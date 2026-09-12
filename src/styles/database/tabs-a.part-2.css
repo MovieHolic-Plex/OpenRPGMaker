@@ -209,7 +209,6 @@
 .tileset-modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 40;
   display: grid;
   place-items: center;
   padding: var(--space-4);
@@ -413,18 +412,3 @@
 }
 
 /* ?? ?덉씠????됲꽣 ?? */
-.layer-row {
-  display: flex;
-  gap: 3px;
-}
-.layer-btn {
-  flex: 1;
-  font-size: 11px;
-  padding: 6px 2px;
-}
-.layer-btn.active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--text-1);
-  font-weight: 600;
-}

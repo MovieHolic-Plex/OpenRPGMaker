@@ -8,7 +8,6 @@
    그 패치는 font-family 만 강제해서, 타이틀에 새 텍스트를 추가하면 조용히
    Malgun Gothic 으로 돌아가는 함정이기도 했다. */
 .rm-title-screen {
-  font-family: var(--runtime-ui-font);
 
   --oprn-title-sky-glow: rgba(255, 255, 255, 0.12);
   --oprn-title-vignette: rgba(42, 37, 33, 0.14);
@@ -274,15 +273,9 @@
   --oprn-status-highlight: var(--oprn-title-highlight, #397ddd);
   --oprn-status-highlight-deep: var(--oprn-title-highlight-deep, #1b54bd);
   --oprn-status-text: var(--oprn-title-text, var(--bg-overlay));
-  background: var(--runtime-window-fill-fallback);
-  color: var(--oprn-status-text);
-  border: 1px solid var(--runtime-glass-hairline);
   border-radius: var(--runtime-glass-radius-small);
-  box-shadow: none;
   bottom: 0;
   box-sizing: border-box;
-  display: grid;
-  font: 700 var(--runtime-font-size-9)/1.2 var(--runtime-ui-font);
   gap: 4px;
   /* B안 2열 — 좌측 한 창(레일 + 파티), 우측 전체가 작업 영역.
      기존 3열(60px 레일 | 120px 파티 | 나머지 상세)에서는 작업 영역이 화면 1/3 뿐이라
@@ -293,8 +286,6 @@
   left: 0;
   max-width: none;
   min-width: 0;
-  overflow: hidden;
-  padding: 4px;
   right: 0;
   top: 0;
   width: 100%;

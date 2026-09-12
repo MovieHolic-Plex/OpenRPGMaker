@@ -51,7 +51,7 @@ describe("all AI interior routes consume concept bundles", () => {
     const ground = maps[0];
     if (!ground) throw new Error("Ground floor missing");
     const groundDoor = planOf(ground).door;
-    expect(ground.upperTiles[groundDoor.y * ground.width + groundDoor.x]).toBe(176);
+    expect(ground.upperTiles[(groundDoor.y + 1) * ground.width + groundDoor.x]).toBe(176);
     const steps: WalkthroughStep[] = [];
     for (const [index,map] of maps.entries()) {
       const flights = map.events.filter(event => event.id.includes("_main_stair_") || event.id.includes("_upper_stair_"));

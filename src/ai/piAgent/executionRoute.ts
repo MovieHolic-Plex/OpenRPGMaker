@@ -1,51 +1,50 @@
-// 실행 경로 — 지시 한 줄이 어느 루프로 가는가. 사용자는 컴포저의 「경로」 셀렉트(또는 설정)로 기본을 정하고,
-// 질문·계획·선택 영역 작업은 기존 조수가 맡는다. `/pi …` 는 언제나 명시적 우선이다.
+// 조수 채팅의 실행 계획 — 루프는 Pi 하나다(2026-09-11).
+//
+// 예전에는 「경로」 enum(`session | pi-agent | pi-team`)이 «어느 루프로 가는가» 를 답했다. 조수 세션을
+// deprecated 하면서 답할 것이 없어졌다: 사용자가 고르는 값은 이제 «그 Pi 를 무엇까지 허용하는가»
+// 하나이고, 그 답은 자율성 다이얼(`autonomyLevels`)에서 나온다.
+//
+// 팀도 경로가 아니다 — Pi 루프의 실행 모드(`PiAgentMode`)다. 그 비트의 자리는 `AiConfig.piTeam`
+// 하나이고, 컴포저 「팀」 토글과 설정 「Pi 팀 실행」 이 같은 값을 읽는다. 경로 enum 으로 한 번 더
+// 인코딩하면 라우트 → `/pi team` 문자열 → 파서 왕복이 생겨 한 비트를 네 곳에서 표현하게 된다.
 
-import type { ComposerMode } from "@/ai/composerMode";
-
-export const EXECUTION_ROUTES = ["session", "pi-agent", "pi-team"] as const;
-export type ExecutionRoute = (typeof EXECUTION_ROUTES)[number];
-
-export const EXECUTION_ROUTE_LABEL: Readonly<Record<ExecutionRoute, string>> = {
-  session: "조수",
-  "pi-agent": "Pi 에이전트",
-  "pi-team": "Pi 팀",
-};
-
-export const EXECUTION_ROUTE_DESCRIPTION: Readonly<Record<ExecutionRoute, string>> = {
-  session: "기존 조수 루프. 제안 카드·승인·질문·계획을 모두 지원한다.",
-  "pi-agent": "Pi 에이전트 하나가 현재 맵에서 끝까지 일하고 결과를 검토 카드로 낸다.",
-  "pi-team": "팀장이 팀원을 나눠 배정하고 검수한다. 진행은 팀 패널과 보드에 보인다.",
-};
-
-// 기본은 Pi 에이전트다(2026-09-10 변경): 생 입력은 현재 맵에서 끝까지 일하는 Pi 로 간다.
-// `/pi …` 명시 입력·질문/계획/선택 영역의 세션 고정은 그대로다. 이전 기본(session)은
-// 질문·계획 모드에서만 살아남는다.
-export const DEFAULT_EXECUTION_ROUTE: ExecutionRoute = "pi-agent";
+import type { AutonomyResolution } from "@/ai/autonomyLevels";
+import type { PiAgentThinkingLevel } from "./protocol";
 
 export type PiApplyMode = "review" | "auto";
 export const DEFAULT_PI_APPLY: PiApplyMode = "review";
+/** 팀 실행 기본값. 컴포저 「팀」 토글·설정 「Pi 팀 실행」 이 이 값을 덮는다. */
+export const DEFAULT_PI_TEAM = false;
 
-export function isExecutionRoute(value: unknown): value is ExecutionRoute {
-  return typeof value === "string" && (EXECUTION_ROUTES as readonly string[]).includes(value);
+/**
+ * 옛 blob 호환 어휘. 경로 enum 이 있던 시절 `executionRoute` 키가 저장돼 있다:
+ * `"pi-team"` 은 «Pi + 팀» 이었고, `"session"`·`"pi-agent"` 는 둘 다 «Pi» 다. 새 코드는 이 키를
+ * 쓰지 않는다 — 읽는 곳은 `loadAiConfig` 의 승격 한 곳뿐이다(옛 값을 지우면 사용자의 팀 설정이
+ * 조용히 사라지고, 남겨 두면 두 어휘가 살아 있는 것처럼 보인다).
+ */
+export const LEGACY_PI_TEAM_ROUTE = "pi-team";
+/** 다이얼 한 값이 이번 실행에 대해 정하는 것 전부. */
+export interface PiRunPlan {
+  /** 쓰기 툴 없이 조회·보고만 한다(읽기 전용 레벨·계획 턴). */
+  readonly readOnly: boolean;
+  /** 실행하지 않고 계획만 세운다. Pi 에는 세션 플래너가 없으므로 프롬프트 지시로 만들고, readOnly 와 함께 쓴다. */
+  readonly planOnly: boolean;
+  /** 다이얼의 작업 예산 → Pi 턴 상한. */
+  readonly maxTurns: number;
+  /** 다이얼의 추론 강도 → Pi thinking level. */
+  readonly thinkingLevel: PiAgentThinkingLevel;
 }
 
-export interface RouteDecision {
-  readonly route: ExecutionRoute;
-  /** 사용자에게 보일 이유(기본 경로에서 벗어났을 때만). */
-  readonly reason: string | null;
+/**
+ * 레벨을 Pi 노브로 푼다. 계획 턴은 쓰이면 안 된다 — 세션에서는 플래너가 실행을 막았고, 지금은
+ * 쓰기 툴 미제공(`readOnly`)이 그 역할을 한다.
+ */
+export function resolvePiRunPlan(autonomy: AutonomyResolution): PiRunPlan {
+  return {
+    readOnly: autonomy.readOnly || autonomy.planOnly,
+    planOnly: autonomy.planOnly,
+    maxTurns: autonomy.budgetCap,
+    thinkingLevel: autonomy.reasoningEffort,
+  };
 }
 
-export function resolveExecutionRoute(input: {
-  readonly text: string;
-  readonly composerMode: ComposerMode;
-  readonly preferred: ExecutionRoute;
-  readonly selectionTaskActive?: boolean;
-}): RouteDecision {
-  const trimmed = input.text.trim();
-  if (trimmed === "/pi" || trimmed.startsWith("/pi ")) return { route: "pi-agent", reason: null }; // 파서가 agent/team 을 정한다
-  if (input.composerMode === "ask") return { route: "session", reason: input.preferred === "session" ? null : "질문은 기존 조수가 답한다" };
-  if (input.composerMode === "plan") return { route: "session", reason: input.preferred === "session" ? null : "계획 모드는 기존 조수가 맡는다" };
-  if (input.selectionTaskActive) return { route: "session", reason: input.preferred === "session" ? null : "선택 영역 작업은 기존 조수가 맡는다" };
-  return { route: input.preferred, reason: null };
-}

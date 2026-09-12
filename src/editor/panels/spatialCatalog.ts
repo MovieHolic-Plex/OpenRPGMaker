@@ -26,6 +26,7 @@ export type SpatialGalleryCard = {
   readonly objectId?: string;
   readonly mapId?: string;
   readonly placeKind?: "facility" | "settlement" | "natural";
+  readonly regionKind?: "terrain" | "settlement";
   readonly missingSource?: boolean;
   readonly compatibility?: SpatialCompatibilitySource;
   readonly mapUsage?: boolean;
@@ -181,6 +182,9 @@ export function listSpatialGalleryCards(session: SpatialAuthoringSession): reado
   const cards = DESIGN_LISTERS[session.tab]().filter((card) => matchesSource(card, session.source));
   if (session.tab === "places" && session.placeKindFilter) {
     return cards.filter((card) => card.placeKind === session.placeKindFilter);
+  }
+  if (session.tab === "regions" && session.regionKindFilter) {
+    return cards.filter((card) => card.regionKind === session.regionKindFilter);
   }
   return cards;
 }

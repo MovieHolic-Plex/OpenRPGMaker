@@ -1,0 +1,523 @@
+/* event 표면 — footer.css. 규칙 순서는 2026-09 세대 접기 전 유효 순서(event/index.css 평탄 순서)를 보존한다. */
+
+.event-editor-modal-footer {
+  justify-content: end;
+}
+
+@media (max-width: 900px) {
+
+  .event-editor-modal-footer {
+    gap: 6px;
+    padding: 6px;
+  }
+
+  .event-editor-footer-button {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
+/* 푸터: 좌측 힌트 | 우측 삭제·테스트·취소·적용·확인·도움말 (목업 순서) */
+.event-editor-modal-footer {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.event-editor-footer-button {
+  min-height: 32px;
+  min-width: 64px;
+  padding-block: 4px;
+}
+
+.event-editor-footer-button.primary:hover {
+  filter: brightness(1.05);
+}
+
+.event-editor-modal-resize-handle {
+  border-radius: 6px;
+  bottom: 2px;
+  cursor: nwse-resize;
+  height: 22px;
+  position: absolute;
+  right: 2px;
+  touch-action: none;
+  width: 22px;
+  z-index: 4;
+}
+
+.event-editor-modal-resize-handle:focus-visible {
+  outline-offset: 1px;
+}
+
+.event-editor-modal-resize-handle::before {
+  background:
+    linear-gradient(135deg, transparent 0 50%, var(--event-modern-border-strong) 50% 55%, transparent 55%),
+    linear-gradient(135deg, transparent 0 66%, var(--event-modern-border-strong) 66% 71%, transparent 71%),
+    linear-gradient(135deg, transparent 0 82%, var(--event-modern-border-strong) 82% 87%, transparent 87%);
+  content: "";
+  inset: 3px;
+  position: absolute;
+}
+
+.event-editor-modal-resize-handle:hover,
+.event-editor-modal-resize-handle:focus-visible {
+  background: var(--event-modern-accent-soft);
+  outline: 1px solid var(--event-modern-accent);
+}
+
+/* ── 확인 버튼도 셸 액센트로 (testid: event-editor-ok) ──────────── */
+[data-testid="event-editor-ok"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+  font-weight: 650;
+}
+
+[data-testid="event-editor-ok"]:hover {
+  filter: brightness(1.07);
+}
+
+.event-editor-footer-more {
+  position: relative;
+}
+
+.event-editor-footer-more-summary {
+  display: grid;
+  place-items: center;
+  min-width: 82px;
+  min-height: 38px;
+}
+
+.event-editor-footer-more-menu {
+  position: absolute;
+  z-index: 30;
+  right: 0;
+  bottom: calc(100% + 7px);
+  display: grid;
+  width: 190px;
+  gap: 4px;
+  padding: 6px;
+  border: 1px solid var(--mk-line);
+  border-radius: 6px;
+  background: var(--mk-raised);
+  box-shadow: 0 -12px 28px var(--shadow-pop);
+}
+
+.event-editor-footer-more:not([open]) > .event-editor-footer-more-menu {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+  .event-editor-modal-footer {
+    gap: 8px;
+    padding-inline: 12px;
+  }
+
+  .event-editor-footer-button {
+    min-width: 72px;
+  }
+}
+
+/* ── 푸터: 한 줄 상태 + 콘텐츠 크기 버튼의 압축 행 ── */
+.event-editor-modal-footer .event-editor-lifecycle-status {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.event-editor-modal-footer .event-editor-draft-status,
+.event-editor-modal-footer .event-editor-remote-status {
+  display: inline-block;
+  font: 500 12px/1.35 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.event-editor-modal-footer .btn.event-editor-footer-button,
+.event-editor-modal-footer .event-editor-footer-more-summary {
+  height: 30px;
+  min-height: 30px;
+  min-width: 0;
+  padding: 0 13px;
+}
+
+.event-editor-modal-footer .event-editor-footer-button[data-testid="event-delete"] {
+  border-color: rgba(42,37,33,.20);
+  color: var(--danger, #C6403D);
+}
+
+.event-editor-modal-footer .event-editor-footer-button[data-testid="event-editor-help"] {
+  background: transparent;
+}
+
+@media (max-width: 820px) {
+  .event-editor-modal-footer {
+    gap: 6px;
+    grid-template-columns: minmax(80px, 1fr) auto;
+  }
+
+  .event-editor-modal-footer .event-editor-footer-leading {
+    display: flex;
+  }
+
+  .event-editor-modal-footer .event-editor-lifecycle-status {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .event-editor-modal-footer .event-editor-draft-status,
+  .event-editor-modal-footer .event-editor-remote-status {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .event-editor-modal-footer .event-editor-footer-actions {
+    gap: 4px;
+  }
+
+  .event-editor-modal-footer .btn.event-editor-footer-button,
+  .event-editor-modal-footer .event-editor-footer-more-summary {
+    padding-inline: 8px;
+  }
+}
+
+.event-editor-modal-window.is-fullscreen .event-editor-modal-resize-handle {
+  display: none;
+}
+
+.event-editor-render-error {
+  align-items: flex-start;
+  color: var(--text-1);
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  min-height: 160px;
+  padding: 24px 28px;
+}
+
+.event-editor-render-error-title {
+  font-size: 15px;
+  font-weight: 650;
+  margin: 0;
+}
+
+.event-editor-render-error-detail {
+  color: var(--text-2);
+  font-size: 13px;
+  margin: 0;
+}
+
+/* 40px Footer */
+.event-editor-modal-footer,
+footer {
+  align-items: center;
+  background: var(--bg-raised);
+  border-top: 1px solid var(--border);
+  color: var(--text-2);
+  display: flex;
+  font-size: 12px;
+  gap: 12px;
+  height: var(--hierarchy-footer-height);
+  min-height: var(--hierarchy-footer-height);
+  max-height: var(--hierarchy-footer-height);
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.event-editor-modal-footer .issue {
+  color: var(--warning);
+  font-weight: 550;
+}
+
+.event-editor-modal-footer .actions,
+.event-editor-footer-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* Destructive delete leaves the commit cluster.
+   `.event-editor-footer-actions` 의 flex 배치는 아래쪽 규칙이 소유한다(justify-content 까지
+   같이 선언하는 곳). 여기 있던 같은 값의 사본은 뒤 규칙에 덮여 사문이었다. */
+.event-editor-modal-footer [data-testid="event-delete"] {
+  margin-right: auto;
+}
+
+.event-editor-modal-header .event-draft-validation {
+  --ev-bell-tone: var(--accent);
+  --ev-bell-wash: var(--accent-muted);
+  flex: 0 0 auto;
+  position: relative;
+}
+
+.event-editor-modal-header .event-draft-validation[data-severity="warning"],
+.event-editor-modal-header .event-draft-validation[data-severity="error"] {
+  --ev-bell-tone: var(--danger);
+  --ev-bell-wash: var(--danger-muted);
+}
+
+.event-editor-modal-header .event-draft-validation-summary {
+  align-items: center;
+  background: var(--ev-bell-wash);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--ev-bell-tone);
+  cursor: pointer;
+  display: inline-flex;
+  gap: 5px;
+  height: 30px;
+  list-style: none;
+  padding: 0 7px 0 8px;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.event-editor-modal-header .event-draft-validation-summary::-webkit-details-marker {
+  display: none;
+}
+
+.event-editor-modal-header .event-draft-validation-summary::marker {
+  content: "";
+}
+
+.event-editor-modal-header .event-draft-validation-summary:hover {
+  background: color-mix(in srgb, var(--ev-bell-tone) 15%, transparent);
+  border-color: color-mix(in srgb, var(--ev-bell-tone) 38%, transparent);
+}
+
+.event-editor-modal-header .event-draft-validation-summary:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+.event-editor-modal-header .event-draft-validation[open] > .event-draft-validation-summary {
+  background: color-mix(in srgb, var(--ev-bell-tone) 18%, transparent);
+  border-color: color-mix(in srgb, var(--ev-bell-tone) 45%, transparent);
+}
+
+.event-editor-modal-header .event-draft-validation-bell {
+  align-items: center;
+  display: inline-flex;
+  height: 16px;
+  justify-content: center;
+  width: 16px;
+}
+
+.event-editor-modal-header .event-draft-validation-count {
+  background: var(--ev-bell-tone);
+  border-radius: 999px;
+  color: var(--on-accent);
+  font: 700 11px/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  min-width: 18px;
+  padding: 4px 5px;
+  text-align: center;
+}
+
+@keyframes event-validation-bell-ring {
+  0%, 60%, 100% { transform: rotate(0deg); }
+  10% { transform: rotate(13deg); }
+  20% { transform: rotate(-11deg); }
+  30% { transform: rotate(8deg); }
+  40% { transform: rotate(-6deg); }
+  50% { transform: rotate(3deg); }
+}
+
+.event-editor-modal-header
+  .event-draft-validation[data-severity="error"]:not([open])
+  .event-draft-validation-bell {
+  animation: event-validation-bell-ring 1.6s ease-in-out 3;
+  transform-origin: 50% 18%;
+}
+
+.event-editor-modal-header .event-draft-validation-popover {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-modal);
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: min(420px, 76vw);
+  z-index: var(--z-popover-high);
+}
+
+.event-editor-modal-header .event-draft-validation:not([open]) > .event-draft-validation-popover {
+  display: none;
+}
+
+@keyframes event-validation-popover-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.event-editor-modal-header .event-draft-validation[open] > .event-draft-validation-popover {
+  animation: event-validation-popover-in var(--transition-med);
+}
+
+.event-editor-modal-header .event-draft-validation-head {
+  align-items: baseline;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.event-editor-modal-header .event-draft-validation-title {
+  color: var(--text-1);
+  font: 650 12px/1.2 var(--font-ui);
+}
+
+.event-editor-modal-header .event-draft-validation-tally {
+  background: var(--ev-bell-wash);
+  border-radius: 999px;
+  color: var(--ev-bell-tone);
+  font: 700 10.5px/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  padding: 4px 8px;
+}
+
+.event-editor-modal-header .event-draft-validation-issues {
+  display: grid;
+  gap: 2px;
+  max-height: min(320px, 46vh);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.event-editor-modal-header .event-draft-validation-issue {
+  --ev-issue-tone: var(--accent);
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  cursor: pointer;
+  display: grid;
+  font: 500 12px/1.45 var(--font-ui);
+  gap: 8px;
+  grid-template-columns: 38px minmax(0, 1fr);
+  padding: 7px 8px;
+  text-align: left;
+  width: 100%;
+}
+
+.event-editor-modal-header .event-draft-validation-issue[data-severity="error"] {
+  --ev-issue-tone: var(--danger);
+}
+
+.event-editor-modal-header .event-draft-validation-issue[data-severity="warning"] {
+  --ev-issue-tone: var(--warning);
+}
+
+.event-editor-modal-header .event-draft-validation-issue:hover,
+.event-editor-modal-header .event-draft-validation-issue:focus-visible {
+  background: color-mix(in srgb, var(--ev-issue-tone) 8%, transparent);
+  border-color: color-mix(in srgb, var(--ev-issue-tone) 30%, transparent);
+  outline: none;
+}
+
+.event-editor-modal-header .event-draft-validation-severity {
+  background: color-mix(in srgb, var(--ev-issue-tone) 12%, transparent);
+  border-radius: 999px;
+  color: var(--ev-issue-tone);
+  font: 700 10px/1 var(--font-ui);
+  padding: 4px 0;
+  text-align: center;
+}
+
+.event-editor-modal-header .event-draft-validation-message > span {
+  display: block;
+}
+
+.event-editor-modal-header .event-draft-validation-head {
+  flex-wrap: wrap;
+}
+
+.event-editor-modal-header .event-draft-validation-message {
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event-editor-modal-header .event-draft-validation-bell,
+  .event-editor-modal-header .event-draft-validation[open] > .event-draft-validation-popover {
+    animation: none;
+  }
+}
+
+/* 「변경 있음/없음」은 판단이고 「적용」은 실행이다. 예전엔 상태가 푸터 왼쪽 끝, 저장 군이
+ * 오른쪽 끝이라 넓은 창에서 2,000px 넘게 떨어져 사실상 안 읽혔다. 이제 상태는 실행 버튼
+ * 바로 왼쪽에 서고, 푸터 왼쪽 칸은 파괴 동작(이벤트 삭제) 전용이다. */
+.event-editor-modal-footer .event-editor-footer-actions {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.event-editor-modal-footer .event-editor-footer-actions .event-editor-draft-status {
+  flex: 0 1 auto;
+  margin-right: 4px;
+}
+
+/* 헤더 검증 종(경고 n) 칩 — 999px 알약 · 10.5~11px 글자였다. 안쪽 4px · 보조 12px 로. */
+.event-editor-modal-window .event-editor-modal-header .event-draft-validation-summary,
+.event-editor-modal-window .event-editor-modal-header .event-draft-validation-count,
+.event-editor-modal-window .event-editor-modal-header .event-draft-validation-tally {
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.event-editor-window-controls .ee-icon,
+.event-editor-window-restore .ee-icon {
+  flex: 0 0 16px;
+  height: 16px;
+  width: 16px;
+}
+
+.event-editor-modal-window .event-editor-modal-header .event-editor-window-control:focus-visible,
+.event-editor-window-restore:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+.event-editor-window-restore {
+  align-items: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  bottom: var(--space-4);
+  box-shadow: var(--shadow-pop);
+  color: var(--text-1);
+  cursor: pointer;
+  display: flex;
+  font: 600 13px/1.5 var(--font-ui);
+  gap: var(--space-2);
+  left: 50%;
+  max-width: min(480px, calc(100vw - 32px));
+  min-height: 32px;
+  padding: var(--space-2) var(--space-3);
+  position: fixed;
+  transform: translateX(-50%);
+  z-index: 999;
+}
+
+.event-editor-window-restore > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-editor-window-restore:hover {
+  background: var(--bg-hover);
+}
+
+.event-editor-window-restore:active {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+}

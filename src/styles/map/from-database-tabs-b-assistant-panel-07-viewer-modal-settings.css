@@ -1,0 +1,211 @@
+/* map 표면 — database/tabs-b-assistant-panel/07-viewer-modal-settings.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 map 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:2-8 */
+.harness-window {
+  display: flex;
+  flex-direction: column;
+  height: min(84vh, 780px);
+  max-width: min(92vw, 920px);
+  width: 92vw;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:9-13 */
+.harness-header {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:14-16 */
+.harness-header h2 {
+  flex: 1 1 auto;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:17-21 */
+.harness-hint {
+  color: var(--text-3);
+  font-size: 11px;
+  margin: var(--space-1) 0;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:22-28 */
+.harness-summary {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:29-36 */
+.harness-body {
+  display: grid;
+  align-content: start;
+  flex: 1 1 auto;
+  gap: var(--space-2);
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:37-40 */
+.harness-timeline {
+  display: grid;
+  gap: 2px;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:41-47 */
+.harness-row {
+  align-items: baseline;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  gap: var(--space-2);
+  padding: 3px 0;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:48-50 */
+.harness-row.is-phase {
+  background: var(--control-bg);
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:52-55 */
+.harness-row.is-ui {
+  border-left: 2px solid var(--accent);
+  padding-left: var(--space-2);
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:56-62 */
+.harness-time {
+  color: var(--text-3);
+  flex: none;
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  min-width: 58px;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:63-70 */
+.harness-badge {
+  border-radius: 999px;
+  flex: none;
+  font-size: 10px;
+  padding: 1px 8px;
+  background: var(--control-bg);
+  color: var(--text-2);
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:71-74 */
+.harness-badge.is-phase {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:75-78 */
+.harness-badge.is-injection {
+  background: #8b5cf6;
+  color: #fff;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:79-82 */
+.harness-badge.is-tool-ok {
+  background: #14532d;
+  color: #86efac;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:83-87 */
+.harness-badge.is-tool-fail,
+.harness-badge.is-role-system {
+  background: var(--danger-muted);
+  color: var(--danger);
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:88-91 */
+.harness-badge.is-turn-end {
+  background: #1e3a5f;
+  color: #93c5fd;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:92-95 */
+.harness-badge.is-model,
+.harness-badge.is-role-assistant {
+  color: var(--accent);
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:97-100 */
+.harness-badge.is-ui {
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:101-105 */
+.harness-badge.is-ui-blocked,
+.harness-badge.is-warn {
+  background: var(--warning-muted);
+  color: var(--warning);
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:106-113 */
+.harness-text {
+  color: var(--text-2);
+  font-size: 11px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:114-118 */
+.harness-tool-name {
+  color: var(--accent);
+  flex: none;
+  font-size: 11px;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:119-122 */
+.harness-row-details {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:123-128 */
+.harness-row-summary {
+  align-items: baseline;
+  cursor: pointer;
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:129-140 */
+.harness-row-raw {
+  background: var(--control-bg);
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  font-size: 10px;
+  margin: var(--space-1) 0 0;
+  max-height: 320px;
+  overflow: auto;
+  padding: var(--space-2);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:141-146 */
+.harness-raw-section > summary {
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 11px;
+  padding: var(--space-1) 0;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:147-150 */
+.harness-raw-messages {
+  display: grid;
+  gap: 2px;
+}
+
+/* database/tabs-b-assistant-panel/07-viewer-modal-settings.css:151-154 */
+.harness-empty {
+  color: var(--text-3);
+  font-size: 11px;
+}

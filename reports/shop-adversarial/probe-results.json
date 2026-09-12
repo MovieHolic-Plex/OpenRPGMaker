@@ -1,0 +1,59 @@
+[
+  {
+    "name": "entrance-realclick",
+    "buyListOpen": false
+  },
+  {
+    "name": "click-row-ether",
+    "goldBefore": 300,
+    "goldAfter": 300,
+    "status": "무엇을 구매하시겠습니까?"
+  },
+  {
+    "name": "enter-on-qty-input",
+    "goldBefore": 300,
+    "goldAfter": 250,
+    "focused": "shop-buy-item_potion",
+    "shopOpen": true
+  },
+  {
+    "name": "arrowup-on-qty-input",
+    "qty": "1",
+    "focused": "shop-buy-item_elixir"
+  },
+  {
+    "name": "click-unaffordable-elixir",
+    "goldBefore": 250,
+    "goldAfter": 250,
+    "status": "회복약 구매 — -50G"
+  },
+  {
+    "name": "type-99-unaffordable",
+    "qty": "",
+    "max": "5",
+    "total": "합계 50G",
+    "balance": "거래 후 잔액 200G"
+  },
+  {
+    "name": "equipment-detail-overflow",
+    "overflowPx": 113,
+    "ownedInView": false,
+    "statGrid": false,
+    "summaryStats": true
+  },
+  {
+    "name": "button-tabindex",
+    "confirm": "-1",
+    "cancel": null,
+    "detailOpen": null
+  },
+  {
+    "name": "esc-from-items",
+    "atMenu": true
+  },
+  {
+    "name": "esc-from-menu",
+    "shopClosed": true,
+    "gold": 250
+  }
+]

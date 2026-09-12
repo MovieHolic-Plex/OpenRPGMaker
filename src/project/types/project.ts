@@ -98,6 +98,12 @@ export interface GameMap {
    * optional 이라 옛 맵은 필드 자체가 없다(마이그레이션 불필요, 옛 빌더 맵도 불변).
    */
   locations?: MapNamedLocation[];
+  /**
+   * 역할(안전지대·경작지) 투영의 마지막 결과. 로케이션 ID → 그때 넣은 사각형.
+   * optional 이라 옛 맵은 없다 — 없으면 «우리가 넣은 사각형이 없다» 는 뜻이고,
+   * `safeZones`/`farmableArea` 의 모든 항목을 손 저작으로 보존한다.
+   */
+  locationRoleProjection?: LocationRoleProjection;
   /** 시공 당시 설계서와 시드. 원본 변경이 기존 맵을 바꾸지 않는다. */
   villageDesignSource?: {
     preset: VillageLayoutPresetRecord;
@@ -276,6 +282,21 @@ export interface MapNamedLocationOrigin {
   planKind?: string;
 }
 
+/** 로케이션이 투영하는 맵 시스템. 정의는 `src/project/locationRoles.ts`. */
+export type LocationRole = "safeZone" | "farmable";
+
+/**
+ * 역할 투영의 **마지막 결과** (2026-09-12). `safeZones`/`farmableArea` 안에서 «우리가 넣은
+ * 사각형» 을 로케이션 ID 로 기억한다.
+ *
+ * 왜 로케이션 쪽(`origin`)이 아니라 맵에 두는가: 구역을 **지우면** 그 로케이션의 표시도
+ * 함께 사라져 옛 사각형을 식별할 수 없다 — 유령이 남는다. 기록이 맵에 있으면 삭제·이동 모두
+ * «지난번에 내가 넣은 것» 을 정확히 걷어낼 수 있다.
+ */
+export type LocationRoleProjection = {
+  readonly [role in LocationRole]?: Record<string, Rect>;
+};
+
 /**
  * 진영 간 태도. -2 최악의 적 / -1 적 / 0 중립 / 1 우호 / 2 동맹.
  * 태도는 "싸워도 되는가"만 정한다. 실제 선공은 FactionAggression 이 정한다.
@@ -324,6 +345,12 @@ export interface FieldSpawnDef {
   id: string;
   troopId: TroopId;
   area: Rect;
+  /**
+   * 같은 맵의 `locations[].id`. 있으면 **사각형 대신** 이 구역을 스폰 영역으로 쓴다 —
+   * 구역을 옮기면 스폰도 따라간다(2026-09-12). `area` 는 그대로 남는다:
+   * 옛 저장본 호환 + 구역이 지워졌을 때의 폴백.
+   */
+  locationId?: string;
   maxAlive?: number;
   respawnSec?: number;
   graphic?: EventPageGraphic;

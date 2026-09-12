@@ -70,32 +70,7 @@ body.editor-ui-beginner .editor-statusbar .sb-detail {
   display: none !important;
 }
 
-body.editor-ui-beginner .canvas-toolbar.is-basic-chrome,
-body.editor-ui-standard .canvas-toolbar.is-basic-chrome {
-  gap: 8px;
-  opacity: 0.95;
-}
-
-body.editor-ui-beginner .canvas-toolbar.is-basic-chrome.is-docked-chrome {
-  align-items: center;
-  backdrop-filter: none;
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-  height: var(--editor-canvas-chrome-top, 48px);
-  left: auto;
-  max-width: none;
-  padding: 0 8px;
-  right: 8px;
-  top: 0;
-  transform: none;
-}
-
 /* Basic has no ⋯ expand control — never hide zoom buttons behind is-expanded gate. */
-body.editor-ui-beginner .canvas-toolbar.is-basic-chrome .zoom-button,
-.canvas-toolbar.is-basic-chrome.is-expanded .zoom-button {
-  display: inline-flex;
-}
 
 /* ── Basic labeled rail + flyout ─────────────────────────────────
    figma-editor.css loads after this file and sets left-palette padding +
@@ -419,63 +394,10 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
   overflow-x: hidden !important;
 }
 
-.left-panel-stack[data-testid="left-palette-root"] .chipset-sheet,
-.left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.tile-palette {
-  max-width: 100% !important;
-  min-width: 0 !important;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
-  width: 100% !important;
-}
-
-.left-panel-stack[data-testid="left-palette-root"] .chipset-grid {
-  max-width: 100% !important;
-  min-width: 0 !important;
-  width: 100% !important;
-}
-
 /* 전문가 좌측 RM2003 팔레트: 가로 6칸 고정 */
-.left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.oprn-palette {
-  container-type: inline-size;
-}
-
-.left-panel-stack[data-testid="left-palette-root"] .chipset-grid.oprn-palette-grid {
-  --oprn-cols: 6;
-  --chipset-cell: min(32px, calc((100cqi - 12px) / 6));
-  grid-auto-rows: var(--chipset-cell);
-  grid-template-columns: repeat(6, var(--chipset-cell)) !important;
-  max-width: 100% !important;
-  min-width: 0 !important;
-  width: max-content !important;
-}
-
-.left-panel-stack[data-testid="left-palette-root"] .chipset-grid.oprn-palette-grid .chipset-tile {
-  height: var(--chipset-cell);
-  min-width: 0;
-  width: var(--chipset-cell);
-}
 
 /* Custom atlases preserve the authored sheet geometry. Never reflow them into the
    RM2K six-column palette: multi-cell facades and props must remain readable. */
-.left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.custom-palette {
-  container-type: inline-size;
-  overflow-x: auto !important;
-}
-
-.left-panel-stack[data-testid="left-palette-root"] .chipset-grid.custom-palette-grid {
-  --chipset-cell: max(var(--custom-min-cell), min(32px, calc((100cqi - 4px) / var(--custom-cols))));
-  grid-auto-rows: var(--chipset-cell);
-  grid-template-columns: repeat(var(--custom-cols), var(--chipset-cell)) !important;
-  max-width: none !important;
-  min-width: calc(var(--custom-cols) * var(--custom-min-cell) + 4px) !important;
-  width: max-content !important;
-}
-
-.left-panel-stack[data-testid="left-palette-root"] .chipset-grid.custom-palette-grid .chipset-tile {
-  height: var(--chipset-cell);
-  min-width: 0;
-  width: var(--chipset-cell);
-}
 
 /* 시트 크게 보기 팝오버 */
 .chipset-sheet-popout-backdrop {
@@ -524,34 +446,6 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
   overflow-x: hidden;
   overflow-y: auto;
   padding: 10px 12px 14px;
-}
-
-.chipset-sheet-popout-body .chipset-sheet.tile-palette {
-  border: 0;
-  height: auto;
-  max-height: none;
-  min-height: 0;
-  overflow: visible;
-}
-
-.chipset-sheet-popout-body .chipset-grid {
-  --chipset-cell: clamp(32px, calc((100cqw - 16px) / 10), 48px);
-  grid-template-columns: repeat(auto-fill, minmax(var(--chipset-cell), 1fr));
-  width: 100%;
-}
-
-.palette-sheet-tools {
-  align-items: center;
-  display: flex;
-  gap: 6px;
-  justify-content: flex-end;
-  margin: 0 0 6px;
-}
-
-.palette-sheet-tools .btn {
-  font-size: 11px;
-  height: 26px;
-  padding: 0 10px;
 }
 
 .basic-flyout-head {
@@ -644,48 +538,8 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
   line-height: 1;
 }
 
-
-.workspace-panels-menu {
-  gap: 1px;
-  min-width: 216px;
-}
-
-.workspace-menu-group {
-  color: var(--text-3, #8A7F70);
-  font: 700 10px/1 var(--font-ui, system-ui, sans-serif);
-  letter-spacing: 0.08em;
-  padding: 6px 8px 3px;
-  text-transform: uppercase;
-}
-
-.workspace-panel-row {
-  align-items: center;
-  display: flex;
-  gap: 2px;
-}
-
 .workspace-panel-row .workspace-panel-toggle {
-  flex: 1 1 auto;
   text-align: left;
-}
-
-.workspace-panel-dock-chip {
-  appearance: none;
-  background: transparent;
-  border: 1px solid var(--border-subtle, rgba(60, 48, 32, 0.18));
-  border-radius: var(--radius-s, 2px);
-  color: var(--text-2, #5C5348);
-  cursor: pointer;
-  flex: 0 0 auto;
-  font: 600 10px/1 var(--font-ui, system-ui, sans-serif);
-  padding: 4px 6px;
-}
-
-.workspace-panel-dock-chip:hover,
-.workspace-panel-dock-chip:focus-visible {
-  border-color: var(--border-strong, rgba(60, 48, 32, 0.4));
-  color: var(--text-1, #2E2A24);
-  outline: none;
 }
 
 

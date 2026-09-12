@@ -52,11 +52,6 @@ body.ai-studio-open .ai-chat-float-host {
   z-index: var(--z-flyout);
 }
 
-body.ai-studio-open .topbar {
-  position: relative;
-  z-index: var(--z-status);
-}
-
 body.ai-studio-open .left-panel,
 body.ai-studio-open .right-panel,
 body.ai-studio-open .resizer-left,
@@ -549,47 +544,6 @@ body.ai-studio-open .authoring-journey-host {
   display: flex;
 }
 
-.ai-studio-monitor-chrome .canvas-toolbar,
-.ai-studio-monitor-chrome .canvas-toolbar.is-basic-chrome,
-.ai-studio-monitor-chrome .canvas-toolbar.is-docked-chrome {
-  backdrop-filter: none;
-  background: var(--bg-inset);
-  border: 0;
-  border-radius: 6px;
-  box-shadow: none;
-  height: auto;
-  left: auto;
-  max-width: none;
-  padding: 2px;
-  pointer-events: auto;
-  position: relative;
-  right: auto;
-  top: auto;
-  transform: none;
-  z-index: auto;
-}
-
-.ai-studio-monitor-chrome .canvas-toolbar-zoom-group {
-  gap: 2px;
-}
-
-.ai-studio-monitor-chrome .canvas-toolbar .zoom-stepper-btn,
-.ai-studio-monitor-chrome .canvas-toolbar .zoom-stepper-current {
-  border-radius: 4px;
-  box-shadow: none;
-  font-size: 12px;
-  height: 26px;
-  min-height: 0;
-  min-width: 26px;
-  padding: 0 6px;
-}
-
-.ai-studio-monitor-chrome .canvas-ai-workbench,
-.ai-studio-monitor-chrome .canvas-toolbar-save-group,
-.ai-studio-monitor-chrome .canvas-toolbar-expand {
-  display: none;
-}
-
 .ai-studio-exit {
   align-items: center;
   background: var(--bg-raised);
@@ -631,17 +585,6 @@ body.ai-studio-open .authoring-journey-host {
 
 /* 캔버스 셸의 톱바 예약(--editor-canvas-chrome-top, persistence :has)을 덮어
    모니터 칸을 끝까지 채운다. 안 그러면 위가 74px 비어 그림 액자처럼 보인다. */
-body.ai-studio-open .canvas-area .ai-studio-monitor-stage .editor-canvas-scroll-shell {
-  --editor-canvas-chrome-top: 0px;
-  --editor-canvas-chrome-bottom: 0px;
-  bottom: 0;
-  height: auto;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: auto;
-}
 
 .ai-studio-monitor-stage .phaser-container,
 .ai-studio-monitor-stage .phaser-container > canvas {
@@ -660,10 +603,6 @@ body.ai-studio-open .canvas-area .ai-studio-monitor-stage .editor-canvas-scroll-
   gap: 8px;
   height: 100%;
   justify-content: center;
-}
-
-body.ai-studio-open .coach-mark-card {
-  display: none;
 }
 
 /* ── 조수 ─────────────────────────────────────────────────────────────────── */
@@ -1113,31 +1052,13 @@ body.ai-studio-open .coach-mark-card {
   margin-bottom: 8px;
 }
 
-.ai-studio-tool-grid {
-  display: grid;
-  gap: 8px;
-  grid-template-columns: repeat(auto-fill, minmax(min(150px, 100%), 1fr));
-}
-
 .ai-studio-tool-card {
-  align-items: center;
-  background: var(--bg-inset);
-  border: 1px solid transparent;
-  border-radius: 8px;
-  color: var(--text-1);
   cursor: pointer;
-  display: flex;
   font: inherit;
-  gap: 10px;
-  min-height: 52px;
-  padding: 8px 10px;
-  text-align: left;
   transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
 }
 
 .ai-studio-tool-card:hover {
-  background: var(--bg-raised);
-  border-color: var(--accent-border);
   transform: translateY(-1px);
 }
 
@@ -1146,7 +1067,6 @@ body.ai-studio-open .coach-mark-card {
 }
 
 .ai-studio-tool-card:focus-visible {
-  outline: var(--focus-outline);
   outline-offset: 1px;
 }
 
@@ -1641,7 +1561,6 @@ body.ai-studio-open .coach-mark-card {
 /* 레거시 텍스트 스킬 카드(다른 진입점 호환) */
 .ai-start-grid {
   display: grid;
-  gap: 10px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-top: 6px;
 }
@@ -1650,20 +1569,16 @@ body.ai-studio-open .coach-mark-card {
   align-items: center;
   background: var(--bg-raised);
   border: 1.5px solid var(--border-subtle);
-  border-radius: 12px;
   cursor: pointer;
   display: flex;
   gap: 8px;
   min-height: 52px;
-  padding: 10px 12px;
   text-align: left;
-  transition: background 0.14s, border-color 0.14s, transform 0.12s;
 }
 
 .ai-start-card:hover {
   border-color: color-mix(in srgb, var(--accent, #4c6ef5) 28%, var(--border-subtle));
   background: var(--control-bg-hover);
-  transform: translateY(-1px);
 }
 
 .ai-start-card:focus-visible {

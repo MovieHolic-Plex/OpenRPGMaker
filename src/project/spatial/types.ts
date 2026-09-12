@@ -64,9 +64,16 @@ export type SpatialTerrain = {
   readonly tilesetId: string; readonly width: number; readonly height: number;
   readonly floor: string; readonly areas: readonly SpatialFloorArea[];
 };
+/** 정주지 본문 — 지역 지형을 슬롯 배치 대신 마을 설계서(villagePresets 레코드)와 시드로 채운다. */
+export type RegionSettlement = {
+  readonly presetId: string;
+  readonly seed: number;
+};
 export type RegionDesign = SpatialDesignBase & {
   readonly terrain: SpatialTerrain; readonly places: readonly SpatialChildSlot<"place">[];
   readonly ports: readonly SpatialPort[]; readonly routes: readonly SpatialRoute[];
+  /** 있으면 정주지 지역 — 지형은 combined_town 칩셋이어야 하고 맵 본체를 마을 시공기가 채운다. */
+  readonly settlement?: RegionSettlement;
 };
 export type WorldDesign = SpatialDesignBase & {
   readonly terrain: SpatialTerrain; readonly regions: readonly SpatialChildSlot<"region">[];

@@ -303,7 +303,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let strictResolution: { readonly round: number; readonly actions: StrictQueuedAction[]; index: number; grantedExtraActions: number } | undefined;
   let drainingStrictActions = false;
   let escaped = false;
+  // turn 의 의미를 두 플로우에서 통일한다: **완료된 행동 사이클 수**.
+  // strict 는 라운드 완료 시 +1. gauge 에서는 생존 배틀러 전원이 한 번씩 행동(또는
+  // 행동 불가로 스킵)할 때마다 사이클이 닫히며 +1 — 예전에는 적 행동 1회마다 +1 이라
+  // 트룹 이벤트의 turn/everyRound 조건과 적 행동 패턴(turn)이 모델마다 다른 케이던스로
+  // 발화했다(적대 리뷰: 적 3체 기준 gauge 의 "3턴"은 사실상 1라운드였다).
   let turn = 0;
+  // 현재 gauge 사이클에서 이미 행동 슬롯을 소비한 배틀러 id(행동 불가 스킵 포함).
+  const gaugeCycleActed = new Set<string>();
   let currentActorCommandKind: ActorCommand["kind"] | undefined;
   let lastCaptureResult: BattleCaptureResultSnapshot | undefined;
   let targetSelection: BattleTargetSelectionSnapshot | undefined;
@@ -659,6 +666,23 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     recordTimeline({ kind: "incapacitated", side: battlerSide(battler), userRecordId: battler.recordId, targetId: battler.id });
   }
 
+  /**
+   * gauge 모드에서 배틀러의 행동 슬롯 1회 소비를 기록하고, 생존 배틀러 전원이 소비했으면
+   * 사이클을 닫아 turn 을 올린다. 반환값은 이 행동이 속한 1-based 사이클 번호 —
+   * 트룹 이벤트의 turn 조건(eventTurn)과 strict 의 queue.round 에 대응한다.
+   * 사망한 배틀러는 대기 목록에서 빠지므로 쓰러진 적이 사이클 완료를 막지 않는다.
+   */
+  function markGaugeActionCycle(battler: MutableBattler): number {
+    gaugeCycleActed.add(battler.id);
+    const pending = [...activeActors(), ...visibleEnemies()].some(
+      (candidate) => candidate.hp > 0 && !gaugeCycleActed.has(candidate.id)
+    );
+    if (pending) return turn + 1;
+    gaugeCycleActed.clear();
+    turn += 1;
+    return turn;
+  }
+
   function tick(deltaMs: number): void {
     if (battleFlow === "strict") return;
     if (phase !== "charging" || result) return;
@@ -681,7 +705,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         if (!canBattlerAct(options.project, ready.battler)) {
           recordIncapacitated(ready.battler);
           ready.battler.gauge = 0;
-          phase = "charging";
+          // 행동 불가 스킵도 행동 슬롯을 소비한다 — 적 스킵(performEnemyTurn)과 같은
+          // 사이클 계수·트룹 이벤트 발화를 적용한다.
+          applyTroopEvents(finishGaugeTurnSlot, markGaugeActionCycle(ready.battler));
           return;
         }
       }
@@ -730,7 +756,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       phase = "resolved";
       return;
     }
-    applyTroopEvents(() => finishGaugeActorCommand(actor));
+    // 사이클 계수는 효과 적용 뒤에 — 이번 행동으로 쓰러진 배틀러는 대기 목록에서 빠진다.
+    applyTroopEvents(() => finishGaugeActorCommand(actor), markGaugeActionCycle(actor));
   }
 
   function finishGaugeActorCommand(actor: MutableBattler): void {
@@ -784,11 +811,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return resolution;
   }
 
-  function isValidActorCommand(actor: MutableBattler, command: ActorCommand): boolean {
+  // 커맨드 자체의 적법성(대상 해결 전). isValidActorCommand 와 beginActorCommand 가
+  // 공유한다 — 예전에는 beginActorCommand 가 attack/capture 를 검사 없이 대상 선택으로
+  // 보내, gen1 에서 스킬이 남은 액터의 공격이 대상 확정 후 조용히 무시됐다.
+  function actorCommandLegality(actor: MutableBattler, command: ActorCommandDraft): boolean {
     switch (command.kind) {
       case "attack":
-        if (gen1 && actor.skillIds.some((skillId) => battleSkillUseFailure(options.project, actor, skillId) === undefined)) return false;
-        break;
+        return !(gen1 && actor.skillIds.some((skillId) => battleSkillUseFailure(options.project, actor, skillId) === undefined));
       case "defend":
         return true;
       case "escape":
@@ -796,28 +825,42 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       case "switch":
         return canSwitchActor(actor.recordId, command.targetActorId);
       case "skill":
-        if (battleSkillUseFailure(options.project, actor, command.skillId)) return false;
-        break;
+        return battleSkillUseFailure(options.project, actor, command.skillId) === undefined;
       case "item": {
         const item = options.project.database.items.find((record) => record.id === command.itemId);
-        if (!item || (battleEventState.inventory[command.itemId] ?? 0) <= 0 || !itemIsBattleUsable(item)) return false;
         // actor/class 제한 체크 — 불일치 시 커맨드 자체를 거부한다 (무효 턴으로 소모 안 함)
-        if (!isItemActorEligible(options.project, item, actor.id)) return false;
-        break;
+        return Boolean(item && (battleEventState.inventory[command.itemId] ?? 0) > 0 && itemIsBattleUsable(item)
+          && isItemActorEligible(options.project, item, actor.id));
       }
       case "capture": {
         const item = options.project.database.items.find((record) => record.id === command.captureItemId);
-        if (!item?.captureProfile || item.type !== "special" || !itemAllowsBattle(item) || (battleEventState.inventory[command.captureItemId] ?? 0) <= 0) return false;
-        break;
+        return Boolean(item?.captureProfile && item.type === "special" && itemAllowsBattle(item)
+          && (battleEventState.inventory[command.captureItemId] ?? 0) > 0);
       }
     }
-    const resolution = resolvedCommandTargets(actor, command);
-    return resolution.targets.length > 0;
+  }
+
+  function isValidActorCommand(actor: MutableBattler, command: ActorCommand): boolean {
+    if (!actorCommandLegality(actor, command)) return false;
+    // 대상 해결 검사는 대상을 쓰는 명령에만 — defend/escape/switch 는 적법성만으로 결정된다.
+    switch (command.kind) {
+      case "defend":
+      case "escape":
+      case "switch":
+        return true;
+      default: {
+        const resolution = resolvedCommandTargets(actor, command);
+        return resolution.targets.length > 0;
+      }
+    }
   }
 
   function applyActorCommandEffect(actor: MutableBattler, command: ActorCommand): void {
     currentActorCommandKind = command.kind;
     lastCaptureResult = undefined;
+    // 방어 자세는 "다음 행동까지"다 — 액터가 새 명령을 실행하면 해제된다.
+    // (defend 명령이면 아래 switch 에서 곧바로 다시 true 가 된다.)
+    actor.defending = false;
     switch (command.kind) {
       case "attack":
         if (!prepareGen1CombatAction(actor)) break;
@@ -1033,6 +1076,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
     consumeSkillMp(actor, skill.id);
     currentActorCommandKind = "skill";
+    // 장비 사용도 액터의 행동 슬롯을 소비한다 — 방어 해제·사이클 계수를 명령 경로와 맞춘다.
+    // 사이클 계수는 gauge 전용 — strict 는 라운드 완료 시점의 turn=round 가 정본이다.
+    actor.defending = false;
+    const actionCycle = battleFlow === "strict" ? undefined : markGaugeActionCycle(actor);
     for (const skillTarget of targets) applySkill(actor, skillTarget, skill.id);
     applyTroopEvents(() => {
       resolveOutcome();
@@ -1040,7 +1087,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       activeActorId = undefined;
       currentActorCommandKind = undefined;
       phase = result ? "resolved" : "charging";
-    });
+    }, actionCycle ?? turn);
     return { kind: "used", skillId: skill.id };
   }
   function attemptEscape(): void {
@@ -1058,24 +1105,19 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (phase !== "actorCommand" || !activeActorId || result) return;
     const actor = actors.find((entry) => entry.recordId === activeActorId);
     if (!actor) return;
+    // 대상 선택을 열기 전에 performActorCommand 와 같은 적법성 검사를 먼저 돌린다.
+    // 없으면 gen1 의 죽은 공격처럼 대상까지 고른 뒤 아무 일 없이 턴이 증발한다.
+    if (!actorCommandLegality(actor, command)) return;
     switch (command.kind) {
       case "defend":
       case "escape":
       case "switch":
         performActorCommand(command);
         return;
-      case "skill":
-        if (battleSkillUseFailure(options.project, actor, command.skillId)) return;
-        beginTargetSelection(command);
-        return;
-      case "item": {
-        const item = options.project.database.items.find((record) => record.id === command.itemId);
-        if (!item || (battleEventState.inventory[command.itemId] ?? 0) <= 0 || !itemIsBattleUsable(item)) return;
-        beginTargetSelection(command);
-        return;
-      }
       case "attack":
       case "capture":
+      case "skill":
+      case "item":
         beginTargetSelection(command);
         return;
     }
@@ -1472,22 +1514,20 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (!canBattlerAct(options.project, enemy)) {
       recordIncapacitated(enemy);
       enemy.gauge = 0;
-      for (const actor of actors) actor.defending = false;
-      turn += 1;
-      applyTroopEvents(finishGaugeEnemyTurn);
+      applyTroopEvents(finishGaugeTurnSlot, markGaugeActionCycle(enemy));
       return;
     }
     }
     executeEnemyAction(enemy, chooseEnemyAction(enemy));
     enemy.gauge = 0;
-    // 적 턴이 끝나면 아군의 방어(defending) 상태를 해제한다.
-    // RM2K3: 방어는 다음 적 턴까지만 유효(1턴 가드).
-    for (const actor of actors) actor.defending = false;
-    turn += 1;
-    applyTroopEvents(finishGaugeEnemyTurn);
+    // 방어(defending)는 여기서 해제하지 않는다 — RM 의미는 "다음 자기 행동까지"이며
+    // 해제 지점은 액터가 새 명령을 실행하는 applyActorCommandEffect 다. 예전에는
+    // 적 행동 1회마다 전원의 방어가 풀려, strict(라운드 종료 해제)와 의미가 갈리고
+    // 적 3체 기준 방어가 첫 적 공격만 막는 1/3 성능이었다(적대 리뷰).
+    applyTroopEvents(finishGaugeTurnSlot, markGaugeActionCycle(enemy));
   }
 
-  function finishGaugeEnemyTurn(): void {
+  function finishGaugeTurnSlot(): void {
     resolveOutcome();
     if (!result && beginForcedSwitchIfNeeded()) return;
     phase = result ? "resolved" : "charging";

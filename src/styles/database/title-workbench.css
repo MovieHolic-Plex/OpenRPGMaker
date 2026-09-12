@@ -32,14 +32,6 @@
   padding: 0 4px;
 }
 
-.database-modal-backdrop .db-title-workbench-system-title-id {
-  color: var(--db-studio-text-3);
-  font: 400 11px/1.4 var(--font-mono);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .database-modal-backdrop .db-title-menu-option-row {
   align-items: end;
   display: grid;

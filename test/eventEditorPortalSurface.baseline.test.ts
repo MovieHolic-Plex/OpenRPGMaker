@@ -20,8 +20,9 @@
 //   · diff() 가 합성 변이 4종을 반드시 보고한다
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { relative, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { eventSurfaceFiles } from "./helpers/eventSurfaceCss";
 import {
   captureAllPortalSurfaces,
   diffPortalSurface,
@@ -59,11 +60,16 @@ const PRE_FEATURE_PICKER_CONTROL_SHA256 = {
   commandPickerGrid: "d7202e383d2c8ee5a92dece9d3778910cb49dda54e5dbf047f523b6af20c9bc2",
 } as const;
 
-/** 이 축이 생기기 전까지 어떤 게이트도 렌더로 증명하지 못했던 두 시트(실측). */
-const BLIND_SHEETS = [
-  "src/styles/editor/event-editor.part-3/06-event-command-picker-favorite.css",
-  "src/styles/editor/event-editor.p1-route.css",
-] as const;
+/**
+ * 이 축이 생기기 전까지 어떤 게이트도 렌더로 증명하지 못했던 두 시트(실측):
+ * 옛 event-editor.part-3/06-event-command-picker-favorite.css 와 event-editor.p1-route.css.
+ * 2026-09-11 Task 13 재편성으로 그 규칙들은 구성 요소 버킷 subdialogs/dialogs*.css(포털 = 서브다이얼로그·피커) 로 갔다.
+ * 그래서 이 축은 이제 subdialogs 버킷의 모든 리프 시트를 렌더로 증명한다.
+ */
+const BLIND_SHEETS = eventSurfaceFiles()
+  .map((abs) => relative(process.cwd(), abs).split("\\").join("/"))
+  .filter((rel) => rel.startsWith("src/styles/event/subdialogs/"));
+if (BLIND_SHEETS.length === 0) throw new Error("이벤트 표면에 subdialogs 버킷 시트가 없다 — index.css 등록을 확인해라");
 
 /** 테스트 환경 제약으로 뺀 포털 수. 늘어나면 실패한다(조용한 절단 금지). */
 const EXPECTED_SKIP_COUNT = 6;

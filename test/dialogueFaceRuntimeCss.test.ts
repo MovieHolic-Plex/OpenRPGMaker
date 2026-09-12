@@ -5,7 +5,8 @@
 //   <div class="dialogue-face dialogue-face-image" style="--face-url:…">
 // 로 만든다. 그런데 이 상자의 background-image / width / height 선언은 예전에 `.actor-sheet-crop`
 // 이라는 이름으로
-// src/styles/editor/event-editor-legacy.part-1.css — **에디터 전용 CSS** 에만 있었다.
+// (옛) src/styles/event/event-editor-legacy.part-1.css — **에디터 전용 CSS** 에만 있었다
+// (2026-09-11 Task 13 부터 이벤트 시트는 구성 요소 버킷 src/styles/event/*.css 다).
 // 익스포트한 단독 플레이어는 src/player/player.css(tokens + runtime/playerRuntime)만
 // 불러오므로 그 규칙이 없고, 얼굴은 배경 없는 빈 테두리로 그려졌다.
 // 실제 빌드 산출물로 확인: community-site/public/player-static 의 player CSS 에
@@ -37,10 +38,11 @@ describe("런타임 대사창 얼굴 CSS", () => {
   });
 
   it("dialogue.css 는 런타임 CSS 사슬 안에 있다", () => {
-    // player.css → runtime/playerRuntime.css → ../dialogue.css 경로가 끊기면
+    // player.css → runtime/playerRuntime.css → runtime/index.css → ../dialogue.css 경로가 끊기면
     // 위 규칙을 넣어도 플레이어 빌드에 들어가지 않는다.
     expect(read("src/player/player.css")).toContain("runtime/playerRuntime.css");
-    expect(read("src/styles/runtime/playerRuntime.css")).toContain("dialogue.css");
+    expect(read("src/styles/runtime/playerRuntime.css")).toContain('@import "./index.css";');
+    expect(read("src/styles/runtime/index.css")).toContain("dialogue.css");
   });
 
   it("화자 이름표 자리를 상속된 글꼴 크기에 의존하지 않는다", () => {

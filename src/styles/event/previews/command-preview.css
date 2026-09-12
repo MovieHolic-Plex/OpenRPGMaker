@@ -1,0 +1,955 @@
+/* event 표면 — previews/command-preview.css. 규칙 순서는 2026-09 세대 접기 전 유효 순서(event/index.css 평탄 순서)를 보존한다. */
+
+.ecp-move-grid-caption {
+  color: var(--text-2, var(--text-muted));
+  font: 500 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin-top: 4px;
+}
+
+.ecp-wait-stage {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  min-height: 96px;
+}
+
+.ecp-wait-card {
+  background: color-mix(in srgb, var(--accent, #4A57D6) 18%, var(--bg-inset, #EFE9DC));
+  border: 1px solid color-mix(in srgb, var(--accent, #4A57D6) 45%, rgba(42,37,33,.20));
+  border-radius: 8px;
+  color: var(--oprn-command-blue, var(--accent, #4A57D6));
+  font: 700 16px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  padding: 14px 18px;
+  text-align: center;
+}
+
+.ecp-wait-sub {
+  color: var(--text-2, #5C5348);
+  font: 400 11px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+}
+
+.event-page-route-thumb .ecp-move-grid-box {
+  background: none;
+  gap: 2px;
+  padding: 0;
+}
+
+/* 궤적 SVG 는 경로 길이에 따라 커진다. 레일에서는 높이·폭을 함께 묶는다. */
+.event-page-route-thumb .ecp-move-grid {
+  max-height: 84px;
+  max-width: 132px;
+  width: auto;
+}
+
+.event-page-route-thumb .ecp-move-grid-caption {
+  margin: 0;
+}
+
+.event-page-movement-route .ecp-move-tape {
+  gap: 3px;
+}
+
+.event-page-movement-route .ecp-move-chip {
+  font-size: 12px;
+  min-width: 20px;
+  padding: 1px 6px;
+  text-align: center;
+}
+
+.event-command-face-preview {
+  align-items: center;
+  background: var(--surface-recessed, var(--bg-raised));
+  border-color: var(--event-rm-mid) var(--event-rm-light) var(--event-rm-light) var(--event-rm-mid);
+  border-style: solid;
+  border-width: 1px;
+  color: var(--event-rm-text, var(--text-1));
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-height: 120px;
+  padding: 12px;
+}
+
+.event-command-face-crop {
+  border-color: var(--event-rm-shadow) var(--event-rm-light) var(--event-rm-light) var(--event-rm-shadow);
+  border-style: solid;
+  border-width: 1px;
+  flex: 0 0 auto;
+}
+
+.event-command-face-preview.flipped .event-command-face-crop,
+.event-command-face-crop-shell.flipped .event-command-face-crop {
+  transform: scaleX(-1);
+}
+
+.event-command-face-preview-id {
+  color: var(--text-dim, var(--text-2));
+  font: 500 10px/1.3 var(--font-mono, "Cascadia Mono", Consolas, monospace);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-command-face-selected-card {
+  align-items: start;
+  background: var(--event-modern-field-muted);
+  border-bottom: 1px solid var(--event-modern-line);
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(120px, 160px) minmax(0, 1fr);
+  min-width: 0;
+  padding: 14px;
+}
+
+.event-command-face-bust-note {
+  background: color-mix(in srgb, var(--event-modern-field-muted) 90%, transparent);
+  border: 1px dashed var(--event-modern-line);
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  max-width: 420px;
+  padding: 14px 16px;
+}
+
+.event-command-face-bust-note strong {
+  color: var(--text-1);
+  font: 700 12px/1.3 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.event-command-face-bust-note p {
+  color: var(--text-2);
+  font: 500 12px/1.45 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.event-command-face-crop.event-command-face-bust {
+  background-position: bottom center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  border: 1px solid var(--border-subtle);
+  /* Do not force background-image:none — inline url from bustVisual must show. */
+}
+
+.event-command-face-preview-host {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.event-command-face-crop {
+  background-image: var(--face-url);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  border: 1px solid var(--border-subtle);
+  border-radius: 2px;
+  height: var(--face-display-height, 96px);
+  image-rendering: pixelated;
+  overflow: hidden;
+  width: var(--face-display-width, 96px);
+}
+
+.event-command-face-preview-copy {
+  align-content: center;
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.event-command-face-preview-copy strong,
+.event-command-face-preview[data-empty="true"] strong {
+  color: var(--text-1);
+  font: 700 13px/1.3 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-command-face-preview-copy span,
+.event-command-face-preview[data-empty="true"] span {
+  color: var(--text-2);
+  font: 500 12px/1.35 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.event-command-face-selected-meta {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.event-command-face-selected-heading {
+  color: var(--event-modern-text-soft);
+  font: 700 11px/1.2 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.event-command-face-resource-actions {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.event-command-face-resource-label {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.event-command-face-resource-label > span {
+  color: var(--event-modern-text-soft);
+  font: 700 11px/1.2 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.event-command-face-resource-input {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.event-command-face-grid-section {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px;
+}
+
+.event-command-face-section-label {
+  color: var(--event-modern-text-soft);
+  font: 700 12px/1.2 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.event-command-face-grid-host {
+  min-width: 0;
+}
+
+/* 낱장 얼굴 갤러리 — 칸 번호 개수에 매이지 않게 auto-fill 하고 세로 스토로 둔다. */
+.event-command-face-gallery {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  max-height: 260px;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 2px;
+  width: 100%;
+}
+
+.event-command-face-gallery[data-empty="true"] {
+  display: block;
+}
+
+.event-command-face-gallery-empty {
+  background: color-mix(in srgb, var(--event-modern-field-muted) 88%, transparent);
+  border: 1px dashed var(--event-modern-line);
+  border-radius: 6px;
+  color: var(--text-2);
+  font: 500 12px/1.4 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 18px 14px;
+  text-align: center;
+}
+
+.event-command-face-gallery-cell {
+  align-items: center;
+  background: color-mix(in srgb, var(--bg-inset, #EFE9DC) 70%, transparent);
+  border: 2px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  display: grid;
+  justify-items: center;
+  min-width: 0;
+  padding: 2px;
+  place-items: center;
+}
+
+.event-command-face-gallery-cell:hover {
+  border-color: color-mix(in srgb, var(--accent, #4A57D6) 55%, transparent);
+}
+
+.event-command-face-gallery-cell.is-selected {
+  border-color: var(--accent, #4A57D6);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent, #4A57D6) 45%, transparent);
+}
+
+.event-command-face-gallery-cell .event-command-face-crop {
+  border-radius: 3px;
+  pointer-events: none;
+}
+
+.event-command-face-gallery-missing {
+  color: var(--text-2);
+  display: grid;
+  font: 700 12px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  height: 48px;
+  place-items: center;
+  width: 48px;
+}
+
+.event-command-face-options {
+  border-top: 1px solid var(--event-modern-line);
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-width: 0;
+}
+
+.event-command-face-hint {
+  border-top: 1px solid var(--event-modern-line);
+  color: var(--text-2);
+  font: 500 11px/1.45 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+  padding: 10px 14px 12px;
+}
+
+/* 장소 이동: 좌측에 맵 피커가 있으므로 우측 범용 프리뷰 중복 숨김 */
+.event-command-edit-columns:has(.transfer-command-editor-inline) > .event-command-preview-panel {
+  display: none;
+}
+
+.event-command-edit-columns:has(.move-route-editor) > .event-command-preview-panel {
+  display: none;
+}
+
+.event-command-edit-columns:has([data-testid="show-animation-command-body"]) > .event-command-preview-panel {
+  display: none;
+}
+
+.event-command-edit-columns:has(.event-command-frame-editor) > .event-command-preview-panel {
+  display: none;
+}
+
+.event-command-edit-columns:has(.event-command-preview.ecp-summary-only) > .event-command-preview-panel {
+  display: none;
+}
+
+.event-command-edit-columns:has(.change-equipment-command-body) > .event-command-preview-panel {
+  display: none;
+}
+
+/* 우측 프리뷰 패널 */
+.event-command-preview-panel {
+  min-width: 0;
+}
+
+.event-command-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--bg-inset, #EFE9DC);
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
+  border-radius: 8px;
+  padding: 12px;
+  min-height: 160px;
+}
+
+.ecp-caption {
+  font: 700 12px/1.2 Tahoma, "Malgun Gothic", sans-serif;
+  color: var(--oprn-command-blue, var(--accent, #4A57D6));
+  border-bottom: 1px solid var(--border-subtle, rgba(42,37,33,.20));
+  padding-bottom: 6px;
+}
+
+/* 화면 목업 무대 */
+.ecp-stage {
+  position: relative;
+  display: grid;
+  place-items: end center;
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  background: linear-gradient(180deg, var(--bg-surface), var(--bg-surface));
+  border-radius: 6px;
+  padding: 10px;
+  overflow: hidden;
+}
+
+.ecp-stage.pos-top { place-items: start center; }
+
+.ecp-stage.pos-center { place-items: center; }
+
+.ecp-stage.pos-bottom { place-items: end center; }
+
+.ecp-message-window {
+  width: 100%;
+  max-width: 96%;
+  min-height: 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  border: 1px solid var(--runtime-dialogue-glass-border, rgba(154, 170, 226, 0.18));
+  border-image: none;
+  border-radius: var(--runtime-dialogue-radius, var(--radius-s));
+  /* 반투명한 대화창 유리가 불투명 밑판 **위에** 와야 한다. background-color 는 항상 맨
+     아래에 깔리므로 유리를 색으로 두면 밑판 그라디언트가 그 위를 덮는다. 그러면 창이
+     밝아지고 `--runtime-window-text` 크림색 글자가 사라진다(실측: #FFF6E2 on
+     #F7F8F8 = 1.0:1). computed 값만 읽으면 17.8:1 로 보이니 렌더된 픽셀로 확인한다. */
+  background:
+    linear-gradient(180deg, var(--runtime-dialogue-glass-surface, rgba(12, 15, 30, 0.82)), var(--runtime-dialogue-glass-surface, rgba(12, 15, 30, 0.82))),
+    var(--bg-surface);
+  color: var(--runtime-window-text, rgba(238, 241, 251, 0.98));
+  font: 400 13px/1.45 "Malgun Gothic", Tahoma, sans-serif;
+  box-shadow: var(--runtime-dialogue-glass-shadow, 0 8px 24px rgba(3, 5, 14, 0.55));
+  backdrop-filter: var(--runtime-dialogue-glass-filter, blur(4px) saturate(1.08));
+  image-rendering: pixelated;
+  position: relative;
+}
+
+.ecp-message-window.has-speaker {
+  margin-top: 14px;
+}
+
+.ecp-message-window.with-face {
+  flex-direction: row;
+  align-items: stretch;
+  gap: 12px;
+  min-height: 120px;
+}
+
+.ecp-message-window.face-right { flex-direction: row-reverse; }
+
+/* === 프리뷰 「말투·연출」 진입 재생 ===
+   런타임과 **같은 keyframe** 을 쓴다. src/styles/dialogue.css 는 에디터 그래프에도
+   실려 있으므로(styles/index.css → runtime/playerRuntime.css → ../dialogue.css)
+   이름만 부르면 된다. 규칙을 다시 적는 이유는 셀렉터가 `.dialogue-box` 를 요구하는데
+   프리뷰 창은 `.ecp-message-window` 라서다.
+
+   감정→keyframe 짝이 런타임과 어긋나면 제작자가 고른 연출과 프리뷰가 달라진다.
+   test/dialoguePreviewPresentationCss.test.ts 가 두 선택자 집합을 대조해 잠근다. */
+.ecp-message-window[data-dialogue-phase] {
+  transform-origin: 50% 100%;
+}
+
+.ecp-message-window[data-dialogue-phase="enter"] {
+  animation: dialogue-box-enter var(--dialogue-enter-ms, 170ms) var(--runtime-dialogue-enter-ease, cubic-bezier(0.16, 0.84, 0.3, 1)) both;
+}
+
+.ecp-message-window[data-dialogue-emotion="happy"][data-dialogue-phase="enter"],
+.ecp-message-window[data-dialogue-emotion="surprised"][data-dialogue-phase="enter"] {
+  animation-name: dialogue-box-enter-pop;
+}
+
+.ecp-message-window[data-dialogue-emotion="sad"][data-dialogue-phase="enter"] {
+  animation-name: dialogue-box-enter-soft;
+  animation-timing-function: var(--runtime-dialogue-enter-ease-soft, cubic-bezier(0.22, 0.61, 0.36, 1));
+}
+
+.ecp-message-window[data-dialogue-motion="off"][data-dialogue-phase="enter"] {
+  animation-name: dialogue-box-enter-fade;
+  animation-timing-function: linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* 런타임과 같은 특이도 셈. 감정별 animation-name 규칙이 (0,3,0) 이므로
+     [data-dialogue-emotion] 을 함께 붙여야 이 안전망이 이긴다. */
+  .ecp-message-window[data-dialogue-emotion][data-dialogue-phase="enter"] {
+    animation-name: dialogue-box-enter-fade;
+    animation-timing-function: linear;
+  }
+}
+
+.ecp-message-window.transparent {
+  background: transparent;
+  backdrop-filter: none;
+  background-image: none;
+  border-image: none;
+  border-style: dashed;
+  border-color: var(--runtime-dialogue-glass-border, rgba(154, 170, 226, 0.18));
+  border-width: 1px;
+  box-shadow: none;
+}
+
+.ecp-message-text {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: center;
+  min-width: 0;
+}
+
+.ecp-message-speaker { font-weight: 700; color: var(--oprn-command-teal, #ffd76e); font-size: 12px; }
+
+.ecp-message-speaker-nameplate {
+  position: absolute;
+  left: 10px;
+  top: -12px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  max-width: calc(100% - 24px);
+  padding: 2px 10px 3px;
+  border: 1px solid var(--runtime-dialogue-glass-border, rgba(154, 170, 226, 0.18));
+  border-radius: var(--runtime-dialogue-radius-small, 3px);
+  /* --runtime-dialogue-glass-surface-strong 은 색이 아니라 linear-gradient 이미지다.
+     색상정지 자리에 넣으면 치환 후 선언 전체가 버려져 이름표가 투명해진다(크림 무대 위
+     유리 글자). 이미지 슬롯에 통째로 두고, 불투명 밑판은 다음 레이어로 깐다.
+     overflow/font 로 가리지 말 것. --shadow-pop 은 이미 그림자 리스트라 길이를 앞에 붙이면 무효. */
+  background:
+    var(--runtime-dialogue-glass-surface-strong, linear-gradient(180deg, rgba(23, 28, 52, 0.96), rgba(9, 11, 24, 0.98))),
+    var(--bg-surface);
+  box-shadow: var(--shadow-pop);
+  color: var(--runtime-window-text, rgba(238, 241, 251, 0.98));
+  font: 700 12px/1.2 "Malgun Gothic", Tahoma, sans-serif;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.ecp-message-body { white-space: pre-wrap; word-break: break-word; }
+
+.ecp-message-body.muted { color: var(--text-1); font-size: 12px; }
+
+/* changeFace play mock — larger face crop, no editor meta chrome inside the window */
+.ecp-face-stage {
+  gap: 8px;
+}
+
+.ecp-face-stage.ecp-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-end;
+  aspect-ratio: auto;
+  min-height: 200px;
+}
+
+.ecp-face-stage-bust {
+  position: relative;
+  min-height: 260px;
+}
+
+.ecp-face-stage-bust > .event-command-face-crop-shell {
+  align-self: flex-start;
+  margin: 0 8px -12px;
+  position: relative;
+  z-index: 2;
+}
+
+.ecp-face-stage.ecp-face-pos-right > .event-command-face-crop-shell,
+.ecp-face-stage-bust.ecp-face-pos-right > .event-command-face-crop-shell {
+  align-self: flex-end;
+}
+
+.ecp-face-stage.ecp-face-pos-left > .event-command-face-crop-shell,
+.ecp-face-stage-bust.ecp-face-pos-left > .event-command-face-crop-shell {
+  align-self: flex-start;
+}
+
+.ecp-message-window.with-bust {
+  position: relative;
+  z-index: 1;
+}
+
+.ecp-face-message {
+  min-height: 128px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.ecp-message-window .event-command-face-crop-shell {
+  flex: 0 0 auto;
+  align-self: center;
+}
+
+/* 배경 폴백은 공용 `.event-command-face-crop` 이 한 곳에서 소유한다. 여기서 `background-image` 를
+   다시 선언하면 특이도가 (0,2,0) 으로 같아져 나중에 로드되는 이 파일이 `:has(> .faceset-crop-sheet)`
+   가드를 이기고, 재생 목업에서만 얼굴 두 장이 겹친다. 이 규칙은 테두리 강조만 담당한다. */
+.ecp-message-window .event-command-face-crop {
+  border: 1px solid var(--border-default);
+  border-radius: 2px;
+  height: var(--face-display-height, 96px);
+  image-rendering: pixelated;
+  overflow: hidden;
+  width: var(--face-display-width, 96px);
+}
+
+.ecp-message-window .event-command-face-crop-shell.flipped .event-command-face-crop {
+  transform: scaleX(-1);
+}
+
+.ecp-message-window .event-command-face-crop-shell[data-empty="true"] {
+  align-items: center;
+  background: var(--bg-surface);
+  border: 1px dashed var(--border-default);
+  border-radius: 2px;
+  display: grid;
+  height: 96px;
+  justify-items: center;
+  width: 96px;
+}
+
+.ecp-message-window .event-command-face-crop-missing {
+  color: var(--text-1);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.ecp-face-caption {
+  color: var(--text-2, #5C5348);
+  font: 600 11px/1.35 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  text-align: center;
+}
+
+/* 문장 표시 설정 프리뷰: 무대 + 옵션 배지 */
+.ecp-settings-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ecp-settings-preview .ecp-stage {
+  position: relative;
+}
+
+.ecp-player-pawn {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 3px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  color: var(--text-1);
+  font-size: 11px;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ecp-settings-preview .ecp-message-window {
+  position: relative;
+  z-index: 1;
+}
+
+.ecp-settings-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+}
+
+.ecp-settings-badges .ecp-move-badge.off {
+  opacity: 0.55;
+  background: var(--bg-inset, #EFE9DC);
+  color: var(--text-2, #5C5348);
+  border-color: var(--border-default, rgba(42,37,33,.20));
+}
+
+.ecp-choice-list { display: flex; flex-direction: column; gap: 3px; margin-top: 4px; }
+
+.ecp-choice-window,
+.ecp-choice-list,
+.ecp-choice {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.ecp-choice {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: start;
+  gap: 5px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--runtime-dialogue-radius-small, 3px);
+  font-size: 12px;
+  padding: 3px 7px;
+}
+
+.ecp-choice:first-child {
+  background: var(--runtime-dialogue-glass-accent-soft, rgba(124, 140, 255, 0.2));
+  border-color: var(--runtime-dialogue-glass-border, rgba(154, 170, 226, 0.18));
+  box-shadow: var(--runtime-dialogue-glass-focus-shadow, inset 2px 0 0 rgba(124, 140, 255, 0.96), inset 0 0 0 1px rgba(211, 232, 255, 0.34));
+}
+
+.ecp-choice.empty { opacity: 0.6; }
+
+.ecp-choice > .ee-icon { width: 16px; height: 16px; margin-top: 1px; }
+
+.ecp-choice-label {
+  min-width: 0;
+  white-space: pre-wrap;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+/* 미니맵 */
+.ecp-map-stage { place-items: center; background: var(--bg-surface); }
+
+.ecp-map-canvas { image-rendering: pixelated; max-width: 100%; max-height: 210px; border: 1px solid var(--border-default); }
+
+.ecp-map-caption {
+  position: absolute; bottom: 6px; left: 8px; font-size: 11px; color: var(--text-1);
+  background: var(--border-default); padding: 1px 6px; border-radius: 3px;
+}
+
+/* 아이콘 무대 (아이템/배우/골드/전투/스위치) */
+.ecp-icon-stage { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 8px; }
+
+.ecp-hero-icon {
+  display: grid; place-items: center; width: 56px; height: 56px;
+  background: var(--bg-raised, #FFFDF8); border: 1px solid var(--border-default, rgba(42,37,33,.20)); border-radius: 8px;
+}
+
+.ecp-hero-img { image-rendering: pixelated; }
+
+.ecp-icon-name { font-weight: 600; font-size: 13px; color: var(--text-1, #2A2521); text-align: center; }
+
+.ecp-op-strip {
+  font-size: 12px; color: var(--text-2, #5C5348);
+  background: var(--bg-inset, #EFE9DC); border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
+  border-radius: 999px; padding: 2px 10px;
+}
+
+.ecp-gold-badge, .ecp-battle-badge, .ecp-exp-badge, .ecp-skill-badge { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; font-weight: 800; font-size: 20px; }
+
+.ecp-gold-badge { background: radial-gradient(circle at 35% 30%, var(--bg-raised), var(--warning-muted)); color: var(--warning); border: 1px solid var(--warning); }
+
+.ecp-exp-badge { background: radial-gradient(circle at 35% 30%, var(--bg-raised), var(--accent-muted)); color: var(--accent); border: 1px solid var(--accent-border); font-size: 14px; }
+
+.ecp-skill-badge { background: radial-gradient(circle at 35% 30%, var(--bg-raised), var(--bg-inset)); color: var(--text-1); border: 1px solid var(--border-strong); font-size: 14px; }
+
+.ecp-battle-badge { background: var(--danger-muted); color: var(--danger); border: 1px solid var(--danger); }
+
+.ecp-battle-stage { width: 100%; align-items: stretch; padding: 10px 8px 14px; }
+
+.ecp-battle-field {
+  position: relative;
+  width: 100%;
+  min-height: 110px;
+  border-radius: 10px;
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
+  background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-surface) 70%, var(--bg-surface) 100%);
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 10px 8px 8px;
+}
+
+.ecp-battle-enemies {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 72px;
+}
+
+.ecp-battle-enemy {
+  max-width: 72px;
+  max-height: 72px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 2px 0 var(--shadow-pop));
+}
+
+.ecp-battle-enemy-fallback {
+  min-width: 40px;
+  min-height: 40px;
+  padding: 6px;
+  border-radius: 8px;
+  background: var(--bg-surface);
+  color: var(--text-1);
+  font-size: 12px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+.ecp-battle-rewards {
+  color: var(--text-2, #5C5348);
+  font: 600 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin-top: 4px;
+  text-align: center;
+}
+
+.ecp-battle-empty-warn {
+  margin-top: 6px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--bg-surface) 18%, transparent);
+  color: var(--text-1);
+  font: 700 11px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  text-align: center;
+}
+
+.ecp-battle-result-note {
+  margin-top: 6px;
+  color: var(--text-3, #6B5F52);
+  font: 500 10px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  text-align: center;
+}
+
+.ecp-lamp { display: grid; place-items: center; width: 56px; height: 30px; border-radius: 6px; font-weight: 800; font-size: 13px; letter-spacing: 0.08em; }
+
+.ecp-lamp.on { background: var(--success-muted); color: var(--success); border: 1px solid var(--success); }
+
+.ecp-lamp.off { background: var(--control-bg); color: var(--text-3); border: 1px solid var(--border-strong); }
+
+.ecp-vital-gauge {
+  width: 100%;
+  max-width: 160px;
+  height: 10px;
+  background: var(--bg-inset, #EFE9DC);
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ecp-vital-gauge-fill {
+  height: 100%;
+  min-width: 8px;
+}
+
+.ecp-vital-gauge-fill.hurt { background: var(--danger, #C4473A); }
+
+.ecp-vital-gauge-fill.heal { background: var(--success, #2F8A4E); }
+
+.ecp-vital-gauge-fill.set { background: var(--accent, #4A57D6); }
+
+/* 결과 화면 목업 */
+.ecp-result-screen {
+  display: grid; place-items: center; width: 100%; height: 100%; min-height: 96px;
+  font: 800 18px/1.2 Tahoma, sans-serif; letter-spacing: 0.12em; border-radius: 6px;
+}
+
+/* 같은 --bg-surface 를 전경/배경에 쓰면 GAME OVER·타이틀·엔딩 글자가 무대에 묻힌다.
+   전역 토큰은 바꾸지 않고, 이미 있는 의미 토큰으로 결과 화면 대비만 복구한다. */
+.ecp-result-screen.gameover { background: var(--danger); color: var(--on-accent); }
+
+.ecp-result-screen.title { background: var(--accent-active); color: var(--on-accent); }
+
+.ecp-result-screen.ending { background: var(--runtime-glass-scrim, rgba(6, 8, 18, 0.86)); color: var(--runtime-glass-text, rgba(238, 241, 251, 0.98)); }
+
+/* 숫자 입력 창 — System.png fill 금지, 빈 슬롯 idle 미리보기. */
+.ecp-number-stage {
+  place-items: center;
+  padding: 12px;
+}
+
+.ecp-number-window,
+.ecp-number-window-clean {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--accent, #4A57D6) 45%, rgba(42,37,33,.20));
+  border-radius: 8px;
+  background: linear-gradient(180deg, var(--bg-surface), var(--bg-surface));
+  color: var(--text-1);
+  box-shadow: var(--shadow-pop);
+  border-image: none;
+  background-image: none;
+}
+
+.ecp-number-title {
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--oprn-command-blue, #4A57D6);
+}
+
+.ecp-number-slots {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
+.ecp-number-slot {
+  min-width: 22px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border: 2px solid var(--border-default);
+  background: var(--bg-surface);
+  color: transparent;
+  font: 700 16px/1 "Malgun Gothic", Tahoma, sans-serif;
+  border-radius: 2px;
+}
+
+.ecp-number-slot.empty {
+  color: transparent;
+}
+
+.ecp-number-slot.filled {
+  border-color: var(--border-default);
+  color: var(--text-1);
+}
+
+.ecp-number-slot.cursor {
+  border-color: var(--border-default);
+  box-shadow: var(--focus-ring);
+}
+
+.ecp-number-pad {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(28px, 1fr));
+  gap: 4px;
+  width: 100%;
+  max-width: 148px;
+}
+
+.ecp-number-pad-key {
+  min-height: 24px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-1);
+  border-radius: 3px;
+}
+
+.ecp-number-pad-key.ok {
+  background: var(--bg-surface);
+  border-color: var(--accent, #4A57D6);
+  color: var(--text-1);
+}
+
+.ecp-number-pad-key.back {
+  color: var(--text-1);
+}
+
+.ecp-number-ok-mock {
+  min-width: 56px;
+  min-height: 26px;
+  display: grid;
+  place-items: center;
+  padding: 2px 10px;
+  border: 1px solid color-mix(in srgb, var(--accent, #4A57D6) 55%, rgba(42,37,33,.20));
+  border-radius: 3px;
+  background: var(--bg-surface);
+  color: var(--text-1);
+  font: 700 12px/1 Tahoma, "Malgun Gothic", sans-serif;
+}
+
+.ecp-number-meta {
+  font-size: 11px;
+  color: var(--text-1);
+  text-align: center;
+}

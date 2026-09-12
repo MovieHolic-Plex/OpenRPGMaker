@@ -1,0 +1,151 @@
+{
+  "checks": [
+    {
+      "name": "준비: 구역과 그 안의 이벤트를 만들었다",
+      "ok": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "1a. 역할 버튼이 인스펙터에 있다",
+      "ok": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "1b. 안전지대를 켜면 safeZones 로 투영된다",
+      "ok": true,
+      "actual": [
+        {
+          "x": 40,
+          "y": 40,
+          "w": 12,
+          "h": 10
+        }
+      ],
+      "expected": [
+        {
+          "x": 40,
+          "y": 40,
+          "w": 12,
+          "h": 10
+        }
+      ]
+    },
+    {
+      "name": "1c. 구역 태그에 역할이 남는다",
+      "ok": true,
+      "actual": [
+        "safeZone"
+      ],
+      "expected": [
+        "safeZone"
+      ]
+    },
+    {
+      "name": "2. 구역을 옮겨도 투영이 하나만 남는다(유령 없음)",
+      "ok": true,
+      "actual": [
+        {
+          "x": 46,
+          "y": 46,
+          "w": 12,
+          "h": 10
+        }
+      ],
+      "expected": [
+        {
+          "x": 46,
+          "y": 46,
+          "w": 12,
+          "h": 10
+        }
+      ]
+    },
+    {
+      "name": "3. 출처 없는 사각형은 살아남는다",
+      "ok": true,
+      "actual": [
+        {
+          "x": 5,
+          "y": 5,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "x": 46,
+          "y": 46,
+          "w": 12,
+          "h": 10
+        }
+      ],
+      "expected": [
+        {
+          "x": 5,
+          "y": 5,
+          "w": 2,
+          "h": 2
+        },
+        {
+          "x": 46,
+          "y": 46,
+          "w": 12,
+          "h": 10
+        }
+      ]
+    },
+    {
+      "name": "4a. 겹친 NPC 의 화면 좌표를 얻었다",
+      "ok": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "4b. 한 번 클릭은 이벤트를 열지 않는다",
+      "ok": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "name": "4c. Alt+클릭은 그 칸의 이벤트를 연다",
+      "ok": true,
+      "actual": "ev_overlap_npc",
+      "expected": "ev_overlap_npc"
+    },
+    {
+      "name": "4d. 이벤트 편집기가 실제로 열렸다",
+      "ok": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "5. 예상 밖 페이지 오류 없음",
+      "ok": true,
+      "actual": [],
+      "expected": []
+    }
+  ],
+  "errors": [],
+  "steps": [
+    {
+      "name": "01-role-picker",
+      "note": "구역을 고르면 인스펙터에 맵 시스템 역할(안전지대·경작지)이 있다."
+    },
+    {
+      "name": "02-role-projected",
+      "note": "안전지대를 켜면 map.safeZones 에 구역 사각형이 투영된다."
+    },
+    {
+      "name": "03-role-follows-move",
+      "note": "구역을 옮기면 safeZones 사각형도 따라오고 옛 자리에는 남지 않는다."
+    },
+    {
+      "name": "04-plain-click-draws",
+      "note": "이벤트와 겹쳐도 한 번 클릭은 구역 그리기다 — 도구가 막히지 않는다."
+    },
+    {
+      "name": "05-alt-click-opens-event",
+      "note": "Alt+클릭은 겹친 이벤트를 편집기로 연다 — 도구를 끄지 않아도 된다."
+    }
+  ]
+}

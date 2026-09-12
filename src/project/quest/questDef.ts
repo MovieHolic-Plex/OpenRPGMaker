@@ -29,6 +29,11 @@ export interface PickupSpec {
   readonly x: number;
   readonly y: number;
   readonly lookText?: string; // 습득 전 조사 문구
+  /**
+   * 같은 맵의 구역 이름. 있으면 **중심 칸**을 목적지로 쓴다 — 구역을 옮기면 퀘스트도 따라온다.
+   * `x`/`y` 는 그대로 남는다(옛 저장본 + 구역이 지워졌을 때의 폴백).
+   */
+  readonly locationId?: string;
 }
 
 // 전투 드롭(블로커 처치 보상으로 아이템 지급).
@@ -38,6 +43,8 @@ export interface DropSpec {
   readonly x: number;
   readonly y: number;
   readonly troopId: TroopId;
+  /** 같은 맵의 구역 이름. 있으면 중심 칸에 선다. `x`/`y` 는 폴백으로 남는다. */
+  readonly locationId?: string;
   readonly graphicQuery?: string;
 }
 
@@ -48,6 +55,8 @@ export interface BlockerSpec {
   readonly mapId: MapId;
   readonly x: number;
   readonly y: number;
+  /** 같은 맵의 구역 이름. 있으면 중심 칸에 선다. `x`/`y` 는 폴백으로 남는다. */
+  readonly locationId?: string;
   readonly graphicQuery?: string;
   readonly intro?: readonly string[];
   readonly victory?: readonly string[];
@@ -57,7 +66,15 @@ export type QuestStep =
   | { readonly kind: "talk"; readonly target: EventRef | { readonly create: QuestNpcSpec }; readonly lines?: readonly string[] }
   | { readonly kind: "collect"; readonly itemId: ItemId; readonly count: number; readonly sources: readonly CollectSource[] }
   | { readonly kind: "kill"; readonly troopId: TroopId; readonly at: BlockerSpec }
-  | { readonly kind: "reach"; readonly mapId: MapId; readonly x: number; readonly y: number };
+
+  | {
+      readonly kind: "reach";
+      readonly mapId: MapId;
+      readonly x: number;
+      readonly y: number;
+      /** 같은 맵의 구역 이름. 있으면 중심 칸이 목적지다. */
+      readonly locationId?: string;
+    };
 
 export interface QuestReward {
   readonly gold?: number;
@@ -69,6 +86,8 @@ export interface QuestGate {
   readonly mapId: MapId;
   readonly x: number;
   readonly y: number;
+  /** 같은 맵의 구역 이름. 게이트는 길을 막는 자리라 좁은 구역을 가리키는 편이다. */
+  readonly locationId?: string;
   readonly requiresStep: number; // 0-기반 단계 인덱스(이 단계까지 완료돼야 통과)
   readonly lockedText: string;
 }

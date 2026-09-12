@@ -378,6 +378,9 @@ export function summarizeAgentGhostPreviewForToolCall(
     case "remove_map":
       if (mapId && map) pushArea(boundsArea(mapId, fullMapBounds(map), "remove_map", "맵 제거"));
       break;
+    case "clear_map":
+      if (mapId && map) pushArea(boundsArea(mapId, fullMapBounds(map), "clear_map", "맵 전체 청소"));
+      break;
     default:
       break;
   }

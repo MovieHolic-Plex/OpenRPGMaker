@@ -137,27 +137,41 @@ function parseExistingTarget(target: BoundaryRecord): AuthorVillageTarget {
 function parseNewTarget(target: BoundaryRecord): AuthorVillageTarget {
   rejectUnknownKeys(target, NEW_TARGET_KEYS, "authorVillage.target");
   const mapId = requiredString(target, "mapId", "authorVillage.target");
-  const width = parseMapDimension(target, "width", "authorVillage.target");
-  const height = parseMapDimension(target, "height", "authorVillage.target");
-  // plannedMap은 선택 — 주면 mapId·width·height가 일치해야 하고, 생략하면 target 값으로 채운다.
-  // 모델이 같은 값을 두 번 에코하다 어긋나는 planned-map-mismatch가 잦해서 선택으로 바꿨다.
+  // 2026-09-11: width/height는 선택 — 생략하면 파사드(fillMissingVillageDimensions)가
+  // 의도 선언과 같은 환산기(estimateVillageSize)로 채운다. 모델이 쓰면 범위(20~256)만 검사.
+  // 근거: 같은 수량이 의도→플래너→도구에서 세 번 발명되던 결함(「마을을 만들어」).
+  const width = optionalInteger(target, "width", "authorVillage.target");
+  const height = optionalInteger(target, "height", "authorVillage.target");
+  validateDimensionRange(width, "width");
+  validateDimensionRange(height, "height");
   const plannedMap = target["plannedMap"] === undefined
-    ? { mapId, width, height }
+    ? (width !== undefined && height !== undefined ? { mapId, width, height } : undefined)
     : parsePlannedMap(target["plannedMap"]);
-  if (plannedMap.mapId !== mapId || plannedMap.width !== width || plannedMap.height !== height) {
-    throw new ToolError("authorVillage.target plannedMap must match its mapId and dimensions.", {
-      code: "planned-map-mismatch",
-      mapId,
-    });
+  if (plannedMap) {
+    if (plannedMap.mapId !== mapId
+      || (width !== undefined && plannedMap.width !== width)
+      || (height !== undefined && plannedMap.height !== height)) {
+      throw new ToolError("authorVillage.target plannedMap must match its mapId and dimensions.", {
+        code: "planned-map-mismatch",
+        mapId,
+      });
+    }
   }
   return {
     kind: "new",
     mapId,
     name: requiredString(target, "name", "authorVillage.target"),
-    width,
-    height,
-    plannedMap,
+    ...(width === undefined ? {} : { width }),
+    ...(height === undefined ? {} : { height }),
+    ...(plannedMap === undefined ? {} : { plannedMap }),
   };
+}
+
+function validateDimensionRange(value: number | undefined, key: "width" | "height"): void {
+  if (value === undefined) return;
+  if (value < MIN_MAP_SIZE || value > MAX_MAP_SIZE) {
+    throw new ToolError(`authorVillage.target.${key} must be between ${MIN_MAP_SIZE} and ${MAX_MAP_SIZE}.`, { code: "invalid-args" });
+  }
 }
 
 function parsePlannedMap(value: unknown): PlannedMapDescriptor {

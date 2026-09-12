@@ -80,6 +80,7 @@ function sessionFor(place: PlaceDesign, mode: SpatialAuthoringSession["mode"] = 
     breadcrumb: [],
     legacyOrigin: null,
     placeKindFilter: null,
+    regionKindFilter: null,
     inspectorOpen: true,
   };
 }

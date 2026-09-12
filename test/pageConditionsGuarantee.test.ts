@@ -26,6 +26,7 @@ const SIMPLE_KINDS: readonly SimpleConditionKind[] = [
   "timePhase",
   "season",
   "npcActivity",
+  "insideLocation",
   "friendshipAtLeast",
   "relationshipAtLeast",
 ];
@@ -105,6 +106,8 @@ function sampleCondition(kind: (typeof CONDITION_KINDS)[number]): EventPageCondi
       return { kind: "season", season: "spring" };
     case "npcActivity":
       return { kind: "npcActivity", activity: "work" };
+    case "insideLocation":
+      return { kind: "insideLocation", locationId: "loc1", inside: true };
     case "friendshipAtLeast":
       return { kind: "friendshipAtLeast", value: 50 };
     case "relationshipAtLeast":
@@ -218,6 +221,8 @@ describe("page conditions working guarantee (all kinds)", () => {
       { kind: "season", season: "winter" },
       sampleCondition("npcActivity"),
       { kind: "npcActivity", activity: "sleep" },
+      sampleCondition("insideLocation"),
+      { kind: "insideLocation", locationId: "loc_extra", inside: false },
       sampleCondition("friendshipAtLeast"),
       sampleCondition("relationshipAtLeast"),
       { kind: "relationshipAtLeast", state: "married" },
@@ -299,6 +304,7 @@ describe("page conditions working guarantee (all kinds)", () => {
         { kind: "timePhase", phase: "evening" },
         { kind: "season", season: "fall" },
         { kind: "npcActivity", activity: "patrol" },
+        { kind: "insideLocation", locationId: "loc1", inside: true },
        { kind: "friendshipAtLeast", value: 80 },
         { kind: "selfSwitch", key: "A", value: true },
      ],
@@ -351,8 +357,8 @@ describe("page conditions working guarantee (all kinds)", () => {
     const emptyRoot = renderWithFakeDom(() => el("div", { children: renderPageConditions("map-start", "ev", emptyPage) }));
     expect(emptyRoot.querySelectorAll(".event-condition-row").length).toBe(0);
     expect(findByTestId(emptyRoot, "event-condition-empty")).not.toBeNull();
-    expect(emptyRoot.querySelectorAll(".event-condition-chip").length).toBe(13);
-    for (const key of ["switch1", "switch2", "variable", "item", "actor", "timer1", "timer2", "timePhase", "season", "npcActivity", "friendship", "selfSwitch"]) {
+    expect(emptyRoot.querySelectorAll(".event-condition-chip").length).toBe(14);
+    for (const key of ["switch1", "switch2", "variable", "item", "actor", "timer1", "timer2", "timePhase", "season", "npcActivity", "insideLocation", "friendship", "selfSwitch"]) {
       const chip = findByTestId(emptyRoot, `event-condition-chip-${key}`);
       expect(chip, `chip missing: ${key}`).not.toBeNull();
       expect(chip?.getAttribute("aria-pressed")).toBe("false");
@@ -403,7 +409,8 @@ describe("page conditions working guarantee (all kinds)", () => {
     const swCond = conditions.find((c) => c.kind === "switch");
     if (swCond?.kind === "switch") passSession.switches[swCond.switchId] = true;
 
-    expect(resolveEventPage(event, passSession)?.id).toBe("p1");
+    const locationContext = { locations: [{ id: "loc1", x: 0, y: 0, w: 4, h: 4 }] };
+    expect(resolveEventPage(event, { ...passSession, x: 1, y: 1 }, locationContext)?.id).toBe("p1");
 
     // fail item
     expect(
@@ -451,6 +458,8 @@ describe("page conditions working guarantee (all kinds)", () => {
         relationships: {} as Record<string, RelationshipState>,
         battleResult: undefined as undefined | "victory" | "defeat" | "escape",
         roguelikeRun: undefined as undefined | RoguelikeRunState,
+        x: undefined as number | undefined,
+        y: undefined as number | undefined,
       };
 
       // failing session — timer는 "N초 이하"라 미설정(0)도 참이므로 초과 값으로 실패시킨다.
@@ -543,6 +552,10 @@ describe("page conditions working guarantee (all kinds)", () => {
         case "run":
           pass.roguelikeRun = RUN_STATE;
           break;
+        case "insideLocation":
+          pass.x = 1;
+          pass.y = 1;
+          break;
         case "all":
         case "any":
           for (const child of condition.conditions) {
@@ -553,7 +566,10 @@ describe("page conditions working guarantee (all kinds)", () => {
           // 내부 조건(sw_absent)이 거짓인 기본 세션에서 NOT 은 참이다.
           break;
       }
-      expect(resolveEventPage(event, pass)?.id, `${kind} should pass matching session`).toBe("only");
+      const locationContext = condition.kind === "insideLocation"
+        ? { locations: [{ id: "loc1", x: 0, y: 0, w: 4, h: 4 }] }
+        : undefined;
+      expect(resolveEventPage(event, pass, locationContext)?.id, `${kind} should pass matching session`).toBe("only");
     }
   });
 });

@@ -23,6 +23,16 @@ import type { GameMap } from "@/project/types";
 
 export type DoorSpec = { readonly x: number; readonly y: number };
 
+/**
+ * 바깥 문의 실제 개구부. plan.door 는 홀 남쪽 행(방 안)이고, 천장 띠를 뚫은
+ * 바닥 통로는 바로 아래 칸이다. 입구 표식 176 과 출입 이벤트는 여기 둔다 —
+ * 방 안에 두면 크림 표식 남쪽에 바닥이 한 칸 더 남아 입구가 건너뛴 것처럼 보인다.
+ */
+export function southDoorOpening(door: DoorSpec, height: number): DoorSpec {
+  const y = door.y + 1;
+  return y < height ? { x: door.x, y } : door;
+}
+
 export type RoomBox = {
   readonly id?: string;
   readonly x: number;

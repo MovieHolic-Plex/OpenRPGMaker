@@ -64,6 +64,17 @@ vi.mock("@/ai/assistantSession", () => ({
   METADATA_ONLY_TOOLS: new Set(["set_tile_metadata", "set_tile_rules", "upsert_tile_group"]),
 }));
 
+const piMock = vi.hoisted(() => ({ calls: [] as { task: string; mode: string }[] }));
+
+// 패널은 컴포저 입력을 Pi 하나로 보낸다(2026-09-11) — 킥오프 이벤트도 같은 경로다.
+vi.mock("@/editor/panels/aiPiAgentCommand", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/editor/panels/aiPiAgentCommand")>()),
+  runPiCommand: vi.fn(async (command: { task: string; mode: string }) => {
+    piMock.calls.push({ task: command.task, mode: command.mode });
+    return true;
+  }),
+}));
+
 /** 킥오프 프롬프트에 실릴 그룹 스냅샷(구 skills.ts 의 clusterGroupSnapshot 로컬 픽스처). */
 function groupSnapshot(tilesetId: string, groupId: string): ClusterGroupSnapshot | null {
   const group = store.getCurrent().tilesets[tilesetId]?.tileGroups?.find((entry) => entry.id === groupId);
@@ -136,6 +147,7 @@ beforeEach(() => {
   restoreWindow = installFakeWindow();
   installFakeLocalStorage();
   assistantMock.sentMessages.length = 0;
+  piMock.calls.length = 0;
   store.replace(projectWithGroup());
 });
 
@@ -189,14 +201,12 @@ describe("AI 패널 브리지", () => {
     window.dispatchEvent(new CustomEvent("oprn:ai-assist", {
       detail: { kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "wall_group" },
     }));
-    await flushMicrotasks();
-
+    await vi.waitFor(() => expect(piMock.calls).toHaveLength(1));
     expect(panel.classList.contains("is-collapsed")).toBe(false);
     // 자동 펼침은 사용자의 저장된 접힘 선택("1")을 덮어쓰지 않는다.
     expect(storage.get("oprn:ai-panel-collapsed")).toBe("1");
-    expect(assistantMock.sentMessages).toHaveLength(1);
-    expect(assistantMock.sentMessages[0]).toContain("클러스터 수정");
-    expect(assistantMock.sentMessages[0]).toContain("\"id\": \"wall_group\"");
+    expect(piMock.calls[0]?.task).toContain("클러스터 수정");
+    expect(piMock.calls[0]?.task).toContain("\"id\": \"wall_group\"");
     expect(findByTestId(panel, "ai-command-row-user")?.textContent).toContain("클러스터 수정");
   });
 });
@@ -287,7 +297,4 @@ function group(): TileGroupMetadata {
   };
 }
 
-async function flushMicrotasks(): Promise<void> {
-  await Promise.resolve();
-  await Promise.resolve();
-}
+

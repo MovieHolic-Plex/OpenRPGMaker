@@ -141,6 +141,58 @@ seed 경로이므로(여관 다층·저택 폴백·`facilityId:"composed"` 단�
   다른 그림이므로 애초에 일반 옵션이 아니었다. 실내(place_concept / 실내 세션)의 벽은 설계상 정상이며
   이 변경과 무관하다.
 
+## 맵 전체 청소 `clear_map` — 파괴적 한 콜 + 사용자 허가 모달 (2026-09-11)
+
+`src/editor/tools/mapTools.ts`(MAP_TOOLS) · 승인 페이로드 `src/ai/mapDestructionConfirm.ts` ·
+적용 게이트 `src/editor/tools/applyChangesetToStore.ts` · 표면 `src/editor/panels/aiProposalCard.ts`.
+
+맵 전체를 한 번에 비우는 툴이 없어서, 모델이 `tile_erase`/`clear_region` 로 **맵 크기를 먼저
+조회해 사각형을 계산**한 뒤 호출했다. `clear_map` 은 그 왕복을 없애고, 대신 "타일만 지운다"는
+경계를 이름에 못박는다.
+
+| 계약 | 값 |
+|---|---|
+| 인자 | `mapId`(필수), `fill`(`grass` 기본 / `empty`=허공), `events`(`keep` 기본 / `remove`), `confirmDestroy`(**true 여야 실행**) |
+| `confirmDestroy` 없이 호출 | 커밋 없이 `invalid-args` + 예시 문구(맵 이름·칸 수를 함께 알려준다) |
+| 지우는 것 | 하위·상위 타일 전량, 타일 스택 |
+| 안 지우는 것 | 필드 스폰·명명 로케이션·`layoutPlan`·`structurePlacements`·맵 속성·맵 자체(= `remove_map`) |
+| `fill:"empty"` + 시작/전송 칸 | 그 칸은 **남기고** 경고한다(`passageProtectedCells`, `tile_erase` 와 같은 정책). 시작 위치가 통행 불가면 `start-position` lint 가 커밋을 막기 때문이다 |
+| 완성된 집 | 기록된 소유 영역이 있으면 `protected-house-write` 로 **거부**(선언·승인과 무관한 러너 불변식) |
+| 되돌리기 범위 | `MAP_ONLY_WRITE_TOOLS` 에 등록 → undo 스냅샷 1개가 그 맵만 되돌린다 |
+
+**왜 이 툴만 사용자 허가 모달인가.** 2026-09 정책은 "변경 확인 팝업 없음, 복구는 되돌리기"다
+(`src/ai/approvalPolicy.ts` 머리말). 그 판단의 전제는 *무엇이 사라졌는지 사용자가 화면에서 봤다*이고,
+맵 규모 파괴는 그 전제를 깬다 — 한 콜로 맵 전체가 바뀌므로 적용 전 화면과 결과가 다른 맵이다.
+그래서 소실 규모가 승인 UX 를 가르고, 등록 지점은 하나다:
+
+- `MAP_DESTRUCTION_TOOLS`(`approvalPolicy.ts`) — 이름 기반 판정의 단일 소스.
+- 채팅 표면: `aiProposalCard` 가 적용 **직전** `showConfirm` 을 띄운다. 취소는 적용도 되돌리기도
+  아니다(무변경). 모달 요청은 `applyingCalls.add` **앞**에서 만들어 취소가 재시도를 막지 않는다.
+- 자율 런: `AssistantSession.maybeAutoApplyMilestone` 이 이 배치를 **자동 적용하지 않는다**
+  (모달을 띄울 사람이 없다). 초안은 남고 표면에서 확인 후 적용된다.
+- 안전망: `applyProposedProject` 가 `toolNames` 에 맵 규모 파괴가 있고
+  `mapDestructionApproved !== true` 면 `map-destruction-unapproved` 로 거부한다. `toolNames` 로
+  판정하는 이유는 이 경로가 도구 실행 전에 합의된 스냅샷을 받기 때문이고, `/pi` 처럼 자기 검토
+  카드를 가진 표면은 실제 툴 이름을 넘기지 않아 스스로 빠진다.
+
+모달 문안의 맵 이름·칸 수는 **툴 실행 결과(`result.data`)** 에서 온다 — 모델 문장이 아니다.
+수치를 못 꺼내도 요청은 만든다(fail-closed).
+
+**일부러 넣지 않은 것:** `SPATIAL_BUILD_TOOLS`/`TILE_WRITE_TOOLS`(밑그림 게이트). 그 게이트가 아는
+허가 형식은 `set_build_spec` 의 `clear`+`confirmDestroy` 이고 이 툴은 자기 인자로 같은 허가를 이미
+요구한다. 둘을 겹치면 「이 맵 다 지워」가 명세 제출 왕복을 강제당한다. 대신 파괴성 레지스트리
+(`approvalPolicy.DESTRUCTIVE_TOOLS`·`overInsertionReview.DESTRUCTIVE_CALLS`)와 승격 금지 목록
+(`capabilityEscalation.ESCALATION_DENYLIST`)에는 등록했다 — 자연어가 스쳤다는 이유로 얹히지 않는다.
+
+회귀: `test/clearMap.test.ts`(9건 — 등록/도메인, 잔디·허공 채움, 스택 제거, `confirmDestroy` 없이
+거부, 이벤트 유지+경고, `events:"remove"` 의 diff, 빈 채움에서 시작 칸 보존, 완성된 집 거부),
+`test/clearMapApproval.test.ts`(5건 — 모달 페이로드의 실측 수치, `applyProposedProject` 게이트 거부와
+승인 후 적용), `test/clearMapPanelApproval.test.ts`(4건 — 취소=무변경, 취소 후 재시도 가능,
+확인 시 `mapDestructionApproved`, 비파괴 배치는 무질문).
+브라우저 증거: `test/e2e/clear-map-approval.spec.ts` → `.omo/evidence/clear-map-approval/`.
+그 스펙은 **실제 `clear_map` 드라이런 결과 → 실제 페이로드 → 실제 모달**을 검증하고, AI 턴 전체
+(플래너 → 수용 기준 → 독립 검수)의 대본화는 하지 않는다 — 그 프로토콜의 정본은 vitest 하네스다.
+
 ## 명명 로케이션 툴 7종 (OPRN-OUT-020 + LOC-ADOPT, 2026-09-10)
 
 `src/editor/tools/mapLocationTools.ts`. 목표 하나다: 사용자가 "정문 광장"이라고 말하면 조수가
@@ -945,6 +997,7 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 - **복잡한 NPC 는 조회 후 상태별 다중 페이지 (2026-09-01):** 한 줄 인사 `place_npc` 만 부르는 단편 저작을 막는다. 프롬프트 블록 `EVENT_PAGE_SEMANTICS_BLOCK` + 수칙 8이 조회 순서(`find_events`/`get_event`/`get_story_state`/`get_database_records`)와 상태별 페이지 패턴을 고정하고, `place_npc.characterId`·페이지별 `name`/`graphic`, `make_villager` 의 `pages`/`dialogue.when`(switch·selfSwitch·friendship) 이 그 패턴을 실제로 받는다. `find_events` 매치는 pageCount/conditionKinds 를 포함한다. 상세는 `openwiki/editor-event-authoring.md`. Tests: `test/aiEventPageSemantics.test.ts`, `test/toolsMapManagement.test.ts`.
 
 - **들어가서 걷는 집은 `author_house(interior:"linked-interior")` 한 번이 정답 (2026-09-04):** 외장만 짓고 `create_transfer_pair`/`start_interior_room_session` 으로 잇는 3단계는 가짜 출입구(같은 맵 teleport)와 점유된 문 칸에서 깨진다. `linked-interior` 는 실내맵+문/출구 양방향 전이를 원자적으로 만든다(`houseKitDomain` → `createHouseInteriorMap`). `interior` 생략도 이 모드가 기본. `space:"both"`·야외 집·영역 위 집은 이 경로, 외장 없는 독립 실내만 세션, 개념 시설은 `place_concept`. Tests: `test/intentDeclaration.test.ts`, `test/proposalCompleteness.test.ts`, `test/interiorRoomPipeline.test.ts`, `test/constructionContracts.test.ts`.
+- **다층 linked-interior 의 상층에는 정문 이벤트가 없다 (2026-09-13 실측 수정):** 실내 파이프라인은 맵마다 `ev_entrance_<id>` 를 두는데, 상층 플랜엔 `returnMapId/X/Y` 가 없어 이 이벤트가 **자기 맵의 남벽 칸**을 가리키는 미연결 전이가 됐다 — `transfer-impassable` 로 시공이 통째로 거부됐다. 작사 계단(`authoredDescent`)이 없는 상층에서는 `ev_entrance_` 를 지우고, 상층→하층 하강은 `placeStairTransfer` 의 `ev_exit_f*` 가 소유한다. **하강 착지는 계단 칸이 아니라 그 옆 바닥이다**(`stairFootCell`): 상승 계단 칸에 내리면 playerTouch 위에 선 상태가 된다. 날개별 `stories` 가 선언된 계단식 집의 실내 층수는 가장 높은 날개 층수를 따른다 — 높이 휴리스틱이 선언을 덮어쓰지 않는다(`houseInteriorStories`). 회귀: `test/houseKit.test.ts` 「계단식 2층 linked-interior…」「날개 선언 층수…」.
 - **집 문은 기본 개방 — 걸어 들어가면 열린다 (2026-09-05 갱신):** 실외 집 시공(`author_house`/`build_village`/`build_house_kit`)의 집 문은 문 스프라이트(벽 칸, below 장식) + 문 앞 통행 칸의 투명 발판(`<doorEventId>_step`, playerTouch+below) 두 이벤트다. 문 칸은 벽이라 밟히지 않으므로 playerTouch 발판은 문 앞에만 둔다 — 시작집 문(STARTER_HOUSE_DOOR_APPROACH)과 같은 배치. 발판은 `callMapEvent(doorEventId)`로 문 본체의 활성 페이지를 실행한다. 이전에는 발판이 `transfer`만 가져 문 본체의 열림 SE·프레임·대기를 전부 건너뛰었다. 본체 페이지를 복사하지 않아 이후 사용자가 바꾼 소리·조건·명령도 그대로 따른다. 기존 문을 고칠 때는 발판의 단일 transfer를 문 ID를 가리키는 callMapEvent로 바꾸고 문 그림·페이지·실내·출구는 보존한다. **귀환 착지가 발판과 같아도 즉시 재전이하지 않는다:** `transferTo`는 도착 후 auto만 실행하고 playerTouch는 걸음 완료 때 평가한다. 벽 위 문 그림의 통행 경고와 착지 발판 경고만으로 런타임 불량을 단정하지 말 것. Tests: `test/houseDoorOpen.test.ts`(실제 생성→호출→열림 순서·원본 편집 보존·귀환 시 접촉 미실행).
 - **출입구·타일은 벽에 바짝 붙인다 (2026-08-31):** 모델이 벽·맵 끝에서 1칸 안쪽에 좌표를 잡는 버릇이 있다. `create_transfer_pair` 는 `snapFlushToWall`(`src/editor/tools/wallFlush.ts`)로 그 1칸을 당긴다 — 맵 가장자리(x=0 / width-1)와 벽 바로 앞 통행 칸. playerTouch+below 는 벽 칸 위에서 발동하지 않으므로(`openwiki/runtime-sessions.md`) 벽 위 요청도 바로 앞 통행 칸으로 옮긴다. 문 자리 자체가 이벤트에 점유됐으면(여관 문 이벤트 등) 1칸 안쪽을 gate로 쓰지 않는다 — 스냅이 밀려난 자리를 radius=0에서 제외하고 옆 flush 칸을 먼저 찾으며, 착지가 점유된 후보도 버린다(2026-09-04). `fill_region` / `paint_tiles` rect 는 맵 **안 벽** 과의 1칸 틈만 메운다(맵 가장자리까지 늘리면 원형 호수가 남쪽으로 샌다). 프롬프트 정책 「벽 밀착」과 도구 description 이 같은 말을 한다. Tests: `test/wallFlush.test.ts`, `test/transferGateOccupied.test.ts`, `test/agentUxPolicyPrompt.test.ts`.
 

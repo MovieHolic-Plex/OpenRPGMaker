@@ -35,7 +35,8 @@ it("renders map-relative cells when a space board opens", () => {
   renderSpatialSpacesCanvas({
     tab: "spaces", mode: "design", source: "own", designId: card.id, occurrenceId: null,
     camera: { x: 0, y: 0, zoom: 1 }, breadcrumb: [], legacyOrigin: null,
-    placeKindFilter: null, inspectorOpen: true,
+    placeKindFilter: null,
+    regionKindFilter: null, inspectorOpen: true,
   }, card, () => undefined);
 
   // Then: the board renderer receives every occupied cell at its actual map-relative coordinate.

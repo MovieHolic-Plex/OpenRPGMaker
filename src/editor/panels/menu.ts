@@ -2,7 +2,8 @@ import { getMode, toggleMode } from "@/app/mode";
 import { PRODUCT_TAGLINE } from "@/brand";
 import { showConfirm } from "@/editor/ui/modal";
 import { createNewProjectSeed } from "@/editor/genrePacks";
-import { newProjectPackLabel, showNewProjectDialog } from "@/editor/ui/newProjectDialog";
+import { newProjectChoiceById } from "@/editor/newProjectChoices";
+import { newProjectChoiceLabel, showNewProjectDialog } from "@/editor/ui/newProjectDialog";
 import {
   EDITOR_PRODUCT_BRAND,
   getEditorChrome,
@@ -837,25 +838,27 @@ async function newProject(): Promise<void> {
   const selection = await showNewProjectDialog({ defaultValue: "새 프로젝트" });
   if (selection === null) return;
   const title = selection.title.trim() || "새 프로젝트";
-  const packId = selection.packId;
+  const choiceId = selection.choiceId;
+  const packId = choiceId === null ? null : newProjectChoiceById(choiceId)?.packId ?? null;
   const seed = createNewProjectSeed(packId);
   const result = await store.loadNewRemoteProject(seed, { title });
   const { focusProjectStartMap } = await import("@/editor/mapSelection");
   focusProjectStartMap();
-  const genreSuffix = packId ? ` — 시작 장르: ${newProjectPackLabel(packId)}` : "";
+  const genreSuffix = choiceId ? ` — 시작 장르: ${newProjectChoiceLabel(choiceId)}` : "";
   toast(
     result.projectId
       ? `'${title}' 프로젝트를 만들었습니다 — 새 작업으로 온라인 저장됩니다${genreSuffix}`
       : `'${title}' 프로젝트를 만들었습니다 (온라인 저장 미연결)${genreSuffix}`,
     "ok",
   );
-  if (packId) {
+  if (choiceId) {
     // 프리셋으로 만들면 장르 프롬프트를 AI 조수에 바로 자동 전송한다 —
     // 엔진 토글은 씨앗에 들어 있고, AI는 그 위의 콘텐츠만 채운다.
     // 빈 프로젝트는 조용히 둔다.
     const { sendAiBootIntent, setPendingAiBootIntent, applyPendingAiBootIntent } = await import("@/editor/aiBootIntent");
-    const { WELCOME_GENRE_PRESETS, buildWelcomeGenrePresetPrompt } = await import("@/editor/welcomeGenrePresets");
-    const preset = WELCOME_GENRE_PRESETS.find((entry) => entry.packId === packId);
+    const { welcomeGenrePresetById, buildWelcomeGenrePresetPrompt } = await import("@/editor/welcomeGenrePresets");
+    // 선택지 id 로 바로 찾는다 — 예전에는 packId 로 역추적해서 같은 팩 2장 중 하나만 골랐다.
+    const preset = welcomeGenrePresetById(choiceId);
     if (preset) {
       const prompt = buildWelcomeGenrePresetPrompt(preset);
       if (!sendAiBootIntent(prompt)) {

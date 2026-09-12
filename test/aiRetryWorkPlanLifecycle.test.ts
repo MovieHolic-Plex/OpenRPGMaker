@@ -10,6 +10,7 @@ import { editorState } from "@/editor/editorState";
 import { renderAiChatPanel, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import * as turnRunner from "@/editor/panels/aiTurnRunner";
 
 vi.mock("@/ai/activityLog", async (original) => ({
   ...await original<typeof import("@/ai/activityLog")>(), recordAiActivity: vi.fn(async () => ({})),
@@ -104,16 +105,17 @@ describe("manual retry work-plan ownership", () => {
       return { assistantText: "", proposedCalls: [], stoppedReason: "error", error: "RETRY_FIXTURE_ERROR" };
     });
     vi.spyOn(AssistantSession.prototype, "canRetryLastTurn").mockReturnValue(true);
+    const runner = vi.spyOn(turnRunner, "createAiTurnRunner");
     const panel = renderAiChatPanel();
     document.body.append(panel);
     await bounded(whenAiChatPanelSettled());
-    const input = panel.querySelector<HTMLTextAreaElement>("[data-testid='ai-input']");
-    if (!input) throw new Error("Missing composer input");
     if (level !== "balanced") selectAutonomy(panel, level);
+    // 컴포저는 Pi 하나로 간다(2026-09-11) — 세션 턴은 그 표면(런 서피스)으로 직접 보낸다.
+    // 이 테스트가 보는 것은 세션의 재시도 수명이고, 그 경로는 영역 작업·QA 브리지가 아직 쓴다.
     const firstDone = terminalSignal();
-    input.value = "RETRY_FIXTURE_REQUEST";
-    input.dispatchEvent(new Event("input", { bubbles: true }));
-    button(panel, "ai-send").click();
+    const surface = runner.mock.calls[0]?.[0].surface;
+    if (!surface) throw new Error("Missing panel run surface");
+    await bounded(surface.sendText("RETRY_FIXTURE_REQUEST"));
     await bounded(firstDone);
     expect(send).toHaveBeenCalledTimes(1);
     expect(panel.querySelector("[data-testid='ai-work-plan-checklist']")).toBeNull();

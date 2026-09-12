@@ -30,7 +30,6 @@
 }
 
 .battle-scene {
-  --battle-hud-height: 40%;
   /* 포커스 링: var(--focus-ring, …) 의 폴백은 죽은 코드다 — tokens.css 가 --focus-ring 을
      정의(2px 판)해서 폴백이 아예 평가되지 않는다. 그래서 4px 판(= 논리 px 2배)을 씬
      스코프에서 재정의한다. 색은 전역과 동일. */
@@ -62,30 +61,17 @@
   height: 480px;
   transform: scale(var(--battle-stage-scale));
   transform-origin: top left;
-  gap: 4px;
-  padding: 0;
-  display: grid;
-  grid-template-columns: minmax(112px, 16%) minmax(164px, 22%) minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr) minmax(192px, var(--battle-hud-height));
   border: 0;
   border-radius: 0;
-  background: #000;
   color: var(--oprn-battle-text);
-  font-family: var(--runtime-ui-font);
-  font-size: var(--runtime-font-size-9);
-  line-height: 1.25;
   overflow: hidden;
   position: absolute;
   box-shadow: none;
 }
 
 .battle-field {
-  grid-column: 1 / -1;
-  grid-row: 1;
   display: block;
   min-height: 0;
-  overflow: hidden;
-  position: relative;
 }
 
 .battle-field::after {
@@ -105,20 +91,7 @@
   border-radius: 0;
   z-index: 0;
   /* 배경 이미지를 어둡게 — 몬스터가 묻히지 않도록 */
-  filter: brightness(0.55) saturate(0.7);
-  background:
-    radial-gradient(ellipse at 20% 26%, rgba(255, 255, 255, 0.52), transparent 18%),
-    radial-gradient(ellipse at 78% 28%, rgba(255, 255, 255, 0.42), transparent 22%),
-    linear-gradient(
-      180deg,
-      var(--oprn-battle-backdrop-top) 0%,
-      #a7d6f3 32%,
-      var(--oprn-battle-backdrop-mid) 33%,
-      var(--oprn-battle-backdrop-ground) 100%
-    );
-  background-position: center;
   background-repeat: no-repeat;
-  background-size: cover;
   color: var(--oprn-battle-muted);
   font-family: inherit;
   font-size: 16px;
@@ -155,7 +128,6 @@
      전에는 라벨 스택 높이를 JS 로 실측해 top 에 더했는데(--battle-enemy-label-drop),
      HUD 를 펼치고 접을 때마다 그 값이 바뀌어 몬스터가 눈에 보이게 튀었다. */
   top: var(--battle-node-y);
-  transform: translate(-50%, -100%);
   border: 0;
   border-radius: 0;
   background: none;
@@ -168,11 +140,9 @@
 }
 
 .battle-enemy-group {
-  inset: 0;
   min-width: 0;
   padding: 0;
   position: absolute;
-  z-index: 1;
 }
 
 /* 이름표·순번·상태 아이콘·HP HUD 를 담는 겹(battleFieldDom: enemyChrome).
@@ -194,10 +164,8 @@
 }
 
 .battle-enemy-image {
-  height: 192px;
   image-rendering: pixelated;
   object-fit: contain;
-  width: 224px;
   background: none;
   border-radius: 0;
   filter: none;
@@ -205,33 +173,15 @@
 }
 
 .battle-actor-group {
-  inset: 0;
   min-width: 0;
   padding: 0;
   position: absolute;
-  z-index: 1;
-}
-
-.battle-party,
-.battle-command-panel,
-.battle-enemy-list-panel,
-.battle-message-window,
-.battle-result-panel {
-  background: var(--runtime-window-fill-fallback);
-  border: 1px solid var(--runtime-glass-hairline);
-  border-radius: var(--runtime-glass-radius-small);
-  box-shadow: none;
 }
 
 .battle-party {
-  grid-column: 3;
-  grid-row: 2;
-  display: grid;
-  gap: 0;
   grid-auto-rows: minmax(0, 1fr);
   min-width: 0;
   overflow: hidden;
-  padding: 4px;
   align-self: stretch;
 }
 
@@ -250,15 +200,12 @@
 .battle-actor-group .battle-actor {
   align-items: center;
   display: grid;
-  height: 192px;
   justify-items: center;
   left: var(--battle-node-x);
   min-height: 0;
   padding: 0;
   position: absolute;
   top: var(--battle-node-y);
-  transform: translate(-50%, -100%);
-  width: 176px;
 }
 
 .battle-actor-sprite {
@@ -315,19 +262,28 @@
 }
 
 .battle-command-panel {
-  grid-column: 2;
-  grid-row: 2;
-  align-content: start;
-  display: grid;
   /* gap 은 외부 파일(editor/core.part-2.css 의 gap: var(--space-2) = 8px)에 의존하던 값이라
      그 파일이 없는 빌드(독립 플레이어: src/player/player.css)에서는 gap: normal = 0 으로
      갈렸다. 16px = 이주 전 화면 크기와 같은 8 논리 px × 2 — 여기서 명시해 두 빌드를 통일한다. */
-  gap: 16px;
-  grid-template-columns: minmax(0, 1fr);
   justify-items: stretch;
   min-width: 0;
-  overflow: hidden;
-  padding: 6px;
+}
+
+/* 커맨드 메뉴가 스크롤포트 밖에 항목을 숨길 때(도주/교체가 잘리는 4행 카드) 보이는
+   "더 있다" 신호. sticky 로 뷰포트 하단에 떠 있다가 끝까지 스크롤하면 도킹된다.
+   battleCommandDom.attachScrollCue 가 넘침이 있을 때만 hidden 을 해제한다. */
+.battle-command-scroll-cue {
+  align-self: end;
+  bottom: 0;
+  color: var(--oprn-battle-muted, #fff7c6);
+  font-size: 12px;
+  grid-column: 1 / -1;
+  justify-self: center;
+  line-height: 1;
+  pointer-events: none;
+  position: sticky;
+  text-shadow: 1px 1px 0 #000;
+  z-index: 3;
 }
 
 .battle-enemy-list-panel {
@@ -339,17 +295,9 @@
 }
 
 .battle-message-window {
-  bottom: calc(var(--battle-hud-height) + 8px);
-  grid-column: 1 / -1;
-  left: 4px;
-  right: 4px;
-  display: grid;
   grid-template-columns: 28px minmax(0, 1fr);
-  min-height: 60px;
   padding: 6px 10px;
-  position: absolute;
   text-shadow: 2px 2px 0 #000;
-  z-index: 3;
 }
 
 .battle-scene[data-battle-director-step="command"] .battle-message-window {
@@ -360,12 +308,7 @@
   display: grid;
 }
 
-.battle-scene[data-battle-director-step="result"] .battle-message-window {
-  display: none;
-}
-
 .battle-scene[data-battle-director-step="result"] {
-  background: #000;
   background-image: none;
   overflow: hidden;
 }
@@ -393,12 +336,6 @@
 
 /* 결과 화면에서도 전장(배틀러 그룹)과 아군 상태(파티 패널)는 남는다 — 포켓몬처럼
    승리의 현장 위에 보상이 얹힌다. 명령/적 정보 패널만 정리한다(적대 리뷰 §13). */
-.battle-scene[data-battle-director-step="result"] .battle-command-panel,
-.battle-scene[data-battle-director-step="result"] .battle-enemy-list-panel {
-  opacity: 0;
-  pointer-events: none;
-  visibility: hidden;
-}
 
 .battle-scene[data-battle-director-step="result"]::after {
   background: rgba(0, 0, 0, 0.22);

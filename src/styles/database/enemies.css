@@ -1,4 +1,0 @@
-/* Split wrapper: preserves enemies.css cascade order. */
-@import "./enemies.part-1.css";
-@import "./enemies.part-2.css";
-@import "./enemies.part-3.css";

@@ -8,7 +8,8 @@
 
 import { editorState, type Layer, type Tool } from "@/editor/editorState";
 import { makeTileBrushControls } from "@/editor/panels/tilePaletteStampStatus";
-import { selectTileTool, selectPaletteStamp } from "@/editor/panels/tileToolbarActions";
+import { dismissLocationDrawModeForLayer, dismissLocationDrawModeForTool, isLocationDrawMode } from "@/editor/locationDrawMode";
+import { selectMapModeTool, selectTileTool, selectPaletteStamp } from "@/editor/panels/tileToolbarActions";
 import { uiLabel } from "@/editor/uiCopy";
 import { getEditorChrome, subscribeEditorUiMode } from "@/editor/editorUiMode";
 import { openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
@@ -192,7 +193,7 @@ function makeToolsColumn(activeTool: Tool): HTMLElement {
     attrs: { role: "toolbar", "aria-orientation": "vertical", "aria-label": RAIL_GROUP_LABELS.tools },
   });
   for (const tool of BASIC_TOOLS) {
-    const active = activeTool === tool.id;
+    const active = !isLocationDrawMode() && activeTool === tool.id;
     list.append(
       el("button", {
         class: "basic-rail-btn" + (active ? " is-active" : ""),
@@ -209,9 +210,11 @@ function makeToolsColumn(activeTool: Tool): HTMLElement {
           click: () => {
             if (tool.id === "paint") {
               selectTileTool("pen");
-            } else if (tool.id === "event") editorState.set({ tool: "event", layer: "event" });
-            else if (editorState.get().layer === "event") editorState.set({ tool: tool.id, layer: "lower" });
-            else editorState.set({ tool: tool.id });
+            } else if (tool.id === "event") selectMapModeTool("event");
+            else if (tool.id === "eyedropper") selectMapModeTool("eyedropper");
+            else if (tool.id === "select") selectTileTool("select");
+            else if (tool.id === "erase") selectTileTool("erase");
+            else if (tool.id === "fill") selectTileTool("fill");
           },
         },
         children: [
@@ -225,6 +228,7 @@ function makeToolsColumn(activeTool: Tool): HTMLElement {
 }
 
 function applyLayerSelection(layer: Layer): void {
+  dismissLocationDrawModeForLayer(layer);
   if (layer === "event") {
     editorState.set({ layer: "event", tool: "event" });
     return;
@@ -387,6 +391,7 @@ function makeTilesBody(selectedTile: number, layer: "lower" | "upper", tileset: 
     },
     onSelect: (index) => {
       const home = tileLayerHome(tileset, index);
+      dismissLocationDrawModeForTool("paint");
       editorState.set({
         selectedTile: index, tool: "paint", paintShape: "pen", activePaletteStamp: null,
         layer: home === "both" ? layer : home,

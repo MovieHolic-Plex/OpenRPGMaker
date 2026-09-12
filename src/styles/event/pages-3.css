@@ -1,0 +1,931 @@
+/* event 표면 — pages-3.css. 규칙 순서는 2026-09 세대 접기 전 유효 순서(event/index.css 평탄 순서)를 보존한다. */
+
+/* 플로우 보기 — 「이 페이지가 하는 일」 칼럼의 네 번째 보기 방식.
+   예전에는 도구 팝오버 안 618×280 오버레이라 미리보기의 재생 컨트롤을 덮고
+   최상위 명령 7개 중 2개만 보였다. 이제 형제 보기라서 칼럼 높이를 그대로 쓴다. */
+.event-page-flow {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+}
+
+.event-page-flow-status {
+  align-items: center;
+  color: var(--text-2);
+  display: flex;
+  flex-wrap: wrap;
+  font: 600 11px/1.5 var(--font-ui);
+  gap: 4px 12px;
+  padding: 2px 14px 8px;
+}
+
+/* 미리보기에서 이어받은 단계. 아직 볼 단계가 없을 때도 자리를 지켜 흔들리지 않는다. */
+.event-page-flow-current {
+  color: var(--event-modern-accent);
+}
+
+/* ---- Character ID picker (dedicated, not switch/variable clone) ---- */
+.event-editor-identity-row {
+  align-items: center;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1.2fr) minmax(170px, 0.9fr);
+  min-width: 0;
+}
+
+.event-character-social-extras {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 8px;
+}
+
+/* ---- Draft validation repair surfaces: event coordinates and tool-authored schedules ---- */
+.event-editor-id-row,
+.event-position-controls,
+.event-position-controls label,
+.event-schedule-row,
+.event-schedule-label {
+  align-items: center;
+  display: flex;
+}
+
+.event-editor-id-row {
+  gap: 10px;
+}
+
+.event-position-controls,
+.event-position-controls label,
+.event-schedule-row,
+.event-schedule-label {
+  gap: 5px;
+}
+
+.event-position-input {
+  width: 58px;
+}
+
+.event-schedule-editor {
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.event-schedule-summary {
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.event-schedule-rows {
+  display: grid;
+  gap: 6px;
+  padding-top: 8px;
+}
+
+.event-schedule-row {
+  flex-wrap: wrap;
+}
+
+.event-schedule-row select,
+.event-schedule-row input[type="text"] {
+  max-width: 150px;
+}
+
+.event-schedule-row input[type="number"] {
+  width: 58px;
+}
+
+.event-schedule-toolbar,
+.event-schedule-condition-grid,
+.event-schedule-target-grid,
+.event-schedule-range {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.event-schedule-toolbar {
+  justify-content: space-between;
+  padding-top: 8px;
+}
+
+.event-schedule-help {
+  color: var(--text-muted, unset);
+  font-size: 11px;
+  margin: 0;
+}
+
+.event-schedule-row {
+  align-items: stretch;
+  border-top: 1px solid var(--border-soft, var(--border-subtle));
+  display: grid;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+@media (min-width: 1360px) {
+  .event-schedule-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  }
+}
+
+/* P1: 페이지 탭 리치화 — 캐릭터 그래픽으로 탭을 채우고 번호를 하단에 overlay. */
+.event-page-number-tabs .btn.event-page-tab-rich {
+  display: block;
+  height: 72px;
+  min-height: 72px;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  width: 100%;
+}
+
+.event-page-tab-number {
+  align-items: flex-end;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--bg-raised, #FFFDF8) 88%, transparent) 0%,
+    color-mix(in srgb, var(--bg-raised, #FFFDF8) 55%, transparent) 55%,
+    transparent 100%
+  );
+  bottom: 0;
+  color: var(--text-1, #2A2521);
+  display: flex;
+  font-size: 13px;
+  font-weight: 700;
+  justify-content: center;
+  left: 0;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  padding: 10px 2px 4px;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  text-shadow: 0 1px 2px var(--shadow-pop);
+  z-index: 2;
+}
+
+.event-page-number-tabs .btn.event-page-tab-rich.active .event-page-tab-number {
+  color: var(--event-modern-accent, #4A57D6);
+}
+
+.event-page-tab-badges {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  justify-content: flex-end;
+  max-width: calc(100% - 4px);
+  min-height: 0;
+  padding: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  z-index: 3;
+}
+
+.event-page-tab-badge {
+  align-items: center;
+  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 72%, var(--event-modern-accent-soft, rgba(96, 128, 192, 0.45)));
+  border: 1px solid var(--event-modern-border, rgba(96, 128, 192, 0.5));
+  border-radius: 2px;
+  color: var(--text-1, inherit);
+  display: inline-flex;
+  font: 700 8px/1 "Malgun Gothic", sans-serif;
+  justify-content: center;
+  min-width: 10px;
+  padding: 1px 1px 0;
+  text-shadow: 0 1px 1px var(--shadow-pop);
+}
+
+.event-page-tab-badge-switch {
+  background: var(--bg-surface);
+}
+
+.event-page-tab-badge-variable {
+  background: var(--bg-surface);
+}
+
+.event-page-tab-badge-item {
+  background: var(--bg-surface);
+}
+
+.event-page-tab-badge-actor {
+  background: var(--bg-surface);
+}
+
+.event-page-tab-badge-timer {
+  background: var(--bg-surface);
+}
+
+.event-page-tab-badge-more {
+  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 70%, transparent);
+  border-style: dashed;
+  opacity: 0.9;
+}
+
+/* ── 페이지 탭: 좌측 세로 스택 → 상단 가로 스트립 ─────────────────── */
+.event-editor .event-page-number-tabs {
+  flex-direction: row;
+  flex-wrap: nowrap;
+  background: transparent;
+  border-bottom: 0;
+  border-radius: 0;
+  width: 100%;
+}
+
+.event-editor .event-page-number-tabs > .event-page-tab-rich {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  width: 224px;
+  min-width: 0;
+  min-height: 50px;
+  height: auto;
+  margin: 0;
+  padding: 6px 11px 7px;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-top: 2px solid transparent;
+  border-radius: 6px 6px 0 0;
+  color: var(--mk-t2);
+  transition: background 0.13s, color 0.13s;
+}
+
+.event-editor .event-page-number-tabs > .event-page-tab-rich:hover {
+  background: var(--mk-surface);
+  color: var(--mk-t1);
+}
+
+.event-editor .event-page-number-tabs > .event-page-tab-rich.active {
+  position: relative;
+  z-index: 1;
+  background: var(--mk-surface);
+  color: var(--mk-t1);
+  border-top-color: var(--mk-accent);
+}
+
+.event-editor .event-page-tab-number {
+  font-family: var(--mk-mono);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.4;
+  background: var(--mk-line);
+  color: var(--mk-t2);
+  padding: 1px 5px;
+  border-radius: 2px;
+}
+
+.event-editor .event-page-tab-rich.active .event-page-tab-number {
+  background: var(--mk-accent-wash);
+  color: var(--mk-accent);
+}
+
+.event-editor .event-page-tab-meta {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.event-editor .event-page-tab-title {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-editor .event-page-tab-cond {
+  font-family: var(--mk-mono);
+  font-size: 10.5px;
+  line-height: 1.25;
+  /* t3(#626b7d)는 이 어두운 탭 스트립 위에서 약 3.4:1 — 10.5px 본문에 WCAG AA(4.5:1) 미달이었다.
+     비활성 탭의 조건 요약이야말로 "어느 페이지가 언제 도는지" 스캔하는 핵심 정보라 한 단계 올린다. */
+  color: var(--mk-t2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-editor .event-page-tab-rich.active .event-page-tab-cond {
+  /* 활성 탭은 한 단계 더 밝게 둬서 비활성과의 위계는 유지한다. */
+  color: var(--mk-t1);
+}
+
+/* 조건 배지는 요약 텍스트가 생겼으므로 보조로만 남긴다. */
+.event-editor .event-page-tab-badges {
+  display: none;
+}
+
+/* 옛 p1-pagetabs 의 absolute 오버레이(번호/배지)를 가로 스트립용 플로우로 복원.
+ * 옛 시트(p1-pagetabs)가 position:absolute + inset 을 주지만 이 선택자(0,4,0)가 더 특이해 그대로 이긴다. */
+.event-editor .event-page-number-tabs > .event-page-tab-rich > .event-page-tab-number,
+.event-editor .event-page-number-tabs > .event-page-tab-rich > .event-page-tab-badges {
+  position: static;
+  inset: auto;
+}
+
+.event-editor .event-page-number-tabs > .event-page-tab-rich > .event-page-tab-number {
+  display: inline-block;
+  right: auto;
+  bottom: auto;
+  z-index: auto;
+  background: var(--mk-line);
+  padding: 1px 5px;
+  text-shadow: none;
+}
+
+.event-editor .event-page-number-tabs > .event-page-tab-rich > .event-page-tab-badges {
+  z-index: auto;
+}
+
+.event-editor .event-page-tab-add {
+  flex: 0 0 auto;
+  align-self: center;
+  margin: 0 6px;
+  padding: 2px 11px;
+  border-radius: 3px;
+  line-height: 1.4;
+}
+
+.event-editor .event-page-tab-add:hover {
+  color: var(--mk-accent);
+  border-color: var(--mk-accent);
+}
+
+/* ── 좌측 설정 컬럼 = 레일 ───────────────────────────────────────── */
+.event-editor .event-editor-settings-column {
+  /* 페이지 탭 스트립이 상단으로 나갔으므로 자식은 settings-main 하나다.
+     기존 정의(56px + 1fr)를 그대로 두면 본문이 56px 칸에 갇힌다. */
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* 상단 식별 스트립을 이벤트 카드처럼 — 시선 진입점 만들기. */
+.event-editor .event-editor-id-row {
+  font-family: var(--mk-mono);
+  font-size: 11px;
+  color: var(--mk-t2);
+}
+
+.event-editor .event-editor-id-row input {
+  font-family: var(--mk-mono);
+}
+
+/* 접이식 섹션 헤더 — 목업의 대문자 마이크로 라벨. */
+.event-editor .event-oprn-fieldset > legend,
+.event-editor .event-contents-legend {
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mk-t2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event-editor .event-page-number-tabs > .event-page-tab-rich {
+    transition: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .event-editor .event-editor-settings-column,
+  .event-editor .event-editor-commands-column {
+    min-width: 0;
+  }
+}
+
+/* ── 페이지 탭 스트립 기하 확정 ──────────────────────────────────
+ * 기존 p1-pagetabs 가 탭에 height:72px / width:100% 를, modern 이 min-height:72px 를
+ * 준다. 세로 레일이던 시절의 값이라 상단 가로 스트립에서는 탭이 늘어나고
+ * ＋ 버튼이 남는 폭을 전부 먹어 가로 스크롤이 생겼다(실측 2190 > 1898).
+ * 여기서 기하만 확정한다.
+ */
+.event-editor .event-page-number-tabs {
+  align-self: stretch;
+  height: auto;
+  min-height: 50px;
+  max-height: none;
+}
+
+.event-editor .event-page-number-tabs > .btn.event-page-tab-rich {
+  display: grid;
+  width: auto;
+  height: auto;
+  min-height: 50px;
+  overflow: visible;
+}
+
+.event-editor .event-page-number-tabs > .btn.event-page-tab-add {
+  width: auto;
+  min-width: 40px;
+  height: auto;
+  min-height: 0;
+  flex: 0 0 auto;
+  align-self: center;
+}
+
+/* 옛 레일 시절의 grid-row:1 이 남아 있어 탭이 1행에 고정되고 나머지가 아래로
+ * 밀려 거대한 빈 칸이 생겼다. 배치는 DOM 순서에 맡긴다. */
+.event-editor > .event-page-number-tabs {
+  grid-row: auto;
+}
+
+.event-editor .event-editor-top-strip .event-page-tabs {
+  min-height: 0;
+  height: auto;
+  align-self: center;
+}
+
+.event-editor .event-editor-top-strip .event-page-tabs .event-page-action-buttons {
+  min-height: 0;
+}
+
+/* 탭 안의 검사 배지가 이름 위로 겹쳐 보였다 — 우측 끝으로 밀어낸다. */
+.event-editor .event-page-tab-rich .event-page-validation-badge {
+  position: static;
+  align-self: center;
+  margin-left: 2px;
+}
+
+/* top-strip 이 grid 인 채로는 행이 234px 로 잡혀(내용은 43px) 거대한 빈 칸이 생겼다.
+ * 내용 높이를 그대로 따르는 flex 로 바꾼다. */
+/* 그리드 행이 어떤 이유로든 늘어나도 상단 스트립은 한 줄 컨트롤 높이를 넘지 않는다.
+ * (측정: 내용 43px 인데 행이 235px 로 잡혀 빈 칸이 됐다) */
+.event-editor > .event-editor-id-row {
+  max-height: 40px;
+}
+
+/* 목업 셸: 본문(3열)은 모달 가장자리에 붙고, 열 사이 간격은 0 —
+ * 열 구분은 레일/인스펙터의 border-right/left 1px 이 한다.
+ * (옛 .event-editor-modal-body padding 20px 25px 8px 와 .event-editor gap 8px 가
+ *  페이지바 아래 20px·좌우 25px·열 사이 8px 죽은 여백을 만들었다) */
+.event-editor-modal-dynamic .event-editor > .event-page-number-tabs,
+.event-editor-modal-dynamic .event-editor > .event-editor-top-strip,
+.event-editor-modal-dynamic .event-editor > .event-editor-card,
+.event-editor-modal-dynamic .event-editor > .event-editor-id-row {
+  flex: 0 0 auto;
+}
+
+.event-editor-modal-backdrop .btn.event-editor-footer-button.primary:hover,
+.event-editor-modal-window .btn.event-editor-footer-button.primary:hover {
+  filter: brightness(1.07);
+  background: var(--accent-hover, var(--accent));
+}
+
+/* 탭 검사 배지가 이름/조건 위로 겹쳐 보였다. 그리드 마지막 칸으로 고정. */
+/* ── 이벤트 카드 (목업 evcard) ───────────────────────────────────── */
+.event-editor .event-editor-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 11px;
+  align-items: center;
+  padding: 11px 12px;
+  margin: 0 0 10px;
+  background: linear-gradient(180deg, var(--mk-raised), var(--mk-surface));
+  border: 1px solid var(--mk-line-soft);
+  border-radius: var(--mk-radius);
+}
+
+.event-editor .event-editor-card-sprite {
+  flex: 0 0 54px;
+  display: grid;
+  place-items: center;
+  background: var(--mk-inset);
+  border: 1px solid var(--mk-line);
+  border-radius: 3px;
+  overflow: hidden;
+  image-rendering: pixelated;
+}
+
+.event-editor .event-editor-card-meta {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+/* 카드 안에서는 top-strip 이 한 줄 컨트롤 묶음이다. */
+.event-editor .event-editor-card .event-editor-top-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-height: none;
+  min-height: 0;
+  margin: 0;
+}
+
+.event-editor .event-editor-card .event-editor-id-row {
+  max-height: none;
+  margin: 0;
+  font-family: var(--mk-mono);
+  font-size: 11px;
+  color: var(--mk-t2);
+}
+
+/* 설정 컬럼: 카드는 내용 높이, 설정 본문이 남는 높이를 갖고 스크롤한다.
+ * grid 로 두면 카드가 stretch 되어 400px 넘게 늘어난다. */
+.event-editor .event-editor-settings-column > .event-editor-card {
+  flex: 0 0 auto;
+}
+
+.event-editor .event-editor-settings-column > .event-editor-settings-main {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* 카드 안 컨트롤 — 이름과 NPC 관계를 같은 62px 라벨 축에 맞춘다.
+ * 관계 설정은 접힘 메뉴가 아니라 상태+행동이 한 번에 읽히는 단일 컨트롤이다. */
+.event-editor .event-editor-card .event-classic-name,
+.event-editor .event-editor-card .event-editor-identity-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  gap: 5px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.event-editor .event-character-link-control {
+  align-items: center;
+  background: var(--mk-inset);
+  border: 1px solid var(--mk-line);
+  border-radius: 5px;
+  color: var(--mk-t1);
+  cursor: pointer;
+  display: grid;
+  gap: 7px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-height: 34px;
+  min-width: 0;
+  padding: 4px 7px;
+  text-align: left;
+  transition: background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+  width: 100%;
+}
+
+.event-editor .event-character-link-control:hover {
+  background: var(--mk-raised);
+  border-color: color-mix(in srgb, var(--mk-accent) 55%, var(--mk-line));
+}
+
+.event-editor .event-character-link-control:focus-visible {
+  border-color: var(--mk-accent);
+  box-shadow: 0 0 0 2px var(--mk-accent-wash);
+  outline: none;
+}
+
+.event-editor .event-character-link-control.is-unlinked {
+  border-style: dashed;
+}
+
+.event-editor .event-character-link-dot {
+  background: var(--mk-t3);
+  border-radius: 999px;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mk-t3) 16%, transparent);
+  display: block;
+  height: 7px;
+  width: 7px;
+}
+
+.event-editor .event-character-link-control.is-linked .event-character-link-dot {
+  background: #2d9b70;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #2d9b70 18%, transparent);
+}
+
+.event-editor .event-character-link-copy {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.event-editor .event-character-link-copy strong,
+.event-editor .event-character-link-copy small {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-editor .event-character-link-copy strong {
+  color: var(--mk-t1);
+  font-size: 11.5px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.event-editor .event-character-link-copy small {
+  color: var(--mk-t2);
+  font-size: 9.5px;
+  line-height: 1.2;
+}
+
+.event-editor .event-character-link-action {
+  color: var(--mk-accent);
+  font-size: 10.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* 연결 후 설정은 이름 없는 체크박스 두 줄 대신 하나의 관계 카드로 묶는다. */
+.event-editor .event-character-social-extras {
+  background: color-mix(in srgb, var(--mk-accent) 5%, var(--mk-raised));
+  border: 1px solid var(--mk-line);
+  border-left: 3px solid var(--mk-accent);
+  border-radius: var(--mk-radius);
+  display: grid;
+  gap: 10px;
+  margin: 0 0 10px;
+  padding: 10px;
+}
+
+.event-editor .event-character-social-header {
+  align-items: center;
+  display: grid;
+  gap: 5px 7px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.event-editor .event-character-social-heading {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.event-editor .event-character-social-heading > span {
+  color: var(--mk-t2);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+.event-editor .event-character-social-heading > strong {
+  color: var(--mk-t1);
+  font-size: 13px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-editor .event-character-social-status {
+  align-items: center;
+  color: #2d9b70;
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: 700;
+  gap: 4px;
+  justify-self: end;
+}
+
+.event-editor .event-character-social-status::before {
+  background: currentColor;
+  border-radius: 999px;
+  content: "";
+  height: 6px;
+  width: 6px;
+}
+
+.event-editor .event-talk-friendship-label {
+  align-items: center;
+  background: var(--mk-inset);
+  border: 1px solid var(--mk-line-soft);
+  border-radius: 5px;
+  cursor: pointer;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr);
+  margin: 0;
+  padding: 8px;
+}
+
+.event-editor .event-character-social-option-copy {
+  display: grid;
+  gap: 2px;
+}
+
+.event-editor .event-character-social-option-copy strong {
+  color: var(--mk-t1);
+  font-size: 11.5px;
+}
+
+.event-editor .event-character-social-option-copy small {
+  color: var(--mk-t2);
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.event-editor .event-character-social-advanced {
+  border-top: 1px solid var(--mk-line-soft);
+  padding-top: 2px;
+}
+
+.event-editor .event-character-social-advanced > summary {
+  align-items: center;
+  color: var(--mk-t2);
+  cursor: pointer;
+  display: flex;
+  font-size: 10.5px;
+  gap: 6px;
+  justify-content: space-between;
+  list-style: none;
+  padding: 4px 0 1px;
+}
+
+.event-editor .event-character-social-advanced > summary::-webkit-details-marker {
+  display: none;
+}
+
+.event-editor .event-character-social-advanced > summary::after {
+  content: "▾";
+  font-size: 9px;
+  margin-left: auto;
+  transition: transform 120ms ease;
+}
+
+.event-editor .event-character-social-advanced:not([open]) > summary::after {
+  transform: rotate(-90deg);
+}
+
+.event-editor .event-character-social-advanced > summary code {
+  background: var(--mk-inset);
+  border-radius: 3px;
+  color: var(--mk-t2);
+  font-family: var(--mk-mono);
+  font-size: 9.5px;
+  max-width: 116px;
+  overflow: hidden;
+  padding: 2px 4px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-editor .event-character-social-advanced-body {
+  display: grid;
+  gap: 7px;
+  padding-top: 8px;
+}
+
+.event-editor .event-character-social-advanced-body > p {
+  color: var(--mk-t2);
+  font-size: 9.5px;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.event-editor .event-character-social-unlink {
+  justify-self: start;
+}
+
+/* ID / X / Y 는 한 줄. 라벨이 줄바꿈되면 카드가 두 줄로 부푼다. */
+.event-editor .event-editor-card .event-editor-id-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 6px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+/* 42px는 Windows Chrome에서 스피너(~20px)가 텍스트를 가려 "15"가 "1"로 보였다(2026-08-18 실측).
+ * 세 자리 좌표 + 스피너가 온전히 보이는 최소 폭으로 확대. */
+.event-editor .event-editor-card .event-editor-id-row input {
+  width: 64px;
+  min-width: 0;
+}
+
+/* 범위 밖 값을 클램프했을 때 잠깐 깜빡여 "값이 바뀌었다"를 알린다 */
+.event-position-input.is-clamped {
+  outline: 2px solid var(--warning, #8A5E00);
+  transition: outline-color 0.2s ease;
+}
+
+/* 페이지 액션 버튼은 카드에서 아이콘 위주로 압축 */
+.event-editor .event-editor-card .event-page-action-buttons {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+
+.event-editor .event-editor-card .event-page-action-button {
+  padding: 3px 8px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* 탭 스트립 + 페이지 액션 버튼의 배치는 balanced.css 한 곳이 소유한다. */
+.event-editor > .event-editor-pagebar {
+  display: flex;
+  flex: 0 0 auto;
+  min-height: 0;
+}
+
+/* 실행 내용의 제목과 보기 전환은 페이지바의 우측 헤더로 승격한다.
+ * 캔버스 안에서 별도 행을 쓰지 않아 같은 모달 높이에서 명령 보드가 더 커진다. */
+.event-editor > .event-editor-pagebar > .event-editor-command-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex: 0 0 auto;
+  align-self: stretch;
+  min-width: 238px;
+  padding: 0 4px 5px 12px;
+  margin-left: 2px;
+  border-left: 1px solid var(--mk-line-soft, var(--mk-line));
+}
+
+/* 탭 검사 배지가 조건 요약 위로 겹쳐 작은 숫자로 보였다.
+ * 그리드 마지막 칸에 고정하고 절대배치를 끊는다. */
+.event-editor .event-page-tab-rich > .event-page-validation-badge {
+  position: static;
+  inset: auto;
+  transform: none;
+  align-self: center;
+  justify-self: end;
+  margin: 0;
+  font-size: 9.5px;
+}
+
+.event-editor .event-page-tab-rich > .event-page-validation-badge.hidden {
+  display: none;
+}
+
+/* 탭 검사 배지는 ::after(attr(data-label)) 로 그려지고 절대배치라 겹쳤다. */
+.event-editor .event-page-tab-rich > .event-page-validation-badge::after,
+.event-editor .event-page-tab-rich > .event-page-validation-badge::before {
+  position: static;
+  inset: auto;
+  transform: none;
+}
+
+.event-editor .event-editor-settings-column > .event-editor-card {
+  margin: 0;
+  padding: 12px;
+  border: 0;
+  border-bottom: 1px solid var(--mk-line);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--mk-raised) 70%, var(--mk-surface));
+}
+
+.event-editor .event-editor-settings-column > .event-editor-settings-main {
+  padding: 10px 12px;
+}
+
+.event-editor .event-editor-card-sprite {
+  width: 54px;
+  height: 70px;
+  flex-basis: 54px;
+}
+
+.event-editor .event-editor-card .event-editor-top-strip {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+/* These controls live in the narrow event rail: show each complete choice. */
+.event-editor .event-horror-field {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  min-width: 0;
+  margin: 0;
+}
+
+.event-editor .event-horror-field select,
+.event-editor .event-horror-field input[type="number"] {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.event-editor .event-horror-field:has(input[type="checkbox"]) {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.event-editor .event-horror-settings .empty-hint {
+  text-align: start;
+  line-height: 1.5;
+}
+
+.event-editor-follower-preset-bar {
+  align-items: center;
+  display: grid;
+  gap: 5px 10px;
+  grid-template-columns: auto minmax(0, 1fr);
+  padding: 6px 8px;
+  border: 1px dashed var(--border-subtle, rgba(42,37,33,.20));
+  border-radius: 10px;
+  background: var(--bg-surface);
+}

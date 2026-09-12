@@ -32,7 +32,9 @@ const spaces = object({ ...base, environment: choices(["interior", "outdoor"]), 
 const places = object({ ...base, kind: choices(["facility", "settlement", "natural"]), children: child(["space", "place"]),
   layout: choices(["row", "double-row", "manual"]), ports, connections: array(object(connection)), exterior: graphic,
 }, [...Object.keys(base), "kind", "children", "layout", "ports", "connections"]);
-const regions = object({ ...base, terrain, places: child(["place"]), ports, routes: array(object({ ...connection, points: array(point) })) });
+const settlement = object({ presetId: id, seed: { type: "integer", minimum: 0 } });
+const regions = object({ ...base, terrain, places: child(["place"]), ports, routes: array(object({ ...connection, points: array(point) })), settlement },
+  [...Object.keys(base), "terrain", "places", "ports", "routes"]);
 const worlds = object({ ...base, terrain, regions: child(["region"]), ports, connections: array(object(connection)), entryPort: endpoint });
 
 export const SPATIAL_DESIGN_SCHEMAS = { object: objects, space: spaces, place: places, region: regions, world: worlds } as const;
@@ -44,6 +46,18 @@ export const SPATIAL_UPSERT_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA,
 export const SPATIAL_BUILD_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA, id, occurrenceId: id, seed: integer,
   target: object({ mapId: id, rect: object({ x: integer, y: integer, width: size, height: size }), entry: point }),
 }, ["kind", "id", "occurrenceId", "seed"]);
-export const SPATIAL_GET_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA, id });
+export const SPATIAL_GET_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA, id,
+  resolved: { type: "boolean", description: "default true — resolved transitive source closure. false returns only the design body (enough for an upsert revision round-trip when the full payload is truncated)." } }, ["kind", "id"]);
 export const SPATIAL_LIST_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA, query: text }, []);
 export const SPATIAL_APPLY_SCHEMA = object({ previewId: id });
+// Occurrence endpoints use occurrenceId (concrete frozen id), not design childId slots.
+const occurrenceEndpoint = object({ occurrenceId: id, portId: id });
+export const SPATIAL_OCCURRENCE_SCHEMA = object({
+  operation: choices(["move", "delete", "refresh", "detach", "clone", "link", "unlink"]),
+  occurrenceId: id,
+  x: integer, y: integer, level: integer,
+  externalConnections: choices(["reject", "remove", "omit", "copy"]),
+  newOccurrenceId: id,
+  connection: object({ id, from: occurrenceEndpoint, to: occurrenceEndpoint, bidirectional: { type: "boolean" } }),
+  connectionId: id,
+}, ["operation"]);

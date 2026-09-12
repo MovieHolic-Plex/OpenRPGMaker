@@ -132,13 +132,19 @@ test("modern: 잡화점 전체 흐름", async ({ page }) => {
   await shot(page, "02-buy-list", overlay);
   await shot(page, "02b-buy-viewport", viewport);
 
-  // 03 — 장비에 커서를 얹으면 상세 카드에 능력치 격자가 뜬다 (F-4 의 성과)
+  // 03 — 장비에 커서를 얹으면 상세 카드에 비교 요약이 뜨고, 순수 보너스 격자는
+  // 「상세 / 장비 비교」 오버레이에 있다 (요약이 같은 슬롯을 덮어쓰던 시절의 정리).
   await page.getByTestId("shop-buy-equip_sword").hover();
   await page.getByTestId("shop-buy-equip_sword").focus();
-  await expect(overlay.getByTestId("shop-detail-stats")).toBeVisible();
-  await expect(overlay.getByTestId("shop-detail-stats")).toContainText("공격");
+  await expect(overlay.getByTestId("shop-summary-replacement")).toBeVisible();
   await shot(page, "03-equipment-detail", overlay);
   await shot(page, "03b-detail-card", overlay.getByTestId("shop-detail-card"));
+  await page.getByTestId("shop-detail-open").click();
+  await expect(overlay.getByTestId("shop-comparison")).toBeVisible();
+  await expect(overlay.getByTestId("shop-detail-stats")).toContainText("공격");
+  await shot(page, "03c-equipment-compare", overlay);
+  await page.getByTestId("shop-detail-close").click();
+  await expect(overlay.getByTestId("shop-buy-equip_sword")).toBeVisible();
 
   // 04 — 카테고리 칩으로 장비만 보기
   await page.getByTestId("shop-category-equipment").click();
@@ -153,11 +159,12 @@ test("modern: 잡화점 전체 흐름", async ({ page }) => {
   await expect(page.getByTestId("shop-buy-item_sword_manual")).toHaveAttribute("data-unaffordable", "1");
   await shot(page, "05-unaffordable", overlay);
 
-  // 06 — 수량 스테퍼로 2개 구매. 창은 닫히지 않고 소지금 델타가 떠오른다.
+  // 06 — ←→ 로 수량을 올려 2개 구매. 창은 닫히지 않고 소지금 델타가 떠오른다.
+  // (스테퍼 버튼은 키보드·포인터 양쪽에 죽은 장식이어서 걷어냈다 — 조절은 방향키가 담당.)
   // 합계는 '선택된 행'의 단가로 계산된다 — 05 에서 검서를 눌러 선택이 거기 남아 있으므로
   // 회복약으로 커서를 되돌린 뒤에 합계를 본다(12G × 2 = 24G).
   await page.getByTestId("shop-buy-item_potion").focus();
-  await page.getByTestId("shop-quantity-inc").click();
+  await page.keyboard.press("ArrowRight");
   await expect(page.getByTestId("shop-quantity-total")).toContainText("24");
   await page.getByTestId("shop-buy-item_potion").click();
   await expect(overlay).toContainText("구매");

@@ -360,11 +360,6 @@
   margin: 0 0 6px;
 }
 
-.editor-layout .left-panel-stack .palette-filter-search-row {
-  gap: 6px;
-  grid-template-columns: minmax(0, 1fr) 30px;
-}
-
 .editor-layout .left-panel-stack .tile-search-input {
   background: var(--bg-inset);
   border: 1px solid transparent;
@@ -372,7 +367,6 @@
   box-shadow: none;
   color: var(--text-1);
   font: 500 12px/1.2 var(--font-ui);
-  height: 30px;
   padding: 0 10px;
   transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
 }

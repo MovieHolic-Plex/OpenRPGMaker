@@ -1,0 +1,727 @@
+/* event 표면 — pages.css. 규칙 순서는 2026-09 세대 접기 전 유효 순서(event/index.css 평탄 순서)를 보존한다. */
+
+/* editor/core.part-2.css:204-211 */
+.event-id-readout {
+  align-items: center;
+  column-gap: var(--space-2);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-width: 0;
+  row-gap: var(--space-1);
+}
+
+/* editor/core.part-2.css:213-220 */
+.event-id-readout-label {
+  color: var(--text-dim, unset);
+  font-size: 11px;
+  font-weight: 600;
+  grid-column: 1;
+  grid-row: 1;
+  letter-spacing: 0.2px;
+}
+
+/* editor/core.part-2.css:224-240 */
+.event-editor input.event-id-readout-value {
+  background: var(--bg-inset);
+  border: 1px dashed var(--border);
+  color: var(--text, unset);
+  cursor: text;
+  font: 400 11px/1.4 var(--mono, unset);
+  grid-column: 1 / -1;
+  grid-row: 2;
+  min-width: 0;
+  overflow: hidden;
+  /* 좌우 4px — 6px 이면 `ev_`+UUID(39자)가 3px 모자라 마지막 글자가 잘렸다.
+   * 실측(1440×900, expert): 열 269px · 텍스트 258px · 내용폭 6px→255 / 4px→259. */
+  padding: 3px 4px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+/* editor/core.part-2.css:243-248 */
+.event-editor input.event-id-readout-value:focus-visible {
+  border-color: var(--accent);
+  border-style: solid;
+  outline: var(--focus-outline);
+  outline-offset: 1px;
+}
+
+/* editor/core.part-2.css:251-266 */
+.event-id-readout-copy {
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--border-soft, unset);
+  border-radius: var(--radius-sm, var(--radius-s));
+  color: var(--text-dim, unset);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 11px;
+  grid-column: 2;
+  grid-row: 1;
+  justify-content: center;
+  min-height: 20px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+/* editor/core.part-2.css:268-272 */
+.event-id-readout-copy:hover,
+.event-id-readout-copy:focus-visible {
+  border-color: var(--border);
+  color: var(--text, unset);
+}
+
+/* editor/core.part-2.css:274-281 */
+.event-id-readout-hint {
+  color: var(--text-dim, unset);
+  font-size: 11px;
+  grid-column: 1 / -1;
+  grid-row: 3;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* editor/palette-player.css:44-48 */
+.event-editor-event-id {
+  align-self: center;
+  color: var(--text-dim, unset);
+  font: 600 12px/1.35 var(--font-mono);
+}
+
+.event-editor-name-field {
+  border-color: var(--event-rm-light) var(--event-rm-mid) var(--event-rm-mid) var(--event-rm-light);
+  border-style: solid;
+  border-width: 1px;
+}
+
+.event-editor-name-field span {
+  text-transform: none;
+}
+
+.event-editor-name-field input,
+.event-editor-modal-body input,
+.event-editor-modal-body select,
+.event-editor-modal-body textarea {
+  border-color: var(--event-rm-mid) var(--event-rm-light) var(--event-rm-light) var(--event-rm-mid);
+  border-style: solid;
+  border-width: 2px;
+}
+
+.event-page-tabs {
+  justify-content: start;
+  min-width: 0;
+}
+
+.event-page-action-buttons {
+  align-items: stretch;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  max-width: 100%;
+}
+
+@media (max-width: 640px) {
+  .event-page-action-buttons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 380px) {
+  .event-page-action-buttons { grid-template-columns: 1fr; }
+}
+
+.event-page-action-buttons .btn,
+.event-page-number-tabs .btn,
+.event-editor-modal-footer .btn {
+  border-color: var(--event-rm-light) var(--event-rm-mid) var(--event-rm-mid) var(--event-rm-light);
+  border-style: solid;
+  border-width: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-page-action-buttons .btn:disabled {
+  text-shadow: 1px 1px 0 var(--event-rm-light);
+}
+
+.event-page-action-button {
+  align-items: center;
+  display: inline-flex;
+  gap: 7px;
+  justify-content: center;
+}
+
+.event-page-number-tabs {
+  padding-left: 0;
+}
+
+.event-page-number-tabs .btn {
+  border-bottom-color: var(--event-rm-chrome);
+  font-weight: 400;
+}
+
+.event-editor-settings-column,
+.event-editor-commands-column {
+  border: 0;
+  min-height: 0;
+  padding: 0;
+}
+
+.event-editor-settings-column {
+  align-content: start;
+  grid-template-rows: auto auto;
+  padding-right: 2px;
+}
+
+.event-editor-top-strip,
+.event-editor-workbench,
+.event-editor-settings-column,
+.event-editor-commands-column {
+  min-width: 0;
+}
+
+@media (max-width: 1488px) {
+
+  .event-page-action-buttons {
+    grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+  }
+}
+
+.event-oprn-fieldset {
+  background: var(--event-rm-chrome);
+  border-color: var(--event-rm-mid) var(--event-rm-light) var(--event-rm-light) var(--event-rm-mid);
+  border-style: solid;
+  border-width: 1px;
+}
+
+.event-command-cancel-fieldset {
+  align-content: start;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 9px 10px 8px;
+}
+
+.event-command-wait-mode {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 8px 10px;
+}
+
+.event-conditions-grid,
+.event-condition-row,
+.event-page-movement,
+.event-page-movement-basics {
+  gap: 3px;
+}
+
+/* 조건 칩 팔레트 — 종류는 늘 다 보이고, 켠 것만 아래 목록에 행으로 내려간다.
+   토큰만 쓴다(하드코딩 색 금지, TOKENS.md §4.1). */
+.event-condition-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  padding-bottom: 3px;
+}
+
+.event-condition-chip {
+  appearance: none;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  color: var(--text-2);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11.5px;
+  line-height: 1.5;
+  padding: 1px 8px;
+}
+
+.event-condition-chip:hover {
+  border-color: var(--border-strong);
+  color: var(--text-1);
+}
+
+.event-condition-chip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.event-condition-chip.active {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.event-condition-list {
+  display: grid;
+  gap: 3px;
+}
+
+.event-condition-empty {
+  color: var(--text-3);
+  font-size: 11.5px;
+  margin: 0;
+  padding: 2px 0 3px;
+}
+
+.event-editor-modal-body [data-testid="event-classic-conditions"].event-oprn-fieldset {
+  padding: 4px 5px 3px;
+}
+
+.event-editor-modal-body [data-testid="event-classic-conditions"] .event-conditions-grid {
+  gap: 3px;
+}
+
+.event-editor-modal-body .event-condition-row {
+  justify-content: start;
+}
+
+.event-editor-modal-body .event-condition-control {
+  gap: 2px 4px;
+}
+
+.event-condition-main {
+  display: grid;
+  gap: 2px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.event-condition-threshold {
+  justify-content: start;
+}
+
+.event-editor-modal-body .event-condition-control input,
+.event-editor-modal-body .event-condition-control select {
+  font: 400 12px/16px "Malgun Gothic", sans-serif;
+  height: 20px;
+  min-height: 20px;
+  min-width: 0;
+  padding-block: 0;
+  width: 100%;
+}
+
+.event-condition-label,
+.event-condition-suffix,
+.event-editor-modal-body label {
+  color: var(--event-rm-text);
+  font: 700 12px/16px "Malgun Gothic", sans-serif;
+}
+
+.event-condition-row > input[type="checkbox"] {
+  height: 12px;
+  margin: 0;
+  width: 12px;
+}
+
+.event-condition-row.disabled .event-condition-label,
+.event-condition-row.disabled .event-condition-suffix {
+  color: var(--event-rm-disabled);
+}
+
+.event-advanced-conditions {
+  border-top: 1px solid var(--event-rm-mid);
+  margin-top: 3px;
+  padding-top: 3px;
+}
+
+.event-advanced-conditions > summary {
+  color: var(--event-rm-text);
+  cursor: pointer;
+  font: 700 12px/16px "Malgun Gothic", sans-serif;
+  list-style-position: inside;
+  outline-offset: 2px;
+  width: max-content;
+}
+
+.event-advanced-conditions > summary:focus-visible {
+  outline: 1px dotted var(--accent);
+}
+
+.event-advanced-condition-list {
+  display: grid;
+  gap: 2px;
+  margin-top: 2px;
+}
+
+.event-advanced-condition-row {
+  align-items: center;
+  display: grid;
+  gap: 3px;
+  grid-template-columns: 76px minmax(0, 1fr) 46px;
+  max-width: 520px;
+  min-height: 20px;
+}
+
+.event-advanced-condition-control {
+  display: grid;
+  min-width: 0;
+}
+
+.event-advanced-condition-control.variable {
+  gap: 3px;
+  grid-template-columns: minmax(0, 1fr) 86px 48px;
+}
+
+.event-advanced-condition-control.timer {
+  align-items: center;
+  gap: 3px;
+  grid-template-columns: 78px 42px max-content 42px max-content;
+  justify-content: start;
+}
+
+.event-advanced-condition-row input,
+.event-advanced-condition-row select,
+.event-advanced-condition-add select {
+  font: 400 12px/16px "Malgun Gothic", sans-serif;
+  height: 20px;
+  min-height: 20px;
+  min-width: 0;
+  padding-block: 0;
+  width: 100%;
+}
+
+.event-advanced-condition-empty {
+  color: var(--event-rm-disabled);
+  font: 700 12px/16px "Malgun Gothic", sans-serif;
+}
+
+.event-advanced-condition-add {
+  display: grid;
+  gap: 3px;
+  margin-top: 3px;
+}
+
+/* 몸 크기와 통행 행 — 2차 스펙 §5. */
+.event-footprint-control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.event-footprint-body {
+  align-items: end;
+  display: grid;
+  gap: 6px 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.event-footprint-grid {
+  display: grid;
+  gap: 6px 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* 몸 사각 격자 + 실제 배율 스프라이트. 통행 행만 진하게 칠해 "발밑 한 줄만 막힘" 을 보인다. */
+.event-footprint-preview-host {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+.event-footprint-preview {
+  flex: none;
+  position: relative;
+}
+
+.event-footprint-preview-grid {
+  display: grid;
+  position: absolute;
+}
+
+.event-footprint-preview-cell {
+  border: 1px solid color-mix(in srgb, currentcolor 26%, transparent);
+  box-sizing: border-box;
+}
+
+.event-footprint-preview-cell[data-pass="true"] {
+  background: color-mix(in srgb, currentcolor 22%, transparent);
+}
+
+.event-footprint-preview-cell[data-anchor="true"] {
+  border-color: color-mix(in srgb, currentcolor 62%, transparent);
+}
+
+.event-footprint-preview-sprite {
+  image-rendering: pixelated;
+  position: absolute;
+}
+
+.event-footprint-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.event-footprint-field > span {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+.event-footprint-field input {
+  min-width: 0;
+  width: 100%;
+}
+
+.event-footprint-summary {
+  font-size: 11px;
+  line-height: 1.45;
+  margin: 0;
+  opacity: 0.85;
+}
+
+.event-footprint-scale {
+  align-items: end;
+  display: grid;
+  gap: 6px 10px;
+  grid-template-columns: minmax(0, 1fr) 96px;
+}
+
+.event-footprint-scale-manual {
+  align-items: center;
+  display: inline-flex;
+  gap: 5px;
+  min-height: 20px;
+  white-space: nowrap;
+}
+
+.event-footprint-control input:disabled {
+  opacity: 0.5;
+}
+
+.event-page-movement-basics {
+  display: grid;
+  gap: 5px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.event-page-movement-basics > select,
+.event-page-movement-label select {
+  width: 100%;
+}
+
+/* `.event-editor label { display: block }` (core.part-2.css:270) 은 특이도 (0,1,1) 이라
+   여태 이 규칙(0,1,0)을 이기고 있었다 — 라벨과 컨트롤이 의도와 달리 세로로 쌓여
+   행마다 높이를 두 배로 먹었다. `.event-editor` 를 앞에 붙여 실제로 적용시킨다. */
+.event-editor .event-page-movement-label,
+.event-page-movement-label {
+  align-items: center;
+  display: grid;
+  gap: 7px;
+  grid-template-columns: 62px minmax(0, 1fr);
+  margin-bottom: 0;
+}
+
+.event-page-custom-route {
+  justify-self: stretch;
+  min-height: 25px;
+}
+
+.event-page-living-route {
+  display: grid;
+  gap: 7px;
+  margin-top: 7px;
+  min-width: 0;
+}
+
+/* 233px 레일에서 minmax(148px) 는 1열로 접혀 항목 수만큼 세로로 쌓였다. 96px 는 2열을 남긴다. */
+.event-page-living-grid {
+  display: grid;
+  gap: 5px;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  min-width: 0;
+}
+
+.event-page-living-destination {
+  align-items: center;
+  display: grid;
+  gap: 5px;
+  grid-template-columns: minmax(0, max-content) minmax(0, 1fr) minmax(0, max-content);
+  min-width: 0;
+}
+
+.event-page-living-field-label {
+  color: var(--event-rm-text);
+  white-space: nowrap;
+}
+
+.event-page-living-destination select {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.event-page-living-pick {
+  min-height: 25px;
+  white-space: nowrap;
+}
+
+/* 좁은 창에서는 목적지 select 가 눌리므로 찍기 버튼을 아래 줄로 내린다. */
+@media (max-width: 900px) {
+  .event-page-living-destination {
+    grid-template-columns: minmax(0, max-content) minmax(0, 1fr);
+  }
+
+  .event-page-living-pick {
+    grid-column: 1 / -1;
+    justify-self: stretch;
+  }
+}
+
+.event-editor .event-page-living-grid .event-page-movement-label,
+.event-page-living-grid .event-page-movement-label {
+  grid-template-columns: minmax(38px, max-content) minmax(48px, 1fr);
+  min-width: 0;
+}
+
+/* 목적지 상세 한 줄: X·Y 는 숫자 두세 자리면 되고 방향 select 는 "왼쪽" 이 들어가야 한다.
+   auto-fit 균등 4열은 방향을 "아." 로 잘라먹었다 — 비율을 못박는다. */
+.event-page-living-detail {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 0.8fr);
+}
+
+.event-page-living-detail .event-page-movement-label {
+  gap: 5px;
+}
+
+.event-page-living-grid .event-page-movement-label > span {
+  overflow: visible;
+  white-space: nowrap;
+}
+
+.event-page-living-grid input[type="number"],
+.event-page-living-grid select {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.event-page-living-grid input[type="checkbox"] {
+  height: 16px;
+  justify-self: start;
+  margin: 0;
+  width: 16px;
+}
+
+.event-page-map-link-block {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.event-page-map-link-block:empty {
+  display: none;
+}
+
+/* 상태 한 줄 + (연결이 있을 때만) 편집 토글. 토글은 폭을 다 먹지 않는다 — 전폭 버튼은
+   그룹 전체의 본 행동처럼 읽히는데, 여기서 본 행동은 목적지 고르기다. */
+.event-page-map-link-status {
+  align-items: center;
+  border-top: 1px solid var(--event-rm-mid);
+  display: grid;
+  gap: 5px 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding-top: 7px;
+}
+
+.event-page-map-link-status-text {
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+
+.event-page-map-link-status.is-missing .event-page-map-link-status-text {
+  color: var(--danger);
+}
+
+.event-page-map-link-toggle {
+  justify-self: end;
+  min-height: 25px;
+  white-space: nowrap;
+}
+
+.event-page-map-link-panel {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.event-page-map-link-grid {
+  display: grid;
+  gap: 5px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-width: 0;
+}
+
+.event-page-map-link-wide {
+  grid-column: 1 / -1;
+}
+
+.event-editor .event-page-map-link-grid .event-page-movement-label {
+  grid-template-columns: minmax(44px, max-content) minmax(48px, 1fr);
+  min-width: 0;
+}
+
+.event-page-map-link-grid input[type="number"],
+.event-page-map-link-grid select {
+  min-width: 0;
+  width: 100%;
+}
+
+.event-page-map-link-grid input[type="checkbox"] {
+  height: 16px;
+  justify-self: start;
+  margin: 0;
+  width: 16px;
+}
+
+/* [hidden] 이 display:grid 에 지지 않도록 같은 특이도로 못박는다. */
+.event-page-map-link-panel[hidden] {
+  display: none;
+}
+
+.event-page-map-link-actions {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.event-page-map-link-add {
+  justify-self: stretch;
+  min-height: 25px;
+  white-space: nowrap;
+}
+
+.event-page-map-link-hint {
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+
+/* 사용자 지정 경로 되읽기: 왼쪽에 궤적 그림(클릭=편집), 오른쪽에 화살표 테이프 + 전체 라벨.
+   세로로 세 층을 쌓으면 궤적 박스가 남는 폭을 다 먹고 아래 두 줄을 밀어낸다. */
+.event-page-movement-route {
+  align-items: start;
+  column-gap: 8px;
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  margin-top: 6px;
+  min-width: 0;
+  row-gap: 4px;
+}
+
+.event-page-route-thumb {
+  background: var(--event-rm-field);
+  border: 1px solid var(--event-rm-mid);
+  border-radius: 4px;
+  cursor: pointer;
+  display: block;
+  grid-row: 1 / span 2;
+  min-width: 0;
+  padding: 4px;
+}
+
+.event-page-route-thumb:hover,
+.event-page-route-thumb:focus-visible {
+  border-color: var(--accent);
+}

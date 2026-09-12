@@ -3,7 +3,7 @@ import { equipmentSlotLabel } from "@/project/equipmentSlots";
 import type { ShopGoods } from "@/player/playSceneShopGoods";
 import type { ShopEquipmentPreview, ShopEquipmentEffect } from "@/player/shopEquipmentPreview";
 import { el } from "@/util/dom";
-import { keyHints } from "@/player/playSceneShopParts";
+import { detailStatGrid, keyHints } from "@/player/playSceneShopParts";
 import { SHOP_FOCUS_GROUP_KEY_LABEL, SHOP_DETAIL_SCROLL_KEY_LABEL, CANCEL_KEY_LABEL } from "@/player/keyBindings";
 
 const STAT_LABELS = { attack: "공격", defense: "방어", mind: "정신", agility: "민첩" } as const;
@@ -40,21 +40,27 @@ export function shopComparisonSummary(project: Project, preview: ShopEquipmentPr
     text: `현재 장비: ${equipmentName(project, preview.currentEquipment[preview.slot])}` }));
   if (preview.kind === "blocked") wrap.append(el("p", { class: "runtime-shop-preview-reason", text: REASONS[preview.reason],
     dataset: { testid: detail ? "shop-preview-reason" : "shop-summary-reason", reason: preview.reason }, attrs: { role: "status" } }));
-  const stats = el("div", { class: "runtime-shop-statgrid runtime-shop-comparison-stats" });
-  for (const stat of preview.stats) {
-    const next = "next" in stat ? stat.next : undefined;
-    const delta = "delta" in stat ? stat.delta : undefined;
-    stats.append(el("div", { class: `runtime-shop-stat${delta === undefined || delta === 0 ? " is-same" : delta > 0 ? " is-up" : " is-down"}`,
-      dataset: { testid: `${detail ? "shop-stat" : "shop-summary-stat"}-${stat.key}`, current: String(stat.current),
-        ...(next === undefined ? {} : { next: String(next), delta: String(delta) }) },
-      children: [el("span", { class: "runtime-shop-stat-key", text: STAT_LABELS[stat.key] }),
-        el("span", { class: "runtime-shop-stat-value", text: next === undefined ? String(stat.current) : `${stat.current} → ${next}` }),
-        ...(delta === undefined ? [] : [el("span", { class: "runtime-shop-stat-delta", text: signed(delta), attrs: { "data-delta-label": "" } })])],
-    }));
+  // 델타가 전부 0 이면 '53 → 53 +0' 격자는 자리만 차지하는 잡음 — 같은 장비·동률 장비는
+  // 문장 한 줄로 답한다(실측: 4행 격자가 상세 패널의 보유/장비 줄을 접힘선 밖으로 밀었다).
+  const anyDelta = preview.stats.some(stat => "delta" in stat && stat.delta !== 0);
+  if (preview.kind !== "ready" || anyDelta) {
+    const stats = el("div", { class: "runtime-shop-statgrid runtime-shop-comparison-stats" });
+    for (const stat of preview.stats) {
+      const next = "next" in stat ? stat.next : undefined;
+      const delta = "delta" in stat ? stat.delta : undefined;
+      stats.append(el("div", { class: `runtime-shop-stat${delta === undefined || delta === 0 ? " is-same" : delta > 0 ? " is-up" : " is-down"}`,
+        dataset: { testid: `${detail ? "shop-stat" : "shop-summary-stat"}-${stat.key}`, current: String(stat.current),
+          ...(next === undefined ? {} : { next: String(next), delta: String(delta) }) },
+        children: [el("span", { class: "runtime-shop-stat-key", text: STAT_LABELS[stat.key] }),
+          el("span", { class: "runtime-shop-stat-value", text: next === undefined ? String(stat.current) : `${stat.current} → ${next}` }),
+          ...(delta === undefined ? [] : [el("span", { class: "runtime-shop-stat-delta", text: signed(delta), attrs: { "data-delta-label": "" } })])],
+      }));
+    }
+    wrap.append(stats);
   }
-  wrap.append(stats);
   if (preview.kind !== "ready") return wrap;
   if (preview.sameEquipment) wrap.append(el("p", { class: "runtime-shop-same-equipment", text: "같은 장비 · 변화 없음" }));
+  else if (!anyDelta) wrap.append(el("p", { class: "runtime-shop-same-equipment", text: "능력치 변화 없음" }));
   if (!detail) return wrap;
   const displaced = el("section", { class: "runtime-shop-displaced", dataset: { testid: "shop-displaced" }, children: [el("h3", { text: "해제되는 장비" })] });
   for (const entry of preview.displaced) displaced.append(el("div", { text: `${equipmentName(project, entry.id)} ×${entry.count}`,
@@ -120,6 +126,10 @@ export function renderShopComparison(options: {
     scroll.append(choices("slot", target?.slots.map(slot => ({ id: slot.id, name: slot.label })) ?? [], preview.slot, options.onSlot));
   }
   scroll.append(shopComparisonSummary(project, preview, true));
+  // 순수 보너스(+8 공격 등)는 상세 뷰의 소관 — 목록 상세 카드에서는 비교 요약이 같은 슬롯을
+  // 덮어써 보이지 않던 표기였다.
+  const rawBonus = detailStatGrid(goods);
+  if (rawBonus) scroll.append(rawBonus);
   const close = el("button", { class: "runtime-shop-cancel runtime-shop-detail-close", text: "비교 닫기", dataset: { testid: "shop-detail-close" }, attrs: { type: "button" } });
   close.style.flexShrink = "0";
   close.addEventListener("click", options.onClose, { signal });

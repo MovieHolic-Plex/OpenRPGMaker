@@ -70,10 +70,12 @@ describe("facility furniture composition", () => {
       && y > room.y && y < room.y + room.h - 1)).toBe(true);
     for (let y = room.y; y < room.y + room.h; y += 1) {
       const upper = map.upperTiles[y * map.width + layout.door.x];
-      if (y === layout.door.y) expect(upper).toBe(176);
-      else expect(upper).toBeLessThan(0);
+      expect(upper).toBeLessThan(0);
       expect(isPassable(project, map, layout.door.x, y)).toBe(true);
     }
+    const openingY = layout.door.y + 1;
+    expect(map.upperTiles[openingY * map.width + layout.door.x]).toBe(176);
+    expect(isPassable(project, map, layout.door.x, openingY)).toBe(true);
   });
 
   it("preserves authored furniture omissions during lookup and subsequent construction", () => {

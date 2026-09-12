@@ -9,7 +9,7 @@
 
 import { digestOf } from "../interior/hash";
 import {
-  buildAframeRoofPrompt,
+  buildRoofDiagonalPrompt,
   buildAutotilePrompt,
   buildDoorPrompt,
   buildFencePrompt,
@@ -87,13 +87,13 @@ export const TOWN_TASKS: readonly TownTaskDef[] = Object.freeze([
     placement: "wallGrid" as const,
   }),
   Object.freeze({
-    id: "t8-aframe-roof",
+    id: "t8-roof-diagonal",
     titleKo: "지붕 대각 시공",
     kind: "layered" as const,
-    input: "aframeGrid" as const,
-    prompt: buildAframeRoofPrompt,
+    input: "roofGrid" as const,
+    prompt: buildRoofDiagonalPrompt,
     axis: "roofDiagonal" as const,
-    placement: "aframeGrid" as const,
+    placement: "roofGrid" as const,
   }),
   Object.freeze({
     id: "t9-door",

@@ -1,0 +1,113 @@
+/* map 표면 — shell/studio-bar.modern.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 map 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* shell/studio-bar.modern.css:618-626 */
+.canvas-toolbar {
+  align-items: center;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-pop);
+  gap: 4px;
+  padding: 5px;
+}
+
+/* shell/studio-bar.modern.css:628-639 */
+.canvas-toolbar .oprn-tool-button,
+.canvas-toolbar .canvas-toolbar-expand {
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-s);
+  box-shadow: none;
+  color: var(--text-1);
+  font: 600 12.5px/1 var(--font-ui);
+  height: 32px;
+  min-width: 32px;
+  padding: 0 8px;
+}
+
+/* shell/studio-bar.modern.css:641-648 */
+.canvas-toolbar .oprn-tool-button:hover:not(:disabled),
+.canvas-toolbar .oprn-tool-button:focus-visible,
+.canvas-toolbar .canvas-toolbar-expand:hover,
+.canvas-toolbar .canvas-toolbar-expand:focus-visible {
+  background: var(--bg-hover);
+  border-color: transparent;
+  outline: none;
+}
+
+/* shell/studio-bar.modern.css:650-653 */
+.canvas-toolbar .zoom-stepper-current {
+  background: var(--bg-inset);
+  min-width: 44px;
+}
+
+/* shell/studio-bar.modern.css:655-658 */
+.canvas-toolbar .zoom-stepper-btn {
+  color: var(--text-2);
+  font-size: 15px;
+}
+
+/* shell/studio-bar.modern.css:660-665 */
+.canvas-toolbar .oprn-tool-button.active,
+.canvas-toolbar .oprn-tool-button[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: transparent;
+  color: var(--on-accent);
+}
+
+/* shell/studio-bar.modern.css:667-671 */
+.canvas-toolbar .canvas-toolbar-save-group {
+  border-left: 1px solid var(--border-subtle);
+  margin-left: 2px;
+  padding-left: 6px;
+}
+
+/* shell/studio-bar.modern.css:673-678 */
+.canvas-toolbar .canvas-ai-workbench {
+  border-left: 1px solid var(--border-subtle);
+  gap: 2px;
+  margin-left: 2px;
+  padding-left: 6px;
+}
+
+/* shell/studio-bar.modern.css:680-688 */
+.canvas-toolbar .canvas-ai-action {
+  border: 0;
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font: 600 12.5px/1 var(--font-ui);
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 9px;
+}
+
+/* shell/studio-bar.modern.css:690-692 */
+.canvas-toolbar .canvas-ai-action svg {
+  color: var(--text-2);
+}
+
+/* shell/studio-bar.modern.css:694-697 */
+.canvas-toolbar .canvas-ai-action:hover {
+  background: var(--bg-hover);
+  border-color: transparent;
+}
+
+/* shell/studio-bar.modern.css:699-703 */
+.canvas-toolbar .canvas-ai-action.is-ask {
+  background: var(--accent-muted);
+  border: 0;
+  color: var(--accent);
+}
+
+/* shell/studio-bar.modern.css:705-707 */
+.canvas-toolbar .canvas-ai-action.is-ask svg {
+  color: var(--accent);
+}
+
+/* shell/studio-bar.modern.css:709-711 */
+.canvas-toolbar .canvas-ai-action.is-ask:hover {
+  background: var(--accent-border);
+}

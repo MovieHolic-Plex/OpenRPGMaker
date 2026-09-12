@@ -250,10 +250,6 @@
   font-size: 13px !important;
 }
 
-.battle-scene[data-battle-skin="vxace"] .battle-command-text small {
-  font-size: 11px !important;
-}
-
 .battle-scene[data-battle-skin="vxace"] .battle-command-text,
 .battle-scene[data-battle-skin="vxace"] .battle-command-text strong {
   color: #fff !important;

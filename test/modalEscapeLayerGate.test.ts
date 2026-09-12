@@ -2,7 +2,7 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { showNewProjectDialog } from "@/editor/panels/newProjectDialog";
+import { NEW_PROJECT_DIALOG_TESTIDS, showNewProjectDialog } from "@/editor/ui/newProjectDialog";
 import { openWorldPanel } from "@/editor/panels/worldPanel";
 import { requestDatabaseModalClose } from "@/editor/panels/databaseModal";
 import { store } from "@/project/store";
@@ -34,6 +34,7 @@ const EXEMPT: Readonly<Record<string, string>> = {
   "coachMarks.ts": "온보딩 코치마크 — 포인터 상호작용으로만 사라진다",
   "layoutBboxOverlay.ts": "디버그 계측 오버레이 — 사용자 입력을 받지 않는다",
   "panels/eventListHoverTooltip.ts": "hover 툴팁 — 포인터를 떼면 사라진다",
+  "delayedTooltip.ts": "공통 지연 툴팁 — pointer-events:none 이고 포인터를 떼거나 blur 하면 사라진다. Escape 는 툴팁만 닫고 그 자리에서 stopPropagation 하지 않으므로 위 모달의 취소 키를 훔치지 않는다",
   "panels/editorZoomToolbar.ts": "상시 표시 툴바 — 닫는 개념이 없다",
   "panels/editActivityPanel.ts": "상시 표시 패널 — 닫는 개념이 없다",
   "panels/canvasInspectionPanel.ts": "상시 표시 진단 패널 — 닫는 개념이 없다",
@@ -96,19 +97,19 @@ describe("Escape 계층 게이트", () => {
     document.body.append(bottom);
     let bottomClosed = false;
     registerModal(bottom, () => { bottomClosed = true; bottom.remove(); });
-    const pending = showNewProjectDialog("fixture-title");
+    const pending = showNewProjectDialog({ defaultValue: "fixture-title" });
     expect(modalStackEntryCountForTest()).toBe(2);
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
     await expect(pending).resolves.toBeNull();
     expect(bottomClosed).toBe(false);
     expect(modalStackEntryCountForTest()).toBe(1);
-    expect(document.querySelector('[data-testid="new-project-modal"]')).toBeNull();
+    expect(document.querySelector(`[data-testid="${NEW_PROJECT_DIALOG_TESTIDS.host}"]`)).toBeNull();
   });
 
   it("new-project confirmation unregisters its layer without cancelling the selection", async () => {
-    const pending = showNewProjectDialog("fixture-title");
-    document.querySelector<HTMLButtonElement>('[data-testid="new-project-confirm"]')?.click();
-    await expect(pending).resolves.toEqual({ title: "fixture-title", starter: { kind: "blank" } });
+    const pending = showNewProjectDialog({ defaultValue: "fixture-title" });
+    document.querySelector<HTMLButtonElement>(`[data-testid="${NEW_PROJECT_DIALOG_TESTIDS.confirm}"]`)?.click();
+    await expect(pending).resolves.toEqual({ title: "fixture-title", choiceId: null });
     expect(modalStackEntryCountForTest()).toBe(0);
   });
 

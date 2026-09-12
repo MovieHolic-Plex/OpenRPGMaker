@@ -6,16 +6,26 @@ import { overviewDesign, resolveOverviewEndpoint } from "@/project/spatial/overv
 import { occurrenceSubtree } from "@/project/spatial/ownership";
 import type { SpatialConnection, SpatialPoint } from "@/project/spatial/types";
 import type { Project } from "@/project/types";
+import { ToolError } from "../tools/types";
 import { spatialRasterDigest } from "./compilerValidation";
 import { SpatialCompileError, type SpatialCompileContext } from "./compilerTypes";
 import { compileGeographyEntries, releaseGeographyEntries } from "./geographyEntries";
-import { geographyTerrain, paintGeographyRoute } from "./geographyTerrain";
+import { geographyTerrain, paintGeographyRoute, settlementTerrain } from "./geographyTerrain";
+import { settlementVillageBuild } from "./settlementVillageBuild";
 import { validateOverviewAccess } from "./overviewEntries";
+
+/** 마을 시공이 맵에 남기는 이벤트 접두사 — 재시공 전 이전 시공분을 걸러 멱등을 지킨다. */
+const VILLAGE_EVENT_PREFIXES = ["ev_village_", "ev_house_door", "ev_house_exit", "ev_entrance_", "ev_exit_"];
+
+function isVillageBuiltEventId(eventId: string): boolean {
+  return VILLAGE_EVENT_PREFIXES.some((prefix) => eventId.startsWith(prefix));
+}
 
 /** Shared bounded raster/association assembly; callers select the actual child compiler. */
 export function compileGeography(context: SpatialCompileContext, compileChild: (context: SpatialCompileContext) => Project): Project {
   const { occurrence } = context;
   const design = overviewDesign(occurrence);
+  const settlement = "settlement" in design ? design.settlement : undefined;
   const members = new Set(occurrenceSubtree(context.document, occurrence.id));
   const connectionOrder = new Map(context.project.mapConnections?.map((link, index) => [link.id, index]));
   const eventOrder = new Map(Object.values(context.project.maps).map(map => [map.id, new Map(map.events.map((event, index) => [event.id, index]))]));
@@ -45,7 +55,12 @@ export function compileGeography(context: SpatialCompileContext, compileChild: (
   if (occurrence.bindings.length && (occurrence.bindings.length !== 1 || !binding || binding.mapId !== id)) {
     throw new SpatialCompileError("ownership", occurrence.id);
   }
-  const raster = geographyTerrain(context.project, design.terrain, { id, name: design.name });
+  if (settlement && localRoutes.length > 0) {
+    throw new SpatialCompileError("connection", `${id}: 정주지 지역의 길은 마을 시공이 그린다 — 지역 routes는 비워야 한다`);
+  }
+  const raster = settlement
+    ? settlementTerrain(context.project, design.terrain, { id, name: design.name })
+    : geographyTerrain(context.project, design.terrain, { id, name: design.name });
   for (const [index, link] of links.entries()) {
     const local = localRoutes[index];
     if (!local) throw new TypeError("Missing frozen route");
@@ -73,10 +88,23 @@ export function compileGeography(context: SpatialCompileContext, compileChild: (
     if (!project.spatialAuthoring) throw new TypeError("Child compiler lost document");
     document = project.spatialAuthoring;
   }
-  const { lowerTileStacks: _lower, upperTileStacks: _upper, ...retained } = previous ?? raster;
-  const map = { ...retained, tilesetId: raster.tilesetId, lowerTiles: raster.lowerTiles, upperTiles: raster.upperTiles, events: [...retained.events] };
+  const { lowerTileStacks: _lower, upperTileStacks: _upper, layoutPlan: retainedPlan, ...retained } = previous ?? raster;
+  // 정주지 재시공 땐 이전 village-harness 플랜을 버린다 — protectedHouseCells가 그걸 읽어
+  // 집 보호 셀로 막으면 재시공 배치가 갈려 멱등이 깨진다. 시공기가 새 플랜을 다시 쓴다.
+  const keepPlan = retainedPlan !== undefined && !(settlement !== undefined && retainedPlan.kind?.startsWith("village-harness"));
+  const map = { ...retained, ...(keepPlan ? { layoutPlan: retainedPlan } : {}),
+    tilesetId: raster.tilesetId, lowerTiles: raster.lowerTiles, upperTiles: raster.upperTiles,
+    events: retained.events.filter((event) => settlement === undefined || !isVillageBuiltEventId(event.id)) };
   project.maps[id] = map;
   if (!containsMap(project.mapTree, id)) appendToTree(project.mapTree, id);
+  if (settlement) {
+    try {
+      settlementVillageBuild(project, { mapId: id, presetId: settlement.presetId, seed: settlement.seed, interior: false });
+    } catch (error) {
+      if (error instanceof ToolError) throw new SpatialCompileError("material", `${id}: ${error.message}`);
+      throw error;
+    }
+  }
   const compiled = compileGeographyEntries(project, document, { ownerId: occurrence.id, map, targets, previous: released.previous });
   const extent = { mapId: id, rect: { x: 0, y: 0, width: map.width, height: map.height },
     ports: occurrence.snapshot.ports.map(port => ({ portId: port.id, x: port.x, y: port.y })),

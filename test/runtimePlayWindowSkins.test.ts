@@ -103,8 +103,9 @@ describe("runtime play window skins — 전투 크롬", () => {
     // System2 는 이 파일에서 쓰지 않는다.
     expect(contract).not.toContain("--runtime-battle-system2");
 
-    const index = read("src/styles/runtime/battle-skins/index.css");
-    const imports = [...index.matchAll(/@import "\.\/(_[a-z]+)\.css";/g)].map((match) => match[1]);
+    // 배럴 battle-skins/index.css 는 사라졌다(2026-09-11 Task 7). 진입 시트 runtime/index.css 의 battle-skins/ 구간이 순서다.
+    const index = read("src/styles/runtime/index.css");
+    const imports = [...index.matchAll(/@import "\.\/battle-skins\/(_[a-z]+)\.css" layer\(runtime\);/g)].map((match) => match[1]);
     // 계약 파일이 마지막이어야 스킨 파셜의 하드코드 창 표면을 이긴다.
     expect(imports.at(-1)).toBe("_windowskin");
   });

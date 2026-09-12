@@ -1,0 +1,910 @@
+/* event 표면 — shell.css. 규칙 순서는 2026-09 세대 접기 전 유효 순서(event/index.css 평탄 순서)를 보존한다. */
+
+/* event 표면 — editor/core.part-2.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 event 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+/* editor/core.part-2.css:135-143 */
+.event-editor label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-dim, unset);
+  margin-bottom: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* editor/core.part-2.css:144-157 */
+.event-editor input[type="text"],
+.event-editor input[type="number"],
+.event-editor select,
+.event-editor textarea {
+  width: 100%;
+  background: var(--bg, unset);
+  color: var(--text, unset);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, var(--radius-s));
+  padding: 5px 8px;
+  font-size: 13px;
+  font-family: inherit;
+  transition: border-color 0.1s;
+}
+
+/* editor/core.part-2.css:158-163 */
+.event-editor input:focus,
+.event-editor textarea:focus,
+.event-editor select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* editor/core.part-2.css:164-167 */
+.event-editor textarea {
+  resize: vertical;
+  min-height: 54px;
+}
+
+/* event 표면 — editor/palette-player.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 event 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+/* editor/palette-player.css:9-11 */
+.event-editor-modal-backdrop {
+  place-items: center;
+}
+
+/* editor/palette-player.css:13-16 */
+.event-editor-modal-window {
+  flex-direction: column;
+  width: min(900px, calc(100vw - 32px));
+}
+
+/* editor/palette-player.css:18-21 */
+.event-editor-modal-header {
+  top: 0;
+  justify-content: space-between;
+}
+
+/* editor/palette-player.css:23-25 */
+.event-editor-modal-header h2 {
+  font-size: 16px;
+}
+
+/* editor/palette-player.css:27-31 */
+.event-editor-modal-header p {
+  margin: 2px 0 0;
+  color: var(--text-dim, unset);
+  font-size: 12px;
+}
+
+/* editor/palette-player.css:37-42 */
+.event-editor-page-header {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: minmax(120px, 1fr) auto;
+  margin-bottom: var(--space-2);
+}
+
+/* editor/palette-player.css:408-412 */
+@media (max-width: 960px) {
+  .event-editor-page-header,
+    .event-editor-workbench,
+    .event-command-picker-grid {
+      grid-template-columns: 1fr;
+    }
+}
+
+.tileset-db-preview-scale button.scroll {
+  font-family: var(--font-mono);
+  min-width: 24px;
+  padding: 0 5px;
+}
+
+/* event 표면 — database/tabs-b-resource-manager.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 event 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+/* database/tabs-b-resource-manager.css:108-112 — [레이어 보존] 범용 .btn.small(0,2,0) — 오늘 이기던 button.btn/.event-editor-modal-window button(0,1,1) 과 같은 레이어여야 특이도로 계속 이긴다(샷 DOM 실측) */
+.btn.small {
+  font-size: 10px;
+  padding: 3px 6px;
+  flex: 1;
+}
+
+.event-subdialog-backdrop[data-testid="event-page-move-route-dialog"] .event-subdialog-close {
+  background: transparent;
+}
+
+.event-page-move-route-command:active,
+.event-page-move-route-utility:active,
+.event-page-move-route-footer-button:active {
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+}
+
+.event-editor-modal-backdrop {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.event-editor-modal-window {
+  --event-rm-chrome: var(--bg-raised);
+  --event-rm-face: var(--bg-surface);
+  --event-rm-field: var(--bg-inset);
+  --event-rm-text: var(--text-1);
+  --event-rm-disabled: var(--text-3);
+  --event-rm-light: var(--border-strong);
+  --event-rm-mid: var(--border-default);
+  --event-rm-shadow: var(--border-subtle);
+  border-color: rgba(42,37,33,.12) var(--accent-border) var(--accent-border) rgba(42,37,33,.12);
+  border-style: solid;
+  border-width: 2px;
+  height: min(936px, calc(100vh - 12px));
+  height: min(936px, calc(100dvh - 12px));
+  max-height: calc(100vh - 12px);
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.event-editor-modal-header {
+  touch-action: none;
+  user-select: none;
+}
+
+.event-editor-modal-window.resizing,
+.event-editor-modal-window.resizing * {
+  cursor: nwse-resize;
+  user-select: none;
+}
+
+.event-editor-modal-header > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.event-editor-modal-header h2 {
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.event-editor-modal-header p {
+  display: none;
+}
+
+.event-editor-modal-header .event-editor-modal-close.btn,
+.event-editor-modal-close {
+  background:
+    linear-gradient(180deg, var(--bg-surface), var(--bg-surface) 36%),
+    linear-gradient(180deg, var(--bg-surface), var(--bg-surface));
+  border-color: var(--border-default) var(--border-default) var(--border-default) var(--border-default);
+  border-radius: 4px;
+  border-style: solid;
+  border-width: 1px;
+  color: var(--text-1);
+  font: 700 18px/20px sans-serif;
+  height: 23px;
+  min-height: 23px;
+  min-width: 27px;
+  padding: 0;
+  text-shadow: 1px 1px 0 var(--shadow-pop);
+  width: 27px;
+}
+
+.event-editor-modal-body {
+  border-color: var(--event-rm-light) var(--event-rm-mid) var(--event-rm-mid) var(--event-rm-light);
+  border-style: solid;
+  border-width: 1px;
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.event-editor-modal-dynamic .event-editor {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.event-editor-modal-stable,
+.event-editor-modal-body .event-editor-stable,
+.event-editor-id-row {
+  display: none;
+}
+
+.event-editor-modal-body input:disabled,
+.event-editor-modal-body select:disabled,
+.event-editor-modal-body textarea:disabled {
+  background-color: var(--bg-raised);
+  color: var(--event-rm-disabled);
+}
+
+.event-editor-workbench {
+  --event-editor-settings-track: 540px;
+}
+
+.event-editor-column-resizer:hover::before,
+.event-editor-column-resizer.dragging::before {
+  background:
+    linear-gradient(90deg, var(--event-rm-light) 0 1px, transparent 1px 3px, var(--accent) 3px 4px),
+    var(--event-rm-chrome);
+}
+
+.event-editor-modal-window {
+  min-width: 0;
+}
+
+@media (max-width: 1488px) {
+  .event-editor-modal-window {
+    height: min(936px, calc(100vh - 12px));
+    min-height: 0;
+  }
+
+  .event-editor-top-strip {
+    gap: 10px;
+    grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  }
+
+  .event-editor-workbench {
+    --event-editor-settings-track: minmax(420px, 0.92fr);
+    grid-template-columns: var(--event-editor-settings-track) 8px minmax(0, 1.08fr);
+  }
+}
+
+.event-command-edit-action:active {
+  border-color: var(--event-rm-shadow) var(--event-rm-light) var(--event-rm-light) var(--event-rm-shadow);
+}
+
+.event-condition-id-picker .btn.small {
+  font: 700 11px/16px "Malgun Gothic", sans-serif;
+  padding-inline: 0;
+}
+
+.event-advanced-condition-row .btn.small,
+.event-advanced-condition-add .btn.small {
+  font: 700 11px/16px "Malgun Gothic", sans-serif;
+  min-height: 20px;
+  padding-inline: 5px;
+}
+
+.event-subdialog-backdrop[data-testid="event-graphic-dialog"] .event-subdialog-close {
+  background: transparent;
+}
+
+.event-subdialog-backdrop[data-testid="event-graphic-dialog"] .event-graphic-picker-footer .btn:active {
+  border-color: var(--event-rm-shadow) var(--event-rm-light) var(--event-rm-light) var(--event-rm-shadow);
+}
+
+@media (max-width: 1488px) {
+  .event-editor-modal-backdrop {
+    justify-content: start;
+    justify-items: start;
+  }
+}
+
+@media (max-width: 1488px) and (max-height: 840px) {
+  .event-editor-modal-body {
+    padding: 6px 7px 4px;
+  }
+
+  .event-editor-modal-dynamic .event-editor {
+    gap: 4px;
+  }
+
+  .event-editor-top-strip {
+    min-height: 42px;
+  }
+  .event-priority-block {
+    gap: 2px;
+  }
+}
+
+.event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] .event-subdialog-close {
+  background: var(--bg-raised);
+}
+
+.transfer-player-zoom-button.active {
+  background: color-mix(in srgb, var(--accent-soft, #dbeafe) 78%, var(--bg-raised));
+}
+
+@media (max-width: 1240px) {
+  .event-editor-modal-body {
+    padding: 6px 7px 5px;
+  }
+
+  .event-editor-modal-dynamic .event-editor {
+    gap: 4px;
+  }
+
+  .event-editor-top-strip {
+    gap: 8px;
+    grid-template-columns: minmax(300px, 350px) minmax(0, 1fr);
+    min-height: 42px;
+  }
+
+  .event-editor-workbench {
+    --event-editor-settings-track: minmax(430px, 0.9fr);
+    gap: 6px;
+    grid-template-columns: var(--event-editor-settings-track) 8px minmax(0, 1.1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .event-editor-modal-backdrop {
+    justify-content: center;
+    justify-items: center;
+    padding: 4px;
+  }
+
+  .event-editor-modal-window {
+    grid-template-rows: 31px minmax(0, 1fr) auto;
+    max-height: calc(100vh - 8px);
+    max-height: calc(100dvh - 8px);
+    max-width: calc(100vw - 8px);
+    width: calc(100vw - 8px);
+  }
+
+  .event-editor-modal-header h2 {
+    font-size: 14px;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .event-editor-modal-body {
+    overflow: auto;
+    padding: 5px;
+  }
+
+  .event-editor-modal-dynamic,
+  .event-editor-modal-dynamic .event-editor {
+    height: auto;
+  }
+
+  .event-editor-modal-dynamic .event-editor {
+    grid-template-rows: auto auto auto;
+    min-height: 100%;
+  }
+
+  .event-editor-top-strip {
+    gap: 4px;
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+  }
+
+  .event-editor-workbench {
+    --event-editor-settings-track: minmax(300px, 0.82fr);
+    gap: 5px;
+    grid-template-columns: var(--event-editor-settings-track) 6px minmax(0, 1.18fr);
+    grid-template-rows: minmax(0, 1fr);
+  }
+}
+
+.event-subdialog-close,
+.event-subdialog-backdrop[data-testid="event-page-move-route-dialog"] .event-subdialog-close,
+.event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] .event-subdialog-close,
+.event-subdialog-backdrop[data-testid="event-graphic-dialog"] .event-subdialog-close {
+  align-items: center;
+  background: color-mix(in srgb, var(--surface-button, var(--bg-raised)) 92%, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 6px;
+  box-shadow: 0 1px 2px var(--shadow-pop);
+  color: var(--text-muted, var(--text-2));
+  display: inline-flex;
+  font: 700 14px/1 Inter, "Segoe UI", system-ui, sans-serif;
+  height: 28px;
+  justify-content: center;
+  min-height: 28px;
+  min-width: 28px;
+  padding: 0;
+}
+
+.event-subdialog-body .btn:hover,
+.event-command-edit-action:hover,
+.event-command-picker-cancel:hover,
+.event-page-move-route-command:hover,
+.event-page-move-route-utility:hover,
+.event-page-move-route-footer-button:hover,
+.transfer-player-zoom-button:hover,
+.transfer-player-button:hover,
+.event-subdialog-backdrop[data-testid="event-graphic-dialog"] .event-graphic-picker-footer .btn:hover {
+  background: color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 72%, var(--bg-raised));
+  border-color: color-mix(in srgb, var(--accent, var(--accent-border)) 58%, var(--border, var(--border-default)));
+}
+
+.event-editor-modal-backdrop,
+.event-editor-modal-backdrop.event-editor-modal-backdrop {
+  align-content: stretch;
+  align-items: stretch;
+  display: grid;
+  inset: 0;
+  justify-content: stretch;
+  justify-items: stretch;
+  overflow: hidden;
+  position: fixed;
+  z-index: 1000;
+}
+
+body.event-editor-modal-open {
+  overflow: hidden;
+}
+
+body.event-editor-modal-open .coach-mark-card {
+  display: none;
+}
+
+.event-editor-modal-window {
+  --event-modern-accent: var(--accent);
+  --event-modern-accent-soft: var(--accent-muted);
+  --event-modern-border: var(--border-subtle);
+  --event-modern-border-strong: var(--border-strong);
+  --event-modern-card: var(--bg-raised);
+  --event-modern-field: var(--bg-inset);
+  --event-modern-field-muted: var(--bg-surface);
+  --event-modern-line: var(--border-default);
+  --event-modern-success: var(--success);
+  --event-modern-text: var(--text-1);
+  --event-modern-text-soft: var(--text-2);
+  box-sizing: border-box;
+  display: grid;
+  height: min(88dvh, 820px);
+}
+
+.event-editor-modal-header {
+  color: var(--text-1);
+  cursor: default;
+}
+
+.event-editor-modal-window.dragging .event-editor-modal-header {
+  cursor: default;
+}
+
+.event-editor-window-title {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  justify-content: center;
+  min-width: 0;
+}
+
+.event-editor-modal-header h2 {
+  color: var(--text-1);
+  font: 700 20px/1.2 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: none;
+  white-space: nowrap;
+}
+
+.event-editor-window-eyebrow {
+  color: var(--text-2);
+  font: 600 10px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.event-editor-window-control,
+.event-editor-modal-header .event-editor-modal-close {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+  box-shadow: none;
+  color: var(--text-1);
+  display: inline-flex;
+  font: 500 18px/1 "Segoe UI", system-ui, sans-serif;
+  height: 32px;
+  justify-content: center;
+  min-height: 32px;
+  min-width: 36px;
+  padding: 0;
+  text-shadow: none;
+  width: 36px;
+}
+
+.event-editor-window-control:hover,
+.event-editor-modal-header .event-editor-modal-close:hover {
+  background: var(--bg-raised);
+}
+
+.event-editor-modal-body {
+  border: 0;
+}
+
+.event-editor-modal-window,
+.event-editor-modal-window * {
+  overflow-wrap: normal;
+  word-break: keep-all;
+}
+
+.event-editor-modal-dynamic .event-editor {
+  min-width: 0;
+}
+
+.event-editor-modal-body input[type="checkbox"] {
+  accent-color: var(--event-modern-accent);
+  box-shadow: none;
+  height: 18px;
+  min-height: 18px;
+  padding: 0;
+  width: 18px;
+}
+
+.event-editor-workbench {
+  /* 이 페이지가 하는 일 쪽 비중을 조금 더 줘서 짧은 스크립트에서도 리스트 면적을 확보 */
+  --event-editor-settings-track: clamp(320px, 36vw, 540px);
+  display: grid;
+  gap: 6px;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.event-editor-column-resizer {
+  background:
+    linear-gradient(90deg, transparent 0 4px, var(--event-modern-line) 4px 6px, transparent 6px 10px),
+    linear-gradient(90deg, transparent 0 1px, var(--bg-surface) 1px 9px, transparent 9px);
+  border-radius: 5px;
+  cursor: col-resize;
+  min-height: 0;
+  position: relative;
+  touch-action: none;
+  width: 10px;
+}
+
+.event-editor-column-resizer::before {
+  background:
+    radial-gradient(circle, var(--event-modern-text-soft) 0 1px, transparent 1.5px) center 42% / 4px 8px repeat-y;
+  content: "";
+  inset: 0;
+  opacity: 0.45;
+  position: absolute;
+}
+
+.event-editor-column-resizer:hover,
+.event-editor-column-resizer:focus-visible,
+.event-editor-column-resizer.dragging {
+  background:
+    linear-gradient(90deg, transparent 0 3px, var(--event-modern-accent) 3px 7px, transparent 7px 10px),
+    var(--event-modern-accent-soft);
+  outline: 0;
+}
+
+.event-editor-column-resizer:hover::before,
+.event-editor-column-resizer:focus-visible::before,
+.event-editor-column-resizer.dragging::before {
+  opacity: 0.9;
+}
+
+.event-editor-footer-leading {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.event-editor-lifecycle-status {
+  align-items: center;
+  flex-direction: row;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.event-editor-remote-status {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.event-editor-remote-status::before {
+  color: var(--event-modern-text-soft, var(--text-2));
+  content: "·";
+  margin-right: 8px;
+}
+
+.event-editor-draft-status {
+  font: 500 12px/1.35 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-editor-footer-actions {
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+}
+
+@media (max-width: 720px) {
+  .event-editor-workbench {
+    grid-template-rows: minmax(220px, 1fr) auto;
+  }
+  .event-editor-column-resizer {
+    display: none;
+  }
+}
+
+/* cream studio */
+:root {
+  /* Six coordinated families keep related commands together while category badges
+     provide the second, non-color cue. Values stay dark enough on the cream UI. */
+  /* 분류색 6종(2026-09-03 제안서 §13). 대화·흐름·보상·시스템은 토큰을 그대로 쓰고, 지도·화면만
+     고유색이다. 소리는 화면과, 전투·동료·도구는 시스템과 같은 색 — 막대·아이콘·팔레트 칩에만 쓰고
+     텍스트에는 쓰지 않는다(대비). 여섯 색 모두 순백 위 4.5:1 이상. */
+  --cmdcat-dialogue: var(--accent);
+  --cmdcat-flow: var(--warning);
+  --cmdcat-map: #0F7490;
+  --cmdcat-reward: var(--success);
+  --cmdcat-sound: var(--cmdcat-screen);
+  --cmdcat-actor: var(--cmdcat-system);
+  --cmdcat-screen: #7A3E9D;
+  --cmdcat-system: var(--text-3);
+  --cmdcat-battle: var(--cmdcat-system);
+  --cmdcat-modern: var(--cmdcat-system);
+}
+
+/* 승인된 목업(v1/v2)에 맞춘 이벤트 에디터 셸.
+ *
+ * 스코프: 이벤트 에디터 모달 내부(.event-editor)만. 에디터 전역 토큰은 건드리지 않는다.
+ * DOM 변경은 페이지 탭에 이름/조건 요약 span 을 추가한 것뿐이고, 나머지는 전부 재배치다.
+ */
+.event-editor {
+  /* ── 목업 토큰 ── */
+  /* 액센트는 셸 토큰 하나로 통일한다 (DESIGN.md: 인디고 #4A57D6 단일 액센트).
+   * 목업 시절의 황동은 푸터 기본 버튼과 나란히 놓이면 액센트가 둘로 보였다. */
+  --mk-accent: var(--accent);
+  --mk-accent-ink: var(--on-accent);
+  --mk-accent-wash: var(--accent-muted);
+  --mk-line: rgba(42,37,33,.12);
+  --mk-line-soft: rgba(42,37,33,.06);
+  --mk-surface: var(--bg-surface);
+  --mk-raised: var(--bg-raised);
+  --mk-inset: var(--bg-inset);
+  --mk-t1: var(--text-1);
+  --mk-t2: var(--text-2);
+  --mk-t3: #626b7d;
+  --mk-cat-flow: #d95926; /* 흐름·분기 마커 (§3.2) */
+  --mk-radius: 6px;
+  --mk-mono: var(--font-mono);
+}
+
+/* ── 우측 인라인 인스펙터 ────────────────────────────────────────── */
+.event-editor .event-editor-workbench {
+  position: relative;
+}
+
+/* 더 좁은 뷰포트(900px 이하)에서 4컬럼 붕괴 방지 — 2행 스택 폴백 */
+@media (max-width: 900px) {
+  .event-editor .event-editor-workbench {
+    grid-template-rows: auto auto;
+  }
+}
+
+/* 그리드 기본 align-content 는 stretch 라 auto 행들이 남는 높이를 나눠 갖는다.
+ * 그래서 탭·이름·ID 행 사이에 수백 px 빈 칸이 생겼다. 행은 내용 높이로 두고
+ * 남는 공간은 워크벤치가 갖게 한다. */
+.event-editor {
+  align-content: start;
+  grid-auto-rows: min-content;
+}
+
+/* 번호 탭이 상단 스트립으로 나간 뒤, top-strip 안의 .event-page-tabs 는
+ * 액션 버튼(새 페이지/페이지 복사)만 남는데 옛 높이를 유지해 235px 빈 칸이 됐다. */
+.event-editor .event-editor-top-strip {
+  align-items: center;
+  border-top: 1px solid var(--mk-line-soft);
+  background: color-mix(in srgb, var(--mk-surface) 96%, transparent);
+  padding-top: 6px;
+  margin-top: 2px;
+}
+
+/* 기존 정의는 .event-editor-modal-dynamic .event-editor 에
+ * grid-template-rows: auto auto minmax(0,1fr) — 자식 3개(top-strip/id-row/workbench)
+ * 기준이다. 목업 배치로 자식이 6개가 되면서 행 배분이 깨져 200~350px 빈 칸이 생겼다.
+ * 같은 스코프에서 flex column 으로 바꿔 행 높이를 내용에 맡긴다. */
+.event-editor-modal-dynamic .event-editor {
+  flex-direction: column;
+}
+
+.event-editor-modal-dynamic .event-editor > .event-editor-workbench {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.event-editor .event-editor-command-header > .event-contents-legend {
+  margin: 0;
+  color: var(--mk-t1);
+  white-space: nowrap;
+}
+
+.event-editor .event-editor-command-edit-menu {
+  position: relative;
+  order: 2;
+}
+
+/* 이벤트 에디터 창 모드와 작업 영역 분할선. event-editor.mockup.css 뒤에서 최종 기하를 소유한다. */
+.event-editor-modal-header > .event-editor-window-controls,
+.event-editor-window-controls {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 4px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.event-editor-window-control {
+  white-space: nowrap;
+}
+
+.event-editor-modal-header .event-editor-window-fullscreen {
+  font-size: 17px;
+  line-height: 1;
+}
+
+.event-editor-modal-backdrop.event-editor-modal-backdrop.is-fullscreen {
+  backdrop-filter: blur(2px);
+  padding: 6px;
+}
+
+.event-editor-modal-window.is-fullscreen {
+  border-radius: 4px;
+  border-width: 0;
+  box-shadow: none;
+  height: calc(100vh - 12px);
+  height: calc(100dvh - 12px);
+  max-height: none;
+  max-width: none;
+  place-self: stretch;
+  width: calc(100vw - 12px);
+}
+
+.event-editor-modal-window.is-fullscreen .event-editor-modal-header {
+  cursor: default;
+}
+
+.event-editor .event-editor-column-resizer {
+  align-self: stretch;
+  background:
+    linear-gradient(90deg, transparent 0 5px, var(--mk-line, var(--border-default)) 5px 7px, transparent 7px),
+    var(--mk-surface, var(--bg-surface));
+  border-radius: 0;
+  cursor: col-resize;
+  min-height: 0;
+  touch-action: none;
+  transition: background-color 120ms ease;
+}
+
+.event-editor .event-editor-column-resizer::before {
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--mk-t3, var(--text-2)) 0 3px,
+    transparent 3px 6px
+  );
+  border-radius: 999px;
+  content: "";
+  height: 42px;
+  inset: 50% auto auto 50%;
+  opacity: 0.58;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 3px;
+}
+
+.event-editor .event-editor-column-resizer:hover,
+.event-editor .event-editor-column-resizer:focus-visible,
+.event-editor .event-editor-column-resizer.dragging {
+  background:
+    linear-gradient(90deg, transparent 0 4px, var(--mk-accent, var(--accent)) 4px 8px, transparent 8px),
+    var(--mk-accent-wash, var(--accent-muted));
+  outline: none;
+}
+
+.event-editor .event-editor-column-resizer:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--mk-accent, var(--accent));
+}
+
+.event-editor .event-editor-column-resizer:hover::before,
+.event-editor .event-editor-column-resizer:focus-visible::before,
+.event-editor .event-editor-column-resizer.dragging::before {
+  opacity: 1;
+}
+
+@media (max-width: 720px) {
+
+  .event-editor .event-editor-column-resizer {
+    display: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .event-editor .event-editor-workbench,
+  .event-editor .event-editor-workbench.has-command-inspector {
+    grid-template-rows: auto auto;
+  }
+}
+
+/* Split wrapper: event-editor.css 의 레거시 규칙 묶음. */
+/* 마지막 — 명령 리스트를 블록 캔버스로 덮어쓴다 (DOM 변경 없음). */
+/* 목업 셸 — 페이지 탭·레일·헤더 검사 팝오버·액센트. 반드시 blocks 다음. */
+/* 창 전체 보기와 드래그 가능한 열 구분선은 최종 레이아웃 기하를 소유한다. */
+/* Native selects keep their data contract; this layer owns the visible dropdown UI. */
+/* alias collapse — after imports so the sheet stays valid */
+:root {
+  --event-rm-chrome: var(--bg-raised);
+  --event-rm-face: var(--bg-surface);
+  --event-rm-field: var(--bg-inset);
+  --event-rm-light: var(--border-subtle);
+  --event-rm-mid: var(--border-default);
+  --event-rm-shadow: var(--border-strong);
+  --oprn-command-blue: var(--accent);
+  --oprn-command-orange: var(--gold);
+  --oprn-command-teal: var(--success);
+  --oprn-command-row-alt: var(--bg-hover);
+  --oprn-command-selected: var(--accent-muted);
+  --mk-t1: var(--text-1); --mk-t2: var(--text-2); --mk-t3: var(--text-3);
+  --mk-accent: var(--gold);
+  --pick-cat-dialogue: var(--cmdcat-dialogue);
+}
+
+/* 이벤트 에디터 도움말(eventEditorHelp.ts) — 기존 .help-modal-* 클래스를 재사용하되
+   섹션 제목 앞 글리프 간격만 보충한다. z-index 290 > 이벤트 에디터 120 이므로 겹침은 그대로. */
+.help-modal-section-glyph {
+  flex: 0 0 auto;
+  margin-right: 2px;
+  font-size: 15px;
+  line-height: 1;
+  opacity: 0.92;
+}
+
+/* OPRN Studio hierarchy event editor presentation layer.
+ * Target contract: .omo/evidence/event-editor-hierarchy-20260826/after.html.
+ * Existing test ids, draft semantics, command renderers, and inspector behavior stay intact.
+ */
+.event-editor-modal-window {
+  --hierarchy-header-height: 48px;
+  --hierarchy-pages-height: 40px;
+  --hierarchy-footer-height: 40px;
+  --balanced-header-height: 48px;
+  --balanced-pages-height: 40px;
+  --balanced-footer-height: 40px;
+  /* --balanced-settings-width 는 아래 «Hierarchy zones» 블록이 268px 로 선언한다.
+     여기 있던 228px 는 같은 선택자의 뒤 선언에 덮여 한 번도 쓰이지 않았고,
+     레일 폭을 찾는 사람에게 228/268 중 어느 쪽인지 헷갈리게 만들었다. */
+  --balanced-inspector-width: 340px;
+
+  --bg-base: #F7F8F8;
+  --bg-raised: #FFFFFF;
+  --bg-inset: #EEF1F4;
+  --text-1: #0F172A;
+  --text-2: #475569;
+  --text-3: #64748B;
+  --accent: #4A57D6;
+  --accent-muted: rgba(74, 87, 214, 0.12);
+  --on-accent: #FFFFFF;
+  --danger: #C6403D;
+  --warning: #8A5E00;
+  --border: rgba(15, 23, 42, 0.10);
+  --border-strong: rgba(15, 23, 42, 0.16);
+
+  background: var(--bg-base);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  grid-template-rows: var(--hierarchy-header-height) minmax(0, 1fr) var(--hierarchy-footer-height);
+  height: 100dvh;
+  inset: 0;
+  max-height: none;
+  max-width: none;
+  place-self: stretch;
+  width: 100vw;
+}
+
+.event-editor-modal-backdrop,
+.event-editor-modal-backdrop.event-editor-modal-backdrop {
+  background: var(--bg-base);
+  backdrop-filter: none;
+  padding: 0;
+}

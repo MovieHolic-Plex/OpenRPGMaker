@@ -4,6 +4,7 @@ import { applyLayer } from "@/editor/hotkeys";
 import { AUTHORING_TASKS, runAuthoringTask } from "@/editor/authoringTasks";
 import { toolLabel } from "@/editor/uiCopy";
 import { editorState, type Tool } from "@/editor/editorState";
+import { dismissLocationDrawModeForTool } from "@/editor/locationDrawMode";
 import { getEditorChrome, setEditorUiMode, type EditorUiMode } from "@/editor/editorUiMode";
 import { dockZoneHasHost, isLeftDockPanelOffered } from "@/editor/workspace/leftDockPanels";
 import { allPanels } from "@/editor/workspace/panelRegistry";
@@ -57,6 +58,7 @@ const TOOL_COMMANDS: readonly { id: Tool; keywords: readonly string[]; hotkey: s
 ];
 
 function runTool(tool: Tool): void {
+  dismissLocationDrawModeForTool(tool);
   if (tool === "paint") {
     editorState.set(
       editorState.get().layer === "event"

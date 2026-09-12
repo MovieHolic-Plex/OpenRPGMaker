@@ -7,6 +7,7 @@ import { BOOLEAN_OPTIONS, CONDITION_OP_OPTIONS, collectNpcActivitySuggestions } 
 import { databasePicker } from "./switchVariablePicker";
 import { actorPickerControl, itemPickerControl } from "./sharedPickers";
 import type { ActorId, Condition, ItemId, Season, TimePhase } from "@/project/types";
+import { renderLocationDrawCta } from "@/editor/locationDrawCta";
 
 import { isRelationshipState, RELATIONSHIP_STATES, relationshipStateName } from "@/project/relationshipState";
 export { databasePicker, switchPicker, switchVariablePicker, variablePicker } from "./switchVariablePicker";
@@ -1073,7 +1074,8 @@ export function renderInsideLocationCondition(
   picker.addEventListener("change", apply);
   side.addEventListener("change", apply);
   syncError();
-  box.append(field("구역", picker), error, field("판정", side));
+  const drawCta = renderLocationDrawCta({ testId: "event-condition-inside-location-draw" });
+  box.append(field("구역", picker), error, ...(drawCta ? [drawCta] : []), field("판정", side));
   return box;
 }
 

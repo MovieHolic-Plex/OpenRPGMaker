@@ -1,5 +1,47 @@
 # Editor AI Panel & Tools
 
+## 조수 채팅은 Pi 하나다 — 세션 경로를 걷어냈다 (2026-09-11)
+
+조수 세션이 deprecated 되면서 «어느 루프로 가는가» 를 답하던 경로 enum(`session` · `pi-agent`)이
+사라졌다. 남은 축은 둘뿐이다: **무엇을 해도 되는가**(자율성 다이얼 → Pi 노브)와 **몇 명이 도는가**
+(`AiConfig.piTeam`).
+
+| 표면 | 값 | 소유 |
+|---|---|---|
+| 실행 계획 | `readOnly` · `planOnly` · `maxTurns` · `thinkingLevel` | `resolvePiRunPlan`(`src/ai/piAgent/executionRoute.ts`) ← 자율성 다이얼 |
+| 팀 | boolean | `AiConfig.piTeam` — 컴포저 「팀」 토글(`ai-composer-team`) · 설정 「Pi 팀 실행」(`ai-config-pi-team`) |
+| 명시 입력 | `/pi …` · `/pi team …` | `parsePiCommand` — 언제나 최우선. 다이얼의 읽기 전용·계획보다 **세다** |
+
+- 컴포저의 「경로」 셀렉트(`ai-composer-route`)와 설정의 「지시 실행 경로」(`ai-config-route`)는 **없다** —
+  그 자리를 팀 토글이 대신한다. 토글은 다이얼이 쓰기를 허용할 때만 보인다(읽기 전용·계획 턴에서는
+  쓰기 툴이 없어 팀이 예산만 태운다).
+- 질문(다이얼 「읽기 전용」)·계획(「확인」)은 세션이 아니라 Pi 가 맡는다: `readOnly` 는 요청에 실려
+  워커가 쓰기 툴을 주지 않고(`readOnlyTools` + 시스템 프롬프트 한 줄), 계획 턴은 지시문 머리에 계획
+  지시가 붙는다(`PLAN_ONLY_PREFIX`). 바뀐 것이 없으면 그 턴의 **답·계획 본문**을 assistant 말풍선으로
+  남긴다 — 보드의 220자 한 줄이 답이 되면 질문 모드가 쓸 수 없다.
+- **do 레벨의 질문 발화는 의도 선언이 읽기 전용으로 승격한다 (2026-09-12 복원):** `plainPiTurn` 이
+  다이얼이 쓰기를 허용할 때만 `declareIntentCached(createLlmIntentDeclarer())` 를 부르고
+  `intent.mode === "question"` 이면 `plan.readOnly = true` 로 덮어 Pi 를 단독·읽기 전용으로 돌린다.
+  세션 경로의 `mode=question → ask` 승격이 Pi 이관(2026-09-11)에서 빠져 「균형」 질문 턴에 쓰기 툴이
+  달려 갔던 구멍을 메운다 — 툴 목록 수준 강제라 모델 선의에 의존하지 않는다. 분류는 **원문 발화**만
+  본다(컨텍스트 footer·도구 지시 제외), 실패·지연은 폴백 `mode:"other"` 이라 작성 요청이 읽기 전용으로
+  새지 않는다(6초 타임아웃, 캐시 TTL 90초). 승격 시 시스템 줄로 사용자에게 알린다. 명시 `/pi` 는 이
+  분류를 거치지 않는다 — `runPiTurn` 진입 전에 `plainPiTurn` 에서만 부른다.
+- 변경-0 종료의 보드 phase 는 **「완료」**(`markTeamBoardDone`)다 — 「적용됨」은 `applyProposedProject` 가
+  실제 커밋한 실행에만 쓴다(2026-09-12 실측: 질문 턴이 「적용됨」 배지 + 실패 톤 캡션으로 끝났다).
+  답이 남은 턴은 본문 말풍선을 시스템 줄(「프로젝트는 바뀌지 않았습니다」) **앞에** 붙인다. 보드 행의
+  지시가 보드 지시와 같으면 echo(`ai-team-task`)를 그리지 않는다 — 단일 실행에서 같은 문장이
+  카드 제목·행·말풍선에 세 번 나오던 것을 막는다.
+- 옛 blob 의 `executionRoute: "pi-team"` 은 **팀 비트**로 승격된다(`loadAiConfig`,
+  `LEGACY_PI_TEAM_ROUTE`). `session`·`pi-agent` 는 둘 다 «Pi» 이므로 버린다. 이 승격이 이 변경의
+  유일한 데이터 위험이고 `test/piAgentExecutionRoute.test.ts` 가 세 값을 전부 고정한다.
+- Pi 적용은 조수 세션과 같은 **영수증 카드**(`ai-change-card`, 지금 → 적용 후 두 장)를 남긴다: Pi 명령이
+  재료(`PiChangeReceipt`)를 넘기고 패널이 그린다(`showChangeReceipt` → 로그 + 스튜디오 「변경」 탭 +
+  되돌리기). 검토 카드에서 적용해도 같은 경로다.
+- **남은 세션 호출자**(deprecated 재고): 선택 영역 작업·영역 생성기(`runRegionTask`/`runOperatorTask`),
+  클러스터 AI 모달, 조수 QA 브리지(`aiAssistantBridge` — DB AI 바가 이걸 쓴다), 벤치마크/QA 스크립트.
+  각자 표면의 엔진이라 조수 창 경로와 무관하고, Pi 이관은 별도 작업이다.
+
 ## Retained map planning items and explicit reuse (2026-09-10, OPRN-019)
 
 An assistant `BuildSpec` remains **session** state: `assistantSession.specsByMap` replaces the
@@ -60,6 +102,17 @@ both capture and delivery retire, because an outdated picture is not current evi
 never reported delivery facts omits the attribute entirely — unknown is not rewritten as zero or
 as failure. Contract tests: `test/aiVisualEvidenceReceipt.test.ts`; the axis table lives in
 `test/aiRunOutcome.test.ts`.
+
+**Pi 경로도 같은 4축을 그린다 (2026-09-11).** 2026-09-10부터 평문 지시는 전부 Pi 에이전트
+경로로 가므로(`src/ai/piAgent/executionRoute.ts` DEFAULT_EXECUTION_ROUTE), 이 줄이 세션에만
+붙으면 20턴 내내 한 번도 안 그려진다(실측: 적대 평가 2026-09-11, 20턴 0회 렌더). 이제
+`runPiCommand`가 종료 4축을 `PiCommandSurface.setRunOutcome`으로 게시하고(`src/editor/panels/aiPiAgentCommand.ts`),
+패널은 `piRunOutcome ?? controller.session?.getRunOutcome()` 순으로 슬롯에 그린다
+(`src/editor/panels/aiChatPanel.ts` refreshRunOutcome). Pi 경로는 수용 검사가 없으므로
+`goal`은 늘 `unassessed`이고 `persistence`는 `none`이다 — 사실 없는 축을 성공으로 올리지
+않는다. 같은 종료 캡션은 스트림 오류·툴 실패를 숫자+첫줄로 묻고(예: `(⚠ 오류 1건 — OAuth
+token expired…)`), 범위 밖 spill 버림도 `범위 밖 N건 버림(키들)`으로 성공 캡션에 함께 고지한다.
+계약: `test/piAgentRunOutcome.test.ts`.
 
 ## P3 run retirement and stale drafts (2026-09-07)
 

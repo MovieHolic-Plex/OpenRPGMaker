@@ -1445,7 +1445,6 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-classes .db-class-build-metric strong {
-  color: var(--db-studio-text-1);
   font: 700 16px/1.3 var(--font-ui);
   font-variant-numeric: tabular-nums;
 }

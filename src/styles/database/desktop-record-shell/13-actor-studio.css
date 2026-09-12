@@ -6,7 +6,6 @@
   }
 
   .database-modal-body .db-actor-studio-workspace .db-studio-table-pane {
-    background: var(--bg-raised);
     border: 1px solid var(--border-subtle);
     border-radius: 8px 0 0 8px;
     grid-template-rows: auto auto minmax(0, 1fr) auto auto;

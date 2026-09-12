@@ -8,15 +8,22 @@
 // keyframes 자체는 src/styles/dialogue.css 것을 그대로 부른다(복제하지 않는다).
 // 그 파일이 에디터 그래프에 실려 있어야 이름이 풀리므로 import 사슬도 같이 본다.
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { resolve, sep } from "node:path";
 import { describe, expect, it } from "vitest";
+import { eventSurfaceFiles } from "./helpers/eventSurfaceCss";
 
 const RUNTIME_CSS = "src/styles/dialogue.css";
-const PREVIEW_CSS = "src/styles/editor/event-editor.command-preview/01-event-editor-modern-import.css";
+// 2026-09-11 Task 13: 프리뷰 연출 규칙을 갖던 옛 event-editor.command-preview/01-event-editor-modern-import.css 는
+// 구성 요소 버킷 previews/command-preview*.css 로 접혔다 → 프리뷰 버킷 시트 전체를 이어 읽는다.
+const PREVIEW_CSS_FILES = eventSurfaceFiles().filter((abs) => abs.includes(`${sep}previews${sep}`));
+if (PREVIEW_CSS_FILES.length === 0) throw new Error("이벤트 표면에 previews 버킷 시트가 없다");
 
-function read(relative: string): string {
+function stripComments(css: string): string {
   // 주석은 걷어낸다 — 규칙 앞 주석이 선택자 덩어리에 섞여 들어온다.
-  return readFileSync(resolve(__dirname, "..", relative), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  return css.replace(/\/\*[\s\S]*?\*\//g, "");
+}
+function read(relative: string): string {
+  return stripComments(readFileSync(resolve(__dirname, "..", relative), "utf8"));
 }
 
 /** `@media (prefers-reduced-motion: reduce)` 블록의 문자 범위. 중괄호 균형으로 뜬다. */
@@ -67,7 +74,7 @@ function enterRules(css: string, base: string, reduced: boolean): ReadonlyMap<st
 }
 
 const runtime = read(RUNTIME_CSS);
-const preview = read(PREVIEW_CSS);
+const preview = PREVIEW_CSS_FILES.map((abs) => stripComments(readFileSync(abs, "utf8"))).join("\n");
 
 describe("에디터 프리뷰 연출 CSS", () => {
   it("감정별 진입 연출이 런타임과 한 짝도 어긋나지 않는다", () => {
@@ -111,9 +118,11 @@ describe("에디터 프리뷰 연출 CSS", () => {
     }
     // 이름은 정의가 같은 문서에 로드돼야 풀린다. 에디터 셸이 dialogue.css 를 놓치면
     // 프리뷰 규칙은 남고 애니메이션만 사라진다.
-    const runtimeIndex = readFileSync(resolve(__dirname, "..", "src/styles/runtime/playerRuntime.css"), "utf8");
-    expect(runtimeIndex, "playerRuntime.css 가 dialogue.css 를 안 부른다").toContain("../dialogue.css");
+    const runtimeIndex = readFileSync(resolve(__dirname, "..", "src/styles/runtime/index.css"), "utf8");
+    expect(runtimeIndex, "runtime/index.css 가 dialogue.css 를 안 부른다").toContain("../dialogue.css");
+    const forwarder = readFileSync(resolve(__dirname, "..", "src/styles/runtime/playerRuntime.css"), "utf8");
+    expect(forwarder, "playerRuntime.css 가 runtime/index.css 로 전달하지 않는다").toContain('@import "./index.css";');
     const editorIndex = readFileSync(resolve(__dirname, "..", "src/styles/index.css"), "utf8");
-    expect(editorIndex, "index.css 가 playerRuntime.css 를 안 부른다").toContain("runtime/playerRuntime.css");
+    expect(editorIndex, "index.css 가 runtime/index.css 를 안 부른다").toContain("./runtime/index.css");
   });
 });

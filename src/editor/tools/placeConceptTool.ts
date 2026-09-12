@@ -91,7 +91,9 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
     + "방 종류 requiredRoles 로 시설을 합성하지 마라. 새 mapId 가 필요하다. "
     + "기존 실내 맵을 고치는 요청에는 쓰지 마라. "
     + "개념 꾸러미 시설을 요청받으면 야외 집(author_house)을 짓지 말고 이 툴로 새 mapId 실내를 시공한다 — "
-    + "create_map 만 하고 멈추지 말 것.",
+    + "create_map 만 하고 멈추지 말 것. "
+    + "canonical(spatialAuthoring 문서가 있는) 프로젝트에서는 계약이 다르다: plan 인자는 거부되고 query 는 canonical 설계를 가리킨다 — "
+    + "설계 저작은 list_spatial_designs → get_spatial_design → upsert_spatial_design, 시공은 preview_spatial_build → apply_spatial_build 체인을 쓴다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -365,7 +367,8 @@ export const GET_CONCEPT_FACILITY_TOOL: ToolDefinition = {
     `모든 신규 실내(일반 방·시설)를 지으려면 이것을 먼저 부른다. ${conceptFacilityTemplateLabels().join("·")} 시설의 `
     + "템플릿(사용자가 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 정해 둔 장소·물건)과 이 타일셋에서 쓸 수 있는 물건 어휘(vocabulary)를 돌려준다. "
     + "이 응답의 plan 을 요청에 맞게 고쳐 place_concept({query, mapId, plan}) 에 넘기라 — 그래야 장소 수·크기·내용물이 다른 시설이 생긴다. "
-    + "query가 없거나 미등록 시설이면 sources에 현재 꾸러미의 장소·물건 구성을 돌려준다. 이를 조합해 새 실내 plan을 설계하라. 읽기 전용 — 맵을 건들지 않는다.",
+    + "query가 없거나 미등록 시설이면 sources에 현재 꾸러미의 장소·물건 구성을 돌려준다. 이를 조합해 새 실내 plan을 설계하라. 읽기 전용 — 맵을 건들지 않는다. "
+    + "canonical(spatialAuthoring) 프로젝트에서는 꾸러미 대신 canonical 설계와 쓸 체인(tools 필드)을 돌려준다 — 그 경우 plan 흐름이 아니라 spatial_* 도구를 쓴다.",
   mode: "read",
   parameters: {
     type: "object",

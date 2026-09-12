@@ -86,8 +86,3 @@
 }
 
 /* list well — hairline */
-.database-modal-backdrop .database-modal-window .database-modal-body .db-list:not(.db-gallery) {
-  background: var(--db-studio-surface, #FFFFFF);
-  border: 1px solid var(--db-studio-border-subtle, rgba(15,23,42,.08));
-  border-radius: 8px;
-}

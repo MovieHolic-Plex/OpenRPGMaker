@@ -23,6 +23,41 @@ drop breadcrumbs. `bindSpatialAuthoringControllerFactory` stays the
 database.ts binding. Six selectable shipped region examples remain
 task18; they are not completed here.
 
+## Settlement regions (2026-09-12)
+
+Villages are regions, not places. `villagePresets` records surface as
+`regionKind: "settlement"` cards in the regions gallery; `villageTemplates`
+(house shapes) stay in places. The legacy `villages` database route selects the
+regions tab with `regionKindFilter: "settlement"` and mounts the old
+`renderVillageTab` inside a `.spatial-legacy-host` on the regions stage; the
+canonical regions rail clears both. A preset card's inspector exposes
+「정주지 지역 만들기」 (`createSettlementRegion`), which writes a real
+`RegionDesign` with `settlement { presetId, seed }` into
+`library.regions`. The region inspector shows the source preset and an editable
+seed. Preview and compile both stamp the actual village — see
+[the compiler contract](spatial-geography-compiler.md#settlement-regions-2026-09-12).
+
+Legacy projects without a `spatialAuthoring` document cannot create
+geography: `upsertGeography` would silently no-op, so 「추가」 and
+「정주지 지역 만들기」 bail early via `spatialDocumentPresent` and
+surface an activation-required message. The stage toolbar now exposes a
+「공간 설계 활성화」 action on exactly those projects — `domainChrome` in
+`spatialStage.ts` overlays `activate` on every spatial tab (not just
+regions/worlds) while the document is missing, wiring it to
+`activateSpatialDocument`, which calls `store.activateSpatialAuthoring()`
+and guards re-entry through `geographyChromeState.activating`. Activation
+errors are project-scoped: a failure message is cleared once a canonical
+document exists, and the overlay surfaces it on whichever tab the user is
+viewing. The store
+still enforces remote persistence, a clean working copy and legacy-baseline
+conversion; the button only surfaces that path instead of leaving the
+message dead-ended. Browser QA for this surface needs a canonical project;
+when the dev DB lacks the spatial CAS
+migration (`migration-required` on publish), seed a converted project
+through the `__RPG_ZZU_E2E_PROJECT__` dev hook — build it with
+`convertLegacySpatialSnapshot(serialize(project))`, never by editing raw
+JSON by hand.
+
 ## Authoring rules
 
 Edits go through the project-scoped detached draft. Preview and apply
@@ -36,6 +71,12 @@ writes from the canvas and no reconstructed draft handles.
 - Region routes are authored orthogonal polylines. Endpoints must match
   the positioned children. An invalid move or route is rejected before
   apply; it does not erase obstacles.
+- Occurrence delete/refresh first try `externalConnections: "reject"`.
+  When the preview rejects with `external-connection`, the request is
+  armed as `geographyChromeState.pendingExternal` and the 「확인」 button
+  retries once with `remove` — the failure is never a dead end. The
+  `SpatialOperationError` code reaches the UI through `detail` on the
+  controller result (`src/editor/spatial/actions.ts`).
 - World connections have no path-point field. The canvas draws the
   compiler's horizontal-then-vertical crossing from the two child
   positions. Entry is an explicit selector, not containment.

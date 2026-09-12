@@ -40,6 +40,7 @@ import {
 import { childOccurrenceId, libraryPlaceCardId, libraryRegionCardId, libraryWorldCardId } from "@/editor/panels/spatialGeographyQuery";
 import { GEOGRAPHY_TILE_PX, geographyPreviewMap, geographyRasterTile } from "@/editor/panels/spatialGeographyRaster";
 import { spatialId } from "@/project/spatial/domain";
+import { createBlankProject } from "@/project/defaults/defaultProject";
 import { store } from "@/project/store";
 import type { RegionDesign } from "@/project/spatial/types";
 import { authoringValue } from "./support/spatialAuthoringFixture";
@@ -81,6 +82,7 @@ function regionSession(id: string, mode: SpatialAuthoringSession["mode"] = "desi
     breadcrumb: [],
     legacyOrigin: null,
     placeKindFilter: null,
+    regionKindFilter: null,
     inspectorOpen: true,
   };
 }
@@ -96,6 +98,7 @@ function worldSession(id: string): SpatialAuthoringSession {
     breadcrumb: [],
     legacyOrigin: null,
     placeKindFilter: null,
+    regionKindFilter: null,
     inspectorOpen: true,
   };
 }
@@ -477,5 +480,43 @@ describe("spatial geography actions", () => {
     spatialRegionsChrome(regionCard("lake-country", "placed"), () => undefined).refresh?.();
     expect(store.getCurrent()).toBe(live);
     expect(getMapEditHistoryEntries()).toEqual([]);
+  });
+
+  it("arms a remove-external retry when delete is blocked by incoming links", () => {
+    // Given — a region child inside a compiled world is crossed by world connections.
+    store.replace(geographyRecipeFixture("lake-kingdom"));
+    const document = store.getCurrent().spatialAuthoring;
+    if (!document) throw new TypeError("Missing spatial document");
+    const child = Object.values(document.occurrences).find(entry => entry.kind === "region" && entry.parentId !== null);
+    if (!child) throw new TypeError("Missing nested region");
+    const card = { id: child.id, localId: child.source.id, name: "child", source: "placed" as const, kind: "regions" as const, usage: 0 };
+    // When — delete → confirm: reject policy fails on the crossing link.
+    spatialRegionsChrome(card, () => undefined).delete?.();
+    expect(geographyChromeState.deleteOpen).toBe(true);
+    spatialRegionsChrome(card, () => undefined).onDeleteConfirm?.();
+    // Then — the failure is armed, not dead-ended.
+    expect(geographyChromeState.previewError).toContain("외부 연결");
+    expect(geographyChromeState.pendingExternal).not.toBeNull();
+    // When — 「확인」 again retries once with externalConnections: "remove".
+    spatialRegionsChrome(card, () => undefined).onDeleteConfirm?.();
+    // Then
+    expect(geographyChromeState.pendingExternal).toBeNull();
+    expect(hasAuthoringPreview()).toBe(true);
+    expect(visibleAuthoringProject().spatialAuthoring?.occurrences[child.id]).toBeUndefined();
+  });
+
+  it("exposes the activation action only while the canonical document is missing", async () => {
+    // Canonical fixture: activation is already done, no surface.
+    expect(spatialRegionsChrome(regionCard("lake-country"), () => undefined).activate).toBeUndefined();
+    // Legacy project: the stage toolbar must surface the single activation path.
+    store.replace(createBlankProject());
+    const chrome = spatialRegionsChrome(regionCard("lake-country"), () => undefined);
+    expect(chrome.activate).toBeDefined();
+    chrome.activate?.();
+    expect(geographyChromeState.activating).toBe(true);
+    // Without remote persistence the store rejects; the error stays visible, not silent.
+    await new Promise(resolve => setTimeout(resolve, 0));
+    expect(geographyChromeState.activating).toBe(false);
+    expect(geographyChromeState.previewError).toContain("공간 설계 활성화 실패");
   });
 });

@@ -17,28 +17,13 @@
   /* 모달 내 네이티브 폼 컨트롤을 라이트로 렌더 — 서브트리에만 영향. */
 
   /* ---- 배경 계층 (크림 기조) -------------------------------------------- */
-  --db-light-bg-base: #F7F3EA;    /* 창 최하층/본문 */
-  --db-light-bg-surface: #FCF9F2; /* 탭 스트립/푸터/헤더 톤 */
-  --db-light-bg-raised: #FFFDF8;  /* 컨트롤/버튼/카드 면 */
-  --db-light-bg-inset: #EFE9DC;   /* 인풋 웰 */
 
   /* ---- 테두리 (라이트면 위 어두운 알파) --------------------------------- */
-  --db-light-border-subtle: rgba(42, 37, 33, 0.12);
-  --db-light-border-default: rgba(42, 37, 33, 0.20);
-  --db-light-border-strong: rgba(42, 37, 33, 0.55);
 
   /* ---- 텍스트 3단계 ----------------------------------------------------- */
-  --db-light-text-1: #2A2521; /* 본문/제목 (primary) */
-  --db-light-text-2: #5C5348; /* 보조 라벨 (secondary) */
-  --db-light-text-3: #6B5F52; /* 흐린 힌트 (muted) — AA 4.5:1 보장 */
   --db-light-text-disabled: #6E6252;
 
   /* ---- 액센트 (인디고 계열 유지 — 라이트면 위 대비) ---------------------- */
-  --db-light-accent: #4A57D6;       /* on-accent 흰 글씨 AA */
-  --db-light-accent-hover: #3C48C4;
-  --db-light-accent-muted: rgba(90, 104, 232, 0.14); /* 선택 행/탭 배경 */
-  --db-light-accent-border: rgba(74, 88, 200, 0.45);
-  --db-light-on-accent: #ffffff;
 
   /* ---- 상태 색 (라이트면 위 AA) ----------------------------------------- */
   --db-light-danger: #C6403D;
@@ -55,55 +40,22 @@
      --runtime-window-*)은 의도된 인게임 룩이므로 건드리지 않는다. */
 
   /* 배경 계층 */
-  --bg-base: var(--db-light-bg-base);
-  --bg-surface: var(--db-light-bg-surface);
-  --bg-raised: var(--db-light-bg-raised);
-  --bg-overlay: #ffffff;
-  --bg-inset: var(--db-light-bg-inset);
-  --bg-canvas: #E7E0D0;
-  --bg-glass: rgba(253, 251, 245, 0.9);
-  --bg-well: #E7E0D0;
 
   /* 인터랙션 상태 (라이트면 위 어두운 알파) */
-  --bg-hover: rgba(42, 37, 33, 0.06);
-  --bg-active: rgba(42, 37, 33, 0.10);
-  --control-bg: rgba(42, 37, 33, 0.05);
-  --control-bg-hover: rgba(42, 37, 33, 0.09);
-  --control-bg-active: rgba(42, 37, 33, 0.13);
 
   /* 테두리 */
-  --border-subtle: var(--db-light-border-subtle);
-  --border-default: var(--db-light-border-default);
-  --border-strong: var(--db-light-border-strong);
 
   /* 텍스트 */
-  --text-1: var(--db-light-text-1);
-  --text-2: var(--db-light-text-2);
-  --text-3: var(--db-light-text-3);
-  --text-placeholder: var(--db-light-text-3);
-  --text-disabled: var(--db-light-text-disabled);
 
   /* 액센트 */
-  --accent: var(--db-light-accent);
-  --accent-hover: var(--db-light-accent-hover);
-  --accent-active: #2F3AAE;
-  --accent-muted: var(--db-light-accent-muted);
-  --accent-border: var(--db-light-accent-border);
-  --on-accent: var(--db-light-on-accent);
 
   /* 상태 색 */
-  --danger: var(--db-light-danger);
   --danger-muted: var(--db-light-danger-muted);
-  --success: var(--db-light-success);
   --success-muted: var(--db-light-success-muted);
   --warning: var(--db-light-warning);
   --warning-muted: var(--db-light-warning-muted);
 
   /* 그림자/포커스/스크롤바 — 라이트면에 맞게 옅게 */
-  --shadow-pop: 0 4px 12px rgba(60, 48, 32, 0.10), 0 12px 32px rgba(42, 37, 33, 0.12);
-  --shadow-modal: 0 8px 24px rgba(42, 37, 33, 0.12), 0 24px 64px rgba(60, 48, 32, 0.18);
-  --focus-ring: 0 0 0 2px rgba(74, 88, 200, 0.45);
-  --focus-outline: 2px solid var(--db-light-accent);
   --scrollbar-thumb: rgba(42, 37, 33, 0.20);
   --scrollbar-thumb-hover: rgba(42, 37, 33, 0.36);
   --pixel-grid: rgba(42, 37, 33, 0.13);
@@ -124,16 +76,6 @@
 
   /* 레거시 별칭 re-bridge — :root 별칭은 다크 값으로 이미 굳어 상속되므로
      이 스코프에서 다시 선언해 라이트 토큰으로 재해석시킨다. */
-  --bg: var(--bg-base);
-  --bg-panel: var(--bg-surface);
-  --bg-panel-2: var(--bg-raised);
-  --bg-elev: var(--bg-raised);
-  --bg-recessed: var(--bg-inset);
-  --border: var(--border-default);
-  --border-soft: var(--border-subtle);
-  --text: var(--text-1);
-  --text-dim: var(--text-2);
-  --text-muted: var(--text-3);
   --text-primary: var(--text-1);
   --text-secondary: var(--text-2);
   --text-inverse: var(--on-accent);

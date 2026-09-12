@@ -1,3 +1,4 @@
+import type { SpatialAuthoringRequest } from "@/editor/spatial/authoringTypes";
 import type { SpatialId, SpatialPoint } from "@/project/spatial/types";
 
 export type GeographyTool = "select" | "route" | "entry" | "terrain";
@@ -19,6 +20,9 @@ export const geographyChromeState: {
   gesture: GeographyGesture | null;
   createdDesignId: SpatialId | null;
   boardKey: string;
+  activating: boolean;
+  /** 외부 연결 때문에 거부된 요청 — 「확인」으로 remove 정책 재시도. */
+  pendingExternal: SpatialAuthoringRequest | null;
 } = {
   saveState: "읽기",
   previewError: null,
@@ -31,6 +35,8 @@ export const geographyChromeState: {
   gesture: null,
   createdDesignId: null,
   boardKey: "",
+  activating: false,
+  pendingExternal: null,
 };
 
 export function resetSpatialGeographyChrome(): void {
@@ -45,6 +51,8 @@ export function resetSpatialGeographyChrome(): void {
   geographyChromeState.gesture = null;
   geographyChromeState.createdDesignId = null;
   geographyChromeState.boardKey = "";
+  geographyChromeState.activating = false;
+  geographyChromeState.pendingExternal = null;
 }
 
 export function bindGeographyBoard(key: string): void {

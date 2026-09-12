@@ -9,7 +9,7 @@ import { editorState } from "@/editor/editorState";
 import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { createBlankProject } from "@/project/defaults";
 import { store, type AutoSaveState } from "@/project/store";
-import type { GenrePackId } from "@/project/genrePackId";
+import type { NewProjectChoiceId } from "@/editor/newProjectChoices";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 const mocks = vi.hoisted(() => ({
@@ -21,9 +21,9 @@ const mocks = vi.hoisted(() => ({
   openAiSettingsModal: vi.fn(),
   saveProjectNow: vi.fn(async () => undefined),
   showNewProjectDialog: vi.fn(
-    async (): Promise<{ readonly title: string; readonly packId: GenrePackId | null }> => ({
+    async (): Promise<{ readonly title: string; readonly choiceId: NewProjectChoiceId | null }> => ({
       title: "새 프로젝트",
-      packId: null,
+      choiceId: null,
     }),
   ),
   sendAiBootIntent: vi.fn((_text: string): boolean => true),
@@ -52,11 +52,6 @@ vi.mock("@/editor/aiBootIntent", async (importOriginal) => {
 });
 vi.mock("@/editor/ui/newProjectDialog", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/editor/ui/newProjectDialog")>();
-  return { ...actual, showNewProjectDialog: mocks.showNewProjectDialog };
-});
-
-vi.mock("@/editor/panels/newProjectDialog", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/editor/panels/newProjectDialog")>();
   return { ...actual, showNewProjectDialog: mocks.showNewProjectDialog };
 });
 
@@ -215,7 +210,7 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     // Break: 클래식 툴바의 toolbar-new 와 함께 새 프로젝트 동작 자체가 사라진다.
     // 장르를 고르면 genrePacks.ts 정본 씨앗이 loadNewRemoteProject 로 전달된다.
     const loadNew = vi.spyOn(store, "loadNewRemoteProject").mockResolvedValue({ projectId: "rpg-zzu-test" });
-    mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "달빛 항구", packId: "monster-collect" as const });
+    mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "달빛 항구", choiceId: "monster-collect" as const });
     const topbar = render("expert");
     openMenu(topbar, "menu-project");
     findByTestId(fake(document.body as unknown as HTMLElement), "menu-project-new")?.click();
@@ -228,7 +223,7 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     // Break: 프리셋 선택이 씨앗 system.* 토글에서 끝나고 AI 전송이 빠져,
     // 빈 맵만 남고 콘텐츠 저작이 시작되지 않는다.
     const loadNew = vi.spyOn(store, "loadNewRemoteProject").mockResolvedValue({ projectId: "rpg-zzu-test" });
-    mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "달빛 항구", packId: "monster-collect" });
+    mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "달빛 항구", choiceId: "monster-collect" });
     const topbar = render("expert");
     openMenu(topbar, "menu-project");
     findByTestId(fake(document.body as unknown as HTMLElement), "menu-project-new")?.click();
@@ -242,7 +237,7 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
   it("AI 패널이 아직 없으면 보류 의도로 남기고 적용을 시도한다", async () => {
     // Break: send 실패 시 조용히 끝나 웰컴 경로와 달리 프롬프트가 증발한다.
     const loadNew = vi.spyOn(store, "loadNewRemoteProject").mockResolvedValue({ projectId: "rpg-zzu-test" });
-    mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "달빛 항구", packId: "farm-life" });
+    mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "달빛 항구", choiceId: "farm-life" });
     mocks.sendAiBootIntent.mockReturnValueOnce(false);
     const topbar = render("expert");
     openMenu(topbar, "menu-project");
@@ -256,7 +251,7 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
   it("빈 프로젝트는 AI 조수를 건드리지 않는다", async () => {
     // Break: 빈 맵 시작에도 AI 전송이 붙어 원치 않는 초안이 생긴다.
     const loadNew = vi.spyOn(store, "loadNewRemoteProject").mockResolvedValue({ projectId: "rpg-zzu-test" });
-    mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "빈 맵", packId: null });
+    mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "빈 맵", choiceId: null });
     const topbar = render("expert");
     openMenu(topbar, "menu-project");
     findByTestId(fake(document.body as unknown as HTMLElement), "menu-project-new")?.click();

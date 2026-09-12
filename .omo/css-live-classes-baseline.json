@@ -20051,14 +20051,12 @@
   },
   "gain": {
    "props": [
-    "color",
-    "font-weight"
+    "color"
    ],
    "decls": [
     "color:var(--db-light-success)",
     "color:var(--success)",
-    "color:var(--success, #18764f)",
-    "font-weight:600"
+    "color:var(--success, #18764f)"
    ],
    "sheets": [
     "src/styles/database/light-theme.css",
@@ -23324,7 +23322,6 @@
   "n": {
    "props": [
     "color",
-    "font-family",
     "font-size",
     "font-variant-numeric",
     "font-weight",
@@ -23334,7 +23331,6 @@
     "color:var(--accent)",
     "color:var(--text-3)",
     "color:var(--text-3, #6b5f52)",
-    "font-family:var(--font-mono)",
     "font-size:10px",
     "font-size:11px",
     "font-variant-numeric:tabular-nums",

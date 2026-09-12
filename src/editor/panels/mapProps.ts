@@ -9,6 +9,7 @@ import { DEFAULT_ENEMY_FACTION_ID, factionName, resolveFactionTable } from "@/pr
 import { SEASONS, TIME_PHASES, type Season, type TimePhase } from "@/project/gameTime";
 import { store } from "@/project/store";
 import { mapLocations } from "@/project/mapNamedLocations";
+import { renderLocationDrawCta } from "@/editor/locationDrawCta";
 import type { EncounterTableEntry, FieldSpawnDef, MapBgmSetting } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { showConfirm } from "@/editor/ui/modal";
@@ -709,29 +710,39 @@ function encounterRow(
     conditions?.locationId && !locations.some((entry) => entry.id === conditions.locationId)
       ? conditions.locationId
       : undefined;
-  if (locations.length > 0 || brokenLocationId) {
+  // 0개 맵에서도 **필드를 숨기지 않는다** — 숨기면 이 기능이 존재한다는 사실을 배울 기회 자체가
+  // 사라진다(어포던스 감사 2026-09-11: 새 사용자가 «구역이 존재하는 화면» 을 볼 경로가 없었다).
+  details.append(
+    selectField(
+      "이름 붙은 구역",
+      `map-encounter-location-${index}`,
+      [
+        { value: "", label: "— 사용 안 함 —" },
+        ...(brokenLocationId ? [{ value: brokenLocationId, label: `(삭제된 로케이션 ${brokenLocationId})` }] : []),
+        ...locations.map((entry) => ({ value: entry.id, label: `${entry.name} (${entry.x},${entry.y}) ${entry.w}×${entry.h}` })),
+      ],
+      conditions?.locationId ?? "",
+      (value) => patchConditions({ locationId: value || undefined }),
+    ),
+  );
+  if (brokenLocationId) {
     details.append(
-      selectField(
-        "이름 붙은 구역",
-        `map-encounter-location-${index}`,
-        [
-          { value: "", label: "— 사용 안 함 —" },
-          ...(brokenLocationId ? [{ value: brokenLocationId, label: `(삭제된 로케이션 ${brokenLocationId})` }] : []),
-          ...locations.map((entry) => ({ value: entry.id, label: `${entry.name} (${entry.x},${entry.y}) ${entry.w}×${entry.h}` })),
-        ],
-        conditions?.locationId ?? "",
-        (value) => patchConditions({ locationId: value || undefined }),
-      ),
+      el("p", {
+        class: "map-encounter-location-broken",
+        text: `이 인카운터가 가리키는 로케이션 '${brokenLocationId}' 이 삭제됐습니다. 다른 구역을 고르거나 「사용 안 함」으로 되돌리세요 — 지금은 이 항목이 절대 뽑히지 않습니다.`,
+        dataset: { testid: `map-encounter-location-broken-${index}` },
+      }),
     );
-    if (brokenLocationId) {
-      details.append(
-        el("p", {
-          class: "map-encounter-location-broken",
-          text: `이 인카운터가 가리키는 로케이션 '${brokenLocationId}' 이 삭제됐습니다. 다른 구역을 고르거나 「사용 안 함」으로 되돌리세요 — 지금은 이 항목이 절대 뽑히지 않습니다.`,
-          dataset: { testid: `map-encounter-location-broken-${index}` },
-        }),
-      );
-    }
+  } else if (locations.length === 0) {
+    details.append(
+      el("p", {
+        class: "map-props-hint",
+        text: "이 맵에는 아직 이름 붙은 구역이 없습니다 — 구역을 만들면 이 인카운터가 사각형을 복사하지 않고 그 구역을 가리킬 수 있습니다.",
+        dataset: { testid: `map-encounter-location-empty-${index}` },
+      }),
+    );
+    const drawCta = renderLocationDrawCta({ testId: `map-encounter-location-draw-${index}` });
+    if (drawCta) details.append(drawCta);
   }
 
   // 구역 제한(레거시 raw 사각형). 이름 붙은 구역을 지정하면 그쪽이 이긴다.

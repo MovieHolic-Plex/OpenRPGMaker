@@ -128,6 +128,7 @@ async function captureSnapshot(page, dir, id, expected, screenshots) {
       status: overlay?.querySelector('[data-testid="shop-status-text"]')?.textContent,
       equippedText: overlay?.querySelector('[data-testid="shop-owned-panel"]')?.textContent,
       statsText: overlay?.querySelector('[data-testid="shop-detail-stats"]')?.textContent,
+      summaryText: overlay?.querySelector('.runtime-shop-comparison-summary')?.textContent,
       geometry, warnings, layoutFailures, artworkUrls: urls };
   });
   const failures = [];
@@ -208,7 +209,9 @@ try {
       await keyUntil(page, 'ArrowDown', selected('shop-buy-equip_sword'), 'select equipment');
       await keyUntil(page, 'ArrowLeft', () => document.querySelector('[data-testid="shop-quantity-input"]').value === '1', 'explicit equipment quantity one');
       await snapshot(page, dir, '04-equipment', { gold: 150, quantity: '1', selected: 'shop-buy-equip_sword', inventory: { item_potion: 4, item_antidote: 2 } }, screenshots);
-      assert.match(screenshots.at(-1).statsText, /8/);
+      // 장비 선택 시 비교 요약이 채워지는가 — 이미 찬 장비라 "같은 장비 · 변화 없음",
+      // 다른 장비라면 '현재 장비: …' 행이 뜬다(원시 보너스 격자는 상세 오버레이 소관).
+      assert.match(screenshots.at(-1).summaryText, /같은 장비|현재 장비/);
       assert.equal(screenshots.at(-1).actorEquipment.actor_hero.weapon, 'equip_sword');
       assert.equal(screenshots.at(-1).actorEquipment.actor_guardian.weapon, 'equip_sword');
       await keyUntil(page, 'Enter', goldIs(50), 'buy equipment');

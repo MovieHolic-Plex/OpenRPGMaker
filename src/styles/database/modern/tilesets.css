@@ -15,8 +15,8 @@
 
    팔레트는 studio-theme.css 의 --db-studio-* 만 소비한다. 새 hex 없음.
 
-   NOTE(로드 순서): 이 파일은 `database/tilesets.css` 첫 줄에서 @import 된다 —
-   index.css 에 다시 추가하지 말 것(중복 로드). 그래서 셀렉터는 workspace-modern.css
+   NOTE(로드 순서): 이 파일은 `database/index.css` 진입 시트가 `database/tilesets.css` 바로 앞에
+   읽는다(옛 tilesets.css 첫 줄 @import 와 같은 유효 순서, 2026-09-11 Task 7) — 다른 곳에 다시 추가하지 말 것(중복 로드). 셀렉터는 workspace-modern.css
    보다 항상 한 클래스 더 구체적으로 쓴다(순서 독립).
    ========================================================================= */
 

@@ -97,13 +97,12 @@ describe("houseVariety — 타일에서 집을 되읽는다", () => {
     expect(report.verdict).toBe("diverse");
   });
 
-  it("kitId 6종은 지붕색 3군으로 접힌다", () => {
+  it("kitId 5종은 지붕색 3군으로 접힌다", () => {
     expect(roofColorForKit("blue-stone")).toBe("blue");
     expect(roofColorForKit("slate-wood")).toBe("blue");
     expect(roofColorForKit("bright-plaster")).toBe("orange");
     expect(roofColorForKit("amber-wood")).toBe("orange");
     expect(roofColorForKit("timber-hall")).toBe("red");
-    expect(roofColorForKit("aframe-stone")).toBe("red");
   });
 
   it("카탈로그에 없는 모양은 custom 치수로 표기한다", () => {

@@ -25,9 +25,9 @@ function agentsOf(state: TeamBoardState | null, memberId: string): TeamBoardAgen
 }
 
 function liveSummary(spec: PiTeamSpec, state: TeamBoardState | null): string {
-  if (!state || state.phase === "적용됨" || state.phase === "버림" || state.phase === "중단" || state.phase === "실패") {
+  if (!state || state.phase === "적용됨" || state.phase === "완료" || state.phase === "버림" || state.phase === "중단" || state.phase === "실패") {
     const enabled = spec.members.filter((member) => member.enabled);
-    const tail = state?.phase === "적용됨" ? " · 마지막 작업 적용됨" : state?.phase === "버림" ? " · 마지막 작업 버림" : state?.phase === "중단" ? " · 마지막 작업 중단" : state?.phase === "실패" ? " · 마지막 작업 실패" : "";
+    const tail = state ? ` · 마지막 작업 ${state.phase}` : "";
     return `${enabled.map((member) => member.label).join(" · ") || "팀원 없음"} · 대기${tail}`;
   }
   if (state.phase === "검토 대기") return "검토 대기 — 보드에서 적용 또는 버리기";
@@ -245,7 +245,7 @@ export function createTeamPanel(): TeamPanelHandle {
 
   const render = (): void => {
     const running = Boolean(activity && (activity.phase === "실행 중" || activity.phase === "적용 중" || activity.phase === "준비"));
-    dot.className = `ai-team-panel-dot${running ? " is-running ai-deck-spin" : activity?.phase === "적용됨" ? " is-done" : activity?.phase === "실패" ? " is-error" : ""}`;
+    dot.className = `ai-team-panel-dot${running ? " is-running ai-deck-spin" : activity?.phase === "적용됨" || activity?.phase === "완료" ? " is-done" : activity?.phase === "실패" ? " is-error" : ""}`;
     summary.textContent = liveSummary(spec, activity);
     root.classList.toggle("is-running", running);
     if (!open) return;

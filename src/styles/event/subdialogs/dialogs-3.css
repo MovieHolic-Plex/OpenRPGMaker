@@ -1,0 +1,939 @@
+/* event 표면 — subdialogs/dialogs-3.css. 규칙 순서는 2026-09 세대 접기 전 유효 순서(event/index.css 평탄 순서)를 보존한다. */
+
+/* ── 레코드 픽커 (스위치·변수·아이템·주인공 공용) ──────────────────────────
+   구 RM2003 창(20칸 블록 내비 + 모노스페이스 + 파란 반전 행)을 걷어내고
+   검색 우선 목록 하나로 바꿨다. DESIGN.md: 이벤트 편집기에 RM2K3 레트로 표현 금지. */
+.event-subdialog-backdrop[data-testid="event-record-picker"] .event-subdialog-window.narrow {
+  width: min(460px, calc(100vw - 36px));
+}
+
+.event-record-picker {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  min-height: 0;
+}
+
+.event-record-picker-head {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.event-subdialog-body .event-record-picker-search {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  min-height: 34px;
+  padding: 0 10px;
+  width: 100%;
+}
+
+.event-record-picker-summary {
+  color: var(--text-3);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0 2px;
+  text-transform: uppercase;
+}
+
+.event-record-picker-list {
+  align-content: start;
+  display: grid;
+  gap: 2px;
+  max-height: min(46vh, 380px);
+  min-height: 0;
+  overflow: auto;
+  padding: 2px;
+}
+
+.event-record-picker-section {
+  align-items: center;
+  color: var(--text-3);
+  display: flex;
+  font-size: 10.5px;
+  font-weight: 700;
+  justify-content: space-between;
+  letter-spacing: 0.06em;
+  padding: 10px 8px 4px;
+  text-transform: uppercase;
+}
+
+.event-record-picker-section:first-child {
+  padding-top: 2px;
+}
+
+.event-record-picker-section-count {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.event-record-picker-row-group {
+  display: grid;
+  gap: 2px;
+}
+
+.event-record-picker-row {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  min-height: 40px;
+  padding: 5px 8px;
+  text-align: left;
+  width: 100%;
+}
+
+.event-record-picker-row:hover {
+  background: var(--bg-hover);
+}
+
+.event-record-picker-row.selected {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+}
+
+.event-record-picker-row-icon {
+  align-items: center;
+  border-radius: var(--radius-s);
+  display: flex;
+  height: 26px;
+  justify-content: center;
+  overflow: hidden;
+  width: 26px;
+}
+
+.event-record-picker-row-icon img,
+.event-record-picker-row-icon canvas {
+  image-rendering: pixelated;
+}
+
+.event-record-picker-row-main {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.event-record-picker-row-name {
+  color: var(--text-1);
+  font-size: 13.5px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-record-picker-row-name.unnamed {
+  color: var(--text-3);
+  font-style: italic;
+  font-weight: 500;
+}
+
+.event-record-picker-row-meta {
+  color: var(--text-3);
+  font-size: 11.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 아직 아무 데서도 안 쓰이는 레코드 — 지워도 되는 후보라 눈에 띄게 둔다. */
+.event-record-picker-row-meta.unused {
+  color: var(--warning);
+}
+
+.event-record-picker-row-ordinal {
+  color: var(--text-3);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.event-record-picker-rename-row {
+  align-items: center;
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: auto minmax(0, 1fr);
+  padding: 0 8px 4px 34px;
+}
+
+.event-record-picker-rename-label {
+  color: var(--text-3);
+  font-size: 11.5px;
+}
+
+.event-subdialog-body .event-record-picker-rename {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  min-height: 30px;
+  padding: 0 8px;
+  width: 100%;
+}
+
+.event-record-picker-footer {
+  align-items: center;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+}
+
+.event-record-picker-footer-spacer {
+  flex: 1;
+}
+
+.transfer-player-zoom-button.active {
+  background: color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 78%, var(--bg-raised));
+  border-color: var(--accent, var(--accent-border));
+  color: var(--accent, var(--accent));
+}
+
+.transfer-player-map-row:hover,
+.transfer-player-map-row.selected,
+.event-page-move-route-list-row:hover,
+.event-page-move-route-list-row.selected,
+.event-graphic-resource-row:not(.disabled):hover,
+.event-graphic-resource-row.active {
+  background: color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 72%, var(--bg-raised));
+  color: var(--accent, var(--accent));
+}
+
+.event-page-move-route {
+  gap: 10px;
+  grid-template-rows: auto minmax(0, 1fr) 116px 42px;
+}
+
+.event-page-move-route fieldset,
+.transfer-player-direction,
+.event-graphic-radio-group {
+  margin: 0;
+}
+
+.event-page-move-route legend,
+.event-graphic-radio-group legend {
+  color: var(--text-muted, var(--text-2));
+  font: 750 12px/16px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 0 4px;
+}
+
+.transfer-player-direction legend {
+  color: color-mix(in srgb, var(--text, var(--text-1)) 88%, var(--text-muted, var(--text-2)));
+  font: 750 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 0 4px;
+}
+
+.event-page-move-route-frequency-radios span,
+.event-page-move-route-options span,
+.event-page-move-route-parameters span,
+.event-graphic-radio-option {
+  color: var(--text, var(--text-1));
+  font: 600 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.transfer-player-direction-options span {
+  color: var(--text, var(--text-1));
+  font: 600 14px/20px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+/* Map preview keeps a dark stage so the map reads clearly and fills the pane. */
+.transfer-player-preview {
+  background: color-mix(in srgb, var(--bg-canvas, #E7E0D0) 88%, var(--event-popup-field, var(--bg-raised)));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px var(--shadow-pop);
+  padding: 0;
+}
+
+.event-page-move-route-list-row,
+.event-graphic-resource-row {
+  color: var(--text, var(--text-1));
+  font: 600 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.transfer-player-map-row,
+.transfer-player-project {
+  color: var(--text, var(--text-1));
+  font: 600 14px/20px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.transfer-player-project {
+  font-weight: 700;
+}
+
+.event-page-move-route-list-row {
+  border-radius: 5px;
+  margin: 2px 4px;
+  min-height: 28px;
+  padding: 5px 8px;
+}
+
+.event-page-move-route-grid {
+  gap: 6px;
+}
+
+.event-page-move-route-command {
+  min-height: 36px;
+}
+
+.transfer-player-dialog {
+  gap: 12px;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  grid-template-rows: minmax(360px, 42vh) auto auto;
+}
+
+.transfer-player-controls {
+  display: grid;
+  gap: 10px;
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+}
+
+.transfer-player-tree {
+  padding: 10px;
+}
+
+.transfer-player-map-row {
+  border-radius: 6px;
+  min-height: 32px;
+  padding-block: 6px;
+}
+
+.transfer-player-status {
+  color: var(--text, var(--text-1));
+  font: 700 14px/20px ui-monospace, "Cascadia Mono", "Consolas", monospace;
+  padding: 0 12px;
+}
+
+.event-graphic-picker-frame {
+  gap: 10px;
+  padding: 10px;
+}
+
+.event-graphic-resource-list {
+  gap: 3px;
+  grid-auto-rows: minmax(28px, auto);
+  padding: 6px;
+}
+
+.event-graphic-resource-row {
+  border-radius: 6px;
+  min-height: 28px;
+  padding: 4px 7px;
+}
+
+.event-graphic-preview-panel {
+  border: 1px solid color-mix(in srgb, var(--border-default) 68%, white);
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px var(--shadow-pop);
+}
+
+.event-graphic-preview-panel .npc-character-cell {
+  border-radius: 6px;
+}
+
+.event-graphic-preview-panel .npc-character-cell:hover,
+.event-graphic-preview-panel .npc-character-cell.active {
+  border-color: var(--text-inverse, var(--border-subtle));
+  box-shadow: 0 0 0 2px var(--shadow-pop);
+}
+
+@media (max-width: 760px) {
+  .event-subdialog-backdrop,
+  .event-subdialog-backdrop[data-testid="event-page-move-route-dialog"],
+  .event-subdialog-backdrop[data-testid="event-transfer-player-dialog"],
+  .event-subdialog-backdrop[data-testid="event-graphic-dialog"] {
+    align-items: flex-start;
+    padding: 10px;
+  }
+
+  .event-command-picker-grid,
+  .transfer-player-dialog,
+  .event-graphic-picker-frame {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .transfer-player-dialog {
+    grid-template-rows: minmax(240px, 36vh) auto auto;
+  }
+
+  .transfer-player-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .event-page-move-route-top,
+  .event-page-move-route-main,
+  .event-page-move-route-bottom,
+  .event-graphic-option-area {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.event-command-variable-hint.compact.muted {
+  opacity: 0.82;
+  background: transparent;
+  border-style: dashed;
+}
+
+.event-character-id-field-inline {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 40px;
+}
+
+.event-page-action-buttons .btn,
+.event-page-number-tabs .btn,
+.event-editor-modal-footer .btn {
+  align-items: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--event-modern-border);
+  border-radius: 6px;
+  box-shadow: 0 1px 2px var(--shadow-pop);
+  color: var(--text-1);
+  display: inline-flex;
+  font: 700 13px/18px "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 14px;
+  transition: border-color 0.12s ease, background 0.12s ease, color 0.12s ease;
+}
+
+.event-page-number-tabs .btn {
+  border-radius: 8px;
+  color: var(--event-modern-accent);
+  font-size: 16px;
+  height: auto;
+  min-height: 52px;
+  min-width: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.event-graphic-control {
+  display: grid;
+  gap: 8px 10px;
+  grid-template-columns: 72px minmax(0, 1fr);
+  max-width: 100%;
+  min-width: 0;
+}
+
+.event-graphic-control input[data-testid="event-page-sprite-input"] {
+  display: none;
+}
+
+.event-graphic-control .btn {
+  max-width: 100%;
+  min-height: 34px;
+  min-width: 0;
+}
+
+.event-command-face-resource-actions .btn {
+  flex: 0 0 auto;
+  min-height: 30px;
+  min-width: max-content;
+  white-space: nowrap;
+  width: auto;
+  writing-mode: horizontal-tb;
+}
+
+.event-editor-footer-button.primary {
+  background: var(--accent);
+  border-color: var(--accent-border, var(--accent));
+  color: var(--text-on-accent, #2A2521);
+  font-weight: 700;
+}
+
+/* Field monster one-click template dialog */
+.field-monster-template-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 2px 8px;
+}
+
+.field-monster-template-hint {
+  color: var(--text-2);
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.field-monster-template-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-monster-template-label {
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.field-monster-template-textarea,
+.field-monster-template-input {
+  background: var(--bg-inset, var(--event-modern-field));
+  border: 1px solid var(--border-subtle, var(--event-modern-border));
+  border-radius: 6px;
+  color: inherit;
+  font: inherit;
+  min-height: 34px;
+  padding: 8px 10px;
+  resize: vertical;
+  width: 100%;
+}
+
+.field-monster-template-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+}
+
+.field-monster-template-check {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.field-monster-template-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+/* 이벤트 명령 편집 모달 — 2열(폼 / 이미지 리치 프리뷰) 레이아웃 + 종류별 프리뷰.
+   이 슬라이스가 캐스케이드 마지막이 아니다. 깨진 선언은 여기서 고친다. */
+/* 명령 편집 다이얼로그를 2열이 들어갈 만큼 넓힌다. */
+.event-subdialog-window.wide:has(.event-command-edit-dialog) {
+  width: min(780px, calc(100vw - 24px));
+}
+
+/* 선택지 표시: 입력+삭제 버튼+취소 패널이 한 줄에 들어가도록 조금 더 넓힌다. */
+.event-subdialog-window.wide:has(.event-command-choices-inline) {
+  width: min(920px, calc(100vw - 24px));
+}
+
+.event-command-edit-columns:has(.event-command-choices-inline) > .event-command-edit-body {
+  max-height: min(70vh, 640px);
+  overflow: auto;
+  padding-right: 2px;
+}
+
+/* 장소 이동: 인라인 맵 피커 폭 확보 (우측 중복 프리뷰는 위 규칙에서 숨김) */
+.event-subdialog-window.wide:has(.transfer-command-editor-inline) {
+  width: min(1040px, calc(100vw - 20px));
+}
+
+.event-command-edit-columns:has(.transfer-command-editor-inline) > .event-command-edit-body {
+  max-height: min(78vh, 760px);
+  overflow: auto;
+  min-width: 0;
+}
+
+/* 이동 경로 설정: 폼 자체에 리스트+프리뷰+버튼 그리드가 있어 더 넓게 잡는다. */
+.event-subdialog-window.wide:has(.move-route-editor) {
+  height: min(720px, calc(100vh - 24px));
+  width: min(1120px, calc(100vw - 24px));
+}
+
+/* 이벤트 프레임 변경: RM2003 그래픽 피커 전체 폭. 우측 범용 프리뷰 숨김. */
+.event-subdialog-window.wide:has(.event-command-frame-editor) {
+  height: min(720px, calc(100vh - 24px));
+  width: min(920px, calc(100vw - 24px));
+}
+
+/* 얼굴 그래픽 변경: 선택 카드 + 낱장 얼굴 갤러리가 들어가도록 폭 확보.
+   (4×4 칸 번호 격자는 폐기됐다 — 갤러리는 등록된 얼굴 파일 전부를 auto-fill 로 깐다.) */
+.event-subdialog-window.wide:has(.event-command-face-editor) {
+  width: min(900px, calc(100vw - 24px));
+}
+
+.event-subdialog-window.wide:has(.change-equipment-command-body) {
+  width: min(760px, calc(100vw - 24px));
+}
+
+.event-command-edit-columns:has(.move-route-editor) > .event-command-edit-body {
+  max-height: min(720px, calc(100vh - 120px));
+  overflow: auto;
+}
+
+.ecp-vital-gauge-fill.full.hp { background: var(--danger, #C4473A); }
+
+.ecp-vital-gauge-fill.full.mp { background: var(--accent, #4A57D6); }
+
+.ecp-pattern-sprite.event-graphic-preview,
+.ecp-pattern-stage .event-graphic-preview {
+  image-rendering: pixelated;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px var(--shadow-pop);
+  background-color: var(--bg-surface);
+  flex: none;
+}
+
+.event-command-frame-live .event-graphic-preview {
+  image-rendering: pixelated;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  background-color: var(--bg-surface);
+  flex: none;
+}
+
+.event-command-frame-sheet-cell .event-graphic-preview {
+  image-rendering: pixelated;
+  background-color: var(--bg-surface);
+  flex: none;
+}
+
+/* setEventGraphicPattern reuses page graphic (RM2003) picker chrome */
+.event-command-frame-editor.event-graphic-rm-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  width: 100%;
+}
+
+/* Force full RM grid even inside command body (override part-3 auto-fit). */
+.event-command-frame-editor .event-graphic-picker-frame {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 10px;
+  min-height: 360px;
+  align-items: start;
+}
+
+.event-command-frame-editor .event-graphic-resource-list {
+  max-height: 420px;
+  min-height: 320px;
+  overflow-y: auto;
+}
+
+.event-command-frame-editor .event-graphic-right-pane {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 56px;
+  gap: 8px;
+  min-width: 0;
+}
+
+.event-command-frame-editor .event-graphic-preview-panel {
+  grid-column: 1 / 3;
+  grid-template-columns: repeat(auto-fill, 48px);
+  justify-content: center;
+  min-height: 194px;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.event-command-frame-editor .event-graphic-option-area {
+  grid-column: 1 / 3;
+  display: grid;
+  grid-template-columns: minmax(140px, 1fr) 140px;
+  gap: 8px;
+  align-items: start;
+}
+
+.event-command-frame-editor .event-graphic-radio-group {
+  min-height: 90px;
+}
+
+.event-command-frame-editor .event-graphic-probe-stack {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  justify-items: center;
+}
+
+.event-command-frame-editor .event-graphic-frame-probe,
+.event-command-frame-editor .npc-walk-preview {
+  background-color: var(--bg-surface);
+  background-repeat: no-repeat;
+  border: 1px solid var(--event-rm-mid, rgba(42,37,33,.20));
+  image-rendering: pixelated;
+}
+
+/* depth 가이드/레일은 event-editor.modern.css 스레드 레일이 SSOT.
+   여기서 약한 16px 밴드를 다시 그리면 parent/child 대비가 뭉개진다. */
+/* ---- [높음-1/중간-5] 커맨드 피커: 검색/아이콘/스티키 푸터/범례 ---- */
+.event-subdialog-backdrop[data-testid="event-command-picker"] .event-subdialog-body {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  padding: 14px 16px 12px;
+}
+
+.event-subdialog-backdrop[data-testid="event-command-picker"] .event-subdialog-window {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: min(860px, calc(100vh - 36px));
+  max-height: calc(100vh - 36px);
+  width: min(860px, calc(100vw - 36px));
+}
+
+.event-subdialog-backdrop[data-testid="event-command-picker"] .event-command-picker-panel {
+  /* 220px 바닥값 때문에 검색 결과가 1건이어도 리스트가 항상 220px 이상 자리를 잡고
+     그 아래가 통째로 빈 검은 공백이 됐다. 바닥을 없애고 천장만 둔다 —
+     결과가 적으면 모달이 같이 줄고, 많으면 여기서 스크롤한다. */
+  background:
+    linear-gradient(var(--event-popup-surface) 30%, transparent) center top / 100% 16px no-repeat local,
+    linear-gradient(transparent, var(--event-popup-surface) 70%) center bottom / 100% 22px no-repeat local;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 8px 28px 0;
+  scrollbar-color: color-mix(in srgb, var(--text-muted, unset) 55%, transparent) transparent;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+}
+
+.event-subdialog-backdrop[data-testid="event-command-picker"] .event-command-picker-panel::-webkit-scrollbar {
+  width: 9px;
+}
+
+.event-subdialog-backdrop[data-testid="event-command-picker"] .event-command-picker-panel::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-muted, unset) 55%, transparent);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+  border-radius: 999px;
+}
+
+.event-command-picker-search-row {
+  display: flex;
+  gap: 8px;
+  min-height: 44px;
+  padding-bottom: 10px;
+}
+
+.event-command-picker-search {
+  flex: 1 1 auto;
+  font: 500 13px/19px var(--font-ui, system-ui, sans-serif);
+  min-height: 36px;
+  min-width: 0;
+}
+
+.event-command-picker-view-toggle {
+  background: var(--surface-panel, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 6px;
+  color: var(--text-muted, var(--text-2));
+  flex: 0 0 auto;
+  font: 650 11px/16px var(--font-ui, system-ui, sans-serif);
+  padding: 4px 10px;
+}
+
+.event-command-picker-view-toggle[aria-pressed="true"] {
+  border-color: color-mix(in srgb, var(--accent, #4A57D6) 60%, transparent);
+  color: var(--accent, var(--text-1));
+}
+
+.event-command-picker-tab {
+  min-height: 34px;
+  padding-inline: 16px;
+}
+
+.event-command-picker-tab::before {
+  font-size: 11px;
+  opacity: 0.75;
+}
+
+.event-command-picker-group-heading[data-category="dialogue"] { --cmdcat: var(--cmdcat-dialogue); }
+
+.event-command-picker-group-heading[data-category="flow"] { --cmdcat: var(--cmdcat-flow); }
+
+.event-command-picker-group-heading[data-category="map"] { --cmdcat: var(--cmdcat-map); }
+
+.event-command-picker-group-heading[data-category="reward"] { --cmdcat: var(--cmdcat-reward); }
+
+.event-command-picker-group-heading[data-category="sound"] { --cmdcat: var(--cmdcat-sound); }
+
+.event-command-picker-group-heading[data-category="actor"] { --cmdcat: var(--cmdcat-actor); }
+
+.event-command-picker-group-heading[data-category="screen"] { --cmdcat: var(--cmdcat-screen); }
+
+.event-command-picker-group-heading[data-category="system"] { --cmdcat: var(--cmdcat-system); }
+
+.event-command-picker-group-heading[data-category="battle"] { --cmdcat: var(--cmdcat-battle); }
+
+.event-command-picker-group-heading[data-category="modern"] { --cmdcat: var(--cmdcat-modern); }
+
+.event-command-picker-group-heading::before {
+  align-items: center;
+  background: color-mix(in srgb, var(--cmdcat, var(--text-dim)) 18%, transparent);
+  border-radius: 4px;
+  color: var(--cmdcat, var(--text-dim, currentColor));
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 10px;
+  height: 16px;
+  justify-content: center;
+  width: 16px;
+}
+
+.event-command-picker-command[data-category="dialogue"] { --cmdcat: var(--cmdcat-dialogue); }
+
+.event-command-picker-command[data-category="flow"] { --cmdcat: var(--cmdcat-flow); }
+
+.event-command-picker-command[data-category="map"] { --cmdcat: var(--cmdcat-map); }
+
+.event-command-picker-command[data-category="reward"] { --cmdcat: var(--cmdcat-reward); }
+
+.event-command-picker-command[data-category="sound"] { --cmdcat: var(--cmdcat-sound); }
+
+.event-command-picker-command[data-category="actor"] { --cmdcat: var(--cmdcat-actor); }
+
+.event-command-picker-command[data-category="screen"] { --cmdcat: var(--cmdcat-screen); }
+
+.event-command-picker-command[data-category="system"] { --cmdcat: var(--cmdcat-system); }
+
+.event-command-picker-command[data-category="battle"] { --cmdcat: var(--cmdcat-battle); }
+
+.event-command-picker-command[data-category="modern"] { --cmdcat: var(--cmdcat-modern); }
+
+.event-command-picker-command-icon {
+  color: var(--cmdcat, var(--text-dim, currentColor));
+  flex: 0 0 auto;
+  font-size: 10px;
+  height: 16px;
+  justify-content: center;
+  margin-right: 7px;
+  opacity: 0.9;
+  width: 16px;
+}
+
+.event-command-picker-page-chip {
+  background: color-mix(in srgb, var(--text-dim, #6B5F52) 14%, transparent);
+  border-radius: 4px;
+  color: var(--text-dim, var(--text-2));
+  flex: 0 0 auto;
+  font: 700 10px/14px var(--font-ui, system-ui, sans-serif);
+  margin-left: 6px;
+  padding: 0 4px;
+}
+
+.event-command-picker-no-result {
+  padding: 18px 6px;
+  text-align: center;
+}
+
+/* ---- DB 동료 로스터(탭2 상단, 이미지 리치) ---- */
+.event-command-picker-companions {
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+}
+
+.event-command-picker-companions-title {
+  color: var(--text-2);
+  font: 750 11px/14px var(--font-ui);
+  margin: 0;
+}
+
+.event-command-picker-companions-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.event-subdialog-backdrop[data-testid="event-command-picker"] .event-command-picker-footer {
+  align-items: center;
+  background: var(--event-popup-surface);
+  border-top: 1px solid var(--border-soft, var(--border-subtle));
+  justify-content: space-between;
+  min-height: 48px;
+  position: relative;
+  padding: 10px 0 0;
+  z-index: 1;
+}
+
+.event-command-picker-legend {
+  align-items: center;
+  color: var(--text-dim, var(--text-2));
+  display: inline-flex;
+  flex-wrap: wrap;
+  font: 600 11px/16px var(--font-ui, system-ui, sans-serif);
+  gap: 5px;
+}
+
+@media (max-width: 1100px) {
+  .event-subdialog-backdrop[data-testid="event-command-picker"] {
+    padding: 18px;
+  }
+
+  .event-subdialog-backdrop[data-testid="event-command-picker"] .event-subdialog-window {
+    height: calc(100vh - 36px);
+    width: calc(100vw - 36px);
+  }
+
+  .event-subdialog-backdrop[data-testid="event-command-picker"] .event-command-picker-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.event-command-picker-legend .command-runtime-badge {
+  margin-left: 0;
+}
+
+/* cream studio */
+.event-command-picker-grid.icon-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.event-command-picker-grid.icon-grid .event-command-picker-command {
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+  min-height: 64px;
+  padding: 8px 6px;
+  text-align: center;
+  white-space: normal;
+}
+
+.event-command-picker-grid.icon-grid .event-command-picker-command-icon {
+  background: color-mix(in srgb, var(--cmdcat, var(--text-dim)) 16%, transparent);
+  border-radius: 6px;
+  font-size: 13px;
+  height: 24px;
+  margin-right: 0;
+  width: 24px;
+}
+
+.event-command-picker-grid.icon-grid .event-command-picker-command {
+  position: relative;
+}
+
+.event-command-picker-grid.icon-grid .event-command-picker-command-label {
+  flex: 0 0 auto;
+  font-size: 11px;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  width: 100%;
+}
+
+.event-subdialog-window.wide:has(.event-command-text-editor) {
+  width: min(940px, calc(100vw - 24px));
+}
+
+/* ---- [중간-4] 모달 깊이: 겹친 서브다이얼로그의 블러 중첩 완화 ---- */
+.event-subdialog-backdrop {
+  backdrop-filter: blur(6px) saturate(1.05);
+}
+
+.event-subdialog-backdrop ~ .event-subdialog-backdrop {
+  backdrop-filter: none;
+  background: var(--bg-surface);
+}

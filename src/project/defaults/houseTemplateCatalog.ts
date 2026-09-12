@@ -11,7 +11,6 @@
 //  · w <= 8 — 후보 슬롯 폭(slotWidth) 필터를 통과해야 실제 배치된다. 큰 필지는 세로로 늘린다.
 //  · estate-*: 본채 + 분리 헛간 날개 한 필지 — 울타리 패스(fences.ts)가 bbox+1 둘레를 치므로
 //    자동으로 "울타리 안에 헛간 있는 큰 집"이 된다.
-//  · aframe-*: kitId 강제(aframe-stone), h = 벽 밴드 + floor((w-1)/2) + 1 정확히.
 //
 // ⚠ 여기 값은 좌표·치수만이다. 타일 번호는 킷(editor/houseKit.ts)이 갖는다.
 
@@ -23,6 +22,8 @@ export interface HouseTemplateWing {
   readonly y: number;
   readonly w: number;
   readonly h: number;
+  /** 이 날개만의 층수(계단식 2층). 생략하면 템플릿의 stories 를 쓴다. */
+  readonly stories?: 1 | 2 | 3;
 }
 
 /** 집 형태 한 종. 순수 데이터 — 구조 복제·JSON 직렬화가 그대로 된다. */
@@ -35,7 +36,7 @@ export interface HouseTemplateDef {
   readonly stories?: 1 | 2 | 3;
   /** 낮은 벽(상단+하단 2행) — 헛간·창고·오두막. */
   readonly lowWall?: boolean;
-  /** 킷 강제 — aframe처럼 지오메트리가 킷에 종속인 템플릿. 랜덤 믹스보다 우선. */
+  /** 킷 강제 — 옥상 데크처럼 지오메트리가 킷에 종속인 템플릿. 랜덤 믹스보다 우선. */
   readonly kitId?: HouseKitId;
   /** 옥상 판자 데크 + 벽면 사다리(파랑 평지붕 전용) — houses.ts applyRoofDeck. */
   readonly roofDeck?: boolean;
@@ -102,18 +103,41 @@ export const HOUSE_TEMPLATE_DEFS: readonly HouseTemplateDef[] = [
   { id: "estate-shed-r", name: "필지(헛간 우)", w: 7, h: 14, stories: 1, wings: [{ x: 0, y: 7, w: 7, h: 7 }, { x: 3, y: 0, w: 4, h: 5 }] },
   { id: "estate-shed-l", name: "필지(헛간 좌)", w: 7, h: 14, stories: 1, wings: [{ x: 0, y: 7, w: 7, h: 7 }, { x: 0, y: 0, w: 4, h: 5 }] },
   { id: "estate-barn", name: "큰 필지(외양간)", w: 8, h: 15, stories: 1, wings: [{ x: 0, y: 8, w: 8, h: 7 }, { x: 2, y: 0, w: 6, h: 5 }] },
-  // ── A자 지붕(이미지 #6) — kitId 강제, h = 벽 밴드 + floor((w-1)/2) + 1 ──
-  { id: "aframe-small", name: "A자 소", w: 5, h: 6, stories: 1, kitId: "aframe-stone", wings: [{ x: 0, y: 0, w: 5, h: 6 }] },
-  { id: "aframe-mid", name: "A자 중", w: 7, h: 7, stories: 1, kitId: "aframe-stone", wings: [{ x: 0, y: 0, w: 7, h: 7 }] },
-  { id: "aframe-wide", name: "A자 대", w: 8, h: 7, stories: 1, kitId: "aframe-stone", wings: [{ x: 0, y: 0, w: 8, h: 7 }] },
-  { id: "aframe-low", name: "A자 낮은", w: 7, h: 6, stories: 1, lowWall: true, kitId: "aframe-stone", wings: [{ x: 0, y: 0, w: 7, h: 6 }] },
+  // ── 계단식 2층(2026-09-11) — 위층이 드러나는 집. 예전 A자 지붕 4종을 대체한다.
+  // 날개마다 stories 를 적어 두면 열 구간마다 벽 밴드가 달라져 "층이 내려앉는" 실루엣이 된다.
+  { id: "tier-front", name: "계단식 2층", w: 7, h: 15, stories: 2, wings: [
+    // 뒤쪽 2층 본채와 앞쪽 전폭 1층이 겹치지 않고 세로로 붙는다 — 층수 경계에서
+    // 열 구간이 나뉘어 본채 벽이 1층 지붕 위로 드러난다. 겹쳐 짜면 앞 날개는
+    // 좌우로 삐져나온 폭만 남아 '지붕 플랩'처럼 읽힌다(실측).
+    { x: 1, y: 0, w: 5, h: 9, stories: 2 },
+    { x: 0, y: 9, w: 7, h: 6, stories: 1 },
+  ] },
+  { id: "tier-wide", name: "계단식 2층(넓은 1층)", w: 8, h: 11, stories: 2, wings: [
+    { x: 2, y: 0, w: 4, h: 11, stories: 2 },
+    { x: 0, y: 5, w: 8, h: 6, stories: 1 },
+  ] },
+  { id: "tier-symmetric", name: "계단식 2층(좌우 날개)", w: 8, h: 12, stories: 2, wings: [
+    { x: 2, y: 0, w: 4, h: 12, stories: 2 },
+    { x: 0, y: 4, w: 3, h: 8, stories: 1 },
+    { x: 5, y: 4, w: 3, h: 8, stories: 1 },
+  ] },
+  { id: "tier-l", name: "계단식 2층(ㄱ자)", w: 8, h: 13, stories: 2, wings: [
+    { x: 0, y: 0, w: 4, h: 13, stories: 2 },
+    { x: 0, y: 7, w: 8, h: 6, stories: 1 },
+  ] },
   // ── 옥상 데크 — 파랑 평지붕 위 판자 보행면 + 벽면 사다리(322) ──
   { id: "rooftop-deck", name: "옥상 데크", w: 7, h: 8, stories: 1, kitId: "blue-stone", roofDeck: true, wings: [{ x: 0, y: 0, w: 7, h: 8 }] },
 ];
 
 /** 원점 기준 날개를 시공 좌표로 평행이동한다. 형태 데이터의 유일한 전개 경로. */
 export function houseTemplateWingsAt(def: HouseTemplateDef, x: number, y: number): HouseTemplateWing[] {
-  return def.wings.map((wing) => ({ x: wing.x + x, y: wing.y + y, w: wing.w, h: wing.h }));
+  return def.wings.map((wing) => ({
+    x: wing.x + x,
+    y: wing.y + y,
+    w: wing.w,
+    h: wing.h,
+    ...(wing.stories === undefined ? {} : { stories: wing.stories }),
+  }));
 }
 
 /** id로 형태를 찾는다. 알 수 없는 id는 undefined — 호출부가 경고 후 제거한다. */

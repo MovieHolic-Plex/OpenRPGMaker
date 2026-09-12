@@ -137,7 +137,35 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
   `src/project/locationTransitions.ts`, 참조·복구 `src/project/mapLocationReferences.ts`,
   편집기 상태·store 편집 `src/editor/mapLocationLayerState.ts`, DOM 오버레이·인스펙터
   `src/editor/mapLocationLayer.ts`, 라벨 문장 `src/editor/mapLocationLabels.ts`,
+  **쓰는 지점의 빈 상태 행동** `src/editor/locationDrawCta.ts`,
   조수 툴 `src/editor/tools/mapLocationTools.ts`, 스타일 `src/styles/editor/map-location-layer.css`.
+  켜진 동안의 도구 양보는 `src/editor/locationDrawMode.ts`.
+
+- **켜진 동안은 구역 그리기 도구다 (2026-09-11, 같은 날 보강).** 브러시 `is-active` 를 끄고
+  토글은 「구역 그리기」로 바뀐다. **도구 전이는 감시자 하나가 잡는다** —
+  `installLocationDrawModeGuard()` 가 켠 순간의 도구를 기억하고, 다른 도구로 넘어가면 끈다.
+  팔레트 칸·사이드바 레이어·구조 킷·건축 팔레트가 각자 끄지 않는다: 그렇게 한 줄씩 붙이던
+  1차 구현은 팔레트와 `leftLayerSwitcher` 를 빠뜨려 「타일을 골랐는데 클릭이 구역을 만드는」
+  상태를 남겼다. `editorState.set({ tool })` 를 직접 쓰는 진입점이 열 곳 남짓이라 목록으로는
+  다음 진입점이 조용히 빠진다. **팬은 기준선을 바꾸지 않는다** — 지도를 보려고 밀었다가
+  돌아온 사람에게서 그리기를 빼앗으면 안 된다. 도구 state 는 그대로 두므로 끄면 직전 브러시가
+  바로 돌아온다.
+- **같은 칸 클릭은 구역을 만들지 않는다**(`isLocationDrawClick`). 1칸짜리(문·단상)는
+  **Shift+클릭**이 명시 통로다 — 없으면 8×6으로 그린 뒤 인스펙터 숫자를 1로 줄여야 했다.
+- 0개일 때 맵 위 `map-location-empty-ghost` 「여기를 드래그」가 다음 행동을 그린다.
+  **고스트도 카메라 계약을 따른다** — `repositionMapLocationLayer()` 가 상자·설계 고스트와
+  함께 이것도 옮긴다. 빠뜨리면 팬 한 번에 점선 상자가 맵 밖으로 나간다(같은 날 실측).
+- 인스펙터 참조 0건은 쓰는 법을 말하고, N건은 사이트 버튼으로 이벤트 편집기·맵 설정 인카운터·
+  자료집(공통 이벤트·부대)을 연다. **참조 수와 목록은 현재 맵만 센다** — 로케이션 ID 는 맵마다
+  다시 쓰이므로(`loc1`) 프로젝트 전량을 세면 「참조 3건」 옆에 버튼 하나만 서는 거짓말이 된다.
+  같은 이유로 `repairMapLocationReferences(project, id, plan, mapId)` 의 네 번째 인자가
+  편집기 복구 경로에 필수다 — 없으면 다른 맵의 **다른 장소**를 함께 고친다.
+- **도구 켜짐은 localStorage 에 남는다.** 새로고침·다음 방문에 그대로 켜진 채 열리므로
+  감시자는 설치 시점의 도구를 기준선으로 잡고 시작한다(첫 상태 변화에 곧바로 꺼지지 않는다).
+- **그리는 동안 패널을 다시 짓지 마라.** `subscribeLocationLayer` 는 선택·드래그 미리보기까지
+  받으므로, 그 안에서 `scheduleFullPanelRefresh()` 를 부르면 pointermove 마다 좌측 팔레트·맵
+  트리가 재조립된다. `editor.ts` 는 마지막으로 반영한 `enabled` 와 다를 때만 툴바·패널을 다시
+  짓는다(2026-09-11 실측).
 - **`layoutPlan.regions` 를 사람이 편집하는 층으로 쓰지 마라.** `setMapLayoutPlan` 이 통째로
   갈아치우므로 사람 편집이 재시공에서 사라진다. 관계·승격 계약은
   `openwiki/runtime-project-schema.md` 의 「명명 로케이션 레이어」 절이 소유한다.
@@ -176,7 +204,80 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
 - 브라우저 QA: `npm run dev:worktree` 뒤
   `MAP_LOCATION_QA_URL=http://127.0.0.1:<포트> node scripts/qa/map-location-layer.mjs`
   → `verify-shots/oprn-020/SUMMARY.md`. 우클릭 영역 선택·붙여넣기 확정·선택 도구 맵 밖 팬·제스처 중 레이어 끄기 등 실측 엣지 단계를 포함한 16개 단계가 실 브라우저 이벤트 경로로 검증된다.
+- **어포던스 감사 + A 적용(2026-09-11):** 이 층의 효용이 «쓰는 지점» 에서 안 읽힌다는 실측과 후보 수정
+  (A/B/D 적용, C 미적용)은 `openwiki/location-layer-affordance-audit.md` 가 소유한다. 빈 상태의 행동은
+  `src/editor/locationDrawCta.ts` 하나가 내고 조건 폼·트리거·인카운터가 그걸 부른다 — 새 표면이
+  생기면 여기에 줄을 더하지 말고 이 모듈을 불러라. 라벨·문구를 갈아치우기 전에 그 문서를 읽어라:
+  문구 고정 테스트(`test/locationTransitionAuthoring.test.ts`)와 용어 정본이 걸려 있다.
+
+### 로케이션 역할과 겹침 클릭 (2026-09-12)
+
+로케이션이 **맵 시스템의 저작 표면**이 된다. `safeZones`(추격자 안전지대)와 `farmableArea`
+(경작지)는 런타임에서 오래 동작했지만 사람이 그릴 표면이 없었다 — 조수 툴과 코드가 좌표를
+찍어 넣고 검사기는 개수만 보여 줬다. 이제 구역에 역할을 주면 그 사각형이 그 배열로 투영된다.
+
+- 소유 파일: 순수 규칙 `src/project/locationRoles.ts`, 스키마 `GameMap.locationRoleProjection`,
+  검증 `shapeEventFields.validateLocationRoleProjection`, 상태 `setLocationRole`,
+  인스펙터 역할 선택기(`map-location-role-<role>`), 스타일 `map-location-layer.css`.
+- **정본은 로케이션 한 방향이다.** `safeZones`/`farmableArea` 는 투영이고, 기록에 없는 항목은
+  손 저작·조수 툴의 것이라 **절대 지우지 않는다**. 추격자 툴(`make_chase_scene`)과 경작 툴이
+  이미 그 배열을 직접 쓰므로 그 툴들을 로케이션 생성으로 바꾸지 마라.
+- **투영 기록은 맵에 둔다(`locationRoleProjection`).** 로케이션 쪽(`origin`)에 두면 구역을
+  지웠을 때 표시도 함께 사라져 옛 사각형을 식별할 수 없고, `safeZones` 에 **유령이 남는다**
+  (2026-09-12 브라우저 QA 가 실측으로 잡았다). 기록은 로케이션 ID → 마지막 투영 사각형이다.
+- **재투영은 `editMap` 한 곳에서 부른다.** 구역 만들기·옮기기·크기·삭제·역할 토글이 모두
+  그 함수를 지난다. 이동 경로에만 붙이면 삭제가 유령을 남기고, 삭제에만 붙이면 이동이 남는다.
+  이동 뒤 재투영을 빠뜨려 QA 가 «옛 자리에 그대로» 를 잡은 것이 이 조항의 근거다.
+- 역할은 **하나만** 갖는다(`tags` 의 전용 낱말). 둘을 겹치면 어느 배열의 정본인지 흐려진다.
+
+#### 로케이션과 이벤트가 같은 칸에서 만날 때 (클릭 소유권)
+
+순수 판정기는 `src/editor/locationPointerPriority.ts` 하나다. 같은 판정을 오버레이의
+`pointerdown` 과 캔버스의 더블클릭 경로가 함께 쓰므로 if 를 복사하지 마라.
+
+- **한 번 클릭은 구역의 것이다.** 그 칸에 NPC 가 서 있어도 마찬가지다 — 면을 칠하려는 사람이
+  이벤트 하나 때문에 막히면 그리기 도구 자체가 못 쓰게 된다.
+- **Alt+클릭 또는 더블클릭은 그 칸의 이벤트를 연다.** 도구를 끄고 레이어를 옮기고 다시 찾는
+  3단계를 한 번의 클릭으로 줄인다. 오버레이는 `openEventFromCanvas` 로 손을 떼고 캔버스에 넘긴다.
+- **클릭 수는 시각 기반이다.** `pointerdown` 의 `detail` 은 이 저장소 실측(2026-08-11)에서
+  **항상 0** 이다. `locationClickCount` 가 500ms 같은-타일 규칙을 쓰고, 그 상수는 `EditScene`
+  의 `EVENT_LAYER_DOUBLE_CLICK_MS` 와 같은 값이어야 한다(같은 손놀림에 같은 답).
+- 이벤트 판정은 캔버스가 한다(`eventIdAt` → `eventIdCoveringClientPoint`). 편집 중 초안
+  (`editorWorkingEvents`) 을 아는 쪽이 씬이라, 오버레이가 store 를 직접 읽으면 «보이는데
+  안 잡히는» 칸이 생긴다.
+- 브라우저 QA: `LOCATION_ROLES_QA_URL=http://127.0.0.1:<포트> node scripts/qa/location-roles.mjs`
+  → `verify-shots/loc-roles/`. 회귀: `test/locationRoles.test.ts`, `test/locationPointerPriority.test.ts`.
+
 ### 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
+
+### 로케이션 앵커 — 좌표 대신 이름으로 가리키기 (2026-09-12)
+
+인카운터(`conditions.locationId`)가 이미 하던 일을 필드 스폰과 퀘스트로 넓힌다. 소유 파일은
+순수 해석기 `src/project/locationAnchors.ts` 하나이고, 소비자는 각자 그걸 부른다.
+
+- **추가 필드다. 좌표를 지우지 마라.** `FieldSpawnDef.locationId`,
+  `PickupSpec`/`DropSpec`/`BlockerSpec`/`reach`/`QuestGate` 의 `locationId` 는 전부 optional 이고
+  `x`/`y`(스폰은 `area`)가 그대로 남는다. 이유 셋: 옛 저장본이 그대로 돌고(마이그레이션 없음),
+  구역이 지워지면 lint 가 끊김을 올리는 동안 옛 좌표로 계속 동작하며, 로케이션이 하나도 없는
+  맵에서는 좌표가 유일한 길이다.
+- **둘 다 있으면 `locationId` 가 이긴다** — 인카운터와 같은 규칙이다.
+- **앵커는 구역의 중심 칸이다**(`locationCenter`). 목적지·블로커·게이트가 좌표 한 점을 요구하기
+  때문이다. 통행 조정(`resolveEventPlacement`)이 한 칸 옮길 수 있고 그건 경고로 보고된다 —
+  QA 단언도 «정확한 중심» 이 아니라 «구역 안» 을 계약으로 잡는다.
+- **해석기는 맵을 명시로 받는다.** 로케이션 ID 는 맵 안에서만 유일하고(`loc1`), 퀘스트 목적지는
+  다른 맵의 구역을 가리킬 수 있다. 맵을 안 좁히면 다른 장소를 집는다(참조 수 집계에서 같은
+  함정을 이미 실측했다 — `countLocationReferences` 의 `mapId` 인자).
+- **필드 스폰은 `normalizeFieldSpawn(project, map, spawn)` 에서 푼다.** 런타임 진입이 두 곳
+  (`createFieldSpawnRuntime`, `addFieldSpawnEntry`)이라 정규화 한 곳에서 풀어야 갈라지지 않는다.
+  저작 툴은 `parseFieldSpawn` 에서 이름을 같은 맵 로케이션으로 해석하고, 못 찾으면 오류다 —
+  오타를 조용히 좌표로 되돌리면 «구역을 옮겼는데 스폰이 안 따라오는» 상태를 디버깅하게 된다.
+- **퀘스트는 `placeQuestEvent` 한 곳에서 푼다.** 대화 NPC·전투 블로커·도달 지점·수집물·드롭·
+  게이트가 모두 그 함수를 지난다. 호출부마다 붙이면 다음 단계 종류가 조용히 빠진다.
+- 툴 스키마는 `questToolSchemas.ts` 의 `position` 하나를 넓혀 reach·pickup·drop·blocker·gate·기버
+  NPC 가 한꺼번에 앵커를 받는다.
+- 회귀: `test/locationAnchors.test.ts`(9건). 브라우저 QA:
+  `LOCATION_ANCHOR_QA_URL=http://127.0.0.1:<포트> node scripts/qa/location-quest-anchor.mjs`
+  → `verify-shots/loc-anchor/`.
 
 빌더 `layoutPlan.regions` 를 명명 로케이션으로 **일괄** 옮기는 창. OPRN-OUT-020 이 미뤄 뒀던
 항목이고, 자동 승격은 여전히 없다 — 사람이 보고 고르는 수단이 생겼을 뿐이다.

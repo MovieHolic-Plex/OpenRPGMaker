@@ -60,6 +60,7 @@ function regionSession(): SpatialAuthoringSession {
     breadcrumb: [],
     legacyOrigin: null,
     placeKindFilter: null,
+    regionKindFilter: null,
     inspectorOpen: true,
   };
 }
@@ -75,6 +76,7 @@ function worldSession(mode: SpatialAuthoringSession["mode"] = "design"): Spatial
     breadcrumb: [],
     legacyOrigin: null,
     placeKindFilter: null,
+    regionKindFilter: null,
     inspectorOpen: true,
   };
 }

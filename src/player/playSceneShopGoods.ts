@@ -77,10 +77,11 @@ export const EQUIPPABLE_ITEM_TYPES: ReadonlySet<string> = new Set([
   "accessory",
 ]);
 
-function itemCategory(type: ItemType): ShopCategory {
-  if (EQUIPPABLE_ITEM_TYPES.has(type)) return "equipment";
-  if (type === "medicine" || type === "book" || type === "seed") return "consumable";
-  if (type === "special" || type === "switch") return "special";
+function itemCategory(item: ItemRecord): ShopCategory {
+  if (EQUIPPABLE_ITEM_TYPES.has(item.type)) return "equipment";
+  // 일반 물품이라도 '소비'로 저작됐으면 소비 칸이다 — 회복약이 재료에 들어가던 분류 오류.
+  if (item.type === "medicine" || item.type === "book" || item.type === "seed" || item.consumable) return "consumable";
+  if (item.type === "special" || item.type === "switch") return "special";
   return "material";
 }
 
@@ -92,7 +93,7 @@ export function itemToGoods(item: ItemRecord): ShopGoods {
     description: item.description ?? "",
     source: "item",
     typeLabel: ITEM_TYPE_LABELS[item.type] ?? item.type,
-    category: itemCategory(item.type),
+    category: itemCategory(item),
     iconResourceId: item.iconResourceId ?? item.imageResourceId,
     itemType: item.type,
   };

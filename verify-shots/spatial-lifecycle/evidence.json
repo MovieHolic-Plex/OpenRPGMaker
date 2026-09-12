@@ -1,0 +1,55 @@
+{
+  "objectsTabActivateVisible": true,
+  "tools": {
+    "refreshRoot": {
+      "ok": true,
+      "code": "transfer-retrigger",
+      "summary": "Spatial refresh: 49 occurrences · 9 maps"
+    },
+    "cloneRoot": {
+      "ok": true,
+      "code": "transfer-retrigger",
+      "summary": "Spatial clone: 49 occurrences · 9 maps"
+    },
+    "deleteReject": {
+      "ok": false,
+      "code": "external-connection",
+      "summary": "'edit_spatial_occurrence' 실행 실패: external-connection: connection:23:geography-contract-root13:authored-road, spatial-enter:23:geography-contract-root:64:port:49"
+    },
+    "deleteRemove": {
+      "ok": true,
+      "code": "transfer-retrigger",
+      "summary": "Spatial delete: 26 occurrences · 6 maps"
+    },
+    "unlinkRoute": {
+      "ok": false,
+      "code": "unsupported",
+      "summary": "'edit_spatial_occurrence' 실행 실패: connection:23:geography-contract-root13:authored-road is a compiled geography route — remove it by editing the source design ro"
+    },
+    "unlinkDoc": {
+      "ok": true,
+      "code": "transfer-retrigger",
+      "summary": "Spatial unlink: 2 occurrences · 1 maps"
+    },
+    "relinkDoc": {
+      "ok": true,
+      "code": "transfer-retrigger",
+      "summary": "Spatial link: 2 occurrences · 1 maps"
+    },
+    "moveWorldChild": {
+      "ok": true,
+      "code": "transfer-retrigger",
+      "summary": "Spatial move: 148 occurrences · 28 maps",
+      "movedX": 20
+    },
+    "legacyCode": "spatial-inactive"
+  },
+  "refreshEnabled": true,
+  "deleteEnabled": true,
+  "detachEnabled": true,
+  "duplicateEnabled": true,
+  "externalErrorText": "외부 연결이 걸려 있습니다 — 「확인」을 누르면 외부 연결을 제거하고 실행합니다",
+  "retryConfirmVisible": true,
+  "retryResultText": "미리보기",
+  "retryErrorText": ""
+}

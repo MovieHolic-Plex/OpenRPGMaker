@@ -38,7 +38,6 @@ export const PUBLIC_HOUSE_KIT_IDS = [
   "amber-wood",
   "slate-wood",
   "timber-hall",
-  "aframe-stone",
 ] as const satisfies readonly HouseKitId[];
 
 export const INTERNAL_ONLY_HOUSE_KIT_IDS = [] as const satisfies readonly HouseKitId[];

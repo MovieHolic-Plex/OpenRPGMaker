@@ -7,7 +7,7 @@ import { roadComponentNotes } from "@/editor/tools/village/audit";
 import type { GameMap } from "@/project/types";
 
 // 형태 카탈로그(2026-07-17, 30종+) 계약 테스트 — 모든 템플릿이 실제로 시공 가능해야 하고,
-// 신규 지오메트리(A자 피라미드·낮은 벽·옥상 데크·estate 분리 헛간)가 규약대로 전개돼야 한다.
+// 신규 지오메트리(계단식 2층·낮은 벽·옥상 데크·estate 분리 헛간)가 규약대로 전개돼야 한다.
 
 const E = TILE.EMPTY;
 const G = 270; // 풀
@@ -60,67 +60,76 @@ describe("집 형태 카탈로그", () => {
     }
   });
 
-  it("aframe-stone은 랜덤 믹스 목록에 없다 (지오메트리 종속 킷)", () => {
-    expect(ALL_HOUSE_KIT_IDS).toContain("aframe-stone");
-    expect(MIXABLE_HOUSE_KIT_IDS).not.toContain("aframe-stone");
+  it("모든 공개 킷이 랜덤 믹스 목록에 들어 있다 (지오메트리 종속 킷 없음)", () => {
+    // 2026-09-11: A자(피라미드) 킷 삭제로 ALL 과 MIXABLE 이 같아졌다.
+    expect(MIXABLE_HOUSE_KIT_IDS).toEqual(ALL_HOUSE_KIT_IDS);
   });
 });
 
-describe("A자 지붕 (aframe-stone)", () => {
-  it("홀수 폭 7: 꼭짓점 374 + 행마다 좁아지는 사선 캡 354/355 + 처마 405", () => {
+describe("계단식 2층 (날개별 층수)", () => {
+  it("2층 본채 앞 1층 날개가 붙어도 시공된다", () => {
     const map = freshMap();
     const result = stampFootprintHouseKit(map, {
-      kitId: "aframe-stone",
-      stories: 1,
-      wings: [{ x: 4, y: 4, w: 7, h: 7 }],
+      kitId: "blue-stone",
+      wings: [
+        { x: 4, y: 4, w: 5, h: 12, stories: 2 },
+        { x: 3, y: 10, w: 7, h: 6, stories: 1 },
+      ],
       windows: false,
     });
     expect(result.ok, result.reason).toBe(true);
-    // 피라미드 3행 + 처마(y=7) + 벽 3행(y=8..10).
-    expect(lowerAt(map, 7, 4)).toBe(374); // 꼭짓점(중앙 x=7) — 불투명이라 하위 (2026-07-17 교정)
-    expect(upperAt(map, 6, 5)).toBe(354); // 사선 캡 좌
-    expect(upperAt(map, 8, 5)).toBe(355); // 사선 캡 우
-    expect(upperAt(map, 5, 6)).toBe(354);
-    expect(upperAt(map, 9, 6)).toBe(355);
-    expect(lowerAt(map, 7, 6)).toBe(404); // 내부 채움
-    expect(lowerAt(map, 4, 6)).toBe(G); // 사선 바깥은 잔디 그대로 (삼각 실루엣)
-    expect(lowerAt(map, 4, 7)).toBe(405); // 처마는 벽 전체 폭
-    expect(lowerAt(map, 10, 7)).toBe(405);
-    expect(lowerAt(map, 4, 8)).toBe(12); // 석벽 상단 좌
-    expect(result.doorAt).toEqual({ x: 7, y: 10 });
+    // 좌우로 넓어진 1층 날개가 본채보다 아래까지 내려와 "위층이 드러나는" 실루엣을 만든다.
+    expect(lowerAt(map, 3, 15)).not.toBe(G);
+    expect(lowerAt(map, 3, 4)).toBe(G); // 2층 본채 위쪽 바깥은 잔디
   });
 
-  it("짝수 폭 8: 꼭짓점은 사선 캡 쌍(354+355)", () => {
+  it("날개 층수를 선언하지 않으면 계획 층수를 쓴다", () => {
     const map = freshMap();
     const result = stampFootprintHouseKit(map, {
-      kitId: "aframe-stone",
-      stories: 1,
-      wings: [{ x: 4, y: 4, w: 8, h: 7 }],
+      kitId: "blue-stone",
+      stories: 2,
+      wings: [{ x: 4, y: 4, w: 6, h: 9 }],
       windows: false,
     });
     expect(result.ok, result.reason).toBe(true);
-    expect(upperAt(map, 7, 4)).toBe(354);
-    expect(upperAt(map, 8, 4)).toBe(355);
   });
 
-  it("날개 높이가 폭 규약과 다르면 이유를 밝히고 거부한다", () => {
+  it("1층 날개 높이가 1층 최소치보다 낮으면 이유를 밝히고 거부한다", () => {
     const map = freshMap();
     const result = stampFootprintHouseKit(map, {
-      kitId: "aframe-stone",
-      stories: 1,
-      wings: [{ x: 4, y: 4, w: 7, h: 9 }],
+      kitId: "blue-stone",
+      wings: [
+        { x: 4, y: 4, w: 5, h: 12, stories: 2 },
+        { x: 3, y: 10, w: 7, h: 4, stories: 1 },
+      ],
       windows: false,
     });
     expect(result.ok).toBe(false);
-    expect(result.reason).toContain("h=7");
+    expect(result.reason).toContain("최소");
   });
 
-  it("rect 스탬프도 지원한다 (roofBodyRows 무시, 폭 종속 높이)", () => {
+  // 2026-09-11 사용자 실측: 층수가 다른 두 날개가 가로로 맞닿으면, 왼쪽 날개의 윗층
+  // 벽(중단 행)과 오른쪽 날개의 아래 벽(상단 행)이 같은 행에서 만나 역할이 같아진다.
+  // 역할 연속으로 런을 재면 좌측 끝 타일이 오른쪽 덩어리의 왼쪽 모서리에 붙는다.
+  it("층이 다른 두 날개가 맞닿아도 각 덩어리가 자기 좌우 모서리로 마감된다", () => {
     const map = freshMap();
-    const result = stampRectHouseKit(map, { x: 3, y: 3, width: 7, stories: 1, roofBodyRows: 1, kitId: "aframe-stone", windows: false });
+    const result = stampFootprintHouseKit(map, {
+      kitId: "bright-plaster",
+      windows: false,
+      wings: [
+        { x: 3, y: 3, w: 5, h: 12, stories: 2 }, // 왼쪽 2층 본채 (x3..7)
+        { x: 8, y: 6, w: 4, h: 9, stories: 1 },  // 오른쪽 1층 날개 (x8..11)
+      ],
+    });
     expect(result.ok, result.reason).toBe(true);
-    expect(result.height).toBe(7); // floor(6/2)=3 + 처마 1 + 벽 3
-    expect(lowerAt(map, 6, 3)).toBe(374); // 꼭짓점 — 하위 (2026-07-17 교정)
+    // 벽 밴드가 실제로 겹치는 행 y=12: 왼쪽은 2층 중단 행, 오른쪽은 1층 상단 행.
+    // 왼쪽 덩어리는 좌 모서리(42)로 시작해 우 모서리(44)로 끝나고,
+    // 오른쪽 덩어리는 좌 모서리(12)로 시작해 우 모서리(14)로 끝나야 한다.
+    const rowAt = (y: number, x0: number, x1: number): number[] =>
+      Array.from({ length: x1 - x0 + 1 }, (_, i) => lowerAt(map, x0 + i, y));
+    expect(rowAt(12, 2, 12)).toEqual([G, 42, 43, 43, 43, 44, 12, 13, 13, 14, G]);
+    // 아래 행은 두 덩어리가 같은 역할(하단)이어도 각자 좌우 모서리로 마감된다.
+    expect(rowAt(14, 2, 12)).toEqual([G, 72, 73, 73, 73, 74, 72, 73, 73, 74, G]);
   });
 });
 

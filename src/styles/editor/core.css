@@ -1,3 +1,0 @@
-/* Split wrapper: preserves core.css cascade order. */
-@import "./core.part-1.css";
-@import "./core.part-2.css";

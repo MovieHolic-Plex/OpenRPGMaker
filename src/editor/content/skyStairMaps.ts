@@ -653,7 +653,7 @@ function wheatMap(): GameMap {
   rect(map, { x: 17, y: 11 }, { x: 18, y: 12 }, TILE.PATH);
   // 농가 둘 + 헛간 하나(낮은 벽) — 밀밭은 건물이 드물어야 벌판으로 읽힌다.
   buildHouses(map, [
-    { x: 4, y: 5, width: 6, stories: 2, roofBodyRows: 2, kitId: "aframe-stone" },
+    { x: 4, y: 5, width: 6, stories: 2, roofBodyRows: 2, kitId: "blue-stone" },
     { x: 23, y: 6, width: 5, stories: 1, roofBodyRows: 1, kitId: "amber-wood" },
     { x: 23, y: 19, width: 6, stories: 1, roofBodyRows: 1, kitId: "timber-hall", lowWall: true },
   ]);

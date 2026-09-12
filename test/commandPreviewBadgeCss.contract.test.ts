@@ -8,12 +8,12 @@
 // 상태는 전 배지가 color == backgroundColor 이라 RED 다. CSS 가 고쳐진 뒤에만 GREEN.
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { eventSurfaceFileContaining } from "./helpers/eventSurfaceCss";
 
-// 배지 스타일이 선언된 커맨드 프리뷰 CSS 파일.
-const CSS_FILE = new URL(
-  "../src/styles/editor/event-editor.command-preview/02-changeface-play-mock-larger.css",
-  import.meta.url,
-);
+// 배지 스타일이 선언된 커맨드 프리뷰 CSS 파일. 2026-09-11 Task 13 부터 옛 02-changeface-play-mock-larger.css 의 규칙은
+// 구성 요소 버킷(previews/command-preview*.css) 에 있다 → 배지 규칙을 가진 리프 시트를 찾아 읽는다.
+const CSS_FILE = eventSurfaceFileContaining(/\n\.ecp-gold-badge \{/u);
+if (!CSS_FILE) throw new Error("이벤트 표면에 .ecp-gold-badge 규칙을 가진 시트가 없다");
 
 const BADGE_SELECTORS = [
   ".ecp-gold-badge",

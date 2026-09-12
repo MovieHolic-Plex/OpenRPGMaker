@@ -412,6 +412,69 @@ describe("author_house single", () => {
     expect(projectLint(ctx.project).some((issue) => issue.code === "transfer-impassable")).toBe(false);
   });
 
+  it("계단식 2층 linked-interior는 상층 전이가 통행 가능한 칸에 착지하고 재발동 계단이 없다", async () => {
+    const ctx = { project: createBlankProject() };
+    const result = runTool(ctx, "author_house", {
+      kind: "single",
+      mapId: ctx.project.startMapId,
+      kitId: "bright-plaster",
+      templateId: "tier-wide",
+      wings: [{ x: 2, y: 2, w: 8, h: 11 }],
+      interior: "linked-interior",
+      door: true,
+      yard: [],
+    });
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+
+    const floor2 = Object.values(ctx.project.maps).find((map) => map.id.endsWith("_f2"));
+    expect(floor2, "2층 실내맵").toBeDefined();
+    // 위층에는 바깥 문이 없다 — 자기 맵 벽 칸을 가리키는 미연결 정문 이벤트는 없어야 한다.
+    expect(floor2!.events.some((event) => event.id === `ev_entrance_${floor2!.id}`)).toBe(false);
+
+    const issues = projectLint(ctx.project);
+    expect(issues.filter((issue) => issue.code === "transfer-impassable")).toEqual([]);
+
+    // 하강 전이는 올라가는 계단(밟기) 칸이 아니라 그 옆 바닥에 착지해야 한다 —
+    // 계단 칸에 내리면 밟기 전이 위에 서 있는 상태가 된다.
+    const descentTargets = floor2!.events
+      .flatMap((event) => event.pages ?? [])
+      .flatMap((page) => page.commands)
+      .filter((command) => command.kind === "transfer" && command.mapId !== floor2!.id);
+    expect(descentTargets.length).toBeGreaterThan(0);
+    for (const command of descentTargets) {
+      if (command.kind !== "transfer") continue;
+      const target = ctx.project.maps[command.mapId]!;
+      const index = command.y * target.width + command.x;
+      expect(target.lowerTiles[index], `착지 (${command.x},${command.y})`).not.toBe(-1);
+      const landingEvent = target.events.find(
+        (event) => event.x === command.x && event.y === command.y
+          && (event.pages ?? []).some((page) => page.trigger.kind === "playerTouch"),
+      );
+      expect(landingEvent, `착지 (${command.x},${command.y})의 밟기 이벤트`).toBeUndefined();
+    }
+  });
+
+  it("날개 선언 층수(stories:2)는 높이 휴리스틱보다 우선한다 — 실내는 2층까지만", async () => {
+    const ctx = { project: createBlankProject() };
+    const result = runTool(ctx, "author_house", {
+      kind: "single",
+      mapId: ctx.project.startMapId,
+      kitId: "bright-plaster",
+      wings: [
+        // h=11은 높이 휴리스틱으론 3층(h>=11)이지만 선언 층수 2가 정본이다.
+        { x: 2, y: 2, w: 8, h: 11, stories: 2 },
+        { x: 12, y: 6, w: 6, h: 7, stories: 1 },
+      ],
+      interior: "linked-interior",
+      door: true,
+      yard: [],
+    });
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    const interiorIds = Object.keys(ctx.project.maps).filter((id) => id !== ctx.project.startMapId);
+    expect(interiorIds.some((id) => id.endsWith("_f2"))).toBe(true);
+    expect(interiorIds.some((id) => id.endsWith("_f3")), "3층 실내가 생기면 안 된다").toBe(false);
+  });
+
   it("문 앞이 맵 밖이면 남쪽 여유 안내와 함께 실패한다", async () => {
     const project = createBlankProject();
     const result = runTool({ project }, "author_house", {
@@ -492,7 +555,6 @@ describe("house interior — L cottage (reference plan)", () => {
     expect(wallMaterialForKit("bright-plaster")).toBe("cream");
     expect(wallMaterialForKit("amber-wood")).toBe("cream");
     expect(wallMaterialForKit("timber-hall")).toBe("cream");
-    expect(wallMaterialForKit("aframe-stone")).toBe("cream");
   });
 
   it("maps catalog template families to interior scale", () => {

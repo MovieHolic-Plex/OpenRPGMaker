@@ -31,6 +31,7 @@ import { genId } from "@/util/id";
 import { resolveWikiCombatMode } from "@/ai/projectWikiContext";
 import { isActionCombatMap } from "@/project/actionCombat";
 import type { EncounterTableEntry, FieldSpawnDef, GameEvent, GameMap, PaletteSlotRole, Project, Rect, RoguelikeRoomDef, TilesetDef } from "@/project/types";
+import { mapLocations, resolveLocation } from "@/project/mapNamedLocations";
 import { applyMapShift } from "@/editor/mapShiftActions";
 import { visitProjectCommands } from "./commandTraversal";
 import {
@@ -920,6 +921,112 @@ const clearRegion: ToolDefinition = {
   },
 };
 
+// ── clear_map ──
+// 맵 전체를 한 콜로 비운다(clear_region 의 맵 크기판). 이 툴이 따로 있는 이유는 두 가지다:
+//  1) 모델이 맵 크기를 몰라도 된다 — 전체 rect 를 계산하려고 get_map_region 을 왕복하던 경로가 사라진다.
+//  2) **타일이 아닌 저작물은 건드리지 않는다**는 계약을 이름에 못박는다. 스폰·명명 로케이션·시공
+//     기록·맵 속성·맵 자체는 그대로다(맵을 없애는 것은 remove_map).
+//
+// 승인은 세 겹이고 각각 다른 것을 막는다:
+//  - 인자 confirmDestroy:true — 모델이 파괴적 의도를 명시했는지(이름만 스쳐 지나가는 호출 차단).
+//  - 적용 직전 사용자 허가 모달(ai/mapDestructionConfirm + aiProposalCard) — 사람이 봤는지.
+//  - 완성된 집 불변식(toolRunner) — 선언과 무관하게 기록된 집은 남는다. 이건 뚫리지 않는다.
+//
+// 기존 내용 보호(밑그림 에셋 선언) 목록에는 **일부러 넣지 않는다**: 그 게이트가 아는 허가 형식은
+// set_build_spec 의 clear 에셋이고, 이 툴은 자기 인자로 같은 허가를 이미 요구한다. 겹쳐 놓으면
+// 「이 맵 다 지워」가 명세 제출 왕복을 강제당한다. 대신 파괴성 레지스트리(approvalPolicy·
+// overInsertionReview)와 승격 금지 목록(capabilityEscalation)에는 등록한다.
+const clearMap: ToolDefinition = {
+  name: "clear_map",
+  description:
+    "맵 전체의 타일을 한 번에 비운다(파괴적). 상위 레이어는 항상 빈 칸이 되고 하위 레이어는 fill로 정한다" +
+    "(기본 grass=잔디, empty=진짜 허공). confirmDestroy:true 없이는 실행되지 않는다. " +
+    "events 기본값 keep 은 이벤트를 남기고 경고로 id를 알린다 — remove 면 이벤트까지 지운다. " +
+    "필드 스폰·명명 로케이션·시공 기록·맵 속성은 건드리지 않는다(맵 자체를 없애는 것은 remove_map). " +
+    "기록된 완성된 집이 있으면 거부된다. 맵 크기를 몰라도 되고 get_map_region 왕복도 필요 없다.",
+  mode: "write",
+  domains: ["map"],
+  invalidArgsExample: { mapId: "map_1", confirmDestroy: true },
+  invalidArgsHint: "맵 전체를 비우는 파괴적 작업이다 — 사용자가 명시적으로 요청한 경우에만 confirmDestroy:true를 넣는다.",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      fill: { type: "string", enum: ["grass", "empty"], description: "하위 레이어 결과(기본 grass). empty=허공(하늘 맵 등)" },
+      events: { type: "string", enum: ["keep", "remove"], description: "이벤트 처리(기본 keep=남기고 경고)" },
+      confirmDestroy: { type: "boolean", description: "파괴적 실행 확인 — true 여야 실행된다" },
+    },
+    required: ["mapId"],
+  },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    if (args.confirmDestroy !== true) {
+      throw new ToolError(
+        `맵 전체 청소는 파괴적 작업입니다 — '${map.name}'(${map.id}) 타일 ${map.width * map.height}칸이 바뀝니다. `
+          + `정말 필요하면 confirmDestroy:true 를 넣으세요. 예: ${JSON.stringify({ mapId: map.id, confirmDestroy: true })}`,
+        { code: "invalid-args", mapId: map.id },
+      );
+    }
+    const fill = (args.fill as "grass" | "empty" | undefined) ?? "grass";
+    const lowerFill = fill === "empty" ? TILE.EMPTY : TILE.GRASS;
+    const removeEvents = args.events === "remove";
+    // 통행 보장 칸은 남긴다 — fill=empty 는 그 칸을 통행 불가로 만든다. 정책은 tile_erase/fill_region 과
+    // 같다: 막는 칸만 건너뛰고 경고하며 편집 전체를 거부하지 않는다.
+    const passage = fill === "empty" ? passageProtectedCells(draft, map) : new Map<string, string>();
+    const keptLowerStacks: Record<number, number[]> = {};
+    const keptUpperStacks: Record<number, number[]> = {};
+    let cleared = 0;
+    for (let y = 0; y < map.height; y += 1) {
+      for (let x = 0; x < map.width; x += 1) {
+        const index = y * map.width + x;
+        if (passage.has(`${x},${y}`)) {
+          const lowerStack = map.lowerTileStacks?.[index];
+          const upperStack = map.upperTileStacks?.[index];
+          if (lowerStack) keptLowerStacks[index] = lowerStack.slice();
+          if (upperStack) keptUpperStacks[index] = upperStack.slice();
+          continue;
+        }
+        map.lowerTiles[index] = lowerFill;
+        map.upperTiles[index] = TILE.EMPTY;
+        cleared += 1;
+      }
+    }
+    if (Object.keys(keptLowerStacks).length > 0) map.lowerTileStacks = keptLowerStacks;
+    else delete map.lowerTileStacks;
+    if (Object.keys(keptUpperStacks).length > 0) map.upperTileStacks = keptUpperStacks;
+    else delete map.upperTileStacks;
+
+    const eventIds = map.events.map((event) => event.id);
+    if (removeEvents) map.events = [];
+    const warnings: string[] = [];
+    if (removeEvents && eventIds.length > 0) {
+      warnings.push(`이벤트 ${eventIds.length}개를 함께 삭제했습니다: ${eventIds.join(", ")}`);
+    }
+    if (!removeEvents && eventIds.length > 0) {
+      warnings.push(`이벤트 ${eventIds.length}개는 남겨둠: ${eventIds.join(", ")} — 함께 지우려면 events:"remove"`);
+    }
+    if (passage.size > 0) {
+      const samples = [...passage].slice(0, 3).map(([key, reason]) => `(${key})은 ${reason}라 제외했습니다`);
+      const extra = passage.size > samples.length ? ` 외 ${passage.size - samples.length}칸` : "";
+      warnings.push(`${samples.join(", ")}${extra}`);
+    }
+    return {
+      summary: `${map.name}(${map.id}) 전체 청소 — ${cleared}/${map.width * map.height}칸 (하위=${fill === "empty" ? "빈 칸" : "잔디"}, 이벤트 ${removeEvents ? "삭제" : "유지"})`,
+      warnings: warnings.length > 0 ? warnings : undefined,
+      data: {
+        mapId: map.id,
+        mapName: map.name,
+        fill,
+        events: removeEvents ? "remove" : "keep",
+        cells: cleared,
+        total: map.width * map.height,
+        keptCells: [...passage.keys()],
+        removedEvents: removeEvents ? eventIds : [],
+      },
+    };
+  },
+};
+
 // 영역 대칭 변환 — LLM 판단 없는 결정적 변환(코퍼스 mirror-symmetry가 "불가"이던 갭 해소).
 // 비대칭 오토타일 경계는 후처리하지 않는다(설명에 명시).
 const mirrorRegion: ToolDefinition = {
@@ -1213,6 +1320,22 @@ function parseFieldSpawn(draft: Project, map: GameMap, value: unknown, label: st
     troopId,
     area: parseRect(input.area, `${label}.area`, map),
   };
+  // 구역 앵커. 이름(ID 또는 표시명)을 받아 같은 맵의 로케이션으로 해석한다 —
+  // 없으면 오류다: 오타를 조용히 좌표로 되돌리면 «구역을 옮겼는데 스폰이 안 따라오는»
+  // 상태를 디버깅하게 된다. area 는 폴백으로 항상 함께 남는다.
+  if (input.locationId !== undefined) {
+    const locationId = stringField(input, "locationId", label).trim();
+    if (!locationId) throw new ToolError(`${label}.locationId는 비울 수 없습니다.`, { code: "invalid-location-anchor", mapId: map.id });
+    const location = resolveLocation(map, locationId);
+    if (!location) {
+      const known = mapLocations(map).map((entry) => `${entry.name}(${entry.id})`).join(", ") || "(없음)";
+      throw new ToolError(`${label}.locationId를 찾을 수 없습니다: ${locationId}. 이 맵의 로케이션: ${known}`, {
+        code: "location-not-found",
+        mapId: map.id,
+      });
+    }
+    spawn.locationId = location.id;
+  }
   if (input.maxAlive !== undefined) {
     const maxAlive = integerField(input, "maxAlive", label);
     if (maxAlive <= 0) throw new ToolError(`${label}.maxAlive는 1 이상이어야 합니다.`, { code: "invalid-max-alive", mapId: map.id });
@@ -1583,6 +1706,11 @@ const makeHuntingGround: ToolDefinition = {
       mapId: { type: "string" },
       area: rectSchema,
       troopId: { type: "string" },
+      locationId: {
+        type: "string",
+        description:
+          "이 맵의 로케이션(구역) ID 또는 이름. 주면 area 대신 그 구역 사각형을 스폰 영역으로 쓴다 — 구역을 옮기면 스폰도 따라온다. area 는 폴백으로 함께 보낸다.",
+      },
       maxAlive: { type: "integer" },
       respawnSec: { type: "integer" },
       chase: { type: "boolean" },
@@ -1609,6 +1737,7 @@ const makeHuntingGround: ToolDefinition = {
       id: nextFieldSpawnId(map, troopId),
       troopId,
       area,
+      ...(args.locationId !== undefined ? { locationId: args.locationId } : {}),
       ...(args.maxAlive !== undefined ? { maxAlive: args.maxAlive } : {}),
       ...(args.respawnSec !== undefined ? { respawnSec: args.respawnSec } : {}),
       chase: args.chase === true,
@@ -1856,7 +1985,8 @@ function copyRegionRect(args: Record<string, unknown>, field: string): { mapId: 
 
 // 시작 위치·transfer 목적지는 통행이 보장돼야 하는 칸이다. fill_region/tile_erase 와 같은 정책:
 // 그 칸을 통행 불가로 만드는 쓰기만 건너뛰고 경고하며, 편집 전체를 거부하지 않는다.
-function copyProtectedCells(project: Project, map: GameMap): Map<string, string> {
+// clear_map(fill=empty)과 copy_map_region 이 함께 쓴다 — 둘 다 통행 보장 칸을 불가로 만들 수 있다.
+function passageProtectedCells(project: Project, map: GameMap): Map<string, string> {
   const cells = new Map<string, string>();
   if (project.startMapId === map.id) cells.set(`${project.startPos.x},${project.startPos.y}`, "시작 위치");
   visitProjectCommands(project, ({ command }) => {
@@ -1984,7 +2114,7 @@ const copyMapRegion: ToolDefinition = {
       }
     }
 
-    const protectedCells = copyProtectedCells(draft, target);
+    const protectedCells = passageProtectedCells(draft, target);
     const skipped: CopyProtectedSkip[] = [];
     let copied = 0;
     let kept = 0;
@@ -2086,7 +2216,7 @@ const copyMapRegion: ToolDefinition = {
   },
 };
 
-export const MAP_TOOLS: readonly ToolDefinition[] = [createMap, duplicateMap, manageMapTree, paintTiles, paintRoad, stampStructure, previewHouse, buildHouse, clearRegion, mirrorRegion, copyMapRegion, setStartPosition, setTilePassability, setMapProperties, setEncounterTable, makeHuntingGround, configureRoguelikeRoom, createFarmPlot, resizeMapTool, shiftMap, removeMapTool];
+export const MAP_TOOLS: readonly ToolDefinition[] = [createMap, duplicateMap, manageMapTree, paintTiles, paintRoad, stampStructure, previewHouse, buildHouse, clearRegion, clearMap, mirrorRegion, copyMapRegion, setStartPosition, setTilePassability, setMapProperties, setEncounterTable, makeHuntingGround, configureRoguelikeRoom, createFarmPlot, resizeMapTool, shiftMap, removeMapTool];
 
 // 스키마 참조를 정적으로 검증하기 위한 도우미(사용처 없어도 트리 셰이킹 안전).
 export type { JsonSchema };

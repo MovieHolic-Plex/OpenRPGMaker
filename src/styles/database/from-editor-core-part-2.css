@@ -1,0 +1,160 @@
+/* database 표면 — editor/core.part-2.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 database 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* editor/core.part-2.css:358-367 */
+.db-required-panel {
+  align-content: center;
+  background: var(--bg-base);
+  color: var(--text-1);
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+  min-height: 100%;
+  padding: 32px;
+}
+
+/* editor/core.part-2.css:369-379 */
+.db-required-panel.db-required-hero {
+  align-content: stretch;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 20%, color-mix(in srgb, var(--accent, #4A57D6) 10%, transparent), transparent 58%),
+    radial-gradient(ellipse 70% 50% at 90% 80%, color-mix(in srgb, #8A6B2F 8%, transparent), transparent 55%),
+    var(--bg-base, #F7F3EA);
+  gap: 0;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  justify-items: stretch;
+  padding: 0;
+}
+
+/* editor/core.part-2.css:381-385 */
+.db-required-hero-art {
+  min-height: min(100vh, 720px);
+  overflow: hidden;
+  position: relative;
+}
+
+/* editor/core.part-2.css:387-393 */
+.db-required-hero-image {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+}
+
+/* editor/core.part-2.css:395-404 */
+.db-required-hero-art::after {
+  background: linear-gradient(90deg, transparent 55%, color-mix(in srgb, var(--bg-base, #F7F3EA) 88%, transparent) 100%);
+  bottom: 0;
+  content: "";
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+/* editor/core.part-2.css:406-412 */
+.db-required-copy {
+  align-content: center;
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+  padding: 40px 36px 40px 20px;
+}
+
+/* editor/core.part-2.css:414-421 */
+.db-required-kicker {
+  color: var(--accent, #4A57D6);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+/* editor/core.part-2.css:423-428 */
+.db-required-panel h1 {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+/* editor/core.part-2.css:430-434 */
+.db-required-hero .db-required-copy h1 {
+  font-size: clamp(26px, 3.2vw, 36px);
+  line-height: 1.2;
+  max-width: 18ch;
+}
+
+/* editor/core.part-2.css:436-442 */
+.db-required-panel p {
+  color: var(--text-2);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 560px;
+}
+
+/* editor/core.part-2.css:444-451 */
+.db-required-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* editor/core.part-2.css:453-462 */
+.db-required-chips li {
+  background: var(--bg-raised, #FFFDF8);
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
+  border-radius: 999px;
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  box-shadow: 0 1px 4px rgba(60, 48, 32, 0.06);
+}
+
+/* editor/core.part-2.css:465-467 */
+@media (max-width: 900px) {
+  .db-required-panel.db-required-hero {
+      grid-template-columns: 1fr;
+    }
+}
+
+/* editor/core.part-2.css:469-471 */
+@media (max-width: 900px) {
+  .db-required-hero-art {
+      min-height: 220px;
+    }
+}
+
+/* editor/core.part-2.css:473-475 */
+@media (max-width: 900px) {
+  .db-required-hero-art::after {
+      background: linear-gradient(180deg, transparent 40%, color-mix(in srgb, var(--bg-base, #F7F3EA) 92%, transparent) 100%);
+    }
+}
+
+/* editor/core.part-2.css:477-479 */
+@media (max-width: 900px) {
+  .db-required-copy {
+      padding: 20px 24px 32px;
+    }
+}
+
+/* editor/core.part-2.css:523-525 */
+.db-required-panel.db-required-hero .db-required-hero-image {
+  filter: saturate(1.02) brightness(1.02);
+}
+
+/* editor/core.part-2.css:527-529 */
+.db-required-copy {
+  background: transparent;
+}

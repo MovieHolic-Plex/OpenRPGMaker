@@ -38,6 +38,8 @@ import {
   spatialWorldsChrome,
 } from "@/editor/panels/spatialWorldsTab";
 import { restoreGeographyParent } from "@/editor/panels/spatialGeographyNavigate";
+import { activateSpatialDocument, workingProject } from "@/editor/panels/spatialGeographyCommands";
+import { geographyChromeState } from "@/editor/panels/spatialGeographyChromeState";
 import { el } from "@/util/dom";
 
 const TAB_LABEL = {
@@ -76,13 +78,20 @@ export function inspectorSourceLabel(card: SpatialGalleryCard): string {
 
 function domainChrome(session: SpatialAuthoringSession, onChange: () => void): SpatialDomainChrome | undefined {
   const selected = visibleSpatialSelection(session);
-  if (session.tab === "tiles") return spatialTilesChrome();
-  if (session.tab === "objects") return spatialObjectsChrome(selected, onChange);
-  if (session.tab === "spaces") return spatialSpacesChrome(selected, onChange);
-  if (session.tab === "places") return spatialPlacesChrome(visiblePlaceSelection(selected), onChange);
-  if (session.tab === "regions") return spatialRegionsChrome(selected, onChange);
-  if (session.tab === "worlds") return spatialWorldsChrome(selected, onChange);
-  return undefined;
+  const chrome = session.tab === "tiles" ? spatialTilesChrome()
+    : session.tab === "objects" ? spatialObjectsChrome(selected, onChange)
+    : session.tab === "spaces" ? spatialSpacesChrome(selected, onChange)
+    : session.tab === "places" ? spatialPlacesChrome(visiblePlaceSelection(selected), onChange)
+    : session.tab === "regions" ? spatialRegionsChrome(selected, onChange)
+    : session.tab === "worlds" ? spatialWorldsChrome(selected, onChange)
+    : undefined;
+  // Canonical 문서가 없으면 어느 탭이든 프로젝트 수준 활성화 경로와 그 오류를 표면에 올린다.
+  if (chrome && !workingProject().spatialAuthoring) {
+    return { ...chrome,
+      previewError: chrome.previewError ?? geographyChromeState.previewError,
+      activate: chrome.activate ?? (geographyChromeState.activating ? undefined : () => activateSpatialDocument(onChange)) };
+  }
+  return chrome;
 }
 
 export function renderSpatialChrome(
@@ -162,6 +171,7 @@ export function renderSpatialChrome(
       el("div", {
         class: "spatial-actions",
         children: [
+          actionButton("spatial-activate", "공간 설계 활성화", Boolean(chrome?.activate), chrome?.activate),
           actionButton("spatial-add", "추가", Boolean(chrome?.add), chrome?.add),
           actionButton("spatial-duplicate", "복제", Boolean(chrome?.duplicate), chrome?.duplicate),
           actionButton("spatial-delete", "삭제", Boolean(chrome?.delete), chrome?.delete),
@@ -199,10 +209,6 @@ function renderLegacyStage(session: SpatialAuthoringSession, rerender: () => voi
     renderTilesetSpacesTab(host, rerender);
     return host;
   }
-  if (session.legacyOrigin === "villages" && session.tab === "places") {
-    renderVillageTab(host, rerender);
-    return host;
-  }
   if (session.legacyOrigin === "worldGen" && session.tab === "regions") {
     renderWorldGenTab(host, rerender);
     return host;
@@ -215,6 +221,17 @@ export function renderSpatialCanvas(
   card: SpatialGalleryCard | undefined,
   rerender: () => void,
 ): HTMLElement {
+  // 기존 마을 설계는 지역 탭의 레거시 스테이지 — 레시피(집 형태·설계서) 편집 표면을 그대로 띄운다.
+  if (session.legacyOrigin === "villages" && session.tab === "regions") {
+    const host = el("div", { class: "spatial-legacy-host" });
+    renderVillageTab(host, rerender);
+    return el("div", {
+      class: "spatial-canvas",
+      attrs: { tabindex: "0", "aria-label": "공간 캔버스" },
+      dataset: { testid: "spatial-canvas" },
+      children: [host],
+    });
+  }
   if (session.tab === "tiles") return renderSpatialTilesCanvas(session, card, rerender);
   if (session.tab === "objects") return renderSpatialObjectsCanvas(session, card);
   if (session.tab === "spaces") return renderSpatialSpacesCanvas(session, card, rerender);

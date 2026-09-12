@@ -1,0 +1,117 @@
+/* map 표면 — shell/figma-editor/03-layout-left-palette.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 map 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* shell/figma-editor/03-layout-left-palette.css:73-80 */
+.left-panel-stack[data-testid="left-palette-root"] .palette-work-pane {
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
+    /* 가로 스크롤 금지 — 자식이 넘치면 줄바꿈/클립, 시트만 세로 스크롤 */
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+/* shell/figma-editor/03-layout-left-palette.css:82-86 */
+.left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+/* shell/figma-editor/03-layout-left-palette.css:88-93 */
+.left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint .panel-section {
+    flex: 0 0 auto;
+    margin-bottom: 8px;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+/* shell/figma-editor/03-layout-left-palette.css:95-103 */
+.left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint .chipset-sheet.tile-palette,
+  .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint [data-testid="tile-palette-clusters"] {
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    width: 100%;
+  }
+
+/* shell/figma-editor/03-layout-left-palette.css:132-146 */
+.tile-search-input {
+    appearance: none;
+    background: var(--bg-inset);
+    border: 1px solid var(--editor-line-strong);
+    border-radius: 6px;
+    box-shadow: inset 0 1px 0 rgba(42, 37, 33, 0.06);
+    color: var(--editor-text);
+    font: 500 16px/1.2 var(--font-ui);
+    height: 34px;
+    min-width: 0;
+    padding: 0 12px;
+  }
+
+/* shell/figma-editor/03-layout-left-palette.css:173-177 */
+.palette-option-row {
+    gap: 2px;
+    grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+    margin-bottom: 8px;
+  }
+
+/* shell/figma-editor/03-layout-left-palette.css:191-200 */
+.palette-option-button.active,
+  .palette-option-button[aria-pressed="true"],
+  .chipset-band-button.active,
+  .chipset-band-button[aria-pressed="true"],
+  .stamp-button.active,
+  .stamp-button[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent-border);
+    color: var(--on-accent);
+  }
+
+/* shell/figma-editor/03-layout-left-palette.css:202-206 */
+.tile-brush-row,
+  .tile-brush-neighborhood {
+    gap: 8px;
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+/* shell/figma-editor/03-layout-left-palette.css:208-211 */
+.structure-stamp-panel {
+    display: block;
+    margin: 8px 0 10px;
+  }
+
+/* shell/figma-editor/03-layout-left-palette.css:213-217 */
+.structure-stamp-panel .tile-brush-label,
+  .tile-brush-assist,
+  .quick-tile-picker {
+    display: none;
+  }
+
+/* shell/figma-editor/03-layout-left-palette.css:219-223 */
+.structure-stamp-panel .stamp-picker {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+  }
+
+/* shell/figma-editor/03-layout-left-palette.css:225-228 */
+.structure-stamp-panel .stamp-button {
+    min-width: 0;
+    width: 100%;
+  }
+
+/* shell/figma-editor/03-layout-left-palette.css:230-233 */
+.chipset-band-nav {
+    gap: 2px;
+    margin-bottom: 10px;
+  }
+
+/* shell/figma-editor/03-layout-left-palette.css:235-237 */
+.chipset-band-button {
+    height: 34px;
+  }

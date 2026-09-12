@@ -1,4 +1,0 @@
-/* Split wrapper: preserves tabs-a.css cascade order. */
-@import "./tabs-a.part-1.css";
-@import "./tabs-a.part-2.css";
-@import "./tabs-a.part-3.css";

@@ -7,7 +7,7 @@
 // - Node(테스트/스모크)에서는 config를 직접 주입해 사용한다.
 
 import { defaultModelForAuthMode, isModelValidForAuthMode } from "@/ai/modelCatalog";
-import { DEFAULT_EXECUTION_ROUTE, DEFAULT_PI_APPLY, isExecutionRoute, type ExecutionRoute, type PiApplyMode } from "@/ai/piAgent/executionRoute";
+import { DEFAULT_PI_APPLY, DEFAULT_PI_TEAM, LEGACY_PI_TEAM_ROUTE, type PiApplyMode } from "@/ai/piAgent/executionRoute";
 import type { AutonomyLevel } from "@/ai/autonomyLevels";
 import { AUTONOMY_LEVEL_IDS } from "@/ai/autonomyLevels";
 import { PRODUCT_BRAND } from "@/brand";
@@ -63,8 +63,9 @@ export interface AiConfig {
   // "chat" = 종래 동작(감독·실행 모델이 다를 때만 플래너). 미지정(구형 blob/테스트 주입)은
   // loadAiConfig가 "auto"로 백필하지만, 직접 주입된 config는 종래 판정을 유지한다.
   agentMode?: "auto" | "chat";
-  // 지시의 기본 실행 경로(컴포저 「경로」 셀렉트·설정 공용). 미지정 옛 blob 은 Pi 에이전트.
-  executionRoute?: ExecutionRoute;
+  // Pi 팀 실행: 컴포저 「팀」 토글·설정 「Pi 팀 실행」 공용 비트. 옛 blob 의 `executionRoute: "pi-team"`
+  // 은 loadAiConfig 가 이 값으로 승격한다(경로 enum 은 없앴다 — executionRoute.ts 머리말).
+  piTeam?: boolean;
   // Pi 경로의 적용 방식: review = 검토 카드에서 승인 후 적용(기본), auto = 게이트 통과 즉시 적용.
   piApply?: PiApplyMode;
 }
@@ -142,6 +143,7 @@ export function defaultAiConfig(): AiConfig {
     reasoningEffort: "low",
     agentMode: "auto",
     autonomyLevel: "balanced",
+    piTeam: DEFAULT_PI_TEAM,
   };
 }
 
@@ -271,7 +273,10 @@ export function loadAiConfig(): AiConfig {
       agentMode: parsed.agentMode === "chat" ? "chat" : "auto",
       // 자율성 다이얼 백필: 알려진 id 만 인정하고, 없는 옛 blob·이상한 값은 "balanced".
       autonomyLevel: isAutonomyLevel(parsed.autonomyLevel) ? parsed.autonomyLevel : "balanced",
-      executionRoute: isExecutionRoute(parsed.executionRoute) ? parsed.executionRoute : DEFAULT_EXECUTION_ROUTE,
+      // 경로 enum 승격(옛 blob): `"pi-team"` 은 «Pi + 팀» 이었다. `"session"`·`"pi-agent"` 는 둘 다
+      // «Pi» 이므로 팀 비트만 살리고 나머지는 버린다 — 조수 세션은 deprecated 다. 옛 키는 이제
+      // AiConfig 에 없으므로 느슨한 레코드로 읽는다(그 한 곳에만 남은 어휘).
+      piTeam: parsed.piTeam === true || (parsed as { executionRoute?: unknown }).executionRoute === LEGACY_PI_TEAM_ROUTE,
       piApply: parsed.piApply === "auto" ? "auto" : DEFAULT_PI_APPLY,
     };
   } catch {

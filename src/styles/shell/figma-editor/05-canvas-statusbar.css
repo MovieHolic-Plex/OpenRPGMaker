@@ -1,88 +1,7 @@
-  .canvas-area,
-  .editor-layout .canvas-area {
-    /* 하단 상태바는 렌더하지 않는다. 캔버스가 하단까지 온전히 사용한다. */
-    --editor-canvas-chrome-top: 48px;
-    --editor-canvas-chrome-bottom: 0px;
-  }
-
-  .editor-canvas-scroll-shell {
-    background: var(--editor-canvas-bg);
-    bottom: var(--editor-canvas-chrome-bottom, 0px);
-    top: var(--editor-canvas-chrome-top, 48px);
-  }
-
-  .editor-layout .canvas-area .phaser-container {
-    background: var(--bg-canvas);
-    border: 0;
-    box-shadow: none;
-    box-sizing: border-box;
-    display: block;
-    height: 100%;
-    min-height: 100%;
-    min-width: 100%;
-    overflow: hidden;
-    position: relative;
-    width: 100%;
-  }
-
   .editor-layout .canvas-area .phaser-container > canvas {
     display: block;
     height: 100% !important;
     width: 100% !important;
-  }
-
-  .editor-canvas-scroll-shell {
-    overflow: hidden;
-  }
-
-  .canvas-toolbar {
-    background: var(--bg-glass);
-    border: 1px solid var(--editor-line-strong);
-    border-radius: var(--radius-m);
-    box-shadow: var(--shadow-pop);
-    box-sizing: border-box;
-    gap: 6px;
-    max-width: calc(100% - 24px);
-    padding: 8px;
-    top: 12px;
-  }
-
-  .canvas-toolbar-label {
-    color: var(--editor-text-muted);
-    flex: 0 0 auto;
-    font-size: 15px;
-    padding: 0 8px;
-    white-space: nowrap;
-  }
-
-  .zoom-button {
-    flex: 0 0 auto;
-    min-width: 44px;
-    white-space: nowrap;
-  }
-
-  .canvas-toolbar [data-testid="editor-map-screenshot-button"] {
-    min-width: 72px;
-  }
-
-  .map-lock-takeover-button {
-    background: var(--control-bg);
-    border: 1px solid var(--editor-line-strong);
-    border-radius: var(--radius-s);
-    color: var(--editor-text);
-    cursor: pointer;
-    font: 700 12px/1 var(--font-ui);
-    margin-left: 8px;
-    min-height: 24px;
-    padding: 0 8px;
-    white-space: nowrap;
-  }
-
-  .map-lock-takeover-button:hover,
-  .map-lock-takeover-button:focus-visible {
-    background: var(--control-bg-hover);
-    outline: 1px solid var(--editor-blue);
-    outline-offset: 1px;
   }
 
   .map-context-menu,
@@ -103,8 +22,6 @@
   .oprn-menu-command {
     max-width: 100%;
     min-width: 0;
-    overflow-wrap: anywhere;
-    white-space: normal;
   }
 
 

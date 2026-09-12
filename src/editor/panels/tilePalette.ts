@@ -18,6 +18,7 @@ import { makeComboBrushShelf } from "@/editor/panels/comboBrushShelf";
 import { makeTileBrushAssistPanel } from "@/editor/panels/tilePalettePreviewPanel";
 import { makeTileBrushControls } from "@/editor/panels/tilePaletteStampStatus";
 import { selectPaletteStamp } from "@/editor/panels/tileToolbarActions";
+import { dismissLocationDrawModeForTool } from "@/editor/locationDrawMode";
 import { makeCustomPalette, makeGridPalette, gridPaletteDisplayTile } from "@/editor/panels/tilePaletteGrid";
 import {
   TILE_CATEGORIES,
@@ -454,6 +455,9 @@ function filteredTileIndexes(tileset: TilesetDef): readonly number[] {
 }
 
 export function selectPaletteTile(index: number): void {
+  // 타일을 고르는 것은 「칠하겠다」는 선언이다. 같은 도구 상태가 유지되는 경우(이미 브러시)
+  // 에는 아래 editorState 변화가 tool 을 건드리지 않아 감시자가 못 잡는다 — 여기서 끊는다.
+  dismissLocationDrawModeForTool("paint");
   preservePaletteViewport(() => {
     const existingIndex = recentTiles.indexOf(index);
     if (existingIndex >= 0) recentTiles.splice(existingIndex, 1);

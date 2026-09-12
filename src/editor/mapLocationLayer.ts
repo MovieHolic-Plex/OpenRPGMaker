@@ -7,12 +7,18 @@
 // 겹침은 허용이므로 클릭 판정은 «가장 구체적인(작은) 구역» 이 이긴다(순수 모듈 규칙).
 
 import { TILE_SIZE } from "@/assets/bundled";
-import { claimCanvasPointer, type CanvasPointerPoint } from "@/editor/canvasPointerBridge";
+import { claimCanvasPointer, eventIdAtPoint, openEventFromCanvas, type CanvasPointerPoint } from "@/editor/canvasPointerBridge";
 import { editorState } from "@/editor/editorState";
+import {
+  locationClickCount,
+  resolveLocationOverlapPointer,
+  type LocationClickTrace,
+} from "@/editor/locationPointerPriority";
 import { resolveClientPointTile, resolveRegionClientRect } from "@/editor/regionClientRect";
 import {
   createLocationFromRect,
   currentLocationMap,
+  currentLocationMapId,
   deleteLocation,
   locationAt,
   locationDeletionImpact,
@@ -25,6 +31,7 @@ import {
   selectedLocation,
   selectedOverlaps,
   setLocationDrag,
+  setLocationRole,
   setShowLayoutRegions,
   subscribeLocationLayer,
   toggleLocationLayer,
@@ -32,9 +39,16 @@ import {
   type LocationActionResult,
 } from "@/editor/mapLocationLayerState";
 import { openLocationAdoptionPanel } from "@/editor/panels/mapLocationAdoptionPanel";
-import { collectMapLocationReferenceIssues } from "@/project/mapLocationReferences";
+import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
+import { openMapPropertiesDialog } from "@/editor/panels/mapPropertiesDialog";
+import {
+  collectMapLocationReferenceIssues,
+  collectMapLocationReferences,
+  type MapLocationReferenceSite,
+} from "@/project/mapLocationReferences";
 import { DEFAULT_ADOPTION_ROLES, adoptionRoleLabel, surveyMapAdoption } from "@/project/mapLocationAdoption";
-import { locationDisplayColor, mapLocations, rectFromDrag } from "@/project/mapNamedLocations";
+import { LOCATION_ROLES, LOCATION_ROLE_LABELS, locationRoleTag } from "@/project/locationRoles";
+import { isLocationDrawClick, locationDisplayColor, mapLocations, rectFromDrag } from "@/project/mapNamedLocations";
 import { store } from "@/project/store";
 import type { GameMap, MapNamedLocation, Rect } from "@/project/types";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
@@ -49,6 +63,8 @@ let cleanupYield: (() => void) | null = null;
 let yieldTimer: number | null = null;
 /** 방금 만든 구역의 이름 칸에 초점을 준다 — 그리자마자 이름을 붙이는 게 이 레이어의 목적이다. */
 let focusNameOnNextRender = false;
+/** 마지막 좌클릭 좌표·시각. 이벤트와 겹칠 때 더블클릭을 판정한다. */
+let lastOverlapClick: LocationClickTrace | null = null;
 function ensureHost(): HTMLElement | null {
   const host = document.querySelector<HTMLElement>(".phaser-container");
   if (!host) return null;
@@ -122,6 +138,33 @@ function report(result: LocationActionResult): void {
   if (result.message) toast(result.message, "info");
 }
 
+function emptyDrawHintRect(map: GameMap): Rect {
+  const bounds = overlayEl?.getBoundingClientRect?.();
+  const center = bounds
+    ? resolveClientPointTile({ x: bounds.left + bounds.width / 2, y: bounds.top + bounds.height / 2 })
+    : null;
+  const w = Math.min(8, Math.max(1, map.width));
+  const h = Math.min(6, Math.max(1, map.height));
+  const cx = center?.x ?? Math.floor(map.width / 2);
+  const cy = center?.y ?? Math.floor(map.height / 2);
+  const x = Math.max(0, Math.min(map.width - w, cx - Math.floor(w / 2)));
+  const y = Math.max(0, Math.min(map.height - h, cy - Math.floor(h / 2)));
+  return { x, y, w, h };
+}
+
+function renderEmptyDrawHint(overlay: HTMLElement, map: GameMap): void {
+  if (locationLayerState().drag) return;
+  if (mapLocations(map).length > 0) return;
+  const ghost = el("div", {
+    class: "map-location-empty-ghost",
+    dataset: { testid: "map-location-empty-ghost" },
+    attrs: { "aria-hidden": "true" },
+    children: [el("span", { class: "map-location-empty-ghost-label", text: "여기를 드래그" })],
+  });
+  applyOverlayRect(ghost, emptyDrawHintRect(map));
+  overlay.append(ghost);
+}
+
 // ───────────────────────────────────────────────────────────────── 렌더
 
 function render(): void {
@@ -131,6 +174,10 @@ function render(): void {
   if (!overlay || !inspector) return;
   overlay.classList.toggle("is-active", state.enabled);
   inspector.classList.toggle("is-active", state.enabled);
+  if (typeof document !== "undefined") {
+    if (state.enabled) document.body.dataset.locationDraw = "1";
+    else delete document.body.dataset.locationDraw;
+  }
   if (!state.enabled) {
     cleanupYield?.();
     cleanupYield = null;
@@ -144,6 +191,7 @@ function render(): void {
   clearChildren(inspector);
   if (!map) return;
   renderBoxes(overlay, map, state.selectedId);
+  renderEmptyDrawHint(overlay, map);
   renderDragPreview(overlay);
   inspector.append(renderInspector(map, state.selectedId));
 }
@@ -229,6 +277,10 @@ export function repositionMapLocationLayer(): void {
   if (!overlay || !state.enabled) return;
   const map = currentLocationMap();
   if (!map) return;
+  // 빈 상태 고스트도 같은 계약이다 — 다시 그리면 팬 한 프레임마다 노드가 새로 생기고,
+  // 안 옮기면 화면 중심에 남아 타일과 어긋난다(2026-09-11 실측: 팬 뒤 고스트가 맵 밖에 섰다).
+  const ghost = overlay.querySelector<HTMLElement>(".map-location-empty-ghost");
+  if (ghost) applyOverlayRect(ghost, emptyDrawHintRect(map));
   const locations = new Map(mapLocations(map).map((entry) => [entry.id, entry]));
   for (const box of overlay.querySelectorAll<HTMLElement>(".map-location-box")) {
     const location = box.dataset.locationId ? locations.get(box.dataset.locationId) : undefined;
@@ -268,7 +320,7 @@ function renderInspector(map: GameMap, selectedId: string | null): HTMLElement {
       class: "map-location-hint",
       text:
         locations.length === 0
-          ? "빈 곳을 드래그하면 새 구역이 생깁니다. 구역은 이름으로 이벤트 조건과 랜덤 인카운터가 가리킵니다."
+          ? "맵의 점선 상자 안을 드래그하면 새 구역이 생깁니다. 한 칸짜리는 Shift+클릭입니다."
           : "구역을 눌러 고르고, 몸통을 끌어 옮기고, 오른쪽 아래 손잡이로 크기를 바꿉니다.",
       dataset: { testid: "map-location-hint" },
     }),
@@ -396,14 +448,19 @@ function renderSelectedEditor(location: MapNamedLocation): HTMLElement {
     );
   }
 
+  box.append(renderRolePicker(location));
+
   const references = locationReferenceCount(location.id);
   box.append(
     el("p", {
       class: "map-location-refs",
-      text: references === 0 ? "이 구역을 가리키는 조건·인카운터가 없습니다." : `이 구역을 가리키는 참조 ${references}건.`,
+      text: references === 0
+        ? "이벤트 조건 「구역」, 시작 방식 「구역에 드나들면」, 맵 설정의 랜덤 전투에서 이 이름을 고를 수 있습니다."
+        : `이 구역을 가리키는 참조 ${references}건.`,
       dataset: { testid: "map-location-refs" },
     }),
   );
+  box.append(renderReferenceSites(location.id));
 
   box.append(
     el("button", {
@@ -421,6 +478,123 @@ function renderSelectedEditor(location: MapNamedLocation): HTMLElement {
       name.focus();
       name.select();
     });
+  }
+  return box;
+}
+
+
+/**
+ * 역할 선택기 (2026-09-12). 켜면 `safeZones`/`farmableArea` 로 투영된다.
+ *
+ * 왜 라디오처럼 보이는 버튼인가: 역할은 하나만 갖는다(안전지대이면서 경작지인 구역은
+ * 어느 배열의 정본인지 흐려진다). 체크박스 두 개면 그 상태를 만들 수 있다.
+ */
+function renderRolePicker(location: MapNamedLocation): HTMLElement {
+  const active = locationRoleTag(location);
+  const box = el("div", { class: "map-location-roles", dataset: { testid: "map-location-roles" } });
+  box.append(el("span", { class: "map-location-roles-label", text: "맵 시스템 역할" }));
+  const row = el("div", { class: "map-location-roles-row" });
+  for (const role of LOCATION_ROLES) {
+    const on = active === role;
+    row.append(
+      el("button", {
+        class: "btn" + (on ? " is-active" : ""),
+        text: LOCATION_ROLE_LABELS[role],
+        attrs: { type: "button", "aria-pressed": String(on) },
+        dataset: { testid: `map-location-role-${role}` },
+        on: { click: () => report(setLocationRole(location.id, on ? null : role)) },
+      }),
+    );
+  }
+  box.append(row);
+  box.append(
+    el("p", {
+      class: "map-location-roles-hint",
+      dataset: { testid: "map-location-roles-hint" },
+      text: active
+        ? `이 구역은 이 맵의 ${LOCATION_ROLE_LABELS[active]}입니다. 구역을 옮기면 그 사각형도 따라갑니다.`
+        : "안전지대는 추격자가 들어오지 못하고, 경작지는 밭을 일굴 수 있습니다.",
+    }),
+  );
+  return box;
+}
+
+function siteLabel(site: MapLocationReferenceSite): string {
+  const project = store.getCurrent();
+  if (site.kind === "encounter") return `랜덤 전투 ${site.entryIndex + 1}번`;
+  const eventName = site.eventId
+    ? project.maps[site.mapId]?.events.find((event) => event.id === site.eventId)?.name ?? site.eventId
+    : null;
+  if (site.kind === "trigger") return eventName ? `${eventName} · 시작 방식` : site.path;
+  return eventName ? `${eventName} · 출현 조건` : site.path;
+}
+
+function openReferenceSite(site: MapLocationReferenceSite): void {
+  if (site.kind === "encounter") {
+    const map = store.getCurrent().maps[site.mapId];
+    openMapPropertiesDialog(site.mapId, map?.name ?? site.mapId, { focus: "encounter" });
+    return;
+  }
+  if (site.eventId) {
+    openEventEditorModal(site.mapId, site.eventId);
+    return;
+  }
+  // 공통 이벤트·부대 조건은 이벤트가 아니라 자료집 레코드다. eventId 만 보고 끝내면
+  // 버튼이 눌러도 아무 일도 안 하는 장식이 된다 — 참조가 어디 사는지에 맞는 창을 연다.
+  if (site.kind === "condition" && site.commonEventId) {
+    void import("@/editor/panels/databaseModal").then(({ openDatabaseModal }) => {
+      openDatabaseModal("commonEvents");
+      Array.from(document.querySelectorAll<HTMLElement>("[data-record-id]"))
+        .find((row) => row.dataset.recordId === site.commonEventId)
+        ?.click();
+    });
+    return;
+  }
+  if (site.kind === "condition" && site.troopId) {
+    void import("@/editor/panels/databaseModal").then(({ openDatabaseModal }) => {
+      openDatabaseModal("troops");
+      Array.from(document.querySelectorAll<HTMLElement>("[data-record-id]"))
+        .find((row) => row.dataset.recordId === site.troopId)
+        ?.click();
+    });
+  }
+}
+
+function renderReferenceSites(locationId: string): HTMLElement {
+  const map = currentLocationMap();
+  const project = store.getCurrent();
+  const sites = collectMapLocationReferences(project).filter((entry) => {
+    if (entry.locationId !== locationId) return false;
+    return !map || entry.site.mapId === map.id;
+  });
+  const box = el("div", { class: "map-location-ref-sites", dataset: { testid: "map-location-ref-sites" } });
+  if (sites.length === 0) {
+    box.append(
+      el("button", {
+        class: "btn",
+        text: "맵 설정에서 인카운터에 쓰기",
+        attrs: { type: "button" },
+        dataset: { testid: "map-location-open-encounter" },
+        on: {
+          click: () => {
+            const current = currentLocationMap();
+            if (current) openMapPropertiesDialog(current.id, current.name, { focus: "encounter" });
+          },
+        },
+      }),
+    );
+    return box;
+  }
+  for (const [index, entry] of sites.entries()) {
+    box.append(
+      el("button", {
+        class: "btn btn-ghost map-location-ref-site",
+        text: siteLabel(entry.site),
+        attrs: { type: "button" },
+        dataset: { testid: `map-location-ref-site-${index}` },
+        on: { click: () => openReferenceSite(entry.site) },
+      }),
+    );
   }
   return box;
 }
@@ -546,6 +720,29 @@ function onPointerDown(event: PointerEvent): void {
   if (!locationLayerState().enabled) return;
   const point: CanvasPointerPoint = { button: event.button, buttons: event.buttons, clientX: event.clientX, clientY: event.clientY };
   const claim = claimCanvasPointer(point);
+  // 좌클릭 그리기와 그 칸의 이벤트가 겹치면 규칙 하나가 정한다 — Alt/더블클릭이면 이벤트를 연다.
+  // 규칙은 순수 모듈이 갖는다: 같은 판정을 캔버스의 더블클릭 경로도 써야 하기 때문이다.
+  if (!claim && event.button === 0) {
+    const tile = overlayPointToTile(event);
+    const mapId = currentLocationMapId() ?? "";
+    // 클릭 수는 시각 기반이다 — pointerdown 의 detail 은 항상 0 이다(Chromium 실측).
+    const clickCount =
+      tile && mapId
+        ? locationClickCount(lastOverlapClick, { mapId, x: tile.x, y: tile.y, at: Date.now() })
+        : 1;
+    if (tile && mapId) lastOverlapClick = { mapId, x: tile.x, y: tile.y, at: Date.now() };
+    const priority = resolveLocationOverlapPointer({
+      locationLayerEnabled: true,
+      eventIdAtPoint: eventIdAtPoint(point),
+      altKey: event.altKey,
+      clickCount,
+    });
+    if (priority.kind === "openEvent") {
+      openEventFromCanvas({ mapId, eventId: priority.eventId });
+      event.preventDefault();
+      return;
+    }
+  }
   if (claim) {
     // 영역 제스처는 **취소하면 안 된다.** pointerdown 을 preventDefault 하면 브라우저가 그 포인터
     // 열의 호환 마우스 이벤트(mousedown/mousemove/mouseup)를 통째로 삼킨다. Phaser 는 캔버스의
@@ -637,6 +834,10 @@ function onPointerUp(event: PointerEvent): void {
   setLocationDrag(null);
   if (drag.kind === "draw") {
     const rect = rectFromDrag(drag.from, tile ?? drag.to);
+    // 클릭만으로는 만들지 않는다(실수 저작). 다만 문·단상처럼 1칸짜리 구역은 저작 대상이라
+    // Shift+클릭을 명시적 통로로 남긴다 — 없으면 8×6으로 그린 뒤 숫자를 1로 줄여야 한다.
+    const clicked = isLocationDrawClick(drag.from, tile ?? drag.to);
+    if (clicked && !event.shiftKey) return;
     focusNameOnNextRender = true;
     report(createLocationFromRect(rect));
     return;

@@ -35,12 +35,16 @@ export type VillageFacadeState = {
 
 export function createExactVillageMap(project: Project, target: NewVillageTarget): void {
   assertMapIdAvailable(project, target.mapId);
-  const size = target.width * target.height;
+  // 파사드(fillMissingVillageDimensions)가 이미 채우지만, 직접 호출 경로(테스트·세션) 방어로
+  // 같은 환산기의 하한 기본(houseCount 없음 = 기본 12채)로 닫는다 — undefined가 맵에 들어가지 않게.
+  const width = target.width ?? 74;
+  const height = target.height ?? 52;
+  const size = width * height;
   const map: GameMap = {
     id: target.mapId,
     name: target.name,
-    width: target.width,
-    height: target.height,
+    width,
+    height,
     tilesetId: DEFAULT_TILESET_ID,
     tileSize: DEFAULT_TILE_SIZE,
     lowerTiles: new Array<number>(size).fill(TILE.GRASS),
@@ -55,7 +59,7 @@ export function createExactVillageMap(project: Project, target: NewVillageTarget
   }
   if (!project.maps[project.startMapId]) {
     project.startMapId = target.mapId;
-    project.startPos = { x: Math.floor(target.width / 2), y: Math.floor(target.height / 2) };
+    project.startPos = { x: Math.floor(width / 2), y: Math.floor(height / 2) };
   }
 }
 

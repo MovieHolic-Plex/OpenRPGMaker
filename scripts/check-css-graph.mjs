@@ -35,13 +35,14 @@ const CSS_ROOTS = ["src/styles", "src/player", "src/benchmark"];
 
 // 엔트리는 하드코딩하지 않고 src/**/*.ts 의 `import "....css"` 로 **발견**한다.
 // 엔트리가 늘거나 옮겨져도 게이트가 따라가야 하기 때문이다. 스캔이 0건이면 아래 폴백을 쓴다.
+// (2026-09-11 Task 7 이후) TS 가 직접 붙이던 database 시트(curve-editors·battle-studio·animation-editor 등)는
+// database/index.css 진입 시트로 흡수됐다 — 폴백은 편집기·플레이어·벤치마크 엔트리와 두 지연 진입 시트만 둔다.
 const FALLBACK_ENTRIES = [
-  "src/styles/index.css", // src/main.ts:3
-  "src/player/player.css", // src/player/exportEntry.ts:1
-  "src/benchmark/ui/styles.css", // src/benchmark/ui/landing.ts:6
-  "src/styles/database/curve-editors.css", // actorRecordCurveEditors.ts:9
-  "src/styles/database/battle-studio.css", // databaseUtilityRecordViews.ts:30, databaseAnimationRecordView.ts:21
-  "src/styles/database/animation-editor.css", // databaseAnimationRecordView.ts:20
+  "src/styles/index.css", // src/main.ts
+  "src/styles/event/index.css", // src/editor/panels/eventEditor/modal.ts
+  "src/styles/database/index.css", // src/editor/panels/databaseModal.ts
+  "src/player/player.css", // src/player/exportEntry.ts
+  "src/benchmark/ui/styles.css", // src/benchmark/ui/landing.ts
 ];
 
 // ── 유예 목록 (P0 기준선) ───────────────────────────────────────────────────────
@@ -52,40 +53,22 @@ const UNREACHABLE_ALLOWLIST = new Set([]);
 
 // 검사 2: 두 곳 이상에서 @import 되는 파일 — postcss-import 가 첫 위치로 dedup 하므로
 // 두 번째 배럴의 cascade 순서 선언은 실제로 적용되지 않는다.
-// 전부 index.css 번들 안에서 겹친다. 합계 1,276 줄.
-const DOUBLE_IMPORT_ALLOWLIST = new Set([
-  // database/tabs-b.css:3  +  runtime/playerRuntime.css:8   (226 줄)
-  "src/styles/database/tabs-b-status-menu-base.css",
-  // database/tabs-b.css:4  +  runtime/playerRuntime.css:9   (477 줄)
-  "src/styles/database/tabs-b-status-menu-main.css",
-  // database/tabs-b.css:2  +  runtime/playerRuntime.css:7   (352 줄)
-  "src/styles/database/tabs-b-title-screen.css",
-  // runtime/playerRuntime.css:20  +  editor/core.part-2.css:1  (129 줄)
-  "src/styles/runtime/playSurface.css",
-  // index.css:5  +  runtime/playerRuntime.css:2             (92 줄)
-  "src/styles/runtime/system.css",
-]);
+// (P0 기준선의 5건은 2026-09-11 Task 7 의 진입 시트로 전부 해소돼 유예 목록이 비었다.)
+const DOUBLE_IMPORT_ALLOWLIST = new Set([]);
 
-// 검사 3: NN-*.css 인데 형제 배럴이 @import 하지 않는 슬라이스 파일.
-// (사고 (1) 을 잡아냈어야 할 검사. 유예 항목은 UNREACHABLE 과 중복될 수 있다.)
-const UNREGISTERED_SLICE_ALLOWLIST = new Set([
-  // 배럴(desktop-record-shell.css)이 01~12 만 들여오고 13 은 src/styles/index.css:53 이
-  // 직접 들여온다. 죽지는 않았지만 배럴을 우회하므로 슬라이스 순서 계약이 index.css 로 새어나갔다.
-  // Phase 1 에서 배럴로 이관 예정.
-  "src/styles/database/desktop-record-shell/13-actor-studio.css",
-]);
+// 검사 3: NN-*.css 인데 형제 배럴도, 그 슬라이스를 @import 하는 표면 진입 시트도 없는 슬라이스 파일.
+// (사고 (1) 을 잡아냈어야 할 검사. 유예 항목은 UNREACHABLE 과 중복될 수 있다.
+//  P0 기준선의 13-actor-studio.css 는 database/index.css 진입 시트가 직접 들여와 해소됐다.)
+const UNREGISTERED_SLICE_ALLOWLIST = new Set([]);
 
 // 검사 4: 같은 슬라이스 디렉터리에서 NN- 접두사가 겹치는 파일들.
 // 병렬 워크트리에서 각자 다음 번호를 집어 생긴 충돌이다. 번호가 곧 cascade 순서라
 // 겹치면 로드 순서가 배럴 줄 순서에만 의존하게 되고, 리네임 한 번에 조용히 뒤집힌다.
 // 키 형식: "<슬라이스 디렉터리>#<NN>"
-// 실측: 8개 슬라이스 디렉터리(총 94개 번호 파일)를 전수 조사한 결과 충돌 그룹은 **1개**뿐이다.
-// 다만 그 그룹에 파일이 3개라 쌍(pair)으로 세면 3건 — 보고서의 "3건"은 이 쌍 수를 센 것이다.
-const DUPLICATE_PREFIX_ALLOWLIST = new Set([
-  // 07-actor-battle-authoring-surface.css / 07-identifiable-previews.css / 07-screen-effect-stage.css
-  // 세 파일 모두 07 — 병렬 워크트리가 각자 "다음 번호"를 07 로 집었다. P0-7 고아도 이 그룹 소속.
-  "src/styles/editor/event-editor.command-preview#07",
-]);
+// 실측: 8개 슬라이스 디렉터리(총 94개 번호 파일)를 전수 조사한 결과 충돌 그룹은 **1개**뿐이었다
+// (event-editor.command-preview 의 07 세 파일). 2026-09-11 Task 13 이 이벤트 시트를 번호 없는 구성 요소 버킷으로
+// 접어 그 그룹이 사라졌다 → 유예 목록은 비어 있다.
+const DUPLICATE_PREFIX_ALLOWLIST = new Set([]);
 
 // ── 도구 ────────────────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
@@ -254,6 +237,14 @@ for (const hit of doubles) {
 // ── 슬라이스 디렉터리 수집 ─────────────────────────────────────────────────────
 // 슬라이스 = NN-*.css 를 가진 디렉터리. 형제 배럴은 `<디렉터리>.css`.
 const NUMBERED_RE = /^(\d{2})-.+\.css$/;
+// 표면 진입 시트 — 배럴이 없는 슬라이스 디렉터리의 등록처(검사 3). 레지스트리가 없거나 파일이 없으면 빈 목록.
+const SURFACE_ENTRIES = (() => {
+  const reg = join(ROOT, "scripts/css-surfaces.json");
+  if (!existsSync(reg)) return [];
+  return Object.values(JSON.parse(readFileSync(reg, "utf8")).surfaces ?? {})
+    .map((s) => resolve(ROOT, s.entry))
+    .filter((p) => existsSync(p));
+})();
 const sliceDirs = new Map(); // 디렉터리 절대경로 → 번호 파일명 배열
 for (const abs of universe) {
   if (!NUMBERED_RE.test(basename(abs))) continue;
@@ -265,9 +256,13 @@ for (const abs of universe) {
 // ── 검사 3: 미등록 번호 슬라이스 ───────────────────────────────────────────────
 report.checks.unregisteredSlice = { found: [], allowlisted: [...UNREGISTERED_SLICE_ALLOWLIST], new: [] };
 for (const [dir, files] of [...sliceDirs].sort()) {
-  const barrel = `${dir}.css`;
-  if (!existsSync(barrel)) {
-    fail(`${toRel(dir)} 은 번호 슬라이스인데 형제 배럴 ${toRel(barrel)} 이 없다. 배럴을 만들고 엔트리에 연결하세요.`);
+  // 형제 배럴(<디렉터리>.css)이 있으면 그것이 등록처다. 표면 격리 1단계(2026-09-11) 이후 배럴은
+  // 지워지고 표면 진입 시트(scripts/css-surfaces.json 의 entry)가 슬라이스를 직접 @import 하므로,
+  // 배럴이 없으면 진입 시트들을 등록처로 본다. 둘 다 없으면 여전히 실패다.
+  const siblingBarrel = `${dir}.css`;
+  const barrel = existsSync(siblingBarrel) ? siblingBarrel : SURFACE_ENTRIES.find((e) => readImports(e).some((imp) => dirname(imp.target) === dir));
+  if (!barrel) {
+    fail(`${toRel(dir)} 은 번호 슬라이스인데 형제 배럴 ${toRel(siblingBarrel)} 도, 그 슬라이스를 @import 하는 표면 진입 시트도 없다. 진입 시트에 연결하세요.`);
     continue;
   }
   const registered = new Set(readImports(barrel).map((imp) => imp.target));

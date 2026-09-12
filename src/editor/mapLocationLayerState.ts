@@ -12,6 +12,7 @@
 import { editorState } from "@/editor/editorState";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { LOCATION_ROLES, hasLocationRole, locationRoleTag, projectLocationRoles, type LocationRole } from "@/project/locationRoles";
 import { store } from "@/project/store";
 import {
   addMapLocation,
@@ -77,6 +78,12 @@ function writeStoredEnabled(enabled: boolean): void {
   }
 }
 
+function writeLocationDrawFlag(enabled: boolean): void {
+  if (typeof document === "undefined") return;
+  if (enabled) document.body.dataset.locationDraw = "1";
+  else delete document.body.dataset.locationDraw;
+}
+
 export function locationLayerState(): LocationLayerState {
   return state;
 }
@@ -102,6 +109,7 @@ function set(patch: Partial<LocationLayerState>): void {
 
 export function setLocationLayerEnabled(enabled: boolean): void {
   writeStoredEnabled(enabled);
+  writeLocationDrawFlag(enabled);
   // 레이어를 끄면 선택과 진행 중 드래그를 반드시 버린다 — 남겨 두면 다시 켤 때
   // 사라진 로케이션을 가리키는 유령 선택이 살아난다.
   set(enabled ? { enabled } : { enabled, selectedId: null, drag: null });
@@ -159,6 +167,10 @@ function editMap(label: string, mutate: (map: GameMap) => LocationActionResult):
       const map = project.maps[mapId];
       if (!map) return;
       result = mutate(map);
+      // 편집이 성공했으면 역할 투영을 다시 맞춘다. 구역을 옮기거나 지우면
+      // safeZones/farmableArea 가 옛 자리에 남기 때문이다(2026-09-12 브라우저 QA 실측).
+      // 편집마다 여기 한 곳에서 부르는 이유: 옮기기·크기·삭제·역할 토글이 모두 이 함수를 지난다.
+      if (result.ok) projectLocationRoles(map);
     },
     { scope: "map", mapId, label: `로케이션 ${label}` },
   );
@@ -247,7 +259,7 @@ export function repairBrokenLocationReferences(missingLocationId: string, plan: 
   let repaired = 0;
   store.update(
     (project) => {
-      repaired = repairMapLocationReferences(project, missingLocationId, plan).repaired;
+      repaired = repairMapLocationReferences(project, missingLocationId, plan, mapId).repaired;
     },
     { scope: "project", label: "로케이션 참조 복구" },
   );
@@ -281,5 +293,60 @@ export function selectedOverlaps(): readonly MapNamedLocation[] {
 }
 
 export function locationReferenceCount(locationId: string): number {
-  return countLocationReferences(store.getCurrent(), locationId);
+  const project = store.getCurrent();
+  const map = currentLocationMap();
+  return countLocationReferences(project, locationId, map?.id);
+}
+
+// ───────────────────────────────────────────── 로케이션 역할 (2026-09-12)
+
+const LOCATION_ROLE_LABELS_KO: Record<LocationRole, string> = { safeZone: "안전지대", farmable: "경작지" };
+
+/**
+ * 그 구역의 역할을 켜고 끈다. 역할은 하나만 갖고, 켜면 `safeZones`/`farmableArea` 로 **투영**된다.
+ *
+ * 무변경이면 스냅샷을 밀지 않는다 — 같은 역할을 두 번 켠 사람의 Ctrl+Z 가 빈 스냅샷으로 가면
+ * 안 된다(일괄 이관 창에서 실측으로 잡힌 함정과 같은 규칙).
+ */
+export function setLocationRole(locationId: string, role: LocationRole | null): LocationActionResult {
+  const map = currentLocationMap();
+  if (!map) return { ok: false, error: "맵이 선택되지 않았습니다." };
+  const current = (map.locations ?? []).find((entry) => entry.id === locationId);
+  if (!current) return { ok: false, error: "구역을 찾을 수 없습니다." };
+  const previous = locationRoleTag(current);
+  const next = role ?? undefined;
+  if (previous === next) {
+    // 역할은 그대로지만 투영이 어긋나 있을 수 있다(옛 저장본·코드가 넣은 사각형).
+    // 그 경우만 다시 맞춘다 — 무변경이면 스냅샷도 밀지 않는다.
+    return projectRolesIfNeeded(map);
+  }
+  return editMap("역할", (draft) => {
+    const target = (draft.locations ?? []).find((entry) => entry.id === locationId);
+    if (!target) return { ok: false, error: "구역을 찾을 수 없습니다." };
+    const kept = (target.tags ?? []).filter((tag) => !(LOCATION_ROLES as readonly string[]).includes(tag));
+    const tags = next === undefined ? kept : [...kept, next];
+    const updated = updateMapLocationFields(draft, locationId, {
+      tags: tags.length > 0 ? tags : undefined,
+    });
+    if (!updated.ok) return { ok: false, error: updated.error };
+    projectLocationRoles(draft);
+    return {
+      ok: true,
+      message:
+        next === undefined
+          ? "구역 역할을 뗐습니다."
+          : '구역을 ' + LOCATION_ROLE_LABELS_KO[next] + '(으)로 표시했습니다.',
+    };
+  });
+}
+
+/** 이미 켜 둔 역할의 투영이 어긋나 있으면 맞춘다. 아니면 아무 일도 하지 않는다. */
+function projectRolesIfNeeded(map: ReturnType<typeof currentLocationMap>): LocationActionResult {
+  if (!map) return { ok: false, error: "맵이 선택되지 않았습니다." };
+  const hasRole = (map.locations ?? []).some((entry) => hasLocationRole(entry, "safeZone") || hasLocationRole(entry, "farmable"));
+  if (!hasRole) return { ok: true };
+  return editMap("역할 투영", (draft) => {
+    const changed = projectLocationRoles(draft);
+    return changed === 0 ? { ok: true } : { ok: true, message: "맵의 역할 사각형을 다시 맞췄습니다." };
+  });
 }

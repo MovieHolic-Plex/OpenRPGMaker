@@ -16,7 +16,7 @@
 // 않는다 — 옛 빌더 맵의 동작을 바꾸지 않겠다는 계약이다. 승격된 로케이션은 `origin` 에 출처를 남겨
 // 추적할 수 있게 한다(스냅샷이므로 원본이 사라져도 로케이션은 남는다).
 
-import type { GameMap, MapLayoutRegion, MapNamedLocation, Rect } from "./types";
+import type { GameMap, MapLayoutRegion, MapNamedLocation, MapNamedLocationOrigin, Rect } from "./types";
 
 /** 로케이션 최소 크기. 0 폭/높이는 "안에 있음" 판정이 영원히 거짓이라 저작 실수다. */
 export const MIN_LOCATION_SIZE = 1;
@@ -189,7 +189,16 @@ export function resizeMapLocation(map: GameMap, locationId: string, rect: Rect):
 export function updateMapLocationFields(
   map: GameMap,
   locationId: string,
-  fields: { readonly note?: string; readonly tags?: readonly string[]; readonly color?: string },
+  fields: {
+    readonly note?: string;
+    readonly tags?: readonly string[];
+    readonly color?: string;
+    /**
+     * 출처 표시. `null` 은 지운다(역할을 뗄 때), `undefined` 는 「바꾸지 않음」이다 —
+     * 다른 필드와 같은 규칙을 쓰면 출처를 지울 길이 없어진다.
+     */
+    readonly origin?: MapNamedLocationOrigin | null;
+  },
 ): LocationChange {
   const location = findLocationById(map, locationId);
   if (!location) return { ok: false, error: `로케이션을 찾을 수 없습니다: ${locationId}` };
@@ -205,6 +214,10 @@ export function updateMapLocationFields(
   if (fields.color !== undefined) {
     if (fields.color.trim().length === 0) delete location.color;
     else location.color = fields.color;
+  }
+  if (fields.origin !== undefined) {
+    if (fields.origin === null) delete location.origin;
+    else location.origin = fields.origin;
   }
   return { ok: true, location };
 }
@@ -356,6 +369,11 @@ export function rectFromDrag(a: LocationPoint, b: LocationPoint): Rect {
   const x = Math.min(a.x, b.x);
   const y = Math.min(a.y, b.y);
   return { x, y, w: Math.abs(a.x - b.x) + 1, h: Math.abs(a.y - b.y) + 1 };
+}
+
+/** 같은 칸에서 누르고 떼면 클릭이다. 드래그가 있을 때만 구역을 만든다. */
+export function isLocationDrawClick(from: LocationPoint, to: LocationPoint): boolean {
+  return from.x === to.x && from.y === to.y;
 }
 
 const LOCATION_PALETTE = ["#7ad9ff", "#ffc857", "#8ce99a", "#ff9ec4", "#c3a6ff", "#ffa94d"] as const;
