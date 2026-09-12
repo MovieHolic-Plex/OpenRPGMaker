@@ -31,7 +31,8 @@ export function spatialToolDesigns(project: Project) {
   const document = checkedDocument(project.spatialAuthoring, project);
   return kinds.flatMap(kind => Object.keys(document.library[collections[kind]]).map(key => {
     const node = designNode(document.library, { kind, id: id(key, "designId") });
-    return { ...node.design, kind, children: designSlots(node).map(slot => ({ id: slot.id, source: slot.source, quantity: slot.quantity })) };
+    return { ...node.design, ...(node.kind === "place" ? { placeKind: node.design.kind } : {}),
+      kind, children: designSlots(node).map(slot => ({ id: slot.id, source: slot.source, quantity: slot.quantity })) };
   }));
 }
 function target(value: unknown): SpatialStampTarget | undefined {
@@ -61,7 +62,7 @@ function connectionCompileRoot(document: SpatialAuthoringDocument, link: Pick<Sp
 }
 export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
   { name: "list_spatial_designs", mode: "read", domains: ["world", "map", "database"],
-    description: "Discover canonical object, space, place, region and world designs across all project tilesets. Read-only; never activates or seeds an empty library. When data.active is false the project has no spatialAuthoring document and every other spatial tool rejects with spatial-inactive — activation is a user-side editor action, not a tool.",
+    description: "Discover saved canonical designs across all project tilesets; query matches id, name or tags. object = reusable appearance/prop, including building exteriors; space = usable room/floor/yard; place = complete facility/settlement grouping spaces or places. For a complete house search kind:place; for saved exteriors search kind:object with query:건물 외형 (or the authored name/tag). Context designs are only samples: search this full library before declaring an asset missing. List rows use kind:place plus placeKind:facility|settlement|natural; get_spatial_design returns the original upsert body. Read-only; never activates or seeds an empty library. data.active=false means legacy project; activation is a user-side editor action, not a tool.",
     parameters: SPATIAL_LIST_SCHEMA,
     run(project, args) {
       if (project.spatialAuthoring === undefined) {
@@ -103,7 +104,7 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
     },
   },
   { name: "get_spatial_design", mode: "read", domains: ["world", "map", "database"],
-    description: "Read a canonical design and its resolved transitive source revisions, object selections and frozen kit cells. Use the returned kind-specific design as the starting point for upsert_spatial_design. Large designs can exceed the tool payload limit — when the response is truncated re-read with resolved:false; the design body alone is enough for a revision round-trip.",
+    description: "Read a canonical design and its resolved transitive source revisions, object selections and frozen kit cells. Use data.design as the starting point for upsert_spatial_design. Reuse an exterior object in an outdoor yard space's objectSlots to supply ground and an approach. Alternatively copy design.graphic {tilesetId,kitId} into place.exterior when the graphic supports painted passable port cells; this copy is not an objectDesignId link and does not inherit object anchors/chips or future object changes. A complete house is a place with authored spaces, ports and connections; facade height/labels do not establish usable floor count. Large designs can exceed the tool payload limit — when truncated re-read with resolved:false; the design body alone is enough for a revision round-trip.",
     parameters: SPATIAL_GET_SCHEMA,
     run(project, args) {
       const ref = source(args);
@@ -115,7 +116,7 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
     },
   },
   { name: "upsert_spatial_design", mode: "write", domains: ["world", "map", "database"],
-    description: "Author one canonical design in the detached AI proposal. Supply exactly the body named by kind (object/space/place/region/world). expectedRevision=0 creates a new id; updates require the current revision and design.revision=current+1. References must already exist — author bottom-up: objects before spaces, spaces before places, places before regions, regions before worlds. For region/world terrain read get_geography_vocabulary first. Never refreshes frozen occurrences or overwrites maps. Uses normal proposal acceptance.",
+    description: "Author one canonical design in the detached AI proposal. Supply exactly the body named by kind (object/space/place/region/world). expectedRevision=0 creates a new id; updates require the current revision and design.revision=current+1. References must already exist — author bottom-up: objects before spaces, spaces before places, places before regions, regions before worlds. A complete house uses place.kind:facility with explicit interior/outdoor space children. Put a saved exterior object into an outdoor yard space's objectSlots for ground/approach; direct place.exterior copies object.graphic only when painted passable port cells are available. Define usable floors from the requested plan, never infer them from facade height or names. Interior children are separate maps even at the same level: author ports and connections for room doors, stairs and exterior entry/return. Enclosing place ports require painted passable outdoor surface. For region/world terrain read get_geography_vocabulary first. Never refreshes frozen occurrences or overwrites maps. Uses normal proposal acceptance.",
     parameters: SPATIAL_UPSERT_SCHEMA,
     run(project, args) {
       const kind = parseKind(args.kind, "kind");

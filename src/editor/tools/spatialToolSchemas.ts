@@ -7,7 +7,8 @@ const size = { type: "integer", minimum: 1, maximum: 256 } as const;
 const array = (items: JsonSchema): JsonSchema => ({ type: "array", items });
 const object = (properties: Record<string, JsonSchema>, required = Object.keys(properties)): JsonSchema => ({ type: "object", properties, required, additionalProperties: false });
 const choices = (values: readonly string[]): JsonSchema => ({ type: "string", enum: values });
-export const SPATIAL_KIND_SCHEMA = choices(["object", "space", "place", "region", "world"]);
+export const SPATIAL_KIND_SCHEMA = { ...choices(["object", "space", "place", "region", "world"]),
+  description: "object: reusable appearance/prop including building exterior; space: usable room/floor/yard; place: complete facility/settlement grouping spaces/places; region/world: geography." };
 const point = object({ x: integer, y: integer });
 const ports = array(object({ id, name: text, x: integer, y: integer }));
 const graphic = object({ tilesetId: id, kitId: id });
@@ -30,7 +31,8 @@ const spaces = object({ ...base, environment: choices(["interior", "outdoor"]), 
   }, ["id", "objectDesignId", "quantity", "required", "placement"])),
 }, [...Object.keys(base), "environment", "tilesetId", "shape", "width", "height", "floor", "wall", "ports", "objectSlots"]);
 const places = object({ ...base, kind: choices(["facility", "settlement", "natural"]), children: child(["space", "place"]),
-  layout: choices(["row", "double-row", "manual"]), ports, connections: array(object(connection)), exterior: graphic,
+  layout: choices(["row", "double-row", "manual"]), ports, connections: array(object(connection)),
+  exterior: { ...graphic, description: "Copy a saved ObjectDesign.graphic {tilesetId,kitId} only with painted passable port cells. Otherwise place the object via objectSlots in an outdoor yard space for ground/approach. No objectDesignId link or anchors/chips inheritance in this field. Appearance does not define interior floors, ports or connections." },
 }, [...Object.keys(base), "kind", "children", "layout", "ports", "connections"]);
 const settlement = object({ presetId: id, seed: { type: "integer", minimum: 0 } });
 const regions = object({ ...base, terrain, places: child(["place"]), ports, routes: array(object({ ...connection, points: array(point) })), settlement },
@@ -48,7 +50,8 @@ export const SPATIAL_BUILD_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA, id, occu
 }, ["kind", "id", "occurrenceId", "seed"]);
 export const SPATIAL_GET_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA, id,
   resolved: { type: "boolean", description: "default true — resolved transitive source closure. false returns only the design body (enough for an upsert revision round-trip when the full payload is truncated)." } }, ["kind", "id"]);
-export const SPATIAL_LIST_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA, query: text }, []);
+export const SPATIAL_LIST_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA,
+  query: { ...text, description: "Case-insensitive substring of saved id, name or tags. For exteriors try kind:object and query:건물 외형, then the authored name/tag; for complete houses use kind:place. Omit query to list all designs of the kind." } }, []);
 export const SPATIAL_APPLY_SCHEMA = object({ previewId: id });
 // Occurrence endpoints use occurrenceId (concrete frozen id), not design childId slots.
 const occurrenceEndpoint = object({ occurrenceId: id, portId: id });
