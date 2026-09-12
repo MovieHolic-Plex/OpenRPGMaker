@@ -46,7 +46,7 @@ export function issueSpatialToolPreview(project: Project, preview: SpatialAuthor
 export function consumeSpatialToolPreview(project: Project, id: string): SpatialAuthoringPreview {
   const issued = getDetachedDraftMemory<IssuedPreview>(project, PREVIEWS);
   if (!issued || issued.id !== id) throw new ToolError("Preview was not issued for this draft", { code: "spatial-foreign-preview" });
-  if (issued.baseline !== spatialToolFingerprint(project)) throw new ToolError("Project changed since preview", { code: "spatial-stale" });
+  if (issued.baseline !== spatialToolFingerprint(project)) throw new ToolError("Project changed since preview — re-issue preview_spatial_build and apply it before any other write", { code: "spatial-stale" });
   setDetachedDraftMemory(project, PREVIEWS, undefined);
   return issued.preview;
 }

@@ -1,16 +1,17 @@
 import { previewSpatialAuthoring } from "@/editor/spatial/preview";
-import type { SpatialStampTarget } from "@/editor/spatial/compilerTypes";
+import type { SpatialAuthoringRequest } from "@/editor/spatial/authoringTypes";
+import { SpatialCompileError, type SpatialStampTarget } from "@/editor/spatial/compilerTypes";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { isWorldTileset } from "@/project/defaults/worldCoastMapping";
 import { WORLD_TERRAIN_BLOCKS } from "@/project/defaults/worldTerrainAutotiles";
-import { checkedDocument, designNode, designSlots, own } from "@/project/spatial/domain";
-import { choice, id, integer, point, record, rect } from "@/project/spatial/guardValues";
+import { checkedDocument, designNode, designSlots, own, SpatialOperationError } from "@/project/spatial/domain";
+import { boolean, choice, coordinate, id, integer, point, record, rect } from "@/project/spatial/guardValues";
 import { resolveSpatialDesign } from "@/project/spatial/resolve";
 import type { Project } from "@/project/types";
-import type { SpatialDesignReference } from "@/project/spatial/types";
+import type { SpatialAuthoringDocument, SpatialConnection, SpatialDesignReference, SpatialId, SpatialOccurrence } from "@/project/spatial/types";
 import { MAP_GENERATION_PROFILES } from "./mapGenerationProfiles";
 import { authorizeSpatialToolChange, consumeSpatialToolPreview, issueSpatialToolPreview } from "./spatialToolState";
-import { SPATIAL_APPLY_SCHEMA, SPATIAL_BUILD_SCHEMA, SPATIAL_GET_SCHEMA, SPATIAL_LIST_SCHEMA, SPATIAL_UPSERT_SCHEMA } from "./spatialToolSchemas";
+import { SPATIAL_APPLY_SCHEMA, SPATIAL_BUILD_SCHEMA, SPATIAL_GET_SCHEMA, SPATIAL_LIST_SCHEMA, SPATIAL_OCCURRENCE_SCHEMA, SPATIAL_UPSERT_SCHEMA } from "./spatialToolSchemas";
 import { ToolError, type ToolDefinition } from "./types";
 
 const kinds = ["object", "space", "place", "region", "world"] as const;
@@ -37,6 +38,26 @@ function target(value: unknown): SpatialStampTarget | undefined {
   if (value === undefined) return undefined;
   const input = record(value, "target", "mapId rect entry");
   return { mapId: id(input.mapId, "target.mapId"), rect: rect(input.rect, "target.rect"), entry: point(input.entry, "target.entry") };
+}
+function lookupOccurrence(document: SpatialAuthoringDocument, occurrenceId: SpatialId): SpatialOccurrence {
+  const found = document.occurrences[occurrenceId];
+  if (!found) throw new ToolError(`Missing occurrence ${occurrenceId}`, { code: "invalid-args" });
+  return found;
+}
+function ancestorChain(document: SpatialAuthoringDocument, occurrenceId: SpatialId): readonly SpatialOccurrence[] {
+  const chain: SpatialOccurrence[] = [];
+  for (let cursor: SpatialOccurrence | undefined = lookupOccurrence(document, occurrenceId); cursor !== undefined;
+    cursor = cursor.parentId === null ? undefined : lookupOccurrence(document, cursor.parentId)) chain.push(cursor);
+  return chain;
+}
+/** The containing root owns the write set: overview entries into a child live on their geography owner's binding. */
+function connectionCompileRoot(document: SpatialAuthoringDocument, link: Pick<SpatialConnection, "from" | "to">): SpatialId {
+  const fromRoot = ancestorChain(document, link.from.occurrenceId).at(-1);
+  const toRoot = ancestorChain(document, link.to.occurrenceId).at(-1);
+  if (!fromRoot || !toRoot || fromRoot.id !== toRoot.id) {
+    throw new ToolError("link/unlink endpoints must share one occurrence tree — cross-tree connections have no compile scope", { code: "unsupported" });
+  }
+  return fromRoot.id;
 }
 export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
   { name: "list_spatial_designs", mode: "read", domains: ["world", "map", "database"],
@@ -82,13 +103,14 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
     },
   },
   { name: "get_spatial_design", mode: "read", domains: ["world", "map", "database"],
-    description: "Read a canonical design and its resolved transitive source revisions, object selections and frozen kit cells. Use the returned kind-specific design as the starting point for upsert_spatial_design.",
+    description: "Read a canonical design and its resolved transitive source revisions, object selections and frozen kit cells. Use the returned kind-specific design as the starting point for upsert_spatial_design. Large designs can exceed the tool payload limit — when the response is truncated re-read with resolved:false; the design body alone is enough for a revision round-trip.",
     parameters: SPATIAL_GET_SCHEMA,
     run(project, args) {
       const ref = source(args);
       const document = requireSpatialDocument(project);
       return { summary: `Spatial ${ref.kind}: ${ref.id}`, data: {
-        ...designNode(document.library, ref), resolved: resolveSpatialDesign(document, project, ref),
+        ...designNode(document.library, ref),
+        ...(args.resolved === false ? {} : { resolved: resolveSpatialDesign(document, project, ref) }),
       } };
     },
   },
@@ -144,6 +166,94 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
       Object.assign(project, accepted);
       authorizeSpatialToolChange(project, before);
       return { summary: `Spatial build: ${preview.impact.mapIds.length} maps`, data: { impact: preview.impact } };
+    },
+  },
+  { name: "edit_spatial_occurrence", mode: "write", domains: ["world", "map"],
+    description: "Modify an already-built frozen occurrence in the detached AI proposal — source designs are never touched and occurrences never refresh silently. Operations: move (reposition a child inside its region/world parent; needs occurrenceId+x/y, optional level — the containing map recompiles), refresh (rebuild the subtree from the CURRENT source revision — the only way an upserted source edit reaches a built map; object occurrences stamp via preview_spatial_build+apply_spatial_build instead), delete (remove the subtree — externalConnections reject|remove, default reject fails safely while incoming links exist), detach (release compiled ownership, keep content), clone (standalone copy — needs newOccurrenceId; externalConnections omit|copy, default omit), link/unlink (create/remove a navigation connection — link needs connection {id,from:{occurrenceId,portId},to:{occurrenceId,portId},bidirectional}; unlink needs connectionId; the containing root occurrence recompiles). Returns actual impact; uses normal proposal acceptance.",
+    parameters: SPATIAL_OCCURRENCE_SCHEMA,
+    run(project, args) {
+      const document = requireSpatialDocument(project);
+      const operation = choice(["move", "delete", "refresh", "detach", "clone", "link", "unlink"] as const)(args.operation, "operation");
+      const occurrenceId = args.occurrenceId === undefined ? undefined : id(args.occurrenceId, "occurrenceId");
+      const occurrence = () => {
+        if (occurrenceId === undefined) throw new ToolError(`${operation} requires occurrenceId`, { code: "invalid-args" });
+        return lookupOccurrence(document, occurrenceId);
+      };
+      const policy = <T extends string>(allowed: readonly T[], fallback: T): T => args.externalConnections === undefined ? fallback
+        : choice(allowed)(args.externalConnections, "externalConnections");
+      let request: SpatialAuthoringRequest;
+      let proposed = project;
+      switch (operation) {
+        case "move": {
+          const child = occurrence();
+          if (child.parentId === null) throw new ToolError("move repositions a child inside its region/world parent — root occurrences have no containing map", { code: "invalid-args" });
+          const parent = own(document.occurrences, child.parentId);
+          if (parent.kind !== "region" && parent.kind !== "world") throw new ToolError(`move only relocates geography children — ${child.id} sits inside ${parent.kind} ${parent.id}`, { code: "invalid-args" });
+          proposed = { ...project, spatialAuthoring: checkedDocument({ ...document, occurrences: { ...document.occurrences,
+            [child.id]: { ...child, x: coordinate(args.x, "x"), y: coordinate(args.y, "y"),
+              level: args.level === undefined ? child.level : coordinate(args.level, "level") } } }, project) };
+          request = { operation: { kind: "edit" }, compile: { occurrenceId: parent.id } };
+          break;
+        }
+        case "delete":
+          request = { operation: { kind: "delete-occurrence", request: { occurrenceId: occurrence().id,
+            externalConnections: policy(["reject", "remove"] as const, "reject") } } };
+          break;
+        case "refresh": {
+          const selected = occurrence();
+          if (selected.kind === "object") throw new ToolError("object occurrences are stamped content — rebuild through preview_spatial_build + apply_spatial_build", { code: "unsupported" });
+          request = { operation: { kind: "refresh", request: { occurrenceId: selected.id, externalConnections: policy(["reject", "remove"] as const, "reject") } },
+            compile: { occurrenceId: selected.id } };
+          break;
+        }
+        case "detach":
+          request = { operation: { kind: "detach", occurrenceId: occurrence().id } };
+          break;
+        case "clone": {
+          const selected = occurrence();
+          if (args.newOccurrenceId === undefined) throw new ToolError("clone requires newOccurrenceId for the copy's root", { code: "invalid-args" });
+          const rootId = id(args.newOccurrenceId, "newOccurrenceId");
+          request = { operation: { kind: "clone-occurrence", request: { occurrenceId: selected.id, rootId,
+              externalConnections: policy(["omit", "copy"] as const, "omit") } },
+            ...(selected.kind === "object" ? {} : { compile: { occurrenceId: rootId } }) };
+          break;
+        }
+        case "link": {
+          const input = record(args.connection, "connection", "id from to bidirectional");
+          const endpoint = (value: unknown, path: string) => { const entry = record(value, path, "occurrenceId portId");
+            return { occurrenceId: id(entry.occurrenceId, `${path}.occurrenceId`), portId: id(entry.portId, `${path}.portId`) }; };
+          const link = { id: id(input.id, "connection.id"), from: endpoint(input.from, "connection.from"),
+            to: endpoint(input.to, "connection.to"), bidirectional: boolean(input.bidirectional, "connection.bidirectional") };
+          request = { operation: { kind: "edit-connection", request: { kind: "create", connection: link } },
+            compile: { occurrenceId: connectionCompileRoot(document, link) } };
+          break;
+        }
+        case "unlink": {
+          if (args.connectionId === undefined) throw new ToolError("unlink requires connectionId", { code: "invalid-args" });
+          const connectionId = id(args.connectionId, "connectionId");
+          const link = document.connections.find(entry => entry.id === connectionId);
+          if (!link) throw new ToolError(`Missing connection ${connectionId}`, { code: "invalid-args" });
+          if (link.overviewRoute !== undefined) throw new ToolError(`${connectionId} is a compiled geography route — remove it by editing the source design route or moving a child instead`, { code: "unsupported" });
+          request = { operation: { kind: "edit-connection", request: { kind: "remove", connectionId } },
+            compile: { occurrenceId: connectionCompileRoot(document, link) } };
+          break;
+        }
+        default: throw new ToolError(`Unsupported operation ${String(operation)}`, { code: "invalid-args" });
+      }
+      const before = { ...project };
+      let preview;
+      try {
+        preview = previewSpatialAuthoring(proposed, request, { original: project, checkpoint: project });
+      } catch (error) {
+        // Preserve the typed domain code so the model can self-correct (e.g. external-connection → "remove").
+        if (error instanceof SpatialOperationError || error instanceof SpatialCompileError) {
+          throw new ToolError(error.message, { code: error.code });
+        }
+        throw error;
+      }
+      Object.assign(project, structuredClone(preview.project));
+      authorizeSpatialToolChange(project, before);
+      return { summary: `Spatial ${operation}: ${preview.impact.occurrenceIds.length} occurrences · ${preview.impact.mapIds.length} maps`, data: { impact: preview.impact } };
     },
   },
 ];

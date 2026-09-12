@@ -41,10 +41,14 @@ Legacy projects without a `spatialAuthoring` document cannot create
 geography: `upsertGeography` would silently no-op, so 「추가」 and
 「정주지 지역 만들기」 bail early via `spatialDocumentPresent` and
 surface an activation-required message. The stage toolbar now exposes a
-「공간 설계 활성화」 action on exactly those projects —
-`SpatialDomainChrome.activate` / `spatialGeographyChrome` wire it to
+「공간 설계 활성화」 action on exactly those projects — `domainChrome` in
+`spatialStage.ts` overlays `activate` on every spatial tab (not just
+regions/worlds) while the document is missing, wiring it to
 `activateSpatialDocument`, which calls `store.activateSpatialAuthoring()`
-and guards re-entry through `geographyChromeState.activating`. The store
+and guards re-entry through `geographyChromeState.activating`. Activation
+errors are project-scoped: a failure message is cleared once a canonical
+document exists, and the overlay surfaces it on whichever tab the user is
+viewing. The store
 still enforces remote persistence, a clean working copy and legacy-baseline
 conversion; the button only surfaces that path instead of leaving the
 message dead-ended. Browser QA for this surface needs a canonical project;
@@ -67,6 +71,12 @@ writes from the canvas and no reconstructed draft handles.
 - Region routes are authored orthogonal polylines. Endpoints must match
   the positioned children. An invalid move or route is rejected before
   apply; it does not erase obstacles.
+- Occurrence delete/refresh first try `externalConnections: "reject"`.
+  When the preview rejects with `external-connection`, the request is
+  armed as `geographyChromeState.pendingExternal` and the 「확인」 button
+  retries once with `remove` — the failure is never a dead end. The
+  `SpatialOperationError` code reaches the UI through `detail` on the
+  controller result (`src/editor/spatial/actions.ts`).
 - World connections have no path-point field. The canvas draws the
   compiler's horizontal-then-vertical crossing from the two child
   positions. Entry is an explicit selector, not containment.

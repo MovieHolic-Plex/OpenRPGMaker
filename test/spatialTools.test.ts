@@ -7,6 +7,8 @@ import { own, spatialId } from "@/project/spatial/domain";
 import "@/editor/tools/village/builder";
 import { createBlankProject } from "@/project/defaults/defaultProject";
 import { fixtureDocument, spaceCompilerFixture, spaceDesign } from "./support/spatialSpaceCompilerFixture";
+import { geographyRoot } from "./support/spatialGeographyFixture";
+import { geographyRecipeFixture } from "./support/spatialGeographyRecipes";
 
 function previewId(data: unknown): string {
   if (typeof data !== "object" || data === null || !("previewId" in data) || typeof data.previewId !== "string") throw new TypeError("Missing issued preview ID");
@@ -15,11 +17,11 @@ function previewId(data: unknown): string {
 const build = { kind: "space", id: spaceDesign, occurrenceId: "ai-room", seed: 17 };
 
 describe("registered canonical spatial tools", () => {
-  it("exposes the six native tools when the registry is queried", () => {
+  it("exposes the seven native tools when the registry is queried", () => {
     // Given / When
     const names = allTools().filter(tool => !tool.deprecated).map(tool => tool.name);
     // Then
-    expect(names).toEqual(expect.arrayContaining(["list_spatial_designs", "get_geography_vocabulary", "get_spatial_design", "upsert_spatial_design", "preview_spatial_build", "apply_spatial_build"]));
+    expect(names).toEqual(expect.arrayContaining(["list_spatial_designs", "get_geography_vocabulary", "get_spatial_design", "upsert_spatial_design", "preview_spatial_build", "apply_spatial_build", "edit_spatial_occurrence"]));
   });
   it("reports inactive instead of throwing on a legacy project", () => {
     // Given
@@ -74,6 +76,16 @@ describe("registered canonical spatial tools", () => {
     expect(result.ok, result.summary).toBe(true);
     expect(result.data).toMatchObject({ kind: "space", design: { id: spaceDesign, revision: 1 }, resolved: { snapshot: { root: { id: spaceDesign } } } });
     expect(JSON.stringify(project)).toBe(before);
+  });
+  it("returns a narrow design body without the resolved closure when asked", () => {
+    // Given
+    const project = spaceCompilerFixture();
+    // When
+    const result = runTool({ project }, "get_spatial_design", { kind: "space", id: spaceDesign, resolved: false });
+    // Then — the body alone is the upsert revision round-trip payload.
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.data).toMatchObject({ kind: "space", design: { id: spaceDesign, revision: 1 } });
+    expect(result.data).not.toHaveProperty("resolved");
   });
   it("changes only the source when a revision is explicitly replaced", () => {
     // Given
@@ -160,5 +172,166 @@ describe("registered canonical spatial tools", () => {
     // Then
     expect(applied.ok, applied.summary).toBe(true);
     expect(copy.project.maps["spatial:ai-room"]).toBeDefined();
+  });
+});
+
+describe("edit_spatial_occurrence lifecycle", () => {
+  function fixture() {
+    const project = geographyRecipeFixture("lake-country");
+    const document = fixtureDocument(project);
+    const root = own(document.occurrences, geographyRoot);
+    const child = Object.values(document.occurrences).find(entry => entry.parentId === root.id);
+    if (!child) throw new TypeError("Missing region child occurrence");
+    return { project, document, root, child };
+  }
+  it("rejects every lifecycle operation on a legacy project", () => {
+    // Given / When
+    const result = runTool({ project: createBlankProject() }, "edit_spatial_occurrence", { operation: "refresh", occurrenceId: "x" });
+    // Then
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.code).toBe("spatial-inactive");
+  });
+  it("moves a region child inside its world parent and recompiles the containing map", () => {
+    // Given — a world occurrence: region children have no authored polyline endpoints to break.
+    const project = geographyRecipeFixture("lake-kingdom");
+    const document = fixtureDocument(project);
+    const root = own(document.occurrences, geographyRoot);
+    const child = Object.values(document.occurrences).find(entry => entry.parentId === root.id);
+    if (!child) throw new TypeError("Missing world child occurrence");
+    const ctx = { project };
+    const before = JSON.stringify(project);
+    // When
+    const result = runTool(ctx, "edit_spatial_occurrence", { operation: "move", occurrenceId: child.id, x: child.x + 4, y: child.y });
+    // Then
+    expect(result.ok, result.summary).toBe(true);
+    expect(own(fixtureDocument(ctx.project).occurrences, child.id).x).toBe(child.x + 4);
+    expect(JSON.stringify(project)).toBe(before);
+  });
+  it("rejects a move that strands an authored route endpoint", () => {
+    // Given — lake-country's places anchor the authored-road polyline endpoints.
+    const { project, child } = fixture();
+    const ctx = { project };
+    const before = JSON.stringify(project);
+    // When
+    const result = runTool(ctx, "edit_spatial_occurrence", { operation: "move", occurrenceId: child.id, x: child.x + 4, y: child.y });
+    // Then
+    expect(result.ok).toBe(false);
+    expect(JSON.stringify(project)).toBe(before);
+  });
+  it("rejects moving a root occurrence or a non-geography child", () => {
+    // Given
+    const { project, document, root } = fixture();
+    const ctx = { project };
+    const spaceChild = Object.values(document.occurrences).find(entry => entry.kind === "space" && entry.parentId !== null);
+    if (!spaceChild) throw new TypeError("Missing nested space occurrence");
+    const before = JSON.stringify(ctx.project);
+    // When
+    const rootMove = runTool(ctx, "edit_spatial_occurrence", { operation: "move", occurrenceId: root.id, x: 0, y: 0 });
+    const nestedMove = runTool(ctx, "edit_spatial_occurrence", { operation: "move", occurrenceId: spaceChild.id, x: 0, y: 0 });
+    // Then
+    for (const result of [rootMove, nestedMove]) {
+      expect(result.ok).toBe(false);
+      expect(result.issues?.[0]?.code).toBe("invalid-args");
+    }
+    expect(JSON.stringify(ctx.project)).toBe(before);
+  });
+  it("rejects delete while incoming links exist, then removes them explicitly", () => {
+    // Given
+    const { project, child } = fixture();
+    const ctx = { project };
+    const before = JSON.stringify(ctx.project);
+    // When
+    const rejected = runTool(ctx, "edit_spatial_occurrence", { operation: "delete", occurrenceId: child.id });
+    // Then
+    expect(rejected.ok).toBe(false);
+    expect(JSON.stringify(ctx.project)).toBe(before);
+    // When — the model reads the failure and passes the explicit policy.
+    const removed = runTool(ctx, "edit_spatial_occurrence", { operation: "delete", occurrenceId: child.id, externalConnections: "remove" });
+    // Then
+    expect(removed.ok, removed.summary).toBe(true);
+    expect(fixtureDocument(ctx.project).occurrences[child.id]).toBeUndefined();
+  });
+  it("refreshes a region root from its source revision", () => {
+    // Given
+    const { project, root } = fixture();
+    const ctx = { project };
+    // When
+    const result = runTool(ctx, "edit_spatial_occurrence", { operation: "refresh", occurrenceId: root.id });
+    // Then
+    expect(result.ok, result.summary).toBe(true);
+    const after = fixtureDocument(ctx.project);
+    const refreshed = own(after.occurrences, root.id);
+    expect(refreshed.source).toEqual(root.source);
+    const binding = refreshed.bindings.find(entry => "mapId" in entry);
+    if (!binding || !("mapId" in binding)) throw new TypeError("Missing refreshed map binding");
+    expect(ctx.project.maps[binding.mapId]).toBeDefined();
+  });
+  it("rejects refreshing an object occurrence with the stamp guidance", () => {
+    // Given
+    const { project, document } = fixture();
+    const objectOccurrence = Object.values(document.occurrences).find(entry => entry.kind === "object");
+    if (!objectOccurrence) throw new TypeError("Missing object occurrence");
+    // When
+    const result = runTool({ project }, "edit_spatial_occurrence", { operation: "refresh", occurrenceId: objectOccurrence.id });
+    // Then
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.code).toBe("unsupported");
+  });
+  it("clones a region occurrence into a standalone compiled copy", () => {
+    // Given
+    const { project, root } = fixture();
+    const ctx = { project };
+    // When
+    const result = runTool(ctx, "edit_spatial_occurrence", { operation: "clone", occurrenceId: root.id, newOccurrenceId: "lake-country-copy" });
+    // Then
+    expect(result.ok, result.summary).toBe(true);
+    const after = fixtureDocument(ctx.project);
+    expect(after.rootOccurrenceIds).toContain("lake-country-copy");
+    expect(own(after.occurrences, "lake-country-copy").source).toEqual(root.source);
+  });
+  it("unlinks and relinks a document connection through the shared ancestor compile", () => {
+    // Given
+    const { project, document } = fixture();
+    const ctx = { project };
+    const link = document.connections.find(entry => entry.overviewRoute === undefined);
+    if (!link) throw new TypeError("Missing document connection");
+    // When
+    const unlinked = runTool(ctx, "edit_spatial_occurrence", { operation: "unlink", connectionId: link.id });
+    // Then
+    expect(unlinked.ok, unlinked.summary).toBe(true);
+    expect(fixtureDocument(ctx.project).connections.some(entry => entry.id === link.id)).toBe(false);
+    // When
+    const relinked = runTool(ctx, "edit_spatial_occurrence", { operation: "link",
+      connection: { id: link.id, from: link.from, to: link.to, bidirectional: link.bidirectional } });
+    // Then
+    expect(relinked.ok, relinked.summary).toBe(true);
+    expect(fixtureDocument(ctx.project).connections.some(entry => entry.id === link.id)).toBe(true);
+  });
+  it("rejects unlinking a compiled geography route connection", () => {
+    // Given
+    const { project, document } = fixture();
+    const route = document.connections.find(entry => entry.overviewRoute !== undefined);
+    if (!route) throw new TypeError("Missing overview route connection");
+    const before = JSON.stringify(project);
+    // When
+    const result = runTool({ project }, "edit_spatial_occurrence", { operation: "unlink", connectionId: route.id });
+    // Then
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.code).toBe("unsupported");
+    expect(JSON.stringify(project)).toBe(before);
+  });
+  it("rejects a missing required field with a typed error before any mutation", () => {
+    // Given
+    const { project } = fixture();
+    const before = JSON.stringify(project);
+    // When — delete without occurrenceId, clone without newOccurrenceId.
+    const missing = runTool({ project }, "edit_spatial_occurrence", { operation: "delete" });
+    const clone = runTool({ project }, "edit_spatial_occurrence", { operation: "clone", occurrenceId: "lake-country-copy" });
+    // Then
+    for (const result of [missing, clone]) {
+      expect(result.ok).toBe(false);
+      expect(result.issues?.[0]?.code).toBe("invalid-args");
+    }
+    expect(JSON.stringify(project)).toBe(before);
   });
 });
