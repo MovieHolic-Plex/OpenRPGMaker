@@ -77,6 +77,16 @@ describe("registered canonical spatial tools", () => {
     expect(result.data).toMatchObject({ kind: "space", design: { id: spaceDesign, revision: 1 }, resolved: { snapshot: { root: { id: spaceDesign } } } });
     expect(JSON.stringify(project)).toBe(before);
   });
+  it("returns a narrow design body without the resolved closure when asked", () => {
+    // Given
+    const project = spaceCompilerFixture();
+    // When
+    const result = runTool({ project }, "get_spatial_design", { kind: "space", id: spaceDesign, resolved: false });
+    // Then — the body alone is the upsert revision round-trip payload.
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.data).toMatchObject({ kind: "space", design: { id: spaceDesign, revision: 1 } });
+    expect(result.data).not.toHaveProperty("resolved");
+  });
   it("changes only the source when a revision is explicitly replaced", () => {
     // Given
     const project = spaceCompilerFixture();

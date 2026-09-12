@@ -103,13 +103,14 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
     },
   },
   { name: "get_spatial_design", mode: "read", domains: ["world", "map", "database"],
-    description: "Read a canonical design and its resolved transitive source revisions, object selections and frozen kit cells. Use the returned kind-specific design as the starting point for upsert_spatial_design.",
+    description: "Read a canonical design and its resolved transitive source revisions, object selections and frozen kit cells. Use the returned kind-specific design as the starting point for upsert_spatial_design. Large designs can exceed the tool payload limit — when the response is truncated re-read with resolved:false; the design body alone is enough for a revision round-trip.",
     parameters: SPATIAL_GET_SCHEMA,
     run(project, args) {
       const ref = source(args);
       const document = requireSpatialDocument(project);
       return { summary: `Spatial ${ref.kind}: ${ref.id}`, data: {
-        ...designNode(document.library, ref), resolved: resolveSpatialDesign(document, project, ref),
+        ...designNode(document.library, ref),
+        ...(args.resolved === false ? {} : { resolved: resolveSpatialDesign(document, project, ref) }),
       } };
     },
   },

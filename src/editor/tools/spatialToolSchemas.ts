@@ -46,7 +46,8 @@ export const SPATIAL_UPSERT_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA,
 export const SPATIAL_BUILD_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA, id, occurrenceId: id, seed: integer,
   target: object({ mapId: id, rect: object({ x: integer, y: integer, width: size, height: size }), entry: point }),
 }, ["kind", "id", "occurrenceId", "seed"]);
-export const SPATIAL_GET_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA, id });
+export const SPATIAL_GET_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA, id,
+  resolved: { type: "boolean", description: "default true — resolved transitive source closure. false returns only the design body (enough for an upsert revision round-trip when the full payload is truncated)." } }, ["kind", "id"]);
 export const SPATIAL_LIST_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA, query: text }, []);
 export const SPATIAL_APPLY_SCHEMA = object({ previewId: id });
 // Occurrence endpoints use occurrenceId (concrete frozen id), not design childId slots.

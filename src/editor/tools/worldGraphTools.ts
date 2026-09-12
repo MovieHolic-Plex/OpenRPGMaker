@@ -100,7 +100,7 @@ const WORLD_GRAPH_EDGE_SCHEMA: JsonSchema = {
 
 const planWorld: ToolDefinition = {
   name: "plan_world",
-  description: `선언형 worldGraph를 검증해 프로젝트에 등록한다. 맵은 만들지 않으며, edges는 nodes에 선언된 mapId만 참조할 수 있다. 크기 힌트는 build_world 와 같은 상한(최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION})을 지켜야 한다.`,
+  description: `선언형 worldGraph를 검증해 프로젝트에 등록한다. 맵은 만들지 않으며, edges는 nodes에 선언된 mapId만 참조할 수 있다. 크기 힌트는 build_world 와 같은 상한(최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION})을 지켜야 한다. canonical spatialAuthoring 프로젝트의 「세계」 계층(지형 자동 컴파일)은 upsert_spatial_design(kind:world)→preview_spatial_build→apply_spatial_build 를 쓴다 — 이 도구는 수작업 맵 그래프다.`,
   mode: "write",
   parameters: {
     type: "object",
@@ -184,7 +184,7 @@ const linkMaps: ToolDefinition = {
 const buildWorld: ToolDefinition = {
   name: "build_world",
   description:
-    `worldGraph 형태의 plan으로 다중 맵 월드를 만든다. 노드별 빈 맵과 역할 기본 지형만 만들고, transfer edges를 일괄 link_maps 처리한다. 마을 내부 콘텐츠(집/NPC)는 만들지 않는다. 노드 맵 하나는 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION} — 더 넓은 월드는 노드를 늘려 나눠라.`,
+    `worldGraph 형태의 plan으로 다중 맵 월드를 만든다. 노드별 빈 맵과 역할 기본 지형만 만들고, transfer edges를 일괄 link_maps 처리한다. 마을 내부 콘텐츠(집/NPC)는 만들지 않는다. 노드 맵 하나는 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION} — 더 넓은 월드는 노드를 늘려 나눠라. canonical spatialAuthoring 프로젝트의 「세계」 계층은 upsert_spatial_design(kind:world)→preview_spatial_build→apply_spatial_build, 이후 수정은 edit_spatial_occurrence 를 쓴다.`,
   mode: "write",
   parameters: {
     type: "object",
