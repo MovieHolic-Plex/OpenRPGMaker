@@ -10,6 +10,7 @@
   - If canonical project load fails with a validation/integrity error, `src/app/mode.ts` renders a recovery screen whose primary actions load a sample or blank fallback project through `store.loadFallbackProject()`. That path keeps remote/local saved data intact and disables remote persistence until the user explicitly reconnects or exports.
   - `enterMode()` tears down the previous mode, clears the main area, and lazily imports either the editor or player renderer.
   - `startEditGame()` and `startPlayGame()` build separate Phaser games with different scenes/resolution; `destroyGame()` is the shared cleanup path.
+  - Game startup is generation-guarded: each tracked starter captures `++gameGeneration` before awaiting, and a game that finishes after `destroyGame()` or a newer start destroys itself instead of being adopted. An adopted game also destroys the previously tracked one. Without this, an orphaned game's `KeyboardManager` keeps listening on `window` and a second `EditScene` answers the same `Ctrl+Z` — one press undid two history entries. `src/player/exportAppModeShim.ts` mirrors the same contract for the export player, and `EditScene.handleKeyDown` additionally ignores keys when its canvas is detached from the document.
 
 - `src/editor` responsibilities:
   - `src/editor/panels/editor.ts` is the editor shell: layout, panel mounting, resize handling, subscriptions, and canvas host creation.
