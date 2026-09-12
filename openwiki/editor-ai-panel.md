@@ -19,6 +19,19 @@
   워커가 쓰기 툴을 주지 않고(`readOnlyTools` + 시스템 프롬프트 한 줄), 계획 턴은 지시문 머리에 계획
   지시가 붙는다(`PLAN_ONLY_PREFIX`). 바뀐 것이 없으면 그 턴의 **답·계획 본문**을 assistant 말풍선으로
   남긴다 — 보드의 220자 한 줄이 답이 되면 질문 모드가 쓸 수 없다.
+- **do 레벨의 질문 발화는 의도 선언이 읽기 전용으로 승격한다 (2026-09-12 복원):** `plainPiTurn` 이
+  다이얼이 쓰기를 허용할 때만 `declareIntentCached(createLlmIntentDeclarer())` 를 부르고
+  `intent.mode === "question"` 이면 `plan.readOnly = true` 로 덮어 Pi 를 단독·읽기 전용으로 돌린다.
+  세션 경로의 `mode=question → ask` 승격이 Pi 이관(2026-09-11)에서 빠져 「균형」 질문 턴에 쓰기 툴이
+  달려 갔던 구멍을 메운다 — 툴 목록 수준 강제라 모델 선의에 의존하지 않는다. 분류는 **원문 발화**만
+  본다(컨텍스트 footer·도구 지시 제외), 실패·지연은 폴백 `mode:"other"` 이라 작성 요청이 읽기 전용으로
+  새지 않는다(6초 타임아웃, 캐시 TTL 90초). 승격 시 시스템 줄로 사용자에게 알린다. 명시 `/pi` 는 이
+  분류를 거치지 않는다 — `runPiTurn` 진입 전에 `plainPiTurn` 에서만 부른다.
+- 변경-0 종료의 보드 phase 는 **「완료」**(`markTeamBoardDone`)다 — 「적용됨」은 `applyProposedProject` 가
+  실제 커밋한 실행에만 쓴다(2026-09-12 실측: 질문 턴이 「적용됨」 배지 + 실패 톤 캡션으로 끝났다).
+  답이 남은 턴은 본문 말풍선을 시스템 줄(「프로젝트는 바뀌지 않았습니다」) **앞에** 붙인다. 보드 행의
+  지시가 보드 지시와 같으면 echo(`ai-team-task`)를 그리지 않는다 — 단일 실행에서 같은 문장이
+  카드 제목·행·말풍선에 세 번 나오던 것을 막는다.
 - 옛 blob 의 `executionRoute: "pi-team"` 은 **팀 비트**로 승격된다(`loadAiConfig`,
   `LEGACY_PI_TEAM_ROUTE`). `session`·`pi-agent` 는 둘 다 «Pi» 이므로 버린다. 이 승격이 이 변경의
   유일한 데이터 위험이고 `test/piAgentExecutionRoute.test.ts` 가 세 값을 전부 고정한다.
