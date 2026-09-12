@@ -76,6 +76,11 @@ export const CONDITION_FIXTURES: Readonly<Record<ConditionKind, Condition>> = {
   timePhase: { kind: "timePhase", phase: "day" },
   season: { kind: "season", season: "spring" },
   npcActivity: { kind: "npcActivity", activity: "work" },
+  insideLocation: {
+    kind: "insideLocation",
+    locationId: firstId(CAPTURE.maps[CONDITION_REFS.mapId]?.locations, "loc_missing"),
+    inside: true,
+  },
   friendshipAtLeast: { kind: "friendshipAtLeast", npcKey: "npc_condition_probe", value: 200 },
   // CONDITION_KINDS 에 relationshipAtLeast 가 들어왔는데 픽스처가 없어 undefined 가 렌더로
   // 들어갔다 — fork 축이 «컨트롤 0개» 로 죽었다(게이트가 잡은 실측 결함).

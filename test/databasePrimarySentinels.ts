@@ -4,6 +4,7 @@ export const DATABASE_PRIMARY_SENTINELS: Readonly<Record<string, string>> = {
   worldCanon: '[data-testid="db-world-canon-name"]',
   worldCodex: '[data-testid="world-add-entity"]',
   actors: '[data-testid="db-actor-tab-identity"]',
+  characterAppearances: '[data-testid="appearance-search"]',
   classes: '[data-testid="db-classes-bm88-workbench"]',
   promotionTree: '[data-testid="growth-studio-promotion"] .growth-toolbar',
   skills: '.oprn-record-skills .db-skill-composer',

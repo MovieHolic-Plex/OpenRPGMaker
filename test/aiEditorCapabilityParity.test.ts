@@ -51,7 +51,7 @@ describe("AI editor capability parity", () => {
   it("returns full database record fields when include=full", () => {
     const ctx = context();
     const created = runTool(ctx, "upsert_enemy", {
-      enemy: { id: "enemy_parity", name: "패리티 슬라임", stats: { maxHp: 44, attack: 7 } },
+      enemy: { id: "enemy_parity", name: "패리티 슬라임", monsterResourceId: "generated-enemy-slime-01", stats: { maxHp: 44, attack: 7 } },
     });
     expect(created.ok, created.summary).toBe(true);
     const listed = runTool(ctx, "get_database_records", { collection: "enemies", include: "full" });

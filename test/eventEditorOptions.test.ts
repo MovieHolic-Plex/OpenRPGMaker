@@ -15,6 +15,7 @@ describe("event editor trigger options", () => {
       "eventTouch",
       "auto",
       "parallel",
+      "locationTransition",
     ]);
   });
 });
