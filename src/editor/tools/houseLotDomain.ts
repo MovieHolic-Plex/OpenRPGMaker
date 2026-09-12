@@ -23,6 +23,7 @@ export type HouseLotPlan = {
   readonly windows?: HouseKitWindowsOption;
   readonly yard: readonly YardDecorPlan[];
   /** 형태 어휘 — buildHouseKit 로 그대로 흘려보낸다(외장 실루엣을 바꾸는 축). */
+  readonly templateId?: string;
   readonly stories?: 1 | 2 | 3;
   readonly lowWall?: boolean;
   readonly chimney?: boolean;
@@ -97,6 +98,7 @@ export function buildHouseLots(draft: Project, input: BuildHouseLotsInput): Buil
       ...(house.ownerName === undefined ? {} : { ownerName: house.ownerName }),
       ...(house.windows === undefined ? {} : { windows: house.windows }),
       ...(house.interiorPlan === undefined ? {} : { interiorPlan: house.interiorPlan }),
+      ...(house.templateId === undefined ? {} : { templateId: house.templateId }),
       ...(house.stories === undefined ? {} : { stories: house.stories }),
       ...(house.lowWall === undefined ? {} : { lowWall: house.lowWall }),
       ...(house.chimney === undefined ? {} : { chimney: house.chimney }),

@@ -1,5 +1,9 @@
-import { isHouseKitId } from "@/editor/houseKit";
+import { isHouseKitId, type HouseKitId } from "@/editor/houseKit";
 import { ToolError } from "@/editor/tools/types";
+import {
+  AUTHORED_HOUSE_FORM_DEFS,
+  findAuthoredHouseForm,
+} from "@/project/defaults/authoredHouseFormCatalog";
 import {
   HOUSE_TEMPLATE_DEFS,
   findHouseTemplateDef,
@@ -117,9 +121,17 @@ function parseHousePlan(value: unknown, scope: string): AuthorHousePlan {
 }
 
 function parseHouseCore(record: BoundaryRecord, scope: string): HouseCore {
-  const kitId = record["kitId"];
-  if (!isHouseKitId(kitId)) {
-    throw new ToolError(`${scope}.kitId is not a known house kit.`, { code: "invalid-args" });
+  const rawKitId = record["kitId"];
+  let kitId: HouseKitId;
+  if (isHouseKitId(rawKitId)) {
+    kitId = rawKitId;
+  } else {
+    // 저작 형태(셀 레시피)는 재료가 레시피에 고정돼 kitId 인자가 무의미하다 — 생략 허용.
+    const form = typeof record["templateId"] === "string" ? findAuthoredHouseForm(record["templateId"]) : undefined;
+    if (form === undefined) {
+      throw new ToolError(`${scope}.kitId is not a known house kit.`, { code: "invalid-args" });
+    }
+    kitId = form.kitId;
   }
   const ownerName = optionalString(record, "ownerName", scope);
   const windows = parseWindows(record["windows"], scope);
@@ -178,13 +190,24 @@ function parseShape(
     };
   }
   const def = findHouseTemplateDef(templateId);
-  if (!def) {
-    throw new ToolError(
-      `${scope}.templateId '${templateId}' 는 알 수 없는 형태입니다. 사용 가능: ${HOUSE_TEMPLATE_DEFS.map((entry) => entry.id).join(", ")}`,
-      { code: "invalid-args" },
-    );
-  }
   const anchor = wings[0] as HouseWing;
+  if (!def) {
+    // 날개 문법으로 못 만드는 저작 형태(셀 레시피) — 폭 상한 없는 고정 형태다.
+    const form = findAuthoredHouseForm(templateId);
+    if (!form) {
+      const known = [...HOUSE_TEMPLATE_DEFS.map((entry) => entry.id), ...AUTHORED_HOUSE_FORM_DEFS.map((entry) => entry.id)];
+      throw new ToolError(
+        `${scope}.templateId '${templateId}' 는 알 수 없는 형태입니다. 사용 가능: ${known.join(", ")}`,
+        { code: "invalid-args" },
+      );
+    }
+    return {
+      kitId: form.kitId,
+      wings: [{ x: anchor.x, y: anchor.y, w: form.w, h: form.h }],
+      templateId: form.id,
+      stories: form.stories,
+    };
+  }
   return {
     kitId: def.kitId ?? requestedKitId,
     wings: houseTemplateWingsAt(def, anchor.x, anchor.y),

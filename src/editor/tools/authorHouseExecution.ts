@@ -176,15 +176,18 @@ function assertCompleteYards(mapId: string, data: HouseLotBuildData): void {
 }
 
 type ShapeInput = {
+  readonly templateId?: string;
   readonly stories?: 1 | 2 | 3;
   readonly lowWall?: boolean;
   readonly chimney?: boolean;
   readonly roofDeck?: boolean;
 };
 
-/** 형태 어휘를 도메인 입력으로 옮긴다. templateId 는 파서가 이미 wings 로 전개했다. */
-function shapeInput(plan: Pick<AuthorHousePlan, "stories" | "lowWall" | "chimney" | "roofDeck">): ShapeInput {
+/** 형태 어휘를 도메인 입력으로 옮긴다. 날개 템플릿은 파서가 wings 로 전개했고,
+ * 저작 형태(셀 레시피)는 templateId 가 그대로 내려가 buildHouseKit 이 감지한다. */
+function shapeInput(plan: Pick<AuthorHousePlan, "templateId" | "stories" | "lowWall" | "chimney" | "roofDeck">): ShapeInput {
   return {
+    ...(plan.templateId === undefined ? {} : { templateId: plan.templateId }),
     ...(plan.stories === undefined ? {} : { stories: plan.stories }),
     ...(plan.lowWall === undefined ? {} : { lowWall: plan.lowWall }),
     ...(plan.chimney === undefined ? {} : { chimney: plan.chimney }),
