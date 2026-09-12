@@ -80,6 +80,9 @@ function objectCards(): SpatialGalleryCard[] {
   const known = new Set(cards.map((card) => card.id));
   for (const tileset of Object.values(project.tilesets)) {
     for (const kit of tileset.structureKits ?? []) {
+      // Keep compatibility cards until a canonical design owns the same graphic.
+      if (Object.values(project.spatialAuthoring?.library.objects ?? {}).some((object) =>
+        object.graphic.tilesetId === tileset.id && object.graphic.kitId === kit.id)) continue;
       const id = spatialPresentationId("tileset-kit", tileset.id, kit.id);
       if (known.has(id)) continue;
       known.add(id);
@@ -159,6 +162,7 @@ function spaceCards(): SpatialGalleryCard[] {
       kind: "spaces",
       usage: 0,
       tilesetId: space.tilesetId,
+      subtitle: `${space.environment === "outdoor" ? "야외 공간" : "실내 공간"} · ${space.width}×${space.height}`,
     });
   }
   return cards;

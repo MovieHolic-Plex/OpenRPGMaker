@@ -37,6 +37,14 @@
   background: var(--db-studio-surface, #fff);
 }
 
+.database-modal-body .spatial-kind-guidance {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--db-studio-text-2, #475569);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 .database-modal-body .spatial-modes,
 .database-modal-body .spatial-actions,
 .database-modal-body .spatial-source-chips,

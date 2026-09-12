@@ -34,6 +34,7 @@ import {
 } from "@/editor/panels/spatialPlaceDraft";
 import {
   libraryPlaceCardId,
+  pickerCandidates,
   previewSpaceDependants,
 } from "@/editor/panels/spatialPlaceQuery";
 import { createSpatialAuthoringController } from "@/editor/spatial/actions";
@@ -44,6 +45,8 @@ import { store } from "@/project/store";
 import type { PlaceDesign, SpatialLibrary } from "@/project/spatial/types";
 import type { Project } from "@/project/types";
 import { spaceDesign } from "./support/spatialSpaceCompilerFixture";
+import { renderPlaceExterior } from "@/editor/panels/spatialPlaceExterior";
+import { placeDraftTarget } from "@/editor/panels/spatialPlaceDraft";
 import { placeCompilerFixture, placeRoot } from "./support/spatialPlaceCompilerFixture";
 
 const previous = store.getCurrent();
@@ -207,6 +210,63 @@ afterEach(() => {
 });
 
 describe("spatial place actions", () => {
+  it("uses an object's graphic as a first exterior without copying members or mutating the source", () => {
+    const place = { ...innOf(store.getCurrent()), exterior: undefined };
+    const project = store.getCurrent();
+    const library = libraryOf(project);
+    store.replace({ ...project, spatialAuthoring: { ...project.spatialAuthoring!, library: {
+      ...library, places: { ...library.places, [place.id]: place },
+    } } });
+    const object = Object.values(library.objects)[0]!;
+    const before = structuredClone(object);
+    const host = renderPlaceExterior(place, placeDraftTarget(placeCard(place)), () => {});
+    const select = host.querySelector<HTMLSelectElement>("select")!;
+    select.value = object.id;
+    select.dispatchEvent(new Event("change"));
+    const edited = libraryOf(visibleAuthoringProject()).places[place.id]!;
+    expect(edited.exterior).toEqual(object.graphic);
+    expect(edited.children).toEqual(place.children);
+    expect(edited.ports).toEqual(place.ports);
+    expect(libraryOf(visibleAuthoringProject()).objects[object.id]).toEqual(before);
+    expect(libraryOf(store.getCurrent()).places[place.id]!.exterior).toBeUndefined();
+  });
+
+  it("keeps both manual exterior fields until the pair is explicitly submitted", () => {
+    const place = { ...innOf(store.getCurrent()), exterior: undefined };
+    const host = renderPlaceExterior(place, placeDraftTarget(placeCard(place)), () => {});
+    const tileset = host.querySelector<HTMLInputElement>("[data-testid='spatial-place-exterior-tileset']")!;
+    const kit = host.querySelector<HTMLInputElement>("[data-testid='spatial-place-exterior-kit']")!;
+    const apply = host.querySelector<HTMLButtonElement>("[data-testid='spatial-place-exterior-reference-apply']")!;
+    tileset.value = "test-tileset";
+    tileset.dispatchEvent(new Event("change"));
+    apply.click();
+    expect(host.querySelector("[role='status']")?.textContent).toContain("모두 입력");
+    expect(tileset.value).toBe("test-tileset");
+    kit.value = "test-kit";
+    apply.click();
+    expect(libraryOf(visibleAuthoringProject()).places[place.id]!.exterior).toEqual({ tilesetId: "test-tileset", kitId: "test-kit" });
+  });
+
+  it("accepts an outdoor yard at level zero while keeping indoor rooms above ground", () => {
+    const library = libraryOf(store.getCurrent());
+    const inn = innOf(store.getCurrent());
+    const outdoor = Object.values(library.spaces).find((space) => space.environment === "outdoor")!;
+    const indoor = Object.values(library.spaces).find((space) => space.environment === "interior")!;
+    const slot = { id: spatialId("yard"), source: { kind: "space" as const, id: outdoor.id }, x: 0, y: 0, level: 0 };
+    expect(pickerCandidates(library, inn).find((entry) => entry.source.id === outdoor.id)?.level).toBe(0);
+    expect(pickerCandidates(library, inn).find((entry) => entry.source.id === indoor.id)?.level).toBe(1);
+    expect(nestChild(inn, library, slot).kind).toBe("ok");
+    expect(nestChild(inn, library, { ...slot, source: { kind: "space", id: indoor.id } })).toMatchObject({ kind: "rejected", code: "floor-limit" });
+  });
+
+  it("allows the authored fourth facility floor and rejects a fifth floor", () => {
+    const library = libraryOf(store.getCurrent());
+    const inn = innOf(store.getCurrent());
+    const slot = { id: spatialId("new-floor"), source: { kind: "space" as const, id: Object.values(library.spaces)[0]!.id }, x: 0, y: 0, level: 4 };
+    expect(nestChild(inn, library, slot).kind).toBe("ok");
+    expect(nestChild(inn, library, { ...slot, level: 5 })).toMatchObject({ kind: "rejected", code: "floor-limit" });
+  });
+
   it("keeps nested inn and square child identities when another inn slot is added", () => {
     const project = store.getCurrent();
     const village = villageOf(project);

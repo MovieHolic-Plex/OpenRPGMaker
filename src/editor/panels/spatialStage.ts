@@ -42,6 +42,12 @@ import { activateSpatialDocument, workingProject } from "@/editor/panels/spatial
 import { geographyChromeState } from "@/editor/panels/spatialGeographyChromeState";
 import { el } from "@/util/dom";
 
+const KIND_GUIDANCE: Partial<Record<SpatialAuthoringSession["tab"], string>> = {
+  objects: "오브젝트 · 가구, 소품, 건물 외형처럼 다시 쓰는 그림입니다. 건물 안에서 이용할 방·층은 공간으로 만드세요.",
+  spaces: "공간 · 방, 한 층, 마당처럼 이용할 구역입니다. 바닥·벽·오브젝트·출입구를 정하고 장소에 모을 수 있습니다.",
+  places: "장소 · 공간과 하위 장소를 모은 시설·정착지입니다. 건물 외형, 출입구, 공간 사이 연결을 함께 구성하세요.",
+};
+
 const TAB_LABEL = {
   tiles: "타일",
   objects: "오브젝트",
@@ -201,6 +207,11 @@ export function renderSpatialChrome(
           }),
         ],
       }),
+      ...(KIND_GUIDANCE[session.tab] ? [el("p", {
+        class: "spatial-kind-guidance",
+        text: KIND_GUIDANCE[session.tab],
+        dataset: { testid: "spatial-kind-guidance" },
+      })] : []),
       ...(buildPanel ? [buildPanel] : []),
     ],
   });

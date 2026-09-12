@@ -1,7 +1,7 @@
 import type { SpatialAuthoringSession } from "@/editor/panels/spatialAuthoringSession";
 import { placeChromeState } from "@/editor/panels/spatialPlaceChromeState";
-import { commitWorkingPlace, mutateWorkingPlace, workingProject } from "@/editor/panels/spatialPlaceCommands";
-import { nestChild, placeDraftTarget, withPlaceExterior } from "@/editor/panels/spatialPlaceDraft";
+import { commitWorkingPlace, workingProject } from "@/editor/panels/spatialPlaceCommands";
+import { nestChild, placeDraftTarget } from "@/editor/panels/spatialPlaceDraft";
 import { addPlacedPickerChild } from "@/editor/panels/spatialPlacePlaced";
 import { floorsOf, pickerCandidates } from "@/editor/panels/spatialPlaceQuery";
 import { childSourceLabel } from "@/editor/panels/spatialPlacePreview";
@@ -36,7 +36,7 @@ export function renderPlaceFloorStrip(
       }),
       ...levels.map((level) => el("button", {
         class: `spatial-source-chip${placeChromeState.selectedFloor === level ? " is-active" : ""}`,
-        text: `${level}층`,
+        text: level === 0 ? "지상" : `${level}층`,
         attrs: { type: "button", role: "tab", "aria-pressed": String(placeChromeState.selectedFloor === level) },
         dataset: { testid: `spatial-place-floor-${level}` },
         on: { click: () => { placeChromeState.selectedFloor = level; rerender(); } },
@@ -58,7 +58,7 @@ export function renderPlaceChildPicker(
     dataset: { testid: "spatial-place-picker" },
     children: candidates.map((slot) => el("button", {
       class: "spatial-place-pick",
-      text: childSourceLabel(workingProject(), slot.source.kind, slot.source.id),
+      text: `${slot.source.kind === "space" ? "공간" : "장소"} · ${childSourceLabel(workingProject(), slot.source.kind, slot.source.id)}`,
       attrs: { type: "button" },
       dataset: { testid: `spatial-place-pick-${slot.source.id}` },
       on: {
@@ -81,58 +81,4 @@ export function renderPlaceChildPicker(
   });
 }
 
-export function renderPlaceExterior(
-  place: PlaceDesign,
-  target: ReturnType<typeof placeDraftTarget>,
-  rerender: () => void,
-): HTMLElement {
-  const commit = (tilesetId: string, kitId: string): void => {
-    mutateWorkingPlace(target, (current) => withPlaceExterior(
-      current,
-      tilesetId.trim().length === 0 || kitId.trim().length === 0
-        ? undefined
-        : { tilesetId: tilesetId.trim(), kitId: kitId.trim() },
-    ));
-    rerender();
-  };
-  return el("div", {
-    class: "spatial-place-exterior",
-    dataset: { testid: "spatial-place-exterior" },
-    children: [
-      el("label", {
-        class: "spatial-place-field",
-        children: [
-          el("span", { text: "외관 타일셋" }),
-          el("input", {
-            attrs: { type: "text", value: place.exterior?.tilesetId ?? "" },
-            dataset: { testid: "spatial-place-exterior-tileset" },
-            on: {
-              change: (event) => {
-                const input = event.target;
-                if (!(input instanceof HTMLInputElement)) return;
-                commit(input.value, place.exterior?.kitId ?? "");
-              },
-            },
-          }),
-        ],
-      }),
-      el("label", {
-        class: "spatial-place-field",
-        children: [
-          el("span", { text: "외관 키트" }),
-          el("input", {
-            attrs: { type: "text", value: place.exterior?.kitId ?? "" },
-            dataset: { testid: "spatial-place-exterior-kit" },
-            on: {
-              change: (event) => {
-                const input = event.target;
-                if (!(input instanceof HTMLInputElement)) return;
-                commit(place.exterior?.tilesetId ?? "", input.value);
-              },
-            },
-          }),
-        ],
-      }),
-    ],
-  });
-}
+export { renderPlaceExterior } from "@/editor/panels/spatialPlaceExterior";

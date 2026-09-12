@@ -2,7 +2,7 @@ import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import { cardSubtitle, humanizeSpatialError, spatialSourceLabel } from "@/editor/panels/spatialFeedback";
 import { placeChromeState } from "@/editor/panels/spatialPlaceChromeState";
 import { mutateWorkingPlace, placeDeletePreview, workingPlace, workingProject } from "@/editor/panels/spatialPlaceCommands";
-import { placeDraftTarget, withPlaceKind, withPlaceLayout, withPlaceName } from "@/editor/panels/spatialPlaceDraft";
+import { FACILITY_FLOOR_MAX, placeDraftTarget, withPlaceKind, withPlaceLayout, withPlaceName } from "@/editor/panels/spatialPlaceDraft";
 import {
   deletePlacedChild,
   openPlaceChild,
@@ -53,6 +53,13 @@ export function renderSpatialPlacesInspector(
       ],
     }));
   }
+  if (card?.compatibility === "house-shape") {
+    body.push(el("p", {
+      class: "spatial-readonly-note",
+      text: "건물 외형 도안입니다. 그림에 보이는 층수만으로 실내 공간이나 계단 연결이 만들어지지는 않습니다.",
+      dataset: { testid: "spatial-place-exterior-only" },
+    }));
+  }
   if (card && !place) {
     // 꾸러미 시설 카드 — 편집할 PlaceDesign 이 없어도 번들 사실을 보여 준다.
     const bundle = card.source === "default"
@@ -77,6 +84,21 @@ export function renderSpatialPlacesInspector(
     }
   }
   if (place && target) {
+    body.push(el("dl", {
+      class: "spatial-inspector-facts",
+      dataset: { testid: "spatial-place-composition" },
+      children: [
+        el("dt", { text: "직접 지정한 외형" }), el("dd", { text: place.exterior ? "있음" : "없음 (공간 내 배치는 별도)" }),
+        el("dt", { text: "공간" }), el("dd", { text: `${place.children.filter((child) => child.source.kind === "space").length}개` }),
+        el("dt", { text: "하위 장소" }), el("dd", { text: `${place.children.filter((child) => child.source.kind === "place").length}개` }),
+        el("dt", { text: "출입구 / 연결" }), el("dd", { text: `${place.ports.length} / ${place.connections.length}` }),
+      ],
+    }));
+    if (place.children.length === 0) body.push(el("p", {
+      class: "spatial-readonly-note",
+      text: "구성 공간이 없습니다. 이용할 방·층·마당은 공간에서 만든 뒤 이 장소에 추가하세요. 건물 외형의 층수는 실내 층수가 아닙니다.",
+      dataset: { testid: "spatial-place-no-spaces" },
+    }));
     body.push(el("label", {
       class: "spatial-place-field",
       children: [
@@ -120,6 +142,9 @@ export function renderSpatialPlacesInspector(
     const placedChild = target.occurrenceId ? selectedPlacedChild(project, target.occurrenceId) : undefined;
     const sourceChild = place.children.find((entry) => entry.id === placeChromeState.selectedChildId);
     if (placedChild) {
+      const childLibrary = project.spatialAuthoring?.occurrences[placedChild.occurrenceId]?.snapshot.library;
+      const outdoorChild = placedChild.source.kind === "space"
+        && childLibrary?.spaces[placedChild.source.id]?.environment === "outdoor";
       body.push(el("p", {
         class: "spatial-inspector-sub",
         text: `${placedChild.name} ${placedChild.occurrenceId} (${placedChild.x},${placedChild.y}) L${placedChild.level} #${placedChild.slotId}:${placedChild.index}`,
@@ -130,7 +155,7 @@ export function renderSpatialPlacesInspector(
         children: [
           el("span", { text: "층" }),
           el("input", {
-            attrs: { type: "number", value: String(placedChild.level), min: place.kind === "facility" ? "1" : "0", max: "3" },
+            attrs: { type: "number", value: String(placedChild.level), min: place.kind === "facility" && !outdoorChild ? "1" : "0", max: String(FACILITY_FLOOR_MAX) },
             dataset: { testid: "spatial-place-child-level" },
             on: {
               change: (event) => {

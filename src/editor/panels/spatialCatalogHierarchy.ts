@@ -60,7 +60,7 @@ function placeCards(): SpatialGalleryCard[] {
       usage: 0,
       placeKind: "settlement",
       compatibility: "house-shape",
-      subtitle: "호환 집 형태",
+      subtitle: "건물 외형 · 호환 도안",
     });
   }
   for (const place of Object.values(project.spatialAuthoring?.library.places ?? {})) {
@@ -76,6 +76,7 @@ function placeCards(): SpatialGalleryCard[] {
       kind: "places",
       usage: 0,
       placeKind: place.kind,
+      subtitle: `공간 ${place.children.filter((child) => child.source.kind === "space").length} · 하위 장소 ${place.children.filter((child) => child.source.kind === "place").length}`,
     });
   }
   return cards;
