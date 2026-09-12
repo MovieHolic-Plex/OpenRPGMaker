@@ -6,6 +6,32 @@
 
 ---
 
+## 내장 AI 시공 순서 (2026-09-12, 아래 과거 하네스 순서보다 우선)
+
+사용자 지정 정본은 **집 → 길 → 나무 → 호수·마당·맵 꾸미기**다.
+`author_village`, `buildVillageDomain`, 설계서 미리보기와 정주지 지역 시공이 같은 본체를 탄다.
+
+- 계획에서 수역·대로 자리를 예약하지만 타일은 칠하지 않는다. 집 외형·문·실내·벽 장식은
+  집 단계에서 완결·봉인한다. 다음으로 광장·대로·집 진입로를 만든다.
+- `village/decor.ts`의 `placeVillageTrees`는 독립 나무 단계다. 수역 예정지와 집 앞마당은
+  `village/reservedAreas.ts`로 제외하며, 분할된 영역을 나무 전체가 벗어나지 않는다.
+- `villageTerrainPass.ts`는 `trees`와 `water` 단계를 받는다. 숲과 수역의 겹친 예약은
+  숲에서 제외한다. 합성 숲의 바닥 장식·작은 물웅덩이도 최종 단계로 미룬다.
+  마지막 수역이 기존 길·나무를 덮으려 하면 `village-water-conflict`로 거부한다.
+- `village/decoration.ts`의 `finishVillageDecoration`은 울타리·마당·소품·대형 맵 조경을
+  담당한다. 각 단계는 기존 완성 집 보호 검사를 유지한다.
+- 멀티턴 세션은 `settlement → forest_conifer → forest_big → water → decoration → critique → look`.
+  필요 없는 물·숲은 생략한다. 모델이 물 먼저 순서를 보내도 `normalizeVillagePlan`이
+  이 순서로 정규화하고 경고한다. 마당 꾸미기 입력은 세션의 detached memory로 이어진다.
+  **작업 세션은 원래 프로젝트 JSON 저장 대상이 아니다.** 완성된 맵은 기존 저장 경로를 탄다.
+- AI 도구 설명과 컨텍스트도 같은 순서를 안내한다. `build_village` 결과의 `buildStages`는
+  네 단계의 이름을 제공한다.
+
+검증: `test/villageBuildStages.test.ts`는 실제 등록 도구에서 순서·예약지 비점유·집 보존,
+AI 초안 간 꾸미기 이월과 완성 맵 직렬화를 검사한다. 관련 회귀는
+`villageBuilder`, `houseProtectionLifecycle`, `villageDesign`, `forestDensity`,
+`villageProducerProtection`, `authorVillageFacade`다. 이는 엔진 계약 fixture이며 새 데모 저작이 아니다.
+
 ## 한 줄 요약
 
 ```

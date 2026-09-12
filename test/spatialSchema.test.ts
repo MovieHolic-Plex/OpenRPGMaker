@@ -75,7 +75,7 @@ describe("spatial authoring IO contract", () => {
     expect(load).toThrow(`spatialAuthoring.occurrences.occ-b.bindings[0].${path}`);
   });
 
-  it.each(["region-kind", "world-kind", "entry-port", "route-port", "fourth-floor"])("rejects %s when a hierarchy reference breaks", scenario => {
+  it.each(["region-kind", "world-kind", "entry-port", "route-port", "fifth-floor"])("rejects %s when a hierarchy reference breaks", scenario => {
     // Given
     const { project, document } = spatialHierarchyFixture();
     switch (scenario) {
@@ -83,7 +83,7 @@ describe("spatial authoring IO contract", () => {
       case "world-kind": document.library.worlds.kingdom.regions[0].source.kind = "world"; break;
       case "entry-port": document.library.worlds.kingdom.entryPort.portId = "absent"; break;
       case "route-port": document.library.regions.country.routes[0].to.portId = "room-door"; break;
-      case "fourth-floor": document.library.places.inn.children[0].level = 4; break;
+      case "fifth-floor": document.library.places.inn.children[0].level = 5; break;
       default: throw new Error(`Unknown fixture ${scenario}`);
     }
     // When

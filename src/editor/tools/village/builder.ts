@@ -75,8 +75,8 @@ import {
   type PresetOverrides,
 } from "./authoringData";
 import { auditVillage, critiqueBuiltVillage, critiqueVillageMap, roadComponentNotes } from "./audit";
-import { finishVillageHouseDecor, placeVillageDecor } from "./decor";
-import { placeHouseLotFences } from "./fences";
+import { finishVillageHouseDecor, placeVillageTrees } from "./decor";
+import { finishVillageDecoration, type VillageDecorationPlan } from "./decoration";
 import {
   buildHouses,
   clearHouseRidgeRowProps,
@@ -86,7 +86,6 @@ import {
   terrainBlockedCells,
 } from "./houses";
 import { createVillageHouseInteriors } from "./interiors";
-import { dressVillageLandscape } from "./landscape";
 import { npcOverrides, npcText, placeVillageNpcs } from "./npcs";
 import {
   mergePlanIntoBuildArgs,
@@ -343,41 +342,40 @@ export function buildVillageDomain(
     );
   }
   perfLap("roads");
-  // Yard fences remain environmental and cannot modify the sealed house (including its ridge/deck).
-  if (fencesEnabled) {
-    placeHouseLotFences(map, houses, seed, area);
+  // Houses and roads are complete. Reserve future water without painting it.
+  const skipTerrain = args.skipTerrain === true || merged.skipTerrain === true;
+  const deferDecoration = args.deferDecoration === true;
+  const landmarkNotes: string[] = [];
+  const { templateCatalog: _templates, ...decorationIntent } = intent;
+  const decorationPlan: VillageDecorationPlan = {
+    area, plaza, houses, seed, intent: decorationIntent,
+    fences: fencesEnabled, decor: decorEnabled, landscape: boulevard !== null,
+  };
+  let decorPlaced = houseDecorPlaced;
+  if (!skipTerrain && requirements && requirements.landmarks.length > 0) {
+    const terrain = runTerrainConstraintPass(draft, map, requirements, warnings, baseArea, worldGenRules, "trees");
+    landmarkNotes.push(...terrain.notes);
     assertSealed();
   }
+  if (decorEnabled) {
+    decorPlaced += placeVillageTrees(draft, map, area, plaza, houses, seed, intent, warnings, terrainMasks?.waterRects);
+    assertSealed();
+  }
+  perfLap("trees");
 
-  // E 지형 패스: 마스크의 water/forest를 fill_region·place_props로 채움 (솔버 교체 포인트)
-  // multi-turn 세션은 skipTerrain=true 후 water/forest_big 레이어로 분리 시공
-  const skipTerrain = args.skipTerrain === true || merged.skipTerrain === true;
-  let landmarkNotes: string[] = [];
+  // Final decoration: water, then yards/fences/props and optional landscape.
   if (!skipTerrain && requirements && requirements.landmarks.length > 0) {
-    const terrain = runTerrainConstraintPass(draft, map, requirements, warnings, baseArea, worldGenRules);
-    landmarkNotes = [...terrain.notes];
-    if (terrain.notes.length > 0) warnings.push(`terrainPass: ${terrain.notes.join("; ")}`);
+    const terrain = runTerrainConstraintPass(draft, map, requirements, warnings, baseArea, worldGenRules, "water");
+    landmarkNotes.push(...terrain.notes);
     assertSealed();
   } else if (skipTerrain) {
-    landmarkNotes = ["skipTerrain: multi-turn forest/water layers"];
+    landmarkNotes.push("skipTerrain: multi-turn forest/water layers");
   }
-  perfLap("terrain");
-
-  let decorPlaced = houseDecorPlaced;
-  if (decorEnabled) {
-    decorPlaced += placeVillageDecor(draft, map, area, plaza, houses, seed, intent, warnings);
+  if (!deferDecoration) {
+    decorPlaced += finishVillageDecoration(draft, map, decorationPlan, warnings);
     assertSealed();
   }
-  // Corruption is rejected at the stage boundary, never repaired into a new baseline.
-  perfLap("decor");
-  // 조경(2026-07-17): 대형 맵(대로 모드)은 시가지 코어 밖을 수변·밭·숲·설원 지구로 채운다.
-  // 문법 규칙(수로=물의 논리, 백사장 접안, 눈↔밭 이격, 어둠+계단 세트)은 landscape.ts가 보증.
-  if (boulevard) {
-    const landscaped = dressVillageLandscape(map, { area, houses, plaza, seed, warnings });
-    warnings.push(`조경 지구 ${landscaped}칸`);
-    assertSealed();
-  }
-  perfLap("landscape");
+  perfLap("decoration");
   // 배치 충돌 정리 — 이후 스테이지(terrain 물·decor 나무·landscape 수로)가 서로 다른
   // 시점에 같은 칸을 차지해 생기는 순서 결함(물 위 수관·통행불가 위 수관)을 지운다.
   // 승인 게이트(validateLayoutPlacement)와 같은 규칙이므로, 지나치면 통과한다.
@@ -450,7 +448,7 @@ export function buildVillageDomain(
   if (audit.npcCount !== requestedNpcCount) warnings.push(`NPC 수 미달: ${audit.npcCount}/${requestedNpcCount}`);
   if (audit.npcsWithText !== audit.npcCount) warnings.push(`대사 없는 NPC: ${audit.npcCount - audit.npcsWithText}명`);
   if (interiorEnabled && houseInteriors.length !== houses.length) warnings.push(`내부 생성 미달: ${houseInteriors.length}/${houses.length}`);
-  if (fencesEnabled && audit.fencedHouses < houses.length) {
+  if (!deferDecoration && fencesEnabled && audit.fencedHouses < houses.length) {
     warnings.push(`울타리 미달: ${audit.fencedHouses}/${houses.length}`);
   }
 
@@ -490,6 +488,8 @@ export function buildVillageDomain(
       bounds: area,
       requirements: requirements ?? undefined,
       landmarks: landmarkNotes,
+      buildStages: deferDecoration ? ["houses", "roads"] : ["houses", "roads", "trees", "decoration"],
+      ...(deferDecoration ? { decorationPlan } : {}),
       planId: typeof merged.planId === "string" ? merged.planId : undefined,
       theme: intent.theme || undefined,
       critique,
@@ -650,7 +650,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
     description:
       "마을 계층 계획을 검증·정규화한다(맵 타일은 변경하지 않음). " +
       "theme·pathStyle·yardStyle·plazaStyle·edgeTrees·plazaLayout·houses[{kitId,yard,ownerName}]·npcs·" +
-      "buildOrder(시공 레이어 순서: 호수/강이면 water를 settlement 앞)를 넣으면 " +
+      "buildOrder(시공 레이어 순서: 집·길 다음 나무, 마지막 water·decoration)를 넣으면 " +
       "정규화된 VillagePlan + 한 줄 요약 + issues를 돌려준다. 이어서 run_village_session / advance_village_build 또는 build_village({ planId }). " +
       "settlement 내부는 항상 집→길. 빈 계획 금지 — 테마 마을이면 theme을 반드시 넣을 것.",
     mode: "write",
@@ -698,8 +698,8 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
         buildOrder: {
           type: "array",
           description:
-            "시공 레이어 순서(LLM 기획). 호수/강: water를 settlement 앞. settlement 내부는 집→길 고정. " +
-            "예: [plan,map,water,settlement,forest_conifer,forest_big,critique,look]",
+            "시공 레이어 순서(LLM 기획). settlement(집→길) → forest_conifer/forest_big → water → decoration 고정. " +
+            "예: [plan,map,settlement,forest_conifer,forest_big,water,decoration,critique,look]",
           items: { type: "string" },
         },
         id: { type: "string", description: "계획 id(없으면 자동 생성)" },
@@ -711,7 +711,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
       pathStyle: "sand",
       yardStyle: "market",
       plazaLayout: "south",
-      buildOrder: ["plan", "map", "water", "settlement", "forest_conifer", "forest_big", "critique", "look"],
+      buildOrder: ["plan", "map", "settlement", "forest_conifer", "forest_big", "water", "decoration", "critique", "look"],
       houses: [
         { kitId: "bright-plaster", yard: ["barrel", "wood_box"], ownerName: "어부" },
         { kitId: "blue-stone", yard: ["mailbox", "flowers"], ownerName: "포구지기" },
