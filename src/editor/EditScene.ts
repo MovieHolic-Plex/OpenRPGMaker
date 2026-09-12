@@ -1236,6 +1236,11 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private handleKeyDown(event: KeyboardEvent): void {
+    // 문서에서 떨어진 캔버스의 씬은 키를 먹지 않는다. 부트 도중 teardown 이 스쳐 게임이
+    // 추적에서 빠지면(고아) KeyboardManager 의 window 리스너만 남아, 보이는 씬과 이 씬이
+    // 한 번의 Ctrl+Z 를 각각 되돌려 두 단계가 사라졌다. 씬 쪽에서도 문을 닫아 두면
+    // 어떤 누수 경로가 생겨도 키 소비로 번지지 않는다.
+    if (!this.game.canvas?.isConnected) return;
     // 히스토리 키는 굵은 가드보다 먼저 — shouldIgnoreEditorShortcut 은 체크박스/슬라이더
     // 포커스까지 INPUT 으로 묶어 되돌리기를 삼켰다. handleHistoryHotkey 가 텍스트 편집
     // 포커스만 정확히 양보하고, 성공/빈 스택 모두 토스트로 알린다.
