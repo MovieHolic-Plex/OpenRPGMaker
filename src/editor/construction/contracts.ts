@@ -47,6 +47,12 @@ export type AuthorHousePlan = {
   readonly chimney?: boolean;
   /** 옥상 판자 데크 + 벽면 사다리 — 파랑 평지붕(blue-stone/slate-wood) 전용. */
   readonly roofDeck?: boolean;
+  /**
+   * 연결 실내의 **설계** — place_concept 의 plan 과 같은 모양(layout·wall·places[]·things[]).
+   * 생략하면 개념 꾸러미 템플릿이 그대로 찍혀 모든 집의 실내가 같은 도면이 된다(2026-09-11 사용자 지적).
+   * 여기서는 원문만 싣는다 — 물건 어휘(프로젝트 타일셋)로 해석·검증하는 곳은 houseKitDomain 이다.
+   */
+  readonly interiorPlan?: unknown;
 };
 
 export type AuthorHouseSingleRequest = Omit<AuthorHousePlan, "yard"> & {

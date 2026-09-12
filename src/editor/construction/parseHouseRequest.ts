@@ -29,9 +29,9 @@ import type {
 } from "./contracts";
 
 const SHAPE_KEYS = ["templateId", "stories", "lowWall", "chimney", "roofDeck"] as const;
-const SINGLE_KEYS = ["kind", "mapId", "kitId", "wings", "interior", "door", "ownerName", "windows", "yard", ...SHAPE_KEYS] as const;
+const SINGLE_KEYS = ["kind", "mapId", "kitId", "wings", "interior", "interiorPlan", "door", "ownerName", "windows", "yard", ...SHAPE_KEYS] as const;
 const LOTS_KEYS = ["kind", "mapId", "houses", "seed"] as const;
-const PLAN_KEYS = ["kitId", "wings", "interior", "door", "ownerName", "windows", "yard", ...SHAPE_KEYS] as const;
+const PLAN_KEYS = ["kitId", "wings", "interior", "interiorPlan", "door", "ownerName", "windows", "yard", ...SHAPE_KEYS] as const;
 
 type HouseCore = Omit<AuthorHousePlan, "yard">;
 
@@ -123,6 +123,7 @@ function parseHouseCore(record: BoundaryRecord, scope: string): HouseCore {
   }
   const ownerName = optionalString(record, "ownerName", scope);
   const windows = parseWindows(record["windows"], scope);
+  const interiorPlan = parseInteriorPlan(record["interiorPlan"], scope);
   const shape = parseShape(record, scope, parseWings(requiredArray(record, "wings", scope), scope), kitId);
   return {
     kitId: shape.kitId,
@@ -131,6 +132,7 @@ function parseHouseCore(record: BoundaryRecord, scope: string): HouseCore {
     door: booleanOrDefault(record, "door", { scope, defaultValue: true }),
     ...(ownerName === undefined ? {} : { ownerName }),
     ...(windows === undefined ? {} : { windows }),
+    ...(interiorPlan === undefined ? {} : { interiorPlan }),
     ...(shape.templateId === undefined ? {} : { templateId: shape.templateId }),
     ...(shape.stories === undefined ? {} : { stories: shape.stories }),
     ...(shape.lowWall === undefined ? {} : { lowWall: shape.lowWall }),
@@ -229,6 +231,14 @@ function parseWings(values: readonly unknown[], scope: string): readonly HouseWi
       ...(wingStories === undefined ? {} : { stories: wingStories as 1 | 2 | 3 }),
     };
   });
+}
+/**
+ * 실내 설계 원문. 모양(객체)만 보고 통과시킨다 — objectId 가 이 프로젝트의 물건 어휘인지는
+ * houseKitDomain 이 타일셋을 들고 판정한다(파서는 프로젝트를 모른다).
+ */
+function parseInteriorPlan(value: unknown, scope: string): unknown {
+  if (value === undefined || value === null) return undefined;
+  return requireRecord(value, `${scope}.interiorPlan`);
 }
 
 function parseInteriorMode(value: unknown, scope: string): HouseInteriorMode {

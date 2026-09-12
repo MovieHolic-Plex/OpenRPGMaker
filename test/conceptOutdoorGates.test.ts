@@ -32,6 +32,7 @@ describe("Phase 5 실외 확장 — 스코프 게이트와 명시적 거부", ()
   it("place_concept는 실내 칩셋이 아니면 invalid-tileset으로 거절하고 쓰지 않는다", () => {
     const context = ctx();
     const result = runTool(context, "place_concept", {
+      template: true,
       query: "여관",
       mapId: "map_outdoor_test",
       tilesetId: DEFAULT_TILESET_ID,
@@ -52,6 +53,7 @@ describe("Phase 5 실외 확장 — 스코프 게이트와 명시적 거부", ()
       things: [],
     }];
     const result = runTool(context, "place_concept", {
+      template: true,
       query: "시장",
       mapId: "map_market_leak",
     }, { dryRun: false });
@@ -73,6 +75,7 @@ describe("Phase 5 실외 확장 — 스코프 게이트와 명시적 거부", ()
   it("place_concept는 실내 칩셋에서 그대로 짓는다", () => {
     const context = ctx();
     const result = runTool(context, "place_concept", {
+      template: true,
       query: "여관",
       mapId: "map_inn_p5",
       seed: 7,

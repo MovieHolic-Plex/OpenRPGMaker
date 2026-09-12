@@ -48,7 +48,7 @@ describe('reviewed interior assemblies', () => {
   for (const seed of [7,19,42]) for (const bundle of cloneConceptFacilityTemplates()) {
     it(`${bundle.id} seed ${seed}: complete supported tables, wall clocks and no placement warnings`, () => {
       const ctx = {project:createBlankProject()};
-      const result = runTool(ctx,'place_concept',{query:bundle.id,mapId:`assembly_${bundle.id}`,seed},{dryRun:false});
+      const result = runTool(ctx,'place_concept',{ template: true,query:bundle.id,mapId:`assembly_${bundle.id}`,seed},{dryRun:false});
       expect(result.ok,result.summary).toBe(true);
       expect([...(result.warnings??[]),...(result.diff?.warnings??[])]).toEqual([]);
       const map = ctx.project.maps[`assembly_${bundle.id}`]!;

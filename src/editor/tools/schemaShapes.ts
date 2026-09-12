@@ -9,6 +9,7 @@
 // 죽인다. 대신 키 합집합을 모두 선택 필드로 선언하고 required 를 비워 둔다.
 import { RELATIONSHIP_STATES } from "@/project/relationshipState";
 import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
+import { CONCEPT_PLAN_ENUMS } from "@/editor/conceptPlan";
 import type { JsonSchema } from "./types";
 
 /** `{x,y}` 좌표. 두 필드 모두 필수. */
@@ -367,4 +368,65 @@ export const VILLAGE_NPC_PLAN_SCHEMA: JsonSchema = {
     name: { type: "string" },
     lines: { type: "array", items: { type: "string" } },
   },
+};
+
+
+/**
+ * 개념 시설 설계(place_concept.plan · author_house.interiorPlan 공용).
+ * 설계는 정본이다 — 생략하거나 템플릿을 그대로 복사하면 시공이 거부된다(2026-09-11: 모든 실내가 같은 도면으로 찍히던 결함).
+ */
+export const CONCEPT_PLAN_SCHEMA: JsonSchema = {
+  type: "object",
+  description:
+    "설계한 시설 도면. get_concept_facility(query) 가 돌려준 템플릿을 요청에 맞게 고쳐 넘긴다 — 방 수(count)·크기(size)·바닥·층·구역(zone)·물건 추가/제외. "
+    + "좌표는 코드가 정한다. objectId 는 vocabulary[].id 에서만. 템플릿의 required 물건을 빼면 경고(거부 아님). "
+    + "**생략하거나 템플릿을 그대로 복사하면 거부된다** — 그러면 모든 실내가 같은 도면으로 찍힌다. 장소 수·크기·물건 중 둘 이상이 템플릿과 달라야 한다.",
+  properties: {
+    layout: {
+      type: "string",
+      enum: [...CONCEPT_PLAN_ENUMS.layouts],
+      description: "도면 문법. row=방 줄→복도→홀(기본). double-row=객실은 복도 북쪽, 날개(주방·창고)는 홀 옆.",
+    },
+    wall: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.walls], description: "벽 재질. 생략=cream" },
+    places: {
+      type: "array",
+      description: "장소 목록. entrance(정문 홀) 하나, walkway(복도) 0~1, 나머지 room. row 는 홀→복도→방 줄, double-row 는 북 방 줄→복도→홀+남쪽 날개.",
+      items: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          label: { type: "string" },
+          role: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.roles], description: "생략=room" },
+          shape: { type: "string", enum: ["rect", "l", "alcove"], description: "방 바닥 형태. 생략=rect" },
+          size: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.sizes], description: "s 5×3 · m 7×4 · l 9×5. 생략=m" },
+          count: { type: "integer", description: `같은 장소 개수 1..${CONCEPT_PLAN_ENUMS.countMax}(객실 ×3). 생략=1` },
+          floor: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.floors], description: "생략=wood" },
+          level: { type: "integer", description: `층 1..${CONCEPT_PLAN_ENUMS.levelMax}. 2 이상은 <mapId>_<n>f 별도 맵 + 계단. 생략=1` },
+          zone: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.zones], description: "double-row 에서 north=복도 위 객실, south=홀 옆 날개. 생략 시 주방·창고 라벨은 south" },
+        },
+        required: ["id"],
+      },
+    },
+    things: {
+      type: "array",
+      description: "물건 목록. 각 물건은 어느 장소(placeIds)에 놓이는지와 능력 칩(chips)을 가진다.",
+      items: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          label: { type: "string" },
+          objectId: { type: "string", description: "get_concept_facility 의 vocabulary[].id" },
+          placeIds: { type: "array", items: { type: "string" } },
+          chips: {
+            type: "array",
+            items: { type: "string" },
+            description: `내장 ${Object.entries(CONCEPT_PLAN_ENUMS.chipLabels).map(([id, label]) => `${id}=${label}`).join(" · ")} · 자유 칩(영문·숫자·-_·1~32자, 엔진 무동작 메모)도 된다`,
+          },
+          required: { type: "boolean", description: "자리가 없으면 경고를 내는 핵심 물건" },
+        },
+        required: ["objectId", "placeIds"],
+      },
+    },
+  },
+  required: ["places"],
 };

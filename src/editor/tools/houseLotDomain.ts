@@ -17,6 +17,8 @@ export type HouseLotPlan = {
   readonly wings: readonly HouseWing[];
   readonly ownerName?: string;
   readonly interior?: boolean;
+  /** 연결 실내 설계(place_concept plan 모양). 없으면 템플릿을 그대로 짓고 경고를 남긴다. */
+  readonly interiorPlan?: unknown;
   readonly door?: boolean;
   readonly windows?: HouseKitWindowsOption;
   readonly yard: readonly YardDecorPlan[];
@@ -94,6 +96,7 @@ export function buildHouseLots(draft: Project, input: BuildHouseLotsInput): Buil
       doorEvent: linkedInterior,
       ...(house.ownerName === undefined ? {} : { ownerName: house.ownerName }),
       ...(house.windows === undefined ? {} : { windows: house.windows }),
+      ...(house.interiorPlan === undefined ? {} : { interiorPlan: house.interiorPlan }),
       ...(house.stories === undefined ? {} : { stories: house.stories }),
       ...(house.lowWall === undefined ? {} : { lowWall: house.lowWall }),
       ...(house.chimney === undefined ? {} : { chimney: house.chimney }),

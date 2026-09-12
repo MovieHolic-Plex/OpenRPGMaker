@@ -33,7 +33,7 @@ function expectCellPixels(png: PNG, x: number, y: number, source: (px: number, p
 
 function buildDefaultInn(): { map: GameMap; context: ToolContext } {
   const context: ToolContext = { project: createBlankProject() };
-  const result = runTool(context, "place_concept", { query: "여관", mapId: "map_inn_render", seed: 7 }, { dryRun: false });
+  const result = runTool(context, "place_concept", { template: true, query: "여관", mapId: "map_inn_render", seed: 7 }, { dryRun: false });
   if (!result.ok) throw new Error(result.summary);
   return { map: context.project.maps.map_inn_render!, context };
 }

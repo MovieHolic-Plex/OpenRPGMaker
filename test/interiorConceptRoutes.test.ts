@@ -31,8 +31,13 @@ function planOf(map: { roomHarnessPlan?: { plan: unknown } }) {
 }
 
 describe("all AI interior routes consume concept bundles", () => {
-  it("author_house preserves shipped inn flights and connects only the authored descent on each floor", () => {
+  it("author_house preserves authored inn flights and connects only the authored descent on each floor", () => {
     const ctx = { project: preparedProject() };
+    // 저작된 여관만 도면 정본이다 — 초안 그대로면 씨앗(절차 도면)으로 간다. 구조를 한 끗 바꿔 저작본으로 만든다.
+    const bundles = cloneConceptFacilityTemplates();
+    const innBundle = bundles.find(bundle => bundle.id === "inn")!;
+    innBundle.places.find(place => place.id === "pantry")!.size = "m";
+    ctx.project.tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles = bundles;
     const result = runAuthorHouse(ctx, { ...exteriorSingle, interior: "linked-interior", ownerName: "Inn" });
     expect(result.ok, result.summary).toBe(true);
     const house = requireHouseData(result.data).houses[0]?.interior;
@@ -128,6 +133,8 @@ describe("all AI interior routes consume concept bundles", () => {
     };
     const manor = project.tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles!.find(bundle => bundle.id === "manor")!;
     manor.facilities[0]!.label = "내 저택";
+    // 구조가 초안과 달라야 저작본으로 인정된다 — 라벨만 바꾼 초안은 씨앗이다.
+    manor.places.find(place => place.id === "salon")!.size = "m";
     const built = createHouseInteriorMap(input);
     expect(planOf(built.map).concept!.facilityLabel).toBe("내 저택");
     expect(Object.values(planOf(built.map).concept!.rooms).map(room => room.placeId)).toEqual(["suite", "study", "salon"]);
@@ -221,6 +228,34 @@ describe("all AI interior routes consume concept bundles", () => {
       expect(events.filter(event => event.id.includes("reading_clock"))).toHaveLength(2);
       expect(events.filter(event => event.x >= 13)).toEqual(otherEvents);
     }
+  });
+
+  it("author_house 는 interiorPlan 설계를 그대로 짓는다(템플릿 대신)", () => {
+    const ctx = { project: preparedProject() };
+    const result = runAuthorHouse(ctx, {
+      ...exteriorSingle,
+      interior: "linked-interior",
+      ownerName: "주민",
+      interiorPlan: {
+        places: [{ id: "hall", label: "홀", role: "entrance", size: "l", floor: "plank" }],
+        things: [{ objectId: "counter", placeIds: ["hall"], chips: ["block", "event"], required: true }],
+      },
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const house = requireHouseData(result.data).houses[0]?.interior;
+    if (!house) throw new Error("Linked interior missing");
+    const plan = planOf(ctx.project.maps[house.interiorMapId]!);
+    // 템플릿(민가 bedroom·kitchen·living)이 아니라 설계한 홀 하나가 선다.
+    expect(Object.values(plan.concept!.rooms).map(room => room.placeId)).toEqual(["hall"]);
+    expect(result.warnings ?? []).not.toContain(expect.stringContaining("설계하지 않아"));
+  });
+
+  it("author_house 는 설계 없이 지으면 템플릿 찍기를 경고로 되먹인다", () => {
+    const ctx = { project: preparedProject() };
+    const result = runAuthorHouse(ctx, { ...exteriorSingle, interior: "linked-interior", ownerName: "주민" });
+    expect(result.ok, result.summary).toBe(true);
+    const warnings = [...(result.warnings ?? []), ...(result.data.construction.warnings ?? [])];
+    expect(warnings.some(line => line.includes("설계하지 않아"))).toBe(true);
   });
 
   it("new unknown facilities can be built by combining the returned sources", () => {

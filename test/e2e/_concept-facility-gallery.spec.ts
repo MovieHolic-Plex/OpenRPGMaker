@@ -153,7 +153,8 @@ test.describe("개념 꾸러미 시설 다양화 — 에디터 증거", () => {
     const built: Record<string, unknown>[] = [];
     for (const entry of BUILD) {
       const mapId = `map_e2e_${entry.id}`;
-      const result = await runEditorTool(page, "place_concept", { query: entry.query, mapId, seed: 7 });
+      // 초안(템플릿) 갤러리 검사 — 설계 경로가 아니라 템플릿 자체를 본다(2026-09-11: place_concept 은 설계를 요구한다).
+      const result = await runEditorTool(page, "place_concept", { query: entry.query, mapId, seed: 7, template: true });
       expect(result.ok, `${entry.query}: ${result.summary}`).toBe(true);
       const unplaced = (result.diff?.warnings ?? []).filter((line) => line.includes("자리 없음"));
       expect(unplaced, `${entry.query} 자리 없음: ${unplaced.join(" / ")}`).toEqual([]);

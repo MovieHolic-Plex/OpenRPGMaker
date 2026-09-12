@@ -214,6 +214,25 @@ export const INTERIOR_OBJECT_CATALOG: readonly InteriorObjectDef[] = [
   },
   def("care_bed", "병상과 간병 걸상", [[VR.BED_V_HEAD,null],[VR.BED_V_FOOT,VR.STOOL]], "upper", ["bedroom"], "wall-north", "bed"),
   def("teacher_desk", "교사용 책상과 펼친 책", [[156,157,158],[198,199,200]], "lower", ["study"], "wall-north", "table", [...interiorTableCells(3,1),{dx:1,dy:0,layer:"upper",tile:145}]),
+  // ── 팔레트 확장(2026-09-11): 칩셋에 그림은 있으나 물건 정의가 없던 타일로 채운다 ──────────────
+  // 실측: 그림 있는 478칸 중 물건이 쓰던 건 129칸뿐이었다. 구조물이 늘 같은 12종으로 보이던 원인.
+  // 타일 id 는 `INTERIOR_TILE_SEMANTICS[].index`(라벨의 진짜 id)로만 고른다 — 배열 위치와 다르다.
+  def("window_white", "흰 창문", [[54]], "lower", ALL_ROOM_THEMES, "wall-any"),
+  def("window_lattice", "격자 창(어두운)", [[174]], "lower", ["storage", "corridor", "study"], "wall-any"),
+  def("glass_pane", "유리판 벽", [[81]], "lower", ["study", "dining"], "wall-any"),
+  def("curtain_red", "붉은 대형 커튼", [[142, 143], [172, 173]], "upper", ["dining", "tavern", "study"], "wall-north"),
+  def("curtain_tail", "붉은 커튼 자락", [[202]], "upper", ["dining", "tavern", "study"], "wall-north"),
+  def("chair_back", "등받이 의자", [[267]], "upper", ["dining", "study", "bedroom"], "wall-north"),
+  def("chair_red", "붉은 의자", [[446], [476]], "upper", ["dining", "tavern"], "wall-north"),
+  def("chair_fallen", "쓰러진 의자", [[384]], "upper", ["tavern", "corridor", "storage"], "floor"),
+  def("table_round", "원형 탁자", [[236]], "lower", ["dining", "tavern", "study"], "floor"),
+  def("altar_stone", "석판 제단", [[374]], "lower", ["study", "dining"], "floor"),
+  def("vase_flowers", "꽃병", [[296]], "upper", ["bedroom", "dining", "study"], "floor"),
+  def("bottle_set", "술병과 잔", [[237]], "upper", ["tavern", "dining", "kitchen"], "floor"),
+  def("glass_shards", "깨진 유리 조각", [[417]], "upper", ["corridor", "storage", "kitchen"], "floor"),
+  def("armor_leather", "가죽 갑옷 전시", [[292]], "upper", ["corridor", "storage", "tavern"], "wall-north"),
+  def("ladder_tall", "장대 사다리", [[473]], "upper", ["storage", "corridor"], "wall-any"),
+  def("stairs_plain", "독립 하강 계단", [[475]], "lower", ["corridor"], "free"),
 ] as const;
 
 const BY_ID = new Map<string, InteriorObjectDef>(INTERIOR_OBJECT_CATALOG.map((entry) => [entry.id, entry]));

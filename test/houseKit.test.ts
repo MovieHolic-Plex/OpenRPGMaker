@@ -307,10 +307,10 @@ describe("author_house single", () => {
     expect(house.doorEventId).toMatch(/^ev_house_door_/);
     const interior = ctx.project.maps[house.interiorMapId];
     expect(interior.tilesetId).toBe(INTERIOR_HOUSE_TILESET_ID);
-    // Linked interiors now use the authored house facility, not the old 20×20 L plan.
+    // 초안뿐인 프로젝트는 절차 도면 + 초안 씨앗(composed 오버레이)으로 짓는다 — 저작본이면 facilityId 가 시설 id 다.
     expect(interior.roomHarnessPlan?.plan).toMatchObject({
       width: interior.width, height: interior.height,
-      concept: { facilityId: "house", rooms: expect.any(Object) },
+      concept: { facilityId: "composed", rooms: expect.any(Object) },
     });
     expect(treeContains(ctx.project.mapTree, house.interiorMapId)).toBe(true);
     const door = map.events.find((event) => event.id === house.doorEventId);

@@ -12,7 +12,6 @@ import {
 import { innDesignVariants } from "@/editor/conceptInnVariants";
 import { facilityDesignVariants } from "@/editor/conceptFacilityVariants";
 import {
-  CONCEPT_PLAN_ENUMS,
   ConceptPlanError,
   conceptVocabulary,
   facilityAsPlan,
@@ -36,65 +35,28 @@ import { conceptFacilityTemplateLabels } from "@/project/defaults/conceptFacilit
 import type { GameMap, Project } from "@/project/types";
 import { deterministicRng } from "@/util/rng";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
-import { REPLACE_EXISTING_SCHEMA } from "./schemaShapes";
+import { CONCEPT_PLAN_SCHEMA, REPLACE_EXISTING_SCHEMA } from "./schemaShapes";
 import { getCanonicalConcept, placeCanonicalConcept } from "./spatialConceptTools";
 
 const KIT = INTERIOR_ROOM_KIT.kitId;
 
-const PLAN_SCHEMA = {
-  type: "object",
-  description:
-    "모델이 설계한 시설. get_concept_facility(query) 가 돌려준 템플릿을 요청에 맞게 고쳐 그대로 넘기라 — 방 수(count)·크기(size)·바닥·벽·층·물건 추가/제외. "
-    + "좌표는 코드가 정한다. objectId 는 vocabulary[].id 에서만. 템플릿의 required 물건을 뾄으면 경고(거부 아님). 생략하면 템플릿 그대로.",
-  properties: {
-    layout: {
-      type: "string",
-      enum: [...CONCEPT_PLAN_ENUMS.layouts],
-      description: "도면 문법. row=방 줄→복도→홀(기본). double-row=객실은 복도 북쪽, 날개(주방·창고)는 홀 옆.",
-    },
-    wall: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.walls], description: "벽 재질. 생략=cream" },
-    places: {
-      type: "array",
-      description: "장소 목록. entrance(정문 홀) 하나, walkway(복도) 0~1, 나머지 room. row 는 홀→복도→방 줄, double-row 는 북 방 줄→복도→홀+남쪽 날개.",
-      items: {
-        type: "object",
-        properties: {
-          id: { type: "string" },
-          label: { type: "string" },
-          role: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.roles], description: "생략=room" },
-          shape: { type: "string", enum: ["rect", "l", "alcove"], description: "방 바닥 형태. 생략=rect" },
-          size: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.sizes], description: "s 5×3 · m 7×4 · l 9×5. 생략=m" },
-          count: { type: "integer", description: `같은 장소 개수 1..${CONCEPT_PLAN_ENUMS.countMax}(객실 ×3). 생략=1` },
-          floor: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.floors], description: "생략=wood" },
-          level: { type: "integer", description: `층 1..${CONCEPT_PLAN_ENUMS.levelMax}. 2 이상은 <mapId>_<n>f 별도 맵 + 계단. 생략=1` },
-          zone: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.zones], description: "double-row 에서 north=복도 위 객실, south=홀 옆 날개. 생략 시 주방·창고 라벨은 south" },
-        },
-        required: ["id"],
-      },
-    },
-    things: {
-      type: "array",
-      description: "물건 목록. 각 물건은 어느 장소(placeIds)에 놓이는지와 능력 칩(chips)을 가진다.",
-      items: {
-        type: "object",
-        properties: {
-          id: { type: "string" },
-          label: { type: "string" },
-          objectId: { type: "string", description: "get_concept_facility 의 vocabulary[].id" },
-          placeIds: { type: "array", items: { type: "string" } },
-          chips: {
-            type: "array",
-            items: { type: "string" },
-            description: `내장 ${Object.entries(CONCEPT_PLAN_ENUMS.chipLabels).map(([id, label]) => `${id}=${label}`).join(" · ")} · 자유 칩(영문·숫자·-_·1~32자, 엔진 무동작 메모)도 된다`,
-          },
-          required: { type: "boolean", description: "자리가 없으면 경고를 내는 핵심 물건" },
-        },
-        required: ["objectId", "placeIds"],
-      },
-    },
-  },
-  required: ["places"],
-} as const;
+/**
+ * 같은 역할의 대체 물건 — 모델이 템플릿 물건을 베끼지 않고 골라 쓸 재료.
+ * 실측(2026-09-11): 초안 19종이 쓰는 물건 47종은 소수(창·상자·선반·탁자…)에 쏠려 있고,
+ * 그래서 "무엇을 대신 쓸 수 있는지"를 응답에 실어 변주를 유도한다.
+ */
+const CONCEPT_VOCABULARY_GROUPS: readonly { readonly role: string; readonly ids: readonly string[] }[] = [
+  { role: "잠자리", ids: ["bed_v", "bed_h", "care_bed"] },
+  { role: "난방·조리 (3×3 석조 화로는 홀·거실 북벽이나 복도 끝 — 작은 방에 밀어 넣지 않는다)", ids: ["stove", "hearth", "stone_hearth_lit", "stone_hearth_unlit", "flue", "cauldron", "kettle"] },
+  { role: "식사·작업대", ids: ["dining_table", "table_long", "table_wood", "table_white", "tea_table", "work_table", "reading_table", "study_desk", "teacher_desk", "counter", "consultation_table", "altar_table", "table_round", "altar_stone"] },
+  { role: "수납·적재", ids: ["cabinet", "bookshelf", "shelf_jars", "display", "fruit_shelf", "crate", "barrel", "box", "jars", "grain", "bucket", "ladder", "box_wood", "swordbox_tall"] },
+  { role: "좌석", ids: ["table_chairs", "stool", "chair_back", "chair_red", "chair_fallen"] },
+  { role: "바닥깔개", ids: ["rug_mat", "rug_red", "rug"] },
+  { role: "벽장식·전시", ids: ["window", "window_white", "window_lattice", "glass_pane", "picture", "clock", "mirror", "mirror_grand", "bust", "armor", "armor_leather", "sword_rack", "tavern_sign", "religious", "crystal", "piano", "plant", "curtain_red", "curtain_tail"] },
+  { role: "통행·층계", ids: ["stairs", "stairs_small", "stairs_plain", "stairs_horizontal", "stairs_down", "ladder_tall"] },
+  { role: "작은 소품", ids: ["vase_flowers", "bottle_set", "jar_stone", "glass_shards", "cauldron", "kettle"] },
+];
+
 
 function seedFromMapId(mapId: string): number {
   return Math.floor(deterministicRng(1, "place_concept", mapId)() * 0x7fffffff);
@@ -123,7 +85,7 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
     + `${conceptFacilityTemplateLabels().join(" · ")} 처럼 시설명을 부르는 요청에 쓴다. `
     + "순서: get_concept_facility(query) 로 템플릿(사용자가 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 고친 장소·물건)과 물건 어휘를 읽고, "
     + "요청(방 수·크기·분위기·층·내용물)에 맞게 고친 plan 을 넘기라. 수식어가 없어도 템플릿을 그대로 복사하지 말고 설계를 다듬어라. "
-    + "plan 을 생략하면 템플릿 그대로 짓는다. 좌표·벽·문·이벤트는 코드가 정한다(방 bbox 를 찍지 마라). "
+    + "**plan 은 필수다 — 생략하거나 템플릿을 그대로 복사하면 거부된다(모든 실내가 같은 도면으로 찍힌다).** 사용자가 템플릿 그대로를 명시했을 때만 template:true. "
     + "query 는 시설명(여관·상점·대장간…) 또는 꾸러미 id — 템플릿에 없는 시설도 plan 이 있으면 짓는다. "
     + "장소에 2층 이상이 있으면 층마다 맵(<mapId>_2f)을 짓고 계단으로 잇는다(data.floors). "
     + "방 종류 requiredRoles 로 시설을 합성하지 마라. 새 mapId 가 필요하다. "
@@ -146,7 +108,12 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
         type: "string",
         description: "꾸러미를 읽을 타일셋. 생략 시 실내 칩셋 easyrpg_chipset_interior",
       },
-      plan: PLAN_SCHEMA,
+      plan: CONCEPT_PLAN_SCHEMA,
+      template: {
+        type: "boolean",
+        description:
+          "**사용자가 「템플릿 그대로」를 명시했을 때만** true. 꾸러미 템플릿을 설계 없이 그대로 시공한다(전부 같은 실내가 된다). 설계를 넘기는 정상 경로는 plan 이다.",
+      },
       seed: { type: "integer", description: "가구 배치 변주 시드. 생략 시 mapId 에서 파생(같은 mapId 는 같은 배치)" },
       replaceExisting: REPLACE_EXISTING_SCHEMA,
     },
@@ -207,6 +174,27 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
       resolved = template;
     } else {
       throw new ToolError(`"${query}" 시설을 풀 수 없다`, { code: "concept-not-found" });
+    }
+    // 설계가 정본이다 — 템플릿을 그대로 찍으면 모든 실내가 같은 도면이 된다(2026-09-11 사용자 지적:
+    // "도면 기반으로 똑같은 것만 찍어낸다"). 생략·복사는 거부하고, 명시적 탈출구(template:true)만 통과시킨다.
+    const useTemplate = args.template === true;
+    if (!hasPlan && !useTemplate) {
+      throw new ToolError(
+        `plan 없이 "${query}" 를 시공하면 꾸러미 템플릿이 그대로 찍혀 모든 실내가 같은 도면이 된다 — 이 툴은 설계를 요구한다. `
+        + `get_concept_facility(query:"${query}") 로 템플릿·물건 어휘·levers 를 읽고, 장소 수(count)·크기(size)·구역(zone)·층(level)·물건(objectId)을 요청에 맞게 바꿔 plan 으로 넘겨라. `
+        + "사용자가 「템플릿 그대로」를 명시했을 때만 template:true 로 시공한다.",
+        { code: "concept-plan-required", mapId },
+      );
+    }
+    const templatePlan = template ? facilityAsPlan(template.bundle, template.facility) : undefined;
+    const plannedPlan = hasPlan ? facilityAsPlan(resolved.bundle, resolved.facility) : undefined;
+    if (hasPlan && !useTemplate && templatePlan && plannedPlan && plansStructurallyEqual(templatePlan, plannedPlan)) {
+      throw new ToolError(
+        `설계가 "${query}" 템플릿과 구조가 같다 — 이대로면 방금 전 실내와 같은 도면이 또 나온다. `
+        + "장소 수·크기·구역·층·물건(objectId) 중 둘 이상을 요청에 맞게 바꿔 다시 넘겨라. "
+        + "사용자가 템플릿 그대로를 명시했다면 template:true 로 시공한다.",
+        { code: "concept-plan-identical", mapId },
+      );
     }
     // Phase 5: plan 경로에서 template이 실외 칩셋이면 시공하지 않는다.
     if (resolved.tilesetId !== INTERIOR_ROOM_TILESET_ID) {
@@ -323,14 +311,10 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
     const floorNote = multi ? `, ${floors.slice(1).map((floor) => `${floor.level}층 ${floor.mapId}`).join(" · ")}` : "";
     const builtMap = draft.maps[mapId];
     const overlay = conceptOverlayFor(resolved.bundle, resolved.facility, layout);
-    const templatePlan = template ? facilityAsPlan(template.bundle, template.facility) : undefined;
-    const plannedPlan = hasPlan ? facilityAsPlan(resolved.bundle, resolved.facility) : undefined;
-    let designNote: string | undefined;
-    if (!hasPlan) {
-      designNote = "plan 을 생략해 템플릿 그대로 시공했다. get_concept_facility 의 variants 를 보고 설계를 넘겨라.";
-    } else if (templatePlan && plannedPlan && plansStructurallyEqual(templatePlan, plannedPlan)) {
-      designNote = "설계가 템플릿과 같다. 장소 수·크기·물건 중 둘 이상을 바꿔라.";
-    }
+    // templatePlan·plannedPlan 은 게이트에서 이미 계산했다(위). 여기서는 탈출구 사용 여부만 기록한다.
+    const designNote = useTemplate
+      ? "template:true 로 꾸러미 템플릿을 그대로 시공했다 — 이 실내는 설계된 도면이 아니다. 요청에 맞추려면 plan 을 넘겨라."
+      : undefined;
     const review = builtMap
       ? scoreConceptFacility({
           map: builtMap,
@@ -355,6 +339,7 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
         facilityLabel: resolved.facility.label,
         tilesetId: resolved.tilesetId,
         planned: hasPlan,
+        designSource: hasPlan ? "planned" : "template",
         seed,
         used,
         rooms,
@@ -427,9 +412,20 @@ export const GET_CONCEPT_FACILITY_TOOL: ToolDefinition = {
       data: {
         query,
         designHint: {
-          rule: "사용자의 요청과 현재 template의 개별 수정이 우선이다. variants는 공간 구성 참고이며 사용자에게 없는 물건을 무조건 다시 넣는 초기화 명령이 아니다. 수식어가 없어도 용도와 규모를 정하고, 요청에 맞게 장소 수·크기·layout·물건을 바꿔 plan으로 넘겨라. 탁자와 러그, 조리 도구와 화덕, 같은 종류 재고를 묶고 문 접근로를 비워라.",
+          rule: "사용자의 요청과 현재 template의 개별 수정이 우선이다. variants는 공간 구성 참고이며 사용자에게 없는 물건을 무조건 다시 넣는 초기화 명령이 아니다. 수식어가 없어도 용도와 규모를 정하고, 요청에 맞게 장소 수·크기·layout·물건을 바꿔 plan으로 넘겨라. 탁자와 러그, 조리 도구와 화덕, 같은 종류 재고를 묶고 문 접근로를 비워라. **템플릿 물건을 그대로 베끼면 모든 실내가 같은 구조물로 채워진다 — 같은 역할(vocabularyGroups)의 다른 물건을 최소 둘 이상 골라라.**",
           keep: plan.things.filter((thing) => thing.required).map((thing) => thing.objectId),
-          levers: ["plan.layout row|double-row", "places[].zone north|south", "places[].count 1..4", "places[].size s|m|l", "places[].floor wood|stone|plank|mat", "wall cream|gold-brick|stone-brick", "things[] 에 vocabulary[].id 추가/제거", "places[].level 2 로 위층"],
+          levers: [
+            "plan.layout row|double-row|wing (wing=세로 복도, 방이 동·서에 붙고 홀이 남쪽 끝)",
+            "places[].shape rect|l|alcove (ㄱ자·벽감으로 방 실루엣을 바꾼다)",
+            "places[].zone north|south (double-row)",
+            "places[].count 1..4",
+            "places[].size s|m|l",
+            "places[].floor wood|stone|plank|mat",
+            "wall cream|gold-brick|stone-brick",
+            "things[] 에 vocabulary[].id 추가/제거 — vocabularyGroups 의 같은 역할 대체품",
+            "places[].level 2 로 위층",
+          ],
+          vocabularyGroups: CONCEPT_VOCABULARY_GROUPS,
         },
         facilities,
         template: {
@@ -440,6 +436,7 @@ export const GET_CONCEPT_FACILITY_TOOL: ToolDefinition = {
         },
         variants,
         vocabulary,
+        vocabularyGroups: CONCEPT_VOCABULARY_GROUPS,
       },
     };
   },

@@ -38,6 +38,7 @@ import {
   runTerrainConstraintPass,
 } from "../villageTerrainPass";
 import { inferRequirementsFromQuery } from "../villageRequirements";
+import { interiorVarietyReport, interiorVarietySummary, type InteriorDesignSource } from "../interiorVariety";
 import { FOREST_DENSITIES, parseOptionalForestDensity } from "../forestDensity";
 import { resolveWorldGenRules } from "@/project/worldGenRules";
 import { isPassable } from "@/project/collision";
@@ -278,6 +279,24 @@ export function buildVillageDomain(
   const houseInteriors = doorEventsPlanned
     ? createVillageHouseInteriors(draft, map, houses, overrides, seed, warnings)
     : [];
+  // 실내 다양성 관찰 고리(author_house 의 interiorVariety 와 동일) — 지은 층 맵을 되읽어
+  // 도면 서명·물건 세트를 집계하고, 찍어내기면 경고로 되먹인다.
+  const interiorVariety = interiorVarietyReport(
+    houseInteriors.flatMap((ref) => {
+      const maps = (ref.floorMapIds ?? [ref.interiorMapId])
+        .map((mapId) => draft.maps[mapId])
+        .filter((floor): floor is GameMap => floor !== undefined);
+      const source: InteriorDesignSource = ref.designSource === "designed"
+        ? "planned"
+        : ref.designSource === "authored" ? "template" : "seed";
+      return maps.length > 0 ? [{ source, maps }] : [];
+    }),
+  );
+  if (interiorVariety.interiors > 1 && interiorVariety.verdict !== "diverse") {
+    warnings.push(
+      `실내 다양성 ${interiorVariety.verdict}: ${interiorVarietySummary(interiorVariety)}. ${interiorVariety.advice.join(" ")}`,
+    );
+  }
   assertHouseProtection(existingHouses, draft, []);
   setVillageHarnessLayoutPlan(map, area, plaza, houses, intent, seed, fencesEnabled, merged.settlementLayout);
   // Invocation-local immutable values: pipeline retries discard these with their attempt, never a project WeakMap.
@@ -501,6 +520,7 @@ export function buildVillageDomain(
       npcCount: audit.npcCount,
       interiorCount: houseInteriors.length,
       doorEventCount: houseInteriors.length,
+      ...(interiorVariety.interiors > 0 ? { interiorVariety } : {}),
       houses: houses.map((house, index) => {
         const interiorRef = houseInteriors[index];
         return {

@@ -17,7 +17,7 @@ it("separates accommodation from ground-floor food preparation and one reception
 
 for (const seed of [1, 7, 19, 42, 99]) it(`inn seed ${seed}: distinct rooms and one reception transaction survive save/load`, () => {
   const ctx = { project: createBlankProject() };
-  const result = runTool(ctx, "place_concept", { query: "inn", mapId: "inn_rebuild", seed }, { dryRun: false });
+  const result = runTool(ctx, "place_concept", { template: true, query: "inn", mapId: "inn_rebuild", seed }, { dryRun: false });
   expect(result.ok, result.summary).toBe(true);
   expect([...(result.warnings ?? []), ...(result.diff?.warnings ?? [])]).toEqual([]);
   const project = deserialize(serialize(ctx.project));

@@ -12,7 +12,7 @@ import { TILE } from "@/project/defaults/constants";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import type { FootprintWing, HouseKitId } from "@/editor/houseKit";
 import { MIXABLE_HOUSE_KIT_IDS } from "@/editor/houseKit";
-import type { HouseInteriorProgram } from "@/editor/houseInteriors";
+import type { HouseInteriorProgram, InteriorBlueprintSource } from "@/editor/houseInteriors";
 import { DEFAULT_COBBLE_AUTOTILE_GROUP, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import { HOUSE_TEMPLATE_DEFS, houseTemplateWingsAt } from "@/project/defaults/houseTemplateCatalog";
 import type { GameMap, MapId, Project } from "@/project/types";
@@ -263,6 +263,8 @@ export interface VillageHouseInteriorRef {
   readonly stories: 1 | 2 | 3;
   readonly upperMapId?: MapId;
   readonly floorMapIds?: readonly MapId[];
+  /** 실내 도면의 출처(designed/authored/seed) — 다양성 리포트의 원인 축. */
+  readonly designSource?: InteriorBlueprintSource;
 }
 
 export interface Plaza {

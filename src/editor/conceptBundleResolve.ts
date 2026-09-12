@@ -11,6 +11,7 @@ import { canonicalConceptBundles, canonicalConceptLayout } from "./spatial/legac
 // 남→북으로 홀(정문) → 복도 → 방들이 서고, 파티션은 파이프라인 벽 문법(가로 인접 1열·세로 인접 3행)을 따른다.
 // 이 모듈은 interiorRoomPipeline 을 import 하지 않는다(순환). 실내 칩셋 id 는 문자열로 둔다.
 import { layoutConceptFacilityDoubleRow } from "@/editor/conceptLayoutDoubleRow";
+import { layoutConceptFacilityWing } from "@/editor/conceptLayoutWing";
 import { CONCEPT_FACILITY_TEMPLATES, cloneConceptFacilityTemplates } from "@/project/defaults/conceptFacilityTemplates";
 import {
   CONCEPT_PLACE_COUNT_MAX,
@@ -274,6 +275,8 @@ export function layoutConceptFacility(
   const canonical = canonicalConceptLayout(bundle, options.level);
   if (canonical) return canonical;
   if (facility.layout === "double-row") return layoutConceptFacilityDoubleRow(bundle, facility, options);
+  // wing: 세로 복도 축 — 방이 동·서에 붙고 홀이 남쪽 끝. 가로 밴드 쌓기와 실루엣이 완전히 다르다.
+  if (facility.layout === "wing") return layoutConceptFacilityWing(bundle, facility, options);
   // 층을 지정하면 그 층의 장소만 도면에 든다. 지정이 없으면 전부(한 층 시설의 종전 동작).
   // 위층엔 보통 정문 역할이 없다 — 그러면 마지막 방이 문 밴드로 승격되고(아래 promoted), 그 문 자리가
   // 「내려가는 계단」 착지가 된다(placeConceptTool 이 정문 이벤트를 바꾼다).

@@ -107,6 +107,9 @@ export function legacyFacilityFloors(bundle: ConceptBundleRecord, facility: Conc
         return rooms.length > 0 ? rooms : [{ place: { id: facility.id, label: facility.label }, role: "room" as const, x: 2, y: 3, ...sizes.m }];
       }
       case "double-row": return doubleRowLayout(entries, minWidth);
+      // wing 은 레거시 도면 문법에 없다 — import 경계(legacyImport 의 layout assert)가
+      // 먼저 거절하므로 여기까지 오면 경계를 우회한 호출이다.
+      case "wing": return unreachable(kind as never);
       default: return unreachable(kind);
     }
   };

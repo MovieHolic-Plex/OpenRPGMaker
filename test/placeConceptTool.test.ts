@@ -49,6 +49,7 @@ describe("place_concept", () => {
   it("이전에 저작된 여관으로 침실·복도·식당을 짓고 침대를 놓는다", () => {
     const context = ctx();
     const result = runTool(context, "place_concept", {
+      template: true,
       query: "여관",
       mapId: "map_inn_live",
       seed: 7,
@@ -81,6 +82,7 @@ describe("place_concept", () => {
     tileset.scratchConceptBundles = [edited];
 
     const result = runTool(context, "place_concept", {
+      template: true,
       query: "주막",
       mapId: "map_inn_edited",
       seed: 7,
@@ -107,6 +109,7 @@ describe("place_concept", () => {
     context.project.tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles = [edited];
 
     const result = runTool(context, "place_concept", {
+      template: true,
       query: "여관",
       mapId: "map_inn_no_dining",
       seed: 7,
@@ -122,6 +125,7 @@ describe("place_concept", () => {
     const context = ctx();
     context.project.tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles = [];
     const result = runTool(context, "place_concept", {
+      template: true,
       query: "여관",
       mapId: "map_inn_empty",
     }, { dryRun: false });
@@ -233,7 +237,7 @@ describe("place_concept 도면", () => {
 
   it("시공된 여관은 문에서 모든 방에 닿고 plan 경고가 없다", () => {
     const context = ctx();
-    const result = runTool(context, "place_concept", { query: "여관", mapId: "map_inn_plan", seed: 7 }, { dryRun: false });
+    const result = runTool(context, "place_concept", { template: true, query: "여관", mapId: "map_inn_plan", seed: 7 }, { dryRun: false });
     expect(result.ok, result.summary).toBe(true);
     // 쓰기 툴의 실행 경고는 diff.warnings 에 실린다(toolRunner).
     const warnings = [...(result.warnings ?? []), ...(result.diff?.warnings ?? [])];
@@ -254,7 +258,7 @@ describe("place_concept 구성과 칩 집행", () => {
       edit(bundle);
       context.project.tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles = [bundle];
     }
-    const result = runTool(context, "place_concept", { query, mapId: "map_inn_chips", seed: 7 }, { dryRun: false });
+    const result = runTool(context, "place_concept", { template: true, query, mapId: "map_inn_chips", seed: 7 }, { dryRun: false });
     expect(result.ok, result.summary).toBe(true);
     const data = result.data as Pick<Built, "rooms" | "door" | "connections">;
     return {
@@ -422,6 +426,7 @@ describe("place_concept 구성과 칩 집행", () => {
 });
 
 describe("place_concept plan — 모델이 설계하고 코드가 시공한다 (2026-09-03)", () => {
+  type DesignSourceData = { designSource?: string; designNote?: string };
   type PlanData = { planned: boolean; seed: number; rooms: { placeId: string; role: string }[]; used: { placeId: string; things: { objectId: string }[] }[]; floors: { level: number; mapId: string }[] };
   function template(context: ToolContext, query = "여관") {
     const result = runTool(context, "get_concept_facility", { query }, { dryRun: false });
@@ -546,7 +551,7 @@ describe("place_concept plan — 모델이 설계하고 코드가 시공한다 (
   it("seed 가 다르면 같은 설계라도 배치가 달라질 수 있고, 같은 mapId 는 seed 없이도 같은 결과다", () => {
     const tiles = (seed: number | undefined, mapId = "map_inn_seed") => {
       const context = ctx();
-      const result = runTool(context, "place_concept", { query: "여관", mapId, ...(seed === undefined ? {} : { seed }) }, { dryRun: false });
+      const result = runTool(context, "place_concept", { template: true, query: "여관", mapId, ...(seed === undefined ? {} : { seed }) }, { dryRun: false });
       expect(result.ok, result.summary).toBe(true);
       const map = context.project.maps[mapId]!;
       return [...map.lowerTiles, ...map.upperTiles].join(",");
@@ -558,7 +563,7 @@ describe("place_concept plan — 모델이 설계하고 코드가 시공한다 (
 
   it("어느 seed 로 지어도 초안 여관의 물건은 전부 자리를 얻는다", () => {
     for (const seed of [1, 2, 3, 4, 5, 6, 7, 8, 11, 22, 33]) {
-      const result = runTool(ctx(), "place_concept", { query: "여관", mapId: "map_inn_seed_fit", seed }, { dryRun: false });
+      const result = runTool(ctx(), "place_concept", { template: true, query: "여관", mapId: "map_inn_seed_fit", seed }, { dryRun: false });
       expect(result.ok).toBe(true);
       const unplaced = [...(result.warnings ?? []), ...(result.diff?.warnings ?? [])].filter((line) => line.includes("자리 없음"));
       expect(unplaced, `seed ${seed}: ${unplaced.join(" / ")}`).toEqual([]);
@@ -575,9 +580,26 @@ describe("place_concept plan — 모델이 설계하고 코드가 시공한다 (
     expect(full.designHint?.rule).toMatch(/수식어/);
   });
 
-  it("plan 을 생략하면 designNote 가 템플릿 복사를 알린다", () => {
-    const result = runTool(ctx(), "place_concept", { query: "여관", mapId: "map_inn_copy", seed: 7 }, { dryRun: false });
-    expect(result.ok).toBe(true);
-    expect((result.data as { designNote?: string }).designNote).toMatch(/템플릿/);
+  it("plan 을 생략하면 시공하지 않고 설계를 요구한다", () => {
+    const context = ctx();
+    const result = runTool(context, "place_concept", { query: "여관", mapId: "map_inn_copy", seed: 7 }, { dryRun: false });
+    expect(result.ok).toBe(false);
+    expect(result.issues?.some((issue) => issue.code === "concept-plan-required")).toBe(true);
+    expect(context.project.maps.map_inn_copy).toBeUndefined();
+  });
+
+  it("템플릿과 같은 설계는 거부하고, template:true 만 그대로 짓는다", () => {
+    const context = ctx();
+    const templatePlan = template(context).template?.plan;
+    const identical = runTool(context, "place_concept", { query: "여관", mapId: "map_inn_same", plan: templatePlan }, { dryRun: false });
+    expect(identical.ok).toBe(false);
+    expect(identical.issues?.some((issue) => issue.code === "concept-plan-identical")).toBe(true);
+    expect(context.project.maps.map_inn_same).toBeUndefined();
+
+    const escaped = runTool(context, "place_concept", { query: "여관", mapId: "map_inn_template", template: true, seed: 7 }, { dryRun: false });
+    expect(escaped.ok, escaped.summary).toBe(true);
+    const data = escaped.data as DesignSourceData;
+    expect(data.designSource).toBe("template");
+    expect(data.designNote).toMatch(/템플릿/);
   });
 });

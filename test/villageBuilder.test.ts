@@ -740,8 +740,9 @@ describe("build_village housePlans contract", () => {
     const interiorId = data.houses?.[0]?.interiorMapId;
     expect(interiorId).toBeTruthy();
     const interior = ctx.project.maps[interiorId!];
+    // 초안뿐인 프로젝트는 절차 도면 + 초안 씨앗(composed) — 저작본 꾸러미가 있어야 facilityId 가 시설 id 다.
     expect(interior.roomHarnessPlan?.plan).toMatchObject({
-      width: interior.width, height: interior.height, concept: { facilityId: "manor" },
+      width: interior.width, height: interior.height, concept: { facilityId: "composed" },
     });
     expect(interior.name).toContain("촌장 로안");
   });

@@ -106,6 +106,16 @@ type SlotClass = "stair-face" | "face" | "tall-face" | "north-end" | "north" | "
 // 러그는 바닥 가구보다 먼저 깔린다 — 탁자·소품(상위 레이어)이 러그 위에 앉을 수 있다(정본 placeRugUnder 의 「탁자 밑 러그」).
 const CLASS_ORDER: readonly SlotClass[] = ["stair-face", "north-end", "north", "face", "tall-face", "rug", "floor", "corner"];
 
+
+/** 큰 화로 계열 — 복도 끝 알코브 슬롯의 원래 대상. */
+const HEARTH_OBJECT_IDS: readonly string[] = ["hearth", "stone_hearth_lit", "stone_hearth_unlit"];
+/**
+ * 복도 끝 알코브 슬롯을 받는 물건 — 화로 계열과 **폭 3칸 이상 하부 설비**(피아노·긴 탁자·큰 화로 등).
+ * 카탈로그 role 을 손대는 대신 id·크기로 판정한다(role 은 타일 의미 계약이라 임의 값이 못 들어간다).
+ */
+const endNookObject = (object: InteriorObjectDef): boolean =>
+  HEARTH_OBJECT_IDS.includes(object.id) || (object.width >= 3 && object.layer === "lower");
+
 type Point = { readonly x: number; readonly y: number };
 
 export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeResult {
@@ -186,6 +196,15 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
   const freeFor = (cell: InteriorObjectCell, x: number, y: number, loose = false): boolean =>
     (free(x, y, loose) && (cell.layer === "upper" || !rugCells.has(idx(x, y))))
     || (cell.layer === "upper" && rugCells.has(idx(x, y)) && inRoomFloor(x, y) && upperEmpty(x, y) && !blocked(x, y, loose));
+  /**
+   * 복도 끝 알코브용 — 통행선(lane)을 점유로 보지 않는다. 복도 lane 은 복도 전체를 덮으므로
+   * 이 규칙이 없으면 3×3 석조 화로가 복도 끝에 설 수 없다(2026-09-11 사용자: "난로는 복도 끝에").
+   * 대신 아래 preservesAccess 가 그 자리 뒤쪽에 남는 상호작용(문·계단)이 없는지 계속 검사한다 —
+   * 화로가 통로를 끊으면 후보에서 빠진다.
+   */
+  const freeForEndNook = (cell: InteriorObjectCell, x: number, y: number): boolean =>
+    inRoomFloor(x, y) && input.isFloorTile(lowerAt(x, y)) && upperEmpty(x, y)
+    && !taken.has(idx(x, y)) && (cell.layer === "upper" || !rugCells.has(idx(x, y)));
   const faceFree = (x: number, y: number, loose = false): boolean =>
     inBounds(x, y)
     && x >= room.x && x < room.x + room.w
@@ -207,6 +226,9 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
   const classify = (thing: ConceptOverlayThing, object: InteriorObjectDef): SlotClass => {
     if (object.id === "stairs_horizontal") return "stair-face";
     if (object.id === "stairs_down") return "north-end";
+    // 큰 화로(석조 3×3)는 복도에서 통행을 막지 않는 **끝 알코브**에 선다.
+    // 거실·홀에서는 아래 wall-north 규칙을 그대로 타서 북벽에 앉는다(2026-09-11 사용자: "석조 난로는 거실이나 복도 끝").
+    if (endNookObject(object) && input.role === "walkway") return "north-end";
     if (object.id === "clock" || object.snap === "wall-any") return "face";
     if (object.snap === "wall-north") {
       return object.height === 2 && TALL_FACE_OVERLAP_IDS.has(object.id) ? "tall-face" : "north";
@@ -460,11 +482,16 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
       }
       case "north-end":
       case "north": {
+        // 복도 끝 알코브의 화로는 통행선을 점유로 보지 않는다(끝 자리 전용 규칙).
+        const endNook = endNookObject(object) && input.role === "walkway";
         const pick = withRetry((loose) => {
           const candidates: Point[] = [];
           for (let northY = room.y; northY < room.y + room.h; northY += 1) for (let x = room.x; x <= room.x + room.w - object.width; x += 1) {
             if (inRoomFloor(x, northY - 1)) continue;
-            if (object.cells.every((cell) => freeFor(cell, x + cell.dx, northY + cell.dy, loose)) && preservesAccess(object.cells,x,northY,baselineReach)) candidates.push({ x, y: northY });
+            const fits = object.cells.every((cell) => endNook
+              ? freeForEndNook(cell, x + cell.dx, northY + cell.dy)
+              : freeFor(cell, x + cell.dx, northY + cell.dy, loose));
+            if (fits && preservesAccess(object.cells, x, northY, baselineReach)) candidates.push({ x, y: northY });
           }
           return candidates;
         }, (candidates) => (job.slot === "north-end"

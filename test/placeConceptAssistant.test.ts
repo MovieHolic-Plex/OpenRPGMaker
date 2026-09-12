@@ -9,6 +9,15 @@ import { cloneConceptBundle, SCRATCH_INN_BUNDLE } from "@/project/defaults/scrat
 
 type ToolSchema = { readonly function?: { readonly name?: string } };
 
+
+/**
+ * 조수가 넘기는 최소 설계 — place_concept 은 이제 설계 없이 템플릿을 찍지 않는다(2026-09-11).
+ * 템플릿과 구조가 다르면 통과한다.
+ */
+const INN_DESIGN = {
+  places: [{ id: "hall", label: "홀", role: "entrance", size: "l", floor: "plank" }],
+  things: [{ objectId: "counter", placeIds: ["hall"], chips: ["block", "event"], required: true }],
+} as const;
 describe("조수 앞문 — 여관 지어줘 → place_concept", () => {
   it("첫 실행 라운드 스키마에 place_concept 이 있고, 호출 결과가 감사 로그에 남는다", async () => {
     const exposedPerRound: string[][] = [];
@@ -27,7 +36,7 @@ describe("조수 앞문 — 여관 지어줘 → place_concept", () => {
             message: {
               role: "assistant",
               content: null,
-              tool_calls: [{ id: "call_inn", type: "function", function: { name: "place_concept", arguments: JSON.stringify({ query: "여관", mapId: "map_inn_ai", seed: 7 }) } }],
+              tool_calls: [{ id: "call_inn", type: "function", function: { name: "place_concept", arguments: JSON.stringify({ query: "여관", mapId: "map_inn_ai", seed: 7, plan: INN_DESIGN }) } }],
             },
             finishReason: "tool_calls",
             usage: { completion_tokens: 30 },
@@ -72,7 +81,7 @@ describe("두 턴 사이의 데이터베이스 수정을 조수가 읽는다", (
       config: { ...defaultAiConfig(), apiKey: "sk" },
       // 예산 기본값에서는 개념 꾸러미 절이 뒤쪽이라 잘릴 수 있다 — 프롬프트 검사에는 넉넉히 준다.
       contextOptions: { budgetChars: 50_000 },
-      chat: chatThatCallsOnce("place_concept", { query: "주막", mapId: "map_tavern_ai", seed: 7 }, called),
+      chat: chatThatCallsOnce("place_concept", { query: "주막", mapId: "map_tavern_ai", seed: 7, plan: INN_DESIGN }, called),
     });
     // 사용자가 데이터베이스에서 여관 → 주막으로 고쳤다(저장소 프로젝트).
     const edited = createBlankProject();
@@ -93,7 +102,7 @@ describe("두 턴 사이의 데이터베이스 수정을 조수가 읽는다", (
     const called = { value: false };
     const session = new AssistantSession(createBlankProject(), {
       config: { ...defaultAiConfig(), apiKey: "sk" },
-      chat: chatThatCallsOnce("place_concept", { query: "여관", mapId: "map_inn_pending", seed: 7 }, called),
+      chat: chatThatCallsOnce("place_concept", { query: "여관", mapId: "map_inn_pending", seed: 7, plan: INN_DESIGN }, called),
     });
     // 비자율 턴: 쓰기는 제안으로 남고 적용되지 않는다.
     const result = await session.sendUserMessage("여관 지어줘", () => {});

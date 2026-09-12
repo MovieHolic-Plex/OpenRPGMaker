@@ -10,7 +10,7 @@ import type { GameMap, Project } from "@/project/types";
 let project: Project;
 beforeAll(() => {
   const ctx = { project: createBlankProject() };
-  const result = runTool(ctx, "place_concept", { query: "inn", mapId: "architecture_inn", seed: 7 }, { dryRun: false });
+  const result = runTool(ctx, "place_concept", { template: true, query: "inn", mapId: "architecture_inn", seed: 7 }, { dryRun: false });
   expect(result.ok, result.summary).toBe(true);
   expect([...(result.warnings ?? []), ...(result.diff?.warnings ?? [])]).toEqual([]);
   project = ctx.project;

@@ -78,5 +78,5 @@ export function createCanonicalHouseInterior(input: Input, style: { readonly sca
   project.mapConnections = compiled.mapConnections;
   project.spatialAuthoring = compiled.spatialAuthoring;
   authorizeSpatialToolChange(project, before);
-  return { ...style, map, entry, exit, stories, floors, ...(upper ? { upperMapId: upper.mapId, upperMap: upper.map } : {}) };
+  return { ...style, map, entry, exit, stories, floors, interiorSource: "authored", ...(upper ? { upperMapId: upper.mapId, upperMap: upper.map } : {}) };
 }

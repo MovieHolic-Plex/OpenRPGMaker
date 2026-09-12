@@ -10,7 +10,7 @@ import type { Project } from "@/project/types";
 let project: Project;
 beforeAll(() => {
   const ctx = { project: createBlankProject() };
-  const result = runTool(ctx, "place_concept", { query: "inn", mapId: "tile_review_inn", seed: 7 }, { dryRun: false });
+  const result = runTool(ctx, "place_concept", { template: true, query: "inn", mapId: "tile_review_inn", seed: 7 }, { dryRun: false });
   expect(result.ok, result.summary).toBe(true);
   project = ctx.project;
 });
