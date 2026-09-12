@@ -13,77 +13,184 @@ type Design = {
   doors: Point[];
 };
 
-const clay = (x: number, y: number, w: number, roof: number, material: Volume["material"] = "plaster"): Volume =>
-  ({ x, y, w, roof, wall: 3, material, color: "clay" });
-const slate = (x: number, y: number, w: number, roof: number, material: Volume["material"] = "stone"): Volume =>
-  ({ x, y, w, roof, wall: 3, material, color: "slate" });
-
 /** Every design starts from atlas roof and wall materials. Footprints and upper
  * positions vary together; none are recolors or mirrored completed house kits.
  */
 const DESIGNS: Design[] = [
-  { number: 21, slug: "open-court", name: "긴 날개의 중정 주택", family: "열린 중정 · 2층",
-    description: "낮은 양쪽 날개가 앞마당을 깊게 감싸고, 뒤채 중앙의 2층에서 지붕이 이어지는 ㄷ자 주택.",
-    width: 26, height: 20,
-    tiers: [[clay(7, 0, 10, 4)],
-      [clay(0, 3, 26, 7), clay(0, 3, 6, 13), clay(20, 3, 6, 13)]],
-    doors: [{ x: 13, y: 13 }] },
-  { number: 22, slug: "deep-west-wing", name: "서쪽 긴 날개 저택", family: "비대칭 ㄱ자 · 2층",
-    description: "넓은 뒤채의 오른쪽에 윗층을 놓고, 왼쪽 날개만 앞으로 길게 내민 석조 저택.",
-    width: 24, height: 21,
-    tiers: [[slate(10, 0, 10, 4, "plaster")],
-      [slate(0, 3, 24, 7), slate(0, 3, 8, 14)]],
-    doors: [{ x: 16, y: 13 }, { x: 4, y: 20 }] },
-  { number: 23, slug: "axial-hall", name: "삼층 중앙 현관집", family: "중앙 돌출 ㅗ자 · 3층",
-    description: "짧은 맨윗층 아래로 넓은 가로채를 놓고 지상 중앙 현관채를 앞으로 내민 3층집.",
-    width: 24, height: 24,
-    tiers: [[clay(9, 0, 6, 3)], [clay(4, 2, 16, 7)],
-      [clay(0, 8, 24, 7), clay(8, 8, 8, 12)]],
-    doors: [{ x: 12, y: 23 }] },
-  { number: 24, slug: "east-service-wing", name: "동쪽 별실을 이은 집", family: "깊은 본채와 낮은 옆채 · 2층",
-    description: "깊은 왼쪽 본채 위로 윗층이 솟고 오른쪽의 낮은 별실 지붕이 넓게 이어지는 목조 주택.",
-    width: 25, height: 20,
-    tiers: [[clay(3, 0, 8, 5, "log")],
-      [clay(0, 4, 15, 12, "log"), clay(11, 6, 14, 5, "log")]],
-    doors: [{ x: 7, y: 19 }, { x: 20, y: 14 }] },
-  { number: 25, slug: "shifted-manor", name: "엇갈린 삼층 저택", family: "편심 계단형 · 3층",
-    description: "윗층은 왼쪽, 지상 정면은 오른쪽으로 늘어나며 층마다 처마 깊이가 다른 회벽 저택.",
-    width: 24, height: 21,
-    tiers: [[slate(4, 0, 7, 4, "plaster")],
-      [slate(2, 3, 14, 7, "plaster")],
-      [slate(0, 9, 20, 7, "plaster"), slate(18, 11, 6, 6, "plaster")]],
-    doors: [{ x: 11, y: 19 }, { x: 21, y: 20 }] },
-  { number: 26, slug: "four-storey-crown", name: "중앙 사층 대주택", family: "중앙 집중형 · 4층",
-    description: "작은 최상층에서 네 단의 처마가 넓어지며 마지막 층의 넓은 정면으로 내려오는 대주택.",
-    width: 24, height: 25,
-    tiers: [[clay(9, 0, 6, 3)], [clay(7, 2, 10, 7)],
-      [clay(4, 8, 16, 7)], [clay(0, 14, 24, 7, "stone")]],
-    doors: [{ x: 12, y: 24 }] },
-  { number: 27, slug: "broad-upper-house", name: "넓은 윗채 삼층집", family: "낮고 넓은 상층 · 3층",
-    description: "가로로 넓은 맨윗채 아래의 두 층이 완만하게 벌어지고 한쪽 현관이 살짝 앞으로 나온 집.",
-    width: 27, height: 23,
-    tiers: [[clay(5, 0, 14, 4, "log")], [clay(2, 3, 20, 8, "log")],
-      [clay(0, 10, 27, 7, "stone"), clay(4, 10, 7, 9, "stone")]],
-    doors: [{ x: 7, y: 22 }, { x: 21, y: 20 }] },
-  { number: 28, slug: "eastern-high-house", name: "동쪽 사층 저택", family: "편심 고층과 긴 서쪽 처마 · 4층",
-    description: "최상층을 오른쪽에 두고 아래층을 서쪽으로 점차 넓힌 4층집. 지상 서쪽 끝은 더 깊다.",
-    width: 28, height: 27,
-    tiers: [[slate(16, 0, 6, 3, "plaster")], [slate(13, 2, 11, 7, "plaster")],
-      [slate(8, 8, 18, 7, "plaster")],
-      [slate(0, 14, 28, 7), slate(0, 14, 7, 9)]],
-    doors: [{ x: 17, y: 24 }, { x: 3, y: 26 }] },
-  { number: 29, slug: "deep-library-house", name: "깊은 지붕의 서재 주택", family: "깊은 본채 · 2층",
-    description: "높이가 긴 상층 지붕과 넓은 아래 지붕 사이에 벽을 드러내고, 왼쪽 정면을 앞으로 내민 서재 주택.",
-    width: 18, height: 22,
-    tiers: [[slate(5, 0, 8, 7, "plaster")],
-      [slate(0, 6, 18, 9, "plaster"), slate(0, 6, 8, 12, "plaster")]],
-    doors: [{ x: 5, y: 21 }, { x: 13, y: 18 }] },
-  { number: 30, slug: "three-storey-court", name: "삼층 안뜰 저택", family: "넓은 중정 · 3층",
-    description: "작은 최상층과 넓은 중간층 아래로 길고 넓은 왼쪽 날개와 짧은 오른쪽 날개가 안뜰을 감싸는 저택.",
-    width: 28, height: 27,
-    tiers: [[slate(10, 0, 8, 4, "plaster")], [slate(6, 3, 16, 7, "plaster")],
-      [slate(0, 9, 28, 7), slate(0, 9, 7, 14), slate(23, 9, 5, 11)]],
-    doors: [{ x: 14, y: 19 }] },
+  {
+    number: 21,
+    slug: "open-court",
+    name: "작은 중정 이층집",
+    family: "열린 중정",
+    description: "열린 중정 윤곽과 층별 양옆 처마를 보존한 최대 15칸 외형.",
+    width: 13,
+    height: 12,
+    tiers: [
+      [{x: 4, y: 0, w: 5, roof: 2, wall: 3, material: "plaster", color: "clay"}],
+      [{x: 0, y: 2, w: 13, roof: 4, wall: 3, material: "plaster", color: "clay"}, {x: 0, y: 2, w: 3, roof: 6, wall: 3, material: "plaster", color: "clay"}, {x: 10, y: 2, w: 3, roof: 6, wall: 3, material: "plaster", color: "clay"}],
+    ],
+    doors: [
+      {x: 6, y: 9},
+    ],
+  },
+  {
+    number: 22,
+    slug: "deep-west-wing",
+    name: "서쪽 날개 이층집",
+    family: "비대칭 ㄱ자",
+    description: "비대칭 ㄱ자 윤곽과 층별 양옆 처마를 보존한 최대 15칸 외형.",
+    width: 12,
+    height: 12,
+    tiers: [
+      [{x: 5, y: 0, w: 4, roof: 2, wall: 3, material: "stone", color: "slate"}],
+      [{x: 0, y: 2, w: 12, roof: 4, wall: 3, material: "stone", color: "slate"}, {x: 0, y: 2, w: 3, roof: 6, wall: 3, material: "stone", color: "slate"}],
+    ],
+    doors: [
+      {x: 7, y: 9},
+      {x: 1, y: 11},
+    ],
+  },
+  {
+    number: 23,
+    slug: "axial-hall",
+    name: "삼층 중앙 현관집",
+    family: "중앙 돌출",
+    description: "중앙 돌출 윤곽과 층별 양옆 처마를 보존한 최대 15칸 외형.",
+    width: 13,
+    height: 13,
+    tiers: [
+      [{x: 5, y: 0, w: 3, roof: 2, wall: 2, material: "plaster", color: "clay"}],
+      [{x: 3, y: 1, w: 7, roof: 4, wall: 2, material: "plaster", color: "clay"}],
+      [{x: 0, y: 2, w: 13, roof: 6, wall: 3, material: "plaster", color: "clay"}, {x: 4, y: 3, w: 5, roof: 6, wall: 3, material: "plaster", color: "clay"}],
+    ],
+    doors: [
+      {x: 6, y: 12},
+    ],
+  },
+  {
+    number: 24,
+    slug: "east-service-wing",
+    name: "동쪽 별실 이층집",
+    family: "낮은 옆채",
+    description: "낮은 옆채 윤곽과 층별 양옆 처마를 보존한 최대 15칸 외형.",
+    width: 13,
+    height: 12,
+    tiers: [
+      [{x: 2, y: 0, w: 4, roof: 3, wall: 3, material: "stone", color: "clay"}],
+      [{x: 0, y: 2, w: 9, roof: 6, wall: 3, material: "stone", color: "clay"}, {x: 8, y: 3, w: 5, roof: 3, wall: 3, material: "stone", color: "clay"}],
+    ],
+    doors: [
+      {x: 4, y: 11},
+      {x: 10, y: 9},
+    ],
+  },
+  {
+    number: 25,
+    slug: "shifted-manor",
+    name: "엇갈린 삼층집",
+    family: "편심 계단형",
+    description: "편심 계단형 윤곽과 층별 양옆 처마를 보존한 최대 15칸 외형.",
+    width: 14,
+    height: 13,
+    tiers: [
+      [{x: 4, y: 0, w: 3, roof: 2, wall: 2, material: "plaster", color: "slate"}],
+      [{x: 2, y: 1, w: 8, roof: 4, wall: 2, material: "plaster", color: "slate"}],
+      [{x: 0, y: 2, w: 12, roof: 6, wall: 3, material: "plaster", color: "slate"}, {x: 10, y: 3, w: 4, roof: 6, wall: 3, material: "plaster", color: "slate"}],
+    ],
+    doors: [
+      {x: 6, y: 11},
+      {x: 12, y: 12},
+    ],
+  },
+  {
+    number: 26,
+    slug: "four-storey-crown",
+    name: "중앙 사층집",
+    family: "중앙 집중형",
+    description: "중앙 집중형 윤곽과 층별 양옆 처마를 보존한 최대 15칸 외형.",
+    width: 15,
+    height: 15,
+    tiers: [
+      [{x: 6, y: 0, w: 3, roof: 1, wall: 2, material: "plaster", color: "clay"}],
+      [{x: 4, y: 1, w: 7, roof: 3, wall: 2, material: "plaster", color: "clay"}],
+      [{x: 2, y: 2, w: 11, roof: 5, wall: 2, material: "plaster", color: "clay"}],
+      [{x: 0, y: 3, w: 15, roof: 8, wall: 3, material: "plaster", color: "clay"}],
+    ],
+    doors: [
+      {x: 7, y: 14},
+    ],
+  },
+  {
+    number: 27,
+    slug: "broad-upper-house",
+    name: "넓은 윗채 삼층집",
+    family: "넓은 상층",
+    description: "넓은 상층 윤곽과 층별 양옆 처마를 보존한 최대 15칸 외형.",
+    width: 15,
+    height: 13,
+    tiers: [
+      [{x: 4, y: 0, w: 6, roof: 2, wall: 2, material: "plaster", color: "clay"}],
+      [{x: 2, y: 1, w: 11, roof: 4, wall: 2, material: "plaster", color: "clay"}],
+      [{x: 0, y: 2, w: 15, roof: 6, wall: 3, material: "plaster", color: "clay"}, {x: 3, y: 3, w: 4, roof: 6, wall: 3, material: "plaster", color: "clay"}],
+    ],
+    doors: [
+      {x: 5, y: 12},
+      {x: 11, y: 11},
+    ],
+  },
+  {
+    number: 28,
+    slug: "eastern-high-house",
+    name: "동쪽 사층집",
+    family: "편심 고층",
+    description: "편심 고층 윤곽과 층별 양옆 처마를 보존한 최대 15칸 외형.",
+    width: 15,
+    height: 15,
+    tiers: [
+      [{x: 6, y: 0, w: 3, roof: 1, wall: 2, material: "stone", color: "slate"}],
+      [{x: 4, y: 1, w: 7, roof: 3, wall: 2, material: "stone", color: "slate"}],
+      [{x: 2, y: 2, w: 11, roof: 5, wall: 2, material: "stone", color: "slate"}],
+      [{x: 0, y: 3, w: 15, roof: 7, wall: 3, material: "stone", color: "slate"}, {x: 0, y: 3, w: 3, roof: 8, wall: 3, material: "stone", color: "slate"}],
+    ],
+    doors: [
+      {x: 8, y: 13},
+      {x: 1, y: 14},
+    ],
+  },
+  {
+    number: 29,
+    slug: "deep-library-house",
+    name: "깊은 지붕 서재집",
+    family: "깊은 본채",
+    description: "깊은 본채 윤곽과 층별 양옆 처마를 보존한 최대 15칸 외형.",
+    width: 11,
+    height: 13,
+    tiers: [
+      [{x: 3, y: 0, w: 5, roof: 4, wall: 3, material: "plaster", color: "slate"}],
+      [{x: 0, y: 3, w: 11, roof: 5, wall: 3, material: "plaster", color: "slate"}, {x: 0, y: 3, w: 3, roof: 6, wall: 3, material: "plaster", color: "slate"}],
+    ],
+    doors: [
+      {x: 1, y: 12},
+      {x: 7, y: 11},
+    ],
+  },
+  {
+    number: 30,
+    slug: "three-storey-court",
+    name: "삼층 안뜰집",
+    family: "넓은 중정",
+    description: "넓은 중정 윤곽과 층별 양옆 처마를 보존한 최대 15칸 외형.",
+    width: 15,
+    height: 14,
+    tiers: [
+      [{x: 6, y: 0, w: 3, roof: 2, wall: 2, material: "plaster", color: "slate"}],
+      [{x: 4, y: 1, w: 7, roof: 4, wall: 2, material: "plaster", color: "slate"}],
+      [{x: 0, y: 2, w: 15, roof: 6, wall: 3, material: "plaster", color: "slate"}, {x: 0, y: 3, w: 3, roof: 7, wall: 3, material: "plaster", color: "slate"}, {x: 12, y: 3, w: 3, roof: 6, wall: 3, material: "plaster", color: "slate"}],
+    ],
+    doors: [
+      {x: 7, y: 11},
+    ],
+  },
 ];
 
 function compose(design: Design): House30Entry {
@@ -101,7 +208,7 @@ function compose(design: Design): House30Entry {
     }
     if ((row.upperTiles?.[x] ?? -1) >= 0) kit.rows[y]!.upperTiles![x] = row.upperTiles![x]!;
   }));
-  // Verify the three rows of every intended facade from actual wall cells,
+  // Verify every authored row of each intended facade from actual wall cells,
   // before ground doors are cut. Top floors must never disappear into roofs.
   const wallIds = new Set([12, 13, 14, 42, 43, 44, 72, 73, 74, 15, 16, 17, 45, 46, 47, 75, 76, 77, 102, 103, 104, 132, 133, 134, 162, 163, 164]);
   const roofIds = new Set([354, 355, 356, 357, 374, 376, 377, 384, 385, 386, 387, 404, 405, 406, 407, 467]);
@@ -117,6 +224,13 @@ function compose(design: Design): House30Entry {
     for (const x of [left - 2, left - 1, right + 1, right + 2]) {
       const actual = [kit.rows[y]?.tiles[x] ?? -1, kit.rows[y]?.upperTiles?.[x] ?? -1];
       assert.ok(actual.some(tile => roofIds.has(tile)), `${number}: upper facade lacks two-cell roof shoulder at ${x},${y}`);
+    }
+  }
+  // Two-row upper facades still need readable windows at this compact scale.
+  for (const volumes of design.tiers.slice(0, -1)) for (const volume of volumes) {
+    if (volume.wall !== 2) continue;
+    for (let x = volume.x + 1; x < volume.x + volume.w - 1; x += 3) {
+      kit.rows[volume.y + volume.roof! + 2]!.upperTiles![x] = volume.color === "slate" ? 87 : 85;
     }
   }
   for (const p of design.doors) {

@@ -8,7 +8,8 @@ import { houseObjectForGraphic } from "./houseSpatialCatalog.mts";
 import { HOUSE30_EXCLUDED_TILES, HOUSE30_TAG, type House30Entry } from "./house30Contract.mts";
 import type { Project } from "../../src/project/types";
 
-const roofTiles = new Set([354,355,356,357,374,376,377,384,385,386,387,404,405,406,407,467]);
+const logWallTiles = new Set([102,103,104,132,133,134,162,163,164]);
+const roofTiles = new Set([354,355,356,357,374,375,376,377,384,385,386,387,404,405,406,407,436,437,467]);
 const hash = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 const key = (x: number, y: number) => `${x},${y}`;
 function flood(cells: Set<string>, start: string) {
@@ -41,7 +42,7 @@ export function inspectHouse30(entries: readonly House30Entry[]) {
     assert.ok(entry.number >= 1 && entry.number <= 30 && Number.isInteger(entry.number));
     assert.ok(kit.id.startsWith(`house-30-${String(entry.number).padStart(2,"0")}-`));
     assert.equal(kit.kind, "section");
-    assert.ok(kit.width > 0 && kit.height > 0 && kit.width <= 48 && kit.height <= 48);
+    assert.ok(kit.width > 0 && kit.height > 0 && kit.width <= 15 && kit.height <= 15);
     assert.equal(kit.rows.length, kit.height);
     const occupied = new Set<string>(), roof = new Set<string>();
     const geometry: string[][] = [];
@@ -53,6 +54,7 @@ export function inspectHouse30(entries: readonly House30Entry[]) {
         const tiles = [row.tiles[x]!, row.upperTiles?.[x] ?? -1];
         for (const tile of tiles) {
           assert.ok(Number.isInteger(tile) && tile >= -1, `${kit.id}: invalid tile`);
+          assert.ok(!logWallTiles.has(tile), `${kit.id}: forbidden log wall ${tile}`);
           assert.ok(!HOUSE30_EXCLUDED_TILES.includes(tile as never), `${kit.id}: forbidden tile ${tile}`);
         }
         if (tiles.some(tile => tile >= 0)) occupied.add(key(x,y));
@@ -89,6 +91,7 @@ export function authorHouse30(input: Project, entries: readonly House30Entry[]) 
   assert.ok(input.spatialAuthoring, "Canonical authoring is required");
   const context = { project: structuredClone(input) };
   const tileset = context.project.tilesets[DEFAULT_TILESET_ID]!;
+  const changedGraphics = new Set<string>();
   const placements: { number:number; name:string; description:string; family:string; floors:number; id:string; objectId:string; mapId:string; x:number; y:number; width:number; height:number }[] = [];
   for (const entry of entries) {
     const oldKit = tileset.structureKits?.find(kit => kit.id === entry.kit.id);
@@ -99,6 +102,7 @@ export function authorHouse30(input: Project, entries: readonly House30Entry[]) 
     const kit = { ...entry.kit, name: entry.name, ai: { ...entry.kit.ai,
       description: entry.description, tags: [HOUSE30_TAG,"집","건물 외형",entry.family,`${entry.floors}층 외형`],
       role:"structure" as const, repeatability:"fixed" as const, layerHome:"perCell" as const } };
+    if (oldKit && (oldKit.kind !== "section" || oldKit.width !== kit.width || oldKit.height !== kit.height || !isDeepStrictEqual(oldKit.rows, kit.rows))) changedGraphics.add(kit.id);
     tileset.structureKits = [...(tileset.structureKits ?? []).filter(value => value.id !== kit.id),kit];
   }
   // One 5-by-2 gallery per author's batch; every card has a clear apron under its door.
@@ -132,11 +136,11 @@ export function authorHouse30(input: Project, entries: readonly House30Entry[]) 
     const kit = entry.kit;
     const old = houseObjectForGraphic(context.project,tileset.id,kit.id);
     const objectId = old?.id ?? `house30:object:${entry.number}`;
-    const next = { id:objectId, name:`${String(entry.number).padStart(2,"0")} · ${entry.name}`, revision:old?.revision ?? 1,
+    const next = { exteriorStories: entry.floors, id:objectId, name:`${String(entry.number).padStart(2,"0")} · ${entry.name}`, revision:old?.revision ?? 1,
       tags:[HOUSE30_TAG,"건물 외형",entry.family,`${entry.floors}층 외형`],
       provenance:{origin:"ai",sourceId:"house30-astra-xhigh"}, graphic:{tilesetId:tileset.id,kitId:kit.id}, chips:[],
       anchors:entry.doors.map((door,i)=>({id:`door-${i+1}`,name:"현관 앞",x:door.x,y:door.y+1})) };
-    if (!isDeepStrictEqual(old,next)) {
+    if (!isDeepStrictEqual(old,next) || changedGraphics.has(kit.id)) {
       const result = runTool(context,"upsert_spatial_design", { kind:"object",expectedRevision:old?.revision ?? 0,
         object:{...next,revision:(old?.revision ?? 0)+1} });
       assert.ok(result.ok, JSON.stringify(result));

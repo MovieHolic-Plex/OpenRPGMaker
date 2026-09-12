@@ -59,7 +59,16 @@ describe("compact village composition contract", () => {
   }, 90_000);
 
   it("filters actual log-wall cells and oversized exteriors without modifying the source library", () => {
-    const { project, ids } = fixture(), before = structuredClone(project);
+    const { project, ids } = fixture();
+    // Invalid legacy samples are explicit; reviewed houses no longer contain these defects.
+    const logHouse = project.tilesets[DEFAULT_TILESET_ID]!.structureKits![2]!;
+    if (logHouse.kind !== "section") throw Error("section");
+    logHouse.rows[4]!.tiles[1] = 133;
+    const oversized = project.tilesets[DEFAULT_TILESET_ID]!.structureKits![25]!;
+    if (oversized.kind !== "section") throw Error("section");
+    oversized.width = 16;
+    for (const row of oversized.rows) { row.tiles.push(-1); row.upperTiles?.push(-1); }
+    const before = structuredClone(project);
     const allowed = villageObjectHouseCatalog(project, { houseObjectIds: ids, composition: "compact" })!;
     expect(allowed.length).toBeGreaterThan(6);
     expect(allowed.every(h => h.raster.width <= 15 && h.raster.height <= 15)).toBe(true);
@@ -83,7 +92,10 @@ describe("compact village composition contract", () => {
 
   it("rejects conflicting fixed log/oversize houses and a third large house", () => {
     const { project, ids } = fixture();
-    const catalog = villageObjectHouseCatalog(project, { houseObjectIds: ids })!;
+    const original = villageObjectHouseCatalog(project, { houseObjectIds: ids })!;
+    const catalog = original.map(h => h.design.id === "house:3"
+      ? { ...h, raster: { ...h.raster, cells: [...h.raster.cells, { x: 1, y: 4, tile: 133, layer: "upper" as const }] } }
+      : h.design.id === "house:26" ? { ...h, raster: { ...h.raster, width: 16 } } : h);
     expect(() => compactHousePool(catalog, ["house:3"])).toThrow(/통나무/);
     expect(() => compactHousePool(catalog, ["house:26"])).toThrow(/15×15/);
     const pool = compactHousePool(catalog, []), large = pool.find(compactLandmark)!;

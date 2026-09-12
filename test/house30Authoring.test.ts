@@ -1,5 +1,7 @@
 import { describe,expect,it } from "vitest";
-import { inspectHouse30 } from "../scripts/lib/house30Authoring.mts";
+import { createBlankProject } from "@/project/defaults";
+import { emptySpatialDocument } from "./support/spatialSchemaFixture";
+import { authorHouse30, inspectHouse30 } from "../scripts/lib/house30Authoring.mts";
 import { buildHouse30BatchA } from "../scripts/lib/house30BatchA.mts";
 import { buildHouse30BatchB } from "../scripts/lib/house30BatchB.mts";
 import { buildHouse30BatchC } from "../scripts/lib/house30BatchC.mts";
@@ -37,3 +39,15 @@ describe("thirty authored house exteriors",()=>{
     expect(()=>inspectHouse30([first,copy])).toThrow(/only material\/color differs/);
   });
 });
+
+it("advances an existing object revision when only its kit pixels change, and keeps a repeat registration stable", () => {
+  const project = createBlankProject(); project.spatialAuthoring = emptySpatialDocument();
+  const entries = buildHouse30BatchA();
+  const first = authorHouse30(project, entries).project;
+  const old = first.spatialAuthoring!.library.objects["house30:object:1"]!;
+  const changed = structuredClone(entries);
+  changed[0]!.kit.rows[5]!.upperTiles![1] = 87;
+  const second = authorHouse30(first, changed).project;
+  expect(second.spatialAuthoring!.library.objects[old.id]!.revision).toBe(old.revision + 1);
+  expect(authorHouse30(second, changed).project).toEqual(second);
+}, 90_000);

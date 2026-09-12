@@ -69,7 +69,10 @@ try {
     defaultPressed: document.querySelector('[data-testid="db-village-design-default"]').getAttribute("aria-pressed"),
     request: document.querySelector('[data-testid="db-village-design-request"]').value,
   }));
-  assert.deepEqual({ ...rules, request: undefined }, { multiStoreyCount: "3", clustering: "tight", width: "76", height: "76", selectedObjects: 12, defaultPressed: "false", request: undefined });
+  if (expected.villagePresets.find(p => p.id === "small-village-dense").design.stories.includes(4)) {
+    assert.ok(await page.locator('[data-testid="db-village-design-stories-4"]').isChecked());
+  }
+  assert.deepEqual({ ...rules, request: undefined }, { multiStoreyCount: "3", clustering: "tight", width: "76", height: "76", selectedObjects: expected.villagePresets.find(p => p.id === "small-village-dense").design.objectVillage.objectIds.length, defaultPressed: "false", request: undefined });
   assert.ok(rules.request.includes("small-village-dense"));
   await page.getByTestId("db-village-preset-preview-run").click({ timeout: 90000 });
   await page.waitForFunction(() => document.querySelector('[data-testid="db-village-preset-preview"]')?.dataset.previewState === "ready", null, { timeout: 90000 });
