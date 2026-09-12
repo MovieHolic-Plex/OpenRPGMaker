@@ -11,7 +11,10 @@ export type CombinedTownHarnessGroup = Omit<TileGroupMetadata, "tileIds"> & {
 };
 
 export const COMBINED_TOWN_HARNESS_PREFIX = "harness-combined-town-";
-export const COMBINED_TOWN_ROOF_OVERLAY_TILES = [374, 375, 376, 377, 384, 385, 386, 387] as const;
+// 사선 지붕은 두 층으로 나뉜다: 불투명 몸체(374–377, 하위)와 투명 마감 캡(384–387, 상위).
+// 2026-07-17 킷 교정 정본(houseKit) 기준 — 몸체가 지면을 대체하고 캡만 겹친다.
+export const COMBINED_TOWN_ROOF_BODY_TILES = [374, 375, 376, 377] as const;
+export const COMBINED_TOWN_ROOF_OVERLAY_TILES = [384, 385, 386, 387] as const;
 
 const CONIFER_TOP = 260;
 const CONIFER_BOTTOM = 290;
@@ -204,13 +207,42 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
   // place_door/place_window가 이 벽 위 배치를 거부하던 공백을 메운다.
   wall9Slice("timber-stone-wall-9slice", "목골 석벽 집 벽 확장", CHIPSET_TILE_GROUPS.housePurpleStoneWallObjects, "목골+석재 집의 정면 벽입니다. 좌/중/우 열과 상/중/하 행을 유지해 확장합니다."),
   {
+    // 불투명 사선 지붕 몸체 — 용마루(374)·사선면(375)·좌우 트림(376/377).
+    // 예전엔 roof-overlays 한 그룹으로 상위에 묶였으나, 이들은 불투명 칩이라
+    // 지면을 대체하는 지붕 본체다(houseKit 2026-07-17 교정 정본).
+    id: `${COMBINED_TOWN_HARNESS_PREFIX}roof-body`,
+    name: "사선 지붕 몸체",
+    role: "roof",
+    defaultLayer: "lower",
+    tileIds: COMBINED_TOWN_ROOF_BODY_TILES,
+    description: "불투명한 사선 지붕 몸체(용마루·사선면·좌우 트림)입니다. 하위 레이어 지면을 대체해 깝니다.",
+    placementRules: "하위 레이어에 놓습니다. 지붕 띠는 좌캡 374 + 사선면 375(반복) + 우캡 377로 전개하고, 투명 마감 캡(384–387)은 상위에 겹칩니다.",
+    confidence: "high",
+    source: "bundled-default",
+    passage: "solid",
+    repeatability: "repeat",
+    patternGrammar: {
+      axis: "horizontal",
+      kind: "horizontal_expandable",
+      minWidth: 3,
+      minHeight: 1,
+      parts: [
+        { role: "leftCap", tileIds: [374] },
+        { role: "repeatBody", tileIds: [375] },
+        { role: "rightCap", tileIds: [377] },
+      ],
+      preserveCaps: true,
+      repeat: "body",
+    },
+  },
+  {
     id: `${COMBINED_TOWN_HARNESS_PREFIX}roof-overlays`,
     name: "사선 지붕 오버레이",
     role: "roof",
     defaultLayer: "upper",
     tileIds: COMBINED_TOWN_ROOF_OVERLAY_TILES,
-    description: "벽 위에 얹어 사선 지붕 실루엣을 만드는 상위 오버레이입니다.",
-    placementRules: "상위 레이어에만 놓습니다. 아래 벽이나 지붕면을 지우지 않고 겹쳐서 통행을 막는 지붕 외곽을 만듭니다.",
+    description: "투명 배경의 사선 지붕 마감 캡(처마·코너)입니다. 하위 지붕 몸체 위에 겹쳐 실루엣을 다듬습니다.",
+    placementRules: "상위 레이어에만 놓습니다. 아래 벽이나 지붕 몸체를 지우지 않고 겹쳐서 지붕 외곽을 만듭니다.",
     confidence: "high",
     source: "bundled-default",
     passage: "solid",
@@ -276,7 +308,7 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
       repeat: "body",
     },
   },
-  lowerSolidGroup("roof-wall-boundary", "지붕-벽 경계", [404, 405, 406, 407, 434, 435, 436, 437, 464, 466, 467], "직선 지붕면과 벽 경계는 하위 레이어입니다. 사선 지붕만 상위에 겹칩니다."),
+  lowerSolidGroup("roof-wall-boundary", "지붕-벽 경계", [404, 405, 406, 407, 434, 435, 436, 437, 464, 466, 467], "직선 지붕면과 벽 경계는 하위 레이어입니다. 사선 지붕 몸체(374–377)도 하위 — 상위에는 투명 마감 캡(384–387)만 겹칩니다."),
   verticalTreeGroup("conifer-tree", "침엽수", CONIFER_TOP, CONIFER_BOTTOM, "침엽수는 상단과 하단을 세로 2칸 원자로 배치합니다."),
   verticalTreeGroup(
     "dry-tree",

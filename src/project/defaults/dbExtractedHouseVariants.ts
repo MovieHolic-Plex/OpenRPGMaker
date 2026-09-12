@@ -182,17 +182,19 @@ function stampBody(map: GameMap, input: { readonly body: HouseBody; readonly mat
 }
 
 function stampRoof(map: GameMap, roof: Rect): void {
-  stampRun(map, { layer: "upper", origin: { x: roof.x + 1, y: roof.y }, tiles: [ROOF_BODY, ROOF_BODY, ROOF_CAP_RIGHT], width: roof.width - 2 });
-  stampRun(map, { layer: "upper", origin: { x: roof.x + 1, y: roof.y + 1 }, tiles: [ROOF_BODY, ROOF_BODY, ROOF_BODY], width: roof.width - 2 });
-  stampRun(map, { layer: "upper", origin: { x: roof.x + 1, y: roof.y + 2 }, tiles: [ROOF_BODY, ROOF_BODY, ROOF_BODY], width: roof.width - 2 });
+  // 2026-07-17 레이어 교정: 불투명 지붕 몸체(375·사선 트림 376/377)는 하위,
+  // 상위에는 투명 캡(354/355/384/385)만 얹는다 — houseKit 정본과 동일 관례.
+  stampRun(map, { layer: "lower", origin: { x: roof.x + 1, y: roof.y }, tiles: [ROOF_BODY, ROOF_BODY, ROOF_CAP_RIGHT], width: roof.width - 2 });
+  stampRun(map, { layer: "lower", origin: { x: roof.x + 1, y: roof.y + 1 }, tiles: [ROOF_BODY, ROOF_BODY, ROOF_BODY], width: roof.width - 2 });
+  stampRun(map, { layer: "lower", origin: { x: roof.x + 1, y: roof.y + 2 }, tiles: [ROOF_BODY, ROOF_BODY, ROOF_BODY], width: roof.width - 2 });
   stampRun(map, { layer: "lower", origin: { x: roof.x, y: roof.y + 3 }, tiles: [ROOF_FACE_LEFT, ROOF_FACE_MID, ROOF_FACE_MID], width: roof.width });
   placeTile(map, { layer: "upper", tile: LEFT_DIAGONAL_ROOF_TOP, x: roof.x, y: roof.y });
-  placeTile(map, { layer: "upper", tile: LEFT_DIAGONAL_ROOF_MID, x: roof.x, y: roof.y + 1 });
-  placeTile(map, { layer: "upper", tile: LEFT_DIAGONAL_ROOF_MID, x: roof.x, y: roof.y + 2 });
+  placeTile(map, { layer: "lower", tile: LEFT_DIAGONAL_ROOF_MID, x: roof.x, y: roof.y + 1 });
+  placeTile(map, { layer: "lower", tile: LEFT_DIAGONAL_ROOF_MID, x: roof.x, y: roof.y + 2 });
   placeTile(map, { layer: "upper", tile: LEFT_DIAGONAL_ROOF_BOTTOM, x: roof.x, y: roof.y + 3 });
   placeTile(map, { layer: "upper", tile: RIGHT_DIAGONAL_ROOF_TOP, x: roof.x + roof.width - 1, y: roof.y });
-  placeTile(map, { layer: "upper", tile: RIGHT_DIAGONAL_ROOF_MID, x: roof.x + roof.width - 1, y: roof.y + 1 });
-  placeTile(map, { layer: "upper", tile: RIGHT_DIAGONAL_ROOF_MID, x: roof.x + roof.width - 1, y: roof.y + 2 });
+  placeTile(map, { layer: "lower", tile: RIGHT_DIAGONAL_ROOF_MID, x: roof.x + roof.width - 1, y: roof.y + 1 });
+  placeTile(map, { layer: "lower", tile: RIGHT_DIAGONAL_ROOF_MID, x: roof.x + roof.width - 1, y: roof.y + 2 });
   placeTile(map, { layer: "upper", tile: RIGHT_DIAGONAL_ROOF_BOTTOM, x: roof.x + roof.width - 1, y: roof.y + 3 });
 }
 

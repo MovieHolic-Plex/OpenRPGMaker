@@ -446,7 +446,8 @@ function labelForTile(group: CombinedTownHarnessGroup, tile: number, fallback: s
   if (group.id.includes("castle-round-tower")) return roundTowerLabel(tile);
   if (group.id.includes("bush-props")) return "덤불";
   if (group.id.includes("branch-props")) return "가지";
-  if (group.id.includes("roof-overlays")) return "사선 지붕";
+  if (group.id.includes("roof-body")) return "사선 지붕";
+  if (group.id.includes("roof-overlays")) return "사선 지붕 캡";
   if (group.id.includes("windows")) return "창문";
   if (group.id.includes("fence")) return "울타리";
   if (group.id.includes("doors")) return "문/입구";
