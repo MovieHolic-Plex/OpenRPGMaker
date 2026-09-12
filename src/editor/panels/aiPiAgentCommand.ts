@@ -99,6 +99,11 @@ export interface PiRunOptions {
   readonly maxTurns?: number;
   /** 다이얼의 추론 강도 → Pi thinking level. */
   readonly thinkingLevel?: PiAgentThinkingLevel;
+  /**
+   * 의도 선언이 연 툴 도메인 — 초기 노출을 core+이 도메인들로 좁힌다(빠진 툴은 find_tools·
+   * 폴백 에스컬레이션이 실행 중 얹는다). 비우면 레지스트리 전량 노출.
+   */
+  readonly toolDomains?: readonly string[];
 }
 
 /** 적용 뒤 영수증(지금 → 적용 후) 재료. 렌더는 패널이 한다 — 되돌리기와 스튜디오 「변경」 탭이 거기 있다. */
@@ -243,6 +248,7 @@ export async function runPiCommand(
         ...(readOnly ? { readOnly: true } : {}),
         ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),
         ...(options.thinkingLevel === undefined ? {} : { thinkingLevel: options.thinkingLevel }),
+        ...(options.toolDomains && options.toolDomains.length > 0 ? { toolDomains: options.toolDomains } : {}),
         ...(teamSpec ? { team: teamSpec } : {}),
       },
       { signal: surface.signal, onEvent: wrap(mapIds, index) },

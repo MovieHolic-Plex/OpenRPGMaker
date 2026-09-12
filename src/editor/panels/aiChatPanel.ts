@@ -46,6 +46,7 @@ import { runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/
 import { getPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { formatMaterialLabelHint } from "@/ai/turnGuide";
 import { buildIntentFacts, createLlmIntentDeclarer, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
+import { intentToolDomains } from "@/ai/intentDeclaration";
 import type { SessionTurnScope } from "@/ai/assistantSession";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel, type AutonomyResolution } from "@/ai/autonomyLevels";
 import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
@@ -1383,7 +1384,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const next = pendingSends.shift();
     refreshQueueIndicator();
     if (next) {
-      void plainPiTurn(next.text).then(({ command, plan, questionPromoted }) => runPiTurn(command, next.displayAs ?? next.text, plan, { questionPromoted }));
+      void plainPiTurn(next.text).then(({ command, plan, questionPromoted, toolDomains }) =>
+        runPiTurn(command, next.displayAs ?? next.text, plan, { questionPromoted, toolDomains }));
     }
   };
 
@@ -1856,7 +1858,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    * Pi 턴 하나 — 조수 채팅의 유일한 실행 경로다(2026-09-11). 명시 `/pi` 든 평문이든 여기로 모인다:
    * 중단 버튼·상태·보드·영수증 배선이 한 곳에 있어야 두 입구가 어긋나지 않는다.
    */
-  const runPiTurn = async (command: ParsedPiCommand, displayText: string, plan: PiRunPlan | null, opts?: { readonly questionPromoted?: boolean }): Promise<void> => {
+  const runPiTurn = async (command: ParsedPiCommand, displayText: string, plan: PiRunPlan | null, opts?: { readonly questionPromoted?: boolean; readonly toolDomains?: readonly string[] }): Promise<void> => {
     if (turnBusy) {
       toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
       return;
@@ -1886,6 +1888,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         planOnly: plan.planOnly,
         maxTurns: plan.maxTurns,
         thinkingLevel: plan.thinkingLevel,
+        ...(opts?.toolDomains ? { toolDomains: opts.toolDomains } : {}),
       } : {});
     } finally {
       // 다음 턴이 이번 4축을 물고 가지 않게 한다 — 세션 경로 beginWorkPlanTurn 의 슬롯 클리어와 같은 수명.
@@ -1902,9 +1905,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 분류가 지연·실패하면 다이얼 그대로 두는 쪽이 안전하므로 타임아웃을 짧게 둔다.
   let piIntentDeclarer: IntentDeclarer | null = null;
   /** 평문 한 줄 → Pi 명령 + 실행 계획. 팀 비트는 설정에서, 읽기 전용·계획은 자율성 다이얼에서 온다. */
-  const plainPiTurn = async (text: string): Promise<{ readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean }> => {
+  const plainPiTurn = async (text: string): Promise<{ readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean; readonly toolDomains?: readonly string[] }> => {
     let plan = resolvePiRunPlan(currentAutonomy());
     let questionPromoted = false;
+    let toolDomains: readonly string[] | undefined;
     if (!plan.readOnly) {
       piIntentDeclarer ??= createLlmIntentDeclarer({ timeoutMs: 6_000 });
       setStatus("의도 읽는 중…");
@@ -1918,10 +1922,16 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (declared.intent.mode === "question") {
         plan = { ...plan, readOnly: true };
         questionPromoted = true;
+      } else {
+        // 의도가 연 도메인만 초기 노출한다(core+범용은 상시). 빠진 툴은 find_tools 수확·
+        // 폴백 구제가 실행 중 얹으므로 오판이 절벽이 아니라 검색 한 번으로 끝난다.
+        // 선언이 빈 손(도메인 0)이면 근거가 없는 셈 — 전량 노출로 떨어진다.
+        const seeded = intentToolDomains(declared.intent, (name) => getTool(name)?.domains);
+        if (seeded.size > 0) toolDomains = ["core", ...seeded];
       }
     }
     const team = (loadAiConfig().piTeam ?? DEFAULT_PI_TEAM) && !plan.readOnly;
-    return { command: plainPiCommand(text, team ? "team" : "single", editorState.get().currentMapId ?? null), plan, questionPromoted };
+    return { command: plainPiCommand(text, team ? "team" : "single", editorState.get().currentMapId ?? null), plan, questionPromoted, toolDomains };
   };
   const send = async (): Promise<void> => {
     const text = input.value.trim();
@@ -1960,8 +1970,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       await sendSelectionRegionTask(text);
       return;
     }
-    const { command, plan, questionPromoted } = await plainPiTurn(text);
-    await runPiTurn(command, text, plan, { questionPromoted });
+    const { command, plan, questionPromoted, toolDomains } = await plainPiTurn(text);
+    await runPiTurn(command, text, plan, { questionPromoted, toolDomains });
   };
 
   sendButton.addEventListener("click", () => void send());
@@ -3129,8 +3139,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       toast("AI 분석을 시작할 수 없습니다.", "error");
       return;
     }
-    void plainPiTurn(kickoff.prompt).then(({ command, plan, questionPromoted }) =>
-      runPiTurn(command, kickoff.displayAs, plan, { questionPromoted }));
+    void plainPiTurn(kickoff.prompt).then(({ command, plan, questionPromoted, toolDomains }) =>
+      runPiTurn(command, kickoff.displayAs, plan, { questionPromoted, toolDomains }));
   };
 
   if (typeof window !== "undefined") {
@@ -3311,8 +3321,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       } catch {
         /* headless */
       }
-      const { command, plan, questionPromoted } = await plainPiTurn(text);
-      await runPiTurn(command, text, plan, { questionPromoted });
+      const { command, plan, questionPromoted, toolDomains } = await plainPiTurn(text);
+      await runPiTurn(command, text, plan, { questionPromoted, toolDomains });
     },
   });
   // 부팅 복원 — 이 프로젝트 범위의 최신 대화를 이어받는다. 전역 최신 하나만 집어 스코프를 대조하는

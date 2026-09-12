@@ -102,6 +102,46 @@ export function formatPiToolFailure(result: ToolResult, maxIssues = DEFAULT_MAX_
   });
 }
 
+/**
+ * find_tools 실행 결과에서 호출 가능해진 후보 이름을 수확한다 — Pi 에스컬레이션의 입력.
+ * 실패·data 없음이면 빈 배열. 반환된 이름은 아직 실행 경계를 거치지 않은 “후보”다.
+ */
+export function harvestFindToolsNames(result: ToolResult): string[] {
+  if (!result.ok) return [];
+  const matches = (result.data as { readonly matches?: unknown } | undefined)?.matches;
+  if (!Array.isArray(matches)) return [];
+  const names: string[] = [];
+  for (const match of matches) {
+    const name = match && typeof match === "object" ? (match as { name?: unknown }).name : undefined;
+    if (typeof name === "string" && name) names.push(name);
+  }
+  return names;
+}
+
+export interface ResolvePiToolOptions {
+  /** 읽기 전용 실행 — 쓰기 툴은 절대 셰이프가 되지 않는다. */
+  readonly readOnly?: boolean;
+  /** 실행의 하드 경계(팀 역할 제한 등). 설정되면 이 목록 안 이름만 만든다. */
+  readonly toolNames?: readonly string[];
+  readonly onCall?: (record: PiToolCallRecord) => void;
+  readonly maxDataChars?: number;
+}
+
+/**
+ * 이름 하나의 실행 셰이프 — 에스컬레이션(find_tools 수확)·폴백(미노출 호출 구제)이 공유하는 해석기.
+ * 레지스트리에 없거나 경계 밖(readOnly 중 쓰기·toolNames 목록 외·deprecated)이면 undefined —
+ * 호출자는 undefined 를 “이 실행에서는 못 쓰는 툴”로 흘려 모델의 자가수정 루프에 태운다.
+ */
+export function resolvePiToolShape(ctx: ToolContext, name: string, options: ResolvePiToolOptions = {}): PiToolShape | undefined {
+  if (options.toolNames && !options.toolNames.includes(name)) return undefined;
+  return createPiToolset(ctx, {
+    toolNames: [name],
+    readOnly: options.readOnly,
+    onCall: options.onCall,
+    ...(options.maxDataChars === undefined ? {} : { maxDataChars: options.maxDataChars }),
+  })[0];
+}
+
 export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOptions = {}): PiToolShape[] {
   const maxDataChars = options.maxDataChars ?? DEFAULT_MAX_DATA_CHARS;
   const maxIssues = options.maxIssues ?? DEFAULT_MAX_ISSUES;
