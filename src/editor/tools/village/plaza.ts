@@ -8,6 +8,7 @@ import type { Rng } from "@/util/rng";
 import { inMapBounds } from "../mapHelpers";
 import { protectedHouseCells } from "../houseProtection";
 import type { PlazaLayout } from "../villagePlan";
+import { marketAisleCells, placeMarketDisplays } from "./market";
 import {
   clamp,
   FENCE_END_LEFT,
@@ -15,9 +16,7 @@ import {
   HOUSE_MARGIN,
   PLAZA_HEIGHT,
   PLAZA_WIDTH,
-  pointInMap,
   type Plaza,
-  type Point,
   type Rect,
   type SettlementLayout,
 } from "./constants";
@@ -71,9 +70,12 @@ export function villagePlaza(
 }
 
 export function paintMarketDeck(map: GameMap, rect: Rect): void {
+  if (![rect.x,rect.y,rect.w,rect.h].every(Number.isSafeInteger) || rect.w<=0 || rect.h<=0) return;
   const protectedCells = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
+  const gateways = new Set(marketAisleCells(rect).map(({x,y})=>y*map.width+x));
   for (let y = rect.y; y < rect.y + rect.h; y += 1) {
     for (let x = rect.x; x < rect.x + rect.w; x += 1) {
+      if (!inMapBounds(map,x,y)) continue;
       let tile: number = WOOD_FLOOR_PASSABILITY.body;
       if (x === rect.x) tile = WOOD_FLOOR_PASSABILITY.edgeWest;
       else if (x === rect.x + rect.w - 1) tile = WOOD_FLOOR_PASSABILITY.edgeEast;
@@ -81,6 +83,8 @@ export function paintMarketDeck(map: GameMap, rect: Rect): void {
       else if (y === rect.y + rect.h - 1) tile = WOOD_FLOOR_PASSABILITY.edgeSouth;
       const index = y * map.width + x;
       if (protectedCells.has(index)) continue;
+      // A closed edge in all four directions traps shoppers inside the deck.
+      if (gateways.has(index)) tile=WOOD_FLOOR_PASSABILITY.body;
       map.lowerTiles[index] = tile;
       map.upperTiles[index] = TILE.EMPTY;
     }
@@ -151,26 +155,5 @@ export function paintPlazaFence(map: GameMap, rect: Rect): number {
 }
 
 export function placeMarketDeckProps(map: GameMap, area: Rect): number {
-  const protectedCells = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
-  const placements: readonly (Point & { readonly tile: number })[] = [
-    { x: area.x, y: area.y, tile: 234 },
-    { x: area.x + 1, y: area.y, tile: 235 },
-    { x: area.x + 2, y: area.y, tile: 236 },
-    { x: area.x + area.w - 2, y: area.y + 1, tile: 202 },
-    { x: area.x + area.w - 1, y: area.y + 1, tile: 203 },
-    { x: area.x + 1, y: area.y + area.h - 2, tile: 327 },
-    { x: area.x + 2, y: area.y + area.h - 2, tile: 328 },
-    { x: area.x + area.w - 2, y: area.y + area.h - 2, tile: 237 },
-    { x: area.x + Math.floor(area.w / 2), y: area.y + Math.floor(area.h / 2), tile: 320 },
-  ];
-  let placed = 0;
-  for (const placement of placements) {
-    if (!pointInMap(map, placement)) continue;
-    const index = placement.y * map.width + placement.x;
-    if (protectedCells.has(index)) continue;
-    if (map.upperTiles[index] !== TILE.EMPTY) continue;
-    map.upperTiles[index] = placement.tile;
-    placed += 1;
-  }
-  return placed;
+  return placeMarketDisplays(map,area).placed;
 }
