@@ -1,4 +1,4 @@
-import { HOUSE_SHELL_CREAM_FACE_TILES } from "@/project/defaults/interiorHouseWallTiles";
+import { HOUSE_SHELL_FACE_TILES } from "@/project/defaults/interiorHouseWallTiles";
 import { tilePassability } from "@/project/collision";
 import { assertNever, findOccurrenceChildId, own, requireOccurrenceAssociations, resolveOccurrencePortId } from "@/project/spatial/domain";
 import type { SpatialId } from "@/project/spatial/types";
@@ -50,7 +50,7 @@ export function compileSpaces(context: SpatialCompileContext): SpatialRasterProp
           if (job.wallOverlap) {
             if (space.environment !== "interior" || job.raster.height <= job.wallOverlap) throw new SpatialCompileError("clipped", job.child.id);
             for (const cell of object.placement.cells.filter(cell => cell.y < baseY)) {
-              if (cell.layer !== "upper" || !HOUSE_SHELL_CREAM_FACE_TILES.includes(map.lowerTiles[cell.y * map.width + cell.x]!)
+              if (cell.layer !== "upper" || !HOUSE_SHELL_FACE_TILES.includes(map.lowerTiles[cell.y * map.width + cell.x]!)
                 || !floor[baseY * map.width + cell.x]
                 || !object.placement.cells.some(base => base.x === cell.x && base.y >= baseY && floor[base.y * map.width + base.x])) throw new SpatialCompileError("blocked", `${job.child.id}: wall support`);
               upperWallCells.add(`${cell.x},${cell.y}`);

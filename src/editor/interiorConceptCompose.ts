@@ -20,7 +20,7 @@ import type { ConceptOverlayThing } from "@/editor/conceptBundleResolve";
 import { isCeilingTile, shapeInteriorCeiling } from "@/editor/interiorHouseWallGrammar";
 import type { InteriorObjectCell, InteriorObjectDef } from "@/editor/interiorObjectCatalog";
 import { TILE } from "@/project/defaults/constants";
-import { HOUSE_SHELL_TILE } from "@/project/defaults/interiorHouseWallTiles";
+import { HOUSE_SHELL_FACE_TILES } from "@/project/defaults/interiorHouseWallTiles";
 import type { ConceptChipId, ConceptPlaceRole } from "@/project/types/conceptBundle";
 import type { GameMap } from "@/project/types";
 import { deterministicRng, type Rng } from "@/util/rng";
@@ -31,16 +31,7 @@ export const OUTSIDE_VOID_TILE = 116;
 /** 상단이 벽면 아랫줄에 겹치는 키 큰 가구(정본: placeTallPairU / placeStovePair). */
 const TALL_FACE_OVERLAP_IDS: ReadonlySet<string> = new Set(["armor", "bust", "mirror", "display", "stove", "flue"]);
 
-const CREAM_FACE_TILES: ReadonlySet<number> = new Set([
-  HOUSE_SHELL_TILE.creamUpperL,
-  HOUSE_SHELL_TILE.creamUpperM,
-  HOUSE_SHELL_TILE.creamUpperR,
-  HOUSE_SHELL_TILE.creamLowerL,
-  HOUSE_SHELL_TILE.creamLowerM,
-  HOUSE_SHELL_TILE.creamLowerR,
-  HOUSE_SHELL_TILE.soloUpper,
-  HOUSE_SHELL_TILE.soloLower,
-]);
+const CREAM_FACE_TILES: ReadonlySet<number> = new Set(HOUSE_SHELL_FACE_TILES);
 
 export type ConceptRoomBox = {
   readonly x: number;

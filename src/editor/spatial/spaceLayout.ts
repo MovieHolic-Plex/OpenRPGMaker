@@ -27,7 +27,7 @@ export function spaceLayout(project: Project, space: SpaceDesign, identity: { re
       }
       const rooms = space.interiorLayout?.rooms.map(part => ({ id: part.id,
         x: room.x + part.x, y: room.y + part.y, w: part.width, h: part.height,
-        shape: "rect" as const, theme: space.id })) ?? [room];
+        shape: part.shape ?? "rect", floorTile: part.floor && isConceptFloorMaterial(part.floor) ? CONCEPT_FLOOR_TILES[part.floor] : undefined, theme: space.id })) ?? [room];
       const plan: InteriorRoomPlan = { ...identity, name: space.name, tilesetId: tileset.id,
         width: space.width + 4, height: space.height + 6, wings: [], rooms, door: entry,
         ...(space.interiorLayout ? { innerDoors: space.interiorLayout.doorways.map(p => ({ x: room.x + p.x, y: room.y + p.y })) } : {}),

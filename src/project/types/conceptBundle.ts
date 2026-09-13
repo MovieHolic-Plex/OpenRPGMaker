@@ -127,13 +127,16 @@ export function isConceptPlaceLevel(value: number): boolean {
 }
 
 /** 장소 바닥 재질. 생략 시 나무. 타일 번호는 시공기(conceptBundleResolve)가 칩셋에 맞춰 푼다. */
-export const CONCEPT_FLOOR_MATERIALS = ["wood", "stone", "plank", "mat"] as const;
+export const CONCEPT_FLOOR_MATERIALS = ["wood", "stone", "plank", "mat", "jade", "gravel", "dark-stone"] as const;
 export type ConceptFloorMaterial = (typeof CONCEPT_FLOOR_MATERIALS)[number];
 export const CONCEPT_FLOOR_MATERIAL_LABELS: Record<ConceptFloorMaterial, string> = {
   wood: "나무 바닥",
   stone: "돌 바닥",
   plank: "널 바닥",
   mat: "돗자리",
+  jade: "청록 돌바닥",
+  gravel: "청회색 자갈 바닥",
+  "dark-stone": "암녹색 돌바닥",
 };
 export function isConceptFloorMaterial(value: string): value is ConceptFloorMaterial {
   return (CONCEPT_FLOOR_MATERIALS as readonly string[]).includes(value);

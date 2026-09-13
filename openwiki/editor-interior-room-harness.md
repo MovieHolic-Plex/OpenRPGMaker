@@ -252,3 +252,12 @@ compatibility evidence, not whole-task17 provider/UI/publication acceptance.
 - 테마 파이프라인의 배치 저널 복원과 개념 경로의 멀티타일 보호·방 한정 수리를 함께 유지한다. 긴 탁자 검사는 `325 | 326* | 327` 반복 몸통을 허용하고 고립된 끝 조각은 계속 거절한다.
 - `test/conceptFacilityComposition.test.ts`는 18개 비여관 시설의 시작 칸 통행성도 검사한다. 창고의 입구 타일 176은 빈 칸이 아니라 통행 가능한 표식이므로 실제 collision/reachability 계약으로 접근을 확인한다. 기존 UI의 방 id 편집 계약은 `test/fixtures/legacyConceptInn.ts`를 명시적으로 시드해 계속 검사한다.
 - 안전한 로컬 플레이어 fixture: `node_modules/.bin/vite-node scripts/qa-pr618-fixtures.mts`. 원격 읽기·쓰기 없이 `output/evidence/pr618-fixtures/inn.json`, `hearth-unlit.json`, `hearth-lit.json`과 이동 단계 manifest를 만든다. 여관은 직렬화 후 1F→2F→3F→2F→1F walkthrough까지 검사한다. 이는 엔진 회귀 fixture이며 새 원격 콘텐츠 저작이 아니다. 실제 브라우저·빌드 검증은 별도다.
+
+## 비직사각 실내 정본 재설계 (2026-09-13)
+
+- `interiorRoomFootprint.ts` owns `rect/l/alcove/l-right/bay/notch/cross`. New variants expose mirrored elbows, a south bay, an inward side-wall pier, and a cross-shaped footprint. Small existing rooms keep the legacy rectangular fallback. Spatial guards, AI tool schemas, and inspector controls accept the same values.
+- `SpatialInteriorLayout.rooms[]` optionally stores `shape` and `floor` per room; omitted values retain rectangular rooms and the space material. The existing wall grammar compiles the floor union, shared partitions and explicit doorways together. Shape `rect` on an envelope does not imply that its rooms fill that envelope.
+- Floor materials now include `jade` (13), `gravel` (42), and `dark-stone` (43), alongside wood/plank/stone/mat. These are material selections, not new pixel art or runtime passage overrides.
+- `HOUSE_SHELL_FACE_TILES` includes cream, stone-brick and gold-brick face cells. Both fixed wall overlap and automatic wall furniture use it; the former cream-only check rejected cabinets after wall retint.
+- `scripts/lib/diverseInteriorCatalog.mts` rebuilds the existing interior library with preserved IDs, restores program-specific furniture assemblies, and leaves user tile metadata intact. Publish uses `edit_spatial_occurrence(operation:refresh)` for the three saved house roots and validates Supabase reload; rendering evidence belongs in `output/evidence/interior-redesign`.
+- Contract tests: `test/spatialInteriorLayout.test.ts` checks connected irregular floors, per-room materials and save/load, alongside existing spatial schema and object-placement contracts.

@@ -46,11 +46,11 @@ export type SpatialFloorArea =
   | { readonly kind: "polygon"; readonly material: string; readonly points: readonly SpatialPoint[] };
 /** Floor-local room boxes; shared edges reserve partition cells, doorways reopen them. */
 export type SpatialInteriorLayout = {
-  readonly rooms: readonly (SpatialRect & { readonly id: SpatialId; readonly name: string })[];
+  readonly rooms: readonly (SpatialRect & { readonly id: SpatialId; readonly name: string; readonly shape?: import("../interiorRoomFootprint").InteriorRoomShape; readonly floor?: string })[];
   readonly doorways: readonly SpatialPoint[];
 };
 export type SpaceDesign = SpatialDesignBase & SpatialComposable & {
-  readonly tilesetId: string; readonly shape: "rect" | "l" | "alcove";
+  readonly tilesetId: string; readonly shape: "rect" | "l" | "alcove" | "l-right" | "bay" | "notch" | "cross";
   readonly width: number; readonly height: number; readonly floor: string; readonly wall: string;
   readonly objectSlots: readonly SpatialObjectSlot[]; readonly ports: readonly SpatialPort[];
 } & (

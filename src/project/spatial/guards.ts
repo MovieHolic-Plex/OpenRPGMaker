@@ -70,8 +70,8 @@ const composable = (r: Record<string, unknown>, p: string): S.SpatialComposable 
 const interiorLayout: Parser<S.SpatialInteriorLayout> = (v, p) => {
   const r = record(v, p, "rooms doorways");
   const rooms = list(r.rooms, `${p}.rooms`, (v, p) => {
-    const r = record(v, p, "id name x y width height");
-    return { ...rect({ x: r.x, y: r.y, width: r.width, height: r.height }, p), id: id(r.id, `${p}.id`), name: text(r.name, `${p}.name`) };
+    const r = record(v, p, "id name x y width height shape floor");
+    return { ...rect({ x: r.x, y: r.y, width: r.width, height: r.height }, p), id: id(r.id, `${p}.id`), name: text(r.name, `${p}.name`), ...(r.shape === undefined ? {} : { shape: choice(["rect", "l", "alcove", "l-right", "bay", "notch", "cross"] as const)(r.shape, `${p}.shape`) }), ...(r.floor === undefined ? {} : { floor: text(r.floor, `${p}.floor`) }) };
   });
   assert(rooms.length >= 2, `${p}.rooms: at least two rooms required`);
   assert(new Set(rooms.map(room => room.id)).size === rooms.length, `${p}.rooms: duplicate id`);
@@ -80,7 +80,7 @@ const interiorLayout: Parser<S.SpatialInteriorLayout> = (v, p) => {
 const space: Parser<S.SpaceDesign> = (v, p) => {
   const r = record(v, p);
   const environment = choice(["interior", "outdoor"] as const)(r.environment, `${p}.environment`);
-  const common = { ...base(r, p), ...composable(r, p), tilesetId: id(r.tilesetId, `${p}.tilesetId`), shape: choice(["rect", "l", "alcove"] as const)(r.shape, `${p}.shape`), width: size(r.width, `${p}.width`), height: size(r.height, `${p}.height`), floor: text(r.floor, `${p}.floor`), wall: text(r.wall, `${p}.wall`), objectSlots: list(r.objectSlots, `${p}.objectSlots`, objectSlot), ports: ports(r.ports, `${p}.ports`) };
+  const common = { ...base(r, p), ...composable(r, p), tilesetId: id(r.tilesetId, `${p}.tilesetId`), shape: choice(["rect", "l", "alcove", "l-right", "bay", "notch", "cross"] as const)(r.shape, `${p}.shape`), width: size(r.width, `${p}.width`), height: size(r.height, `${p}.height`), floor: text(r.floor, `${p}.floor`), wall: text(r.wall, `${p}.wall`), objectSlots: list(r.objectSlots, `${p}.objectSlots`, objectSlot), ports: ports(r.ports, `${p}.ports`) };
   const fields = `${baseFields} environment tilesetId shape width height floor wall objectSlots ports composition`;
   switch (environment) {
     case "interior": {

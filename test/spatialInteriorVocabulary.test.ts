@@ -129,3 +129,12 @@ describe("frozen interior placement vocabulary", () => {
     expect(raster.cells).toEqual([{ x: 0, y: 0, layer: "lower", tile: 243 }]);
   });
 });
+
+it.each(['stone-brick','gold-brick'] as const)('keeps automatic wall props on %s faces after retint',wall=>{
+ const project=reinstantiateSpace(room('religious',['wall','event']),s=>({...s,wall}));
+ const {map}=compiled(deserialize(serialize(project)));
+ const cell=map.upperTiles.findIndex(t=>t===59);
+ expect(cell).toBeGreaterThanOrEqual(0);
+ expect(wall==='stone-brick'?[134,135,136]:[314,315,316]).toContain(map.lowerTiles[cell]);
+ expect(map.events[0]!.y).toBe(4);
+});

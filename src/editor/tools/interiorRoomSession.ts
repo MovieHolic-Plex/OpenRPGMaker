@@ -40,7 +40,7 @@ const INTERIOR_ROOM_RECT_SCHEMA: JsonSchema = {
     w: { type: "integer" },
     h: { type: "integer" },
     theme: { type: "string" },
-    shape: { type: "string", enum: ["rect", "l", "alcove"] },
+    shape: { type: "string", enum: ["rect", "l", "alcove", "l-right", "bay", "notch", "cross"] },
     floorTile: { type: "integer" },
   },
   required: ["x", "y", "w", "h"],
@@ -220,7 +220,7 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
         innerDoors: { type: "array", items: COORD_SCHEMA, description: "파티션 개구부 [{x,y}]" },
         door: COORD_SCHEMA,
         theme: { type: "string" },
-    shape: { type: "string", enum: ["rect", "l", "alcove"] },
+    shape: { type: "string", enum: ["rect", "l", "alcove", "l-right", "bay", "notch", "cross"] },
         tilesetId: { type: "string" },
         themeModifiers: {
           type: "array",

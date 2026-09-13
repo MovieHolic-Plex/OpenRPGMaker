@@ -82,7 +82,17 @@ for (const [root, floors] of [
   };
   travel("enter", enter.from, enter.to);
   for (let n = 1; n <= floors; n++) {
-    travel(`bedroom-${n}`, { mapId: position.mapId, x: 8, y: 6 });
+    const map = project.maps[position.mapId]!;
+    for (const room of map.roomHarnessPlan!.plan.rooms ?? []) {
+      let destination: {mapId:string;x:number;y:number} | undefined;
+      for (let y=room.y; y<room.y+room.h && !destination; y++)
+        for (let x=room.x; x<room.x+room.w && !destination; x++) {
+          if (project.mapConnections!.some(c=>c.from.mapId===map.id&&c.from.x===x&&c.from.y===y)) continue;
+          try { route(map.id,position,{x,y}); destination={mapId:map.id,x,y}; } catch {}
+        }
+      assert.ok(destination, `No accessible floor in ${map.id}/${room.id}`);
+      travel(`room-${n}-${room.id}`, destination);
+    }
     if (n < floors) {
       const next = connections.find(
         (c) =>
