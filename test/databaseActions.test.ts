@@ -316,17 +316,20 @@ describe("Database actions", () => {
     const project = store.getCurrent();
     const variables = project.variables;
     expect(project.switches).toHaveLength(1001);
-    expect(project.switches[1000]).toEqual({ id: "sw_1001", name: "Late Switch 1001" });
+    // 아이템 기동석 스위치가 이미 자리를 채우므로 "1001번째 슬롯" 의 id 는 sw_1001 이 아니다 —
+    // 이 테스트가 보는 것은 범위 저작이 옛 1000 슬롯 경계를 넘어갔는가이다.
+    const renamed = project.switches.find((entry) => entry.name === "Late Switch 1001");
+    if (!renamed) throw new Error("expected a slot renamed to Late Switch 1001");
+    expect(project.session.switches[renamed.id]).toBe(false);
     expect(variables).toHaveLength(1002);
     expect(variables[1000]).toEqual({ id: "var_1001", name: "Late Game 1001" });
     expect(variables[1001]).toEqual({ id: "var_1002", name: "Late Game 1002" });
-    expect(project.session.switches.sw_1001).toBe(false);
     expect(project.session.variables.var_1002).toBe(0);
 
     const restored = deserialize(serialize(project));
-    expect(restored.switches[1000]).toEqual({ id: "sw_1001", name: "Late Switch 1001" });
+    const renamedRestored = restored.switches.find((entry) => entry.name === "Late Switch 1001");
+    expect(renamedRestored?.id).toBe(renamed.id);
     expect(restored.variables[1001]).toEqual({ id: "var_1002", name: "Late Game 1002" });
-    expect(restored.session.switches.sw_1001).toBe(false);
     expect(restored.session.variables.var_1002).toBe(0);
   });
 
@@ -340,7 +343,7 @@ describe("Database actions", () => {
     bulkRenameSwitches(500, 5, "QARANGE");
 
     const project = store.getCurrent();
-    expect(project.switches.slice(499, 504).map((entry) => entry.name)).toEqual([
+    expect(project.switches.filter((entry) => entry.name.startsWith("QARANGE ")).map((entry) => entry.name)).toEqual([
       "QARANGE 0500",
       "QARANGE 0501",
       "QARANGE 0502",
@@ -351,8 +354,9 @@ describe("Database actions", () => {
     const undone = undoMapEdit();
     expect(undone).toBe(true);
     expect(getMapEditHistoryState().canUndo).toBe(false);
-    expect(store.getCurrent().switches).toHaveLength(20);
-    expect(store.getCurrent().switches.every((entry) => entry.name === "")).toBe(true);
+    const restoredSlots = store.getCurrent().switches.filter((entry) => /^sw_\d{4}$/u.test(entry.id));
+    expect(restoredSlots).toHaveLength(20);
+    expect(restoredSlots.every((entry) => entry.name === "")).toBe(true);
   });
 
   it("rejects malformed v3 database references with an actionable message", () => {

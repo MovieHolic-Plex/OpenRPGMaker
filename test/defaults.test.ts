@@ -163,7 +163,8 @@ describe("createBlankProject", () => {
   it("starts with one small picker block instead of 1000 preallocated slots", () => {
     const p = createBlankProject();
 
-    expect(p.switches).toHaveLength(20);
+    // 20 picker slots + 아이템이 켜는 기동석 스위치 11개(#777 `ensureItemSwitchDefs`).
+    expect(p.switches).toHaveLength(31);
     expect(p.variables).toHaveLength(20);
     expect(p.switches[0]).toEqual({ id: "sw_0001", name: "" });
     expect(p.variables[0]).toEqual({ id: "var_0001", name: "" });
@@ -185,9 +186,14 @@ describe("createBlankProject", () => {
     const changed = ensureSwitchVariableSlots(p);
 
     expect(changed).toBe(true);
-    expect(p.switches).toEqual([{ id: "sw_legacy_gate", name: "" }]);
+    // 아이템이 있는 한 기동석 스위치도 함께 선언된다 — 여기서 보는 것은 "인공적인 빈
+    // 슬롯(sw_NNNN)이 끼어들지 않는가" 이므로 그 축만 본다.
+    expect(p.switches.filter((entry) => entry.id === "sw_legacy_gate")).toHaveLength(1);
+    expect(p.switches.filter((entry) => /^sw_\d{4}$/u.test(entry.id))).toEqual([]);
     expect(p.variables).toEqual([{ id: "var_legacy_score", name: "" }]);
-    expect(p.session.switches).toEqual({ sw_legacy_gate: true });
+    expect(p.session.switches.sw_legacy_gate).toBe(true);
+    // 아이템 기동석 세션 값은 함께 실린다 — 인공적인 빈 숫자 슬롯만 없으면 된다.
+    expect(Object.keys(p.session.switches).filter((id) => /^sw_\d{4}$/u.test(id))).toEqual([]);
     expect(p.session.variables).toEqual({ var_legacy_score: 5 });
   });
 

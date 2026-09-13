@@ -38,7 +38,11 @@ describe("DB 모달 라이트 팔레트 스코프 (W1)", () => {
 
   it("light-theme.css 의 모든 규칙 선택자가 .database-modal-backdrop 하위에 스코프된다", () => {
     const css = stripCssComments(read("src/styles/database/light-theme.css"));
-    const selectors = css.match(/[^{}]+(?=\s*\{)/gu) ?? [];
+    // `@media`/`@supports` 프렐류드는 선택자가 아니다 — 내부 규칙은 따로 잡힌다.
+    // #803 이 light-theme.css 에 첫 미디어 쿼리를 넣으면서 이 스캐너가 프렐류드를 선택자로 읽었다.
+    const selectors = (css.match(/[^{}]+(?=\s*\{)/gu) ?? []).filter(
+      (candidate) => !candidate.trim().startsWith("@"),
+    );
     expect(selectors.length, "light-theme.css 에 규칙이 하나도 없다").toBeGreaterThan(0);
     for (const selector of selectors) {
       const trimmed = selector.trim();
