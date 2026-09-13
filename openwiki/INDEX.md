@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **65쪽 / 2521KB / 약 706,900 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **65쪽 / 2525KB / 약 708,207 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -17,10 +17,10 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 381KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 1890 | ~107,781 |
 | `openwiki/editor-ai-tools.md` | 187KB | 82KB ⚠상한 초과 — 절을 더 쪼개라 | 1439 | ~52,343 |
-| `openwiki/editor-database.md` | 278KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 1519 | ~80,305 |
+| `openwiki/editor-database.md` | 277KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 1517 | ~80,015 |
 | `openwiki/editor-event-authoring.md` | 135KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 740 | ~38,710 |
 | `openwiki/editor-event-commands.md` | 57KB | 32KB | 202 | ~15,410 |
-| `openwiki/editor-pre-edit-routing.md` | 106KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 590 | ~30,385 |
+| `openwiki/editor-pre-edit-routing.md` | 107KB | 59KB ⚠상한 초과 — 절을 더 쪼개라 | 591 | ~30,554 |
 | `openwiki/editor-workflows-misc.md` | 65KB | 29KB | 456 | ~17,604 |
 | `openwiki/runtime-battle.md` | 134KB | 31KB | 540 | ~38,257 |
 | `openwiki/runtime-project-schema.md` | 136KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 887 | ~36,868 |
@@ -40,7 +40,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 109, 122, 123, 125, 128, 129 |
 | `openwiki/editor-observability.md` | 1 | 310 |
-| `openwiki/editor-pre-edit-routing.md` | 5 | 411, 420, 427, 429, 452 |
+| `openwiki/editor-pre-edit-routing.md` | 5 | 412, 421, 428, 430, 453 |
 | `openwiki/state-system.md` | 2 | 3, 84 |
 
 ## 없는 파일을 가리키는 참조
@@ -64,7 +64,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-workflows-misc.md` | 7 | `.qa.json`, `default.json`, `game.html`, `release.json`, `runtime.json`, `src/editor/authoringTestGate.ts`, `src/styles/editor/event-editor-help.css` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/horror-authoring.md` | 1 | `motion-sheet.png` |
-| `openwiki/large-village-generation.md` | 2 | `HANDOFF.json`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
+| `openwiki/large-village-generation.md` | 3 | `-standalone.html`, `HANDOFF.json`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
 | `openwiki/night-monster.md` | 1 | `verify-shots/runtime-qa/night-monster/SUMMARY.md` |
 | `openwiki/runtime-action-combat.md` | 1 | `export-player/player.html` |
 | `openwiki/runtime-battle.md` | 7 | `battle.css`, `hero-03-battle-idle.png`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `raw.png`, `reference.png`, `src/styles/runtime/battle.css`, `starter/hires/hero-0N-battle.png` |
@@ -108,20 +108,21 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L177` 턴 예산이 결과를 지배한다
 - `L191` 비용 주의
 
-### `openwiki/agent-worktrees.md` — 14KB · 201줄 · ~4,216 토큰
+### `openwiki/agent-worktrees.md` — 16KB · 234줄 · ~4,958 토큰
 
 - `L6` 적용 범위
 - `L16` 명령
-- `L26` `git stash` 를 쓰지 마라 (실측 2026-09-10, 남의 작업을 꺼내 버렸다)
-- `L53` 회수 규칙 (커밋이 유일한 안전망)
-  - `L65` 에이전트에게 줄 지시
-  - `L102` e2e 는 `DEV_SERVER_PORT` 없이 돌리면 **남의 코드를 검증한다** (실측 2026-08-29)
-- `L119` 검증 게이트
-  - `L121` 통합 작업의 검증 대상 고정 (2026-09-06)
-  - `L140` 왜 기준선 방식인가
-  - `L151` 왜 별도 스크립트인가
-- `L160` 감독 절차
-- `L171` 알려진 함정
+- `L28` `git stash` 를 쓰지 마라 (실측 2026-09-10, 남의 작업을 꺼내 버렸다)
+- `L55` 회수 규칙 (커밋이 유일한 안전망)
+  - `L67` 에이전트에게 줄 지시
+  - `L104` 동시 생성 (에이전트 수십 개)
+  - `L124` e2e 는 `DEV_SERVER_PORT` 없이 돌리면 **남의 코드를 검증한다** (실측 2026-08-29)
+- `L141` 검증 게이트
+  - `L143` 통합 작업의 검증 대상 고정 (2026-09-06)
+  - `L162` 왜 기준선 방식인가
+  - `L173` 왜 별도 스크립트인가
+- `L182` 감독 절차
+- `L193` 알려진 함정
 
 ### `openwiki/ai-context-compaction.md` — 16KB · 190줄 · ~4,783 토큰
 
@@ -334,7 +335,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1402` 실제 이미지 입력 보존 (2026-09-07)
 - `L1416` Physical tile passage exposure (2026-09-08)
 
-### `openwiki/editor-database.md` — 278KB · 1519줄 · ~80,305 토큰 · 통째읽기 잘림 · 깨진 줄 7
+### `openwiki/editor-database.md` — 277KB · 1517줄 · ~80,015 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
 - `L1` 복합 공간 편집기 (2026-09-13)
 - `L25` Placed-place child proposal adapter (2026-09-08)
@@ -399,20 +400,20 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1226` '마을' 탭 — 마을 하네스 값을 사람이 저작한다 (2026-08-30)
   - `L1250` 붓을 고르면 화면이 흔들렸다 — 재부모가 스크롤·포커스를 지운다 (2026-08-30 실측)
 - `L1293` 날개마다 층수를 정한다 — 계단식 2층 (2026-09-11)
-  - `L1306` 지붕 가장자리 판정은 "다른 지붕면인가"다 (2026-09-11 실측 결함)
-- `L1314` '마을' 탭 — 숫자칸을 그림으로 바꾼다 (2026-08-31)
-  - `L1330` AI로 몬스터·아이템 생성 (2026-08-30)
-  - `L1351` AI 어시스턴트 바 — 진행·결과가 바 안에 보인다 (2026-09-03)
-  - `L1385` AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)
-- `L1401` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
-- `L1478` 직업 승급 트리 · 스킬 트리 (2026-09-05)
-- `L1484` 미회수 편집 후속 통합 (2026-09-05)
-- `L1488` 마을 설계서 (2026-09-05)
-- `L1493` 구조물 증분 메타 정정 (2026-09-05)
-- `L1501` 개념 회수 UI 직접 렌더 QA (2026-09-05)
-- `L1505` Battle-animation preview-first graphic controls (Phase 2, 2026-09-05)
-- `L1512` 검토한 실내 기본값의 원격 반영 (2026-09-05)
-- `L1516` 특정 꾸러미의 명시적 교체 (2026-09-06)
+  - `L1304` 지붕 가장자리 판정은 "다른 지붕면인가"다 (2026-09-11 실측 결함)
+- `L1312` '마을' 탭 — 숫자칸을 그림으로 바꾼다 (2026-08-31)
+  - `L1328` AI로 몬스터·아이템 생성 (2026-08-30)
+  - `L1349` AI 어시스턴트 바 — 진행·결과가 바 안에 보인다 (2026-09-03)
+  - `L1383` AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)
+- `L1399` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
+- `L1476` 직업 승급 트리 · 스킬 트리 (2026-09-05)
+- `L1482` 미회수 편집 후속 통합 (2026-09-05)
+- `L1486` 마을 설계서 (2026-09-05)
+- `L1491` 구조물 증분 메타 정정 (2026-09-05)
+- `L1499` 개념 회수 UI 직접 렌더 QA (2026-09-05)
+- `L1503` Battle-animation preview-first graphic controls (Phase 2, 2026-09-05)
+- `L1510` 검토한 실내 기본값의 원격 반영 (2026-09-05)
+- `L1514` 특정 꾸러미의 명시적 교체 (2026-09-06)
 
 ### `openwiki/editor-event-authoring.md` — 135KB · 740줄 · ~38,710 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
@@ -527,7 +528,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L455` AI 툴·액션 이유 (2026-09-02)
 - `L465` 검증
 
-### `openwiki/editor-pre-edit-routing.md` — 106KB · 590줄 · ~30,385 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 107KB · 591줄 · ~30,554 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L7` Exterior door backing
 - `L17` Tile brush reliability (2026-09-06)
@@ -544,13 +545,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L251` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
   - `L253` 로케이션 앵커 — 좌표 대신 이름으로 가리키기 (2026-09-12)
   - `L306` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
-  - `L365` Automatic usage guides disabled (2026-09-06)
-  - `L375` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
-- `L463` Agent cautions
-- `L473` 헤더 용어 정본과 중복 감사 (2026-08-30)
-  - `L504` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
-  - `L536` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
-  - `L565` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
+  - `L366` Automatic usage guides disabled (2026-09-06)
+  - `L376` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
+- `L464` Agent cautions
+- `L474` 헤더 용어 정본과 중복 감사 (2026-08-30)
+  - `L505` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
+  - `L537` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
+  - `L566` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
 
 ### `openwiki/editor-storage-chest.md` — 1KB · 15줄 · ~333 토큰
 
@@ -632,7 +633,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L144` 안티-게이밍 규칙
 - `L154` 이 페이지를 갱신해야 하는 변경
 
-### `openwiki/large-village-generation.md` — 26KB · 508줄 · ~7,651 토큰
+### `openwiki/large-village-generation.md` — 29KB · 538줄 · ~8,337 토큰
 
 - `L9` 내장 AI 시공 순서 (2026-09-12, 아래 과거 하네스 순서보다 우선)
 - `L35` 저장된 건물 오브젝트로 마을 만들기 (2026-09-12)
@@ -640,29 +641,30 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L100` 과거 대형 하네스 순서
 - `L115` AI tree placement and completed houses (2026-09-05)
 - `L150` Phase 2 construction boundary (2026-09-06)
-- `L180` 관련 파일
-- `L199` 전체 그림
-- `L217` 단계별 설명
-  - `L219` 0단계 — 자리 잡기 (`planLargeVillageBboxes`)
-  - `L249` 1단계 — 맵 생성
-  - `L257` 2단계 — 물
-  - `L268` 3단계 — 집 (다양화)
-  - `L283` 4단계 — 구불구불 길
-  - `L299` 5단계 — 광장 + 시장 하네스
-  - `L310` 6단계 — 울타리 + 마당 (집과 별 개념)
-  - `L333` 7단계 — 나무·마을 소품
-  - `L345` 8단계 — NPC
-  - `L355` 9단계 — QA (품질 게이트)
-  - `L378` 10단계 — 저장
-- `L389` 데이터 개념 3개만 기억하기
-- `L408` 예전에 자주 깨지던 이유 (로직 이슈)
-- `L421` 로그 읽는 법
-- `L441` 다시 만들 때
-- `L457` 고칠 때 어디를 만지나
-- `L471` 아직 약한 부분 (솔직히)
-- `L488` 관련 위키
-- `L496` author_village 스코프 계약 (2026-09-04 적대 리뷰 반영)
-- `L505` 대로 병합 검증 (2026-09-05)
+- `L180` 참조 그림 같은 마을을 한 번에 (2026-09-12)
+- `L210` 관련 파일
+- `L229` 전체 그림
+- `L247` 단계별 설명
+  - `L249` 0단계 — 자리 잡기 (`planLargeVillageBboxes`)
+  - `L279` 1단계 — 맵 생성
+  - `L287` 2단계 — 물
+  - `L298` 3단계 — 집 (다양화)
+  - `L313` 4단계 — 구불구불 길
+  - `L329` 5단계 — 광장 + 시장 하네스
+  - `L340` 6단계 — 울타리 + 마당 (집과 별 개념)
+  - `L363` 7단계 — 나무·마을 소품
+  - `L375` 8단계 — NPC
+  - `L385` 9단계 — QA (품질 게이트)
+  - `L408` 10단계 — 저장
+- `L419` 데이터 개념 3개만 기억하기
+- `L438` 예전에 자주 깨지던 이유 (로직 이슈)
+- `L451` 로그 읽는 법
+- `L471` 다시 만들 때
+- `L487` 고칠 때 어디를 만지나
+- `L501` 아직 약한 부분 (솔직히)
+- `L518` 관련 위키
+- `L526` author_village 스코프 계약 (2026-09-04 적대 리뷰 반영)
+- `L535` 대로 병합 검증 (2026-09-05)
 
 ### `openwiki/location-layer-affordance-audit.md` — 13KB · 130줄 · ~3,930 토큰
 
