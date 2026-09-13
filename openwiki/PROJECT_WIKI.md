@@ -33,6 +33,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - Editor genre-pack authoring contract: `openwiki/editor-genre-packs.md`
    - Interior room harness: `openwiki/editor-interior-room-harness.md`
    - Editor index: `openwiki/editor-workflows.md` (slim TOC linking to the above)
+   - 연결 던전 생성 (방 그래프·복합 절벽·맥락 소품): `openwiki/connected-dungeon-generation.md`
    - Castle / keep map modules (`map_castle_keep` gold): `openwiki/castle-map.md`
    - Large river/market village generation (bbox → houses → roads): `openwiki/large-village-generation.md`
    - Terrain autotiles, template-block anchors, water/animation wiring: `openwiki/autotiles.md`

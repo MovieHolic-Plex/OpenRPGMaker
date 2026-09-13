@@ -9,6 +9,8 @@
  *
  * 레이어: ceiling(천장 프레임) → wall(천장 하단 직선 벽) → floor(바닥 오토타일) → hazard(용암/구덩이/급류 + 판자 다리).
  */
+import { applyConnectedDungeonLayer, evaluateConnectedDungeon } from "./dungeonGeneration/connected";
+import type { DungeonDesign } from "./dungeonGeneration/topology";
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
 import { createDungeonTerrainAutotileGroups, DUNGEON_TERRAIN_AUTOTILE_PREFIX } from "@/project/defaults/dungeonTerrainAutotiles";
@@ -27,7 +29,9 @@ export const DUNGEON_ROOM_TILESET_ID = "easyrpg_chipset_dungeon";
 export type DungeonRoomTheme = "lava" | "stone" | "ice";
 export const DUNGEON_ROOM_THEMES: readonly DungeonRoomTheme[] = ["lava", "stone", "ice"];
 
-export type DungeonRoomPlan = {
+export type DungeonRoomPlan = DungeonDesign & {
+  /** New tool calls use connected layouts; omitted in historical plans means the original room. */
+  readonly layout?: "connected" | "single-room";
   readonly mapId: string;
   readonly name: string;
   readonly width: number;
@@ -62,6 +66,10 @@ const PLANK_H = { left: 252, mid: 253, right: 254 } as const;
 export function ensureDungeonRoomHarness(project: Project): boolean {
   const ts = project.tilesets[DUNGEON_ROOM_TILESET_ID];
   if (!ts) return false;
+  // A seeded chipset may contain subsequently authored collision/priority rules.
+  // Running the pack again is not an innocuous existence check: it rewrites them.
+  const expected = createDungeonTerrainAutotileGroups();
+  if (expected.every(group => ts.autotileGroups?.some(existing => existing.id === group.id))) return false;
   return applyEasyRpgThemeMetadataPacks(ts);
 }
 
@@ -99,7 +107,8 @@ function hazardRect(W: number, H: number): { hx0: number; hx1: number; hy0: numb
 }
 
 /** 던전 방 레이어 1개를 시공한다(맵 사본 반환). */
-export function applyDungeonRoomLayer(map: GameMap, plan: DungeonRoomPlan, layer: string): RoomLayerResult {
+export function applyDungeonRoomLayer(map: GameMap, plan: DungeonRoomPlan, layer: string, project?: Project): RoomLayerResult {
+  if (plan.layout === "connected") return applyConnectedDungeonLayer(map, plan, layer, project);
   const W = plan.width, H = plan.height;
   const spec = THEME[plan.theme];
   const next = cloneDungeonMap(map);
@@ -175,12 +184,12 @@ export function applyDungeonRoomLayer(map: GameMap, plan: DungeonRoomPlan, layer
 }
 
 /** 던전 방을 원샷 절차 생성한다(모든 레이어 순서 시공). */
-export function runDungeonRoomPipeline(plan: DungeonRoomPlan): { map: GameMap; log: string[]; warnings: string[]; ok: boolean } {
+export function runDungeonRoomPipeline(plan: DungeonRoomPlan, project?: Project): { map: GameMap; log: string[]; warnings: string[]; ok: boolean } {
   let map = createEmptyDungeonRoomMap(plan);
   const log: string[] = [];
   const warnings: string[] = [];
   for (const layer of DUNGEON_ROOM_BUILD_ORDER) {
-    const r = applyDungeonRoomLayer(map, plan, layer);
+    const r = applyDungeonRoomLayer(map, plan, layer, project);
     map = r.map;
     log.push(`[${layer}] ${r.summary}`);
     warnings.push(...r.warnings);
@@ -189,7 +198,8 @@ export function runDungeonRoomPipeline(plan: DungeonRoomPlan): { map: GameMap; l
 }
 
 /** 완성 던전 방을 평가한다(실내 리포트 계약 정렬: ok/score/issues). */
-export function evaluateDungeonRoom(map: GameMap, plan: DungeonRoomPlan, attempt = 1): RoomEvalReport {
+export function evaluateDungeonRoom(map: GameMap, plan: DungeonRoomPlan, attempt = 1, project?: Project): RoomEvalReport {
+  if (plan.layout === "connected") return evaluateConnectedDungeon(map, plan, project);
   const W = map.width;
   const spec = THEME[plan.theme];
   const at = (x: number, y: number) => map.lowerTiles[y * W + x]!;
