@@ -76,6 +76,13 @@ function activeSkin(): BattleSkin {
   return getBattleSkin(resolveSkinId(store.getCurrent().system.battleUiStyle));
 }
 
+/** 정면 스킨(드퀘·마더·rm2000)은 아군 필드 노드를 만들지 않는다 — 그때 파티 상태 행이
+ *  아군 상태 배지의 유일한 살림터다. 필드 노드가 있는 스킨에도 행에 달면 같은 testid 가
+ *  두 번 생기므로 이 조건으로만 단다. */
+function partyStatusRowsCarryIcons(): boolean {
+  return BATTLER_PLACEMENTS[activeSkin().id].partyFacing === "hidden";
+}
+
 /** 스킨 전용 적 스프라이트(bskin-enemy-<id>)를 우선 사용. 없으면 null. */
 function skinEnemySpriteUrl(): string | null {
   return resolveAssetResourceUrl(`bskin-enemy-${activeSkin().id}`, { project: store.getCurrent() });
@@ -253,6 +260,11 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot, pr
     if (atbBar) atbBar.style.setProperty("--battle-atb", `${gaugePct}%`);
     const atbValueNode = row.querySelector<HTMLElement>(".battle-atb-value");
     if (atbValueNode) atbValueNode.textContent = `${gaugePct}%`;
+    if (partyStatusRowsCarryIcons()) {
+      // 이름 셀 안에 넣으면 rm2000 계열의 overflow:hidden + 고정 폭 열에 잘린다(실측:
+      // 배지가 2px 조각으로만 보임) — 행의 직계 자식으로 달고 배치는 스킨 CSS 가 한다.
+      syncStatusIcons(row, { ...actor, defeated: presented.defeated });
+    }
     let strictOrder = row.querySelector<HTMLElement>(".battle-strict-order");
     if (snapshot.battleFlow === "strict") {
       if (!strictOrder) {
@@ -986,6 +998,10 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
     gauge.append(atbLabel(), atbValue(actor.gauge), atbBar(actor.gauge));
     row.append(gauge);
   }
+  // 정면 스킨(필드 노드 없음)은 상태 배지를 행에 직접 단다 — 이름 셀 안은 rm2000 의
+  // overflow:hidden 열에 잘린다(실측: 배지가 2px 조각으로만 보임). 배치는 스킨 CSS 책임.
+  // DOM 맨 끝에 둬서 겹침 시 같은 z-index 의 다른 셀 위에 그려지게 한다.
+  if (partyStatusRowsCarryIcons()) row.append(statusIconCluster(actor));
   return row;
 }
 

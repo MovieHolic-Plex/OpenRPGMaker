@@ -26,6 +26,7 @@ import {
   validateSystemResources,
 } from "./resourceReferenceValidation";
 import { DEFAULT_ENEMY_FACTION_ID, PLAYER_FACTION_ID } from "../factions";
+import { ensureItemSwitchDefs } from "../itemSwitchDefs";
 import { monsterEvolutionCycleSpeciesIds } from "../monsterCollection";
 import { inBounds, isPassable } from "../collision";
 import { footprintCells, isSpatialFootprint, isSpatialOrientation } from "../spatialPlacements";
@@ -184,7 +185,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   validateActorRecords(project, classIds, animationIds, context, issues);
   validateClassRecords(project, classIds, actorIds, skillIds, equipmentIds, animationIds, issues);
   validateSkillRecords(project, skillIds, animationIds, context, issues);
-  validateItemRecords(project, actorIds, classIds, skillIds, animationIds, resourceIds, issues);
+  validateItemRecords(project, actorIds, classIds, skillIds, animationIds, resourceIds, switchIds, issues);
   validateEquipmentRecords(project, actorIds, classIds, skillIds, resourceIds, issues);
   validateEnemyRecords(project, itemIds, skillIds, resourceIds, context.switchIds, speciesIds, issues);
   validateElementRates(project, issues);
@@ -358,6 +359,9 @@ export function repairProjectReferences(project: Project): void {
   repairFarmAnimalReferences(project);
   repairStructurePlacements(project);
   repairP2References(project);
+  // 아이템이 켜는 스위치는 정의를 자동 선언한다 — 기본 카탈로그 기동석 아이템이
+  // 미선언 스위치를 가리키던 구형 저장본(dew-village fixture 포함)을 자동치유.
+  ensureItemSwitchDefs(project);
   if (project.system.timeSystem?.onDayEnd && !commonEventIds.has(project.system.timeSystem.onDayEnd)) {
     const { onDayEnd: _removed, ...rest } = project.system.timeSystem;
     project.system.timeSystem = rest;
@@ -571,6 +575,7 @@ function validateItemRecords(
   skillIds: ReadonlySet<string>,
   animationIds: ReadonlySet<string>,
   resourceIds: ReadonlySet<string>,
+  switchIds: ReadonlySet<string>,
   issues: string[]
 ): void {
   for (const item of project.database.items) {
@@ -578,6 +583,7 @@ function validateItemRecords(
     if (item.learnedSkillId && !skillIds.has(item.learnedSkillId)) issues.push(`item ${item.id}: learnedSkillId does not exist.`);
     if (item.activateSkillId && !skillIds.has(item.activateSkillId)) issues.push(`item ${item.id}: activateSkillId does not exist.`);
     if (item.animationId && !animationIds.has(item.animationId)) issues.push(`item ${item.id}: animationId does not exist.`);
+    if (item.switchId && !switchIds.has(item.switchId)) issues.push(`item ${item.id}: switchId does not exist.`);
     capture(issues, () => validateItemResources(item, resourceIds));
     for (const effect of item.stateEffects) if (!stateIdExists(project, effect.stateId)) issues.push(`item ${item.id}: stateId does not exist.`);
     collectExistingIdIssues(`item ${item.id}: healState`, item.healStateIds, stateIds(project), issues);

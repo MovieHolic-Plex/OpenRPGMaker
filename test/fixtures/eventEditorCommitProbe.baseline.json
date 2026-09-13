@@ -38,7 +38,7 @@
  "fork": {
   "probes": {
    "event-condition-mode": "replaceCommand {\"condition\":{\"condition\":{\"kind\":\"switch\",\"switchId\":\"\",\"value\":true},\"kind\":\"not\"},\"else\":[],\"kind\":\"fork\",\"then\":[]}",
-   "event-condition-switch-target>select#0": "replaceCommand {\"condition\":{\"kind\":\"switch\",\"switchId\":\"sw_0020\",\"value\":true},\"else\":[],\"kind\":\"fork\",\"then\":[]}",
+   "event-condition-switch-target>select#0": "replaceCommand {\"condition\":{\"kind\":\"switch\",\"switchId\":\"sw_gen2_sun_relay\",\"value\":true},\"else\":[],\"kind\":\"fork\",\"then\":[]}",
    "event-condition-switch-value": "replaceCommand {\"condition\":{\"kind\":\"switch\",\"switchId\":\"sw1\",\"value\":false},\"else\":[],\"kind\":\"fork\",\"then\":[]}",
    "event-fork-else-enabled": "replaceCommand {\"condition\":{\"kind\":\"switch\",\"switchId\":\"sw1\",\"value\":true},\"kind\":\"fork\",\"then\":[]}"
   },
@@ -108,7 +108,7 @@
  },
  "setSwitch": {
   "probes": {
-   "event-command-switch-target>select#0": "replaceCommand {\"kind\":\"setSwitch\",\"switchId\":\"sw_0020\",\"value\":true}",
+   "event-command-switch-target>select#0": "replaceCommand {\"kind\":\"setSwitch\",\"switchId\":\"sw_gen2_sun_relay\",\"value\":true}",
    "event-command-switch-value": "replaceCommand {\"kind\":\"setSwitch\",\"switchId\":\"sw1\",\"value\":{\"id\":\"\",\"kind\":\"var\"}}",
    "event-command-switch-operand>select#0": "replaceCommand {\"kind\":\"setSwitch\",\"switchId\":\"sw1\",\"value\":true}"
   },
@@ -719,7 +719,7 @@
  "spawnFieldEnemy": {
   "probes": {
    "event-command-spawn-troop": "replaceCommand {\"kind\":\"spawnFieldEnemy\",\"spawn\":{\"area\":{\"h\":4,\"w\":4,\"x\":0,\"y\":0},\"id\":\"spawn1\",\"troopId\":\"troop_bat_swarm\"}}",
-   "event-command-spawn-switch": "replaceCommand {\"kind\":\"spawnFieldEnemy\",\"spawn\":{\"area\":{\"h\":4,\"w\":4,\"x\":0,\"y\":0},\"id\":\"spawn1\",\"onKillSwitchId\":\"sw_0020\",\"troopId\":\"troop1\"}}",
+   "event-command-spawn-switch": "replaceCommand {\"kind\":\"spawnFieldEnemy\",\"spawn\":{\"area\":{\"h\":4,\"w\":4,\"x\":0,\"y\":0},\"id\":\"spawn1\",\"onKillSwitchId\":\"sw_gen2_sun_relay\",\"troopId\":\"troop1\"}}",
    "event-command-spawn-graphic": "replaceCommand {\"kind\":\"spawnFieldEnemy\",\"spawn\":{\"area\":{\"h\":4,\"w\":4,\"x\":0,\"y\":0},\"graphic\":{\"sprite\":{\"id\":\"__p_5acc74__\",\"type\":\"bundled\"}},\"id\":\"spawn1\",\"troopId\":\"troop1\"}}",
    "event-command-spawn-area-x": "replaceCommand {\"kind\":\"spawnFieldEnemy\",\"spawn\":{\"area\":{\"h\":4,\"w\":4,\"x\":7237,\"y\":0},\"id\":\"spawn1\",\"troopId\":\"troop1\"}}",
    "event-command-spawn-area-y": "replaceCommand {\"kind\":\"spawnFieldEnemy\",\"spawn\":{\"area\":{\"h\":4,\"w\":4,\"x\":0,\"y\":7854},\"id\":\"spawn1\",\"troopId\":\"troop1\"}}",

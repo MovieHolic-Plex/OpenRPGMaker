@@ -14,6 +14,7 @@ import { dropCropsWithMissingItems, normalizeEnemyRecord } from "../databaseReco
 import { defaultAssetSet, defaultResourceProfiles } from "./defaultAssets";
 import { defaultDatabase, defaultSession, defaultSystem, defaultTerms, defaultTitleScreenSettings } from "./defaultDatabase";
 import { createBlankMap, singleNodeTree } from "./defaultMaps";
+import { ensureItemSwitchDefs } from "../itemSwitchDefs";
 
 export const MODERN_NOCTURNE_TITLE = "네온의 유언";
 export const MODERN_NOCTURNE_PROJECT_ID = "modern-nocturne-20260809";
@@ -203,6 +204,8 @@ export function createModernNocturneProject(): Project {
     [MODERN_SWITCH.endingMercy]: "새벽의 증언 엔딩",
     [MODERN_SWITCH.endingExpose]: "꺼지지 않는 간판 엔딩",
   })) nameSwitch(project, id, name);
+  // 기본 아이템 카탈로그의 스위치 아이템이 가리키는 스위치 정의까지 채운다.
+  ensureItemSwitchDefs(project);
   return project;
 }
 function modernTileset(): TilesetDef {

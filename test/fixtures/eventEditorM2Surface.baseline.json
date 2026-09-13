@@ -6897,7 +6897,18 @@
     "sw_0017",
     "sw_0018",
     "sw_0019",
-    "sw_0020"
+    "sw_0020",
+    "sw_catalog_aqueduct_route",
+    "sw_catalog_archive_unlock",
+    "sw_catalog_beacon_lit",
+    "sw_catalog_fountain_flow",
+    "sw_catalog_gate_open",
+    "sw_catalog_lighthouse_lit",
+    "sw_catalog_mine_lift",
+    "sw_gen2_bridge_relay",
+    "sw_gen2_moon_relay",
+    "sw_gen2_seal_relay",
+    "sw_gen2_sun_relay"
    ],
    "coordinate-move-result-variable>select#0": [
     "",
@@ -6999,7 +7010,7 @@
    "button": 16,
    "div": 37,
    "input": 5,
-   "option": 95,
+   "option": 106,
    "p": 6,
    "select": 9,
    "span": 11
@@ -7183,7 +7194,18 @@
     "sw_0017",
     "sw_0018",
     "sw_0019",
-    "sw_0020"
+    "sw_0020",
+    "sw_catalog_aqueduct_route",
+    "sw_catalog_archive_unlock",
+    "sw_catalog_beacon_lit",
+    "sw_catalog_fountain_flow",
+    "sw_catalog_gate_open",
+    "sw_catalog_lighthouse_lit",
+    "sw_catalog_mine_lift",
+    "sw_gen2_bridge_relay",
+    "sw_gen2_moon_relay",
+    "sw_gen2_seal_relay",
+    "sw_gen2_sun_relay"
    ]
   },
   "labels": [
@@ -7198,7 +7220,7 @@
    "div": 13,
    "input": 1,
    "label": 4,
-   "option": 25,
+   "option": 36,
    "select": 3,
    "span": 1
   },

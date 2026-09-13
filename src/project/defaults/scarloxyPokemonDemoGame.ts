@@ -196,11 +196,6 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
     hero.learnedSkills = [{ level: 1, skillId: "skill_pkmn_rock" }];
   }
 
-  const captureOrb = project.database.items.find((item) => item.id === CAPTURE_ORB_ITEM_ID);
-  if (captureOrb?.captureProfile) {
-    captureOrb.captureProfile = { ...captureOrb.captureProfile, ballClass: "poke" };
-  }
-
   project.database.skills.push(
     // Gen1 관례: 불꽃 기본기는 10% 화상. state_burn 은 아래에서 이 데모 DB 에만 저작한다.
     { ...demoSkill("skill_scarloxy_ember", "불씨 뿜기", 26, "anim_scarloxy_fire", "불씨를 뿜어 적을 태웁니다.", "fire"), stateEffects: [{ stateId: "state_burn", chance: 10, operation: "add" as const }] },

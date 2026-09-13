@@ -730,8 +730,10 @@
   border-radius: 8px;
   column-gap: 8px;
   display: grid;
-  grid-template-areas: "face name hpbar hpnum mpbar mpnum";
-  grid-template-columns: auto minmax(56px, 1fr) 56px 88px 44px 80px;
+  /* state 칸은 상태 배지 클러스터(.battle-actor-status > .battle-status-icons) 자리 —
+     auto 열이라 배지가 없으면 0 으로 접힌다. 이름 셀 안에 얹으면 overflow:hidden 에 잘린다(실측). */
+  grid-template-areas: "face name state hpbar hpnum mpbar mpnum";
+  grid-template-columns: auto minmax(56px, 1fr) auto 56px 88px 44px 80px;
   grid-template-rows: var(--battle-command-row-height);
   height: var(--battle-command-row-height);
   /* 명령 카드가 숨는 단계에서 파티 카드가 두 열을 다 차지해도 행은 이 폭에서 멈춰 가운데에
@@ -748,8 +750,8 @@
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-flow="gauge"] .battle-actor-status {
-  grid-template-areas: "face name hpbar hpnum mpbar mpnum tp";
-  grid-template-columns: auto minmax(56px, 1fr) 48px 84px 40px 76px 56px;
+  grid-template-areas: "face name state hpbar hpnum mpbar mpnum tp";
+  grid-template-columns: auto minmax(56px, 1fr) auto 48px 84px 40px 76px 56px;
 }
 
 /* 얼굴: 기본 CSS 는 숨긴다(vxace 전용이었다). 여기서는 둥근 작은 초상으로 보인다. */
@@ -789,6 +791,20 @@
   overflow: hidden;
   text-shadow: none;
   white-space: nowrap;
+}
+
+/* 상태 배지 — 행 직계 자식으로 달리는 클러스터(03-vxace-status-nodes.css)를
+   이름과 HP 게이지 사이의 state 칸에 둔다. 이름 셀 안은 overflow:hidden 이라 잘렸다(실측). */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-actor-status > .battle-status-icons {
+  align-self: center;
+  grid-area: state;
+  justify-self: end;
+  z-index: 2;
+}
+
+/* 두 줄 행(1~2인)에는 state 칸이 없다 — 이름 칸이 상단 전체 폭을 쓰므로 그 오른쪽 끝에 얹는다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status > .battle-status-icons {
+  grid-area: name;
 }
 
 /* 레벨 배지. 한 줄 행에서는 이름 폭을 아껴 접고, 두 줄 행에서만 보인다. */

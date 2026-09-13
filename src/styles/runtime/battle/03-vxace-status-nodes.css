@@ -180,6 +180,19 @@
   z-index: 4;
 }
 
+/* 정면 스킨(필드 노드 없음)의 파티 상태 행 — 배지는 행의 직계 자식으로 달린다.
+   이름 셀 안에 넣으면 rm2000 계열 명명 영역 그리드의 overflow:hidden + 고정 폭 열에 잘려
+   2px 조각만 보였다(실측). 기본 배치는 1행 1열(이름 칸)의 오른쪽 끝 — 이름/수치 격자를
+   쓰는 dragonquest·mother·mv·컴팩트 행에서는 이름 끝, 게이지 직전 자리다.
+   스킨 파일이 자기 행 구조에 맞게 grid-area/절대배치로 재지정한다(rm2000·vxace). */
+.battle-actor-status > .battle-status-icons {
+  align-self: center;
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: end;
+  z-index: 2;
+}
+
 .battle-status-icon {
   align-items: center;
   background: var(--battle-status-icon-bg, #4a4a4a);

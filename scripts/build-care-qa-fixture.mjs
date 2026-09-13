@@ -111,6 +111,13 @@ async function main() {
     if (!fixture.database.monsterSpecies.some((record) => record.id === species.id)) {
       fixture.database.monsterSpecies.push(species);
     }
+    // 진화 참조가 댕글링하지 않게 도착 종족도 출하 레코드로 채운다.
+    for (const evolution of species.evolutions ?? []) {
+      const target = shipped.database.monsterSpecies.find((record) => record.id === evolution.toSpeciesId);
+      if (target && !fixture.database.monsterSpecies.some((record) => record.id === target.id)) {
+        fixture.database.monsterSpecies.push(structuredClone(target));
+      }
+    }
     fixture.session.monsterInstances = {
       [INSTANCE_ID]: {
         instanceId: INSTANCE_ID,
