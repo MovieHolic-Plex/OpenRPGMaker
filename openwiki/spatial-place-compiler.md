@@ -54,3 +54,31 @@ the reviewed graphics and existing maps, and checks idempotent registration.
 The separate `house-spatial-catalog` and `house-spatial-catalog-4f` runtime QA scenarios
 walk the reloaded examples through fresh exported-player sessions, including return
 trips. Setup teleport is limited to each yard; doors and stairs use actual movement.
+
+## Compact one-floor household (2026-09-13)
+
+The reviewed `house-catalog:room:single` space is now an 8×6 open-plan floor,
+replacing its previous 12×10 floor with only two furniture slots. Eight fixed slots
+provide cooking, dining, sleeping and storage around a connected aisle. This is one
+walkable room; it does not pretend adjacent zones are separate maps or introduce a
+new classification. Existing single-floor places reference the same space ID.
+Previously frozen examples keep their old snapshots until explicitly refreshed.
+
+`scripts/lib/compactHouseInterior.mts` authors the revised space and two reviewed
+objects: an upper-layer cabinet (148/178, preserving the floor) and a stove with
+its wall backing (105 behind upper 21, lower 51 below). It leaves old imported kits
+and other placed maps alone. Do not move the frozen stove into open floor without
+its backing: its existing north-wall surface rule still applies. Moving the wardrobe
+one row down leaves the floor beside the bed accessible; merely reaching each
+furniture anchor would miss that isolated empty corner.
+
+`publish-compact-house-interior.mts --apply` checks remote authority, registers the
+source, uses the actual spatial get/preview/apply or explicit refresh tool, validates
+cluster rules and **every passable floor cell**, and CAS-saves/reloads. Example:
+`compact-interior:example:cottage` (yard + one interior). Project start and unrelated
+maps are preserved. The large multi-storey examples are not silently rebuilt.
+`qa/compact-house-interior.mts` verifies 48 floor cells / 34 connected walkable cells;
+`qa:runtime -- --scenario compact-house-interior` enters the door, walks to four
+furniture areas and returns to the yard through actual player movement.
+Evidence: `.omo/evidence/compact-interior/`. These are registered tool-path checks,
+not an LLM provider conversation run.

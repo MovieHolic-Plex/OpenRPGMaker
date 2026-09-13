@@ -1,0 +1,10 @@
+{
+  "projectId": "rpg-zzu-house-template-gallery",
+  "canonicalSHA256": "02a99841d6011c507565bf22187fe7d8f098dc443ce55d024c22fe553fa04b4f",
+  "canonicalRevisionMatches": true,
+  "authoredMapsMatch": true,
+  "sourceDefinitionsMatch": true,
+  "maps": 22,
+  "roomMapId": "spatial:child:32:compact-interior:example:cottage7:floor-1:0",
+  "checkedAt": "2026-09-13T07:26:43.835Z"
+}
