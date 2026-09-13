@@ -111,7 +111,7 @@ const proof = {
   referenceFloor: { w: 12, h: 10 },
   afterFloor: { w: 8, h: 6 },
   furniture: 8,
-  partitionArms: 2,
+  structuralRooms: 2,
   bedroomDoorway: { x: 4, y: 3 },
   exampleMaps: maps,
   unrelatedMapsPreserved: true,

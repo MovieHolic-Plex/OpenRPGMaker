@@ -26,6 +26,10 @@ const objects = object({ ...base, graphic, anchors: ports, chips: array(text) })
 const spaces = object({ ...base, environment: choices(["interior", "outdoor"]), tilesetId: id,
   shape: choices(["rect", "l", "alcove"]), width: size, height: size, floor: text, wall: text,
   role: choices(["entrance", "walkway", "room"]), floorAreas: areas, ports,
+  interiorLayout: { ...object({
+    rooms: array(object({ id, name: text, x: integer, y: integer, width: size, height: size })),
+    doorways: array(point),
+  }), description: "Optional interior-only subdivisions within a rectangular floor. Coordinates are floor-local. Adjacent room boxes reserve a shared partition on the west/north box's last column/row; doorways reopen it. Generates connected outer walls and partitions together; do not stamp partition walls as furniture." },
   objectSlots: array(object({ id, objectDesignId: id, quantity: { type: "integer", minimum: 1 }, required: { type: "boolean" },
     placement: object({ mode: choices(["auto", "fixed"]), x: integer, y: integer }, ["mode"]), chipOverrides: array(text),
   }, ["id", "objectDesignId", "quantity", "required", "placement"])),

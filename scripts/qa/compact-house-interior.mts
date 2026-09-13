@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import { isCeilingTile } from "../../src/editor/interiorHouseWallGrammar";
 import assert from "node:assert/strict";
 import { canMove, isPassableLanding } from "../../src/project/collision";
 import { validateClusterRules } from "../../src/project/lint/clusterRuleValidators";
@@ -72,6 +73,9 @@ function path(start: P, end: P, blocked?: P) {
 }
 // Five solid cells form a north/south partition, with exactly one doorway.
 const doorway = { x: 6, y: 7 };
+assert.equal(map.roomHarnessPlan!.plan.rooms.length, 2);
+for (let y = 1; y <= 4; y++)
+  assert.ok(isCeilingTile(map.lowerTiles[y * map.width + 6]!));
 for (let y = 4; y < 10; y++)
   assert.equal(isPassableLanding(project, map, 6, y), y === doorway.y);
 assert.deepEqual(map.roomHarnessPlan!.plan.door, { x: entry.x, y: entry.y });

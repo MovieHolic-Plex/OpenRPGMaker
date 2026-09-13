@@ -67,13 +67,32 @@ const composition: Parser<S.SpatialComposition> = (v, p) => {
     }), members: list(r.members, `${p}.members`, (v, p) => child(kind)(v, p)) };
 };
 const composable = (r: Record<string, unknown>, p: string): S.SpatialComposable => r.composition === undefined ? {} : { composition: composition(r.composition, `${p}.composition`) };
+const interiorLayout: Parser<S.SpatialInteriorLayout> = (v, p) => {
+  const r = record(v, p, "rooms doorways");
+  const rooms = list(r.rooms, `${p}.rooms`, (v, p) => {
+    const r = record(v, p, "id name x y width height");
+    return { ...rect({ x: r.x, y: r.y, width: r.width, height: r.height }, p), id: id(r.id, `${p}.id`), name: text(r.name, `${p}.name`) };
+  });
+  assert(rooms.length >= 2, `${p}.rooms: at least two rooms required`);
+  assert(new Set(rooms.map(room => room.id)).size === rooms.length, `${p}.rooms: duplicate id`);
+  return { rooms, doorways: list(r.doorways, `${p}.doorways`, (v, p) => point(record(v, p, "x y"), p)) };
+};
 const space: Parser<S.SpaceDesign> = (v, p) => {
   const r = record(v, p);
   const environment = choice(["interior", "outdoor"] as const)(r.environment, `${p}.environment`);
   const common = { ...base(r, p), ...composable(r, p), tilesetId: id(r.tilesetId, `${p}.tilesetId`), shape: choice(["rect", "l", "alcove"] as const)(r.shape, `${p}.shape`), width: size(r.width, `${p}.width`), height: size(r.height, `${p}.height`), floor: text(r.floor, `${p}.floor`), wall: text(r.wall, `${p}.wall`), objectSlots: list(r.objectSlots, `${p}.objectSlots`, objectSlot), ports: ports(r.ports, `${p}.ports`) };
   const fields = `${baseFields} environment tilesetId shape width height floor wall objectSlots ports composition`;
   switch (environment) {
-    case "interior": record(r, p, `${fields} role`); return { ...common, environment, role: choice(["entrance", "walkway", "room"] as const)(r.role, `${p}.role`) };
+    case "interior": {
+      record(r, p, `${fields} role interiorLayout`);
+      const layout = r.interiorLayout === undefined ? undefined : interiorLayout(r.interiorLayout, `${p}.interiorLayout`);
+      if (layout) {
+        assert(common.shape === "rect", `${p}.interiorLayout: rectangular envelope required`);
+        for (const room of layout.rooms) assert(room.x >= 0 && room.y >= 0 && room.x + room.width <= common.width && room.y + room.height <= common.height, `${p}.interiorLayout: room outside floor`);
+        for (const door of layout.doorways) assert(door.x >= 0 && door.y >= 0 && door.x < common.width && door.y < common.height, `${p}.interiorLayout: doorway outside floor`);
+      }
+      return { ...common, environment, role: choice(["entrance", "walkway", "room"] as const)(r.role, `${p}.role`), ...(layout ? { interiorLayout: layout } : {}) };
+    }
     case "outdoor": record(r, p, `${fields} floorAreas`); return { ...common, environment, floorAreas: list(r.floorAreas, `${p}.floorAreas`, area) };
     default: return assertNever(environment);
   }

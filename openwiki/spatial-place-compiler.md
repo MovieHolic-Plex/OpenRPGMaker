@@ -59,15 +59,14 @@ trips. Setup teleport is limited to each yard; doors and stairs use actual movem
 
 The reviewed `house-catalog:room:single` space is now an 8×6 divided floor,
 replacing its previous 12×10 floor with only two furniture slots. Eight fixed slots
-provide cooking, dining, sleeping and storage. Two native partition assemblies
-separate a combined kitchen/living room from the bedroom on the same map. The
+provide cooking, dining, sleeping and storage. An optional `interiorLayout` of floor-local room rectangles and doorways separates a combined kitchen/living room from the bedroom on the same map. The
 partition occupies local x=4, y=0..2 and y=4..5, leaving one doorway at (4,3);
 the entrance is (3,5). Blocking the doorway must disconnect the two rooms.
 Existing single-floor places reference the same space ID.
 Previously frozen examples keep their old snapshots until explicitly refreshed.
 
-`scripts/lib/compactHouseInterior.mts` authors the revised space and four reviewed
-objects: two partition arms (north 430/77/107, south 430/430), an upper-layer cabinet (148/178, preserving the floor) and a stove with
+`scripts/lib/compactHouseInterior.mts` authors the revised space and two reviewed
+furniture objects: an upper-layer cabinet (148/178, preserving the floor) and a stove with
 its wall backing (105 behind upper 21, lower 51 below). It leaves old imported kits
 and other placed maps alone. Do not move the frozen stove into open floor without
 its backing: its existing north-wall surface rule still applies. Moving the wardrobe
@@ -86,5 +85,27 @@ furniture areas and returns to the yard through actual player movement.
 raster replacement; retaining the old plan left the old door coordinate inside a
 new wall after moving the entrance. Unrelated map metadata remains preserved.
 Evidence: `.omo/evidence/compact-interior/` (open plan) and
-`.omo/evidence/partitioned-interior/` (divided rooms). These are registered tool-path checks,
+`.omo/evidence/partitioned-interior/` (first divided version), and
+`.omo/evidence/unified-interior-walls/` (connected structural walls). These are registered tool-path checks,
 not an LLM provider conversation run.
+
+### Structural partitions (2026-09-13 correction)
+
+Do not stamp partition arms as furniture: adding bare 430 cells after the shell
+pass leaves the ceiling border unshaped and its north end disconnected from the
+outer wall. `SpaceDesign` interior variants may store `interiorLayout` with
+`rooms: [{id, name, x, y, width, height}]` and `doorways: [{x,y}]`, relative to the
+floor. The optional field is parsed in library and frozen snapshots, survives
+project serialization, and leaves old single-room designs unchanged. At least two
+uniquely named IDs and an in-bounds rectangular envelope are required.
+
+`spaceLayout` translates these boxes and doorways to the existing room harness;
+its wall grammar generates the outer wall, shared partitions, wall faces and
+ceiling borders together. Only the resulting passable floor is available for
+furniture, so automatic placement cannot occupy a partition. The compact example
+uses adjacent 5×6 and 3×6 boxes, sharing a partition at local x=4. Old partition
+objects remain available for existing frozen content but are no longer placed.
+`upsert_spatial_design` exposes this optional layout in its tool schema and explains
+shared-edge/doorway semantics, so AI authors use the same structural path.
+`test/spatialInteriorLayout.test.ts` proves registered AI upsert, save/load/recompile, ceiling connection,
+shape idempotence, doorway-only reachability, bounds rejection and old-plan compatibility.

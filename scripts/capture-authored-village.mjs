@@ -6,7 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { chromium } from "playwright";
+import { chromium, firefox } from "playwright";
 
 const HELP = `Usage: node scripts/capture-authored-village.mjs --project <json> --map <id>
   [--out <directory>] [--base <vite-origin>] [--rect x,y,w,h ...]
@@ -101,7 +101,7 @@ async function main() {
     renderer: "editor/mapTileDraw", base: opts.base, status: "failed", startedAt: new Date().toISOString() };
   let browser;
   try {
-    browser = await chromium.launch({ headless: true });
+    browser = await (process.env.QA_BROWSER === "firefox" ? firefox : chromium).launch({ headless: true });
     const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 });
     page.setDefaultTimeout(30000);
     page.on("pageerror", error => errors.page.push(diagnostic(error.message)));

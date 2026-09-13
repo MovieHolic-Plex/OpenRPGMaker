@@ -71,45 +71,11 @@ export function registerCompactHouseInterior(input: Project): Project {
     anchors: [],
     chips: [],
   };
-  // Native wall assemblies: north arm has a ceiling and two-row cream face;
-  // south arm joins the south shell. The one-cell opening stays bare floor.
-  const partitionIds = [
-    "compact-interior:partition-north",
-    "compact-interior:partition-south",
-  ];
-  for (const [index, tiles] of [
-    [430, 77, 107],
-    [430, 430],
-  ].entries()) {
-    const id = partitionIds[index]!;
-    tileset.structureKits = [
-      ...(tileset.structureKits ?? []).filter((k) => k.id !== id),
-      {
-        id,
-        kind: "section",
-        name: index === 0 ? "침실 칸막이 · 북쪽" : "침실 칸막이 · 남쪽",
-        width: 1,
-        height: tiles.length,
-        learnedFrom: "db-authored",
-        rows: tiles.map((tile) => ({ tiles: [tile], upperTiles: [-1] })),
-      },
-    ];
-    document.library.objects[id] = {
-      id: spatialId(id),
-      name: index === 0 ? "침실 칸막이 · 북쪽" : "침실 칸막이 · 남쪽",
-      revision: 1,
-      tags: ["작은 실내", "칸막이", "벽"],
-      provenance: { origin: "ai" },
-      graphic: { tilesetId, kitId: id },
-      anchors: [],
-      chips: [],
-    };
-  }
   const slot = (key: string, object: string, x: number, y: number) => ({
     id: spatialId(key),
     quantity: 1,
     required: true,
-    objectDesignId: [kitId, stoveId, ...partitionIds].includes(object)
+    objectDesignId: [kitId, stoveId].includes(object)
       ? spatialId(object)
       : houseObjectForGraphic(project, tilesetId, object)!.id,
     placement: { mode: "fixed" as const, x, y },
@@ -122,6 +88,27 @@ export function registerCompactHouseInterior(input: Project): Project {
     width: 8,
     height: 6,
     shape: "rect",
+    interiorLayout: {
+      rooms: [
+        {
+          id: spatialId("living-kitchen"),
+          name: "거실·주방",
+          x: 0,
+          y: 0,
+          width: 5,
+          height: 6,
+        },
+        {
+          id: spatialId("bedroom"),
+          name: "침실",
+          x: 5,
+          y: 0,
+          width: 3,
+          height: 6,
+        },
+      ],
+      doorways: [{ x: 4, y: 3 }],
+    },
     floor: "wood",
     wall: "cream",
     tags: [
@@ -136,8 +123,6 @@ export function registerCompactHouseInterior(input: Project): Project {
     ],
     ports: [{ id: spatialId("entry"), name: "현관", x: 3, y: 5 }],
     objectSlots: [
-      slot("partition-north", partitionIds[0]!, 4, 0),
-      slot("partition-south", partitionIds[1]!, 4, 4),
       slot("stove", stoveId, 0, 0),
       slot("dishes", kitId, 1, 0),
       slot("water", "jars", 2, 1),

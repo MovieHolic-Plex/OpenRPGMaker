@@ -103,7 +103,7 @@ try {
   assert.equal(await page.getByTestId("composition-height").inputValue(), "12");
   assert.equal(
     await page.locator('[data-testid^="composition-member-"]').count(),
-    10,
+    8,
   );
   await page.getByText("기존 설계와 생성 규칙", { exact: true }).click();
   assert.equal(await page.getByTestId("spatial-space-width").inputValue(), "8");
