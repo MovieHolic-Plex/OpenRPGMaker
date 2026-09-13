@@ -1,0 +1,19 @@
+{
+  "head": "1d08dbe97",
+  "typecheck": {
+    "name": "typecheck:app",
+    "exitCode": 0,
+    "errorCount": 0,
+    "files": {}
+  },
+  "tests": {
+    "total": 23838,
+    "failed": 509,
+    "passed": 23205
+  },
+  "css": 0,
+  "surface": 0,
+  "regressions": [
+    "tests test/spatialGeographyRaster.browser.test.ts: 새로 실패"
+  ]
+}

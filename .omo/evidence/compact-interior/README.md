@@ -18,3 +18,7 @@ Full project snapshots stay local under `output/evidence/compact-interior/`. Exi
 Before integrating origin/main, full gates: app typecheck and CSS passed. 519 failed / 23,139 passed versus prior 522 / 23,136; surface failures unchanged. One newly observed browser readiness timeout passed unchanged on a focused recheck (1/1). No new content compiler failure.
 
 After integrating main at `10228f0a7`, the saved source/maps/tileset still match. The current composition workspace renders all 8 members and reports floor 8×6 / shell canvas 12×12. Editor readback and shipping-player 10/10 beats were repeated successfully.
+
+A later project save changed the overall revision. `latest-remote-check.json` still verifies the two authored maps, source definitions and full interior tileset unchanged; no overwrite was performed. The earlier exact-revision readback remains in `final-remote-check.json`.
+
+Final integrated gates: app typecheck, CSS and surface all passed. Vitest had 509 failures / 23,205 passes (checked-in baseline: 557 failures / 23,152 passes). The sole newly failed file was a geography-browser readiness timeout; it passed unchanged in isolation (1/1). Full gate exit remains 1; no blanket green claim.
