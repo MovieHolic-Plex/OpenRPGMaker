@@ -29,6 +29,7 @@ import { kitIdForSmallHouseMaterial, type SmallHouseMaterial } from "@/editor/co
 import { recommendMapBgm } from "@/assets/bgmThemeRecommendation";
 import { genId } from "@/util/id";
 import { resolveWikiCombatMode } from "@/ai/projectWikiContext";
+import { MAP_BACKGROUND_SCROLL_LIMIT, normalizeMapBackground } from "@/project/mapBackground";
 import { isActionCombatMap } from "@/project/actionCombat";
 import type { EncounterTableEntry, FieldSpawnDef, GameEvent, GameMap, PaletteSlotRole, Project, Rect, RoguelikeRoomDef, TilesetDef } from "@/project/types";
 import { mapLocations, resolveLocation } from "@/project/mapNamedLocations";
@@ -1552,7 +1553,13 @@ const bgmSchema: JsonSchema = {
 
 const backgroundSchema: JsonSchema = {
   type: "object",
-  properties: { imageId: { type: "string" }, scrollX: { type: "number" }, scrollY: { type: "number" } },
+  properties: {
+    imageId: { type: "string" },
+    // 상한은 편집기 입력·로드 정규화와 같은 값이어야 한다 — 툴로만 들어가는 값이 생기면
+    // 저장한 뒤 다시 열 때 조용히 잘린다.
+    scrollX: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
+    scrollY: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
+  },
   required: ["imageId"],
   additionalProperties: false,
 };
@@ -1641,7 +1648,9 @@ const setMapProperties: ToolDefinition = {
       delete map.background;
       changed.push("배경=기본");
     } else if (args.background && typeof args.background === "object" && !Array.isArray(args.background)) {
-      map.background = structuredClone(args.background) as NonNullable<GameMap["background"]>;
+      const normalized = normalizeMapBackground(args.background);
+      if (!normalized) throw new ToolError("background는 { imageId, scrollX?, scrollY? } 여야 합니다.", { code: "invalid-args" });
+      map.background = normalized;
       changed.push(`배경=${map.background.imageId}`);
     }
     if (args.clearBattleBackground === true) {

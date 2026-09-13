@@ -160,13 +160,19 @@ export interface StructurePlacement {
   afterHash: string;
 }
 
-/** 맵 배경(패럴랙스) 설정 — RM2003 Background 탭 대응. */
+/**
+ * 맵 배경(패럴랙스) 설정 — RM2003 Background 탭 대응.
+ *
+ * 순서: 하층 타일 **아래**에 깔리고, 비어 있는 칸이 그 그림을 보이는 창이 된다.
+ * 위치: 화면 고정(카메라를 따라 흐르지 않는다) — RM 계열 파노라마와 같다.
+ * 속도: **60Hz 논리 프레임당 px** (`@/project/mapBackground` 의 상한 참조).
+ */
 export interface MapBackground {
-  /** 배경 이미지 리소스 ID 또는 URL. */
+  /** 배경 그림 리소스 ID(예: `easyrpg-backdrop-sky1`). 외부 URL 은 해석되지 않는다. */
   imageId: string;
-  /** 수평 스크롤 속도 (px/frame, 0=고정). */
+  /** 수평 스크롤 속도 (px/프레임, 0=고정). */
   scrollX?: number;
-  /** 수직 스크롤 속도 (px/frame, 0=고정). */
+  /** 수직 스크롤 속도 (px/프레임, 0=고정). */
   scrollY?: number;
 }
 

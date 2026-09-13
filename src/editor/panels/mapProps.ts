@@ -4,6 +4,7 @@ import {
 } from "@/editor/actions";
 import { appendGroupedTilesetOptions } from "@/editor/tilesetSelectOptions";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { MAP_BACKGROUND_SCROLL_LIMIT, normalizeMapBackgroundScroll } from "@/project/mapBackground";
 import { openDatabaseResourcePickerDialog, listDatabaseResourceOptions, type DatabaseResourcePickerKind } from "@/editor/panels/databaseResourcePickerDialog";
 import { editorState } from "@/editor/editorState";
 import { DEFAULT_ENEMY_FACTION_ID, factionName, resolveFactionTable } from "@/project/factions";
@@ -310,23 +311,27 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
 
     const scrollLine = el("div", { class: "map-props-size-row" });
     const sxInput = el("input", {
-      attrs: { type: "number", min: "-10", max: "10", step: "0.5", "aria-label": "가로 스크롤 속도" },
+      attrs: { type: "number", min: String(-MAP_BACKGROUND_SCROLL_LIMIT), max: String(MAP_BACKGROUND_SCROLL_LIMIT), step: "0.5", "aria-label": "가로 스크롤 속도" },
       value: String(bg.scrollX ?? 0),
       dataset: { testid: "map-bg-scroll-x" },
     });
     const syInput = el("input", {
-      attrs: { type: "number", min: "-10", max: "10", step: "0.5", "aria-label": "세로 스크롤 속도" },
+      attrs: { type: "number", min: String(-MAP_BACKGROUND_SCROLL_LIMIT), max: String(MAP_BACKGROUND_SCROLL_LIMIT), step: "0.5", "aria-label": "세로 스크롤 속도" },
       value: String(bg.scrollY ?? 0),
       dataset: { testid: "map-bg-scroll-y" },
     });
     scrollLine.append(el("span", { text: "X" }), sxInput, el("span", { text: "Y" }), syInput);
+    // 범위 밖 입력은 **조용히 클램프**한다 — 타이틀 배경 레이어(`databaseSystemView`)와 같은 규칙이고,
+    // 상한은 로드 정규화·AI 툴 스키마와 같은 상수(`@/project/mapBackground`)를 본다.
     const updateScroll = (key: "scrollX" | "scrollY", input: HTMLInputElement): void => {
       const value = Number(input.value);
-      if (!Number.isFinite(value) || value < -10 || value > 10) {
-        toast("스크롤 속도는 -10~10 사이로 입력하세요.", "error");
+      const normalized = normalizeMapBackgroundScroll(value);
+      if (normalized === undefined) {
+        input.value = String(store.getCurrent().maps[map.id]!.background?.[key] ?? 0);
         return;
       }
-      setMapBackground(map.id, { ...store.getCurrent().maps[map.id]!.background!, [key]: value });
+      setMapBackground(map.id, { ...store.getCurrent().maps[map.id]!.background!, [key]: normalized });
+      if (normalized !== value) input.value = String(normalized);
     };
     sxInput.addEventListener("change", () => updateScroll("scrollX", sxInput));
     syInput.addEventListener("change", () => updateScroll("scrollY", syInput));

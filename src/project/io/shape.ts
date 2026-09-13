@@ -18,6 +18,7 @@ import { normalizePalettePresetId } from "../tilesetPalette";
 import { normalizeFarmAnimalStartInstances } from "../p1FoundationRecords";
 import { normalizeFarmBuildingPlacements, normalizeHomeDecorationPlacements } from "../spatialPlacements";
 import { HOUSE_TEMPLATE_DEFS } from "../defaults/houseTemplateCatalog";
+import { normalizeMapBackground } from "../mapBackground";
 import { assert, cloneJson, sanitize, type JsonRecord, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { repairProjectReferences, validateProjectReferences } from "./references";
 import { validateConditionShape } from "./shapeCommandFields";
@@ -159,6 +160,7 @@ function normalizeProjectV4(data: JsonRecord): Project {
   normalizeEndings(project);
   normalizeStoryFlags(project);
   normalizeProjectPlanningItems(project);
+  normalizeProjectMapBackgrounds(project);
   normalizeTilesetPalettePresets(project);
   if (data.world !== undefined) project.world = normalizeWorld(data.world);
   if (data.worldCanon !== undefined) {
@@ -236,6 +238,19 @@ function normalizeProjectPlanningItems(project: Project): void {
     const normalized = normalizeMapPlanningItems(map.planningItems);
     if (normalized) map.planningItems = normalized;
     else delete map.planningItems;
+  }
+}
+
+/**
+ * 맵 배경 정리 — 범위를 벗어난 스크롤 속도만 클램프하고, 저작이 «켜 둔» 빈 상태는 남긴다.
+ * 규칙은 `@/project/mapBackground` 한 곳에 있다(편집기 입력·AI 툴 스키마와 같은 상한).
+ */
+function normalizeProjectMapBackgrounds(project: Project): void {
+  for (const map of Object.values(project.maps)) {
+    if (map.background === undefined) continue;
+    const normalized = normalizeMapBackground(map.background);
+    if (normalized) map.background = normalized;
+    else delete map.background;
   }
 }
 
