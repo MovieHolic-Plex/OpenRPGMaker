@@ -65,6 +65,8 @@ function validateMapBackgroundShape(label: string, value: unknown): void {
   requireString(`${label}.imageId`, background.imageId);
   if (background.scrollX !== undefined) requireNumber(`${label}.scrollX`, background.scrollX);
   if (background.scrollY !== undefined) requireNumber(`${label}.scrollY`, background.scrollY);
+  if (background.loopX !== undefined) requireBoolean(`${label}.loopX`, background.loopX);
+  if (background.loopY !== undefined) requireBoolean(`${label}.loopY`, background.loopY);
 }
 
 function validateEncounterTable(label: string, value: unknown): void {

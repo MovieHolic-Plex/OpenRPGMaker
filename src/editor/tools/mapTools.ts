@@ -1559,6 +1559,8 @@ const backgroundSchema: JsonSchema = {
     // 저장한 뒤 다시 열 때 조용히 잘린다.
     scrollX: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
     scrollY: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
+    loopX: { type: "boolean" },
+    loopY: { type: "boolean" },
   },
   required: ["imageId"],
   additionalProperties: false,

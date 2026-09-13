@@ -336,6 +336,27 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
     sxInput.addEventListener("change", () => updateScroll("scrollX", sxInput));
     syInput.addEventListener("change", () => updateScroll("scrollY", syInput));
     section.append(fieldRow("스크롤 속도", scrollLine));
+
+    // 반복은 기본값이라 «끈 것» 만 저장한다(normalize 와 같은 규칙 — 옛 JSON 바이트 유지).
+    const loopRow = el("div", { class: "map-props-check-row" });
+    const loopBox = (key: "loopX" | "loopY", label: string): HTMLElement => {
+      const box = el("input", {
+        attrs: { type: "checkbox" },
+        dataset: { testid: `map-bg-loop-${key === "loopX" ? "x" : "y"}` },
+      }) as HTMLInputElement;
+      box.checked = bg[key] !== false;
+      box.addEventListener("change", () => {
+        const next = { ...store.getCurrent().maps[map.id]!.background! };
+        if (box.checked) delete next[key];
+        else next[key] = false;
+        setMapBackground(map.id, next);
+      });
+      const wrapper = el("label", { class: "map-props-check-row" });
+      wrapper.append(box, el("span", { text: label }));
+      return wrapper;
+    };
+    loopRow.append(loopBox("loopX", "가로 반복"), loopBox("loopY", "세로 반복"));
+    section.append(loopRow);
   }
 
   host.append(section);

@@ -63,6 +63,17 @@ describe("맵 배경 저작 규칙", () => {
       scrollY: -1,
     });
   });
+
+  it("반복은 기본값이라 «끈 것» 만 저장한다", () => {
+    // 켜 둔 것을 true 로 적으면 옛 JSON 과 바이트가 어긋난다.
+    expect(normalizeMapBackground({ imageId: "bg", loopX: true, loopY: true })).toEqual({ imageId: "bg" });
+    expect(normalizeMapBackground({ imageId: "bg", loopX: false })).toEqual({ imageId: "bg", loopX: false });
+    expect(normalizeMapBackground({ imageId: "bg", loopY: false, scrollY: 2 })).toEqual({
+      imageId: "bg",
+      scrollY: 2,
+      loopY: false,
+    });
+  });
 });
 
 describe("맵 배경 로드 게이트", () => {

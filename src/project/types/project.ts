@@ -174,6 +174,10 @@ export interface MapBackground {
   scrollX?: number;
   /** 수직 스크롤 속도 (px/프레임, 0=고정). */
   scrollY?: number;
+  /** 수평 반복(기본 true). 끄면 그림이 한 번만 그려지고 그 밖은 배경색이 비친다. */
+  loopX?: boolean;
+  /** 수직 반복(기본 true). */
+  loopY?: boolean;
 }
 
 /** 맵 BGM 설정 — RM2003 BGM 탭 대응. */

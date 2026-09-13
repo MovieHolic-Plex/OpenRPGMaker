@@ -45,5 +45,8 @@ export function normalizeMapBackground(value: unknown): MapBackground | undefine
     imageId: record.imageId.trim(),
     ...(scrollX !== undefined ? { scrollX } : {}),
     ...(scrollY !== undefined ? { scrollY } : {}),
+    // 반복이 기본값이다 — «끈 것» 만 적어 옛 JSON 과 바이트를 맞춘다.
+    ...(record.loopX === false ? { loopX: false } : {}),
+    ...(record.loopY === false ? { loopY: false } : {}),
   };
 }

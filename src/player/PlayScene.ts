@@ -70,7 +70,7 @@ import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { seedLocationOccupancyForScene } from "@/player/playSceneLocationTransitions";
 import { installLightingLayer, syncLightingLayer, updateLighting } from "@/player/playSceneLighting";
 import type { LightingAmbientTransition } from "@/project/lightingRules";
-import { syncMapBackgroundLayer, updateMapBackground } from "@/player/playSceneMapBackground";
+import { syncMapBackgroundLayers, updateMapBackground } from "@/player/playSceneMapBackground";
 import { installWeatherLayer, syncWeatherLayer, updateWeather } from "@/player/playSceneWeather";
 import type { WeatherParams, WeatherTransition } from "@/player/weather/weatherModel";
 import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";
@@ -395,7 +395,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean; readonly applyMapBgm?: boolean }): void {
     clearAllSceneEmotes(this);
     loadSceneMap(this, mapId, options);
-    syncMapBackgroundLayer(this);
+    syncMapBackgroundLayers(this);
     initializeActionCombatForScene(this);
     resetEncounterCounter();
     void this.syncMinimap();
