@@ -93,13 +93,21 @@ try {
     openDatabaseModal("spatialSpaces");
   });
   await page
-    .locator('[data-testid^="spatial-card-"]')
-    .filter({ hasText: "작은 단층집 · 취사·식사·수면" })
-    .scrollIntoViewIfNeeded({ timeout: 90000 });
-  await page
-    .locator('[data-testid^="spatial-card-"]')
-    .filter({ hasText: "작은 단층집 · 취사·식사·수면" })
-    .click();
+    .getByTestId("composition-design")
+    .selectOption({ label: "작은 단층집 · 취사·식사·수면" });
+  await page.getByTestId("composition-board").waitFor({ state: "visible" });
+  assert.equal(await page.getByTestId("composition-width").inputValue(), "12");
+  assert.equal(await page.getByTestId("composition-height").inputValue(), "12");
+  assert.equal(
+    await page.locator('[data-testid^="composition-member-"]').count(),
+    8,
+  );
+  await page.getByText("기존 설계와 생성 규칙", { exact: true }).click();
+  assert.equal(await page.getByTestId("spatial-space-width").inputValue(), "8");
+  assert.equal(
+    await page.getByTestId("spatial-space-height").inputValue(),
+    "6",
+  );
   await page.screenshot({ path: `${out}/editor-space.png`, fullPage: true });
   assert.deepEqual(errors, []);
   assert.ok(writes.every((p) => p === "/rest/v1/project_commits"));

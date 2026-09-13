@@ -15,4 +15,6 @@
 
 Full project snapshots stay local under `output/evidence/compact-interior/`. Existing shared-space references use the revised definition on a new build or explicit refresh; no engine sizing clamp is introduced.
 
-Full gates: app typecheck and CSS passed. 519 failed / 23,139 passed versus prior 522 / 23,136; surface failures unchanged. One newly observed browser readiness timeout passed unchanged on a focused recheck (1/1). No new content compiler failure.
+Before integrating origin/main, full gates: app typecheck and CSS passed. 519 failed / 23,139 passed versus prior 522 / 23,136; surface failures unchanged. One newly observed browser readiness timeout passed unchanged on a focused recheck (1/1). No new content compiler failure.
+
+After integrating main at `10228f0a7`, the saved source/maps/tileset still match. The current composition workspace renders all 8 members and reports floor 8×6 / shell canvas 12×12. Editor readback and shipping-player 10/10 beats were repeated successfully.
