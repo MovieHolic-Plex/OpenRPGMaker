@@ -69,3 +69,21 @@ describe("structural interior room layout", () => {
     expect(() => checkedDocument(document, input)).toThrow(/room outside floor/);
   });
 });
+
+describe('irregular room materials',()=>{
+ it.each(['l-right','bay','notch','cross'] as const)('persists and builds a connected %s footprint',shape=>{
+  const input=reinstantiateSpace(spaceCompilerFixture(),space=>({...space,width:10,height:8,shape,wall:'stone-brick',floor:'jade',objectSlots:[],ports:[{id:spatialId('entry'),name:'Entry',x:5,y:7}]}));
+  const loaded=deserialize(serialize(input));
+  const result=compileSpatialOccurrence(loaded,{occurrenceId:spaceRoot});
+  const map=result.maps[own(fixtureDocument(result).occurrences,spaceRoot).bindings[0]!.mapId]!;
+  const reached=computeReachableCells(result,map,7,11);
+  const floor=[];for(let y=4;y<12;y++)for(let x=2;x<12;x++)if(isPassableLanding(result,map,x,y)){floor.push(`${x},${y}`);expect(reached.has(`${x},${y}`)).toBe(true);}
+  expect(floor.length).toBeLessThan(80);expect(floor.length).toBeGreaterThan(30);
+  expect(map.lowerTiles).toContain(13);expect(map.lowerTiles).toContain(135);
+ });
+ it('preserves per-room shapes and different floor materials across save/load',()=>{
+  const input=reinstantiateSpace(spaceCompilerFixture(),space=>({...space,width:13,height:8,objectSlots:[],ports:[{id:spatialId('entry'),name:'Entry',x:4,y:7}],interiorLayout:{rooms:[{id:spatialId('main'),name:'Main',x:0,y:0,width:8,height:8,shape:'notch',floor:'gravel'},{id:spatialId('side'),name:'Side',x:9,y:3,width:4,height:5,floor:'jade'}],doorways:[{x:8,y:5}]}}));
+  const loaded=deserialize(serialize(input));const result=compileSpatialOccurrence(loaded,{occurrenceId:spaceRoot});const map=result.maps[own(fixtureDocument(result).occurrences,spaceRoot).bindings[0]!.mapId]!;
+  expect(map.lowerTiles).toContain(42);expect(map.lowerTiles).toContain(13);expect(computeReachableCells(result,map,6,11).has('12,10')).toBe(true);
+ });
+});

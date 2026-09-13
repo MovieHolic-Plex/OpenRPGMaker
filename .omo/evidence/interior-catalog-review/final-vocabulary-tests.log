@@ -1,0 +1,14 @@
+
+ RUN  v3.2.4 /home/main/.codex/worktrees/2ece/rpg-zzu
+
+ ✓ test/spatialInteriorVocabulary.test.ts (7 tests) 3312ms
+   ✓ frozen interior placement vocabulary > freezes snap/role alongside pixels and survives project save/load  691ms
+   ✓ frozen interior placement vocabulary > freezes effective upper wall pixels and preserves the wall under a window  343ms
+   ✓ frozen interior placement vocabulary > keeps wall investigation reachable after compiling and saving  595ms
+   ✓ frozen interior placement vocabulary > does not consult edited live kit metadata when recompiling a frozen occurrence  538ms
+   ✓ frozen interior placement vocabulary > keeps legacy snapshots without metadata at their original floor placement  707ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  20:03:49
+   Duration  10.66s (transform 4.67s, setup 0ms, collect 6.67s, tests 3.31s, environment 0ms, prepare 159ms)

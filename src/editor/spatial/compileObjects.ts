@@ -23,8 +23,9 @@ export function frozenObject(occurrence: SpatialAssociatedOccurrence) {
     tiles: Array.from({ length: raster.width }, (_, x) => cells.get(`${x},${y},lower`) ?? -1),
     upperTiles: Array.from({ length: raster.width }, (_, x) => cells.get(`${x},${y},upper`) ?? -1),
   }));
-  const kit: SectionStructureKitDef = { id: occurrence.id, kind: "section", name: design.name,
-    width: raster.width, height: raster.height, rows, learnedFrom: "db-authored" };
+  const kit: SectionStructureKitDef = { id: raster.interior?.id ?? occurrence.id, kind: "section", name: design.name,
+    width: raster.width, height: raster.height, rows, learnedFrom: "db-authored",
+    ...(raster.interior ? {ai: {description: "", placementRules: "", snap: raster.interior.snap, interiorRole: raster.interior.role}} : {}) };
   return { design, raster, object: interiorObjectFromKit(kit) };
 }
 
@@ -35,7 +36,7 @@ export function objectPorts(object: CompiledObject) {
   }));
 }
 
-export function placedObject(occurrence: SpatialAssociatedOccurrence, origin: SpatialPoint, required: boolean): CompiledObject {
+export function placedObject(occurrence: SpatialAssociatedOccurrence, origin: SpatialPoint, required: boolean, wallMounted = false): CompiledObject {
   const { design, raster } = frozenObject(occurrence);
   const left = Math.min(0, ...occurrence.snapshot.ports.map(port => port.x));
   const top = Math.min(0, ...occurrence.snapshot.ports.map(port => port.y));
@@ -45,12 +46,12 @@ export function placedObject(occurrence: SpatialAssociatedOccurrence, origin: Sp
     roomId: occurrence.parentId ?? occurrence.id, thingId: occurrence.id, objectId: occurrence.id,
     label: design.name, chips: design.chips, required,
     cells: raster.cells.map(cell => ({ ...cell, x: origin.x + cell.x, y: origin.y + cell.y })),
-    anchor: { x: origin.x + Math.floor(raster.width / 2), y: origin.y + raster.height - 1 },
+    anchor: { x: origin.x + Math.floor(raster.width / 2), y: origin.y + (wallMounted ? Math.max(2, raster.height - 1) : raster.height - 1) },
   } };
 }
 
 /** Mutates only the compiler's detached raster after preflight of the entire assembly. */
-export function stampFrozenObject(context: { readonly project: Project; readonly map: GameMap; readonly area: SpatialRect },
+export function stampFrozenObject(context: { readonly project: Project; readonly map: GameMap; readonly area: SpatialRect; readonly upperWallCells?: ReadonlySet<string> },
   object: CompiledObject, previous?: CompiledObject): void {
   const { raster } = frozenObject(object.occurrence);
   const { map, project, area } = context;
@@ -68,7 +69,8 @@ export function stampFrozenObject(context: { readonly project: Project; readonly
   for (const cell of [...oldCells, ...object.placement.cells]) {
     const i = cell.y * map.width + cell.x;
     const point = `${cell.x},${cell.y}`;
-    if ((!oldPoints.has(point) && !isPassableLanding(project, map, cell.x, cell.y))
+    if ((!oldPoints.has(point) && !isPassableLanding(project, map, cell.x, cell.y)
+        && !(cell.layer === "upper" && context.upperWallCells?.has(point)))
       || (map.upperTiles[i] !== -1 && !oldUpper.has(point))
       || map.lowerTileStacks?.[i]?.length || map.upperTileStacks?.[i]?.length
       || map.events.some(event => event.x === cell.x && event.y === cell.y)) {

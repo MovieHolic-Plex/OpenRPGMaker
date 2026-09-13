@@ -74,7 +74,9 @@ export function registerHouseSpatialCatalog(input: Project) {
         ...(spec.down ? [slot("stairs-down", "stairs_down", 6, 9)] : []),
         ...(spec.up ? [slot("stairs-up", "stairs_small", 9, 2)] : [])],
     };
-    put(spaces, space);
+    // A reviewed physical floor plan owns its furniture and partition layout.
+    // Re-registering facade studies must not reset it to the old empty 12×10 seed.
+    if (!spaces[space.id]?.interiorLayout) put(spaces, space);
   }
   const registered = [];
   for (const { study, floors } of HOUSE_CATALOG_STUDIES) {

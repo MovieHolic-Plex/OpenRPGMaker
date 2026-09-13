@@ -1,0 +1,14 @@
+{
+  "baseline": "pre-change HEAD",
+  "files": 33,
+  "head": {
+    "passed": 298,
+    "failed": 33
+  },
+  "current": {
+    "passed": 298,
+    "failed": 33
+  },
+  "newFailingCases": [],
+  "resolvedFailingCases": []
+}

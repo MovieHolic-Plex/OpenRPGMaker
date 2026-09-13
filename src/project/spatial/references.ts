@@ -84,7 +84,8 @@ function validateLibrary(library: S.SpatialLibrary, context: LibraryContext): Re
     edges.set(space.id, space.objectSlots.map((slot, i) => {
       own(library.objects, slot.objectDesignId, `${path}.objectSlots[${i}].objectDesignId`);
       switch (slot.placement.mode) {
-        case "fixed": bounds([slot.placement], space, `${path}.objectSlots[${i}].placement`); break;
+        case "fixed": bounds([slot.placement], space, `${path}.objectSlots[${i}].placement`);
+          assert(!slot.placement.wallOverlap || space.environment === "interior", `${path}.objectSlots[${i}].placement.wallOverlap: interior only`); break;
         case "auto": break;
         default: assertNever(slot.placement);
       }

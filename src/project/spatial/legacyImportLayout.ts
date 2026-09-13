@@ -16,7 +16,7 @@ export function legacyRoomSize(place: ConceptPlaceRecord): Pick<SpatialRect, "wi
   const shape = place.shape ?? "rect";
   switch (shape) {
     case "rect": return box;
-    case "l": case "alcove": return { width: box.width + 2, height: box.height + 3 };
+    case "l": case "alcove": case "l-right": case "bay": case "notch": case "cross": return { width: box.width + 2, height: box.height + 3 };
     default: return unreachable(shape);
   }
 }
