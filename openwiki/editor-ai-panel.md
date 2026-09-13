@@ -42,6 +42,82 @@
   클러스터 AI 모달, 조수 QA 브리지(`aiAssistantBridge` — DB AI 바가 이걸 쓴다), 벤치마크/QA 스크립트.
   각자 표면의 엔진이라 조수 창 경로와 무관하고, Pi 이관은 별도 작업이다.
 
+## Five model roles and whole-map harmony review (2026-09-14)
+
+The main Pi chat route uses **Ultrabrain** for planning and final map judgement,
+**Deep** for implementation/tool work, **Writer** for narrative prose, **Vision** for
+image observations, and the existing **Image** selection for image generation.
+`modelRoles.ts` resolves `roleModels.{vision,writer,deep}` independently; missing roles
+migrate from legacy `model` (writer/vision) and `liteModel` (deep). Explicit ids are preserved.
+The legacy fields remain compatibility aliases. Once explicit role settings are saved,
+retained region sessions select Ultrabrain for their supervisor and Deep via
+the Deep role; provider and effort travel with each role. `resolveSurfaceAiConfig`
+selects Vision for tileset analysis, Deep for region/cluster/event-command, and
+Ultrabrain for supervisor surfaces. Cast-sheet prose uses Writer. The small intent
+classifier remains a non-reasoning, 4096-token routing call; it must not inherit
+Deep's expensive effort or the editor's 200000 output budget. Legacy/test configs
+without role selections retain their prior behavior.
+Provider/model/effort for each LLM role are independent of the autonomy dial. Image keeps
+`imageProviderId`/`imageModel` and the existing `imageGenerationClient` path.
+
+`aiPiAgentCommand` runs one read-only Ultrabrain plan across the requested scope before
+single-mode Deep execution. Planning errors/empty plans stop execution. Plan-only turns
+always enforce read-only and use Ultrabrain alone, even if the caller omitted `readOnly`.
+Read-only questions skip the extra planning phase. Team mode uses Ultrabrain as its existing
+orchestrator (planning plus assignments), while builders and structural reviewers use Deep.
+With explicit role selections, the Deep selection takes precedence over legacy team member
+model overrides; the team editor points users to AI role settings instead of offering
+a model override that would be ignored. Team role ids (builder/reviewer) are task responsibilities, not model tiers.
+`consult_writer` delegates prose on demand and returns text for Deep to apply; it has no
+mutation tools. It carries cancellation and rejects incomplete output. Mechanical tasks
+need not call Writer. The Node auth owner resolves each selected provider's credentials and
+passes a server-only provider-key map to the worker; child calls never reuse another
+provider's credential. Plan-only calls do not receive the Writer consultation tool.
+
+
+`aiPiAgentCommand` reviews the merged, postprocessed Pi draft before presenting/applying it.
+`src/ai/ultrabrainReview.ts` selects visually changed maps, but sends each **whole map**,
+not just edited regions: one PNG up to 1536 px, no tile-array dump or fixed 16-image fanout.
+Vision first reports visible evidence; Ultrabrain then judges palette, density, proportions
+and relationships against the author request using **the same original whole image** plus
+Vision observations. Neither phase has mutation tools. `ultrabrainImage.ts` uses the editor screenshot layer compositor
+(`drawMapTileLayer`) for terrain quarters and tile backing, with actual event sprites between
+layers. It does not claim passability/runtime proof from a still.
+Read-only/unchanged maps incur no review call. Shared renderer limitations (backgrounds,
+ambiguous event states, unavailable assets) remain visible; missing image delivery, malformed
+or truncated verdicts and cancellation never count as approval. Draft changes stay isolated.
+Negative/unavailable reviews keep the existing manual proposal card even in auto-apply mode;
+only all-positive review allows automatic application. Findings appear in chat and the board log.
+
+AI settings exposes five role sections, including **Ultrabrain · 계획과 최종 판단**.
+`ultrabrainConfig.ts` defaults to Google Antigravity / `gemini-3.8-flash` / `high`.
+Writer model/provider changes and the autonomy dial do not overwrite it. These preferences
+live in `oprn:ai-config`, not the project database. No new credential store is used.
+
+The old 2026-09-10 claim that catalog absence proves Gemini 3.8 is unavailable is obsolete.
+OMP 17.4's bundled catalog is still missing it, but direct OAuth wire `gemini-3.8-flash-high`
+with `thinkingLevel: HIGH` returned OK on 2026-09-14. `scripts/lib/ohMyPiModel.ts` provides a
+narrow compatibility entry using 3.7's transport metadata until upstream includes 3.8.
+Both Pi and completion use this exact resolver. Unknown explicit IDs now fail instead of
+silently changing models; `loadAiConfig` also preserves explicit IDs. Completion uses
+`completeSimple` and maps the envelope's reasoning effort and output limit into SDK options,
+so selecting high actually reaches the high wire route.
+
+Coverage: `modelRoles.test.ts`, `piWriterTool.test.ts`, `piAgentTeamRuntime.test.ts`,
+`piAgentRunOutcome.test.ts`, `ultrabrainReview.test.ts`, `piAgentModelFallback.bun.test.ts`,
+`ohMyPiComplete.bun.test.ts` (real SDK + mock fetch asserts model/effort/image wire).
+Browser replay: `QA_BASE_URL=http://127.0.0.1:<port> node scripts/qa/ultrabrain.mjs`
+(mock completion by default; `--live` exercises existing OAuth). It verifies independent
+settings persistence and whole-image review without writing any project. Evidence:
+`output/evidence/ultrabrain/settings.png`, `specialists.png`, `review-input.png`.
+Live provider verification can run without Chromium after capture:
+`node scripts/qa/model-roles-wire.mjs` checks Vision 3.7/medium → Ultrabrain 3.8/high
+with the same PNG; `bun scripts/qa/model-role-plan.ts` verifies read-only Ultrabrain Pi
+planning, and `--writer` verifies an actual Deep → consult_writer call. These write
+local QA evidence only (`roles-wire.json`, `plan-wire.json`, `writer-wire.json`).
+All three live checks passed on 2026-09-14. Both image-review phases cap output at 4096:
+forwarding the generic editor default of 200000 to Vision caused a verified HTTP 400.
+
 ## Retained map planning items and explicit reuse (2026-09-10, OPRN-019)
 
 An assistant `BuildSpec` remains **session** state: `assistantSession.specsByMap` replaces the

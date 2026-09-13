@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { clearToolImageEventSpriteCache } from "@/ai/toolImageEventSprites";
 import { renderToolImages, type RenderedToolImage } from "@/ai/toolImageRenderer";
+import { renderHarmonyMapImages } from "@/ai/ultrabrainImage";
 import { charsetGraphic } from "@/editor/tools/eventCompile";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createBlankProject } from "@/project/defaults";
@@ -21,6 +22,21 @@ afterEach(() => {
 });
 
 describe("show_map_region event depiction", () => {
+  it("Ultrabrain preserves whole-map detail and events at the far edge within its image budget", async () => {
+    restoreDom = installToolImageRasterDom();
+    const project = seededProject(), map = requireMap(project);
+    map.width = 100; map.height = 80;
+    map.lowerTiles = Array(8000).fill(0); map.upperTiles = Array(8000).fill(-1);
+    placeNpc(map, multiPageEvent("edge", 99, 79, [pageGraphic("p0", charsetGraphic("tex_easyrpg_charset_people1", 0))]));
+    const before = (await renderHarmonyMapImages(project, map))[0]!;
+    const raster = decodeDataUrlPng(before.dataUrl);
+    expect(raster.width).toBeGreaterThan(1000);
+    expect(raster.width).toBeLessThanOrEqual(1536);
+    expect(raster.height / raster.width).toBeCloseTo(0.8);
+    requireEvent(map, "edge").x = 97;
+    const after = (await renderHarmonyMapImages(project, map))[0]!;
+    expect(after.dataUrl).not.toBe(before.dataUrl);
+  });
   it("changes pixels when a charset event moves inside the region", async () => {
     restoreDom = installToolImageRasterDom();
     const project = seededProject();

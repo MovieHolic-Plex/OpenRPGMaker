@@ -97,14 +97,14 @@ describe("scrubStoredAiCredentials", () => {
 describe("loadAiConfig — 제공자는 Antigravity·Codex 둘뿐이다", () => {
   it("사라진 제공자(zai)는 기본 제공자로 마이그레이션한다", () => {
     // zai 는 레지스트리에서 사라진 id 다 — parseOhMyPiProvider 가 기본 제공자로 스냅하고,
-    // 모델도 남의 네임스페이스이므로 그 제공자의 기본 모델로 함께 교정된다.
+    // 모델 선택은 보존한다. 지원되지 않는 조합은 전송 시 명시적으로 거부한다.
     // (Codex 는 사라지지 않았으므로 그 선택은 보존된다 — test/aiAntigravityOnly.test.ts)
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: "zai", model: "glm-5.3" }));
 
     const config = loadAiConfig();
 
     expect(config.providerId).toBe("google-antigravity");
-    expect(config.model).toBe("gemini-3.7-flash");
+    expect(config.model).toBe("glm-5.3");
     // 전송 축은 그대로 동반 서비스에 고정된다 — 브라우저에 비밀도 죽은 baseUrl 도 남지 않는다.
     expect(config.authMode).toBe("chatgpt");
     expect(config.baseUrl).toBe("");
@@ -127,6 +127,6 @@ describe("loadAiConfig — 제공자는 Antigravity·Codex 둘뿐이다", () => 
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ authMode: "chatgpt", model: "gpt-5.6-sol" }));
     const config = loadAiConfig();
     expect(config.providerId).toBe("google-antigravity");
-    expect(config.model).toBe("gemini-3.7-flash");
+    expect(config.model).toBe("gpt-5.6-sol");
   });
 });

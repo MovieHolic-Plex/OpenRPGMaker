@@ -107,8 +107,8 @@ describe("제공자는 Antigravity·Codex 둘뿐이다", () => {
   });
 });
 
-describe("모델 교정은 선택된 제공자 기준이다", () => {
-  it("Antigravity 에 남의 네임스페이스 모델이 저장돼 있으면 gemini 기본으로 교정한다", () => {
+describe("명시적 모델 선택은 자동으로 대체하지 않는다", () => {
+  it("Antigravity에서도 명시적 모델 ID를 유지하여 전송 시 오류를 드러낸다", () => {
     for (const stale of ["z-ai/glm-5.2-ultrafast", "cpen/gpt-5-6-luna", "gpt-5.6-sol", "claude-opus-4-8", "mimo-v2.5"]) {
       storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
         providerId: ANTIGRAVITY_PROVIDER_ID,
@@ -117,14 +117,13 @@ describe("모델 교정은 선택된 제공자 기준이다", () => {
       }));
 
       const loaded = loadAiConfig();
-      expect(loaded.model, stale).toBe("gemini-3.7-flash");
-      expect(loaded.liteModel, stale).toBe("gemini-3.7-flash");
+      expect(loaded.model, stale).toBe(stale);
+      expect(loaded.liteModel, stale).toBe(stale);
     }
   });
 
-  it("Codex 에 남의 네임스페이스 모델이 저장돼 있으면 Codex 기본으로 교정한다", () => {
-    // 예전에는 제공자를 Antigravity 로 되돌려 모델도 gemini 로 끌고 갔다. 이제 교정 기준은
-    // **사용자가 고른 제공자**다 — Codex 를 고른 사용자는 Codex 기본 모델로 낫는다.
+  it("Codex에서도 명시적 모델 ID를 유지한다", () => {
+    // Preserve both selections; the exact runtime resolver rejects unsupported combinations.
     for (const stale of ["gemini-3.7-flash", "z-ai/glm-5.2-ultrafast", "cpen/gpt-5-6-luna", "gpt-5.1-codex"]) {
       storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
         providerId: CODEX_PROVIDER_ID,
@@ -134,22 +133,22 @@ describe("모델 교정은 선택된 제공자 기준이다", () => {
 
       const loaded = loadAiConfig();
       expect(loaded.providerId, stale).toBe(CODEX_PROVIDER_ID);
-      expect(loaded.model, stale).toBe("gpt-5.6-sol");
-      expect(loaded.liteModel, stale).toBe("gpt-5.6-sol");
+      expect(loaded.model, stale).toBe(stale);
+      expect(loaded.liteModel, stale).toBe(stale);
     }
   });
 
   // 2026-08-26 실측: 기본값을 한동안 `gemini-3.7-flash-high` 로 강제했는데 Cloud Code Assist 가
   // 그 ID 를 404 `Requested entity was not found` 로 거부한다 — Antigravity 에서 `-high` 는
   // 독립 모델이 아니라 `thinking.effortRouting` 의 대상 이름이다. 그 사이에 에디터를 켠
-  // 사용자의 localStorage 에는 404 나는 ID 가 남아 있으므로, 로드할 때 스스로 낫게 만든다.
-  it("사고 강도 변형(-high/-medium/-low)이 저장돼 있으면 기본 모델로 교정한다", () => {
+  // 잘못된 ID는 그대로 드러내고 모델 설정에서 수정하게 한다.
+  it("잘못된 사고 강도 변형도 몰래 대체하지 않는다", () => {
     for (const broken of ["gemini-3.7-flash-high", "gemini-3.7-flash-medium", "gemini-3.7-flash-low"]) {
       storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ model: broken, liteModel: broken }));
 
       const loaded = loadAiConfig();
-      expect(loaded.model, broken).toBe("gemini-3.7-flash");
-      expect(loaded.liteModel, broken).toBe("gemini-3.7-flash");
+      expect(loaded.model, broken).toBe(broken);
+      expect(loaded.liteModel, broken).toBe(broken);
     }
   });
 

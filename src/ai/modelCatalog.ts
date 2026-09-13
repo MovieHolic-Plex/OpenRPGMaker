@@ -6,17 +6,8 @@ export interface AiModelCatalogGroup {
   readonly models: readonly string[];
 }
 
-/**
- * Codex(ChatGPT 구독) 경로에서 실제로 고를 수 있는 모델.
- *
- * 이 경로는 @oh-my-pi/pi-ai 가 전송을 맡고, 모델은 @oh-my-pi/pi-catalog 의
- * `getBundledModels("openai-codex")` 에서만 해석된다. 카탈로그에 없는 ID 를 보내면 오류가 아니라
- * **조용히 제공자 기본 모델로 떨어진다** — 실측(2026-08-21, 동반 서비스에 같은 본문을 모델만 바꿔 재생):
- *   gpt-5.5           → model=gpt-5.5  "OK"
- *   gpt-5.1-codex-max → model=gpt-5.5  "OK"   ← 카탈로그 밖. 요청한 모델이 무시됐다.
- * 그래서 목록은 pi-catalog 와 동일해야 한다(실측 2026-08-27 `getBundledModels("openai-codex")` 8종).
- * 첫 항목은 제공자 기본값(gpt-5.6-sol)을 유지한다.
- */
+/** OAuth model choices. The companion resolves exactly and rejects unknown IDs.
+ * Keep these in sync with pi-catalog plus verified local entries in ohMyPiModel.ts. */
 const CODEX_MODELS: readonly string[] = [
   "gpt-5.6-sol",
   "gpt-5.6-terra",
@@ -40,12 +31,12 @@ const CODEX_MODELS: readonly string[] = [
  * `Requested entity was not found` 로 거부한다. Antigravity 에서 `-high`/`-medium`/`-low` 는
  * 독립 모델이 아니라 `gemini-3.7-flash` 의 `thinking.effortRouting` 대상 이름이다.
  *
- * `gemini-3.8-flash` 도 없다 — 실측(2026-09-10) 결과 번들 17.4.0 의
- * `getBundledModels("google-antigravity")` 19종에 없고, 저장된 Pi 요청이 번들 첫 항목으로
- * 조용히 바뀌어 CCA 404 즉시 실패가 났다. 번들에 들어오면 그때 목록에 올린다.
+ * Gemini 3.8 Flash is provided by the local OMP catalog extension.
+ * OAuth wire gemini-3.8-flash-high / HIGH verified 2026-09-14.
  */
 const ANTIGRAVITY_MODELS: readonly string[] = [
   "gemini-3.7-flash",
+  "gemini-3.8-flash",
   "claude-opus-4-5",
   "claude-opus-4-6",
   "claude-sonnet-4-5",
@@ -110,11 +101,8 @@ export function defaultModelForAuthMode(authMode: "chatgpt" | "apiKey", provider
  * apiKey 전송(주입 게이트웨이)은 어떤 ID 든 허용한다 — 그 경로는 UI 가 없고, 설정을 직접 넣는
  * 소비자가 자기 게이트웨이의 모델 이름을 안다.
  *
- * companion 전송에서는 **선택된 제공자의 pi-catalog 목록에 속하는가**로 판정한다. 카탈로그 밖 ID 는
- * `resolveModel` 이 오류 대신 제공자 기본 모델로 조용히 강등시키므로(근거는 CODEX_MODELS 주석의
- * 실측), 다른 모델이 답한 줄 모르게 두기보다 미리 거부해 loadAiConfig 가 그 제공자의 기본값으로
- * 교정하게 한다. 이것이 남의 네임스페이스 ID(Antigravity 에 gpt-…, Codex 에 gemini-…, 옛 기본값
- * z-ai/… 같은 제공자 접두사)가 그대로 실려 나가 400 이 되던 실측 장애를 막는다.
+ * Companion settings validate provider membership for early feedback.
+ * The runtime rejects unsupported IDs explicitly; loading settings never substitutes a model.
  *
  * 예외 하나: Antigravity 는 gemini 네임스페이스를 번들링 밖이라도 통과시킨다 — 카탈로그는 굳어
  * 있는 스냅샷이고, 아직 번들링에 없는 새 gemini 변형을 사용자가 직접 입력하는 것은 정상 사용이다.

@@ -130,12 +130,19 @@ export async function createOhMyPiAdapters() {
     /** Pi 에이전트 실행. 워커의 NDJSON 본문(web ReadableStream)을 그대로 넘긴다. */
     async runAgent(provider, body, options = {}) {
       const apiKey = await resolveRequestApiKey(provider);
+      const providerApiKeys = { [provider]: apiKey };
+      for (const role of ["deep", "writer"]) {
+        const selected = body.roleModels?.[role];
+        if (selected?.provider && !(selected.provider in providerApiKeys)) {
+          providerApiKeys[selected.provider] = await resolveRequestApiKey(selected.provider);
+        }
+      }
       const port = await startWorker();
       // 브라우저가 끊으면(중단 버튼) 그 신호를 워커까지 넘긴다 — 안 그러면 에이전트는 끝까지 돈다.
       const response = await fetch(`http://127.0.0.1:${port}/agent/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ apiKey, request: { ...body, provider } }),
+        body: JSON.stringify({ apiKey, providerApiKeys, request: { ...body, provider } }),
         ...(options.signal ? { signal: options.signal } : {}),
       });
       if (!response.ok) {

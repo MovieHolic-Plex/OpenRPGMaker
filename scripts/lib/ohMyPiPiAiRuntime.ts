@@ -4,8 +4,8 @@
 // 이 파일은 이미 부혼 자겁문자열(apiKey)를 받아 모델 호출만 한다. pi-ai 는 bun:sqlite 를
 // 싣고 오므로 Bun 에서만 로드되며, 그 Bun 의존이 인증 경로로 새지 않는 것이 이 경계의 목적이다.
 
-import { complete } from "@oh-my-pi/pi-ai";
-import { getBundledModel, getBundledModels } from "@oh-my-pi/pi-catalog";
+import { completeSimple } from "@oh-my-pi/pi-ai";
+import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
 import { getOhMyPiProvider } from "../../src/ai/ohMyPiProviders.ts";
 import type { ImageDelivery } from "../../src/ai/imageDelivery.ts";
 import { convertUserContent, hasImagePart, ImageTransportError } from "./ohMyPiUserContent.ts";
@@ -134,16 +134,6 @@ function openaiToContextWithDelivery(provider: string, body: Record<string, unkn
   return { context: { systemPrompt, messages: converted as never[], tools }, imageDelivery };
 }
 
-function resolveModel(provider: string, modelId: string) {
-  const exact = getBundledModel(provider as never, modelId);
-  if (exact && typeof exact === "object" && "id" in exact) return exact;
-  const fallbackId = getOhMyPiProvider(provider)?.defaultModel;
-  if (fallbackId) {
-    const fallback = getBundledModel(provider as never, fallbackId);
-    if (fallback && typeof fallback === "object" && "id" in fallback) return fallback;
-  }
-  return getBundledModels(provider as never)[0];
-}
 
 function assistantToOpenAI(message: {
   content?: unknown[];
@@ -177,7 +167,7 @@ function assistantToOpenAI(message: {
       });
     }
   }
-  const finish = message.stopReason === "toolUse" ? "tool_calls" : "stop";
+  const finish = message.stopReason === "toolUse" ? "tool_calls" : message.stopReason === "length" ? "length" : "stop";
   return {
     id: `oh-my-pi-${Date.now()}`,
     object: "chat.completion",
@@ -199,10 +189,10 @@ function assistantToOpenAI(message: {
 export async function completeProvider(
   provider: string,
   body: Record<string, unknown>,
-  options?: { fetch?: typeof fetch; apiKey?: string },
+  options?: { fetch?: typeof fetch; apiKey?: string; signal?: AbortSignal },
 ) {
   const modelId = typeof body.model === "string" ? body.model : getOhMyPiProvider(provider)?.defaultModel ?? "";
-  const model = resolveModel(provider, modelId);
+  const model = resolveOhMyPiModel(provider, modelId);
   if (!model) {
     const err = new Error(`oh-my-pi 카탈로그에 ${provider} 모델이 없습니다`);
     (err as Error & { status?: number }).status = 400;
@@ -226,13 +216,23 @@ export async function completeProvider(
     };
   }
   const apiKey = options?.apiKey;
-  const message = await complete(model as never, context as never, {
+  const message = await completeSimple(model as never, context as never, {
     ...(apiKey ? { apiKey } : {}),
     fetch: options?.fetch,
+    signal: options?.signal,
+    ...completionThinkingOptions(body),
+    ...(typeof body.max_tokens === "number" ? { maxTokens: body.max_tokens } : {}),
     ...(provider === "google-antigravity" && context.tools?.length
       ? { onPayload: antigravityToolEnumPayload(model.id, context.tools) }
       : {}),
   } as never);
   const completion = assistantToOpenAI(message);
   return { stream: false, completion: { ...completion, image_delivery: imageDelivery } };
+}
+
+/** OpenAI envelope -> OMP simple options, which own wire model/effort routing. */
+export function completionThinkingOptions(body: Record<string, unknown>) {
+  const effort = (body.reasoning as { effort?: unknown } | undefined)?.effort;
+  return effort === "low" || effort === "medium" || effort === "high"
+    ? { reasoning: effort } : {};
 }
