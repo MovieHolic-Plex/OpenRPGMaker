@@ -102,6 +102,8 @@ export type SpatialLibrary = {
   readonly worlds: Readonly<Record<string, WorldDesign>>;
 };
 export type SpatialKitSnapshot = SpatialGraphic & {
+  /** Frozen placement vocabulary; absent in older snapshots (legacy floor behavior). */
+  readonly interior?: { readonly id: string; readonly snap: "wall-north" | "wall-any" | "floor" | "free"; readonly role: string };
   readonly width: number; readonly height: number;
   readonly cells: readonly (SpatialPoint & { readonly layer: "lower" | "upper"; readonly tile: number })[];
 };

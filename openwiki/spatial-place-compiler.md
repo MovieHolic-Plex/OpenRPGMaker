@@ -143,3 +143,60 @@ All 32 passable floor cells connect without crossing the exit trigger.
 `test/spatialWallOverlap.test.ts` covers exact layer placement, save/load/recompile,
 legacy behavior, missing support, lower-wall overwrite, object collision, and AI upsert.
 Evidence: `.omo/evidence/wall-overlap-interior/`.
+
+## Reviewed interior space catalog (2026-09-13)
+
+`rpg-zzu-house-template-gallery` contains 101 interior spaces: 93 reviewed existing
+records (including retained legacy facility-context identities) and eight new
+physically divided small interiors. `scripts/lib/reviewedInteriorCatalog.mts`
+authors the library; `scripts/publish-reviewed-interiors.mts --apply` fresh-loads,
+refreshes the cottage/3-floor inn/4-floor workshop through `edit_spatial_occurrence`,
+CAS-saves to Supabase, and compares the full reloaded project. Unrelated maps and
+start position are preserved. Registration is idempotent. Facade catalog replay
+must preserve an existing `interiorLayout` instead of resetting it to 12×10.
+
+- Existing bedrooms/storage remain room components, usually 5×3 or 7×4. Halls
+  and reading/chapel rooms are sized for their furniture; stretched context copies
+  use their original room dimensions. The three multi-floor house spaces now use
+  an 8×6 divided plan and preserve the `entry`/`down`/`up` port identities.
+- Eight `reviewed-interior:*` spaces (family, scholar, herbalist, craftsman,
+  inn-suite, clinic, farmhouse, watchhouse) use 9×6 or 10×7 floor plans, structural
+  partitions and fixed functional furnishing groups. The compiler adds shell
+  padding, so the displayed map/composition dimensions are larger than the floor.
+- Imported object identities and investigation/loot/sleep chips survive compact
+  graphic replacements. Cabinets use the reviewed transparent upper-layer kit.
+  Overlarge table assemblies use small tables/seating appropriate to these rooms.
+- Unbound imported `transfer` chips are replaced at the **space slot** with a
+  stair graphic and a named space port. The original object is retained. A place
+  must connect that port to a real destination; standalone spaces do not invent
+  self-transfers. This review does not author the legacy inn's whole connection graph.
+
+### Frozen placement vocabulary
+
+New `SpatialKitSnapshot.interior?` freezes `{id,snap,role}` from the resolved
+interior kit along with its pixels. Previously the synthetic occurrence ID lost
+all snap/role metadata, so windows and bookshelves were scattered on the floor.
+Wall-any objects freeze the upper-layer raster that the existing wall composer
+actually paints. The compiler does not consult live kit metadata after freezing.
+Older snapshots without this optional field retain their original floor behavior;
+explicit refresh captures the new semantics. Automatic wall investigations use
+an approachable floor anchor; fixed/standalone anchors remain unchanged.
+
+Automatic placement also preserves access to previously stamped required objects.
+Small corner props and tall wall objects must preserve reachable floor, just like
+large floor furniture. This prevents an optional crate or repeated beds from
+closing the only approach to an already placed object.
+
+Verification tools: `scripts/audit-interior-catalog.mts <project.json> <suffix> [seed]`
+compiles every interior through the actual compiler, reports missing objects,
+cluster errors and unreachable floor; `scripts/qa/render-interior-catalog.mjs`
+uses the native tile renderer for full contact sheets. `interior-catalog-editor.mjs`
+checks the real remote editor's space shelf. Runtime uses the dedicated
+`interior-catalog` scenario and `interior-catalog-routes.mts` for actual 3/4-floor
+stairs and bedroom visits; use `qa:runtime`, never editor play mode.
+
+Run each runtime example in a fresh player session with
+`QA_INTERIOR_HOUSE=inn-3f` (default) and `QA_INTERIOR_HOUSE=workshop-4f`.
+The first combined QA teleported during the preceding house exit and carried
+transition/route state into the next case. Independent sessions preserve actual
+walking assertions; they pass 12 and 15 beats, with no runtime errors.

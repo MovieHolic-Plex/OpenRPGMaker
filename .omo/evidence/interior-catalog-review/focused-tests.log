@@ -1,0 +1,354 @@
+
+ RUN  v3.2.4 /home/main/.codex/worktrees/2ece/rpg-zzu
+
+ ✓ test/spatialInteriorVocabulary.test.ts (5 tests) 2560ms
+   ✓ frozen interior placement vocabulary > freezes snap/role alongside pixels and survives project save/load  623ms
+   ✓ frozen interior placement vocabulary > freezes effective upper wall pixels and preserves the wall under a window  325ms
+   ✓ frozen interior placement vocabulary > keeps wall investigation reachable after compiling and saving  546ms
+   ✓ frozen interior placement vocabulary > does not consult edited live kit metadata when recompiling a frozen occurrence  464ms
+   ✓ frozen interior placement vocabulary > keeps legacy snapshots without metadata at their original floor placement  596ms
+ ✓ test/spatialOwnedObjectCompile.test.ts (13 tests) 8348ms
+   ✓ paints the changed frozen raster when old owned graphic authorization is supplied  1002ms
+   ✓ removes vacated graphic cells without enlarging ownership when a replacement shrinks  598ms
+   ✓ retains old graphics when only the live source changes without explicit refresh  593ms
+   ✓ rejects without mutation when replacement encounters old-digest  593ms
+   ✓ rejects without mutation when replacement encounters adopted-digest  629ms
+   ✓ rejects without mutation when replacement encounters target  576ms
+   ✓ rejects without mutation when replacement encounters oversized  598ms
+   ✓ rejects without mutation when replacement encounters atlas  568ms
+   ✓ rejects without mutation when replacement encounters new-event  583ms
+   ✓ rejects without mutation when replacement encounters old-event  570ms
+   ✓ rejects without mutation when replacement encounters new-stack  663ms
+   ✓ rejects without mutation when replacement encounters blocked-floor  759ms
+   ✓ rejects without mutation when replacement encounters port  609ms
+ ✓ test/spatialSpaceCompiler.test.ts (33 tests) 9670ms
+   ✓ spatial space compiler > paints the frozen mixed-layer assembly when a space is compiled  456ms
+   ✓ spatial space compiler > preserves the rect footprint and two independent beds when composed  400ms
+   ✓ spatial space compiler > preserves the l footprint and two independent beds when composed  320ms
+   ✓ spatial space compiler > preserves the alcove footprint and two independent beds when composed  316ms
+   ✓ spatial space compiler > keeps the missing repetition absent when the first bed occurrence was deleted  333ms
+   ✓ spatial space compiler > preserves per-occurrence bed selections when one frozen child uses a horizontal bed  314ms
+   ✓ spatial space compiler > keeps frozen cells when source designs are removed and the live kit is replaced  435ms
+   ✓ spatial space compiler > returns identical IDs, cells and events when compiled again after project IO  697ms
+   ✓ spatial space compiler > rejects ownership when generated pixels have been edited  379ms
+   ✓ spatial space compiler > uses the backend mat floor without legacy filler when no objects remain  311ms
+   ✓ spatial space compiler > rejects shared raster authority when a child projection is changed to an owned binding  405ms
+   ✓ spatial space compiler > paints explicit rectangle and polygon materials when an outdoor space is compiled  440ms
+   ✓ spatial space compiler > keeps object event IDs stable when the same standalone stamp is compiled after reload  535ms
+ ✓ test/spatialWallOverlap.test.ts (6 tests) 2952ms
+   ✓ fixed furniture wall overlap > keeps the cabinet base on the floor and the wall intact through save/load/recompile  1081ms
+   ✓ fixed furniture wall overlap > accepts explicit overlap through the actual AI upsert schema  847ms
+ ✓ test/interiorConceptRoutes.test.ts (16 tests) 4170ms
+   ✓ all AI interior routes consume concept bundles > author_house preserves authored inn flights and connects only the authored descent on each floor  1032ms
+   ✓ all AI interior routes consume concept bundles > run_interior_room_pipeline records edited concept contents before building  310ms
+   ✓ all AI interior routes consume concept bundles > author_house uses edited facility layout, objects, and keeps its return transfer  404ms
+   ✓ all AI interior routes consume concept bundles > re-furnishing a room replaces only its generated interactions without duplicate ids  605ms
+   ✓ all AI interior routes consume concept bundles > author_house 는 interiorPlan 설계를 그대로 짓는다(템플릿 대신)  339ms
+   ✓ all AI interior routes consume concept bundles > author_house 는 설계 없이 지으면 템플릿 찍기를 경고로 되먹인다  339ms
+ ✓ test/spatialSerialization.test.ts (20 tests) 12412ms
+   ✓ opaque spatial serialization with function serialize(project) {
+  return JSON.stringify(projectJson(project));
+} > preserves complete authored data when 'opaque-desk' roundtrips  795ms
+   ✓ opaque spatial serialization with function serialize(project) {
+  return JSON.stringify(projectJson(project));
+} > preserves complete authored data when 'opaque-room' roundtrips  644ms
+   ✓ opaque spatial serialization with function serialize(project) {
+  return JSON.stringify(projectJson(project));
+} > preserves complete authored data when 'opaque-inn' roundtrips  542ms
+   ✓ opaque spatial serialization with function serialize(project) {
+  return JSON.stringify(projectJson(project));
+} > preserves complete authored data when 'opaque-country' roundtrips  589ms
+   ✓ opaque spatial serialization with function serialize(project) {
+  return JSON.stringify(projectJson(project));
+} > preserves complete authored data when 'opaque-kingdom' roundtrips  657ms
+   ✓ opaque spatial serialization with function serialize(project) {
+  return JSON.stringify(projectJson(project));
+} > preserves complete authored data when 'opaque-occ-a' roundtrips  595ms
+   ✓ opaque spatial serialization with function serialize(project) {
+  return JSON.stringify(projectJson(project));
+} > preserves complete authored data when 'opaque-unreferenced-space' roundtrips  526ms
+   ✓ opaque spatial serialization with function serialize(project) {
+  return JSON.stringify(projectJson(project));
+} > preserves complete authored data when 'opaque-historical-snapshot' roundtrips  687ms
+   ✓ opaque spatial serialization with function serialize(project) {
+  return JSON.stringify(projectJson(project));
+} > preserves distinct resource metadata when retired owner fields are omitted  581ms
+   ✓ opaque spatial serialization with function serialize(project) {
+  return JSON.stringify(projectJson(project));
+} > preserves accepted non-owner data when it aliases a retired tileset owner  692ms
+   ✓ opaque spatial serialization with function serializePretty(project) {
+  return JSON.stringify(projectJson(project), null, 2);
+} > preserves complete authored data when 'opaque-desk' roundtrips  660ms
+   ✓ opaque spatial serialization with function serializePretty(project) {
+  return JSON.stringify(projectJson(project), null, 2);
+} > preserves complete authored data when 'opaque-room' roundtrips  730ms
+   ✓ opaque spatial serialization with function serializePretty(project) {
+  return JSON.stringify(projectJson(project), null, 2);
+} > preserves complete authored data when 'opaque-inn' roundtrips  600ms
+   ✓ opaque spatial serialization with function serializePretty(project) {
+  return JSON.stringify(projectJson(project), null, 2);
+} > preserves complete authored data when 'opaque-country' roundtrips  565ms
+   ✓ opaque spatial serialization with function serializePretty(project) {
+  return JSON.stringify(projectJson(project), null, 2);
+} > preserves complete authored data when 'opaque-kingdom' roundtrips  665ms
+   ✓ opaque spatial serialization with function serializePretty(project) {
+  return JSON.stringify(projectJson(project), null, 2);
+} > preserves complete authored data when 'opaque-occ-a' roundtrips  642ms
+   ✓ opaque spatial serialization with function serializePretty(project) {
+  return JSON.stringify(projectJson(project), null, 2);
+} > preserves complete authored data when 'opaque-unreferenced-space' roundtrips  547ms
+   ✓ opaque spatial serialization with function serializePretty(project) {
+  return JSON.stringify(projectJson(project), null, 2);
+} > preserves complete authored data when 'opaque-historical-snapshot' roundtrips  540ms
+   ✓ opaque spatial serialization with function serializePretty(project) {
+  return JSON.stringify(projectJson(project), null, 2);
+} > preserves distinct resource metadata when retired owner fields are omitted  549ms
+   ✓ opaque spatial serialization with function serializePretty(project) {
+  return JSON.stringify(projectJson(project), null, 2);
+} > preserves accepted non-owner data when it aliases a retired tileset owner  596ms
+ ❯ test/interiorConceptAssemblies.test.ts (60 tests | 57 failed) 13652ms
+   ✓ reviewed interior assemblies > expands the table body and apron without duplicating corners 4ms
+   ✓ reviewed interior assemblies > preserves room shape through project save/load and rejects unknown shapes  310ms
+   ✓ reviewed interior assemblies > keeps user metadata, runtime overrides and edited furniture during migration 178ms
+   × reviewed interior assemblies > inn seed 7: complete supported tables, wall clocks and no placement warnings 584ms
+     → expected [ …(3) ] to deeply equal []
+   × reviewed interior assemblies > house seed 7: complete supported tables, wall clocks and no placement warnings 316ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > shop seed 7: complete supported tables, wall clocks and no placement warnings 285ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > tavern seed 7: complete supported tables, wall clocks and no placement warnings 276ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > library seed 7: complete supported tables, wall clocks and no placement warnings 270ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > smithy seed 7: complete supported tables, wall clocks and no placement warnings 269ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > church seed 7: complete supported tables, wall clocks and no placement warnings 261ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > warehouse seed 7: complete supported tables, wall clocks and no placement warnings 273ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > guild seed 7: complete supported tables, wall clocks and no placement warnings 274ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > clinic seed 7: complete supported tables, wall clocks and no placement warnings 273ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > barracks seed 7: complete supported tables, wall clocks and no placement warnings 237ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > school seed 7: complete supported tables, wall clocks and no placement warnings 299ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > townhall seed 7: complete supported tables, wall clocks and no placement warnings 258ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > alchemist seed 7: complete supported tables, wall clocks and no placement warnings 206ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > bakery seed 7: complete supported tables, wall clocks and no placement warnings 210ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > farmhouse seed 7: complete supported tables, wall clocks and no placement warnings 210ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > manor seed 7: complete supported tables, wall clocks and no placement warnings 194ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > hunter seed 7: complete supported tables, wall clocks and no placement warnings 237ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > bank seed 7: complete supported tables, wall clocks and no placement warnings 239ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > inn seed 19: complete supported tables, wall clocks and no placement warnings 236ms
+     → expected [ …(3) ] to deeply equal []
+   × reviewed interior assemblies > house seed 19: complete supported tables, wall clocks and no placement warnings 195ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > shop seed 19: complete supported tables, wall clocks and no placement warnings 195ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > tavern seed 19: complete supported tables, wall clocks and no placement warnings 197ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > library seed 19: complete supported tables, wall clocks and no placement warnings 197ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > smithy seed 19: complete supported tables, wall clocks and no placement warnings 216ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > church seed 19: complete supported tables, wall clocks and no placement warnings 231ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > warehouse seed 19: complete supported tables, wall clocks and no placement warnings 225ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > guild seed 19: complete supported tables, wall clocks and no placement warnings 227ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > clinic seed 19: complete supported tables, wall clocks and no placement warnings 208ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > barracks seed 19: complete supported tables, wall clocks and no placement warnings 207ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > school seed 19: complete supported tables, wall clocks and no placement warnings 216ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > townhall seed 19: complete supported tables, wall clocks and no placement warnings 239ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > alchemist seed 19: complete supported tables, wall clocks and no placement warnings 205ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > bakery seed 19: complete supported tables, wall clocks and no placement warnings 207ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > farmhouse seed 19: complete supported tables, wall clocks and no placement warnings 209ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > manor seed 19: complete supported tables, wall clocks and no placement warnings 217ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > hunter seed 19: complete supported tables, wall clocks and no placement warnings 227ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > bank seed 19: complete supported tables, wall clocks and no placement warnings 239ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > inn seed 42: complete supported tables, wall clocks and no placement warnings 256ms
+     → expected [ …(3) ] to deeply equal []
+   × reviewed interior assemblies > house seed 42: complete supported tables, wall clocks and no placement warnings 223ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > shop seed 42: complete supported tables, wall clocks and no placement warnings 190ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > tavern seed 42: complete supported tables, wall clocks and no placement warnings 192ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > library seed 42: complete supported tables, wall clocks and no placement warnings 199ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > smithy seed 42: complete supported tables, wall clocks and no placement warnings 214ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > church seed 42: complete supported tables, wall clocks and no placement warnings 208ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > warehouse seed 42: complete supported tables, wall clocks and no placement warnings 215ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > guild seed 42: complete supported tables, wall clocks and no placement warnings 209ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > clinic seed 42: complete supported tables, wall clocks and no placement warnings 210ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > barracks seed 42: complete supported tables, wall clocks and no placement warnings 201ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > school seed 42: complete supported tables, wall clocks and no placement warnings 207ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > townhall seed 42: complete supported tables, wall clocks and no placement warnings 190ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > alchemist seed 42: complete supported tables, wall clocks and no placement warnings 203ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > bakery seed 42: complete supported tables, wall clocks and no placement warnings 205ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > farmhouse seed 42: complete supported tables, wall clocks and no placement warnings 202ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > manor seed 42: complete supported tables, wall clocks and no placement warnings 190ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > hunter seed 42: complete supported tables, wall clocks and no placement warnings 190ms
+     → expected [ Array(1) ] to deeply equal []
+   × reviewed interior assemblies > bank seed 42: complete supported tables, wall clocks and no placement warnings 187ms
+     → expected [ Array(1) ] to deeply equal []
+ ✓ test/spatialTools.test.ts (29 tests) 26429ms
+   ✓ registered canonical spatial tools > accepts a settlement region design through the schema and domain boundaries  965ms
+   ✓ registered canonical spatial tools > discovers tagged exterior objects beyond prompt samples and preserves complete place bodies  891ms
+   ✓ registered canonical spatial tools > changes only the source when a revision is explicitly replaced  628ms
+   ✓ registered canonical spatial tools > compiles only on the detached draft when an issued preview is applied  1148ms
+   ✓ registered canonical spatial tools > rejects forged preview acceptance without mutation  690ms
+   ✓ registered canonical spatial tools > rejects stale preview acceptance without mutation  883ms
+   ✓ registered canonical spatial tools > rejects foreign preview acceptance without mutation  704ms
+   ✓ registered canonical spatial tools > rejects spent preview acceptance without mutation  1261ms
+   ✓ registered canonical spatial tools > rejects malformed hierarchy when a generic write bypasses spatial tools  343ms
+   ✓ registered canonical spatial tools > retains preview lineage when the normal assistant draft is cloned  1249ms
+   ✓ edit_spatial_occurrence lifecycle > moves a region child inside its world parent and recompiles the containing map  4852ms
+   ✓ edit_spatial_occurrence lifecycle > rejects a move that strands an authored route endpoint  763ms
+   ✓ edit_spatial_occurrence lifecycle > rejects moving a root occurrence or a non-geography child  569ms
+   ✓ edit_spatial_occurrence lifecycle > rejects delete while incoming links exist, then removes them explicitly  1434ms
+   ✓ edit_spatial_occurrence lifecycle > refreshes a region root from its source revision  1874ms
+   ✓ edit_spatial_occurrence lifecycle > rejects refreshing an object occurrence with the stamp guidance  342ms
+   ✓ edit_spatial_occurrence lifecycle > clones a region occurrence into a standalone compiled copy  1950ms
+   ✓ edit_spatial_occurrence lifecycle > unlinks and relinks a document connection through the shared ancestor compile  3863ms
+   ✓ edit_spatial_occurrence lifecycle > rejects unlinking a compiled geography route connection  400ms
+   ✓ edit_spatial_occurrence lifecycle > rejects a missing required field with a typed error before any mutation  550ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 57 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > inn seed 7: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > inn seed 19: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > inn seed 42: complete supported tables, wall clocks and no placement warnings
+AssertionError: expected [ …(3) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "방 맵이 assembly_inn을 교체해 이 맵으로 들어오는 착지 좌표 (19, 23)가 통행 불가/경계 밖이 되었습니다 — 가장 가까운 통행 가능한 칸 (19, 22)로 옮겼습니다. 다른 위치를 원하면 해당 transfer 명령을 직접 고치세요.",
++   "방 맵이 assembly_inn_2f을 교체해 이 맵으로 들어오는 착지 좌표 (11, 23)가 통행 불가/경계 밖이 되었습니다 — 가장 가까운 통행 가능한 칸 (11, 22)로 옮겼습니다. 다른 위치를 원하면 해당 transfer 명령을 직접 고치세요.",
++   "방 맵이 assembly_inn_3f을 교체해 이 맵으로 들어오는 착지 좌표 (6, 11)가 통행 불가/경계 밖이 되었습니다 — 가장 가까운 통행 가능한 칸 (6, 10)로 옮겼습니다. 다른 위치를 원하면 해당 transfer 명령을 직접 고치세요.",
++ ]
+
+ ❯ test/interiorConceptAssemblies.test.ts:53:73
+     51|       const result = runTool(ctx,'place_concept',{ template: true,quer…
+     52|       expect(result.ok,result.summary).toBe(true);
+     53|       expect([...(result.warnings??[]),...(result.diff?.warnings??[])]…
+       |                                                                         ^
+     54|       const map = ctx.project.maps[`assembly_${bundle.id}`]!;
+     55|       const rooms = (result.data as any).rooms;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/57]⎯
+
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > house seed 7: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > shop seed 7: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > tavern seed 7: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > library seed 7: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > smithy seed 7: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > church seed 7: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > warehouse seed 7: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > guild seed 7: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > clinic seed 7: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > barracks seed 7: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > school seed 7: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > townhall seed 7: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > alchemist seed 7: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > bakery seed 7: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > farmhouse seed 7: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > manor seed 7: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > hunter seed 7: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > bank seed 7: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > house seed 19: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > shop seed 19: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > tavern seed 19: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > library seed 19: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > smithy seed 19: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > church seed 19: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > warehouse seed 19: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > guild seed 19: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > clinic seed 19: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > barracks seed 19: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > school seed 19: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > townhall seed 19: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > alchemist seed 19: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > bakery seed 19: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > farmhouse seed 19: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > manor seed 19: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > hunter seed 19: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > bank seed 19: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > house seed 42: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > shop seed 42: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > tavern seed 42: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > library seed 42: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > smithy seed 42: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > church seed 42: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > warehouse seed 42: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > guild seed 42: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > clinic seed 42: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > barracks seed 42: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > school seed 42: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > townhall seed 42: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > alchemist seed 42: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > bakery seed 42: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > farmhouse seed 42: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > manor seed 42: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > hunter seed 42: complete supported tables, wall clocks and no placement warnings
+ FAIL  test/interiorConceptAssemblies.test.ts > reviewed interior assemblies > bank seed 42: complete supported tables, wall clocks and no placement warnings
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "방 맵이 assembly_house을 교체해 이 맵으로 들어오는 착지 좌표 (8, 15)가 통행 불가/경계 밖이 되었습니다 — 가장 가까운 통행 가능한 칸 (8, 14)로 옮겼습니다. 다른 위치를 원하면 해당 transfer 명령을 직접 고치세요.",
++ ]
+
+ ❯ test/interiorConceptAssemblies.test.ts:53:73
+     51|       const result = runTool(ctx,'place_concept',{ template: true,quer…
+     52|       expect(result.ok,result.summary).toBe(true);
+     53|       expect([...(result.warnings??[]),...(result.diff?.warnings??[])]…
+       |                                                                         ^
+     54|       const map = ctx.project.maps[`assembly_${bundle.id}`]!;
+     55|       const rooms = (result.data as any).rooms;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/57]⎯
+
+
+ Test Files  1 failed | 7 passed (8)
+      Tests  57 failed | 125 passed (182)
+   Start at  19:50:59
+   Duration  38.25s (transform 11.08s, setup 0ms, collect 59.42s, tests 80.19s, environment 2ms, prepare 1.69s)

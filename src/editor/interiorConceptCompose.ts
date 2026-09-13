@@ -72,6 +72,8 @@ export type ConceptComposeInput = {
   readonly map: GameMap;
   /** Built-in facility identity; other facilities retain the legacy slot grammar. */
   readonly facilityId?: string;
+  /** Required furniture already stamped by the space compiler must remain approachable. */
+  readonly protectedAnchors?: readonly {readonly x:number; readonly y:number}[];
   /** 이 방의 바닥 마스크(맵 크기). */
   readonly floor: readonly boolean[];
   /** 맵 전체 바닥 마스크 — 방 밖 바닥(문 개구부)을 보고 통로를 잡는다. */
@@ -231,7 +233,7 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
     if (endNookObject(object) && input.role === "walkway") return "north-end";
     if (object.id === "clock" || object.snap === "wall-any") return "face";
     if (object.snap === "wall-north") {
-      return object.height === 2 && TALL_FACE_OVERLAP_IDS.has(object.id) ? "tall-face" : "north";
+      return object.height === 2 && (TALL_FACE_OVERLAP_IDS.has(object.id) || object.role === "cabinet") ? "tall-face" : "north";
     }
     if (thing.chips.includes("transfer")) return "north-end";
     if (object.id.startsWith("rug") || (thing.chips.includes("floor") && object.layer === "lower")) return "rug";
@@ -360,7 +362,8 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
   const preservesAccess = (cells:readonly InteriorObjectCell[],x:number,y:number,baseline:ReadonlySet<number>):boolean => {
     const blocked = new Set(cells.map(cell=>idx(x+cell.dx,y+cell.dy)));
     const after = reachable(blocked);
-    return [...baseline].every(i=>blocked.has(i)||after.has(i));
+    return [...baseline].every(i=>blocked.has(i)||after.has(i))
+      && (input.protectedAnchors ?? []).every(p => [[0,0],[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>after.has(idx(p.x+dx!,p.y+dy!))));
   };
 
   const cellsFit = (cells: readonly InteriorObjectCell[], ox: number, oy: number, test: (x: number, y: number) => boolean): boolean =>
@@ -430,7 +433,7 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
                 const cy = y - 2 + cell.dy;
                 return cell.dy < 2 ? faceFree(x + cell.dx, cy, loose) : freeFor(cell, x + cell.dx, cy, loose);
               });
-              if (fits) candidates.push({ x, y: y - 2 });
+              if (fits && preservesAccess(object.cells, x, y - 2, baselineReach)) candidates.push({ x, y: y - 2 });
             }
           }
           return candidates;
@@ -470,7 +473,7 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
               const cy = oy + cell.dy;
               return cell.dy === 0 ? faceFree(cx, cy, loose) : freeFor(cell, cx, cy, loose);
             });
-            if (ok) candidates.push({ x, y: oy });
+            if (ok && preservesAccess(object.cells, x, oy, baselineReach)) candidates.push({ x, y: oy });
           }
           return candidates;
         }, (candidates) => spreadPick(candidates, "north", "east"));
@@ -547,7 +550,8 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
           : perimeterCandidates(room);
         const cell = object.cells[0]!;
         const propFree = (x: number, y: number, loose = false): boolean =>
-          freeFor(cell, x, y, loose) && preservesInteractionAccess(x, y, thing);
+          freeFor(cell, x, y, loose) && preservesInteractionAccess(x, y, thing)
+            && preservesAccess(object.cells, x, y, baselineReach);
         // Warehouse stock sits in short rows on either side of the loading
         // aisle, with a one-cell perimeter so every group can be approached.
         const stockRows: Point[] = [];

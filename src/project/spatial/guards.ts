@@ -148,13 +148,18 @@ const library: Parser<S.SpatialLibrary> = (v, p) => {
   const r = record(v, p, "objects spaces places regions worlds");
   return { objects: dictionary(r.objects, `${p}.objects`, object), spaces: dictionary(r.spaces, `${p}.spaces`, space), places: dictionary(r.places, `${p}.places`, place), regions: dictionary(r.regions, `${p}.regions`, region), worlds: dictionary(r.worlds, `${p}.worlds`, world) };
 };
+const interiorKit: Parser<NonNullable<S.SpatialKitSnapshot["interior"]>> = (v, p) => {
+  const r = record(v, p, "id snap role");
+  return { id: text(r.id, `${p}.id`), snap: choice(["wall-north", "wall-any", "floor", "free"] as const)(r.snap, `${p}.snap`), role: text(r.role, `${p}.role`) };
+};
 const kit: Parser<S.SpatialKitSnapshot> = (v, p) => {
-  const r = record(v, p, "tilesetId kitId width height cells");
+  const r = record(v, p, "tilesetId kitId width height cells interior");
   const cells = list(r.cells, `${p}.cells`, (c, cp) => {
     const cell = record(c, cp, "x y layer tile");
     return { ...point(cell, cp), layer: choice(["lower", "upper"] as const)(cell.layer, `${cp}.layer`), tile: integer([-1, Number.MAX_SAFE_INTEGER])(cell.tile, `${cp}.tile`) };
   });
-  return { ...graphic({ tilesetId: r.tilesetId, kitId: r.kitId }, p), width: size(r.width, `${p}.width`), height: size(r.height, `${p}.height`), cells };
+  return { ...graphic({ tilesetId: r.tilesetId, kitId: r.kitId }, p), width: size(r.width, `${p}.width`), height: size(r.height, `${p}.height`), cells,
+    ...(r.interior === undefined ? {} : { interior: interiorKit(r.interior, `${p}.interior`) }) };
 };
 const snapshot = <P extends S.SpatialPort>(parsePort: Parser<P>): Parser<S.SpatialCompositionSnapshot<P>> => (v, p) => {
   const r = record(v, p, "root library kitCells ports");

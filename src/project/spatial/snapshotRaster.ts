@@ -11,6 +11,7 @@ export function snapshotGraphic(context: SpatialResolutionContext, graphic: Spat
   let snapshot: SpatialKitSnapshot;
   switch (resolved.source) {
     case "builtin": snapshot = { ...graphic, width: resolved.object.width, height: resolved.object.height,
+      interior: {id: resolved.object.id, snap: resolved.object.snap, role: resolved.object.role ?? "decoration"},
       cells: resolved.object.cells.map(({ dx, dy, layer, tile }) => ({ x: dx, y: dy, layer, tile })) }; break;
     case "authored": {
       const kit = resolved.kit;
@@ -36,11 +37,15 @@ export function snapshotGraphic(context: SpatialResolutionContext, graphic: Spat
           if (upper !== undefined && upper !== -1) cells.push({ x, y, layer: "upper", tile: upper });
         });
       });
-      snapshot = { ...graphic, width, height, cells };
+      snapshot = { ...graphic, width, height, cells,
+        ...(graphic.tilesetId === "easyrpg_chipset_interior" && kit.ai?.snap ? {interior: {id: kit.id, snap: kit.ai.snap, role: kit.ai.interiorRole ?? "decoration"}} : {}) };
       break;
     }
     default: return assertNever(resolved);
   }
+  // Wall mounts are painted above the structural wall by the established composer.
+  // Freeze that effective raster as well, so validation/ownership describe the pixels actually emitted.
+  if (snapshot.interior?.snap === "wall-any") snapshot = {...snapshot, cells: snapshot.cells.map(cell => ({...cell, layer: "upper" as const}))};
   if (snapshot.tilesetId !== graphic.tilesetId || snapshot.kitId !== graphic.kitId || snapshot.cells.length === 0) {
     throw new SpatialOperationError("raster", `${path}: incomplete or mismatched raster`);
   }

@@ -81,7 +81,7 @@ export function compileSpaces(context: SpatialCompileContext): SpatialRasterProp
       placeIds: ["space"], chips: job.design.chips, required: job.slot.required })) },
   { bundleId: occurrence.id, facilityId: occurrence.id, facilityLabel: space.name, resolveObject: id => vocab.get(id) });
   const composed = composeConceptRoom({ map, floor: available, fullFloor: floor, room, roomId: occurrence.id,
-    role: layout.role, door: entry, placeLabel: space.name, seed: occurrence.seed,
+    role: layout.role, protectedAnchors: objects.filter(o=>o.placement.required).map(o=>o.placement.anchor), door: entry, placeLabel: space.name, seed: occurrence.seed,
     things: parsed.bundle.things.map(thing => ({ thingId: thing.id, objectId: thing.objectId, label: thing.label, chips: thing.chips, required: thing.required === true })),
     resolveObject: id => vocab.get(id),
     isFloorTile: tile => {
@@ -99,7 +99,7 @@ export function compileSpaces(context: SpatialCompileContext): SpatialRasterProp
     const cell = placement.cells[0];
     const local = job.object.cells[0];
     if (!cell || !local) throw new SpatialCompileError("raster", job.child.id);
-    objects.push(placedObject(job.child, { x: cell.x - local.dx, y: cell.y - local.dy }, job.slot.required));
+    objects.push(placedObject(job.child, { x: cell.x - local.dx, y: cell.y - local.dy }, job.slot.required, job.object.snap === "wall-any"));
   }
   const ports = occurrence.snapshot.ports.map(port => ({ portId: resolveOccurrencePortId(occurrence, port.localPortId),
     x: room.x + port.x, y: room.y + port.y }));
