@@ -462,6 +462,8 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
 - **서브맵 빠른 추가 (2026-07-24):** Beginner flyout rows still show a hover `+` (`.map-tree-add-child-quick`). Standard/expert use the context menu "하위 맵 추가".
 - **맵 삭제 — 하위 맵 처리 (2026-07-24):** `confirmAndDeleteMap` now explains child map behavior explicitly (children promoted to parent level). New `confirmAndDeleteMapRecursive` in `src/editor/mapDeleteConfirm.ts` deletes a map and all descendants (leaf-first, one undo step). Context menu item "하위 포함 삭제" (`map-menu-delete-recursive-*`).
 
+- **맵 삭제 되돌리기 — 문구와 이력이 어긋나 있었다 (2026-09-14 고침):** 확인창은 `삭제 후 Ctrl+Z로 되돌릴 수 있습니다`(`mapDeleteConfirm.ts:31`)와 `한 번의 실행 취소로 이 묶음 삭제를 되돌릴 수 있습니다`(`:39`)를 인쇄했지만, `deleteMap` / `deleteMapsInOrder`(`actions.ts`)는 `recordProjectSnapshot` 없이 `store.update` 만 호출했다 — 삭제된 맵과 그 이벤트는 복구되지 않았고, Ctrl+Z 는 **무관한 이전 편집**을 되돌렸다. 두 경로 모두 삭제 직전 스냅샷 1건을 남긴다(묶음 삭제도 1건 — 위 "one undo step" 문구가 이제 참이다). 삭제될 맵이 없으면(`maps.length <= 1`) 스냅샷을 아예 밀지 않는다 — 무변경 실행이 되돌리기 칸을 먹던 함정(아래 「되돌림 함정(실측)」과 같은 규칙)을 피하기 위해서다. 계약: `test/mapDeleteUndo.test.ts`.
+
 ## Agent cautions
 
 
