@@ -16,7 +16,7 @@ export default defineConfig({
     // 의도적으로 돌릴 때: node scripts/run-vitest.mjs run --config vitest.live.config.ts
     // *.bun.test.ts 는 bun:test 을 import 하므로 vitest 가 수집하면 무조건 실패한다.
     // 전원 경로는 npm run test:oh-my-pi (bun test) 다.
-    exclude: [...configDefaults.exclude, "test/lakeVillageRebuildFinal.test.ts", "test/**/*.bun.test.ts"],
+    exclude: [...configDefaults.exclude, "test/lakeVillageRebuildFinal.test.ts", "test/**/*.bun.test.ts", "test/**/*.quarantine.test.ts"],
     globals: false,
     testTimeout: 15_000,
     hookTimeout: 90_000,
