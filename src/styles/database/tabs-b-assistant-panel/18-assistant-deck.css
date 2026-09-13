@@ -119,24 +119,35 @@
   user-select: none;
 }
 
-.ai-chat-panel.chat-dock-float.is-dragging .ai-deck-rail {
+/* 드래그 중에는 grabbing. 아래 grab 규칙과 **같은 접두사 + is-dragging** 으로 특이도를 한 단계
+   올린다 — 상태 가드(:not 3개)가 붙은 grab 규칙이 이 규칙을 이기면 끄는 동안 손이 grab 이 된다. */
+.ai-chat-panel.chat-dock-float.is-dragging:not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck-rail {
   cursor: grabbing;
 }
 
 /* ── 2. 상태 레일 ─────────────────────────────────────────────── */
 /* 레일은 데크의 드래그 손잡이다(2026-09-12) — 잡을 수 있음을 grab 커서로 알린다.
    아이콘 줄·팝오버는 손잡이가 아니므로 각자 커서를 되돌린다(버튼은 .ai-composer-menu-btn
-   의 cursor:pointer 가 그대로 이긴다). */
+   의 cursor:pointer 가 그대로 이긴다).
+   커서는 **끌 수 있는 상태에서만** grab 이다 — 기록 열림(도킹)·스튜디오·접힘에서는 데크가
+   보여도 pointerdown 이 거절되므로(aiDeckMoveChrome 의 movable 게터) grab 이 거짓말이 된다.
+   2026-09-14 실측: is-history-open 데크(503×835) 위에서 커서는 grab, 끌면 아무 일도 없었다. */
 .ai-deck-rail {
   align-items: center;
   border-bottom: 1px solid var(--ai-deck-line);
-  cursor: grab;
   display: flex;
   flex: 0 0 auto;
   gap: 10px;
   min-height: 38px;
   padding: 0 8px 0 16px;
   position: relative;
+}
+
+/* 잡을 수 있다는 신호는 **끌 수 있는 상태에서만** — 기록 열림(도킹)·스튜디오·접힘에서는 데크가
+   보여도 pointerdown 이 거절되므로(aiDeckMoveChrome 의 movable 게터) grab 커서가 거짓말이 된다.
+   2026-09-14 실측: is-history-open 데크(503×835) 위에서 커서는 grab, 끌면 아무 일도 없었다. */
+.ai-chat-panel.chat-dock-float:not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck-rail {
+  cursor: grab;
 }
 
 .ai-deck-rail-actions,
