@@ -105,7 +105,8 @@ describe("spatial Database authoring integration", () => {
     expect(spatialSession().breadcrumb).toHaveLength(1);
     expect(host.querySelector("[data-testid='composition-board']")).not.toBeNull();
     expect(host.querySelector("[data-testid='spatial-places-board']")).toBeNull();
-    expect(host.querySelector("[data-testid='db-tab-spatial-spaces']")?.classList.contains("active")).toBe(true);
+    expect(host.querySelector("[data-testid='db-tab-spatial-spaces']")).toBeNull();
+    expect(host.querySelector("[data-testid='db-tab-spatial-places']")?.classList.contains("active")).toBe(true);
 
     host.querySelector<HTMLButtonElement>("[data-testid='spatial-back']")?.click();
     expect(getDatabaseActiveTab()).toBe("spatialPlaces");
@@ -122,6 +123,11 @@ describe("spatial Database authoring integration", () => {
     paint();
     const live = store.getCurrent();
     host.querySelector<HTMLButtonElement>("[data-testid='spatial-add']")?.click();
+    const name = document.querySelector<HTMLInputElement>('[data-testid="new-place-name"]')!;
+    name.value = "새 여관";
+    const kind = document.querySelector<HTMLSelectElement>('[data-testid="new-place-kind"]')!;
+    kind.value = "building"; kind.dispatchEvent(new Event("change"));
+    name.closest("form")!.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
     expect(store.getCurrent()).toBe(live);
     const created = Object.values(visibleAuthoringProject().spatialAuthoring?.library.places ?? {})
       .find((place) => !Object.hasOwn(live.spatialAuthoring?.library.places ?? {}, place.id));

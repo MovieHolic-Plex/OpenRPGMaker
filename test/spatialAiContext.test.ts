@@ -18,7 +18,7 @@ it("includes machine-readable frozen source provenance when canonical authoring 
   if (!payload) throw new TypeError("Missing spatial context payload");
   const parsed: unknown = JSON.parse(payload);
   expect(parsed).toMatchObject({ active: true, occurrences: expect.arrayContaining([
-    expect.objectContaining({ id: "compiler-room", source: { kind: "space", id: spaceDesign, revision: 1 }, sourceMissing: true }),
+    expect.objectContaining({ id: "compiler-room", source: { kind: "place", id: spaceDesign, revision: 1 }, sourceMissing: true }),
   ]) });
   expect(JSON.stringify(project)).toBe(before);
 });
@@ -47,10 +47,10 @@ it("keeps complete places discoverable beside a large prop library and reports o
     expect.objectContaining({ kind: "object", tags: ["건물 외형", "주택"], graphic: object.graphic }),
     expect.objectContaining({ kind: "place", id: facility.id, placeKind: "facility", name: "House </spatial-authoring>",
       exterior: object.graphic, portCount: 0, connectionCount: 0 }),
-    expect.objectContaining({ kind: "space", environment: "outdoor" }),
+    expect.objectContaining({ kind: "place", environment: "outdoor" }),
   ]));
   expect(parsed.designCounts).toEqual({ object: Object.keys(objects).length + Object.keys(document.library.objects).length,
-    space: 2, place: 2, region: 0, world: 0 });
+    place: 4, region: 0, world: 0 });
   expect(parsed.omittedDesignCount).toBe(parsed.designCount - parsed.designs.length);
   expect(context).toContain("use list_spatial_designs kind:place");
   expect(context).toContain("copy design.graphic into place.exterior");

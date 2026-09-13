@@ -1,17 +1,19 @@
+import { startPlaceContainer } from "./spatialPlaceContainer";
+import { selectSpatialGalleryEntry } from "./spatialGalleryNavigation";
 import { el } from "@/util/dom";
 import { randomUuid } from "@/util/id";
 import { designNode, spatialId } from "@/project/spatial/domain";
 import { COMPOSITION_KINDS, paintComposition } from "@/project/spatial/composition";
 import type { SpatialComposition, SpatialDesignReference, SpatialKind, SpatialPoint } from "@/project/spatial/types";
 import { visibleAuthoringProject } from "./spatialAuthoringAccess";
-import { spatialProjectKey, selectSpatialDesign, pushSpatialBreadcrumb, openSpatialDestination, type SpatialAuthoringSession } from "./spatialAuthoringSession";
+import { spatialProjectKey, pushSpatialBreadcrumb, openSpatialDestination, type SpatialAuthoringSession } from "./spatialAuthoringSession";
 import { listSpatialGalleryCards, type SpatialGalleryCard } from "./spatialCatalog";
 import { renderSpatialCardThumb } from "./spatialGallery";
 import { renderSpatialChrome, renderSpatialInspector } from "./spatialStage";
 import { cellsFromMapRect, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import { openTilesetTileBrowser } from "./tilesetTileBrowser";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
-import { COMPOSITION_COLLECTIONS, COMPOSITION_NAMES, compositionPreview, currentComposition, defaultComposition, editComposition, editExistingComponent } from "./spatialCompositionAccess";
+import { wouldCycleComposition, COMPOSITION_COLLECTIONS, COMPOSITION_NAMES, compositionPreview, currentComposition, defaultComposition, editComposition, editExistingComponent } from "./spatialCompositionAccess";
 
 type State = { material: "tile" | SpatialKind; query: string; brush: number; layer: "lower" | "upper"; tool: "select" | "paint" | "erase" | "restore"; source?: SpatialDesignReference; selected?: string; zoom: number; error: string | null; undo: SpatialComposition[] };
 const states = new Map<string, State>();
@@ -46,7 +48,9 @@ export function renderSpatialCompositionWorkspace(session: SpatialAuthoringSessi
   const palette = el("div", { class: "spatial-mixed-palette" });
   const results = el("div", { class: "spatial-mixed-assets", dataset: { testid: "composition-assets" } });
   const tabs = el("div", { class: "spatial-mixed-tabs", attrs: { role: "group", "aria-label": "배치할 재료" } });
-  for (const kind of ["tile", ...COMPOSITION_KINDS[source.kind]] as const) tabs.append(button(kind === "tile" ? "타일" : COMPOSITION_NAMES[kind], () => {
+  const materialKinds = [...new Set(COMPOSITION_KINDS[source.kind].map(kind => kind === "space" ? "place" as const : kind))];
+  if (state.material === "space") state.material = "place";
+  for (const kind of ["tile", ...materialKinds] as const) tabs.append(button(kind === "tile" ? "타일" : COMPOSITION_NAMES[kind], () => {
     state.material = kind; state.source = undefined; state.tool = kind === "tile" ? "paint" : "select"; rerender();
   }, `composition-material-${kind}`, state.material === kind));
   const search = el("input", { class: "asset-browser-search", value: state.query, attrs: { type: "search", placeholder: "재료 이름 검색", "aria-label": "재료 이름 검색" }, dataset: { testid: "composition-search" }, on: {
@@ -61,13 +65,16 @@ export function renderSpatialCompositionWorkspace(session: SpatialAuthoringSessi
       return;
     }
     const material = state.material;
-    const entries = Object.values(project.spatialAuthoring!.library[COMPOSITION_COLLECTIONS[material]]).filter(value => value.name.toLocaleLowerCase().includes(state.query.toLocaleLowerCase()));
-    results.replaceChildren(...entries.map(value => {
-      const ref = { kind: material, id: value.id };
+    const kinds = material === "place" ? COMPOSITION_KINDS[source.kind].filter(kind => kind === "space" || kind === "place") : [material];
+    const entries = kinds.flatMap(kind => Object.values(project.spatialAuthoring!.library[COMPOSITION_COLLECTIONS[kind]]).map(value => ({ kind, value })))
+      .filter(({ kind, value }) => !wouldCycleComposition(project, source, { kind, id: value.id }))
+      .filter(({ value }) => value.name.toLocaleLowerCase().includes(state.query.toLocaleLowerCase()));
+    results.replaceChildren(...entries.map(({ kind, value }) => {
+      const ref = { kind, id: value.id };
       const child = designNode(project.spatialAuthoring!.library, ref);
       const atlas = child.kind === "object" ? child.design.graphic.tilesetId : defaultComposition(project, child).tilesetId;
       const compatible = atlas === composition.tilesetId;
-      const gallery: SpatialGalleryCard = { id: value.id, localId: value.id, canonicalSource: ref, name: value.name, kind: COMPOSITION_COLLECTIONS[material], source: "own", usage: 0, tilesetId: atlas,
+      const gallery: SpatialGalleryCard = { id: value.id, localId: value.id, canonicalSource: ref, name: value.name, kind: COMPOSITION_COLLECTIONS[kind], source: "own", usage: 0, tilesetId: atlas,
         ...(child.kind === "object" ? { objectId: child.design.graphic.kitId } : {}) };
       return el("button", { class: `spatial-mixed-asset${state.source?.id === value.id ? " is-selected" : ""}`, attrs: { type: "button", draggable: String(compatible), ...(compatible ? {} : { disabled: "" }), title: compatible ? value.name : "캔버스와 같은 타일셋을 사용하는 재료를 선택하세요." }, dataset: { testid: `composition-asset-${value.id}` },
         children: [el("div", { children: [renderSpatialCardThumb(gallery)] }), el("strong", { text: value.name }), ...(compatible ? [] : [el("small", { text: "다른 타일셋" })])], on: {
@@ -171,12 +178,14 @@ export function renderSpatialCompositionWorkspace(session: SpatialAuthoringSessi
     button("선택 삭제", () => moveMember(selectedMember.id, null), "composition-remove"),
     el("p", { text: "끌어서 이동 · 방향키로 한 칸 이동 · Delete로 삭제" }),
   ] }) : el("p", { text: "배치한 항목을 선택하면 이동하거나 삭제할 수 있습니다." });
-  const cards = listSpatialGalleryCards({ ...session, source: "all" });
-  const picker = el("select", { dataset: { testid: "composition-design" }, attrs: { "aria-label": `${COMPOSITION_NAMES[source.kind]} 선택` }, children: cards.map(item => el("option", { text: item.name, attrs: { value: item.id, ...(item.id === card.id ? { selected: "" } : {}) } })), on: { change: event => { selectSpatialDesign((event.currentTarget as HTMLSelectElement).value); rerender(); } } });
+  const cards = listSpatialGalleryCards({ ...session, tab: source.kind === "space" ? "places" : session.tab, source: "all" });
+  const picker = el("select", { dataset: { testid: "composition-design" }, attrs: { "aria-label": `${COMPOSITION_NAMES[source.kind]} 선택` }, children: cards.map(item => el("option", { text: item.name, attrs: { value: item.id, ...(item.id === card.id ? { selected: "" } : {}) } })), on: { change: event => { const chosen = cards.find(item => item.id === (event.currentTarget as HTMLSelectElement).value); if (chosen) selectSpatialGalleryEntry(chosen); rerender(); } } });
   return el("div", { class: "spatial-shell spatial-mixed-workspace", dataset: { testid: `spatial-shell-${session.tab}` }, attrs: { tabindex: "0" }, children: [
-    el("header", { class: "asset-browser-top", children: [el("div", { class: "asset-browser-heading", children: [el("h2", { text: `${COMPOSITION_NAMES[source.kind]} 편집` }), el("p", { text: `타일과 ${COMPOSITION_KINDS[source.kind].map(kind => COMPOSITION_NAMES[kind]).join("·")}을 함께 배치하세요.` })] }), picker, renderSpatialChrome(session, rerender, { browser: true })] }),
+    el("header", { class: "asset-browser-top", children: [el("div", { class: "asset-browser-heading", children: [el("h2", { text: `${source.kind === "space" ? "장소" : COMPOSITION_NAMES[source.kind]} 편집` }), el("p", { text: `타일과 ${materialKinds.map(kind => COMPOSITION_NAMES[kind]).join("·")}을 함께 배치하세요.` })] }), picker, renderSpatialChrome(session, rerender, { browser: true })] }),
     el("div", { class: "spatial-mixed-body", children: [palette, el("section", { class: "spatial-mixed-stage", children: [tools, ...(state.error ? [el("p", { class: "spatial-mixed-error", attrs: { role: "alert" }, text: state.error })] : []), camera] }),
       el("aside", { class: "asset-browser-detail", children: [el("h3", { text: "배치 속성" }), atlasSelect, size, memberControls,
+        ...((source.kind === "space" || source.kind === "place") ? [button("건물로 묶기", () => { state.error = startPlaceContainer(source); rerender(); }, "composition-create-building"),
+          el("p", { class: "spatial-mixed-hint", text: "현재 장소를 첫 방으로 넣은 새 건물을 만듭니다. 그 안에서 별도 지도의 방·층을 추가하고 출입을 연결하세요." })] : []),
         el("details", { children: [el("summary", { text: "기존 설계와 생성 규칙" }), renderSpatialInspector(card, true, rerender)] })] })] }),
   ] });
 }

@@ -46,7 +46,6 @@ const EXPECTED_TABS = [
   // 맵 — six visual spatial destinations
   "db-tab-spatial-tiles",
   "db-tab-spatial-objects",
-  "db-tab-spatial-spaces",
   "db-tab-spatial-places",
   "db-tab-spatial-regions",
   "db-tab-spatial-worlds",
@@ -130,10 +129,10 @@ describe("database sidebar navigation", () => {
     const panelRoot = renderPanelHost();
     const buttons = panelRoot.querySelectorAll(".db-tab");
     expect(buttons.length).toBe(EXPECTED_TABS.length);
-    expect(EXPECTED_TABS.length).toBe(40);
+    expect(EXPECTED_TABS.length).toBe(39);
     expect(buttons.map((button) => button.dataset.testid)).toEqual(EXPECTED_TABS);
     // 중복 없음 — 등장 순서 자체가 기대 순서와 일치하면 중복이 섞일 수 없다(배열 비교).
-    expect(new Set(EXPECTED_TABS).size).toBe(40);
+    expect(new Set(EXPECTED_TABS).size).toBe(39);
     for (const button of buttons) {
       expect(button.tagName).toBe("BUTTON");
       const label = (button.textContent ?? "").trim();

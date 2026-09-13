@@ -97,7 +97,7 @@ function applySpace(rerender: () => void): void {
 
 function addBlankSpace(rerender: () => void): void {
   if (!visibleAuthoringProject().spatialAuthoring) {
-    spaceChromeState.previewError = "이 프로젝트에는 공간 설계 문서가 없습니다 — 새 설계를 만들 수 없습니다";
+    spaceChromeState.previewError = "이 프로젝트에는 장소 설계 문서가 없습니다 — 새 설계를 만들 수 없습니다";
     rerender();
     return;
   }
@@ -187,7 +187,7 @@ function blankInteriorSpace(project: Project): SpaceDesign {
   const id = freshSpatialId(project, "space");
   return {
     id,
-    name: "새 공간",
+    name: "새 장소",
     revision: 1,
     tags: [],
     provenance: { origin: "user" },

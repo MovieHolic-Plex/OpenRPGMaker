@@ -1,3 +1,31 @@
+## 지역 하위 장소의 단일 계약 (2026-09-14)
+
+`RegionDesign.places`는 내부 `space/place` 둘 다 참조할 수 있다. AI 공개 참조는 모두
+`kind:place`이고 전역 고유 ID로 원래 저장 위치를 판별한다. 지역 선택→직접 장소 열기→
+부모 복귀는 설계·배치 모드에서 원래 선택과 카메라를 보존한다.
+개요 지도와 하위 직접 구성은 별도 지도다. 시공 분기는 현재 root의 composition으로 결정하며
+하위 설계의 composition 존재만으로 지역·세계 개요를 합치지 않는다.
+검증: `spatialPlaceContract.test.ts`(그린 방과 지역 길, save/load/recompile),
+`spatialUnifiedPlaces.test.ts`(양 모드 탐색), `spatialMixedComposition.test.ts`(세계 개요와 직접 구성 지역).
+
+## 직접 그린 방을 포함하는 다층 장소 (2026-09-14)
+
+원본 PlaceDesign에 composition이 없는 건물은 자식 방에 composition이 있어도
+`compilePlaces`의 층별 시공을 사용한다. `placeLayout`은 직접 구성한 자식 전체를
+하나의 표면으로 굽고 내부 projection/ports를 함께 전달한다. 실내는 독립 지도,
+야외는 같은 층·타일셋 합성 규칙을 유지한다. 동결 자식의 위치·오브젝트 이벤트·
+양방향 transfer·소유권 digest를 보존하며 수동 변경 영역은 재시공 때 거부한다.
+회귀: `test/spatialPlaceComposedFloors.test.ts`와 기존 `test/spatialPlaceCompiler.test.ts`.
+
+## 장소 재료의 포함 관계 (2026-09-14)
+
+`composition.members`의 `space`와 `place`는 모두 다른 `space/place`를 포함할 수 있다.
+`COMPOSITION_KINDS`가 편집기와 도메인 검증의 공통 허용표다. 전역 ID 고유성·전체 포함 그래프의
+순환 검사는 그대로 유지한다. 지역/세계의 상위 종류를 장소에 넣는 것은 거부한다.
+저장 구조의 키·ID·스냅샷을 이 변경 때문에 다시 쓰지 않는다. 같은 지도 구성은 동일 타일셋과
+0층 조건, 자식의 전체 크기 검사를 통과해야 시공된다. 회귀는 `test/spatialMixedComposition.test.ts`의
+중첩 장소 시공→직렬화→재로드→재시공 및 순환 거부 검사다.
+
 ## 혼합 하위 재료 구성 (2026-09-13)
 
 공간·장소·지역·세계 설계에 선택적 `composition`을 추가한다. 기존 project v4/spatial v1

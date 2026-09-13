@@ -84,7 +84,7 @@ export type RegionSettlement = {
   readonly seed: number;
 };
 export type RegionDesign = SpatialDesignBase & SpatialComposable & {
-  readonly terrain: SpatialTerrain; readonly places: readonly SpatialChildSlot<"place">[];
+  readonly terrain: SpatialTerrain; readonly places: readonly SpatialChildSlot<"space" | "place">[];
   readonly ports: readonly SpatialPort[]; readonly routes: readonly SpatialRoute[];
   /** 있으면 정주지 지역 — 지형은 combined_town 칩셋이어야 하고 맵 본체를 마을 시공기가 채운다. */
   readonly settlement?: RegionSettlement;

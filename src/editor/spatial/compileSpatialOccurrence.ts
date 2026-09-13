@@ -1,4 +1,5 @@
-import { hasMixedComposition } from "./mixedCompositionRaster";
+import { compositionOf } from "@/project/spatial/composition";
+import { designNode } from "@/project/spatial/domain";
 import { compileMixedComposition } from "./compileMixedComposition";
 import { deserialize } from "@/project/io";
 import { appendToTree, containsMap } from "@/project/mapTree";
@@ -27,7 +28,7 @@ export function compileSpatialOccurrence(input: Project, value: unknown, previou
   const occurrence = requireOccurrenceAssociations(own(document.occurrences, request.occurrenceId));
   const context = { project, document, occurrence };
   requireOverviewWriteSet(document, new Set(occurrenceSubtree(document, occurrence.id)));
-  if (occurrence.kind !== "object" && hasMixedComposition(occurrence.snapshot.library)) {
+  if (occurrence.kind !== "object" && compositionOf(designNode(occurrence.snapshot.library, occurrence.source))) {
     if (request.target) throw new SpatialCompileError("target", occurrence.id);
     return compileMixedComposition(context);
   }

@@ -2,7 +2,7 @@ import type { DesignNode } from "./domain";
 import type { SpatialComposition, SpatialKind, SpatialPoint } from "./types";
 
 export const COMPOSITION_KINDS: Readonly<Record<SpatialKind, readonly SpatialKind[]>> = {
-  object: [], space: ["object"], place: ["object", "space"],
+  object: [], space: ["object", "space", "place"], place: ["object", "space", "place"],
   region: ["object", "space", "place"], world: ["object", "space", "place", "region"],
 };
 export function compositionOf(node: DesignNode): SpatialComposition | undefined {

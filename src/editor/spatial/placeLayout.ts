@@ -1,3 +1,6 @@
+import { compositionOf } from "@/project/spatial/composition";
+import { designNode } from "@/project/spatial/domain";
+import { mixedCompositionRaster, type MixedProjection } from "./mixedCompositionRaster";
 import { assertNever, own, requireOccurrenceAssociations, resolveOccurrencePortId } from "@/project/spatial/domain";
 import type { SpatialAssociatedOccurrence, SpatialPoint } from "@/project/spatial/types";
 import type { GameMap } from "@/project/types";
@@ -11,6 +14,7 @@ export type PlaceSurface = {
   readonly world: SpatialPoint;
   readonly level: number;
   readonly outdoor: boolean;
+  readonly projections?: readonly MixedProjection[];
 };
 export type PlacePosition = { readonly occurrence: SpatialAssociatedOccurrence; readonly world: SpatialPoint; readonly level: number };
 
@@ -20,6 +24,15 @@ export function placeLayout(context: SpatialCompileContext) {
   const surfaces: PlaceSurface[] = [];
   for (const position of positions) {
     const { occurrence } = position;
+    const node = designNode(occurrence.snapshot.library, occurrence.source);
+    if (compositionOf(node)) {
+      const raster = mixedCompositionRaster({ ...context, occurrence });
+      validateRasterAccess(context.project, { ...raster, ports: raster.projections.flatMap(projection => projection.ports) });
+      compileObjectEvents(raster, new Set(context.document.connections.flatMap(link => [link.from.occurrenceId, link.to.occurrenceId])));
+      surfaces.push({ ...position, raster, projections: raster.projections,
+        outdoor: node.kind === "space" ? node.design.environment === "outdoor" : position.level === 0 });
+      continue;
+    }
     switch (occurrence.kind) {
       case "place": {
         const design = own(occurrence.snapshot.library.places, occurrence.source.id);

@@ -137,7 +137,7 @@ const settlement: Parser<S.RegionSettlement> = (v, p) => {
 };
 const region: Parser<S.RegionDesign> = (v, p) => {
   const r = record(v, p, `${baseFields} terrain places ports routes settlement composition`);
-  return { ...base(r, p), ...composable(r, p), terrain: terrain(r.terrain, `${p}.terrain`), places: list(r.places, `${p}.places`, child(choice(["place"] as const))), ports: ports(r.ports, `${p}.ports`), routes: list(r.routes, `${p}.routes`, route),
+  return { ...base(r, p), ...composable(r, p), terrain: terrain(r.terrain, `${p}.terrain`), places: list(r.places, `${p}.places`, child(choice(["space", "place"] as const))), ports: ports(r.ports, `${p}.ports`), routes: list(r.routes, `${p}.routes`, route),
     ...(r.settlement === undefined ? {} : { settlement: settlement(r.settlement, `${p}.settlement`) }) };
 };
 const world: Parser<S.WorldDesign> = (v, p) => {

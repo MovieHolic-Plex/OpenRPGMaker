@@ -94,13 +94,13 @@ export function discloseSpatialBuildInput(): string {
   const { input } = pending;
   const dest = input.destination;
   if (dest.kind === "new-maps") {
-    return `${input.seed} ${input.source.kind} ${input.source.id} new-maps`;
+    return `${input.seed} ${input.source.kind === "space" ? "place" : input.source.kind} ${input.source.id} new-maps`;
   }
   const rect = dest.selection;
   const entry = dest.entry;
   const rectText = rect ? `${rect.x},${rect.y} ${rect.width}x${rect.height}` : "";
   const entryText = entry ? `${entry.x},${entry.y}` : "";
-  return `${input.seed} ${input.source.kind} ${input.source.id} ${dest.currentMapId ?? ""} ${rectText} ${entryText}`.trim();
+  return `${input.seed} ${input.source.kind === "space" ? "place" : input.source.kind} ${input.source.id} ${dest.currentMapId ?? ""} ${rectText} ${entryText}`.trim();
 }
 
 export function spatialBuildInputDataset(): Record<string, string> {

@@ -1,3 +1,4 @@
+import { COMPOSITION_KINDS } from "./composition";
 import { assert } from "../io/guards";
 import { resolveSpatialGraphic } from "./assets";
 import { FACILITY_FLOOR_MAX, isFacilityChildLevelAllowed } from "./facilityLevels";
@@ -127,7 +128,6 @@ function validateLibrary(library: S.SpatialLibrary, context: LibraryContext): Re
     if ("routes" in value) value.routes.forEach((route, i) => bounds(route.points, value.terrain, `${path}.routes[${i}].points`));
     if ("entryPort" in value) local(value, slots)(value.entryPort, `${path}.entryPort`);
   }
-  const ranks: Record<S.SpatialKind, number> = { object: 0, space: 1, place: 2, region: 3, world: 4 };
   for (const [kind, records] of Object.entries({ space: library.spaces, place: library.places, region: library.regions, world: library.worlds })) {
     for (const value of Object.values<S.SpaceDesign | S.PlaceDesign | S.RegionDesign | S.WorldDesign>(records)) {
       const paint = value.composition;
@@ -141,7 +141,7 @@ function validateLibrary(library: S.SpatialLibrary, context: LibraryContext): Re
       unique([...oldSlots, ...paint.members].map(slot => slot.id), `${path}.members`);
       bounds(paint.members, paint, `${path}.members`);
       const direct = paint.members.map((slot, i) => {
-        assert(ranks[slot.source.kind] < ranks[kind as S.SpatialKind], `${path}.members[${i}]: only lower kinds may be contained`);
+        assert(COMPOSITION_KINDS[kind as S.SpatialKind].includes(slot.source.kind), `${path}.members[${i}]: incompatible member kind`);
         design(library, slot.source, `${path}.members[${i}].source`);
         return { id: slot.source.id, path: `${path}.members[${i}].source` };
       });
@@ -189,7 +189,12 @@ export function validateSpatialReferences(document: S.SpatialAuthoringDocument, 
     assert((occurrence.parentId === null) === document.rootOccurrenceIds.includes(occurrence.id), `${p}.rootOccurrenceIds: root membership mismatch at ${path}`);
     if (occurrence.parentId !== null) {
       const parent = own(document.occurrences, occurrence.parentId, `${path}.parentId`);
-      assert(allowedChildren[parent.kind].includes(occurrence.kind), `${path}.parentId: illegal containment kind`);
+      const parentDesign = design(parent.snapshot.library, parent.snapshot.root, path);
+      const direct = "composition" in parentDesign && occurrence.parentSlot
+        ? parentDesign.composition?.members.some(slot => slot.id === occurrence.parentSlot!.slotId && slot.source.kind === occurrence.kind && slot.source.id === occurrence.source.id)
+        : false;
+      const allowed = direct ? COMPOSITION_KINDS[parent.kind] : allowedChildren[parent.kind];
+      assert(allowed.includes(occurrence.kind), `${path}.parentId: illegal containment kind`);
     }
     containment.set(occurrence.id, occurrence.parentId === null ? [] : [{ id: occurrence.parentId, path: `${path}.parentId` }]);
     validateSnapshot(occurrence, assets, `${path}.snapshot`);

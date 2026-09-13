@@ -1,3 +1,4 @@
+import { normalizePlaceToolArgs } from "./spatialPlaceContract";
 // editor/tools/toolRunner.ts
 // 툴 실행기. runTool(ctx, name, args, {dryRun}) → ToolResult.
 // - 인자를 JSON Schema로 최소 검증.
@@ -65,7 +66,7 @@ function argErrorMessage(message: string, example: Record<string, unknown> | und
 export function normalizeToolArgs(name: string, args: Record<string, unknown>): Record<string, unknown> {
   const tool = getTool(name);
   if (!tool) return args;
-  return normalizeArgsForSchema(tool.parameters, args) as Record<string, unknown>;
+  return normalizeArgsForSchema(tool.parameters, normalizePlaceToolArgs(tool.name, args)) as Record<string, unknown>;
 }
 
 export function runTool(
@@ -90,7 +91,7 @@ export function runToolDefinition(
 ): ToolResult {
   const name = tool.name;
 
-  const normalizedArgs = normalizeArgsForSchema(tool.parameters, args) as Record<string, unknown>;
+  const normalizedArgs = normalizeArgsForSchema(tool.parameters, normalizePlaceToolArgs(tool.name, args)) as Record<string, unknown>;
   const argErrors = validateArgs(tool.parameters, normalizedArgs);
   if (argErrors.length > 0) {
     const repair = tool.invalidArgsRepair?.(normalizedArgs);

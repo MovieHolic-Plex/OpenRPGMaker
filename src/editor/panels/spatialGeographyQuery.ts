@@ -69,7 +69,7 @@ export function geographyViewChildren(
   project: Project,
   design: GeographyDesign,
   occurrenceId?: SpatialId,
-): readonly SpatialChildSlot<"place" | "region">[] {
+): readonly SpatialChildSlot<"space" | "place" | "region">[] {
   const slots = geographyChildren(design);
   if (!occurrenceId) return slots;
   return slots.map((slot) => {

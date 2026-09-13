@@ -127,6 +127,26 @@ export function editAuthoringDraft(
   }
 }
 
+/** Prepare a compound edit off-session; failed previews preserve the current draft/preview. */
+export function previewPreparedAuthoringDraft(
+  mutate: (project: Project) => Project,
+  preview: (controller: SpatialAuthoringController, draft: SpatialAuthoringDraft) => SpatialAuthoringResult<SpatialAuthoringPreview>,
+): SpatialAuthoringResult<SpatialAuthoringPreview> {
+  const controller = spatialAuthoringController();
+  if (!controller) return { kind: "error", error: { code: "unsupported", message: "authoring-controller-unavailable" } };
+  const current = activeSession();
+  const issued = current.preview ? controller.continueDraft(current.preview) : controller.createDraft(current.draft ?? undefined);
+  if (issued.kind !== "ok") return issued;
+  Object.assign(issued.value.project, mutate(structuredClone(issued.value.project)));
+  const result = preview(controller, issued.value);
+  if (result.kind === "ok") {
+    current.draft = issued.value;
+    current.preview = result.value;
+    current.request = { operation: { kind: "edit" } };
+  }
+  return result;
+}
+
 export function previewAuthoringDraft(): SpatialAuthoringResult<SpatialAuthoringPreview> {
   const controller = spatialAuthoringController();
   const current = activeSession();

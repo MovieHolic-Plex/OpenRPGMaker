@@ -1,3 +1,5 @@
+import { openNewPlaceDialog } from "./spatialNewPlaceDialog";
+import { FACILITY_FLOOR_MAX } from "@/project/spatial/facilityLevels";
 import type { SpatialAuthoringSession } from "@/editor/panels/spatialAuthoringSession";
 import { placeChromeState } from "@/editor/panels/spatialPlaceChromeState";
 import { commitWorkingPlace, workingProject } from "@/editor/panels/spatialPlaceCommands";
@@ -53,12 +55,20 @@ export function renderPlaceChildPicker(
 ): HTMLElement {
   const library = workingProject().spatialAuthoring?.library;
   const candidates = library ? pickerCandidates(library, place) : [];
+  const levels = target.occurrenceId ? placedPlaceChildren(workingProject(), target.occurrenceId).map(child => child.level) : floorsOf(place);
+  const nextFloor = Math.max(0, ...levels) + 1;
+  const actions = !place.composition ? [
+    el("button", { class: "spatial-place-pick", text: "방 추가", attrs: { type: "button" }, dataset: { testid: "place-add-room" },
+      on: { click: () => openNewPlaceDialog(rerender, { parent: target, level: placeChromeState.selectedFloor ?? (place.kind === "facility" ? 1 : 0) }) } }),
+    el("button", { class: "spatial-place-pick", text: "층 추가", attrs: { type: "button", ...(nextFloor > FACILITY_FLOOR_MAX ? { disabled: "", title: `최대 ${FACILITY_FLOOR_MAX}층까지 만들 수 있습니다` } : {}) }, dataset: { testid: "place-add-floor" },
+      on: { click: () => openNewPlaceDialog(rerender, { parent: target, level: nextFloor, floor: true }) } }),
+  ] : [];
   return el("div", {
     class: "spatial-place-picker",
     dataset: { testid: "spatial-place-picker" },
-    children: candidates.map((slot) => el("button", {
+    children: [...actions, el("details", { children: [el("summary", { text: "기존 장소 가져오기" }), el("div", { class: "spatial-place-picker", children: candidates.map((slot) => el("button", {
       class: "spatial-place-pick",
-      text: `${slot.source.kind === "space" ? "공간" : "장소"} · ${childSourceLabel(workingProject(), slot.source.kind, slot.source.id)}`,
+      text: `장소 · ${childSourceLabel(workingProject(), slot.source.kind, slot.source.id)}`,
       attrs: { type: "button" },
       dataset: { testid: `spatial-place-pick-${slot.source.id}` },
       on: {
@@ -77,7 +87,7 @@ export function renderPlaceChildPicker(
           rerender();
         },
       },
-    })),
+    })) })] })],
   });
 }
 

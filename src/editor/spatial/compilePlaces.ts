@@ -40,6 +40,12 @@ export function compilePlaces(context: SpatialCompileContext): Project {
       bindings: [{ kind: "projection", mapId: map.id,
         rect: { ...object.rect, x: object.rect.x + offset.x, y: object.rect.y + offset.y },
         ports: objectPorts(object).map(port => ({ ...port, x: port.x + offset.x, y: port.y + offset.y })) }] };
+    for (const projection of surface.projections ?? []) {
+      if (projection.occurrence.id === occurrence.id) continue;
+      occurrences[projection.occurrence.id] = { ...projection.occurrence, bindings: [{ kind: "projection", mapId: map.id,
+        rect: { ...projection.rect, x: projection.rect.x + offset.x, y: projection.rect.y + offset.y },
+        ports: projection.ports.map(port => ({ ...port, x: port.x + offset.x, y: port.y + offset.y })) }] };
+    }
   }
   // A place projects containment, not ownership. Its own ports must have an exact surface.
   for (const position of positions) {

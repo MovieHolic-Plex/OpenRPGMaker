@@ -1,3 +1,4 @@
+import { publicSpatialValue, publicSpatialKind, storageSpatialSource, storageSpatialDesign } from "./spatialPlaceContract";
 import { REGION_REFERENCES, readRegionReference } from "@/project/regionReferences";
 import { previewSpatialAuthoring } from "@/editor/spatial/preview";
 import type { SpatialAuthoringRequest } from "@/editor/spatial/authoringTypes";
@@ -9,7 +10,7 @@ import { checkedDocument, designNode, designSlots, own, SpatialOperationError } 
 import { boolean, choice, coordinate, id, integer, point, record, rect } from "@/project/spatial/guardValues";
 import { resolveSpatialDesign } from "@/project/spatial/resolve";
 import type { Project } from "@/project/types";
-import type { SpatialAuthoringDocument, SpatialConnection, SpatialDesignReference, SpatialId, SpatialOccurrence } from "@/project/spatial/types";
+import type { SpatialAuthoringDocument, SpatialConnection, SpatialId, SpatialOccurrence } from "@/project/spatial/types";
 import { MAP_GENERATION_PROFILES } from "./mapGenerationProfiles";
 import { authorizeSpatialToolChange, consumeSpatialToolPreview, issueSpatialToolPreview } from "./spatialToolState";
 import { SPATIAL_APPLY_SCHEMA, SPATIAL_BUILD_SCHEMA, SPATIAL_GET_SCHEMA, SPATIAL_LIST_SCHEMA, SPATIAL_OCCURRENCE_SCHEMA, SPATIAL_UPSERT_SCHEMA } from "./spatialToolSchemas";
@@ -18,11 +19,8 @@ import { ToolError, type ToolDefinition } from "./types";
 const kinds = ["object", "space", "place", "region", "world"] as const;
 const collections = { object: "objects", space: "spaces", place: "places", region: "regions", world: "worlds" } as const;
 const parseKind = choice(kinds);
-function source(args: Record<string, unknown>): SpatialDesignReference {
-  return { kind: parseKind(args.kind, "kind"), id: id(args.id, "id") };
-}
-const SPATIAL_INACTIVE_MESSAGE = "이 프로젝트에는 canonical 공간 저작 문서(spatialAuthoring)가 없다 — 레거시 프로젝트다. "
-  + "활성화는 데이터베이스 공간 탭의 「공간 설계 활성화」로만 할 수 있으며 AI 도구로는 못 한다. 비활성 상태에서는 레거시 도구(place_concept 등)를 쓴다.";
+const SPATIAL_INACTIVE_MESSAGE = "이 프로젝트에는 장소 저작 문서(spatialAuthoring)가 없다 — 레거시 프로젝트다. "
+  + "활성화는 데이터베이스 장소의 「장소 설계 활성화」로만 할 수 있으며 AI 도구로는 못 한다. 비활성 상태에서는 레거시 도구(place_concept 등)를 쓴다.";
 function requireSpatialDocument(project: Project) {
   if (project.spatialAuthoring === undefined) throw new ToolError(SPATIAL_INACTIVE_MESSAGE, { code: "spatial-inactive" });
   return checkedDocument(project.spatialAuthoring, project);
@@ -72,17 +70,17 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
     },
   },
   { name: "list_spatial_designs", mode: "read", domains: ["world", "map", "database"],
-    description: "Discover saved canonical designs across all project tilesets; query matches id, name or tags. object = reusable appearance/prop, including building exteriors; space = usable room/floor/yard; place = complete facility/settlement grouping spaces or places. For a complete house search kind:place; for saved exteriors search kind:object with query:건물 외형 (or the authored name/tag). Context designs are only samples: search this full library before declaring an asset missing. List rows use kind:place plus placeKind:facility|settlement|natural; get_spatial_design returns the original upsert body. Read-only; never activates or seeds an empty library. When data.active is false the project has no spatialAuthoring document and canonical design/build tools reject with spatial-inactive; read_region_reference remains available — activation is a user-side editor action, not a tool.",
+    description: "Discover saved canonical designs across all project tilesets; query matches id, name or tags. object = reusable appearance/prop, including building exteriors; place = room, floor, yard, complete facility or settlement. Use environment:interior/outdoor for a direct place and placeKind:facility/settlement/natural for a grouped place. For a complete house search kind:place; for saved exteriors search kind:object with query:건물 외형 (or the authored name/tag). Context designs are only samples: search this full library before declaring an asset missing. List rows use kind:place plus placeKind:facility|settlement|natural; get_spatial_design returns the original upsert body. Read-only; never activates or seeds an empty library. When data.active is false the project has no spatialAuthoring document and canonical design/build tools reject with spatial-inactive; read_region_reference remains available — activation is a user-side editor action, not a tool.",
     parameters: SPATIAL_LIST_SCHEMA,
     run(project, args) {
       if (project.spatialAuthoring === undefined) {
-        return { summary: "공간 저작 비활성 — canonical 문서가 없는 레거시 프로젝트(0 spatial designs)", data: { active: false, designs: [] } };
+        return { summary: "장소 저작 비활성 — canonical 문서가 없는 레거시 프로젝트(0 spatial designs)", data: { active: false, designs: [] } };
       }
       const kind = args.kind === undefined ? undefined : parseKind(args.kind, "kind");
       const query = typeof args.query === "string" ? args.query.toLocaleLowerCase() : "";
-      const designs = spatialToolDesigns(project).filter(design => (!kind || design.kind === kind)
+      const designs = spatialToolDesigns(project).filter(design => (!kind || design.kind === kind || (kind === "place" && design.kind === "space"))
         && [design.id, design.name, ...design.tags].some(value => value.toLocaleLowerCase().includes(query)));
-      return { summary: `${designs.length} spatial designs`, data: { active: true, designs } };
+      return { summary: `${designs.length} spatial designs`, data: { active: true, designs: publicSpatialValue(designs) } };
     },
   },
   { name: "get_geography_vocabulary", mode: "read", domains: ["world", "map"],
@@ -114,24 +112,24 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
     },
   },
   { name: "get_spatial_design", mode: "read", domains: ["world", "map", "database"],
-    description: "Read a canonical design and its resolved transitive source revisions, object selections and frozen kit cells. Use data.design as the starting point for upsert_spatial_design. Reuse an exterior object in an outdoor yard space's objectSlots to supply ground and an approach. Alternatively copy design.graphic {tilesetId,kitId} into place.exterior when the graphic supports painted passable port cells; this copy is not an objectDesignId link and does not inherit object anchors/chips or future object changes. A complete house is a place with authored spaces, ports and connections; facade height/labels do not establish usable floor count. Large designs can exceed the tool payload limit — when truncated re-read with resolved:false; the design body alone is enough for a revision round-trip.",
+    description: "Read a canonical design and its resolved transitive source revisions, object selections and frozen kit cells. Use data.design as the starting point for upsert_spatial_design. Reuse an exterior object in an outdoor yard place's objectSlots to supply ground and an approach. Alternatively copy design.graphic {tilesetId,kitId} into place.exterior when the graphic supports painted passable port cells; this copy is not an objectDesignId link and does not inherit object anchors/chips or future object changes. A complete house is a place with authored rooms, ports and connections; facade height/labels do not establish usable floor count. Large designs can exceed the tool payload limit — when truncated re-read with resolved:false; the design body alone is enough for a revision round-trip.",
     parameters: SPATIAL_GET_SCHEMA,
     run(project, args) {
-      const ref = source(args);
+      const ref = storageSpatialSource(project, args);
       const document = requireSpatialDocument(project);
-      return { summary: `Spatial ${ref.kind}: ${ref.id}`, data: {
+      return { summary: `Spatial ${publicSpatialKind(ref.kind)}: ${ref.id}`, data: publicSpatialValue({
         ...designNode(document.library, ref),
         ...(args.resolved === false ? {} : { resolved: resolveSpatialDesign(document, project, ref) }),
-      } };
+      }) };
     },
   },
   { name: "upsert_spatial_design", mode: "write", domains: ["world", "map", "database"],
-    description: "Author one canonical design in the detached AI proposal. Supply exactly the body named by kind (object/space/place/region/world). expectedRevision=0 creates a new id; updates require the current revision and design.revision=current+1. References must already exist — author bottom-up: objects before spaces, spaces before places, places before regions, regions before worlds. A complete house uses place.kind:facility with explicit interior/outdoor space children. Put a saved exterior object into an outdoor yard space's objectSlots for ground/approach; direct place.exterior copies object.graphic only when painted passable port cells are available. Define usable floors from the requested plan, never infer them from facade height or names. For rooms sharing one interior map, author space.interiorLayout with floor-local rooms and doorways; the wall generator joins partitions to the outer shell. Interior children are separate maps even at the same level: author ports and connections for room doors, stairs and exterior entry/return. Enclosing place ports require painted passable outdoor surface. For region/world terrain read get_geography_vocabulary first. Never refreshes frozen occurrences or overwrites maps. Uses normal proposal acceptance.",
+    description: "Author one canonical design in the detached AI proposal. Supply exactly the body named by kind (object/place/region/world). Place bodies with environment:interior/outdoor describe a room/floor/yard; place bodies with kind:facility/settlement/natural describe a group of child places. expectedRevision=0 creates a new id; updates require the current revision and design.revision=current+1. References must already exist — author bottom-up: objects before child places, child places before enclosing places, places before regions, regions before worlds. A complete house uses place.kind:facility with explicit interior/outdoor place children. Put a saved exterior object into an outdoor yard place's objectSlots for ground/approach; direct place.exterior copies object.graphic only when painted passable port cells are available. Define usable floors from the requested plan, never infer them from facade height or names. For rooms sharing one interior map, author place.interiorLayout with floor-local rooms and doorways; the wall generator joins partitions to the outer shell. Interior children are separate maps even at the same level: author ports and connections for room doors, stairs and exterior entry/return. Enclosing place ports require painted passable outdoor surface. For region/world terrain read get_geography_vocabulary first. Never refreshes frozen occurrences or overwrites maps. Uses normal proposal acceptance.",
     parameters: SPATIAL_UPSERT_SCHEMA,
     run(project, args) {
-      const kind = parseKind(args.kind, "kind");
-      for (const other of kinds) if (other !== kind && args[other] !== undefined) throw new ToolError(`Unexpected ${other} body for ${kind}`, { code: "invalid-args" });
-      const raw = record(args[kind], kind);
+      const requestedKind = parseKind(args.kind, "kind");
+      for (const other of kinds) if (other !== requestedKind && args[other] !== undefined) throw new ToolError(`Unexpected ${other} body for ${requestedKind}`, { code: "invalid-args" });
+      const { kind, design: raw } = storageSpatialDesign(project, requestedKind, args[requestedKind]);
       const designId = id(raw.id, `${kind}.id`);
       const document = requireSpatialDocument(project);
       const collection = collections[kind];
@@ -145,7 +143,7 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
       const before = { ...project };
       project.spatialAuthoring = preview.project.spatialAuthoring;
       authorizeSpatialToolChange(project, before);
-      return { summary: `Spatial ${kind} ${designId} revision ${expected + 1}`, data: designNode(checkedDocument(project.spatialAuthoring, project).library, { kind, id: designId }) };
+      return { summary: `Spatial ${publicSpatialKind(kind)} ${designId} revision ${expected + 1}`, data: publicSpatialValue(designNode(checkedDocument(project.spatialAuthoring, project).library, { kind, id: designId })) };
     },
   },
   { name: "preview_spatial_build", mode: "read", domains: ["world", "map"],
@@ -153,7 +151,7 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
     parameters: SPATIAL_BUILD_SCHEMA,
     run(project, args) {
       requireSpatialDocument(project);
-      const ref = source(args);
+      const ref = storageSpatialSource(project, args);
       const occurrenceId = id(args.occurrenceId, "occurrenceId");
       const stamp = target(args.target);
       const preview = previewSpatialAuthoring(project, {
@@ -161,9 +159,9 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
           seed: integer([-Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER])(args.seed, "seed"), generatorVersion: "spatial-ai-v1" } },
         compile: { occurrenceId, ...(stamp ? { target: stamp } : {}) },
       }, { original: project, checkpoint: project });
-      return { summary: `Preview ${ref.kind} ${ref.id}: ${preview.impact.mapIds.length} maps`, data: {
+      return { summary: `Preview ${publicSpatialKind(ref.kind)} ${ref.id}: ${preview.impact.mapIds.length} maps`, data: {
         previewId: issueSpatialToolPreview(project, preview), impact: preview.impact,
-        source: own(checkedDocument(preview.project.spatialAuthoring, preview.project).occurrences, occurrenceId).source,
+        source: publicSpatialValue(own(checkedDocument(preview.project.spatialAuthoring, preview.project).occurrences, occurrenceId).source),
       } };
     },
   },

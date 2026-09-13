@@ -16,13 +16,13 @@ export function renderSpatialSpaceWorkspace(session: SpatialAuthoringSession, se
   })) });
   return el("div", { class: "spatial-shell spatial-space-workspace", attrs: { tabindex: "0" }, dataset: { testid: "spatial-shell-spaces" }, children: [
     el("header", { class: "asset-browser-top", children: [
-      el("div", { class: "asset-browser-heading", children: [el("h2", { text: "공간 편집" }), el("p", { text: "오브젝트를 배치해 방과 공간을 구성하세요." })] }),
-      el("details", { class: "space-workspace-picker", children: [el("summary", { text: `${selected?.name ?? "공간 선택"} · 다른 공간 열기` }), choices] }),
+      el("div", { class: "asset-browser-heading", children: [el("h2", { text: "장소 편집" }), el("p", { text: "오브젝트를 배치해 방과 마당을 구성하세요." })] }),
+      el("details", { class: "space-workspace-picker", children: [el("summary", { text: `${selected?.name ?? "장소 선택"} · 다른 장소 열기` }), choices] }),
       renderSpatialChrome(session, rerender, { browser: true }),
     ] }),
     el("div", { class: "space-workspace-body", children: [
       renderSpatialSpacesCanvas(session, selected, rerender, { objectBrowser: true }),
-      el("section", { class: "asset-browser-detail", attrs: { "aria-label": "공간과 배치 속성" }, children: [renderSpatialSpacesInspector(selected, true, rerender)] }),
+      el("section", { class: "asset-browser-detail", attrs: { "aria-label": "장소와 배치 속성" }, children: [renderSpatialSpacesInspector(selected, true, rerender)] }),
     ] }),
   ] });
 }

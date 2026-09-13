@@ -141,7 +141,7 @@ export function spatialGeographyChrome(
   const missing = Boolean(card?.missingSource);
   const occurrenceId = target?.occurrenceId;
   // 활성화 실패 문구는 그 프로젝트 전용이다 — canonical 문서가 생긴 뒤에도 남으면 stale 오류가 된다.
-  if (workingProject().spatialAuthoring && geographyChromeState.previewError?.startsWith("공간 설계 활성화")) {
+  if (workingProject().spatialAuthoring && geographyChromeState.previewError?.startsWith("장소 설계 활성화")) {
     geographyChromeState.previewError = null;
   }
   const external = geographyChromeState.pendingExternal;
@@ -208,7 +208,7 @@ function addBlank(kind: GeographyKind, rerender: () => void): void {
 /** 레거시 프로젝트는 spatialAuthoring 문서가 없어 upsert가 조용히 무시된다 — 사전에 표면에 올린다. */
 function spatialDocumentPresent(rerender: () => void): boolean {
   if (workingProject().spatialAuthoring) return true;
-  geographyChromeState.previewError = "spatialAuthoring 문서가 없는 레거시 프로젝트입니다 — 「공간 설계 활성화」로 canonical 문서를 발행한 뒤 지역·세계를 만들 수 있습니다";
+  geographyChromeState.previewError = "spatialAuthoring 문서가 없는 레거시 프로젝트입니다 — 「장소 설계 활성화」로 canonical 문서를 발행한 뒤 지역·세계를 만들 수 있습니다";
   rerender();
   return false;
 }
@@ -217,7 +217,7 @@ function spatialDocumentPresent(rerender: () => void): boolean {
 export function activateSpatialDocument(rerender: () => void): void {
   if (geographyChromeState.activating) return;
   geographyChromeState.activating = true;
-  geographyChromeState.previewError = "공간 설계 문서를 활성화하는 중…";
+  geographyChromeState.previewError = "장소 설계 문서를 활성화하는 중…";
   rerender();
   void store.activateSpatialAuthoring()
     .then(() => {
@@ -225,7 +225,7 @@ export function activateSpatialDocument(rerender: () => void): void {
       geographyChromeState.saveState = "활성화됨";
     })
     .catch((error: unknown) => {
-      geographyChromeState.previewError = `공간 설계 활성화 실패: ${error instanceof Error ? error.message : String(error)}`;
+      geographyChromeState.previewError = `장소 설계 활성화 실패: ${error instanceof Error ? error.message : String(error)}`;
     })
     .finally(() => {
       geographyChromeState.activating = false;

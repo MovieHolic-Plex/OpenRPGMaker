@@ -36,9 +36,9 @@ function renderOnTileset(tilesetId: string): FakeElement {
 }
 
 describe("tilesetSpacesTab 은 구조물 앨범이 아니다", () => {
-  it("제목은 공간 종류이고 [+ 새 구조물]·원본 칩이 없다", () => {
+  it("제목은 방 템플릿이고 [+ 새 구조물]·원본 칩이 없다", () => {
     const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
-    expect(host.querySelector("[data-testid='tileset-spaces-heading']")?.textContent).toBe("공간 종류");
+    expect(host.querySelector("[data-testid='tileset-spaces-heading']")?.textContent).toBe("방 템플릿");
     expect(host.querySelector("[data-testid='structure-kit-new']")).toBeNull();
     expect(host.querySelector("[data-testid='structure-kit-source-all']")).toBeNull();
     expect(host.querySelector("[data-testid='structure-kit-source-interior']")).toBeNull();
@@ -94,7 +94,7 @@ describe("tilesetSpacesTab 은 구조물 앨범이 아니다", () => {
     const host = renderOnTileset(tilesetId);
     host.querySelector("[data-testid='tileset-spaces-kind-add']")!.click();
     const kinds = store.getCurrent().tilesets[tilesetId]?.interiorRoomKinds ?? [];
-    // 파생 행(hall_a)이 살아 있고 새 행이 붙는다 — [새 공간] 하나로 붕괴하지 않는다.
+    // 파생 행(hall_a)이 살아 있고 새 행이 붙는다 — [새 장소] 하나로 붕괴하지 않는다.
     expect(kinds.some((kind) => kind.id === "hall_a")).toBe(true);
     expect(kinds.length).toBe(2);
   });
@@ -170,17 +170,17 @@ describe("tilesetSpacesTab 저작", () => {
     expect(storage?.requiredRoles).toEqual(["stove"]);
   });
 
-  it("[+ 공간 종류]가 빈 문법을 추가한다", () => {
+  it("[+ 방 템플릿]가 빈 문법을 추가한다", () => {
     const host = renderOnTileset(DEFAULT_TILESET_ID);
     host.querySelector("[data-testid='tileset-spaces-empty-add']")!.click();
 
     const kinds = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.interiorRoomKinds ?? [];
     expect(kinds).toHaveLength(1);
-    expect(kinds[0]!.label).toBe("새 공간");
+    expect(kinds[0]!.label).toBe("새 장소");
     expect(host.querySelector("[data-testid='tileset-spaces-empty']")).toBeNull();
   });
 
-  it("삭제는 그 공간 종류만 지운다", () => {
+  it("삭제는 그 방 템플릿만 지운다", () => {
     const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
     host.querySelector("[data-testid='tileset-spaces-kind-corridor']")!.click();
     host.querySelector("[data-testid='tileset-spaces-kind-delete-corridor']")!.click();

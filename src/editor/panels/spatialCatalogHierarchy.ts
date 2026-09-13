@@ -77,7 +77,7 @@ function placeCards(): SpatialGalleryCard[] {
       kind: "places",
       usage: 0,
       placeKind: place.kind,
-      subtitle: `공간 ${place.children.filter((child) => child.source.kind === "space").length} · 하위 장소 ${place.children.filter((child) => child.source.kind === "place").length}`,
+      subtitle: `포함된 장소 ${place.children.length}`,
     });
   }
   return cards;

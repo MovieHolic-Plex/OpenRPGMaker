@@ -1,4 +1,4 @@
-import { checkedDocument, designNode, requireOccurrenceAssociations, spatialId, type DesignNode } from "@/project/spatial/domain";
+import { checkedDocument, designNode, designSlots, requireOccurrenceAssociations, spatialId, type DesignNode } from "@/project/spatial/domain";
 import { instantiateSpatialDesign } from "@/project/spatial/instances";
 import { compositionOf } from "@/project/spatial/composition";
 import type { SpatialComposition, SpatialDesignReference } from "@/project/spatial/types";
@@ -7,7 +7,7 @@ import { mixedCompositionRaster, type MixedRaster } from "@/editor/spatial/mixed
 import { editAuthoringDraft, visibleAuthoringProject, spatialAuthoringErrorText } from "./spatialAuthoringAccess";
 import { randomUuid } from "@/util/id";
 
-export const COMPOSITION_NAMES = { object: "오브젝트", space: "공간", place: "장소", region: "지역", world: "세계" } as const;
+export const COMPOSITION_NAMES = { object: "오브젝트", space: "장소", place: "장소", region: "지역", world: "세계" } as const;
 export const COMPOSITION_COLLECTIONS = { object: "objects", space: "spaces", place: "places", region: "regions", world: "worlds" } as const;
 export function defaultComposition(project: Project, node: DesignNode): SpatialComposition {
   const current = compositionOf(node);
@@ -87,5 +87,21 @@ export function canUseCompositionWorkspace(source: SpatialDesignReference): bool
   const project = visibleAuthoringProject();
   const node = designNode(project.spatialAuthoring!.library, source);
   if (compositionOf(node)) return true;
+  if (node.kind === "place" && node.design.children.length > 0) return false;
   try { compositionPreview(project, source); return true; } catch { return false; }
+}
+
+/** Exclude self and ancestors before offering a reusable place as a material. */
+export function wouldCycleComposition(project: Project, parent: SpatialDesignReference, child: SpatialDesignReference): boolean {
+  const library = project.spatialAuthoring!.library;
+  const pending = [child];
+  const seen = new Set<string>();
+  while (pending.length) {
+    const ref = pending.pop()!;
+    if (ref.id === parent.id) return true;
+    if (seen.has(ref.id)) continue;
+    seen.add(ref.id);
+    pending.push(...designSlots(designNode(library, ref)).map(slot => slot.source));
+  }
+  return false;
 }

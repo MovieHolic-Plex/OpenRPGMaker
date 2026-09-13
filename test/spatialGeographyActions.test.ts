@@ -518,6 +518,6 @@ describe("spatial geography actions", () => {
     // Without remote persistence the store rejects; the error stays visible, not silent.
     await new Promise(resolve => setTimeout(resolve, 0));
     expect(geographyChromeState.activating).toBe(false);
-    expect(geographyChromeState.previewError).toContain("공간 설계 활성화 실패");
+    expect(geographyChromeState.previewError).toContain("장소 설계 활성화 실패");
   });
 });

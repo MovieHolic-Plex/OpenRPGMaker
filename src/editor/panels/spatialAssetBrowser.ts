@@ -91,7 +91,7 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
         attrs: { type: "button", "aria-pressed": String(selected?.id === card.id) },
         dataset: { cardId: card.id, testid: `spatial-card-${card.id}`, source: card.source },
         children: [art, el("strong", { text: card.name }), el("span", {
-          text: card.source === "default" ? "기본 제공" : card.compatibility ? "공간 종류" : "내가 만든 항목",
+          text: card.source === "default" ? "기본 제공" : card.compatibility ? "방 템플릿" : "내가 만든 항목",
         })],
         on: { click: () => {
           selectSpatialDesign(card.id); patchSpatialSession({ inspectorOpen: true }); rerender();
