@@ -301,4 +301,92 @@ test.describe("조수 변경 카드 + 넓은 비교 뷰어", () => {
 
     await page.screenshot({ path: path.join(EVIDENCE, "change-card-non-map-1920.png"), animations: "disabled" });
   });
+
+  // 감독 지시의 본론: "보통 맡기는 일이 매우 클텐데" — 큰 위임은 스크롤되는 **긴 명세**로 검토한다.
+  test("큰 위임은 스크롤되는 긴 명세로 검토한다", async ({ page }) => {
+    await page.setViewportSize({ width: WIDE.width, height: WIDE.height });
+    await page.addInitScript(({ uiModeKey, coachKey }) => {
+      localStorage.setItem(uiModeKey, "standard");
+      localStorage.setItem(coachKey, "1");
+    }, { uiModeKey: UI_MODE_KEY, coachKey: COACH_KEY });
+
+    await bootEditor(page);
+    expect((await seedConversationRecord(page, CONVERSATION_KEY)).length).toBeGreaterThan(0);
+    await bootEditor(page);
+    const restore = page.getByTestId("ai-collapsed-restore");
+    if (await restore.isVisible().catch(() => false)) await restore.click();
+    await expect(page.getByTestId("ai-panel")).not.toHaveClass(/is-collapsed/);
+
+    const mount = await mountLargeChangeCard(page);
+    expect(mount.reason).toBe("ok");
+    expect(mount.mounted).toBe(true);
+    expect(mount.total).toBeGreaterThanOrEqual(15);
+
+    const ledger = page.getByTestId("ai-change-ledger");
+    await expect(ledger).toBeVisible();
+    await expect(page.getByTestId("ai-change-ledger-count")).toHaveText(`${mount.total}건`);
+    // 목록만 스크롤한다 — 카드가 로그를 통째로 밀어내지 않는다.
+    const list = ledger.locator(".ai-change-ledger-list");
+    const overflows = await list.evaluate((node) => node.scrollHeight > node.clientHeight + 1);
+    expect(overflows).toBe(true);
+    // 영역·항목 이름·값 변화가 실제로 화면에 있다.
+    await expect(ledger).toContainText("이벤트 ·");
+    await expect(ledger).toContainText("퀘스트");
+    await expect(ledger).toContainText("X: 60 → 9");
+    await expect(ledger).toContainText("→ 120");
+
+    await page.screenshot({ path: path.join(EVIDENCE, "change-ledger-large-1920.png"), animations: "disabled" });
+  });
+
+  /** 큰 위임 하나 — 이벤트 12·퀘스트 3·스위치 2·변수 2·맵 속성·DB 레코드가 한 번에 바뀐다. */
+  async function mountLargeChangeCard(page: Page): Promise<{ mounted: boolean; reason: string; total: number }> {
+    return await page.evaluate(async () => {
+      const load = async <T>(url: string): Promise<T> => (await import(/* @vite-ignore */ url)) as T;
+      const [{ store }, preview, ledger] = await Promise.all([
+        load<typeof import("@/project/store")>("/src/project/store.ts"),
+        load<typeof import("@/editor/panels/aiChangePreview")>("/src/editor/panels/aiChangePreview.ts"),
+        load<typeof import("@/project/changeLedger")>("/src/project/changeLedger.ts"),
+      ]);
+      const before = store.getCurrent();
+      const mapId = before.startMapId ?? Object.keys(before.maps)[0];
+      if (!mapId) return { mounted: false, reason: "no map", total: 0 };
+      const after = structuredClone(before);
+      const map = after.maps[mapId];
+      map.events = [
+        ...(map.events ?? []),
+        ...Array.from({ length: 12 }, (_, index) => ({
+          id: `qa_event_${index}`, name: `마을 사람 ${index + 1}`, x: index + 1, y: 2,
+          trigger: "action", commands: [], pages: [{ commands: [] }],
+        })),
+      ];
+      map.name = `${map.name} (개정)`;
+      after.quests = [
+        ...(after.quests ?? []),
+        { key: "qa_quest_1", title: "잃어버린 종", summary: "종을 되찾아라", steps: [{ id: "s1" }, { id: "s2" }] },
+        { key: "qa_quest_2", title: "첫 수확", summary: "당근 3개", steps: [{ id: "s1" }] },
+        { key: "qa_quest_3", title: "밤의 손님", summary: "밤에 만나자", steps: [] },
+      ];
+      after.switches = [...after.switches, { id: "qa_switch_1", name: "종을 되찾았다" }, { id: "qa_switch_2", name: "첫 수확 완료" }];
+      after.variables = [...after.variables, { id: "qa_var_1", name: "종 개수" }, { id: "qa_var_2", name: "호감도" }];
+      after.database = { ...after.database, items: [...(after.database.items ?? []), { id: "qa_item_1", name: "낡은 종", price: 120 }] };
+      if ((before.database.items ?? []).length > 0) after.database.items[0] = { ...after.database.items[0], price: 120 };
+      // 이벤트 하나는 움직인다 — 좌표 before → after 가 명세에 남아야 한다.
+      if ((map.events ?? []).length > 0) map.events[0] = { ...map.events[0], x: 9 };
+
+      const built = ledger.buildChangeLedger(before, after);
+      const card = preview.renderChangePreviewCard({
+        before,
+        after,
+        mapId,
+        title: "마을에 사람 12명과 퀘스트 3개를 넣었습니다",
+        ledger: built,
+      });
+      const log = [...document.querySelectorAll(".ai-chat-log")].find((node) => node.getClientRects().length > 0)
+        ?? document.querySelector(".ai-chat-log");
+      if (!log) return { mounted: false, reason: "no chat log", total: 0 };
+      log.append(card);
+      card.scrollIntoView();
+      return { mounted: true, reason: "ok", total: built.total };
+    });
+  }
 });
