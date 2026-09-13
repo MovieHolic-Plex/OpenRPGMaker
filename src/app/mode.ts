@@ -27,6 +27,8 @@ import {
 import { MAP_EDIT_HISTORY_EVENT } from "@/editor/mapEditHistory";
 import { editorState } from "@/editor/editorState";
 import { hasDeepLinkedProject, isAutomationBootContext, presentEditorWelcome, setEditorWelcomeDismissed, shouldPresentEditorWelcome } from "@/editor/editorWelcome";
+import { isForcedWelcomeRehearsal } from "@/editor/automationBootContext";
+import { shouldOpenSharedDemoAtBoot } from "@/project/sharedDemoProject";
 import { hasStoredSupabaseProjectSelection, supabaseProjectConfig } from "@/project/supabaseProjectConfig";
 
 export type Mode = "edit" | "play";
@@ -51,6 +53,10 @@ let topbarRefreshQueued = false;
 // 2026-08-18 UX 리뷰 P0-1: store.load()가 주소창에 ?project=를 스스로 써 넣으므로
 // "사용자가 정말 공유 링크로 들어왔는가"는 로드 전에 캡처해야 한다(환영 화면 억제 버그).
 let deepLinkedProjectAtBoot = false;
+// 첫 방문 게이트가 공용 데모를 열었는가 — false 면 빈 프로젝트 발급으로 폴백하는 근거.
+// 웰컴 억제·안내 토스트는 세션 상태(store.isSharedDemoSession)가 판단하므로
+// ?project= 데모 딥링크도 같은 경로를 탄다.
+let sharedDemoOpenedAtBoot = false;
 
 // 현재 모드 조회.
 export function getMode(): Mode {
@@ -97,25 +103,30 @@ export async function bootApp(root: HTMLElement): Promise<void> {
     });
     installAiUiEventCapture();
     deepLinkedProjectAtBoot = hasDeepLinkedProject();
-    // 첫 방문 게이트(2026-08-18 UX 리뷰 P0-1): URL에 ?project= 없고, 이 기기에 저장된
-    // 선택한 작업도 없는 진짜 첫 방문은 배포 기본(공유) 프로젝트 행을 편집 대상으로 열지
-    // 않는다 — 새 project id를 발급받은 빈 프로젝트로 시작한다. 연결 자격 증명은 배포가
-    // 소유하고 브라우저에는 선택한 project id만 기억한다. 자동화/데모 부팅은 제외.
-    const mintFirstVisitProject =
+    // 첫 방문 게이트(2026-08-18 UX 리뷰 P0-1 → 2026-09-14 데모 전환): URL에 ?project= 없고,
+    // 이 기기에 저장된 선택한 작업도 없는 진짜 첫 방문은 「무엇을 만들지」 묻기 전에
+    // 잘 만든 공용 데모 마을을 읽기 전용으로 바로 연다. 데모 행이 아직 없거나 읽기가
+    // 실패하면 예전 계약(새 project id 빈 프로젝트 발급)으로 폴백한다. 자동화/데모 부팅은 제외.
+    const firstVisit =
       typeof window !== "undefined"
-      && !deepLinkedProjectAtBoot
-      && !isAutomationBootContext()
-      && createDevShowcaseProjectForLocation() === null
-      && supabaseProjectConfig() !== null
-      && !hasStoredSupabaseProjectSelection();
-    if (mintFirstVisitProject) {
-      const { createBlankProject } = await import("@/project/defaults");
-      try {
-        await store.loadNewRemoteProject(createBlankProject(), { title: "새 프로젝트" });
-      } catch (mintError) {
-        // 발급 실패가 부팅을 벨려서는 안 된다 — 기존 로드 경로로 폴백.
-        console.error("[app] first-visit project mint failed; falling back to load:", mintError);
-        await store.load();
+      && shouldOpenSharedDemoAtBoot({
+        deepLinkedProject: deepLinkedProjectAtBoot,
+        automation: isAutomationBootContext(),
+        devShowcase: createDevShowcaseProjectForLocation() !== null,
+        dbConfigured: supabaseProjectConfig() !== null,
+        storedSelection: hasStoredSupabaseProjectSelection(),
+      });
+    if (firstVisit) {
+      sharedDemoOpenedAtBoot = (await store.loadSharedDemo()) !== null;
+      if (!sharedDemoOpenedAtBoot) {
+        const { createBlankProject } = await import("@/project/defaults");
+        try {
+          await store.loadNewRemoteProject(createBlankProject(), { title: "새 프로젝트" });
+        } catch (mintError) {
+          // 발급 실패가 부팅을 벨려서는 안 된다 — 기존 로드 경로로 폴백.
+          console.error("[app] first-visit project mint failed; falling back to load:", mintError);
+          await store.load();
+        }
       }
     } else {
       await store.load();
@@ -158,13 +169,17 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
   } = await import("@/editor/aiBootIntent");
 
   let showBriefing = false;
+  // 공용 데모가 열려 있으면(첫 방문 게이트 또는 ?project= 데모 딥링크) 「어떤 게임을
+  // 만들까요」 브리핑 대신 데모 안내 토스트가 첫 인상을 맡는다. ?forceWelcome=1 리허설만 예외.
+  const sharedDemoOpen = store.isSharedDemoSession();
+  const demoHoldsFirstScreen = sharedDemoOpen && !isForcedWelcomeRehearsal();
 
   // Cold-boot briefing only. Re-entry while edit/play shell is live must not overlay.
   if (modeMounted) {
     clearPendingAiBootIntent();
   } else {
     clearWelcomeIntentBootFlags();
-    showBriefing = shouldPresentEditorWelcome({
+    showBriefing = !demoHoldsFirstScreen && shouldPresentEditorWelcome({
       modeShellMounted: false,
       deepLinkedProject: deepLinkedProjectAtBoot,
     });
@@ -183,6 +198,11 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
 
   await renderTopbar();
   await enterMode("edit");
+
+  if (sharedDemoOpen && !showBriefing) {
+    const { presentSharedDemoIntro } = await import("@/editor/sharedDemoIntro");
+    presentSharedDemoIntro();
+  }
 
   if (showBriefing && elements) {
     const { applyWelcomeGenreSystemPresetPlan } = await import("@/editor/welcomeGenreSystemPresetAction");

@@ -29,3 +29,12 @@ export function isAutomationBootContext(): boolean {
     || params.has("sc3")
   );
 }
+
+/**
+ * ?forceWelcome=1 — 브라우저 검증·도그푸딩에서 사람 첫 방문을 재현하는 명시적 예외.
+ * 자동화 억제를 끌 뿐 아니라, 첫 방문 데모가 뜬 상태에서도 웰컴 브리핑을 강제로 올린다.
+ */
+export function isForcedWelcomeRehearsal(): boolean {
+  if (typeof window === "undefined") return false;
+  return new URLSearchParams(window.location?.search ?? "").has("forceWelcome");
+}

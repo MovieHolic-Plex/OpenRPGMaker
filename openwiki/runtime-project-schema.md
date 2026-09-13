@@ -509,6 +509,40 @@ quota/cancel/network-denial paths with all remote writes blocked. Only a lead wi
 authorization may run `--permit-new-remote-project` to prove an 8 MiB file's exact
 bytes after real remote reload and Test Play. The default is not remote proof.
 
+## 공용 첫 방문 데모 — 읽기 전용 저장 계약 (2026-09-14)
+
+첫 방문자가 바로 보는 정본 데모는 전용 Supabase 행
+`rpg-zzu-first-visit-demo`(「큰 강호 장터 마을」)다. 배포 기본(gallery) 행을 쓰지
+않는 이유: 공유 행은 다른 탭의 자동저장이 덮어쓰는 실측 사고가 있다
+(`openwiki/large-village-generation.md`).
+
+- **읽기 전용 세션.** `store.loadSharedDemo()` 와 `store.load()`(`?project=` 또는
+  작업 선택으로 데모 행을 연 경우) 모두 `writeAuthority = null`,
+  `remotePersistenceEnabled = false`,
+  `remotePersistenceDisabledReason = "shared-demo"`, `persistedBaseline = null` 로
+  끝낸다. 방문자 편집은 메모리에만 머물고 `scheduleAutoSave`·`persistCurrent`·
+  `flush`·`reconnectRemotePersistence`·`reloadFromRemote` 는 전부 기존
+  `remotePersistenceEnabled` 게이트에서 멈춘다 — 새로운 쓰기 경로를 만들지 않고
+  비활성 이유(`DbPersistenceDisabledReason` 에 `"shared-demo"` 추가)만 늘렸다.
+- **URL·선택 저장 오염 금지.** `loadSharedDemo` 는 `syncProjectToUrl` /
+  `saveSupabaseSelectedProjectId` 를 호출하지 않는다 — 다음 방문도 첫 방문
+  게이트를 다시 타고, 방문자의 기존 작업 선택을 데모가 덮지 않는다.
+- **포크만이 유일한 쓰기 출구.** `forkSharedDemoToEditableCopy` →
+  `loadNewRemoteProjectTransactionally(project)`. 데모 세션은 flush 할 원격
+  원본이 없으므로(`dev-showcase` 와 같은 이유로) 소스 flush 단계를 건너뛰고,
+  새 project id 에만 저장·재로드 검증 후 커밋한다. 데모 id 를 대상으로 한
+  전환·발급은 `configuration` 오류로 거부된다. 저장 버튼·미디어 가져오기도
+  데모 세션에서는 같은 사본 만들기 안내로 연결한다.
+- **발행.** `scripts/publish-first-visit-demo.mts` 가
+  `buildLargeRiverMarketVillageProject` 산출물을 QA(집 20채·NPC 53·시장·낚시·
+  물길) 후 실제 Supabase 경로로 저장하고 재로드 일치를 증명한다. 스토어를 거치지
+  않으므로 읽기 전용 가드의 영향을 받지 않는다. 증거는
+  `output/evidence/first-visit-demo/`(적용 실행은 `{"saved":true,"reloaded":true}`).
+- **계약 테스트:** `test/sharedDemoStore.test.ts` — 데모 로드 시 읽기 전용
+  상태, dirty flush → `disabled` + 데모 행 무쓰기, 딥링크 경로도 동일,
+  트랜잭셔널 포크가 새 id 로 저장·검증·커밋하고 데모 행에는 POST 가 가지
+  않음, 데모 id 대상 전환 거부.
+
 ## Project schema & persistence
 - **Retained map planning items (2026-09-10, OPRN-019):** optional `GameMap.planningItems` is authored, human-readable planning data owned by `src/project/mapPlanningItems.ts`. Each row is `{id, text, status:"active"|"retired", origin:"user"|"spec", createdAt?, updatedAt?, specAssetId?}` with ids of the form `pi_N`, text folded to single spaces and capped at 400 characters, and at most 200 rows per map. The field is **absent** when unauthored, so legacy project JSON stays byte-stable and `SCHEMA_VERSION` is **not** bumped. `validateMaps` in `io/shapeEventFields.ts` is **fail-closed** at the JSON boundary — a non-array, blank id/text, duplicate id, unknown `status`/`origin`, non-string timestamp, or over-limit array rejects the load rather than silently dropping a sentence the user chose to keep. After shape checks, `normalizeProjectPlanningItems` (in `io/shape.ts`, beside `normalizeStoryFlags`) re-normalizes text and deletes the field when nothing survives. `serialize` passes the field through unchanged, so export (`.oprn` / project JSON) → import round-trips it, and Supabase load/save need no migration. Editor writes go only through `src/editor/mapPlanningActions.ts` as `{scope:"map", mapId}` updates. This field is authoring metadata for the assistant UX only: no runtime, session, save-slot, spec-gate, approval-policy or validator code reads it, and it must not become mandatory prompt memory — reuse is an explicit per-turn user choice (`openwiki/editor-ai-panel.md`). Tests: `test/mapPlanningItems.test.ts` (roundtrip, empty-field deletion, fail-closed cases), `test/mapPlanningReuse.test.ts` (reload through `store.replaceProject`, per-map scope, deletion).
 - **System audio cue authoring (2026-09-08):** M2 027/028 fields add optional concrete `cue` and `operation:"set"|"reset"` (omission means set), preserving `resourceId` precedence over legacy `value` even when empty. New catalog defaults are `{cue:"battle",operation:"set",resourceId:"",volume:100}` for BGM and `cue:"confirm"` for SE. `src/project/systemAudioOverrides.ts` owns the finite cue keys; `volume` is per-track 0..100, not a mixer mutation. Generic forms show a disabled legacy placeholder instead of pretending a cue-less saved command has the new default. Existing project versions need no audio migration: generic M2 fields round-trip unchanged; only the optional runtime/save-slot `systemAudioOverrides` field is added. Its parser rejects unknown families/cues, non-string resources and non-finite/out-of-range volumes. See `runtime-sessions.md` for playback and silence/reset semantics.
