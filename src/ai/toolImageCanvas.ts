@@ -11,9 +11,6 @@ import {
 export const MAX_IMAGE_DIMENSION = 512;
 /** 맵 미리보기 타일 배율 — 너무 크면 base64가 컨텍스트를 잠식(16×16×3×16px ≈ 거대). */
 export const TILE_GRID_SCALE = 2;
-/** Largest canvas worth drawing before `canvasDataUrl` shrinks it. Supersampling past
- * 2× the delivered image buys nothing a nearest-neighbour downscale keeps. */
-const SUPERSAMPLE_LIMIT = MAX_IMAGE_DIMENSION * 2;
 export const CHECKER_DARK = "#2a2a2e";
 export const CHECKER_LIGHT = "#33333a";
 export const EMPTY_TILE = -1;
@@ -61,17 +58,17 @@ export function drawTile(context: CanvasRenderingContext2D, image: HTMLImageElem
  * 512px result. Pick a size that lands inside the delivered image up front. Small
  * regions keep the native scale so their existing output is unchanged.
  */
-export function tileDrawSize(tilesWide: number, tilesHigh: number, tileSize: number): number {
+export function tileDrawSize(tilesWide: number, tilesHigh: number, tileSize: number, maxDimension = MAX_IMAGE_DIMENSION): number {
   const natural = Math.max(1, tileSize * TILE_GRID_SCALE);
   const span = Math.max(1, tilesWide, tilesHigh);
-  if (span * natural <= SUPERSAMPLE_LIMIT) return natural;
-  return Math.max(1, Math.floor(MAX_IMAGE_DIMENSION / span));
+  if (span * natural <= maxDimension * 2) return natural;
+  return Math.max(1, Math.floor(maxDimension / span));
 }
 
-export function canvasDataUrl(canvas: HTMLCanvasElement): string | null {
+export function canvasDataUrl(canvas: HTMLCanvasElement, limit = MAX_IMAGE_DIMENSION): string | null {
   const maxDimension = Math.max(canvas.width, canvas.height);
-  if (maxDimension <= MAX_IMAGE_DIMENSION) return canvas.toDataURL("image/png");
-  const scale = MAX_IMAGE_DIMENSION / maxDimension;
+  if (maxDimension <= limit) return canvas.toDataURL("image/png");
+  const scale = limit / maxDimension;
   const scaledPair = createCanvas(canvas.width * scale, canvas.height * scale);
   if (!scaledPair) return null;
   scaledPair.context.drawImage(canvas, 0, 0, scaledPair.canvas.width, scaledPair.canvas.height);

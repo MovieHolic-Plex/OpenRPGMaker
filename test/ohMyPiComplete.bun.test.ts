@@ -71,6 +71,32 @@ function responseWithUrl(body: string, url: string): Response {
 }
 
 describe("oh-my-pi complete (real pi-ai + mock fetch)", () => {
+  test("Gemini 3.8 high and image reach the exact wire without model substitution", async () => {
+    const payloads: Record<string, any>[] = [];
+    const response = { response: { candidates: [{ content: { role: "model", parts: [{ text: "OK" }] }, finishReason: "STOP" }] } };
+    const result = await completeProvider("google-antigravity", {
+      model: "gemini-3.8-flash", reasoning: { effort: "high" }, max_tokens: 256,
+      messages: [{ role: "user", content: [{ type: "text", text: "review" }, { type: "image_url", image_url: { url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aY9sAAAAASUVORK5CYII=" } }] }],
+    }, { apiKey: JSON.stringify({ token: "test-access", projectId: "test-project" }),
+      fetch: async (_input, init) => {
+        payloads.push(JSON.parse(String(init?.body)));
+        return new Response(`data: ${JSON.stringify(response)}\n\n`, { headers: { "Content-Type": "text/event-stream" } });
+      },
+    });
+    expect(payloads[0]?.model).toBe("gemini-3.8-flash-high");
+    expect(payloads[0]?.request.generationConfig.thinkingConfig.thinkingLevel).toBe("HIGH");
+    expect(payloads[0]?.request.contents[0].parts.some((p: any) => p.inlineData?.mimeType === "image/png")).toBe(true);
+    expect(result.completion).toMatchObject({ model: "gemini-3.8-flash", image_delivery: [{ messageIndex: 0, partIndex: 1 }] });
+    response.response.candidates[0]!.finishReason = "MAX_TOKENS";
+    const truncated = await completeProvider("google-antigravity", {
+      model: "gemini-3.8-flash", reasoning: { effort: "high" }, max_tokens: 256,
+      messages: [{ role: "user", content: "review" }],
+    }, { apiKey: JSON.stringify({ token: "test-access", projectId: "test-project" }),
+      fetch: async () => new Response(`data: ${JSON.stringify(response)}\n\n`, { headers: { "Content-Type": "text/event-stream" } }),
+    });
+    expect(truncated.completion.choices[0]?.finish_reason).toBe("length");
+    await expect(completeProvider("google-antigravity", { model: "unknown-selected-model" })).rejects.toThrow("대체하지 않았습니다");
+  });
   afterAll(() => {
     rmSync(dir, { recursive: true, force: true });
   });

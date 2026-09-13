@@ -110,8 +110,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   };
   const candidateMaps = request.mapIds.length > 0 ? [...request.mapIds] : Object.keys(base.maps);
   const mapName = (id: string | null) => (id ? working.maps[id]?.name ?? null : null);
-  const child = (agentId: string): RunPiAgentOptions => ({
-    apiKey: options.apiKey,
+  const child = (agentId: string, provider = request.provider): RunPiAgentOptions => ({
+    apiKey: provider === request.provider ? options.apiKey : undefined,
+    providerApiKeys: options.providerApiKeys,
     signal: options.signal,
     onEvent: (event) => {
       const row = progress.get(agentId);
@@ -160,12 +161,12 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       try {
         const done = await runAgent(
           {
-            ...request, mode: "single", mapIds: [mapId], project: snapshot, task,
+            ...request, ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
             systemPrompt: memberSystemPrompt(member, snapshot, [mapId]), maxTurns: member.maxTurns,
-            ...(member.model ? { model: member.model } : {}),
+            ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
             ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
           },
-          child(agentId),
+          child(agentId, request.roleModels?.deep?.provider ?? request.provider),
         );
         const { spills, conflicts } = mergeOutcome(agentId, mapId, snapshot, done);
         ledger = settleAssignment(ledger, agentId, true);
@@ -230,12 +231,12 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     const snapshot = structuredClone(working) as Project;
     const done = await runAgent(
       {
-        ...request, mode: "single", mapIds: [mapId], project: snapshot, task,
+        ...request, ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
         systemPrompt: memberSystemPrompt(member, snapshot, [mapId]), maxTurns: member.maxTurns,
-        ...(member.model ? { model: member.model } : {}),
+        ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
         ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
       },
-      { ...child(agentId), readOnlyTools: true, extraTools: [reportTool] },
+      { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider), readOnlyTools: true, extraTools: [reportTool] },
     );
     toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns;
     const result = verdict ?? { ok: false, findings: ["검수 에이전트가 report_review 를 호출하지 않았습니다: " + summaryOf(done)] };

@@ -1,3 +1,5 @@
+import { configForRole } from "./modelRoles";
+import { configForLegacySupervisor } from "./ultrabrainConfig";
 import { genId as newCheckpointRunId } from "@/util/id";
 import { readLatestRunCheckpoint, saveRunCheckpoint, type RunCheckpoint, type RunCheckpointKey } from "./runCheckpointStore";
 import { checkpointContentIdentity, reconcileRunCheckpoint, type RunRecovery, type RunRuntimeState } from "./runRecovery";
@@ -916,7 +918,7 @@ export class AssistantSession {
   constructor(project: Project, options: AssistantSessionOptions = {}) {
     this.storeBacked = project === store.getCurrent();
     this.checkpointHost = options.checkpoint;
-    this.config = options.config ?? loadAiConfig();
+    this.config = configForLegacySupervisor(options.config ?? loadAiConfig());
     this.reviewConfig = options.reviewConfig;
     // 계량은 로그 파싱이 아니라 호출 지점에서 센다(sessionUsage.ts). 본문·플래너·검수·요약 콜이
     // 모두 이 한 겹을 지나므로, 여기서 세면 어떤 경로도 빠지지 않는다.
@@ -1051,7 +1053,7 @@ export class AssistantSession {
   // 세션이 생성 시점 설정을 캐시해 키를 저장해도 401이 반복되던 문제의 해법 —
   // 대화/초안은 보존하고 다음 요청부터 새 설정을 쓴다.
   updateConfig(config: AiConfig): void {
-    this.config = config;
+    this.config = configForLegacySupervisor(config);
   }
 
   // 지금까지 누적된 draft(= 제안 프리뷰의 정확한 결과). 수락 시 이 스냅샷을 그대로 적용한다.
@@ -4237,6 +4239,7 @@ export class AssistantSession {
     // Balanced keeps the fast executor. Explicit autonomous/max runs retain the
     // saved reasoning choice instead of silently disabling it when models switch.
     if (phase === "execute") {
+      if (this.config.roleModels?.deep) return configForRole(this.config, "deep");
       const executor = configForLiteModel(this.config);
       return this.config.autonomyLevel === "autonomous" || this.config.autonomyLevel === "max"
         ? { ...executor, reasoningEffort: this.config.reasoningEffort }
@@ -4485,7 +4488,7 @@ export class AssistantSession {
     let issues: readonly string[] = [];
     for (let attempt = 0; attempt < 2; attempt += 1) {
       try {
-        const result = await operation.wait(this.chat(configForLiteModel(this.config), {
+        const result = await operation.wait(this.chat(this.config.roleModels?.writer ? configForRole(this.config, "writer") : configForLiteModel(this.config), {
           messages: issues.length === 0
             ? messages
             : [...messages, { role: "user", content: `이전 시트는 거부되었습니다. 아래를 고쳐 JSON 전체를 다시 쓰세요:\n- ${issues.join("\n- ")}` }],

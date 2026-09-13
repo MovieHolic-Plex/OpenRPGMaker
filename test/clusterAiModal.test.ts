@@ -197,7 +197,7 @@ describe("cluster AI modal", () => {
     );
     const kickoff = mocks.instances[0].sendUserMessage.mock.calls[0]?.[0] ?? "";
     expect(kickoff).toContain("render_group_sample");
-    expect((mocks.constructorOptions[0] as { config?: { model?: string } }).config?.model).toBe("gemini-3.7-flash");
+    expect((mocks.constructorOptions[0] as { config?: { model?: string } }).config?.model).toBe("gpt-5.4-mini");
   });
 
   it("blocks kickoff when the stored config's live connection is confirmed disconnected", async () => {

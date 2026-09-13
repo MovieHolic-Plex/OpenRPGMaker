@@ -1,3 +1,5 @@
+import { configForUltrabrain } from "@/ai/ultrabrainConfig";
+import { modelForRole } from "@/ai/modelRoles";
 // 채팅 패널의 `/pi` 명령. Pi 에이전트(Bun 쪽 oh-my-pi 루프)를 돌리고, 결과 프로젝트에서 맵 묶음만
 // 떼어 기존 커밋 게이트(applyProposedProject)로 적용한다. 진행은 로그 안 팀 보드 카드로 그린다.
 //
@@ -8,6 +10,7 @@
 //
 // 이 파일은 패널의 나머지와 최소 접점(말풍선·상태 표시·로그 붙이기)만 공유한다 — 기존 세션 루프는 건드리지 않는다.
 
+import { reviewMapHarmony } from "@/ai/ultrabrainReview";
 import { runPiAgentViaCompanion } from "@/ai/piAgent/client";
 import { deriveRunOutcome } from "@/ai/runOutcome";
 import type { RunOutcome, RunOutcomeFacts } from "@/ai/runOutcome";
@@ -89,7 +92,7 @@ export interface PiRunOptions {
   readonly planOnly?: boolean;
   /** 다이얼의 작업 예산 → Pi 턴 상한. */
   readonly maxTurns?: number;
-  /** 다이얼의 추론 강도 → Pi thinking level. */
+  /** Legacy caller hint. Role-specific reasoning takes precedence in Pi execution. */
   readonly thinkingLevel?: PiAgentThinkingLevel;
 }
 
@@ -135,11 +138,15 @@ export async function runPiCommand(
   const proposalBase = captureProposalBase(base);
   const baseline = new AuthoredProjectBaseline(base);
   const config = loadAiConfig();
-  const provider = config.providerId ?? "google-antigravity";
-  const readOnly = options.readOnly === true;
+  const brain = configForUltrabrain(config);
+  const deep = modelForRole(config, "deep");
+  const effective = options.planOnly || (command.mode === "team" && !options.readOnly)
+    ? { provider: brain.providerId!, model: brain.model } : deep;
+  const provider = effective.provider;
+  const readOnly = options.readOnly === true || options.planOnly === true;
   // 조회 턴에 팀을 켜면 시공 팀원이 아무것도 못 하는 채로 예산만 태운다 — 읽기 전용은 언제나 단독이다.
   const team = command.mode === "team" && !readOnly;
-  const groups = team ? [command.mapIds] : command.mapIds.length > 0 ? command.mapIds.map((id) => [id]) : [[] as string[]];
+  const groups = team || options.planOnly ? [command.mapIds] : command.mapIds.length > 0 ? command.mapIds.map((id) => [id]) : [[] as string[]];
 
   // 실행 결과 4축 — 세션 경로(assistantSession.getRunOutcome)와 같은 deriveRunOutcome 을 쓴다.
   // 실행부는 사실만 정하고 판정(목표)은 수용 검사가 소유하므로 Pi 경로에선 unassessed 가 정직한 값이다.
@@ -148,6 +155,7 @@ export async function runPiCommand(
   let toolErrorCount = 0;
   let changedCount = 0;
   let applied = false;
+  let harmonyManualReview = false;
   /** 사실 팩 하나를 4축으로 투영한다 — 목표 축은 수용 검사의 소유라 여기선 늘 unassessed. */
   const publishOutcome = (facts: Omit<RunOutcomeFacts, "acceptance" | "visualDelivery">): void => {
     surface.setRunOutcome?.(deriveRunOutcome({ ...facts, acceptance: null }));
@@ -155,7 +163,7 @@ export async function runPiCommand(
   /** 종료 시점의 4축 하나를 게시한다. 종료 경로가 여러 개라서 하나로 모은다. */
   const publishFinalOutcome = (): void => {
     if (!surface.setRunOutcome) return;
-    const hasPendingDraft = changedCount > 0 && (config.piApply ?? "review") !== "auto";
+    const hasPendingDraft = changedCount > 0 && ((config.piApply ?? "review") !== "auto" || harmonyManualReview);
     publishOutcome({
       execution: surface.signal?.aborted ? "cancelled"
         : streamErrors.length > 0 && changedCount === 0 ? "blocked" : "response-final",
@@ -181,7 +189,7 @@ export async function runPiCommand(
     mapId: command.mapIds[0] ?? surface.getCurrentMapId(),
     mapName: command.mapIds[0] ? base.maps[command.mapIds[0]]?.name ?? null : null,
     provider,
-    model: config.model,
+    model: effective.model,
   };
   const runLog = startPiRunLog(logContext);
   // boardState 는 push 마다 새 객체로 갈아 끼워지므로 호출 시점의 것을 싣는다.
@@ -224,17 +232,40 @@ export async function runPiCommand(
 
   let results: PiAgentDoneEvent[];
   try {
+    let executionTask = command.task;
+    if (!readOnly && !team) {
+      surface.setStatus(`Ultrabrain · 계획 작성 (${brain.model})`);
+      let plan = "";
+      let planError = "";
+      push({ type: "agent_spawn", agentId: "ultrabrain-plan", role: "orchestrator", mapId: null, mapName: null, task: command.task, label: "Ultrabrain · 계획" });
+      const planned = await runPiAgentViaCompanion({
+        mode: "single", provider: brain.providerId!, model: brain.model,
+        task: `${PLAN_ONLY_PREFIX}${command.task}`, mapIds: command.mapIds, project: base,
+        readOnly: true, maxTurns: options.maxTurns, thinkingLevel: brain.reasoningEffort,
+      }, { signal: surface.signal, onEvent: event => {
+        push({ type: "agent_event", agentId: "ultrabrain-plan", event });
+        if (event.type === "assistant") plan = event.text;
+        if (event.type === "error") planError = event.message;
+      } });
+      surface.signal?.throwIfAborted();
+      if (planError || !plan.trim() || planned.changedKeys.length) throw new Error(planError || "Ultrabrain 계획을 완료하지 못했습니다.");
+      push({ type: "agent_done", agentId: "ultrabrain-plan", ok: true, summary: plan,
+        stats: planned.stats, changedKeys: [], spills: [], conflicts: [] });
+      surface.appendBubble("assistant", `Ultrabrain 계획\n${plan}`);
+      executionTask = `${command.task}\n\nUltrabrain 실행 계획:\n${plan}`;
+    }
     results = await Promise.all(groups.map((mapIds, index) => runPiAgentViaCompanion(
       {
         mode: team ? "team" : "single",
-        provider,
-        model: config.model,
-        task: options.planOnly ? `${PLAN_ONLY_PREFIX}${command.task}` : command.task,
+        provider: options.planOnly || team ? brain.providerId! : deep.provider,
+        model: options.planOnly || team ? brain.model : deep.model,
+        ...(!options.planOnly ? { roleModels: { deep, writer: modelForRole(config, "writer") } } : {}),
+        task: options.planOnly ? `${PLAN_ONLY_PREFIX}${command.task}` : executionTask,
         mapIds,
         project: base,
         ...(readOnly ? { readOnly: true } : {}),
         ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),
-        ...(options.thinkingLevel === undefined ? {} : { thinkingLevel: options.thinkingLevel }),
+        thinkingLevel: options.planOnly || team ? brain.reasoningEffort : deep.thinkingLevel,
         ...(teamSpec ? { team: teamSpec } : {}),
       },
       { signal: surface.signal, onEvent: wrap(mapIds, index) },
@@ -306,6 +337,35 @@ export async function runPiCommand(
   // 영수증이 그릴 맵: 먼저 바뀐 맵, 없으면 지시 범위의 첫 맵.
   const receiptMapId = changedKeys.find((key) => key.startsWith("maps."))?.slice("maps.".length)
     ?? command.mapIds[0] ?? surface.getCurrentMapId();
+  // Review the merged postprocessed draft once; preserve whole-map context.
+  // Negative/unavailable review keeps the existing manual proposal path, never auto-applies.
+  let harmonyApproved = false;
+  try {
+    const reviews = await reviewMapHarmony(base, merged.project, command.task, config, {
+      signal: surface.signal,
+      onStatus: text => surface.setStatus(text),
+      onReview: review => {
+        push({ type: "agent_spawn", agentId: `ultrabrain-${review.mapId}`, role: "reviewer", mapId: review.mapId,
+          mapName: merged.project.maps[review.mapId]?.name ?? null, task: "전체 맵 조화 검수", label: "Ultrabrain" });
+        surface.appendBubble("assistant", `Ultrabrain · ${merged.project.maps[review.mapId]?.name ?? review.mapId}\n${review.summary}${review.findings.length ? "\n" + review.findings.map(f => `• ${f}`).join("\n") : ""}`);
+        push({ type: "review", agentId: `ultrabrain-${review.mapId}`, mapId: review.mapId, ok: review.harmonious, findings: [...review.findings] });
+      },
+    });
+    harmonyApproved = reviews.every(review => review.harmonious);
+  } catch (error) {
+    if (surface.signal?.aborted) {
+      publishFinalOutcome();
+      boardState = markTeamBoardAborted(boardState); sync();
+      finishLog({ applied: false, changedCount, stoppedReason: "중단" });
+      surface.setStatus("대기");
+      return false;
+    }
+    const message = error instanceof Error ? error.message : String(error);
+    surface.appendBubble("system", `Ultrabrain 검수 미완료: ${message} 자동 적용하지 않고 검토할 초안을 남겼습니다.`);
+    push({ type: "agent_spawn", agentId: "ultrabrain", role: "reviewer", mapId: null, mapName: null, task: "전체 맵 조화 검수", label: "Ultrabrain" });
+    push({ type: "review", agentId: "ultrabrain", mapId: null, ok: false, findings: [message] });
+  }
+  harmonyManualReview = !harmonyApproved;
   const apply = async (): Promise<boolean> => {
     const appliedResult = await applyProposedProject(merged.project, {
     base: proposalBase,
@@ -349,7 +409,7 @@ export async function runPiCommand(
   };
   // 기본은 검토 후 적용: 보드 발의 검토 카드에서 사용자가 승인해야 프로젝트가 바뀐다.
   // 기준(base)이 그 사이 바뀌면 applyProposedProject 가 stale-base 로 거절한다.
-  if ((config.piApply ?? "review") === "auto") return apply();
+  if ((config.piApply ?? "review") === "auto" && harmonyApproved) return apply();
   boardState = markTeamBoardReview(boardState, changePreviewChips(changed)); sync();
   publishFinalOutcome();
   finishLog({ applied: false, changedCount, stoppedReason: "검토 대기" });

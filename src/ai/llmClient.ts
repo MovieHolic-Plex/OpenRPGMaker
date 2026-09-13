@@ -1,3 +1,4 @@
+import { configForRole, parseRoleModels, type SpecialistModels } from "./modelRoles";
 // ai/llmClient.ts
 // OpenAI Chat Completions 호환 LLM 클라이언트(의존성 추가 없이 fetch 직접 구현).
 // 공급자: 사용자 설정 baseUrl(OpenAI 호환 엔드포인트). 기본 공급자를 하드코딩하지 않는다.
@@ -6,7 +7,7 @@
 //   **API 키는 소스/프로젝트 JSON/localStorage 기본값에 하드코딩 금지.** 설정 UI로만 입력.
 // - Node(테스트/스모크)에서는 config를 직접 주입해 사용한다.
 
-import { defaultModelForAuthMode, isModelValidForAuthMode } from "@/ai/modelCatalog";
+import { DEFAULT_ULTRABRAIN_PROVIDER, DEFAULT_ULTRABRAIN_MODEL, DEFAULT_ULTRABRAIN_EFFORT } from "./ultrabrainConfig";
 import { DEFAULT_PI_APPLY, DEFAULT_PI_TEAM, LEGACY_PI_TEAM_ROUTE, type PiApplyMode } from "@/ai/piAgent/executionRoute";
 import type { AutonomyLevel } from "@/ai/autonomyLevels";
 import { AUTONOMY_LEVEL_IDS } from "@/ai/autonomyLevels";
@@ -49,6 +50,10 @@ export interface AiConfig {
   model: string;
   // 실행 모델: 쓰기 툴 루프와 반복/배치 보조 호출. 저장값이 없으면 DEFAULT_LITE_MODEL을 쓴다.
   liteModel?: string;
+  roleModels?: SpecialistModels;
+  ultrabrainProviderId?: string;
+  ultrabrainModel?: string;
+  ultrabrainReasoningEffort?: "low" | "medium" | "high";
   apiKey: string;
   // 라운드 안전핀. 기본은 후하게 잡고(2000), 설정 UI 에 노출하지 않는다. 사용자 제한은 maxTokens.
   maxToolCalls: number;
@@ -134,6 +139,9 @@ export function defaultAiConfig(): AiConfig {
     baseUrl: DEFAULT_BASE_URL,
     model: DEFAULT_MODEL,
     liteModel: DEFAULT_LITE_MODEL,
+    ultrabrainProviderId: DEFAULT_ULTRABRAIN_PROVIDER,
+    ultrabrainModel: DEFAULT_ULTRABRAIN_MODEL,
+    ultrabrainReasoningEffort: DEFAULT_ULTRABRAIN_EFFORT,
     // OAuth 는 클라이언트 키를 쓰지 않는다. 동반 서비스(pi-ai)가 자기 저장소의 자격 증명으로
     // 전송하므로 여기서 env 키를 실어 보내면 apiKey 경로가 되살아난다.
     apiKey: "",
@@ -216,29 +224,16 @@ export function loadAiConfig(): AiConfig {
     // AiConfig 의 선택 필드지만 defaultAiConfig() 가 항상 DEFAULT_LITE_MODEL 을 채우므로 ?? base.model 로
     // undefined 여지만 없앤다. 런타임 값은 이전 삼항 표현식과 동일하다.
     const storedModel = typeof parsed.model === "string" ? parsed.model.trim() : "";
-    let model: string = storedModel || base.model;
+    const model: string = storedModel || base.model;
     const storedLiteModel = typeof parsed.liteModel === "string" ? parsed.liteModel.trim() : "";
-    let liteModel: string = storedLiteModel || storedModel || (base.liteModel ?? base.model);
+    const liteModel: string = storedLiteModel || storedModel || (base.liteModel ?? base.model);
     // 제공자는 **Antigravity 와 Codex 둘 중 하나**다. 저장된 선택은 그대로 존중하고,
     // 레지스트리에 없는 값(옛 zai/xiaomi/… 나 오타)은 parseOhMyPiProvider 가 기본 제공자로
     // 스냅한다 — 사라진 제공자 id 가 살아남아 동반 서비스에 그대로 실려 나가는 것을 막는다.
     // providerId 가 없는 옛 blob 도 같은 경로로 기본 제공자가 된다.
     // authMode 는 위에서 이미 "chatgpt" 로 고정돼 있다.
     const providerId = parseOhMyPiProvider(parsed.providerId);
-    // 모델 검증은 **선택된 제공자 기준**이다. 다른 제공자의 모델(Antigravity 에 gpt-5.6-sol,
-    // Codex 에 gemini-3.7-flash)은 그대로 보내면 조용히 강등되거나 400 이 되므로, 여기서
-    // 그 제공자의 권장 기본값으로 교정한다 — 사용자의 localStorage 가 스스로 낫는다.
-    if (!isModelValidForAuthMode(authMode, model, providerId) || !isModelValidForAuthMode(authMode, liteModel, providerId)) {
-      const fallback = defaultModelForAuthMode(authMode, providerId) || base.model;
-      if (!isModelValidForAuthMode(authMode, model, providerId)) {
-        console.warn(`[llmClient] authMode(${authMode})에서 쓸 수 없는 모델 '${model}' 을(를) 권장 기본 '${fallback}' 으로 바꿨습니다.`);
-        model = fallback;
-      }
-      if (!isModelValidForAuthMode(authMode, liteModel, providerId)) {
-        console.warn(`[llmClient] authMode(${authMode})에서 쓸 수 없는 실행 모델 '${liteModel}' 을(를) 권장 기본 '${fallback}' 으로 바꿨습니다.`);
-        liteModel = fallback;
-      }
-    }
+    // Preserve explicit selections; the companion rejects unsupported IDs without substitution.
     return {
       authMode,
       providerId,
@@ -253,6 +248,12 @@ export function loadAiConfig(): AiConfig {
       baseUrl: base.baseUrl,
       model,
       liteModel,
+      roleModels: parseRoleModels(parsed.roleModels),
+      ultrabrainProviderId: parseOhMyPiProvider(parsed.ultrabrainProviderId, DEFAULT_ULTRABRAIN_PROVIDER),
+      ultrabrainModel: typeof parsed.ultrabrainModel === "string" && parsed.ultrabrainModel.trim()
+        ? parsed.ultrabrainModel.trim() : DEFAULT_ULTRABRAIN_MODEL,
+      ultrabrainReasoningEffort: parsed.ultrabrainReasoningEffort === "low" || parsed.ultrabrainReasoningEffort === "medium"
+        ? parsed.ultrabrainReasoningEffort : DEFAULT_ULTRABRAIN_EFFORT,
       // OAuth 는 클라이언트 키를 쓰지 않는다 — 저장된 키도, env 키도 싣지 않는다.
       apiKey: "",
       maxToolCalls: Number.isFinite(parsed.maxToolCalls) && Number(parsed.maxToolCalls) > 0
@@ -294,6 +295,7 @@ export function saveAiConfig(config: AiConfig): void {
 }
 
 export function configForLiteModel(config: AiConfig): AiConfig {
+  if (config.roleModels?.deep) return configForRole(config, "deep");
   // liteModel 미설정 시 감독 model을 따라간다(일원화). 감독을 바꾸면 영역 작업 실행도 함께 바뀌고,
   // 각 authMode(chatgpt OAuth / apiKey)의 baseUrl·게이트웨이 경로가 일관되게 유지된다.
   // DEFAULT_LITE_MODEL은 defaultAiConfig() 초기값으로만 의미를 가진다.
@@ -854,18 +856,8 @@ export function resetAiModelDemotion(): void {
   aiModelDemotion = null;
 }
 
-/**
- * **모델 강등을 조용히 넘기지 않는다.**
- *
- * 동반 서비스의 `resolveModel` 은 카탈로그 밖 모델 ID 를 오류가 아니라 제공자 기본 모델로
- * 바꿔 버린다 — 두 제공자 모두. 그래서 감독이 고른 모델이 아닌 것이 답해도 아무 신호가 없었다.
- * `isModelValidForAuthMode` 는 Codex 만 카탈로그 화이트리스트로 막고 Antigravity 는 gemini
- * 네임스페이스만 본다 — 사용자가 직접 입력한 새 gemini 변형이 강등되는 경우는 여기서만 보인다.
- *
- * 다행히 응답 본문의 `model` 은 **해석된** 모델이다(assistantToOpenAI 가 그렇게 채운다).
- * 서버를 고치지 않고도 요청 모델과 비교하면 강등이 보인다 — 이 함수가 그 비교를 기록한다.
- * 치명적으로 만들지는 않는다: 강등된 응답도 쓸 수 있는 응답이므로 크게 말하고 넘긴다.
- */
+/** Report upstream model mismatches for injected transports and older companions.
+ * The current OMP resolver rejects unknown IDs instead of substituting a default. */
 export function reportModelDemotion(requested: string, served: string): void {
   const a = requested.trim();
   const b = served.trim();

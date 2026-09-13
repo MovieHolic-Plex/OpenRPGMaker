@@ -1,3 +1,4 @@
+import type { SpecialistModels } from "../modelRoles";
 // Pi 에이전트 경로의 공용 규약. 브라우저(클라이언트)·동반 서비스(Node)·Bun 워커(런타임)가 같은
 // 요청/이벤트 모양을 쓴다. 전송은 NDJSON 한 줄 = 이벤트 하나.
 //
@@ -15,6 +16,7 @@ export type PiAgentMode = "single" | "team";
 export interface PiAgentRequest {
   /** 기본 single. team 이면 팀장 에이전트가 맵별 시공·검수 에이전트를 띄운다. */
   readonly mode?: PiAgentMode;
+  readonly roleModels?: SpecialistModels;
   readonly provider: string;
   /** 비우면 제공자 기본 모델. */
   readonly model?: string;

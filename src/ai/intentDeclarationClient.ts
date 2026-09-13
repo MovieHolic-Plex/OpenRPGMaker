@@ -92,6 +92,10 @@ export function createLlmIntentDeclarer(
   const chat = options.chat ?? chatCompletion;
   const getConfig = options.getConfig ?? loadAiConfig;
   const timeoutMs = options.timeoutMs ?? INTENT_DECLARATION_TIMEOUT_MS;
+  const routingConfig = (): AiConfig => {
+    const config = configForLiteModel(getConfig());
+    return { ...config, reasoningEffort: "off", maxTokens: Math.min(config.maxTokens, 4096) };
+  };
   return async (facts, signal) => {
     const started = Date.now();
     const text = facts.userText.trim();
@@ -107,7 +111,7 @@ export function createLlmIntentDeclarer(
     const assessed = async (intent: IntentDeclaration, error?: string): Promise<IntentDeclarationOutcome> => {
       if (intent.mode !== "create" && intent.mode !== "modify") return { intent, elapsedMs: Date.now() - started, error };
       // This call sees the original request/facts, not the planner or authored draft.
-      const result = await (options.audit ?? chat)(configForLiteModel(getConfig()), {
+      const result = await (options.audit ?? chat)(routingConfig(), {
         messages: [{ role: "system", content: REQUEST_COVERAGE_AUDIT },
           { role: "user", content: buildIntentUserPayload(facts) }],
         response_format: { type: "json_object" }, temperature: 0.1,
@@ -119,7 +123,7 @@ export function createLlmIntentDeclarer(
         error: error ?? coverage.error };
     };
     try {
-      const config = configForLiteModel(getConfig());
+      const config = routingConfig();
       const request: ChatRequest = {
         messages: [
           { role: "system", content: INTENT_SYSTEM_PROMPT },

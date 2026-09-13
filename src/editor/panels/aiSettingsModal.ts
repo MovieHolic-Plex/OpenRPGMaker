@@ -1,6 +1,8 @@
+import { modelForRole, type SpecialistRole, type RoleModel } from "@/ai/modelRoles";
 // AI 설정 전용 모달 — 채팅 본문과 분리된 설정 표면.
 // loadAiConfig/saveAiConfig 자동 저장 계약을 유지한다.
 
+import { configForUltrabrain, DEFAULT_ULTRABRAIN_MODEL } from "@/ai/ultrabrainConfig";
 import { DEFAULT_PI_APPLY, DEFAULT_PI_TEAM } from "@/ai/piAgent/executionRoute";
 import {
   fetchChatGptAuthStatus,
@@ -20,8 +22,8 @@ import {
   type AiConfig,
 } from "@/ai/llmClient";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel } from "@/ai/autonomyLevels";
-import { defaultModelForAuthMode, isModelValidForAuthMode, modelCatalogForAuthMode } from "@/ai/modelCatalog";
-import { parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { isModelValidForAuthMode, modelCatalogForAuthMode } from "@/ai/modelCatalog";
+import { OH_MY_PI_PROVIDERS, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, IMAGE_MODEL_CATALOG } from "@/ai/imageModelCatalog";
 import {
   AI_BACKGROUND_OPACITY_LIMITS,
@@ -218,16 +220,48 @@ export function renderAiSettingsForm(options: {
     refreshImageStatus();
   };
   refreshImageModels(config.imageModel ?? DEFAULT_IMAGE_MODEL);
-  const model = modelField("감독 모델(계획·검수)", config.model, "ai-config-model", "ai-config-model-preset", authMode, DEFAULT_MODEL, providerId);
+  const model = modelField("Writer 모델", modelForRole(config, "writer").model, "ai-config-model", "ai-config-model-preset", authMode, DEFAULT_MODEL, providerId);
   const liteModel = modelField(
-    "실행 모델(툴 작업)",
-    config.liteModel ?? DEFAULT_LITE_MODEL,
+    "Deep 모델",
+    modelForRole(config, "deep").model,
     "ai-config-lite-model",
     "ai-config-lite-model-preset",
     authMode,
     DEFAULT_LITE_MODEL,
     providerId,
   );
+  const brainConfig = configForUltrabrain(config);
+  const brainProvider = el("select", {
+    class: "ai-config-select", dataset: { testid: "ai-config-ultrabrain-provider" },
+    attrs: { "aria-label": "Ultrabrain 제공자" },
+    children: OH_MY_PI_PROVIDERS.map(p => el("option", { attrs: { value: p.id }, text: p.label })),
+  }) as HTMLSelectElement;
+  brainProvider.value = brainConfig.providerId!;
+  const brainModel = modelField("Ultrabrain 모델", brainConfig.model,
+    "ai-config-ultrabrain-model", "ai-config-ultrabrain-model-preset", authMode, DEFAULT_ULTRABRAIN_MODEL, brainProvider.value);
+  const brainEffort = el("select", {
+    class: "ai-config-select", dataset: { testid: "ai-config-ultrabrain-reasoning" },
+    attrs: { "aria-label": "Ultrabrain 추론" },
+    children: ["low", "medium", "high"].map(value => el("option", { attrs: { value }, text: value })),
+  }) as HTMLSelectElement;
+  brainEffort.value = brainConfig.reasoningEffort!;
+  const specialistControls = (["vision", "writer", "deep"] as const).map(role => {
+    const selected = modelForRole(config, role);
+    const provider = el("select", { class: "ai-config-select", dataset: { testid: `ai-config-${role}-provider` },
+      attrs: { "aria-label": `${role} 제공자` },
+      children: OH_MY_PI_PROVIDERS.map(p => el("option", { attrs: { value: p.id }, text: p.label })),
+    }) as HTMLSelectElement;
+    provider.value = selected.provider;
+    const field = role === "writer" ? model : role === "deep" ? liteModel
+      : modelField("Vision 모델", selected.model, "ai-config-vision-model", "ai-config-vision-model-preset", authMode, selected.model, selected.provider);
+    field.refresh(authMode, selected.provider);
+    const effort = el("select", { class: "ai-config-select", dataset: { testid: `ai-config-${role}-reasoning` },
+      attrs: { "aria-label": `${role} 추론 강도` },
+      children: ["off", "low", "medium", "high"].map(value => el("option", { attrs: { value }, text: value })),
+    }) as HTMLSelectElement;
+    effort.value = selected.thinkingLevel;
+    return { role, provider, field, effort };
+  });
   // 엔드포인트(ai-config-baseurl)와 API 키(ai-config-apikey) 입력은 **의도적으로 없다.**
   //
   // 두 필드는 브라우저가 직접 게이트웨이를 치던 시절의 것이고, 입력한 키는 saveAiConfig 를 통해
@@ -240,20 +274,6 @@ export function renderAiSettingsForm(options: {
   // 동반 서비스이므로 UI 가 정할 것이 없다(근거: llmClient.aiTransport).
   const authSettings = renderAiAuthSettings(config, ({ providerId: next }) => {
     providerId = next;
-    // 제공자를 바꾸면 **그 제공자의 기본 모델을 채택한다.**
-    //
-    // "유효하면 사용자 선택을 존중" 이 더 친절해 보이지만 여기서는 위험하다.
-    // isModelValidForAuthMode 는 openai-codex 에서만 실제 화이트리스트이고 나머지 제공자에는
-    // 무조건 true 를 준다(modelCatalog.ts). 그래서 옛 모델을 "유효하다"며 남기면 동반 서비스의
-    // resolveModel 이 그것을 오류 없이 다른 모델로 강등한다 — 감독이 고른 것도, 새 제공자의
-    // 기본도 아닌 모델이 답한다. 검증 가능한 라이브 카탈로그가 붙기 전까지는 채택이 정직하다.
-    const recommended = defaultModelForAuthMode(authMode, next);
-    if (recommended) {
-      model.setValue(recommended, authMode);
-      liteModel.setValue(recommended, authMode);
-    }
-    model.refresh(authMode, next);
-    liteModel.refresh(authMode, next);
     persistAuthMode();
   });
   const maxTokensDescription = `한 요청에서 AI가 쓸 수 있는 출력 토큰 예산입니다. 기본값은 ${DEFAULT_MAX_TOKENS}이며, 예산이 다 되면 그때까지의 변경을 제안하고 멈춥니다.`;
@@ -271,7 +291,7 @@ export function renderAiSettingsForm(options: {
     ),
   }) as HTMLSelectElement;
   autonomySelect.value = initialAutonomyLevel;
-  const autonomyDescription = "AI가 스스로 판단하고 실행하는 정도입니다. 올리면 추론과 작업 모드가 함께 조정됩니다.";
+  const autonomyDescription = "계획만 제안할지 직접 작업할지와 작업 예산을 조정합니다. 역할별 모델과 추론 강도는 유지됩니다.";
   const autonomyRow = settingsRow("자율성", autonomyDescription, autonomySelect);
   autonomyRow.setAttribute("title", autonomyDescription);
 
@@ -286,8 +306,8 @@ export function renderAiSettingsForm(options: {
     ],
   }) as HTMLSelectElement;
   reasoningSelect.value = config.reasoningEffort ?? "medium";
-  const reasoningDescription = "모델이 답이나 도구 사용 전에 추론하는 강도입니다. 끔을 고르면 별도 추론을 하지 않습니다.";
-  const reasoningRow = settingsRow("추론", reasoningDescription, reasoningSelect);
+  const reasoningDescription = "기존 영역 작업 경로의 추론 설정입니다. 대화 조수는 위에서 선택한 역할별 추론 강도를 사용합니다.";
+  const reasoningRow = settingsRow("영역 작업 추론", reasoningDescription, reasoningSelect);
   reasoningRow.setAttribute("title", reasoningDescription);
 
   // agentMode(작업 모드): auto = 플래너(작업 분해) 상시, chat = 종래 채팅(모델 이원화 시에만 플래너).
@@ -402,6 +422,13 @@ export function renderAiSettingsForm(options: {
   const collect = (): AiConfig => ({
     authMode,
     providerId,
+    roleModels: Object.fromEntries(specialistControls.map(({ role, provider, field, effort }) => [role, {
+      provider: provider.value, model: field.input.value.trim() || modelForRole(config, role).model,
+      thinkingLevel: effort.value as RoleModel["thinkingLevel"],
+    }])),
+    ultrabrainProviderId: brainProvider.value,
+    ultrabrainModel: brainModel.input.value.trim() || DEFAULT_ULTRABRAIN_MODEL,
+    ultrabrainReasoningEffort: brainEffort.value as AiConfig["ultrabrainReasoningEffort"],
     imageProviderId: imageProvider.value,
     imageModel: imageModel.value,
     // 에디터는 동반 서비스 전송만 쓴다 — baseUrl 은 endpoint() 가 무시하고, 키는 동반 서비스가
@@ -422,17 +449,14 @@ export function renderAiSettingsForm(options: {
   let autoSaveTimer: number | null = null;
   const persist = (showToast: boolean): void => {
     const next = collect();
-    // 저장 전에 모델 유효성을 검사해 무효하면 눈에 보이게 알린다. 요청을 보내고 400 을 받고 나서야
-    // 아는 지금 동작을 막기 위함이다. 저장 자체는 막지 않는다 — 무효 모델이 저장돼도 loadAiConfig 가
-    // 로드 시점에 권장 기본으로 교정(원인 1 수정)하므로 실제로 400 요청이 나가지는 않기 때문이다.
-    // 여기서 저장을 막으면 사용자 입력을 되돌리는 부작용이 생기고, 교정 안전망이 이미 있으므로
-    // 경고(인라인 + 토스트)만으로 충분하다고 판단했다.
-    const modelValid = model.validate(authMode, providerId);
-    const liteValid = liteModel.validate(authMode, providerId);
+    // Keep the selection; unsupported models are shown here and rejected by the companion.
+    const modelValid = specialistControls.map(c => c.field.validate(authMode, c.provider.value)).every(Boolean);
+    const liteValid = true;
+    const brainValid = brainModel.validate(authMode, brainProvider.value);
     saveAiConfig(next);
     onSaved(next);
     savedHint.textContent = savedAtText(showToast ? "지금" : "자동");
-    if (!modelValid || !liteValid) {
+    if (!modelValid || !liteValid || !brainValid) {
       toast("선택한 모델이 현재 연결 방식에서 쓸 수 없습니다. 모델 입력 아래 경고를 확인하세요.", "error");
     } else if (showToast) {
       toast("어시스턴트 설정을 저장했습니다.", "ok");
@@ -464,20 +488,34 @@ export function renderAiSettingsForm(options: {
       persist(false);
     }, 350);
   };
-  for (const field of [model, liteModel, maxTokens]) {
+  for (const field of [...specialistControls.map(c => c.field), brainModel, maxTokens]) {
     field.input.addEventListener("input", scheduleAutoSave);
     field.input.addEventListener("change", () => persist(false));
   }
-  for (const field of [model, liteModel]) {
-    // 입력 즉시 유효성을 보여준다(저장까지 기다리지 않음). authMode 는 클로저의 현재 값을 쓴다.
-    field.input.addEventListener("input", () => field.validate(authMode, providerId));
-    field.preset.addEventListener("change", () => {
-      // setValue 로 넣는다 — input.value 직접 대입은 경고 재평가를 건너뛰어, 목록에서 고른
-      // 직후에는 이전 값의 경고가 그대로 남아 있었다(저장 시점에야 갱신됐다).
-      if (field.preset.value) field.setValue(field.preset.value, authMode, providerId);
+  for (const { provider, field, effort } of specialistControls) {
+    provider.addEventListener("change", () => {
+      field.refresh(authMode, provider.value);
+      field.validate(authMode, provider.value);
       persist(false);
     });
+    field.input.addEventListener("input", () => field.validate(authMode, provider.value));
+    field.preset.addEventListener("change", () => {
+      if (field.preset.value) field.setValue(field.preset.value, authMode, provider.value);
+      persist(false);
+    });
+    effort.addEventListener("change", () => persist(false));
   }
+  brainProvider.addEventListener("change", () => {
+    brainModel.refresh(authMode, brainProvider.value);
+    brainModel.validate(authMode, brainProvider.value);
+    persist(false);
+  });
+  brainModel.input.addEventListener("input", () => brainModel.validate(authMode, brainProvider.value));
+  brainModel.preset.addEventListener("change", () => {
+    if (brainModel.preset.value) brainModel.setValue(brainModel.preset.value, authMode, brainProvider.value);
+    persist(false);
+  });
+  brainEffort.addEventListener("change", () => persist(false));
   reasoningSelect.addEventListener("change", () => persist(false));
   autonomySelect.addEventListener("change", () => {
     const level: AutonomyLevel = isAutonomyLevel(autonomySelect.value) ? autonomySelect.value : "balanced";
@@ -576,27 +614,33 @@ export function renderAiSettingsForm(options: {
         "AI 제공자와 로그인 상태를 관리합니다.",
         [authSettings.element],
       ),
-      el("div", {
-        class: "ai-settings-advanced",
-        attrs: { open: "" },
-        dataset: { testid: "ai-settings-advanced" },
-        children: [settingsSection(
-          "model",
-          "모델",
-          "계획과 실행에 사용할 모델을 선택합니다.",
-          [model.row, liteModel.row],
-        )],
-      }),
+      el("div", { class: "ai-settings-advanced", attrs: { open: "" },
+        dataset: { testid: "ai-settings-advanced" }, children: [
+      settingsSection(
+        "ultrabrain", "Ultrabrain · 계획과 최종 판단",
+        "최고 지능 역할입니다. 작업 계획과 팀 지휘를 맡고, 맵 검수에서는 전체 이미지를 직접 보고 최종 판단합니다. 맵 검수 시 이미지 입력을 지원해야 합니다.",
+        [settingsRow("제공자", "선택한 제공자의 OAuth 로그인을 사용합니다.", brainProvider),
+          brainModel.row, settingsRow("추론 강도", "작성 모델의 자율성 설정과 별도로 유지됩니다.", brainEffort)],
+      ),
+      ...specialistControls.map(({ role, provider, field, effort }) => settingsSection(role,
+        ({ vision: "Vision · 시각 관찰", writer: "Writer · 작문", deep: "Deep · 깊은 작업과 실행" } satisfies Record<SpecialistRole, string>)[role],
+        ({ vision: "전체 맵 이미지의 배치·색감·경계·겹침을 관찰합니다. 이미지 입력을 지원하는 LLM을 선택하세요. 실제 이미지 전달을 확인하며 미지원 모델로는 검수를 통과시키지 않습니다.",
+          writer: "이야기·세계관·NPC 대사·퀘스트 문장을 작성합니다. Deep이 필요한 작업에서 호출합니다.",
+          deep: "Ultrabrain의 계획에 따라 복잡한 편집·도구 실행·수정·검증을 담당합니다." } satisfies Record<SpecialistRole, string>)[role],
+        [settingsRow("제공자", "역할별로 독립적으로 선택합니다.", provider), field.row,
+          settingsRow("추론 강도", "자율성 다이얼과 별도로 유지됩니다.", effort)],
+      )),
       settingsSection(
         "image",
-        "이미지 생성",
-        "대화의 감독·실행 모델과 별도로 그림을 만들 모델을 선택합니다.",
+        "Image · 이미지 생성",
+        "그림을 생성하는 모델입니다. 이미지를 읽는 Vision과 별도로 선택합니다.",
         [
           settingsRow("이미지 생성 제공자", "대화 제공자를 바꿔도 이 선택은 유지됩니다.", imageProvider),
           settingsRow("이미지 생성 모델", "이미지를 출력하는 모델만 표시합니다. 지원 미확인 모델은 선택할 수 없습니다.", imageModel),
           imageStatus,
         ],
       ),
+      ] }),
       settingsSection(
         "behavior",
         "동작",
@@ -756,7 +800,7 @@ function modelField(
     // 시작하는데도 거부되는 ID 에 "gpt- 는 괜찮다"고 안내하는 모순이 있었다. 게다가 remedy 로
     // 제시한 "연결 방식을 API/게이트웨이로 바꾸세요" 는 이제 존재하지 않는 경로다.
     warning.textContent =
-      "이 목록에 없는 모델 ID 는 오류 없이 다른 모델로 바뀝니다. 목록에서 골라 주세요.";
+      "현재 제공자에서 지원을 확인하지 못한 모델입니다. 다른 모델로 자동 대체하지 않습니다.";
     return false;
   };
   // 값을 바꾸는 공개 수단. input.value 직접 대입은 드롭다운 하이라이트와 경고 표시가 어긋난다.

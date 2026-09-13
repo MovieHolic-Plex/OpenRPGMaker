@@ -1,3 +1,5 @@
+import { configForRole } from "./modelRoles";
+import { configForUltrabrain } from "./ultrabrainConfig";
 // ai/assistantEndpoint.ts
 // 에디터 AI 표면이 **조수와 같은 엔드포인트에 닿는 단일 지점**.
 //
@@ -96,7 +98,12 @@ const SURFACE_POLICIES: Readonly<Record<AiSurface, SurfacePolicy>> = {
 export function resolveSurfaceAiConfig(surface: AiSurface, base?: AiConfig): AiConfig {
   const policy = SURFACE_POLICIES[surface];
   const source = base ?? loadAiConfig();
-  const tiered = policy.tier === "lite" ? configForLiteModel(source) : source;
+  const hasRoles = source.roleModels && Object.keys(source.roleModels).length > 0;
+  const tiered = hasRoles
+    ? surface === "tileset-analysis" ? configForRole(source, "vision")
+      : policy.tier === "lite" ? configForRole(source, "deep")
+      : { ...configForUltrabrain(source), maxTokens: source.maxTokens }
+    : policy.tier === "lite" ? configForLiteModel(source) : source;
   // 두 항목은 서로 독립이고 둘 다 없는 표면이 대부분이므로, 정책이 요구할 때만 사본을 만든다.
   if (policy.maxTokens === undefined && policy.maxToolCallsCeiling === undefined) return tiered;
   return {

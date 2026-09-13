@@ -212,3 +212,27 @@ describe("팀 런타임 — 업무/수정 분류", () => {
     ]);
   });
 });
+
+describe("team model roles", () => {
+  it("uses Ultrabrain for orchestration and Deep for builders with provider-specific credentials", async () => {
+    const project = seeded();
+    const calls: PiAgentRequest[] = [];
+    const keys = { "google-antigravity": "brain-test-key", "openai-codex": "deep-test-key" };
+    await runPiTeam({ ...request(project), provider: "google-antigravity", model: "gemini-3.8-flash", thinkingLevel: "high",
+      roleModels: { deep: { provider: "openai-codex", model: "deep-model", thinkingLevel: "medium" } },
+    }, { apiKey: "brain-only-token", providerApiKeys: keys, runAgent: async (req, opts) => {
+      calls.push(req);
+      expect(opts.providerApiKeys).toEqual(keys);
+      expect(opts.apiKey).toBe(req.provider === "google-antigravity" ? "brain-only-token" : undefined);
+      const tools = opts.extraTools ?? [];
+      if (tools.some(tool => tool.name === "assign_map_agent")) {
+        await callTool(tools, "assign_map_agent", { mapId: "map_a", task: "집", member: "builder" });
+        await callTool(tools, "wait_agents", {});
+        await callTool(tools, "finish", { report: "끝" });
+      }
+      return doneWith(req.project);
+    } });
+    expect(calls[0]).toMatchObject({ provider: "google-antigravity", model: "gemini-3.8-flash", thinkingLevel: "high" });
+    expect(calls[1]).toMatchObject({ provider: "openai-codex", model: "deep-model", thinkingLevel: "medium" });
+  });
+});

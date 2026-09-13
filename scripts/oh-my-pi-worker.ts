@@ -38,7 +38,7 @@ const server = Bun.serve({
       if (request.method === "POST" && url.pathname === "/agent/run") {
         // Pi 에이전트 실행. 진행 이벤트를 NDJSON 으로 흘리고 마지막 줄 `done` 에 결과 프로젝트를 싣는다.
         // 오류도 이벤트 줄로 보낸다 — 헤더가 이미 나간 뒤라 상태 코드로는 말할 수 없다.
-        const body = await request.json() as { apiKey?: string; request?: PiAgentRequest };
+        const body = await request.json() as { apiKey?: string; providerApiKeys?: Record<string, string | undefined>; request?: PiAgentRequest };
         const agentRequest = body.request;
         if (!agentRequest || typeof agentRequest !== "object" || typeof agentRequest.task !== "string" || !agentRequest.project) {
           return json({ error: "request.task 와 request.project 가 필요합니다" }, 400);
@@ -52,6 +52,7 @@ const server = Bun.serve({
             };
             const agentOptions = {
               apiKey,
+              providerApiKeys: body.providerApiKeys,
               signal: request.signal,
               onEvent: (event: PiAgentEvent) => write(encodePiAgentEvent(event)),
               ...(agentRequest.readOnly ? { readOnlyTools: true } : {}),
