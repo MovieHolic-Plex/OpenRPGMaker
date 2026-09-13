@@ -1,0 +1,382 @@
+{
+  "mapId": "spatial-geography:30:small-village:example:20260913",
+  "mapSHA256": "a14aea3155a8604d6ad56fcb1150da366ddf4277b095614644aadeb34b88a999",
+  "walks": [
+    {
+      "id": "market",
+      "start": {
+        "x": 39,
+        "y": 43
+      },
+      "end": {
+        "x": 32,
+        "y": 37
+      },
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        }
+      ],
+      "fullPathLength": 13
+    },
+    {
+      "id": "house",
+      "start": {
+        "x": 7,
+        "y": 52
+      },
+      "end": {
+        "x": 12,
+        "y": 55
+      },
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        }
+      ],
+      "fullPathLength": 53
+    },
+    {
+      "id": "lakeside",
+      "start": {
+        "x": 53,
+        "y": 59
+      },
+      "end": {
+        "x": 63,
+        "y": 61
+      },
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        }
+      ],
+      "fullPathLength": 42
+    },
+    {
+      "id": "well",
+      "start": {
+        "x": 38,
+        "y": 40
+      },
+      "end": {
+        "x": 41,
+        "y": 31
+      },
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        }
+      ],
+      "fullPathLength": 16
+    },
+    {
+      "id": "dock",
+      "start": {
+        "x": 51,
+        "y": 55
+      },
+      "end": {
+        "x": 55,
+        "y": 63
+      },
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        }
+      ],
+      "fullPathLength": 36
+    },
+    {
+      "id": "tent",
+      "start": {
+        "x": 39,
+        "y": 43
+      },
+      "end": {
+        "x": 35,
+        "y": 35
+      },
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        }
+      ],
+      "fullPathLength": 12
+    }
+  ]
+}

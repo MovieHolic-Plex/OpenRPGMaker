@@ -109,6 +109,7 @@ import { buildObjectHouses, inspectObjectHouseAccess, villageObjectHouseCatalog 
 import { prepareVillageLakesides, finishVillageLakesides, assertVillagePublicAccess } from "./lakeside";
 import { completeVillageTrees } from "./treeCompletion";
 import { plantCompactVillageTrees, dressCompactVillageGround } from "./compactVegetation";
+import { decorateVillageSpaces } from "./spaceDecoration";
 import { planOrganicVillageLake, paintOrganicVillageLake } from "./organicLake";
 
 export type VillageBuildDomainArgs = Readonly<Record<string, unknown>>;
@@ -457,6 +458,8 @@ export function buildVillageDomain(
   const sealedCells = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
   const scrubbed = scrubPlacementConflicts(draft, map, (index) => !sealedCells.has(index));
   const treeCompletion = objectCatalog ? completeVillageTrees(draft, map, area) : undefined;
+  const spaceDecorations = compact && decorEnabled && !deferDecoration && preset?.design?.objectVillage?.decorations
+    ? decorateVillageSpaces(draft, map, area, preset.design.objectVillage.decorations, { x: plaza.centerX, y: plaza.centerRow }, seed) : [];
   assertSealed();
   if (scrubbed.propsOnWater > 0 || scrubbed.treesOnImpassable > 0) {
     warnings.push(`배치 정리: 물 위 ${scrubbed.propsOnWater}칸·통행불가 위 ${scrubbed.treesOnImpassable}칸 소품/수관 제거`);
@@ -549,6 +552,8 @@ export function buildVillageDomain(
         yardStyle: intent.yardStyle, plazaStyle: intent.plazaStyle, plazaLayout: intent.plazaLayout,
         interior: interiorEnabled, npcCount: requestedNpcCount, requirements: structuredClone(requirements),
         worldGen: structuredClone(worldGenRules),
+        ...(compact ? { vegetation: { version: 2, trees: compactTrees, ground: compactGround } } : {}),
+        ...(spaceDecorations.length ? { spaceDecorations } : {}),
         ...(objectCatalog ? { composition: merged.composition, houseClustering: merged.houseClustering, multiStoreyCount: merged.multiStoreyCount,
           exteriors: houses.map(h => ({ objectId: h.objectExterior!.objectId, revision: h.objectExterior!.revision,
             exteriorStories: h.objectExterior!.exteriorStories, raster: structuredClone(h.objectExterior!.raster) })) } : {}),
@@ -590,7 +595,7 @@ export function buildVillageDomain(
       },
       housesBuilt: houses.length,
       ...(objectCatalog ? { houseSource: "objects", exteriorDoors: objectAccess, treeCompletion } : {}),
-      ...(compact ? { composition: "compact", compactTrees, compactGround, organicWaterCells } : {}),
+      ...(compact ? { composition: "compact", compactTrees, compactGround, organicWaterCells, spaceDecorations } : {}),
       // 경고를 결과 데이터로도 노출(2026-07-17) — 재시도 횟수·[vperf]·미달 사유가 호출자에게 보이게.
       warnings: warnings.length > 0 ? [...warnings] : undefined,
       fencesEnabled,

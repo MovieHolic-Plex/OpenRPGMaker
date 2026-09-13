@@ -1,0 +1,10 @@
+{
+  "passed": 2,
+  "failed": 0,
+  "files": [
+    {
+      "file": "test/revisedHouseVillage.test.ts",
+      "status": "passed"
+    }
+  ]
+}

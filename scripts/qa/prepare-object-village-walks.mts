@@ -16,6 +16,11 @@ const targets = [
   { id: "house", target: regions.filter(r => r.objectExterior).sort((a, b) => b.objectExterior!.privateAccess.length - a.objectExterior!.privateAccess.length)[0]!.objectExterior!.doorApproaches[0]! },
   { id: "lakeside", target: regions.find(r => r.tags?.includes("lakeside"))!.front! },
 ];
+for (const [id, suffix] of [["well", "well-court"], ["dock", "fishing-dock"], ["tent", "market-tent"]]) {
+  const region = regions.find(r => r.tags?.includes(`space:village-dressing:space:${suffix}`));
+  if (region?.front) targets.push({ id: id!, target: id === "dock"
+    ? { x: region.x, y: region.y + region.h - 1 } : region.front });
+}
 const key = (x: number, y: number): string => `${x},${y}`;
 type Point = { x: number; y: number };
 const previous = new Map<string, Point | null>([[key(project.startPos.x, project.startPos.y), null]]);

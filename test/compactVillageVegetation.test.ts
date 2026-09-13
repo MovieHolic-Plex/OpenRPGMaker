@@ -66,11 +66,18 @@ describe("compact village vegetation", () => {
     expect(tree.edgeCells).toBeGreaterThan(size * 8);
     expect(tree.innerCells).toBeGreaterThan(size * 2);
     expect(tree.groves).toBeGreaterThan(8);
+    const actualOverlaps = map.lowerTiles.filter((tile, index) => [290, 292, 293].includes(tile)
+      && [260, 262, 263].includes(map.upperTiles[index]!)).length;
+    expect(actualOverlaps).toBeGreaterThan(size * 3);
+    expect(tree.overlapCells).toBe(actualOverlaps);
     // Trees first: this stage has not scattered grass fragments or flower props.
     const treeOnly = structuredClone(map);
     const grass = dressCompactVillageGround(project, map, area, 3917, water);
     expect(grass.tallGrassCells).toBeGreaterThan(size * 6);
     expect(grass.tallGrassPatches).toBeGreaterThan(8);
+    expect(grass.edgeGrassCells / grass.edgeEligibleCells).toBeGreaterThan(0.9);
+    expect(grass.edgeGrassCells / grass.edgeEligibleCells)
+      .toBeGreaterThan(grass.innerGrassCells / grass.innerEligibleCells + 0.3);
     expect(grass.flowerClusters).toBeGreaterThan(5);
     expect(grass.flowerCells).toBeGreaterThan(20);
     const protectedCells = new Set([...protectedHouseCells(map).map(({ x, y }) => y * size + x),
