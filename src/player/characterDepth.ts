@@ -10,6 +10,11 @@ const PRIORITY_DEPTH_BASE: Record<EventPriority, number> = {
   above: 300_000,
 };
 
+/**
+ * 맵 배경(패럴랙스) depth — 하층 지형(0) **아래**. 비어 있는 칸이 뚫린 창이 되고 타일이
+ * 깔린 칸은 배경을 가린다. 음수인 이유: 하층 컨테이너가 0 이고 그 아래에는 아무것도 없다.
+ */
+export const MAP_BACKGROUND_LAYER_DEPTH = -100_000;
 /** 하층 지형 컨테이너 depth — 캐릭터(same=200k+) 아래. */
 export const MAP_LOWER_LAYER_DEPTH = 0;
 /**
