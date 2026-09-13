@@ -127,6 +127,41 @@ async function mountRealChangeCard(page: Page): Promise<{ mounted: boolean; regi
   });
 }
 
+/**
+ * 지도 그림이 **같아지는** 변경(맵 밖 — 프로젝트 정보·퀘스트·설정)의 카드.
+ * 두 캔버스는 타일과 이벤트 좌표만 그리므로 그런 변경에서는 같은 그림 두 장이 된다 —
+ * 그때 카드는 「지금 / 적용 후」 대신 사실 한 줄과 영역 이름을 보여준다.
+ */
+async function mountNonMapChangeCard(page: Page): Promise<{ mounted: boolean; reason: string }> {
+  return await page.evaluate(async () => {
+    const load = async <T>(url: string): Promise<T> => (await import(/* @vite-ignore */ url)) as T;
+    const [{ store }, preview, areas] = await Promise.all([
+      load<typeof import("@/project/store")>("/src/project/store.ts"),
+      load<typeof import("@/editor/panels/aiChangePreview")>("/src/editor/panels/aiChangePreview.ts"),
+      load<typeof import("@/project/changeAreas")>("/src/project/changeAreas.ts"),
+    ]);
+    const before = store.getCurrent();
+    const mapId = before.startMapId ?? Object.keys(before.maps)[0];
+    if (!mapId) return { mounted: false, reason: "no map" };
+    const after = structuredClone(before);
+    after.meta = { ...after.meta, title: `${after.meta?.title ?? "게임"} (개정)` };
+
+    const card = preview.renderChangePreviewCard({
+      before,
+      after,
+      mapId,
+      title: "게임 제목을 바꿨습니다",
+      chips: preview.changeChipsWithAreas(undefined, areas.changedAreaLabels(before, after)),
+    });
+    const log = [...document.querySelectorAll(".ai-chat-log")].find((node) => node.getClientRects().length > 0)
+      ?? document.querySelector(".ai-chat-log");
+    if (!log) return { mounted: false, reason: "no chat log" };
+    log.append(card);
+    card.scrollIntoView();
+    return { mounted: true, reason: "ok" };
+  });
+}
+
 test.describe("조수 변경 카드 + 넓은 비교 뷰어", () => {
   test.describe.configure({ timeout: 180_000 });
 
@@ -210,5 +245,38 @@ test.describe("조수 변경 카드 + 넓은 비교 뷰어", () => {
     await page.keyboard.press("Escape");
     await expect(page.getByTestId("ai-change-wide")).toHaveCount(0);
     await expect(card).toBeVisible();
+  });
+
+  test("지도 밖 변경은 같은 그림 두 장 대신 사실 한 줄과 영역 이름으로 보인다", async ({ page }) => {
+    await page.setViewportSize({ width: WIDE.width, height: WIDE.height });
+    await page.addInitScript(({ uiModeKey, coachKey }) => {
+      localStorage.setItem(uiModeKey, "standard");
+      localStorage.setItem(coachKey, "1");
+    }, { uiModeKey: UI_MODE_KEY, coachKey: COACH_KEY });
+
+    await bootEditor(page);
+    // 대화 기록을 심고 다시 부팅한다 — 빈 대화에서는 패널이 유휴라 로그가 display:none 이고,
+    // 그래서 카드도 "숨김" 이 된다(첫 테스트와 같은 조건을 만든다).
+    expect((await seedConversationRecord(page, CONVERSATION_KEY)).length).toBeGreaterThan(0);
+    await bootEditor(page);
+    const restore = page.getByTestId("ai-collapsed-restore");
+    if (await restore.isVisible().catch(() => false)) await restore.click();
+    await expect(page.getByTestId("ai-panel")).not.toHaveClass(/is-collapsed/);
+
+    const mount = await mountNonMapChangeCard(page);
+    expect(mount.reason).toBe("ok");
+    expect(mount.mounted).toBe(true);
+
+    const card = page.getByTestId("ai-change-card");
+    await expect(card).toBeVisible();
+    // 캔버스를 아예 만들지 않는다 — 같은 그림을 두 번 그리면 "아무 일도 없었다" 로 읽힌다.
+    expect(await card.locator("canvas").count()).toBe(0);
+    expect(await page.getByTestId("ai-change-pair").count()).toBe(0);
+    expect(await page.getByTestId("ai-change-expand").count()).toBe(0);
+    await expect(page.getByTestId("ai-change-word-diff")).toBeVisible();
+    // 무엇이 바뀌었는지는 이름이 나른다 — 카운터 목록에 축이 없는 영역도 여기 남는다.
+    await expect(card.locator(".ai-change-chip").first()).toHaveText("프로젝트 정보");
+
+    await page.screenshot({ path: path.join(EVIDENCE, "change-card-non-map-1920.png"), animations: "disabled" });
   });
 });

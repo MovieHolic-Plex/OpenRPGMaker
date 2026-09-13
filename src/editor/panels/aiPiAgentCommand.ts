@@ -28,13 +28,14 @@ import {
   reduceTeamBoard,
   type TeamBoardState,
 } from "@/ai/piAgent/teamBoardState";
-import { changePreviewChips } from "./aiChangePreview";
+import { changeChipsWithAreas, renderChangePreviewCard } from "./aiChangePreview";
 import { loadAiConfig } from "@/ai/llmClient";
 import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
 import { summarizeChanges } from "@/editor/tools/changeset";
 import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
+import { changedAreaLabels } from "@/project/changeAreas";
 import { createTeamBoard } from "./aiTeamBoard";
 import { publishTeamActivity } from "@/ai/piAgent/teamActivity";
 import { loadTeamSpec } from "@/ai/piAgent/teamSpecStore";
@@ -334,9 +335,14 @@ export async function runPiCommand(
     surface.appendBubble("system", caption);
     return true;
   }
-  // 영수증이 그릴 맵: 먼저 바뀐 맵, 없으면 지시 범위의 첫 맵.
+  // 영수증이 그릴 맵: 먼저 바뀐 맵, 없으면 지시 범위의 첫 맵, 그것도 없으면 프로젝트의 첫 맵.
+  // 마지막 후보가 없으면 맵 없는 프로젝트에서 영수증이 통째로 사라진다(그림은 못 그려도 이름은 남아야 한다).
   const receiptMapId = changedKeys.find((key) => key.startsWith("maps."))?.slice("maps.".length)
-    ?? command.mapIds[0] ?? surface.getCurrentMapId();
+    ?? command.mapIds[0] ?? surface.getCurrentMapId() ?? Object.keys(merged.project.maps)[0] ?? null;
+  const receiptTitle = `${team ? "Pi 팀" : `Pi 에이전트 ${groups.length}개`} — ${scopeText}`;
+  // 카운터가 없는 영역(퀘스트·스토리 플래그·캐릭터·맵 연결…)까지 한 줄에 — 검토 카드와 영수증이
+  // 같은 칩을 쓴다. 이게 없으면 그런 턴은 "적용/버리기" 만 있는 빈 카드로 끝났다.
+  const receiptChips = changeChipsWithAreas(changed, changedAreaLabels(base, merged.project));
   // Review the merged postprocessed draft once; preserve whole-map context.
   // Negative/unavailable review keeps the existing manual proposal path, never auto-applies.
   let harmonyApproved = false;
@@ -400,9 +406,9 @@ export async function runPiCommand(
       before: base,
       after: merged.project,
       mapId: receiptMapId,
-      title: `${team ? "Pi 팀" : `Pi 에이전트 ${groups.length}개`} — ${scopeText}`,
+      title: receiptTitle,
       detail: appliedText,
-      chips: changePreviewChips(changed),
+      chips: receiptChips,
       toolNames: [team ? "pi_team" : "pi_agent"],
     });
     return true;
@@ -410,10 +416,22 @@ export async function runPiCommand(
   // 기본은 검토 후 적용: 보드 발의 검토 카드에서 사용자가 승인해야 프로젝트가 바뀐다.
   // 기준(base)이 그 사이 바뀌면 applyProposedProject 가 stale-base 로 거절한다.
   if ((config.piApply ?? "review") === "auto" && harmonyApproved) return apply();
-  boardState = markTeamBoardReview(boardState, changePreviewChips(changed)); sync();
+  boardState = markTeamBoardReview(boardState, receiptChips); sync();
+  // 적용 전에도 «무엇이 바뀔 것인가» 를 보여준다 — 여기가 사용자가 결정하는 자리다.
+  // 같은 카드·같은 렌더러를 쓰고 배지만 「적용 전」 이다(두 번째 어휘를 만들지 않는다).
+  const reviewPreview = receiptMapId === null ? null : renderChangePreviewCard({
+    before: base,
+    after: merged.project,
+    mapId: receiptMapId,
+    title: receiptTitle,
+    detail: `아직 프로젝트에 반영하지 않았습니다 — 툴콜 ${toolCalls}회, 바뀐 맵·항목 ${changedCount}개.`,
+    chips: receiptChips,
+    state: "proposed",
+  });
   publishFinalOutcome();
   finishLog({ applied: false, changedCount, stoppedReason: "검토 대기" });
   board.setReview({
+    ...(reviewPreview ? { preview: reviewPreview } : {}),
     onApply: () => { board.setReview(null); void apply(); },
     onDiscard: () => {
       board.setReview(null);

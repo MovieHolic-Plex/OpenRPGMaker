@@ -50,9 +50,14 @@ vi.mock("@/ai/piAgent/client", () => ({
   },
 }));
 vi.mock("@/editor/panels/aiTeamBoard", () => ({
-  createTeamBoard: () => ({ root: { nodeType: 1 } as unknown as HTMLElement, update: (state: { phase?: string; applied?: string | null }) => { h.boardStates.push(state); }, setReview: (review: { onDiscard: () => void } | null) => { h.outcomes.push(review); } }),
+  createTeamBoard: () => ({ root: { nodeType: 1 } as unknown as HTMLElement, update: (state: { phase?: string; applied?: string | null }) => { h.boardStates.push(state); }, setReview: (review: { onDiscard: () => void; preview?: unknown } | null) => { h.outcomes.push(review); } }),
 }));
-vi.mock("@/editor/panels/aiChangePreview", () => ({ changePreviewChips: () => [] }));
+vi.mock("@/editor/panels/aiChangePreview", () => ({
+  changePreviewChips: () => [],
+  changeChipsWithAreas: () => [],
+  // 보드 검토 카드는 «적용 전» 카드 요소를 받는다 — 이 테스트는 그 전달 사실만 본다.
+  renderChangePreviewCard: (input: Record<string, unknown>) => ({ nodeType: 1, dataset: { state: input.state } }) as unknown as HTMLElement,
+}));
 vi.mock("@/ai/piAgent/teamActivity", () => ({ publishTeamActivity: () => {} }));
 vi.mock("@/ai/piAgent/teamSpecStore", () => ({ loadTeamSpec: () => ({ version: 1, orchestratorNotes: "", members: [] }) }));
 vi.mock("@/ai/piAgent/mapBundle", () => ({
@@ -139,6 +144,10 @@ describe("Pi 경로 실행 결과 4축", () => {
 
     const last = outcomeCalls.at(-1)!;
     expect(last).toMatchObject({ execution: "response-final", goal: "unassessed", delivery: "draft" });
+
+    // 적용 전에도 비교 카드가 검토 자리에 선다 — 없으면 사용자는 빈 카드로 결정해야 했다.
+    const review = h.outcomes.at(-1) as { preview?: { dataset?: { state?: string } } } | null;
+    expect(review?.preview?.dataset?.state).toBe("proposed");
   });
 
   it("바뀐 것이 없으면: response-final + no-change", async () => {

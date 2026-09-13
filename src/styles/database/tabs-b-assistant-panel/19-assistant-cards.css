@@ -4,9 +4,11 @@
    색은 tokens.css 변수만. !important 0. 글자 크기 3단(data-ai-font-size)은 --ai-font-scale 로 스케일. */
 
 /* ── 1. 변경 영수증 카드 ─────────────────────────────────────────
-   DOM(aiChangePreview.ts): section.ai-change-card > .ai-change-card-head(배지·제목·넓게 보기)
-   + .ai-change-chips + .ai-change-pair(지금 → 적용 후) + .ai-change-detail + .ai-change-card-actions(되돌리기).
-   커맨드 줄은 auto minmax(0,1fr) 2열 그리드라 두 열을 다 쓰게 못 박는다. */
+  DOM(aiChangePreview.ts): section.ai-change-card[data-state=applied|proposed]
+  > .ai-change-card-head(배지·제목·넓게 보기) + .ai-change-chips
+  + (.ai-change-pair(지금 → 적용 후) | .ai-change-word-diff) + .ai-change-detail
+  + .ai-change-card-actions(되돌리기).
+  커맨드 줄은 auto minmax(0,1fr) 2열 그리드라 두 열을 다 쓰게 못 박는다. */
 .ai-command-row > .ai-change-card,
 .ai-command-row > .ai-change-card-host {
   grid-column: 1 / -1;
@@ -50,6 +52,20 @@
   letter-spacing: 0.02em;
   line-height: 1.5;
   padding: 3px 8px;
+}
+
+/* 「적용 전」(Pi 검토 단계)은 완료가 아니다 — 초록 성공 배지를 쓰면 이미 적용된 것처럼 읽힌다. */
+.ai-change-card[data-state="proposed"] .ai-change-badge {
+  background: var(--warning-muted);
+  color: var(--warning);
+}
+
+/* 지도 그림이 말할 수 없는 변경 — 두 장 대신 사실 한 줄. */
+.ai-change-word-diff {
+  color: var(--text-2);
+  font-size: calc(12.5px * var(--ai-font-scale, 1));
+  margin: 0;
+  padding: 0 14px 12px;
 }
 
 .ai-change-title {

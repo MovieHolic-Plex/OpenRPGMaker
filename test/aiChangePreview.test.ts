@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  changeChipsWithAreas,
   changePreviewChips,
   changePreviewRegion,
   openWideChangeViewer,
@@ -8,7 +9,7 @@ import {
 } from "@/editor/panels/aiChangePreview";
 import type { ChangeSummary } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
-import type { Project } from "@/project/types";
+import type { GameEvent, Project } from "@/project/types";
 import { documentListenerCount, FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 let restoreDom: (() => void) | null = null;
@@ -146,6 +147,28 @@ describe("changePreviewChips", () => {
   it("변경이 없으면 빈 배열", () => {
     expect(changePreviewChips(changeSummary())).toEqual([]);
   });
+
+  it("개수가 아닌 축(세션·시스템)은 이름만 낸다", () => {
+    expect(changePreviewChips(changeSummary({ sessionChanged: true, systemChanged: true }))).toEqual(["세션", "시스템"]);
+  });
+});
+
+describe("changeChipsWithAreas", () => {
+  it("카운터 뒤에 카운터 밖 영역 이름을 붙인다 — 검토 카드가 빈 줄로 끝나지 않는다", () => {
+    expect(changeChipsWithAreas(changeSummary({ tilesChanged: 3 }), ["퀘스트", "스토리 플래그"])).toEqual([
+      "타일 3",
+      "퀘스트",
+      "스토리 플래그",
+    ]);
+  });
+
+  it("요약이 없어도(카운터 밖 변경만 있어도) 이름은 남는다", () => {
+    expect(changeChipsWithAreas(undefined, ["퀘스트"])).toEqual(["퀘스트"]);
+  });
+
+  it("같은 이름을 두 번 붙이지 않는다", () => {
+    expect(changeChipsWithAreas(changeSummary({ sessionChanged: true }), ["세션"])).toEqual(["세션"]);
+  });
 });
 
 describe("renderChangePreviewCard", () => {
@@ -270,5 +293,102 @@ describe("openWideChangeViewer", () => {
     dispatchDocumentKey("Escape");
     expect(document.querySelector("[data-testid='ai-change-wide']")).toBeNull();
     byEscape.close();
+  });
+});
+
+/** 지도 그림이 같아지는 쌍 — 맵 밖 변경(퀘스트·설정·이벤트 내용)만 다르다. */
+function nonMapPair(mutate: (after: Project, mapId: string) => void): { before: Project; after: Project; mapId: string } {
+  const before = createBlankProject();
+  const mapId = firstMapId(before);
+  const after = structuredClone(before) as Project;
+  mutate(after, mapId);
+  return { before, after, mapId };
+}
+/** 썸네일이 읽는 것은 id·x·y 뿐이다 — 나머지 필드는 계약 밖이라 최소값으로 채운다. */
+function eventAt(x: number, y: number, name: string): GameEvent {
+  return { id: "event_1", name, x, y, pages: [] } as unknown as GameEvent;
+}
+
+describe("그림이 같으면 비교 대신 사실을 말한다", () => {
+  it("타일·이벤트 좌표가 그대로면 두 장을 그리지 않고 안내를 낸다", () => {
+    const { before, after, mapId } = nonMapPair((project) => {
+      project.meta = { ...project.meta, author: "다른 사람" };
+    });
+    const renderShot = stubRenderer();
+
+    const root = card(renderChangePreviewCard({ before, after, mapId, title: "작가를 바꿨습니다", renderShot }));
+
+    expect(findByTestId(root, "ai-change-pair")).toBeNull();
+    expect(findByTestId(root, "ai-change-expand")).toBeNull();
+    expect(requireTestId(root, "ai-change-word-diff").textContent).toContain("지도 그림에 나타나지 않습니다");
+    // 두 장을 그리지 않으므로 렌더러를 부르지 않는다 — 같은 그림을 두 번 그리는 비용도 없다.
+    expect(renderShot).not.toHaveBeenCalled();
+  });
+
+  it("이벤트 내용만 바뀐 경우도 두 장 대신 안내다(그림은 좌표만 그린다)", () => {
+    const { before, after, mapId } = nonMapPair((project, id) => {
+      project.maps[id]!.events = [eventAt(1, 1, "이름만 바뀐 이벤트")];
+    });
+    before.maps[mapId]!.events = [eventAt(1, 1, "원래 이름")];
+    const root = card(renderChangePreviewCard({ before, after, mapId, title: "대사를 고쳤습니다", renderShot: stubRenderer() }));
+    expect(findByTestId(root, "ai-change-pair")).toBeNull();
+    expect(findByTestId(root, "ai-change-word-diff")).not.toBeNull();
+  });
+
+  it("타일은 같아도 타일셋 정의가 바뀌면 그림이 다르므로 두 장을 그린다", () => {
+    const { before, after, mapId } = nonMapPair((project, id) => {
+      const tilesetId = project.maps[id]!.tilesetId;
+      const tileset = project.tilesets[tilesetId]!;
+      project.tilesets[tilesetId] = { ...tileset, name: `${tileset.name} (개정)` };
+    });
+    const root = card(renderChangePreviewCard({ before, after, mapId, title: "타일셋 개정", renderShot: stubRenderer() }));
+    expect(findByTestId(root, "ai-change-pair")).not.toBeNull();
+    expect(findByTestId(root, "ai-change-word-diff")).toBeNull();
+  });
+
+  it("이벤트가 움직이면 (타일이 그대로여도) 두 장을 그린다", () => {
+    const { before, after, mapId } = nonMapPair((project, id) => {
+      project.maps[id]!.events = [eventAt(2, 1, "NPC")];
+    });
+    before.maps[mapId]!.events = [eventAt(1, 1, "NPC")];
+    const root = card(renderChangePreviewCard({ before, after, mapId, title: "NPC 를 옮겼습니다", renderShot: stubRenderer() }));
+    expect(findByTestId(root, "ai-change-pair")).not.toBeNull();
+  });
+
+  it("안내 문구는 칩이 없으면 '위 항목' 을 가리키지 않는다", () => {
+    const { before, after, mapId } = nonMapPair((project) => {
+      project.meta = { ...project.meta, author: "다른 사람" };
+    });
+    const root = card(renderChangePreviewCard({ before, after, mapId, title: "변경", renderShot: stubRenderer() }));
+    expect(requireTestId(root, "ai-change-word-diff").textContent).not.toContain("위 항목");
+  });
+
+  it("넓은 뷰어도 같은 판정을 쓴다 — 같으면 비교 모드를 만들지 않는다", () => {
+    const { before, after, mapId } = nonMapPair((project) => {
+      project.meta = { ...project.meta, author: "다른 사람" };
+    });
+    const viewer = openWideChangeViewer({ before, after, mapId, title: "변경", renderShot: stubRenderer() });
+    const root = card(viewer.root);
+    expect(findByTestId(root, "ai-change-word-diff")).not.toBeNull();
+    expect(findByTestId(root, "ai-change-wide-mode-side")).toBeNull();
+    expect(findByTestId(root, "ai-change-wide-shot-before")).toBeNull();
+    viewer.close();
+  });
+});
+
+describe("카드가 말하는 상태", () => {
+  it("기본은 영수증(적용됨)이다", () => {
+    const { before, after, mapId } = tilePair();
+    const root = card(renderChangePreviewCard({ before, after, mapId, title: "변경", renderShot: stubRenderer() }));
+    expect(root.querySelector(".ai-change-badge")?.textContent).toBe("적용됨");
+    expect(root.dataset.state).toBe("applied");
+  });
+
+  it("검토 대기 카드는 「적용 전」 이고 되돌리기가 없다", () => {
+    const { before, after, mapId } = tilePair();
+    const root = card(renderChangePreviewCard({ before, after, mapId, title: "변경", state: "proposed", renderShot: stubRenderer() }));
+    expect(root.querySelector(".ai-change-badge")?.textContent).toBe("적용 전");
+    expect(root.dataset.state).toBe("proposed");
+    expect(findByTestId(root, "ai-change-undo")).toBeNull();
   });
 });

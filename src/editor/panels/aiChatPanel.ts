@@ -141,8 +141,9 @@ import {
 } from "./aiConversationLog";
 import { anchoredPopupPosition } from "./popupPosition";
 import { createProposalHost, setAssistantMessageBadge } from "./aiProposalCard";
-import { changePreviewChips, renderChangePreviewCard, type ChangePreviewInput } from "./aiChangePreview";
+import { changeChipsWithAreas, renderChangePreviewCard, type ChangePreviewInput } from "./aiChangePreview";
 import { createStudioShell, type StudioShell } from "./aiStudioShell";
+import { changedAreaLabels } from "@/project/changeAreas";
 import { proposalHumanSummaryLine } from "./aiProposalSummary";
 import { createAiTurnRunner } from "./aiTurnRunner";
 import { openLocalDiagnosticsDialog } from "./localDiagnosticsDialog";
@@ -699,13 +700,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const diffs = input.calls
       .map((call) => call.result?.diff)
       .filter((diff): diff is ChangeSummary => Boolean(diff));
+    // 요약 카운터 + 카운터 밖 영역 이름 — 카운터 목록에 축이 없는 변경도 카드에 남는다.
+    const chips = changeChipsWithAreas(
+      diffs.length > 0 ? combineDiffs(diffs) : undefined,
+      changedAreaLabels(input.before, input.after),
+    );
     const card = renderChangePreviewCard({
       before: input.before,
       after: input.after,
       mapId: input.mapId,
       title: input.title,
       ...(input.detail ? { detail: input.detail } : {}),
-      chips: diffs.length > 0 ? changePreviewChips(combineDiffs(diffs)) : [],
+      chips,
       onUndo: () => {
         // 성향 신호(가장 강한 부정): 채팅 제안은 자동 적용되므로 수락 버튼이 없다 — 되돌리기가
         // "이건 원하는 게 아니었다"는 유일한 명시적 반응이다. 이 카드는 AI 변경 1건에 1:1로 붙어
@@ -720,7 +726,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       mapId: input.mapId,
       title: input.title,
       ...(input.detail ? { detail: input.detail } : {}),
-      chips: diffs.length > 0 ? changePreviewChips(combineDiffs(diffs)) : [],
+      chips,
       onUndo: () => {
         noteAiChangeUndone({ toolNames: input.calls.map((call) => call.name) });
         undoMapEdit();
