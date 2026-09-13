@@ -36,10 +36,10 @@ describe("map properties panel", () => {
     expect(store.getCurrent().maps[mapId]?.name).toBe("01 집 외관 정면");
   });
 
-  it("renders all eight sections at once and preserves scroll across rerender", () => {
+  it("renders all nine sections at once and preserves scroll across rerender", () => {
     const container = new FakeElement("div");
     renderMapProps(container as unknown as HTMLElement);
-    for (const tab of ["general", "background", "bgm", "battle", "restrictions", "encounter", "spawns", "minimap"]) {
+    for (const tab of ["general", "background", "clouds", "bgm", "battle", "restrictions", "encounter", "spawns", "minimap"]) {
       expect(findByTestId(container, `map-props-section-${tab}`)).not.toBeNull();
     }
     // 복구 대상은 .map-props-body — CSS 에서 유일한 overflow:auto 스크롤러다.

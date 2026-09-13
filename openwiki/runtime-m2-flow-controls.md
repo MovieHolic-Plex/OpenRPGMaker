@@ -134,3 +134,38 @@ M2 runtime commands: event processing, erase, graphic pattern, movement, checkpo
 - 새 목적지가 현재 착지 칸이면 빈 경로도 현재 보행/체공 종료까지 기다린다. NPC는 기존 `activeMove`의 위치·경과 시간·지속 시간을 이어 받아 화면에서 튀지 않는다.
 - 첫 걸음 전 현재 칸을 목적지로 다시 지정하면 이전 예약 루트를 취소한다. `pathfindSucceeded`는 세션의 **가장 최근 경로 명령** 결과이며, 교체된 작업의 완료 콜백이 덮어쓰지 않는다.
 - 회귀: `test/runtimeMovementStability.test.ts`의 retarget/queued 사례 5개. 브라우저: `scripts/qa-event-runtime-adversarial.mjs`(테스트 전용 픽스처, 조작은 키보드만). 시각 근거: `.omo/evidence/event-runtime-adversarial/README.md`.
+
+### 맵 위를 흐르는 구름 그림자 (2026-09-14)
+
+- **저작 표면은 「맵 설정」의 한 섹션이다.** `GameMap.cloudShadows?: MapCloudShadowSetting`
+  (`src/project/types/project.ts`) — `enabled` + `opacity`(0.05~0.6) · `speed`(0~160 px/초) ·
+  `angleDeg`(0~359) · `scale`(0.5~2.5). optional 이라 옛 맵은 필드 자체가 없고 마이그레이션이 필요 없다.
+  「맵 배경」 다음 섹션(`map-props-section-clouds`, `map-cloud-shadows-enable`)에서 켜고,
+  꺼 두면 필드를 지운다(미니맵과 같은 null-패치 관례). 쓰기 액션은 `setMapCloudShadows`.
+  AI 툴 `set_map_properties` 도 같은 이름의 `cloudShadows`/`clearCloudShadows` 인자를 받는다.
+- **계산은 순수 함수, 그리기는 레이어.** `src/player/cloudShadows.ts` 가 (설정, 경과 ms, 화면 사각, 시드)
+  만으로 덩어리를 계산한다 — 위치를 어디에도 저장하지 않으므로 세이브·재현·테스트가 같은 계산을
+  공유한다. `cloudShadowAnchors` 는 배치 순서가 고정된 «구름 12개의 주기 위상» 이고,
+  `cloudShadowBlobs` 는 그 위상에 격자 복사본을 더해 화면과 겹치는 것만 돌려준다. 화면에 보이는
+  수는 배치 수보다 적을 수 있다(화면 밖 위상). 시드는 맵 id 해시라 맵마다 다른 구름이 뜬다.
+- `src/player/playSceneCloudShadows.ts` 가 그 결과를 Phaser 스프라이트로 그린다. 좌표는 **월드 px**
+  (scrollFactor 1)라 카메라가 움직이면 그림자도 같이 밀린다. 깊이 `CLOUD_SHADOW_DEPTH = 700_000` —
+  상층 타일·캐릭터(25만)보다 위, 맵 애니메이션·날씨(80만)·시간 틴트·조명(90만)보다 아래.
+  스프라이트 풀은 필요한 만큼만 자라고, 꺼져 있으면 전부 감춘다.
+- **검증 축은 셋이다(출하 `player.html` 기준).** `node scripts/qa/runtime/cloud-shadows.probe.mjs`:
+  (1) 배선 — `__oprnCloudShadows` 훅(`src/player/playSceneTestHooks.ts`)이 켜짐·배치 수·깊이·알파·텍스처를 보고,
+  (2) 흐름 — **위상으로 짝지은** 덩어리 변위의 중앙값이 설정한 방향(±12°)·속도(±20%)와 일치,
+  (3) 렌더 — 같은 시간 창을 «구름 끔» 대조 실행과 비교해 변한 픽셀 비율이 3배 이상.
+  인덱스로 스프라이트를 짝지으면 풀 순서가 바뀌며 엉뚱한 변위가 나온다(실측 173px/0.68초).
+  결과는 `verify-shots/runtime-qa/cloud-shadows/SUMMARY.md`(gitignore — 매 실행 재생성).
+  `CLOUD_SHADOW_QA_PRESET=default` 로 돌리면 «체크만 한» 기본값(opacity 0.34·speed 26·angle 28·scale 1)
+  모습을 `cloud-shadows-default/` 에 남긴다. 단위 계약은 `test/cloudShadows.test.ts`,
+  편집기·지속성은 `test/cloudShadowMapProps.test.ts`, 툴 커버리지는 `test/aiEditorToolCoverage…`.
+- **배경 잡음의 기준은 «구름 끔» 대조 실행뿐이다(실측).** 화면을 두 번 찍어 «정지 쌍» 을 만들려는
+  시도는 성립하지 않는다 — 스크린샷 자체가 게임 루프를 멈춰 세우므로 두 컷 사이에도 구름이 흐른다
+  (실측 3.6% 픽셀이 변했다). 대조군은 같은 픽스처에서 `cloudShadows` 를 지우고 같은 시간 창을 재는
+  실행이고(실측 0.17%), 프로브는 훅이 없어도 그 측정을 계속한다(wall-clock 창).
+- **측정된 값(2026-09-14, 출하 `player.html`).** QA 프리셋(0.4/52/200/1.5): 변위 55.4px/1.066초 =
+  **52.0px/초**, 방향 오차 **0.0°**, 위상 12/12 연속, 변한 픽셀 **9.00% vs 대조 0.17%(54배)**.
+  기본 프리셋(0.34/26/28/1): **26.0px/초**, 오차 0.0°, 보이는 덩어리 8~11개, **9.52% vs 0.17%**.
+  깊이 700_000·알파=설정값·텍스처 로드는 두 실행 모두 통과.

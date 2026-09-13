@@ -2,6 +2,7 @@
 // 맵 생성/타일 페인팅/도로/구조물/시작위치 쓰기 툴.
 
 import { isPassable } from "@/project/collision";
+import { normalizeCloudShadowParams } from "@/player/cloudShadows";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
@@ -1570,10 +1571,23 @@ const minimapSchema: JsonSchema = {
   additionalProperties: false,
 };
 
+const cloudShadowSchema: JsonSchema = {
+  type: "object",
+  properties: {
+    enabled: { type: "boolean" },
+    opacity: { type: "number", minimum: 0.05, maximum: 0.6 },
+    speed: { type: "number", minimum: 0, maximum: 160 },
+    angleDeg: { type: "number", minimum: 0, maximum: 359 },
+    scale: { type: "number", minimum: 0.5, maximum: 2.5 },
+  },
+  required: ["enabled"],
+  additionalProperties: false,
+};
+
 // 맵 속성 설정. 크기 변경은 resize_map, 트리 위치는 manage_map_tree로 분리.
 const setMapProperties: ToolDefinition = {
   name: "set_map_properties",
-  description: "맵 편집기의 전체 속성을 설정한다: 이름·타일셋·인카운트·BGM·배경·전투 배경·저장/이동/도주 제한·미니맵.",
+  description: "맵 편집기의 전체 속성을 설정한다: 이름·타일셋·인카운트·BGM·배경·전투 배경·저장/이동/도주 제한·미니맵·구름 그림자.",
   mode: "write",
   parameters: {
     type: "object",
@@ -1596,6 +1610,8 @@ const setMapProperties: ToolDefinition = {
       },
       minimap: minimapSchema,
       clearMinimap: { type: "boolean" },
+      cloudShadows: cloudShadowSchema,
+      clearCloudShadows: { type: "boolean" },
     },
     required: ["mapId"],
   },
@@ -1664,6 +1680,21 @@ const setMapProperties: ToolDefinition = {
     } else if (args.minimap && typeof args.minimap === "object" && !Array.isArray(args.minimap)) {
       map.minimap = structuredClone(args.minimap) as NonNullable<GameMap["minimap"]>;
       changed.push(`미니맵=${map.minimap.enabled ? "켬" : "끔"}`);
+    }
+    if (args.clearCloudShadows === true) {
+      delete map.cloudShadows;
+      changed.push("구름 그림자=끔");
+    } else if (args.cloudShadows && typeof args.cloudShadows === "object" && !Array.isArray(args.cloudShadows)) {
+      const shadows = structuredClone(args.cloudShadows) as NonNullable<GameMap["cloudShadows"]>;
+      const params = normalizeCloudShadowParams(shadows);
+      map.cloudShadows = {
+        enabled: shadows.enabled === true,
+        opacity: params.opacity,
+        speed: params.speed,
+        angleDeg: params.angleDeg,
+        scale: params.scale,
+      };
+      changed.push(`구름 그림자=${map.cloudShadows.enabled ? "켬" : "끔"}`);
     }
     if (changed.length === 0) throw new ToolError("바꿀 맵 속성이 없습니다.", { code: "invalid-args", mapId: map.id });
     return { summary: `${map.name} 속성 변경 — ${changed.join(", ")}`, data: { mapId: map.id } };

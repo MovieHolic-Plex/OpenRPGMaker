@@ -127,6 +127,12 @@ export interface GameMap {
    */
   minimap?: MapMinimapSetting;
   /**
+   * 이 맵 위를 흘러가는 구름 그림자. optional — 없으면 그림자 없음(기존 맵 호환).
+   * 수치는 저작 설정이고, 시간에 따른 위치 계산은 `src/player/cloudShadows.ts` 의
+   * 순수 함수가 맡는다(같은 시간 입력은 언제나 같은 그림자).
+   */
+  cloudShadows?: MapCloudShadowSetting;
+  /**
    * 맵에 찍힌 구조물 킷 배치 기록. "여기에 이 집이 있다"를 남겨 다시 고르고·고치고·지울 수 있게 한다.
    * 기록 범위는 구조물 킷 스탬프만 — 사람이 팔레트로 찍은 것.
    * 마을 자동 생성(빌더)의 집 시공은 layoutPlan.regions 가 담당하며 여기에 들어오지 않는다.
@@ -178,6 +184,26 @@ export interface MapBgmSetting {
   resourceId?: string;
   /** 페이드인 시간(ms). */
   fadeInMs?: number;
+}
+
+/**
+ * 맵별 구름 그림자 설정 — 제작자가 맵마다 켜고 끈다. optional이므로 기존 맵은 그대로 off.
+ *
+ * 값은 «의도» 만 담는다: 얼마나 짙은가(opacity), 어느 방향으로 얼마나 빨리 흐르는가
+ * (angleDeg·speed), 덩어리가 얼마나 큰가(scale). 프레임마다의 그림자 위치는 저장하지 않는다 —
+ * 순수 함수가 시간에서 계산하므로 세이브·재현이 자동으로 맞는다.
+ */
+export interface MapCloudShadowSetting {
+  /** 이 맵에서 구름 그림자를 그리는가. 기본 false. */
+  enabled: boolean;
+  /** 그림자 진하기(0.05~0.6). 기본 0.26. */
+  opacity?: number;
+  /** 흐르는 속도 — 월드 px/초(0~160). 기본 26. 0이면 제자리에 머문다. */
+  speed?: number;
+  /** 흐르는 방향(도). 0=오른쪽, 90=아래. 기본 28. */
+  angleDeg?: number;
+  /** 구름 덩어리 크기 배율(0.5~2.5). 기본 1. */
+  scale?: number;
 }
 
 /** 맵별 미니맵 설정 — 제작자가 맵마다 켜고 끈다. optional이므로 기존 맵은 그대로 off. */

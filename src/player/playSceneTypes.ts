@@ -209,6 +209,9 @@ export interface PlaySceneContext extends Phaser.Scene {
   weatherDisplayed: WeatherParams;
   weatherTargetSignature: string;
   weatherTransition: WeatherTransition | null;
+  /** 구름 그림자 스프라이트 풀. 매 프레임 cloudShadows.ts 가 계산한 덩어리 수만큼 쓴다. */
+  cloudShadowSprites?: Phaser.GameObjects.Image[];
+  cloudShadowClockMs: number;
   timeFixedAccumulatorMs: number;
   timeMinuteAccumulator: number;
   timeSleepInProgress: boolean;
