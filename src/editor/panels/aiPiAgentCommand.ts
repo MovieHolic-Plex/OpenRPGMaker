@@ -36,6 +36,7 @@ import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { changedAreaLabels } from "@/project/changeAreas";
+import { buildChangeLedger, type ChangeLedger } from "@/project/changeLedger";
 import { createTeamBoard } from "./aiTeamBoard";
 import { publishTeamActivity } from "@/ai/piAgent/teamActivity";
 import { loadTeamSpec } from "@/ai/piAgent/teamSpecStore";
@@ -105,6 +106,8 @@ export interface PiChangeReceipt {
   readonly title: string;
   readonly detail: string;
   readonly chips: readonly string[];
+  /** 항목별 before → after 명세 — 큰 위임의 검토는 칩이 아니라 이걸로 한다. */
+  readonly ledger?: ChangeLedger;
   /** 되돌리기 신호에 남길 툴 이름(성향 기억이 «가장 강한 부정» 을 이 이름으로 기록한다). */
   readonly toolNames: readonly string[];
 }
@@ -372,6 +375,8 @@ export async function runPiCommand(
     push({ type: "review", agentId: "ultrabrain", mapId: null, ok: false, findings: [message] });
   }
   harmonyManualReview = !harmonyApproved;
+  // 명세는 한 번만 계산해 검토 카드와 영수증이 **같은 것**을 쓴다 — 두 번 만들면 두 화면이 갈라진다.
+  const receiptLedger = buildChangeLedger(base, merged.project);
   const apply = async (): Promise<boolean> => {
     const appliedResult = await applyProposedProject(merged.project, {
     base: proposalBase,
@@ -409,6 +414,7 @@ export async function runPiCommand(
       title: receiptTitle,
       detail: appliedText,
       chips: receiptChips,
+      ledger: receiptLedger,
       toolNames: [team ? "pi_team" : "pi_agent"],
     });
     return true;
@@ -426,6 +432,7 @@ export async function runPiCommand(
     title: receiptTitle,
     detail: `아직 프로젝트에 반영하지 않았습니다 — 툴콜 ${toolCalls}회, 바뀐 맵·항목 ${changedCount}개.`,
     chips: receiptChips,
+    ledger: receiptLedger,
     state: "proposed",
   });
   publishFinalOutcome();
