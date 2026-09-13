@@ -940,7 +940,18 @@
      "sw_0017",
      "sw_0018",
      "sw_0019",
-     "sw_0020"
+     "sw_0020",
+     "sw_catalog_aqueduct_route",
+     "sw_catalog_archive_unlock",
+     "sw_catalog_beacon_lit",
+     "sw_catalog_fountain_flow",
+     "sw_catalog_gate_open",
+     "sw_catalog_lighthouse_lit",
+     "sw_catalog_mine_lift",
+     "sw_gen2_bridge_relay",
+     "sw_gen2_moon_relay",
+     "sw_gen2_seal_relay",
+     "sw_gen2_sun_relay"
     ],
     "event-condition-switch-value": [
      "true",
@@ -957,7 +968,7 @@
     "div": 15,
     "input": 1,
     "label": 4,
-    "option": 41,
+    "option": 52,
     "p": 3,
     "section": 2,
     "select": 3,
@@ -1794,7 +1805,18 @@
      "sw_0017",
      "sw_0018",
      "sw_0019",
-     "sw_0020"
+     "sw_0020",
+     "sw_catalog_aqueduct_route",
+     "sw_catalog_archive_unlock",
+     "sw_catalog_beacon_lit",
+     "sw_catalog_fountain_flow",
+     "sw_catalog_gate_open",
+     "sw_catalog_lighthouse_lit",
+     "sw_catalog_mine_lift",
+     "sw_gen2_bridge_relay",
+     "sw_gen2_moon_relay",
+     "sw_gen2_seal_relay",
+     "sw_gen2_sun_relay"
     ],
     "event-command-switch-value": [
      "true",
@@ -1810,7 +1832,7 @@
     "button": 2,
     "div": 6,
     "label": 2,
-    "option": 46,
+    "option": 57,
     "p": 1,
     "select": 3,
     "span": 4
@@ -10093,7 +10115,18 @@
      "sw_0017",
      "sw_0018",
      "sw_0019",
-     "sw_0020"
+     "sw_0020",
+     "sw_catalog_aqueduct_route",
+     "sw_catalog_archive_unlock",
+     "sw_catalog_beacon_lit",
+     "sw_catalog_fountain_flow",
+     "sw_catalog_gate_open",
+     "sw_catalog_lighthouse_lit",
+     "sw_catalog_mine_lift",
+     "sw_gen2_bridge_relay",
+     "sw_gen2_moon_relay",
+     "sw_gen2_seal_relay",
+     "sw_gen2_sun_relay"
     ],
     "event-command-spawn-troop": [
      "",
@@ -10114,7 +10147,7 @@
     "div": 4,
     "input": 5,
     "label": 7,
-    "option": 25,
+    "option": 36,
     "select": 2,
     "span": 15
    },
