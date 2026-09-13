@@ -5,9 +5,15 @@
 import { el } from "@/util/dom";
 import { teamBoardTotals, type TeamBoardAgent, type TeamBoardState } from "@/ai/piAgent/teamBoardState";
 
+/**
+ * 검토 대기 단계의 계약. `preview` 는 적용 **전** 비교 카드다 — 사용자가 결정하려면 결과가
+ * 아니라 «무엇이 바뀔 것인가» 를 봐야 한다(패널이 같은 렌더러로 만들어 넘긴다).
+ */
 export interface TeamBoardReview {
   readonly onApply: () => void;
   readonly onDiscard: () => void;
+  /** 없으면 검토 카드는 칩 줄만 그린다. */
+  readonly preview?: HTMLElement;
 }
 
 export interface TeamBoardHandle {
@@ -111,7 +117,11 @@ export function createTeamBoard(initial: TeamBoardState): TeamBoardHandle {
   const reviewBlock = (state: TeamBoardState): HTMLElement => {
     const block = el("div", { class: "ai-team-review-card", dataset: { testid: "ai-team-review" }, attrs: { role: "group", "aria-label": "검토" } });
     block.append(el("p", { class: "ai-team-review-title", text: "결과를 검토하고 적용하세요. 적용 전까지 프로젝트는 바뀌지 않습니다." }));
-    if (state.reviewChips.length > 0) {
+    // 적용 전에도 «무엇이 바뀌는지» 를 보여준다 — 사용자가 결정하는 자리에 비교가 없으면
+    // 검토 카드는 문장과 버튼만 남고, 그게 "부탁했는데 before/after 가 안 보인다" 였다.
+    // 카드는 패널이 만들어 넘긴다(같은 DOM·같은 렌더러를 쓴다 — 두 번째 어휘를 만들지 않는다).
+    if (review?.preview) block.append(review.preview);
+    else if (state.reviewChips.length > 0) {
       const chips = el("div", { class: "ai-change-chips ai-team-review-chips" });
       for (const chip of state.reviewChips) chips.append(el("span", { class: "ai-change-chip", text: chip }));
       block.append(chips);

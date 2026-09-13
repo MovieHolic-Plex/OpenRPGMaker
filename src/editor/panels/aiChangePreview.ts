@@ -2,6 +2,10 @@
 // 인라인 변경 카드(작게 두 장)와 넓은 비교 뷰어(패널 폭 상한을 벗어난 오버레이)를 만든다.
 // 캔버스 렌더는 주입형(renderShot) — 테스트 DOM 은 canvas.getContext()가 null 이라
 // 기본 렌더러(renderRegionSnapshot)를 그대로 쓸 수 없다. 스타일은 CSS 파티션 담당.
+//
+// 카드는 두 상태를 같은 DOM 으로 그린다: 「적용 전」(Pi 검토 대기)과 「적용됨」(영수증).
+// 그리고 **지도 그림이 말할 수 없는 변경**은 그림 대신 사실을 말한다 — 두 캔버스는 타일과
+// 이벤트 좌표만 그리므로, 그 밖의 변경은 같은 그림 두 장이 되어 "아무 일도 없었다"로 읽혔다.
 import { computeMapTileChangeBounds } from "@/editor/panels/aiProposalCard";
 import { renderRegionSnapshot } from "@/editor/regionSnapshot";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
@@ -34,6 +38,8 @@ export interface ChangePreviewInput {
   readonly detail?: string;
   readonly chips?: readonly string[];
   readonly onUndo?: () => void;
+  /** 카드가 말하는 사실 — 「적용 전」(검토 대기) / 「적용됨」(영수증). 기본은 영수증. */
+  readonly state?: "proposed" | "applied";
   readonly renderShot?: ChangeShotRenderer;
 }
 
@@ -47,6 +53,26 @@ export function changePreviewRegion(before: Project, after: Project, mapId: MapI
   const map = after.maps[mapId] ?? before.maps[mapId];
   if (!map) return null;
   return { x: 0, y: 0, width: map.width, height: map.height };
+}
+
+/**
+ * 두 패널이 **같은 그림이 되는가** — 그러면 「지금 / 적용 후」 두 장은 아무것도 말하지 않는다.
+ *
+ * 판정은 렌더 입력을 전부 덮는다(`renderRegionSnapshot`: 맵 크기·타일 크기·타일셋 정의·타일
+ * 배열·이벤트 좌표). 타일/이벤트만 보는 `computeMapTileChangeBounds` 를 술어로 쓰지 않는 이유:
+ * 그 함수는 타일셋 교체·타일 크기 변경을 보지 못해, 그림이 실제로 달라진 경우까지 접어 버린다.
+ */
+export function changePreviewPanesMatch(before: Project, after: Project, mapId: MapId): boolean {
+  const base = before.maps[mapId];
+  const next = after.maps[mapId];
+  if (!base || !next) return false; // 한쪽에 없으면 그림이 다르다(새 맵·지워진 맵)
+  if (base.width !== next.width || base.height !== next.height || base.tileSize !== next.tileSize) return false;
+  if (JSON.stringify(before.tilesets[base.tilesetId]) !== JSON.stringify(after.tilesets[next.tilesetId])) return false;
+  const eventPositions = (map: GameMap): string =>
+    JSON.stringify((map.events ?? []).map((event) => [event.id, event.x, event.y]));
+  return JSON.stringify(base.lowerTiles) === JSON.stringify(next.lowerTiles)
+    && JSON.stringify(base.upperTiles) === JSON.stringify(next.upperTiles)
+    && eventPositions(base) === eventPositions(next);
 }
 
 type ChipRule = readonly [keyof ChangeSummary, (count: number) => string];
@@ -73,13 +99,39 @@ const CHIP_RULES: readonly ChipRule[] = [
   ["endingsChanged", (n) => `엔딩 ${n}`],
 ];
 
-/** 0 이 아닌 항목만 사람 말로. */
+// 개수가 아니라 «일어났다» 만 말하는 축. 낱말은 aiProposalSummary 의 합계 줄과 같게 쓴다 —
+// 같은 사실을 두 어휘로 부르면 사용자가 둘을 다른 일로 읽는다.
+const FLAG_CHIP_RULES: readonly (readonly [keyof ChangeSummary, string])[] = [
+  ["sessionChanged", "세션"],
+  ["systemChanged", "시스템"],
+];
+
+/** 0 이 아닌 항목만 사람 말로. 카운터 → 불리언 순서로 붙는다. */
 export function changePreviewChips(diff: ChangeSummary): string[] {
   const chips: string[] = [];
   for (const [field, label] of CHIP_RULES) {
     const value = diff[field];
     if (typeof value === "number" && value !== 0) chips.push(label(value));
   }
+  for (const [field, label] of FLAG_CHIP_RULES) {
+    if (diff[field] === true) chips.push(label);
+  }
+  return chips;
+}
+
+/**
+ * 카드의 칩 한 줄 = 요약 카운터 + **카운터 밖 영역 이름**(`changedAreaLabels`).
+ *
+ * 왜 합치는 자리가 여기 하나인가: 카운터 목록은 손으로 관리돼 새 Project 필드에서 뒤처진다.
+ * 퀘스트·스토리 플래그·캐릭터·맵 연결만 바뀐 턴은 `changePreviewChips` 가 빈 배열을 내고,
+ * 검토 카드는 "적용/버리기" 만 남았다 — 그게 "부탁했는데 무엇이 바뀌는지 안 보인다" 였다.
+ * 요약 타입(`ChangeSummary`)에 필드를 더하지 않는 이유: `isPositiveTileOnlyDiff` 같은 안전
+ * 판정이 **모르는 키를 만나면 거짓**을 내므로, 영수증 어휘를 자료형에 넣으면 자동 적용이
+ * 조용히 멈춘다(실측: proposalSafety 의 KNOWN_DIFF_KEYS).
+ */
+export function changeChipsWithAreas(diff: ChangeSummary | undefined, areas: readonly string[]): string[] {
+  const chips = diff ? changePreviewChips(diff) : [];
+  for (const area of areas) if (!chips.includes(area)) chips.push(area);
   return chips;
 }
 
@@ -139,35 +191,55 @@ function chipRow(chips: readonly string[]): HTMLElement {
   });
 }
 
+/**
+ * 그림으로 말할 수 없는 변경 — 두 장을 나란히 두면 "아무 일도 없었다"로 읽힌다.
+ * 여기서는 사실을 말하고, 무엇이 바뀌었는지는 칩·설명이 나른다.
+ */
+function wordDiffNote(chips: readonly string[]): HTMLElement {
+  return el("p", {
+    class: "ai-change-word-diff",
+    dataset: { testid: "ai-change-word-diff" },
+    text: chips.length > 0
+      ? "이번 변경은 지도 그림에 나타나지 않습니다 — 위 항목을 확인하세요."
+      : "이번 변경은 지도 그림에 나타나지 않습니다.",
+  });
+}
+
 /** 인라인 변경 카드. 동기 반환 — 캔버스는 렌더러가 resolve 될 때 붙는다. */
 export function renderChangePreviewCard(input: ChangePreviewInput): HTMLElement {
   const renderShot = input.renderShot ?? defaultRenderShot;
-  const region = changePreviewRegion(input.before, input.after, input.mapId);
+  const chips = input.chips ?? [];
+  // 같은 그림 두 장은 비교가 아니다 — 그때는 그림 대신 사실을 말한다.
+  const panesMatch = changePreviewPanesMatch(input.before, input.after, input.mapId);
+  const region = panesMatch ? null : changePreviewRegion(input.before, input.after, input.mapId);
   const before = shotFigure("before", "ai-change-shot-before");
   const after = shotFigure("after", "ai-change-shot-after");
-  const expand = el("button", {
-    class: "ai-change-expand",
-    text: "넓게 보기",
-    attrs: { type: "button", title: "변경을 넓은 화면으로 비교합니다" },
-    dataset: { testid: "ai-change-expand" },
-    on: { click: () => void openWideChangeViewer(input) },
-  });
   const children: HTMLElement[] = [
     el("header", {
       class: "ai-change-card-head",
       children: [
-        // 카드가 붙는 시점에 변경은 이미 적용돼 있다 — 배지가 사실을 말한다(「변경」 은 상태가 아니었다).
-        el("span", { class: "ai-change-badge", text: "적용됨" }),
+        // 배지는 카드가 붙는 시점의 사실을 말한다 — 검토 대기(적용 전)와 영수증(적용됨).
+        el("span", { class: "ai-change-badge", text: input.state === "proposed" ? "적용 전" : "적용됨" }),
         el("h4", { class: "ai-change-title", text: input.title }),
-        expand,
+        ...(panesMatch
+          ? []
+          : [el("button", {
+            class: "ai-change-expand",
+            text: "넓게 보기",
+            attrs: { type: "button", title: "변경을 넓은 화면으로 비교합니다" },
+            dataset: { testid: "ai-change-expand" },
+            on: { click: () => void openWideChangeViewer(input) },
+          })]),
       ],
     }),
-    chipRow(input.chips ?? []),
-    el("div", {
-      class: "ai-change-pair",
-      dataset: { testid: "ai-change-pair" },
-      children: [before.figure, el("span", { class: "ai-change-arrow", text: "→" }), after.figure],
-    }),
+    chipRow(chips),
+    ...(panesMatch
+      ? [wordDiffNote(chips)]
+      : [el("div", {
+        class: "ai-change-pair",
+        dataset: { testid: "ai-change-pair" },
+        children: [before.figure, el("span", { class: "ai-change-arrow", text: "→" }), after.figure],
+      })]),
   ];
   if (input.detail) children.push(el("div", { class: "ai-change-detail", text: input.detail }));
   if (input.onUndo) {
@@ -187,9 +259,15 @@ export function renderChangePreviewCard(input: ChangePreviewInput): HTMLElement 
       }),
     );
   }
-  const root = el("section", { class: "ai-change-card", dataset: { testid: "ai-change-card" }, children });
-  attachShot(before.canvasHost, input.before, input.mapId, region, CARD_SHOT_WIDTH, renderShot);
-  attachShot(after.canvasHost, input.after, input.mapId, region, CARD_SHOT_WIDTH, renderShot);
+  const root = el("section", {
+    class: "ai-change-card",
+    dataset: { testid: "ai-change-card", state: input.state ?? "applied" },
+    children,
+  });
+  if (!panesMatch) {
+    attachShot(before.canvasHost, input.before, input.mapId, region, CARD_SHOT_WIDTH, renderShot);
+    attachShot(after.canvasHost, input.after, input.mapId, region, CARD_SHOT_WIDTH, renderShot);
+  }
   return root;
 }
 
@@ -206,15 +284,18 @@ function modeButton(mode: "side" | "overlay", label: string, onPick: (mode: "sid
 /** 넓은 비교 뷰어 — body 오버레이. 나란히 / 겹쳐 보기 두 모드. */
 export function openWideChangeViewer(input: ChangePreviewInput): { readonly root: HTMLElement; readonly close: () => void } {
   const renderShot = input.renderShot ?? defaultRenderShot;
-  const region = changePreviewRegion(input.before, input.after, input.mapId);
+  const panesMatch = changePreviewPanesMatch(input.before, input.after, input.mapId);
+  const region = panesMatch ? null : changePreviewRegion(input.before, input.after, input.mapId);
   const before = shotFigure("before", "ai-change-wide-shot-before", "ai-change-wide-shot");
   const after = shotFigure("after", "ai-change-wide-shot-after", "ai-change-wide-shot");
 
-  const body = el("div", {
-    class: "ai-change-wide-body",
-    dataset: { mode: "side" },
-    children: [before.figure, after.figure],
-  });
+  const body: HTMLElement = panesMatch
+    ? wordDiffNote(input.chips ?? [])
+    : el("div", {
+      class: "ai-change-wide-body",
+      dataset: { mode: "side" },
+      children: [before.figure, after.figure],
+    });
   const setMode = (mode: "side" | "overlay"): void => {
     body.dataset.mode = mode;
   };
@@ -249,10 +330,12 @@ export function openWideChangeViewer(input: ChangePreviewInput): { readonly root
     children: [
       el("h3", { class: "ai-change-wide-title", text: input.title }),
       chipRow(input.chips ?? []),
-      el("div", {
-        class: "ai-change-wide-modes",
-        children: [modeButton("side", "나란히", setMode), modeButton("overlay", "겹쳐 보기", setMode), slider],
-      }),
+      ...(panesMatch
+        ? []
+        : [el("div", {
+          class: "ai-change-wide-modes",
+          children: [modeButton("side", "나란히", setMode), modeButton("overlay", "겹쳐 보기", setMode), slider],
+        })]),
       el("button", {
         class: "ai-change-wide-close",
         text: "닫기",
@@ -271,7 +354,9 @@ export function openWideChangeViewer(input: ChangePreviewInput): { readonly root
   root.addEventListener("click", onBackdropClick);
   document.addEventListener("keydown", onKeydown);
   document.body.append(root);
-  attachShot(before.canvasHost, input.before, input.mapId, region, WIDE_SHOT_WIDTH, renderShot);
-  attachShot(after.canvasHost, input.after, input.mapId, region, WIDE_SHOT_WIDTH, renderShot);
+  if (!panesMatch) {
+    attachShot(before.canvasHost, input.before, input.mapId, region, WIDE_SHOT_WIDTH, renderShot);
+    attachShot(after.canvasHost, input.after, input.mapId, region, WIDE_SHOT_WIDTH, renderShot);
+  }
   return { root, close };
 }
