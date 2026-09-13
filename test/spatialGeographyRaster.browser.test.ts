@@ -1,7 +1,6 @@
 // @vitest-environment node
-import { mkdir, mkdtemp, rm } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { mkdir } from "node:fs/promises";
+import { resolve } from "node:path";
 import { chromium, type Browser, type Page } from "playwright";
 import { createServer, type ViteDevServer } from "vite";
 import { describe, expect, it } from "vitest";
@@ -12,12 +11,16 @@ const RASTER = "[data-testid='spatial-geography-raster']";
 
 describe("spatial geography candidate raster", () => {
   it("paints lake-country through paintGeographyAtlas and shows typed mountain errors", async () => {
-    let cacheDir: string | undefined;
     let server: ViteDevServer | undefined;
     let browser: Browser | undefined;
     let page: Page | undefined;
     try {
-      cacheDir = await mkdtemp(join(tmpdir(), "spatial-geography-raster-"));
+      // dep 사전 번들링(esbuild 스캔+번들)은 cacheDir 단위로 캐시된다. 매 실행 임시 디렉터리를
+      // 쓰면 매번 콜드이고, 그 비용이 30초 준비 마감을 넘겨 이 게이트가 병렬 실행에서
+      // 뒤집혔다(2026-09-13 실측: 단독 37.0s 통과 ↔ 4파일 병렬 30s 타임아웃).
+      // 테스트 고유의 상태가 아니라 파생 캐시이므로 안정 경로를 쓴다(node_modules 하위 = gitignore 대상).
+      const cacheDir = resolve("node_modules/.vite-spatial-geography-harness");
+      await mkdir(cacheDir, { recursive: true });
       server = await createServer({
         configFile: false,
         root: resolve("."),
@@ -68,7 +71,6 @@ describe("spatial geography candidate raster", () => {
       await page?.close();
       await browser?.close();
       await server?.close();
-      if (cacheDir) await rm(cacheDir, { recursive: true, force: true });
     }
   }, 60_000);
 });

@@ -51,9 +51,30 @@
 `test/helpers/aiTestSignals.ts` 의 단정은 **실시간 10초 데드라인**을 건다(`setTimeout(..., 10_000)` →
 `"… was not delivered"`). AI 조수 테스트는 가짜 타이머가 아니라 실제 비동기 턴 파이프라인을 돌리므로,
 워커가 32개씩 붙어 CPU 를 나눠 쓰면 턴이 10초를 넘겨 가족 전체가 타임아웃으로 죽는다.
-기준선에 남은 실패 174파일 중 54가 AI 계열이고, 그중 64파일이 타임아웃으로 분류된다.
+기준선에 남은 실패 174파일 중 54가 AI 계열이었다(격리 후 남은 빨간불은 14파일).
 **마감을 늘리는 수정은 하지 않는다**(계약이 금지). 대신 낮은 부하에서 돌리거나
 `VITEST_MAX_FORKS` 로 동시성을 낮추고, 최종 판정은 기준선 대비 회귀만 본다.
+
+## 격리 원장 `test/QUARANTINE.md` (2026-09-13)
+
+기준선 저장 시점부터 계속 빨갛고 그 뒤로도 한 번도 초록이 아니었던 156파일을 기본 스위트에서 뺐다.
+게이트는 "기준선 대비 새 실패"만 회귀로 세므로 이들은 **아무것도 게이팅하지 않는데**
+vitest CPU 시간의 25%(2,056초 / 8,363초)를 먹고 부하 때 재실행을 강요했다.
+
+- 파일은 **삭제하지 않았다**. `X.test.ts` → `X.quarantine.test.ts` 로 이름만 바꿨다(깊이 유지 → 상대 import 생존).
+- 기본 스위트 제외: `vitest.config.ts` exclude 의 `test/**/*.quarantine.test.ts`.
+- 다시 돌리기: `npm run test:quarantine`. 되돌리기: `.quarantine` 만 떼고 **초록으로 고친 뒤에만** 넣는다.
+- 실패 종류(격리 시점): 단정 146 · 스위트 에러 8 · 타임아웃 2.
+
+격리 자체는 실패를 고친 게 아니라 부기를 바꾼 것이다 — 절대 실패 수가 줄어도
+**빨간불이 사라진 게 아니다**. 원장이 그 기록이다.
+
+## 브라우저 하네스의 cacheDir (2026-09-13)
+
+`test/spatialGeographyRaster.browser.test.ts` 는 매 실행 임시 `cacheDir` 로 콜드 Vite 서버를 띄워
+30초 준비 마감에 걸렸다(dep 사전 번들링이 매번 다시 돎). 지금은 안정 경로
+`node_modules/.vite-spatial-geography-harness` 를 써서 첫 실행만 콜드다.
+마감(30초)과 단정은 그대로다 — **고친 것은 콜드 스타트지 마감이 아니다.**
 
 ## P5 delivery gates and the P4 regressions they caught (2026-09-09)
 
