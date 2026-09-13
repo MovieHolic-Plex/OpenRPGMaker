@@ -16,7 +16,12 @@ const project = snapshot.project,
     "spatial-place:32:compact-interior:example:cottage:0:29:easyrpg_chipset_combined_town";
 for (const id of [room, yard])
   assert.deepEqual(project.maps[id], expected.maps[id]);
-for (const id of ["compact-interior:cabinet", "compact-interior:wall-stove"])
+for (const id of [
+  "compact-interior:cabinet",
+  "compact-interior:wall-stove",
+  "compact-interior:partition-north",
+  "compact-interior:partition-south",
+])
   assert.deepEqual(
     project.spatialAuthoring!.library.objects[id],
     expected.spatialAuthoring.library.objects[id],

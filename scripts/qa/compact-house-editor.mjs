@@ -1,13 +1,16 @@
 import fs from "node:fs";
 import assert from "node:assert/strict";
-import { chromium } from "playwright";
+import { chromium, firefox } from "playwright";
 const out = "output/evidence/compact-interior",
   expected = JSON.parse(
     fs.readFileSync(`${out}/reloaded-project.json`, "utf8"),
   );
 const mapId = "spatial:child:32:compact-interior:example:cottage7:floor-1:0";
-const browser = await chromium.launch({
-  args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu"],
+const browserType = process.env.QA_BROWSER === "firefox" ? firefox : chromium;
+const browser = await browserType.launch({
+  ...(browserType === chromium
+    ? { args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu"] }
+    : {}),
 });
 try {
   const page = await browser.newPage({
@@ -100,7 +103,7 @@ try {
   assert.equal(await page.getByTestId("composition-height").inputValue(), "12");
   assert.equal(
     await page.locator('[data-testid^="composition-member-"]').count(),
-    8,
+    10,
   );
   await page.getByText("기존 설계와 생성 규칙", { exact: true }).click();
   assert.equal(await page.getByTestId("spatial-space-width").inputValue(), "8");

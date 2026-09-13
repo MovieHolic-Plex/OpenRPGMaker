@@ -35,18 +35,22 @@ const beats = [
     note: "현관까지 실제로 걸어 들어가기",
     shot: true,
     ops: [
-      { kind: "dir", dir: "up" },
+      {
+        kind: "playerRoute",
+        moves: Array.from({ length: street.y - enter.from.y }, () => ({
+          kind: "move",
+          dir: "up",
+        })),
+      },
       { kind: "waitForPosition", ...enter.to },
-      { kind: "dir", dir: null },
     ],
     expect: { ...enter.to, playerSpriteTextureLoaded: true },
   },
   {
     id: "clear-door",
     ops: [
-      { kind: "dir", dir: "up" },
+      { kind: "playerRoute", moves: [{ kind: "move", dir: "up" }] },
       { kind: "waitForPosition", mapId: roomMapId, x: entry.x, y: entry.y - 1 },
-      { kind: "dir", dir: null },
     ],
     expect: { mapId: roomMapId, x: entry.x, y: entry.y - 1 },
   },

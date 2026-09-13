@@ -81,6 +81,7 @@ const maps = Object.keys(next.maps).filter(
   (id) => !before.maps[id] || owned.has(id),
 );
 assert.equal(maps.length, 2);
+fs.writeFileSync(`${out}/candidate-project.json`, serialize(next));
 for (const mapId of maps) {
   assert.deepEqual(
     validateClusterRules(next, mapId).filter((i) => i.severity === "error"),
@@ -110,6 +111,8 @@ const proof = {
   referenceFloor: { w: 12, h: 10 },
   afterFloor: { w: 8, h: 6 },
   furniture: 8,
+  partitionArms: 2,
+  bedroomDoorway: { x: 4, y: 3 },
   exampleMaps: maps,
   unrelatedMapsPreserved: true,
 };

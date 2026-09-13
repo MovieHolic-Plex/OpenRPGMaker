@@ -57,15 +57,17 @@ trips. Setup teleport is limited to each yard; doors and stairs use actual movem
 
 ## Compact one-floor household (2026-09-13)
 
-The reviewed `house-catalog:room:single` space is now an 8×6 open-plan floor,
+The reviewed `house-catalog:room:single` space is now an 8×6 divided floor,
 replacing its previous 12×10 floor with only two furniture slots. Eight fixed slots
-provide cooking, dining, sleeping and storage around a connected aisle. This is one
-walkable room; it does not pretend adjacent zones are separate maps or introduce a
-new classification. Existing single-floor places reference the same space ID.
+provide cooking, dining, sleeping and storage. Two native partition assemblies
+separate a combined kitchen/living room from the bedroom on the same map. The
+partition occupies local x=4, y=0..2 and y=4..5, leaving one doorway at (4,3);
+the entrance is (3,5). Blocking the doorway must disconnect the two rooms.
+Existing single-floor places reference the same space ID.
 Previously frozen examples keep their old snapshots until explicitly refreshed.
 
-`scripts/lib/compactHouseInterior.mts` authors the revised space and two reviewed
-objects: an upper-layer cabinet (148/178, preserving the floor) and a stove with
+`scripts/lib/compactHouseInterior.mts` authors the revised space and four reviewed
+objects: two partition arms (north 430/77/107, south 430/430), an upper-layer cabinet (148/178, preserving the floor) and a stove with
 its wall backing (105 behind upper 21, lower 51 below). It leaves old imported kits
 and other placed maps alone. Do not move the frozen stove into open floor without
 its backing: its existing north-wall surface rule still applies. Moving the wardrobe
@@ -77,8 +79,12 @@ source, uses the actual spatial get/preview/apply or explicit refresh tool, vali
 cluster rules and **every passable floor cell**, and CAS-saves/reloads. Example:
 `compact-interior:example:cottage` (yard + one interior). Project start and unrelated
 maps are preserved. The large multi-storey examples are not silently rebuilt.
-`qa/compact-house-interior.mts` verifies 48 floor cells / 34 connected walkable cells;
+`qa/compact-house-interior.mts` verifies 48 floor cells / 29 connected walkable cells;
 `qa:runtime -- --scenario compact-house-interior` enters the door, walks to four
 furniture areas and returns to the yard through actual player movement.
-Evidence: `.omo/evidence/compact-interior/`. These are registered tool-path checks,
+`placeCanvases` refreshes generated `roomHarnessPlan` metadata alongside interior
+raster replacement; retaining the old plan left the old door coordinate inside a
+new wall after moving the entrance. Unrelated map metadata remains preserved.
+Evidence: `.omo/evidence/compact-interior/` (open plan) and
+`.omo/evidence/partitioned-interior/` (divided rooms). These are registered tool-path checks,
 not an LLM provider conversation run.

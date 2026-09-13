@@ -32,7 +32,7 @@ const directions = [
   ["left", -1, 0],
 ] as const;
 type P = { x: number; y: number };
-function path(start: P, end: P) {
+function path(start: P, end: P, blocked?: P) {
   const queue = [start],
     prev = new Map<string, { p: P; dir: string } | null>([
       [`${start.x},${start.y}`, null],
@@ -44,6 +44,7 @@ function path(start: P, end: P) {
       const n = { x: p.x + dx, y: p.y + dy },
         key = `${n.x},${n.y}`;
       if (
+        (blocked?.x === n.x && blocked?.y === n.y) ||
         prev.has(key) ||
         !canMove(project, map, p.x, p.y, n.x, n.y) ||
         (n.x === entry.x &&
@@ -69,6 +70,15 @@ function path(start: P, end: P) {
   }
   return moves;
 }
+// Five solid cells form a north/south partition, with exactly one doorway.
+const doorway = { x: 6, y: 7 };
+for (let y = 4; y < 10; y++)
+  assert.equal(isPassableLanding(project, map, 6, y), y === doorway.y);
+assert.deepEqual(map.roomHarnessPlan!.plan.door, { x: entry.x, y: entry.y });
+assert.throws(
+  () => path({ x: 5, y: 7 }, { x: 7, y: 7 }, doorway),
+  /No walking route/,
+);
 let start = { x: entry.x, y: entry.y - 1 };
 assert.ok(isPassableLanding(project, map, start.x, start.y));
 const targets = [
@@ -106,6 +116,9 @@ const proof = {
   walkableFloorCells: walkable,
   allWalkableFloorConnected: true,
   clusterErrors: errors.length,
+  solidPartitionCells: 5,
+  doorway,
+  closingDoorwaySeparatesRooms: true,
 };
 fs.writeFileSync(
   "output/evidence/compact-interior/walkthroughs.json",
