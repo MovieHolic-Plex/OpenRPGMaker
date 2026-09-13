@@ -35,6 +35,8 @@ export function placeCanvases(context: { readonly project: Project; readonly doc
     const map: GameMap = { ...(previous ?? (first.outdoor ? { id, name: base.name, tilesetId: base.tilesetId, tileSize: base.tileSize } : base)),
       id, ...size, lowerTiles: new Array<number>(size.width * size.height).fill(-1),
       upperTiles: new Array<number>(size.width * size.height).fill(-1), events: [...previous?.events ?? []] };
+    // Interior plan metadata must describe the newly compiled floor and entry.
+    if (!first.outdoor) map.roomHarnessPlan = base.roomHarnessPlan;
     if (previous) {
       for (const layer of ["lower", "upper"] as const) {
         const tiles = `${layer}Tiles` as const;

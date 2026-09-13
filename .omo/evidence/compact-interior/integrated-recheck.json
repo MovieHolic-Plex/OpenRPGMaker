@@ -1,0 +1,10 @@
+{
+  "passed": 1,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "spatial geography candidate raster paints lake-country through paintGeographyAtlas and shows typed mountain errors",
+      "status": "passed"
+    }
+  ]
+}

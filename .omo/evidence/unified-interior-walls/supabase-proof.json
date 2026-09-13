@@ -1,0 +1,28 @@
+{
+  "projectId": "rpg-zzu-house-template-gallery",
+  "spaceId": "house-catalog:room:single",
+  "placeId": "house-catalog:place:cottage",
+  "occurrenceId": "compact-interior:example:cottage",
+  "referenceFloor": {
+    "w": 12,
+    "h": 10
+  },
+  "afterFloor": {
+    "w": 8,
+    "h": 6
+  },
+  "furniture": 8,
+  "structuralRooms": 2,
+  "bedroomDoorway": {
+    "x": 4,
+    "y": 3
+  },
+  "exampleMaps": [
+    "spatial:child:32:compact-interior:example:cottage7:floor-1:0",
+    "spatial-place:32:compact-interior:example:cottage:0:29:easyrpg_chipset_combined_town"
+  ],
+  "unrelatedMapsPreserved": true,
+  "saved": true,
+  "reloaded": true,
+  "canonicalSHA256": "67d35df01ae28fe34af24c9618464040daab937066aba757e46c9e4466b94cb6"
+}

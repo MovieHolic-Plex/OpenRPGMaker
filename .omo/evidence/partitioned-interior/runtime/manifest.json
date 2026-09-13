@@ -1,0 +1,380 @@
+{
+  "scenarioId": "compact-house-interior",
+  "projectPath": "output/evidence/compact-interior/reloaded-project.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "start",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial-geography:30:small-village:example:20260913",
+        "x": 39,
+        "y": 43,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "yard",
+      "note": "저장된 작은 집의 마당에서 출발",
+      "shot": "03-yard.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial-place:32:compact-interior:example:cottage:0:29:easyrpg_chipset_combined_town",
+        "x": 5,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "spatial-place:32:compact-interior:example:cottage:0:29:easyrpg_chipset_combined_town",
+          "x": 5,
+          "y": 10
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "spatial-place:32:compact-interior:example:cottage:0:29:easyrpg_chipset_combined_town",
+          "x": 5,
+          "y": 10
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "enter",
+      "note": "현관까지 실제로 걸어 들어가기",
+      "shot": "04-enter.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial:child:32:compact-interior:example:cottage7:floor-1:0",
+        "x": 5,
+        "y": 9,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "x": 5,
+          "y": 9,
+          "mapId": "spatial:child:32:compact-interior:example:cottage7:floor-1:0"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "clear-door",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial:child:32:compact-interior:example:cottage7:floor-1:0",
+        "x": 5,
+        "y": 8,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "up"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "spatial:child:32:compact-interior:example:cottage7:floor-1:0",
+          "x": 5,
+          "y": 8
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "id": "kitchen",
+      "note": "kitchen 앞까지 실제 이동",
+      "shot": "06-kitchen.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial:child:32:compact-interior:example:cottage7:floor-1:0",
+        "x": 2,
+        "y": 6,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "spatial:child:32:compact-interior:example:cottage7:floor-1:0",
+          "x": 2,
+          "y": 6
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "id": "dining",
+      "note": "dining 앞까지 실제 이동",
+      "shot": "07-dining.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial:child:32:compact-interior:example:cottage7:floor-1:0",
+        "x": 4,
+        "y": 8,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "spatial:child:32:compact-interior:example:cottage7:floor-1:0",
+          "x": 4,
+          "y": 8
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "id": "bed",
+      "note": "bed 앞까지 실제 이동",
+      "shot": "08-bed.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial:child:32:compact-interior:example:cottage7:floor-1:0",
+        "x": 8,
+        "y": 6,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "spatial:child:32:compact-interior:example:cottage7:floor-1:0",
+          "x": 8,
+          "y": 6
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "id": "wardrobe",
+      "note": "wardrobe 앞까지 실제 이동",
+      "shot": "09-wardrobe.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial:child:32:compact-interior:example:cottage7:floor-1:0",
+        "x": 8,
+        "y": 7,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "down"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "spatial:child:32:compact-interior:example:cottage7:floor-1:0",
+          "x": 8,
+          "y": 7
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "id": "exit",
+      "note": "현관을 통해 마당으로 돌아오기",
+      "shot": "10-exit.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial-place:32:compact-interior:example:cottage:0:29:easyrpg_chipset_combined_town",
+        "x": 5,
+        "y": 8,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "x": 5,
+          "y": 8,
+          "mapId": "spatial-place:32:compact-interior:example:cottage:0:29:easyrpg_chipset_combined_town"
+        }
+      ]
+    }
+  ]
+}

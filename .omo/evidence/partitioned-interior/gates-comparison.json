@@ -1,0 +1,42 @@
+{
+  "baseline": {
+    "total": 23838,
+    "failed": 509,
+    "passed": 23205
+  },
+  "current": {
+    "total": 23839,
+    "failed": 508,
+    "passed": 23207
+  },
+  "newFailedAssertions": [
+    {
+      "key": "assistantAcceptanceRequestBaseline.test.ts :: per-request acceptance baselines preserves a map created in A while B changes another map",
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/assistantAcceptanceRequestBaseline.test.ts",
+      "name": "per-request acceptance baselines preserves a map created in A while B changes another map",
+      "messages": [
+        "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/assistantAcceptanceRequestBaseline.test.ts:85:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+      ]
+    },
+    {
+      "key": "publicationExport.test.ts :: actual publication exports boots verified payloads (legacy runtime: false) but rejects coherent executable tampering",
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/publicationExport.test.ts",
+      "name": "actual publication exports boots verified payloads (legacy runtime: false) but rejects coherent executable tampering",
+      "messages": [
+        "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at Object.chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:863:7\n    at Array.forEach (<anonymous>)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:851:10\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/publicationExport.test.ts:103:24\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)"
+      ]
+    }
+  ],
+  "affected": [
+    {
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/spatialPlaceCompiler.test.ts",
+      "status": "passed",
+      "tests": 4
+    },
+    {
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/spatialPlacePreservation.test.ts",
+      "status": "passed",
+      "tests": 11
+    }
+  ]
+}
