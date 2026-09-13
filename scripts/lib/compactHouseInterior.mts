@@ -71,11 +71,57 @@ export function registerCompactHouseInterior(input: Project): Project {
     anchors: [],
     chips: [],
   };
+  const bedsideId = "compact-interior:bedside-table";
+  tileset.structureKits = [
+    ...(tileset.structureKits ?? []).filter((k) => k.id !== bedsideId),
+    {
+      id: bedsideId,
+      kind: "section",
+      name: "침대 옆 작은 탁자",
+      width: 1,
+      height: 1,
+      learnedFrom: "db-authored",
+      rows: [{ tiles: [-1], upperTiles: [328] }],
+    },
+  ];
+  document.library.objects[bedsideId] = {
+    id: spatialId(bedsideId),
+    name: "침대 옆 작은 탁자",
+    revision: 1,
+    tags: ["작은 실내", "침실", "협탁"],
+    provenance: { origin: "ai" },
+    graphic: { tilesetId, kitId: bedsideId },
+    anchors: [],
+    chips: [],
+  };
+  const diningId = "compact-interior:single-dining";
+  tileset.structureKits = [
+    ...(tileset.structureKits ?? []).filter((k) => k.id !== diningId),
+    {
+      id: diningId,
+      kind: "section",
+      name: "작은 집 1인 식탁",
+      width: 2,
+      height: 1,
+      learnedFrom: "db-authored",
+      rows: [{ tiles: [-1, -1], upperTiles: [328, 298] }],
+    },
+  ];
+  document.library.objects[diningId] = {
+    id: spatialId(diningId),
+    name: "작은 집 1인 식탁",
+    revision: 1,
+    tags: ["작은 실내", "식사", "1인용"],
+    provenance: { origin: "ai" },
+    graphic: { tilesetId, kitId: diningId },
+    anchors: [],
+    chips: [],
+  };
   const slot = (key: string, object: string, x: number, y: number) => ({
     id: spatialId(key),
     quantity: 1,
     required: true,
-    objectDesignId: [kitId, stoveId].includes(object)
+    objectDesignId: [kitId, stoveId, bedsideId, diningId].includes(object)
       ? spatialId(object)
       : houseObjectForGraphic(project, tilesetId, object)!.id,
     placement: { mode: "fixed" as const, x, y },
@@ -125,12 +171,12 @@ export function registerCompactHouseInterior(input: Project): Project {
     objectSlots: [
       slot("stove", stoveId, 0, 0),
       slot("dishes", kitId, 1, 0),
-      slot("water", "jars", 2, 1),
-      slot("meal", "table_chairs", 0, 3),
-      slot("bed", "bed_v", 6, 0),
-      slot("wardrobe", kitId, 7, 3),
-      slot("bedside", "jars", 5, 0),
-      slot("plant", "plant", 0, 5),
+      slot("water", "jars", 2, 0),
+      slot("meal", diningId, 1, 4),
+      slot("bed", "bed_v", 7, 0),
+      slot("wardrobe", kitId, 7, 4),
+      slot("bedside", bedsideId, 6, 0),
+      slot("plant", "plant", 5, 0),
     ],
   };
   document.library.spaces[room.id] = {

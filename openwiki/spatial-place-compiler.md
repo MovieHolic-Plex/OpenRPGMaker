@@ -78,7 +78,7 @@ source, uses the actual spatial get/preview/apply or explicit refresh tool, vali
 cluster rules and **every passable floor cell**, and CAS-saves/reloads. Example:
 `compact-interior:example:cottage` (yard + one interior). Project start and unrelated
 maps are preserved. The large multi-storey examples are not silently rebuilt.
-`qa/compact-house-interior.mts` verifies 48 floor cells / 29 connected walkable cells;
+`qa/compact-house-interior.mts` verifies 48 floor cells / 30 connected walkable cells;
 `qa:runtime -- --scenario compact-house-interior` enters the door, walks to four
 furniture areas and returns to the yard through actual player movement.
 `placeCanvases` refreshes generated `roomHarnessPlan` metadata alongside interior
@@ -109,3 +109,18 @@ objects remain available for existing frozen content but are no longer placed.
 shared-edge/doorway semantics, so AI authors use the same structural path.
 `test/spatialInteriorLayout.test.ts` proves registered AI upsert, save/load/recompile, ceiling connection,
 shape idempotence, doorway-only reachability, bounds rejection and old-plan compatibility.
+
+### Compact furniture arrangement
+
+The small single-person household keeps eight objects, grouped by use. Cooking
+storage and water align along the north kitchen wall. A two-cell table/chair
+assembly (`compact-interior:single-dining`, upper 328/298) sits at local (1,4),
+leaving both a west route around it and the east entrance aisle. A three-cell
+meal assembly at (0,4) traps the bottom-left floor behind the exit trigger; the
+walking QA must avoid that trigger except on the final exit, not just run plain BFS.
+The bed sits in the northeast corner (7,0), with a bedside table (6,0; upper 328)
+and plant (5,0). The wardrobe occupies the southeast corner (7,4). The doorway
+and 8×6 envelope are unchanged; all 30 passable floor cells remain reachable.
+Furniture art uses existing atlas tiles. Both new assemblies are registered
+objects referenced by the canonical space, saved via explicit occurrence refresh.
+Evidence: `.omo/evidence/furnished-interior/`.

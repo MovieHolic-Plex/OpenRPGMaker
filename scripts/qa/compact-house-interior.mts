@@ -87,9 +87,9 @@ let start = { x: entry.x, y: entry.y - 1 };
 assert.ok(isPassableLanding(project, map, start.x, start.y));
 const targets = [
   { id: "kitchen", x: 2, y: 6 },
-  { id: "dining", x: 4, y: 8 },
+  { id: "dining", x: 4, y: 7 },
   { id: "bed", x: 8, y: 6 },
-  { id: "wardrobe", x: 8, y: 7 },
+  { id: "wardrobe", x: 8, y: 9 },
   { id: "exit", x: entry.x, y: entry.y },
 ];
 const walks = targets.map((end) => {
