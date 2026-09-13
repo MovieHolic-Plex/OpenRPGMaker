@@ -346,8 +346,46 @@ for (const failure of report.css?.failures ?? []) regressions.push(`css ${failur
 for (const failure of report.surface?.failures ?? []) regressions.push(`surface ${failure}`);
 // 브라우저 게이트도 같은 이유로 기준선 유무와 무관하게 실패가 곧 회귀다.
 for (const failure of report.browser?.failures ?? []) regressions.push(`browser ${failure}`);
+// 새로 실패한 테스트 파일은 **단독 재실행**으로 한 번 더 판정한다. 실측(2026-09-13): 32워커
+// 전체 실행에서는 매번 4건 안팎이 서로 다른 조합으로 "새로 실패"에 섞였고, 그 전부가
+// 단독으로는 통과했다 — 굶주린 워커에서만 흔들리는 타이밍 플레이크다. 진짜 회귀는 단독에서도
+// 실패한다. 단정·마감은 건드리지 않는다(재실행은 판정 절차이지 완화가 아니다).
+// `--no-flake-retry` 로 끌 수 있다.
+const flakeRetries = [];
+if (baseline && regressions.length > 0 && !flag("--no-flake-retry")) {
+  const kept = [];
+  for (const entry of regressions) {
+    const match = /^tests (test\/\S+\.ts): 새로 실패$/u.exec(entry);
+    if (!match) {
+      kept.push(entry);
+      continue;
+    }
+    const { code: soloCode } = run("node", [
+      "scripts/run-vitest.mjs",
+      "run",
+      "--configLoader",
+      "bundle",
+      "--reporter=default",
+      "--maxWorkers=2",
+      "--minWorkers=1",
+      match[1],
+    ]);
+    if (soloCode === 0) flakeRetries.push(match[1]);
+    else kept.push(`${entry} [단독 재실행도 실패]`);
+  }
+  regressions.length = 0;
+  regressions.push(...kept);
+}
+report.flakeRetries = flakeRetries;
+
 report.baseline = baseline ? baselinePath : null;
 report.regressions = regressions;
+
+if (!asJson && flakeRetries.length > 0) {
+  console.log(`부하 플레이크 ${flakeRetries.length}건 — 단독 재실행에서 통과했으므로 회귀에서 제외:`);
+  for (const file of flakeRetries) console.log(`   ${file}`);
+  console.log("");
+}
 
 if (asJson) {
   console.log(JSON.stringify(report, null, 2));
