@@ -31,7 +31,7 @@ const spaces = object({ ...base, environment: choices(["interior", "outdoor"]), 
     doorways: array(point),
   }), description: "Optional interior-only subdivisions within a rectangular floor. Coordinates are floor-local. Adjacent room boxes reserve a shared partition on the west/north box's last column/row; doorways reopen it. Generates connected outer walls and partitions together; do not stamp partition walls as furniture." },
   objectSlots: array(object({ id, objectDesignId: id, quantity: { type: "integer", minimum: 1 }, required: { type: "boolean" },
-    placement: object({ mode: choices(["auto", "fixed"]), x: integer, y: integer }, ["mode"]), chipOverrides: array(text),
+    placement: object({ mode: choices(["auto", "fixed"]), x: integer, y: integer, wallOverlap: { type: "integer", enum: [1, 2], description: "Interior fixed placement only: x/y locates the first floor row; lift the graphic by this many rows. Only upper-layer pieces may overlap actual cream wall faces, with a floor-supported base. Use 1 for a two-tile cabinet against the north wall." } }, ["mode"]), chipOverrides: array(text),
   }, ["id", "objectDesignId", "quantity", "required", "placement"])),
 }, [...Object.keys(base), "environment", "tilesetId", "shape", "width", "height", "floor", "wall", "ports", "objectSlots"]);
 const places = object({ ...base, kind: choices(["facility", "settlement", "natural"]), children: child(["space", "place"]),

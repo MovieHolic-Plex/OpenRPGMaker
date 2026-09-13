@@ -50,7 +50,7 @@ export function placedObject(occurrence: SpatialAssociatedOccurrence, origin: Sp
 }
 
 /** Mutates only the compiler's detached raster after preflight of the entire assembly. */
-export function stampFrozenObject(context: { readonly project: Project; readonly map: GameMap; readonly area: SpatialRect },
+export function stampFrozenObject(context: { readonly project: Project; readonly map: GameMap; readonly area: SpatialRect; readonly upperWallCells?: ReadonlySet<string> },
   object: CompiledObject, previous?: CompiledObject): void {
   const { raster } = frozenObject(object.occurrence);
   const { map, project, area } = context;
@@ -68,7 +68,8 @@ export function stampFrozenObject(context: { readonly project: Project; readonly
   for (const cell of [...oldCells, ...object.placement.cells]) {
     const i = cell.y * map.width + cell.x;
     const point = `${cell.x},${cell.y}`;
-    if ((!oldPoints.has(point) && !isPassableLanding(project, map, cell.x, cell.y))
+    if ((!oldPoints.has(point) && !isPassableLanding(project, map, cell.x, cell.y)
+        && !(cell.layer === "upper" && context.upperWallCells?.has(point)))
       || (map.upperTiles[i] !== -1 && !oldUpper.has(point))
       || map.lowerTileStacks?.[i]?.length || map.upperTileStacks?.[i]?.length
       || map.events.some(event => event.x === cell.x && event.y === cell.y)) {

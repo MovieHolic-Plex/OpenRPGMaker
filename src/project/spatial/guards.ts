@@ -35,7 +35,7 @@ const placement: Parser<S.SpatialObjectSlot["placement"]> = (v, p) => {
   const mode = choice(["auto", "fixed"] as const)(r.mode, `${p}.mode`);
   switch (mode) {
     case "auto": record(r, p, "mode"); return { mode };
-    case "fixed": record(r, p, "mode x y"); return { mode, ...point(r, p) };
+    case "fixed": record(r, p, "mode x y wallOverlap"); return { mode, ...point(r, p), ...(r.wallOverlap === undefined ? {} : { wallOverlap: choice([1, 2] as const)(r.wallOverlap, `${p}.wallOverlap`) }) };
     default: return assertNever(mode);
   }
 };

@@ -78,7 +78,7 @@ source, uses the actual spatial get/preview/apply or explicit refresh tool, vali
 cluster rules and **every passable floor cell**, and CAS-saves/reloads. Example:
 `compact-interior:example:cottage` (yard + one interior). Project start and unrelated
 maps are preserved. The large multi-storey examples are not silently rebuilt.
-`qa/compact-house-interior.mts` verifies 48 floor cells / 30 connected walkable cells;
+`qa/compact-house-interior.mts` verifies 48 floor cells / 32 connected walkable cells;
 `qa:runtime -- --scenario compact-house-interior` enters the door, walks to four
 furniture areas and returns to the yard through actual player movement.
 `placeCanvases` refreshes generated `roomHarnessPlan` metadata alongside interior
@@ -124,3 +124,22 @@ and 8×6 envelope are unchanged; all 30 passable floor cells remain reachable.
 Furniture art uses existing atlas tiles. Both new assemblies are registered
 objects referenced by the canonical space, saved via explicit occurrence refresh.
 Evidence: `.omo/evidence/furnished-interior/`.
+
+### Furniture overlapping the north wall
+
+Fixed object slots accept optional `placement.wallOverlap: 1 | 2`. Their x/y
+coordinates locate the first floor row, and only the graphic origin is lifted.
+The live definition, frozen slot, parser and AI upsert schema share this contract.
+`compileSpaces` authorizes only upper-layer cells over actual cream wall-face tiles,
+with floor support and a painted base beneath each overlapping column. The
+standard stamp preflight still rejects upper collisions, stacks and events;
+lower wall tiles are never replaced. Outdoor use and unsupported wall/ceiling
+positions are rejected. Legacy placements without the field remain floor-only.
+
+The compact kitchen cabinet uses (1,0) with one overlapping row; the bedroom
+wardrobe moves to (5,0) with the same support. Their upper 148 tiles cover the wall
+and lower 178 pieces sit on the first floor row. The plant moves to kitchen (3,0).
+All 32 passable floor cells connect without crossing the exit trigger.
+`test/spatialWallOverlap.test.ts` covers exact layer placement, save/load/recompile,
+legacy behavior, missing support, lower-wall overwrite, object collision, and AI upsert.
+Evidence: `.omo/evidence/wall-overlap-interior/`.

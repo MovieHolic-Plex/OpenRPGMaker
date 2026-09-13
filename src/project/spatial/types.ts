@@ -38,7 +38,7 @@ export type ObjectDesign = SpatialDesignBase & {
 export type SpatialObjectSlot = {
   readonly id: SpatialId; readonly objectDesignId: SpatialId;
   readonly quantity: number; readonly required: boolean;
-  readonly placement: { readonly mode: "auto" } | ({ readonly mode: "fixed" } & SpatialPoint);
+  readonly placement: { readonly mode: "auto" } | ({ readonly mode: "fixed"; readonly wallOverlap?: 1 | 2 } & SpatialPoint);
   readonly chipOverrides?: readonly string[];
 };
 export type SpatialFloorArea =

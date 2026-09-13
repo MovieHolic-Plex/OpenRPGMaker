@@ -117,14 +117,25 @@ export function registerCompactHouseInterior(input: Project): Project {
     anchors: [],
     chips: [],
   };
-  const slot = (key: string, object: string, x: number, y: number) => ({
+  const slot = (
+    key: string,
+    object: string,
+    x: number,
+    y: number,
+    wallOverlap?: 1 | 2,
+  ) => ({
     id: spatialId(key),
     quantity: 1,
     required: true,
     objectDesignId: [kitId, stoveId, bedsideId, diningId].includes(object)
       ? spatialId(object)
       : houseObjectForGraphic(project, tilesetId, object)!.id,
-    placement: { mode: "fixed" as const, x, y },
+    placement: {
+      mode: "fixed" as const,
+      x,
+      y,
+      ...(wallOverlap ? { wallOverlap } : {}),
+    },
   });
   const old = document.library.spaces[COMPACT_INTERIOR_SPACE];
   assert.ok(old);
@@ -170,13 +181,13 @@ export function registerCompactHouseInterior(input: Project): Project {
     ports: [{ id: spatialId("entry"), name: "현관", x: 3, y: 5 }],
     objectSlots: [
       slot("stove", stoveId, 0, 0),
-      slot("dishes", kitId, 1, 0),
+      slot("dishes", kitId, 1, 0, 1),
       slot("water", "jars", 2, 0),
       slot("meal", diningId, 1, 4),
       slot("bed", "bed_v", 7, 0),
-      slot("wardrobe", kitId, 7, 4),
+      slot("wardrobe", kitId, 5, 0, 1),
       slot("bedside", bedsideId, 6, 0),
-      slot("plant", "plant", 5, 0),
+      slot("plant", "plant", 3, 0),
     ],
   };
   document.library.spaces[room.id] = {
