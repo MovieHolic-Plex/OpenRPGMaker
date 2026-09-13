@@ -32,6 +32,29 @@
 `.omo/gates-vitest-report.json` 에서 **오래 걸린 파일 상위**를 뽑아 `/usr/bin/time -v` 로 단독 실행해
 피크 RSS 를 재는 쪽이 빠르다(이번에도 그렇게 찾았다).
 
+## 게이트 반복은 `--changed` 로 좁힌다 (2026-09-13)
+
+`npm run gates` 는 축 넷(typecheck·vitest·css·surface)을 전부 돈다. vitest 축만 **23,700여 건 / 2,244 파일**이라
+부하에 따라 13~26분이 걸린다. 반복 중에 매번 전체를 돌릴 이유가 없다:
+
+- `npm run gates -- --changed` — vitest 가 **바뀐 파일에 영향받는 테스트만** 고른다(마지막 커밋 기준). 수십 초.
+- `npm run gates -- --changed=origin/main` — 비교 기준 ref 를 지정한다.
+- `npm run gates -- --only typecheck|tests|css|surface` — 축 하나만 돈다(css 수 초, surface 수십 초, 나머지 수 분).
+- 경합을 줄이려면 환경 변수: `VITEST_MAX_FORKS=6 npm run gates` (동시성만 바뀌고 테스트·마감·기준선은 그대로).
+
+**최종 게이트는 플래그 없이 전체를 돌린다.** `--changed` 와 `--save-baseline` 을 함께 쓸 수 없다 —
+부분집합 실행을 기준선으로 저장하면 기준선이 그 부분집합이 돼 다음 전체 실행의 모든 실패가 "신규 회귀"로
+보고된다(스크립트가 거부한다).
+
+### AI 조수 가족이 왜 이렇게 잘 뒤집히나 (실측)
+
+`test/helpers/aiTestSignals.ts` 의 단정은 **실시간 10초 데드라인**을 건다(`setTimeout(..., 10_000)` →
+`"… was not delivered"`). AI 조수 테스트는 가짜 타이머가 아니라 실제 비동기 턴 파이프라인을 돌리므로,
+워커가 32개씩 붙어 CPU 를 나눠 쓰면 턴이 10초를 넘겨 가족 전체가 타임아웃으로 죽는다.
+기준선에 남은 실패 174파일 중 54가 AI 계열이고, 그중 64파일이 타임아웃으로 분류된다.
+**마감을 늘리는 수정은 하지 않는다**(계약이 금지). 대신 낮은 부하에서 돌리거나
+`VITEST_MAX_FORKS` 로 동시성을 낮추고, 최종 판정은 기준선 대비 회귀만 본다.
+
 ## P5 delivery gates and the P4 regressions they caught (2026-09-09)
 
 ### Open: checkpoint writes still slow the authoring loop

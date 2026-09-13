@@ -37,6 +37,19 @@ const value = (name, fallback) => {
 const only = value("--only", null);
 const asJson = flag("--json");
 const baselinePath = resolve(value("--baseline", DEFAULT_BASELINE));
+// `--changed[=ref]` — vitest 의 `--changed` 로 넘겨 "바뀐 파일에 영향받는 테스트만" 돌린다.
+// 23,700건 전체(15~26분)를 매 반복 돌리지 않기 위한 스코프다. 최종 게이트는 플래그 없이 전체를 돈다.
+const changedArg = args.find((entry) => entry === "--changed" || entry.startsWith("--changed=")) ?? null;
+const changedArgs = changedArg
+  ? (changedArg.includes("=")
+      ? ["--changed", changedArg.slice("--changed=".length)]
+      : ["--changed"])
+  : [];
+if (changedArg && flag("--save-baseline")) {
+  // 부분집합 실행을 기준선으로 저장하면 기준선이 그 부분집합이 돼 다음 전체 실행의
+  // 모든 실패가 "신규 회귀"로 보고된다(게이트 무력화).
+  throw new Error("--save-baseline 과 --changed 는 함께 쓸 수 없다 — 기준선이 부분집합이 된다.");
+}
 
 function run(command, commandArgs) {
   const result = spawnSync(command, commandArgs, {
@@ -125,6 +138,7 @@ function testsGate() {
     "--reporter=json",
     "--outputFile",
     reportPath,
+    ...changedArgs,
   ]);
 
   if (!existsSync(reportPath)) {
