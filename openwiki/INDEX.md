@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **65쪽 / 2544KB / 약 713,477 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **65쪽 / 2548KB / 약 714,476 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -20,9 +20,9 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-database.md` | 278KB | 59KB ⚠상한 초과 — 절을 더 쪼개라 | 1518 | ~80,349 |
 | `openwiki/editor-event-authoring.md` | 135KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 740 | ~38,710 |
 | `openwiki/editor-event-commands.md` | 57KB | 32KB | 202 | ~15,410 |
-| `openwiki/editor-interior-room-harness.md` | 53KB | 6KB | 273 | ~15,331 |
-| `openwiki/editor-pre-edit-routing.md` | 108KB | 60KB ⚠상한 초과 — 절을 더 쪼개라 | 592 | ~30,985 |
-| `openwiki/editor-workflows-misc.md` | 65KB | 29KB | 456 | ~17,604 |
+| `openwiki/editor-interior-room-harness.md` | 55KB | 6KB | 280 | ~15,775 |
+| `openwiki/editor-pre-edit-routing.md` | 109KB | 61KB ⚠상한 초과 — 절을 더 쪼개라 | 594 | ~31,261 |
+| `openwiki/editor-workflows-misc.md` | 65KB | 30KB | 458 | ~17,883 |
 | `openwiki/runtime-battle.md` | 134KB | 31KB | 540 | ~38,257 |
 | `openwiki/runtime-project-schema.md` | 139KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 921 | ~37,623 |
 | `openwiki/runtime-sessions.md` | 89KB | 46KB | 318 | ~23,590 |
@@ -494,7 +494,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L59` Validation
 - `L61` Two new-project surfaces, one choice model (2026-09-11)
 
-### `openwiki/editor-interior-room-harness.md` — 53KB · 273줄 · ~15,331 토큰 · 통째읽기 잘림
+### `openwiki/editor-interior-room-harness.md` — 55KB · 280줄 · ~15,775 토큰 · 통째읽기 잘림
 
 - `L5` Interior authoring/load consistency (2026-09-07)
 - `L46` Closed expandable long tables (2026-09-07)
@@ -516,6 +516,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L248` PR618 통합: 큰 탁자와 기존 시설 구성 (2026-09-06)
 - `L256` 비직사각 실내 정본 재설계 (2026-09-13)
 - `L265` 생활 구역 조합으로 실내 저작 (2026-09-14)
+- `L274` 여관·잡화점의 시설별 실내 기준 (2026-09-14)
 
 ### `openwiki/editor-observability.md` — 38KB · 471줄 · ~10,680 토큰 · 깨진 줄 1
 
@@ -534,7 +535,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L455` AI 툴·액션 이유 (2026-09-02)
 - `L465` 검증
 
-### `openwiki/editor-pre-edit-routing.md` — 108KB · 592줄 · ~30,985 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 109KB · 594줄 · ~31,261 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L7` Exterior door backing
 - `L17` Tile brush reliability (2026-09-06)
@@ -553,11 +554,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L306` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
   - `L366` Automatic usage guides disabled (2026-09-06)
   - `L376` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
-- `L465` Agent cautions
-- `L475` 헤더 용어 정본과 중복 감사 (2026-08-30)
-  - `L506` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
-  - `L538` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
-  - `L567` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
+- `L467` Agent cautions
+- `L477` 헤더 용어 정본과 중복 감사 (2026-08-30)
+  - `L508` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
+  - `L540` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
+  - `L569` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
 
 ### `openwiki/editor-storage-chest.md` — 1KB · 15줄 · ~333 토큰
 
@@ -581,7 +582,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L235` 손붓이 hard 클러스터에 막혔을 때의 복구 경로 (2026-09-10, OPRN-OUT-017)
   - `L281` `bAlt`/`aAlt` 패리티 — 별도 리뷰 결과: **실제 결함이었고 고쳤다** (2026-09-10)
 
-### `openwiki/editor-workflows-misc.md` — 65KB · 456줄 · ~17,604 토큰 · 통째읽기 잘림
+### `openwiki/editor-workflows-misc.md` — 65KB · 458줄 · ~17,883 토큰 · 통째읽기 잘림
 
 - `L7` Other Editor Workflows
   - `L9` New-project name and player title (2026-09-07)
@@ -589,12 +590,12 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L85` Game export delivery (2026-09-06)
   - `L196` Audio descriptions and live resource ownership
   - `L279` Genre-neutral authoring launcher and journey (2026-08-24)
-- `L329` 편집기 z 층 밴드와 토스트 (2026-08-30, PR #308)
-- `L358` 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
-- `L380` 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
-- `L394` 맵 설정 가독성·편집 연속성 (2026-09-05)
-- `L404` 왼쪽 사이드바 3모드 적대적 리뷰 (2026-09-05)
-- `L415` Authoring viewport navigation (issue 693, 2026-09-08)
+- `L331` 편집기 z 층 밴드와 토스트 (2026-08-30, PR #308)
+- `L360` 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
+- `L382` 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
+- `L396` 맵 설정 가독성·편집 연속성 (2026-09-05)
+- `L406` 왼쪽 사이드바 3모드 적대적 리뷰 (2026-09-05)
+- `L417` Authoring viewport navigation (issue 693, 2026-09-08)
 
 ### `openwiki/editor-workflows.md` — 2KB · 28줄 · ~586 토큰
 
