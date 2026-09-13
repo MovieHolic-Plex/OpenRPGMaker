@@ -348,22 +348,30 @@ for (const failure of report.surface?.failures ?? []) regressions.push(`surface 
 // 브라우저 게이트도 같은 이유로 기준선 유무와 무관하게 실패가 곧 회귀다.
 for (const failure of report.browser?.failures ?? []) regressions.push(`browser ${failure}`);
 // 새로 실패한 테스트 파일은 **단독 재실행**으로 한 번 더 판정한다. 실측(2026-09-13): 32워커
-// 전체 실행에서는 매번 서로 다른 파일들이 "새로 실패"에 섞였고 대부분 단독으로는 통과했다 —
-// 굶주린 워커에서만 흔들리는 타이밍 플레이크다. 진짜 회귀는 단독에서도 실패한다.
+// 전체 실행에서는 매번 서로 다른 파일들이 "새로 실패"에 섞였고, 그 전부가 단독으로는 통과했다 —
+// 굶주린 워커에서만 흔들리는 타이밍 플레이크다.
 //
-// 판정은 **테스트 단위 실패 수**로 한다. 종료 코드로 판정했더니 테스트는 다 통과하는데
-// 테스트 밖에서 난 프로세스 수준 오류(`Response constructor: Invalid response status code 204`)
-// 하나가 파일을 영원히 "회귀"로 만들었다(2026-09-13 실측: 머지 전 origin/main 에서도 동일).
-// 후보는 **한 번의 실행**으로 묶어 돌린다 — 파일마다 따로 돌렸더니 16건에 45분이 걸렸다.
+// 판정은 **파일별 · maxWorkers=1** 로 한다. 후보를 한 실행에 몰아 돌렸더니 그 배치 자체가
+// 경합을 만들어 멀쩡한 파일을 "단독 재실행도 실패"로 오판했다(2026-09-13 실측: 같은 파일이
+// 한 실행에 모으면 실패, 하나씩 돌리면 통과). 동시 실행도 하지 않는다.
+// 판정 기준은 종료 코드가 아니라 **테스트 단위 실패 수**다 — 테스트는 다 통과하는데 테스트 밖
+// 프로세스 오류로 파일이 영원히 회귀가 되던 문제(같은 날 실측)를 막는다.
+// 예산(기본 20분)을 넘긴 후보는 판정하지 않고 회귀로 남긴다. `--no-flake-retry` 로 끈다.
 const flakeRetries = [];
 if (baseline && regressions.length > 0 && !flag("--no-flake-retry")) {
-  const candidates = [];
+  const deadline = Date.now() + (Number(value("--flake-budget-min", "20")) || 20) * 60_000;
+  const kept = [];
   for (const entry of regressions) {
     const match = /^tests (test\/\S+\.ts): 새로 실패$/u.exec(entry);
-    if (match) candidates.push(match[1]);
-  }
-  if (candidates.length > 0) {
-    const soloPath = `${tmpdir()}/gate-flake-retry.json`;
+    if (!match) {
+      kept.push(entry);
+      continue;
+    }
+    if (Date.now() > deadline) {
+      kept.push(`${entry} [재판정 예산 초과]`);
+      continue;
+    }
+    const soloPath = `${tmpdir()}/gate-flake-${match[1].replace(/[^a-z0-9]+/giu, "_")}.json`;
     rmSync(soloPath, { force: true });
     run("node", [
       "scripts/run-vitest.mjs",
@@ -372,37 +380,24 @@ if (baseline && regressions.length > 0 && !flag("--no-flake-retry")) {
       "bundle",
       "--reporter=json",
       `--outputFile=${soloPath}`,
-      "--maxWorkers=4",
+      "--maxWorkers=1",
       "--minWorkers=1",
-      ...candidates,
+      match[1],
     ]);
-    const failedSolo = new Set();
-    let soloUsable = false;
+    let soloFailures = null;
     if (existsSync(soloPath)) {
       try {
         const solo = JSON.parse(readFileSync(soloPath, "utf8"));
-        soloUsable = true;
-        for (const result of solo.testResults ?? []) {
-          const name = String(result.name ?? "").replace(`${process.cwd()}/`, "");
-          if ((result.assertionResults ?? []).some((a) => a.status === "failed")) failedSolo.add(name);
-        }
+        soloFailures = solo.numFailedTests ?? 0;
       } catch {
-        soloUsable = false;
+        soloFailures = null;
       }
     }
-    const kept = [];
-    for (const entry of regressions) {
-      const match = /^tests (test\/\S+\.ts): 새로 실패$/u.exec(entry);
-      if (!match || !soloUsable) {
-        kept.push(entry);
-        continue;
-      }
-      if (failedSolo.has(match[1])) kept.push(`${entry} [단독 재실행도 테스트 실패]`);
-      else flakeRetries.push(match[1]);
-    }
-    regressions.length = 0;
-    regressions.push(...kept);
+    if (soloFailures === 0) flakeRetries.push(match[1]);
+    else kept.push(`${entry} [단독 재실행도 테스트 실패${soloFailures === null ? "(리포트 없음)" : ` ${soloFailures}건`}]`);
   }
+  regressions.length = 0;
+  regressions.push(...kept);
 }
 report.flakeRetries = flakeRetries;
 
