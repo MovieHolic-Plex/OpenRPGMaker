@@ -121,6 +121,9 @@ let chatFloatRoot: HTMLElement | null = null;
 let aiChatPanelRoot: HTMLElement | null = null;
 let mapLockBannerRoot: HTMLElement | null = null;
 let authoringJourneyRoot: HTMLElement | null = null;
+// 저장 모드 배너 호스트는 항상 DOM에 두고 내용만 갈아 끼운다 — 공용 데모 → 사본 전환처럼
+// 부팅 뒤에 persistence 상태가 바뀌어도 배너가 붙고 떨어진다(emit(project) 가 repaint 를 탄다).
+let persistenceBannerHost: HTMLElement | null = null;
 let authoringJourneyOpen = false;
 let authoringJourneyReferenceIssues: readonly string[] | null = null;
 let projectExportNode: HTMLElement | null = null;
@@ -203,8 +206,10 @@ export function renderEditor(main: HTMLElement): void {
   canvasScrollShell.append(phaserContainer);
   // 저장 모드 배너(결함 ⑩)는 캔버스 열 상단에 넣는다 — .main(flex row)의 형제로 넣으면
   // 좌측 열처럼 배치되어 레이아웃이 깨진다.
-  const persistenceBanner = renderPersistenceModeBanner();
-  if (persistenceBanner) canvasArea.append(persistenceBanner);
+  const bannerHost = el("div", { class: "persistence-banner-host" });
+  canvasArea.append(bannerHost);
+  persistenceBannerHost = bannerHost;
+  paintPersistenceBanner();
   canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, authoringJourney, cursorDiagnostics, chatFloatHost);
   layout.append(left, leftResizer, canvasArea);
   const aiPanel = renderAiChatPanel({
@@ -434,6 +439,7 @@ export function teardownEditor(): void {
   aiChatPanelRoot = null;
   mapLockBannerRoot = null;
   authoringJourneyRoot = null;
+  persistenceBannerHost = null;
   authoringJourneyOpen = false;
   authoringJourneyReferenceIssues = null;
   projectExportNode = null;
@@ -472,9 +478,39 @@ function mountAssistantOverlay(): void {
 // 임시 세션 배너는 오류가 아니라 정보 — 인라인 '내보내기' + 닫기(세션 동안 유지)를 제공한다.
 let persistenceBannerDismissed = false;
 
+function paintPersistenceBanner(): void {
+  if (!persistenceBannerHost) return;
+  clearChildren(persistenceBannerHost);
+  const banner = renderPersistenceModeBanner();
+  if (banner) persistenceBannerHost.append(banner);
+}
+
 function renderPersistenceModeBanner(): HTMLElement | null {
   const status = store.getDbPersistenceStatus();
   if (status.kind !== "disabled") return null;
+  if (status.reason === "shared-demo") {
+    // 공용 데모: 원본 보호를 상시 표면에 남기고 사본 만들기로 이어준다 — 토스트는 사라져도 배너는 남는다.
+    const banner = el("div", {
+      class: "persistence-mode-banner is-shared-demo",
+      dataset: { testid: "shared-demo-banner" },
+    });
+    banner.append(
+      el("span", {
+        class: "persistence-mode-banner-text",
+        text: "공용 예제를 보고 있습니다 — 원본은 바뀌지 않습니다.",
+      }),
+      el("button", {
+        class: "persistence-mode-banner-action",
+        text: "편집용 사본 만들기",
+        attrs: { type: "button", title: "현재 화면을 새 온라인 프로젝트로 복사해 편집을 시작합니다" },
+        dataset: { testid: "shared-demo-banner-fork" },
+        on: {
+          click: () => void import("@/editor/sharedDemoIntro").then((m) => m.forkSharedDemoToEditableCopy()),
+        },
+      }),
+    );
+    return banner;
+  }
   if (status.reason === "dev-showcase") {
     const saveSkipped = isSaveSkippedLocation();
     if (saveSkipped && persistenceBannerDismissed) return null;
@@ -762,6 +798,8 @@ function scheduleFullPanelRefresh(): void {
 
 function refreshPanels(change?: ProjectChangeDescriptor): void {
   refreshAuthoringJourney(change);
+  // 프로젝트 단위 변화(포크 커밋·재연결·복구)는 persistence 상태를 바꾼다 — 배너를 다시 그린다.
+  if (!change || change.scope === "project" || change.projectSwitch) paintPersistenceBanner();
   // 좌측 패널 호스트는 프리셋에 따라 없을 수 있다 — 캔버스 크롬만 있으면 갱신을 진행한다.
   if (!canvasToolbarRoot || !mapLockBannerRoot) return;
   if (change?.scope === "map" && change.cells?.length) {

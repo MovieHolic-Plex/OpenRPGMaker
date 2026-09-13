@@ -13,11 +13,13 @@ import { isSaveSkippedLocation, loadDevProjectOverride, saveDevProjectOverride }
 import {
   loadProjectFromSupabase,
   loadProjectForPersistenceProof,
+  loadProjectSnapshotFromSupabase,
   saveProjectMapPatchToSupabase,
   saveProjectToSupabase,
   type SupabaseSaveResult,
   type ProjectWriteAuthority,
 } from "./supabaseProjectSync";
+import { isSharedDemoProjectId, SHARED_DEMO_PROJECT_ID } from "./sharedDemoProject";
 import { projectWithoutEventDrafts } from "./eventDrafts";
 import { activateSpatialProjectFromRaw, assertCanonicalReplacement, ProjectRoutingError, sameProjectTarget } from "./spatial/saveRouting";
 import { SpatialPersistenceError, type MirrorStatus } from "./spatial/persistence";
@@ -302,13 +304,16 @@ class ProjectStore {
             throw new DbConnectionRequiredError("선택한 작업을 찾지 못했습니다.");
           }
           this.adoptProject(project, { restoreVault: true });
-          this.writeAuthority = authority;
           const loadedProjectId = target?.projectId;
+          const sharedDemo = isSharedDemoProjectId(loadedProjectId);
+          // 공용 데모 행은 어떤 경로로 열리든 읽기 전용이다 — ?project= 딥링크나
+          // 작업 선택 목록에서 골라도 쓰기 권한·자동저장을 쥐지 않는다.
+          this.writeAuthority = sharedDemo ? null : authority;
           if (loadedProjectId) this.loadedRemoteProjectId = loadedProjectId;
           else this.beginLocalProjectSession();
-          this.remotePersistenceEnabled = true;
-          this.remotePersistenceDisabledReason = null;
-          this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
+          this.remotePersistenceEnabled = !sharedDemo;
+          this.remotePersistenceDisabledReason = sharedDemo ? "shared-demo" : null;
+          this.persistedBaseline = sharedDemo ? null : structuredClone(projectWithoutEventDrafts(this.current));
           resetManualProjectCommitBaseline(this.current);
           this.syncProjectUrlBar();
         }
@@ -358,6 +363,49 @@ class ProjectStore {
   }
 
   /**
+   * 첫 방문 공용 데모를 읽기 전용으로 연다.
+   *
+   * 일반 load() 와 다른 점: ?project=/선택 저장을 쓰지 않고, 쓰기 권한을
+   * 아예 쥐지 않는다(writeAuthority=null + remotePersistenceEnabled=false).
+   * 방문자의 편집은 메모리에만 머물고 자동저장·flush·락 경로는 전부 비활성이라
+   * 공용 행을 덮어쓸 수 없다. 편집은 "편집용 사본"(loadNewRemoteProjectTransactionally)에서만.
+   *
+   * 행이 없거나 읽기가 실패하면 null — 호출자(mode.ts)가 기존 첫 방문 경로로 폴백한다.
+   * 데모 부재가 부팅을 벨리면 안 되므로 여기서 throw 하지 않는다.
+   */
+  async loadSharedDemo(): Promise<Project | null> {
+    const base = supabaseProjectConfig();
+    if (!base) return null;
+    const target: SupabaseProjectConfig = { ...base, projectId: SHARED_DEMO_PROJECT_ID };
+    let snapshot;
+    try {
+      snapshot = await loadProjectSnapshotFromSupabase(target);
+    } catch (error) {
+      log.warn("공용 데모 읽기 실패 — 첫 방문 폴백 경로로 진행", error);
+      return null;
+    }
+    if (!snapshot) return null;
+    this.adoptProject(snapshot.project, { restoreVault: false });
+    this.writeAuthority = null;
+    // Identity stays "remote/demo" so a fork's concurrent-edit guard anchors to
+    // the demo; the row is unreachable for writes either way.
+    this.loadedRemoteProjectId = SHARED_DEMO_PROJECT_ID;
+    this.remotePersistenceEnabled = false;
+    this.remotePersistenceDisabledReason = "shared-demo";
+    this.persistedBaseline = null;
+    this.loaded = true;
+    this.dirtySinceLastPersist = false;
+    await this.normalizeCurrentProject({ persistIfChanged: false });
+    this.emit({ scope: "project", projectSwitch: true });
+    return this.current;
+  }
+
+  /** 현재 세션이 공용 데모(읽기 전용)인가 — 토스트/배너/포크 표면의 판정 근거. */
+  isSharedDemoSession(): boolean {
+    return this.remotePersistenceDisabledReason === "shared-demo";
+  }
+
+  /**
    * Welcome/genre pipeline: blank/authored project for a NEW remote row.
    * Keeps remote persistence on when DB is configured, mints a project id, and
    * never reuses the previously loaded project id (so lake village etc. stay intact).
@@ -376,6 +424,10 @@ class ProjectStore {
     const projectId =
       options.projectId?.trim()
       || (configured ? `oprn-${randomUuid().replace(/-/g, "").slice(0, 10)}` : null);
+    // 공용 데모 행은 어떤 발급 경로로도 쓰기 대상이 될 수 없다.
+    if (projectId === SHARED_DEMO_PROJECT_ID) {
+      throw new ProjectRoutingError("target-changed", "공용 데모 행은 덮어쓸 수 없습니다. 다른 프로젝트 ID를 사용하세요.");
+    }
 
     // Full project switch — drop previous event drafts and copied pages; new world starts clean.
     clearEventDraftVault();
@@ -435,6 +487,9 @@ class ProjectStore {
     },
   ): Promise<{ readonly projectId: string }> {
     const promoteShowcase = options.source === "dev-showcase";
+    // 공용 데모 세션도 쇼케이스와 같이 flush 할 자기 원격 원본이 없다 — 읽기 전용
+    // 행에 flush 를 시도하면 "disabled" 로 실패하므로, 소스 플러시를 건너뛰고 바로 사본을 만든다.
+    const sharedDemoSession = this.remotePersistenceDisabledReason === "shared-demo";
     // Accepted metadata reconciliation can replace the root without changing ownership.
     const sourceLineage = this.contentLineage;
     const sourceGeneration = this.mutationGeneration;
@@ -453,12 +508,13 @@ class ProjectStore {
       }
     };
     assertSourceCurrent();
-    if (promoteShowcase) {
-      if (!this.loaded || this.remotePersistenceEnabled || this.remotePersistenceDisabledReason !== "dev-showcase") {
-        throw new NewRemoteProjectTransactionError("configuration", "브라우저 쇼케이스에서만 온라인 사본을 만들 수 있습니다.");
+    if (promoteShowcase || sharedDemoSession) {
+      if (!this.loaded || this.remotePersistenceEnabled
+        || this.remotePersistenceDisabledReason !== (promoteShowcase ? "dev-showcase" : "shared-demo")) {
+        throw new NewRemoteProjectTransactionError("configuration", "브라우저 쇼케이스나 공용 데모에서만 사본 만들기 전환을 시작할 수 있습니다.");
       }
-      // Do not flush a quota-constrained source. Its live edits and previous local
-      // recovery stay untouched; the detached candidate is the explicit new copy.
+      // Do not flush a read-only/quota-constrained source. Its live edits and previous
+      // local recovery stay untouched; the detached candidate is the explicit new copy.
     } else {
       const flushResult = await this.flush();
       if (flushResult.kind !== "saved") {
@@ -482,6 +538,10 @@ class ProjectStore {
     const projectId = promoteShowcase ? dependencies.createProjectId() : options.projectId?.trim() || dependencies.createProjectId();
     if (promoteShowcase && projectId === baseConfig.projectId) {
       throw new NewRemoteProjectTransactionError("configuration", "온라인 사본은 기존 작업과 다른 새 프로젝트 ID가 필요합니다.");
+    }
+    // 공용 데모 원본은 어떤 전환 경로로도 쓰기 대상이 될 수 없다 — 사본은 항상 새 id 다.
+    if (projectId === SHARED_DEMO_PROJECT_ID) {
+      throw new NewRemoteProjectTransactionError("configuration", "공용 데모 원본은 덮어쓸 수 없습니다. 사본은 새 프로젝트 ID로 저장됩니다.");
     }
     const targetConfig: SupabaseProjectConfig = { ...baseConfig, projectId };
     const title = options.title?.trim();
@@ -531,7 +591,10 @@ class ProjectStore {
       );
     }
     assertSourceCurrent();
-    if (!promoteShowcase && (this.dirtySinceLastPersist
+    // dirtySinceLastPersist 는 "원격에 아직 안 간 내 변경" — 읽기 전용 데모 세션에는
+    // 원격 원본이 없어 이 플래그가 계속 켜져 있을 수 있다. 데모 소스의 정합성은
+    // assertSourceCurrent(계보·세대·식별자 동일성)가 이미 보장한다.
+    if (!promoteShowcase && !sharedDemoSession && (this.dirtySinceLastPersist
       || this.contentLineage !== lineageAfterFlush || !sameProjectTarget(baseConfig, supabaseProjectConfig()))) {
       throw new NewRemoteProjectTransactionError(
         "concurrent-edit",
@@ -799,15 +862,17 @@ class ProjectStore {
     try {
       const { project, authority } = await this.readRemoteProject();
       if (project) {
+        const sharedDemo = isSharedDemoProjectId(status.projectId);
         this.contentLineage += 1;
         this.lastPersistenceReceipt = null;
         this.current = preserveEventDraftsOnProject(project, this.current);
         clearCopiedEventPage();
         syncEventDraftVaultFromProject(this.current);
-        this.remotePersistenceEnabled = true;
-        this.remotePersistenceDisabledReason = null;
+        // 재연결도 공용 데모 행을 쓰기 가능하게 만들지 않는다 — 대상이 데모면 읽기 전용 유지.
+        this.remotePersistenceEnabled = !sharedDemo;
+        this.remotePersistenceDisabledReason = sharedDemo ? "shared-demo" : null;
         this.loadedRemoteProjectId = status.projectId;
-        this.writeAuthority = authority;
+        this.writeAuthority = sharedDemo ? null : authority;
         this.persistenceRecovery = { kind: "ready" };
         this.loaded = true;
         if (this.writeAuthority?.mode === "canonical") {
@@ -827,8 +892,10 @@ class ProjectStore {
         this.refreshSupabaseResourceCache();
         return { kind: "connected", source: "remote" };
       }
-      this.remotePersistenceEnabled = true;
-      this.remotePersistenceDisabledReason = null;
+      if (!isSharedDemoProjectId(status.projectId)) {
+        this.remotePersistenceEnabled = true;
+        this.remotePersistenceDisabledReason = null;
+      }
       this.persistedBaseline = null;
       return { kind: "failed", message: "선택한 작업을 찾지 못했습니다. 목록에서 다시 선택하세요." };
     } catch (error) {

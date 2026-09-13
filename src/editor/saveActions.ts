@@ -8,6 +8,12 @@ import { dismissToastsByKey, toast } from "@/util/toast";
 const recoveryToastKey = Symbol("persistence-recovery");
 
 export async function saveProjectNow(): Promise<boolean> {
+  // 공용 데모 세션에서 저장은 "편집용 사본 만들기"로 연결한다 — 원본은 절대 못 바꾼다.
+  if (store.isSharedDemoSession()) {
+    const { presentSharedDemoSaveHint } = await import("@/editor/sharedDemoIntro");
+    presentSharedDemoSaveHint();
+    return false;
+  }
   if (store.isLoaded() && !store.hasUnsavedChanges() && store.getAutoSaveState().kind !== "error"
     && store.getPersistenceRecovery().kind !== "blocked") {
     toast("이미 최신 상태입니다", "ok");
@@ -71,6 +77,11 @@ export async function reloadProjectFromDbNow(options: {
       toast("복구 대상이 바뀌어 불러오기를 취소했습니다.", "error");
       return false;
     }
+  }
+  // 공용 데모에는 "저장본 다시 불러오기" 가 없다 — 원본은 항상 지금 보이는 그대로다.
+  if (store.isSharedDemoSession()) {
+    toast("공용 예제는 항상 원본 그대로입니다. 편집하려면 내 사본을 만드세요.", "info");
+    return false;
   }
   if (!options.force && store.hasUnsavedChanges()) {
     // 호출자가 confirm 한 뒤 force 로 다시 부를 수 있게 cancelled 는 false.
