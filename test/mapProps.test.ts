@@ -75,4 +75,24 @@ describe("map properties panel", () => {
     expect(groups.map((group) => group.getAttribute("label"))).toEqual(["RPG 2000/2003", "Custom Tile Chip"]);
     expect(groups[1]?.textContent).toContain("CUSTOM Modern Exteriors");
   });
+
+  it("맵 배경 그림을 고르면 미리보기 그림을 세운다", () => {
+    // 캔버스가 배경을 안 그리므로(빈 칸 체커가 신호라 덮지 않는다) 확인할 자리는 이 미리보기뿐이다.
+    const container = new FakeElement("div");
+    renderMapProps(container as unknown as HTMLElement);
+    expect(findByTestId(container, "map-bg-preview")).toBeNull();
+
+    const mapId = store.getCurrent().startMapId;
+    const enable = findByTestId(container, "map-bg-enable");
+    if (!enable) throw new Error("Expected background toggle");
+    enable.dispatchEvent(new Event("change"));
+    // 그림이 비어 있으면 미리보기도 없다 — 빈 칸에 깨진 img 를 세우지 않는다.
+    expect(findByTestId(container, "map-bg-preview")).toBeNull();
+
+    store.getCurrent().maps[mapId]!.background = { imageId: "easyrpg-backdrop-sky1", scrollX: 0, scrollY: 0 };
+    const next = new FakeElement("div");
+    renderMapProps(next as unknown as HTMLElement);
+    const preview = findByTestId(next, "map-bg-preview");
+    expect(preview?.attrs.src).toBe("/assets/easyrpg/backdrop/Sky1.png");
+  });
 });

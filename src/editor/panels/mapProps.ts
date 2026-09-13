@@ -3,6 +3,7 @@ import {
   setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapMinimap,
 } from "@/editor/actions";
 import { appendGroupedTilesetOptions } from "@/editor/tilesetSelectOptions";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { openDatabaseResourcePickerDialog, listDatabaseResourceOptions, type DatabaseResourcePickerKind } from "@/editor/panels/databaseResourcePickerDialog";
 import { editorState } from "@/editor/editorState";
 import { DEFAULT_ENEMY_FACTION_ID, factionName, resolveFactionTable } from "@/project/factions";
@@ -295,6 +296,17 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
       }),
       rerender: () => rerender(host, "map-bg-image-set"),
     }));
+
+    // 캔버스는 배경을 그리지 않는다(빈 칸 체커가 의도된 신호라 덮지 않는다 — 편집기 라우팅 문서).
+    // 그래서 고른 그림을 확인할 자리는 여기 하나뿐이다.
+    const previewUrl = resolveAssetResourceUrl(bg.imageId, { project: store.getCurrent() });
+    if (previewUrl) {
+      section.append(el("img", {
+        class: "map-bg-preview",
+        attrs: { src: previewUrl, alt: "맵 배경 미리보기", loading: "lazy" },
+        dataset: { testid: "map-bg-preview" },
+      }));
+    }
 
     const scrollLine = el("div", { class: "map-props-size-row" });
     const sxInput = el("input", {
