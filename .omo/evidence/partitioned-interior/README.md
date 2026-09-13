@@ -25,3 +25,15 @@ Browser QA used Firefox after Chromium failed to load modules with
 Runtime QA passed 10/10 with no runtime errors. Its initial held-direction input
 overshot by one cell; finite movement routes remove that automation race without
 changing the game map, movement engine, or expected destinations.
+
+A later independent read (`latest-remote-check.json`) observed another project
+revision, while both authored maps, all four source objects, the space/place and
+the complete interior tileset still matched exactly. No unrelated project changes
+were overwritten.
+
+`npm run gates -- --json` exited 0: app types/CSS/surface passed and checked-in
+baseline regressions were empty. Vitest reported 23,207 passed / 508 failed
+(existing baseline 557 failures). Compared to the immediately preceding run,
+two assertions newly failed inside already-failing files; unchanged focused
+recheck passed all 21 tests. The modified compiler suites passed all 15 tests
+in both the focused run and the full gate. See `gates*.json`.
