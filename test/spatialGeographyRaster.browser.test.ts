@@ -30,6 +30,11 @@ describe("spatial geography candidate raster", () => {
       await server.listen();
       const origin = server.resolvedUrls?.local[0]?.replace(/\/$/, "");
       if (!origin) throw new Error("vite origin missing");
+      // 브라우저가 붙기 전에 하네스가 import 하는 모듈 그래프를 미리 변환한다. 이 테스트는
+      // 매번 임시 cacheDir 로 콜드 서버를 띄우므로, 앱 그래프 변환이 30초 셀렉터 마감을
+      // 넘겨 게이트가 뒤집혔다(2026-09-13 실측: 단독 36.98s 통과 → 다음 실행 37.83s 실패).
+      // 마감이 아니라 콜드 스타트를 고친다.
+      await server.warmupRequest("/test/support/spatialGeographyRasterHarness.ts");
       browser = await chromium.launch({ headless: true });
       page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
 
