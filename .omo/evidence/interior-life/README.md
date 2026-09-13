@@ -15,3 +15,7 @@ The reviewed interiors had varied outer walls but sparse, unrelated furnishings.
 - Comparison gallery: `output/interior-life/index.html`, all 12 before/after designs. `scripts/qa/interior-life-gallery.mjs` produces it plus the representative native render sheet (`samples.png`). Toggle was exercised in Firefox.
 
 This is authored project data plus reproducible publication/QA scripts. No `src/`, `test/`, CSS, runtime rules or schemas changed in this pass.
+
+## Full repository gate
+
+`npm run gates` completed: app typecheck 0 errors; CSS passed; all 10 surface axes passed. Vitest remains red at 23,172 passed / 565 failed across 173 files. The old baseline flags eight files. Their 33 failing cases and **complete diagnostic messages** exactly match the prior final-code run at `858f254e5`; `src/`, `test/`, package files and Vitest config are unchanged since that revision. No new failing cases were found in those files. See `gate-comparison.json`. This is not a claim that the entire repository suite passes.
