@@ -6,6 +6,11 @@ import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 
+function clone<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T;
+}
+
+
 function seed(): Project {
   const ctx = { project: createBlankProject() };
   for (const [id, name] of [["map_east", "동쪽"], ["map_west", "서쪽"]] as const) {
@@ -15,9 +20,6 @@ function seed(): Project {
   return ctx.project;
 }
 
-function clone<T>(value: T): T {
-  return JSON.parse(JSON.stringify(value)) as T;
-}
 
 describe("piAgent mapBundle", () => {
   it("묶음은 맵 + mapTree 아래 파생 맵이다", () => {
@@ -97,6 +99,46 @@ describe("piAgent mapBundle", () => {
     expect(merged.spills).toEqual([]);
     expect(merged.project.maps.map_east!.name).toBe("동쪽 (A)");
     expect(merged.project.maps.map_west!.name).toBe("서쪽 (B)");
+  });
+
+  // 실측(2026-09-14): 묶음이 맵만 옮기고 **그 맵이 만든 스위치 정의를 버리면**, 병합본은
+  // 자기 이벤트가 가리키는 스위치가 없는 프로젝트가 된다. 커밋 게이트가 serialize 왕복에서
+  // 그걸 잡아 `/pi` 는 "적용 실패(commit-rejected): 직렬화 왕복 실패: setSwitch: switchId가
+  // 존재하지 않습니다: …" 로 **에이전트가 한 일 전부를 거부**했다.
+  it("묶음이 만든 스위치 정의는 함께 옮겨 커밋 게이트를 통과한다", () => {
+    const base = seed();
+    const ctx = { project: clone(base) };
+    const blocked = runTool(ctx, "place_battle_blocker", {
+      mapId: "map_east",
+      x: 4,
+      y: 4,
+      troopId: ctx.project.database.troops[0]!.id,
+    });
+    expect(blocked.ok).toBe(true);
+    const { eventId, clearSwitchId } = (blocked.data ?? {}) as { eventId: string; clearSwitchId: string };
+    expect(ctx.project.switches.some((entry) => entry.id === clearSwitchId)).toBe(true);
+
+    const merged = mergeMapBundles(base, [{ mapIds: ["map_east"], project: ctx.project }]);
+
+    expect(merged.project.maps.map_east!.events.some((event) => event.id === eventId)).toBe(true);
+    expect(merged.project.switches.some((entry) => entry.id === clearSwitchId)).toBe(true);
+    expect(merged.spills).toEqual([]);
+    expect(commitChangeset(merged.project, base).ok).toBe(true);
+  });
+
+  // 경계 고정: 옮기는 것은 «만든 것» 뿐이다. 기존 정의를 고치는 것은 묶음 밖 편집이라
+  // 지금처럼 버리고 spill 로 보고해야 한다 — 아니면 범위 계약이 스위치 탭까지 새어 나간다.
+  it("묶음 밖에서 기존 스위치를 고친 것은 옮기지 않고 spill 로 보고한다", () => {
+    const base = seed();
+    const seeded = base.switches[0] ?? { id: "sw_scope_probe", name: "범위 탐침" };
+    if (base.switches.length === 0) base.switches.push(seeded);
+    const a = clone(base);
+    a.switches.find((entry) => entry.id === seeded.id)!.name = "남의 스위치";
+
+    const merged = mergeMapBundles(base, [{ mapIds: ["map_east"], project: a }]);
+
+    expect(merged.project.switches.find((entry) => entry.id === seeded.id)!.name).toBe(seeded.name);
+    expect(merged.spills).toEqual([{ mapIds: ["map_east"], keys: ["switches"] }]);
   });
 
   it("NDJSON 디코더는 조각 경계와 깨진 줄을 견딘다", () => {
