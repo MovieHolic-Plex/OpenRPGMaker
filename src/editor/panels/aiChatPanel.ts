@@ -144,6 +144,7 @@ import { createProposalHost, setAssistantMessageBadge } from "./aiProposalCard";
 import { changeChipsWithAreas, renderChangePreviewCard, type ChangePreviewInput } from "./aiChangePreview";
 import { createStudioShell, type StudioShell } from "./aiStudioShell";
 import { changedAreaLabels } from "@/project/changeAreas";
+import { buildChangeLedger } from "@/project/changeLedger";
 import { proposalHumanSummaryLine } from "./aiProposalSummary";
 import { createAiTurnRunner } from "./aiTurnRunner";
 import { openLocalDiagnosticsDialog } from "./localDiagnosticsDialog";
@@ -705,6 +706,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       diffs.length > 0 ? combineDiffs(diffs) : undefined,
       changedAreaLabels(input.before, input.after),
     );
+    // 항목별 before → after 명세 — 큰 위임의 검토는 칩이 아니라 이걸로 한다.
+    const ledger = buildChangeLedger(input.before, input.after);
     const card = renderChangePreviewCard({
       before: input.before,
       after: input.after,
@@ -712,6 +715,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       title: input.title,
       ...(input.detail ? { detail: input.detail } : {}),
       chips,
+      ledger,
       onUndo: () => {
         // 성향 신호(가장 강한 부정): 채팅 제안은 자동 적용되므로 수락 버튼이 없다 — 되돌리기가
         // "이건 원하는 게 아니었다"는 유일한 명시적 반응이다. 이 카드는 AI 변경 1건에 1:1로 붙어
@@ -727,6 +731,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       title: input.title,
       ...(input.detail ? { detail: input.detail } : {}),
       chips,
+      ledger,
       onUndo: () => {
         noteAiChangeUndone({ toolNames: input.calls.map((call) => call.name) });
         undoMapEdit();
@@ -752,6 +757,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       title: input.title,
       detail: input.detail,
       chips: [...input.chips],
+      ...(input.ledger ? { ledger: input.ledger } : {}),
       onUndo: () => {
         noteAiChangeUndone({ toolNames: [...input.toolNames] });
         undoMapEdit();

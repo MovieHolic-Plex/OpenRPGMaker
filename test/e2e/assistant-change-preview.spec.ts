@@ -135,23 +135,28 @@ async function mountRealChangeCard(page: Page): Promise<{ mounted: boolean; regi
 async function mountNonMapChangeCard(page: Page): Promise<{ mounted: boolean; reason: string }> {
   return await page.evaluate(async () => {
     const load = async <T>(url: string): Promise<T> => (await import(/* @vite-ignore */ url)) as T;
-    const [{ store }, preview, areas] = await Promise.all([
+    const [{ store }, preview, areas, ledger] = await Promise.all([
       load<typeof import("@/project/store")>("/src/project/store.ts"),
       load<typeof import("@/editor/panels/aiChangePreview")>("/src/editor/panels/aiChangePreview.ts"),
       load<typeof import("@/project/changeAreas")>("/src/project/changeAreas.ts"),
+      load<typeof import("@/project/changeLedger")>("/src/project/changeLedger.ts"),
     ]);
     const before = store.getCurrent();
     const mapId = before.startMapId ?? Object.keys(before.maps)[0];
     if (!mapId) return { mounted: false, reason: "no map" };
+    // 그림에 안 보이는 변경 여럿 — 제목·스위치·변수. 명세가 이것들을 전부 이름으로 남겨야 한다.
     const after = structuredClone(before);
     after.meta = { ...after.meta, title: `${after.meta?.title ?? "게임"} (개정)` };
+    after.switches = [...after.switches, { id: "switch_bell", name: "종을 되찾았다" }];
+    after.variables = [...after.variables, { id: "var_bells", name: "종 개수" }];
 
     const card = preview.renderChangePreviewCard({
       before,
       after,
       mapId,
-      title: "게임 제목을 바꿨습니다",
+      title: "게임 제목과 진행 변수를 바꿨습니다",
       chips: preview.changeChipsWithAreas(undefined, areas.changedAreaLabels(before, after)),
+      ledger: ledger.buildChangeLedger(before, after),
     });
     const log = [...document.querySelectorAll(".ai-chat-log")].find((node) => node.getClientRects().length > 0)
       ?? document.querySelector(".ai-chat-log");
@@ -276,6 +281,23 @@ test.describe("조수 변경 카드 + 넓은 비교 뷰어", () => {
     await expect(page.getByTestId("ai-change-word-diff")).toBeVisible();
     // 무엇이 바뀌었는지는 이름이 나른다 — 카운터 목록에 축이 없는 영역도 여기 남는다.
     await expect(card.locator(".ai-change-chip").first()).toHaveText("프로젝트 정보");
+
+    // 긴 명세 — 항목별 before → after 가 카드 안에 실제로 그려진다(접힘 아님).
+    const ledger = page.getByTestId("ai-change-ledger");
+    await expect(ledger).toBeVisible();
+    const rows = ledger.locator(".ai-change-ledger-row");
+    const rowCount = await rows.count();
+    expect(rowCount).toBeGreaterThanOrEqual(3);
+    await expect(page.getByTestId("ai-change-ledger-count")).toHaveText(`${rowCount}건`);
+    // 영역 이름·항목 이름·값 변화가 화면에 있다.
+    await expect(ledger).toContainText("스위치");
+    await expect(ledger).toContainText("종을 되찾았다");
+    await expect(ledger).toContainText("종 개수");
+    // 접기는 목록만 접는다 — 구획은 남는다.
+    await page.getByTestId("ai-change-ledger-toggle").click();
+    await expect(ledger).toHaveAttribute("data-collapsed", "true");
+    await page.getByTestId("ai-change-ledger-toggle").click();
+    await expect(rows.first()).toBeVisible();
 
     await page.screenshot({ path: path.join(EVIDENCE, "change-card-non-map-1920.png"), animations: "disabled" });
   });

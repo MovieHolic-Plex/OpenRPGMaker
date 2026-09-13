@@ -8,6 +8,7 @@ import {
   type ChangeShotRenderer,
 } from "@/editor/panels/aiChangePreview";
 import type { ChangeSummary } from "@/editor/tools/types";
+import { buildChangeLedger } from "@/project/changeLedger";
 import { createBlankProject } from "@/project/defaults";
 import type { GameEvent, Project } from "@/project/types";
 import { documentListenerCount, FakeElement, findByTestId, installFakeDom } from "./fakeDom";
@@ -390,5 +391,77 @@ describe("카드가 말하는 상태", () => {
     expect(root.querySelector(".ai-change-badge")?.textContent).toBe("적용 전");
     expect(root.dataset.state).toBe("proposed");
     expect(findByTestId(root, "ai-change-undo")).toBeNull();
+  });
+});
+
+describe("변경 내역(긴 명세)", () => {
+  /** 명세 픽스처 — 커맨드·데이터베이스처럼 그림에 안 보이는 변경들. */
+  function ledgerPair(): { before: Project; after: Project; mapId: string } {
+    const before = createBlankProject();
+    const mapId = firstMapId(before);
+    const after = structuredClone(before) as Project;
+    after.meta = { ...after.meta, title: "새 게임" };
+    after.switches = [...after.switches, { id: "switch_quest", name: "퀘스트 시작" } as never];
+    return { before, after, mapId };
+  }
+
+  it("항목별 before → after 를 카드 안에 그린다 — 칩 한 줄로는 위임을 검토할 수 없다", () => {
+    const { before, after, mapId } = ledgerPair();
+    const root = card(renderChangePreviewCard({
+      before,
+      after,
+      mapId,
+      title: "설정을 바꿨습니다",
+      ledger: buildChangeLedger(before, after),
+      renderShot: stubRenderer(),
+    }));
+
+    const section = requireTestId(root, "ai-change-ledger");
+    expect(requireTestId(root, "ai-change-ledger-count").textContent).toBe("2건");
+    const rows = section.querySelectorAll(".ai-change-ledger-row");
+    expect(rows.map((row) => row.dataset.area)).toEqual(["프로젝트 정보", "스위치"]);
+    expect(section.querySelectorAll(".ai-change-ledger-detail li").length).toBeGreaterThan(0);
+  });
+
+  it("기본은 펼침이고 토글이 목록만 접는다 — 원래 불평이 «안 보인다» 였다", () => {
+    const { before, after, mapId } = ledgerPair();
+    const root = card(renderChangePreviewCard({
+      before,
+      after,
+      mapId,
+      title: "설정을 바꿨습니다",
+      ledger: buildChangeLedger(before, after),
+      renderShot: stubRenderer(),
+    }));
+
+    const section = requireTestId(root, "ai-change-ledger");
+    const toggle = requireTestId(root, "ai-change-ledger-toggle");
+    expect(section.dataset.collapsed).toBeUndefined();
+    expect(toggle.textContent).toBe("접기");
+
+    toggle.click();
+    expect(section.dataset.collapsed).toBe("true");
+    expect(toggle.textContent).toBe("펼치기");
+    expect(toggle.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("명세가 없으면 구획을 만들지 않는다", () => {
+    const { before, after, mapId } = tilePair();
+    const root = card(renderChangePreviewCard({ before, after, mapId, title: "변경", renderShot: stubRenderer() }));
+    expect(findByTestId(root, "ai-change-ledger")).toBeNull();
+  });
+
+  it("넓게 보기에도 명세가 실린다 — 잘린 항목은 여기서 읽는다", () => {
+    const { before, after, mapId } = ledgerPair();
+    const viewer = openWideChangeViewer({
+      before,
+      after,
+      mapId,
+      title: "설정을 바꿨습니다",
+      ledger: buildChangeLedger(before, after),
+      renderShot: stubRenderer(),
+    });
+    expect(requireTestId(card(viewer.root), "ai-change-ledger")).not.toBeNull();
+    viewer.close();
   });
 });
