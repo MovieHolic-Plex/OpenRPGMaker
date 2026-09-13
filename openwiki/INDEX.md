@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **65쪽 / 2532KB / 약 710,115 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **65쪽 / 2535KB / 약 710,761 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -20,7 +20,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-database.md` | 277KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 1517 | ~80,015 |
 | `openwiki/editor-event-authoring.md` | 135KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 740 | ~38,710 |
 | `openwiki/editor-event-commands.md` | 57KB | 32KB | 202 | ~15,410 |
-| `openwiki/editor-interior-room-harness.md` | 50KB | 6KB | 264 | ~14,685 |
+| `openwiki/editor-interior-room-harness.md` | 53KB | 6KB | 273 | ~15,331 |
 | `openwiki/editor-pre-edit-routing.md` | 107KB | 59KB ⚠상한 초과 — 절을 더 쪼개라 | 591 | ~30,554 |
 | `openwiki/editor-workflows-misc.md` | 65KB | 29KB | 456 | ~17,604 |
 | `openwiki/runtime-battle.md` | 134KB | 31KB | 540 | ~38,257 |
@@ -492,7 +492,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L59` Validation
 - `L61` Two new-project surfaces, one choice model (2026-09-11)
 
-### `openwiki/editor-interior-room-harness.md` — 50KB · 264줄 · ~14,685 토큰 · 통째읽기 잘림
+### `openwiki/editor-interior-room-harness.md` — 53KB · 273줄 · ~15,331 토큰 · 통째읽기 잘림
 
 - `L5` Interior authoring/load consistency (2026-09-07)
 - `L46` Closed expandable long tables (2026-09-07)
@@ -513,6 +513,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L238` 여관 외 시설의 공간 구성 (2026-09-05)
 - `L248` PR618 통합: 큰 탁자와 기존 시설 구성 (2026-09-06)
 - `L256` 비직사각 실내 정본 재설계 (2026-09-13)
+- `L265` 생활 구역 조합으로 실내 저작 (2026-09-14)
 
 ### `openwiki/editor-observability.md` — 38KB · 471줄 · ~10,680 토큰 · 깨진 줄 1
 

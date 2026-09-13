@@ -1,0 +1,68 @@
+{
+  "projectId": "rpg-zzu-house-template-gallery",
+  "interiors": 101,
+  "redesigned": 12,
+  "refreshed": [
+    {
+      "id": "spatial:child:20:house-example:inn-3f7:floor-1:0",
+      "width": 19,
+      "height": 18,
+      "rooms": 3,
+      "reachableFloor": 104
+    },
+    {
+      "id": "spatial:child:20:house-example:inn-3f7:floor-2:0",
+      "width": 18,
+      "height": 18,
+      "rooms": 2,
+      "reachableFloor": 78
+    },
+    {
+      "id": "spatial:child:20:house-example:inn-3f7:floor-3:0",
+      "width": 19,
+      "height": 17,
+      "rooms": 2,
+      "reachableFloor": 78
+    },
+    {
+      "id": "spatial:child:25:house-example:workshop-4f7:floor-1:0",
+      "width": 19,
+      "height": 18,
+      "rooms": 3,
+      "reachableFloor": 104
+    },
+    {
+      "id": "spatial:child:25:house-example:workshop-4f7:floor-2:0",
+      "width": 18,
+      "height": 18,
+      "rooms": 2,
+      "reachableFloor": 78
+    },
+    {
+      "id": "spatial:child:25:house-example:workshop-4f7:floor-3:0",
+      "width": 18,
+      "height": 18,
+      "rooms": 2,
+      "reachableFloor": 78
+    },
+    {
+      "id": "spatial:child:25:house-example:workshop-4f7:floor-4:0",
+      "width": 19,
+      "height": 17,
+      "rooms": 2,
+      "reachableFloor": 78
+    },
+    {
+      "id": "spatial:child:32:compact-interior:example:cottage7:floor-1:0",
+      "width": 19,
+      "height": 18,
+      "rooms": 3,
+      "reachableFloor": 105
+    }
+  ],
+  "unrelatedMapsPreserved": 17,
+  "startPreserved": true,
+  "saved": true,
+  "reloaded": true,
+  "canonicalSHA256": "02a1df28aade1526f484bdd720a0ea8e65543fe7206d00b305c90f03e9c1e95b"
+}

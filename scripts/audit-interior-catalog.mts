@@ -18,7 +18,7 @@ const renders = [];
 for (const [index, space] of Object.values(
   project.spatialAuthoring!.library.spaces,
 )
-  .filter((s) => s.environment === "interior")
+  .filter((s) => s.environment === "interior" && (process.argv[5] !== "life" || s.tags.includes("생활 구역 구성 20260914")))
   .entries()) {
   const rootId = spatialId(`interior-audit:${index}`);
   const row: any = {
