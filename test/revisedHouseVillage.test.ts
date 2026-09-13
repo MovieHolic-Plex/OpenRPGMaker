@@ -53,6 +53,13 @@ it("combines all three house catalogs and counts a three- and four-storey landma
   for (const zone of ["house", "commons", "market", "shore", "road"]) expect(decorations.some(r => r.tags?.includes(`zone:${zone}`))).toBe(true);
   expect(decorations.every(r => reachable.has(`${r.front!.x},${r.front!.y}`))).toBe(true);
   expect(map.villageDesignSource?.resolvedSettings.spaceDecorations).toBeDefined();
+  // The AI tool must use the same overlapping forest builder as persisted regions.
+  const overlaps = map.lowerTiles.filter((tile, index) => [290, 292, 293].includes(tile)
+    && [260, 262, 263].includes(map.upperTiles[index]!)).length;
+  expect(overlaps).toBeGreaterThan(100);
+  expect(map.villageDesignSource?.resolvedSettings.vegetation).toMatchObject({
+    version: 2, trees: { overlapCells: overlaps },
+  });
 }, 90_000);
 
 it("keeps four settlement roof contours connected after removing log walls and map decoration", () => {

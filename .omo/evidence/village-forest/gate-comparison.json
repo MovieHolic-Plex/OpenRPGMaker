@@ -1,0 +1,44 @@
+{
+  "baseline": {
+    "failed": 522,
+    "passed": 23131
+  },
+  "current": {
+    "failed": 522,
+    "passed": 23136
+  },
+  "newlyFailed": 4,
+  "resolved": 4,
+  "changedAreaFailures": [],
+  "newFiles": [
+    "test/aiRunEndProof.test.ts",
+    "test/autosaveStatus.test.ts",
+    "test/spatialActivationSafety.test.ts"
+  ],
+  "newFailures": [
+    {
+      "key": "test/aiRunEndProof.test.ts :: AssistantSession accepted-revision proof retries failed proof for the same plan/revision, deduplicates success, and reproves a changed revision",
+      "duration": 15340.723344999999,
+      "timeout": true,
+      "excerpt": "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk"
+    },
+    {
+      "key": "test/autosaveStatus.test.ts :: autosave status retains transport until native manual history finishes during teardown",
+      "duration": 6799.546168,
+      "timeout": true,
+      "excerpt": "Error: Autosave fixture completion deadline\n    at Timeout.<anonymous> (/home/main/.codex/worktrees/2ece/rpg-zzu/test/autosaveStatus.test.ts:275:39)\n    at listOnTimeout (node:internal/timers:605:17)\n    at processTimers (node:internal/timers:541:7)\nError: Autosave fixture completion deadline\n    at Timeout.<anonymous> (/home/main/.codex/worktrees/"
+    },
+    {
+      "key": "test/autosaveStatus.test.ts :: autosave status notifies pending, saving, and saved around the 4 second autosave debounce",
+      "duration": 2546.611430000001,
+      "timeout": true,
+      "excerpt": "Error: Autosave fixture completion deadline\n    at Timeout.<anonymous> (/home/main/.codex/worktrees/2ece/rpg-zzu/test/autosaveStatus.test.ts:275:39)\n    at listOnTimeout (node:internal/timers:605:17)\n    at processTimers (node:internal/timers:541:7)"
+    },
+    {
+      "key": "test/spatialActivationSafety.test.ts :: scoped store lifecycle blocks unsafe follow-up publication when activation encounters dirty-before",
+      "duration": 9852.778932000001,
+      "timeout": false,
+      "excerpt": "TypeError: fetch failed\n    at node:internal/deps/undici/undici:15845:13\n    at fetchJsonArray (/home/main/.codex/worktrees/2ece/rpg-zzu/src/project/supabaseProjectSync.ts:533:20)\n    at loadMapRowsFromSupabase (/home/main/.codex/worktrees/2ece/rpg-zzu/src/project/supabaseProjectSync.ts:1282:10)\n    at Module.loadProjectSnapshotFromSupabase (/home/"
+    }
+  ]
+}

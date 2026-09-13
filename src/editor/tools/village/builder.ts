@@ -552,6 +552,7 @@ export function buildVillageDomain(
         yardStyle: intent.yardStyle, plazaStyle: intent.plazaStyle, plazaLayout: intent.plazaLayout,
         interior: interiorEnabled, npcCount: requestedNpcCount, requirements: structuredClone(requirements),
         worldGen: structuredClone(worldGenRules),
+        ...(compact ? { vegetation: { version: 2, trees: compactTrees, ground: compactGround } } : {}),
         ...(spaceDecorations.length ? { spaceDecorations } : {}),
         ...(objectCatalog ? { composition: merged.composition, houseClustering: merged.houseClustering, multiStoreyCount: merged.multiStoreyCount,
           exteriors: houses.map(h => ({ objectId: h.objectExterior!.objectId, revision: h.objectExterior!.revision,

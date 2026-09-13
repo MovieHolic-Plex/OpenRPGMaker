@@ -19,10 +19,11 @@ type ExteriorRegion = MapLayoutRegion & {
 };
 export interface CompactTreeCounts {
   broadleafTrees: number; conifers: number; footprintCells: number; eligibleCells: number;
-  edgeCells: number; innerCells: number; groves: number;
+  edgeCells: number; innerCells: number; groves: number; overlapCells: number;
 }
 export interface CompactGroundCounts {
   tallGrassCells: number; tallGrassPatches: number; flowerCells: number; flowerClusters: number;
+  edgeGrassCells: number; edgeEligibleCells: number; innerGrassCells: number; innerEligibleCells: number;
 }
 
 /** House/road construction must finish and register ownership first. This stage
@@ -38,17 +39,29 @@ export function plantCompactVillageTrees(project: Project, map: GameMap, area: R
     && map.lowerTiles[index] === TILE.GRASS && map.upperTiles[index] === TILE.EMPTY);
   const rng = mulberry32(seed ^ 0x76b421);
   const field = groveField(map, area, eligible, rng);
-  const planted = new Set<number>();
+  const planted = new Set<number>(), crowns = new Set<number>(), trunks = new Set<number>();
   const result: CompactTreeCounts = { broadleafTrees: 0, conifers: 0, footprintCells: 0,
-    eligibleCells: eligible.length, edgeCells: 0, innerCells: 0, groves: 0 };
+    eligibleCells: eligible.length, edgeCells: 0, innerCells: 0, groves: 0, overlapCells: 0 };
   const origins = shuffle([...field], rng);
   const stamp = (origin: number, width: 1 | 2): boolean => {
     const x = origin % map.width;
     const y = Math.floor(origin / map.width);
     if (!inside(map, area, x + width - 1, y + 1)) return false;
     const footprint = Array.from({ length: width * 2 }, (_, offset) => origin + offset % width + Math.floor(offset / width) * map.width);
-    if (footprint.some(index => !field.has(index) || planted.has(index))) return false;
+    if (footprint.some(index => !field.has(index))) return false;
+    // Distinct layers may share a cell: a foreground crown can cover a rear
+    // trunk. Never overwrite another crown or another trunk, so every atom
+    // retains its own required companions.
     for (let dx = 0; dx < width; dx += 1) {
+      if (crowns.has(origin + dx) || trunks.has(origin + map.width + dx)) return false;
+      // Break long vertical curtains while still permitting staggered clusters.
+      let run = 1;
+      for (let yy = y - 1; yy >= area.y && crowns.has(yy * map.width + x + dx); yy--) run++;
+      for (let yy = y + 1; yy < area.y + area.h && crowns.has(yy * map.width + x + dx); yy++) run++;
+      if (run > 3) return false;
+    }
+    for (let dx = 0; dx < width; dx += 1) {
+      crowns.add(origin + dx); trunks.add(origin + map.width + dx);
       map.upperTiles[origin + dx] = width === 2 ? 262 + dx : 260;
       map.lowerTiles[origin + map.width + dx] = width === 2 ? 292 + dx : 290;
     }
@@ -56,13 +69,14 @@ export function plantCompactVillageTrees(project: Project, map: GameMap, area: R
     return true;
   };
   // The larger crowns establish the mass first; conifers fill its narrow pockets.
-  const broadleafAreaTarget = field.size * 0.57;
+  const broadleafAreaTarget = field.size * 0.72;
   for (const origin of origins) {
     if (result.broadleafTrees * 4 >= broadleafAreaTarget) break;
     if (stamp(origin, 2)) result.broadleafTrees += 1;
   }
   for (const origin of shuffle(origins, rng)) if (stamp(origin, 1)) result.conifers += 1;
   result.footprintCells = planted.size;
+  result.overlapCells = [...crowns].filter(index => trunks.has(index)).length;
   for (const index of planted) {
     if (edgeDistance(map, area, index) < 8) result.edgeCells += 1;
     else result.innerCells += 1;
@@ -95,15 +109,25 @@ export function dressCompactVillageGround(project: Project, map: GameMap, area: 
     // Keep previously authored grass boundaries exact, including owned neighbors.
     && !neighbors(map, index, true).some(other => members.has(map.lowerTiles[other]!)));
   const rng = mulberry32(seed ^ 0x43935);
-  const field = groveField(map, area, eligible, rng);
-  const patches = components(map, field).filter(patch => patch.length >= 9);
+  const field = grassFringeField(map, area, eligible, rng);
+  // Dense trees leave narrow connected strips between trunks. Requiring nine
+  // empty cells discarded these strips and kept the outer forest pale.
+  const patches = components(map, field).filter(patch => patch.length >= 3 || patch.some(index => edgeDistance(map, area, index) < 8));
   const painted = new Set(patches.flat());
   const points = [...painted].map(index => ({ x: index % map.width, y: Math.floor(index / map.width) }));
   const body = group.variantMap["255"];
   if (body === undefined || !members.has(body)) throw new ToolError("키큰 풀 몸통 변형이 없습니다.", { code: "compact-vegetation-grass-group", mapId: map.id });
   for (const index of painted) map.lowerTiles[index] = body;
   shapeAutotileGroupAround(map, group, points, (x, y) => painted.has(y * map.width + x));
-  const result: CompactGroundCounts = { tallGrassCells: painted.size, tallGrassPatches: patches.length, flowerCells: 0, flowerClusters: 0 };
+  const result: CompactGroundCounts = { tallGrassCells: painted.size, tallGrassPatches: patches.length, flowerCells: 0, flowerClusters: 0,
+    edgeGrassCells: 0, edgeEligibleCells: 0, innerGrassCells: 0, innerEligibleCells: 0 };
+  for (const index of eligible) {
+    if (edgeDistance(map, area, index) < 8) {
+      result.edgeEligibleCells++; if (painted.has(index)) result.edgeGrassCells++;
+    } else if (edgeDistance(map, area, index) >= 16) {
+      result.innerEligibleCells++; if (painted.has(index)) result.innerGrassCells++;
+    }
+  }
   const flowerCenters: number[] = [];
   for (const center of shuffle([...painted], rng)) {
     if (flowerCenters.length >= Math.ceil(painted.size / 65)) break;
@@ -180,6 +204,22 @@ function protection(project: Project, map: GameMap, area: Rect, water: ReadonlyS
     }
   }
   return blocked;
+}
+
+/** A near-continuous outer fringe fading into small inner patches. Smooth bands
+ * avoid salt-and-pepper noise and do not reuse the narrow tree footprint mask. */
+function grassFringeField(map: GameMap, area: Rect, eligible: readonly number[], rng: Rng): Set<number> {
+  const field = new Set<number>();
+  const phase = rng() * Math.PI * 2;
+  for (const index of eligible) {
+    const x = index % map.width - area.x, y = Math.floor(index / map.width) - area.y;
+    const depth = 20 + 2 * Math.sin(x * 0.22 + phase) + 2 * Math.cos(y * 0.19 - phase);
+    const d = edgeDistance(map, area, index);
+    // Sparse connected pockets remain in town, with most of its ground open.
+    const pocket = Math.sin(x * 0.29 + phase) + Math.cos(y * 0.31 - phase);
+    if (d < depth || (d >= 24 && pocket > 1.62)) field.add(index);
+  }
+  return field;
 }
 
 function groveField(map: GameMap, area: Rect, eligible: readonly number[], rng: Rng): Set<number> {

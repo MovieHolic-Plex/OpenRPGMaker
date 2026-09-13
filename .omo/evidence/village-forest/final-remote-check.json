@@ -1,0 +1,18 @@
+{
+  "projectId": "rpg-zzu-house-template-gallery",
+  "mapId": "spatial-geography:30:small-village:example:20260913",
+  "canonicalSHA256": "9d639530d673b260d8e8ac6fda42925b6543845a53dbf8ed35b0743d1268af82",
+  "canonicalRevisionMatches": true,
+  "authoredContentMatches": true,
+  "compactHouseLibraryCount": 12,
+  "libraryHouseCount": 30,
+  "maps": 20,
+  "houses": 26,
+  "doors": 26,
+  "marketDisplays": 4,
+  "lakesideAccess": 1,
+  "decorationSpaces": 36,
+  "exactDestinationsReachable": 67,
+  "rasterSHA256": "2d3e6299641b8ec61c58dc85f56b94c98b86bfd3f82495526dadde8c40b22ac1",
+  "verifiedAt": "2026-09-13T06:20:27.943Z"
+}
