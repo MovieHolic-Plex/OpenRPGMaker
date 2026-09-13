@@ -506,11 +506,7 @@ export function createHouseInteriorMap(options: {
       floorEntry = { x: stairDown.x, y: stairDown.y + 1 };
     }
     const authoredAscent = listConceptConnections(lowerMap).length > 0;
-    // 하강 착지는 올라가는 계단(밟기 전이) 칸이 아니라 그 옆 바닥이어야 한다 —
-    // 계단 칸에 내리면 playerTouch 가 즉시 재발동해 위층으로 튕긴다(transfer-retrigger).
-    const lowerLanding = authoredAscent
-      ? { x: stairCell.x, y: stairCell.y + 1 }
-      : stairFootCell(lowerMap, stairCell);
+    const lowerLanding = authoredAscent ? { x: stairCell.x, y: stairCell.y + 1 } : stairCell;
 
     if (authoredAscent) {
       // Keep the authored staircase picture and connect every transfer chip.
@@ -533,12 +529,6 @@ export function createHouseInteriorMap(options: {
       convertEntranceToDescent(floorMap, { mapId: lowerMapId, ...lowerLanding });
     } else {
       stampStairsDown(floorMap, stairDown);
-      // 위층에는 바깥 문이 없다 — 파이프라인이 매 층 두는 정문 이벤트는 return 대상 없이
-      // 자기 맵 (door.x, door.y+1) 을 가리킨다. 개념 층에선 그 칸이 남벽이라
-      // transfer-impassable 로 커밋이 거부된다. 하강은 아래 계단 전이가 소유한다.
-      floorMap.events = (floorMap.events ?? []).filter(
-        (event) => event.id !== `ev_entrance_${floorMap.id}`,
-      );
     }
     placeStairTransfer(floorMap, {
       id: exitId,
@@ -550,10 +540,7 @@ export function createHouseInteriorMap(options: {
       destY: lowerLanding.y,
     });
 
-    if (!authoredAscent) {
-      clearPassableLanding(lowerMap, stairCell.x, stairCell.y, { keepUpper: true });
-      clearPassableLanding(lowerMap, lowerLanding.x, lowerLanding.y);
-    }
+    if (!authoredAscent) clearPassableLanding(lowerMap, stairCell.x, stairCell.y, { keepUpper: true });
     if (!authoredDescent) {
       clearPassableLanding(floorMap, stairDown.x, stairDown.y, { keepUpper: true });
       clearPassableLanding(floorMap, floorEntry.x, floorEntry.y);
@@ -1081,23 +1068,6 @@ function pickStairCell(
     return c;
   }
   return { x: Math.min(map.width - 2, Math.max(1, entry.x)), y: Math.max(1, entry.y - 1) };
-}
-
-/**
- * 밟기 계단 칸 옆의 하강 착지 — 계단 칸 위에 내리면 playerTouch 전이가 즉시 재발동한다.
- * 남쪽(y+1)을 우선한다 — 계단은 보통 복도 북단이라 플레이어는 남쪽에서 다가선다.
- */
-function stairFootCell(map: GameMap, stair: { readonly x: number; readonly y: number }): { x: number; y: number } {
-  for (const [dx, dy] of [[0, 1], [0, -1], [1, 0], [-1, 0]] as const) {
-    const x = stair.x + dx;
-    const y = stair.y + dy;
-    if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
-    if (!PASSABLE_LOWER_TILES.has(map.lowerTiles[y * map.width + x] ?? -1)) continue;
-    if ((map.upperTiles[y * map.width + x] ?? -1) >= 0) continue;
-    if ((map.events ?? []).some((event) => event.x === x && event.y === y)) continue;
-    return { x, y };
-  }
-  return { x: stair.x, y: stair.y + 1 };
 }
 
 /** 계단 셀 정본(2026-07-20): 복도가 있으면 그 층 문(착지)에서 먼 쪽 복도 끝 중앙. */

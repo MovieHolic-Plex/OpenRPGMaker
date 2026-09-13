@@ -177,6 +177,36 @@ read-only actual-map evidence: `scripts/verify-village-tree-completion.mts`.
   `.omo/evidence/house-protection/p2/exercise.mts` runs real `author_house` → reload
   → `author_village` → reload → fill/forest → rejected erase on 50x50 and 100x100.
 
+## 참조 그림 같은 마을을 한 번에 (2026-09-12)
+
+"이런 식의 마을"(격자 골목 + 집 20여 채 + 나무 + 물)은 **`author_village` 한 번**으로 나온다.
+사람은 설계서에서 값만 정하고 시공은 코드가 한다 — 집 배치, 문·지붕·울타리, 길 연결,
+나무·물, (선택) 실내·주민까지 순서대로 돌고 스스로 감사한다.
+
+| 보고 싶은 것 | 넘기는 값 |
+|---|---|
+| 집 수 | `houseCount`(1~32) · `countPolicy:"exact"` 면 미달 시 실패로 알린다 |
+| 길 모양 | `settlementLayout` — `street-grid`(격자 골목) · `plaza-ring`(광장 중심) · `clusters`(무리) |
+| 길 재질·폭 | 설계서 `pathStyle` · `roadWidth`(2~3) |
+| 나무 밀도 | `forestDensity` — `sparse` · `normal` · `dense` · `impassable` |
+| 분위기 | `theme` 또는 `presetId` — 낱말이 원형 6갈래로 접힌다 |
+| 집 생김새 | `housePlans[].templateId`(34종) · `kitId`(5종) |
+| 물 | 테마 낱말("호수"·"항구"·"강가") — 물이 필수로 잡히면 **물 칸 수를 세어** 미달이면 실패 |
+
+**실렌더 증거**: `npx tsx scripts/render-town-reference.mts` → `output/evidence/town-reference/*.png`.
+그림은 실제 시공 결과 맵을 렌더한 것이라(합본 마을 칩셋의 4분면 오토타일 합성까지 태운다)
+상상으로 그린 미리보기가 아니다. 케이스는 환경변수 `TOWN_CASES`(JSON 배열)로 바꾼다.
+
+- 실측 시간: 40×40·8채 **1초**, 56×56·14채 **1초 미만**, 72×72·20채 **약 6분 30초**.
+  큰 맵이 급격히 느려지는 이유는 길 연결 탐색과 단계별 집 보호 검증이 맵 넓이에 따라 늘기 때문이다.
+  전경 한 장을 굽는 용도라면 40~56 이 실용적이고, 72 는 한 번 굽고 캐시하는 편이 맞다.
+- 물은 테마가 정한다. 같은 크기·집 수라도 `theme:"어촌 마을"`(물 랜드마크)이면 서쪽에 강이 들어가고,
+  `theme:"농촌 마을"` + `forestDensity:"dense"` 면 마을이 숲으로 닫힌다.
+- 집 수가 공간 대비 많으면 `Village house count shortfall: 10/12` 처럼 **부족분을 숫자로** 알려준다
+  (`countPolicy:"best-effort"`). 크기를 키우거나 집 수를 줄이면 된다.
+
+보고서: `output/evidence/town-reference/town-reference.html`(+ 단일 파일판 `-standalone.html`).
+
 ## 관련 파일
 
 | 역할 | 파일 |

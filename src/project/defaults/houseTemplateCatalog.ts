@@ -105,12 +105,9 @@ export const HOUSE_TEMPLATE_DEFS: readonly HouseTemplateDef[] = [
   { id: "estate-barn", name: "큰 필지(외양간)", w: 8, h: 15, stories: 1, wings: [{ x: 0, y: 8, w: 8, h: 7 }, { x: 2, y: 0, w: 6, h: 5 }] },
   // ── 계단식 2층(2026-09-11) — 위층이 드러나는 집. 예전 A자 지붕 4종을 대체한다.
   // 날개마다 stories 를 적어 두면 열 구간마다 벽 밴드가 달라져 "층이 내려앉는" 실루엣이 된다.
-  { id: "tier-front", name: "계단식 2층", w: 7, h: 15, stories: 2, wings: [
-    // 뒤쪽 2층 본채와 앞쪽 전폭 1층이 겹치지 않고 세로로 붙는다 — 층수 경계에서
-    // 열 구간이 나뉘어 본채 벽이 1층 지붕 위로 드러난다. 겹쳐 짜면 앞 날개는
-    // 좌우로 삐져나온 폭만 남아 '지붕 플랩'처럼 읽힌다(실측).
-    { x: 1, y: 0, w: 5, h: 9, stories: 2 },
-    { x: 0, y: 9, w: 7, h: 6, stories: 1 },
+  { id: "tier-front", name: "계단식 2층", w: 7, h: 12, stories: 2, wings: [
+    { x: 1, y: 0, w: 5, h: 12, stories: 2 },
+    { x: 0, y: 6, w: 7, h: 6, stories: 1 },
   ] },
   { id: "tier-wide", name: "계단식 2층(넓은 1층)", w: 8, h: 11, stories: 2, wings: [
     { x: 2, y: 0, w: 4, h: 11, stories: 2 },

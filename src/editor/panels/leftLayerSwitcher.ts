@@ -13,7 +13,6 @@
 import { editorState, type Layer } from "@/editor/editorState";
 import { uiLabel, type UiCopyKey } from "@/editor/uiCopy";
 import { el } from "@/util/dom";
-import { makeSvgIcon } from "@/editor/panels/tileToolbarIcons";
 
 type LayerRow = {
   readonly id: Layer;
@@ -62,8 +61,9 @@ export function makeLeftLayerSwitcher(activeLayer: Layer): HTMLElement {
           ...(active ? { "aria-current": "true" } : {}),
         },
         dataset: { testid: layer.testId, sidebarLayer: layer.id },
+        // 글리프는 달지 않는다 — 세 단추가 전부 같은 layers 아이콘이라 구분력 없이 폭만 먹었다.
+        // 세그먼트 컨트롤은 라벨만으로 읽힌다(맵 이름과 한 줄을 나누는 컴팩트 배치).
         children: [
-          makeSvgIcon("layers"),
           el("span", { class: "left-layer-btn-label", text: label }),
         ],
         on: { click: () => selectSidebarLayer(layer.id) },

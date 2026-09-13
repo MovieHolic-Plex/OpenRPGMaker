@@ -392,13 +392,7 @@ export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): 
         continue;
       }
       let top = y;
-      /**
-       * 구간은 유효 층수가 바뀌는 경계에서도 끊긴다 — 층수가 다른 날개가 같은 열에
-       * 세로로 붙으면(넓은 1층 위에 2층 본채) 위쪽 덩어리가 자기 벽 밴드를 드러내야
-       * 한다. 합치면 위층 벽이 아래 지붕에 삼켜져 한 층짜리 거대 지붕으로 읽힌다.
-       * 같은 층수끼리는 계속 한 런이다 — ㄱ자·tier 겹침의 한 지붕면 규칙을 지킨다.
-       */
-      while (inMass(x, y + 1) && storiesAt(x, y + 1) === storiesAt(x, y)) y += 1;
+      while (inMass(x, y + 1)) y += 1;
       const bottom = y;
       const height = bottom - top + 1;
       const runWallBand = wallBandAt(x, bottom);
