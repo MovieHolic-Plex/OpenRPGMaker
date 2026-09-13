@@ -1,0 +1,10 @@
+{
+  "projectId": "rpg-zzu-house-template-gallery",
+  "mapIds": [
+    "spatial:child:28:special-interior:example:inn7:floor-1:0",
+    "spatial:child:28:special-interior:example:inn7:floor-2:0",
+    "spatial:child:29:special-interior:example:shop7:floor-1:0"
+  ],
+  "mapMatchesRemote": true,
+  "errors": []
+}

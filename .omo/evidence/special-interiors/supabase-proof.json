@@ -1,0 +1,52 @@
+{
+  "projectId": "rpg-zzu-house-template-gallery",
+  "places": [
+    "special-interior:place:inn",
+    "special-interior:place:shop"
+  ],
+  "roots": [
+    "special-interior:example:inn",
+    "special-interior:example:shop"
+  ],
+  "specialMaps": [
+    {
+      "id": "spatial:child:28:special-interior:example:inn7:floor-1:0",
+      "name": "길손 여관 · 접수와 공용 식당",
+      "width": 21,
+      "height": 18,
+      "rooms": 3
+    },
+    {
+      "id": "spatial:child:28:special-interior:example:inn7:floor-2:0",
+      "name": "길손 여관 · 다인실과 개인실",
+      "width": 21,
+      "height": 18,
+      "rooms": 3
+    },
+    {
+      "id": "spatial:child:29:special-interior:example:shop7:floor-1:0",
+      "name": "모퉁이 잡화점 · 진열과 계산",
+      "width": 20,
+      "height": 18,
+      "rooms": 3
+    },
+    {
+      "id": "spatial-place:28:special-interior:example:inn:0:29:easyrpg_chipset_combined_town",
+      "name": "왼쪽 윗채의 2층집 · 마당과 외형",
+      "width": 17,
+      "height": 17
+    },
+    {
+      "id": "spatial-place:29:special-interior:example:shop:0:29:easyrpg_chipset_combined_town",
+      "name": "푸른 지붕 상점 · 마당과 외형",
+      "width": 16,
+      "height": 14
+    }
+  ],
+  "refreshedHouseMaps": 8,
+  "unrelatedMapsPreserved": 17,
+  "tileMetadataPreserved": true,
+  "saved": true,
+  "reloaded": true,
+  "sha256": "e447ea8ebd05a821c449f3d93c2662f04da0c9804440d1414410e5f788c8f6ad"
+}

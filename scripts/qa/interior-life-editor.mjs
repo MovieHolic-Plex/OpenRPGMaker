@@ -88,7 +88,7 @@ try {
   assert.equal(data.space.height, 12);
   assert.equal(data.remote, true);
   for (const tile of [142, 143, 172, 173, 202, 203])
-    assert.ok(data.map.upperTiles.includes(tile), `Missing curtain ${tile}`);
+    assert.ok(!data.map.upperTiles.includes(tile), `Unexpected curtain ${tile}`);
   for (const tile of [124, 42])
     assert.ok(
       data.map.lowerTiles.includes(tile),
