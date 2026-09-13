@@ -16,3 +16,5 @@
 Open `index.html` to toggle the before/after native render. Full project snapshots are intentionally local-only in `output/evidence/village-forest/`.
 
 Full gates: app typecheck and CSS passed. Vitest 522 failed / 23,136 passed (prior: 522 / 23,131); surface failures unchanged. Four newly observed failures (three deadlines, one fetch failure) all passed unchanged on an isolated recheck. That recheck was 36 passed / 2 failed; both remaining failures were already in the measured baseline. No new village-area failure.
+
+A final read at 06:37 UTC observed a later project revision. Only an unrelated map (`map_neon_nocturne_60_20260913`) plus system/database fields had changed; the authored village map still matched exactly. No overwrite was performed. See `latest-remote-check.json`; the earlier `final-remote-check.json` remains the successful exact-revision readback at save time.
