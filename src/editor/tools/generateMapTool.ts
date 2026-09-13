@@ -3,6 +3,11 @@
 // **생성→도달성 검사→국소 수리(통로 뚫기) 루프를 내장**해 항상 입구에서 모든 POI에 도달 가능한 맵을 반환한다.
 // aiPreviewThemeGrammar는 AiPreview 계약에 강결합돼 재사용 대신 독자 구현한다.
 
+import { runRoomPipeline } from "@/editor/roomHarness/engine";
+import { DUNGEON_ROOM_KIT_ID, DUNGEON_ROOM_TILESET_ID } from "@/editor/dungeonRoomPipeline";
+import { connectedDungeonLandings } from "@/editor/dungeonGeneration/connected";
+import type { DungeonRoomPlan } from "@/editor/dungeonRoomPipeline";
+import { DUNGEON_DESIGN_PROPERTIES } from "./dungeonDesignSchema";
 import { computeReachableCells, isAdjacentOrOn } from "@/project/lint/reachability";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
@@ -138,9 +143,9 @@ function carvePath(map: GameMap, from: Point, to: Point, floor: number, border: 
 const generateMap: ToolDefinition = {
   name: "generate_map",
   description:
-    `테마(village/forest/cave) 맵을 생성한다(기본은 테두리 없는 평지, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 입구→모든 POI 도달성을 생성기가 보장(생성→검사→통로 수리 루프). `
+    `테마(village/forest/cave) 맵을 생성한다. 좌표 입구/POI를 생략한 cave는 던전 칩셋과 방 연결 구조 생성기를 사용한다. dungeonDesign으로 역할·연결·시드를 설계한다(다른 테마의 기본은 테두리 없는 평지, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 입구→모든 POI 도달성을 생성기가 보장(생성→검사→통로 수리 루프). `
     + "테마에 맞는 BGM을 CC0 카탈로그에서 고른다(같은 seed면 같은 곡, bgm/bgmResourceId가 있으면 그걸 쓴다). "
-    + "테마 장애물은 맵 안쪽에만 산포하고 외곽 4변은 봉인하지 않는다.",
+    + "연결 던전은 방과 통로를 암반 속에 구성한다. 기존 평지 경로는 장애물을 안쪽에 산포하며 외곽 4변을 강제로 봉인하지 않는다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -165,6 +170,7 @@ const generateMap: ToolDefinition = {
           fadeInMs: { type: "integer" },
         },
       },
+      dungeonDesign: { type: "object", properties: DUNGEON_DESIGN_PROPERTIES, description: "던전 칩셋 cave의 연결 구조. 고정 entrance/pois 대신 graph의 방 중심과 연결을 지정한다." },
       id: { type: "string" },
     },
     required: ["theme", "width", "height"],
@@ -172,7 +178,8 @@ const generateMap: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const theme = args.theme as MapTheme;
     if (!["village", "forest", "cave"].includes(theme)) throw new ToolError(`알 수 없는 테마: ${theme}`, { code: "unknown-theme" });
-    const tilesetId = (args.tilesetId as string | undefined) ?? DEFAULT_TILESET_ID;
+    const connectedDefault = theme === "cave" && args.entrance === undefined && args.pois === undefined;
+    const tilesetId = (args.tilesetId as string | undefined) ?? (connectedDefault ? DUNGEON_ROOM_TILESET_ID : DEFAULT_TILESET_ID);
     const generationProfile = requireMapGenerationProfile(draft, tilesetId);
     if (generationProfile.layout === "rooms") {
       throw new ToolError(
@@ -180,7 +187,6 @@ const generateMap: ToolDefinition = {
         { code: "concept-interior-required" },
       );
     }
-    const palette = resolveMapGenerationPalette(draft, generationProfile, generationProfile.palettes[theme]);
     const width = args.width as number;
     const height = args.height as number;
     if (width < 6 || height < 6) throw new ToolError("생성 맵은 최소 6x6 이상이어야 합니다.");
@@ -188,6 +194,23 @@ const generateMap: ToolDefinition = {
     const id = (args.id as string | undefined) ?? genId("map");
     // code:"map-exists" 누락으로 이 경로만 감사·게이트에서 다른 실패로 세어졌다(진단 근본원인 15).
     assertMapIdAvailable(draft, id);
+    if (args.dungeonDesign !== undefined && (!connectedDefault || tilesetId !== DUNGEON_ROOM_TILESET_ID || width < 18 || height < 18 || args.border === "wall")) throw new ToolError("dungeonDesign은 던전 칩셋 cave에서 사용하며 고정 entrance/pois 대신 graph를 지정하세요.", { code: "invalid-args" });
+    if (connectedDefault && tilesetId === DUNGEON_ROOM_TILESET_ID && width >= 18 && height >= 18 && args.border !== "wall") {
+      if (args.border !== undefined && args.border !== "none") throw new ToolError("border는 none, wall 중 하나여야 합니다.", { code: "invalid-args" });
+      if (args.dungeonDesign !== undefined && (!args.dungeonDesign || typeof args.dungeonDesign !== "object" || Array.isArray(args.dungeonDesign))) throw new ToolError("dungeonDesign must be an object", { code: "invalid-args" });
+      const design = (args.dungeonDesign ?? {}) as Record<string, unknown>;
+      const built = runRoomPipeline(draft, DUNGEON_ROOM_KIT_ID, { layout: design.layout, character: design.character, graph: design.graph, mapId: id, name: args.name ?? "연결 동굴", theme: "stone", width, height, seed: design.seed ?? args.seed ?? 1 });
+      if ((built.data as { ok?: boolean }).ok === false) throw new ToolError(`던전 구조 검사 실패: ${(built.warnings ?? []).join("; ")}`, { code: "invalid-args" });
+      const map = draft.maps[id]!;
+      const plan = map.roomHarnessPlan!.plan as DungeonRoomPlan;
+      const landings = plan.layout === "connected" ? connectedDungeonLandings(map, plan) : [{ x: Math.floor(width / 2), y: height - 3 }];
+      const entranceIndex = Math.max(0, plan.graph?.rooms.findIndex(r => r.role === "entrance") ?? 0);
+      const entrance = landings[entranceIndex]!;
+      if (!draft.maps[draft.startMapId]) { draft.startMapId = id; draft.startPos = { ...entrance }; }
+      const bgmResourceId = assignCreatedMapBgm(map, args, { themeOrName: theme, defaultSeed: 1 });
+      return { ...built, summary: `연결 동굴 '${map.name}' — 방 ${landings.length}개. 전체 맵 시각 검토 필요.`, data: { ...(built.data as object), mapId: id, entrance, pois: landings, border: "none", generationProfile: tilesetId, generationLayout: plan.layout === "connected" ? "connected-dungeon" : "single-room", bgmResourceId } };
+    }
+    const palette = resolveMapGenerationPalette(draft, generationProfile, generationProfile.palettes[theme]);
     const rng = mulberry32((args.seed as number | undefined) ?? 1);
     // 스키마에서 뺀 인자라도 명시 호출은 종전 규약대로 검증한다(오타를 조용히 none 으로 떨어뜨리지 않는다).
     const borderArg = args.border;
