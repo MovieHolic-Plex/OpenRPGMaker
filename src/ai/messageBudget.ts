@@ -127,8 +127,8 @@ function compactUserParts(parts: ContentPart[]): ContentPart[] {
  * - 시스템 프롬프트는 항상 유지.
  * - 최근 KEEP_RECENT_MESSAGES 개는 무압축.
  * - 그 밖의 user/tool 메시지는 이미지 제거 / 툴 결과 요약.
- * - 그래도 초과하면 최근 창 안의 이미지까지 버린다(지시 문장은 남는다).
- * - 마지막 수단으로 오래된 assistant/tool 메시지를 짝과 함께 버린다.
+ * - 그래도 초과하면 최근 창의 이전 이미지를 버리고 오래된 assistant/tool 짝을 줄인다.
+ * - 최신 이미지는 그 뒤에도 예산에 들어가지 않을 때만 버린다(지시 문장은 남는다).
  *
  * **user 메시지는 절대 버리지 않는다.** 예전 구현은 예산 초과 시 `index > 0` 인 첫 메시지를
  * 지웠는데 그게 곧 사용자 지시였다. 짧은 대화(5개)에서는 최근 창(6개)이 전체를 덮어
@@ -232,11 +232,15 @@ function clampMessagesToBudget(
     if (totalMessagesCharLength(result) <= budgetChars) return result;
   }
 
-  // 2차: 최근 창 안의 이미지도 버린다 — 오래된 것부터. 비전 이미지는 재생성할 수 있지만
-  // 사용자 지시는 재생성할 수 없다.
+  // 최신 검수 이미지는 오래된 대화보다 먼저 버리지 않는다. 전체 스키마가 커져도
+  // 방금 캡처한 이미지를 읽고 다음 응답에서 검수할 수 있어야 한다.
+  const latestImage = result.slice(compactBoundary).reverse().find(message =>
+    message.role === "user" && Array.isArray(message.content) && message.content.some(part => part.type === "image_url"));
+
+  // 2차: 최신 캡처를 제외한 최근 창의 이전 이미지를 제거한다.
   for (let index = 1; index < result.length; index += 1) {
     const message = result[index];
-    if (message.role !== "user" || !Array.isArray(message.content)) continue;
+    if (message === latestImage || message.role !== "user" || !Array.isArray(message.content)) continue;
     const stripped = compactUserParts(message.content);
     if (stripped.length === message.content.length) continue;
     message.content = stripped;
@@ -256,6 +260,9 @@ function clampMessagesToBudget(
       const paired = result.findIndex((entry) => entry.role === "tool" && entry.tool_call_id === call.id);
       if (paired > 0) result.splice(paired, 1);
     }
+  }
+  if (totalMessagesCharLength(result) > budgetChars && latestImage && Array.isArray(latestImage.content)) {
+    latestImage.content = compactUserParts(latestImage.content);
   }
   return result;
 }

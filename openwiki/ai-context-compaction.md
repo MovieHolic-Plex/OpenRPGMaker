@@ -187,3 +187,14 @@ schemaVersion 1은 DB 버전과 별개이며, 메모리 backend는 durable=false
 - `test/contextCompaction.test.ts`: 토큰 추정 휴리스틱, base64 가중치, 절단점 스냅, 툴 응답 짝 수리, 요약 프롬프트 조립 계약 검증.
 - `test/assistantSessionCompaction.test.ts`: AssistantSession 내 실측 usage 연동, 임계 도달 시 압축 발동, 요약 실패 시 대화 보존 및 턴당 1회 실패 캡 검증.
 - `scripts/compaction-http-proof.mts`: 실제 루프백 HTTP 서버를 구동해 실 와이어 페이로드와 압축 전후 메시지 구조를 검증하는 종단 증명 스크립트.
+
+## 최신 검수 이미지의 요청 예산 우선순위 (2026-09-14)
+
+장소 통합 스키마가 늘면서 `buildGroundedRequest`의 남은 대화 예산이 줄었고,
+수정 직후 캡처한 이미지가 이전 assistant 메시지보다 먼저 제거되는 사례가 재현됐다.
+`messageBudget.ts`는 최근 창의 최신 이미지 메시지를 보존한 채 이전 이미지와
+오래된 assistant/tool 짝을 먼저 줄인다. 그래도 예산을 넘을 때 최신 이미지도 제거한다.
+시스템/사용자 지시와 원본 transcript는 보존하며, 실제 전달되지 않은 이미지를
+검수 증거로 인정하지 않는 기존 규칙은 유지한다.
+`messageBudget.test.ts`는 예산 내 보존·초소형 예산 제거·원본 불변을 검증하고,
+`aiAssistantSession.test.ts`의 미이행 보완 후 재검수 사례가 통합 스키마로 왕복을 검증한다.
