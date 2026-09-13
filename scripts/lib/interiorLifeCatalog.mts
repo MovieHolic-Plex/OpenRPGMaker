@@ -420,12 +420,16 @@ export function registerInteriorLifeCatalog(input: Project): Project {
         ...new Set([
           ...s.tags.filter(
             (t) =>
-              !/^생활 구역 구성|^난롯가·식탁·침상·세면·커튼$|^통로는 비우고 가구는 용도별로 모은다$|방 · 단차 외곽$/.test(
+              !/^생활 구역 구성|^난롯가·식탁·침상·세면(?:·커튼)?$|^통로는 비우고 가구는 용도별로 모은다$|방 · 단차 외곽$/.test(
                 t,
               ),
           ),
           "생활 구역 구성 20260914",
-          "난롯가·식탁·침상·세면·커튼",
+          ["house-catalog:room:top", "reviewed-interior:inn-suite"].includes(
+            s.id,
+          )
+            ? "난롯가·식탁·침상·세면·커튼"
+            : "난롯가·식탁·침상·세면",
           "통로는 비우고 가구는 용도별로 모은다",
         ]),
       ],
@@ -579,7 +583,10 @@ export function registerInteriorLifeCatalog(input: Project): Project {
             ? "reading"
             : "meal";
     add(focus, rooms[0], livingX + 1, 6);
-    add("curtain", kitchen, livingX + mw - 2, kitchen.y);
+    if (
+      ["house-catalog:room:top", "reviewed-interior:inn-suite"].includes(s.id)
+    )
+      add("curtain", kitchen, livingX + mw - 2, kitchen.y);
     const clock = houseObjectForGraphic(p, atlas, "clock");
     if (clock)
       draft.objectSlots.push({

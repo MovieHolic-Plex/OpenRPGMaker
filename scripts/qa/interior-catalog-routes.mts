@@ -54,11 +54,14 @@ function route(
   }
   return moves;
 }
-for (const [root, floors] of [
+for (const [root, floors] of (process.argv[3] === "special" ? [
+  ["special-interior:example:inn", 2],
+  ["special-interior:example:shop", 1],
+] as const : [
   ["house-example:inn-3f", 3],
   ["house-example:workshop-4f", 4],
-] as const) {
-  const prefix = root.split(":")[1]!;
+] as const)) {
+  const prefix = root.split(":").at(-1)!;
   const connections = project.mapConnections!.filter((c) =>
     c.id.includes(root),
   );
