@@ -53,9 +53,10 @@ export function requiresVisualReview(before: Project | undefined, after: Project
 }
 
 /**
- * The shipped tile preview and runtime have no map-background rendering contract.
- * Even a current tile image cannot prove a background or its removal/scrolling.
- * Keep this refusal until a real background-capable surface supplies owned evidence.
+ * The review surface is the tile preview (`show_map_region`), which renders tiles only.
+ * The play runtime does draw `map.background` (2026-09-14, `playSceneMapBackground.ts`),
+ * but a tile image still cannot prove a background, its removal, or its scrolling.
+ * Keep this refusal until a background-capable *preview* surface supplies owned evidence.
  */
 export function mapVisualEvidenceUnavailable(map: GameMap, before?: GameMap): string | null {
   if (map.background === undefined && before?.background === undefined) return null;

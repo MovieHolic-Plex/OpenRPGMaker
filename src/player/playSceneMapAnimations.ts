@@ -9,6 +9,7 @@ import {
 } from "@/player/battleAnimationPlayback";
 import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import type { StepResult } from "@/player/interpreter";
+import { ensureSceneImageTexture } from "@/player/playSceneImageTexture";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { UNIT_FOOTPRINT } from "@/project/footprint";
 import { store } from "@/project/store";
@@ -195,8 +196,6 @@ function waitForDuration(scene: PlaySceneContext, durationMs: number): Promise<v
   });
 }
 
-const loadingTextures = new Map<string, Promise<string | undefined>>();
-
 function ensureBattleAnimationTexture(
   scene: PlaySceneContext,
   record: BattleAnimationRecord
@@ -207,38 +206,16 @@ function ensureBattleAnimationTexture(
     registerBattleAnimationFrames(scene, textureKey, record);
     return Promise.resolve(textureKey);
   }
-  const pending = loadingTextures.get(textureKey);
-  if (pending) return pending.then((key) => {
+  const url = resolveAssetResourceUrl(record.resourceId, { project: store.getCurrent() });
+  if (!url) return Promise.resolve(undefined);
+  // 원본 로드·중복 제거는 공용 로더가 맡는다. 색상 키아웃은 그 위에 한 겹이다.
+  const rawKey = rawTextureKey(record.resourceId);
+  return ensureSceneImageTexture(scene, rawKey, url).then((loadedKey) => {
+    if (!loadedKey) return undefined;
+    const key = createChromaKeyTexture(scene, loadedKey, textureKey);
     if (key) registerBattleAnimationFrames(scene, key, record);
     return key;
   });
-  const url = resolveAssetResourceUrl(record.resourceId, { project: store.getCurrent() });
-  if (!url) return Promise.resolve(undefined);
-  const promise = new Promise<string | undefined>((resolve) => {
-    const rawKey = rawTextureKey(record.resourceId ?? "");
-    const finish = (): void => {
-      scene.load.off(`filecomplete-image-${rawKey}`, onComplete);
-      scene.load.off("loaderror", onError);
-      loadingTextures.delete(textureKey);
-    };
-    const onComplete = (): void => {
-      finish();
-      const key = createChromaKeyTexture(scene, rawKey, textureKey);
-      if (key) registerBattleAnimationFrames(scene, key, record);
-      resolve(key);
-    };
-    const onError = (file: { readonly key?: string }): void => {
-      if (file.key !== rawKey) return;
-      finish();
-      resolve(undefined);
-    };
-    scene.load.once(`filecomplete-image-${rawKey}`, onComplete);
-    scene.load.on("loaderror", onError);
-    scene.load.image(rawKey, url);
-    if (!scene.load.isLoading()) scene.load.start();
-  });
-  loadingTextures.set(textureKey, promise);
-  return promise;
 }
 
 function createChromaKeyTexture(
