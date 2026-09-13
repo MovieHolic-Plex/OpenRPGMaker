@@ -1,30 +1,6 @@
-  .db-config-backdrop {
-    align-items: center;
-    backdrop-filter: blur(2px);
-    background: color-mix(in srgb, var(--bg-canvas) 82%, transparent);
-    justify-content: center;
-  }
-
-  .db-config-window {
-    background: var(--editor-panel-bg);
-    border: 1px solid var(--editor-line-strong);
-    border-radius: var(--radius-l);
-    box-shadow: var(--shadow-modal);
-    color: var(--editor-text);
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr);
-    max-height: min(88dvh, 820px);
-    max-width: min(880px, calc(100vw - 32px));
-    min-height: 0;
-    width: 880px;
-  }
-
-  .db-config-body {
-    background: transparent;
-    min-height: 0;
-    overflow: auto;
-    padding: 14px 16px 16px;
-  }
+  /* 창 골격(.db-config-backdrop/.db-config-window/.db-config-body) 오버라이드는
+     database/light-theme.css 의 작업 열기 절로 옮겼다 — layer(shell) 에 있으면
+     layer(database) 의 베이스 .database-modal-* 크롬을 이기지 못한다. */
 
   .db-config-form {
     display: grid;
@@ -260,15 +236,6 @@
   }
 
   @media (max-width: 640px) {
-    .db-config-window {
-      max-height: calc(100dvh - 16px);
-      max-width: calc(100vw - 16px);
-    }
-
-    .db-config-body {
-      padding: 12px;
-    }
-
     .db-config-project-list {
       grid-template-columns: 1fr;
     }

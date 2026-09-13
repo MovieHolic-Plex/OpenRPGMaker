@@ -660,6 +660,50 @@
   color: var(--db-light-text-3);
 }
 
+/* ── 작업 열기(db-config) 창 골격 — 베이스 .database-modal-* 크롬 위에 얹는
+   오버라이드라 이 database 레이어 안에서 스코프 특이성으로 이겨야 한다.
+   shell/figma-editor/06-db-config-project-picker.css(layer(shell)) 에 뒀을 때
+   2026-09-11 표면 레이어 분리로 shell < database 가 되어 베이스(1530px 플렉스 창,
+   본문 padding 0)에 패해 골격이 무너졌다. 카드·목록 등 내부 규칙은 그 파일에 남는다. */
+.database-modal-backdrop.db-config-backdrop {
+  align-items: center;
+  backdrop-filter: blur(2px);
+  background: color-mix(in srgb, var(--bg-canvas) 82%, transparent);
+  justify-content: center;
+}
+.database-modal-backdrop .db-config-window {
+  background: var(--editor-panel-bg);
+  border: 1px solid var(--editor-line-strong);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-modal);
+  color: var(--editor-text);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  max-height: min(88dvh, 820px);
+  max-width: min(880px, calc(100vw - 32px));
+  min-height: 0;
+  width: 880px;
+}
+/* sidebar.css 의 (0,3,0) 규칙이 모든 .database-modal-body 에 display:flex; flex-direction:row 를
+   씌운다 — 이 모달의 유일한 자식은 세로 그리드 폼이라 행 플렉스에서는 내용 폭(약 445px)으로
+   쪼그라 카드 auto-fill 이 1열로 붕괴했다. (0,4,0) 로 올려 문서 흐름으로 되돌린다. */
+.database-modal-backdrop .database-modal-window .database-modal-body.db-config-body {
+  background: transparent;
+  display: block;
+  min-height: 0;
+  overflow: auto;
+  padding: 14px 16px 16px;
+}
+@media (max-width: 640px) {
+  .database-modal-backdrop .db-config-window {
+    max-height: calc(100dvh - 16px);
+    max-width: calc(100vw - 16px);
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-body.db-config-body {
+    padding: 12px;
+  }
+}
+
 /* ── 작업 열기(db-config) — 크림 배경 위 다크 토큰 헤딩이 안 보이던 대비 결함 수정
    (2026-08-18 초보자 UX 리뷰 P2-9). 톤은 기존 --db-light-text-* AA 단계를 재사용. */
 .database-modal-backdrop .db-config-intro h3,
