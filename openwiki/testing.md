@@ -69,12 +69,19 @@ vitest CPU 시간의 25%(2,056초 / 8,363초)를 먹고 부하 때 재실행을 
 격리 자체는 실패를 고친 게 아니라 부기를 바꾼 것이다 — 절대 실패 수가 줄어도
 **빨간불이 사라진 게 아니다**. 원장이 그 기록이다.
 
-## 브라우저 하네스의 cacheDir (2026-09-13)
+## 브라우저 테스트는 별도 스테이지다 (2026-09-13)
 
-`test/spatialGeographyRaster.browser.test.ts` 는 매 실행 임시 `cacheDir` 로 콜드 Vite 서버를 띄워
-30초 준비 마감에 걸렸다(dep 사전 번들링이 매번 다시 돎). 지금은 안정 경로
-`node_modules/.vite-spatial-geography-harness` 를 써서 첫 실행만 콜드다.
-마감(30초)과 단정은 그대로다 — **고친 것은 콜드 스타트지 마감이 아니다.**
+`test/spatialGeographyRaster.browser.test.ts` 는 실제 Chromium 을 띄우는 유일한 테스트다.
+32워커 무리 안에서는 준비 마감(30초)을 넘겨 **늘 이 파일 하나만 회귀**로 잡혔다.
+마감을 늘리는 대신 경합에서 떼어냈다:
+
+- 기본 스위트(`vitest.config.ts`)는 `test/**/*.browser.test.ts` 를 제외한다.
+- `vitest.browser.config.ts` 가 그 축만 include 한다(같은 alias·environment).
+- `verify-gates.mjs` 의 `browser` 스테이지가 `--maxWorkers=2 --minWorkers=1` 로 돌리고,
+  실패는 기준선과 무관하게 회귀로 센다(surface 와 같은 성격). `--only browser` 로 따로 돌린다.
+- 하네스는 매 실행 **임시 cacheDir** 를 쓴다. 공유 경로를 쓰면 이전 실행이 남긴 dep 최적화
+  캐시가 생겨 페이지가 ready 신호를 못 내는 일이 있었다(실측: 캐시 삭제 후 통과).
+  **고친 것은 격리와 경합이지 마감이 아니다** — 30초 준비 마감과 단정은 그대로다.
 
 ## P5 delivery gates and the P4 regressions they caught (2026-09-09)
 
