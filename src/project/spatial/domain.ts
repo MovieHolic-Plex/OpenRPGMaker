@@ -58,6 +58,10 @@ export type ExpansionSlot = S.SpatialChildSlot<S.SpatialKind> & {
 };
 /** Ordered edges; quantity is not expanded until cardinality preflight succeeds. */
 export function designSlots(node: DesignNode): readonly ExpansionSlot[] {
+  const direct = node.kind === "object" ? [] : (node.design.composition?.members ?? []).map(slot => ({ ...slot, quantity: 1 }));
+  return [...legacyDesignSlots(node), ...direct];
+}
+export function legacyDesignSlots(node: DesignNode): readonly ExpansionSlot[] {
   switch (node.kind) {
     case "object": return [];
     case "space": return node.design.objectSlots.map(slot => ({

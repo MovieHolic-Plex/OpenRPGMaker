@@ -355,13 +355,15 @@ function renderKindCard(
   });
 }
 
-function renderKindInspector(
+export function renderKindInspector(
   tileset: TilesetDef,
   kind: InteriorRoomKindRecord,
   host: HTMLElement,
   rerender: () => void,
+  access?: { patch: (next: InteriorRoomKindRecord) => void; remove: () => void },
 ): HTMLElement {
   const patch = (next: InteriorRoomKindRecord): void => {
+    if (access) { access.patch(next); return; }
     const kinds = tileset.interiorRoomKinds ?? [];
     writeKinds(
       tileset.id,
@@ -434,6 +436,7 @@ function renderKindInspector(
         dataset: { testid: `tileset-spaces-kind-delete-${kind.id}` },
         on: {
           click: () => {
+            if (access) { access.remove(); return; }
             writeKinds(
               tileset.id,
               (tileset.interiorRoomKinds ?? []).filter((entry) => entry.id !== kind.id),

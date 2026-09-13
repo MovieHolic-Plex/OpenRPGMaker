@@ -11,7 +11,7 @@ import {
   charsetFrameIndex,
   decodeCharsetFrameIndex,
 } from "@/assets/easyrpgRtp";
-import { FACESET_FACE_ASSETS } from "@/assets/facesetFaceAssets";
+import { AUTHORABLE_FACESET_FACE_ASSETS, GENERATED_FACESET_FACE_IDS } from "@/assets/facesetFaceAssets";
 import { FACE_IMAGE_SIZE, RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import { defaultResourceProfiles } from "@/project/defaults/defaultAssets";
 
@@ -102,7 +102,9 @@ describe("EasyRPG RTP asset manifest", () => {
     expect([...legacySheetIds].filter((id) => profileAssetIds.has(id))).toEqual([]);
 
     const faceProfiles = profiles.filter((profile) => profile.kind === "faceset");
-    expect(faceProfiles).toHaveLength(FACESET_FACE_ASSETS.length);
+    // 생성 시리즈(hero-XX-face) 낱장은 저장본 호환 등록만 남기고 저작 목록에는 올리지 않는다.
+    expect(faceProfiles).toHaveLength(AUTHORABLE_FACESET_FACE_ASSETS.length);
+    expect(faceProfiles.filter((profile) => GENERATED_FACESET_FACE_IDS.has(profile.assetId ?? ""))).toEqual([]);
     expect(faceProfiles.every((profile) => profile.imageWidth === FACE_IMAGE_SIZE)).toBe(true);
   });
 

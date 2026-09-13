@@ -1,3 +1,4 @@
+import { openTilesetTileBrowser } from "@/editor/panels/tilesetTileBrowser";
 // panels/structureKitEditorDialog.ts
 // 구조물 편집기 — DB 모달 위에 뜨는 전용 다이얼로그.
 //
@@ -321,6 +322,14 @@ export function openStructureKitEditor(
     refreshCellHints();
   });
   const filterBar = createFilterBar(filterWrap, session, () => syncPalette());
+  const browseTiles = el("button", {
+    class: "structure-kit-browser-open", text: "타일 브라우저 열기",
+    attrs: { type: "button" }, dataset: { testid: "structure-kit-tile-browser" },
+    on: { click: () => openTilesetTileBrowser(tileset, session.tile, tile => {
+      session.tile = tile; session.tool = "paint"; noteRecentTile(session, tile);
+      tools.refresh(); syncPalette(); refreshCellHints();
+    }) },
+  });
   const tools = createTools(toolsWrap, session, (changed) => {
     tools.refresh();
     // 레이어를 바꾸면 스테이지 테두리(바닥/덧그림)가 달라진다 — 캔버스만 다시 그린다.
@@ -345,7 +354,7 @@ export function openStructureKitEditor(
   }
   // 오른쪽 열은 지금 이 한 번만 조립된다. 툴·필터·팔레트·AI 폼은 전부 여기 남아 있고
   // 탭 전환은 hidden 을 토글한다 — 노드를 떼었다 다시 붙이면 팔레트 스크롤이 매번 맨 위로 튄다.
-  rightWrap.replaceChildren(tabsWrap, toolsWrap, filterWrap, paletteWrap, aiWrap);
+  rightWrap.replaceChildren(tabsWrap, toolsWrap, browseTiles, filterWrap, paletteWrap, aiWrap);
 
   const redraw = (): void => {
     const current = session.requireKit();
@@ -364,6 +373,7 @@ export function openStructureKitEditor(
     setHidden(toolsWrap, !shapeTab);
     setHidden(filterWrap, !shapeTab);
     setHidden(paletteWrap, !shapeTab);
+    setHidden(browseTiles, !shapeTab);
     setHidden(aiWrap, shapeTab);
     if (shapeTab) {
       drawParts(partsWrap, current, session, redraw, commitKit);
@@ -570,12 +580,14 @@ export function openStructureKitEditor(
     [{
       label: "닫기",
       testid: "structure-kit-editor-close",
-      action: () => {
-        closed = true;
-        detachedKitAccess = null;
-    onClosed();
-      },
     }],
+    undefined,
+    () => {
+      if (closed) return;
+      closed = true;
+      detachedKitAccess = null;
+      onClosed();
+    },
   );
   // openDialog 는 오버레이를 돌려주지 않는다 — 자기가 박은 testid 로 되찾아 둔다.
   // 킷이 사라졌을 때 이 노드를 직접 떼어 내야 하기 때문이다.

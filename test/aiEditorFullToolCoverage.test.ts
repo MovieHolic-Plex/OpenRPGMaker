@@ -176,7 +176,7 @@ describe("AI assistant editor-wide project mutation coverage", () => {
     const context: ToolContext = { project: createEmptyToolProject("프로젝트 설정") };
     const actorId = context.project.database.actors[0]?.id;
     expect(actorId).toBeDefined();
-    const enemy = runTool(context, "upsert_enemy", { enemy: { id: "enemy_settings", name: "설정용 적" } });
+    const enemy = runTool(context, "upsert_enemy", { enemy: { id: "enemy_settings", name: "설정용 적", monsterResourceId: "generated-enemy-orc-01" } });
     const troop = runTool(context, "upsert_troop", { troop: { id: "troop_settings", name: "설정용 적 그룹", enemyIds: ["enemy_settings"] } });
     expect(enemy.ok, enemy.summary).toBe(true);
     expect(troop.ok, troop.summary).toBe(true);

@@ -9,7 +9,7 @@ import {
   spatialAuthoringErrorText,
   visibleAuthoringProject,
 } from "@/editor/panels/spatialAuthoringAccess";
-import { selectSpatialDesign, selectSpatialOccurrence } from "@/editor/panels/spatialAuthoringSession";
+import { patchSpatialSession, selectSpatialDesign, selectSpatialOccurrence } from "@/editor/panels/spatialAuthoringSession";
 import {
   BUILD_SEED_INTEGER_REQUIRED,
   bindSpatialBuildInputs,
@@ -45,8 +45,8 @@ export function spatialSpacesChrome(card: SpatialGalleryCard | undefined, rerend
     previewError: spaceChromeState.previewError,
     deleteOpen: spaceChromeState.deleteOpen,
     add: controller ? () => addBlankSpace(rerender) : undefined,
-    duplicate: controller && target && !builtinLocked ? () => queueClone(target, rerender) : undefined,
-    delete: controller && target && !builtinLocked ? () => { spaceChromeState.deleteOpen = true; rerender(); } : undefined,
+    duplicate: controller && target && (target.libraryId || target.occurrenceId) && !builtinLocked ? () => queueClone(target, rerender) : undefined,
+    delete: controller && target && (target.libraryId || target.occurrenceId) && !builtinLocked ? () => { spaceChromeState.deleteOpen = true; rerender(); } : undefined,
     onDeleteConfirm: controller && target && spaceChromeState.deleteOpen ? () => queueDelete(target, rerender) : undefined,
     preview: controller && hasAuthoringDraft() ? () => previewSpace(rerender) : undefined,
     build: controller && !spatialBuildDisabledReason(card) ? () => {
@@ -107,7 +107,10 @@ function addBlankSpace(rerender: () => void): void {
     createdId = created.id;
     return upsertSpaceDesign(project, created);
   });
-  if (createdId) selectSpatialDesign(librarySpaceCardId(createdId));
+  if (createdId && !spaceChromeState.previewError) {
+    selectSpatialDesign(librarySpaceCardId(createdId));
+    patchSpatialSession({ source: "own", inspectorOpen: true });
+  }
   rerender();
 }
 

@@ -23,6 +23,9 @@ export function inspectSpatialDesignReferences(input: unknown, assets: S.Spatial
   for (const place of Object.values(document.library.places)) children({ kind: "place", id: place.id }, place.children, "children");
   for (const region of Object.values(document.library.regions)) children({ kind: "region", id: region.id }, region.places, "places");
   for (const world of Object.values(document.library.worlds)) children({ kind: "world", id: world.id }, world.regions, "regions");
+  for (const kind of ["space", "place", "region", "world"] as const) {
+    for (const value of Object.values(document.library[collections[kind]])) children({ kind, id: value.id }, value.composition?.members ?? [], "composition.members");
+  }
   const historical = Object.values(document.occurrences).filter(value => Object.hasOwn(value.snapshot.library[collections[ref.kind]], ref.id)).map(value => value.id);
   return freezeSpatial({ strong, historical });
 }

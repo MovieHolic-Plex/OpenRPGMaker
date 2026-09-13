@@ -1,3 +1,4 @@
+import { regionReferenceImage } from "./regionReferenceView";
 import { interiorObjectById, interiorObjectsForTheme } from "@/editor/interiorObjectCatalog";
 import { cellsFromMapRect, assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import { INTERIOR_OBJECT_THUMB_BACKGROUND_TILE, interiorThemeCards } from "@/editor/panels/structureKitDbSources";
@@ -143,9 +144,8 @@ function renderRoomKindThumb(card: SpatialGalleryCard, kind: InteriorRoomKindRec
 
 /** 카드가 가리키는 방 종류 레코드 — 기본 7종 또는 타일셋 저작 호환 규칙. */
 export function roomKindOf(card: SpatialGalleryCard): InteriorRoomKindRecord | undefined {
-  const builtin = BUILTIN_INTERIOR_ROOM_KINDS.find((entry) => entry.id === card.localId);
-  if (builtin) return builtin;
-  return tilesetOf(card)?.interiorRoomKinds?.find((entry) => entry.id === card.localId);
+  if (card.source !== "default") return tilesetOf(card)?.interiorRoomKinds?.find((entry) => entry.id === card.localId);
+  return BUILTIN_INTERIOR_ROOM_KINDS.find((entry) => entry.id === card.localId);
 }
 
 function renderSpaceThumb(card: SpatialGalleryCard): HTMLElement {
@@ -214,6 +214,7 @@ function renderMapThumb(card: SpatialGalleryCard): HTMLElement {
 }
 
 export function renderSpatialCardThumb(card: SpatialGalleryCard): HTMLElement {
+  if (card.regionReferenceId) return regionReferenceImage(card.regionReferenceId, true);
   if (card.kind === "places") return renderPlaceCardThumb(card);
   if (card.kind === "regions" || card.kind === "worlds") return renderGeographyCardThumb(card);
   if (card.mapId) return renderMapThumb(card);

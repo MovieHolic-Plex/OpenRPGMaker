@@ -1,3 +1,7 @@
+import { canUseCompositionWorkspace } from "./spatialCompositionAccess";
+import { renderSpatialCompositionWorkspace } from "./spatialCompositionWorkspace";
+import { renderSpatialSpaceWorkspace } from "@/editor/panels/spatialSpaceWorkspace";
+import { renderSpatialAssetBrowser } from "@/editor/panels/spatialAssetBrowser";
 import { listSpatialGalleryCards, type SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import { renderSpatialGalleryCard } from "@/editor/panels/spatialGallery";
 import {
@@ -40,7 +44,7 @@ export function renderSpatialAuthoringShell(
   const requested = session.mode === "instances" ? session.occurrenceId : session.designId;
   if (!requested && cards[0]) {
     if (session.mode === "instances") selectSpatialOccurrence(cards[0].id);
-    else selectSpatialDesign(cards[0].id);
+    else selectSpatialDesign((tab !== "objects" && tab !== "tiles" ? cards.find(card => card.canonicalSource) : undefined)?.id ?? cards[0].id);
     session = spatialSession();
   }
   const selected = visibleSpatialSelection(session);
@@ -66,6 +70,22 @@ export function renderSpatialAuthoringShell(
     patchSpatialSession({ source });
     refresh();
   };
+
+  if (selected?.canonicalSource && tab !== "objects" && tab !== "tiles" && session.mode === "design" && !session.legacyOrigin && canUseCompositionWorkspace(selected.canonicalSource)) {
+    const workspace = renderSpatialCompositionWorkspace(session, selected, refresh);
+    workspace.addEventListener("keydown", event => handleShellKey(event, selected, refresh));
+    latestShellRefresh = refresh; installSpatialEscapeLayer(); host.append(workspace); return;
+  }
+  if ((tab === "objects" || tab === "spaces") && session.mode === "design" && !session.legacyOrigin) {
+    const browser = tab === "spaces"
+      ? renderSpatialSpaceWorkspace(session, selected, refresh)
+      : renderSpatialAssetBrowser(session, selected, refresh);
+    browser.addEventListener("keydown", (event) => handleShellKey(event, selected, refresh));
+    latestShellRefresh = refresh;
+    installSpatialEscapeLayer();
+    host.append(browser);
+    return;
+  }
 
   const villageStudio = session.legacyOrigin === "villages" && session.tab === "regions";
   const chrome = villageStudio ? el("div", { class: "spatial-chrome", children: [el("button", {

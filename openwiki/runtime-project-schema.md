@@ -1,3 +1,20 @@
+## 혼합 하위 재료 구성 (2026-09-13)
+
+공간·장소·지역·세계 설계에 선택적 `composition`을 추가한다. 기존 project v4/spatial v1
+레코드의 필드와 absence를 보존하므로 전량 migration이나 SQL 변경은 없다.
+형태는 `{tilesetId,width,height,tiles:[{x,y,layer,tile}],members:[{id,source,x,y,level}]}`.
+타일은 lower/upper로 분리하며 -1은 명시적 지우기, 셀 없음은 생성 바탕 복원을 뜻한다.
+멤버는 엄격히 하위 종류만 허용한다. 기존 Place.children의 동종 장소 계약은 변경하지 않는다.
+참조 검증·삭제 영향·snapshot closure·인스턴스 전개·복제 용량 제한은 직접 구성도 포함한다.
+타일 좌표/중복/atlas 범위 및 슬롯 ID 충돌을 검증한다.
+
+frozen subtree에 composition이 있으면 `compileMixedComposition.ts`로 한 맵을 시공한다.
+루트가 전체 raster/event digest를 소유하고 하위 occurrence는 projection binding을 갖는다.
+원본 설계를 바꿔도 기존 snapshot 시공 결과는 변하지 않으며 수작업 맵 변경은 소유권 검사로
+보호한다. 같은 atlas, 단일 층만 지원하고 기존 개요 경로가 있으면 오류로 중단한다.
+composition 없는 트리는 기존 시공기를 유지한다. `spatialMixedComposition.test.ts`가
+serialize→deserialize→재시공 동일성, frozen 불변성, 직접 오브젝트 픽셀, 수동 편집 거부를 검증한다.
+
 # Runtime Project Schema & Persistence
 
 ## Truthful migrated-load state (2026-09-07)

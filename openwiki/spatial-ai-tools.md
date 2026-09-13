@@ -19,7 +19,7 @@ archived legacy data as a live source.
 | `apply_spatial_build` | write | Takes the issued `previewId` into the detached proposal, not the live store. Forged, foreign, stale and consumed IDs reject. |
 | `edit_spatial_occurrence` | write | Lifecycle edits on an already-built occurrence: `move` (child inside a region/world parent — `x`/`y`, optional `level`; the containing map recompiles, authored route endpoints must still match), `refresh` (rebuild from the current source revision — the only way an upserted source edit reaches a built map; objects stamp via preview/apply), `delete` (`externalConnections` `reject` default, or explicit `remove`), `detach` (release compiled ownership), `clone` (standalone copy under `newOccurrenceId`; `omit`/`copy` external links), `link`/`unlink` (create/remove a document connection — the containing root occurrence recompiles because overview entries into a child live on their geography owner's write set; cross-tree links reject `unsupported`; compiled overview routes reject). |
 
-On a legacy project every tool except `list_spatial_designs` rejects with a typed
+On a legacy project canonical design/build tools reject with a typed
 `spatial-inactive` error naming the UI activation path (`공간 설계 활성화`);
 activation stays a user/editor action, not an AI tool. Canonical tools declare
 `world` before `map`/`database` domains so capability bucketing lands on the
@@ -153,3 +153,19 @@ That driver is explicitly offline and disables remote publication. It is not a
 real-provider Q6 transcript or browser/visual acceptance. Those remain parent-owned,
 along with catalog content, activation/publication and the final integration build.
 The runner does not silently substitute defaults for an inactive/empty library.
+
+## Completed region references (2026-09-13)
+
+`read_region_reference` is a read-only catalog tool available on **both legacy
+and canonical projects**, without spatial activation. No `id` lists references;
+`{id,row,rows}` reads a bounded window (default 8, maximum 16 rows). `nextRow:null`
+marks completion. Results include exact lower/upper tile arrays, dimensions,
+preview URL, lessons, provenance, and the frozen passage/priority/terrain for
+every returned tile. These flags belong to the example, not the active project's
+possibly edited tileset. Responses are detached copies. No live map is changed.
+
+`regionReferenceContext()` supplies a compact discovery entry to the next AI
+turn. The `spatial-world` capability group includes the reader. The example must
+not be sent to `upsert_spatial_design` as though it were a procedural region.
+Tests reconstruct the complete source through registered tool reads, verify
+metadata/non-mutation, reject invalid pages, and exercise the read-only card.

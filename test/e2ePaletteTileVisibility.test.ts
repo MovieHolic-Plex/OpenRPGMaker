@@ -19,8 +19,11 @@ describe("팔레트 레이어 필터 — e2e가 참조하는 타일 노출 보�
     expect(tileVisibleOnLayer(tileset, 7, "lower")).toBe(true);
   });
 
-  it("UPPER_TILE(374, 사선 지붕 오버레이)은 상위 팔레트에 보인다", () => {
+  it("UPPER_TILE(385, 투명 지붕 캡)은 상위 팔레트에 보이고 몸체 374는 하위에 보인다", () => {
     const tileset = bundledTileset();
-    expect(tileVisibleOnLayer(tileset, 374, "upper")).toBe(true);
+    expect(tileVisibleOnLayer(tileset, 385, "upper")).toBe(true);
+    // 사선 지붕 몸체는 불투명 — 하위 팔레트가 홈이다(2026-07-17 킷 교정 정본).
+    expect(tileVisibleOnLayer(tileset, 374, "lower")).toBe(true);
+    expect(tileVisibleOnLayer(tileset, 374, "upper")).toBe(false);
   });
 });

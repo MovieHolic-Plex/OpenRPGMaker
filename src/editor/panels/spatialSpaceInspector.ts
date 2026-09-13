@@ -1,3 +1,11 @@
+import { randomUuid } from "@/util/id";
+import { renderKindInspector } from "@/editor/panels/tilesetSpacesTab";
+import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { store } from "@/project/store";
+import { patchSpatialSession, selectSpatialDesign } from "@/editor/panels/spatialAuthoringSession";
+import { spatialPresentationId } from "@/editor/panels/spatialPresentation";
+import type { InteriorRoomKindRecord, Project } from "@/project/types";
+import { mutateSpaceDraft } from "@/editor/panels/spatialSpaceCommands";
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import { cardSubtitle, spatialSourceLabel } from "@/editor/panels/spatialFeedback";
 import { roomKindOf } from "@/editor/panels/spatialGallery";
@@ -51,13 +59,51 @@ export function renderSpatialSpacesInspector(
         el("dd", { text: theme && theme.modifierLabels.length > 0 ? theme.modifierLabels.join(", ") : "—" }),
       ],
     }));
-    body.push(el("p", {
-      class: "spatial-readonly-note",
-      text: "방 종류는 읽기 전용입니다 — 「시공」으로 실내를 만들거나 「추가」로 설계를 시작하세요.",
-      dataset: { testid: "spatial-readonly-note" },
-    }));
+    const tileset = card?.tilesetId ? workingProject().tilesets[card.tilesetId] : undefined;
+    if (tileset && card) {
+      const write = (next: InteriorRoomKindRecord | null): void => {
+        const mutate = (project: Project): Project => {
+          const current = project.tilesets[tileset.id];
+          const kinds = current.interiorRoomKinds ?? [];
+          const records = kinds.filter((entry) => entry.id !== (next?.id ?? kind.id));
+          return { ...project, tilesets: { ...project.tilesets, [tileset.id]: {
+            ...current, interiorRoomKinds: next ? [...records, next] : records,
+          } } };
+        };
+        if (workingProject().spatialAuthoring) mutateSpaceDraft(mutate);
+        else {
+          recordProjectSnapshot();
+          store.update((project) => Object.assign(project, mutate(project)), { scope: "database", label: "공간 종류 수정" });
+          spaceChromeState.saveState = "적용";
+        }
+        if (next) {
+          selectSpatialDesign(spatialPresentationId("tileset-room", tileset.id, next.id));
+          patchSpatialSession({ source: "own", inspectorOpen: true });
+        } else patchSpatialSession({ designId: null });
+        rerender();
+      };
+      if (card.source === "default") body.push(el("button", {
+        class: "spatial-action", text: "내 설계로 복제",
+        attrs: { type: "button" }, dataset: { testid: "spatial-space-copy" },
+        on: { click: () => write({ ...structuredClone(kind), id: `room_${randomUuid()}`, label: `${kind.label} 사본` }) },
+      }));
+      else body.push(renderKindInspector(tileset, kind, el("div"), rerender, {
+        patch: (next) => write(next), remove: () => write(null),
+      }));
+    }
   }
   if (space && target) {
+    body.push(el("label", { class: "spatial-space-field", children: [
+      el("span", { text: "이름" }),
+      el("input", { value: space.name, attrs: { type: "text" }, dataset: { testid: "spatial-space-name" },
+        on: { change: (event) => {
+          const input = event.currentTarget;
+          if (!(input instanceof HTMLInputElement) || !input.value.trim()) return;
+          mutateWorkingSpace(target, (current) => ({ ...current, name: input.value.trim() }));
+          rerender();
+        } },
+      }),
+    ] }));
     body.push(spaceShapeControls(space, target, rerender));
     body.push(spaceSizeControls(space, target, rerender));
     body.push(spaceEnvironmentControls(space, target, rerender));

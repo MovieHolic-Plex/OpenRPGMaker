@@ -243,6 +243,24 @@ describe("createBlankProject", () => {
     expect(p.resourceProfiles.some((profile) => profile.assetId === LEGACY_RM_TILESET_TEXTURE_KEY)).toBe(false);
   });
 
+  it("ensureBundledResourceProfiles 가 저장본의 생성 얼굴 프로필을 걷어낸다", () => {
+    const p = createBlankProject();
+    // 예전 저장본처럼 생성 시리즈 낱장 프로필이 남아 있는 상태를 만든다.
+    p.resourceProfiles.push({
+      kind: "faceset",
+      name: "hero-01-face 얼굴 2",
+      assetId: "generated-actor-hero-01-face-01",
+      imageWidth: 48,
+      imageHeight: 48,
+    });
+
+    expect(ensureBundledResourceProfiles(p)).toBe(true);
+
+    expect(p.resourceProfiles.some((profile) => profile.assetId === "generated-actor-hero-01-face-01")).toBe(false);
+    // 저작 목록에 다시 끼어들지도 않아야 한다.
+    expect(p.resourceProfiles.some((profile) => (profile.assetId ?? "").startsWith("generated-actor-hero-") && profile.kind === "faceset")).toBe(false);
+  });
+
   it("Map Tree가 있고 루트가 startMapId", () => {
     const p = createBlankProject();
     expect(p.mapTree.mapId).toBe(p.startMapId);
@@ -310,7 +328,7 @@ describe("createBlankProject", () => {
     expect(tileset.passability[TILE.FLOWERS]).toEqual(passable);
     expect(tileset.priority[85]).toBe("upper");
     expect(tileset.priority[378]).toBe("upper");
-    expect(tileset.priority[374]).toBe("upper");
+    expect(tileset.priority[374]).toBe("lower");
     const passableRoofTiles = [374, 375, 376, 377, 384, 385, 386, 387, 404, 405, 406, 407, 436, 437].filter((tile) => !(
       tileset.passability[tile]?.up === false &&
       tileset.passability[tile]?.down === false &&

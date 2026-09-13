@@ -23,6 +23,7 @@ import {
 } from "@/project/defaults/tileSemanticsCombinedTown";
 import {
   COMBINED_TOWN_HARNESS_GROUPS,
+  COMBINED_TOWN_ROOF_BODY_TILES,
   COMBINED_TOWN_ROOF_OVERLAY_TILES,
 } from "@/project/tilesetHarness/combinedTownGroups";
 
@@ -118,11 +119,12 @@ export function deriveFloorTiles(): ReadonlySet<number> {
 // ── ROOF ───────────────────────────────────────────────────────────────────
 
 export function deriveRoofTiles(): ReadonlySet<number> {
-  // 1) COMBINED_TOWN_ROOF_OVERLAY_TILES — combinedTownGroups.ts:14 [374,375,376,377,384,385,386,387].
+  // 1) 사선 지붕 어휘 두 조각 — combinedTownGroups.ts:
+  //    몸체 COMBINED_TOWN_ROOF_BODY_TILES [374..377](하위) + 캡 COMBINED_TOWN_ROOF_OVERLAY_TILES [384..387](상위).
   // 2) 라벨에 지붕/roof(대소문자 무시)가 포함된 타일.
   //    현재 일치: 374/375 "사선 지붕", 404/405 "지붕-벽 경계", 326 "지붕 장식".
   const labeled = semanticIdsWhere((entry) => /지붕|roof/i.test(entry.label));
-  return freezeSet([...COMBINED_TOWN_ROOF_OVERLAY_TILES, ...labeled]);
+  return freezeSet([...COMBINED_TOWN_ROOF_BODY_TILES, ...COMBINED_TOWN_ROOF_OVERLAY_TILES, ...labeled]);
 }
 
 // ── WINDOW ─────────────────────────────────────────────────────────────────

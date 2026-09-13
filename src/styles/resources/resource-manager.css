@@ -1120,6 +1120,7 @@
 .rm-meta-label {
   color: var(--text-3);
   font-weight: 500;
+  flex-shrink: 0;
 }
 
 .rm-meta-val {
@@ -1127,6 +1128,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
+  text-align: right;
 }
 
 .rm-inspector-actions {

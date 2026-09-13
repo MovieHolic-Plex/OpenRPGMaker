@@ -73,8 +73,11 @@ export function renderSpatialObjectInspector(input: {
           ? [actionButton("spatial-object-copy", "내 설계로 복제", handlers.onCopyBuiltin)]
           : [actionButton("spatial-object-paint", "그림 편집", handlers.onEditGraphic)],
       }),
-      anchorFields(design?.anchors ?? [], handlers),
-      chipFields(chips, customChips.join(", "), handlers),
+      ...(design ? [el("details", { class: "spatial-object-meta", children: [
+        el("summary", { text: "고급 설정 · 연결점과 동작" }),
+        graphicFields(tilesets, target, kits, handlers),
+        anchorFields(design.anchors, handlers), chipFields(chips, customChips.join(", "), handlers),
+      ] })] : []),
       ...(deletePreview ? [deletePreviewBlock(deletePreview)] : []),
       el("details", {
         class: "spatial-object-meta",

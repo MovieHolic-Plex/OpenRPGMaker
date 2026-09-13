@@ -83,14 +83,15 @@ describe("spatial inspector drawer", () => {
     });
     renderDatabasePanel(host);
     host.querySelector<HTMLButtonElement>("[data-testid='db-tab-spatial-objects']")?.click();
-    const builtin = host.querySelector<HTMLButtonElement>("[data-testid='spatial-card-bed_v']");
+    const bed = listSpatialGalleryCards(spatialSession()).find(card => card.objectId === "bed_v");
+    const builtin = bed ? host.querySelector<HTMLButtonElement>(spatialCardDomSelector(bed.id)) : null;
     expect(builtin, "builtin bed_v card").not.toBeNull();
     builtin?.click();
-    const beforeHeader = host.querySelector("[data-testid='spatial-name']")?.textContent ?? "";
+    const beforeHeader = host.querySelector(".spatial-inspector-name")?.textContent ?? "";
     const beforeId = spatialSession().designId;
     host.querySelector<HTMLButtonElement>("[data-testid='spatial-source-own']")?.click();
     expect(spatialSession().designId).toBe(beforeId);
-    expect(host.querySelector("[data-testid='spatial-name']")?.textContent).toBe(beforeHeader);
+    expect(host.querySelector(".spatial-inspector-name")?.textContent).toBe(beforeHeader);
     expect(host.querySelector(".spatial-inspector-name")?.textContent).toBe(beforeHeader);
     expect(host.querySelector("[data-testid^='spatial-card-'].is-selected")?.getAttribute("data-testid")).not.toBe(
       `spatial-card-${first}::my_chair`,
@@ -163,6 +164,6 @@ describe("spatial inspector drawer", () => {
     expect(card?.textContent).toContain("Colon-scope bed");
     (card as HTMLButtonElement | null)?.click();
     expect(spatialSession().designId).toBe(id);
-    expect(host.querySelector("[data-testid='spatial-name']")?.textContent).toBe("Colon-scope bed");
+    expect(host.querySelector(".spatial-inspector-name")?.textContent).toBe("Colon-scope bed");
   });
 });

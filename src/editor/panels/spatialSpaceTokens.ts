@@ -2,7 +2,9 @@ import { spaceChromeState } from "@/editor/panels/spatialSpaceChromeState";
 import { SPACE_TILE_PX, spaceCanvasLayout } from "@/editor/panels/spatialSpaceLayoutView";
 import { listPlacedSpaceMembers } from "@/editor/panels/spatialSpaceMembers";
 import { workingProject } from "@/editor/panels/spatialSpaceCommands";
-import { cellsFromMapRect, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
+import { resolveSpatialGraphic } from "@/project/spatial/assets";
+import { bakeInteriorObject } from "@/editor/harnessSuggestion/structureKitRasterModel";
+import { assembledKitCells, cellsFromMapRect, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import { INTERIOR_OBJECT_THUMB_BACKGROUND_TILE } from "@/editor/panels/structureKitDbSources";
 import type { SpaceDesign, SpatialId } from "@/project/spatial/types";
 import { el } from "@/util/dom";
@@ -61,7 +63,7 @@ export function slotNode(space: SpaceDesign, slotId: SpatialId, onSelect: () => 
   const x = slot?.placement.mode === "fixed" ? slot.placement.x : 0;
   const y = slot?.placement.mode === "fixed" ? slot.placement.y : 0;
   const selected = spaceChromeState.selectedSlotId === slotId && spaceChromeState.selectedIndex === null;
-  return tokenButton(
+  const token = tokenButton(
     `spatial-space-slot${selected ? " is-selected" : ""}${slot?.required ? " is-required" : ""}`,
     `spatial-slot-${slotId}`,
     x, y, slot?.quantity === 1 ? "" : String(slot?.quantity ?? ""),
@@ -71,10 +73,26 @@ export function slotNode(space: SpaceDesign, slotId: SpatialId, onSelect: () => 
       spaceChromeState.selectedSlotId = slotId;
       spaceChromeState.selectedIndex = null;
       spaceChromeState.selectedPortId = null;
-      spaceChromeState.gesture = { kind: "slot", id: slotId, originX: x, originY: y };
+      spaceChromeState.gesture = event.type === "pointerdown" ? { kind: "slot", id: slotId, originX: x, originY: y } : null;
       onSelect();
     },
   );
+  const project = workingProject();
+  const object = slot && project.spatialAuthoring?.library.objects[slot.objectDesignId];
+  const graphic = object && resolveSpatialGraphic(project, object.graphic);
+  const kit = graphic?.source === "builtin" ? bakeInteriorObject(graphic.object, object!.id, object!.name) : graphic?.kit;
+  if (object && kit?.kind === "section") {
+    const art = renderTileCellsToCanvas({ tileset: project.tilesets[object.graphic.tilesetId],
+      widthTiles: kit.width, heightTiles: kit.height, cells: assembledKitCells(kit, kit.width),
+      scale: SPACE_TILE_PX / 16, backgroundTile: null, transparentBackground: true });
+    token.prepend(art);
+    token.classList.add("spatial-space-slot-art");
+    token.style.width = `${kit.width * SPACE_TILE_PX}px`;
+    token.style.height = `${kit.height * SPACE_TILE_PX}px`;
+    token.setAttribute("aria-label", object.name);
+    token.title = object.name;
+  }
+  return token;
 }
 
 export function memberNode(view: ReturnType<typeof listPlacedSpaceMembers>[number], onSelect: () => void): HTMLElement {

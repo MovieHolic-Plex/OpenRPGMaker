@@ -1,3 +1,4 @@
+import { REGION_REFERENCES } from "@/project/regionReferences";
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { listSpatialGalleryCards, spatialCardById, spatialPresentationId } from "@/editor/panels/spatialCatalog";
@@ -591,7 +592,7 @@ describe("shipped spatial design catalog", () => {
 
     // Then: 배송 정본이 기본 설계로 보인다 — 빈 화면으로 열리지 않는다.
     expect(regions.filter((card) => card.source === "default").map((card) => card.localId))
-      .toEqual(REGION_CATALOG.map((region) => region.id));
+      .toEqual([...REGION_REFERENCES.map(reference => reference.id), ...REGION_CATALOG.map((region) => region.id)]);
     expect(worlds.filter((card) => card.source === "default").map((card) => card.localId))
       .toEqual(WORLD_CATALOG.map((world) => world.id));
   });

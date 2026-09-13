@@ -106,26 +106,18 @@ function stampForegroundOpenings(map: GameMap): void {
   stampPlasterOpenings(map);
 }
 
+// 사선 지붕 몸체(374/375/377)는 불투명 지붕 본체 — 하위 레이어에 깔아 지면을 대체한다
+// (roof-body 하네스 그룹. 투명 마감 캡 384–387 만 상위 오버레이).
 function stampDiagonalRoofBand(map: GameMap, origin: TilePoint, width: number, height: number): void {
   for (let offsetY = 0; offsetY < height; offsetY += 1) {
-    if (offsetY === 0) {
-      stampDiagonalRoofRun(map, { x: origin.x, y: origin.y + offsetY }, width);
-    } else {
-      stampRoofBodyRun(map, { x: origin.x, y: origin.y + offsetY }, width);
-    }
+    stampDiagonalRoofRun(map, { x: origin.x, y: origin.y + offsetY }, width);
   }
 }
 
 function stampDiagonalRoofRun(map: GameMap, origin: TilePoint, width: number): void {
   for (let offset = 0; offset < width; offset += 1) {
     const tile = roofTileForOffset(offset, width);
-    stampUpper(map, { x: origin.x + offset, y: origin.y }, tile);
-  }
-}
-
-function stampRoofBodyRun(map: GameMap, origin: TilePoint, width: number): void {
-  for (let offset = 0; offset < width; offset += 1) {
-    stampUpper(map, { x: origin.x + offset, y: origin.y }, roofTileForOffset(offset, width));
+    stampLower(map, { x: origin.x + offset, y: origin.y }, tile);
   }
 }
 

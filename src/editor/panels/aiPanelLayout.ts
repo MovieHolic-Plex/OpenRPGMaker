@@ -85,6 +85,48 @@ export function clampPanelSizeToViewport(
   };
 }
 
+// ── 데크 위치(레일 드래그) ──────────────────────────────────────
+// 데크는 패널(캔버스 위 inset:0 오버레이)의 오른쪽·아래 변에서 떨어진 거리를 저장한다.
+// right/bottom 앵커라 내용이 자라도 위로만 커진다 — left/top 앵커면 열린 기록이 아래로 잘린다.
+const DECK_POSITION_KEY = "oprn:ai-deck-pos";
+
+export interface DeckPosition {
+  /** 패널 오른쪽 변 → 데크 오른쪽 변 (px). */
+  right: number;
+  /** 패널 아래쪽 변 → 데크 아래쪽 변 (px). */
+  bottom: number;
+}
+
+export function loadDeckPosition(): DeckPosition | null {
+  if (typeof localStorage === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(DECK_POSITION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<DeckPosition>;
+    if (typeof parsed.right !== "number" || typeof parsed.bottom !== "number") return null;
+    if (!Number.isFinite(parsed.right) || !Number.isFinite(parsed.bottom)) return null;
+    return { right: Math.max(0, parsed.right), bottom: Math.max(0, parsed.bottom) };
+  } catch {
+    return null;
+  }
+}
+
+export function saveDeckPosition(position: DeckPosition): void {
+  if (typeof localStorage === "undefined") return;
+  localStorage.setItem(
+    DECK_POSITION_KEY,
+    JSON.stringify({
+      right: Math.max(0, Math.round(position.right)),
+      bottom: Math.max(0, Math.round(position.bottom)),
+    }),
+  );
+}
+
+export function clearDeckPosition(): void {
+  if (typeof localStorage === "undefined") return;
+  localStorage.removeItem(DECK_POSITION_KEY);
+}
+
 // ── 도킹 사이드바 폭(§2.3 — G4) ──────────────────────────────────
 // fixed 오버레이(is-docked / 기록 패널)용 폭. 좌측 리사이저로 조절해 localStorage에 유지한다.
 const DOCK_WIDTH_KEY = "oprn:ai-dock-width";

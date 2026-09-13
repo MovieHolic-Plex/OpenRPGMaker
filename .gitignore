@@ -274,3 +274,7 @@ verify-shots/battle-skin-trio/
 !.omo/evidence/loc-transition/
 !.omo/evidence/loc-transition/**
 >>>>>>> agent/loctrans
+
+# Growth DB adversarial review — defect + save/reload receipts.
+!.omo/evidence/growth-db-review/
+!.omo/evidence/growth-db-review/**

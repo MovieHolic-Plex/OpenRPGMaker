@@ -97,6 +97,7 @@ import { createComposerElements, type ComposerElements, type ComposerMode, type 
 import { createPlanningReuseControl, type PlanningReuseControl } from "./aiPlanningReuse";
 import { describePlanningReuse } from "@/project/mapPlanningItems";
 import { deckIcon } from "./aiDeckIcons";
+import { createDeckMoveChrome } from "./aiDeckMoveChrome";
 import { createDeckRail, deckStateOfTone, type DeckState } from "./aiDeckRail";
 import { regionFromToolCall, renderMapChip } from "./aiMapChip";
 import { toolIconKey } from "./aiToolLabels";
@@ -2769,6 +2770,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const applySize = resizeChrome.applySize;
   const mountResizeHandle = resizeChrome.mountHandle;
 
+  // 위치 이동 크롬은 aiDeckMoveChrome.ts 가 갖는다 — 레일 드래그로 데크를 캔버스 위 아무 데나 놓는다.
+  // 저장 위치(oprn:ai-deck-pos)는 패널 CSS 변수로 들어가 접힘 알약도 같은 자리에 선다.
+  const moveChrome = createDeckMoveChrome({
+    panel,
+    deck,
+    rail: rail.root,
+    movable: resizableDock,
+  });
+
   /**
    * 로그 배치의 **단일 상태 함수**. (도크 × 기록/스튜디오) → 슬롯 하나.
    *
@@ -3353,6 +3363,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     endTurnProgress();
     clearAutoCollapseTimer();
     resizeChrome.dispose();
+    moveChrome.dispose();
     studioShell?.dispose();
     studioShell = null;
 

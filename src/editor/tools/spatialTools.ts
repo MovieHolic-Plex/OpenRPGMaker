@@ -1,3 +1,4 @@
+import { REGION_REFERENCES, readRegionReference } from "@/project/regionReferences";
 import { previewSpatialAuthoring } from "@/editor/spatial/preview";
 import type { SpatialAuthoringRequest } from "@/editor/spatial/authoringTypes";
 import { SpatialCompileError, type SpatialStampTarget } from "@/editor/spatial/compilerTypes";
@@ -61,8 +62,17 @@ function connectionCompileRoot(document: SpatialAuthoringDocument, link: Pick<Sp
   return fromRoot.id;
 }
 export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
+  { name: "read_region_reference", mode: "read", domains: ["world", "map", "database"],
+    description: "Read a completed region example: frozen tile rows, tile passage/priority, image and authoring lessons. Omit id to list examples. Works without spatial activation. Rows are zero-based; tile arrays are row-major and -1 means empty. Follow nextRow to recover the whole map; this is a reference, not a procedural design or build command.",
+    parameters: { type: "object", properties: { id: { type: "string" }, row: { type: "integer", minimum: 0 }, rows: { type: "integer", minimum: 1, maximum: 16 } }, additionalProperties: false },
+    run(_project, args) {
+      if (args.id === undefined) return { summary: "완성 지역 사례", data: { references: structuredClone(REGION_REFERENCES) } };
+      try { return { summary: "완성 지역 사례 원본", data: readRegionReference(String(args.id), args.row === undefined ? 0 : Number(args.row), args.rows === undefined ? 8 : Number(args.rows)) }; }
+      catch (error) { throw new ToolError(error instanceof Error ? error.message : String(error), { code: "invalid-args" }); }
+    },
+  },
   { name: "list_spatial_designs", mode: "read", domains: ["world", "map", "database"],
-    description: "Discover saved canonical designs across all project tilesets; query matches id, name or tags. object = reusable appearance/prop, including building exteriors; space = usable room/floor/yard; place = complete facility/settlement grouping spaces or places. For a complete house search kind:place; for saved exteriors search kind:object with query:건물 외형 (or the authored name/tag). Context designs are only samples: search this full library before declaring an asset missing. List rows use kind:place plus placeKind:facility|settlement|natural; get_spatial_design returns the original upsert body. Read-only; never activates or seeds an empty library. data.active=false means legacy project; activation is a user-side editor action, not a tool.",
+    description: "Discover saved canonical designs across all project tilesets; query matches id, name or tags. object = reusable appearance/prop, including building exteriors; space = usable room/floor/yard; place = complete facility/settlement grouping spaces or places. For a complete house search kind:place; for saved exteriors search kind:object with query:건물 외형 (or the authored name/tag). Context designs are only samples: search this full library before declaring an asset missing. List rows use kind:place plus placeKind:facility|settlement|natural; get_spatial_design returns the original upsert body. Read-only; never activates or seeds an empty library. When data.active is false the project has no spatialAuthoring document and canonical design/build tools reject with spatial-inactive; read_region_reference remains available — activation is a user-side editor action, not a tool.",
     parameters: SPATIAL_LIST_SCHEMA,
     run(project, args) {
       if (project.spatialAuthoring === undefined) {

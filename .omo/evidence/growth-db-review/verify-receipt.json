@@ -1,0 +1,18 @@
+{
+  "projectId": "rpg-zzu-growth-presets-20260906-wish2",
+  "mode": "--verify",
+  "authoredDigest": "a090d0eed84945afaf867b212718e3f6cfcc19fe4565de90036a267a0b4356ae",
+  "reloadedDigest": "f6c67dbf1968c629c6ee10c1a020423328107786fe223c7fbea4a553f1a9ebd0",
+  "equality": false,
+  "changes": {
+    "filledDescs": 12,
+    "wiredPromos": 12,
+    "loweredActors": 3
+  },
+  "counts": {
+    "classes": 21,
+    "skills": 51,
+    "trees": 3,
+    "nodes": 21
+  }
+}

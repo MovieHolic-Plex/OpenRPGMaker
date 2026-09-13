@@ -1,3 +1,4 @@
+import { REGION_REFERENCES } from "@/project/regionReferences";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { CONCEPT_FACILITY_TEMPLATES } from "@/project/defaults/conceptFacilityTemplates";
 import { visibleAuthoringProject } from "@/editor/panels/spatialAuthoringAccess";
@@ -97,6 +98,9 @@ function regionCards(): SpatialGalleryCard[] {
     // 이름과 같은 부제는 카드·인스펙터에서 이중 출력된다 — 자리가 말해 주는 것을 쓴다.
     subtitle: `장소 ${region.places.length}곳`,
   }));
+  cards.unshift(...REGION_REFERENCES.map(entry => ({ id: `region-reference:${entry.id}`, localId: entry.id,
+    regionReferenceId: entry.id, name: entry.name, source: "default" as const, kind: "regions" as const,
+    usage: 0, tilesetId: entry.tilesetId, regionKind: "settlement" as const, subtitle: "완성 맵 사례" })));
   const known = new Set(cards.map((card) => card.id));
   for (const region of Object.values(visibleAuthoringProject().spatialAuthoring?.library.regions ?? {})) {
     const id = spatialPresentationId("library-region", "library", region.id);

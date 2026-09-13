@@ -1,3 +1,4 @@
+import { renderSpaceObjectBrowser } from "@/editor/panels/spatialSpaceObjectBrowser";
 import { renderSpatialCardThumb, roomKindOf } from "@/editor/panels/spatialGallery";
 import { interiorThemeCards } from "@/editor/panels/structureKitDbSources";
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
@@ -89,6 +90,7 @@ export function renderSpatialSpacesCanvas(
   _session: SpatialAuthoringSession,
   card: SpatialGalleryCard | undefined,
   rerender: () => void,
+  options: { objectBrowser?: boolean } = {},
 ): HTMLElement {
   const space = workingSpace(card);
   const target = card ? spaceDraftTarget(card) : undefined;
@@ -156,7 +158,7 @@ export function renderSpatialSpacesCanvas(
       rerender();
       return;
     }
-    if (event.key === "Enter" && spaceChromeState.selectedObjectId && target.occurrenceId) {
+    if (event.key === "Enter" && spaceChromeState.selectedObjectId) {
       event.preventDefault();
       addSpaceObjectAt(target, spaceChromeState.selectedObjectId, spaceChromeState.cursorTile);
       rerender();
@@ -191,6 +193,13 @@ export function renderSpatialSpacesCanvas(
         },
       },
     })),
+  });
+  if (options.objectBrowser) board.addEventListener("click", event => {
+    if (!target || !space || !spaceChromeState.selectedObjectId) return;
+    const node = event.target;
+    if (node instanceof Element && node.closest(".spatial-space-slot, .spatial-space-port, .spatial-space-member")) return;
+    addSpaceObjectAt(target, spaceChromeState.selectedObjectId, eventTile(event, board));
+    rerender();
   });
   board.addEventListener("dragover", (event) => event.preventDefault());
   board.addEventListener("drop", (event) => {
@@ -246,6 +255,14 @@ export function renderSpatialSpacesCanvas(
     });
   }
   const kindPanel = !space && card ? roomKindPanel(card) : undefined;
+  if (options.objectBrowser && space) return el("div", {
+    class: "spatial-canvas spatial-spaces-canvas space-composition-canvas",
+    dataset: { testid: "spatial-canvas" }, attrs: { "aria-label": "공간 배치 작업대" },
+    children: [renderSpaceObjectBrowser(space.tilesetId), el("section", { class: "space-composition-board", children: [
+      el("div", { class: "space-composition-hint", text: "오브젝트를 끌어 놓거나 선택 후 빈칸을 클릭하세요. 선택한 항목은 방향키로 옮길 수 있습니다." }),
+      el("div", { class: "spatial-canvas-camera", children: [board] }),
+    ] })],
+  });
   const filters: Array<typeof spaceChromeState.environment> = ["all", "interior", "outdoor"];
   return el("div", {
     class: "spatial-canvas spatial-spaces-canvas",

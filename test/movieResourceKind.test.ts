@@ -94,7 +94,7 @@ describe("movie ResourceKind", () => {
       return container;
     });
     const movieRow = findByTestId(panel, "resource-category-list")
-      ?.children.find((row) => row.textContent === "동영상");
+      ?.children.find((row) => row.textContent?.includes("동영상"));
     expect(movieRow, "동영상 카테고리 버튼이 없다").toBeDefined();
 
     (movieRow as FakeElement).dispatchEvent(new Event("click"));

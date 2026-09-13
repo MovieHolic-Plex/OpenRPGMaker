@@ -51,7 +51,7 @@ describe("저작 집 형태 카탈로그 계약", () => {
     }
   });
 
-  it("레이어 정책을 지킨다 — 하위는 불투명만, 상위는 상위 홈 타일만", () => {
+  it("레이어 정책을 지킨다 — 하위는 불투명만, 상위는 상위 홈이거나 의도적 불투명 오버레이", () => {
     const project = createBlankProject();
     const tileset = project.tilesets[DEFAULT_TILESET_ID]!;
     for (const def of AUTHORED_HOUSE_FORM_DEFS) {
@@ -64,7 +64,15 @@ describe("저작 집 형태 카탈로그 계약", () => {
         });
         row.upperTiles?.forEach((tile, x) => {
           if (tile === -1) return;
-          expect(tileLayerPolicy(tileset, tile).home, `${def.id} 상위 (${x},${y}) 타일 ${tile}`).toBe("upper");
+          // 상위 홈이 아니어도 불투명 칩은 의도적 오버레이로 상위에 둘 수 있다 —
+          // 저작 폼의 셀 배치가 정본이다(예: manor-balcony 의 용마루 374·트림 376/377.
+          // 이들의 홈 분류는 하위로 교정됐지만 폼의 상위 겹침 표현은 그대로 유효하다).
+          // 투명 칩은 반드시 상위 홈이어야 한다 — 그 외 조합은 분류 회귀다.
+          const policy = tileLayerPolicy(tileset, tile);
+          expect(
+            policy.home === "upper" || !policy.transparent,
+            `${def.id} 상위 (${x},${y}) 타일 ${tile}`,
+          ).toBe(true);
         });
       }
     }

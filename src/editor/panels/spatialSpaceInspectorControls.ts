@@ -10,7 +10,7 @@ export function spaceShapeControls(space: SpaceDesign, target: SpaceDraftTarget,
     class: "spatial-space-shapes",
     children: SHAPES.map((shape) => el("button", {
       class: `spatial-source-chip${space.shape === shape ? " is-active" : ""}`,
-      text: shape,
+      text: ({ rect: "직사각형", l: "L자", alcove: "홈 있는 방" })[shape],
       attrs: { type: "button", "aria-pressed": String(space.shape === shape) },
       dataset: { testid: `spatial-shape-${shape}` },
       on: { click: () => { mutateWorkingSpace(target, (current) => withShape(current, shape)); rerender(); } },
