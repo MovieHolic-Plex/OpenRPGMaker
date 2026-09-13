@@ -114,6 +114,14 @@ as failure. Contract tests: `test/aiVisualEvidenceReceipt.test.ts`; the axis tab
 token expired…)`), 범위 밖 spill 버림도 `범위 밖 N건 버림(키들)`으로 성공 캡션에 함께 고지한다.
 계약: `test/piAgentRunOutcome.test.ts`.
 
+**묶음이 만든 정의는 병합이 데려온다 (2026-09-14).** 맵 묶음 병합(`src/ai/piAgent/mapBundle.ts`)은
+묶음 밖 변경을 버리지만, 묶음이 **새로 만든** 스위치·변수·공통이벤트·엔딩·타일셋·업로드 자산·
+`database` 레코드와 새 플래그의 세션 시작값은 함께 옮긴다. 맵 이벤트가 그 정의를 가리키기 때문이다 —
+버리면 병합본이 자기 이벤트의 참조를 잃고 커밋 게이트가 `serialize-roundtrip`(`setSwitch: switchId가
+존재하지 않습니다`)으로 **적용 전체를 거부**한다(`/pi` 실측: `적용 실패(commit-rejected): …`).
+기존 항목의 수정·삭제는 그대로 범위 밖이고, 함께 옮긴 키는 spill 목록에서 덜어낸다.
+계약: `test/piAgentMapBundle.test.ts`.
+
 ## P3 run retirement and stale drafts (2026-09-07)
 
 P3 adds client-local execution ownership and a captured proposal base to the P1/P2
