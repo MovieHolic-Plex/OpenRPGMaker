@@ -1,0 +1,52 @@
+{
+  "baseline": {
+    "total": 23839,
+    "failed": 508,
+    "passed": 23207
+  },
+  "current": {
+    "total": 23843,
+    "failed": 509,
+    "passed": 23210
+  },
+  "newFailedAssertions": [
+    {
+      "key": "aiRunRecoveryRuntime.test.ts :: restores the same WorkPlan and immutable requirements, executing only its remaining task without resetting consumed budget",
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/aiRunRecoveryRuntime.test.ts",
+      "name": "restores the same WorkPlan and immutable requirements, executing only its remaining task without resetting consumed budget",
+      "messages": [
+        "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/aiRunRecoveryRuntime.test.ts:136:1\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at VitestExecutor.runModule (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:397:4)\n    at VitestExecutor.directRequest (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:375:3)\n    at VitestExecutor.cachedRequest (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:189:11)\n    at VitestExecutor.executeId (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:166:10)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1174:4)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+      ]
+    },
+    {
+      "key": "spatialGeographyRaster.browser.test.ts :: spatial geography candidate raster paints lake-country through paintGeographyAtlas and shows typed mountain errors",
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/spatialGeographyRaster.browser.test.ts",
+      "name": "spatial geography candidate raster paints lake-country through paintGeographyAtlas and shows typed mountain errors",
+      "messages": [
+        "page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('html[data-ready=\\'1\\']') to be visible\u001b[22m\n\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/spatialGeographyRaster.browser.test.ts:37:18\n    at /home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+      ]
+    }
+  ],
+  "affected": [
+    {
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/spatialInteriorLayout.test.ts",
+      "status": "passed",
+      "tests": 4
+    },
+    {
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/spatialPlacePreservation.test.ts",
+      "status": "passed",
+      "tests": 11
+    },
+    {
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/spatialSpaceCompiler.test.ts",
+      "status": "passed",
+      "tests": 33
+    },
+    {
+      "file": "/home/main/.codex/worktrees/2ece/rpg-zzu/test/spatialTools.test.ts",
+      "status": "passed",
+      "tests": 29
+    }
+  ]
+}

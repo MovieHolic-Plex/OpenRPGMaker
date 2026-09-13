@@ -30,3 +30,20 @@ verified the saved maps and source definitions with the same project revision.
 `upsert_spatial_design` accepting `interiorLayout`, followed by the regular
 canonical tool suite. The optional JSON schema field documents floor coordinates,
 shared partition ownership and doorway semantics for the AI author.
+
+A later independent read (`latest-remote-check.json`) observed a different whole
+project revision while both authored maps, source definitions and the interior
+tileset still matched. Other project work was not overwritten.
+
+
+Full gates completed with exit 1: app types, CSS and surface passed; all 77 tests
+in the changed layout/space/place/tool suites passed. Overall Vitest reported
+23,210 passed / 509 failed. Compared with the immediately preceding run, the AI
+recovery test and geography browser test differed. The AI recovery file passed
+all six tests on recheck. `spatialGeographyRaster.browser.test.ts` retained a
+30-second `html[data-ready='1']` timeout (initial page in the full run, fault page
+in the first recheck) and still failed alone. This also occurred in the earlier
+integrated compact-interior gate evidence; no geography code was changed here.
+The unresolved geography browser failure is reported, not counted as a pass.
+See `gates.json`, `gates-comparison.json`, `gates-recheck.json`, `browser-recheck.json`.
+A final app typecheck after adding AI schema support also exited 0.
