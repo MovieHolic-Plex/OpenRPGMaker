@@ -1698,7 +1698,8 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(result.stoppedReason).toBe("error");
     expect(result.review).toMatchObject({ status: "error", summary: "independent-review-malformed-json" });
     expect(phases).toEqual(["plan", "execute", "review"]);
-    expect(requests.filter(request => independentReviewPayload(request))).toHaveLength(1);
+    // One corrective re-ask, then closed: an off-protocol answer costs a round, never the gate.
+    expect(requests.filter(request => independentReviewPayload(request))).toHaveLength(2);
     expect(session.isDraftReviewApproved()).toBe(false);
     expect(store.getCurrent().meta.title).toBe(project.meta.title);
     expect(getMapEditHistoryEntries()).toHaveLength(0);
@@ -1706,6 +1707,42 @@ describe("AssistantSession 툴콜 루프", () => {
     const serializedMessages = JSON.stringify(session.getMessages());
     expect(serializedMessages).not.toContain("<tool_call>");
     expect(serializedMessages).not.toContain("<invoke name=");
+  }, 30000);
+
+  it("검수 응답이 산문이면 프로토콜만 한 번 다시 요구하고 그 판정으로 적용한다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const steps = [
+      PLANNER_DIRECT,
+      assistantToolCall("set_title_screen", { title: "새 제목" }, "c_title"),
+      assistantFinal("실행 완료"),
+    ];
+    let index = 0;
+    const chat = async (_config: unknown, req: ChatRequest): Promise<ChatResult> => {
+      void req;
+      if (index >= steps.length) throw new Error("scripted chat exhausted");
+      return steps[index++];
+    };
+    const project = createBlankProject();
+    installMilestoneHermeticEnv(project);
+    const reviewRequests: ChatRequest[] = [];
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 24 }, chat: (config, request) => {
+      if (independentReviewPayload(request)) {
+        reviewRequests.push(request);
+        if (reviewRequests.length === 1) return Promise.resolve(assistantFinal(RAW_TOOL_MARKUP_FIXTURE));
+        return Promise.resolve(approvedReviewResponse(request)!);
+      }
+      return chat(config, request);
+    } });
+
+    const result = await session.sendUserMessage(`${ORCH_GOAL}타이틀을 새 제목으로 바꿔줘`, () => {}, undefined, { autonomous: true });
+
+    expect(reviewRequests).toHaveLength(2);
+    // The retry repeats the same evidence and adds only the offending answer plus the protocol reminder.
+    expect(reviewRequests[1]!.messages).toHaveLength(reviewRequests[0]!.messages.length + 2);
+    expect(reviewRequests[1]!.messages.at(-1)?.content).toContain("exactly one JSON object");
+    expect(result.review).toMatchObject({ status: "approved" });
+    expect(result.stoppedReason).not.toBe("error");
+    expect(store.getCurrent().meta.title).toBe("새 제목");
   }, 30000);
 
   it("집 3채 NPC 5명 요청에서 집 1채만 만든 실행자의 완료 주장은 독립 검수의 구조화된 부족분으로 재투입한다", async () => {

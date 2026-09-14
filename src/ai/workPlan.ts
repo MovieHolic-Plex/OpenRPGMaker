@@ -980,13 +980,15 @@ export function canCompleteWorkItem(
 }
 
 export type CompleteWorkItemResult =
-  | { ok: true; item: WorkItem; alreadyDone?: boolean }
-  | { ok: false; reason: string; item?: WorkItem };
+  | { ok: true; item: WorkItem; alreadyDone?: boolean; waivedTools?: readonly string[] }
+  | { ok: false; reason: string; item?: WorkItem; missingTools?: readonly string[] };
 
-/** 아직 열려 있는(대기/진행) 항목 id — 오류 메시지에서 모델에 유효값을 알려주는 용도. */
+/** 아직 열려 있는(대기/진행/막힘) 항목 id — 오류 메시지에서 모델에 유효값을 알려주는 용도.
+ * `blocked` 도 여기 들어간다: 막힌 항목만 남은 계획에서 "유효한 항목 id: (없음)" 은 사실이 아니고,
+ * 모델에게 다시 시도할 대상을 가리키지 못해 문자열을 지어내게 한다. */
 export function openWorkItemIds(plan: WorkPlan): string[] {
   return plan.layers.flatMap((layer) => layer.items)
-    .filter((item) => item.status === "pending" || item.status === "in_progress")
+    .filter((item) => item.status === "pending" || item.status === "in_progress" || item.status === "blocked")
     .map((item) => item.id);
 }
 
@@ -998,6 +1000,8 @@ export function completeWorkItemById(
     successfulTools?: readonly string[];
     force?: boolean;
     outcomeGate?: WorkItemOutcomeGate;
+    /** 선언한 successTools 기록만 비었을 때, 산출물 검사를 대신 근거로 쓴다. 호출부가 조건을 진단한다. */
+    waiveMissingTools?: boolean;
   },
 ): CompleteWorkItemResult {
   for (const layer of plan.layers) {
@@ -1016,7 +1020,21 @@ export function completeWorkItemById(
         return { ok: false, item: it, reason: `현재 항목 '${plan.currentItemId}'을 먼저 완료하세요. 다른 항목의 성공 기록을 사용할 수 없습니다.` };
       }
       const gate = canCompleteWorkItem(it, options?.successfulTools, options?.outcomeGate);
-      if (!gate.ok) return { ok: false, reason: gate.reason, item: it };
+      // 구조적으로 닫힐 수 없는 항목이 생긴다: 선언된 툴이 앞선 게이트·스키마로 막히거나 모델이 동등한
+      // 다른 툴로 같은 일을 해내면 기록이 남지 않고, 그러면 같은 항목을 예산이 마를 때까지 반복한다(F4).
+      // 탈출구는 항목이 실제로 산출물을 남겼는지 보는 게이트다 — 쓰기 기록 없음·검증 미통과는 여전히 거부된다.
+      if (!gate.ok) {
+        const waivable = options?.waiveMissingTools === true && gate.missingTools !== undefined
+          && gate.missingTools.length > 0;
+        const outcome = waivable ? options?.outcomeGate?.(it) ?? { ok: true as const } : null;
+        if (!waivable || outcome?.ok !== true) {
+          return { ok: false, reason: outcome && !outcome.ok ? outcome.reason : gate.reason, item: it, ...(gate.missingTools ? { missingTools: gate.missingTools } : {}) };
+        }
+        it.status = "done";
+        it.note = note ?? `선언한 툴(${gate.missingTools!.join(", ")}) 기록 없이 산출물 검사로 완료`;
+        if (plan.currentItemId === itemId) activateFirstPending(plan);
+        return { ok: true, item: it, waivedTools: gate.missingTools };
+      }
     }
     it.status = "done";
     if (note) it.note = note;
