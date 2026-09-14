@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **67쪽 / 2636KB / 약 741,546 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **67쪽 / 2647KB / 약 744,643 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,15 +15,15 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 393KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 1992 | ~111,206 |
+| `openwiki/editor-ai-panel.md` | 398KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2023 | ~112,448 |
 | `openwiki/editor-ai-tools.md` | 195KB | 82KB ⚠상한 초과 — 절을 더 쪼개라 | 1504 | ~54,516 |
 | `openwiki/editor-database.md` | 284KB | 59KB ⚠상한 초과 — 절을 더 쪼개라 | 1584 | ~82,227 |
-| `openwiki/editor-event-authoring.md` | 135KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 740 | ~38,710 |
+| `openwiki/editor-event-authoring.md` | 136KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 744 | ~39,121 |
 | `openwiki/editor-event-commands.md` | 57KB | 32KB | 202 | ~15,410 |
 | `openwiki/editor-interior-room-harness.md` | 77KB | 6KB | 374 | ~22,891 |
 | `openwiki/editor-pre-edit-routing.md` | 113KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 605 | ~32,349 |
 | `openwiki/editor-workflows-misc.md` | 65KB | 30KB | 458 | ~17,883 |
-| `openwiki/runtime-battle.md` | 141KB | 31KB | 596 | ~40,340 |
+| `openwiki/runtime-battle.md` | 143KB | 31KB | 611 | ~40,897 |
 | `openwiki/runtime-project-schema.md` | 142KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 949 | ~38,435 |
 | `openwiki/runtime-sessions.md` | 89KB | 46KB | 318 | ~23,590 |
 | `openwiki/testing.md` | 196KB | 48KB | 1822 | ~54,107 |
@@ -34,7 +34,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/editor-ai-panel.md` | 25 | 1637, 1638, 1639, 1640, 1641, 1642, 1656, 1666 |
+| `openwiki/editor-ai-panel.md` | 25 | 1668, 1669, 1670, 1671, 1672, 1673, 1687, 1697 |
 | `openwiki/editor-ai-tools.md` | 6 | 1151, 1152, 1156, 1158, 1160, 1347 |
 | `openwiki/editor-database.md` | 7 | 649, 653, 654, 655, 664, 690, 693 |
 | `openwiki/editor-event-authoring.md` | 16 | 310, 311, 314, 319, 320, 321, 322, 323 |
@@ -162,16 +162,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L40` 3단계 — 이름 삭제 (메이저 정리)
 - `L45` 개별 판단 메모
 
-### `openwiki/ai-workflow.md` — 32KB · 255줄 · ~8,612 토큰
+### `openwiki/ai-workflow.md` — 35KB · 261줄 · ~9,499 토큰
 
 - `L5` Before changing files
 - `L13` While changing files
-  - `L149` Request-bound NPC prerequisite proof (CR-NPC-PREREQ-01, 2026-09-07)
-- `L205` After changing files
-- `L212` Tool-calling architecture (human review map)
-- `L222` Headless Tool and MCP Access
-- `L231` Live editor AI assistant MCP (same UI session)
-- `L250` Refreshing the wiki
+  - `L155` Request-bound NPC prerequisite proof (CR-NPC-PREREQ-01, 2026-09-07)
+- `L211` After changing files
+- `L218` Tool-calling architecture (human review map)
+- `L228` Headless Tool and MCP Access
+- `L237` Live editor AI assistant MCP (same UI session)
+- `L256` Refreshing the wiki
 
 ### `openwiki/architecture.md` — 10KB · 68줄 · ~2,605 토큰
 
@@ -258,52 +258,52 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L46` 설치 지점
 - `L52` 테스트
 
-### `openwiki/editor-ai-panel.md` — 393KB · 1992줄 · ~111,206 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 398KB · 2023줄 · ~112,448 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L3` 조수 채팅은 Pi 하나다 — 세션 경로를 걷어냈다 (2026-09-11)
-- `L49` Five model roles and whole-map harmony review (2026-09-14)
-- `L125` Retained map planning items and explicit reuse (2026-09-10, OPRN-019)
-- `L166` Run outcome line: four independent axes (2026-09-09)
-- `L217` P3 run retirement and stale drafts (2026-09-07)
-- `L297` Map-scoped conversation archive (2026-09-08)
-  - `L357` Editor history surface
-- `L399` Independent result review and repair (2026-09-06)
-- `L502` Combined P2 and independent-review ownership (2026-09-07)
-- `L536` P2 run outcomes and user scope actions (2026-09-06)
-  - `L592` Canonical requirements and genuine user actions
-- `L664` User-confirmed interaction approach correction (CR-P7-1, 2026-09-08)
-- `L701` Live large-world QA: plan repair and final audit (2026-09-07)
-- `L790` Assistant control audit fixes (2026-09-07)
-- `L801` World structure activity labels (2026-09-06)
-- `L810` Multi-map construction specifications (2026-09-06)
-- `L877` Plan authoring has no small-plan quota (2026-09-06)
-- `L896` Acceptance sticky note (2026-09-07)
-  - `L946` Session-owned acceptance contract
-- `L1284` 자동 프로젝트 위키 (2026-09-07)
-- `L1316` Independent image generation settings (2026-09-07)
-- `L1317` Independent image generation settings (2026-09-08)
-- `L1355` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
-- `L1362` Map-targeted work outcomes (2026-09-06)
-- `L1377` 계획 항목의 연속 실행 증거 (2026-09-05)
-- `L1383` 계획 규모와 선언 자세 (2026-09-09)
-- `L1393` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
-- `L1402` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
-- `L1418` 패널 셸 · 도크 · 접기 · 컴포저
-- `L1566` 세션 수명 · 대화 컨텍스트
-- `L1583` 제안 적용 · 복구 · 완성도 린트
-- `L1670` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
-- `L1731` 영역 작업 · 시공 · 실내/집 파이프라인
-- `L1755` 툴 노출 · 프롬프트 · 의도 판정 · NPC
-- `L1769` 타일셋 이해 · 검토 위저드 (T1a/T1b)
-- `L1795` 저장 · 내보내기 · 프로젝트 생성
-- `L1803` 제공자 · OAuth · 동반 서비스
-- `L1833` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
-- `L1876` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
-- `L1909` 배치 의존성과 완료 멱등성 (2026-09-06)
-- `L1917` 모험 완료와 실제 적용 횟수 (2026-09-05)
-- `L1922` Assistant clean conversation — Phase 1 (2026-09-06)
-- `L1959` Assistant deck width resize (2026-09-07)
-  - `L1971` Legacy AI contract verification (2026-09-08)
+- `L80` Five model roles and whole-map harmony review (2026-09-14)
+- `L156` Retained map planning items and explicit reuse (2026-09-10, OPRN-019)
+- `L197` Run outcome line: four independent axes (2026-09-09)
+- `L248` P3 run retirement and stale drafts (2026-09-07)
+- `L328` Map-scoped conversation archive (2026-09-08)
+  - `L388` Editor history surface
+- `L430` Independent result review and repair (2026-09-06)
+- `L533` Combined P2 and independent-review ownership (2026-09-07)
+- `L567` P2 run outcomes and user scope actions (2026-09-06)
+  - `L623` Canonical requirements and genuine user actions
+- `L695` User-confirmed interaction approach correction (CR-P7-1, 2026-09-08)
+- `L732` Live large-world QA: plan repair and final audit (2026-09-07)
+- `L821` Assistant control audit fixes (2026-09-07)
+- `L832` World structure activity labels (2026-09-06)
+- `L841` Multi-map construction specifications (2026-09-06)
+- `L908` Plan authoring has no small-plan quota (2026-09-06)
+- `L927` Acceptance sticky note (2026-09-07)
+  - `L977` Session-owned acceptance contract
+- `L1315` 자동 프로젝트 위키 (2026-09-07)
+- `L1347` Independent image generation settings (2026-09-07)
+- `L1348` Independent image generation settings (2026-09-08)
+- `L1386` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
+- `L1393` Map-targeted work outcomes (2026-09-06)
+- `L1408` 계획 항목의 연속 실행 증거 (2026-09-05)
+- `L1414` 계획 규모와 선언 자세 (2026-09-09)
+- `L1424` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
+- `L1433` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
+- `L1449` 패널 셸 · 도크 · 접기 · 컴포저
+- `L1597` 세션 수명 · 대화 컨텍스트
+- `L1614` 제안 적용 · 복구 · 완성도 린트
+- `L1701` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
+- `L1762` 영역 작업 · 시공 · 실내/집 파이프라인
+- `L1786` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+- `L1800` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+- `L1826` 저장 · 내보내기 · 프로젝트 생성
+- `L1834` 제공자 · OAuth · 동반 서비스
+- `L1864` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L1907` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+- `L1940` 배치 의존성과 완료 멱등성 (2026-09-06)
+- `L1948` 모험 완료와 실제 적용 횟수 (2026-09-05)
+- `L1953` Assistant clean conversation — Phase 1 (2026-09-06)
+- `L1990` Assistant deck width resize (2026-09-07)
+  - `L2002` Legacy AI contract verification (2026-09-08)
 
 ### `openwiki/editor-ai-tools.md` — 195KB · 1504줄 · ~54,516 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
@@ -436,7 +436,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1577` 검토한 실내 기본값의 원격 반영 (2026-09-05)
 - `L1581` 특정 꾸러미의 명시적 교체 (2026-09-06)
 
-### `openwiki/editor-event-authoring.md` — 135KB · 740줄 · ~38,710 토큰 · 통째읽기 잘림 · 깨진 줄 16
+### `openwiki/editor-event-authoring.md` — 136KB · 744줄 · ~39,121 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
 - `L3` 구역(로케이션) 조건분기 (OPRN-OUT-020, 2026-09-10)
 - `L25` 구역 드나듦 트리거 (2026-09-10)
@@ -460,20 +460,20 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L541` 회상 오프닝 저작 — beat 컴파일러다 (2026-09-03)
 - `L550` Guided story arc facade
 - `L554` 지도·화면 효과 탭 초보자 UX (2026-08-27)
-- `L559` 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
-- `L567` Companion roster in the command picker (2026-08-27)
-- `L573` Presentation and system M2 command bodies
-- `L580` 좌측 설정 레일 그룹 소속 (2026-08-27)
-- `L598` 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
-- `L608` 「움직임과 속도」 부피 정리 (2026-08-29)
-- `L643` 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
-  - `L677` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
-  - `L688` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
-  - `L696` 참조를 비워도 조건을 삭제하지 않는다
-  - `L703` 조건 미리보기는 모르면 모른다고 말한다
-  - `L712` 조건 문구에 내부 토큰을 넣지 마라
-- `L727` 공포 게임 제작 기능 (2026-09-05)
-  - `L732` NPC 발견·추격 저작 (2026-09-06)
+- `L563` 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
+- `L571` Companion roster in the command picker (2026-08-27)
+- `L577` Presentation and system M2 command bodies
+- `L584` 좌측 설정 레일 그룹 소속 (2026-08-27)
+- `L602` 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
+- `L612` 「움직임과 속도」 부피 정리 (2026-08-29)
+- `L647` 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
+  - `L681` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
+  - `L692` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
+  - `L700` 참조를 비워도 조건을 삭제하지 않는다
+  - `L707` 조건 미리보기는 모르면 모른다고 말한다
+  - `L716` 조건 문구에 내부 토큰을 넣지 마라
+- `L731` 공포 게임 제작 기능 (2026-09-05)
+  - `L736` NPC 발견·추격 저작 (2026-09-06)
 
 ### `openwiki/editor-event-command-fixes.md` — 24KB · 98줄 · ~6,208 토큰 · 깨진 줄 11
 
@@ -785,33 +785,33 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 141KB · 596줄 · ~40,340 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 143KB · 611줄 · ~40,897 토큰 · 통째읽기 잘림
 
 - `L3` 전투 UI/UX·모션 적대적 리뷰 5축 후속 (2026-09-14)
-- `L59` Native event battle admission (2026-09-08)
-- `L105` Supported action authoring (2026-09-07)
-- `L117` 적별 전투 표시 크기 (2026-09-06)
-- `L127` Capture-only victory (2026-09-08)
-- `L138` Event friendship and live level changes (2026-09-06)
-- `L157` Sequential battle event completion (2026-09-08)
-- `L192` Battle-event continuation and cancellation (2026-09-06)
-- `L235` 전투 명령 custom CSS (2026-09-05)
-- `L239` 빈 페이지와 실행 빈도 계약 (2026-09-05)
-  - `L256` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
-- `L274` 지원 전투 시스템은 둘뿐이다 (2026-08-28)
-- `L287` Roguelike run boundary (2026-08-24)
-- `L292` Battle rules & runtime
-  - `L307` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
-  - `L332` 커맨드/대상 메뉴 기하와 글자 가시성 계약
-  - `L348` 스킨 CSS 캐스케이드와 저작 가능 스킨
-  - `L352` Gen 1(포켓몬식) 규칙 모델
-  - `L360` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
-  - `L379` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
-- `L417` Starter hero battle sheets (2026-08-29)
-- `L438` Per-actor back battlers (2026-08-29)
-- `L456` Battle input and visibility P0 contract (2026-07-30)
-- `L467` 배틀러 idle 애니메이션 (2026-08-30)
-- `L593` 필드 아이템 상태 부여 복구 (2026-09-05)
+- `L74` Native event battle admission (2026-09-08)
+- `L120` Supported action authoring (2026-09-07)
+- `L132` 적별 전투 표시 크기 (2026-09-06)
+- `L142` Capture-only victory (2026-09-08)
+- `L153` Event friendship and live level changes (2026-09-06)
+- `L172` Sequential battle event completion (2026-09-08)
+- `L207` Battle-event continuation and cancellation (2026-09-06)
+- `L250` 전투 명령 custom CSS (2026-09-05)
+- `L254` 빈 페이지와 실행 빈도 계약 (2026-09-05)
+  - `L271` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
+- `L289` 지원 전투 시스템은 둘뿐이다 (2026-08-28)
+- `L302` Roguelike run boundary (2026-08-24)
+- `L307` Battle rules & runtime
+  - `L322` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
+  - `L347` 커맨드/대상 메뉴 기하와 글자 가시성 계약
+  - `L363` 스킨 CSS 캐스케이드와 저작 가능 스킨
+  - `L367` Gen 1(포켓몬식) 규칙 모델
+  - `L375` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
+  - `L394` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
+- `L432` Starter hero battle sheets (2026-08-29)
+- `L453` Per-actor back battlers (2026-08-29)
+- `L471` Battle input and visibility P0 contract (2026-07-30)
+- `L482` 배틀러 idle 애니메이션 (2026-08-30)
+- `L608` 필드 아이템 상태 부여 복구 (2026-09-05)
 
 ### `openwiki/runtime-m2-flow-controls.md` — 30KB · 185줄 · ~8,377 토큰
 

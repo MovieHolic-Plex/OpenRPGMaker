@@ -631,7 +631,8 @@
   display: none;
 }
 
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command:disabled {
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command:disabled,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command[aria-disabled="true"] {
   color: var(--battle-text-muted);
   opacity: 0.42;
 }

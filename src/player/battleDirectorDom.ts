@@ -517,14 +517,22 @@ function battlerHpDelta(targetId: string | undefined, before: BattleSnapshot, af
   return beforeTarget.hp - afterTarget.hp;
 }
 
+/**
+ * 결과 패널의 **제목**이자 디렉터 대사의 첫 줄.
+ *
+ * 세 갈래가 문체가 제각각이었다 — `승리`(명사), `패배했습니다`(합쇼체), `무사히 후퇴했다`(해라체).
+ * 같은 슬롯에서 갈라지면 감독이 문체를 고를 수 없다. 이 슬롯은 `.battle-result-title` 에
+ * 그대로 찍히는 **제목**이므로 셋 다 명사로 맞춘다(문장은 바로 아래 `rewardsLine` 이 맡는다).
+ * 전투 로그(`battleSequencer`)는 일부러 해라체다 — 저기는 건드리지 않는다.
+ */
 function resultLine(result: BattleSnapshot["result"]): string {
   switch (result) {
     case "victory":
       return "승리";
     case "defeat":
-      return "패배했습니다";
+      return "패배";
     case "escape":
-      return "무사히 후퇴했다";
+      return "후퇴";
     case undefined:
       return "";
   }

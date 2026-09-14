@@ -47,6 +47,20 @@ export interface PiAgentStats {
 
 export type PiTeamRoleId = "orchestrator" | "builder" | "reviewer";
 
+/**
+ * 워커가 heartbeat 줄을 쓰는 간격. 진행 이벤트는 턴·툴 경계에만 나오므로 모델이 생각하는 동안 와이어가
+ * 비는데, 그 침묵을 유휴 타임아웃 층(Bun.serve idleTimeout 10초 — 지금은 꺼 둠, undici bodyTimeout 300초,
+ * 앞으로 끼어들 프록시)이 끊었다(실측 2026-09-14: 팀 모드 「마을 만들어줘」 가 매번 `terminated`).
+ */
+export const PI_AGENT_HEARTBEAT_MS = 5_000;
+/** 브라우저 워치독: 이 시간 동안 줄이 하나도 안 오면 워커가 죽은 것으로 보고 끊는다. heartbeat 의 6배. */
+export const PI_AGENT_STALE_MS = 30_000;
+/**
+ * 델타 중계 간격. 토큰마다 줄을 쓰면 NDJSON 이 수천 줄이 된다. 보드가 이미 1초마다 행을 통째 다시 그리므로
+ * (`aiTeamBoard` 티커) 그보다 잔 간격은 보이지 않는 렌더만 늘린다. 와이어가 살아 있는 것은 heartbeat 가 맡는다.
+ */
+export const PI_AGENT_DELTA_FLUSH_MS = 1_000;
+
 export interface PiTeamAgentStats extends PiAgentStats {}
 
 export type PiAgentEvent =
@@ -59,6 +73,10 @@ export type PiAgentEvent =
   | { readonly type: "review"; readonly agentId: string; readonly mapId: string | null; readonly ok: boolean; readonly findings: readonly string[] }
   | { readonly type: "team_report"; readonly text: string }
   | { readonly type: "turn"; readonly index: number }
+  /** 연결이 살아 있음. 내용은 없다 — 유휴 타임아웃을 지나가게 하고 브라우저 워치독의 시계가 된다. 보드는 무시한다. */
+  | { readonly type: "heartbeat"; readonly at: number }
+  /** 모델 스트림 조각. 생각(thinking)·본문(text)을 PI_AGENT_DELTA_FLUSH_MS 간격으로 합친 것 — 보드의 「생각 중」 재료. */
+  | { readonly type: "delta"; readonly kind: "thinking" | "text"; readonly text: string }
   | { readonly type: "assistant"; readonly text: string }
   | { readonly type: "tool_start"; readonly id: string; readonly name: string; readonly args: unknown }
   | { readonly type: "tool_end"; readonly id: string; readonly name: string; readonly ok: boolean; readonly summary: string }

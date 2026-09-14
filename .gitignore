@@ -19,6 +19,7 @@ dist/
 !.omo/css-live-classes-baseline.json
 !.omo/evidence/
 .omo/evidence/*
+!.omo/evidence/ai-assistant-failure-modes.md
 !.omo/evidence/event-editor-ux/
 !.omo/evidence/rm2003-database-plan/
 !.omo/evidence/ai-compaction/
