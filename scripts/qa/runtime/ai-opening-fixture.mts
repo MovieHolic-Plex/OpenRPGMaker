@@ -16,13 +16,6 @@ voice.write("RIFF"); voice.writeUInt32LE(voice.length - 8, 4); voice.write("WAVE
 voice.writeUInt32LE(16, 16); voice.writeUInt16LE(1, 20); voice.writeUInt16LE(1, 22);
 voice.writeUInt32LE(8000, 24); voice.writeUInt32LE(16000, 28); voice.writeUInt16LE(2, 32);
 voice.writeUInt16LE(16, 34); voice.write("data", 36); voice.writeUInt32LE(16000, 40);
-project.assets.uploaded["ai-opening-picture"] = {
-  id: "ai-opening-picture",
-  name: "AI opening still",
-  kind: "picture",
-  dataUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
-  meta: { width: 1, height: 1 },
-};
 project.assets.uploaded["ai-opening-video"] = {
   id: "ai-opening-video",
   name: "AI opening clip",
@@ -42,9 +35,10 @@ const ctx = { project };
 const authored = runTool(ctx, "set_opening", {
   enabled: true,
   skippable: true,
+  musicResourceId: "cc0-bgm-rtp-ttl-001",
   scenes: [
     { id: "ai-opening-text", kind: "text", narration: "AI가 지은 첫 장면\n커스텀 오프닝 계약", durationMs: 0, narrationAudioResourceId: "ai-opening-voice" },
-    { id: "ai-opening-image", kind: "image", resourceId: "ai-opening-picture", narration: "AI가 고른 그림", durationMs: 0, motion: "pan" },
+    { id: "ai-opening-image", kind: "image", resourceId: "easyrpg-backdrop-cosmos1", narration: "AI가 고른 배경화", durationMs: 0, motion: "pan" },
     { id: "ai-opening-video", kind: "video", resourceId: "ai-opening-video", narration: "AI가 고른 영상", durationMs: 0 },
   ],
 });
