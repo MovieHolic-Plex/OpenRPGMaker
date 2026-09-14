@@ -57,8 +57,14 @@ export function createBattleTransition(
   let lastPhase: BattleTransitionPhase | undefined;
   host.append(overlay);
 
-  const wait = (ms: number): Promise<void> => {
+  // 감소 모션이면 CSS 가 막대·커버를 1ms 로 접으므로 JS 대기도 한 프레임으로 줄인다 —
+  // 시퀀서(battleSequencer.delay)와 같은 계약. 그렇지 않으면 안무 없는 1초 대기가 남는다.
+  const reducedMotion = (): boolean =>
+    typeof window !== "undefined" && typeof window.matchMedia === "function"
+    && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const wait = (requestedMs: number): Promise<void> => {
     if (destroyed) return Promise.resolve();
+    const ms = reducedMotion() ? Math.min(requestedMs, 16) : requestedMs;
     return new Promise((resolve) => {
       let timer: number | undefined;
       let fired = false;
