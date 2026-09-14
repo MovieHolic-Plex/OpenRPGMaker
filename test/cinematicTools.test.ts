@@ -151,6 +151,12 @@ describe("opening cinematic AI tools", () => {
     expect(unknownVoice.ok).toBe(false);
     expect(failure(unknownVoice)).toContain("voice-없음");
 
+    const wrongKind = runTool(ctx, "set_opening", {
+      scenes: [{ kind: "image", resourceId: "cc0-bgm-field", narration: "그림", durationMs: 0, motion: "none" }],
+    });
+    expect(wrongKind.ok).toBe(false);
+    expect(failure(wrongKind)).toContain("cc0-bgm-field");
+
     expect(opening(ctx)).toBeUndefined();
   });
 
