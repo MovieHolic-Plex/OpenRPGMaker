@@ -403,9 +403,12 @@ export function resolveMaterialByLabel(
     if (options.preferRoles?.length && role && options.preferRoles.includes(role)) score += 12;
     scored.push({ tileId, score, label, description, role });
   }
-  scored.push(...scoredGroupCandidates(tileset, terms));
   scored.sort((a, b) => b.score - a.score || a.tileId - b.tileId);
   // 약매칭(부분 포함만)은 후보 제시에 쓰고, 자동 시공은 강한 매칭만 채택.
+  // 그룹 이름은 **타일 강매칭이 하나도 없을 때만** 후보가 된다. 같은 저울에 섮으면 기존에 타일로 풀리던
+  // 라벨(예: 프리셋 "흰 집 밀")의 순위가 밀려 다른 타일이 시공된다 — 게이트 실측에서 잡혀다(2026-09-14).
+  if (!scored.some((hit) => hit.score >= 70)) scored.push(...scoredGroupCandidates(tileset, terms));
+  scored.sort((a, b) => b.score - a.score || a.tileId - b.tileId);
   const strong = scored.filter((hit) => hit.score >= 70);
 
   if (strong.length === 0) {

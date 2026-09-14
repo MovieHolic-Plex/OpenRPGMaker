@@ -380,14 +380,12 @@ export const REVIEW_JSON_ONLY_REMINDER = "That response was not the protocol. Do
   + " Markdown fence — using the keys revision, verdict, summary, findings, echoing the supplied revision."
   + " Your judgement of the draft must not change because of this message; only its spelling.";
 
-const REVIEW_PROTOCOL_ERRORS: ReadonlySet<string> = new Set(["independent-review-tool-call-rejected",
-  "independent-review-malformed-json", "independent-review-malformed-verdict",
-  "independent-review-malformed-finding", "independent-review-inconsistent-verdict"]);
-
-/** The reviewer broke the answer protocol, as opposed to refusing the draft or the harness refusing its
- * own envelope. Only these are worth one corrective re-ask: the draft itself is still unjudged. */
+/** The reviewer did not answer in JSON at all — the draft is still unjudged, and one corrective round is
+ * the whole remedy. Every other violation still stops the turn on the first response: a reviewer that
+ * tried to call a tool does not get the same envelope again, and a verdict echoing the wrong revision is a
+ * signal that it judged a different draft, not a spelling slip (`test/assistantIndependentReview.test.ts`). */
 export function isReviewProtocolViolation(cause: unknown): boolean {
-  return cause instanceof Error && REVIEW_PROTOCOL_ERRORS.has(cause.message);
+  return cause instanceof Error && cause.message === "independent-review-malformed-json";
 }
 
 /** Verdict objects embedded in prose — balanced top-level objects that already carry both protocol keys.

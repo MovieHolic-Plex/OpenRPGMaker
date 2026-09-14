@@ -68,8 +68,9 @@ function argErrorMessage(message: string, example: Record<string, unknown> | und
 // 받지 못해 같은 인자로 재시도되었다(F1). 거부는 그대로고, 동일한 교정 정보만 둘 다 실어 보낸다.
 function issueFromToolError(tool: ToolDefinition, normalizedArgs: Record<string, unknown>, cause: unknown): LintIssue {
   const issue = issueFromError(cause);
-  // 이미 자기 교정문을 실어 보내는 툴(place_npc)은 그대로 둔다 — 두 번째 `repair:` 줄은 파서를 깨뜨린다.
-  if (issue.code !== "invalid-args" || issue.message.includes("repair: ")) return issue;
+  // 이미 교정본을 실어 보내는 문구는 그대로 둔다. 모델도 테스트도 그 메시지의 JSON 을 끝까지 읽어 그대로
+  // 다시 부르므로(`test/aiNativePageContract.test.ts`), 뒤에 무엇을 붙이든 그 예시를 깨뜨린다.
+  if (issue.code !== "invalid-args" || issue.message.includes("repair: ") || issue.message.includes('{"')) return issue;
   const repair = tool.invalidArgsRepair?.(normalizedArgs);
   return { ...issue, message: argErrorMessage(issue.message, tool.invalidArgsExample, tool.invalidArgsHint)
     + (repair ? `\nrepair: ${JSON.stringify(repair)}` : "") };
