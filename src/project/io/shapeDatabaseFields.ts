@@ -156,9 +156,10 @@ export function validateSystem(value: unknown): void {
 
 function validateCinematicSequence(label: string, value: unknown): void {
   const sequence = requireRecord(label, value);
-  requireOnlyFields(label, sequence, ["enabled", "skippable", "scenes"]);
+  requireOnlyFields(label, sequence, ["enabled", "skippable", "musicResourceId", "scenes"]);
   requireBoolean(`${label}.enabled`, sequence.enabled);
   requireBoolean(`${label}.skippable`, sequence.skippable);
+  if (sequence.musicResourceId !== undefined) requireNonBlankString(`${label}.musicResourceId`, sequence.musicResourceId);
   const scenes = requireArray(`${label}.scenes`, sequence.scenes);
   assert(scenes.length <= CINEMATIC_SCENE_LIMIT, `${label}.scenes must contain at most ${CINEMATIC_SCENE_LIMIT} scenes.`);
   const ids = new Set<string>();

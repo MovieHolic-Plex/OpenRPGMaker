@@ -26,6 +26,11 @@ import type { Project, ResourceKind } from "@/project/types";
 export type DatabaseResourcePickerKind =
   | "icon"
   | "image"
+  /**
+   * 시네마틱 스틸(오프닝·게임 오버 배경) 전용. 전체화면 아트를 앞에 두고, 뒤에 image 카탈로그를
+   * 통째로 이어 붙여 기존 저장본의 아이콘 참조도 계속 유효하게 둔다.
+   */
+  | "still"
   | "movie"
   | "picture"
   | "monster"
@@ -109,6 +114,12 @@ export function listDatabaseResourceOptions(
       for (const asset of EASYRPG_BACKDROP_ASSETS) add(asset.id, asset.name);
       for (const asset of SCARLOXY_BACKDROP_ASSETS) add(asset.id, asset.name);
       break;
+    case "still":
+      // 전체화면 연출용 아트가 먼저다 — 아이템 아이콘이 첫 화면을 채우면 AI도 사람도 못 고른다.
+      for (const asset of EASYRPG_BACKDROP_ASSETS) add(asset.id, asset.name);
+      for (const asset of SCARLOXY_BACKDROP_ASSETS) add(asset.id, asset.name);
+      for (const asset of EASYRPG_TITLE_ASSETS) add(asset.id, asset.name);
+      break;
     case "battle":
       for (const asset of EASYRPG_BATTLE_ASSETS) add(asset.id, asset.name);
       for (const asset of GENERATED_EFFECT_SHEET_ASSETS) add(asset.id, asset.name);
@@ -138,10 +149,22 @@ export function listDatabaseResourceOptions(
       add(id, uploaded.name || id);
     }
   }
+  if (kind === "still") {
+    // 호환 꼬리: 아이콘으로 저작된 기존 오프닝·게임 오버 배경이 "종류 불일치"로 사라지지 않게 한다.
+    for (const option of listDatabaseResourceOptions("image", project)) {
+      add(option.id, option.name, option.searchTerms);
+    }
+  }
   return Array.from(options.values());
 }
 
 export function matchesGeneratedKind(kind: DatabaseResourcePickerKind, resourceKind: ResourceKind | undefined, id: string): boolean {
+  if (kind === "still") {
+    // 아이콘 규칙은 여기서 빼고 호환 꼬리에서만 받는다(앞자리는 전체화면 아트 몫).
+    return matchesGeneratedKind("backdrop", resourceKind, id)
+      || matchesGeneratedKind("title", resourceKind, id)
+      || matchesGeneratedKind("picture", resourceKind, id);
+  }
   if (kind === "movie") return resourceKind === "movie";
   if (kind === "picture") return resourceKind === "picture" || id === "generated-face-actor1-bust" || id === "generated-face-actor1-full";
   if (kind === "faceset") {
@@ -198,6 +221,9 @@ export function uploadedMatchesKind(
   id: string
 ): boolean {
   if (!uploadedKind) return matchesGeneratedKind(kind, undefined, id);
+  if (kind === "still") {
+    return uploadedKind === "picture" || uploadedKind === "backdrop" || uploadedKind === "title";
+  }
   if (kind === "movie") return uploadedKind === "movie";
   if (kind === "picture") return uploadedKind === "picture";
   if (kind === "icon" || kind === "image") {

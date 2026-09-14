@@ -28,6 +28,7 @@ import { ToolVerificationEvidence, parseVerificationChecks, verificationInitialS
 import { runProjectLint } from "@/editor/tools/queryTools";
 import { isVerifyNpcRewardInput, npcRewardTargetSnapshot, VERIFY_NPC_REWARD_TOOL, type NpcRewardWitness } from "./npcRewardWitness";
 import { APPEARANCE_GENERATION_TOOL } from "@/editor/tools/characterAppearanceTools";
+import { OPENING_IMAGE_TOOL } from "@/editor/tools/cinematicTools";
 import type { AppearanceGenerationHandoff } from "@/editor/characterAppearanceGeneration";
 import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
 import { validateArgs } from "@/editor/tools/jsonSchema";
@@ -5294,7 +5295,7 @@ export class AssistantSession {
         if (typeof args.theme === "string" && args.theme.trim()) turnTheme = args.theme.trim();
         this.emitToolStarted(onEvent, name, args);
         await operation.wait(this.yieldForUi(signal));
-        if (tool?.mode === "write" || name === APPEARANCE_GENERATION_TOOL) writeToolAttempts += 1;
+        if (tool?.mode === "write" || name === APPEARANCE_GENERATION_TOOL || name === OPENING_IMAGE_TOOL) writeToolAttempts += 1;
         // 프로토콜 보장: 이 호출에 대한 role:"tool" 응답을 반드시 남긴다. 응답 없이 라운드를 벗어나면
         // 세션의 영구 대화에 짝 없는 tool_calls 가 남아 **그 뒤 모든 턴**이 공급자 400 으로 죽는다
         // (실측 2026-08-30). 예외는 삼키지 않고 응답을 붙인 뒤 그대로 다시 던진다.
@@ -5360,6 +5361,24 @@ export class AssistantSession {
             this.publishAcceptance(publishToolEvent);
           } else if (name === "set_build_spec") {
             toolResult = this.applyBuildSpec(args);
+          } else if (name === OPENING_IMAGE_TOOL) {
+            const { generateOpeningStill } = await operation.wait(import("@/editor/openingImageGeneration"));
+            const still = await operation.wait(generateOpeningStill(args, { signal }));
+            if (!still.ok) {
+              toolResult = { ok: false, summary: still.summary, issues: [{ severity: "error", code: still.code, message: still.summary }] };
+            } else {
+              // 등록은 기존 쓰기 툴로 — 제안·diff 회계를 그대로 타고 dataUrl 은 전사에 남지 않는다.
+              const applied = runTool(this.ctx, "upsert_resource", {
+                resource: { id: still.resourceId, name: still.name, kind: "backdrop", dataUrl: still.dataUrl },
+              }, { dryRun: false });
+              toolResult = applied.ok
+                ? {
+                  ...applied,
+                  summary: `오프닝 그림 ${still.resourceId} 를 만들어 등록했습니다. image 장면의 resourceId 로 쓰세요.`,
+                  data: { status: "generated", resourceId: still.resourceId, name: still.name },
+                }
+                : applied;
+            }
           } else if (name === APPEARANCE_GENERATION_TOOL) {
             const { startAppearanceGenerationFromAssistant } = await operation.wait(import("@/editor/characterAppearanceGeneration"));
             const handoff = await operation.wait(startAppearanceGenerationFromAssistant(this.ctx.project, args, this.appearanceProjectIdentity, signal));

@@ -13,13 +13,25 @@ import { listDatabaseResourceOptions, type DatabaseResourcePickerKind } from "@/
 import type { Project } from "@/project/types";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
-const OPENING_MEDIA_KINDS = ["image", "movie", "sound"] as const;
+const OPENING_MEDIA_KINDS = ["image", "movie", "sound", "music"] as const;
 type OpeningMediaKind = (typeof OPENING_MEDIA_KINDS)[number];
 
 const MEDIA_KIND_LABEL: Record<OpeningMediaKind, string> = {
   image: "이미지",
   movie: "영상",
   sound: "내레이션 음성",
+  music: "배경음악",
+};
+
+/**
+ * 모델이 보는 kind 와 피커 카탈로그의 대응. 그림은 시네마틱 스틸 카탈로그(배경화·타이틀 아트가 앞,
+ * 아이템 아이콘은 호환용 꼬리)를 쓴다 — DB 「오프닝」 탭이 보는 목록과 같아야 한다.
+ */
+const PICKER_KIND: Record<OpeningMediaKind, DatabaseResourcePickerKind> = {
+  image: "still",
+  movie: "movie",
+  sound: "sound",
+  music: "music",
 };
 
 const MOTIONS: readonly CinematicMotion[] = ["none", "fade", "pan", "zoom"];
@@ -37,7 +49,17 @@ function requireRecord(value: unknown, label: string): Record<string, unknown> {
 }
 
 function catalogIds(project: Project, kind: OpeningMediaKind): string[] {
-  return listDatabaseResourceOptions(kind as DatabaseResourcePickerKind, project).map(entry => entry.id);
+  return listDatabaseResourceOptions(PICKER_KIND[kind], project).map(entry => entry.id);
+}
+
+/** 스틸 후보의 성격 표시 — 모델이 전체화면 연출에 아이템 아이콘을 고르지 않게 한다. */
+function stillGrouper(project: Project): (id: string) => string {
+  const backdrops = new Set(listDatabaseResourceOptions("backdrop", project).map(entry => entry.id));
+  const titles = new Set(listDatabaseResourceOptions("title", project).map(entry => entry.id));
+  const icons = new Set(listDatabaseResourceOptions("image", project).map(entry => entry.id));
+  return id => backdrops.has(id) ? "배경화"
+    : titles.has(id) ? "타이틀 아트"
+      : icons.has(id) ? "아이콘(작음·전체화면 부적합)" : "그림";
 }
 
 /** kind별 피커 카탈로그 조회 — 한 호출 안에서 종류별로 한 번만 만든다(카탈로그 스캔이 수백 개 id를 돈다). */
@@ -172,13 +194,14 @@ function buildSequence(project: Project, args: Record<string, unknown>): { seque
     );
   }
   for (const key of Object.keys(args)) {
-    if (key !== "enabled" && key !== "skippable" && key !== "scenes") {
+    if (key !== "enabled" && key !== "skippable" && key !== "scenes" && key !== "musicResourceId") {
       throw new ToolError(`set_opening의 ${key}는 지원하지 않는 인자입니다.`, { code: "invalid-args" });
     }
   }
 
   const warnings: string[] = [];
   const isKnown = catalogLookup(project);
+  const musicResourceId = resolveMusicId(project, args.musicResourceId, isKnown);
   const scenes = rawScenes.map((raw, index) => normalizeScene(project, raw, index, isKnown));
   const ids = new Set<string>();
   for (const [index, scene] of scenes.entries()) {
@@ -198,11 +221,45 @@ function buildSequence(project: Project, args: Record<string, unknown>): { seque
     throw new ToolError("skippable은 true/false여야 합니다.", { code: "invalid-args" });
   }
 
-  const sequence = normalizeCinematicSequence({ enabled, skippable, scenes });
+  // 인자를 생략하면 기존 배경음악을 유지하고, 빈 문자열이면 지운다(enabled/skippable 과 같은 규칙).
+  const music = musicResourceId === undefined ? existing?.musicResourceId : musicResourceId;
+  const sequence = normalizeCinematicSequence({
+    enabled,
+    skippable,
+    ...(music ? { musicResourceId: music } : {}),
+    scenes,
+  });
   if (!sequence.enabled && sequence.scenes.length > 0) {
     warnings.push("오프닝 사용이 꺼져 있어 실제 게임에서는 재생되지 않습니다. 재생하려면 enabled:true로 다시 저장하세요.");
   }
   return { sequence, warnings };
+}
+
+/**
+ * 배경음악 id 검사. undefined 는 "건드리지 않음", 빈 문자열은 "비우기" — 둘을 구분해야
+ * edit_opening(settings) 로 음악만 지울 수 있다.
+ */
+function resolveMusicId(
+  project: Project,
+  raw: unknown,
+  isKnown: (kind: OpeningMediaKind, id: string) => boolean,
+): string | undefined {
+  if (raw === undefined) return undefined;
+  if (typeof raw !== "string") {
+    throw new ToolError("musicResourceId는 문자열이어야 합니다(빈 문자열은 배경음악 제거).", { code: "invalid-args" });
+  }
+  const id = raw.trim();
+  if (!id) return "";
+  if (!isKnown("music", id)) {
+    const candidates = catalogIds(project, "music").slice(0, 10).join(", ");
+    throw new ToolError(
+      `musicResourceId를 배경음악 목록에서 찾을 수 없습니다: ${id}. `
+      + `list_opening_media(kind:"music")로 확인하세요(효과음·영상 id는 배경음악이 아닙니다).`
+      + (candidates ? ` 현재 후보: ${candidates}` : ""),
+      { code: "resource-not-found" },
+    );
+  }
+  return id;
 }
 
 function countByKind(sequence: CinematicSequence): string {
@@ -246,10 +303,18 @@ const getOpening: ToolDefinition = {
       .flatMap(scene => (scene.kind === "text" ? [] : [[scene.kind === "video" ? "movie" : "image", scene.resourceId] as const]))
       .filter(([kind, id]) => !isKnown(kind, id))
       .map(([, id]) => id);
+    if (opening.musicResourceId && !isKnown("music", opening.musicResourceId)) missing.push(opening.musicResourceId);
     if (missing.length > 0) warnings.push(`프로젝트에서 찾을 수 없는 미디어 참조가 있습니다: ${[...new Set(missing)].join(", ")}`);
     return {
-      summary: `오프닝 장면 ${opening.scenes.length}개(${countByKind(opening)}), 사용 ${opening.enabled ? "켜짐" : "꺼짐"}, 건너뛰기 ${opening.skippable ? "가능" : "불가"}.`,
-      data: { opening, sceneCount: opening.scenes.length, enabled: opening.enabled, skippable: opening.skippable },
+      summary: `오프닝 장면 ${opening.scenes.length}개(${countByKind(opening)}), 사용 ${opening.enabled ? "켜짐" : "꺼짐"}, 건너뛰기 ${opening.skippable ? "가능" : "불가"}`
+        + `${opening.musicResourceId ? `, 배경음악 ${opening.musicResourceId}` : ", 배경음악 없음"}.`,
+      data: {
+        opening,
+        sceneCount: opening.scenes.length,
+        enabled: opening.enabled,
+        skippable: opening.skippable,
+        musicResourceId: opening.musicResourceId ?? null,
+      },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
@@ -260,7 +325,8 @@ const setOpening: ToolDefinition = {
   description:
     "새 게임 시작 전에 재생되는 오프닝(system.opening) 장면 목록을 통째로 저장한다. "
     + "장면: kind text/image/video, image·video 는 resourceId 필수, motion 은 image 전용, "
-    + "durationMs 0 은 확인 입력(영상은 재생 끝)까지 기다린다. 일부만 고치려면 get_opening 결과에 바꿀 장면을 반영해 전체를 보낸다. "
+    + "durationMs 0 은 확인 입력(영상은 재생 끝)까지 기다린다. 장면 하나만 고치거나 순서만 바꿀 땐 edit_opening 을 쓴다. "
+    + "musicResourceId 는 시퀀스 전체에 반복 재생되는 배경음악(생략 시 기존 유지, 빈 문자열은 제거). "
     + "미디어 id 는 list_opening_media 로 확인하고, 재생되게 하려면 enabled:true.",
   mode: "write",
   parameters: {
@@ -270,6 +336,7 @@ const setOpening: ToolDefinition = {
     properties: {
       enabled: { type: "boolean" },
       skippable: { type: "boolean" },
+      musicResourceId: { type: "string", description: "시퀀스 배경음악(list_opening_media kind:music). 빈 문자열은 제거." },
       scenes: { type: "array", items: OPENING_SCENE_SCHEMA },
     },
   },
@@ -282,7 +349,7 @@ const setOpening: ToolDefinition = {
       { kind: "video", resourceId: "movie_intro", narration: "영상", durationMs: 0, narrationAudioResourceId: "sound_voice" },
     ],
   },
-  invalidArgsHint: "미디어 id는 list_opening_media(kind:\"image\"|\"movie\"|\"sound\") 결과에서 고르세요.",
+  invalidArgsHint: "미디어 id는 list_opening_media(kind:\"image\"|\"movie\"|\"sound\"|\"music\") 결과에서 고르세요.",
   run(draft, args): ToolExecResult {
     const { sequence, warnings } = buildSequence(draft, args);
     draft.system.opening = sequence;
@@ -313,7 +380,8 @@ const listOpeningMedia: ToolDefinition = {
   name: "list_opening_media",
   description:
     "오프닝 장면에 쓸 미디어 후보를 DB 「오프닝」 탭과 같은 목록에서 반환한다. "
-    + "kind image(그림)/movie(영상)/sound(내레이션 음성) — 결과에 없는 id 는 저장이 거부된다.",
+    + "kind image(그림)/movie(영상)/sound(내레이션 음성)/music(배경음악) — 결과에 없는 id 는 저장이 거부된다. "
+    + "그림은 group 으로 성격을 알려준다 — 전체화면은 배경화·타이틀 아트를 고르고(아이콘은 피함), 없으면 generate_opening_image.",
   mode: "read",
   parameters: {
     type: "object",
@@ -350,7 +418,12 @@ const listOpeningMedia: ToolDefinition = {
         || entry.id.toLocaleLowerCase().includes(needle)
         || entry.name.toLocaleLowerCase().includes(needle)
         || (entry.searchTerms ?? []).some(term => term.toLocaleLowerCase().includes(needle)));
-    const matches = all.slice(offset, offset + limit).map(entry => ({ id: entry.id, name: entry.name }));
+    const group = kind === "image" ? stillGrouper(project) : undefined;
+    const matches = all.slice(offset, offset + limit).map(entry => ({
+      id: entry.id,
+      name: entry.name,
+      ...(group ? { group: group(entry.id) } : {}),
+    }));
     const nextOffset = offset + matches.length < all.length ? offset + matches.length : null;
     return {
       summary: `${MEDIA_KIND_LABEL[kind]} 후보 ${matches.length}개 조회(전체 ${all.length}개, kind=${kind}).`,
@@ -359,4 +432,217 @@ const listOpeningMedia: ToolDefinition = {
   },
 };
 
-export const CINEMATIC_TOOLS: readonly ToolDefinition[] = [getOpening, setOpening, removeOpening, listOpeningMedia];
+const OPENING_EDIT_OPS = ["append", "insert", "update", "remove", "move", "settings"] as const;
+type OpeningEditOp = (typeof OPENING_EDIT_OPS)[number];
+const OPENING_EDIT_ARG_NAMES = ["op", "index", "sceneId", "scene", "enabled", "skippable", "musicResourceId"] as const;
+
+function editOp(value: unknown): OpeningEditOp {
+  const op = OPENING_EDIT_OPS.find(entry => entry === value);
+  if (!op) {
+    throw new ToolError(
+      `op은 ${OPENING_EDIT_OPS.join("/")} 중 하나여야 합니다: ${JSON.stringify(value)}`,
+      { code: "invalid-args" },
+    );
+  }
+  return op;
+}
+
+function editIndex(value: unknown, max: number, label: string): number {
+  if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 0 || value > max) {
+    throw new ToolError(`index는 0~${max} 사이의 정수여야 합니다(${label}). 받은 값: ${JSON.stringify(value)}`, { code: "invalid-args" });
+  }
+  return value;
+}
+
+function requireSceneId(value: unknown): string {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    throw new ToolError("sceneId가 필요합니다. get_opening 으로 현재 장면 id 를 확인하세요.", { code: "invalid-args" });
+  }
+  return value.trim();
+}
+
+function sceneIndexById(scenes: readonly CinematicScene[], sceneId: string): number {
+  const index = scenes.findIndex(scene => scene.id === sceneId);
+  if (index < 0) {
+    throw new ToolError(
+      `오프닝 장면 ${sceneId}를 찾을 수 없습니다. 현재 장면: ${scenes.map(scene => scene.id).join(", ") || "없음"}`,
+      { code: "scene-not-found" },
+    );
+  }
+  return index;
+}
+
+const editOpening: ToolDefinition = {
+  name: "edit_opening",
+  description:
+    "오프닝 장면 하나만 고친다(전체 재작성 불필요). op: append/insert(index)/update(sceneId)/remove(sceneId)/"
+    + "move(sceneId,index)/settings(enabled·skippable·musicResourceId). 장면 규칙은 set_opening 과 같다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    additionalProperties: false,
+    required: ["op"],
+    properties: {
+      op: { type: "string", enum: OPENING_EDIT_OPS },
+      index: { type: "integer", minimum: 0 },
+      sceneId: { type: "string" },
+      scene: OPENING_SCENE_SCHEMA,
+      enabled: { type: "boolean" },
+      skippable: { type: "boolean" },
+      musicResourceId: { type: "string" },
+    },
+  },
+  invalidArgsExample: { op: "append", scene: { kind: "text", narration: "그날 밤의 일이었다.", durationMs: 0 } },
+  run(draft, args): ToolExecResult {
+    for (const key of Object.keys(args)) {
+      if (!(OPENING_EDIT_ARG_NAMES as readonly string[]).includes(key)) {
+        throw new ToolError(`edit_opening의 ${key}는 지원하지 않는 인자입니다.`, { code: "invalid-args" });
+      }
+    }
+    const op = editOp(args.op);
+    const isKnown = catalogLookup(draft);
+    const existing = draft.system.opening;
+    if (!existing && op !== "append" && op !== "insert") {
+      throw new ToolError(
+        "오프닝 시퀀스가 아직 없습니다. edit_opening(op:\"append\") 또는 set_opening 으로 먼저 장면을 만드세요.",
+        { code: "opening-missing" },
+      );
+    }
+    const scenes: CinematicScene[] = existing ? [...existing.scenes] : [];
+    const enabled = args.enabled === undefined ? existing?.enabled ?? true : args.enabled;
+    if (typeof enabled !== "boolean") throw new ToolError("enabled는 true/false여야 합니다.", { code: "invalid-args" });
+    const skippable = args.skippable === undefined ? existing?.skippable ?? true : args.skippable;
+    if (typeof skippable !== "boolean") throw new ToolError("skippable은 true/false여야 합니다.", { code: "invalid-args" });
+    const requestedMusic = resolveMusicId(draft, args.musicResourceId, isKnown);
+    const music = requestedMusic === undefined ? existing?.musicResourceId : requestedMusic;
+
+    if (op !== "settings" && op !== "remove" && op !== "move" && args.scene === undefined) {
+      throw new ToolError(`op:"${op}"에는 scene 이 필요합니다.`, { code: "invalid-args" });
+    }
+    if ((op === "settings" || op === "remove" || op === "move") && args.scene !== undefined) {
+      throw new ToolError(`op:"${op}"은 scene 을 받지 않습니다.`, { code: "invalid-args" });
+    }
+
+    let summary: string;
+    switch (op) {
+      case "settings": {
+        summary = `오프닝 설정을 바꿨습니다(사용 ${enabled ? "켜짐" : "꺼짐"}, 건너뛰기 ${skippable ? "가능" : "불가"}, 배경음악 ${music || "없음"}).`;
+        break;
+      }
+      case "append":
+      case "insert": {
+        if (scenes.length >= CINEMATIC_SCENE_LIMIT) {
+          throw new ToolError(`장면은 최대 ${CINEMATIC_SCENE_LIMIT}개까지입니다. 먼저 뺄 장면을 지우세요.`, { code: "too-many-scenes" });
+        }
+        const at = op === "append" ? scenes.length : editIndex(args.index, scenes.length, "insert");
+        const scene = normalizeScene(draft, args.scene, at, isKnown);
+        if (scenes.some(entry => entry.id === scene.id)) {
+          throw new ToolError(`이미 쓰고 있는 장면 id 입니다: ${scene.id}`, { code: "duplicate-scene-id" });
+        }
+        scenes.splice(at, 0, scene);
+        summary = `장면 ${scene.id}를 ${at + 1}번째로 추가했습니다(총 ${scenes.length}개).`;
+        break;
+      }
+      case "update": {
+        const sceneId = requireSceneId(args.sceneId);
+        const at = sceneIndexById(scenes, sceneId);
+        const raw = { ...(args.scene as Record<string, unknown>) };
+        if (raw.id === undefined) raw.id = sceneId;
+        const scene = normalizeScene(draft, raw, at, isKnown);
+        if (scenes.some((entry, entryIndex) => entryIndex !== at && entry.id === scene.id)) {
+          throw new ToolError(`이미 쓰고 있는 장면 id 입니다: ${scene.id}`, { code: "duplicate-scene-id" });
+        }
+        scenes[at] = scene;
+        summary = `장면 ${sceneId}를 ${scene.kind} 장면으로 교체했습니다.`;
+        break;
+      }
+      case "remove": {
+        const sceneId = requireSceneId(args.sceneId);
+        const at = sceneIndexById(scenes, sceneId);
+        scenes.splice(at, 1);
+        summary = `장면 ${sceneId}를 지웠습니다(남은 ${scenes.length}개).`;
+        break;
+      }
+      case "move": {
+        const sceneId = requireSceneId(args.sceneId);
+        const from = sceneIndexById(scenes, sceneId);
+        const to = editIndex(args.index, Math.max(scenes.length - 1, 0), "move");
+        const [scene] = scenes.splice(from, 1);
+        scenes.splice(to, 0, scene);
+        summary = `장면 ${sceneId}를 ${to + 1}번째로 옮겼습니다.`;
+        break;
+      }
+    }
+
+    const sequence = normalizeCinematicSequence({
+      enabled,
+      skippable,
+      ...(music ? { musicResourceId: music } : {}),
+      scenes,
+    });
+    draft.system.opening = sequence;
+    const warnings = !sequence.enabled && sequence.scenes.length > 0
+      ? ["오프닝 사용이 꺼져 있어 실제 게임에서는 재생되지 않습니다. edit_opening(op:\"settings\", enabled:true)로 켜세요."]
+      : [];
+    return {
+      summary,
+      data: { opening: sequence, sceneCount: sequence.scenes.length, sceneIds: sequence.scenes.map(scene => scene.id) },
+      ...(warnings.length > 0 ? { warnings } : {}),
+    };
+  },
+};
+
+export const OPENING_IMAGE_TOOL = "generate_opening_image";
+
+const OPENING_PROMPT_MIN_LENGTH = 4;
+
+/** 툴·편집기 핸드오프가 같은 검사를 쓰게 하는 순수 준비 함수. */
+export function prepareOpeningImageRequest(args: Record<string, unknown>): { readonly prompt: string; readonly name: string } {
+  const raw = args.prompt;
+  if (typeof raw !== "string" || raw.trim().length < OPENING_PROMPT_MIN_LENGTH) {
+    throw new ToolError(
+      `prompt는 만들 그림을 설명하는 ${OPENING_PROMPT_MIN_LENGTH}자 이상의 문장이어야 합니다(예: "폭풍우 치는 밤의 성문 앞").`,
+      { code: "invalid-args" },
+    );
+  }
+  const rawName = args.name;
+  if (rawName !== undefined && typeof rawName !== "string") {
+    throw new ToolError("name은 문자열이어야 합니다.", { code: "invalid-args" });
+  }
+  const prompt = raw.trim();
+  const name = rawName?.trim() || `오프닝 그림: ${prompt.slice(0, 24)}`;
+  return { prompt, name };
+}
+
+const generateOpeningImage: ToolDefinition = {
+  name: "generate_opening_image",
+  description:
+    "오프닝용 전체화면 그림을 이미지 모델로 만들어 리소스로 등록하고 resourceId 를 돌려준다(image 장면에 바로 쓴다). "
+    + "기존 배경화로 충분하면 list_opening_media 를 먼저 본다. 장면당 한 장.",
+  mode: "read",
+  parameters: {
+    type: "object",
+    additionalProperties: false,
+    required: ["prompt"],
+    properties: {
+      prompt: { type: "string", minLength: OPENING_PROMPT_MIN_LENGTH, description: "장면 설명(분위기·시간대·장소). 글자는 넣지 않는다." },
+      name: { type: "string" },
+    },
+  },
+  run(_project, args): ToolExecResult {
+    const { prompt, name } = prepareOpeningImageRequest(args);
+    return {
+      summary: "그림 생성 요청을 준비했습니다. 생성에는 편집기가 필요하며 아직 만들어지지 않았습니다.",
+      data: { status: "ui-required", prompt, name },
+    };
+  },
+};
+
+export const CINEMATIC_TOOLS: readonly ToolDefinition[] = [
+  getOpening,
+  setOpening,
+  editOpening,
+  removeOpening,
+  listOpeningMedia,
+  generateOpeningImage,
+];
