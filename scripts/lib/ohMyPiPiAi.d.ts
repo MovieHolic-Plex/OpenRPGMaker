@@ -56,3 +56,5 @@ export interface OhMyPiAdapters {
 
 export function createOhMyPiAdapters(): Promise<OhMyPiAdapters>;
 export function stopOhMyPiWorker(): void;
+/** 개발 중 코드가 바뀌었을 때 호출한다 — 다음 요청이 워커를 새 코드로 다시 띄운다. */
+export function markOhMyPiWorkerStale(): void;
