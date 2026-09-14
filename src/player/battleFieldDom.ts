@@ -49,8 +49,11 @@ export function disambiguatedBattlerName(
 /** targetId(적 id·아군 배틀러 id·recordId)를 실제 DOM 노드로 해석한다.
  *  아군 노드 testid는 `battle-actor-<recordId>`라 직접 조회가 실패하던 버그의 단일 수정 지점. */
 export function findBattlerNode(scope: HTMLElement | Document, targetId: string): HTMLElement | null {
+  // recordId 조회는 **살아 있는** 노드를 먼저 고른다 — 같은 종족 둘 중 1번이 죽은 뒤 2번이
+  // 공격하면 죽은 1번에 예고·전진 모션이 붙고 2번은 미동도 없던 결함(2026-09-14 실측).
   return scope.querySelector<HTMLElement>(`[data-testid="${targetId}"]`)
     ?? scope.querySelector<HTMLElement>(`[data-testid="battle-actor-${targetId}"]`)
+    ?? scope.querySelector<HTMLElement>(`.battle-enemy[data-record-id="${targetId}"]:not(.defeated)`)
     ?? scope.querySelector<HTMLElement>(`.battle-enemy[data-record-id="${targetId}"]`);
 }
 
@@ -74,6 +77,13 @@ export function battlerSpriteNode(node: HTMLElement): HTMLElement {
 /** 현재 프로젝트 설정에서 활성 전투 스킨을 해석한다. */
 function activeSkin(): BattleSkin {
   return getBattleSkin(resolveSkinId(store.getCurrent().system.battleUiStyle));
+}
+
+/** 정면 스킨(드퀘·마더·rm2000)은 아군 필드 노드를 만들지 않는다 — 그때 파티 상태 행이
+ *  아군 상태 배지의 유일한 살림터다. 필드 노드가 있는 스킨에도 행에 달면 같은 testid 가
+ *  두 번 생기므로 이 조건으로만 단다. */
+function partyStatusRowsCarryIcons(): boolean {
+  return BATTLER_PLACEMENTS[activeSkin().id].partyFacing === "hidden";
 }
 
 /** 스킨 전용 적 스프라이트(bskin-enemy-<id>)를 우선 사용. 없으면 null. */
@@ -253,6 +263,11 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot, pr
     if (atbBar) atbBar.style.setProperty("--battle-atb", `${gaugePct}%`);
     const atbValueNode = row.querySelector<HTMLElement>(".battle-atb-value");
     if (atbValueNode) atbValueNode.textContent = `${gaugePct}%`;
+    if (partyStatusRowsCarryIcons()) {
+      // 이름 셀 안에 넣으면 rm2000 계열의 overflow:hidden + 고정 폭 열에 잘린다(실측:
+      // 배지가 2px 조각으로만 보임) — 행의 직계 자식으로 달고 배치는 스킨 CSS 가 한다.
+      syncStatusIcons(row, { ...actor, defeated: presented.defeated });
+    }
     let strictOrder = row.querySelector<HTMLElement>(".battle-strict-order");
     if (snapshot.battleFlow === "strict") {
       if (!strictOrder) {
@@ -340,8 +355,21 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
  * 되므로, 실측 보정 자체가 필요 없다. CSS 의 `--battle-enemy-label-drop` 도 함께 지웠다. */
 
 function syncActorGroup(field: HTMLElement, snapshot: BattleSnapshot, presentation?: BattleFieldPresentation): void {
-  const group = field.querySelector(".battle-actor-group");
+  const group = field.querySelector<HTMLElement>(".battle-actor-group");
   if (!group) return;
+  // 전열이 바뀌면(포켓몬식 교체) 스프라이트 집합을 다시 만든다. 예전엔 마운트 때 1회만
+  // 만들고 기존 노드만 갱신해서, 교체 뒤에도 필드에는 이전 몬스터가 서 있었다(2026-09-14 실측).
+  if (group.dataset.hidden !== "true") {
+    const place = BATTLER_PLACEMENTS[activeSkin().id];
+    const shown = place.partyMax ? snapshot.actors.slice(0, place.partyMax) : snapshot.actors;
+    const wanted = shown.map((actor) => `battle-actor-${actor.recordId}`);
+    const present = [...group.querySelectorAll<HTMLElement>(".battle-actor")].map((node) => node.dataset.testid ?? "");
+    if (wanted.join("|") !== present.join("|")) {
+      const rebuilt = actorSpriteGroup(snapshot.actors);
+      group.replaceChildren(...rebuilt.childNodes);
+      for (const node of group.querySelectorAll<HTMLElement>(".battle-actor")) node.classList.add("battle-actor-switched-in");
+    }
+  }
   for (const actor of snapshot.actors) {
     const node = group.querySelector<HTMLElement>(`[data-testid="battle-actor-${actor.recordId}"]`);
     if (!node) continue;
@@ -615,6 +643,8 @@ function enemyButton(
   // 겹칠 때 화면 아래(가까운) 적이 앞에 오도록 — z 는 CSS 변수로만 소비해
   // 모션 클래스(z-index 상승)가 인라인에 눌리지 않게 한다.
   enemyNode.style.setProperty("--battle-depth", String(1 + Math.round(ep.y / 16)));
+  // 인트로 등장 스태거(_rm2000.css `--enemy-index`)가 읽는 순번. 없으면 다수 적이 한 덩이로 슬라이드인.
+  enemyNode.style.setProperty("--enemy-index", String(index));
   enemyNode.dataset.testid = enemy.id;
   enemyNode.dataset.recordId = enemy.recordId;
   enemyNode.dataset.facing = "right";
@@ -752,6 +782,7 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0, count = 4): HTMLElem
   const ap = place.party(index, count);
   positionBattleNode(node, ap.x, ap.y);
   if (place.partyScale) node.style.setProperty("--battle-actor-scale", String(place.partyScale));
+  node.style.setProperty("--actor-index", String(index));
   node.dataset.partyFacing = place.partyFacing;
   node.dataset.testid = `battle-actor-${actor.recordId}`;
   node.dataset.recordId = actor.recordId;
@@ -986,6 +1017,10 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
     gauge.append(atbLabel(), atbValue(actor.gauge), atbBar(actor.gauge));
     row.append(gauge);
   }
+  // 정면 스킨(필드 노드 없음)은 상태 배지를 행에 직접 단다 — 이름 셀 안은 rm2000 의
+  // overflow:hidden 열에 잘린다(실측: 배지가 2px 조각으로만 보임). 배치는 스킨 CSS 책임.
+  // DOM 맨 끝에 둬서 겹침 시 같은 z-index 의 다른 셀 위에 그려지게 한다.
+  if (partyStatusRowsCarryIcons()) row.append(statusIconCluster(actor));
   return row;
 }
 

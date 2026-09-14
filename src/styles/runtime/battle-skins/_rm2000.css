@@ -185,7 +185,8 @@
   height: calc(var(--battle-enemy-base-height) * var(--battle-enemy-scale, 1) * var(--battle-enemy-fit, 1));
   object-fit: contain;
   opacity: 1;
-  transition: filter 160ms ease-out;
+  /* transform 도 함께 — filter 만 두면 15층 포획 흡수의 transform 전환을 이 선언이 덮는다. */
+  transition: filter 160ms ease-out, transform 220ms ease-in;
   width: calc(var(--battle-enemy-base-width) * var(--battle-enemy-scale, 1) * var(--battle-enemy-fit, 1));
 }
 
@@ -423,6 +424,10 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command-host {
   bottom: auto;
+  /* 1열 트랙이 0 ↔ 184px 로 전환되는 220ms 동안 카드는 **밀려 나오듯** 드러나야 한다 — 패널 폭을 고정하고
+     호스트가 좌우·아래만 자른다(위 24px 은 턴 칩 자리라 남긴다). 자르지 않으면 폭이 줄어든 카드가 글자를
+     생략부호로 재배치해 전환 중 글자가 깜빡인다. */
+  clip-path: inset(-24px 0 0 0);
   display: grid;
   grid-column: 1;
   grid-row: 2;
@@ -443,6 +448,8 @@
   grid-column: 1;
   grid-row: 1;
   grid-template-columns: minmax(0, 1fr);
+  /* 트랙 전환 중에도 폭이 변하지 않는다(184px 트랙 − 호스트 왼쪽 여백 8px). */
+  min-width: 176px;
   /* 4행 × 24 + 패딩 4×2 = 104 = 카드 높이. */
   grid-template-rows: calc(4 * var(--battle-command-row-height));
   height: 100%;
@@ -478,7 +485,9 @@
   position: absolute;
   right: auto;
   text-overflow: ellipsis;
-  top: -10px;
+  /* 카드 위로 완전히 올린다. -10px 이면 칩 아래 절반이 카드 안으로 들어와 대상·서브메뉴 국면의
+     첫 행(패널 패딩 4px 바로 밑) 글자 윗부분을 덮었다(2026-09-14 실측). */
+  top: -22px;
   white-space: nowrap;
   width: auto;
   z-index: 2;
@@ -622,7 +631,8 @@
   display: none;
 }
 
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command:disabled {
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command:disabled,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command[aria-disabled="true"] {
   color: var(--battle-text-muted);
   opacity: 0.42;
 }
@@ -730,8 +740,10 @@
   border-radius: 8px;
   column-gap: 8px;
   display: grid;
-  grid-template-areas: "face name hpbar hpnum mpbar mpnum";
-  grid-template-columns: auto minmax(56px, 1fr) 56px 88px 44px 80px;
+  /* state 칸은 상태 배지 클러스터(.battle-actor-status > .battle-status-icons) 자리 —
+     auto 열이라 배지가 없으면 0 으로 접힌다. 이름 셀 안에 얹으면 overflow:hidden 에 잘린다(실측). */
+  grid-template-areas: "face name state hpbar hpnum mpbar mpnum";
+  grid-template-columns: auto minmax(56px, 1fr) auto 56px 88px 44px 80px;
   grid-template-rows: var(--battle-command-row-height);
   height: var(--battle-command-row-height);
   /* 명령 카드가 숨는 단계에서 파티 카드가 두 열을 다 차지해도 행은 이 폭에서 멈춰 가운데에
@@ -748,8 +760,11 @@
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-flow="gauge"] .battle-actor-status {
-  grid-template-areas: "face name hpbar hpnum mpbar mpnum tp";
-  grid-template-columns: auto minmax(56px, 1fr) 48px 84px 40px 76px 56px;
+  grid-template-areas: "face name state hpbar hpnum mpbar mpnum tp";
+  /* 명령 국면(파티 카드 2열, 내용폭 416px)에 들어가는 합: 고정 288 + 이름 56 + 얼굴 20 + 간격 42 = 406.
+     예전 열(84/76/56, 간격 8)은 436 으로 20px 넘쳐 ATB 게이지 오른쪽 끝이 잘려 그려졌다. */
+  column-gap: 6px;
+  grid-template-columns: auto minmax(56px, 1fr) auto 48px 80px 40px 72px 48px;
 }
 
 /* 얼굴: 기본 CSS 는 숨긴다(vxace 전용이었다). 여기서는 둥근 작은 초상으로 보인다. */
@@ -791,12 +806,26 @@
   white-space: nowrap;
 }
 
-/* 레벨 배지. 한 줄 행에서는 이름 폭을 아껴 접고, 두 줄 행에서만 보인다. */
+/* 상태 배지 — 행 직계 자식으로 달리는 클러스터(03-vxace-status-nodes.css)를
+   이름과 HP 게이지 사이의 state 칸에 둔다. 이름 셀 안은 overflow:hidden 이라 잘렸다(실측). */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-actor-status > .battle-status-icons {
+  align-self: center;
+  grid-area: state;
+  justify-self: end;
+  z-index: 2;
+}
+
+/* 두 줄 행(1~2인)에는 state 칸이 없다 — 이름 칸이 상단 전체 폭을 쓰므로 그 오른쪽 끝에 얹는다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status > .battle-status-icons {
+  grid-area: name;
+}
+
+/* 레벨 배지. 두 줄 행(1~2인)에서만 이름 옆 알약으로 보인다. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-actor-level {
   background: var(--rm-card-raised);
   border-radius: 6px;
   color: var(--battle-text-muted);
-  display: none;
+  display: inline-block;
   flex: 0 0 auto;
   font-size: 12px;
   font-variant-numeric: tabular-nums;
@@ -935,8 +964,10 @@
   width: 40px;
 }
 
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-level {
-  display: inline-block;
+/* 한 줄 행(3인 이상)은 이름 칸(min 56px) 안에 배지를 둘 자리가 없다 — 넣으면 이름이 생략되고 Lv 수치가
+   이름 칸 밖으로 잘린다(계측 감사 실측). 레벨은 결과 카드·메뉴에서 본다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-level {
+  display: none;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-gauge {
@@ -1073,24 +1104,10 @@
   white-space: nowrap;
 }
 
-/* 진행 캐럿: 글리프(">")를 그대로 두지만 깜빡임으로 "계속"을 알린다. */
+/* 진행 캐럿. 점멸 캐럿은 "눌러서 계속" 관습인데 전투 대사는 시퀀서가 자동 진행하고 확인키는
+   빨리감기다 — 거짓 약속이라 기본은 접고, 빨리감기 중(▶▶, 17-sprint-a-polish.css)에만 자리를 쓴다. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-message-cursor {
-  align-self: end;
-  animation: rm-caret 1s steps(2, jump-none) infinite;
-  color: var(--battle-accent);
-  display: inline-block;
-  font-size: 16px;
-  font-weight: 700;
-  grid-column: 2;
-  justify-self: end;
-  line-height: 16px;
-  /* ">" 글리프를 90° 돌려 아래 화살표로 쓴다 — 글자는 그대로라 감사·접근성 트리가 읽는다. */
-  transform: rotate(90deg);
-}
-
-@keyframes rm-caret {
-  from { opacity: 0.25; }
-  to { opacity: 1; }
+  display: none;
 }
 
 /* ---- Target select ------------------------------------------------------- */
@@ -1140,6 +1157,35 @@
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-phase="targetSelect"] .battle-target-menu .battle-command-icon,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-phase="targetSelect"] .battle-target-menu .battle-command-text small {
   display: none;
+}
+
+/* 이름 + 순번(별도 노드). 이름만 생략부호로 잘리고 순번(1/2)은 알약으로 끝에 남는다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-phase="targetSelect"] .battle-target-menu .battle-command-text {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-phase="targetSelect"] .battle-target-menu .battle-command-text strong {
+  min-width: 0;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-target-ordinal {
+  background: var(--rm-card-raised);
+  border-radius: 6px;
+  color: var(--battle-text-muted);
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  line-height: 18px;
+  padding: 0 6px;
+}
+
+/* 커서가 「뒤로」 행에 있으면 선택 대상 행의 강조를 낮춘다 — 금색 강조 둘이면 Enter 가 무엇을 하는지 애매하다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-target-cursor="cancel"] .battle-target-menu .battle-command:not(:disabled).battle-target-selected {
+  background: none;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-target-cursor="cancel"] .battle-target-menu .battle-command:not(:disabled).battle-target-selected::before {
+  opacity: 0.5;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-phase="targetSelect"] .battle-key-prompts {
@@ -1204,10 +1250,13 @@
   grid-template-areas:
     "title"
     "cards"
-    "confirm";
+    "confirm"
+    "prompt";
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto minmax(36px, 1fr) auto;
-  max-height: none;
+  grid-template-rows: auto minmax(36px, 1fr) auto auto;
+  /* 상한 없이 자라면 보상 행 10개부터 경험치·골드·확인 버튼이 씬 밖으로 나갔다(2026-09-14 실측,
+     행 12개 → 732px). 카드 트랙(1fr)이 줄고 .battle-result-cards 가 스크롤한다. */
+  max-height: calc(100% - 32px);
   max-width: calc(100% - 16px);
   min-height: 160px;
   overflow-x: hidden;
@@ -1265,6 +1314,12 @@
   text-align: left;
 }
 
+/* 레벨업·기술 습득 행은 결과 화면의 최고 순간 — 강조색으로 값을 띄운다(아이콘은 10-compact-hud-stage.css). */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-result-reward-card:has(.battle-result-reward-icon-levelup) .battle-result-reward-value,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-result-reward-card:has(.battle-result-reward-icon-skill) .battle-result-reward-value {
+  color: var(--battle-accent);
+}
+
 /* 보상 아이콘(경험치·골드·아이템 시트, 10-compact-hud-stage.css)을 20px 로 보인다. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-result-reward-icon {
   display: block;
@@ -1282,7 +1337,7 @@
   grid-column: 2;
   grid-row: 1;
   letter-spacing: 0.04em;
-  line-height: 1.4;
+  line-height: 1.6;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1340,8 +1395,15 @@
   transform: translateY(-2px);
 }
 
+/* 키 안내 — 키보드 전용 런타임에서 결과 화면만 "무엇을 누르나" 가 없었다. 확인 버튼 아래 한 줄. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-result-next-prompt {
-  display: none;
+  color: var(--battle-text-muted);
+  font-size: 12px;
+  grid-area: prompt;
+  justify-self: center;
+  line-height: 16px;
+  margin-top: -4px;
+  opacity: 0.8;
 }
 
 @keyframes rm2000-result-in {
@@ -1351,22 +1413,26 @@
 
 /* ---- Intro choreography -------------------------------------------------- */
 
+/* 안무는 커버(블라인드 300ms, --battle-reveal-ms)가 걷힌 뒤 시작한다. 마운트와 함께 돌면 절반이
+   커버 뒤에서 소진돼 적은 이미 절반 들어와 있고 배경 줌은 끝나 있었다(2026-09-14 실측). */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="intro"] .battle-backdrop {
   animation: rm2000-backdrop-in 0.9s ease-out both;
+  animation-delay: var(--battle-reveal-ms, 300ms);
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="intro"] .battle-enemy {
   animation: rm2000-enemy-in 0.55s cubic-bezier(0.2, 0.8, 0.3, 1) both;
-  animation-delay: calc(var(--enemy-index, 0) * 90ms);
+  animation-delay: calc(var(--battle-reveal-ms, 300ms) + var(--enemy-index, 0) * 90ms);
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="intro"] .battle-actor-group .battle-actor {
   animation: rm2000-actor-in 0.5s cubic-bezier(0.2, 0.8, 0.3, 1) both;
-  animation-delay: calc(120ms + var(--actor-index, 0) * 70ms);
+  animation-delay: calc(var(--battle-reveal-ms, 300ms) + 120ms + var(--actor-index, 0) * 70ms);
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="intro"] .battle-party {
   animation: rm2000-hud-in 0.45s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+  animation-delay: var(--battle-reveal-ms, 300ms);
 }
 
 /* 명령 카드는 차례가 올 때마다 아래에서 올라온다(연출 중 display:none 이었다가 다시 보이면 재시작). */
@@ -1379,21 +1445,27 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* 명령 카드가 숨는 단계: 카드는 보이지 않게 두고(visibility) 씬 1열 트랙을 0 으로 접는다.
+   예전엔 display:none + 파티 카드 `grid-column: 1 / -1` 토글이라 intro→command·매 행동마다
+   파티 카드 폭이 한 프레임에 전체 폭 ↔ 우측 열로 **스냅**했다(2026-09-14 실측, 중심 92px 점프).
+   트랙 자체를 220ms 전환하면 카드가 올라오는 동안 파티 카드가 같은 속도로 물러난다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] {
+  transition: grid-template-columns 220ms cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="intro"],
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="acting"],
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="impact"],
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="result"] {
+  grid-template-columns: 0px minmax(0, 1fr);
+}
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="intro"] .battle-command-host,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="acting"] .battle-command-host,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="impact"] .battle-command-host,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="result"] .battle-command-host {
-  display: none;
-}
-
-/* 명령 카드가 숨는 단계에서는 파티 카드가 두 열을 다 쓴다.
-   씬 그리드 1열은 `184px` **고정**이라 `.battle-command-host` 를 `display: none` 해도
-   그 폭이 그대로 남는다 — 그러면 행동 해결 중 밴드 왼쪽에 빈 띠가 생긴다(실측). */
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="intro"] .battle-party,
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="acting"] .battle-party,
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="impact"] .battle-party,
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="result"] .battle-party {
-  grid-column: 1 / -1;
+  margin-left: 0;
+  margin-right: 0;
+  overflow: hidden;
+  visibility: hidden;
 }
 
 @keyframes rm2000-backdrop-in {
@@ -1411,8 +1483,10 @@
   to   { opacity: 1; transform: translate(-50%, -100%); }
 }
 
+/* 8px — 파티 카드 아래 여백 안에서만 움직인다. 24px 이면 시작 프레임에서 카드 절반이 씬 밖으로 나가
+   글자 계측(battle-text 시나리오 intro 비트)이 잘림으로 잡았고, 화면에서도 카드가 아래 가장자리에 잘려 보였다. */
 @keyframes rm2000-hud-in {
-  from { opacity: 0; transform: translateY(24px); }
+  from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -1441,7 +1515,9 @@
   animation: rm2000-juice-swing 0.28s ease-out;
 }
 
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"].battle-flash-hit .battle-field {
+/* 세기 변수 흔들림(04-anim-damage-layers.css .battle-screen-shake)이 함께 붙으면 그쪽이 이긴다.
+   예전엔 이 고정 4px 규칙이 특정도로 덮어 heavy/crushing 의 6/10px 가 전부 4px 로 뭉개졌다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"].battle-flash-hit:not(.battle-screen-shake) .battle-field {
   animation: rm2000-hit-shake 0.24s ease-out;
 }
 
@@ -1474,6 +1550,23 @@
   letter-spacing: 0.08em;
 }
 
+/* 완전 방어 0 은 실제 피해와 같은 흰 26px 로 읽혔다 — 뮤트·작게. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-damage-popup-blocked {
+  color: var(--battle-text-muted);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* 격파된 적의 명찰·HP 카드는 스프라이트 분해(620ms)에 이어 사라진다 — 남겨 두면 빈 자리 밑에
+   「KO 0/144」 유령 카드가 라운드 내내 떠 있었다(2026-09-14 실측). */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-enemy.defeated .battle-enemy-chrome {
+  animation: rm2000-chrome-out 300ms ease-out 620ms both;
+}
+@keyframes rm2000-chrome-out {
+  from { opacity: 1; }
+  to { opacity: 0; visibility: hidden; }
+}
+
 /* 정면 구도의 피격: 적은 카메라에서 **뒤로(위로)** 밀리고, 뒷모습 파티는 카메라 쪽(아래)으로 밀린다.
    거리·찌그러짐은 타격 세기 변수(--hit-knockback/--hit-squash, battleHitIntensity.ts). */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-enemy { --hit-dir-x: 0; --hit-dir-y: -0.45; }
@@ -1481,7 +1574,7 @@
 @keyframes rm2000-juice-hit {
   0% { filter: brightness(1); transform: var(--battle-juice-base, translate(-50%, -100%)); }
   18% {
-    filter: brightness(2.4);
+    filter: brightness(1.6);
     transform: var(--battle-juice-base, translate(-50%, -100%))
       translate(calc(var(--hit-dir-x, 0) * var(--hit-knockback, 12px)), calc(var(--hit-dir-y, -0.45) * var(--hit-knockback, 12px)))
       scale(calc(1 + var(--hit-squash, 0.06)), calc(1 - var(--hit-squash, 0.06)));

@@ -42,13 +42,8 @@ export const itemCareScenario = {
     },
     {
       id: "after",
-      note: "돌봄 슬라임에게 순한 사료를 사용해 친밀도가 78로 오른다",
-      ops: [
-        { kind: "key", key: "z" },
-        { kind: "waitFor", testid: "status-menu-item-item_gen2_monster_kibble", state: "present" },
-        { kind: "key", key: "z" },
-        { kind: "waitFor", testid: "status-menu-monster-monster_care_qa", state: "present" },
-      ],
+      note: "돌봄 슬라임에게 순한 사료를 사용해 친밀도가 78로 오른다 — 대상 선택은 닫히지 않고 수치가 그 자리에서 갱신된다",
+      ops: [{ kind: "key", key: "z" }],
       expect: {
         testidPresent: ["status-menu-monster-monster_care_qa"],
         visibleText: { "status-menu-monster-monster_care_qa": "친밀도 78" },

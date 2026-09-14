@@ -163,7 +163,8 @@ describe("createBlankProject", () => {
   it("starts with one small picker block instead of 1000 preallocated slots", () => {
     const p = createBlankProject();
 
-    expect(p.switches).toHaveLength(20);
+    // 20 picker slots + 아이템이 켜는 기동석 스위치 11개(#777 `ensureItemSwitchDefs`).
+    expect(p.switches).toHaveLength(31);
     expect(p.variables).toHaveLength(20);
     expect(p.switches[0]).toEqual({ id: "sw_0001", name: "" });
     expect(p.variables[0]).toEqual({ id: "var_0001", name: "" });
@@ -185,9 +186,14 @@ describe("createBlankProject", () => {
     const changed = ensureSwitchVariableSlots(p);
 
     expect(changed).toBe(true);
-    expect(p.switches).toEqual([{ id: "sw_legacy_gate", name: "" }]);
+    // 아이템이 있는 한 기동석 스위치도 함께 선언된다 — 여기서 보는 것은 "인공적인 빈
+    // 슬롯(sw_NNNN)이 끼어들지 않는가" 이므로 그 축만 본다.
+    expect(p.switches.filter((entry) => entry.id === "sw_legacy_gate")).toHaveLength(1);
+    expect(p.switches.filter((entry) => /^sw_\d{4}$/u.test(entry.id))).toEqual([]);
     expect(p.variables).toEqual([{ id: "var_legacy_score", name: "" }]);
-    expect(p.session.switches).toEqual({ sw_legacy_gate: true });
+    expect(p.session.switches.sw_legacy_gate).toBe(true);
+    // 아이템 기동석 세션 값은 함께 실린다 — 인공적인 빈 숫자 슬롯만 없으면 된다.
+    expect(Object.keys(p.session.switches).filter((id) => /^sw_\d{4}$/u.test(id))).toEqual([]);
     expect(p.session.variables).toEqual({ var_legacy_score: 5 });
   });
 
@@ -241,6 +247,24 @@ describe("createBlankProject", () => {
     expect(ensureBundledResourceProfiles(p)).toBe(true);
 
     expect(p.resourceProfiles.some((profile) => profile.assetId === LEGACY_RM_TILESET_TEXTURE_KEY)).toBe(false);
+  });
+
+  it("ensureBundledResourceProfiles 가 저장본의 생성 얼굴 프로필을 걷어낸다", () => {
+    const p = createBlankProject();
+    // 예전 저장본처럼 생성 시리즈 낱장 프로필이 남아 있는 상태를 만든다.
+    p.resourceProfiles.push({
+      kind: "faceset",
+      name: "hero-01-face 얼굴 2",
+      assetId: "generated-actor-hero-01-face-01",
+      imageWidth: 48,
+      imageHeight: 48,
+    });
+
+    expect(ensureBundledResourceProfiles(p)).toBe(true);
+
+    expect(p.resourceProfiles.some((profile) => profile.assetId === "generated-actor-hero-01-face-01")).toBe(false);
+    // 저작 목록에 다시 끼어들지도 않아야 한다.
+    expect(p.resourceProfiles.some((profile) => (profile.assetId ?? "").startsWith("generated-actor-hero-") && profile.kind === "faceset")).toBe(false);
   });
 
   it("Map Tree가 있고 루트가 startMapId", () => {
@@ -310,7 +334,7 @@ describe("createBlankProject", () => {
     expect(tileset.passability[TILE.FLOWERS]).toEqual(passable);
     expect(tileset.priority[85]).toBe("upper");
     expect(tileset.priority[378]).toBe("upper");
-    expect(tileset.priority[374]).toBe("upper");
+    expect(tileset.priority[374]).toBe("lower");
     const passableRoofTiles = [374, 375, 376, 377, 384, 385, 386, 387, 404, 405, 406, 407, 436, 437].filter((tile) => !(
       tileset.passability[tile]?.up === false &&
       tileset.passability[tile]?.down === false &&

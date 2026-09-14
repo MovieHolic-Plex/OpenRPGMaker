@@ -1,8 +1,8 @@
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import { cardSubtitle, humanizeSpatialError, spatialSourceLabel } from "@/editor/panels/spatialFeedback";
 import { placeChromeState } from "@/editor/panels/spatialPlaceChromeState";
-import { mutateWorkingPlace, placeDeletePreview, workingPlace, workingProject } from "@/editor/panels/spatialPlaceCommands";
-import { placeDraftTarget, withPlaceKind, withPlaceLayout, withPlaceName } from "@/editor/panels/spatialPlaceDraft";
+import { commitWorkingPlace, mutateWorkingPlace, placeDeletePreview, workingPlace, workingProject } from "@/editor/panels/spatialPlaceCommands";
+import { FACILITY_FLOOR_MAX, removeChild, placeDraftTarget, withPlaceKind, withPlaceLayout, withPlaceName } from "@/editor/panels/spatialPlaceDraft";
 import {
   deletePlacedChild,
   openPlaceChild,
@@ -53,6 +53,13 @@ export function renderSpatialPlacesInspector(
       ],
     }));
   }
+  if (card?.compatibility === "house-shape") {
+    body.push(el("p", {
+      class: "spatial-readonly-note",
+      text: "건물 외형 도안입니다. 그림에 보이는 층수만으로 실내 공간이나 계단 연결이 만들어지지는 않습니다.",
+      dataset: { testid: "spatial-place-exterior-only" },
+    }));
+  }
   if (card && !place) {
     // 꾸러미 시설 카드 — 편집할 PlaceDesign 이 없어도 번들 사실을 보여 준다.
     const bundle = card.source === "default"
@@ -77,6 +84,20 @@ export function renderSpatialPlacesInspector(
     }
   }
   if (place && target) {
+    body.push(el("dl", {
+      class: "spatial-inspector-facts",
+      dataset: { testid: "spatial-place-composition" },
+      children: [
+        el("dt", { text: "직접 지정한 외형" }), el("dd", { text: place.exterior ? "있음" : "없음 (내부 배치는 별도)" }),
+        el("dt", { text: "포함된 장소" }), el("dd", { text: `${place.children.length}개` }),
+        el("dt", { text: "출입구 / 연결" }), el("dd", { text: `${place.ports.length} / ${place.connections.length}` }),
+      ],
+    }));
+    if (place.children.length === 0) body.push(el("p", {
+      class: "spatial-readonly-note",
+      text: "아직 방이 없습니다. 방 추가 또는 기존 장소 가져오기로 구성을 시작하세요.",
+      dataset: { testid: "spatial-place-no-spaces" },
+    }));
     body.push(el("label", {
       class: "spatial-place-field",
       children: [
@@ -120,6 +141,9 @@ export function renderSpatialPlacesInspector(
     const placedChild = target.occurrenceId ? selectedPlacedChild(project, target.occurrenceId) : undefined;
     const sourceChild = place.children.find((entry) => entry.id === placeChromeState.selectedChildId);
     if (placedChild) {
+      const childLibrary = project.spatialAuthoring?.occurrences[placedChild.occurrenceId]?.snapshot.library;
+      const outdoorChild = placedChild.source.kind === "space"
+        && childLibrary?.spaces[placedChild.source.id]?.environment === "outdoor";
       body.push(el("p", {
         class: "spatial-inspector-sub",
         text: `${placedChild.name} ${placedChild.occurrenceId} (${placedChild.x},${placedChild.y}) L${placedChild.level} #${placedChild.slotId}:${placedChild.index}`,
@@ -130,7 +154,7 @@ export function renderSpatialPlacesInspector(
         children: [
           el("span", { text: "층" }),
           el("input", {
-            attrs: { type: "number", value: String(placedChild.level), min: place.kind === "facility" ? "1" : "0", max: "3" },
+            attrs: { type: "number", value: String(placedChild.level), min: place.kind === "facility" && !outdoorChild ? "1" : "0", max: String(FACILITY_FLOOR_MAX) },
             dataset: { testid: "spatial-place-child-level" },
             on: {
               change: (event) => {
@@ -145,7 +169,7 @@ export function renderSpatialPlacesInspector(
       }));
       body.push(el("button", {
         class: "spatial-action",
-        text: "자식 삭제",
+        text: "이 장소에서 빼기",
         attrs: { type: "button" },
         dataset: { testid: "spatial-place-child-delete" },
         on: {
@@ -160,9 +184,29 @@ export function renderSpatialPlacesInspector(
     } else if (sourceChild) {
       body.push(el("p", {
         class: "spatial-inspector-sub",
-        text: `${sourceChild.source.kind} (${sourceChild.x},${sourceChild.y}) L${sourceChild.level}`,
+        text: `장소 (${sourceChild.x}, ${sourceChild.y}) · ${sourceChild.level === 0 ? "지상" : `${sourceChild.level}층`}`,
         dataset: { testid: "spatial-place-child-label" },
       }));
+      const childLibrary = project.spatialAuthoring!.library;
+      const outdoorChild = sourceChild.source.kind === "space" && childLibrary.spaces[sourceChild.source.id]?.environment === "outdoor";
+      body.push(el("label", { class: "spatial-place-field", children: [el("span", { text: "층" }), el("input", {
+        attrs: { type: "number", value: String(sourceChild.level), min: place.kind === "facility" && !outdoorChild ? "1" : "0", max: String(FACILITY_FLOOR_MAX) },
+        dataset: { testid: "spatial-place-child-level" }, on: { change: event => {
+          const input = event.target;
+          if (!(input instanceof HTMLInputElement)) return;
+          const level = Number(input.value);
+          if (!Number.isInteger(level) || level < 0 || level > FACILITY_FLOOR_MAX) {
+            placeChromeState.previewError = `층을 0~${FACILITY_FLOOR_MAX} 사이로 입력해 주세요.`;
+          } else {
+            mutateWorkingPlace(target, current => ({ ...current, children: current.children.map(child => child.id === sourceChild.id ? { ...child, level } : child) }));
+          }
+          rerender();
+        } },
+      })] }));
+      body.push(el("button", { class: "spatial-action", text: "이 장소에서 빼기", attrs: { type: "button" }, dataset: { testid: "spatial-place-child-delete" }, on: { click: () => {
+        if (commitWorkingPlace(target, removeChild(place, sourceChild.id))) placeChromeState.selectedChildId = null;
+        rerender();
+      } } }));
     }
     if (placedChild || sourceChild) {
       body.push(el("button", {

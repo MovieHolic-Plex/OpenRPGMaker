@@ -96,11 +96,13 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode, onNavigateToS
     const auto = arrangeTree(ids, edges.filter(e => ids.includes(e.from)));
     const portalOffset = mode === 'skill' && dependency.portals.length ? 248 : 0;
     const nodes: GraphNode[] = mode === 'promotion' ? p.database.classes.map(c => ({
-      id: c.id, name: c.name, iconUrl: resolveAssetResourceUrl(classGrowthArt(p, c), { project: p }) ?? undefined, subtitle: `${c.learnedSkills.length} 스킬 · ${c.promotions?.length ?? 0} 승급 경로`, badge: c.name.slice(0, 1),
+      id: c.id, name: c.name, iconUrl: resolveAssetResourceUrl(classGrowthArt(p, c), { project: p }) ?? undefined, subtitle: `${c.learnedSkills.length} 스킬 · 승급 경로 ${c.promotions?.length ?? 0}개`, badge: c.name.slice(0, 1),
       ...(g.classPositions[c.id] ?? auto[c.id]!), invalid: edges.some(e => e.to === c.id && wouldCreateCycle(edges.filter(x => x !== e), e.from, e.to)),
     })) : (tree?.nodes ?? []).map(n => {
       const skill = n.effect.kind === 'skill' ? p.database.skills.find(s => s.id === (n.effect as { skillId: string }).skillId) : undefined;
-      return { ...n, x: n.x + portalOffset, iconUrl: resolveAssetResourceUrl(nodeGrowthArt(p, n), { project: p }) ?? undefined, badge: n.effect.kind === 'parameter' ? '+' : '✧', subtitle: state.preview ? `${nodeRank(state.simulation, state.previewActor ?? '', tree!.id, n.id)} / ${n.maxRank} 습득 · ${n.cost} P` : `${n.cost} P · Lv.${n.level} · ${n.effect.kind === 'skill' ? '스킬' : GROWTH_PARAMETER_LABELS[n.effect.parameter]}`,
+      const effectText = n.effect.kind === 'skill' ? `스킬 · ${skill?.name ?? '미지정'}` : `${GROWTH_PARAMETER_LABELS[n.effect.parameter]} +${n.effect.amount}/등급`;
+      const rankText = n.maxRank > 1 ? ` · 최대 ${n.maxRank}등급` : '';
+      return { ...n, x: n.x + portalOffset, iconUrl: resolveAssetResourceUrl(nodeGrowthArt(p, n), { project: p }) ?? undefined, badge: n.effect.kind === 'parameter' ? '+' : '✧', subtitle: state.preview ? `${nodeRank(state.simulation, state.previewActor ?? '', tree!.id, n.id)} / ${n.maxRank} 습득 · 비용 ${n.cost}P` : `${effectText} · 비용 ${n.cost}P · Lv.${n.level}${rankText}`,
         invalid: n.effect.kind === 'skill' && !skill,
       };
     });
@@ -150,7 +152,7 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode, onNavigateToS
       for (const tool of tools.slice(0, 2)) (tool as HTMLButtonElement).disabled = !tree || state.preview;
     }
     tools.push(button(state.preview ? '편집으로 돌아가기' : '성장 미리보기', 'growth-preview-toggle', () => { state.preview = !state.preview; state.connecting = undefined; draw(); }));
-    const connect = button(state.connecting ? '연결 취소' : '노드 연결', 'growth-connect', () => { state.connecting = state.connecting ? undefined : state.selected; draw(); });
+    const connect = button(state.connecting ? '연결 취소' : mode === 'promotion' ? '승급 연결' : '선행 노드 연결', 'growth-connect', () => { state.connecting = state.connecting ? undefined : state.selected; draw(); });
     connect.disabled = !state.selected || state.preview; tools.push(connect);
     const toolbar = el('div', { class: 'growth-toolbar', children: [el('span', { class: 'growth-toolbar-title', text: mode === 'promotion' ? '직업 계보' : tree?.name ?? '새 트리를 만들어 시작하세요' }), ...tools] });
     const canvas = renderGrowthCanvas({ nodes, edges, selected: state.selected, connecting: state.connecting, zoom: state.zoom, readOnly: state.preview, coordinateOffsetX: portalOffset,
@@ -165,7 +167,7 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode, onNavigateToS
     const inspector = el('aside', { class: 'growth-inspector', attrs: { 'aria-label': '선택 항목 설정' }, children: state.preview ? previewInspector(p, tree) : mode === 'promotion' ? promotionInspector(p) : skillInspector(p, tree) });
     const issues = growthIssues(p);
     root.replaceChildren(header, el('div', { class: 'growth-body', children: [catalog(p, tree), el('main', { class: 'growth-workspace', children: [toolbar, canvas,
-      el('div', { class: `growth-status${state.message || issues.length ? ' has-issue' : ''}`, attrs: { role: 'status' }, dataset: { testid: 'growth-status' }, text: state.message ?? (state.connecting ? '도착 노드를 선택하세요. 선행 조건으로 연결됩니다.' : issues[0] ?? '노드를 끌어 배치 · Alt + 방향키로 미세 이동 · Ctrl + 휠로 확대') }),
+      el('div', { class: `growth-status${state.message || issues.length ? ' has-issue' : ''}`, attrs: { role: 'status' }, dataset: { testid: 'growth-status' }, text: state.message ?? (state.connecting ? '도착 노드를 선택하세요. 선행 조건으로 연결됩니다.' : issues[0] ?? '드래그로 배치 · Ctrl+휠 확대') }),
     ] }), inspector] }), presetBrowser(mode, closePresets, addedPreset, { compact: true, state: state.preset, disabled: state.preview }));
     const nextScroll = root.querySelector<HTMLElement>('.growth-body .growth-viewport'); if (nextScroll) { nextScroll.scrollLeft = scrollPos.x; nextScroll.scrollTop = scrollPos.y; }
     nextScroll?.addEventListener('scroll', () => { state.canvasX = nextScroll.scrollLeft; state.canvasY = nextScroll.scrollTop; });

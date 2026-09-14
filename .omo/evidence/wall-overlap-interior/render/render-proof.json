@@ -1,0 +1,53 @@
+{
+  "source": "/home/main/.codex/worktrees/2ece/rpg-zzu/output/evidence/compact-interior/preview-project.json",
+  "sourceSHA256": "dd5686494d4982d5668f806d16247c1f7b1fa99e958519ce517c03118772bdac",
+  "mapId": "spatial:child:32:compact-interior:example:cottage7:floor-1:0",
+  "renderer": "editor/mapTileDraw",
+  "base": "http://127.0.0.1:19841",
+  "status": "passed",
+  "startedAt": "2026-09-13T10:17:52.685Z",
+  "mapName": "작은 단층집 · 취사·식사·수면",
+  "tiles": {
+    "width": 12,
+    "height": 12,
+    "size": 16
+  },
+  "nativePixels": {
+    "width": 192,
+    "height": 192
+  },
+  "overviewPixels": {
+    "width": 192,
+    "height": 192
+  },
+  "rects": [
+    {
+      "x": 0,
+      "y": 0,
+      "width": 12,
+      "height": 12
+    }
+  ],
+  "files": [
+    "map-full.png",
+    "map-overview.png",
+    "index.html",
+    "render-proof.json",
+    "detail-01.png"
+  ],
+  "sourceUnchanged": true,
+  "completedAt": "2026-09-13T10:18:06.458Z",
+  "browserErrorCounts": {
+    "page": 0,
+    "console": 0,
+    "requests": 0,
+    "responses": 0
+  },
+  "browserErrorCount": 0,
+  "browserErrors": {
+    "page": [],
+    "console": [],
+    "requests": [],
+    "responses": []
+  }
+}

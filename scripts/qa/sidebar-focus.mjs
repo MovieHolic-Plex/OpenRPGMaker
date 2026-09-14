@@ -113,7 +113,8 @@ try {
         assert(!measured.pageOverflow && !measured.toolbarScroll, `${value} ${width}: horizontal overflow`);
         assert(!measured.mainToolbarScroll, `${value} ${width}: main toolbar scroll`);
         assert.deepEqual(measured.clippedControls, [], `${value} ${width}: controls clipped or covered`);
-        if (value === 'standard' && width === 1440) assert(measured.sheetRatio >= .6, 'standard sheet must own 60% of sidebar');
+        if (value === 'standard' && width === 1440) assert(measured.sheetRatio >= .7, 'standard sheet must own 70% of sidebar');
+        if (value === 'expert' && width === 1440) assert(measured.sheetRatio >= .4, 'expert sheet must own 40% of sidebar');
       }
     }
   }

@@ -104,7 +104,7 @@ describe("expandRoof / resolveAutotile", () => {
     expect(() => expandRoof(def, roof, { x: 0, y: 0, w: 4, h: 3 }, RM_TYPE_GRAMMAR_PROFILE, EXAMPLE)).toThrowError(/공간이 없습니다/u);
   });
 
-  it("overlay_detail 지붕 어휘도 throw하지 않고 장식 가로 지붕으로 폴백한다", () => {
+  it("overlay_detail 지붕 어휘는 형제 roof-body 문법으로 전개해 하위 지붕 띠를 깐다", () => {
     const def = tileset();
     const roof: TileGroupMetadata = {
       id: "test-overlay-roof", name: "사선 지붕", role: "roof", defaultLayer: "upper", layerHome: "upper",
@@ -116,9 +116,11 @@ describe("expandRoof / resolveAutotile", () => {
     };
     const { edits, region } = expandRoof(def, roof, { x: 3, y: 4, w: 4, h: 3 }, RM_TYPE_GRAMMAR_PROFILE, EXAMPLE);
     expect(region).toEqual({ x: 3, y: 3, w: 4, h: 1 });
+    // 오버레이 어휘는 같은 role의 roof-body 형제 문법(374|375*|377)으로 전개된다.
+    // 홈은 형제 그룹을 따른다 — 몸체는 불투명이므로 하위.
     expect(edits).toHaveLength(4);
-    expect(edits[0]).toMatchObject({ x: 3, y: 3, tile: 374, layer: "upper" });
-    expect(edits[3]).toMatchObject({ x: 6, y: 3, tile: 376, layer: "upper" });
+    expect(edits.map((edit) => edit.tile)).toEqual([374, 375, 375, 377]);
+    for (const edit of edits) expect(edit.layer).toBe("lower");
   });
 
   it("resolveAutotile: 8-이웃 variantMap으로 inner corner(대각만 빈 셀)를 재계산한다", () => {

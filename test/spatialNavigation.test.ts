@@ -6,7 +6,7 @@ import { resetScratchConceptTabSession } from "@/editor/panels/scratchConceptTab
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 
-const tabs = ["tiles", "objects", "spaces", "places", "regions", "worlds"] as const;
+const tabs = ["tiles", "objects", "places", "regions", "worlds"] as const;
 let host: HTMLDivElement;
 const previousProject = store.getCurrent();
 const previousEditor = editorState.get();
@@ -31,7 +31,7 @@ afterEach(() => {
 });
 
 describe("spatial navigation acceptance (task 12 owns GREEN)", () => {
-  it("renders the six ordered spatial destinations when the legacy concept route opens", () => {
+  it("renders the five ordered spatial destinations when the legacy concept route opens", () => {
     // Given: real database host and current outdoor map from beforeEach.
     // When
     renderDatabasePanel(host);

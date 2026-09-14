@@ -200,7 +200,7 @@ export const GOLDEN_BATTLE: GoldenTask = {
 const GOLDEN_BATTLE_SOLUTION: readonly ToolCall[] = [
   ...baseTown(),
   { name: "upsert_item", args: { item: { id: "it_key", name: "낡은 열쇠" } } },
-  { name: "upsert_enemy", args: { enemy: { id: "en_slime", name: "슬라임" } } },
+  { name: "upsert_enemy", args: { enemy: { id: "en_slime", name: "슬라임", monsterResourceId: "generated-enemy-slime-01" } } },
   { name: "upsert_troop", args: { troop: { id: "tr_slime", name: "슬라임 무리", enemyIds: ["en_slime"] } } },
   { name: "place_battle_blocker", args: { mapId: TOWN, x: 9, y: 3, troopId: "tr_slime", graphic: { query: "슬라임" }, victoryItems: [{ itemId: "it_key", amount: 1 }] } },
 ];
@@ -230,7 +230,7 @@ export const GOLDEN_QUEST: GoldenTask = {
 };
 const GOLDEN_QUEST_SOLUTION: readonly ToolCall[] = [
   ...baseTown(),
-  { name: "upsert_enemy", args: { enemy: { id: "en_slime", name: "슬라임" } } },
+  { name: "upsert_enemy", args: { enemy: { id: "en_slime", name: "슬라임", monsterResourceId: "generated-enemy-slime-01" } } },
   { name: "upsert_troop", args: { troop: { id: "tr_slime", name: "슬라임 무리", enemyIds: ["en_slime"] } } },
   {
     name: "create_quest",
@@ -266,7 +266,7 @@ export const GOLDEN_TOUGH_ENEMY: GoldenTask = {
 };
 const GOLDEN_TOUGH_SOLUTION: readonly ToolCall[] = [
   ...baseTown(),
-  { name: "upsert_enemy", args: { enemy: { id: "en_boss", name: "보스", stats: { maxHp: 50, attack: 30, defense: 20 } } } },
+  { name: "upsert_enemy", args: { enemy: { id: "en_boss", name: "보스", monsterResourceId: "generated-enemy-dragon-01", stats: { maxHp: 50, attack: 30, defense: 20 } } } },
   { name: "tune_enemy", args: { enemyId: "en_boss", targetHitsToKill: 8, targetDamageToHeroPerHit: 120, heroLevel: 1 } },
 ];
 

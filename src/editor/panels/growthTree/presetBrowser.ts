@@ -40,7 +40,7 @@ export function presetBrowser(mode: GrowthStudioMode, close: () => void, added: 
     for (const p of Object.values(positions)) { p.x -= 40; p.y -= 44; }
     const nodes: GraphNode[] = mode === 'promotion' ? project.database.classes.map(c => ({ id: c.id, name: c.name, ...positions[c.id]!, badge: c.name.slice(0, 1),
       iconUrl: resolveAssetResourceUrl(classGrowthArt(project, c)) ?? undefined,
-      subtitle: `Lv.${project.database.classes.flatMap(from => from.promotions ?? []).find(path => path.toClassId === c.id)?.requires.level ?? 1} · ${project.growth!.skillTrees.filter(t => t.classIds.includes(c.id)).length} 트리`,
+      subtitle: `승급 Lv.${project.database.classes.flatMap(from => from.promotions ?? []).find(path => path.toClassId === c.id)?.requires.level ?? 1} · 스킬 트리 ${project.growth!.skillTrees.filter(t => t.classIds.includes(c.id)).length}개`,
     })) : [
       ...dependency.portals.map(portal => {
         const n = portal.tree.nodes.find(n => n.id === portal.requirement.nodeId)!;
@@ -48,7 +48,7 @@ export function presetBrowser(mode: GrowthStudioMode, close: () => void, added: 
           subtitle: `${n.name} · ${portal.requirement.rank}등급 · 열기`, iconUrl: resolveAssetResourceUrl(nodeGrowthArt(project, n)) ?? undefined };
       }),
       ...(tree?.nodes ?? []).map(n => ({ ...n, ...positions[n.id]!, badge: '+',
-        subtitle: `Lv.${n.level} · ${n.cost} P · ${n.maxRank}등급`, iconUrl: resolveAssetResourceUrl(nodeGrowthArt(project, n)) ?? undefined })),
+        subtitle: `Lv.${n.level} · 비용 ${n.cost}P · 최대 ${n.maxRank}등급`, iconUrl: resolveAssetResourceUrl(nodeGrowthArt(project, n)) ?? undefined })),
     ];
     if (!ids.includes(state.selected ?? '')) state.selected = mode === 'skill' ? tree?.nodes[0]?.id : ids[0];
     const showTree = (id: string, nodeId?: string): void => { state.treeId = id; state.selected = nodeId; state.x = 0; state.y = 0; draw(); };

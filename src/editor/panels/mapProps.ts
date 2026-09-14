@@ -1,8 +1,11 @@
 import {
   resizeMap, renameMap, setMapEncounterRate, setMapEncounterTable, setMapFieldSpawns, setMapTileset,
   setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapMinimap,
+  setMapCloudShadows,
 } from "@/editor/actions";
 import { appendGroupedTilesetOptions } from "@/editor/tilesetSelectOptions";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { MAP_BACKGROUND_SCROLL_LIMIT, normalizeMapBackgroundScroll } from "@/project/mapBackground";
 import { openDatabaseResourcePickerDialog, listDatabaseResourceOptions, type DatabaseResourcePickerKind } from "@/editor/panels/databaseResourcePickerDialog";
 import { editorState } from "@/editor/editorState";
 import { DEFAULT_ENEMY_FACTION_ID, factionName, resolveFactionTable } from "@/project/factions";
@@ -10,16 +13,23 @@ import { SEASONS, TIME_PHASES, type Season, type TimePhase } from "@/project/gam
 import { store } from "@/project/store";
 import { mapLocations } from "@/project/mapNamedLocations";
 import { renderLocationDrawCta } from "@/editor/locationDrawCta";
+import {
+  CLOUD_SHADOW_OPACITY_RANGE,
+  CLOUD_SHADOW_SCALE_RANGE,
+  CLOUD_SHADOW_SPEED_RANGE,
+  normalizeCloudShadowParams,
+} from "@/player/cloudShadows";
 import type { EncounterTableEntry, FieldSpawnDef, MapBgmSetting } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { showConfirm } from "@/editor/ui/modal";
 import { toast } from "@/util/toast";
 
-type MapPropsTab = "general" | "background" | "bgm" | "battle" | "restrictions" | "encounter" | "spawns" | "minimap";
+type MapPropsTab = "general" | "background" | "clouds" | "bgm" | "battle" | "restrictions" | "encounter" | "spawns" | "minimap";
 
 const TAB_LABELS: Record<MapPropsTab, string> = {
   general: "기본 설정",
   background: "맵 배경",
+  clouds: "구름 그림자",
   bgm: "배경 음악",
   battle: "전투 배경",
   restrictions: "행동 제한",
@@ -29,12 +39,13 @@ const TAB_LABELS: Record<MapPropsTab, string> = {
 };
 
 const SECTION_ORDER: readonly MapPropsTab[] = [
-  "general", "background", "bgm", "battle", "restrictions", "encounter", "spawns", "minimap",
+  "general", "background", "clouds", "bgm", "battle", "restrictions", "encounter", "spawns", "minimap",
 ];
 
 const SECTION_DESCRIPTIONS: Record<MapPropsTab, string> = {
   general: "맵의 이름, 타일 그림판과 크기를 설정합니다.",
   background: "투명한 타일 뒤에 표시할 그림과 움직임을 설정합니다.",
+  clouds: "맵 위를 흘러가는 구름 그림자를 설정합니다.",
   bgm: "이 맵에 들어왔을 때 재생할 음악을 고릅니다.",
   battle: "이 맵에서 전투가 시작되면 표시할 배경입니다.",
   restrictions: "체크한 행동을 이 맵에서 제한합니다.",
@@ -44,7 +55,7 @@ const SECTION_DESCRIPTIONS: Record<MapPropsTab, string> = {
 };
 
 const SECTION_RENDERERS: Record<MapPropsTab, (host: HTMLElement, map: import("@/project/types").GameMap) => void> = {
-  general: renderGeneralTab, background: renderBackgroundTab, bgm: renderBgmTab,
+  general: renderGeneralTab, background: renderBackgroundTab, clouds: renderCloudShadowTab, bgm: renderBgmTab,
   battle: renderBattleTab, restrictions: renderRestrictionsTab, encounter: renderEncounterTab,
   spawns: renderSpawnsTab, minimap: renderMinimapTab,
 };
@@ -296,29 +307,65 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
       rerender: () => rerender(host, "map-bg-image-set"),
     }));
 
+    // 캔버스는 배경을 그리지 않는다(빈 칸 체커가 의도된 신호라 덮지 않는다 — 편집기 라우팅 문서).
+    // 그래서 고른 그림을 확인할 자리는 여기 하나뿐이다.
+    const previewUrl = resolveAssetResourceUrl(bg.imageId, { project: store.getCurrent() });
+    if (previewUrl) {
+      section.append(el("img", {
+        class: "map-bg-preview",
+        attrs: { src: previewUrl, alt: "맵 배경 미리보기", loading: "lazy" },
+        dataset: { testid: "map-bg-preview" },
+      }));
+    }
+
     const scrollLine = el("div", { class: "map-props-size-row" });
     const sxInput = el("input", {
-      attrs: { type: "number", min: "-10", max: "10", step: "0.5", "aria-label": "가로 스크롤 속도" },
+      attrs: { type: "number", min: String(-MAP_BACKGROUND_SCROLL_LIMIT), max: String(MAP_BACKGROUND_SCROLL_LIMIT), step: "0.5", "aria-label": "가로 스크롤 속도" },
       value: String(bg.scrollX ?? 0),
       dataset: { testid: "map-bg-scroll-x" },
     });
     const syInput = el("input", {
-      attrs: { type: "number", min: "-10", max: "10", step: "0.5", "aria-label": "세로 스크롤 속도" },
+      attrs: { type: "number", min: String(-MAP_BACKGROUND_SCROLL_LIMIT), max: String(MAP_BACKGROUND_SCROLL_LIMIT), step: "0.5", "aria-label": "세로 스크롤 속도" },
       value: String(bg.scrollY ?? 0),
       dataset: { testid: "map-bg-scroll-y" },
     });
     scrollLine.append(el("span", { text: "X" }), sxInput, el("span", { text: "Y" }), syInput);
+    // 범위 밖 입력은 **조용히 클램프**한다 — 타이틀 배경 레이어(`databaseSystemView`)와 같은 규칙이고,
+    // 상한은 로드 정규화·AI 툴 스키마와 같은 상수(`@/project/mapBackground`)를 본다.
     const updateScroll = (key: "scrollX" | "scrollY", input: HTMLInputElement): void => {
       const value = Number(input.value);
-      if (!Number.isFinite(value) || value < -10 || value > 10) {
-        toast("스크롤 속도는 -10~10 사이로 입력하세요.", "error");
+      const normalized = normalizeMapBackgroundScroll(value);
+      if (normalized === undefined) {
+        input.value = String(store.getCurrent().maps[map.id]!.background?.[key] ?? 0);
         return;
       }
-      setMapBackground(map.id, { ...store.getCurrent().maps[map.id]!.background!, [key]: value });
+      setMapBackground(map.id, { ...store.getCurrent().maps[map.id]!.background!, [key]: normalized });
+      if (normalized !== value) input.value = String(normalized);
     };
     sxInput.addEventListener("change", () => updateScroll("scrollX", sxInput));
     syInput.addEventListener("change", () => updateScroll("scrollY", syInput));
     section.append(fieldRow("스크롤 속도", scrollLine));
+
+    // 반복은 기본값이라 «끈 것» 만 저장한다(normalize 와 같은 규칙 — 옛 JSON 바이트 유지).
+    const loopRow = el("div", { class: "map-props-check-row" });
+    const loopBox = (key: "loopX" | "loopY", label: string): HTMLElement => {
+      const box = el("input", {
+        attrs: { type: "checkbox" },
+        dataset: { testid: `map-bg-loop-${key === "loopX" ? "x" : "y"}` },
+      }) as HTMLInputElement;
+      box.checked = bg[key] !== false;
+      box.addEventListener("change", () => {
+        const next = { ...store.getCurrent().maps[map.id]!.background! };
+        if (box.checked) delete next[key];
+        else next[key] = false;
+        setMapBackground(map.id, next);
+      });
+      const wrapper = el("label", { class: "map-props-check-row" });
+      wrapper.append(box, el("span", { text: label }));
+      return wrapper;
+    };
+    loopRow.append(loopBox("loopX", "가로 반복"), loopBox("loopY", "세로 반복"));
+    section.append(loopRow);
   }
 
   host.append(section);
@@ -842,6 +889,145 @@ function numberField(
   const cell = el("div", { class: "map-encounter-cond-cell" });
   cell.append(el("label", { text: label, attrs: { for: input.dataset.testid ?? "" } }), input);
   return cell;
+}
+
+// ── 구름 그림자 섹션 ──
+//
+// 슬라이더의 범위·기본값은 런타임과 같은 순수 모델(`@/player/cloudShadows`)에서 읽는다.
+// 여기서 숫자를 따로 적으면 플레이 화면의 계산과 어긋날 수 있다.
+function renderCloudShadowTab(host: HTMLElement, map: import("@/project/types").GameMap): void {
+  const section = el("div", { class: "panel-section map-props-section" });
+  const enabled = map.cloudShadows?.enabled === true;
+  const params = normalizeCloudShadowParams(map.cloudShadows);
+
+  const enableCheck = el("input", {
+    attrs: { type: "checkbox" },
+    dataset: { testid: "map-cloud-shadows-enable" },
+  }) as HTMLInputElement;
+  enableCheck.checked = enabled;
+  enableCheck.addEventListener("change", () => {
+    if (enableCheck.checked) setMapCloudShadows(map.id, { enabled: true });
+    else setMapCloudShadows(map.id, null);
+    rerender(host);
+  });
+  const enableRow = el("label", { class: "map-props-check-row" });
+  enableRow.append(enableCheck, el("span", { text: "이 맵에 구름 그림자" }));
+  section.append(enableRow);
+  section.append(el("p", {
+    class: "map-props-hint",
+    text: enabled
+      ? "하늘 구름이 만드는 그늘이 맵 위를 흘러갑니다. 실제 모습은 플레이 화면에서 확인하세요."
+      : "체크하면 이 맵 위로 구름 그림자가 흘러갑니다.",
+  }));
+
+  if (enabled) {
+    const opacityPercent = { min: Math.round(CLOUD_SHADOW_OPACITY_RANGE.min * 100), max: Math.round(CLOUD_SHADOW_OPACITY_RANGE.max * 100) };
+    const scalePercent = { min: Math.round(CLOUD_SHADOW_SCALE_RANGE.min * 100), max: Math.round(CLOUD_SHADOW_SCALE_RANGE.max * 100) };
+    appendSliderRow(section, {
+      label: "그림자 진하기 (%)",
+      testid: "map-cloud-shadows-opacity",
+      min: opacityPercent.min,
+      max: opacityPercent.max,
+      step: 1,
+      value: Math.round(params.opacity * 100),
+      normalize: (value) => clampSlider(value, opacityPercent.min, opacityPercent.max),
+      describe: (value) => `${value}% — 높을수록 그늘이 짙습니다.`,
+      apply: (value) => setMapCloudShadows(map.id, { opacity: value / 100 }),
+    });
+    appendSliderRow(section, {
+      label: "흘러가는 속도 (px/초)",
+      testid: "map-cloud-shadows-speed",
+      min: CLOUD_SHADOW_SPEED_RANGE.min,
+      max: CLOUD_SHADOW_SPEED_RANGE.max,
+      step: 1,
+      value: Math.round(params.speed),
+      normalize: (value) => clampSlider(value, CLOUD_SHADOW_SPEED_RANGE.min, CLOUD_SHADOW_SPEED_RANGE.max),
+      describe: (value) => value <= 0 ? "0 — 제자리에 머물러 있습니다." : `${value}px/초 — 클수록 빨리 지나갑니다.`,
+      apply: (value) => setMapCloudShadows(map.id, { speed: value }),
+    });
+    appendSliderRow(section, {
+      label: "흘러가는 방향 (도)",
+      testid: "map-cloud-shadows-angle",
+      min: 0,
+      max: 359,
+      step: 1,
+      value: Math.round(params.angleDeg),
+      normalize: (value) => wrapDegrees(value, params.angleDeg),
+      describe: (value) => `${value}° — 0°는 오른쪽, 90°는 아래쪽으로 흐릅니다.`,
+      apply: (value) => setMapCloudShadows(map.id, { angleDeg: value }),
+    });
+    appendSliderRow(section, {
+      label: "구름 크기 (%)",
+      testid: "map-cloud-shadows-scale",
+      min: scalePercent.min,
+      max: scalePercent.max,
+      step: 5,
+      value: Math.round(params.scale * 100),
+      normalize: (value) => clampSlider(value, scalePercent.min, scalePercent.max),
+      describe: (value) => `${value}% — 클수록 덩어리가 크고 드문드문 지나갑니다.`,
+      apply: (value) => setMapCloudShadows(map.id, { scale: value / 100 }),
+    });
+  }
+
+  host.append(section);
+}
+
+type SliderRowOptions = {
+  readonly label: string;
+  readonly testid: string;
+  readonly min: number;
+  readonly max: number;
+  readonly step: number;
+  readonly value: number;
+  readonly normalize: (value: number) => number;
+  readonly describe: (value: number) => string;
+  readonly apply: (value: number) => void;
+};
+
+/** 슬라이더 + 숫자 입력 한 줄. 둘은 같은 값을 쓰고, 힌트 문장이 그 값을 사람 말로 다시 말한다. */
+function appendSliderRow(host: HTMLElement, options: SliderRowOptions): void {
+  const bounds = {
+    min: String(options.min),
+    max: String(options.max),
+    step: String(options.step),
+    "aria-label": options.label,
+  };
+  const slider = el("input", {
+    class: "map-encounter-slider",
+    attrs: { type: "range", ...bounds },
+    value: String(options.value),
+    dataset: { testid: options.testid },
+  }) as HTMLInputElement;
+  const number = el("input", {
+    attrs: { type: "number", ...bounds },
+    value: String(options.value),
+    dataset: { testid: `${options.testid}-number` },
+  }) as HTMLInputElement;
+  const hint = el("p", { class: "map-props-hint", text: options.describe(options.value) });
+  const commit = (raw: number): void => {
+    const value = options.normalize(raw);
+    slider.value = String(value);
+    number.value = String(value);
+    hint.textContent = options.describe(value);
+    options.apply(value);
+  };
+  slider.addEventListener("input", () => commit(Number.parseInt(slider.value, 10)));
+  number.addEventListener("change", () => commit(Number.parseInt(number.value, 10)));
+  const row = el("div", { class: "map-encounter-rate-row" });
+  row.append(slider, number);
+  host.append(fieldRow(options.label, row));
+  host.append(hint);
+}
+
+function clampSlider(value: number, min: number, max: number): number {
+  if (!Number.isFinite(value)) return min;
+  return Math.max(min, Math.min(max, Math.round(value)));
+}
+
+/** 각도는 «같은 방향» 을 여러 바퀴 표현할 수 있다 — 400° 는 40° 로 접어 저장한다. */
+function wrapDegrees(value: number, fallback: number): number {
+  if (!Number.isFinite(value)) return Math.round(fallback);
+  return ((Math.round(value) % 360) + 360) % 360;
 }
 
 // ── 미니맵 탭 ──

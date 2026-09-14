@@ -62,6 +62,9 @@ function floorTileOf(place: ConceptPlaceRecord): number | undefined {
   if (place.floor === "stone") return 12;
   if (place.floor === "plank") return 102;
   if (place.floor === "mat") return 139;
+  if (place.floor === "jade") return 13;
+  if (place.floor === "gravel") return 42;
+  if (place.floor === "dark-stone") return 43;
   return undefined;
 }
 

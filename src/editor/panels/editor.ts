@@ -30,6 +30,7 @@ import {
 import { installLayoutBboxOverlay } from "@/editor/layoutBboxOverlay";
 import { installMapLocationLayer } from "@/editor/mapLocationLayer";
 import { locationLayerState, subscribeLocationLayer } from "@/editor/mapLocationLayerState";
+import { subscribeMapBackgroundPreview } from "@/editor/mapBackgroundPreviewState";
 import { installLocationDrawModeGuard } from "@/editor/locationDrawMode";
 import { getMapEditHistoryState } from "@/editor/mapEditHistory";
 import { bindMapSurfaceFocusHandoff } from "@/editor/mapSurfaceFocus";
@@ -78,12 +79,14 @@ const MAP_TREE_MIN_HEIGHT = 80;
 const MAP_TREE_MAX_HEIGHT = 480;
 // 맵 트리 자동 높이 — 기본은 "내용에 맞춤"이다. 고정 300px 은 맵이 1~2개인 프로젝트에서
 // 좌패널 3분의 1을 빈 칸으로 두고 타일 시트를 눌렀다(실측 1440×900: 시트 275px 에 191칸 중
-// 8행). 하한은 리사이저 드롭 표적과 행 하나가 들어가는 150px, 상한은 좌패널 40% 또는 320px 중
+// 8행). 하한은 리사이저 드롭 표적과 행 하나가 들어가는 150px, 상한은 좌패널 32% 또는 240px 중
 // 작은 쪽 — 맵이 많아도(실측 16개) 시트가 200px 아래로 눌리지 않는다. 사용자가 리사이저를 끌면
 // 수동으로 전환되고(mapTreeHeight 저장), 리사이저를 더블클릭하면 다시 자동이다.
 const MAP_TREE_AUTO_MIN_HEIGHT = 150;
-const MAP_TREE_AUTO_MAX_HEIGHT = 320;
-const MAP_TREE_AUTO_MAX_RATIO = 0.4;
+// 상한을 320/40% → 240/32% 로 낮췄다 — 목록 약 4~5행이면 맵을 고르는 데 충분하고,
+// 그 이상은 시트(이 면의 주 작업 영역)의 몫이다. 더 보고 싶으면 리사이저로 연다.
+const MAP_TREE_AUTO_MAX_HEIGHT = 240;
+const MAP_TREE_AUTO_MAX_RATIO = 0.32;
 /** 자동 측정이 헤더·목록의 반올림으로 스크롤바를 만들지 않게 두는 여유. */
 const MAP_TREE_AUTO_SLACK = 6;
 /** 접힌 섹션 = 헤더 한 줄. 헤더를 아직 못 잰 첫 페인트의 폴백. */
@@ -119,6 +122,9 @@ let chatFloatRoot: HTMLElement | null = null;
 let aiChatPanelRoot: HTMLElement | null = null;
 let mapLockBannerRoot: HTMLElement | null = null;
 let authoringJourneyRoot: HTMLElement | null = null;
+// 저장 모드 배너 호스트는 항상 DOM에 두고 내용만 갈아 끼운다 — 공용 데모 → 사본 전환처럼
+// 부팅 뒤에 persistence 상태가 바뀌어도 배너가 붙고 떨어진다(emit(project) 가 repaint 를 탄다).
+let persistenceBannerHost: HTMLElement | null = null;
 let authoringJourneyOpen = false;
 let authoringJourneyReferenceIssues: readonly string[] | null = null;
 let projectExportNode: HTMLElement | null = null;
@@ -138,6 +144,7 @@ let unsubLayoutBbox: (() => void) | null = null;
 let unsubLocationLayer: (() => void) | null = null;
 let unsubLocationToggle: (() => void) | null = null;
 let unsubLocationDrawGuard: (() => void) | null = null;
+let unsubMapBackgroundPreview: (() => void) | null = null;
 /** 마지막으로 툴바·패널에 반영한 레이어 켜짐. 드래그 중 재렌더를 걸러내는 기준이다. */
 let lastRenderedLocationLayerEnabled: boolean | null = null;
 let unsubWorkspace: (() => void) | null = null;
@@ -201,8 +208,10 @@ export function renderEditor(main: HTMLElement): void {
   canvasScrollShell.append(phaserContainer);
   // 저장 모드 배너(결함 ⑩)는 캔버스 열 상단에 넣는다 — .main(flex row)의 형제로 넣으면
   // 좌측 열처럼 배치되어 레이아웃이 깨진다.
-  const persistenceBanner = renderPersistenceModeBanner();
-  if (persistenceBanner) canvasArea.append(persistenceBanner);
+  const bannerHost = el("div", { class: "persistence-banner-host" });
+  canvasArea.append(bannerHost);
+  persistenceBannerHost = bannerHost;
+  paintPersistenceBanner();
   canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, authoringJourney, cursorDiagnostics, chatFloatHost);
   layout.append(left, leftResizer, canvasArea);
   const aiPanel = renderAiChatPanel({
@@ -251,6 +260,10 @@ export function renderEditor(main: HTMLElement): void {
 
   unsubStore = store.subscribe((_project, change) => refreshPanels(change));
   unsubEditor = editorState.subscribe(() => scheduleFullPanelRefresh());
+  // 미리보기 토글도 눌린 상태(aria-pressed/색)를 그대로 보여야 한다 — 툴바만 다시 그린다.
+  unsubMapBackgroundPreview = subscribeMapBackgroundPreview(() => {
+    if (canvasToolbarRoot) renderCanvasToolbar(canvasToolbarRoot);
+  });
   unsubMapLocks = subscribeMapEditLocks(() => refreshPanels());
   unsubUiMode = subscribeEditorUiMode(() => {
     syncLeftDock();
@@ -397,6 +410,7 @@ export function teardownEditor(): void {
   unsubLayoutBbox?.();
   unsubLocationLayer?.();
   unsubLocationToggle?.();
+  unsubMapBackgroundPreview?.();
   unsubLocationDrawGuard?.();
   unsubWorkspace?.();
   unsubMapPanel?.();
@@ -412,6 +426,7 @@ export function teardownEditor(): void {
   unsubLayoutBbox = null;
   unsubLocationLayer = null;
   unsubLocationToggle = null;
+  unsubMapBackgroundPreview = null;
   unsubLocationDrawGuard = null;
   unsubWorkspace = null;
   leftDock = null;
@@ -432,6 +447,7 @@ export function teardownEditor(): void {
   aiChatPanelRoot = null;
   mapLockBannerRoot = null;
   authoringJourneyRoot = null;
+  persistenceBannerHost = null;
   authoringJourneyOpen = false;
   authoringJourneyReferenceIssues = null;
   projectExportNode = null;
@@ -470,9 +486,39 @@ function mountAssistantOverlay(): void {
 // 임시 세션 배너는 오류가 아니라 정보 — 인라인 '내보내기' + 닫기(세션 동안 유지)를 제공한다.
 let persistenceBannerDismissed = false;
 
+function paintPersistenceBanner(): void {
+  if (!persistenceBannerHost) return;
+  clearChildren(persistenceBannerHost);
+  const banner = renderPersistenceModeBanner();
+  if (banner) persistenceBannerHost.append(banner);
+}
+
 function renderPersistenceModeBanner(): HTMLElement | null {
   const status = store.getDbPersistenceStatus();
   if (status.kind !== "disabled") return null;
+  if (status.reason === "shared-demo") {
+    // 공용 데모: 원본 보호를 상시 표면에 남기고 사본 만들기로 이어준다 — 토스트는 사라져도 배너는 남는다.
+    const banner = el("div", {
+      class: "persistence-mode-banner is-shared-demo",
+      dataset: { testid: "shared-demo-banner" },
+    });
+    banner.append(
+      el("span", {
+        class: "persistence-mode-banner-text",
+        text: "공용 예제를 보고 있습니다 — 원본은 바뀌지 않습니다.",
+      }),
+      el("button", {
+        class: "persistence-mode-banner-action",
+        text: "편집용 사본 만들기",
+        attrs: { type: "button", title: "현재 화면을 새 온라인 프로젝트로 복사해 편집을 시작합니다" },
+        dataset: { testid: "shared-demo-banner-fork" },
+        on: {
+          click: () => void import("@/editor/sharedDemoIntro").then((m) => m.forkSharedDemoToEditableCopy()),
+        },
+      }),
+    );
+    return banner;
+  }
   if (status.reason === "dev-showcase") {
     const saveSkipped = isSaveSkippedLocation();
     if (saveSkipped && persistenceBannerDismissed) return null;
@@ -760,6 +806,8 @@ function scheduleFullPanelRefresh(): void {
 
 function refreshPanels(change?: ProjectChangeDescriptor): void {
   refreshAuthoringJourney(change);
+  // 프로젝트 단위 변화(포크 커밋·재연결·복구)는 persistence 상태를 바꾼다 — 배너를 다시 그린다.
+  if (!change || change.scope === "project" || change.projectSwitch) paintPersistenceBanner();
   // 좌측 패널 호스트는 프리셋에 따라 없을 수 있다 — 캔버스 크롬만 있으면 갱신을 진행한다.
   if (!canvasToolbarRoot || !mapLockBannerRoot) return;
   if (change?.scope === "map" && change.cells?.length) {

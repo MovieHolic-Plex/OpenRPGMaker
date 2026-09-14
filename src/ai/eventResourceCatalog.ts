@@ -17,7 +17,7 @@
 import { BGM_CATALOG, bgmTrackLabel } from "@/assets/bgmCatalog";
 import { CC0_MUSIC_ASSETS, CC0_SOUND_ASSETS } from "@/assets/cc0AudioAssets";
 import { EASYRPG_MUSIC_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp";
-import { FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
+import { AUTHORABLE_FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { SE_CATALOG, SE_CATALOG_CATEGORIES } from "@/assets/seCatalog";
@@ -137,9 +137,9 @@ function collect(
       for (const id of builtinGeneratedResourceIds()) {
         if (id.startsWith(GENERATED_FACE_PREFIX)) add(id, `${id} (대형 초상 레이아웃)`);
       }
-      // 낱장 얼굴 112장. 분할 전 4×4 시트 id 는 저장본 호환으로 등록만 남아 있으므로 뺀다 —
-      // 시트를 얼굴 한 장으로 지정하면 대화창에 엉뚱한 칸이 뜬다.
-      for (const asset of FACESET_FACE_ASSETS) add(asset.id, asset.name);
+      // 낱장 얼굴. 분할 전 4×4 시트 id 는 저장본 호환으로 등록만 남아 있으므로 뺀다 —
+      // 시트를 얼굴 한 장으로 지정하면 대화창에 엉뚱한 칸이 뜬다. 생성 시리즈도 뺀다.
+      for (const asset of AUTHORABLE_FACESET_FACE_ASSETS) add(asset.id, asset.name);
       break;
     case "music": {
       // 장면 축을 라운드로빈으로 **맨 앞에** 둔다. 카탈로그 순서를 그대로 실으면
@@ -218,7 +218,7 @@ function collect(
 }
 
 /**
- * 종류 판정. 문자열 접두어 규칙은 databaseResourcePickerDialog 의 `matchesGeneratedKind`
+ * 종류 판정. 문자열 접두어 규칙은 resourceOptions 의 `matchesGeneratedKind`
  * 와 같은 근거를 쓴다 — 생성 자산은 선언된 `resourceKind` 가 없을 수 있어서다.
  */
 function matchesSlot(slot: EventResourceSlot, kind: string | undefined, id: string): boolean {

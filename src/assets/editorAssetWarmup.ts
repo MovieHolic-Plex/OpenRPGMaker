@@ -14,7 +14,7 @@
 import { BUNDLED_EASYRPG_CHIPSET_ASSETS } from "@/assets/bundled";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
-import { FACESET_FACE_ASSETS } from "@/assets/facesetFaceAssets";
+import { AUTHORABLE_FACESET_FACE_ASSETS } from "@/assets/facesetFaceAssets";
 import {
   imageWarmSupported,
   normalizeWarmUrl,
@@ -110,7 +110,7 @@ async function warmColorKeyPaths(paths: readonly string[], concurrency: number):
 
 function pickerCatalogPaths(): readonly string[] {
   return [
-    ...FACESET_FACE_ASSETS.map((face) => face.path),
+    ...AUTHORABLE_FACESET_FACE_ASSETS.map((face) => face.path),
     ...BUNDLED_EASYRPG_CHIPSET_ASSETS.map((asset) => asset.path),
   ];
 }

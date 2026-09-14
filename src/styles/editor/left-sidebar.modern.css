@@ -119,8 +119,8 @@
   border-radius: var(--radius-m);
   gap: 8px;
   margin: 0 0 6px;
-  min-height: 34px;
-  padding: 4px 6px 4px 5px;
+  min-height: 30px;
+  padding: 2px 6px 2px 5px;
 }
 
 .editor-layout .left-panel-stack .selected-tile-status .selected-tile-thumb {
@@ -212,7 +212,7 @@
   border-radius: 0;
   gap: 2px;
   margin: 0 0 4px;
-  min-height: 30px;
+  min-height: 26px;
   padding: 0;
 }
 
@@ -324,10 +324,10 @@
   border: 1px solid transparent;
   border-radius: 8px;
   color: var(--text-2);
-  font: 600 12px/1 var(--font-ui);
+  font: 600 11px/1 var(--font-ui);
   gap: 5px;
-  min-height: 26px;
-  padding: 0 6px;
+  min-height: 22px;
+  padding: 0 7px;
   transition: background var(--transition-fast), color var(--transition-fast);
 }
 
@@ -342,10 +342,6 @@
   border-color: var(--border-subtle);
   color: var(--text-1);
   font-weight: 700;
-}
-
-.editor-layout .left-panel-stack[data-testid="left-palette-root"] .left-layer-btn.is-active svg {
-  color: var(--accent);
 }
 
 .editor-layout .left-panel-stack[data-testid="left-palette-root"] .left-layer-btn:focus-visible {
@@ -392,10 +388,10 @@
   border-radius: var(--radius-s);
   color: var(--text-2);
   font: 700 12px/1 var(--font-ui);
-  height: 30px;
-  min-width: 30px;
+  height: 26px;
+  min-width: 26px;
   padding: 0;
-  width: 30px;
+  width: 26px;
 }
 
 .editor-layout .left-panel-stack .tile-number-toggle:hover {
@@ -624,12 +620,12 @@
 .editor-layout .left-panel-stack[data-testid="left-map-root"] .map-tree-header {
   gap: 4px;
   margin: 0 0 4px;
-  min-height: 32px;
+  min-height: 26px;
 }
 
-/* The heading contains a 28px collapse button, not a one-line text label. */
+/* The heading contains a 24px collapse button, not a one-line text label. */
 .editor-layout .left-panel-stack[data-testid="left-map-root"] .map-tree-header h3 {
-  min-height: 28px;
+  min-height: 24px;
   margin: 0;
 }
 
@@ -643,9 +639,9 @@
   color: var(--text-1);
   cursor: pointer;
   display: inline-flex;
-  font: 800 13px/1 var(--font-ui);
+  font: 800 12px/1 var(--font-ui);
   gap: 6px;
-  height: 28px;
+  height: 24px;
   min-width: 0;
   padding: 0 6px 0 4px;
   transition: background var(--transition-fast);
@@ -713,9 +709,9 @@
   background: color-mix(in srgb, currentColor 45%, transparent);
 }
 
-/* 필터 입력 — 검색 입력과 같은 30px·우묵한 면. */
+/* 필터 입력 — 검색 입력과 같은 26px·우묵한 면. */
 .editor-layout .left-panel-stack[data-testid="left-map-root"] .map-tree-filter {
-  margin: 0 0 6px;
+  margin: 0 0 4px;
 }
 
 .editor-layout .left-panel-stack[data-testid="left-map-root"] .map-tree-filter-input {
@@ -723,7 +719,7 @@
   border: 1px solid transparent;
   border-radius: var(--radius-s);
   font: 500 12px/1.2 var(--font-ui);
-  height: 30px;
+  height: 26px;
   padding: 0 10px;
   transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
@@ -743,8 +739,8 @@
   border-color: transparent;
   color: var(--text-2);
   font: 600 11px/1 var(--font-ui);
-  height: 24px;
-  padding: 0 10px;
+  height: 22px;
+  padding: 0 8px;
 }
 
 .editor-layout .left-panel-stack[data-testid="left-map-root"] .map-tree-facet.is-active {
@@ -767,7 +763,7 @@
 .editor-layout .left-panel-stack[data-testid="left-map-root"] .map-item {
   border-radius: var(--radius-s);
   gap: 6px;
-  min-height: 36px;
+  min-height: 32px;
   padding: 2px 6px 2px 2px;
 }
 
@@ -881,15 +877,8 @@
 }
 
 .editor-layout .basic-left-rail .basic-selected-tile,
-.editor-layout .basic-left-rail .tile-search-input,
-.editor-layout .basic-left-rail .basic-paint-guide {
+.editor-layout .basic-left-rail .tile-search-input {
   flex: 0 0 auto;
-}
-
-.basic-paint-guide {
-  color: var(--text-2);
-  font: var(--font-weight-medium) var(--font-size-sm)/var(--line-height-tight) var(--font-ui);
-  margin: 0;
 }
 
 .editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar {
@@ -902,8 +891,8 @@
 
 .editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-toolbar-menu > .oprn-tile-tool {
   width: auto;
-  min-width: var(--space-6);
-  min-height: var(--space-6);
+  min-width: 26px;
+  min-height: 26px;
   height: auto;
   gap: var(--space-1);
   padding: var(--space-1);
@@ -941,8 +930,8 @@
 
 .editor-layout .sidebar-brush-controls .btn,
 .editor-layout .basic-tile-search-feedback .btn {
-  min-height: var(--space-6);
-  min-width: var(--space-6);
+  min-height: var(--space-5);
+  min-width: var(--space-5);
   padding: var(--space-1);
 }
 
@@ -1042,7 +1031,7 @@
 .editor-layout .left-panel-stack .sidebar-surface-button,
 .sidebar-paint-options select,
 .editor-layout .left-panel-stack .tile-category-select {
-  min-height: var(--space-6);
+  min-height: var(--space-5);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-s);
   background: var(--bg-raised);
@@ -1053,13 +1042,13 @@
 }
 
 .editor-layout .left-panel-stack .palette-filter-search-row {
-  grid-template-columns: minmax(0, 1fr) 76px 30px;
+  grid-template-columns: minmax(0, 1fr) 72px 26px;
   gap: var(--space-1);
 }
 
 .editor-layout .left-panel-stack .tile-search-input {
   min-width: 0;
-  height: var(--space-6);
+  height: 26px;
 }
 
 .editor-layout .left-panel-stack[data-testid='left-palette-root'] .oprn-tile-toolbar {
@@ -1074,8 +1063,8 @@
 }
 
 .editor-layout .left-panel-stack[data-testid='left-palette-root'] .oprn-tile-tool {
-  width: var(--space-6);
-  height: var(--space-6);
+  width: 26px;
+  height: 26px;
 }
 
 /* 되돌리기·다시실행은 한 쌍으로 읽혀야 한다 — 각 행위 단추와 그 펼쳐보기를 도구 간격(2px)
@@ -1175,4 +1164,87 @@
 .tile-category-select:focus-visible {
   outline: var(--focus-outline);
   outline-offset: -2px;
+}
+
+/* ── 9. 컴팩트 타일 중심 배치 ────────────────────────────────────────────────
+   실측(2026-10): 표준 모드 시트 위에 고정 크롬 194px(맵 헤더 32 + 레이어 30 + 도구 32 +
+   붓 옵션 66 + 필터 34)이 쌓여 시트가 좌패널의 60% 를 겨우 넘었다. 「어디에 그리는가」
+   문맥(맵 이름 · 레이어)은 한 줄로 합치고, 나머지 줄은 크롬을 한 단계 낮춘다.
+   DOM 순서(헤더→레이어→도구)는 editorMenuSidebarIa.test.ts 계약이라 그대로 두고
+   grid 배치만 바꾼다. 시트 행만 minmax(0,1fr) 이라 남는 세로는 전부 시트가 가져간다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint {
+  display: grid;
+  gap: 4px 6px;
+  grid-template-areas:
+    "maphead layers"
+    "toolbar toolbar"
+    "options options"
+    "filter filter"
+    "sheet sheet"
+    "status status"
+    "utils utils";
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto auto auto minmax(0, 1fr) auto auto;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .sidebar-map-header {
+  grid-area: maphead;
+  margin: 0;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .left-layer-switcher {
+  align-self: center;
+  grid-area: layers;
+  margin: 0;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .oprn-tile-toolbar {
+  grid-area: toolbar;
+  margin: 0;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .sidebar-paint-options {
+  grid-area: options;
+  margin: 0;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .palette-filter-bar {
+  grid-area: filter;
+  margin: 0;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .chipset-sheet {
+  grid-area: sheet;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .selected-tile-status {
+  grid-area: status;
+  margin: 0;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .sidebar-utilities {
+  grid-area: utils;
+}
+
+/* 구 셸 필드 규격(03-layout-left-palette.css: 34px 입력 · 화살표 여백 34px)이 이 면의
+   24~26px 리듬과 어긋나 옵션·필터 줄이 34px 로 부풀었다. 여기서는 24px 컨트롤이다. */
+.editor-layout .left-panel-stack .sidebar-paint-options select,
+.editor-layout .left-panel-stack .palette-filter-bar select {
+  background-position: calc(100% - 13px) 9px, calc(100% - 8px) 9px;
+  font-size: 11px;
+  height: 24px;
+  padding: 0 18px 0 6px;
+}
+
+/* 「이웃 연결」「구조 보조」 행의 72px 라벨 칸(.tile-brush-row grid)은 네 글자 라벨에
+   과하다 — 인라인으로 바꿔 옵션 줄이 한 줄에 들어가게 한다. */
+.editor-layout .left-panel-stack .sidebar-paint-options .tile-brush-row {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+}
+
+.editor-layout .left-panel-stack .sidebar-paint-options .tile-brush-chip {
+  min-height: 22px;
+  padding: 1px 8px;
 }

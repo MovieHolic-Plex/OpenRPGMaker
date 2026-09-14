@@ -10,6 +10,14 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
 import type { RuntimePerfCounters } from "@/player/runtimePerfCounters";
 import { subscribeActionCombatObservations } from "@/player/playSceneActionCombat";
+import {
+  CLOUD_SHADOW_BLOB_COUNT,
+  cloudShadowAnchors,
+  cloudShadowPeriod,
+  cloudShadowSeedForMap,
+  normalizeCloudShadowParams,
+} from "@/player/cloudShadows";
+import { CLOUD_SHADOW_TEXTURE_KEY, cloudShadowView } from "@/player/playSceneCloudShadows";
 import { inBounds, isPassable } from "@/project/collision";
 import { store } from "@/project/store";
 import { PLAYER_COMBATANT_ID, type ActionEnemyState } from "@/player/actionCombatTypes";
@@ -69,6 +77,10 @@ type TestHookWindow = Window & {
   /** 재생성·카메라 스냅 계수기 스냅숏. 값이 없으면(계측 없는 씬) null. */
   __oprnPerf?: () => RuntimePerfCounters | null;
   __oprnEmotes?: () => readonly SceneEmoteDebug[];
+  /** 구름 그림자 레이어 관측. 계측이 꺼진 씬에는 없다. */
+  __oprnCloudShadows?: () => CloudShadowDebug;
+  /** 이 훅들을 심은 씬. 옛 씬의 shutdown 이 새 씬의 훅을 지우지 않게 하는 소유권 표다. */
+  __oprnHooksScene?: Phaser.Scene;
 
   __oprnSetActorVitals?: (actorId: string, hp: number, mp: number) => void;
   __oprnSetMediaState?: (state: MediaStateDebug) => void;
@@ -171,6 +183,30 @@ type CameraDebug = {
   readonly zoom: number;
 };
 
+/**
+ * 구름 그림자가 «화면에 실제로 떠 있는지» 를 판정하는 관측. 설정값(맵 저장본), 계산된
+ * 스프라이트 수·알파·깊이, 월드 좌표를 함께 돌려준다 — QA 는 흐르는 방향을 좌표로,
+ * 그려짐을 픽셀로 본다.
+ */
+type CloudShadowDebug = {
+  readonly enabled: boolean;
+  readonly opacity: number;
+  readonly speed: number;
+  readonly angleDeg: number;
+  readonly scale: number;
+  readonly clockMs: number;
+  readonly visibleCount: number;
+  readonly depth: number | null;
+  readonly textureReady: boolean;
+  /** 배치가 가진 구름 수(화면에 보이는 수와 다를 수 있다 — 일부는 화면 밖이다). */
+  readonly layoutCount: number;
+  /** 격자 주기(월드 px). 위상을 접을 때 쓴다. */
+  readonly period: number;
+  /** 배치 순서가 고정된 구름 위상 — 두 관측을 «같은 구름» 으로 이어 주는 유일한 이름. */
+  readonly anchors: readonly { readonly x: number; readonly y: number }[];
+  readonly blobs: readonly { readonly x: number; readonly y: number; readonly alpha: number; readonly visible: boolean }[];
+};
+
 type SpriteDebugScene = Phaser.Scene & {
   readonly player?: Phaser.GameObjects.Sprite;
   readonly playerSprite?: {
@@ -204,6 +240,7 @@ export function installPlaySceneTestHooks(
   syncRuntimeState: () => void
 ): void {
   const w = window as TestHookWindow;
+  w.__oprnHooksScene = scene;
   w.__oprnInput = {
     action: () => input.injectActionEdge(),
     attack: () => input.injectAttackEdge(),
@@ -222,6 +259,7 @@ export function installPlaySceneTestHooks(
   w.__oprnCharacterSprites = () => characterSpritesDebug(scene);
   w.__oprnCamera = () => cameraDebug(scene);
   w.__oprnPerf = () => perfCountersDebug(scene);
+  w.__oprnCloudShadows = () => cloudShadowsDebug(scene);
   w.__oprnEmotes = () => describeSceneEmotes(scene as unknown as Parameters<typeof describeSceneEmotes>[0]);
 
   w.__oprnActionCombat = () => actionCombatDebug(scene);
@@ -299,6 +337,10 @@ export function installPlaySceneTestHooks(
     },
   };
   scene.events.once("shutdown", () => {
+    // 씬 재시작에서 옛 인스턴스의 shutdown 이 새 인스턴스의 create 뒤에 올 수 있다. 그때
+    // 무조건 지우면 살아 있는 새 씬의 훅과 진행 중인 proof 까지 날아간다(실측: 두 번째 페이지에서
+    // 관측 훅이 사라져 QA 가 TypeError 로 죽었다) — 내가 심은 훅일 때만 거둔다.
+    if (w.__oprnHooksScene !== scene) return;
     proofController.abort();
     delete w.__oprnRunActionCombatProof;
     delete w.__oprnActionCombat;
@@ -308,6 +350,8 @@ export function installPlaySceneTestHooks(
     delete w.__oprnCamera;
     delete w.__oprnPerf;
     delete w.__oprnEmotes;
+    delete w.__oprnCloudShadows;
+    delete w.__oprnHooksScene;
 
     delete w.__oprnSetActorVitals;
     delete w.__oprnSetMediaState;
@@ -524,6 +568,33 @@ function cameraDebug(scene: Phaser.Scene): CameraDebug {
     scrollY: camera.scrollY,
     width: camera.width,
     zoom: camera.zoom,
+  };
+}
+
+function cloudShadowsDebug(scene: Phaser.Scene): CloudShadowDebug {
+  const context = scene as unknown as Partial<PlaySceneContext>;
+  const params = normalizeCloudShadowParams(context.map?.cloudShadows);
+  const sprites = context.cloudShadowSprites ?? [];
+  const view = context.cameras ? cloudShadowView(context as PlaySceneContext) : { x: 0, y: 0, width: 1, height: 1 };
+  return {
+    enabled: params.enabled,
+    opacity: params.opacity,
+    speed: params.speed,
+    angleDeg: params.angleDeg,
+    scale: params.scale,
+    clockMs: context.cloudShadowClockMs ?? 0,
+    visibleCount: sprites.filter((sprite) => sprite.visible).length,
+    depth: sprites[0]?.depth ?? null,
+    textureReady: scene.textures.exists(CLOUD_SHADOW_TEXTURE_KEY),
+    layoutCount: CLOUD_SHADOW_BLOB_COUNT,
+    period: cloudShadowPeriod(view, params.scale),
+    anchors: cloudShadowAnchors(params, context.cloudShadowClockMs ?? 0, cloudShadowPeriod(view, params.scale), cloudShadowSeedForMap(context.map?.id ?? "")),
+    blobs: sprites.map((sprite) => ({
+      x: sprite.x,
+      y: sprite.y,
+      alpha: sprite.alpha,
+      visible: sprite.visible,
+    })),
   };
 }
 

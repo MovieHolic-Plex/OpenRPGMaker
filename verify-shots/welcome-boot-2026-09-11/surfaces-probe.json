@@ -1,0 +1,19 @@
+{
+  "base": "http://127.0.0.1:9871",
+  "log": [
+    "welcome: skipped",
+    "shot: 05-editor-first-view",
+    "shot: 06-new-project-menu",
+    "new-project-menu-items: [{\"testid\":\"menu-project\",\"text\":\"새 프로젝트\"},{\"testid\":\"menu-tools\",\"text\":\"도구\"},{\"testid\":\"menu-help\",\"text\":\"도움말\"},{\"testid\":\"ai-command-menu-toggle\",\"text\":\"\"},{\"testid\":\"menu-project-new\",\"text\":\"새 프로젝트\"},{\"testid\":\"menu-project-load\",\"text\":\"열기\"},{\"testid\":\"menu-project-reload-db\",\"text\":\"저장본 다시 불러오기\"},{\"testid\":\"menu-project-samples\",\"text\":\"예제 프로젝트\"},{\"testid\":\"menu-project-import\",\"text\":\"가져오기...\"},{\"testid\":\"menu-project-export\",\"text\":\"프로젝트 파일 내보내기...\"},{\"testid\":\"menu-project-publication\",\"text\":\"게임 및 배포...\"},{\"testid\":\"menu-project-export-web\",\"text\":\"웹 게임 내보내기...\"},{\"testid\":\"menu-project-export-standalone\",\"text\":\"실행형 HTML 내보내기...\"}]",
+    "shot: 07-new-project-dialog",
+    "shot: 08-ai-studio-start",
+    "studio-surface: [\"studio-bar-lead\",\"studio-run-group\",\"topbar-ai-studio\",\"studio-icon-cluster\",\"topbar-ai-settings\",\"ai-panel\",\"ai-studio-shell\",\"ai-studio-scene-count\",\"ai-studio-scene-add\",\"ai-studio-scenes-collapse\",\"ai-studio-scene-search\",\"ai-studio-scenes\",\"ai-studio-scene\",\"ai-studio-thumb-map_blank_start\",\"ai-studio-split-scenes\",\"ai-studio-monitor\",\"ai-studio-monitor-label\",\"ai-studio-monitor-meta\",\"ai-studio-monitor-chrome\",\"ai-studio-exit\",\"ai-studio-monitor-stage\",\"ai-studio-split-chat\",\"ai-studio-chat\",\"ai-studio-status\",\"ai-studio-chat-collapse\",\"ai-studio-briefing\",\"ai-studio-chat-log\",\"ai-studio-composer\",\"ai-command-bar\",\"ai-composer\",\"ai-input\",\"ai-composer-actions\",\"ai-composer-route\",\"ai-composer-team\",\"ai-composer-team-input\",\"ai-composer-autonomy\",\"ai-context-chips\",\"ai-send\",\"ai-studio-deck\",\"ai-studio-split-deck\"]",
+    "shot: 09-help-menu"
+  ],
+  "errors": [
+    "console: Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "console: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "console: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "console: Failed to load resource: net::ERR_CONNECTION_REFUSED"
+  ]
+}

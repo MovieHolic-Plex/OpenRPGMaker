@@ -97,6 +97,7 @@ import { createComposerElements, type ComposerElements, type ComposerMode, type 
 import { createPlanningReuseControl, type PlanningReuseControl } from "./aiPlanningReuse";
 import { describePlanningReuse } from "@/project/mapPlanningItems";
 import { deckIcon } from "./aiDeckIcons";
+import { createDeckMoveChrome } from "./aiDeckMoveChrome";
 import { createDeckRail, deckStateOfTone, type DeckState } from "./aiDeckRail";
 import { regionFromToolCall, renderMapChip } from "./aiMapChip";
 import { toolIconKey } from "./aiToolLabels";
@@ -140,8 +141,10 @@ import {
 } from "./aiConversationLog";
 import { anchoredPopupPosition } from "./popupPosition";
 import { createProposalHost, setAssistantMessageBadge } from "./aiProposalCard";
-import { changePreviewChips, renderChangePreviewCard, type ChangePreviewInput } from "./aiChangePreview";
+import { changeChipsWithAreas, renderChangePreviewCard, type ChangePreviewInput } from "./aiChangePreview";
 import { createStudioShell, type StudioShell } from "./aiStudioShell";
+import { changedAreaLabels } from "@/project/changeAreas";
+import { buildChangeLedger } from "@/project/changeLedger";
 import { proposalHumanSummaryLine } from "./aiProposalSummary";
 import { createAiTurnRunner } from "./aiTurnRunner";
 import { openLocalDiagnosticsDialog } from "./localDiagnosticsDialog";
@@ -698,13 +701,21 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const diffs = input.calls
       .map((call) => call.result?.diff)
       .filter((diff): diff is ChangeSummary => Boolean(diff));
+    // 요약 카운터 + 카운터 밖 영역 이름 — 카운터 목록에 축이 없는 변경도 카드에 남는다.
+    const chips = changeChipsWithAreas(
+      diffs.length > 0 ? combineDiffs(diffs) : undefined,
+      changedAreaLabels(input.before, input.after),
+    );
+    // 항목별 before → after 명세 — 큰 위임의 검토는 칩이 아니라 이걸로 한다.
+    const ledger = buildChangeLedger(input.before, input.after);
     const card = renderChangePreviewCard({
       before: input.before,
       after: input.after,
       mapId: input.mapId,
       title: input.title,
       ...(input.detail ? { detail: input.detail } : {}),
-      chips: diffs.length > 0 ? changePreviewChips(combineDiffs(diffs)) : [],
+      chips,
+      ledger,
       onUndo: () => {
         // 성향 신호(가장 강한 부정): 채팅 제안은 자동 적용되므로 수락 버튼이 없다 — 되돌리기가
         // "이건 원하는 게 아니었다"는 유일한 명시적 반응이다. 이 카드는 AI 변경 1건에 1:1로 붙어
@@ -719,7 +730,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       mapId: input.mapId,
       title: input.title,
       ...(input.detail ? { detail: input.detail } : {}),
-      chips: diffs.length > 0 ? changePreviewChips(combineDiffs(diffs)) : [],
+      chips,
+      ledger,
       onUndo: () => {
         noteAiChangeUndone({ toolNames: input.calls.map((call) => call.name) });
         undoMapEdit();
@@ -745,6 +757,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       title: input.title,
       detail: input.detail,
       chips: [...input.chips],
+      ...(input.ledger ? { ledger: input.ledger } : {}),
       onUndo: () => {
         noteAiChangeUndone({ toolNames: [...input.toolNames] });
         undoMapEdit();
@@ -2769,6 +2782,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const applySize = resizeChrome.applySize;
   const mountResizeHandle = resizeChrome.mountHandle;
 
+  // 위치 이동 크롬은 aiDeckMoveChrome.ts 가 갖는다 — 레일 드래그로 데크를 캔버스 위 아무 데나 놓는다.
+  // 저장 위치(oprn:ai-deck-pos)는 패널 CSS 변수로 들어가 접힘 알약도 같은 자리에 선다.
+  const moveChrome = createDeckMoveChrome({
+    panel,
+    deck,
+    rail: rail.root,
+    movable: resizableDock,
+  });
+
   /**
    * 로그 배치의 **단일 상태 함수**. (도크 × 기록/스튜디오) → 슬롯 하나.
    *
@@ -3353,6 +3375,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     endTurnProgress();
     clearAutoCollapseTimer();
     resizeChrome.dispose();
+    moveChrome.dispose();
     studioShell?.dispose();
     studioShell = null;
 

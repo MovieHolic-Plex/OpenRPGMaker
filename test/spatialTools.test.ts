@@ -1,3 +1,4 @@
+import { publicSpatialValue } from "@/editor/tools/spatialPlaceContract";
 import { describe, expect, it } from "vitest";
 import { runTool, runToolDefinition } from "@/editor/tools/toolRunner";
 import { allTools } from "@/editor/tools/toolRegistry";
@@ -9,6 +10,7 @@ import { createBlankProject } from "@/project/defaults/defaultProject";
 import { fixtureDocument, spaceCompilerFixture, spaceDesign } from "./support/spatialSpaceCompilerFixture";
 import { geographyRoot } from "./support/spatialGeographyFixture";
 import { geographyRecipeFixture } from "./support/spatialGeographyRecipes";
+import { placeCompilerFixture } from "./support/spatialPlaceCompilerFixture";
 
 function previewId(data: unknown): string {
   if (typeof data !== "object" || data === null || !("previewId" in data) || typeof data.previewId !== "string") throw new TypeError("Missing issued preview ID");
@@ -74,7 +76,7 @@ describe("registered canonical spatial tools", () => {
     const result = runTool({ project }, "get_spatial_design", { kind: "space", id: spaceDesign });
     // Then
     expect(result.ok, result.summary).toBe(true);
-    expect(result.data).toMatchObject({ kind: "space", design: { id: spaceDesign, revision: 1 }, resolved: { snapshot: { root: { id: spaceDesign } } } });
+    expect(result.data).toMatchObject({ kind: "place", design: { id: spaceDesign, revision: 1 }, resolved: { snapshot: { root: { id: spaceDesign } } } });
     expect(JSON.stringify(project)).toBe(before);
   });
   it("returns a narrow design body without the resolved closure when asked", () => {
@@ -84,8 +86,49 @@ describe("registered canonical spatial tools", () => {
     const result = runTool({ project }, "get_spatial_design", { kind: "space", id: spaceDesign, resolved: false });
     // Then — the body alone is the upsert revision round-trip payload.
     expect(result.ok, result.summary).toBe(true);
-    expect(result.data).toMatchObject({ kind: "space", design: { id: spaceDesign, revision: 1 } });
+    expect(result.data).toMatchObject({ kind: "place", design: { id: spaceDesign, revision: 1 } });
     expect(result.data).not.toHaveProperty("resolved");
+  });
+  it("discovers tagged exterior objects beyond prompt samples and preserves complete place bodies", () => {
+    const project = placeCompilerFixture();
+    const document = fixtureDocument(project);
+    const exterior = own(document.library.objects, "hearth-design");
+    const facility = own(document.library.places, "nested-inn-design");
+    const objects = Object.fromEntries(Array.from({ length: 40 }, (_, index) => {
+      const id = spatialId(`unrelated-prop-${index}`);
+      return [id, { ...exterior, id, name: `Unrelated prop ${index}` }];
+    }));
+    const savedExterior = { ...exterior, name: "붉은 지붕", tags: ["건물 외형", "주택", "HOUSE"] };
+    const savedFacility = { ...facility, name: "작은 주택", tags: ["주택"], exterior: savedExterior.graphic };
+    project.spatialAuthoring = { ...document, library: { ...document.library,
+      objects: { ...objects, ...document.library.objects, [savedExterior.id]: savedExterior },
+      places: { ...document.library.places, [savedFacility.id]: savedFacility },
+    } };
+    const before = JSON.stringify(project);
+    for (const query of ["건물 외형", "붉은 지붕", "house", savedExterior.id]) {
+      const result = runTool({ project }, "list_spatial_designs", { kind: "object", query });
+      expect(result.ok, result.summary).toBe(true);
+      expect(result.data).toMatchObject({ active: true, designs: [expect.objectContaining({
+        ...savedExterior, kind: "object", children: [],
+      })] });
+    }
+    const list = runTool({ project }, "list_spatial_designs", { kind: "place", query: "주택" });
+    expect(list.ok, list.summary).toBe(true);
+    expect(list.data).toMatchObject({ active: true, designs: [expect.objectContaining({
+      id: savedFacility.id, kind: "place", placeKind: "facility", exterior: savedExterior.graphic,
+    })] });
+    const read = runTool({ project }, "get_spatial_design", { kind: "place", id: savedFacility.id, resolved: false });
+    expect(read.ok, read.summary).toBe(true);
+    expect(read.data).toEqual(publicSpatialValue({ kind: "place", design: savedFacility }));
+    expect(JSON.stringify(project)).toBe(before);
+    // A get body remains directly usable for a source revision update, including facility kind and child geometry.
+    const ctx = { project };
+    const updated = runTool(ctx, "upsert_spatial_design", { kind: "place", expectedRevision: 1,
+      place: { ...savedFacility, revision: 2 } });
+    expect(updated.ok, updated.summary).toBe(true);
+    expect(ctx.project.spatialAuthoring?.library.places[savedFacility.id]).toEqual({ ...savedFacility, revision: 2 });
+    expect(ctx.project.spatialAuthoring?.library.objects[savedExterior.id]).toEqual(savedExterior);
+    expect(ctx.project.spatialAuthoring?.occurrences).toEqual(document.occurrences);
   });
   it("changes only the source when a revision is explicitly replaced", () => {
     // Given

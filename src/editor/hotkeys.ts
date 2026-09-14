@@ -12,6 +12,7 @@
 
 import { deleteSelectedEditorEvent } from "@/editor/eventDeletion";
 import { EDITOR_ZOOM_LEVELS, editorState, type EditorState, type Layer, type Tool } from "@/editor/editorState";
+import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { dismissLocationDrawModeForLayer, dismissLocationDrawModeForTool } from "@/editor/locationDrawMode";
 import { pendingHistoryLabels, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { toast } from "@/util/toast";
@@ -61,6 +62,10 @@ export function shouldIgnoreEditorShortcut(event: KeyboardEvent): boolean {
       && target.closest('[data-editor-navigation-owner="true"]')) return true;
     // 모달/팝업/메뉴가 열려 있으면 충돌 방지를 위해 단축키를 끈다.
     if (target.closest("[data-testid^='menu-popup-']")) return true;
+    // 공용 confirm/alert/prompt 는 .app-modal-overlay 를 쓴다(modal.ts:61/179,
+    // persistenceRecoveryUi.ts:111, aiGateModal.ts:65). 이 셀렉터가 목록에 없어서
+    // 확인창이 떠 있는데도 도구 키·Delete 가 배경 편집기에 적용됐다.
+    if (target.closest(".app-modal-overlay")) return true;
     if (target.closest(".oprn-modal") || target.closest(".modal-backdrop")) return true;
   }
   // 데이터베이스/리소스/이벤트 명령 모달이 열려 있으면 document 기준으로 가드.
@@ -139,6 +144,10 @@ export function historyHotkeyOwnedByPanel(): boolean {
   // 내려가 전적으로 침묵한다 — EditScene 에 별도 가드를 넣지 않는 이유다.
   if (isPlaySurfaceOwningKeyboard()) return true;
   if (document.querySelector(WALK_ENCOUNTER_DIALOG_SELECTOR)) return true;
+  // 모달 계층이 살아 있으면 히스토리 키도 그 계층의 것이다. EditScene 은 히스토리 키를
+  // 일반 가드보다 **먼저** 처리하므로(체크박스 포커스가 되돌리기를 삼키던 결함 대응),
+  // 여기서 소유권을 넘기지 않으면 맵 삭제 확인 도중 Ctrl+Z 가 뒤에서 프로젝트를 되돌린다.
+  if (hasOpenModalLayer()) return true;
   if (document.querySelector("[data-testid='database-modal']")) return true;
   if (document.querySelector("[data-testid='resource-modal']")) return true;
   return Boolean(document.querySelector("[data-testid='event-editor-modal']:not([hidden])"));

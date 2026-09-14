@@ -739,9 +739,13 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   const watchedTestids = [
     ...new Set(scenario.beats.flatMap((beat) => Object.keys(beat.expect?.visibleText ?? {}))),
   ];
-  // 생활 소유물도 같은 규칙으로 이름을 댄 것만 관측한다.
+  // 생활 소유물도 같은 규칙으로 이름을 댄 것만 관측한다. `inventory` 와 `inventoryCounts`
+  // 는 서로 다른 expect 축이지만 같은 관측 원천(session.inventory)을 읽으므로 합집합으로 잡는다.
   const watchedItemIds = [
-    ...new Set(scenario.beats.flatMap((beat) => Object.keys(beat.expect?.inventory ?? {}))),
+    ...new Set(scenario.beats.flatMap((beat) => [
+      ...Object.keys(beat.expect?.inventory ?? {}),
+      ...Object.keys(beat.expect?.inventoryCounts ?? {}),
+    ])),
   ];
   const watchedPlaceableKeys = [
     ...new Set(scenario.beats.flatMap((beat) => beat.expect?.placeablesAt ?? [])),
@@ -779,9 +783,8 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       auditBattleTextNodes: Boolean(beat.expect?.battleTextClean),
       watchedEventIds,
       watchedTestids,
-      watchedItemIds: Object.keys(beat.expect?.inventoryCounts ?? {}),
-      watchedSpeciesIds: Object.keys(beat.expect?.ownedMonsterCounts ?? {}),
       watchedItemIds,
+      watchedSpeciesIds: Object.keys(beat.expect?.ownedMonsterCounts ?? {}),
       watchedPlaceableKeys,
       watchedTestidPrefixes,
     });

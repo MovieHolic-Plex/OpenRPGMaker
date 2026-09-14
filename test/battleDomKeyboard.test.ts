@@ -217,9 +217,12 @@ describe("gen1+RM dead-attack guard UI and scroll cue", () => {
 
     const attack = controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-attack']");
     expect(attack).toBeTruthy();
-    expect(attack?.disabled).toBe(true);
+    // `disabled` 가 아니라 `aria-disabled` — 커서가 서서 사유를 읽히게 한다(적대 리뷰 #3).
+    expect(attack?.disabled).toBe(false);
+    expect(attack?.getAttribute("aria-disabled")).toBe("true");
     expect(attack?.dataset.previewOnly).toBe("true");
     expect(attack?.getAttribute("aria-label")).toContain("통상 공격을 쓸 수 없습니다");
+    expect(attack?.textContent ?? "").toContain("통상 공격을 쓸 수 없습니다");
     // 그리고 런타임도 같은 규칙으로 막는다 — 버튼이 아니라 계약이 정본이다.
     runtime.beginActorCommand({ kind: "attack" });
     expect(runtime.snapshot().phase).toBe("actorCommand");

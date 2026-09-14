@@ -47,7 +47,7 @@ const pendingDrop: { run: (event: PointerEvent) => void } = { run() { return; } 
 /** One stable subscription: a rerender replaces pendingDrop.run, so the listener identity must not change. */
 const dropListener = (event: PointerEvent): void => pendingDrop.run(event);
 
-function childButton(child: SpatialChildSlot<"place" | "region">, board: HTMLElement, tilePx: number, readonly: boolean): HTMLElement {
+function childButton(child: SpatialChildSlot<"space" | "place" | "region">, board: HTMLElement, tilePx: number, readonly: boolean): HTMLElement {
   const selected = geographyChromeState.selectedChildId === child.id;
   return el("button", {
     class: `spatial-geography-child${selected ? " is-selected" : ""}`,
@@ -80,7 +80,7 @@ function pointAttr(points: readonly SpatialPoint[]): string {
 
 function routeLayer(
   design: GeographyDesign,
-  children: readonly SpatialChildSlot<"place" | "region">[],
+  children: readonly SpatialChildSlot<"space" | "place" | "region">[],
   tilePx: number,
   rerender: () => void,
 ): HTMLElement {

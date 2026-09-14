@@ -24,11 +24,6 @@ const WING_SCHEMA = {
     y: { type: "integer", minimum: 0, description: "맵 상단 기준 행 (≥0)" },
     w: { type: "integer", minimum: 3, description: "폭 (최소 3칸)" },
     h: { type: "integer", minimum: 5, description: "높이 (최소 5칸 — 지붕 2행+벽 3행)" },
-    stories: {
-      type: "integer",
-      enum: [1, 2, 3],
-      description: "이 날개의 층수 — 생략하면 계획 전체 stories. 2층 본채 + 1층 날개 같은 계단식 집을 wings 로 직접 만들 때 쓴다.",
-    },
   },
   required: ["x", "y", "w", "h"],
 } as const;

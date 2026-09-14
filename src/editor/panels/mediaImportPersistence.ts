@@ -16,13 +16,16 @@ export async function persistMediaImport(asset: MediaImportAsset): Promise<boole
   const source = store.getCurrent();
   const identity = store.getProjectIdentity();
   const status = store.getDbPersistenceStatus();
-  if (status.kind === "disabled" && status.reason === "dev-showcase") {
+  if (status.kind === "disabled" && (status.reason === "dev-showcase" || status.reason === "shared-demo")) {
     // Web Storage cannot promise the audio/video file limits. Ask before creating
     // a dedicated Supabase copy, even for small files; never silently pick the
     // deployment's shared project. Cancel/failure leaves source recovery intact.
+    const sharedDemo = status.reason === "shared-demo";
     const accepted = await showConfirm({
       title: "미디어를 새 온라인 사본에 저장",
-      message: "이 쇼케이스의 브라우저 저장소는 미디어 용량을 보장하지 못합니다. 현재 작업과 선택한 파일을 새 Supabase 프로젝트로 복사하고, 저장본을 다시 읽어 확인한 뒤 전환할까요? 기존 온라인 작업을 덮어쓰지 않으며 브라우저 원본도 유지됩니다. 취소하면 파일을 가져오지 않습니다.",
+      message: sharedDemo
+        ? "공용 예제 원본에는 파일을 추가할 수 없습니다. 현재 화면과 선택한 파일을 새 Supabase 프로젝트로 복사하고, 저장본을 다시 읽어 확인한 뒤 전환할까요? 공용 원본은 바뀌지 않습니다. 취소하면 파일을 가져오지 않습니다."
+        : "이 쇼케이스의 브라우저 저장소는 미디어 용량을 보장하지 못합니다. 현재 작업과 선택한 파일을 새 Supabase 프로젝트로 복사하고, 저장본을 다시 읽어 확인한 뒤 전환할까요? 기존 온라인 작업을 덮어쓰지 않으며 브라우저 원본도 유지됩니다. 취소하면 파일을 가져오지 않습니다.",
       confirmLabel: "새 온라인 사본에 저장",
       cancelLabel: "취소 · 원본 유지",
     });
@@ -34,7 +37,11 @@ export async function persistMediaImport(asset: MediaImportAsset): Promise<boole
     const candidate = structuredClone(source);
     addMedia(candidate, asset);
     toast("새 온라인 사본을 저장하고 다시 읽어 확인하는 중...", "info");
-    await store.loadNewRemoteProjectTransactionally(candidate, { source: "dev-showcase" });
+    // 데모 세션은 트랜잭션이 세션 상태로 소스 flush 를 건너뛴다 — source 지정은 쇼케이스만.
+    await store.loadNewRemoteProjectTransactionally(
+      candidate,
+      sharedDemo ? {} : { source: "dev-showcase" },
+    );
     return true;
   }
 

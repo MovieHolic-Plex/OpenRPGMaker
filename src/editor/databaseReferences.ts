@@ -309,6 +309,12 @@ export function switchVariableReferenceMessage(kind: "switch" | "variable", id: 
   if (kind === "switch" && (project.system.bundles ?? []).some((bundle) => bundle.reward?.switchId === id)) {
     return "꾸러미 완료 보상이 이 스위치를 사용 중입니다.";
   }
+  if (kind === "switch" && project.database.items.some((item) => item.switchId === id)) {
+    return "아이템이 이 스위치를 사용 중입니다.";
+  }
+  if (kind === "switch" && project.database.skills.some((skill) => skill.effect.kind === "switch" && skill.effect.switchId === id)) {
+    return "스킬 효과가 이 스위치를 사용 중입니다.";
+  }
   if (!switchVariableReferencedInProject(project, kind, id)) return null;
   return kind === "switch" ? "이벤트/조건이 이 스위치를 사용 중입니다." : "이벤트/조건이 이 변수를 사용 중입니다.";
 }

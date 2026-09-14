@@ -1,0 +1,256 @@
+{
+  "baselineCommit": "858f254e5",
+  "unchangedEngineAndTests": true,
+  "fullGate": {
+    "passed": 23172,
+    "failed": 565,
+    "failedFiles": 173
+  },
+  "flaggedFiles": [
+    "test/authoredHouseForm.test.ts",
+    "test/databaseLightTheme.test.ts",
+    "test/exteriorDoorBackground.test.ts",
+    "test/houseKitDomainSeam.test.ts",
+    "test/houseProtectionLifecycle.test.ts",
+    "test/villageBuildStages.test.ts",
+    "test/villageBuilder.test.ts",
+    "test/villageFirstPlanHardGate.test.ts"
+  ],
+  "previousFailingCases": 33,
+  "currentFailingCases": 33,
+  "newFailingCases": [],
+  "sameFullDiagnostics": true,
+  "diagnostics": [
+    {
+      "file": "authoredHouseForm.test.ts",
+      "case": "author_house 가 저작 형태를 시공한다 templateId=manor-balcony — 셀 레시피 + 연결 내부 + 문 이벤트가 한 트랜잭션에 나온다",
+      "messages": [
+        "AssertionError: 'author_house' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_map_form_test_bright_plaster_9_18_f2 (10, 18): expected false to be true // Object.is equality\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/authoredHouseForm.test.ts:133:39\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "databaseLightTheme.test.ts",
+      "case": "DB 모달 라이트 팔레트 스코프 (W1) light-theme.css 의 모든 규칙 선택자가 .database-modal-backdrop 하위에 스코프된다",
+      "messages": [
+        "AssertionError: 스코프 밖 선택자 발견: \"@media (max-width: 640px)\" — 모든 규칙은 .database-modal-backdrop 하위여야 한다.: expected '@media (max-width: 640px)' to match /^\\.database-modal-backdrop/\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/databaseLightTheme.test.ts:49:9\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "exteriorDoorBackground.test.ts",
+      "case": "exterior door event backing village decoration and door restoration preserve both background cells",
+      "messages": [
+        "AssertionError: [{\"severity\":\"error\",\"code\":\"transfer-impassable\",\"mapId\":\"map_house_interior_7_map_village_7_50x50_1_f2\",\"x\":10,\"y\":18,\"message\":\"transfer 목적지가 통행 불가 타일입니다: map_house_interior_7_map_village_7_50x50_1_f2 (10, 18)\"},{\"severity\":\"error\",\"code\":\"transfer-impassable\",\"mapId\":\"map_house_interior_7_map_village_7_50x50_1_f3\",\"x\":10,\"y\":18,\"message\":\"transfer 목적지가 통행 불가 타일입니다: map_house_interior_7_map_village_7_50x50_1_f3 (10, 18)\"},{\"severity\":\"error\",\"code\":\"transfer-impassable\",\"mapId\":\"map_house_interior_7_map_village_7_50x50_3_f2\",\"x\":10,\"y\":18,\"message\":\"transfer 목적지가 통행 불가 타일입니다: map_house_interior_7_map_village_7_50x50_3_f2 (10, 18)\"},{\"severity\":\"error\",\"code\":\"transfer-impassable\",\"mapId\":\"map_house_interior_7_map_village_7_50x50_5_f2\",\"x\":10,\"y\":18,\"message\":\"transfer 목적지가 통행 불가 타일입니다: map_house_interior_7_map_village_7_50x50_5_f2 (10, 18)\"}]: expected false to be true // Object.is equality\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/exteriorDoorBackground.test.ts:84:54\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "houseKitDomainSeam.test.ts",
+      "case": "HouseKit domain seam baseline characterization locks the linked-interior semantic hash",
+      "messages": [
+        "AssertionError: [{\"severity\":\"error\",\"code\":\"transfer-impassable\",\"mapId\":\"map_house_interior_map_blank_start_blue_stone_7_10_f2\",\"x\":10,\"y\":18,\"message\":\"transfer 목적지가 통행 불가 타일입니다: map_house_interior_map_blank_start_blue_stone_7_10_f2 (10, 18)\"}]: expected false to be true // Object.is equality\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/houseKitDomainSeam.test.ts:81:54\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "houseKitDomainSeam.test.ts",
+      "case": "HouseKit domain seam author_house single produces the domain linked-interior semantic project",
+      "messages": [
+        "AssertionError: [{\"severity\":\"error\",\"code\":\"transfer-impassable\",\"mapId\":\"map_house_interior_map_blank_start_blue_stone_7_10_f2\",\"x\":10,\"y\":18,\"message\":\"transfer 목적지가 통행 불가 타일입니다: map_house_interior_map_blank_start_blue_stone_7_10_f2 (10, 18)\"}]: expected false to be true // Object.is equality\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/houseKitDomainSeam.test.ts:168:62\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "houseProtectionLifecycle.test.ts",
+      "case": "village early completion lifecycle registers finished houses before roads and preserves the same snapshots through every real stage",
+      "messages": [
+        "AssertionError: [{\"severity\":\"error\",\"code\":\"transfer-impassable\",\"mapId\":\"map_house_interior_7_map_village_7_50x50_1_f2\",\"x\":10,\"y\":18,\"message\":\"transfer 목적지가 통행 불가 타일입니다: map_house_interior_7_map_village_7_50x50_1_f2 (10, 18)\"},{\"severity\":\"error\",\"code\":\"transfer-impassable\",\"mapId\":\"map_house_interior_7_map_village_7_50x50_2_f2\",\"x\":10,\"y\":18,\"message\":\"transfer 목적지가 통행 불가 타일입니다: map_house_interior_7_map_village_7_50x50_2_f2 (10, 18)\"}]: expected false to be true // Object.is equality\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/houseProtectionLifecycle.test.ts:47:54\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "houseProtectionLifecycle.test.ts",
+      "case": "integrated village production surface seals 'slate-wood'/'rect-2f' on 50 snow map, reloads and accepts useful fill/forest outside",
+      "messages": [
+        "AssertionError: [{\"severity\":\"error\",\"code\":\"transfer-impassable\",\"mapId\":\"map_house_interior_13_map_existing_1_f2\",\"x\":10,\"y\":18,\"message\":\"transfer 목적지가 통행 불가 타일입니다: map_house_interior_13_map_existing_1_f2 (10, 18)\"}]: expected false to be true // Object.is equality\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/houseProtectionLifecycle.test.ts:127:54\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:863:59\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "houseProtectionLifecycle.test.ts",
+      "case": "integrated village production surface discards a real failed-look attempt without leaving project-wide house seals",
+      "messages": [
+        "AssertionError: [{\"severity\":\"error\",\"code\":\"transfer-impassable\",\"mapId\":\"map_house_interior_8_map_village_8_50x50_1_f2\",\"x\":10,\"y\":18,\"message\":\"transfer 목적지가 통행 불가 타일입니다: map_house_interior_8_map_village_8_50x50_1_f2 (10, 18)\"},{\"severity\":\"error\",\"code\":\"transfer-impassable\",\"mapId\":\"map_house_interior_8_map_village_8_50x50_3_f2\",\"x\":10,\"y\":18,\"message\":\"transfer 목적지가 통행 불가 타일입니다: map_house_interior_8_map_village_8_50x50_3_f2 (10, 18)\"}]: expected false to be true // Object.is equality\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/houseProtectionLifecycle.test.ts:171:54\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuildStages.test.ts",
+      "case": "village construction stages retains reservations and decoration across detached drafts: '평범한 마을'",
+      "messages": [
+        "AssertionError: [{\"severity\":\"error\",\"code\":\"transfer-impassable\",\"mapId\":\"map_house_interior_7_map_village_7_50x50_1_f2\",\"x\":10,\"y\":18,\"message\":\"transfer 목적지가 통행 불가 타일입니다: map_house_interior_7_map_village_7_50x50_1_f2 (10, 18)\"},{\"severity\":\"error\",\"code\":\"transfer-impassable\",\"mapId\":\"map_house_interior_7_map_village_7_50x50_2_f2\",\"x\":10,\"y\":18,\"message\":\"transfer 목적지가 통행 불가 타일입니다: map_house_interior_7_map_village_7_50x50_2_f2 (10, 18)\"}]: expected false to be true // Object.is equality\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuildStages.test.ts:99:56\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:863:59\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuildStages.test.ts",
+      "case": "village construction stages retains reservations and decoration across detached drafts: '서쪽 강과 호수가 있는 숲 마을'",
+      "messages": [
+        "AssertionError: [{\"severity\":\"error\",\"code\":\"transfer-impassable\",\"mapId\":\"map_house_interior_1_map_village_1_50x50_1_f2\",\"x\":10,\"y\":18,\"message\":\"transfer 목적지가 통행 불가 타일입니다: map_house_interior_1_map_village_1_50x50_1_f2 (10, 18)\"}]: expected false to be true // Object.is equality\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuildStages.test.ts:99:56\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:863:59\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "case": "build_village 빈 프로젝트에서 seed만으로 50x50 마을을 완성한다",
+      "messages": [
+        "AssertionError: 'build_village' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_7_map_village_7_50x50_1_f2 (10, 18) (+3건): expected false to be true // Object.is equality\n    at buildVillage (/home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:88:37)\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:112:31\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "case": "build_village pathStyle:dirt 로 흙길을 쓸 수 있다",
+      "messages": [
+        "AssertionError: 'build_village' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_7_map_village_7_50x50_1_f2 (10, 18) (+3건): expected false to be true // Object.is equality\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:213:39\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "case": "build_village theme/housePlans 의도를 받아 집 수와 키트에 반영한다",
+      "messages": [
+        "AssertionError: 'build_village' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_3_map_village_3_50x50_1_f2 (10, 18): expected false to be true // Object.is equality\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:233:39\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "case": "build_village 강촌마을 쿼리는 강+숲 필수 스펙을 뽑고 맵에 수역·나무를 깐다",
+      "messages": [
+        "AssertionError: 'build_village' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_9_map_village_9_50x50_1_f2 (10, 18): expected false to be true // Object.is equality\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:264:37\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "case": "build_village run_village_session 이 멀티턴 체크리스트로 강촌을 시공하고 2×2 나무를 심는다",
+      "messages": [
+        "AssertionError: 'run_village_session' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_77_map_village_77_50x50_1_f2 (10, 18) (+2건): expected false to be true // Object.is equality\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:306:39\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "case": "build_village run_village_pipeline 이 plan→build→spec→look 을 돌린다",
+      "messages": [
+        "AssertionError: 'run_village_pipeline' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_6_map_village_6_50x50_1_f2 (10, 18) (+3건): expected false to be true // Object.is equality\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:352:39\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "case": "build_village plan_village → build_village(planId) → critique_village 3층 흐름",
+      "messages": [
+        "AssertionError: 'build_village' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_11_map_village_11_50x50_1_f2 (10, 18): expected false to be true // Object.is equality\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:395:37\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "case": "build_village fences:false면 울타리를 깔지 않는다",
+      "messages": [
+        "AssertionError: 'build_village' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_7_map_village_7_50x50_1_f2 (10, 18) (+3건): expected false to be true // Object.is equality\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:414:39\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "case": "build_village 기본 시드에서도 문 8개가 전부 온전하다 (진입로 관통 회귀)",
+      "messages": [
+        "AssertionError: 'build_village' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_1_map_village_1_50x50_1_f2 (10, 18) (+2건): expected false to be true // Object.is equality\n    at buildVillage (/home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:88:37)\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:424:31\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "case": "build_village 같은 seed는 타일과 이벤트 좌표가 같고 다른 seed는 하위 타일이 달라진다",
+      "messages": [
+        "AssertionError: 'build_village' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_7_map_village_7_50x50_1_f2 (10, 18) (+3건): expected false to be true // Object.is equality\n    at buildVillage (/home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:88:37)\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:439:19\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "case": "build_village NPC 그래픽을 주민형 후보에서 다양하게 순환 배정하고 같은 seed에서 고정한다",
+      "messages": [
+        "AssertionError: 'build_village' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_7_map_village_7_50x50_1_f2 (10, 18) (+3건): expected false to be true // Object.is equality\n    at buildVillage (/home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:88:37)\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:452:19\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "case": "build_village 스케치가 이긴 집 배치는 격자 열에 서지 않는다",
+      "messages": [
+        "AssertionError: 'build_village' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_7_map_village_7_50x50_1_f2 (10, 18) (+3건): expected false to be true // Object.is equality\n    at buildVillage (/home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:88:37)\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:479:33\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "case": "build_village 집 8채에 Object1 문 이벤트와 자식 내부 맵을 생성한다",
+      "messages": [
+        "AssertionError: 'build_village' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_7_map_village_7_50x50_1_f2 (10, 18) (+3건): expected false to be true // Object.is equality\n    at buildVillage (/home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:88:37)\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:501:31\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "case": "build_village 대로·진입로가 집 footprint 내부를 침범하지 않는다",
+      "messages": [
+        "AssertionError: 'build_village' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_1_map_village_1_50x50_1_f2 (10, 18) (+2건): expected false to be true // Object.is equality\n    at buildVillage (/home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:88:37)\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:569:33\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "case": "build_village 내부 맵 삭제 시 외부 문 transfer dangling 참조가 정리된다",
+      "messages": [
+        "AssertionError: 'build_village' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_7_map_village_7_50x50_1_f2 (10, 18) (+3건): expected false to be true // Object.is equality\n    at buildVillage (/home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:88:37)\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:615:31\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "case": "build_village 하네싱 창문을 상위 레이어에 배치한다",
+      "messages": [
+        "AssertionError: 'build_village' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_7_map_village_7_50x50_1_f2 (10, 18) (+3건): expected false to be true // Object.is equality\n    at buildVillage (/home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:88:37)\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:630:31\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "case": "build_village 레지스트리에 등록되고(deprecated) runTool 경로로 실행된다",
+      "messages": [
+        "AssertionError: 'build_village' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_13_map_village_13_50x50_1_f2 (10, 18) (+2건): expected false to be true // Object.is equality\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:673:39\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "case": "build_village housePlans contract 파이프라인 재시도 정리가 기존 무관 맵을 보존한다 (스냅샷 와이프)",
+      "messages": [
+        "AssertionError: 'build_village' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_7_map_village_7_50x50_1_f2 (10, 18) (+3건): expected false to be true // Object.is equality\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:807:37\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "case": "build_village housePlans contract 강+호수 테마에서 집이 물 마스크 셀 위에 배치되지 않는다",
+      "messages": [
+        "AssertionError: 'build_village' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_3_map_village_3_50x50_1_f2 (10, 18) (+2건): expected false to be true // Object.is equality\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:837:39\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "case": "build_village housePlans contract 길·울타리·나무가 지붕 용마루 행(bbox.y-1)을 침범하지 않는다",
+      "messages": [
+        "AssertionError: 'build_village' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_3_map_village_3_50x50_1_f2 (10, 18) (+2건): expected false to be true // Object.is equality\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:866:41\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageBuilder.test.ts",
+      "case": "build_village housePlans contract pathStyle:stone 은 포석(129 블록) 오토타일로 성형된 돌길을 깔고 불변식을 지킨다",
+      "messages": [
+        "AssertionError: 'build_village' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_5_map_village_5_50x50_1_f2 (10, 18) (+2건): expected false to be true // Object.is equality\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageBuilder.test.ts:890:39\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageFirstPlanHardGate.test.ts",
+      "case": "첫 plan 필수요소 hard 게이트 장터 테마는 장터 소품을 실측으로 보장한다",
+      "messages": [
+        "AssertionError: 'build_village' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_7_map_village_7_50x50_1_f2 (10, 18) (+3건): expected false to be true // Object.is equality\n    at build (/home/main/.codex/worktrees/2ece/rpg-zzu/test/villageFirstPlanHardGate.test.ts:14:37)\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageFirstPlanHardGate.test.ts:22:32\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "villageFirstPlanHardGate.test.ts",
+      "case": "첫 plan 필수요소 hard 게이트 농촌 테마 look 평가는 farm 충족 여부를 requirementsMet에 싣는다",
+      "messages": [
+        "AssertionError: 'build_village' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_house_interior_7_map_village_7_50x50_1_f2 (10, 18) (+3건): expected false to be true // Object.is equality\n    at build (/home/main/.codex/worktrees/2ece/rpg-zzu/test/villageFirstPlanHardGate.test.ts:14:37)\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/villageFirstPlanHardGate.test.ts:28:32\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    }
+  ]
+}

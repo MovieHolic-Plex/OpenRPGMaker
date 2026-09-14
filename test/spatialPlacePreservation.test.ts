@@ -9,6 +9,21 @@ import { placeChild, placeCompilerFixture, placeRoot, stairFloors, withStairConn
 const request = { occurrenceId: placeRoot };
 
 describe("nested compilation preservation", () => {
+  it("replaces stale interior plan metadata while retaining unrelated map metadata", () => {
+    const input = compileSpatialOccurrence(placeCompilerFixture(), request);
+    const floor = stairFloors(input)[0]!;
+    const binding = own(fixtureDocument(input).occurrences, floor.roomId).bindings[0]!;
+    const map = own(input.maps, binding.mapId);
+    const expected = structuredClone(map.roomHarnessPlan!);
+    map.roomHarnessPlan = { ...expected, plan: { ...expected.plan,
+      door: { ...expected.plan.door, x: expected.plan.door.x + 1 } } };
+    map.name = "Manual map title";
+    const output = compileSpatialOccurrence(deserialize(serialize(input)), request);
+    expect(output.maps[map.id]!.roomHarnessPlan).toEqual(expected);
+    expect(output.maps[map.id]!.name).toBe("Manual map title");
+    expect(input.maps[map.id]!.roomHarnessPlan).not.toEqual(expected);
+  });
+
   it("retains identical IDs and projections when real serializer reload precedes repeated compilation", () => {
     // Given: a fully compiled three-floor project reloaded by the actual serializer.
     const input = deserialize(serialize(compileSpatialOccurrence(withStairConnections(placeCompilerFixture()), request)));

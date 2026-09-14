@@ -1,0 +1,15 @@
+{
+  "guidance": {
+    "object": "오브젝트 · 가구, 소품, 건물 외형처럼 다시 쓰는 그림입니다. 건물 안에서 이용할 방·층은 공간으로 만드세요.",
+    "space": "공간 · 방, 한 층, 마당처럼 이용할 구역입니다. 바닥·벽·오브젝트·출입구를 정하고 장소에 모을 수 있습니다.",
+    "place": "장소 · 공간과 하위 장소를 모은 시설·정착지입니다. 건물 외형, 출입구, 공간 사이 연결을 함께 구성하세요."
+  },
+  "result": {
+    "draft": {
+      "tilesetId": "easyrpg_chipset_combined_town",
+      "kitId": "fixture-tree"
+    },
+    "live": null
+  },
+  "remoteWrites": "blocked"
+}

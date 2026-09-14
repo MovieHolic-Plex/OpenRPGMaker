@@ -38,7 +38,9 @@ export const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
       x: Math.round(108 + (i - (n - 1) / 2) * 48),
       y: n <= 1 ? 124 : 112 + (i % 2) * 12,
     }),
-    party: (i) => ({ x: 220 + i * 22, y: 84 + i * 25 }),
+    // 아군 4명 가로 간격 32 RM px(스프라이트 1.25배). 22 면 다음 배우가 앞 배우를 38% 덮어 2·3번은
+    // 실루엣만 남았다(2026-09-14 실측). 시작 x 196 → 마지막 292 + 반폭 24 = 316 으로 무대(320) 안에 든다.
+    party: (i) => ({ x: 196 + i * 32, y: 84 + i * 25 }),
   },
   octopath: { partyFacing: "back", partyScale: 1.15, enemy: (i) => ({ x: 72 + (i % 2) * 54, y: 47 + Math.floor(i / 2) * 27 }), party: (i) => ({ x: 236 + (i % 2) * 42, y: 88 + Math.floor(i / 2) * 52 }) },
   chrono: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 250 - i * 50, y: 48 }), party: (i) => ({ x: 62 + (i % 2) * 42, y: 104 + Math.floor(i / 2) * 30 }) },
@@ -125,5 +127,29 @@ export function resolveSkinEnemyPositions(
       y: BATTLER_PLACEMENTS[skinId].enemy(i, n).y,
     }));
   }
-  return canonicals.map((c, i) => resolveSkinEnemyPosition(skinId, c, i, n, false));
+  const resolved = canonicals.map((c, i) => resolveSkinEnemyPosition(skinId, c, i, n, false));
+  if (layout !== "sideview" && layout !== "active") return resolved;
+  // 측면 수동 배치: 저작 x>150 을 고전 진형 x 로 접는 규칙이 index 별 충돌을 보지 않아 두 적이
+  // **같은 좌표**에 서서 한 마리만 보였다(2026-09-14 실측, troop_slime_pair 128/192 → 둘 다 128).
+  // 앞선 적과 x·y 가 모두 가까우면 고전 진형의 y(52+36i)로 내려 세운다.
+  const placed: { x: number; y: number }[] = [];
+  const clamp = (candidate: { x: number; y: number }): { x: number; y: number } => ({
+    x: Math.max(0, Math.min(320, Math.round(candidate.x))),
+    y: Math.max(0, Math.min(160, Math.round(candidate.y))),
+  });
+  return resolved.map((position, index) => {
+    const collides = (candidate: { x: number; y: number }): boolean =>
+      placed.some((prior) => Math.abs(prior.x - candidate.x) < 24 && Math.abs(prior.y - candidate.y) < 24);
+    // 후보 순서: 저작값 → 이 스킨의 자동 진형 자리 → 오른쪽 48 → 아래 40. 첫 비충돌 후보를 쓴다.
+    const candidates = [
+      position,
+      BATTLER_PLACEMENTS[skinId].enemy(index, n),
+      clamp({ x: position.x + 48, y: position.y }),
+      clamp({ x: position.x, y: position.y + 40 }),
+      clamp({ x: position.x - 48, y: position.y + 40 }),
+    ];
+    const next = candidates.find((candidate) => !collides(candidate)) ?? candidates[candidates.length - 1];
+    placed.push(next);
+    return next;
+  });
 }

@@ -77,6 +77,12 @@ export interface BattleSequencerHooks {
   readonly onEntryAnimation?: (animation: BattleAnimationSnapshot | undefined) => void;
   /** 포획 시네마틱(구슬 투척·흔들림)을 재생하고 소요 ms를 반환. 미구현이면 0. */
   readonly onCaptureCinematic?: (targetId: string, success: boolean) => number;
+  /** 이 애니메이션의 착탄(효과음·플래시가 걸린 첫 프레임)까지 걸리는 ms. 시퀀서는 이펙트
+   *  마운트를 `approach − 착탄` 만큼 늦춰 착탄 프레임이 임팩트 비트(팝업·히트스톱)와 같은
+   *  순간에 오게 한다. 미구현이면 이펙트는 approach 시작과 함께 뜬다. */
+  readonly animationImpactMs?: (animation: BattleAnimationSnapshot) => number;
+  /** 도주 시도의 결과가 화면에 도달하는 순간. 도주음·BGM 정지는 성공이 확정된 뒤에만 울려야 한다. */
+  readonly onEscapeOutcome?: (success: boolean) => void;
 }
 
 export interface BattleSequencer {
@@ -96,6 +102,8 @@ export function createBattleSequencer(
   clearSchedule: ClearScheduleFn = (timerId) => window.clearTimeout(timerId)
 ): BattleSequencer {
   const timers = new Set<number>();
+  /** 배속이 바뀔 때 남은 시간을 새 배속으로 다시 걸기 위한 원장. authored 지연은 제외. */
+  const pending = new Map<number, { callback: () => void; baseMs: number; scaledMs: number; startedAt: number; generation: number }>();
   let busy = false;
   let speedMultiplier = 1.0;
   // Ordered timeline cursor. A sequencer is created with its runtime, so facts
@@ -118,21 +126,76 @@ export function createBattleSequencer(
     generation += 1;
     for (const timerId of timers) clearSchedule(timerId);
     timers.clear();
+    pending.clear();
   }
 
-  function delay(callback: () => void, ms: number, authored = false): void {
-    const reduced = typeof window !== "undefined" && typeof window.matchMedia === "function"
+  function reducedMotion(): boolean {
+    return typeof window !== "undefined" && typeof window.matchMedia === "function"
       && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const scaledMs = reduced ? 10 : Math.max(10, Math.round(ms / Math.max(0.2, speedMultiplier)));
-    const scheduledGeneration = generation;
+  }
+
+  /** 감소 모션은 **움직임**을 빼는 것이지 정보를 빼는 것이 아니다. 대사·격파 문구·결과 대기가
+   *  10ms 로 지나가면 읽을 수 없는 로그가 된다(2026-09-14 실측). 읽기 시간 250ms 는 남긴다. */
+  const REDUCED_MOTION_MAX_MS = 250;
+
+  function scaleDelay(ms: number): number {
+    if (reducedMotion()) return Math.max(10, Math.min(ms, REDUCED_MOTION_MAX_MS));
+    return Math.max(10, Math.round(ms / Math.max(0.2, speedMultiplier)));
+  }
+
+  function now(): number {
+    return typeof performance !== "undefined" ? performance.now() : Date.now();
+  }
+
+  function scheduleScaled(callback: () => void, baseMs: number, scaledMs: number, scheduledGeneration: number): void {
     let timer: number | undefined;
     let fired = false;
     timer = schedule(() => {
       fired = true;
-      if (timer !== undefined) timers.delete(timer);
+      if (timer !== undefined) {
+        timers.delete(timer);
+        pending.delete(timer);
+      }
       if (generation === scheduledGeneration) callback();
-    }, authored ? ms : scaledMs);
-    if (!fired) trackTimer(timer);
+    }, scaledMs);
+    if (!fired) {
+      trackTimer(timer);
+      pending.set(timer, { callback, baseMs, scaledMs, startedAt: now(), generation: scheduledGeneration });
+    }
+  }
+
+  function delay(callback: () => void, ms: number, authored = false): void {
+    const scheduledGeneration = generation;
+    if (authored) {
+      let timer: number | undefined;
+      let fired = false;
+      timer = schedule(() => {
+        fired = true;
+        if (timer !== undefined) timers.delete(timer);
+        if (generation === scheduledGeneration) callback();
+      }, ms);
+      if (!fired) trackTimer(timer);
+      return;
+    }
+    scheduleScaled(callback, ms, scaleDelay(ms), scheduledGeneration);
+  }
+
+  /** 배속이 바뀌면 **이미 걸려 있는** 지연도 남은 비율만큼 새 배속으로 다시 건다. 예전엔
+   *  스케줄 시점의 배속이 고정돼 인트로 1.2초 홀드 중 확인키(스킵)를 눌러도 표시만 켜지고
+   *  실제 단축은 0 이었다(2026-09-14 실측: 연타 15회에도 1236ms). */
+  function rescheduleForSpeed(): void {
+    if (pending.size === 0) return;
+    const current = now();
+    const entries = [...pending.entries()];
+    for (const [timer, item] of entries) {
+      clearSchedule(timer);
+      timers.delete(timer);
+      pending.delete(timer);
+      if (item.generation !== generation) continue;
+      const fraction = item.scaledMs > 0 ? Math.min(1, Math.max(0, (current - item.startedAt) / item.scaledMs)) : 1;
+      const remainingBase = item.baseMs * (1 - fraction);
+      scheduleScaled(item.callback, remainingBase, scaleDelay(remainingBase), item.generation);
+    }
   }
 
   function clearMotion(): void {
@@ -181,7 +244,9 @@ export function createBattleSequencer(
     hooks.onSyncView();
     // 보상 행 수와 공개 스테이지 수를 동일한 소스로 계산한다(골드 행 미공개 버그 방지).
     const rewardCount = battleResultRewardRowCount(snapshot);
-    let stage = 0;
+    // 첫 행(경험치)은 패널과 함께 공개한다 — stage 0 은 제목·확인만 있는 빈 상자를 450ms
+    // 보여 줬다(2026-09-14 실측). 행 수가 많으면 그 빈 상자마저 화면 밖이었다.
+    let stage = Math.min(1, rewardCount);
     const revealNext = (): void => {
       hooks.onResultStage(stage);
       hooks.onSyncView();
@@ -343,7 +408,6 @@ export function createBattleSequencer(
       else continueNext();
       return;
     }
-    hooks.onEntryAnimation?.(entry.animation);
     const cinematicMs = entry.kind === "capture" && entry.targetId
       ? hooks.onCaptureCinematic?.(entry.targetId, entry.success === true) ?? 0
       : 0;
@@ -371,6 +435,22 @@ export function createBattleSequencer(
           impactMs: recoverMsForAnimation(entry.animation?.durationMs, Math.max(BATTLE_ACTING_MS, cinematicMs), BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
           weight,
         });
+    // 이펙트 마운트 시점: 착탄 프레임이 임팩트 비트와 같은 순간에 오도록 approach 길이에서
+    // 착탄까지의 ms 를 뺀 만큼 늦춘다. 예전엔 approach 시작에 바로 떠서 적이 하얗게 번쩍인
+    // 뒤 0.3초 있다가 숫자가 뜨고 밀리는 "절정 두 번"이 됐다(2026-09-14 실측 250~300ms).
+    const approachMs = beats.find((beat) => beat.kind === "approach")?.durationMs ?? 0;
+    const impactAtMs = entry.animation && hooks.animationImpactMs ? hooks.animationImpactMs(entry.animation) : 0;
+    // 착탄 정보가 없으면(타이밍 없는 레코드·훅 미구현) 예전처럼 approach 시작과 함께 뜬다.
+    const animationOffsetMs = impactAtMs > 0 ? Math.max(0, approachMs - impactAtMs) : 0;
+    if (entry.animation && animationOffsetMs > 0) {
+      hooks.onEntryAnimation?.(undefined);
+      delay(() => hooks.onEntryAnimation?.(entry.animation), animationOffsetMs);
+    } else {
+      hooks.onEntryAnimation?.(entry.animation);
+    }
+    if (entry.kind === "action" && entry.commandKind === "escape" && entry.side === "actor") {
+      hooks.onEscapeOutcome?.(entry.success === true);
+    }
     const afterBeats = killLine
       ? (): void => {
         hooks.onActionMotion?.(undefined);
@@ -464,7 +544,9 @@ export function createBattleSequencer(
       return speedMultiplier;
     },
     set speedMultiplier(val: number) {
+      if (val === speedMultiplier) return;
       speedMultiplier = val;
+      rescheduleForSpeed();
     },
     startIntro(snapshot: BattleSnapshot): void {
       clearTimers();

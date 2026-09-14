@@ -16,7 +16,7 @@ import { spaceChromeState } from "@/editor/panels/spatialSpaceChromeState";
 const ERROR_TEXT: Readonly<Record<string, string>> = {
   "authoring-draft-missing": "편집 중인 초안이 없습니다 — 추가·수정을 먼저 하세요",
   "authoring-preview-missing": "적용할 미리보기가 없습니다 — 미리보기를 먼저 실행하세요",
-  "authoring-controller-unavailable": "이 환경에서는 공간 편집을 사용할 수 없습니다",
+  "authoring-controller-unavailable": "이 환경에서는 장소 편집을 사용할 수 없습니다",
   "authoring-session-lineage": "이전 편집과 이어지지 않습니다 — 다시 시도하세요",
   "build-proposal-pending": "적용되지 않은 시공 미리보기가 있습니다 — 먼저 적용하세요",
   "build-seed-integer-required": "시드는 정수여야 합니다",
@@ -27,7 +27,7 @@ const ERROR_TEXT: Readonly<Record<string, string>> = {
   "Preview has already been accepted": "이미 적용된 미리보기입니다",
   "Project changed since draft creation": "초안을 만든 뒤 프로젝트가 바뀌었습니다 — 다시 편집하세요",
   "Project changed since preview": "미리보기를 만든 뒤 프로젝트가 바뀌었습니다 — 미리보기를 다시 실행하세요",
-  "spatialAuthoring가 객체가 아닙니다": "이 프로젝트에는 공간 설계 문서가 없습니다",
+  "spatialAuthoring가 객체가 아닙니다": "이 프로젝트에는 장소 설계 문서가 없습니다",
   clipped: "지형 범위를 벗어났습니다",
   diagonal: "대각선 경로는 지원하지 않습니다",
   endpoint: "경로의 끝점이 올바르지 않습니다",
@@ -60,7 +60,7 @@ export function humanizeSpatialError(text: string | null): string | null {
 export function spatialSourceLabel(card: SpatialGalleryCard): string {
   if (card.mapUsage) return "맵 사용";
   if (card.compatibility === "room-rule") return "호환 방 규칙";
-  if (card.compatibility === "house-shape") return "호환 집 형태";
+  if (card.compatibility === "house-shape") return "건물 외형 · 호환 도안";
   switch (card.source) {
     case "default": return "기본 설계";
     case "own": return "내 설계";
@@ -84,7 +84,7 @@ export function spatialGalleryEmptyCopy(mode: SpatialAuthoringMode, tab: Spatial
       body: "설계를 「시공」으로 실제 맵에 배치하면 여기에 나타납니다.",
     };
   }
-  const thing = tab === "tiles" ? "타일셋" : tab === "objects" ? "오브젝트" : tab === "spaces" ? "공간"
+  const thing = tab === "tiles" ? "타일셋" : tab === "objects" ? "오브젝트" : tab === "spaces" ? "장소"
     : tab === "places" ? "장소" : tab === "regions" ? "지역" : "세계";
   return {
     title: `내 ${thing} 설계가 없습니다`,

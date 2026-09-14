@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import type { PiAgentDoneEvent, PiAgentEvent, PiAgentRequest } from "@/ai/piAgent/protocol";
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import type { PiTeamSpec } from "@/ai/piAgent/teamSpec";
-import { runTool } from "@/editor/tools";
+import { commitChangeset, runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 import { runPiTeam, type RunPiTeamOptions } from "../scripts/lib/piTeamRuntime";
@@ -188,6 +188,42 @@ describe("팀 런타임 — 시작/확인 분리", () => {
   });
 });
 
+describe("팀 런타임 — 묶음이 만든 정의", () => {
+  // 실측(2026-09-14, `/pi team` · 빈 맵 · "던전을 만들어줘", 활동 로그 project oprn-fcfe8b2c2b):
+  // 시공 팀원이 place_battle_blocker 로 «클리어 스위치»를 만들고 그 맵 이벤트가 그걸 가리키는데,
+  // 병합이 맵만 옮기고 스위치 정의를 버려 병합본이 자기 이벤트의 참조를 잃었다. 커밋 게이트가
+  // serialize 왕복에서 그걸 잡아 런 전체가 "적용 실패(commit-rejected): 직렬화 왕복 실패:
+  // setSwitch: switchId가 존재하지 않습니다: sw_ev_battle_<uuid>_clear" 로 거부됐다.
+  it("시공 팀원이 만든 스위치가 팀 병합을 지나 커밋 게이트를 통과한다", async () => {
+    const project = seeded();
+    let clearSwitchId = "";
+    const runAgent = async (req: PiAgentRequest, opts: { extraTools?: readonly PiToolShape[] }): Promise<PiAgentDoneEvent> => {
+      const extra = opts.extraTools ?? [];
+      if (extra.some((tool) => tool.name === "assign_map_agent")) {
+        await callTool(extra, "assign_map_agent", { mapId: "map_a", task: "던전", member: "builder" });
+        await callTool(extra, "wait_agents", {});
+        await callTool(extra, "finish", { report: "끝" });
+        return doneWith(req.project);
+      }
+      // 시공 팀원은 자기 사본에서 진짜 툴을 돌린다 — 정의가 그 사본의 프로젝트에 실제로 생긴다.
+      const ctx = { project: structuredClone(req.project) as Project };
+      const mapId = req.mapIds[0]!;
+      const blocked = runTool(ctx, "place_battle_blocker", { mapId, x: 4, y: 4, troopId: ctx.project.database.troops[0]!.id });
+      expect(blocked.ok).toBe(true);
+      clearSwitchId = (blocked.data as { clearSwitchId: string }).clearSwitchId;
+      return doneWith(ctx.project, [`maps.${mapId}`]);
+    };
+
+    const done = await runPiTeam(request(project), { runAgent: runAgent as RunPiTeamOptions["runAgent"] });
+    expect(clearSwitchId).not.toBe("");
+    // 정의를 잃으면 게이트가 serialize 왕복에서 잡고 런 전체를 거부한다(부분 적용이 없다) —
+    // 실패 메시지가 곧 사용자가 본 증상이라 그대로 실어 두면 회귀 원인이 한 줄로 보인다.
+    const gate = commitChangeset(done.project, project);
+    expect(gate.ok, gate.ok ? "" : gate.blocking.map((issue) => issue.message).join(" | ")).toBe(true);
+    expect(done.project.switches.some((entry) => entry.id === clearSwitchId)).toBe(true);
+  });
+});
+
 describe("팀 런타임 — 업무/수정 분류", () => {
   // 깨질 것: 배정 예산 하나로 세면 시공·장식 두 업무만으로 예산이 줄어 검수 지적을 못 고친다.
   // 그리고 수정 배정이 원인 검수를 가리키지 않으면 보드가 두 행을 잇지 못한다.
@@ -210,5 +246,29 @@ describe("팀 런타임 — 업무/수정 분류", () => {
     expect(spawns.filter((spawn) => spawn.role === "builder").map((spawn) => [spawn.agentId, spawn.fixOf ?? null])).toEqual([
       ["builder-1", null], ["builder-2", null], ["builder-3", "reviewer-1"],
     ]);
+  });
+});
+
+describe("team model roles", () => {
+  it("uses Ultrabrain for orchestration and Deep for builders with provider-specific credentials", async () => {
+    const project = seeded();
+    const calls: PiAgentRequest[] = [];
+    const keys = { "google-antigravity": "brain-test-key", "openai-codex": "deep-test-key" };
+    await runPiTeam({ ...request(project), provider: "google-antigravity", model: "gemini-3.8-flash", thinkingLevel: "high",
+      roleModels: { deep: { provider: "openai-codex", model: "deep-model", thinkingLevel: "medium" } },
+    }, { apiKey: "brain-only-token", providerApiKeys: keys, runAgent: async (req, opts) => {
+      calls.push(req);
+      expect(opts.providerApiKeys).toEqual(keys);
+      expect(opts.apiKey).toBe(req.provider === "google-antigravity" ? "brain-only-token" : undefined);
+      const tools = opts.extraTools ?? [];
+      if (tools.some(tool => tool.name === "assign_map_agent")) {
+        await callTool(tools, "assign_map_agent", { mapId: "map_a", task: "집", member: "builder" });
+        await callTool(tools, "wait_agents", {});
+        await callTool(tools, "finish", { report: "끝" });
+      }
+      return doneWith(req.project);
+    } });
+    expect(calls[0]).toMatchObject({ provider: "google-antigravity", model: "gemini-3.8-flash", thinkingLevel: "high" });
+    expect(calls[1]).toMatchObject({ provider: "openai-codex", model: "deep-model", thinkingLevel: "medium" });
   });
 });

@@ -10,7 +10,7 @@ import { waitForEventKey } from "@/player/eventInput";
 import type { BattleEventChoiceSnapshot, BattleEventPauseSnapshot } from "@/battle/types";
 import { targetScopeForCommand } from "@/battle/battleTargetResolver";
 import type { BattleAnimationPlayback } from "@/player/battleAnimationDom";
-import { syncBattleAnimationLayer } from "@/player/battleAnimationDom";
+import { battleAnimationImpactMs, syncBattleAnimationLayer } from "@/player/battleAnimationDom";
 import { createPresentationLedger, type BattlePresentationLedger } from "@/player/battlePresentation";
 import { commandPanel, enemyListPanel, syncEnemyListPanel, type BattleCommandSubmenu } from "@/player/battleCommandDom";
 import {
@@ -18,6 +18,7 @@ import {
   battleMessageWindow,
   battleEventDirectorState,
   battleResultPanel,
+  battleResultRewardRowCount,
   chargingDirectorState,
   commandPromptState,
   resultDirectorState,
@@ -163,6 +164,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   // 크롬이었고 런타임은 키보드 전용이다. 자동전투(A)·배속(Shift) 토글은 키로만 받고,
   // 상태는 루트 data 속성으로 노출한다(스킨/테스트가 읽을 수 있게).
   root.append(field, animationLayer, messageWindow, enemyPanel, commandHost, partyPanel, resultHost);
+  // 씬이 붙으면 포커스를 씬 안으로 가져온다 — 없으면 인트로·명령 국면 내내 activeElement 가
+  // BODY 라 보조기술 컨텍스트가 필드에 남고 씬 스코프 포커스 링이 절대 보이지 않는다.
+  queueMicrotask(() => {
+    if (root.isConnected && !root.contains(document.activeElement)) root.focus({ preventScroll: true });
+  });
   // 필드가 루트에 붙은 뒤에만 배경 변수를 비출 수 있다(battleField 생성 시점에는 부모가 없다).
   syncSceneBackdropVar(field);
 
@@ -191,6 +197,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     if (skipping) return;
     skipping = true;
     sequencer.speedMultiplier = SKIP_SPEED;
+    // 이펙트 프레임 간격(battleAnimationFrameMs)은 이 속성만 읽는다 — 안 갱신하면 스킵 중
+    // 대사·모션은 5배속인데 이펙트만 원속도로 남아 다음 행동 위에 겹쳤다.
+    root.dataset.battleSpeed = SKIP_SPEED.toFixed(1);
     root.dataset.battleSkipping = "true";
   }
 
@@ -198,6 +207,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     if (!skipping) return;
     skipping = false;
     sequencer.speedMultiplier = speedMultiplier;
+    root.dataset.battleSpeed = speedMultiplier.toFixed(1);
     root.dataset.battleSkipping = "false";
   }
 
@@ -349,8 +359,20 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     onActionMotion(beat) {
       applyActionMotion(field, beat);
     },
+    animationImpactMs(animation) {
+      return battleAnimationImpactMs(animation.animationId);
+    },
+    onEscapeOutcome(success) {
+      // 도주음·BGM 정지는 성공이 **화면에 도달한** 순간에만. 예전엔 명령 확정 시점에 울려
+      // 실패해도 "도주음 → 그러나 도망칠 수 없었다" 순서가 됐고 남은 전투가 무음이었다.
+      const actorNode = options.runtime.snapshot().activeActorId
+        ? findBattlerNode(field, options.runtime.snapshot().activeActorId!)
+        : null;
+      emitBattleJuice(success ? "escape" : "hit-miss", actorNode ?? undefined);
+    },
     onResultStage(stage) {
-      resultRevealStage = stage;
+      // 사용자가 확인키로 전부 공개했으면(revealAllResultRows) 늦게 도착한 낮은 단계가 되감지 않는다.
+      resultRevealStage = Math.max(resultRevealStage, stage);
       // 값만 바꾸면 화면은 stage 0 인 채로 남는다 — 보상 행은 `index >= revealStage` 로
       // hidden 이 결정되므로(battleDirectorDom.ts:251) 경험치·골드가 끝까지 안 보였다.
       // 결과 패널이 이미 떠 있을 때만 즉시 다시 그린다(전체 syncView 는 불필요).
@@ -380,6 +402,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // 시 "도망치려 한다…" 직후 씬 소멸).
     if (snapshot.result) {
       if (directorState.step === "result" && !resultSent) {
+        if (revealAllResultRows(snapshot)) return;
         resultSent = true;
         options.onResult(snapshot.result, snapshot);
       }
@@ -426,7 +449,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (isBattleConfirmKey(event)) {
         event.preventDefault();
         // 클릭 핸들러와 같은 이유로, 결과 연출이 화면에 도달했을 때만 확정한다.
+        // 첫 확인 = 보상 전부 공개, 둘째 확인 = 닫기. 막타 연타가 보상을 하나도 못 보고
+        // 씬을 닫던 결함(2026-09-14 실측: stage 0 에서 Z → 700ms 뒤 씬 소멸).
         if (directorState.step === "result" && !resultSent) {
+          if (revealAllResultRows(snapshot)) return;
           resultSent = true;
           options.onResult(snapshot.result, snapshot);
         }
@@ -598,7 +624,21 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     }
     if (focus && selected && document.activeElement !== selected) selected.focus({ preventScroll: true });
     // 스크롤되는 서브메뉴(기술/아이템 목록)에서 커서가 화면 밖 항목으로 내려가면 따라간다.
-    selected?.scrollIntoView({ block: "nearest" });
+    // 첫 항목으로 감싸 올라오면 헤더(「스킬」)까지 보이도록 맨 위로 되돌린다.
+    if (selected) {
+      const menu = selected.closest<HTMLElement>(".battle-command-menu");
+      if (menu && enabledMenuButtons()[0] === selected) menu.scrollTop = 0;
+      else selected.scrollIntoView({ block: "nearest" });
+    }
+  }
+
+  /** 적 대상 국면에서 커서가 「뒤로」 행에 있는가. 대상 순환의 마지막 자리 — 화살표로 닿고
+   *  확인키가 그 행을 누른다. 예전엔 이 행이 키보드 전용 런타임에서 누를 수 없는 버튼이었고,
+   *  어렵게 포커스해도 Enter 가 공격을 확정했다(2026-09-14 실측). */
+  let enemyTargetCursorOnCancel = false;
+
+  function targetCancelButton(): HTMLButtonElement | null {
+    return commandHost.querySelector<HTMLButtonElement>("button.battle-command[data-testid='battle-target-cancel']:not(:disabled)");
   }
 
   function cycleTarget(snapshot: BattleSnapshot, direction: 1 | -1): boolean {
@@ -607,6 +647,23 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     if (ids.length === 0) return false;
     const selectedId = snapshot.targetSelection.selectedTargetId ?? ids[0];
     const selectedIndex = ids.indexOf(selectedId);
+    const hasCancel = Boolean(targetCancelButton());
+    if (enemyTargetCursorOnCancel) {
+      enemyTargetCursorOnCancel = false;
+      const nextId = direction > 0 ? ids[0] : ids[ids.length - 1];
+      playBattleCue("command-select");
+      options.runtime.setSelectedTarget(nextId);
+      directorState = targetSelectDirectorState(options.runtime.snapshot());
+      syncView();
+      return true;
+    }
+    const atEnd = direction > 0 ? selectedIndex === ids.length - 1 : selectedIndex <= 0;
+    if (hasCancel && atEnd) {
+      enemyTargetCursorOnCancel = true;
+      playBattleCue("command-select");
+      syncView();
+      return true;
+    }
     const baseIndex = selectedIndex >= 0 ? selectedIndex : direction > 0 ? -1 : 0;
     const nextId = ids[(baseIndex + direction + ids.length) % ids.length];
     if (nextId !== selectedId) playBattleCue("command-select");
@@ -683,6 +740,15 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   function handleConfirm(snapshot: BattleSnapshot): boolean {
     if (snapshot.phase === "targetSelect" && snapshot.targetSelection?.side === "enemy") {
+      // 커서가 「뒤로」 행에 있으면(화살표 순환 또는 포커스 이동으로) 확인키는 그 행을 누른다.
+      const cancel = targetCancelButton();
+      const cancelHasCursor = Boolean(cancel)
+        && (enemyTargetCursorOnCancel || cancel!.dataset.battleCommandCursor === "true" || document.activeElement === cancel);
+      enemyTargetCursorOnCancel = false;
+      if (cancel && cancelHasCursor) {
+        cancel.click();
+        return true;
+      }
       const targetId = snapshot.targetSelection.selectedTargetId ?? snapshot.targetSelection.targetIds[0];
       if (!targetId) return false;
       confirmTargetSelection(targetId);
@@ -691,11 +757,18 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const button = commandHost.querySelector<HTMLButtonElement>("button.battle-command[data-battle-command-cursor='true']:not(:disabled)")
       ?? markMenuCursor(snapshot);
     if (!button) return false;
+    // 비활성 행(MP 부족·PP 없음)에도 커서는 선다 — 사유를 읽히려고 일부러 그렇게 뒀다.
+    // 확인키는 거기서 아무 일도 하지 않고 거절음만 울린다. 메뉴는 열린 채로 둔다.
+    if (button.dataset.battleCommandInert === "true") {
+      playBattleCue("command-cancel");
+      return true;
+    }
     button.click();
     return true;
   }
 
   function handleCancel(snapshot: BattleSnapshot): void {
+    enemyTargetCursorOnCancel = false;
     if (snapshot.phase === "targetSelect") {
       playBattleCue("command-cancel");
       cancelTargetSelectionAndRestore();
@@ -733,7 +806,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const button = event.target instanceof Element
       ? event.target.closest<HTMLButtonElement>("button.battle-command:not(:disabled)")
       : null;
-    if (button) playBattleCue("command-confirm");
+    if (!button) return;
+    // 비활성 행은 눌러도 확정이 아니다 — 거절음으로 갈라 준다.
+    playBattleCue(button.dataset.battleCommandInert === "true" ? "command-cancel" : "command-confirm");
   });
 
   function syncView(): void {
@@ -768,6 +843,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     rebuildCommandPanelIfNeeded(snapshot);
     syncResultHost(snapshot, showingResult);
     applyBattleDirectorState(root, directorState, snapshot);
+    // 명령 국면에 들어오면 커서 버튼이 포커스를 갖는다. acting 중 host 가 display:none 이라
+    // rebuild 시점의 focus() 가 실패하고, 이후 시그니처가 같아 재포커스가 없었다(실측 BODY).
+    if (directorState.step === "command" && !sequenceBusy && !commandHost.contains(document.activeElement)) {
+      const cursor = commandHost.querySelector<HTMLButtonElement>("button.battle-command[data-battle-command-cursor='true']:not(:disabled)");
+      cursor?.focus({ preventScroll: true });
+    }
     if (showingResult || !sequenceBusy) {
       // 애니메이션은 시퀀서의 onEntryAnimation 이 비트 단위로만 올린다. 시퀀스가 돌지
       // 않는 화면(명령 선택·타깃 선택·결과)에는 어떤 액션 애니메이션도 남지 않는다 —
@@ -822,22 +903,50 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       snapshot.strictPendingActorIds.join(","),
       snapshot.strictQueuedActorIds.join(","),
     ].join(":");
+    const enemyTargeting = snapshot.phase === "targetSelect" && snapshot.targetSelection?.side === "enemy";
+    if (!enemyTargeting) enemyTargetCursorOnCancel = false;
     if (signature === commandPanelSignature && commandHost.childElementCount > 0) {
-      markMenuCursor(snapshot);
+      if (enemyTargeting) syncEnemyTargetCursor(snapshot);
+      else markMenuCursor(snapshot);
       return;
     }
 
     commandPanelSignature = signature;
     commandHost.replaceChildren(commandPanel(snapshot, panelOptions));
-    if (snapshot.phase === "targetSelect" && snapshot.targetSelection?.side === "enemy") {
-      syncFieldTargetCursor(snapshot, true);
+    if (enemyTargeting) {
+      syncEnemyTargetCursor(snapshot);
       return;
     }
     const selected = markMenuCursor(snapshot);
     if (selected && document.activeElement !== selected) selected.focus({ preventScroll: true });
   }
 
+  /** 적 대상 국면의 커서: 「뒤로」 행이 커서를 갖고 있으면 그 행, 아니면 필드의 선택 적. */
+  function syncEnemyTargetCursor(snapshot: BattleSnapshot): void {
+    if (!enemyTargetCursorOnCancel) {
+      syncFieldTargetCursor(snapshot, true);
+      return;
+    }
+    for (const node of root.querySelectorAll<HTMLElement>("[data-battle-command-cursor]")) {
+      node.removeAttribute("data-battle-command-cursor");
+      node.removeAttribute("aria-current");
+      if (node instanceof HTMLButtonElement) node.tabIndex = -1;
+    }
+    const cancel = targetCancelButton();
+    if (!cancel) {
+      enemyTargetCursorOnCancel = false;
+      syncFieldTargetCursor(snapshot, true);
+      return;
+    }
+    cancel.dataset.battleCommandCursor = "true";
+    cancel.setAttribute("aria-current", "true");
+    cancel.tabIndex = 0;
+    root.dataset.battleTargetCursor = "cancel";
+    if (document.activeElement !== cancel) cancel.focus({ preventScroll: true });
+  }
+
   function syncFieldTargetCursor(snapshot: BattleSnapshot, focus: boolean): HTMLButtonElement | undefined {
+    delete root.dataset.battleTargetCursor;
     for (const node of root.querySelectorAll<HTMLElement>("[data-battle-command-cursor]")) {
       node.removeAttribute("data-battle-command-cursor");
       node.removeAttribute("aria-current");
@@ -857,6 +966,15 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     return target;
   }
 
+  /** 결과 카드에 아직 공개되지 않은 보상 행이 있으면 전부 공개하고 true. 없으면 false. */
+  function revealAllResultRows(snapshot: BattleSnapshot): boolean {
+    const panel = resultHost.querySelector<HTMLElement>("[data-testid='battle-result-panel']");
+    if (!panel || !panel.querySelector("[data-revealed='false']")) return false;
+    resultRevealStage = battleResultRewardRowCount(snapshot) + 1;
+    syncBattleResultPanel(panel, snapshot, resultRevealStage);
+    return true;
+  }
+
   function syncResultHost(snapshot: BattleSnapshot, showResult: boolean): void {
     if (!showResult) {
       resultHost.replaceChildren();
@@ -871,6 +989,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (!created) return;
       resultHost.replaceChildren(created);
       panel = created;
+      // 키보드 전용 런타임 — 확인 버튼이 포커스를 받아야 :focus-visible 링과 보조기술 안내가 산다.
+      created.querySelector<HTMLButtonElement>("button")?.focus({ preventScroll: true });
       // 뒤늦게 살아있는 데미지 팝업이 결과 화면 위로 새지 않도록 정리하고, 결과 연출을 1회 발화.
       for (const popup of root.querySelectorAll(".battle-damage-popup")) popup.remove();
       // 결과 팡파레도 사건 1개 = 소리 1개. emitBattleJuice 가 큐를 울리므로
@@ -916,9 +1036,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       emitBattleJuice("attack-swing", actorNode ?? undefined);
     } else if (command.kind === "defend") {
       emitBattleJuice("defend", actorNode ?? undefined);
-    } else if (command.kind === "escape") {
-      emitBattleJuice("escape", actorNode ?? undefined);
     }
+    // escape 는 결과가 화면에 도달할 때 시퀀서 훅(onEscapeOutcome)이 울린다.
   }
 
   function beginTargetCommand(command: TargetedActorCommand): void {
@@ -985,7 +1104,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     targetReturnSubmenu = null;
     panelOptions.submenu = null;
     presentation = createPresentationLedger(before);
-    syncView();
+    // 여기서 syncView 를 부르면 busy=false 상태에서 result 가 이미 서 있어 디렉터가 result 로
+    // 찍히고 필드가 잠깐 전체화면이 된다 — 그 프레임에 이펙트 앵커가 재어져 막타 이펙트가
+    // 138px 아래에 고정됐다(2026-09-14 실측). 첫 비트가 곧바로 동기화하므로 생략한다.
     sequencer.runAfterActorCommand(command, before, afterCommand);
   }
 

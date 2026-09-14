@@ -1,4 +1,5 @@
 import { applyCharsetFrameCrop } from "@/assets/charsetFrameCrop";
+import { GENERATED_FACESET_FACE_IDS } from "@/assets/facesetFaceAssets";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
@@ -35,6 +36,12 @@ function stateFor(container: HTMLElement): ViewState {
   }
   return state;
 }
+/** 표시용 얼굴 목록 — 생성 시리즈(hero-XX-face)는 리소스 관리자·피커와 같이 숨긴다.
+ *  검증 집합인 listCharacterFaces 자체는 건드리지 않는다: 저장본의 characterSlots 가
+ *  생성 얼굴을 가리켜도 로드가 깨지지 않아야 한다. */
+function listPickableFaces(project: Project): CharacterFace[] {
+  return listCharacterFaces(project).filter((face) => !GENERATED_FACESET_FACE_IDS.has(face.resourceId));
+}
 function matches(row: { label: string; attributes: GraphicAttributes }, id: string, filter: Filter): boolean {
   const haystack = `${row.label} ${id} ${Object.values(row.attributes).join(" ")}`.toLocaleLowerCase();
   return haystack.includes(filter.query.toLocaleLowerCase()) && GRAPHIC_ATTRIBUTE_AXES.every((axis) => !filter.attributes[axis] || row.attributes[axis] === filter.attributes[axis]);
@@ -63,7 +70,7 @@ export function renderCharacterGraphicsTab(container: HTMLElement, _rerender?: (
     store.update(change, { scope: "project", label });
   };
   const sprites = listCharacterSprites(store.getCurrent());
-  const faces = listCharacterFaces(store.getCurrent());
+  const faces = listPickableFaces(store.getCurrent());
   const selectedSprite = sprites.find((row) => graphicSpriteKey(row.textureKey, row.characterIndex) === state.spriteKey) ?? sprites[0];
   const selectedFace = faces.find((row) => row.resourceId === state.faceId) ?? faces[0];
   if (selectedSprite) state.spriteKey = graphicSpriteKey(selectedSprite.textureKey, selectedSprite.characterIndex);
@@ -83,7 +90,7 @@ export function renderCharacterGraphicsTab(container: HTMLElement, _rerender?: (
         active: state.spriteKey === graphicSpriteKey(row.textureKey, row.characterIndex), testid: `db-cg-sprite-${row.textureKey}-${row.characterIndex}`,
         onSelect: () => { state.spriteKey = graphicSpriteKey(row.textureKey, row.characterIndex); redraw(); },
       }))
-      : listCharacterFaces(project).filter((row) => matches(row, row.resourceId, state.faces)).map((row) => listRow({
+      : listPickableFaces(project).filter((row) => matches(row, row.resourceId, state.faces)).map((row) => listRow({
         name: row.label, thumb: imageThumbnail(row.resourceId, project, row.label, 40), active: state.faceId === row.resourceId,
         testid: `db-cg-face-${row.resourceId}`, onSelect: () => { state.faceId = row.resourceId; redraw(); },
       }));
@@ -100,7 +107,7 @@ export function renderCharacterGraphicsTab(container: HTMLElement, _rerender?: (
   };
   const refreshCandidates = (): void => {
     const project = store.getCurrent();
-    const candidates = listCharacterFaces(project).filter((face) => matches(face, face.resourceId, state.picker));
+    const candidates = listPickableFaces(project).filter((face) => matches(face, face.resourceId, state.picker));
     candidateHost.replaceChildren(...candidates.map((face) => el("button", {
       class: "db-cg-face-choice", attrs: { type: "button", title: `${face.label} · ${face.resourceId}`, "aria-label": `${face.label} 얼굴 지정` },
       dataset: { testid: `db-cg-assign-${face.resourceId}` },

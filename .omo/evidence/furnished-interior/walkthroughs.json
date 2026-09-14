@@ -1,0 +1,222 @@
+{
+  "roomMapId": "spatial:child:32:compact-interior:example:cottage7:floor-1:0",
+  "yardMapId": "spatial-place:32:compact-interior:example:cottage:0:29:easyrpg_chipset_combined_town",
+  "entry": {
+    "x": 5,
+    "y": 9,
+    "portId": "port:52:child:32:compact-interior:example:cottage7:floor-1:05:entry"
+  },
+  "street": {
+    "x": 5,
+    "y": 10,
+    "portId": "port:49:child:32:compact-interior:example:cottage4:yard:06:street"
+  },
+  "enter": {
+    "id": "spatial-transfer:59:connection:32:compact-interior:example:cottage10:front-door:63:port:49:child:32:compact-interior:example:cottage4:yard:04:door",
+    "to": {
+      "x": 5,
+      "y": 9,
+      "mapId": "spatial:child:32:compact-interior:example:cottage7:floor-1:0"
+    },
+    "from": {
+      "x": 5,
+      "y": 8,
+      "mapId": "spatial-place:32:compact-interior:example:cottage:0:29:easyrpg_chipset_combined_town"
+    },
+    "npcEnabled": true,
+    "playerEnabled": true
+  },
+  "exit": {
+    "id": "spatial-transfer:59:connection:32:compact-interior:example:cottage10:front-door:67:port:52:child:32:compact-interior:example:cottage7:floor-1:05:entry",
+    "to": {
+      "x": 5,
+      "y": 8,
+      "mapId": "spatial-place:32:compact-interior:example:cottage:0:29:easyrpg_chipset_combined_town"
+    },
+    "from": {
+      "x": 5,
+      "y": 9,
+      "mapId": "spatial:child:32:compact-interior:example:cottage7:floor-1:0"
+    },
+    "npcEnabled": true,
+    "playerEnabled": true
+  },
+  "walks": [
+    {
+      "id": "kitchen",
+      "start": {
+        "x": 5,
+        "y": 8
+      },
+      "end": {
+        "id": "kitchen",
+        "x": 2,
+        "y": 6
+      },
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        }
+      ]
+    },
+    {
+      "id": "dining",
+      "start": {
+        "id": "kitchen",
+        "x": 2,
+        "y": 6
+      },
+      "end": {
+        "id": "dining",
+        "x": 4,
+        "y": 7
+      },
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        }
+      ]
+    },
+    {
+      "id": "bed",
+      "start": {
+        "id": "dining",
+        "x": 4,
+        "y": 7
+      },
+      "end": {
+        "id": "bed",
+        "x": 8,
+        "y": 6
+      },
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "wardrobe",
+      "start": {
+        "id": "bed",
+        "x": 8,
+        "y": 6
+      },
+      "end": {
+        "id": "wardrobe",
+        "x": 8,
+        "y": 9
+      },
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        }
+      ]
+    },
+    {
+      "id": "exit",
+      "start": {
+        "id": "wardrobe",
+        "x": 8,
+        "y": 9
+      },
+      "end": {
+        "id": "exit",
+        "x": 5,
+        "y": 9
+      },
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        }
+      ]
+    }
+  ],
+  "floorCells": 48,
+  "walkableFloorCells": 30,
+  "allWalkableFloorConnected": true,
+  "clusterErrors": 0,
+  "solidPartitionCells": 5,
+  "doorway": {
+    "x": 6,
+    "y": 7
+  },
+  "closingDoorwaySeparatesRooms": true
+}

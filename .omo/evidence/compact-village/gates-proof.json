@@ -1,0 +1,75 @@
+{
+  "fullRun": {
+    "command": "npm run gates -- --json",
+    "exitCode": 1,
+    "ranAt": "2026-09-12T15:49:50.890Z",
+    "typecheck": {
+      "name": "typecheck:app",
+      "exitCode": 0,
+      "errorCount": 0,
+      "files": {}
+    },
+    "tests": {
+      "name": "vitest",
+      "exitCode": 1,
+      "totalCount": 23768,
+      "failedCount": 508,
+      "passedCount": 23136
+    },
+    "failedFiles": 167,
+    "css": {
+      "name": "css",
+      "exitCode": 0,
+      "budgetExitCode": 0,
+      "graphExitCode": 0,
+      "failures": []
+    },
+    "surface": {
+      "name": "surface",
+      "exitCode": 1,
+      "skippedAxes": [],
+      "failures": [
+        "표면 스냅샷 축 실패 (vitest exit=1)",
+        "Required axis did not execute successfully without skips: test/databaseAllTabsRenderWalk.test.ts (failed)",
+        "Required axis did not execute successfully without skips: test/eventEditorFormSurface.baseline.test.ts (failed)",
+        "Required axis did not execute successfully without skips: test/eventEditorConditionSurface.baseline.test.ts (failed, failed, failed, failed)",
+        "Required axis did not execute successfully without skips: test/eventEditorPortalSurface.baseline.test.ts (failed)",
+        "Required axis did not execute successfully without skips: test/eventEditorInteractionSurface.baseline.test.ts (failed)"
+      ]
+    }
+  },
+  "priorRun": {
+    "failedTests": 516,
+    "passedTests": 23041,
+    "failedFiles": 166
+  },
+  "newFailingFiles": [
+    "test/spatialGeographyDatabaseMount.test.ts",
+    "test/villageHouseSigns.test.ts"
+  ],
+  "resolvedFailingFiles": [
+    "test/devRuntimeArchive.test.ts"
+  ],
+  "followUp": {
+    "villageHouseSigns": "Reproduced two failures. assignShopPrograms replaces array entries, so select legacy houses AFTER role assignment. The one-line ordering correction restores the sign finishing input.",
+    "spatialGeographyDatabaseMount": "Passed in the focused two-file rerun with no source or test change."
+  },
+  "overallGreen": false,
+  "wholeSuiteRerunAfterSignFix": false,
+  "finalChecks": {
+    "focused": {
+      "files": 11,
+      "passed": 161,
+      "failed": 0,
+      "exitCode": 0,
+      "log": "post-gate-tests.log"
+    },
+    "appTypecheck": {
+      "name": "typecheck:app",
+      "exitCode": 0,
+      "errorCount": 0,
+      "files": {}
+    },
+    "newFailureCasesRemainingInFocusedChecks": []
+  }
+}

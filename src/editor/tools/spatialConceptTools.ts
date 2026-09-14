@@ -1,3 +1,4 @@
+import { publicSpatialValue } from "./spatialPlaceContract";
 import { canonicalConceptSource } from "@/editor/spatial/legacyConcepts";
 import { previewSpatialAuthoring } from "@/editor/spatial/preview";
 import { checkedDocument, designNode, spatialId } from "@/project/spatial/domain";
@@ -12,10 +13,10 @@ export function getCanonicalConcept(project: Project, args: Record<string, unkno
   const source = canonicalConceptSource(project, query, typeof args.tilesetId === "string" ? args.tilesetId : undefined);
   const document = checkedDocument(project.spatialAuthoring, project);
   const canonical = source ? { ...designNode(document.library, source), resolved: resolveSpatialDesign(document, project, source) } : null;
-  return { summary: source ? `Canonical facility ${source.id}` : "Canonical facility discovery", data: {
+  return { summary: source ? `Canonical facility ${source.id}` : "Canonical facility discovery", data: publicSpatialValue({
     canonical, sources: spatialToolDesigns(project),
     tools: ["get_spatial_design", "upsert_spatial_design", "preview_spatial_build", "apply_spatial_build"],
-  } };
+  }) };
 }
 export function placeCanonicalConcept(project: Project, args: Record<string, unknown>): ToolExecResult {
   if (args.plan !== undefined) throw new ToolError("Canonical mode requires kind-specific upsert_spatial_design before placement; legacy plan cannot overwrite the library", { code: "spatial-design-required" });

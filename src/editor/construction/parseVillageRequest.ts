@@ -28,11 +28,11 @@ import {
   type VillageSettlementLayout,
 } from "./contracts";
 
-const REQUEST_KEYS = ["target", "houseCount", "housePlans", "countPolicy", "groundTheme", "settlementLayout", "npcCount", "residents", "theme", "forestDensity", "seed", "interior", "presetId", "fullMap"] as const;
+const REQUEST_KEYS = ["target", "houseCount", "housePlans", "houseObjectIds", "composition", "multiStoreyCount", "houseClustering", "countPolicy", "groundTheme", "settlementLayout", "npcCount", "residents", "theme", "forestDensity", "seed", "interior", "presetId", "fullMap"] as const;
 const FOREST_DENSITIES = ["sparse", "normal", "dense", "impassable"] as const;
 const EXISTING_TARGET_KEYS = ["kind", "mapId", "bounds", "fullMap"] as const;
 const NEW_TARGET_KEYS = ["kind", "mapId", "name", "width", "height", "plannedMap"] as const;
-const HOUSE_PLAN_KEYS = ["kitId", "yard", "ownerName", "templateId", "program"] as const;
+const HOUSE_PLAN_KEYS = ["objectId", "kitId", "yard", "ownerName", "templateId", "program"] as const;
 const RESIDENT_KEYS = ["name", "role", "lines"] as const;
 const MIN_HOUSES = 1;
 const MAX_HOUSES = 32;
@@ -48,6 +48,20 @@ export function parseAuthorVillageRequest(value: unknown): AuthorVillageRequest 
     throw new ToolError("authorVillage.houseCount must be between 1 and 32.", { code: "invalid-args" });
   }
   const housePlans = parseHousePlans(request["housePlans"]);
+  if (request.composition !== undefined && request.composition !== "compact") {
+    throw new ToolError("composition must be compact when supplied.", { code: "invalid-args" });
+  }
+  const multiStoreyCount = optionalInteger(request, "multiStoreyCount", "authorVillage");
+  if (multiStoreyCount !== undefined && (request.composition !== "compact" || multiStoreyCount < 0 || multiStoreyCount > houseCount)) {
+    throw new ToolError("multiStoreyCount requires compact composition and must be between 0 and houseCount.", { code: "invalid-args" });
+  }
+  const houseClustering = parseOptionalEnum(request.houseClustering, ["balanced", "tight"] as const, "authorVillage.houseClustering");
+  if (houseClustering && request.composition !== "compact") throw new ToolError("houseClustering requires compact composition.", { code: "invalid-args" });
+  const houseObjectIds = request.houseObjectIds === undefined ? undefined
+    : parseStringArray(requiredArray(request, "houseObjectIds", "authorVillage"), "authorVillage.houseObjectIds");
+  if (houseObjectIds && (houseObjectIds.length === 0 || houseObjectIds.length > 128 || new Set(houseObjectIds).size !== houseObjectIds.length)) {
+    throw new ToolError("houseObjectIds requires 1–128 distinct saved object IDs.", { code: "invalid-args" });
+  }
   if (housePlans !== undefined && housePlans.length !== houseCount) {
     throw new ToolError("authorVillage.housePlans length must equal houseCount.", { code: "invalid-args" });
   }
@@ -70,6 +84,10 @@ export function parseAuthorVillageRequest(value: unknown): AuthorVillageRequest 
     houseCount,
     countPolicy: parseCountPolicy(request["countPolicy"]),
     ...(housePlans === undefined ? {} : { housePlans }),
+    ...(multiStoreyCount === undefined ? {} : { multiStoreyCount }),
+    ...(houseClustering === undefined ? {} : { houseClustering }),
+    ...(houseObjectIds === undefined ? {} : { houseObjectIds }),
+    ...(request.composition === "compact" ? { composition: "compact" as const } : {}),
     ...(groundTheme === undefined ? {} : { groundTheme: groundTheme as VillageGroundTheme }),
     ...(settlementLayout === undefined ? {} : { settlementLayout: settlementLayout as VillageSettlementLayout }),
     ...(npcCount === undefined ? {} : { npcCount }),
@@ -226,8 +244,13 @@ function parseHousePlan(value: unknown, index: number): VillageHousePlan {
   const yard = plan["yard"] === undefined ? [] : parseStringArray(requiredArray(plan, "yard", scope), `${scope}.yard`);
   const ownerName = optionalString(plan, "ownerName", scope);
   const templateId = optionalString(plan, "templateId", scope);
+  const objectId = optionalString(plan, "objectId", scope);
+  if (objectId && (kitId !== undefined || templateId !== undefined)) {
+    throw new ToolError(`${scope}.objectId cannot be combined with kitId/templateId.`, { code: "invalid-args" });
+  }
   const program = parseProgram(plan["program"], scope);
   return {
+    ...(objectId === undefined ? {} : { objectId }),
     ...(kitId === undefined ? {} : { kitId }),
     yard,
     ...(ownerName === undefined ? {} : { ownerName }),

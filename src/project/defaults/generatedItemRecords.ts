@@ -421,7 +421,7 @@ export function generatedItemRecords(): ItemRecord[] {
       occasionField: false,
       occasionBattle: true,
       consumable: true,
-      captureProfile: { multiplier: 1.1 },
+      captureProfile: { multiplier: 1.5, ballClass: "great" },
     }),
     normalizeItemRecord({
       id: "item_gen_capture_sphere",
@@ -436,7 +436,25 @@ export function generatedItemRecords(): ItemRecord[] {
       occasionField: false,
       occasionBattle: true,
       consumable: true,
-      captureProfile: { multiplier: 1.2 },
+      captureProfile: { multiplier: 2, ballClass: "ultra" },
+    }),
+    // 볼 등급 사다리의 최상단 — gen1 공식은 master 를 확정 포획(255/255)으로 처리한다.
+    // rm2k3 공식은 배율만 읽는데 정규화가 100 으로 상한을 두므로 ×100 — 포획 가능한
+    // 종이라면 실질적으로 항상 성공한다.
+    normalizeItemRecord({
+      id: "item_gen_master_orb",
+      name: "마스터 구슬",
+      type: "special",
+      scope: "enemy",
+      price: 5000,
+      description: "어떤 몬스터든 반드시 포획하는 전설의 구슬입니다.",
+      imageResourceId: "cc0-jetrel-gen-capture-sphere",
+      iconResourceId: "cc0-jetrel-gen-capture-sphere",
+      occasion: "battle",
+      occasionField: false,
+      occasionBattle: true,
+      consumable: true,
+      captureProfile: { multiplier: 255, ballClass: "master" },
     }),
     // ── 재료 (사용 효과 없는 보관용) ──
     normalizeItemRecord({

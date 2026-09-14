@@ -42,7 +42,8 @@ describe("spatial space compiler", () => {
     const footprint = interiorRoomRects({ x: 2, y: 4, w: 16, h: 12, shape });
     for (let y = 4; y < 6; y++) for (let x = 2; x < 18; x++) {
       const inside = footprint.some(rect => x >= rect.x && x < rect.x + rect.w && y >= rect.y && y < rect.y + rect.h);
-      expect(isPassableLanding(proposal, map, x, y)).toBe(inside);
+      // North-snapped beds legitimately occupy floor cells; inspect the structural underlay.
+      expect(map.lowerTiles[y * map.width + x] === CONCEPT_FLOOR_TILES.wood).toBe(inside);
     }
   });
 

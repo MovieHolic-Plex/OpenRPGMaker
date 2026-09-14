@@ -1,5 +1,7 @@
+import { COMPOSITION_KINDS } from "./composition";
 import { assert } from "../io/guards";
 import { resolveSpatialGraphic } from "./assets";
+import { FACILITY_FLOOR_MAX, isFacilityChildLevelAllowed } from "./facilityLevels";
 import { validateOccurrencePorts, validateParentSlot } from "./associations";
 import { hasProjectedSpatialPort, isOwnedSpatialBinding } from "./bindings";
 import { hasOverviewRouteRepresentation, validateOverviewRoutes } from "./overview";
@@ -70,7 +72,7 @@ function validateLibrary(library: S.SpatialLibrary, context: LibraryContext): Re
     edges.set(parent.id, slots.map((slot, i) => { design(library, slot.source, `${path}[${i}].source`); return { id: slot.source.id, path: `${path}[${i}].source` }; }));
   };
   const local = (parent: Design, slots: readonly S.SpatialChildSlot<S.SpatialKind>[]) => (endpoint: S.SpatialLocalEndpoint, path: string) => {
-    const slot = slots.find(slot => slot.id === endpoint.childId);
+    const slot = [...slots, ...("composition" in parent ? parent.composition?.members ?? [] : [])].find(slot => slot.id === endpoint.childId);
     assert(endpoint.childId === null || slot !== undefined, `${path}.childId: missing owned child`);
     const target = slot ? design(library, slot.source, path) : parent;
     assert(designPorts(target).some(port => port.id === endpoint.portId), `${path}.portId: missing owned port`);
@@ -83,7 +85,8 @@ function validateLibrary(library: S.SpatialLibrary, context: LibraryContext): Re
     edges.set(space.id, space.objectSlots.map((slot, i) => {
       own(library.objects, slot.objectDesignId, `${path}.objectSlots[${i}].objectDesignId`);
       switch (slot.placement.mode) {
-        case "fixed": bounds([slot.placement], space, `${path}.objectSlots[${i}].placement`); break;
+        case "fixed": bounds([slot.placement], space, `${path}.objectSlots[${i}].placement`);
+          assert(!slot.placement.wallOverlap || space.environment === "interior", `${path}.objectSlots[${i}].placement.wallOverlap: interior only`); break;
         case "auto": break;
         default: assertNever(slot.placement);
       }
@@ -100,7 +103,7 @@ function validateLibrary(library: S.SpatialLibrary, context: LibraryContext): Re
     const path = `${context.path}.places.${place.id}`;
     children(place, place.children, `${path}.children`);
     switch (place.kind) {
-      case "facility": place.children.forEach((slot, i) => assert(slot.level >= 1 && slot.level <= 3, `${path}.children[${i}].level: facility supports floors 1..3`)); break;
+      case "facility": place.children.forEach((slot, i) => assert(isFacilityChildLevelAllowed(library, slot), `${path}.children[${i}].level: facility supports floors 1..${FACILITY_FLOOR_MAX} and an outdoor space at level 0`)); break;
       case "settlement": case "natural": break;
       default: assertNever(place.kind);
     }
@@ -124,6 +127,26 @@ function validateLibrary(library: S.SpatialLibrary, context: LibraryContext): Re
     links.forEach((link, i) => { local(value, slots)(link.from, `${path}.${linkField}[${i}].from`); local(value, slots)(link.to, `${path}.${linkField}[${i}].to`); });
     if ("routes" in value) value.routes.forEach((route, i) => bounds(route.points, value.terrain, `${path}.routes[${i}].points`));
     if ("entryPort" in value) local(value, slots)(value.entryPort, `${path}.entryPort`);
+  }
+  for (const [kind, records] of Object.entries({ space: library.spaces, place: library.places, region: library.regions, world: library.worlds })) {
+    for (const value of Object.values<S.SpaceDesign | S.PlaceDesign | S.RegionDesign | S.WorldDesign>(records)) {
+      const paint = value.composition;
+      if (!paint) continue;
+      const path = `${context.path}.${kind}.${value.id}.composition`;
+      const atlas = own(context.assets.tilesets, paint.tilesetId, `${path}.tilesetId`);
+      bounds(paint.tiles, paint, `${path}.tiles`);
+      unique(paint.tiles.map(cell => `${cell.layer}:${cell.x}:${cell.y}`), `${path}.tiles`);
+      paint.tiles.forEach((cell, i) => assert(cell.tile < atlas.count, `${path}.tiles[${i}]: outside atlas`));
+      const oldSlots = "objectSlots" in value ? value.objectSlots : "children" in value ? value.children : "places" in value ? value.places : value.regions;
+      unique([...oldSlots, ...paint.members].map(slot => slot.id), `${path}.members`);
+      bounds(paint.members, paint, `${path}.members`);
+      const direct = paint.members.map((slot, i) => {
+        assert(COMPOSITION_KINDS[kind as S.SpatialKind].includes(slot.source.kind), `${path}.members[${i}]: incompatible member kind`);
+        design(library, slot.source, `${path}.members[${i}].source`);
+        return { id: slot.source.id, path: `${path}.members[${i}].source` };
+      });
+      edges.set(value.id, [...edges.get(value.id) ?? [], ...direct]);
+    }
   }
   acyclic(edges);
   return edges;
@@ -150,7 +173,7 @@ function validateSnapshot(occurrence: S.SpatialOccurrence, assets: S.SpatialAsse
   }
   for (const id of graphics.keys()) own(snapshot.kitCells, id, `${path}.kitCells.${id}`);
 }
-const allowedChildren: Readonly<Record<S.SpatialKind, readonly S.SpatialKind[]>> = { object: [], space: ["object"], place: ["space", "place"], region: ["place"], world: ["region"] };
+const allowedChildren: Readonly<Record<S.SpatialKind, readonly S.SpatialKind[]>> = { object: [], space: ["object"], place: ["object", "space", "place"], region: ["object", "space", "place"], world: ["object", "space", "place", "region"] };
 export function validateSpatialReferences(document: S.SpatialAuthoringDocument, assets: S.SpatialAssetContext): void {
   const p = "spatialAuthoring";
   const libraryEdges = validateLibrary(document.library, { assets, frozen: false, path: `${p}.library` });
@@ -166,7 +189,12 @@ export function validateSpatialReferences(document: S.SpatialAuthoringDocument, 
     assert((occurrence.parentId === null) === document.rootOccurrenceIds.includes(occurrence.id), `${p}.rootOccurrenceIds: root membership mismatch at ${path}`);
     if (occurrence.parentId !== null) {
       const parent = own(document.occurrences, occurrence.parentId, `${path}.parentId`);
-      assert(allowedChildren[parent.kind].includes(occurrence.kind), `${path}.parentId: illegal containment kind`);
+      const parentDesign = design(parent.snapshot.library, parent.snapshot.root, path);
+      const direct = "composition" in parentDesign && occurrence.parentSlot
+        ? parentDesign.composition?.members.some(slot => slot.id === occurrence.parentSlot!.slotId && slot.source.kind === occurrence.kind && slot.source.id === occurrence.source.id)
+        : false;
+      const allowed = direct ? COMPOSITION_KINDS[parent.kind] : allowedChildren[parent.kind];
+      assert(allowed.includes(occurrence.kind), `${path}.parentId: illegal containment kind`);
     }
     containment.set(occurrence.id, occurrence.parentId === null ? [] : [{ id: occurrence.parentId, path: `${path}.parentId` }]);
     validateSnapshot(occurrence, assets, `${path}.snapshot`);

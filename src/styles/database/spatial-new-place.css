@@ -1,0 +1,16 @@
+/* Creation dialog is mounted outside the database body. Use global theme tokens. */
+[data-testid="new-place-dialog"] .db-enemy-dialog {
+  width: 480px;
+  min-width: 0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+[data-testid="new-place-dialog"] .db-enemy-dialog header { padding: 12px 18px; font-size: 16px; }
+[data-testid="new-place-dialog"] .db-enemy-dialog main { padding: 18px; }
+.spatial-new-place-form { display: grid; gap: 14px; }
+.spatial-new-place-field { display: grid; grid-template-columns: 72px minmax(0, 1fr); align-items: center; gap: 12px; font-size: 13px; }
+.spatial-new-place-field input,
+.spatial-new-place-field select { box-sizing: border-box; min-width: 0; width: 100%; padding: 8px 10px; border: 1px solid var(--border-default); border-radius: 6px; background: var(--bg-raised); color: var(--text-primary); font: inherit; }
+.spatial-new-place-form p { margin: 0; font-size: 13px; line-height: 1.5; }
+.spatial-new-place-form [role="alert"]:empty { display: none; }
+.spatial-new-place-form button { justify-self: end; padding: 8px 20px; }

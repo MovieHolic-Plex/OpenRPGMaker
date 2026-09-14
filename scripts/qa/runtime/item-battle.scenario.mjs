@@ -129,7 +129,9 @@ export const itemBattleScenario = {
         { kind: "waitFor", testid: "battle-target-prompt", state: "present" },
       ],
       expect: {
-        testidPresent: ["battle-target-actor_hero", "battle-actor-actor_hero"],
+        // rm2000 은 정면 스킨이라 아군 필드 노드(battle-actor-*)가 없다 — 아군 배지의
+        // 살림터는 하단 파티 상태 행의 battle-status-* 아이콘이다.
+        testidPresent: ["battle-target-actor_hero"],
         // 아직 공격 상승 배지가 없어야 한다 — 사후 비트의 배지가 이 아이템 때문임을 가른다.
         testidAbsent: ["battle-status-actor_hero-atk-up"],
       },
@@ -145,7 +147,7 @@ export const itemBattleScenario = {
         { kind: "waitFor", testid: "battle-status-actor_hero-atk-up", state: "present", timeoutMs: 30000 },
       ],
       expect: {
-        testidPresent: ["battle-scene", "battle-party", "battle-actor-actor_hero"],
+        testidPresent: ["battle-scene", "battle-party"],
         // 배지의 글리프는 CSS ::before 라 textContent 로는 못 읽는다 — 빈 문자열은 "보이기만
         // 하면 된다" 는 뜻이고, 어떤 상태인지는 testid 의 토큰(atk-up)이 말한다.
         visibleText: { "battle-status-actor_hero-atk-up": "" },

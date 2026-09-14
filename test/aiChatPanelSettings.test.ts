@@ -107,7 +107,7 @@ describe("설정 자동 저장", () => {
     expect(findByTestId(modal, "ai-config-model-preset")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-lite-model-preset")).not.toBeNull();
     expect(modal.textContent).toContain("구독 로그인");
-    expect(findByTestId(modal, "ai-settings-advanced")?.getAttribute("open")).not.toBeNull();
+    expect(modal.textContent).toContain("Ultrabrain · 계획과 최종 판단");
   });
 
   it("API 키 종류로 바꿔도 전송 축은 동반 서비스로 남는다", () => {
@@ -164,11 +164,12 @@ describe("설정 자동 저장", () => {
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.providerId).toBe("openai-codex");
-    // 제공자를 바꾸면 그 제공자의 기본 모델을 채택한다(남의 카탈로그 모델을 남기지 않는다).
-    expect(stored.model).toBe("gpt-5.6-sol");
+    // 연결 제공자를 바꿔도 역할별 선택은 유지한다.
+    expect(stored.model).toBe(DEFAULT_MODEL);
+    expect(stored.roleModels.writer.provider).toBe("google-antigravity");
     const reloaded = loadAiConfig();
     expect(reloaded.providerId).toBe("openai-codex");
-    expect(reloaded.model).toBe("gpt-5.6-sol");
+    expect(reloaded.model).toBe(DEFAULT_MODEL);
 
     // 되돌리기도 된다 — 잠긴 축이 아니라 진짜 선택이다.
     select.value = "google-antigravity";
@@ -250,8 +251,8 @@ describe("설정 자동 저장", () => {
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
 
-    expect(modal.textContent).toContain("감독 모델(계획·검수)");
-    expect(modal.textContent).toContain("실행 모델(툴 작업)");
+    expect(modal.textContent).toContain("Writer 모델");
+    expect(modal.textContent).toContain("Deep 모델");
   });
 
   it("ChatGPT 모델 선택기는 GJC의 최신 Codex 모델을 바로 선택해 저장한다", () => {
@@ -278,7 +279,7 @@ describe("설정 자동 저장", () => {
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const preset = findByTestId(modal, "ai-config-model-preset");
-    const select = findByTestId(modal, "ai-oh-my-pi-provider") as unknown as HTMLSelectElement;
+    const select = findByTestId(modal, "ai-config-writer-provider") as unknown as HTMLSelectElement;
     if (!preset || !select) throw new Error("model preset or provider select missing");
 
     // 기본 제공자(Antigravity): gemini 계열이 보이고 Codex 모델은 없다.
@@ -298,11 +299,10 @@ describe("설정 자동 저장", () => {
     }
   });
 
-  it("두 제공자 카탈로그 밖 모델은 제시되지도, 살아남지도 않는다", () => {
+  it("카탈로그 밖 모델도 명시적 선택을 보존하고 목록에는 추가하지 않는다", () => {
     // 옛 계약("API/게이트웨이 모드에서 Claude·Gemini·Grok 목록을 제공한다")이 지켰던 동작은
     // 사라졌다: 그 모델들에 닿을 게이트웨이 제공자가 레지스트리에 없다. 같은 자리에서 지켜야
-    // 할 새 보증은 이것이다 — 카탈로그 밖 ID 는 목록에 없고, 저장돼 있었다면 로드 시 선택된
-    // 제공자의 기본 모델로 교정된다(그대로 실려 나가면 400/조용한 강등이 된다).
+    // 할 새 보증은 이것이다 — 명시적 ID는 보존하고 전송 시 지원하지 않는 모델을 명시적으로 거부한다.
     storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
       ...defaultAiConfig(),
       model: "claude-opus-4-8",
@@ -311,8 +311,8 @@ describe("설정 자동 저장", () => {
 
     const corrected = loadAiConfig();
     expect(corrected.providerId).toBe("google-antigravity");
-    expect(corrected.model).toBe(DEFAULT_MODEL);
-    expect(corrected.liteModel).toBe(DEFAULT_LITE_MODEL);
+    expect(corrected.model).toBe("claude-opus-4-8");
+    expect(corrected.liteModel).toBe("grok-4.6");
 
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);

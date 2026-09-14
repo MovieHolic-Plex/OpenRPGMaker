@@ -62,7 +62,9 @@ describe("database utility views", () => {
 
   it("switch add button creates the next numbered switch and focuses name input", () => {
     const host = renderUtility(renderSwitchesTab);
-    expect(host.textContent).toContain("아직 스위치가 없습니다");
+    // #777: 기본 카탈로그의 기동석 아이템이 스위치를 선언하므로 빈 프로젝트도 목록이 비지 않는다.
+    // 이 테스트가 보는 것은 "개수 슬롯 추가/포커스" 흐름이다.
+    expect(store.getCurrent().switches.some((entry) => entry.name.trim().length > 0)).toBe(true);
     expect(host.querySelectorAll(".db-empty-row")).toHaveLength(0);
 
     findByTestId(host, "db-add-switch")?.click();
@@ -71,7 +73,7 @@ describe("database utility views", () => {
     input.value = "문 열림";
     input.dispatchEvent(new Event("input"));
 
-    expect(namedSwitches()).toEqual([{ id: "sw_0001", name: "문 열림" }]);
+    expect(namedSwitches()).toContainEqual({ id: "sw_0001", name: "문 열림" });
     expect(document.activeElement).toBe(input);
   });
 
@@ -99,11 +101,10 @@ describe("database utility views", () => {
 
     deleteButton.click();
     expect(deleteButton.textContent).toBe("정말 삭제?");
-    expect(namedSwitches()).toEqual([{ id: "sw_0001", name: "새 스위치" }]);
+    expect(namedSwitches()).toContainEqual({ id: "sw_0001", name: "새 스위치" });
 
     deleteButton.click();
-    expect(namedSwitches()).toEqual([]);
-    expect(host.textContent).toContain("아직 스위치가 없습니다");
+    expect(namedSwitches().some((entry) => entry.id === "sw_0001")).toBe(false);
   });
 
   // fix(db): deleteSwitch/deleteVariable이 session.switches[id]/variables[id] 값을 정리하지
@@ -164,13 +165,13 @@ describe("database utility views", () => {
       input.value = next;
       input.dispatchEvent(new Event("input"));
     }
-    expect(namedSwitches()).toEqual([{ id: "sw_0001", name: "HELLO" }]);
+    expect(namedSwitches()).toContainEqual({ id: "sw_0001", name: "HELLO" });
 
     const undone = undoMapEdit();
     expect(undone).toBe(true);
     // one snapshot for the whole keystroke stream — reverts straight back to the
     // pre-typing name ("새 스위치"), not one letter at a time.
-    expect(namedSwitches()).toEqual([{ id: "sw_0001", name: "새 스위치" }]);
+    expect(namedSwitches()).toContainEqual({ id: "sw_0001", name: "새 스위치" });
     expect(getMapEditHistoryState().canUndo).toBe(false);
   });
 

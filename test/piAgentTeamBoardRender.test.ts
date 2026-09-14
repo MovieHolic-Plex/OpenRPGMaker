@@ -3,7 +3,7 @@
 import { Window } from "happy-dom";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { publishTeamActivity } from "@/ai/piAgent/teamActivity";
-import { createTeamBoardState, reduceTeamBoard, type TeamBoardState } from "@/ai/piAgent/teamBoardState";
+import { createTeamBoardState, markTeamBoardReview, reduceTeamBoard, type TeamBoardState } from "@/ai/piAgent/teamBoardState";
 import type { PiTeamSpec } from "@/ai/piAgent/teamSpec";
 import { TEAM_SPEC_STORAGE_KEY, __resetTeamSpecCache } from "@/ai/piAgent/teamSpecStore";
 import { createTeamBoard } from "@/editor/panels/aiTeamBoard";
@@ -90,6 +90,36 @@ describe("팀 보드 렌더", () => {
     board.update(state);
     row = board.root.querySelector("[data-agent-id='a2']")!;
     expect(row.querySelector(".ai-team-task")?.textContent).toContain("맵 이름과 크기만 조회");
+  });
+});
+
+describe("검토 대기 카드의 적용 전 비교", () => {
+  // 깨질 것(실측 2026-09-14): 검토 카드가 문장·칩·버튼만 그리면, 사용자는 "무엇이 바뀌는지"
+  // 보지 못한 채 적용/버리기를 결정해야 한다 — "부탁했는데 before/after 가 안 보인다" 의 자리다.
+  const reviewState = (): TeamBoardState =>
+    markTeamBoardReview(createTeamBoardState("single", "마을"), ["타일 12"]);
+
+  it("패널이 넘긴 적용 전 카드를 검토 자리에 그대로 세운다", () => {
+    const board = createTeamBoard(createTeamBoardState("single", "마을"));
+    const preview = document.createElement("div");
+    preview.dataset.testid = "preview-fixture";
+
+    board.setReview({ onApply: () => {}, onDiscard: () => {}, preview });
+    board.update(reviewState());
+
+    const block = board.root.querySelector("[data-testid='ai-team-review']")!;
+    expect(block.contains(preview)).toBe(true);
+    // 카드가 같은 사실을 이미 말하므로 칩 줄을 따로 그리지 않는다.
+    expect(block.querySelector(".ai-change-chips")).toBeNull();
+  });
+
+  it("카드가 없으면 지금까지처럼 칩 줄만 그린다", () => {
+    const board = createTeamBoard(reviewState());
+    board.setReview({ onApply: () => {}, onDiscard: () => {} });
+    board.update(reviewState());
+
+    const block = board.root.querySelector("[data-testid='ai-team-review']")!;
+    expect([...block.querySelectorAll(".ai-change-chip")].map((chip) => chip.textContent)).toEqual(["타일 12"]);
   });
 });
 

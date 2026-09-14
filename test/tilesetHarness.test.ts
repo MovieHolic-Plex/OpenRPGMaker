@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankMap, createBlankProject, DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
 import { lintCastleGrammar, stampCastle } from "@/editor/castleKit";
+import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { CHIPSET_TILE_GROUPS } from "@/project/defaults/chipsetMapping";
 import { deserialize, serialize } from "@/project/io";
 import { passageMarkForTile } from "@/project/tilesetPassage";
@@ -172,18 +173,34 @@ describe("EasyRPG Combined Town tileset harness", () => {
     expect(restored.tilesets[DEFAULT_TILESET_ID].suppressedHarnessGroupIds).toEqual([groupId]);
   });
 
-  it("locks the Combined Town layer contract to lower building parts and upper roof overlays", () => {
+  it("locks the Combined Town layer contract: roof body 374–377 lower, transparent caps 384–387 upper", () => {
     const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
 
     expect(harnessLayerForTile(tileset, 85)).toBe("lower");
     expect(harnessLayerForTile(tileset, 378)).toBe("lower");
     expect(harnessLayerForTile(tileset, 116)).toBe("lower");
     expect(harnessLayerForTile(tileset, 404)).toBe("lower");
-    expect(harnessLayerForTile(tileset, 374)).toBe("upper");
+    // 사선 지붕 몸체는 불투명 지붕 본체 — 하위(houseKit 2026-07-17 교정 정본).
+    // 예전엔 roof-overlays 그룹이 전부 상위로 묶었다.
+    for (const tile of [374, 375, 376, 377]) {
+      expect(harnessLayerForTile(tileset, tile), `harness ${tile}`).toBe("lower");
+      expect(tileset.priority[tile], `priority ${tile}`).toBe("lower");
+      expect(tileLayerHome(tileset, tile), `home ${tile}`).toBe("lower");
+    }
+    // 투명 마감 캡만 상위 오버레이.
+    for (const tile of [384, 385, 386, 387]) {
+      expect(harnessLayerForTile(tileset, tile), `harness ${tile}`).toBe("upper");
+      expect(tileset.priority[tile], `priority ${tile}`).toBe("upper");
+      expect(tileLayerHome(tileset, tile), `home ${tile}`).toBe("upper");
+    }
+    const body = tileset.tileGroups?.find((group) => group.id.endsWith("roof-body"));
+    expect(body).toMatchObject({ role: "roof", defaultLayer: "lower" });
+    expect(body?.tileIds).toEqual([374, 375, 376, 377]);
+    const caps = tileset.tileGroups?.find((group) => group.id.endsWith("roof-overlays"));
+    expect(caps?.tileIds).toEqual([384, 385, 386, 387]);
     // 창문(85)/울타리(378)는 그룹 계약이 lower여도 투명 칩이라 런타임 priority는 upper로 승격된다.
     expect(tileset.priority[85]).toBe("upper");
     expect(tileset.priority[378]).toBe("upper");
-    expect(tileset.priority[374]).toBe("upper");
     expect(tileset.passability[374]).toEqual({ up: false, down: false, left: false, right: false });
   });
 

@@ -42,7 +42,7 @@ export {
   toggleCollision,
 } from "@/editor/tileActions";
 export type { TileStrokeCell } from "@/editor/tileActions";
-import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBgmSetting, MapId, MapMinimapSetting, TilesetDef, TroopId } from "@/project/types";
+import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBgmSetting, MapCloudShadowSetting, MapId, MapMinimapSetting, TilesetDef, TroopId } from "@/project/types";
 
 // ── 맵 CRUD ──
 
@@ -156,6 +156,9 @@ export function deleteMap(mapId: MapId): DeleteMapResult {
     toast(plan.block.message, "error");
     return { ok: false, message: plan.block.message };
   }
+  // 확인창이 "삭제 후 Ctrl+Z로 되돌릴 수 있습니다"(mapDeleteConfirm.ts:31)를 인쇄한다 —
+  // 약속을 참으로 만들려면 삭제 직전 상태를 되돌리기 스택에 남겨야 한다.
+  recordProjectSnapshot(`맵 삭제: ${plan.impact.mapName}`);
   store.update((p) => applyMapDeletion(p, mapId), { scope: "project" });
   return { ok: true, impact: plan.impact };
 }
@@ -163,6 +166,15 @@ export function deleteMap(mapId: MapId): DeleteMapResult {
 export function deleteMapsInOrder(mapIds: readonly MapId[]): DeleteMapResult {
   const remaining = mapIds.filter((mapId) => store.getCurrent().maps[mapId]);
   if (remaining.length === 0) return { ok: false, message: "맵을 찾을 수 없습니다." };
+  // 마지막 한 장은 루프 가드가 건너뛴다 — 삭제될 것이 없으면 스냅샷도 남기지 않는다.
+  if (Object.keys(store.getCurrent().maps).length <= 1) {
+    return { ok: false, message: "맵을 삭제할 수 없습니다." };
+  }
+  // 재귀 삭제 문구의 "한 번의 실행 취소로"(mapDeleteConfirm.ts:39) — 묶음당 스냅샷 1건.
+  const [firstTargetId] = remaining;
+  recordProjectSnapshot(remaining.length === 1 && firstTargetId
+    ? `맵 삭제: ${store.getCurrent().maps[firstTargetId]?.name ?? firstTargetId}`
+    : `맵 ${remaining.length}개 삭제`);
   let lastImpact: MapDeletionImpact | null = null;
   store.update((p) => {
     for (const mapId of remaining) {
@@ -379,6 +391,32 @@ export function setMapMinimap(mapId: MapId, patch: Partial<MapMinimapSetting> | 
       delete map.minimap;
     } else {
       map.minimap = next;
+    }
+  }, { scope: "map", mapId });
+}
+
+export function setMapCloudShadows(mapId: MapId, patch: Partial<MapCloudShadowSetting> | null): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (patch === null) {
+      delete map.cloudShadows;
+      return;
+    }
+    const current = map.cloudShadows;
+    const next: MapCloudShadowSetting = {
+      enabled: patch.enabled ?? current?.enabled ?? false,
+      ...(patch.opacity !== undefined ? { opacity: patch.opacity } : current?.opacity !== undefined ? { opacity: current.opacity } : {}),
+      ...(patch.speed !== undefined ? { speed: patch.speed } : current?.speed !== undefined ? { speed: current.speed } : {}),
+      ...(patch.angleDeg !== undefined ? { angleDeg: patch.angleDeg } : current?.angleDeg !== undefined ? { angleDeg: current.angleDeg } : {}),
+      ...(patch.scale !== undefined ? { scale: patch.scale } : current?.scale !== undefined ? { scale: current.scale } : {}),
+    };
+    const hasExtra = next.opacity !== undefined || next.speed !== undefined || next.angleDeg !== undefined || next.scale !== undefined;
+    if (!next.enabled && !hasExtra) {
+      delete map.cloudShadows;
+    } else {
+      map.cloudShadows = next;
     }
   }, { scope: "map", mapId });
 }

@@ -87,3 +87,14 @@ walking routes checked with `canMove`, and executed interpreter transfer results
 The interpreter receipt is not a browser/Phaser scene-load or visual receipt.
 The old deliberately RED output-contract script is archived under
 `.omo/evidence/task-9/backend-v2/historical/`, not active success tooling.
+
+## Direct mixed compositions
+
+When the frozen closure contains optional `composition`, `compileMixedComposition`
+uses one explicit canvas. Tiles form the base edits; direct children stamp in authored
+order and keep their identities as projection bindings. Existing space recipes still
+produce their floor/walls and legacy object placements. Root ownership covers the
+whole result, with preflight validation and protection against manual map changes.
+This canvas currently requires one atlas and level zero. Multilevel children and
+legacy overview routes reject instead of silently losing navigation semantics.
+Unchanged legacy trees remain on the original compilers above.

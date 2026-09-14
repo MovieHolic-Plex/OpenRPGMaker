@@ -1,0 +1,23 @@
+{
+  "beforeHouseholdCurtains": [
+    "house-catalog:room:top",
+    "reviewed-interior:clinic",
+    "reviewed-interior:family",
+    "house-catalog:room:ground",
+    "house-catalog:room:middle",
+    "house-catalog:room:single",
+    "reviewed-interior:scholar",
+    "reviewed-interior:craftsman",
+    "reviewed-interior:farmhouse",
+    "reviewed-interior:herbalist",
+    "reviewed-interior:inn-suite",
+    "reviewed-interior:watchhouse"
+  ],
+  "afterHouseholdCurtains": [
+    "house-catalog:room:top",
+    "reviewed-interior:inn-suite"
+  ],
+  "newFacilityCurtainSpaces": [
+    "special-interior:space:inn-guests"
+  ]
+}

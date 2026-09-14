@@ -34,7 +34,7 @@ import {
 } from "@/benchmark/groundTruth";
 import { TERRAIN_TEMPLATE_ANCHORS } from "@/project/defaults/autotileGroups";
 import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
-import { COMBINED_TOWN_ROOF_OVERLAY_TILES } from "@/project/tilesetHarness/combinedTownGroups";
+import { COMBINED_TOWN_ROOF_BODY_TILES, COMBINED_TOWN_ROOF_OVERLAY_TILES } from "@/project/tilesetHarness/combinedTownGroups";
 
 // 계획이 명시한 문/창문 id(todo 1: "subtract doors {329,359,116,146} and windows {87,28,58,88}").
 const DOOR_TILES = [329, 359, 116, 146] as const;
@@ -101,8 +101,8 @@ describe("benchmark ground truth", () => {
       expect(FLOOR_TILES.has(246)).toBe(false);
     });
 
-    it("ROOF ⊇ COMBINED_TOWN_ROOF_OVERLAY_TILES", () => {
-      for (const id of COMBINED_TOWN_ROOF_OVERLAY_TILES) {
+    it("ROOF ⊇ 지붕 어휘 전체(몸체 374–377 + 캡 384–387)", () => {
+      for (const id of [...COMBINED_TOWN_ROOF_BODY_TILES, ...COMBINED_TOWN_ROOF_OVERLAY_TILES]) {
         expect(ROOF_TILES.has(id)).toBe(true);
       }
     });

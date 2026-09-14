@@ -84,13 +84,30 @@ export interface VillageLayoutPresetRecord {
 }
 
 export type VillageDesignPolicy = "fixed" | "free";
+export interface VillageDecorationRule {
+  spaceId: string;
+  zone: "house" | "commons" | "market" | "shore" | "road";
+  maxCount: number;
+}
 export interface VillageDesign {
   version: 1;
   revision: number;
   policies: Record<"appearance" | "layout" | "nature" | "residents" | "interior", VillageDesignPolicy>;
   houseCount: { mode: "fixed" | "range" | "free"; min: number; max: number };
-  stories: (1 | 2 | 3)[];
+  /** Four-storey exteriors are available only with an authored object composition. */
+  stories: (1 | 2 | 3 | 4)[];
   interior: boolean;
+  /** Saved exterior composition. Optional for legacy procedural house designs. */
+  objectVillage?: {
+    composition: "compact";
+    objectIds: string[];
+    /** Exact count of ALL two-or-more-storey exteriors, landmarks included. */
+    multiStoreyCount: number;
+    clustering: "balanced" | "tight";
+    previewSize: { width: number; height: number };
+    /** Outdoor spaces placed after construction; omitted on historical designs. */
+    decorations?: VillageDecorationRule[];
+  };
   nature: {
     water: "none" | "river" | "lake" | "river-lake";
     waterSide: "north" | "south" | "east" | "west";

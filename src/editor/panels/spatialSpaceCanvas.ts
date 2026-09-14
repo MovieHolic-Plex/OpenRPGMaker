@@ -1,3 +1,4 @@
+import { renderSpaceObjectBrowser } from "@/editor/panels/spatialSpaceObjectBrowser";
 import { renderSpatialCardThumb, roomKindOf } from "@/editor/panels/spatialGallery";
 import { interiorThemeCards } from "@/editor/panels/structureKitDbSources";
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
@@ -89,6 +90,7 @@ export function renderSpatialSpacesCanvas(
   _session: SpatialAuthoringSession,
   card: SpatialGalleryCard | undefined,
   rerender: () => void,
+  options: { objectBrowser?: boolean } = {},
 ): HTMLElement {
   const space = workingSpace(card);
   const target = card ? spaceDraftTarget(card) : undefined;
@@ -98,7 +100,7 @@ export function renderSpatialSpacesCanvas(
     class: "spatial-space-board",
     attrs: {
       tabindex: "0",
-      "aria-label": "공간 배치",
+      "aria-label": "장소 배치",
       style: space
         ? `width:${Math.max(space.width, 8) * SPACE_TILE_PX}px;height:${Math.max(space.height, 6) * SPACE_TILE_PX}px`
         : "",
@@ -156,7 +158,7 @@ export function renderSpatialSpacesCanvas(
       rerender();
       return;
     }
-    if (event.key === "Enter" && spaceChromeState.selectedObjectId && target.occurrenceId) {
+    if (event.key === "Enter" && spaceChromeState.selectedObjectId) {
       event.preventDefault();
       addSpaceObjectAt(target, spaceChromeState.selectedObjectId, spaceChromeState.cursorTile);
       rerender();
@@ -192,6 +194,13 @@ export function renderSpatialSpacesCanvas(
       },
     })),
   });
+  if (options.objectBrowser) board.addEventListener("click", event => {
+    if (!target || !space || !spaceChromeState.selectedObjectId) return;
+    const node = event.target;
+    if (node instanceof Element && node.closest(".spatial-space-slot, .spatial-space-port, .spatial-space-member")) return;
+    addSpaceObjectAt(target, spaceChromeState.selectedObjectId, eventTile(event, board));
+    rerender();
+  });
   board.addEventListener("dragover", (event) => event.preventDefault());
   board.addEventListener("drop", (event) => {
     event.preventDefault();
@@ -221,7 +230,7 @@ export function renderSpatialSpacesCanvas(
         el("p", {
           class: "spatial-space-kind-note",
           text: kind.walkway
-            ? "통로 공간 — 방이 아니라 이동 경로로 쓰입니다."
+            ? "통로 — 방이 아니라 이동 경로로 쓰입니다."
             : card.compatibility === "room-rule"
               ? "호환 방 규칙 — 이 타일셋이 정의한 방 종류입니다."
               : "기본 방 종류 — 실내를 만들 때 이 문법으로 채웁니다.",
@@ -246,10 +255,18 @@ export function renderSpatialSpacesCanvas(
     });
   }
   const kindPanel = !space && card ? roomKindPanel(card) : undefined;
+  if (options.objectBrowser && space) return el("div", {
+    class: "spatial-canvas spatial-spaces-canvas space-composition-canvas",
+    dataset: { testid: "spatial-canvas" }, attrs: { "aria-label": "장소 배치 작업대" },
+    children: [renderSpaceObjectBrowser(space.tilesetId), el("section", { class: "space-composition-board", children: [
+      el("div", { class: "space-composition-hint", text: "오브젝트를 끌어 놓거나 선택 후 빈칸을 클릭하세요. 선택한 항목은 방향키로 옮길 수 있습니다." }),
+      el("div", { class: "spatial-canvas-camera", children: [board] }),
+    ] })],
+  });
   const filters: Array<typeof spaceChromeState.environment> = ["all", "interior", "outdoor"];
   return el("div", {
     class: "spatial-canvas spatial-spaces-canvas",
-    attrs: { tabindex: "0", "aria-label": "공간 캔버스" },
+    attrs: { tabindex: "0", "aria-label": "장소 캔버스" },
     dataset: { testid: "spatial-canvas" },
     children: [
       el("div", {

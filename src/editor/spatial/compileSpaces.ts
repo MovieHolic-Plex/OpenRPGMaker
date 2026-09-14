@@ -1,3 +1,4 @@
+import { HOUSE_SHELL_FACE_TILES } from "@/project/defaults/interiorHouseWallTiles";
 import { tilePassability } from "@/project/collision";
 import { assertNever, findOccurrenceChildId, own, requireOccurrenceAssociations, resolveOccurrencePortId } from "@/project/spatial/domain";
 import type { SpatialId } from "@/project/spatial/types";
@@ -33,7 +34,7 @@ export function compileSpaces(context: SpatialCompileContext): SpatialRasterProp
       if (frozen.raster.tilesetId !== map.tilesetId) throw new SpatialCompileError("atlas", child.id);
       // Nonzero actual coordinates override an auto slot's unplaced 0,0 placeholder.
       const placement = child.x !== 0 || child.y !== 0 ? { mode: "fixed" as const, x: child.x, y: child.y } : slot.placement;
-      return { slot: { ...slot, placement }, child, ...frozen };
+      return { slot: { ...slot, placement }, wallOverlap: slot.placement.mode === "fixed" ? slot.placement.wallOverlap ?? 0 : 0, child, ...frozen };
     }));
   const objects: CompiledObject[] = [];
   const omitted: SpatialId[] = [];
@@ -42,10 +43,23 @@ export function compileSpaces(context: SpatialCompileContext): SpatialRasterProp
     switch (job.slot.placement.mode) {
       case "auto": break;
       case "fixed": {
-        const object = placedObject(job.child, { x: room.x + job.child.x, y: room.y + job.child.y }, job.slot.required);
+        const baseY = room.y + job.child.y;
+        const object = placedObject(job.child, { x: room.x + job.child.x, y: baseY - job.wallOverlap }, job.slot.required);
         try {
-          if (object.placement.cells.some(cell => !floor[cell.y * map.width + cell.x])) throw new SpatialCompileError("clipped", job.child.id);
-          stampFrozenObject({ project, map, area }, object);
+          const upperWallCells = new Set<string>();
+          if (job.wallOverlap) {
+            if (space.environment !== "interior" || job.raster.height <= job.wallOverlap) throw new SpatialCompileError("clipped", job.child.id);
+            for (const cell of object.placement.cells.filter(cell => cell.y < baseY)) {
+              if (cell.layer !== "upper" || !HOUSE_SHELL_FACE_TILES.includes(map.lowerTiles[cell.y * map.width + cell.x]!)
+                || !floor[baseY * map.width + cell.x]
+                || !object.placement.cells.some(base => base.x === cell.x && base.y >= baseY && floor[base.y * map.width + base.x])) throw new SpatialCompileError("blocked", `${job.child.id}: wall support`);
+              upperWallCells.add(`${cell.x},${cell.y}`);
+            }
+            if (!upperWallCells.size) throw new SpatialCompileError("blocked", `${job.child.id}: no wall overlap`);
+          }
+          if (object.placement.cells.some(cell => !floor[cell.y * map.width + cell.x] && !upperWallCells.has(`${cell.x},${cell.y}`))) throw new SpatialCompileError("clipped", job.child.id);
+          const stampArea = { ...area, y: area.y - job.wallOverlap, height: area.height + job.wallOverlap };
+          stampFrozenObject({ project, map, area: stampArea, upperWallCells }, object);
           objects.push(object);
           for (const cell of object.placement.cells) available[cell.y * map.width + cell.x] = false;
         } catch (error) {
@@ -100,7 +114,7 @@ export function compileSpaces(context: SpatialCompileContext): SpatialRasterProp
     const cell = placement.cells[0];
     const local = job.object.cells[0];
     if (!cell || !local) throw new SpatialCompileError("raster", job.child.id);
-    objects.push(placedObject(job.child, { x: cell.x - local.dx, y: cell.y - local.dy }, job.slot.required));
+    objects.push(placedObject(job.child, { x: cell.x - local.dx, y: cell.y - local.dy }, job.slot.required, job.object.snap === "wall-any"));
   }
   const ports = occurrence.snapshot.ports.map(port => ({ portId: resolveOccurrencePortId(occurrence, port.localPortId),
     x: room.x + port.x, y: room.y + port.y }));

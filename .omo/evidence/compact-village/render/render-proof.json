@@ -1,0 +1,60 @@
+{
+  "source": "/home/main/.codex/worktrees/2ece/rpg-zzu/output/evidence/compact-village/reloaded-project.json",
+  "sourceSHA256": "b52d3d9c04813a4ec0f8cf784707d457fb8daa294b45bc68017c2ede2692f5a8",
+  "mapId": "map_compact_market_village_20260913",
+  "renderer": "editor/mapTileDraw",
+  "base": "http://127.0.0.1:19841",
+  "status": "passed",
+  "startedAt": "2026-09-12T15:52:25.230Z",
+  "mapName": "오밀조밀 장터 마을 · 작은 집 26채",
+  "tiles": {
+    "width": 80,
+    "height": 80,
+    "size": 16
+  },
+  "nativePixels": {
+    "width": 1280,
+    "height": 1280
+  },
+  "overviewPixels": {
+    "width": 1280,
+    "height": 1280
+  },
+  "rects": [
+    {
+      "x": 28,
+      "y": 29,
+      "width": 29,
+      "height": 25
+    },
+    {
+      "x": 50,
+      "y": 57,
+      "width": 30,
+      "height": 23
+    }
+  ],
+  "files": [
+    "map-full.png",
+    "map-overview.png",
+    "index.html",
+    "render-proof.json",
+    "detail-01.png",
+    "detail-02.png"
+  ],
+  "sourceUnchanged": true,
+  "completedAt": "2026-09-12T15:52:36.534Z",
+  "browserErrorCounts": {
+    "page": 0,
+    "console": 0,
+    "requests": 0,
+    "responses": 0
+  },
+  "browserErrorCount": 0,
+  "browserErrors": {
+    "page": [],
+    "console": [],
+    "requests": [],
+    "responses": []
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "houses": 30,
+  "geometryUnique": 30,
+  "silhouetteUnique": 30,
+  "connectedRoofs": 30,
+  "reachableDoorApproaches": 37,
+  "excludedTileUses": 0,
+  "crossReviewer": "house30_a",
+  "reviewMode": "read-only render + reloaded raster"
+}

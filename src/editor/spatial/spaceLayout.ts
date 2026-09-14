@@ -25,11 +25,15 @@ export function spaceLayout(project: Project, space: SpaceDesign, identity: { re
       if (!boxes.some(box => containsPoint({ x: box.x, y: box.y, width: box.w, height: box.h }, entry))) {
         throw new SpatialCompileError("entry", `${space.id}@${localEntry.x},${localEntry.y}`);
       }
+      const rooms = space.interiorLayout?.rooms.map(part => ({ id: part.id,
+        x: room.x + part.x, y: room.y + part.y, w: part.width, h: part.height,
+        shape: part.shape ?? "rect", floorTile: part.floor && isConceptFloorMaterial(part.floor) ? CONCEPT_FLOOR_TILES[part.floor] : undefined, theme: space.id })) ?? [room];
       const plan: InteriorRoomPlan = { ...identity, name: space.name, tilesetId: tileset.id,
-        width: space.width + 4, height: space.height + 6, wings: [], rooms: [room], door: entry,
+        width: space.width + 4, height: space.height + 6, wings: [], rooms, door: entry,
+        ...(space.interiorLayout ? { innerDoors: space.interiorLayout.doorways.map(p => ({ x: room.x + p.x, y: room.y + p.y })) } : {}),
         theme: space.id, floorTile: CONCEPT_FLOOR_TILES[space.floor], wallMaterial: space.wall,
         concept: { bundleId: space.id, facilityId: space.id, facilityLabel: space.name,
-          rooms: { [space.id]: { placeId: space.id, placeLabel: space.name, role: space.role, things: [] } } } };
+          rooms: Object.fromEntries(rooms.map(part => [part.id, { placeId: part.id, placeLabel: space.interiorLayout?.rooms.find(r => r.id === part.id)?.name ?? space.name, role: space.role, things: [] }])) } };
       let map = createEmptyRoomMap(plan);
       // No entrance self-transfer, legacy filler, or live vocabulary lookup is authorized.
       for (const layer of ["plan", "floor", "walls", "furniture"] as const) {
@@ -38,7 +42,7 @@ export function spaceLayout(project: Project, space: SpaceDesign, identity: { re
         map = result.map;
       }
       map.roomHarnessPlan = { kitId: "villager-room-v1", plan };
-      const floor = map.lowerTiles.map((_, i) => boxes.some(box => containsPoint({ x: box.x, y: box.y, width: box.w, height: box.h },
+      const floor = map.lowerTiles.map((_, i) => (!space.interiorLayout || isPassableLanding(project, map, i % map.width, Math.floor(i / map.width))) && boxes.some(box => containsPoint({ x: box.x, y: box.y, width: box.w, height: box.h },
         { x: i % map.width, y: Math.floor(i / map.width) })));
       for (const zone of space.zones ?? []) {
         if (!isConceptFloorMaterial(zone.floor)) throw new SpatialCompileError("material", `${space.id}.zones:${zone.floor}`);

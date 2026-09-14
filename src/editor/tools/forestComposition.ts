@@ -124,6 +124,8 @@ export function plantForestComposition(draft: Project, input: {
   readonly seed: number;
   /** 사용자가 지목한 수종 — 지분을 조금 더 갖는다(요청한 나무가 주인공으로 보이게). */
   readonly primary?: "침엽수" | "활엽수";
+  /** Village stages defer floor details and puddles until final decoration. */
+  readonly decorate?: boolean;
 }): ForestCompositionResult {
   const map = draft.maps[input.mapId];
   if (!map) {
@@ -183,8 +185,14 @@ export function plantForestComposition(draft: Project, input: {
     ? closeGapsWithBushes(draft, map, input.area, input.seed, houses)
     : 0;
   const feathered = input.density === "dense" ? featherForestEdge(draft, map, input.area, input.seed, houses) : 0;
-  const undergrowthCells = paintForestFloor(draft, map, input.area, input.seed, houses);
+  const undergrowthCells = input.decorate === false ? 0 : paintForestFloor(draft, map, input.area, input.seed, houses);
   return { placed, requested, materials, undergrowthCells, warnings, liftedTrunks: lifted, closedGaps, feathered };
+}
+
+/** Finish a village forest after its trees and the planned water have been built. */
+export function decorateForestFloor(draft: Project, map: GameMap, area: Rect, seed: number): number {
+  const houses = new Set(protectedHouseCells(map).map(({ x, y }) => String(x) + "," + String(y)));
+  return paintForestFloor(draft, map, area, seed, houses);
 }
 
 /**

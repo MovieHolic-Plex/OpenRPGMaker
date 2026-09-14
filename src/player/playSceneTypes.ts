@@ -209,6 +209,9 @@ export interface PlaySceneContext extends Phaser.Scene {
   weatherDisplayed: WeatherParams;
   weatherTargetSignature: string;
   weatherTransition: WeatherTransition | null;
+  /** 구름 그림자 스프라이트 풀. 매 프레임 cloudShadows.ts 가 계산한 덩어리 수만큼 쓴다. */
+  cloudShadowSprites?: Phaser.GameObjects.Image[];
+  cloudShadowClockMs: number;
   timeFixedAccumulatorMs: number;
   timeMinuteAccumulator: number;
   timeSleepInProgress: boolean;
@@ -218,6 +221,14 @@ export interface PlaySceneContext extends Phaser.Scene {
   timeTintTransition: TimeTintTransition | null;
   mapAnimationLayer?: Phaser.GameObjects.Container;
   activeMapAnimations: Set<Phaser.GameObjects.Container>;
+  /** 맵 배경 스프라이트 스택(아래→위) — 화면 고정, 하층 타일(depth 0) 아래. */
+  mapBackgroundSprites?: Phaser.GameObjects.TileSprite[];
+  /** 지금 붙어 있는 그림 id 들의 서명. 같은 서명이면 다시 붙이지 않는다. */
+  mapBackgroundAppliedSignature?: string;
+  /** 로드를 걸어 둔 서명 — 같은 요청을 두 번 큐에 넣지 않기 위한 표식. */
+  mapBackgroundPendingSignature?: string;
+  /** 로드 경쟁 무효화 토큰 — 맵이나 그림이 바뀌면 증가한다. */
+  mapBackgroundToken?: number;
   /** 체공 그림자 풀. 키는 `PLAYER_SHADOW_KEY` 또는 이벤트 id — 스프라이트 풀과 1:1. */
   characterShadows?: Map<string, import("@/player/characterShadow").ShadowImage>;
   /** 체공 스쿼시의 기준 배율 풀. 그림자 풀과 같은 키·같은 수명이다. */

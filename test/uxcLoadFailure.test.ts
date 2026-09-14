@@ -31,6 +31,8 @@ function mockModeDependencies(): {
         throw new Error("mapTree: mapId(map_ember_village)가 존재하지 않는 맵.");
       }),
       loadFallbackProject,
+      isSharedDemoSession: () => false,
+      loadSharedDemo: vi.fn(async () => null),
     },
     setDevProjectFactory: vi.fn(),
   }));

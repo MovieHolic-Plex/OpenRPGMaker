@@ -39,7 +39,7 @@ export interface SpaceDefBase {
   readonly description: string;
   readonly width: number;
   readonly height: number;
-  readonly shape: "rect" | "l" | "alcove";
+  readonly shape: "rect" | "l" | "alcove" | "l-right" | "bay" | "notch" | "cross";
   readonly ports: readonly SpacePortSpec[];
   readonly slots: readonly SpaceSlotSpec[];
 }

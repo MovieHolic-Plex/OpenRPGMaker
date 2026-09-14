@@ -16,12 +16,21 @@ export type SpatialProvenance = {
   readonly origin: "user" | "builtin" | "legacy" | "ai";
   readonly sourceId?: string;
 };
+/** Direct paint and lower-kind members coexist with the original generated layout. */
+export type SpatialComposition = {
+  readonly tilesetId: string; readonly width: number; readonly height: number;
+  readonly tiles: readonly (SpatialPoint & { readonly layer: "lower" | "upper"; readonly tile: number })[];
+  readonly members: readonly SpatialChildSlot<SpatialKind>[];
+};
+export type SpatialComposable = { readonly composition?: SpatialComposition };
 export type SpatialDesignBase = {
   readonly id: SpatialId; readonly name: string; readonly revision: number;
   readonly tags: readonly string[]; readonly provenance: SpatialProvenance;
 };
 export type SpatialGraphic = { readonly tilesetId: string; readonly kitId: string };
 export type ObjectDesign = SpatialDesignBase & {
+  /** Authored facade floors; does not imply playable interior spaces. */
+  readonly exteriorStories?: 1 | 2 | 3 | 4;
   readonly graphic: SpatialGraphic;
   readonly anchors: readonly SpatialPort[];
   readonly chips: readonly string[];
@@ -29,7 +38,7 @@ export type ObjectDesign = SpatialDesignBase & {
 export type SpatialObjectSlot = {
   readonly id: SpatialId; readonly objectDesignId: SpatialId;
   readonly quantity: number; readonly required: boolean;
-  readonly placement: { readonly mode: "auto" } | ({ readonly mode: "fixed" } & SpatialPoint);
+  readonly placement: { readonly mode: "auto" } | ({ readonly mode: "fixed"; readonly wallOverlap?: 1 | 2 } & SpatialPoint);
   readonly chipOverrides?: readonly string[];
   /** Optional activity zone inside one shared interior shell. */
   readonly zoneId?: SpatialId;
@@ -40,12 +49,17 @@ export type SpatialFloorArea =
 export type SpatialInteriorZone = SpatialRect & {
   readonly id: SpatialId; readonly name: string; readonly floor: string;
 };
-export type SpaceDesign = SpatialDesignBase & {
-  readonly tilesetId: string; readonly shape: "rect" | "l" | "alcove";
+/** Floor-local room boxes; shared edges reserve partition cells, doorways reopen them. */
+export type SpatialInteriorLayout = {
+  readonly rooms: readonly (SpatialRect & { readonly id: SpatialId; readonly name: string; readonly shape?: import("../interiorRoomFootprint").InteriorRoomShape; readonly floor?: string })[];
+  readonly doorways: readonly SpatialPoint[];
+};
+export type SpaceDesign = SpatialDesignBase & SpatialComposable & {
+  readonly tilesetId: string; readonly shape: "rect" | "l" | "alcove" | "l-right" | "bay" | "notch" | "cross";
   readonly width: number; readonly height: number; readonly floor: string; readonly wall: string;
   readonly objectSlots: readonly SpatialObjectSlot[]; readonly ports: readonly SpatialPort[];
 } & (
-  | { readonly environment: "interior"; readonly role: "entrance" | "walkway" | "room"; readonly zones?: readonly SpatialInteriorZone[] }
+  | { readonly environment: "interior"; readonly role: "entrance" | "walkway" | "room"; readonly zones?: readonly SpatialInteriorZone[]; readonly interiorLayout?: SpatialInteriorLayout }
   | { readonly environment: "outdoor"; readonly floorAreas: readonly SpatialFloorArea[] }
 );
 export type SpatialChildSlot<K extends SpatialKind> = SpatialPoint & {
@@ -58,7 +72,7 @@ export type SpatialLocalConnection = {
   readonly bidirectional: boolean;
 };
 export type SpatialRoute = SpatialLocalConnection & { readonly points: readonly SpatialPoint[] };
-export type PlaceDesign = SpatialDesignBase & {
+export type PlaceDesign = SpatialDesignBase & SpatialComposable & {
   readonly kind: "facility" | "settlement" | "natural";
   readonly children: readonly SpatialChildSlot<"space" | "place">[];
   readonly layout: "row" | "double-row" | "manual";
@@ -74,13 +88,13 @@ export type RegionSettlement = {
   readonly presetId: string;
   readonly seed: number;
 };
-export type RegionDesign = SpatialDesignBase & {
-  readonly terrain: SpatialTerrain; readonly places: readonly SpatialChildSlot<"place">[];
+export type RegionDesign = SpatialDesignBase & SpatialComposable & {
+  readonly terrain: SpatialTerrain; readonly places: readonly SpatialChildSlot<"space" | "place">[];
   readonly ports: readonly SpatialPort[]; readonly routes: readonly SpatialRoute[];
   /** 있으면 정주지 지역 — 지형은 combined_town 칩셋이어야 하고 맵 본체를 마을 시공기가 채운다. */
   readonly settlement?: RegionSettlement;
 };
-export type WorldDesign = SpatialDesignBase & {
+export type WorldDesign = SpatialDesignBase & SpatialComposable & {
   readonly terrain: SpatialTerrain; readonly regions: readonly SpatialChildSlot<"region">[];
   readonly ports: readonly SpatialPort[]; readonly connections: readonly SpatialLocalConnection[];
   readonly entryPort: SpatialLocalEndpoint;
@@ -93,6 +107,8 @@ export type SpatialLibrary = {
   readonly worlds: Readonly<Record<string, WorldDesign>>;
 };
 export type SpatialKitSnapshot = SpatialGraphic & {
+  /** Frozen placement vocabulary; absent in older snapshots (legacy floor behavior). */
+  readonly interior?: { readonly id: string; readonly snap: "wall-north" | "wall-any" | "floor" | "free"; readonly role: string };
   readonly width: number; readonly height: number;
   readonly cells: readonly (SpatialPoint & { readonly layer: "lower" | "upper"; readonly tile: number })[];
 };

@@ -1,0 +1,24 @@
+{
+  "baseline": {
+    "failed": 522,
+    "passed": 23136
+  },
+  "current": {
+    "failed": 519,
+    "passed": 23139
+  },
+  "newlyFailed": 1,
+  "resolved": 4,
+  "changedAreaFailures": [],
+  "newFiles": [
+    "test/spatialGeographyRaster.browser.test.ts"
+  ],
+  "newFailures": [
+    {
+      "key": "test/spatialGeographyRaster.browser.test.ts :: spatial geography candidate raster paints lake-country through paintGeographyAtlas and shows typed mountain errors",
+      "duration": 34453.571245,
+      "timeout": true,
+      "excerpt": "page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('html[data-ready=\\'1\\']') to be visible\u001b[22m\n\n    at /home/main/.codex/worktrees/2ece/rpg-zzu/test/spatialGeographyRaster.browser.test.ts:37:18\n    at /home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+    }
+  ]
+}

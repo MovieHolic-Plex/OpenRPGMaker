@@ -170,11 +170,10 @@ export function createTeamPanel(): TeamPanelHandle {
     }
     const turns = el("input", { class: "ai-team-input ai-team-input-narrow", attrs: { type: "number", min: "1", max: "120", value: String(current.maxTurns) }, dataset: { testid: "ai-team-form-turns" } });
     turns.addEventListener("input", () => { draft = { ...(draft ?? current), maxTurns: Number(turns.value) || current.maxTurns }; });
-    const model = el("input", { class: "ai-team-input", attrs: { type: "text", value: current.model ?? "", placeholder: "비우면 세션 모델" } });
-    model.addEventListener("input", () => { const value = model.value.trim(); const next = { ...(draft ?? current) } as PiTeamMember & { model?: string }; if (value) next.model = value; else delete next.model; draft = next; });
     form.append(
       field("이름", name), field("종류", kind), field("소개", summaryInput), field("프롬프트", prompt),
-      field("도구 범위 (비우면 전부)", domains), field("턴 상한", turns), field("모델", model),
+      field("도구 범위 (비우면 전부)", domains), field("턴 상한", turns),
+      el("p", { text: "모델은 AI 설정에서 선택합니다. 팀장은 Ultrabrain, 팀원의 실행·구조 검수는 Deep을 사용합니다." }),
     );
     const actions = el("div", { class: "ai-team-form-actions" });
     const save = el("button", { class: "ai-team-btn is-primary", text: "저장", attrs: { type: "submit" }, dataset: { testid: "ai-team-form-save" } });

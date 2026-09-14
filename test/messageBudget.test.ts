@@ -184,3 +184,24 @@ describe("compactMessagesForRequest", () => {
     expect(out.filter((message) => message.role === "user")).toHaveLength(2);
   });
 });
+
+describe("current image under schema budget pressure", () => {
+  it("keeps the latest capture by dropping older assistant history without mutating the transcript", () => {
+    const messages: ChatMessage[] = [
+      { role: "system", content: "system" },
+      { role: "user", content: "Inspect the new revision" },
+      { role: "assistant", content: "old response ".repeat(100) },
+      { role: "assistant", content: "Capture complete" },
+      userWithImage("Current map", 100),
+    ];
+    const before = JSON.stringify(messages);
+    const out = compactMessagesForRequest(messages, 250);
+    expect(totalMessagesCharLength(out)).toBeLessThanOrEqual(250);
+    expect(out.some(m => Array.isArray(m.content) && m.content.some(p => p.type === "image_url"))).toBe(true);
+    expect(out.some(m => m.content === "Inspect the new revision")).toBe(true);
+    expect(JSON.stringify(messages)).toBe(before);
+    const tiny = compactMessagesForRequest(messages, 80);
+    expect(totalMessagesCharLength(tiny)).toBeLessThanOrEqual(80);
+    expect(tiny.some(m => Array.isArray(m.content) && m.content.some(p => p.type === "image_url"))).toBe(false);
+  });
+});

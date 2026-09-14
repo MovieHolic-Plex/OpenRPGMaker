@@ -4,6 +4,7 @@ import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";
 
 const fakePlayScene = vi.hoisted(() => class FakePlayScene {});
+const fakeEditScene = vi.hoisted(() => class FakeEditScene {});
 
 const fakeProjectStore = vi.hoisted(() => ({
   current: undefined as ReturnType<typeof createBlankProject> | undefined,
@@ -82,6 +83,7 @@ vi.mock("@/app/phaserRuntime", () => ({
 }));
 
 vi.mock("@/player/PlayScene", () => ({ PlayScene: fakePlayScene }));
+vi.mock("@/editor/EditScene", () => ({ EditScene: fakeEditScene }));
 vi.mock("@/project/store", () => ({
   DbConnectionRequiredError: class DbConnectionRequiredError extends Error {},
   store: {
@@ -308,6 +310,69 @@ describe("player Phaser boot contract", { timeout: 60_000 }, () => {
     expect(editor.getGame()).toBe(reenteredGame);
     expect(fakePhaser.games[0]?.destroyCalls).toEqual([true]);
     expect(fakePhaser.games[1]?.destroyCalls).toEqual([]);
+  });
+
+  it("destroys an edit game that finishes booting after teardown already ran", async () => {
+    // Given — 콜드 부트에서 사용자가 play 로 토글하면 teardownEditor 가 destroyGame 을 부르지만,
+    // startEditGame 의 await 구간이라 아직 game 이 null 이다. 옛 구현은 이후 `game = new Game`
+    // 이 그대로 adopt 돼 추적 밖 EditScene 이 window keydown 으로 Ctrl+Z 를 중복 실행했다.
+    const parent = document.createElement("div");
+    const editor = await import("@/app/mode");
+
+    // When
+    const pending = editor.startEditGame(parent);
+    editor.destroyGame();
+    const orphan = await pending;
+
+    // Then
+    expect(orphan.destroyCalls).toEqual([true]);
+    expect(editor.getGame()).toBeNull();
+  });
+
+  it("replaces a still-tracked game instead of orphaning it", async () => {
+    // Given — teardown 없이 startEditGame 이 다시 호출돼도 이전 게임을 스스로 정리한다.
+    const parent = document.createElement("div");
+    const editor = await import("@/app/mode");
+    const previous = await editor.startEditGame(parent);
+
+    // When
+    const next = await editor.startEditGame(parent);
+
+    // Then
+    expect(previous.destroyCalls).toEqual([true]);
+    expect(editor.getGame()).toBe(next);
+  });
+
+  it("does not let a tracked play game adopt the slot after teardown", async () => {
+    // Given — 같은 레이스의 play 쪽 절반.
+    const parent = document.createElement("div");
+    const editor = await import("@/app/mode");
+
+    // When
+    const pending = editor.startPlayGame(parent);
+    editor.destroyGame();
+    const orphan = await pending;
+
+    // Then
+    expect(orphan.destroyCalls).toEqual([true]);
+    expect(editor.getGame()).toBeNull();
+  });
+
+  it("untracked modal games neither claim nor invalidate the tracked slot", async () => {
+    // Given — 테스트 플레이 창(trackGlobalGame: false)은 편집기 게임과 공존해야 한다.
+    const parent = document.createElement("div");
+    const editor = await import("@/app/mode");
+    const tracked = await editor.startPlayGame(parent);
+
+    // When
+    const pendingModal = editor.startPlayGame(parent, undefined, { trackGlobalGame: false });
+    editor.destroyGame();
+    const modalGame = await pendingModal;
+
+    // Then
+    expect(modalGame.destroyCalls).toEqual([]);
+    expect(tracked.destroyCalls).toEqual([true]);
+    expect(editor.getGame()).toBeNull();
   });
 
   it("honors untracked export games without replacing the shim-owned game", async () => {

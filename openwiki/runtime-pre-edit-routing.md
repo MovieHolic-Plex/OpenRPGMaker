@@ -211,3 +211,54 @@ Validation: `showEmoteCommand`, `showEmoteCommandBody`, `playSceneEmotes`, `emot
 `playSceneEmotes.ts` owns transient target-keyed sprites/timers. Interpreter and parallel/common-event scheduler resume immediately after `showEmote`; gift rank and friendship changes use the same sprite path. Head anchoring follows displayHeight × originY, including hop lift. Replacement, target removal, map change and scene teardown cancel timers/tweens together. `runtimeAssets.json` includes the generated sheet for shipping exports; Phaser preload uses `withInlineAsset` for standalone HTML. `__oprnEmotes` is installed only by the existing QA instrumentation boundary.
 
 Validation: `showEmoteCommand`, `showEmoteCommandBody`, `playSceneEmotes`, `emoteSheet` and `commandContracts/showEmote` tests. `npx tsx scripts/qa/emote-runtime.mts` generates a transient minimal engine contract fixture and runs the shipping-player harness; it does not author/persist a demo game. Read `verify-shots/runtime-qa/emote/SUMMARY.md` first.
+
+## 맵 배경(패럴랙스) 렌더 (2026-09-14)
+
+- **`map.background` 는 이제 플레이 화면에 그려진다.** 저작 필드(`imageId`/`scrollX`/`scrollY`)와
+  편집기 「맵 배경」 탭은 예전부터 있었지만 **소비자가 없었다** — 비어 있는 칸은 플레이 카메라의
+  검은 배경(#000)이었다. 새 모듈은 `src/player/playSceneMapBackground.ts` 하나다.
+- **계약 넷.** (1) depth `MAP_BACKGROUND_LAYER_DEPTH = -100_000` — 하층 타일(0) 아래라
+  빈 칸이 뚫린 창이 되고 타일이 깔린 칸은 배경을 가린다(「절벽 뒤로 먼 풍경」이 이 순서다).
+  (2) `scrollFactor 0` 화면 고정 — 카메라를 따라 흐르지 않고 자기 속도로만 움직인다
+  (RM2K3 배경에는 「맵에 맞춰 스크롤」 플래그가 없다). (3) 스크롤 단위는 **60Hz 논리 프레임당 px**
+  (`advanceMapBackgroundScroll`). (4) 그림은 무한 반복 타일이다.
+  화면 고정 객체는 카메라 줌만큼 확대되므로 `mapBackgroundLayout` 이 위치 `halfSize·(1-1/zoom)`,
+  크기 `뷰포트/zoom` 으로 보정한다 — **보정이 없으면 배율 < 1 에서 가장자리에 검은 띠가 드러난다**
+  (배율 > 1 은 객체가 화면보다 커져 가려지므로 증상이 안 보인다).
+- **텍스처는 공용 로더로 뒤늦게 싣는다.** `src/player/playSceneImageTexture.ts` 가 «같은 키를 두 번
+  로드하지 않는다» 를 소유하고, 맵 애니메이션(`playSceneMapAnimations`)과 배경이 같이 쓴다.
+  preload(`loadBundledAssets`)에 배경 그림은 없다 — 프로젝트에 참조된 것만 그때 싣는다.
+- **이벤트 명령 「먼 배경 변경」(m2-069)도 같은 레이어를 쓴다.** 예전에는 세션에 값만 쓰고
+  소비자가 없었다. 이제 `resolveMapBackgroundImageId` 가 **그 맵에 기록된** 오버라이드를 먼저
+  본다 — 명령은 맵의 배경을 바꾸므로 `m2Runtime.ts` 가 명령을 실행할 때 `session.currentMapId`
+  를 함께 적는다(안 적으면 맵을 건너간 뒤에도 이전 맵의 하늘이 따라온다). `mapId` 가 빈 기록
+  (맵을 적기 전에 저장된 세이브)은 모든 맵에 적용한다. 맵을 다시 싣지 않고 명령이 들어오는
+  경로가 있으므로 `updateMapBackground` 가 매 프레임 «해석 결과 ≠ 적용/로드 중 id» 를 보고
+  그 자리에서 다시 건다 — 그 비교가 없으면 명령이 다음 맵 전환까지 아무 일도 안 한다.
+  형제 명령 둘은 **여전히 소비자가 없다** — 「타일셋 변경」(`map.tileset_override`)과
+  「인카운터율 설정」(`map.encounter_rate`)은 같은 모양(`{mapId,x,y,value}`)으로 세션에만 적힌다.
+  같은 방식으로 붙이려면 «어느 맵에 적용되는가» 를 먼저 정하라(배경은 명령 시점의 현재 맵으로 정했다).
+- **아직 안 되는 것(알고 있어야 할 경계).**
+  - 편집기 **캔버스**는 배경을 그리지 않는다. 빈 칸은 `editSceneRender.createEmptyTile` 의
+    **불투명** 체커 사각형이고, 그 체커는 "여기 바닥이 없다" 를 보이게 하는 **의도된 신호**
+    (2026-08-27, 사용자가 유지를 요구)라 배경을 보이게 하려면 그 신호를 약화시켜야 한다 —
+    그래서 캔버스는 건드리지 않았다. 배경을 눈으로 확인할 자리는 「맵 배경」 탭의 미리보기
+    (`map-bg-preview`, `mapProps.renderBackgroundTab`)와 플레이 화면이다.
+  - AI 검수 표면(`show_map_region` 타일 프리뷰)도 못 그린다 → `mapVisualEvidenceUnavailable` 의
+    거부는 **유지**한다(런타임이 그린다는 이유로 풀면 안 된다).
+  - 내보내기는 배경 PNG 를 **이미 싣는다**(실측 2026-09-14: 빈 프로젝트도 배경 프로필 13개를
+    등록해 내보내기 자산 688개에 `assets/easyrpg/backdrop/*.png` 가 들어 있다). 그래서 이 기능에
+    내보내기 자산 작업은 필요 없었다 — `runtimeAssets.json`(플레이어 SDK 목록)은 별개다.
+    회귀: `test/webExportMapBackground.test.ts` 가 «런타임이 만드는 URL = 내보낸 경로» 와
+    스탠드얼론 인라인 표 치환을 잠근다.
+- **검증.** 단위: `test/mapBackgroundRuntime.test.ts`(depth·배치·스크롤 단위·로드 1회·프레임 진행·
+  명령 오버라이드 우선/맵 한정/예전 세이브) + `test/webExportMapBackground.test.ts`(내보내기 경로).
+  출하 표면: `npm run qa:runtime -- --scenario map-background`. 픽스처 생성기
+  `scripts/qa/runtime/map-background-fixture.mjs` 가 시작 맵 위 6행을 비워 하늘 띠를 만든다 —
+  `--no-background`(대조군) · `--zoom 0.5`(배율 보정) · `--override-id <id>`(이벤트 명령 경로).
+  샷 비교는 `scripts/qa/runtime/map-background-diff.mjs`. 2026-09-14 실측:
+  하늘 띠 평균 RGB 4,3,2 → 32,96,200(대조군 → 배경), 타일 띠 차이 0.0000(배경이 타일을 덮지
+  않는다 = 절벽 뒤에만 보인다), 배경 띠 차이 0.9773, 프레임 60개 스크롤 이동 −387px(논리 129px,
+  프레임당 2.0~2.1px — 저작 scrollX 는 2px/프레임이고 Phaser TimeStep 이 61~63 프레임을 돈다),
+  배율 0.5 가장자리 검은 비율 0, 그리고 `map.background` 없이 명령만으로도 하늘이 뜬다
+  (`verify-shots/runtime-qa/map-background-command/`).

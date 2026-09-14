@@ -50,12 +50,23 @@ export function validateMaps(value: unknown): Record<string, unknown> {
     if (map.locations !== undefined) validateMapNamedLocations(`map ${id}.locations`, map.locations, width, height);
     if (map.locationRoleProjection !== undefined) validateLocationRoleProjection(`map ${id}.locationRoleProjection`, map.locationRoleProjection);
     if (map.planningItems !== undefined) validatePlanningItems(`map ${id}.planningItems`, map.planningItems);
+    if (map.background !== undefined) validateMapBackgroundShape(`map ${id}.background`, map.background);
     if (map.defaultLighting !== undefined) validateLightingState(`map ${id}.defaultLighting`, map.defaultLighting);
     for (const [eventIndex, eventValue] of requireArray(`map ${id}.events`, map.events).entries()) {
       validateEventShape(`map ${id}.events[${eventIndex}]`, eventValue);
     }
   }
   return maps;
+}
+
+/** 맵 배경은 타입만 본다 — 범위 클램프는 로드 정규화(`shape.ts`)가 맡는다. */
+function validateMapBackgroundShape(label: string, value: unknown): void {
+  const background = requireRecord(label, value);
+  requireString(`${label}.imageId`, background.imageId);
+  if (background.scrollX !== undefined) requireNumber(`${label}.scrollX`, background.scrollX);
+  if (background.scrollY !== undefined) requireNumber(`${label}.scrollY`, background.scrollY);
+  if (background.loopX !== undefined) requireBoolean(`${label}.loopX`, background.loopX);
+  if (background.loopY !== undefined) requireBoolean(`${label}.loopY`, background.loopY);
 }
 
 function validateEncounterTable(label: string, value: unknown): void {

@@ -13,14 +13,18 @@ import {
   waterShapeFor,
   type ResolvedWorldGenRules,
 } from "@/project/worldGenRules";
-import { forestCompositionApplies, plantForestComposition } from "./forestComposition";
+import { unreservedAreas } from "./village/reservedAreas";
+import { decorateForestFloor, forestCompositionApplies, plantForestComposition } from "./forestComposition";
 import {
   forestPackingFor,
   forestPlacementPlan,
   treeFootprintCells,
   type ForestDensity,
 } from "./forestDensity";
-import type { ToolDefinition } from "./types";
+import { ToolError, type ToolDefinition } from "./types";
+import { environmentalRoadAt } from "./village/constants";
+import { isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness";
+import { cellsInFillShape } from "./v3/constructionTools";
 import type { VillageRequirements } from "./villageRequirements";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3";
 import { resolveSpatialRect } from "@/ai/viewRelativeLocation";
@@ -138,6 +142,7 @@ export function applyTerrainPassFromMasks(
   warnings: string[],
   rules: ResolvedWorldGenRules = resolveWorldGenRules(draft.system.worldGen),
   forestDensity?: ForestDensity,
+  phase: "all" | "trees" | "water" = "all",
 ): { readonly waterOps: number; readonly forestOps: number; readonly notes: string[] } {
   const fill = requireTool("fill_region");
   const props = requireTool("place_props");
@@ -146,18 +151,25 @@ export function applyTerrainPassFromMasks(
   const notes = [...masks.notes];
   const forest = rules.forest;
 
-  for (const rect of masks.waterRects) {
-    // 강: 긴 축이면 ellipse, 호수에 가까운 정사각이면 circle — 저자가 모양을 고정하면 그 값.
-    const shape = waterShapeFor(rect.w, rect.h, rules.water);
-    const painted = runFill(fill, draft, map.id, rect, shape, warnings);
-    waterOps += painted;
-    // 실패(0칸)를 시공 완료로 기록하지 않는다 — 게이트·로그가 이 노트를 근거로 삼는다.
-    notes.push(painted > 0
-      ? `terrainPass water ${shape} ${rect.w}×${rect.h} (${painted}칸)`
-      : `terrainPass water FAILED ${shape} ${rect.w}×${rect.h}`);
+  // The final water pass must not erase roads or trees accepted by earlier stages.
+  // Use the real fill shape so occupied dry corners outside a lake are allowed.
+  if (phase !== "trees") {
+    const roadAt = environmentalRoadAt(map);
+    for (const rect of masks.waterRects) {
+      for (const { x, y } of cellsInFillShape(map, rect, waterShapeFor(rect.w, rect.h, rules.water))) {
+        const index = y * map.width + x;
+        const tiles = [map.lowerTiles[index] ?? -1, map.upperTiles[index] ?? -1,
+          ...(map.lowerTileStacks?.[index] ?? []), ...(map.upperTileStacks?.[index] ?? [])];
+        if (roadAt(x, y) || tiles.some(tile => isTreeCanopyTileId(tile) || isTreeTrunkTileId(tile))) {
+          throw new ToolError("수역 예정지가 기존 길·나무와 겹칩니다. 집·길·나무를 보존하고 수역 위치를 조정하세요.",
+            { code: "village-water-conflict", mapId: map.id, x, y });
+        }
+      }
+    }
   }
 
-  for (const rect of masks.forestRects) {
+  for (const rect of phase === "water" ? [] : unreservedAreas(masks.forestRects, masks.waterRects)) {
+    if (rect.w < 2 || rect.h < 2) continue;
     // 왜 요청 밀도와 저작 규칙을 함께 받는가: 요청문은 이번 숲의 개수·패킹을 정하지만,
     // 생성 규칙은 밴드 깊이와 수종별 간격·자연도의 정본이다. 요청이 없으면 저작 개수도 그대로 쓴다.
     if (forestDensity && forestCompositionApplies(forestDensity)) {
@@ -165,6 +177,7 @@ export function applyTerrainPassFromMasks(
         mapId: map.id,
         area: rect,
         density: forestDensity,
+        decorate: false,
         seed: 7700 + rect.x * 13 + rect.y * 7,
       });
       warnings.push(...composed.warnings);
@@ -237,6 +250,24 @@ export function applyTerrainPassFromMasks(
     }
   }
 
+  for (const rect of phase === "trees" ? [] : masks.waterRects) {
+    // 강: 긴 축이면 ellipse, 호수에 가까운 정사각이면 circle — 저자가 모양을 고정하면 그 값.
+    const shape = waterShapeFor(rect.w, rect.h, rules.water);
+    const painted = runFill(fill, draft, map.id, rect, shape, warnings);
+    waterOps += painted;
+    // 실패(0칸)를 시공 완료로 기록하지 않는다 — 게이트·로그가 이 노트를 근거로 삼는다.
+    notes.push(painted > 0
+      ? `terrainPass water ${shape} ${rect.w}×${rect.h} (${painted}칸)`
+      : `terrainPass water FAILED ${shape} ${rect.w}×${rect.h}`);
+  }
+
+  if (phase !== "trees" && forestDensity && forestCompositionApplies(forestDensity)) {
+    for (const rect of unreservedAreas(masks.forestRects, masks.waterRects)) {
+      if (rect.w < 2 || rect.h < 2) continue;
+      const cells = decorateForestFloor(draft, map, rect, 7700 + rect.x * 13 + rect.y * 7);
+      notes.push("terrainPass forest floor " + cells + "칸");
+    }
+  }
   return { waterOps, forestOps, notes };
 }
 
@@ -248,6 +279,7 @@ export function runTerrainConstraintPass(
   warnings: string[],
   area?: Rect,
   rules: ResolvedWorldGenRules = resolveWorldGenRules(draft.system.worldGen),
+  phase: "all" | "trees" | "water" = "all",
 ): {
   readonly masks: TerrainConstraintMasks;
   readonly waterOps: number;
@@ -255,7 +287,7 @@ export function runTerrainConstraintPass(
   readonly notes: string[];
 } {
   const masks = buildTerrainConstraintMasks(map, requirements, area, rules);
-  const applied = applyTerrainPassFromMasks(draft, map, masks, warnings, rules, requirements.forestDensity);
+  const applied = applyTerrainPassFromMasks(draft, map, masks, warnings, rules, requirements.forestDensity, phase);
   return {
     masks,
     waterOps: applied.waterOps,

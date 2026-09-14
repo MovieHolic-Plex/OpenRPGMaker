@@ -1,0 +1,24 @@
+{
+  "typecheck": {
+    "exit": 0,
+    "errors": 0
+  },
+  "tests": {
+    "exit": 1,
+    "failed": 516,
+    "passed": 23041,
+    "failedFiles": 166,
+    "house30TestsPassed": 5
+  },
+  "css": {
+    "exit": 0,
+    "budget": 0,
+    "graph": 0
+  },
+  "surface": {
+    "exit": 1
+  },
+  "baselineFailingFileAdditions": 45,
+  "sameFailingFileAdditionSetAsPreviousRun": true,
+  "overallGreen": false
+}

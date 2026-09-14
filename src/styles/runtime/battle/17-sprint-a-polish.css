@@ -116,10 +116,18 @@
   box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.12);
 }
 
-.battle-command:disabled {
+/* 비활성 행은 `disabled` 가 아니라 `aria-disabled` 다 — 커서가 서야 사유를 읽는다. 회색 처리는 그대로. */
+.battle-command:disabled,
+.battle-command[aria-disabled="true"] {
   cursor: not-allowed;
   filter: grayscale(0.45) saturate(0.45);
   opacity: 0.48;
+}
+
+/* 사유 줄은 흐린 본문보다 한 톤 더 또렷하게 — 여기 읽으라고 붙인 줄이다. */
+.battle-command[aria-disabled="true"] .battle-command-reason {
+  color: #ffd9a8;
+  opacity: 0.95;
 }
 
 .battle-command:disabled:focus-visible {
@@ -188,6 +196,13 @@
     scroll-behavior: auto;
     transition-delay: 0ms;
     transition-duration: 1ms;
+  }
+  /* 감소 모션은 움직임을 빼는 것이지 정보를 빼는 게 아니다. 팝업 키프레임은 100% 에서 opacity 0 이라
+     1ms 로 접으면 생성 즉시 끝나 수명 내내 보이지 않았다(2026-09-14 실측: 12표본 전부 0). 정적으로 띄운다. */
+  .battle-scene .battle-damage-popup {
+    animation: none;
+    opacity: 1;
+    transform: translate(-50%, -100%);
   }
 }
 

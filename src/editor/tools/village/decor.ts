@@ -1,6 +1,7 @@
 // editor/tools/village/decor.ts
 // 마을 소품 레이어 — 마당 꾸밈, 길 옆 벤치, 우물, 깃발, 바위 노두, 활엽수 군락, place_props 위임.
 
+import { unreservedAreas } from "./reservedAreas";
 import { HOUSE_KITS } from "@/editor/houseKit";
 import { COBBLE_TILE } from "@/project/defaults/chipsetMapping";
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
@@ -283,6 +284,27 @@ export function placeVillageDecor(
     }, mulberry32((seed ^ 0x2545f491) >>> 0));
   }
 
+  if (intent.edgeTrees !== "none") placed += placeStoneRestSpots(map, area, houses, seed);
+
+  return placed;
+}
+
+/** Tree stage: all scatter excludes planned water and the yards finished later. */
+export function placeVillageTrees(
+  draft: Project, map: GameMap, area: Rect, plaza: Plaza, houses: readonly BuiltHouse[],
+  seed: number, intent: VillageIntent, warnings: string[], reserved: readonly Rect[] = [],
+): number {
+  const yards = houses.map(house => yardAreaForHouse(map, [house.bbox], house.doorAt, { depth: 3, pad: 1 }));
+  return unreservedAreas([area], [...reserved, ...yards])
+    .filter(part => part.w >= 4 && part.h >= 4)
+    .reduce((total, part) => total + plantVillageTreeArea(draft, map, part, plaza, houses, seed, intent, warnings, part.w * part.h / (area.w * area.h)), 0);
+}
+
+function plantVillageTreeArea(
+  draft: Project, map: GameMap, area: Rect, plaza: Plaza, houses: readonly BuiltHouse[],
+  seed: number, intent: VillageIntent, warnings: string[], share: number,
+): number {
+  let placed = 0;
   if (intent.edgeTrees !== "none") {
     // edgeTrees="dense" 만 숲 밀도 축을 탄다 — "conifer" 는 숲 요구가 아니라 마을 가장자리 나무라
     // 옛 개수를 그대로 둔다(실측: 밀도를 여기에도 밀었더니 50×50 시공이 1.6s → 31s 가 됐다).
@@ -292,7 +314,7 @@ export function placeVillageDecor(
     const broadleafPlan = density
       ? forestPlacementPlan({ area, footprintCells: treeFootprintCells("활엽수"), density, share: 0.05 })
       : undefined;
-    placed += placeBroadleafGroves(map, area, plaza, houses, seed, broadleafPlan ? Math.max(16, broadleafPlan.count) : 9);
+    placed += placeBroadleafGroves(map, area, plaza, houses, seed, broadleafPlan ? Math.max(Math.round(16 * share), broadleafPlan.count) : Math.round(9 * share));
     const treeArea = {
       x: area.x + 1,
       y: area.y + 1,
@@ -314,7 +336,7 @@ export function placeVillageDecor(
       mapId: map.id,
       area: treeArea,
       material: "침엽수",
-      count: coniferPlan?.count ?? Math.max(18, Math.floor((treeArea.w * treeArea.h) / 118)),
+      count: Math.max(1, coniferPlan?.count ?? Math.max(Math.round(18 * share), Math.floor((treeArea.w * treeArea.h) / 118))),
       // 밀도 경로는 선형 packer 를 탄다: 자연 산포는 스텝마다 전 후보를 다시 재기 때문에 count 에
       // 제곱으로 들어간다(실측 48×48 에 230그루 = 40s, 같은 수를 dense 로 = 63ms).
       minGap: coniferPlan?.minGap ?? 3,
@@ -322,8 +344,6 @@ export function placeVillageDecor(
       ...(density ? { packing: forestPackingFor(density) } : {}),
       seed: seed + 1000,
     }, warnings);
-    // 석상 쉼터 — 포석(129 블록) 패치 위 석상/돌기둥. (바위 441/442는 전역 밴, 2026-07-17.)
-    placed += placeStoneRestSpots(map, treeArea, houses, seed);
   }
 
   return placed;
@@ -613,6 +633,7 @@ function placeBroadleafGroves(
   };
   const freeFor = (x: number, y: number, allowLowerTrunk: boolean): boolean => {
     if (!inMapBounds(map, x, y) || !inMapBounds(map, x + 1, y + 1)) return false;
+    if (!pointInRect({ x, y }, area) || !pointInRect({ x: x + 1, y: y + 1 }, area)) return false;
     for (const cell of [{ x, y }, { x: x + 1, y }, { x, y: y + 1 }, { x: x + 1, y: y + 1 }]) {
       if (blocked.has(coordKey(cell.x, cell.y))) return false;
       const index = cell.y * map.width + cell.x;

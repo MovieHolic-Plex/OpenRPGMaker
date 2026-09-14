@@ -66,12 +66,16 @@ function exhausted(): never {
   })();
 }
 
+// 모델·보조모델 id 가 임의 문자열이면 창이 보수 폴백 128,000 토큰으로 잡히는데, 툴 카탈로그만 98K 토큰이라
+// 이 스모크가 검증하려는 산출물 게이트 대신 원본 매니페스트 자리 부족으로 턴이 죽는다
+// (`original-context-window-exceeded`). 산출물 게이트를 재는 픽스처이므로 실제 카탈로그 모델을 쓴다.
+// 좁은 창(128K 급 모델) 자체의 계약은 test/aiToolCatalogBudget.test.ts 가 따로 감시한다.
 const CONFIG = {
   authMode: "apiKey" as const,
   agentMode: "auto" as const,
   baseUrl: "x",
-  model: "supervisor-model",
-  liteModel: "executor-model",
+  model: "gemini-3.7-flash",
+  liteModel: "gemini-3.7-flash-lite",
   apiKey: "sk",
   maxToolCalls: 8,
   maxTokens: 512,

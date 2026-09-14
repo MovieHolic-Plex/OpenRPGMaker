@@ -64,11 +64,15 @@ const ACTIONS = {
   play: forms("게임을 시험하는 중", "게임을 시험했어요", "게임 시험을 실패했어요"),
   history: forms("편집 내용을 되돌리는 중", "편집 내용을 되돌렸어요", "편집 내용 되돌리기를 실패했어요"),
   focusView: forms("화면을 옮기는 중", "화면을 옮겼어요", "화면을 옮기지 못했어요"),
+  opening: forms("오프닝을 만드는 중", "오프닝을 만들었어요", "오프닝 만들기를 실패했어요"),
+  removeOpening: forms("오프닝을 지우는 중", "오프닝을 지웠어요", "오프닝 지우기를 실패했어요"),
+  openingImage: forms("오프닝 그림을 만드는 중", "오프닝 그림을 만들었어요", "오프닝 그림 만들기를 실패했어요"),
 } as const;
 
 const READ_ONLY_MAP = new Set([
   "get_map_region", "get_project_summary", "show_map_region", "highlight_map_region",
   "find_layout_regions", "check_reachability", "analyze_map_tile_usage",
+  "survey_layout_adoption", "read_region_reference",
 ]);
 const READ_ONLY_TILE = new Set([
   "tile_query", "query_tiles", "get_tile_info", "find_similar_tiles", "find_unclassified_tiles",
@@ -98,10 +102,10 @@ function addFamily(action: ActionForms, names: string): void {
 addFamily(ACTIONS.road, "paint_road lay_path");
 addFamily(ACTIONS.paint, "paint_tiles set_tile_grafts set_tile_metadata set_tile_rules set_group_overlay set_group_junction set_animation_strips");
 addFamily(ACTIONS.fill, "fill_region arrange_rows mirror_region copy_map_region");
-addFamily(ACTIONS.erase, "tile_erase clear_region");
+addFamily(ACTIONS.erase, "tile_erase clear_region clear_map");
 addFamily(ACTIONS.scatter, "scatter_object plant_tree_clusters place_props");
 addFamily(ACTIONS.structure, "stamp_structure build_wall build_roof place_door place_window build_castle register_structure_kit");
-addFamily(ACTIONS.house, "author_house build_house preview_house furnish_interior_space make_gallery_room place_concept");
+addFamily(ACTIONS.house, "author_house build_house preview_house furnish_interior_space make_gallery_room place_concept apply_spatial_build upsert_spatial_design edit_spatial_occurrence");
 addFamily(ACTIONS.village, "author_village build_village plan_village materialize_village_spec revise_village_plan run_village_pipeline start_village_session advance_village_build run_village_session");
 addFamily(ACTIONS.person, "place_npc make_villager author_npc_cast upsert_actor upsert_character_profile add_companion set_npc_schedule configure_companion_rules");
 addFamily(ACTIONS.event, "upsert_event duplicate_event move_event create_transfer_pair place_battle_blocker place_trap place_chest place_storage_chest place_savepoint place_examine_hotspots compile_puzzle make_chase_scene configure_object_behavior script_cutscene script_cutscene_preset upsert_common_event upsert_troop_battle_page author_boss_phases");
@@ -111,7 +115,7 @@ addFamily(ACTIONS.deleteDatabase, "delete_database_record delete_craft_recipe de
 addFamily(ACTIONS.createMap, "create_map duplicate_map generate_map");
 addFamily(ACTIONS.resizeMap, "resize_map");
 addFamily(ACTIONS.deleteMap, "remove_map");
-addFamily(ACTIONS.editMap, "manage_map_tree set_map_properties shift_map set_start_position set_tile_passability set_encounter_table create_farm_plot make_hunting_ground remove_field_spawn configure_roguelike_room upsert_map_connection delete_map_connection link_maps");
+addFamily(ACTIONS.editMap, "manage_map_tree set_map_properties shift_map set_start_position set_tile_passability set_encounter_table create_farm_plot make_hunting_ground remove_field_spawn configure_roguelike_room upsert_map_connection delete_map_connection link_maps adopt_layout_regions create_map_location delete_map_location update_map_location resolve_map_location");
 addFamily(ACTIONS.validate, "lint_world lint_quest run_lint verify_quest evaluate_game_quality evaluate_dungeon_room evaluate_interior_room evaluate_village_layer evaluate_village_look critique_village");
 addFamily(ACTIONS.document, "present_doc upsert_village_document delete_village_document generate_walkthrough");
 addFamily(ACTIONS.plan, "plan_world propose_tile_vocabulary");
@@ -125,6 +129,9 @@ addFamily(ACTIONS.export, "export_game");
 addFamily(ACTIONS.play, "play_walkthrough run_scene_test run_action_combat_test");
 addFamily(ACTIONS.history, "revert_last_edit");
 addFamily(ACTIONS.focusView, "focus_editor_view");
+addFamily(ACTIONS.opening, "set_opening edit_opening");
+addFamily(ACTIONS.openingImage, "generate_opening_image");
+addFamily(ACTIONS.removeOpening, "remove_opening");
 
 function readOnlyAction(toolName: string): ActionForms | undefined {
   if (READ_ONLY_MAP.has(toolName)) return ACTIONS.inspectMap;

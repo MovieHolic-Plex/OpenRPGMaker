@@ -1,3 +1,4 @@
+import { openNewPlaceDialog } from "./spatialNewPlaceDialog";
 import { renderWorldGenTab } from "@/editor/panels/databaseWorldGenView";
 import { renderVillageTab } from "@/editor/panels/databaseVillageView";
 import { renderTilesetSpacesTab } from "@/editor/panels/tilesetSpacesTab";
@@ -42,10 +43,16 @@ import { activateSpatialDocument, workingProject } from "@/editor/panels/spatial
 import { geographyChromeState } from "@/editor/panels/spatialGeographyChromeState";
 import { el } from "@/util/dom";
 
+const KIND_GUIDANCE: Partial<Record<SpatialAuthoringSession["tab"], string>> = {
+  objects: "오브젝트 · 가구, 소품, 건물 외형처럼 다시 쓰는 그림입니다. 건물 안의 방·층은 장소에서 만드세요.",
+  spaces: "장소 · 방, 한 층, 마당처럼 이용할 구역입니다. 바닥·벽·오브젝트·출입구를 정하고 장소에 모을 수 있습니다.",
+  places: "장소 · 방·마당부터 여러 층의 건물까지 만듭니다. 새 장소에서 실내·실외·건물을 선택하세요.",
+};
+
 const TAB_LABEL = {
   tiles: "타일",
   objects: "오브젝트",
-  spaces: "공간",
+  spaces: "장소",
   places: "장소",
   regions: "지역",
   worlds: "세계",
@@ -84,15 +91,18 @@ export function inspectorSourceLabel(card: SpatialGalleryCard): string {
 
 function domainChrome(session: SpatialAuthoringSession, onChange: () => void): SpatialDomainChrome | undefined {
   const selected = visibleSpatialSelection(session);
-  const chrome = session.tab === "tiles" ? spatialTilesChrome()
+  let chrome = session.tab === "tiles" ? spatialTilesChrome()
     : session.tab === "objects" ? spatialObjectsChrome(selected, onChange)
     : session.tab === "spaces" ? spatialSpacesChrome(selected, onChange)
     : session.tab === "places" ? spatialPlacesChrome(visiblePlaceSelection(selected), onChange)
     : session.tab === "regions" ? spatialRegionsChrome(selected, onChange)
     : session.tab === "worlds" ? spatialWorldsChrome(selected, onChange)
     : undefined;
+  if (chrome?.add && (session.tab === "spaces" || session.tab === "places")) {
+    chrome = { ...chrome, add: () => openNewPlaceDialog(onChange) };
+  }
   // Canonical 문서가 없으면 어느 탭이든 프로젝트 수준 활성화 경로와 그 오류를 표면에 올린다.
-  if (chrome && !workingProject().spatialAuthoring) {
+  if (chrome && !selected?.regionReferenceId && !workingProject().spatialAuthoring) {
     return { ...chrome,
       previewError: chrome.previewError ?? geographyChromeState.previewError,
       activate: chrome.activate ?? (geographyChromeState.activating ? undefined : () => activateSpatialDocument(onChange)) };
@@ -103,12 +113,14 @@ function domainChrome(session: SpatialAuthoringSession, onChange: () => void): S
 export function renderSpatialChrome(
   session: SpatialAuthoringSession,
   onChange: () => void,
+  options: { browser?: boolean; onAdd?: () => void } = {},
 ): HTMLElement {
+  if (options.browser) return renderBrowserChrome(session, onChange, options.onAdd);
   const selected = visibleSpatialSelection(session);
   const crumbLabel = selected?.name ?? TAB_LABEL[session.tab];
   const chrome = domainChrome(session, onChange);
   const previewError = chrome?.previewError ?? null;
-  const buildPanel = renderSpatialBuildPanel(session.tab);
+  const buildPanel = selected?.regionReferenceId ? undefined : renderSpatialBuildPanel(session.tab);
   return el("div", {
     class: "spatial-chrome",
     children: [
@@ -148,7 +160,7 @@ export function renderSpatialChrome(
       }),
       el("nav", {
         class: "spatial-breadcrumb",
-        attrs: { "aria-label": "공간 위치" },
+        attrs: { "aria-label": "장소 위치" },
         dataset: { testid: "spatial-breadcrumb" },
         children: [
           // 항상 disabled인 ← 는 자리만 차지한다 — 되돌아갈 부모가 있을 때만 단다.
@@ -169,17 +181,19 @@ export function renderSpatialChrome(
       el("div", {
         class: "spatial-actions",
         children: [
-          actionButton("spatial-activate", "공간 설계 활성화", Boolean(chrome?.activate), chrome?.activate),
-          actionButton("spatial-add", "추가", Boolean(chrome?.add), chrome?.add),
-          actionButton("spatial-duplicate", "복제", Boolean(chrome?.duplicate), chrome?.duplicate),
-          actionButton("spatial-delete", "삭제", Boolean(chrome?.delete), chrome?.delete),
-          actionButton("spatial-preview", "미리보기", Boolean(chrome?.preview), chrome?.preview),
-          ...renderSpatialBuildChrome(session.tab, chrome),
-          actionButton("spatial-apply", "적용", Boolean(chrome?.apply), chrome?.apply),
-          actionButton("spatial-refresh", "새로고침", Boolean(chrome?.refresh), chrome?.refresh),
-          actionButton("spatial-detach", "분리", Boolean(chrome?.detach), chrome?.detach),
-          actionButton("spatial-undo", "되돌리기", Boolean(chrome?.undo), chrome?.undo),
-          actionButton("spatial-redo", "다시 실행", Boolean(chrome?.redo), chrome?.redo),
+          ...(selected?.regionReferenceId ? [] : [
+            actionButton("spatial-activate", "장소 설계 활성화", Boolean(chrome?.activate), chrome?.activate),
+            actionButton("spatial-add", "추가", Boolean(chrome?.add), chrome?.add),
+            actionButton("spatial-duplicate", "복제", Boolean(chrome?.duplicate), chrome?.duplicate),
+            actionButton("spatial-delete", "삭제", Boolean(chrome?.delete), chrome?.delete),
+            actionButton("spatial-preview", "미리보기", Boolean(chrome?.preview), chrome?.preview),
+            ...renderSpatialBuildChrome(session.tab, chrome),
+            actionButton("spatial-apply", "적용", Boolean(chrome?.apply), chrome?.apply),
+            actionButton("spatial-refresh", "새로고침", Boolean(chrome?.refresh), chrome?.refresh),
+            actionButton("spatial-detach", "분리", Boolean(chrome?.detach), chrome?.detach),
+            actionButton("spatial-undo", "되돌리기", Boolean(chrome?.undo), chrome?.undo),
+            actionButton("spatial-redo", "다시 실행", Boolean(chrome?.redo), chrome?.redo),
+          ]),
           el("span", {
             class: "spatial-save-state",
             text: chrome?.saveState ?? "읽기",
@@ -201,6 +215,11 @@ export function renderSpatialChrome(
           }),
         ],
       }),
+      ...(KIND_GUIDANCE[session.tab] ? [el("p", {
+        class: "spatial-kind-guidance",
+        text: KIND_GUIDANCE[session.tab],
+        dataset: { testid: "spatial-kind-guidance" },
+      })] : []),
       ...(buildPanel ? [buildPanel] : []),
     ],
   });
@@ -230,7 +249,7 @@ export function renderSpatialCanvas(
     renderVillageTab(host, rerender);
     return el("div", {
       class: "spatial-canvas",
-      attrs: { tabindex: "0", "aria-label": "공간 캔버스" },
+      attrs: { tabindex: "0", "aria-label": "장소 캔버스" },
       dataset: { testid: "spatial-canvas" },
       children: [host],
     });
@@ -252,7 +271,7 @@ export function renderSpatialCanvas(
   art.classList.add("spatial-canvas-art");
   return el("div", {
     class: "spatial-canvas",
-    attrs: { tabindex: "0", "aria-label": "공간 캔버스" },
+    attrs: { tabindex: "0", "aria-label": "장소 캔버스" },
     dataset: { testid: "spatial-canvas" },
     children: [
       el("div", {
@@ -331,7 +350,36 @@ export function renderSpatialSourceChips(
 export function visibleSpatialSelection(session: SpatialAuthoringSession): SpatialGalleryCard | undefined {
   const requested = session.mode === "instances" ? session.occurrenceId : session.designId;
   if (requested) return spatialCardById(session, requested);
-  return listSpatialGalleryCards(session)[0];
+  return listSpatialGalleryCards(session).find(card => card.kind === session.tab);
 }
 
 export { spatialSession };
+
+function renderBrowserChrome(session: SpatialAuthoringSession, onChange: () => void, onAdd?: () => void): HTMLElement {
+  const chrome = domainChrome(session, onChange);
+  const panel = renderSpatialBuildPanel(session.tab);
+  const more = el("details", { class: "asset-browser-more", attrs: chrome?.deleteOpen ? { open: "" } : {}, children: [
+    el("summary", { text: "배치·관리" }),
+    el("div", { class: "asset-browser-more-body", children: [
+      actionButton("spatial-mode-instances", "맵에 배치된 항목", true, () => { patchSpatialSession({ mode: "instances" }); onChange(); }),
+      ...(chrome?.activate && session.tab !== "spaces" ? [actionButton("spatial-activate", "장소 설계 활성화", true, chrome.activate)] : []),
+      actionButton("spatial-delete", "삭제", Boolean(chrome?.delete), chrome?.delete),
+      ...(chrome?.deleteOpen ? [actionButton("spatial-delete-confirm", "삭제 확인", true, chrome.onDeleteConfirm)] : []),
+      ...renderSpatialBuildChrome(session.tab, chrome),
+      ...(panel ? [panel] : []),
+    ] }),
+  ] });
+  return el("div", { class: "asset-browser-actions", children: [
+    ...(session.breadcrumb.length ? [actionButton("spatial-back", "← 상위 항목", true, () => restoreGeographyParent(onChange))] : []),
+    ...(session.tab === "spaces" && chrome?.activate ? [actionButton("spatial-activate", "장소 배치 시작", true, chrome.activate)] : []),
+    actionButton("spatial-add", `+ 새 ${TAB_LABEL[session.tab]}`, Boolean(onAdd ?? chrome?.add) && (session.tab !== "spaces" || Boolean(workingProject().spatialAuthoring)), onAdd ?? chrome?.add),
+    ...(chrome?.duplicate ? [actionButton("spatial-duplicate", "복제", true, chrome.duplicate)] : []),
+    actionButton("spatial-preview", "변경 미리보기", Boolean(chrome?.preview), chrome?.preview),
+    actionButton("spatial-apply", "변경 적용", Boolean(chrome?.apply), chrome?.apply),
+    actionButton("spatial-undo", "되돌리기", Boolean(chrome?.undo), chrome?.undo),
+    actionButton("spatial-redo", "다시 실행", Boolean(chrome?.redo), chrome?.redo),
+    more,
+    el("span", { class: "asset-browser-status", text: chrome?.saveState === "초안" ? "적용하지 않은 변경이 있습니다" : chrome?.saveState ?? "", dataset: { testid: "spatial-save-state" } }),
+    el("p", { class: "asset-browser-error", text: humanizeSpatialError(chrome?.previewError ?? null) ?? "", attrs: { role: "status", ...(chrome?.previewError ? {} : { hidden: "" }) }, dataset: { testid: "spatial-preview-error" } }),
+  ] });
+}

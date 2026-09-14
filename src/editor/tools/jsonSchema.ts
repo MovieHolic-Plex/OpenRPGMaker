@@ -30,8 +30,15 @@ function schemaHasType(schema: JsonSchema, type: JsonSchemaType): boolean {
 
 const SINGLE_OBJECT_ARRAY_MARK = "__oprnSingleObjectArray";
 
-function shouldWrapSingleObjectAsArray(schema: JsonSchema): boolean {
-  return schema.type === "array" && schema.items?.type === "object" && schema.description?.includes("단일 Command object") === true;
+// 목록을 받는 자리에 한 개짜리 객체를 보내는 것은 모델의 고정 습관이고, 해석은 모호하지 않다 — 그 하나를
+// 원소로 감싼다는 뜻뿐이다. 이 정규화가 Command 스키마 설명문에만 걸려 있어서 `make_villager dialogue:{...}`
+// 같은 호출은 "타입이 array 이어야 합니다" 로 거부됐다(F1).
+//
+// 툴 인자의 **최상위 속성**까지만 일반화한다. 더 안쪽(pages[].commands·conditions)은 툴 자신의 정규화가
+// 감싸면서 "단수 객체를 배열로 감쌌습니다" 경고를 남기는 자리이고, 여기서 먼저 감싸면 그 경고가 사라진다.
+function shouldWrapSingleObjectAsArray(schema: JsonSchema, depth: number): boolean {
+  if (schema.type !== "array" || schema.items?.type !== "object") return false;
+  return depth <= 1 || schema.description?.includes("단일 Command object") === true;
 }
 
 function singleObjectArray(value: unknown): unknown[] {
@@ -121,7 +128,7 @@ function normalizeCoordinateShape(schema: JsonSchema, args: Record<string, unkno
   wrapFlatCoordinates(properties, args);
 }
 
-function coerceForSchema(schema: JsonSchema, value: unknown): unknown {
+function coerceForSchema(schema: JsonSchema, value: unknown, depth = 0): unknown {
   const parsed = parseJsonString(value, schema);
   const schemaTypes = Array.isArray(schema.type) ? schema.type : [schema.type];
   const objectCandidate = coerceBooleanEnabledObject(schema, parsed);
@@ -131,16 +138,16 @@ function coerceForSchema(schema: JsonSchema, value: unknown): unknown {
     const next: Record<string, unknown> = { ...unwrapped };
     normalizeCoordinateShape(schema, next);
     for (const [key, childSchema] of Object.entries(properties)) {
-      if (next[key] !== undefined) next[key] = coerceForSchema(childSchema, next[key]);
+      if (next[key] !== undefined) next[key] = coerceForSchema(childSchema, next[key], depth + 1);
     }
     return next;
   }
   if (schemaTypes.includes("array") && Array.isArray(parsed)) {
     if (!schema.items) return parsed;
-    return parsed.map((entry) => coerceForSchema(schema.items as JsonSchema, entry));
+    return parsed.map((entry) => coerceForSchema(schema.items as JsonSchema, entry, depth + 1));
   }
-  if (shouldWrapSingleObjectAsArray(schema) && isRecord(parsed)) {
-    return singleObjectArray(coerceForSchema(schema.items as JsonSchema, parsed));
+  if (shouldWrapSingleObjectAsArray(schema, depth) && isRecord(parsed)) {
+    return singleObjectArray(coerceForSchema(schema.items as JsonSchema, parsed, depth + 1));
   }
   if (schemaTypes.includes("integer") || schemaTypes.includes("number")) {
     if (typeof parsed === "string" && parsed.trim() !== "") {
@@ -158,19 +165,19 @@ function coerceForSchema(schema: JsonSchema, value: unknown): unknown {
       const next: Record<string, unknown> = { ...unwrapped };
       normalizeCoordinateShape(schema, next);
       for (const [key, childSchema] of Object.entries(properties)) {
-        if (next[key] !== undefined) next[key] = coerceForSchema(childSchema, next[key]);
+        if (next[key] !== undefined) next[key] = coerceForSchema(childSchema, next[key], depth + 1);
       }
       return next;
     }
     case "array": {
       if (!Array.isArray(parsed)) {
-        if (shouldWrapSingleObjectAsArray(schema) && isRecord(parsed)) {
-          return singleObjectArray(coerceForSchema(schema.items as JsonSchema, parsed));
+        if (shouldWrapSingleObjectAsArray(schema, depth) && isRecord(parsed)) {
+          return singleObjectArray(coerceForSchema(schema.items as JsonSchema, parsed, depth + 1));
         }
         return parsed;
       }
       if (!schema.items) return parsed;
-      return parsed.map((entry) => coerceForSchema(schema.items as JsonSchema, entry));
+      return parsed.map((entry) => coerceForSchema(schema.items as JsonSchema, entry, depth + 1));
     }
     case "integer":
     case "number": {

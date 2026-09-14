@@ -19,6 +19,9 @@ export function duplicateSpatialOccurrence(input: unknown, assets: S.SpatialAsse
     const snapshot = requireOccurrenceAssociations(own(document.occurrences, id)).snapshot;
     entries += Object.values(snapshot.library).reduce((count, records) => count + Object.keys(records).length, 0);
     cells += Object.values(snapshot.kitCells).reduce((count, kit) => count + kit.cells.length, 0);
+    for (const records of [snapshot.library.spaces, snapshot.library.places, snapshot.library.regions, snapshot.library.worlds]) {
+      cells += Object.values(records).reduce((count, design) => count + (design.composition?.tiles.length ?? 0), 0);
+    }
   }
   if (ids.length > SPATIAL_EXPANSION_LIMITS.occurrences || entries > SPATIAL_EXPANSION_LIMITS.snapshotEntries || cells > SPATIAL_EXPANSION_LIMITS.frozenCells) {
     throw new SpatialOperationError("limit", `duplicate: occurrences=${ids.length}, snapshotEntries=${entries}, frozenCells=${cells}`);

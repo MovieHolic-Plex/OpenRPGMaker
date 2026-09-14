@@ -1,7 +1,9 @@
+import { openNewPlaceDialog } from "./spatialNewPlaceDialog";
+import { FACILITY_FLOOR_MAX } from "@/project/spatial/facilityLevels";
 import type { SpatialAuthoringSession } from "@/editor/panels/spatialAuthoringSession";
 import { placeChromeState } from "@/editor/panels/spatialPlaceChromeState";
-import { commitWorkingPlace, mutateWorkingPlace, workingProject } from "@/editor/panels/spatialPlaceCommands";
-import { nestChild, placeDraftTarget, withPlaceExterior } from "@/editor/panels/spatialPlaceDraft";
+import { commitWorkingPlace, workingProject } from "@/editor/panels/spatialPlaceCommands";
+import { nestChild, placeDraftTarget } from "@/editor/panels/spatialPlaceDraft";
 import { addPlacedPickerChild } from "@/editor/panels/spatialPlacePlaced";
 import { floorsOf, pickerCandidates } from "@/editor/panels/spatialPlaceQuery";
 import { childSourceLabel } from "@/editor/panels/spatialPlacePreview";
@@ -36,7 +38,7 @@ export function renderPlaceFloorStrip(
       }),
       ...levels.map((level) => el("button", {
         class: `spatial-source-chip${placeChromeState.selectedFloor === level ? " is-active" : ""}`,
-        text: `${level}층`,
+        text: level === 0 ? "지상" : `${level}층`,
         attrs: { type: "button", role: "tab", "aria-pressed": String(placeChromeState.selectedFloor === level) },
         dataset: { testid: `spatial-place-floor-${level}` },
         on: { click: () => { placeChromeState.selectedFloor = level; rerender(); } },
@@ -53,12 +55,20 @@ export function renderPlaceChildPicker(
 ): HTMLElement {
   const library = workingProject().spatialAuthoring?.library;
   const candidates = library ? pickerCandidates(library, place) : [];
+  const levels = target.occurrenceId ? placedPlaceChildren(workingProject(), target.occurrenceId).map(child => child.level) : floorsOf(place);
+  const nextFloor = Math.max(0, ...levels) + 1;
+  const actions = !place.composition ? [
+    el("button", { class: "spatial-place-pick", text: "방 추가", attrs: { type: "button" }, dataset: { testid: "place-add-room" },
+      on: { click: () => openNewPlaceDialog(rerender, { parent: target, level: placeChromeState.selectedFloor ?? (place.kind === "facility" ? 1 : 0) }) } }),
+    el("button", { class: "spatial-place-pick", text: "층 추가", attrs: { type: "button", ...(nextFloor > FACILITY_FLOOR_MAX ? { disabled: "", title: `최대 ${FACILITY_FLOOR_MAX}층까지 만들 수 있습니다` } : {}) }, dataset: { testid: "place-add-floor" },
+      on: { click: () => openNewPlaceDialog(rerender, { parent: target, level: nextFloor, floor: true }) } }),
+  ] : [];
   return el("div", {
     class: "spatial-place-picker",
     dataset: { testid: "spatial-place-picker" },
-    children: candidates.map((slot) => el("button", {
+    children: [...actions, el("details", { children: [el("summary", { text: "기존 장소 가져오기" }), el("div", { class: "spatial-place-picker", children: candidates.map((slot) => el("button", {
       class: "spatial-place-pick",
-      text: childSourceLabel(workingProject(), slot.source.kind, slot.source.id),
+      text: `장소 · ${childSourceLabel(workingProject(), slot.source.kind, slot.source.id)}`,
       attrs: { type: "button" },
       dataset: { testid: `spatial-place-pick-${slot.source.id}` },
       on: {
@@ -77,62 +87,8 @@ export function renderPlaceChildPicker(
           rerender();
         },
       },
-    })),
+    })) })] })],
   });
 }
 
-export function renderPlaceExterior(
-  place: PlaceDesign,
-  target: ReturnType<typeof placeDraftTarget>,
-  rerender: () => void,
-): HTMLElement {
-  const commit = (tilesetId: string, kitId: string): void => {
-    mutateWorkingPlace(target, (current) => withPlaceExterior(
-      current,
-      tilesetId.trim().length === 0 || kitId.trim().length === 0
-        ? undefined
-        : { tilesetId: tilesetId.trim(), kitId: kitId.trim() },
-    ));
-    rerender();
-  };
-  return el("div", {
-    class: "spatial-place-exterior",
-    dataset: { testid: "spatial-place-exterior" },
-    children: [
-      el("label", {
-        class: "spatial-place-field",
-        children: [
-          el("span", { text: "외관 타일셋" }),
-          el("input", {
-            attrs: { type: "text", value: place.exterior?.tilesetId ?? "" },
-            dataset: { testid: "spatial-place-exterior-tileset" },
-            on: {
-              change: (event) => {
-                const input = event.target;
-                if (!(input instanceof HTMLInputElement)) return;
-                commit(input.value, place.exterior?.kitId ?? "");
-              },
-            },
-          }),
-        ],
-      }),
-      el("label", {
-        class: "spatial-place-field",
-        children: [
-          el("span", { text: "외관 키트" }),
-          el("input", {
-            attrs: { type: "text", value: place.exterior?.kitId ?? "" },
-            dataset: { testid: "spatial-place-exterior-kit" },
-            on: {
-              change: (event) => {
-                const input = event.target;
-                if (!(input instanceof HTMLInputElement)) return;
-                commit(place.exterior?.tilesetId ?? "", input.value);
-              },
-            },
-          }),
-        ],
-      }),
-    ],
-  });
-}
+export { renderPlaceExterior } from "@/editor/panels/spatialPlaceExterior";

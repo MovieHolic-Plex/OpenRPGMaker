@@ -34155,7 +34155,18 @@
       "sw_0997": false,
       "sw_0998": false,
       "sw_0999": false,
-      "sw_1000": false
+      "sw_1000": false,
+      "sw_gen2_sun_relay": false,
+      "sw_gen2_moon_relay": false,
+      "sw_gen2_bridge_relay": false,
+      "sw_gen2_seal_relay": false,
+      "sw_catalog_gate_open": false,
+      "sw_catalog_lighthouse_lit": false,
+      "sw_catalog_mine_lift": false,
+      "sw_catalog_fountain_flow": false,
+      "sw_catalog_archive_unlock": false,
+      "sw_catalog_beacon_lit": false,
+      "sw_catalog_aqueduct_route": false
     },
     "inventory": {},
     "variables": {
@@ -35307,7 +35318,8 @@
           "stateResistanceChance": 0
         },
         "captureProfile": {
-          "multiplier": 1
+          "multiplier": 1,
+          "ballClass": "poke"
         }
       },
       {
@@ -39108,6 +39120,75 @@
           "stateResistanceChance": 0
         },
         "farmTool": "wateringCan"
+      },
+      {
+        "id": "item_axe",
+        "name": "도끼",
+        "imageResourceId": "cc0-jetrel-gen-axe-great",
+        "iconResourceId": "cc0-jetrel-gen-axe-great",
+        "scope": "none",
+        "price": 100,
+        "description": "숲의 나무를 베어 목재를 얻는 농기구입니다.",
+        "type": "normalGoods",
+        "occasion": "never",
+        "consumable": false,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "occasionField": false,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        },
+        "farmTool": "axe"
       },
       {
         "id": "item_arrow_bundle",
@@ -49523,7 +49604,8 @@
           "stateResistanceChance": 0
         },
         "captureProfile": {
-          "multiplier": 1.1
+          "multiplier": 1.5,
+          "ballClass": "great"
         }
       },
       {
@@ -49595,7 +49677,81 @@
           "stateResistanceChance": 0
         },
         "captureProfile": {
-          "multiplier": 1.2
+          "multiplier": 2,
+          "ballClass": "ultra"
+        }
+      },
+      {
+        "id": "item_gen_master_orb",
+        "name": "마스터 구슬",
+        "imageResourceId": "cc0-jetrel-gen-capture-sphere",
+        "iconResourceId": "cc0-jetrel-gen-capture-sphere",
+        "scope": "enemy",
+        "price": 5000,
+        "description": "어떤 몬스터든 반드시 포획하는 전설의 구슬입니다.",
+        "type": "special",
+        "occasion": "battle",
+        "consumable": true,
+        "animationId": "anim_gen_capture_seal",
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "occasionField": false,
+        "occasionBattle": true,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        },
+        "captureProfile": {
+          "multiplier": 100,
+          "ballClass": "master"
         }
       },
       {
@@ -77311,6 +77467,50 @@
     {
       "id": "sw_1000",
       "name": ""
+    },
+    {
+      "id": "sw_gen2_sun_relay",
+      "name": "태양 기동석 작동"
+    },
+    {
+      "id": "sw_gen2_moon_relay",
+      "name": "달 기동석 작동"
+    },
+    {
+      "id": "sw_gen2_bridge_relay",
+      "name": "교량 기동석 작동"
+    },
+    {
+      "id": "sw_gen2_seal_relay",
+      "name": "봉인 기동석 작동"
+    },
+    {
+      "id": "sw_catalog_gate_open",
+      "name": "성문 개방"
+    },
+    {
+      "id": "sw_catalog_lighthouse_lit",
+      "name": "등대 점화"
+    },
+    {
+      "id": "sw_catalog_mine_lift",
+      "name": "광산 승강기 작동"
+    },
+    {
+      "id": "sw_catalog_fountain_flow",
+      "name": "분수 작동"
+    },
+    {
+      "id": "sw_catalog_archive_unlock",
+      "name": "서고 봉인 해제"
+    },
+    {
+      "id": "sw_catalog_beacon_lit",
+      "name": "봉화 점화"
+    },
+    {
+      "id": "sw_catalog_aqueduct_route",
+      "name": "수로 전환"
     }
   ],
   "tilesets": {

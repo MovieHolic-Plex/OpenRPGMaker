@@ -1,3 +1,4 @@
+import { isFacilityChildLevelAllowed } from "@/project/spatial/facilityLevels";
 import {
   editAuthoringDraft,
   previewAuthoringDraft,
@@ -8,7 +9,7 @@ import {
 } from "@/editor/panels/spatialAuthoringAccess";
 import { MANUAL_SPATIAL_BUILD_VERSION } from "@/editor/panels/spatialBuildActions";
 import { placeChromeState } from "@/editor/panels/spatialPlaceChromeState";
-import { FACILITY_FLOOR_MAX, type PlaceChildPick, type PlaceDraftTarget } from "@/editor/panels/spatialPlaceDraft";
+import type { PlaceChildPick, PlaceDraftTarget } from "@/editor/panels/spatialPlaceDraft";
 import {
   openPlacedSpatialDestination,
   openSpatialDestination,
@@ -122,7 +123,8 @@ export function deletePlacedChild(parentId: SpatialId, child: PlacedPlaceChild):
 }
 
 export function setPlacedChildLevel(parentId: SpatialId, child: PlacedPlaceChild, level: number, kind: PlaceDesign["kind"]): boolean {
-  if (kind === "facility" && (!Number.isInteger(level) || level < 1 || level > FACILITY_FLOOR_MAX)) {
+  const library = visibleAuthoringProject().spatialAuthoring?.occurrences[child.occurrenceId]?.snapshot.library;
+  if (kind === "facility" && (!library || !isFacilityChildLevelAllowed(library, { source: child.source, level }))) {
     note("floor-limit");
     return false;
   }

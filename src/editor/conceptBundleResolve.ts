@@ -212,6 +212,9 @@ export const CONCEPT_FLOOR_TILES: Readonly<Record<ConceptFloorMaterial, number>>
   stone: 12,
   plank: 102,
   mat: 139,
+  jade: 13,
+  gravel: 42,
+  "dark-stone": 43,
 };
 
 /** 장소의 바닥 타일. 나무(기본)는 undefined — 파이프라인 기본값과 같아 리틴트가 없다. */

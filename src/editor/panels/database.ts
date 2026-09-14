@@ -153,7 +153,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "villages", label: "기존 마을 설계", testid: "db-tab-villages" },
   { id: "spatialTiles", label: "타일", testid: "db-tab-spatial-tiles" },
   { id: "spatialObjects", label: "오브젝트", testid: "db-tab-spatial-objects" },
-  { id: "spatialSpaces", label: "공간", testid: "db-tab-spatial-spaces" },
+  { id: "spatialSpaces", label: "장소 편집", testid: "db-tab-spatial-spaces" },
   { id: "spatialPlaces", label: "장소", testid: "db-tab-spatial-places" },
   { id: "spatialRegions", label: "지역", testid: "db-tab-spatial-regions" },
   { id: "spatialWorlds", label: "세계", testid: "db-tab-spatial-worlds" },
@@ -188,12 +188,13 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
     tabs: ["elements", "states", "animations", "battleScreen", "battleCommands"],
   },
   { label: "생활", slug: "life", tabs: ["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"] },
-  { label: "맵", slug: "world", tabs: ["spatialTiles", "spatialObjects", "spatialSpaces", "spatialPlaces", "spatialRegions", "spatialWorlds"] },
+  { label: "맵", slug: "world", tabs: ["spatialTiles", "spatialObjects", "spatialPlaces", "spatialRegions", "spatialWorlds"] },
   { label: "시스템", slug: "system", tabs: ["commonEvents", "system", "opening", "gameOver", "characterGraphics", "terms", "switches", "variables"] },
 ];
 
 /** Facet editors hang off the tiles destination. Legacy map routes redirect below. */
 const MAP_PARENT_TAB: Partial<Record<DatabaseTab, DatabaseTab>> = {
+  spatialSpaces: "spatialPlaces",
   terrain: "spatialTiles",
   tilesetAutotile: "spatialTiles",
   tilesetUnlabeled: "spatialTiles",
@@ -236,7 +237,7 @@ export function resolveCanonicalDatabaseTab(tab: DatabaseTab): DatabaseTab {
 export function databaseTabPath(tab: DatabaseTab): readonly DatabaseTab[] {
   const canonical = resolveCanonicalDatabaseTab(tab);
   if (tab === "tilesetAutotile" || tab === "tilesetUnlabeled") return ["spatialTiles"];
-  if (canonical !== tab) return [canonical];
+  if (canonical !== tab) return databaseTabPath(canonical);
   const parent = MAP_PARENT_TAB[tab];
   return parent ? [...databaseTabPath(parent), tab] : [tab];
 }
@@ -704,7 +705,7 @@ const LEGACY_TAB_SEARCH: Partial<Record<DatabaseTab, string>> = {
   spatialTiles: "타일셋 통행 지형 tilesets",
   spatialObjects: "구조물 부품 보관함 오브젝트 structureKits",
   spatialSpaces: "공간 종류 기존 방 규칙 tilesetSpaces",
-  spatialPlaces: "개념 꾸러미 시설 scratchConcepts",
+  spatialPlaces: "공간 방 실내 실외 건물 개념 꾸러미 시설 scratchConcepts tilesetSpaces",
   spatialRegions: "생성 규칙 지역 마을 정주지 worldGen villages",
   spatialWorlds: "세계 맵",
 };
@@ -1200,7 +1201,7 @@ function renderMapContextNav(tab: DatabaseTab, container: HTMLElement): HTMLElem
   // Legacy mode routes are facets of the same tileset workspace, not extra rails.
   const context = tab === "tilesetAutotile" || tab === "tilesetUnlabeled" ? "spatialTiles" : tab;
   for (const [child, owner] of Object.entries(MAP_PARENT_TAB)) {
-    if (owner === context && child !== "tilesetAutotile" && child !== "tilesetUnlabeled") {
+    if (owner === context && child !== "spatialSpaces" && child !== "tilesetAutotile" && child !== "tilesetUnlabeled") {
       addLink(child as DatabaseTab);
     }
   }

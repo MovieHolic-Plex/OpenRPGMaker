@@ -1,0 +1,590 @@
+{
+  "scenarioId": "house-spatial-catalog-4f",
+  "projectPath": "output/evidence/house-spatial-catalog/reloaded-project.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "start",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lake_village",
+        "x": 17,
+        "y": 24,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "workshop-4f-yard",
+      "note": "저장된 마당에서 실제 문까지 걷기 시작",
+      "shot": "03-workshop-4f-yard.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial-place:25:house-example:workshop-4f:0:29:easyrpg_chipset_combined_town",
+        "x": 13,
+        "y": 27,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "spatial-place:25:house-example:workshop-4f:0:29:easyrpg_chipset_combined_town",
+          "x": 13,
+          "y": 27
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "spatial-place:25:house-example:workshop-4f:0:29:easyrpg_chipset_combined_town",
+          "x": 13,
+          "y": 27
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "workshop-4f-enter",
+      "note": "현관 앞을 밟으면 1층으로 이동",
+      "shot": "04-workshop-4f-enter.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial:child:25:house-example:workshop-4f7:floor-1:0",
+        "x": 8,
+        "y": 13,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "dir",
+          "dir": "up"
+        },
+        {
+          "kind": "waitForPosition",
+          "x": 8,
+          "y": 13,
+          "mapId": "spatial:child:25:house-example:workshop-4f7:floor-1:0"
+        },
+        {
+          "kind": "dir",
+          "dir": null
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "workshop-4f-up-2",
+      "note": "1층에서 계단을 밟아 2층으로 이동",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial:child:25:house-example:workshop-4f7:floor-2:0",
+        "x": 8,
+        "y": 13,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "x": 8,
+          "y": 13,
+          "mapId": "spatial:child:25:house-example:workshop-4f7:floor-2:0"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "id": "workshop-4f-up-3",
+      "note": "2층에서 계단을 밟아 3층으로 이동",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial:child:25:house-example:workshop-4f7:floor-3:0",
+        "x": 8,
+        "y": 13,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "x": 8,
+          "y": 13,
+          "mapId": "spatial:child:25:house-example:workshop-4f7:floor-3:0"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "id": "workshop-4f-up-4",
+      "note": "3층에서 계단을 밟아 4층으로 이동",
+      "shot": "07-workshop-4f-up-4.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial:child:25:house-example:workshop-4f7:floor-4:0",
+        "x": 8,
+        "y": 13,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "x": 8,
+          "y": 13,
+          "mapId": "spatial:child:25:house-example:workshop-4f7:floor-4:0"
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "id": "workshop-4f-down-3",
+      "note": "3층으로 내려오기",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial:child:25:house-example:workshop-4f7:floor-3:0",
+        "x": 11,
+        "y": 6,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "dir",
+          "dir": "up"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "spatial:child:25:house-example:workshop-4f7:floor-4:0",
+          "x": 8,
+          "y": 12
+        },
+        {
+          "kind": "dir",
+          "dir": null
+        },
+        {
+          "kind": "dir",
+          "dir": "down"
+        },
+        {
+          "kind": "waitForPosition",
+          "x": 11,
+          "y": 6,
+          "mapId": "spatial:child:25:house-example:workshop-4f7:floor-3:0"
+        },
+        {
+          "kind": "dir",
+          "dir": null
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "id": "workshop-4f-down-2",
+      "note": "2층으로 내려오기",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial:child:25:house-example:workshop-4f7:floor-2:0",
+        "x": 11,
+        "y": 6,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "x": 11,
+          "y": 6,
+          "mapId": "spatial:child:25:house-example:workshop-4f7:floor-2:0"
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "id": "workshop-4f-down-1",
+      "note": "1층으로 내려오기",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial:child:25:house-example:workshop-4f7:floor-1:0",
+        "x": 11,
+        "y": 6,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "x": 11,
+          "y": 6,
+          "mapId": "spatial:child:25:house-example:workshop-4f7:floor-1:0"
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "id": "workshop-4f-down-0",
+      "note": "현관을 통해 마당으로 복귀",
+      "shot": "11-workshop-4f-down-0.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "spatial-place:25:house-example:workshop-4f:0:29:easyrpg_chipset_combined_town",
+        "x": 13,
+        "y": 25,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "x": 13,
+          "y": 25,
+          "mapId": "spatial-place:25:house-example:workshop-4f:0:29:easyrpg_chipset_combined_town"
+        }
+      ]
+    }
+  ]
+}

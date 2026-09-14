@@ -35,7 +35,7 @@ describe("humanizeSpatialError", () => {
   it("translates the internal draft/preview tokens that leaked into the toolbar", () => {
     expect(humanizeSpatialError("authoring-draft-missing")).toBe("편집 중인 초안이 없습니다 — 추가·수정을 먼저 하세요");
     expect(humanizeSpatialError("authoring-preview-missing")).toBe("적용할 미리보기가 없습니다 — 미리보기를 먼저 실행하세요");
-    expect(humanizeSpatialError("spatialAuthoring가 객체가 아닙니다")).toBe("이 프로젝트에는 공간 설계 문서가 없습니다");
+    expect(humanizeSpatialError("spatialAuthoring가 객체가 아닙니다")).toBe("이 프로젝트에는 장소 설계 문서가 없습니다");
   });
 
   it("keeps the path of a code:path issue while translating the code", () => {

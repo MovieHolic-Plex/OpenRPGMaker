@@ -21,16 +21,23 @@ describe("database all-tabs render walk", () => {
   it.each([
     "spatialTiles", "spatialObjects", "spatialSpaces", "spatialPlaces", "spatialRegions", "spatialWorlds",
   ] as const)("renders a destination-specific authoring surface when %s is selected", (tab) => {
-    // Given: a blank project and one of the six approved spatial primaries.
+    // Given: a blank project and a primary destination or the retained room editor.
     const root = document.createElement("div");
     setDatabaseActiveTab(tab);
     // When: the real database panel renders that primary.
     renderDatabasePanel(root);
     // Then: its specific destination contains the gallery and canvas, not an empty shell.
-    const destination = root.querySelector(DATABASE_PRIMARY_SENTINELS[tab]);
+    const destination = root.querySelector(tab === "spatialSpaces" ? '[data-testid="spatial-shell-spaces"]' : DATABASE_PRIMARY_SENTINELS[tab]);
     expect(destination).not.toBeNull();
-    expect(destination?.querySelector("[data-testid='spatial-gallery']")).not.toBeNull();
-    expect(destination?.querySelector("[data-testid='spatial-canvas']")).not.toBeNull();
+    if (tab === "spatialObjects") {
+      expect(destination?.querySelector("[data-testid='spatial-browser-results']")).not.toBeNull();
+      expect(destination?.querySelector(".asset-browser-detail")).not.toBeNull();
+    } else if (tab === "spatialSpaces") {
+      expect(destination?.querySelector("[data-testid='composition-board']") ?? destination?.querySelector("[data-testid='spatial-canvas']")).not.toBeNull();
+    } else {
+      expect(destination?.querySelector("[data-testid='spatial-gallery']")).not.toBeNull();
+      expect(destination?.querySelector("[data-testid='spatial-canvas']")).not.toBeNull();
+    }
   });
 
   it("every registered tab renders a non-empty body without throwing", () => {

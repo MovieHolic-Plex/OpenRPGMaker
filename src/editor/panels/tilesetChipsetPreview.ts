@@ -43,8 +43,9 @@ type ChipsetPreviewModel = {
 
 type LayerFilter = "all" | "lower" | "upper";
 
-/** 기본 2x — 한 화면에 더 많은 행. 전체 시트는 프리뷰 박스 안 스크롤. */
-const PREVIEW_SCALES = [2, 3, 4] as const;
+/** 기본 2x — 한 화면에 더 많은 행. 전체 시트는 프리뷰 박스 안 스크롤.
+ *  1x 는 30열 시트(480px)가 스크롤 없이 들어가는 유일한 배율 — 전체를 한눈에 볼 때 쓴다. */
+const PREVIEW_SCALES = [1, 2, 3, 4] as const;
 let previewScale: number = 2;
 let passageDragActive = false;
 let passagePaintedByPointer = false;
@@ -125,7 +126,7 @@ function renderPreviewHeader(model: ChipsetPreviewModel): HTMLElement {
             renderScaleButton({
               scale,
               text: `${scale}x`,
-              title: scale === 2 ? "2배 (기본·한눈에)" : scale === 3 ? "3배" : "4배 (크게)",
+              title: scale === 1 ? "1배 (시트 전체가 한눈에)" : scale === 2 ? "2배 (기본)" : scale === 3 ? "3배" : "4배 (크게)",
               model,
             }),
           ),

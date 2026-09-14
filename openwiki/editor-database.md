@@ -1,3 +1,72 @@
+## 장소 통합 진행: 방·층과 재료 (2026-09-14)
+
+새 건물의 기존 구조 편집기에 「방 추가」「층 추가」를 붙였다. 원본 방을 복제해 덮지 않고
+새 장소를 초안에 만들고 자식 슬롯으로 연결한다. 속성창에서 포함된 장소의 층을 수정하거나
+「이 장소에서 빼기」로 슬롯을 제거할 수 있다. 원본 장소는 삭제하지 않고 해당 슬롯의 연결만 함께 제거한다. 배치된 건물은 기존 preview/apply 경로로
+동결 배치를 수정하며 원본 구성은 유지한다. 실패한 방 추가는 이전 초안·미리보기를 보존한다.
+좁은 화면의 열린 속성 패널은 캔버스 위에 뜨므로 상단 속성 토글로 닫고 조작한다.
+
+직접 구성 재료는 `공간`과 `장소`를 하나의 「장소」로 표시한다. 두 내부 저장 종류 모두
+다른 방/장소를 같은 지도에 배치할 수 있으며 자기 자신과 상위 장소는 목록에서 제외한다.
+도메인 검증도 같은 허용표를 쓰고 순환 참조를 검사한다. 다층 구성은 여전히 층별 편집 대상이다.
+직접 구성은 「건물로 묶기」로 새 건물을 만들고 그 안에서 별도 지도의 방·층을 추가한다. 원래 장소 ID와 그림은 유지하며, 이 작업도 미리보기·적용·취소를 따른다. 진행 기준은 `unified-place-authoring.md`다.
+
+## 새 장소 생성 흐름 (2026-09-14, 2단계)
+
+`spatialStage.domainChrome`의 장소/기존 공간 UI 추가 버튼은 `spatialNewPlaceDialog.ts`를 연다.
+이름·실내/실외/건물·가로/세로(4~128칸)·지원 타일셋을 선택한다. 실내는 기존 실내 시공기가
+지원하는 타일셋, 실외는 ground 재료가 있는 타일셋만 제시한다. `spatialNewPlace.ts`가
+직접 편집할 SpaceDesign 또는 1층 SpaceDesign을 포함한 facility PlaceDesign을 한 번의
+초안 편집으로 만든다. 실외 floorAreas는 전체 바닥을 명시한다. 기존 시공기로 생성 가능 여부와
+문서 참조를 검사하며 취소/실패는 라이브 프로젝트를 수정하지 않는다. 미리보기→적용과 undo는
+기존 컨트롤러를 사용한다. 전환한 프로젝트에 열린 창의 입력을 적용하지 않는다.
+
+프로그램용 `spatialSpacesChrome.add`/`spatialPlacesChrome.add`의 기존 동작은 유지한다.
+이 단계는 새 장소 시작 흐름이며 방 추가·층 추가·출입 연결을 새 통합 UX로 만드는 것은 후속이다.
+기존 공간 편집 제목/추가 버튼을 장소로 표시하고 DB 검색의 공간/방 키워드는 장소를 찾는다.
+스타일은 body에 붙는 모달을 위한 `spatial-new-place.css`이며 전역 테마 토큰을 쓴다.
+검증: `test/spatialNewPlace.test.ts`(취소/실패/초안·적용/직렬화·맵 시공), 기존 통합 저작 테스트,
+`scripts/capture-new-place.mjs`(격리 fixture, 실제 세 형태 생성·적용, 1440/1024px).
+
+## 장소 목록 통합 1단계 (2026-09-14)
+
+맵 레일에서 독립 `spatialSpaces` 항목을 제거하고 `spatialPlaces` 아래 편집 경로로 유지한다.
+장소 설계 목록은 기존 장소와 공간(기본 방 규칙 포함)을 함께 표시하며, 배치 목록도 두 종류를
+합친다. 카드의 kind·canonicalSource·ID는 보존한다. `spatialGalleryNavigation.ts`가 선택한
+카드 종류에 맞는 기존 편집기로 이동하고 breadcrumb를 남긴다. 공통 구성 편집기의 선택기도
+같은 경로를 사용한다. 공간 편집 화면의 「장소 돌아가기」으로 돌아갈 수 있고, 기존 바로가기와
+`tilesetSpaces` 방 규칙 편집 경로도 유지한다. 레일의 소속 강조는 장소를 따른다.
+
+이 단계는 목록·탐색 통합이다. 새 장소 생성, 방·층 추가, AI 용어, 공간/장소 내부 스키마와
+시공기는 후속 단계이며 변경하지 않았다. 포함된 공간도 재사용을 위해 목록에 표시한다.
+시설/정주지/자연 필터는 기존 장소 분류만 필터링한다. 데이터 마이그레이션이나 원격 콘텐츠
+수정은 없다. `test/spatialUnifiedPlaces.test.ts`, 기존 catalog/card-resolution 계약,
+`scripts/capture-unified-places.mjs`(격리 blankProject, 1440/1024px)로 검증한다.
+
+## 복합 공간 편집기 (2026-09-13)
+
+자체 canonical 설계의 공간·장소·지역·세계는 `spatialCompositionWorkspace.ts`를 쓴다.
+오브젝트는 별도 타일셋/오브젝트 브라우저와 타일 화가를 유지한다. 공간 재료는 타일·오브젝트,
+장소는 타일·오브젝트·공간, 지역은 여기에 장소, 세계는 여기에 지역을 추가한다.
+재료 검색, 클릭/드롭 배치, 선택 이동(드래그·방향키), 삭제, 하위/상위 타일 레이어,
+붓·지우개·원래대로, 확대/맞춤, 캔버스 크기를 제공한다. 원래대로는 직접 칠한 셀만 제거한다.
+기존 생성 규칙은 우측 접힌 상세에 남고 기존 슬롯도 선택/이동/삭제한다.
+선택 항목의 원본 열기(Enter)는 해당 종류의 편집기로 이동하고 뒤로 가기로 부모를 복원한다.
+초안은 미리보기→적용 트랜잭션으로 저장하며 잘못된 범위/참조/시공은 초안 반영 전에 거부한다.
+직접 구성 편집 취소는 구성 전용 40단계이며 기존 생성 규칙 변경은 공통 초안 취소를 쓴다.
+
+현재 한 캔버스는 **같은 타일셋** 재료만 조합한다. 다른 타일셋 재료는 비활성 표시한다.
+기존 여러 층 및 개요 지도 routes/connections를 단일 캔버스로 조용히 평탄화하지 않는다:
+구성 없는 기존 설계가 복합 미리보기에 맞지 않으면 기존 편집기로 열어 탐색/층별/개요 편집을 보존한다.
+이미 명시적 구성이 있는 설계의 지원 불가 시공은 오류로 막는다. 복합 구성이 없는 인스턴스는
+기존 층별/개요 시공기를 계속 사용한다. 라이브 콘텐츠를 자동 변환하거나 원격 덮어쓰지 않는다.
+
+검증: `test/spatialMixedComposition.test.ts`, `test/spatialCompositionWorkspace.test.ts`,
+기존 schema/space/place compiler 계약, `scripts/capture-spatial-mixed.mjs`(공간/장소/지역/세계 및1024px),
+오브젝트 브라우저는 `scripts/capture-spatial-browser.mjs`.
+브라우저 fixture 주입에 동적 store import를 쓸 때 Vite HMR 직후에는 쿼리별 store singleton이
+갈릴 수 있다. 이 경우 소유한 dev 서버를 재시작한 뒤 캡처한다.
+
 ## Placed-place child proposal adapter (2026-09-08)
 
 Association-based child lifecycle, frozen actual read models, clone/deletion data and
@@ -137,6 +206,21 @@ The current multi-floor inn template remains authoritative (`dorm_bed_a`,
 `upper_stair`); snapshot tests use those IDs, not the retired bedroom/stairs IDs.
 Validation and replay boundaries are in `reports/pr617-621-integration.md`.
 
+## Opening still media, sequence music and AI generation (2026-09-14)
+
+오프닝·게임오버 탭의 그림 슬롯은 picker kind `image`(아이템 아이콘 457개) 대신 신설 kind **`still`** 을 쓴다:
+배경화 → 타이틀 아트 → 생성·업로드 그림 순서가 앞에 오고, 기존 `image` 목록은 뒤에 통째로 남아 **아이콘으로
+저작해 둔 저장본이 그대로 유효하다**. 버튼 배선은 그대로고 `databaseCinematicMediaFields`(표시)와
+`databaseCinematicMediaActions`(검증·커밋)가 같은 kind 를 본다.
+
+- `AI_GENERATABLE_PICKER_KINDS` 에 `still: "backdrop"` 을 넣어 그림 슬롯 피커에 기존 "AI로 만들기"(`aiImageGenerateField`)가
+  그대로 붙는다. 생성물은 `kind:"backdrop"` 업로드 자산으로 등록되고 `still` 카탈로그에 바로 잡힐다.
+- 「시퀀스 설정」 카드에 **배경음악**(`db-cinematic-music`, picker kind `music`, 비우기·파일 가져오기 허용)이 생겼다.
+  슬롯 `{ kind: "music" }` 은 장면이 없어도 설정된다 — 시퀀스가 없으면 빈 시퀀스를 만들고 `musicResourceId` 를 쓴다.
+- 업로드 경로: 음악 슬롯은 음성과 같은 `audio` 준비기를 타고, `still` 업로드는 종전처럼 `picture` 프로필로 등록된다.
+- 브라우저 계약: `test/e2e/database-opening-still-media.spec.ts` — 배경화 후보 노출·선택 반영, AI 생성 필드 노출,
+  배경음악 선택이 `system.opening.musicResourceId` 로 저장됨.
+
 ## Opening and game-over authoring (2026-09-06)
 
 The System group contains dedicated `opening` / `gameOver` tabs, labelled
@@ -174,6 +258,12 @@ truth is `project.system.opening` and `project.system.gameOver`, never
 - `database.ts` and `databaseModal.ts` call `disposeDatabaseCinematicsIn` before
   leaving/evicting/closing cinematic views. These views are not reused from
   detached cache. Other Database caching stays unchanged.
+- The same authored record is writable through the AI assistant since 2026-09-14:
+  `get_opening` / `set_opening` / `remove_opening` / `list_opening_media`
+  (`cinematicTools.ts`, system domain). `set_opening` replaces the whole scene list,
+  so an AI edit and a tab edit land on one source of truth — `project.system.opening`.
+  Media candidates come from the same catalog the tab's picker uses
+  (`src/editor/resourceOptions.ts`). See `editor-ai-tools.md` (2026-09-14).
 - Scoped editor presentation lives in `src/styles/database/system-studio.css`;
   runtime stage presentation still belongs to the existing runtime CSS closure.
 
@@ -513,7 +603,9 @@ Database tabs, record views, battle database records, utility records, reference
 
 ## Database Editor
 
-- **얼굴은 리소스 목록에서도 낱장이다 (2026-08-27):** 얼굴 한 칸 = 파일 한 장 모델은 피커뿐 아니라 **리소스 관리자(얼굴 그래픽) 목록**에서도 지켜야 한다. `defaultResourceProfiles()` 는 `FACESET_FACE_ASSETS` 112장을 48×48 `kind: "faceset"` 프로필로 등록하고, `EASYRPG_RTP_ASSETS` 의 faceset 행(4×4 시트)은 **건너뛴다** — 시트는 v3 로드 해석용으로만 등록돼 있는 레거시다. 이미 저장된 프로젝트에 남은 시트 프로필은 `ensureBundledResourceProfiles()` 가 `LEGACY_FACESET_SHEET_IDS` 기준으로 걷어내므로, 로드 한 번으로 112장으로 수렴한다. 실측 회귀: 이 등록을 빼먹으면 피커는 낱장 112장인데 리소스 관리자는 192×192 시트 5장만 보여 저자 눈에는 "전혀 나뉘지 않은" 상태가 된다. 얼굴 표면을 손볼 때는 피커·이벤트 명령 미리보기·**리소스 관리자**·런타임 상태 메뉴를 같이 확인하라.
+- **얼굴은 리소스 목록에서도 낱장이다 (2026-08-27):** 얼굴 한 칸 = 파일 한 장 모델은 피커뿐 아니라 **리소스 관리자(얼굴 그래픽) 목록**에서도 지켜야 한다. `defaultResourceProfiles()` 는 `AUTHORABLE_FACESET_FACE_ASSETS` 80장을 48×48 `kind: "faceset"` 프로필로 등록하고, `EASYRPG_RTP_ASSETS` 의 faceset 행(4×4 시트)은 **건너뛴다** — 시트는 v3 로드 해석용으로만 등록돼 있는 레거시다. 이미 저장된 프로젝트에 남은 시트 프로필은 `ensureBundledResourceProfiles()` 가 `LEGACY_FACESET_SHEET_IDS` 기준으로 걷어내므로, 로드 한 번으로 수렴한다. 실측 회귀: 이 등록을 빼먹으면 피커는 낱장인데 리소스 관리자는 192×192 시트 5장만 보여 저자 눈에는 "전혀 나뉘지 않은" 상태가 된다. 얼굴 표면을 손볼 때는 피커·이벤트 명령 미리보기·**리소스 관리자**·런타임 상태 메뉴를 같이 확인하라.
+- **생성 얼굴 시리즈는 저작 목록에서 내렸다 (2026-09-12):** `generated-actor-hero-01/02-face-NN` 낱장 32장은 `GENERATED_FACESET_FACE_IDS` 에 묶여 리소스 관리자·DB 얼굴 피커·AI 리소스 카탈로그·캐릭터 그래픽 탭·에디터 워밍업에서 전부 빠진다. 다만 **해석·검증 등록은 유지**한다 — `FACESET_FACE_ASSETS`(112장 전체)·`resolveFacesetFaceAssetUrl`·`collectResourceIds`·`faceIdForSheetCell` 매핑은 그대로라, 이 얼굴을 가리키는 저장본도 깨지지 않는다(시트 id 와 같은 "등록만 남기기" 패턴). 저장본에 남은 프로필 행은 `ensureBundledResourceProfiles()` 가 로드 때 걷어낸다. 완전 삭제가 아니라 숨김이다 — 파일·id·해석 경로를 지우면 참조 프로젝트가 역직렬화에서 던진다.
+- **리소스 관리자 목록은 프로필을 정본 id 하나로 접는다 (2026-09-12):** 번들 프로젝트의 `resourceProfiles` 는 같은 시트를 두 네임스페이스로 등록한다 — 번들 textureKey(`tex_easyrpg_chipset_*`, `tex_easyrpg_charset_*`)와 RTP 매니페스트 id(`easyrpg-chipset-*`, `easyrpg-charset-*`). 데이터상 둘 다 유효한 id 라 프로필은 **지우지 않는다**(액터 `characterResourceId` 가 `easyrpg-charset-*` 로 저장되고, `characterSlots`·`graphicAttributes` 같은 저작 메타가 어느 id 로도 온다 — `characterGraphics.test.ts` 가 두 id 공존을 요구). 다만 목록에 카드가 두 장이면 중복으로 읽히므로 `resourceManagerUtils.dedupeListedProfiles` 가 표시 단계에서만 접는다: (a) `assetId` 가 업로드 자산과 겹치는 프로필(오디오·몬스터 카탈로그의 `Object.hasOwn(uploaded, id)` 와 같은 규칙 — 이미지 import 는 uploaded+profile 을 같은 id 로 둘 다 쓴다), (b) 정본 id 가 같은 별칭 프로필. 정본 대응은 `canonicalResourceProfileId`: charset 은 `findCharsetAsset().textureKey`, chipset 은 번들 경로 파일명(`-transparent` 제거)에서 유도 — `tex_tiles_default` 는 프로필로 등록되지 않는 런타임 키라 `easyrpg-chipset-exterior` 는 별칭만으로 남아 그대로 보인다. 카테고리 배지 수도 같은 목록을 센다. 계약: `test/resourceManagerDedup.test.ts`, `test/e2e/oprn-resource-manager.spec.ts`.
 - **시트 업로드는 앱이 쪼갠다 (2026-08-27):** 저자가 192×192(16칸)·96×96(4칸) 시트를 업로드하면 `planFacesetSheetSplit` → `sliceFacesetSheetDataUrls`(canvas)가 48×48 낱장으로 잘라 `<base>-00..-15` 리소스로 등록한다. `decideFacesetUploadDimensions` 는 더 이상 시트를 거부하지 않는다 — 저자에게 터미널에서 `npm run assets:slice-faces` 를 돌리라고 요구하지 않는다(그 스크립트는 레포 내장 에셋 재생성 전용이다). 계약: `test/facesetSheetSlicing.test.ts`, `test/facesetUploadDimension.test.ts`.
 - **이미 저장된 업로드 시트도 쪼개진다 (2026-08-27):** `faceIdForSheetCell` 은 내장 7장만 알아서 업로드 시트 id 를 그대로 되돌려준다 — 그 상태로 `migrateV3toV4` 가 `faceIndex` 를 지우면 업로드 4×4 시트를 가리킨 액터가 48px 얼굴 칸에 겪자 전제를 다 누른 상태로 남는다. 그래서 마이그레이션은 `faceIdForFace` 로 업로드 시트도 `<시트 id>-NN` 으로 옮긴다. 대상은 **업로드 faceset 자산 중 48 배수 정사각인 id 집합**으로 한정한다 — 이 및장이 없으면 얼굴과 무관한 m2 `fields.value` 가 `-07` 을 달고 망가진다.
 
@@ -526,6 +618,7 @@ Database tabs, record views, battle database records, utility records, reference
 - **로드 정규화 (2026-09-05 변경):** `ensureDefaultDatabaseIconResources()`는 기존 행의 이미지 연결만 보정하며 기본 ITEM/EQUIPMENT 레코드를 재주입하지 않는다. 삭제 보존 계약은 이 페이지 맨 위 참조.
 - **기본 카탈로그 계약:** 아이템과 장비 이름에는 한글이 들어가고, 모든 레코드는 서로 다른 구체적인 한국어 설명을 가진다. 사용 가능한 아이템의 `occasion`, `consumable`, 실행 가능한 회복·상태·스킬·기술서 효과는 서로 맞아야 한다. `occasion: "never"`는 소모하지 않는 재료, 수확물, 도구, 이벤트·퀘스트 물품과 농사 권위자가 소비하는 작물 씨앗에만 쓴다. 농기구에는 유효한 `farmTool`이 있어야 한다. 착용 장비는 `project.database.equipment`에만 두며, 장비 모양 행을 `database.items`에 남기지 않는다. 전투 아이템과 아이템 효과 스킬은 실제 전투 애니메이션 레코드를 참조해야 한다. 전투 대상 해석이 쓰러진 전투원을 제외하므로 부활 아이템은 필드 전용이다. `test/defaultItemCatalogQuality.test.ts`가 데이터와 애니메이션 참조 계약을 검사하고, `test/itemRuntimeUsability.test.ts`가 실제 메뉴·전투·농기구 권위자를 실행한다.
 - **기능 확장 기본 아이템(2026-08-29):** `defaultFeatureItemRecords.ts`가 기본 카탈로그에서 비어 있던 상태 추가, 아군 전체 대상, 몬스터 `careProfile`, 영구 성장 씨앗, `switchId`, 속성 아이템 스킬, 유한 `consumptionLimit` 경로를 출하 레코드로 연결한다. 출하 프로젝트에 연결되지 않은 작물 씨앗은 심기·수확을 약속하지 않도록 카탈로그에서 제외한다. 스위치 아이템은 필드 메뉴에서 아직 꺼진 전용 스위치만 켜고 성공 사용 1회를 공통 아이템 전환 권위자에 넘긴다. 유한 충전은 메뉴와 전투 모두 `transitionItemState(..., { kind: "successfulUse" })`가 계산하며, `allAllies` 전투 아이템은 대상 수와 관계없이 명령당 한 번만 전환한다. 집중 실행 계약은 `test/defaultFeatureItemRuntime.test.ts`다.
+- **`item.switchId` 는 항상 선언된 스위치를 가리킨다(2026-09 회계 정리):** 기동석·기동패 아이템이 `project.switches` 에 없는 스위치를 켜면 실행 자체는 세션 키 쓰기로 동작하지만 저작자가 스위치 탭에서 후속 조건을 연결할 방법이 없었다. `ensureItemSwitchDefs`(`src/project/itemSwitchDefs.ts`)가 `repairProjectReferences`(로드)와 `ensureSwitchVariableSlots`(스토어 정규화) 양쪽에서 정의와 세션 슬롯을 자동 선언하며, 표시 이름은 `ITEM_SWITCH_NAMES` 표 → 아이템 이름 순으로 정한다. `validateItemRecords`는 `skill.effect.switchId` 와 같은 수준으로 `item.switchId`를 하드 검증하고, `deleteSwitch` 가드(`switchVariableReferenceMessage`)도 아이템·스킬 스위치 참조를 막는다. 회귀 계약은 `test/itemSwitchReferences.test.ts`와 `test/databaseReferenceGuards.test.ts`다. 같은 점검에서 포획 `ballClass` 사다리(poke/great/ultra/master — `item_gen_master_orb` 추가, gen1은 master=확정 포획)와 네 농기구 전 종(`item_axe` 추가)이 기본 카탈로그에 채워졌다.
 - **Characters ??actors (G006):** Characters are **not** a `database.*` collection and are **not** party Actors. The `characters` database tab (`db-tab-characters`, `databaseCharacterView.ts`) manages the opt-in identity package `project.characters` plus orphan event-used characterIds via `listCharacterIdIndex`. Do **not** confuse these social keys with Actor (`database.actors`) party members. List thumbs come from the first host map-event charset crop (`characterListThumbnail.ts` / `resolveCharacterListThumbSource`: hosts[0] event page graphic only). Never use Actor facesets, `database.actors`, or a CharacterProfile portrait field for list thumbs ??CharacterProfile has displayName/birthday/giftPrefs only, no portrait resource.
 
 - **Battle effect sheets are generated procedurally, not prompted.** `src/assets/generatedEffectSheets.json` is the single catalog (slug, Korean name, frameCount, tags, scope/position, independent sound/flash/shake seeds); `scripts/gen-effect-sheets.mjs` (`npm run generate:effect-sheets`) renders each slug to `public/assets/generated/effects/effect-<slug>.png` as 96x96 cells with a purpose-specific 8, 10, or 12 frame length. The generated family uses a 75ms frame interval, so total playback remains 600–900ms; legacy/authored animations retain the 120ms default. Rendering runs through `scripts/lib/effectSheet/` (canvas primitives + per-slug painters + fixed-seed PRNG). `src/assets/generatedEffectSheets.ts` re-exports the catalog for the runtime: resource ids are `generated-battle-anim-<slug>`, resolved by `resolveGeneratedEffectAssetUrl` inside `resolveAssetResourceUrl`, registered in `collectResourceIds` (missing = default project fails deserialization), and listed by the `battle` kind of `databaseResourcePickerDialog`. `defaultBattleAnimationRecords()` maps every catalog entry to a record that plays every authored frame and merges same-frame sound/flash/shake into one timing; `anim_magic` / `anim_heal` / `anim_poison` point at `arcane-nova` / `heal-bloom` / `poison-mist` instead of reusing the melee `easyrpg-battle-blow` / `-arrow` art. Why procedural: frame-to-frame continuity is the whole effect, and image models re-imagine the silhouette per frame. Adding one: catalog entry → painter in `render.mjs` `PAINTERS` → run the generator → commit the PNG. `node scripts/gen-effect-sheets.mjs --check` fails on drift, and `test/generatedEffectSheets.test.ts` locks catalog/painter/PNG/record agreement byte-for-byte. `npm run generate:effect-showcase` builds the self-contained audiovisual catalog at `reports/generated-effect-showcase-2026-08-24.html` from those same catalog rows, PNG bytes, and bundled EasyRPG sounds.
@@ -676,6 +769,49 @@ Phase 1은 탐색·선택·표현 변경뿐이다. 방 마이그레이션과 마
 `structureKits`·`interiorRoomKinds`·`scratchConceptBundles`·지형·마을 데이터는 그대로 둔다.
 회귀: `databaseConceptFirstNav`, `databaseTilesetFolder`, `tilesetTabActivation`, `scratchConceptTab`.
 
+## 오브젝트·공간 수정 복구 (2026-09-13)
+
+- `spatialObjectMutations.ts`는 컨트롤러가 등록돼 있어도 `spatialAuthoring` 없는 프로젝트의
+  기존 킷 수정·복제·추가·삭제를 기존 store/history 경로로 저장한다. 문서 없는 초안을 만들면
+  `previewSpatialAuthoring`의 문서 검증에서 막히므로 컨트롤러 존재만으로 분기하지 않는다.
+- Canonical 오브젝트의 그림이 코드 카탈로그 참조일 수 있다. 「그림 편집」은 그 그림을 새 킷으로
+  굽고 선택된 설계의 graphic만 초안에서 교체한다. 다른 설계와 기본 카탈로그는 보존한다.
+  그림 편집기 종료는 `openDialog`의 공통 onClose를 사용해 Esc·백드롭으로 닫아도
+  초안 툴바를 갱신한다. 기존 킷 카드도 같은 graphic을 가리키는 설계에 연결하며, 설계가 없는 킷에는 작동하지 않는
+  앵커·칩·graphic 선택 폼을 노출하지 않는다.
+- 공간의 `room-rule` 카드는 `tilesetSpacesTab.renderKindInspector`의 이름·필수 역할·분위기·통로
+  편집 폼을 재사용한다. 기본 방 종류는 「내 설계로 복제」로 고유 ID 사본을 만들고 편집한다.
+  `roomKindOf`는 사용자 카드를 기본 ID보다 먼저 저작 레코드로 해석한다.
+  레거시 수정은 store/history, canonical 프로젝트는 초안 → 미리보기 → 적용을 따른다.
+- Canonical 공간에는 이름 입력이 있으며, 추가 후 「내 설계」 필터와 속성을 연다.
+  방 규칙의 수정은 방 종류 규칙을 바꾸며 이미 시공된 공간을 재시공하지 않는다.
+  좁은 창의 속성은 스테이지 위 스크롤 가능한 drawer로 열어 auto grid 행의 36% 높이로
+  축소되던 입력 폼을 복구한다. 방 규칙 폼도 속성 패널 폭에 맞춘다.
+- 회귀: `test/spatialLegacyEditing.test.ts`, `test/spatialObjectActions.test.ts`,
+  `test/spatialSpaceActions.test.ts`. 브라우저: `node scripts/capture-spatial-edit-repair.mjs <baseURL>`
+  (격리된 blankProject 검증), 증거: `output/evidence/spatial-edit-repair/`.
+
+## 오브젝트 브라우저와 공간 배치 작업대 (2026-09-13)
+
+- 설계 모드의 **오브젝트**는 `spatialAssetBrowser.ts`: 타일셋 목록 → 검색/기본·내 설계 필터 →
+  그림 카드 → 상세 편집이다. 48개씩 페이지를 나누며 선택이 바뀌면 해당 카드가 있는 페이지를 연다.
+  이름 검색은 결과 영역만 갱신하여 포커스를 유지한다. 앵커·칩·직접 graphic 참조는 고급 설정으로 접는다.
+- 오브젝트 그림 편집기의 「타일 브라우저 열기」는 `tilesetTileBrowser.ts`의 독립 모달이다.
+  원본 행·열 배열, 분류·이름·번호 검색, 24/40/64px 확대, 선택 타일 미리보기를 제공한다.
+  확인/더블클릭은 오브젝트 편집기의 브러시만 바꾸고, 취소는 아무것도 바꾸지 않는다.
+- **공간**은 `spatialSpaceWorkspace.ts`의 별도 배치 작업대다. 상단에서 공간을 바꾸고,
+  `spatialSpaceObjectBrowser.ts`에서 같은 타일셋의 ObjectDesign을 찾아 클릭 후 빈칸 클릭 또는
+  드래그로 배치한다. 중앙은 실제 공간, 오른쪽은 이름·형태·크기·선택한 배치의 속성이다.
+  원본 공간의 고정 슬롯은 실제 오브젝트 래스터를 투명 배경으로 표시한다. 새 슬롯은 초안에만
+  기록되며 미리보기 → 적용을 거친다. 기존 방 종류 카드는 호환 규칙 편집을 유지한다.
+- `spatialStage.ts`의 browser 툴바는 추가·복제·미리보기·적용·되돌리기를 노출하고
+  맵 배치/삭제/시공은 「배치·관리」에 둔다. 공간 설계가 없는 프로젝트는 상단 「공간 배치 시작」으로 활성화하며 그 전에는 새 공간 추가를 비활성화한다. 다른 4탭과 배치 모드는 기존 셸을 유지한다.
+- CSS는 `database/asset-browser.css`, 소유 클래스는 `scripts/css-surfaces.json`에 등록한다.
+  중첩 타일 모달은 DB 창 밖에 붙으므로 전역 토큰으로 색을 연결해야 한다.
+- 회귀: `test/spatialAssetBrowsers.test.ts`; UI 증거 재생:
+  `node scripts/capture-spatial-browser.mjs <baseURL>` → `output/evidence/spatial-browser/`.
+  이 스크립트는 원격 저장이 꺼진 격리 테스트이며 콘텐츠 저작/원격 저장 증거가 아니다.
+
 ## 맵 그룹 — 공간 저작 셸 UX 계약 (2026-09-12)
 
 타일·오브젝트·공간·장소·지역·세계 6탭은 `spatialShell.ts`+`spatialStage.ts`+`spatialGallery.ts`
@@ -714,6 +850,37 @@ Phase 1은 탐색·선택·표현 변경뿐이다. 방 마이그레이션과 마
 - 회귀: `test/spatialFeedback.test.ts` + 기존 spatial 스위트. 브라우저 검증 스크립트
   `output/spatial-ux-verify.mjs`(52 체크, netns 격리 실행)와 스크린샷
   `output/evidence/spatial-ux-fixed/`.
+
+## 타일 작업대 — 공간 셸 안 레이아웃 계약 (2026-09-13)
+
+타일 탭(`spatialTilesTab`, `data-testid="spatial-shell-tiles"`)은 공유 공간 셸 안에
+독립 타일셋 표면(`oprn-tileset-main`, `tileset-db-edit-area`)을 내장한다. 셸의
+`<1199px` 컨테이너 쿼리(갤러리 필름스트립·2행 본문)와 독립 표면의 `<1180px`
+뷰포트 규칙이 셸 안에서도 그대로 발동해 생기던 결함과 계약:
+
+- **`.spatial-body` 는 행까지 되돌려야 한다.** 열(`grid-template-columns`)만
+  고치고 `grid-template-rows` 를 놔두면 갤러리+스테이지가 32% 높이 행에 눌려
+  작업대가 ~0px 로 붕괴한다(1024×768 실측 스테이지 178px). 셸 스코프
+  `[data-testid="spatial-shell-tiles"]` 선택자가 `!important` 없이도 이긴다 —
+  `spatial-collections.css` 는 `tilesets.css` 보다 늦게 로드되고 특이도가 높다.
+- **시트는 항상 왼쪽 넓은 열.** 비페인트 모드(ai/group)는 DOM 순서가
+  `[사이드바, 시트]` 인데 무차별 `grid-column:1` 핀이 시트를 좁은 사이드바 열에
+  가뒀다. `passage-paint`(3행 그리드)와 `autotile-compose`(tilesets.css 자체 배치)
+  를 제외한 모드는 `minmax(0,1fr) minmax(260px,340px)` + 시트 `grid-column:1`.
+- **인스펙터 토글은 셸 안에서 숨긴다.** `<1200px` 에서 토글 버튼이 나타나지만
+  인스펙터는 `display:none` 이라 사막 버튼이었다 — 감춘다.
+- **`.oprn-tileset-main` 은 grid 여야 한다.** `flex-direction:column` 이면
+  「생성 감사」세로 레일이 본문 아래 빈 가로 띠로 깨지고 26px 접힘 계약이 깨진다.
+- **시트 프리뷰 `min-height` 는 0.** 480px 강제는 짧은 모달에서 시트 하단을
+  `overflow:hidden` 부모에 잘라먹는다 — 시트 자체가 스크롤 상자다.
+- **줌 1x 추가**(`PREVIEW_SCALES`): 30열 시트(480px)가 스크롤 없이 들어가는 유일한
+  배율.
+- 회귀: `test/spatialTilesShellCss.test.ts`(CSS 계약) +
+  `test/e2e/spatial-tiles-layout.spec.ts`(1024 생존·지식 탭 시트 넓은 열).
+  캡처 `scripts/capture-map-tiles-fix.mjs`, 스샷 `verify-shots/map-tiles-fix/`.
+- 게이트 주의: `oprn-db-`·`passage-` 클래스는 database 표면 어휘로
+  `scripts/css-surfaces.json` 에 등록돼 있다 — 셸 스코프 규칙에서 써도 R2 에 걸리지
+  않는다.
 
 ## 오토타일 설정 — 9칸/11칸/커스텀 카드 (2026-09-01)
 
@@ -1197,9 +1364,7 @@ n=3 / 484.6 이 나온다 — 리스트로 모아서 세라. 이 표의 `.db-lif
 - **`FootprintWing.stories`** 가 이제 날개별 층수다. 시공기(`stampFootprintHouseKit.storiesAt`)가 열마다 그 열을 덮는 날개의 층수를 읽어 벽 밴드(2 + (2×층수 − 1))를 정한다. 층수를 **선언한 날개가 이긴다** — 선언 없는 날개가 먼저 와도 계단식 의도가 조용히 무시되지 않게.
 - **나인슬라이스 런 경계는 역할이 아니라 날개의 가로 범위다 (2026-09-11 실측 결함).** 층수가 다른 두 날개가 가로로 맞닿으면 왼쪽 날개의 윗층 벽(중단 행)과 오른쪽 날개의 아래 벽(상단 행)이 **같은 행**에서 만나 역할이 같아진다. 역할 연속으로 런을 재면 좌측 끝 타일이 오른쪽 덩어리의 왼쪽 모서리에, 우측 끝 타일이 왼쪽 덩어리의 오른쪽 모서리에 붙는다(사용자 지적: "우측 벽을 붙이는 방식이 좀 잘못됐군"). 그래서 좌우 끝은 그 칸을 덮는 날개(층수 선언 날개 우선)의 가로 범위로 정한다. 회귀: `test/houseTemplates.test.ts` 의 "층이 다른 두 날개가 맞닿아도 각 덩어리가 자기 좌우 모서리로 마감된다". 기존 단일 덩어리 골든(연습04·연습08·ㅁ자)은 그대로다 — 런 경계가 같은 날개 안에서는 예전과 동일하기 때문이다.
 - **저작 표면도 같은 규칙을 쓴다.** `shapeReason()`(규약 검사)과 `minWingRun()` 이 열별 층수로 최소 높이를 재고, 템플릿 레코드(`VillageTemplateWing.stories`)·내장 카탈로그(`HouseTemplateWing.stories`)·`houseTemplateWingsAt()`·미리보기(`housePreviewMap`)가 값을 잃지 않고 전달한다.
-- **열 구간은 유효 층수가 바뀌는 경계에서도 끊긴다.** 층수가 다른 날개가 같은 열에 세로로 붙으면(넓은 1층 앞 + 2층 본채 뒤) 위쪽 덩어리가 자기 벽 밴드를 드러내야 한다 — 합치면 위층 벽이 아래 지붕에 삼켜져 한 층짜리 거대 지붕으로 읽힌다(레퍼런스 재현 실측). 같은 층수끼리는 계속 한 런이다 — ㄱ자·tier 겹침의 한 지붕면 규칙 보존.
-- **실내 층수 해석 순서**: `houseInteriorStories()` 는 ①계획 전체 `stories` 명시 → ②날개 선언 층수의 최댓값 → ③높이 휴리스틱(h≥11→3, h≥9→2). ②를 빼먹으면 h≥11 인 2층 날개가 실내를 3층으로 부풀린다(실측: 날개 stories:2 인데 `_f3` 생성).
-- **내장 카탈로그 4종 교체(A자 → 계단식).** `tier-front`(7×15) `tier-wide`(8×11) `tier-symmetric`(8×12) `tier-l`(8×13). 각 형태는 2층 날개 + 1층 날개를 조합해 만든다. `tier-front` 는 뒤 본채와 앞 날개를 겹치지 않고 세로로 붙인다 — 겹치면 앞 날개가 좌우 1열 지붕 조각으로만 읽힌다(2026-09-13 실측 재설계).
+- **내장 카탈로그 4종 교체(A자 → 계단식).** `tier-front`(7×12) `tier-wide`(8×11) `tier-symmetric`(8×12) `tier-l`(8×13). 각 형태는 2층 날개 + 1층 날개를 조합해 만든다.
 - **A자(피라미드) 지붕 삭제.** 사용자 지시로 킷 `aframe-stone` 과 템플릿 `aframe-*` 4종을 엔진·카탈로그·AI 프롬프트·평가 하네스에서 전부 걷어냈다. 지붕 대각 축(6번)은 표준 사선 지붕 과제(`roofGrid` / `t8-roof-diagonal`)로 교체됐다 — 용마루 인셋 폭·좌우 세로 트림·모서리 투명 캡의 레이어 분담을 본다.
 - 커버리지: `test/houseTemplates.test.ts`(계단식 2층 시공·층수 미선언 폴백·최소 높이 거부), `test/houseTemplateCatalog.test.ts`(tier-* 날개 층수·열 구간 높이), `test/villageAuthoringData.test.ts`(내장 34종 왕복), `test/villageHousePreview.test.ts`(34종 전부 렌더), `test/benchmark*.test.ts`(6번 축 교체).
 

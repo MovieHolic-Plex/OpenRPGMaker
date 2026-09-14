@@ -63,6 +63,8 @@ describe("mode transitions", () => {
         getCurrent: vi.fn(() => ({ startMapId: "map_town", system: { battleModel: "rm2k3" } })),
         subscribe: vi.fn(),
         getDbPersistenceStatus: vi.fn(() => ({ kind: "ok" })),
+        isSharedDemoSession: vi.fn(() => false),
+        loadSharedDemo: vi.fn(async () => null),
       },
       setDevProjectFactory: vi.fn(),
     }));

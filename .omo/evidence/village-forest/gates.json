@@ -1,0 +1,26 @@
+{
+  "ranAt": "2026-09-13T06:15:45.082Z",
+  "typecheck": {
+    "name": "typecheck:app",
+    "exitCode": 0,
+    "errorCount": 0,
+    "files": {}
+  },
+  "css": {
+    "exitCode": 0,
+    "failures": []
+  },
+  "surface": {
+    "exitCode": 1,
+    "failures": [
+      "표면 스냅샷 축 실패 (vitest exit=1)",
+      "Required axis did not execute successfully without skips: test/databaseAllTabsRenderWalk.test.ts (failed)",
+      "Required axis did not execute successfully without skips: test/eventEditorFormSurface.baseline.test.ts (failed)",
+      "Required axis did not execute successfully without skips: test/eventEditorConditionSurface.baseline.test.ts (failed, failed, failed, failed)",
+      "Required axis did not execute successfully without skips: test/eventEditorPortalSurface.baseline.test.ts (failed)",
+      "Required axis did not execute successfully without skips: test/eventEditorInteractionSurface.baseline.test.ts (failed)"
+    ],
+    "newFailures": []
+  },
+  "fullGateExitCode": 1
+}

@@ -25,6 +25,7 @@ export type SpatialGalleryCard = {
   readonly tilesetId?: string;
   readonly objectId?: string;
   readonly mapId?: string;
+  readonly regionReferenceId?: string;
   readonly placeKind?: "facility" | "settlement" | "natural";
   readonly regionKind?: "terrain" | "settlement";
   readonly missingSource?: boolean;
@@ -80,6 +81,9 @@ function objectCards(): SpatialGalleryCard[] {
   const known = new Set(cards.map((card) => card.id));
   for (const tileset of Object.values(project.tilesets)) {
     for (const kit of tileset.structureKits ?? []) {
+      // Keep compatibility cards until a canonical design owns the same graphic.
+      if (Object.values(project.spatialAuthoring?.library.objects ?? {}).some((object) =>
+        object.graphic.tilesetId === tileset.id && object.graphic.kitId === kit.id)) continue;
       const id = spatialPresentationId("tileset-kit", tileset.id, kit.id);
       if (known.has(id)) continue;
       known.add(id);
@@ -159,6 +163,7 @@ function spaceCards(): SpatialGalleryCard[] {
       kind: "spaces",
       usage: 0,
       tilesetId: space.tilesetId,
+      subtitle: `${space.environment === "outdoor" ? "실외" : "실내"} · ${space.width}×${space.height}`,
     });
   }
   return cards;
@@ -168,7 +173,7 @@ const DESIGN_LISTERS: Record<SpatialShellTab, () => SpatialGalleryCard[]> = {
   tiles: tileCards,
   objects: objectCards,
   spaces: spaceCards,
-  places: placeCards,
+  places: () => [...placeCards(), ...spaceCards()],
   regions: regionCards,
   worlds: worldCards,
 };
@@ -178,7 +183,9 @@ export function spatialAllSourceDesignCount(tab: SpatialShellTab): number {
 }
 
 export function listSpatialGalleryCards(session: SpatialAuthoringSession): readonly SpatialGalleryCard[] {
-  if (session.mode === "instances") return placedCards(session.tab);
+  if (session.mode === "instances") return session.tab === "places"
+    ? [...placedCards("places"), ...placedCards("spaces")]
+    : placedCards(session.tab);
   const cards = DESIGN_LISTERS[session.tab]().filter((card) => matchesSource(card, session.source));
   if (session.tab === "places" && session.placeKindFilter) {
     return cards.filter((card) => card.placeKind === session.placeKindFilter);

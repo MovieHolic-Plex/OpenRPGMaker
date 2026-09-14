@@ -1,3 +1,4 @@
+import { REGION_REFERENCES } from "@/project/regionReferences";
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { listSpatialGalleryCards, spatialCardById, spatialPresentationId } from "@/editor/panels/spatialCatalog";
@@ -66,6 +67,16 @@ afterEach(() => {
 });
 
 describe("spatial catalog source fidelity", () => {
+  it("shows one canonical object for a registered graphic and retains unrelated compatibility kits", () => {
+    const { project, document, tilesetId } = spatialFixture();
+    project.tilesets[tilesetId]!.structureKits!.push(furnitureKit("unregistered", "Unregistered"));
+    store.replace({ ...project, spatialAuthoring: document } as unknown as ReturnType<typeof store.getCurrent>);
+    const cards = listSpatialGalleryCards(sessionFor({ tab: "objects", source: "own", mode: "design" }));
+    expect(cards.filter((card) => card.tilesetId === tilesetId && card.objectId === "kit").map((card) => card.id))
+      .toEqual([spatialPresentationId("library-object", "library", "desk")]);
+    expect(cards.some((card) => card.id === spatialPresentationId("tileset-kit", tilesetId, "unregistered"))).toBe(true);
+  });
+
   it("keeps authored furniture and builtin-id overrides beside defaults", () => {
     // Given: user furniture plus an override that reuses a builtin local id
     const tilesetIds = Object.keys(store.getCurrent().tilesets);
@@ -581,7 +592,7 @@ describe("shipped spatial design catalog", () => {
 
     // Then: 배송 정본이 기본 설계로 보인다 — 빈 화면으로 열리지 않는다.
     expect(regions.filter((card) => card.source === "default").map((card) => card.localId))
-      .toEqual(REGION_CATALOG.map((region) => region.id));
+      .toEqual([...REGION_REFERENCES.map(reference => reference.id), ...REGION_CATALOG.map((region) => region.id)]);
     expect(worlds.filter((card) => card.source === "default").map((card) => card.localId))
       .toEqual(WORLD_CATALOG.map((world) => world.id));
   });

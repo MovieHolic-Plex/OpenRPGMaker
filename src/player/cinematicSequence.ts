@@ -35,6 +35,16 @@ export function playCinematicSequence(options: {
   let retryMedia = (): void => undefined;
   let scrollNarration = (_key: string): boolean => false;
   let canContinueVideo = false;
+  // 시퀀스 전체에 깔리는 배경음악. 장면마다 root.replaceChildren 이 도니 host 에 붙여 살려 둔다.
+  let music: HTMLAudioElement | undefined;
+  const stopMusic = (): void => {
+    if (!music) return;
+    music.pause();
+    music.removeAttribute("src");
+    music.load();
+    music.remove();
+    music = undefined;
+  };
   let resolveDone: (result: CinematicCompletion) => void = () => undefined;
   const done = new Promise<CinematicCompletion>(resolve => { resolveDone = resolve; });
   const observer = new MutationObserver(() => {
@@ -44,6 +54,7 @@ export function playCinematicSequence(options: {
     if (settled) return;
     settled = true;
     cleanScene();
+    stopMusic();
     observer.disconnect();
     signal.removeEventListener("abort", abort);
     view.removeEventListener("keydown", onKeyDown, true);
@@ -218,6 +229,19 @@ export function playCinematicSequence(options: {
     }
     if (scene.durationMs > 0) advanceTimer = setTimeout(next, scene.durationMs);
   };
+  if (sequence.musicResourceId) {
+    root.dataset.music = sequence.musicResourceId;
+    const url = resolveAssetResourceUrl(sequence.musicResourceId, { project });
+    if (url) {
+      const audio = el("audio", { dataset: { testid: "cinematic-music" } });
+      audio.loop = true;
+      audio.src = url;
+      host.append(audio);
+      music = audio;
+      // 자동재생 차단·재생 실패는 연출을 막지 않는다(장면 상태 기계와 분리).
+      void audio.play().catch(() => undefined);
+    }
+  }
   host.append(root);
   view.addEventListener("keydown", onKeyDown, true);
   signal.addEventListener("abort", abort, { once: true });

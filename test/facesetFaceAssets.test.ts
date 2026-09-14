@@ -2,7 +2,9 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  AUTHORABLE_FACESET_FACE_ASSETS,
   FACESET_FACE_ASSETS,
+  GENERATED_FACESET_FACE_IDS,
   LEGACY_FACESET_SHEET_IDS,
   faceIdForSheetCell,
 } from "@/assets/facesetFaceAssets";
@@ -20,6 +22,18 @@ describe("얼굴 낱장 에셋 목록", () => {
     expect(FACESET_FACE_ASSETS.map((face) => face.sheetIndex)).toEqual(
       LEGACY_FACESET_SHEET_IDS.flatMap(() => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
     );
+  });
+
+  it("생성 시리즈 낱장은 등록은 남기되 저작 목록에서는 뺀다", () => {
+    // hero-01-face / hero-02-face 두 시트 × 16칸 = 32장.
+    expect(GENERATED_FACESET_FACE_IDS.size).toBe(32);
+    for (const id of GENERATED_FACESET_FACE_IDS) {
+      expect(id.startsWith("generated-actor-hero-")).toBe(true);
+    }
+    expect(AUTHORABLE_FACESET_FACE_ASSETS).toHaveLength(112 - GENERATED_FACESET_FACE_IDS.size);
+    for (const face of AUTHORABLE_FACESET_FACE_ASSETS) {
+      expect(GENERATED_FACESET_FACE_IDS.has(face.id)).toBe(false);
+    }
   });
 
   it("시트 id + 칸 번호를 낱장 id 로 바꾼다", () => {

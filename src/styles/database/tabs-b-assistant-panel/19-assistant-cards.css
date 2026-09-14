@@ -4,9 +4,11 @@
    색은 tokens.css 변수만. !important 0. 글자 크기 3단(data-ai-font-size)은 --ai-font-scale 로 스케일. */
 
 /* ── 1. 변경 영수증 카드 ─────────────────────────────────────────
-   DOM(aiChangePreview.ts): section.ai-change-card > .ai-change-card-head(배지·제목·넓게 보기)
-   + .ai-change-chips + .ai-change-pair(지금 → 적용 후) + .ai-change-detail + .ai-change-card-actions(되돌리기).
-   커맨드 줄은 auto minmax(0,1fr) 2열 그리드라 두 열을 다 쓰게 못 박는다. */
+  DOM(aiChangePreview.ts): section.ai-change-card[data-state=applied|proposed]
+  > .ai-change-card-head(배지·제목·넓게 보기) + .ai-change-chips
+  + (.ai-change-pair(지금 → 적용 후) | .ai-change-word-diff) + .ai-change-detail
+  + .ai-change-card-actions(되돌리기).
+  커맨드 줄은 auto minmax(0,1fr) 2열 그리드라 두 열을 다 쓰게 못 박는다. */
 .ai-command-row > .ai-change-card,
 .ai-command-row > .ai-change-card-host {
   grid-column: 1 / -1;
@@ -50,6 +52,20 @@
   letter-spacing: 0.02em;
   line-height: 1.5;
   padding: 3px 8px;
+}
+
+/* 「적용 전」(Pi 검토 단계)은 완료가 아니다 — 초록 성공 배지를 쓰면 이미 적용된 것처럼 읽힌다. */
+.ai-change-card[data-state="proposed"] .ai-change-badge {
+  background: var(--warning-muted);
+  color: var(--warning);
+}
+
+/* 지도 그림이 말할 수 없는 변경 — 두 장 대신 사실 한 줄. */
+.ai-change-word-diff {
+  color: var(--text-2);
+  font-size: calc(12.5px * var(--ai-font-scale, 1));
+  margin: 0;
+  padding: 0 14px 12px;
 }
 
 .ai-change-title {
@@ -201,6 +217,168 @@
   line-height: 1.5;
   overflow-wrap: anywhere;
   padding: 0 14px 10px;
+}
+
+/* ── 변경 내역(항목별 before → after) ────────────────────────────
+   큰 위임의 검토는 칩이 아니라 이 목록으로 한다. 목록만 스크롤한다 — 카드가 로그를
+   통째로 밀어내면 그 뒤의 말풍선을 못 읽는다. 기본은 펼침(접힘이 원래 불평이었다). */
+.ai-change-ledger {
+  border-top: 1px solid var(--border-subtle);
+  margin: 0 0 10px;
+  min-width: 0;
+  padding: 8px 0 0;
+}
+
+.ai-change-ledger-head {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 14px 6px;
+}
+
+.ai-change-ledger-title {
+  color: var(--text-1);
+  font-size: calc(12.5px * var(--ai-font-scale, 1));
+  font-weight: 600;
+}
+
+.ai-change-ledger-count {
+  color: var(--text-2);
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  font-variant-numeric: tabular-nums;
+}
+
+.ai-change-ledger-note {
+  color: var(--text-2);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+}
+
+.ai-change-ledger-toggle {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  color: var(--text-2);
+  cursor: pointer;
+  font: inherit;
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  margin-left: auto;
+  padding: 2px 9px;
+}
+
+.ai-change-ledger-toggle:hover {
+  border-color: var(--border-strong);
+  color: var(--text-1);
+}
+
+.ai-change-ledger-list {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  max-height: 280px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 14px 6px;
+  scrollbar-color: var(--border-strong) transparent;
+  scrollbar-width: thin;
+}
+
+.ai-change-ledger[data-collapsed="true"] .ai-change-ledger-list {
+  display: none;
+}
+
+.ai-change-ledger-row {
+  border-left: 2px solid var(--border-default);
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding-left: 8px;
+}
+
+.ai-change-ledger-row.is-added {
+  border-left-color: var(--success);
+}
+
+.ai-change-ledger-row.is-removed {
+  border-left-color: var(--danger);
+}
+
+.ai-change-ledger-line {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ai-change-ledger-area {
+  color: var(--text-2);
+  flex: 0 0 auto;
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+}
+
+.ai-change-ledger-label {
+  color: var(--text-1);
+  font-size: calc(12.5px * var(--ai-font-scale, 1));
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.ai-change-ledger-verb {
+  color: var(--text-2);
+  flex: 0 0 auto;
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+}
+
+.ai-change-ledger-values {
+  align-items: baseline;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  min-width: 0;
+}
+
+.ai-change-ledger-before {
+  color: var(--text-2);
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  overflow-wrap: anywhere;
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--text-2) 55%, transparent);
+}
+
+.ai-change-ledger-arrow {
+  color: var(--text-2);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+}
+
+.ai-change-ledger-after {
+  color: var(--text-1);
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  overflow-wrap: anywhere;
+}
+
+.ai-change-ledger-detail {
+  color: var(--text-2);
+  display: grid;
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  gap: 1px;
+  line-height: 1.5;
+  list-style: none;
+  margin: 0;
+  overflow-wrap: anywhere;
+  padding: 0;
+}
+
+.ai-change-wide .ai-change-ledger {
+  border-top: 1px solid var(--border-default);
+  margin: 0;
+  padding: 10px 4px 0;
+}
+
+.ai-change-wide .ai-change-ledger-list {
+  max-height: min(320px, 40vh);
+  padding: 0 4px 4px;
 }
 
 .ai-change-card-actions {

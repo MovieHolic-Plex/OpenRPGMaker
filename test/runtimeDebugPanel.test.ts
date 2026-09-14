@@ -129,7 +129,10 @@ describe("runtime debug panel option labels", () => {
   it("labels empty-named switch slots by id instead of dropping them", () => {
     const project = storeMocks.project as Project;
     expect(project.switches.length).toBeGreaterThan(0);
-    expect(project.switches.every((entry) => entry.name === "")).toBe(true);
+    // #777 이 아이템 기동석 스위치를 이름과 함께 선언한다 — 이 테스트는 "이름 없는 슬롯을
+    // 버리지 않고 id 로 라벨링하는가" 를 보므로 이름 있는 것을 제외하고 본다.
+    const unnamed = project.switches.filter((entry) => entry.name === "");
+    expect(unnamed.length).toBeGreaterThan(0);
 
     const panel = renderRuntimeDebugPanel();
     const switchSelect = select(panel, "runtime-debug-switch-select");
@@ -186,12 +189,14 @@ describe("runtime debug panel filters", () => {
     const project = storeMocks.project as Project;
     const named = project.switches[2];
     if (!named) throw new Error("expected 3rd switch slot");
-    named.name = "성문 개방";
+    // "성문 개방" 은 #777 의 기동석 스위치(sw_catalog_gate_open) 이름과 겹친다 — 겹치지 않는
+    // 이름으로 필터가 한 건만 남기는지 본다.
+    named.name = "테스트 게이트";
 
     const panel = renderRuntimeDebugPanel();
     const switchSelect = select(panel, "runtime-debug-switch-select");
     const filter = input(panel, "runtime-debug-switch-filter");
-    filter.value = "성문";
+    filter.value = "테스트";
     filter.dispatchEvent(new Event("input"));
 
     expect(optionValues(switchSelect)).toEqual(["sw_0003"]);

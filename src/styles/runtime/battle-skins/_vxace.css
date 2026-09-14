@@ -291,7 +291,8 @@
   display: none !important;
 }
 
-.battle-scene[data-battle-skin="vxace"] .battle-command:disabled {
+.battle-scene[data-battle-skin="vxace"] .battle-command:disabled,
+.battle-scene[data-battle-skin="vxace"] .battle-command[aria-disabled="true"] {
   opacity: 0.45 !important;
 }
 
@@ -427,6 +428,15 @@
   overflow: visible !important;
   position: absolute !important;
   top: 8px !important;
+  z-index: 3 !important;
+}
+
+/* 상태 배지 — 셀이 display:block 이라 격자 배치가 안 먹는다. 초상 위 좌하단에 얹는다
+   (참조의 상태 아이콘 자리). 행의 직계 자식으로 달리는 클러스터를 여기서 절대배치한다. */
+.battle-scene[data-battle-skin="vxace"] .battle-actor-status > .battle-status-icons {
+  bottom: 6px !important;
+  left: 6px !important;
+  position: absolute !important;
   z-index: 3 !important;
 }
 

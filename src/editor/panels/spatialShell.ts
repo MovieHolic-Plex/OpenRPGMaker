@@ -1,3 +1,7 @@
+import { canUseCompositionWorkspace } from "./spatialCompositionAccess";
+import { renderSpatialCompositionWorkspace } from "./spatialCompositionWorkspace";
+import { renderSpatialSpaceWorkspace } from "@/editor/panels/spatialSpaceWorkspace";
+import { renderSpatialAssetBrowser } from "@/editor/panels/spatialAssetBrowser";
 import { listSpatialGalleryCards, type SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import { renderSpatialGalleryCard } from "@/editor/panels/spatialGallery";
 import {
@@ -27,6 +31,7 @@ import {
   syncSpatialFeedbackSelection,
 } from "@/editor/panels/spatialFeedback";
 import { dismissAuthoringPreview, hasAuthoringPreview } from "@/editor/panels/spatialAuthoringAccess";
+import { selectSpatialGalleryEntry } from "./spatialGalleryNavigation";
 import { el } from "@/util/dom";
 
 export function renderSpatialAuthoringShell(
@@ -38,9 +43,10 @@ export function renderSpatialAuthoringShell(
   let session = spatialSession();
   const cards = listSpatialGalleryCards(session);
   const requested = session.mode === "instances" ? session.occurrenceId : session.designId;
-  if (!requested && cards[0]) {
-    if (session.mode === "instances") selectSpatialOccurrence(cards[0].id);
-    else selectSpatialDesign(cards[0].id);
+  const first = cards.find(card => card.kind === session.tab);
+  if (!requested && first) {
+    if (session.mode === "instances") selectSpatialOccurrence(first.id);
+    else selectSpatialDesign((tab !== "objects" && tab !== "tiles" ? cards.find(card => card.kind === session.tab && card.canonicalSource) : undefined)?.id ?? first.id);
     session = spatialSession();
   }
   const selected = visibleSpatialSelection(session);
@@ -50,8 +56,8 @@ export function renderSpatialAuthoringShell(
   const refresh = (): void => rerender();
 
   const onSelect = (id: string): void => {
-    if (session.mode === "instances") selectSpatialOccurrence(id);
-    else selectSpatialDesign(id);
+    const card = cards.find(card => card.id === id);
+    if (card) selectSpatialGalleryEntry(card);
     if (tab === "tiles") {
       const tilesetId = cards.find((card) => card.id === id)?.tilesetId;
       if (tilesetId) setSelectedTileset(tilesetId);
@@ -67,7 +73,27 @@ export function renderSpatialAuthoringShell(
     refresh();
   };
 
-  const chrome = renderSpatialChrome(session, refresh);
+  if (selected?.canonicalSource && tab !== "objects" && tab !== "tiles" && session.mode === "design" && !session.legacyOrigin && canUseCompositionWorkspace(selected.canonicalSource)) {
+    const workspace = renderSpatialCompositionWorkspace(session, selected, refresh);
+    workspace.addEventListener("keydown", event => handleShellKey(event, selected, refresh));
+    latestShellRefresh = refresh; installSpatialEscapeLayer(); host.append(workspace); return;
+  }
+  if ((tab === "objects" || tab === "spaces") && session.mode === "design" && !session.legacyOrigin) {
+    const browser = tab === "spaces"
+      ? renderSpatialSpaceWorkspace(session, selected, refresh)
+      : renderSpatialAssetBrowser(session, selected, refresh);
+    browser.addEventListener("keydown", (event) => handleShellKey(event, selected, refresh));
+    latestShellRefresh = refresh;
+    installSpatialEscapeLayer();
+    host.append(browser);
+    return;
+  }
+
+  const villageStudio = session.legacyOrigin === "villages" && session.tab === "regions";
+  const chrome = villageStudio ? el("div", { class: "spatial-chrome", children: [el("button", {
+    class: "db-ws-btn", text: "지역 목록으로", attrs: { type: "button" }, dataset: { testid: "spatial-village-back" },
+    on: { click: () => { setSpatialTab("regions"); refresh(); } },
+  }), el("strong", { text: "마을 설계서" })] }) : renderSpatialChrome(session, refresh);
   wireMode(chrome, "spatial-mode-design", () => onMode("design"));
   wireMode(chrome, "spatial-mode-instances", () => onMode("instances"));
 
@@ -105,7 +131,7 @@ export function renderSpatialAuthoringShell(
 
   const shell = el("div", {
     class: "spatial-shell",
-    dataset: { testid: `spatial-shell-${tab}` },
+    dataset: { testid: `spatial-shell-${tab}`, ...(villageStudio ? { legacyOrigin: "villages" } : {}) },
     attrs: { tabindex: "0" },
     children: [chrome, el("div", { class: "spatial-body", children: [gallery, stage] })],
   });

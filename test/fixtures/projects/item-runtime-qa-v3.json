@@ -77169,7 +77169,7 @@
         "price": 50,
         "skillId": "skill_item_potion",
         "description": "아군 하나의 HP를 50 회복합니다.",
-        "type": "normalGoods",
+        "type": "medicine",
         "occasion": "always",
         "consumable": true,
         "animationId": "anim_heal",
@@ -77239,7 +77239,7 @@
         "price": 120,
         "skillId": "skill_item_ether",
         "description": "아군 하나의 MP를 30 회복합니다.",
-        "type": "normalGoods",
+        "type": "medicine",
         "occasion": "always",
         "consumable": true,
         "animationId": "anim_magic",
@@ -78654,7 +78654,8 @@
           "stateResistanceChance": 0
         },
         "captureProfile": {
-          "multiplier": 1
+          "multiplier": 1,
+          "ballClass": "poke"
         }
       },
       {
@@ -81098,6 +81099,75 @@
           "stateResistanceChance": 0
         },
         "farmTool": "wateringCan"
+      },
+      {
+        "id": "item_axe",
+        "name": "도끼",
+        "imageResourceId": "cc0-jetrel-gen-axe-great",
+        "iconResourceId": "cc0-jetrel-gen-axe-great",
+        "scope": "none",
+        "price": 100,
+        "description": "숲의 나무를 베어 목재를 얻는 농기구입니다.",
+        "type": "normalGoods",
+        "occasion": "never",
+        "consumable": false,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "occasionField": false,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        },
+        "farmTool": "axe"
       },
       {
         "id": "item_arrow_bundle",
@@ -91513,7 +91583,8 @@
           "stateResistanceChance": 0
         },
         "captureProfile": {
-          "multiplier": 1.1
+          "multiplier": 1.5,
+          "ballClass": "great"
         }
       },
       {
@@ -91585,7 +91656,81 @@
           "stateResistanceChance": 0
         },
         "captureProfile": {
-          "multiplier": 1.2
+          "multiplier": 2,
+          "ballClass": "ultra"
+        }
+      },
+      {
+        "id": "item_gen_master_orb",
+        "name": "마스터 구슬",
+        "imageResourceId": "cc0-jetrel-gen-capture-sphere",
+        "iconResourceId": "cc0-jetrel-gen-capture-sphere",
+        "scope": "enemy",
+        "price": 5000,
+        "description": "어떤 몬스터든 반드시 포획하는 전설의 구슬입니다.",
+        "type": "special",
+        "occasion": "battle",
+        "consumable": true,
+        "animationId": "anim_gen_capture_seal",
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "occasionField": false,
+        "occasionBattle": true,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        },
+        "captureProfile": {
+          "multiplier": 100,
+          "ballClass": "master"
         }
       },
       {
@@ -99636,7 +99781,8 @@
         "sheet": {
           "frameWidth": 96,
           "frameHeight": 96,
-          "columns": 4
+          "columns": 4,
+          "assetScale": 2
         },
         "scope": "singleTarget",
         "position": "center",
@@ -99713,7 +99859,8 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_scarloxy_fire",
@@ -99722,7 +99869,8 @@
         "sheet": {
           "frameWidth": 96,
           "frameHeight": 96,
-          "columns": 4
+          "columns": 4,
+          "assetScale": 2
         },
         "scope": "singleTarget",
         "position": "center",
@@ -99791,7 +99939,8 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_scarloxy_green",
@@ -99800,7 +99949,8 @@
         "sheet": {
           "frameWidth": 96,
           "frameHeight": 96,
-          "columns": 4
+          "columns": 4,
+          "assetScale": 2
         },
         "scope": "singleTarget",
         "position": "center",
@@ -99869,7 +100019,8 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_scarloxy_ice",
@@ -99878,7 +100029,8 @@
         "sheet": {
           "frameWidth": 96,
           "frameHeight": 96,
-          "columns": 4
+          "columns": 4,
+          "assetScale": 2
         },
         "scope": "singleTarget",
         "position": "center",
@@ -99947,7 +100099,8 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_scarloxy_scratch",
@@ -99956,7 +100109,8 @@
         "sheet": {
           "frameWidth": 96,
           "frameHeight": 96,
-          "columns": 4
+          "columns": 4,
+          "assetScale": 2
         },
         "scope": "singleTarget",
         "position": "center",
@@ -100025,7 +100179,8 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_scarloxy_splash",
@@ -100034,7 +100189,8 @@
         "sheet": {
           "frameWidth": 96,
           "frameHeight": 96,
-          "columns": 4
+          "columns": 4,
+          "assetScale": 2
         },
         "scope": "singleTarget",
         "position": "center",
@@ -100103,16 +100259,18 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_slash_steel",
         "name": "강철 베기",
         "resourceId": "generated-battle-anim-slash-steel",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -100235,16 +100393,18 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_fire_burst",
         "name": "화염 폭발",
         "resourceId": "generated-battle-anim-fire-burst",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -100394,6 +100554,12 @@
               "durationFrames": 6
             }
           }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_smoke_vanish",
+            "startFrame": 6
+          }
         ]
       },
       {
@@ -100401,9 +100567,10 @@
         "name": "얼음 파쇄",
         "resourceId": "generated-battle-anim-ice-shatter",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -100545,6 +100712,12 @@
               "durationFrames": 5
             }
           }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_cleanse_sparkle",
+            "startFrame": 6
+          }
         ]
       },
       {
@@ -100552,9 +100725,10 @@
         "name": "번개 강타",
         "resourceId": "generated-battle-anim-thunder-strike",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "head",
@@ -100704,16 +100878,18 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_water_column",
         "name": "물기둥",
         "resourceId": "generated-battle-anim-water-column",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "feet",
@@ -100855,16 +101031,18 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_wind_slice",
         "name": "바람 칼날",
         "resourceId": "generated-battle-anim-wind-slice",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -101006,16 +101184,18 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_earth_spike",
         "name": "대지 창",
         "resourceId": "generated-battle-anim-earth-spike",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "feet",
@@ -101152,6 +101332,12 @@
               "durationFrames": 7
             }
           }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_smoke_vanish",
+            "startFrame": 5
+          }
         ]
       },
       {
@@ -101159,9 +101345,10 @@
         "name": "몸통박치기 충격",
         "resourceId": "generated-battle-anim-tackle-impact",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -101284,16 +101471,18 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_claw_rake",
         "name": "발톱 할퀴기",
         "resourceId": "generated-battle-anim-claw-rake",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -101411,16 +101600,18 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_bite_crunch",
         "name": "물어뜯기",
         "resourceId": "generated-battle-anim-bite-crunch",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -101543,16 +101734,18 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_projectile_shot",
         "name": "에너지 투사체",
         "resourceId": "generated-battle-anim-projectile-shot",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -101670,16 +101863,18 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_leaf_volley",
         "name": "잎날 난사",
         "resourceId": "generated-battle-anim-leaf-volley",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -101821,16 +102016,18 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_psychic_wave",
         "name": "염동 파동",
         "resourceId": "generated-battle-anim-psychic-wave",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -101972,16 +102169,18 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_shadow_pulse",
         "name": "암흑 파동",
         "resourceId": "generated-battle-anim-shadow-pulse",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -102123,6 +102322,12 @@
               "durationFrames": 6
             }
           }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_smoke_vanish",
+            "startFrame": 6
+          }
         ]
       },
       {
@@ -102130,9 +102335,10 @@
         "name": "성광",
         "resourceId": "generated-battle-anim-holy-beam",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -102274,6 +102480,12 @@
               "durationFrames": 6
             }
           }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_cleanse_sparkle",
+            "startFrame": 6
+          }
         ]
       },
       {
@@ -102281,9 +102493,10 @@
         "name": "수면 가루",
         "resourceId": "generated-battle-anim-sleep-dust",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "head",
@@ -102425,16 +102638,18 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_power_aura",
         "name": "강화 오라",
         "resourceId": "generated-battle-anim-power-aura",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -102576,16 +102791,18 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_guard_barrier",
         "name": "방어 장벽",
         "resourceId": "generated-battle-anim-guard-barrier",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -102727,16 +102944,18 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_capture_seal",
         "name": "포획 봉인",
         "resourceId": "generated-battle-anim-capture-seal",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 12
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 12,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -102907,16 +103126,18 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_critical_burst",
         "name": "치명타 폭발",
         "resourceId": "generated-battle-anim-critical-burst",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -103039,6 +103260,12 @@
               "durationFrames": 5
             }
           }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_smoke_vanish",
+            "startFrame": 4
+          }
         ]
       },
       {
@@ -103046,9 +103273,10 @@
         "name": "음파 충격",
         "resourceId": "generated-battle-anim-sonic-wave",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "allTargets",
         "position": "center",
@@ -103166,16 +103394,18 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_drain_orbs",
         "name": "생명력 흡수",
         "resourceId": "generated-battle-anim-drain-orbs",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -103317,16 +103547,18 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_revive_rise",
         "name": "부활의 빛",
         "resourceId": "generated-battle-anim-revive-rise",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "feet",
@@ -103468,16 +103700,18 @@
               "durationFrames": 7
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_cleanse_sparkle",
         "name": "정화의 반짝임",
         "resourceId": "generated-battle-anim-cleanse-sparkle",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -103619,16 +103853,18 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_paralysis_bind",
         "name": "마비 속박",
         "resourceId": "generated-battle-anim-paralysis-bind",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -103770,16 +104006,18 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_blind_veil",
         "name": "암흑 장막",
         "resourceId": "generated-battle-anim-blind-veil",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "head",
@@ -103921,16 +104159,18 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_confusion_spiral",
         "name": "혼란 나선",
         "resourceId": "generated-battle-anim-confusion-spiral",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "head",
@@ -104072,16 +104312,18 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_silence_lock",
         "name": "침묵 봉인",
         "resourceId": "generated-battle-anim-silence-lock",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -104223,16 +104465,18 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_summon_portal",
         "name": "소환 차원문",
         "resourceId": "generated-battle-anim-summon-portal",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 12
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 12,
+          "assetScale": 0.5
         },
         "scope": "allTargets",
         "position": "screen",
@@ -104244,7 +104488,7 @@
                 "pattern": 0,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104256,7 +104500,7 @@
                 "pattern": 1,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104268,7 +104512,7 @@
                 "pattern": 2,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104280,7 +104524,7 @@
                 "pattern": 3,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104292,7 +104536,7 @@
                 "pattern": 4,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104304,7 +104548,7 @@
                 "pattern": 5,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104316,7 +104560,7 @@
                 "pattern": 6,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104328,7 +104572,7 @@
                 "pattern": 7,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104340,7 +104584,7 @@
                 "pattern": 8,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104352,7 +104596,7 @@
                 "pattern": 9,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104364,7 +104608,7 @@
                 "pattern": 10,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104376,7 +104620,7 @@
                 "pattern": 11,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104403,16 +104647,18 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_smoke_vanish",
         "name": "연막 소멸",
         "resourceId": "generated-battle-anim-smoke-vanish",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -104520,16 +104766,18 @@
             "frameIndex": 3,
             "soundResourceId": "easyrpg-sound-fog1"
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_meteor_fall",
         "name": "운석 낙하",
         "resourceId": "generated-battle-anim-meteor-fall",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 12
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 12,
+          "assetScale": 0.5
         },
         "scope": "allTargets",
         "position": "screen",
@@ -104541,7 +104789,7 @@
                 "pattern": 0,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104553,7 +104801,7 @@
                 "pattern": 1,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104565,7 +104813,7 @@
                 "pattern": 2,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104577,7 +104825,7 @@
                 "pattern": 3,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104589,7 +104837,7 @@
                 "pattern": 4,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104601,7 +104849,7 @@
                 "pattern": 5,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104613,7 +104861,7 @@
                 "pattern": 6,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104625,7 +104873,7 @@
                 "pattern": 7,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104637,7 +104885,7 @@
                 "pattern": 8,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104649,7 +104897,7 @@
                 "pattern": 9,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104661,7 +104909,7 @@
                 "pattern": 10,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104673,7 +104921,7 @@
                 "pattern": 11,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -104699,6 +104947,12 @@
               "speed": 6,
               "durationFrames": 9
             }
+          }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_smoke_vanish",
+            "startFrame": 8
           }
         ]
       }

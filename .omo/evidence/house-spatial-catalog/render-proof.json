@@ -1,0 +1,6 @@
+{
+  "source": "Supabase reload",
+  "renderer": "editor/mapTileDraw",
+  "examples": 2,
+  "interiorMaps": 7
+}

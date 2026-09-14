@@ -170,7 +170,14 @@ function executeByTitle(
     return;
   }
   if (title === "Change Parallax Back") {
-    runtime.map["parallax_override"] = { mapId: "", x: 0, y: 0, value: commandResourceId(fields) };
+    // 이 명령은 **그때 서 있던 맵**의 먼 배경을 바꾼다(RM2K3). 어느 맵인지 적어 두지 않으면
+    // 다른 맵으로 걸어간 뒤에도 이전 맵의 하늘이 따라온다 — 세션이 현재 맵을 알고 있다.
+    runtime.map["parallax_override"] = {
+      mapId: session.currentMapId ?? "",
+      x: 0,
+      y: 0,
+      value: commandResourceId(fields),
+    };
     return;
   }
   if (title === "Set Encounter Rate") {

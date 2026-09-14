@@ -28,9 +28,10 @@ describe("AI assistant editor-wide project mutation coverage", () => {
     const { context, mapId } = contextWithMap();
     const source = context.project.maps[mapId];
     source.bgm = { mode: "custom", resourceId: "bgm_field", fadeInMs: 350 };
-    source.background = { imageId: "bg_clouds", scrollX: 1, scrollY: -1 };
+    source.background = { imageId: "easyrpg-backdrop-sky1", scrollX: 1, scrollY: -1 };
     source.disableSave = true;
     source.minimap = { enabled: true, corner: "topLeft", showEvents: true };
+    source.cloudShadows = { enabled: true, opacity: 0.3, speed: 40, angleDeg: 200, scale: 1.5 };
 
     const result = runTool(context, "duplicate_map", {
       mapId,
@@ -46,6 +47,7 @@ describe("AI assistant editor-wide project mutation coverage", () => {
       background: source.background,
       disableSave: true,
       minimap: source.minimap,
+      cloudShadows: source.cloudShadows,
     });
     expect(findParentMapId(context.project.mapTree, "map_copy")).toBe(findParentMapId(context.project.mapTree, mapId));
   });
@@ -60,10 +62,11 @@ describe("AI assistant editor-wide project mutation coverage", () => {
       name: "속성 완성 맵",
       tilesetId,
       bgm: { mode: "custom", resourceId: "bgm_dungeon", fadeInMs: 500 },
-      background: { imageId: "bg_fog", scrollX: 2, scrollY: 0 },
+      background: { imageId: "easyrpg-backdrop-dawn1", scrollX: 2, scrollY: 0 },
       battleBackground: "battle_cave",
       flags: { disableSave: true, disableTeleport: true, disableEscape: false },
       minimap: { enabled: true, corner: "bottomRight", scale: 0.2, showEvents: false, fogOfWar: true },
+      cloudShadows: { enabled: true, opacity: 0.4, speed: 52, angleDeg: 200, scale: 1.5 },
     });
 
     expect(result.ok, result.summary).toBe(true);
@@ -72,11 +75,12 @@ describe("AI assistant editor-wide project mutation coverage", () => {
       name: "속성 완성 맵",
       tilesetId,
       bgm: { mode: "custom", resourceId: "bgm_dungeon", fadeInMs: 500 },
-      background: { imageId: "bg_fog", scrollX: 2, scrollY: 0 },
+      background: { imageId: "easyrpg-backdrop-dawn1", scrollX: 2, scrollY: 0 },
       battleBackground: "battle_cave",
       disableSave: true,
       disableTeleport: true,
       minimap: { enabled: true, corner: "bottomRight", scale: 0.2, showEvents: false, fogOfWar: true },
+      cloudShadows: { enabled: true, opacity: 0.4, speed: 52, angleDeg: 200, scale: 1.5 },
     });
     expect(context.project.maps[mapId].disableEscape).toBeUndefined();
   });
@@ -176,7 +180,7 @@ describe("AI assistant editor-wide project mutation coverage", () => {
     const context: ToolContext = { project: createEmptyToolProject("프로젝트 설정") };
     const actorId = context.project.database.actors[0]?.id;
     expect(actorId).toBeDefined();
-    const enemy = runTool(context, "upsert_enemy", { enemy: { id: "enemy_settings", name: "설정용 적" } });
+    const enemy = runTool(context, "upsert_enemy", { enemy: { id: "enemy_settings", name: "설정용 적", monsterResourceId: "generated-enemy-orc-01" } });
     const troop = runTool(context, "upsert_troop", { troop: { id: "troop_settings", name: "설정용 적 그룹", enemyIds: ["enemy_settings"] } });
     expect(enemy.ok, enemy.summary).toBe(true);
     expect(troop.ok, troop.summary).toBe(true);

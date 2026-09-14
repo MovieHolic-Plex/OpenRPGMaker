@@ -8,6 +8,7 @@ import { el } from "@/util/dom";
 export type SpatialObjectInspectorHandlers = {
   readonly onBuildTarget: () => void;
   readonly onName: (name: string) => void;
+  readonly onExteriorStories?: (stories: ObjectDesign["exteriorStories"]) => void;
   readonly onGraphic: (tilesetId: string, kitId: string) => void;
   readonly onAnchor: (index: number, patch: Partial<SpatialPort>) => void;
   readonly onAddAnchor: () => void;
@@ -65,14 +66,18 @@ export function renderSpatialObjectInspector(input: {
       }),
       nameField(design?.name ?? card.name, handlers.builtinLocked, handlers.onName),
       graphicFields(tilesets, target, kits, handlers),
+      ...(design && handlers.onExteriorStories ? [exteriorStoriesField(design, handlers)] : []),
       el("div", {
         class: "spatial-object-actions",
         children: handlers.builtinLocked
           ? [actionButton("spatial-object-copy", "내 설계로 복제", handlers.onCopyBuiltin)]
           : [actionButton("spatial-object-paint", "그림 편집", handlers.onEditGraphic)],
       }),
-      anchorFields(design?.anchors ?? [], handlers),
-      chipFields(chips, customChips.join(", "), handlers),
+      ...(design ? [el("details", { class: "spatial-object-meta", children: [
+        el("summary", { text: "고급 설정 · 연결점과 동작" }),
+        graphicFields(tilesets, target, kits, handlers),
+        anchorFields(design.anchors, handlers), chipFields(chips, customChips.join(", "), handlers),
+      ] })] : []),
       ...(deletePreview ? [deletePreviewBlock(deletePreview)] : []),
       el("details", {
         class: "spatial-object-meta",
@@ -242,4 +247,13 @@ function actionButton(testid: string, label: string, onClick: () => void): HTMLE
     dataset: { testid },
     on: { click: onClick },
   });
+}
+
+function exteriorStoriesField(design: ObjectDesign, handlers: SpatialObjectInspectorHandlers): HTMLElement {
+  const select = el("select", { attrs: { "aria-label": "건물 외형 층수" }, dataset: { testid: "spatial-object-exterior-stories" },
+    children: [el("option", { attrs: { value: "" }, text: "건물 아님 / 미지정" }), ...[1, 2, 3, 4].map(n => el("option", { attrs: { value: String(n) }, text: `${n}층 외형` }))] }) as HTMLSelectElement;
+  select.value = String(design.exteriorStories ?? "");
+  select.disabled = handlers.builtinLocked;
+  select.addEventListener("change", () => handlers.onExteriorStories?.(select.value ? Number(select.value) as 1 | 2 | 3 | 4 : undefined));
+  return el("label", { children: [el("span", { text: "건물 외형 층수 (실내 공간은 별도)" }), select] });
 }

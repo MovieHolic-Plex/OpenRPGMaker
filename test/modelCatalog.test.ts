@@ -51,7 +51,7 @@ describe("modelCatalog — 두 제공자만 해석한다", () => {
     const { defaultModelForAuthMode, modelCatalogForAuthMode } = await loadCatalog();
     const models = modelCatalogForAuthMode("chatgpt", ANTIGRAVITY_PROVIDER_ID).flatMap((g) => g.models);
 
-    expect([...models].sort()).toEqual([...ANTIGRAVITY_BUNDLED].sort());
+    expect([...models].sort()).toEqual([...ANTIGRAVITY_BUNDLED, "gemini-3.8-flash"].sort());
     expect(models[0]).toBe("gemini-3.7-flash");
     expect(defaultModelForAuthMode("chatgpt", ANTIGRAVITY_PROVIDER_ID)).toBe("gemini-3.7-flash");
     // `-high` 는 목록에 없다 — Cloud Code Assist 가 404 로 거부하는 ID 다(실측 2026-08-26).
@@ -121,11 +121,11 @@ describe("isModelValidForAuthMode — 선택된 제공자 기준", () => {
     expect(isModelValidForAuthMode("chatgpt", "gemini-9-experimental", ANTIGRAVITY_PROVIDER_ID)).toBe(true);
   });
 
-  it("번들에 없는 Gemini 3.8 Flash 는 목록에 없다(실측 2026-09-10 번들 17.4.0 19종)", async () => {
+  it("Gemini 3.8 Flash is selectable through the verified local catalog extension", async () => {
     const { isModelValidForAuthMode, modelCatalogForAuthMode } = await loadCatalog();
     const models = modelCatalogForAuthMode("chatgpt", ANTIGRAVITY_PROVIDER_ID).flatMap((g) => g.models);
-    expect(models).not.toContain("gemini-3.8-flash");
-    // gemini 네임스페이스 통과 예외로 검증 자체는 통과하지만, 목록에서 골라 저장되지는 않는다.
+    expect(models).toContain("gemini-3.8-flash");
+    // OAuth wire verified 2026-09-14; selection is preserved end to end.
     expect(isModelValidForAuthMode("chatgpt", "gemini-3.8-flash", ANTIGRAVITY_PROVIDER_ID)).toBe(true);
   });
 

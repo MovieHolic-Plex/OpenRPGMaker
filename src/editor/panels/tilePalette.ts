@@ -19,7 +19,12 @@ import { makeTileBrushAssistPanel } from "@/editor/panels/tilePalettePreviewPane
 import { makeTileBrushControls } from "@/editor/panels/tilePaletteStampStatus";
 import { selectPaletteStamp } from "@/editor/panels/tileToolbarActions";
 import { dismissLocationDrawModeForTool } from "@/editor/locationDrawMode";
-import { makeCustomPalette, makeGridPalette, gridPaletteDisplayTile } from "@/editor/panels/tilePaletteGrid";
+import {
+  makeCustomPalette,
+  makeGridPalette,
+  gridPaletteDisplayTile,
+  gridPaletteVisibleCount,
+} from "@/editor/panels/tilePaletteGrid";
 import {
   TILE_CATEGORIES,
   filterTileIndexes,
@@ -241,9 +246,10 @@ function makePaletteSurface(input: {
   // 구조 보조는 이웃 연결과 나란히 보인다 — 두 계약이 따로 있다는 사실 자체가 UI 정보다.
   if (assist.clusterRow) options.append(assist.clusterRow);
   root.append(options);
-  root.append(makePaletteFilterBar(tileset));
-
   const visibleTiles = filteredTileIdSet(tileset);
+  root.append(makePaletteFilterBar(tileset, tileLayer, state.selectedTile));
+  const emptyHint = makePaletteEmptyHint(tileLayer);
+
   const palette = isCustomTileset(tileset)
     ? makeCustomPalette({
         onCreatePaletteStamp: selectPaletteStamp,
@@ -251,6 +257,7 @@ function makePaletteSurface(input: {
         onSelectTile: selectPaletteTile,
         selectedTile: state.selectedTile,
         tileset,
+        emptyHint,
         visibleTiles,
       })
     : makeGridPalette({
@@ -261,6 +268,7 @@ function makePaletteSurface(input: {
         onSelectTile: selectPaletteTile,
         selectedTile: state.selectedTile,
         tileset,
+        emptyHint,
         visibleTiles,
       });
   if (showQuickTileNumbers) palette.classList.add("show-index");
@@ -297,7 +305,11 @@ function makePaletteSurface(input: {
  * 검색 + 카테고리 한 줄. 예전 「찾기」 탭의 알맹이지만 별개 그리드를 만들지 않고
  * 위의 팔레트 하나를 필터링한다 — 같은 타일 그림판을 두 방식으로 보여주지 않는다.
  */
-function makePaletteFilterBar(tileset: TilesetDef): HTMLElement {
+function makePaletteFilterBar(
+  tileset: TilesetDef,
+  tileLayer: Exclude<Layer, "event">,
+  selectedTile: number,
+): HTMLElement {
   const bar = el("div", {
     class: "palette-filter-bar",
     dataset: { testid: "palette-filter-bar" },
@@ -349,19 +361,24 @@ function makePaletteFilterBar(tileset: TilesetDef): HTMLElement {
     } },
   });
   for (const category of TILE_CATEGORIES) {
-    categorySelect.append(el("option", { value: category.id, text: category.label }));
+    // 분류 이름 옆에 **실제로 보일 칸 수**를 붙인다. 셀렉트를 열기 전에 무엇이 비어 있는지
+    // 알 수 있어야 한다 — 덧그림 레이어의 지형/물은 이 수가 0이고, 그때 고르면 빈 시트를 본다.
+    const count = paletteMatchCount(tileset, tileLayer, selectedTile, categoryVisibleTileSet(tileset, category.id));
+    categorySelect.append(el("option", { value: category.id, text: `${category.label} (${count})` }));
   }
   categorySelect.value = activeTileCategory;
   bar.append(el("div", { class: "palette-filter-search-row", children: [search, categorySelect, numberToggle] }));
 
   if (isFilterActive()) {
-    const matched = filteredTileIndexes(tileset).length;
+    // 개수는 **팔레트가 실제로 그리는 칸**을 센다(아래 paletteMatchCount 참고). 예전에는
+    // 타일셋 인덱스 일치 수를 세서 표기가 화면과 갈라졌다.
+    const matched = paletteMatchCount(tileset, tileLayer, selectedTile, filteredTileIdSet(tileset));
     bar.append(
       el("div", {
         class: "palette-filter-status",
         dataset: { testid: "palette-filter-status" },
         children: [
-          el("span", { text: `${matched}개 일치` }),
+          el("span", { text: `${matched}칸 표시` }),
           el("button", {
             class: "btn btn-mini palette-filter-clear",
             text: "필터 해제",
@@ -444,6 +461,51 @@ function isFilterActive(): boolean {
 function filteredTileIdSet(tileset: TilesetDef): ReadonlySet<number> | null {
   if (!isFilterActive()) return null;
   return new Set(filteredTileIndexes(tileset));
+}
+
+/**
+ * 분류 하나만 걸었을 때의 타일 집합 — 셀렉트의 「지형 (42)」 같은 수를 내는 데 쓴다.
+ * 검색어는 섞지 않는다: 분류 옆의 수는 분류의 크기이지 현재 검색의 크기가 아니다.
+ */
+function categoryVisibleTileSet(tileset: TilesetDef, category: TileCategoryId): ReadonlySet<number> {
+  if (category === "all") return new Set(Array.from({ length: tileset.count }, (_, index) => index));
+  return new Set(filterTileIndexes(tileset, { category, query: "", recent: recentTiles }));
+}
+
+/**
+ * 지금 조건에 맞는 칸이 몇 개인가 — **팔레트 종류에 따라 답이 다르다.**
+ *
+ * · 기본 리플로우 팔레트: 안 맞는 칸을 아예 안 그린다. 그래서 그리는 수는
+ *   gridPaletteVisibleCount(오토타일 대표 축약 · 변형 숨김 · 레이어 가시성 반영)다.
+ * · 커스텀 아틀라스: 칸의 위치가 정보라 **하나도 숨기지 않고** 안 맞는 것만 흐리게 한다
+ *   (makeCustomPalette 주석). 그래서 화면에 있는 칸은 언제나 전량이고, 셀 수 있는 것은
+ *   "맞는 칸"의 수다. 이 둘을 한 함수로 뭉치면 커스텀 아틀라스에서 0이라고 말하게 된다.
+ */
+function paletteMatchCount(
+  tileset: TilesetDef,
+  tileLayer: Exclude<Layer, "event">,
+  selectedTile: number,
+  visibleTiles: ReadonlySet<number> | null,
+): number {
+  if (isCustomTileset(tileset)) return visibleTiles ? visibleTiles.size : tileset.count;
+  return gridPaletteVisibleCount({ layer: tileLayer, selectedTile, tileset, visibleTiles });
+}
+
+/**
+ * 빈 시트의 안내 문장. 「조건에 맞는 타일이 없습니다」 만으로는 **무엇을 풀어야 하는지**
+ * 알 수 없다 — 실측: 덧그림 레이어에서 「지형」을 고르면 0칸인데, 그 사실은 어느 칩이
+ * 원인인지 말해 주지 않았다. 레이어를 아는 이 함수가 원인을 짚는다.
+ */
+function makePaletteEmptyHint(tileLayer: Exclude<Layer, "event">): string | undefined {
+  const layerLabel = tileLayer === "upper" ? "덧그림" : "바닥";
+  // 「지형」·「물」은 하위 레이어 전용 판정이다(tileMatchesCategory). 그 레이어가 아니면
+  // 분류 자체가 0칸을 낳으므로, 검색어를 지우는 것으로는 풀리지 않는다는 걸 말해 준다.
+  if (tileLayer === "upper" && (activeTileCategory === "terrain" || activeTileCategory === "water")) {
+    return `「${activeTileCategory === "terrain" ? "지형" : "물"}」 분류는 바닥 레이어 전용입니다. ` +
+      `바닥 레이어로 바꾸거나 분류를 「전체」로 되돌리세요. (${layerLabel} 레이어에는 해당 타일이 없습니다)`;
+  }
+  if (activeTileCategory !== "all") return "조건에 맞는 타일이 없습니다. 분류를 「전체」로 되돌려 보세요.";
+  return undefined;
 }
 
 function filteredTileIndexes(tileset: TilesetDef): readonly number[] {

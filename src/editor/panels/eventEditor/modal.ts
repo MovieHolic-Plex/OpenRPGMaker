@@ -757,7 +757,7 @@ function remotePersistenceLabel(autoSave: AutoSaveState): { readonly text: strin
   if (db.kind === "not-configured") return { text: "저장소 미설정", state: "not-configured" };
   if (db.kind === "disabled") {
     return {
-      text: db.reason === "dev-showcase" ? "임시 세션" : "오프라인",
+      text: db.reason === "dev-showcase" ? "임시 세션" : db.reason === "shared-demo" ? "공용 예제" : "오프라인",
       state: "disabled",
     };
   }

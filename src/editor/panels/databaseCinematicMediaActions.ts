@@ -1,9 +1,11 @@
 import { prepareCinematicUpload } from "@/editor/cinematicMediaImport";
 import {
+  emptySequence,
   readCinematicSequence,
   requireCinematicSequence,
   sameRecord,
   sceneWithKind,
+  writeSequence,
   type CinematicTarget,
 } from "@/editor/panels/databaseCinematicActionModel";
 import { listDatabaseResourceOptions } from "@/editor/panels/databaseResourcePickerDialog";
@@ -14,6 +16,8 @@ import type { Project, UploadedAsset } from "@/project/types";
 export type CinematicMediaSlot =
   | { readonly kind: "image" | "video"; readonly sceneId: string }
   | { readonly kind: "voice"; readonly sceneId: string }
+  /** 시퀀스 전체 배경음악 — 장면이 아직 없어도 설정할 수 있다. */
+  | { readonly kind: "music" }
   | { readonly kind: "background" };
 
 /**
@@ -29,9 +33,10 @@ export type CinematicMediaTicket = {
 
 type MediaDestination =
   | { readonly kind: "background" }
+  | { readonly kind: "music" }
   | {
     readonly kind: "scene";
-    readonly slot: Exclude<CinematicMediaSlot, { readonly kind: "background" }>;
+    readonly slot: Exclude<CinematicMediaSlot, { readonly kind: "background" } | { readonly kind: "music" }>;
     readonly scene: CinematicScene;
   };
 
@@ -50,6 +55,7 @@ export function createDatabaseCinematicMediaActions(options: {
     if (slot.kind === "background") {
       return target === "gameOver" ? { kind: "background" } : undefined;
     }
+    if (slot.kind === "music") return { kind: "music" };
     const scene = readCinematicSequence(store.getCurrent(), target)?.scenes
       .find(entry => entry.id === slot.sceneId);
     return scene ? { kind: "scene", slot, scene } : undefined;
@@ -73,7 +79,8 @@ export function createDatabaseCinematicMediaActions(options: {
     const required = slot.kind === "image" || slot.kind === "video";
     if (required && !resourceId) return false;
     const pickerKind = slot.kind === "video" ? "movie"
-      : slot.kind === "voice" ? "sound" : "image";
+      : slot.kind === "voice" ? "sound"
+        : slot.kind === "music" ? "music" : "still";
     if (resourceId && !asset && !listDatabaseResourceOptions(pickerKind, ticket.project)
       .some(option => option.id === resourceId)) return false;
 
@@ -93,6 +100,16 @@ export function createDatabaseCinematicMediaActions(options: {
         const index = scenes.findIndex(scene => scene.id === slot.sceneId);
         scenes[index] = nextScene;
       };
+    } else if (destination.kind === "music") {
+      if (!asset && (readCinematicSequence(store.getCurrent(), target)?.musicResourceId ?? "") === resourceId) {
+        return false;
+      }
+      applyReference = project => {
+        if (!readCinematicSequence(project, target)) writeSequence(project, target, emptySequence());
+        const sequence = requireCinematicSequence(project, target);
+        if (resourceId) sequence.musicResourceId = resourceId;
+        else delete sequence.musicResourceId;
+      };
     } else {
       if (!asset
         && (store.getCurrent().system.gameOver?.backgroundResourceId ?? "") === resourceId) {
@@ -110,7 +127,7 @@ export function createDatabaseCinematicMediaActions(options: {
       if (asset) {
         project.assets.uploaded[asset.id] = asset;
         project.resourceProfiles.push({
-          kind: pickerKind === "image" ? "picture" : pickerKind,
+          kind: pickerKind === "still" ? "picture" : pickerKind,
           name: asset.name,
           assetId: asset.id,
         });
@@ -148,7 +165,7 @@ export function createDatabaseCinematicMediaActions(options: {
       });
       try {
         const kind = ticket.slot.kind === "video" ? "video"
-          : ticket.slot.kind === "voice" ? "audio" : "image";
+          : ticket.slot.kind === "voice" || ticket.slot.kind === "music" ? "audio" : "image";
         const asset = await prepareCinematicUpload(file, kind, preparation.signal);
         preparation.signal.throwIfAborted();
         if (!resolveTicket(ticket)) return false;

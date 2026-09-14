@@ -1,3 +1,4 @@
+import { regionReferenceContext } from "@/project/regionReferences";
 // ai/contextBuilder.ts
 // 어시스턴트 시스템 프롬프트(한국어) 조립기. 순수 함수(브라우저 접근 금지).
 // 구성: ① 에디터 소개 + 툴 사용 수칙 ② get_project_summary ③ 현재 맵 get_map_region 요약
@@ -213,6 +214,7 @@ const INTRO = [
   "22. 스위치/변수를 새로 쓰기 전에 declare_story_flag로 의미를 등록하세요.",
   "23. 이벤트가 왜 안 나오는지는 explain_event로 확인하세요.",
   "24. 다중 맵 월드는 plan_world→build_world→맵별 콘텐츠 순서로.",
+  "25. 게임 시작 오프닝 연출은 system.opening(set_opening·edit_opening) 이다 — 이벤트 컷신으로 대신하지 마세요. 그림은 배경화·타이틀 아트를 고르거나 generate_opening_image 로 만듭니다.",
 ].join("\n");
 
 function summarySection(project: Project): string {
@@ -309,7 +311,7 @@ function tileVocabularySection(project: Project, mapId: string | undefined): str
   if (lines.length === 0) return "";
   return [
     "## 타일 어휘 다이제스트",
-    "배치는 v3 공정 프리미티브 + 고수준 툴. **집·마당:** author_house — LLM은 wings(앵커 위치)·templateId(모양 34종)·kitId(색)·stories/lowWall/chimney·yard 태그만(firewood/mailbox/bench_h/…), 세부 좌표는 코드. 여러 채면 templateId 를 집마다 다르게 주고 look_at_houses 로 확인. **마을:** author_village에 theme·pathStyle·yardStyle·forestDensity 등 의도를 채워라(빈 호출 금지). 숲=forestDensity:\"dense\", 울창/빽빽/통행 불가=\"impassable\", 드문드문=\"sparse\" — 테마 문장을 코드가 읽지 않는다. **place_props:** 숲/들판 산포와 집에서 먼 소품(묘지 등)만 — 구역별, area 넓게, 숲이면 density enum, naturalness 0.55~0.7, 동일 인자 턴당 1회. 집 앞 소품을 광장에 몰지 말 것. **자리 줄:** 신도석·좌석·책상 줄은 산포 대신 arrange_rows(axis=통로축·aisleWidth·rowGap·symmetric). 호수: fill_region+circle(get_map_region data.water.bounds). 길: paint_road. 미합의 재료는 맵 목업 후 [이대로 적용]. 재료는 material=타일 라벨/설명만(그룹 id·*VocabId 금지). 모르면 tile_query ask:\"labels\".",
+    "배치는 v3 공정 프리미티브 + 고수준 툴. **집·마당:** author_house — LLM은 wings(앵커 위치)·templateId(모양 34종)·kitId(색)·stories/lowWall/chimney·yard 태그만(firewood/mailbox/bench_h/…), 세부 좌표는 코드. 여러 채면 templateId 를 집마다 다르게 주고 look_at_houses 로 확인. **마을:** 집 → 길 → 나무 → 호수·마당·맵 꾸미기 순서. 앞서 만든 집·길을 보존하고 호수·마당 자리는 계획에서 예약한다. author_village에 theme·pathStyle·yardStyle·forestDensity 등 의도를 채워라(빈 호출 금지). 숲=forestDensity:\"dense\", 울창/빽빽/통행 불가=\"impassable\", 드문드문=\"sparse\" — 테마 문장을 코드가 읽지 않는다. **place_props:** 숲/들판 산포와 집에서 먼 소품(묘지 등)만 — 구역별, area 넓게, 숲이면 density enum, naturalness 0.55~0.7, 동일 인자 턴당 1회. 집 앞 소품을 광장에 몰지 말 것. **자리 줄:** 신도석·좌석·책상 줄은 산포 대신 arrange_rows(axis=통로축·aisleWidth·rowGap·symmetric). 호수: fill_region+circle(get_map_region data.water.bounds). 길: paint_road. 미합의 재료는 맵 목업 후 [이대로 적용]. 재료는 material=타일 라벨/설명만(그룹 id·*VocabId 금지). 모르면 tile_query ask:\"labels\".",
     trimDigestLines(lines, 700),
   ].join("\n");
 }
@@ -747,6 +749,7 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   // 사라진다 — 사라진 줄 아무도 모르는 것이 이 블록의 최악 실패다(색인을 예산 밖에 둔 이유와 동일).
   const spatial = spatialAuthoringContext(project);
   if (spatial) assembled += `\n\n${spatial}`;
+  assembled += `\n\n${regionReferenceContext()}`;
   const designContract = villageDesignContext(project);
   if (designContract) assembled += `\n\n${designContract}`;
   const wiki = projectWikiContext(project, { query: options.wikiQuery ?? "", mapId: currentMapId });

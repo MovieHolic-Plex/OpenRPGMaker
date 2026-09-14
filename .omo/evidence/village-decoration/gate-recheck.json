@@ -1,0 +1,22 @@
+{
+  "command": "npx vitest run test/spatialCombinedAuthoring.test.ts --maxWorkers=1",
+  "passed": 3,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "accepts one nested transaction when shared space and place adapters move delete and add actual members",
+      "status": "passed",
+      "duration": 9547.218506999998
+    },
+    {
+      "name": "preserves the continuing build when an obsolete member adapter hands off after a newer shared edit",
+      "status": "passed",
+      "duration": 8841.998435000001
+    },
+    {
+      "name": "retains opaque transfer identities when an ordinary shared containing edit moves their actual destination",
+      "status": "passed",
+      "duration": 4930.6433529999995
+    }
+  ]
+}

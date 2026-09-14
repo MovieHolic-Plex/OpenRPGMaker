@@ -1,6 +1,6 @@
 import type { SpatialAuthoringSession } from "@/editor/panels/spatialAuthoringSession";
 import { placeChromeState } from "@/editor/panels/spatialPlaceChromeState";
-import { commitWorkingPlace, workingProject } from "@/editor/panels/spatialPlaceCommands";
+import { commitWorkingPlace, mutateWorkingPlace, workingProject } from "@/editor/panels/spatialPlaceCommands";
 import { connectLocal, placeDraftTarget } from "@/editor/panels/spatialPlaceDraft";
 import {
   ordinaryPlacedConnections,
@@ -20,6 +20,7 @@ function option(value: string, label: string, selected: boolean): HTMLElement {
 
 function bindSelect(testid: string, value: string, onChange: (next: string) => void, options: readonly HTMLElement[]): HTMLElement {
   const select = el("select", {
+    attrs: { "aria-label": ({ "spatial-place-connect-from": "출발 장소", "spatial-place-connect-from-port": "출발 출입구", "spatial-place-connect-to": "도착 장소", "spatial-place-connect-to-port": "도착 출입구" } as Record<string, string>)[testid] ?? testid },
     dataset: { testid },
     on: {
       change: (event) => {
@@ -82,12 +83,12 @@ function renderSourceLinkActions(place: PlaceDesign, target: ReturnType<typeof p
       }, sourcePortOptions(place, placeChromeState.connectToId).map((port) => option(port.id, port.name, port.id === placeChromeState.connectToPort))),
       el("button", {
         class: "spatial-action",
-        text: selected ? "다시 연결" : "층 연결",
+        text: selected ? "다시 연결" : "출입 연결",
         attrs: { type: "button" },
         dataset: { testid: "spatial-place-connect" },
         on: {
           click: () => {
-            commitWorkingPlace(target, connectLocal(place, {
+            commitWorkingPlace(target, connectLocal(selected ? { ...place, connections: place.connections.filter(link => link.id !== selected.id) } : place, {
               id: selected?.id ?? newConnectionId(),
               from: {
                 childId: placeChromeState.connectFromId ? spatialId(placeChromeState.connectFromId) : null,
@@ -103,6 +104,11 @@ function renderSourceLinkActions(place: PlaceDesign, target: ReturnType<typeof p
           },
         },
       }),
+      ...(selected ? [el("button", { class: "spatial-action", text: "연결 삭제", attrs: { type: "button" }, dataset: { testid: "spatial-place-disconnect" }, on: { click: () => {
+        mutateWorkingPlace(target, current => ({ ...current, connections: current.connections.filter(link => link.id !== selected.id) }));
+        if (!placeChromeState.previewError) placeChromeState.selectedConnectionId = null;
+        rerender();
+      } } })] : []),
     ],
   });
 }
@@ -170,7 +176,7 @@ export function renderPlaceLinkActions(
       }),
       el("button", {
         class: "spatial-action",
-        text: selected ? "다시 연결" : "층 연결",
+        text: selected ? "다시 연결" : "출입 연결",
         attrs: { type: "button" },
         dataset: { testid: "spatial-place-connect" },
         on: { click: () => { submitPlacedConnection(workingProject(), parentId); rerender(); } },
