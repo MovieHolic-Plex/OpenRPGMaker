@@ -74,10 +74,12 @@ function savedPos(): unknown {
   return JSON.parse(storage.get(POS_KEY) ?? "null");
 }
 
-function pointerEvent(type: string, clientX: number, clientY: number): Event {
+function pointerEvent(type: string, clientX: number, clientY: number, buttons = 1): Event {
   const event = new Event(type);
   Object.defineProperty(event, "clientX", { configurable: true, value: clientX });
   Object.defineProperty(event, "clientY", { configurable: true, value: clientY });
+  // 드래그 중 실제 포인터는 buttons ≥ 1 이다. 창 밖 릴리스 뒤 돌아온 move 만 0 이다.
+  Object.defineProperty(event, "buttons", { configurable: true, value: buttons });
   Object.defineProperty(event, "preventDefault", { configurable: true, value: () => undefined });
   return event;
 }
@@ -181,8 +183,13 @@ describe("레일 드래그는 데크를 옮긴다", () => {
     const { panel, rail } = surface;
 
     rail.dispatchEvent(pointerEvent("pointerdown", 1000, 900));
-    expect(panel.className).toContain("is-dragging");
+    // 임계값 아래는 클릭이다 — 시각 상태도 위치 변수도 아직 없다.
+    globalThis.window.dispatchEvent(pointerEvent("pointermove", 999, 900));
+    expect(panel.className).not.toContain("is-dragging");
+    expect(deckRight(panel)).toBe("");
+
     globalThis.window.dispatchEvent(pointerEvent("pointermove", 800, 700));
+    expect(panel.className).toContain("is-dragging");
 
     // right/bottom 앵커 — 왼쪽(−200)·위(−200)로 끌면 오프셋이 커진다.
     expect(deckRight(panel)).toBe("216px");
@@ -254,10 +261,57 @@ describe("레일 드래그는 데크를 옮긴다", () => {
     const body = (globalThis.document as unknown as { body: FakeElement }).body;
 
     surface.rail.dispatchEvent(pointerEvent("pointerdown", 1000, 900));
-    expect(body.style.getPropertyValue("cursor")).toBe("grabbing");
+    // 커서는 드래그가 열린 뒤에만 — 클릭 지점에서 grabbing 이 번쩍이지 않는다.
+    expect(body.style.getPropertyValue("cursor")).toBe("");
     globalThis.window.dispatchEvent(pointerEvent("pointermove", 900, 800));
+    expect(body.style.getPropertyValue("cursor")).toBe("grabbing");
     globalThis.window.dispatchEvent(pointerEvent("pointerup", 900, 800));
     expect(body.style.getPropertyValue("cursor")).toBe("");
+  });
+
+  it("1px 지터 클릭은 드래그가 아니다 — 위치도 저장도 남기지 않는다", () => {
+    installFakeWindow();
+    const surface = renderSurface();
+    stubMeasured(surface);
+
+    surface.rail.dispatchEvent(pointerEvent("pointerdown", 1000, 900));
+    globalThis.window.dispatchEvent(pointerEvent("pointermove", 1001, 901));
+    globalThis.window.dispatchEvent(pointerEvent("pointerup", 1001, 901));
+
+    // 실측 결함(2026-09-14): 1px 만 흔든 클릭이 {"right":15,"bottom":15} 를 저장해 데크를 굳혔다.
+    expect(deckRight(surface.panel)).toBe("");
+    expect(surface.panel.className).not.toContain("is-dragging");
+    expect(savedPos()).toBeNull();
+  });
+
+  it("창이 초점을 잃으면 드래그를 끝내고 그 자리를 저장한다 — 창 밖 릴리스", () => {
+    installFakeWindow();
+    const surface = renderSurface();
+    stubMeasured(surface);
+    const body = (globalThis.document as unknown as { body: FakeElement }).body;
+
+    surface.rail.dispatchEvent(pointerEvent("pointerdown", 1000, 900));
+    globalThis.window.dispatchEvent(pointerEvent("pointermove", 900, 800));
+    // 실측 결함(2026-09-14): blur 뒤 is-dragging·grabbing 이 남고 이동이 저장되지 않았다.
+    globalThis.window.dispatchEvent(new Event("blur"));
+
+    expect(surface.panel.className).not.toContain("is-dragging");
+    expect(body.style.getPropertyValue("cursor")).toBe("");
+    expect(savedPos()).toEqual({ right: 116, bottom: 116 });
+  });
+
+  it("버튼이 풀린 pointermove 를 릴리스로 읽는다 — pointerup 없이 돌아온 포인터", () => {
+    installFakeWindow();
+    const surface = renderSurface();
+    stubMeasured(surface);
+
+    surface.rail.dispatchEvent(pointerEvent("pointerdown", 1000, 900));
+    globalThis.window.dispatchEvent(pointerEvent("pointermove", 900, 800));
+    // 창 밖에서 놓으면 pointerup 이 오지 않는다. 돌아온 첫 move 는 buttons 0 — 그 move 는 적용하지 않는다.
+    globalThis.window.dispatchEvent(pointerEvent("pointermove", 880, 780, 0));
+
+    expect(surface.panel.className).not.toContain("is-dragging");
+    expect(savedPos()).toEqual({ right: 116, bottom: 116 });
   });
 });
 
@@ -336,5 +390,40 @@ describe("더블클릭은 기본 위치로 되돌린다", () => {
 
     expect(deckRight(surface.panel)).toBe("200px");
     expect(savedPos()).toEqual({ right: 200, bottom: 140 });
+  });
+});
+
+
+describe("끌 수 없는 상태에서는 손잡이 신호를 달지 않는다", () => {
+  const HINT = "드래그해서 조수 옮기기 · 더블클릭하면 기본 위치";
+
+  it("도킹(전체 기록)으로 바뀌면 hover 시점에 힌트가 사라진다", () => {
+    installFakeWindow();
+    const surface = renderSurface();
+    const who = surface.rail.querySelector(".ai-deck-rail-who");
+    if (!who) throw new Error("rail who slot missing");
+    expect(who.getAttribute("title")).toBe(HINT);
+
+    // 데크는 이 상태에서도 보인다 — 커서·힌트만 걷어야 한다(2026-09-14 실측: 둘 다 거짓말이었다).
+    surface.panel.classList.add("is-docked");
+    surface.rail.dispatchEvent(new Event("pointerenter"));
+
+    expect(who.getAttribute("title")).toBe("");
+  });
+
+  it("다시 끌 수 있게 되면 힌트가 돌아온다", () => {
+    installFakeWindow();
+    const surface = renderSurface();
+    const who = surface.rail.querySelector(".ai-deck-rail-who");
+    if (!who) throw new Error("rail who slot missing");
+
+    surface.panel.classList.add("is-docked");
+    surface.rail.dispatchEvent(new Event("pointerenter"));
+    expect(who.getAttribute("title")).toBe("");
+
+    surface.panel.classList.remove("is-docked");
+    surface.rail.dispatchEvent(new Event("pointerenter"));
+
+    expect(who.getAttribute("title")).toBe(HINT);
   });
 });

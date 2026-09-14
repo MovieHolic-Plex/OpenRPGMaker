@@ -3,7 +3,12 @@
  *
  * 목적: (1) 레일을 끌면 데크가 포인터를 따라오는가, (2) 놓으면 localStorage(oprn:ai-deck-pos)에
  * 저장되고 새로고침 뒤 복원되는가, (3) 접으면 알약이 같은 자리에 서는가, (4) 패널 가장자리 밖으로
- * 못 나가는가, (5) 레일 더블클릭이 기본 위치로 되돌리는가 — 를 실측한다.
+ * 못 나가는가, (5) 레일 더블클릭이 기본 위치로 되돌리는가, (6) 1px 지터 클릭이 위치를 굳히지
+ * 않는가, (7) 드래그 중 창이 초점을 잃어도(창 밖 릴리스) 그 자리에서 끝나고 저장되는가,
+ * (8) 전체 기록(도킹) 상태에서 커서·힌트가 「끌 수 없음」을 말하는가 — 를 실측한다.
+ *
+ * (7) 의 blur 는 합성 이벤트(`window.dispatchEvent(new Event("blur"))`)다 — OS 창 전환은 헤드리스에서
+ * 만들 수 없으므로, 그 릴리스 경로가 도는지만 본다. 유닛 테스트가 같은 경로를 고정한다.
  *
  * Usage:
  *   RPG_ZZU_URL=http://127.0.0.1:9841 node scripts/qa/assistant-deck-move-qa.mjs --label after
@@ -68,6 +73,9 @@ const probe = () =>
       collapsed: panel?.classList.contains("is-collapsed") ?? null,
       bodyCursor: document.body.style.cursor || "",
       railHit: rail ? hitAt(rail.getBoundingClientRect().x + rail.getBoundingClientRect().width * 0.4, rail.getBoundingClientRect().y + 6) : null,
+      railCursor: rail ? getComputedStyle(rail).cursor : null,
+      railHint: rail?.querySelector(".ai-deck-rail-who")?.getAttribute("title") ?? null,
+      deckDisplay: deck ? getComputedStyle(deck).display : null,
     };
   }, POS_KEY);
 
@@ -190,6 +198,77 @@ const report = { label, base: BASE, at: new Date().toISOString(), steps: {}, con
   report.steps.reset = p1;
   check("더블클릭은 저장 위치를 지우고 기본 우하단으로 돌아온다", p1.stored === null && p1.right === null && p1.bottom === null, `stored=${p1.stored} right=${p1.right}`);
   await shot("07-reset");
+}
+
+// 7. 1px 지터 클릭 — 드래그가 아니므로 아무것도 저장하지 않는다.
+{
+  const p0 = await probe();
+  const gx = p0.rail.x + p0.rail.w * 0.4;
+  const gy = p0.rail.y + 6;
+  await page.mouse.move(gx, gy);
+  await page.mouse.down();
+  await page.mouse.move(gx + 1, gy + 1);
+  const mid = await probe();
+  await page.mouse.up();
+  await page.waitForTimeout(250);
+  const p1 = await probe();
+  report.steps.jitterClick = { mid, after: p1 };
+  check("1px 클릭은 드래그를 열지 않는다", mid.isDragging === false && mid.right === null, `dragging=${mid.isDragging} right=${mid.right}`);
+  check("1px 클릭은 위치를 저장하지 않는다", p1.stored === null && p1.right === null, `stored=${p1.stored} right=${p1.right}`);
+  await shot("08-jitter-click");
+}
+
+// 8. 드래그 중 창이 초점을 잃으면(창 밖 릴리스·Alt-Tab) 그 자리에서 끝나고 저장된다.
+{
+  const p0 = await probe();
+  const gx = p0.rail.x + p0.rail.w * 0.4;
+  const gy = p0.rail.y + 6;
+  await page.mouse.move(gx, gy);
+  await page.mouse.down();
+  await page.mouse.move(gx - 300, gy - 180, { steps: 4 });
+  const mid = await probe();
+  await page.evaluate(() => window.dispatchEvent(new Event("blur")));
+  await page.waitForTimeout(250);
+  const p1 = await probe();
+  const stored = p1.stored ? JSON.parse(p1.stored) : null;
+  const liveRight = Number(String(mid.right ?? "").replace("px", ""));
+  report.steps.blurRelease = { mid, after: p1 };
+  check("blur 는 드래그 상태와 grabbing 커서를 내린다", p1.isDragging === false && p1.bodyCursor === "", `dragging=${p1.isDragging} cursor=${p1.bodyCursor}`);
+  check(
+    "blur 는 눈에 보이던 자리를 저장한다",
+    Boolean(mid.isDragging && stored && Math.abs(liveRight - stored.right) <= 1),
+    `midRight=${mid.right} stored=${p1.stored}`,
+  );
+  await page.mouse.up().catch(() => undefined);
+  await page.waitForTimeout(200);
+  await shot("09-blur-release");
+}
+
+// 9. 전체 기록(도킹)에서는 데크가 보여도 끌 수 없다 — 커서·힌트가 그 사실을 말해야 한다.
+{
+  await page.evaluate(() => document.querySelector('[data-testid="ai-panel"]').classList.add("is-history-open", "is-docked"));
+  await page.mouse.move(600, 400);
+  await page.waitForTimeout(150);
+  const p0 = await probe();
+  const gx = p0.rail.x + p0.rail.w * 0.4;
+  const gy = p0.rail.y + 6;
+  await page.mouse.move(gx, gy);
+  await page.waitForTimeout(150);
+  const hovered = await probe();
+  await page.mouse.down();
+  await page.mouse.move(gx - 200, gy - 120, { steps: 4 });
+  const mid = await probe();
+  await page.mouse.up();
+  await page.waitForTimeout(200);
+  const p1 = await probe();
+  report.steps.dockedState = { visible: p0, hovered, mid, after: p1 };
+  check("도킹 상태에서도 데크는 보인다 — 신호만 걷어야 한다", p0.deckDisplay === "flex" && Boolean(p0.deck && p0.deck.h > 200), `display=${p0.deckDisplay} h=${p0.deck?.h}`);
+  check("도킹 상태의 레일 커서는 grab 이 아니다", hovered.railCursor !== "grab", `cursor=${hovered.railCursor}`);
+  check("도킹 상태에서는 드래그 힌트가 사라진다", hovered.railHint === "", `hint=${hovered.railHint}`);
+  check("도킹 상태에서 끌어도 데크는 움직이지 않는다", mid.isDragging === false && mid.right === p0.right, `dragging=${mid.isDragging} right=${p0.right}→${mid.right}`);
+  await page.evaluate(() => document.querySelector('[data-testid="ai-panel"]').classList.remove("is-history-open", "is-docked"));
+  await page.waitForTimeout(300);
+  await shot("10-docked-not-draggable");
 }
 
 report.consoleErrors = consoleErrors.slice(0, 20);

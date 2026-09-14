@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **67쪽 / 2603KB / 약 731,506 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **67쪽 / 2606KB / 약 732,352 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 391KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 1990 | ~110,360 |
+| `openwiki/editor-ai-panel.md` | 393KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 1992 | ~111,206 |
 | `openwiki/editor-ai-tools.md` | 187KB | 82KB ⚠상한 초과 — 절을 더 쪼개라 | 1439 | ~52,343 |
 | `openwiki/editor-database.md` | 283KB | 59KB ⚠상한 초과 — 절을 더 쪼개라 | 1563 | ~81,667 |
 | `openwiki/editor-event-authoring.md` | 135KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 740 | ~38,710 |
@@ -34,7 +34,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/editor-ai-panel.md` | 25 | 1636, 1637, 1638, 1639, 1640, 1641, 1654, 1664 |
+| `openwiki/editor-ai-panel.md` | 25 | 1637, 1638, 1639, 1640, 1641, 1642, 1656, 1666 |
 | `openwiki/editor-ai-tools.md` | 6 | 1086, 1087, 1091, 1093, 1095, 1282 |
 | `openwiki/editor-database.md` | 7 | 628, 632, 633, 634, 643, 669, 672 |
 | `openwiki/editor-event-authoring.md` | 16 | 310, 311, 314, 319, 320, 321, 322, 323 |
@@ -79,7 +79,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/spatial-ai-tools.md` | 1 | `test/spatialToolProjectionBoundary.test.ts` |
 | `openwiki/spatial-authoring-controller.md` | 1 | `storeMutationInstrumentation.test.ts` |
 | `openwiki/spatial-geography-compiler.md` | 1 | `.omo/ulw-execute/tile-to-world/execution-policy.md` |
-| `openwiki/testing.md` | 28 | `../dialogue.css`, `X.quarantine.test.ts`, `X.test.ts`, `aiChatObservability.test.ts`, `aiChatPanelTransportError.test.ts`, `aiSelectionChipScope.test.ts`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/actionRpgAuthoringAcceptance.test.ts`, `test/aiEventPlacementSurfaceGate.test.ts`, `test/databaseKoreanRtpDefaults.test.ts`, `test/dialoguePreviewPresentationCss.test.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/interiorConceptAssemblies.test.ts`, `test/regionTaskRun.test.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
+| `openwiki/testing.md` | 29 | `../dialogue.css`, `.omo/gates-vitest-report.json`, `X.quarantine.test.ts`, `X.test.ts`, `aiChatObservability.test.ts`, `aiChatPanelTransportError.test.ts`, `aiSelectionChipScope.test.ts`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/actionRpgAuthoringAcceptance.test.ts`, `test/aiEventPlacementSurfaceGate.test.ts`, `test/databaseKoreanRtpDefaults.test.ts`, `test/dialoguePreviewPresentationCss.test.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/interiorConceptAssemblies.test.ts`, `test/regionTaskRun.test.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
 | `openwiki/ui-discovery-pilot.md` | 3 | `direct/RESULTS.json`, `output/evidence/ui-discovery-v2/report.html`, `trace.json` |
 | `openwiki/village-design.md` | 3 | `depth-review.json`, `output/evidence/house-heights/REVIEW.md`, `output/village-direction/index.html` |
@@ -258,7 +258,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L46` 설치 지점
 - `L52` 테스트
 
-### `openwiki/editor-ai-panel.md` — 391KB · 1990줄 · ~110,360 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 393KB · 1992줄 · ~111,206 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L3` 조수 채팅은 Pi 하나다 — 세션 경로를 걷어냈다 (2026-09-11)
 - `L49` Five model roles and whole-map harmony review (2026-09-14)
@@ -289,21 +289,21 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1393` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
 - `L1402` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
 - `L1418` 패널 셸 · 도크 · 접기 · 컴포저
-- `L1565` 세션 수명 · 대화 컨텍스트
-- `L1582` 제안 적용 · 복구 · 완성도 린트
-- `L1668` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
-- `L1729` 영역 작업 · 시공 · 실내/집 파이프라인
-- `L1753` 툴 노출 · 프롬프트 · 의도 판정 · NPC
-- `L1767` 타일셋 이해 · 검토 위저드 (T1a/T1b)
-- `L1793` 저장 · 내보내기 · 프로젝트 생성
-- `L1801` 제공자 · OAuth · 동반 서비스
-- `L1831` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
-- `L1874` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
-- `L1907` 배치 의존성과 완료 멱등성 (2026-09-06)
-- `L1915` 모험 완료와 실제 적용 횟수 (2026-09-05)
-- `L1920` Assistant clean conversation — Phase 1 (2026-09-06)
-- `L1957` Assistant deck width resize (2026-09-07)
-  - `L1969` Legacy AI contract verification (2026-09-08)
+- `L1566` 세션 수명 · 대화 컨텍스트
+- `L1583` 제안 적용 · 복구 · 완성도 린트
+- `L1670` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
+- `L1731` 영역 작업 · 시공 · 실내/집 파이프라인
+- `L1755` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+- `L1769` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+- `L1795` 저장 · 내보내기 · 프로젝트 생성
+- `L1803` 제공자 · OAuth · 동반 서비스
+- `L1833` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L1876` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+- `L1909` 배치 의존성과 완료 멱등성 (2026-09-06)
+- `L1917` 모험 완료와 실제 적용 횟수 (2026-09-05)
+- `L1922` Assistant clean conversation — Phase 1 (2026-09-06)
+- `L1959` Assistant deck width resize (2026-09-07)
+  - `L1971` Legacy AI contract verification (2026-09-08)
 
 ### `openwiki/editor-ai-tools.md` — 187KB · 1439줄 · ~52,343 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
