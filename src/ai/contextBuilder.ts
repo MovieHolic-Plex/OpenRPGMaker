@@ -213,6 +213,7 @@ const INTRO = [
   "22. 스위치/변수를 새로 쓰기 전에 declare_story_flag로 의미를 등록하세요.",
   "23. 이벤트가 왜 안 나오는지는 explain_event로 확인하세요.",
   "24. 다중 맵 월드는 plan_world→build_world→맵별 콘텐츠 순서로.",
+  "25. 게임 시작 오프닝 연출은 DB 「오프닝」의 system.opening(set_opening)이다 — 이벤트 컷신으로 대신하지 마세요.",
 ].join("\n");
 
 function summarySection(project: Project): string {

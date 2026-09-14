@@ -1,5 +1,32 @@
 # Editor AI Tools & Vocabulary
 
+## 오프닝 시네마틱 AI 저작 — system.opening (2026-09-14)
+
+사용자 요청: "사용자가 커스텀한 오프닝을 에디터 내에 있는 ai 를 통해 할 수 있게 만들고싶음".
+
+- 실측 공백: `system.opening` 은 DB 「오프닝」 탭(`db-tab-opening`, `databaseCinematic*`)으로만 저작됐고
+  **어떤 AI 툴도 쓰지 못했다**. `script_cutscene_preset` 은 이벤트 커맨드 프리셋(회상/엔딩)이라
+  New Game 재생 경로가 다르고, `set_title_screen` 은 타이틀 화면 전용이다. `list_resources` 는
+  kind `tile/charset/monster/backdrop/bgm/se` 만 지원해 업로드 `picture`/`movie` 를 발견할 경로가 없었다.
+- 새 툴(`src/editor/tools/cinematicTools.ts`, domain `system`):
+  - `get_opening`(read) — 없으면 `opening:null` 이며 기본값을 만들지 않는다. 꺼진 시퀀스·미존재 참조를 warning 으로 보고.
+  - `set_opening`(write) — 장면 목록 **전체 교체**. `kind`는 `text|image|video`,
+    장면당 `id`(생략 시 `opening-scene-<순번>`)·`narration`·`durationMs`(0~120000 정수, 0=확인 입력/영상 끝)·
+    `resourceId`(image/video 필수)·`motion`(image 전용 `none/fade/pan/zoom`)·`narrationAudioResourceId`.
+    장면 100개 상한, 빈 id·중복 id·없는 리소스 id·종류에 맞지 않는 필드(`text`의 `resourceId`, `video`의 `motion`)를 거부한다.
+    `enabled` 생략 시 기존 값 유지(없던 시퀀스면 true) — 꺼진 채 장면만 쌓이면 warning 으로 알린다.
+  - `remove_opening`(write) — 시퀀스 자체를 제거(장면 일부 삭제는 `set_opening` 전체 교체로 표현한다).
+  - `list_opening_media`(read) — `kind:"image"|"movie"|"sound"` 후보. 이미지 장면은 DB 이미지 슬롯과 같은 목록을 쓴다.
+- 리소스 후보 정본: `listDatabaseResourceOptions`(+kind 매칭)를 `src/editor/resourceOptions.ts` 로 옮겨
+  DB 피커와 AI 툴이 **같은 목록**을 본다. 툴 레이어가 DOM/스토어를 무는 피커 모듈을 집어오지 않도록 순수 모듈로 분리했고,
+  `databaseResourcePickerDialog` 는 그대로 re-export 하므로 기존 import 경로는 유지된다.
+- 노출: 레지스트리(system) + 툴 능력 색인(`TASK_RECIPES` `opening-cinematic` 레시피) + 시스템 프롬프트 규칙 25.
+  `remove_opening` 은 `ESCALATION_DENYLIST` 에 넣었다 — 이름이 스쳤다는 이유로 자동 승격되면 작성 장면이 통째로 사라진다.
+- 계약: `test/cinematicTools.test.ts`(3장면 저작 + `serialize/deserialize` 왕복, 경계·오류, DB 피커 목록 패리티),
+  `test/aiEditorReachParity.test.ts` REQUIRED_FACADES 에 `set_opening → system.opening`,
+  `test/aiToolCapabilityIndex.test.ts` 색인 상한 4,800 → 4,900(실측 4,811자/활성 226툴 — 조용한 상향 금지 규칙에 따라 함께 기록).
+- 런타임 소비는 기존 그대로다: `player.ts` 가 New Game 직전에 시퀀스를 재생한다(`runtime-sessions.md`).
+
 ## 도면 문법에 wing(세로 복도) 추가 — 실루엣 변주와 물건 대체군 (2026-09-11)
 
 사용자 지적: "저 화톳불이랑 집의 구조 뭐 이런걸 좀 변주해야하는 게 아닌가". 실측이 맞았다.
