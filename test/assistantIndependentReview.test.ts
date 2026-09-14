@@ -127,7 +127,8 @@ describe("review termination and isolation", () => {
     const result = await f.session.sendUserMessage("Change title");
     expect(result.stoppedReason).toBe("error");
     expect(result.review?.status).toBe("error");
-    expect(f.reviewRequests).toHaveLength(1);
+    // 아예 JSON 이 아닌 응답만 교정 재요구 한 번을 산다(F6). 툴호출·스테일 판정·전송 실패는 첫 응답에서 닫는다.
+    expect(f.reviewRequests).toHaveLength(mode === "malformed" ? 2 : 1);
     expect(f.session.isDraftReviewApproved()).toBe(false);
     expect(f.session.getProposedProject().maps).toEqual(f.project.maps);
   });

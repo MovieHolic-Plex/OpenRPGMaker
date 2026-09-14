@@ -98,7 +98,8 @@ export const TILE_WRITE_TOOLS: ReadonlySet<string> = new Set([
 ]);
 
 // 밑그림 툴 중 타일을 덮어쓰지 않는 점 배치 — 기존 내용 보호 대상이 아니다.
-const NON_TILE_SPATIAL_TOOLS: ReadonlySet<string> = new Set(["place_npc", "place_battle_blocker"]);
+// 덮어쓰는 것이 없으므로 "밑그림이 없다" 는 이유로만 막을 근거도 없다(F2) — 경계·plannedMap 검사는 그대로 받는다.
+export const NON_TILE_SPATIAL_TOOLS: ReadonlySet<string> = new Set(["place_npc", "place_battle_blocker"]);
 
 /** 이 툴 호출이 맵 타일을 덮어쓰는가 — 기존 내용 보호를 적용할지 정한다. */
 export function toolWritesTiles(toolName: string): boolean {
