@@ -10,6 +10,7 @@ import { completeProvider } from "./ohMyPiPiAiRuntime.ts";
 import { Agent } from "@oh-my-pi/pi-agent-core";
 import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
 import { createPiToolset, type PiToolShape } from "../../src/ai/piAgent/toolAdapter.ts";
+import { createDeltaRelay } from "../../src/ai/piAgent/deltaRelay.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
 import { changedProjectKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
@@ -90,7 +91,17 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let fatal: string | undefined;
   const started = Date.now();
   emit({ type: "start", provider: request.provider, model: String((model as { id?: string }).id ?? ""), toolCount: tools.length });
+  // 모델 스트림 조각은 버리지 않고 합쳐 중계한다 — 이게 없어서 모델이 생각하는 동안 와이어가 비었다(실측 2026-09-14).
+  const deltas = createDeltaRelay(emit);
   const unsubscribe = agent.subscribe((event: { type: string; [key: string]: unknown }) => {
+    if (event.type === "message_update") {
+      const part = event.assistantMessageEvent as { type?: string; delta?: unknown } | undefined;
+      if (part?.type === "thinking_delta" || part?.type === "text_delta") {
+        deltas.push(part.type === "thinking_delta" ? "thinking" : "text", typeof part.delta === "string" ? part.delta : "");
+      }
+      return;
+    }
+    if (event.type === "turn_start" || event.type === "tool_execution_start" || event.type === "message_end") deltas.flush();
     if (event.type === "turn_start") {
       turns += 1;
       emit({ type: "turn", index: turns });
@@ -149,6 +160,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     clearTimeout(timer);
     options.signal?.removeEventListener("abort", onAbort);
     unsubscribe();
+    deltas.dispose();
   }
   if (fatal && toolCalls === 0) throw Object.assign(new Error(fatal), { status: 502 });
   const done: PiAgentDoneEvent = {
