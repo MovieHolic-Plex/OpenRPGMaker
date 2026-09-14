@@ -70,7 +70,7 @@ import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { seedLocationOccupancyForScene } from "@/player/playSceneLocationTransitions";
 import { installLightingLayer, syncLightingLayer, updateLighting } from "@/player/playSceneLighting";
 import type { LightingAmbientTransition } from "@/project/lightingRules";
-import { syncMapBackgroundLayer, updateMapBackground } from "@/player/playSceneMapBackground";
+import { syncMapBackgroundLayers, updateMapBackground } from "@/player/playSceneMapBackground";
 import { installWeatherLayer, syncWeatherLayer, updateWeather } from "@/player/playSceneWeather";
 import { installCloudShadowLayer, syncCloudShadowLayer, updateCloudShadows } from "@/player/playSceneCloudShadows";
 import type { WeatherParams, WeatherTransition } from "@/player/weather/weatherModel";
@@ -400,7 +400,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean; readonly applyMapBgm?: boolean }): void {
     clearAllSceneEmotes(this);
     loadSceneMap(this, mapId, options);
-    syncMapBackgroundLayer(this);
+    syncMapBackgroundLayers(this);
     initializeActionCombatForScene(this);
     resetEncounterCounter();
     // 맵마다 설정이 다르다 — 새 맵의 구름을 즉시 다시 계산하지 않으면 이전 맵의 그림자가 남는다.

@@ -221,12 +221,12 @@ export interface PlaySceneContext extends Phaser.Scene {
   timeTintTransition: TimeTintTransition | null;
   mapAnimationLayer?: Phaser.GameObjects.Container;
   activeMapAnimations: Set<Phaser.GameObjects.Container>;
-  /** 맵 배경(패럴랙스) 타일스프라이트 — 화면 고정, 하층 타일(depth 0) 아래. */
-  mapBackgroundLayer?: Phaser.GameObjects.TileSprite;
-  /** 지금 레이어에 실린 배경 그림 id. 같은 그림 재장착을 건너뛰는 표식이다. */
-  mapBackgroundAppliedId?: string;
-  /** 로드를 걸어 둔 배경 그림 id — 같은 요청을 두 번 큐에 넣지 않기 위한 표식. */
-  mapBackgroundPendingId?: string;
+  /** 맵 배경 스프라이트 스택(아래→위) — 화면 고정, 하층 타일(depth 0) 아래. */
+  mapBackgroundSprites?: Phaser.GameObjects.TileSprite[];
+  /** 지금 붙어 있는 그림 id 들의 서명. 같은 서명이면 다시 붙이지 않는다. */
+  mapBackgroundAppliedSignature?: string;
+  /** 로드를 걸어 둔 서명 — 같은 요청을 두 번 큐에 넣지 않기 위한 표식. */
+  mapBackgroundPendingSignature?: string;
   /** 로드 경쟁 무효화 토큰 — 맵이나 그림이 바뀌면 증가한다. */
   mapBackgroundToken?: number;
   /** 체공 그림자 풀. 키는 `PLAYER_SHADOW_KEY` 또는 이벤트 id — 스프라이트 풀과 1:1. */
