@@ -29,7 +29,7 @@ function placeCards(): SpatialGalleryCard[] {
     objectId: bundle.things[0]?.objectId,
     subtitle: bundle.facilities[0]?.label === bundle.label ? undefined : bundle.facilities[0]?.label,
   }));
-  cards.unshift(...PLACE_REFERENCES.map(entry => ({ id: `region-reference:${entry.id}`, localId: entry.id,
+  cards.push(...PLACE_REFERENCES.map(entry => ({ id: `region-reference:${entry.id}`, localId: entry.id,
     regionReferenceId: entry.id, name: entry.name, source: "default" as const, kind: "places" as const,
     usage: 0, tilesetId: entry.tilesetId, placeKind: "facility" as const, subtitle: "완성 장소 사례" })));
   const known = new Set(cards.map((card) => card.id));
