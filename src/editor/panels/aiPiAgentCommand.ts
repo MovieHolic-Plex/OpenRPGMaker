@@ -221,6 +221,8 @@ export async function runPiCommand(
   // 답이 될 문장을 따로 붙잡아 둔다 — 이게 없으면 질문 모드가 220자로 잘린 한 줄이 된다.
   let lastAssistantText = "";
   const wrap = (mapIds: readonly string[], index: number) => (event: PiAgentEvent): void => {
+    // heartbeat 는 연결 생존 신호다 — 클라이언트 워치독이 이미 소뱄했고, 보드에는 그릴 것이 없다.
+    if (event.type === "heartbeat") return;
     if (event.type === "assistant") lastAssistantText = event.text;
     if (team) { push(event); return; }
     const agentId = mapIds.join(",") || `agent-${index + 1}`;
@@ -247,6 +249,7 @@ export async function runPiCommand(
         task: `${PLAN_ONLY_PREFIX}${command.task}`, mapIds: command.mapIds, project: base,
         readOnly: true, maxTurns: options.maxTurns, thinkingLevel: brain.reasoningEffort,
       }, { signal: surface.signal, onEvent: event => {
+        if (event.type === "heartbeat") return;
         push({ type: "agent_event", agentId: "ultrabrain-plan", event });
         if (event.type === "assistant") plan = event.text;
         if (event.type === "error") planError = event.message;
