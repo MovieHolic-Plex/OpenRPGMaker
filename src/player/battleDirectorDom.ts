@@ -36,7 +36,11 @@ export function commandPromptState(snapshot: BattleSnapshot, openingLine?: strin
 /** 인카운트 인트로 배너 — 몬스터 트룹이면 "야생의 ○○이(가) 나타났다!" */
 export function introDirectorState(snapshot: BattleSnapshot): BattleDirectorState {
   const living = snapshot.enemies.filter((enemy) => !enemy.defeated);
-  const names = living.map((enemy) => enemy.name);
+  // 같은 이름은 묶어 「초원 슬라임 ×3, 숲 박쥐 ×3」 — 이름을 여섯 번 나열하면 첫 문장이
+  // 소음이 되고 창 폭(560px)을 넘겨 생략됐다(2026-09-14 실측).
+  const counts = new Map<string, number>();
+  for (const enemy of living) counts.set(enemy.name, (counts.get(enemy.name) ?? 0) + 1);
+  const names = [...counts.entries()].map(([name, count]) => (count > 1 ? `${name} ×${count}` : name));
   const label = names.length > 1 ? `${names.slice(0, -1).join(", ")}, ${names[names.length - 1]}` : names[0] ?? "적";
   // 전원이 몬스터 종(speciesId)인 트룹에만 "야생의"를 붙인다 — 인간형/보스 트룹까지
   // 야생으로 부르지 않게. 파일 서두 주석이 약속해 온 포켓몬식 인트로 문구다.
@@ -72,10 +76,13 @@ export function enemyActionDirectorState(entry: BattleActionResultSnapshot, snap
   const action = entry.skillName && entry.skillName !== "공격"
     ? `${withJosa(userName, "이/가")} ${withJosa(entry.skillName, "을/를")} 사용했다!`
     : `${userName}의 공격!`;
+  const targetName = target
+    ? disambiguatedBattlerName(target, snapshot.enemies.some((enemy) => enemy.id === target.id) ? snapshot.enemies : snapshot.actors)
+    : "대상";
   const impact = !entry.hit
     ? "공격이 빗나갔다!"
     : entry.amount > 0
-      ? `${withJosa(target?.name ?? "대상", "이(가)")} ${entry.amount} 피해를 입었다!${entry.critical ? " 급소다!" : ""}`
+      ? `${withJosa(targetName, "이(가)")} ${entry.amount} 피해를 입었다!${entry.critical ? " 급소다!" : ""}`
       : "효과가 충분하지 않았다.";
   return {
     step: "acting",
@@ -179,16 +186,20 @@ export function targetSelectDirectorState(snapshot: BattleSnapshot): BattleDirec
     : snapshot.enemies.find((entry) => entry.id === selectedId);
   const terms = resolveTerms(store.getCurrent());
   const targetCount = snapshot.targetSelection?.targetIds.length ?? 0;
+  // 이름은 순번까지(disambiguatedBattlerName) — 동명 적 셋에서 ←→ 를 눌러도 문장이 한 글자도
+  // 안 바뀌던 결함(2026-09-14 실측). 두 갈래(아군/적)는 같은 어조·같은 정보량으로 둔다.
+  const peers = snapshot.targetSelection?.side === "actor" ? snapshot.actors : snapshot.enemies;
+  const selectedName = selected ? disambiguatedBattlerName(selected, peers) : undefined;
   const lines = snapshot.targetSelection?.side === "actor"
     ? [
-      actor ? `${actor.name}: 대상을 선택하십시오.` : "대상을 선택하십시오.",
-      selected ? `${withJosa(selected.name, "을/를")} 겨냥하고 있습니다.` : "선택 가능한 대상이 없습니다.",
+      actor ? `${actor.name}: ${withJosa(terms.target, "을/를")} 고른다.` : `${withJosa(terms.target, "을/를")} 고른다.`,
+      selectedName ? `${withJosa(selectedName, "을/를")} 노린다.` : "선택 가능한 대상이 없다.",
     ]
     : [
       // 키 조작 힌트는 커맨드 패널 하단의 키 프롬프트가 이미 보여준다 — 메시지 창에
       // "Z/Enter · X/Esc"만 대사처럼 떠 있던 결함(적대 리뷰 3차). 여기는 상황 서술만.
-      selected
-        ? `${withJosa(selected.name, "을/를")} 노린다${targetCount > 1 ? ` — ← →로 ${terms.target} 변경` : ""}`
+      selectedName
+        ? `${withJosa(selectedName, "을/를")} 노린다${targetCount > 1 ? ` (← → ${terms.target} 변경)` : ""}`
         : `${withJosa(terms.target, "을/를")} 고르는 중…`,
     ];
   return {
@@ -261,9 +272,10 @@ export function battleResultPanel(snapshot: BattleSnapshot, revealStage = 0): HT
   panel.className = "battle-result-panel";
   panel.dataset.testid = "battle-result-panel";
   panel.dataset.battleResult = snapshot.result;
+  // 제목만 라이브(polite). 카드 컨테이너까지 atomic 으로 읽으면 스테이지마다 패널 전체가
+  // 행 수만큼 재낭독됐다(최대 12회).
   panel.setAttribute("role", "status");
-  panel.setAttribute("aria-live", "assertive");
-  panel.setAttribute("aria-atomic", "true");
+  panel.setAttribute("aria-live", "polite");
   syncBattleResultPanel(panel, snapshot, revealStage);
   return panel;
 }
@@ -284,13 +296,15 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
     title.className = "battle-result-title";
     panel.append(title);
   }
-  title.textContent = resultLine(snapshot.result);
+  const nextTitle = resultLine(snapshot.result);
+  if (title.textContent !== nextTitle) title.textContent = nextTitle;
 
   let cards = panel.querySelector<HTMLElement>(".battle-result-cards");
   if (!cards) {
     cards = document.createElement("div");
     cards.className = "battle-result-cards battle-result-rewards";
     cards.dataset.testid = "battle-result-cards";
+    cards.setAttribute("aria-live", "off");
     panel.append(cards);
   }
   // 행 노드는 결과당 한 번만 만든다. 매 동기화마다 replaceChildren 으로 다시 만들면
@@ -391,8 +405,16 @@ export function applyBattleDirectorState(
   // 결과 클래스는 연출(비트)이 전부 끝나고 디렉터가 result 단계에 진입했을 때만 붙인다.
   // snapshot.result 만 보면 막타 액션이 재생되는 도중에 전투 UI 가 통째로 숨는다(적대 리뷰 §2).
   root.classList.toggle("battle-has-result", Boolean(snapshot.result) && state.step === "result");
+  // 이전 단계의 표식을 먼저 걷는다 — 걷지 않으면 대상 선택 때 붙은 battle-targeted 가 임팩트까지
+  // 남아 "피격 순간" 플래시(oprn-target-flash)가 조준 순간에 한 번 돌고 끝났다(2026-09-14 실측).
+  for (const node of root.querySelectorAll<HTMLElement>(".battle-acting")) {
+    if (node.dataset.recordId !== state.activeActorRecordId) node.classList.remove("battle-acting");
+  }
+  for (const node of root.querySelectorAll<HTMLElement>(".battle-targeted")) {
+    if (node.dataset.testid !== state.targetId || state.step !== "impact") node.classList.remove("battle-targeted");
+  }
   markByDataset(root, "recordId", state.activeActorRecordId, "battle-acting");
-  markByDataset(root, "testid", state.targetId, "battle-targeted");
+  if (state.step === "impact") markByDataset(root, "testid", state.targetId, "battle-targeted");
 }
 
 function commandTarget(
@@ -534,8 +556,12 @@ function rewardRows(snapshot: BattleSnapshot): readonly { readonly kind: string;
     { kind: "gold", label: "골드", value: `+${snapshot.rewards.gold}` },
   ];
   // 획득한 아이템이 있으면 실제 이름으로, 없으면 행을 추가하지 않는다(거짓 표시 금지).
-  for (const itemId of snapshot.rewards.items) {
-    rows.push({ kind: "item", label: "아이템", value: itemName(itemId) });
+  // 같은 아이템은 한 행에 ×n — 드롭 6개가 「아이템」 라벨 6줄·같은 아이콘 6개로 늘어나
+  // 공개 시간(450ms/행)과 패널 높이를 함께 키웠다(2026-09-14 실측).
+  const itemCounts = new Map<string, number>();
+  for (const itemId of snapshot.rewards.items) itemCounts.set(itemId, (itemCounts.get(itemId) ?? 0) + 1);
+  for (const [itemId, count] of itemCounts) {
+    rows.push({ kind: "item", label: itemName(itemId), value: count > 1 ? `×${count}` : "획득" });
   }
   // 레벨업이 발생한 액터별로 "레벨 업!" 행을 추가.
   for (const levelUp of snapshot.rewards.levelUps ?? []) {

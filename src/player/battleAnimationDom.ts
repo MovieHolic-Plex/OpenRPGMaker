@@ -145,7 +145,27 @@ function positionAnimation(
   if (applyMeasuredAnchor(element, layer, animation)) return;
   // 아군 노드 testid 는 battle-actor-<id> 형식 — findBattlerNode 로 통일 조회한다.
   const target = findBattlerNode(document, animation.targetId);
-  if (!target) return;
+  if (!target) {
+    // 대상 노드가 없는 스킨(rm2000 은 파티를 필드에 세우지 않는다)에서 적→아군 이펙트가
+    // left/top 미설정으로 무대 좌상단·배너 뒤에 잘려 그려졌다(2026-09-14 실측). 파티 카드
+    // 행이 있으면 그 행 위에, 없으면 무대 중앙에 놓는다.
+    const row = document.querySelector<HTMLElement>(`.battle-actor-status[data-record-id="${CSS.escape(animation.targetId)}"]`)
+      ?? document.querySelector<HTMLElement>(`[data-testid="battle-actor-status-${CSS.escape(animation.targetId)}"]`);
+    const layerRect = layer.getBoundingClientRect();
+    const rowRect = row?.getBoundingClientRect();
+    if (row && rowRect && layerRect.width > 0 && layerRect.height > 0 && rowRect.width > 0) {
+      const x = ((rowRect.left + rowRect.width / 2 - layerRect.left) / layerRect.width) * 100;
+      const y = ((rowRect.top + rowRect.height / 2 - layerRect.top) / layerRect.height) * 100;
+      element.style.left = `${Math.max(0, Math.min(100, x))}%`;
+      element.style.top = `${Math.max(0, Math.min(100, y))}%`;
+      element.dataset.animationAnchor = "party-row";
+    } else {
+      element.style.left = "50%";
+      element.style.top = "50%";
+      element.dataset.animationAnchor = "stage-center";
+    }
+    return;
+  }
   element.style.setProperty("--battle-node-x", target.style.getPropertyValue("--battle-node-x"));
   element.style.setProperty("--battle-node-y", target.style.getPropertyValue("--battle-node-y"));
   element.dataset.animationAnchor = "fallback";
@@ -256,6 +276,21 @@ function setOptionalDataset(element: HTMLElement, key: string, value: string | u
 
 function battleAnimationRecord(animationId: string): BattleAnimationRecord | undefined {
   return store.getCurrent().database.battleAnimations.find((record) => record.id === animationId);
+}
+
+/**
+ * 착탄까지의 ms — 효과음·플래시·흔들림이 걸린 **첫 프레임**의 시작 시각. 시퀀서가 이펙트
+ * 마운트를 approach 비트 끝에서 이만큼 앞으로 당겨 착탄 프레임과 임팩트 비트(팝업·히트스톱)
+ * 가 같은 순간에 오게 한다. 타이밍이 없는 레코드는 0(즉시 마운트).
+ */
+export function battleAnimationImpactMs(animationId: string): number {
+  const record = battleAnimationRecord(animationId);
+  if (!record?.timings?.length) return 0;
+  const impact = record.timings
+    .filter((timing) => timing.soundResourceId || timing.flash || timing.screenShake)
+    .reduce<number | undefined>((min, timing) => (min === undefined ? timing.frameIndex : Math.min(min, timing.frameIndex)), undefined);
+  if (impact === undefined) return 0;
+  return impact * battleAnimationFrameDurationMs(record);
 }
 
 /**

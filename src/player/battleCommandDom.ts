@@ -92,9 +92,15 @@ function attachScrollCue(menu: HTMLElement): void {
   cue.textContent = "▾";
   cue.hidden = true;
   menu.append(cue);
+  // 큐 자신도 그리드 한 트랙을 차지해 scrollHeight 에 들어간다. 이를 빼지 않으면 마지막 행에
+  // 커서가 있어도 "더 있다" 신호가 켜진 채 그 행 위에 얹혔다(2026-09-14 실측: 5행 메뉴에 유령 행 1개).
   const syncCue = (): void => {
     if (!menu.isConnected) return;
-    cue.hidden = menu.scrollHeight - menu.clientHeight <= 1;
+    const cueHeight = cue.hidden ? 0 : cue.offsetHeight;
+    const contentHeight = menu.scrollHeight - cueHeight;
+    const overflow = contentHeight - menu.clientHeight > 1;
+    const atEnd = menu.scrollTop + menu.clientHeight >= contentHeight - 1;
+    cue.hidden = !overflow || atEnd;
   };
   // 패널은 detached 상태로 만들어져 같은 태스크에서 DOM 에 붙는다 — 마이크로태스크면
   // 붙은 뒤 레이아웃을 읽을 수 있다. rAF 는 fake-timer 환경에서 타이머 누수로 잡힌다.
@@ -668,9 +674,22 @@ function targetSelectionMenu(snapshot: BattleSnapshot, options: BattleCommandPan
       : snapshot.enemies.find((entry) => entry.id === targetId);
     if (!target) continue;
     const peers = snapshot.targetSelection?.side === "actor" ? snapshot.actors : snapshot.enemies;
-    const button = commandButton(disambiguatedBattlerName(target, peers), `battle-target-${target.id}`, "target", `${terms.hp} ${target.hp}/${target.maxHp}`, () => {
+    const fullName = disambiguatedBattlerName(target, peers);
+    const button = commandButton(fullName, `battle-target-${target.id}`, "target", `${terms.hp} ${target.hp}/${target.maxHp}`, () => {
       options.confirmTargetSelection(target.id);
     });
+    // 순번은 별도 노드로 — 이름이 생략부호로 잘릴 때 식별 정보(1/2)가 마지막에 남아야 한다.
+    // 긴 저작 이름(14자)이면 두 행이 똑같이 「심연에서기어나온…」 이 됐다(2026-09-14 실측).
+    if (fullName !== target.name && fullName.startsWith(target.name)) {
+      const title = button.querySelector<HTMLElement>(".battle-command-text strong");
+      if (title) {
+        title.textContent = target.name;
+        const ordinal = document.createElement("b");
+        ordinal.className = "battle-target-ordinal";
+        ordinal.textContent = fullName.slice(target.name.length).trim();
+        title.after(ordinal);
+      }
+    }
     button.dataset.battleTargetable = "true";
     button.dataset.battleTargetId = target.id;
     button.dataset.battleTargetSide = snapshot.targetSelection?.side ?? "enemy";
