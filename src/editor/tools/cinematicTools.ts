@@ -10,9 +10,8 @@ import {
   type CinematicSequence,
 } from "@/project/cinematicSettings";
 import { listDatabaseResourceOptions, type DatabaseResourcePickerKind } from "@/editor/resourceOptions";
-import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { Project } from "@/project/types";
-import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
 const OPENING_MEDIA_KINDS = ["image", "movie", "sound"] as const;
 type OpeningMediaKind = (typeof OPENING_MEDIA_KINDS)[number];
@@ -41,8 +40,17 @@ function catalogIds(project: Project, kind: OpeningMediaKind): string[] {
   return listDatabaseResourceOptions(kind as DatabaseResourcePickerKind, project).map(entry => entry.id);
 }
 
-function knownIds(project: Project): Set<string> {
-  return collectResourceIds(project);
+/** kind별 피커 카탈로그 조회 — 한 호출 안에서 종류별로 한 번만 만든다(카탈로그 스캔이 수백 개 id를 돈다). */
+function catalogLookup(project: Project): (kind: OpeningMediaKind, id: string) => boolean {
+  const cache = new Map<OpeningMediaKind, Set<string>>();
+  return (kind, id) => {
+    let ids = cache.get(kind);
+    if (!ids) {
+      ids = new Set(catalogIds(project, kind));
+      cache.set(kind, ids);
+    }
+    return ids.has(id);
+  };
 }
 
 function sceneKind(value: unknown, index: number): CinematicScene["kind"] {
@@ -78,6 +86,7 @@ function resolveResourceId(
   raw: unknown,
   index: number,
   field: "resourceId" | "narrationAudioResourceId",
+  isKnown: (kind: OpeningMediaKind, id: string) => boolean,
 ): string {
   if (typeof raw !== "string" || raw.trim().length === 0) {
     throw new ToolError(
@@ -86,7 +95,7 @@ function resolveResourceId(
     );
   }
   const id = raw.trim();
-  if (!knownIds(project).has(id)) {
+  if (!isKnown(kind, id)) {
     const candidates = catalogIds(project, kind).slice(0, 20).join(", ");
     throw new ToolError(
       `scenes[${index}].${field} id를 프로젝트에서 찾을 수 없습니다: ${id}. `
@@ -98,7 +107,7 @@ function resolveResourceId(
   return id;
 }
 
-function normalizeScene(project: Project, raw: unknown, index: number): CinematicScene {
+function normalizeScene(project: Project, raw: unknown, index: number, isKnown: (kind: OpeningMediaKind, id: string) => boolean): CinematicScene {
   const scene = requireRecord(raw, `scenes[${index}]`);
   for (const key of Object.keys(scene)) {
     if (!(OPENING_FIELD_NAMES as readonly string[]).includes(key)) {
@@ -116,7 +125,7 @@ function normalizeScene(project: Project, raw: unknown, index: number): Cinemati
   const durationMs = sceneDuration(scene.durationMs, index);
   const narrationAudioResourceId = scene.narrationAudioResourceId === undefined
     ? undefined
-    : resolveResourceId(project, "sound", scene.narrationAudioResourceId, index, "narrationAudioResourceId");
+    : resolveResourceId(project, "sound", scene.narrationAudioResourceId, index, "narrationAudioResourceId", isKnown);
   const common = {
     id: id.trim(),
     narration,
@@ -136,7 +145,7 @@ function normalizeScene(project: Project, raw: unknown, index: number): Cinemati
     return { ...common, kind: "text" };
   }
 
-  const resourceId = resolveResourceId(project, kind === "video" ? "movie" : "image", scene.resourceId, index, "resourceId");
+  const resourceId = resolveResourceId(project, kind === "video" ? "movie" : "image", scene.resourceId, index, "resourceId", isKnown);
   if (kind === "video") {
     if (scene.motion !== undefined) {
       throw new ToolError(`scenes[${index}]는 영상 장면이라 motion을 가질 수 없습니다(움직임은 image 전용).`, { code: "invalid-args" });
@@ -169,7 +178,8 @@ function buildSequence(project: Project, args: Record<string, unknown>): { seque
   }
 
   const warnings: string[] = [];
-  const scenes = rawScenes.map((raw, index) => normalizeScene(project, raw, index));
+  const isKnown = catalogLookup(project);
+  const scenes = rawScenes.map((raw, index) => normalizeScene(project, raw, index, isKnown));
   const ids = new Set<string>();
   for (const [index, scene] of scenes.entries()) {
     if (ids.has(scene.id)) {
@@ -202,11 +212,24 @@ function countByKind(sequence: CinematicSequence): string {
   return [...counts.entries()].map(([kind, count]) => `${label[kind]} ${count}`).join("·");
 }
 
+const OPENING_SCENE_SCHEMA: JsonSchema = {
+  type: "object",
+  additionalProperties: false,
+  required: ["kind"],
+  properties: {
+    id: { type: "string" },
+    kind: { type: "string", enum: ["text", "image", "video"] },
+    narration: { type: "string" },
+    durationMs: { type: "integer", minimum: 0, maximum: CINEMATIC_DURATION_MAX_MS },
+    resourceId: { type: "string" },
+    motion: { type: "string", enum: MOTIONS },
+    narrationAudioResourceId: { type: "string" },
+  },
+};
+
 const getOpening: ToolDefinition = {
   name: "get_opening",
-  description:
-    "현재 오프닝 시네마틱(system.opening)을 그대로 반환한다. 없으면 opening:null이며 기본값을 만들지 않는다. "
-    + "set_opening으로 장면을 고치기 전에 먼저 읽어 원본을 보존하라.",
+  description: "현재 오프닝 시네마틱(system.opening)을 그대로 반환한다. 없으면 opening:null 이며 기본값을 만들지 않는다.",
   mode: "read",
   parameters: { type: "object", properties: {}, additionalProperties: false },
   run(project): ToolExecResult {
@@ -218,10 +241,11 @@ const getOpening: ToolDefinition = {
     if (!opening.enabled && opening.scenes.length > 0) {
       warnings.push("오프닝 사용이 꺼져 있어 실제 게임에서는 재생되지 않습니다.");
     }
-    const known = knownIds(project);
+    const isKnown = catalogLookup(project);
     const missing = opening.scenes
-      .flatMap(scene => (scene.kind === "text" ? [] : [scene.resourceId]))
-      .filter(id => !known.has(id));
+      .flatMap(scene => (scene.kind === "text" ? [] : [[scene.kind === "video" ? "movie" : "image", scene.resourceId] as const]))
+      .filter(([kind, id]) => !isKnown(kind, id))
+      .map(([, id]) => id);
     if (missing.length > 0) warnings.push(`프로젝트에서 찾을 수 없는 미디어 참조가 있습니다: ${[...new Set(missing)].join(", ")}`);
     return {
       summary: `오프닝 장면 ${opening.scenes.length}개(${countByKind(opening)}), 사용 ${opening.enabled ? "켜짐" : "꺼짐"}, 건너뛰기 ${opening.skippable ? "가능" : "불가"}.`,
@@ -234,39 +258,20 @@ const getOpening: ToolDefinition = {
 const setOpening: ToolDefinition = {
   name: "set_opening",
   description:
-    "새 게임을 시작할 때 타이틀 뒤·맵 부팅 전에 재생되는 오프닝 시네마틱(system.opening)을 통째로 저장한다. "
-    + "장면은 순서대로 재생된다: kind=text(내레이션 글), image(resourceId 필수, motion none/fade/pan/zoom), video(resourceId 필수, 끝나면 다음 장면). "
-    + "durationMs는 0이면 확인 입력(영상은 재생 끝)까지 기다리고, 양수면 그 시간(ms)만큼 보여 준다. "
-    + "이 툴은 장면 목록을 **전체 교체**한다 — 일부만 고치려면 get_opening으로 읽어 원하는 장면만 바꾼 전체 목록을 보내라. "
-    + "미디어 id는 list_opening_media로 확인한 값만 쓴다. 실제 재생되게 하려면 enabled:true여야 한다. "
-    + "이벤트 안의 컷신은 이 툴이 아니라 script_cutscene/upsert_event로 만든다.",
+    "새 게임 시작 전에 재생되는 오프닝(system.opening) 장면 목록을 통째로 저장한다. "
+    + "장면: kind text/image/video, image·video 는 resourceId 필수, motion 은 image 전용, "
+    + "durationMs 0 은 확인 입력(영상은 재생 끝)까지 기다린다. 일부만 고치려면 get_opening 결과에 바꿀 장면을 반영해 전체를 보낸다. "
+    + "미디어 id 는 list_opening_media 로 확인하고, 재생되게 하려면 enabled:true.",
   mode: "write",
   parameters: {
     type: "object",
-    properties: {
-      enabled: { type: "boolean", description: "오프닝 재생 여부. 생략하면 기존 값을 유지하고, 없던 시퀀스면 true" },
-      skippable: { type: "boolean", description: "Escape로 건너뛸 수 있는지. 생략하면 기존 값을 유지하고, 없던 시퀀스면 true" },
-      scenes: {
-        type: "array",
-        description: `장면 목록(전체 교체, 최대 ${CINEMATIC_SCENE_LIMIT}개)`,
-        items: {
-          type: "object",
-          properties: {
-            id: { type: "string", description: "장면 id. 생략하면 opening-scene-<순번>으로 자동 생성" },
-            kind: { type: "string", enum: ["text", "image", "video"] },
-            narration: { type: "string", description: "화면 아래에 표시할 글(없으면 빈 문자열)" },
-            durationMs: { type: "integer", minimum: 0, maximum: CINEMATIC_DURATION_MAX_MS, description: "0=확인 입력/영상 끝까지" },
-            resourceId: { type: "string", description: "image/video 장면의 미디어 id(list_opening_media 결과)" },
-            motion: { type: "string", enum: MOTIONS, description: "image 장면의 움직임. 생략하면 none" },
-            narrationAudioResourceId: { type: "string", description: "이 장면에서 재생할 음성 리소스 id" },
-          },
-          required: ["kind"],
-          additionalProperties: false,
-        },
-      },
-    },
-    required: ["scenes"],
     additionalProperties: false,
+    required: ["scenes"],
+    properties: {
+      enabled: { type: "boolean" },
+      skippable: { type: "boolean" },
+      scenes: { type: "array", items: OPENING_SCENE_SCHEMA },
+    },
   },
   invalidArgsExample: {
     enabled: true,
@@ -274,6 +279,7 @@ const setOpening: ToolDefinition = {
     scenes: [
       { kind: "text", narration: "오래된 편지 한 장이 남았다.", durationMs: 0 },
       { kind: "image", resourceId: "picture_img_0001", narration: "그날의 사진", durationMs: 4000, motion: "zoom" },
+      { kind: "video", resourceId: "movie_intro", narration: "영상", durationMs: 0, narrationAudioResourceId: "sound_voice" },
     ],
   },
   invalidArgsHint: "미디어 id는 list_opening_media(kind:\"image\"|\"movie\"|\"sound\") 결과에서 고르세요.",
@@ -290,9 +296,7 @@ const setOpening: ToolDefinition = {
 
 const removeOpening: ToolDefinition = {
   name: "remove_opening",
-  description:
-    "오프닝 시네마틱(system.opening) 자체를 프로젝트에서 제거한다. 새 게임 시작 연출이 없던 상태로 돌아간다. "
-    + "장면을 잠시 끄려면 set_opening(enabled:false)을 쓴다 — 이 툴은 작성한 장면을 전부 지운다.",
+  description: "오프닝 시퀀스를 프로젝트에서 제거한다(작성한 장면을 전부 지움). 장면을 잠시 끄려면 set_opening(enabled:false)을 쓴다.",
   mode: "write",
   parameters: { type: "object", properties: {}, additionalProperties: false },
   run(draft): ToolExecResult {
@@ -308,20 +312,19 @@ const removeOpening: ToolDefinition = {
 const listOpeningMedia: ToolDefinition = {
   name: "list_opening_media",
   description:
-    "오프닝 장면에 쓸 수 있는 미디어 후보를 DB 「오프닝」 탭과 같은 목록으로 반환한다. "
-    + 'kind:"image"는 이미지 장면, "movie"는 영상 장면, "sound"는 내레이션 음성 후보다. '
-    + "set_opening에 넣을 id를 여기서 고르고, 결과에 없는 id는 저장이 거부된다.",
+    "오프닝 장면에 쓸 미디어 후보를 DB 「오프닝」 탭과 같은 목록에서 반환한다. "
+    + "kind image(그림)/movie(영상)/sound(내레이션 음성) — 결과에 없는 id 는 저장이 거부된다.",
   mode: "read",
   parameters: {
     type: "object",
-    properties: {
-      kind: { type: "string", enum: OPENING_MEDIA_KINDS, description: "image(그림) / movie(영상) / sound(내레이션 음성)" },
-      query: { type: "string", description: "id·이름·설명 부분 일치 검색" },
-      offset: { type: "integer", minimum: 0, description: "시작 위치(기본 0)" },
-      limit: { type: "integer", minimum: 1, maximum: MEDIA_RESULT_LIMIT_MAX, description: `반환 개수(기본 20, 최대 ${MEDIA_RESULT_LIMIT_MAX})` },
-    },
-    required: ["kind"],
     additionalProperties: false,
+    required: ["kind"],
+    properties: {
+      kind: { type: "string", enum: OPENING_MEDIA_KINDS },
+      query: { type: "string" },
+      offset: { type: "integer", minimum: 0 },
+      limit: { type: "integer", minimum: 1, maximum: MEDIA_RESULT_LIMIT_MAX },
+    },
   },
   run(project, args): ToolExecResult {
     const kind = OPENING_MEDIA_KINDS.find(entry => entry === args.kind);
