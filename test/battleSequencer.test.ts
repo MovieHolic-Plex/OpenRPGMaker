@@ -358,9 +358,9 @@ describe("battle sequencer", () => {
       guard += 1;
     }
 
-    expect(lines.some((line) => line.includes("무사히 후퇴했다"))).toBe(true);
+    expect(lines.some((line) => line.includes("후퇴"))).toBe(true);
     expect(delays).toContain(BATTLE_RESULT_HOLD_MS);
-    expect(lines.at(-1)).toContain("무사히 후퇴했다");
+    expect(lines.at(-1)).toContain("후퇴");
     expect(queue).toHaveLength(0);
   });
 });

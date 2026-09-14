@@ -757,6 +757,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const button = commandHost.querySelector<HTMLButtonElement>("button.battle-command[data-battle-command-cursor='true']:not(:disabled)")
       ?? markMenuCursor(snapshot);
     if (!button) return false;
+    // 비활성 행(MP 부족·PP 없음)에도 커서는 선다 — 사유를 읽히려고 일부러 그렇게 뒀다.
+    // 확인키는 거기서 아무 일도 하지 않고 거절음만 울린다. 메뉴는 열린 채로 둔다.
+    if (button.dataset.battleCommandInert === "true") {
+      playBattleCue("command-cancel");
+      return true;
+    }
     button.click();
     return true;
   }
@@ -800,7 +806,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const button = event.target instanceof Element
       ? event.target.closest<HTMLButtonElement>("button.battle-command:not(:disabled)")
       : null;
-    if (button) playBattleCue("command-confirm");
+    if (!button) return;
+    // 비활성 행은 눌러도 확정이 아니다 — 거절음으로 갈라 준다.
+    playBattleCue(button.dataset.battleCommandInert === "true" ? "command-cancel" : "command-confirm");
   });
 
   function syncView(): void {

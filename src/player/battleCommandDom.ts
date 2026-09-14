@@ -763,11 +763,17 @@ function commandButton(
   button.className = "battle-command";
   button.dataset.testid = testId;
   button.dataset.commandIcon = icon;
+  const inertReason = inert ? disabledReason || hint || detail || "현재 사용할 수 없습니다." : "";
   if (inert) {
     button.dataset.previewOnly = "true";
-    button.disabled = true;
-    const reason = disabledReason || hint || detail || "현재 사용할 수 없습니다.";
-    button.setAttribute("aria-label", `${label}: ${reason}`);
+    // `disabled` 가 아니라 `aria-disabled` 다 — 비활성 행에도 커서가 **서야** 한다.
+    // 예전엔 `disabled` 라 화살표가 행을 건너뛰었고, 감독은 기술이 목록에서 사라진 줄 알았다.
+    // 왜 못 쓰는지(MP 부족·PP 없음)를 읽을 기회 자체가 없었다(적대 리뷰 보류 항목).
+    // 실제 실행 차단은 클릭 리스너를 달지 않는 것으로 한다(아래 `if (!inert)`).
+    button.dataset.battleCommandInert = "true";
+    button.setAttribute("aria-disabled", "true");
+    button.dataset.battleCommandInertReason = inertReason;
+    button.setAttribute("aria-label", `${label}: ${inertReason}`);
   } else if (hint) {
     button.setAttribute("aria-label", `${label}: ${hint}`);
   }
@@ -783,6 +789,15 @@ function commandButton(
     const small = document.createElement("small");
     small.textContent = detail;
     text.append(small);
+  }
+  // 사유는 눈으로도 읽혀야 한다 — 예전엔 `aria-label` 에만 넣어서 화면을 보는 사람에겐 없는 정보였다.
+  // `detail` 이 이미 같은 말이면 두 번 쓰지 않는다.
+  if (inertReason && inertReason !== detail) {
+    const reasonNode = document.createElement("small");
+    reasonNode.className = "battle-command-reason";
+    reasonNode.dataset.testid = `${testId}-reason`;
+    reasonNode.textContent = inertReason;
+    text.append(reasonNode);
   }
   button.append(iconNode, text);
   if (!inert) button.addEventListener("click", onClick);

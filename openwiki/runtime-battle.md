@@ -52,8 +52,23 @@
   `syncActorGroup` 이 필드 스프라이트 집합을 다시 만든다(`battle-actor-switched-in`).
 - **rm2003 수동 배치 충돌 회피.** `resolveSkinEnemyPositions` 측면 분기는 앞선 적과 24px 안에 겹치면 자동 진형
   자리 → 오른쪽 48 → 아래 40 순으로 비충돌 후보를 쓴다. 아군은 `x: 196 + i*32`.
-- 남은 것(의도적으로 보류): 375×667/640×360 의 정수 배율 정책(320×240 우표 — 플레이 표면 정책이라 별도 과제),
-  터치 입력 차단(키보드 전용 감독 결정), 비활성 행 커서 정지·사유 표시, 포켓몬 뒷모습 슬롯, 문체 통일(승리/패배).
+- **비활성 행에도 커서가 선다(2026-09-15, 보류 항목 해소).** `disabled` 버튼은 포커스를 못 받고, 커서는 포커스를
+  따라가므로 예전엔 화살표가 MP 부족·PP 0 행을 통째로 건너뛰었다 — 감독은 기술이 목록에서 사라진 줄 알았고,
+  왜 못 쓰는지는 `aria-label` 에만 있어 눈으로는 읽을 수 없었다. 이제 `commandButton` 은 `disabled` 대신
+  `aria-disabled="true"` + `data-battle-command-inert` 를 쓴다. 기존 `:not(:disabled)` 선택자가 그대로 매치하므로
+  커서 이동 코드는 **한 줄도 안 고쳤다**. 실행 차단은 클릭 리스너를 안 다는 것으로, 확인키는 `handleConfirm` 에서
+  거절음(`command-cancel`)만 울리고 메뉴를 연 채 둔다. 사유는 `.battle-command-reason` 으로 눈에도 보이며
+  `detail` 과 같은 말이면 중복 출력하지 않는다. 회색 처리는 `17-sprint-a-polish.css` 와 rm2000·vxace 스킨에
+  `[aria-disabled="true"]` 형제 선택자를 더해 유지했다.
+- **결과 문체 통일(2026-09-15, 보류 항목 해소).** `resultLine` 은 `승리`(명사)·`패배했습니다`(합쇼체)·
+  `무사히 후퇴했다`(해라체)로 세 갈래였다. 이 슬롯은 디렉터 첫 줄이자 `.battle-result-title` 에 그대로 찍히는
+  **제목**이므로(문장은 바로 아래 `rewardsLine` 담당) 셋 다 명사로 맞췄다 — `승리`/`패배`/`후퇴`.
+  전투 로그(`battleSequencer`)의 해라체는 의도된 것이라 건드리지 않았다.
+- **터치 입력 차단은 이미 걸려 있었다.** `src/player/player.ts:184` 의 `installPlayPointerBlocker(layout)` 가
+  플레이 표면 전체(전투 씬 포함)에서 pointer·touch 이벤트를 막는다. 예외는 `touch-controls` 와 `host-fullscreen`
+  소유 표면뿐. 별도 작업이 필요 없어 보류 목록에서 뺀다.
+- 아직 남은 것: 375×667/640×360 의 정수 배율 정책(320×240 우표 — 감독이 "또렷한 정수 픽셀" 과 "뷰포트 채우기"
+  중 하나를 골라야 하는 플레이 표면 정책이라 별도 과제), 포켓몬 뒷모습 슬롯(아트 에셋 대기).
   증거 스크립트는 리뷰 당시 `verify-shots/adv-review-{1..5}/` 와 `verify-shots/after/` 에 남겼다(커밋하지 않음).
 
 ## Native event battle admission (2026-09-08)
