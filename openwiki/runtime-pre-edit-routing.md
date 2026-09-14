@@ -211,3 +211,25 @@ Validation: `showEmoteCommand`, `showEmoteCommandBody`, `playSceneEmotes`, `emot
 `playSceneEmotes.ts` owns transient target-keyed sprites/timers. Interpreter and parallel/common-event scheduler resume immediately after `showEmote`; gift rank and friendship changes use the same sprite path. Head anchoring follows displayHeight × originY, including hop lift. Replacement, target removal, map change and scene teardown cancel timers/tweens together. `runtimeAssets.json` includes the generated sheet for shipping exports; Phaser preload uses `withInlineAsset` for standalone HTML. `__oprnEmotes` is installed only by the existing QA instrumentation boundary.
 
 Validation: `showEmoteCommand`, `showEmoteCommandBody`, `playSceneEmotes`, `emoteSheet` and `commandContracts/showEmote` tests. `npx tsx scripts/qa/emote-runtime.mts` generates a transient minimal engine contract fixture and runs the shipping-player harness; it does not author/persist a demo game. Read `verify-shots/runtime-qa/emote/SUMMARY.md` first.
+
+## Saved uploaded tilesets in the actual player (2026-09-14)
+
+`tilesetImage.ts` previously mapped every uploaded atlas to `tex_tiles_default`, while
+`loadBundledAssets` preloaded uploaded charsets but no uploaded tilesets. A canvas PNG
+could therefore look correct and the player could report the correct map ID while
+rendering the bundled exterior's unrelated graphics. Field movement gates did not catch it.
+
+`src/assets/uploadedTilesets.ts` now owns uploaded atlas keys, preload, authored frame
+geometry/count, and declared animation registration. `loadBundledAssets` /
+`registerBundledFrames` call it for saved project tilesets. Texture identity includes the
+asset ID, tile size, columns and count, so two images or slicings do not share frames.
+`tilesetImage.ts` resolves that same key; baked uploaded textures also register their own
+geometry. Both `chipsetTileRender.ts` and `playSceneMapRuntime.ts` use the matching
+`tilesetAnimationKeyForTile` name. Bundled texture/animation rules remain separate.
+
+The fixed entry is project boot/reload with uploaded bytes present. This does not claim
+that replacing an uploaded asset in a running scene hot-reloads its existing GPU texture.
+
+Regression: `test/uploadedTilesetRendering.test.ts`; actual player pixel checks, waterfall
+frame changes, and the original reference-image proof: `openwiki/emerald-fields.md`.
+Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser rendering.

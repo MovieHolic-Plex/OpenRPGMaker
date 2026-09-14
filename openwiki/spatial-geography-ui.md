@@ -173,3 +173,18 @@ not a procedural `RegionDesign`, occurrence, or village generation preset.
 Verification: `test/regionReferences.test.ts`; browser evidence and remote receipt
 are under `docs/evidence/region-reference/`. Runtime behavior is unchanged; the
 example currently contains no interior connections or interactive well event.
+
+## 기존 완성 맵을 지역에 연결
+
+`regionMapLinks.ts`는 지역 루트 occurrence의 **단일 projection binding**이 실제 맵 전체
+범위를 가리키는 경우에만 연결된 완성 맵으로 판정한다. 이름이나 provenance에서 map ID를
+추측하지 않는다. 라이브러리 카드에는 같은 revision의 유일한 배치만 연결하고, 여러 배치가
+있으면 각 「배치된 곳」 카드에서 선택한다. 부분 범위·owned binding은 기존 편집 경로를 유지한다.
+
+`spatialCatalogHierarchy.ts`가 카드에 `regionMapId`를 제공하면 지역 탭은 생성 미리보기 대신
+`regionMapView.ts`에서 실제 저장 맵을 공통 `drawMapTileLayers`로 그린다. 「맵 열기」는 현재 맵과
+카메라를 이동하고 DB 모달의 정상 닫기 경로를 사용한다. 연결된 카드는 복합 설계 작업실이나
+재생성 액션으로 보내지 않는다. projection은 타일/이벤트 삭제 권한이나 생성 템플릿이 아니다.
+
+검증: `test/spatialRegionMapLinks.test.ts` (IO 보존·중복 배치·revision 불일치·부분 범위/삭제 맵),
+`test/spatialCatalog.test.ts`; 실제 저장 프로젝트 UI는 `scripts/qa/emerald-region-editor.mjs --saved`.

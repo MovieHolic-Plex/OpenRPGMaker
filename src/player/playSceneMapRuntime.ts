@@ -6,7 +6,7 @@ import { chipsetAnimationKey, TILE_SIZE } from "@/assets/bundled";
 import {
   isDefaultTilesetTexture,
   supportsChipsetQuarterComposition,
-  supportsChipsetTileAnimation,
+  tilesetAnimationKeyForTile,
   tilesetTextureKey,
 } from "@/editor/tilesetImage";
 import { tileBackingTile } from "@/editor/tileLayerPolicy";
@@ -403,7 +403,7 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
     const backing = scene.add.image(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${backingTile}`);
     placeMapTileImage(scene, backing, tileset, backingTile, x, y, layer);
   }
-  const baseAnimationKey = supportsChipsetTileAnimation(tileset, tile) ? animationKeyForTile(tile) : null;
+  const baseAnimationKey = tilesetAnimationKeyForTile(tileset, tile);
   const animationKey = baseAnimationKey ? chipsetAnimationKey(textureKey, baseAnimationKey) : null;
   const image = animationKey
     ? scene.add.sprite(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${tile}`).play(animationKey)

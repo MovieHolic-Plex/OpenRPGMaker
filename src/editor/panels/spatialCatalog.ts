@@ -26,6 +26,7 @@ export type SpatialGalleryCard = {
   readonly objectId?: string;
   readonly mapId?: string;
   readonly regionReferenceId?: string;
+  readonly regionMapId?: string;
   readonly placeKind?: "facility" | "settlement" | "natural";
   readonly regionKind?: "terrain" | "settlement";
   readonly missingSource?: boolean;

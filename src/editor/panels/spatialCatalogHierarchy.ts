@@ -1,3 +1,4 @@
+import { linkedRegionMapId } from "@/project/spatial/regionMapLinks";
 import { REGION_REFERENCES } from "@/project/regionReferences";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { CONCEPT_FACILITY_TEMPLATES } from "@/project/defaults/conceptFacilityTemplates";
@@ -111,6 +112,7 @@ function regionCards(): SpatialGalleryCard[] {
       localId: region.id,
       canonicalSource: { kind: "region", id: region.id },
       name: region.name,
+      regionMapId: linkedRegionMapId(visibleAuthoringProject(), region.id),
       source: "own",
       kind: "regions",
       usage: 0,
@@ -224,6 +226,7 @@ function placedCards(tab: SpatialShellTab): SpatialGalleryCard[] {
       usage: 0,
       missingSource: !liveLibraryHas(entry.kind, entry.source.id),
       mapId: entry.bindings[0]?.mapId,
+      regionMapId: entry.kind === "region" ? linkedRegionMapId(project, entry.source.id, entry.id) : undefined,
     };
   });
   if (tab === "tiles") {
