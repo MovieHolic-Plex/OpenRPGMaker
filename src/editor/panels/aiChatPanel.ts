@@ -542,6 +542,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       composerShell.syncEffort(isAutonomyLevel(config.autonomyLevel) ? config.autonomyLevel : "balanced");
       // 팀 비트도 같은 값이다 — 설정에서 끄면 컴포저 토글이 따라와야 다음 평문이 어긋나지 않는다.
       composerShell.setPiTeam(config.piTeam ?? DEFAULT_PI_TEAM);
+      teamPanel.setEnabled(config.piTeam ?? DEFAULT_PI_TEAM);
     },
     extraSections: settingsExtraSections,
   }));
@@ -1896,6 +1897,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         setRunOutcome: (outcome) => { piRunOutcome = outcome; refreshRunOutcome(); },
       }, plan ? {
         readOnly: plan.readOnly,
+        routineEdit: plan.routineEdit,
         planOnly: plan.planOnly,
         maxTurns: plan.maxTurns,
         thinkingLevel: plan.thinkingLevel,
@@ -1928,6 +1930,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         selection: mapContext().selection,
         hasActivePlan: workPlanSurfaceState?.active === true,
       }));
+      // 기존 분류 결과를 재사용한다. 실패/모호함/생성/다단계 요청은 기존 절차를 유지한다.
+      plan = { ...plan, routineEdit: !declared.error && declared.intent.source === "llm"
+        && declared.intent.mode === "modify" && declared.intent.needsPlan === false
+        && declared.intent.clarify === null };
       if (declared.intent.mode === "question") {
         plan = { ...plan, readOnly: true };
         questionPromoted = true;
@@ -2638,6 +2644,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       initialTeam: loadAiConfig().piTeam ?? DEFAULT_PI_TEAM,
       onTeamChange: (team) => {
         saveAiConfig({ ...loadAiConfig(), piTeam: team });
+        teamPanel.setEnabled(team);
         setStatus(team ? "Pi 팀 실행" : "Pi 에이전트 하나");
       },
     },
@@ -2718,7 +2725,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 컴포저 위로 띄우면 기록과 레일을 덮어 토글 자신이 가려진다(실측 2026-09-03).
   rail.root.append(commandMenu, composerShell.preferencePopover, composerShell.planningPopover, contextMeter.popover);
   // 팀 패널: 레일 아래 접힌 막대. 유휴 상태(본문 숨김)에서도 「누가 무엇을 하는지」 한 줄이 보인다.
-  const teamPanel = createTeamPanel();
+  const teamPanel = createTeamPanel(loadAiConfig().piTeam ?? DEFAULT_PI_TEAM);
   const deck = el("div", {
     class: "ai-deck",
     dataset: { testid: "ai-deck" },
@@ -3385,6 +3392,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     appliedCompletion = null;
     commandBarClearanceObserver?.disconnect();
     composerShell.dispose();
+    teamPanel.dispose();
 
     if (typeof window !== "undefined") {
       window.removeEventListener(AI_SELECTION_CONTEXT_EVENT, handleSelectionContextEvent);

@@ -17,12 +17,12 @@ vi.mock("@/editor/panels/aiPiAgentCommand", async (importOriginal) => ({
 }));
 
 // 의도 선언의 판정만 고정한다 — 나머지(buildIntentFacts·createLlmIntentDeclarer)는 실물을 쓴다.
-const intentDecl = vi.hoisted(() => ({ mode: "other" as string, calls: 0 }));
+const intentDecl = vi.hoisted(() => ({ mode: "other" as string, source: "llm", needsPlan: false, clarify: null as string | null, error: undefined as string | undefined, calls: 0 }));
 vi.mock("@/ai/intentDeclarationClient", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/ai/intentDeclarationClient")>()),
   declareIntentCached: vi.fn(async () => {
     intentDecl.calls += 1;
-    return { intent: { mode: intentDecl.mode }, elapsedMs: 1 } as never;
+    return { intent: { ...intentDecl }, error: intentDecl.error, elapsedMs: 1 } as never;
   }),
 }));
 
@@ -69,6 +69,7 @@ beforeEach(() => {
   vi.mocked(runPiCommand).mockClear();
   intentDecl.mode = "other";
   intentDecl.calls = 0;
+  intentDecl.error = undefined; intentDecl.source = "llm"; intentDecl.needsPlan = false; intentDecl.clarify = null;
   store.replace(createBlankProject());
   editorState.set({ currentMapId: null, selection: null });
   restoreDom = installFakeDom();
@@ -159,6 +160,28 @@ describe("자율성 다이얼 → Pi 실행 계획", () => {
     const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
     await send(panel, "집 한 채 지어줘");
     expect(lastPlan()).toMatchObject({ readOnly: false, planOnly: false });
+  });
+
+  it.each([
+    ["modify", "llm", false, null, true],
+    ["modify", "llm", true, null, false],
+    ["modify", "fallback", false, null, false],
+    ["create", "llm", false, null, false],
+    ["modify", "llm", false, "어느 집인가요?", false],
+  ] as const)("기존 의도 판정을 재사용한다: %s/%s/plan=%s/clarify=%s", async (mode, source, needsPlan, clarify, routineEdit) => {
+    Object.assign(intentDecl, { mode, source, needsPlan, clarify });
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    await send(panel, "맵 이름을 숲길로 바꿔줘");
+    expect(lastPlan()).toMatchObject({ routineEdit });
+    expect(intentDecl.calls).toBe(1);
+  });
+
+  it("의도는 수정이어도 분류·감사 오류가 있으면 기존 절차를 유지한다", async () => {
+    intentDecl.mode = "modify";
+    intentDecl.error = "Request coverage extraction failed";
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    await send(panel, "맵 이름을 숲길로 바꿔줘");
+    expect(lastPlan()).toMatchObject({ routineEdit: false });
   });
 
   it("읽기 전용 다이얼은 분류 호출 자체를 건너뛴다", async () => {

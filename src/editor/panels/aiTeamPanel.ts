@@ -12,6 +12,7 @@ export interface TeamPanelHandle {
   readonly root: HTMLElement;
   /** 펼침 상태가 바뀔 때(패널 폭 조정용). */
   readonly onToggle: (listener: (open: boolean) => void) => void;
+  setEnabled(enabled: boolean): void;
   dispose(): void;
 }
 
@@ -50,7 +51,8 @@ function liveSummary(spec: PiTeamSpec, state: TeamBoardState | null): string {
   return parts.join(" · ") || state.phase;
 }
 
-export function createTeamPanel(): TeamPanelHandle {
+export function createTeamPanel(initialEnabled = false): TeamPanelHandle {
+  let enabled = initialEnabled;
   let spec = loadTeamSpec();
   let activity: TeamBoardState | null = null;
   let open = false;
@@ -243,6 +245,9 @@ export function createTeamPanel(): TeamPanelHandle {
   };
 
   const render = (): void => {
+    const visible = enabled || activity?.mode === "team";
+    root.hidden = !visible;
+    if (!visible && open) setOpen(false);
     const running = Boolean(activity && (activity.phase === "실행 중" || activity.phase === "적용 중" || activity.phase === "준비"));
     dot.className = `ai-team-panel-dot${running ? " is-running ai-deck-spin" : activity?.phase === "적용됨" || activity?.phase === "완료" ? " is-done" : activity?.phase === "실패" ? " is-error" : ""}`;
     summary.textContent = liveSummary(spec, activity);
@@ -252,10 +257,11 @@ export function createTeamPanel(): TeamPanelHandle {
   };
 
   const unsubscribeSpec = subscribeTeamSpec((next) => { spec = next; render(); });
-  const unsubscribeActivity = subscribeTeamActivity((state) => { activity = state; render(); });
+  const unsubscribeActivity = subscribeTeamActivity((state) => { activity = state?.mode === "team" ? state : null; render(); });
   render();
   return {
     root,
+    setEnabled(next) { enabled = next; render(); },
     onToggle: (listener) => { toggleListeners.add(listener); },
     dispose: () => { unsubscribeSpec(); unsubscribeActivity(); },
   };

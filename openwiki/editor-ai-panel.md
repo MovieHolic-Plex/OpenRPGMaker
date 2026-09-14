@@ -77,6 +77,49 @@
   클러스터 AI 모달, 조수 QA 브리지(`aiAssistantBridge` — DB AI 바가 이걸 쓴다), 벤치마크/QA 스크립트.
   각자 표면의 엔진이라 조수 창 경로와 무관하고, Pi 이관은 별도 작업이다.
 
+## 단독 작업은 결과 중심으로 표시한다 (2026-09-14)
+
+`aiTeamBoard.ts`의 단독 실행은 기본적으로 접힌 네이티브 `details` 「작업 기록」이다.
+사용자 지시 제목·Pi 배지·시공 행·툴/시간 합계를 기본 화면에서 반복하지 않는다.
+팀 모드는 기존 보드를 유지한다. 기록 요소는 상태 갱신에도 같은 DOM을 유지하므로
+사용자가 연/닫은 상태가 보존된다. 1초 ticker는 시간 합계만 갱신하고 행을 재생성하지 않는다.
+
+- 적용 전 비교와 적용/버리기 버튼은 `details` **밖**에 있다. 오류 본문도 접지 않는다.
+  도구 오류 수·검토 지적은 접힌 요약에 남는다. 검토 해제 시 버튼 DOM도 제거한다.
+- 단독 적용 결과는 영수증 하나로 전달한다(영수증을 표시할 수 없는 호출자는 시스템 문장).
+  보드 footer와 채팅에 같은 완료 문장을 중복하지 않는다. 단독 결과 제목은 「변경 내용」이며
+  기술 수치·내부 맵 ID로 만든 제목은 생략한다. 실제 실행 로그/보드 상태 데이터는 유지한다.
+- `aiTeamPanel.setEnabled`는 컴포저 팀 토글·설정 모달과 동기화된다. 팀이 꺼져 있고
+  실제 팀 작업이 없으면 레일 아래 팀 패널을 숨긴다. 명시 `/pi team`은 설정과 무관하게 표시한다.
+  다음 단독 작업에서 이전 팀 상태를 지운다. 채팅 패널 해제 시 팀 패널 구독도 해제한다.
+- 브라우저 재현은 `scripts/qa/ai-routine-edit.mjs`: 네이티브 summary의 Enter 열기/닫기,
+  팀 토글, 적용·되돌리기·버리기, 초보/전문가 모드의 1024×768·1280×800·1440×900 비교·버튼 가시성을 검증한다.
+  증거 `output/evidence/ai-routine-edit/compact-<width>-<mode>.png`. 모델 전송은 모킹한다.
+  단위 회귀는 `test/piAgentTeamBoardRender.test.ts`와 기존 Pi 실행/컴포저 테스트.
+
+## 단순 수정은 별도 계획·시각 검토를 생략한다 (2026-09-14)
+
+평문 채팅은 기존 `declareIntentCached` 결과를 재사용한다. 오류 없이 `source: llm`,
+`mode: modify`, `needsPlan: false`, `clarify: null`이면 `PiRunPlan.routineEdit`를 넘긴다.
+새 분류 호출·설정·키워드 판정은 없다. 기존 의도 선언 내부의 요청 범위 감사 호출은 유지한다.
+`runPiCommand`는 쓰기가 허용된 단독 실행이며 기존 맵 하나가 지정된 경우만 이 힌트를 사용한다.
+
+- 이 경우 Deep이 바로 실행한다. 별도 Ultrabrain 계획을 만들지 않는다.
+- 병합 결과가 해당 맵 이외의 프로젝트 키도 바꾸면 기존 시각 검토를 복원한다.
+  해당 맵만 바뀌면 Vision/Ultrabrain 검토를 생략한다. 생략을 검토 통과로 기록하지 않는다.
+- 사용자 검토/자동 적용 설정, 적용 전 비교 카드, 커밋 게이트, 범위 밖 변경 제거,
+  stale-base 검사, 적용 영수증과 되돌리기는 같은 경로를 쓴다.
+- 생성·다단계·불명확한 요청·분류 오류·팀·다중 맵·명시 `/pi`는 기존 절차를 유지한다.
+  계획 전용은 항상 쓰기 없이 Ultrabrain으로 실행한다. 자연어 판정의 정확도를 보장하는
+  변경은 아니며, 이 첫 축소는 구형 세션 제거나 팀 UI 재설계를 포함하지 않는다.
+
+검증: `test/aiChatPanelComposerMode.test.ts`, `test/piAgentRunOutcome.test.ts`,
+`test/piAgentExecutionRoute.test.ts`. 실제 편집기 재현은
+`QA_BASE_URL=http://127.0.0.1:<port> node scripts/qa/ai-routine-edit.mjs`.
+모델 전송을 모킹하고 원격 저장이 꺼진 blankProject에서 맵 이름 수정→비교→적용→되돌리기와
+바닥 한 칸 수정→전후 이미지→버리기를 검증한다.
+증거는 `output/evidence/ai-routine-edit/`이며 실제 모델의 응답 품질·지연 측정은 아니다.
+
 ## Five model roles and whole-map harmony review (2026-09-14)
 
 The main Pi chat route uses **Ultrabrain** for planning and final map judgement,
@@ -96,7 +139,7 @@ Provider/model/effort for each LLM role are independent of the autonomy dial. Im
 `imageProviderId`/`imageModel` and the existing `imageGenerationClient` path.
 
 `aiPiAgentCommand` runs one read-only Ultrabrain plan across the requested scope before
-single-mode Deep execution. Planning errors/empty plans stop execution. Plan-only turns
+single-mode Deep execution, except for the routine-edit path described above. Planning errors/empty plans stop execution. Plan-only turns
 always enforce read-only and use Ultrabrain alone, even if the caller omitted `readOnly`.
 Read-only questions skip the extra planning phase. Team mode uses Ultrabrain as its existing
 orchestrator (planning plus assignments), while builders and structural reviewers use Deep.
@@ -110,7 +153,8 @@ passes a server-only provider-key map to the worker; child calls never reuse ano
 provider's credential. Plan-only calls do not receive the Writer consultation tool.
 
 
-`aiPiAgentCommand` reviews the merged, postprocessed Pi draft before presenting/applying it.
+`aiPiAgentCommand` reviews the merged, postprocessed Pi draft before presenting/applying it
+unless it qualifies for the routine-edit review exemption above.
 `src/ai/ultrabrainReview.ts` selects visually changed maps, but sends each **whole map**,
 not just edited regions: one PNG up to 1536 px, no tile-array dump or fixed 16-image fanout.
 Vision first reports visible evidence; Ultrabrain then judges palette, density, proportions
