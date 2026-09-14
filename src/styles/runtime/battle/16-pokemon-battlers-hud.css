@@ -55,9 +55,6 @@
   transform: scaleX(-1) scale(1.85);
   transform-origin: 50% 80%;
 }
-.battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-monster-back {
-  transform: scaleX(-1) scale(2.35);
-}
 /* 몬스터 배틀러 노드는 캐릭터용 3열 스프라이트 프레이밍을 쓰지 않는다 */
 .battle-actor-group .battle-actor[data-monster-battler="true"] {
   height: 240px;
@@ -145,9 +142,10 @@
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command[data-battle-command-cursor="true"]::before,
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command:focus-visible::before,
-.battle-scene[data-battle-ui-style="pokemon"] .battle-command:focus-visible::before {
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-menu .battle-command.battle-target-selected::before {
   content: "▸";
   display: inline-block;
+  flex: 0 0 auto;
   position: static;
   color: var(--pkmn-accent);
   margin-right: 6px;

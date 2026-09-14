@@ -33,7 +33,6 @@
   grid-row: 1 / -1;
   right: auto;
   bottom: auto;
-  width: min(38%, 220px);
   z-index: 8;
   border-image: none;
   border-radius: 16px 16px 16px 4px;
@@ -141,9 +140,9 @@
   text-shadow: none;
 }
 
-/* 적 스프라이트를 크게 — 정통 포켓몬 1:1 대치 크기 */
+/* transform 은 여기서 건드리지 않는다 — `scale(1)` 재지정이 15층 포획 흡수(.battle-capture-absorbed
+   → scale(0))를 특정도로 덮어 몬스터가 구슬 옆에 그대로 서 있었다(2026-09-14 실측). */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-image {
-  transform: scale(1);
   transform-origin: 50% 100%;
   image-rendering: pixelated;
 }
@@ -192,9 +191,6 @@
 .battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-stat-bar {
   height: 12px;
   margin-top: 2px;
-}
-.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-panel {
-  width: min(50%, 300px);
 }
 
 /* 대상 선택 흰 박스/화살표는 포켓몬 1:1 대치에선 어색 — 모두 숨긴다 */

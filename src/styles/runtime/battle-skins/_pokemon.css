@@ -9,56 +9,14 @@
   --battle-accent: #f04030;
   --oprn-battle-window-light: #f8f8f8;
   --oprn-battle-text: #282828;
-  background: #98d0d8;
+  /* 씬 배경은 18층(#14181f)이 소유한다 — 여기서 하늘색을 주면 밴드 경계·창 사이 틈으로 새어 나온다. */
 }
 
 /* 포켓몬 문법: 내 몬스터 뒷모습(선두 1)은 JS placement가 좌하단에 세운다. 적 위치도 JS(우상). */
 
-/* QA r1(layout, 최우선): 파티 상태 박스를 우하단(HUD 바로 위)에 도킹하고
-   높이를 제한 — 적 영역·적 정보 박스를 절대 덮지 않는다.
-   첫 행이 패널 위로 잘리던 문제도 bottom 고정 + max-height + 스크롤로 해소. */
-.battle-scene[data-battle-skin="pokemon"] .battle-party {
-  position: absolute !important;
-  grid-column: 1 / -1 !important;
-  grid-row: 1 / -1 !important;
-  top: auto !important;
-  left: auto !important;
-  right: 8px !important;
-  bottom: calc(var(--battle-hud-height) + 14px) !important;
-  width: min(46%, 336px) !important;
-  height: auto !important;
-  max-height: 46% !important;
-  overflow-y: auto !important;
-  z-index: 6 !important;
-  padding: 6px 14px 8px !important;
-  background: linear-gradient(180deg, #fdfdf4 0%, #edeadb 100%);
-  border: 4px solid #45443c;
-  /* border-image 삭제: 창 표면은 _windowskin.css 계약(자료집 System 윈도스킨)이 소유한다. */
-  border-radius: 16px 4px 16px 16px;
-  color: #282828;
-}
-
-/* 파티 행 컴팩트화 — 4인 파티가 max-height 안에 들어가도록. */
-.battle-scene[data-battle-skin="pokemon"] .battle-party .battle-actor-status {
-  gap: 0 !important;
-}
-
-.battle-scene[data-battle-skin="pokemon"] .battle-party .battle-actor-name {
-  font-size: 14px !important;
-}
-
-.battle-scene[data-battle-skin="pokemon"] .battle-party .battle-actor-hp,
-.battle-scene[data-battle-skin="pokemon"] .battle-party .battle-actor-mp {
-  font-size: 13px !important;
-  overflow: visible;
-  text-overflow: clip;
-  white-space: nowrap;
-}
-
-.battle-scene[data-battle-skin="pokemon"] .battle-party .battle-stat-bar {
-  height: 8px !important;
-  margin-top: 0 !important;
-}
+/* 파티 박스의 위치·크롬은 battle/20-pokemon-reference-restyle.css(사선 다크 바)가 소유한다.
+   예전에 여기 있던 `!important` 13개짜리 크림 박스가 20층을 되살려 4인 파티에서 적 스프라이트를
+   통째로 가렸다(2026-09-14 실측). 스킨 파일은 팔레트만 갖는다. */
 
 /* QA r1(readability): 메시지 창 한 줄 말줄임 → 줄바꿈 허용. */
 .battle-scene[data-battle-skin="pokemon"] .battle-message-window {

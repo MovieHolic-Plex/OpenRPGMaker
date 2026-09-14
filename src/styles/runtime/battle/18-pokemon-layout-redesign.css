@@ -52,10 +52,8 @@
   object-fit: contain;
 }
 
-/* ── 적 정보 박스: 좌상 컴팩트(스프라이트·아군을 덮지 않게 폭·행 최소화) ── */
-.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-panel {
-  width: min(32%, 205px);
-}
+/* 적 정보 박스 폭은 20층(20-pokemon-reference-restyle.css)이 최종 소유한다 — 같은 선택자의 width 가
+   14/18/19/20 에 다섯 번 재선언돼 있었다(2026-09-14 정리). */
 
 /* ── 커맨드 패널: 상태줄 / 메뉴(스크롤) / 힌트 3단. 행 겹침 제거 ──
    flex-wrap/justify 도 명시한다 — 에디터 스타일(editor/core.part-2.css:48)이 같은
