@@ -138,12 +138,14 @@ export function withEnvironment(space: SpaceDesign, environment: "interior" | "o
         ...base,
         environment: "interior",
         role: space.environment === "interior" ? space.role : "room",
+        ...(space.environment === "interior" && space.zones !== undefined ? { zones: space.zones } : {}),
         tilesetId: interiorAtlas,
       };
     case "outdoor":
       return {
         ...base,
         environment: "outdoor",
+        objectSlots: base.objectSlots.map(({ zoneId: _zoneId, ...slot }) => slot),
         floorAreas: space.environment === "outdoor"
           ? space.floorAreas
           : [{ kind: "rect", material: space.floor, x: 0, y: 0, width: space.width, height: space.height } satisfies SpatialFloorArea],

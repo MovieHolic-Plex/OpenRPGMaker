@@ -40,6 +40,15 @@ export function spaceLayout(project: Project, space: SpaceDesign, identity: { re
       map.roomHarnessPlan = { kitId: "villager-room-v1", plan };
       const floor = map.lowerTiles.map((_, i) => boxes.some(box => containsPoint({ x: box.x, y: box.y, width: box.w, height: box.h },
         { x: i % map.width, y: Math.floor(i / map.width) })));
+      for (const zone of space.zones ?? []) {
+        if (!isConceptFloorMaterial(zone.floor)) throw new SpatialCompileError("material", `${space.id}.zones:${zone.floor}`);
+        let cells = 0;
+        for (let y = room.y + zone.y; y < room.y + zone.y + zone.height; y++) for (let x = room.x + zone.x; x < room.x + zone.x + zone.width; x++) {
+          const i = y * map.width + x;
+          if (floor[i]) { map.lowerTiles[i] = CONCEPT_FLOOR_TILES[zone.floor]; cells++; }
+        }
+        if (!cells) throw new SpatialCompileError("clipped", `${space.id}.zone:${zone.id}`);
+      }
       return { map, room, entry, floor, role: space.role };
     }
     case "outdoor": {

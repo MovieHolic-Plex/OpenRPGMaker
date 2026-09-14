@@ -25,8 +25,9 @@ const objects = object({ ...base, graphic, anchors: ports, chips: array(text) })
 const spaces = object({ ...base, environment: choices(["interior", "outdoor"]), tilesetId: id,
   shape: choices(["rect", "l", "alcove"]), width: size, height: size, floor: text, wall: text,
   role: choices(["entrance", "walkway", "room"]), floorAreas: areas, ports,
+  zones: { ...array(object({ id, name: text, floor: choices(["wood", "stone", "plank", "mat"]), x: integer, y: integer, width: size, height: size })), description: "생활 영역: 하나의 외벽 안에서 바닥과 가구만 구분. 벽/문 생성 없음. 공간 바닥 기준 좌표, 서로 겹치지 않게 지정." },
   objectSlots: array(object({ id, objectDesignId: id, quantity: { type: "integer", minimum: 1 }, required: { type: "boolean" },
-    placement: object({ mode: choices(["auto", "fixed"]), x: integer, y: integer }, ["mode"]), chipOverrides: array(text),
+    placement: object({ mode: choices(["auto", "fixed"]), x: integer, y: integer }, ["mode"]), chipOverrides: array(text), zoneId: { ...id, description: "자동 가구의 생활 영역 id. fixed 좌표는 계속 공간 바닥 기준." },
   }, ["id", "objectDesignId", "quantity", "required", "placement"])),
 }, [...Object.keys(base), "environment", "tilesetId", "shape", "width", "height", "floor", "wall", "ports", "objectSlots"]);
 const places = object({ ...base, kind: choices(["facility", "settlement", "natural"]), children: child(["space", "place"]),

@@ -64,17 +64,32 @@ export function compileSpaces(context: SpatialCompileContext): SpatialRasterProp
   // The existing concept parser owns chip semantics and the composer owns all automatic layout.
   const parsed = parseConceptPlan({ places: [{ id: "space", label: space.name, role: layout.role, shape: space.shape }],
     things: automatic.map(job => ({ id: job.key, objectId: job.key, label: job.design.name,
-      placeIds: ["space"], chips: job.design.chips, required: job.slot.required })) },
+      placeIds: ["space"], chips: job.design.chips, required: job.slot.required || job.child.snapshot.ports.length > 0 })) },
   { bundleId: occurrence.id, facilityId: occurrence.id, facilityLabel: space.name, resolveObject: id => vocab.get(id) });
-  const composed = composeConceptRoom({ map, floor: available, fullFloor: floor, room, roomId: occurrence.id,
-    role: layout.role, door: entry, placeLabel: space.name, seed: occurrence.seed,
-    things: parsed.bundle.things.map(thing => ({ thingId: thing.id, objectId: thing.objectId, label: thing.label, chips: thing.chips, required: thing.required === true })),
-    resolveObject: id => vocab.get(id),
-    isFloorTile: tile => {
-      const passage = tilePassability(own(project.tilesets, map.tilesetId), tile, -1);
-      return passage.up || passage.down || passage.left || passage.right;
-    },
-  });
+  const zones = space.environment === "interior" ? space.zones ?? [] : [];
+  const composed = { placements: [] as import("../interiorConceptCompose").ConceptPlacement[] };
+  // Activity rectangles are masks within a shared shell. They never build walls or doors.
+  for (const zone of [...zones, undefined]) {
+    const selected = automatic.filter(job => job.slot.zoneId === zone?.id);
+    if (!selected.length) continue;
+    const keys = new Set(selected.map(job => job.key));
+    const bounds = zone ? { id: zone.id, x: room.x + zone.x, y: room.y + zone.y, w: zone.width, h: zone.height } : room;
+    const mask = available.map((cell, i) => cell && i % map.width >= bounds.x && i % map.width < bounds.x + bounds.w
+      && Math.floor(i / map.width) >= bounds.y && Math.floor(i / map.width) < bounds.y + bounds.h);
+    const result = composeConceptRoom({ map, floor: mask, fullFloor: floor, room: bounds, roomId: zone?.id ?? occurrence.id,
+      openPlan: zones.length > 0, role: layout.role, door: entry, placeLabel: zone?.name ?? space.name, seed: occurrence.seed,
+      things: parsed.bundle.things.filter(thing => keys.has(thing.id)).map(thing => ({ thingId: thing.id, objectId: thing.objectId, label: thing.label, chips: thing.chips, required: thing.required === true })),
+      resolveObject: id => vocab.get(id),
+      furnishingObjectIds: new Map(selected.map(job => [job.key, job.design.graphic.kitId])),
+      fixedFurnishingObjectIds: jobs.filter(job => job.slot.zoneId === zone?.id && objects.some(object => object.occurrence.id === job.child.id)).map(job => job.design.graphic.kitId),
+      isFloorTile: tile => {
+        const passage = tilePassability(own(project.tilesets, map.tilesetId), tile, -1);
+        return passage.up || passage.down || passage.left || passage.right;
+      },
+    });
+    composed.placements.push(...result.placements);
+    for (const placement of result.placements) for (const cell of placement.cells) available[cell.y * map.width + cell.x] = false;
+  }
   for (const job of automatic) {
     const placement = composed.placements.find(placement => placement.thingId === job.key);
     if (!placement) {

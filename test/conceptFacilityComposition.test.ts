@@ -37,22 +37,16 @@ function objectOrigins(map: GameMap, id: string) {
 }
 
 describe("facility furniture composition", () => {
-  it("places the house dining table on its rug without occupying the entrance lane", () => {
-    // Given the public house template with a dining table and a rug.
-    const facility = SCRATCH_HOUSE_BUNDLE.facilities[0];
-    if (!facility) throw new Error("Missing house facility");
+  it("uses one complete dining assembly and keeps its entrance reachable", () => {
+    const facility = SCRATCH_HOUSE_BUNDLE.facilities[0]!;
     const layout = layoutConceptFacility(SCRATCH_HOUSE_BUNDLE, facility);
-    // When the real assistant construction tool builds it.
-    const { map } = build("민가");
-    // Then the intact table belongs to the rug, rather than sitting next to an empty rug.
-    const rugs = objectOrigins(map, "rug_mat");
-    const tables = objectOrigins(map, "table_chairs");
-    expect(tables.some((table) => rugs.some((rug) =>
-      table.x >= rug.x && table.x + 3 <= rug.x + 3
-      && table.y >= rug.y && table.y < rug.y + 3))).toBe(true);
-    for (const table of tables) {
-      expect(table.x <= layout.door.x && table.x + 3 > layout.door.x).toBe(false);
-    }
+    const { map, project } = build("민가");
+    const tables = objectOrigins(map, "dining_table");
+    expect(tables).toHaveLength(1);
+    expect(objectOrigins(map, "table_chairs")).toHaveLength(0);
+    const reached = computeReachableCells(project, map, layout.door.x, layout.door.y);
+    const table = tables[0]!;
+    expect(isAdjacentOrOn(reached, table.x + 2, table.y + 2)).toBe(true);
   });
 
   it("keeps warehouse stock in interior rows with a continuous central aisle", () => {

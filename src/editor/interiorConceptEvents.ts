@@ -26,6 +26,8 @@ export type ConceptEventOptions = {
   readonly door: { readonly x: number; readonly y: number };
   /** 숙박 요금. 기본 20G. */
   readonly innPrice?: number;
+  /** Optional generated-map access mask; fixed canonical anchors retain their own contract. */
+  readonly reachableCells?: ReadonlySet<number>;
   /** 계단·문 연결 대상. 없으면 같은 맵 정문(미연결). */
   readonly transferTarget?: ConceptTransferTarget | null;
   /** 조사 문장에 넣는 시설명(「여관 카운터다」). 없으면 「시설」. */
@@ -117,11 +119,16 @@ export function buildConceptEvents(
     const bottomRow = Math.max(...placement.cells.map((cell) => cell.y));
     const rowCells = placement.cells.filter((cell) => cell.y === bottomRow);
     const preferred = placement.objectId === "stairs_down" ? rowCells[0] : placement.anchor;
-    const anchor = [preferred, ...rowCells].map(cell => {
+    const anchor = [preferred, ...rowCells, ...(options.reachableCells ? placement.cells : [])].map(cell => {
       if (!cell) return undefined;
       const upperWall = [74, 75, 76, 77].includes(map.lowerTiles[cell.y * map.width + cell.x] ?? -1);
-      return { x: cell.x, y: cell.y + (placement.chips.includes("wall") && upperWall ? 1 : 0) };
-    }).find(cell => cell && !occupied.has(`${cell.x},${cell.y}`));
+      const stoveProp = options.reachableCells && placement.objectId === "cauldron" && map.lowerTiles[cell.y * map.width + cell.x] === 21;
+      return { x: cell.x, y: cell.y + (stoveProp || (placement.chips.includes("wall") && upperWall) ? 1 : 0) };
+    }).find(cell => cell && !occupied.has(`${cell.x},${cell.y}`)
+      && (!options.reachableCells || [[0,0],[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy]) => {
+        const x=cell.x+dx!, y=cell.y+dy!;
+        return x>=0 && y>=0 && x<map.width && y<map.height && options.reachableCells!.has(y*map.width+x);
+      })));
     if (!anchor) {
       warnings.push(`concept: ${placement.label} 자리에 이미 이벤트가 있어 칩을 달지 못했다`);
       continue;

@@ -115,7 +115,7 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
     },
   },
   { name: "upsert_spatial_design", mode: "write", domains: ["world", "map", "database"],
-    description: "Author one canonical design in the detached AI proposal. Supply exactly the body named by kind (object/space/place/region/world). expectedRevision=0 creates a new id; updates require the current revision and design.revision=current+1. References must already exist — author bottom-up: objects before spaces, spaces before places, places before regions, regions before worlds. For region/world terrain read get_geography_vocabulary first. Never refreshes frozen occurrences or overwrites maps. Uses normal proposal acceptance.",
+    description: "Author one canonical design in the detached AI proposal. Supply exactly the body named by kind (object/space/place/region/world). expectedRevision=0 creates a new id; updates require the current revision and design.revision=current+1. For ordinary homes, prefer one interior space with zones (activity rectangles with floor material) and objectSlots[].zoneId; zones share the outer shell and do not add partitions. Use separate spaces only when an enclosed room is intended. References must already exist — author bottom-up: objects before spaces, spaces before places, places before regions, regions before worlds. For region/world terrain read get_geography_vocabulary first. Never refreshes frozen occurrences or overwrites maps. Uses normal proposal acceptance.",
     parameters: SPATIAL_UPSERT_SCHEMA,
     run(project, args) {
       const kind = parseKind(args.kind, "kind");

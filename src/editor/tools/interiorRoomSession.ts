@@ -93,7 +93,7 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
     name: "start_interior_room_session",
     description:
       "**새** 주민 집 실내(villager-room-v1)를 새 mapId 로 시공하는 멀티턴 세션을 시작한다.  개념 꾸러미의 장소를 지정한 도면(rooms[] theme=장소 id, door, wallMaterial)에 쓴다. 내용물은 꾸러미에서 읽는다. 없는 장소는 get_concept_facility의 sources를 조합해 place_concept(plan)으로 설계한다 → advance_interior_room_build 반복 → evaluate_interior_room. create_map 만 하고 멈추지 말 것. **기존 실내 맵을 고치는 요청에는 금지** — 그 맵의 타일·이벤트가 전부 삭제된다. 기존 실내는 furnish_interior_space({mapId, roomId})." +
-      "저택은 방 용도·출입구·연결 통로를 먼저 계획하고 rooms/innerDoors로 구획하라. 현관에 dining을 대입하거나 가구 반복으로 빈 공간을 메우지 말 것. 평가 점수는 배치/통행 검사이며 시각 품질 합격이 아니다. 실제 플레이 화면에서 방의 용도·문 위치·물체 식별을 검토하라. " +
+      "용도 구분이 곧 벽 구분은 아니다. 일반 집은 주방·식사·침상 영역을 바닥 재질과 가구로 구분하고 넓게 연결하라. 잠금·욕실·독립 객실처럼 사생활이 필요한 곳만 벽과 문으로 구획하라. 현관에 dining을 대입하거나 가구 반복으로 빈 공간을 메우지 말 것. 평가 점수는 배치/통행 검사이며 시각 품질 합격이 아니다. 실제 플레이 화면에서 방의 용도·문 위치·물체 식별을 검토하라. " +
       "절차: plan → floor(bbox 바닥) → walls → furniture → entrance(입구 이벤트) → critique. " +
       "wings는 통행 바닥 bbox 합집합. 벽은 floor 이후 세운다. 침대 355|356은 hard 좌우 쌍. " +
       "이어서 advance_interior_room_build 반복 또는 run_interior_room_pipeline 원샷. " +
@@ -117,12 +117,13 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
         rooms: {
           type: "array",
           description:
-            "공간 구조 bbox [{id,x,y,w,h,theme?,floorTile?}] — 상하 인접 방은 3행 간격(파티션). "
+            "생활 영역 bbox [{id,x,y,w,h,theme?,floorTile?}]. 일반 집은 openPlan:true로 영역끼리 변을 맞대어 하나의 연속 바닥으로 만든다. 벽으로 분리할 때만 상하 3행/좌우 1열 간격과 innerDoors를 준다. "
             + "지정 시 wings 대신 사용. '실내'는 상위 개념이고 배치는 공간(방) 단위: 방마다 역할 테마"
             + "(기본 7종 또는 타일셋에 저장한 방 종류 id)와 바닥 재질을 준다. "
             + "corridor는 복도 — 바닥 점유물 없이 벽 장식·전시물만 놓인다(저택 통로에 사용).",
           items: INTERIOR_ROOM_RECT_SCHEMA,
         },
+        openPlan: { type: "boolean", description: "true: 맞닿은 생활 영역의 경계에 벽을 만들지 않는다. 사생활이 필요한 방은 실제 벽 간격을 남긴다. 생략하면 기존 방 파티션 규칙." },
         innerDoors: {
           type: "array",
           description: "방 사이 파티션 개구부 [{x,y}] — 파티션 최상단(트림 행) 좌표",
@@ -216,7 +217,8 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
         width: { type: "integer" },
         height: { type: "integer" },
         wings: { type: "array", items: RECT_SCHEMA, description: "바닥 bbox들 [{x,y,w,h}]" },
-        rooms: { type: "array", items: INTERIOR_ROOM_RECT_SCHEMA, description: "방 구조 bbox [{id,x,y,w,h,theme?}]" },
+        rooms: { type: "array", items: INTERIOR_ROOM_RECT_SCHEMA, description: "생활 영역 bbox [{id,x,y,w,h,theme?,floorTile?}]. openPlan:true에서 변을 맞대면 개방 공간, 벽 간격을 두면 분리된 방." },
+        openPlan: { type: "boolean", description: "true: 맞닿은 생활 영역의 경계에 벽을 만들지 않는다. 사생활이 필요한 방은 실제 벽 간격을 남긴다. 생략하면 기존 방 파티션 규칙." },
         innerDoors: { type: "array", items: COORD_SCHEMA, description: "파티션 개구부 [{x,y}]" },
         door: COORD_SCHEMA,
         theme: { type: "string" },

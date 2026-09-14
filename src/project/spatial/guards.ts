@@ -40,8 +40,8 @@ const placement: Parser<S.SpatialObjectSlot["placement"]> = (v, p) => {
   }
 };
 const objectSlot: Parser<S.SpatialObjectSlot> = (v, p) => {
-  const r = record(v, p, "id objectDesignId quantity required placement chipOverrides");
-  return { id: id(r.id, `${p}.id`), objectDesignId: id(r.objectDesignId, `${p}.objectDesignId`), quantity: positive(r.quantity, `${p}.quantity`), required: boolean(r.required, `${p}.required`), placement: placement(r.placement, `${p}.placement`), ...(r.chipOverrides === undefined ? {} : { chipOverrides: texts(r.chipOverrides, `${p}.chipOverrides`) }) };
+  const r = record(v, p, "id objectDesignId quantity required placement chipOverrides zoneId");
+  return { id: id(r.id, `${p}.id`), objectDesignId: id(r.objectDesignId, `${p}.objectDesignId`), quantity: positive(r.quantity, `${p}.quantity`), required: boolean(r.required, `${p}.required`), placement: placement(r.placement, `${p}.placement`), ...(r.zoneId === undefined ? {} : { zoneId: id(r.zoneId, `${p}.zoneId`) }), ...(r.chipOverrides === undefined ? {} : { chipOverrides: texts(r.chipOverrides, `${p}.chipOverrides`) }) };
 };
 const area: Parser<S.SpatialFloorArea> = (v, p) => {
   const r = record(v, p);
@@ -58,14 +58,29 @@ const area: Parser<S.SpatialFloorArea> = (v, p) => {
     default: return assertNever(areaKind);
   }
 };
+const zone: Parser<S.SpatialInteriorZone> = (v, p) => {
+  const r = record(v, p, "id name floor x y width height");
+  return { ...rect({ x: r.x, y: r.y, width: r.width, height: r.height }, p), id: id(r.id, `${p}.id`), name: text(r.name, `${p}.name`), floor: text(r.floor, `${p}.floor`) };
+};
 const space: Parser<S.SpaceDesign> = (v, p) => {
   const r = record(v, p);
   const environment = choice(["interior", "outdoor"] as const)(r.environment, `${p}.environment`);
   const common = { ...base(r, p), tilesetId: id(r.tilesetId, `${p}.tilesetId`), shape: choice(["rect", "l", "alcove"] as const)(r.shape, `${p}.shape`), width: size(r.width, `${p}.width`), height: size(r.height, `${p}.height`), floor: text(r.floor, `${p}.floor`), wall: text(r.wall, `${p}.wall`), objectSlots: list(r.objectSlots, `${p}.objectSlots`, objectSlot), ports: ports(r.ports, `${p}.ports`) };
   const fields = `${baseFields} environment tilesetId shape width height floor wall objectSlots ports`;
   switch (environment) {
-    case "interior": record(r, p, `${fields} role`); return { ...common, environment, role: choice(["entrance", "walkway", "room"] as const)(r.role, `${p}.role`) };
-    case "outdoor": record(r, p, `${fields} floorAreas`); return { ...common, environment, floorAreas: list(r.floorAreas, `${p}.floorAreas`, area) };
+    case "interior": {
+      record(r, p, `${fields} role zones`);
+      const zones = r.zones === undefined ? undefined : list(r.zones, `${p}.zones`, zone);
+      const seen = new Set<string>();
+      for (const z of zones ?? []) {
+        assert(!seen.has(z.id), `${p}.zones: duplicate id ${z.id}`); seen.add(z.id);
+        assert(z.x >= 0 && z.y >= 0 && z.x + z.width <= common.width && z.y + z.height <= common.height, `${p}.zones: outside floor bounds`);
+        assert(!(zones ?? []).some(other => other !== z && z.x < other.x + other.width && other.x < z.x + z.width && z.y < other.y + other.height && other.y < z.y + z.height), `${p}.zones: overlapping activity areas`);
+      }
+      for (const slot of common.objectSlots) assert(slot.zoneId === undefined || seen.has(slot.zoneId), `${p}.objectSlots: unknown zone ${slot.zoneId}`);
+      return { ...common, environment, role: choice(["entrance", "walkway", "room"] as const)(r.role, `${p}.role`), ...(zones === undefined ? {} : { zones }) };
+    }
+    case "outdoor": assert(common.objectSlots.every(slot => slot.zoneId === undefined), `${p}: activity zones require an interior`); record(r, p, `${fields} floorAreas`); return { ...common, environment, floorAreas: list(r.floorAreas, `${p}.floorAreas`, area) };
     default: return assertNever(environment);
   }
 };
