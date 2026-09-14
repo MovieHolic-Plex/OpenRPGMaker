@@ -28,7 +28,6 @@ export const DATABASE_PRIMARY_SENTINELS: Readonly<Record<string, string>> = {
   lifeCollections: '[data-testid="db-life-collections-search"]',
   spatialTiles: '[data-testid="spatial-shell-tiles"]',
   spatialObjects: '[data-testid="spatial-shell-objects"]',
-  spatialSpaces: '[data-testid="spatial-shell-spaces"]',
   spatialPlaces: '[data-testid="spatial-shell-places"]',
   spatialRegions: '[data-testid="spatial-shell-regions"]',
   spatialWorlds: '[data-testid="spatial-shell-worlds"]',

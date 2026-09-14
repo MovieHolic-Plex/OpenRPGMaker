@@ -28,7 +28,7 @@ export const GEOGRAPHY_MATERIALS = [
 ] as const;
 export type GeographyMaterial = (typeof GEOGRAPHY_MATERIALS)[number];
 
-export function geographyChildren(design: GeographyDesign): readonly SpatialChildSlot<"place" | "region">[] {
+export function geographyChildren(design: GeographyDesign): readonly SpatialChildSlot<"space" | "place" | "region">[] {
   return "places" in design ? design.places : design.regions;
 }
 
@@ -64,7 +64,7 @@ function polylineIssue(terrain: SpatialTerrain, points: readonly SpatialPoint[])
 }
 
 function endpointAt(
-  children: readonly SpatialChildSlot<"place" | "region">[],
+  children: readonly SpatialChildSlot<"space" | "place" | "region">[],
   ports: readonly SpatialPort[],
   end: SpatialLocalEndpoint,
 ): SpatialPoint | undefined {

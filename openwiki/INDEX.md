@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **66쪽 / 2553KB / 약 716,717 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **68쪽 / 2671KB / 약 752,254 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,17 +15,18 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 381KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 1890 | ~107,781 |
-| `openwiki/editor-ai-tools.md` | 187KB | 82KB ⚠상한 초과 — 절을 더 쪼개라 | 1439 | ~52,343 |
-| `openwiki/editor-database.md` | 278KB | 59KB ⚠상한 초과 — 절을 더 쪼개라 | 1518 | ~80,349 |
-| `openwiki/editor-event-authoring.md` | 135KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 740 | ~38,710 |
+| `openwiki/editor-ai-panel.md` | 398KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2023 | ~112,448 |
+| `openwiki/editor-ai-tools.md` | 195KB | 82KB ⚠상한 초과 — 절을 더 쪼개라 | 1504 | ~54,516 |
+| `openwiki/editor-database.md` | 284KB | 59KB ⚠상한 초과 — 절을 더 쪼개라 | 1584 | ~82,227 |
+| `openwiki/editor-event-authoring.md` | 136KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 744 | ~39,121 |
 | `openwiki/editor-event-commands.md` | 57KB | 32KB | 202 | ~15,410 |
-| `openwiki/editor-pre-edit-routing.md` | 107KB | 59KB ⚠상한 초과 — 절을 더 쪼개라 | 591 | ~30,554 |
-| `openwiki/editor-workflows-misc.md` | 65KB | 29KB | 456 | ~17,604 |
-| `openwiki/runtime-battle.md` | 134KB | 31KB | 540 | ~38,257 |
-| `openwiki/runtime-project-schema.md` | 136KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 887 | ~36,868 |
+| `openwiki/editor-interior-room-harness.md` | 77KB | 6KB | 374 | ~22,891 |
+| `openwiki/editor-pre-edit-routing.md` | 113KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 605 | ~32,349 |
+| `openwiki/editor-workflows-misc.md` | 65KB | 30KB | 458 | ~17,883 |
+| `openwiki/runtime-battle.md` | 143KB | 31KB | 611 | ~40,897 |
+| `openwiki/runtime-project-schema.md` | 142KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 949 | ~38,435 |
 | `openwiki/runtime-sessions.md` | 89KB | 46KB | 318 | ~23,590 |
-| `openwiki/testing.md` | 190KB | 48KB | 1748 | ~52,085 |
+| `openwiki/testing.md` | 196KB | 48KB | 1822 | ~54,107 |
 
 ## 한국어 산문이 깨진 페이지
 
@@ -33,14 +34,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/editor-ai-panel.md` | 25 | 1536, 1537, 1538, 1539, 1540, 1541, 1553, 1563 |
-| `openwiki/editor-ai-tools.md` | 6 | 1086, 1087, 1091, 1093, 1095, 1282 |
-| `openwiki/editor-database.md` | 7 | 583, 587, 588, 589, 598, 624, 627 |
+| `openwiki/editor-ai-panel.md` | 25 | 1668, 1669, 1670, 1671, 1672, 1673, 1687, 1697 |
+| `openwiki/editor-ai-tools.md` | 6 | 1151, 1152, 1156, 1158, 1160, 1347 |
+| `openwiki/editor-database.md` | 7 | 649, 653, 654, 655, 664, 690, 693 |
 | `openwiki/editor-event-authoring.md` | 16 | 310, 311, 314, 319, 320, 321, 322, 323 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 109, 122, 123, 125, 128, 129 |
 | `openwiki/editor-observability.md` | 1 | 310 |
-| `openwiki/editor-pre-edit-routing.md` | 5 | 412, 421, 428, 430, 453 |
+| `openwiki/editor-pre-edit-routing.md` | 5 | 418, 427, 434, 436, 459 |
 | `openwiki/state-system.md` | 2 | 3, 84 |
 
 ## 없는 파일을 가리키는 참조
@@ -51,32 +52,35 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 |---|---|---|
 | `openwiki/ai-workflow.md` | 3 | `src/ai/plannerSkip.ts`, `test/tilesetAiClient.test.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/bgm-catalog.md` | 4 | `artifacts/bgm-release/bgm-release-v1.json`, `catalog.raw.json`, `output/evidence/agy-interface-smoke-transcript.json`, `output/evidence/audio-ai-final/ingestion-report.json` |
-| `openwiki/editor-ai-panel.md` | 36 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `06-page-modern-forms.css`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/acceptance-live/README.md`, `output/evidence/assistant-clean-glass/phase-2/implementation.md`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `regionIntentRouter.ts`, `scripts/qa/assistant-side-seam-hittest.mjs`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/tilesetAiClient.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts` |
-| `openwiki/editor-ai-tools.md` | 5 | `aiCommandBar.ts`, `aiProposalModal.ts`, `tabs-b-assistant-panel.css`, `test/intentClarify.test.ts`, `test/volumeContractSession.test.ts` |
-| `openwiki/editor-database.md` | 22 | `builtinHouseStructureKits.ts`, `desktop-record-shell.css`, `enemy-art-NNN.png`, `form-hierarchy-modern.css`, `houseKitTools.ts`, `output/evidence/battle-animation-ux/p1-implementation.md`, `output/evidence/battle-animation-ux/p2-implementation.md`, `output/evidence/battle-rules-ux/st_01a07318-manual-qa.md`, `output/evidence/battle-rules-ux/verification.md`, `output/evidence/concept-expansion/supabase-proof.json`, `output/evidence/concept-v2/supabase-proof.json`, `output/evidence/monster-concepts/b1/fix.md`, `output/evidence/monster-concepts/p2/verification.md`, `output/evidence/monster-concepts/r1/fix.md`, `output/evidence/system-studio/system-studio-backed-settings-1586x992.png`, `output/spatial-ux-verify.mjs`, `reports/generated-effect-showcase-2026-08-24.html`, `reveal-fix.md`, `scripts/generate-default-item-icons.mts`, `scripts/lib/effectSheet/paintersMonster.mjs`, `scripts/lib/effectSheet/paintersUtility.mjs`, `troops.part-1.css` |
-| `openwiki/editor-event-authoring.md` | 13 | `03-legend-toolbar.css`, `05-force-modern-actor-page3.css`, `audit-before.md`, `event-editor-ai.css`, `event-editor.balanced.css`, `event-editor.part-3/08-inline-validation-badges.css`, `new-editor/REPORT.html`, `output/evidence/event-ai-assist-ux/960x900-compact.png`, `scripts/generated/toolCatalog.json`, `src/styles/editor/event-editor.balanced.css`, `src/styles/editor/event-editor.modernize.css`, `verify-shots/page-preview-probe/02-preview-open.png`, `verify-shots/runtime-qa/cheolsu-keyboard-fixed/SUMMARY.md` |
+| `openwiki/connected-dungeon-generation.md` | 1 | `verify-shots/runtime-qa/connected-dungeon-editor/SUMMARY.md` |
+| `openwiki/editor-ai-panel.md` | 60 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `06-page-modern-forms.css`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `assistantP2ReviewIntegration.test.ts`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `functionalCompositeClarification.test.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/acceptance-live/README.md`, `output/evidence/assistant-clean-glass/phase-2/implementation.md`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `output/evidence/ultrabrain/settings.png`, `plan-wire.json`, `regionIntentRouter.ts`, `review-input.png`, `roles-wire.json`, `scripts/qa/assistant-side-seam-hittest.mjs`, `specialists.png`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `test/agentBlueprintTurnEnd.test.ts`, `test/aiChatObservability.test.ts`, `test/aiChatPanelUxRepairs.test.ts`, `test/aiChatSessionScope.test.ts`, `test/aiComposerEffortPanel.test.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/aiNewGoalDraftRetirement.test.ts`, `test/aiNewGoalEarlyOwnership.test.ts`, `test/aiPanelContextSurfaces.test.ts`, `test/aiStickyChecklist.test.ts`, `test/aiToolCallSessionProtocol.test.ts`, `test/aiWorkItemStall.test.ts`, `test/assistantAcceptance.test.ts`, `test/assistantImageTransport.test.ts`, `test/assistantSpatialObligations.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/editSceneCameraFocus.test.ts`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/regionTaskRun.test.ts`, `test/tilesetAiClient.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts`, `writer-wire.json` |
+| `openwiki/editor-ai-tools.md` | 21 | `aiCommandBar.ts`, `aiProposalModal.ts`, `projectWikiSession.test.ts`, `tabs-b-assistant-panel.css`, `test/aiEventPlacementSurfaceGate.test.ts`, `test/aiStaleProposal.test.ts`, `test/aiToolCallSessionProtocol.test.ts`, `test/aiToolDiscoveryEscalation.test.ts`, `test/applyProposedProjectHouseProtection.test.ts`, `test/assistantMapPreservationGuard.test.ts`, `test/clusterAiModalHouseProtection.test.ts`, `test/elementRatesPartialAccept.test.ts`, `test/intentClarify.test.ts`, `test/npcCastSession.test.ts`, `test/projectLint.test.ts`, `test/propRejectionDiagnostics.test.ts`, `test/questGraph.test.ts`, `test/refactorTools.test.ts`, `test/regionTaskRun.test.ts`, `test/volumeContractSession.test.ts`, `test/worldAiExclusion.test.ts` |
+| `openwiki/editor-database.md` | 28 | `builtinHouseStructureKits.ts`, `databaseCinematics.test.ts`, `desktop-record-shell.css`, `enemy-art-NNN.png`, `form-hierarchy-modern.css`, `houseKitTools.ts`, `output/evidence/battle-animation-ux/p1-implementation.md`, `output/evidence/battle-animation-ux/p2-implementation.md`, `output/evidence/battle-rules-ux/st_01a07318-manual-qa.md`, `output/evidence/battle-rules-ux/verification.md`, `output/evidence/concept-expansion/supabase-proof.json`, `output/evidence/concept-v2/supabase-proof.json`, `output/evidence/monster-concepts/b1/fix.md`, `output/evidence/monster-concepts/p2/verification.md`, `output/evidence/monster-concepts/r1/fix.md`, `output/evidence/system-studio/system-studio-backed-settings-1586x992.png`, `output/spatial-ux-verify.mjs`, `reports/generated-effect-showcase-2026-08-24.html`, `reveal-fix.md`, `scripts/generate-default-item-icons.mts`, `scripts/lib/effectSheet/paintersMonster.mjs`, `scripts/lib/effectSheet/paintersUtility.mjs`, `test/databaseStudioV2.test.ts`, `test/databaseSystemView.test.ts`, `test/databaseTilesetFolder.test.ts`, `test/p0ProjectSchema.test.ts`, `test/spatialLegacyImport.test.ts`, `troops.part-1.css` |
+| `openwiki/editor-event-authoring.md` | 14 | `03-legend-toolbar.css`, `05-force-modern-actor-page3.css`, `audit-before.md`, `event-editor-ai.css`, `event-editor.balanced.css`, `event-editor.part-3/08-inline-validation-badges.css`, `new-editor/REPORT.html`, `output/evidence/event-ai-assist-ux/960x900-compact.png`, `scripts/generated/toolCatalog.json`, `src/styles/editor/event-editor.balanced.css`, `src/styles/editor/event-editor.modernize.css`, `test/eventEditorTrustLoop.test.ts`, `verify-shots/page-preview-probe/02-preview-open.png`, `verify-shots/runtime-qa/cheolsu-keyboard-fixed/SUMMARY.md` |
 | `openwiki/editor-event-command-fixes.md` | 14 | `.omo/evidence/event-command-remediation/U04/api-ownership.md`, `event-editor-rich-forms.css`, `scripts/qa/runtime/event-command-remediation-u02.scenario.mjs`, `scripts/qa/runtime/event-command-remediation-u04.scenario.mjs`, `scripts/qa/runtime/event-command-remediation-u05.scenario.mjs`, `scripts/qa/runtime/event-command-remediation-u06.scenario.mjs`, `test/e2e/event-command-remediation-U02.spec.ts`, `test/e2e/event-command-remediation-U04.spec.ts`, `test/e2e/event-command-remediation-U05.spec.ts`, `test/e2e/event-command-remediation-U06.spec.ts`, `test/eventCommandRemediation/U02.test.ts`, `test/eventCommandRemediation/U04.test.ts`, `test/eventCommandRemediation/U05.test.ts`, `test/eventCommandRemediation/U06.test.ts` |
-| `openwiki/editor-event-commands.md` | 13 | `02-changeface-play-mock-larger.css`, `07-identifiable-previews.css`, `choicesDialog.ts`, `event-editor.command-preview.css`, `event-editor.command-preview/01-event-editor-modern-import.css`, `event-editor.commerce.css`, `event-editor.part-1.css`, `event-editor.part-2/3.css`, `event-editor.shop.css`, `messageCommandDialogs.ts`, `messageDialogControls.ts`, `src/styles/editor/event-editor.part-2.css`, `textCommandDialog.ts` |
-| `openwiki/editor-genre-packs.md` | 1 | `src/editor/panels/newProjectDialog.ts` |
-| `openwiki/editor-interior-room-harness.md` | 7 | `hearth-lit.json`, `hearth-unlit.json`, `output/evidence/concept-v2/index.html`, `output/evidence/inn-exploration-v4/index.html`, `output/evidence/inn-inspection-v5/index.html`, `output/evidence/pr618-fixtures/inn.json`, `player/SUMMARY.md` |
-| `openwiki/editor-pre-edit-routing.md` | 10 | `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `event-editor.part-4.css`, `figma-editor.css`, `figma-editor/10-map-tree.css`, `rm2k3.part-1.css`, `shell/editor-responsive-expert.css`, `src/editor/tools/worldTools.ts`, `src/styles/editor/event-editor.balanced.css`, `worldTools.ts` |
-| `openwiki/editor-validation.md` | 2 | `final-layout.json`, `viewport-matrix.json` |
-| `openwiki/editor-workflows-misc.md` | 7 | `.qa.json`, `default.json`, `game.html`, `release.json`, `runtime.json`, `src/editor/authoringTestGate.ts`, `src/styles/editor/event-editor-help.css` |
-| `openwiki/emerald-fields.md` | 18 | `ANALYSIS.md`, `VISUAL-SUMMARY.md`, `author-emerald-wide.mts`, `cliff-contours.json`, `editor-saved-proof.json`, `emerald-fields-runtime.mjs`, `emerald-wide-v2/reloaded-project.json`, `exit-seam-proof.json`, `fidelity/fidelity-proof.json`, `fidelity/reference-vs-editor.png`, `fidelity/runtime-visual/SUMMARY.md`, `inspection-16-fixed/manifest.json`, `inspection-16/REVIEW.md`, `map-open-saved.png`, `output/evidence/emerald-region/supabase-proof.json`, `refine-emerald-reference.mts`, `region-saved.png`, `road-graph.json` |
+| `openwiki/editor-event-commands.md` | 16 | `02-changeface-play-mock-larger.css`, `07-identifiable-previews.css`, `choicesDialog.ts`, `event-editor.command-preview.css`, `event-editor.command-preview/01-event-editor-modern-import.css`, `event-editor.commerce.css`, `event-editor.part-1.css`, `event-editor.part-2/3.css`, `event-editor.shop.css`, `eventCommandSupportRepairs.test.ts`, `messageCommandDialogs.ts`, `messageDialogControls.ts`, `src/styles/editor/event-editor.part-2.css`, `test/dialoguePreviewPresentationCss.test.ts`, `test/eventEditorTrustLoop.test.ts`, `textCommandDialog.ts` |
+| `openwiki/editor-genre-packs.md` | 2 | `src/editor/panels/newProjectDialog.ts`, `test/modalEscapeLayerGate.test.ts` |
+| `openwiki/editor-interior-room-harness.md` | 37 | `hearth-lit.json`, `hearth-unlit.json`, `output/audit-element-cliff-seams.py`, `output/audit-element-complex-seams.py`, `output/audit-four-context-dungeons-v3.py`, `output/audit-four-context-dungeons.py`, `output/build-element-complex-caves.mts`, `output/build-element-confluence-caves.mts`, `output/build-element-contour-caves.mts`, `output/build-four-context-dungeons-v2.mts`, `output/build-four-context-dungeons-v3.mts`, `output/build-four-context-dungeons.mts`, `output/context-element-caves.mts`, `output/decorate-element-caves.mts`, `output/element-complex-qa.mjs`, `output/element-confluence-qa.mjs`, `output/element-contour-qa.mjs`, `output/evidence/concept-v2/index.html`, `output/evidence/inn-exploration-v4/index.html`, `output/evidence/inn-inspection-v5/index.html`, `output/evidence/pr618-fixtures/inn.json`, `output/four-context-dungeons-qa.mjs`, `output/four-context-dungeons-v3-qa.mjs`, `output/save-element-complex-caves.mts`, `output/save-element-confluence-caves.mts`, `output/save-four-context-dungeons-v3.mts`, `output/save-four-context-dungeons.mts`, `player/SUMMARY.md`, `reports.json`, `seam-audit.json`, `test/innConceptRebuild.test.ts`, `test/innExploration.test.ts`, `test/interiorConceptAssemblies.test.ts`, `test/interiorLoadConsistency.test.ts`, `test/interiorLongTable.test.ts`, `test/stoneHearth.test.ts`, `test/storeDeferredLineage.test.ts` |
+| `openwiki/editor-pre-edit-routing.md` | 13 | `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `event-editor.part-4.css`, `figma-editor.css`, `figma-editor/10-map-tree.css`, `rm2k3.part-1.css`, `shell/editor-responsive-expert.css`, `src/editor/tools/worldTools.ts`, `src/styles/editor/event-editor.balanced.css`, `test/modalEscapeLayerGate.test.ts`, `test/regionTaskHouseProtection.test.ts`, `test/worldAiExclusion.test.ts`, `worldTools.ts` |
+| `openwiki/editor-validation.md` | 8 | `final-layout.json`, `test/aiBlockedEventRelocation.test.ts`, `test/aiToolDiscoveryEscalation.test.ts`, `test/databaseSystemView.test.ts`, `test/interiorLongTable.test.ts`, `test/p0ProjectSchema.test.ts`, `test/projectLint.test.ts`, `viewport-matrix.json` |
+| `openwiki/editor-workflows-misc.md` | 11 | `.qa.json`, `default.json`, `game.html`, `release.json`, `runtime.json`, `src/editor/authoringTestGate.ts`, `src/styles/editor/event-editor-help.css`, `test/audioDescriptionCommandSurfaces.test.ts`, `test/devRuntimeArchive.test.ts`, `test/mapSurfaceFocus.test.ts`, `test/runtimePictureStacking.test.ts` |
+| `openwiki/emerald-fields.md` | 14 | `ANALYSIS.md`, `VISUAL-SUMMARY.md`, `cliff-contours.json`, `editor-saved-proof.json`, `emerald-wide-v2/reloaded-project.json`, `exit-seam-proof.json`, `fidelity/fidelity-proof.json`, `fidelity/reference-vs-editor.png`, `fidelity/runtime-visual/SUMMARY.md`, `inspection-16-fixed/manifest.json`, `inspection-16/REVIEW.md`, `map-open-saved.png`, `region-saved.png`, `road-graph.json` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
-| `openwiki/horror-authoring.md` | 1 | `motion-sheet.png` |
+| `openwiki/horror-authoring.md` | 2 | `motion-sheet.png`, `projectLint.test.ts` |
 | `openwiki/large-village-generation.md` | 4 | `-standalone.html`, `HANDOFF.json`, `output/evidence/town-reference/town-reference.html`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
 | `openwiki/night-monster.md` | 1 | `verify-shots/runtime-qa/night-monster/SUMMARY.md` |
+| `openwiki/project-wiki.md` | 2 | `projectWikiSession.test.ts`, `projectWikiTimeout.test.ts` |
 | `openwiki/runtime-action-combat.md` | 1 | `export-player/player.html` |
 | `openwiki/runtime-battle.md` | 7 | `battle.css`, `hero-03-battle-idle.png`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `raw.png`, `reference.png`, `src/styles/runtime/battle.css`, `starter/hires/hero-0N-battle.png` |
-| `openwiki/runtime-m2-flow-controls.md` | 1 | `verify-shots/runtime-qa/coordinate-move/SUMMARY.md` |
-| `openwiki/runtime-pre-edit-routing.md` | 1 | `verify-shots/runtime-qa/emote/SUMMARY.md` |
-| `openwiki/runtime-project-schema.md` | 3 | `.json`, `.png`, `output/evidence/event-command-completion/legacy-persistence/ledger.json` |
+| `openwiki/runtime-m2-flow-controls.md` | 3 | `test/runtimePictureStacking.test.ts`, `verify-shots/runtime-qa/cloud-shadows/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md` |
+| `openwiki/runtime-pre-edit-routing.md` | 3 | `test/playerInputCss.test.ts`, `test/runtimeQaInstrumentationBoundary.test.ts`, `verify-shots/runtime-qa/emote/SUMMARY.md` |
+| `openwiki/runtime-project-schema.md` | 11 | `.json`, `.png`, `interiorLoadConsistency.test.ts`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/io.test.ts`, `test/mapPlanningReuse.test.ts`, `transactionalRemoteSourceLineage.test.ts` |
 | `openwiki/runtime-sessions.md` | 1 | `output/evidence/stardew/stardew-supabase.json` |
-| `openwiki/se-catalog.md` | 7 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `labels.json`, `placed.json` |
+| `openwiki/se-catalog.md` | 8 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `labels.json`, `placed.json`, `test/audioDescriptionCommandSurfaces.test.ts` |
+| `openwiki/spatial-ai-tools.md` | 1 | `test/spatialToolProjectionBoundary.test.ts` |
+| `openwiki/spatial-authoring-controller.md` | 1 | `storeMutationInstrumentation.test.ts` |
 | `openwiki/spatial-geography-compiler.md` | 1 | `.omo/ulw-execute/tile-to-world/execution-policy.md` |
-| `openwiki/spatial-geography-ui.md` | 2 | `regionMapLinks.ts`, `regionMapView.ts` |
-| `openwiki/testing.md` | 17 | `../dialogue.css`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
+| `openwiki/testing.md` | 28 | `../dialogue.css`, `X.quarantine.test.ts`, `X.test.ts`, `aiChatObservability.test.ts`, `aiChatPanelTransportError.test.ts`, `aiSelectionChipScope.test.ts`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/actionRpgAuthoringAcceptance.test.ts`, `test/aiEventPlacementSurfaceGate.test.ts`, `test/databaseKoreanRtpDefaults.test.ts`, `test/dialoguePreviewPresentationCss.test.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/interiorConceptAssemblies.test.ts`, `test/regionTaskRun.test.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
 | `openwiki/ui-discovery-pilot.md` | 3 | `direct/RESULTS.json`, `output/evidence/ui-discovery-v2/report.html`, `trace.json` |
 | `openwiki/village-design.md` | 3 | `depth-review.json`, `output/evidence/house-heights/REVIEW.md`, `output/village-direction/index.html` |
@@ -84,17 +88,17 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 ## 페이지별 절 좌표
 
-### `openwiki/PROJECT_WIKI.md` — 10KB · 120줄 · ~2,535 토큰
+### `openwiki/PROJECT_WIKI.md` — 10KB · 121줄 · ~2,568 토큰
 
 - `L5` Purpose
 - `L16` Required pre-edit read order
-- `L56` Project identity
-- `L65` Main ownership boundaries
-- `L76` How an AI should use this wiki
-- `L87` Supabase DB mandatory (see root `AGENTS.md`)
-- `L93` Desktop UI integration truth (2026-08-11)
-- `L101` Per-project wiki structure
-- `L117` Staleness rule
+- `L57` Project identity
+- `L66` Main ownership boundaries
+- `L77` How an AI should use this wiki
+- `L88` Supabase DB mandatory (see root `AGENTS.md`)
+- `L94` Desktop UI integration truth (2026-08-11)
+- `L102` Per-project wiki structure
+- `L118` Staleness rule
 
 ### `openwiki/agent-tile-benchmark.md` — 11KB · 195줄 · ~3,365 토큰
 
@@ -127,7 +131,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L182` 감독 절차
 - `L193` 알려진 함정
 
-### `openwiki/ai-context-compaction.md` — 16KB · 190줄 · ~4,783 토큰
+### `openwiki/ai-context-compaction.md` — 17KB · 201줄 · ~5,060 토큰
 
 - `L7` 대화 복원과 실행 체크포인트의 경계 (2026-09-09)
 - `L40` 1. 3개 예산·압축 계층의 분리와 실행 순서
@@ -147,6 +151,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L150` 5. 실측 데이터 (Real-HTTP Proof)
 - `L166` 6. 업스트림(Senpi) 대비 설계 및 의도적 차이점
 - `L185` 7. 계약 테스트 및 검증 스크립트
+- `L191` 최신 검수 이미지의 요청 예산 우선순위 (2026-09-14)
 
 ### `openwiki/ai-tools-deprecation-roadmap.md` — 4KB · 63줄 · ~1,350 토큰
 
@@ -158,16 +163,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L40` 3단계 — 이름 삭제 (메이저 정리)
 - `L45` 개별 판단 메모
 
-### `openwiki/ai-workflow.md` — 32KB · 255줄 · ~8,612 토큰
+### `openwiki/ai-workflow.md` — 35KB · 261줄 · ~9,499 토큰
 
 - `L5` Before changing files
 - `L13` While changing files
-  - `L149` Request-bound NPC prerequisite proof (CR-NPC-PREREQ-01, 2026-09-07)
-- `L205` After changing files
-- `L212` Tool-calling architecture (human review map)
-- `L222` Headless Tool and MCP Access
-- `L231` Live editor AI assistant MCP (same UI session)
-- `L250` Refreshing the wiki
+  - `L155` Request-bound NPC prerequisite proof (CR-NPC-PREREQ-01, 2026-09-07)
+- `L211` After changing files
+- `L218` Tool-calling architecture (human review map)
+- `L228` Headless Tool and MCP Access
+- `L237` Live editor AI assistant MCP (same UI session)
+- `L256` Refreshing the wiki
 
 ### `openwiki/architecture.md` — 10KB · 68줄 · ~2,605 토큰
 
@@ -239,6 +244,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L167` Ops notes
 - `L171` Gotchas learned
 
+### `openwiki/connected-dungeon-generation.md` — 5KB · 35줄 · ~1,492 토큰
+
+- `L5` 진입과 호환성
+- `L13` 소유 모듈
+- `L21` 설계 입력
+- `L30` 검증 및 증거
+
 ### `openwiki/delayed-tooltip.md` — 4KB · 67줄 · ~1,278 토큰
 
 - `L11` 동작 계약
@@ -247,178 +259,185 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L46` 설치 지점
 - `L52` 테스트
 
-### `openwiki/editor-ai-panel.md` — 381KB · 1890줄 · ~107,781 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 398KB · 2023줄 · ~112,448 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L3` 조수 채팅은 Pi 하나다 — 세션 경로를 걷어냈다 (2026-09-11)
-- `L45` Retained map planning items and explicit reuse (2026-09-10, OPRN-019)
-- `L86` Run outcome line: four independent axes (2026-09-09)
-- `L117` P3 run retirement and stale drafts (2026-09-07)
-- `L197` Map-scoped conversation archive (2026-09-08)
-  - `L257` Editor history surface
-- `L299` Independent result review and repair (2026-09-06)
-- `L402` Combined P2 and independent-review ownership (2026-09-07)
-- `L436` P2 run outcomes and user scope actions (2026-09-06)
-  - `L492` Canonical requirements and genuine user actions
-- `L564` User-confirmed interaction approach correction (CR-P7-1, 2026-09-08)
-- `L601` Live large-world QA: plan repair and final audit (2026-09-07)
-- `L690` Assistant control audit fixes (2026-09-07)
-- `L701` World structure activity labels (2026-09-06)
-- `L710` Multi-map construction specifications (2026-09-06)
-- `L777` Plan authoring has no small-plan quota (2026-09-06)
-- `L796` Acceptance sticky note (2026-09-07)
-  - `L846` Session-owned acceptance contract
-- `L1184` 자동 프로젝트 위키 (2026-09-07)
-- `L1216` Independent image generation settings (2026-09-07)
-- `L1217` Independent image generation settings (2026-09-08)
-- `L1255` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
-- `L1262` Map-targeted work outcomes (2026-09-06)
-- `L1277` 계획 항목의 연속 실행 증거 (2026-09-05)
-- `L1283` 계획 규모와 선언 자세 (2026-09-09)
-- `L1293` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
-- `L1302` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
-- `L1318` 패널 셸 · 도크 · 접기 · 컴포저
-- `L1465` 세션 수명 · 대화 컨텍스트
-- `L1482` 제안 적용 · 복구 · 완성도 린트
-- `L1567` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
-- `L1629` 영역 작업 · 시공 · 실내/집 파이프라인
-- `L1653` 툴 노출 · 프롬프트 · 의도 판정 · NPC
-- `L1667` 타일셋 이해 · 검토 위저드 (T1a/T1b)
-- `L1693` 저장 · 내보내기 · 프로젝트 생성
-- `L1701` 제공자 · OAuth · 동반 서비스
-- `L1731` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
-- `L1774` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
-- `L1807` 배치 의존성과 완료 멱등성 (2026-09-06)
-- `L1815` 모험 완료와 실제 적용 횟수 (2026-09-05)
-- `L1820` Assistant clean conversation — Phase 1 (2026-09-06)
-- `L1857` Assistant deck width resize (2026-09-07)
-  - `L1869` Legacy AI contract verification (2026-09-08)
+- `L80` Five model roles and whole-map harmony review (2026-09-14)
+- `L156` Retained map planning items and explicit reuse (2026-09-10, OPRN-019)
+- `L197` Run outcome line: four independent axes (2026-09-09)
+- `L248` P3 run retirement and stale drafts (2026-09-07)
+- `L328` Map-scoped conversation archive (2026-09-08)
+  - `L388` Editor history surface
+- `L430` Independent result review and repair (2026-09-06)
+- `L533` Combined P2 and independent-review ownership (2026-09-07)
+- `L567` P2 run outcomes and user scope actions (2026-09-06)
+  - `L623` Canonical requirements and genuine user actions
+- `L695` User-confirmed interaction approach correction (CR-P7-1, 2026-09-08)
+- `L732` Live large-world QA: plan repair and final audit (2026-09-07)
+- `L821` Assistant control audit fixes (2026-09-07)
+- `L832` World structure activity labels (2026-09-06)
+- `L841` Multi-map construction specifications (2026-09-06)
+- `L908` Plan authoring has no small-plan quota (2026-09-06)
+- `L927` Acceptance sticky note (2026-09-07)
+  - `L977` Session-owned acceptance contract
+- `L1315` 자동 프로젝트 위키 (2026-09-07)
+- `L1347` Independent image generation settings (2026-09-07)
+- `L1348` Independent image generation settings (2026-09-08)
+- `L1386` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
+- `L1393` Map-targeted work outcomes (2026-09-06)
+- `L1408` 계획 항목의 연속 실행 증거 (2026-09-05)
+- `L1414` 계획 규모와 선언 자세 (2026-09-09)
+- `L1424` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
+- `L1433` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
+- `L1449` 패널 셸 · 도크 · 접기 · 컴포저
+- `L1597` 세션 수명 · 대화 컨텍스트
+- `L1614` 제안 적용 · 복구 · 완성도 린트
+- `L1701` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
+- `L1762` 영역 작업 · 시공 · 실내/집 파이프라인
+- `L1786` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+- `L1800` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+- `L1826` 저장 · 내보내기 · 프로젝트 생성
+- `L1834` 제공자 · OAuth · 동반 서비스
+- `L1864` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L1907` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+- `L1940` 배치 의존성과 완료 멱등성 (2026-09-06)
+- `L1948` 모험 완료와 실제 적용 횟수 (2026-09-05)
+- `L1953` Assistant clean conversation — Phase 1 (2026-09-06)
+- `L1990` Assistant deck width resize (2026-09-07)
+  - `L2002` Legacy AI contract verification (2026-09-08)
 
-### `openwiki/editor-ai-tools.md` — 187KB · 1439줄 · ~52,343 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 195KB · 1504줄 · ~54,516 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
-- `L3` 도면 문법에 wing(세로 복도) 추가 — 실루엣 변주와 물건 대체군 (2026-09-11)
-  - `L28` 후속: 석조 화로는 복도 끝 알코브에 (2026-09-11)
-  - `L45` 팔레트 확장 — 안 쓰던 칩셋 그림 16종을 물건으로 (2026-09-11)
-- `L65` 실내는 찍어내지 않는다 — place_concept 은 설계를 요구하고, author_house 는 interiorPlan 을 받는다 (2026-09-11)
-- `L97` 초안은 씨앗이고 저작본만 도면 정본이다 — 절차 도면 되살리기 + 실내 다양성 리포트 (2026-09-12)
-- `L124` 맵 생성 테두리 옵션은 모델에게 주지 않는다 (2026-09-11)
-- `L144` 맵 전체 청소 `clear_map` — 파괴적 한 콜 + 사용자 허가 모달 (2026-09-11)
-- `L196` 명명 로케이션 툴 7종 (OPRN-OUT-020 + LOC-ADOPT, 2026-09-10)
-- `L235` Exact project values and sourced declarations (2026-09-08)
-- `L263` Measured zero-prop rejection diagnostics (2026-09-07)
-- `L360` Logical walkthrough versus real player traversal (2026-09-07)
-- `L368` Tile-query selector and filter boundaries (2026-09-07)
-- `L377` Action enemy profile edits (2026-09-07)
-- `L395` Explicit field-spawn mutations (2026-09-07)
-- `L421` Monster resource discovery and AI appearance evidence (2026-09-07)
-- `L498` House-site tree clearance before ownership (2026-09-07)
-- `L509` Flower-yard material in house lots (2026-09-07)
-- `L522` Pre-write original grounding (2026-09-06)
-- `L597` Full native tool exposure (2026-09-06)
-- `L624` Review approval lifetime (R3, 2026-09-06)
-- `L642` Audio description tools and event candidates
-  - `L662` Search pages and full detail
-  - `L676` Event prompt projection is not ID authority
-- `L710` P3 captured proposal base (2026-09-07)
-- `L782` Project wiki application ownership (2026-09-07)
-- `L795` Character appearance image candidates v1 (2026-09-06)
-- `L853` Completed-house transaction protection - Phase 1 (2026-09-05)
-- `L927` Completed-house construction protection - Phase 2 (2026-09-06)
-- `L966` 퀘스트 입력과 완주 증거 계약 (2026-09-05)
-- `L976` DB 조회 페이지와 마을 전체 범위 (2026-09-05)
-- `L1112` P2 requirement and exact-verdict inputs (2026-09-06)
-- `L1187` Project-wide quality evaluation
-- `L1201` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
-- `L1237` Action controls guide (2026-09-07)
-- `L1280` NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
-- `L1311` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
-- `L1326` 마을 설계서 (2026-09-05)
-- `L1330` 저수준 이벤트 입력은 명령 위치를 검증한다 (2026-09-05)
-- `L1365` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
-- `L1372` 모험 저작 완료와 재시도 (2026-09-05)
-- `L1402` 실제 이미지 입력 보존 (2026-09-07)
-- `L1416` Physical tile passage exposure (2026-09-08)
+- `L3` 오프닝 미디어 배선 — 스틸 카탈로그·배경음악·부분 편집 (2026-09-14)
+- `L40` 오프닝 시네마틱 AI 저작 — system.opening (2026-09-14)
+- `L68` 도면 문법에 wing(세로 복도) 추가 — 실루엣 변주와 물건 대체군 (2026-09-11)
+  - `L93` 후속: 석조 화로는 복도 끝 알코브에 (2026-09-11)
+  - `L110` 팔레트 확장 — 안 쓰던 칩셋 그림 16종을 물건으로 (2026-09-11)
+- `L130` 실내는 찍어내지 않는다 — place_concept 은 설계를 요구하고, author_house 는 interiorPlan 을 받는다 (2026-09-11)
+- `L162` 초안은 씨앗이고 저작본만 도면 정본이다 — 절차 도면 되살리기 + 실내 다양성 리포트 (2026-09-12)
+- `L189` 맵 생성 테두리 옵션은 모델에게 주지 않는다 (2026-09-11)
+- `L209` 맵 전체 청소 `clear_map` — 파괴적 한 콜 + 사용자 허가 모달 (2026-09-11)
+- `L261` 명명 로케이션 툴 7종 (OPRN-OUT-020 + LOC-ADOPT, 2026-09-10)
+- `L300` Exact project values and sourced declarations (2026-09-08)
+- `L328` Measured zero-prop rejection diagnostics (2026-09-07)
+- `L425` Logical walkthrough versus real player traversal (2026-09-07)
+- `L433` Tile-query selector and filter boundaries (2026-09-07)
+- `L442` Action enemy profile edits (2026-09-07)
+- `L460` Explicit field-spawn mutations (2026-09-07)
+- `L486` Monster resource discovery and AI appearance evidence (2026-09-07)
+- `L563` House-site tree clearance before ownership (2026-09-07)
+- `L574` Flower-yard material in house lots (2026-09-07)
+- `L587` Pre-write original grounding (2026-09-06)
+- `L662` Full native tool exposure (2026-09-06)
+- `L689` Review approval lifetime (R3, 2026-09-06)
+- `L707` Audio description tools and event candidates
+  - `L727` Search pages and full detail
+  - `L741` Event prompt projection is not ID authority
+- `L775` P3 captured proposal base (2026-09-07)
+- `L847` Project wiki application ownership (2026-09-07)
+- `L860` Character appearance image candidates v1 (2026-09-06)
+- `L918` Completed-house transaction protection - Phase 1 (2026-09-05)
+- `L992` Completed-house construction protection - Phase 2 (2026-09-06)
+- `L1031` 퀘스트 입력과 완주 증거 계약 (2026-09-05)
+- `L1041` DB 조회 페이지와 마을 전체 범위 (2026-09-05)
+- `L1177` P2 requirement and exact-verdict inputs (2026-09-06)
+- `L1252` Project-wide quality evaluation
+- `L1266` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
+- `L1302` Action controls guide (2026-09-07)
+- `L1345` NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
+- `L1376` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
+- `L1391` 마을 설계서 (2026-09-05)
+- `L1395` 저수준 이벤트 입력은 명령 위치를 검증한다 (2026-09-05)
+- `L1430` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
+- `L1437` 모험 저작 완료와 재시도 (2026-09-05)
+- `L1467` 실제 이미지 입력 보존 (2026-09-07)
+- `L1481` Physical tile passage exposure (2026-09-08)
 
-### `openwiki/editor-database.md` — 278KB · 1518줄 · ~80,349 토큰 · 통째읽기 잘림 · 깨진 줄 7
+### `openwiki/editor-database.md` — 284KB · 1584줄 · ~82,227 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
-- `L1` 복합 공간 편집기 (2026-09-13)
-- `L25` Placed-place child proposal adapter (2026-09-08)
-- `L30` Monster resource metadata worksheet (2026-09-07)
-- `L36` Shared database CSS ownership (2026-09-06)
-- `L77` 전투 몬스터 표시 크기 (2026-09-06)
-- `L84` 전투 명령 배치 스튜디오 (2026-09-05)
-- `L101` 캐릭터·얼굴 메타데이터 (2026-09-06)
-- `L108` Character appearance catalog v1 (2026-09-06)
-- `L150` Concept navigation integration (2026-09-06)
-- `L164` Opening and game-over authoring (2026-09-06)
-- `L214` Cinematic media preparation boundary (2026-09-06)
-- `L233` System settings workspace (2026-09-06)
-- `L294` Graphic 칩 사용자 교정 29건 (2026-09-05)
-- `L310` Custom equipment slot authoring (2026-09-05)
-- `L318` 통합 아이템·장비 카탈로그 (2026-09-05)
-- `L326` 아이템·장비 저작 신뢰성 (2026-09-05)
-- `L337` 전투 몬스터와 포획·성장 종족 (Phase 1)
-  - `L347` 종족 검색과 관련 레코드 노출 (Phase 2)
-- `L357` 몬스터 작업실 — 미리보기 · 행동 · 속성 (2026-09-05)
-  - `L382` Monster action input trust (Phase 1, 2026-09-05)
-  - `L391` Monster numeric caption activation (Phase 2, 2026-09-05)
-  - `L398` Monster nested dialog focus (Phase 2, 2026-09-05)
-- `L404` 몬스터 그룹 저작 신뢰성 (2026-09-05)
-- `L419` Database Studio chrome (2026-08-24)
-  - `L433` Actor data-table slice (2026-08-25)
-- `L443` 프로젝트 위키 출처와 수동 편집 (2026-09-07)
-- `L455` 세계관 그룹 — 세계 개요 · 설정집 (2026-09-06)
-  - `L472` 세계관 입력 보존·설정집 저장 계약 (2026-09-05)
-- `L484` '생성 규칙' 탭 — AI 마을 생성의 물·숲·길 (2026-08-30)
-- `L492` P2 낚시·채집·박물관 저작 표면 (2026-08-25)
-- `L497` 생활 저작 경계와 자동 화자 (task14, 2026-09-06)
-- `L506` 계절·날씨 / 동물·축사 저작 표면 (2026-08-25)
-- `L519` 생활 기술·제작 저작 표면 (2026-08-24)
-- `L538` Database Editor
-- `L632` Beginner-centric adversarial review (2026-08)
-- `L636` DB UI modernization (2026-08)
-- `L672` P2 spatial authoring (2026-08-25)
-- `L684` 맵 그룹 — 개념 우선 탐색 Phase 1 (2026-09-05)
-- `L706` 오브젝트·공간 수정 복구 (2026-09-13)
-- `L728` 오브젝트 브라우저와 공간 배치 작업대 (2026-09-13)
-- `L749` 맵 그룹 — 공간 저작 셸 UX 계약 (2026-09-12)
-- `L788` 타일 작업대 — 공간 셸 안 레이아웃 계약 (2026-09-13)
-- `L819` 오토타일 설정 — 9칸/11칸/커스텀 카드 (2026-09-01)
-- `L840` 공간 종류와 구조물은 다른 면이다 (2026-09-01)
-- `L859` 맵 → 개념 꾸러미 (2026-09-02 시작, 2026-09-05 개념 우선 Phase 1)
-- `L890` '구조물' 탭 — 두 출처 앨범 + 방 종류 문법 (2026-08-28)
-- `L903` '구조물' 편집기와 파일 입출력 (2026-08-29)
-- `L922` 삭제 가드는 묶음 조건(all/any/not) 안까지 본다 (2026-08-29 실측 결함 수정)
-- `L942` '진영' 탭과 몬스터 소속 진영 (2026-08-29)
-  - `L957` 몬스터 폼의 소속 진영 (`databaseEnemyRecordView.ts`)
-  - `L965` 다 만들어 놓고 못 쓰던 이유 — `[편집]` 이 화면 밖 67px 에 있었다 (2026-08-29 실측)
-  - `L977` 구조물 어휘 — 역할·레이어·테마·증분 축·칸 힌트 (2026-08-30)
-  - `L1028` 편집기를 맵 타일 편집기 수준으로 (2026-08-30 실측)
-- `L1050` Battle-animation editor autoplay (2026-09-05)
-- `L1057` 스킬 탭 `연출` 카드 = 살아 있는 애니메이션 스테이지 (2026-08-30)
-- `L1068` 데이터베이스 30탭 UI/UX 계약 (2026-08-30 실측)
-  - `L1083` 헤더는 설명문이 아니라 아이콘 칩 한 줄이다
-  - `L1161` 숫자 입력은 스테퍼를 먼저 붙이고 그다음 스피너를 지운다
-  - `L1175` 줄상자 바닥은 1.35 다 (1.25 는 큰 한글 제목에서 깎인다)
-  - `L1218` 이미지 실패는 빈 상자가 아니라 라벨 붙은 자리표시자다
-- `L1227` '마을' 탭 — 마을 하네스 값을 사람이 저작한다 (2026-08-30)
-  - `L1251` 붓을 고르면 화면이 흔들렸다 — 재부모가 스크롤·포커스를 지운다 (2026-08-30 실측)
-- `L1294` 날개마다 층수를 정한다 — 계단식 2층 (2026-09-11)
-  - `L1305` 지붕 가장자리 판정은 "다른 지붕면인가"다 (2026-09-11 실측 결함)
-- `L1313` '마을' 탭 — 숫자칸을 그림으로 바꾼다 (2026-08-31)
-  - `L1329` AI로 몬스터·아이템 생성 (2026-08-30)
-  - `L1350` AI 어시스턴트 바 — 진행·결과가 바 안에 보인다 (2026-09-03)
-  - `L1384` AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)
-- `L1400` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
-- `L1477` 직업 승급 트리 · 스킬 트리 (2026-09-05)
-- `L1483` 미회수 편집 후속 통합 (2026-09-05)
-- `L1487` 마을 설계서 (2026-09-05)
-- `L1492` 구조물 증분 메타 정정 (2026-09-05)
-- `L1500` 개념 회수 UI 직접 렌더 QA (2026-09-05)
-- `L1504` Battle-animation preview-first graphic controls (Phase 2, 2026-09-05)
-- `L1511` 검토한 실내 기본값의 원격 반영 (2026-09-05)
-- `L1515` 특정 꾸러미의 명시적 교체 (2026-09-06)
+- `L1` 장소 통합 진행: 방·층과 재료 (2026-09-14)
+- `L14` 새 장소 생성 흐름 (2026-09-14, 2단계)
+- `L31` 장소 목록 통합 1단계 (2026-09-14)
+- `L46` 복합 공간 편집기 (2026-09-13)
+- `L70` Placed-place child proposal adapter (2026-09-08)
+- `L75` Monster resource metadata worksheet (2026-09-07)
+- `L81` Shared database CSS ownership (2026-09-06)
+- `L122` 전투 몬스터 표시 크기 (2026-09-06)
+- `L129` 전투 명령 배치 스튜디오 (2026-09-05)
+- `L146` 캐릭터·얼굴 메타데이터 (2026-09-06)
+- `L153` Character appearance catalog v1 (2026-09-06)
+- `L195` Concept navigation integration (2026-09-06)
+- `L209` Opening still media, sequence music and AI generation (2026-09-14)
+- `L224` Opening and game-over authoring (2026-09-06)
+- `L280` Cinematic media preparation boundary (2026-09-06)
+- `L299` System settings workspace (2026-09-06)
+- `L360` Graphic 칩 사용자 교정 29건 (2026-09-05)
+- `L376` Custom equipment slot authoring (2026-09-05)
+- `L384` 통합 아이템·장비 카탈로그 (2026-09-05)
+- `L392` 아이템·장비 저작 신뢰성 (2026-09-05)
+- `L403` 전투 몬스터와 포획·성장 종족 (Phase 1)
+  - `L413` 종족 검색과 관련 레코드 노출 (Phase 2)
+- `L423` 몬스터 작업실 — 미리보기 · 행동 · 속성 (2026-09-05)
+  - `L448` Monster action input trust (Phase 1, 2026-09-05)
+  - `L457` Monster numeric caption activation (Phase 2, 2026-09-05)
+  - `L464` Monster nested dialog focus (Phase 2, 2026-09-05)
+- `L470` 몬스터 그룹 저작 신뢰성 (2026-09-05)
+- `L485` Database Studio chrome (2026-08-24)
+  - `L499` Actor data-table slice (2026-08-25)
+- `L509` 프로젝트 위키 출처와 수동 편집 (2026-09-07)
+- `L521` 세계관 그룹 — 세계 개요 · 설정집 (2026-09-06)
+  - `L538` 세계관 입력 보존·설정집 저장 계약 (2026-09-05)
+- `L550` '생성 규칙' 탭 — AI 마을 생성의 물·숲·길 (2026-08-30)
+- `L558` P2 낚시·채집·박물관 저작 표면 (2026-08-25)
+- `L563` 생활 저작 경계와 자동 화자 (task14, 2026-09-06)
+- `L572` 계절·날씨 / 동물·축사 저작 표면 (2026-08-25)
+- `L585` 생활 기술·제작 저작 표면 (2026-08-24)
+- `L604` Database Editor
+- `L698` Beginner-centric adversarial review (2026-08)
+- `L702` DB UI modernization (2026-08)
+- `L738` P2 spatial authoring (2026-08-25)
+- `L750` 맵 그룹 — 개념 우선 탐색 Phase 1 (2026-09-05)
+- `L772` 오브젝트·공간 수정 복구 (2026-09-13)
+- `L794` 오브젝트 브라우저와 공간 배치 작업대 (2026-09-13)
+- `L815` 맵 그룹 — 공간 저작 셸 UX 계약 (2026-09-12)
+- `L854` 타일 작업대 — 공간 셸 안 레이아웃 계약 (2026-09-13)
+- `L885` 오토타일 설정 — 9칸/11칸/커스텀 카드 (2026-09-01)
+- `L906` 공간 종류와 구조물은 다른 면이다 (2026-09-01)
+- `L925` 맵 → 개념 꾸러미 (2026-09-02 시작, 2026-09-05 개념 우선 Phase 1)
+- `L956` '구조물' 탭 — 두 출처 앨범 + 방 종류 문법 (2026-08-28)
+- `L969` '구조물' 편집기와 파일 입출력 (2026-08-29)
+- `L988` 삭제 가드는 묶음 조건(all/any/not) 안까지 본다 (2026-08-29 실측 결함 수정)
+- `L1008` '진영' 탭과 몬스터 소속 진영 (2026-08-29)
+  - `L1023` 몬스터 폼의 소속 진영 (`databaseEnemyRecordView.ts`)
+  - `L1031` 다 만들어 놓고 못 쓰던 이유 — `[편집]` 이 화면 밖 67px 에 있었다 (2026-08-29 실측)
+  - `L1043` 구조물 어휘 — 역할·레이어·테마·증분 축·칸 힌트 (2026-08-30)
+  - `L1094` 편집기를 맵 타일 편집기 수준으로 (2026-08-30 실측)
+- `L1116` Battle-animation editor autoplay (2026-09-05)
+- `L1123` 스킬 탭 `연출` 카드 = 살아 있는 애니메이션 스테이지 (2026-08-30)
+- `L1134` 데이터베이스 30탭 UI/UX 계약 (2026-08-30 실측)
+  - `L1149` 헤더는 설명문이 아니라 아이콘 칩 한 줄이다
+  - `L1227` 숫자 입력은 스테퍼를 먼저 붙이고 그다음 스피너를 지운다
+  - `L1241` 줄상자 바닥은 1.35 다 (1.25 는 큰 한글 제목에서 깎인다)
+  - `L1284` 이미지 실패는 빈 상자가 아니라 라벨 붙은 자리표시자다
+- `L1293` '마을' 탭 — 마을 하네스 값을 사람이 저작한다 (2026-08-30)
+  - `L1317` 붓을 고르면 화면이 흔들렸다 — 재부모가 스크롤·포커스를 지운다 (2026-08-30 실측)
+- `L1360` 날개마다 층수를 정한다 — 계단식 2층 (2026-09-11)
+  - `L1371` 지붕 가장자리 판정은 "다른 지붕면인가"다 (2026-09-11 실측 결함)
+- `L1379` '마을' 탭 — 숫자칸을 그림으로 바꾼다 (2026-08-31)
+  - `L1395` AI로 몬스터·아이템 생성 (2026-08-30)
+  - `L1416` AI 어시스턴트 바 — 진행·결과가 바 안에 보인다 (2026-09-03)
+  - `L1450` AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)
+- `L1466` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
+- `L1543` 직업 승급 트리 · 스킬 트리 (2026-09-05)
+- `L1549` 미회수 편집 후속 통합 (2026-09-05)
+- `L1553` 마을 설계서 (2026-09-05)
+- `L1558` 구조물 증분 메타 정정 (2026-09-05)
+- `L1566` 개념 회수 UI 직접 렌더 QA (2026-09-05)
+- `L1570` Battle-animation preview-first graphic controls (Phase 2, 2026-09-05)
+- `L1577` 검토한 실내 기본값의 원격 반영 (2026-09-05)
+- `L1581` 특정 꾸러미의 명시적 교체 (2026-09-06)
 
-### `openwiki/editor-event-authoring.md` — 135KB · 740줄 · ~38,710 토큰 · 통째읽기 잘림 · 깨진 줄 16
+### `openwiki/editor-event-authoring.md` — 136KB · 744줄 · ~39,121 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
 - `L3` 구역(로케이션) 조건분기 (OPRN-OUT-020, 2026-09-10)
 - `L25` 구역 드나듦 트리거 (2026-09-10)
@@ -442,20 +461,20 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L541` 회상 오프닝 저작 — beat 컴파일러다 (2026-09-03)
 - `L550` Guided story arc facade
 - `L554` 지도·화면 효과 탭 초보자 UX (2026-08-27)
-- `L559` 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
-- `L567` Companion roster in the command picker (2026-08-27)
-- `L573` Presentation and system M2 command bodies
-- `L580` 좌측 설정 레일 그룹 소속 (2026-08-27)
-- `L598` 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
-- `L608` 「움직임과 속도」 부피 정리 (2026-08-29)
-- `L643` 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
-  - `L677` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
-  - `L688` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
-  - `L696` 참조를 비워도 조건을 삭제하지 않는다
-  - `L703` 조건 미리보기는 모르면 모른다고 말한다
-  - `L712` 조건 문구에 내부 토큰을 넣지 마라
-- `L727` 공포 게임 제작 기능 (2026-09-05)
-  - `L732` NPC 발견·추격 저작 (2026-09-06)
+- `L563` 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
+- `L571` Companion roster in the command picker (2026-08-27)
+- `L577` Presentation and system M2 command bodies
+- `L584` 좌측 설정 레일 그룹 소속 (2026-08-27)
+- `L602` 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
+- `L612` 「움직임과 속도」 부피 정리 (2026-08-29)
+- `L647` 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
+  - `L681` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
+  - `L692` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
+  - `L700` 참조를 비워도 조건을 삭제하지 않는다
+  - `L707` 조건 미리보기는 모르면 모른다고 말한다
+  - `L716` 조건 문구에 내부 토큰을 넣지 마라
+- `L731` 공포 게임 제작 기능 (2026-09-05)
+  - `L736` NPC 발견·추격 저작 (2026-09-06)
 
 ### `openwiki/editor-event-command-fixes.md` — 24KB · 98줄 · ~6,208 토큰 · 깨진 줄 11
 
@@ -493,28 +512,41 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L59` Validation
 - `L61` Two new-project surfaces, one choice model (2026-09-11)
 
-### `openwiki/editor-interior-room-harness.md` — 49KB · 255줄 · ~14,266 토큰
+### `openwiki/editor-interior-room-harness.md` — 77KB · 374줄 · ~22,891 토큰 · 통째읽기 잘림
 
-- `L5` Interior authoring/load consistency (2026-09-07)
-- `L46` Closed expandable long tables (2026-09-07)
-- `L87` 사용자 타일 정정: 항아리·돌계단·석조 화로
-- `L98` 여관 검수표와 숙박 검증
-- `L106` 여관 꾸러미 전면 재구성 (2026-09-06)
-- `L125` 실내 의미·형태 검토 반영 (2026-09-05)
-- `L138` 모든 AI 실내의 개념 꾸러미 계약 (2026-09-05)
-- `L149` Tileset-specific map generation contract
-- `L161` Interior Room Session Harness (villager-room-v1)
-- `L174` Safe detached draft and approval harness
-- `L182` Interior object catalog is the shape source of truth (2026-08-28)
-- `L193` 소품 표면 어휘가 `PlacementZone` 으로 통일됐다 (2026-08-30, PR #316)
-- `L206` 개념 시설 시공 — place_concept 경로가 파이프라인에서 다른 점 (2026-09-02)
-- `L220` 도면 호환성과 외장 스탬프 후속 (2026-09-05)
-- `L226` 입구 예약·멀티타일 통행 복원 (2026-09-05)
-- `L234` 공포 게임 제작 기능 (2026-09-05)
-- `L238` 여관 외 시설의 공간 구성 (2026-09-05)
-- `L248` PR618 통합: 큰 탁자와 기존 시설 구성 (2026-09-06)
+- `L5` 던전 천장과 단차의 구분 — 사용자 정정 (2026-09-13)
+- `L19` 대형 광산 저작 접합 교정 (2026-09-13)
+- `L27` 사용자 광산 참고 이미지와 확장판 (2026-09-13)
+- `L35` 광산 참고 문법의 얼음·용암 적용 (2026-09-13)
+- `L43` 얼음·용암 절벽 굴곡과 소품 보강 (2026-09-14)
+- `L51` 서로 합류하는 복합 절벽 — 실제 반영 (2026-09-14)
+- `L64` 기존 칩셋 던전 네 종류 (2026-09-14)
+- `L75` 네 던전의 연결 구조 우선 재저작 (2026-09-14)
+- `L83` 설산 빙벽 조립 정정 (2026-09-13)
+- `L95` Interior authoring/load consistency (2026-09-07)
+- `L136` Closed expandable long tables (2026-09-07)
+- `L177` 사용자 타일 정정: 항아리·돌계단·석조 화로
+- `L188` 여관 검수표와 숙박 검증
+- `L196` 여관 꾸러미 전면 재구성 (2026-09-06)
+- `L215` 실내 의미·형태 검토 반영 (2026-09-05)
+- `L228` 모든 AI 실내의 개념 꾸러미 계약 (2026-09-05)
+- `L239` Tileset-specific map generation contract
+- `L251` Interior Room Session Harness (villager-room-v1)
+- `L264` Safe detached draft and approval harness
+- `L272` Interior object catalog is the shape source of truth (2026-08-28)
+- `L283` 소품 표면 어휘가 `PlacementZone` 으로 통일됐다 (2026-08-30, PR #316)
+- `L296` 개념 시설 시공 — place_concept 경로가 파이프라인에서 다른 점 (2026-09-02)
+- `L310` 도면 호환성과 외장 스탬프 후속 (2026-09-05)
+- `L316` 입구 예약·멀티타일 통행 복원 (2026-09-05)
+- `L324` 공포 게임 제작 기능 (2026-09-05)
+- `L328` 여관 외 시설의 공간 구성 (2026-09-05)
+- `L338` PR618 통합: 큰 탁자와 기존 시설 구성 (2026-09-06)
+- `L346` 비직사각 실내 정본 재설계 (2026-09-13)
+- `L355` 생활 구역 조합으로 실내 저작 (2026-09-14)
+- `L364` 여관·잡화점의 시설별 실내 기준 (2026-09-14)
+- `L371` 연결 던전의 에디터 통합 (2026-09-14)
 
-### `openwiki/editor-observability.md` — 38KB · 471줄 · ~10,680 토큰 · 깨진 줄 1
+### `openwiki/editor-observability.md` — 38KB · 469줄 · ~10,835 토큰 · 깨진 줄 1
 
 - `L21` Opt-in local diagnostics (issue 693 OUT-009 / OUT-010)
 - `L74` 계측 초크포인트는 `store.markLocalMutation` 하나다
@@ -528,10 +560,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L373` 저장된 것 — DB 커밋에 실린 행위 (`npm run commit:log`)
 - `L408` 로거
 - `L422` 알려진 남은 공백 (여기 손대는 사람이 이어서 하라)
-- `L455` AI 툴·액션 이유 (2026-09-02)
-- `L465` 검증
+- `L453` AI 툴·액션 이유 (2026-09-02)
+- `L463` 검증
 
-### `openwiki/editor-pre-edit-routing.md` — 107KB · 591줄 · ~30,554 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 113KB · 605줄 · ~32,349 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L7` Exterior door backing
 - `L17` Tile brush reliability (2026-09-06)
@@ -550,11 +582,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L306` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
   - `L366` Automatic usage guides disabled (2026-09-06)
   - `L376` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
-- `L464` Agent cautions
-- `L474` 헤더 용어 정본과 중복 감사 (2026-08-30)
-  - `L505` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
-  - `L537` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
-  - `L566` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
+- `L478` Agent cautions
+- `L488` 헤더 용어 정본과 중복 감사 (2026-08-30)
+  - `L519` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
+  - `L551` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
+  - `L580` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
 
 ### `openwiki/editor-storage-chest.md` — 1KB · 15줄 · ~333 토큰
 
@@ -578,7 +610,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L235` 손붓이 hard 클러스터에 막혔을 때의 복구 경로 (2026-09-10, OPRN-OUT-017)
   - `L281` `bAlt`/`aAlt` 패리티 — 별도 리뷰 결과: **실제 결함이었고 고쳤다** (2026-09-10)
 
-### `openwiki/editor-workflows-misc.md` — 65KB · 456줄 · ~17,604 토큰 · 통째읽기 잘림
+### `openwiki/editor-workflows-misc.md` — 65KB · 458줄 · ~17,883 토큰 · 통째읽기 잘림
 
 - `L7` Other Editor Workflows
   - `L9` New-project name and player title (2026-09-07)
@@ -586,12 +618,12 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L85` Game export delivery (2026-09-06)
   - `L196` Audio descriptions and live resource ownership
   - `L279` Genre-neutral authoring launcher and journey (2026-08-24)
-- `L329` 편집기 z 층 밴드와 토스트 (2026-08-30, PR #308)
-- `L358` 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
-- `L380` 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
-- `L394` 맵 설정 가독성·편집 연속성 (2026-09-05)
-- `L404` 왼쪽 사이드바 3모드 적대적 리뷰 (2026-09-05)
-- `L415` Authoring viewport navigation (issue 693, 2026-09-08)
+- `L331` 편집기 z 층 밴드와 토스트 (2026-08-30, PR #308)
+- `L360` 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
+- `L382` 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
+- `L396` 맵 설정 가독성·편집 연속성 (2026-09-05)
+- `L406` 왼쪽 사이드바 3모드 적대적 리뷰 (2026-09-05)
+- `L417` Authoring viewport navigation (issue 693, 2026-09-08)
 
 ### `openwiki/editor-workflows.md` — 2KB · 28줄 · ~586 토큰
 
@@ -727,16 +759,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L107` Combat acceptance slice
 - `L119` Verification
 
-### `openwiki/quickstart.md` — 16KB · 179줄 · ~4,778 토큰
+### `openwiki/quickstart.md` — 17KB · 181줄 · ~4,920 토큰
 
 - `L6` 0. 여기서 에이전트가 실제로 헤매는 이유 (실측 2026-08-30)
 - `L17` 1. 환경 — 여기가 틀리면 이후 전부 헛수고
 - `L45` 1a. Mac novice launcher / private setup (Phase 1, 2026-09-06)
 - `L81` 1b. 전체 BGM은 Release 팩으로 설치
 - `L96` 2. 검증 — 무엇이 진짜 게이트인가
-- `L116` 3. 어디를 고치나 — 기능 → 진입 파일
-- `L161` 4. 위키를 읽는 법
-- `L173` 5. 끝났다고 말할 수 있는 조건
+- `L118` 3. 어디를 고치나 — 기능 → 진입 파일
+- `L163` 4. 위키를 읽는 법
+- `L175` 5. 끝났다고 말할 수 있는 조건
 
 ### `openwiki/runtime-action-combat.md` — 26KB · 300줄 · ~6,633 토큰
 
@@ -769,34 +801,35 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 134KB · 540줄 · ~38,257 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 143KB · 611줄 · ~40,897 토큰 · 통째읽기 잘림
 
-- `L3` Native event battle admission (2026-09-08)
-- `L49` Supported action authoring (2026-09-07)
-- `L61` 적별 전투 표시 크기 (2026-09-06)
-- `L71` Capture-only victory (2026-09-08)
-- `L82` Event friendship and live level changes (2026-09-06)
-- `L101` Sequential battle event completion (2026-09-08)
-- `L136` Battle-event continuation and cancellation (2026-09-06)
-- `L179` 전투 명령 custom CSS (2026-09-05)
-- `L183` 빈 페이지와 실행 빈도 계약 (2026-09-05)
-  - `L200` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
-- `L218` 지원 전투 시스템은 둘뿐이다 (2026-08-28)
-- `L231` Roguelike run boundary (2026-08-24)
-- `L236` Battle rules & runtime
-  - `L251` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
-  - `L276` 커맨드/대상 메뉴 기하와 글자 가시성 계약
-  - `L292` 스킨 CSS 캐스케이드와 저작 가능 스킨
-  - `L296` Gen 1(포켓몬식) 규칙 모델
-  - `L304` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
-  - `L323` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
-- `L361` Starter hero battle sheets (2026-08-29)
-- `L382` Per-actor back battlers (2026-08-29)
-- `L400` Battle input and visibility P0 contract (2026-07-30)
-- `L411` 배틀러 idle 애니메이션 (2026-08-30)
-- `L537` 필드 아이템 상태 부여 복구 (2026-09-05)
+- `L3` 전투 UI/UX·모션 적대적 리뷰 5축 후속 (2026-09-14)
+- `L74` Native event battle admission (2026-09-08)
+- `L120` Supported action authoring (2026-09-07)
+- `L132` 적별 전투 표시 크기 (2026-09-06)
+- `L142` Capture-only victory (2026-09-08)
+- `L153` Event friendship and live level changes (2026-09-06)
+- `L172` Sequential battle event completion (2026-09-08)
+- `L207` Battle-event continuation and cancellation (2026-09-06)
+- `L250` 전투 명령 custom CSS (2026-09-05)
+- `L254` 빈 페이지와 실행 빈도 계약 (2026-09-05)
+  - `L271` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
+- `L289` 지원 전투 시스템은 둘뿐이다 (2026-08-28)
+- `L302` Roguelike run boundary (2026-08-24)
+- `L307` Battle rules & runtime
+  - `L322` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
+  - `L347` 커맨드/대상 메뉴 기하와 글자 가시성 계약
+  - `L363` 스킨 CSS 캐스케이드와 저작 가능 스킨
+  - `L367` Gen 1(포켓몬식) 규칙 모델
+  - `L375` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
+  - `L394` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
+- `L432` Starter hero battle sheets (2026-08-29)
+- `L453` Per-actor back battlers (2026-08-29)
+- `L471` Battle input and visibility P0 contract (2026-07-30)
+- `L482` 배틀러 idle 애니메이션 (2026-08-30)
+- `L608` 필드 아이템 상태 부여 복구 (2026-09-05)
 
-### `openwiki/runtime-m2-flow-controls.md` — 25KB · 137줄 · ~6,758 토큰
+### `openwiki/runtime-m2-flow-controls.md` — 30KB · 185줄 · ~8,377 토큰
 
 - `L5` Map-effect repair boundary (2026-09-06)
 - `L12` Sound Layer audio controls (2026-09-06)
@@ -806,8 +839,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L59` 저장된 M2 명령 실행 연결 복구 (2026-09-05)
 - `L72` 좌표 목적지 이동의 실패 계약 (OPRN-OUT-013, 2026-09-10)
   - `L131` 이동 중 경로 재지정 — 2026-09-05 브라우저 적대적 QA
+  - `L138` 맵 위를 흐르는 구름 그림자 (2026-09-14)
 
-### `openwiki/runtime-pre-edit-routing.md` — 37KB · 236줄 · ~10,690 토큰
+### `openwiki/runtime-pre-edit-routing.md` — 42KB · 286줄 · ~12,288 토큰
 
 - `L175` ESC skill thumbnails (2026-09-06)
 - `L186` Recovered head emotes (2026-09-05)
@@ -815,49 +849,54 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L200` 가구 밀기 애니메이션 (2026-09-05)
 - `L209` Recovered head emotes (2026-09-05)
 - `L215` Saved uploaded tilesets in the actual player (2026-09-14)
+- `L236` 맵 배경(패럴랙스) 렌더 (2026-09-14)
 
-### `openwiki/runtime-project-schema.md` — 136KB · 887줄 · ~36,868 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 142KB · 949줄 · ~38,435 토큰 · 통째읽기 잘림
 
-- `L1` 혼합 하위 재료 구성 (2026-09-13)
-- `L20` Truthful migrated-load state (2026-09-07)
-- `L53` Explicit publication identity and Save6 (2026-09-06)
-- `L111` Spatial canonical routing (task6 backend increment, 2026-09-07)
-- `L153` P1 accepted-save receipts and read-only proof (2026-09-06)
-- `L203` Opening and game-over cinematic settings (2026-09-06)
-- `L220` 적 전투 이미지 크기 (2026-09-06)
-- `L224` Project monster metadata overrides (foundation, 2026-09-07)
-- `L266` Project audio description overrides
-  - `L295` Concurrent persistence
-  - `L320` Editor preservation and playable export
-- `L334` Character/face authoring metadata (2026-09-06)
-- `L341` Character appearance sets v1 (2026-09-06)
-- `L378` New-project save/reload verification (2026-09-05)
-- `L386` Task15 nonvisual economy command contract (2026-09-08)
-- `L397` Independent game Save5 boundary (2026-09-06)
-- `L403` Life ownership in Save5 (2026-09-06)
-- `L419` Placement safety core (task12, 2026-09-06)
-- `L431` Project-authored equipment slots (2026-09-05)
-- `L439` 전투 명령 CSS (2026-09-05)
-- `L443` 기본 카탈로그 삭제 보존 (2026-09-05)
-- `L447` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
-- `L460` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
-- `L468` 세계 법칙의 명시적 부재 (2026-09-05)
-- `L472` Showcase media save-copy durability (issue #693, 2026-09-08)
-- `L512` Project schema & persistence
-- `L741` Variable arithmetic & loop runtime (2026-08-07)
-- `L745` Canonical event-draft projection (2026-07-30)
-- `L751` P2 general buildings and home decorations (2026-08-25)
-- `L758` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
-- `L776` Boot normalizers must not create dangling references (2026-08-30)
-- `L802` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
-- `L836` 성장 트리 선택 확장 (2026-09-05)
-- `L842` 마을 설계서 (2026-09-05)
-- `L848` 공포 게임 제작 기능 (2026-09-05)
-  - `L852` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
-- `L856` NPC 표시 이름 (2026-09-05)
-- `L869` 연결 실내 도면의 영속성 (2026-09-05)
-- `L873` 개념 장소 형상 (2026-09-05)
-- `L877` Optional village decoration attachments (2026-09-13)
+- `L1` 지역 하위 장소의 단일 계약 (2026-09-14)
+- `L11` 직접 그린 방을 포함하는 다층 장소 (2026-09-14)
+- `L20` 장소 재료의 포함 관계 (2026-09-14)
+- `L29` 혼합 하위 재료 구성 (2026-09-13)
+- `L48` Truthful migrated-load state (2026-09-07)
+- `L81` Explicit publication identity and Save6 (2026-09-06)
+- `L139` Spatial canonical routing (task6 backend increment, 2026-09-07)
+- `L181` P1 accepted-save receipts and read-only proof (2026-09-06)
+- `L231` Opening and game-over cinematic settings (2026-09-06)
+- `L248` 적 전투 이미지 크기 (2026-09-06)
+- `L252` Project monster metadata overrides (foundation, 2026-09-07)
+- `L294` Project audio description overrides
+  - `L323` Concurrent persistence
+  - `L348` Editor preservation and playable export
+- `L362` Character/face authoring metadata (2026-09-06)
+- `L369` Character appearance sets v1 (2026-09-06)
+- `L406` New-project save/reload verification (2026-09-05)
+- `L414` Task15 nonvisual economy command contract (2026-09-08)
+- `L425` Independent game Save5 boundary (2026-09-06)
+- `L431` Life ownership in Save5 (2026-09-06)
+- `L447` Placement safety core (task12, 2026-09-06)
+- `L459` Project-authored equipment slots (2026-09-05)
+- `L467` 전투 명령 CSS (2026-09-05)
+- `L471` 기본 카탈로그 삭제 보존 (2026-09-05)
+- `L475` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
+- `L488` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
+- `L496` 세계 법칙의 명시적 부재 (2026-09-05)
+- `L500` Showcase media save-copy durability (issue #693, 2026-09-08)
+- `L540` 공용 첫 방문 데모 — 읽기 전용 저장 계약 (2026-09-14)
+- `L574` Project schema & persistence
+- `L803` Variable arithmetic & loop runtime (2026-08-07)
+- `L807` Canonical event-draft projection (2026-07-30)
+- `L813` P2 general buildings and home decorations (2026-08-25)
+- `L820` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
+- `L838` Boot normalizers must not create dangling references (2026-08-30)
+- `L864` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
+- `L898` 성장 트리 선택 확장 (2026-09-05)
+- `L904` 마을 설계서 (2026-09-05)
+- `L910` 공포 게임 제작 기능 (2026-09-05)
+  - `L914` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
+- `L918` NPC 표시 이름 (2026-09-05)
+- `L931` 연결 실내 도면의 영속성 (2026-09-05)
+- `L935` 개념 장소 형상 (2026-09-05)
+- `L939` Optional village decoration attachments (2026-09-13)
 
 ### `openwiki/runtime-sessions.md` — 89KB · 318줄 · ~23,590 토큰 · 통째읽기 잘림
 
@@ -909,14 +948,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L82` 마을 생활 공간 장식 (2026-09-13)
 - `L126` 겹치는 숲과 외곽 풀밭 (2026-09-13)
 
-### `openwiki/spatial-ai-tools.md` — 13KB · 172줄 · ~3,529 토큰
+### `openwiki/spatial-ai-tools.md` — 14KB · 187줄 · ~3,904 토큰
 
-- `L3` Ownership
-- `L34` 사물·공간·장소와 저장된 건물 외형 찾기 (2026-09-12)
-- `L63` Preview versus publication
-- `L98` Legacy adapters and context
-- `L140` Evidence and integration boundary
-- `L157` Completed region references (2026-09-13)
+- `L3` 장소 단일 계약 (2026-09-14)
+- `L19` Ownership
+- `L50` 저장된 건물 외형 찾기 (2026-09-14 갱신)
+- `L78` Preview versus publication
+- `L113` Legacy adapters and context
+- `L155` Evidence and integration boundary
+- `L172` Completed region references (2026-09-13)
 
 ### `openwiki/spatial-authoring-controller.md` — 18KB · 294줄 · ~4,590 토큰
 
@@ -971,11 +1011,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L58` Lifecycle and compatibility
 - `L89` Reproduction
 
-### `openwiki/spatial-place-compiler.md` — 7KB · 112줄 · ~1,877 토큰
+### `openwiki/spatial-place-compiler.md` — 13KB · 203줄 · ~3,366 토큰
 
 - `L29` Houses with a yard and four floors (2026-09-12)
 - `L58` Compact one-floor household (2026-09-13)
   - `L92` Structural partitions (2026-09-13 correction)
+  - `L113` Compact furniture arrangement
+  - `L128` Furniture overlapping the north wall
+- `L147` Reviewed interior space catalog (2026-09-13)
+  - `L174` Frozen placement vocabulary
 
 ### `openwiki/spatial-placed-space-edits.md` — 5KB · 75줄 · ~1,209 토큰
 
@@ -1019,84 +1063,88 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L110` Files to inspect before editing
 - `L122` Related pages
 
-### `openwiki/testing.md` — 190KB · 1748줄 · ~52,085 토큰 · 통째읽기 잘림
+### `openwiki/testing.md` — 196KB · 1822줄 · ~54,107 토큰 · 통째읽기 잘림
 
-- `L1` 전체 스위트가 워커 힙에서 죽던 문제 (2026-09-11)
-- `L35` 게이트 반복은 `--changed` 로 좁힌다 (2026-09-13)
-  - `L49` AI 조수 가족이 왜 이렇게 잘 뒤집히나 (실측)
-- `L58` P5 delivery gates and the P4 regressions they caught (2026-09-09)
-  - `L60` Open: checkpoint writes still slow the authoring loop
-- `L112` P4 checkpoint storage and boot admission (2026-09-09)
-- `L166` P3 request-bound fixture alignment (2026-09-08)
-- `L191` Issue 693 verification contracts (2026-09-08)
-- `L215` Request-coverage gate follow-up (2026-09-08)
-- `L258` Native event battle reliability QA (2026-09-08)
-- `L294` Real large-world player QA (2026-09-07)
-- `L303` CSS budget: file count is informational
-- `L315` Selection and composer surface contracts (2026-09-06)
-- `L334` P3/current-main composition fixtures (2026-09-08)
-  - `L361` Cooperative Node scheduling in long session fixtures (2026-09-08)
-- `L377` AI turn observation contracts (2026-09-06)
-  - `L398` P2 R1 retained-draft Ask (2026-09-07)
-  - `L436` P2 R3 wiki delivery (2026-09-07)
-- `L465` P3 ownership and stale-base verification (2026-09-07)
-  - `L540` Autosave status fixture ownership (2026-09-08)
-  - `L554` Project history transport isolation
-- `L586` Canonical project storage versus AI history (2026-09-06)
-- `L600` Action RPG authoring and runtime proof (2026-09-07)
-- `L621` Database CSS ownership contracts (2026-09-06)
-- `L642` Audio description verification
-  - `L666` Real editor surfaces
-  - `L693` Exported-player playback and dependency evidence
-- `L742` Mac onboarding Phase 1 contracts (2026-09-06)
-- `L770` Task10 field-input verification and limits (2026-09-06)
-- `L786` Life QA observation and action receipts (2026-09-06)
-  - `L794` Task5 validation correction (2026-09-06)
-  - `L802` Task5 Q1 audio boundary correction (2026-09-06)
-- `L810` 기존 실패 비교는 진단 내용까지 확인한다 (2026-09-05)
-- `L827` Esc 메뉴 동작·시각 검증 (2026-09-05)
-- `L843` Completed-house Phase 2 verification (2026-09-06)
-- `L874` P2 낚시·채집·도감·박물관 focused gate (2026-08-25)
-- `L881` Map-owned overlays: actual AI-turn browser regression (2026-09-05)
-- `L890` Editor e2e boot-overlay determinism (2026-08-31)
-- `L895` 영역 다듬기 focused gate (2026-08-31)
-- `L902` AI 이벤트 배치 통행성 focused gate (2026-08-30)
-- `L910` 체공(점프·낙하) focused gate (2026-08-29)
-  - `L919` 좌표 목적지 이동 QA — `node scripts/qa-coordinate-move.mjs` (OPRN-OUT-013, 2026-09-10)
-  - `L936` 좌표 이동 저작 폼 QA — `node scripts/capture-coordinate-move-form.mjs`
-  - `L945` 체공 런타임 QA — `npm run qa:runtime -- --scenario hop`
-  - `L975` 워크트리에 `node_modules` 가 없을 때 (2026-08-29 실측)
-- `L1038` Roguelike run Phase 0–3 coverage (2026-08-24)
-  - `L1049` 조건 게이트를 부하 중에 재지 마라 (실측 2026-08-29)
-- `L1058` 데이터베이스 UI/UX 계측 하네스 (2026-08-30)
-  - `L1082` 가상 요소 텍스트를 안 재면 `tinyFont 0` 은 "안 봤다" 는 뜻이다 (실측)
-  - `L1103` 0px 이미지는 "깨진 것" 과 "접힌 것" 을 갈라야 한다 (실측)
-  - `L1109` 타이밍에 취약한 e2e 가 빨간불이면 그 스펙이 단정하는 속성을 직접 재라 (실측 2026-08-30)
-  - `L1132` 소스를 grep 하는 테스트는 이름만 봐서는 회귀를 못 가른다 (실측)
-- `L1140` Agent validation rule
-- `L1250` Event-editor trust-loop validation (2026-07-30)
-- `L1255` 얼굴 바꾸기(changeFace) 폼 시각 계약 (2026-08-28 실측)
-- `L1274` Tile-to-world persistence concurrency (task20)
-- `L1280` P2 spatial focused gate (2026-08-25)
-- `L1289` 대화창 연출 focused gate (2026-08-30)
-- `L1364` 워크트리 e2e 는 dev 서버가 조용히 안 뜬다 (2026-08-27 실측)
-  - `L1377` `locator.click()` 은 잘림 버그를 구조적으로 못 잡는다 (2026-08-29 실측)
-  - `L1389` 스크롤이 생겼다고 다 닿는 건 아니다 — 가운데 정렬 넘침 (2026-08-30 실측)
-  - `L1397` 미정의 커스텀 프로퍼티는 콘솔에 아무 말도 남기지 않는다 (2026-08-30 실측)
-  - `L1404` `ERR_NETWORK_CHANGED` 는 HMR 말고 호스트 인터페이스 때문에도 터진다 (2026-08-28 실측)
-- `L1426` 런타임(게임) 전용 비전 QA 하네스 (2026-08-28)
-  - `L1428` 메뉴 적대적 플레이 회귀 (2026-09-05)
-- `L1565` sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
-- `L1572` fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
-  - `L1593` Shared fake DOM enhancement contracts (2026-09-08)
-- `L1625` bugfix-sweep 실제 표면 하네스 (2026-08-29)
-- `L1638` 마을 설계서 (2026-09-05)
-- `L1643` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
-- `L1653` 상점 진열 중심 편집 검증 (2026-09-05)
-- `L1661` 실제 DB로 나가는 전체 검사 요청 (2026-09-05 실측)
-- `L1667` Request-bound functional acceptance verification (2026-09-07)
-- `L1735` 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
-- `L1745` 실내 조립·형상 검증 (2026-09-05)
+- `L1` AI 세션 테스트의 모델 id 는 임의로 짓지 않는다 (2026-09-14)
+- `L17` 전체 스위트가 워커 힙에서 죽던 문제 (2026-09-11)
+- `L51` 게이트 반복은 `--changed` 로 좁힌다 (2026-09-13)
+  - `L66` vitest 는 왜 28분이고, 무엇을 만져도 안 줄어드는가 (2026-09-14 실측)
+  - `L95` AI 조수 가족이 왜 이렇게 잘 뒤집히나 (실측)
+- `L104` 격리 원장 `test/QUARANTINE.md` (2026-09-13)
+- `L118` 브라우저 테스트는 별도 스테이지다 (2026-09-13)
+- `L132` P5 delivery gates and the P4 regressions they caught (2026-09-09)
+  - `L134` Open: checkpoint writes still slow the authoring loop
+- `L186` P4 checkpoint storage and boot admission (2026-09-09)
+- `L240` P3 request-bound fixture alignment (2026-09-08)
+- `L265` Issue 693 verification contracts (2026-09-08)
+- `L289` Request-coverage gate follow-up (2026-09-08)
+- `L332` Native event battle reliability QA (2026-09-08)
+- `L368` Real large-world player QA (2026-09-07)
+- `L377` CSS budget: file count is informational
+- `L389` Selection and composer surface contracts (2026-09-06)
+- `L408` P3/current-main composition fixtures (2026-09-08)
+  - `L435` Cooperative Node scheduling in long session fixtures (2026-09-08)
+- `L451` AI turn observation contracts (2026-09-06)
+  - `L472` P2 R1 retained-draft Ask (2026-09-07)
+  - `L510` P2 R3 wiki delivery (2026-09-07)
+- `L539` P3 ownership and stale-base verification (2026-09-07)
+  - `L614` Autosave status fixture ownership (2026-09-08)
+  - `L628` Project history transport isolation
+- `L660` Canonical project storage versus AI history (2026-09-06)
+- `L674` Action RPG authoring and runtime proof (2026-09-07)
+- `L695` Database CSS ownership contracts (2026-09-06)
+- `L716` Audio description verification
+  - `L740` Real editor surfaces
+  - `L767` Exported-player playback and dependency evidence
+- `L816` Mac onboarding Phase 1 contracts (2026-09-06)
+- `L844` Task10 field-input verification and limits (2026-09-06)
+- `L860` Life QA observation and action receipts (2026-09-06)
+  - `L868` Task5 validation correction (2026-09-06)
+  - `L876` Task5 Q1 audio boundary correction (2026-09-06)
+- `L884` 기존 실패 비교는 진단 내용까지 확인한다 (2026-09-05)
+- `L901` Esc 메뉴 동작·시각 검증 (2026-09-05)
+- `L917` Completed-house Phase 2 verification (2026-09-06)
+- `L948` P2 낚시·채집·도감·박물관 focused gate (2026-08-25)
+- `L955` Map-owned overlays: actual AI-turn browser regression (2026-09-05)
+- `L964` Editor e2e boot-overlay determinism (2026-08-31)
+- `L969` 영역 다듬기 focused gate (2026-08-31)
+- `L976` AI 이벤트 배치 통행성 focused gate (2026-08-30)
+- `L984` 체공(점프·낙하) focused gate (2026-08-29)
+  - `L993` 좌표 목적지 이동 QA — `node scripts/qa-coordinate-move.mjs` (OPRN-OUT-013, 2026-09-10)
+  - `L1010` 좌표 이동 저작 폼 QA — `node scripts/capture-coordinate-move-form.mjs`
+  - `L1019` 체공 런타임 QA — `npm run qa:runtime -- --scenario hop`
+  - `L1049` 워크트리에 `node_modules` 가 없을 때 (2026-08-29 실측)
+- `L1112` Roguelike run Phase 0–3 coverage (2026-08-24)
+  - `L1123` 조건 게이트를 부하 중에 재지 마라 (실측 2026-08-29)
+- `L1132` 데이터베이스 UI/UX 계측 하네스 (2026-08-30)
+  - `L1156` 가상 요소 텍스트를 안 재면 `tinyFont 0` 은 "안 봤다" 는 뜻이다 (실측)
+  - `L1177` 0px 이미지는 "깨진 것" 과 "접힌 것" 을 갈라야 한다 (실측)
+  - `L1183` 타이밍에 취약한 e2e 가 빨간불이면 그 스펙이 단정하는 속성을 직접 재라 (실측 2026-08-30)
+  - `L1206` 소스를 grep 하는 테스트는 이름만 봐서는 회귀를 못 가른다 (실측)
+- `L1214` Agent validation rule
+- `L1324` Event-editor trust-loop validation (2026-07-30)
+- `L1329` 얼굴 바꾸기(changeFace) 폼 시각 계약 (2026-08-28 실측)
+- `L1348` Tile-to-world persistence concurrency (task20)
+- `L1354` P2 spatial focused gate (2026-08-25)
+- `L1363` 대화창 연출 focused gate (2026-08-30)
+- `L1438` 워크트리 e2e 는 dev 서버가 조용히 안 뜬다 (2026-08-27 실측)
+  - `L1451` `locator.click()` 은 잘림 버그를 구조적으로 못 잡는다 (2026-08-29 실측)
+  - `L1463` 스크롤이 생겼다고 다 닿는 건 아니다 — 가운데 정렬 넘침 (2026-08-30 실측)
+  - `L1471` 미정의 커스텀 프로퍼티는 콘솔에 아무 말도 남기지 않는다 (2026-08-30 실측)
+  - `L1478` `ERR_NETWORK_CHANGED` 는 HMR 말고 호스트 인터페이스 때문에도 터진다 (2026-08-28 실측)
+- `L1500` 런타임(게임) 전용 비전 QA 하네스 (2026-08-28)
+  - `L1502` 메뉴 적대적 플레이 회귀 (2026-09-05)
+- `L1639` sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
+- `L1646` fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
+  - `L1667` Shared fake DOM enhancement contracts (2026-09-08)
+- `L1699` bugfix-sweep 실제 표면 하네스 (2026-08-29)
+- `L1712` 마을 설계서 (2026-09-05)
+- `L1717` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
+- `L1727` 상점 진열 중심 편집 검증 (2026-09-05)
+- `L1735` 실제 DB로 나가는 전체 검사 요청 (2026-09-05 실측)
+- `L1741` Request-bound functional acceptance verification (2026-09-07)
+- `L1809` 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
+- `L1819` 실내 조립·형상 검증 (2026-09-05)
 
 ### `openwiki/tile-layer-policy.md` — 12KB · 165줄 · ~3,743 토큰
 
@@ -1133,6 +1181,12 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L54` Score and decide
 - `L69` Image capability trap
 - `L81` 2026-09-08 pilot result
+
+### `openwiki/unified-place-authoring.md` — 5KB · 54줄 · ~1,413 토큰
+
+- `L7` 저작 계약
+- `L28` 검증 근거
+- `L46` 최종 판정
 
 ### `openwiki/village-design.md` — 20KB · 215줄 · ~6,143 토큰
 

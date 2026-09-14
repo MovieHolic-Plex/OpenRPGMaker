@@ -397,7 +397,7 @@ export const CONCEPT_PLAN_SCHEMA: JsonSchema = {
           id: { type: "string" },
           label: { type: "string" },
           role: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.roles], description: "생략=room" },
-          shape: { type: "string", enum: ["rect", "l", "alcove"], description: "방 바닥 형태. 생략=rect" },
+          shape: { type: "string", enum: ["rect", "l", "alcove", "l-right", "bay", "notch", "cross"], description: "방 바닥 형태. 생략=rect" },
           size: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.sizes], description: "s 5×3 · m 7×4 · l 9×5. 생략=m" },
           count: { type: "integer", description: `같은 장소 개수 1..${CONCEPT_PLAN_ENUMS.countMax}(객실 ×3). 생략=1` },
           floor: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.floors], description: "생략=wood" },

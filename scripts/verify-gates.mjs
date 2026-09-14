@@ -22,7 +22,8 @@
 //   node scripts/verify-gates.mjs --only typecheck|tests|css|surface
 //                                                          # css 는 수 초, surface 는 수십 초, 나머지는 수 분
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { classifyTestFailures } from "./lib/gatesRegression.mjs";
 
@@ -233,11 +234,51 @@ function surfaceGate() {
   };
 }
 
+// 브라우저 게이트 — 실제 Chromium 으로 페이지를 띄우는 테스트는 32워커 무리 안에서 자기
+// 준비 마감을 넘긴다(실측 2026-09-13: 단독 37s 통과 / 전체 스위트 동시 실행 시
+// `page.waitForSelector` 30s 타임아웃, 남은 회귀 1건이 늘 이 파일이었다).
+// 마감을 늘리는 대신 **경합에서 떼어낸다**: 동시성을 낮춰 따로 돌리고 종료 코드를 그대로 본다.
+function listBrowserTestFiles(dir = resolve(process.cwd(), "test"), acc = []) {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (entry.name === "node_modules" || entry.name.startsWith(".")) continue;
+    const full = `${dir}/${entry.name}`;
+    if (entry.isDirectory()) listBrowserTestFiles(full, acc);
+    else if (entry.name.endsWith(".browser.test.ts")) acc.push(full.slice(process.cwd().length + 1));
+  }
+  return acc;
+}
+
+function browserGate() {
+  const files = listBrowserTestFiles();
+  if (files.length === 0) return { name: "browser", exitCode: 0, files: [], failures: [], out: "" };
+  const { code, out } = run("node", [
+    "scripts/run-vitest.mjs",
+    "run",
+    "--config",
+    "vitest.browser.config.ts",
+    "--configLoader",
+    "bundle",
+    "--reporter=default",
+    "--maxWorkers=2",
+    "--minWorkers=1",
+    ...files,
+  ]);
+  const failed = out.split("\n").map((line) => line.trim()).filter((line) => /^(FAIL|×)\s+test\//.test(line));
+  return {
+    name: "browser",
+    exitCode: code,
+    files,
+    failures: code === 0 ? [] : (failed.length ? failed : [`browser tests exit=${code}`]),
+    out: out.trimEnd(),
+  };
+}
+
 const report = { ranAt: new Date().toISOString(), cwd: process.cwd() };
-if (only !== "tests" && only !== "css" && only !== "surface") report.typecheck = typecheckGate();
-if (only !== "typecheck" && only !== "css" && only !== "surface") report.tests = testsGate();
-if (only !== "typecheck" && only !== "tests" && only !== "surface") report.css = cssGate();
-if (only !== "typecheck" && only !== "tests" && only !== "css") report.surface = surfaceGate();
+if (only !== "tests" && only !== "css" && only !== "surface" && only !== "browser") report.typecheck = typecheckGate();
+if (only !== "typecheck" && only !== "css" && only !== "surface" && only !== "browser") report.tests = testsGate();
+if (only !== "typecheck" && only !== "tests" && only !== "surface" && only !== "browser") report.css = cssGate();
+if (only !== "typecheck" && only !== "tests" && only !== "css" && only !== "browser") report.surface = surfaceGate();
+if (only !== "typecheck" && only !== "tests" && only !== "css" && only !== "surface") report.browser = browserGate();
 
 if (flag("--save-baseline")) {
   mkdirSync(dirname(baselinePath), { recursive: true });
@@ -246,7 +287,7 @@ if (flag("--save-baseline")) {
   // 더럽혀져 매번 의미 없는 diff 가 생긴다. 실행 시점 진단용으로는 --json 에 그대로 남기고,
   // 저장본에서만 뺀다. `ranAt` 도 같은 이유로 재저장 때마다 바뀌지만, 그건 언제 갱신했는지를
   // 알려주는 유용한 정보라 남긴다.
-  const { cwd: _cwd, css: cssReport, surface: surfaceReport, ...rest } = report;
+  const { cwd: _cwd, css: cssReport, surface: surfaceReport, browser: browserReport, ...rest } = report;
   // CSS/표면 게이트의 `out` 은 사람이 읽는 콘솔 출력이라 기준선에 넣으면 수백 줄이 쌓인다.
   // 애초에 두 게이트는 기준선 대비 비교를 하지 않으므로 종료 코드만 기록으로 남긴다.
   const persisted = { ...rest };
@@ -265,6 +306,8 @@ if (flag("--save-baseline")) {
       axes: surfaceReport.axes,
       skippedAxes: surfaceReport.skippedAxes,
     };
+  if (browserReport)
+    persisted.browser = { name: browserReport.name, exitCode: browserReport.exitCode, files: browserReport.files };
   writeFileSync(baselinePath, `${JSON.stringify(persisted, null, 2)}\n`, "utf8");
   // «등재» 를 눈에 보이게 한다: 이 숫자가 다음 실행에서 신규 파일을 가려내는 기준이 된다.
   const enrolled = persisted.tests?.testFiles?.length ?? 0;
@@ -302,8 +345,70 @@ if (baseline) {
 for (const failure of report.css?.failures ?? []) regressions.push(`css ${failure}`);
 // 표면 게이트도 같은 이유로 기준선 유무와 무관하게 실패가 곧 회귀다.
 for (const failure of report.surface?.failures ?? []) regressions.push(`surface ${failure}`);
+// 브라우저 게이트도 같은 이유로 기준선 유무와 무관하게 실패가 곧 회귀다.
+for (const failure of report.browser?.failures ?? []) regressions.push(`browser ${failure}`);
+// 새로 실패한 테스트 파일은 **단독 재실행**으로 한 번 더 판정한다. 실측(2026-09-13): 32워커
+// 전체 실행에서는 매번 서로 다른 파일들이 "새로 실패"에 섞였고, 그 전부가 단독으로는 통과했다 —
+// 굶주린 워커에서만 흔들리는 타이밍 플레이크다.
+//
+// 판정은 **파일별 · maxWorkers=1** 로 한다. 후보를 한 실행에 몰아 돌렸더니 그 배치 자체가
+// 경합을 만들어 멀쩡한 파일을 "단독 재실행도 실패"로 오판했다(2026-09-13 실측: 같은 파일이
+// 한 실행에 모으면 실패, 하나씩 돌리면 통과). 동시 실행도 하지 않는다.
+// 판정 기준은 종료 코드가 아니라 **테스트 단위 실패 수**다 — 테스트는 다 통과하는데 테스트 밖
+// 프로세스 오류로 파일이 영원히 회귀가 되던 문제(같은 날 실측)를 막는다.
+// 예산(기본 20분)을 넘긴 후보는 판정하지 않고 회귀로 남긴다. `--no-flake-retry` 로 끈다.
+const flakeRetries = [];
+if (baseline && regressions.length > 0 && !flag("--no-flake-retry")) {
+  const deadline = Date.now() + (Number(value("--flake-budget-min", "20")) || 20) * 60_000;
+  const kept = [];
+  for (const entry of regressions) {
+    const match = /^tests (test\/\S+\.ts): 새로 실패$/u.exec(entry);
+    if (!match) {
+      kept.push(entry);
+      continue;
+    }
+    if (Date.now() > deadline) {
+      kept.push(`${entry} [재판정 예산 초과]`);
+      continue;
+    }
+    const soloPath = `${tmpdir()}/gate-flake-${match[1].replace(/[^a-z0-9]+/giu, "_")}.json`;
+    rmSync(soloPath, { force: true });
+    run("node", [
+      "scripts/run-vitest.mjs",
+      "run",
+      "--configLoader",
+      "bundle",
+      "--reporter=json",
+      `--outputFile=${soloPath}`,
+      "--maxWorkers=1",
+      "--minWorkers=1",
+      match[1],
+    ]);
+    let soloFailures = null;
+    if (existsSync(soloPath)) {
+      try {
+        const solo = JSON.parse(readFileSync(soloPath, "utf8"));
+        soloFailures = solo.numFailedTests ?? 0;
+      } catch {
+        soloFailures = null;
+      }
+    }
+    if (soloFailures === 0) flakeRetries.push(match[1]);
+    else kept.push(`${entry} [단독 재실행도 테스트 실패${soloFailures === null ? "(리포트 없음)" : ` ${soloFailures}건`}]`);
+  }
+  regressions.length = 0;
+  regressions.push(...kept);
+}
+report.flakeRetries = flakeRetries;
+
 report.baseline = baseline ? baselinePath : null;
 report.regressions = regressions;
+
+if (!asJson && flakeRetries.length > 0) {
+  console.log(`부하 플레이크 ${flakeRetries.length}건 — 단독 재실행에서 통과했으므로 회귀에서 제외:`);
+  for (const file of flakeRetries) console.log(`   ${file}`);
+  console.log("");
+}
 
 if (asJson) {
   console.log(JSON.stringify(report, null, 2));
@@ -326,6 +431,13 @@ if (asJson) {
     // 어느 파일이 고아인지는 그 출력에 이미 파일 경로까지 찍혀 있다.
     if (gate.exitCode !== 0 && gate.out) {
       for (const line of gate.out.split("\n")) console.log(`   ${line}`);
+    }
+  }
+  if (report.browser) {
+    const gate = report.browser;
+    console.log(`browser        exit=${gate.exitCode}  파일=${gate.files.length}`);
+    if (gate.exitCode !== 0 && gate.out) {
+      for (const line of gate.out.split("\n").slice(-20)) console.log(`   ${line}`);
     }
   }
   if (report.surface) {

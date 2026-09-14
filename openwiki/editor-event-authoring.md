@@ -552,7 +552,11 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 `author_story_arc` is the deterministic high-level path for bounded tutorial objectives, executable choice branches, and an optional twist reveal. It compiles only to existing event text/choices/fork/setSwitch/setVariable commands plus quest graphs and story-flag metadata, reports the created identifiers, and rejects empty objectives or branch bodies. It is a structural authoring aid, not an automatic prose-quality or story-quality judge.
 
 ## 지도·화면 효과 탭 초보자 UX (2026-08-27)
-- **전수 감사:** 명령 피커 3탭 45항목을 playwright로 전부 열어 스크린샷(`.omo/evidence/event-map-items/before|after/`)과 항목별 감사(`audit-before.md`)로 남겼다. 고유 다이얼로그 44개가 A형(설명카드+요약+미리보기)과 B형 레거시(기타 명령 껍데기, 9건: m2-026/030/066/078/201/202/205/207/212)로 갈라진다. B형 껍데기 통일은 아직 미착수 — 후속 과제.
+- **전수 감사:** 명령 피커 3탭 45항목을 playwright로 전부 열어 스크린샷(`.omo/evidence/event-map-items/before|after/`)과 항목별 감사(`audit-before.md`)로 남겼다. 고유 다이얼로그 44개가 A형(설명카드+요약+미리보기)과 B형 레거시(기타 명령 껍데기)로 갈라진다.
+- **B형 껍데기 통일 완료 (2026-09-15).** 당시 적은 9건 목록(m2-026/030/066/078/201/202/205/207/212)은 **틀렸다** — 실제 렌더를 떠서 세어 보니 7건이다. m2-202(화면 연출)는 이미 설명카드를 달고 있었고, m2-205(길찾기 이동)는 이미 전용 폼(설명카드+미리보기, 컨트롤 30개)이었다. 눈으로 목록을 만들지 말고 `captureM2Surface` 로 떠서 셀 것.
+- 남은 7건(m2-026/030/066/078/201/207/212)에 설명카드를 붙였다(`commandBodyM2.ts`의 `M2_INTENT_BY_TITLE`). 키는 카탈로그의 **영어 `title`** — 전문 렌더러들이 쓰는 분기 축과 같다(id 는 별칭이 갈린다). 카드 본문 둘째 문장은 **부정문**이다: 한국어 머리글이 이미 "무엇을 하는지"는 말하므로, 카드의 값은 "무엇을 하지 **않는지**"(헷갈리는 짝 배제)에 있다. 첫 문장만 쓸 거면 붙이지 마라.
+- 판정 축은 `m2-command-intent-card` 클래스 하나로 모았다. 전에는 화면 연출·이벤트 지우기가 제각각의 마커를 쓰고 있었다. 계약 테스트 `test/m2CommandIntentCard.test.ts`.
+- **남은 결함:** m2 다이얼로그의 `event-command-edit-summary` 가 명령 이름 대신 종류 딱지 "기타 명령"을 보여 준다(전용 폼인 m2-205 도 마찬가지). 폼 머리글(`cream-command-form-head`)에는 한국어 이름이 이미 있으므로 정보는 있다 — 요약 쪽 배선 문제.
 - **적용된 픽스:** (1) `isM2CatalogEntrySelectableInMap`이 m2-055(Show Animation 중복 등재)를 맵 피커에서 제외 — 카탈로그 엔트리는 저장 프로젝트 호환을 위해 유지. (2) 조명 설정(setLighting) 입력을 0~1 → 밝기(%)/100 스케일로 통일하고 암전/AMB/주변광 3중 용어를 "밝기"로 정리(`commandBodyPage3Native.ts`, `commandPreview.ts` lightingStage/caption). (3) 카메라 프리뷰의 내부 토큰(panTo 등)은 `CAMERA_MODE_LABELS`로 한국어화. (4) 타일 변경(changeTile)에 실맵 캔버스 미리보기 추가(`change-tile-map-canvas`, drawTransferMapPreview 재사용). (5) 프리셋 칩 세로 쪼개짐 방지 CSS(`05-force-modern-actor-page3.css`: nowrap+min-width fit-content). (6) parallax 병기 문구 정리.
 - **계약 테스트:** `test/eventMapItemsBeginnerUx.test.ts`. e2e 증거: `_event-map-items-after.spec.ts`.
 

@@ -1,3 +1,19 @@
+## AI 세션 테스트의 모델 id 는 임의로 짓지 않는다 (2026-09-14)
+
+픽스처가 `model: "supervisor-model"` 처럼 **카탈로그에 없는 id** 를 쓰면 창이 보수 폴백
+`DEFAULT_CONTEXT_WINDOW = 128,000` 토큰으로 잡힐다. 그런데 툴 카탈로그만 **98,357 토큰**(228툴,
+2026-09-14 실측)이라 예비분 16,384 를 뺀 약 13,000 토큰이 대화와 원본 매니페스트의 전부다.
+자리가 모자라면 `buildGroundedRequest` 가 `original-context-window-exceeded` 로 **턴을 통째로 죽인다** —
+테스트는 자기가 재려던 계약과 무관하게 실패하고, 원인은 단정에서 멀리 떨어져 보인다.
+
+- 증상: `expected false to be true` 같은 엉뚱한 단정 실패. 감사 마지막을 보면
+  `context:grounded {"windowTokens":128000,"toolsTokens":98415,...}` 와 `stoppedReason:"error"` 가 남아 있다.
+- 처방: 픽스처의 `model`·`liteModel` 을 **실제 카탈로그 모델**(예 `gemini-3.7-flash` / `gemini-3.7-flash-lite`)로 둔다.
+  보조모델도 같이 바꿔야 한다 — 라운드에 따라 그쪽이 요청을 조립한다.
+- 천장은 `test/aiToolCatalogBudget.test.ts` 가 감시한다(카탈로그 99,000 토큰). 이 수치를 올리려면
+  좁은 창 경로(툴 스코핑·매니페스트 축약)를 함께 결정해야 한다. 실제 모델에도 128,000 창(`gpt-5.3-codex-spark`)이 있어
+  이건 테스트만의 문제가 아니다.
+
 ## 전체 스위트가 워커 힙에서 죽던 문제 (2026-09-11)
 
 `npm run gates` 의 vitest 축(그리고 전체 vitest)이 **OOM 으로 죽어 리포트조차 못 내놨다**. 원인은 컨테이너
@@ -37,23 +53,81 @@
 `npm run gates` 는 축 넷(typecheck·vitest·css·surface)을 전부 돈다. vitest 축만 **23,700여 건 / 2,244 파일**이라
 부하에 따라 13~26분이 걸린다. 반복 중에 매번 전체를 돌릴 이유가 없다:
 
-- `npm run gates -- --changed` — vitest 가 **바뀐 파일에 영향받는 테스트만** 고른다(마지막 커밋 기준). 수십 초.
+- `npm run gates -- --changed` — vitest 가 **바뀐 파일에 영향받는 테스트만** 고른다(기준 미지정 = `HEAD`). 수백 파일이면 수 분이다(`test:changed` 실측 254 s / 454 파일).
 - `npm run gates -- --changed=origin/main` — 비교 기준 ref 를 지정한다.
 - `npm run gates -- --only typecheck|tests|css|surface` — 축 하나만 돈다(css 수 초, surface 수십 초, 나머지 수 분).
 - 경합을 줄이려면 환경 변수: `VITEST_MAX_FORKS=6 npm run gates` (동시성만 바뀌고 테스트·마감·기준선은 그대로).
+- `npm run test:changed [-- <ref>]` — 게이트 축 없이 vitest 만 돌린다(HEAD 대비, 커밋 전 반복용). 실측은 아래.
 
 **최종 게이트는 플래그 없이 전체를 돌린다.** `--changed` 와 `--save-baseline` 을 함께 쓸 수 없다 —
 부분집합 실행을 기준선으로 저장하면 기준선이 그 부분집합이 돼 다음 전체 실행의 모든 실패가 "신규 회귀"로
 보고된다(스크립트가 거부한다).
+
+### vitest 는 왜 28분이고, 무엇을 만져도 안 줄어드는가 (2026-09-14 실측)
+
+전체 `npm test` 실측: **wall 1,715 s(28분 35초)**, 2,093 파일 / 21,894 케이스, 실패 83건(exit 1).
+vitest 자체 회계는 collect **33,894 s** + tests 15,171 s + transform 752 s (워커 누적)이고, 파일별 소요
+합계는 **11,677 s = 약 3.2 CPU-시간**이다. 즉 이 스위트는 시간이 아니라 **연산**이다.
+
+- 무거운 파일은 대기가 아니다: `test/aiAssistantSession.test.ts`(64 케이스) 단독 실행 = **wall 4분 24초 / CPU 88%**(user 214 s).
+  그 파일에는 `setTimeout`·폴링이 한 곳도 없다. 타이머를 손봐서 얻을 시간이 없다.
+- 그래서 플래그 튜닝은 실측으로 기각됐다 (121파일 표본, 워밍 후 교차 2회):
+  기본(31 워커) 156/125 s · `--maxWorkers=16` 128/117 s(노이즈 범위 안) · `--pool=threads` 150/172 s ·
+  `--pool=threads --maxWorkers=16` 134/134 s · `--no-isolate` 는 14파일에서 71 → 87 s 로 **악화**.
+  `--pool=threads`·`--no-isolate` 를 다시 시도하지 마라.
+- 이 박스는 **공유**다: 전체 실행 중 loadavg 49~71(32 코어). 4 샤드 × 8 워커 동시 실행도 196 s 로 단일 실행과
+  같은 수준이었다 — 포화된 박스에서는 병렬도를 올려도 총 연산이 그대로다. 샤딩(`--shard=i/4`, 121파일 34.6 s)은
+  **CI 에서 머신을 나눌 때만** 이득이다.
+- 남은 레버는 스코프뿐이다: 전체 1,715 s → `--changed` **254 s**(454 파일) → 단일 파일 **16 s**(고정비 ≈16 s,
+  `npm run test:watch` 가 이 고정비를 상각한다).
+- 상위 25 파일이 파일별 소요의 **29%**(3,382 s / 11,677 s)를 먹는다. `test/aiAssistantSession.test.ts` 346 s,
+  `test/editorLayoutPersist.test.ts` 280 s, `test/approachCorrection.test.ts` 255 s, `test/leftDockPanels.test.ts` 192 s,
+  `test/verificationPlanAtomicity.test.ts` 190 s, `test/storePersistenceProof.test.ts` 188 s.
+  쪼개는 판단은 격리 원장(`test/QUARANTINE.md`)과 같은 급의 개별 판단이다 — 일괄로 잘라내지 마라.
+- `--changed` 는 **만진 파일이 잎일 때만** 좁다. 같은 날 두 번 재보니 변경 6건(454 파일) → 254 s 였는데,
+  변경 3건일 때는 **1,247 파일까지 번져 30분에 끝나지 않았다**(타임아웃 kill). `src/project/store.ts` 처럼
+  모든 테스트가 import 하는 허브를 만지면 `--changed` 는 전체와 다를 바 없다. 그럴 때는 억지로 좁히지 말고
+  계약을 지키는 테스트 파일을 직접 지정하거나, 박스가 한산해질 때 전체를 한 번 돌려라.
+- 같은 시각 이 체크아웃에서 **다른 세션의 `npm run gates` 가 34분째** 돌고 있었다(`--reporter=json --outputFile`).
+  공유 체크아웃에서 검증을 겹쳐 돌리면 서로를 몇 배로 느리게 만든다 — AGENTS.md 의 "검증은 감독자가 직접" 규칙이
+  이 비용까지 포함한다. 부하 의심되면 `cut -d' ' -f1-3 /proc/loadavg` 를 먼저 보라(이 세션에서 49 → 122 까지 올라갔다).
 
 ### AI 조수 가족이 왜 이렇게 잘 뒤집히나 (실측)
 
 `test/helpers/aiTestSignals.ts` 의 단정은 **실시간 10초 데드라인**을 건다(`setTimeout(..., 10_000)` →
 `"… was not delivered"`). AI 조수 테스트는 가짜 타이머가 아니라 실제 비동기 턴 파이프라인을 돌리므로,
 워커가 32개씩 붙어 CPU 를 나눠 쓰면 턴이 10초를 넘겨 가족 전체가 타임아웃으로 죽는다.
-기준선에 남은 실패 174파일 중 54가 AI 계열이고, 그중 64파일이 타임아웃으로 분류된다.
+기준선에 남은 실패 174파일 중 54가 AI 계열이었다(격리 후 남은 빨간불은 14파일).
 **마감을 늘리는 수정은 하지 않는다**(계약이 금지). 대신 낮은 부하에서 돌리거나
 `VITEST_MAX_FORKS` 로 동시성을 낮추고, 최종 판정은 기준선 대비 회귀만 본다.
+
+## 격리 원장 `test/QUARANTINE.md` (2026-09-13)
+
+기준선 저장 시점부터 계속 빨갛고 그 뒤로도 한 번도 초록이 아니었던 156파일을 기본 스위트에서 뺐다.
+게이트는 "기준선 대비 새 실패"만 회귀로 세므로 이들은 **아무것도 게이팅하지 않는데**
+vitest CPU 시간의 25%(2,056초 / 8,363초)를 먹고 부하 때 재실행을 강요했다.
+
+- 파일은 **삭제하지 않았다**. `X.test.ts` → `X.quarantine.test.ts` 로 이름만 바꿨다(깊이 유지 → 상대 import 생존).
+- 기본 스위트 제외: `vitest.config.ts` exclude 의 `test/**/*.quarantine.test.ts`.
+- 다시 돌리기: `npm run test:quarantine`. 되돌리기: `.quarantine` 만 떼고 **초록으로 고친 뒤에만** 넣는다.
+- 실패 종류(격리 시점): 단정 146 · 스위트 에러 8 · 타임아웃 2.
+
+격리 자체는 실패를 고친 게 아니라 부기를 바꾼 것이다 — 절대 실패 수가 줄어도
+**빨간불이 사라진 게 아니다**. 원장이 그 기록이다.
+
+## 브라우저 테스트는 별도 스테이지다 (2026-09-13)
+
+`test/spatialGeographyRaster.browser.test.ts` 는 실제 Chromium 을 띄우는 유일한 테스트다.
+32워커 무리 안에서는 준비 마감(30초)을 넘겨 **늘 이 파일 하나만 회귀**로 잡혔다.
+마감을 늘리는 대신 경합에서 떼어냈다:
+
+- 기본 스위트(`vitest.config.ts`)는 `test/**/*.browser.test.ts` 를 제외한다.
+- `vitest.browser.config.ts` 가 그 축만 include 한다(같은 alias·environment).
+- `verify-gates.mjs` 의 `browser` 스테이지가 `--maxWorkers=2 --minWorkers=1` 로 돌리고,
+  실패는 기준선과 무관하게 회귀로 센다(surface 와 같은 성격). `--only browser` 로 따로 돌린다.
+- 하네스는 매 실행 **임시 cacheDir** 를 쓴다. 공유 경로를 쓰면 이전 실행이 남긴 dep 최적화
+  캐시가 생겨 페이지가 ready 신호를 못 내는 일이 있었다(실측: 캐시 삭제 후 통과).
+  **고친 것은 격리와 경합이지 마감이 아니다** — 30초 준비 마감과 단정은 그대로다.
 
 ## P5 delivery gates and the P4 regressions they caught (2026-09-09)
 

@@ -1,3 +1,4 @@
+import { normalizePlaceToolArgs } from "./spatialPlaceContract";
 // editor/tools/toolRunner.ts
 // 툴 실행기. runTool(ctx, name, args, {dryRun}) → ToolResult.
 // - 인자를 JSON Schema로 최소 검증.
@@ -62,10 +63,23 @@ function argErrorMessage(message: string, example: Record<string, unknown> | und
   return example ? `${withHint} — 다시 보낼 형식 예시: ${JSON.stringify(example)}` : withHint;
 }
 
+// 인자 모양 오류는 스키마 검증(실행 전)과 툴 내부 검사(실행 중) 두 곳에서 나오는데, 교정 예시·힌트·repair 는
+// 실행 전 경로에만 붙어 있었다. 그래서 `upsert_event` · `set_scene_mood` 의 "커맨드 형식 오류" 는 고칠 본을
+// 받지 못해 같은 인자로 재시도되었다(F1). 거부는 그대로고, 동일한 교정 정보만 둘 다 실어 보낸다.
+function issueFromToolError(tool: ToolDefinition, normalizedArgs: Record<string, unknown>, cause: unknown): LintIssue {
+  const issue = issueFromError(cause);
+  // 이미 교정본을 실어 보내는 문구는 그대로 둔다. 모델도 테스트도 그 메시지의 JSON 을 끝까지 읽어 그대로
+  // 다시 부르므로(`test/aiNativePageContract.test.ts`), 뒤에 무엇을 붙이든 그 예시를 깨뜨린다.
+  if (issue.code !== "invalid-args" || issue.message.includes("repair: ") || issue.message.includes('{"')) return issue;
+  const repair = tool.invalidArgsRepair?.(normalizedArgs);
+  return { ...issue, message: argErrorMessage(issue.message, tool.invalidArgsExample, tool.invalidArgsHint)
+    + (repair ? `\nrepair: ${JSON.stringify(repair)}` : "") };
+}
+
 export function normalizeToolArgs(name: string, args: Record<string, unknown>): Record<string, unknown> {
   const tool = getTool(name);
   if (!tool) return args;
-  return normalizeArgsForSchema(tool.parameters, args) as Record<string, unknown>;
+  return normalizeArgsForSchema(tool.parameters, normalizePlaceToolArgs(tool.name, args)) as Record<string, unknown>;
 }
 
 export function runTool(
@@ -90,7 +104,7 @@ export function runToolDefinition(
 ): ToolResult {
   const name = tool.name;
 
-  const normalizedArgs = normalizeArgsForSchema(tool.parameters, args) as Record<string, unknown>;
+  const normalizedArgs = normalizeArgsForSchema(tool.parameters, normalizePlaceToolArgs(tool.name, args)) as Record<string, unknown>;
   const argErrors = validateArgs(tool.parameters, normalizedArgs);
   if (argErrors.length > 0) {
     const repair = tool.invalidArgsRepair?.(normalizedArgs);
@@ -118,7 +132,7 @@ export function runToolDefinition(
       };
     } catch (cause) {
       const error = cause instanceof Error ? cause : new ToolError(String(cause), { code: "tool-exception" });
-      return { ok: false, summary: failureSummary(name, error), issues: [issueFromError(error)] };
+      return { ok: false, summary: failureSummary(name, error), issues: [issueFromToolError(tool, normalizedArgs, error)] };
     }
   }
 
@@ -133,7 +147,7 @@ export function runToolDefinition(
     exec = tool.run(draft, normalizedArgs);
   } catch (cause) {
     const error = cause instanceof Error ? cause : new ToolError(String(cause), { code: "tool-exception" });
-    return { ok: false, summary: failureSummary(name, error), issues: [issueFromError(error)] };
+    return { ok: false, summary: failureSummary(name, error), issues: [issueFromToolError(tool, normalizedArgs, error)] };
   }
 
   try {

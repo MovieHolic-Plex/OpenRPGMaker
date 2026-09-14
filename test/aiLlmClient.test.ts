@@ -103,7 +103,7 @@ describe("aiConfig 저장/로드", () => {
     expect(kept.maxToolCalls).toBe(50);
   });
 
-  it("ChatGPT 모드에 저장된 비-gpt 모델은 로드 시점에 권장 기본으로 교정된다", async () => {
+  it("저장된 모델 ID는 지원 여부와 무관하게 보존한다", async () => {
     // 실측 근거: {"detail":"The 'z-ai/glm-5.2-ultrafast' model is not supported when using
     // Codex with a ChatGPT account."} — 옛 기본값이 localStorage 에 남아 400 을 내던 사례.
     vi.stubEnv("VITE_LLM_API_URL", "");
@@ -116,12 +116,12 @@ describe("aiConfig 저장/로드", () => {
 
     const loaded = loadAiConfig();
     expect(loaded.authMode).toBe("chatgpt");
-    // 제공자가 Antigravity 로 강제된 뒤에도 교정은 살아 있다 — 목표만 gemini 기본으로 바뀐다.
-    expect(loaded.model).toBe("gemini-3.7-flash");
-    expect(loaded.liteModel).toBe("gemini-3.7-flash");
+    // Unsupported IDs are rejected by the transport, never silently substituted.
+    expect(loaded.model).toBe("z-ai/glm-5.2-ultrafast");
+    expect(loaded.liteModel).toBe("z-ai/glm-5.2-ultrafast");
   });
 
-  it("저장된 다른 제공자와 그 모델은 Antigravity 로 끌어온다 (제공자 강제 통일)", async () => {
+  it("사라진 제공자는 마이그레이션하되 명시적 모델은 보존한다", async () => {
     vi.stubEnv("VITE_LLM_API_URL", "");
     vi.stubEnv("VITE_LLM_API_KEY", "");
     const store = installLocalStorage();
@@ -134,7 +134,7 @@ describe("aiConfig 저장/로드", () => {
     }));
     const loaded = loadAiConfig();
     expect(loaded.providerId).toBe("google-antigravity");
-    expect(loaded.model).toBe("gemini-3.7-flash");
+    expect(loaded.model).toBe("claude-opus-4-8");
   });
 
   it("env VITE_LLM_API_URL 이 있어도 OAuth 로 부팅한다 (env 가 authMode 를 정하지 못한다)", async () => {
@@ -170,8 +170,8 @@ describe("aiConfig 저장/로드", () => {
     expect(reloaded.authMode).toBe("chatgpt");
     expect(reloaded.baseUrl).toBe("");
     expect(reloaded.apiKey).toBe("");
-    // 게이트웨이 모델 ID 는 Antigravity 네임스페이스 밖 → 강제 기본으로 교정된다(조용한 오배송 방지).
-    expect(reloaded.model).toBe("gemini-3.7-flash");
+    // Removing stale credentials does not overwrite model selection.
+    expect(reloaded.model).toBe("cpen/gpt-5-6-luna");
   });
 
   it("authMode 가 없는 옛 설정도 OAuth 로 승격한다", async () => {
@@ -186,7 +186,7 @@ describe("aiConfig 저장/로드", () => {
     const reloaded = loadAiConfig();
     expect(reloaded.authMode).toBe("chatgpt");
     expect(reloaded.baseUrl).toBe("");
-    expect(reloaded.model).toBe("gemini-3.7-flash");
+    expect(reloaded.model).toBe("existing-model");
   });
 
   it("저장된 사용자 model은 존중하고 liteModel 누락은 감독 model로 보강한다 (일원화)", async () => {
@@ -212,14 +212,14 @@ describe("aiConfig 저장/로드", () => {
   it("liteModel 미설정 시 감독 model을 따라간다 (authMode 일원화)", async () => {
     const store = installLocalStorage();
     const { AI_CONFIG_STORAGE_KEY, configForLiteModel, loadAiConfig } = await loadClient();
-    // 제공자는 Antigravity 로 강제되므로 남의 제공자 모델은 강제 기본으로 교정된다.
+    // Lite inherits the explicit selection; validation belongs to the transport.
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
       providerId: "anthropic",
       model: "claude-opus-4-8",
     }));
     const foreign = configForLiteModel(loadAiConfig());
-    expect(foreign.model).toBe("gemini-3.7-flash");
-    expect(foreign.liteModel).toBe("gemini-3.7-flash");
+    expect(foreign.model).toBe("claude-opus-4-8");
+    expect(foreign.liteModel).toBe("claude-opus-4-8");
 
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
       authMode: "chatgpt",

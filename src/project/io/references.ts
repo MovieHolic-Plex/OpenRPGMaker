@@ -1152,6 +1152,11 @@ function validateMapRecords(
   for (const [hostMapId, map] of Object.entries(project.maps)) {
     if (project.tilesets[map.tilesetId] === undefined) issues.push(`map ${map.id}: tilesetId does not exist.`);
     collectExistingIdIssues(`map ${map.id}: troopIds`, map.troopIds ?? [], context.troopIds, issues);
+    // 빈 imageId 는 「맵 배경 사용」 을 켜고 아직 안 고른 저작 상태다 — 참조가 아니다.
+    const backgroundImageId = map.background?.imageId;
+    if (backgroundImageId) {
+      capture(issues, () => validateOptionalResource(`map ${map.id}: background.imageId`, backgroundImageId, resourceIds));
+    }
     for (const [index, entry] of (map.encounterTable ?? []).entries()) {
       if (!context.troopIds.has(entry.troopId)) issues.push(`map ${map.id}: encounterTable[${index}].troopId does not exist: ${entry.troopId}`);
       if (entry.conditions?.switchId) collectExistingIdIssues(`map ${map.id}: encounterTable[${index}].conditions.switchId`, [entry.conditions.switchId], switchIds, issues);

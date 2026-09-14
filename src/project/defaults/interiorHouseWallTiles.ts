@@ -76,3 +76,6 @@ export const HOUSE_SHELL_CREAM_FACE_TILES: readonly number[] = [
 
 /** Forbidden placeholder IDs — never write as house wall/door art. */
 export const HOUSE_SHELL_FORBIDDEN_TILES: readonly number[] = [233, 257, 258];
+
+/** All supported retinted north-wall faces; frames/ceiling are excluded. */
+export const HOUSE_SHELL_FACE_TILES: readonly number[] = [...HOUSE_SHELL_CREAM_FACE_TILES,134,135,136,164,165,166,314,315,316,344,345,346];

@@ -16,6 +16,10 @@ const REQUIRED_TEST_IDS = [
   "ai-settings-close",
   "ai-settings-body",
   "ai-settings-advanced",
+  "ai-config-ultrabrain-model",
+  "ai-config-vision-model",
+  "ai-config-writer-provider",
+  "ai-config-deep-provider",
   "ai-config",
   "ai-config-model",
   "ai-config-model-preset",
@@ -75,7 +79,11 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     const modal = await openModal();
     const expected = [
       ["connection", "연결", "AI 제공자와 로그인 상태를 관리합니다."],
-      ["model", "모델", "계획과 실행에 사용할 모델을 선택합니다."],
+      ["ultrabrain", "Ultrabrain · 계획과 최종 판단", "최고 지능 역할입니다."],
+      ["vision", "Vision · 시각 관찰", "이미지 입력을 지원하는 LLM"],
+      ["writer", "Writer · 작문", "이야기·세계관·NPC 대사·퀘스트 문장"],
+      ["deep", "Deep · 깊은 작업과 실행", "Ultrabrain의 계획"],
+      ["image", "Image · 이미지 생성", "그림을 생성하는 모델"],
       ["behavior", "동작", "응답 예산과 작업 진행 방식을 조정합니다."],
       ["display", "표시", "AI 패널의 읽기 환경을 조정합니다."],
     ] as const;
@@ -93,7 +101,7 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     for (const description of [
       "목록에서 고르거나 공급자별 모델 ID를 직접 입력하세요.",
       "한 요청에서 AI가 쓸 수 있는 출력 토큰 예산",
-      "모델이 답이나 도구 사용 전에 추론하는 강도입니다.",
+      "대화 조수는 위에서 선택한 역할별 추론 강도를 사용합니다.",
       "자율 모드는 요청을 작업 계획으로 나누고, 채팅 모드는 대화 중심으로 진행합니다.",
       "채팅 로그, 제안 카드, 도구 로그의 글자 크기입니다.",
     ]) {

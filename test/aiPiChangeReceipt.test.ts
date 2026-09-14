@@ -75,11 +75,15 @@ describe("Pi 적용 영수증", () => {
   it("영수증이 오면 지금/적용 후 카드가 로그에 남는다", async () => {
     const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
     await startTurn(panel, "집 한 채 지어줘");
-    const project = store.getCurrent();
+    const before = store.getCurrent();
+    const mapId = before.startMapId ?? Object.keys(before.maps)[0]!;
+    // 실제 변경을 만든다 — 같은 프로젝트 두 장은 카드가 그림 대신 사실을 말하는 경우다(아래 테스트).
+    const after = structuredClone(before);
+    after.maps[mapId]!.lowerTiles[0] = (after.maps[mapId]!.lowerTiles[0] ?? 0) + 1;
     const receipt: PiChangeReceipt = {
-      before: project,
-      after: project,
-      mapId: project.startMapId,
+      before,
+      after,
+      mapId,
       title: "Pi 에이전트 1개 — map_a",
       detail: "적용했습니다 — 에이전트 1개, 툴콜 12회, 바뀐 맵·항목 3개.",
       chips: ["타일 48"],
@@ -94,7 +98,32 @@ describe("Pi 적용 영수증", () => {
     expect(card?.querySelector(".ai-change-chip")?.textContent).toBe("타일 48");
     const labels = card?.querySelectorAll(".ai-change-shot-label").map((node) => node.textContent);
     expect(labels).toEqual(["지금", "적용 후"]);
+    expect(card?.dataset.state).toBe("applied");
     expect(findByTestId(panel, "ai-change-undo")).not.toBeNull();
+  });
+
+  it("지도 그림이 같은 영수증은 두 장 대신 사실 한 줄을 남긴다", async () => {
+    // 퀘스트·설정처럼 지도 밖 변경은 두 캔버스가 같은 그림이 된다 — 「지금 / 적용 후」 두 장은 거짓이다.
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    await startTurn(panel, "퀘스트 하나 추가해줘");
+    const project = store.getCurrent();
+    const receipt: PiChangeReceipt = {
+      before: project,
+      after: structuredClone(project),
+      mapId: project.startMapId,
+      title: "Pi 에이전트 1개 — 전체",
+      detail: "적용했습니다 — 툴콜 3회, 바뀐 맵·항목 1개.",
+      chips: ["퀘스트"],
+      toolNames: ["pi_agent"],
+    };
+
+    lastSurface()?.showChangeReceipt?.(receipt);
+
+    const card = findByTestId(panel, "ai-change-card");
+    expect(card).not.toBeNull();
+    expect(card?.querySelector(".ai-change-chip")?.textContent).toBe("퀘스트");
+    expect(findByTestId(card!, "ai-change-pair")).toBeNull();
+    expect(findByTestId(card!, "ai-change-word-diff")).not.toBeNull();
   });
 
   it("맵이 안 바뀐 영수증은 카드를 만들지 않는다", async () => {

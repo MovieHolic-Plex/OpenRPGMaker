@@ -31,6 +31,7 @@ import {
   syncSpatialFeedbackSelection,
 } from "@/editor/panels/spatialFeedback";
 import { dismissAuthoringPreview, hasAuthoringPreview } from "@/editor/panels/spatialAuthoringAccess";
+import { selectSpatialGalleryEntry } from "./spatialGalleryNavigation";
 import { el } from "@/util/dom";
 
 export function renderSpatialAuthoringShell(
@@ -42,9 +43,10 @@ export function renderSpatialAuthoringShell(
   let session = spatialSession();
   const cards = listSpatialGalleryCards(session);
   const requested = session.mode === "instances" ? session.occurrenceId : session.designId;
-  if (!requested && cards[0]) {
-    if (session.mode === "instances") selectSpatialOccurrence(cards[0].id);
-    else selectSpatialDesign((tab !== "objects" && tab !== "tiles" ? cards.find(card => card.canonicalSource) : undefined)?.id ?? cards[0].id);
+  const first = cards.find(card => card.kind === session.tab);
+  if (!requested && first) {
+    if (session.mode === "instances") selectSpatialOccurrence(first.id);
+    else selectSpatialDesign((tab !== "objects" && tab !== "tiles" ? cards.find(card => card.kind === session.tab && card.canonicalSource) : undefined)?.id ?? first.id);
     session = spatialSession();
   }
   const selected = visibleSpatialSelection(session);
@@ -54,8 +56,8 @@ export function renderSpatialAuthoringShell(
   const refresh = (): void => rerender();
 
   const onSelect = (id: string): void => {
-    if (session.mode === "instances") selectSpatialOccurrence(id);
-    else selectSpatialDesign(id);
+    const card = cards.find(card => card.id === id);
+    if (card) selectSpatialGalleryEntry(card);
     if (tab === "tiles") {
       const tilesetId = cards.find((card) => card.id === id)?.tilesetId;
       if (tilesetId) setSelectedTileset(tilesetId);

@@ -5,26 +5,23 @@
   visibility: hidden;
 }
 
-.battle-scene[data-battle-director-step="intro"] .battle-field {
-  animation: battle-intro-field 550ms ease-out both;
-}
-
+/* 안무는 진입 커버가 걷힌 뒤(--battle-reveal-ms) 시작한다. 마운트와 동시에 돌리면 블라인드 뒤에서
+   절반이 소진되고, 필드 페이드가 커버 열림과 겹쳐 "이중 페이드" 가 됐다(2026-09-14 실측). 필드
+   페이드는 커버가 그 일을 하므로 뺐다. 합계는 시퀀서 인트로 홀드(1200ms) 안: 300+480+420 = 1200. */
 .battle-scene[data-battle-director-step="intro"] .battle-enemy {
-  animation: battle-intro-enemy 620ms cubic-bezier(0.2, 0.9, 0.3, 1.15) 260ms both;
+  animation: battle-intro-enemy 620ms cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
+  animation-delay: calc(var(--battle-reveal-ms, 300ms) + 120ms + var(--enemy-index, 0) * 80ms);
 }
 
 .battle-scene[data-battle-director-step="intro"] .battle-actor-group .battle-actor {
-  animation: battle-intro-ally 550ms ease-out 140ms both;
+  animation: battle-intro-ally 550ms ease-out both;
+  animation-delay: calc(var(--battle-reveal-ms, 300ms) + 60ms + var(--actor-index, 0) * 60ms);
 }
 
 .battle-scene[data-battle-director-step="intro"] .battle-enemy-list-panel,
 .battle-scene[data-battle-director-step="intro"] .battle-party {
-  animation: battle-intro-panel 420ms ease-out 700ms both;
-}
-
-@keyframes battle-intro-field {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  animation: battle-intro-panel 420ms ease-out both;
+  animation-delay: calc(var(--battle-reveal-ms, 300ms) + 480ms);
 }
 
 @keyframes battle-intro-enemy {
@@ -83,6 +80,8 @@
 
 .battle-result-reward-label {
   color: var(--oprn-battle-text);
+  /* 잉크가 상속 라인박스를 살짝 넘어 첫 공개 행(경험치)이 위아래 1px 씩 깎였다(감사 clipped 0.059). */
+  line-height: 1.6;
 }
 
 .battle-result-reward-value {

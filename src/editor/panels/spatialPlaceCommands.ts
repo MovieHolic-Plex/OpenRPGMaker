@@ -97,6 +97,7 @@ export function visiblePlaceSelection(card: SpatialGalleryCard | undefined): Spa
     kind: "places",
     usage: 0,
     placeKind: place.kind,
+    canonicalSource: { kind: "place", id: place.id },
   };
 }
 
@@ -168,7 +169,7 @@ function applyPlace(rerender: () => void): void {
 
 function addBlankPlace(rerender: () => void): void {
   if (!visibleAuthoringProject().spatialAuthoring) {
-    placeChromeState.previewError = "이 프로젝트에는 공간 설계 문서가 없습니다 — 새 설계를 만들 수 없습니다";
+    placeChromeState.previewError = "이 프로젝트에는 장소 설계 문서가 없습니다 — 새 설계를 만들 수 없습니다";
     rerender();
     return;
   }

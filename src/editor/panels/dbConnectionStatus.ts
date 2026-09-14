@@ -112,7 +112,8 @@ function onlineSaveStatusText(status: DbPersistenceStatus): string {
     case "not-configured":
       return "온라인 저장: 준비 안 됨";
     case "disabled":
-      return "온라인 저장: 오프라인";
+      // 공용 데모는 "오프라인" 이 아니라 읽기 전용 예제 — 칩 라벨이 그 사실을 말한다.
+      return status.reason === "shared-demo" ? "공용 예제" : "온라인 저장: 오프라인";
   }
 }
 
@@ -132,9 +133,11 @@ function onlineSaveStatusTitle(status: DbPersistenceStatus): string {
     case "not-configured":
       return "온라인 저장을 준비하지 못했습니다. 잠시 후 다시 시도하세요.";
     case "disabled":
-      return status.reason === "dev-showcase"
-        ? "현재 예제 모드에서는 온라인 저장을 사용하지 않습니다."
-        : "복구 모드에서는 온라인 저장을 잠시 사용하지 않습니다.";
+      if (status.reason === "dev-showcase") return "현재 예제 모드에서는 온라인 저장을 사용하지 않습니다.";
+      if (status.reason === "shared-demo") {
+        return "공용 예제를 보고 있습니다 — 원본은 바뀌지 않습니다. 편집하려면 편집용 사본을 만드세요.";
+      }
+      return "복구 모드에서는 온라인 저장을 잠시 사용하지 않습니다.";
   }
 }
 

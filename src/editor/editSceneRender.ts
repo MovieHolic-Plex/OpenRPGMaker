@@ -36,6 +36,11 @@ export interface EditSceneRenderContext {
   readonly mapId: MapId;
   readonly tileIndex?: EditSceneTileIndex;
   readonly resetCamera?: boolean;
+  /**
+   * 맵 배경 미리보기가 켜져 있는가. 켜져 있으면 빈 칸 체커를 옅게 그린다 — 배경이 뒤로 비치되
+   * "여기 바닥이 없다" 는 신호는 남는다(체커를 통째로 지우는 건 금지된 결정이다).
+   */
+  readonly backgroundPreview?: boolean;
   /** 같은 맵에서 줌만 바뀐 경우 true. 맵 전환이면 넘기지 않아 한가운데로 둔다. */
   readonly preserveCameraLookAt?: boolean;
 }
@@ -139,7 +144,7 @@ function renderTileCellLayer(
       lowerTile.setAlpha(lowerAlpha);
       addTileObject(context, objects, lowerTile, 0);
     } else {
-      addTileObject(context, objects, createEmptyTile(context.scene, x, y), 0);
+      addTileObject(context, objects, createEmptyTile(context.scene, x, y, context.backgroundPreview === true), 0);
     }
     for (const stackedLower of tileStackAt(map, "lower", i)) {
       const lowerTile = createChipsetTileObject(context.scene, map, tileset, x, y, stackedLower);
@@ -215,7 +220,8 @@ function isTintable(object: Phaser.GameObjects.GameObject): object is Phaser.Gam
   return "setTint" in object && typeof object.setTint === "function";
 }
 
-function createEmptyTile(scene: Phaser.Scene, x: number, y: number): Phaser.GameObjects.Rectangle {
+/** 빈 하위 칸의 체커. 미리보기 중에는 알파를 낮춰 뒤의 배경이 비치게 한다(신호는 유지). */
+function createEmptyTile(scene: Phaser.Scene, x: number, y: number, translucent = false): Phaser.GameObjects.Rectangle {
   const r = scene.add.rectangle(
     x * TILE_SIZE,
     y * TILE_SIZE,
@@ -223,6 +229,7 @@ function createEmptyTile(scene: Phaser.Scene, x: number, y: number): Phaser.Game
     TILE_SIZE,
     (x + y) % 2 === 0 ? 0x15171c : 0x1a1d23
   );
+  if (translucent) r.setAlpha(0.35);
   r.setOrigin(0, 0);
   return r;
 }

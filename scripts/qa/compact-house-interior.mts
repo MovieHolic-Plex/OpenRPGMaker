@@ -74,6 +74,11 @@ function path(start: P, end: P, blocked?: P) {
 // Five solid cells form a north/south partition, with exactly one doorway.
 const doorway = { x: 6, y: 7 };
 assert.equal(map.roomHarnessPlan!.plan.rooms.length, 2);
+for (const x of [3, 7]) {
+  assert.equal(map.upperTiles[3 * map.width + x], 148);
+  assert.equal(map.upperTiles[4 * map.width + x], 178);
+  assert.ok([104, 105, 106, 107].includes(map.lowerTiles[3 * map.width + x]!));
+}
 for (let y = 1; y <= 4; y++)
   assert.ok(isCeilingTile(map.lowerTiles[y * map.width + 6]!));
 for (let y = 4; y < 10; y++)
@@ -87,9 +92,9 @@ let start = { x: entry.x, y: entry.y - 1 };
 assert.ok(isPassableLanding(project, map, start.x, start.y));
 const targets = [
   { id: "kitchen", x: 2, y: 6 },
-  { id: "dining", x: 4, y: 8 },
+  { id: "dining", x: 4, y: 7 },
   { id: "bed", x: 8, y: 6 },
-  { id: "wardrobe", x: 8, y: 7 },
+  { id: "wardrobe", x: 7, y: 5 },
   { id: "exit", x: entry.x, y: entry.y },
 ];
 const walks = targets.map((end) => {

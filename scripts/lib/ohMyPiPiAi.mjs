@@ -16,10 +16,26 @@ import {
 
 let workerPortPromise;
 let workerChild;
+let workerStale = false;
+
+/**
+ * 살아 있는 워커를 «다음 요청 때 갈아 끼울 것» 으로 표시한다. 워커는 모듈 그래프를 부팅 때
+ * **한 번** 로드하는 Bun 자식 프로세스라, 코드를 고쳐도 그대로 두면 옛 판정·옛 병합 코드가
+ * 계속 돈다. 실측(2026-09-14): 맵 묶음 병합이 «묶음이 만든 정의» 를 데려오는 픽스가 들어간
+ * 뒤에도, 페이지를 새로 고친 편집기는 `적용 실패(commit-rejected): 직렬화 왕복 실패: setSwitch:
+ * switchId가 존재하지 않습니다: sw_ev_battle_<uuid>_clear` 를 그대로 재현했다 — 브라우저가 낡은
+ * 것이 아니라 **워커가 낡아 있었다**. 지금 도는 실행은 죽이지 않는다: 갈아 끼우는 자리는 다음
+ * 요청이다(진행 중인 Pi 실행을 파일 저장 한 번으로 끊지 않는다).
+ */
+export function markOhMyPiWorkerStale() {
+  workerStale = true;
+}
 
 function startWorker() {
+  if (workerStale) stopOhMyPiWorker();
   if (workerPortPromise) return workerPortPromise;
-  workerPortPromise = new Promise((resolve, reject) => {
+  let promise;
+  promise = new Promise((resolve, reject) => {
     const script = fileURLToPath(new URL("../oh-my-pi-worker.ts", import.meta.url));
     // Tests point this at a script that crashes on startup to pin the failure contract.
     const command = process.env.RPG_ZZU_OH_MY_PI_WORKER_COMMAND;
@@ -34,7 +50,10 @@ function startWorker() {
     const fail = (error) => {
       if (settled) return;
       settled = true;
-      workerPortPromise = null;
+      // 자리 정리는 **자기 것일 때만**. 갈아 끼운 뒤 옛 워커가 늦게 죽으면 그 정리가
+      // 새 워커의 자리를 지워 다음 요청이 워커를 하나 더 띄운다(실측: 테스트가 스폰 수로
+      // 그걸 잡는다).
+      if (workerPortPromise === promise) workerPortPromise = null;
       reject(error);
     };
     const onChunk = (chunk) => {
@@ -64,15 +83,23 @@ function startWorker() {
       ));
     });
     child.on("exit", (code) => {
-      workerChild = null;
-      workerPortPromise = null;
+      // 죽은 포트를 물려주지 않는다 — 다음 요청이 새 워커를 띄운다(READY 뒤에 죽은 경우까지).
+      // 단, 갈아 끼운 뒤 옛 워커가 늦게 죽는 경우에는 새 워커의 자리를 지우면 안 된다.
+      if (workerChild === child) {
+        workerChild = null;
+        workerPortPromise = null;
+      }
       fail(new Error(startupLog
         ? `oh-my-pi worker exited (${code ?? "?"}): ${startupLog}`
         : `oh-my-pi worker exited (${code ?? "?"})`));
     });
-    setTimeout(() => fail(new Error("oh-my-pi worker start timed out")), 30_000);
+    // 기동 타임아웃은 기동을 기다리는 동안만 의미가 있다. unref 하지 않으면 안 쓰는 타이머가
+    // 프로세스를 30초 더 붙잡는다(실측: node 테스트 파일이 끝난 뒤에도 그만큼 안 끝났다).
+    const startTimeout = setTimeout(() => fail(new Error("oh-my-pi worker start timed out")), 30_000);
+    startTimeout.unref?.();
   });
-  return workerPortPromise;
+  workerPortPromise = promise;
+  return promise;
 }
 
 async function workerJson(pathname, body) {
@@ -95,6 +122,7 @@ export function stopOhMyPiWorker() {
   workerChild?.kill();
   workerChild = null;
   workerPortPromise = null;
+  workerStale = false;
 }
 
 export async function createOhMyPiAdapters() {
@@ -130,12 +158,19 @@ export async function createOhMyPiAdapters() {
     /** Pi 에이전트 실행. 워커의 NDJSON 본문(web ReadableStream)을 그대로 넘긴다. */
     async runAgent(provider, body, options = {}) {
       const apiKey = await resolveRequestApiKey(provider);
+      const providerApiKeys = { [provider]: apiKey };
+      for (const role of ["deep", "writer"]) {
+        const selected = body.roleModels?.[role];
+        if (selected?.provider && !(selected.provider in providerApiKeys)) {
+          providerApiKeys[selected.provider] = await resolveRequestApiKey(selected.provider);
+        }
+      }
       const port = await startWorker();
       // 브라우저가 끊으면(중단 버튼) 그 신호를 워커까지 넘긴다 — 안 그러면 에이전트는 끝까지 돈다.
       const response = await fetch(`http://127.0.0.1:${port}/agent/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ apiKey, request: { ...body, provider } }),
+        body: JSON.stringify({ apiKey, providerApiKeys, request: { ...body, provider } }),
         ...(options.signal ? { signal: options.signal } : {}),
       });
       if (!response.ok) {

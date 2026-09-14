@@ -41,9 +41,23 @@ it("rejects shrinking across a child's footprint without poisoning the draft", (
   expect(editComposition(source, value => ({ ...value, width: 22 }))).toBeNull();
   expect(previewAuthoringDraft().kind).toBe("ok");
 });
-it("offers only lower kinds in each container", () => {
-  for (const [kind, id, tab, allowed] of [["space", "room-design", "spaces", ["tile", "object"]], ["place", "inn", "places", ["tile", "object", "space"]], ["region", "town", "regions", ["tile", "object", "space", "place"]], ["world", "world", "worlds", ["tile", "object", "space", "place", "region"]]] as const) {
+it("offers a single place material category in both place editors", () => {
+  for (const [kind, id, tab, allowed] of [["space", "room-design", "spaces", ["tile", "object", "place"]], ["place", "inn", "places", ["tile", "object", "place"]], ["region", "town", "regions", ["tile", "object", "place"]], ["world", "world", "worlds", ["tile", "object", "place", "region"]]] as const) {
     const root = renderSpatialCompositionWorkspace({ ...spatialSession(), tab }, { id, name: id, kind: tab, source: "own", usage: 0, canonicalSource: { kind, id: spatialId(id) } }, () => {});
     expect([...root.querySelectorAll("[data-testid^='composition-material-']")].map(el => el.getAttribute("data-testid")!.replace("composition-material-", ""))).toEqual(allowed);
   }
+});
+it("shows both room and building materials together while excluding self and ancestors", () => {
+  const render = () => document.body.replaceChildren(renderSpatialCompositionWorkspace({ ...spatialSession(), tab: "regions" }, {
+    id: "town", name: "마을", kind: "regions", source: "own", usage: 0, canonicalSource: { kind: "region", id: spatialId("town") },
+  }, render));
+  render();
+  click("composition-material-place");
+  expect(document.querySelector("[data-testid='composition-asset-room-design']")).not.toBeNull();
+  expect(document.querySelector("[data-testid='composition-asset-inn']")).not.toBeNull();
+  expect(document.querySelector("[data-testid='composition-material-space']")).toBeNull();
+  mount();
+  click("composition-material-place");
+  expect(document.querySelector("[data-testid='composition-asset-room-design']")).toBeNull();
+  expect(document.querySelector("[data-testid='composition-asset-inn']")).toBeNull();
 });

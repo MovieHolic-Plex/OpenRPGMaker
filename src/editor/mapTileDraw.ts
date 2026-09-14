@@ -34,10 +34,17 @@ export function drawMapTileLayers(
   tileset: TilesetDef,
   scale: number,
 ): void {
-  drawLayer(context, image, map, tileset, map.lowerTiles, scale);
-  drawStackLayer(context, image, map, tileset, "lower", scale);
-  drawLayer(context, image, map, tileset, map.upperTiles, scale);
-  drawStackLayer(context, image, map, tileset, "upper", scale);
+  drawMapTileLayer(context, image, map, tileset, "lower", scale);
+  drawMapTileLayer(context, image, map, tileset, "upper", scale);
+}
+
+/** Shared capture layer; allows real event sprites between lower and upper tiles. */
+export function drawMapTileLayer(
+  context: CanvasRenderingContext2D, image: TilesetCanvasImage, map: GameMap,
+  tileset: TilesetDef, layer: "lower" | "upper", scale: number,
+): void {
+  drawLayer(context, image, map, tileset, layer === "lower" ? map.lowerTiles : map.upperTiles, scale);
+  drawStackLayer(context, image, map, tileset, layer, scale);
 }
 
 function drawStackLayer(

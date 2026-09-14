@@ -19,6 +19,8 @@ for (const id of [room, yard])
 for (const id of [
   "compact-interior:cabinet",
   "compact-interior:wall-stove",
+  "compact-interior:bedside-table",
+  "compact-interior:single-dining",
   "compact-interior:partition-north",
   "compact-interior:partition-south",
 ])

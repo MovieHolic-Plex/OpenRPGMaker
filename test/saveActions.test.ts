@@ -19,6 +19,7 @@ const mocks = vi.hoisted(() => ({
   getPersistenceRecovery: vi.fn(() => ({ kind: "ready" as const })),
   reloadFromRemote: vi.fn(),
   getCurrent: vi.fn(),
+  isSharedDemoSession: vi.fn(() => false),
   supabaseProjectConfig: vi.fn(),
   editorGet: vi.fn(() => ({ currentMapId: "start" })),
   editorSet: vi.fn(),
@@ -34,6 +35,7 @@ vi.mock("@/project/store", () => ({
     getPersistenceRecovery: mocks.getPersistenceRecovery,
     reloadFromRemote: mocks.reloadFromRemote,
     getCurrent: mocks.getCurrent,
+    isSharedDemoSession: mocks.isSharedDemoSession,
   },
 }));
 

@@ -73,7 +73,7 @@ export function renderSpatialSpacesInspector(
         if (workingProject().spatialAuthoring) mutateSpaceDraft(mutate);
         else {
           recordProjectSnapshot();
-          store.update((project) => Object.assign(project, mutate(project)), { scope: "database", label: "공간 종류 수정" });
+          store.update((project) => Object.assign(project, mutate(project)), { scope: "database", label: "방 템플릿 수정" });
           spaceChromeState.saveState = "적용";
         }
         if (next) {

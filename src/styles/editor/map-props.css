@@ -475,6 +475,18 @@
   accent-color: var(--accent, #4A57D6);
 }
 
+/* ── 맵 배경 탭 미리보기 (캔버스가 배경을 안 그리므로 확인은 여기서) ── */
+.map-bg-preview {
+  display: block;
+  max-width: 100%;
+  max-height: 120px;
+  object-fit: cover;
+  image-rendering: pixelated;
+  border: 1px solid var(--border-color, rgba(42, 37, 33, 0.20));
+  border-radius: 4px;
+  background: var(--surface-raised, #FFFDF8);
+}
+
 /* ── 미니맵 탭 미리보기 ── */
 .map-minimap-preview {
   display: flex;

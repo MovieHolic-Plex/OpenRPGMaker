@@ -103,6 +103,43 @@ describe('focused standard and expert sidebar', () => {
     find('palette-filter-clear')?.click();
     expect(document.activeElement).toBe(find('tile-search-input'));
   });
+
+  /**
+   * 필터 바의 수는 **팔레트가 실제로 그린 칸**과 같아야 한다.
+   *
+   * 회귀(2026-09-14 실측, 합본 마을 195칸 · 표준 모드): 필터 바는 타일셋 인덱스 일치 수를
+   * 세고 팔레트는 오토타일 대표 축약·변형 숨김·레이어 가시성까지 통과시킨 뒤에 그려서,
+   * 덧그림 레이어의 「지형」 칩이 「126개 일치」라고 말하면서 시트는 0칸이었다.
+   * 「울타리」도 「11개 일치」인데 표시는 1칸이었다.
+   */
+  it('reports the count of cells it actually draws, on both layers', () => {
+    for (const layer of ['lower', 'upper'] as const) {
+      find(`layer-${layer}`)?.click();
+      for (const category of ['terrain', 'water', 'house', 'fence', 'decor'] as const) {
+        const select = find('tile-category-select');
+        if (!(select instanceof HTMLSelectElement)) throw new Error('missing category selector');
+        select.value = category;
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+        const drawn = find('tile-palette')?.querySelectorAll('.chipset-tile').length ?? -1;
+        const text = find('palette-filter-status')?.querySelector('span')?.textContent ?? '';
+        const shown = Number((text.match(/(\d+)/) ?? [])[1] ?? NaN);
+        expect({ layer, category, shown }).toEqual({ layer, category, shown: drawn });
+        find('palette-filter-clear')?.click();
+      }
+    }
+  });
+
+  it('explains why a bottom-layer-only category is empty on the upper layer', () => {
+    find('layer-upper')?.click();
+    const select = find('tile-category-select');
+    if (!(select instanceof HTMLSelectElement)) throw new Error('missing category selector');
+    select.value = 'terrain';
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(find('tile-palette')?.querySelectorAll('.chipset-tile').length).toBe(0);
+    const hint = find('palette-filter-empty')?.textContent ?? '';
+    expect(hint).toContain('바닥 레이어 전용');
+    expect(hint).toContain('전체');
+  });
   it('persists expert inspection pins without exposing or resetting them in Standard', () => {
     setEditorUiMode('expert', null);
     find('oprn-tool-overflow')?.click();

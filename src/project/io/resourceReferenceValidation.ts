@@ -106,6 +106,7 @@ export function validateSystemResources(system: SystemRecords, resourceIds: Read
 }
 
 function validateCinematicResources(label: string, sequence: CinematicSequence | undefined, resourceIds: ReadonlySet<string>): void {
+  validateOptionalResource(`${label}.musicResourceId`, sequence?.musicResourceId, resourceIds);
   for (const [index, scene] of (sequence?.scenes ?? []).entries()) {
     const sceneLabel = `${label}.scenes[${index}]`;
     if (scene.kind !== "text") validateOptionalResource(`${sceneLabel}.resourceId`, scene.resourceId, resourceIds);

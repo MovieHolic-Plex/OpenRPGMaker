@@ -1,3 +1,31 @@
+## 지역 하위 장소의 단일 계약 (2026-09-14)
+
+`RegionDesign.places`는 내부 `space/place` 둘 다 참조할 수 있다. AI 공개 참조는 모두
+`kind:place`이고 전역 고유 ID로 원래 저장 위치를 판별한다. 지역 선택→직접 장소 열기→
+부모 복귀는 설계·배치 모드에서 원래 선택과 카메라를 보존한다.
+개요 지도와 하위 직접 구성은 별도 지도다. 시공 분기는 현재 root의 composition으로 결정하며
+하위 설계의 composition 존재만으로 지역·세계 개요를 합치지 않는다.
+검증: `spatialPlaceContract.test.ts`(그린 방과 지역 길, save/load/recompile),
+`spatialUnifiedPlaces.test.ts`(양 모드 탐색), `spatialMixedComposition.test.ts`(세계 개요와 직접 구성 지역).
+
+## 직접 그린 방을 포함하는 다층 장소 (2026-09-14)
+
+원본 PlaceDesign에 composition이 없는 건물은 자식 방에 composition이 있어도
+`compilePlaces`의 층별 시공을 사용한다. `placeLayout`은 직접 구성한 자식 전체를
+하나의 표면으로 굽고 내부 projection/ports를 함께 전달한다. 실내는 독립 지도,
+야외는 같은 층·타일셋 합성 규칙을 유지한다. 동결 자식의 위치·오브젝트 이벤트·
+양방향 transfer·소유권 digest를 보존하며 수동 변경 영역은 재시공 때 거부한다.
+회귀: `test/spatialPlaceComposedFloors.test.ts`와 기존 `test/spatialPlaceCompiler.test.ts`.
+
+## 장소 재료의 포함 관계 (2026-09-14)
+
+`composition.members`의 `space`와 `place`는 모두 다른 `space/place`를 포함할 수 있다.
+`COMPOSITION_KINDS`가 편집기와 도메인 검증의 공통 허용표다. 전역 ID 고유성·전체 포함 그래프의
+순환 검사는 그대로 유지한다. 지역/세계의 상위 종류를 장소에 넣는 것은 거부한다.
+저장 구조의 키·ID·스냅샷을 이 변경 때문에 다시 쓰지 않는다. 같은 지도 구성은 동일 타일셋과
+0층 조건, 자식의 전체 크기 검사를 통과해야 시공된다. 회귀는 `test/spatialMixedComposition.test.ts`의
+중첩 장소 시공→직렬화→재로드→재시공 및 순환 거부 검사다.
+
 ## 혼합 하위 재료 구성 (2026-09-13)
 
 공간·장소·지역·세계 설계에 선택적 `composition`을 추가한다. 기존 project v4/spatial v1
@@ -206,7 +234,7 @@ durable receipt recovery, cross-device guarantee, or P2-P5 implementation.
 
 - `CinematicMotion = "none" | "fade" | "pan" | "zoom"`.
 - `CinematicScene` is a discriminated union with common `id`, `narration`, optional `narrationAudioResourceId`, and `durationMs`. A `text` scene has no media or motion field; an `image` scene requires `resourceId` and `motion`; a `video` scene requires `resourceId` and has no motion field.
-- `CinematicSequence = { enabled: boolean; skippable: boolean; scenes: CinematicScene[] }`.
+- `CinematicSequence = { enabled: boolean; skippable: boolean; musicResourceId?: string; scenes: CinematicScene[] }`. `musicResourceId` (2026-09-14) is the sequence-wide background music: the player loops it under every scene from sequence start and stops/releases it on completion, skip or abort, independently of the per-scene `narrationAudioResourceId` and of the scene media state machine (a blocked or missing track never stalls the scenes). It is trimmed and omitted when empty by normalization, validated as a non-blank string by `shapeDatabaseFields`, existence-checked by `resourceReferenceValidation`, and collected by the web export string walk like any other resource reference.
 - `GameOverSettings` has optional `sequence`, `title`, `message`, `retryLabel`, `titleLabel`, and `backgroundResourceId` fields.
 
 `CINEMATIC_SCENE_LIMIT = 100` and `CINEMATIC_DURATION_MAX_MS = 120000` are exported from the focused module. `normalizeCinematicSequence(sequence: CinematicSequence): CinematicSequence` and `normalizeGameOverSettings(settings: GameOverSettings): GameOverSettings` accept typed records; the `normalizeSystemRecords` whitelist calls them only for present settings. Missing settings stay missing, empty authored records/sequences and disabled content survive, and normalization preserves ordering and exact text (including blank strings and whitespace). IDs are trimmed; optional empty IDs are omitted on typed direct normalization. Normalization does not mutate input and is idempotent; it is not a replacement for wire validation.
@@ -508,6 +536,40 @@ Real browser script: `scripts/qa/issue693-media.mjs`; default runs actual showca
 quota/cancel/network-denial paths with all remote writes blocked. Only a lead with
 authorization may run `--permit-new-remote-project` to prove an 8 MiB file's exact
 bytes after real remote reload and Test Play. The default is not remote proof.
+
+## 공용 첫 방문 데모 — 읽기 전용 저장 계약 (2026-09-14)
+
+첫 방문자가 바로 보는 정본 데모는 전용 Supabase 행
+`rpg-zzu-first-visit-demo`(「큰 강호 장터 마을」)다. 배포 기본(gallery) 행을 쓰지
+않는 이유: 공유 행은 다른 탭의 자동저장이 덮어쓰는 실측 사고가 있다
+(`openwiki/large-village-generation.md`).
+
+- **읽기 전용 세션.** `store.loadSharedDemo()` 와 `store.load()`(`?project=` 또는
+  작업 선택으로 데모 행을 연 경우) 모두 `writeAuthority = null`,
+  `remotePersistenceEnabled = false`,
+  `remotePersistenceDisabledReason = "shared-demo"`, `persistedBaseline = null` 로
+  끝낸다. 방문자 편집은 메모리에만 머물고 `scheduleAutoSave`·`persistCurrent`·
+  `flush`·`reconnectRemotePersistence`·`reloadFromRemote` 는 전부 기존
+  `remotePersistenceEnabled` 게이트에서 멈춘다 — 새로운 쓰기 경로를 만들지 않고
+  비활성 이유(`DbPersistenceDisabledReason` 에 `"shared-demo"` 추가)만 늘렸다.
+- **URL·선택 저장 오염 금지.** `loadSharedDemo` 는 `syncProjectToUrl` /
+  `saveSupabaseSelectedProjectId` 를 호출하지 않는다 — 다음 방문도 첫 방문
+  게이트를 다시 타고, 방문자의 기존 작업 선택을 데모가 덮지 않는다.
+- **포크만이 유일한 쓰기 출구.** `forkSharedDemoToEditableCopy` →
+  `loadNewRemoteProjectTransactionally(project)`. 데모 세션은 flush 할 원격
+  원본이 없으므로(`dev-showcase` 와 같은 이유로) 소스 flush 단계를 건너뛰고,
+  새 project id 에만 저장·재로드 검증 후 커밋한다. 데모 id 를 대상으로 한
+  전환·발급은 `configuration` 오류로 거부된다. 저장 버튼·미디어 가져오기도
+  데모 세션에서는 같은 사본 만들기 안내로 연결한다.
+- **발행.** `scripts/publish-first-visit-demo.mts` 가
+  `buildLargeRiverMarketVillageProject` 산출물을 QA(집 20채·NPC 53·시장·낚시·
+  물길) 후 실제 Supabase 경로로 저장하고 재로드 일치를 증명한다. 스토어를 거치지
+  않으므로 읽기 전용 가드의 영향을 받지 않는다. 증거는
+  `output/evidence/first-visit-demo/`(적용 실행은 `{"saved":true,"reloaded":true}`).
+- **계약 테스트:** `test/sharedDemoStore.test.ts` — 데모 로드 시 읽기 전용
+  상태, dirty flush → `disabled` + 데모 행 무쓰기, 딥링크 경로도 동일,
+  트랜잭셔널 포크가 새 id 로 저장·검증·커밋하고 데모 행에는 POST 가 가지
+  않음, 데모 id 대상 전환 거부.
 
 ## Project schema & persistence
 - **Retained map planning items (2026-09-10, OPRN-019):** optional `GameMap.planningItems` is authored, human-readable planning data owned by `src/project/mapPlanningItems.ts`. Each row is `{id, text, status:"active"|"retired", origin:"user"|"spec", createdAt?, updatedAt?, specAssetId?}` with ids of the form `pi_N`, text folded to single spaces and capped at 400 characters, and at most 200 rows per map. The field is **absent** when unauthored, so legacy project JSON stays byte-stable and `SCHEMA_VERSION` is **not** bumped. `validateMaps` in `io/shapeEventFields.ts` is **fail-closed** at the JSON boundary — a non-array, blank id/text, duplicate id, unknown `status`/`origin`, non-string timestamp, or over-limit array rejects the load rather than silently dropping a sentence the user chose to keep. After shape checks, `normalizeProjectPlanningItems` (in `io/shape.ts`, beside `normalizeStoryFlags`) re-normalizes text and deletes the field when nothing survives. `serialize` passes the field through unchanged, so export (`.oprn` / project JSON) → import round-trips it, and Supabase load/save need no migration. Editor writes go only through `src/editor/mapPlanningActions.ts` as `{scope:"map", mapId}` updates. This field is authoring metadata for the assistant UX only: no runtime, session, save-slot, spec-gate, approval-policy or validator code reads it, and it must not become mandatory prompt memory — reuse is an explicit per-turn user choice (`openwiki/editor-ai-panel.md`). Tests: `test/mapPlanningItems.test.ts` (roundtrip, empty-field deletion, fail-closed cases), `test/mapPlanningReuse.test.ts` (reload through `store.replaceProject`, per-map scope, deletion).

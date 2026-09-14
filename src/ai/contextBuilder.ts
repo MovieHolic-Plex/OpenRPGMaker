@@ -130,6 +130,8 @@ const HIGH_LEVEL_TOOL_ROUTING_BLOCK = [
   "## 고수준 툴 우선",
   "고수준 툴 우선 — 트랩/즉사=place_trap 또는 make_horror_loop, 체크포인트=place_trap의 checkpoint 관례, 퍼즐=compile_puzzle, 조사=place_examine_hotspots 또는 make_gallery_room(이브 갤러리 원큐), 컷신=script_cutscene 또는 script_cutscene_preset(투더문 프리셋), 추격=make_chase_scene, NPC=place_npc/make_villager(상태별 다중 페이지. 대사 시 faceset changeFace 자동), 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명=set_lighting_volume/set_scene_mood, 수역=fill_region(circle+물 그룹), 야외 집=author_house(interior:\"linked-interior\" 기본, kind:\"single\" 또는 kind:\"lots\"), **마을=author_village(target:{kind:\"existing\",mapId} 또는 target:{kind:\"new\",mapId,name,width,height}, countPolicy:\"exact\", bounds 16x16 이상·기존맵 전체 재시공은 fullMap:true). 나무=list_village_tree_assets/plant_tree_clusters(broadleaf-2x2)**, 성채=build_castle, **모든 신규 실내(시설·일반 방)=get_concept_facility → place_concept(query, plan). 타일셋 개념 꾸러미가 정본이며 사용자가 데이터베이스에서 고친 나무가 시공에 쓰인다. 방 종류 requiredRoles 로 여관을 합성하지 마라. 실내/방 맵 신규=place_concept(반드시 새 mapId·이름); 방 세션도 개념 꾸러미의 장소·물건을 읽는다. 기존 실내 맵 수정=그 mapId로 furnish_interior_space·fill_region·tile_erase·place_props(대상은 list_interior_room_sessions). 기존 맵 id로 세션 시작은 그 맵을 통째로 지우므로 map-exists로 거부된다. 실내 요청에는 author_house(exterior-only)/author_village 금지 — 다만 들어가서 걷는 집은 author_house(interior:\"linked-interior\")가 정답**, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.",
   "upsert_event/upsert_common_event는 위에 없는 커스텀 로직 전용.",
+  "- 던전·광산·수정굴은 run_dungeon_room_pipeline 또는 start_dungeon_room_session의 connected 경로를 사용한다. 방의 역할·크기와 연결(graph)을 먼저 설계하고 character/seed를 전달한다. generate_map(cave)는 고정 entrance/pois 없이 호출하면 같은 생성기를 사용한다. 기존 맵은 명시적 교체 요청 없이 재생성하지 않는다. 생성 후 evaluate_dungeon_room(mapId)와 전체 show_map_region으로 구조와 미관을 각각 검토한다.",
+  "- 집 내부는 기존 place_concept/interiorPlan 경로를 사용한다. 방 역할·문·동선은 설계하되 동굴 윤곽·절벽 생성기를 실내에 적용하지 않는다.",
 ].join("\n");
 
 const INTRO = [
@@ -211,6 +213,7 @@ const INTRO = [
   "22. 스위치/변수를 새로 쓰기 전에 declare_story_flag로 의미를 등록하세요.",
   "23. 이벤트가 왜 안 나오는지는 explain_event로 확인하세요.",
   "24. 다중 맵 월드는 plan_world→build_world→맵별 콘텐츠 순서로.",
+  "25. 게임 시작 오프닝 연출은 system.opening(set_opening·edit_opening) 이다 — 이벤트 컷신으로 대신하지 마세요. 그림은 배경화·타이틀 아트를 고르거나 generate_opening_image 로 만듭니다.",
 ].join("\n");
 
 function summarySection(project: Project): string {

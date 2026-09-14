@@ -1,3 +1,4 @@
+import { publicSpatialValue } from "@/editor/tools/spatialPlaceContract";
 import { describe, expect, it } from "vitest";
 import { runTool, runToolDefinition } from "@/editor/tools/toolRunner";
 import { allTools } from "@/editor/tools/toolRegistry";
@@ -75,7 +76,7 @@ describe("registered canonical spatial tools", () => {
     const result = runTool({ project }, "get_spatial_design", { kind: "space", id: spaceDesign });
     // Then
     expect(result.ok, result.summary).toBe(true);
-    expect(result.data).toMatchObject({ kind: "space", design: { id: spaceDesign, revision: 1 }, resolved: { snapshot: { root: { id: spaceDesign } } } });
+    expect(result.data).toMatchObject({ kind: "place", design: { id: spaceDesign, revision: 1 }, resolved: { snapshot: { root: { id: spaceDesign } } } });
     expect(JSON.stringify(project)).toBe(before);
   });
   it("returns a narrow design body without the resolved closure when asked", () => {
@@ -85,7 +86,7 @@ describe("registered canonical spatial tools", () => {
     const result = runTool({ project }, "get_spatial_design", { kind: "space", id: spaceDesign, resolved: false });
     // Then — the body alone is the upsert revision round-trip payload.
     expect(result.ok, result.summary).toBe(true);
-    expect(result.data).toMatchObject({ kind: "space", design: { id: spaceDesign, revision: 1 } });
+    expect(result.data).toMatchObject({ kind: "place", design: { id: spaceDesign, revision: 1 } });
     expect(result.data).not.toHaveProperty("resolved");
   });
   it("discovers tagged exterior objects beyond prompt samples and preserves complete place bodies", () => {
@@ -118,7 +119,7 @@ describe("registered canonical spatial tools", () => {
     })] });
     const read = runTool({ project }, "get_spatial_design", { kind: "place", id: savedFacility.id, resolved: false });
     expect(read.ok, read.summary).toBe(true);
-    expect(read.data).toEqual({ kind: "place", design: savedFacility });
+    expect(read.data).toEqual(publicSpatialValue({ kind: "place", design: savedFacility }));
     expect(JSON.stringify(project)).toBe(before);
     // A get body remains directly usable for a source revision update, including facility kind and child geometry.
     const ctx = { project };

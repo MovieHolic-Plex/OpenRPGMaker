@@ -3,14 +3,18 @@ import { withEnvironment, withShape, withSize, type SpaceDraftTarget } from "@/e
 import type { SpaceDesign } from "@/project/spatial/types";
 import { el } from "@/util/dom";
 
-const SHAPES: readonly SpaceDesign["shape"][] = ["rect", "l", "alcove"];
+const SHAPES: readonly SpaceDesign["shape"][] = ["rect", "l", "alcove", "l-right", "bay", "notch", "cross"];
 
 export function spaceShapeControls(space: SpaceDesign, target: SpaceDraftTarget, rerender: () => void): HTMLElement {
+  if (space.environment === "interior" && space.interiorLayout) return el("p", {
+    text: `${space.interiorLayout.rooms.length}개 방의 외곽을 합친 구조입니다.`,
+    dataset: { testid: "spatial-composed-footprint" },
+  });
   return el("div", {
     class: "spatial-space-shapes",
     children: SHAPES.map((shape) => el("button", {
       class: `spatial-source-chip${space.shape === shape ? " is-active" : ""}`,
-      text: ({ rect: "직사각형", l: "L자", alcove: "홈 있는 방" })[shape],
+      text: ({ rect: "직사각형", l: "L자", alcove: "북쪽 알코브", "l-right": "반대 ㄱ자", bay: "남쪽 돌출방", notch: "벽 돌출 홈", cross: "십자형 방" })[shape],
       attrs: { type: "button", "aria-pressed": String(space.shape === shape) },
       dataset: { testid: `spatial-shape-${shape}` },
       on: { click: () => { mutateWorkingSpace(target, (current) => withShape(current, shape)); rerender(); } },

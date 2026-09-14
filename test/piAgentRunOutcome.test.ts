@@ -4,6 +4,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const h = vi.hoisted(() => ({
+  planError: false,
+  harmony: true,
+  harmonyError: false,
   requests: [] as Record<string, unknown>[],
   results: [] as { project: unknown; toolCalls?: number; toolErrors?: number }[],
   errorEvents: [] as string[],
@@ -18,9 +21,18 @@ const h = vi.hoisted(() => ({
   piApply: "auto" as "auto" | "review",
 }));
 
+vi.mock("@/ai/ultrabrainReview", () => ({ reviewMapHarmony: async () => {
+  if (h.harmonyError) throw new Error("image unavailable");
+  return [{ mapId: "map_a", harmonious: h.harmony, summary: "review", findings: h.harmony ? [] : ["density"] }];
+} }));
 vi.mock("@/ai/piAgent/client", () => ({
   runPiAgentViaCompanion: async (request: Record<string, unknown>, options?: { onEvent?: (event: unknown) => void }) => {
     h.requests.push(request);
+    if (request.readOnly && String(request.task).startsWith("[계획 턴]")) {
+      if (h.planError) options?.onEvent?.({ type: "error", message: "plan failed" });
+      options?.onEvent?.({ type: "assistant", text: "1. 요청 범위에 변경을 적용하고 검증한다." });
+      return { type: "done", project: request.project, changedKeys: [], stats: { ms: 1, turns: 1, toolCalls: 0, toolErrors: 0 } };
+    }
     const next = h.results.shift() ?? { project: request.project };
     for (const message of h.errorEvents.splice(0)) options?.onEvent?.({ type: "error", message });
     options?.onEvent?.({ type: "start", provider: "p", model: "m", toolCount: 1 });
@@ -38,9 +50,14 @@ vi.mock("@/ai/piAgent/client", () => ({
   },
 }));
 vi.mock("@/editor/panels/aiTeamBoard", () => ({
-  createTeamBoard: () => ({ root: { nodeType: 1 } as unknown as HTMLElement, update: (state: { phase?: string; applied?: string | null }) => { h.boardStates.push(state); }, setReview: (review: { onDiscard: () => void } | null) => { h.outcomes.push(review); } }),
+  createTeamBoard: () => ({ root: { nodeType: 1 } as unknown as HTMLElement, update: (state: { phase?: string; applied?: string | null }) => { h.boardStates.push(state); }, setReview: (review: { onDiscard: () => void; preview?: unknown } | null) => { h.outcomes.push(review); } }),
 }));
-vi.mock("@/editor/panels/aiChangePreview", () => ({ changePreviewChips: () => [] }));
+vi.mock("@/editor/panels/aiChangePreview", () => ({
+  changePreviewChips: () => [],
+  changeChipsWithAreas: () => [],
+  // 보드 검토 카드는 «적용 전» 카드 요소를 받는다 — 이 테스트는 그 전달 사실만 본다.
+  renderChangePreviewCard: (input: Record<string, unknown>) => ({ nodeType: 1, dataset: { state: input.state } }) as unknown as HTMLElement,
+}));
 vi.mock("@/ai/piAgent/teamActivity", () => ({ publishTeamActivity: () => {} }));
 vi.mock("@/ai/piAgent/teamSpecStore", () => ({ loadTeamSpec: () => ({ version: 1, orchestratorNotes: "", members: [] }) }));
 vi.mock("@/ai/piAgent/mapBundle", () => ({
@@ -76,10 +93,11 @@ const harness = () => {
 };
 
 beforeEach(() => {
+  h.planError = false;
   h.requests.length = 0; h.results.length = 0; h.bubbles.length = 0;
   h.assistantTexts.length = 0; h.boardStates.length = 0;
   h.project = { maps: { map_a: { id: "map_a", name: "A", width: 4, height: 4 } } };
-  h.piApply = "auto";
+  h.piApply = "auto"; h.harmony = true; h.harmonyError = false;
 });
 
 describe("Pi 경로 실행 결과 4축", () => {
@@ -97,6 +115,15 @@ describe("Pi 경로 실행 결과 4축", () => {
     expect((last as { visualDelivery?: unknown }).visualDelivery).toBeUndefined();
   });
 
+  it.each(["negative", "unavailable"])("Ultrabrain %s leaves a manual draft even in auto mode", async kind => {
+    h.harmony = false;
+    h.harmonyError = kind === "unavailable";
+    h.results.push({ project: projectWith("바뀜") });
+    const { outcomeCalls, surface } = harness();
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "바꿔라" }, surface());
+    expect(outcomeCalls.at(-1)).toMatchObject({ delivery: "draft" });
+    expect(h.boardStates.at(-1)?.phase).not.toBe("적용됨");
+  });
   it("검토 대기는 draft, 버리면 no-change로 갈아엎는다", async () => {
     h.piApply = "review";
     h.results.push({ project: projectWith("검토"), toolErrors: 0 });
@@ -117,6 +144,10 @@ describe("Pi 경로 실행 결과 4축", () => {
 
     const last = outcomeCalls.at(-1)!;
     expect(last).toMatchObject({ execution: "response-final", goal: "unassessed", delivery: "draft" });
+
+    // 적용 전에도 비교 카드가 검토 자리에 선다 — 없으면 사용자는 빈 카드로 결정해야 했다.
+    const review = h.outcomes.at(-1) as { preview?: { dataset?: { state?: string } } } | null;
+    expect(review?.preview?.dataset?.state).toBe("proposed");
   });
 
   it("바뀐 것이 없으면: response-final + no-change", async () => {
@@ -139,7 +170,7 @@ describe("Pi 경로 실행 결과 4축", () => {
 
     expect(h.boardStates.at(-1)?.phase).toBe("완료");
     expect(h.boardStates.at(-1)?.phase).not.toBe("적용됨");
-    const assistantIndex = h.bubbles.findIndex((line) => line.startsWith("assistant:"));
+    const assistantIndex = h.bubbles.findIndex((line) => line.startsWith("assistant:") && !line.startsWith("assistant:Ultrabrain 계획"));
     const systemIndex = h.bubbles.findIndex((line) => line.startsWith("system:"));
     expect(assistantIndex).toBeGreaterThanOrEqual(0);
     expect(h.bubbles[assistantIndex]).toContain("빈 맵(map_blank_start)");
@@ -190,5 +221,27 @@ describe("Pi 경로 실행 결과 4축", () => {
     expect(h.bubbles.some((line) => line.includes("적용했습니다") && line.includes("범위 밖 1건 버림") && line.includes("switches"))).toBe(true);
     // outcome 축 자체는 적용 성공을 그대로 말한다 — spill 은 성공을 지우지 않는다(4축 독립).
     expect(outcomeCalls.at(-1)).toMatchObject({ delivery: "applied", execution: "response-final" });
+  });
+});
+
+
+describe("model role routing", () => {
+  it("does not execute a partial or failed plan", async () => {
+    h.planError = true;
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface());
+    expect(h.requests).toHaveLength(1);
+    expect(h.bubbles.some(text => text.includes("plan failed"))).toBe(true);
+  });
+  it("plans with Ultrabrain before Deep edits", async () => {
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface());
+    expect(h.requests).toHaveLength(2);
+    expect(h.requests[0]).toMatchObject({ model: "gemini-3.8-flash", thinkingLevel: "high", readOnly: true });
+    expect(h.requests[1]).toMatchObject({ model: "m", thinkingLevel: "high" });
+    expect(h.requests[1]!.task).toContain("Ultrabrain 실행 계획");
+  });
+  it("planOnly always disables writes and never starts Deep", async () => {
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "계획" }, harness().surface(), { planOnly: true });
+    expect(h.requests).toHaveLength(1);
+    expect(h.requests[0]).toMatchObject({ model: "gemini-3.8-flash", thinkingLevel: "high", readOnly: true });
   });
 });

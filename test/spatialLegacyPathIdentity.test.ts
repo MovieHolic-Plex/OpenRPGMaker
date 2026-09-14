@@ -53,7 +53,7 @@ describe("canonical legacy opaque path identity", () => {
     // Then: exact object multiplicities and membership survive, without rewriting source IDs.
     expect(lookup.ok, lookup.summary).toBe(true);
     expect(lookup.data).toMatchObject({ canonical: { kind: "place", design: { id: "collision-root", children: [
-      { id: `${left}/${right}`, source: { kind: "space", id: "room-one" } },
+      { id: `${left}/${right}`, source: { kind: "place", id: "room-one" } },
       { id: left, source: { kind: "place", id: "nested" } },
     ] } } });
     expect(Object.values(overlay.rooms).map(room => room.things.map(thing => thing.objectId))).toEqual([

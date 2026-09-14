@@ -16,7 +16,9 @@ export default defineConfig({
     // 의도적으로 돌릴 때: node scripts/run-vitest.mjs run --config vitest.live.config.ts
     // *.bun.test.ts 는 bun:test 을 import 하므로 vitest 가 수집하면 무조건 실패한다.
     // 전원 경로는 npm run test:oh-my-pi (bun test) 다.
-    exclude: [...configDefaults.exclude, "test/lakeVillageRebuildFinal.test.ts", "test/**/*.bun.test.ts"],
+    // `*.browser.test.ts` 는 verify-gates 의 **browser 스테이지**가 따로 돌린다(동시성 낮춤).
+    // 32워커 무리에 섞이면 Chromium 부팅이 준비 마감을 넘겨 늘 이 파일이 회귀로 잡혔다.
+    exclude: [...configDefaults.exclude, "test/lakeVillageRebuildFinal.test.ts", "test/**/*.bun.test.ts", "test/**/*.quarantine.test.ts", "test/**/*.browser.test.ts"],
     globals: false,
     testTimeout: 15_000,
     hookTimeout: 90_000,

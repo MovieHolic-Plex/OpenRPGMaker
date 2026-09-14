@@ -4,7 +4,7 @@ import {
   type SupabaseProjectEnv,
 } from "./supabaseProjectConfig";
 
-export type DbPersistenceDisabledReason = "dev-showcase" | "load-failed";
+export type DbPersistenceDisabledReason = "dev-showcase" | "load-failed" | "shared-demo";
 
 export type DbPersistenceStatus =
   | { readonly kind: "disabled"; readonly reason: DbPersistenceDisabledReason }

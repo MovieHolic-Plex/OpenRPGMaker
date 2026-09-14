@@ -12,6 +12,12 @@
 //
 // 손잡이는 데크 상단 레일(.ai-deck-rail)이다. 버튼·팝오버·링크 같은 상호작용 자식은
 // 제외하고, 더블클릭은 저장 위치를 지워 기본 자리(우하단)로 되돌린다.
+//
+// 제스처 계약 (2026-09-14 보강, 셋 다 실측 결함):
+//   · `DRAG_START_THRESHOLD_PX` 를 넘어야 드래그다 — 1px 지터 클릭이 위치를 저장하던 것을 막는다.
+//   · 릴리스 하나로 끝난다 — `pointerup`·`pointercancel`·`blur`·버튼이 풀린 `pointermove`.
+//     창 밖 릴리스는 `pointerup` 을 주지 않아 `is-dragging`·grabbing 이 남고 이동이 저장되지 않았다.
+//   · 끌 수 없는 상태(접힘·기록 열림·스튜디오)에서는 `grab` 커서도 힌트도 달지 않는다.
 import { clearDeckPosition, loadDeckPosition, saveDeckPosition, type DeckPosition } from "./aiPanelLayout";
 
 export interface DeckMoveChromeDeps {
@@ -56,6 +62,13 @@ const DRAG_BLOCK_SELECTORS = [
 const DRAG_SURFACE_SELECTORS = [".ai-deck-rail-who", ".ai-deck-rail-state", ".ai-deck-rail-spacer"] as const;
 
 const DRAG_HINT = "드래그해서 조수 옮기기 · 더블클릭하면 기본 위치";
+
+/**
+ * 드래그로 인정하는 최소 이동(px). 이 아래는 클릭이다 — 1px 지터 클릭이 위치를 굳히던 실측 결함
+ * (2026-09-14: 1px 이동 후 `{"right":15,"bottom":15}` 저장)을 막는다. 임계값은 축별 최대 이동으로
+ * 재고, 넘는 순간 시각 상태(`is-dragging`·grabbing)를 세운다 — 그 전에는 아무 흔적도 남기지 않는다.
+ */
+const DRAG_START_THRESHOLD_PX = 3;
 
 function clampNumber(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
@@ -108,11 +121,25 @@ export function createDeckMoveChrome(deps: DeckMoveChromeDeps): DeckMoveChrome {
 
   // 힌트는 손잡이 표면에만 단다 — 레일 자체에 달면 레일 아래 붙은 팝오버 항목 위에서도
   // 「드래그해서…」 툴팁이 떠서 열린 메뉴를 훼방한다.
-  for (const selector of DRAG_SURFACE_SELECTORS) {
-    for (const zone of Array.from(rail.querySelectorAll(selector))) {
-      (zone as HTMLElement).title = DRAG_HINT;
+  //
+  // 문구는 **지금 끌 수 있을 때만** 붙인다. 기록 열림(도킹)·스튜디오·접힘에서는 데크가 그대로
+  // 보이는데 pointerdown 은 거절되므로 안내가 거짓말이 된다(2026-09-14 실측: `is-history-open`
+  // 데크 503×835 위에서 힌트와 `grab` 커서가 살아 있었고, 끌면 아무 일도 없었다).
+  // 상태는 hover 진입 시점에 다시 읽는다 — 패널 클래스는 이 모듈이 소유하지 않아 관측할 대상이 없다.
+  // 빈 문자열도 그대로 심는다 — 빈 title 속성은 브라우저가 툴팁을 띄우지 않으므로 지움과 같다.
+  const syncHint = (): void => {
+    const hint = movable() ? DRAG_HINT : "";
+    for (const selector of DRAG_SURFACE_SELECTORS) {
+      for (const zone of Array.from(rail.querySelectorAll(selector))) {
+        const handle = zone as HTMLElement; // querySelectorAll 은 Element 를 준다 — title 은 HTMLElement 속성
+        handle.setAttribute("title", hint);
+      }
     }
-  }
+  };
+  syncHint();
+  rail.addEventListener("pointerenter", syncHint);
+
+  const win = typeof window === "undefined" ? null : window;
 
   let activeDragCleanup: (() => void) | null = null;
   rail.addEventListener("pointerdown", (event: PointerEvent) => {
@@ -132,26 +159,17 @@ export function createDeckMoveChrome(deps: DeckMoveChromeDeps): DeckMoveChrome {
     const startBottom = host.height > 0 && surface.height > 0 ? host.bottom - surface.bottom : (position?.bottom ?? EDGE_MARGIN_PX);
     const startX = event.clientX;
     const startY = event.clientY;
+    /** 임계값을 넘었는가 = 드래그인가. 넘기 전에는 시각 상태도 저장도 없다. */
     let moved = false;
-    panel.classList.add("is-dragging");
     const body = typeof document === "undefined" ? null : document.body;
     // 포인터가 레일 밖으로 나가도 grabbing 을 유지한다 — 호버 대상 커서가 우선하므로
     // body 에 직접 심고, 기존 값이 있으면 드래그 뒤 되돌린다.
     const previousCursor = body?.style.getPropertyValue("cursor") ?? "";
-    body?.style.setProperty("cursor", "grabbing");
-    const onMove = (move: PointerEvent): void => {
-      moved = true;
-      // right/bottom 앵커라 포인터 dx·dy 부호가 반전된다 — 오른쪽으로 끌면 right 가 줄어든다.
-      position = clampPosition({
-        right: startRight - (move.clientX - startX),
-        bottom: startBottom - (move.clientY - startY),
-      });
-      writeVars(position);
-    };
     const cleanupDrag = (): void => {
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerup", onUp);
-      window.removeEventListener("pointercancel", onUp);
+      win?.removeEventListener("pointermove", onMove);
+      win?.removeEventListener("pointerup", onUp);
+      win?.removeEventListener("pointercancel", onUp);
+      win?.removeEventListener("blur", onUp);
       panel.classList.remove("is-dragging");
       if (body) {
         if (previousCursor) body.style.setProperty("cursor", previousCursor);
@@ -159,14 +177,39 @@ export function createDeckMoveChrome(deps: DeckMoveChromeDeps): DeckMoveChrome {
       }
       if (activeDragCleanup === cleanupDrag) activeDragCleanup = null;
     };
+    /** 릴리스 하나로 끝난다. `blur`·`pointercancel`·버튼 풀린 move 도 같은 몸을 쓴다. */
     const onUp = (): void => {
       cleanupDrag();
       if (moved && position) saveDeckPosition(position);
     };
+    const onMove = (move: PointerEvent): void => {
+      // 창 밖에서 버튼을 놓으면 pointerup 이 오지 않는다 — 버튼이 풀린 move 를 릴리스로 읽는다.
+      // (이 경로가 없으면 페이지로 돌아온 뒤 첫 move 에서 그대로 끌려 다닌다.)
+      if (typeof move.buttons === "number" && move.buttons === 0) {
+        onUp();
+        return;
+      }
+      const dx = move.clientX - startX;
+      const dy = move.clientY - startY;
+      if (!moved) {
+        // 클릭(지터 포함)은 드래그가 아니다 — 임계값을 넘는 순간에만 제스처를 연다.
+        if (Math.max(Math.abs(dx), Math.abs(dy)) < DRAG_START_THRESHOLD_PX) return;
+        moved = true;
+        panel.classList.add("is-dragging");
+        body?.style.setProperty("cursor", "grabbing");
+      }
+      // right/bottom 앵커라 포인터 dx·dy 부호가 반전된다 — 오른쪽으로 끌면 right 가 줄어든다.
+      position = clampPosition({ right: startRight - dx, bottom: startBottom - dy });
+      writeVars(position);
+    };
     activeDragCleanup = cleanupDrag;
-    window.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerup", onUp);
-    window.addEventListener("pointercancel", onUp);
+    win?.addEventListener("pointermove", onMove);
+    win?.addEventListener("pointerup", onUp);
+    win?.addEventListener("pointercancel", onUp);
+    // 창이 초점을 잃으면(Alt-Tab, 창 밖 릴리스) pointerup 이 영원히 오지 않는다. 그때 상태를 그대로
+    // 두면 is-dragging(폭 transition 해제·텍스트 선택 차단)과 grabbing 커서가 남고, 눈에 보이는
+    // 이동이 저장되지 않아 새로고침에서 되돌아갔다(2026-09-14 실측). blur 를 릴리스로 읽는다.
+    win?.addEventListener("blur", onUp);
   });
 
   // 더블클릭은 기본 위치 복귀 — 끌어 놓은 자리가 마음에 안 들 때 되돌리는 유일한 출구다.
@@ -189,7 +232,6 @@ export function createDeckMoveChrome(deps: DeckMoveChromeDeps): DeckMoveChrome {
   positionObserver?.observe(deck);
   positionObserver?.observe(hostEl());
   const onWindowResize = (): void => applyPosition();
-  const win = typeof window === "undefined" ? null : window;
   win?.addEventListener("resize", onWindowResize);
 
   applyPosition();

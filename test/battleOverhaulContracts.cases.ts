@@ -197,7 +197,7 @@ describe("shared MP validation and target UI", () => {
     expect(after.timeline).toHaveLength(before.timeline.length);
   });
 
-  it("renders insufficient skills as native disabled controls with the shared cost reason", () => {
+  it("keeps insufficient skills on the cursor path and shows the cost reason on the row", () => {
     vi.useFakeTimers();
     const project = battleProject();
     clearLearnedSkills(project);
@@ -228,18 +228,30 @@ describe("shared MP validation and target UI", () => {
     const button = controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-skill']");
     const actor = runtime.snapshot().actors[0];
     const cost = battleSkillMpCost(fire, actor?.maxMp ?? 0);
-    expect(button?.disabled).toBe(true);
-    // 키보드 전용 포인터 계약: 네이티당 title 툴팁은 마우스 어포던스이묀로 금지다.
-    // 버튼이 쓰지 못하는 사유와 필요 MP 는 aria-label 로만 전달한다
+    // `disabled` 가 아니라 `aria-disabled` 다 — 커서가 서야 사유를 읽는다(적대 리뷰 #3).
+    expect(button?.disabled).toBe(false);
+    expect(button?.getAttribute("aria-disabled")).toBe("true");
+    expect(button?.dataset.battleCommandInert).toBe("true");
+    // 키보드 전용 포인터 계약: 네이티브 title 툴팁은 마우스 어포던스이므로 금지다.
+    // 사유와 필요 MP 는 aria-label 과 **눈에 보이는 사유 줄** 양쪽으로 전달한다
     // (battleSkillUseFailureLabel: "MP 부족 (필요 N / 현재 M)").
     expect(button?.title ?? "").toBe("");
     expect(button?.getAttribute("aria-label")).toContain(`필요 ${cost}`);
     expect(button?.getAttribute("aria-label")).toContain("MP 부족");
+    expect(button?.textContent ?? "").toContain("MP 부족");
 
-    pressKey("ArrowDown");
-    const cursor = controller.root.querySelector<HTMLButtonElement>("[data-battle-command-cursor='true']");
-    expect(cursor?.disabled).toBe(false);
-    expect(cursor?.dataset.testid).not.toBe("actor-command-skill");
+    // 커서는 비활성 행을 건너뛰지 않는다. 확인키를 눌러도 아무 일이 일어나지 않는다.
+    const phaseBefore = runtime.snapshot().phase;
+    const visited: string[] = [];
+    for (let step = 0; step < 8; step += 1) {
+      const cursor = controller.root.querySelector<HTMLButtonElement>("[data-battle-command-cursor='true']");
+      if (cursor?.dataset.testid) visited.push(cursor.dataset.testid);
+      if (cursor?.dataset.testid === "actor-command-skill") break;
+      pressKey("ArrowDown");
+    }
+    expect(visited).toContain("actor-command-skill");
+    pressKey("Enter");
+    expect(runtime.snapshot().phase).toBe(phaseBefore);
     controller.destroy();
   });
 

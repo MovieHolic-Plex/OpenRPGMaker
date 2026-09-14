@@ -35,7 +35,7 @@ const placement: Parser<S.SpatialObjectSlot["placement"]> = (v, p) => {
   const mode = choice(["auto", "fixed"] as const)(r.mode, `${p}.mode`);
   switch (mode) {
     case "auto": record(r, p, "mode"); return { mode };
-    case "fixed": record(r, p, "mode x y"); return { mode, ...point(r, p) };
+    case "fixed": record(r, p, "mode x y wallOverlap"); return { mode, ...point(r, p), ...(r.wallOverlap === undefined ? {} : { wallOverlap: choice([1, 2] as const)(r.wallOverlap, `${p}.wallOverlap`) }) };
     default: return assertNever(mode);
   }
 };
@@ -70,8 +70,8 @@ const composable = (r: Record<string, unknown>, p: string): S.SpatialComposable 
 const interiorLayout: Parser<S.SpatialInteriorLayout> = (v, p) => {
   const r = record(v, p, "rooms doorways");
   const rooms = list(r.rooms, `${p}.rooms`, (v, p) => {
-    const r = record(v, p, "id name x y width height");
-    return { ...rect({ x: r.x, y: r.y, width: r.width, height: r.height }, p), id: id(r.id, `${p}.id`), name: text(r.name, `${p}.name`) };
+    const r = record(v, p, "id name x y width height shape floor");
+    return { ...rect({ x: r.x, y: r.y, width: r.width, height: r.height }, p), id: id(r.id, `${p}.id`), name: text(r.name, `${p}.name`), ...(r.shape === undefined ? {} : { shape: choice(["rect", "l", "alcove", "l-right", "bay", "notch", "cross"] as const)(r.shape, `${p}.shape`) }), ...(r.floor === undefined ? {} : { floor: text(r.floor, `${p}.floor`) }) };
   });
   assert(rooms.length >= 2, `${p}.rooms: at least two rooms required`);
   assert(new Set(rooms.map(room => room.id)).size === rooms.length, `${p}.rooms: duplicate id`);
@@ -80,7 +80,7 @@ const interiorLayout: Parser<S.SpatialInteriorLayout> = (v, p) => {
 const space: Parser<S.SpaceDesign> = (v, p) => {
   const r = record(v, p);
   const environment = choice(["interior", "outdoor"] as const)(r.environment, `${p}.environment`);
-  const common = { ...base(r, p), ...composable(r, p), tilesetId: id(r.tilesetId, `${p}.tilesetId`), shape: choice(["rect", "l", "alcove"] as const)(r.shape, `${p}.shape`), width: size(r.width, `${p}.width`), height: size(r.height, `${p}.height`), floor: text(r.floor, `${p}.floor`), wall: text(r.wall, `${p}.wall`), objectSlots: list(r.objectSlots, `${p}.objectSlots`, objectSlot), ports: ports(r.ports, `${p}.ports`) };
+  const common = { ...base(r, p), ...composable(r, p), tilesetId: id(r.tilesetId, `${p}.tilesetId`), shape: choice(["rect", "l", "alcove", "l-right", "bay", "notch", "cross"] as const)(r.shape, `${p}.shape`), width: size(r.width, `${p}.width`), height: size(r.height, `${p}.height`), floor: text(r.floor, `${p}.floor`), wall: text(r.wall, `${p}.wall`), objectSlots: list(r.objectSlots, `${p}.objectSlots`, objectSlot), ports: ports(r.ports, `${p}.ports`) };
   const fields = `${baseFields} environment tilesetId shape width height floor wall objectSlots ports composition`;
   switch (environment) {
     case "interior": {
@@ -137,7 +137,7 @@ const settlement: Parser<S.RegionSettlement> = (v, p) => {
 };
 const region: Parser<S.RegionDesign> = (v, p) => {
   const r = record(v, p, `${baseFields} terrain places ports routes settlement composition`);
-  return { ...base(r, p), ...composable(r, p), terrain: terrain(r.terrain, `${p}.terrain`), places: list(r.places, `${p}.places`, child(choice(["place"] as const))), ports: ports(r.ports, `${p}.ports`), routes: list(r.routes, `${p}.routes`, route),
+  return { ...base(r, p), ...composable(r, p), terrain: terrain(r.terrain, `${p}.terrain`), places: list(r.places, `${p}.places`, child(choice(["space", "place"] as const))), ports: ports(r.ports, `${p}.ports`), routes: list(r.routes, `${p}.routes`, route),
     ...(r.settlement === undefined ? {} : { settlement: settlement(r.settlement, `${p}.settlement`) }) };
 };
 const world: Parser<S.WorldDesign> = (v, p) => {
@@ -148,13 +148,18 @@ const library: Parser<S.SpatialLibrary> = (v, p) => {
   const r = record(v, p, "objects spaces places regions worlds");
   return { objects: dictionary(r.objects, `${p}.objects`, object), spaces: dictionary(r.spaces, `${p}.spaces`, space), places: dictionary(r.places, `${p}.places`, place), regions: dictionary(r.regions, `${p}.regions`, region), worlds: dictionary(r.worlds, `${p}.worlds`, world) };
 };
+const interiorKit: Parser<NonNullable<S.SpatialKitSnapshot["interior"]>> = (v, p) => {
+  const r = record(v, p, "id snap role");
+  return { id: text(r.id, `${p}.id`), snap: choice(["wall-north", "wall-any", "floor", "free"] as const)(r.snap, `${p}.snap`), role: text(r.role, `${p}.role`) };
+};
 const kit: Parser<S.SpatialKitSnapshot> = (v, p) => {
-  const r = record(v, p, "tilesetId kitId width height cells");
+  const r = record(v, p, "tilesetId kitId width height cells interior");
   const cells = list(r.cells, `${p}.cells`, (c, cp) => {
     const cell = record(c, cp, "x y layer tile");
     return { ...point(cell, cp), layer: choice(["lower", "upper"] as const)(cell.layer, `${cp}.layer`), tile: integer([-1, Number.MAX_SAFE_INTEGER])(cell.tile, `${cp}.tile`) };
   });
-  return { ...graphic({ tilesetId: r.tilesetId, kitId: r.kitId }, p), width: size(r.width, `${p}.width`), height: size(r.height, `${p}.height`), cells };
+  return { ...graphic({ tilesetId: r.tilesetId, kitId: r.kitId }, p), width: size(r.width, `${p}.width`), height: size(r.height, `${p}.height`), cells,
+    ...(r.interior === undefined ? {} : { interior: interiorKit(r.interior, `${p}.interior`) }) };
 };
 const snapshot = <P extends S.SpatialPort>(parsePort: Parser<P>): Parser<S.SpatialCompositionSnapshot<P>> => (v, p) => {
   const r = record(v, p, "root library kitCells ports");

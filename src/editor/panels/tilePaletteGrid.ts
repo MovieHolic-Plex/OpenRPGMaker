@@ -50,6 +50,12 @@ type MakeGridPaletteArgs = {
    * 이제 필터는 **이 팔레트 하나**에 적용된다.
    */
   readonly visibleTiles?: ReadonlySet<number> | null;
+
+  /**
+   * 조건에 맞는 칸이 0개일 때 보여줄 문장. 호출부가 **무엇을 풀면 되는지** 알기 때문이다
+   * (분류 이름을 아는 쪽은 필터 바이지 이 그리드가 아니다). 없으면 기본 문장.
+   */
+  readonly emptyHint?: string;
 };
 
 type MakeCustomPaletteArgs = MakeGridPaletteArgs & {
@@ -64,8 +70,22 @@ type MakeGridPaletteWithStampArgs = MakeGridPaletteArgs & {
   readonly onCreatePaletteStamp?: (stamp: PaletteStamp) => void;
 };
 
+/**
+ * 팔레트가 무언가를 그리기 위해 실제로 읽는 값만 모은 좁은 타입.
+ *
+ * 왜 나눴나 — 「몇 칸이 보이는가」는 필터 UI(tilePalette.ts)도 알아야 하는데,
+ * 그때 onSelectTile 같은 **그리기 전용 콜백**까지 들고 갈 이유가 없다. 이 타입이
+ * 있어서 필터 바가 팔레트와 **같은 함수**로 개수를 셀 수 있다(따로 세면 두 답이 갈라진다).
+ */
+export type PaletteFilterView = {
+  readonly layer: Exclude<Layer, "event">;
+  readonly tileset: TilesetDef;
+  readonly selectedTile: number;
+  readonly visibleTiles?: ReadonlySet<number> | null;
+};
+
 /** 선택 타일은 필터에 안 걸려도 항상 보여야 한다 — 안 그러면 "선택 중"인 칸이 사라진다. */
-function passesFilter(args: MakeGridPaletteArgs, tileId: number): boolean {
+function passesFilter(args: PaletteFilterView, tileId: number): boolean {
   if (!args.visibleTiles) return true;
   return args.visibleTiles.has(tileId) || args.selectedTile === tileId;
 }
@@ -171,7 +191,7 @@ export function gridPaletteDisplayTile(tileset: TilesetDef, tile: number): numbe
  * 화면에 실제로 깔리는 순서 — 오토타일 대표 칸이 앞, 이어서 일반 나열.
  * 드래그 스탬프는 이 순서를 격자로 읽는다(리플로우 팔레트에는 원본 좌표가 없다).
  */
-export function gridPaletteDisplayOrder(input: MakeGridPaletteArgs): readonly number[] {
+export function gridPaletteDisplayOrder(input: PaletteFilterView): readonly number[] {
   const args = { ...input, selectedTile: gridPaletteDisplayTile(input.tileset, input.selectedTile) };
   const model = buildGridPaletteModel(args.tileset, args.layer);
   const order: number[] = [];
@@ -182,6 +202,17 @@ export function gridPaletteDisplayOrder(input: MakeGridPaletteArgs): readonly nu
     if (passesFilter(args, tileId)) order.push(tileId);
   }
   return order;
+}
+
+/**
+ * 지금 팔레트가 실제로 그리는 칸의 개수. 필터 바가 자기 숫자를 이걸로 낸다.
+ *
+ * 왜 같은 함수를 쓰나 — 따로 세면 두 답이 갈라진다. 실측: 필터 바는 타일셋 인덱스
+ * 일치 수를 세고, 팔레트는 오토타일 대표 축약과 변형 숨김, 레이어 가시성까지 통과시킨
+ * 뒤에 그린다. 그래서 덧그림 레이어의 지형 칩은 126개라고 말하면서 시트는 0칸이었다.
+ */
+export function gridPaletteVisibleCount(input: PaletteFilterView): number {
+  return gridPaletteDisplayOrder(input).length;
 }
 
 export function makeGridPalette(input: MakeGridPaletteWithStampArgs): HTMLElement {
@@ -233,7 +264,11 @@ export function makeGridPalette(input: MakeGridPaletteWithStampArgs): HTMLElemen
   }
   sheet.append(grid);
   if (shown === 0) {
-    sheet.append(el("div", { class: "empty-hint palette-filter-empty", text: "조건에 맞는 타일이 없습니다.", dataset: { testid: "palette-filter-empty" } }));
+    sheet.append(el("div", {
+      class: "empty-hint palette-filter-empty",
+      text: input.emptyHint ?? "조건에 맞는 타일이 없습니다.",
+      dataset: { testid: "palette-filter-empty" },
+    }));
   }
   return sheet;
 }

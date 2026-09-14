@@ -195,7 +195,7 @@ export function childSourceLabel(project: Project, kind: "space" | "place", id: 
   const library = project.spatialAuthoring?.library;
   switch (kind) {
     case "place": return library?.places[id]?.name ?? "장소";
-    case "space": return library?.spaces[id]?.name ?? "공간";
+    case "space": return library?.spaces[id]?.name ?? "장소";
     default: return assertNever(kind);
   }
 }

@@ -164,7 +164,7 @@ function spaceCards(): SpatialGalleryCard[] {
       kind: "spaces",
       usage: 0,
       tilesetId: space.tilesetId,
-      subtitle: `${space.environment === "outdoor" ? "야외 공간" : "실내 공간"} · ${space.width}×${space.height}`,
+      subtitle: `${space.environment === "outdoor" ? "실외" : "실내"} · ${space.width}×${space.height}`,
     });
   }
   return cards;
@@ -174,7 +174,7 @@ const DESIGN_LISTERS: Record<SpatialShellTab, () => SpatialGalleryCard[]> = {
   tiles: tileCards,
   objects: objectCards,
   spaces: spaceCards,
-  places: placeCards,
+  places: () => [...placeCards(), ...spaceCards()],
   regions: regionCards,
   worlds: worldCards,
 };
@@ -184,7 +184,9 @@ export function spatialAllSourceDesignCount(tab: SpatialShellTab): number {
 }
 
 export function listSpatialGalleryCards(session: SpatialAuthoringSession): readonly SpatialGalleryCard[] {
-  if (session.mode === "instances") return placedCards(session.tab);
+  if (session.mode === "instances") return session.tab === "places"
+    ? [...placedCards("places"), ...placedCards("spaces")]
+    : placedCards(session.tab);
   const cards = DESIGN_LISTERS[session.tab]().filter((card) => matchesSource(card, session.source));
   if (session.tab === "places" && session.placeKindFilter) {
     return cards.filter((card) => card.placeKind === session.placeKindFilter);

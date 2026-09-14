@@ -1,8 +1,8 @@
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import { cardSubtitle, humanizeSpatialError, spatialSourceLabel } from "@/editor/panels/spatialFeedback";
 import { placeChromeState } from "@/editor/panels/spatialPlaceChromeState";
-import { mutateWorkingPlace, placeDeletePreview, workingPlace, workingProject } from "@/editor/panels/spatialPlaceCommands";
-import { FACILITY_FLOOR_MAX, placeDraftTarget, withPlaceKind, withPlaceLayout, withPlaceName } from "@/editor/panels/spatialPlaceDraft";
+import { commitWorkingPlace, mutateWorkingPlace, placeDeletePreview, workingPlace, workingProject } from "@/editor/panels/spatialPlaceCommands";
+import { FACILITY_FLOOR_MAX, removeChild, placeDraftTarget, withPlaceKind, withPlaceLayout, withPlaceName } from "@/editor/panels/spatialPlaceDraft";
 import {
   deletePlacedChild,
   openPlaceChild,
@@ -88,15 +88,14 @@ export function renderSpatialPlacesInspector(
       class: "spatial-inspector-facts",
       dataset: { testid: "spatial-place-composition" },
       children: [
-        el("dt", { text: "직접 지정한 외형" }), el("dd", { text: place.exterior ? "있음" : "없음 (공간 내 배치는 별도)" }),
-        el("dt", { text: "공간" }), el("dd", { text: `${place.children.filter((child) => child.source.kind === "space").length}개` }),
-        el("dt", { text: "하위 장소" }), el("dd", { text: `${place.children.filter((child) => child.source.kind === "place").length}개` }),
+        el("dt", { text: "직접 지정한 외형" }), el("dd", { text: place.exterior ? "있음" : "없음 (내부 배치는 별도)" }),
+        el("dt", { text: "포함된 장소" }), el("dd", { text: `${place.children.length}개` }),
         el("dt", { text: "출입구 / 연결" }), el("dd", { text: `${place.ports.length} / ${place.connections.length}` }),
       ],
     }));
     if (place.children.length === 0) body.push(el("p", {
       class: "spatial-readonly-note",
-      text: "구성 공간이 없습니다. 이용할 방·층·마당은 공간에서 만든 뒤 이 장소에 추가하세요. 건물 외형의 층수는 실내 층수가 아닙니다.",
+      text: "아직 방이 없습니다. 방 추가 또는 기존 장소 가져오기로 구성을 시작하세요.",
       dataset: { testid: "spatial-place-no-spaces" },
     }));
     body.push(el("label", {
@@ -170,7 +169,7 @@ export function renderSpatialPlacesInspector(
       }));
       body.push(el("button", {
         class: "spatial-action",
-        text: "자식 삭제",
+        text: "이 장소에서 빼기",
         attrs: { type: "button" },
         dataset: { testid: "spatial-place-child-delete" },
         on: {
@@ -185,9 +184,29 @@ export function renderSpatialPlacesInspector(
     } else if (sourceChild) {
       body.push(el("p", {
         class: "spatial-inspector-sub",
-        text: `${sourceChild.source.kind} (${sourceChild.x},${sourceChild.y}) L${sourceChild.level}`,
+        text: `장소 (${sourceChild.x}, ${sourceChild.y}) · ${sourceChild.level === 0 ? "지상" : `${sourceChild.level}층`}`,
         dataset: { testid: "spatial-place-child-label" },
       }));
+      const childLibrary = project.spatialAuthoring!.library;
+      const outdoorChild = sourceChild.source.kind === "space" && childLibrary.spaces[sourceChild.source.id]?.environment === "outdoor";
+      body.push(el("label", { class: "spatial-place-field", children: [el("span", { text: "층" }), el("input", {
+        attrs: { type: "number", value: String(sourceChild.level), min: place.kind === "facility" && !outdoorChild ? "1" : "0", max: String(FACILITY_FLOOR_MAX) },
+        dataset: { testid: "spatial-place-child-level" }, on: { change: event => {
+          const input = event.target;
+          if (!(input instanceof HTMLInputElement)) return;
+          const level = Number(input.value);
+          if (!Number.isInteger(level) || level < 0 || level > FACILITY_FLOOR_MAX) {
+            placeChromeState.previewError = `층을 0~${FACILITY_FLOOR_MAX} 사이로 입력해 주세요.`;
+          } else {
+            mutateWorkingPlace(target, current => ({ ...current, children: current.children.map(child => child.id === sourceChild.id ? { ...child, level } : child) }));
+          }
+          rerender();
+        } },
+      })] }));
+      body.push(el("button", { class: "spatial-action", text: "이 장소에서 빼기", attrs: { type: "button" }, dataset: { testid: "spatial-place-child-delete" }, on: { click: () => {
+        if (commitWorkingPlace(target, removeChild(place, sourceChild.id))) placeChromeState.selectedChildId = null;
+        rerender();
+      } } }));
     }
     if (placedChild || sourceChild) {
       body.push(el("button", {

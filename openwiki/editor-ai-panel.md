@@ -38,9 +38,120 @@
 - Pi 적용은 조수 세션과 같은 **영수증 카드**(`ai-change-card`, 지금 → 적용 후 두 장)를 남긴다: Pi 명령이
   재료(`PiChangeReceipt`)를 넘기고 패널이 그린다(`showChangeReceipt` → 로그 + 스튜디오 「변경」 탭 +
   되돌리기). 검토 카드에서 적용해도 같은 경로다.
+- **결정 자리에 비교가 먼저 선다 (2026-09-14):** 기본값 `piApply: "review"` 에서 검토 카드는 문장·칩·버튼만
+  그렸고, 비교는 「적용」 을 누른 **뒤에야** 나왔다 — "부탁했는데 before/after 가 안 보인다" 의 첫 자리다.
+  이제 `runPiCommand` 가 검토 단계에서도 같은 카드를 «적용 전» 상태로 만들어 `board.setReview({preview})`
+  로 넘기고, 보드의 검토 카드가 그 자리에 그대로 세운다(칩 줄은 카드가 대신하므로 따로 그리지 않는다).
+- **Bun 워커의 유휴 타임아웃은 꺼져 있어야 한다 (2026-09-14 실측):** `Bun.serve` 는 `idleTimeout` 기본값이 **10초**라
+  연결에 바이트가 오가지 않으면 소켓을 끊는다. `/agent/run` 은 턴 시작·툴 호출·응답 끝에만 NDJSON 줄을 쓰고 하트비트가
+  없어서, 모델이 10초 넘게 생각하는 순간 스트림이 끊겼다. 체인: Bun 소켓 닫힘 → Node `fetch`(undici) 가
+  `TypeError: terminated` → `companionHttpUtil.pipeWebStream` 이 `{type:"error",message:"terminated"}` 줄로 전달 →
+  보드 「Pi 에이전트 실패: terminated」. 동시에 워커는 `request.signal` abort 를 클라이언트 중단으로 읽어 팀장·시공을
+  전부 abort 했다(`[pi-agent] aborted by client`). 팀 모드가 유독 잘 죽었다: 팀장은 `wait_agents` 로 조용히 기다리고
+  팀원은 Ultrabrain 사고 수준(high)으로 돌아 한 턴이 10초를 넘기기 쉽다 — 09-13~09-14 팀 모드 「마을 만들어줘」
+  「집을 만들어바」 「재밌는 rpg 로 만들어줘」 가 전부 25~210초 만에 `terminated`, 단독·low 였던 09-11 「마을을 만들어봐」
+  만 살아남았다. 라이브 재현(`?blankProject=1`, 팀 켜고 「마을 만들어줘」): 시공 3턴 시작 +15.1s → 9.5초 침묵 →
+  +24.5s `terminated`. 고침은 `scripts/oh-my-pi-worker.ts` 의 `Bun.serve({ idleTimeout: 0 })` 한 줄 — 실행 상한은
+  `piAgentRuntime.ts` 의 `timeoutMs`(기본 10분)가 따로 든다. 회귀는 `test/ohMyPiWorkerIdle.node.test.mjs` 가
+  모델 없이 잡는다(헤더만 보내고 14초 유휴 → 같은 연결로 400 응답을 받아야 한다; 기본값이면 +12초에 닫힌다).
+- **침묵을 없애고, 남은 침묵은 고장으로 읽는다 (2026-09-14):** 유휴 타임아웃을 끄는 것은 10초짜리 컷을 다음 층의
+  300초짜리로 뮸 것뿐이고(Node `fetch` → undici `bodyTimeout`), 「5분 넘게 침묵했는지」를 **알 방법이 없다**는 것이
+  더 큰 문제다. 세 겹으로 나눠 닫았다.
+  - **내용 — 델타 중계(`src/ai/piAgent/deltaRelay.ts`).** pi-agent-core 는 모델을 **스트리밍으로** 부르고(`streamSimple`)
+    델타마다 `message_update` 를 내며, Antigravity 제공자는 `includeThoughts` 로 **생각 델타까지** 흘린다. 그런데
+    `piAgentRuntime` 은 `turn_start`·`tool_execution_*`·`message_end` 네 가지만 중계하고 이 이벤트를 버렸다 —
+    즉 데이터는 워커 문 앞까지 초 단위로 닿고 있는데 문을 안 열어준 것이었다. 이제 `delta` 이벤트로 1초씩
+    합쳐 보내고(보드가 이미 1초 티커로 다시 그리므로 그보다 잔 간격은 보이지 않는 렌더만 늘린다), 보드는
+    「생각 중 · …」 한 줄로 그린다. 순서 계약: 턴·툴·응답 끝 직전에 `flush()` — 안 하면 조각이 완성문 뒤에 도착한다.
+  - **맥박 — 워커 heartbeat(`scripts/lib/piAgentStream.ts`).** `/agent/run` 응답 본문을 이 모듈이 만들고,
+    줄 사이가 비면 `PI_AGENT_HEARTBEAT_MS`(5초)마다 `{type:"heartbeat"}` 를 끼운다. 델타가 안 나오는 구간
+    (첫 토큰 전 대기, 긴 툴 실행, 팀장의 `wait_agents`, 생각 요약을 숨기는 모델)에서도 와이어는 안 비운다.
+  - **판정 — 브라우저 워치독(`client.ts`).** `PI_AGENT_STALE_MS`(30초, heartbeat 의 6배) 동안 줄이 하나도 안 오면
+    리더를 취소하고 「워커가 응답하지 않습니다」로 끝낌다. 이제 **침묵은 정상이 아니다** — 생각하는 중이면
+    heartbeat 가 오기 때문이다. 이게 없으면 죽은 워커를 10분 상한까지 「실행 중」으로 띄우게 된다.
+  `heartbeat` 는 보드 앞에서 버려진다(`aiPiAgentCommand` 의 `wrap` · Ultrabrain 계획 핸들러) — 5초마다 행 전체를
+  다시 그릴 이유가 없다. 커버리지: `test/piAgentStreamLiveness.test.ts`(델타 합침·순서·상한, heartbeat 흐름,
+  워치독 두 방향, 보드의 delta/heartbeat 처리). 대조 실측: heartbeat 를 빼면 그 테스트가 15초 타임아웃으로,
+  `onStale` 을 비우면 워치독 테스트가 같은 모양으로 죽는다.
 - **남은 세션 호출자**(deprecated 재고): 선택 영역 작업·영역 생성기(`runRegionTask`/`runOperatorTask`),
   클러스터 AI 모달, 조수 QA 브리지(`aiAssistantBridge` — DB AI 바가 이걸 쓴다), 벤치마크/QA 스크립트.
   각자 표면의 엔진이라 조수 창 경로와 무관하고, Pi 이관은 별도 작업이다.
+
+## Five model roles and whole-map harmony review (2026-09-14)
+
+The main Pi chat route uses **Ultrabrain** for planning and final map judgement,
+**Deep** for implementation/tool work, **Writer** for narrative prose, **Vision** for
+image observations, and the existing **Image** selection for image generation.
+`modelRoles.ts` resolves `roleModels.{vision,writer,deep}` independently; missing roles
+migrate from legacy `model` (writer/vision) and `liteModel` (deep). Explicit ids are preserved.
+The legacy fields remain compatibility aliases. Once explicit role settings are saved,
+retained region sessions select Ultrabrain for their supervisor and Deep via
+the Deep role; provider and effort travel with each role. `resolveSurfaceAiConfig`
+selects Vision for tileset analysis, Deep for region/cluster/event-command, and
+Ultrabrain for supervisor surfaces. Cast-sheet prose uses Writer. The small intent
+classifier remains a non-reasoning, 4096-token routing call; it must not inherit
+Deep's expensive effort or the editor's 200000 output budget. Legacy/test configs
+without role selections retain their prior behavior.
+Provider/model/effort for each LLM role are independent of the autonomy dial. Image keeps
+`imageProviderId`/`imageModel` and the existing `imageGenerationClient` path.
+
+`aiPiAgentCommand` runs one read-only Ultrabrain plan across the requested scope before
+single-mode Deep execution. Planning errors/empty plans stop execution. Plan-only turns
+always enforce read-only and use Ultrabrain alone, even if the caller omitted `readOnly`.
+Read-only questions skip the extra planning phase. Team mode uses Ultrabrain as its existing
+orchestrator (planning plus assignments), while builders and structural reviewers use Deep.
+With explicit role selections, the Deep selection takes precedence over legacy team member
+model overrides; the team editor points users to AI role settings instead of offering
+a model override that would be ignored. Team role ids (builder/reviewer) are task responsibilities, not model tiers.
+`consult_writer` delegates prose on demand and returns text for Deep to apply; it has no
+mutation tools. It carries cancellation and rejects incomplete output. Mechanical tasks
+need not call Writer. The Node auth owner resolves each selected provider's credentials and
+passes a server-only provider-key map to the worker; child calls never reuse another
+provider's credential. Plan-only calls do not receive the Writer consultation tool.
+
+
+`aiPiAgentCommand` reviews the merged, postprocessed Pi draft before presenting/applying it.
+`src/ai/ultrabrainReview.ts` selects visually changed maps, but sends each **whole map**,
+not just edited regions: one PNG up to 1536 px, no tile-array dump or fixed 16-image fanout.
+Vision first reports visible evidence; Ultrabrain then judges palette, density, proportions
+and relationships against the author request using **the same original whole image** plus
+Vision observations. Neither phase has mutation tools. `ultrabrainImage.ts` uses the editor screenshot layer compositor
+(`drawMapTileLayer`) for terrain quarters and tile backing, with actual event sprites between
+layers. It does not claim passability/runtime proof from a still.
+Read-only/unchanged maps incur no review call. Shared renderer limitations (backgrounds,
+ambiguous event states, unavailable assets) remain visible; missing image delivery, malformed
+or truncated verdicts and cancellation never count as approval. Draft changes stay isolated.
+Negative/unavailable reviews keep the existing manual proposal card even in auto-apply mode;
+only all-positive review allows automatic application. Findings appear in chat and the board log.
+
+AI settings exposes five role sections, including **Ultrabrain · 계획과 최종 판단**.
+`ultrabrainConfig.ts` defaults to Google Antigravity / `gemini-3.8-flash` / `high`.
+Writer model/provider changes and the autonomy dial do not overwrite it. These preferences
+live in `oprn:ai-config`, not the project database. No new credential store is used.
+
+The old 2026-09-10 claim that catalog absence proves Gemini 3.8 is unavailable is obsolete.
+OMP 17.4's bundled catalog is still missing it, but direct OAuth wire `gemini-3.8-flash-high`
+with `thinkingLevel: HIGH` returned OK on 2026-09-14. `scripts/lib/ohMyPiModel.ts` provides a
+narrow compatibility entry using 3.7's transport metadata until upstream includes 3.8.
+Both Pi and completion use this exact resolver. Unknown explicit IDs now fail instead of
+silently changing models; `loadAiConfig` also preserves explicit IDs. Completion uses
+`completeSimple` and maps the envelope's reasoning effort and output limit into SDK options,
+so selecting high actually reaches the high wire route.
+
+Coverage: `modelRoles.test.ts`, `piWriterTool.test.ts`, `piAgentTeamRuntime.test.ts`,
+`piAgentRunOutcome.test.ts`, `ultrabrainReview.test.ts`, `piAgentModelFallback.bun.test.ts`,
+`ohMyPiComplete.bun.test.ts` (real SDK + mock fetch asserts model/effort/image wire).
+Browser replay: `QA_BASE_URL=http://127.0.0.1:<port> node scripts/qa/ultrabrain.mjs`
+(mock completion by default; `--live` exercises existing OAuth). It verifies independent
+settings persistence and whole-image review without writing any project. Evidence:
+`output/evidence/ultrabrain/settings.png`, `specialists.png`, `review-input.png`.
+Live provider verification can run without Chromium after capture:
+`node scripts/qa/model-roles-wire.mjs` checks Vision 3.7/medium → Ultrabrain 3.8/high
+with the same PNG; `bun scripts/qa/model-role-plan.ts` verifies read-only Ultrabrain Pi
+planning, and `--writer` verifies an actual Deep → consult_writer call. These write
+local QA evidence only (`roles-wire.json`, `plan-wire.json`, `writer-wire.json`).
+All three live checks passed on 2026-09-14. Both image-review phases cap output at 4096:
+forwarding the generic editor default of 200000 to Vision caused a verified HTTP 400.
 
 ## Retained map planning items and explicit reuse (2026-09-10, OPRN-019)
 
@@ -113,6 +224,26 @@ as failure. Contract tests: `test/aiVisualEvidenceReceipt.test.ts`; the axis tab
 않는다. 같은 종료 캡션은 스트림 오류·툴 실패를 숫자+첫줄로 묻고(예: `(⚠ 오류 1건 — OAuth
 token expired…)`), 범위 밖 spill 버림도 `범위 밖 N건 버림(키들)`으로 성공 캡션에 함께 고지한다.
 계약: `test/piAgentRunOutcome.test.ts`.
+
+**묶음이 만든 정의는 병합이 데려온다 (2026-09-14).** 맵 묶음 병합(`src/ai/piAgent/mapBundle.ts`)은
+묶음 밖 변경을 버리지만, 묶음이 **새로 만든** 스위치·변수·공통이벤트·엔딩·타일셋·업로드 자산·
+`database` 레코드와 새 플래그의 세션 시작값은 함께 옮긴다. 맵 이벤트가 그 정의를 가리키기 때문이다 —
+버리면 병합본이 자기 이벤트의 참조를 잃고 커밋 게이트가 `serialize-roundtrip`(`setSwitch: switchId가
+존재하지 않습니다`)으로 **적용 전체를 거부**한다(`/pi` 실측: `적용 실패(commit-rejected): …`).
+기존 항목의 수정·삭제는 그대로 범위 밖이고, 함께 옮긴 키는 spill 목록에서 덜어낸다.
+계약: `test/piAgentMapBundle.test.ts`(단일·CLI 경로), `test/piAgentTeamRuntime.test.ts`(팀 경로 —
+병합이 워커 안에서 돌아 여기가 진짜 실패 경로였다; 시공 팀원의 `place_battle_blocker` 스위치가
+게이트를 통과하는지 잡는다).
+
+**살아 있는 워커는 코드를 안 따라온다 (2026-09-14).** 워커(`scripts/oh-my-pi-worker.ts`)는 모듈
+그래프를 부팅 때 한 번 로드하는 오래 사는 Bun 자식이라, 페이지를 새로 고쳐도 살아 있는 워커는 옛
+병합·옛 툴을 계속 돈다. 실측: 위 픽스가 `main` 에 들어간 뒤에도 편집기는 같은
+`적용 실패(commit-rejected): 직렬화 왕복 실패: setSwitch: switchId가 존재하지 않습니다` 를
+재현했다 — 브라우저가 아니라 워커가 낡아 있었다(활동 로그 `project oprn-fcfe8b2c2b`, 픽스가
+`main` 에 병합되기 70분 전 실행). 이제 dev 서버가 `src/**`·`scripts/**` 변경을 보면 다음 요청 때 워커를 갈아 끼우도록
+표시한다(`markOhMyPiWorkerStale`, `vite.config.ts` 의 워처). 진행 중인 실행은 죽이지 않는다.
+계약: `test/ohMyPiWorkerStale.node.test.mjs`. 회귀 진단 순서: (1) 활동 로그에서 그 실행의
+`result.error` 를 본다(`ai_activity_logs`), (2) 워커를 실제로 다시 띄운 뒤 재현되는지 본다.
 
 ## P3 run retirement and stale drafts (2026-09-07)
 
@@ -1320,9 +1451,10 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 - **데크 위치 이동 — 레일 드래그로 아무 데나 놓는다 (2026-09-12):** 데크 상단 레일(`.ai-deck-rail`)의 비상호작용 표면(who·state·spacer·레일 자체)을 잡아 끌면 데크가 포인터를 따라오고, 놓으면 `oprn:ai-deck-pos`(`aiPanelLayout.ts` 의 `loadDeckPosition`/`saveDeckPosition`/`clearDeckPosition`)에 `{ right, bottom }`(호스트 우·하 변 → 데크 우·하 변, px)으로 저장된다. 소유자는 `aiDeckMoveChrome.ts` — `aiChatResizeChrome` 과 같은 이유로 대화·런 상태를 읽지 않고 표면 셋(패널·데크·레일)과 "지금 움직여도 되는가" 게터 하나만 받는다. 계약:
   - **right/bottom 앵커**다 — 데크 기본이 우하단(`--ai-deck-inset`)이라 사용자 위치도 같은 축으로 저장한다. left/top 이면 내용이 자랄 때 아래로 잘린다. 변수 `--ai-deck-right`/`--ai-deck-bottom` 은 **패널**에 심고, 데크(`18-assistant-deck.css`)와 접힘 알약(`02-chat-dock.css` 의 `is-collapsed` inset)이 같이 읽는다 — 접으면 알약이 데크의 우하 모서리 자리에 선다.
   - **클램프 기준은 호스트(`.ai-chat-float-host`, 항상 `inset:0`)다 — 패널이 아니다.** 접히면 패널 자신이 알약 상자(약 72×44)로 줄어, 그 사각형으로 자르면 저장 위치가 가장자리 여백(4px)으로 뭉개져 알약이 우하단으로 도망간다(2026-09-12 실측 회귀, `test/aiDeckMove.test.ts` 「접혀서 패널이 알약 크기로 줄어도」). 접힌 동안 호스트가 줄어도 패널(알약) 크기는 그대로라 ResizeObserver 가 안 울린다 — 창 `resize` 를 따로 듣는다. 선호값(`position`)은 자르지 않고 심는 값만 자른다 — 창이 다시 커지면 원래 자리로 돌아간다(리사이즈의 barSize 와 같은 계약).
-  - **클릭과 드래그를 가른다** — pointermove 가 한 번이라도 온 제스처만 저장한다. 시작점이 `button a input select textarea summary [contenteditable]`·`.ai-deck-rail-actions`·`.ai-composer-popover` 안이면 시작하지 않는다. 더블클릭은 저장 위치를 지워 기본 우하단으로 되돌린다 — 되돌리는 유일한 출구다. `title` 힌트는 who/state/spacer 표면에만 단다 — 레일 자체에 달면 아래 붙은 팝오버 항목 위에서도 떠서 열린 메뉴를 훼방한다.
-  - **움직이지 않는 상태**: 접힘·전체 기록(`is-history-open`)·스튜디오·도킹 — `resizableDock` 게터가 막는다. 드래그 중 패널은 `is-dragging`(폭 transition 해제·텍스트 선택 차단), 문서 커서는 `grabbing`(기존 body 커서는 끝나면 되돌린다).
-  - fakeDom 의 `matchesSelector` 는 콤마 나열을 못 읽는다 — 차단·표면 선택자는 한 번에 하나씩 묻는다. Tests: `test/aiDeckMove.test.ts`(15). QA: `scripts/qa/assistant-deck-move-qa.mjs` — 드래그·저장·재로드 복원·접힘 알약 자리·호스트 클램프·더블클릭 리셋 10개 실측, 산출물 `output/evidence/assistant-deck-move/`.
+  - **클릭과 드래그를 가른다 (2026-09-14 보강)** — 시작점이 `button a input select textarea summary [contenteditable]`·`.ai-deck-rail-actions`·`.ai-composer-popover` 안이면 시작하지 않고, 축별 최대 이동이 `DRAG_START_THRESHOLD_PX`(3px)를 넘어야 드래그다. 실측 결함: 1px 만 흔든 클릭이 `{"right":15,"bottom":15}` 를 저장해 데크를 그 자리에 굳혔다(`is-dragging`·grabbing 커서도 그때 번쩍였다). 더블클릭은 저장 위치를 지워 기본 우하단으로 되돌린다 — 되돌리는 유일한 출구다. `title` 힌트는 who/state/spacer 표면에만 달고 **지금 끌 수 있을 때만** 문구를 넣는다(빈 title = 툴팁 없음) — 레일 자체에 달면 아래 붙은 팝오버 항목 위에서도 떠서 열린 메뉴를 훼방한다. 상태는 hover(`pointerenter`) 시점에 다시 읽는다.
+  - **릴리스 하나로 끝난다 (2026-09-14 보강)** — `pointerup`·`pointercancel`·`blur`·버튼이 풀린(`buttons === 0`) `pointermove` 가 같은 몸(`onUp`)을 쓴다. 창 밖에서 버튼을 놓으면(Alt-Tab·창 밖 릴리스) `pointerup` 이 오지 않아 `is-dragging`(폭 transition 해제·텍스트 선택 차단)과 grabbing 커서가 남고 **눈에 보이던 이동이 저장되지 않아** 새로고침에서 되돌아갔다(2026-09-14 실측: blur 뒤 `is-dragging true`·`body cursor grabbing`·저장값은 이전 그대로). 같은 부류의 선례가 캔버스 `pointerupoutside`(`EditScene.endPointerGesture`, 2026-08-30)다.
+  - **움직이지 않는 상태**: 접힘·전체 기록(`is-history-open`)·스튜디오·도킹 — `resizableDock` 게터가 막는다. 전체 기록에서는 데크가 **보인다**(`display:flex`, 503×835) — 그래서 `grab` 커서와 힌트가 거짓말이 되지 않도록 커서를 `18-assistant-deck.css` 에서 같은 상태 가드(`:not(.is-studio):not(.is-history-open):not(.is-collapsed)`)로 좁히고, grabbing 규칙은 특이도를 한 단계 올려 그 가드를 이기게 둔다(실측: 도킹 상태 커서 `auto`, 힌트 없음, 끌어도 무반응). 드래그 중 패널은 `is-dragging`, 문서 커서는 `grabbing`(기존 body 커서는 끝나면 되돌린다).
+  - fakeDom 의 `matchesSelector` 는 콤마 나열을 못 읽는다 — 차단·표면 선택자는 한 번에 하나씩 묻는다. Tests: `test/aiDeckMove.test.ts`(20 — 임계값·blur 릴리스·buttons=0·힌트 상태 포함). QA: `scripts/qa/assistant-deck-move-qa.mjs` — 드래그·저장·재로드 복원·접힘 알약 자리·호스트 클램프·더블클릭 리셋·1px 클릭·blur 릴리스·도킹 신호까지 18개 실측, 산출물 `output/evidence/assistant-deck-move/`.
 
 - **사용 로그는 그 자리에서 .txt 로 나온다 (2026-09-09):** 두 ☰ 표면에 「사용 로그 내려받기」(헤더 `ai-more-usage-log` / 컴포저 `ai-command-menu-usage-log`)를 둔다. 누르면 `listAiActivityLogs()` 를 `formatAiActivityLogText()`(`src/ai/activityLogText.ts`)로 옮겨 `text/plain;charset=utf-8` 블롭을 `ai-usage-log-<ISO, 콜론·점→하이픈>.txt` 로 떨어뜨린다. **왜 새로 만들었나**: 이 로그를 꺼내는 창구가 `npm run ai:log` CLI 와 테스트용 `serializeAiActivityLogs()` 뿐이어서, 조수가 뭘 했는지 확인하려는 사용자에게는 경로가 아예 없었다. 편집 활동 로그(`editActivityPanel`)에는 복사·내보내기가 있었으니 비대칭이기도 했다. 계약 셋 — ① **JSON 아니라 글**이다(한 턴이 한 문단: 지시·모델·맵·영역·결과 상세·자원 요약·도구 호출·대화 기록·진단), 기계 판독은 `serializeAiActivityLogs()` 가 그대로 맡는다. ② **조용히 자르지 않는다**: 지시문·응답·감사 기록은 길어도 전부 싣고, 로그가 이미 예산에 걸려 버린 몫은 `잘린 기록: …` 으로 적는다. ③ **기록이 0건이면 파일을 만들지 않는다** — 빈 파일은 "받았는데 아무것도 없다" 로 끝나므로 안내 토스트만 띄우고 `false` 를 돌린다. 서식(`src/ai/activityLogText.ts`)은 순수 함수라 패널을 세우지 않고 테스트하고, 동작(`src/editor/panels/aiUsageLogDownload.ts`)은 `src/ai` 가 아니라 패널 층에 둔다 — 토스트는 UI 이고 `src/ai` 는 토스트를 모르는 층이다. Tests: `test/aiUsageLogDownload.test.ts`(서식 계약 · 파일명 · 내려받기 · 빈 로그 · 두 표면). 로그 자체의 채널·보존 규칙은 `openwiki/editor-observability.md` 「AI 경로는 별도 채널이다」.
 
@@ -1545,8 +1677,10 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 - AI write-tool proposal generation uses `src/editor/agentGhostPreview.ts` for both legacy tool-argument summaries and live draft-diff previews. `aiChatPanel` and `runRegionTask` throttle successful write `tool_call` events at 150ms, compare the current store/base project to `session.getProposedProject()`, and replace the ghost pub/sub state with changed map cells/events. `EditScene` renders only previews whose `mapId` matches the currently viewed map, so off-map draft work appears when the user later switches maps. Accept/reject/new-session/modal-close and error/abort paths must call `clearAgentGhostPreview()` before any accepted `agentFocus` highlight runs.
 
 - AI proposal cards run a conservative completeness lint before display. If the current-turn or relevant active BuildSpec declares an asset/area that no actual changed tool region touched, or if a no-spec request clearly expected edits but produced no changed calls / a severely short counted placement, the closed `자세히` drawer shows the completeness line and stores the same message in `ToolResult.diff.warnings`. The lint also adds proceed-instruction hints for 0-change turns and flags assistant final text that ends with a wait-please promise when no write tool or proposal was produced.
-
-- 적용 결과는 변경 카드(`aiChangePreview` / `ai-change-card`)가 보여준다 — 한 문장 제목 + 명사 나열 요약(`집 3 · 강 · 앞마당`, `타일 4` / `세계관 1` / `프리셋 2`; `채`/`칸`/`그루`/`건` 이나 툴 이름은 쓰지 않는다) + before/after 미니맵 + `되돌리기`. 결정 카드(수락/거부/항목 선택)는 없다 — 사용자는 결과를 보고 되돌릴지만 정한다. 크롭은 `computeMapTileChangeBounds`, 미니맵은 `renderProposalMapThumbnail`(둘 다 `aiProposalCard.ts`).
+- 적용 결과는 변경 카드(`aiChangePreview` / `ai-change-card`)가 보여준다 — 배지(`적용됨`, 검토 단계는 `적용 전`) + 한 문장 제목 + 명사 나열 요약(`집 3 · 강 · 앞마당`, `타일 4` / `세계관 1` / `프리셋 2`; `채`/`칸`/`그루`/`건` 이나 툴 이름은 쓰지 않는다) + before/after 미니맵 + `되돌리기`. 결정 카드(수락/거부/항목 선택)는 없다 — 사용자는 결과를 보고 되돌릴지만 정한다.
+- **카드가 그림으로 말할 수 없는 변경 (2026-09-14 실측):** 미니맵은 `renderRegionSnapshot`(타일 + 이벤트 좌표)이라 타일·이벤트 위치 밖의 변경(대사·퀘스트·설정·캐릭터·맵 연결)에서는 두 장이 **같은 그림**이 된다. 그때는 `changePreviewPanesMatch` 가 캔버스를 아예 만들지 않고 `ai-change-word-diff` 한 줄로 사실을 말한다 — 같거나 다른지를 렌더 입력(맵 크기·타일 크기·타일셋 정의·타일 배열·이벤트 좌표) 전부로 판정하므로, 그림이 실제로 달라지는 경우를 접지 않는다. 크롭은 `computeMapTileChangeBounds`(`aiProposalCard.ts`)이고, `renderProposalMapThumbnail` 은 **호출자 0인 죽은 코드**다(승인 카드 시절 잔재 — 이 문서의 옛 서술은 틀렸다).
+- **요약 카운터 밖의 변경도 이름으로 남는다 (2026-09-14):** `ChangeSummary` 의 카운터 목록은 손으로 관리돼 퀘스트·스토리 플래그·캐릭터·맵 연결·공통 이벤트 같은 필드에서 뒤처졌고, 그 턴은 검토 카드에 칩이 **하나도** 없었다. `src/project/changeAreas.ts` 가 "명시 카운터가 없는 필드가 바뀌었나" 를 여집합으로 계산해 `changeChipsWithAreas(diff, areas)` 가 카운터 뒤에 붙인다. `ChangeSummary` 에 필드를 더하지 않는 이유: `proposalSafety.isPositiveTileOnlyDiff` 가 모르는 키를 만나면 거짓을 내므로(자동 적용이 조용히 멈춘다) 영수증 어휘는 자료형 밖에 둔다.
+- **변경 내역(긴 명세) — 큰 위임은 그림으로 검토할 수 없다 (2026-09-14, 감독 지시):** "before/after 가 굉장히 긴 명세여야 하는 것 아닌가. 보통 맡기는 일이 매우 클텐데." `src/project/changeLedger.ts` 가 두 프로젝트에서 **항목별 before → after** 를 계산하고(`buildChangeLedger`), 카드와 넓은 뷰어가 그 목록을 그린다(`ai-change-ledger`, 기본 펼침, 목록만 `max-height` 스크롤). 영역은 고정 순서(프로젝트 정보 → 시작 위치 → 시스템·세션 → 맵 → 이벤트 → 데이터베이스 → 스위치·변수·퀘스트·스토리 플래그·캐릭터·공통 이벤트·엔딩·프리셋·자원·맵 연결·세계관·마을·AI 문서 → 타일셋)이고, 항목 하나는 `영역 · 이름 · (추가|삭제|변경)` + `필드: 이전 → 이후` 줄들이다. 판정은 열거가 아니라 여집합이라 **모르는 모양도 키 이름과 값 요약으로 남는다**. 신원은 `id` → `key` → 자리 번호 순(퀘스트는 `key`, 자원은 `assetId`, 캐릭터·칩셋 이름은 합성 키). 값은 한 줄로 접는다 — 타일은 `N칸 바뀜`, 목록은 `개수 + 앞부분`, 중첩 개체는 JSON 이 아니라 키 이름(`hp HP, mp MP (2개)`). 상한(기본 400)을 넘으면 자르고 `N/M건` 으로 전체 수를 알린다.
 
 - The proposal completeness lint warns when a turn declares three or more story flags without `define_quest`, so narrative-heavy turns are nudged toward a quest graph and `verify_quest` acceptance path.
 
@@ -1615,7 +1749,6 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 - **吏?vs ?ㅻ궡 ?섎룄 ?뺤씤:** `src/ai/intentClarify.ts`??`resolveIntentClarification`??LLM ?꾩뿉 寃곗젙濡좎쑝濡?寃쎈줈瑜?媛른다. `吏?嫄대Ъ 만들?댁쨾`留??덇퀬 ?ㅻ궡쨌?쇱쇅 ?쒖?媛 ?놁쑝硫??꾧뎄 ?몄텧 ?놁씠 `[?좏깮吏] ?ㅻ궡 留듭쑝濡?| ?쇱쇅 吏??몄옣)?쇰줈 | ?몄옣 吏?+ ?대? ????瑜??꾩슫??`AssistantSession.sendUserMessage`). ?щ옒???ㅽ궗 ?쒕엻?쇰줈 `build-house`쨌`build-interior`瑜?怨좊Ⅴ硫?`explicitSkillId`濡??섎Щ湲곕? 건너?대떎. UX ?뺤콉 문구??`promptPolicies`?섅뚯쭛 vs ?ㅻ궡(?꾩닔)??
 - NPC/二쇰?/????대깽???좉퇋 배치??`place_npc` ?먮뒗 ?쒓컙?쒓? ?꾩슂??경우 `make_villager`媛 기본 경로?? `upsert_event`???꾩껜 `GameEvent` shape瑜??뚭퀬 기존 ?대깽?몃? ??섏??쇰줈 ?섏젙???뚮쭔 ?곕룄濡????ㅻ챸, ?몄옄 ?ㅻ쪟 ?뚰듃, ?쒖뒪???꾨＼?꾪듃 泥댄겕리�뒪?? ?앹꽦????移댄깉濡쒓렇瑜??④퍡 맞춘?? Event write paths must keep `event.commands` and every `pages[].commands` as arrays after normalization; low-level paths may normalize a single command object to an array with a warning, while unrecoverable malformed values fail as `invalid-args`. `projectLint` must skip malformed command arrays with a `command-shape` warning instead of throwing.
 - AI proposal cards run a conservative completeness lint before display. If the current-turn or relevant active BuildSpec declares an asset/area that no actual changed tool region touched, or if a no-spec request clearly expected edits but produced no changed calls / a severely short counted placement, the closed `자세히` drawer shows the completeness line and stores the same message in `ToolResult.diff.warnings`. The lint also adds proceed-instruction hints for 0-change turns and flags assistant final text that ends with a wait-please promise when no write tool or proposal was produced.
-- 적용 결과는 변경 카드(`aiChangePreview` / `ai-change-card`)가 보여준다 — 한 문장 제목 + 명사 나열 요약(`집 3 · 강 · 앞마당`, `타일 4` / `세계관 1` / `프리셋 2`; `채`/`칸`/`그루`/`건` 이나 툴 이름은 쓰지 않는다) + before/after 미니맵 + `되돌리기`. 결정 카드(수락/거부/항목 선택)는 없다 — 사용자는 결과를 보고 되돌릴지만 정한다. 크롭은 `computeMapTileChangeBounds`, 미니맵은 `renderProposalMapThumbnail`(둘 다 `aiProposalCard.ts`).
 - The proposal completeness lint warns when a turn declares three or more story flags without `define_quest`, so narrative-heavy turns are nudged toward a quest graph and `verify_quest` acceptance path.
 - `AssistantSession` also treats prior-turn active BuildSpecs as proposal-scope risk: if the next proposal uses that carried-over spatial plan, the first changed call stores `??범위: ???쒖븞?먮뒗 ?댁쟾 계획(...)???ы븿?섏뼱 ?덉뒿?덈떎.` in `ToolResult.diff.warnings`. This warning rides the same proposal warning-line frame as completeness warnings.
 - Proposal assembly squashes event movement trial runs before display. Repeated `move_event` calls for the same target keep all tool/audit events, but `proposedCalls` retains only the final move; if a newly created event (`place_npc`/similar event base call) is immediately moved, the creation proposal is rewritten to the final event coordinates instead of showing separate move rows.

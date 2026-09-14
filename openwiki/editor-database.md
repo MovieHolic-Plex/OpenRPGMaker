@@ -1,3 +1,48 @@
+## 장소 통합 진행: 방·층과 재료 (2026-09-14)
+
+새 건물의 기존 구조 편집기에 「방 추가」「층 추가」를 붙였다. 원본 방을 복제해 덮지 않고
+새 장소를 초안에 만들고 자식 슬롯으로 연결한다. 속성창에서 포함된 장소의 층을 수정하거나
+「이 장소에서 빼기」로 슬롯을 제거할 수 있다. 원본 장소는 삭제하지 않고 해당 슬롯의 연결만 함께 제거한다. 배치된 건물은 기존 preview/apply 경로로
+동결 배치를 수정하며 원본 구성은 유지한다. 실패한 방 추가는 이전 초안·미리보기를 보존한다.
+좁은 화면의 열린 속성 패널은 캔버스 위에 뜨므로 상단 속성 토글로 닫고 조작한다.
+
+직접 구성 재료는 `공간`과 `장소`를 하나의 「장소」로 표시한다. 두 내부 저장 종류 모두
+다른 방/장소를 같은 지도에 배치할 수 있으며 자기 자신과 상위 장소는 목록에서 제외한다.
+도메인 검증도 같은 허용표를 쓰고 순환 참조를 검사한다. 다층 구성은 여전히 층별 편집 대상이다.
+직접 구성은 「건물로 묶기」로 새 건물을 만들고 그 안에서 별도 지도의 방·층을 추가한다. 원래 장소 ID와 그림은 유지하며, 이 작업도 미리보기·적용·취소를 따른다. 진행 기준은 `unified-place-authoring.md`다.
+
+## 새 장소 생성 흐름 (2026-09-14, 2단계)
+
+`spatialStage.domainChrome`의 장소/기존 공간 UI 추가 버튼은 `spatialNewPlaceDialog.ts`를 연다.
+이름·실내/실외/건물·가로/세로(4~128칸)·지원 타일셋을 선택한다. 실내는 기존 실내 시공기가
+지원하는 타일셋, 실외는 ground 재료가 있는 타일셋만 제시한다. `spatialNewPlace.ts`가
+직접 편집할 SpaceDesign 또는 1층 SpaceDesign을 포함한 facility PlaceDesign을 한 번의
+초안 편집으로 만든다. 실외 floorAreas는 전체 바닥을 명시한다. 기존 시공기로 생성 가능 여부와
+문서 참조를 검사하며 취소/실패는 라이브 프로젝트를 수정하지 않는다. 미리보기→적용과 undo는
+기존 컨트롤러를 사용한다. 전환한 프로젝트에 열린 창의 입력을 적용하지 않는다.
+
+프로그램용 `spatialSpacesChrome.add`/`spatialPlacesChrome.add`의 기존 동작은 유지한다.
+이 단계는 새 장소 시작 흐름이며 방 추가·층 추가·출입 연결을 새 통합 UX로 만드는 것은 후속이다.
+기존 공간 편집 제목/추가 버튼을 장소로 표시하고 DB 검색의 공간/방 키워드는 장소를 찾는다.
+스타일은 body에 붙는 모달을 위한 `spatial-new-place.css`이며 전역 테마 토큰을 쓴다.
+검증: `test/spatialNewPlace.test.ts`(취소/실패/초안·적용/직렬화·맵 시공), 기존 통합 저작 테스트,
+`scripts/capture-new-place.mjs`(격리 fixture, 실제 세 형태 생성·적용, 1440/1024px).
+
+## 장소 목록 통합 1단계 (2026-09-14)
+
+맵 레일에서 독립 `spatialSpaces` 항목을 제거하고 `spatialPlaces` 아래 편집 경로로 유지한다.
+장소 설계 목록은 기존 장소와 공간(기본 방 규칙 포함)을 함께 표시하며, 배치 목록도 두 종류를
+합친다. 카드의 kind·canonicalSource·ID는 보존한다. `spatialGalleryNavigation.ts`가 선택한
+카드 종류에 맞는 기존 편집기로 이동하고 breadcrumb를 남긴다. 공통 구성 편집기의 선택기도
+같은 경로를 사용한다. 공간 편집 화면의 「장소 돌아가기」으로 돌아갈 수 있고, 기존 바로가기와
+`tilesetSpaces` 방 규칙 편집 경로도 유지한다. 레일의 소속 강조는 장소를 따른다.
+
+이 단계는 목록·탐색 통합이다. 새 장소 생성, 방·층 추가, AI 용어, 공간/장소 내부 스키마와
+시공기는 후속 단계이며 변경하지 않았다. 포함된 공간도 재사용을 위해 목록에 표시한다.
+시설/정주지/자연 필터는 기존 장소 분류만 필터링한다. 데이터 마이그레이션이나 원격 콘텐츠
+수정은 없다. `test/spatialUnifiedPlaces.test.ts`, 기존 catalog/card-resolution 계약,
+`scripts/capture-unified-places.mjs`(격리 blankProject, 1440/1024px)로 검증한다.
+
 ## 복합 공간 편집기 (2026-09-13)
 
 자체 canonical 설계의 공간·장소·지역·세계는 `spatialCompositionWorkspace.ts`를 쓴다.
@@ -161,6 +206,21 @@ The current multi-floor inn template remains authoritative (`dorm_bed_a`,
 `upper_stair`); snapshot tests use those IDs, not the retired bedroom/stairs IDs.
 Validation and replay boundaries are in `reports/pr617-621-integration.md`.
 
+## Opening still media, sequence music and AI generation (2026-09-14)
+
+오프닝·게임오버 탭의 그림 슬롯은 picker kind `image`(아이템 아이콘 457개) 대신 신설 kind **`still`** 을 쓴다:
+배경화 → 타이틀 아트 → 생성·업로드 그림 순서가 앞에 오고, 기존 `image` 목록은 뒤에 통째로 남아 **아이콘으로
+저작해 둔 저장본이 그대로 유효하다**. 버튼 배선은 그대로고 `databaseCinematicMediaFields`(표시)와
+`databaseCinematicMediaActions`(검증·커밋)가 같은 kind 를 본다.
+
+- `AI_GENERATABLE_PICKER_KINDS` 에 `still: "backdrop"` 을 넣어 그림 슬롯 피커에 기존 "AI로 만들기"(`aiImageGenerateField`)가
+  그대로 붙는다. 생성물은 `kind:"backdrop"` 업로드 자산으로 등록되고 `still` 카탈로그에 바로 잡힐다.
+- 「시퀀스 설정」 카드에 **배경음악**(`db-cinematic-music`, picker kind `music`, 비우기·파일 가져오기 허용)이 생겼다.
+  슬롯 `{ kind: "music" }` 은 장면이 없어도 설정된다 — 시퀀스가 없으면 빈 시퀀스를 만들고 `musicResourceId` 를 쓴다.
+- 업로드 경로: 음악 슬롯은 음성과 같은 `audio` 준비기를 타고, `still` 업로드는 종전처럼 `picture` 프로필로 등록된다.
+- 브라우저 계약: `test/e2e/database-opening-still-media.spec.ts` — 배경화 후보 노출·선택 반영, AI 생성 필드 노출,
+  배경음악 선택이 `system.opening.musicResourceId` 로 저장됨.
+
 ## Opening and game-over authoring (2026-09-06)
 
 The System group contains dedicated `opening` / `gameOver` tabs, labelled
@@ -198,6 +258,12 @@ truth is `project.system.opening` and `project.system.gameOver`, never
 - `database.ts` and `databaseModal.ts` call `disposeDatabaseCinematicsIn` before
   leaving/evicting/closing cinematic views. These views are not reused from
   detached cache. Other Database caching stays unchanged.
+- The same authored record is writable through the AI assistant since 2026-09-14:
+  `get_opening` / `set_opening` / `remove_opening` / `list_opening_media`
+  (`cinematicTools.ts`, system domain). `set_opening` replaces the whole scene list,
+  so an AI edit and a tab edit land on one source of truth — `project.system.opening`.
+  Media candidates come from the same catalog the tab's picker uses
+  (`src/editor/resourceOptions.ts`). See `editor-ai-tools.md` (2026-09-14).
 - Scoped editor presentation lives in `src/styles/database/system-studio.css`;
   runtime stage presentation still belongs to the existing runtime CSS closure.
 
