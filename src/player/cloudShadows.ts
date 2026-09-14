@@ -44,6 +44,19 @@ export type CloudShadowBlob = {
   readonly rotationDeg: number;
   /** 짧은 반지름 / 긴 반지름. */
   readonly squash: number;
+  /** 어느 실루엣으로 그릴지 — `cloudShadowSilhouette` 의 변주 번호. */
+  readonly variant: number;
+};
+
+/**
+ * 실루엣을 이루는 로브 하나. 좌표는 «덩어리 한 변을 1 로 본» 정규화 값이다(0~1, 중심 0.5).
+ * 그림 도구가 무엇이든(캔버스·셰이더) 같은 실루엣이 나오도록 모양은 여기서만 정한다.
+ */
+export type CloudShadowLobe = {
+  readonly cx: number;
+  readonly cy: number;
+  /** 정규화 반지름 — 0.5 면 덩어리 한 변을 가득 채운다. */
+  readonly radius: number;
 };
 
 export const CLOUD_SHADOW_OPACITY_RANGE = { min: 0.05, max: 0.6 } as const;
@@ -52,6 +65,31 @@ export const CLOUD_SHADOW_SCALE_RANGE = { min: 0.5, max: 2.5 } as const;
 
 /** seed 하나가 만드는 덩어리 수. 화면 덮임 밀도는 이 값이 정한다. */
 export const CLOUD_SHADOW_BLOB_COUNT = 12;
+
+/**
+ * 실루엣 변주 수. 원 하나로 그리면 «구름» 이 아니라 «동그란 얼룩» 으로 읽힌다(실측) —
+ * 로브 여러 개의 합집합으로 윤곽을 울퉁불퉁하게 만들고, 변주를 몇 개 두어 같은 모양이
+ * 화면에 겹쳐 보이지 않게 한다.
+ */
+export const CLOUD_SHADOW_SILHOUETTE_COUNT = 4;
+
+/** 로브 개수 범위. 적으면 원에 가깝고 많으면 뭉개져 다시 원이 된다. */
+const CLOUD_SHADOW_LOBE_COUNT = { min: 5, max: 7 } as const;
+
+/**
+ * 로브 중심에서 이 비율까지는 알파가 평평하다. 가장자리 전부가 반그림자면 «지나가는 그늘»
+ * 이 아니라 «화면 밝기가 숨 쉬는 것» 으로 보인다(실측) — 코어를 평평하게 둬야 경계가 읽힌다.
+ */
+export const CLOUD_SHADOW_LOBE_CORE_FRACTION = 0.62;
+
+/**
+ * 덩어리별 속도 배율 범위. 12개가 정확히 같은 속도로 가면 «판 하나를 끌고 간다» 로 보인다.
+ * 중앙값은 1 이라 설정한 속도·방향은 그대로 유지된다(QA 가 재는 값이 이 중앙값이다).
+ */
+export const CLOUD_SHADOW_SPEED_JITTER = { min: 0.88, max: 1.12 } as const;
+
+/** 느린 크기 호흡 — 폭과 한 바퀴 주기(ms). 구름은 흘러가면서 늘어나고 줄어든다. */
+export const CLOUD_SHADOW_BREATH = { amount: 0.09, periodMs: 21_000 } as const;
 
 /** 체크만 했을 때의 값. 진하기 0.34 는 «안 보이면 기능이 없는 줄 안다» 와 «너무 어둡다» 사이의 실측값이다. */
 export const CLOUD_SHADOW_DEFAULTS = { opacity: 0.34, speed: 26, angleDeg: 28, scale: 1 } as const;
@@ -105,7 +143,7 @@ export function cloudShadowBlobs(
   for (let index = 0; index < anchors.length; index += 1) {
     const anchor = anchors[index]!;
     const entry = layout[index]!;
-    const radius = entry.radiusFraction * period;
+    const radius = entry.radiusFraction * period * cloudShadowBreath(entry.breathPhase, elapsedMs);
     const firstX = Math.ceil((view.x - radius - anchor.x) / period);
     const lastX = Math.floor((view.x + view.width + radius - anchor.x) / period);
     const firstY = Math.ceil((view.y - radius - anchor.y) / period);
@@ -119,6 +157,7 @@ export function cloudShadowBlobs(
           alpha: round(params.opacity * entry.alphaFactor),
           rotationDeg: entry.rotationDeg,
           squash: entry.squash,
+          variant: entry.variant,
         });
       }
     }
@@ -138,10 +177,23 @@ export function cloudShadowAnchors(
 ): readonly { readonly x: number; readonly y: number }[] {
   if (!params.enabled || params.opacity <= 0 || !Number.isFinite(period) || period <= 0) return [];
   const drift = cloudShadowDrift(params, elapsedMs);
+  // 덩어리마다 속도를 살짝 달리 준다 — 방향은 같고, 배율의 중앙값이 1 이라 설정값은 지켜진다.
   return cloudShadowLayout(seed).map((entry) => ({
-    x: positiveModulo(entry.u * period + drift.dx, period),
-    y: positiveModulo(entry.v * period + drift.dy, period),
+    x: positiveModulo(entry.u * period + drift.dx * entry.speedFactor, period),
+    y: positiveModulo(entry.v * period + drift.dy * entry.speedFactor, period),
   }));
+}
+
+/**
+ * 호흡 배율 — 덩어리마다 위상이 달라 같은 순간에도 어떤 구름은 늘어나고 어떤 구름은 줄어들어 있다.
+ * 시간만으로 결정되므로 위치와 마찬가지로 저장할 것이 없다.
+ */
+export function cloudShadowBreath(phase: number, elapsedMs: number): number {
+  if (!Number.isFinite(elapsedMs) || elapsedMs <= 0) {
+    return round(1 + CLOUD_SHADOW_BREATH.amount * Math.sin(phase * Math.PI * 2));
+  }
+  const turns = elapsedMs / CLOUD_SHADOW_BREATH.periodMs + phase;
+  return round(1 + CLOUD_SHADOW_BREATH.amount * Math.sin(turns * Math.PI * 2));
 }
 
 /** 시드 하나가 만드는 덩어리 «모양» — 주기 격자 안의 정규화 좌표다. */
@@ -152,7 +204,44 @@ type CloudShadowLayoutEntry = {
   readonly alphaFactor: number;
   readonly rotationDeg: number;
   readonly squash: number;
+  readonly variant: number;
+  /** 이 덩어리만의 속도 배율. */
+  readonly speedFactor: number;
+  /** 크기 호흡의 시작 위상(0~1). */
+  readonly breathPhase: number;
 };
+
+/**
+ * 변주 번호 하나가 그리는 구름 실루엣 — 큰 몸통 하나에 위성 로브를 붙인 합집합이다.
+ * 위성은 몸통 가장자리에 걸치도록 놓아 윤곽만 울퉁불퉁해지고 가운데는 비지 않는다.
+ */
+export function cloudShadowSilhouette(variant: number): readonly CloudShadowLobe[] {
+  const random = mulberry32(hashSeed(Math.abs(Math.trunc(variant)) * 2654435761 + 17));
+  const bodyRadius = lerp(0.24, 0.29, random());
+  const lobes: CloudShadowLobe[] = [{ cx: 0.5, cy: 0.5, radius: bodyRadius }];
+  const count = Math.round(lerp(CLOUD_SHADOW_LOBE_COUNT.min, CLOUD_SHADOW_LOBE_COUNT.max, random()));
+  const startAngle = random() * Math.PI * 2;
+  for (let index = 0; index < count; index += 1) {
+    // 각도는 고르게 돌리되 흔들어 놓는다 — 정확히 등간격이면 꽃잎 모양이 된다.
+    const angle = startAngle + ((index + lerp(-0.35, 0.35, random())) / count) * Math.PI * 2;
+    const radius = lerp(0.11, 0.2, random());
+    const distance = bodyRadius * lerp(0.55, 0.95, random());
+    // 가로로 눌러 놓는다: 바람에 끌린 구름은 진행 방향으로 늘어난다.
+    const cx = 0.5 + Math.cos(angle) * distance * 1.15;
+    const cy = 0.5 + Math.sin(angle) * distance * 0.78;
+    lobes.push({
+      cx: clampUnit(cx, radius),
+      cy: clampUnit(cy, radius),
+      radius,
+    });
+  }
+  return lobes;
+}
+
+/** 로브가 덩어리 상자를 벗어나면 가장자리가 잘려 직선이 생긴다 — 안쪽으로 접어 둔다. */
+function clampUnit(value: number, radius: number): number {
+  return round(Math.max(radius, Math.min(1 - radius, value)));
+}
 
 /**
  * 시드에서 덩어리 배치를 만든다. 값은 정수 연산 PRNG 라 실행·플랫폼이 달라도 같다 —
@@ -170,6 +259,9 @@ function cloudShadowLayout(seed: number): readonly CloudShadowLayoutEntry[] {
       alphaFactor: lerp(0.55, 1, random()),
       rotationDeg: random() * 360,
       squash: lerp(0.62, 1, random()),
+      variant: Math.floor(random() * CLOUD_SHADOW_SILHOUETTE_COUNT) % CLOUD_SHADOW_SILHOUETTE_COUNT,
+      speedFactor: round(lerp(CLOUD_SHADOW_SPEED_JITTER.min, CLOUD_SHADOW_SPEED_JITTER.max, index / Math.max(1, CLOUD_SHADOW_BLOB_COUNT - 1))),
+      breathPhase: random(),
     });
   }
   return entries;
