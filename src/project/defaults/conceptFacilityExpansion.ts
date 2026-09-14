@@ -52,7 +52,7 @@ export const EXPANDED_CONCEPT_FACILITIES: readonly ConceptBundleRecord[] = [
     ] },
     { id: "dispensary", label: "조제실", role: "room", size: "m", floor: "stone", furnishings: [
       item("counter", "조제 작업대", ["block", "event"], true),
-      item("shelf_jars", "약재 항아리 선반", ["wall"]), item("jars", "약재 항아리"),
+      item("shelf_jars", "약재 항아리 선반", ["wall"]),
       item("kettle", "약재 항아리"), item("box", "약재 상자"),
     ] },
     reception,
@@ -100,13 +100,14 @@ export const EXPANDED_CONCEPT_FACILITIES: readonly ConceptBundleRecord[] = [
   facility("alchemist", "연금술 공방", [
     { id: "laboratory", label: "실험실", role: "room", size: "l", shape: "l", floor: "stone", furnishings: [
       item("counter", "실험대", ["block", "event"], true),
+      item("stove", "연금 가열 화덕", ["block"], true),
       item("cauldron", "연금 가마솥", ["block", "event"], true),
       item("crystal", "연구 수정구", ["block", "event"]),
       item("shelf_jars", "시약 선반", ["wall"]), item("bucket", "세척 물통"),
     ] },
     { id: "ingredients", label: "재료 보관실", role: "room", size: "s", furnishings: [
-      item("jars", "시약 항아리", ["block", "event"], true),
-      item("box", "광물 상자"), item("shelf_jars", "재료 선반", ["wall"]),
+      item("shelf_jars", "시약 항아리 선반", ["wall", "event"], true),
+      item("box", "광물 상자"),
     ] },
     { id: "consultation", label: "의뢰 상담실", role: "entrance", size: "l", furnishings: [
       item("bookshelf", "연금술 서적", ["block", "event"], true),
@@ -122,7 +123,7 @@ export const EXPANDED_CONCEPT_FACILITIES: readonly ConceptBundleRecord[] = [
     ] },
     { id: "pantry", label: "식재료 저장실", role: "room", size: "s", furnishings: [
       item("grain", "곡물 자루", ["block", "event"], true),
-      item("crate", "식재료 상자"), item("jars", "저장 항아리"),
+      item("crate", "식재료 상자"), item("shelf_jars", "저장 항아리 선반", ["wall"]),
     ] },
     { id: "tearoom", label: "판매·찻자리", role: "entrance", size: "l", floor: "plank", furnishings: [
       item("table_white", "판매용 흰 작업대", ["block", "event"], true),

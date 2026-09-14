@@ -174,6 +174,52 @@ Verification: `test/regionReferences.test.ts`; browser evidence and remote recei
 are under `docs/evidence/region-reference/`. Runtime behavior is unchanged; the
 example currently contains no interior connections or interactive well event.
 
+### Castle town reference (2026-09-13)
+
+`castle-town-100x100` adds the user-finalized 100×100 castle city alongside
+the original settlement. The source is `rpg-zzu-castle-town-100-20260913-6890`;
+its frozen Supabase copy is `rpg-zzu-region-reference-castle-town-v1`.
+`src/project/regionReferences/castle-town.json` and
+`public/assets/region-references/castle-town.png` are derived from that reloaded
+copy, including the user's road, entrance, garden and roof edits. AI paginated
+reads select the snapshot by reference ID; the two references must never share
+the same raster implicitly. `test/regionReferences.test.ts` reconstructs both
+rasters and verifies their own passage metadata and gallery discovery.
+This is an exterior reference, without palace floor interiors; runtime evidence
+from before the user's last edits is not a validation of this frozen revision.
+
+### Lake village and extracted places (2026-09-13)
+
+`lake-village-60x60` is the accepted mixed-tree lake village, frozen from
+`rpg-zzu-lake-village-60-20260913-6890` into Supabase project
+`rpg-zzu-region-reference-lake-village-v1`. Its reloaded map and tileset are
+bundled as `regionReferences/lake-village.json`; preview is captured from the
+frozen project. Source content is left untouched.
+
+`PLACE_REFERENCES` exposes three read-only crops in the Places gallery:
+`lake-pier-workyard`, `lake-well-rest`, and `lake-cottage-garden`. These are
+completed placement examples, not facility generation presets. Crops retain
+source map coordinates in catalog metadata, return local-sized paginated raster
+rows through `read_region_reference`, and use the same frozen tileset metadata.
+The tool list and AI reference context expose both region and place references.
+Place stage/chrome route references before ordinary facility selection; activation,
+apply and build controls remain absent. The lake snapshot holds the remote
+source for all three crops; no independent mutable crop projects are created.
+
+Validation: `test/regionReferences.test.ts` checks lake raster, exact crop rows,
+place gallery discovery, preview routing and absence of apply. Browser proof:
+`output/evidence/region-reference/*-gallery.png`, `lake-regions-desktop.png`;
+remote reload receipt: `lake-persistence.json` in the same directory.
+
+### 석교 공간 저작 자료 (2026-09-15)
+
+`docs/authored/stonebridge/`에는 원격 프로젝트
+`rpg-zzu-castle-canal-reference-20260913-6890`에서 재로드한 최종 맵·칩셋과
+`seokgyo-*` 오브젝트 25개, 공간 8개, 장소 5개의 선택적 스냅샷이 있다.
+이는 해당 프로젝트의 실제 canonical library이며 전역 기본 설계 자동 설치가 아니다.
+성곽 외부 계단 금지, 연속된 3층 외벽, 본관 6칸·양익 4칸 평지붕 규칙 및
+컴파일·통행 검증 범위는 동 디렉터리 README와 receipt를 참조한다.
+
 ## 기존 완성 맵을 지역에 연결
 
 `regionMapLinks.ts`는 지역 루트 occurrence의 **단일 projection binding**이 실제 맵 전체

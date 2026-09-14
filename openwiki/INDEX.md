@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **68쪽 / 2671KB / 약 752,254 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **68쪽 / 2690KB / 약 757,226 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -20,7 +20,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-database.md` | 284KB | 59KB ⚠상한 초과 — 절을 더 쪼개라 | 1584 | ~82,227 |
 | `openwiki/editor-event-authoring.md` | 136KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 744 | ~39,121 |
 | `openwiki/editor-event-commands.md` | 57KB | 32KB | 202 | ~15,410 |
-| `openwiki/editor-interior-room-harness.md` | 77KB | 6KB | 374 | ~22,891 |
+| `openwiki/editor-interior-room-harness.md` | 92KB | 6KB | 445 | ~26,704 |
 | `openwiki/editor-pre-edit-routing.md` | 113KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 605 | ~32,349 |
 | `openwiki/editor-workflows-misc.md` | 65KB | 30KB | 458 | ~17,883 |
 | `openwiki/runtime-battle.md` | 143KB | 31KB | 611 | ~40,897 |
@@ -64,7 +64,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-pre-edit-routing.md` | 13 | `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `event-editor.part-4.css`, `figma-editor.css`, `figma-editor/10-map-tree.css`, `rm2k3.part-1.css`, `shell/editor-responsive-expert.css`, `src/editor/tools/worldTools.ts`, `src/styles/editor/event-editor.balanced.css`, `test/modalEscapeLayerGate.test.ts`, `test/regionTaskHouseProtection.test.ts`, `test/worldAiExclusion.test.ts`, `worldTools.ts` |
 | `openwiki/editor-validation.md` | 8 | `final-layout.json`, `test/aiBlockedEventRelocation.test.ts`, `test/aiToolDiscoveryEscalation.test.ts`, `test/databaseSystemView.test.ts`, `test/interiorLongTable.test.ts`, `test/p0ProjectSchema.test.ts`, `test/projectLint.test.ts`, `viewport-matrix.json` |
 | `openwiki/editor-workflows-misc.md` | 11 | `.qa.json`, `default.json`, `game.html`, `release.json`, `runtime.json`, `src/editor/authoringTestGate.ts`, `src/styles/editor/event-editor-help.css`, `test/audioDescriptionCommandSurfaces.test.ts`, `test/devRuntimeArchive.test.ts`, `test/mapSurfaceFocus.test.ts`, `test/runtimePictureStacking.test.ts` |
-| `openwiki/emerald-fields.md` | 14 | `ANALYSIS.md`, `VISUAL-SUMMARY.md`, `cliff-contours.json`, `editor-saved-proof.json`, `emerald-wide-v2/reloaded-project.json`, `exit-seam-proof.json`, `fidelity/fidelity-proof.json`, `fidelity/reference-vs-editor.png`, `fidelity/runtime-visual/SUMMARY.md`, `inspection-16-fixed/manifest.json`, `inspection-16/REVIEW.md`, `map-open-saved.png`, `region-saved.png`, `road-graph.json` |
+| `openwiki/emerald-fields.md` | 20 | `ANALYSIS.md`, `VISUAL-SUMMARY.md`, `cliff-contours.json`, `editor-saved-proof.json`, `emerald-wide-v2/reloaded-project.json`, `exit-seam-proof.json`, `fidelity/fidelity-proof.json`, `fidelity/reference-vs-editor.png`, `fidelity/runtime-visual/SUMMARY.md`, `inspection-16-fixed/manifest.json`, `inspection-16/REVIEW.md`, `map-open-saved.png`, `output/evidence/emerald-fields/fidelity/VALIDATION.md`, `output/evidence/emerald-region/supabase-proof.json`, `output/evidence/emerald-wide/reloaded-project.json`, `region-saved.png`, `road-graph.json`, `verify-shots/runtime-qa/emerald-fields/SUMMARY.md`, `verify-shots/runtime-qa/emerald-wide-v2/SUMMARY.md`, `verify-shots/runtime-qa/emerald-wide/SUMMARY.md` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/horror-authoring.md` | 2 | `motion-sheet.png`, `projectLint.test.ts` |
 | `openwiki/large-village-generation.md` | 4 | `-standalone.html`, `HANDOFF.json`, `output/evidence/town-reference/town-reference.html`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
@@ -80,7 +80,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/spatial-ai-tools.md` | 1 | `test/spatialToolProjectionBoundary.test.ts` |
 | `openwiki/spatial-authoring-controller.md` | 1 | `storeMutationInstrumentation.test.ts` |
 | `openwiki/spatial-geography-compiler.md` | 1 | `.omo/ulw-execute/tile-to-world/execution-policy.md` |
-| `openwiki/testing.md` | 28 | `../dialogue.css`, `X.quarantine.test.ts`, `X.test.ts`, `aiChatObservability.test.ts`, `aiChatPanelTransportError.test.ts`, `aiSelectionChipScope.test.ts`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/actionRpgAuthoringAcceptance.test.ts`, `test/aiEventPlacementSurfaceGate.test.ts`, `test/databaseKoreanRtpDefaults.test.ts`, `test/dialoguePreviewPresentationCss.test.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/interiorConceptAssemblies.test.ts`, `test/regionTaskRun.test.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
+| `openwiki/spatial-geography-ui.md` | 2 | `lake-persistence.json`, `lake-regions-desktop.png` |
+| `openwiki/testing.md` | 29 | `../dialogue.css`, `.omo/gates-vitest-report.json`, `X.quarantine.test.ts`, `X.test.ts`, `aiChatObservability.test.ts`, `aiChatPanelTransportError.test.ts`, `aiSelectionChipScope.test.ts`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/actionRpgAuthoringAcceptance.test.ts`, `test/aiEventPlacementSurfaceGate.test.ts`, `test/databaseKoreanRtpDefaults.test.ts`, `test/dialoguePreviewPresentationCss.test.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/interiorConceptAssemblies.test.ts`, `test/regionTaskRun.test.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
 | `openwiki/ui-discovery-pilot.md` | 3 | `direct/RESULTS.json`, `output/evidence/ui-discovery-v2/report.html`, `trace.json` |
 | `openwiki/village-design.md` | 3 | `depth-review.json`, `output/evidence/house-heights/REVIEW.md`, `output/village-direction/index.html` |
@@ -512,7 +513,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L59` Validation
 - `L61` Two new-project surfaces, one choice model (2026-09-11)
 
-### `openwiki/editor-interior-room-harness.md` — 77KB · 374줄 · ~22,891 토큰 · 통째읽기 잘림
+### `openwiki/editor-interior-room-harness.md` — 92KB · 445줄 · ~26,704 토큰 · 통째읽기 잘림
 
 - `L5` 던전 천장과 단차의 구분 — 사용자 정정 (2026-09-13)
 - `L19` 대형 광산 저작 접합 교정 (2026-09-13)
@@ -545,6 +546,12 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L355` 생활 구역 조합으로 실내 저작 (2026-09-14)
 - `L364` 여관·잡화점의 시설별 실내 기준 (2026-09-14)
 - `L371` 연결 던전의 에디터 통합 (2026-09-14)
+- `L375` Compact interiors and automatic furnishing budgets (2026-09-14)
+- `L386` Open domestic interiors: activity areas are not enclosed rooms (2026-09-14)
+  - `L398` Follow-up: excess floor and furniture depth (2026-09-14)
+  - `L408` Small props require supports; short bathroom steps (2026-09-14)
+  - `L418` Reference-house correction: no shrub pots, cooking supports, inset cabinets (2026-09-14)
+  - `L428` All-interior review (2026-09-15)
 
 ### `openwiki/editor-observability.md` — 38KB · 469줄 · ~10,835 토큰 · 깨진 줄 1
 
@@ -984,7 +991,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L83` Ownership and regeneration
 - `L106` Contract fixtures and proof
 
-### `openwiki/spatial-geography-ui.md` — 11KB · 191줄 · ~2,856 토큰
+### `openwiki/spatial-geography-ui.md` — 14KB · 237줄 · ~3,598 토큰
 
 - `L7` Public modules
 - `L26` Settlement regions (2026-09-12)
@@ -993,7 +1000,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L123` Fixtures
 - `L129` Proof
 - `L148` Completed map references (2026-09-13)
-- `L177` 기존 완성 맵을 지역에 연결
+  - `L177` Castle town reference (2026-09-13)
+  - `L191` Lake village and extracted places (2026-09-13)
+  - `L214` 석교 공간 저작 자료 (2026-09-15)
+- `L223` 기존 완성 맵을 지역에 연결
 
 ### `openwiki/spatial-manual-build.md` — 11KB · 177줄 · ~2,738 토큰
 
@@ -1011,15 +1021,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L58` Lifecycle and compatibility
 - `L89` Reproduction
 
-### `openwiki/spatial-place-compiler.md` — 13KB · 203줄 · ~3,366 토큰
+### `openwiki/spatial-place-compiler.md` — 15KB · 211줄 · ~3,783 토큰
 
-- `L29` Houses with a yard and four floors (2026-09-12)
-- `L58` Compact one-floor household (2026-09-13)
-  - `L92` Structural partitions (2026-09-13 correction)
-  - `L113` Compact furniture arrangement
-  - `L128` Furniture overlapping the north wall
-- `L147` Reviewed interior space catalog (2026-09-13)
-  - `L174` Frozen placement vocabulary
+- `L29` Shared interior shell and activity zones (2026-09-14)
+- `L37` Houses with a yard and four floors (2026-09-12)
+- `L66` Compact one-floor household (2026-09-13)
+  - `L100` Structural partitions (2026-09-13 correction)
+  - `L121` Compact furniture arrangement
+  - `L136` Furniture overlapping the north wall
+- `L155` Reviewed interior space catalog (2026-09-13)
+  - `L182` Frozen placement vocabulary
 
 ### `openwiki/spatial-placed-space-edits.md` — 5KB · 75줄 · ~1,209 토큰
 

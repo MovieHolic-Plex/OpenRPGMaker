@@ -127,7 +127,8 @@ export function canonicalRoomAlias(project: Project, query: string, tilesetId: s
   // Unmapped legacy layout copies are exact-ID-only, never replacements for deleted originals.
   const candidates = spaces.filter(space => space.tilesetId === tilesetId
     && (space.provenance.origin !== "legacy" || mappedIds.has(space.id)));
-  const alias = PLACE_ALIASES[query];
+  const qualified = query.split("/");
+  const alias = PLACE_ALIASES[query] ?? (qualified.length === 2 && qualified.every(Boolean) ? qualified : undefined);
   const qualifiedIds = new Set(receipt.filter(entry => alias && entry.tuple[0] === tilesetId
     && entry.tuple[1] === alias[0] && entry.tuple[3] === alias[1]).map(entry => entry.id));
   const preferred = candidates.filter(space => qualifiedIds.has(space.id));

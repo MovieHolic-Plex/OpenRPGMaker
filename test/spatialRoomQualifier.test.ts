@@ -48,7 +48,7 @@ function roomPlan(theme: string): InteriorRoomPlan {
 
 describe("requested-atlas canonical room binding", () => {
   describe.each([true, false])("foreign-first=%s", foreignFirst => {
-    it.each(["Shared Room", "shared-room-tag", "bedroom"])("binds the requested atlas when the query is %s", query => {
+    it.each(["Shared Room", "shared-room-tag", "bedroom", "qualified-facility/bedroom"])("binds the requested atlas when the query is %s", query => {
       // Given: distinct atlas sources with identical label/tag/receipt aliases.
       const project = convertedRooms(foreignFirst);
       const plan = roomPlan(query);

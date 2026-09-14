@@ -40,10 +40,15 @@ export type SpatialObjectSlot = {
   readonly quantity: number; readonly required: boolean;
   readonly placement: { readonly mode: "auto" } | ({ readonly mode: "fixed"; readonly wallOverlap?: 1 | 2 } & SpatialPoint);
   readonly chipOverrides?: readonly string[];
+  /** Optional activity zone inside one shared interior shell. */
+  readonly zoneId?: SpatialId;
 };
 export type SpatialFloorArea =
   | ({ readonly kind: "rect"; readonly material: string } & SpatialRect)
   | { readonly kind: "polygon"; readonly material: string; readonly points: readonly SpatialPoint[] };
+export type SpatialInteriorZone = SpatialRect & {
+  readonly id: SpatialId; readonly name: string; readonly floor: string;
+};
 /** Floor-local room boxes; shared edges reserve partition cells, doorways reopen them. */
 export type SpatialInteriorLayout = {
   readonly rooms: readonly (SpatialRect & { readonly id: SpatialId; readonly name: string; readonly shape?: import("../interiorRoomFootprint").InteriorRoomShape; readonly floor?: string })[];
@@ -54,7 +59,7 @@ export type SpaceDesign = SpatialDesignBase & SpatialComposable & {
   readonly width: number; readonly height: number; readonly floor: string; readonly wall: string;
   readonly objectSlots: readonly SpatialObjectSlot[]; readonly ports: readonly SpatialPort[];
 } & (
-  | { readonly environment: "interior"; readonly role: "entrance" | "walkway" | "room"; readonly interiorLayout?: SpatialInteriorLayout }
+  | { readonly environment: "interior"; readonly role: "entrance" | "walkway" | "room"; readonly zones?: readonly SpatialInteriorZone[]; readonly interiorLayout?: SpatialInteriorLayout }
   | { readonly environment: "outdoor"; readonly floorAreas: readonly SpatialFloorArea[] }
 );
 export type SpatialChildSlot<K extends SpatialKind> = SpatialPoint & {
