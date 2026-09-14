@@ -4,7 +4,7 @@ import {
   ensureTilesetTexture,
   isDefaultTilesetTexture,
   supportsChipsetQuarterComposition,
-  supportsChipsetTileAnimation,
+  tilesetAnimationKeyForTile,
 } from "@/editor/tilesetImage";
 import { animationKeyForTile } from "@/project/defaults/chipsetAnimation";
 import { tileBackingTile } from "@/editor/tileLayerPolicy";
@@ -167,7 +167,7 @@ function createTerrainQuarterObject(
 
 function createRawTileObject(scene: Phaser.Scene, tileset: TilesetDef, pixelX: number, pixelY: number, tile: number): ChipsetTilePiece {
   const textureKey = ensureTilesetTexture(scene, tileset);
-  const baseAnimationKey = supportsChipsetTileAnimation(tileset, tile) ? animationKeyForTile(tile) : null;
+  const baseAnimationKey = tilesetAnimationKeyForTile(tileset, tile);
   const animationKey = baseAnimationKey ? chipsetAnimationKey(textureKey, baseAnimationKey) : null;
   const image = animationKey
     ? scene.add.sprite(pixelX, pixelY, textureKey, `tile_${tile}`).play(animationKey)
