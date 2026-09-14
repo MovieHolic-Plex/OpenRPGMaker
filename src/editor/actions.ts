@@ -42,7 +42,7 @@ export {
   toggleCollision,
 } from "@/editor/tileActions";
 export type { TileStrokeCell } from "@/editor/tileActions";
-import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBgmSetting, MapId, MapMinimapSetting, TilesetDef, TroopId } from "@/project/types";
+import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBgmSetting, MapCloudShadowSetting, MapId, MapMinimapSetting, TilesetDef, TroopId } from "@/project/types";
 
 // ── 맵 CRUD ──
 
@@ -391,6 +391,32 @@ export function setMapMinimap(mapId: MapId, patch: Partial<MapMinimapSetting> | 
       delete map.minimap;
     } else {
       map.minimap = next;
+    }
+  }, { scope: "map", mapId });
+}
+
+export function setMapCloudShadows(mapId: MapId, patch: Partial<MapCloudShadowSetting> | null): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (patch === null) {
+      delete map.cloudShadows;
+      return;
+    }
+    const current = map.cloudShadows;
+    const next: MapCloudShadowSetting = {
+      enabled: patch.enabled ?? current?.enabled ?? false,
+      ...(patch.opacity !== undefined ? { opacity: patch.opacity } : current?.opacity !== undefined ? { opacity: current.opacity } : {}),
+      ...(patch.speed !== undefined ? { speed: patch.speed } : current?.speed !== undefined ? { speed: current.speed } : {}),
+      ...(patch.angleDeg !== undefined ? { angleDeg: patch.angleDeg } : current?.angleDeg !== undefined ? { angleDeg: current.angleDeg } : {}),
+      ...(patch.scale !== undefined ? { scale: patch.scale } : current?.scale !== undefined ? { scale: current.scale } : {}),
+    };
+    const hasExtra = next.opacity !== undefined || next.speed !== undefined || next.angleDeg !== undefined || next.scale !== undefined;
+    if (!next.enabled && !hasExtra) {
+      delete map.cloudShadows;
+    } else {
+      map.cloudShadows = next;
     }
   }, { scope: "map", mapId });
 }

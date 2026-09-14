@@ -31,6 +31,7 @@ describe("AI assistant editor-wide project mutation coverage", () => {
     source.background = { imageId: "bg_clouds", scrollX: 1, scrollY: -1 };
     source.disableSave = true;
     source.minimap = { enabled: true, corner: "topLeft", showEvents: true };
+    source.cloudShadows = { enabled: true, opacity: 0.3, speed: 40, angleDeg: 200, scale: 1.5 };
 
     const result = runTool(context, "duplicate_map", {
       mapId,
@@ -46,6 +47,7 @@ describe("AI assistant editor-wide project mutation coverage", () => {
       background: source.background,
       disableSave: true,
       minimap: source.minimap,
+      cloudShadows: source.cloudShadows,
     });
     expect(findParentMapId(context.project.mapTree, "map_copy")).toBe(findParentMapId(context.project.mapTree, mapId));
   });
@@ -64,6 +66,7 @@ describe("AI assistant editor-wide project mutation coverage", () => {
       battleBackground: "battle_cave",
       flags: { disableSave: true, disableTeleport: true, disableEscape: false },
       minimap: { enabled: true, corner: "bottomRight", scale: 0.2, showEvents: false, fogOfWar: true },
+      cloudShadows: { enabled: true, opacity: 0.4, speed: 52, angleDeg: 200, scale: 1.5 },
     });
 
     expect(result.ok, result.summary).toBe(true);
@@ -77,6 +80,7 @@ describe("AI assistant editor-wide project mutation coverage", () => {
       disableSave: true,
       disableTeleport: true,
       minimap: { enabled: true, corner: "bottomRight", scale: 0.2, showEvents: false, fogOfWar: true },
+      cloudShadows: { enabled: true, opacity: 0.4, speed: 52, angleDeg: 200, scale: 1.5 },
     });
     expect(context.project.maps[mapId].disableEscape).toBeUndefined();
   });
