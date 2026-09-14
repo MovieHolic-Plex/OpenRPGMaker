@@ -200,7 +200,19 @@ token expired…)`), 범위 밖 spill 버림도 `범위 밖 N건 버림(키들)`
 버리면 병합본이 자기 이벤트의 참조를 잃고 커밋 게이트가 `serialize-roundtrip`(`setSwitch: switchId가
 존재하지 않습니다`)으로 **적용 전체를 거부**한다(`/pi` 실측: `적용 실패(commit-rejected): …`).
 기존 항목의 수정·삭제는 그대로 범위 밖이고, 함께 옮긴 키는 spill 목록에서 덜어낸다.
-계약: `test/piAgentMapBundle.test.ts`.
+계약: `test/piAgentMapBundle.test.ts`(단일·CLI 경로), `test/piAgentTeamRuntime.test.ts`(팀 경로 —
+병합이 워커 안에서 돌아 여기가 진짜 실패 경로였다; 시공 팀원의 `place_battle_blocker` 스위치가
+게이트를 통과하는지 잡는다).
+
+**살아 있는 워커는 코드를 안 따라온다 (2026-09-14).** 워커(`scripts/oh-my-pi-worker.ts`)는 모듈
+그래프를 부팅 때 한 번 로드하는 오래 사는 Bun 자식이라, 페이지를 새로 고쳐도 살아 있는 워커는 옛
+병합·옛 툴을 계속 돈다. 실측: 위 픽스가 `main` 에 들어간 뒤에도 편집기는 같은
+`적용 실패(commit-rejected): 직렬화 왕복 실패: setSwitch: switchId가 존재하지 않습니다` 를
+재현했다 — 브라우저가 아니라 워커가 낡아 있었다(활동 로그 `project oprn-fcfe8b2c2b`, 픽스가
+`main` 에 병합되기 70분 전 실행). 이제 dev 서버가 `src/**`·`scripts/**` 변경을 보면 다음 요청 때 워커를 갈아 끼우도록
+표시한다(`markOhMyPiWorkerStale`, `vite.config.ts` 의 워처). 진행 중인 실행은 죽이지 않는다.
+계약: `test/ohMyPiWorkerStale.node.test.mjs`. 회귀 진단 순서: (1) 활동 로그에서 그 실행의
+`result.error` 를 본다(`ai_activity_logs`), (2) 워커를 실제로 다시 띄운 뒤 재현되는지 본다.
 
 ## P3 run retirement and stale drafts (2026-09-07)
 

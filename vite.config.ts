@@ -11,7 +11,7 @@ import {
 } from "node:fs";
 import { join } from "node:path";
 import { handleCompanionRequest, isCompanionPath } from "./scripts/lib/ohMyPiHttp.mjs";
-import { createOhMyPiAdapters, stopOhMyPiWorker } from "./scripts/lib/ohMyPiPiAi.mjs";
+import { createOhMyPiAdapters, markOhMyPiWorkerStale, stopOhMyPiWorker } from "./scripts/lib/ohMyPiPiAi.mjs";
 import type { OhMyPiAdapters } from "./scripts/lib/ohMyPiPiAi.mjs";
 import { readRequestJson, writeCompanionResult } from "./scripts/lib/companionHttpUtil.mjs";
 import { devPlayerBundlesPlugin } from "./scripts/lib/devPlayerBundles";
@@ -473,6 +473,18 @@ function codexOAuthPlugin(): Plugin {
     name: "rpgzzu-codex-oauth",
     configureServer(server) {
       attachCompanion(server);
+      // 워커는 모듈 그래프를 부팅 때 한 번 로드하는 오래 사는 Bun 자식이라, 코드를 고쳐도
+      // 살아 있는 프로세스는 옛 판정·옛 병합을 계속 돈다. 실측(2026-09-14): 맵 묶음 병합 픽스가
+      // 들어온 뒤에도 페이지를 새로 고친 편집기가 같은 `setSwitch: switchId가 존재하지 않습니다`
+      // 를 재현했다 — 브라우저가 아니라 워커가 낡아 있었다. 그래서 워커의 모듈 그래프가 될 수 있는
+      // 파일(src/**·scripts/**)이 바뀌면 «다음 요청 때 갈아 끼우기» 로 표시만 한다. 진행 중인
+      // Pi 실행을 파일 저장 한 번으로 끊지 않으려고 여기서 죽이지 않는다.
+      const staleWorkerCode = (file: string): void => {
+        if (/[\\/](?:src|scripts)[\\/].*\.[cm]?[jt]sx?$/u.test(file)) markOhMyPiWorkerStale();
+      };
+      server.watcher.on("change", staleWorkerCode);
+      server.watcher.on("add", staleWorkerCode);
+      server.watcher.on("unlink", staleWorkerCode);
     },
     configurePreviewServer(server) {
       attachCompanion(server);
