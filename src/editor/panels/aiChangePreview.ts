@@ -10,6 +10,7 @@ import { computeMapTileChangeBounds } from "@/editor/panels/aiProposalCard";
 import { renderRegionSnapshot } from "@/editor/regionSnapshot";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import type { ChangeSummary } from "@/editor/tools/types";
+import type { ChangeLedger, ChangeLedgerEntry } from "@/project/changeLedger";
 import type { GameMap, MapId, Project } from "@/project/types";
 import { el } from "@/util/dom";
 
@@ -41,6 +42,11 @@ export interface ChangePreviewInput {
   /** 카드가 말하는 사실 — 「적용 전」(검토 대기) / 「적용됨」(영수증). 기본은 영수증. */
   readonly state?: "proposed" | "applied";
   readonly renderShot?: ChangeShotRenderer;
+  /**
+   * 항목별 before → after 명세. 큰 위임의 검토는 이걸로 한다 — 칩 한 줄은 요약이지 명세가 아니다.
+   * 없으면(변경 0건) 내역 구획을 그리지 않는다.
+   */
+  readonly ledger?: ChangeLedger;
 }
 
 const defaultRenderShot: ChangeShotRenderer = (project, map, region, targetWidth) =>
@@ -200,9 +206,88 @@ function wordDiffNote(chips: readonly string[]): HTMLElement {
     class: "ai-change-word-diff",
     dataset: { testid: "ai-change-word-diff" },
     text: chips.length > 0
-      ? "이번 변경은 지도 그림에 나타나지 않습니다 — 위 항목을 확인하세요."
+      ? "이번 변경은 지도 그림에 나타나지 않습니다 — 아래 변경 내역을 확인하세요."
       : "이번 변경은 지도 그림에 나타나지 않습니다.",
   });
+}
+
+function ledgerRow(entry: ChangeLedgerEntry): HTMLElement {
+  const verb = entry.change === "added" ? "추가" : entry.change === "removed" ? "삭제" : "변경";
+  const values = entry.detail ?? [];
+  return el("li", {
+    class: `ai-change-ledger-row is-${entry.change}`,
+    dataset: { area: entry.area, change: entry.change },
+    children: [
+      el("div", {
+        class: "ai-change-ledger-line",
+        children: [
+          el("span", { class: "ai-change-ledger-area", text: entry.area }),
+          el("span", { class: "ai-change-ledger-label", text: entry.label }),
+          el("span", { class: "ai-change-ledger-verb", text: verb }),
+          ...(entry.before !== undefined || entry.after !== undefined
+            ? [el("span", {
+              class: "ai-change-ledger-values",
+              children: [
+                el("span", { class: "ai-change-ledger-before", text: entry.before ?? "없음" }),
+                el("span", { class: "ai-change-ledger-arrow", text: "→" }),
+                el("span", { class: "ai-change-ledger-after", text: entry.after ?? "없음" }),
+              ],
+            })]
+            : []),
+        ],
+      }),
+      ...(values.length > 0
+        ? [el("ul", { class: "ai-change-ledger-detail", children: values.map((line) => el("li", { text: line })) })]
+        : []),
+    ],
+  });
+}
+
+/**
+ * 변경 내역 — 항목별 before → after. 기본은 **펼침**이고 목록만 스크롤한다:
+ * 접힌 채로 두면 "무엇이 바뀌었나" 를 보려고 한 번 더 눌러야 한다(그게 원래 불평이었다).
+ */
+function ledgerSection(ledger: ChangeLedger): HTMLElement | null {
+  if (ledger.entries.length === 0) return null;
+  const truncated = ledger.total > ledger.entries.length;
+  const section = el("section", {
+    class: "ai-change-ledger",
+    dataset: { testid: "ai-change-ledger" },
+    children: [],
+  });
+  const toggle = el("button", {
+    class: "ai-change-ledger-toggle",
+    text: "접기",
+    attrs: { type: "button", "aria-expanded": "true", title: "변경 내역을 접습니다" },
+    dataset: { testid: "ai-change-ledger-toggle" },
+    on: {
+      click: () => {
+        const collapsed = section.dataset.collapsed !== "true";
+        section.dataset.collapsed = collapsed ? "true" : "false";
+        toggle.textContent = collapsed ? "펼치기" : "접기";
+        toggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
+      },
+    },
+  });
+  section.append(
+    el("header", {
+      class: "ai-change-ledger-head",
+      children: [
+        el("span", { class: "ai-change-ledger-title", text: "변경 내역" }),
+        el("span", {
+          class: "ai-change-ledger-count",
+          text: truncated ? `${ledger.entries.length}/${ledger.total}건` : `${ledger.total}건`,
+          dataset: { testid: "ai-change-ledger-count" },
+        }),
+        ...(truncated
+          ? [el("span", { class: "ai-change-ledger-note", text: "나머지는 넓게 보기에서" })]
+          : []),
+        toggle,
+      ],
+    }),
+    el("ul", { class: "ai-change-ledger-list", children: ledger.entries.map(ledgerRow) }),
+  );
+  return section;
 }
 
 /** 인라인 변경 카드. 동기 반환 — 캔버스는 렌더러가 resolve 될 때 붙는다. */
@@ -241,6 +326,9 @@ export function renderChangePreviewCard(input: ChangePreviewInput): HTMLElement 
         children: [before.figure, el("span", { class: "ai-change-arrow", text: "→" }), after.figure],
       })]),
   ];
+  // 명세는 그림 뒤에 온다 — 그림은 「어디가」, 내역은 「무엇이 어떻게」. 큰 위임은 후자가 본문이다.
+  const ledger = input.ledger ? ledgerSection(input.ledger) : null;
+  if (ledger) children.push(ledger);
   if (input.detail) children.push(el("div", { class: "ai-change-detail", text: input.detail }));
   if (input.onUndo) {
     const onUndo = input.onUndo;
@@ -345,11 +433,13 @@ export function openWideChangeViewer(input: ChangePreviewInput): { readonly root
       }),
     ],
   });
+  // 넓게 보기는 명세를 **자르지 않고** 담는 자리다 — 잘린 항목은 여기서 전부 읽힌다.
+  const ledger = input.ledger ? ledgerSection(input.ledger) : null;
   const root = el("div", {
     class: "ai-change-wide",
     attrs: { role: "dialog", "aria-modal": "true" },
     dataset: { testid: "ai-change-wide" },
-    children: [head, body],
+    children: [head, body, ...(ledger ? [ledger] : [])],
   });
   root.addEventListener("click", onBackdropClick);
   document.addEventListener("keydown", onKeydown);
