@@ -176,9 +176,10 @@ describe("audited NPC repairs through the real runner", () => {
     const ctx = context();
     const result = rejectWithoutMutation(ctx, entry196);
     const repair = repairFrom(result);
-    expect(repair, JSON.stringify(result)).toEqual({ path: "pages[1].conditions", example: [{ kind: "selfSwitch", key: "A", value: true }] });
-    if (!repair || !Array.isArray(repair.example)) throw new Error("Missing conditions repair");
-    const conditions: unknown[] = repair.example;
+    // 목록 자리의 단일 객체는 이제 스키마 정규화가 감싸주므로(F1), 수리는 사이블링 배열 케이스와 같은 원소 단위다.
+    expect(repair, JSON.stringify(result)).toEqual({ path: "pages[1].conditions[0]", example: { kind: "selfSwitch", key: "A", value: true } });
+    if (!repair) throw new Error("Missing conditions repair");
+    const conditions: unknown[] = [repair.example];
     const pages = entry196.pages.map((page, index) => ({ ...page, conditions: index === 1 ? conditions : [] }));
     assertRetry(ctx, entry196, pages);
   });

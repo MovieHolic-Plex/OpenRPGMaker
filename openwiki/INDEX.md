@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **67쪽 / 2606KB / 약 732,352 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **67쪽 / 2609KB / 약 733,239 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -162,16 +162,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L40` 3단계 — 이름 삭제 (메이저 정리)
 - `L45` 개별 판단 메모
 
-### `openwiki/ai-workflow.md` — 32KB · 255줄 · ~8,612 토큰
+### `openwiki/ai-workflow.md` — 35KB · 261줄 · ~9,499 토큰
 
 - `L5` Before changing files
 - `L13` While changing files
-  - `L149` Request-bound NPC prerequisite proof (CR-NPC-PREREQ-01, 2026-09-07)
-- `L205` After changing files
-- `L212` Tool-calling architecture (human review map)
-- `L222` Headless Tool and MCP Access
-- `L231` Live editor AI assistant MCP (same UI session)
-- `L250` Refreshing the wiki
+  - `L155` Request-bound NPC prerequisite proof (CR-NPC-PREREQ-01, 2026-09-07)
+- `L211` After changing files
+- `L218` Tool-calling architecture (human review map)
+- `L228` Headless Tool and MCP Access
+- `L237` Live editor AI assistant MCP (same UI session)
+- `L256` Refreshing the wiki
 
 ### `openwiki/architecture.md` — 10KB · 68줄 · ~2,605 토큰
 

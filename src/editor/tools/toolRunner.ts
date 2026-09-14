@@ -63,6 +63,18 @@ function argErrorMessage(message: string, example: Record<string, unknown> | und
   return example ? `${withHint} — 다시 보낼 형식 예시: ${JSON.stringify(example)}` : withHint;
 }
 
+// 인자 모양 오류는 스키마 검증(실행 전)과 툴 내부 검사(실행 중) 두 곳에서 나오는데, 교정 예시·힌트·repair 는
+// 실행 전 경로에만 붙어 있었다. 그래서 `upsert_event` · `set_scene_mood` 의 "커맨드 형식 오류" 는 고칠 본을
+// 받지 못해 같은 인자로 재시도되었다(F1). 거부는 그대로고, 동일한 교정 정보만 둘 다 실어 보낸다.
+function issueFromToolError(tool: ToolDefinition, normalizedArgs: Record<string, unknown>, cause: unknown): LintIssue {
+  const issue = issueFromError(cause);
+  // 이미 자기 교정문을 실어 보내는 툴(place_npc)은 그대로 둔다 — 두 번째 `repair:` 줄은 파서를 깨뜨린다.
+  if (issue.code !== "invalid-args" || issue.message.includes("repair: ")) return issue;
+  const repair = tool.invalidArgsRepair?.(normalizedArgs);
+  return { ...issue, message: argErrorMessage(issue.message, tool.invalidArgsExample, tool.invalidArgsHint)
+    + (repair ? `\nrepair: ${JSON.stringify(repair)}` : "") };
+}
+
 export function normalizeToolArgs(name: string, args: Record<string, unknown>): Record<string, unknown> {
   const tool = getTool(name);
   if (!tool) return args;
@@ -119,7 +131,7 @@ export function runToolDefinition(
       };
     } catch (cause) {
       const error = cause instanceof Error ? cause : new ToolError(String(cause), { code: "tool-exception" });
-      return { ok: false, summary: failureSummary(name, error), issues: [issueFromError(error)] };
+      return { ok: false, summary: failureSummary(name, error), issues: [issueFromToolError(tool, normalizedArgs, error)] };
     }
   }
 
@@ -134,7 +146,7 @@ export function runToolDefinition(
     exec = tool.run(draft, normalizedArgs);
   } catch (cause) {
     const error = cause instanceof Error ? cause : new ToolError(String(cause), { code: "tool-exception" });
-    return { ok: false, summary: failureSummary(name, error), issues: [issueFromError(error)] };
+    return { ok: false, summary: failureSummary(name, error), issues: [issueFromToolError(tool, normalizedArgs, error)] };
   }
 
   try {

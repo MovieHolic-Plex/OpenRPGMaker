@@ -30,8 +30,11 @@ function schemaHasType(schema: JsonSchema, type: JsonSchemaType): boolean {
 
 const SINGLE_OBJECT_ARRAY_MARK = "__oprnSingleObjectArray";
 
+// 목록을 받는 자리에 한 개짜리 객체를 보내는 것은 모델의 고정 습관이고, 해석은 모호하지 않다 — 그 하나를
+// 원소로 감싼다는 뜻뿐이다. 이 정규화가 Command 스키마 설명문에만 걸려 있어서 `make_villager dialogue:{...}`,
+// `place_props origins:{...}` 같은 호출은 "타입이 array 이어야 합니다" 로 거부됐다(F1).
 function shouldWrapSingleObjectAsArray(schema: JsonSchema): boolean {
-  return schema.type === "array" && schema.items?.type === "object" && schema.description?.includes("단일 Command object") === true;
+  return schema.type === "array" && schema.items?.type === "object";
 }
 
 function singleObjectArray(value: unknown): unknown[] {
