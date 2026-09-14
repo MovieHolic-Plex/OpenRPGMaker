@@ -98,6 +98,7 @@ function renderAgent(agent: TeamBoardAgent, startedAt: number, hideTask: boolean
 
 export function createTeamBoard(initial: TeamBoardState): TeamBoardHandle {
   const startedAt = Date.now();
+  const compact = initial.mode === "single";
   const root = el("section", {
     class: "ai-team-board",
     dataset: { testid: "ai-team-board" },
@@ -109,14 +110,22 @@ export function createTeamBoard(initial: TeamBoardState): TeamBoardHandle {
   const totals = el("span", { class: "ai-team-totals" });
   const head = el("header", { class: "ai-team-head" });
   head.append(badge, title, phase, totals);
+  // 단독 작업은 사용자 지시를 되풀이하지 않는다. 기록만 접고, 검토 동작은 밖에 둔다.
+  const details = el("details", { class: "ai-run-details", dataset: { testid: "ai-run-details" } });
+  const summary = el("summary", { class: "ai-run-summary" });
+  const summaryLabel = el("span", { text: "작업 기록" });
   const list = el("ol", { class: "ai-team-agents", attrs: { "aria-label": "에이전트" } });
   const foot = el("footer", { class: "ai-team-foot", attrs: { hidden: "" } });
-  root.append(head, list, foot);
+  if (compact) {
+    summary.append(summaryLabel, phase);
+    details.append(summary, totals, list);
+    root.append(details, foot);
+  } else root.append(head, list, foot);
 
   let review: TeamBoardReview | null = null;
   const reviewBlock = (state: TeamBoardState): HTMLElement => {
     const block = el("div", { class: "ai-team-review-card", dataset: { testid: "ai-team-review" }, attrs: { role: "group", "aria-label": "검토" } });
-    block.append(el("p", { class: "ai-team-review-title", text: "결과를 검토하고 적용하세요. 적용 전까지 프로젝트는 바뀌지 않습니다." }));
+    if (!compact || !review?.preview) block.append(el("p", { class: "ai-team-review-title", text: "결과를 검토하고 적용하세요. 적용 전까지 프로젝트는 바뀌지 않습니다." }));
     // 적용 전에도 «무엇이 바뀌는지» 를 보여준다 — 사용자가 결정하는 자리에 비교가 없으면
     // 검토 카드는 문장과 버튼만 남고, 그게 "부탁했는데 before/after 가 안 보인다" 였다.
     // 카드는 패널이 만들어 넘긴다(같은 DOM·같은 렌더러를 쓴다 — 두 번째 어휘를 만들지 않는다).
@@ -136,15 +145,21 @@ export function createTeamBoard(initial: TeamBoardState): TeamBoardHandle {
     return block;
   };
 
-  const update = (state: TeamBoardState): void => {
-    root.dataset.phase = state.phase;
-    root.className = `ai-team-board is-${PHASE_TONE[state.phase]}`;
-    phase.textContent = state.phase;
+  const updateTotals = (state: TeamBoardState): void => {
     const sum = teamBoardTotals(state);
     const elapsed = Math.round((Date.now() - startedAt) / 1000);
     totals.textContent = sum.agents > 0
       ? `에이전트 ${sum.agents}${sum.running ? ` (${sum.running} 실행 중)` : ""} · 툴 ${sum.toolCalls}${sum.toolErrors ? ` (실패 ${sum.toolErrors})` : ""} · ${elapsed}초`
       : `${elapsed}초`;
+  };
+  const update = (state: TeamBoardState): void => {
+    root.dataset.phase = state.phase;
+    root.className = `ai-team-board${compact ? " is-compact" : ""} is-${PHASE_TONE[state.phase]}`;
+    phase.textContent = state.phase;
+    updateTotals(state);
+    const errors = teamBoardTotals(state).toolErrors;
+    const findings = state.agents.reduce((count, agent) => count + (agent.review && !agent.review.ok ? Math.max(1, agent.review.findings.length) : 0), 0);
+    summaryLabel.textContent = ["작업 기록", errors ? `도구 오류 ${errors}건` : "", findings ? `검토 지적 ${findings}건` : ""].filter(Boolean).join(" · ");
     // 행의 지시가 보드 지시(=사용자 발화, 이미 카드 제목)와 같으면 echo 를 생략한다 —
     // 단일 /pi 실행은 행이 지시를 그대로 물고 와 같은 문장이 세 번 나왔다(2026-09-12 실측).
     list.replaceChildren(...state.agents.map((agent) => renderAgent(agent, startedAt, agent.task === state.task)));
@@ -152,16 +167,16 @@ export function createTeamBoard(initial: TeamBoardState): TeamBoardHandle {
     if (state.report) footParts.push(el("p", { class: "ai-team-report", text: state.report, dataset: { testid: "ai-team-report" } }));
     if (state.error) footParts.push(el("p", { class: "ai-team-error", text: state.error }));
     if (state.phase === "검토 대기" && review) footParts.push(reviewBlock(state));
-    if (state.applied) footParts.push(el("p", { class: "ai-team-applied", text: state.applied, dataset: { testid: "ai-team-applied" } }));
+    if (state.applied && !compact) footParts.push(el("p", { class: "ai-team-applied", text: state.applied, dataset: { testid: "ai-team-applied" } }));
     if (footParts.length > 0) { foot.replaceChildren(...footParts); foot.removeAttribute("hidden"); }
-    else foot.setAttribute("hidden", "");
+    else { foot.replaceChildren(); foot.setAttribute("hidden", ""); }
   };
   // 실행 중엔 1초마다 경과 시간만 다시 쓴다. 끝나면 멈춘다.
   let lastState = initial;
   let ticker: ReturnType<typeof setInterval> | null = null;
   const syncTicker = (): void => {
     const running = lastState.phase === "실행 중" || lastState.phase === "적용 중" || lastState.phase === "준비";
-    if (running && ticker === null) ticker = setInterval(() => { if (root.isConnected) update(lastState); else stopTicker(); }, 1000);
+    if (running && ticker === null) ticker = setInterval(() => { if (root.isConnected) updateTotals(lastState); else stopTicker(); }, 1000);
     if (!running) stopTicker();
   };
   const stopTicker = (): void => { if (ticker !== null) { clearInterval(ticker); ticker = null; } };
