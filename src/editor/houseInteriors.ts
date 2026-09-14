@@ -1,3 +1,6 @@
+import { generateHouseTopology } from "./houseTopology";
+import { openHousePlan } from "./openHousePlan";
+import { compactHousePlan } from "./compactHousePlan";
 import { charsetFrameIndex, type CharsetDirection } from "@/assets/easyrpgRtp";
 import {
   DOOR_CLOSE_SE_POOL,
@@ -18,7 +21,7 @@ import { southDoorOpening } from "@/editor/interiorHouseWallGrammar";
 import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
 import type { Command, EventPageGraphic, GameEvent, GameMap, MapId, Project } from "@/project/types";
 import type { HouseKitId } from "./houseKit";
-import { bindInteriorConceptPlan, conceptHouseFloorPlan, isCodeDraftFacility, resolveHouseConcept } from "./interiorConceptPlan";
+import { bindSeedHouseInteriorPlan, conceptHouseFloorPlan, isCodeDraftFacility, resolveHouseConcept } from "./interiorConceptPlan";
 import { createCanonicalHouseInterior } from "./spatial/legacyHouseInterior";
 import { conceptFacilityLevels, type ResolvedConceptFacility } from "./conceptBundleResolve";
 import { convertEntranceToDescent, findConceptDescent, linkConceptTransfers, listConceptConnections } from "./interiorConceptEvents";
@@ -384,7 +387,7 @@ export function createHouseInteriorMap(options: {
   const seedBlueprint = (plan: InteriorRoomPlan): InteriorRoomPlan => {
     if (!options.project) return plan;
     try {
-      return bindInteriorConceptPlan(plan, options.project);
+      return bindSeedHouseInteriorPlan(plan, options.project, program);
     } catch (error) {
       if (error instanceof ToolError) return plan;
       throw error;
@@ -403,6 +406,7 @@ export function createHouseInteriorMap(options: {
   const groundPlan = concept ? conceptHouseFloorPlan(concept, {
     mapId: options.id, name: stories >= 2 ? `${options.name} (1층)` : options.name, seed, level: 1,
   }) : seedBlueprint(buildHouseInteriorPlan({
+    project: options.project,
     mapId: options.id,
     name: stories >= 2 ? `${options.name} (1층)` : options.name,
     seed,
@@ -465,6 +469,7 @@ export function createHouseInteriorMap(options: {
     const floorPlan = concept ? conceptHouseFloorPlan(concept, {
       mapId: floorMapId, name: `${options.name} (${floor}층)`, seed: floorSeed, level: floor,
     }) : seedBlueprint(buildHouseInteriorPlan({
+      project: options.project,
       mapId: floorMapId,
       name: `${options.name} (${floor}층)`,
       seed: floorSeed,
@@ -600,6 +605,7 @@ export function buildHouseInteriorPlan(input: {
   readonly name: string;
   readonly seed: number;
   readonly scale: HouseInteriorScale;
+  readonly project?: Project;
   readonly program?: HouseInteriorProgram;
   readonly floor?: "ground" | "upper";
   readonly themeHint?: InteriorRoomTheme;
@@ -611,7 +617,19 @@ export function buildHouseInteriorPlan(input: {
   const program = input.program ?? "dwelling";
   const floor = input.floor ?? "ground";
   const finish = (plan: InteriorRoomPlan): InteriorRoomPlan => {
-    const shifted = shiftPlanForCeiling(plan);
+    const compact = compactHousePlan(plan, program);
+    const activities = program === "dwelling" || program === "study" || program === "workshop" ? openHousePlan(compact) : compact;
+    const shifted = shiftPlanForCeiling(generateHouseTopology(activities, `${program}:${input.scale}:${floor}`, candidate => {
+      const shiftedCandidate = shiftPlanForCeiling(candidate);
+      try {
+        const bound = input.project ? bindSeedHouseInteriorPlan(shiftedCandidate, input.project, program) : shiftedCandidate;
+        const result = runInteriorRoomPipeline(bound, input.project ? interiorVocabFromTileset(input.project.tilesets[bound.tilesetId ?? "easyrpg_chipset_interior"]) : undefined);
+        return result.ok && !result.warnings.some(warning => /자리 없음|칩을 달지|walkability:|plan:/.test(warning));
+      } catch (error) {
+        if (error instanceof ToolError) return false;
+        throw error;
+      }
+    }));
     if (input.returnMapId === undefined && input.returnX === undefined && input.returnY === undefined) {
       return shifted;
     }
@@ -710,8 +728,7 @@ function cottageLPlan(
     program === "study" ? "study" :
     "kitchen";
   const northEastTheme: InteriorRoomTheme =
-    program === "inn" ? "bedroom" :
-    program === "study" ? "study" :
+    program === "inn" || program === "study" ? "bedroom" :
     program === "shop" ? "storage" :
     "bedroom";
 
@@ -989,7 +1006,7 @@ function roomsForProgram(
     case "study":
       return [
         { id: "study", x: 2, y: 3, w: 8, h: 5, theme: "study" },
-        { id: "archive", x: 12, y: 3, w: 6, h: 5, theme: "study" },
+        { id: "bedroom", x: 12, y: 3, w: 6, h: 5, theme: "bedroom" },
         { id: "living", x: 2, y: 11, w: 16, h: 6, theme: "dining" },
       ];
     case "manor":

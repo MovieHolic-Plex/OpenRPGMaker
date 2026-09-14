@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **67쪽 / 2647KB / 약 744,643 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **67쪽 / 2663KB / 약 748,873 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -20,7 +20,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-database.md` | 284KB | 59KB ⚠상한 초과 — 절을 더 쪼개라 | 1584 | ~82,227 |
 | `openwiki/editor-event-authoring.md` | 136KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 744 | ~39,121 |
 | `openwiki/editor-event-commands.md` | 57KB | 32KB | 202 | ~15,410 |
-| `openwiki/editor-interior-room-harness.md` | 77KB | 6KB | 374 | ~22,891 |
+| `openwiki/editor-interior-room-harness.md` | 92KB | 6KB | 445 | ~26,704 |
 | `openwiki/editor-pre-edit-routing.md` | 113KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 605 | ~32,349 |
 | `openwiki/editor-workflows-misc.md` | 65KB | 30KB | 458 | ~17,883 |
 | `openwiki/runtime-battle.md` | 143KB | 31KB | 611 | ~40,897 |
@@ -52,7 +52,6 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 |---|---|---|
 | `openwiki/ai-workflow.md` | 3 | `src/ai/plannerSkip.ts`, `test/tilesetAiClient.test.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/bgm-catalog.md` | 4 | `artifacts/bgm-release/bgm-release-v1.json`, `catalog.raw.json`, `output/evidence/agy-interface-smoke-transcript.json`, `output/evidence/audio-ai-final/ingestion-report.json` |
-| `openwiki/connected-dungeon-generation.md` | 1 | `verify-shots/runtime-qa/connected-dungeon-editor/SUMMARY.md` |
 | `openwiki/editor-ai-panel.md` | 60 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `06-page-modern-forms.css`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `assistantP2ReviewIntegration.test.ts`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `functionalCompositeClarification.test.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/acceptance-live/README.md`, `output/evidence/assistant-clean-glass/phase-2/implementation.md`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `output/evidence/ultrabrain/settings.png`, `plan-wire.json`, `regionIntentRouter.ts`, `review-input.png`, `roles-wire.json`, `scripts/qa/assistant-side-seam-hittest.mjs`, `specialists.png`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `test/agentBlueprintTurnEnd.test.ts`, `test/aiChatObservability.test.ts`, `test/aiChatPanelUxRepairs.test.ts`, `test/aiChatSessionScope.test.ts`, `test/aiComposerEffortPanel.test.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/aiNewGoalDraftRetirement.test.ts`, `test/aiNewGoalEarlyOwnership.test.ts`, `test/aiPanelContextSurfaces.test.ts`, `test/aiStickyChecklist.test.ts`, `test/aiToolCallSessionProtocol.test.ts`, `test/aiWorkItemStall.test.ts`, `test/assistantAcceptance.test.ts`, `test/assistantImageTransport.test.ts`, `test/assistantSpatialObligations.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/editSceneCameraFocus.test.ts`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/regionTaskRun.test.ts`, `test/tilesetAiClient.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts`, `writer-wire.json` |
 | `openwiki/editor-ai-tools.md` | 21 | `aiCommandBar.ts`, `aiProposalModal.ts`, `projectWikiSession.test.ts`, `tabs-b-assistant-panel.css`, `test/aiEventPlacementSurfaceGate.test.ts`, `test/aiStaleProposal.test.ts`, `test/aiToolCallSessionProtocol.test.ts`, `test/aiToolDiscoveryEscalation.test.ts`, `test/applyProposedProjectHouseProtection.test.ts`, `test/assistantMapPreservationGuard.test.ts`, `test/clusterAiModalHouseProtection.test.ts`, `test/elementRatesPartialAccept.test.ts`, `test/intentClarify.test.ts`, `test/npcCastSession.test.ts`, `test/projectLint.test.ts`, `test/propRejectionDiagnostics.test.ts`, `test/questGraph.test.ts`, `test/refactorTools.test.ts`, `test/regionTaskRun.test.ts`, `test/volumeContractSession.test.ts`, `test/worldAiExclusion.test.ts` |
 | `openwiki/editor-database.md` | 28 | `builtinHouseStructureKits.ts`, `databaseCinematics.test.ts`, `desktop-record-shell.css`, `enemy-art-NNN.png`, `form-hierarchy-modern.css`, `houseKitTools.ts`, `output/evidence/battle-animation-ux/p1-implementation.md`, `output/evidence/battle-animation-ux/p2-implementation.md`, `output/evidence/battle-rules-ux/st_01a07318-manual-qa.md`, `output/evidence/battle-rules-ux/verification.md`, `output/evidence/concept-expansion/supabase-proof.json`, `output/evidence/concept-v2/supabase-proof.json`, `output/evidence/monster-concepts/b1/fix.md`, `output/evidence/monster-concepts/p2/verification.md`, `output/evidence/monster-concepts/r1/fix.md`, `output/evidence/system-studio/system-studio-backed-settings-1586x992.png`, `output/spatial-ux-verify.mjs`, `reports/generated-effect-showcase-2026-08-24.html`, `reveal-fix.md`, `scripts/generate-default-item-icons.mts`, `scripts/lib/effectSheet/paintersMonster.mjs`, `scripts/lib/effectSheet/paintersUtility.mjs`, `test/databaseStudioV2.test.ts`, `test/databaseSystemView.test.ts`, `test/databaseTilesetFolder.test.ts`, `test/p0ProjectSchema.test.ts`, `test/spatialLegacyImport.test.ts`, `troops.part-1.css` |
@@ -60,7 +59,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-event-command-fixes.md` | 14 | `.omo/evidence/event-command-remediation/U04/api-ownership.md`, `event-editor-rich-forms.css`, `scripts/qa/runtime/event-command-remediation-u02.scenario.mjs`, `scripts/qa/runtime/event-command-remediation-u04.scenario.mjs`, `scripts/qa/runtime/event-command-remediation-u05.scenario.mjs`, `scripts/qa/runtime/event-command-remediation-u06.scenario.mjs`, `test/e2e/event-command-remediation-U02.spec.ts`, `test/e2e/event-command-remediation-U04.spec.ts`, `test/e2e/event-command-remediation-U05.spec.ts`, `test/e2e/event-command-remediation-U06.spec.ts`, `test/eventCommandRemediation/U02.test.ts`, `test/eventCommandRemediation/U04.test.ts`, `test/eventCommandRemediation/U05.test.ts`, `test/eventCommandRemediation/U06.test.ts` |
 | `openwiki/editor-event-commands.md` | 16 | `02-changeface-play-mock-larger.css`, `07-identifiable-previews.css`, `choicesDialog.ts`, `event-editor.command-preview.css`, `event-editor.command-preview/01-event-editor-modern-import.css`, `event-editor.commerce.css`, `event-editor.part-1.css`, `event-editor.part-2/3.css`, `event-editor.shop.css`, `eventCommandSupportRepairs.test.ts`, `messageCommandDialogs.ts`, `messageDialogControls.ts`, `src/styles/editor/event-editor.part-2.css`, `test/dialoguePreviewPresentationCss.test.ts`, `test/eventEditorTrustLoop.test.ts`, `textCommandDialog.ts` |
 | `openwiki/editor-genre-packs.md` | 2 | `src/editor/panels/newProjectDialog.ts`, `test/modalEscapeLayerGate.test.ts` |
-| `openwiki/editor-interior-room-harness.md` | 37 | `hearth-lit.json`, `hearth-unlit.json`, `output/audit-element-cliff-seams.py`, `output/audit-element-complex-seams.py`, `output/audit-four-context-dungeons-v3.py`, `output/audit-four-context-dungeons.py`, `output/build-element-complex-caves.mts`, `output/build-element-confluence-caves.mts`, `output/build-element-contour-caves.mts`, `output/build-four-context-dungeons-v2.mts`, `output/build-four-context-dungeons-v3.mts`, `output/build-four-context-dungeons.mts`, `output/context-element-caves.mts`, `output/decorate-element-caves.mts`, `output/element-complex-qa.mjs`, `output/element-confluence-qa.mjs`, `output/element-contour-qa.mjs`, `output/evidence/concept-v2/index.html`, `output/evidence/inn-exploration-v4/index.html`, `output/evidence/inn-inspection-v5/index.html`, `output/evidence/pr618-fixtures/inn.json`, `output/four-context-dungeons-qa.mjs`, `output/four-context-dungeons-v3-qa.mjs`, `output/save-element-complex-caves.mts`, `output/save-element-confluence-caves.mts`, `output/save-four-context-dungeons-v3.mts`, `output/save-four-context-dungeons.mts`, `player/SUMMARY.md`, `reports.json`, `seam-audit.json`, `test/innConceptRebuild.test.ts`, `test/innExploration.test.ts`, `test/interiorConceptAssemblies.test.ts`, `test/interiorLoadConsistency.test.ts`, `test/interiorLongTable.test.ts`, `test/stoneHearth.test.ts`, `test/storeDeferredLineage.test.ts` |
+| `openwiki/editor-interior-room-harness.md` | 16 | `hearth-lit.json`, `hearth-unlit.json`, `output/evidence/concept-v2/index.html`, `output/evidence/inn-exploration-v4/index.html`, `output/evidence/inn-inspection-v5/index.html`, `output/evidence/pr618-fixtures/inn.json`, `player/SUMMARY.md`, `reports.json`, `seam-audit.json`, `test/innConceptRebuild.test.ts`, `test/innExploration.test.ts`, `test/interiorConceptAssemblies.test.ts`, `test/interiorLoadConsistency.test.ts`, `test/interiorLongTable.test.ts`, `test/stoneHearth.test.ts`, `test/storeDeferredLineage.test.ts` |
 | `openwiki/editor-pre-edit-routing.md` | 13 | `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `event-editor.part-4.css`, `figma-editor.css`, `figma-editor/10-map-tree.css`, `rm2k3.part-1.css`, `shell/editor-responsive-expert.css`, `src/editor/tools/worldTools.ts`, `src/styles/editor/event-editor.balanced.css`, `test/modalEscapeLayerGate.test.ts`, `test/regionTaskHouseProtection.test.ts`, `test/worldAiExclusion.test.ts`, `worldTools.ts` |
 | `openwiki/editor-validation.md` | 8 | `final-layout.json`, `test/aiBlockedEventRelocation.test.ts`, `test/aiToolDiscoveryEscalation.test.ts`, `test/databaseSystemView.test.ts`, `test/interiorLongTable.test.ts`, `test/p0ProjectSchema.test.ts`, `test/projectLint.test.ts`, `viewport-matrix.json` |
 | `openwiki/editor-workflows-misc.md` | 11 | `.qa.json`, `default.json`, `game.html`, `release.json`, `runtime.json`, `src/editor/authoringTestGate.ts`, `src/styles/editor/event-editor-help.css`, `test/audioDescriptionCommandSurfaces.test.ts`, `test/devRuntimeArchive.test.ts`, `test/mapSurfaceFocus.test.ts`, `test/runtimePictureStacking.test.ts` |
@@ -511,7 +510,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L59` Validation
 - `L61` Two new-project surfaces, one choice model (2026-09-11)
 
-### `openwiki/editor-interior-room-harness.md` — 77KB · 374줄 · ~22,891 토큰 · 통째읽기 잘림
+### `openwiki/editor-interior-room-harness.md` — 92KB · 445줄 · ~26,704 토큰 · 통째읽기 잘림
 
 - `L5` 던전 천장과 단차의 구분 — 사용자 정정 (2026-09-13)
 - `L19` 대형 광산 저작 접합 교정 (2026-09-13)
@@ -544,6 +543,12 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L355` 생활 구역 조합으로 실내 저작 (2026-09-14)
 - `L364` 여관·잡화점의 시설별 실내 기준 (2026-09-14)
 - `L371` 연결 던전의 에디터 통합 (2026-09-14)
+- `L375` Compact interiors and automatic furnishing budgets (2026-09-14)
+- `L386` Open domestic interiors: activity areas are not enclosed rooms (2026-09-14)
+  - `L398` Follow-up: excess floor and furniture depth (2026-09-14)
+  - `L408` Small props require supports; short bathroom steps (2026-09-14)
+  - `L418` Reference-house correction: no shrub pots, cooking supports, inset cabinets (2026-09-14)
+  - `L428` All-interior review (2026-09-15)
 
 ### `openwiki/editor-observability.md` — 38KB · 469줄 · ~10,835 토큰 · 깨진 줄 1
 
@@ -993,15 +998,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L58` Lifecycle and compatibility
 - `L89` Reproduction
 
-### `openwiki/spatial-place-compiler.md` — 13KB · 203줄 · ~3,366 토큰
+### `openwiki/spatial-place-compiler.md` — 15KB · 211줄 · ~3,783 토큰
 
-- `L29` Houses with a yard and four floors (2026-09-12)
-- `L58` Compact one-floor household (2026-09-13)
-  - `L92` Structural partitions (2026-09-13 correction)
-  - `L113` Compact furniture arrangement
-  - `L128` Furniture overlapping the north wall
-- `L147` Reviewed interior space catalog (2026-09-13)
-  - `L174` Frozen placement vocabulary
+- `L29` Shared interior shell and activity zones (2026-09-14)
+- `L37` Houses with a yard and four floors (2026-09-12)
+- `L66` Compact one-floor household (2026-09-13)
+  - `L100` Structural partitions (2026-09-13 correction)
+  - `L121` Compact furniture arrangement
+  - `L136` Furniture overlapping the north wall
+- `L155` Reviewed interior space catalog (2026-09-13)
+  - `L182` Frozen placement vocabulary
 
 ### `openwiki/spatial-placed-space-edits.md` — 5KB · 75줄 · ~1,209 토큰
 

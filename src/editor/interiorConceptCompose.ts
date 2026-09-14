@@ -1,3 +1,6 @@
+import { INTERIOR_SURFACE_PROP_IDS, isInteriorPropSurface } from "./interiorSurfaceProps";
+import { interiorActivityEntries } from "./interiorActivityEntries";
+import { selectInteriorFurnishings } from "./interiorFurnishingPolicy";
 /**
  * 개념 꾸러미 방 구성 — 물건을 슬롯에 앉힌다.
  *
@@ -29,7 +32,7 @@ import { deterministicRng, type Rng } from "@/util/rng";
 export const OUTSIDE_VOID_TILE = 116;
 
 /** 상단이 벽면 아랫줄에 겹치는 키 큰 가구(정본: placeTallPairU / placeStovePair). */
-const TALL_FACE_OVERLAP_IDS: ReadonlySet<string> = new Set(["armor", "bust", "mirror", "display", "stove", "flue"]);
+const TALL_FACE_OVERLAP_IDS: ReadonlySet<string> = new Set(["armor", "bust", "mirror", "display", "stove", "flue", "cabinet", "bookshelf", "stone_hearth_lit", "stone_hearth_unlit"]);
 
 const CREAM_FACE_TILES: ReadonlySet<number> = new Set(HOUSE_SHELL_FACE_TILES);
 
@@ -75,6 +78,10 @@ export type ConceptComposeInput = {
   readonly door: { readonly x: number; readonly y: number };
   readonly placeLabel: string;
   readonly things: readonly ConceptOverlayThing[];
+  /** Frozen graphic identities when adapter-local object IDs are opaque. */
+  readonly furnishingObjectIds?: ReadonlyMap<string, string>;
+  readonly openPlan?: boolean;
+  readonly fixedFurnishingObjectIds?: readonly string[];
   readonly resolveObject: (objectId: string) => InteriorObjectDef | undefined;
   /** 하위 타일이 통행 바닥 재질인가(나무·돌·널·돗자리). 파이프라인이 정본을 준다. */
   readonly isFloorTile: (tile: number) => boolean;
@@ -93,11 +100,11 @@ export type ConceptComposeResult = {
   readonly warnings: readonly string[];
 };
 
-type SlotClass = "stair-face" | "face" | "tall-face" | "north-end" | "north" | "floor" | "rug" | "corner";
+type SlotClass = "step-seam" | "surface" | "stair-face" | "face" | "tall-face" | "north-end" | "north" | "floor" | "rug" | "corner";
 
 // 큰 가구(북벽)가 먼저 자리를 잡고 장식(키 큰 가구·벽걸이)이 남은 틈을 채운다. 계단은 복도 끝을 가장 먼저 받는다.
 // 러그는 바닥 가구보다 먼저 깔린다 — 탁자·소품(상위 레이어)이 러그 위에 앉을 수 있다(정본 placeRugUnder 의 「탁자 밑 러그」).
-const CLASS_ORDER: readonly SlotClass[] = ["stair-face", "north-end", "north", "face", "tall-face", "rug", "floor", "corner"];
+const CLASS_ORDER: readonly SlotClass[] = ["stair-face", "north-end", "north", "tall-face", "face", "rug", "floor", "corner", "surface", "step-seam"];
 
 
 /** 큰 화로 계열 — 복도 끝 알코브 슬롯의 원래 대상. */
@@ -166,19 +173,11 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
     laneFrom(door.x, door.y, 0, -1);
     if (inRoomFloor(door.x, door.y - 1)) lane.add(idx(door.x, door.y - 1));
   }
-  // 방 입구: 방 밖 바닥과 맞닿는 방 바닥 칸에서 안쪽으로 곧게.
-  for (let y = room.y; y < room.y + room.h; y += 1) {
-    for (let x = room.x; x < room.x + room.w; x += 1) {
-      if (!inRoomFloor(x, y)) continue;
-      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
-        const nx = x + dx;
-        const ny = y + dy;
-        if (!inBounds(nx, ny) || input.fullFloor[idx(nx, ny)] !== true) continue;
-        const outside = nx < room.x || nx >= room.x + room.w || ny < room.y || ny >= room.y + room.h;
-        if (!outside) continue;
-        laneFrom(x, y, -dx, -dy);
-      }
-    }
+  // Open activity boundaries reserve a central approach, not every boundary tile.
+  const activityFloor = input.fullFloor.map((cell, i) => cell && i % W >= room.x && i % W < room.x + room.w
+    && Math.floor(i / W) >= room.y && Math.floor(i / W) < room.y + room.h);
+  for (const entry of interiorActivityEntries(activityFloor, input.fullFloor, W, map.height, input.openPlan)) {
+    laneFrom(entry.x, entry.y, entry.dx, entry.dy);
   }
 
   const blocked = (x: number, y: number, loose: boolean): boolean =>
@@ -217,6 +216,11 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
     && (bedCells.some((cell) => cell.x === x && cell.y === y) || (!floorTaken.has(idx(x, y)) && upperEmptyOrEntry(x, y)));
 
   const classify = (thing: ConceptOverlayThing, object: InteriorObjectDef): SlotClass => {
+    const graphicId = input.furnishingObjectIds?.get(thing.objectId) ?? object.id;
+    if (graphicId === "bathroom_steps") return "step-seam";
+    if (INTERIOR_SURFACE_PROP_IDS.has(graphicId)) return "surface";
+    // Frozen canonical IDs may be opaque; use the frozen graphic identity.
+    if (object.height >= 2 && TALL_FACE_OVERLAP_IDS.has(graphicId)) return "tall-face";
     if (object.id === "stairs_horizontal") return "stair-face";
     if (object.id === "stairs_down") return "north-end";
     // 큰 화로(석조 3×3)는 복도에서 통행을 막지 않는 **끝 알코브**에 선다.
@@ -234,7 +238,12 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
 
   type Job = { readonly thing: ConceptOverlayThing; readonly object: InteriorObjectDef; readonly slot: SlotClass };
   const jobs: Job[] = [];
-  for (const thing of input.things) {
+  for (const thing of selectInteriorFurnishings(input.things, floor.filter(Boolean).length, thing => input.furnishingObjectIds?.get(thing.objectId) ?? thing.objectId, input.fixedFurnishingObjectIds)) {
+    const graphicId = input.furnishingObjectIds?.get(thing.objectId) ?? thing.objectId;
+    if (["plant", "plant_small"].includes(graphicId)) {
+      if (thing.required) warnings.push(`concept: ${thing.label} 실내 자동 배치에서 제외된 화분 (${input.placeLabel})`);
+      continue;
+    }
     const object = input.resolveObject(thing.objectId);
     if (!object) {
       warnings.push(`concept: 물건 ${thing.objectId} 정의를 찾지 못함 (${input.placeLabel})`);
@@ -245,6 +254,9 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
   // 벽에 붙는 가구(필수 먼저) → 러그 → 바닥·구석 소품(필수 먼저). 러그는 상위 레이어 가구의 자리를 빼앗지 않으므로
   // 필수 탁자보다 먼저 깔려도 손해가 없고, 반대로 탁자가 먼저 앉으면 러그가 들어갈 3×3 이 남지 않는다.
   const groupOf = (job: Job): number => {
+    if (job.slot === "step-seam") return 4;
+    if (job.slot === "surface") return 3;
+    if (!job.thing.required && ["north", "north-end", "tall-face"].includes(job.slot)) return 0.75; // Supports must be placed first, even for required props.
     // Opaque table assemblies must fit before rugs; otherwise either the table
     // erases the rug or a decorative rug prevents required furniture placement.
     if (job.slot === "floor" && job.object.cells.some((cell) => cell.layer === "lower")) return 0.5;
@@ -413,6 +425,37 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
     const baselineReach = reachable(new Set());
     let done = false;
     switch (job.slot) {
+      case "step-seam": {
+        // An explicitly requested low step ends a raised activity area, with
+        // walkable landings on both sides. Never drop it in the middle of a room.
+        const y = room.y + room.h - 1;
+        for (let x = room.x; x <= room.x + room.w - object.width; x++) {
+          const fits = object.height === 1 && object.cells.every(cell => {
+            const cx = x + cell.dx;
+            return inRoomFloor(cx, y) && inRoomFloor(cx, y - 1)
+              && input.fullFloor[idx(cx, y + 1)] === true
+              && input.isFloorTile(lowerAt(cx, y)) && input.isFloorTile(lowerAt(cx, y - 1))
+              && input.isFloorTile(lowerAt(cx, y + 1)) && lowerAt(cx, y - 1) !== lowerAt(cx, y + 1)
+              && upperEmptyOrEntry(cx, y) && upperEmptyOrEntry(cx, y - 1) && upperEmptyOrEntry(cx, y + 1)
+              && !taken.has(idx(cx, y));
+          });
+          if (fits) { paint(job, x, y, object.cells); done = true; break; }
+        }
+        break;
+      }
+      case "surface": {
+        const candidates: Point[] = [];
+        for (let y = room.y - 1; y < room.y + room.h; y++) for (let x = room.x; x < room.x + room.w; x++) {
+          if (object.cells.every(cell => cell.layer === "upper" && inBounds(x + cell.dx, y + cell.dy)
+            && x + cell.dx < room.x + room.w && y + cell.dy < room.y + room.h
+            && ((input.furnishingObjectIds?.get(thing.objectId) ?? object.id) === "cauldron"
+              ? lowerAt(x + cell.dx, y + cell.dy) === 21 : isInteriorPropSurface(lowerAt(x + cell.dx, y + cell.dy)))
+            && upperEmpty(x + cell.dx, y + cell.dy))) candidates.push({x, y});
+        }
+        const pick = pickAmong(candidates);
+        if (pick) { paint(job, pick.x, pick.y, object.cells); done = true; }
+        break;
+      }
       case "stair-face": {
         // The flight rises from the first floor row through both north wall-face rows.
         const pick = withRetry((loose) => {
@@ -455,14 +498,17 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
         break;
       }
       case "tall-face": {
-        // 상단이 벽면 아랫줄, 하단이 북쪽 바닥 행.
+        // Stone hearths overlap both wall rows; other tall furnishings overlap one.
+        const graphicId = input.furnishingObjectIds?.get(thing.objectId) ?? object.id;
+        const overlap = ["stone_hearth_lit", "stone_hearth_unlit"].includes(graphicId) ? 2 : 1;
         const pick = withRetry((loose) => {
           const candidates: Point[] = [];
-          for (let oy = room.y - 1; oy < room.y + room.h - 1; oy += 1) for (let x = room.x; x <= room.x + room.w - object.width; x += 1) {
+          for (let oy = room.y - overlap; oy < room.y + room.h - overlap; oy += 1) for (let x = room.x; x <= room.x + room.w - object.width; x += 1) {
             const ok = object.cells.every((cell) => {
               const cx = x + cell.dx;
               const cy = oy + cell.dy;
-              return cell.dy === 0 ? faceFree(cx, cy, loose) : freeFor(cell, cx, cy, loose);
+              return cell.dy < overlap ? faceFree(cx, cy, loose)
+                : input.role === "walkway" ? freeForEndNook(cell, cx, cy) : freeFor(cell, cx, cy, loose);
             });
             if (ok && preservesAccess(object.cells, x, oy, baselineReach)) candidates.push({ x, y: oy });
           }
@@ -481,7 +527,7 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
         const pick = withRetry((loose) => {
           const candidates: Point[] = [];
           for (let northY = room.y; northY < room.y + room.h; northY += 1) for (let x = room.x; x <= room.x + room.w - object.width; x += 1) {
-            if (inRoomFloor(x, northY - 1)) continue;
+            if (input.fullFloor[idx(x, northY - 1)] === true) continue;
             const fits = object.cells.every((cell) => endNook
               ? freeForEndNook(cell, x + cell.dx, northY + cell.dy)
               : freeFor(cell, x + cell.dx, northY + cell.dy, loose));
