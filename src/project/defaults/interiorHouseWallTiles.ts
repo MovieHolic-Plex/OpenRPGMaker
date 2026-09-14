@@ -77,5 +77,11 @@ export const HOUSE_SHELL_CREAM_FACE_TILES: readonly number[] = [
 /** Forbidden placeholder IDs — never write as house wall/door art. */
 export const HOUSE_SHELL_FORBIDDEN_TILES: readonly number[] = [233, 257, 258];
 
+// Shared by wall retinting and wall-overlapping furniture placement.
+export const WALL_FACE_RETINT: Record<string, { upper: readonly number[]; lower: readonly number[] }> = {
+  "gold-brick": { upper: [314, 315, 316], lower: [344, 345, 346] }, // 자주+금장 벽돌(귀족 저택)
+  "stone-brick": { upper: [134, 135, 136], lower: [164, 165, 166] }, // 밝은 석재 벽돌
+};
+
 /** All supported retinted north-wall faces; frames/ceiling are excluded. */
 export const HOUSE_SHELL_FACE_TILES: readonly number[] = [...HOUSE_SHELL_CREAM_FACE_TILES,134,135,136,164,165,166,314,315,316,344,345,346];

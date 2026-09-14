@@ -8,6 +8,7 @@ import { clearChildren, el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { openWalkEncounterList } from "@/editor/panels/walkEncounterModal";
 import { locationLayerState, toggleLocationLayer } from "@/editor/mapLocationLayerState";
+import { mapBackgroundPreviewEnabled, toggleMapBackgroundPreview } from "@/editor/mapBackgroundPreviewState";
 
 let mapScreenshotRequestSeq = 0;
 
@@ -119,6 +120,23 @@ export function renderCanvasToolbar(container: HTMLElement): void {
     },
     dataset: { testid: "map-location-layer-toggle" },
     on: { click: () => toggleLocationLayer() },
+  }));
+  // 맵 배경 미리보기는 기본값이 «꺼짐» 이다 — 빈 칸 체커가 "바닥 없음" 신호를 계속 말해야 하고,
+  // 켜면 그 체커가 옅어지며 뒤의 배경이 비친다. 팔레트와 무관한 «보기» 축이라 로케이션과 같은 줄에 둔다.
+  const backgroundPreviewOn = mapBackgroundPreviewEnabled();
+  container.append(el("button", {
+    class: `btn map-background-preview-button${backgroundPreviewOn ? " is-active" : ""}`,
+    text: "맵 배경",
+    attrs: {
+      type: "button",
+      title: backgroundPreviewOn
+        ? "맵 배경 미리보기가 켜져 있습니다. 빈 칸 체커가 옅게 그려지고 그 뒤로 배경 그림이 보입니다. 끄면 체커가 원래대로 돌아옵니다."
+        : "맵 배경 미리보기 — 켜면 「맵 배경」 탭에서 고른 그림을 캔버스에서 확인할 수 있습니다(플레이와 같이 화면 고정). 빈 칸 체커는 옅어진 채로 남습니다.",
+      "aria-pressed": String(backgroundPreviewOn),
+      ...(backgroundPreviewOn ? { "aria-current": "true" } : {}),
+    },
+    dataset: { testid: "map-background-preview-toggle" },
+    on: { click: () => toggleMapBackgroundPreview() },
   }));
   // Basic: zoom only (always expanded). Expert: ⋯ expand + build palette + map screenshot.
   if (!chrome.canvasChromeDense) {

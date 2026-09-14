@@ -73,7 +73,7 @@ export function renderSpatialAuthoringShell(
     refresh();
   };
 
-  if (selected?.canonicalSource && tab !== "objects" && tab !== "tiles" && session.mode === "design" && !session.legacyOrigin && canUseCompositionWorkspace(selected.canonicalSource)) {
+  if (selected?.canonicalSource && !selected.regionMapId && tab !== "objects" && tab !== "tiles" && session.mode === "design" && !session.legacyOrigin && canUseCompositionWorkspace(selected.canonicalSource)) {
     const workspace = renderSpatialCompositionWorkspace(session, selected, refresh);
     workspace.addEventListener("keydown", event => handleShellKey(event, selected, refresh));
     latestShellRefresh = refresh; installSpatialEscapeLayer(); host.append(workspace); return;

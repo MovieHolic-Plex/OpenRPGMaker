@@ -87,6 +87,9 @@ function renderM2CommandBodyInner(context: CommandEditContext, cmd: Extract<Comm
     return wrap;
   }
 
+  const intent = M2_INTENT_BY_TITLE[entry.title];
+  if (intent) wrap.append(m2IntentCard(intent));
+
   // 필드 없는 명령은 안내 한 줄만 — 도움말+빈문구 이중 노출을 막는다.
   if (entry.fields.length === 0) {
     wrap.append(el("div", { class: "empty-hint", text: m2CommandHelpText(0) }));
@@ -105,6 +108,71 @@ function renderM2CommandBodyInner(context: CommandEditContext, cmd: Extract<Comm
   }
   if (entry.title === "Screen Effect") decorateScreenEffectBody(wrap);
   return wrap;
+}
+
+/**
+ * 제네릭 M2 폼에 얹는 설명카드.
+ *
+ * 왜 필요한가 — 제네릭 폼은 영어 제목을 한국어로 바꿔 머리에 달고 필드를 그대로 나열할 뿐이라,
+ * "이 명령이 무엇을 하고 **무엇을 하지 않는지**" 를 말하지 않는다. 그래서 감독은 이름만 보고
+ * 엉뚱한 명령을 집었다(예: `이벤트 지우기` 를 맵에서 오브젝트를 삭제하는 버튼으로 읽었다).
+ * 그 사고가 잦았던 명령부터 한 문단씩 붙인다.
+ *
+ * `copy` 의 둘째 문장은 **부정문**이다 — 헷갈리는 짝을 명시적으로 배제하는 것이 이 카드의 값이다.
+ * 첫 문장만 쓸 거면 붙이지 마라. 한국어 머리글이 이미 같은 말을 하고 있다.
+ */
+type M2IntentCopy = { readonly testid: string; readonly title: string; readonly copy: string };
+
+/** 키는 카탈로그의 영어 `title` — 전문 렌더러들이 쓰는 분기 축과 같다(id 는 별칭이 갈린다). */
+const M2_INTENT_BY_TITLE: Readonly<Record<string, M2IntentCopy>> = {
+  "Change Vehicle Graphic": {
+    testid: "m2-change-vehicle-graphic-intent",
+    title: "탈것 겉모습 바꾸기",
+    copy: "배·비행선 같은 탈것이 맵 위에 그려지는 그림을 바꿉니다. 주인공이나 NPC 의 모습을 바꾸는 명령이 아닙니다.",
+  },
+  "Change Screen Transition": {
+    testid: "m2-change-screen-transition-intent",
+    title: "다음 전환 연출 정하기",
+    copy: "앞으로 맵을 옮기거나 전투를 시작할 때 쓸 화면 전환 방식을 미리 정해 둡니다. 이 명령 자체가 지금 화면을 전환시키지는 않습니다.",
+  },
+  "Play Movie": {
+    testid: "m2-play-movie-intent",
+    title: "동영상 재생",
+    copy: "동영상 파일을 화면 전체에 재생하고, 끝날 때까지 다음 명령을 기다립니다. 배경에 깔아 두는 음악·효과음이 아닙니다.",
+  },
+  "Open Menu Screen": {
+    testid: "m2-open-menu-screen-intent",
+    title: "메뉴 화면 열기",
+    copy: "플레이어가 메뉴 버튼을 누른 것처럼 게임 안의 메뉴를 엽니다. 에디터의 메뉴나 설정 창을 여는 명령이 아닙니다.",
+  },
+  "Camera Control": {
+    testid: "m2-camera-control-intent",
+    title: "카메라 옮기기",
+    copy: "화면이 비추는 위치와 배율만 바꿉니다. 주인공이나 이벤트를 실제로 이동시키지는 않습니다 — 이동은 `이동 경로 설정` 이나 `좌표로 이동` 입니다.",
+  },
+  "Region Trigger": {
+    testid: "m2-region-trigger-intent",
+    title: "지역을 밟으면 일어날 일",
+    copy: "맵에 칠해 둔 지역 번호를 밟았을 때 이벤트를 부르거나 스위치를 켜도록 연결합니다. 지역 번호를 칠하는 것은 맵 편집 화면에서 합니다.",
+  },
+  "Cutscene Control": {
+    testid: "m2-cutscene-control-intent",
+    title: "컷신 모드 켜고 끄기",
+    copy: "켜는 동안 조작을 잠그고 화면 UI 를 숨깁니다. 컷신에서 무슨 일이 벌어지는지는 이 명령 다음에 오는 명령들이 정합니다.",
+  },
+};
+
+/** 설명카드 한 장. 판정 축은 `m2-command-intent-card` 클래스 하나로 모은다. */
+function m2IntentCard(intent: M2IntentCopy): HTMLElement {
+  return el("div", {
+    class: "m2-command-intent-card",
+    dataset: { testid: intent.testid },
+    attrs: { role: "note" },
+    children: [
+      el("div", { class: "m2-command-intent-title", text: intent.title }),
+      el("p", { class: "m2-command-intent-body", text: intent.copy }),
+    ],
+  });
 }
 
 /** 시간 프리셋 칩 — 런타임 clampMs(50~5000) 안쪽의 흔한 세 값. */
@@ -268,7 +336,7 @@ function eraseEventCommandBody(context: CommandEditContext, cmd: M2Command): HTM
     dataset: { testid: `m2-command-body-${cmd.commandId}` },
     children: [
       el("div", {
-        class: "m2-command-intent m2-erase-event-card",
+        class: "m2-command-intent-card m2-command-intent m2-erase-event-card",
         dataset: { testid: "m2-command-intent-card" },
         children: [
           el("div", { class: "m2-command-intent-title", text: "플레이 중 이벤트 지우기" }),

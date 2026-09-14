@@ -48,7 +48,6 @@ export const SCRATCH_INN_BUNDLE: ConceptBundleRecord = {
     { id: "waiting_seats", label: "접수대 앞 작은 대기석", objectId: "table_chairs", placeIds: ["reception"], chips: ["block"], required: true },
     { id: "lobby_plant", label: "입구 화분", objectId: "plant", placeIds: ["reception"], chips: ["block"] },
     { id: "dining_seats", label: "식기와 식사가 놓인 공용 식탁", objectId: "dining_table", placeIds: ["dining"], chips: ["block", "event"], required: true },
-    { id: "extra_dining_seats", label: "추가 식사 자리", objectId: "table_chairs", placeIds: ["dining"], chips: ["block"], required: true },
     { id: "dining_window", label: "식당 창문", objectId: "window", placeIds: ["dining"], chips: ["wall"] },
     { id: "dishes", label: "그릇 보관장", objectId: "cabinet", placeIds: ["dining"], chips: ["block", "event"] },
     { id: "cooking_stove", label: "손님 식사를 만드는 화덕", objectId: "stove", placeIds: ["kitchen"], chips: ["block", "event"], required: true },

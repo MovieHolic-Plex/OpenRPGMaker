@@ -237,7 +237,17 @@ export async function playBattle(
                 closingDom = true;
                 battleScene?.destroy();
                 battleScene = undefined;
-                await transition.reveal();
+                // 패배로 게임이 끝나는 길(canLose=false)은 커버를 걷지 않고 넘긴다. 걷으면 살아 있는
+                // 밝은 필드에 파티가 서 있는 장면이 300ms 드러난 뒤 게임오버 상자가 무전환으로 튀었다
+                // (2026-09-14 실측). 커버는 게임오버 화면이 그 아래에 마운트된 뒤 스스로 페이드아웃한다 —
+                // cleanup 이 오버레이를 즉시 지우지 않도록 소유권을 놓는다.
+                const terminalDefeat = result === "defeat" && !snapshot.canLose;
+                if (terminalDefeat) {
+                  exitTransition = undefined;
+                  void transition.reveal();
+                } else {
+                  await transition.reveal();
+                }
                 if (!current()) { abort(); return; }
                 // Commit once, after all cancellable presentation has completed.
                 exitBattleAudio(project, session, savedAudio);

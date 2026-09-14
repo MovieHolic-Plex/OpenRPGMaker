@@ -64,6 +64,7 @@
     "openwiki:index": "node scripts/openwiki-index.mjs",
     "openwiki:verify": "node scripts/verify-openwiki-editor-wiki.mjs",
     "test": "node scripts/run-vitest.mjs run --configLoader bundle",
+    "test:changed": "node scripts/run-vitest-changed.mjs",
     "test:parity": "node scripts/run-vitest.mjs run test/parity --configLoader bundle",
     "test:node": "node scripts/run-node-tests.mjs",
     "test:ai-oauth": "node scripts/run-node-tests.mjs ohMyPi",

@@ -40,8 +40,8 @@ const placement: Parser<S.SpatialObjectSlot["placement"]> = (v, p) => {
   }
 };
 const objectSlot: Parser<S.SpatialObjectSlot> = (v, p) => {
-  const r = record(v, p, "id objectDesignId quantity required placement chipOverrides");
-  return { id: id(r.id, `${p}.id`), objectDesignId: id(r.objectDesignId, `${p}.objectDesignId`), quantity: positive(r.quantity, `${p}.quantity`), required: boolean(r.required, `${p}.required`), placement: placement(r.placement, `${p}.placement`), ...(r.chipOverrides === undefined ? {} : { chipOverrides: texts(r.chipOverrides, `${p}.chipOverrides`) }) };
+  const r = record(v, p, "id objectDesignId quantity required placement chipOverrides zoneId");
+  return { id: id(r.id, `${p}.id`), objectDesignId: id(r.objectDesignId, `${p}.objectDesignId`), quantity: positive(r.quantity, `${p}.quantity`), required: boolean(r.required, `${p}.required`), placement: placement(r.placement, `${p}.placement`), ...(r.zoneId === undefined ? {} : { zoneId: id(r.zoneId, `${p}.zoneId`) }), ...(r.chipOverrides === undefined ? {} : { chipOverrides: texts(r.chipOverrides, `${p}.chipOverrides`) }) };
 };
 const area: Parser<S.SpatialFloorArea> = (v, p) => {
   const r = record(v, p);
@@ -57,6 +57,10 @@ const area: Parser<S.SpatialFloorArea> = (v, p) => {
     }
     default: return assertNever(areaKind);
   }
+};
+const zone: Parser<S.SpatialInteriorZone> = (v, p) => {
+  const r = record(v, p, "id name floor x y width height");
+  return { ...rect({ x: r.x, y: r.y, width: r.width, height: r.height }, p), id: id(r.id, `${p}.id`), name: text(r.name, `${p}.name`), floor: text(r.floor, `${p}.floor`) };
 };
 const composition: Parser<S.SpatialComposition> = (v, p) => {
   const r = record(v, p, "tilesetId width height tiles members");
@@ -84,16 +88,24 @@ const space: Parser<S.SpaceDesign> = (v, p) => {
   const fields = `${baseFields} environment tilesetId shape width height floor wall objectSlots ports composition`;
   switch (environment) {
     case "interior": {
-      record(r, p, `${fields} role interiorLayout`);
+      record(r, p, `${fields} role zones interiorLayout`);
+      const zones = r.zones === undefined ? undefined : list(r.zones, `${p}.zones`, zone);
+      const seen = new Set<string>();
+      for (const z of zones ?? []) {
+        assert(!seen.has(z.id), `${p}.zones: duplicate id ${z.id}`); seen.add(z.id);
+        assert(z.x >= 0 && z.y >= 0 && z.x + z.width <= common.width && z.y + z.height <= common.height, `${p}.zones: outside floor bounds`);
+        assert(!(zones ?? []).some(other => other !== z && z.x < other.x + other.width && other.x < z.x + z.width && z.y < other.y + other.height && other.y < z.y + z.height), `${p}.zones: overlapping activity areas`);
+      }
+      for (const slot of common.objectSlots) assert(slot.zoneId === undefined || seen.has(slot.zoneId), `${p}.objectSlots: unknown zone ${slot.zoneId}`);
       const layout = r.interiorLayout === undefined ? undefined : interiorLayout(r.interiorLayout, `${p}.interiorLayout`);
       if (layout) {
         assert(common.shape === "rect", `${p}.interiorLayout: rectangular envelope required`);
         for (const room of layout.rooms) assert(room.x >= 0 && room.y >= 0 && room.x + room.width <= common.width && room.y + room.height <= common.height, `${p}.interiorLayout: room outside floor`);
         for (const door of layout.doorways) assert(door.x >= 0 && door.y >= 0 && door.x < common.width && door.y < common.height, `${p}.interiorLayout: doorway outside floor`);
       }
-      return { ...common, environment, role: choice(["entrance", "walkway", "room"] as const)(r.role, `${p}.role`), ...(layout ? { interiorLayout: layout } : {}) };
+      return { ...common, environment, role: choice(["entrance", "walkway", "room"] as const)(r.role, `${p}.role`), ...(zones === undefined ? {} : { zones }), ...(layout ? { interiorLayout: layout } : {}) };
     }
-    case "outdoor": record(r, p, `${fields} floorAreas`); return { ...common, environment, floorAreas: list(r.floorAreas, `${p}.floorAreas`, area) };
+    case "outdoor": assert(common.objectSlots.every(slot => slot.zoneId === undefined), `${p}: activity zones require an interior`); record(r, p, `${fields} floorAreas`); return { ...common, environment, floorAreas: list(r.floorAreas, `${p}.floorAreas`, area) };
     default: return assertNever(environment);
   }
 };

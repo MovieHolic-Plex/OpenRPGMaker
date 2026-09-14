@@ -99,7 +99,9 @@ SHA-256 검증·손상 복구·잠금 복구·관리자 제작 명령은 `openwi
 |---|---|---|---|
 | `npm run typecheck:app` | `src` 만 (`tsconfig.app.json`) | **0 에러 / exit 0** — 초록 | 코드 바꿨으면 항상 |
 | `npm run typecheck` | `src` + `test` 전체 | **빨간불** (`test/` 타입 에러 다수, exit 2) | 게이트로 쓰지 마라. 자기가 만진 테스트 파일만 눈으로 확인 |
-| `npm test` | Vitest 유닛/계약 | 약 **23,376건**(2,185 파일) 중 **실패 431건** (2026-09-11 실측), 머신 부하에 비례해 흔들림. 워커 힙은 스크립트가 8GB 로 깐다 | 관련 파일만 지정해 돌린다: `npm test -- test/<name>.test.ts` |
+| `npm test` | Vitest 유닛/계약 **전체** | 약 **21,894건**(2,093 파일) 중 실패 83건, **1,715 s(28분 35초)** (2026-09-14 실측, 이 박스는 공유라 loadavg 49~71 — 한산하면 더 짧다). 워커 힙은 스크립트가 8GB 로 깐다 | 최종 게이트에서만. 반복 중에는 쓰지 마라 |
+| `npm run test:changed` | HEAD 대비 **import 영향만** (`--changed`) | **254 s**(454 파일, 변경 6건) ↔ **1,247 파일에서 30분 초과 미완**(변경 3건 — 코어 모듈이면 전파가 전부에 가깝다) | 편집 중 반복. 잎 모듈을 만졌을 때만 이득 |
+| `npm test -- test/<name>.test.ts` | 파일 지정 | **16 s** (고정비 ≈16 s: 워커 스폰 + 앱 모듈 그래프) | 방금 만진 파일 하나 |
 | `npm run gates` | typecheck:app + vitest + css + surface 를 **기준선과 비교** | `.omo/gates-baseline.json` (추적 파일) | 변경 마무리. 새로 생긴 실패만 회귀로 본다 |
 | `npm run gates -- --only css` | CSS 예산·그래프·라이브 클래스 | 수 초 | 스타일만 만졌을 때 |
 | `npm run qa:runtime` | 게임 화면(출하 플레이어 `player.html`) 스크린샷 QA | `verify-shots/runtime-qa/<시나리오>/SUMMARY.md` | 런타임 UI 변경 |

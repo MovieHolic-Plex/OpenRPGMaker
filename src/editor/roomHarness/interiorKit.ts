@@ -208,6 +208,7 @@ export function parseInteriorPlan(args: Record<string, unknown>): ParsedInterior
         };
       })
     : undefined;
+  if (args.openPlan !== undefined && typeof args.openPlan !== "boolean") throw new ToolError("openPlan must be boolean", { code: "invalid-args" });
   const innerDoorsRaw = args.innerDoors as Array<{ x?: unknown; y?: unknown }> | undefined;
   const innerDoors = Array.isArray(innerDoorsRaw)
     ? innerDoorsRaw.map((d) => ({ x: Math.floor(Number(d.x)), y: Math.floor(Number(d.y)) }))
@@ -227,6 +228,7 @@ export function parseInteriorPlan(args: Record<string, unknown>): ParsedInterior
     wings,
     rooms,
     innerDoors,
+    ...(args.openPlan === undefined ? {} : { openPlan: args.openPlan as boolean }),
     door: { x: Math.floor(door.x), y: Math.floor(door.y) },
     theme,
     themeModifiers: parseThemeModifiers(args.themeModifiers, "themeModifiers"),

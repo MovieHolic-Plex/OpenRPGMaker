@@ -1,0 +1,52 @@
+{
+  "projectId": "rpg-zzu-ashen-vault-20260913",
+  "saved": true,
+  "reloadMatched": true,
+  "places": [
+    "place_functional_goods",
+    "place_functional_equipment",
+    "place_functional_apothecary",
+    "place_functional_small_inn",
+    "place_functional_dining_inn",
+    "place_functional_two_story_inn"
+  ],
+  "checks": [
+    {
+      "id": "place_functional_goods",
+      "maps": 1,
+      "preview": true,
+      "apply": true
+    },
+    {
+      "id": "place_functional_equipment",
+      "maps": 1,
+      "preview": true,
+      "apply": true
+    },
+    {
+      "id": "place_functional_apothecary",
+      "maps": 1,
+      "preview": true,
+      "apply": true
+    },
+    {
+      "id": "place_functional_small_inn",
+      "maps": 1,
+      "preview": true,
+      "apply": true
+    },
+    {
+      "id": "place_functional_dining_inn",
+      "maps": 1,
+      "preview": true,
+      "apply": true
+    },
+    {
+      "id": "place_functional_two_story_inn",
+      "maps": 2,
+      "preview": true,
+      "apply": true
+    }
+  ],
+  "originalMapsPreserved": 75
+}

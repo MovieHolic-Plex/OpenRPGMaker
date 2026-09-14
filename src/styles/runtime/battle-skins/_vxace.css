@@ -291,7 +291,8 @@
   display: none !important;
 }
 
-.battle-scene[data-battle-skin="vxace"] .battle-command:disabled {
+.battle-scene[data-battle-skin="vxace"] .battle-command:disabled,
+.battle-scene[data-battle-skin="vxace"] .battle-command[aria-disabled="true"] {
   opacity: 0.45 !important;
 }
 

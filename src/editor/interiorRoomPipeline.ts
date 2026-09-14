@@ -1,3 +1,4 @@
+import { interiorActivityEntries } from "./interiorActivityEntries";
 import { interiorRoomRects, type InteriorRoomShape } from "@/project/interiorRoomFootprint";
 /**
  * villager-room-v1 procedural interior pipeline (village-session style layers).
@@ -22,7 +23,7 @@ import {
   shapeInteriorCeiling,
   southDoorOpening,
 } from "@/editor/interiorHouseWallGrammar";
-import { HOUSE_SHELL_MEMBER_TILES } from "@/project/defaults/interiorHouseWallTiles";
+import { HOUSE_SHELL_MEMBER_TILES, WALL_FACE_RETINT } from "@/project/defaults/interiorHouseWallTiles";
 import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
 import {
   createDarkWallAutotileGroup,
@@ -116,10 +117,7 @@ const FLOOR_MATERIAL_TILES = new Set<number>([12, 13, 42, 43, 72, 73, 102, 103, 
 // 벽면 재질(하우스 셸의 크림 면 104|105|106을 방 완성 후 리틴트) — "저택 느낌은 벽부터" 지적.
 // 상단 행/하단 행이 다른 아트(하단은 걸레받이 몰딩)를 쓰는 2단 면.
 export type InteriorWallMaterial = "cream" | "gold-brick" | "stone-brick";
-const WALL_FACE_RETINT: Record<string, { upper: readonly number[]; lower: readonly number[] }> = {
-  "gold-brick": { upper: [314, 315, 316], lower: [344, 345, 346] }, // 자주+금장 벽돌(귀족 저택)
-  "stone-brick": { upper: [134, 135, 136], lower: [164, 165, 166] }, // 밝은 석재 벽돌
-};
+
 
 /**
  * Where a prop may be placed.
@@ -144,7 +142,6 @@ export const PROP_SURFACE: Readonly<Record<number, PropSurface>> = {
   [VR.BED_R]: "againstWall",
   [VR.BOOK_TL]: "againstWall",
   [VR.CABINET_U]: "againstWall",
-  [VR.PLANT]: "corner",
   [VR.GRAIN]: "corner",
   [VR.BOX]: "corner",
   [VR.TABLE_TOP]: "openFloor",
@@ -160,7 +157,6 @@ export const PROP_SURFACE: Readonly<Record<number, PropSurface>> = {
   [VR.TAVERN_SIGN]: "wallFace",
   [VR.LADDER]: "wallFace",
   [VR.BUCKET]: "corner",
-  [VR.JARS]: "corner",
   [VR.CRATE]: "corner",
   [VR.BARREL]: "corner",
   [VR.CAULDRON]: "openFloor",
@@ -327,6 +323,8 @@ export type InteriorRoomPlan = {
   readonly rooms?: readonly RoomSpec[];
   // 방 사이 파티션 개구부 — 파티션 최상단(트림 행) 좌표. 세로로 바닥까지(최대 3칸) 뚫린다.
   readonly innerDoors?: readonly DoorSpec[];
+  /** Adjacent activity areas share floor; only actual gaps generate partitions. */
+  readonly openPlan?: boolean;
   // 기본 바닥 재질 — 파이프라인 내부 표현은 72로 유지하고 가구 배치 후 리틴트한다.
   readonly floorTile?: number;
   // 벽면 재질 — 크림 면(104|105|106)을 완성 후 리틴트. "gold-brick"은 귀족 저택(식당 러그도 붉은 카펫).
@@ -456,11 +454,11 @@ export function interiorRoomTileGroups(): TileGroupMetadata[] {
     group("wall-mount", "벽면 장식", "prop", "upper", [
       VR.WINDOW, VR.PICTURE_L, VR.PICTURE_R, VR.RELIGIOUS, VR.SWORD_RACK,
     ], "wallFace upper only — 바닥 금지", { layerHome: "upper" }),
-    group("corner-props", "구석 소품", "prop", "upper", [VR.GRAIN, VR.BOX, VR.PLANT, VR.BUCKET, VR.JARS, VR.CRATE, VR.BARREL], "구석 바닥(corner)만", {
+    group("corner-props", "구석 소품", "prop", "upper", [VR.GRAIN, VR.BOX, VR.BUCKET, VR.CRATE, VR.BARREL], "구석 바닥(corner)만", {
       layerHome: "upper",
     }),
     group("floor-debris", "바닥 잔해", "prop", "mixed", [VR.BROKEN_GLASS, VR.FLOOR_HOLE, VR.STAIRS_DOWN], "floor only — 벽면 금지"),
-    group("counter-top-props", "카운터 위 소품", "prop", "upper", [237, 235, 238], "술병/항아리/식기 — 카운터·탁자(lower 불투명) 위에만 배치", {
+    group("counter-top-props", "카운터 위 소품", "prop", "upper", [237, 235, 238, VR.PLANT, 288, 296, VR.JARS], "작은 화분/병/식기 — 카운터·탁자(lower 불투명) 위에만 배치", {
       layerHome: "upper",
     }),
     group("clock", "괘종시계", "prop", "upper", [389, 419], "상단 389는 벽면 행, 하단 419는 북측 바닥 행 — 세로 hard 쌍", {
@@ -479,7 +477,7 @@ export function interiorRoomTileGroups(): TileGroupMetadata[] {
         ],
       },
     }),
-    group("kitchen-stove", "화덕 오븐", "building", "mixed", [VR.STOVE_TOP, VR.STOVE_BOT], "세로 2칸 쌍 — 상단 21은 벽면 행 upper, 하단 51은 북측 바닥 행 lower(통행 차단)", {
+    group("kitchen-stove", "화덕 오븐", "building", "mixed", [VR.STOVE_TOP, VR.STOVE_BOT], "세로 2칸 lower 쌍 — 상단 21은 벽면과 겹치고 냄비는 그 위 upper, 하단 51은 북측 바닥(통행 차단)", {
       rules: [interiorStoveHardRule(), interiorStoveSurfaceRule()],
       patternGrammar: {
         kind: "vertical_expandable",
@@ -494,7 +492,7 @@ export function interiorRoomTileGroups(): TileGroupMetadata[] {
         ],
       },
     }),
-    group("kitchen-props", "주방 소품", "prop", "upper", [VR.CAULDRON, VR.KETTLE, VR.FRUIT_SHELF, VR.SHELF_JARS], "가마솥/항아리는 openFloor, 선반은 wallFace", {
+    group("kitchen-props", "주방 소품", "prop", "upper", [VR.CAULDRON, VR.KETTLE, VR.FRUIT_SHELF, VR.SHELF_JARS], "가마솥은 화덕 상판 위 upper, 선반은 wallFace", {
       layerHome: "upper",
     }),
     group("tavern-table", "긴 탁자", "prop", "upper", [VR.TABLE_L, VR.TABLE_R], "openFloor, 좌우 한 쌍", {
@@ -754,7 +752,7 @@ export function applyInteriorRoomLayer(
         width: plan.width,
         height: plan.height,
         floor,
-        rooms: plan.rooms,
+        rooms: plan.openPlan ? undefined : plan.rooms,
         door: plan.door,
         innerDoors: plan.innerDoors ?? [],
       });
@@ -780,7 +778,7 @@ export function applyInteriorRoomLayer(
       warnings.push(...enforceWalkability(next, floor, plan.door, placements));
       if (plan.concept) {
         // 칩 집행: 물건이 놓인 자리에 이벤트(수면·조사·노획·연결). 통행 확보로 치워진 물건은 받지 않는다.
-        warnings.push(...attachConceptEvents(next, placements, { door: plan.door, facilityLabel: plan.concept.facilityLabel }).warnings);
+        warnings.push(...attachConceptEvents(next, placements, { door: plan.door, facilityLabel: plan.concept.facilityLabel, reachableCells: reachableOpenCells(next, floor, plan.door) }).warnings);
       } else {
         // 사분면 공백 보정 — 통행이 확보된 상태에서 공백 사분면에 벽 스냅 소품(놓고-검증-되돌리기).
         // 개념 시설은 나무에 없는 가구를 보태지 않는다.
@@ -1032,20 +1030,8 @@ function paintRoomSpace(
   const modifiers = room?.modifiers ?? plan.themeModifiers ?? [];
   const luxury = plan.wallMaterial === "gold-brick" || modifiers.includes("luxury");
   const sentinels: Array<{ x: number; y: number }> = [];
-  for (let y = 0; y < map.height; y += 1) {
-    for (let x = 0; x < map.width; x += 1) {
-      if (!mask[y * map.width + x]) continue;
-      const isEntry = ([[1, 0], [-1, 0], [0, 1], [0, -1]] as const).some(([dx, dy]) => {
-        const nx = x + dx;
-        const ny = y + dy;
-        if (!inBounds(nx, ny, map.width, map.height)) return false;
-        return floor[ny * map.width + nx] === true && mask[ny * map.width + nx] !== true;
-      });
-      if (isEntry && isUpperEmpty(map, x, y)) {
-        setU(map, x, y, ENTRY_SENTINEL);
-        sentinels.push({ x, y });
-      }
-    }
+  for (const { x, y } of interiorActivityEntries(mask, floor, map.width, map.height, plan.openPlan)) {
+    if (isUpperEmpty(map, x, y)) { setU(map, x, y, ENTRY_SENTINEL); sentinels.push({x,y}); }
   }
   let conceptWarnings: string[] | null = null;
   if (plan.concept) {
@@ -1066,6 +1052,7 @@ function paintRoomSpace(
         resolveObject: (objectId) => currentInteriorVocab().objectsById.get(objectId) ?? interiorObjectById(objectId),
         isFloorTile: (tile) => FLOOR_MATERIAL_TILES.has(tile) || RUG_TILE_SET.has(tile),
         entrySentinel: ENTRY_SENTINEL,
+        openPlan: plan.openPlan,
         // 개념 경로는 테마 가구의 RNG 를 안 타서 seed 가 죽어 있었다(2026-09-03 실측). 구성기가 직접 소비한다.
         seed: plan.seed,
       });
@@ -1199,7 +1186,7 @@ export function furnishInteriorSpace(
   const warnings = paintRoomSpace(map, floor, mask, room.theme ?? nextPlan.theme, nextPlan, room, placements);
   warnings.push(...enforceWalkability(map, floor, nextPlan.door, placements, mask));
   if (nextPlan.concept) {
-    warnings.push(...attachConceptEvents(map, placements, { door: nextPlan.door, facilityLabel: nextPlan.concept.facilityLabel }).warnings);
+    warnings.push(...attachConceptEvents(map, placements, { door: nextPlan.door, facilityLabel: nextPlan.concept.facilityLabel, reachableCells: reachableOpenCells(map, floor, nextPlan.door) }).warnings);
   }
   return { plan: nextPlan, warnings };
 }
@@ -1783,7 +1770,7 @@ function paintThemeFurniture(
     const stove = placeStovePair(map, northFloor, plan.door);
     if (stove) {
       const cx = stove.x + 1;
-      if (isWalkFloor(map, cx, stove.y) && isUpperEmpty(map, cx, stove.y)) setU(map, cx, stove.y, VR.CAULDRON);
+      if (isUpperEmpty(map, stove.x, stove.y - 1)) setU(map, stove.x, stove.y - 1, VR.CAULDRON);
       if (isWalkFloor(map, cx + 1, stove.y) && isUpperEmpty(map, cx + 1, stove.y)) setU(map, cx + 1, stove.y, VR.KETTLE);
       const hearthX = stove.x - 1;
       const hearthY = stove.y - 1; // 화덕 상단(21)과 같은 벽면 행
@@ -1960,6 +1947,13 @@ function placeAgainstWall(
 ): void {
   let ci = 0;
   for (const tile of tiles) {
+    if (tile === VR.CABINET_U) {
+      const candidate = cells.find(c => isWalkFloor(map, c.x, c.y)
+        && houseShellWallMembers().has(getL(map, c.x, c.y - 1))
+        && isUpperEmpty(map, c.x, c.y - 1) && isUpperEmpty(map, c.x, c.y));
+      if (candidate) paintJournaledObjectCells(map, objectCells("cabinet"), candidate.x, candidate.y - 1);
+      continue;
+    }
     while (
       ci < cells.length
       && (!isWalkFloor(map, cells[ci]!.x, cells[ci]!.y) || !isUpperEmpty(map, cells[ci]!.x, cells[ci]!.y))
@@ -2071,12 +2065,12 @@ function placeSouthFiller(
     const southSnap = listWallSnapFloor(floor, map, door).filter((c) => c.y > midY);
     const goods =
       theme === "kitchen"
-        ? [VR.BARREL, VR.CRATE, VR.JARS, VR.BUCKET]
+        ? [VR.BARREL, VR.CRATE, VR.BUCKET]
         : theme === "storage"
           ? [VR.BARREL, VR.CRATE, VR.GRAIN, VR.BOX]
           : theme === "bedroom"
             ? [VR.CABINET_U, VR.BOX]
-            : [VR.BARREL, VR.CRATE, VR.GRAIN, VR.JARS];
+            : [VR.BARREL, VR.CRATE, VR.GRAIN];
     placeAgainstWall(map, southSnap, goods, 1);
     return;
   }
@@ -2406,11 +2400,13 @@ function placeBookshelfRow(
     let ok = true;
     for (let dy = 0; dy < 3 && ok; dy += 1) {
       for (let dx = 0; dx < 2 && ok; dx += 1) {
-        if (!isWalkFloor(map, c.x + dx, c.y + dy) || getU(map, c.x + dx, c.y + dy) === ENTRY_SENTINEL) ok = false;
+        const y = c.y - 1 + dy;
+        const surface = dy === 0 ? houseShellWallMembers().has(getL(map, c.x + dx, y)) : isWalkFloor(map, c.x + dx, y);
+        if (!surface || !isUpperEmpty(map, c.x + dx, y)) ok = false;
       }
     }
     if (!ok) continue;
-    paintJournaledObjectCells(map, shelfCells, c.x, c.y);
+    paintJournaledObjectCells(map, shelfCells, c.x, c.y - 1);
     placed += 1;
     minNextX = c.x + 3; // 책장 2칸 + 통로 1칸
   }
@@ -2743,11 +2739,11 @@ function critiqueRoom(map: GameMap, plan: InteriorRoomPlan): string[] {
   // stove hard vertical pair — 21 upper(벽면 행) 바로 아래 51 lower(바닥 행)
   for (let y = 0; y < map.height; y += 1) {
     for (let x = 0; x < map.width; x += 1) {
-      if (getU(map, x, y) === VR.STOVE_TOP && getL(map, x, y + 1) !== VR.STOVE_BOT) {
-        issues.push(`hard stove: 21(upper) at (${x},${y}) missing 51(lower) below`);
+      if ((getU(map, x, y) === VR.STOVE_TOP || getL(map, x, y) === VR.STOVE_TOP) && getL(map, x, y + 1) !== VR.STOVE_BOT) {
+        issues.push(`hard stove: 21 at (${x},${y}) missing 51(lower) below`);
       }
-      if (getL(map, x, y) === VR.STOVE_BOT && getU(map, x, y - 1) !== VR.STOVE_TOP) {
-        issues.push(`hard stove: 51(lower) at (${x},${y}) missing 21(upper) above`);
+      if (getL(map, x, y) === VR.STOVE_BOT && getU(map, x, y - 1) !== VR.STOVE_TOP && getL(map, x, y - 1) !== VR.STOVE_TOP) {
+        issues.push(`hard stove: 51(lower) at (${x},${y}) missing 21 above`);
       }
     }
   }

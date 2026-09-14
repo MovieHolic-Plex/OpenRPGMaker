@@ -1108,6 +1108,7 @@
  "m2-026-change-vehicle-graphic": {
   "testids": [
    "event-command-edit-summary",
+   "m2-change-vehicle-graphic-intent",
    "m2-command-body-m2-026-change-vehicle-graphic",
    "m2-command-operation-option-select",
    "m2-command-target-option-select",
@@ -1121,6 +1122,9 @@
    "empty-hint",
    "field",
    "m2-command-body",
+   "m2-command-intent-body",
+   "m2-command-intent-card",
+   "m2-command-intent-title",
    "m2-resource-picker",
    "m2-resource-preview",
    "m2-resource-selected-name"
@@ -1155,13 +1159,15 @@
    "탈것"
   ],
   "tags": {
-   "div": 11,
+   "div": 13,
    "label": 3,
    "option": 11,
+   "p": 1,
    "select": 3
   },
   "tagByTestid": {
    "event-command-edit-summary": "div",
+   "m2-change-vehicle-graphic-intent": "div",
    "m2-command-body-m2-026-change-vehicle-graphic": "div",
    "m2-command-operation-option-select": "select",
    "m2-command-target-option-select": "select",
@@ -1171,9 +1177,10 @@
   },
   "texts": {
    "event-command-edit-summary": "기타 명령",
+   "m2-change-vehicle-graphic-intent": "탈것 겉모습 바꾸기배·비행선 같은 탈것이 맵 위에 그려지는 그림을 바꿉니다. 주인공이나 NPC 의 모습을 바꾸는 명령이 아닙니다.",
    "m2-command-value-resource-preview": "그림을 고르세요"
   },
-  "testidCount": 7,
+  "testidCount": 8,
   "controlCount": 3
  },
  "m2-027-change-system-bgm": {
@@ -2432,6 +2439,7 @@
  "m2-030-change-screen-transition": {
   "testids": [
    "event-command-edit-summary",
+   "m2-change-screen-transition-intent",
    "m2-command-body-m2-030-change-screen-transition",
    "m2-command-operation-option-select",
    "m2-command-target-input",
@@ -2442,7 +2450,10 @@
    "cream-command-form-head",
    "empty-hint",
    "field",
-   "m2-command-body"
+   "m2-command-body",
+   "m2-command-intent-body",
+   "m2-command-intent-card",
+   "m2-command-intent-title"
   ],
   "controls": {
    "m2-command-operation-option-select": "select{}",
@@ -2463,23 +2474,26 @@
    "어떻게"
   ],
   "tags": {
-   "div": 8,
+   "div": 10,
    "input": 2,
    "label": 3,
    "option": 4,
+   "p": 1,
    "select": 1
   },
   "tagByTestid": {
    "event-command-edit-summary": "div",
+   "m2-change-screen-transition-intent": "div",
    "m2-command-body-m2-030-change-screen-transition": "div",
    "m2-command-operation-option-select": "select",
    "m2-command-target-input": "input",
    "m2-command-value-input": "input"
   },
   "texts": {
-   "event-command-edit-summary": "기타 명령"
+   "event-command-edit-summary": "기타 명령",
+   "m2-change-screen-transition-intent": "다음 전환 연출 정하기앞으로 맵을 옮기거나 전투를 시작할 때 쓸 화면 전환 방식을 미리 정해 둡니다. 이 명령 자체가 지금 화면을 전환시키지는 않습니다."
   },
-  "testidCount": 5,
+  "testidCount": 6,
   "controlCount": 3
  },
  "m2-036-get-player-location": {
@@ -4510,7 +4524,8 @@
    "m2-command-resourceId-picker",
    "m2-command-resourceId-preview",
    "m2-command-resourceId-selected-name",
-   "m2-command-volume-input"
+   "m2-command-volume-input",
+   "m2-play-movie-intent"
   ],
   "classes": [
    "cream-command-form",
@@ -4518,6 +4533,9 @@
    "empty-hint",
    "field",
    "m2-command-body",
+   "m2-command-intent-body",
+   "m2-command-intent-card",
+   "m2-command-intent-title",
    "m2-resource-picker",
    "m2-resource-preview",
    "m2-resource-selected-name"
@@ -4536,10 +4554,11 @@
    "볼륨"
   ],
   "tags": {
-   "div": 10,
+   "div": 12,
    "input": 1,
    "label": 2,
    "option": 1,
+   "p": 1,
    "select": 1
   },
   "tagByTestid": {
@@ -4548,13 +4567,15 @@
    "m2-command-resourceId-picker": "select",
    "m2-command-resourceId-preview": "div",
    "m2-command-resourceId-selected-name": "div",
-   "m2-command-volume-input": "input"
+   "m2-command-volume-input": "input",
+   "m2-play-movie-intent": "div"
   },
   "texts": {
    "event-command-edit-summary": "기타 명령",
-   "m2-command-resourceId-preview": "동영상을 고르세요"
+   "m2-command-resourceId-preview": "동영상을 고르세요",
+   "m2-play-movie-intent": "동영상 재생동영상 파일을 화면 전체에 재생하고, 끝날 때까지 다음 명령을 기다립니다. 배경에 깔아 두는 음악·효과음이 아닙니다."
   },
-  "testidCount": 6,
+  "testidCount": 7,
   "controlCount": 2
  },
  "m2-067-key-input-processing": {
@@ -5304,28 +5325,35 @@
  "m2-078-open-menu-screen": {
   "testids": [
    "event-command-edit-summary",
-   "m2-command-body-m2-078-open-menu-screen"
+   "m2-command-body-m2-078-open-menu-screen",
+   "m2-open-menu-screen-intent"
   ],
   "classes": [
    "cream-command-form",
    "cream-command-form-head",
    "empty-hint",
-   "m2-command-body"
+   "m2-command-body",
+   "m2-command-intent-body",
+   "m2-command-intent-card",
+   "m2-command-intent-title"
   ],
   "controls": {},
   "selectOptions": {},
   "labels": [],
   "tags": {
-   "div": 5
+   "div": 7,
+   "p": 1
   },
   "tagByTestid": {
    "event-command-edit-summary": "div",
-   "m2-command-body-m2-078-open-menu-screen": "div"
+   "m2-command-body-m2-078-open-menu-screen": "div",
+   "m2-open-menu-screen-intent": "div"
   },
   "texts": {
-   "event-command-edit-summary": "기타 명령"
+   "event-command-edit-summary": "기타 명령",
+   "m2-open-menu-screen-intent": "메뉴 화면 열기플레이어가 메뉴 버튼을 누른 것처럼 게임 안의 메뉴를 엽니다. 에디터의 메뉴나 설정 창을 여는 명령이 아닙니다."
   },
-  "testidCount": 2,
+  "testidCount": 3,
   "controlCount": 0
  },
  "m2-079-change-menu-access": {
@@ -5409,6 +5437,7 @@
    "cream-command-form-head",
    "m2-command-body",
    "m2-command-intent",
+   "m2-command-intent-card",
    "m2-command-intent-copy",
    "m2-command-intent-title",
    "m2-erase-event-body",
@@ -6448,6 +6477,7 @@
  "m2-201-camera-control": {
   "testids": [
    "event-command-edit-summary",
+   "m2-camera-control-intent",
    "m2-command-body-m2-201-camera-control",
    "m2-command-durationMs-input",
    "m2-command-mode-option-select",
@@ -6461,7 +6491,10 @@
    "cream-command-form-head",
    "empty-hint",
    "field",
-   "m2-command-body"
+   "m2-command-body",
+   "m2-command-intent-body",
+   "m2-command-intent-card",
+   "m2-command-intent-title"
   ],
   "controls": {
    "m2-command-durationMs-input": "input[number]{}",
@@ -6493,14 +6526,16 @@
    "줌"
   ],
   "tags": {
-   "div": 11,
+   "div": 13,
    "input": 4,
    "label": 6,
    "option": 7,
+   "p": 1,
    "select": 2
   },
   "tagByTestid": {
    "event-command-edit-summary": "div",
+   "m2-camera-control-intent": "div",
    "m2-command-body-m2-201-camera-control": "div",
    "m2-command-durationMs-input": "input",
    "m2-command-mode-option-select": "select",
@@ -6510,9 +6545,10 @@
    "m2-command-zoom-input": "input"
   },
   "texts": {
-   "event-command-edit-summary": "기타 명령"
+   "event-command-edit-summary": "기타 명령",
+   "m2-camera-control-intent": "카메라 옮기기화면이 비추는 위치와 배율만 바꿉니다. 주인공이나 이벤트를 실제로 이동시키지는 않습니다 — 이동은 `이동 경로 설정` 이나 `좌표로 이동` 입니다."
   },
-  "testidCount": 8,
+  "testidCount": 9,
   "controlCount": 6
  },
  "m2-202-screen-effect": {
@@ -7141,7 +7177,8 @@
    "m2-command-regionId-input",
    "m2-command-switchId-record-open",
    "m2-command-switchId-record-select",
-   "m2-command-switchId-record-selected-name"
+   "m2-command-switchId-record-selected-name",
+   "m2-region-trigger-intent"
   ],
   "classes": [
    "btn",
@@ -7152,6 +7189,9 @@
    "event-record-picker-trigger",
    "field",
    "m2-command-body",
+   "m2-command-intent-body",
+   "m2-command-intent-card",
+   "m2-command-intent-title",
    "m2-record-modal-picker",
    "m2-record-picker",
    "m2-record-selected-name",
@@ -7217,10 +7257,11 @@
   ],
   "tags": {
    "button": 1,
-   "div": 13,
+   "div": 15,
    "input": 1,
    "label": 4,
    "option": 36,
+   "p": 1,
    "select": 3,
    "span": 1
   },
@@ -7233,12 +7274,14 @@
    "m2-command-regionId-input": "input",
    "m2-command-switchId-record-open": "button",
    "m2-command-switchId-record-select": "select",
-   "m2-command-switchId-record-selected-name": "div"
+   "m2-command-switchId-record-selected-name": "div",
+   "m2-region-trigger-intent": "div"
   },
   "texts": {
-   "event-command-edit-summary": "기타 명령"
+   "event-command-edit-summary": "기타 명령",
+   "m2-region-trigger-intent": "지역을 밟으면 일어날 일맵에 칠해 둔 지역 번호를 밟았을 때 이벤트를 부르거나 스위치를 켜도록 연결합니다. 지역 번호를 칠하는 것은 맵 편집 화면에서 합니다."
   },
-  "testidCount": 9,
+  "testidCount": 10,
   "controlCount": 5
  },
  "m2-208-quest-objective": {
@@ -8571,14 +8614,18 @@
    "event-command-edit-summary",
    "m2-command-action-option-select",
    "m2-command-body-m2-212-cutscene-control",
-   "m2-command-enabled-checkbox"
+   "m2-command-enabled-checkbox",
+   "m2-cutscene-control-intent"
   ],
   "classes": [
    "cream-command-form",
    "cream-command-form-head",
    "empty-hint",
    "field",
-   "m2-command-body"
+   "m2-command-body",
+   "m2-command-intent-body",
+   "m2-command-intent-card",
+   "m2-command-intent-title"
   ],
   "controls": {
    "m2-command-action-option-select": "select{}",
@@ -8596,22 +8643,25 @@
    "상태"
   ],
   "tags": {
-   "div": 7,
+   "div": 9,
    "input": 1,
    "label": 2,
    "option": 3,
+   "p": 1,
    "select": 1
   },
   "tagByTestid": {
    "event-command-edit-summary": "div",
    "m2-command-action-option-select": "select",
    "m2-command-body-m2-212-cutscene-control": "div",
-   "m2-command-enabled-checkbox": "input"
+   "m2-command-enabled-checkbox": "input",
+   "m2-cutscene-control-intent": "div"
   },
   "texts": {
-   "event-command-edit-summary": "기타 명령"
+   "event-command-edit-summary": "기타 명령",
+   "m2-cutscene-control-intent": "컷신 모드 켜고 끄기켜는 동안 조작을 잠그고 화면 UI 를 숨깁니다. 컷신에서 무슨 일이 벌어지는지는 이 명령 다음에 오는 명령들이 정합니다."
   },
-  "testidCount": 4,
+  "testidCount": 5,
   "controlCount": 2
  },
  "m2-213-checkpoint-save": {

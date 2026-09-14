@@ -75,7 +75,9 @@
   animation-duration: 0.6s;
 }
 
-.battle-damage-popup.is-critical {
+/* 아래 세 규칙은 battleFieldDom.showDamageFeedback 이 붙이는 실제 클래스명이다. 예전 `.is-critical`
+   등은 아무도 붙이지 않아 급소 팝업이 통상 팝업과 같은 키프레임에 색만 달랐다(2026-09-14 실측). */
+.battle-damage-popup.battle-damage-popup-critical {
   animation-name: battle-damage-critical-pop;
   color: #fff263;
   font-size: 34px;
@@ -84,12 +86,12 @@
   z-index: 10;
 }
 
-.battle-damage-popup.is-heal {
+.battle-damage-popup.battle-damage-popup-heal {
   color: #79ff6b;
   text-shadow: 0 0 8px #008822, 2px 2px 0 #004411;
 }
 
-.battle-damage-popup.is-miss {
+.battle-damage-popup.battle-damage-popup-miss {
   color: #d1d5db;
   font-style: italic;
   text-shadow: 2px 2px 0 #374151;

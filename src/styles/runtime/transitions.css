@@ -19,7 +19,10 @@
   /* 전투 진입/종료는 battleTransition.ts 의 JS 타임라인과 같은 길이를 쓴다.
      오버레이 자체가 전체 host를 덮어야 flash 단계부터 실제로 보이고,
      여덟 blind가 닫힌 뒤 새 전투 장면을 reveal할 수 있다. */
+  /* 커버 색은 런타임 전용 토큰이다. 예전엔 편집기 `--bg-canvas`(#EEF1F4, 연회색)를 빌려
+     써서 전투 종료가 "검게 페이드" 가 아니라 거의 흰 화면으로 스냅했다(2026-09-14 실측). */
   .battle-transition-overlay {
+    --battle-transition-cover: #05070c;
     inset: 0;
     overflow: hidden;
     pointer-events: none;
@@ -44,7 +47,7 @@
   }
 
   .battle-transition-blind-bar {
-    background: var(--bg-canvas, #05070c);
+    background: var(--battle-transition-cover);
     display: block;
     min-height: 0;
     transform: scaleX(0);
@@ -60,18 +63,20 @@
     animation-delay: calc(var(--blind-index) * 10ms);
   }
 
+  /* 열림은 닫힘의 역순 계단(아래→위). 막대 230ms + 최대 지연 70ms = JS REVEAL_MS 300 안. */
   .battle-transition-overlay[data-battle-transition-phase="reveal"] .battle-transition-blind-bar {
-    animation: battle-transition-blind-reveal 300ms cubic-bezier(0.15, 0.55, 0.25, 1) both;
+    animation: battle-transition-blind-reveal 230ms cubic-bezier(0.15, 0.55, 0.25, 1) both;
+    animation-delay: calc((7 - var(--blind-index)) * 10ms);
   }
 
   .battle-transition-overlay[data-battle-transition-phase="exit"] {
     animation: battle-transition-exit-cover 220ms ease-in both;
-    background: var(--bg-canvas, #05070c);
+    background: var(--battle-transition-cover);
   }
 
   .battle-transition-overlay[data-battle-transition-phase="reveal"]:not(:has(.battle-transition-blinds)) {
     animation: battle-transition-exit-reveal 300ms ease-out both;
-    background: var(--bg-canvas, #05070c);
+    background: var(--battle-transition-cover);
   }
 
   @keyframes battle-transition-flash {
@@ -98,5 +103,21 @@
   @keyframes battle-transition-exit-reveal {
     from { opacity: 1; }
     to { opacity: 0; }
+  }
+
+  /* 감소 모션: 전체화면 플래시를 없애고 막대·커버는 즉시 전환한다. JS 대기는
+     battleTransition.ts 가 같은 미디어쿼리를 읽어 접는다. */
+  @media (prefers-reduced-motion: reduce) {
+    .battle-transition-overlay[data-battle-transition-phase="flash"] .battle-transition-flash {
+      animation: none;
+      opacity: 0;
+    }
+    .battle-transition-overlay[data-battle-transition-phase="close"] .battle-transition-blind-bar,
+    .battle-transition-overlay[data-battle-transition-phase="reveal"] .battle-transition-blind-bar,
+    .battle-transition-overlay[data-battle-transition-phase="exit"],
+    .battle-transition-overlay[data-battle-transition-phase="reveal"]:not(:has(.battle-transition-blinds)) {
+      animation-delay: 0ms;
+      animation-duration: 1ms;
+    }
   }
 }

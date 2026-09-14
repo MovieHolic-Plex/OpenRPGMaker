@@ -30,6 +30,7 @@ import {
 import { installLayoutBboxOverlay } from "@/editor/layoutBboxOverlay";
 import { installMapLocationLayer } from "@/editor/mapLocationLayer";
 import { locationLayerState, subscribeLocationLayer } from "@/editor/mapLocationLayerState";
+import { subscribeMapBackgroundPreview } from "@/editor/mapBackgroundPreviewState";
 import { installLocationDrawModeGuard } from "@/editor/locationDrawMode";
 import { getMapEditHistoryState } from "@/editor/mapEditHistory";
 import { bindMapSurfaceFocusHandoff } from "@/editor/mapSurfaceFocus";
@@ -143,6 +144,7 @@ let unsubLayoutBbox: (() => void) | null = null;
 let unsubLocationLayer: (() => void) | null = null;
 let unsubLocationToggle: (() => void) | null = null;
 let unsubLocationDrawGuard: (() => void) | null = null;
+let unsubMapBackgroundPreview: (() => void) | null = null;
 /** 마지막으로 툴바·패널에 반영한 레이어 켜짐. 드래그 중 재렌더를 걸러내는 기준이다. */
 let lastRenderedLocationLayerEnabled: boolean | null = null;
 let unsubWorkspace: (() => void) | null = null;
@@ -258,6 +260,10 @@ export function renderEditor(main: HTMLElement): void {
 
   unsubStore = store.subscribe((_project, change) => refreshPanels(change));
   unsubEditor = editorState.subscribe(() => scheduleFullPanelRefresh());
+  // 미리보기 토글도 눌린 상태(aria-pressed/색)를 그대로 보여야 한다 — 툴바만 다시 그린다.
+  unsubMapBackgroundPreview = subscribeMapBackgroundPreview(() => {
+    if (canvasToolbarRoot) renderCanvasToolbar(canvasToolbarRoot);
+  });
   unsubMapLocks = subscribeMapEditLocks(() => refreshPanels());
   unsubUiMode = subscribeEditorUiMode(() => {
     syncLeftDock();
@@ -404,6 +410,7 @@ export function teardownEditor(): void {
   unsubLayoutBbox?.();
   unsubLocationLayer?.();
   unsubLocationToggle?.();
+  unsubMapBackgroundPreview?.();
   unsubLocationDrawGuard?.();
   unsubWorkspace?.();
   unsubMapPanel?.();
@@ -419,6 +426,7 @@ export function teardownEditor(): void {
   unsubLayoutBbox = null;
   unsubLocationLayer = null;
   unsubLocationToggle = null;
+  unsubMapBackgroundPreview = null;
   unsubLocationDrawGuard = null;
   unsubWorkspace = null;
   leftDock = null;

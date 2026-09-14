@@ -16,6 +16,7 @@ export function bindCanonicalInteriorPlan(plan: InteriorRoomPlan, project: Proje
     const space = canonicalRoomAlias(project, room.theme ?? plan.theme, plan.tilesetId ?? "easyrpg_chipset_interior");
     if (!space || space.environment !== "interior") throw new ToolError(`Canonical space not found: ${room.theme ?? plan.theme}`, { code: "concept-place-not-found" });
     if (space.tilesetId !== (plan.tilesetId ?? "easyrpg_chipset_interior")) throw new ToolError(`Unsupported atlas: ${space.tilesetId}`, { code: "spatial-atlas" });
+    if (space.zones?.length) throw new ToolError("생활 영역이 있는 공간은 preview_spatial_build / apply_spatial_build로 시공하라 — 방 호환 도구는 영역을 평탄화할 수 없다", { code: "invalid-args" });
     const things = space.objectSlots.flatMap(slot => {
       const object = own(document.library.objects, slot.objectDesignId);
       if (object.graphic.tilesetId !== space.tilesetId) throw new ToolError(`Unsupported object atlas: ${object.id}`, { code: "spatial-atlas" });

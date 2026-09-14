@@ -1,0 +1,62 @@
+[
+  {
+    "label": "빈 맵 준비",
+    "tool": "create_map",
+    "ok": true,
+    "summary": "맵 '실패 모드 수정 검증' (20x14) 생성 — id map_f_fix_evidence, BGM cc0-bgm-rtp-fld-003",
+    "issues": [
+      "transfer 착지 좌표에 playerTouch 이벤트가 있어 즉시 재전이될 수 있습니다: spatial-place:20:house-example:inn-3f:0:29:easyrpg_chipset_combined_town (10, 19)",
+      "transfer 착지 좌표에 playerTouch 이벤트가 있어 즉시 재전이될 수 있습니다: spatial:child:20:house-example:inn-3f7:floor-2:0 (11, 14)",
+      "transfer 착지 좌표에 playerTouch 이벤트가 있어 즉시 재전이될 수 있습니다: spatial:child:20:house-example:inn-3f7:floor-1:0 (10, 14)"
+    ]
+  },
+  {
+    "label": "F3 어휘 해석",
+    "tool": "resolveMaterialByLabel(\"꽃\")",
+    "ok": true,
+    "summary": "approved · 꽃",
+    "issues": []
+  },
+  {
+    "label": "F3 꽃 소품 배치",
+    "tool": "place_props",
+    "ok": true,
+    "summary": "실패 모드 수정 검증 (2,2) 16×5에 소품(Flowers) 18/18개 산포 — 자연도 0.5.",
+    "issues": [
+      "transfer 착지 좌표에 playerTouch 이벤트가 있어 즉시 재전이될 수 있습니다: spatial-place:20:house-example:inn-3f:0:29:easyrpg_chipset_combined_town (10, 19)",
+      "transfer 착지 좌표에 playerTouch 이벤트가 있어 즉시 재전이될 수 있습니다: spatial:child:20:house-example:inn-3f7:floor-2:0 (11, 14)",
+      "transfer 착지 좌표에 playerTouch 이벤트가 있어 즉시 재전이될 수 있습니다: spatial:child:20:house-example:inn-3f7:floor-1:0 (10, 14)"
+    ]
+  },
+  {
+    "label": "F2 밑그림 없이 NPC 배치",
+    "tool": "place_npc",
+    "ok": true,
+    "summary": "실패 모드 수정 검증에 NPC '안내원' 배치 (4, 9) — 페이지 1개 — SimplePage 정규화 경고 1건",
+    "issues": [
+      "transfer 착지 좌표에 playerTouch 이벤트가 있어 즉시 재전이될 수 있습니다: spatial-place:20:house-example:inn-3f:0:29:easyrpg_chipset_combined_town (10, 19)",
+      "transfer 착지 좌표에 playerTouch 이벤트가 있어 즉시 재전이될 수 있습니다: spatial:child:20:house-example:inn-3f7:floor-2:0 (11, 14)",
+      "transfer 착지 좌표에 playerTouch 이벤트가 있어 즉시 재전이될 수 있습니다: spatial:child:20:house-example:inn-3f7:floor-1:0 (10, 14)"
+    ]
+  },
+  {
+    "label": "F1 단일 객체 dialogue",
+    "tool": "make_villager",
+    "ok": true,
+    "summary": "실패 모드 수정 검증에 주민 '주민' 생성 (9, 9) — characterId=char_주민, 스케줄 0개, 대사 페이지 1개",
+    "issues": [
+      "transfer 착지 좌표에 playerTouch 이벤트가 있어 즉시 재전이될 수 있습니다: spatial-place:20:house-example:inn-3f:0:29:easyrpg_chipset_combined_town (10, 19)",
+      "transfer 착지 좌표에 playerTouch 이벤트가 있어 즉시 재전이될 수 있습니다: spatial:child:20:house-example:inn-3f7:floor-2:0 (11, 14)",
+      "transfer 착지 좌표에 playerTouch 이벤트가 있어 즉시 재전이될 수 있습니다: spatial:child:20:house-example:inn-3f7:floor-1:0 (10, 14)"
+    ]
+  },
+  {
+    "label": "F3 없는 재료(실패 문구)",
+    "tool": "place_props",
+    "ok": false,
+    "summary": "'place_props' 실행 실패: 라벨/설명이 \"붉은 카펫\" 인 타일을 찾지 못했습니다. 이 타일셋(easyrpg_chipset_combined_town)에는 비슷한 재료도 없습니다 — 맵의 타일셋이 이 요청과 맞는지 확인하세요(실내 재료는 실내 칩셋에만 있습니다). tile_query ask:\"labels\" 로 조회 — 다시 보낼 형식 예시: {\"mapId\":\"map_1\",\"area\":{…",
+    "issues": [
+      "라벨/설명이 \"붉은 카펫\" 인 타일을 찾지 못했습니다. 이 타일셋(easyrpg_chipset_combined_town)에는 비슷한 재료도 없습니다 — 맵의 타일셋이 이 요청과 맞는지 확인하세요(실내 재료는 실내 칩셋에만 있습니다). tile_query ask:\"labels\" 로 조회 — 다시 보낼 형식 예시: {\"mapId\":\"map_1\",\"area\":{\"x\":2,\"y\":2,\"w\":18,\"h\":12},\"material\":\"침엽수\",\"count\":8,\"naturalness\":0.6}"
+    ]
+  }
+]
