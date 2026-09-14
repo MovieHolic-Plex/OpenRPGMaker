@@ -227,6 +227,8 @@ const AI_GENERATABLE_PICKER_KINDS: Readonly<Record<string, "title" | "backdrop" 
   title: "title",
   backdrop: "backdrop",
   monster: "monster",
+  // 시네마틱 스틸(오프닝·게임 오버 배경)도 전체화면 아트라 배경화 생성기를 그대로 쓴다.
+  still: "backdrop",
 };
 
 export function resourcePickerControl(input: {
