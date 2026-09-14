@@ -42,6 +42,37 @@
   그렸고, 비교는 「적용」 을 누른 **뒤에야** 나왔다 — "부탁했는데 before/after 가 안 보인다" 의 첫 자리다.
   이제 `runPiCommand` 가 검토 단계에서도 같은 카드를 «적용 전» 상태로 만들어 `board.setReview({preview})`
   로 넘기고, 보드의 검토 카드가 그 자리에 그대로 세운다(칩 줄은 카드가 대신하므로 따로 그리지 않는다).
+- **Bun 워커의 유휴 타임아웃은 꺼져 있어야 한다 (2026-09-14 실측):** `Bun.serve` 는 `idleTimeout` 기본값이 **10초**라
+  연결에 바이트가 오가지 않으면 소켓을 끊는다. `/agent/run` 은 턴 시작·툴 호출·응답 끝에만 NDJSON 줄을 쓰고 하트비트가
+  없어서, 모델이 10초 넘게 생각하는 순간 스트림이 끊겼다. 체인: Bun 소켓 닫힘 → Node `fetch`(undici) 가
+  `TypeError: terminated` → `companionHttpUtil.pipeWebStream` 이 `{type:"error",message:"terminated"}` 줄로 전달 →
+  보드 「Pi 에이전트 실패: terminated」. 동시에 워커는 `request.signal` abort 를 클라이언트 중단으로 읽어 팀장·시공을
+  전부 abort 했다(`[pi-agent] aborted by client`). 팀 모드가 유독 잘 죽었다: 팀장은 `wait_agents` 로 조용히 기다리고
+  팀원은 Ultrabrain 사고 수준(high)으로 돌아 한 턴이 10초를 넘기기 쉽다 — 09-13~09-14 팀 모드 「마을 만들어줘」
+  「집을 만들어바」 「재밌는 rpg 로 만들어줘」 가 전부 25~210초 만에 `terminated`, 단독·low 였던 09-11 「마을을 만들어봐」
+  만 살아남았다. 라이브 재현(`?blankProject=1`, 팀 켜고 「마을 만들어줘」): 시공 3턴 시작 +15.1s → 9.5초 침묵 →
+  +24.5s `terminated`. 고침은 `scripts/oh-my-pi-worker.ts` 의 `Bun.serve({ idleTimeout: 0 })` 한 줄 — 실행 상한은
+  `piAgentRuntime.ts` 의 `timeoutMs`(기본 10분)가 따로 든다. 회귀는 `test/ohMyPiWorkerIdle.node.test.mjs` 가
+  모델 없이 잡는다(헤더만 보내고 14초 유휴 → 같은 연결로 400 응답을 받아야 한다; 기본값이면 +12초에 닫힌다).
+- **침묵을 없애고, 남은 침묵은 고장으로 읽는다 (2026-09-14):** 유휴 타임아웃을 끄는 것은 10초짜리 컷을 다음 층의
+  300초짜리로 뮸 것뿐이고(Node `fetch` → undici `bodyTimeout`), 「5분 넘게 침묵했는지」를 **알 방법이 없다**는 것이
+  더 큰 문제다. 세 겹으로 나눠 닫았다.
+  - **내용 — 델타 중계(`src/ai/piAgent/deltaRelay.ts`).** pi-agent-core 는 모델을 **스트리밍으로** 부르고(`streamSimple`)
+    델타마다 `message_update` 를 내며, Antigravity 제공자는 `includeThoughts` 로 **생각 델타까지** 흘린다. 그런데
+    `piAgentRuntime` 은 `turn_start`·`tool_execution_*`·`message_end` 네 가지만 중계하고 이 이벤트를 버렸다 —
+    즉 데이터는 워커 문 앞까지 초 단위로 닿고 있는데 문을 안 열어준 것이었다. 이제 `delta` 이벤트로 1초씩
+    합쳐 보내고(보드가 이미 1초 티커로 다시 그리므로 그보다 잔 간격은 보이지 않는 렌더만 늘린다), 보드는
+    「생각 중 · …」 한 줄로 그린다. 순서 계약: 턴·툴·응답 끝 직전에 `flush()` — 안 하면 조각이 완성문 뒤에 도착한다.
+  - **맥박 — 워커 heartbeat(`scripts/lib/piAgentStream.ts`).** `/agent/run` 응답 본문을 이 모듈이 만들고,
+    줄 사이가 비면 `PI_AGENT_HEARTBEAT_MS`(5초)마다 `{type:"heartbeat"}` 를 끼운다. 델타가 안 나오는 구간
+    (첫 토큰 전 대기, 긴 툴 실행, 팀장의 `wait_agents`, 생각 요약을 숨기는 모델)에서도 와이어는 안 비운다.
+  - **판정 — 브라우저 워치독(`client.ts`).** `PI_AGENT_STALE_MS`(30초, heartbeat 의 6배) 동안 줄이 하나도 안 오면
+    리더를 취소하고 「워커가 응답하지 않습니다」로 끝낌다. 이제 **침묵은 정상이 아니다** — 생각하는 중이면
+    heartbeat 가 오기 때문이다. 이게 없으면 죽은 워커를 10분 상한까지 「실행 중」으로 띄우게 된다.
+  `heartbeat` 는 보드 앞에서 버려진다(`aiPiAgentCommand` 의 `wrap` · Ultrabrain 계획 핸들러) — 5초마다 행 전체를
+  다시 그릴 이유가 없다. 커버리지: `test/piAgentStreamLiveness.test.ts`(델타 합침·순서·상한, heartbeat 흐름,
+  워치독 두 방향, 보드의 delta/heartbeat 처리). 대조 실측: heartbeat 를 빼면 그 테스트가 15초 타임아웃으로,
+  `onStale` 을 비우면 워치독 테스트가 같은 모양으로 죽는다.
 - **남은 세션 호출자**(deprecated 재고): 선택 영역 작업·영역 생성기(`runRegionTask`/`runOperatorTask`),
   클러스터 AI 모달, 조수 QA 브리지(`aiAssistantBridge` — DB AI 바가 이걸 쓴다), 벤치마크/QA 스크립트.
   각자 표면의 엔진이라 조수 창 경로와 무관하고, Pi 이관은 별도 작업이다.

@@ -1,0 +1,289 @@
+import { describe, expect, it } from "vitest";
+import {
+  CLOUD_SHADOW_BLOB_COUNT,
+  CLOUD_SHADOW_BREATH,
+  CLOUD_SHADOW_LOBE_CORE_FRACTION,
+  CLOUD_SHADOW_SPEED_JITTER,
+  cloudShadowBreath,
+  CLOUD_SHADOW_SILHOUETTE_COUNT,
+  cloudShadowSilhouette,
+  CLOUD_SHADOW_DEFAULTS,
+  CLOUD_SHADOW_OPACITY_RANGE,
+  CLOUD_SHADOW_SCALE_RANGE,
+  CLOUD_SHADOW_SPEED_RANGE,
+  cloudShadowAnchors,
+  cloudShadowBlobs,
+  cloudShadowDrift,
+  cloudShadowPeriod,
+  normalizeCloudShadowParams,
+  type CloudShadowBlob,
+  type CloudShadowParams,
+} from "@/player/cloudShadows";
+
+const VIEW = { x: 0, y: 0, width: 960, height: 720 };
+
+function params(overrides: Partial<CloudShadowParams> = {}): CloudShadowParams {
+  return { ...normalizeCloudShadowParams({ enabled: true }), ...overrides };
+}
+
+function mod(value: number, divisor: number): number {
+  return ((value % divisor) + divisor) % divisor;
+}
+
+function positionKey(x: number, y: number): string {
+  return `${Math.round(x * 100) / 100}|${Math.round(y * 100) / 100}`;
+}
+describe("normalizeCloudShadowParams", () => {
+  it("설정이 없으면 기본값 + 꺼짐", () => {
+    expect(normalizeCloudShadowParams(undefined)).toEqual({ enabled: false, ...CLOUD_SHADOW_DEFAULTS });
+  });
+
+  it("enabled 만 있으면 나머지는 기본값", () => {
+    expect(normalizeCloudShadowParams({ enabled: true })).toEqual({ enabled: true, ...CLOUD_SHADOW_DEFAULTS });
+  });
+
+  it("범위 밖 수치는 범위로 접는다", () => {
+    const wild = normalizeCloudShadowParams({
+      enabled: true,
+      opacity: 5,
+      speed: -20,
+      angleDeg: 400,
+      scale: 99,
+    });
+    expect(wild.opacity).toBe(CLOUD_SHADOW_OPACITY_RANGE.max);
+    expect(wild.speed).toBe(CLOUD_SHADOW_SPEED_RANGE.min);
+    expect(wild.angleDeg).toBe(40);
+    expect(wild.scale).toBe(CLOUD_SHADOW_SCALE_RANGE.max);
+
+    const floor = normalizeCloudShadowParams({ enabled: true, opacity: -3, speed: 900, scale: 0 });
+    expect(floor.opacity).toBe(CLOUD_SHADOW_OPACITY_RANGE.min);
+    expect(floor.speed).toBe(CLOUD_SHADOW_SPEED_RANGE.max);
+    expect(floor.scale).toBe(CLOUD_SHADOW_SCALE_RANGE.min);
+  });
+
+  it("각도는 360도로 접고 NaN/무한대는 기본값으로 되돌린다", () => {
+    expect(normalizeCloudShadowParams({ enabled: true, angleDeg: -90 }).angleDeg).toBe(270);
+    expect(normalizeCloudShadowParams({ enabled: true, angleDeg: Number.NaN }).angleDeg).toBe(CLOUD_SHADOW_DEFAULTS.angleDeg);
+    expect(normalizeCloudShadowParams({ enabled: true, speed: Number.POSITIVE_INFINITY }).speed).toBe(CLOUD_SHADOW_SPEED_RANGE.max);
+  });
+});
+
+describe("cloudShadowDrift", () => {
+  it("꺼져 있으면 흐르지 않는다", () => {
+    expect(cloudShadowDrift(normalizeCloudShadowParams(undefined), 5000)).toEqual({ dx: 0, dy: 0 });
+  });
+
+  it("방향 0도 = 오른쪽, 90도 = 아래, 속도는 px/초", () => {
+    expect(cloudShadowDrift(params({ speed: 40, angleDeg: 0 }), 1000)).toEqual({ dx: 40, dy: 0 });
+    const down = cloudShadowDrift(params({ speed: 40, angleDeg: 90 }), 1000);
+    expect(down.dx).toBeCloseTo(0, 6);
+    expect(down.dy).toBeCloseTo(40, 6);
+    const left = cloudShadowDrift(params({ speed: 30, angleDeg: 180 }), 1000);
+    expect(left.dx).toBeCloseTo(-30, 6);
+    expect(left.dy).toBeCloseTo(0, 6);
+  });
+
+  it("경과 시간에 비례한다", () => {
+    const half = cloudShadowDrift(params({ speed: 40, angleDeg: 0 }), 500);
+    const full = cloudShadowDrift(params({ speed: 40, angleDeg: 0 }), 1000);
+    expect(half.dx).toBeCloseTo(full.dx / 2, 6);
+    expect(cloudShadowDrift(params({ speed: 40, angleDeg: 0 }), 0)).toEqual({ dx: 0, dy: 0 });
+  });
+});
+
+describe("cloudShadowPeriod", () => {
+  it("화면을 덮고, 크기 배율에 비례한다", () => {
+    const base = cloudShadowPeriod(VIEW, 1);
+    expect(base).toBeGreaterThanOrEqual(VIEW.width);
+    expect(cloudShadowPeriod(VIEW, 2)).toBe(base * 2);
+    expect(cloudShadowPeriod(VIEW, 0.5)).toBe(Math.round(base * 0.5));
+  });
+});
+
+describe("cloudShadowBlobs", () => {
+  it("꺼져 있거나 진하기가 0이면 덩어리가 없다", () => {
+    expect(cloudShadowBlobs(normalizeCloudShadowParams(undefined), 0, VIEW)).toEqual([]);
+    expect(cloudShadowBlobs(params({ opacity: 0 }), 0, VIEW)).toEqual([]);
+  });
+
+  it("화면을 덮는 덩어리를 만들고 전부 화면과 겹친다", () => {
+    const blobs = cloudShadowBlobs(params(), 0, VIEW);
+    // 배치(12개) 중 일부는 화면 밖이라 보이는 덩어리는 그보다 적다 — 0이 아닌 «덮임» 이 계약이다.
+    expect(blobs.length).toBeGreaterThanOrEqual(4);
+    for (const blob of blobs) {
+      expect(blob.x + blob.radius).toBeGreaterThanOrEqual(VIEW.x);
+      expect(blob.x - blob.radius).toBeLessThanOrEqual(VIEW.x + VIEW.width);
+      expect(blob.y + blob.radius).toBeGreaterThanOrEqual(VIEW.y);
+      expect(blob.y - blob.radius).toBeLessThanOrEqual(VIEW.y + VIEW.height);
+    }
+  });
+
+  it("덩어리 모양·알파는 계약 범위 안이다", () => {
+    const setting = params({ opacity: 0.4 });
+    for (const blob of cloudShadowBlobs(setting, 0, VIEW)) {
+      expect(blob.radius).toBeGreaterThan(0);
+      expect(blob.alpha).toBeGreaterThan(0);
+      expect(blob.alpha).toBeLessThanOrEqual(setting.opacity);
+      expect(blob.squash).toBeGreaterThan(0);
+      expect(blob.squash).toBeLessThanOrEqual(1);
+      expect(blob.rotationDeg).toBeGreaterThanOrEqual(0);
+      expect(blob.rotationDeg).toBeLessThan(360);
+    }
+  });
+
+  it("같은 입력은 언제나 같은 그림자를 만든다", () => {
+    const first = JSON.stringify(cloudShadowBlobs(params({ scale: 1.5 }), 4321, VIEW, 11));
+    const second = JSON.stringify(cloudShadowBlobs(params({ scale: 1.5 }), 4321, VIEW, 11));
+    expect(second).toBe(first);
+  });
+
+  it("시드가 다르면 배치가 다르다", () => {
+    const a = JSON.stringify(cloudShadowBlobs(params(), 0, VIEW, 1));
+    const b = JSON.stringify(cloudShadowBlobs(params(), 0, VIEW, 2));
+    expect(a).not.toBe(b);
+  });
+
+  it("1초 뒤 모든 구름 위상이 설정한 방향으로, 배율 범위 안의 거리만큼 이동한다(주기 접힘 포함)", () => {
+    const setting = params({ speed: 40, angleDeg: 90, scale: 1 });
+    const period = cloudShadowPeriod(VIEW, setting.scale);
+    const drift = cloudShadowDrift(setting, 1000);
+    const before = cloudShadowAnchors(setting, 0, period, 7);
+    const after = cloudShadowAnchors(setting, 1000, period, 7);
+
+    expect(before).toHaveLength(CLOUD_SHADOW_BLOB_COUNT);
+    expect(after).toHaveLength(before.length);
+    for (let index = 0; index < before.length; index += 1) {
+      // 덩어리마다 배율이 다르므로 «정확히 같은 거리» 가 아니다. 방향은 같고, 거리는 범위 안이면 된다.
+      const movedX = mod(after[index]!.x - before[index]!.x, period);
+      const movedY = mod(after[index]!.y - before[index]!.y, period);
+      const factor = movedY / drift.dy;
+      expect(factor).toBeGreaterThanOrEqual(CLOUD_SHADOW_SPEED_JITTER.min - 1e-6);
+      expect(factor).toBeLessThanOrEqual(CLOUD_SHADOW_SPEED_JITTER.max + 1e-6);
+      expect(movedX).toBeCloseTo(mod(drift.dx * factor, period), 3);
+    }
+  });
+
+  it("보이는 덩어리는 전부 위상 위에 있다", () => {
+    const setting = params({ speed: 40, angleDeg: 90, scale: 1 });
+    const period = cloudShadowPeriod(VIEW, setting.scale);
+    const phases = new Set(cloudShadowAnchors(setting, 1000, period, 7).map((anchor) => positionKey(anchor.x, anchor.y)));
+    const blobs = cloudShadowBlobs(setting, 1000, VIEW, 7);
+    expect(blobs.length).toBeGreaterThan(0);
+    for (const blob of blobs) {
+      expect(phases.has(positionKey(mod(blob.x, period), mod(blob.y, period)))).toBe(true);
+    }
+  });
+
+  it("속도 0이면 1초 뒤에도 제자리다", () => {
+    const setting = params({ speed: 0 });
+    const period = cloudShadowPeriod(VIEW, setting.scale);
+    expect(cloudShadowAnchors(setting, 1000, period, 3)).toEqual(cloudShadowAnchors(setting, 0, period, 3));
+  });
+
+  it("카메라가 움직여도 그림자는 땅에 붙어 있다 — 월드 위상이 카메라와 무관하다", () => {
+    const setting = params({ speed: 24, angleDeg: 28, scale: 1 });
+    const span = { x: 0, y: 0, width: 2200, height: 2200 };
+    const period = cloudShadowPeriod(span, setting.scale);
+    const origin = cloudShadowBlobs(setting, 0, span, 5);
+    // 카메라를 정확히 한 주기(가로 1·세로 3) 옮기면 «같은 구름» 이 보여야 한다.
+    const shifted = cloudShadowBlobs(setting, 0, { ...span, x: period, y: period * 3 }, 5);
+    const unwrap = new Set(shifted.map((blob) => positionKey(blob.x - period, blob.y - period * 3)));
+    expect(origin.length).toBeGreaterThan(0);
+    expect(shifted.length).toBe(origin.length);
+    expect(unwrap).toEqual(new Set(origin.map((blob) => positionKey(blob.x, blob.y))));
+  });
+
+  it("크기 배율을 키우면 덩어리가 커진다", () => {
+    const small = cloudShadowBlobs(params({ scale: 0.5 }), 0, VIEW, 9);
+    const large = cloudShadowBlobs(params({ scale: 2.5 }), 0, VIEW, 9);
+    const maxRadius = (blobs: readonly CloudShadowBlob[]): number => Math.max(...blobs.map((blob) => blob.radius));
+    expect(maxRadius(large)).toBeGreaterThan(maxRadius(small));
+  });
+
+  it("덩어리마다 그릴 실루엣 변주를 들고 다닌다", () => {
+    const blobs = cloudShadowBlobs(params(), 0, VIEW, 11);
+    expect(blobs.length).toBeGreaterThan(0);
+    for (const blob of blobs) {
+      expect(Number.isInteger(blob.variant)).toBe(true);
+      expect(blob.variant).toBeGreaterThanOrEqual(0);
+      expect(blob.variant).toBeLessThan(CLOUD_SHADOW_SILHOUETTE_COUNT);
+    }
+  });
+});
+
+describe("덩어리별 속도 변주와 크기 호흡", () => {
+  it("같은 순간에 덩어리마다 다른 거리를 간다 — 판 하나로 끌리지 않는다", () => {
+    const setting = params({ speed: 60, angleDeg: 0, scale: 1 });
+    const period = cloudShadowPeriod(VIEW, setting.scale);
+    const start = cloudShadowAnchors(setting, 0, period, 4);
+    const later = cloudShadowAnchors(setting, 1000, period, 4);
+    const travelled = start.map((anchor, index) => mod(later[index]!.x - anchor.x, period));
+    expect(new Set(travelled.map((value) => Math.round(value))).size).toBeGreaterThan(1);
+  });
+
+  it("배율의 중앙값은 1 — 설정한 속도가 그대로 지켜진다", () => {
+    const setting = params({ speed: 50, angleDeg: 0, scale: 1 });
+    const period = cloudShadowPeriod(VIEW, setting.scale);
+    const start = cloudShadowAnchors(setting, 0, period, 4);
+    const later = cloudShadowAnchors(setting, 1000, period, 4);
+    const travelled = start
+      .map((anchor, index) => mod(later[index]!.x - anchor.x, period))
+      .sort((a, b) => a - b);
+    const median = travelled[Math.floor(travelled.length / 2)]!;
+    expect(median).toBeGreaterThanOrEqual(50 * CLOUD_SHADOW_SPEED_JITTER.min);
+    expect(median).toBeLessThanOrEqual(50 * CLOUD_SHADOW_SPEED_JITTER.max);
+    expect(Math.abs(median - 50)).toBeLessThan(50 * 0.05);
+  });
+
+  it("호흡은 설정한 폭 안에서만 움직이고 한 주기 뒤 제자리로 돌아온다", () => {
+    for (const phase of [0, 0.25, 0.5, 0.9]) {
+      for (const elapsed of [0, 3000, 12_345, 60_000]) {
+        const value = cloudShadowBreath(phase, elapsed);
+        expect(value).toBeGreaterThanOrEqual(1 - CLOUD_SHADOW_BREATH.amount - 1e-3);
+        expect(value).toBeLessThanOrEqual(1 + CLOUD_SHADOW_BREATH.amount + 1e-3);
+      }
+      expect(cloudShadowBreath(phase, CLOUD_SHADOW_BREATH.periodMs * 2)).toBeCloseTo(cloudShadowBreath(phase, 1), 2);
+    }
+  });
+
+  it("시간이 흘러가면 덩어리 크기가 바뀐다 — 모양이 얼어있지 않다", () => {
+    const setting = params({ speed: 0, scale: 1 });
+    const start = cloudShadowBlobs(setting, 0, VIEW, 6).map((blob) => blob.radius);
+    const later = cloudShadowBlobs(setting, CLOUD_SHADOW_BREATH.periodMs / 4, VIEW, 6).map((blob) => blob.radius);
+    expect(start.length).toBe(later.length);
+    expect(start.some((radius, index) => Math.abs(radius - later[index]!) > 0.5)).toBe(true);
+  });
+});
+
+describe("cloudShadowSilhouette", () => {
+  it("변주마다 로브 여러 개의 합집합이다 — 원 하나가 아니다", () => {
+    for (let variant = 0; variant < CLOUD_SHADOW_SILHOUETTE_COUNT; variant += 1) {
+      const lobes = cloudShadowSilhouette(variant);
+      expect(lobes.length).toBeGreaterThanOrEqual(6);
+      const offCenter = lobes.filter((lobe) => Math.hypot(lobe.cx - 0.5, lobe.cy - 0.5) > 0.08);
+      expect(offCenter.length).toBeGreaterThanOrEqual(4);
+    }
+  });
+
+  it("모든 로브가 텍스처 상자 안에 들어간다 — 가장자리가 잘리면 직선이 보인다", () => {
+    for (let variant = 0; variant < CLOUD_SHADOW_SILHOUETTE_COUNT; variant += 1) {
+      for (const lobe of cloudShadowSilhouette(variant)) {
+        expect(lobe.radius).toBeGreaterThan(0);
+        expect(lobe.cx - lobe.radius).toBeGreaterThanOrEqual(0);
+        expect(lobe.cx + lobe.radius).toBeLessThanOrEqual(1);
+        expect(lobe.cy - lobe.radius).toBeGreaterThanOrEqual(0);
+        expect(lobe.cy + lobe.radius).toBeLessThanOrEqual(1);
+      }
+    }
+  });
+
+  it("같은 변주는 항상 같고, 다른 변주는 다른 모양이다", () => {
+    expect(cloudShadowSilhouette(2)).toEqual(cloudShadowSilhouette(2));
+    expect(cloudShadowSilhouette(0)).not.toEqual(cloudShadowSilhouette(1));
+  });
+
+  it("코어가 평평한 구간이 있다 — 가장자리가 전부 반그림자면 경계가 안 읽힌다", () => {
+    expect(CLOUD_SHADOW_LOBE_CORE_FRACTION).toBeGreaterThan(0.4);
+    expect(CLOUD_SHADOW_LOBE_CORE_FRACTION).toBeLessThan(0.9);
+  });
+});

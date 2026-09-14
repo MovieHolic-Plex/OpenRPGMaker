@@ -243,6 +243,12 @@ truth is `project.system.opening` and `project.system.gameOver`, never
 - `database.ts` and `databaseModal.ts` call `disposeDatabaseCinematicsIn` before
   leaving/evicting/closing cinematic views. These views are not reused from
   detached cache. Other Database caching stays unchanged.
+- The same authored record is writable through the AI assistant since 2026-09-14:
+  `get_opening` / `set_opening` / `remove_opening` / `list_opening_media`
+  (`cinematicTools.ts`, system domain). `set_opening` replaces the whole scene list,
+  so an AI edit and a tab edit land on one source of truth — `project.system.opening`.
+  Media candidates come from the same catalog the tab's picker uses
+  (`src/editor/resourceOptions.ts`). See `editor-ai-tools.md` (2026-09-14).
 - Scoped editor presentation lives in `src/styles/database/system-studio.css`;
   runtime stage presentation still belongs to the existing runtime CSS closure.
 

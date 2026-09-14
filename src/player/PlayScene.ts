@@ -70,8 +70,9 @@ import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { seedLocationOccupancyForScene } from "@/player/playSceneLocationTransitions";
 import { installLightingLayer, syncLightingLayer, updateLighting } from "@/player/playSceneLighting";
 import type { LightingAmbientTransition } from "@/project/lightingRules";
-import { syncMapBackgroundLayer, updateMapBackground } from "@/player/playSceneMapBackground";
+import { syncMapBackgroundLayers, updateMapBackground } from "@/player/playSceneMapBackground";
 import { installWeatherLayer, syncWeatherLayer, updateWeather } from "@/player/playSceneWeather";
+import { installCloudShadowLayer, syncCloudShadowLayer, updateCloudShadows } from "@/player/playSceneCloudShadows";
 import type { WeatherParams, WeatherTransition } from "@/player/weather/weatherModel";
 import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";
 import { updateFieldSpawnsForScene } from "@/player/playSceneFieldSpawns";
@@ -164,6 +165,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   lightingTransitionWaiters: Array<() => void> = [];
   weatherClockMs = 0;
   weatherFixedAccumulatorMs = 0;
+  cloudShadowSprites?: Phaser.GameObjects.Image[];
+  cloudShadowClockMs = 0;
   weatherDisplayed: WeatherParams = { kind: "none", intensity: 0 };
   weatherTargetSignature = "none:0";
   weatherTransition: WeatherTransition | null = null;
@@ -270,6 +273,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     );
     placeCharacterSprite(this.player, "same");
     installWeatherLayer(this);
+    installCloudShadowLayer(this);
     installTimeTintLayer(this);
     installLightingLayer(this);
     this.cameras.main.startFollow(this.player, true, 0.2, 0.2);
@@ -361,6 +365,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     updateGameTime(this, deltaMs);
     tickNpcSchedules(this, isGameTimePausedForRuntime(this), deltaMs);
     updateWeather(this, deltaMs);
+    updateCloudShadows(this, deltaMs);
     updateTimeTint(this, deltaMs);
     updateLighting(this, deltaMs);
     updateMapBackground(this, deltaMs);
@@ -395,9 +400,11 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean; readonly applyMapBgm?: boolean }): void {
     clearAllSceneEmotes(this);
     loadSceneMap(this, mapId, options);
-    syncMapBackgroundLayer(this);
+    syncMapBackgroundLayers(this);
     initializeActionCombatForScene(this);
     resetEncounterCounter();
+    // 맵마다 설정이 다르다 — 새 맵의 구름을 즉시 다시 계산하지 않으면 이전 맵의 그림자가 남는다.
+    syncCloudShadowLayer(this);
     void this.syncMinimap();
   }
 

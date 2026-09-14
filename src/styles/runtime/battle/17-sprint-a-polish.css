@@ -189,6 +189,13 @@
     transition-delay: 0ms;
     transition-duration: 1ms;
   }
+  /* 감소 모션은 움직임을 빼는 것이지 정보를 빼는 게 아니다. 팝업 키프레임은 100% 에서 opacity 0 이라
+     1ms 로 접으면 생성 즉시 끝나 수명 내내 보이지 않았다(2026-09-14 실측: 12표본 전부 0). 정적으로 띄운다. */
+  .battle-scene .battle-damage-popup {
+    animation: none;
+    opacity: 1;
+    transform: translate(-50%, -100%);
+  }
 }
 
 /* =========================================================================

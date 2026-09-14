@@ -1624,7 +1624,7 @@ describe("AssistantSession 툴콜 루프", () => {
       seenModels.push(config.model);
       const review = independentReviewPayload(request);
       if (review) {
-        expect(config.model).toBe("supervisor-model");
+        expect(config.model).toBe("gemini-2.5-flash");
         reviews.push(review);
         if (reviews.length === 1) return { ...assistantFinal(JSON.stringify({ revision: review.revision,
           verdict: "changes_requested", summary: "Flower area is missing", findings: [{ id: "flowers", target: `/maps/${mapId}`,
@@ -1632,11 +1632,17 @@ describe("AssistantSession 툴콜 루프", () => {
           imageDelivery: imageDeliveryForRequest(request) };
         return approvedReviewResponse(request)!;
       }
-      if (reviews.length > 0) expect(config.model).toBe("executor-model");
+      if (reviews.length > 0) expect(config.model).toBe("gemini-2.5-flash-lite");
       if (index >= steps.length) throw new Error("scripted chat exhausted");
       return { ...steps[index++]!, imageDelivery: imageDeliveryForRequest(request) };
     };
-    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 16, maxTokens: 8192 }, chat,
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield,
+      // 합성 id(supervisor-model/executor-model)는 창을 모르는 모델이라 128K 기본값을 받는다. 전체 툴 카탈로그가
+      // 이미 그 창의 대부분(활성 226툴 ≈ 100K 토큰)을 먹어 대화 몫이 ~11K 토큰뿐인데, 이 시나리오는 전체 맵
+      // show_map_region 결과 + 캡처 이미지를 함께 실어야 한다 — 카탈로그에 4툴만 늘어도 그 경계를 넘어
+      // 문자 클램프가 캡처를 잘라낸다(2026-09-14 실측). 창이 분명한 모델로 재서 검수 재투입 계약만 재도록 한다
+      // (같은 파일의 LARGE_REVIEW_CONFIG 와 같은 이유).
+      config: { ...ORCH_CONFIG, model: "gemini-2.5-flash", liteModel: "gemini-2.5-flash-lite", maxToolCalls: 16, maxTokens: 8192 }, chat,
       renderImages: renderLifecycleImages });
     const phases: string[] = [];
 
@@ -1656,7 +1662,7 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(reviews).toHaveLength(2);
     expect(reviews[1]!.revision).toBeGreaterThan(reviews[0]!.revision);
     expect(reviews[1]!.requiredProblems).toEqual([]);
-    expect(seenModels[0]).toBe("supervisor-model");
+    expect(seenModels[0]).toBe("gemini-2.5-flash");
     expect(phases).toEqual(["plan", "execute", "review", "execute", "review"]);
   }, 30000);
 

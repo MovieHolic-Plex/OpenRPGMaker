@@ -130,6 +130,14 @@
   background-image: url("../../../../public/assets/generated/starter/battle-icon-shard.png");
 }
 
+/* 레벨업·기술 습득 행의 아이콘 칸이 비어 미완성으로 보였다 — 경험치 아이콘을 쓴다. */
+.battle-result-reward-icon-levelup,
+.battle-result-reward-icon-skill {
+  background-image: url("../../../../public/assets/generated/starter/battle-icon-exp.png");
+  border: 0;
+  transform: none;
+}
+
 .battle-result-progress-icon-world {
   background-image: url("../../../../public/assets/generated/starter/battle-icon-world.png");
 }

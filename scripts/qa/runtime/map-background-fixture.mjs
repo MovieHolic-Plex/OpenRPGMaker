@@ -112,6 +112,9 @@ function parseArgs(argv) {
     else if (arg === "--no-background") args.background = null;
     else if (arg === "--background-id") args.background = { ...(args.background ?? {}), imageId: argv[++i] };
     else if (arg === "--scroll-x") args.background = { ...(args.background ?? {}), scrollX: Number(argv[++i]) };
+    // 반복을 끈 축은 그림이 화면을 떠나면 빈 자리(카메라 배경)가 남는다 — 그 판정용.
+    else if (arg === "--no-loop-x") args.background = { ...(args.background ?? {}), loopX: false };
+    else if (arg === "--no-loop-y") args.background = { ...(args.background ?? {}), loopY: false };
     else if (arg === "--scroll-y") args.background = { ...(args.background ?? {}), scrollY: Number(argv[++i]) };
     else if (arg === "--zoom") args.zoom = Number(argv[++i]);
     else if (arg === "--override-id") args.parallaxOverride = argv[++i];

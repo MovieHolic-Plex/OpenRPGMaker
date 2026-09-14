@@ -90,6 +90,7 @@ function applyAgentEvent(agent: TeamBoardAgent, event: PiAgentEvent): TeamBoardA
     case "turn": return { ...agent, state: "실행 중", turns: event.index };
     case "tool_start": return { ...agent, toolCalls: agent.toolCalls + 1, lastLine: `${event.name} 실행 중`, lastKind: "tool" };
     case "tool_end": return { ...agent, toolErrors: agent.toolErrors + (event.ok ? 0 : 1), lastLine: `${event.ok ? "✓" : "✗"} ${event.name} — ${trimLine(event.summary)}`, lastKind: "tool" };
+    case "delta": return { ...agent, state: "실행 중", lastLine: `${event.kind === "thinking" ? "생각 중" : "작성 중"} · ${trimLine(event.text)}`, lastKind: "text" };
     case "assistant": return { ...agent, lastLine: trimLine(event.text, 220), lastKind: "text", summary: trimLine(event.text, 400) };
     case "error": return { ...agent, state: "실패", lastLine: trimLine(event.message), lastKind: "text" };
     case "done": return { ...agent, state: agent.state === "실패" ? "실패" : "완료", stats: event.stats, changedKeys: event.changedKeys };
