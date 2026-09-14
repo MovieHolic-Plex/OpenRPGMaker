@@ -6,7 +6,7 @@
 .battle-scene[data-battle-hud="rows"] .battle-actor-status { padding: 6px 10px; }
 
 /* boxes: VX/GoldenSun/Pokemon — 박스 윈도우 느낌 유 */
-.battle-scene[data-battle-hud="boxes"] .battle-command-panel { border-radius: 12px; }
+.battle-scene[data-battle-hud="boxes"]:not([data-battle-ui-style="pokemon"]) .battle-command-panel { border-radius: 12px; }
 
 /* minimal: Octopath/Bravely — 얇은 행, 낮은 크롬 */
 .battle-scene[data-battle-hud="minimal"] .battle-command { padding: 3px 8px; }
