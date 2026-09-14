@@ -1,3 +1,19 @@
+## AI 세션 테스트의 모델 id 는 임의로 짓지 않는다 (2026-09-14)
+
+픽스처가 `model: "supervisor-model"` 처럼 **카탈로그에 없는 id** 를 쓰면 창이 보수 폴백
+`DEFAULT_CONTEXT_WINDOW = 128,000` 토큰으로 잡힐다. 그런데 툴 카탈로그만 **98,357 토큰**(228툴,
+2026-09-14 실측)이라 예비분 16,384 를 뺀 약 13,000 토큰이 대화와 원본 매니페스트의 전부다.
+자리가 모자라면 `buildGroundedRequest` 가 `original-context-window-exceeded` 로 **턴을 통째로 죽인다** —
+테스트는 자기가 재려던 계약과 무관하게 실패하고, 원인은 단정에서 멀리 떨어져 보인다.
+
+- 증상: `expected false to be true` 같은 엉뚱한 단정 실패. 감사 마지막을 보면
+  `context:grounded {"windowTokens":128000,"toolsTokens":98415,...}` 와 `stoppedReason:"error"` 가 남아 있다.
+- 처방: 픽스처의 `model`·`liteModel` 을 **실제 카탈로그 모델**(예 `gemini-3.7-flash` / `gemini-3.7-flash-lite`)로 둔다.
+  보조모델도 같이 바꿔야 한다 — 라운드에 따라 그쪽이 요청을 조립한다.
+- 천장은 `test/aiToolCatalogBudget.test.ts` 가 감시한다(카탈로그 99,000 토큰). 이 수치를 올리려면
+  좁은 창 경로(툴 스코핑·매니페스트 축약)를 함께 결정해야 한다. 실제 모델에도 128,000 창(`gpt-5.3-codex-spark`)이 있어
+  이건 테스트만의 문제가 아니다.
+
 ## 전체 스위트가 워커 힙에서 죽던 문제 (2026-09-11)
 
 `npm run gates` 의 vitest 축(그리고 전체 vitest)이 **OOM 으로 죽어 리포트조차 못 내놨다**. 원인은 컨테이너

@@ -206,6 +206,21 @@ The current multi-floor inn template remains authoritative (`dorm_bed_a`,
 `upper_stair`); snapshot tests use those IDs, not the retired bedroom/stairs IDs.
 Validation and replay boundaries are in `reports/pr617-621-integration.md`.
 
+## Opening still media, sequence music and AI generation (2026-09-14)
+
+오프닝·게임오버 탭의 그림 슬롯은 picker kind `image`(아이템 아이콘 457개) 대신 신설 kind **`still`** 을 쓴다:
+배경화 → 타이틀 아트 → 생성·업로드 그림 순서가 앞에 오고, 기존 `image` 목록은 뒤에 통째로 남아 **아이콘으로
+저작해 둔 저장본이 그대로 유효하다**. 버튼 배선은 그대로고 `databaseCinematicMediaFields`(표시)와
+`databaseCinematicMediaActions`(검증·커밋)가 같은 kind 를 본다.
+
+- `AI_GENERATABLE_PICKER_KINDS` 에 `still: "backdrop"` 을 넣어 그림 슬롯 피커에 기존 "AI로 만들기"(`aiImageGenerateField`)가
+  그대로 붙는다. 생성물은 `kind:"backdrop"` 업로드 자산으로 등록되고 `still` 카탈로그에 바로 잡힐다.
+- 「시퀀스 설정」 카드에 **배경음악**(`db-cinematic-music`, picker kind `music`, 비우기·파일 가져오기 허용)이 생겼다.
+  슬롯 `{ kind: "music" }` 은 장면이 없어도 설정된다 — 시퀀스가 없으면 빈 시퀀스를 만들고 `musicResourceId` 를 쓴다.
+- 업로드 경로: 음악 슬롯은 음성과 같은 `audio` 준비기를 타고, `still` 업로드는 종전처럼 `picture` 프로필로 등록된다.
+- 브라우저 계약: `test/e2e/database-opening-still-media.spec.ts` — 배경화 후보 노출·선택 반영, AI 생성 필드 노출,
+  배경음악 선택이 `system.opening.musicResourceId` 로 저장됨.
+
 ## Opening and game-over authoring (2026-09-06)
 
 The System group contains dedicated `opening` / `gameOver` tabs, labelled

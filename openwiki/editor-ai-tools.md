@@ -1,5 +1,42 @@
 # Editor AI Tools & Vocabulary
 
+## 오프닝 미디어 배선 — 스틸 카탈로그·배경음악·부분 편집 (2026-09-14)
+
+사용자 지적: "이미지 생성이야 codex cli 나 뭐 그런것들로 만들게 할 수 있잖아". 맞았다 — 생성 인프라는 이미 범용인데
+**오프닝만 배선이 빠져** 그 산출물을 못 받고 있었다.
+
+- 실측(빈 프로젝트): 오프닝 그림 슬롯이 보던 `image` 카탈로그는 **457개 전부 아이템 아이콘**(`cc0-jetrel-*`)이고,
+  전체화면 아트인 `backdrop` 29 / `title` 13 은 탭과 툴 양쪽에서 **거부**됐다(런타임은 멀정히 렌더한다).
+  생성 버튼(`AI_GENERATABLE_PICKER_KINDS`)도 title/backdrop/monster 에만 붙어 오프닝 슬롯엔 없었다.
+- 시네마틱 전용 picker kind **`still`** 을 신설(`resourceOptions.ts`): 배경화 → 타이틀 아트 → 생성·업로드 그림 순으로 앞에 놓고,
+  마지막에 기존 `image` 카탈로그를 통째로 이어 붙인다. 즉 `still ⊇ image` — **아이콘으로 저작해 둔 기존 오프닝·게임오버 배경이
+  "종류 불일치"로 사라지지 않는다**(동일 함정을 `cc0-se-` 주석이 이미 경고하고 있었다). 탭(`databaseCinematicMediaFields/Actions`)과
+  툴(`cinematicTools`)이 같은 kind 를 쓴다. 아이콘·이미지 슬롯 동작은 불변.
+- `AI_GENERATABLE_PICKER_KINDS` 에 `still: "backdrop"` 추가 → 오프닝 그림 슬롯의 피커에 기존 "AI로 만들기"가 그대로 붙는다.
+- 새 툴 2개:
+  - `edit_opening`(write) — `op: append|insert|update|remove|move|settings`. 전체 재작성 없이 장면 하나·순서·
+    시퀀스 설정만 고친다. **건드리지 않은 기존 장면은 재검증하지 않는다** — 삭제된 업로드를 참조하는 오래된 장면이
+    새 편집을 통째로 막는 사도를 피한다.
+  - `generate_opening_image`(세션 쓰기) — 프롬프트를 전체화면 지시로 감싸 이미지 모델을 호출하고,
+    등록은 **기존 `upsert_resource` 쓰기 툴로** 한다(제안·diff 회계를 그대로 타고 dataUrl 은 전사에 남지 않는다).
+    헤드리스에서는 `status:"ui-required"` 만 돌려준다(`generate_character_appearance` 과 같은 계약).
+    세션 드래프트에 쓰는 이유: 세션은 `cloneDetachedDraft` 위에서 돌아서 **스토어에 직접 써다 넣으면
+    뒤이어 호출되는 `set_opening` 이 그 id 를 못 찾는다**.
+- `CinematicSequence.musicResourceId`(시퀀스 배경음악)을 툴·탭·런타임에 함께 배선. `list_opening_media` 에 `kind:"music"` 추가,
+  그림 후보는 `group`(배경화/타이틀 아트/그림/아이콘)을 함께 돌려 모델이 전체화면에 아이콘을 고르지 않게 한다.
+- **툴을 늘릴 때의 새 제약(2026-09-14 실측)**: 툴 카탈로그 228툴 = **98,357 토큰**이다. 모델 창이 128,000인 경우
+  (카탈로그의 `gpt-5.3-codex-spark`, 그리고 **모르는 id 의 보수 폴백**) 예비분 16,384 를 뺀 약 13,000 토큰이
+  대화·원본 매니페스트의 전부다. 이번 툴 2개(+약 470토큰)만으로 `test/aiWorkItemOutcomeGateSmoke.test.ts` 가
+  `original-context-window-exceeded: no room for the original context manifest` 로 **턴 자체가 죽는** 상태가 됐다
+  (`contextBuilder.buildGroundedRequest` → `originalContext.message`). 그 픽스처는 임의 모델 id 를 쓰고 있어
+  실제 카탈로그 모델로 바꿨 복구했고, 천장은 `test/aiToolCatalogBudget.test.ts` 래칧(99,000토큰)으로 드러냈다.
+  좀은 창에서 툴을 줄이거나(도메인 스코핑) 매니페스트를 줄이는 결정은 **아직 없다 — 다음 툴 추가 전에 필요하다**.
+- 계약: `test/openingStillCatalog.test.ts`(스틸 순서·호환 꼬리·기존 카탈로그 불변),
+  `test/openingEditTools.test.ts`(부분 편집 5종 op · 경계 14가지 거부 · 음악 저장·참조 검증·내보내기 수집),
+  `test/openingMusicRuntime.test.ts`(반복 재생·장면 전환 유지·종료/건너뛰기 정지·재생 불가 시 진행 보장),
+  `test/e2e/database-opening-still-media.spec.ts`(탭에서 배경화 선택·AI 생성 버튼·배경음악 저장),
+  `scripts/qa/runtime/ai-opening.scenario.mjs`(출하 플레이어에서 배경화 스틸 + `cinematic-music` 존재·종료 후 소멸).
+
 ## 오프닝 시네마틱 AI 저작 — system.opening (2026-09-14)
 
 사용자 요청: "사용자가 커스텀한 오프닝을 에디터 내에 있는 ai 를 통해 할 수 있게 만들고싶음".
@@ -15,8 +52,9 @@
     `resourceId`(image/video 필수)·`motion`(image 전용 `none/fade/pan/zoom`)·`narrationAudioResourceId`.
     장면 100개 상한, 빈 id·중복 id·없는 리소스 id·종류에 맞지 않는 필드(`text`의 `resourceId`, `video`의 `motion`)를 거부한다.
     `enabled` 생략 시 기존 값 유지(없던 시퀀스면 true) — 꺼진 채 장면만 쌓이면 warning 으로 알린다.
-  - `remove_opening`(write) — 시퀀스 자체를 제거(장면 일부 삭제는 `set_opening` 전체 교체로 표현한다).
-  - `list_opening_media`(read) — `kind:"image"|"movie"|"sound"` 후보. 이미지 장면은 DB 이미지 슬롯과 같은 목록을 쓴다.
+  - `remove_opening`(write) — 시퀀스 자체를 제거(장면 일부 삭제는 2026-09-14 이후 `edit_opening(op:"remove")`).
+  - `list_opening_media`(read) — `kind:"image"|"movie"|"sound"` 후보. 이미지 장면은 DB 이미지 슬롯과 같은 목록을 쓴다
+    (2026-09-14부터 그림은 `still` 카탈로그, `kind:"music"` 추가 — 위 절 참조).
 - 리소스 후보 정본: `listDatabaseResourceOptions`(+kind 매칭)를 `src/editor/resourceOptions.ts` 로 옮겨
   DB 피커와 AI 툴이 **같은 목록**을 본다. 툴 레이어가 DOM/스토어를 무는 피커 모듈을 집어오지 않도록 순수 모듈로 분리했고,
   `databaseResourcePickerDialog` 는 그대로 re-export 하므로 기존 import 경로는 유지된다.
