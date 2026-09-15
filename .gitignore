@@ -40,6 +40,7 @@ dist/
 !.omo/evidence/loc-adopt/
 !.omo/evidence/loc-transition/
 !.omo/evidence/verif-scope/
+!.omo/evidence/db-ai-review/
 !.omo/rules/
 !.omo/rules/**
 artifacts/

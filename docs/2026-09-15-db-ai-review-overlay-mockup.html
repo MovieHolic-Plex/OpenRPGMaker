@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2026-09-15 DB AI 검토 오버레이 — 목업</title>
+<style>
+  /* ── 문서 크롬 (2026-09-03 제안서 관례) ─────────────────────────── */
+  :root {
+    --font-ui: system-ui, "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans CJK KR", -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "JetBrains Mono", "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+    /* src/styles/tokens.css 실측값 */
+    --ink-1: #0F172A; --ink-2: #475569; --ink-3: #626E89;
+    --accent: #4A57D6; --accent-deep: #3C48C4; --accent-soft: rgba(74,87,214,.12); --accent-line: rgba(74,87,214,.45);
+    --success: #18764F; --success-soft: rgba(24,118,79,.13);
+    --danger: #C6403D; --danger-soft: rgba(198,64,61,.13);
+    --warning: #8A5E00; --warning-soft: rgba(138,94,0,.13);
+    --line: rgba(15,23,42,.127); --line-soft: rgba(15,23,42,.08); --line-strong: rgba(15,23,42,.461);
+    --well: #EEF1F4; --canvas: #F7F8F8; --raised: #FFFFFF;
+    --scrim: rgba(15,23,42,.40);
+    --shadow-pop: 0 24px 64px -16px rgba(15,23,42,.35), 0 2px 6px rgba(15,23,42,.10);
+  }
+  * { box-sizing: border-box; }
+  html { color-scheme: light; }
+  body { margin: 0; background: var(--canvas); color: var(--ink-1); font-family: var(--font-ui); font-size: 15px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 48px 32px 96px; }
+  header.doc { border-bottom: 1px solid var(--line); padding-bottom: 28px; margin-bottom: 40px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-deep); font-weight: 700; }
+  h1 { font-size: 34px; line-height: 1.2; letter-spacing: -.02em; margin: 10px 0 12px; font-weight: 800; }
+  h1 small { display: block; font-size: 18px; font-weight: 500; color: var(--ink-2); margin-top: 8px; }
+  .metaline { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--ink-2); }
+  .metaline code { font-family: var(--font-mono); font-size: 12px; background: var(--well); padding: 1px 6px; border-radius: 5px; }
+  h2 { font-size: 24px; letter-spacing: -.02em; margin: 64px 0 16px; font-weight: 800; display: flex; align-items: baseline; gap: 12px; }
+  h2 .no { font-family: var(--font-mono); font-size: 13px; color: var(--accent-deep); font-weight: 600; background: var(--accent-soft); padding: 2px 8px; border-radius: 6px; }
+  p { margin: 0 0 12px; }
+  p.lead { font-size: 17px; }
+  code { font-family: var(--font-mono); font-size: 12.5px; background: var(--well); padding: 1px 6px; border-radius: 5px; }
+  table.doc { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0 20px; background: var(--raised); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  table.doc th, table.doc td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  table.doc th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-2); background: var(--well); font-weight: 700; }
+  table.doc tr:last-child td { border-bottom: 0; }
+  figure.frame { margin: 20px 0; background: var(--raised); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; box-shadow: 0 1px 2px rgba(15,23,42,.04); }
+  figcaption { padding: 12px 16px 14px; font-size: 13px; color: var(--ink-2); border-top: 1px solid var(--line-soft); }
+  figcaption b { color: var(--ink-1); }
+
+  /* ── 1440×900 스테이지 (실물 스크린샷 위 합성) ───────────────────── */
+  .stage-fit { width: 100%; overflow: hidden; }
+  .stage { width: 1440px; height: 900px; position: relative; transform-origin: top left; background: url("2026-09-15-db-ai-review-overlay-assets/db-window-1440.png") top left / 1440px 900px no-repeat; }
+  /* DB 창(스크린샷 상 inset ≈16px)만 덮는 스크림 */
+  .stage .scrim { position: absolute; inset: 16px; border-radius: 14px; background: var(--scrim); backdrop-filter: blur(1.5px); }
+
+  /* ── 검토 오버레이 패널 ─────────────────────────────────────────── */
+  .mk-panel { position: absolute; left: 50%; top: 54px; transform: translateX(-50%); width: 880px; max-height: 800px; display: flex; flex-direction: column; background: var(--raised); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow-pop); overflow: hidden; font-size: 14px; }
+  .mk-panel.static { position: static; transform: none; width: 100%; max-height: none; border: 0; border-radius: 0; box-shadow: none; }
+
+  .mk-head { display: flex; align-items: center; gap: 10px; padding: 14px 18px 12px; border-bottom: 1px solid var(--line-soft); }
+  .mk-head .spark { width: 26px; height: 26px; border-radius: 8px; background: var(--accent-soft); color: var(--accent-deep); display: grid; place-items: center; flex: 0 0 auto; }
+  .mk-head .title { font-weight: 700; font-size: 14px; }
+  .mk-head .req { flex: 1; min-width: 0; color: var(--ink-2); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mk-head .req q { quotes: "「" "」"; color: var(--ink-1); }
+  .mk-x { width: 28px; height: 28px; border: 0; background: transparent; border-radius: 8px; color: var(--ink-3); display: grid; place-items: center; }
+  .mk-x:hover { background: rgba(15,23,42,.05); }
+
+  .mk-status { display: flex; align-items: center; gap: 10px; padding: 10px 18px; background: var(--success-soft); border-bottom: 1px solid var(--line-soft); font-size: 13px; }
+  .mk-status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); flex: 0 0 auto; }
+  .mk-status b { color: var(--success); font-weight: 700; }
+  .mk-status .meta { margin-left: auto; color: var(--ink-3); font-size: 12px; }
+  .mk-status .meta code { background: transparent; padding: 0; color: inherit; }
+  .mk-status.run { background: var(--accent-soft); }
+  .mk-status.run b { color: var(--accent-deep); }
+  .mk-status.run .dot { background: var(--accent); animation: pulse 1.2s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .35; } }
+
+  .mk-cards { flex: 1; min-height: 0; overflow-y: auto; padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+
+  /* 레코드 카드 */
+  .mk-card { display: grid; grid-template-columns: 104px 1fr; gap: 14px; padding: 12px; border: 1px solid var(--line-soft); border-radius: 12px; background: var(--raised); }
+  .mk-card:hover { border-color: var(--line); box-shadow: 0 1px 3px rgba(15,23,42,.06); }
+  .mk-thumb { display: flex; flex-direction: column; gap: 6px; align-items: center; justify-content: center; }
+  .mk-thumb .art { width: 96px; height: 96px; border-radius: 10px; background: var(--well); border: 1px solid var(--line-soft); display: grid; place-items: center; overflow: hidden; }
+  .mk-thumb .art img { width: 88px; height: 88px; object-fit: contain; }
+  .mk-thumb .art img.px { image-rendering: pixelated; width: 64px; height: 64px; }
+  .mk-body { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+  .mk-rowhead { display: flex; align-items: center; gap: 8px; }
+  .mk-name { font-weight: 700; font-size: 14.5px; }
+  .mk-id { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-3); }
+  .mk-verb { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; letter-spacing: .02em; }
+  .mk-verb.chg { background: var(--accent-soft); color: var(--accent-deep); }
+  .mk-verb.add { background: var(--success-soft); color: var(--success); }
+  .mk-verb.del { background: var(--danger-soft); color: var(--danger); }
+  .mk-goto { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--accent-deep); background: transparent; border: 1px solid var(--accent-line); border-radius: 8px; padding: 3px 10px; }
+  .mk-goto:hover { background: var(--accent-soft); }
+
+  /* 필드 diff 행 */
+  .mk-fields { display: flex; flex-direction: column; gap: 3px; }
+  .mk-field { display: grid; grid-template-columns: 88px 1fr auto; align-items: baseline; gap: 10px; font-size: 13px; padding: 3px 8px; border-radius: 6px; }
+  .mk-field:nth-child(odd) { background: rgba(15,23,42,.025); }
+  .mk-field .k { color: var(--ink-3); font-size: 12px; }
+  .mk-field .v { font-family: var(--font-mono); font-size: 12.5px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .mk-field .v .b4 { color: var(--ink-3); }
+  .mk-field .v .arr { color: var(--ink-3); font-family: var(--font-ui); }
+  .mk-field .v .af { color: var(--ink-1); font-weight: 600; }
+  .mk-delta { font-family: var(--font-mono); font-size: 11.5px; font-weight: 700; padding: 1px 7px; border-radius: 999px; }
+  .mk-delta.up { color: var(--success); background: var(--success-soft); }
+  .mk-delta.dn { color: var(--danger); background: var(--danger-soft); }
+
+  /* 그림 before/after */
+  .mk-gfx { display: flex; align-items: center; gap: 14px; padding: 6px 8px; }
+  .mk-gfx .cell { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .mk-gfx .cell .art { width: 76px; height: 76px; border-radius: 10px; background: var(--well); border: 1px solid var(--line-soft); overflow: hidden; display: grid; place-items: center; }
+  .mk-gfx .cell .art img { width: 70px; height: 70px; object-fit: contain; }
+  .mk-gfx .cell.aft .art { border-color: var(--accent-line); box-shadow: 0 0 0 2px var(--accent-soft); }
+  .mk-gfx .cell small { font-size: 11px; color: var(--ink-3); font-weight: 600; }
+  .mk-gfx .cell.aft small { color: var(--accent-deep); }
+  .mk-gfx .garr { color: var(--ink-3); }
+
+  /* 삭제 카드(그림 없음) */
+  .mk-card.slim { grid-template-columns: 1fr; }
+  .mk-card.slim .mk-fields .v .b4 { text-decoration: line-through; }
+
+  /* 답변 접기 */
+  .mk-answer { border-top: 1px solid var(--line-soft); padding: 10px 18px; font-size: 13px; color: var(--ink-2); }
+  .mk-answer summary { cursor: pointer; font-weight: 600; color: var(--ink-1); font-size: 13px; }
+  .mk-answer p { margin: 8px 0 0; }
+
+  /* 풋터 */
+  .mk-foot { display: flex; align-items: center; gap: 10px; padding: 12px 18px; border-top: 1px solid var(--line-soft); background: var(--canvas); }
+  .mk-foot .hint { font-size: 12px; color: var(--ink-3); }
+  .mk-foot .sp { flex: 1; }
+  .mk-btn { border: 1px solid var(--line); background: var(--raised); border-radius: 10px; padding: 7px 16px; font-size: 13px; font-weight: 600; color: var(--ink-2); font-family: var(--font-ui); }
+  .mk-btn:hover { background: var(--well); }
+  .mk-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; display: inline-flex; align-items: center; gap: 7px; }
+  .mk-btn.primary:hover { background: var(--accent-deep); }
+  .mk-btn.danger-ghost { color: var(--danger); border-color: rgba(198,64,61,.35); }
+
+  /* 입력 상태 (컴포저) */
+  .mk-composer { padding: 14px 18px 16px; display: flex; flex-direction: column; gap: 10px; }
+  .mk-input { display: flex; gap: 8px; }
+  .mk-input .field { flex: 1; border: 1.5px solid var(--accent-line); border-radius: 10px; padding: 9px 14px; font-size: 14px; color: var(--ink-3); background: var(--raised); }
+  .mk-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .mk-chip { font-size: 12px; font-weight: 600; color: var(--ink-2); background: var(--well); border: 1px solid var(--line-soft); border-radius: 999px; padding: 3px 11px; }
+  .mk-chip.ctx { background: var(--accent-soft); color: var(--accent-deep); border-color: transparent; }
+
+  /* 실행 중 툴 피드 */
+  .mk-feed { padding: 4px 18px 14px; display: flex; flex-direction: column; gap: 5px; font-size: 12.5px; }
+  .mk-feed .t { display: flex; align-items: center; gap: 8px; color: var(--ink-2); }
+  .mk-feed .t .ic { width: 15px; height: 15px; color: var(--success); flex: 0 0 auto; }
+  .mk-feed .t.run .ic { color: var(--accent); }
+  .mk-feed .t code { background: transparent; padding: 0; color: var(--ink-1); }
+  .mk-feed .t .sub { color: var(--ink-3); }
+  .spinner { width: 13px; height: 13px; border: 2px solid var(--accent-soft); border-top-color: var(--accent); border-radius: 50%; flex: 0 0 auto; }
+
+  /* 주석 마커 */
+  .anno { position: relative; }
+  .anno .mk-pt { position: absolute; width: 24px; height: 24px; border-radius: 50%; background: var(--danger); color: #fff; font-size: 12.5px; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 3px rgba(255,255,255,.9), 0 4px 10px rgba(15,23,42,.3); transform: translate(-50%,-50%); z-index: 5; }
+  .anno .mk-pt.i { background: var(--accent); }
+  .callouts { columns: 2; column-gap: 24px; font-size: 13.5px; margin: 14px 0 0; }
+  .callouts div { break-inside: avoid; margin-bottom: 10px; }
+  .callouts b.n { display: inline-flex; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 11.5px; align-items: center; justify-content: center; margin-right: 7px; }
+  .g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 900px) { .g3 { grid-template-columns: 1fr; } .callouts { columns: 1; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="doc">
+  <div class="eyebrow">RPG ZZU · UI 목업 · 2026-09-15</div>
+  <h1>DB AI 검토 오버레이
+    <small>「AI 어시스턴트」 바를 — 레코드 카드 before → after 목록으로</small>
+  </h1>
+  <div class="metaline">
+    <span>대체 대상 <code>databaseAiBar.ts</code>의 텍스트 턴 상자</span>
+    <span>표면 <b>DB 창 안 오버레이</b> (3층 모달 아님)</span>
+    <span>정책 <b>검토 후 적용</b> (<code>captureProposalBase</code> → <code>applyProposedProject</code>)</span>
+    <span>diff 재료 <code>changeLedger.ts databaseEntries</code> (이미 있음)</span>
+  </div>
+</header>
+
+<h2><span class="no">1</span>한눈에 — 실물 위에 얹은 모습 (1440×900)</h2>
+<p class="lead">데이터베이스 창의 기존 「AI 어시스턴트」 단추가 이 오버레이를 엽니다. 지시 → 실행 → <b>바뀐 레코드마다 카드 한 장</b>. 아래는 실제 편집기 스크린샷 위에 합성한 검토 상태입니다. 수치 사례는 실측 사건 그대로입니다 — <code>tune_enemy</code>가 몬스터 HP를 64→300으로 바꿨는데 화면엔 아무 흔적이 없었다(2026-09-03 위키).</p>
+
+<figure class="frame">
+<div class="stage-fit anno" id="stage-fit">
+  <div class="stage" id="stage">
+    <div class="scrim"></div>
+    <section class="mk-panel">
+      <div class="mk-head">
+        <span class="spark"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0l1.8 5.2L15 7l-5.2 1.8L8 14l-1.8-5.2L1 7l5.2-1.8z"/></svg></span>
+        <span class="title">AI 검토</span>
+        <span class="req"><q>몬스터들을 중반 난이도에 맞춰 조정하고 보상도 손봐줘</q></span>
+        <button class="mk-x" title="닫기"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 2l10 10M12 2L2 12"/></svg></button>
+      </div>
+
+      <div class="mk-status">
+        <span class="dot"></span>
+        <span><b>검토 대기</b> · 바꾼 레코드 2 · 추가 1 · 삭제 1 — 아직 프로젝트에 적용되지 않았습니다</span>
+        <span class="meta">읽기 조회 4회 · 21.3초 · <code>gemini-3.7-flash</code></span>
+      </div>
+
+      <div class="mk-cards">
+        <!-- 1. 변경: 몬스터 스탯 튠 -->
+        <article class="mk-card">
+          <div class="mk-thumb"><span class="art"><img src="2026-09-15-db-ai-review-overlay-assets/monster-imp-mischief.png" alt="임프"></span></div>
+          <div class="mk-body">
+            <div class="mk-rowhead">
+              <span class="mk-name">임프</span>
+              <span class="mk-id">#enemy_0003</span>
+              <span class="mk-verb chg">변경</span>
+              <button class="mk-goto">이동 <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 6h8M7 3l3 3-3 3"/></svg></button>
+            </div>
+            <div class="mk-fields">
+              <div class="mk-field"><span class="k">최대 HP</span><span class="v"><span class="b4">64</span><span class="arr">→</span><span class="af">300</span></span><span class="mk-delta up">+236</span></div>
+              <div class="mk-field"><span class="k">공격</span><span class="v"><span class="b4">12</span><span class="arr">→</span><span class="af">28</span></span><span class="mk-delta up">+16</span></div>
+              <div class="mk-field"><span class="k">경험치</span><span class="v"><span class="b4">5</span><span class="arr">→</span><span class="af">40</span></span><span class="mk-delta up">+35</span></div>
+              <div class="mk-field"><span class="k">드롭 아이템</span><span class="v"><span class="b4">없음</span><span class="arr">→</span><span class="af">동검 (5%)</span></span></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 2. 추가: 아이템 -->
+        <article class="mk-card">
+          <div class="mk-thumb"><span class="art"><img class="px" src="2026-09-15-db-ai-review-overlay-assets/battle-icon-sword.png" alt="동검"></span></div>
+          <div class="mk-body">
+            <div class="mk-rowhead">
+              <span class="mk-name">동검</span>
+              <span class="mk-id">#item_0012</span>
+              <span class="mk-verb add">추가</span>
+              <button class="mk-goto">이동 <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 6h8M7 3l3 3-3 3"/></svg></button>
+            </div>
+            <div class="mk-fields">
+              <div class="mk-field"><span class="k">종류</span><span class="v"><span class="af">무기</span></span></div>
+              <div class="mk-field"><span class="k">공격</span><span class="v"><span class="af">+8</span></span></div>
+              <div class="mk-field"><span class="k">가격</span><span class="v"><span class="af">120 G</span></span></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 3. 변경: 배틀러 그림 before/after -->
+        <article class="mk-card">
+          <div class="mk-thumb"><span class="art"><img src="2026-09-15-db-ai-review-overlay-assets/monster-bat-vampire.png" alt="동굴 박쥐"></span></div>
+          <div class="mk-body">
+            <div class="mk-rowhead">
+              <span class="mk-name">동굴 박쥐</span>
+              <span class="mk-id">#enemy_0009</span>
+              <span class="mk-verb chg">변경</span>
+              <button class="mk-goto">이동 <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 6h8M7 3l3 3-3 3"/></svg></button>
+            </div>
+            <div class="mk-gfx">
+              <span class="cell"><span class="art"><img src="2026-09-15-db-ai-review-overlay-assets/monster-bat-01.png" alt="지금 배틀러"></span><small>지금</small></span>
+              <span class="garr"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9h12M11 4l4 5-4 5"/></svg></span>
+              <span class="cell aft"><span class="art"><img src="2026-09-15-db-ai-review-overlay-assets/monster-bat-vampire.png" alt="적용 후 배틀러"></span><small>적용 후</small></span>
+            </div>
+            <div class="mk-fields">
+              <div class="mk-field"><span class="k">배틀러 그림</span><span class="v"><span class="b4">monster-bat-01</span><span class="arr">→</span><span class="af">monster-bat-vampire</span></span></div>
+              <div class="mk-field"><span class="k">최대 HP</span><span class="v"><span class="b4">40</span><span class="arr">→</span><span class="af">180</span></span><span class="mk-delta up">+140</span></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 4. 삭제: 스킬 (그림 없음, 슬림) -->
+        <article class="mk-card slim">
+          <div class="mk-body">
+            <div class="mk-rowhead">
+              <span class="mk-name">독 안개</span>
+              <span class="mk-id">#skill_0021</span>
+              <span class="mk-verb del">삭제</span>
+              <button class="mk-goto">이동 <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 6h8M7 3l3 3-3 3"/></svg></button>
+            </div>
+            <div class="mk-fields">
+              <div class="mk-field"><span class="k">사유</span><span class="v"><span class="af">어느 몬스터·직업도 참조하지 않음 (AI 답변 근거)</span></span></div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <details class="mk-answer">
+        <summary>답변 — “임프를 중반 기준으로 올렸습니다…” (펼치기)</summary>
+        <p>임프와 동굴 박쥐를 중반 파티(레벨 12~15) 기준으로 올리고, 잡을 이유가 생기도록 경험치와 드롭을 붙였습니다. 드롭용 「동검」은 새로 만들었고, 박쥐는 상위종 배틀러로 교체했습니다. 참조가 없는 「독 안개」는 정리를 제안합니다.</p>
+      </details>
+
+      <div class="mk-foot">
+        <span class="hint">적용하면 편집 기록에 남고, 언제든 되돌릴 수 있습니다</span>
+        <span class="sp"></span>
+        <button class="mk-btn danger-ghost">버리기</button>
+        <button class="mk-btn primary"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7.5L5.5 11L12 3.5"/></svg>적용 4건</button>
+      </div>
+    </section>
+
+    <!-- 주석 마커 (스테이지 좌표) -->
+    <span class="mk-pt i" style="left: 323px; top: 298px;">1</span>
+    <span class="mk-pt i" style="left: 1134px; top: 170px;">2</span>
+    <span class="mk-pt i" style="left: 536px; top: 563px;">3</span>
+    <span class="mk-pt i" style="left: 1094px; top: 797px;">4</span>
+  </div>
+</div>
+<figcaption>
+  <b>검토 상태 — 바뀐 레코드마다 카드 한 장, 뒤는 실제 DB 창(스크림).</b>
+  <div class="callouts">
+    <div><b class="n">1</b><b>카드 = 레코드.</b> 그림(배틀러·아이콘·얼굴) + 필드별 <code>before → after</code> + 수치 델타 배지. 재료는 <code>buildChangeLedger</code>가 이미 만들던 것 — DB 바만 안 쓰고 있었다.</div>
+    <div><b class="n">2</b><b>「이동 →」</b> 그 레코드의 DB 탭·선택으로 점프. 오버레이라서 가능한 동작 — 별도 모달이면 창 전환이 된다.</div>
+    <div><b class="n">3</b><b>그림 변경은 두 장.</b> 「지금 / 적용 후」 — 데크 영수증 카드와 같은 언어. 스탯만 바뀌면 한 장(썸네일).</div>
+    <div><b class="n">4</b><b>검토 후 적용.</b> 즉시 쓰기(현행) 대신 <code>captureProposalBase → applyProposedProject</code> 커밋 게이트. 「적용 5건」을 누르기 전엔 프로젝트가 안 바뀐다.</div>
+  </div>
+</figcaption>
+</figure>
+
+<h2><span class="no">2</span>상태 흐름 — 입력 · 실행 중 · 검토</h2>
+<p>오버레이는 상태 셋을 오간다. 실행 중에도 <b>지금 무슨 툴이 도는지</b>가 카드 자리에서 보인다 — 지금 바의 400ms 폴링 감사 요약을 그대로 흘려 넣으면 된다.</p>
+
+<div class="g3">
+  <figure class="frame">
+    <section class="mk-panel static">
+      <div class="mk-head">
+        <span class="spark"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0l1.8 5.2L15 7l-5.2 1.8L8 14l-1.8-5.2L1 7l5.2-1.8z"/></svg></span>
+        <span class="title">AI 검토</span>
+        <button class="mk-x"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 2l10 10M12 2L2 12"/></svg></button>
+      </div>
+      <div class="mk-composer">
+        <div class="mk-input"><span class="field">몬스터 탭에 관해 요청하세요…</span></div>
+        <div class="mk-chips">
+          <span class="mk-chip ctx">지금 보는 곳 몬스터 › 임프</span>
+          <span class="mk-chip">선택 레코드 다듬기</span>
+          <span class="mk-chip">난이도 맞추기</span>
+          <span class="mk-chip">이 탭 점검</span>
+        </div>
+      </div>
+    </section>
+    <figcaption><b>입력.</b> 제안 칩은 현행 <code>databaseAiSuggestions</code> 그대로 — 탭·선택 레코드 기준.</figcaption>
+  </figure>
+
+  <figure class="frame">
+    <section class="mk-panel static">
+      <div class="mk-head">
+        <span class="spark"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0l1.8 5.2L15 7l-5.2 1.8L8 14l-1.8-5.2L1 7l5.2-1.8z"/></svg></span>
+        <span class="title">AI 검토</span>
+        <span class="req"><q>몬스터들을 중반 난이도에…</q></span>
+        <button class="mk-x"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 2l10 10M12 2L2 12"/></svg></button>
+      </div>
+      <div class="mk-status run">
+        <span class="dot"></span>
+        <span><b>적용 준비 중</b> · 바꾼 것 2개</span>
+        <span class="meta">14초</span>
+      </div>
+      <div class="mk-feed">
+        <div class="t"><svg class="ic" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7.5L5.5 11L12 3.5"/></svg><code>get_database_records</code><span class="sub">몬스터 125건 조회</span></div>
+        <div class="t"><svg class="ic" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7.5L5.5 11L12 3.5"/></svg><code>tune_enemy</code><span class="sub">임프 · HP/공격/경험치</span></div>
+        <div class="t run"><span class="spinner"></span><code>upsert_item</code><span class="sub">동검 만드는 중…</span></div>
+      </div>
+      <div class="mk-foot"><span class="sp"></span><button class="mk-btn">중단</button></div>
+    </section>
+    <figcaption><b>실행 중.</b> 툴 피드 + 중단. 실패한 쓰기는 여기서 「실패 —」로 남는다(현행 계약 유지).</figcaption>
+  </figure>
+
+  <figure class="frame">
+    <section class="mk-panel static">
+      <div class="mk-status">
+        <span class="dot"></span>
+        <span><b>검토 대기</b> · 바꾼 레코드 2 · 추가 1</span>
+      </div>
+      <div class="mk-cards" style="padding: 12px 14px;">
+        <article class="mk-card">
+          <div class="mk-thumb"><span class="art"><img src="2026-09-15-db-ai-review-overlay-assets/monster-imp-mischief.png" alt="임프"></span></div>
+          <div class="mk-body">
+            <div class="mk-rowhead"><span class="mk-name">임프</span><span class="mk-verb chg">변경</span></div>
+            <div class="mk-fields">
+              <div class="mk-field" style="grid-template-columns: 52px 1fr;"><span class="k">최대 HP</span><span class="v"><span class="b4">64</span><span class="arr">→</span><span class="af">300</span></span></div>
+            </div>
+          </div>
+        </article>
+      </div>
+      <div class="mk-foot">
+        <span class="sp"></span>
+        <button class="mk-btn danger-ghost">버리기</button>
+        <button class="mk-btn primary"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7.5L5.5 11L12 3.5"/></svg>적용</button>
+      </div>
+    </section>
+    <figcaption><b>검토.</b> §1의 카드 목록. 적용하면 영수증(편집 기록·되돌리기)으로 이어진다.</figcaption>
+  </figure>
+</div>
+
+<h2><span class="no">3</span>구현 계약 (요약)</h2>
+<table class="doc">
+  <tr><th>축</th><th>결정</th><th>근거·재료</th></tr>
+  <tr><td>표면</td><td>DB 창 <b>안</b> 오버레이. 기존 헤더 「AI 어시스턴트」 토글이 연다</td><td>3층 모달의 Escape 스택 회피 (현행 바도 <code>stopPropagation</code> 전력)</td></tr>
+  <tr><td>diff</td><td>턴 전후 프로젝트 스냅샷 → <code>buildChangeLedger</code> → 레코드 id 로 그룹</td><td><code>changeLedger.ts databaseEntries</code> — DB 20개 영역 필드 diff 이미 존재</td></tr>
+  <tr><td>그림</td><td>몬스터=배틀러, 액터=얼굴, 아이템·스킬=아이콘. 그림 필드가 바뀌면 지금/적용 후 두 장</td><td><code>battlerIdleAnimationUrl</code>, faceset crop, 아이콘 시트 — 전부 기존 렌더러</td></tr>
+  <tr><td>적용</td><td>검토 후 적용 (전체 단위). 카드별 부분 적용은 v2 — 참조 무결성(적 드롭 ↔ 새 아이템)이 얽힌다</td><td><code>captureProposalBase</code> / <code>applyProposedProject</code> (데크와 동일 게이트)</td></tr>
+  <tr><td>엔진</td><td>1차는 현행 브리지(구 세션) 유지. Pi 이관은 별도 — Pi 병합기가 DB 는 신규 레코드만 얹음</td><td><code>mapBundle.ts createdDatabaseEntries</code></td></tr>
+  <tr><td>파일</td><td>신규 <code>databaseAiReview.ts</code> + <code>databaseAiBar.ts</code> 런처 축소 + <code>ai-bar.css</code>(래칫) + 테스트·위키</td><td><code>test/databaseAiBar.test.ts</code> 개편, e2e <code>qa-db-ai-dock.spec.ts</code></td></tr>
+</table>
+
+</div>
+<script>
+  // 1440px 스테이지를 문서 폭에 맞춰 축소 (텍스트 선명도 유지를 위해 transform 사용)
+  const fit = document.getElementById("stage-fit");
+  const stage = document.getElementById("stage");
+  const resize = () => {
+    const s = fit.clientWidth / 1440;
+    stage.style.transform = `scale(${s})`;
+    fit.style.height = `${900 * s}px`;
+  };
+  new ResizeObserver(resize).observe(fit);
+  resize();
+</script>
+</body>
+</html>

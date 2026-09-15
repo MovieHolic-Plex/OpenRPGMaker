@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **68쪽 / 2694KB / 약 758,433 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **68쪽 / 2701KB / 약 760,544 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -17,7 +17,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 402KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2067 | ~113,655 |
 | `openwiki/editor-ai-tools.md` | 195KB | 82KB ⚠상한 초과 — 절을 더 쪼개라 | 1504 | ~54,516 |
-| `openwiki/editor-database.md` | 284KB | 59KB ⚠상한 초과 — 절을 더 쪼개라 | 1584 | ~82,227 |
+| `openwiki/editor-database.md` | 291KB | 59KB ⚠상한 초과 — 절을 더 쪼개라 | 1644 | ~84,338 |
 | `openwiki/editor-event-authoring.md` | 136KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 744 | ~39,121 |
 | `openwiki/editor-event-commands.md` | 57KB | 32KB | 202 | ~15,410 |
 | `openwiki/editor-interior-room-harness.md` | 92KB | 6KB | 445 | ~26,704 |
@@ -81,7 +81,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/spatial-authoring-controller.md` | 1 | `storeMutationInstrumentation.test.ts` |
 | `openwiki/spatial-geography-compiler.md` | 1 | `.omo/ulw-execute/tile-to-world/execution-policy.md` |
 | `openwiki/spatial-geography-ui.md` | 2 | `lake-persistence.json`, `lake-regions-desktop.png` |
-| `openwiki/testing.md` | 29 | `../dialogue.css`, `.omo/gates-vitest-report.json`, `X.quarantine.test.ts`, `X.test.ts`, `aiChatObservability.test.ts`, `aiChatPanelTransportError.test.ts`, `aiSelectionChipScope.test.ts`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/actionRpgAuthoringAcceptance.test.ts`, `test/aiEventPlacementSurfaceGate.test.ts`, `test/databaseKoreanRtpDefaults.test.ts`, `test/dialoguePreviewPresentationCss.test.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/interiorConceptAssemblies.test.ts`, `test/regionTaskRun.test.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
+| `openwiki/testing.md` | 28 | `../dialogue.css`, `X.quarantine.test.ts`, `X.test.ts`, `aiChatObservability.test.ts`, `aiChatPanelTransportError.test.ts`, `aiSelectionChipScope.test.ts`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/actionRpgAuthoringAcceptance.test.ts`, `test/aiEventPlacementSurfaceGate.test.ts`, `test/databaseKoreanRtpDefaults.test.ts`, `test/dialoguePreviewPresentationCss.test.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/interiorConceptAssemblies.test.ts`, `test/regionTaskRun.test.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
 | `openwiki/ui-discovery-pilot.md` | 3 | `direct/RESULTS.json`, `output/evidence/ui-discovery-v2/report.html`, `trace.json` |
 | `openwiki/village-design.md` | 3 | `depth-review.json`, `output/evidence/house-heights/REVIEW.md`, `output/village-direction/index.html` |
@@ -356,7 +356,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1467` 실제 이미지 입력 보존 (2026-09-07)
 - `L1481` Physical tile passage exposure (2026-09-08)
 
-### `openwiki/editor-database.md` — 284KB · 1584줄 · ~82,227 토큰 · 통째읽기 잘림 · 깨진 줄 7
+### `openwiki/editor-database.md` — 291KB · 1644줄 · ~84,338 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
 - `L1` 장소 통합 진행: 방·층과 재료 (2026-09-14)
 - `L14` 새 장소 생성 흐름 (2026-09-14, 2단계)
@@ -428,17 +428,17 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L1371` 지붕 가장자리 판정은 "다른 지붕면인가"다 (2026-09-11 실측 결함)
 - `L1379` '마을' 탭 — 숫자칸을 그림으로 바꾼다 (2026-08-31)
   - `L1395` AI로 몬스터·아이템 생성 (2026-08-30)
-  - `L1416` AI 어시스턴트 바 — 진행·결과가 바 안에 보인다 (2026-09-03)
-  - `L1450` AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)
-- `L1466` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
-- `L1543` 직업 승급 트리 · 스킬 트리 (2026-09-05)
-- `L1549` 미회수 편집 후속 통합 (2026-09-05)
-- `L1553` 마을 설계서 (2026-09-05)
-- `L1558` 구조물 증분 메타 정정 (2026-09-05)
-- `L1566` 개념 회수 UI 직접 렌더 QA (2026-09-05)
-- `L1570` Battle-animation preview-first graphic controls (Phase 2, 2026-09-05)
-- `L1577` 검토한 실내 기본값의 원격 반영 (2026-09-05)
-- `L1581` 특정 꾸러미의 명시적 교체 (2026-09-06)
+  - `L1416` AI 검토 오버레이 — 레코드 카드로 before → after 를 보고 적용한다 (2026-09-15)
+  - `L1510` AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)
+- `L1526` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
+- `L1603` 직업 승급 트리 · 스킬 트리 (2026-09-05)
+- `L1609` 미회수 편집 후속 통합 (2026-09-05)
+- `L1613` 마을 설계서 (2026-09-05)
+- `L1618` 구조물 증분 메타 정정 (2026-09-05)
+- `L1626` 개념 회수 UI 직접 렌더 QA (2026-09-05)
+- `L1630` Battle-animation preview-first graphic controls (Phase 2, 2026-09-05)
+- `L1637` 검토한 실내 기본값의 원격 반영 (2026-09-05)
+- `L1641` 특정 꾸러미의 명시적 교체 (2026-09-06)
 
 ### `openwiki/editor-event-authoring.md` — 136KB · 744줄 · ~39,121 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
