@@ -11,7 +11,7 @@ try{
   page.setDefaultTimeout(120000);
   page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/*',route=>{const r=route.request();return !['GET','HEAD','OPTIONS'].includes(r.method())&&/\/rest\/v1\/|\/rpc\//.test(r.url())?route.abort():route.continue();});
-  await page.addInitScript(()=>{localStorage.setItem('rpg-zzu:editor-ui-mode','expert');localStorage.setItem('oprn:ai-panel-collapsed','1');for(const k of ['oprn:editor-welcome-dismissed','oprn:standard-welcome-seen','oprn:coachmarks-basic-v1'])localStorage.setItem(k,'1');});
+  await page.addInitScript(()=>{localStorage.setItem('oprn:editor-ui-mode','expert');localStorage.setItem('oprn:ai-panel-collapsed','1');for(const k of ['oprn:editor-welcome-dismissed','oprn:standard-welcome-seen','oprn:coachmarks-basic-v1'])localStorage.setItem(k,'1');});
   try{
    await page.goto(`${base}/?${query}&aiBridge=0`,{waitUntil:'domcontentloaded',timeout:120000});
    if(name==='unrelated-project')await page.getByTestId('map-tree-node-map_reference_gabled_houses_20260913').waitFor({state:'attached',timeout:120000});
