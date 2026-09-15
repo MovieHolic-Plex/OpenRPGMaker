@@ -46,6 +46,7 @@ export type LocalMapPatchInput = {
 
 export type LocalCommitInput = {
   readonly identity: {
+  /** 이관 시 원본 commit_id·created_at 을 보존한다. 일반 저장에서는 생략한다. */
     readonly id: string;
     readonly label: string;
     readonly kind: string;
@@ -160,6 +161,13 @@ export type LocalProjectStore = {
   listAssets(): readonly LocalAssetRow[];
   pruneUnusedAssets(referenced: readonly string[]): Promise<readonly string[]>;
   separateInlineMedia(project: Project): Promise<LocalMediaSeparationResult>;
+  bulkImportSupabase(tables: {
+    readonly commits?: readonly Record<string, unknown>[];
+    readonly changes?: readonly Record<string, unknown>[];
+    readonly aiActivityLogs?: readonly Record<string, unknown>[];
+    readonly aiConversations?: readonly Record<string, unknown>[];
+    readonly aiAnalysisRuns?: readonly Record<string, unknown>[];
+  }): void;
   exportSerialized(): string | null;
   backup(): string;
   dataVersion(): number;
@@ -630,6 +638,46 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
         clock(),
       );
       return { changed: true, migratedAssetIds, project: nextProject, sha256: wire.sha256, revision };
+    },
+
+    bulkImportSupabase(tables: {
+      readonly commits?: readonly Record<string, unknown>[];
+      readonly changes?: readonly Record<string, unknown>[];
+      readonly aiActivityLogs?: readonly Record<string, unknown>[];
+      readonly aiConversations?: readonly Record<string, unknown>[];
+      readonly aiAnalysisRuns?: readonly Record<string, unknown>[];
+    }): void {
+      const str = (v: unknown): string | null => (v === null || v === undefined ? null : String(v));
+      for (const row of tables.commits ?? []) {
+        driver.prepare(
+          `INSERT OR IGNORE INTO commits (commit_id, project_id, parent_commit_id, created_at, message, summary, review_status, author_id, author_kind, author_label, agent_name, current_sha256, diff_json, tool_names_json, edit_activity_json) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+        ).run([
+          str(row.commit_id) ?? randomUUID(), projectId, str(row.parent_commit_id),
+          str(row.created_at) ?? clock(), str(row.message), str(row.summary), str(row.review_status),
+          str(row.author_id), str(row.author_kind), str(row.author_label), str(row.agent_name),
+          str(row.current_sha256), str(row.diff_json), str(row.tool_names_json), str(row.edit_activity_json),
+        ]);
+      }
+      for (const row of tables.changes ?? []) {
+        driver.prepare(
+          `INSERT OR IGNORE INTO changes (commit_id, entity_kind, entity_id, patch_json) VALUES (?,?,?,?)`,
+        ).run([str(row.commit_id) ?? "", str(row.entity_kind) ?? "", str(row.entity_id) ?? "", str(row.patch_json)]);
+      }
+      for (const row of tables.ai_activity_logs ?? []) {
+        driver.prepare(
+          `INSERT OR IGNORE INTO ai_activity_logs (log_id, project_id, run_id, channel, instruction, map_id, payload_json, created_at) VALUES (?,?,?,?,?,?,?,?)`,
+        ).run([str(row.log_id) ?? randomUUID(), projectId, str(row.run_id), str(row.channel) ?? "", str(row.instruction) ?? "", str(row.map_id), str(row.payload_json), str(row.created_at) ?? clock()]);
+      }
+      for (const row of tables.ai_conversations ?? []) {
+        driver.prepare(
+          `INSERT OR IGNORE INTO ai_conversations (conversation_id, project_id, title, model, project_context_key, entries_json, saved_at) VALUES (?,?,?,?,?,?,?)`,
+        ).run([str(row.conversation_id) ?? randomUUID(), projectId, str(row.title) ?? "", str(row.model), str(row.project_context_key), str(row.entries_json), str(row.saved_at) ?? clock()]);
+      }
+      for (const row of tables.ai_analysis_runs ?? []) {
+        driver.prepare(
+          `INSERT OR IGNORE INTO ai_analysis_runs (run_id, project_id, tileset_id, selected_tile_ids_json, prompt_context_json, result_json, created_at) VALUES (?,?,?,?,?,?,?)`,
+        ).run([str(row.run_id) ?? randomUUID(), projectId, str(row.tileset_id), str(row.selected_tile_ids_json), str(row.prompt_context_json), str(row.result_json), str(row.created_at) ?? clock()]);
+      }
     },
     dataVersion(): number {
       return readDataVersion(driver);
