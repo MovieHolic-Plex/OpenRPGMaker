@@ -2,7 +2,7 @@
 // 도움말 모달 — 툴바 "도움말" 버튼과 도움말 메뉴, 커맨드 팔레트(Ctrl+K)에서 연다.
 // 에디터 전체를 설명하는 인앱 위키: 개요, 화면 구성, 지도/이벤트/데이터베이스/소재/오디오/
 // 시연 실행/저장 공유, 마지막에 단축키 요약. 왼쪽 목차에서 섹션으로 바로 이동한다.
-import { PRODUCT_BRAND, PRODUCT_TAGLINE } from "@/brand";
+import { APP_VERSION, PRODUCT_BRAND, PRODUCT_TAGLINE, appVersionDetail } from "@/brand";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { el } from "@/util/dom";
 
@@ -310,6 +310,14 @@ export function openHelpModal(): void {
                   el("p", {
                     class: "help-modal-subtitle",
                     text: `${PRODUCT_BRAND} 사용 설명 — 목차를 눌러 이동하고 Esc로 닫습니다`,
+                  }),
+                  // 버전을 여기 두는 이유: 버그 리포트를 쓰는 사람이 보는 화면이 도움말이고,
+                  // 창 제목·푸터는 다른 정보가 이미 차지하고 있다. 값은 빌드가 주입한다.
+                  el("p", {
+                    class: "help-modal-version",
+                    text: `버전 ${APP_VERSION}`,
+                    attrs: { title: appVersionDetail() },
+                    dataset: { testid: "help-modal-version" },
                   }),
                 ],
               }),

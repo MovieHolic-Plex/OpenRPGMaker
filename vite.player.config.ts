@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import { fileURLToPath, URL } from "node:url";
+import { appVersionPlugin } from "./scripts/lib/appVersion.mjs";
 
 const src = (path: string): string => fileURLToPath(new URL(`./src/${path}`, import.meta.url));
 
@@ -7,6 +8,9 @@ export default defineConfig({
   base: "./",
   envPrefix: "OPENRPG_PLAYER_",
   publicDir: false,
+  // 내보낸 게임도 자기가 어느 도구 버전으로 만들어졌는지 알아야 한다 —
+  // 버그 리포트가 "게임이 이상해요" 로 시작할 때 도구 버전이 유일한 단서다.
+  plugins: [appVersionPlugin()],
   resolve: {
     alias: [
       { find: /^@\/app\/mode$/, replacement: src("player/exportAppModeShim.ts") },
