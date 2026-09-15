@@ -19,6 +19,12 @@
 - PASS 1440: 단독 실행도 「작업」으로 자동 전환된다 — agents=1
 - PASS 1440: 단독 실행은 팀원 열이 없다(is-single, 폭 0) — {"x":0,"y":0,"w":0,"h":0,"hidden":false}
 - PASS 1440: 압축 보기에는 툴 인자 줄이 없다
+- PASS 1440: 보고서 재료는 지점 ≥2 를 만든다 — sites=3
+- PASS 1440: 보고서 모달이 지점마다 한 구획을 그린다 — sections=3
+- PASS 1440: 지점마다 before/after 캔버스 한 쌍이 붙는다 — canvases=6
+- PASS 1440: 보고서 머리에 팀 보고·검수 지적이 실린다 — 북쪽에 대장간 앞마당을 닦고 남쪽 숲길을 정비했습니다. 검수 지적 1건은 재배정으로 고쳤습니다.(20,9) 
+- PASS 1440: 보고서 모드에는 겹쳐 보기 토글이 없다
+- PASS 1440: 닫기로 보고서가 닫힌다
 - PASS 1440: 스튜디오에서는 데크 탭 줄이 숨는다
 - PASS 1440: 스튜디오 덱 「작업」은 상세 페인이다 — true
 - PASS 1440: 상세 페인은 툴 인자 줄을 그린다 — rows=8 first=x: 10 · y: 2 · w: 20 · h: 10
@@ -35,7 +41,7 @@
 - PASS 1920: 작업 탭에서 채팅 본문은 숨는다
 - PASS 1920: 「대화」를 누르면 채팅 본문이 돌아온다
 - PASS 1920: 대화 탭을 보던 중이면 배지는 뜨지 않는다
-- PASS 1920: 검토 대기 스트립이 보인다 — {"x":1145,"y":860,"w":759,"h":42,"hidden":false}
+- PASS 1920: 검토 대기 스트립이 보인다 — {"x":1144,"y":860,"w":760,"h":42,"hidden":false}
 - PASS 1920: 스트립에 변경 칩 문장이 있다 — 검토 대기 · 타일 128칸 · 이벤트 +2 · 맵 2버리기보고서 열기적용
 - PASS 1920: 「보고서 열기」「적용」이 버스 액션을 부른다 — {"apply":1,"discard":0,"report":1}
 - PASS 1920: 작업 탭 점은 검토 대기 색(attention) — attention
@@ -44,6 +50,12 @@
 - PASS 1920: 단독 실행도 「작업」으로 자동 전환된다 — agents=1
 - PASS 1920: 단독 실행은 팀원 열이 없다(is-single, 폭 0) — {"x":0,"y":0,"w":0,"h":0,"hidden":false}
 - PASS 1920: 압축 보기에는 툴 인자 줄이 없다
+- PASS 1920: 보고서 재료는 지점 ≥2 를 만든다 — sites=3
+- PASS 1920: 보고서 모달이 지점마다 한 구획을 그린다 — sections=3
+- PASS 1920: 지점마다 before/after 캔버스 한 쌍이 붙는다 — canvases=6
+- PASS 1920: 보고서 머리에 팀 보고·검수 지적이 실린다 — 북쪽에 대장간 앞마당을 닦고 남쪽 숲길을 정비했습니다. 검수 지적 1건은 재배정으로 고쳤습니다.(20,9) 
+- PASS 1920: 보고서 모드에는 겹쳐 보기 토글이 없다
+- PASS 1920: 닫기로 보고서가 닫힌다
 - PASS 1920: 스튜디오에서는 데크 탭 줄이 숨는다
 - PASS 1920: 스튜디오 덱 「작업」은 상세 페인이다 — true
 - PASS 1920: 상세 페인은 툴 인자 줄을 그린다 — rows=8 first=x: 10 · y: 2 · w: 20 · h: 10
@@ -51,4 +63,4 @@
 - PASS 1920: 기본 높이 덱은 보드가 뜨면 420 으로 자란다 — {"x":291,"y":649,"w":1190,"h":420,"hidden":false}
 - PASS 1920: 페이지 오류 0
 
-즉시 확인: 1440x900/01-work-team-running.png · 02-work-review-strip.png · 03-work-single-run.png · 04-studio-work-detail.png
+즉시 확인: 1440x900/01-work-team-running.png · 02-work-review-strip.png · 03-work-single-run.png · 04-studio-work-detail.png · 05-report-modal.png
