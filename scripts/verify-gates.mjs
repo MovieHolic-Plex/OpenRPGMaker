@@ -164,7 +164,12 @@ function testsGate() {
   const totalCount = Number(parsed.numTotalTests ?? 0);
 
   // 빈 결과를 기준선으로 굳히지 않는다. 이 방어가 없어서 위 파싱 버그가 조용히 통과했다.
-  if (code !== 0 && failedFiles.length === 0 && failedCount === 0) {
+  // 단, 리포터 자신이 `success:true` 와 통과 숫자를 적었는데 exit≠0 이면 파싱 버그가 아니라 **테스트 밖 unhandled
+  // error**(정리 단계의 거부된 Promise·리스너 예외·워커 RPC 타임아웃)다 — vitest 는 그 경우 모든 테스트가 통과해도 1 로 난다.
+  // 실측(2026-09-14): 스위트가 처음 0 실패가 되자 이 가드가 게이트를 터뜨렸다. 실패 ≥1 이던 동안은 그 오류들이 가려져 보이지 않았다.
+  const reporterSaysGreen = parsed.success === true && passedCount > 0 && results.length > 0;
+  const unhandledErrors = code !== 0 && failedCount === 0 && reporterSaysGreen;
+  if (code !== 0 && failedFiles.length === 0 && failedCount === 0 && !reporterSaysGreen) {
     throw new Error(
       `vitest 가 exit=${code} 인데 실패 항목을 하나도 읽지 못했다 — 리포트 파싱을 확인하라 (${reportPath})`
     );
@@ -176,7 +181,7 @@ function testsGate() {
     throw new Error(`vitest 가 테스트를 하나도 수집하지 못했다 — runner 로딩 경로를 확인하라 (${reportPath})`);
   }
 
-  return { name: "vitest", exitCode: code, totalCount, failedCount, passedCount, failedFiles, testFiles };
+  return { name: "vitest", exitCode: code, totalCount, failedCount, passedCount, failedFiles, testFiles, unhandledErrors };
 }
 
 // CSS 게이트 — 자체 기준선을 가진 두 정적 분석 스크립트를 그대로 실행한다.
@@ -423,6 +428,14 @@ if (asJson) {
   if (report.tests) {
     const gate = report.tests;
     console.log(`vitest         exit=${gate.exitCode}  failed=${gate.failedCount}  passed=${gate.passedCount}  files=${gate.failedFiles.length}`);
+    // 테스트는 전부 통과인데 exit≠0 — 테스트 밖 unhandled error 다. 파일 단위 회귀 판정에는 들어가지 않지만 숨기지 않는다:
+    // JSON 리포터에는 스택이 없으므로 default 리포터로 다시 돌리면 「Unhandled Errors」 절에 출처 테스트 파일이 찍힌다.
+    if (gate.unhandledErrors) {
+      console.log(
+        "   ⚠ 테스트는 0 실패인데 vitest 가 exit≠0 — 테스트 밖 unhandled error(정리 단계 거부 Promise·리스너 예외·워커 타임아웃). " +
+        "파일 회귀는 아니다. 원인은 `node scripts/run-vitest.mjs run --configLoader bundle --reporter=default` 의 Unhandled Errors 절에서 본다."
+      );
+    }
   }
   if (report.css) {
     const gate = report.css;

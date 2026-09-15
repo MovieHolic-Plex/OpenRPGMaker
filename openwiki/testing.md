@@ -46,6 +46,14 @@
 부분집합 실행을 기준선으로 저장하면 기준선이 그 부분집합이 돼 다음 전체 실행의 모든 실패가 "신규 회귀"로
 보고된다(스크립트가 거부한다).
 
+**테스트가 0 실패인데 vitest 가 exit 1 이면 — 테스트 밖 unhandled error 다 (2026-09-14 실측).** vitest 는 정리 단계의
+거부된 Promise·리스너 예외·워커 RPC 타임아웃("Vitest caught N unhandled errors")이 있으면 모든 테스트가 통과해도 1 로 난다.
+`verify-gates.mjs` 는 이걸 파싱 버그(실패 0 인데 exit 1 → 빈 기준선)와 구분한다: JSON 리포터가 `success:true` + 통과 숫자를
+적었으면 `tests.unhandledErrors=true` 로 표시하고 계속 가며(파일 회귀 아님), 그 증거가 없을 때만 throw 한다. 이 스위트는
+2026-09-14 기준 그런 오류가 18건 있다(`mapEditLockScratchSession`·`playerFootprint`·`houseDoorOpen`·`termsRuntime`·
+`inspectorBadges`·`battleStrictRuntime` + 워커 `onTaskUpdate` 타임아웃 2) — 실패 ≥1 이던 동안은 가려져 있었다. JSON 리포터에는
+스택이 없으니 원인은 `node scripts/run-vitest.mjs run --configLoader bundle --reporter=default` 의 Unhandled Errors 절에서 본다.
+
 ### AI 조수 가족이 왜 이렇게 잘 뒤집히나 (실측)
 
 `test/helpers/aiTestSignals.ts` 의 단정은 **실시간 10초 데드라인**을 건다(`setTimeout(..., 10_000)` →
