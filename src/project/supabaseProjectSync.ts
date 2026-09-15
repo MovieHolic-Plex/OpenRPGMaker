@@ -4,20 +4,16 @@ import { rememberCanonicalTarget, routeSpatialSave, ProjectRoutingError, type Pr
 import type { MirrorStatus } from "./spatial/persistenceTypes";
 export type { ProjectWriteAuthority } from "./spatial/saveRouting";
 import { serialize } from "./io";
-import { readProjectV4MapMergeSnapshot } from "./io/shape";
-import { SCHEMA_VERSION } from "./types";
 import { removeLegacySpriteReferences } from "./defaults/defaultAssets";
-import { validateProjectReferences } from "./io/references";
 import { projectWithoutEventDrafts } from "./eventDrafts";
-import { applyAudioDescriptionDelta } from "./audioDescriptions";
-import { applyMonsterMetadataDelta } from "./monsterMetadata";
 import { supabaseProjectConfig, type SupabaseProjectConfig } from "./supabaseProjectConfig";
 import { sha256HexText } from "../util/sha256";
 import { randomUuid } from "../util/id";
 import { projectWire, type ProjectWire } from "./persistence/core/projectWire";
 export { canonicalJsonString } from "./persistence/core/canonicalJson";
-import { changedMapIdsBetween, changedMapTreeIdsBetween, mapSaveConflicts, mergeProjectMaps, type MapSaveConflict } from "./persistence/core/mapMerge";
-import { deserializeStoredProjectJson, repairStoredLoadFoundation } from "./persistence/core/loadRepair";
+import type { MapSaveConflict } from "./persistence/core/mapMerge";
+import { deserializeStoredProjectJson } from "./persistence/core/loadRepair";
+import { mapPatchChangeSet, planMapPatch, readMapPatchSnapshot } from "./persistence/core/mapPatch";
 // 타입 전용 import — 런타임 그래프를 넓히지 않는다(선례: projectCommitLog 의 순환 검사 주석).
 import type { EditActivityCommitAttachment } from "@/editor/editActivityLog";
 import type { ChangeSummary } from "@/project/types";
@@ -85,7 +81,7 @@ export type SupabaseProjectMapPatchInput = {
   readonly authority?: ProjectWriteAuthority;
 };
 
-type SupabaseAiAnalysisRunInput = {
+export type SupabaseAiAnalysisRunInput = {
   readonly promptContext: unknown;
   readonly result: unknown;
   readonly selectedTiles: readonly number[];
@@ -319,14 +315,7 @@ export async function saveProjectMapPatchToSupabase(
   const baseProject = projectWithoutEventDrafts(input.baseProject);
   removeLegacySpriteReferences(persistedProject);
   removeLegacySpriteReferences(baseProject);
-  // Compare all three snapshots with the same shape/compatibility normalization
-  // (shop defaults, social IDs, load foundation), without pruning references.
-  // Remote roots may lack targets restored by local edits; repairing here would
-  // erase concurrent commands before conflict detection or candidate validation.
-  const canonicalBase = canonicalizeForMapComparison(baseProject);
-  const canonicalLocal = canonicalizeForMapComparison(persistedProject);
-  const changedMapIds = input.changedMapIds ?? changedMapIdsBetween(canonicalBase, canonicalLocal);
-  const changedMapTreeIds = changedMapTreeIdsBetween(canonicalBase.mapTree, canonicalLocal.mapTree);
+  const changeSet = mapPatchChangeSet(baseProject, persistedProject, input.changedMapIds);
   for (let attempt = 0; attempt < MAP_PATCH_MAX_ATTEMPTS; attempt += 1) {
     // Conflict/merge against current_json only (no maps overlay). RTT cut: drop
     // saveChangedMapRowsFromCanonical's before/after full-snapshot pair.
@@ -335,42 +324,20 @@ export async function saveProjectMapPatchToSupabase(
     if (latestRow && isRecord(latestRow.current_json) && Object.hasOwn(latestRow.current_json, "spatialAuthoring")) {
       throw new ProjectRoutingError("activation-required", "The legacy target was activated remotely. Reload before editing; stale content cannot acquire its new token.");
     }
-    const latestProject = latestRow ? readMapPatchSnapshot(latestRow.current_json) : canonicalBase;
+    const latestProject = latestRow ? readMapPatchSnapshot(latestRow.current_json) : changeSet.canonicalBase;
     const latestSha = latestRow?.current_sha256 ?? null;
 
-    const conflicts = mapSaveConflicts(canonicalBase, canonicalLocal, latestProject, changedMapIds);
-    if (conflicts.length > 0) return { kind: "conflict", conflicts };
-
-    const candidate = mergeProjectMaps(latestProject, persistedProject, changedMapIds, changedMapTreeIds);
-    const audioDescriptions = applyAudioDescriptionDelta(
-      baseProject.audioDescriptions,
-      persistedProject.audioDescriptions,
-      latestProject.audioDescriptions,
-    );
-    // mergeProjectMaps returns a detached root; never mutate any input snapshot.
-    if (audioDescriptions === undefined) delete candidate.audioDescriptions;
-    else candidate.audioDescriptions = audioDescriptions;
-    const monsterMetadata = applyMonsterMetadataDelta(
-      baseProject.monsterMetadata,
-      persistedProject.monsterMetadata,
-      latestProject.monsterMetadata,
-    );
-    if (monsterMetadata === undefined) delete candidate.monsterMetadata;
-    else candidate.monsterMetadata = monsterMetadata;
-    // Do not let load repair silently discard invalid intended references. Only
-    // the fully validated merge may enter the existing SHA-conditional write.
-    validateProjectReferences(candidate);
-    const mergedProject = deserializeStoredProjectJson(candidate);
-    const wire = await projectWire(mergedProject);
-    const saved = await saveProjectSnapshotToSupabase(config, mergedProject, latestSha, wire);
+    const plan = await planMapPatch(changeSet, latestProject);
+    if (plan.kind === "conflict") return { kind: "conflict", conflicts: plan.conflicts };
+    const saved = await saveProjectSnapshotToSupabase(config, plan.mergedProject, latestSha, plan.wire);
     if (!saved) continue;
     try {
       // maps table = map-content SoT mirror written after successful project snapshot.
-      await saveChangedMapRows(config, mergedProject, changedMapIds);
+      await saveChangedMapRows(config, plan.mergedProject, changeSet.changedMapIds);
     } catch (error) {
       if (!isOptionalTableMissingError(error)) throw error;
     }
-    return { kind: "saved", project: mergedProject, sha256: wire.sha256 };
+    return { kind: "saved", project: plan.mergedProject, sha256: plan.wire.sha256 };
   }
   throw new SupabaseProjectSyncError("Supabase project changed too often while saving map patch", 409);
 }
@@ -1094,32 +1061,6 @@ function parseProjectCommitRows(parsed: unknown): readonly SupabaseProjectCommit
 
 async function sha256Hex(value: string): Promise<string> {
   return sha256HexText(value);
-}
-
-/**
- * Symmetric map comparison keeps load-compatible shape defaults without erasing
- * references before root ownership is resolved. Malformed local intermediates
- * retain the existing comparison fallback; the completed candidate must validate.
- */
-function canonicalizeForMapComparison(project: Project): MapPatchSnapshot {
-  try {
-    return readMapPatchSnapshot(JSON.parse(serialize(project)) as unknown);
-  } catch {
-    return project;
-  }
-}
-
-type MapPatchSnapshot = Pick<Project, "maps" | "mapTree"> & Partial<Pick<Project, "audioDescriptions" | "monsterMetadata">>;
-
-// Map merging only needs maps/mapTree, but the audio-description and monster-metadata
-// deltas compare the same remote snapshot, so those optional roots stay visible.
-function readMapPatchSnapshot(value: unknown): MapPatchSnapshot {
-  if (!isRecord(value) || value.version !== SCHEMA_VERSION) return deserializeStoredProjectJson(value);
-  const snapshot = structuredClone(value);
-  // Keep compatibility foundation changes, but never use ordinary load repair
-  // to prune map references against roots that the local candidate may restore.
-  repairStoredLoadFoundation(snapshot);
-  return readProjectV4MapMergeSnapshot(snapshot);
 }
 
 async function loadMapRowsFromSupabase(config: SupabaseProjectConfig, signal?: AbortSignal): Promise<readonly Record<string, unknown>[]> {
