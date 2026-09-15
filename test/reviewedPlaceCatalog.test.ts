@@ -18,7 +18,7 @@ describe('reviewed places shipped independently of a remote project',()=>{
  const p=createBlankProject();p.spatialAuthoring=emptySpatialDocument();const original=serialize(p);
  const result=copyReviewedPlace(p,'place_functional_goods','copy1');expect(serialize(p)).toBe(original);expect(result.project.maps).toEqual(p.maps);expect(result.project.spatialAuthoring!.library.places[result.id].provenance.origin).toBe('user');expect(()=>copyReviewedPlace(result.project,'place_functional_goods','copy1')).toThrow();expect(()=>deserialize(serialize(result.project))).not.toThrow();
  });
- for(const id of ['place_functional_two_story_inn','place_iron_vein_mine','place_reviewed_cottage'])it(`builds reusable ${id}`,()=>{
+ for(const id of REVIEWED_PLACES.map(p=>p.id))it(`builds reusable ${id}`,()=>{
  const p=createBlankProject();p.spatialAuthoring=emptySpatialDocument();const copied=copyReviewedPlace(p,id,'test');const rootId=spatialId('test-occurrence');
  copied.project.spatialAuthoring=instantiateSpatialDesign(copied.project.spatialAuthoring!,copied.project,{source:{kind:'place',id:copied.id},rootId,seed:1,x:0,y:0,level:0,generatorVersion:'test'});
  const built=compileSpatialOccurrence(copied.project,{occurrenceId:rootId});const maps=Object.values(built.maps).filter(m=>!p.maps[m.id]);expect(maps).toHaveLength(id.includes('two_story')?2:1);expect(()=>checkedDocument(built.spatialAuthoring,built)).not.toThrow();

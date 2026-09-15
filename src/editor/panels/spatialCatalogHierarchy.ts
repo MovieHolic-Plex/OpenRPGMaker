@@ -33,7 +33,7 @@ function placeCards(): SpatialGalleryCard[] {
   cards.push(...PLACE_REFERENCES.map(entry => ({ id: `region-reference:${entry.id}`, localId: entry.id,
     regionReferenceId: entry.id, name: entry.name, source: "default" as const, kind: "places" as const,
     usage: 0, tilesetId: entry.tilesetId, placeKind: "facility" as const, subtitle: "완성 장소 사례" })));
-  cards.unshift(...REVIEWED_PLACES.map(place => ({ id: `reviewed-place:${place.id}`, localId: place.id, reviewedPlaceId: place.id, name: place.name, source: "default" as const, kind: "places" as const, usage: 0, placeKind: place.kind, subtitle: "완성 도안 · 복제하여 사용" })));
+  cards.unshift(...REVIEWED_PLACES.map(place => ({ id: `reviewed-place:${place.id}`, localId: place.id, reviewedPlaceId: place.id, name: place.name, source: "default" as const, kind: "places" as const, usage: 0, placeKind: place.kind })));
   const known = new Set(cards.map((card) => card.id));
   for (const tileset of Object.values(project.tilesets)) {
     if (tileset.scratchConceptBundles === undefined) continue;

@@ -174,7 +174,7 @@ export function placeCatalogRasters(project: Project, card: SpatialGalleryCard, 
 }
 
 export function renderPlaceCardThumb(card: SpatialGalleryCard): HTMLElement {
-  if (card.reviewedPlaceId) return el("div", { class: "spatial-card-map", children: reviewedRasters(card.reviewedPlaceId, 0.35).stamps.map(s => s.canvas) });
+  if (card.reviewedPlaceId) return el("div", { class: "spatial-card-map", children: reviewedRasters(card.reviewedPlaceId, 0.35).stamps.map(s => { s.canvas.className = "spatial-card-map"; s.canvas.style.removeProperty("left"); s.canvas.style.width = "auto"; s.canvas.style.height = "112px"; return s.canvas; }) });
   const project = visibleAuthoringProject();
   try {
     const target = placeDraftTarget(card);

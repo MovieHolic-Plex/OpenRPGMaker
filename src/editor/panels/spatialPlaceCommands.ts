@@ -114,7 +114,7 @@ export function spatialPlacesChrome(card: SpatialGalleryCard | undefined, rerend
     previewError: placeChromeState.previewError,
     deleteOpen: placeChromeState.deleteOpen,
     add: controller ? () => addBlankPlace(rerender) : undefined,
-    duplicate: controller && card?.reviewedPlaceId ? () => copyBuiltinPlace(card.reviewedPlaceId!, rerender) : controller && target && !builtinLocked ? () => clonePlace(target, rerender) : undefined,
+    duplicate: controller && workingProject().spatialAuthoring && card?.reviewedPlaceId ? () => copyBuiltinPlace(card.reviewedPlaceId!, rerender) : controller && target && !builtinLocked ? () => clonePlace(target, rerender) : undefined,
     delete: controller && target && !builtinLocked ? () => { placeChromeState.deleteOpen = true; rerender(); } : undefined,
     onDeleteConfirm: controller && target && placeChromeState.deleteOpen ? () => confirmDelete(target, rerender) : undefined,
     preview: controller && hasAuthoringDraft() ? () => previewPlace(rerender) : undefined,
