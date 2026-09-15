@@ -606,9 +606,15 @@ function itemSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     const scope = record ? targetScopeForCommand(project, { kind: "item", itemId: record.id }) : "self";
     const states = record?.stateEffects.map((effect) => project.database.states.find((state) => state.id === effect.stateId)?.name ?? effect.stateId).join(", ");
     const hint = [scopeLabel(scope), states].filter(Boolean).join(" · ");
-    nodes.push(commandButton(`${item.name} x${item.count}`, `actor-item-${item.itemId}`, "bag", "", () => {
+    // 수량은 이름과 분리된 **축소되지 않는** 슬롯으로 보낸다. 예전에는 한 라벨 문자열
+    // "이름 xN" 을 모두 strong 에 넣어고, strong 에는 nowrap+ellipsis 가 걸려 있어 긴 이름이
+    // 수량까지 지웠다(2026-09-16 실측: clientWidth 144 vs scrollWidth 235, x5 미표시).
+    // 수량은 aria-label(hint)에도 남겨 보조기술이 읽는다.
+    const countLabel = `x${item.count}`;
+    const hintText = [countLabel, hint].filter(Boolean).join(" · ");
+    nodes.push(commandButton(item.name, `actor-item-${item.itemId}`, "bag", countLabel, () => {
       options.beginTargetCommand({ kind: "item", itemId: item.itemId });
-    }, false, undefined, hint || `${terms.item} 사용`));
+    }, false, undefined, hintText || `${terms.item} 사용`));
   }
   if (isPokemonMonsterActor(project, activeActor(snapshot))) {
     for (const item of captureItems(snapshot)) {

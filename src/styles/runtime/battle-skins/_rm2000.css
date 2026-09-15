@@ -627,6 +627,27 @@
   padding: 0 6px;
 }
 
+/* 배지가 둘(비용 + 거절 사유)인 행에서는 이름을 0 까지 포기하면 안 된다 — 어느 기술인지 읽을
+   수 없게 된다. 실측: 이름 clientWidth 0(글자 45px 다 잃음), 배지 82 + 245 > 행 252.
+   252px 한 줄에 이름 + 두 배지는 물리적으로 들어가지 않는다. 거절 사유가 이미 비용까지
+   말하므로("MP 부족 (필요 999 / 현재 43)") 비활성 행에서는 비용 배지를 겁지 않는다.
+   이름에 바닥을 주고, 살아남은 사유가 남는 폭을 쓴다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command-menu:has(> .battle-submenu-header) .battle-command-text strong {
+  min-width: 3em;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command-menu:has(> .battle-submenu-header) .battle-command[data-battle-command-inert="true"] .battle-command-text small:not(.battle-command-reason) {
+  display: none;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command-menu:has(> .battle-submenu-header) .battle-command-text small.battle-command-reason {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-command-menu:has(> .battle-submenu-header) .battle-command-text small:empty {
   display: none;
 }
