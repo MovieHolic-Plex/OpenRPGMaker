@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createFakePostgrest } from "./fakePostgrest";
 import { createSupabaseRepository } from "@/project/persistence/supabaseRepository";
+import { createLocalRepositoryFixture } from "../localStore/localRepositoryFixture";
 import { createHouseTemplateGalleryProject } from "@/project/defaults/defaultProject";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { serialize, serializeForComparison } from "@/project/io";
@@ -173,6 +174,11 @@ export function describeRepositoryContract(name: string, factory: FixtureFactory
 describeRepositoryContract("memory", (projectId) => {
   const target: ProjectTarget = { url: "memory://contract", anonKey: "memory", projectId };
   return { repository: createMemoryRepository({ target }), target };
+});
+
+describeRepositoryContract("local (real SQLite in a temp folder)", async () => {
+  const fixture = await createLocalRepositoryFixture();
+  return { repository: fixture.repository, target: fixture.target, cleanup: () => { fixture.close(); } };
 });
 
 

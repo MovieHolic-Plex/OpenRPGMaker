@@ -43,6 +43,73 @@ export type LocalMapPatchInput = {
   readonly changedMapIds?: readonly string[];
 };
 
+export type LocalCommitInput = {
+  readonly identity: {
+    readonly id: string;
+    readonly label: string;
+    readonly kind: string;
+    readonly agentName?: string;
+  };
+  readonly reviewStatus: string;
+  readonly summary: string;
+  readonly parentCommitId?: string | null;
+  readonly diff?: unknown;
+  readonly toolNames?: readonly string[];
+  readonly editActivity?: unknown;
+};
+
+export type LocalCommitRow = {
+  readonly agentName: string | null;
+  readonly authorId: string | null;
+  readonly authorKind: string | null;
+  readonly authorLabel: string | null;
+  readonly commitId: string;
+  readonly createdAt: string | null;
+  readonly currentSha256: string | null;
+  readonly message: string;
+  readonly reviewStatus: string | null;
+  readonly summary: string | null;
+};
+
+export type LocalActivityInput = {
+  readonly logId: string;
+  readonly runId?: string;
+  readonly channel: string;
+  readonly instruction: string;
+  readonly mapId?: string;
+  readonly payload: unknown;
+};
+
+export type LocalActivityListOptions = { readonly runId?: string };
+
+export type LocalConversationInput = {
+  readonly conversationId: string;
+  readonly destinationProjectId?: string | null;
+  readonly title: string;
+  readonly model: string;
+  readonly projectContextKey?: string;
+  readonly entries: unknown;
+  readonly savedAt: number;
+};
+
+export type LocalConversationListOptions = {
+  readonly query?: string;
+  readonly limit?: number;
+  readonly offset?: number;
+  readonly signal?: { readonly throwIfAborted?: () => void };
+  readonly includeEntries?: boolean;
+  readonly projectContextKey?: string;
+};
+
+export type LocalAnalysisRunInput = {
+  readonly tilesetId: string;
+  readonly selectedTiles: readonly number[];
+  readonly promptContext: unknown;
+  readonly result: unknown;
+};
+
+export type LocalStoreRow = Readonly<Record<string, unknown>>;
+
 export type LocalProjectStore = {
   readonly projectDir: string;
   readonly projectId: string;
@@ -51,6 +118,14 @@ export type LocalProjectStore = {
   loadSnapshot(): LocalProjectSnapshot | null;
   saveProject(project: Project): Promise<LocalStoreSaveResult>;
   saveMapPatch(input: LocalMapPatchInput): Promise<LocalStoreSaveResult>;
+  recordCommit(input: LocalCommitInput): string;
+  listCommits(limit: number): readonly LocalCommitRow[];
+  recordActivity(input: LocalActivityInput): void;
+  listActivity(limit: number, options?: LocalActivityListOptions): readonly LocalStoreRow[];
+  recordConversation(input: LocalConversationInput): void;
+  listConversations(options: LocalConversationListOptions): readonly LocalStoreRow[];
+  loadConversation(conversationId: string): LocalStoreRow | null;
+  recordAnalysisRun(input: LocalAnalysisRunInput): void;
   exportSerialized(): string | null;
   backup(): string;
   dataVersion(): number;
@@ -162,8 +237,25 @@ function writeProjectRow(driver: Driver, project: Project, wire: ProjectWire, pr
   return revision;
 }
 
-function sqlLiteral(value: string): string {
-  if (value.includes("'")) throw new LocalStoreError("backup-path", "backup path must not contain a quote");
+function jsonOrNull(value: unknown): string | null {
+  return value === undefined ? null : JSON.stringify(value);
+}
+
+function parseOrNull(value: DriverValue | undefined): unknown {
+  if (value === null || value === undefined) return null;
+  const text = String(value);
+  return text === "" ? null : JSON.parse(text);
+}
+
+function nullableText(value: DriverValue | undefined): string | null {
+  return value === null || value === undefined ? null : String(value);
+}
+
+function clampLimit(limit: number): number {
+  return Math.max(1, Math.min(100, Math.floor(limit)));
+}
+
+function sqlLiteral(value: string): string {  if (value.includes("'")) throw new LocalStoreError("backup-path", "backup path must not contain a quote");
   return `'${value}'`;
 }
 
@@ -238,6 +330,153 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
       const target = join(backupsDir, `${backupStamp(clock())}.sqlite`);
       driver.exec(`VACUUM INTO ${sqlLiteral(target)}`);
       return target;
+    },
+    recordCommit(input: LocalCommitInput): string {
+      const commitId = randomUUID();
+      driver.prepare(
+        `INSERT INTO commits (commit_id, project_id, parent_commit_id, created_at, message, summary, review_status,
+           author_id, author_kind, author_label, agent_name, current_sha256, diff_json, tool_names_json, edit_activity_json)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ).run([
+        commitId,
+        projectId,
+        input.parentCommitId ?? null,
+        clock(),
+        input.summary,
+        input.summary,
+        input.reviewStatus,
+        input.identity.id,
+        input.identity.kind,
+        input.identity.label,
+        input.identity.agentName ?? null,
+        readProjectRow(driver)?.sha256 ?? null,
+        jsonOrNull(input.diff),
+        jsonOrNull(input.toolNames ?? []),
+        jsonOrNull(input.editActivity),
+      ]);
+      return commitId;
+    },
+    listCommits(limit: number): readonly LocalCommitRow[] {
+      return driver.prepare(
+        `SELECT commit_id, message, summary, review_status, author_id, author_kind, author_label, agent_name, created_at, current_sha256
+           FROM commits WHERE project_id = ? ORDER BY created_at DESC, commit_id ASC LIMIT ?`,
+      ).all([projectId, clampLimit(limit)]).map((row) => ({
+        agentName: nullableText(row.agent_name),
+        authorId: nullableText(row.author_id),
+        authorKind: nullableText(row.author_kind),
+        authorLabel: nullableText(row.author_label),
+        commitId: String(row.commit_id),
+        createdAt: nullableText(row.created_at),
+        currentSha256: nullableText(row.current_sha256),
+        message: String(row.message ?? ""),
+        reviewStatus: nullableText(row.review_status),
+        summary: nullableText(row.summary),
+      }));
+    },
+    recordActivity(input: LocalActivityInput): void {
+      driver.prepare(
+        `INSERT INTO ai_activity_logs (log_id, project_id, run_id, channel, instruction, map_id, payload_json, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+         ON CONFLICT(log_id) DO UPDATE SET run_id = excluded.run_id, channel = excluded.channel,
+           instruction = excluded.instruction, map_id = excluded.map_id, payload_json = excluded.payload_json`,
+      ).run([
+        input.logId,
+        projectId,
+        input.runId ?? null,
+        input.channel,
+        input.instruction,
+        input.mapId ?? null,
+        jsonOrNull(input.payload),
+        clock(),
+      ]);
+    },
+    listActivity(limit: number, options: LocalActivityListOptions = {}): readonly LocalStoreRow[] {
+      const rows = driver.prepare(
+        `SELECT log_id, run_id, channel, instruction, map_id, payload_json, created_at FROM ai_activity_logs
+         WHERE project_id = ? ORDER BY created_at DESC, log_id ASC LIMIT ?`,
+      ).all([projectId, clampLimit(limit)]);
+      return rows
+        .filter((row) => (options.runId === undefined ? true : row.run_id === options.runId))
+        .map((row) => ({
+          log_id: String(row.log_id),
+          run_id: nullableText(row.run_id),
+          channel: String(row.channel),
+          instruction: String(row.instruction),
+          map_id: nullableText(row.map_id),
+          payload_json: parseOrNull(row.payload_json),
+          created_at: nullableText(row.created_at),
+          source: "ai_activity_logs",
+        }));
+    },
+    recordConversation(input: LocalConversationInput): void {
+      const scopeProjectId = input.destinationProjectId
+        ?? (input.projectContextKey?.startsWith("remote:") ? input.projectContextKey.slice(7) : projectId);
+      driver.prepare(
+        `INSERT INTO ai_conversations (conversation_id, project_id, title, model, project_context_key, entries_json, saved_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?)
+         ON CONFLICT(conversation_id) DO UPDATE SET title = excluded.title, model = excluded.model,
+           project_context_key = excluded.project_context_key, entries_json = excluded.entries_json, saved_at = excluded.saved_at`,
+      ).run([
+        input.conversationId,
+        scopeProjectId,
+        input.title,
+        input.model,
+        input.projectContextKey ?? null,
+        jsonOrNull(input.entries),
+        new Date(input.savedAt).toISOString(),
+      ]);
+    },
+    listConversations(options: LocalConversationListOptions): readonly LocalStoreRow[] {
+      options.signal?.throwIfAborted?.();
+      const query = options.query?.trim().toLowerCase();
+      const rows = driver.prepare(
+        `SELECT conversation_id, project_id, title, model, project_context_key, entries_json, saved_at
+           FROM ai_conversations WHERE project_id = ?
+           ORDER BY saved_at DESC, conversation_id ASC`,
+      ).all([projectId]);
+      const filtered = rows
+        .filter((row) => (options.projectContextKey === undefined ? true : row.project_context_key === options.projectContextKey))
+        .filter((row) => (query ? String(row.title).toLowerCase().includes(query) : true));
+      const offset = Math.max(0, Math.floor(options.offset ?? 0));
+      const limit = clampLimit(options.limit ?? 50);
+      return filtered.slice(offset, offset + limit).map((row) => ({
+        conversation_id: String(row.conversation_id),
+        project_id: String(row.project_id),
+        title: String(row.title),
+        model: nullableText(row.model),
+        project_context_key: nullableText(row.project_context_key),
+        saved_at: nullableText(row.saved_at),
+        ...(options.includeEntries === true ? { entries_json: parseOrNull(row.entries_json) } : {}),
+      }));
+    },
+    loadConversation(conversationId: string): LocalStoreRow | null {
+      const row = driver.prepare(
+        "SELECT conversation_id, project_id, title, model, project_context_key, entries_json, saved_at FROM ai_conversations WHERE conversation_id = ?",
+      ).get([conversationId]);
+      if (!row) return null;
+      return {
+        conversation_id: String(row.conversation_id),
+        project_id: String(row.project_id),
+        title: String(row.title),
+        model: nullableText(row.model),
+        project_context_key: nullableText(row.project_context_key),
+        entries_json: parseOrNull(row.entries_json),
+        saved_at: nullableText(row.saved_at),
+      };
+    },
+    recordAnalysisRun(input: LocalAnalysisRunInput): void {
+      driver.prepare(
+        `INSERT INTO ai_analysis_runs (run_id, project_id, tileset_id, selected_tile_ids_json, prompt_context_json, result_json, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      ).run([
+        randomUUID(),
+        projectId,
+        input.tilesetId,
+        jsonOrNull(input.selectedTiles),
+        jsonOrNull(input.promptContext),
+        jsonOrNull(input.result),
+        clock(),
+      ]);
     },
     dataVersion(): number {
       return readDataVersion(driver);
