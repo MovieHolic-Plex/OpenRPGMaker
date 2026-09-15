@@ -1,3 +1,4 @@
+import { copyReviewedPlace } from "@/project/defaults/spatial/reviewedPlaceCatalog";
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import type { SpatialDomainChrome } from "@/editor/panels/spatialTilesTab";
 import {
@@ -113,7 +114,7 @@ export function spatialPlacesChrome(card: SpatialGalleryCard | undefined, rerend
     previewError: placeChromeState.previewError,
     deleteOpen: placeChromeState.deleteOpen,
     add: controller ? () => addBlankPlace(rerender) : undefined,
-    duplicate: controller && target && !builtinLocked ? () => clonePlace(target, rerender) : undefined,
+    duplicate: controller && card?.reviewedPlaceId ? () => copyBuiltinPlace(card.reviewedPlaceId!, rerender) : controller && target && !builtinLocked ? () => clonePlace(target, rerender) : undefined,
     delete: controller && target && !builtinLocked ? () => { placeChromeState.deleteOpen = true; rerender(); } : undefined,
     onDeleteConfirm: controller && target && placeChromeState.deleteOpen ? () => confirmDelete(target, rerender) : undefined,
     preview: controller && hasAuthoringDraft() ? () => previewPlace(rerender) : undefined,
@@ -247,3 +248,19 @@ export function placeDeletePreview(card: SpatialGalleryCard | undefined): Return
 }
 
 export { clearAuthoringSession };
+
+function copyBuiltinPlace(id: string, rerender: () => void): void {
+  let copiedId: SpatialId | undefined;
+  const namespace = freshPlaceId(workingProject());
+  const result = editAuthoringDraft(project => {
+    const copied = copyReviewedPlace(project, id, namespace);
+    copiedId = copied.id;
+    return copied.project;
+  });
+  if (result.kind === "ok" && copiedId) {
+    placeChromeState.createdDesignId = copiedId;
+    selectSpatialDesign(libraryPlaceCardId(copiedId));
+  }
+  note(spatialAuthoringErrorText(result), result.kind === "ok" ? "초안 · 미리보기 후 적용" : placeChromeState.saveState);
+  rerender();
+}

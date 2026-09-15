@@ -48,7 +48,7 @@ export function placeDraftTarget(card: SpatialGalleryCard): PlaceDraftTarget {
       occurrenceId: spatialId(card.id),
     };
   }
-  const libraryId = card.localId ? spatialId(card.localId) : undefined;
+  const libraryId = !card.reviewedPlaceId && card.localId ? spatialId(card.localId) : undefined;
   return {
     cardId: card.id,
     localId: card.localId ?? card.id,

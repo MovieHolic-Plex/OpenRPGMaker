@@ -1,3 +1,4 @@
+import { reviewedPlaceMaps } from "@/project/defaults/spatial/reviewedPlaceCatalog";
 import { TILE_SIZE } from "@/assets/bundled";
 import { cellsFromMapRect, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import { conceptHouseFloorPlan } from "@/editor/interiorConceptPlan";
@@ -147,6 +148,7 @@ function facilityMaps(project: Project, card: SpatialGalleryCard): readonly Plac
  * 편집용 previewPlaceRasters 와 달리 프로젝트를 바꾸지 않고, 실패를 error 문자열로 돌려준다.
  */
 export function placeCatalogRasters(project: Project, card: SpatialGalleryCard, scale: number): PlaceRasterPreview {
+  if (card.reviewedPlaceId) return reviewedRasters(card.reviewedPlaceId, scale);
   try {
     const maps = facilityMaps(project, card);
     const stamps = maps.map(({ map, x, y }) => {
@@ -172,6 +174,7 @@ export function placeCatalogRasters(project: Project, card: SpatialGalleryCard, 
 }
 
 export function renderPlaceCardThumb(card: SpatialGalleryCard): HTMLElement {
+  if (card.reviewedPlaceId) return el("div", { class: "spatial-card-map", children: reviewedRasters(card.reviewedPlaceId, 0.35).stamps.map(s => s.canvas) });
   const project = visibleAuthoringProject();
   try {
     const target = placeDraftTarget(card);
@@ -198,4 +201,24 @@ export function childSourceLabel(project: Project, kind: "space" | "place", id: 
     case "space": return library?.spaces[id]?.name ?? "장소";
     default: return assertNever(kind);
   }
+}
+
+function reviewedRasters(id: string, scale: number): PlaceRasterPreview {
+  let offset = 0;
+  const maps = reviewedPlaceMaps(id);
+  const stamps = maps.map(({ map }) => {
+    const canvas = document.createElement("canvas");
+    const drawScale = Math.min(scale, 1024 / (Math.max(map.width, map.height) * 16));
+    canvas.width = Math.ceil(map.width * 16 * drawScale);
+    canvas.height = Math.ceil(map.height * 16 * drawScale);
+    canvas.style.width = `${map.width * 16 * scale}px`;
+    canvas.style.height = `${map.height * 16 * scale}px`;
+    canvas.style.left = `${offset * 16 * scale}px`;
+    canvas.className = "spatial-place-raster";
+    const img = new Image();
+    img.onload = () => { const ctx = canvas.getContext("2d"); if(ctx) { ctx.imageSmoothingEnabled = false; ctx.drawImage(img,0,0,canvas.width,canvas.height); canvas.dataset.loaded="true"; } };
+    img.src = `/assets/reviewed-places/${map.id}.png`;
+    const stamp = { x: offset, y: 0, canvas }; offset += map.width + 2; return stamp;
+  });
+  return { stamps, width: offset, height: Math.max(...maps.map(m=>m.map.height)), error: null };
 }

@@ -208,3 +208,17 @@ Run each runtime example in a fresh player session with
 The first combined QA teleported during the preceding house exit and carried
 transition/route state into the next case. Independent sessions preserve actual
 walking assertions; they pass 12 and 15 beats, with no runtime errors.
+
+## Reviewed default places (2026-09-15)
+
+`defaults/spatial/reviewedPlaceCatalog.ts` ships 25 reviewed dungeon, mountain and
+interior designs independently of the selected Supabase project. The catalog's
+27 records include the two child floors of one inn. Default cards do not resolve
+coincident user-library IDs. Native PNG previews require no remote project fetch.
+The existing duplicate action copies the selected transitive place closure and
+its tileset/asset dependencies under fresh IDs into the shared authoring draft;
+preview/apply and subsequent Build remain the normal controller path. Browse is
+read-only, existing project maps and definitions are never implicitly replaced.
+The catalog was exported from the saved/reloaded reviewed project, not from a
+procedural approximation. Stair ports/connections are retained. Tests cover
+raster completeness, copy isolation, serialization and dungeon/house/inn builds.
