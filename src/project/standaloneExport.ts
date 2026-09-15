@@ -13,10 +13,30 @@ import {
 import { prepareWebExport } from "@/project/webExport";
 import { buildStandaloneRelease } from "./standaloneRelease";
 import { exportAssetSourceUrl, invalidExportDependencyBytes } from "@/project/webExportAssets";
-import type { Project } from "@/project/types";
+import { uploadedAssetBytes } from "@/project/persistence/assetAccessors";
+import { encodeDataUrlBytes } from "@/project/persistence/core/dataUrl";
+import type { Project, UploadedAsset } from "@/project/types";
 
 /** 스탠드얼론 번들이 놓이는 곳. vite.standalone.config.ts 의 outDir 과 짝이다. */
 export const STANDALONE_BUNDLE_BASE = "/standalone-player/";
+
+/** 단일 문서는 미디어를 스스로 들어야 한다 — ref 자산을 빌드 시점에 data URL 로 되돌린다. */
+async function projectWithInlineUploadedMedia(project: Project): Promise<Project> {
+  const uploaded = project.assets.uploaded;
+  if (!Object.values(uploaded).some((asset) => asset.ref !== undefined)) return project;
+  const nextUploaded: Record<string, UploadedAsset> = {};
+  for (const [id, asset] of Object.entries(uploaded)) {
+    if (!asset.ref) {
+      nextUploaded[id] = asset;
+      continue;
+    }
+    const bytes = await uploadedAssetBytes(asset);
+    const inlined: UploadedAsset = { ...asset, dataUrl: encodeDataUrlBytes(bytes, asset.ref.mime) };
+    delete inlined.ref;
+    nextUploaded[id] = inlined;
+  }
+  return { ...project, assets: { ...project.assets, uploaded: nextUploaded } };
+}
 
 export type StandaloneFetchBytes = (path: string) => Promise<Uint8Array>;
 
@@ -58,8 +78,9 @@ export async function createStandaloneHtmlExport(
   options: StandaloneExportOptions = {},
 ): Promise<StandaloneExportResult> {
   const source = options.fetchBytes ?? defaultFetchBytes;
-  if (project.meta.publication) {
-    const prepared = prepareWebExport(project);
+  const exportProject = await projectWithInlineUploadedMedia(project);
+  if (exportProject.meta.publication) {
+    const prepared = prepareWebExport(exportProject);
     const html = await buildStandaloneRelease(prepared, source);
     return { blob: new Blob([html], { type: "text/html;charset=utf-8" }), fileName: standaloneHtmlFileName(project.meta.title),
       summary: { assetCount: prepared.assets.length, missingAssets: [], htmlBytes: new TextEncoder().encode(html).length } };
@@ -77,7 +98,7 @@ export async function createStandaloneHtmlExport(
     return bytes;
   };
   const bundleBase = options.bundleBase ?? STANDALONE_BUNDLE_BASE;
-  const prepared = prepareWebExport(project);
+  const prepared = prepareWebExport(exportProject);
 
   const inlineAssets: Record<string, string> = {};
   for (const asset of prepared.assets) {
