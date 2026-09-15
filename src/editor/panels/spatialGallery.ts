@@ -22,6 +22,7 @@ import {
 } from "@/editor/panels/spatialGeographyDraft";
 import { renderGeographyThumb } from "@/editor/panels/spatialGeographyRaster";
 import { deferredSpatialCardThumb } from "@/editor/panels/spatialCardThumbs";
+import { designUsage, usageSummary } from "@/editor/panels/spatialUsage";
 import { spatialId } from "@/project/spatial/domain";
 import { resolveSpatialGraphic } from "@/project/spatial/assets";
 import { BUILTIN_INTERIOR_ROOM_KINDS } from "@/project/defaults/interiorRoomKinds";
@@ -261,6 +262,15 @@ export function renderSpatialGalleryCard(
     }));
   }
   const subtitle = cardSubtitle(card);
+  // 설계 카드는 쓰임을 말한다 — 안 쓰이는 설계가 눈에 보여야 지우든 쓰든 결정이 된다.
+  // canonical 설계만 센다: 기본 카탈로그 카드의 localId 는 라이브러리 설계 id 와
+  // 거리낌없이 겹친다(둘 다 "inn"). 그대로 두면 기본 카드가 내 설계의 배치를 빌려 표시한다.
+  const usage = card.canonicalSource ? designUsage(visibleAuthoringProject(), card.canonicalSource.id) : null;
+  const usageLine = usage === null ? null : el("span", {
+    class: `spatial-card-usage${usage.rows.length === 0 ? " is-idle" : ""}`,
+    text: usageSummary(usage),
+    dataset: { testid: `spatial-card-usage-${card.id}` },
+  });
   return el("button", {
     class: `spatial-card${selected ? " is-selected" : ""}`,
     attrs: { type: "button", title: card.name },
@@ -271,6 +281,7 @@ export function renderSpatialGalleryCard(
       el("div", { class: "spatial-card-caption", children: [
         el("span", { class: "spatial-card-name", text: card.name }),
         ...(subtitle ? [el("span", { class: "spatial-card-sub", text: subtitle })] : []),
+        ...(usageLine ? [usageLine] : []),
         el("span", { class: "spatial-card-badges", children: badges }),
       ] }),
     ],

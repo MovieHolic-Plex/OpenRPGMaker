@@ -24,7 +24,7 @@ export function createCanonicalHouseInterior(input: Input, style: { readonly sca
   if (!source) throw new ToolError("Canonical facility unavailable", { code: "concept-not-found" });
   const rootId = spatialId(input.id);
   const preview = previewSpatialAuthoring(project, {
-    operation: { kind: "instantiate", request: { source, rootId, x: 0, y: 0, level: 0, seed: input.seed, generatorVersion: "spatial-legacy-house-v1" } },
+    operation: { kind: "instantiate", request: { source, rootId, x: 0, y: 0, level: 0, seed: input.seed, generatorVersion: "spatial-legacy-house-v1", origin: "ai" } },
     compile: { occurrenceId: rootId },
   }, { original: project, checkpoint: project });
   const compiled = structuredClone(preview.project);

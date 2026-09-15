@@ -15,6 +15,7 @@ export function refreshSpatialAuthoring(project: Project, request: SpatialDeleti
   const fresh = instantiateSpatialDesign(removed, project, {
     source: original.source, rootId: original.id, x: original.x, y: original.y, level: original.level,
     seed: original.seed, generatorVersion: original.generatorVersion,
+    ...(original.origin === undefined ? {} : { origin: original.origin }),
   });
   // Reserve persisted identities before traversing: a missing parent's allocated ID must
   // never look like a retained parent, including one visited later in the transitive tree.

@@ -99,6 +99,16 @@ export function nodeConnections(node: DesignNode): readonly S.SpatialLocalConnec
 }
 /** Fresh-ID constructors, not read APIs for persisted opaque identities.
  * Length-prefixed tuples avoid collisions without exponential nested escaping. */
+/**
+ * Who placed this occurrence. The explicit field wins; historical data (before the field
+ * existed) is read from the generator tag the AI build paths have always stamped.
+ */
+export function occurrenceOrigin(occurrence: Pick<S.SpatialOccurrence, "generatorVersion" | "origin">): S.SpatialProvenance["origin"] {
+  if (occurrence.origin !== undefined) return occurrence.origin;
+  const tag = occurrence.generatorVersion;
+  if (tag.startsWith("spatial-ai") || tag.startsWith("spatial-legacy-house")) return "ai";
+  return "user";
+}
 export function occurrenceChildId(parent: S.SpatialId, slot: S.SpatialId, index: number): S.SpatialId {
   return spatialId(`child:${parent.length}:${parent}${slot.length}:${slot}:${index}`);
 }

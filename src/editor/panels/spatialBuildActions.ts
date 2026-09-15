@@ -59,7 +59,7 @@ export function previewSpatialSourceBuild(value: SpatialSourceBuildInput): Spati
     ? { kind: "edit" }
     : { kind: "instantiate", request: {
     source: input.source, rootId: input.rootId, seed: input.seed, x: 0, y: 0, level: 0,
-    generatorVersion: MANUAL_SPATIAL_BUILD_VERSION,
+    generatorVersion: MANUAL_SPATIAL_BUILD_VERSION, origin: "user",
   } };
   const draft = editAuthoringDraft(project => project, { operation, compile });
   switch (draft.kind) {

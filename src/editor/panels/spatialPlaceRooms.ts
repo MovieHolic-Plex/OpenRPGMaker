@@ -58,7 +58,7 @@ export function addNewPlaceRoom(target: PlaceDraftTarget, options: NewPlaceOptio
     if (!newSlot) throw new Error("새 방을 찾을 수 없습니다.");
     rootId = freshSpatialId(preparedProject, "room-occurrence");
     return previewPlacedPlaceEdit(controller, draft, { edit: { kind: "add", parentId: target.occurrenceId!, rootId,
-      slot: newSlot, seed: 7, generatorVersion: "place-room-editor-v1" },
+      slot: newSlot, seed: 7, generatorVersion: "place-room-editor-v1", origin: "user" },
       compile: spatialAuthoringCompileScope(preparedProject.spatialAuthoring!, target.occurrenceId!) });
   }) : editAuthoringDraft(mutate);
   const issue = spatialAuthoringErrorText(result);

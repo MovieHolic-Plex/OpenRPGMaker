@@ -17,9 +17,10 @@ const graphic: Parser<S.SpatialGraphic> = (v, p) => {
   const r = record(v, p, "tilesetId kitId");
   return { tilesetId: id(r.tilesetId, `${p}.tilesetId`), kitId: id(r.kitId, `${p}.kitId`) };
 };
+const origin = choice(["user", "builtin", "legacy", "ai"] as const);
 const provenance: Parser<S.SpatialProvenance> = (v, p) => {
   const r = record(v, p, "origin sourceId");
-  return { origin: choice(["user", "builtin", "legacy", "ai"] as const)(r.origin, `${p}.origin`), ...(r.sourceId === undefined ? {} : { sourceId: text(r.sourceId, `${p}.sourceId`) }) };
+  return { origin: origin(r.origin, `${p}.origin`), ...(r.sourceId === undefined ? {} : { sourceId: text(r.sourceId, `${p}.sourceId`) }) };
 };
 const base: Parser<S.SpatialDesignBase> = (v, p) => {
   const r = record(v, p);
@@ -192,8 +193,9 @@ const binding: Parser<S.SpatialCompiledBinding> = (v, p) => {
   }
 };
 const occurrence: Parser<S.SpatialOccurrence> = (v, p) => {
-  const r = record(v, p, "id kind parentId parentSlot source x y level seed snapshot generatorVersion bindings");
-  const common = { ...point(r, p), id: id(r.id, `${p}.id`), level: coordinate(r.level, `${p}.level`), seed: coordinate(r.seed, `${p}.seed`), generatorVersion: id(r.generatorVersion, `${p}.generatorVersion`), bindings: list(r.bindings, `${p}.bindings`, binding) };
+  const r = record(v, p, "id kind parentId parentSlot source x y level seed snapshot generatorVersion bindings origin");
+  const common = { ...point(r, p), id: id(r.id, `${p}.id`), level: coordinate(r.level, `${p}.level`), seed: coordinate(r.seed, `${p}.seed`), generatorVersion: id(r.generatorVersion, `${p}.generatorVersion`), bindings: list(r.bindings, `${p}.bindings`, binding),
+    ...(r.origin === undefined ? {} : { origin: origin(r.origin, `${p}.origin`) }) };
   const parentId = nullableId(r.parentId, `${p}.parentId`);
   const occurrenceKind = kind(r.kind, `${p}.kind`);
   const typed = <K extends S.SpatialKind>(k: K) => {

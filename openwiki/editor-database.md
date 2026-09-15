@@ -55,8 +55,70 @@ h3·이름 입력까지 세 번 보였다. 「속성」 하나로 합치고(인�
 타일셋·크기·선택 컨트롤 → 건물로 묶기), 중복 이름 h3 는 복합 편집기 안에서만 CSS 로 숨겼다
 (`.spatial-mixed-workspace .asset-browser-detail .spatial-inspector-name`).
 
-아직 안 한 것(후속): 층·방 트리. 「복합 공간 편집기」 절의 단일 캔버스 평탄화 금지 규약과
-충돌하므로 층별 편집 라우팅을 먼저 정해야 한다.
+### 3차 (같은 날) — 이 탭이 뭔지 말하게 한다: 목적·쓰임·배치 감사
+
+사용자 지적: 「장소에서 뭔 할 수 있는지 안 와닿B」. 1·2차는 버튼 위치를 고쳤고 존재 이유는
+손대지 않았다. 이 탭은 **사용자와 AI 가 공유하는 어휘집**이다 — `src/ai/spatialContext.ts` 가
+AI 에게 `list_spatial_designs kind:place` 로 완성된 집을 찾으라고 지시하고, `spatialTools.ts` 에
+list/get/upsert/preview_build/apply_build/edit_occurrence 6개 툴이 이 라이브러리를 겨눈다.
+
+**중요 — AI 위임 버튼은 넣지 않는다.** 감독자 판단: AI 에게 장소 배치를 맡기면 결과가 나쁘다.
+단, 버튼을 빼도 `place_concept`·`author_village` 는 이 탭 UI 와 무관하게 돌아간다 —
+제거는 품질 조치가 아니라 **위임을 권하지 않는다는 자세**다. 그래서 origin 배지가
+"출처 표시"가 아니라 **감사 추적**이 된다: AI 가 어디에 뭐를 놓았는지 찾아 고치는 수단.
+
+**(a) occurrence origin.** `SpatialOccurrence.origin?: "user"|"builtin"|"legacy"|"ai"` 추가
+(`types.ts`, guards 허용목록에 `origin` 추가, `SpatialInstantiation` 으로 전달).
+AI 경로(`spatialTools` apply_build, `spatialConceptTools`, `legacyHouseInterior`)는 `"ai"`,
+편집기 경로(`spatialBuildActions`, `spatialPlacePlaced`, `spatialPlaceRooms`, `placedSpaceMembers`)는
+`"user"` 를 찍는다. `authoringRefresh` 는 원본 값을 이어받는다.
+**기존 데이터는 필드가 없다** — `occurrenceOrigin()` 이 generatorVersion 태그로 읽는다
+(`spatial-ai*`·`spatial-legacy-house*` → ai, 그 밖 → user). 명시 필드가 항상 이긴다.
+
+**(b) 쓰임.** `spatialUsage.ts` 가 occurrences 를 설계별로 집계한다(루트뿐 아니라 다른 장소 안에
+방으로 들어간 자식 배치도 센다). 카드에 「맵 N곳 · AI n · 직접 m」 또는 「아직 안 쓰임」,
+갤러리에 쓰임 필터(전체/배치됨/안 쓰임/AI가 놓음), 선택 카드에 배치 팝오버(출처 배지 · 맵·좌표 ·
+「맵으로 →」). 점프는 `focusEditorRegion` + `requestDatabaseModalClose("x")` 를 쓴다
+(databaseModal 은 **지연 import** — 정적이면 모달→DB탭→갤러리→이 모듈 순환이 생긴다).
+
+> **함정 (실측으로 잡았다):** 쓰임을 `canonicalSource?.id ?? localId` 로 찾으면 **틀린다**.
+> 기본 카탈로그 카드의 localId 와 라이브러리 설계 id 가 둘 다 `inn` 이라, 기본 「여관」 카드가
+> 내 설계의 배치를 빌려 「맵 1곳 · AI 1」 로 표시됐다. **canonical 카드만 쓰임을 갖는다.**
+
+**(c) 목적과 액션.** 셀 폭 전체에 목적 스트립(「여기서 만든 장소가 정본입니다. AI는 여기서 골라
+쓸 뿐입니다.」 + 3단계). **갤러리 칼럼(~400px) 안에 넣지 마라** — 세 줄로 접혀 안 읽힌다.
+선택 카드에 「맵에 놓기」(기존 `chrome.build` → new-maps 미리보기)·「편집」·「배치 N」.
+카드가 `<button>` 이라 안에 버튼을 넣을 수 없어 `.spatial-card-cell` 로 감싼다.
+장소 갤러리는 **첫 클릭이 선택, 같은 카드 재클릭이 편집기 진입**이다(액션 줄을 볼 틈을 준다).
+
+> **함정 (또 실측):** 셸은 **정확히 두 행**짜리 그리드다(`chrome` / 본문). 목적 스트립을
+> `.spatial-shell` 의 **세 번째 자식**으로 넣으면 본문이 암시 행으로 밀려 `overflow` 에 잘렸다 —
+> DOM 에는 있는데 화면에 없어서, 프로브가 `spatial-purpose` 를 기다리는 동안 스크린샷은 깨끗했다.
+> 스트립과 본문을 `.spatial-shell-main`(그리드 행 auto·minmax(0,1fr)) 한 겹으로 묶어 둘째 행에 넣는다.
+
+> **함정 (팝오버가 화면 밖에 낳았다):** 셸은 리프레시마다 통째로 다시 만들어진다 — 카드 버튼 하나를
+> 눌러도 `.spatial-gallery-grid` 의 `scrollTop` 이 0 으로 돌아가고, 카드 아래에 붙는 팝오버는
+> 뷰포트 밖에 낙았다(실측: 그리드 2153 → 0, 팝오버 y=2724 · 뷰포트 280~824). 사용자에겐
+> 「배치 N 을 누르면 목록 맨 위로 튕기고 아무것도 안 뜨는」 증상이다. `usageChromeState.galleryScrollTop`
+> 으로 스크롤을 이어받고, 열린 팝오버가 있으면 `scrollIntoView({block:"nearest"})` 로 맞춘다
+> (실측: 2153 유지, 팝오버 y=571 · 가시). 필터 칩은 다른 결과집합이라 **의도적으로 0 으로 되돌린다**.
+
+> **CSS 예산:** 새 규칙에 `var(--db-studio-*, #HEX)` 폴백을 쓰면 `hexLiterals` 래칫이 막는다
+> (spatial-shell.css 31 → 43). 토큰은 `.database-modal-backdrop`(studio-theme.css)에 정의돼 있으므로
+> 새 규칙은 폴백 없이 `var(--db-studio-*)` 만 쓴다.
+
+> **기존 결함 (이 PR 밖, 재현 확인됨):** 장소 갤러리에서 시공→적용을 하면
+> `referenced: child:40:occ_…:sign:0` 이 잡히지 않고 셀이 날아간다. **1·2차 이전 코드에서도
+> 똑같이 재현된다** (96e8473ee 에서 별도 워크트리로 확인: 같은 예외, `galleryPresent:false`).
+> 이번 변경의 회귀가 아니다. 다만 「맵에 놓기」가 카드 주 액션이 되면서 **더 쉽게 밟힌다** —
+> 다음 순위로 고쳐야 한다. `ownership.ts:40` (strong 참조) 와 시공 compile scope 를 볼 것.
+
+검증: `typecheck:app` 0, `gates --only css` 회귀 0(budget·graph 통과), `test/spatialOccurrenceOrigin.test.ts`
+(신규 3건) 포함 관련 10파일 **97건** 통과. 증거: `output/evidence/places-ux-audit/phase3/`
+(01 목적·쓰임, 02 AI 필터, 03 배치 팝오버). 프로브: `scripts/tmp-phase3-probe.mjs`(gitignore).
+
+아직 안 한 것(후속): 위 시공→적용 결함, 층·방 트리. 층·방 트리는 「복합 공간 편집기」 절의
+단일 캔버스 평탄화 금지 규약과 충돌하므로 층별 편집 라우팅을 먼저 정해야 한다.
 
 ## 장소 통합 진행: 방·층과 재료 (2026-09-14)
 

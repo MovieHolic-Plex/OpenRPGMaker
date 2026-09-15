@@ -55,7 +55,7 @@ export function addPlacedSpaceMember(project: Project, occurrenceId: SpatialId,
   const id = spatialId(genId("placed-object"));
   const root = { ...source, revision: design.revision };
   const child: SpatialAssociatedOccurrence = { id, kind: "object", parentId: occurrenceId, parentSlot: { slotId: slot.id, index },
-    source: root, ...position, level: 0, seed: occurrence.seed, generatorVersion: occurrence.generatorVersion, bindings: [],
+    source: root, ...position, level: 0, seed: occurrence.seed, generatorVersion: occurrence.generatorVersion, bindings: [], origin: "user",
     snapshot: { ...snapshot, root, library: { ...snapshot.library,
       objects: { [design.id]: { ...design, chips: slot.chipOverrides ?? design.chips } } },
       ports: design.anchors.map(port => ({ ...port, localPortId: port.id, id: occurrencePortId(id, port.id) })) } };
