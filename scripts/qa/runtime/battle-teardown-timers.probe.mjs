@@ -43,10 +43,22 @@ try {
     window.__timerLog = [];
     const original = window.setTimeout;
     window.setTimeout = function (fn, ms, ...rest) {
-      const record = { ms: typeof ms === "number" ? ms : -1, scheduledAt: performance.now(), firedAt: null };
+      const record = { id: null, ms: typeof ms === "number" ? ms : -1, scheduledAt: performance.now(), firedAt: null, clearedAt: null, stack: String(new Error().stack || "").split("\n").slice(2, 5).join(" | ") };
       window.__timerLog.push(record);
-      const wrapped = function (...args) { record.firedAt = performance.now(); return fn.apply(this, args); };
-      return original.call(window, wrapped, ms, ...rest);
+      const wrapped = function (...args) {
+        record.firedAt = performance.now();
+        // 이미 clear 된 타이머가 발화하는 경우는 없다 — 기록만 남긴다.
+        if (record.clearedAt === null) return fn.apply(this, args);
+        return undefined;
+      };
+      record.id = original.call(window, wrapped, ms, ...rest);
+      return record.id;
+    };
+    const originalClear = window.clearTimeout;
+    window.clearTimeout = function (id, ...rest) {
+      const record = window.__timerLog.find((r) => r.id === id);
+      if (record) record.clearedAt = performance.now();
+      return originalClear.call(window, id, ...rest);
     };
     window.__audioAfterDestroy = [];
     const audioObserver = new MutationObserver((records) => {
@@ -113,8 +125,10 @@ try {
       totalTimers: log.length,
       battleTimers: battleWindow.length,
       faintScheduled: battleWindow.some((r) => r.ms === 260),
-      firedAfterDestroy: battleWindow.filter((r) => r.firedAt !== null && goneAt !== null && r.firedAt > goneAt).map((r) => ({ ms: r.ms, lateBy: Math.round(r.firedAt - goneAt) })),
-      stillPendingAfterDestroy: battleWindow.filter((r) => r.firedAt === null).map((r) => r.ms),
+      firedAfterDestroy: battleWindow.filter((r) => r.firedAt !== null && r.clearedAt === null && goneAt !== null && r.firedAt > goneAt).map((r) => ({ ms: r.ms, lateBy: Math.round(r.firedAt - goneAt), stack: r.stack })),
+      clearedDuringBattle: battleWindow.filter((r) => r.clearedAt !== null).length,
+      // clear 되지도, 발화하지도 않은 타이머만 "진짜 잔류"다.
+      stillPendingAfterDestroy: battleWindow.filter((r) => r.firedAt === null && r.clearedAt === null).map((r) => ({ ms: r.ms, stack: r.stack })),
       // 파괴 뒤에 새로 만들어진 오디오 엘리먼트 = 씬이 사라진 뒤 울린 효과음.
       audioAfterDestroy: window.__audioAfterDestroy ?? [],
     };
