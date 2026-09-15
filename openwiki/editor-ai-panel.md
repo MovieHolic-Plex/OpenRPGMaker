@@ -2216,3 +2216,61 @@ e2e `ai-ui-audit-fixes` F10.
 
 이 상태에서 실제 모델 QA 는 돌지 않는다. `scripts/qa/db-ai-review-live.mjs` 는 그 사실을
 `process.exitCode = 1` 과 상태줄로 정직하게 보고한다(이번에 고침).
+## 에이전트 레인 — 묶음별 병렬 실행과 레인별 적용 (2026-09-15)
+
+설계: `docs/superpowers/specs/2026-09-15-studio-agent-lanes-design.md` · 목업·QA 캡처: `output/evidence/studio-agent-lanes/`
+
+- **단위**: 레인 = 에이전트 × 맵 묶음 × 지시 × 모델. 묶음은 `mapBundleIds`(맵 + 실내 + mapTree 부분 트리).
+  상태 전이·묶음 충돌 판정은 순수 모듈 `src/ai/piAgent/lane.ts`, 실행·적용 배선은 `src/editor/panels/aiLaneManager.ts`.
+- **적용이 레인별인 이유**: 기존 게이트는 **프로젝트 전체 내용 등가**를 요구한다
+  (`applyChangesetToStore.ts` `isProposalBaseCurrent` → `proposalContent(current) === base.content`). 그래서 실행 하나를 적용하면
+  다른 실행이 `stale-base` 로 죽었다. 레인은 `laneBundleChangedKeys(lane.base, current, mapIds)` 로 **자기 묶음만** 비교하고,
+  통과하면 `mergeMapBundles(current, …)` 로 지금 프로젝트 위에 얹은 뒤 `captureProposalBase(current)` +
+  `new AuthoredProjectBaseline(current)` 로 게이트를 다시 통과시킨다. 묶음 밖 변경은 사람·다른 레인의 것이라 건드리지 않는다.
+  계약은 `test/piAgentLanes.test.ts` 가 고정한다 — 레인 A 적용 뒤에도 레인 B 가 적용된다.
+- **동시성**: 같은 묶음에 둘을 동시에 붙일 수 없다(`lanesOverlap` + 매니저의 in-flight 거절).
+  팀 런타임의 맵 in-flight 락(`teamAssignments.ts`)과 같은 규칙이다.
+- **화면**: 스튜디오 덱의 첫 탭이 「레인」이다(`ai-studio-tab-lanes`). 표(상태·묶음·에이전트·제공자·모델·턴/툴/경과·적용·버리기),
+  아래에 새 레인 폼(묶음 칩·에이전트·제공자·모델·턴·지시). 화면 배치는 2026-09-16 에 3분할로 바뀌었다 — 아래 「스튜디오 3분할」 절 참조(인스펙터는 오른쪽 열의 레인 스레드로 갔다).
+  장면 레일의 각 맵 행에는 그 맵을 소유한 레인 칩이 붙는다(`ai-studio-lane-chip`).
+  렌더는 `src/editor/panels/aiLaneBoard.ts`, 스타일은 `src/styles/database/tabs-b-assistant-panel/23-agent-lanes.css`(토큰만, `!important` 0).
+  도구 카탈로그는 「도구」 탭과 「모든 도구」 모달에 그대로 남는다.
+- **후속 지시**: Pi 실행은 무상태다(`PiAgentRequest` 에 세션 id 없음). 레인의 후속 지시는 앞선 지시·assistant 보고를
+  문자열로 다시 실어 **새 실행**으로 보낸다(`aiLaneManager.start(id, { instruction })`, 셸의 `followUpLane`).
+- **덱 높이·타이핑**: 레인 탭이 열리면 덱을 420px 로 한 번 키운다(팀 보드와 같은 규칙 — 사용자가 드래그해 둔 높이는 건드리지 않는다).
+  진행 이벤트마다 표를 다시 그리지만 입력 필드에 포커스가 있으면 건너뛰고, 「레인 추가」 활성 상태는 입력 핸들러가 직접 맞춘다(`syncStart`).
+- **아직 아닌 것**: 워커 세션(진짜 다중 턴) 없음,
+  제공자별 동시 상한·대기열 없음(P2), 도구 카탈로그의 「모든 도구」 모달 이관 미완.
+- **검증**: `npx vitest run test/piAgentLanes.test.ts test/aiStudioShell.test.ts`,
+  `node scripts/check-css-budget.mjs && node scripts/check-css-graph.mjs`,
+  캡처 `BASE=http://127.0.0.1:9841 node scripts/capture-studio-lanes.mjs`(Pi 실행은 `page.route` 로 스텁 — UI 흐름은 실제 표면을 지난다).
+
+## 스튜디오 3분할 — 가운데는 맵, 왼쪽은 실시간 조수·채팅, 오른쪽은 지금 보는 채팅 (2026-09-16)
+
+사용자 지시: "가운데에는 맵, 왼쪽에는 '채팅' 및 '조수들이 뭐하고있는지 실시간', 오른쪽에는 '지금 보고있는 채팅'".
+참조 이미지는 3열 창(좌 목록 · 중앙 내용 · 우 활성 대화)이었다. 구현: src/editor/panels/aiStudioShell.ts, 스타일은 같은 23-agent-lanes.css 의 「좌 레일」 절.
+
+| 열 | 무엇이 사는가 |
+|---|---|
+| 좌 레일 .ai-studio-left | ① 「조수」 절(ai-studio-agents) — 레인마다 한 행: 에이전트·상태 배지·묶음·턴/툴/경과·마지막 줄, 실행 중이면 중단, 검토 대기면 적용·버리기. 거절 사유도 여기 뜬다 ② 「채팅」 절(ai-studio-threads) — 감독 + 레인별 스레드, 고르면 오른쪽이 바뀐다 ③ 「장면」 절 — 기존 장면 목록(검색·추가·접기 그대로) |
+| 중앙 .ai-studio-monitor | 살아 있는 맵 캔버스 + 장면 머리띠·줌·「편집기로」 |
+| 오른쪽 .ai-studio-chat | 지금 보는 채팅. 감독이면 기존 로그·컴포저 그대로, 레인이면 그 레인 스레드(ai-lane-thread: 단계·결과·후속 지시). 전환은 클래스 is-lane-thread 로 로그·컴포저를 감추기만 한다(파괴하지 않는다) |
+| 아래 덱 | 기존 탭(레인·도구·작업·기획·변경·활동) 그대로 — 레인 표와 새 레인 폼이 여기에 산다 |
+
+- 레인은 화면보다 오래 산다: src/editor/panels/aiLaneSession.ts 모듈 싱글턴. 2026-09-16 실측 — 장면을 추가하면 renderEditor→renderAiChatPanel 로 스튜디오 셸이 새로 만들어지고, 셸이 자기 매니저를 만들면 돌던 레인·검토 결과가 사라졌다(실표면에서 「전체 2」→「전체 1」). 테스트는 resetLaneSessionForTest() 로 모듈 상태를 비운다.
+- 밟은 함정 두 가지: ① aiStudioShell.ts 는 루트 children 을 replaceChildren(...) 로 다시 박는다 — 좌 레일을 만들어도 여기서 되돌아간다. ② 빈 프로젝트는 맵트리 루트가 첫 맵이라 「새 장면」 이 그 맵의 자식으로 붙는다 — 레인이 출발한 뒤에 장면을 더하면 그 맵이 레인 묶음에 들어가 다음 적용이 «이 묶음이 도는 동안 바뀌었다» 로 거절된다(가드 자체는 옳다).
+- 검증: test/aiStudioShell.test.ts 의 「스튜디오 3분할 재배치」 2건(좌 레일 구성 · 스레드 전환), scripts/capture-studio-3col.mjs → output/evidence/studio-3col/qa/(4 뷰포트 × 7 상태, capture-report.json).
+
+## 하단 덱 → 오버레이 드로워 (2026-09-16)
+
+사용자 판단: "스튜디오 아래쪽에 도구모음을 다른 곳으로 빼는 게 나을 것 같은데" → 선택: 오버레이 드로워.
+
+- 덱은 이제 그리드 행이 아니다(`.ai-studio-shell.is-deck-overlay`). 맵(중앙 열)이 세로를 전부 쓴다.
+- 드로워는 `.ai-studio-deck.is-drawer` — 중앙 열 위에 절대 배치(좌·우 경계는 `--studio-scenes-w`/`--studio-chat-w` 로 계산),
+  높이 `min(58%, 520px)`, 기본은 닫힘(`is-collapsed` → translateY). 실측: 1600 에서 열림/닫힘 모두 모니터 스테이지가 870×781 로 같았다
+  — 오버레이라 맵 기하를 밀지 않는다(`output/evidence/studio-drawer/qa/capture-report.json`).
+- 탭: 새 레인 · 도구 · 작업 · 기획 · 변경 · 활동. 덱의 「레인」 표는 삭제했다 — 좌 레일의 실시간 조수 행이 같은 정보(상태·적용·버리기)를 이미 갖고 있었다.
+- 입구/출구: 모니터 하단 중앙의 「도구」 손잡이(`ai-studio-deck-handle`), 좌 레일 조수 헤더의 ＋(`ai-studio-new-lane`, 새 레인 탭으로 열림),
+  드로워 접기 버튼, Esc. 열려 있으면 손잡이는 숨는다. 작업·변경이 새로 떠도 배지만 세우고 드로워를 빼앗지 않는다(2026-09-16 변경). 레인을 만들면 드로워가 닫히고 그 스레드가 오른쪽에 선다.
+- 검증: `test/aiStudioShell.test.ts` 27(드로워 3 포함) · `test/aiStudioColumnCollapse.test.ts` 3 · `test/piAgentLanes.test.ts` 11 ·
+  `npm run typecheck:app` 0 · CSS 예산/그래프 0 회귀 · `scripts/capture-studio-drawer.mjs` → `output/evidence/studio-drawer/qa/`(1600·1024 × 6 상태).
