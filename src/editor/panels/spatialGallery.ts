@@ -21,6 +21,7 @@ import {
   type GeographyDesign,
 } from "@/editor/panels/spatialGeographyDraft";
 import { renderGeographyThumb } from "@/editor/panels/spatialGeographyRaster";
+import { deferredSpatialCardThumb } from "@/editor/panels/spatialCardThumbs";
 import { spatialId } from "@/project/spatial/domain";
 import { resolveSpatialGraphic } from "@/project/spatial/assets";
 import { BUILTIN_INTERIOR_ROOM_KINDS } from "@/project/defaults/interiorRoomKinds";
@@ -243,8 +244,8 @@ export function renderSpatialGalleryCard(
   selected: boolean,
   onSelect: (id: string) => void,
 ): HTMLElement {
-  const thumb = renderSpatialCardThumb(card);
-  thumb.classList.add("spatial-card-thumb-art");
+  // 썸네일은 맵 컴파일이다 — 마운트에서 카드 전부를 구우면 탭이 멈춘다(spatialCardThumbs 참고).
+  const thumb = deferredSpatialCardThumb(card, () => renderSpatialCardThumb(card));
   const badges: HTMLElement[] = [];
   if (card.source === "default") badges.push(el("span", { class: "spatial-card-badge", text: "기본" }));
   if (card.source === "own" && !card.compatibility) badges.push(el("span", { class: "spatial-card-badge", text: "내 것" }));
