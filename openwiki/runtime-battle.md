@@ -108,8 +108,8 @@
   그 경로는 채널만 멈추고 세션 기록만 필드곡으로 되돌린다(재시도·저장 해석이 같은 값을 본다).
   승리·도주·`canLose=true` 패배의 필드 복원은 그대로다. 계측:
   `scripts/qa/runtime/battle-title-bgm-handoff.probe.mjs` 의 `atGameOver`.
-- **대상 목록도 커서를 따라 스크한다.** `setMenuCursor` 와 `cycleTarget` 은 `syncView()` 뒤 곧바로
-  반환해서 메뉴의 "따라가기" 블록(`selected.scrollIntoView`)에 지 않았다 — 6체처럼 스크롤포트(4행)를
+- **대상 목록도 커서가 직이면 따라간다.** `setMenuCursor` 와 `cycleTarget` 은 `syncView()` 뒤 곧바로
+  반환해서 메뉴의 `selected.scrollIntoView` 블록이 실행되지 않았다 — 6체처럼 스크롤포트(4행)를
   넘는 목록에서 커서를 옮기면 선택 행이 포트 밖에 남아 플레이어가 자기가 고른 적을 볼 수 없었다
   (실측: enemy-5/6 선택 시 `scrollTop 0`, 행 bottom > 포트 bottom → 수정 후 24px/48px 로 따라옴).
   `followTargetCursor()` 가 다시 그려진 선택 행을 `scrollIntoView({ block: "nearest" })` 로 당긴다.
