@@ -1,9 +1,9 @@
 import { createElectronRepository, hasElectronBridge } from "./electronRepository";
-import { createMemoryRepository } from "./memoryRepository";
+import { createSupabaseRepository } from "./supabaseRepository";
 import type { ProjectRepository } from "./types";
 
 let override: ProjectRepository | null = null;
-let memory: ProjectRepository | null = null;
+let remote: ProjectRepository | null = null;
 let electron: ProjectRepository | null = null;
 
 /**
@@ -17,10 +17,8 @@ export function projectRepository(): ProjectRepository {
     electron ??= createElectronRepository();
     return electron;
   }
-  // P6: Supabase 어댑터 퇴역 — 원격이 필요하면 import-supabase 로 폴더로 옮긴 뒤 Electron 을 쓴다.
-  // 웹 빌드는 메모리 어댑터만 남아 QA 하네스가 된다(설계서 8절 P6 행).
-  memory ??= createMemoryRepository({ target: null });
-  return memory;
+  remote ??= createSupabaseRepository();
+  return remote;
 }
 
 /** 테스트 전용. null 이면 기본 어댑터로 돌아간다. */
