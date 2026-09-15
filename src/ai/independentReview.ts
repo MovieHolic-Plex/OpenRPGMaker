@@ -373,16 +373,75 @@ export function buildIndependentReviewRequest(config: AiConfig, input: ReviewInp
 function record(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
+
+/** One corrective round for a reviewer that answered in prose instead of the protocol. */
+export const REVIEW_JSON_ONLY_REMINDER = "That response was not the protocol. Do not explain, apologize or"
+  + " restate the evidence. Reply with exactly one JSON object and nothing else — no prose before or after it, no"
+  + " Markdown fence — using the keys revision, verdict, summary, findings, echoing the supplied revision."
+  + " Your judgement of the draft must not change because of this message; only its spelling.";
+
+/** The reviewer did not answer in JSON at all — the draft is still unjudged, and one corrective round is
+ * the whole remedy. Every other violation still stops the turn on the first response: a reviewer that
+ * tried to call a tool does not get the same envelope again, and a verdict echoing the wrong revision is a
+ * signal that it judged a different draft, not a spelling slip (`test/assistantIndependentReview.test.ts`). */
+export function isReviewProtocolViolation(cause: unknown): boolean {
+  return cause instanceof Error && cause.message === "independent-review-malformed-json";
+}
+
+/** Verdict objects embedded in prose — balanced top-level objects that already carry both protocol keys.
+ *
+ * A reviewer that judged correctly and then narrated its verdict used to cost the whole draft
+ * (`independent-review-malformed-json` was the most recent live user-facing failure in
+ * `.omo/evidence/ai-assistant-failure-modes.md`). Extraction stays deliberately narrow, because the
+ * original rule — never read JSON out of prose — exists to stop a narrated example or raw tool markup
+ * from being mistaken for a verdict: a candidate must parse whole, must already declare `revision` and
+ * `verdict`, and two candidates are ambiguous rather than a verdict. Shape validation below is unchanged,
+ * so nothing is approved here that a whole-response answer would not have approved. */
+function verdictObjectsInProse(content: string): unknown[] {
+  const found: unknown[] = [];
+  for (let start = content.indexOf("{"); start !== -1 && found.length < 2; start = content.indexOf("{", start + 1)) {
+    let depth = 0;
+    let inString = false;
+    let escaped = false;
+    for (let index = start; index < content.length; index += 1) {
+      const character = content[index]!;
+      if (inString) {
+        if (escaped) escaped = false;
+        else if (character === "\\") escaped = true;
+        else if (character === '"') inString = false;
+        continue;
+      }
+      if (character === '"') inString = true;
+      else if (character === "{") depth += 1;
+      else if (character === "}") {
+        depth -= 1;
+        if (depth > 0) continue;
+        let parsed: unknown;
+        try { parsed = JSON.parse(content.slice(start, index + 1)); }
+        catch { break; }
+        if (record(parsed) && "verdict" in parsed && "revision" in parsed) found.push(parsed);
+        start = index;
+        break;
+      }
+    }
+  }
+  return found;
+}
 export function parseIndependentReview(result: ChatResult, revision: number, requiredProblems: readonly string[]): ResultReview {
   if (result.message.tool_calls?.length) throw new Error("independent-review-tool-call-rejected");
   if (result.finishReason !== "stop") throw new Error(`independent-review-incomplete: ${result.finishReason}`);
   let value: unknown;
   // Some authenticated providers wrap json_object responses in one complete
-  // Markdown fence. Unwrap only the entire response, never extract JSON from prose.
+  // Markdown fence. Unwrap only the entire response; prose falls back to the narrow
+  // single-verdict extraction above, which still refuses ambiguity and non-verdict objects.
   const content = String(result.message.content).trim();
   const fence = /^```(?:json)?[ \t]*\r?\n([\s\S]*?)\r?\n```$/i.exec(content);
   try { value = JSON.parse(fence ? fence[1]! : content); }
-  catch { throw new Error("independent-review-malformed-json"); }
+  catch {
+    const narrated = verdictObjectsInProse(content);
+    if (narrated.length !== 1) throw new Error("independent-review-malformed-json");
+    value = narrated[0];
+  }
   if (!record(value) || value.revision !== revision || !["approved", "changes_requested"].includes(String(value.verdict))
     || typeof value.summary !== "string" || !value.summary.trim() || !Array.isArray(value.findings)) {
     throw new Error("independent-review-malformed-verdict");

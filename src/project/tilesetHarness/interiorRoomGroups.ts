@@ -264,7 +264,7 @@ export function interiorRoomTileGroups(): TileGroupMetadata[] {
         ],
       },
     }),
-    group("kitchen-stove", "화덕 오븐", "building", "mixed", [VR.STOVE_TOP, VR.STOVE_BOT], "세로 2칸 쌍 — 상단 21은 벽면 행 upper, 하단 51은 북측 바닥 행 lower(통행 차단)", {
+    group("kitchen-stove", "화덕 오븐", "building", "mixed", [VR.STOVE_TOP, VR.STOVE_BOT], "세로 2칸 lower 쌍 — 상단 21은 벽면과 겹치고 냄비는 그 위 upper, 하단 51은 북측 바닥(통행 차단)", {
       rules: [interiorStoveHardRule(), interiorStoveSurfaceRule()],
       patternGrammar: {
         kind: "vertical_expandable",

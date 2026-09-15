@@ -19,7 +19,8 @@ import { isWorldTileset, isWorldAnimatedTile } from "@/project/defaults/worldCoa
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import type Phaser from "phaser";
-import { animationStripForTile } from "@/project/defaults/chipsetAnimation";
+import { animationKeyForTile, animationStripForTile } from "@/project/defaults/chipsetAnimation";
+import { registerUploadedTilesetFrames, uploadedTilesetAnimationName, uploadedTilesetTextureKey } from "@/assets/uploadedTilesets";
 
 const DEFAULT_TILESET_IMAGE_URL = `/${ASSET_TILESET}`;
 
@@ -60,7 +61,8 @@ export function ensureTilesetTexture(scene: Phaser.Scene, tileset: TilesetDef): 
   if (!texture) return baseKey;
 
   // 확장 타일셋(count > 480)은 확장분 프레임까지 등록한다(기본 480 은 불변).
-  registerTilesetTextureFrames(scene, textureKey, Math.max(TILE_FRAME_COUNT, tileset.count));
+  if (tileset.image.type === "uploaded") registerUploadedTilesetFrames(scene, tileset, textureKey);
+  else registerTilesetTextureFrames(scene, textureKey, Math.max(TILE_FRAME_COUNT, tileset.count));
   return textureKey;
 }
 
@@ -86,7 +88,13 @@ export function supportsChipsetTileAnimation(tileset: TilesetDef, tile: number):
 }
 
 function baseTilesetTextureKey(tileset: TilesetDef): string {
-  return tileset.image.type === "bundled" ? tileset.image.id : TEX_TILESET;
+  return tileset.image.type === "bundled" ? tileset.image.id : uploadedTilesetTextureKey(tileset);
+}
+
+/** The renderer and the preload registry must agree on project-authored animation names. */
+export function tilesetAnimationKeyForTile(tileset: TilesetDef, tile: number): string | null {
+  return uploadedTilesetAnimationName(tileset, tile)
+    ?? (supportsChipsetTileAnimation(tileset, tile) ? animationKeyForTile(tile) : null);
 }
 
 export function tilesetTileBackgroundStyle(tileset: TilesetDef, tile: number, previewSize: number | string): string {

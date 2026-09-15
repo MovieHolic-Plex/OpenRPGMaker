@@ -78,7 +78,7 @@ describe("interior room procedural pipeline (house whole-tile grammar / Option B
 
   it("raises a two-row cream face (upper 74/75/76 + lower 104/105/106) with ceiling block above", () => {
     const plan = INTERIOR_ROOM_DEMO_PLANS[0]!;
-    const { map } = runInteriorRoomPipeline(plan);
+    const map = applyInteriorRoomLayer(createEmptyRoomMap(plan), plan, "walls").map;
     const wing = plan.wings[0]!;
     const midX = wing.x + Math.floor(wing.w / 2);
     const at = (x: number, y: number) => map.lowerTiles[y * map.width + x]!;
@@ -238,7 +238,7 @@ describe("interior room procedural pipeline (house whole-tile grammar / Option B
     expect(bedInGuest1).toBe(true);
   });
 
-  it("kitchen places stove pair — 21 upper on wall face directly above 51 lower on floor", () => {
+  it("kitchen places stove pair — opaque 21/51 below the cooking pot", () => {
     const plan = INTERIOR_ROOM_DEMO_PLANS.find((p) => p.theme === "kitchen")!;
     const { map, ok, warnings } = runInteriorRoomPipeline(plan);
     expect(ok).toBe(true);
@@ -247,9 +247,9 @@ describe("interior room procedural pipeline (house whole-tile grammar / Option B
     const wall = houseShellWallMembers();
     for (let y = 0; y < map.height; y += 1) {
       for (let x = 0; x < map.width; x += 1) {
-        if (map.upperTiles[y * map.width + x] !== VR.STOVE_TOP) continue;
+        if (map.lowerTiles[y * map.width + x] !== VR.STOVE_TOP) continue;
         found = true;
-        expect(wall.has(map.lowerTiles[y * map.width + x]!)).toBe(true);
+        expect(map.upperTiles[y * map.width + x]).toBe(VR.CAULDRON);
         expect(map.lowerTiles[(y + 1) * map.width + x]).toBe(VR.STOVE_BOT);
       }
     }
@@ -325,7 +325,7 @@ describe("interior room procedural pipeline (house whole-tile grammar / Option B
 
   it("wall shell matches ceiling canon — 천장 366 통일, 문은 바닥 통로, 프레임 낱장·금지 타일 없음", () => {
     const plan = INTERIOR_ROOM_DEMO_PLANS[0]!;
-    const { map } = runInteriorRoomPipeline(plan);
+    const map = applyInteriorRoomLayer(createEmptyRoomMap(plan), plan, "walls").map;
     const wing = plan.wings[0]!;
     const at = (x: number, y: number) => map.lowerTiles[y * map.width + x]!;
     // 예전 캡 조인트 자리도 천장(430 계열 오토타일)

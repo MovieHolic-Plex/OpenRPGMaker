@@ -164,6 +164,8 @@ function applyAgentEvent(agent: TeamBoardAgent, event: PiAgentEvent): TeamBoardA
         { ...agent, toolErrors: agent.toolErrors + (event.ok ? 0 : 1), lastLine: `${event.ok ? "✓" : "✗"} ${event.name} — ${trimLine(event.summary)}`, lastKind: "tool" },
         event.id, event.name, event.ok, trimLine(event.summary, 400),
       );
+    // 스트리밍 조각은 한 줄 상태만 갱신한다 — 로그(상한 200)에 조각마다 행을 붙이면 과정이 조각으로 덮인다.
+    case "delta": return { ...agent, state: "실행 중", lastLine: `${event.kind === "thinking" ? "생각 중" : "작성 중"} · ${trimLine(event.text)}`, lastKind: "text" };
     case "assistant":
       return appendLog(
         { ...agent, lastLine: trimLine(event.text, 220), lastKind: "text", summary: trimLine(event.text, 400) },

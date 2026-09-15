@@ -21,6 +21,16 @@ describe("independent review protocol", () => {
     expect(() => parseIndependentReview({ ...response(approved), finishReason: "length" }, 7, [])).toThrow();
     expect(() => parseIndependentReview({ message: { role: "assistant", content: "not JSON" }, finishReason: "stop" }, 7, [])).toThrow();
   });
+  it("reads one narrated verdict but refuses ambiguity and non-verdict objects", () => {
+    const prose = (content: string): ChatResult => ({ message: { role: "assistant", content }, finishReason: "stop" });
+    const verdict = JSON.stringify(approved);
+    expect(parseIndependentReview(prose(`검토 결과 요청대로 반영되었습니다.\n${verdict}\n이상입니다.`), 7, []).status).toBe("approved");
+    expect(parseIndependentReview(prose(`Here is my answer:\n\`\`\`json\n${verdict}\n\`\`\`\nThanks.`), 7, []).status).toBe("approved");
+    expect(() => parseIndependentReview(prose(`${verdict} or maybe ${JSON.stringify({ ...approved, verdict: "changes_requested" })}`), 7, []))
+      .toThrow("independent-review-malformed-json");
+    expect(() => parseIndependentReview(prose('정상입니다 {"note":"no verdict here"}'), 7, [])).toThrow("independent-review-malformed-json");
+    expect(() => parseIndependentReview(prose('대신 툴을 부릅니다 <tool_call><invoke name="reset_project">'), 7, [])).toThrow("independent-review-malformed-json");
+  });
   it("cannot approve deterministic failures and does not invent checks for nonvisual work", () => {
     expect(parseIndependentReview(response(approved), 7, []).status).toBe("approved");
     const blocked = parseIndependentReview(response(approved), 7, ["run_scene_test: failed expectation"]);
@@ -64,7 +74,7 @@ it("retains advisory evidence without making it a required explicit check", () =
 });
 
 
-describe("whole-response provider JSON fences", () => {
+describe("provider JSON fences and narrated verdicts", () => {
   const fenced = (body: string): ChatResult => ({ message: { role: "assistant", content: body }, finishReason: "stop" });
   it.each(["json", ""])("accepts exactly one complete %s fence and preserves the verdict", language => {
     const request = { ...approved, verdict: "changes_requested", findings: [{ id: "price", target: "/database/items/item_potion",
@@ -74,16 +84,25 @@ describe("whole-response provider JSON fences", () => {
     expect(result.findings).toEqual(request.findings);
     expect(parseIndependentReview(fenced(`\`\`\`${language}\r\n${JSON.stringify(approved)}\r\n\`\`\``), 7, []).status).toBe("approved");
   });
+  // A verdict wrapped in narration is still that reviewer's verdict, and discarding it cost the
+  // draft the whole turn (F6). One unambiguous verdict object is read wherever it sits; the
+  // shape checks below are unchanged, so nothing weaker than a whole-response answer is admitted.
   it.each([
     `Here is the review:\n\`\`\`json\n${JSON.stringify(approved)}\n\`\`\``,
     `\`\`\`json\n${JSON.stringify(approved)}\n\`\`\`\nAll done`,
     `\`\`\`json\n${JSON.stringify(approved)}`,
     `${JSON.stringify(approved)}\n\`\`\``,
     `\`\`\`json\n${JSON.stringify(approved)}\n\`\`\`\n\`\`\`json\n{}\n\`\`\``,
-    `\`\`\`json\n{"revision":7,\n\`\`\``,
     `\`\`\`javascript\n${JSON.stringify(approved)}\n\`\`\``,
-  ])("rejects prose, partial or multiple fences: %s", body => {
-    expect(() => parseIndependentReview(fenced(body), 7, [])).toThrow();
+  ])("reads one narrated or oddly fenced verdict: %s", body => {
+    expect(parseIndependentReview(fenced(body), 7, []).status).toBe("approved");
+  });
+  it.each([
+    `\`\`\`json\n{"revision":7,\n\`\`\``,
+    `${JSON.stringify(approved)} 또는 ${JSON.stringify({ ...approved, verdict: "changes_requested" })}`,
+    'Reviewed. {"summary":"looks right"}',
+  ])("still rejects truncated, ambiguous or verdict-free bodies: %s", body => {
+    expect(() => parseIndependentReview(fenced(body), 7, [])).toThrow("independent-review-malformed-json");
   });
   it("does not let a valid fence bypass tool-call, revision or required-evidence checks", () => {
     const result = fenced(`\`\`\`json\n${JSON.stringify(approved)}\n\`\`\``);

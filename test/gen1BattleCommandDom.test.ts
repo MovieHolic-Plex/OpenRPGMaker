@@ -56,9 +56,11 @@ describe("Gen1 monster battle command DOM", () => {
     expect(fight.textContent).toContain("PP 0/20");
     expect(fight.textContent).toContain("PP 5/5");
     expect(fight.querySelector("[data-testid='actor-skill-skill_move_1']")).toBeNull();
-    expect(button(fight, "actor-skill-skill_move_2").disabled).toBe(true);
-    expect(button(fight, "actor-skill-skill_move_4").disabled).toBe(false);
-    expect(button(fight, "actor-skill-skill_move_5").disabled).toBe(false);
+    // PP 0 인 기술은 `disabled` 가 아니라 `aria-disabled` 로 남긴다 — 커서가 서야 "PP가 없습니다" 를 읽는다.
+    expect(button(fight, "actor-skill-skill_move_2").dataset.battleCommandInert).toBe("true");
+    expect(button(fight, "actor-skill-skill_move_2").textContent).toContain("PP가 없습니다");
+    expect(button(fight, "actor-skill-skill_move_4").dataset.battleCommandInert).toBeUndefined();
+    expect(button(fight, "actor-skill-skill_move_5").dataset.battleCommandInert).toBeUndefined();
   });
 
   it("offers Struggle when every finite move is out of PP", () => {

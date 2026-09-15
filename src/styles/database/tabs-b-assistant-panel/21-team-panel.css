@@ -208,3 +208,5 @@
 .ai-chat-panel.chat-dock-float.is-assistant-idle.is-team-open:not(.is-composer-focused):not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck {
   width: min(var(--ai-float-bar-width, var(--ai-deck-open-width)), calc(100% - var(--ai-deck-inset) - 12px));
 }
+
+.ai-team-panel[hidden] { display: none; }

@@ -43,7 +43,7 @@ describe("background review evidence", () => {
     const rounds = [call("set_work_plan", { goal: "Set background", layers: [{ title: "Background", items: [{
       title: "Background", instruction: "Set background" }] }], acceptance: [{ id: "change", title: "Changed target", criteria: [{
       kind: "targetChange", target: { mapId } }] }] }), call("skip_work_item", {}),
-    call("set_map_properties", { mapId, background: { imageId: "new-background", scrollX: 4 } }),
+    call("set_map_properties", { mapId, background: { imageId: "easyrpg-backdrop-sky1", scrollX: 4 } }),
     call("show_map_region", { mapId, x: 0, y: 0, w: 20, h: 15 })];
     let writerCalls = 0;
     const session = new AssistantSession(project, {
@@ -61,7 +61,7 @@ describe("background review evidence", () => {
       },
     });
     const result = await session.sendUserMessage("Set the map background");
-    expect(session.getProposedProject().maps[mapId]?.background).toEqual({ imageId: "new-background", scrollX: 4 });
+    expect(session.getProposedProject().maps[mapId]?.background).toEqual({ imageId: "easyrpg-backdrop-sky1", scrollX: 4 });
     expect(reviews.length).toBeGreaterThan(0);
     expect(reviews[0]?.acceptance).toMatchObject({ items: [{ status: "verified" }] });
     expect(result.review?.status).toBe("changes_requested");
@@ -71,12 +71,12 @@ describe("background review evidence", () => {
 
   it.each(["image", "scroll", "remove"])("classifies %s background changes as visual and permanently retires old evidence", mutation => {
     const project = createBlankProject(), map = project.maps[project.startMapId];
-    map.background = { imageId: "old-background", scrollX: 0 };
+    map.background = { imageId: "easyrpg-backdrop-dawn1", scrollX: 0 };
     const before = structuredClone(project), evidence = new AssistantImageEvidence();
     const receipt = evidence.capture(project, { mapId: map.id, x: 0, y: 0, w: map.width, h: map.height });
     if (!receipt) throw new Error("Missing receipt");
     evidence.deliver([receipt]);
-    if (mutation === "image") map.background.imageId = "new-background";
+    if (mutation === "image") map.background.imageId = "easyrpg-backdrop-sky1";
     else if (mutation === "scroll") map.background.scrollX = 4;
     else delete map.background;
     expect(requiresVisualReview(before, project, map.id)).toBe(true);

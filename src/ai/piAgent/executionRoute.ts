@@ -25,6 +25,8 @@ export const DEFAULT_PI_TEAM = false;
 export const LEGACY_PI_TEAM_ROUTE = "pi-team";
 /** 다이얼 한 값이 이번 실행에 대해 정하는 것 전부. */
 export interface PiRunPlan {
+  /** 기존 의도 선언이 확인한 단순 수정. 별도 계획·시각 검토를 생략할 후보다. */
+  readonly routineEdit?: boolean;
   /** 쓰기 툴 없이 조회·보고만 한다(읽기 전용 레벨·계획 턴). */
   readonly readOnly: boolean;
   /** 실행하지 않고 계획만 세운다. Pi 에는 세션 플래너가 없으므로 프롬프트 지시로 만들고, readOnly 와 함께 쓴다. */

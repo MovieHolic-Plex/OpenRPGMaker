@@ -128,7 +128,7 @@ export const INTERIOR_OBJECT_CATALOG: readonly InteriorObjectDef[] = [
     "wall-north",
     "bookshelf",
   ),
-  // 화덕은 세로 hard 쌍 — 상단(21)은 크림 벽면 행에 겹치는 upper, 하단(51)은 바닥 행 lower(통행 차단).
+  // Both stove cells are opaque lower artwork; the top overlaps the wall and leaves upper free for a cooking pot.
   def(
     "stove",
     "화덕",
@@ -138,7 +138,7 @@ export const INTERIOR_OBJECT_CATALOG: readonly InteriorObjectDef[] = [
     "wall-north",
     "stove",
     [
-      { dx: 0, dy: 0, layer: "upper", tile: VR.STOVE_TOP },
+      { dx: 0, dy: 0, layer: "lower", tile: VR.STOVE_TOP },
       { dx: 0, dy: 1, layer: "lower", tile: VR.STOVE_BOT },
     ],
   ),
@@ -171,6 +171,7 @@ export const INTERIOR_OBJECT_CATALOG: readonly InteriorObjectDef[] = [
   def("barrel", "술통", [[VR.BARREL]], "upper", ["storage", "tavern", "kitchen"], "floor"),
   def("crate", "나무 상자", [[VR.CRATE]], "lower", ["storage", "tavern", "kitchen"], "floor"),
   def("jars", "항아리", [[VR.JARS]], "upper", ["kitchen", "storage", "bedroom"], "floor"),
+  def("plant_small", "탁상 화분", [[288]], "upper", ["dining", "study"], "floor"),
   def("plant", "화분", [[VR.PLANT]], "upper", ["corridor", "dining"], "floor"),
   def("window", "창문", [[VR.WINDOW]], "lower", ALL_ROOM_THEMES, "wall-any"),
   def("picture", "그림", [[VR.PICTURE_L, VR.PICTURE_R]], "lower", ["bedroom", "study", "dining", "corridor"], "wall-any"),
@@ -194,12 +195,20 @@ export const INTERIOR_OBJECT_CATALOG: readonly InteriorObjectDef[] = [
   def("rug_mat", "짚 돗자리", RUG_MAT_ROWS, "lower", ["bedroom", "kitchen", "storage", "dining"], "floor"),
   def("table_wood", "확장 목재 탁자", [[156,157,158],[186,187,188],[198,199,200]], "lower", ["dining","study","kitchen"], "floor", "table", interiorTableCells()),
   def("table_white", "흰색 탁자", [[159,160,161],[189,190,191],[228,229,230]], "lower", ["dining","study"], "floor", "table", interiorTableCells(3,2,true)),
+  def("home_table", "작은 집의 독서·식사 탁자", [[null,null,null,null,null],[null,null,null,null,null]], "lower", ["dining","study"], "floor", "table", [
+    ...interiorTableCells(3,1).map(cell=>({...cell,dx:cell.dx+1})),
+    {dx:0,dy:0,layer:"upper",tile:297},{dx:4,dy:0,layer:"upper",tile:298},
+    {dx:1,dy:0,layer:"upper",tile:204},{dx:2,dy:0,layer:"upper",tile:145},
+  ]),
   tableSet("tea_table", "차탁과 마주 보는 의자", [235,204]),
   tableSet("reading_table", "책·촛대와 독서 좌석", [145,204]),
   tableSet("dining_table", "식기·요리와 식사 좌석", [207,238,208]),
   tableSet("consultation_table", "기록·촛대와 상담 좌석", [145,204], true),
   def("altar_table", "흰 제단과 촛대", [[159,160,161],[189,190,191],[228,229,230]], "lower", ["study"], "floor", "table", [...interiorTableCells(3,2,true),{dx:0,dy:0,layer:"upper",tile:204},{dx:2,dy:0,layer:"upper",tile:204}]),
   def("work_table", "작업 탁자와 도구", [[156,157,158],[186,187,188],[198,199,200]], "lower", ["kitchen"], "wall-north", "table", [...interiorTableCells(),{dx:0,dy:0,layer:"upper",tile:261},{dx:2,dy:0,layer:"upper",tile:414}]),
+  // A short domestic level change; the caller authors a south-facing floor seam.
+  def("bathroom_steps", "욕실 단차 돌계단", [[141,111,171]], "lower", ["corridor"], "free"),
+  def("bathtub", "욕조", [[22,23],[52,53]], "lower", ["bedroom"], "wall-north"),
   def("stairs_small", "한 칸 계단", [[444]], "lower", ["corridor"], "free"),
   def("stairs_horizontal", "벽 높이를 잇는 돌계단", [[141,111,171],[141,111,171],[141,111,171]], "lower", ["corridor"], "free"),
   def("stairs_down", "아래층 계단", [[474]], "upper", ["corridor"], "free"),

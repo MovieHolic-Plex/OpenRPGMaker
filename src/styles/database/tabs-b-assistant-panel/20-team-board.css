@@ -234,3 +234,19 @@
 @container (max-width: 420px) {
   .ai-team-counters { flex: 0 0 100%; margin-left: 0; }
 }
+
+/* 단독 작업: 접히는 실행 기록과 그 밖의 결과/검토. */
+.ai-team-board.is-compact { background: transparent; border: 0; box-shadow: none; gap: 8px; }
+.ai-run-summary {
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  min-height: 32px;
+  padding: 4px 2px;
+}
+.ai-run-summary .ai-team-phase { margin-left: 8px; }
+.ai-run-summary:focus-visible { outline: var(--focus-outline); outline-offset: -2px; }
+.ai-run-details > .ai-team-totals { display: block; padding: 4px 12px; }
+.ai-team-board.is-compact .ai-team-foot { border: 0; padding: 0; }
+.ai-team-board.is-compact .ai-team-review-card { background: transparent; padding: 0; }
+.ai-team-foot[hidden] { display: none; }

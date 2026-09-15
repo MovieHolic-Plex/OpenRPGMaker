@@ -218,7 +218,7 @@ function collect(
 }
 
 /**
- * 종류 판정. 문자열 접두어 규칙은 databaseResourcePickerDialog 의 `matchesGeneratedKind`
+ * 종류 판정. 문자열 접두어 규칙은 resourceOptions 의 `matchesGeneratedKind`
  * 와 같은 근거를 쓴다 — 생성 자산은 선언된 `resourceKind` 가 없을 수 있어서다.
  */
 function matchesSlot(slot: EventResourceSlot, kind: string | undefined, id: string): boolean {

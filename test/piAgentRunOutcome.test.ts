@@ -6,6 +6,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const h = vi.hoisted(() => ({
   planError: false,
   harmony: true,
+  reviewCalls: 0,
+  applyCalls: 0,
   harmonyError: false,
   requests: [] as Record<string, unknown>[],
   results: [] as { project: unknown; toolCalls?: number; toolErrors?: number }[],
@@ -24,6 +26,7 @@ const h = vi.hoisted(() => ({
 }));
 
 vi.mock("@/ai/ultrabrainReview", () => ({ reviewMapHarmony: async () => {
+  h.reviewCalls += 1;
   if (h.harmonyError) throw new Error("image unavailable");
   return [{ mapId: "map_a", harmonious: h.harmony, summary: "review", findings: h.harmony ? [] : ["density"] }];
 } }));
@@ -79,7 +82,7 @@ vi.mock("@/ai/llmClient", () => ({ loadAiConfig: () => ({ providerId: "google-an
 vi.mock("@/editor/tools/changeset", () => ({ summarizeChanges: () => ({}) }));
 vi.mock("@/editor/tools/applyChangesetToStore", () => ({
   captureProposalBase: () => ({}),
-  applyProposedProject: async () => ({ ok: true }),
+  applyProposedProject: async () => { h.applyCalls += 1; return { ok: true }; },
 }));
 
 const { runPiCommand } = await import("@/editor/panels/aiPiAgentCommand");
@@ -100,6 +103,7 @@ const harness = () => {
 
 beforeEach(() => {
   h.planError = false;
+  h.reviewCalls = 0; h.applyCalls = 0; h.outcomes.length = 0;
   h.requests.length = 0; h.results.length = 0; h.bubbles.length = 0;
   h.assistantTexts.length = 0; h.boardStates.length = 0; h.reviewActions.length = 0;
   h.project = { maps: { map_a: { id: "map_a", name: "A", width: 4, height: 4 } } };
@@ -260,5 +264,62 @@ describe("model role routing", () => {
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "계획" }, harness().surface(), { planOnly: true });
     expect(h.requests).toHaveLength(1);
     expect(h.requests[0]).toMatchObject({ model: "gemini-3.8-flash", thinkingLevel: "high", readOnly: true });
+  });
+});
+
+
+describe("routine edits", () => {
+  it("uses only Deep and preserves manual preview, apply and receipt", async () => {
+    h.piApply = "review";
+    h.planError = true; h.harmonyError = true;
+    h.results.push({ project: projectWith("숲길") });
+    const receipt = vi.fn();
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "이름 수정" },
+      { ...harness().surface(), showChangeReceipt: receipt }, { routineEdit: true });
+    expect(h.requests).toHaveLength(1);
+    expect(h.requests[0]).toMatchObject({ model: "m", task: "이름 수정" });
+    expect(h.reviewCalls).toBe(0);
+    expect(h.applyCalls).toBe(0);
+    const review = h.outcomes.at(-1) as unknown as { onApply: () => void; preview: { dataset: { state: string } } };
+    expect(review.preview.dataset.state).toBe("proposed");
+    review.onApply();
+    await vi.waitFor(() => expect(receipt).toHaveBeenCalledOnce());
+    expect(h.applyCalls).toBe(1);
+    expect(receipt.mock.calls[0]![0]).toMatchObject({ before: h.project, after: projectWith("숲길") });
+  });
+
+  it("keeps the user's auto-apply setting without claiming a review", async () => {
+    h.results.push({ project: projectWith("숲길") });
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface(), { routineEdit: true });
+    expect(h.applyCalls).toBe(1);
+    expect(h.reviewCalls).toBe(0);
+    expect(h.bubbles.join("\n")).not.toContain("Ultrabrain");
+  });
+
+  it("restores review when the actual change extends beyond the target map", async () => {
+    h.harmony = false;
+    h.results.push({ project: { ...projectWith("숲길"), switches: [{ id: "flag", name: "추가" }] } });
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface(), { routineEdit: true });
+    expect(h.reviewCalls).toBe(1);
+    expect(h.applyCalls).toBe(0);
+  });
+
+  it.each([
+    { mode: "team" as const, mapIds: ["map_a"] },
+    { mode: "single" as const, mapIds: [] },
+    { mode: "single" as const, mapIds: ["map_a", "map_b"] },
+  ])("never shortcuts team or unbounded/multi-map work: %j", async command => {
+    h.results.push({ project: projectWith("숲길") });
+    await runPiCommand({ ...command, task: "큰 작업" }, harness().surface(), { routineEdit: true });
+    expect(h.reviewCalls).toBe(1);
+    if (command.mode === "single") expect(h.requests[0]!.readOnly).toBe(true);
+    else expect(h.requests[0]!.mode).toBe("team");
+  });
+
+  it("plan-only still uses read-only Ultrabrain even with a routine hint", async () => {
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "계획" }, harness().surface(), { routineEdit: true, planOnly: true });
+    expect(h.requests).toHaveLength(1);
+    expect(h.requests[0]).toMatchObject({ model: "gemini-3.8-flash", readOnly: true });
+    expect(h.applyCalls).toBe(0);
   });
 });

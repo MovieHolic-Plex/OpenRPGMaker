@@ -1,3 +1,4 @@
+import { regionMapPreview } from "./regionMapView";
 import { regionReferenceImage } from "./regionReferenceView";
 import { interiorObjectById, interiorObjectsForTheme } from "@/editor/interiorObjectCatalog";
 import { cellsFromMapRect, assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
@@ -214,6 +215,7 @@ function renderMapThumb(card: SpatialGalleryCard): HTMLElement {
 }
 
 export function renderSpatialCardThumb(card: SpatialGalleryCard): HTMLElement {
+  if (card.regionMapId) return regionMapPreview(card.regionMapId, true);
   if (card.regionReferenceId) return regionReferenceImage(card.regionReferenceId, true);
   if (card.kind === "places") return renderPlaceCardThumb(card);
   if (card.kind === "regions" || card.kind === "worlds") return renderGeographyCardThumb(card);

@@ -7,7 +7,7 @@
 //   node scripts/capture-map-background-preview.mjs [outDir]
 //
 // 결과: <outDir>/background-tab.png + 콘솔에 픽커 옵션 testid 와 미리보기 원본 크기.
-import { chromium } from "playwright";
+import { chromium, expect } from "@playwright/test";
 import { mkdirSync } from "node:fs";
 import { gotoWithRetry } from "./lib/goto-retry.mjs";
 
@@ -35,6 +35,7 @@ try {
   // 트리 행 더블클릭은 그 도크가 열려 있어야 한다.
   await page.getByTestId("palette-tileset-name").first().click();
 
+  const dialog = page.getByRole("dialog", { name: "맵 설정", exact: true });
   await page.getByTestId("map-props-tab-background").click();
   await page.getByTestId("map-bg-enable").check();
   await page.getByTestId("map-bg-image-set").click();
@@ -61,7 +62,49 @@ try {
   if (!(size.naturalWidth > 0)) throw new Error("미리보기 그림이 로드되지 않았습니다");
 
   await page.getByTestId("map-bg-scroll-x").fill("2");
+  await page.getByTestId("map-bg-loop-x").check();
   await page.screenshot({ path: `${OUT}/background-tab.png` });
+
+  // 캔버스 미리보기: 토글 전에는 배경이 안 보이고(빈 칸 체커가 불투명), 켜면 배경이 비친다.
+  // 배경은 **빈 칸이 뚫린 창**으로만 보이므로, 판정할 면적을 먼저 비운다(편집기 툴 훅으로
+  // 카메라가 보고 있는 타일 범위를 지운다 — 맵이 크면(100×100) 고정 좌표로 지우면 화면 밖이다.
+  // 하층을 지운다 — 손으로 지우는 시늉을 하지 않는다).
+  await page.keyboard.press("Escape");
+  await dialog.waitFor({ state: "hidden" });
+  const mapId = new URL(page.url()).searchParams.get("map");
+  if (!mapId) throw new Error("맵 id 를 URL 에서 찾지 못했습니다");
+  // 빈 칸은 «통행 불가» 라 프로젝트 무결성 검사가 큰 사각형을 거부한다(전송 목적지가 막힌다).
+  // 그래서 카메라 중앙에서 작은 패치부터 시도해 **커밋되는** 크기를 찾는다 — 거부를 우회하지 않는다.
+  const erased = await page.evaluate(
+    ([id]) => {
+      const camera = window.__oprnEditCamera();
+      const tile = 16;
+      const centerX = Math.floor((camera.scrollX + camera.width / camera.zoom / 2) / tile);
+      const centerY = Math.floor((camera.scrollY + camera.height / camera.zoom / 2) / tile);
+      for (const [width, height] of [[8, 5], [6, 4], [4, 3], [3, 2], [2, 2]]) {
+        const from = { x: centerX, y: centerY };
+        const to = { x: centerX + width - 1, y: centerY + height - 1 };
+        const result = window.__oprnEditorTool("paint_tiles", {
+          mapId: id, layer: "lower", mode: "rect", tile: -1, from, to,
+        });
+        if (result?.ok) return { ok: true, width, height, from, to };
+      }
+      return { ok: false };
+    },
+    [mapId],
+  );
+  console.log("erase:", JSON.stringify(erased));
+  if (!erased.ok) throw new Error("빈 칸을 만들지 못했습니다 — 미리보기 차이를 보일 수 없습니다");
+  const canvas = page.getByTestId("edit-canvas");
+  const toggle = page.getByTestId("map-background-preview-toggle");
+  await expect(toggle).toHaveAttribute("aria-pressed", "false");
+  await page.waitForTimeout(600);
+  await canvas.screenshot({ path: `${OUT}/canvas-without-preview.png` });
+
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+  await page.waitForTimeout(800);
+  await canvas.screenshot({ path: `${OUT}/canvas-with-preview.png` });
   console.log("done ->", OUT);
 } finally {
   await browser.close();

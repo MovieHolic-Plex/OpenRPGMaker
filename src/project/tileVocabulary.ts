@@ -221,6 +221,18 @@ function materialQueryTerms(query: string): string[] {
   return [...terms];
 }
 
+/** 질의 낟말 중 몇 개가 이 텍스트에 들어 있는가 — 약매칭 전용 점수(최대 65, 자동 채택 기준 70 미만).
+ *
+ * 점수가 문자열 통째라 "돌 제단" vs "석판 제단", "석조 기둥" vs "돌기둥" 이 전부 0점이었고,
+ * 그래서 실패 메시지의 후보 목록이 **빈 배열**로 나갔다(F3). 자동 채택은 그대로 막고 후보만 살린다. */
+function tokenCoverageScore(text: string, term: string): number {
+  const tokens = term.split(/[\s/·,]+/).filter((token) => token.length >= 2);
+  if (tokens.length === 0) return 0;
+  const covered = tokens.filter((token) => text.includes(token)).length;
+  if (covered === 0) return 0;
+  return Math.min(65, 40 + Math.round((15 * covered) / tokens.length));
+}
+
 function scoreTextMatch(haystack: string, terms: readonly string[]): number {
   const text = haystack.trim().toLowerCase();
   if (!text) return 0;
@@ -231,8 +243,32 @@ function scoreTextMatch(haystack: string, terms: readonly string[]): number {
     else if (text.startsWith(term) || term.startsWith(text)) best = Math.max(best, 80);
     else if (text.includes(term)) best = Math.max(best, 55);
     else if (term.length >= 2 && term.includes(text) && text.length >= 2) best = Math.max(best, 40);
+    else best = Math.max(best, tokenCoverageScore(text, term));
   }
   return best;
+}
+
+/** 그룹 이름·설명도 후보다 — 대표 타일로 환산해 타일 후보와 같은 저울에 올린다.
+ *
+ * `tile_query ask:"labels"` 는 그룹 이름을 라벨로 보여 주는데(tileQueryTool) 해석기는 이름 **완전일치**만
+ * 받았다. 그래서 모델이 본 대로 "꽃" 을 써도 "꽃/자연 소품" 을 못 찾고, 실패 메시지는 다시 tile_query 를
+ * 권하는 순환이었다. 사전 자체를 넓힐 뿐, 점수 규칙·임계는 타일과 동일하다. */
+function scoredGroupCandidates(tileset: TilesetDef, terms: readonly string[]): {
+  tileId: number; score: number; label: string; description: string; role?: string;
+}[] {
+  const out: { tileId: number; score: number; label: string; description: string; role?: string }[] = [];
+  for (const group of tileset.tileGroups ?? []) {
+    const tileId = group.tileIds[0];
+    if (tileId === undefined) continue;
+    const label = group.name.trim();
+    const description = (group.description ?? "").trim();
+    const labelScore = scoreTextMatch(label, terms);
+    const descScore = scoreTextMatch(description, terms);
+    const score = Math.max(labelScore, descScore > 0 ? descScore - 5 : 0);
+    if (score <= 0) continue;
+    out.push({ tileId, score, label, description, ...(group.role ? { role: group.role } : {}) });
+  }
+  return out;
 }
 
 function tileLabelDescription(tileset: TilesetDef, tileId: number): { label: string; description: string; role?: string } {
@@ -369,13 +405,28 @@ export function resolveMaterialByLabel(
   }
   scored.sort((a, b) => b.score - a.score || a.tileId - b.tileId);
   // 약매칭(부분 포함만)은 후보 제시에 쓰고, 자동 시공은 강한 매칭만 채택.
+  // 그룹 이름은 **타일 강매칭이 하나도 없을 때만** 후보가 된다. 같은 저울에 섮으면 기존에 타일로 풀리던
+  // 라벨(예: 프리셋 "흰 집 밀")의 순위가 밀려 다른 타일이 시공된다 — 게이트 실측에서 잡혀다(2026-09-14).
+  if (!scored.some((hit) => hit.score >= 70)) scored.push(...scoredGroupCandidates(tileset, terms));
+  scored.sort((a, b) => b.score - a.score || a.tileId - b.tileId);
   const strong = scored.filter((hit) => hit.score >= 70);
 
   if (strong.length === 0) {
+    // 면 채우기는 비슷한 라벨을 받아도 대부분 다시 막힌다 — 채울 수 있는 재료를 준다.
+    const suggestions = options.requireAutotileGroup
+      ? fillableMaterialSuggestions(tileset)
+      : suggestMaterialsByLabel(tileset, raw, 5);
+    // 후보를 메시지 안에 적는다: 모델은 issues[].message 문자열만 받으므로 구조화된 suggestions 를
+    // 버리는 호출부에서는 후보가 아예 보이지 않았고, 대안 없는 거부는 같은 낟말 재시도로 돌아왔다.
+    const listed = suggestions.slice(0, 5).map((entry) => `"${entry.label}"`).join(", ");
+    const hint = listed
+      ? ` 이 타일셋(${tileset.id})에서 ${options.requireAutotileGroup ? "채울 수 있는 재료" : "가까운 라벨"}: ${listed} — material 에 이 문자열을 그대로 넣으세요.`
+      : ` 이 타일셋(${tileset.id})에는 비슷한 재료도 없습니다 — 맵의 타일셋이 이 요청과 맞는지 확인하세요(실내 재료는 실내 칩셋에만 있습니다).`;
     return {
       status: "missing",
-      message: `라벨/설명이 "${raw}" 인 타일을 찾지 못했습니다. tile_query ask:"labels" 로 후보를 확인하세요.`,
-      suggestions: suggestMaterialsByLabel(tileset, raw, 5),
+      message: `라벨/설명이 "${raw}" 인 타일을 찾지 못했습니다.${hint}`,
+      suggestions,
+      ...(options.requireAutotileGroup ? { suggestionKind: "fillable" as const } : {}),
     };
   }
 
@@ -525,6 +576,11 @@ export function suggestMaterialsByLabel(
       score,
       suggestion: { label: label || `타일 ${tileId}`, description, tileId, ...(role ? { role } : {}) },
     });
+  }
+  // 모델이 tile_query 에서 본 그룹 이름이 후보에서만 빠져 있으면 고쳐 쓸 이름을 알 길이 없다.
+  for (const candidate of scoredGroupCandidates(tileset, terms)) {
+    scored.push({ score: candidate.score, suggestion: { label: candidate.label, description: candidate.description,
+      tileId: candidate.tileId, ...(candidate.role ? { role: candidate.role } : {}) } });
   }
   scored.sort((a, b) => b.score - a.score || a.suggestion.tileId - b.suggestion.tileId);
   // 같은 라벨 중복 제거

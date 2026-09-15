@@ -33,6 +33,8 @@ export const ESCALATION_DENYLIST: ReadonlySet<string> = new Set([
   // 맵 전체 청소는 remove_map 과 같은 규모의 소실을 만든다 — 이름이 스쳤다는 이유로 얹지 않는다.
   "clear_map",
   "delete_resource",
+  // 오프닝 제거는 작성한 장면을 통째로 지운다 — 같은 규칙으로 자동 승격에서 뺀다.
+  "remove_opening",
 ]);
 
 function hasSearchableWord(text: string): boolean {
