@@ -7,6 +7,7 @@
 import type { RunOutcome } from "@/ai/runOutcome";
 import type { RequirementWithdrawalAction } from "@/ai/assistantAcceptance";
 import { RunOperation } from "@/ai/runOperation";
+import type { Project } from "@/project/types";
 import { createPendingWorkTracker } from "@/util/pendingWork";
 
 export const AI_ASSISTANT_BRIDGE_DEFAULT_PORT = 17831;
@@ -33,10 +34,30 @@ export type AiBridgeAuditEntry = {
   readonly ok?: boolean;
 };
 
+/**
+ * 적용을 미룬 턴이 남긴 초안. 표면이 검토 화면을 그리고 `applyAiAssistantProposal` 로 커밋하거나
+ * `discardAiAssistantProposal` 로 버린다. `before`/`after` 는 그 표면이 diff 를 계산하는 재료다.
+ */
+export type AiBridgePendingProposal = {
+  readonly callCount: number;
+  readonly summary: string;
+  readonly before: Project;
+  readonly after: Project;
+};
+
+export type AiBridgeSendOptions = {
+  /**
+   * 턴이 끝나도 초안을 스토어에 적용하지 않는다 — 결과의 `pendingProposal` 로 넘긴다.
+   * 검토 게이트를 가진 표면(DB 검토 오버레이)만 쓴다. MCP·외부 전송은 종전대로 즉시 적용이다.
+   */
+  readonly deferApply?: boolean;
+};
+
 export type AiBridgeTurnResult = {
   readonly runOutcome?: RunOutcome | null;
   readonly ok: boolean;
   readonly error?: string;
+  readonly pendingProposal?: AiBridgePendingProposal | null;
   readonly status: AiBridgeStatus;
   readonly audit: readonly AiBridgeAuditEntry[];
   readonly harness: unknown;
@@ -44,7 +65,12 @@ export type AiBridgeTurnResult = {
 };
 
 export type AiAssistantBridgeHandlers = {
-  readonly send: (text: string) => Promise<AiBridgeTurnResult>;
+  readonly send: (text: string, options?: AiBridgeSendOptions) => Promise<AiBridgeTurnResult>;
+  /** 미뤄 둔 초안을 커밋한다. 성공하면 null, 실패하면 사유 한 줄. */
+  readonly applyPendingProposal?: () => Promise<string | null>;
+  /** 미뤄 둔 초안을 버리고 세션 기준을 스토어 최신으로 맞춘다. */
+  readonly discardPendingProposal?: () => void;
+  readonly getPendingProposal?: () => AiBridgePendingProposal | null;
   readonly getStatus: () => AiBridgeStatus;
   readonly getAudit: () => readonly AiBridgeAuditEntry[];
   readonly getHarness: () => unknown;
@@ -118,8 +144,25 @@ export function unregisterAiAssistantBridge(): void {
 
 // DB 모달 등 에디터 내부 진입점이 같은 채팅 세션으로 메시지를 보낼 때 쓰는 공개 API.
 // 패널이 아직 마운트되지 않았으면 ok:false 결과를 돌려준다(throw 하지 않는다).
-export function sendAiAssistantMessage(text: string): Promise<AiBridgeTurnResult> {
-  return runSend(text);
+export function sendAiAssistantMessage(text: string, options?: AiBridgeSendOptions): Promise<AiBridgeTurnResult> {
+  return runSend(text, registration, options);
+}
+
+/**
+ * `deferApply` 턴이 남긴 초안을 적용한다. 반환값은 실패 사유(성공은 null) —
+ * 커밋 게이트 반려·기준 프로젝트 변경(stale-base)이 여기로 온다.
+ */
+export async function applyAiAssistantProposal(): Promise<string | null> {
+  if (!handlers?.applyPendingProposal) return "AI 패널이 아직 마운트되지 않았습니다.";
+  return await handlers.applyPendingProposal();
+}
+
+export function discardAiAssistantProposal(): void {
+  handlers?.discardPendingProposal?.();
+}
+
+export function getAiAssistantPendingProposal(): AiBridgePendingProposal | null {
+  return handlers?.getPendingProposal?.() ?? null;
 }
 
 // 접혀 있는 채팅 패널(도크)을 펼친다. 패널 미마운트/미지원이면 false.
@@ -170,7 +213,7 @@ function getStatusSnapshot(): AiBridgeStatus {
   };
 }
 
-async function runSend(text: string, owner = registration): Promise<AiBridgeTurnResult> {
+async function runSend(text: string, owner = registration, options?: AiBridgeSendOptions): Promise<AiBridgeTurnResult> {
   const retiredStatus = getStatusSnapshot();
   const retired = (): AiBridgeTurnResult => ({ ok: false, error: "AI bridge owner retired",
     status: { ...retiredStatus, ready: false, turnBusy: false, panelMounted: false }, audit: [], harness: null });
@@ -184,7 +227,7 @@ async function runSend(text: string, owner = registration): Promise<AiBridgeTurn
       harness: null,
     };
   }
-  try { return await owner.wait(handlers.send(text)); }
+  try { return await owner.wait(handlers.send(text, options)); }
   catch (cause) { if (owner.signal.aborted) return retired(); throw cause; }
 }
 
