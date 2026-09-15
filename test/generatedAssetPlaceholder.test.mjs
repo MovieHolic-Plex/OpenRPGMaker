@@ -18,16 +18,13 @@ const ROOT = process.cwd();
 const GENERATED = path.join(ROOT, "public", "assets", "generated");
 
 /**
- * 알려진 손상 5장 — dry-run 가짜가 승격된 채로 커밋됐고, 재생성 파이프라인이 돌아야 복구된다.
- * 이력·Supabase 리소스 캐시 사본까지 전부 같은 가짜라 복원할 원본이 없다(.omo/evidence/generated-asset-fakes/README.md).
+ * 알려진 손상 **0장** (2026-09-16 복구 완료). 이 다섯 자리는 dry-run 가짜가 승격된 채 커밋돼 있었고,
+ * `agy` 파이프라인을 다시 돌려 진짜 그림으로 갈아 끼웠다(.omo/evidence/generated-asset-fakes/).
+ *
+ * 목록이 빈 지금부터는 **저장소 어디에도** 가짜가 있으면 실패한다. 이 배열이 다시 채워진다면
+ * 그건 부채를 새로 만든 것이므로, 재생성이 아니라 목록을 늘리는 쪽으로 도망가지 말 것.
  */
-const KNOWN_DAMAGED = [
-  "public/assets/generated/starter/bronze-sword-icon.png",
-  "public/assets/generated/starter/bronze-sword-image.png",
-  "public/assets/generated/starter/hero-01-charset.png",
-  "public/assets/generated/starter/potion-red-icon.png",
-  "public/assets/generated/starter/potion-red-image.png",
-];
+const KNOWN_DAMAGED = [];
 
 /** 정상 그림 대조군 — 탐지기가 멀쩡한 그림을 가짜로 몰면 이 목록 검사가 무의미해진다. */
 const KNOWN_GOOD = "public/assets/generated/starter/battle-icon-bag.png";
@@ -42,7 +39,7 @@ function collectPngs(dir) {
   return found;
 }
 
-test("생성 에셋에 dry-run 가짜가 승격돼 있지 않다(알려진 5장 외에는 0장)", () => {
+test("생성 에셋에 dry-run 가짜가 승격돼 있지 않다(0장)", () => {
   const fakes = [];
   for (const file of collectPngs(GENERATED)) {
     const result = inspectPngFile(file);

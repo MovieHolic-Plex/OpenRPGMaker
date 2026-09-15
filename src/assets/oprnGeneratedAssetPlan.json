@@ -37,12 +37,12 @@
       "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/hero-01-charset-06d4ea2a.png",
       "promotedPath": "public/assets/generated/starter/hero-01-charset.png",
       "resourceId": "generated-actor-hero-01-charset",
-      "sha256": "7baf01d85b960055402a31507bf1e5e8585070bbdaabc6b6a5570854feede953",
+      "sha256": "c353103a944f9c7f46b7dcaedc2324e0df7a952562df8fa78d72334fff66d78b",
       "provenance": {
         "generator": "agy",
         "mode": "live",
         "promptVersion": "oprn-generated-assets-wave1-v1",
-        "createdAt": "2026-06-22T21:30:00.000+09:00"
+        "createdAt": "2026-09-16T07:01:42+09:00"
       }
     },
     {
@@ -345,12 +345,12 @@
       "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/potion-red-image-68d8c0d8.png",
       "promotedPath": "public/assets/generated/starter/potion-red-image.png",
       "resourceId": "generated-item-potion-red-image",
-      "sha256": "c245de3b0c4148aef32fb8f22e069cbbf5f9a409a377069c3ca515676334a006",
+      "sha256": "8d30f63181f80dfb6ceb5de340d78d33112c5724c9ffc9111487a637941a535f",
       "provenance": {
         "generator": "agy",
         "mode": "live",
         "promptVersion": "oprn-generated-assets-wave1-v1",
-        "createdAt": "2026-06-22T21:30:00.000+09:00"
+        "createdAt": "2026-09-16T07:01:42+09:00"
       }
     },
     {
@@ -367,12 +367,12 @@
       "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/potion-red-icon-80e19f42.png",
       "promotedPath": "public/assets/generated/starter/potion-red-icon.png",
       "resourceId": "generated-item-potion-red-icon",
-      "sha256": "5ef64d6194b5e1a2ae876b52599beb109778d6057f4cfe4bcfb0950907803de1",
+      "sha256": "6405832394ada4747d371de499343c4b13ea0d01e7666377eacb977a8bba7caf",
       "provenance": {
         "generator": "agy",
         "mode": "live",
         "promptVersion": "oprn-generated-assets-wave1-v1",
-        "createdAt": "2026-06-22T21:30:00.000+09:00"
+        "createdAt": "2026-09-16T07:01:42+09:00"
       }
     },
     {
@@ -389,12 +389,12 @@
       "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/bronze-sword-image-5a58854d.png",
       "promotedPath": "public/assets/generated/starter/bronze-sword-image.png",
       "resourceId": "generated-equipment-bronze-sword-image",
-      "sha256": "c245de3b0c4148aef32fb8f22e069cbbf5f9a409a377069c3ca515676334a006",
+      "sha256": "58025f576d76c703c949d62c1514eed2b8e9dbf86f747a4044ca538de72c90c6",
       "provenance": {
         "generator": "agy",
         "mode": "live",
         "promptVersion": "oprn-generated-assets-wave1-v1",
-        "createdAt": "2026-06-22T21:30:00.000+09:00"
+        "createdAt": "2026-09-16T07:01:42+09:00"
       }
     },
     {
@@ -411,12 +411,12 @@
       "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/bronze-sword-icon-17916c11.png",
       "promotedPath": "public/assets/generated/starter/bronze-sword-icon.png",
       "resourceId": "generated-equipment-bronze-sword-icon",
-      "sha256": "5ef64d6194b5e1a2ae876b52599beb109778d6057f4cfe4bcfb0950907803de1",
+      "sha256": "8160db5b2b2490c8f4e51e44612193daa8cdcc8260857bf9919bb7da0d833cfc",
       "provenance": {
         "generator": "agy",
         "mode": "live",
         "promptVersion": "oprn-generated-assets-wave1-v1",
-        "createdAt": "2026-06-22T21:30:00.000+09:00"
+        "createdAt": "2026-09-16T07:01:42+09:00"
       }
     },
     {
