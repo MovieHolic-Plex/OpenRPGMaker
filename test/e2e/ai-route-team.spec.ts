@@ -151,8 +151,9 @@ test("팀은 경로가 아니라 Pi 의 토글이고, 그 비트가 실행 모�
   expect(settled?.instruction).toBe("집 한 채와 길");
   await page.screenshot({ path: path.join(EVIDENCE, "01-team-run-failed.png") });
 
-  // 7) 설정 모달은 같은 값을 읽고 쓴다.
+  // 7) 설정 모달은 같은 값을 읽고 쓴다 — 팀 옵션은 「동작」탭에 있다.
   await page.getByTestId("topbar-ai-settings").click();
+  await page.getByTestId("ai-settings-tab-behavior").click();
   const settingsTeam = page.getByTestId("ai-config-pi-team");
   await expect(settingsTeam).toBeVisible();
   await expect(settingsTeam).toHaveValue("team");

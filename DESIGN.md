@@ -1,5 +1,21 @@
 # OPRN Studio Design System
 
+## AI settings modal — rail + panes (2026-09-16)
+
+- One scroll dump becomes a left rail (`연결 | 모델 | 동작 | 표시` + extra sections as
+  their own rail tabs) with right-hand panes; the sticky footer shows autosave
+  status only — there is no manual Save button.
+- Provider cards are both the picker and the status surface: brand SVG marks
+  (Google, OpenAI), connected pill, login/disconnect actions. The dead
+  connection-kind cards and the provider dropdown are gone; a hidden provider
+  select remains only as the persistence/change source.
+- Models default to three quality presets (빠르게/균형/최고 품질) that set every
+  role at once; per-role overrides live in a closed disclosure as a four-row
+  table (역할 | 제공자 | 모델 | 추론) with stacked preset + free-form model controls.
+- The autonomy select shows its derived values (`→ 추론 보통 · 자율 모드`) so the
+  override relationship is visible; role effort options use Korean labels.
+- Evidence: `verify-shots/ai-settings-redesign/real-*.png` (real editor captures).
+
 ## Editor audio preview workbench (2026-09-08)
 
 - Music/Sound uses a searchable list beside a selected reading document, with

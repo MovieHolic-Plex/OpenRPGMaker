@@ -91,10 +91,9 @@ describe.each(["topbar", "panel"] as const)("%s settings entry", (entry) => {
     expect(send).toHaveBeenCalledOnce();
     update.mockClear();
     open(entry);
-    // When settings persist a new autonomy preset and model.
+    // When settings persist a new autonomy preset and model — 자동 저장이라 별도 저장 클릭은 없다.
     change("ai-config-autonomy", "max");
     change("ai-config-model", "gemini-2.5-pro");
-    control("ai-config-save").click();
     // Then the current session and visible chrome use the same saved config.
     expect(update).toHaveBeenLastCalledWith(loadAiConfig());
     expect(control<HTMLSelectElement>("ai-composer-autonomy").value).toBe("max");
@@ -128,10 +127,11 @@ it("preserves explicit callbacks, fontRoot and extra sections without a panel", 
   openAiSettingsModal({ fontRoot: root, onSaved, onFontSizeChange,
     extraSections: [{ id: "caller", title: "Caller", description: "", content: extra }],
   });
-  // When that caller saves preferences.
+  // When that caller saves preferences — 글자·배경은 전용 저장 경로를 타고, persist/onSaved 는
+  // 어느 설정 변경이든 한 번 탄다(수동 저장 버튼은 없다).
   change("ai-font-size", "small");
   change("ai-background-opacity", "78");
-  control("ai-config-save").click();
+  change("ai-config-maxtokens", "4096");
   // Then its supplied contract remains active.
   expect(onFontSizeChange).toHaveBeenCalledExactlyOnceWith("small");
   expect(onSaved).toHaveBeenCalledExactlyOnceWith(loadAiConfig());

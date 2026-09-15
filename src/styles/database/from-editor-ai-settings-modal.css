@@ -9,9 +9,9 @@
   grid-template-rows: auto minmax(0, 1fr);
   height: min(780px, calc(100vh - var(--space-5)));
   max-height: min(780px, calc(100vh - var(--space-5)));
-  max-width: min(680px, calc(100vw - var(--space-5)));
+  max-width: min(860px, calc(100vw - var(--space-5)));
   overflow: hidden;
-  width: 640px;
+  width: 760px;
 }
 
 /* editor/ai-settings-modal.css:13-18 — [레이어 보존] AI 설정 대화상자가 DB 모달 크롬(.database-modal-*)을 재사용하며 덮어쓰는 규칙 — database 레이어의 범용 .database-modal-header 를 오늘처럼 특이도로 이기려면 같은 레이어여야 한다 */
@@ -19,6 +19,7 @@
   background: var(--bg-raised);
   border-bottom: var(--stroke-1) solid var(--border-default);
   min-height: 48px;
+  padding-block: var(--space-2) var(--space-3);
   padding-inline: var(--space-4);
 }
 
@@ -32,13 +33,13 @@
 }
 
 /* editor/ai-settings-modal.css:38-47 — [레이어 보존] AI 설정 대화상자가 DB 모달 크롬(.database-modal-*)을 재사용하며 덮어쓰는 규칙 — database 레이어의 범용 .database-modal-header 를 오늘처럼 특이도로 이기려면 같은 레이어여야 한다 */
+/* 레일+페인 리디자인(2026-09): 바디는 스크롤하지 않는다 — 폼이 레일·본문·푸터 그리드로
+   높이를 채우고 스크롤은 .ai-settings-content 가 맡는다. */
 .database-modal-backdrop.ai-settings-modal-backdrop
   .database-modal-window.ai-settings-window
   .database-modal-body.ai-settings-body {
   display: block;
   min-height: 0;
-  overflow-x: hidden;
-  overflow-y: scroll;
-  overscroll-behavior: contain;
-  scrollbar-gutter: stable;
+  overflow: hidden;
+  padding: 0;
 }

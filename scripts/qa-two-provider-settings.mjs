@@ -43,8 +43,10 @@ async function openSettings() {
   }
   if (!booted) throw new Error("editor did not boot");
   await page.getByTestId("topbar-ai-settings").click();
+  // 보이는 선택은 제공자 카드다 — select 는 숨은 값·change 원천으로만 남는다.
+  await page.getByTestId("ai-auth-quick-google-antigravity").waitFor({ state: "visible", timeout: 30_000 });
   const select = page.getByTestId("ai-oh-my-pi-provider");
-  await select.waitFor({ state: "visible", timeout: 30_000 });
+  await select.waitFor({ state: "attached", timeout: 30_000 });
   return select;
 }
 
@@ -58,7 +60,8 @@ await page.screenshot({ path: path.join(OUT, "01-provider-select-antigravity.png
 const labels = await select.locator("option").evaluateAll((nodes) => nodes.map((n) => n.textContent?.trim()));
 console.log(`INFO option labels: ${JSON.stringify(labels)}`);
 
-await select.selectOption("openai-codex");
+// 보이는 경로(카드 클릭)로 고른다 — select 는 숨겨져 있다.
+await page.getByTestId("ai-auth-quick-openai-codex").click();
 await page.waitForTimeout(600);
 check("selecting Codex sticks in the control", await select.inputValue(), "openai-codex");
 await page.screenshot({ path: path.join(OUT, "02-provider-select-codex.png") });

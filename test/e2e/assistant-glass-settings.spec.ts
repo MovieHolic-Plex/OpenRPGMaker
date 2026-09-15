@@ -132,6 +132,7 @@ async function focusEvidence(control: Locator, log: Log) {
 
 async function settings(page: Page) {
   await page.getByTestId("topbar-ai-settings").click();
+  await page.getByTestId("ai-settings-tab-display").click();
   const slider = page.getByRole("slider", { name: "배경 농도", exact: true });
   await expect(slider).toBeVisible();
   // The native range must participate in the modal's actual Tab order.

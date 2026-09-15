@@ -85,36 +85,40 @@ function optionTexts(select: FakeElement | null): readonly string[] {
   return (select?.querySelectorAll("option") ?? []).map((option) => option.textContent ?? "");
 }
 
-describe("연결 방식은 두 종류다", () => {
-  it("radiogroup 으로 두 종류를 제공하고 기본은 구독 로그인이다", async () => {
+describe("연결 방식은 제공자 카드다", () => {
+  it("죽은 「API 키」종류 카드는 없고 제공자 카드가 곧 선택이다", async () => {
+    // 레지스트리의 두 제공자는 모두 oauth 다 — 예전 「연결 방식」카드는 고를 수 없는
+    // 「API 키」선택지를 늘 보여 주는 죽은 UI 였다(고르면 같은 두 제공자만 다시 떴다).
+    // 지금은 종류 선택이 없고, 제공자 카드가 선택과 상태 표시를 겸한다.
     const { root, dispose } = await render();
-    const oauth = findByTestId(root, "ai-auth-oauth");
-    const apiKey = findByTestId(root, "ai-auth-api-key");
 
-    expect(oauth?.getAttribute("role")).toBe("radio");
-    expect(apiKey?.getAttribute("role")).toBe("radio");
-    expect(oauth?.getAttribute("aria-checked")).toBe("true");
-    expect(apiKey?.getAttribute("aria-checked")).toBe("false");
-    // 선택된 것만 탭 순서에 들어간다(roving tabindex) — 라디오 그룹의 표준 동작이다.
-    expect(oauth?.getAttribute("tabindex")).toBe("0");
-    expect(apiKey?.getAttribute("tabindex")).toBe("-1");
+    expect(findByTestId(root, "ai-auth-oauth")).toBeNull();
+    expect(findByTestId(root, "ai-auth-api-key")).toBeNull();
+
+    const group = findByTestId(root, "ai-auth-quick");
+    expect(group?.getAttribute("role")).toBe("radiogroup");
+    const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
+    const codex = findByTestId(root, "ai-auth-quick-openai-codex");
+    expect(gemini?.getAttribute("role")).toBe("radio");
+    expect(codex?.getAttribute("role")).toBe("radio");
+    // 기본은 Antigravity — 선택된 것만 탭 순서에 들어간다(roving tabindex).
+    expect(gemini?.getAttribute("aria-checked")).toBe("true");
+    expect(gemini?.getAttribute("tabindex")).toBe("0");
+    expect(codex?.getAttribute("aria-checked")).toBe("false");
+    expect(codex?.getAttribute("tabindex")).toBe("-1");
     dispose();
   });
 
-  it("종류를 바꿔도 제공자 목록은 두 구독 제공자 그대로다", async () => {
+  it("제공자 목록은 두 구독 제공자 그대로다", async () => {
     // 예전 계약은 "Antigravity 하나뿐, select 는 비활성" 이었다. Codex 가 1급 선택지가 됐으므로
-    // 목록은 둘이고 select 는 실제 결정 수단이다(활성).
+    // 목록은 둘이다. select 는 숨은 값·change 원천으로만 남는다 — 보이는 선택은 카드가 한다.
     const { root, dispose } = await render();
     const select = findByTestId(root, "ai-oh-my-pi-provider");
 
     expect(optionValues(select)).toEqual(["google-antigravity", "openai-codex"]);
     expect(select?.disabled).toBe(false);
-
-    findByTestId(root, "ai-auth-api-key")?.click();
-
-    // "API 키" 종류에 내놓을 제공자가 없으므로 같은 두 구독 제공자를 유지한다 — 빈 select 를
-    // 세우면 고를 것이 사라져 화면이 고장난 것처럼 보인다.
-    expect(optionValues(select)).toEqual(["google-antigravity", "openai-codex"]);
+    // fakeDom 은 hidden 속성을 속성 필드로 동기화하지 않으므로 attribute 로 본다.
+    expect(select?.getAttribute("hidden")).toBe("");
     dispose();
   });
 
@@ -143,9 +147,10 @@ describe("API 키 입력칸은 어느 제공자에도 없다", () => {
     }
   });
 
-  it("'API 키' 종류를 눌러도 키 입력칸이 생기지 않는다", async () => {
+  it("어느 상태에서도 키 입력칸이 생기지 않는다", async () => {
+    // 「API 키」종류 카드 자체가 없어졌으므로, 키 칸이 뜰 경로는 존재하지 않는다.
     const { root, dispose } = await render();
-    findByTestId(root, "ai-auth-api-key")?.click();
+    findByTestId(root, "ai-auth-quick-openai-codex")?.click();
     expect(findByTestId(root, "ai-companion-api-key")).toBeNull();
     dispose();
   });
@@ -363,14 +368,14 @@ describe("키 저장 경로는 패널에서 사라졌다", () => {
     dispose();
   });
 
-  it("API 키 종류에서는 퀵 블록 전체(제목 포함)가 숨는다 (결함 3)", async () => {
+  it("제공자 카드 블록은 항상 보인다 — 종류 전환 자체가 없어졌다 (결함 3 잔재 정리)", async () => {
+    // 옛 결함은 「API 키」종류에서 '빠른 선택' 제목만 남고 카드가 숨는 것이었다. 종류 카드를
+    // 없앤 지금은 블록이 항상 보이는 것이 계약이다 — 카드가 곧 선택 수단이다.
     const { root, dispose } = await render();
-    findByTestId(root, "ai-auth-api-key")?.click();
     const block = findByTestId(root, "ai-auth-quick-block");
     expect(block).not.toBeNull();
-    expect(block?.hidden).toBe(true);
-    // 자식 카드뿐 아니라 제목이 든 블록 자체가 숨는다 — '빠른 선택' 제목이 화면에 남으면 결함.
-    expect(findByTestId(root, "ai-auth-quick")?.hidden).toBe(true);
+    expect(block?.hidden).toBe(false);
+    expect(findByTestId(root, "ai-auth-quick")?.hidden).toBe(false);
     dispose();
   });
 });
@@ -459,7 +464,9 @@ describe("OAuth 빠른 선택", () => {
     let resolveA!: (value: unknown) => void;
     let resolveB!: (value: unknown) => void;
     fetchChatGptAuthStatus
+      // 호출 순서: (1) 선택 제공자 mount 조회 (2) 비선택 카드 필 조회 (3) 카드 클릭 후 재조회.
       .mockImplementationOnce(() => new Promise((resolve) => { resolveA = resolve; }))
+      .mockImplementationOnce(() => new Promise(() => undefined))
       .mockImplementationOnce(() => new Promise((resolve) => { resolveB = resolve; }));
     const { root, dispose } = await render("openai-codex");
     await Promise.resolve();
@@ -651,7 +658,9 @@ describe("동일 제공자 상태·로그인 경쟁 (결함 A)", () => {
   it("재확인 중에는 연결 해제가 막힌다 (상호 배타 — 이전 결함 A 시나리오)", async () => {
     // 첫 조회: 저장됨 → 연결 해제 버튼이 보인다.
     fetchChatGptAuthStatus.mockResolvedValueOnce({ connected: true, env: false, planType: "plus" });
-    // 재확인(로그인)이 시작하는 두 번째 조회는 미해결로 붙잡아 둔다.
+    // 두 번째 호출은 비선택 카드 필 조회다 — 이 계약과 무관하므로 미해결로 둔다.
+    fetchChatGptAuthStatus.mockImplementationOnce(() => new Promise(() => undefined));
+    // 재확인(로그인)이 시작하는 세 번째 조회는 미해결로 붙잡아 둔다.
     let resolveRecheck!: (value: unknown) => void;
     fetchChatGptAuthStatus.mockImplementationOnce(
       () => new Promise((resolve) => { resolveRecheck = resolve; }),
@@ -696,6 +705,7 @@ describe("동일 제공자 상태·로그인 경쟁 (결함 A)", () => {
     );
     fetchChatGptAuthStatus
       .mockResolvedValueOnce({ connected: false })                             // 첫 render 조회
+      .mockImplementationOnce(() => new Promise(() => undefined))              // 비선택 카드 필 조회
       .mockImplementationOnce(() => new Promise((resolve) => { resolveFollowUp = resolve; })); // follow-up
     const { root, dispose } = await render("openai-codex");
     await Promise.resolve(); // 첫 상태 조회 resolve
@@ -774,7 +784,8 @@ describe("OAuth 액션 상호 배타 — 연결 해제 vs 재확인/로그인", 
   it("재확인(로그인)이 status 를 끝까지 기다리는 동안 연결 해제를 막는다", async () => {
     fetchChatGptAuthStatus
       .mockResolvedValueOnce({ connected: true, env: false, planType: "plus" })
-      .mockImplementationOnce(() => new Promise<void>(() => {}));
+      .mockImplementationOnce(() => new Promise<void>(() => {})) // 비선택 카드 필 조회
+      .mockImplementationOnce(() => new Promise<void>(() => {})); // follow-up 재확인 조회
     refreshCompanionAuth.mockResolvedValue({});
     const { root, dispose } = await render("openai-codex");
     await Promise.resolve();

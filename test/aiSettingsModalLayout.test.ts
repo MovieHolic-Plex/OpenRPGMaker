@@ -29,7 +29,6 @@ const REQUIRED_TEST_IDS = [
   "ai-config-reasoning",
   "ai-config-agentmode",
   "ai-font-size",
-  "ai-config-save",
   "ai-config-saved-hint",
   "ai-config-model-warning",
   "ai-config-lite-model-warning",
@@ -75,15 +74,14 @@ async function openModal(): Promise<FakeElement> {
 }
 
 describe("AI 설정 모달 섹션 레이아웃", () => {
-  it("연결·모델·동작·표시 카드를 제목과 설명으로 구분한다", async () => {
+  it("레일 탭과 페인으로 연결·모델·동작·표시를 나눈다", async () => {
+    // 리디자인 계약: 긴 단일 스크롤 대신 좌측 레일(tablist) + 페인. 역할 섹션 4개는
+    // 「역할별 모델 직접 지정」 표로 압축됐고, 모델 페인은 품질 프리셋으로 시작한다.
     const modal = await openModal();
     const expected = [
       ["connection", "연결", "AI 제공자와 로그인 상태를 관리합니다."],
-      ["ultrabrain", "Ultrabrain · 계획과 최종 판단", "최고 지능 역할입니다."],
-      ["vision", "Vision · 시각 관찰", "이미지 입력을 지원하는 LLM"],
-      ["writer", "Writer · 작문", "이야기·세계관·NPC 대사·퀘스트 문장"],
-      ["deep", "Deep · 깊은 작업과 실행", "Ultrabrain의 계획"],
-      ["image", "Image · 이미지 생성", "그림을 생성하는 모델"],
+      ["presets", "품질 프리셋", "역할별 모델과 추론 강도를 한 번에 맞춥니다."],
+      ["image", "이미지 생성", "그림을 생성하는 모델"],
       ["behavior", "동작", "응답 예산과 작업 진행 방식을 조정합니다."],
       ["display", "표시", "AI 패널의 읽기 환경을 조정합니다."],
     ] as const;
@@ -94,6 +92,40 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
       expect(section?.textContent).toContain(title);
       expect(section?.textContent).toContain(description);
     }
+
+    // 레일 탭 — 연결이 기본 활성, 나머지 페인은 숨겨져 있다.
+    expect(findByTestId(modal, "ai-settings-rail")?.getAttribute("role")).toBe("tablist");
+    for (const id of ["connection", "models", "behavior", "display"]) {
+      expect(findByTestId(modal, `ai-settings-tab-${id}`), `tab ${id}`).not.toBeNull();
+      expect(findByTestId(modal, `ai-settings-pane-${id}`), `pane ${id}`).not.toBeNull();
+    }
+    expect(findByTestId(modal, "ai-settings-tab-connection")?.getAttribute("aria-selected")).toBe("true");
+    expect(findByTestId(modal, "ai-settings-pane-models")?.hidden).toBe(true);
+
+    // 역할 4행은 details 안의 표로 압축 — 섹션 단위가 아니다.
+    const roles = findByTestId(modal, "ai-settings-advanced");
+    expect(roles?.tagName.toLowerCase()).toBe("details");
+    for (const role of ["ultrabrain", "vision", "writer", "deep"]) {
+      expect(findByTestId(modal, `ai-settings-role-${role}`), role).not.toBeNull();
+    }
+  });
+
+  it("모델 품질 프리셋이 역할 컨트롤을 한 번에 채운다", async () => {
+    const modal = await openModal();
+    const presets = findByTestId(modal, "ai-model-presets");
+    expect(presets?.getAttribute("role")).toBe("radiogroup");
+    for (const id of ["fast", "balanced", "quality"]) {
+      expect(findByTestId(modal, `ai-model-preset-${id}`), id).not.toBeNull();
+    }
+
+    // 「최고 품질」을 고르면 역할 모델이 상위 티어로 채워지고 저장된다.
+    findByTestId(modal, "ai-model-preset-quality")?.click();
+    const modelInput = findByTestId(modal, "ai-config-model") as unknown as HTMLInputElement | null;
+    expect(modelInput?.value).toBe("gemini-3-pro");
+    const stored = JSON.parse(storage.get("oprn:ai-config") ?? "{}");
+    expect(stored.model).toBe("gemini-3-pro");
+    expect(stored.ultrabrainModel).toBe("gemini-3-pro");
+    expect(stored.roleModels?.writer?.thinkingLevel).toBe("high");
   });
 
   it("모든 설정 행의 설명을 화면 텍스트로 제공한다", async () => {
@@ -122,15 +154,20 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     expect(fetchChatGptAuthStatus).toHaveBeenCalledWith("google-antigravity");
   });
 
-  it("자동 저장과 지금 저장을 하나의 저장 모델과 시각으로 설명한다", async () => {
+  it("자동 저장이 유일한 저장 모델이고 푸터는 상태만 보여 준다", async () => {
     const modal = await openModal();
     const hint = findByTestId(modal, "ai-config-saved-hint");
-    const save = findByTestId(modal, "ai-config-save");
 
+    // 「지금 저장」버튼은 없다 — 수동 저장이 있으면 자동 저장이 안 되는 것처럼 보인다.
+    expect(findByTestId(modal, "ai-config-save")).toBeNull();
     expect(hint?.textContent).toBe("변경 사항은 자동으로 저장됩니다.");
-    expect(save?.textContent).toBe("지금 저장");
-    save?.click();
-    expect(hint?.textContent).toMatch(/^지금 저장됨 · .+\d{1,2}:\d{2}/u);
+
+    const maxTokens = findByTestId(modal, "ai-config-maxtokens");
+    if (!maxTokens) throw new Error("maxTokens field missing");
+    maxTokens.value = "54321";
+    maxTokens.dispatchEvent(new Event("change"));
+    expect(hint?.textContent).toMatch(/^자동 저장됨 · .+\d{1,2}:\d{2}/u);
+    expect(JSON.parse(storage.get("oprn:ai-config") ?? "{}").maxTokens).toBe(54321);
   });
 
   it("디바운스 중 닫아도 입력값을 저장한다", async () => {
