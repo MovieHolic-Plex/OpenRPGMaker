@@ -12,6 +12,7 @@ test("background opacity: native keyboard, immediate application and reload", as
   const root = page.locator(".ai-chat-panel");
   const deck = page.locator(".ai-deck");
   await page.getByTestId("topbar-ai-settings").click();
+  await page.getByTestId("ai-settings-tab-display").click();
   const slider = page.getByRole("slider", { name: "배경 농도", exact: true });
   await expect(slider).toHaveValue("82");
   await slider.focus();
@@ -36,6 +37,7 @@ test("background opacity: native keyboard, immediate application and reload", as
   expect(await root.evaluate((node) => node.style.getPropertyValue("--ai-background-opacity"))).toBe("99%");
   expect(await pill.evaluate((node) => getComputedStyle(node).backgroundColor)).toBe(before.background);
   await page.getByTestId("topbar-ai-settings").click();
+  await page.getByTestId("ai-settings-tab-display").click();
   await expect(slider).toHaveValue("99");
   await slider.press("Home");
   expect(await pill.evaluate((node) => getComputedStyle(node).backgroundColor)).not.toBe(before.background);

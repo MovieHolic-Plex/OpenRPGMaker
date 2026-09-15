@@ -51,5 +51,6 @@ test("edit mode restores existing chrome, removes the bottom bar, and exposes sc
   });
   expect(scroll.scrollHeight).toBeGreaterThan(scroll.clientHeight);
   expect(scroll.top).toBeGreaterThan(0);
-  await expect(page.getByTestId("ai-config-save")).toBeVisible();
+  // 수동 「지금 저장」은 없다 — 푸터는 자동 저장 상태만 보여 준다.
+  await expect(page.getByTestId("ai-config-saved-hint")).toBeVisible();
 });

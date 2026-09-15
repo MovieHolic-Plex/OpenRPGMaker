@@ -96,8 +96,9 @@ describe("설정 자동 저장", () => {
     // 부재 자체가 회귀 방지선이므로 단언으로 고정한다(자세한 계약은 aiSettingsModalNoBrowserKey).
     expect(findByTestId(modal, "ai-config-baseurl")).toBeNull();
     expect(findByTestId(modal, "ai-config-apikey")).toBeNull();
-    expect(findByTestId(modal, "ai-auth-oauth")).not.toBeNull();
-    expect(findByTestId(modal, "ai-auth-api-key")).not.toBeNull();
+    // 종류 카드는 사라졌다 — 제공자 카드가 곧 선택과 상태 표시다.
+    expect(findByTestId(modal, "ai-auth-quick-google-antigravity")).not.toBeNull();
+    expect(findByTestId(modal, "ai-auth-quick-openai-codex")).not.toBeNull();
     const providers = findByTestId(modal, "ai-oh-my-pi-provider");
     expect(providers).not.toBeNull();
     // 예전에는 68종을 종류 구분 없이 한 줄로 나열했다(감독이 고를 수 없는 제공자까지 섞였다).
@@ -107,34 +108,33 @@ describe("설정 자동 저장", () => {
     expect(findByTestId(modal, "ai-config-model-preset")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-lite-model-preset")).not.toBeNull();
     expect(modal.textContent).toContain("구독 로그인");
-    expect(modal.textContent).toContain("Ultrabrain · 계획과 최종 판단");
+    expect(modal.textContent).toContain("역할별 모델 직접 지정");
   });
 
-  it("API 키 종류로 바꿔도 전송 축은 동반 서비스로 남는다", () => {
-    // 옛 스펙은 여기서 stored.authMode === "apiKey" 를 기대했다. 그 배선이 장애의 원인이었다 —
-    // authMode 는 전송 축(동반 서비스 vs 직접 게이트웨이)이고, 사용자가 고르는 것은 자격 증명
-    // 종류다. 두 종류 모두 동반 서비스가 자격을 보관하므로 전송은 바뀌지 않는다.
+  it("제공자를 바꿔도 전송 축은 동반 서비스로 남는다", () => {
+    // 옛 스펙은 「API 키」종류 카드를 눌러 stored.authMode === "apiKey" 를 기대했다. 그 배선이
+    // 장애의 원인이었다 — authMode 는 전송 축(동반 서비스 vs 직접 게이트웨이)이고, 사용자가
+    // 고르는 것은 제공자다. 종류 카드는 사라졌고, 제공자 카드를 골라도 전송은 바뀌지 않는다.
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     expect(loadAiConfig().authMode).toBe("chatgpt");
 
-    const apiMode = findByTestId(modal, "ai-auth-api-key");
-    if (!apiMode) throw new Error("API auth mode button missing");
-    apiMode.click();
+    const codexCard = findByTestId(modal, "ai-auth-quick-openai-codex");
+    if (!codexCard) throw new Error("Codex provider card missing");
+    codexCard.click();
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.authMode).toBe("chatgpt");
-    // 제공자는 Antigravity 하나로 강제되므로 종류 축도 항상 oauth 다 — 자격 종류를 눌러도
-    // 제공자가 바뀌지 않는다(감독 지시 2026-08-26: 잔여 경로 없음).
-    expect(stored.providerId).toBe("google-antigravity");
+    expect(stored.providerId).toBe("openai-codex");
     expect(ohMyPiAuthKind(stored.providerId)).toBe("oauth");
     // 브라우저에는 비밀이 남지 않는다.
     expect(stored.apiKey ?? "").toBe("");
     expect(stored.baseUrl ?? "").toBe("");
   });
 
-  it("설정 제공자 목록은 종류와 무관하게 두 구독 제공자만 담는다", () => {
+  it("설정 제공자 목록은 두 구독 제공자만 담는다", () => {
     // optgroup 으로 묶여 있으므로 childNodes 가 아니라 querySelectorAll("option") 으로 관통해 읽는다.
+    // 「연결 방식」종류 카드는 사라졌다 — 갈릴 목록이 없으므로 목록은 그대로 두 제공자다.
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const select = findByTestId(modal, "ai-oh-my-pi-provider");
@@ -142,11 +142,6 @@ describe("설정 자동 저장", () => {
     const values = (): readonly string[] =>
       select.querySelectorAll("option").map((option) => option.getAttribute("value") ?? "");
 
-    expect(values()).toEqual(["google-antigravity", "openai-codex"]);
-
-    findByTestId(modal, "ai-auth-api-key")?.click();
-
-    // 자격 종류를 눌러도 목록은 그대로다 — 두 제공자가 모두 구독 로그인이라 갈릴 목록이 없다.
     expect(values()).toEqual(["google-antigravity", "openai-codex"]);
     expect(providersForKind("oauth")).toEqual(providersForKind("apiKey"));
   });
@@ -183,7 +178,6 @@ describe("설정 자동 저장", () => {
     // 보안 계약은 그대로다: **브라우저 저장소에 비밀이 닿지 않는다.**
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
-    findByTestId(modal, "ai-auth-api-key")?.click();
 
     // 숨은 input 도 두지 않는다 — 자동완성·미래 collect 경로가 값을 읽을 수 있는 표면이다.
     expect(findByTestId(modal, "ai-config-apikey")).toBeNull();
@@ -247,12 +241,17 @@ describe("설정 자동 저장", () => {
     expect(DEFAULT_LITE_MODEL).toBe("gemini-3.7-flash");
   });
 
-  it("모델 설정 라벨은 감독/실행 역할을 구분한다", () => {
+  it("모델 설정은 감독/실행 역할을 구분한다", () => {
+    // 역할 컨트롤은 「역할별 모델 직접 지정」 표의 행이다 — 행별 제공자·모델·추론 컨트롤이 있다.
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
 
-    expect(modal.textContent).toContain("Writer 모델");
-    expect(modal.textContent).toContain("Deep 모델");
+    const writerRow = findByTestId(modal, "ai-settings-role-writer");
+    const deepRow = findByTestId(modal, "ai-settings-role-deep");
+    expect(writerRow?.textContent).toContain("Writer");
+    expect(deepRow?.textContent).toContain("Deep");
+    expect(findByTestId(writerRow!, "ai-config-model")).not.toBeNull();
+    expect(findByTestId(deepRow!, "ai-config-lite-model")).not.toBeNull();
   });
 
   it("ChatGPT 모델 선택기는 GJC의 최신 Codex 모델을 바로 선택해 저장한다", () => {
@@ -319,8 +318,7 @@ describe("설정 자동 저장", () => {
     const preset = findByTestId(modal, "ai-config-model-preset");
     if (!preset) throw new Error("model preset missing");
 
-    // 자격 종류를 눌러도 사라진 게이트웨이 목록이 되살아나지 않는다.
-    findByTestId(modal, "ai-auth-api-key")?.click();
+    // 사라진 게이트웨이 목록이 되살아나지 않는다 — 종류 카드 자체가 없어졌다.
     for (const gone of ["claude-opus-4-8", "grok-4.3", "grok-4.6", "glm-5.2-ultrafast", "cpen/"]) {
       expect(preset.textContent, gone).not.toContain(gone);
     }
@@ -338,15 +336,17 @@ describe("설정 자동 저장", () => {
     expect(stored.liteModel).toBe("custom/free-form-model");
   });
 
-  it("설정 저장 버튼도 동일하게 저장한다", () => {
+  it("수동 저장 버튼은 없고 변경 이벤트가 자동 저장한다", () => {
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
+    // 「지금 저장」버튼은 리디자인에서 제거됐다 — 푸터는 자동 저장 상태만 보여 준다.
+    expect(findByTestId(modal, "ai-config-save")).toBeNull();
+    expect(findByTestId(modal, "ai-config-saved-hint")).not.toBeNull();
     // baseUrl 필드가 사라졌으므로 남아 있는 필드(최대 토큰)로 저장 경로를 확인한다.
     const maxTokens = findByTestId(modal, "ai-config-maxtokens");
-    const save = findByTestId(modal, "ai-config-save");
-    if (!maxTokens || !save) throw new Error("fields missing");
+    if (!maxTokens) throw new Error("fields missing");
     maxTokens.value = "12345";
-    save.click();
+    maxTokens.dispatchEvent(new Event("change"));
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.maxTokens).toBe(12345);
@@ -388,14 +388,14 @@ describe("agentMode 설정", () => {
     expect(reselect?.value).toBe("chat");
   });
 
-  it("설정 저장 버튼으로도 agentMode가 저장된다", () => {
+  it("agentMode 변경은 자동 저장된다 — 수동 저장 버튼은 없다", () => {
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const select = findByTestId(modal, "ai-config-agentmode");
-    const save = findByTestId(modal, "ai-config-save");
-    if (!select || !save) throw new Error("agentMode controls missing");
+    if (!select) throw new Error("agentMode controls missing");
+    expect(findByTestId(modal, "ai-config-save")).toBeNull();
     select.value = "chat";
-    save.click();
+    select.dispatchEvent(new Event("change"));
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.agentMode).toBe("chat");

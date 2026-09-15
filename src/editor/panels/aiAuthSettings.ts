@@ -22,8 +22,6 @@ import {
   type ChatGptCompanionUnreachableError,
 } from "@/ai/chatgptOAuthClient";
 import {
-  configForConnectionKind,
-  defaultProviderForKind,
   editorConnectionKind,
   providersForKind,
   type AiConnectionKindId,
@@ -41,6 +39,8 @@ import {
   resetAiConnectionStatusCache,
 } from "@/editor/panels/aiConnectionStatus";
 import { el } from "@/util/dom";
+import { deckIcon } from "./aiDeckIcons";
+import { aiProviderIcon } from "./aiProviderIcons";
 
 export interface AiAuthSettingsChange {
   readonly kind: AiConnectionKindId;
@@ -85,7 +85,9 @@ export function renderAiAuthSettings(
   config: AiConfig,
   onChange: (next: AiAuthSettingsChange) => void,
 ): AiAuthSettingsView {
-  let kind = editorConnectionKind(config);
+  // 연결 종류 선택 UI 는 없다 — 이 레지스트리의 제공자는 전부 oauth 이고, 예전 「API 키」
+  // 카드는 지원 제공자가 없는 죽은 선택지였다(고르면 같은 두 제공자만 다시 보였다).
+  const kind = editorConnectionKind(config);
   let providerId = parseOhMyPiProvider(config.providerId);
   let stored = false;
   let pollTimer: ReturnType<typeof setTimeout> | undefined;
@@ -115,75 +117,88 @@ export function renderAiAuthSettings(
     status.dataset.tone = tone;
   };
 
-  // ── 종류 선택(radiogroup) ─────────────────────────────────────────────────
-  const heading = el("h3", {
-    class: "ai-config-label",
-    text: "연결 방식",
-    attrs: { id: "ai-auth-kind-heading" },
-  });
-  const kindButtons = new Map<AiConnectionKindId, HTMLButtonElement>();
-  const kindGroup = el("div", {
-    class: "ai-auth-kinds",
-    attrs: { role: "radiogroup", "aria-labelledby": "ai-auth-kind-heading" },
-    children: (["oauth", "apiKey"] as const).map((id) => {
-      const button = el("button", {
-        class: "ai-auth-kind",
-        attrs: { type: "button", role: "radio", "aria-checked": "false", tabindex: "-1" },
-        dataset: { testid: id === "oauth" ? "ai-auth-oauth" : "ai-auth-api-key" },
-        children: [
-          el("strong", { text: KIND_COPY[id].label }),
-          el("small", { text: KIND_COPY[id].hint }),
-        ],
-      }) as HTMLButtonElement;
-      button.addEventListener("click", () => selectKind(id));
-      kindButtons.set(id, button);
-      return button;
-    }),
-  });
-  // 라디오 그룹 키보드 관례: 화살표로 선택이 이동한다. 옛 구현은 aria-pressed 토글 두 개를
-  // role="group" 에 넣어, 상호배타인데도 독립 토글 두 개로 읽혔다.
-  kindGroup.addEventListener("keydown", (event) => {
-    const key = (event as KeyboardEvent).key;
-    if (key !== "ArrowLeft" && key !== "ArrowRight" && key !== "ArrowUp" && key !== "ArrowDown") return;
-    event.preventDefault();
-    selectKind(kind === "oauth" ? "apiKey" : "oauth");
-  });
-
-  // ── OAuth 빠른 선택(radiogroup) ──────────────────────────────────────────
-  // Google Gemini / OpenAI Codex 두 카드. 아래 select 와 같은 providerId 를 공유한다 — 선택하면
-  // select 값·aria·onChange·상태 조회·로그인 라우팅까지 한 경로에서 동기화된다.
-  const quickHeading = el("h3", {
-    class: "ai-config-label",
-    text: "빠른 선택",
-    attrs: { id: "ai-auth-quick-heading" },
-  });
+  // ── 제공자 카드(radiogroup) ─────────────────────────────────────────────
+  // 카드가 곧 제공자 선택 + 상태 표시다 — 옛 「연결 방식」 카드와 「제공자」 드롭다운의
+  // 3중 중복을 카드 하나로 합쳤다. 카드 선택은 아래 숨은 select 의 값·change 원천과
+  // 같은 providerId 로 동기화된다.
   const quickButtons = new Map<string, HTMLButtonElement>();
+  const cardPills = new Map<string, HTMLElement>();
+  /** 카드별 마지막으로 확인된 자격 상태 — 선택되지 않은 카드도 「연결됨」을 보여 주기 위한 캐시. */
+  const cardAuth = new Map<string, ChatGptAuthStatus | "checking" | "error">();
   const quickBlock = el("div", {
     class: "ai-auth-quick-block",
-    attrs: { hidden: "" },
     dataset: { testid: "ai-auth-quick-block" },
-    children: [quickHeading],
   });
   const quickGroup = el("div", {
     class: "ai-auth-quick",
-    attrs: { role: "radiogroup", "aria-labelledby": "ai-auth-quick-heading", hidden: "" },
+    attrs: { role: "radiogroup", "aria-label": "AI 제공자" },
     dataset: { testid: "ai-auth-quick" },
-    children: QUICK_PROVIDERS.map((provider) => {
+    children: providersForKind(kind).map((row) => {
+      const copy = QUICK_PROVIDERS.find((quick) => quick.id === row.id);
+      const label = copy?.label ?? row.label;
+      const hint = copy?.hint ?? `${row.label} 계정으로 로그인합니다.`;
+      const pill = el("span", {
+        class: "ai-auth-card-pill",
+        text: "확인 중…",
+        dataset: { testid: `ai-auth-card-status-${row.id}`, tone: "checking" },
+      });
+      cardPills.set(row.id, pill);
       const button = el("button", {
-        class: "ai-auth-quick-card",
+        class: "ai-auth-quick-card ai-auth-provider-card",
         attrs: { type: "button", role: "radio", "aria-checked": "false", tabindex: "-1" },
-        dataset: { testid: `ai-auth-quick-${provider.id}` },
+        dataset: { testid: `ai-auth-quick-${row.id}` },
         children: [
-          el("strong", { text: provider.label }),
-          el("small", { text: provider.hint }),
+          el("span", { class: "ai-auth-card-head", children: [
+            el("span", {
+              class: "ai-auth-card-brand",
+              children: [aiProviderIcon(row.id, 18) ?? deckIcon("spark", { size: 15 })],
+            }),
+            el("strong", { text: label }),
+            el("span", {
+              class: "ai-auth-card-check",
+              attrs: { "aria-hidden": "true" },
+              children: [deckIcon("check", { size: 15 })],
+            }),
+          ] }),
+          el("small", { text: hint }),
+          pill,
         ],
       }) as HTMLButtonElement;
-      button.addEventListener("click", () => selectQuickProvider(provider.id));
-      quickButtons.set(provider.id, button);
+      button.addEventListener("click", () => selectQuickProvider(row.id));
+      quickButtons.set(row.id, button);
       return button;
     }),
   });
   quickBlock.append(quickGroup);
+
+  /** 카드의 상태 필 하나를 캐시된 자격 상태로 다시 그린다. */
+  function renderCardPill(id: string): void {
+    const pill = cardPills.get(id);
+    if (!pill) return;
+    const auth = cardAuth.get(id);
+    let text = "확인 중…";
+    let tone = "checking";
+    if (auth === "error") {
+      text = "확인 실패";
+      tone = "offline";
+    } else if (auth && auth !== "checking") {
+      if (hasStoredCompanionCredential(auth)) {
+        text = `연결됨${auth.planType ? ` · ${auth.planType.toUpperCase()}` : ""}`;
+        tone = "connected";
+      } else if (auth.expired === true) {
+        text = "자격 만료";
+        tone = "offline";
+      } else if (auth.env === true) {
+        text = "환경 변수만 있음";
+        tone = "offline";
+      } else {
+        text = "로그인 필요";
+        tone = "idle";
+      }
+    }
+    pill.textContent = text;
+    pill.dataset.tone = tone;
+  }
   // 라디오 그룹 키보드 관례: 화살표가 옆(끝에서는 처음으로) 선택지를 고르고 **포커스도 이동한다**.
   // 현재 제공자가 퀵 카드에 없으면(드롭다운으로 다른 OAuth 제공자를 골랐다면) 결정적으로 첫 카드로 간다.
   quickGroup.addEventListener("keydown", (event) => {
@@ -193,10 +208,12 @@ export function renderAiAuthSettings(
     selectQuickProvider(nextQuickProvider(key));
   });
 
-  // ── 제공자 선택 ───────────────────────────────────────────────────────────
+  // ── 제공자 선택(숨은 select) ─────────────────────────────────────────────
+  // 카드가 선택의 유일한 보이는 경로다. 이 select 는 값·change 이벤트의 프로그램 원천으로만
+  // 남긴다 — 테스트와 커스텀 셀렉트 우회 경로가 같은 계약을 계속 쓴다.
   const providerSelect = el("select", {
     class: "ai-config-select ai-oh-my-pi-provider",
-    attrs: { id: "ai-auth-provider" },
+    attrs: { id: "ai-auth-provider", hidden: "", "aria-hidden": "true", tabindex: "-1" },
     dataset: { testid: "ai-oh-my-pi-provider" },
   }) as HTMLSelectElement;
   const providerHelp = el("span", {
@@ -338,12 +355,6 @@ export function renderAiAuthSettings(
   const applyChrome = (): void => {
     const meta = getOhMyPiProvider(providerId);
     const providerKind = ohMyPiAuthKind(providerId);
-    for (const [id, button] of kindButtons) {
-      const active = id === kind;
-      button.classList.toggle("is-active", active);
-      button.setAttribute("aria-checked", String(active));
-      button.setAttribute("tabindex", active ? "0" : "-1");
-    }
     // 두 제공자는 모두 oauth 이므로 키 입력 분기가 없다. 안내도 providerId 하드코딩 대신
     // 레지스트리 authKind 를 따라가 새 제공자를 추가할 때 잘못된 키 안내가 생기지 않게 한다.
     providerHelp.textContent = providerKind === "oauth"
@@ -374,14 +385,15 @@ export function renderAiAuthSettings(
       button.setAttribute("aria-checked", String(active));
       button.setAttribute("tabindex", active ? "0" : "-1");
     }
-    if (inOAuth && !quickButtons.has(providerId) && QUICK_PROVIDERS.length > 0) {
-      quickButtons.get(QUICK_PROVIDERS[0].id)?.setAttribute("tabindex", "0");
+    if (inOAuth && !quickButtons.has(providerId)) {
+      const first = [...quickButtons.keys()][0];
+      if (first) quickButtons.get(first)?.setAttribute("tabindex", "0");
     }
   }
 
   /** 화살표 방향에 대해 다음/첫 퀵 제공자. 현재 제공자가 퀵 카드에 없으면 결정적으로 첫 카드. */
   function nextQuickProvider(key: string): string {
-    const ids = QUICK_PROVIDERS.map((provider) => provider.id);
+    const ids = [...quickButtons.keys()];
     const currentIndex = ids.indexOf(providerId);
     if (currentIndex < 0) return ids[0];
     const delta = key === "ArrowUp" || key === "ArrowLeft" ? -1 : 1;
@@ -428,26 +440,6 @@ export function renderAiAuthSettings(
     onChange({ kind, providerId });
   };
 
-  function selectKind(next: AiConnectionKindId): void {
-    if (next === kind) {
-      kindButtons.get(next)?.focus();
-      return;
-    }
-    // 종류 변경도 선택 변경이다 — 실행 중 폴링을 멈추고, 연산 세대를 올리고, 저장된 자격을 비운다.
-    beginSelectionChange();
-    kind = next;
-    // 종류를 바꾸면 제공자도 그 종류 안으로 스냅한다 — 모순 상태(oauth 종류 + apiKey 제공자)를
-    // 만들지 않는다. configForConnectionKind 가 그 규칙의 단일 출처다.
-    providerId = parseOhMyPiProvider(
-      configForConnectionKind(config, next, defaultProviderForKind(next)).providerId,
-    );
-    fillProviders();
-    applyChrome();
-    kindButtons.get(next)?.focus();
-    emit();
-    void refreshStatus();
-  }
-
   // ── 상태 조회 ─────────────────────────────────────────────────────────────
   const showUnreachable = (error: unknown): void => {
     const reason = (error as ChatGptCompanionUnreachableError | undefined)?.reason;
@@ -459,6 +451,8 @@ export function renderAiAuthSettings(
         : "로컬 연결 서비스가 필요합니다. 터미널에서 npm run ai:oauth 를 한 번 실행하세요.";
     hint.hidden = false;
     serverError.hidden = true;
+    cardAuth.set(providerId, "error");
+    renderCardPill(providerId);
   };
 
   const showServerError = (error: unknown): void => {
@@ -476,6 +470,8 @@ export function renderAiAuthSettings(
       ? "codex 프로그램 쪽 문제일 수 있어요. 개발 서버를 껐다 켜 보세요."
       : "개발 서버를 껐다 켜 보세요. 그래도 안 되면 이 화면을 복사해 개발자에게 알려주세요.";
     serverError.textContent = `연결 서비스가 응답했지만 오류가 났어요. ${guidance} 오류 내용: ${detail}`;
+    cardAuth.set(providerId, "error");
+    renderCardPill(providerId);
   };
 
   const applyStatus = (auth: ChatGptAuthStatus): void => {
@@ -497,6 +493,9 @@ export function renderAiAuthSettings(
     } else {
       setStatus(ohMyPiAuthKind(providerId) === "oauth" ? "로그인 필요" : "키 필요", "disconnected");
     }
+    // 선택 제공자 카드의 필도 같은 상태로 맞춘다 — 카드가 곧 상태 표시다.
+    cardAuth.set(providerId, auth);
+    renderCardPill(providerId);
     // 성공 경로에서는 (A) 안내를 **무조건** 숨긴다. 예전에는 미로그인 사용자에게
     // "서비스가 안 켜졌다"고 오진했다(옛 결함 ⑤).
     hint.hidden = true;
@@ -749,33 +748,46 @@ export function renderAiAuthSettings(
   fillProviders();
   applyChrome();
   void refreshStatus();
+  // 선택되지 않은 카드도 실제 자격 상태를 보여 준다 — 카드가 곧 상태 표시이므로 둘 다 조회한다.
+  // 선택 카드는 위 refreshStatus 경로가 담당한다.
+  for (const row of providersForKind(kind)) {
+    if (row.id === providerId) continue;
+    const idle = row.id;
+    void fetchChatGptAuthStatus(idle)
+      .then((auth) => {
+        if (disposed) return;
+        cardAuth.set(idle, auth);
+        renderCardPill(idle);
+      })
+      .catch(() => {
+        if (disposed) return;
+        cardAuth.set(idle, "error");
+        renderCardPill(idle);
+      });
+  }
 
   return {
     element: el("section", {
       class: "ai-auth-settings",
-      attrs: { "aria-label": "AI 연결 방식" },
+      attrs: { "aria-label": "AI 연결" },
       children: [
-        heading,
-        kindGroup,
         quickBlock,
-        el("div", { class: "ai-auth-provider-row", children: [
-          el("label", { class: "ai-config-label", text: "제공자", attrs: { for: "ai-auth-provider" } }),
-          providerSelect,
-          providerHelp,
-        ] }),
         el("div", { class: "ai-auth-panel", dataset: { testid: "ai-auth-connection" }, children: [
+          providerHelp,
           el("div", { class: "ai-auth-state", children: [status, kindBadge] }),
           el("div", { class: "ai-auth-actions", children: [loginButton, disconnectButton] }),
           deviceBlock,
           hint,
           serverError,
         ] }),
+        // 숨은 제공자 select — 카드가 선택을 주도하지만 값·change 의 원천은 여기다.
+        providerSelect,
       ],
     }),
     focus: () => {
       // 폼의 첫 컨트롤로 보낸다 — 로그인 버튼에 포커스를 주면 Enter 한 번에 로그인이 발사된다.
       // API 키 입력은 두 제공자 모두에게 존재하지 않는다.
-      kindButtons.get(kind)?.focus();
+      quickButtons.get(providerId)?.focus();
     },
     dispose: () => {
       disposed = true;

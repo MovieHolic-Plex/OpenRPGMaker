@@ -153,6 +153,8 @@ test.describe("조수 단일 도크", () => {
 
     const modal = page.getByTestId("ai-settings-modal");
     await expect(modal).toBeVisible();
+    // 「대기 화면」은 설정 모달의 추가 절로, 레일의 자체 탭에 있다.
+    await modal.getByTestId("ai-settings-tab-extra-temperature").click();
     await expect(modal.getByTestId("ai-settings-section-temperature")).toBeVisible();
     const choices = [
       ["quiet-gold", "✦", "추천 함께 보기"],

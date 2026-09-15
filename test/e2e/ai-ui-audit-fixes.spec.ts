@@ -199,9 +199,11 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
 
     test("F6 topbar settings immediately synchronize panel", async ({ page }) => {
       await page.getByTestId("topbar-ai-settings").click();
-      await choose(page, "ai-font-size", "크게");
+      // 페인별로 나뉘었으므로 탭을 오가며 고른다 — 수동 저장 버튼은 없고 change 가 자동 저장을 태운다.
+      await page.getByTestId("ai-settings-tab-behavior").click();
       await choose(page, "ai-config-autonomy", "최대");
-      await page.getByTestId("ai-config-save").click();
+      await page.getByTestId("ai-settings-tab-display").click();
+      await choose(page, "ai-font-size", "크게");
       await expect(page.getByTestId("ai-panel")).toHaveAttribute("data-ai-font-size", "large");
       await expect(page.getByTestId("ai-composer-autonomy")).toHaveValue("max");
       await page.getByTestId("ai-background-opacity").focus();
@@ -222,6 +224,8 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
         await page.keyboard.press("Tab");
         await expect(page.getByTestId(`ai-${kind}-close`)).toBeFocused();
         if (kind === "settings") {
+          // 글자 크기는 「표시」페인에 있다 — 페인을 먼저 연다.
+          await page.getByTestId("ai-settings-tab-display").click();
           await page.locator("[data-custom-select-for='ai-font-size']").click();
           await expect(page.getByRole("listbox")).toBeVisible();
           await page.keyboard.press("Escape");
@@ -241,6 +245,8 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
           await page.getByTestId("ai-command-menu-toggle").click();
           await page.getByTestId("ai-command-menu-settings").click();
         }
+        // 대기 화면 선택은 「대기 화면」추가 페인에 있다.
+        await page.getByTestId("ai-settings-tab-extra-temperature").click();
         for (const value of ["map-first", "ink-only", "quiet-gold"]) {
           await page.getByTestId(`ai-command-temperature-${value}`).click();
           await expect(page.getByTestId("ai-panel")).toHaveAttribute("data-temperature", value);

@@ -1,4 +1,4 @@
-import { modelForRole, type SpecialistRole, type RoleModel } from "@/ai/modelRoles";
+import { modelForRole, type RoleModel } from "@/ai/modelRoles";
 // AI 설정 전용 모달 — 채팅 본문과 분리된 설정 표면.
 // loadAiConfig/saveAiConfig 자동 저장 계약을 유지한다.
 
@@ -22,6 +22,7 @@ import {
   type AiConfig,
 } from "@/ai/llmClient";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel } from "@/ai/autonomyLevels";
+import { MODEL_PRESETS, tierModelFor, type ModelPreset } from "@/ai/modelPresets";
 import { isModelValidForAuthMode, modelCatalogForAuthMode } from "@/ai/modelCatalog";
 import { OH_MY_PI_PROVIDERS, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, IMAGE_MODEL_CATALOG } from "@/ai/imageModelCatalog";
@@ -127,7 +128,21 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
         children: [
           el("header", {
             class: "database-modal-header",
-            children: [el("h2", { text: "AI 설정" }), closeButton],
+            children: [
+              // 닫기 버튼이 DOM 첫 포커스 대상이다 — Tab 경계 계약(첫 탭 정지 = 닫기)을 지킨다.
+              // 화면상 위치는 flex `order` 로 여전히 오른쪽 끝이다.
+              closeButton,
+              el("div", {
+                class: "ai-settings-titleblock",
+                children: [
+                  el("h2", { text: "AI 설정" }),
+                  el("div", {
+                    class: "ai-settings-subtitle",
+                    children: [form.connectionSummary, form.connectionCheckButton],
+                  }),
+                ],
+              }),
+            ],
           }),
           el("div", {
             class: "database-modal-body ai-settings-body",
@@ -171,7 +186,15 @@ export function renderAiSettingsForm(options: {
   readonly onBackgroundOpacityChange?: (value: number) => void;
   readonly onFontSizeChange?: (size: AiFontSize) => void;
   readonly extraSections?: readonly AiSettingsExtraSection[];
-}): { element: HTMLElement; focusFirstInput: () => void; focusApiKey: () => void; dispose: () => void } {
+}): {
+  element: HTMLElement;
+  /** 모달 헤더 아래 붙는 연결 상태 요약줄(폼 밖 조립 — 탭 전환과 무관하게 항상 보인다). */
+  connectionSummary: HTMLElement;
+  connectionCheckButton: HTMLElement;
+  focusFirstInput: () => void;
+  focusApiKey: () => void;
+  dispose: () => void;
+} {
   const onSaved = options.onSaved ?? (() => undefined);
   const onFontSizeChange = options.onFontSizeChange ?? (() => undefined);
   const config = loadAiConfig();
@@ -231,6 +254,8 @@ export function renderAiSettingsForm(options: {
     providerId,
   );
   const brainConfig = configForUltrabrain(config);
+  // 추론 강도 옵션은 영어 enum 을 그대로 보여 주지 않는다 — 영역 작업 추론 셀렉트와 같은 한국어 라벨.
+  const EFFORT_LABEL: Record<string, string> = { off: "끔", low: "낮음", medium: "보통", high: "높음" };
   const brainProvider = el("select", {
     class: "ai-config-select", dataset: { testid: "ai-config-ultrabrain-provider" },
     attrs: { "aria-label": "Ultrabrain 제공자" },
@@ -242,7 +267,7 @@ export function renderAiSettingsForm(options: {
   const brainEffort = el("select", {
     class: "ai-config-select", dataset: { testid: "ai-config-ultrabrain-reasoning" },
     attrs: { "aria-label": "Ultrabrain 추론" },
-    children: ["low", "medium", "high"].map(value => el("option", { attrs: { value }, text: value })),
+    children: ["low", "medium", "high"].map(value => el("option", { attrs: { value }, text: EFFORT_LABEL[value] })),
   }) as HTMLSelectElement;
   brainEffort.value = brainConfig.reasoningEffort!;
   const specialistControls = (["vision", "writer", "deep"] as const).map(role => {
@@ -257,7 +282,7 @@ export function renderAiSettingsForm(options: {
     field.refresh(authMode, selected.provider);
     const effort = el("select", { class: "ai-config-select", dataset: { testid: `ai-config-${role}-reasoning` },
       attrs: { "aria-label": `${role} 추론 강도` },
-      children: ["off", "low", "medium", "high"].map(value => el("option", { attrs: { value }, text: value })),
+      children: ["off", "low", "medium", "high"].map(value => el("option", { attrs: { value }, text: EFFORT_LABEL[value] })),
     }) as HTMLSelectElement;
     effort.value = selected.thinkingLevel;
     return { role, provider, field, effort };
@@ -292,7 +317,25 @@ export function renderAiSettingsForm(options: {
   }) as HTMLSelectElement;
   autonomySelect.value = initialAutonomyLevel;
   const autonomyDescription = "계획만 제안할지 직접 작업할지와 작업 예산을 조정합니다. 역할별 모델과 추론 강도는 유지됩니다.";
-  const autonomyRow = settingsRow("자율성", autonomyDescription, autonomySelect);
+  // 다이얼이 덮어쓰는 파생값(추론 강도·작업 모드·플랜 게이트)을 셀렉트 아래 한 줄로 노출한다 —
+  // 예전에는 세 컨트롤이 나란히 놓여 "누가 누구를 덮는지"가 보이지 않았다.
+  const autonomyDerived = el("span", {
+    class: "ai-config-derived",
+    dataset: { testid: "ai-config-autonomy-derived" },
+  });
+  const setAutonomyDerived = (level: AutonomyLevel): void => {
+    const resolved = resolveAutonomy(level);
+    const effort = ({ off: "끔", low: "낮음", medium: "보통", high: "높음" } as const)[resolved.reasoningEffort];
+    const mode = resolved.agentMode === "auto" ? "자율 모드" : "채팅 모드";
+    const extra = resolved.readOnly ? " · 쓰기 없음" : resolved.planOnly ? " · 실행 전 승인" : "";
+    autonomyDerived.textContent = `→ 추론 ${effort} · ${mode}${extra}`;
+  };
+  setAutonomyDerived(initialAutonomyLevel);
+  const autonomyRow = settingsRow(
+    "자율성",
+    autonomyDescription,
+    el("span", { class: "ai-config-stack", children: [autonomySelect, autonomyDerived] }),
+  );
   autonomyRow.setAttribute("title", autonomyDescription);
 
   const reasoningSelect = el("select", {
@@ -340,7 +383,7 @@ export function renderAiSettingsForm(options: {
   }) as HTMLSelectElement;
   piTeamSelect.value = (config.piTeam ?? DEFAULT_PI_TEAM) ? "team" : "single";
   piTeamSelect.addEventListener("change", () => persist(false));
-  const piTeamRow = settingsRow("Pi 팀 실행", "팀은 팀장이 맵을 나눠 시공·검수 에이전트를 띄운다 — 검수와 수정 배정이 붙지만 느립니다. 컴포저의 「팀」 토글과 같은 값입니다.", piTeamSelect);
+  const piTeamRow = settingsRow("팀으로 작업", "팀은 팀장이 맵을 나눠 시공·검수 에이전트를 띄운다 — 검수와 수정 배정이 붙지만 느립니다. 컴포저의 「팀」 토글과 같은 값입니다.", piTeamSelect);
   const piApplySelect = el("select", {
     class: "ai-config-select",
     dataset: { testid: "ai-config-pi-apply" },
@@ -351,7 +394,7 @@ export function renderAiSettingsForm(options: {
   }) as HTMLSelectElement;
   piApplySelect.value = config.piApply ?? DEFAULT_PI_APPLY;
   piApplySelect.addEventListener("change", () => persist(false));
-  const piApplyRow = settingsRow("Pi 결과 적용", "검토 후 적용은 보드의 검토 카드에서 승인해야 프로젝트가 바뀝니다. 바로 적용은 게이트만 통과하면 즉시 반영합니다.", piApplySelect);
+  const piApplyRow = settingsRow("결과 적용", "검토 후 적용은 보드의 검토 카드에서 승인해야 프로젝트가 바뀝니다. 바로 적용은 게이트만 통과하면 즉시 반영합니다.", piApplySelect);
   const fontSizeSelect = el("select", {
     class: "ai-config-select",
     dataset: { testid: "ai-font-size" },
@@ -407,7 +450,7 @@ export function renderAiSettingsForm(options: {
     attrs: { role: "status", "aria-live": "polite" },
     dataset: { testid: "ai-config-saved-hint" },
   });
-  const savedAtText = (kind: "자동" | "지금"): string => `${kind} 저장됨 · ${new Date().toLocaleTimeString("ko-KR", {
+  const savedAtText = (): string => `자동 저장됨 · ${new Date().toLocaleTimeString("ko-KR", {
     hour: "2-digit",
     minute: "2-digit",
   })}`;
@@ -416,7 +459,7 @@ export function renderAiSettingsForm(options: {
     const size: AiFontSize = raw === "small" || raw === "large" ? raw : "normal";
     saveAiFontSize(size);
     onFontSizeChange(size);
-    savedHint.textContent = savedAtText("자동");
+    savedHint.textContent = savedAtText();
   });
 
   const collect = (): AiConfig => ({
@@ -455,7 +498,8 @@ export function renderAiSettingsForm(options: {
     const brainValid = brainModel.validate(authMode, brainProvider.value);
     saveAiConfig(next);
     onSaved(next);
-    savedHint.textContent = savedAtText(showToast ? "지금" : "자동");
+    savedHint.textContent = savedAtText();
+    syncModelPresetCards();
     if (!modelValid || !liteValid || !brainValid) {
       toast("선택한 모델이 현재 연결 방식에서 쓸 수 없습니다. 모델 입력 아래 경고를 확인하세요.", "error");
     } else if (showToast) {
@@ -520,6 +564,7 @@ export function renderAiSettingsForm(options: {
   autonomySelect.addEventListener("change", () => {
     const level: AutonomyLevel = isAutonomyLevel(autonomySelect.value) ? autonomySelect.value : "balanced";
     autonomySelect.value = level;
+    setAutonomyDerived(level);
     const resolved = resolveAutonomy(level);
     reasoningSelect.value = resolved.reasoningEffort;
     agentModeSelect.value = resolved.agentMode;
@@ -585,12 +630,241 @@ export function renderAiSettingsForm(options: {
     on: { click: () => void checkConnection() },
   });
 
-  const saveButton = el("button", {
-    class: "ai-assistant-action ai-settings-save-now",
-    text: "지금 저장",
-    attrs: { type: "button" },
-    dataset: { testid: "ai-config-save" },
-    on: { click: () => persist(true) },
+  // 「지금 저장」버튼은 없다 — 모든 변경 경로가 persist 를 태우고 푸터는 자동 저장 상태만
+  // 보여 준다. 수동 버튼이 있으면 "자동 저장이 안 되나?" 라는 혼란만 낳는다(리디자인 계약).
+
+  // ── 모델 품질 프리셋 ──────────────────────────────────────────────────────
+  // 역할 4개 × 컨트롤 3개를 상시 노출하는 대신 상위 의도(빠르게/균형/최고 품질)를 먼저 고르게
+  // 한다. 프리셋 카드는 역할 컨트롤 각각을 채우는 지름길이고, 역할 컨트롤을 손대면 일치하는
+  // 프리셋이 없어져 카드 체크가 자연스럽게 풀린다.
+  const presetCards = new Map<ModelPreset["id"], HTMLButtonElement>();
+  const presetGroup = el("div", {
+    class: "ai-model-presets",
+    attrs: { role: "radiogroup", "aria-label": "모델 품질 프리셋" },
+    dataset: { testid: "ai-model-presets" },
+    children: MODEL_PRESETS.map((preset) => {
+      const card = el("button", {
+        class: "ai-model-preset-card",
+        attrs: { type: "button", role: "radio", "aria-checked": "false", tabindex: "-1" },
+        dataset: { testid: `ai-model-preset-${preset.id}` },
+        children: [
+          el("strong", { text: preset.label }),
+          el("small", { text: preset.description }),
+          el("span", {
+            class: "ai-model-preset-check",
+            attrs: { "aria-hidden": "true" },
+            children: [deckIcon("check", { size: 15 })],
+          }),
+        ],
+      }) as HTMLButtonElement;
+      card.addEventListener("click", () => applyModelPreset(preset));
+      presetCards.set(preset.id, card);
+      return card;
+    }),
+  });
+  presetGroup.addEventListener("keydown", (event) => {
+    const key = (event as KeyboardEvent).key;
+    if (key !== "ArrowLeft" && key !== "ArrowRight" && key !== "ArrowUp" && key !== "ArrowDown") return;
+    event.preventDefault();
+    const delta = key === "ArrowUp" || key === "ArrowLeft" ? -1 : 1;
+    const index = MODEL_PRESETS.findIndex((preset) => presetCards.get(preset.id)?.getAttribute("aria-checked") === "true");
+    const next = MODEL_PRESETS[(index < 0 ? 0 : index + delta + MODEL_PRESETS.length) % MODEL_PRESETS.length];
+    presetCards.get(next.id)?.focus();
+    applyModelPreset(next);
+  });
+
+  /** 지금 역할 컨트롤 값이 프리셋 조합과 정확히 일치하는지 — 모델 문자열과 추론 강도 둘 다 본다. */
+  function modelPresetMatches(preset: ModelPreset): boolean {
+    const entries: ReadonlyArray<readonly [string, string, string, { readonly tier: "fast" | "strong"; readonly thinking: string }]> = [
+      [brainProvider.value, brainModel.input.value, brainEffort.value, preset.ultrabrain],
+      ...specialistControls.map((c): readonly [string, string, string, { readonly tier: "fast" | "strong"; readonly thinking: string }] =>
+        [c.provider.value, c.field.input.value, c.effort.value, preset.roles[c.role]]),
+    ];
+    return entries.every(([provider, modelValue, effort, spec]) =>
+      tierModelFor(provider, spec.tier) === modelValue.trim() && effort === spec.thinking);
+  }
+
+  function syncModelPresetCards(): void {
+    let first: HTMLButtonElement | undefined;
+    for (const preset of MODEL_PRESETS) {
+      const card = presetCards.get(preset.id);
+      if (!card) continue;
+      first ??= card;
+      const active = modelPresetMatches(preset);
+      card.classList.toggle("is-active", active);
+      card.setAttribute("aria-checked", String(active));
+      card.setAttribute("tabindex", active ? "0" : "-1");
+    }
+    // 일치 프리셋이 없으면(직접 지정 상태) 키보드 복귀를 위해 첫 카드만 탭 순서에 남긴다.
+    if (!MODEL_PRESETS.some((preset) => presetCards.get(preset.id)?.getAttribute("aria-checked") === "true")) {
+      first?.setAttribute("tabindex", "0");
+    }
+  }
+
+  function applyModelPreset(preset: ModelPreset): void {
+    const applyTo = (
+      provider: string,
+      field: typeof brainModel,
+      effort: HTMLSelectElement,
+      spec: { readonly tier: "fast" | "strong"; readonly thinking: string },
+    ): void => {
+      const nextModel = tierModelFor(provider, spec.tier);
+      if (nextModel) field.setValue(nextModel, authMode, provider);
+      effort.value = spec.thinking;
+      // 프로그래밍 대입은 input 을 쏘지 않아 커스텀 셀렉트 라벨이 옛값을 가리킨다 — 라벨만 동기화.
+      effort.dispatchEvent(new Event("input", { bubbles: true }));
+    };
+    applyTo(brainProvider.value, brainModel, brainEffort, preset.ultrabrain);
+    for (const c of specialistControls) applyTo(c.provider.value, c.field, c.effort, preset.roles[c.role]);
+    persist(false);
+  }
+
+  // ── 역할별 직접 지정(고급 표) ─────────────────────────────────────────────
+  const ROLE_TABLE_COPY = {
+    ultrabrain: { label: "계획 · 최종 판단", eng: "Ultrabrain", desc: "작업 계획·팀 지휘·맵 검수 최종 판단" },
+    vision: { label: "시각 관찰", eng: "Vision", desc: "맵 이미지의 배치·색감·경계·겹침 관찰" },
+    writer: { label: "작문", eng: "Writer", desc: "이야기·세계관·NPC 대사·퀘스트 문장" },
+    deep: { label: "실행 · 검증", eng: "Deep", desc: "복잡한 편집·도구 실행·수정·검증" },
+  } as const;
+  const roleTableRow = (
+    key: keyof typeof ROLE_TABLE_COPY,
+    provider: HTMLSelectElement,
+    field: typeof brainModel,
+    effort: HTMLSelectElement,
+  ): HTMLElement => {
+    const copy = ROLE_TABLE_COPY[key];
+    return el("div", {
+      class: "ai-role-row",
+      dataset: { testid: `ai-settings-role-${key}` },
+      children: [
+        el("div", { class: "ai-role-name", children: [
+          el("strong", { text: copy.label }),
+          el("small", { text: `${copy.eng} — ${copy.desc}` }),
+        ] }),
+        el("div", { class: "ai-role-cell", children: [provider] }),
+        el("div", { class: "ai-role-cell ai-role-model", children: [field.control, field.warning] }),
+        el("div", { class: "ai-role-cell", children: [effort] }),
+      ],
+    });
+  };
+  const rolesDetails = el("details", {
+    class: "ai-settings-roles",
+    attrs: { open: "" },
+    dataset: { testid: "ai-settings-advanced" },
+    children: [
+      el("summary", { children: [
+        el("span", { class: "ai-settings-roles-summary", children: [
+          el("strong", { text: "역할별 모델 직접 지정" }),
+          el("small", { text: "고급 — 프리셋 선택을 덮어씁니다" }),
+        ] }),
+      ] }),
+      el("div", { class: "ai-roles-table", children: [
+        el("div", { class: "ai-roles-head", attrs: { role: "presentation" }, children:
+          ["역할", "제공자", "모델", "추론 강도"].map((text) => el("span", { text })) }),
+        roleTableRow("ultrabrain", brainProvider, brainModel, brainEffort),
+        ...specialistControls.map((c) => roleTableRow(c.role, c.provider, c.field, c.effort)),
+      ] }),
+      el("p", { class: "ai-config-help ai-roles-help", text: "모델은 목록에서 고르거나 공급자별 모델 ID를 직접 입력하세요." }),
+    ],
+  });
+
+  // 자율성 다이얼이 매번 덮어쓰는 두 행은 고급 표 아래로 — 나란히 놓이면 덮어쓰기 관계가 안 보인다.
+  const behaviorAdvanced = el("details", {
+    class: "ai-settings-subdetails",
+    children: [
+      el("summary", { text: "고급 — 영역 작업 추론 · 작업 모드" }),
+      el("div", { class: "ai-settings-subdetails-body", children: [reasoningRow, agentModeRow] }),
+    ],
+  });
+
+  // ── 레일 + 탭 페인 ────────────────────────────────────────────────────────
+  // 섹션이 일곱 줄로 나열되던 긴 단일 스크롤을 연결|모델|동작|표시 페인으로 나눈다.
+  // 레일 버튼은 tablist 관례(role=tab, aria-selected, 화살표 이동)를 따른다.
+  const extraSections = options.extraSections ?? [];
+  const tabSpecs: ReadonlyArray<{ readonly id: string; readonly label: string; readonly icon: Parameters<typeof deckIcon>[0] }> = [
+    { id: "connection", label: "연결", icon: "link" },
+    { id: "models", label: "모델", icon: "spark" },
+    { id: "behavior", label: "동작", icon: "gear" },
+    { id: "display", label: "표시", icon: "eye" },
+    ...extraSections.map((section) => ({ id: `extra-${section.id}`, label: section.title, icon: "list" as const })),
+  ];
+  const paneEls = new Map<string, HTMLElement>();
+  const tabButtons = new Map<string, HTMLButtonElement>();
+  const activatePane = (id: string, focus = false): void => {
+    for (const [paneId, pane] of paneEls) pane.hidden = paneId !== id;
+    for (const [tabId, button] of tabButtons) {
+      const active = tabId === id;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-selected", String(active));
+      button.setAttribute("tabindex", active ? "0" : "-1");
+    }
+    if (focus) tabButtons.get(id)?.focus();
+  };
+  const rail = el("nav", {
+    class: "ai-settings-rail",
+    attrs: { role: "tablist", "aria-orientation": "vertical", "aria-label": "AI 설정 섹션" },
+    dataset: { testid: "ai-settings-rail" },
+    children: tabSpecs.map((spec) => {
+      const button = el("button", {
+        class: "ai-settings-tab",
+        attrs: {
+          type: "button", role: "tab", "aria-selected": "false", tabindex: "-1",
+          id: `ai-settings-tab-${spec.id}`, "aria-controls": `ai-settings-pane-${spec.id}`,
+        },
+        dataset: { testid: `ai-settings-tab-${spec.id}`, pane: spec.id },
+        children: [deckIcon(spec.icon, { size: 15 }), el("span", { text: spec.label })],
+      }) as HTMLButtonElement;
+      button.addEventListener("click", () => activatePane(spec.id));
+      tabButtons.set(spec.id, button);
+      return button;
+    }),
+  });
+  rail.addEventListener("keydown", (event) => {
+    const key = (event as KeyboardEvent).key;
+    if (key !== "ArrowUp" && key !== "ArrowDown" && key !== "ArrowLeft" && key !== "ArrowRight") return;
+    event.preventDefault();
+    const ids = tabSpecs.map((spec) => spec.id);
+    const current = ids.findIndex((id) => tabButtons.get(id)?.getAttribute("aria-selected") === "true");
+    const delta = key === "ArrowUp" || key === "ArrowLeft" ? -1 : 1;
+    activatePane(ids[(Math.max(current, 0) + delta + ids.length) % ids.length], true);
+  });
+  const pane = (id: string, children: readonly HTMLElement[]): HTMLElement => {
+    const node = el("div", {
+      class: "ai-settings-pane",
+      attrs: { role: "tabpanel", id: `ai-settings-pane-${id}`, "aria-labelledby": `ai-settings-tab-${id}` },
+      dataset: { testid: `ai-settings-pane-${id}`, pane: id },
+      children,
+    });
+    paneEls.set(id, node);
+    return node;
+  };
+  const content = el("div", {
+    class: "ai-settings-content",
+    children: [
+      pane("connection", [
+        settingsSection("connection", "연결", "AI 제공자와 로그인 상태를 관리합니다.", [authSettings.element]),
+      ]),
+      pane("models", [
+        settingsSection("presets", "품질 프리셋", "역할별 모델과 추론 강도를 한 번에 맞춥니다.", [presetGroup]),
+        rolesDetails,
+        settingsSection("image", "이미지 생성", "그림을 생성하는 모델입니다. 이미지를 읽는 Vision과 별도로 선택합니다.", [
+          settingsRow("이미지 생성 제공자", "대화 제공자를 바꿔도 이 선택은 유지됩니다.", imageProvider),
+          settingsRow("이미지 생성 모델", "이미지를 출력하는 모델만 표시합니다. 지원 미확인 모델은 선택할 수 없습니다.", imageModel),
+          imageStatus,
+        ]),
+      ]),
+      pane("behavior", [
+        settingsSection("behavior", "동작", "응답 예산과 작업 진행 방식을 조정합니다.",
+          // The autonomy dial stays first: it is the only way to reach the read-only (ask)
+          // rail now that the composer has no mode chips, so it must not be pushed down.
+          [autonomyRow, piTeamRow, piApplyRow, maxTokens.row, behaviorAdvanced]),
+      ]),
+      pane("display", [
+        settingsSection("display", "표시", "AI 패널의 읽기 환경을 조정합니다.", [fontSizeRow, backgroundOpacityRow]),
+      ]),
+      ...extraSections.map((section) =>
+        pane(`extra-${section.id}`, [settingsSection(section.id, section.title, section.description, [section.content])])),
+    ],
   });
 
   // "AI 가 기억한 내 성향" 은 **의도적으로 여기 없다** (2026-08-30 감독 지시). 진입점은 채팅
@@ -601,70 +875,20 @@ export function renderAiSettingsForm(options: {
     class: "ai-config-form ai-settings-form",
     dataset: { testid: "ai-config" },
     children: [
-      el("div", {
-        class: "ai-settings-overview",
-        children: [
-          connectionSummary,
-          connectionCheckButton,
-        ],
-      }),
-      settingsSection(
-        "connection",
-        "연결",
-        "AI 제공자와 로그인 상태를 관리합니다.",
-        [authSettings.element],
-      ),
-      el("div", { class: "ai-settings-advanced", attrs: { open: "" },
-        dataset: { testid: "ai-settings-advanced" }, children: [
-      settingsSection(
-        "ultrabrain", "Ultrabrain · 계획과 최종 판단",
-        "최고 지능 역할입니다. 작업 계획과 팀 지휘를 맡고, 맵 검수에서는 전체 이미지를 직접 보고 최종 판단합니다. 맵 검수 시 이미지 입력을 지원해야 합니다.",
-        [settingsRow("제공자", "선택한 제공자의 OAuth 로그인을 사용합니다.", brainProvider),
-          brainModel.row, settingsRow("추론 강도", "작성 모델의 자율성 설정과 별도로 유지됩니다.", brainEffort)],
-      ),
-      ...specialistControls.map(({ role, provider, field, effort }) => settingsSection(role,
-        ({ vision: "Vision · 시각 관찰", writer: "Writer · 작문", deep: "Deep · 깊은 작업과 실행" } satisfies Record<SpecialistRole, string>)[role],
-        ({ vision: "전체 맵 이미지의 배치·색감·경계·겹침을 관찰합니다. 이미지 입력을 지원하는 LLM을 선택하세요. 실제 이미지 전달을 확인하며 미지원 모델로는 검수를 통과시키지 않습니다.",
-          writer: "이야기·세계관·NPC 대사·퀘스트 문장을 작성합니다. Deep이 필요한 작업에서 호출합니다.",
-          deep: "Ultrabrain의 계획에 따라 복잡한 편집·도구 실행·수정·검증을 담당합니다." } satisfies Record<SpecialistRole, string>)[role],
-        [settingsRow("제공자", "역할별로 독립적으로 선택합니다.", provider), field.row,
-          settingsRow("추론 강도", "자율성 다이얼과 별도로 유지됩니다.", effort)],
-      )),
-      settingsSection(
-        "image",
-        "Image · 이미지 생성",
-        "그림을 생성하는 모델입니다. 이미지를 읽는 Vision과 별도로 선택합니다.",
-        [
-          settingsRow("이미지 생성 제공자", "대화 제공자를 바꿔도 이 선택은 유지됩니다.", imageProvider),
-          settingsRow("이미지 생성 모델", "이미지를 출력하는 모델만 표시합니다. 지원 미확인 모델은 선택할 수 없습니다.", imageModel),
-          imageStatus,
-        ],
-      ),
-      ] }),
-      settingsSection(
-        "behavior",
-        "동작",
-        "응답 예산과 작업 진행 방식을 조정합니다.",
-        // The autonomy dial stays first: it is the only way to reach the read-only (ask)
-        // rail now that the composer has no mode chips, so it must not be pushed down.
-        [autonomyRow, piTeamRow, piApplyRow, maxTokens.row, reasoningRow, agentModeRow],
-      ),
-      settingsSection(
-        "display",
-        "표시",
-        "AI 패널의 읽기 환경을 조정합니다.",
-        [fontSizeRow, backgroundOpacityRow],
-      ),
-      ...(options.extraSections ?? []).map((section) =>
-        settingsSection(section.id, section.title, section.description, [section.content])),
-      el("div", { class: "ai-config-actions", children: [savedHint, saveButton] }),
+      rail,
+      content,
+      el("div", { class: "ai-config-actions", children: [savedHint] }),
     ],
   });
 
+  activatePane("connection");
+  syncModelPresetCards();
   void checkConnection();
 
   return {
     element: form,
+    connectionSummary,
+    connectionCheckButton,
     dispose: () => {
       disposed = true;
       connectionCheckGeneration += 1;
@@ -747,7 +971,9 @@ function modelField(
   placeholder: string,
   providerId?: string,
 ): {
-  row: HTMLElement;
+  /** 프리셋 셀렉트 + 입력 칸 묶음 — 역할 표의 「모델」 셀에 들어간다. */
+  control: HTMLElement;
+  warning: HTMLElement;
   input: HTMLInputElement;
   preset: HTMLSelectElement;
   refresh: (mode: AiConfig["authMode"], providerId?: string) => void;
@@ -813,17 +1039,11 @@ function modelField(
     preset.value = value;
     validate(mode, providerId);
   };
-  const row = el("label", {
-    class: "ai-config-row ai-model-row",
-    children: [
-      el("span", { class: "ai-config-row-copy", children: [
-        el("span", { class: "ai-config-label", text: label }),
-        el("span", { class: "ai-model-help ai-config-help", text: "목록에서 고르거나 공급자별 모델 ID를 직접 입력하세요." }),
-      ] }),
-      el("div", { class: "ai-model-control", children: [preset, input] }),
-      warning,
-    ],
+  const control = el("div", {
+    class: "ai-model-control",
+    attrs: { title: `${label} — 목록에서 고르거나 공급자별 모델 ID를 직접 입력하세요.` },
+    children: [preset, input],
   });
   refresh(authMode, providerId);
-  return { row, input, preset, refresh, validate, setValue };
+  return { control, warning, input, preset, refresh, validate, setValue };
 }

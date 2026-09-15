@@ -124,6 +124,7 @@ describe("인증 변경은 공유 AI gate 캐시를 즉시 갱신한다", () => 
 
     const { dispose } = await renderAuthPanel();
     await settleNextFetch({ connected: true, env: false, planType: "plus" }); // panel status
+    await settleNextFetch({ connected: false }); // 비선택 제공자 카드 필 조회
     await settleNextFetch({ connected: true, env: false, planType: "plus" }); // reset generation re-warm
     expect(getAiConnectionStatus().kind).toBe("ready");
 

@@ -80,7 +80,6 @@ describe("브라우저 보관 키·엔드포인트 입력이 없다", () => {
     // Antigravity·Codex 둘로 좁혀지고 둘 다 구독 로그인이므로 저장할 키가 없다 —
     // 숨은 input 조차 두지 않는다(자동완성·미래 collect 경로가 값을 읽을 수 있다).
     const { root, dispose } = await renderForm();
-    findByTestId(root, "ai-auth-api-key")?.click();
     expect(findByTestId(root, "ai-companion-api-key")).toBeNull();
     expect(findByTestId(root, "ai-companion-save-key")).toBeNull();
     dispose();
