@@ -100,7 +100,7 @@ async function runDesktopScenario(
   await context.addInitScript(({ editorMode, seededProject }) => {
     window.localStorage.clear();
     window.localStorage.setItem("oprn:editor-ui-mode", editorMode);
-    window.__RPG_ZZU_E2E_PROJECT__ = seededProject;
+    window.__OPRN_E2E_PROJECT__ = seededProject;
     Object.defineProperty(window, "Audio", {
       configurable: true,
       value: function desktopInteractionFixtureAudio(): HTMLAudioElement {

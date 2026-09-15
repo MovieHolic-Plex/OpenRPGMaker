@@ -67,7 +67,7 @@ test("loop4 certifies quest-grade low-level event parts in editor and runtime", 
   await writeJson("008-editor-export.json", editorExport);
 
   await page.addInitScript((project) => {
-    window.__RPG_ZZU_E2E_PROJECT__ = project;
+    window.__OPRN_E2E_PROJECT__ = project;
     window.localStorage.clear();
   }, editorExport.project);
   await expect(page.getByTestId("event-editor-modal")).toHaveCount(0);

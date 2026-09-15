@@ -55,7 +55,7 @@ try {
     }
   });
   await page.addInitScript(() => {
-    localStorage.setItem('rpg-zzu:editor-ui-mode', 'expert');
+    localStorage.setItem('oprn:editor-ui-mode', 'expert');
     window.spatialBaselineBoot = new Promise((done, fail) => {
       const timeout = setTimeout(() => { observer.disconnect(); fail(new Error('Editor Database action boot deadline')); }, 120000);
       const observer = new MutationObserver(() => {

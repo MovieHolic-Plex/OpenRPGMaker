@@ -9,7 +9,7 @@ import { moveEventPageTo } from "@/editor/eventPages";
 import { toast } from "@/util/toast";
 import type { EventPage, MapId } from "@/project/types";
 
-const PAGE_DRAG_MIME = "application/x-rpgzzu-event-page-id";
+const PAGE_DRAG_MIME = "application/x-oprn-event-page-id";
 let draggingPageId: string | null = null;
 
 export type PageTabDragRequest = {

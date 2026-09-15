@@ -11,7 +11,7 @@ async function recordState(page: Page) {
 test("monster action dialog validates visibly, preserves drafts and keyboard focus, and commits only on OK", async ({ page }) => {
   test.setTimeout(360_000);
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1", { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 60_000 });
   for (const id of ["login-guest", "standard-welcome-start", "coach-mark-skip"]) {

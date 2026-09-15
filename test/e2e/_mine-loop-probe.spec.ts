@@ -88,7 +88,7 @@ async function clearDialogue(page: Page): Promise<void> {
 test("광산에 들어가 보이는 돌을 곡괭이로 캐고 밖으로 나온다", async ({ page }) => {
   mkdirSync(OUT, { recursive: true });
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
   await seedProjectFromSupabaseCanonical(page, createFarmingDemoProject());

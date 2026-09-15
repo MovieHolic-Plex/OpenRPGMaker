@@ -24,7 +24,7 @@ const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
 page.setDefaultTimeout(30_000);
 
 await page.addInitScript((seed) => {
-  window.__RPG_ZZU_E2E_PROJECT__ = seed;
+  window.__OPRN_E2E_PROJECT__ = seed;
   window.localStorage.clear();
 }, project);
 

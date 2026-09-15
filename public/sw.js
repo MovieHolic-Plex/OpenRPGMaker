@@ -1,4 +1,4 @@
-const CACHE_NAME = "rpg-zzu-pwa-v2";
+const CACHE_NAME = "oprn-pwa-v3";
 const APP_SHELL_URLS = [
   "/",
   "/index.html",

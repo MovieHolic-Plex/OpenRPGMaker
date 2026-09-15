@@ -9,7 +9,7 @@ let page;
 try{
  page=await browser.newPage({viewport:{width:1600,height:1000}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',route=>{const r=route.request();return !['GET','HEAD','OPTIONS'].includes(r.method())&&/\/rest\/v1\/|\/rpc\//.test(r.url())?route.abort():route.continue();});
- await page.addInitScript(()=>{localStorage.setItem('oprn:ai-panel-collapsed','1');localStorage.setItem('rpg-zzu:editor-ui-mode','expert');for(const k of ['oprn:editor-welcome-dismissed','oprn:standard-welcome-seen','oprn:coachmarks-basic-v1'])localStorage.setItem(k,'1');});
+ await page.addInitScript(()=>{localStorage.setItem('oprn:ai-panel-collapsed','1');localStorage.setItem('oprn:editor-ui-mode','expert');for(const k of ['oprn:editor-welcome-dismissed','oprn:standard-welcome-seen','oprn:coachmarks-basic-v1'])localStorage.setItem(k,'1');});
  await page.goto(`http://127.0.0.1:9809/?${saved?'project=rpg-zzu-house-template-gallery':'blankProject=1'}&aiBridge=0`,{waitUntil:'domcontentloaded',timeout:120000});
  await page.waitForFunction(()=>window.__oprnEditorStore?.getCurrent()&&window.__oprnEditWorldToClient,null,{timeout:120000});
  const result=await page.evaluate(async({expected,saved,regionId,mapId})=>{

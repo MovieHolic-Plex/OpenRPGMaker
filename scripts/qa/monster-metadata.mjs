@@ -47,7 +47,7 @@ try {
     }
   });
   await page.addInitScript(() => {
-    localStorage.setItem('rpg-zzu:editor-ui-mode', 'expert');
+    localStorage.setItem('oprn:editor-ui-mode', 'expert');
   });
   await page.goto(`${baseUrl}/?freshProject=1`, { waitUntil: 'load', timeout: 90000 });
   await page.getByTestId('toolbar-database').waitFor({ state: 'visible', timeout: Number(process.env.MONSTER_BOOT_TIMEOUT ?? '120000') });

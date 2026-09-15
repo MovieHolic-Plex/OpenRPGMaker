@@ -51,7 +51,7 @@ try {
   const rows = await harness.collectEvidence({ vaultWrites });
   const width = Math.max(...rows.map((row) => row.id.length));
   const report = [
-    "RPG ZZU bugfix-sweep — 실제 표면 증거",
+    "OPRN bugfix-sweep — 실제 표면 증거",
     `생성: ${new Date().toISOString()}`,
     "방식: 프로젝트의 Vite SSR 모듈 파이프라인으로 프로덕션 함수를 끝까지 실행한 관측값",
     "      (편집기 UI 렌더가 아니라 상태·참조·저장 관측 — 이 수정들은 렌더를 바꾸지 않는다)",

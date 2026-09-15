@@ -869,7 +869,7 @@ states 5)에 아이템만 넣으면 **프로젝트가 부팅 중에 스스로 �
 
 계약:
 - **컨테이너는 그대로다.** `src/project/package.ts` 의 `createProjectPackage` / `readProjectPackage`
-  가 정본이고 확장자는 `RPGZZU_EXTENSION = ".oprn"`, MIME 은 `application/vnd.openrpg.project+zip`.
+  가 정본이고 확장자는 `OPRN_EXTENSION = ".oprn"`, MIME 은 `application/vnd.openrpg.project+zip`.
   새 포맷을 만들지 않았다 — 이미 단일 파일 ZIP 이고 업로드 에셋도 `assets.uploaded[].dataUrl` 로
   안에 들어 있다.
 - **플레이어가 `.oprn` 을 연다.** `src/player/exportEntry.ts` 는 번들 `project.json` 을 못 읽으면

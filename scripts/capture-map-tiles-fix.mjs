@@ -13,7 +13,7 @@ const log = (line) => console.log(`[fix] ${line}`);
 
 await page.addInitScript(() => {
   localStorage.setItem("oprn:editor-welcome-dismissed", "1");
-  localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+  localStorage.setItem("oprn:editor-ui-mode", "expert");
 });
 
 await page.goto(`${base}/?blankProject=1&aiBridge=0`, { waitUntil: "domcontentloaded", timeout: 120000 });

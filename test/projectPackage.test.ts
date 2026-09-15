@@ -7,7 +7,7 @@ import {
   projectPackageFileName,
   readProjectPackage,
   readProjectPackageEntryNames,
-  RPGZZU_EXTENSION,
+  OPRN_EXTENSION,
 } from "@/project/package";
 import type { Project } from "@/project/types";
 import { describe, expect, it } from "vitest";
@@ -32,7 +32,7 @@ describe("project package", () => {
     const restored = await readProjectPackage(file);
 
     // Then
-    expect(RPGZZU_EXTENSION).toBe(".oprn");
+    expect(OPRN_EXTENSION).toBe(".oprn");
     expect(projectPackageFileName(project)).toBe("Village-Test.oprn");
     expect(Array.from(bytes.slice(0, 2)).map((byte) => String.fromCharCode(byte)).join("")).toBe("PK");
     expect(names).toContain("project.json");

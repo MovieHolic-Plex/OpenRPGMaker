@@ -342,7 +342,7 @@ RPG_ZZU_URL=http://127.0.0.1:9977 npx tsx scripts/probe-sidebar-keyboard.mts</pr
 
 const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>RPG ZZU · 좌측 사이드바 도구 적대적 리뷰</title>
+<title>OPRN · 좌측 사이드바 도구 적대적 리뷰</title>
 <style>${CSS}</style></head><body>
 <div class="top"><div class="top-in">
 <div class="brand"><div class="logo">✦</div><div><h1>좌측 사이드바 도구 — 적대적 리뷰</h1><p>선택 · 칠하기 · 지우기 · 채우기 · 장면 · 집기 · 화면 밀기 · 통행 표시 · 2026-08-27</p></div></div>
@@ -375,7 +375,7 @@ const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"/>
 </div>
 </div>
 ${sections.join("\n")}
-<footer>RPG ZZU · 좌측 사이드바 도구 적대적 리뷰 · 2026-08-27<br/>
+<footer>OPRN · 좌측 사이드바 도구 적대적 리뷰 · 2026-08-27<br/>
 실화면 ${"IMGCOUNT"}장 base64 내장 · 측정은 127.0.0.1:9977 격리 개발 서버 · 소스 수정 없음</footer>
 </div></body></html>`;
 

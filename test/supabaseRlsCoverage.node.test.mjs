@@ -39,7 +39,7 @@ function executableSql(file) {
   return readMigration(file).replace(/--[^\n]*/gu, "");
 }
 
-function createdRpgZzuTables() {
+function createdOprnTables() {
   const tables = new Set();
   for (const { file } of SUPABASE_MIGRATIONS) {
     for (const match of readMigration(file).matchAll(/create table (?:if not exists )?rpg_zzu\.(\w+)/giu)) {
@@ -70,7 +70,7 @@ function policyVerbsByTable(sql) {
 test("auth RLS 마이그레이션이 모든 rpg_zzu 테이블에 RLS 를 켠다", () => {
   const sql = readMigration(AUTH_RLS_FILE);
   const enabled = rlsEnabledTables(sql);
-  const missing = [...createdRpgZzuTables()].filter((table) => !enabled.has(table)).sort();
+  const missing = [...createdOprnTables()].filter((table) => !enabled.has(table)).sort();
   assert.deepEqual(missing, [], `RLS 미적용 테이블: ${missing.join(", ")}`);
 });
 
@@ -78,7 +78,7 @@ test("auth RLS 마이그레이션이 테이블마다 4개 동작 정책을 갖�
   const sql = readMigration(AUTH_RLS_FILE);
   const verbs = policyVerbsByTable(sql);
   const gaps = [];
-  for (const table of [...createdRpgZzuTables()].sort()) {
+  for (const table of [...createdOprnTables()].sort()) {
     const covered = verbs.get(table) ?? new Set();
     const missing = VERBS.filter((verb) => !covered.has(verb));
     if (missing.length > 0) gaps.push(`${table}: ${missing.join("/")}`);

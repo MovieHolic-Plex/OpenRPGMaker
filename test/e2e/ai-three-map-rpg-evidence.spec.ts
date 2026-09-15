@@ -3,7 +3,7 @@
  * HTML 리포트용 스크린샷 증거를 모은다.
  *
  * 프로젝트는 `test/aiThreeMapRpg.live.test.ts` 가 Supabase 에 저장한 것을 그대로
- * 읽어 주입한다(에디터 실제 로드 경로 = `__RPG_ZZU_E2E_PROJECT__`).
+ * 읽어 주입한다(에디터 실제 로드 경로 = `__OPRN_E2E_PROJECT__`).
  *
  * 실행:
  *   RPG_ZZU_AI_THREE_MAP_SHOTS=1 npx playwright test test/e2e/ai-three-map-rpg-evidence.spec.ts

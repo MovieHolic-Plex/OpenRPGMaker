@@ -7,7 +7,7 @@ canonical attack/moving-dodge bindings. The farming hand chip is hidden on
 action maps without farmable areas; mixed maps keep an explicitly labelled
 farming chip. Menus and dialogue retain their existing HUD suppression.
 
-This page is the authority for the real-time action-combat package in RPG ZZU. It documents the activation contract, pure rule modules under `src/battle/action/`, the scene integration layer, player and enemy capabilities, schema definitions, authoring boundaries, and verification targets.
+This page is the authority for the real-time action-combat package in OPRN Studio. It documents the activation contract, pure rule modules under `src/battle/action/`, the scene integration layer, player and enemy capabilities, schema definitions, authoring boundaries, and verification targets.
 
 ## Activation contract
 
@@ -146,7 +146,7 @@ Action HUD is split between DOM and Phaser:
 
 ## Design decision: Tile-grid movement vs pixel movement
 
-RPG ZZU action combat intentionally preserves tile-grid movement rather than adopting free pixel-physics movement.
+OPRN Studio action combat intentionally preserves tile-grid movement rather than adopting free pixel-physics movement.
 
 Key reasons:
 1. **RPG Maker engine compatibility**: Map triggers, passability checks (`isPassable`), directional facing, autotiles, and event layers operate on discrete tile grids.

@@ -24,7 +24,7 @@ try {
     return route.continue();
   });
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "standard");
+    localStorage.setItem("oprn:editor-ui-mode", "standard");
     localStorage.setItem("oprn:ai-panel-collapsed", "1");
     for (const key of ["oprn:editor-welcome-dismissed", "oprn:standard-welcome-seen", "oprn:coachmarks-basic-v1"]) localStorage.setItem(key, "1");
   });

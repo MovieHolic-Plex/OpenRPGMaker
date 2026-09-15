@@ -29,7 +29,7 @@ test("loop11 certifies transfer battle and terminal scene commands", async ({ pa
   await writeJson("004-editor-export.json", exported);
 
   await page.addInitScript((project) => {
-    window.__RPG_ZZU_E2E_PROJECT__ = project;
+    window.__OPRN_E2E_PROJECT__ = project;
     window.localStorage.clear();
   }, exported.project);
   await page.reload();

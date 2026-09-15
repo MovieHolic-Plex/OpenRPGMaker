@@ -19,7 +19,7 @@ async function boot(page: Page): Promise<void> {
   page.on("console", (msg) => {
     if (msg.type() === "error") log(`CONSOLE-ERROR ${msg.text().slice(0, 240)}`);
   });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1");
   const guest = page.getByTestId("login-guest");
   if (await guest.isVisible().catch(() => false)) await guest.click();

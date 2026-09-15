@@ -144,7 +144,7 @@ const html = `<!doctype html>
 <body>
 <main>
 <h1>기본 아이템이 왜 적어 보였고, 무엇을 고쳤나</h1>
-<p class="sub">rpg-zzu 편집기 · 브랜치 <code>agent/items10</code> · ${new Date(after.capturedAt).toLocaleString("ko-KR")} 실측</p>
+<p class="sub">oprn 편집기 · 브랜치 <code>agent/items10</code> · ${new Date(after.capturedAt).toLocaleString("ko-KR")} 실측</p>
 
 <div class="lede">
 <p><strong>짧게 말하면 이렇습니다.</strong> 아이템이 적었던 게 아니라, <b>장비가 안 보였습니다.</b></p>

@@ -65,7 +65,7 @@ function preserved(before, after) {
   assert.deepEqual(restored, before, 'Unrelated authored content changed');
 }
 try {
-  await page.addInitScript(() => localStorage.setItem('rpg-zzu:editor-ui-mode', 'expert'));
+  await page.addInitScript(() => localStorage.setItem('oprn:editor-ui-mode', 'expert'));
   await page.goto(`${base}/?freshProject=1`, { waitUntil: 'domcontentloaded', timeout: 180000 });
   await page.getByTestId('toolbar-database').click();
   assert.equal((await state()).remote, false);
@@ -160,7 +160,7 @@ try {
       blockedLockRequests.push({ projectId: body.project_id, mapId: body.map_id });
     }
   });
-  await remote.addInitScript(() => localStorage.setItem('rpg-zzu:editor-ui-mode', 'expert'));
+  await remote.addInitScript(() => localStorage.setItem('oprn:editor-ui-mode', 'expert'));
   await remote.goto(`${base}/?project=${receipt.projectId}`, { waitUntil: 'domcontentloaded', timeout: 180000 });
   await remote.getByTestId('toolbar-database').click();
   const loaded = await remote.evaluate(async () => {

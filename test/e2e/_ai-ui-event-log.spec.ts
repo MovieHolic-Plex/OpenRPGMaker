@@ -48,7 +48,7 @@ async function boot(page: Page): Promise<void> {
   await page.setViewportSize({ width: 1600, height: 1000 });
   await page.addInitScript((config) => {
     localStorage.setItem("oprn:editor-ui-mode", "expert");
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
     localStorage.setItem("oprn:ai-config", JSON.stringify(config));
   }, FAKE_CONFIG);
   if (REMOTE_PROBE) {

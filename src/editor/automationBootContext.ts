@@ -17,7 +17,7 @@ export function isAutomationBootContext(): boolean {
   const search = window.location?.search ?? "";
   const params = new URLSearchParams(search);
   if (params.has("forceWelcome")) return false;
-  if (window.__RPG_ZZU_E2E_PROJECT__) return true;
+  if (window.__OPRN_E2E_PROJECT__) return true;
   if (typeof navigator !== "undefined" && navigator.webdriver) return true;
   return (
     params.has("freshProject")

@@ -54,7 +54,41 @@ const FORBIDDEN_PATTERNS: readonly { readonly label: string; readonly re: RegExp
   { label: "window 전역 __rpgzzu", re: /__rpgzzu/ },
   { label: "구 저장 키 접두사 rpg-zzu", re: /rpg-zzu[:.]/ },
   { label: "심볼 접두사 RM2K3_", re: /RM2K3_/ },
+  // ── 2026-09-15 이름 스윕(rpgzzu → oprn) 뒤 다시 못 들어오게 막는 형태들 ──────────
+  // LEGACY_RPGZZU_EXTENSION / LEGACY_RPGZZU_MIME 는 옛 파일을 계속 읽기 위한 값이라 남긴다.
+  { label: "구 식별자 접두사 RPGZZU_ (LEGACY_ 제외)", re: /(?<!LEGACY_)RPGZZU_/ },
+  { label: "구 window 전역 __RPG_ZZU_", re: /__RPG_ZZU_/ },
+  { label: "구 동반 서비스 헤더 X-Rpgzzu-*", re: /x-rpgzzu/i },
+  { label: "구 Phaser 텍스처 키 __rpg_zzu_", re: /__rpg_zzu_/ },
+  { label: "구 드래그 MIME application/x-rpg(-)zzu-", re: /application\/x-rpg-?zzu-/ },
+  { label: "구 CustomEvent 이름 rpgzzu:", re: /rpgzzu:(?!\/\/)/ },
 ];
+
+/**
+ * scripts/·test/ 는 출하물이 아니지만 같은 이름이 남으면 스윕이 끝나지 않는다.
+ * src 규칙 중 데이터 식별자와 겹칠 수 없는 형태만 고른다 — `rpg-zzu-<slug>` 는
+ * Supabase 프로젝트 행 id 이고 `rpg_zzu` 는 Postgres 스키마 이름이라 잡지 않는다.
+ */
+const TOOLING_FORBIDDEN_PATTERNS: readonly { readonly label: string; readonly re: RegExp }[] = [
+  { label: "구 window 전역 __RPG_ZZU_", re: /__RPG_ZZU_/ },
+  { label: "제거된 window 별칭 __rpgzzu*", re: /__rpgzzu/ },
+  { label: "구 동반 서비스 헤더 X-Rpgzzu-*", re: /x-rpgzzu/i },
+  { label: "개명된 스크립트 파일 rpgzzu-*.mjs", re: /rpgzzu-(?:tools|mcp-server|assistant)/ },
+  { label: "구 저장 키 접두사 rpg-zzu: (QA 스크립트가 심던 값)", re: /rpg-zzu:(?=[a-z])/ },
+  { label: "구 제품명 RPG ZZU", re: /RPG\s+ZZU/i },
+  { label: "구 Phaser 텍스처 키 __rpg_zzu_", re: /__rpg_zzu_/ },
+  { label: "구 식별자 접두사 RPGZZU_EXTENSION/MIME (LEGACY_ 제외)", re: /(?<!LEGACY_)RPGZZU_(?:EXTENSION|MIME)/ },
+];
+
+/** scripts/·test/ 스캔 면제 — 각각 옛 이름을 **값으로** 검사하거나 목록으로 들고 있다. */
+const TOOLING_EXEMPT_FILES: readonly string[] = [
+  "test/detsukuruBrandStrings.test.ts",   // 이 목록 자체
+  "test/appStorageMigration.test.ts",     // 구 저장 키 접두사 마이그레이션을 형태별로 검증
+  "test/aiActivityLogEndpoint.test.ts",   // 옛 엔드포인트가 사라졌음을 not.toContain 으로 고정
+  "test/communitySaveBoot.test.ts",       // 다른 리스팅의 구 저장 키가 이관되지 않고 보존되는지 검사하는 fixture
+  "test/communitySaveIsolation.test.mjs", // 같은 검사의 실브라우저 판
+];
+const TOOLING_SCANNED_EXTENSIONS = new Set([".ts", ".tsx", ".mts", ".mjs", ".cjs", ".js", ".sh"]);
 
 /**
  * `rpg-zzu-` (하이픈)은 **데이터 식별자**여서 위 패턴에 넣지 않았다. 남아 있는 것과 이유 —
@@ -185,12 +219,27 @@ function isExempt(relativePath: string): boolean {
   return EXEMPT_PREFIXES.some((prefix) => normalized === prefix || normalized.startsWith(prefix));
 }
 
+const COMMENT_STRIPPABLE_EXTENSIONS = new Set([".ts", ".tsx", ".mts", ".mjs", ".cjs", ".js"]);
+
 function shippingSource(source: string, extension: string): string {
-  if (extension === ".ts" || extension === ".tsx") {
+  if (COMMENT_STRIPPABLE_EXTENSIONS.has(extension)) {
     const file = ts.createSourceFile(`source${extension}`, source, ts.ScriptTarget.Latest, true);
     return ts.createPrinter({ removeComments: true }).printFile(file);
   }
   return source;
+}
+
+function walkTooling(dir: string, out: string[] = []): string[] {
+  for (const entry of readdirSync(dir)) {
+    const full = join(dir, entry);
+    if (statSync(full).isDirectory()) {
+      if (entry === "fixtures" || entry === "node_modules") continue; // 데이터 · 외부 패키지
+      walkTooling(full, out);
+      continue;
+    }
+    if (TOOLING_SCANNED_EXTENSIONS.has(extname(entry))) out.push(full);
+  }
+  return out;
 }
 
 describe("탈-쯔구르: 출하 문자열", () => {
@@ -204,8 +253,11 @@ describe("탈-쯔구르: 출하 문자열", () => {
     for (const file of walk(SRC_ROOT)) {
       const rel = relative(REPO_ROOT, file);
       if (isExempt(rel)) continue;
+      const raw = readFileSync(file, "utf8");
+      // 원문에 어떤 패턴도 없으면 주석 제거(느린 TS 프린터)를 건너뛴다 — 대부분의 파일이 여기서 끝난다.
+      if (!FORBIDDEN_PATTERNS.some(({ re }) => re.test(raw))) continue;
       // Source comments document compatibility/history but are not shipped UI or identifiers.
-      const lines = shippingSource(readFileSync(file, "utf8"), extname(file)).split(/\r?\n/);
+      const lines = shippingSource(raw, extname(file)).split(/\r?\n/);
       lines.forEach((line, index) => {
         if (ASSET_PATH_LINE.test(line)) return;
         for (const { label, re } of FORBIDDEN_PATTERNS) {
@@ -214,6 +266,23 @@ describe("탈-쯔구르: 출하 문자열", () => {
       });
     }
     expect(offenders, `금지 표현 ${offenders.length}건:\n${offenders.join("\n")}`).toEqual([]);
+  });
+
+  it("scripts·test 에도 스윕한 구 이름 식별자가 남아 있지 않다", () => {
+    const offenders: string[] = [];
+    for (const file of [...walkTooling(join(REPO_ROOT, "scripts")), ...walkTooling(join(REPO_ROOT, "test"))]) {
+      const rel = relative(REPO_ROOT, file).replace(/\\/g, "/");
+      if (TOOLING_EXEMPT_FILES.includes(rel)) continue;
+      const raw = readFileSync(file, "utf8");
+      if (!TOOLING_FORBIDDEN_PATTERNS.some(({ re }) => re.test(raw))) continue;
+      const lines = shippingSource(raw, extname(file)).split(/\r?\n/);
+      lines.forEach((line, index) => {
+        for (const { label, re } of TOOLING_FORBIDDEN_PATTERNS) {
+          if (re.test(line)) offenders.push(`${rel}:${index + 1} [${label}] ${line.trim().slice(0, 120)}`);
+        }
+      });
+    }
+    expect(offenders, `구 이름 ${offenders.length}건:\n${offenders.join("\n")}`).toEqual([]);
   });
 
   it("엔트리 HTML·manifest 에도 남아 있지 않다", () => {

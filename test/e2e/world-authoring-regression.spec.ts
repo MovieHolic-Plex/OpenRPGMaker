@@ -7,7 +7,7 @@ test.describe.configure({ timeout: 240_000 });
 test.beforeEach(async ({ page }) => {
   await mkdir(output, { recursive: true });
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   // Host netlink churn can cancel Chromium's localhost module loads. Node's HTTP
   // client transports the same bytes; app code and all UI interactions stay real.
   if (process.env.WORLD_QA_ROUTE_MODULES === "1") {

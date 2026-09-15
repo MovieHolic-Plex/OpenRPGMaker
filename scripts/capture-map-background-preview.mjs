@@ -22,7 +22,7 @@ try {
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
   const page = await context.newPage();
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "standard");
+    localStorage.setItem("oprn:editor-ui-mode", "standard");
     localStorage.setItem("oprn:editor-ui-mode", "standard");
     localStorage.setItem("oprn:editor-welcome-dismissed", "1");
     localStorage.setItem("oprn:coachmarks-basic-v1", "1");

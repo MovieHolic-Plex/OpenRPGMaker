@@ -193,7 +193,7 @@ try {
   await context.addInitScript(() => {
     if (location.protocol !== 'http:') return;
     localStorage.setItem('oprn:editor-ui-mode', 'expert');
-    localStorage.setItem('rpg-zzu:editor-ui-mode', 'expert');
+    localStorage.setItem('oprn:editor-ui-mode', 'expert');
     localStorage.setItem('oprn:ai-consent', 'accepted');
   });
   page = await context.newPage(); page.setDefaultTimeout(45000);

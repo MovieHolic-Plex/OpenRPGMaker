@@ -49,7 +49,7 @@ describe("independent image settings", () => {
     });
     expect(view.get("ai-config-image-status").dataset.availability).toBe("supported");
     const fetch = vi.fn(async (_url: unknown, init?: RequestInit) => {
-      expect(new Headers(init?.headers).get("X-Rpgzzu-Provider")).toBe("openai-codex");
+      expect(new Headers(init?.headers).get("X-Oprn-Provider")).toBe("openai-codex");
       expect(JSON.parse(String(init?.body)).model).toBe("codex-image-default");
       return new Response(JSON.stringify({ image: { dataUrl: "data:image/png;base64,AAAA", provider: "openai-codex", model: "gpt-image-2" } }));
     });
@@ -106,13 +106,13 @@ describe("independent image settings", () => {
       return new Response(JSON.stringify({ image: { dataUrl: "data:image/png;base64,AAAA" } }));
     });
     const result = await generateAiImage({ prompt: "test", referenceImages: references, signal: controller.signal }, { fetch });
-    expect(new Headers(seen[0]!.headers).get("X-Rpgzzu-Provider")).toBe("openai-codex");
+    expect(new Headers(seen[0]!.headers).get("X-Oprn-Provider")).toBe("openai-codex");
     expect(JSON.parse(String(seen[0]!.body))).toMatchObject({ model: "gpt-image-1", referenceImages: references });
     expect(result).toMatchObject({ provider: "openai-codex", model: "gpt-image-1" });
     controller.abort();
     expect(seen[0]!.signal?.aborted).toBe(true);
     await generateAiImage({ prompt: "test", model: "gemini-3-pro-image", providerId: "google-antigravity" }, { fetch });
-    expect(new Headers(seen[1]!.headers).get("X-Rpgzzu-Provider")).toBe("google-antigravity");
+    expect(new Headers(seen[1]!.headers).get("X-Oprn-Provider")).toBe("google-antigravity");
     expect(JSON.parse(String(seen[1]!.body)).model).toBe("gemini-3-pro-image");
     expect(loadAiConfig().imageModel).toBe("gpt-image-1");
   });

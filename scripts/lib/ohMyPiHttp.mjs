@@ -94,7 +94,7 @@ export function resolveCompanionProvider(req = {}) {
   const query = url.includes("?") ? new URLSearchParams(url.slice(url.indexOf("?") + 1)) : new URLSearchParams();
   const fromQuery = query.get("provider");
   const headers = headerMap(req.headers);
-  const fromHeader = headers["x-rpgzzu-provider"];
+  const fromHeader = headers["x-oprn-provider"];
   const body = req.body && typeof req.body === "object" ? req.body : {};
   const fromBody = typeof body.provider === "string" ? body.provider : "";
   const raw = (fromQuery || fromHeader || fromBody || "").trim();

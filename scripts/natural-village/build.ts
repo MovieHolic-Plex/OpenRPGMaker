@@ -30,7 +30,7 @@ export function buildNaturalVillageReference(): Project {
 
   const project = createBlankProject();
   project.meta.title = "굽은개울 마을 - 직접 제작 참조본";
-  project.meta.author = "RPG ZZU village reference";
+  project.meta.author = "OPRN village reference";
   project.maps = {
     [terrain.id]: terrain,
     [houses.id]: houses,

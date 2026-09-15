@@ -75,7 +75,7 @@ try {
   browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ acceptDownloads: true, deviceScaleFactor: 1, viewport: { width: 1_440, height: 1_000 } });
   await context.addInitScript(({ project }) => {
-    window.__RPG_ZZU_E2E_PROJECT__ = project;
+    window.__OPRN_E2E_PROJECT__ = project;
     localStorage.clear();
     localStorage.setItem("oprn:editor-ui-mode", "expert");
   }, { project: local.project });

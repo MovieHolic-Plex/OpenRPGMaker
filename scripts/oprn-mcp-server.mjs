@@ -60,7 +60,7 @@ function handleRequest(module, project, auditLogPath, request) {
       success(id, {
         protocolVersion: PROTOCOL_VERSION,
         capabilities: { tools: {} },
-        serverInfo: { name: "rpgzzu-headless", version: "0.1.0" },
+        serverInfo: { name: "oprn-headless", version: "0.1.0" },
       });
       return;
     }
@@ -135,7 +135,7 @@ function startFramedJsonRpc() {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (!args.projectPath) {
-    throw new Error("Usage: node scripts/rpgzzu-mcp-server.mjs --project <file.json|file.rpgzzu> [--audit-log <path>]");
+    throw new Error("Usage: node scripts/oprn-mcp-server.mjs --project <file.json|file.rpgzzu> [--audit-log <path>]");
   }
   const rpc = startFramedJsonRpc();
   await withTsModule(HEADLESS_ENTRY, "headless.mjs", async (module) => {

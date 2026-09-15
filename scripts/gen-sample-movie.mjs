@@ -42,7 +42,7 @@ try {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = "#fff";
       ctx.font = "20px sans-serif";
-      ctx.fillText("RPG ZZU MOVIE " + k, 16, 52);
+      ctx.fillText("OPRN MOVIE " + k, 16, 52);
       const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.8));
       outs.push(new Uint8Array(await blob.arrayBuffer()));
     }

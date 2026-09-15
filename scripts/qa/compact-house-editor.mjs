@@ -36,7 +36,7 @@ try {
     },
   );
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "standard");
+    localStorage.setItem("oprn:editor-ui-mode", "standard");
     localStorage.setItem("oprn:ai-panel-collapsed", "1");
     for (const k of [
       "oprn:editor-welcome-dismissed",

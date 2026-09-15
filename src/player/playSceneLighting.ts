@@ -20,7 +20,7 @@ import type { LightSource, LightSourceAnchor } from "@/project/types";
 import { store } from "@/project/store";
 import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 
-const LIGHTING_MASK_TEXTURE_KEY = "__rpg_zzu_lighting_mask";
+const LIGHTING_MASK_TEXTURE_KEY = "__oprn_lighting_mask";
 
 export function installLightingLayer(scene: PlaySceneContext): void {
   if (scene.lightingOverlayImage && scene.lightingMaskTexture) return;

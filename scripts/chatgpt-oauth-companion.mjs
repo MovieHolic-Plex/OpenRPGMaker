@@ -33,7 +33,7 @@ const server = createServer(async (request, response) => {
       response.writeHead(204, {
         "Access-Control-Allow-Origin": cors,
         "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, X-Rpgzzu-Provider",
+        "Access-Control-Allow-Headers": "Content-Type, X-Oprn-Provider",
         Vary: "Origin",
       });
       return response.end();
@@ -55,7 +55,7 @@ const server = createServer(async (request, response) => {
   }
 });
 
-server.listen(port, host, () => console.log(`[rpg-zzu] AI companion (oh-my-pi): http://${host}:${port}`));
+server.listen(port, host, () => console.log(`[oprn] AI companion (oh-my-pi): http://${host}:${port}`));
 function shutdown() {
   server.close();
   stopOhMyPiWorker();

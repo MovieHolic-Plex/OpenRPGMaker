@@ -479,7 +479,7 @@ const html = `<!doctype html>
 <div class="wrap">
 
 <header class="top">
-  <div class="kicker">RPG Zzu · Tileset Harness Report</div>
+  <div class="kicker">OPRN · Tileset Harness Report</div>
   <h1>EasyRPG RTP Combined Town ChipSet<br><span class="dim" style="font-size:22px">— 어떻게 구현했고, AI가 어떻게 쓰는가</span></h1>
   <p>
     이 칩셋은 이 저장소의 <b>기본 타일셋</b>이다. 480칸의 16×16 픽셀 조각에 불과한 시트를

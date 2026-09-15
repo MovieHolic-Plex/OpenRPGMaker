@@ -132,7 +132,7 @@ for (const [name, act] of Object.entries(scenarios)) {
   });
   page.on("pageerror", (e) => consoleErrors.push(`pageerror: ${String(e).slice(0, 240)}`));
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
     window.__ctxLost = [];
     const orig = HTMLCanvasElement.prototype.getContext;
     HTMLCanvasElement.prototype.getContext = function (...a) {

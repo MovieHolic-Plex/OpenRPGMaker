@@ -30,7 +30,7 @@ async function main() {
         {
           method: "POST",
           url: "/v1/images/generations",
-          headers: { "x-rpgzzu-provider": "google-antigravity" },
+          headers: { "x-oprn-provider": "google-antigravity" },
           body: { prompt: subject.prompt },
         },
         adapters,

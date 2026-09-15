@@ -54,7 +54,7 @@ conversion; the button only surfaces that path instead of leaving the
 message dead-ended. Browser QA for this surface needs a canonical project;
 when the dev DB lacks the spatial CAS
 migration (`migration-required` on publish), seed a converted project
-through the `__RPG_ZZU_E2E_PROJECT__` dev hook — build it with
+through the `__OPRN_E2E_PROJECT__` dev hook — build it with
 `convertLegacySpatialSnapshot(serialize(project))`, never by editing raw
 JSON by hand.
 

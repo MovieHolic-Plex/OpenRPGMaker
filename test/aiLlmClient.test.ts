@@ -276,7 +276,7 @@ describe("chatCompletion 스트리밍 SSE 파서", () => {
     expect(String(url)).not.toContain(config.baseUrl || " 없음");
     expect((init as RequestInit | undefined)?.headers).toEqual({
       "Content-Type": "application/json",
-      "X-Rpgzzu-Provider": "google-antigravity",
+      "X-Oprn-Provider": "google-antigravity",
     });
   });
 
@@ -363,7 +363,7 @@ describe("chatCompletion 스트리밍 SSE 파서", () => {
     const fetchMock = (globalThis as unknown as { fetch: ReturnType<typeof vi.fn> }).fetch;
     const init = fetchMock.mock.calls[0]?.[1] as RequestInit | undefined;
     const sent = init?.headers as Record<string, string>;
-    expect(sent["X-Rpgzzu-Provider"]).toBe("openai-codex");
+    expect(sent["X-Oprn-Provider"]).toBe("openai-codex");
     expect(String(fetchMock.mock.calls[0]?.[0])).toContain("/chat/completions");
   });
 });

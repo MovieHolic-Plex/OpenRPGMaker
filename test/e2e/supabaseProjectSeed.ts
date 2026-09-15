@@ -3,7 +3,7 @@ import { gotoWithRetry } from "../../scripts/lib/goto-retry.mjs";
 
 export async function seedProjectFromSupabaseCanonical(page: Page, project: unknown, path = "/"): Promise<void> {
   await page.addInitScript((seed) => {
-    window.__RPG_ZZU_E2E_PROJECT__ = seed;
+    window.__OPRN_E2E_PROJECT__ = seed;
     // 시드의 역할은 프로젝트 주입뿐 — 앞선 init 스크립트(beforeEach)가 정한 UI 모드는 보존한다.
     const uiMode = window.localStorage.getItem("oprn:editor-ui-mode");
     window.localStorage.clear();

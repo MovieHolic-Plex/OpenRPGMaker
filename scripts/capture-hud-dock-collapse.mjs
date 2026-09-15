@@ -111,7 +111,7 @@ try {
   await page.setViewport({ width: 1600, height: 1000 });
   await page.evaluateOnNewDocument((dock) => {
     localStorage.setItem("oprn:editor-ui-mode", "expert");
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
     localStorage.setItem("oprn:ai-panel-collapsed", "0");
     if (dock) {
       localStorage.setItem(
