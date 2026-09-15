@@ -178,7 +178,9 @@
 .database-modal-body .spatial-card {
   display: grid;
   grid-template-rows: 120px auto;
-  min-height: 168px;
+  /* 120px 썸네일 + 캐프션 실측 60px — 168px 에서는 캐프션 세 줄이 48px 안으로
+     짓밟혀 13px 이름이 6px 상자에 잘렸다 (2026-09-15 실측). */
+  min-height: 184px;
   padding: 0;
   overflow: hidden;
   border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
@@ -230,7 +232,10 @@
   display: grid;
   gap: 4px;
   padding: 8px 10px 10px;
-  min-height: 48px;
+  /* 내용 높이를 그대로 갖는다. 고정 48px + 세 줄은 각 줄을 ~7px 로 짓눌렀다. */
+  min-height: auto;
+  align-content: start;
+  grid-auto-rows: auto;
 }
 
 .database-modal-body .spatial-card-name,
@@ -430,6 +435,49 @@
   background: var(--db-studio-danger);
   color: var(--db-studio-on-accent);
   font: 600 12px/1.2 inherit;
+}
+.database-modal-body .spatial-delete-confirm[hidden] {
+  display: none;
+}
+
+/* 자주 안 쓰는 액션은 ⋯ 안으로. 펼쳐 놓은 15개 중 다수가 비활성이라
+   무엇을 누를 수 있는지가 오히려 안 보였다 (2026-09-15). */
+.database-modal-body .spatial-more {
+  position: relative;
+  font-size: 12px;
+}
+.database-modal-body .spatial-more > summary {
+  min-height: 32px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 8px;
+  background: var(--db-studio-surface);
+  color: var(--db-studio-text-1);
+  font: 500 12px/1.2 inherit;
+  cursor: pointer;
+  list-style: none;
+}
+.database-modal-body .spatial-more > summary::-webkit-details-marker {
+  display: none;
+}
+.database-modal-body .spatial-more-body {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 8;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 292px;
+  max-height: 420px;
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 10px;
+  background: var(--db-studio-surface);
+  box-shadow: var(--db-studio-shadow-pop);
 }
 
 /* 오브젝트 시공 대상 — 닫혀 있으면 요약 한 줄만 먹는다. */
