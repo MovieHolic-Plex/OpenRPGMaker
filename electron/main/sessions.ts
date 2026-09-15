@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { openLocalProjectStore, type LocalProjectStore } from "../local-store/store";
+import { initLocalProjectStore, type LocalProjectStore } from "../local-store/store";
 
 export type ProjectSession = {
   readonly projectDir: string;
@@ -14,7 +14,7 @@ export function createWindowSessionRegistry() {
   return {
     async open(webContentsId: number, projectDir: string): Promise<ProjectSession> {
       const existing = byProjectDir.get(projectDir)
-        ?? { projectDir, store: await openLocalProjectStore({ projectDir }) };
+        ?? { projectDir, store: await initLocalProjectStore({ projectDir }) };
       byProjectDir.set(projectDir, existing);
       byWebContents.set(webContentsId, existing);
       return existing;

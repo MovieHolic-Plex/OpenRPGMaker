@@ -40,6 +40,12 @@ const bridge = {
     },
     flushDone: invoke(OPRN_CHANNELS.lifecycleFlushDone),
   },
+  start: {
+    recentProjects: invoke(OPRN_CHANNELS.startRecentProjects),
+    openFolder: invoke(OPRN_CHANNELS.startOpenFolder),
+    createProject: invoke(OPRN_CHANNELS.startCreateProject),
+    importFile: invoke(OPRN_CHANNELS.startImportFile),
+  },
   companionOrigin: null,
 } as const;
 

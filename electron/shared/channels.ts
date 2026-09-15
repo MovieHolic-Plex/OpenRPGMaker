@@ -25,6 +25,10 @@ export const OPRN_CHANNELS = {
   assetsPruneUnused: "oprn:assets.pruneUnused",
   lifecycleFlushBeforeClose: "oprn:lifecycle.flush-before-close",
   lifecycleFlushDone: "oprn:lifecycle.flush-done",
+  startRecentProjects: "oprn:start.recentProjects",
+  startOpenFolder: "oprn:start.openFolder",
+  startCreateProject: "oprn:start.createProject",
+  startImportFile: "oprn:start.importFile",
 } as const;
 
 export type OprnChannel = (typeof OPRN_CHANNELS)[keyof typeof OPRN_CHANNELS];
