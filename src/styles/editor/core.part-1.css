@@ -166,6 +166,19 @@ body[data-editor-tool="pan"] .editor-layout .canvas-area .phaser-container:activ
   /* block + relative: 선택 칩/배지 absolute 오버레이가 캔버스 flex 레이아웃을 밀지 않음 */
 }
 
+/* 맵 전환 크로스페이드의 베일(editor/mapDissolveVeil.ts). 편집 캔버스([data-testid="edit-canvas"])
+   안에만 붙는다 — 플레이어도 `.phaser-container` 를 쓰므로 그쪽을 덮으면 안 된다.
+   불투명도는 JS 가 소유한다 — 여기에 transition/animation 을 두면 WAAPI 와 두 주인이 생긴다.
+   색은 그 호스트가 이미 깔고 있는 캔버스 종이색이라, 다 덮인 순간의 화면은
+   검은 판이 아니라 «빈 편집 캔버스» 다. */
+.map-dissolve-veil {
+  background: var(--bg-canvas);
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: var(--z-canvas-veil, 30);
+}
+
 .agent-focus-highlight {
   animation: agent-focus-highlight-fade 2.2s ease-out forwards;
   background: rgba(255, 212, 59, 0.12);

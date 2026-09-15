@@ -1539,6 +1539,52 @@ Tests: `workPlan`(자세 표 6종 + 선언 없음 + 페이로드 전달), `assis
 - 검증: `test/editSceneCameraFocus.test.ts`, `test/editorCameraFocusPlan.test.ts`, `test/editorReferenceNavigation.test.ts`; 실제 Phaser 프레임·맵 전환·휠 중단·동작 줄이기는 `test/e2e/assistant-camera-motion.spec.ts`, 증거 `.omo/evidence/assistant-camera-motion/`.
 
 
+## 조수의 맵 전환은 크로스페이드다 — 하드컷 금지 (2026-09-15)
+
+**같은 맵 안의 이동만 부드러웠다.** 위 절의 팬은 `target.mapId === 씬의 현재 맵` 일 때만 돌고,
+맵이 바뀌면 `selectEditorMap` → `editorState.set({currentMapId})` → `redrawWhenViewStateChanges`
+→ `redraw()` 가 **한 프레임에** 캔버스를 통째로 갈아 끼웠다. 카메라는
+`planEditorCameraCenter(preserveLookAt:false)` 로 새 맵 한가운데에 붙고, 그 **뒤에** 목표로
+300–650ms 팬이 또 돌았다 — 한 번의 이동에 덜컹이 둘(하드컷 + 낯선 맵 가로지르기)이다.
+조수가 여러 맵을 오가는 턴에서 이게 되풀이되는 것이 감독이 말한 「확확 전환」이다.
+
+- **어휘는 크로스페이드다.** 맵 전환은 좌표계가 통째로 달라 팬이 보여 줄 공간 관계가 없다
+  (motion vocabulary: Crossfade = 같은 영역에서 정체성을 «교환» 한다. Slide/Layout animation 이 아니다).
+  옛 화면을 캔버스 종이색(`--bg-canvas`)으로 덮고, 덮인 동안 맵·카메라·강조를 갈아 끼우고, 새 화면을
+  같은 종이색에서 띄운다. 덮기 130ms / 걷기 200ms.
+- **소유 경계.** 판정은 순수 모듈 `src/editor/assistantViewTransition.ts`
+  (`planAssistantViewTransition` → `cut`|`dissolve`, `remainingCoverMs`). 실제 재생은
+  `src/editor/mapDissolveVeil.ts`. 둘을 묶어 호출부에 내보내는 한 문이
+  `src/editor/assistantViewSwitch.ts` 다 — **조합 모듈인 `editorReferenceNavigation` 에 두면
+  `agentFocus → editorReferenceNavigation → agentFocus` 순환이 생겨서** 별도 모듈이다.
+  화면을 바꾸는 세 진입(`focusAcceptedAgentChanges`, `focusEditorRegion`,
+  `navigateToEditorReference` 의 map 갈래)이 전부 이 문을 지난다.
+- **`apply()` 안에 화면이 바뀌는 일을 전부 넣어라.** 맵 선택·카메라·강조를 한 묶음으로 넣어야
+  덮인 동안 다 끝난다. 절반만 넣으면 나머지 절반이 베일 밖에서 그대로 덜컹인다.
+- **맵을 건너뛴 카메라는 팬하지 않는다** — `CameraFocusTarget.immediate`. 베일이 연속성을 갖고
+  카메라는 이미 도착해 있다. 같은 맵이면 이 깃발을 주지 않는다(기존 팬이 그대로 소유).
+- **걷기는 새 맵이 실제로 그려진 뒤에 시작한다**(`afterNextPaint`, rAF 2회 + 400ms 탈출구).
+  실측(swiftshader, 24×18 맵): 안 기다렸더니 베일이 걷힌 뒤 **빈 종이색 캔버스**가 500ms 드러났다 —
+  하드컷보다 나쁘다.
+- **끼어들기는 이어 덮는다.** 걷히는 중에 새 전환이 오면 0 부터 다시 틀지 않고 지금 보이는
+  불투명도에서 남은 만큼만 덮는다(`remainingCoverMs`). 덮이기 전에 연달아 오는 전환은 **한 번의
+  깜빡임으로 흡수된다**(코얼레싱) — 조수가 맵을 연달아 갈아 끼울 때 깜빡임이 배로 늘지 않는다.
+- **호스트는 `[data-testid="edit-canvas"]` 다. `.phaser-container` 로 찾지 마라** — 플레이어도 같은
+  클래스를 쓰므로(`player/playSurface.ts`) 테스트 플레이 창이 열려 있으면 게임 화면을 덮을 수 있다.
+  베일은 캔버스 **위의 DOM 오버레이까지** 덮어야 한다(로케이션 상자·고스트 마커·활동 칩은 옛 맵
+  좌표에 붙어 있다) — 그래서 `--z-canvas-veil: 30`(칩 22 위, 툴바 40 아래)이고, 캔버스 엘리먼트의
+  opacity 를 건드리는 방식은 쓰지 않는다.
+- **동작 줄이기는 전환을 제거한다**(대체하지 않는다). `prefers-reduced-motion` 의 단일 창구는
+  `src/util/reducedMotion.ts` — 팬과 디졸브가 각자 matchMedia 를 읽으면 한쪽만 꺼져
+  「즉시 갈아 끼운 뒤 300ms 팬」 같은 반쪽 상태가 난다.
+- 검증: `test/assistantViewTransition.test.ts`(순수 판정), `test/editorReferenceNavigation.test.ts`
+  (`immediate` 계약); 실제 브라우저의 불투명도 곡선·교체 시점·도착 카메라·같은 맵 제외·동작 줄이기는
+  `test/e2e/assistant-map-switch-dissolve.spec.ts`. 사람이 볼 필름스트립은
+  `node scripts/qa/assistant-map-switch-filmstrip.mjs`(CDP 스크린캐스트 — `element.screenshot()`
+  한 장이 330ms 전환보다 오래 걸려 중간 프레임을 못 뜬다), 증거
+  `.omo/evidence/assistant-map-switch-dissolve/`.
+
+
 AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, visual polish, dock modes, and harness integration.
 
 > **Encoding note:** Some Korean descriptive text has EUC-KR→UTF-8 mojibake from the original source commit. English terms, file paths, and code references are intact. For accurate Korean, consult the referenced source files. Partial automated restoration applied; remaining garbled CJK is irreversibly corrupted.
