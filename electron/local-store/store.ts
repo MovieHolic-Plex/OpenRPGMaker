@@ -145,6 +145,7 @@ export type LocalProjectStore = {
   mapMirrors(): ReadonlyMap<string, LocalMapMirror>;
   loadSnapshot(): LocalProjectSnapshot | null;
   saveProject(project: Project): Promise<LocalStoreSaveResult>;
+  saveSerialized(serialized: string): Promise<LocalStoreSaveResult>;
   saveMapPatch(input: LocalMapPatchInput): Promise<LocalStoreSaveResult>;
   recordCommit(input: LocalCommitInput): string;
   listCommits(limit: number): readonly LocalCommitRow[];
@@ -383,6 +384,19 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
         kind: "saved",
         sha256: wire.sha256,
         revision: writeProjectRow(driver, project, wire, projectId, clock()),
+      }));
+    },
+    async saveSerialized(serialized: string): Promise<LocalStoreSaveResult> {
+      const parsed = deserializeStoredProjectJson(JSON.parse(serialized));
+      const wire: ProjectWire = {
+        serialized,
+        json: JSON.parse(serialized),
+        sha256: sha256HexOfText(serialized),
+      };
+      return driver.transaction(() => ({
+        kind: "saved",
+        sha256: wire.sha256,
+        revision: writeProjectRow(driver, parsed, wire, projectId, clock()),
       }));
     },
     async saveMapPatch(input: LocalMapPatchInput): Promise<LocalStoreSaveResult> {
