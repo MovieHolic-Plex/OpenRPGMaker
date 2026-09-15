@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { deserialize, serialize } from "@/project/io";
+import { HOUSE_WALL_LADDER } from "@/editor/tools/houseProtection";
+import { TILE } from "@/project/defaults/constants";
 import type { GameMap } from "@/project/types";
 import { completedHouseProject, houseMap, HOUSE_RECT, mutateProject } from "./fixtures/completedHouse";
 
@@ -142,5 +144,32 @@ describe("completed house geometry and exact cell ownership", () => {
     houseMap(ctx.project).lowerTiles[3 * houseMap(ctx.project).width + 3] = 72;
     expect(mutateProject(ctx, (draft) => { houseMap(draft).name = "New name"; }).ok).toBe(true);
     expect(houseMap(ctx.project).lowerTiles[3 * houseMap(ctx.project).width + 3]).toBe(72);
+  });
+
+  // 겹침 검사는 짝마다 칸을 훑기 전에 경계 상자로 가지친다(assertHouseProtection). 그 경계를
+  // region.rect 로 잡으면 rect 밖에 붙는 칸 — 지붕 데크 사다리 — 이 검사에서 통째로 빠진다.
+  // 경계는 반드시 **실제 칸**에서 재야 한다.
+  it("rejects an overlap that only touches a roof-deck ladder outside the house rect", () => {
+    const ctx = { project: completedHouseProject() };
+    const map = houseMap(ctx.project);
+    delete map.layoutPlan;
+    map.layoutPlan = { version: 1, kind: "fixture", regions: [
+      { id: "deck_1", role: "house", label: "Deck", shape: "rooftop-deck", x: 2, y: 2, w: 6, h: 4, doorAt: { x: 4, y: 5 } },
+    ] };
+    // 사다리는 rect 아래 한 칸 — 이 타일이 있어야 소유 칸으로 잡힌다.
+    map.upperTiles[6 * map.width + 5] = HOUSE_WALL_LADDER;
+
+    const before = serialize(ctx.project);
+    const result = mutateProject(ctx, (draft) => {
+      const target = houseMap(draft);
+      // rect(y 2..5)끼리는 닿지 않는다. 사다리 칸 (5,6)에서만 겹친다.
+      target.structurePlacements = [{
+        id: "human_1", kitId: "shed", x: 5, y: 6, w: 1, h: 1,
+        before: { lower: [TILE.GRASS], upper: [TILE.EMPTY] }, afterHash: "human-edited",
+      }];
+    });
+
+    expect(result.issues?.[0]?.code).toBe("house-overlap");
+    expect(serialize(ctx.project)).toBe(before);
   });
 });

@@ -1,0 +1,47 @@
+[
+  {
+    "label": "타일",
+    "testid": "db-tab-spatial-tiles",
+    "cold": 42,
+    "settled": 0,
+    "warm": 43,
+    "cards": 19,
+    "canvases": 0
+  },
+  {
+    "label": "오브젝트",
+    "testid": "db-tab-spatial-objects",
+    "cold": 46,
+    "settled": 0,
+    "warm": 34,
+    "cards": 48,
+    "canvases": 37
+  },
+  {
+    "label": "장소",
+    "testid": "db-tab-spatial-places",
+    "cold": 994,
+    "settled": 1067,
+    "warm": 1047,
+    "cards": 204,
+    "canvases": 19
+  },
+  {
+    "label": "지역",
+    "testid": "db-tab-spatial-regions",
+    "cold": 1389,
+    "settled": 0,
+    "warm": 105,
+    "cards": 0,
+    "canvases": 1
+  },
+  {
+    "label": "세계",
+    "testid": "db-tab-spatial-worlds",
+    "cold": 239,
+    "settled": 0,
+    "warm": 39,
+    "cards": 0,
+    "canvases": 1
+  }
+]

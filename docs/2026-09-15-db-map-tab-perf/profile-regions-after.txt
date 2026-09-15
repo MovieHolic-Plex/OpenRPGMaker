@@ -1,0 +1,16 @@
+총 6465ms
+ 17.7%    1143ms  (program)  :0
+  9.6%     622ms  decorateVillageSpaces  spaceDecoration.ts:10
+  6.7%     436ms  mixedCompositionRaster  mixedCompositionRaster.ts:20
+  6.3%     405ms  houseIndexOf  houseProtection.ts:126
+  4.2%     273ms  computeReachableCells  reachability.ts:2
+  3.5%     226ms  assertHouseProtection  houseProtection.ts:146
+  3.5%     225ms  buildVillageDomain  builder.ts:96
+  3.1%     198ms  compositionPreview  spatialCompositionAccess.ts:45
+  2.9%     186ms  drawImage  :0
+  2.6%     169ms  record  guardValues.ts:23
+  2.1%     136ms  t.exports  phaser.min.js:1
+  1.9%     121ms  buildObjectHouses  objectHouses.ts:72
+  1.7%     111ms  (garbage collector)  :0
+  1.5%      97ms  (anonymous)  spaceDecoration.ts:81
+  1.5%      95ms  (anonymous)  guardValues.ts:10
