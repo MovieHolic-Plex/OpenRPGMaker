@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **69쪽 / 2743KB / 약 773,050 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **69쪽 / 2753KB / 약 775,895 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,15 +15,15 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 417KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2180 | ~118,243 |
+| `openwiki/editor-ai-panel.md` | 420KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2217 | ~119,171 |
 | `openwiki/editor-ai-tools.md` | 195KB | 82KB ⚠상한 초과 — 절을 더 쪼개라 | 1504 | ~54,515 |
-| `openwiki/editor-database.md` | 304KB | 61KB ⚠상한 초과 — 절을 더 쪼개라 | 1767 | ~87,975 |
+| `openwiki/editor-database.md` | 305KB | 61KB ⚠상한 초과 — 절을 더 쪼개라 | 1789 | ~88,414 |
 | `openwiki/editor-event-authoring.md` | 136KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 744 | ~39,120 |
 | `openwiki/editor-event-commands.md` | 57KB | 32KB | 202 | ~15,410 |
 | `openwiki/editor-interior-room-harness.md` | 92KB | 6KB | 445 | ~26,704 |
 | `openwiki/editor-pre-edit-routing.md` | 113KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 605 | ~32,346 |
 | `openwiki/editor-workflows-misc.md` | 65KB | 30KB | 458 | ~17,883 |
-| `openwiki/runtime-battle.md` | 143KB | 31KB | 611 | ~40,926 |
+| `openwiki/runtime-battle.md` | 148KB | 31KB | 656 | ~42,404 |
 | `openwiki/runtime-project-schema.md` | 142KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 949 | ~38,434 |
 | `openwiki/runtime-sessions.md` | 89KB | 46KB | 318 | ~23,589 |
 | `openwiki/testing.md` | 197KB | 48KB | 1830 | ~54,473 |
@@ -260,7 +260,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L46` 설치 지점
 - `L52` 테스트
 
-### `openwiki/editor-ai-panel.md` — 417KB · 2180줄 · ~118,243 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 420KB · 2217줄 · ~119,171 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L3` 결과 보고서 모달 — 변경 지점마다 before/after 한 쌍 (2026-09-15, P2)
 - `L24` 조수 데크 「대화|작업」 탭 + 스튜디오 상세 — 팀원이 어디서 일하는지 한 곳 (2026-09-14, A안)
@@ -311,6 +311,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2110` Assistant clean conversation — Phase 1 (2026-09-06)
 - `L2147` Assistant deck width resize (2026-09-07)
   - `L2159` Legacy AI contract verification (2026-09-08)
+- `L2181` 의도 선언과 커버리지 감사는 각자 예산을 쓴다 (2026-09-16)
+- `L2198` 동반 서비스 자격: CLI 토큰 채택과 env 의 한계 (2026-09-16)
 
 ### `openwiki/editor-ai-tools.md` — 195KB · 1504줄 · ~54,515 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
@@ -359,7 +361,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1467` 실제 이미지 입력 보존 (2026-09-07)
 - `L1481` Physical tile passage exposure (2026-09-08)
 
-### `openwiki/editor-database.md` — 304KB · 1767줄 · ~87,975 토큰 · 통째읽기 잘림 · 깨진 줄 7
+### `openwiki/editor-database.md` — 305KB · 1789줄 · ~88,414 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
 - `L1` 장소 편집 1차 UX 수리 — 이름·툴바·속성·카드 (2026-09-15)
   - `L43` 2차 (같은 날) — 갤러리 복귀와 속성 패널 통합
@@ -445,6 +447,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1753` Battle-animation preview-first graphic controls (Phase 2, 2026-09-05)
 - `L1760` 검토한 실내 기본값의 원격 반영 (2026-09-05)
 - `L1764` 특정 꾸러미의 명시적 교체 (2026-09-06)
+- `L1768` 생성 아이템 아트에 dry-run 가짜가 섞여 들어갔다 (2026-09-16)
 
 ### `openwiki/editor-event-authoring.md` — 136KB · 744줄 · ~39,120 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
@@ -828,33 +831,34 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 143KB · 611줄 · ~40,926 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 148KB · 656줄 · ~42,404 토큰 · 통째읽기 잘림
 
 - `L3` 전투 UI/UX·모션 적대적 리뷰 5축 후속 (2026-09-14)
-- `L74` Native event battle admission (2026-09-08)
-- `L120` Supported action authoring (2026-09-07)
-- `L132` 적별 전투 표시 크기 (2026-09-06)
-- `L142` Capture-only victory (2026-09-08)
-- `L153` Event friendship and live level changes (2026-09-06)
-- `L172` Sequential battle event completion (2026-09-08)
-- `L207` Battle-event continuation and cancellation (2026-09-06)
-- `L250` 전투 명령 custom CSS (2026-09-05)
-- `L254` 빈 페이지와 실행 빈도 계약 (2026-09-05)
-  - `L271` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
-- `L289` 지원 전투 시스템은 둘뿐이다 (2026-08-28)
-- `L302` Roguelike run boundary (2026-08-24)
-- `L307` Battle rules & runtime
-  - `L322` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
-  - `L347` 커맨드/대상 메뉴 기하와 글자 가시성 계약
-  - `L363` 스킨 CSS 캐스케이드와 저작 가능 스킨
-  - `L367` Gen 1(포켓몬식) 규칙 모델
-  - `L375` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
-  - `L394` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
-- `L432` Starter hero battle sheets (2026-08-29)
-- `L453` Per-actor back battlers (2026-08-29)
-- `L471` Battle input and visibility P0 contract (2026-07-30)
-- `L482` 배틀러 idle 애니메이션 (2026-08-30)
-- `L608` 필드 아이템 상태 부여 복구 (2026-09-05)
+- `L74` 회복 자원·인트로 배너·타이머 write-back 계약 (2026-09-15)
+- `L119` Native event battle admission (2026-09-08)
+- `L165` Supported action authoring (2026-09-07)
+- `L177` 적별 전투 표시 크기 (2026-09-06)
+- `L187` Capture-only victory (2026-09-08)
+- `L198` Event friendship and live level changes (2026-09-06)
+- `L217` Sequential battle event completion (2026-09-08)
+- `L252` Battle-event continuation and cancellation (2026-09-06)
+- `L295` 전투 명령 custom CSS (2026-09-05)
+- `L299` 빈 페이지와 실행 빈도 계약 (2026-09-05)
+  - `L316` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
+- `L334` 지원 전투 시스템은 둘뿐이다 (2026-08-28)
+- `L347` Roguelike run boundary (2026-08-24)
+- `L352` Battle rules & runtime
+  - `L367` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
+  - `L392` 커맨드/대상 메뉴 기하와 글자 가시성 계약
+  - `L408` 스킨 CSS 캐스케이드와 저작 가능 스킨
+  - `L412` Gen 1(포켓몬식) 규칙 모델
+  - `L420` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
+  - `L439` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
+- `L477` Starter hero battle sheets (2026-08-29)
+- `L498` Per-actor back battlers (2026-08-29)
+- `L516` Battle input and visibility P0 contract (2026-07-30)
+- `L527` 배틀러 idle 애니메이션 (2026-08-30)
+- `L653` 필드 아이템 상태 부여 복구 (2026-09-05)
 
 ### `openwiki/runtime-m2-flow-controls.md` — 30KB · 185줄 · ~8,377 토큰
 
