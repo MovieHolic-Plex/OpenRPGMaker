@@ -1561,6 +1561,15 @@ Tests: `workPlan`(자세 표 6종 + 선언 없음 + 페이로드 전달), `assis
   `navigateToEditorReference` 의 map 갈래)이 전부 이 문을 지난다.
 - **`apply()` 안에 화면이 바뀌는 일을 전부 넣어라.** 맵 선택·카메라·강조를 한 묶음으로 넣어야
   덮인 동안 다 끝난다. 절반만 넣으면 나머지 절반이 베일 밖에서 그대로 덜컹인다.
+- **사람이 목록에서 직접 고르는 전환도 같은 문을 지난다(2026-09-15 후속).** 조수 경로만 녹이고
+  목록 클릭을 하드컷으로 남기면, 같은 화면 전환이 «누가 시켰는가» 에 따라 다르게 움직인다 —
+  사용자가 목록에서 맵을 누르는 순간이야말로 가장 자주 보는 전환이다.
+  `mapList.ts applyTreeSelection` 이 폴더 행(`isFolder`)과 열 수 없는 맵(`canOpenEditorMap` false)을
+  먼저 갈라 내고, 남은 경우를 `withAssistantViewTransition` 안에서 맵 선택 + `rerenderMapList()` +
+  `focusMapRow()` 한 묶음으로 실행한다. 목록 하이라이트와 로우 포커스는 베일 **밖**(목록 패널)에
+  있으므로 `apply()` 밖에 두면 캔버스만 130ms 늦게 바뀌어 반쪽 덜컹이가 된다.
+  ArrowUp/Down 행 훑기(`focusRelativeRow`)는 일부러 태우지 않는다 — 키마다 330ms 전환이 끼면
+  훑기가 깜빡임이 된다(훑기는 «고르기» 가 아니라 «지나가기» 다).
 - **맵을 건너뛴 카메라는 팬하지 않는다** — `CameraFocusTarget.immediate`. 베일이 연속성을 갖고
   카메라는 이미 도착해 있다. 같은 맵이면 이 깃발을 주지 않는다(기존 팬이 그대로 소유).
 - **걷기는 새 맵이 실제로 그려진 뒤에 시작한다**(`afterNextPaint`, rAF 2회 + 400ms 탈출구).
@@ -1579,8 +1588,11 @@ Tests: `workPlan`(자세 표 6종 + 선언 없음 + 페이로드 전달), `assis
   「즉시 갈아 끼운 뒤 300ms 팬」 같은 반쪽 상태가 난다.
 - 검증: `test/assistantViewTransition.test.ts`(순수 판정), `test/editorReferenceNavigation.test.ts`
   (`immediate` 계약); 실제 브라우저의 불투명도 곡선·교체 시점·도착 카메라·같은 맵 제외·동작 줄이기는
-  `test/e2e/assistant-map-switch-dissolve.spec.ts`. 사람이 볼 필름스트립은
-  `node scripts/qa/assistant-map-switch-filmstrip.mjs`(CDP 스크린캐스트 — `element.screenshot()`
+  `test/e2e/assistant-map-switch-dissolve.spec.ts`. 사람이 목록에서 직접 고르는 클릭은
+  `test/e2e/map-list-switch-dissolve.spec.ts`(행 클릭 → 베일 곡선·교체 시점·같은 행 재클릭·
+  폴더 행·동작 줄이기), 증거 `.omo/evidence/map-list-switch-dissolve/`. 사람이 볼 필름스트립은
+  `node scripts/qa/assistant-map-switch-filmstrip.mjs`(`FILMSTRIP_DRIVER=map-list` 는 목록 클릭 경로, 기본은 조수 경로; 프레임마다 그 순간의 베일 불투명도를 `frames.json` 에 적는다.
+  CDP 스크린캐스트 — `element.screenshot()`
   한 장이 330ms 전환보다 오래 걸려 중간 프레임을 못 뜬다), 증거
   `.omo/evidence/assistant-map-switch-dissolve/`.
 

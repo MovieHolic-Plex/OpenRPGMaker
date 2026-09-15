@@ -1,8 +1,9 @@
 import { addMapFolder, duplicateMap, moveMapInTree, moveMapsInTree, renameMap, setStartMap } from "@/editor/actions";
+import { withAssistantViewTransition } from "@/editor/assistantViewSwitch";
 import { confirmAndDeleteMap, confirmAndDeleteMapRecursive, confirmAndDeleteMaps, confirmAndDissolveFolder } from "@/editor/mapDeleteConfirm";
 import { editorState } from "@/editor/editorState";
 import { addParentChildTransfers, bestTestStartCell } from "@/editor/mapParentLink";
-import { selectEditorMap } from "@/editor/mapSelection";
+import { canOpenEditorMap, selectEditorMap } from "@/editor/mapSelection";
 import { mapTreeDropRelation, type MapTreeDropRelation } from "@/editor/mapTreeDrop";
 import { openMapCreateDialog, openMapCreateUnder } from "@/editor/panels/mapCreateDialog";
 import { createMapThumbnail } from "@/editor/panels/mapThumbnail";
@@ -1266,9 +1267,24 @@ function applyTreeSelection(mapId: MapId, event: Event, isFolder: boolean): void
     selectedMapIds.add(mapId);
     lastClickedMapId = mapId;
   }
-  if (!isFolder) selectEditorMap(mapId);
-  rerenderMapList();
-  focusMapRow(mapId);
+  if (isFolder) {
+    rerenderMapList();
+    focusMapRow(mapId);
+    return;
+  }
+  // 열 수 없는 맵은 화면이 바뀌지 않는다 — 베일부터 깔면 아무 일도 안 일어나는 깜빡임만 남는다.
+  if (!canOpenEditorMap(mapId)) {
+    selectEditorMap(mapId);
+    rerenderMapList();
+    focusMapRow(mapId);
+    return;
+  }
+  // 하이라이트와 포커스는 베일 **밖**(목록 패널)에 있다. 캔버스와 같은 순간에 바뀌어야 한쪽만 먼저 덜컹이지 않는다.
+  withAssistantViewTransition(mapId, () => {
+    selectEditorMap(mapId);
+    rerenderMapList();
+    focusMapRow(mapId);
+  });
 }
 
 function playMapFromTree(mapId: MapId): Promise<void> {
