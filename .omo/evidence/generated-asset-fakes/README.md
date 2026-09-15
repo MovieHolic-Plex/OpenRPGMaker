@@ -83,3 +83,30 @@ node --test test/generatedAssetPlaceholder.test.mjs
 주의: 이 5장의 사본은 **Supabase 리소스 캐시에도 같은 가짜 바이트**로 들어가 있다(위 표).
 저장소 파일만 갈아도 프로젝트가 들고 있는 리소스는 그대로이므로, 실제 프로젝트에 반영하려면
 리소스 재업로드 경로가 필요하다 — 그건 프로젝트 행을 만지는 작업이라 사용자 승인 없이 하지 않는다.
+
+
+## 복구 완료 (2026-09-16)
+
+다섯 장을 **실제 생성 파이프라인으로 다시 만들어 갈아 끼웠다.** 새 원본을 찾을 필요는 없었다 —
+계획 항목의 정본 생성기(`provenance.generator`)가 `agy` CLI 이고, 그 CLI 는 이 환경에서 살아 있었다.
+편집기 앱의 AI 제공자는 죽어 있었지만(400/401) 그건 다른 경로다.
+
+재현 절차:
+1. `node scripts/oprn-generated-assets.mjs agy-command --manifest src/assets/oprnGeneratedAssetPlan.json --out /tmp/agy-cmds.json`
+2. 각 명령을 `--print-timeout 900s` 로 올려 실행한다 — 에이전트 이미지 생성이 기본 180초를 넘긴다
+   (실측: 아이콘 1~3분, 288x256 캐릭터셋 3분). 산출물은 계획의 `rawPath` 자리에 그대로 떨어진다.
+3. `validate-only` 로 검증 → 통과한 것만 `promotedPath` 로 복사하고, 계획 항목의 `sha256` 과 `provenance.createdAt` 을 갱신한다.
+
+검증(실측):
+- 러너 검증기: 다섯 장 모두 `ok=True` (치수 일치 · nonblank · dryRunFake=False).
+- 계약 테스트: `test/generatedAssetPlaceholder.test.mjs` 의 KNOWN_DAMAGED 를 **0장으로 조였다** —
+  저장소 어디에도 가짜가 없으면 통과, 하나라도 있으면 실패.
+- 전후 대조: `repair-before-after.png` (왼쪽 가짜 줄무늬 / 오른쪽 실제 그림).
+- 계획·리졸버·로컬라이제이션 계약 19 테스트 통과, `typecheck:app` exit 0.
+
+남은 한계:
+- **캐릭터셋의 옷 색이 hero-01 의 얼굴·배틀 아트와 다르다.** 계획의 프롬프트가 색을 지정하지 않아
+  ("young field scout") 생성기가 초록 계열로 그렸고, 배틀·얼굴은 파란 옷 + 주황 머리다. 맞추려면 프롬프트를
+  고쳐 다시 생성해야 한다(이번 작업은 "깨진 것을 살린다" 범위).
+- 이 저장소 파일만 고쳤다. **Supabase 리소스 캐시에 올라간 사본은 그대로 가짜**이므로, 그 id 를 쓰는
+  프로젝트는 리소스 재업로드가 있어야 화면이 바뀐다(프로젝트 행을 만지는 작업이라 별도 승인 필요).
