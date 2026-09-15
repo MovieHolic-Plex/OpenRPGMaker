@@ -36,6 +36,9 @@ export type BattleEventRuntimeState = {
   flags?: Record<string, boolean>;
   // 타이머 잔여 초(timer 커맨드가 쓰고 timer 조건이 읽음). 전투 종료 시 write-back.
   timers?: Record<string, number>;
+  // 전투가 실제로 쓴 타이머만 모은다. 진행(tick)은 맵 씬(playSceneTimers) 소관이라
+  // 진입 시점 사본 전체를 되돌려 쓰면 전투 중 만료된 타이머가 진입 값으로 되살아난다.
+  timerWrites?: Record<string, number>;
   // 세션 장비 스냅샷 사본(actorId → 장비). changeEquipment 가 여기 기록하고
   // 전투 종료 시 applyBattleRewardsToSession 이 세션 actorEquipment 로 write-back.
   actorEquipment?: Record<string, ActorInitialEquipment>;
@@ -317,6 +320,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       relationships: { ...(options.state.relationshipWrites ?? {}) },
       flags: { ...(options.state.flags ?? {}) },
       timers: { ...(options.state.timers ?? {}) },
+      timerWrites: { ...(options.state.timerWrites ?? {}) },
       actorEquipment: Object.fromEntries(
         Object.entries(options.state.actorEquipment ?? {}).map(([actorId, equipment]) => [actorId, { ...equipment }])
       ),
@@ -784,6 +788,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         options.state.timers ??= {};
         if (command.action === "set") options.state.timers[timerId] = command.seconds ?? 0;
         if (command.action === "start" && command.seconds !== undefined) options.state.timers[timerId] = command.seconds;
+        options.state.timerWrites ??= {};
+        options.state.timerWrites[timerId] = options.state.timers[timerId];
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `timer ${command.action} ${timerId}${command.seconds !== undefined ? ` ${command.seconds}s` : ""}` });
         return false;
       }

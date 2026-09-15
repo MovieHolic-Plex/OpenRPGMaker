@@ -8,7 +8,12 @@ type BattleStep = Extract<StepResult, { kind: 'battleProcessing' }>;
 export type CommandBattleResult = 'victory' | 'defeat' | 'escape' | null;
 
 /** The caller owns foreground lifetime; both interpreters share resolution, awaiting and defeat semantics. */
-export async function playCommandBattle(scene: PlaySceneContext, step: BattleStep, isCurrent: () => boolean): Promise<CommandBattleResult> {
+export async function playCommandBattle(
+  scene: PlaySceneContext,
+  step: BattleStep,
+  isCurrent: () => boolean,
+  isLive: () => boolean = isCurrent,
+): Promise<CommandBattleResult> {
   const session = scene.session, map = scene.map;
   if (!isCurrent()) return null;
   scene.clearRuntimeOverlay('runtime-error');
@@ -19,7 +24,10 @@ export async function playCommandBattle(scene: PlaySceneContext, step: BattleSte
     if (scene.session !== session || scene.map !== map || !isCurrent() || scene.sys?.isActive() === false) return null;
     throw error;
   }
-  if (result === null || scene.session !== session || scene.map !== map || !isCurrent() || scene.sys?.isActive() === false) return null;
+  // 결과를 커밋한 뒤에는 페이지 조건을 보지 않는다(isLive). 트룹 이벤트가 자기 페이지를 끄는
+  // switch 를 쓰면 그 **정상 커밋** 때문에 페이지가 비활성이 되는데, 여기서 isCurrent 로 보면
+  // 결과가 취소로 위장되어 돌아가고 session.battleResult 가 직전 전투 값으로 남는다.
+  if (result === null || scene.session !== session || scene.map !== map || !isLive() || scene.sys?.isActive() === false) return null;
   session.battleResult = result;
   if (result === 'defeat' && !step.canLose) applyBattleDefeat(scene);
   return result;

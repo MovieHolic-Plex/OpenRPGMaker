@@ -101,6 +101,31 @@ describe("battle dom keyboard and status rows", () => {
     controller.destroy();
   });
 
+  it("follows the cursor with the scroll port when the target list overflows", () => {
+    vi.useFakeTimers();
+    const scrollIntoView = vi.fn();
+    Element.prototype.scrollIntoView = scrollIntoView;
+    const project = deserialize(JSON.stringify(battleFixture));
+    const troop = project.database.troops.find((entry) => entry.id === "troop_slime");
+    troop!.enemyIds = Array(6).fill("enemy_slime");
+    troop!.members = Array.from({ length: 6 }, (_, index) => ({ enemyId: "enemy_slime", x: 40 + index * 24, y: 90 + index * 12, hidden: false }));
+    store.replace(project);
+    const host = document.createElement("div");
+    document.body.append(host);
+    const runtime = createBattleRuntime({ project, troopId: "troop_slime", canEscape: true, canLose: true, rng: () => 0.5 });
+    const controller = mountBattleScene({ host, runtime, onResult: () => undefined, introHold: false });
+    untilActorCommand(runtime);
+    vi.advanceTimersByTime(250);
+    controller.root.querySelector<HTMLElement>("[data-testid='actor-command-attack']")?.click();
+    expect(runtime.snapshot().phase).toBe("targetSelect");
+    scrollIntoView.mockClear();
+    pressKey("ArrowDown");
+    const followed = scrollIntoView.mock.instances.at(-1) as HTMLElement | undefined;
+    expect(scrollIntoView).toHaveBeenCalled();
+    expect(followed?.dataset.testid).toMatch(/^battle-target-/);
+    controller.destroy();
+  });
+
   it("keeps arrow selection, visual cursor, DOM focus, and Enter confirmation on one command", () => {
     vi.useFakeTimers();
     const { runtime, controller } = setup();

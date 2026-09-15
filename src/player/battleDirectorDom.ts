@@ -138,9 +138,15 @@ export function actorCommandDirectorState(
       skillName: commandEntry.skillName,
     }
     : after.lastActionResult;
+  // 회복 여부와 자원은 타임라인 엔트리가 들고 있다. 부호나 HP 차이로 다시 추론하면
+  // 양수 회복량이 "피해" 로, MP 회복이 HP 회복으로 둔갑한다(실측: 마력약 +30 팝업에
+  // "주인공에게 30 피해!").
+  const effect = commandEntry?.kind === "healing"
+    ? { healing: true, resource: commandEntry.resource ?? "hp" as const }
+    : undefined;
   const lines = [
     commandLine(command, actor),
-    impactLine(command, target, impact, result, after),
+    impactLine(command, target, impact, result, after, effect),
   ];
   return {
     step: impact > 0 ? "impact" : "acting",
@@ -156,7 +162,8 @@ function impactLine(
   target: BattleBattlerSnapshot | undefined,
   impact: number,
   result: BattleSnapshot["lastActionResult"],
-  after: BattleSnapshot
+  after: BattleSnapshot,
+  effect?: { readonly healing: boolean; readonly resource: "hp" | "mp" },
 ): string {
   if (command.kind === "defend") return "받는 피해를 줄일 준비를 마쳤다.";
   if (command.kind === "escape") return after.result === "escape" ? "무사히 도망쳤다!" : "그러나 도망칠 수 없었다!";
@@ -171,6 +178,13 @@ function impactLine(
   const targetName = target
     ? disambiguatedBattlerName(target, after.enemies.some((enemy) => enemy.id === target.id) ? after.enemies : after.actors)
     : "적";
+  if (effect?.healing) {
+    const healed = rolled > 0 ? rolled : Math.abs(impact);
+    if (healed > 0) {
+      const amountText = effect.resource === "mp" ? `MP를 ${healed}` : `${healed}`;
+      return `${withJosa(target?.name ?? "대상", "이(가)")} ${amountText} 회복했다!`;
+    }
+  }
   if (result && result.critical && rolled > 0) return `급소에 맞았다! ${targetName}에게 ${rolled} 피해!`;
   if (rolled > 0) return `${targetName}에게 ${rolled} 피해!`;
   if (impact < 0) return `${withJosa(target?.name ?? "대상", "이(가)")} ${Math.abs(impact)} 회복했다!`;

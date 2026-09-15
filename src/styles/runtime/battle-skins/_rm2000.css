@@ -1076,12 +1076,19 @@
 }
 
 /* 배너는 접혔다 펼쳐질 때 위에서 내려온다(display 토글이 애니메이션을 처음부터 다시 돈다).
-   intro/acting/impact 를 한 선택자 목록에 두어 단계가 바뀌어도 계산값이 같아 재시작하지 않는다. */
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="intro"] .battle-message-window,
+   acting/impact/targetSelect 를 한 선택자 목록에 두어 단계가 바뀌어도 계산값이 같아 재시작하지 않는다. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="acting"] .battle-message-window,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="impact"] .battle-message-window,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-phase="targetSelect"] .battle-message-window {
   animation: rm2000-banner-in 200ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+/* 인트로 배너만 커버가 걷힌 뒤에 뜨다 — 적·아군·패널과 같은 --battle-reveal-ms 지연을 쓴다.
+   지연 없이 마운트되면 판이 닫힌 채로 페이드인해서 커버가 배너 글자를 가로질러 잘라먹는다
+   (실측: 씬 마운트 874ms → 커버 960/960px 인 946ms 에 배너 opacity 0.718).
+   전투 중 메시지(acting/impact)는 지연 0 을 유지한다 — 거기까지 늦추면 읽는 리듬이 끊긴다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="intro"] .battle-message-window {
+  animation: rm2000-banner-in 200ms cubic-bezier(0.2, 0.8, 0.3, 1) var(--battle-reveal-ms, 300ms) both;
 }
 
 @keyframes rm2000-banner-in {

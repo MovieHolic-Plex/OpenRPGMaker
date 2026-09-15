@@ -123,3 +123,8 @@ export function stopAllAudio(): void {
   if (engine === null) return;
   engine.stopAll(false);
 }
+
+/** 모드 전환이 오디오 소유권을 가져갔다는 표시(Phaser 게임 registry 에 심는다).
+ *  게임 파괴는 다음 프레임에 실제로 일어나므로, 이전 씬의 teardown 이 그때 공유 엔진을
+ *  통째로 멈추면 이미 켜 둔 새 트랙(타이틀 BGM)까지 사라진다. */
+export const AUDIO_HANDOFF_REGISTRY_KEY = "audioHandoffOwned";

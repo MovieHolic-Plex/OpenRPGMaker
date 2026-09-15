@@ -51,6 +51,9 @@ export interface DamageFeedback {
   readonly amount: number;
   readonly critical: boolean;
   readonly healing: boolean;
+  /** healing === true 일 때 어느 자원이 회복됐는가. 표시 계층이 HP 원장에 MP 회복을
+   *  적용하지 않도록 하는 유일한 근거다. 기본은 "hp". */
+  readonly resource?: "hp" | "mp";
   readonly miss?: boolean;
   /** 명중했지만 피해가 0 인 타격(완전 방어·무효). 화면에 반드시 표시한다. */
   readonly blocked?: boolean;
@@ -209,7 +212,9 @@ export function createBattleSequencer(
       return { targetId: entry.targetId, amount: 0, critical: false, healing: false, miss: true };
     }
     const amount = Math.abs(entry.amount ?? 0);
-    const healing = entry.kind === "healing" || (entry.amount ?? 0) < 0;
+    // 상태 유지 회복(stateRecovery)도 같은 부호 계약을 탄다 — 여기서 빼면 회복량이
+    // 양수 피해로 재생되어 팝업 -8 / HP 50→42 / 메시지 "8 회복" 이 한 화면에 겹친다.
+    const healing = entry.kind === "healing" || entry.kind === "stateRecovery" || (entry.amount ?? 0) < 0;
     if (amount === 0) {
       // 예전에는 여기서 undefined 를 돌려줘 0 피해가 화면에 **아무 흔적도** 남기지
       // 않았다. 실측에서 기본 적 24종 중 12종이 정확히 0 을 주고 있었으니, 초반 전투의
@@ -222,6 +227,7 @@ export function createBattleSequencer(
       amount,
       critical: Boolean(entry.critical),
       healing,
+      ...(healing ? { resource: entry.resource ?? "hp" as const } : {}),
     };
   }
 

@@ -156,7 +156,10 @@ function applyBattleEventStateToSession(session: PlaySession, eventState: Battle
   if (eventState.flags) {
     for (const [key, value] of Object.entries(eventState.flags)) session.flags[key] = value;
   }
-  if (eventState.timers) {
+  if (eventState.timerWrites) {
+    for (const [timerId, seconds] of Object.entries(eventState.timerWrites)) session.timers[timerId] = seconds;
+  } else if (eventState.timers) {
+    // 진입 시점 사본 전잴를 되돌려 쓰는 옛 계약(구 스냅샷 핸들러 호환).
     for (const [timerId, seconds] of Object.entries(eventState.timers)) session.timers[timerId] = seconds;
   }
   // 관계 상태: 셀프 스위치와 같은 병합 write-back. 이게 없으면 트룹 페이지의 setRelationship 이

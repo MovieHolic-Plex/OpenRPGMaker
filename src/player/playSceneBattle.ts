@@ -3,6 +3,8 @@ import { BattleAdmissionError } from "@/project/battleAdmission";
 import { createBattleRuntime } from "@/battle/runtime";
 import type { StepResult } from "@/player/interpreter";
 import { exitBattleAudio, enterBattleAudio } from "@/player/battleAudio";
+import type { BattleAudioSession } from "@/player/battleAudio";
+import { stopAudioChannel } from "@/player/audio";
 import { playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { mountBattleScene, type BattleDomController } from "@/player/battleDom";
 import { createSkinBattleTransition, type BattleTransition } from "@/player/battleTransition";
@@ -66,10 +68,13 @@ export async function playBattle(
   if (usePartyMonsters && !monsterPartyMode) {
     throw new BattleAdmissionError("BATTLE_MONSTER_PARTY_EMPTY", "전투를 시작할 수 없습니다. 파티에 몬스터가 없습니다. 스타터를 받거나 보관함에서 몬스터를 파티에 넣은 뒤 다시 시도하세요.");
   }
-  const savedAudio = { fieldBgmResourceId: session.audio.bgm?.resourceId };
+  const savedAudio: BattleAudioSession = { fieldBgmResourceId: session.audio.bgm?.resourceId };
   let initializedRuntime: BattleRuntime | undefined;
   try {
-    enterBattleAudio(project, session);
+    // 진입 헬퍼가 돌려주는 **완전한** 필드 트랙(저작 볼륨 포함)을 쓴다. resourceId 만 들고
+    // 있으면 복귀 시 exitBattleAudio 의 폴백이 gain 을 안 실어, 저작 volume 0(음소거)·저음량이
+    // 전투를 한 번 거치는 사이에 기본 믹서 볼륨으로 돌아온다(2026-09-15 실측).
+    Object.assign(savedAudio, enterBattleAudio(project, session));
     const runtime = createBattleRuntime({
       project,
       troopId: step.troopId,
@@ -250,7 +255,15 @@ export async function playBattle(
                 }
                 if (!current()) { abort(); return; }
                 // Commit once, after all cancellable presentation has completed.
-                exitBattleAudio(project, session, savedAudio);
+                if (terminalDefeat) {
+                  // 게임 오버가 이어지므로 필드국을 되돌리지 않는다 — 살아 있는 파티가 없는 화면
+                  // 아래에서 탐험 BGM 이 다시 돌면 "죽었는데 마을 음악"이 된다. 세션 기록만 필드곡으로
+                  // 되돌려 두고 재생은 하지 않는다(재시도·저장 해석이 같은 값을 본다).
+                  stopAudioChannel("bgm");
+                  session.audio.bgm = savedAudio.fieldBgm ? { ...savedAudio.fieldBgm } : undefined;
+                } else {
+                  exitBattleAudio(project, session, savedAudio);
+                }
                 applyBattleRewardsToSession(session,
                   { result, canLose: snapshot.canLose, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode }, project);
                 if (result === "victory") maybeAutosave(project, session, "battleVictory");
