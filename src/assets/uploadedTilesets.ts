@@ -1,0 +1,64 @@
+import type Phaser from "phaser";
+import { withInlineAsset } from "./inlineAssetStore";
+import type { Project, TilesetDef, TilesetAnimationStrip } from "@/project/types";
+
+/** Uploaded atlases cannot share the bundled exterior texture or its 480 fixed frames. */
+export function uploadedTilesetTextureKey(tileset: TilesetDef): string {
+  return `uploaded_tileset:${encodeURIComponent(tileset.image.id)}:${tileset.tileSize}:${tileset.tilesPerRow}:${tileset.count}`;
+}
+
+function animationName(strip: TilesetAnimationStrip): string {
+  return `uploaded_tiles_${strip.baseTile}_${strip.frames}_${strip.fps}`;
+}
+
+export function uploadedTilesetAnimationName(tileset: TilesetDef, tile: number): string | null {
+  if (tileset.image.type !== "uploaded") return null;
+  const strip = tileset.animationStrips?.find(s => tile >= s.baseTile && tile < s.baseTile + s.frames);
+  return strip ? animationName(strip) : null;
+}
+
+export function loadUploadedTilesets(
+  scene: { readonly load: Pick<Phaser.Loader.LoaderPlugin, "image"> },
+  project?: Project,
+): void {
+  const queued = new Set<string>();
+  for (const tileset of Object.values(project?.tilesets ?? {})) {
+    if (tileset.image.type !== "uploaded") continue;
+    const asset = project?.assets.uploaded[tileset.image.id];
+    if (!asset?.dataUrl) continue;
+    const key = uploadedTilesetTextureKey(tileset);
+    if (queued.has(key)) continue;
+    queued.add(key);
+    scene.load.image(key, withInlineAsset(asset.dataUrl));
+  }
+}
+
+export function registerUploadedTilesetFrames(
+  scene: Phaser.Scene,
+  tileset: TilesetDef,
+  key = uploadedTilesetTextureKey(tileset),
+): void {
+  if (!scene.textures.exists(key)) return;
+  const texture = scene.textures.get(key);
+  const existing = new Set(texture.getFrameNames());
+  for (let tile = 0; tile < tileset.count; tile++) {
+    const name = `tile_${tile}`;
+    if (!existing.has(name)) texture.add(name, 0,
+      tile % tileset.tilesPerRow * tileset.tileSize,
+      Math.floor(tile / tileset.tilesPerRow) * tileset.tileSize,
+      tileset.tileSize, tileset.tileSize);
+  }
+  for (const strip of tileset.animationStrips ?? []) {
+    const name = `${key}:${animationName(strip)}`;
+    if (scene.anims.exists(name)) continue;
+    scene.anims.create({ key: name, frameRate: strip.fps, repeat: -1,
+      frames: Array.from({ length: strip.frames }, (_, frame) => ({ key, frame: `tile_${strip.baseTile + frame}` })),
+    });
+  }
+}
+
+export function registerUploadedTilesets(scene: Phaser.Scene, project?: Project): void {
+  for (const tileset of Object.values(project?.tilesets ?? {})) {
+    if (tileset.image.type === "uploaded") registerUploadedTilesetFrames(scene, tileset);
+  }
+}

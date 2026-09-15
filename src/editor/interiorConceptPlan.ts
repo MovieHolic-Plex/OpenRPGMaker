@@ -160,3 +160,60 @@ export function bindInteriorConceptPlan(plan: InteriorRoomPlan, project: Project
     concept: { bundleId: "composed", facilityId: "composed", facilityLabel: plan.name, rooms: overlay },
   };
 }
+
+/** Stock houses are domestic programs, not searches across all public facilities.
+ * A seed's circulation is empty connective space, not an inn stairwell template.
+ * Explicit authored plans continue to use bindInteriorConceptPlan unchanged.
+ */
+export function bindSeedHouseInteriorPlan(plan: InteriorRoomPlan, project: Project, program: HouseInteriorProgram): InteriorRoomPlan {
+  const original = plan.rooms ?? [];
+  const rooms = original.filter(room => room.theme !== "corridor").map(room => ({ ...room,
+    theme: program === "workshop" && room.id === "living" && room.theme === "kitchen" ? "house/living"
+      : program === "inn" && room.theme === "study" ? "inn/single"
+      : program === "workshop" && (room.id === "work" || room.id === "kitchen") ? "smithy/workshop"
+      : program === "inn" && room.theme === "tavern" ? "inn/dining"
+      : room.theme === "dining" ? (program === "shop" ? "shop/salesfloor" : "house/living")
+      : room.theme === "storage" ? (program === "shop" ? "shop/stock" : "smithy/store") : room.theme,
+  }));
+  const bound = bindInteriorConceptPlan({ ...plan, rooms }, project);
+  const overlay = { ...bound.concept!.rooms };
+  if (plan.openPlan) {
+    // In a small generated home the common table serves meals and reading.
+    // This selects a seed program; explicit user/canonical selections bypass it.
+    for (const room of original) {
+      const area = overlay[room.id];
+      if (!area) continue;
+      const northWall = Array.from({length: room.w}, (_,dx) => room.x+dx).some(x => !original.some(other => other.id !== room.id
+        && x >= other.x && x < other.x+other.w && room.y-1 >= other.y && room.y-1 < other.y+other.h));
+      const things = area.things.filter(thing => northWall || thing.required || !["wall-any", "wall-north"].includes(interiorObjectById(thing.objectId)?.snap ?? ""))
+        .filter(thing => room.theme !== "study" || !["study_desk", "table_chairs", "reading_table"].includes(thing.objectId))
+        .map(thing => thing.objectId === "dining_table" && room.h <= 4
+          ? { ...thing, objectId: "home_table", label: "식사와 독서를 함께 하는 공용 탁자" } : thing);
+      overlay[room.id] = { ...area, things };
+    }
+  }
+  if (!plan.openPlan && ["dwelling", "study", "manor", "workshop"].includes(program)) {
+    for (const room of original.filter(r => (r.theme === "dining" || (program === "workshop" && r.id === "living")) && r.h <= 4)) {
+      const area = overlay[room.id];
+      if (area) overlay[room.id] = {...area, things: area.things.map(thing => thing.objectId === "dining_table"
+        ? {...thing, objectId:"home_table", label:"식사와 독서를 함께 하는 공용 탁자"} : thing)};
+    }
+  }
+  for (const room of original) {
+    const area = overlay[room.id];
+    if (!area) continue;
+    overlay[room.id] = {...area, things: area.things.filter(thing => {
+      if (thing.required) return true;
+      if (["plant", "plant_small"].includes(thing.objectId)) return false;
+      if (thing.objectId === "work_table" && room.h < 4) return false;
+      if (room.theme === "study" && ["crystal", "box"].includes(thing.objectId)) return false;
+      if (thing.objectId.startsWith("rug") && (room.h < 3 || room.w < 3 || area.things.some(t=>["home_table","dining_table"].includes(t.objectId)))) return false;
+      return true;
+    })};
+  }
+  for (const room of original.filter(room => room.theme === "corridor")) {
+    overlay[room.id] = { placeId: "corridor", placeLabel: "통로", role: "walkway", things: [] };
+  }
+  return { ...bound, rooms: original.map(room => bound.rooms!.find(value => value.id === room.id) ?? room),
+    concept: { ...bound.concept!, rooms: overlay } };
+}

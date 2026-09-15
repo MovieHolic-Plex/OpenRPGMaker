@@ -1,3 +1,4 @@
+import { regionMapPreview, regionMapInspector } from "./regionMapView";
 import { el } from "@/util/dom";
 import { regionReferenceImage, regionReferenceInspector } from "./regionReferenceView";
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
@@ -23,6 +24,9 @@ export function renderSpatialRegionsCanvas(
   card: SpatialGalleryCard | undefined,
   rerender: () => void,
 ): HTMLElement {
+  if (card?.regionMapId) return el("div", { class: "spatial-canvas",
+    attrs: { tabindex: "0", "aria-label": "연결된 지역 맵" }, dataset: { testid: "spatial-canvas" },
+    children: [regionMapPreview(card.regionMapId)] });
   if (card?.regionReferenceId) return el("div", { class: "spatial-canvas",
     attrs: { tabindex: "0", "aria-label": "완성 지역 사례" }, dataset: { testid: "spatial-canvas" },
     children: [regionReferenceImage(card.regionReferenceId)] });
@@ -34,6 +38,7 @@ export function renderSpatialRegionsInspector(
   card: SpatialGalleryCard | undefined,
   rerender: () => void,
 ): HTMLElement {
+  if (card?.regionMapId) return regionMapInspector(card.regionMapId, card.name);
   if (card?.regionReferenceId) return regionReferenceInspector(card.regionReferenceId);
   return renderSpatialGeographyInspector({ session, card, kind: "region" }, rerender);
 }
@@ -51,6 +56,7 @@ export function renderSpatialRegionsStage(
 }
 
 export function spatialRegionsTabChrome(card: SpatialGalleryCard | undefined, rerender: () => void) {
+  if (card?.regionMapId) return { saveState: "완성 맵 · 연결됨", previewError: null };
   if (card?.regionReferenceId) return { saveState: "완성 맵 사례 · 읽기 전용", previewError: null };
   return spatialGeographyChrome(card, "region", rerender);
 }

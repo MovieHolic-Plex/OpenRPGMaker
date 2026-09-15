@@ -1,4 +1,5 @@
 import { openNewPlaceDialog } from "./spatialNewPlaceDialog";
+import { regionReferenceImage, regionReferenceInspector } from "./regionReferenceView";
 import { renderWorldGenTab } from "@/editor/panels/databaseWorldGenView";
 import { renderVillageTab } from "@/editor/panels/databaseVillageView";
 import { renderTilesetSpacesTab } from "@/editor/panels/tilesetSpacesTab";
@@ -91,7 +92,7 @@ export function inspectorSourceLabel(card: SpatialGalleryCard): string {
 
 function domainChrome(session: SpatialAuthoringSession, onChange: () => void): SpatialDomainChrome | undefined {
   const selected = visibleSpatialSelection(session);
-  let chrome = session.tab === "tiles" ? spatialTilesChrome()
+  let chrome = selected?.regionReferenceId ? { saveState: "완성 배치 사례 · 읽기 전용", previewError: null } : session.tab === "tiles" ? spatialTilesChrome()
     : session.tab === "objects" ? spatialObjectsChrome(selected, onChange)
     : session.tab === "spaces" ? spatialSpacesChrome(selected, onChange)
     : session.tab === "places" ? spatialPlacesChrome(visiblePlaceSelection(selected), onChange)
@@ -257,7 +258,7 @@ export function renderSpatialCanvas(
   if (session.tab === "tiles") return renderSpatialTilesCanvas(session, card, rerender);
   if (session.tab === "objects") return renderSpatialObjectsCanvas(session, card);
   if (session.tab === "spaces") return renderSpatialSpacesCanvas(session, card, rerender);
-  if (session.tab === "places") return renderSpatialPlacesCanvas(session, visiblePlaceSelection(card), rerender);
+  if (session.tab === "places") return card?.regionReferenceId ? regionReferenceImage(card.regionReferenceId) : renderSpatialPlacesCanvas(session, visiblePlaceSelection(card), rerender);
   if (session.tab === "regions") return renderSpatialRegionsCanvas(session, card, rerender);
   if (session.tab === "worlds") return renderSpatialWorldsCanvas(session, card, rerender);
   const legacy = renderLegacyStage(session, rerender);
@@ -294,7 +295,7 @@ export function renderSpatialInspector(
   if (spatialSession().tab === "objects") return renderSpatialObjectsInspector(card, open, onChange);
   if (spatialSession().tab === "spaces") return renderSpatialSpacesInspector(card, open, onChange);
   if (spatialSession().tab === "places") {
-    return renderSpatialPlacesInspector(visiblePlaceSelection(card), open, onChange);
+    return card?.regionReferenceId ? regionReferenceInspector(card.regionReferenceId) : renderSpatialPlacesInspector(visiblePlaceSelection(card), open, onChange);
   }
   if (spatialSession().tab === "regions") {
     return renderSpatialRegionsInspector(spatialSession(), card, onChange);

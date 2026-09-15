@@ -120,6 +120,22 @@
   flex: 0 0 auto;
 }
 
+/* 대상 행의 순번(「1」「2」)은 별도 노드 — 이름이 잘려도 식별 정보가 끝에 남는다. */
+.battle-target-menu .battle-command-text {
+  align-items: baseline;
+  display: flex;
+  gap: 4px;
+}
+
+.battle-target-menu .battle-command-text strong {
+  min-width: 0;
+}
+
+.battle-target-ordinal {
+  flex: 0 0 auto;
+  font-weight: 700;
+}
+
 /* Root command menu keeps RM2003's one-line entries; the detail line only
    appears in submenus (skill/item/target lists) where rows have room. */
 .battle-command-menu:not(:has(> .battle-submenu-header)) .battle-command-text small {

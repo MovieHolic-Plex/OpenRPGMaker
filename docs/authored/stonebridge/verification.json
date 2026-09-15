@@ -1,0 +1,23 @@
+{
+  "projectId": "rpg-zzu-castle-canal-reference-20260913-6890",
+  "remoteReload": true,
+  "oneContinuousFacade": true,
+  "windowRows": 3,
+  "centralMidRoofRows": 0,
+  "mainRoofDepth": 6,
+  "wingRoofDepth": 4,
+  "roofInaccessibleFromGround": true,
+  "compiledComponentsExact": 3,
+  "wallwalkInaccessible": true,
+  "palaceApproachAndRearReachable": true,
+  "otherMapsUnchanged": true,
+  "changedMaps": [
+    "map_castle_village_rules_20260913",
+    "spatial-place:28:learned-seokgyo-palace-place:0:23:tileset_seokgyo_library"
+  ],
+  "runtimeQa": {
+    "beats": 4,
+    "failures": 0,
+    "errors": 0
+  }
+}

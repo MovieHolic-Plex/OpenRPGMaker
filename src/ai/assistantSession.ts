@@ -5,7 +5,7 @@ import { readLatestRunCheckpoint, saveRunCheckpoint, type RunCheckpoint, type Ru
 import { checkpointContentIdentity, reconcileRunCheckpoint, type RunRecovery, type RunRuntimeState } from "./runRecovery";
 import { ACCEPTANCE_EXAMPLES, acceptanceRecord, missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise, type AcceptanceSource, type RequirementWithdrawalAction } from "./assistantAcceptance";
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
-import { buildIndependentReviewRequest, parseIndependentReview, reviewChanges, reviewEvidenceContexts, reviewEvidenceImages, reviewMapReferenceRoots, requiresVisualReview, type ResultReview, type ReviewEvidenceFit } from "./independentReview";
+import { buildIndependentReviewRequest, isReviewProtocolViolation, parseIndependentReview, REVIEW_JSON_ONLY_REMINDER, reviewChanges, reviewEvidenceContexts, reviewEvidenceImages, reviewMapReferenceRoots, requiresVisualReview, type ResultReview, type ReviewEvidenceFit } from "./independentReview";
 import { mapVisualEvidenceUnavailable } from "./mapVisualEvidence";
 import { parseFunctionalRequirements, type FunctionalCriterion } from "./functionalAcceptance";
 import { deriveRunOutcome, type RunOutcome } from "./runOutcome";
@@ -28,6 +28,7 @@ import { ToolVerificationEvidence, parseVerificationChecks, verificationInitialS
 import { runProjectLint } from "@/editor/tools/queryTools";
 import { isVerifyNpcRewardInput, npcRewardTargetSnapshot, VERIFY_NPC_REWARD_TOOL, type NpcRewardWitness } from "./npcRewardWitness";
 import { APPEARANCE_GENERATION_TOOL } from "@/editor/tools/characterAppearanceTools";
+import { OPENING_IMAGE_TOOL } from "@/editor/tools/cinematicTools";
 import type { AppearanceGenerationHandoff } from "@/editor/characterAppearanceGeneration";
 import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
 import { validateArgs } from "@/editor/tools/jsonSchema";
@@ -142,6 +143,7 @@ import {
   type ImageUrlPart,
 } from "./llmClient";
 import {
+  NON_TILE_SPATIAL_TOOLS,
   SPATIAL_BUILD_TOOLS,
   TILE_WRITE_TOOLS,
   affectedRegions,
@@ -181,6 +183,7 @@ import {
   formatWorkPlanUserVisible,
   getCurrentWorkItem,
   isWorkPlanComplete,
+  openWorkItemIds,
   parseOrchestratorDecision,
   ralphContinuationDecision,
   type RalphContinuationDecision,
@@ -1649,11 +1652,22 @@ export class AssistantSession {
       ? this.turnViewSpec : null;
     const specs = [activeSpec, this.turnImplicitSpec, viewSpec]
       .filter((spec): spec is BuildSpec => spec !== null && spec.mapId === mapId);
-    if (scoped && specs.length === 0) {
+    if (scoped && specs.length === 0 && !NON_TILE_SPATIAL_TOOLS.has(name)) {
+      // 이 턴에 이 작업 항목이 만든 맵은 사용자 자산이 없는 빈 맵이다 — 보호할 기준선이 없으므로
+      // 밑그림 없음을 이유로 막으면 모델은 같은 항목을 닫지 도 못한 채 재시도만 반복한다(F4 연쇄).
+      // 받은 영역 그대로 암묵 밑그림을 시딩해 경고로 통과시킨다. 사용자 맵·계획 없는 턴·미선언 툴은 그대로 차단된다.
+      const seeded = this.seedSpecForFreshItemMap(mapId, name, regions);
+      if (seeded) return seeded;
+      // 차단할 때는 재제출물의 초안까지 실어 보낸다 — "체크리스트" 만 주면 같은 턴에 다시 막힐 밑그림이 온다.
+      const draft = { mapId, title: this.currentTurnInstruction.slice(0, 40) || "작업 밑그림",
+        assets: regions.filter(region => region.w > 0 && region.h > 0).map((region, index) => ({
+          id: `${autoExpandedAssetKind(name)}${index + 1}`, kind: autoExpandedAssetKind(name),
+          x: region.x, y: region.y, w: region.w, h: region.h })) };
       return specGateResult(`스펙 게이트: '${name}' 차단 — 이 맵의 밑그림(스펙)이 없습니다`, [
         "공간 빌드는 set_build_spec으로 밑그림을 제출해 검증을 통과한 뒤에만 실행됩니다.",
         "체크리스트: 대상 맵, 에셋별 영역(x,y,w,h)·종류·스타일, 통로 너비(pathWidth), 밀도(density), 배치 스타일(layoutStyle).",
         "현재 컨텍스트 선택 영역이 있으면 암묵적 명세로 인정됩니다. 없으면 필요한 영역을 직접 산정해 set_build_spec으로 제출하세요.",
+        `이 호출의 영역으로 만든 초안입니다. 그대로 또는 고쳐서 set_build_spec 으로 먼저 제출하세요: ${JSON.stringify(draft)}`,
       ]);
     }
     if (scoped && activeSpec) {
@@ -1710,6 +1724,30 @@ export class AssistantSession {
       return { warnings: [{ severity: "warning", code: "spec-gate-auto-expand", message: `명세를 자동 확장했습니다: ${coverage.slackWarning}` }] };
     }
     return { warnings: [] };
+  }
+
+  /** 방금 이 작업 항목이 만든 맵이면 밑그림을 시딩해 통과시킨다. 그 맵은 기준선에 없어 보호할 사용자 자산이 없다.
+   *
+   * 조건은 전부 세션이 이미 가진 상태다: 작업계획의 현재 항목이 이 툴을 successTools 로 선언했고,
+   * 그 항목이 이 맵을 이번 턴에 만들었을 것. 사용자가 이전에 저작한 맵은 여전히 밑그림을 요구한다. */
+  private seedSpecForFreshItemMap(mapId: string, toolName: string, regions: readonly AffectedRegion[]): SpecGatePass | null {
+    if (!this.workPlan || !this.turnItemCreatedMapIds.has(mapId) || this.baselineProject.maps[mapId]) return null;
+    const item = getCurrentWorkItem(this.workPlan);
+    if (!item || !(item.successTools ?? []).includes(toolName)) return null;
+    const assets = regions.filter(region => region.w > 0 && region.h > 0).map((region, index): SpecAsset => ({
+      id: `auto-seed:${this.currentTurnIndex}:${toolName}:${index + 1}`,
+      kind: autoExpandedAssetKind(toolName),
+      x: region.x, y: region.y, w: region.w, h: region.h,
+      note: "스펙 게이트 자동 시딩(이번 항목이 만든 빈 맵)",
+    }));
+    if (assets.length === 0) return null;
+    const seeded: BuildSpec = { mapId, title: item.title, assets };
+    return {
+      warnings: [{ severity: "warning", code: "spec-gate-auto-seed",
+        message: `이번 항목이 만든 빈 맵이라 밑그림을 자동으로 세웠습니다: ${toolName} (${assets[0]!.x},${assets[0]!.y}) ${assets[0]!.w}×${assets[0]!.h}${assets.length > 1 ? ` 외 ${assets.length - 1}개` : ""}.` }],
+      // 쓰기가 실제로 성공했을 때만 밑그림이 남는다 — 자동 확장과 같은 계약.
+      commitExpansion: () => { this.turnImplicitSpec = seeded; },
+    };
   }
 
   /** 게이트가 볼 영향 영역. 홍수 채우기(paint_tiles mode=fill)는 시작점이 아니라 맵 전체다 — 면적 0 폴백은 검사를 건너뛴다. */
@@ -2879,7 +2917,10 @@ export class AssistantSession {
     }
     if (name === "complete_work_item") {
       const id = typeof args.itemId === "string" && args.itemId.trim() ? args.itemId.trim() : this.workPlan.currentItemId;
-      if (!id && args.itemId === undefined && this.workPlan.layers.every((layer) => layer.items.every((item) => item.status === "done"))) {
+      // 빈 문자열·null 을 보내는 모델을 "id 미지정" 과 같게 읽는다 — 값이 없다는 뜻은 둘이 같다.
+      const idOmitted = args.itemId === undefined || args.itemId === null
+        || (typeof args.itemId === "string" && !args.itemId.trim());
+      if (!id && idOmitted && this.workPlan.layers.every((layer) => layer.items.every((item) => item.status === "done"))) {
         const rewards = this.npcRewardOutcome();
         if (!rewards.ok) return { ok: false, summary: rewards.reason, issues: [{ severity: "error", code: "npc-reward-incomplete", message: rewards.reason }] };
         const pending = [...this.adventureProblems(), ...this.verificationEvidence.problems("blocking")];
@@ -2893,17 +2934,41 @@ export class AssistantSession {
         }
         return { ok: true, summary: "작업 계획은 이미 완료되었습니다. 다시 적용하지 않습니다.", data: { alreadyComplete: true, progress: summarizeWorkPlan(this.workPlan) } };
       }
-      if (!id) return { ok: false, summary: "완료할 항목 id가 없습니다." };
+      if (!id) {
+        // 정보 0 인 거부는 모델을 추측으로 몰았다(항목 id 를 지어낸다). 계획 상태와 다음 행동을 같이 준다.
+        const open = openWorkItemIds(this.workPlan);
+        const progress = summarizeWorkPlan(this.workPlan);
+        const summary = [`완료할 항목 id가 없습니다 — 현재 항목이 비어 있습니다(완료 ${progress.itemsDone}/${progress.itemsTotal}).`,
+          open.length > 0
+            ? `아직 열린 항목 id: ${open.join(", ")} — itemId 로 명시해 다시 호출하세요.`
+            : "남은 항목이 없습니다(건너뛴 항목 포함). 더 할 일이 있으면 set_work_plan 으로 계획을 새로 세우고, 없으면 마무리하세요."].join("\n");
+        return { ok: false, summary, issues: [{ severity: "error", code: "work-item-id-missing", message: summary }],
+          data: { progress, openItemIds: open } };
+      }
       const note = typeof args.note === "string" ? args.note : undefined;
       this.syncSuccessfulToolsToCurrentWorkItem();
       // completeWorkItemById's already-done shortcut must not bypass changed rewards.
       const item = findWorkItemById(this.workPlan, id);
       const rewards: WorkItemOutcomeVerdict = item ? this.npcRewardOutcome(item) : { ok: true };
       if (!rewards.ok) return { ok: false, summary: rewards.reason, issues: [{ severity: "error", code: "npc-reward-incomplete", message: rewards.reason }] };
-      const result = completeWorkItemById(this.workPlan, id, note, {
+      let result = completeWorkItemById(this.workPlan, id, note, {
         successfulTools: [...this.turnSuccessfulTools],
         outcomeGate: this.outcomeGate(),
       });
+      // 두 번째 거부부터는 산출물을 근거로 인정한다. 첫 번째 거부는 그대로 남겨 모델이 먼저 선언대로
+      // 고쳐볼 기회를 갖고, 검증 툴이 빠진 경우는 제외된다 — 검증은 산출물 검사가 대신해 줄 수 있는 것이 아니다.
+      if (!result.ok && result.missingTools?.length && this.lastBlockReasonByItemId.has(id)
+        && !result.missingTools.some((tool) => VERIFICATION_TOOL_NAMES.has(tool))) {
+        const waived = completeWorkItemById(this.workPlan, id, note, {
+          successfulTools: [...this.turnSuccessfulTools],
+          outcomeGate: this.outcomeGate(),
+          waiveMissingTools: true,
+        });
+        if (waived.ok) {
+          this.pushAudit({ kind: "status", text: `work-item-tools-waived ${id} ← ${result.missingTools.join(",")}` });
+          result = waived;
+        }
+      }
       if (!result.ok) {
         // 「필수 successTools 중 X 성공 기록이 없습니다」만 보내면 모델은 **이미 성공한** X 를 다시
         // 돌린다 — 성공 기록은 검증 미충족 시 지워지는데(아래 verification:unmet 분기) 그 사실이
@@ -4714,15 +4779,34 @@ export class AssistantSession {
         }
       }
       if (!request) throw refused;
-      const response = await operation.wait(this.chat(config, request));
-      if (signal?.aborted) throw new Error("independent-review-cancelled");
-      if (identity !== JSON.stringify(this.ctx.project)) throw new Error("independent-review-stale-revision");
-      if (!this.draftBaselineCurrent || baseline !== this.draftBaseline) throw new Error("independent-review-stale-baseline: regenerate from the current project before review");
-      const undeliveredImage = request.messages.some((message, messageIndex) => Array.isArray(message.content)
-        && message.content.some((part, partIndex) => part.type === "image_url"
-          && !response.imageDelivery?.some(delivery => delivery.messageIndex === messageIndex && delivery.partIndex === partIndex)));
-      if (undeliveredImage) throw new Error("independent-review-image-delivery-unacknowledged");
-      review = parseIndependentReview(response, revision, requiredProblems);
+      // Every admission the verdict depends on — cancellation, project identity, baseline freshness,
+      // image delivery — is bound to the response that carried it, so a second round cannot inherit
+      // the first round's evidence.
+      const ask = async (asked: ChatRequest): Promise<ChatResult> => {
+        const result = await operation.wait(this.chat(config, asked));
+        if (signal?.aborted) throw new Error("independent-review-cancelled");
+        if (identity !== JSON.stringify(this.ctx.project)) throw new Error("independent-review-stale-revision");
+        if (!this.draftBaselineCurrent || baseline !== this.draftBaseline) throw new Error("independent-review-stale-baseline: regenerate from the current project before review");
+        const undeliveredImage = asked.messages.some((message, messageIndex) => Array.isArray(message.content)
+          && message.content.some((part, partIndex) => part.type === "image_url"
+            && !result.imageDelivery?.some(delivery => delivery.messageIndex === messageIndex && delivery.partIndex === partIndex)));
+        if (undeliveredImage) throw new Error("independent-review-image-delivery-unacknowledged");
+        return result;
+      };
+      const response = await ask(request);
+      try {
+        review = parseIndependentReview(response, revision, requiredProblems);
+      } catch (cause) {
+        // A reviewer that answers off-protocol has not judged the draft, yet the draft paid for it with
+        // the whole turn (F6, `.omo/evidence/ai-assistant-failure-modes.md`). Buy exactly one corrective
+        // round: the retry repeats the same evidence plus the offending answer, the caller's output budget
+        // is measured after this returns, and a second slip still fails closed.
+        if (!isReviewProtocolViolation(cause)) throw cause;
+        this.pushAudit({ kind: "status", text: `independent-review-reask ${cause instanceof Error ? cause.message : String(cause)}` });
+        review = parseIndependentReview(await ask({ ...request, messages: [...request.messages,
+          { role: "assistant", content: String(response.message.content ?? "") },
+          { role: "user", content: REVIEW_JSON_ONLY_REMINDER }] }), revision, requiredProblems);
+      }
       if (review.status === "approved") {
         // Deferred to the post-callback admission below: publishing the verdict
         // is not authority until owner/cancellation/budget checks pass. Both
@@ -5211,7 +5295,7 @@ export class AssistantSession {
         if (typeof args.theme === "string" && args.theme.trim()) turnTheme = args.theme.trim();
         this.emitToolStarted(onEvent, name, args);
         await operation.wait(this.yieldForUi(signal));
-        if (tool?.mode === "write" || name === APPEARANCE_GENERATION_TOOL) writeToolAttempts += 1;
+        if (tool?.mode === "write" || name === APPEARANCE_GENERATION_TOOL || name === OPENING_IMAGE_TOOL) writeToolAttempts += 1;
         // 프로토콜 보장: 이 호출에 대한 role:"tool" 응답을 반드시 남긴다. 응답 없이 라운드를 벗어나면
         // 세션의 영구 대화에 짝 없는 tool_calls 가 남아 **그 뒤 모든 턴**이 공급자 400 으로 죽는다
         // (실측 2026-08-30). 예외는 삼키지 않고 응답을 붙인 뒤 그대로 다시 던진다.
@@ -5277,6 +5361,24 @@ export class AssistantSession {
             this.publishAcceptance(publishToolEvent);
           } else if (name === "set_build_spec") {
             toolResult = this.applyBuildSpec(args);
+          } else if (name === OPENING_IMAGE_TOOL) {
+            const { generateOpeningStill } = await operation.wait(import("@/editor/openingImageGeneration"));
+            const still = await operation.wait(generateOpeningStill(args, { signal }));
+            if (!still.ok) {
+              toolResult = { ok: false, summary: still.summary, issues: [{ severity: "error", code: still.code, message: still.summary }] };
+            } else {
+              // 등록은 기존 쓰기 툴로 — 제안·diff 회계를 그대로 타고 dataUrl 은 전사에 남지 않는다.
+              const applied = runTool(this.ctx, "upsert_resource", {
+                resource: { id: still.resourceId, name: still.name, kind: "backdrop", dataUrl: still.dataUrl },
+              }, { dryRun: false });
+              toolResult = applied.ok
+                ? {
+                  ...applied,
+                  summary: `오프닝 그림 ${still.resourceId} 를 만들어 등록했습니다. image 장면의 resourceId 로 쓰세요.`,
+                  data: { status: "generated", resourceId: still.resourceId, name: still.name },
+                }
+                : applied;
+            }
           } else if (name === APPEARANCE_GENERATION_TOOL) {
             const { startAppearanceGenerationFromAssistant } = await operation.wait(import("@/editor/characterAppearanceGeneration"));
             const handoff = await operation.wait(startAppearanceGenerationFromAssistant(this.ctx.project, args, this.appearanceProjectIdentity, signal));

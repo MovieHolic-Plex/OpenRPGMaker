@@ -92,9 +92,15 @@ function attachScrollCue(menu: HTMLElement): void {
   cue.textContent = "▾";
   cue.hidden = true;
   menu.append(cue);
+  // 큐 자신도 그리드 한 트랙을 차지해 scrollHeight 에 들어간다. 이를 빼지 않으면 마지막 행에
+  // 커서가 있어도 "더 있다" 신호가 켜진 채 그 행 위에 얹혔다(2026-09-14 실측: 5행 메뉴에 유령 행 1개).
   const syncCue = (): void => {
     if (!menu.isConnected) return;
-    cue.hidden = menu.scrollHeight - menu.clientHeight <= 1;
+    const cueHeight = cue.hidden ? 0 : cue.offsetHeight;
+    const contentHeight = menu.scrollHeight - cueHeight;
+    const overflow = contentHeight - menu.clientHeight > 1;
+    const atEnd = menu.scrollTop + menu.clientHeight >= contentHeight - 1;
+    cue.hidden = !overflow || atEnd;
   };
   // 패널은 detached 상태로 만들어져 같은 태스크에서 DOM 에 붙는다 — 마이크로태스크면
   // 붙은 뒤 레이아웃을 읽을 수 있다. rAF 는 fake-timer 환경에서 타이머 누수로 잡힌다.
@@ -668,9 +674,22 @@ function targetSelectionMenu(snapshot: BattleSnapshot, options: BattleCommandPan
       : snapshot.enemies.find((entry) => entry.id === targetId);
     if (!target) continue;
     const peers = snapshot.targetSelection?.side === "actor" ? snapshot.actors : snapshot.enemies;
-    const button = commandButton(disambiguatedBattlerName(target, peers), `battle-target-${target.id}`, "target", `${terms.hp} ${target.hp}/${target.maxHp}`, () => {
+    const fullName = disambiguatedBattlerName(target, peers);
+    const button = commandButton(fullName, `battle-target-${target.id}`, "target", `${terms.hp} ${target.hp}/${target.maxHp}`, () => {
       options.confirmTargetSelection(target.id);
     });
+    // 순번은 별도 노드로 — 이름이 생략부호로 잘릴 때 식별 정보(1/2)가 마지막에 남아야 한다.
+    // 긴 저작 이름(14자)이면 두 행이 똑같이 「심연에서기어나온…」 이 됐다(2026-09-14 실측).
+    if (fullName !== target.name && fullName.startsWith(target.name)) {
+      const title = button.querySelector<HTMLElement>(".battle-command-text strong");
+      if (title) {
+        title.textContent = target.name;
+        const ordinal = document.createElement("b");
+        ordinal.className = "battle-target-ordinal";
+        ordinal.textContent = fullName.slice(target.name.length).trim();
+        title.after(ordinal);
+      }
+    }
     button.dataset.battleTargetable = "true";
     button.dataset.battleTargetId = target.id;
     button.dataset.battleTargetSide = snapshot.targetSelection?.side ?? "enemy";
@@ -744,11 +763,17 @@ function commandButton(
   button.className = "battle-command";
   button.dataset.testid = testId;
   button.dataset.commandIcon = icon;
+  const inertReason = inert ? disabledReason || hint || detail || "현재 사용할 수 없습니다." : "";
   if (inert) {
     button.dataset.previewOnly = "true";
-    button.disabled = true;
-    const reason = disabledReason || hint || detail || "현재 사용할 수 없습니다.";
-    button.setAttribute("aria-label", `${label}: ${reason}`);
+    // `disabled` 가 아니라 `aria-disabled` 다 — 비활성 행에도 커서가 **서야** 한다.
+    // 예전엔 `disabled` 라 화살표가 행을 건너뛰었고, 감독은 기술이 목록에서 사라진 줄 알았다.
+    // 왜 못 쓰는지(MP 부족·PP 없음)를 읽을 기회 자체가 없었다(적대 리뷰 보류 항목).
+    // 실제 실행 차단은 클릭 리스너를 달지 않는 것으로 한다(아래 `if (!inert)`).
+    button.dataset.battleCommandInert = "true";
+    button.setAttribute("aria-disabled", "true");
+    button.dataset.battleCommandInertReason = inertReason;
+    button.setAttribute("aria-label", `${label}: ${inertReason}`);
   } else if (hint) {
     button.setAttribute("aria-label", `${label}: ${hint}`);
   }
@@ -764,6 +789,15 @@ function commandButton(
     const small = document.createElement("small");
     small.textContent = detail;
     text.append(small);
+  }
+  // 사유는 눈으로도 읽혀야 한다 — 예전엔 `aria-label` 에만 넣어서 화면을 보는 사람에겐 없는 정보였다.
+  // `detail` 이 이미 같은 말이면 두 번 쓰지 않는다.
+  if (inertReason && inertReason !== detail) {
+    const reasonNode = document.createElement("small");
+    reasonNode.className = "battle-command-reason";
+    reasonNode.dataset.testid = `${testId}-reason`;
+    reasonNode.textContent = inertReason;
+    text.append(reasonNode);
   }
   button.append(iconNode, text);
   if (!inert) button.addEventListener("click", onClick);

@@ -1,7 +1,7 @@
 // 팀 보드·팀 패널이 「누가(어떤 종류의 팀원이) 무슨 업무를 받았는지」를 실제로 그리는지.
 // 리듀서 단위 테스트는 상태만 보므로, 화면에 나오는지는 여기서 확인한다.
 import { Window } from "happy-dom";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { publishTeamActivity } from "@/ai/piAgent/teamActivity";
 import { createTeamBoardState, markTeamBoardReview, reduceTeamBoard, type TeamBoardState } from "@/ai/piAgent/teamBoardState";
 import type { PiTeamSpec } from "@/ai/piAgent/teamSpec";
@@ -137,6 +137,73 @@ describe("팀 패널 「지금」 렌더", () => {
     const gardener = rows.find((row) => (row.textContent ?? "").includes("정원사"))!;
     expect(gardener).toBeDefined();
     expect(gardener.textContent ?? "").toContain("시공");
+    panel.dispose();
+  });
+});
+
+
+describe("단독 작업의 접힌 기록", () => {
+  it("기록을 접어도 비교와 적용/버리기는 바깥에 남고, 상태 갱신은 펼침을 보존한다", () => {
+    const state = createTeamBoardState("single", "이름 바꾸기");
+    const board = createTeamBoard(state);
+    const details = board.root.querySelector("details")!;
+    expect(details.open).toBe(false);
+    expect(board.root.querySelector(".ai-team-title")).toBeNull();
+    const preview = document.createElement("div");
+    const onApply = vi.fn(), onDiscard = vi.fn();
+    board.setReview({ preview, onApply, onDiscard });
+    details.open = true;
+    board.update(markTeamBoardReview(state, ["맵 이름"]));
+    expect(board.root.querySelector("details")).toBe(details);
+    expect(details.open).toBe(true);
+    expect(preview.closest("details")).toBeNull();
+    details.open = false;
+    (board.root.querySelector('[data-testid="ai-team-apply"]') as HTMLElement).click();
+    (board.root.querySelector('[data-testid="ai-team-discard"]') as HTMLElement).click();
+    expect(onApply).toHaveBeenCalledOnce();
+    expect(onDiscard).toHaveBeenCalledOnce();
+    board.setReview(null);
+    expect(board.root.querySelector('[data-testid="ai-team-apply"]')).toBeNull();
+  });
+
+  it("접힌 요약에도 도구 오류와 검토 지적이 남는다", () => {
+    let state = createTeamBoardState("single", "수정");
+    // 실제 단독 경로처럼 agent_event 로 감싼다.
+    state = reduceTeamBoard(state, { type: "agent_event", agentId: "a", event: { type: "tool_end", id: "t", name: "paint", ok: false, summary: "실패" } });
+    state = reduceTeamBoard(state, { type: "review", agentId: "r", mapId: "map_a", ok: false, findings: ["길 끊김", "출입구 막힘"] });
+    const board = createTeamBoard(state);
+    expect(board.root.querySelector("summary")?.textContent).toContain("도구 오류 1건");
+    expect(board.root.querySelector("summary")?.textContent).toContain("검토 지적 2건");
+    expect(board.root.querySelector("details")?.open).toBe(false);
+  });
+
+  it("경과 시간 갱신은 상세 행을 재생성하지 않는다", () => {
+    vi.useFakeTimers();
+    try {
+      const state = reduceTeamBoard(createTeamBoardState("single", "조회"), { type: "start", provider: "p", model: "m", toolCount: 1 });
+      const board = createTeamBoard(state);
+      document.body.append(board.root);
+      const row = board.root.querySelector('[data-testid="ai-team-agent"]');
+      vi.advanceTimersByTime(1000);
+      expect(board.root.querySelector('[data-testid="ai-team-agent"]')).toBe(row);
+      board.root.remove();
+      vi.advanceTimersByTime(1000);
+    } finally { vi.useRealTimers(); }
+  });
+
+  it("팀을 켜거나 실제 팀 작업이 있을 때만 팀 패널을 표시한다", () => {
+    const panel = createTeamPanel();
+    expect(panel.root.hidden).toBe(true);
+    publishTeamActivity(createTeamBoardState("single", "수정"));
+    expect(panel.root.hidden).toBe(true);
+    panel.setEnabled(true);
+    expect(panel.root.hidden).toBe(false);
+    panel.setEnabled(false);
+    expect(panel.root.hidden).toBe(true);
+    publishTeamActivity(boardWithFix());
+    expect(panel.root.hidden).toBe(false);
+    publishTeamActivity(createTeamBoardState("single", "다음 수정"));
+    expect(panel.root.hidden).toBe(true);
     panel.dispose();
   });
 });

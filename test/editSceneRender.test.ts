@@ -13,6 +13,44 @@ import { planEditSceneRenderForStoreChange } from "@/editor/editSceneRenderPlan"
 import { createBlankProject, DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults";
 import { store } from "@/project/store";
 
+/** 빈 칸(하층 -1)만 있는 2×2 맵을 그려 타일 객체를 돌려준다. */
+function renderEmptyMap(options: { backgroundPreview?: boolean } = {}): readonly MockObject[] {
+  const project = createBlankProject();
+  const map = project.maps[project.startMapId];
+  map.width = 2;
+  map.height = 2;
+  map.lowerTiles = [-1, -1, -1, -1];
+  map.upperTiles = [-1, -1, -1, -1];
+  map.events = [];
+  store.replace(project);
+  editorState.set({ currentMapId: map.id, layer: "lower", selectedEventId: null, selection: null, tool: "select" });
+  const tiles: MockObject[] = [];
+  renderEditScene({
+    scene: mockScene(),
+    tileLayer: mockContainer(tiles),
+    overlayLayer: mockContainer(),
+    gridGraphics: mockGridGraphics(),
+    mapId: map.id,
+    backgroundPreview: options.backgroundPreview,
+  });
+  return tiles;
+}
+
+describe("맵 배경 미리보기와 빈 칸 체커", () => {
+  it("체커는 색을 바꾸지 않고 미리보기 중에만 옅어진다", () => {
+    // 「여기 바닥이 없다」 신호는 기본값에서 그대로다 — 배경을 보이게 하려고 지우면 결함이 안 보인다.
+    const opaque = renderEmptyMap();
+    expect(opaque).toHaveLength(4);
+    expect(opaque.every((tile) => tile.fillColor === 0x15171c || tile.fillColor === 0x1a1d23)).toBe(true);
+    expect(opaque.every((tile) => tile.alpha === undefined)).toBe(true);
+
+    const translucent = renderEmptyMap({ backgroundPreview: true });
+    expect(translucent.every((tile) => tile.alpha === 0.35)).toBe(true);
+    // 색은 그대로다 — 신호는 옅어질 뿐 사라지지 않는다.
+    expect(translucent.map((tile) => tile.fillColor)).toEqual(opaque.map((tile) => tile.fillColor));
+  });
+});
+
 type MockStroke = {
   lineWidth: number;
   color: number;

@@ -18,7 +18,7 @@ type MediaRequest = {
 };
 
 export type CinematicMediaField = (
-  suffix: "resource" | "voice" | "background",
+  suffix: "resource" | "voice" | "music" | "background",
   label: string,
   slot: CinematicMediaSlot,
   resourceId: string | undefined,
@@ -67,8 +67,11 @@ export function createCinematicMediaFields(options: {
   const mediaField: CinematicMediaField = (suffix, label, slot, resourceId) => {
     const ownRevision = getRevision();
     const usable = (): boolean => actions.isActive() && ownRevision === getRevision();
-    const kind = slot.kind === "video" ? "movie" : slot.kind === "voice" ? "sound" : "image";
-    const allowClear = slot.kind === "voice" || slot.kind === "background";
+    // 그림 칸은 스틸 카탈로그(배경화·타이틀 아트 + AI 생성) — 아이템 아이콘만 나오던 배선을 고친다.
+    const kind = slot.kind === "video" ? "movie"
+      : slot.kind === "voice" ? "sound"
+        : slot.kind === "music" ? "music" : "still";
+    const allowClear = slot.kind === "voice" || slot.kind === "music" || slot.kind === "background";
     const testid = `db-cinematic-${suffix}`;
 
     const committed = (next: MediaRequest, id: string): void => {
@@ -122,7 +125,7 @@ export function createCinematicMediaFields(options: {
       attrs: {
         type: "file",
         accept: slot.kind === "video" ? ".webm,.mp4,.m4v,.ogv"
-          : slot.kind === "voice" ? ".wav,.mp3,.ogg" : ".png,.jpg,.jpeg,.gif,.webp",
+          : slot.kind === "voice" || slot.kind === "music" ? ".wav,.mp3,.ogg" : ".png,.jpg,.jpeg,.gif,.webp",
       },
       dataset: { testid: `${testid}-upload` },
     });

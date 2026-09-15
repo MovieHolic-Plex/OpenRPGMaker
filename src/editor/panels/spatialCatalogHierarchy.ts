@@ -1,4 +1,5 @@
-import { REGION_REFERENCES } from "@/project/regionReferences";
+import { linkedRegionMapId } from "@/project/spatial/regionMapLinks";
+import { REGION_REFERENCES, PLACE_REFERENCES } from "@/project/regionReferences";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { CONCEPT_FACILITY_TEMPLATES } from "@/project/defaults/conceptFacilityTemplates";
 import { visibleAuthoringProject } from "@/editor/panels/spatialAuthoringAccess";
@@ -28,6 +29,9 @@ function placeCards(): SpatialGalleryCard[] {
     objectId: bundle.things[0]?.objectId,
     subtitle: bundle.facilities[0]?.label === bundle.label ? undefined : bundle.facilities[0]?.label,
   }));
+  cards.push(...PLACE_REFERENCES.map(entry => ({ id: `region-reference:${entry.id}`, localId: entry.id,
+    regionReferenceId: entry.id, name: entry.name, source: "default" as const, kind: "places" as const,
+    usage: 0, tilesetId: entry.tilesetId, placeKind: "facility" as const, subtitle: "완성 장소 사례" })));
   const known = new Set(cards.map((card) => card.id));
   for (const tileset of Object.values(project.tilesets)) {
     if (tileset.scratchConceptBundles === undefined) continue;
@@ -111,6 +115,7 @@ function regionCards(): SpatialGalleryCard[] {
       localId: region.id,
       canonicalSource: { kind: "region", id: region.id },
       name: region.name,
+      regionMapId: linkedRegionMapId(visibleAuthoringProject(), region.id),
       source: "own",
       kind: "regions",
       usage: 0,
@@ -224,6 +229,7 @@ function placedCards(tab: SpatialShellTab): SpatialGalleryCard[] {
       usage: 0,
       missingSource: !liveLibraryHas(entry.kind, entry.source.id),
       mapId: entry.bindings[0]?.mapId,
+      regionMapId: entry.kind === "region" ? linkedRegionMapId(project, entry.source.id, entry.id) : undefined,
     };
   });
   if (tab === "tiles") {

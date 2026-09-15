@@ -216,7 +216,8 @@ export function renderDatabaseCinematicTab(
         toggleSwitch("건너뛰기 허용", "db-cinematic-skippable", sequence?.skippable ?? true, value => {
           if (usable()) actions.setFlag("skippable", value);
         }),
-        note("사용을 꺼도 장면과 미디어 설정은 유지됩니다."),
+        media.field("music", "배경음악", { kind: "music" }, sequence?.musicResourceId),
+        note("사용을 꺼도 장면과 미디어 설정은 유지됩니다. 배경음악은 시퀀스 전체에 반복 재생됩니다."),
         startPreview,
       ],
     });

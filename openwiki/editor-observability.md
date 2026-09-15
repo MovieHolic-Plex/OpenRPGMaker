@@ -421,11 +421,11 @@ log.warn("편집 행위 기록 실패", error);
 
 ## 알려진 남은 공백 (여기 손대는 사람이 이어서 하라)
 
-전부 2026-08-29 실측이며, 이번 변경에서 **고치지 않았다.**
+달리 적지 않았으면 2026-08-29 실측이며, 이번 변경에서 **고치지 않았다.**
 
 | 공백 | 실측 근거 | 결과 / 이어서 할 일 |
 |---|---|---|
-| store 를 바꾸면서 되돌리기 스냅샷을 남기지 않는 파일 21개 | 아래 재측정 명령 | 그 경로로 바뀐 것은 Ctrl+Z 로 되돌아가지 않는다(감사 로그에는 남는다). **명단을 손으로 관리하면 썩는다 — 구조 테스트로 고정하는 것이 후속 과제다** |
+| store 를 바꾸면서 되돌리기 스냅샷을 남기지 않는 파일 24개 | `test/storeUndoSnapshotInventory.test.ts` (2026-09-14 실측) | 그 경로로 바뀐 것은 Ctrl+Z 로 되돌아가지 않는다(감사 로그에는 남는다). ~~명단을 손으로 관리하면 썩는다 — 구조 테스트로 고정하는 것이 후속 과제다~~ **고정함 (2026-09-14)** — 명단은 이제 그 테스트의 `KNOWN_WITHOUT_SNAPSHOT` 이 정본이고, **여기 다시 적지 않는다**. 양방향 래칫이라 새 구멍이 생겨도, 고친 파일을 명단에서 안 빼도 실패한다 |
 | ~~`resetMapEditHistory()` 프로덕션 호출 0건~~ **고침 (2026-08-29)** | 이전 실측: `grep -rn "resetMapEditHistory" src/` → 정의 1건뿐, 호출은 테스트에만. 그래서 프로젝트를 갈아탄 뒤 Ctrl+Z 가 **이전 프로젝트의 스냅샷**을 새 프로젝트에 적용했다 | `ProjectChangeAnnotation.projectSwitch` 신호로 끝난다. 신호를 싣는 경로는 네 곳이다 — `replaceProject()`, `loadNewRemoteProject()`, `loadNewRemoteProjectTransactionally()`(웰컴 장르 프리셋 경로), `reconnectRemotePersistence()`(작업 선택기에서 저장된 프로젝트 열기). `reloadFromRemote()` 는 **같은 projectId** 를 다시 읽는 경로라 의도적으로 싣지 않는다.
 
 **함정 (실측으로 데이터 손실을 만들었다): `replaceProject()` 는 프로젝트 교체 전용이 아니다 — AI 제안 적용 경로이기도 하다.** `applyChangesetToStore.ts` 는 `recordProjectSnapshot()` 을 찍은 **직후** `reset_project` 턴에서 `replaceProject()` 를 부른다. 마커를 무조건 싣게 두면 구독자가 방금 찍은 되돌리기 스냅샷을 동기적으로 지우고, 그러면서 `aiProposalCard` 는 「되돌리려면 Ctrl+Z」라고 안내한다 — 거짓 복구 약속과 함께 복구 불가가 된다. AI 초기화는 **같은 projectId·같은 원격 행의 대량 편집**이지 교체가 아니므로, 그 호출부는 `{ ...change, projectSwitch: false }` 로 명시적으로 빠져나온다. 그래서 필드 타입이 `?: true` 가 아니라 `?: boolean` 이다. 계약 테스트: `test/projectResetTool.test.ts` 의 「keeps the pre-reset project available through undo」.
@@ -436,21 +436,19 @@ log.warn("편집 행위 기록 실패", error);
 | `mapEditLocks` 로 편집이 거부된 사건이 기록되지 않는다 `canEditMap()` 거부 지점(`EditScene.ts`, `TilePaintEngine.ts`, `DragOperationHandler.ts`, `actions.ts`, `panels/basicLeftRail.ts`)은 `toast(mapEditLockNotice(...))` 나 조용한 `return` 만 한다 | "칠했는데 아무 일도 안 일어난다" 가 로그·감사 어디에도 안 남는다. 거부는 mutation 이 아니라 초크포인트를 지나지 않으므로 별도로 남겨야 한다 |
 
 ```bash
-# 되돌리기 스냅샷 없이 store 를 바꾸는 파일 재측정 (2026-08-29 기준 21개)
-for f in $(grep -rlE "store\.(update|updateMap|replace|replaceProject|clearAll)\(" src/); do
-  grep -qE "recordProjectSnapshot|recordMapSnapshot" "$f" || echo "$f"
-done
+# 되돌리기 스냅샷 없이 store 를 바꾸는 파일 — 명단은 테스트가 들고 있다
+npx vitest run test/storeUndoSnapshotInventory.test.ts
 ```
 
-2026-08-29 시점 명단: `editor/eventActions.ts`, `editor/eventPages.ts`, `editor/tileActions.ts`,
-`editor/mapParentLink.ts`, `editor/mapShiftActions.ts`, `editor/harnessSuggestion/structureKitActions.ts`,
-`editor/panels/aiAssistantPanel.ts`, `editor/panels/databaseModalDirtySession.ts`,
-`editor/panels/eventEditor/pageNpcLiving.ts`, `editor/panels/eventEditor/pageProps.ts`,
-`editor/panels/mapProps.ts`, `editor/panels/menu.ts`, `editor/panels/resourceManager.ts`,
-`editor/panels/structureKitEditorDialog.ts`, `editor/panels/structureKitInspector.ts`,
-`editor/panels/tilesetAiQuestionEditor.ts`, `editor/panels/tilesetMetadataEditor.ts`,
-`editor/panels/tilesetTileContextMenu.ts`, `editor/panels/villageInfoModal.ts`,
-`player/runtimeDebugPanel.ts`, `project/characterIdIndex.ts`.
+**명단을 여기 옮겨 적지 마라.** 2026-08-29 에 21개로 적어 둔 명단을 2026-09-14 에 다시 재니
+24개였고, 그 사이 다섯 개(`eventPages.ts`, `pageProps.ts`, `structureKitEditorDialog.ts`,
+`structureKitInspector.ts`, `tilesetMetadataEditor.ts`)는 **고쳐졌는데 명단에 남아 있었고** 여덟 개는
+**새로 생겼는데 명단에 없었다** — 문서를 읽은 사람이 두 방향 모두에서 틀린 지도를 받았다. 그래서
+정본을 `test/storeUndoSnapshotInventory.test.ts` 의 `KNOWN_WITHOUT_SNAPSHOT` 으로 옮겼다. 그 테스트는
+새 구멍이 생겨도, 고친 파일을 명단에서 안 빼도 실패한다.
+
+판정 잣대는 위 재측정 명령과 같은 **파일 단위 어림**이다 — 한 파일 안에서 어떤 함수는 스냅샷을 찍고
+어떤 함수는 안 찍으면 초록이다. 통과를 "되돌리기가 된다"로 읽지 마라. 호출부 단위 판정은 남은 과제다.
 
 ## AI 툴·액션 이유 (2026-09-02)
 

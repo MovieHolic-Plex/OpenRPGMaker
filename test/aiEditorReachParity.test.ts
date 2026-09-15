@@ -50,6 +50,7 @@ const REQUIRED_FACADES: readonly ReachCase[] = [
   { tool: "upsert_test_preset", field: "testPresets" },
   { tool: "delete_test_preset", field: "testPresets" },
   { tool: "manage_flag_slot", field: "switches/variables" },
+  { tool: "set_opening", field: "system.opening" },
 ];
 
 const EXTRA_DELETABLE_COLLECTIONS = [

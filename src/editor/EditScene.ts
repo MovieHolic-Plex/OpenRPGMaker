@@ -36,6 +36,14 @@ import { subscribeInlineProposalActions } from "@/editor/proposalInlineApproval"
 import { CameraScrollbars } from "@/editor/CameraScrollbars";
 import { CameraPanController, pointerScreenPosition } from "@/editor/CameraPanController";
 import { store, type ProjectChangeCell, type ProjectChangeDescriptor } from "@/project/store";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { MAP_BACKGROUND_LAYER_DEPTH } from "@/player/characterDepth";
+import { ensureSceneImageTexture } from "@/player/playSceneImageTexture";
+import { mapBackgroundLayout, mapBackgroundTextureKey } from "@/player/playSceneMapBackground";
+import {
+  mapBackgroundPreviewEnabled,
+  subscribeMapBackgroundPreview,
+} from "@/editor/mapBackgroundPreviewState";
 import { editorState, EDITOR_ZOOM_LEVELS } from "@/editor/editorState";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import {
@@ -193,6 +201,10 @@ export class EditScene extends PhaserRuntime.Scene {
   private unsubStore: (() => void) | null = null;
   private unsubEditor: (() => void) | null = null;
   private unsubAgentGhost: (() => void) | null = null;
+  private unsubMapBackgroundPreview: (() => void) | null = null;
+  /** 맵 배경 미리보기(토글이 켜져 있을 때만). 하층 타일 아래 depth 의 컨테이너다. */
+  private mapBackgroundLayer: Phaser.GameObjects.Container | null = null;
+  private mapBackgroundSprites: Phaser.GameObjects.TileSprite[] = [];
   private unsubAgentFocus: (() => void) | null = null;
   private unsubCameraFocus: (() => void) | null = null;
   private unsubInlineApproval: (() => void) | null = null;
@@ -346,6 +358,9 @@ export class EditScene extends PhaserRuntime.Scene {
   create(): void {
     registerBundledFrames(this, store.getCurrent());
     this.cameras.main.setBackgroundColor("#E7E0D0");
+    // 배경 미리보기는 하층 타일 **아래** 다 — 타일이 깔린 칸은 가리고 빈 칸만 뚫린다(플레이와 같은 순서).
+    this.mapBackgroundLayer = this.add.container(0, 0);
+    this.mapBackgroundLayer.setDepth(MAP_BACKGROUND_LAYER_DEPTH);
     // Round texture sampling, not world-space scroll: flooring scroll can move a
     // wheel anchor by up to eight screen pixels at the existing maximum zoom.
     this.cameras.main.roundPixels = false;
@@ -417,6 +432,8 @@ export class EditScene extends PhaserRuntime.Scene {
       this.renderAgentBlueprint();
     });
     this.unsubAgentBlueprint = subscribeAgentBlueprint(() => this.renderAgentBlueprint());
+    // 미리보기 토글은 씬 밖(캔버스 툴바)에서 뒤집힌다 — 구독이 없으면 켜도 아무 일도 안 한다.
+    this.unsubMapBackgroundPreview = subscribeMapBackgroundPreview(() => this.redraw());
 
     this.scale.on("resize", this.handleResize, this);
     window.addEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
@@ -483,18 +500,21 @@ export class EditScene extends PhaserRuntime.Scene {
     this.rightRegionGesture = null;
     // 미뤄 둔 초점은 씬과 함께 버린다 — 아래 stopPan 이 재생을 시도하기 전에 비워야 한다.
     this.deferredCameraFocus = null;
+
     this.stopPan();
     this.unsubStore?.();
     this.unsubEditor?.();
     this.unsubAgentGhost?.();
     this.unsubAgentFocus?.();
     this.unsubCameraFocus?.();
+    this.unsubMapBackgroundPreview?.();
     this.unsubAgentBlueprint?.();
     this.unsubStore = null;
     this.unsubEditor = null;
     this.unsubAgentGhost = null;
     this.unsubAgentFocus = null;
     this.unsubCameraFocus = null;
+    this.unsubMapBackgroundPreview = null;
     this.unsubAgentBlueprint = null;
     this.clearAgentGhostPreviewLayer();
     this.clearAgentBlueprintLayer();
@@ -1634,6 +1654,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!tileLayer || !hoverPreviewLayer || !overlayLayer || !gridGraphics) return;
     renderEditScene({
       scene: this,
+      backgroundPreview: mapBackgroundPreviewEnabled(),
       tileLayer,
       overlayLayer,
       gridGraphics,
@@ -1643,6 +1664,8 @@ export class EditScene extends PhaserRuntime.Scene {
       preserveCameraLookAt: resetCamera && !mapChanged,
     });
     this.renderEventLayerClickFeedback();
+    // 배경 미리보기는 타일 렌더와 별개다 — 토글·맵·그림이 바뀔 때만 스프라이트를 다시 만든다.
+    this.renderMapBackgroundPreview();
     this.renderAgentGhostPreview();
     // 청사진도 고스트와 같이 다시 그린다 — 청사진 스토어 구독만으로는 부족하다. 맵 전환은
     // editorState/store 만 흔들므로, 다시 그리지 않으면 A 맵의 "2/7 집" 사각형이 B 맵의 같은
@@ -1658,6 +1681,65 @@ export class EditScene extends PhaserRuntime.Scene {
     if (this.lastRenderedMapId !== mapId) return false;
     if (!this.tileLayer || !this.overlayLayer || !this.gridGraphics) return false;
     return this.lastRenderStateKey === this.renderStateKey(mapId);
+  }
+
+
+  /**
+   * 맵 배경 미리보기 — 토글이 켜져 있을 때만 그린다.
+   *
+   * 기본값에서 그리지 않는 이유: 빈 하위 칸의 체커는 "여기 바닥이 없다" 를 보이게 하는 의도된
+   * 신호이고 사용자가 유지를 요구했다(2026-08-27). 미리보기 중에도 체커를 통째로 지우지 않고
+   * 알파만 낮춘다(`editSceneRender.createEmptyTile`) — 배경과 신호가 같이 읽힌다.
+   *
+   * 배치는 플레이와 같다: 화면 고정(`scrollFactor 0`) + 카메라 줌 보정. 팬할 때 좌표만 다시 쓴다.
+   * 스크롤 위상은 0 으로 둔다 — 움직임의 정본은 플레이 화면이다.
+   */
+  private renderMapBackgroundPreview(): void {
+    const container = this.mapBackgroundLayer;
+    if (!container) return;
+    const mapId = this.mapId();
+    const background = mapId ? store.getCurrent().maps[mapId]?.background : undefined;
+    const imageId = mapBackgroundPreviewEnabled() ? (background?.imageId ?? "").trim() : "";
+    const url = imageId ? resolveAssetResourceUrl(imageId, { project: store.getCurrent() }) : null;
+    if (!imageId || !url) {
+      this.clearMapBackgroundPreview();
+      return;
+    }
+    const textureKey = mapBackgroundTextureKey(imageId);
+    const apply = (): void => {
+      if (this.mapId() !== mapId || !mapBackgroundPreviewEnabled()) return;
+      let sprite = this.mapBackgroundSprites[0];
+      if (!sprite) {
+        sprite = this.add.tileSprite(0, 0, 16, 16, textureKey);
+        sprite.setOrigin(0, 0);
+        sprite.setScrollFactor(0);
+        container.add(sprite);
+        this.mapBackgroundSprites = [sprite];
+      } else if (sprite.texture.key !== textureKey) {
+        sprite.setTexture(textureKey);
+      }
+      this.layoutMapBackgroundPreview();
+    };
+    if (this.textures.exists(textureKey)) {
+      apply();
+      return;
+    }
+    void ensureSceneImageTexture(this, textureKey, url).then((key) => {
+      if (key) apply();
+    });
+  }
+
+  /** 화면 고정 배치를 카메라에 맞춘다. 노드는 그대로, 크기·좌표만 다시 쓴다. */
+  private layoutMapBackgroundPreview(): void {
+    const sprite = this.mapBackgroundSprites[0];
+    if (!sprite || !sprite.visible) return;
+    const layout = mapBackgroundLayout(this.cameras.main);
+    if (sprite.width !== layout.width || sprite.height !== layout.height) sprite.setSize(layout.width, layout.height);
+    sprite.setPosition(layout.x, layout.y);
+  }
+
+  private clearMapBackgroundPreview(): void {
+    for (const sprite of this.mapBackgroundSprites) sprite.setVisible(false);
   }
 
   private redrawCells(cells: readonly ProjectChangeCell[]): EditSceneRenderStats {
@@ -1712,6 +1794,8 @@ export class EditScene extends PhaserRuntime.Scene {
       state.autoConnectMode,
       state.activePaletteStamp ? `${state.activePaletteStamp.source.startTile}:${state.activePaletteStamp.source.endTile}` : "none",
       state.brushSize,
+      // 미리보기 토글은 빈 칸 체커의 알파를 바꾼다 — 상태 키에 없으면 증분 렌더가 그 사실을 놓친다.
+      mapBackgroundPreviewEnabled() ? "bg-preview" : "bg-hidden",
       state.selectedEventId ?? "none",
       selectionKey,
     ].join("|");
@@ -2053,6 +2137,9 @@ export class EditScene extends PhaserRuntime.Scene {
 
   /** 프로그램 팬이 끝난 뒤 카메라 좌표에 의존하는 표면을 다시 맞춘다(손 팬의 onPanMove 와 같은 몸). */
   private afterCameraMoved(): void {
+    // 배경 미리보기는 플레이와 같이 **화면 고정**이다 — 팬할 때 노드를 다시 만들지 않고
+    // 좌표만 고쳐 쓴다(로케이션 상자와 같은 계약).
+    this.layoutMapBackgroundPreview();
     this.syncNavigationGeometry();
     this.refreshAgentGhostDomMarkers();
     this.renderBuildPaletteOverlay();

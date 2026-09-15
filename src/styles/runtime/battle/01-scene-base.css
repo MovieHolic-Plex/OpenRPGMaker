@@ -34,6 +34,9 @@
      정의(2px 판)해서 폴백이 아예 평가되지 않는다. 그래서 4px 판(= 논리 px 2배)을 씬
      스코프에서 재정의한다. 색은 전역과 동일. */
   --focus-ring: 0 0 0 4px rgba(108, 121, 242, 0.55);
+  /* 진입 커버(블라인드 열림, battleTransition.ts BATTLE_TRANSITION_REVEAL_MS)가 걷히는 시간.
+     인트로 안무는 이만큼 늦게 시작해 커버 뒤에서 소진되지 않는다. */
+  --battle-reveal-ms: 300ms;
   /* 논리 해상도 스케일링 — battleStageScale.ts 가 컨테이너 크기에서 배율을 계산해
      --battle-stage-scale / --battle-stage-offset-* 을 세팅한다. 스킨(rm2000)은 320×240
      (RM2003 해상도) 기준으로 저작됐는데 예전에는 640×480 에 transform 없이 붙어
@@ -279,7 +282,8 @@
   font-size: 12px;
   grid-column: 1 / -1;
   justify-self: center;
-  line-height: 1;
+  /* 글리프 잉크(약 17px)가 1 배 상자(12px)를 넘어 스크롤포트 경계에 걸쳐 그려졌다(감사 sliced 0.118). */
+  line-height: 1.5;
   pointer-events: none;
   position: sticky;
   text-shadow: 1px 1px 0 #000;

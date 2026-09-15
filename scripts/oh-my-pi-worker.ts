@@ -11,7 +11,8 @@ import { generateCodexImage } from "./lib/codexImageRuntime.ts";
 import { CODEX_PROVIDER_ID } from "../src/ai/oauth/credentials.ts";
 import { runPiAgent } from "./lib/piAgentRuntime.ts";
 import { runPiTeam } from "./lib/piTeamRuntime.ts";
-import { encodePiAgentEvent, type PiAgentEvent, type PiAgentRequest } from "../src/ai/piAgent/protocol.ts";
+import { createPiAgentNdjsonStream } from "./lib/piAgentStream.ts";
+import type { PiAgentRequest } from "../src/ai/piAgent/protocol.ts";
 
 const port = Number(process.env.RPG_ZZU_OH_MY_PI_WORKER_PORT || 0);
 
@@ -25,6 +26,12 @@ function json(data: unknown, status = 200) {
 const server = Bun.serve({
   hostname: "127.0.0.1",
   port,
+  // Bun.serve 의 idleTimeout 기본값은 10초다 — 연결에 바이트가 오가지 않으면 소켓을 끊는다.
+  // /agent/run 은 턴 시작·툴 호출·응답 끝에만 이벤트를 쓰므로 모델이 10초 넘게 생각하면 스트림이
+  // 끊기고, Node 쪽 fetch 는 `terminated` 를 던지고 워커는 클라이언트 중단으로 오해해 에이전트를
+  // 전부 abort 했다(실측 2026-09-14: 팀 모드 "마을 만들어줘" 가 매번 25~110초 만에 실패). 실행
+  // 상한은 piAgentRuntime 의 timeoutMs(기본 10분)가 따로 들고 있으므로 유휴 타임아웃은 끈다.
+  idleTimeout: 0,
   async fetch(request) {
     const url = new URL(request.url);
     try {
@@ -44,25 +51,14 @@ const server = Bun.serve({
           return json({ error: "request.task 와 request.project 가 필요합니다" }, 400);
         }
         const apiKey = typeof body.apiKey === "string" ? body.apiKey : undefined;
-        const encoder = new TextEncoder();
-        const stream = new ReadableStream<Uint8Array>({
-          start(controller) {
-            const write = (line: string) => {
-              try { controller.enqueue(encoder.encode(line)); } catch { /* 클라이언트가 끊었다 */ }
-            };
-            const agentOptions = {
-              apiKey,
-              providerApiKeys: body.providerApiKeys,
-              signal: request.signal,
-              onEvent: (event: PiAgentEvent) => write(encodePiAgentEvent(event)),
-              ...(agentRequest.readOnly ? { readOnlyTools: true } : {}),
-              ...(agentRequest.timeoutMs ? { timeoutMs: agentRequest.timeoutMs } : {}),
-            };
-            (agentRequest.mode === "team" ? runPiTeam : runPiAgent)(agentRequest, agentOptions)
-              .catch((error) => write(encodePiAgentEvent({ type: "error", message: error instanceof Error ? error.message : String(error) })))
-              .finally(() => { try { controller.close(); } catch { /* 이미 닫힘 */ } });
-          },
-        });
+        const stream = createPiAgentNdjsonStream((onEvent) => (agentRequest.mode === "team" ? runPiTeam : runPiAgent)(agentRequest, {
+          apiKey,
+          providerApiKeys: body.providerApiKeys,
+          signal: request.signal,
+          onEvent,
+          ...(agentRequest.readOnly ? { readOnlyTools: true } : {}),
+          ...(agentRequest.timeoutMs ? { timeoutMs: agentRequest.timeoutMs } : {}),
+        }));
         return new Response(stream, { status: 200, headers: { "Content-Type": "application/x-ndjson; charset=utf-8", "Cache-Control": "no-cache" } });
       }
       if (request.method === "POST" && url.pathname === "/image") {

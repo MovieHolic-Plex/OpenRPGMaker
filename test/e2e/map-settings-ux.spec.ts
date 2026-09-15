@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { expect, test, type Page } from "@playwright/test";
 
 const OUT = join(process.cwd(), "output/evidence/map-settings-ux");
-const sections = ["general", "background", "bgm", "battle", "restrictions", "encounter", "spawns", "minimap"];
+const sections = ["general", "background", "clouds", "bgm", "battle", "restrictions", "encounter", "spawns", "minimap"];
 
 async function openSettings(page: Page, mode = "standard"): Promise<void> {
   await page.addInitScript((mode) => {
