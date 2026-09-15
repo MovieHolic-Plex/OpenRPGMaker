@@ -1,5 +1,5 @@
 // editor/assistantViewSwitch.ts
-// 조수가 사용자 화면을 갈아 끼우는 **모든** 경로가 지나는 한 문.
+// 사용자 화면을 갈아 끼우는 결정적 전환이 지나는 한 문 — 조수의 진입 다섯과, 목록에서 사람이 직접 고르는 클릭.
 //
 // 여기 있는 이유는 순환 때문이다: 조합 모듈인 `editorReferenceNavigation` 은 `agentFocus` 를
 // 부르므로, 그쪽에 이 문을 두면 `agentFocus → editorReferenceNavigation → agentFocus` 가 된다.
