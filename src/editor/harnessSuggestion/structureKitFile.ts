@@ -1,6 +1,7 @@
 // harnessSuggestion/structureKitFile.ts
 // 구조물 파일 포맷 — DOM·store 의존 없음(유닛 테스트 대상).
 
+import { PRODUCT_SLUG } from "@/brand";
 import { structureKitSignature } from "@/editor/harnessSuggestion/structureKitModel";
 import type {
   PlacementFacing,
@@ -21,8 +22,15 @@ export class StructureKitFileError extends Error {
 }
 
 /** 프로젝트 파일과 구분하는 판별자. 확장자만으로는 잘못 고른 파일을 못 거른다. */
-export const STRUCTURE_KIT_FILE_FORMAT = "rpgzzu-structure-kits";
+export const STRUCTURE_KIT_FILE_FORMAT = `${PRODUCT_SLUG}-structure-kits` as const;
+/**
+ * 2026-09 제품명 스윕 전에 내보낸 파일의 판별자 — **읽기 전용**. 사용자 디스크에 남아 있는 파일이
+ * 계속 열려야 하므로 parse 가 받아 주되, 결과는 새 판별자로 정규화한다. 새로 쓰는 파일에는 쓰지 않는다.
+ */
+export const LEGACY_STRUCTURE_KIT_FILE_FORMAT = "rpgzzu-structure-kits";
 export const STRUCTURE_KIT_FILE_VERSION = 1;
+/** 내보내기 파일 이름 접미사. 이중 확장자라 브라우저는 JSON 으로 연다. 가져오기는 접미사를 강제하지 않는다. */
+export const STRUCTURE_KIT_FILE_SUFFIX = `.${PRODUCT_SLUG}-kit.json`;
 
 export interface StructureKitFile {
   readonly format: typeof STRUCTURE_KIT_FILE_FORMAT;
@@ -69,7 +77,7 @@ export function parseStructureKitFile(text: string): {
     throw new StructureKitFileError("구조물 파일 형식이 아닙니다.");
   }
   const record = parsed as Record<string, unknown>;
-  if (record.format !== STRUCTURE_KIT_FILE_FORMAT) {
+  if (record.format !== STRUCTURE_KIT_FILE_FORMAT && record.format !== LEGACY_STRUCTURE_KIT_FILE_FORMAT) {
     throw new StructureKitFileError("구조물 파일이 아닙니다. 프로젝트 파일을 고르셨는지 확인해 주세요.");
   }
   const version = typeof record.version === "number" ? record.version : 0;
@@ -322,10 +330,10 @@ function readAiMeta(raw: unknown): StructureKitAiMeta | undefined {
   };
 }
 
-/** 낱개는 구조물 이름, 묶음은 타일셋 이름과 개수. 이중 확장자라 브라우저는 JSON 으로 연다. */
+/** 낱개는 구조물 이름, 묶음은 타일셋 이름과 개수. */
 export function structureKitFileName(tilesetName: string, kits: readonly SectionStructureKitDef[]): string {
-  if (kits.length === 1) return `${kits[0]!.name ?? "구조물"}.rpgzzu-kit.json`;
-  return `${tilesetName}-구조물-${kits.length}개.rpgzzu-kit.json`;
+  if (kits.length === 1) return `${kits[0]!.name ?? "구조물"}${STRUCTURE_KIT_FILE_SUFFIX}`;
+  return `${tilesetName}-구조물-${kits.length}개${STRUCTURE_KIT_FILE_SUFFIX}`;
 }
 
 export interface ImportCandidate {
