@@ -1,4 +1,4 @@
-# RPG ZZU Agent Entry Point
+# OPRN Studio Agent Entry Point
 
 > **AI-log lookup without browser (2026-09-04 incident: prompt hid under oprn-9c35ec902c):** query `rpg_zzu.ai_conversations` with `Accept-Profile: rpg_zzu`, never filter `project_id` first.
 > Search `entries_json` for kind user to find the hidden prompt.
@@ -55,7 +55,7 @@ This repo has multiple agent tooling directories. Here is what each is and wheth
 | Directory / File | Purpose | Tracked? | Canonical? |
 |---|---|---|---|
 | `AGENTS.md` | **Canonical agent entry point** — read this first. All agents start here. | Yes | **Yes — source of truth** |
-| `.mcp.json` | MCP server config (rpgzzu-assistant bridge). Currently gitignored (session-local). | No (gitignored) | Yes for MCP config |
+| `.mcp.json` | MCP server config (oprn-assistant bridge). Currently gitignored (session-local). | No (gitignored) | Yes for MCP config |
 | `.kiro/` | Kiro CLI workspace config. `agents/` holds tracked custom agent profiles; `settings/cli.json` holds tracked model defaults. Invoke with an explicit model/effort when the task requires a fixed profile. | Yes | Kiro-specific |
 | `openwiki/` | Project-local AI wiki (focused pages agents read before editing). | Yes | **Yes — source of truth for codebase knowledge** |
 | `.agents/` | Senpi agent skills (project-local skill overrides). | No (gitignored) | Skills only |
@@ -78,7 +78,7 @@ index 에서 제거하고 `.gitignore` 에 `.qoder/` `.qwen/` `.senpi/` `.agents
 1. Read `AGENTS.md` (this file) — it is the canonical entry point.
 2. Read `openwiki/quickstart.md` (환경·게이트 기준선·기능→파일) and `openwiki/INDEX.md` (위키 절 좌표).
 3. Read `openwiki/PROJECT_WIKI.md` — it is the canonical project-specific AI map.
-4. Use `.mcp.json` for MCP server config (rpgzzu-assistant bridge on localhost).
+4. Use `.mcp.json` for MCP server config (oprn-assistant bridge on localhost).
 5. Your own agent config dir (`.claude/`, `.codex/`, `.senpi/`, etc.) is session-local and gitignored — do not commit it.
 6. `.omo/ulw-loop/` holds durable goal state and evidence; `.omo/evidence/` and `.omo/rules/` are tracked.
 

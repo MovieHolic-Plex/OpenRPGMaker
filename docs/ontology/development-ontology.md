@@ -1,4 +1,4 @@
-# RPG ZZU Development Ontology
+# OPRN Studio Development Ontology
 
 > **Status:** 시점 스냅샷 (Updated: 2026-07-08). 갱신되지 않는 기록이다.
 
@@ -87,7 +87,7 @@ Serialization, package export, migration, shape guards, reference validation, an
 
 ## Entities
 
-- `Project`: The root RPG ZZU project document.
+- `Project`: The root OPRN Studio project document.
 - `GameMap`: A tile map with lower/upper layers and events.
 - `MapTreeNode`: The hierarchical map tree entry.
 - `TilesetDef`: Runtime and semantic definition for a tileset.
