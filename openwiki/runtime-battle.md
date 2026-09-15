@@ -96,6 +96,18 @@
   전투 중 만료된 타이머가 진입 값으로 되살아나고 이후 프레임은 만료된 타이머를 건너뛰므로 자동 교정되지
   않는다. `friendshipWrites`/`relationshipWrites` 와 같은 "쓴 키만" 관례다. `timerWrites` 없는 구 스냅샷은
   예전처럼 `timers` 전체를 병합한다. 회귀: `test/battleRewardsToSession.test.ts` 의 `battle timer write-back`.
+- **필드 트랙은 전투를 거쳐도 저작 볼륨을 유지한다.** `playSceneBattle` 은 `enterBattleAudio` 가 돌려주는
+  **전한** `BattleAudioSession`(resourceId + volume + loop)을 다. resourceId 만 들고 있으면 복귀 시
+  `exitBattleAudio` 의 폴백(`{resourceId, loop:true}`)이 gain 을 안 실어, 저작 `volume: 0`(음소거)·저음량이
+  기본 믹서 볼륨(0.7)으로 되돌아온다 — 그리고 그 잘못된 값이 `session.audio.bgm` 에 기록되어 이후
+  저장·전투로 전파된다. 회귀: `test/battleResultTransitionFailure.test.ts` 의
+  `keeps the authored field volume through the battle round trip` (실제 `playBattle` 경로).
+- **종국 패배(canLose=false)는 필드 BGM 을 되리지 않는다.** 전투 결과가 게임 오버로 이어지는 길에서
+  `exitBattleAudio` 를 그대로 타면, 살아 있는 파티가 없는 게임 오버 화면 **아래에서** 탐험 BGM 이 다시 돈다
+  (실측 A/B: 수정 전 게임 오버 시점 `field-of-dreams.mp3` volume 0.57 재생 → 수정 후 재생 트랙 0개).
+  그 경로는 채널만 멈추고 세션 기록만 필드곡으로 되돌린다(재시도·저장 해석이 같은 값을 본다).
+  승리·도주·`canLose=true` 패배의 필드 복원은 그대로다. 계측:
+  `scripts/qa/runtime/battle-title-bgm-handoff.probe.mjs` 의 `atGameOver`.
 
 ## Native event battle admission (2026-09-08)
 

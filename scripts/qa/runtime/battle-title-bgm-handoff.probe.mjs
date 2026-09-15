@@ -21,6 +21,10 @@ const project = JSON.parse(
 // 이 픽스처의 타이틀에는 음악이 저작돼 있지 않다. 이 프로젝트에 실제로 있는 music 리소스를 꽂는다.
 const TITLE_TRACK = "cc0-bgm-field";
 project.system.titleScreen = { ...(project.system.titleScreen ?? {}), musicResourceId: TITLE_TRACK };
+// 패배 직전 맵에 필드곡을 저작해 둔다 — 게임 오버 아래에서 그 곡이 다시 돌면 그게 결함이다.
+const mapList = Array.isArray(project.maps) ? project.maps : Object.values(project.maps ?? {});
+const defeatMap = mapList.find((m) => m.id === "map_old_copper_mine");
+if (defeatMap) defeatMap.bgm = { mode: "custom", resourceId: "cc0-bgm-field" };
 
 const SAMPLE_AUDIO = `(() => {
   const nodes = [...document.querySelectorAll("audio[data-oprn-audio]")];
@@ -63,6 +67,8 @@ try {
   }
   await page.screenshot({ path: resolve(out, "01-game-over.png") });
   report.reachedGameOver = await page.locator('[data-testid="game-over-screen"]').count();
+  // 게임 오버 화면에서 실제로 재생 중인 트랙. 종국 패배(canLose=false)는 필드를 되돌리지 않는다.
+  report.atGameOver = await page.evaluate(SAMPLE_AUDIO);
 
   // 누가 오디오 엘리먼트를 제거하는지 잡는다(스택 기록).
   await page.evaluate(() => {
