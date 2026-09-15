@@ -84,6 +84,11 @@ export interface AiTurnRunnerDeps {
 
   // ── 제안 · 변경 카드 ─────────────────────────────────────
   readonly applyProposal: (calls: readonly ProposedCall[], assistantBubble?: HTMLElement | null) => Promise<ProposalApplyOutcome>;
+  /**
+   * `deferApply` 턴의 초안을 적용하지 않고 맡긴다 — 검토 게이트를 가진 표면이 사용자 확인 뒤에 커밋한다.
+   * 세션 초안(draft)은 그대로 살아 있고, 적용·폐기는 패널의 브리지 핸들러가 맞는다.
+   */
+  readonly holdProposal?: (calls: readonly ProposedCall[], assistantBubble?: HTMLElement | null) => void;
   readonly noteNoChanges: (result: TurnResult, extraWarnings?: readonly string[]) => void;
 
   // ── 할 일 목록 표면 ──────────────────────────────────────
@@ -119,7 +124,7 @@ export interface AiTurnRunner {
     session: AssistantSession,
     requestText: string,
     exec: (onEvent: (event: SessionEvent) => void, signal: AbortSignal) => Promise<TurnResult>,
-    runOpts?: { readonly autonomous?: boolean; readonly composerMode?: ComposerMode; readonly onSettled?: () => void },
+    runOpts?: { readonly autonomous?: boolean; readonly composerMode?: ComposerMode; readonly onSettled?: () => void; readonly deferApply?: boolean },
   ) => Promise<void>;
   /** LLM 오류 버블 + [설정 열기]/[재시도] 행. */
   readonly appendErrorWithRetry: (message: string, session: AssistantSession, requestText: string, runOpts?: { readonly autonomous?: boolean; readonly composerMode?: ComposerMode }) => void;
@@ -155,7 +160,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
     session: AssistantSession,
     requestText: string,
     exec: (onEvent: (event: SessionEvent) => void, signal: AbortSignal) => Promise<TurnResult>,
-    runOpts?: { readonly autonomous?: boolean; readonly composerMode?: ComposerMode; readonly onSettled?: () => void }
+    runOpts?: { readonly autonomous?: boolean; readonly composerMode?: ComposerMode; readonly onSettled?: () => void; readonly deferApply?: boolean }
   ): Promise<void> => {
     if (deps.surface.activeAbortController?.signal.aborted) retireActiveTurn?.();
     if (deps.surface.turnBusy) {
@@ -778,7 +783,12 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       const currentMapId = editorState.get().currentMapId ?? beforeProject.startMapId ?? null;
       // 승인 카드는 없다 — 쓰기가 있으면 그대로 적용하고, 복구는 되돌리기다(approvalPolicy 머리말).
       const applyMode = resolveProposalApplyMode({ callCount: result.proposedCalls.length });
-      if (runOpts?.composerMode !== "ask" && applyMode === "apply-now") {
+      // 검토 게이트 표면은 여기서 멈춘다 — 초안을 넘기고 적용은 그 표면의 「적용」이 한다.
+      if (runOpts?.deferApply === true && applyMode === "apply-now" && deps.holdProposal) {
+        deps.holdProposal(result.proposedCalls, assistantBubble);
+        settleBlueprintForTurnEnd(null);
+        deps.surface.setStatus("검토 대기");
+      } else if (runOpts?.composerMode !== "ask" && applyMode === "apply-now") {
         // 적용을 먼저 하고 그 결과를 기다린 다음에 로그를 붙인다 — 배치 검증·커밋 게이트가 적용을
         // 거부하면 store 는 그대로이므로 "적용됨 N건" 은 거짓이 된다(사유는 deps.applyProposal 이
         // 이미 ❌ 버블로 남긴다).

@@ -120,6 +120,8 @@ import {
   unregisterAiAssistantBridge,
   withdrawAiRequirement,
   type AiBridgeAuditEntry,
+  type AiBridgePendingProposal,
+  type AiBridgeSendOptions,
   type AiBridgeTurnResult,
 } from "@/editor/aiAssistantBridge";
 import { registerAiBootIntentTarget } from "@/editor/aiBootIntent";
@@ -1710,7 +1712,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const sendText = async (
     text: string,
     displayAs?: string,
-    opts?: { readonly replay?: boolean; readonly onSettled?: () => void },
+    opts?: { readonly replay?: boolean; readonly onSettled?: () => void; readonly deferApply?: boolean },
   ): Promise<void> => {
     const trimmed = text.trim();
     if (!trimmed) return;
@@ -1736,7 +1738,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     // 자율 드라이버 진입: agentMode "auto" 에서만 켠다(전송 시점 설정 기준).
     // "chat" 은 종전대로 턴 1개(수동 「계속」). opts.autonomous 는 세션 진입점의 명시 오버라이드(브리지/테스트).
-    const autonomous = loadAiConfig().agentMode === "auto";
+    // 검토 게이트를 가진 표면(DB 검토 오버레이)은 마일스톤 자동 적용도 받으면 안 된다 — 검토 전에
+    // 스토어가 바뀌면 「적용 전」이라는 화면의 말이 거짓이 된다. 그래서 defer 턴은 자율 드라이버를 끈다.
+    const autonomous = opts?.deferApply === true ? false : loadAiConfig().agentMode === "auto";
     // 계획 모드의 첫 턴은 계획만 세우고 멈춘다(세션이 강제). 활성 계획이 있는 채 「계속」이면 실행 턴이다.
     const activePlan = session.getWorkPlan();
     const planPreview = currentAutonomy().planOnly && (!activePlan || isWorkPlanComplete(activePlan));
@@ -1759,7 +1763,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     await executeTurn(session, trimmed, (onEvent, signal) =>
       // instruction: 사용자 발화 원문 — 의도 선언·툴 이름 언급·능력 승격은 이것만 본다.
       session.sendUserMessage(payload, onEvent, signal, { autonomous, instruction: trimmed, scope: turnScope, composerMode }),
-      { autonomous: autonomous && !planPreview, composerMode, onSettled: opts?.onSettled }
+      { autonomous: autonomous && !planPreview, composerMode, onSettled: opts?.onSettled, ...(opts?.deferApply === true ? { deferApply: true } : {}) }
     );
   };
 
@@ -1815,6 +1819,54 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     isLastReasoningBox: (node) => isLastReasoningBox(node),
   };
 
+  // `deferApply` 턴이 맡긴 초안. 적용도 폐기도 되지 않은 상태로, 브리지 표면이 사용자 확인을 받을 때까지
+  // 세션 draft 에 그대로 살아 있다. `before` 는 적용 전 스토어, `after` 는 세션 초안이다.
+  let deferredProposal: {
+    readonly calls: readonly ProposedCall[];
+    readonly assistantBubble: HTMLElement | null;
+    readonly before: Project;
+    readonly after: Project;
+    readonly summary: string;
+  } | null = null;
+
+  const holdProposal = (calls: readonly ProposedCall[], assistantBubble?: HTMLElement | null): void => {
+    const session = controller.session;
+    if (!session || calls.length === 0) return;
+    deferredProposal = {
+      calls,
+      assistantBubble: assistantBubble ?? null,
+      before: store.getCurrent(),
+      after: session.getProposedProject(),
+      summary: calls.map((call) => call.summary || call.name).join(" · "),
+    };
+    // 다음 턴의 기준 동기화(syncBaselineFromStoreIfClean)가 이 초안을 덮어쓰지 않게 대기 표시를 세운다.
+    proposalApi.pendingProposalMessage = { calls, assistantBubble: assistantBubble ?? null, summary: deferredProposal.summary };
+  };
+
+  const pendingProposalSnapshot = (): AiBridgePendingProposal | null => (deferredProposal
+    ? { callCount: deferredProposal.calls.length, summary: deferredProposal.summary, before: deferredProposal.before, after: deferredProposal.after }
+    : null);
+
+  const applyPendingProposal = async (): Promise<string | null> => {
+    const pending = deferredProposal;
+    if (!pending) return "적용할 변경이 없습니다.";
+    if (turnBusy) return "진행 중인 작업이 끝난 뒤에 적용하세요.";
+    const outcome = await applyProposal(pending.calls, pending.assistantBubble);
+    if (outcome !== "applied") return "변경을 적용하지 못했습니다 — 커밋 게이트가 반려했거나 기준 프로젝트가 바뀜습니다.";
+    deferredProposal = null;
+    return null;
+  };
+
+  const discardPendingProposal = (): void => {
+    const pending = deferredProposal;
+    if (!pending) return;
+    deferredProposal = null;
+    proposalApi.pendingProposalMessage = null;
+    controller.session?.rebaseProject(store.getCurrent());
+    appendBubble("system", `검토에서 변경 ${pending.calls.length}건을 버렸습니다 — 프로젝트는 그대로입니다.`);
+    setStatus("대기");
+  };
+
   // 한 턴 실행 공통부: 최초 전송(sendUserMessage)과 오류 후 수동 재시도(retryLastTurn)가
   // 같은 스트리밍/제안/상태 처리를 공유한다(도그푸딩 결함 ⑥). 본문은 aiTurnRunner.ts.
   const turnRunner = createAiTurnRunner({
@@ -1825,6 +1877,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     set projectIdentityId(value) { projectIdentityId = value; },
     get workPlanSurfaceState() { return workPlanSurfaceState; },
     applyProposal: (calls, assistantBubble) => applyProposal(calls, assistantBubble),
+    holdProposal: (calls, assistantBubble) => holdProposal(calls, assistantBubble),
     noteNoChanges: (result, extraWarnings) => noteNoChanges(result, extraWarnings),
     beginWorkPlanTurn: (opts) => beginWorkPlanTurn(opts),
     settleWorkPlanTurn: () => settleWorkPlanTurn(),
@@ -3299,7 +3352,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     return undefined;
   };
   registerAiAssistantBridge({
-    send: async (text: string): Promise<AiBridgeTurnResult> => {
+    send: async (text: string, sendOptions?: AiBridgeSendOptions): Promise<AiBridgeTurnResult> => {
       const trimmed = text.trim();
       const requestedConversation = conversationId;
       const entryStatus = { ready: true, turnBusy, configReady: isAiConfigReady(loadAiConfig()),
@@ -3333,7 +3386,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
       try {
         let result: AiBridgeTurnResult | undefined;
-        await sendText(trimmed, undefined, { onSettled: () => {
+        await sendText(trimmed, undefined, { ...(sendOptions?.deferApply === true ? { deferApply: true } : {}), onSettled: () => {
           const audit = collectAudit();
           result = {
             ok: true,
@@ -3345,6 +3398,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
             harness: controller.session?.getHarnessSnapshot() ?? null,
             lastAssistantText: lastAssistantFromAudit(),
             runOutcome: controller.session?.getRunOutcome() ?? null,
+            pendingProposal: pendingProposalSnapshot(),
           };
         } });
         if (!result) throw new Error("AI turn ownership retired before publication");
@@ -3367,6 +3421,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }),
     getAudit: () => collectAudit(),
     getHarness: () => controller.session?.getHarnessSnapshot() ?? null,
+    applyPendingProposal: () => applyPendingProposal(),
+    discardPendingProposal: () => discardPendingProposal(),
+    getPendingProposal: () => pendingProposalSnapshot(),
     withdrawRequirement: (action) => {
       if (disposed || turnBusy) return false;
       const session = controller.session;

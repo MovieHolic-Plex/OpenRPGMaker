@@ -176,6 +176,18 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   // 끝내지 않는다.
   const aiBar = createDatabaseAiBar({
     context: () => ({ tab: getDatabaseActiveTab(), record: selectedDatabaseRecordRef() }),
+    deps: {
+      // 검토 카드의 「이동 →」. 컬렉션 이름은 모델이 아니라 diff 가 만든 것이지만, 탭으로 넘기기 전에
+      // 실제 프로젝트 키인지 확인한다 — 없는 탭으로 전환하면 본문이 빈 화면이 된다.
+      navigate: (collection, recordId) => {
+        const database = store.getCurrent().database as unknown as Record<string, unknown>;
+        if (!(collection in database)) return;
+        const target = collection as DatabaseCollection;
+        setSelectedRecordId(target, recordId, { reveal: true });
+        switchDatabaseActiveTab(target as DatabaseTab, body);
+        refreshDatabasePanel(body);
+      },
+    },
   });
   const aiToggleButton = aiBar.toggle;
   // 현재 위치 브레드크럼 — 레일에서 한 그룹만 펼쳐지므로 "어디를 편집하고 있나" 는 헤더가

@@ -1536,10 +1536,55 @@ n=3 / 484.6 이 나온다 — 리스트로 모아서 세라. 이 표의 `.db-lif
 Tests: `test/aiDatabaseGeneration.test.ts`, `test/generatedArtworkAlpha.test.ts`,
 `test/imageGenerationClient.test.ts`.
 
-### AI 어시스턴트 바 — 진행·결과가 바 안에 보인다 (2026-09-03)
+### AI 검토 오버레이 — 레코드 카드로 before → after 를 보고 적용한다 (2026-09-15)
 
-헤더 `AI 어시스턴트`(`database-ai-toggle`) 가 여는 바는 `src/editor/panels/databaseAiBar.ts` 가 소유한다
-(`databaseModal.ts` 는 `createDatabaseAiBar` 를 부르고 `element`/`toggle` 을 놓기만 한다).
+헤더 `AI 어시스턴트`(`database-ai-toggle`) 가 여는 것은 **DB 창 안을 덮는 검토 오버레이**다.
+`src/editor/panels/databaseAiBar.ts` 가 소유하고, `databaseModal.ts` 는 `createDatabaseAiBar` 를 부르고
+`element`/`toggle` 을 놓으며 `navigate` 만 주입한다. 목업·결정 근거는
+`docs/2026-09-15-db-ai-review-overlay-mockup.html`.
+
+- **검토 게이트는 `deferApply` 한 줄로 생긴다.** 오버레이가
+  `sendAiAssistantMessage(text, { deferApply: true })` 로 보내면 `aiTurnRunner` 의 apply-now 분기가
+  `deps.holdProposal` 로 갈라져 **스토어를 건드리지 않고** 초안을 패널이 든다. 결과의
+  `pendingProposal{ before, after, callCount }` 가 카드의 재료이고, 적용·폐기는
+  `applyAiAssistantProposal()` / `discardAiAssistantProposal()` 다. 적용은 데크와 **같은** 커밋 게이트
+  (`applyProposal` → `applyProposedProject`)를 지나므로 내역·스냅샷·되돌리기가 그대로 붙는다. 그 사이에
+  기준 프로젝트가 바뀌었으면 `stale-base` 로 반려되고 사유가 상태줄에 남는다. `deferApply` 턴은
+  마일스톤 자동 적용도 끈다(`autonomous=false`) — 안 그러면 「적용 전」이라는 화면의 말이 거짓이 된다.
+  초안을 돌려주지 않는 호출자(MCP·외부 전송)에겐 종전대로 즉시 적용 + 「바꾼 것 N개」 + 되돌리기다.
+- **Pi 이관은 아니다.** Pi 병합기는 DB 의 **신규 레코드만** 얹는다
+  (`mapBundle.ts createdDatabaseEntries` → `createdById`) — 기존 레코드 수정(HP 튜닝)은 병합에서 사라진다.
+  DB 표면을 Pi 로 옮기려면 DB 스코프 병합 경로를 먼저 만들어야 한다.
+- **카드 한 장 = 레코드 하나.** `diffDatabaseRecords`(`src/project/databaseRecordDiff.ts`)가 두 프로젝트의
+  `database` 를 컬렉션·레코드·필드 경로로 비교하고(중첩 2단까지 폄 — `stats.maxHp` 같은 점 경로),
+  `databaseAiChangeCards.ts` 가 그린다: 썸네일(적=`monsterResourceId` · 액터=`faceResourceId` ·
+  아이템=`iconResourceId`→`imageResourceId`) + 이름·id·동사 배지(변경/추가/삭제) + 필드별 `before → after`
+  + 수치 델타 칩. 참조 id(드롭 아이템 등)는 `databaseRecordNameById` 로 사람 말이 된다
+  (실측: 「드롭 아이템 없음 → 회복약」). changeLedger 를 안 쓰는 이유: 그쪽은 `이름: 이전 → 이후`
+  **문장**이라 썸네일 해석·델타 계산·레코드 점프에 필요한 신원과 원값이 없다. 영역 라벨은
+  `DATABASE_AREA_LABELS` 를 공유한다(changeLedger 에서 export).
+- **추가 레코드는 필드를 6개만 보이고 「이동」이 없다.** 새 레코드는 모든 필드가 「바뀐 것」이라 다 쓰면
+  아이템 하나가 21줄을 먹었고(실측), 이름은 카드 머리가 이미 말한다. 이동을 뺀 이유도 실측이다:
+  아직 적용되지 않은 id 는 현재 프로젝트에 없어서 선택이 첫 레코드로 미끄러졌다(「동검」 → 「회복약」).
+- **그림이 바뀔 때만 두 장.** `*ResourceId`·`*CharsetId` 필드가 바뀐 레코드는 「지금 / 적용 후」를
+  그리고(`database-ai-card-gfx`), 스탯만 바뀌면 썸네일 한 장이다. 삭제 카드는 그림 없이 슬림(`is-slim`).
+- **검토가 걸려 있는 동안에는 새 요청을 받지 않는다** — 초안이 덮여 쓰이면 사용자가 본 카드와 실제
+  적용되는 내용이 갈라진다. 토스트로 「적용하거나 버린 뒤」를 안내한다.
+- **상태줄 단계**(`data-phase`): thinking → working → **review** → done/error. review 에서는 입력·제안·
+  되돌리기를 숨기고 적용·버리기만 남긴다(검토 중에는 되돌릴 것이 없다). 적용 뒤에야 되돌리기가 나온다.
+- **「바꾼 것 N개」는 이 턴이 *실행한* 쓰기 툴 수이지 적용된 수가 아니다.** 적용 여부의 유일한 근거는
+  `DatabaseAiTurnSummary.applied` 이고 되돌리기 단추도 그 값으로만 붙는다. 검토 게이트 턴이 초안을 돌려주지
+  않으면(`pendingProposal` 없음) 쓰기 툴이 돌았어도 적용된 것이 없다 — `deferApply` 는 스토어를 건드리지
+  않으므로 그때의 사실은 「프로젝트는 그대로」다. 사유는 `runOutcome.execution` 을 사람 말로 옮긴다
+  (`budget-exhausted`·`awaiting-user`·`cancelled`, `failed`/`blocked` 는 세션의 마지막 상태 문장).
+  **실측 2026-09-15 라이브:** 슬라임 maxHp 300·exp 40 요청에서 쓰기 툴이 성공 3건 · 실패 6건으로 찍히고 턴이
+  예산 소진으로 끝나 초안이 버려졌다 — 저장소는 그대로(`STORE_CHANGED {maxHp:false,exp:false}`, maxHp 78)
+  였는데 예전 판정은 「완료 · 바꾼 것 3개 — 화면에 바로 반영됐어요」라고 말했다. 지금은 빨간 상태 +
+  되돌리기가 숨겨진다. 증거 `.omo/evidence/db-ai-review/live-03-error.png`(사유 문구의 오타는 그 뒤 교정 — 문장 내용은 같다).
+
+#### 예전 인라인 바 (2026-09-03) — 이 절이 위 오버레이로 대체됐다
+
+아래는 배경 기록이다. 세션·풋터·제안 칩 계약은 그대로 살아 있고, 레이아웃과 적용 정책만 바뀌었다.
 
 - **왜 다시 만들었나(실측):** 예전 바는 `sendAiAssistantMessage` 를 fire-and-forget 으로 던지고 토스트
   「채팅 패널에서 제안을 확인하세요」만 남겼다. DB 창은 모달이라 채팅 패널이 **뒤에 가려지고**, AI 가
@@ -1550,8 +1595,8 @@ Tests: `test/aiDatabaseGeneration.test.ts`, `test/generatedArtworkAlpha.test.ts`
   바꾼 것(쓰기 툴 요약, 실패는 「실패 —」 접두어) → 답변(마크다운 강조 제거) → 행동(중단·되돌리기·채팅에서
   이어가기·지우기). 읽기 툴(`find_tools`·조회)은 「바꾼 것」에서 뺀다 — 브리지 감사 항목이 `mode`/`ok` 를
   실어 준다(`aiChatPanel.ts collectAudit`).
-- **되돌리기는 `undoMapEdit`** 이고 라벨에 되돌릴 항목 이름을 적는다(승인 게이트가 없으므로 복구 경로가
-  이것이다 — `approvalPolicy.ts`).
+- **적용 뒤 되돌리기는 `undoMapEdit`** 이고 라벨에 되돌릴 항목 이름을 적는다. 전역 승인 게이트는 여전히
+  없지만(`approvalPolicy.ts`), **이 표면만은 `deferApply` 로 자기 게이트를 갖는다**(위 참조).
 - 바에 「실패 — 'upsert_enemy' 커밋 거부(무결성 오류)」가 찍히던 원인은 모델의 자리표시 id(`skill_0001`)였고,
   지금은 `upsert_enemy` 가 사유를 돌려주고 요약이 첫 위반을 싣는다(`openwiki/editor-ai-tools.md` 2026-09-03).
 - **컨텍스트 풋터는 그대로다:** `[컨텍스트] 에디터 전체 요청 · 현재 화면: 데이터베이스 DB 탭 <라벨>,
@@ -1560,14 +1605,29 @@ Tests: `test/aiDatabaseGeneration.test.ts`, `test/generatedArtworkAlpha.test.ts`
 - **제안 칩은 탭·선택 레코드로 만든다**(`databaseAiSuggestions`): 레코드 탭이면 「선택 레코드 다듬기」·
   「비슷한 것 하나 더」, 그룹별 밸런스 문장 하나(파티=성장 곡선, 몬스터=난이도, 시스템=스위치·변수…),
   「이 탭 점검」. 개요처럼 레코드가 없으면 「다음 할 일」. 범용 맵·이벤트 문장은 없다.
-- **레이아웃:** `ai-bar.css`(index.css 에서 studio-v2 **뒤**에 읽는다 — light-theme 의 옛 오버라이드는 삭제).
-  창(`@container db-modal`) 폭 1100px 이상에서 턴이 보이면 두 열(왼쪽 입력·제안, 오른쪽 턴,
-  `grid-template-rows: auto 1fr`), 그 아래는 한 열. 턴 상자는 `min(30vh, 260px)`, 창 높이 820px 이하면
-  150px. 행이 있는 목록은 `min-height: 0`(studio-v2) — 예전 220px 최소 높이 때문에 바가 열린 1024×900
-  에서 목록이 1fr 행을 넘쳐 발 단추가 행 위에 올라탔다.
-- **입력에서 Escape 는 바만 접는다**(stopPropagation) — 문서 층 모달 스택이 받으면 DB 창이 닫혔다.
-- Tests: `test/databaseAiBar.test.ts`(happy-dom: 제안·풋터·턴 요약·DOM 계약·폴링·되돌리기·Escape),
-  `test/databaseModalAiConnection.test.ts`(모달 통합), e2e `test/e2e/qa-db-ai-dock.spec.ts`.
+- **레이아웃(오버레이 이후):** `ai-bar.css`(index.css 에서 studio-v2 **뒤**에 읽는다). 오버레이는
+  `.database-modal-window` 기준 `position: absolute` 이고, 위·아래를 `--database-ai-top` /
+  `--database-ai-bottom` 이 잡는다 — 패널이 **열 때마다 헤더와 발 단추 높이를 실측**해 넣는다
+  (도크·최대화·좁은 폭에서 둘 다 바뀐다. 실측 1440×900: 헤더 44px · 발 단추 52px · 오버레이 57→835).
+  **발 단추를 덮지 않는 것은 장식이 아니다:** `.database-modal-footer` 가 같은 z 층에서 오버레이 위에
+  그려져 결정 단추를 잡아먹었다(실측: 푸터 835→887 · 적용 817→845 — `elementFromPoint` 가 푸터를
+  돌려줬다). 닫기·저장 길도 검토 중에 열려 있어야 한다. 패널은 `max-width: 880px`, **카드 목록만**
+  스크롤하고 결정 단추 줄은 항상 보인다. 답변은 `flex: 0 0 auto` + `max-height: 84px` — 답변을 줄이면
+  글자가 반줄로 잘렸다(실측). **행동 줄에 sticky 금지** — 턴 상자가 스크롤하던 시절의 `bottom: -10px` 가
+  남아 `overflow: hidden` 인 상자 밖으로 나가 같은 단추를 또 잘랐다. 창 높이 820px 이하면 썸네일 88→64px.
+- **입력에서 Escape 는 오버레이만 접는다**(stopPropagation) — 문서 층 모달 스택이 받으면 DB 창이 닫혔다.
+- Tests: `test/databaseRecordDiff.test.ts`(구조 diff·델타·그림 필드·추가/삭제·상한),
+  `test/databaseAiChangeCards.test.ts`(카드 DOM·썸네일·두 장 그림·슬림 삭제·추가 카드 이동 없음·값 표기),
+  `test/databaseAiBar.test.ts`(제안·풋터·턴 요약·DOM 계약·폴링·Escape **+ 검토→적용/버리기·이동·
+  검토 중 전송 차단**), `test/databaseModalAiConnection.test.ts`(모달 통합), e2e `test/e2e/qa-db-ai-dock.spec.ts`.
+  브라우저 재현: `QA_BASE_URL=http://127.0.0.1:<port> node scripts/qa/db-ai-review.mjs` — 모델을 부르지
+  않고 `send` 만 모킹해 실제 DB 창에서 카드·이동·적용·버리기·1024×768 을 겁는다(기하 실측 포함).
+  증거: `.omo/evidence/db-ai-review/*.png`(추적됨 — `output/` 은 gitignore 라 증거가 남지 않는다).
+- **e2e `qa-db-ai-dock.spec.ts` 의 M7 케이스는 기준선부터 빨간불이다(이 개편 전·후 동일).** 실측:
+  23행 `db-tab-enemies` 클릭이 30초 타임아웃 — 레일의 몬스터 그룹이 접혀 있어 단추가 `hidden` 이다.
+  AI 코드가 돌기 **전**에 죽는다. 고치려면 탭 전환을 클릭 대신 `switchDatabaseActiveTab` 로 해야 한다
+  (`scripts/qa/db-ai-review.mjs` 가 그 방식을 쓴다). M8 두 케이스는 통과하되, **같은 dev 서버를
+  QA 스크립트가 직전에 몰면 오염돼 플래키하게 실패한다**(실측 1회) — 깨끗한 상태에서 다시 재어라.
   증거: `.omo/evidence/ai-surfaces-ux/{before,after}/`(`scripts/capture-ai-surfaces.mjs`).
 
 ### AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)

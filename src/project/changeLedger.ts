@@ -97,7 +97,7 @@ const FIELD_LABELS: Readonly<Record<string, string>> = {
   markdown: "본문",
 };
 
-const DATABASE_AREA_LABELS: Readonly<Record<string, string>> = {
+export const DATABASE_AREA_LABELS: Readonly<Record<string, string>> = {
   actors: "액터",
   classes: "클래스",
   skills: "스킬",
