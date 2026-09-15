@@ -35,6 +35,7 @@
 @import "./tabs-b-assistant-panel/19-assistant-cards.css" layer(database);
 @import "./tabs-b-assistant-panel/20-team-board.css" layer(database);
 @import "./tabs-b-assistant-panel/21-team-panel.css" layer(database);
+@import "./tabs-b-assistant-panel/22-team-work.css" layer(database);
 @import "./skill-item-visuals.css" layer(database);
 @import "./record-thumbs.css" layer(database);
 @import "./character-graphics.css" layer(database);

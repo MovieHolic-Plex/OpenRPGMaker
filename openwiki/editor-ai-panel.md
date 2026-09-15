@@ -1,5 +1,39 @@
 # Editor AI Panel & Tools
 
+## 조수 데크 「대화|작업」 탭 + 스튜디오 상세 — 팀원이 어디서 일하는지 한 곳 (2026-09-14, A안)
+
+계획서: `docs/2026-09-14-team-panel-plan.html` + A안 목업 `docs/2026-09-14-team-panel-plan-assets/proposed-a/`.
+1단계(좌하단 독립 팀 데크)는 「AI 가 어디서 일하는지」를 두 패널로 갈랐고, 스튜디오 모드에서는 셸 뒤에 묻혀
+보이지도 않았다. A안은 팀 데크를 **조수 데크 안 탭**으로 합치고, 스튜디오 덱의 「작업」 탭이 같은 상태를
+**상세**로 그린다. 단독 `/pi` 도 같은 자리다 — 「팀/단독」 구분이 사용자에게 사라진다.
+
+| 조각 | 파일 | 계약 |
+|---|---|---|
+| 과정 로그 | `src/ai/piAgent/teamBoardState.ts` | `TeamBoardAgent.log: TeamAgentLogEntry[]`(kind `task·turn·tool·text·error·review·done`) + `droppedLog`, 상한 `TEAM_AGENT_LOG_CAP`=200. 툴 행은 `tool_start` 에서 `ok:null` 로 열리고 같은 id 의 `tool_end` 가 제자리에서 닫는다. **`tool.args?: string`** — `formatToolArgs(event.args)`(객체는 `k: v · k: v`, 200자 상한)가 `tool_start` 에서 붙고 닫혀도 유지된다. 상세 보기만 그린다. |
+| 버스 | `src/ai/piAgent/teamActivity.ts` | 보드 상태(`publishTeamActivity`) · 중지 슬롯(`setTeamStopHandler`/`requestTeamStop`) · **검토 액션 슬롯**(`setTeamReviewActions`/`currentTeamReviewActions`: `apply·discard·openReport?`). `runPiCommand` 가 「검토 대기」 게시 **직전**에 로그 카드 `setReview` 와 **같은 클로저**를 등록하고, 적용·버리기·새 실행 시작에서 null 로 지운다. `openReport` 는 `openWideChangeViewer(reviewInput)` — 2단계 보고서 모달의 진입점. |
+| 작업 페인 | `src/editor/panels/aiTeamWorkPane.ts` | `createTeamWorkPane({ detail? })` → `section.ai-team-work[data-detail]`: 빈 안내 · `.ai-team-work-body[.is-single]`(팀원 열 `ul` + 과정 열) · 검토 스트립(`ai-team-work-review`: 버리기 · 보고서 열기 · 적용, 버스 액션이 없으면 disabled) · 푸터(합계·보고·오류·적용 문장). **에이전트가 1명이면 `is-single`** — 팀원 열을 숨기고 과정만(목업 a3). 팀원 클릭은 고정, 새 실행(task 가 바뀜)이면 해제. |
+| 과정 열 | `src/editor/panels/aiTeamTranscript.ts` | `createTeamTranscript({ detail? })`. 툴 행은 조수 작업 타임라인과 같은 어휘(`ai-act-chip/label/sum/status`, `aiToolLabels`). detail 이면 `ai-team-tx-args` 인자 줄 + 요약 줄바꿈 허용. 같은 팀원이면 새 행만 덧붙이고 닫힌 툴 행은 제자리 교체. |
+| 조수 데크 | `aiChatPanel.ts` | 레일 아래 `div.ai-work-tabs[role=tablist]`(`ai-work-tab-chat` + 배지 `ai-work-tab-badge`, `ai-work-tab-work` + 인원 `ai-work-tab-count` + 점 `.ai-work-tab-live[data-state]`). 실행 상태가 null 이면 탭 줄은 hidden. 「작업」이면 `.ai-chat-body[hidden]` + 페인 표시 + `panel.is-work-tab`. 컴포저는 항상 아래(DOM 순서: 레일 → 팀 막대 → 탭 → 채팅 본문 → 작업 페인 → 결과 줄 → 컴포저). |
+| 스튜디오 | `aiStudioShell.ts` | 셸이 버스를 직접 구독한다. 보드가 있으면 덱 「작업」 = `createTeamWorkPane({ detail: true })`(WorkPlan 도 있으면 `.ai-studio-work-split` 좌: 계획 우: 보드), 없으면 기존 WorkPlan 체크리스트. 배지 = 실행 중 인원(없으면 인원, 없으면 `done/total`). 보드가 **처음** 나타날 때만 「작업」으로 전환(setWorkPlan 과 같은 규칙). **덱 높이가 기본(236)이면 보드가 뜰 때 420 으로 한 번 키우고**(`applySplitterSize("deck", 420, false)` — 저장 안 함), 보드가 사라질 때 우리가 키운 값 그대로면 기본으로 되돌린다; 드래그해 둔 높이는 손대지 않는다. 조수 패널은 `is-studio` 에서 데크 탭 줄을 숨기고 탭을 「대화」로 되돌린다. |
+| 스타일 | `src/styles/database/tabs-b-assistant-panel/22-team-work.css` + 18 | 토큰만, `!important` 0. `.ai-deck > .ai-team-work { height: min(700px, 68vh) }` → 900 호스트 612 · 1080 호스트 700(목업 계약). `.ai-studio-deck-pane .ai-team-work { height: 100% }`. 18 의 유휴 컴팩트 폭(480) 규칙에 `:not(.is-work-tab)` — 검토 대기는 턴이 없는 유휴라서 그 순간 팀원 열이 480 으로 접히던 것을 막는다(QA 실측). |
+
+**자동 전환·배지 규칙(조수 데크, 스튜디오 밖):** 버스 phase 가 비실행(null·종결) → 실행(준비·실행 중·적용 중)으로
+바뀌면 「작업」으로 전환한다. 실행 → 비실행(답 도착)인데 「작업」을 보고 있었으면 「대화」에 배지 1 — 대화 탭을
+누르면 지운다. 상태가 null 이 되면 「대화」로 돌린다. 스튜디오에서는 전환·배지를 만들지 않는다(덱이 그린다).
+
+**걷어낸 것(1단계 셸):** `aiTeamDeck.ts`(레일·알약·좌측 앵커·폭 조절·자동 열림·z-order) · 조수 레일 「팀」 토글 ·
+`aiPanelLayout` 의 `oprn:ai-team-deck-*` 저장 · 22-team-deck.css 의 컨테이너 쿼리 컴팩트 규칙 · `editor.ts` 마운트.
+`aiDeckMoveChrome` 의 `anchorX/cssVars/store/hint` 매개화는 기본값이 조수 현행이라 남겨 두었다(`test/aiDeckMove.test.ts` 20건).
+
+검증: `test/piAgentTeamBoardLog.test.ts`(로그·인자 계약) · `test/aiTeamWorkPane.test.ts`(happy-dom: 빈 안내·순서·고정·is-single·
+검토 스트립 버스 액션·상세 인자·새 실행 고정 해제) · `test/aiStudioShell.test.ts`(버스 게시 → 「작업」 상세 페인·배지) ·
+`scripts/qa/ai-work-tab-qa.mjs`(dev 서버에서 실제 리듀서 상태를 게시해 1440/1920 — 팀 실행·검토 스트립·단독 실행·스튜디오 상세 4장,
+`output/evidence/ai-work-tab/SUMMARY.md` 부터 읽을 것). 버스에는 `page.evaluate` 동적 import 로 게시한다 — QA 용 코드 훅이 필요 없다.
+**단, 베어 경로 `/src/ai/piAgent/teamActivity.ts` 를 import 하면 안 된다**: HMR 로 무효화된 모듈은 앱이 `?t=…` 가 붙은 URL 로
+import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게시는 됐는데 구독자가 안 불려 DOM 이 빈 상태). QA 는 서빙되는
+`aiChatPanel.ts` 소스에서 import 지정자를 뽑아 그 URL 로 import 한다(`resolveAppModules`). 검토 액션도 같은 방법으로 세팅해 스트립
+버튼을 실제로 누른다. 게시만으로는 패널이 유휴(`is-assistant-idle`)라 실제 턴과 폭이 다를 수 있다 — 위 `:not(.is-work-tab)` 이 그 차이를 없앤다.
+
 ## 조수 채팅은 Pi 하나다 — 세션 경로를 걷어냈다 (2026-09-11)
 
 조수 세션이 deprecated 되면서 «어느 루프로 가는가» 를 답하던 경로 enum(`session` · `pi-agent`)이
