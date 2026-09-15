@@ -5,7 +5,7 @@ import { modelForRole } from "@/ai/modelRoles";
 //
 //   /pi <지시>              현재 맵 범위, 에이전트 하나
 //   /pi map_a,map_b <지시>  맵마다 에이전트 하나씩 병렬
-//   /pi team <지시>         팀장이 맵을 나눠 시공·검수 에이전트를 띄운다
+//   /pi team <지시>         팀장이 맵을 나눠 시공·검수 에이전트를 띄운다. 후보는 프로젝트 전체, 기본 대상은 현재 맵
 //   /pi team map_a,map_b <지시>  팀장이 쓸 후보 맵을 제한
 //
 // 이 파일은 패널의 나머지와 최소 접점(말풍선·상태 표시·로그 붙이기)만 공유한다 — 기존 세션 루프는 건드리지 않는다.
@@ -47,6 +47,8 @@ export const PI_COMMAND_PREFIX = "/pi";
 export interface ParsedPiCommand {
   readonly mode: PiAgentMode;
   readonly mapIds: readonly string[];
+  /** 사용자가 보고 있는 맵. 팀장이 「여기」를 해석하는 기준 — 후보(mapIds)와 별개다. 비우면 실행 시 패널의 현재 맵으로 채운다. */
+  readonly currentMapId?: string | null;
   readonly task: string;
 }
 
@@ -68,16 +70,19 @@ export function parsePiCommand(text: string, project: Project, currentMapId: str
     rest = rest.slice(4).trim();
   }
   const fallback = mode === "team" ? [] : currentMapId ? [currentMapId] : [];
-  if (!rest) return { mode, mapIds: fallback, task: "" };
+  if (!rest) return { mode, mapIds: fallback, currentMapId, task: "" };
   const [first = "", ...others] = rest.split(/\s+/);
   const mapIds = splitMapList(first, project);
-  if (mapIds && others.length > 0) return { mode, mapIds, task: others.join(" ") };
-  return { mode, mapIds: fallback, task: rest };
+  if (mapIds && others.length > 0) return { mode, mapIds, currentMapId, task: others.join(" ") };
+  return { mode, mapIds: fallback, currentMapId, task: rest };
 }
 
-/** 슬래시 없는 평문 지시 — 컴포저가 고른 실행 모드(팀 비트)를 그대로 싣는다. */
+/**
+ * 슬래시 없는 평문 지시 — 컴포저가 고른 실행 모드(팀 비트)를 그대로 싣는다. 팀은 후보를 비워 두되(팀장이 맵을 나눈다)
+ * 현재 맵은 기본 대상으로 함께 보낸다 — 사용자는 보통 «지금 보고 있는 맵» 을 고치라고 말한다(실측 2026-09-15).
+ */
 export function plainPiCommand(text: string, mode: PiAgentMode, currentMapId: string | null): ParsedPiCommand {
-  return { mode, mapIds: mode === "team" ? [] : currentMapId ? [currentMapId] : [], task: text.trim() };
+  return { mode, mapIds: mode === "team" ? [] : currentMapId ? [currentMapId] : [], currentMapId, task: text.trim() };
 }
 
 /**
@@ -156,6 +161,9 @@ export async function runPiCommand(
   const routineEdit = options.routineEdit === true && !readOnly && !team
     && command.mapIds.length === 1 && Boolean(base.maps[command.mapIds[0]!]);
   const groups = team || options.planOnly ? [command.mapIds] : command.mapIds.length > 0 ? command.mapIds.map((id) => [id]) : [[] as string[]];
+  // 사용자가 보고 있는 맵 — 팀장의 「여기」. 명령이 못 실었으면(옛 호출자) 패널의 현재 맵으로 채운다.
+  const currentMapId = command.currentMapId ?? surface.getCurrentMapId();
+  const here = currentMapId && base.maps[currentMapId] ? { currentMapId } : {};
 
   // 실행 결과 4축 — 세션 경로(assistantSession.getRunOutcome)와 같은 deriveRunOutcome 을 쓴다.
   // 실행부는 사실만 정하고 판정(목표)은 수용 검사가 소유하므로 Pi 경로에선 unassessed 가 정직한 값이다.
@@ -252,7 +260,7 @@ export async function runPiCommand(
       push({ type: "agent_spawn", agentId: "ultrabrain-plan", role: "orchestrator", mapId: null, mapName: null, task: command.task, label: "Ultrabrain · 계획" });
       const planned = await runPiAgentViaCompanion({
         mode: "single", provider: brain.providerId!, model: brain.model,
-        task: `${PLAN_ONLY_PREFIX}${command.task}`, mapIds: command.mapIds, project: base,
+        task: `${PLAN_ONLY_PREFIX}${command.task}`, mapIds: command.mapIds, ...here, project: base,
         readOnly: true, maxTurns: options.maxTurns, thinkingLevel: brain.reasoningEffort,
       }, { signal: surface.signal, onEvent: event => {
         if (event.type === "heartbeat") return;
@@ -275,6 +283,7 @@ export async function runPiCommand(
         ...(!options.planOnly ? { roleModels: { deep, writer: modelForRole(config, "writer") } } : {}),
         task: options.planOnly ? `${PLAN_ONLY_PREFIX}${command.task}` : executionTask,
         mapIds,
+        ...here,
         project: base,
         ...(readOnly ? { readOnly: true } : {}),
         ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),

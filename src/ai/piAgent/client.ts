@@ -47,7 +47,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   });
   const reader = response.body.getReader();
   const text = new TextDecoder();
-  // 워치독: 침묵은 모델이 생각하는 것이 아니라(그건 heartbeat 가 묻는다) 워커가 죽은 것이다. 끊지 않으면 10분 상한까지 「실행 중」이 떠 있는다.
+  // 워치독: 침묵은 모델이 생각하는 것이 아니라(그건 heartbeat 가 묻는다) 워커가 죽은 것이다. 끊지 않으면 실행 상한(PI_AGENT_DEFAULT_TIMEOUT_MS, 3000초)까지 「실행 중」이 떠 있는다.
   const staleMs = options.staleMs ?? PI_AGENT_STALE_MS;
   let stale = false;
   let lastLineAt = Date.now();

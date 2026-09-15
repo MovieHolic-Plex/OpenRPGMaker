@@ -23,6 +23,11 @@ export interface PiAgentRequest {
   readonly task: string;
   /** 에이전트가 소유하는 맵. 비우면 프로젝트 전체가 작업 범위다. */
   readonly mapIds: readonly string[];
+  /**
+   * 사용자가 지금 보고 있는 맵. 팀장이 「여기」「이 맵」을 해석하는 기준이자, 다른 맵을 지목하지 않은 지시의 기본 대상이다.
+   * 후보(mapIds)를 제한하지 않는다 — 실측(2026-09-15) 팀 모드가 이걸 버려 팀장이 43맵 중 엉뚱한 마을에 배정했다.
+   */
+  readonly currentMapId?: string;
   readonly project: Project;
   /** 기본 시스템 프롬프트를 대체한다(테스트·CLI 용). */
   readonly systemPrompt?: readonly string[];
@@ -34,7 +39,7 @@ export interface PiAgentRequest {
   readonly team?: PiTeamSpec;
   /** 읽기 전용 실행: 쓰기 툴을 주지 않고 조회·보고만 한다(자율성 「읽기 전용」·계획 턴). */
   readonly readOnly?: boolean;
-  /** 한 실행의 시간 상한(ms). 비우면 런타임 기본 10분. 팀은 하위 에이전트마다 같은 값이 걸린다. */
+  /** 한 실행의 시간 상한(ms). 비우면 런타임 기본 PI_AGENT_DEFAULT_TIMEOUT_MS(3000초). 팀은 하위 에이전트마다 같은 값이 걸린다. */
   readonly timeoutMs?: number;
 }
 export interface PiAgentStats {
@@ -46,6 +51,14 @@ export interface PiAgentStats {
 }
 
 export type PiTeamRoleId = "orchestrator" | "builder" | "reviewer";
+
+/**
+ * 한 에이전트 실행의 기본 시간 상한. 팀장·시공·검수가 각자 이 상한을 따로 가진다(요청의 timeoutMs 가 있으면 그 값).
+ * 처음 10분이었다 — 실측이 19~213초일 때 잡은 값이다. 기존 마을 맵을 손보는 팀 실행은 시공 팀원이 도구 거부를
+ * 우회하느라 한 맵에 100초 넘게 쓰고, 검수 → 수정 → 재검수까지 가면 10분이 팀장을 먼저 끊었다(2026-09-15).
+ * 유휴 끊김은 heartbeat 가 따로 막으므로 이 값은 «정말 끝나지 않는 실행» 만 잡으면 된다.
+ */
+export const PI_AGENT_DEFAULT_TIMEOUT_MS = 3_000 * 1_000;
 
 /**
  * 워커가 heartbeat 줄을 쓰는 간격. 진행 이벤트는 턴·툴 경계에만 나오므로 모델이 생각하는 동안 와이어가
