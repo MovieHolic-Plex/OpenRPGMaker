@@ -47,7 +47,12 @@ type ScopedTarget = { readonly target: AcceptanceTarget; readonly region?: Accep
 /** Finite authored changes, not arbitrary paths or executable checks. */
 export type ProjectPreservationChange =
   | { readonly kind: "projectTitle" }
-  | { readonly kind: "itemName" | "itemPrice" | "itemAddition"; readonly itemId: ItemRecord["id"] };
+  | { readonly kind: "itemName" | "itemPrice" | "itemAddition"; readonly itemId: ItemRecord["id"] }
+  // DB 레코드 필드 허용 — "다른 건 건드리지 마" 를 DB 편집에도 증명 가능하게 한다.
+  // 실측(2026-09-16): 허용 목록에 DB 가 없어 보존 항목을 닫을 수 없었고, 모델이 repair_acceptance
+  // 를 반복하다 라운드 예산을 소진해 초안이 검토에 닿지 못했다.
+  | { readonly kind: "dbRecordValues"; readonly collection: DbCollection; readonly recordId: string;
+      readonly fields: Readonly<Record<string, string | number | boolean>> };
 export type ProjectAcceptanceCriterion =
   | { readonly kind: "wikiDeclaration"; readonly documentId: string; readonly combatMode: WikiCombatMode; readonly sourceQuote: string }
   | { readonly kind: "projectTitle"; readonly title: Project["meta"]["title"] }
@@ -154,12 +159,28 @@ export function parseAcceptanceRegion(value: unknown): AcceptanceRegion | null {
     || value.w === 0 || value.h === 0) return null;
   return { x: value.x, y: value.y, w: value.w, h: value.h };
 }
+function dbFields(value: unknown): Record<string, string | number | boolean> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const fields: Record<string, string | number | boolean> = {};
+  for (const [path, expected] of Object.entries(value as Record<string, unknown>)) {
+    if (path.trim().length === 0) return null;
+    if (typeof expected !== "string" && typeof expected !== "number" && typeof expected !== "boolean") return null;
+    fields[path] = expected;
+  }
+  return Object.keys(fields).length > 0 ? fields : null;
+}
 function preservationChange(value: unknown): ProjectPreservationChange | null {
   if (!acceptanceRecord(value)) return null;
   if (value.kind === "projectTitle") return Object.keys(value).length === 1 ? { kind: value.kind } : null;
   if ((value.kind === "itemName" || value.kind === "itemPrice" || value.kind === "itemAddition")
     && text(value.itemId) && Object.keys(value).every(key => key === "kind" || key === "itemId")) {
     return { kind: value.kind, itemId: value.itemId };
+  }
+  if (value.kind === "dbRecordValues" && text(value.recordId)
+    && Object.keys(value).every(key => key === "kind" || key === "collection" || key === "recordId" || key === "fields")) {
+    const collection = DB_COLLECTIONS.find(entry => entry === value.collection);
+    const fields = dbFields(value.fields);
+    if (collection && fields) return { kind: value.kind, collection, recordId: value.recordId, fields };
   }
   return null;
 }
@@ -222,16 +243,8 @@ function criterion(value: unknown, index: number, issues: AcceptanceIssue[]): Ac
     if (!collection) return invalid("collection", DB_COLLECTIONS.join(" | "));
     if (!text(value.recordId)) return invalid("recordId", "nonempty exact record ID in that collection");
     const raw = value.fields;
-    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return invalid("fields", "object of dotted field path → exact stored value");
-    const fields: Record<string, string | number | boolean> = {};
-    for (const [path, expected] of Object.entries(raw as Record<string, unknown>)) {
-      if (path.trim().length === 0) return invalid("fields", "nonempty dotted field path");
-      if (typeof expected !== "string" && typeof expected !== "number" && typeof expected !== "boolean") {
-        return invalid("fields", "expected value must be string, number or boolean (exact)");
-      }
-      fields[path] = expected;
-    }
-    if (Object.keys(fields).length === 0) return invalid("fields", "at least one dotted field path");
+    const fields = dbFields(raw);
+    if (!fields) return invalid("fields", "object of dotted field path → exact stored value (at least one string, number or boolean)");
     return { kind: value.kind, collection, recordId: value.recordId, fields };
   }
   if (value.kind === "projectPreserve") {
