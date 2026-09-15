@@ -47,7 +47,7 @@
 구버전에 맞추려고 원격 필드를 삭제하지 않았다. 호환 변경 통합 전에는 다음 두 옵션이 필요하다.
 
 ```bash
-RPG_ZZU_SOURCE_ROOT=<호환 소스 경로> bun --tsconfig-override <호환 소스 경로>/tsconfig.json scripts/refine-emerald-reference.mts --apply
+OPRN_SOURCE_ROOT=<호환 소스 경로> bun --tsconfig-override <호환 소스 경로>/tsconfig.json scripts/refine-emerald-reference.mts --apply
 ```
 
 ## 실제 표면·유사도·이동 검증
@@ -64,7 +64,7 @@ RPG_ZZU_SOURCE_ROOT=<호환 소스 경로> bun --tsconfig-override <호환 소�
 3. `bun scripts/qa/prepare-emerald-fields.mts`
    - 저장본의 맵·이벤트·타일셋은 그대로 두고 QA 시작 위치만 숲길로 바꾼다.
      이 QA 시작 위치는 DB에 쓰지 않는다. 실제 `canMove`로 횡단·복귀 경로를 구한다.
-4. `RPG_ZZU_QA_SOURCE_ROOT=<호환 소스 경로> node scripts/qa/emerald-fields-runtime.mjs`
+4. `OPRN_QA_SOURCE_ROOT=<호환 소스 경로> node scripts/qa/emerald-fields-runtime.mjs`
    - 전용 player.html 하네스로 숲길, 계곡 다리, 유적 이동 및 양방향 복귀를 검사한다.
    - 결과는 `verify-shots/runtime-qa/emerald-fields/SUMMARY.md`를 먼저 읽는다.
 
@@ -112,7 +112,7 @@ QA는 호환 스키마 커밋 `858f254e5`의 별도 `/tmp/rpg-zzu-fields-runtime
 - `scripts/author-emerald-wide.mts`: 시작 시 DB 연결/쓰기 권한 확인, 기존 맵 보존, 타일/나무 조립, 8개 지점 도달 및 다리 옆 물 진입 차단 확인. 기본은 미리보기, `--apply`는 canonical save + 전체 정규화 재로드 비교. 이미 존재하는 맵은 `--revise` 및 마지막 저장 영수증과의 일치가 필요하다. 최초 `before.json`은 보존한다.
 - `scripts/qa/emerald-wide-editor.mjs --saved`: 실제 DB 로드 및 맵 데이터 비교, 전체 렌더와 에디터 화면. QA 원격 쓰기는 차단한다.
 - `bun scripts/qa/prepare-emerald-wide.mts`: 저장본 시작 위치만 QA용 `(3,55)`로 바꾸고 엔진 `canMove`로 총 290칸의 경로를 구한다. DB에 쓰지 않는다.
-- `RPG_ZZU_QA_SOURCE_ROOT=<호환 소스> node scripts/qa/emerald-wide-runtime.mjs`: 전용 player.html로 10개 보행 구간, 부팅 포함 12개 비트를 검사한다. `verify-shots/runtime-qa/emerald-wide/SUMMARY.md`와 `VISUAL-SUMMARY.md`를 먼저 읽고 지정 샷만 연다.
+- `OPRN_QA_SOURCE_ROOT=<호환 소스> node scripts/qa/emerald-wide-runtime.mjs`: 전용 player.html로 10개 보행 구간, 부팅 포함 12개 비트를 검사한다. `verify-shots/runtime-qa/emerald-wide/SUMMARY.md`와 `VISUAL-SUMMARY.md`를 먼저 읽고 지정 샷만 연다.
 
 콘텐츠 저작/QA의 호환 소스는 위와 같은 `/tmp/rpg-zzu-fields-runtime-qa`를 사용한다. 새 엔진 변경은 없다. 근거는 `output/evidence/emerald-wide/`의 `supabase-proof.json`, `checks.json`, `editor-saved-proof.json`, 전체 맵 PNG 및 실제 플레이 보고서다.
 
