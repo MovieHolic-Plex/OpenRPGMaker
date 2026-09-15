@@ -41,7 +41,7 @@ node --test test/oprnGeneratedAssets.test.mjs
 가짜 5장의 **재생성은 안 했다.** 이 파일들은 AI 생성 아트이고, 저장소 안 CC0 팩 그림으로 바꾸면
 `oprnGeneratedAssetPlan.json` 의 `prompt`/`rawPath` 출처 기록이 거짓이 된다. 재생성 경로:
 `scripts/oprn-generated-assets.mjs`(프롬프트는 같은 계획 파일) → 승격 → 이 검증기 통과.
-`hero-01-charset.png`은 주인공 01 의 걷기 캐릭터셋이라 게임 화면에 직접 보인다.
+**영향 범위 (실측 2026-09-16 — 처음엔 과대평가했고 바로잡는다):** 이 다섯 장은 기본 프로젝트 레코드가 **하나도 참조하지 않는다.** 기본 주인공의 맵 스프라이트는 `easyrpg-charset-actor1`(진짜 CC0 아트)이고, 네 아이템 id 도 기본 아이템 레코드에 없다. 즉 이것은 **생성 에셋 라이브러리**의 결함이다 — 리졸버(`generatedAssetResourceResolver.ts`)가 그 id 들을 제공하므로, 저작 경로에서 그 리소스를 고르면 줄무늬가 나온다. 기본 스타터 화면에는 보이지 않는다.
 
 ## 원본이 어디에도 없다 (2026-09-16 추가 확인)
 
