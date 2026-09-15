@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { appendFileSync, readFileSync } from "node:fs";
-import { extname, resolve } from "node:path";
+import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { withTsModule } from "./ontology-ts-loader.mjs";
 
@@ -24,7 +24,8 @@ function parseArgs(argv) {
 
 function loadProject(module, projectPath) {
   const bytes = readFileSync(projectPath);
-  if (extname(projectPath) === ".rpgzzu") {
+  // 확장자 판정은 src/headless 가 든다(.oprn 우선, 옛 .rpgzzu 도 읽음) — 여기서 문자열을 따로 들지 않는다.
+  if (module.isHeadlessPackagePath(projectPath)) {
     return module.loadHeadlessProjectFromPackage(bytes);
   }
   return module.loadHeadlessProject(bytes.toString("utf8"));
@@ -135,7 +136,7 @@ function startFramedJsonRpc() {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (!args.projectPath) {
-    throw new Error("Usage: node scripts/oprn-mcp-server.mjs --project <file.json|file.rpgzzu> [--audit-log <path>]");
+    throw new Error("Usage: node scripts/oprn-mcp-server.mjs --project <file.json|file.oprn> [--audit-log <path>]   (legacy .rpgzzu still opens)");
   }
   const rpc = startFramedJsonRpc();
   await withTsModule(HEADLESS_ENTRY, "headless.mjs", async (module) => {

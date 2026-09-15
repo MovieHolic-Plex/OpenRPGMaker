@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { readFileSync } from "node:fs";
-import { extname, resolve } from "node:path";
+import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { withTsModule } from "./ontology-ts-loader.mjs";
 
@@ -10,7 +10,7 @@ function usage() {
   return [
     "Usage:",
     "  node scripts/oprn-tools.mjs --list",
-    "  node scripts/oprn-tools.mjs --project <file.json|file.rpgzzu> <tool-name> '<args-json>'",
+    "  node scripts/oprn-tools.mjs --project <file.json|file.oprn> <tool-name> '<args-json>'   (legacy .rpgzzu still opens)",
   ].join("\n");
 }
 
@@ -34,7 +34,8 @@ function parseArgs(argv) {
 
 function loadProject(module, projectPath) {
   const bytes = readFileSync(projectPath);
-  if (extname(projectPath) === ".rpgzzu") {
+  // 확장자 판정은 src/headless 가 든다(.oprn 우선, 옛 .rpgzzu 도 읽음) — 여기서 문자열을 따로 들지 않는다.
+  if (module.isHeadlessPackagePath(projectPath)) {
     return module.loadHeadlessProjectFromPackage(bytes);
   }
   return module.loadHeadlessProject(bytes.toString("utf8"));

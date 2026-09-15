@@ -3,9 +3,11 @@ import { allTools } from "@/editor/tools/toolRegistry";
 import { createEmberQuestProject } from "@/project/defaults/emberQuestGame";
 import { EMBER_WALKTHROUGH } from "@/testing/emberWalkthrough";
 import {
+  isHeadlessPackagePath,
   listHeadlessMcpTools,
   listHeadlessTools,
   loadHeadlessProject,
+  loadHeadlessProjectFromPackage,
   runHeadlessTool,
 } from "@/headless";
 
@@ -15,6 +17,20 @@ describe("headless tool runner", () => {
     const loaded = loadHeadlessProject(JSON.stringify(project));
     expect(loaded.meta.title).toBe(project.meta.title);
     expect(Object.keys(loaded.maps)).toEqual(Object.keys(project.maps));
+  });
+
+  // 헤드리스 CLI/MCP 가 --project 로 받는 패키지 판정. 현재 확장자 .oprn 이 우선이고 옛 .rpgzzu 도 계속 연다.
+  it("treats .oprn as the package extension and still accepts legacy .rpgzzu", () => {
+    expect(isHeadlessPackagePath("/tmp/game.oprn")).toBe(true);
+    expect(isHeadlessPackagePath("/tmp/legacy.rpgzzu")).toBe(true);
+    expect(isHeadlessPackagePath("/tmp/Game.OPRN")).toBe(true);
+    expect(isHeadlessPackagePath("/tmp/project.json")).toBe(false);
+    expect(isHeadlessPackagePath("/tmp/game.oprn.json")).toBe(false);
+  });
+
+  it("names the current package extension when a package lacks project.json", () => {
+    expect(() => loadHeadlessProjectFromPackage(new Uint8Array([0x50, 0x4b, 0x05, 0x06, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])))
+      .toThrow(/\.oprn/);
   });
 
   it("exposes every registry tool with accurate read/write mode metadata", () => {

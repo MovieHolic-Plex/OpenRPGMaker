@@ -4,6 +4,7 @@ import { countMonsterMetadataChanges } from "@/project/monsterMetadata";
 import { allTools, getTool } from "@/editor/tools/toolRegistry";
 import { ToolError, type ChangeSummary, type JsonSchema, type ToolMode, type ToolResult } from "@/editor/tools/types";
 import { deserialize } from "@/project/io";
+import { LEGACY_RPGZZU_EXTENSION, OPRN_EXTENSION } from "@/project/package";
 import { readStoredZipEntry } from "@/project/packageZip";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import type { GameEvent, GameMap, Project } from "@/project/types";
@@ -27,9 +28,15 @@ export function loadHeadlessProject(json: string): Project {
   return deserialize(json);
 }
 
+/** 패키지로 읽어야 하는 --project 경로인가. 현재 확장자(.oprn)가 우선이고 옛 .rpgzzu 도 계속 연다. */
+export function isHeadlessPackagePath(path: string): boolean {
+  const lower = path.toLowerCase();
+  return lower.endsWith(OPRN_EXTENSION) || lower.endsWith(LEGACY_RPGZZU_EXTENSION);
+}
+
 export function loadHeadlessProjectFromPackage(bytes: Uint8Array): Project {
   const entry = readStoredZipEntry(bytes, "project.json");
-  if (!entry) throw new Error(".rpgzzu package does not contain project.json");
+  if (!entry) throw new Error(`${OPRN_EXTENSION} package does not contain project.json`);
   return loadHeadlessProject(decoder.decode(entry));
 }
 
