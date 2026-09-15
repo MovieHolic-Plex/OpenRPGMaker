@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
-import { applyCharacterGraphicsImport, exportCharacterGraphics, listCharacterSprites, listCharacterFaces, parseCharacterGraphicsImport, seedGraphicAttributes } from "@/project/characterGraphics";
+import { applyCharacterGraphicsImport, exportCharacterGraphics, listCharacterSprites, listCharacterFaces, NPC_FACE_MAPPING_SCHEMA, parseCharacterGraphicsImport, seedGraphicAttributes } from "@/project/characterGraphics";
 
 const textureKey = "tex_easyrpg_charset_people1";
 const faceResourceId = "easyrpg-faceset-actor2-15";
 const row = (characterIndex = 0) => ({ textureKey, characterIndex, label: "수정한 이름", note: "수동 검토", status: "pending", faceResourceId: null });
+// 2026-09 제품명 스윕 전 카탈로그가 내보낸 v1 문서 — schema id 가 옛 이름이다. 사용자 디스크의 그 파일이 계속 열려야 하므로
+// 이 fixture 는 일부러 옛 id 를 든다(옛 id 수용 검사). 새 id 는 아래 "schema id" 테스트가 고정한다.
 const documentV1 = (mappings: unknown[]) => ({ schema: "rpg-zzu-npc-face-mapping", version: 1, sourceCommit: "old-catalog", mappings });
 
 describe("character graphics metadata", () => {
@@ -22,6 +24,17 @@ describe("character graphics metadata", () => {
     expect(sprites[2]).toMatchObject({ status: "mapped", faceResourceId });
     expect(loaded.charsetLabels?.find((entry) => entry.characterIndex === 0 && entry.textureKey === textureKey)?.label).toBe("수정한 이름");
     expect(JSON.stringify(project.maps)).toBe(events);
+  });
+
+  it("exports the oprn schema id, re-imports it, still accepts the legacy id, and rejects anything else", () => {
+    const project = createBlankProject();
+    const exported = exportCharacterGraphics(project);
+    expect(NPC_FACE_MAPPING_SCHEMA).toBe("oprn-npc-face-mapping");
+    expect(exported.schema).toBe("oprn-npc-face-mapping");
+    expect(() => parseCharacterGraphicsImport(exported, project)).not.toThrow();
+    expect(() => parseCharacterGraphicsImport({ ...exported, schema: "rpg-zzu-npc-face-mapping" }, project)).not.toThrow();
+    expect(() => parseCharacterGraphicsImport(documentV1([row()]), project)).not.toThrow();
+    expect(() => parseCharacterGraphicsImport({ ...exported, schema: "someone-elses-mapping" }, project)).toThrow();
   });
 
   it("rejects a bad final row or duplicate before any mutation", () => {

@@ -2,6 +2,7 @@ import { projectCharsetAssets, findCharsetAsset } from "@/assets/charsetCatalog"
 import { findCharsetSemantic, upsertCharsetLabelOverride } from "@/assets/charsetSemantics";
 import { FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { PRODUCT_SLUG } from "@/brand";
 import type { Project, ResourceProfile } from "./types";
 
 export const GRAPHIC_ATTRIBUTE_AXES = ["kind", "age", "gender", "skin", "hair", "clothing", "role"] as const;
@@ -31,7 +32,7 @@ export interface CharacterFace {
   attributes: GraphicAttributes;
 }
 export interface CharacterGraphicsDocument {
-  schema: "rpg-zzu-npc-face-mapping";
+  schema: typeof NPC_FACE_MAPPING_SCHEMA;
   version: 2;
   mappings: Array<Omit<CharacterSprite, "path" | "sheetName">>;
   faces: CharacterFace[];
@@ -41,7 +42,11 @@ export interface CharacterGraphicsImport {
   faces: CharacterFace[];
 }
 
-const SCHEMA = "rpg-zzu-npc-face-mapping";
+/** 캐릭터·얼굴 JSON 의 schema id. 내보내기는 항상 이 값을 쓴다. */
+export const NPC_FACE_MAPPING_SCHEMA = `${PRODUCT_SLUG}-npc-face-mapping` as const;
+/** 2026-09 제품명 스윕 전 schema id — **읽기 전용**. 사용자가 그때 내보낸 JSON 이 계속 열려야 하므로 parse 만 받는다. */
+const LEGACY_NPC_FACE_MAPPING_SCHEMA = "rpg-zzu-npc-face-mapping";
+const ACCEPTED_SCHEMAS: ReadonlySet<unknown> = new Set([NPC_FACE_MAPPING_SCHEMA, LEGACY_NPC_FACE_MAPPING_SCHEMA]);
 export const graphicSpriteKey = (textureKey: string, characterIndex: number): string => `${textureKey}#${characterIndex}`;
 const canonicalTexture = (id: string): string => findCharsetAsset(id)?.textureKey ?? id;
 
@@ -142,7 +147,7 @@ function mapping(value: unknown, path: string, faceIds: ReadonlySet<string>): Om
 /** Parse every row before callers record history or update the store. Source commits are provenance, not an identity remapping rule. */
 export function parseCharacterGraphicsImport(value: unknown, project: Project): CharacterGraphicsImport {
   const doc = record(typeof value === "string" ? JSON.parse(value) : value, "JSON");
-  if (doc.schema !== SCHEMA || (doc.version !== 1 && doc.version !== 2)) throw new Error("지원하는 캐릭터·얼굴 JSON은 version 1 또는 2입니다.");
+  if (!ACCEPTED_SCHEMAS.has(doc.schema) || (doc.version !== 1 && doc.version !== 2)) throw new Error("지원하는 캐릭터·얼굴 JSON은 version 1 또는 2입니다.");
   const spriteKeys = new Set(listCharacterSprites(project).map((row) => graphicSpriteKey(row.textureKey, row.characterIndex)));
   const faceIds = new Set(listCharacterFaces(project).map((face) => face.resourceId));
   const seen = new Set<string>();
@@ -213,7 +218,7 @@ export function applyCharacterGraphicsImport(project: Project, imported: Charact
 }
 
 export function exportCharacterGraphics(project: Project): CharacterGraphicsDocument {
-  return { schema: SCHEMA, version: 2, mappings: listCharacterSprites(project).map(({ path: _path, sheetName: _sheetName, ...row }) => row), faces: listCharacterFaces(project) };
+  return { schema: NPC_FACE_MAPPING_SCHEMA, version: 2, mappings: listCharacterSprites(project).map(({ path: _path, sheetName: _sheetName, ...row }) => row), faces: listCharacterFaces(project) };
 }
 
 /** Optional profile metadata is validated without seeding or modifying legacy projects. */
