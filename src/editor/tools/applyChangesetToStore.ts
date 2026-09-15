@@ -13,7 +13,7 @@ import { loadAiConfig } from "@/ai/llmClient";
 import { currentAgentEditorIdentity, currentHumanEditorIdentity } from "@/project/editorIdentity";
 import { combineDiffs, recordProjectCommit, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline, summaryForDiff, type CommitLogInput, type CommitRow } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
-import { canonicalJsonString } from "@/project/supabaseProjectSync";
+import { canonicalJsonString } from "@/project/persistence/core/canonicalJson";
 import type { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { createProjectWikiCoordinator, type WikiDeliveryMilestone } from "@/editor/projectWikiCoordinator";
 import type { ChangeSummary, Project } from "@/project/types";

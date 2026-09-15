@@ -1,5 +1,5 @@
 import type { Project } from "./types";
-import { canonicalJsonString } from "./supabaseProjectSync";
+import { canonicalJsonString } from "@/project/persistence/core/canonicalJson";
 
 // Same JSON value semantics as proposal bases and remote JSONB: object key order
 // is not authored drift. Array order and every authored value remain significant.

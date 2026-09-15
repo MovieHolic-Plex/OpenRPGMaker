@@ -1,7 +1,8 @@
 import { PRODUCT_BRAND } from "@/brand";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { currentHumanEditorIdentity, setOwnerLabel, type EditorIdentity } from "@/project/editorIdentity";
-import { listProjectCommitsFromSupabase, type SupabaseProjectCommitListItem } from "@/project/supabaseProjectSync";
+import type { SupabaseProjectCommitListItem } from "@/project/supabaseProjectSync";
+import { projectRepository } from "@/project/persistence/repository";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { readProjectFromUrl } from "@/project/projectUrl";
@@ -359,7 +360,7 @@ function renderCommitPanelLoading(panel: HTMLElement): void {
 async function refreshCommitPanel(panel: HTMLElement): Promise<void> {
   renderCommitPanelLoading(panel);
   try {
-    const commits = await listProjectCommitsFromSupabase(20);
+    const commits = await projectRepository().commits.list(20);
     renderCommitPanelRows(panel, commits);
   } catch (error) {
     renderCommitPanelError(panel, error);
