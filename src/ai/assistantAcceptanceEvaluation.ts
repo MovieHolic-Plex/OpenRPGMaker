@@ -8,7 +8,7 @@ import { passageBounds } from "@/project/footprint";
 import type { GameMap, Project } from "@/project/types";
 import { ACCEPTANCE_EXAMPLES, type AcceptanceIssue, type AcceptanceCriterion, type AcceptanceItemSnapshot, type AcceptanceRegion, type AcceptanceTarget, type ProjectAcceptanceCriterion, type AcceptanceSource } from "./assistantAcceptance";
 import type { ToolVerificationEvidence } from "./toolVerificationEvidence";
-import { collectionRecords } from "@/editor/tools/queryTools";
+import { collectionRecords, type DbCollection } from "@/editor/tools/queryTools";
 
 type Evidence = AcceptanceItemSnapshot["evidence"][number];
 export function acceptanceFingerprint(value: unknown): string {
@@ -85,6 +85,14 @@ export function criterionTargets(criterion: AcceptanceCriterion): readonly Accep
     default: return assertNever(criterion);
   }
 }
+/** id 또는 유일한 이름으로 레코드를 찾는다. 이름 해석이 모호하거나 없으면 검증하지 않는다 —
+ * 어느 레코드를 검증했는지 말할 수 없기 때문이다(커버리지 감사는 읽기 전에 돌아 id 를 모른다). */
+function resolveDbRecord(project: Project, selector: { readonly collection: DbCollection; readonly recordId?: string; readonly recordName?: string }): { record?: Record<string, unknown>; matches: number } {
+  const all = collectionRecords(project, selector.collection);
+  const byId = selector.recordId !== undefined && selector.recordId !== "";
+  const matches = byId ? all.filter(record => record.id === selector.recordId) : all.filter(record => record.name === selector.recordName);
+  return { record: matches.length === 1 ? matches[0] : undefined, matches: matches.length };
+}
 export interface AcceptanceEvaluation {
   readonly source?: AcceptanceSource;
   readonly npcRewardProof?: (project: Project, requirement: NpcRewardRequirement) => WorkItemOutcomeVerdict;
@@ -125,10 +133,10 @@ function projectPreserved(criterion: Extract<ProjectAcceptanceCriterion, { kind:
     }
     if (change.kind === "dbRecordValues") {
       // 허용된 DB 필드만 기준선 값으로 되돌린다 — 그 밖의 차이는 보존 위반으로 남는다.
-      const after = collectionRecords(current, change.collection).filter(record => record.id === change.recordId);
-      const before = collectionRecords(input.baseline, change.collection).filter(record => record.id === change.recordId);
-      if (after.length !== 1 || before.length !== 1) return false;
-      for (const path of Object.keys(change.fields)) writePath(after[0], path, readPath(before[0], path));
+      const after = resolveDbRecord(current, change);
+      const before = resolveDbRecord(input.baseline, change);
+      if (!after.record || !before.record) return false;
+      for (const path of Object.keys(change.fields)) writePath(after.record, path, readPath(before.record, path));
       continue;
     }
     const before = input.baseline.database.items.filter(item => item.id === change.itemId);
@@ -183,8 +191,7 @@ export function evaluateAcceptanceCriterion(criterion: AcceptanceCriterion, inpu
     case "dbRecordValues": {
       // 저장된 필드값을 본다 — 런타임 전투 동작을 증명하지는 않는다(그 조항은 여전히 functionalUnresolved 다).
       // 같은 id 가 둘 이상이면 어느 쪽을 검증했는지 말할 수 없으므로 실패한다(itemValues 와 같은 규칙).
-      const matches = collectionRecords(input.project, criterion.collection).filter(record => record.id === criterion.recordId);
-      const record = matches.length === 1 ? matches[0] : undefined;
+      const { record, matches } = resolveDbRecord(input.project, criterion);
       const observed: Record<string, unknown> = {};
       let passed = record !== undefined;
       for (const [path, expectedValue] of Object.entries(criterion.fields)) {
@@ -192,7 +199,7 @@ export function evaluateAcceptanceCriterion(criterion: AcceptanceCriterion, inpu
         observed[path] = actual ?? null;
         if (actual !== expectedValue) passed = false;
       }
-      return { expected, observed: JSON.stringify({ matches: matches.length, ...observed }), passed };
+      return { expected, observed: JSON.stringify({ matches, ...observed }), passed };
     }
     case "gameTitle": {
       // Match titleScreen.renderTitleScreen/renderTitleNodes without importing DOM

@@ -92,4 +92,18 @@ describe("dbRecordValues 수용 기준", () => {
     expect(criteria).not.toBeNull();
     expect(evaluateAcceptanceCriterion(criteria![0] as AcceptanceCriterion, { project, baseline, bindings: new Map(), reviewed: () => false }).passed).toBe(false);
   });
+  it("id 를 모를 때는 유일한 이름으로 해석한다 — id 를 지어내지 않는다", () => {
+    const { project } = slimeProject();
+    project.database.enemies[0].stats.maxHp = 300;
+    const name = project.database.enemies[0].name;
+    expect(evaluate(project, [{ kind: "dbRecordValues", collection: "enemies", recordName: name, fields: { "stats.maxHp": 300 } }]).passed).toBe(true);
+    project.database.enemies.push({ ...structuredClone(project.database.enemies[0]), id: "enemy_same_name", stats: { ...project.database.enemies[0].stats, maxHp: 78 } });
+    expect(evaluate(project, [{ kind: "dbRecordValues", collection: "enemies", recordName: name, fields: { "stats.maxHp": 300 } }]).passed).toBe(false);
+  });
+
+  it("recordId 와 recordName 은 정확히 하나만 받는다", () => {
+    expect(parseAcceptanceCriteria([{ kind: "dbRecordValues", collection: "enemies", recordId: "a", recordName: "b", fields: { "stats.maxHp": 1 } }])).toBeNull();
+    expect(parseAcceptanceCriteria([{ kind: "dbRecordValues", collection: "enemies", fields: { "stats.maxHp": 1 } }])).toBeNull();
+    expect(parseAcceptanceCriteria([{ kind: "dbRecordValues", collection: "enemies", recordName: "b", fields: { "stats.maxHp": 1 } }])).not.toBeNull();
+  });
 });

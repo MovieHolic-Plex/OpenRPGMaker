@@ -51,16 +51,16 @@ export type ProjectPreservationChange =
   // DB 레코드 필드 허용 — "다른 건 건드리지 마" 를 DB 편집에도 증명 가능하게 한다.
   // 실측(2026-09-16): 허용 목록에 DB 가 없어 보존 항목을 닫을 수 없었고, 모델이 repair_acceptance
   // 를 반복하다 라운드 예산을 소진해 초안이 검토에 닿지 못했다.
-  | { readonly kind: "dbRecordValues"; readonly collection: DbCollection; readonly recordId: string;
-      readonly fields: Readonly<Record<string, string | number | boolean>> };
+  | { readonly kind: "dbRecordValues"; readonly collection: DbCollection; readonly recordId?: string;
+      readonly recordName?: string; readonly fields: Readonly<Record<string, string | number | boolean>> };
 export type ProjectAcceptanceCriterion =
   | { readonly kind: "wikiDeclaration"; readonly documentId: string; readonly combatMode: WikiCombatMode; readonly sourceQuote: string }
   | { readonly kind: "projectTitle"; readonly title: Project["meta"]["title"] }
   | { readonly kind: "itemValues"; readonly itemId: ItemRecord["id"]; readonly name?: ItemRecord["name"]; readonly price?: ItemRecord["price"] }
   // DB 레코드의 저장된 필드값 — 적 stats 같은 속성 변경에는 정확한 평가자가 없어 항목을 닫을 수 없었다.
   // 실측(2026-09-16 라이브): 그 미닫힘 항목을 repair_acceptance 로 닫으려다 라운드 예산을 다 쓰고 초안이 검토에 닿지 못했다.
-  | { readonly kind: "dbRecordValues"; readonly collection: DbCollection; readonly recordId: string;
-      readonly fields: Readonly<Record<string, string | number | boolean>> }
+  | { readonly kind: "dbRecordValues"; readonly collection: DbCollection; readonly recordId?: string;
+      readonly recordName?: string; readonly fields: Readonly<Record<string, string | number | boolean>> }
   | { readonly kind: "projectPreserve"; readonly scope: "project" | "authored"; readonly allowedChanges: readonly ProjectPreservationChange[] };
 export function isProjectAcceptanceKind(kind: string): boolean {
   return kind === "projectTitle" || kind === "itemValues" || kind === "projectPreserve" || kind === "wikiDeclaration" || kind === "dbRecordValues";
@@ -176,11 +176,15 @@ function preservationChange(value: unknown): ProjectPreservationChange | null {
     && text(value.itemId) && Object.keys(value).every(key => key === "kind" || key === "itemId")) {
     return { kind: value.kind, itemId: value.itemId };
   }
-  if (value.kind === "dbRecordValues" && text(value.recordId)
-    && Object.keys(value).every(key => key === "kind" || key === "collection" || key === "recordId" || key === "fields")) {
+  if (value.kind === "dbRecordValues"
+    && Object.keys(value).every(key => key === "kind" || key === "collection" || key === "recordId" || key === "recordName" || key === "fields")) {
     const collection = DB_COLLECTIONS.find(entry => entry === value.collection);
     const fields = dbFields(value.fields);
-    if (collection && fields) return { kind: value.kind, collection, recordId: value.recordId, fields };
+    const byId = text(value.recordId) ? value.recordId : undefined;
+    const byName = text(value.recordName) ? value.recordName : undefined;
+    if (collection && fields && (byId === undefined) !== (byName === undefined)) {
+      return { kind: value.kind, collection, ...(byId !== undefined ? { recordId: byId } : { recordName: byName! }), fields };
+    }
   }
   return null;
 }
@@ -208,7 +212,7 @@ function criterion(value: unknown, index: number, issues: AcceptanceIssue[]): Ac
     reachability: ["kind", "target", "from", "to"], toolVerdict: ["kind", "tool", "args", "interactionTargets"],
     actionCombat: ["kind", "target"], gameTitle: ["kind", "title"],
     projectTitle: ["kind", "title"], itemValues: ["kind", "itemId", "name", "price"],
-    dbRecordValues: ["kind", "collection", "recordId", "fields"],
+    dbRecordValues: ["kind", "collection", "recordId", "recordName", "fields"],
     projectPreserve: ["kind", "scope", "allowedChanges"],
     wikiDeclaration: ["kind", "documentId", "combatMode", "sourceQuote"],
   };
@@ -241,11 +245,14 @@ function criterion(value: unknown, index: number, issues: AcceptanceIssue[]): Ac
   if (value.kind === "dbRecordValues") {
     const collection = DB_COLLECTIONS.find(entry => entry === value.collection);
     if (!collection) return invalid("collection", DB_COLLECTIONS.join(" | "));
-    if (!text(value.recordId)) return invalid("recordId", "nonempty exact record ID in that collection");
-    const raw = value.fields;
-    const fields = dbFields(raw);
+    const byId = text(value.recordId) ? (value.recordId as string) : undefined;
+    const byName = text(value.recordName) ? (value.recordName as string) : undefined;
+    // 커버리지 감사는 읽기 전에 돌므로 레코드 id 를 모른다. 이름만 있을 때는 평가 시점에 그 컬렉션에서
+    // 유일하게 해석되는 이름이어야 한다 — id 를 지어내지 않는다.
+    if ((byId === undefined) === (byName === undefined)) return invalid("recordId", "exactly one of recordId or recordName (the name must resolve uniquely)");
+    const fields = dbFields(value.fields);
     if (!fields) return invalid("fields", "object of dotted field path → exact stored value (at least one string, number or boolean)");
-    return { kind: value.kind, collection, recordId: value.recordId, fields };
+    return { kind: value.kind, collection, ...(byId !== undefined ? { recordId: byId } : { recordName: byName! }), fields };
   }
   if (value.kind === "projectPreserve") {
     if (value.scope !== "project" && value.scope !== "authored") return invalid("scope", "project | authored");
