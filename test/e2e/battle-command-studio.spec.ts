@@ -10,7 +10,7 @@ test("class command placement uses actual class menus", async ({ page }) => {
   await mkdir(evidence, { recursive: true });
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
     localStorage.setItem("oprn:database.activeTab", "battleCommands");
   });
   await page.goto("/?blankProject=1");

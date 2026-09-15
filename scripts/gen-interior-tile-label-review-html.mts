@@ -575,7 +575,7 @@ const html = `<!DOCTYPE html>
   <img src="${chipsetRel}" alt="Interior chipset" style="max-width:min(100%,720px);image-rendering:pixelated;border:1px solid var(--border);border-radius:8px;background:#000" width="480" />
 
   <script>
-    const STORAGE_KEY = "rpgzzu-interior-tile-label-review-v1";
+    const STORAGE_KEY = "oprn-interior-tile-label-review-v1";
     function loadSaved() {
       try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch { return {}; }
     }

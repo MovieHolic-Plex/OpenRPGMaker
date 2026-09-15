@@ -16,7 +16,7 @@ import { expect, test, type Page } from "@playwright/test";
 test.use({ trace: "off" });
 
 async function openTilesTab(page: Page): Promise<void> {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?blankProject=1&aiBridge=0");
   await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();

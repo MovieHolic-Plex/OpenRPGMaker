@@ -1,7 +1,7 @@
 import { isContainerInsideCommand } from "@/editor/eventCommandPaths";
 import type { CommandListActions } from "./types";
 
-const DRAG_MIME = "application/x-rpgzzu-event-command-path";
+const DRAG_MIME = "application/x-oprn-event-command-path";
 
 // [P2] 크로스 컨테이너 드래그 유효성 판정용 현재 드래그 소스 경로.
 // dragover 시점에는 dataTransfer.getData 를 읽을 수 없으므로 모듈 상태로 유지한다.

@@ -12,7 +12,7 @@ for (const t of project.database.troops || []) {
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
 await page.addInitScript((seed) => {
-  window.__RPG_ZZU_E2E_PROJECT__ = seed;
+  window.__OPRN_E2E_PROJECT__ = seed;
   window.localStorage.clear();
 }, project);
 await page.goto("http://127.0.0.1:9173/", { waitUntil: "domcontentloaded", timeout: 60_000 });

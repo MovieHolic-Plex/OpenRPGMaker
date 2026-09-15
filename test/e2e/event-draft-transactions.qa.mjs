@@ -14,7 +14,7 @@ try {
   const page = await context.newPage();
   page.on("pageerror", (error) => errors.push(error.message));
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
     localStorage.setItem("oprn:editor-session-id", "qa-draft-transactions");
     window.transactionShellReady = new Promise((resolve, reject) => {
       const observer = new MutationObserver(() => {

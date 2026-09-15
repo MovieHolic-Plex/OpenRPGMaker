@@ -93,7 +93,7 @@ async function bootEditor(page: Page): Promise<void> {
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 });
 
 test("시연 실행 중 방향키로 걸어도 편집 카메라는 제자리에 있다", async ({ page }) => {

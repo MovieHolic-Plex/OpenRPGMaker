@@ -40,7 +40,7 @@ test("loop9 certifies learnSkill runtime state status menu and save persistence"
   await page.getByTestId("event-editor-modal-close").click();
 
   await page.addInitScript((reloadedProject) => {
-    window.__RPG_ZZU_E2E_PROJECT__ = reloadedProject;
+    window.__OPRN_E2E_PROJECT__ = reloadedProject;
     window.localStorage.clear();
   }, editorExport.project);
   await page.reload();

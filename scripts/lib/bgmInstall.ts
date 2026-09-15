@@ -144,7 +144,7 @@ export function bgmInstallPlugin(options: BgmInstallOptions = {}): Plugin {
   };
 
   return {
-    name: "rpgzzu-bgm-install",
+    name: "oprn-bgm-install",
     configResolved(config) {
       projectRoot = config.root;
       // Vite does not copy non-VITE .env values into process.env (including preview).

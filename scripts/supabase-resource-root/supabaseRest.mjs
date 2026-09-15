@@ -106,5 +106,5 @@ function supabaseHeaders(config, mode) {
 
 function projectTitle(currentJson) {
   const title = currentJson.meta?.title;
-  return typeof title === "string" && title.trim().length > 0 ? title.trim() : "RPG Zzu";
+  return typeof title === "string" && title.trim().length > 0 ? title.trim() : "OPRN";
 }

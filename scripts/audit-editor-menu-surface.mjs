@@ -27,7 +27,7 @@ function installProbe() {
   const origDispatch = EventTarget.prototype.dispatchEvent;
   EventTarget.prototype.dispatchEvent = function (event) {
     try {
-      if (typeof event?.type === "string" && /^(oprn|rpgzzu):/.test(event.type)) {
+      if (typeof event?.type === "string" && /^oprn:/.test(event.type)) {
         // Record the detail kind too: several controls dispatch the same event type with a
         // different payload (plain test play vs random battle), and type alone makes them look
         // like duplicates of each other.

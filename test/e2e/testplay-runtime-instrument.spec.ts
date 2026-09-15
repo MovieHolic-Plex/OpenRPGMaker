@@ -19,7 +19,7 @@ function evidence(name: string): string | undefined {
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 });
 
 test("테스트 플레이는 창을 채우고, 타이틀 없이 시작하고, 재시작·디버그 계측이 실제로 동작한다", async ({ page }) => {

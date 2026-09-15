@@ -10,7 +10,7 @@ for (const [spelling, id] of [["quote", 'cmd_"quoted'], ["backslash", "cmd_\\bac
       const pageErrors: string[] = [];
       page.on("pageerror", (error) => pageErrors.push(error.message));
       await page.addInitScript(() => {
-        localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+        localStorage.setItem("oprn:editor-ui-mode", "expert");
         localStorage.setItem("oprn:database.activeTab", "battleCommands");
       });
       await page.goto("/?blankProject=1");

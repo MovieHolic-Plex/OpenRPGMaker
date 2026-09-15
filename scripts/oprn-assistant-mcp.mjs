@@ -203,7 +203,7 @@ function handleMcpRequest(request) {
       success(id, {
         protocolVersion: PROTOCOL_VERSION,
         capabilities: { tools: {} },
-        serverInfo: { name: "rpgzzu-assistant-bridge", version: "0.1.0" },
+        serverInfo: { name: "oprn-assistant-bridge", version: "0.1.0" },
       });
       return;
     }
@@ -352,7 +352,7 @@ function startHttpBridge(port) {
   });
 
   server.listen(port, HOST, () => {
-    process.stderr.write(`[rpgzzu-assistant-mcp] bridge http://${HOST}:${port}\n`);
+    process.stderr.write(`[oprn-assistant-mcp] bridge http://${HOST}:${port}\n`);
   });
   return server;
 }
@@ -381,18 +381,18 @@ function startFramedJsonRpc() {
       decoder.push(chunk);
     } catch (error) {
       process.stderr.write(
-        `[rpgzzu-assistant-mcp] stdin parse error: ${error instanceof Error ? error.message : String(error)}\n`,
+        `[oprn-assistant-mcp] stdin parse error: ${error instanceof Error ? error.message : String(error)}\n`,
       );
     }
   });
   process.stdin.on("error", (error) => {
     process.stderr.write(
-      `[rpgzzu-assistant-mcp] stdin error (ignored): ${error instanceof Error ? error.message : String(error)}\n`,
+      `[oprn-assistant-mcp] stdin error (ignored): ${error instanceof Error ? error.message : String(error)}\n`,
     );
   });
   // Do NOT exit when stdin ends — HTTP agent shortcuts still need the process.
   process.stdin.on("end", () => {
-    process.stderr.write(`[rpgzzu-assistant-mcp] stdin closed; HTTP bridge stays up\n`);
+    process.stderr.write(`[oprn-assistant-mcp] stdin closed; HTTP bridge stays up\n`);
   });
   process.stdin.resume();
   return {
@@ -407,14 +407,14 @@ function main() {
   const server = startHttpBridge(DEFAULT_PORT);
   server.on("error", (error) => {
     process.stderr.write(
-      `[rpgzzu-assistant-mcp] HTTP listen error: ${error instanceof Error ? error.message : String(error)}\n`,
+      `[oprn-assistant-mcp] HTTP listen error: ${error instanceof Error ? error.message : String(error)}\n`,
     );
     process.exit(1);
   });
   const rpc = startFramedJsonRpc();
   rpc.setHandler(handleMcpRequest);
   process.stderr.write(
-    `[rpgzzu-assistant-mcp] MCP stdio ready. Open the editor (npm run dev) so the AI panel connects.\n`,
+    `[oprn-assistant-mcp] MCP stdio ready. Open the editor (npm run dev) so the AI panel connects.\n`,
   );
   // Keep event loop alive explicitly (HTTP server already does; this is belt-and-suspenders).
   setInterval(() => {}, 60_000).unref?.();

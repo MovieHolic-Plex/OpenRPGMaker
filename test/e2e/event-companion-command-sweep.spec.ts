@@ -23,7 +23,7 @@ test.beforeEach(async ({ page }) => {
     window.localStorage.clear();
     window.sessionStorage.clear();
     window.localStorage.setItem("oprn:editor-session-id", "e2e-companion-sweep");
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "standard");
+    window.localStorage.setItem("oprn:editor-ui-mode", "standard");
     window.localStorage.setItem("oprn:editor-welcome-dismissed", "1");
     window.localStorage.setItem("oprn:standard-welcome-seen", "1");
     window.localStorage.setItem("oprn:coachmarks-basic-v1", "1");

@@ -13,7 +13,7 @@ const log = (line) => console.log(`[lifecycle] ${line}`);
 
 await page.addInitScript(() => {
   localStorage.setItem("oprn:editor-welcome-dismissed", "1");
-  localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+  localStorage.setItem("oprn:editor-ui-mode", "expert");
 });
 
 let ok = false;

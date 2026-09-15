@@ -30,7 +30,7 @@ test("loop12 certifies dialogue face message settings and fixed-height choices",
   await writeJson("004-editor-export.json", exported);
 
   await page.addInitScript((project) => {
-    window.__RPG_ZZU_E2E_PROJECT__ = project;
+    window.__OPRN_E2E_PROJECT__ = project;
     window.localStorage.clear();
   }, exported.project);
   await page.reload();

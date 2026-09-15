@@ -28,7 +28,7 @@ function envFileValue(name) {
 const publicOrigin = process.env.RPG_ZZU_PUBLIC_ORIGIN
   || envFileValue("RPG_ZZU_PUBLIC_ORIGIN")
   || "http://mdc-server:9888";
-console.log(`[rpg-zzu] preview public origin ${publicOrigin}`);
+console.log(`[oprn] preview public origin ${publicOrigin}`);
 
 const vite = fileURLToPath(new URL("../node_modules/vite/bin/vite.js", import.meta.url));
 const preview = spawn(
@@ -39,11 +39,11 @@ const preview = spawn(
 
 // 종료 사유를 남긴다 — 이게 없으면 preview 가 조용히 exit 1 로 죽어 원인을 못 읽는다.
 preview.on("exit", (code, signal) => {
-  console.log(`[rpg-zzu] vite preview exited: code=${code ?? "null"} signal=${signal ?? "none"}`);
+  console.log(`[oprn] vite preview exited: code=${code ?? "null"} signal=${signal ?? "none"}`);
   process.exit(signal ? 1 : (code ?? 0));
 });
 preview.on("error", (error) => {
-  console.error(`[rpg-zzu] vite preview failed to start: ${error.message}`);
+  console.error(`[oprn] vite preview failed to start: ${error.message}`);
   process.exit(1);
 });
 for (const signal of ["SIGINT", "SIGTERM"]) {

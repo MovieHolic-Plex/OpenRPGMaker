@@ -159,7 +159,7 @@ const sheetSection = (effMeta.sheets ?? []).map((sheet) => {
 const html = `<!doctype html>
 <html lang="ko">
 <meta charset="utf-8">
-<title>rpg-zzu 이펙트 감사 — 증거 보고서</title>
+<title>oprn 이펙트 감사 — 증거 보고서</title>
 <style>
   :root {
     --bg:#14141a; --panel:#1d1d26; --panel2:#24242f; --line:#33333f;
@@ -212,7 +212,7 @@ const html = `<!doctype html>
 </style>
 <div class="wrap">
 
-<h1>rpg-zzu 이펙트 감사 — 증거 보고서</h1>
+<h1>oprn 이펙트 감사 — 증거 보고서</h1>
 <p class="lede">2026-08-21 · 전투 / 맵 / UI 3영역 병렬 감사 후 결함을 픽셀·계산으로 재현한 기록.<br>
 모든 수치는 실행 산출물에서 읽어온 것이며, 이미지는 이 파일에 인라인되어 있다.</p>
 

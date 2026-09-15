@@ -71,7 +71,7 @@ if (!map || data.housesBuilt !== 10 || data.npcCount !== 12) {
   throw new HarnessPersistenceError("build-mismatch", `map=${Boolean(map)} houses=${data.housesBuilt} npcs=${data.npcCount}`);
 }
 context.project.meta.title = "자연 마을 하네스 v2 — 직접 저작 문법 재현";
-context.project.meta.author = "RPG ZZU village harness";
+context.project.meta.author = "OPRN village harness";
 context.project.system = {
   ...context.project.system,
   timeSystem: { enabled: true, minutesPerRealSecond: 2, dayStartHour: 6, dayEndHour: 24, daysPerSeason: 28 },

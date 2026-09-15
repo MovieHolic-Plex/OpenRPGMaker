@@ -92,7 +92,7 @@ const sheetSection = (meta.sheets ?? []).map((sheet) => {
 const html = `<!doctype html>
 <html lang="ko">
 <meta charset="utf-8">
-<title>rpg-zzu 이펙트 카탈로그 — 실제로 뭐가 있나</title>
+<title>oprn 이펙트 카탈로그 — 실제로 뭐가 있나</title>
 <style>
   :root { --bg:#14141a; --panel:#1d1d26; --panel2:#24242f; --line:#33333f;
     --fg:#e8e8ef; --dim:#9a9aab; --ok:#51cf66; --bad:#ff6b6b; --warn:#ffd43b; --accent:#3bc9db; --speed:1; }

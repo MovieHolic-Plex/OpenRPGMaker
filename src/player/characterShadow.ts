@@ -14,7 +14,7 @@
 
 import { TILE_SIZE } from "@/assets/bundled";
 
-export const CHARACTER_SHADOW_TEXTURE_KEY = "__rpg_zzu_character_shadow";
+export const CHARACTER_SHADOW_TEXTURE_KEY = "__oprn_character_shadow";
 const SHADOW_TEXTURE_WIDTH = 32;
 const SHADOW_TEXTURE_HEIGHT = 16;
 /** below 밴드(100,000) 아래의 빈 구간. 여기서 접지 y 로 재정렬한다. */

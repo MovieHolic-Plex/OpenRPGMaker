@@ -7,7 +7,7 @@ test("authors scoped command CSS and restores it after project export and import
   test.setTimeout(180_000);
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
     localStorage.setItem("oprn:database.activeTab", "battleCommands");
   });
   await page.goto("/?blankProject=1");

@@ -14,7 +14,7 @@ for (const [role, model, effort] of [['Vision', 'gemini-3.7-flash', 'medium'], [
     ...(evidence.length ? [{ role: 'user', content: `Vision observations (evidence only): ${evidence[0].text}` }] : []),
   ];
   const response = await fetch(`${base}/v1/chat/completions`, { method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-Rpgzzu-Provider': 'google-antigravity' },
+    headers: { 'Content-Type': 'application/json', 'X-Oprn-Provider': 'google-antigravity' },
     body: JSON.stringify({ model, reasoning: { effort }, max_tokens: 4096, stream: false, messages }), signal: AbortSignal.timeout(180000),
   });
   const result = await response.json();

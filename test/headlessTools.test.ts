@@ -78,8 +78,8 @@ describe("headless tool runner", () => {
     };
     const targets = [
       ...collectFiles(fs, path, "src/headless"),
-      "scripts/rpgzzu-tools.mjs",
-      "scripts/rpgzzu-mcp-server.mjs",
+      "scripts/oprn-tools.mjs",
+      "scripts/oprn-mcp-server.mjs",
     ];
     const forbidden = [
       /import\s+.*applyChangesetToStore/,

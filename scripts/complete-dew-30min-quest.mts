@@ -77,7 +77,7 @@ project.mapTree = {
     .filter((id) => id !== VILLAGE)
     .map((mapId) => ({ mapId, children: [] })),
 };
-project.meta = { ...project.meta, title: "이슬 장터 — 30분", author: "RPG ZZU" };
+project.meta = { ...project.meta, title: "이슬 장터 — 30분", author: "OPRN" };
 project.system = {
   ...project.system,
   titleScreen: {

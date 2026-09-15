@@ -216,7 +216,7 @@ export type BgmCatalogTrack = {
 };
 
 export const BGM_CATALOG_LICENSE = "CC0-1.0" as const;
-export const BGM_CATALOG_SOURCE_NAME = "RPG ZZU 오리지널 CC0 BGM 카탈로그" as const;
+export const BGM_CATALOG_SOURCE_NAME = "OPRN 오리지널 CC0 BGM 카탈로그" as const;
 
 export const BGM_CATALOG: readonly BgmCatalogTrack[] = [
 ${metaBody}

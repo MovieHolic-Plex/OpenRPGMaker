@@ -36,7 +36,7 @@ async function main(): Promise<void> {
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1400, height: 900 } });
   await page.addInitScript((seed) => {
-    (window as Window & { __RPG_ZZU_E2E_PROJECT__?: unknown }).__RPG_ZZU_E2E_PROJECT__ = seed;
+    (window as Window & { __OPRN_E2E_PROJECT__?: unknown }).__OPRN_E2E_PROJECT__ = seed;
     window.localStorage.clear();
     window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   }, project);

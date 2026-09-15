@@ -20,7 +20,7 @@ const project = JSON.parse(projectJson);
 
 // Seed as E2E project so the editor loads our JSON without remote DB.
 await page.addInitScript((seed) => {
-  window.__RPG_ZZU_E2E_PROJECT__ = seed;
+  window.__OPRN_E2E_PROJECT__ = seed;
 }, project);
 
 console.log("open editor with seeded kingdom project…");

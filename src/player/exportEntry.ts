@@ -6,7 +6,7 @@ import { installVitePreloadRecovery } from "@/app/moduleLoadRecovery";
 installVitePreloadRecovery();
 import { PRODUCT_BRAND } from "@/brand";
 import { deserialize } from "@/project/io";
-import { RPGZZU_EXTENSION } from "@/project/package";
+import { OPRN_EXTENSION } from "@/project/package";
 import type { Project } from "@/project/types";
 import { renderPlayer } from "@/player/player";
 import { renderOprnGameFilePicker } from "@/player/oprnGameFilePicker";
@@ -79,7 +79,7 @@ async function loadBundledProject(boot: OpenRpgBootConfig): Promise<BundledProje
   try {
     const response = await fetch(boot.projectUrl ?? new URL("project.json", window.location.href));
     if (response.status === 404) {
-      return { ok: false, message: `이 주소에는 번들된 게임이 없습니다. ${RPGZZU_EXTENSION} 게임 파일을 열어 주세요.` };
+      return { ok: false, message: `이 주소에는 번들된 게임이 없습니다. ${OPRN_EXTENSION} 게임 파일을 열어 주세요.` };
     }
     if (!response.ok) return { ok: false, message: `project.json 로드 실패 (${response.status})` };
     return { ok: true, project: deserialize(await response.text()) };

@@ -92,7 +92,7 @@ function hasSampleAdventureParam(params: URLSearchParams): boolean {
 }
 
 function createE2eProjectForLocation(): Project | null {
-  const seed = window.__RPG_ZZU_E2E_PROJECT__;
+  const seed = window.__OPRN_E2E_PROJECT__;
   if (!isE2eProject(seed)) return null;
   return structuredClone(seed);
 }

@@ -78,19 +78,19 @@ async function startTitle(page: Page): Promise<void> {
   await page.keyboard.press("Enter");
   await expect(page.getByTestId("runtime-state-json")).toBeVisible({ timeout: 15_000 });
   await expect
-    .poll(async () => page.evaluate(() => typeof (window as unknown as { __rpgzzuInput?: unknown }).__rpgzzuInput))
+    .poll(async () => page.evaluate(() => typeof (window as unknown as { __oprnInput?: unknown }).__oprnInput))
     .toBe("object");
 }
 
 async function tapDir(page: Page, dir: "left" | "right"): Promise<void> {
-  await page.evaluate((d) => (window as unknown as { __rpgzzuInput: { dir(v: string | null): void } }).__rpgzzuInput.dir(d), dir);
+  await page.evaluate((d) => (window as unknown as { __oprnInput: { dir(v: string | null): void } }).__oprnInput.dir(d), dir);
   await page.waitForTimeout(120);
-  await page.evaluate(() => (window as unknown as { __rpgzzuInput: { dir(v: string | null): void } }).__rpgzzuInput.dir(null));
+  await page.evaluate(() => (window as unknown as { __oprnInput: { dir(v: string | null): void } }).__oprnInput.dir(null));
   await page.waitForTimeout(320);
 }
 
 async function pressAction(page: Page): Promise<void> {
-  await page.evaluate(() => (window as unknown as { __rpgzzuInput: { action(): void } }).__rpgzzuInput.action());
+  await page.evaluate(() => (window as unknown as { __oprnInput: { action(): void } }).__oprnInput.action());
   await page.waitForTimeout(450);
 }
 
@@ -109,7 +109,7 @@ test("Tier0-1/2: 데모가 gen1 게이트를 켜고, 상태 runtimeEffects 가 �
   test.setTimeout(60_000);
   await page.setViewportSize({ width: 1474, height: 950 });
   // 기본(basic) UI 모드는 상단 툴바 항목을 숨긴다 — expert 주입(시드 헬퍼가 clear 후에도 보존).
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await seedProjectFromSupabaseCanonical(page, createScarloxyPokemonDemoProject());
 
   // (1) 출하 데모가 규칙 엔진을 켰다. syncBattleModelAttribute 가 store 구독으로 찍는 속성.
@@ -162,7 +162,7 @@ test("Tier0-1/2: 데모가 gen1 게이트를 켜고, 상태 runtimeEffects 가 �
 test("Tier0-3/4: 상태 배지가 렌더되고, 몬스터 레벨업이 결과 패널에 나온다", async ({ page }, testInfo) => {
   test.setTimeout(120_000);
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await seedProjectFromSupabaseCanonical(page, makeBattleEvidenceProject());
   await page.getByTestId("mode-play").click();
   await startTitle(page);

@@ -31,7 +31,7 @@ describe("imageGenerationClient", () => {
           const headers = new Headers(init?.headers);
           seen.push({
             url: String(input),
-            provider: headers.get("X-Rpgzzu-Provider") ?? "",
+            provider: headers.get("X-Oprn-Provider") ?? "",
             body: JSON.parse(String(init?.body ?? "{}")),
           });
           return jsonResponse({

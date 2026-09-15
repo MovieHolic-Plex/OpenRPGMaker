@@ -195,7 +195,7 @@ function render(data, gifUri, keyFrames, gifWindow) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>3자 진영 전쟁 실측 증거 — RPG ZZU</title>
+<title>3자 진영 전쟁 실측 증거 — OPRN</title>
 <style>
   :root {
     --bg:#12141a; --panel:#191c23; --panel2:#20242d; --line:#2c313b;

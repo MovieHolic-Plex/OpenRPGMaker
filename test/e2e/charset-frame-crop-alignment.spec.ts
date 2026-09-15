@@ -123,7 +123,7 @@ type CropGeometry = {
 
 async function openMonsterGraphicPicker(page: Page): Promise<void> {
   await page.addInitScript((seed) => {
-    window.__RPG_ZZU_E2E_PROJECT__ = seed;
+    window.__OPRN_E2E_PROJECT__ = seed;
     const uiMode = window.localStorage.getItem("oprn:editor-ui-mode");
     window.localStorage.clear();
     if (uiMode !== null) window.localStorage.setItem("oprn:editor-ui-mode", uiMode);

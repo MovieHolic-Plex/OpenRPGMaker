@@ -83,7 +83,7 @@ export async function generateAiImage(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-Rpgzzu-Provider": providerId,
+        "X-Oprn-Provider": providerId,
       },
       body: JSON.stringify({
         prompt,

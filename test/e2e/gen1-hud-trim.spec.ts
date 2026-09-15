@@ -5,7 +5,7 @@ import { expect, test } from "@playwright/test";
 import { seedPokemonLayoutBattleProject, startReferenceBattle } from "./battleReferenceProject";
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 });
 
 test("포켓몬 스킨은 MP/ATB 를 감추고 HP 는 남긴다", async ({ page }, testInfo) => {

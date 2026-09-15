@@ -22,7 +22,7 @@ function Show-LaunchError {
   Write-LaunchLog "ERROR: $Message"
   try {
     $shell = New-Object -ComObject WScript.Shell
-    $shell.Popup($Message, 8, "RPG ZZU PWA", 16) | Out-Null
+    $shell.Popup($Message, 8, "OPRN PWA", 16) | Out-Null
   } catch {
     Write-Host $Message
   }
@@ -46,7 +46,7 @@ function Get-PwaManifest {
 
 function Test-PwaServer {
   $manifest = Get-PwaManifest
-  return $null -ne $manifest -and $manifest.name -eq "RPG ZZU" -and $manifest.display -eq "standalone"
+  return $null -ne $manifest -and $manifest.name -eq "OPRN" -and $manifest.display -eq "standalone"
 }
 
 function Get-BrowserPath {
@@ -73,7 +73,7 @@ try {
     Write-LaunchLog "dist missing; running npm run build"
     $build = Start-Process -FilePath "npm.cmd" -ArgumentList @("run", "build") -WorkingDirectory $projectRoot -WindowStyle Hidden -Wait -PassThru
     if ($build.ExitCode -ne 0) {
-      Show-LaunchError "RPG ZZU build failed. See $logPath"
+      Show-LaunchError "OPRN build failed. See $logPath"
       exit $build.ExitCode
     }
   }
@@ -96,7 +96,7 @@ try {
       }
     }
     if (!$ready) {
-      Show-LaunchError "RPG ZZU preview did not start on $appUrl. See $stderrPath"
+      Show-LaunchError "OPRN preview did not start on $appUrl. See $stderrPath"
       exit 1
     }
   }

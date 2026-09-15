@@ -14,7 +14,7 @@ export function devPlayerBundlesPlugin(): Plugin {
   let outputRoot: string | undefined;
   let unwatch: (() => void) | undefined;
   return {
-    name: "rpgzzu-dev-player-bundles",
+    name: "oprn-dev-player-bundles",
     apply: "serve",
     config(config) {
       // Exclude the directory itself and every staged/committed descendant before

@@ -34,14 +34,14 @@ function projectWithLevers(): ReturnType<typeof createFarmingDemoProject> {
 }
 
 /**
- * 취침 페이드(28일 = 28회) 도중에는 씬이 재생성되며 `__rpgzzuDebug` 가 잠시 사라진다.
+ * 취침 페이드(28일 = 28회) 도중에는 씬이 재생성되며 `__oprnDebug` 가 잠시 사라진다.
  * 곧바로 teleport 를 부르면 `Cannot read properties of undefined` 로 죽는다(실측).
  */
 async function waitForHooks(page: Page): Promise<void> {
   await page.waitForFunction(
     () => {
-      const w = window as never as { __rpgzzuDebug?: { teleport?: unknown }; __rpgzzuInput?: unknown };
-      return typeof w.__rpgzzuDebug?.teleport === "function" && !!w.__rpgzzuInput;
+      const w = window as never as { __oprnDebug?: { teleport?: unknown }; __oprnInput?: unknown };
+      return typeof w.__oprnDebug?.teleport === "function" && !!w.__oprnInput;
     },
     undefined,
     { timeout: 30_000 },
@@ -52,8 +52,8 @@ async function teleport(page: Page, x: number, y: number): Promise<void> {
   await waitForHooks(page);
   await page.evaluate(
     ([m, tx, ty]) =>
-      (window as never as { __rpgzzuDebug: { teleport: (a: string, b: number, c: number) => void } })
-        .__rpgzzuDebug.teleport(m as string, tx as number, ty as number),
+      (window as never as { __oprnDebug: { teleport: (a: string, b: number, c: number) => void } })
+        .__oprnDebug.teleport(m as string, tx as number, ty as number),
     [MAP_ID, x, y] as const,
   );
   await page.waitForTimeout(240);
@@ -61,7 +61,7 @@ async function teleport(page: Page, x: number, y: number): Promise<void> {
 
 async function face(page: Page, dir: string): Promise<void> {
   await page.evaluate(
-    (d) => (window as never as { __rpgzzuInput: { face: (v: string) => void } }).__rpgzzuInput.face(d),
+    (d) => (window as never as { __oprnInput: { face: (v: string) => void } }).__oprnInput.face(d),
     dir,
   );
   await page.waitForTimeout(120);
@@ -123,7 +123,7 @@ async function pull(page: Page, x: number, label: string): Promise<void> {
 test("여름이 된 밭에서 봄 씨앗을 심으려 하면 무슨 말을 하는가", async ({ page }) => {
   mkdirSync(OUT, { recursive: true });
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
   await seedProjectFromSupabaseCanonical(page, projectWithLevers());
@@ -165,8 +165,8 @@ test("여름이 된 밭에서 봄 씨앗을 심으려 하면 무슨 말을 하�
 
   // 여름 작물(블루베리)은 여름에 실제로 심겨야 한다 — 계절 컨텐츠가 붙었는지 화면으로 본다.
   await page.evaluate(() =>
-    (window as never as { __rpgzzuDebug: { giveItem: (id: string, n: number) => void } })
-      .__rpgzzuDebug.giveItem("item_blueberry_seed", 3),
+    (window as never as { __oprnDebug: { giveItem: (id: string, n: number) => void } })
+      .__oprnDebug.giveItem("item_blueberry_seed", 3),
   );
   await page.waitForTimeout(300);
   // 손 슬롯 번호를 추측하지 않는다 — 칩 문구를 보고 블루베리가 잡힐 때까지 숫자키를 넘긴다.

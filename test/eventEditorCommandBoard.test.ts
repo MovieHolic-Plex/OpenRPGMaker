@@ -244,7 +244,7 @@ describe("event editor command board", () => {
     Object.defineProperties(drop, {
       dataTransfer: {
         value: {
-          types: ["application/x-rpgzzu-event-command-path", "text/plain"],
+          types: ["application/x-oprn-event-command-path", "text/plain"],
           getData: () => payload,
         },
       },

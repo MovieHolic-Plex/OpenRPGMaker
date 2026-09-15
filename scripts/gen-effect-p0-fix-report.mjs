@@ -114,7 +114,7 @@ const flashSection = blowTrio.map((record) => {
 const html = `<!doctype html>
 <html lang="ko">
 <meta charset="utf-8">
-<title>rpg-zzu 이펙트 P0 배선 수정 — 검증 보고서</title>
+<title>oprn 이펙트 P0 배선 수정 — 검증 보고서</title>
 <style>
   :root { --bg:#14141a; --panel:#1d1d26; --panel2:#24242f; --line:#33333f;
     --fg:#e8e8ef; --dim:#9a9aab; --ok:#51cf66; --bad:#ff6b6b; --warn:#ffd43b; --accent:#3bc9db; }

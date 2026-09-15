@@ -9,8 +9,8 @@ const HEADLESS_ENTRY = resolve(fileURLToPath(new URL("../src/headless/index.ts",
 function usage() {
   return [
     "Usage:",
-    "  node scripts/rpgzzu-tools.mjs --list",
-    "  node scripts/rpgzzu-tools.mjs --project <file.json|file.rpgzzu> <tool-name> '<args-json>'",
+    "  node scripts/oprn-tools.mjs --list",
+    "  node scripts/oprn-tools.mjs --project <file.json|file.rpgzzu> <tool-name> '<args-json>'",
   ].join("\n");
 }
 

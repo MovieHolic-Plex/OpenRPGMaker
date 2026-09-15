@@ -108,7 +108,7 @@ async function boot(page) {
     json: { choices: [{ message: { role: "assistant", content: "fixture-noop" }, finish_reason: "stop" }] },
   }));
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "standard");
+    localStorage.setItem("oprn:editor-ui-mode", "standard");
     localStorage.setItem("oprn:editor-welcome-dismissed", "1");
     localStorage.setItem("oprn:standard-welcome-seen", "1");
     localStorage.setItem("oprn:coachmarks-basic-v1", "1");

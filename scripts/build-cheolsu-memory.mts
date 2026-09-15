@@ -23,7 +23,7 @@ assert(config.url && config.anonKey, 'Supabase connection is required');
 const existing = await loadProjectFromSupabase(config);
 assert(!existing || existing.meta.title === '철수의 기억', 'Refusing to overwrite another project');
 const project = createBlankProject();
-project.meta = {...project.meta, title: '철수의 기억', author: 'RPG ZZU'};
+project.meta = {...project.meta, title: '철수의 기억', author: 'OPRN'};
 project.system.defaultBgmResourceId = 'cc0-bgm-rtp-emo-001';
 project.system.titleScreen = {...defaultTitleScreenSettings(), title:'철수의 기억', musicResourceId:'cc0-bgm-rtp-emo-001', menuLabels:{newGame:'기억을 따라',continueGame:'이어 하기',quit:'그만두기'}};
 project.database.actors.find(a=>a.id==='actor_hero')!.name = '철수';

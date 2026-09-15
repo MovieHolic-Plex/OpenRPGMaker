@@ -77,7 +77,7 @@ async function talkTo(page: Page, x: number, y: number, dir: string, label: stri
 test("침대로 하루를 넘기고 씨앗 상인에게 수확물을 판다", async ({ page }) => {
   mkdirSync(OUT, { recursive: true });
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
   await seedProjectFromSupabaseCanonical(page, createFarmingDemoProject());

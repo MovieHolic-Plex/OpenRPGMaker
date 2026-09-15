@@ -9,8 +9,8 @@ import {
   type ZipEntry,
 } from "./packageZip";
 
-export const RPGZZU_EXTENSION = ".oprn";
-export const RPGZZU_MIME = "application/vnd.openrpg.project+zip";
+export const OPRN_EXTENSION = ".oprn";
+export const OPRN_MIME = "application/vnd.openrpg.project+zip";
 export const LEGACY_RPGZZU_EXTENSION = ".rpgzzu";
 export const LEGACY_RPGZZU_MIME = "application/vnd.rpgzzu.project+zip";
 
@@ -25,7 +25,7 @@ export class ProjectPackageError extends Error {
 }
 
 export function projectPackageFileName(project: Project): string {
-  return `${safeFileName(project.meta.title || "oprn-project")}${RPGZZU_EXTENSION}`;
+  return `${safeFileName(project.meta.title || "oprn-project")}${OPRN_EXTENSION}`;
 }
 
 export function createProjectPackage(project: Project): Blob {
