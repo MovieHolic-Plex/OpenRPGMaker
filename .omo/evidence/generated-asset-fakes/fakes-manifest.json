@@ -1,0 +1,89 @@
+{
+ "version": 1,
+ "assets": [
+  {
+   "id": "potion-red-icon",
+   "target": "itemIcon",
+   "resourceKind": "picture",
+   "resourceId": "generated-item-potion-red-icon",
+   "expectedDimensions": {
+    "width": 32,
+    "height": 32
+   },
+   "rawPath": "public/assets/generated/starter/potion-red-icon.png",
+   "prompt": "x",
+   "negativePrompt": "y",
+   "status": "promoted"
+  },
+  {
+   "id": "potion-red-image",
+   "target": "itemImage",
+   "resourceKind": "picture",
+   "resourceId": "generated-item-potion-red-image",
+   "expectedDimensions": {
+    "width": 64,
+    "height": 64
+   },
+   "rawPath": "public/assets/generated/starter/potion-red-image.png",
+   "prompt": "x",
+   "negativePrompt": "y",
+   "status": "promoted"
+  },
+  {
+   "id": "bronze-sword-icon",
+   "target": "equipmentIcon",
+   "resourceKind": "picture",
+   "resourceId": "generated-equipment-bronze-sword-icon",
+   "expectedDimensions": {
+    "width": 32,
+    "height": 32
+   },
+   "rawPath": "public/assets/generated/starter/bronze-sword-icon.png",
+   "prompt": "x",
+   "negativePrompt": "y",
+   "status": "promoted"
+  },
+  {
+   "id": "bronze-sword-image",
+   "target": "equipmentImage",
+   "resourceKind": "picture",
+   "resourceId": "generated-equipment-bronze-sword-image",
+   "expectedDimensions": {
+    "width": 64,
+    "height": 64
+   },
+   "rawPath": "public/assets/generated/starter/bronze-sword-image.png",
+   "prompt": "x",
+   "negativePrompt": "y",
+   "status": "promoted"
+  },
+  {
+   "id": "hero-01-charset",
+   "target": "actorCharset",
+   "resourceKind": "picture",
+   "resourceId": "generated-actor-hero-01-charset",
+   "expectedDimensions": {
+    "width": 288,
+    "height": 256
+   },
+   "rawPath": "public/assets/generated/starter/hero-01-charset.png",
+   "prompt": "x",
+   "negativePrompt": "y",
+   "status": "promoted"
+  },
+  {
+   "id": "battle-icon-bag",
+   "target": "itemIcon",
+   "resourceKind": "picture",
+   "resourceId": "generated-item-bag-icon",
+   "expectedDimensions": {
+    "width": 64,
+    "height": 64
+   },
+   "rawPath": "public/assets/generated/starter/battle-icon-bag.png",
+   "prompt": "x",
+   "negativePrompt": "y",
+   "status": "promoted"
+  }
+ ]
+}

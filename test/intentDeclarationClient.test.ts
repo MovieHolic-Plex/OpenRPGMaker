@@ -238,6 +238,34 @@ describe("createLlmIntentDeclarer", () => {
     await declarer({ ...FACTS, userText: "계속" });
     expect(calls).toBe(1);
   });
+
+  it("커버리지 감사는 라우팅과 다른 예산을 쓴다 — 한 호출의 지연이 다른 호출을 죽이지 않는다", async () => {
+    // 실측 2026-09-15 라이브(activity e1c80a58·72e8599d): 라우팅이 20초 벽을 거의 다 쓰고 성공했고, 같은
+    // 컨트롤러를 물려받은 커버리지 감사가 그 벽에 잘렸다. 그 결과 「Request coverage unverified: 시간 초과(20000ms)」
+    // 라는 **닫을 수 없는** 필수 항목이 생겼고, 모델은 그걸 닫으려 repair_acceptance·correct_verification 를
+    // 반복하다 예산을 태운 뒤 초안을 버렸다.
+    const requirements = [{ text: FACTS.userText,
+      criteria: [{ kind: "mapCount" as const, targets: [{ mapId: "map_start" }], count: 1 }] }];
+    let routingSignal: AbortSignal | null | undefined;
+    let auditSignal: AbortSignal | null | undefined;
+    let auditAbortedAtStart: boolean | null = null;
+    const declarer = productionDeclarer({ getConfig: () => CONFIG,
+      chat: async (_config, request) => { routingSignal = request.signal; return reply(JSON.stringify({ mode: "modify", needsPlan: false })); },
+      audit: async (_config, request) => {
+        auditSignal = request.signal;
+        auditAbortedAtStart = request.signal?.aborted ?? null;
+        return reply(JSON.stringify({ requirements }));
+      },
+    });
+    const outcome = await declarer(FACTS);
+    // 감사는 라우팅이 쓴 예산을 물려받지 않는다: 별도 컨트롤러이고, 시작 시점에 이미 취소돼 있지 않다.
+    expect(auditSignal).toBeDefined();
+    expect(auditSignal).not.toBe(routingSignal);
+    expect(auditAbortedAtStart).toBe(false);
+    // 그래서 진짜 의무가 남는다 — 타임아웃 자리표시자가 아니라.
+    expect(outcome.intent.requestRequirements).toEqual(requirements);
+    expect(outcome.error).toBeUndefined();
+  });
 });
 
 describe("declareIntentCached", () => {

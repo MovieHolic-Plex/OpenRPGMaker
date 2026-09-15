@@ -74,7 +74,8 @@ await page.evaluate(async () => {
   const { switchDatabaseActiveTab } = await import(/* @vite-ignore */ "/src/editor/panels/database.ts");
   switchDatabaseActiveTab("enemies", document.querySelector(".database-modal-body"));
 });
-await page.waitForTimeout(800);
+// 탭이 실제로 그려질 때까지 기다린다 — 고정 대기는 느린 기계에서 거짓 결과를 만든다.
+await page.waitForFunction(() => document.querySelector('[data-testid^="db-record-row-"]') !== null, null, { timeout: 20_000 });
 
 const before = await page.evaluate(async () => {
   const { store } = await import(/* @vite-ignore */ "/src/project/store.ts");
@@ -91,18 +92,21 @@ await snap(page, "live-01-prompt");
 const started = Date.now();
 await page.getByTestId("database-ai-run").click();
 
-// 상태줄이 review/done/error 중 하나에 닿을 때까지 — 진행 중 스냅샷도 한 장 남긴다.
+// 상태줄이 review/done/error 중 하나에 닿을 때까지 **상태 변화를 구독한다**(고정 대기 금지).
+// 진행 중 스냅샷은 working/thinking 을 한 번 기다려 찍는다 — 시간으로 짐작하지 않는다.
+await page.waitForFunction(
+  () => ["working", "thinking"].includes(document.querySelector("[data-testid='database-ai-turn-status']")?.dataset.phase ?? ""),
+  null, { timeout: 30_000 },
+).catch(() => { /* 첫 상태가 곷바로 종결일 수 있다 */ });
+await snap(page, "live-02-running");
 let phase = null;
-let midShot = false;
-while (Date.now() - started < TURN_TIMEOUT_MS) {
-  phase = await page.getByTestId("database-ai-turn-status").getAttribute("data-phase");
-  if (!midShot && (phase === "working" || phase === "thinking") && Date.now() - started > 8_000) {
-    await snap(page, "live-02-running");
-    midShot = true;
-  }
-  if (phase === "review" || phase === "done" || phase === "error") break;
-  await page.waitForTimeout(1_500);
-}
+try {
+  await page.waitForFunction(
+    () => ["review", "done", "error"].includes(document.querySelector("[data-testid='database-ai-turn-status']")?.dataset.phase ?? ""),
+    null, { timeout: TURN_TIMEOUT_MS },
+  );
+} catch { /* 시간 초과 → 아래에서 phase=null 로 보고된다 */ }
+phase = await page.getByTestId("database-ai-turn-status").getAttribute("data-phase");
 const elapsed = Math.round((Date.now() - started) / 1000);
 const statusText = await page.getByTestId("database-ai-turn-status").innerText();
 console.log("TURN", JSON.stringify({ phase, elapsed, statusText }));
@@ -137,14 +141,11 @@ if (phase === "review") {
   console.log("STORE_DURING_REVIEW", JSON.stringify({ maxHp: hpDuringReview, unchanged: hpDuringReview === before.maxHp }));
 
   await page.getByTestId("database-ai-turn-apply").click();
-  const applyStart = Date.now();
-  while (Date.now() - applyStart < 60_000) {
-    const p = await page.getByTestId("database-ai-turn-status").getAttribute("data-phase");
-    const t = await page.getByTestId("database-ai-turn-status").innerText();
-    if (p === "error" || t.includes("적용됐어요")) break;
-    await page.waitForTimeout(500);
-  }
-  await page.waitForTimeout(800);
+  // 적용도 상태 변화를 구독한다 — "적용됐어요" 문구나 error 단계가 종결 신호다.
+  await page.waitForFunction(() => {
+    const el = document.querySelector("[data-testid='database-ai-turn-status']");
+    return el?.dataset.phase === "error" || (el?.textContent ?? "").includes("적용됐어요");
+  }, null, { timeout: 60_000 }).catch(() => {});
   await snap(page, "live-04-applied");
   const after = await page.evaluate(async (id) => {
     const { store } = await import(/* @vite-ignore */ "/src/project/store.ts");
@@ -161,3 +162,8 @@ if (phase === "review") {
 }
 
 await browser.close();
+
+// 결과를 종료 코드로 말한다 — 이 스크립트를 게이트에서 쓰는데 "실패해도 exit 0" 이면 게이트가 무의미하다.
+// review = 초안이 사람에게 넘어감(정상), error = 턴 실패, null = 시간 초과.
+console.log("RESULT", JSON.stringify({ phase, elapsed }));
+if (phase !== "review") process.exitCode = 1;

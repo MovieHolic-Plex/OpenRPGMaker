@@ -24,7 +24,8 @@ import {
 } from "./intentDeclaration";
 import { chatCompletion, configForLiteModel, loadAiConfig, type AiConfig, type ChatRequest, type ChatResult } from "./llmClient";
 import { projectWikiContext } from "./projectWikiContext";
-import { parseRequestCoverageResult, REQUEST_COVERAGE_AUDIT, unresolvedRequestCoverage } from "./requestCoverage";
+import { parseRequestCoverageResult, REQUEST_COVERAGE_AUDIT, unresolvedRequestCoverage,
+  type RequestRequirement } from "./requestCoverage";
 
 /** 한 문장을 JSON 으로 옮기는 데 허용하는 벽시계. 넘기면 끊고 폴백으로 떨어진다. */
 export const INTENT_DECLARATION_TIMEOUT_MS = 20_000;
@@ -108,17 +109,42 @@ export function createLlmIntentDeclarer(
     const onOuterAbort = (): void => controller.abort();
     signal?.addEventListener("abort", onOuterAbort, { once: true });
     let invalidIntent: IntentDeclaration | undefined;
+    /**
+     * 커버리지 감사는 라우팅과 **별개의 모델 호출**이다 — 한 벽을 나눠 쓰면 라우팅이 느릴 때 감사가 통째로 잘린다.
+     * 실측(2026-09-15 라이브, activity e1c80a58·72e8599d): 라우팅이 20초를 거의 다 쓰고 성공했고, 같은 컨트롤러를
+     * 물려받은 감사가 그 벽에 잘려 「Request coverage unverified: 시간 초과(20000ms)」라는 **닫을 수 없는** 필수
+     * 항목이 생겼다. 모델은 그 항목을 닫으려 repair_acceptance·correct_verification 를 반복하다 예산을 태우고
+     * 초안을 버렸다. 감사 실패는 여전히 미확인 항목으로 남기되, 실패 이유가 「라우팅이 예산을 썼다」면 안 된다.
+     */
+    const auditCoverage = async (intent: IntentDeclaration): Promise<{ requirements: readonly RequestRequirement[]; error?: string }> => {
+      const auditController = new AbortController();
+      const auditTimer = setTimeout(() => auditController.abort(), timeoutMs);
+      const onAuditAbort = (): void => auditController.abort();
+      signal?.addEventListener("abort", onAuditAbort, { once: true });
+      try {
+        const result = await (options.audit ?? chat)(routingConfig(), {
+          messages: [{ role: "system", content: REQUEST_COVERAGE_AUDIT },
+            { role: "user", content: buildIntentUserPayload(facts) }],
+          response_format: { type: "json_object" }, temperature: 0.1,
+          signal: auditController.signal, disableTransientRetry: true,
+        });
+        const coverage = parseRequestCoverageResult(contentText(result), facts,
+          (intent.functionalRefinements ?? []).map(refinement => refinement.requirementId));
+        return { requirements: coverage.requirements, ...(coverage.error ? { error: coverage.error } : {}) };
+      } catch (cause) {
+        const reason = auditController.signal.aborted && !signal?.aborted
+          ? `시간 초과(${timeoutMs}ms)`
+          : cause instanceof Error ? cause.message : String(cause);
+        return { requirements: unresolvedRequestCoverage(reason), error: reason };
+      } finally {
+        clearTimeout(auditTimer);
+        signal?.removeEventListener("abort", onAuditAbort);
+      }
+    };
     const assessed = async (intent: IntentDeclaration, error?: string): Promise<IntentDeclarationOutcome> => {
       if (intent.mode !== "create" && intent.mode !== "modify") return { intent, elapsedMs: Date.now() - started, error };
       // This call sees the original request/facts, not the planner or authored draft.
-      const result = await (options.audit ?? chat)(routingConfig(), {
-        messages: [{ role: "system", content: REQUEST_COVERAGE_AUDIT },
-          { role: "user", content: buildIntentUserPayload(facts) }],
-        response_format: { type: "json_object" }, temperature: 0.1,
-        signal: controller.signal, disableTransientRetry: true,
-      });
-      const coverage = parseRequestCoverageResult(contentText(result), facts,
-        (intent.functionalRefinements ?? []).map(refinement => refinement.requirementId));
+      const coverage = await auditCoverage(intent);
       return { intent: { ...intent, requestRequirements: coverage.requirements }, elapsedMs: Date.now() - started,
         error: error ?? coverage.error };
     };

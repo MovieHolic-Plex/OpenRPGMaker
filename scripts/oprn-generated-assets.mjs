@@ -89,6 +89,12 @@ async function validateEntry(entry, filePath) {
       issues.push(`PNG dimensions ${inspection.width}x${inspection.height} do not match ${entry.expectedDimensions.width}x${entry.expectedDimensions.height}`);
     }
     if (!inspection.nonblank) issues.push("PNG appears blank");
+    // dry-run 이 쓰는 가짜 픽셀(x*17+y*31 그라데이션)이 그대로 승격된 사고가 있다 — 실측 2026-09-15:
+    // public/assets/generated/starter/ 안에 hero-01-charset.png 포함 5장이 이 패턴이었다.
+    // 검증이 "공백이 아니다" 만 봤기 때문에 가짜도 통과해 status:promoted 로 기록됐다.
+    if (inspection.dryRunFake) {
+      issues.push("PNG is the dry-run fake placeholder (x*17+y*31 gradient); generate the real asset before promoting");
+    }
   }
   const sha256 = bytes ? createHash("sha256").update(bytes).digest("hex") : null;
   return { entryId: entry.id, resourceKind: entry.resourceKind, target: entry.target, path: filePath.replaceAll("\\", "/"), ok: issues.length === 0, inspection, sha256, promotion: issues.length === 0 ? promotion(entry, filePath, sha256) : null, issues };
@@ -124,21 +130,82 @@ function inspectPng(bytes) {
   }
   if (width <= 0 || height <= 0 || idat.length === 0) return { format: "invalid", reason: "PNG is missing pixels" };
   if (colorType !== 6) return { format: "invalid", reason: "PNG color type must be RGBA" };
-  const raw = inflateSync(Buffer.concat(idat));
-  return { format: "png", width, height, mode: "rgba", byteSize: bytes.length, nonblank: hasVariation(raw, width, height) };
+  const inflated = inflateSync(Buffer.concat(idat));
+  // 스캔라인 필터를 풀어야 픽셀을 본다 — 저장소에 들어 있는 파일은 재인코딩돼 있어 필터 0 가정이 틀린다
+  // (실측 2026-09-15: dry-run 가짜 5장이 필터 0 가정 탓에 그대로 통과했다).
+  const pixels = decodeRgba(inflated, width, height);
+  if (!pixels) return { format: "invalid", reason: "PNG uses an unsupported scanline filter" };
+  const dryRunFake = isDryRunFake(pixels, width, height);
+  return { format: "png", width, height, mode: "rgba", byteSize: bytes.length, dryRunFake, nonblank: hasVariation(pixels, width, height) };
 }
 
-function hasVariation(raw, width, height) {
-  const stride = 1 + width * 4;
-  const first = raw.subarray(1, 5);
+function hasVariation(pixels, width, height) {
+  const stride = width * 4;
+  const first = pixels.subarray(0, 4);
   for (let y = 0; y < height; y += 1) {
     const row = y * stride;
     for (let x = 0; x < width; x += 1) {
-      const offset = row + 1 + x * 4;
-      if (raw[offset + 3] !== 0 && !raw.subarray(offset, offset + 4).equals(first)) return true;
+      const offset = row + x * 4;
+      if (pixels[offset + 3] !== 0 && !pixels.subarray(offset, offset + 4).equals(first)) return true;
     }
   }
   return false;
+}
+
+/** PNG 스캔라인 필터(0~4)를 풀어 RGBA 픽셀 버퍼로 돌려준다. 지원하지 않는 필터면 null. */
+function decodeRgba(inflated, width, height) {
+  const bpp = 4;
+  const stride = width * bpp;
+  const out = Buffer.alloc(stride * height);
+  let pos = 0;
+  for (let y = 0; y < height; y += 1) {
+    if (pos + 1 + stride > inflated.length) return null;
+    const filter = inflated[pos];
+    pos += 1;
+    const rowStart = y * stride;
+    const prevStart = rowStart - stride;
+    for (let x = 0; x < stride; x += 1) {
+      const value = inflated[pos + x];
+      const left = x >= bpp ? out[rowStart + x - bpp] : 0;
+      const up = y > 0 ? out[prevStart + x] : 0;
+      const upLeft = y > 0 && x >= bpp ? out[prevStart + x - bpp] : 0;
+      let recon;
+      if (filter === 0) recon = value;
+      else if (filter === 1) recon = value + left;
+      else if (filter === 2) recon = value + up;
+      else if (filter === 3) recon = value + ((left + up) >> 1);
+      else if (filter === 4) {
+        const p = left + up - upLeft;
+        const pa = Math.abs(p - left);
+        const pb = Math.abs(p - up);
+        const pc = Math.abs(p - upLeft);
+        recon = value + (pa <= pb && pa <= pc ? left : pb <= pc ? up : upLeft);
+      } else {
+        return null;
+      }
+      out[rowStart + x] = recon & 255;
+    }
+    pos += stride;
+  }
+  return out;
+}
+
+/** dry-run 전용 가짜 픽셀인가 — 실제 그림이 우연히 이 공식을 만족할 수는 없다. */
+function isDryRunFake(pixels, width, height) {
+  const stride = width * 4;
+  const stepX = Math.max(1, Math.floor(width / 16));
+  const stepY = Math.max(1, Math.floor(height / 16));
+  let sampled = 0;
+  for (let y = 0; y < height; y += stepY) {
+    for (let x = 0; x < width; x += stepX) {
+      const value = (x * 17 + y * 31) % 251;
+      const offset = y * stride + x * 4;
+      if (pixels[offset] !== value || pixels[offset + 1] !== (80 + value) % 251
+        || pixels[offset + 2] !== (160 + value) % 251 || pixels[offset + 3] !== 255) return false;
+      sampled += 1;
+    }
+  }
+  return sampled >= 4;
 }
 
 function createFakePng(width, height) {
