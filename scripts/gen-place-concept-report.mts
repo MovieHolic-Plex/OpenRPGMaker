@@ -458,7 +458,7 @@ const html = `<!doctype html>
   <div class="grid2" style="margin-top:18px">
     <div class="card"><h3>조수의 마지막 말 — 여관</h3><div class="quote">${esc(receipt.innTurn?.assistantText ?? "")}</div><p class="dim">만든 맵 ${esc(receipt.innMap?.id ?? "")} ${esc(receipt.innMap?.size ?? "")} · 이벤트 ${receipt.innMap?.events.length ?? 0}</p></div>
     <div class="card"><h3>조수의 마지막 말 — 주막</h3><div class="quote">${esc(receipt.tavernTurn?.assistantText ?? "")}</div><p class="dim">만든 맵 ${esc(receipt.tavernMap?.id ?? "")} ${esc(receipt.tavernMap?.size ?? "")} · 피아노 이벤트 ${receipt.tavernHasPianoEvent ? "있음" : "없음"}</p></div>
-  </div>` : `<div class="note">실제 조수 턴 증거가 없다. <code>OPRN_OH_MY_PI_AUTH_PATH=~/.rpg-zzu/oh-my-pi-auth.json DEV_SERVER_PORT=9877 npx playwright test test/e2e/_place-concept-inn-evidence.spec.ts --project=chromium</code> 를 돌리면 이 절이 채워진다.</div>`}
+  </div>` : `<div class="note">실제 조수 턴 증거가 없다. <code>OPRN_OH_MY_PI_AUTH_PATH=~/.oprn/oh-my-pi-auth.json DEV_SERVER_PORT=9877 npx playwright test test/e2e/_place-concept-inn-evidence.spec.ts --project=chromium</code> 를 돌리면 이 절이 채워진다.</div>`}
 
   <h2>7. 남은 것</h2>
   <div class="card">
@@ -480,7 +480,7 @@ const html = `<!doctype html>
   <pre>npm run typecheck:app
 npx vitest run test/placeConceptTool.test.ts test/scratchConceptTab.test.ts test/placeConceptRender.test.ts test/placeConceptAssistant.test.ts test/intentClarify.test.ts
 npx tsx scripts/gen-place-concept-report.mts
-OPRN_OH_MY_PI_AUTH_PATH=~/.rpg-zzu/oh-my-pi-auth.json DEV_SERVER_PORT=9877 npx playwright test test/e2e/_place-concept-inn-evidence.spec.ts --project=chromium</pre>
+OPRN_OH_MY_PI_AUTH_PATH=~/.oprn/oh-my-pi-auth.json DEV_SERVER_PORT=9877 npx playwright test test/e2e/_place-concept-inn-evidence.spec.ts --project=chromium</pre>
 </div>
 </body>
 </html>

@@ -9,7 +9,7 @@
  * receipt.json 에 남긴다: 거부 횟수, overExisting 을 실제로 냈는지, 종료 사유, 바뀐 칸 수.
  *
  * 실행(인증 파일 경로를 반드시 넘긴다 — 에이전트 셸의 HOME 은 /home/main 이 아니다):
- *   OPRN_OH_MY_PI_AUTH_PATH=/home/main/.rpg-zzu/oh-my-pi-auth.json \
+ *   OPRN_OH_MY_PI_AUTH_PATH=/home/main/.oprn/oh-my-pi-auth.json \
  *   DEV_SERVER_PORT=9613 SHOT_DIR=<절대경로> \
  *   npx playwright test test/e2e/real-model-tree-turn.spec.ts --project=chromium --workers=1
  */

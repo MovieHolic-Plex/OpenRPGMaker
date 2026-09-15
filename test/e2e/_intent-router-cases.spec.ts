@@ -1,7 +1,7 @@
 /**
  * 진단 전용(`_` 접두): 의도 라우터 실측 — 문장 여러 개를 각각 새 빈 프로젝트에 넣고 실제 모델로 한 런을 돌려
  * 라우팅 흔적(planner/의도 확인/volume-contract/tools:exposed)·툴 호출·맵 델타를 /tmp/intent-cases/ 에 남긴다.
- *   OPRN_OH_MY_PI_AUTH_PATH=/home/main/.rpg-zzu/oh-my-pi-auth.json DEV_SERVER_PORT=9877 E2E_RETRIES=0 E2E_FREEZE_DEV_SERVER=1 \
+ *   OPRN_OH_MY_PI_AUTH_PATH=/home/main/.oprn/oh-my-pi-auth.json DEV_SERVER_PORT=9877 E2E_RETRIES=0 E2E_FREEZE_DEV_SERVER=1 \
  *   AGENT_MODE=auto npx playwright test test/e2e/_intent-router-cases.spec.ts --project=chromium --workers=1
  * CASES 환경변수(줄바꿈 구분)로 문장을 바꿀 수 있다.
  */

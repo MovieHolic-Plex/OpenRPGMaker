@@ -1,7 +1,7 @@
 /**
  * 진단 전용(`_` 접두): 「여관 지어줘」 한 턴의 **감사 로그 전체**(status·tool·orchestration)를 덤프한다.
  * 덤 시공(시작 맵 길·NPC·상점)의 발화점을 찾기 위한 것. 산출은 /tmp 로만 쓴다(dev 서버 리로드 방지).
- *   OPRN_OH_MY_PI_AUTH_PATH=/home/main/.rpg-zzu/oh-my-pi-auth.json DEV_SERVER_PORT=9877 E2E_RETRIES=0 \
+ *   OPRN_OH_MY_PI_AUTH_PATH=/home/main/.oprn/oh-my-pi-auth.json DEV_SERVER_PORT=9877 E2E_RETRIES=0 \
  *   npx playwright test test/e2e/_concept-inn-audit.spec.ts --project=chromium --workers=1
  */
 import { expect, test, type Page } from "@playwright/test";

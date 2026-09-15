@@ -3,9 +3,9 @@
 // 불변식 1: 순수 Node 에서 돈다. 와이어 구현은 src/ai/oauth/* 의 fetch 전용 모듈이고,
 //           Bun 은 완성(completion) 전송에만 필요하다. 인증 경로가 Bun 을 요구하면
 //           Bun 없는 머신에서 /auth/* 전체가 HTTP 500 이 된다.
-// 불변식 2: 비밀은 디스크 저장소(~/.rpg-zzu/oh-my-pi-auth.json)에만 있고 브라우저로 나가지 않는다.
+// 불변식 2: 비밀은 디스크 저장소(~/.oprn/oh-my-pi-auth.json)에만 있고 브라우저로 나가지 않는다.
 //
-// 비밀은 항상 디스크 저장소(~/.rpg-zzu/oh-my-pi-auth.json)에만 있고 브라우저로 나가지 않는다.
+// 비밀은 항상 디스크 저장소(~/.oprn/oh-my-pi-auth.json)에만 있고 브라우저로 나가지 않는다.
 
 import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
