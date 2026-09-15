@@ -117,6 +117,9 @@
   --z-canvas-raised: 4;
   --z-canvas-chrome: 5;
   --z-canvas-chip: 22;
+  /* 맵 전환 크로스페이드의 베일. 캔버스와 그 위 오버레이(로케이션 상자·고스트 마커·활동 칩)를
+     한꺼번에 덮어야 하므로 캔버스 칩보다 위, 캔버스 밖 크롬(툴바)보다 아래다. */
+  --z-canvas-veil: 30;
   --z-toolbar: 40;
   --z-rail: 50;
   --z-flyout: 70;

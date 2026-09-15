@@ -1,3 +1,4 @@
+import { isSameMapMove, withAssistantViewTransition } from "@/editor/assistantViewSwitch";
 import { requestEditorCameraFocus } from "@/editor/editorCameraFocus";
 import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
@@ -51,21 +52,28 @@ export function focusAcceptedAgentChanges(before: Project, after: Project): Agen
   const target = summarizeAcceptedAgentChanges(before, after);
   if (!target) return null;
   const currentMapId = editorState.get().currentMapId ?? before.startMapId ?? null;
-  selectEditorMap(target.mapId, { clearEventSelection: currentMapId !== target.mapId });
-  requestAgentFocusHighlight(target);
-  // 하이라이트만 켜고 카메라를 두면 변경 영역이 화면 밖일 때 "아무 일도 안 일어난 것"으로
-  // 보인다 — bbox 는 이미 손에 있으니 화면 밖일 때만 데려간다. 판정은 씬이 실제 카메라로
-  // 한다(planCameraFocus). 사용자가 지금 칠하거나 화면을 끌고 있으면 씬이 요청을 무시한다.
-  if (target.bounds) {
-    requestEditorCameraFocus({
-      mapId: target.mapId,
-      // 내림하지 않는다 — planCameraFocus 가 쓰는 정확한 중심과 폴백 값이 어긋나면 반 타일이 밀린다.
-      tileX: target.bounds.x + target.bounds.width / 2,
-      tileY: target.bounds.y + target.bounds.height / 2,
-      bounds: target.bounds,
-      onlyIfOffscreen: true,
-    });
-  }
+  // 맵이 바뀌면 캔버스가 한 프레임에 통째로 갈리고 카메라는 새 맵 한가운데로 붙는다 —
+  // 그 하드컷을 크로스페이드로 덮는다. 맵 선택·강조·카메라를 **한 묶음**으로 넣어야
+  // 덮인 동안 전부 끝나고, 베일이 걷힐 때 이미 완성된 화면이 나온다.
+  const sameMap = isSameMapMove(target.mapId);
+  withAssistantViewTransition(target.mapId, () => {
+    selectEditorMap(target.mapId, { clearEventSelection: currentMapId !== target.mapId });
+    requestAgentFocusHighlight(target);
+    // 하이라이트만 켜고 카메라를 두면 변경 영역이 화면 밖일 때 "아무 일도 안 일어난 것"으로
+    // 보인다 — bbox 는 이미 손에 있으니 화면 밖일 때만 데려간다. 판정은 씬이 실제 카메라로
+    // 한다(planCameraFocus). 사용자가 지금 칠하거나 화면을 끌고 있으면 씬이 요청을 무시한다.
+    if (target.bounds) {
+      requestEditorCameraFocus({
+        mapId: target.mapId,
+        // 내림하지 않는다 — planCameraFocus 가 쓰는 정확한 중심과 폴백 값이 어긋나면 반 타일이 밀린다.
+        tileX: target.bounds.x + target.bounds.width / 2,
+        tileY: target.bounds.y + target.bounds.height / 2,
+        bounds: target.bounds,
+        onlyIfOffscreen: true,
+        ...(sameMap ? {} : { immediate: true }),
+      });
+    }
+  });
   return target;
 }
 

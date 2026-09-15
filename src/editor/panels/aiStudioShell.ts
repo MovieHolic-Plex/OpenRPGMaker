@@ -8,6 +8,7 @@
 
 import type { WorkItem, WorkPlan } from "@/ai/workPlan";
 import { addMap } from "@/editor/actions";
+import { withAssistantViewTransition } from "@/editor/assistantViewSwitch";
 import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { readAgentBrief } from "@/editor/panels/aiAgentBrief";
@@ -648,7 +649,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     const name = `새 장면 ${Object.keys(project.maps).length + 1}`;
     const mapId = addMap(name, DEFAULT_SCENE_SIZE.width, DEFAULT_SCENE_SIZE.height);
     if (!mapId) return;
-    selectEditorMap(mapId);
+    withAssistantViewTransition(mapId, () => { selectEditorMap(mapId); });
     refreshScenes();
     refreshMonitor();
   };
@@ -1004,7 +1005,9 @@ function walkScenes(
         dataset: { testid: "ai-studio-scene", mapId: node.mapId, kind: interior ? "interior" : "map" },
         on: {
           click: () => {
-            selectEditorMap(node.mapId);
+            // 장면 목록은 스튜디오에서 가장 자주 눌리는 화면 전환이다 — 하드컷이면
+            // 목록을 훑는 동안 캔버스가 계속 확확 갈린다(editor/assistantViewSwitch.ts).
+            withAssistantViewTransition(node.mapId, () => { selectEditorMap(node.mapId); });
           },
         },
         children: [

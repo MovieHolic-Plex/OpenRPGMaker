@@ -6,8 +6,10 @@
 // 쓰는 일**을 막는다. 채팅 답변 링크와 조수의 화면 이동 툴이 같은 경로를 탄다.
 import { requestAgentFocusHighlight } from "@/editor/agentFocus";
 import type { EditorReferenceTarget } from "@/editor/aiAnswerLinks";
+import { isSameMapMove, withAssistantViewTransition } from "@/editor/assistantViewSwitch";
 import { requestEditorCameraFocus } from "@/editor/editorCameraFocus";
-import { selectEditorMap } from "@/editor/mapSelection";
+import { editorState } from "@/editor/editorState";
+import { canOpenEditorMap, selectEditorMap } from "@/editor/mapSelection";
 import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
 import { toast } from "@/util/toast";
@@ -29,6 +31,15 @@ export interface FocusEditorRegionOptions {
    * 물은 경로는 기본(꺼짐) — 눌렀는데 아무 일도 없는 것이 더 나쁘다.
    */
   readonly onlyIfOffscreen?: boolean;
+  /**
+   * 대상 영역을 선택 사각형으로도 세운다(`highlight_map_region` 의 질문용 강조).
+   *
+   * 호출부가 **직접** `editorState.set({selection})` 을 하면 안 되는 이유: 맵을 건너뛰는
+   * 이동은 크로스페이드로 덮이는데, 선택만 밖에서 먼저 세우면 아직 보이는 **옛 맵** 위에
+   * 목적지 좌표의 사각형이 잠깐 그려진다(엉뚱한 자리의 상자). 화면이 바뀌는 일은 전부
+   * 베일 안에서 한 묶음으로 일어나야 한다.
+   */
+  readonly selectRegion?: boolean;
 }
 
 /**
@@ -43,7 +54,9 @@ export function focusEditorRegion(region: EditorFocusRegion, options: FocusEdito
   const map = store.getCurrent().maps[region.mapId];
   if (!map || map.width <= 0 || map.height <= 0
     || ![map.width, map.height, region.x, region.y, region.w, region.h].every(Number.isFinite)) return false;
-  if (!selectEditorMap(region.mapId, { clearEventSelection: false })) return false;
+  // 전환을 깔기 전에 «열 수 있는 맵인가» 를 먼저 묻는다. 열 수 없으면 `selectEditorMap` 이
+  // 이유를 토스트로 말하고 여기서 끝난다 — 아무 일도 없을 화면을 미리 덮지 않는다.
+  if (!canOpenEditorMap(region.mapId)) return selectEditorMap(region.mapId, { clearEventSelection: false });
 
   const width = Math.max(1, Math.trunc(region.w));
   const height = Math.max(1, Math.trunc(region.h));
@@ -51,16 +64,28 @@ export function focusEditorRegion(region: EditorFocusRegion, options: FocusEdito
   const y = Math.max(0, Math.min(map.height - 1, Math.trunc(region.y)));
   const bounds = { x, y, width: Math.min(width, map.width - x), height: Math.min(height, map.height - y) };
 
-  requestEditorCameraFocus({
-    mapId: region.mapId,
-    tileX: Math.floor(bounds.x + bounds.width / 2),
-    tileY: Math.floor(bounds.y + bounds.height / 2),
-    bounds,
-    ...(options.onlyIfOffscreen === true ? { onlyIfOffscreen: true } : {}),
+  // 맵이 바뀌면 크로스페이드가 하드컷을 덮고, 카메라는 덮인 동안 목적지에 도착해 있는다.
+  // 같은 맵이면 기존 팬이 그대로 「어디서 어디로」를 보여 준다.
+  const sameMap = isSameMapMove(region.mapId);
+  withAssistantViewTransition(region.mapId, () => {
+    selectEditorMap(region.mapId, { clearEventSelection: false });
+    // 요청한 좌표 그대로 세운다 — 카메라용 `bounds` 와 달리 이 사각형은 조수가 «여기» 라고
+    // 가리킨 값 자체이고, 맵 밖 부분까지 포함해 보여 주는 것이 툴의 기존 계약이다.
+    if (options.selectRegion) {
+      editorState.set({ selection: { mapId: region.mapId, x: region.x, y: region.y, width: region.w, height: region.h } });
+    }
+    requestEditorCameraFocus({
+      mapId: region.mapId,
+      tileX: Math.floor(bounds.x + bounds.width / 2),
+      tileY: Math.floor(bounds.y + bounds.height / 2),
+      bounds,
+      ...(options.onlyIfOffscreen === true ? { onlyIfOffscreen: true } : {}),
+      ...(sameMap ? {} : { immediate: true }),
+    });
+    if (options.highlight) {
+      requestAgentFocusHighlight({ mapId: region.mapId, cells: [], bounds, score: 1 });
+    }
   });
-  if (options.highlight) {
-    requestAgentFocusHighlight({ mapId: region.mapId, cells: [], bounds, score: 1 });
-  }
   return true;
 }
 
@@ -86,7 +111,8 @@ export function navigateToEditorReference(
   }
 
   if (target.kind === "map") {
-    if (!selectEditorMap(target.mapId)) return false;
+    if (!canOpenEditorMap(target.mapId)) return selectEditorMap(target.mapId);
+    withAssistantViewTransition(target.mapId, () => { selectEditorMap(target.mapId); });
     toast(`'${map.name || target.mapId}' 맵을 열었습니다.`, "ok");
     return true;
   }

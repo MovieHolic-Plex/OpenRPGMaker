@@ -410,8 +410,9 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         if (event.name === "highlight_map_region" && event.result.ok) {
           const region = event.result.data as EditorFocusRegion;
           highlightedRegionThisTurn = true;
-          editorState.set({ selection: { mapId: region.mapId, x: region.x, y: region.y, width: region.w, height: region.h } });
-          focusEditorRegion(region, { onlyIfOffscreen: true });
+          // 선택 사각형까지 focusEditorRegion 이 세운다 — 여기서 먼저 세우면 맵을 건너뛸 때
+          // 크로스페이드 밖에서 **옛 맵** 위에 목적지 좌표의 상자가 잠깐 그려진다.
+          focusEditorRegion(region, { onlyIfOffscreen: true, selectRegion: true });
         }
         // 조수의 화면 이동 요청: 맵을 열고 카메라를 보내고 잠깐 강조한다(선택 상태는 건드리지 않는다).
         if (event.name === "focus_editor_view" && event.result.ok) {
