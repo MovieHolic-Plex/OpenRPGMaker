@@ -526,7 +526,7 @@ export class AssistantSession {
       if (options.goalAction !== "resume" && !isContinuationText(instruction)) {
         this.checkpointApplied = null;
         this.acceptanceRequestBaseline = structuredClone(this.baselineProject);
-        this.acceptanceRequestSource = { requestId: `request-${this.currentTurnIndex + 1}`, text: instruction, scope: options.scope ?? null };
+        this.acceptanceRequestSource = { requestId: `request-${this.currentTurnIndex + 1}`, text: stripContextFooter(instruction), scope: options.scope ?? null };
       }
     }
     this.captureCheckpoint();
@@ -2525,7 +2525,11 @@ export class AssistantSession {
       : this.getTurnSelection?.() ?? null;
     const facts = buildIntentFacts({
       project: this.ctx.project,
-      userText: instruction,
+      // 코드가 붙인 `[컨텍스트]` footer 는 사용자 발화가 아니다. 이걸 그대로 두면 커버리지 감사가
+      // "인용되지 않은 요청 텍스트" 로 계산해 **닫을 수 없는** functionalUnresolved 항목을 만들고,
+      // 모델이 그걸 닫으려다 라운드 예산을 태운다(실측 2026-09-16: DB 턴 16라운드 중 repair_acceptance
+      // 실패 5회, 초안이 검토에 닿지 못했다). footer 의 사실은 currentMapId·selection 으로 따로 간다.
+      userText: stripContextFooter(instruction),
       currentMapId: resolveContextMapId(this.contextOptions) ?? null,
       selection,
       hasActivePlan,
