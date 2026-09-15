@@ -145,6 +145,8 @@ type SpatialOccurrenceBase = {
     readonly id: SpatialId; readonly kind: K;
     readonly source: SpatialSource<K>; readonly level: number; readonly seed: number;
     readonly generatorVersion: string; readonly bindings: readonly SpatialCompiledBinding[];
+    /** Who asked for this placement. Absent on historical data — read through occurrenceOrigin(). */
+    readonly origin?: SpatialProvenance["origin"];
   }
 }[SpatialKind];
 /** Presence of parentSlot requires complete frozen local-port associations, even for roots. */

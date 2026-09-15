@@ -27,7 +27,7 @@ export function placeCanonicalConcept(project: Project, args: Record<string, unk
   if (Object.hasOwn(project.maps, rootId)) throw new ToolError(`Map already exists: ${rootId}`, { code: "spatial-ownership" });
   const preview = previewSpatialAuthoring(project, {
     operation: { kind: "instantiate", request: { source, rootId, x: 0, y: 0, level: 0,
-      seed: typeof args.seed === "number" ? args.seed : 0, generatorVersion: "spatial-ai-v1" } },
+      seed: typeof args.seed === "number" ? args.seed : 0, generatorVersion: "spatial-ai-v1", origin: "ai" } },
     compile: { occurrenceId: rootId },
   }, { original: project, checkpoint: project });
   const before = { ...project };

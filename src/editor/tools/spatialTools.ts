@@ -156,7 +156,7 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
       const stamp = target(args.target);
       const preview = previewSpatialAuthoring(project, {
         operation: { kind: "instantiate", request: { source: ref, rootId: occurrenceId, x: 0, y: 0, level: 0,
-          seed: integer([-Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER])(args.seed, "seed"), generatorVersion: "spatial-ai-v1" } },
+          seed: integer([-Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER])(args.seed, "seed"), generatorVersion: "spatial-ai-v1", origin: "ai" } },
         compile: { occurrenceId, ...(stamp ? { target: stamp } : {}) },
       }, { original: project, checkpoint: project });
       return { summary: `Preview ${publicSpatialKind(ref.kind)} ${ref.id}: ${preview.impact.mapIds.length} maps`, data: {

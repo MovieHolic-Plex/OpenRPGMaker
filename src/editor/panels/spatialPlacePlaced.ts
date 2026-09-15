@@ -96,6 +96,7 @@ export function addPlacedPickerChild(parentId: SpatialId, slot: PlaceChildPick):
     rootId: spatialId(genId("place-root")),
     seed,
     generatorVersion: MANUAL_SPATIAL_BUILD_VERSION,
+    origin: "user",
     slot: { ...slot, id: spatialId(genId("place-child")), x: 4, y: 4 },
   });
 }
