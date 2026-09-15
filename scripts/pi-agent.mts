@@ -6,6 +6,7 @@
 //
 // 옵션: --provider google-antigravity|openai-codex  --model <id>  --report report.json  --max-turns N  --serial
 //       --team  팀장 에이전트가 맵을 나눠 시공·검수 에이전트를 띄운다(--maps 는 후보 맵)  --team-spec team.json  팀원 명세
+//       --current <mapId>  사용자가 보고 있는 맵(브라우저의 현재 맵과 같은 뜻). 팀장의 「여기」 기준
 
 import fs from "node:fs";
 import path from "node:path";
@@ -62,18 +63,21 @@ async function main() {
   const model = arg("model");
   const maxTurns = arg("max-turns") ? Number(arg("max-turns")) : undefined;
   const mapIds = (arg("maps") ?? "").split(",").map((s) => s.trim()).filter(Boolean);
+  const currentMapId = arg("current");
   const base = loadProject();
+  if (currentMapId && !base.maps[currentMapId]) throw new Error(`--current 맵이 프로젝트에 없습니다: ${currentMapId}`);
+  const here = currentMapId ? { currentMapId } : {};
   const apiKey = await resolveRequestApiKey(provider);
   const groups = mapIds.length > 0 ? mapIds.map((id) => [id]) : [[] as string[]];
   const started = Date.now();
   const run = (ids: string[]) => runPiAgent(
-    { provider, model, task, mapIds: ids, project: base, maxTurns },
+    { provider, model, task, mapIds: ids, ...here, project: base, maxTurns },
     { apiKey, onEvent: (event) => logEvent(groups.length > 1 ? ids.join(",") : "", event) },
   );
   const results: PiAgentDoneEvent[] = [];
   const team = flag("team");
   const teamSpec = arg("team-spec") ? normalizeTeamSpec(JSON.parse(fs.readFileSync(arg("team-spec")!, "utf8"))) : undefined;
-  if (team) results.push(await runPiTeam({ mode: "team", provider, model, task, mapIds, project: base, ...(teamSpec ? { team: teamSpec } : {}) }, { apiKey, onEvent: (event) => logEvent("", event) }));
+  if (team) results.push(await runPiTeam({ mode: "team", provider, model, task, mapIds, ...here, project: base, ...(teamSpec ? { team: teamSpec } : {}) }, { apiKey, onEvent: (event) => logEvent("", event) }));
   else if (flag("serial")) for (const ids of groups) results.push(await run(ids));
   else results.push(...await Promise.all(groups.map(run)));
 

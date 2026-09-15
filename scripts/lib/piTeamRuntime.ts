@@ -114,6 +114,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     apiKey: provider === request.provider ? options.apiKey : undefined,
     providerApiKeys: options.providerApiKeys,
     signal: options.signal,
+    // 규약: 팀은 하위 에이전트마다 같은 상한이 걸린다. 빠뜨리면 시공·검수가 런타임 기본값으로 돌아 요청의 상한이 팀장에게만 적용된다.
+    ...(options.timeoutMs !== undefined ? { timeoutMs: options.timeoutMs } : {}),
     onEvent: (event) => {
       const row = progress.get(agentId);
       if (row) {
@@ -313,7 +315,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   emit({ type: "agent_spawn", agentId: orchestratorId, role: "orchestrator", mapId: null, mapName: null, task: request.task });
   const orch = PI_TEAM_ROLES.orchestrator;
   const orchDone = await runAgent(
-    { ...request, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: orch.systemPrompt(base, request.mapIds, request.task, team), maxTurns: orch.maxTurns },
+    { ...request, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: orch.systemPrompt(base, request.mapIds, request.task, team, request.currentMapId), maxTurns: orch.maxTurns },
     { ...child(orchestratorId), toolNames: orch.toolNames, extraTools: orchestratorTools },
   );
   // 팀장이 wait 없이 끝났을 수 있다(턴 상한·조기 finish 실패). 남은 배정을 거두어 병합한다 —

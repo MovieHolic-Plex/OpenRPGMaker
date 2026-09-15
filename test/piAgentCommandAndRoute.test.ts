@@ -15,14 +15,14 @@ describe("/pi 명령 파서", () => {
     expect(parsePiCommand("/pixel", ctx.project, "map_a")).toBeNull();
   });
   it("맵 목록이 없으면 현재 맵이 범위다", () => {
-    expect(parsePiCommand("/pi 집 지어줘", ctx.project, "map_a")).toEqual({ mode: "single", mapIds: ["map_a"], task: "집 지어줘" });
-    expect(parsePiCommand("/pi 집 지어줘", ctx.project, null)).toEqual({ mode: "single", mapIds: [], task: "집 지어줘" });
+    expect(parsePiCommand("/pi 집 지어줘", ctx.project, "map_a")).toEqual({ mode: "single", mapIds: ["map_a"], currentMapId: "map_a", task: "집 지어줘" });
+    expect(parsePiCommand("/pi 집 지어줘", ctx.project, null)).toEqual({ mode: "single", mapIds: [], currentMapId: null, task: "집 지어줘" });
   });
   it("실존하는 맵 id 목록은 병렬 범위로 읽는다", () => {
-    expect(parsePiCommand("/pi map_a,map_b 집 한 채", ctx.project, "map_a")).toEqual({ mode: "single", mapIds: ["map_a", "map_b"], task: "집 한 채" });
-    expect(parsePiCommand("/pi map_a,map_a 집", ctx.project, null)).toEqual({ mode: "single", mapIds: ["map_a"], task: "집" });
+    expect(parsePiCommand("/pi map_a,map_b 집 한 채", ctx.project, "map_a")).toEqual({ mode: "single", mapIds: ["map_a", "map_b"], currentMapId: "map_a", task: "집 한 채" });
+    expect(parsePiCommand("/pi map_a,map_a 집", ctx.project, null)).toEqual({ mode: "single", mapIds: ["map_a"], currentMapId: null, task: "집" });
     // 없는 id 는 지시문의 첫 단어일 뿐이다.
-    expect(parsePiCommand("/pi map_zzz 집", ctx.project, "map_a")).toEqual({ mode: "single", mapIds: ["map_a"], task: "map_zzz 집" });
+    expect(parsePiCommand("/pi map_zzz 집", ctx.project, "map_a")).toEqual({ mode: "single", mapIds: ["map_a"], currentMapId: "map_a", task: "map_zzz 집" });
   });
 });
 

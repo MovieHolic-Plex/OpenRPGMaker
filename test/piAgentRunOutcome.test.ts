@@ -318,6 +318,14 @@ describe("routine edits", () => {
     else expect(h.requests[0]!.mode).toBe("team");
   });
 
+  // 실측(2026-09-15): 팀 모드가 현재 맵을 버려 팀장이 43맵 중 다른 마을에 배정했다. 팀 요청은 후보를 비워 두더라도
+  // 사용자가 보고 있는 맵을 currentMapId 로 싣는다 — 명령이 안 실었으면 패널의 현재 맵으로 채운다.
+  it("team requests carry the map the user is looking at even when candidates are empty", async () => {
+    h.results.push({ project: projectWith("숲길") });
+    await runPiCommand({ mode: "team", mapIds: [], task: "여기에 마을" }, harness().surface());
+    expect(h.requests[0]).toMatchObject({ mode: "team", mapIds: [], currentMapId: "map_a" });
+  });
+
   it("plan-only still uses read-only Ultrabrain even with a routine hint", async () => {
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "계획" }, harness().surface(), { routineEdit: true, planOnly: true });
     expect(h.requests).toHaveLength(1);
