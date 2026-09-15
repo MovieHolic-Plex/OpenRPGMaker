@@ -7,6 +7,7 @@ import { EASYRPG_CHARSET_ASSETS, type EasyRpgCharsetAsset } from "@/assets/easyr
 import { FARMING_ANIMAL_CHARSET_ASSETS } from "@/assets/farmingSprites";
 import { SCARLOXY_CHARSET_ASSETS } from "@/assets/scarloxyPack";
 import type { UploadedAsset } from "@/project/types";
+import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 
 export const CHARSET_ASSETS: readonly EasyRpgCharsetAsset[] = [
   ...EASYRPG_CHARSET_ASSETS,
@@ -29,7 +30,7 @@ export interface CharsetPickerAsset {
 function uploadedCharsetToPickerAsset(asset: UploadedAsset): CharsetPickerAsset {
   return {
     textureKey: asset.id,
-    path: asset.dataUrl,
+    path: uploadedAssetUrl(asset),
     fileName: asset.name,
     group: "업로드",
   };

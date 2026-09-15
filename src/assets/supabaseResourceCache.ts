@@ -1,4 +1,5 @@
 import type { Project, UploadedAsset } from "@/project/types";
+import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 
 export const SUPABASE_RESOURCE_CACHE_NAME = "oprn-supabase-resource-cache-v3";
 
@@ -61,7 +62,7 @@ export async function cacheSupabaseRootResources(
   const cached: SupabaseResourceCacheEntry[] = [];
   const skipped: SupabaseResourceCacheSkip[] = [];
   for (const asset of uploadedAssets) {
-    const parsed = parseBase64DataUrl(asset.dataUrl);
+    const parsed = parseBase64DataUrl(uploadedAssetUrl(asset));
     if (parsed === null) {
       skipped.push({ resourceId: asset.id, reason: "not-base64-data-url" });
       continue;
@@ -79,7 +80,7 @@ export async function cacheSupabaseRootResources(
 }
 
 export function uploadedAssetIsSupabaseRooted(asset: UploadedAsset | undefined): asset is UploadedAsset {
-  return asset !== undefined && parseBase64DataUrl(asset.dataUrl) !== null;
+  return asset !== undefined && parseBase64DataUrl(uploadedAssetUrl(asset)) !== null;
 }
 
 function parseBase64DataUrl(dataUrl: string): ParsedDataUrl | null {

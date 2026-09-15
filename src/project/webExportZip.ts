@@ -2,7 +2,8 @@ import { contractFailure } from "@/project/playerDeploymentErrors";
 import { pathCollisionKey } from "@/project/playerDeploymentManifest";
 import type { FetchBytes, VerifiedPlayerDeployment } from "@/project/playerDeploymentManifest";
 import type { ZipEntry } from "@/project/packageZip";
-import { dataUrlBytes, exportAssetSourceUrl, invalidExportDependencyBytes } from "@/project/webExportAssets";
+import { uploadedAssetBytes } from "@/project/persistence/assetAccessors";
+import { exportAssetSourceUrl, invalidExportDependencyBytes } from "@/project/webExportAssets";
 import { prunedRuntimeAssetPaths } from "@/project/webExportRuntimeAssets";
 import type { PreparedWebExport, WebExportAsset } from "@/project/webExportTypes";
 
@@ -72,7 +73,7 @@ async function assetEntries(assets: readonly WebExportAsset[], fetchBytes: Fetch
   const entries: ZipEntry[] = [];
   for (const asset of assets) {
     if (asset.kind === "uploaded") {
-      entries.push({ name: asset.zipPath, bytes: dataUrlBytes(asset.asset.dataUrl) });
+      entries.push({ name: asset.zipPath, bytes: await uploadedAssetBytes(asset.asset) });
       continue;
     }
     try {

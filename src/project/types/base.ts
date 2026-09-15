@@ -555,9 +555,9 @@ export interface UploadedAsset {
   id: string;
   name: string;
   kind: "tileset" | "sprite" | ResourceKind;
-  dataUrl: string;
   /** 내용 주소 참조. 있는 자산은 dataUrl 을 쓰지 않는다(미디어 분리, P3). */
   ref?: UploadedAssetRef;
+  dataUrl?: string;
   meta: {
     tileSize?: number;
     frames?: number;

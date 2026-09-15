@@ -2,6 +2,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { getMonsterResource, listMonsterResources, type MonsterResource } from "@/assets/monsterResourceCatalog";
 import { store } from "@/project/store";
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
+import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import type { Project, ResourceProfile, UploadedAsset } from "@/project/types";
 import { el } from "@/util/dom";
 import { monsterResourceStatus } from "./monsterResourcePresentation";
@@ -611,10 +612,11 @@ function renderUploadedCard(
   const badge = el("span", { class: "rm-card-upload-badge", text: "내 업로드" });
 
   const previewBox = el("div", { class: "rm-card-preview-box" });
-  if (asset.dataUrl) {
+  const previewUrl = uploadedAssetUrl(asset);
+  if (previewUrl) {
     const img = el("img", {
       class: "rm-card-img",
-      attrs: { src: asset.dataUrl, alt: asset.name },
+      attrs: { src: previewUrl, alt: asset.name },
     });
     previewBox.append(img);
   }
@@ -763,7 +765,7 @@ function uploadedAssetRow(
     dataset: recent ? { testid: `resource-upload-${asset.id}`, recent: "true" } : { testid: `resource-upload-${asset.id}` },
     on: { click: onSelect },
   });
-  const preview = el("img", { attrs: { src: asset.dataUrl, alt: `${asset.name} 미리보기` } }) as HTMLImageElement;
+  const preview = el("img", { attrs: { src: uploadedAssetUrl(asset), alt: `${asset.name} 미리보기` } }) as HTMLImageElement;
   preview.className = "rm-preview";
   const dims = asset.meta.width && asset.meta.height ? `${asset.meta.width}x${asset.meta.height}px` : "크기 미확인";
   row.append(preview, uploadedAssetInfo(asset, dims));
@@ -859,7 +861,7 @@ function renderInspector(
   let previewUrl = "";
   let dimensions = "";
   if (isUploaded) {
-    previewUrl = item.asset.dataUrl;
+    previewUrl = uploadedAssetUrl(item.asset);
     if (item.asset.meta.width && item.asset.meta.height) {
       dimensions = `${item.asset.meta.width} × ${item.asset.meta.height} px`;
     }
