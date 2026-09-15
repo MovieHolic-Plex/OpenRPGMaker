@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>A 안 목업 — 조수 데크에 「작업」 탭</title>
+<style>
+  :root {
+    --bg-raised: #FFFFFF; --bg-inset: #EEF1F4; --bg-hover: rgba(15,23,42,.05);
+    --border-subtle: rgba(15,23,42,.08); --border-default: rgba(15,23,42,.127); --border-strong: rgba(15,23,42,.461);
+    --text-1: #0F172A; --text-2: #475569; --text-3: #626E89; --text-disabled: #9AA3B5;
+    --accent: #4A57D6; --accent-muted: rgba(74,87,214,.12); --accent-border: rgba(74,87,214,.45); --on-accent: #fff;
+    --danger: #C6403D; --danger-muted: rgba(198,64,61,.12); --success: #18764F; --success-muted: rgba(24,118,79,.12);
+    --warning: #8A5E00; --warning-muted: rgba(138,94,0,.13);
+    --font-ui: system-ui, "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans CJK KR", "Noto Sans KR", sans-serif;
+    --deck-glass: rgba(255,255,255,.88); --deck-line: rgba(15,23,42,.06); --deck-radius: 20px;
+    --deck-shadow: 0 18px 48px rgba(15,23,42,.18), 0 2px 6px rgba(15,23,42,.08);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { font-family: var(--font-ui); color: var(--text-1); font-size: 13px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+  .stage { position: relative; overflow: hidden; background: #dfe3e8; }
+  .stage img.bg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+  .deck {
+    position: absolute; display: flex; flex-direction: column;
+    background: var(--deck-glass); backdrop-filter: blur(20px) saturate(1.08);
+    border-radius: var(--deck-radius); box-shadow: var(--deck-shadow); overflow: hidden;
+  }
+  .rail { position: relative; display: flex; align-items: center; gap: 10px; min-height: 38px; padding: 0 8px 0 16px; }
+  .rail[data-state="run"]::before, .rail[data-state="attention"]::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px; }
+  .rail[data-state="run"]::before { background: linear-gradient(90deg, var(--accent) 0 40%, var(--accent-muted) 40% 100%); }
+  .rail[data-state="attention"]::before { background: var(--warning); }
+  .who { display: flex; align-items: center; gap: 8px; font-weight: 600; white-space: nowrap; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-disabled); flex: none; }
+  .dot.run { background: var(--accent); box-shadow: 0 0 0 4px var(--accent-muted); }
+  .dot.attention { background: var(--warning); box-shadow: 0 0 0 4px var(--warning-muted); }
+  .ctx { color: var(--text-2); font-weight: 400; }
+  .ctx::before { content: "·"; margin-right: 8px; color: var(--text-3); }
+  .rail-state { color: var(--text-2); font-size: 12px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rail-state.run { color: var(--accent); font-weight: 500; }
+  .rail-state.attention { color: var(--warning); font-weight: 600; }
+  .spacer { flex: 1; }
+  .actions { display: flex; gap: 2px; align-items: center; color: var(--text-2); }
+  .ibtn { width: 28px; height: 28px; border-radius: 8px; border: 0; background: transparent; color: var(--text-2); display: grid; place-items: center; font-size: 13px; }
+  .ibtn.txt { width: auto; padding: 0 6px; font-size: 12px; display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
+  .chip svg, .send svg, .spin-none { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+  .send svg { width: 15px; height: 15px; stroke-width: 2; }
+  .ibtn.stop { color: var(--danger); }
+  .ibtn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+
+  .tabs { display: flex; align-items: center; gap: 2px; padding: 0 14px; border-bottom: 1px solid var(--deck-line); }
+  .tab { padding: 7px 10px 8px; font-size: 12.5px; color: var(--text-2); border-bottom: 2px solid transparent; margin-bottom: -1px; display: flex; align-items: center; gap: 6px; }
+  .tab.on { color: var(--text-1); font-weight: 600; border-bottom-color: var(--accent); }
+  .tab .n { color: var(--text-3); font-weight: 400; }
+  .tab .live { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--accent-muted); }
+  .tab .live.attention { background: var(--warning); box-shadow: 0 0 0 3px var(--warning-muted); }
+  .tab .badge { font-size: 10.5px; padding: 0 6px; border-radius: 999px; background: var(--accent); color: #fff; font-weight: 600; }
+  .tabs .right { margin-left: auto; font-size: 11.5px; color: var(--text-3); }
+
+  .body { display: grid; grid-template-columns: 196px minmax(0,1fr); min-height: 0; flex: 1 1 auto; }
+  .body.single { grid-template-columns: minmax(0,1fr); }
+  .members { border-right: 1px solid var(--deck-line); padding: 8px 6px 8px 10px; display: grid; gap: 4px; align-content: start; overflow: auto; }
+  .member { display: grid; gap: 2px; padding: 7px 8px; border-radius: 10px; border: 1px solid transparent; }
+  .member.on { background: var(--bg-raised); border-color: var(--border-default); }
+  .member .head { display: flex; align-items: center; gap: 6px; }
+  .badge-k { font-size: 10.5px; padding: 1px 6px; border-radius: 6px; font-weight: 600; white-space: nowrap; }
+  .badge-k.lead { background: var(--accent-muted); color: var(--accent); }
+  .badge-k.builder { background: var(--success-muted); color: var(--success); }
+  .badge-k.reviewer { background: var(--warning-muted); color: var(--warning); }
+  .member .name { font-weight: 600; font-size: 12.5px; white-space: nowrap; }
+  .member .where { font-size: 11px; color: var(--text-3); }
+  .member .meta { font-size: 11px; color: var(--text-2); display: flex; gap: 6px; align-items: center; white-space: nowrap; overflow: hidden; }
+  .member .meta.warn { color: var(--warning); }
+  .spin { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--accent-muted); border-top-color: var(--accent); display: inline-block; }
+  .member.dim { opacity: .6; }
+
+  .transcript { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+  .t-head { display: flex; align-items: center; gap: 8px; padding: 9px 14px 6px; border-bottom: 1px solid var(--deck-line); }
+  .t-head .name { font-weight: 600; white-space: nowrap; }
+  .t-head .meta { color: var(--text-3); font-size: 11.5px; margin-left: auto; }
+  .t-list { padding: 8px 12px 10px; display: grid; gap: 3px; overflow: hidden; align-content: end; flex: 1 1 auto; min-height: 0; }
+  .t-list.short { align-content: start; }
+  .task { background: var(--bg-inset); border-radius: 10px; padding: 7px 10px; font-size: 12px; color: var(--text-2); }
+  .task b { color: var(--text-1); font-weight: 600; margin-right: 6px; }
+  .turn { font-size: 10.5px; color: var(--text-3); letter-spacing: .04em; padding: 6px 2px 0; }
+  .act { display: grid; grid-template-columns: 22px minmax(0,1fr) 18px; align-items: center; gap: 8px; padding: 4px 6px; border-radius: 8px; }
+  .act .chip { width: 22px; height: 22px; border-radius: 6px; background: var(--bg-inset); display: grid; place-items: center; color: var(--text-2); font-size: 11px; }
+  .act .what { min-width: 0; display: grid; gap: 1px; }
+  .act .label { font-weight: 600; font-size: 12px; white-space: nowrap; }
+  .act .sum { color: var(--text-2); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .act .ok { color: var(--success); font-size: 13px; text-align: center; }
+  .act .ng { color: var(--danger); font-size: 13px; text-align: center; }
+  .act.live .sum { color: var(--accent); }
+  .say { font-size: 12.5px; color: var(--text-1); padding: 4px 8px 4px 36px; position: relative; }
+  .say::before { content: ""; position: absolute; left: 14px; top: 9px; width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); }
+  .review { margin: 4px 0 0 30px; border-left: 2px solid var(--warning); padding: 4px 10px; background: var(--warning-muted); border-radius: 0 8px 8px 0; font-size: 12px; }
+  .review ul { margin: 4px 0 0; padding-left: 16px; color: var(--text-2); }
+
+  .foot { border-top: 1px solid var(--deck-line); padding: 7px 14px; display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-2); }
+  .foot.review { background: var(--warning-muted); color: var(--text-1); }
+  .foot .btns { margin-left: auto; display: flex; gap: 6px; }
+  .btn { padding: 5px 12px; border-radius: 999px; border: 1px solid var(--border-default); background: var(--bg-raised); font-size: 12px; font-weight: 600; color: var(--text-1); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.ghost { border-color: transparent; color: var(--text-2); font-weight: 500; }
+
+  /* 대화 탭 */
+  .chat { padding: 10px 14px; display: grid; gap: 10px; align-content: end; flex: 1 1 auto; min-height: 0; overflow: hidden; }
+  .u { justify-self: end; max-width: 72%; background: var(--accent-muted); color: var(--text-1); border-radius: 14px 14px 4px 14px; padding: 8px 12px; font-size: 13px; }
+  .a { display: grid; gap: 6px; max-width: 86%; }
+  .a .line { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .a .line .k { font-size: 10.5px; padding: 1px 6px; border-radius: 6px; background: var(--bg-inset); color: var(--text-2); font-weight: 600; }
+  .a .live-card { border: 1px solid var(--border-default); border-radius: 12px; padding: 8px 12px; display: grid; gap: 4px; background: var(--bg-raised); }
+  .a .live-card .row { display: flex; align-items: center; gap: 8px; font-size: 12.5px; }
+  .a .live-card .row .nm { font-weight: 600; }
+  .a .live-card .row .sm { color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .a .live-card .go { color: var(--accent); font-size: 12px; font-weight: 600; margin-top: 2px; }
+  .a .text { font-size: 13px; color: var(--text-1); }
+  .a .text .cur { display: inline-block; width: 7px; height: 14px; background: var(--accent); vertical-align: -2px; margin-left: 2px; }
+  .date { justify-self: center; font-size: 11px; color: var(--text-3); }
+
+  /* 컴포저 — 지금 것 그대로 */
+  .composer { padding: 10px 12px 10px; display: grid; gap: 8px; border-top: 1px solid var(--deck-line); }
+  .input { border: 1px solid var(--accent-border); border-radius: 12px; padding: 12px 14px; color: var(--text-3); font-size: 14px; background: var(--bg-raised); box-shadow: 0 0 0 3px rgba(74,87,214,.08); }
+  .input.plain { border-color: var(--border-default); box-shadow: none; }
+  .crow { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-2); }
+  .chipbtn { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border-default); background: var(--bg-raised); color: var(--text-1); font-size: 12px; }
+  .chipbtn .cb { width: 12px; height: 12px; border: 1.5px solid var(--border-strong); border-radius: 3px; }
+  .chipbtn .cb.on { background: var(--accent); border-color: var(--accent); position: relative; }
+  .chipbtn .cb.on::after { content: ""; position: absolute; left: 3px; top: 0px; width: 3px; height: 7px; border: solid #fff; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }
+  .sel { padding: 4px 26px 4px 10px; border-radius: 8px; border: 1px solid var(--border-default); background: var(--bg-raised) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23475569' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 8px center; color: var(--text-1); font-size: 12px; }
+  .send { margin-left: auto; width: 32px; height: 32px; border-radius: 50%; background: var(--bg-inset); display: grid; place-items: center; color: var(--text-3); }
+  .send.on { background: var(--accent); color: #fff; }
+  .model { margin-left: auto; color: var(--text-3); font-size: 12px; }
+
+  /* 주석 */
+  .callout { position: absolute; background: #0F172A; color: #fff; padding: 6px 10px; border-radius: 8px; font-size: 12px; font-weight: 500; white-space: nowrap; box-shadow: 0 4px 14px rgba(15,23,42,.3); }
+  .callout .n { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: #fff; color: #0F172A; font-size: 10.5px; font-weight: 700; margin-right: 6px; }
+  .callout::after { content: ""; position: absolute; width: 10px; height: 10px; background: #0F172A; transform: rotate(45deg); }
+  .callout.down::after { left: 18px; bottom: -5px; }
+  .callout.left::after { left: -5px; top: 10px; }
+  .callout.right::after { right: -5px; top: 10px; }
+</style>
+</head>
+<body>
+<div id="stage" class="stage"></div>
+<script>
+const q = new URLSearchParams(location.search);
+const W = +q.get("w") || 1440, H = +q.get("h") || 900;
+const state = q.get("state") || "work-running";
+const deckW = +q.get("deckW") || 760, deckH = +q.get("deckH") || 612;
+const bg = q.get("bg");
+const annot = q.get("annot") === "1";
+const stage = document.getElementById("stage");
+stage.style.width = W + "px"; stage.style.height = H + "px";
+if (bg) stage.insertAdjacentHTML("beforeend", `<img class="bg" src="${bg}">`);
+
+const svg = {
+  minus: `<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>`,
+  plus: `<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>`,
+  clock: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>`,
+  target: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>`,
+  list: `<svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>`,
+  more: `<svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg>`,
+  chev: `<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>`,
+  stop: `<svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>`,
+  gear: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>`,
+  up: `<svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>`,
+  tool: `<svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0 5 5L22 9l-3-3-1.3 1.3-1.7-1.7L17.3 4 14 1l-2.3 2.3a4 4 0 0 0 3 3zM2 22l9-9"/></svg>`,
+  search: `<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>`,
+};
+
+const running = state === "work-running" || state === "chat" || state === "single" || state === "work-running-1920";
+const review = state === "work-review";
+const railState = review ? "attention" : (running ? "run" : "idle");
+const status = review ? "검토 대기 — 보고서를 확인하고 적용 또는 버리기" : (state === "single" ? "실행 중 · 조수 단독 · 12초" : "실행 중 · 3명 작업 중 · 1분 12초");
+
+function act(label, sum, st) {
+  const icon = label.includes("lint") || label.startsWith("맵 ") ? svg.search : svg.tool;
+  const mark = st === "ok" ? `<span class="ok">✓</span>` : st === "ng" ? `<span class="ng">✕</span>` : `<span class="spin"></span>`;
+  return `<div class="act ${st === "live" ? "live" : ""}"><span class="chip">${icon}</span><div class="what"><span class="label">${label}</span><span class="sum">${sum}</span></div>${mark}</div>`;
+}
+
+function members(sel) {
+  const m = (cls, kind, name, where, meta, on, dim, spin) =>
+    `<div class="member ${on ? "on" : ""} ${dim ? "dim" : ""}"><div class="head"><span class="badge-k ${cls}">${kind}</span><span class="name">${name}</span>${spin ? `<span class="spin"></span>` : ""}</div><div class="where">${where}</div><div class="meta ${meta.includes("지적") ? "warn" : ""}">${meta}</div></div>`;
+  if (review) return `<div class="members">
+    ${m("lead", "팀장", "팀장", "전체", "완료 · 2턴 · 툴 2", false, true, false)}
+    ${m("builder", "시공", "건축가", "시장 마을", "완료 · 3턴 · 툴 9 (실패 1)", false, true, false)}
+    ${m("builder", "시공", "정원사", "시장 마을", "완료 · 1턴 · 툴 1", false, true, false)}
+    ${m("reviewer", "검수", "검수관", "시장 마을", "완료 · 툴 1 · 지적 2", sel === "r1", false, false)}
+    ${m("builder", "시공", "건축가", "시장 마을 · 재배정", "완료 · 툴 1", false, true, false)}
+  </div>`;
+  return `<div class="members">
+    ${m("lead", "팀장", "팀장", "전체", "실행 중 · 1턴 · 툴 1", false, false, true)}
+    ${m("builder", "시공", "건축가", "시장 마을", "실행 중 · 3턴 · 툴 10 (실패 1)", sel === "a1", false, true)}
+    ${m("builder", "시공", "정원사", "시장 마을", "실행 중 · 1턴 · 툴 1", sel === "a2", false, true)}
+  </div>`;
+}
+
+function transcriptArchitect() {
+  return `<div class="transcript">
+    <div class="t-head"><span class="badge-k builder">시공</span><span class="name">건축가</span><span class="meta">시장 마을 · 3턴 · 툴 10 (실패 1)</span></div>
+    <div class="t-list">
+      <div class="task"><b>배정</b>북쪽 (12,4)~(28,10) 에 대장간 2채와 앞마당 돌길을 놓는다. 입구는 남향.</div>
+      <div class="turn">2턴</div>
+      ${act("건물 놓기", "대장간 「동쪽」 6×5 (21,5)", "ok")}
+      ${act("길 그리기", "돌길 (14,10)→(26,10) 폭 2", "ok")}
+      <div class="say">두 대장간 사이 폭 2 를 남겨 앞마당 돌길을 남향으로 뺍니다.</div>
+      ${act("길 그리기", "(27,7) 은 나무 — 우회 필요", "ng")}
+      <div class="turn">3턴</div>
+      ${act("길 그리기", "돌길 (26,10)→(27,11) 한 칸 남쪽 우회", "ok")}
+      ${act("이벤트 놓기", "모루·화로 소품 (15,8) (23,8)", "ok")}
+      ${act("맵 검사", "reachability 통과 · 겹침 0", "ok")}
+      ${act("맵 검사", "실행 중", "live")}
+    </div>
+  </div>`;
+}
+
+function transcriptReviewer() {
+  return `<div class="transcript">
+    <div class="t-head"><span class="badge-k reviewer">검수</span><span class="name">검수관</span><span class="meta">시장 마을 · 툴 1</span></div>
+    <div class="t-list short">
+      <div class="task"><b>배정</b>전체 맵 조화 검수</div>
+      ${act("맵 검사", "돌길 (20,9) 한 칸 끊김 · 지붕-나무 겹침 (27,5)", "ok")}
+      <div class="review"><b>검수 지적 2건</b><ul><li>(20,9) 대장간 입구 앞 돌길이 한 칸 끊김</li><li>동쫑 대장간 지붕이 (27,5) 나무와 겹침</li></ul></div>
+      <div class="say">건축가에게 재배정 — 2건 모두 고쳤습니다.</div>
+    </div>
+  </div>`.replace("동쫑", "동쪽");
+}
+
+function transcriptSingle() {
+  return `<div class="transcript">
+    <div class="t-head"><span class="badge-k lead">조수</span><span class="name">단독 실행</span><span class="meta">시장 마을 · 2턴 · 툴 5</span></div>
+    <div class="t-list">
+      <div class="task"><b>지시</b>우물 옆에 벤치 두 개 놓고 주변에 꽃 심어줘</div>
+      <div class="turn">1턴</div>
+      ${act("맵 읽기", "시장 마을 (18,12) 우물 주변 7×7", "ok")}
+      ${act("빈 자리 찾기", "벤치 놓을 자리 (16,13) (20,13)", "ok")}
+      <div class="say">우물 양옆 두 칸씩 띄워 벤치를 마주 보게 놓습니다.</div>
+      <div class="turn">2턴</div>
+      ${act("건물 놓기", "벤치 (16,13) · 벤치 (20,13)", "ok")}
+      ${act("타일 칠하기", "꽃 12칸 — 우물 둘레", "ok")}
+      ${act("맵 검사", "실행 중", "live")}
+    </div>
+  </div>`;
+}
+
+function tabs(active, extra) {
+  const workBadge = review ? `<span class="live attention"></span>` : running ? `<span class="live"></span>` : "";
+  const n = state === "single" ? "" : `<span class="n">${review ? 5 : 3}</span>`;
+  return `<div class="tabs">
+    <div class="tab ${active === "chat" ? "on" : ""}">대화${active !== "chat" && state === "chat-badge" ? `<span class="badge">1</span>` : ""}</div>
+    <div class="tab ${active === "work" ? "on" : ""}">작업 ${n}${workBadge}</div>
+    <div class="right">${extra || ""}</div>
+  </div>`;
+}
+
+function rail() {
+  const actions = running || review
+    ? `${review ? "" : `<button class="ibtn stop">${svg.stop}</button>`}<button class="ibtn txt">맥락 ${svg.minus}</button><button class="ibtn">${svg.plus}</button><button class="ibtn">${svg.clock}</button><button class="ibtn">${svg.target}</button><button class="ibtn">${svg.list}</button><button class="ibtn">${svg.more}</button><button class="ibtn">${svg.chev}</button>`
+    : `<button class="ibtn txt">맥락 ${svg.minus}</button><button class="ibtn">${svg.plus}</button><button class="ibtn">${svg.clock}</button><button class="ibtn">${svg.target}</button><button class="ibtn">${svg.list}</button><button class="ibtn">${svg.more}</button><button class="ibtn">${svg.chev}</button>`;
+  return `<div class="rail" data-state="${railState}"><div class="who"><span class="dot ${railState}"></span>조수<span class="ctx">시장 마을</span></div><div class="rail-state ${railState}">${status}</div><div class="spacer"></div><div class="actions">${actions}</div></div>`;
+}
+
+function composer(team) {
+  return `<div class="composer">
+    <div class="input plain">${running ? "실행 중에도 이어서 지시 — 예: 동쪽 대장간은 지붕을 파란색으로" : "한 문장으로 지시"}</div>
+    <div class="crow"><span class="chipbtn"><span class="cb ${team ? "on" : ""}"></span>팀</span><span class="sel">균형</span><span class="chipbtn">시장 마을</span><span class="model">gemini-3.7-flash · 균형</span><span class="send">${svg.up}</span></div>
+  </div>`;
+}
+
+function foot() {
+  if (review) return `<div class="foot review"><b>검토 대기</b> · 타일 128칸 · 이벤트 +2 · 맵 2 · 변경 지점 5곳<div class="btns"><span class="btn ghost">버리기</span><span class="btn">보고서 열기</span><span class="btn primary">적용</span></div></div>`;
+  if (state === "single") return `<div class="foot">조수 단독 · 2턴 · 툴 5 · 12초</div>`;
+  return `<div class="foot">에이전트 3 (3 실행 중) · 툴 12 (실패 1) · 1분 12초</div>`;
+}
+
+function chat() {
+  return `<div class="chat">
+    <div class="date">오늘 22:41</div>
+    <div class="u">마을 북쪽에 대장간 거리를 만들고 남쪽 숲길을 정비해줘</div>
+    <div class="a">
+      <div class="line"><span class="k">팀</span>팀장이 지휘 중 · 건축가·정원사 배정</div>
+      <div class="live-card">
+        <div class="row"><span class="spin"></span><span class="nm">건축가</span><span class="sm">맵 검사 — 실행 중 · 툴 10 (실패 1)</span></div>
+        <div class="row"><span class="spin"></span><span class="nm">정원사</span><span class="sm">길 그리기 — 남쪽 숲길 폭 2 정리</span></div>
+        <div class="go">작업 탭에서 과정 보기 →</div>
+      </div>
+      <div class="text">북쪽 빈터에 대장간 두 채를 세우고 앞마당 돌길을 남향으로 뺍니다. 숲길은<span class="cur"></span></div>
+    </div>
+  </div>`;
+}
+
+let body, tabRow;
+switch (state) {
+  case "chat":
+    tabRow = tabs("chat"); body = chat(); break;
+  case "single":
+    tabRow = tabs("work", "단독 실행은 팀원 열 없이 과정만"); body = `<div class="body single">${transcriptSingle()}</div>`; break;
+  case "work-review":
+    tabRow = tabs("work"); body = `<div class="body">${members("r1")}${transcriptReviewer()}</div>`; break;
+  case "idle":
+    tabRow = ""; body = ""; break;
+  default:
+    tabRow = tabs("work"); body = `<div class="body">${members("a1")}${transcriptArchitect()}</div>`;
+}
+
+const deck = document.createElement("div");
+deck.className = "deck";
+const right = 16, bottom = 16;
+deck.style.right = right + "px"; deck.style.bottom = bottom + "px"; deck.style.width = deckW + "px";
+if (state !== "idle") deck.style.height = deckH + "px";
+deck.innerHTML = rail() + tabRow + body + (state === "idle" ? "" : foot()) + composer(state !== "single");
+stage.appendChild(deck);
+
+if (annot) {
+  const left = W - right - deckW;
+  const top = H - bottom - deckH;
+  const add = (cls, x, y, html) => stage.insertAdjacentHTML("beforeend", `<div class="callout ${cls}" style="left:${x}px;top:${y}px">${html}</div>`);
+  add("down", left + 12, top - 44, `<span class="n">1</span>조수 데크 그대로 (폭 760) — 실행 중엔 키만 커짐`);
+  add("left", left + 120, top + 46, `<span class="n">2</span>대화 | 작업 탭 — 실행 시작 시 「작업」으로 자동 전환`);
+  add("right", left - 12 - 330, top + 150, `<span class="n">3</span>팀 데크 1단계의 팀원 열·과정 열을 그대로 이식 →`);
+  add("down", left + deckW - 300, top + deckH - 138, `<span class="n">4</span>컴포저는 항상 맨 아래 — 실행 중에도 이어서 지시`);
+}
+</script>
+</body>
+</html>
