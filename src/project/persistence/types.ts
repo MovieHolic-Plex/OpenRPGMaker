@@ -1,4 +1,4 @@
-import type { Project } from "../types";
+import type { Project, UploadedAssetRef } from "../types";
 import type { CanonicalSave, ProjectWriteAuthority } from "../spatial/saveRouting";
 import type { DbPersistenceDisabledReason, DbPersistenceStatus } from "../persistenceStatus";
 import type {
@@ -46,8 +46,23 @@ export type ConversationListOptions = {
  * `null` 을 **명시**하면 미설정으로 처리한다(sync 함수의 `config = supabaseProjectConfig()`
  * 기본 매개변수와 같은 의미 — `undefined` 만 기본값을 부른다).
  */
+export type AssetPutInput = {
+  readonly mime: string;
+  readonly extension: string;
+  readonly originalName?: string;
+  readonly kind?: string;
+};
+
+export type AssetPutResult = {
+  readonly ref: UploadedAssetRef;
+  /** 파일로 저장할 수 없는 어댑터만 채운다 — 문서에 그대로 넣는 데이터 URL. */
+  readonly dataUrl: string | null;
+};
+
 export interface ProjectRepository {
   readonly kind: "remote" | "local" | "memory";
+  /** true 면 문서에 ref 만 넣는다(파일 저장이 있는 어댑터). false 면 dataUrl 을 넣는다. */
+  readonly supportsAssetRefs: boolean;
   /** 지금 이 편집기 세션이 향하는 대상. 원격이면 설정·URL·저장된 선택에서 계산한다. */
   currentTarget(): ProjectTarget | null;
   status(disabledReason: DbPersistenceDisabledReason | null): PersistenceStatus;
@@ -76,5 +91,11 @@ export interface ProjectRepository {
     listConversations(options: ConversationListOptions, target?: ProjectTarget | null): Promise<readonly Record<string, unknown>[]>;
     loadConversation(conversationId: string, target?: ProjectTarget | null, signal?: AbortSignal): Promise<Record<string, unknown> | null>;
     recordAnalysisRun(input: AiAnalysisRunInput, target?: ProjectTarget | null): Promise<SaveResult>;
+  };
+  readonly assets: {
+    put(bytes: Uint8Array, meta: AssetPutInput): Promise<AssetPutResult>;
+    url(sha256: string): string;
+    list(): Promise<readonly UploadedAssetRef[]>;
+    pruneUnused(referenced: readonly string[]): Promise<readonly string[]>;
   };
 }

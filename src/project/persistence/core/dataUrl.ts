@@ -23,6 +23,12 @@ export function dataUrlExtension(dataUrl: string, mime: string): string {
   return fromMime.toLowerCase();
 }
 
+export function encodeDataUrlBytes(bytes: Uint8Array, mime: string): string {
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return `data:${mime};base64,${btoa(binary)}`;
+}
+
 export function decodeDataUrlBytes(dataUrl: string): Uint8Array {
   const comma = dataUrl.indexOf(",");
   if (comma === -1) return new Uint8Array();

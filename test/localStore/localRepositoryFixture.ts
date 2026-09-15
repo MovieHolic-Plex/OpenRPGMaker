@@ -8,6 +8,8 @@ import type { ProjectTarget } from "@/project/persistence/target";
 import type {
   AiActivityInput,
   AiAnalysisRunInput,
+  AssetPutInput,
+  AssetPutResult,
   CommitInput,
   CommitListItem,
   ConversationInput,
@@ -53,6 +55,27 @@ export async function createLocalRepositoryFixture(): Promise<LocalRepositoryFix
 
   const repository: ProjectRepository = {
     kind: "local",
+    supportsAssetRefs: true,
+    assets: {
+      async put(bytes: Uint8Array, meta: AssetPutInput): Promise<AssetPutResult> {
+        const ref = await store.putAsset(bytes, meta);
+        return { ref, dataUrl: null };
+      },
+      url(sha256: string): string {
+        return `oprn-asset://${target.projectId}/${sha256}`;
+      },
+      async list() {
+        return store.listAssets().map((asset) => ({
+          sha256: asset.sha256,
+          mime: asset.mime,
+          bytes: asset.bytes,
+          extension: asset.extension,
+        }));
+      },
+      pruneUnused(referenced: readonly string[]) {
+        return store.pruneUnusedAssets(referenced);
+      },
+    },
     currentTarget: (): ProjectTarget | null => target,
     status(disabledReason: DbPersistenceDisabledReason | null): PersistenceStatus {
       if (disabledReason) return { kind: "disabled", reason: disabledReason };

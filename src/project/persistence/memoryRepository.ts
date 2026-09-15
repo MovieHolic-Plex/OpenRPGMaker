@@ -6,6 +6,7 @@ import type { ProjectWriteAuthority } from "../spatial/saveRouting";
 import type { Project } from "../types";
 import { randomUuid } from "@/util/id";
 import { sha256HexText } from "@/util/sha256";
+import { createMemoryAssetStore } from "./assetMemoryStore";
 import { mapPatchChangeSet, planMapPatch, readMapPatchSnapshot } from "./core/mapPatch";
 import { projectWire } from "./core/projectWire";
 import type { ProjectTarget } from "./target";
@@ -70,6 +71,7 @@ export function createMemoryRepository(options: { readonly target: ProjectTarget
 
   const repository: MemoryRepository = {
     kind: "memory",
+    ...createMemoryAssetStore(),
     rows,
     currentTarget,
     status(disabledReason: DbPersistenceDisabledReason | null): PersistenceStatus {

@@ -1,4 +1,5 @@
 import { dbPersistenceStatus, type DbPersistenceDisabledReason } from "../persistenceStatus";
+import { createMemoryAssetStore } from "./assetMemoryStore";
 import { activateSpatialProjectFromRaw } from "../spatial/saveRouting";
 import { supabaseProjectConfig } from "../supabaseProjectConfig";
 import {
@@ -33,6 +34,7 @@ import type { ProjectRepository } from "./types";
 export function createSupabaseRepository(): ProjectRepository {
   return {
     kind: "remote",
+    ...createMemoryAssetStore(),
     currentTarget: (): ProjectTarget | null => supabaseProjectConfig(),
     status: (disabledReason: DbPersistenceDisabledReason | null) => dbPersistenceStatus({ disabledReason }),
     async probe() {
