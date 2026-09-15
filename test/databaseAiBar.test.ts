@@ -19,6 +19,8 @@ import {
   type DatabaseAiBarHandle,
 } from "@/editor/panels/databaseAiBar";
 import { databaseTabLabel } from "@/editor/panels/database";
+import { createBlankProject } from "@/project/defaults";
+import type { Project } from "@/project/types";
 
 type Scheduled = { fn: () => void; ms: number; cancelled: boolean };
 
@@ -315,5 +317,144 @@ describe("createDatabaseAiBar — DOM 계약", () => {
     expect(handle.toggle.getAttribute("aria-expanded")).toBe("false");
     handle.dispose();
     expect(scheduler.pending()).toBe(0);
+  });
+});
+
+describe("createDatabaseAiBar — 검토 후 적용", () => {
+  const imp = (patch: Record<string, unknown> = {}) => ({
+    id: "enemy_imp", name: "임프", graphicHue: 0, transparent: false, flying: false,
+    monsterResourceId: "generated-enemy-slime-01",
+    stats: { maxHp: 64, maxMp: 0, attack: 12, defense: 8, mind: 4, agility: 9 },
+    rewards: { exp: 5, gold: 3, dropRatePercent: 0 },
+    skillIds: [], actions: [], stateRates: {}, elementRates: {},
+    ...patch,
+  });
+
+  function projectWith(enemies: unknown[]): Project {
+    const next = structuredClone(createBlankProject()) as { database: Record<string, unknown[]> } & Project;
+    next.database.enemies = [...next.database.enemies, ...enemies] as typeof next.database.enemies;
+    return next;
+  }
+
+  const pendingProposal = () => ({
+    callCount: 1,
+    summary: "tune_enemy",
+    before: projectWith([imp()]),
+    after: projectWith([imp({ stats: { maxHp: 300, maxMp: 0, attack: 28, defense: 8, mind: 4, agility: 9 } })]),
+  });
+
+  function mountReview(extra: Parameters<typeof createDatabaseAiBar>[0]["deps"] = {}) {
+    const handle = createDatabaseAiBar({
+      context: () => ({ tab: "enemies", record: { name: "임프", id: "enemy_imp" } }),
+      deps: {
+        send: () => Promise.resolve(okResult({ pendingProposal: pendingProposal() })),
+        status: () => okResult().status,
+        audit: () => [],
+        schedule: () => () => undefined,
+        ...extra,
+      },
+    });
+    handles.push(handle);
+    document.body.append(handle.toggle, handle.element);
+    return handle;
+  }
+
+  async function runTurn(handle: DatabaseAiBarHandle): Promise<void> {
+    handle.setOpen(true);
+    const input = handle.element.querySelector<HTMLInputElement>("[data-testid='database-ai-input']")!;
+    input.value = "임프를 중반 난이도로";
+    handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-run']")!.click();
+    for (let i = 0; i < 4; i += 1) await Promise.resolve();
+  }
+
+  it("deferApply 로 보내고, 초안이 오면 카드를 그리며 아직 적용되지 않았다고 말한다", async () => {
+    const send = vi.fn((_text: string, _options?: { readonly deferApply?: boolean }) =>
+      Promise.resolve(okResult({ pendingProposal: pendingProposal() })));
+    const handle = mountReview({ send });
+    await runTurn(handle);
+
+    expect(send.mock.calls[0]?.[1]).toEqual({ deferApply: true });
+    const status = handle.element.querySelector<HTMLElement>("[data-testid='database-ai-turn-status']")!;
+    expect(status.dataset.phase).toBe("review");
+    expect(status.textContent).toContain("검토 대기");
+    expect(status.textContent).toContain("아직 프로젝트에 적용되지 않았습니다");
+
+    const cards = handle.element.querySelectorAll("[data-testid='database-ai-card']");
+    expect(cards).toHaveLength(1);
+    expect(handle.element.querySelector("[data-path='stats.maxHp'] .database-ai-card-after")?.textContent).toBe("300");
+    expect(handle.element.querySelector("[data-testid='database-ai-card-delta']")?.textContent).toBe("+236");
+
+    // 검토 중에는 결정 단추만 보이고 되돌리기·입력은 숨는다 — 되돌릴 것이 아직 없다.
+    expect(handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-turn-apply']")!.hidden).toBe(false);
+    expect(handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-turn-discard']")!.hidden).toBe(false);
+    expect(handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-turn-undo']")!.hidden).toBe(true);
+    expect(handle.element.querySelector<HTMLElement>(".database-ai-composer")!.hidden).toBe(true);
+    expect(handle.element.querySelector("[data-testid='database-ai-turn-apply'] .database-ai-turn-action-label")?.textContent).toBe("적용 1건");
+  });
+
+  it("적용은 브리지 apply 를 부르고 영수증·되돌리기로 넘어간다", async () => {
+    const apply = vi.fn(() => Promise.resolve(null));
+    const handle = mountReview({ apply, undoLabel: () => "AI 적 튀닝" });
+    await runTurn(handle);
+    handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-turn-apply']")!.click();
+    for (let i = 0; i < 4; i += 1) await Promise.resolve();
+
+    expect(apply).toHaveBeenCalledTimes(1);
+    const status = handle.element.querySelector<HTMLElement>("[data-testid='database-ai-turn-status']")!;
+    expect(status.dataset.phase).toBe("done");
+    expect(status.textContent).toContain("적용됐어요");
+    expect(handle.element.querySelectorAll("[data-testid='database-ai-card']")).toHaveLength(0);
+    const undoButton = handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-turn-undo']")!;
+    expect(undoButton.hidden).toBe(false);
+    expect(undoButton.textContent).toContain("AI 적 튀닝");
+  });
+
+  it("적용 실패 사유는 상태줄에 남기고 카드를 지우지 않는다", async () => {
+    const apply = vi.fn(() => Promise.resolve("기준 프로젝트가 바뀜습니다."));
+    const handle = mountReview({ apply });
+    await runTurn(handle);
+    handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-turn-apply']")!.click();
+    for (let i = 0; i < 4; i += 1) await Promise.resolve();
+
+    const status = handle.element.querySelector<HTMLElement>("[data-testid='database-ai-turn-status']")!;
+    expect(status.dataset.phase).toBe("error");
+    expect(status.textContent).toContain("기준 프로젝트가 바뀜습니다");
+    expect(handle.element.querySelectorAll("[data-testid='database-ai-card']")).toHaveLength(1);
+  });
+
+  it("버리기는 브리지 discard 를 부르고 카드를 치우며 프로젝트는 그대로라고 말한다", async () => {
+    const discard = vi.fn();
+    const handle = mountReview({ discard });
+    await runTurn(handle);
+    handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-turn-discard']")!.click();
+
+    expect(discard).toHaveBeenCalledTimes(1);
+    expect(handle.element.querySelectorAll("[data-testid='database-ai-card']")).toHaveLength(0);
+    const status = handle.element.querySelector<HTMLElement>("[data-testid='database-ai-turn-status']")!;
+    expect(status.textContent).toContain("프로젝트는 그대로입니다");
+    expect(handle.element.querySelector<HTMLElement>(".database-ai-composer")!.hidden).toBe(false);
+  });
+
+  it("검토가 걸려 있는 동안에는 새 요청을 보내지 않는다", async () => {
+    const send = vi.fn((_text: string, _options?: { readonly deferApply?: boolean }) =>
+      Promise.resolve(okResult({ pendingProposal: pendingProposal() })));
+    const handle = mountReview({ send });
+    await runTurn(handle);
+    const input = handle.element.querySelector<HTMLInputElement>("[data-testid='database-ai-input']")!;
+    input.value = "하나 더";
+    handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-run']")!.click();
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
+  it("카드의 「이동」은 navigate 를 부르고 오버레이를 접는다(검토 상태는 유지)", async () => {
+    const navigate = vi.fn();
+    const handle = mountReview({ navigate });
+    await runTurn(handle);
+    handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-card-goto']")!.click();
+
+    expect(navigate).toHaveBeenCalledWith("enemies", "enemy_imp");
+    expect(handle.element.hidden).toBe(true);
+    handle.setOpen(true);
+    expect(handle.element.querySelectorAll("[data-testid='database-ai-card']")).toHaveLength(1);
   });
 });
