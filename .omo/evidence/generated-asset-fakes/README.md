@@ -42,3 +42,24 @@ node --test test/oprnGeneratedAssets.test.mjs
 `oprnGeneratedAssetPlan.json` 의 `prompt`/`rawPath` 출처 기록이 거짓이 된다. 재생성 경로:
 `scripts/oprn-generated-assets.mjs`(프롬프트는 같은 계획 파일) → 승격 → 이 검증기 통과.
 `hero-01-charset.png`은 주인공 01 의 걷기 캐릭터셋이라 게임 화면에 직접 보인다.
+
+## 원본이 어디에도 없다 (2026-09-16 추가 확인)
+
+복구 가능한 진짜 원본을 찾아 이력을 전부 뒤졌고, **어디에도 없다**:
+
+| 확인한 곳 | 결과 |
+|---|---|
+| 현재 트리 | 가짜(fake=1.00) |
+| 초기 스냅샷 `0864daf96` (2026-06-23) 및 개명 커밋 `a39762825` 전후 | 가짜 (5492/787/363 bytes 그대로) |
+| Supabase 리소스 캐시 덤프 `51031f6ae` 의 `output/evidence/supabase-root-cache*/supabase-resource-cache/` | **같은 가짜 바이트** |
+| 저장소 CC0 팩(`public/assets/cc0/jetrel/icons`) | `potion-red.png`·`bronze-sword.png` 는 진짜지만 **다른 계열**(생성 아트가 아님) |
+
+즉 이 5장은 처음부터 가짜로 커밋됐고, 프로젝트 리소스 캐시에 들어간 사본도 같은 가짜다.
+그래서 "원본 복원" 경로는 없고 **재생성**만이 복구다.
+
+## 재생성 경로 상태 (2026-09-16 실측)
+- 이 환경의 이미지 생성 라우트는 전부 404 다 — `gpt-image-2.5-sunburst` · `gpt-image-2` ·
+  `gpt-image-2.5-flare` 모두 `source: provider-config:aliyun`, `paths: []`.
+- 편집기 자체의 생성 경로도 죽어 있다(Antigravity 400 · Codex 401).
+- 그래서 재생성은 **자격 복구 후** `scripts/oprn-generated-assets.mjs` 로 실행해야 한다.
+  지금 상태에서 손으로 그려 갈아치우면 계획 파일의 `prompt` 출처 기록이 거짓이 된다.
