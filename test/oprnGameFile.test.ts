@@ -83,7 +83,7 @@ describe("oprn game file", () => {
       source: "opened-file",
       hostSaveNamespace: "host-injected-save-slots",
       pathname: "/play/host-community-game",
-    })).toBe(`rpgzzu-export:${exportedProjectId(project)}`);
+    })).toBe(`oprn-export:${exportedProjectId(project)}`);
   });
 
   it("preserves the bundled player's host, community, then project namespace precedence", () => {
@@ -98,10 +98,10 @@ describe("oprn game file", () => {
     expect(resolveExportSaveNamespace(project, {
       source: "bundled",
       pathname: "/play/community%20game",
-    })).toBe("rpgzzu-export:community game");
+    })).toBe("oprn-export:community game");
     expect(resolveExportSaveNamespace(project, {
       source: "bundled",
       pathname: "/player.html",
-    })).toBe(`rpgzzu-export:${exportedProjectId(project)}`);
+    })).toBe(`oprn-export:${exportedProjectId(project)}`);
   });
 });

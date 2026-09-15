@@ -11,7 +11,7 @@ import type { Project } from "@/project/types";
 import { renderPlayer } from "@/player/player";
 import { renderOprnGameFilePicker } from "@/player/oprnGameFilePicker";
 import { readStandalonePayload } from "@/player/standalonePayload";
-import { setSaveSlotStorageNamespace } from "@/player/saveSlots";
+import { adoptLegacyExportSaves, setSaveSlotStorageNamespace } from "@/player/saveSlots";
 import { setExportedProject } from "@/player/exportProjectStoreShim";
 import {
   resolveExportSaveNamespace,
@@ -103,11 +103,18 @@ function startPlayer(
 ): void {
   try {
     setExportedProject(project);
-    setSaveSlotStorageNamespace(resolveExportSaveNamespace(project, {
+    const saveNamespace = resolveExportSaveNamespace(project, {
       source,
       hostSaveNamespace: boot.saveNamespace,
       pathname: window.location.pathname,
-    }));
+    });
+    setSaveSlotStorageNamespace(saveNamespace);
+    // 개명 전 접두사로 남은 이 게임의 세이브를 한 번 복사한다. 저장소 접근이 막힌 환경에서도 부팅은 막지 않는다.
+    try {
+      adoptLegacyExportSaves(window.localStorage, saveNamespace);
+    } catch (error) {
+      console.warn("[oprn] 옛 세이브 입양을 건너뜁니다:", error);
+    }
     document.title = project.meta.title || `${PRODUCT_BRAND} Player`;
     // 호스트(커뮤니티 사이트)가 주입한 returnUrl/hostFeatures — 잘못된 값은 조용히 무시된다.
     const host = parseHostBridge(boot);
