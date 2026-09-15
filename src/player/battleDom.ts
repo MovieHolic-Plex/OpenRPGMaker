@@ -122,6 +122,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   const initialSnapshot = options.runtime.snapshot();
   let destroyed = false;
+  let faintTimer: number | undefined;
   let choiceController: AbortController | undefined;
   let resultSent = false;
   let submenu: BattleCommandSubmenu = null;
@@ -343,9 +344,15 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
                 : "hit-damage",
           targetNode,
         );
-        // 이 타격으로 쓰러졌다면 기절음이 잠시 뒤따른다.
+        // 이 타격으로 쓰러졌다면 기절음이 잠시 뒤따른다. 그 사이 전투가 닫힐 수 있으므로
+        // id 를 보관해 destroy 가 끊는다 — 예전에는 익명 타이머라 씬이 사라진 뒤에도 살아
+        // 공유 오디오 핸들을 만졌다(2026-09-16 실측: 전투 창 41개 중 2개가 파괴 뒤 발화).
         if (wasAlive && presentation?.vitalsFor(feedback.targetId)?.defeated) {
-          window.setTimeout(() => playBattleCue("faint"), 260);
+          faintTimer = window.setTimeout(() => {
+            faintTimer = undefined;
+            if (destroyed) return;
+            playBattleCue("faint");
+          }, 260);
         }
         if (!feedback.healing && !feedback.miss) flashBattleField(root, feedback.critical ? "critical" : "hit", intensity);
       }
@@ -1178,6 +1185,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       // 멱등 — 여러 경로(onResult, teardown, 재마운트)에서 중복 호출돼도 안전해야 한다.
       if (destroyed) return;
       destroyed = true;
+      if (faintTimer !== undefined) {
+        window.clearTimeout(faintTimer);
+        faintTimer = undefined;
+      }
       choiceController?.abort();
       options.runtime.cancel();
       window.clearInterval(tickInterval);
