@@ -40,3 +40,5 @@ export declare function renderReleaseNotes(input: {
 }): string;
 
 export declare function bumpVersion(version: string, kind: string): string;
+
+export declare function decideReleaseKind(commits: readonly ReleaseCommit[]): "minor" | "patch" | null;

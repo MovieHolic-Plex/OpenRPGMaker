@@ -24,18 +24,17 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { readAppVersion } from "./lib/appVersion.mjs";
 import { buildReleaseSections, bumpVersion, collectReleaseItems, renderReleaseNotes } from "./lib/releaseNotes.mjs";
+import {
+  CHANGELOG_FILE,
+  bumpManifestVersion as bumpManifestVersionAt,
+  localDate,
+  writeChangelog as writeChangelogAt,
+} from "./lib/releaseFiles.mjs";
 
-const CHANGELOG_FILE = "CHANGELOG.md";
+
 const RELEASE_TAG_PREFIX = "v";
 /** 첫 릴리스 노트가 저장소 전체 이력(수천 건)을 나열하지 않게 하는 상한. */
 const FIRST_RELEASE_LIMIT = 300;
-const CHANGELOG_HEADER = `# 변경 기록
-
-이 파일은 \`npm run release\` 가 커밋 메시지에서 생성한다. 손으로 고치지 말 것 —
-고칠 것은 커밋 메시지다(\`feat:\` \`fix:\` \`refactor:\` … 규약은 openwiki/release-and-version.md).
-
-<!-- releases -->
-`;
 
 const root = process.cwd();
 
@@ -81,46 +80,17 @@ function parseArgs(argv) {
 }
 
 /** 버전 문자열을 name 표제에 못 박아 찾는다 — 의존성의 같은 버전 문자열을 건드리지 않기 위해서다. */
+/** lib 의 검증 실패를 종료 코드로 바꾼다 — 호출부는 그대로 다. */
 function bumpManifestVersion(file, from, to, expectedMatches) {
-  const path = join(root, file);
-  const text = readFileSync(path, "utf8");
-  const pattern = new RegExp(`("name":\\s*"oprn",\\s*\\n\\s*"version":\\s*")${from.replace(/\./g, "\\.")}(")`, "g");
-  const matches = text.match(pattern) ?? [];
-  if (matches.length !== expectedMatches) {
-    fail(`${file} 에서 버전 자리를 ${expectedMatches}개 찾아야 하는데 ${matches.length}개 찾았습니다 — 손으로 확인하세요.`);
+  try {
+    return bumpManifestVersionAt(root, file, from, to, expectedMatches);
+  } catch (error) {
+    fail(error instanceof Error ? error.message : String(error));
   }
-  const next = text.replace(pattern, `$1${to}$2`);
-  const parsed = JSON.parse(next);
-  if (parsed.version !== to) fail(`${file} 검증 실패: version=${parsed.version}`);
-  writeFileSync(path, next);
-  return parsed;
 }
 
 function writeChangelog(entry) {
-  const path = join(root, CHANGELOG_FILE);
-  const existing = existsSync(path) ? readFileSync(path, "utf8") : "";
-  if (!existing.trim()) {
-    writeFileSync(path, `${CHANGELOG_HEADER}\n${entry}`);
-    return;
-  }
-  const marker = existing.indexOf("<!-- releases -->");
-  if (marker < 0) {
-    // 표식이 없는 파일(사람이 시작한 CHANGELOG)도 덮지 않는다 — 첫 `## ` 앞에 끼워 넣는다.
-    const firstEntry = existing.indexOf("\n## ");
-    const head = firstEntry < 0 ? existing.trimEnd() : existing.slice(0, firstEntry).trimEnd();
-    const tail = firstEntry < 0 ? "" : existing.slice(firstEntry);
-    writeFileSync(path, `${head}\n\n${entry}${tail}`);
-    return;
-  }
-  const insertAt = existing.indexOf("\n", marker) + 1;
-  writeFileSync(path, `${existing.slice(0, insertAt)}\n${entry}${existing.slice(insertAt)}`);
-}
-
-/** 릴리스 날짜는 로컬 기준이다 — KST 새벽에 자른 릴리스가 전날로 적히면 안 된다. */
-function localDate(when = new Date()) {
-  const month = String(when.getMonth() + 1).padStart(2, "0");
-  const day = String(when.getDate()).padStart(2, "0");
-  return `${when.getFullYear()}-${month}-${day}`;
+  writeChangelogAt(root, entry);
 }
 
 function collectCommits(range, limit) {
