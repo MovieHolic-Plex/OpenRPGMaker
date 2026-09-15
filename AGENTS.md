@@ -42,6 +42,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - `openwiki/runtime-and-data.md` is now a slim index linking to the above topic pages.
    - `openwiki/architecture.md` for boot flow and ownership boundaries.
    - `openwiki/testing.md` for validation expectations.
+   - 릴리스·버전 (네 축 구분, 빌드 라벨, `npm run release` 절차): `openwiki/release-and-version.md`
    - LLM tile-placement benchmark (interior chipset as ground truth, reproducibility spine, 6 scoring schemes): `openwiki/interior-tile-benchmark.md`
    - LLM tile-placement benchmark on the DEFAULT chipset (combined_town, 9 axes matching the art director's questions, engine-derived ground truth, PNG evidence sheet): `openwiki/town-tile-benchmark.md`
    - Coding-agent benchmark (throw the repo + chipset at `claude -p` and score what it actually builds; fixture-independent village detection, quality + scale): `openwiki/agent-tile-benchmark.md`
@@ -169,4 +170,7 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
 - Keep project-specific knowledge inside this repo's `openwiki` directory. Other projects should have their own `openwiki/PROJECT_WIKI.md` and focused pages.
 - Do not store API keys or live credentials in wiki files, scripts, evidence, or commits.
 - Prefer focused validation. For UI changes, include browser evidence. For schema/runtime changes, include tests that prove load, migrate, save, and play behavior as relevant.
+- **버전을 손으로 올리지 마라.** 릴리스는 `npm run release` 하나로 자르고, 매 머지에 끌려 올리는 것이 아니다.
+  커밋 메시지가 릴리스 노트의 원본이다 — `feat:`/`fix:`/`refactor:` 규약을 지켜라. 네 버전 축(앱 · 문서 스키마 · 로컬 스토어 · 발행 게임)의
+  구분과 절차는 `openwiki/release-and-version.md`.
 - For **authored game content**, validation is incomplete until **Supabase load after save** succeeds (see hard rule above).
