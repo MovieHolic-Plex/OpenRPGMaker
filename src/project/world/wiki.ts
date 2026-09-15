@@ -4,6 +4,21 @@ import { createWikiSource, normalizeWikiMetadata, normalizeWorld } from "./guard
 import { lintWorld } from "./lint";
 import type { ProjectWikiApplyResult, ProjectWikiConflict, ProjectWikiPatch, ProjectWikiUpsert, ProjectWorld, WikiSource, WorldEntity } from "./types";
 
+/**
+ * The patch parsed, but applying it would damage existing records — a locked/manual document,
+ * or an inversion that buries a newer explicit fact.
+ *
+ * Kept apart from plain shape errors because the two deserve different answers: a model that
+ * cannot format its reply costs this turn a record, while a model reaching for protected
+ * memory has misread the project and must not keep authoring against it.
+ */
+export class ProjectWikiPatchConflictError extends ProjectFormatError {
+  constructor(readonly conflicts: readonly ProjectWikiConflict[]) {
+    super(`Invalid wiki patch: ${JSON.stringify(conflicts)}`);
+    this.name = "ProjectWikiPatchConflictError";
+  }
+}
+
 function record(value: unknown): Record<string, unknown> {
   if (typeof value !== "object" || value === null || Array.isArray(value)) throw new ProjectFormatError("Expected wiki object");
   return Object.fromEntries(Object.entries(value));
@@ -58,7 +73,7 @@ export function parseProjectWikiPatch(value: unknown, project: Project, sources:
   const result = { upserts };
   const base = project.world ?? { entities: [], relations: [] };
   const applied = applyProjectWikiPatch(base, base, result, sources);
-  if (applied.conflicts.length) throw new ProjectFormatError(`Invalid wiki patch: ${JSON.stringify(applied.conflicts)}`);
+  if (applied.conflicts.length) throw new ProjectWikiPatchConflictError(applied.conflicts);
   return result;
 }
 

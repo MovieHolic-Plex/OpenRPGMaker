@@ -1,7 +1,7 @@
 import type { Project } from "@/project/types";
 import { ProjectFormatError } from "@/project/io/errors";
 import { createWikiSource } from "@/project/world/guards";
-import { parseProjectWikiPatch } from "@/project/world/wiki";
+import { parseProjectWikiPatch, ProjectWikiPatchConflictError } from "@/project/world/wiki";
 import type { ProjectWikiPatch, WikiSource } from "@/project/world/types";
 import { chatCompletion, loadAiConfig, type AiConfig } from "./llmClient";
 import { projectWikiContext } from "./projectWikiContext";
@@ -60,6 +60,21 @@ export class ProjectWikiExtractionTimeoutError extends Error {
   }
 }
 
+/**
+ * The model's reply did not parse as a wiki patch.
+ *
+ * Distinct from the transport and project-state failures that share this call: only the
+ * *model's own output* lands here, so callers can treat it as "no record this turn" instead
+ * of a reason to abandon the request. The patch is still rejected whole — this type carries
+ * the refusal, it never softens it.
+ */
+export class ProjectWikiExtractionFormatError extends Error {
+  constructor(cause: unknown) {
+    super(cause instanceof Error ? cause.message : String(cause), { cause });
+    this.name = "ProjectWikiExtractionFormatError";
+  }
+}
+
 /** Uses the existing OAuth-aware transport/config; no stores, credentials, tools, or silent fallback. */
 export async function extractProjectWiki(input: ExtractProjectWikiInput, options: { readonly chat?: typeof chatCompletion; readonly getConfig?: () => AiConfig } = {}): Promise<ProjectWikiPatch> {
   input.signal?.throwIfAborted();
@@ -85,7 +100,16 @@ export async function extractProjectWiki(input: ExtractProjectWikiInput, options
     if (signal.aborted) throw abortReason();
     const content = result.message.content;
     const text = typeof content === "string" ? content : content?.filter((part) => part.type === "text").map((part) => part.text).join("") ?? "";
-    return parseProjectWikiPatch(text, input.project, input.sources);
+    try {
+      return parseProjectWikiPatch(text, input.project, input.sources);
+    } catch (cause) {
+      // Re-check the signal first: an abort that raced the parse is cancellation, not bad output.
+      if (signal.aborted) throw abortReason();
+      // A refusal to damage protected/superseded records is a project-state verdict, not a
+      // formatting slip — it keeps its own type so callers can keep treating it as fatal.
+      if (cause instanceof ProjectWikiPatchConflictError) throw cause;
+      throw new ProjectWikiExtractionFormatError(cause);
+    }
   } finally {
     signal.removeEventListener("abort", onAbort);
   }

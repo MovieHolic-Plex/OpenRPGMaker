@@ -1,4 +1,4 @@
-import { extractProjectWiki, ProjectWikiExtractionTimeoutError } from "@/ai/projectWikiClient";
+import { extractProjectWiki, ProjectWikiExtractionFormatError, ProjectWikiExtractionTimeoutError } from "@/ai/projectWikiClient";
 import { conversationScopeKey, queryConversationArchive, loadConversationForScope } from "@/ai/conversationStore";
 import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
 import { stripContextFooter } from "@/ai/contextFooter";
@@ -15,7 +15,14 @@ export type WikiDeliveryMilestone =
 
 /** Deferred preparation neither replaces the detached world nor claims a write/save. */
 export type WikiPreparationOutcome = Project["world"]
-  | { readonly kind: "deferred"; readonly reason: "extraction-timeout" };
+  | { readonly kind: "deferred"; readonly reason: WikiDeferralReason };
+
+/**
+ * Why this turn carries no record update. Both reasons describe the *extraction round only* —
+ * project-state failures (changed/conflict/save) still abort the request, because those mean
+ * the caller would author against records it never read.
+ */
+export type WikiDeferralReason = "extraction-timeout" | "extraction-invalid";
 
 export interface WikiTurnInput {
   readonly text: string;
@@ -169,7 +176,22 @@ export function createProjectWikiCoordinator(overrides: Partial<WikiCoordinatorD
         }, { getConfig: deps.getConfig });
       } catch (cause) {
         requireCurrent(input.signal);
-        if (!(cause instanceof ProjectWikiExtractionTimeoutError) || !existingWiki) throw cause;
+        // 유예는 추출 라운드의 두 실패에만 열려 있다 — 응답이 안 온 것(timeout)과, 온 응답이
+        // 기록 형식이 아닌 것(invalid). 둘 다 "이번 턴 기록 없음"일 뿐 요청을 막을 이유가 아니다.
+        //
+        // 유예하지 '않는' 것: 보호 문서 침범·역전 supersede(ProjectWikiPatchConflictError)와
+        // 프로젝트 변경·충돌·저장 실패. 앞은 모델이 프로젝트를 잘못 읽었다는 판정이고, 뒤는
+        // 읽지도 않은 기록 위에 저작하게 되는 경우라 둘 다 요청을 멈추는 편이 맞다.
+        //
+        // 형식 오류에 existingWiki 조건을 걸지 않는 이유(2026-09-15 회귀): 기록이 아직 없는
+        // 프로젝트에서 첫 추출이 깨진 답을 받으면 저작 자체가 영영 막힌다. 실제로 이 경로가
+        // 턴을 통째로 죽여 툴이 하나도 돌지 않았고, 맵에 아무것도 시공되지 않았다.
+        // 타임아웃 규칙은 건드리지 않는다(기록이 있을 때만 유예).
+        const reason: WikiDeferralReason | null =
+          cause instanceof ProjectWikiExtractionFormatError ? "extraction-invalid"
+          : cause instanceof ProjectWikiExtractionTimeoutError && existingWiki ? "extraction-timeout"
+          : null;
+        if (!reason) throw cause;
         // Deferral must not let a detached session author against changed records/scope.
         const current = deps.getProject();
         if (input.mapId && JSON.stringify(current.maps[input.mapId]) !== JSON.stringify(base.maps[input.mapId])) {
@@ -178,7 +200,7 @@ export function createProjectWikiCoordinator(overrides: Partial<WikiCoordinatorD
         if (JSON.stringify(current.world) !== JSON.stringify(base.world)) {
           throw new ProjectWikiCheckpointError("conflict", "기록을 읽는 동안 문서가 수정되었습니다. 최신 문서를 확인해주세요.");
         }
-        return { kind: "deferred", reason: "extraction-timeout" };
+        return { kind: "deferred", reason };
       }
       return apply(base, patch, [source], input.signal, input.onDelivery);
     },
