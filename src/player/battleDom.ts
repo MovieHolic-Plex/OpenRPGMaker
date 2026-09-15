@@ -39,6 +39,7 @@ import {
   createBattleSequencer,
   type DamageFeedback,
 } from "@/player/battleSequencer";
+import { openBattleTimerScope, clearBattleTimerScope, scheduleBattleTimer } from "@/player/battleTimerScope";
 import { applyBattleSystemGraphic } from "@/player/systemGraphics";
 import { store } from "@/project/store";
 import { bindBattleStageScale } from "@/player/battleStageScale";
@@ -119,10 +120,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   options.host.append(root);
   // 논리 해상도(320×240) 스케일링 — 스킨이 그 해상도 기준으로 저작돼 있다.
   const stageScale = bindBattleStageScale(options.host, root);
+  // 전투가 소유한 지연 콜백의 스코프를 연다 — teardown 이 남은 것을 한 번에 끊는다.
+  openBattleTimerScope();
 
   const initialSnapshot = options.runtime.snapshot();
   let destroyed = false;
-  let faintTimer: number | undefined;
   let choiceController: AbortController | undefined;
   let resultSent = false;
   let submenu: BattleCommandSubmenu = null;
@@ -348,8 +350,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         // id 를 보관해 destroy 가 끊는다 — 예전에는 익명 타이머라 씬이 사라진 뒤에도 살아
         // 공유 오디오 핸들을 만졌다(2026-09-16 실측: 전투 창 41개 중 2개가 파괴 뒤 발화).
         if (wasAlive && presentation?.vitalsFor(feedback.targetId)?.defeated) {
-          faintTimer = window.setTimeout(() => {
-            faintTimer = undefined;
+          scheduleBattleTimer(() => {
             if (destroyed) return;
             playBattleCue("faint");
           }, 260);
@@ -1185,10 +1186,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       // 멱등 — 여러 경로(onResult, teardown, 재마운트)에서 중복 호출돼도 안전해야 한다.
       if (destroyed) return;
       destroyed = true;
-      if (faintTimer !== undefined) {
-        window.clearTimeout(faintTimer);
-        faintTimer = undefined;
-      }
+      clearBattleTimerScope();
       choiceController?.abort();
       options.runtime.cancel();
       window.clearInterval(tickInterval);
