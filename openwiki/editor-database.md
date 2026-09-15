@@ -1781,8 +1781,4 @@ TURN/BATTLE MENU` 칩. 전투 애니메이션 타이밍 표 헤더 `사운드...
 
 검증이 "공백이 아니다"(`hasVariation`)만 봤고, 그 검사조차 **스캔라인 필터 0** 을 가정해 재인코딩된
 파일에서는 무의미했다. 지금은 `inspectPng` 가 필터를 실제로 풀어(`decodeRgba`) 픽셀을 보고,
-`isDryRunFake` 가 가짜 패턴을 잡아 승격을 거부한다. 계약은 두 층이다 — `test/oprnGeneratedAssets.test.mjs`(러너가 가짜를 승격하지 않는가)와 `test/generatedAssetPlaceholder.test.mjs`(저장소 `public/assets/generated/**` 전체를 훑어 알려진 5장 밖의 가짜가 없는가 · 그 5장이 복구되면 목록을 줄이라고 실패). 판정 함수는 `scripts/lib/dryRunFakePng.mjs` 하나를 공유한다.
-
-재생성은 **아직 안 했다** — 이 5장은 AI 생성 아트라 같은 파이프라인(프롬프트는
-`src/assets/oprnGeneratedAssetPlan.json`)으로 다시 만들어야 한다. 저장소 안 CC0 팩 그림으로 갈아치우면
-그 파일들의 출처 기록(`prompt`/`rawPath`)이 거짓이 된다. 증거: `.omo/evidence/generated-asset-fakes/`.
+`isDryRunFake` 가 가짜 패턴을 잡아 승격을 거부한다. 계약은 두 층이다 — `test/oprnGeneratedAssets.test.mjs`(러너가 가짜를 승격하지 않는가)와 `test/generatedAssetPlaceholder.test.mjs`(저장소 `public/assets/generated/**` 전체를 훑어 가짜가 **0장**인가). 판정 함수는 `scripts/lib/dryRunFakePng.mjs` 하나를 공유한다. 2026-06 의 가짜 5장은 2026-09-16 에 `agy` 파이프라인 재실행으로 복구했다 — 그때 `--print-timeout 900s` 가 필요하고(기본 180s 로는 에이전트 이미지 생성이 끝나지 않는다), 증거는 `.omo/evidence/generated-asset-fakes/` 에 있다. 복구 뒤 계약의 허용 목록은 비었으므로, 다시 채워지면 그건 부채를 새로 만든 것이다.
