@@ -35,13 +35,26 @@ test.afterAll(() => {
 
 async function launch(): Promise<{ app: ElectronApplication; page: Page }> {
   const app = await electron.launch({
-    args: [MAIN_BUNDLE],
+    args: [MAIN_BUNDLE, "--disable-gpu", "--disable-dev-shm-usage"],
     cwd: REPO_ROOT,
     env: { ...process.env, OPRN_SMOKE_PAGE: SMOKE_PAGE, OPRN_RENDERER_DIR: join(REPO_ROOT, "dist") },
   });
   const page = await app.firstWindow();
   await page.waitForLoadState("domcontentloaded");
   return { app, page };
+}
+
+/** 헤드리스 xvfb 에서 Electron 38 의 정상 종료가 실패한다(FATAL: Failed to shutdown) — 유예 뒤 강제한다. 그레이스풀 종료는 P4.4 닫기 절차 몫이다. */
+async function shutdown(app: ElectronApplication): Promise<void> {
+  await Promise.race([
+    app.evaluate(({ app: electronApp }) => { electronApp.exit(0); }).catch(() => {}),
+    new Promise((resolvePromise) => setTimeout(resolvePromise, 3_000)),
+  ]);
+  await Promise.race([
+    app.close().catch(() => {}),
+    new Promise((resolvePromise) => setTimeout(resolvePromise, 5_000)),
+  ]);
+  if (app.process().exitCode === null) app.process().kill("SIGKILL");
 }
 
 async function probeThroughBridge(page: Page, projectDir: string): Promise<BridgeProbe> {
@@ -73,7 +86,7 @@ async function probeThroughBridge(page: Page, projectDir: string): Promise<Bridg
 test("bridge opens a real folder, saves through the store, and reloads after restart", async () => {
   const first = await launch();
   const before = await probeThroughBridge(first.page, projectDir);
-  await first.app.close();
+  await shutdown(first.app);
 
   expect(before.projectId).toMatch(/^[0-9a-f-]{36}$/);
   expect(before.savedKind).toBe("saved");
@@ -100,7 +113,7 @@ test("bridge opens a real folder, saves through the store, and reloads after res
       dataVersion: Number(await bridge.project.dataVersion({ projectDir: dir })),
     };
   }, projectDir);
-  await second.app.close();
+  await shutdown(second.app);
 
   expect(after.revision).toBe(before.revisionAfter);
   expect(after.sha256).toBe(before.sha256Before);
