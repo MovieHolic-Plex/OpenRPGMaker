@@ -284,8 +284,8 @@ function assertTargetCapacity(draft: Project, request: AuthorVillageRequest): vo
       { code: "village-scope-conflict", mapId: map.id },
     );
   }
-  // 새 맵 생성(createVillageMap 기본 50×50)과 달리 기존 맵은 있는 크기가 전부다 —
-  // 집 1채 슬롯(8+여백)도 안 나오는 면적이면 여기서 거부한다.
+  // 시공 영역: bounds 가 있으면 그 사각형, 없으면 맵 전체. bounds 없는 기존 맵은 집 수가 요구하는
+  // 크기까지 아래에서 키운다(2026-09-15) — 예전에는 16×16 최소치까지만 키워서 우겨넣기가 났다.
   const w = bounds?.w ?? map.width;
   const h = bounds?.h ?? map.height;
   const area = { x: bounds?.x ?? 0, y: bounds?.y ?? 0, w, h };
@@ -298,17 +298,26 @@ function assertTargetCapacity(draft: Project, request: AuthorVillageRequest): vo
   // 2026-09-11 P2: 부족하면 실패 대신 좌상단-유지 잔디 확장(resize_map과 같은 규약) —
   // 기존 맵은 이벤트 잘림 없이 커지기만 하므로 비파괴다. 확장부는 잔디(TILE.GRASS)로,
   // 뒤이은 마을 시공이 그 자리를 채운다. 축소는 하지 않는다 — 이벤트·시작 좌표 가드가 필요해진다.
-  if (w < MIN_BOUNDS_SIZE || h < MIN_BOUNDS_SIZE || w > map.width || h > map.height) {
-    if (bounds) {
+  //
+  // bounds 가 있으면 그건 사용자가 정한 사각형이다 — 넓히지 않고 부족하면 거부한다.
+  if (bounds) {
+    if (w < MIN_BOUNDS_SIZE || h < MIN_BOUNDS_SIZE) {
       throw new ToolError(
         `author_village는 최소 ${MIN_BOUNDS_SIZE}x${MIN_BOUNDS_SIZE} 영역이 필요합니다: ${w}x${h}`,
         { code: "bounds-too-small", mapId: map.id },
       );
     }
-    const width = Math.max(w, MIN_BOUNDS_SIZE);
-    const height = Math.max(h, MIN_BOUNDS_SIZE);
-    growExistingVillageMap(map, width, height);
+    return;
   }
+
+  // 2026-09-15: 성장 목표가 MIN_BOUNDS_SIZE(16, 도구의 최소 요구치)였다. 그래서 30×30 맵에 집 20채를
+  // 요청하면 맵은 그대로 둔 채 우겨넣어 집이 덜 서거나 실패했다 —「기존 맵 크기는 사용자가 이미 정한
+  // 사실」이라는 전제가, 신축에만 쓰이던 환산기(estimateVillageSize)를 기존 맵에서 막고 있었다.
+  // 집 수가 요구하는 크기는 신축·기존 동일하게 같은 환산기가 정한다. 줄이지는 않으므로 비파괴다.
+  const needed = estimateVillageSize({ houseCount: request.houseCount });
+  const width = Math.max(w, MIN_BOUNDS_SIZE, needed.width);
+  const height = Math.max(h, MIN_BOUNDS_SIZE, needed.height);
+  if (width > map.width || height > map.height) growExistingVillageMap(map, width, height);
 }
 
 /** 좌상단 기준 잔디 확장 — resize_map 도구와 같은 데이터 규약(확장부 잔디, 스택 재배치, 이벤트 불변). */

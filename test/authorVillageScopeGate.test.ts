@@ -14,6 +14,7 @@ import type { ToolExecResult } from "@/editor/tools/types";
 import type { VillageBuildInspection } from "@/editor/tools/villageBuilder";
 import { TILE } from "@/project/defaults/constants";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
+import { estimateVillageSize } from "@/ai/constructionDeclaration";
 import { serialize } from "@/project/io";
 import {
   createExistingProject,
@@ -215,14 +216,63 @@ describe("author_village postconditions and parser", () => {
     });
     expect(result.ok, JSON.stringify(result.issues ?? [])).toBe(true);
     const grown = (context.project as Project).maps.map_existing as GameMap;
-    // 성장 하한은 MIN_BOUNDS_SIZE=16(파서 bounds 하한과 같다) — 12×12 → 16×16.
-    expect(grown.width).toBe(16);
-    expect(grown.height).toBe(16);
+    // 2026-09-15: 성장 목표가 MIN_BOUNDS_SIZE(16)에서 집 수 환산값으로 바뀌었다 — 집 1채 → 34×20.
+    // 신축이 쓰던 환산기를 기존 맵도 그대로 쓴다(같은 요청이면 같은 크기).
+    const expected = estimateVillageSize({ houseCount: 1 });
+    expect([grown.width, grown.height]).toEqual([expected.width, expected.height]);
     expect(grown.lowerTiles[0]).toBe(TILE.PATH);
     expect(grown.events.some((event) => event.id === "ev_keeper")).toBe(true);
     // 확장부는 잔디 — resize_map과 같은 데이터 규약.
     expect(grown.lowerTiles[(grown.height - 1) * grown.width + (grown.width - 1)]).toBe(TILE.GRASS);
   });
+  it("집 수가 요구하는 크기까지 기존 맵을 키운다 — 30×30에 집 12채를 우겨넣지 않는다", () => {
+    // Given: 손대지 않은 30×30 기존 맵 + 집 12채 요청(bounds 없음 = 맵 전체가 마을).
+    const context = { project: createExistingProject(30) };
+    const tool = stubTool(12);
+
+    // When: 기존 맵 대상으로 시공한다.
+    const result = runToolDefinition(context, tool, {
+      ...BASE,
+      houseCount: 12,
+      target: { kind: "existing", mapId: "map_existing", fullMap: true },
+    });
+
+    // Then: 맵이 신축과 같은 환산값까지 커진다 — 예전에는 30×30 그대로였다.
+    expect(result.ok, JSON.stringify(result.issues ?? [])).toBe(true);
+    const grown = (context.project as Project).maps.map_existing as GameMap;
+    const expected = estimateVillageSize({ houseCount: 12 });
+    expect([grown.width, grown.height]).toEqual([expected.width, expected.height]);
+    expect(grown.width).toBeGreaterThan(30);
+  });
+
+  it("이미 충분히 큰 맵은 건드리지 않는다 — 확장만 하고 축소는 없다", () => {
+    const context = { project: createExistingProject(120) };
+    const result = runToolDefinition(context, stubTool(2), {
+      ...BASE,
+      houseCount: 2,
+      target: { kind: "existing", mapId: "map_existing", fullMap: true },
+    });
+    expect(result.ok, JSON.stringify(result.issues ?? [])).toBe(true);
+    const map = (context.project as Project).maps.map_existing as GameMap;
+    expect([map.width, map.height]).toEqual([120, 120]);
+  });
+
+  it("bounds를 명시하면 키우지 않는다 — 사용자가 정한 사각형이 이긴다", () => {
+    // Given: 20×20 맵에 16×16 bounds + 집 20채(환산값은 74×52로 훨씬 크다).
+    const context = { project: createExistingProject(20) };
+    const before = (context.project.maps.map_existing as GameMap).width;
+
+    // When: bounds 를 준 채 많은 집을 요청한다.
+    runToolDefinition(context, stubTool(20), {
+      ...BASE,
+      houseCount: 20,
+      target: { kind: "existing", mapId: "map_existing", bounds: { x: 0, y: 0, w: 16, h: 16 } },
+    });
+
+    // Then: 맵 크기는 그대로다.
+    expect((context.project.maps.map_existing as GameMap).width).toBe(before);
+  });
+
   it("bounds-reserved 16x16 region passes on a 14x14 map after growth — bounds는 사용자가 정한 사실", () => {
     const context = { project: createExistingProject(20) };
     const tool = stubTool(1);
