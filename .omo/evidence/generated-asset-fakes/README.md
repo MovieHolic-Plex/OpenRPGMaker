@@ -76,7 +76,7 @@ node scripts/oprn-generated-assets.mjs agy-command \
 node scripts/oprn-generated-assets.mjs validate-only \
   --manifest src/assets/oprnGeneratedAssetPlan.json --raw-root <생성물 디렉터리> --out /tmp/regen.json
 
-# 4) 승격 후 저장소 계약이 조여진다 — 복구한 id 를 KNOWN_DAMAGED 에서 븼야 통과한다
+# 4) 승격 후 저장소 계약이 조여진다 — 복구한 id 를 KNOWN_DAMAGED 에서 빼야 통과한다
 node --test test/generatedAssetPlaceholder.test.mjs
 ```
 
