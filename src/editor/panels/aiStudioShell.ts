@@ -29,6 +29,19 @@ import type { ToolDefinition } from "@/editor/tools/types";
 import { TOOL_LABELS, toolGroup, toolIconKey, toolLabel, type ToolGroup } from "./aiToolLabels";
 import { deckIcon } from "./aiDeckIcons";
 import { subscribeTeamActivity } from "@/ai/piAgent/teamActivity";
+import { LANE_STATUS_LABEL } from "@/ai/piAgent/lane";
+import type { LaneManager } from "./aiLaneManager";
+import { laneSession } from "./aiLaneSession";
+import {
+  laneStatusClass,
+  renderAgentLiveList,
+  renderLaneThread,
+  renderNewLanePane,
+  renderTeamLiveRows,
+  renderThreadList,
+  type LaneFormState,
+  type StudioThread,
+} from "./aiLaneBoard";
 import { teamBoardTotals, type TeamBoardState } from "@/ai/piAgent/teamBoardState";
 import { createTeamWorkPane } from "./aiTeamWorkPane";
 import { findParentMapId, isMapTreeFolder, mapTreeNodeLabel } from "@/project/mapTree";
@@ -36,7 +49,7 @@ import { store } from "@/project/store";
 import type { MapId, MapTreeNode, Project } from "@/project/types";
 import { el } from "@/util/dom";
 
-export type StudioDeckTab = "tools" | "work" | "planning" | "changes" | "activity";
+export type StudioDeckTab = "newLane" | "tools" | "work" | "planning" | "changes" | "activity";
 
 export interface StudioShellPieces {
   readonly historyLogMount: HTMLElement;
@@ -49,6 +62,8 @@ export interface StudioShellOptions {
   readonly onUseTool?: (tool: ToolDefinition) => void;
   /** 브리핑의 제안 버튼 — 입력줄을 채우는 쪽이 받는다. */
   readonly onSuggest?: (instruction: string) => void;
+  /** 레인 매니저를 외부가 소유하면 그걸 쓴다(기본은 셸이 만든다). */
+  readonly laneManager?: LaneManager;
 }
 
 export interface StudioShell {
@@ -75,6 +90,7 @@ const WORK_STATUS_LABEL: Record<WorkItem["status"], string> = {
 };
 
 const DECK_TABS: readonly { readonly id: StudioDeckTab; readonly label: string; readonly icon: EditorIconName }[] = [
+  { id: "newLane", label: "새 레인", icon: "plus" },
   { id: "tools", label: "도구", icon: "tool" },
   { id: "work", label: "작업", icon: "lines" },
   { id: "planning", label: "기획", icon: "check" },
@@ -135,8 +151,9 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
   let logHome: HTMLElement | null = null;
   let barHome: HTMLElement | null = null;
   let pieces: StudioShellPieces | null = null;
-  let deckTab: StudioDeckTab = "tools";
-  let deckCollapsed = false;
+  let deckTab: StudioDeckTab = "newLane";
+  // 2026-09-16: 덱은 맵 위로 올라오는 오버레이 드로워다 — 기본은 닫힘, 맵이 세로를 다 쓴다.
+  let deckCollapsed = true;
   let workPlan: WorkPlan | null = null;
   let workActive = false;
   let changePreview: ChangePreviewInput | null = null;
@@ -220,6 +237,58 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     ],
   });
 
+  // ── 좌 레일 — 조수 활동(실시간) · 채팅 목록 · 장면 ───────────────────────────
+  // 2026-09-16 재배치: 가운데는 맵, 왼쪽은 «지금 누가 무엇을 하는가 + 무슨 대화가 있는가»,
+  // 오른쪽은 「지금 보고 있는 채팅」. 장면 목록은 좌 레일 안으로 들어와 검색·추가를 그대로 갖는다.
+  let selectedThreadId = "director";
+  const agentCount = el("span", { class: "ai-studio-count", text: "0" });
+  const agentsLiveDot = el("span", { class: "ai-studio-status-dot", attrs: { "aria-hidden": "true" } });
+  const agentList = el("div", { class: "ai-studio-agents", dataset: { testid: "ai-studio-agents" } });
+  const threadList = el("div", { class: "ai-studio-threads", dataset: { testid: "ai-studio-threads" } });
+  const leftRail = el("aside", {
+    class: "ai-studio-left",
+    attrs: { "aria-label": "조수와 채팅" },
+    dataset: { testid: "ai-studio-left" },
+    children: [
+      el("section", {
+        class: "ai-studio-rail-section is-agents",
+        children: [
+          el("div", {
+            class: "ai-studio-pane-head",
+            children: [
+              el("h3", { class: "ai-studio-pane-title", children: ["조수", agentCount] }),
+              el("div", {
+                class: "ai-studio-pane-actions",
+                children: [
+                  el("button", {
+                    class: "ai-studio-icon-btn",
+                    attrs: { type: "button", title: "새 레인", "aria-label": "새 레인 만들기" },
+                    dataset: { testid: "ai-studio-new-lane" },
+                    children: [renderEditorIcon("plus")],
+                    on: { click: () => showTab("newLane", true) },
+                  }),
+                  agentsLiveDot,
+                ],
+              }),
+            ],
+          }),
+          agentList,
+        ],
+      }),
+      el("section", {
+        class: "ai-studio-rail-section is-threads",
+        children: [
+          el("div", {
+            class: "ai-studio-pane-head",
+            children: [el("h3", { class: "ai-studio-pane-title", children: ["채팅"] })],
+          }),
+          threadList,
+        ],
+      }),
+      scenesPane,
+    ],
+  });
+
   // ── 모니터 ───────────────────────────────────────────────────────────────
   const monitorStage = el("div", {
     class: "ai-studio-monitor-stage",
@@ -245,6 +314,19 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     children: [renderEditorIcon("arrowLeft"), el("span", { text: "편집기로" })],
     on: { click: () => options.onExit() },
   });
+  // 닫힌 드로워의 입구 — 덱이 화면 밖으로 나가도 이 손잡이는 맵 위에 남는다.
+  const drawerHandle = el("button", {
+    class: "ai-studio-drawer-handle",
+    attrs: { type: "button", title: "도구 드로워 열기", "aria-label": "도구 드로워", "aria-expanded": "false" },
+    dataset: { testid: "ai-studio-deck-handle" },
+    children: [el("span", { text: "도구" }), renderEditorIcon("caret")],
+    on: {
+      click: () => {
+        if (deckCollapsed) showTab(deckTab, true);
+        else setDeckCollapsed(true);
+      },
+    },
+  });
   const monitorPane = el("section", {
     class: "ai-studio-monitor",
     dataset: { testid: "ai-studio-monitor" },
@@ -258,6 +340,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
         ],
       }),
       monitorStage,
+      drawerHandle,
     ],
   });
 
@@ -276,6 +359,10 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     class: "ai-studio-chat-log",
     dataset: { testid: "ai-studio-chat-log" },
   });
+  const laneThreadSlot = el("div", {
+    class: "ai-studio-lane-thread-slot",
+    dataset: { testid: "ai-studio-lane-thread-slot" },
+  });
   const composerSlot = el("div", {
     class: "ai-studio-composer",
     dataset: { testid: "ai-studio-composer" },
@@ -287,10 +374,11 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     children: [renderEditorIcon("arrowRight")],
     on: { click: () => setChatCollapsed(!chatCollapsed) },
   });
+  const chatHeadTitle = el("h2", { class: "ai-studio-who-title", text: "감독", dataset: { testid: "ai-studio-thread-title" } });
   const chatPane = el("aside", {
     class: "ai-studio-chat",
     dataset: { testid: "ai-studio-chat" },
-    attrs: { "aria-label": "조수" },
+    attrs: { "aria-label": "지금 보는 chat" },
     children: [
       el("header", {
         class: "ai-studio-chat-head",
@@ -299,14 +387,14 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
           el("div", {
             class: "ai-studio-who",
             children: [
-              el("h2", { class: "ai-studio-who-title", text: "조수" }),
+              chatHeadTitle,
               statusLine,
             ],
           }),
           chatCollapseButton,
         ],
       }),
-      el("div", { class: "ai-studio-chat-body", children: [briefing, chatLogSlot] }),
+      el("div", { class: "ai-studio-chat-body", children: [briefing, chatLogSlot, laneThreadSlot] }),
       composerSlot,
     ],
   });
@@ -331,10 +419,10 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
       const badge = el("span", { class: "ai-studio-tab-badge", attrs: { hidden: "" } });
       const button = el("button", {
         class: "ai-studio-tab",
-        attrs: { type: "button", role: "tab", "aria-selected": "false" },
+        attrs: { type: "button", role: "tab", "aria-selected": "false", "aria-label": tab.label, title: tab.label },
         dataset: { testid: `ai-studio-tab-${tab.id}` },
         children: [renderEditorIcon(tab.icon), el("span", { text: tab.label }), badge],
-        on: { click: () => showTab(tab.id) },
+        on: { click: () => showTab(tab.id, true) },
       }) as HTMLButtonElement;
       tabButtons.set(tab.id, button);
       tabBadges.set(tab.id, badge);
@@ -371,7 +459,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     on: { click: () => setDeckCollapsed(!deckCollapsed) },
   });
   const deckPaneRoot = el("section", {
-    class: "ai-studio-deck",
+    class: "ai-studio-deck is-drawer",
     dataset: { testid: "ai-studio-deck" },
     attrs: { "aria-label": "AI 도구 덱" },
     children: [
@@ -384,10 +472,10 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
   });
 
   const root = el("div", {
-    class: "ai-studio-shell",
+    class: "ai-studio-shell is-deck-overlay",
     attrs: { "aria-label": "AI 스튜디오" },
     dataset: { testid: "ai-studio-shell" },
-    children: [scenesPane, monitorPane, chatPane, deckPaneRoot],
+    children: [leftRail, monitorPane, chatPane, deckPaneRoot],
   });
 
   // ── 스플리터(리사이즈) ────────────────────────────────────────────────────
@@ -503,17 +591,55 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
   };
 
   const scenesSplitter = createSplitter("scenes", "vertical", "ai-studio-split-scenes", "장면 레일 너비");
-  const deckSplitter = createSplitter("deck", "horizontal", "ai-studio-split-deck", "도구 덱 높이");
   const chatSplitter = createSplitter("chat", "vertical", "ai-studio-split-chat", "조수 너비");
   splitterCleanup = (): void => {
     for (const fn of splitterCleanups.splice(0)) fn();
   };
-  // 그리드 자식으로 끼워 넣는다 — 순서가 열 배치(장면 | 손잡이 | 모니터 | 손잡이 | 조수 | 덱)다.
+  // 그리드 자식으로 끼워 넣는다 — 순서가 열 배치(좌 레일 | 손잡이 | 모니터 | 손잡이 | 채팅 | 덱)다.
   // 덱 손잡이는 덱 섹션 첫 자식으로 넣어 머리띠 바로 위에만 앉힌다(탭 클릭 가로채기 방지).
   // FakeDom(test/fakeDom.ts)에는 insertBefore가 없어 children 한 번에 박는다.
-  deckPaneRoot.prepend(deckSplitter);
-  root.replaceChildren(scenesPane, scenesSplitter, monitorPane, chatSplitter, chatPane, deckPaneRoot);
+  root.replaceChildren(leftRail, scenesSplitter, monitorPane, chatSplitter, chatPane, deckPaneRoot);
   for (const key of ["scenes", "chat", "deck"] as const) applySplitterSize(key, layoutSizes[key], false);
+
+  // 좁은 화면에서는 좌·우 열을 깎아 가운데 맵을 지킨다 — 저장값(사용자가 드래그한 폭)은 건드리지 않고
+  // CSS 변수만 조인다. 36px = 손잡이 2×8 + 셸 좌우 여백 2×10. (실측 2026-09-16: 1024 에서 그냥 두면 맵이 330px 였다.)
+  const STUDIO_CHROME_WIDTH = 36;
+  const MIN_MAP_WIDTH = 360;
+  const setColumnVar = (key: "scenes" | "chat", px: number): void => {
+    root.style.setProperty(key === "scenes" ? "--studio-scenes-w" : "--studio-chat-w", px + "px");
+  };
+  let lastResponsive: string | null = null;
+  const COLLAPSED_COLUMN_WIDTH = 52;
+  const applyResponsiveWidths = (): void => {
+    if (typeof window === "undefined") return;
+    const viewport = window.innerWidth;
+    if (!Number.isFinite(viewport) || viewport <= 0) return;
+    let scenes = scenesCollapsed ? COLLAPSED_COLUMN_WIDTH : layoutSizes.scenes;
+    let chat = chatCollapsed ? COLLAPSED_COLUMN_WIDTH : layoutSizes.chat;
+    let deficit = scenes + chat + STUDIO_CHROME_WIDTH + MIN_MAP_WIDTH - viewport;
+    // 오른쪽(지금 보는 채팅)부터 깎고, 그래도 모자라면 왼쪽도 깎는다. 접힌 열은 깎을 것이 없다.
+    if (deficit > 0 && !chatCollapsed) { const next = Math.max(STUDIO_SPLITTER_MIN.chat, chat - deficit); deficit -= chat - next; chat = next; }
+    if (deficit > 0 && !scenesCollapsed) { scenes = Math.max(STUDIO_SPLITTER_MIN.scenes, scenes - deficit); }
+    const signature = [scenesCollapsed, chatCollapsed, scenes, chat].join("|");
+    // requestCanvasFit 이 «다시 맞추기» 로 resize 를 다시 쏘므로, 값이 그대로면 여기서 멈춘다(무한 왕복 방지).
+    if (signature === lastResponsive) return;
+    lastResponsive = signature;
+    // 접힘 폭(52px)은 CSS 클래스가 소유한다 — 인라인 변수를 지워야 그 규칙이 산다.
+    if (scenesCollapsed) root.style.removeProperty("--studio-scenes-w");
+    else setColumnVar("scenes", scenes);
+    if (chatCollapsed) root.style.removeProperty("--studio-chat-w");
+    else setColumnVar("chat", chat);
+    requestCanvasFit();
+  };
+  applyResponsiveWidths();
+  if (typeof window !== "undefined") window.addEventListener("resize", applyResponsiveWidths);
+  // 드로워가 열려 있을 때 Esc 로 닫는다 — 맵 위를 가리는 표면이므로 탈출구가 필요하다.
+  const onDrawerKeydown = (event: KeyboardEvent): void => {
+    if (event.key !== "Escape" || event.isComposing || event.defaultPrevented || deckCollapsed || !attachedTo) return;
+    event.preventDefault();
+    setDeckCollapsed(true);
+  };
+  if (typeof document !== "undefined") document.addEventListener("keydown", onDrawerKeydown);
 
   // ── 덱 상태 ───────────────────────────────────────────────────────────────
   const setBadge = (tab: StudioDeckTab, text: string | null): void => {
@@ -530,7 +656,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     badge.textContent = text;
   };
 
-  const showTab = (tab: StudioDeckTab): void => {
+  const showTab = (tab: StudioDeckTab, open = false): void => {
     deckTab = tab;
     for (const [id, button] of tabButtons) {
       const on = id === tab;
@@ -539,15 +665,26 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     }
     toolFilterWrap.classList.toggle("is-hidden", tab !== "tools");
     renderDeck();
+    // 사용자가 탭을 골랐거나 작업·변경이 새로 뜬 것이면 드로워를 연다. 부팅 직후의 초기화는 열지 않는다.
+    if (open) setDeckCollapsed(false);
   };
 
+  let drawerOpener: HTMLElement | null = null;
   const setDeckCollapsed = (next: boolean): void => {
+    const changed = deckCollapsed !== next;
+    if (changed && !next) drawerOpener = document.activeElement as HTMLElement | null;
     deckCollapsed = next;
+    deckPaneRoot.inert = next;
+    deckPaneRoot.setAttribute("aria-hidden", String(next));
+    root.classList.toggle("is-deck-collapsed", next);
     deckPaneRoot.classList.toggle("is-collapsed", next);
+    drawerHandle.setAttribute("aria-expanded", String(!next));
+    drawerHandle.setAttribute("title", next ? "도구 드로워 열기" : "도구 드로워 닫기");
     collapseButton.setAttribute("aria-expanded", String(!next));
-    collapseButton.setAttribute("aria-label", next ? "덱 펼치기" : "덱 접기");
-    collapseButton.setAttribute("title", next ? "덱 펼치기" : "덱 접기");
-    requestCanvasFit();
+    collapseButton.setAttribute("aria-label", "도구 드로워 닫기");
+    collapseButton.setAttribute("title", "도구 드로워 닫기");
+    if (changed && next) (drawerOpener?.isConnected ? drawerOpener : drawerHandle).focus();
+    else if (changed) tabButtons.get(deckTab)?.focus();
   };
 
   const setScenesCollapsed = (next: boolean): void => {
@@ -557,6 +694,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     scenesCollapseButton.setAttribute("aria-label", next ? "장면 목록 펼치기" : "장면 목록 접기");
     scenesCollapseButton.setAttribute("title", next ? "장면 목록 펼치기" : "장면 목록 접기");
     scenesCollapseButton.replaceChildren(renderEditorIcon(next ? "arrowRight" : "arrowLeft"));
+    applyResponsiveWidths();
     requestCanvasFit();
   };
 
@@ -567,6 +705,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     chatCollapseButton.setAttribute("aria-label", next ? "조수 펼치기" : "조수 접기");
     chatCollapseButton.setAttribute("title", next ? "조수 펼치기" : "조수 접기");
     chatCollapseButton.replaceChildren(renderEditorIcon(next ? "arrowLeft" : "arrowRight"));
+    applyResponsiveWidths();
     requestCanvasFit();
   };
 
@@ -586,7 +725,219 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
   let teamBoard: TeamBoardState | null = null;
   const teamWork = createTeamWorkPane({ detail: true });
 
+  // ── 에이전트 레인 ─────────────────────────────────────────────────────────
+  // 실행·중단·적용은 매니저가 소유한다. 셸은 «고른 레인·폼 값·안내문» 만 들고 그린다.
+  // 레인은 화면보다 오래 산다 — 셸이 다시 만들어져도 세션 매니저가 들고 있다(aiLaneSession.ts).
+  const laneManager = options.laneManager ?? laneSession();
+  const unsubscribeLanes = laneManager.subscribe(() => onLanesChanged());
+  const laneDefaults = laneManager.defaults();
+  let laneForm: LaneFormState = {
+    mapIds: [editorState.get().currentMapId ?? store.getCurrent().startMapId].filter((id): id is string => Boolean(id)),
+    agentLabel: "시공A",
+    provider: laneDefaults.provider,
+    model: laneDefaults.model,
+    instruction: "",
+    maxTurns: 12,
+  };
+  let laneNotice: string | null = null;
+  let laneSignature = "";
+  let laneSeq = 0;
+
+  /** 입력 중인 필드를 다시 그리면 타이핑이 사라진다 — 기획 판과 같은 이유로 포커스 동안은 건너뛴다. */
+  const lanesTyping = (): boolean => {
+    if (typeof document === "undefined") return false;
+    const active = document.activeElement;
+    if (!active || !deckPane.contains(active)) return false;
+    return active.tagName === "INPUT" || active.tagName === "TEXTAREA";
+  };
+
+  /** 레인 하나가 바뀔 때마다 장면 목록을 다시 짓지 않는다 — 상태 구성이 바뀔 때만 칩을 갱신한다. */
+  const onLanesChanged = (): void => {
+    const lanes = laneManager.lanes();
+    const review = lanes.filter((lane) => lane.status === "review").length;
+    setBadge("newLane", review > 0 ? String(review) : null);
+    const signature = lanes.map((lane) => `${lane.spec.id}:${lane.status}`).join("|");
+    if (signature !== laneSignature) {
+      laneSignature = signature;
+      refreshScenes();
+    }
+    renderLeftRail();
+    syncThreadView();
+    if (deckTab === "newLane" && !lanesTyping()) renderDeck();
+  };
+
+  const studioThreads = (): readonly StudioThread[] => [
+    { id: "director", label: "감독", kind: "director", detail: "전체 지시·질문·배정" },
+    ...laneManager.lanes().map((lane) => ({
+      id: lane.spec.id,
+      label: lane.spec.label,
+      kind: "lane" as const,
+      status: lane.status,
+      detail: lane.spec.agentLabel,
+    })),
+  ];
+
+  const renderLeftRail = (): void => {
+    const lanes = laneManager.lanes();
+    const teamAgents = teamBoard?.agents ?? [];
+    const running = lanes.filter((lane) => lane.status === "running").length
+      + teamAgents.filter((agent) => agent.state === "실행 중").length;
+    const review = lanes.filter((lane) => lane.status === "review").length;
+    agentCount.textContent = String(lanes.length + teamAgents.length);
+    agentsLiveDot.dataset.state = running > 0 ? "busy" : review > 0 ? "attention" : "idle";
+    const blocks: HTMLElement[] = [];
+    if (lanes.length > 0) {
+      blocks.push(renderAgentLiveList({
+        lanes,
+        project: store.getCurrent(),
+        now: Date.now(),
+        selectedThreadId,
+        notice: laneNotice,
+        onSelectThread: (id) => selectThread(id),
+        onStop: (id) => laneManager.stop(id),
+        onApply: (id) => void applyLane(id),
+        onDiscard: (id) => laneManager.discard(id),
+      }));
+    }
+    // 팀 실행(/pi team)의 팀장·팀원도 같은 절에 산다 — 여기서 안 보이면 「왼쪽에서 실시간」 이 반쪽이 된다.
+    const teamBlock = renderTeamLiveRows({ agents: teamAgents, onOpenBoard: () => showTab("work", true) });
+    if (teamBlock) blocks.push(teamBlock);
+    if (blocks.length === 0) {
+      blocks.push(renderAgentLiveList({
+        lanes: [], project: store.getCurrent(), now: Date.now(), selectedThreadId,
+        notice: laneNotice, onSelectThread: (id) => selectThread(id),
+        onStop: () => undefined, onApply: () => undefined, onDiscard: () => undefined,
+      }));
+    }
+    agentList.replaceChildren(...blocks);
+    threadList.replaceChildren(renderThreadList({
+      threads: studioThreads(),
+      selectedId: selectedThreadId,
+      onSelect: (id) => selectThread(id),
+    }));
+  };
+
+  const selectThread = (id: string): void => {
+    selectedThreadId = id;
+    renderLeftRail();
+    syncThreadView();
+    if (deckTab === "newLane") renderDeck();
+  };
+
+  /** 오른쪽 열 = 지금 보고 있는 채팅. 감독이면 기존 로그·포저, 레인이면 그 레인 스레드. */
+  const syncThreadView = (): void => {
+    const lane = selectedThreadId === "director" ? null : laneManager.get(selectedThreadId);
+    chatPane.classList.toggle("is-lane-thread", lane !== null);
+    chatHeadTitle.textContent = lane ? `${lane.spec.label} · ${lane.spec.agentLabel}` : "감독";
+    if (!lane) {
+      laneThreadSlot.replaceChildren();
+      return;
+    }
+    laneThreadSlot.replaceChildren(renderLaneThread({
+      lane,
+      project: store.getCurrent(),
+      now: Date.now(),
+      notice: laneNotice,
+      onStart: (id) => void startLane(id),
+      onStop: (id) => laneManager.stop(id),
+      onRetry: (id) => void startLane(id),
+      onApply: (id) => void applyLane(id),
+      onDiscard: (id) => laneManager.discard(id),
+      onFollowUp: (id, text) => void followUpLane(id, text),
+    }));
+  };
+
+  const laneLabel = (mapIds: readonly string[]): string => {
+    const project = store.getCurrent();
+    return mapIds.map((id) => project.maps[id]?.name ?? id).join(" + ") || "레인";
+  };
+
+  const laneChipFor = (mapId: string): HTMLElement | null => {
+    const lane = laneManager.lanes().find((state) => state.spec.mapIds.includes(mapId) && state.status !== "discarded");
+    if (!lane) return null;
+    return el("span", {
+      class: `ai-studio-lane-chip ${laneStatusClass(lane.status)}`,
+      text: `${lane.spec.agentLabel} · ${LANE_STATUS_LABEL[lane.status]}`,
+      dataset: { testid: "ai-studio-lane-chip", laneId: lane.spec.id, status: lane.status },
+    });
+  };
+
+  const startLane = async (id: string): Promise<void> => {
+    const outcome = await laneManager.start(id);
+    laneNotice = outcome.ok ? null : outcome.issue ?? "시작하지 못했습니다";
+    renderDeck();
+    renderLeftRail();
+    syncThreadView();
+  };
+
+  const applyLane = async (id: string): Promise<void> => {
+    laneNotice = "적용 중…";
+    renderDeck();
+    renderLeftRail();
+    const outcome = await laneManager.apply(id);
+    laneNotice = outcome.ok
+      ? `적용했습니다 — 바뀐 키 ${outcome.changedKeys.length}개${outcome.spills.length > 0 ? `, 묶음 밖 ${outcome.spills.length}건 버림` : ""}`
+      : outcome.issue;
+    renderDeck();
+    renderLeftRail();
+    syncThreadView();
+  };
+
+  const createLaneFromForm = (): void => {
+    const instruction = laneForm.instruction.trim();
+    if (laneForm.mapIds.length === 0) { laneNotice = "묶음을 하나 이상 고르세요"; renderDeck(); return; }
+    if (instruction.length === 0) { laneNotice = "지시를 한 줄 적으세요"; renderDeck(); return; }
+    laneSeq += 1;
+    const id = `lane_${laneSeq}_${Math.random().toString(36).slice(2, 7)}`;
+    laneManager.add({
+      id,
+      label: laneLabel(laneForm.mapIds),
+      mapIds: [...laneForm.mapIds],
+      agentLabel: laneForm.agentLabel.trim() || "에이전트",
+      provider: laneForm.provider,
+      model: laneForm.model,
+      instruction,
+      maxTurns: laneForm.maxTurns,
+    });
+    selectedThreadId = id;
+    laneForm = { ...laneForm, instruction: "" };
+    laneNotice = null;
+    setDeckCollapsed(true);
+    selectThread(id);
+    void startLane(id);
+  };
+
+  const followUpLane = async (id: string, text: string): Promise<void> => {
+    const lane = laneManager.get(id);
+    if (!lane) return;
+    // Pi 실행은 무상태다 — 후속 지시는 앞선 지시·보고를 문자열로 다시 실어 새 실행으로 보낸다.
+    const report = lane.steps.filter((step) => step.kind === "assistant").slice(-1)[0]?.text ?? "";
+    const instruction = [
+      `원래 지시: ${lane.spec.instruction}`,
+      report ? `이전 보고: ${report}` : "",
+      `추가 지시: ${text}`,
+    ].filter(Boolean).join("\n");
+    const outcome = await laneManager.start(id, { instruction });
+    laneNotice = outcome.ok ? null : outcome.issue ?? "시작하지 못했습니다";
+    renderDeck();
+  };
+
+
   const renderDeck = (): void => {
+    if (deckTab === "newLane") {
+      deckPane.replaceChildren(renderNewLanePane({
+        form: laneForm,
+        project: store.getCurrent(),
+        currentMapId: editorState.get().currentMapId ?? null,
+        notice: laneNotice,
+        onFormChange: (patch) => {
+          laneForm = { ...laneForm, ...patch };
+          if (patch.provider !== undefined || patch.mapIds !== undefined) renderDeck();
+        },
+        onCreate: createLaneFromForm,
+      }));
+      return;
+    }
     if (deckTab === "tools") {
       deckPane.replaceChildren(renderToolsPane(toolQuery, options.onUseTool));
       return;
@@ -626,7 +977,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     const rows: HTMLElement[] = [];
     const query = sceneQuery.toLocaleLowerCase();
     expandAncestors(project.mapTree, currentId, expandedScenes);
-    walkScenes(project.mapTree, null, 0, project, currentId, query, rows, expandedScenes, (mapId) => {
+    walkScenes(project.mapTree, null, 0, project, currentId, query, rows, expandedScenes, laneChipFor, (mapId) => {
       if (expandedScenes.has(mapId)) expandedScenes.delete(mapId);
       else expandedScenes.add(mapId);
       refreshScenes();
@@ -829,37 +1180,19 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     setBadge("work", `${done}/${items.length}`);
   };
 
-  // 실행 보드가 뜨면 덱을 한 번 키운다 — 236px 기본 높이면 상세 과정이 두 행밖에 안 보인다. 사용자가 저장한 높이가
-  // 아니면(드래그해 둔 값) 손대지 않고, 보드가 사라질 때 우리가 키운 값 그대로면 기본으로 되돌린다. 저장은 안 한다.
-  const BOARD_DECK_HEIGHT = 420;
-  let deckGrownForBoard = false;
-  const growDeckForBoard = (): void => {
-    if (layoutSizes.deck !== SPLITTER_DEFAULTS.deck) return;
-    applySplitterSize("deck", BOARD_DECK_HEIGHT, false);
-    deckGrownForBoard = true;
-    requestCanvasFit();
-  };
-  const restoreDeckAfterBoard = (): void => {
-    if (!deckGrownForBoard) return;
-    deckGrownForBoard = false;
-    if (layoutSizes.deck !== BOARD_DECK_HEIGHT) return;
-    applySplitterSize("deck", SPLITTER_DEFAULTS.deck, false);
-    requestCanvasFit();
-  };
-
   const unsubscribeTeamActivity = subscribeTeamActivity((state) => {
-    const appeared = state !== null && teamBoard === null;
-    const vanished = state === null && teamBoard !== null;
     teamBoard = state;
     teamWork.update(state);
     refreshWorkBadge();
-    if (appeared) growDeckForBoard();
-    if (vanished) restoreDeckAfterBoard();
-    if (appeared && attachedTo) showTab("work");
-    else if (deckTab === "work") renderDeck();
+    renderLeftRail();
+    // 팀원 활동은 이제 좌 레일에 실시간으로 선다 — 맵을 덮는 드로워를 스스로 열지 않는다(배지만).
+    if (deckTab === "work" && !deckCollapsed) renderDeck();
   });
 
-  showTab("tools");
+  showTab("newLane");
+  setDeckCollapsed(true);
+  renderLeftRail();
+  syncThreadView();
 
   return {
     root,
@@ -880,27 +1213,30 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
       workPlan = plan;
       workActive = active;
       refreshWorkBadge();
-      if (appeared && attachedTo) showTab("work");
-      else if (deckTab === "work") renderDeck();
+      // 계획이 새로 떠도 드로워를 스스로 열지 않는다(배지로 알린다) — 좌 레일과 같은 규칙.
+      if (appeared || deckTab === "work") renderDeck();
     },
     setChangePreview(input) {
       const appeared = input != null && changePreview == null;
       changePreview = input;
       setBadge("changes", input ? "" : null);
-      if (appeared && attachedTo) showTab("changes");
-      else if (deckTab === "changes") renderDeck();
+      // 변경이 새로 떠도 드로워를 스스로 열지 않는다(배지로 알린다) — 좌 레일·계획과 같은 규칙.
+      if (appeared || deckTab === "changes") renderDeck();
     },
     setToolLines(lines) {
       toolLines = lines.slice(0, ACTIVITY_LIMIT);
       setBadge("activity", toolLines.length > 0 ? String(toolLines.length) : null);
       if (deckTab === "activity") renderDeck();
     },
-    setDeckTab: showTab,
+    setDeckTab: (tab) => showTab(tab, true),
     dispose() {
       detach();
       unsubscribeTeamActivity();
+      unsubscribeLanes();
+      if (typeof document !== "undefined") document.removeEventListener("keydown", onDrawerKeydown);
       splitterCleanup?.();
       splitterCleanup = null;
+      if (typeof window !== "undefined") window.removeEventListener("resize", applyResponsiveWidths);
     },
   };
 }
@@ -963,6 +1299,7 @@ function walkScenes(
   query: string,
   rows: HTMLElement[],
   expanded: ReadonlySet<string>,
+  laneChip: (mapId: MapId) => HTMLElement | null,
   onToggleFold: (mapId: MapId) => void,
 ): void {
   const filtering = query.length > 0;
@@ -977,7 +1314,7 @@ function walkScenes(
       }));
     }
     for (const child of node.children) {
-      walkScenes(child, parentMapId, depth, project, currentId, query, rows, expanded, onToggleFold);
+      walkScenes(child, parentMapId, depth, project, currentId, query, rows, expanded, laneChip, onToggleFold);
     }
     return;
   }
@@ -992,6 +1329,7 @@ function walkScenes(
       const isStart = node.mapId === project.startMapId;
       const canFold = !filtering && mapChildCount > 0;
       const open = expanded.has(node.mapId);
+      const laneChipEl = laneChip(node.mapId);
       // 실내는 배지가 아니라 들여쓰기(--scene-depth)와 data-kind 로만 말한다 — 15행에 같은
       // 배지가 반복되면 정보가 아니라 소음이다(실측 2026-09-03). 기본은 부모 아래 접기.
       const sceneBtn = el("button", {
@@ -1025,6 +1363,7 @@ function walkScenes(
                 children: [
                   el("b", { text: name }),
                   ...(isStart ? [el("span", { class: "ai-studio-badge is-start", text: "시작" })] : []),
+                  ...(laneChipEl ? [laneChipEl] : []),
                 ],
               }),
               el("span", {
@@ -1070,11 +1409,11 @@ function walkScenes(
   const showMapChildren = filtering || expanded.has(node.mapId);
   for (const child of node.children) {
     if (isMapTreeFolder(child)) {
-      walkScenes(child, node.mapId, depth, project, currentId, query, rows, expanded, onToggleFold);
+      walkScenes(child, node.mapId, depth, project, currentId, query, rows, expanded, laneChip, onToggleFold);
       continue;
     }
     if (!showMapChildren) continue;
-    walkScenes(child, node.mapId, depth + 1, project, currentId, query, rows, expanded, onToggleFold);
+    walkScenes(child, node.mapId, depth + 1, project, currentId, query, rows, expanded, laneChip, onToggleFold);
   }
 }
 

@@ -78,7 +78,8 @@ body.ai-studio-open .authoring-journey-host {
   flex: 1 1 auto;
   font-variant-numeric: tabular-nums;
   gap: 10px;
-  /* 열: 장면 | 손잡이 | 모니터 | 손잡이 | 조수 — 손잡이는 소음을 내지 않는 8px 기둥 */
+  /* 열: 좌 레일 | 손잡이 | 모니터 | 손잡이 | 지금 보는 채팅 — 손잡이는 소음을 내지 않는 8px 기둥.
+     덱은 그리드 행이 아니라 오버레이 드로워다(23-agent-lanes.css). */
   grid-template-columns: var(--studio-scenes-w) var(--studio-splitter) minmax(0, 1fr) var(--studio-splitter) var(--studio-chat-w);
   grid-template-rows: minmax(0, 1fr) auto;
   min-height: 0;

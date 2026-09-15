@@ -1,0 +1,513 @@
+/* ── 에이전트 레인 (2026-09-15, 2026-09-16 재구성) ──────────────────────────
+   실시간 조수 행은 좌 레일(.ai-studio-agents > .ai-studio-agent-row), 레인 스레드는 오른쪽 열(.ai-lane-thread),
+   새 레인 폼은 오버레이 드로워의 「새 레인」 탭(.ai-lane-pane > .ai-lane-form), 장면 행 칩은 .ai-studio-lane-chip.
+   색은 tokens.css 변수만. !important 0. 글자 크기는 --ai-font-scale 로 스케일. */
+
+
+.ai-lane-hint,
+.ai-lane-empty-text {
+  color: var(--text-3);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  margin: 0;
+}
+
+.ai-lane-notice {
+  color: var(--warning);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+}
+
+.ai-lane-error {
+  color: var(--danger);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  margin: 0;
+}
+
+/* Shared lane status and actions (also used by the live rail and thread). */
+.ai-lane-status {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  background: var(--bg-inset);
+  color: var(--text-2);
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+  padding: 2px 8px;
+  text-align: center;
+  white-space: nowrap;
+}
+.ai-lane-status.is-running { background: var(--accent-muted); border-color: var(--accent-border); color: var(--accent); }
+.ai-lane-status.is-review { background: var(--warning-muted); color: var(--warning); }
+.ai-lane-status.is-applied { background: var(--success-muted); color: var(--success); }
+.ai-lane-status.is-failed { background: var(--danger-muted); color: var(--danger); }
+.ai-lane-status.is-stopped,
+.ai-lane-status.is-discarded { color: var(--text-3); }
+.ai-lane-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+.ai-lane-btn {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+.ai-lane-btn:hover { background: var(--control-bg-hover); }
+.ai-lane-btn:focus-visible { outline: var(--focus-outline); }
+.ai-lane-btn.is-primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.ai-lane-btn.is-primary:hover { background: var(--accent-hover); }
+.ai-lane-btn.is-danger { color: var(--danger); }
+.ai-lane-btn:disabled { cursor: not-allowed; opacity: 0.5; }
+
+/* 좌 레일: section headers stay fixed; their lists own overflow. */
+.ai-studio-left {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-l);
+  display: flex;
+  flex-direction: column;
+  grid-column: 1;
+  grid-row: 1 / 3;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+.ai-studio-rail-section {
+  display: flex;
+  flex-direction: column;
+  flex: 0 1 auto;
+  max-height: 35%;
+  min-height: 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.ai-studio-left .ai-studio-scenes {
+  border: 0;
+  border-radius: 0;
+  flex: 1 1 0;
+  width: 100%;
+}
+.ai-studio-agents,
+.ai-studio-threads {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+  min-height: 0;
+  min-width: 0;
+}
+.ai-studio-rail-section > .ai-studio-agents,
+.ai-studio-rail-section > .ai-studio-threads {
+  overflow: auto;
+  padding: var(--space-2);
+}
+.ai-studio-agent-row {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  padding: var(--space-2);
+}
+.ai-studio-agent-row:hover,
+.ai-studio-thread:hover { background: var(--bg-hover); }
+.ai-studio-agent-row.is-selected,
+.ai-studio-thread.is-on { background: var(--accent-muted); }
+.ai-studio-agent-head {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  font-size: calc(12px * var(--ai-font-scale, 1));
+}
+.ai-studio-agent-map,
+.ai-studio-agent-live,
+.ai-studio-agent-line,
+.ai-studio-thread-detail {
+  color: var(--text-2);
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  overflow-wrap: anywhere;
+}
+.ai-studio-agent-map { flex-basis: 100%; }
+.ai-studio-agent-row .ai-lane-actions { justify-content: flex-start; }
+.ai-studio-thread {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  font-family: var(--font-ui);
+  gap: var(--space-1);
+  padding: var(--space-2);
+  text-align: left;
+}
+.ai-studio-thread:focus-visible { outline: var(--focus-outline); }
+.ai-studio-thread-label { font-size: 13px; font-weight: var(--font-weight-semibold); }
+.ai-studio-thread-detail { flex-basis: 100%; }
+.ai-studio-shell.is-scenes-collapsed .ai-studio-rail-section { display: none; }
+.ai-studio-lane-thread-slot { display: none; min-height: 0; overflow: auto; }
+.ai-studio-chat.is-lane-thread .ai-studio-lane-thread-slot { display: block; }
+.ai-studio-chat.is-lane-thread .ai-studio-briefing,
+.ai-studio-chat.is-lane-thread .ai-studio-chat-log,
+.ai-studio-chat.is-lane-thread .ai-studio-composer { display: none; }
+.ai-lane-follow-up { display: flex; flex-wrap: wrap; gap: var(--space-2); min-width: 0; }
+.ai-lane-follow-up .ai-lane-input { flex: 1 1 0; min-width: 0; }
+
+/* ── 새 레인 폼 ──────────────────────────────────────────── */
+.ai-lane-form {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+}
+
+.ai-lane-form-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  min-width: 0;
+}
+
+.ai-lane-form-row.is-actions {
+  justify-content: flex-start;
+}
+
+.ai-lane-field {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+}
+
+.ai-lane-form-label {
+  color: var(--text-3);
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+}
+
+.ai-lane-map-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ai-lane-map-chip {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  color: var(--text-2);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  padding: 3px 10px;
+}
+
+.ai-lane-map-chip:hover {
+  background: var(--control-bg-hover);
+}
+
+.ai-lane-map-chip.is-on {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ai-lane-input,
+.ai-lane-select,
+.ai-lane-instruction {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  padding: 5px 8px;
+}
+
+.ai-lane-input {
+  min-width: 110px;
+}
+
+.ai-lane-input.is-narrow {
+  min-width: 56px;
+  width: 56px;
+}
+
+.ai-lane-input:focus-visible,
+.ai-lane-select:focus-visible,
+.ai-lane-instruction:focus-visible {
+  border-color: var(--accent-border);
+  outline: var(--focus-ring);
+}
+
+.ai-lane-instruction {
+  font-family: var(--font-ui);
+  min-height: 40px;
+  resize: vertical;
+  width: 100%;
+}
+
+/* ── 오른쪽 열의 레인 스레드 (2026-09-16: 인스펙터가 오른쪽 열로 옴겼다) ── */
+.ai-lane-thread {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  display: grid;
+  gap: 8px;
+  min-height: 0;
+  overflow: auto;
+  padding: 10px 12px;
+}
+
+.ai-lane-thread .ai-lane-inspector-head {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+}
+
+.ai-lane-inspector-head b {
+  font-size: calc(13px * var(--ai-font-scale, 1));
+}
+
+.ai-lane-inspector-meta {
+  color: var(--text-3);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  gap: 4px 12px;
+}
+
+.ai-lane-instruction-text {
+  color: var(--text-2);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  margin: 0;
+}
+
+.ai-lane-steps {
+  background: var(--bg-inset);
+  border-radius: var(--radius-s);
+  display: grid;
+  gap: 2px;
+  max-height: 220px;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 6px 8px;
+}
+
+.ai-lane-step {
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: calc(10.5px * var(--ai-font-scale, 1));
+  line-height: 1.5;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.ai-lane-step.is-tool { color: var(--text-1); }
+.ai-lane-step.is-system { color: var(--text-3); }
+.ai-lane-step.is-assistant { white-space: pre-wrap; }
+
+.ai-lane-result {
+  background: var(--warning-muted);
+  border-radius: var(--radius-s);
+  display: grid;
+  gap: 3px;
+  padding: 8px 10px;
+}
+
+.ai-lane-result-line {
+  color: var(--text-2);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+}
+
+.ai-lane-result-line.is-warn {
+  color: var(--warning);
+}
+
+/* ── 장면 레일 칩 ────────────────────────────────────────── */
+.ai-studio-lane-chip {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  color: var(--text-3);
+  font-size: calc(10px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+  margin-left: auto;
+  padding: 1px 7px;
+  white-space: nowrap;
+}
+
+.ai-studio-lane-chip.is-running { background: var(--accent-muted); border-color: var(--accent-border); color: var(--accent); }
+.ai-studio-lane-chip.is-review { background: var(--warning-muted); color: var(--warning); }
+.ai-studio-lane-chip.is-applied { background: var(--success-muted); color: var(--success); }
+.ai-studio-lane-chip.is-failed { background: var(--danger-muted); color: var(--danger); }
+
+
+/* 좁은 덱(중앙 열만 차지한다)에서는 탭 라벨이 줄바꿈으로 부서진다 — 아이콘만 남기고 title 로 말한다. */
+.ai-studio-deck {
+  container-type: inline-size;
+}
+
+@container (max-width: 560px) {
+  .ai-studio-tab span:not(.ai-studio-tab-badge) {
+    display: none;
+  }
+}
+
+/* ── 하단 덱 → 오버레이 드로워 (2026-09-16) ─────────────────────────────
+   덱은 그리드 행을 차지하지 않는다. 맵 위로 올라오고, 닫히면 화면 밖으로 나간다.
+   닫힌 상태의 입구는 모니터 위 손잡이(.ai-studio-drawer-handle)와 좌 레일 ＋ 다. */
+.ai-studio-shell.is-deck-overlay {
+  position: relative;
+  grid-template-rows: minmax(0, 1fr);
+  overflow: hidden;
+  transition: none;
+}
+.ai-studio-shell.is-deck-overlay > .ai-studio-left,
+.ai-studio-shell.is-deck-overlay > .ai-studio-chat,
+.ai-studio-shell.is-deck-overlay > .ai-studio-splitter {
+  grid-row: 1;
+}
+
+.ai-studio-deck.is-drawer {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-l);
+  bottom: 10px;
+  box-shadow: var(--shadow-pop);
+  height: min(58%, 520px);
+  grid-area: auto;
+  grid-template-rows: auto minmax(0, 1fr);
+  left: calc(30px + var(--studio-scenes-w) + var(--studio-splitter));
+  position: absolute;
+  right: calc(30px + var(--studio-chat-w) + var(--studio-splitter));
+  transform: translateY(calc(100% + 20px));
+  transition: transform var(--transition-med);
+  z-index: 3;
+  visibility: hidden;
+  pointer-events: none;
+}
+.ai-studio-deck.is-drawer .ai-studio-deck-head {
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: var(--space-2);
+}
+.ai-studio-deck.is-drawer .ai-studio-tabs { flex-wrap: wrap; }
+.ai-studio-deck.is-drawer .ai-studio-deck-actions { margin-left: auto; }
+.ai-studio-deck.is-drawer .ai-studio-deck-pane { height: auto; }
+.ai-studio-deck.is-drawer .ai-studio-tab { white-space: nowrap; }
+.ai-studio-deck.is-drawer .ai-studio-deck-collapse { flex-shrink: 0; }
+.ai-studio-deck.is-drawer .ai-lane-select,
+.ai-studio-deck.is-drawer .ai-lane-input { max-width: 100%; min-width: 0; }
+.ai-studio-deck.is-drawer .ai-lane-instruction { box-sizing: border-box; }
+.ai-studio-deck.is-drawer:not(.is-collapsed) {
+  visibility: visible;
+  pointer-events: auto;
+  transform: none;
+}
+
+.ai-studio-drawer-handle {
+  align-items: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  bottom: 10px;
+  box-shadow: var(--shadow-pop);
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-ui);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+  gap: 4px;
+  left: 50%;
+  padding: 5px 12px;
+  position: absolute;
+  transform: translateX(-50%);
+  z-index: 4;
+}
+
+.ai-studio-drawer-handle:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.ai-studio-drawer-handle:focus-visible {
+  outline: var(--focus-outline);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-studio-deck.is-drawer { transition: none; }
+}
+
+.ai-studio-shell:not(.is-deck-collapsed) .ai-studio-drawer-handle {
+  display: none;
+}
+
+.ai-lane-pane {
+  display: grid;
+  gap: 8px;
+  max-width: 720px;
+  min-height: 0;
+  padding: 2px 10px 10px;
+}
+
+/* 드로워 본문은 자기 패딩을 갖는다 — 탭 머리와 분리해 글이 모서리에 붙지 않게. */
+.ai-studio-deck.is-drawer .ai-studio-deck-pane {
+  padding: 2px 4px 4px;
+}
+
+/* 팀 실행(/pi team)의 팀장·팀원 행 — 좌 레일에서 레인과 나란히 선다(2026-09-16). */
+.ai-studio-team-rows {
+  border-top: 1px dashed var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+  padding-top: 6px;
+}
+
+.ai-studio-agent-row.is-team::before {
+  background: var(--accent);
+  border-radius: 2px;
+  bottom: 6px;
+  content: "";
+  left: 3px;
+  position: absolute;
+  top: 6px;
+  width: 2px;
+}
+
+.ai-studio-agent-row.is-team {
+  position: relative;
+}
+
+.ai-studio-agent-kind {
+  background: var(--bg-inset);
+  border-radius: var(--radius-pill);
+  color: var(--text-3);
+  font-size: calc(10px * var(--ai-font-scale, 1));
+  padding: 1px 6px;
+}
+
+.ai-studio-agent-line.is-text {
+  font-family: var(--font-ui);
+  white-space: pre-wrap;
+}

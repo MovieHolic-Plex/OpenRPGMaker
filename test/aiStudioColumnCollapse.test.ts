@@ -10,9 +10,20 @@ const css = readFileSync("src/styles/database/tabs-b-assistant-panel/08-studio-m
 const layoutKey = "oprn:ai-studio-layout";
 let shell: StudioShell;
 let style: HTMLStyleElement;
+let restoreViewport: (() => void) | null = null;
+
+/** 셸은 좁은 화면에서 좌·우 열을 깎는다(맵 360px 보장) — 기본 케이스는 «넉넉한 화면» 을 전제로 본다. */
+function setViewport(width: number): void {
+  const original = Object.getOwnPropertyDescriptor(window, "innerWidth");
+  Object.defineProperty(window, "innerWidth", { value: width, configurable: true, writable: true });
+  restoreViewport = () => {
+    if (original) Object.defineProperty(window, "innerWidth", original);
+  };
+}
 
 beforeEach(() => {
   localStorage.clear();
+  setViewport(1920);
   style = document.createElement("style");
   style.textContent = css;
   document.head.append(style);
@@ -20,6 +31,8 @@ beforeEach(() => {
 
 afterEach(() => {
   shell?.dispose();
+  restoreViewport?.();
+  restoreViewport = null;
   style.remove();
   document.body.replaceChildren();
   localStorage.clear();
@@ -112,4 +125,14 @@ describe("studio column collapse layout", () => {
     expectColumns(252, 400);
     expect(JSON.parse(localStorage.getItem(layoutKey) ?? "null")).toEqual({ scenes: 252, chat: 400, deck: 300 });
   });
+
+  it("좁은 화면에서는 가운데 맵을 지키려고 오른쪽 열부터 깎는다(저장값은 그대로)", () => {
+    setViewport(1024);
+    const saved = { scenes: 252, chat: 400, deck: 300 };
+    boot(saved);
+    // 1024 - 36 - 252 - 400 = 336px 밖에 안 남는다 → 오른쪽을 376 까지 깎아 맵 360 을 만든다.
+    expectColumns(252, 376);
+    expect(JSON.parse(localStorage.getItem(layoutKey) ?? "null")).toEqual(saved);
+  });
 });
+

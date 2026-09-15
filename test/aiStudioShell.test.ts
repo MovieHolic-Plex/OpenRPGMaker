@@ -6,6 +6,8 @@ import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { createStudioShell } from "@/editor/panels/aiStudioShell";
+import { createLaneManager } from "@/editor/panels/aiLaneManager";
+import { resetLaneSessionForTest } from "@/editor/panels/aiLaneSession";
 import { publishTeamActivity } from "@/ai/piAgent/teamActivity";
 import { createTeamBoardState, reduceTeamBoard } from "@/ai/piAgent/teamBoardState";
 import { renderTopbar } from "@/editor/panels/menu";
@@ -19,6 +21,7 @@ let storage: Map<string, string>;
 
 beforeEach(() => {
   store.replace(createBlankProject());
+  resetLaneSessionForTest();
   resetMapEditHistory();
   restoreDom = installFakeDom();
   storage = new Map();
@@ -76,6 +79,9 @@ describe("스튜디오 셸 단독", () => {
     expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-deck")).toBeTruthy();
     expect((findByTestId(shell.root as unknown as FakeElement, "ai-studio-composer") as FakeElement).childNodes)
       .toContain(bar);
+    // 드로워의 첫 탭은 「새 레인」 이다(레인 표는 좌 레일로 갔다).
+    expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-tab-newLane")?.className).toContain("is-on");
+    findByTestId(shell.root as unknown as FakeElement, "ai-studio-tab-tools")?.click();
     expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-tab-tools")?.className).toContain("is-on");
     expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-tool-grid")).toBeTruthy();
     // 데크(2026-09-03): 타일은 묶음(짓기 / 사람·이야기 / 보기·검사)으로 나뉘어 첫 카드가 NPC 가 아닐 수 있다 — 전체에서 찾는다.
@@ -89,6 +95,8 @@ describe("스튜디오 셸 단독", () => {
     findByTestId(shell.root as unknown as FakeElement, "ai-studio-tab-changes")?.click();
     expect(shell.root.textContent).toContain("아직 비교할 변경이 없습니다");
 
+    // 계획이 떠도 드로워는 스스로 열리지 않는다(배지만) — 사용자가 탭을 고르면 그때 그린다.
+    findByTestId(shell.root as unknown as FakeElement, "ai-studio-tab-work")?.click();
     shell.setWorkPlan({
       id: "plan",
       goal: "우물을 놓는다",
@@ -177,6 +185,7 @@ describe("패널 스튜디오 모드", () => {
     expect(monitor?.querySelector("[data-testid=edit-canvas]")).toBeTruthy();
     expect(findByTestId(panel, "ai-studio-monitor-thumb")).toBeNull();
 
+    findByTestId(panel, "ai-studio-tab-tools")?.click();
     const card = findByTestId(panel, "ai-studio-tool-card");
     card?.click();
     const input = findByTestId(panel, "ai-input") as unknown as { value: string };
@@ -277,31 +286,33 @@ describe("스튜디오 콘솔(재개편)", () => {
     expect(pane?.textContent?.indexOf("paint_road")).toBeLessThan(pane?.textContent?.indexOf("place_npc") ?? -1);
   });
 
-  it("덱은 접고 펼 수 있다", () => {
+  it("드로워는 기본 닫힘이고 맵 손잡이·접기 버튼·Esc 로 여닫는다", () => {
     const { root } = standaloneShell();
     const deck = findByTestId(root, "ai-studio-deck");
     const toggle = findByTestId(root, "ai-studio-deck-collapse");
-    expect(toggle?.getAttribute("aria-expanded")).toBe("true");
-    toggle?.click();
+    const handle = findByTestId(root, "ai-studio-deck-handle");
+    expect(deck?.className).toContain("is-drawer");
     expect(deck?.className).toContain("is-collapsed");
     expect(toggle?.getAttribute("aria-expanded")).toBe("false");
-    toggle?.click();
+    handle?.click();
     expect(deck?.className).not.toContain("is-collapsed");
+    expect(handle?.getAttribute("aria-expanded")).toBe("true");
+    toggle?.click();
+    expect(deck?.className).toContain("is-collapsed");
+    handle?.click();
+    expect(deck?.className).not.toContain("is-collapsed");
+    document.dispatchEvent(Object.assign(new Event("keydown", { bubbles: true }), { key: "Escape" }));
+    expect(deck?.className).toContain("is-collapsed");
   });
 
-  it("덱을 접으면 그리드 행 축소 마커가 덱 뿌리에 붙는다", () => {
-    // FakeDom 은 computed grid-template-rows 를 못 본다. CSS `.ai-studio-deck.is-collapsed`
-    // 가 splitter+40px 머리로 줄이는 훅이 이 클래스다.
+  it("덱은 그리드 행이 아니라 오버레이다 — 덱 손잡이가 사라지고 셸이 오버레이 모드다", () => {
+    // 2026-09-16: 덱이 행을 차지하면 맵 세로가 잘린다. 이제 맵 위로 올라오는 드로워이고,
+    // 행 높이를 끌던 덱 손잡이는 존재하지 않는다.
     const { root } = standaloneShell();
-    const deck = findByTestId(root, "ai-studio-deck");
-    const toggle = findByTestId(root, "ai-studio-deck-collapse");
-    expect(deck?.classList.contains("is-collapsed")).toBe(false);
-    expect(deck?.querySelector("[data-testid=ai-studio-split-deck]")).toBeTruthy();
-    toggle?.click();
-    expect(deck?.classList.contains("is-collapsed")).toBe(true);
-    expect(deck?.className.split(/\s+/)).toContain("is-collapsed");
-    toggle?.click();
-    expect(deck?.classList.contains("is-collapsed")).toBe(false);
+    expect(root.className).toContain("is-deck-overlay");
+    expect(root.className).toContain("is-deck-collapsed");
+    expect(findByTestId(root, "ai-studio-split-deck")).toBeNull();
+    expect(findByTestId(root, "ai-studio-deck")?.className).toContain("is-drawer");
   });
 
   it("refreshMonitor 는 attach 뒤에 나타난 캔버스를 입양한다", () => {
@@ -330,16 +341,14 @@ describe("스튜디오 콘솔(재개편)", () => {
     expect(body.querySelector("[data-testid=editor-zoom-controls]")).toBe(zoom);
   });
 
-  it("좌·우·하단 손잡이가 있고 키보드로 크기를 조절한다", () => {
+  it("좌·우 손잡이가 있고 키보드로 크기를 조절한다", () => {
     // Break: 손잡이가 없거나 키 입력이 크기에 닿지 않아 고정 폭으로 굳는다.
     const { root } = standaloneShell();
     const shell = root;
     const scenes = findByTestId(root, "ai-studio-split-scenes");
     const chat = findByTestId(root, "ai-studio-split-chat");
-    const deck = findByTestId(root, "ai-studio-split-deck");
     expect(scenes?.getAttribute("role")).toBe("separator");
     expect(chat?.getAttribute("role")).toBe("separator");
-    expect(deck?.getAttribute("role")).toBe("separator");
     const before = shell?.style.getPropertyValue("--studio-scenes-col");
     expect(before).toContain("px");
     // FakeDom에는 KeyboardEvent 생성자가 없어 일반 Event에 key를 얹는다.
@@ -350,8 +359,6 @@ describe("스튜디오 콘솔(재개편)", () => {
     expect(Number.parseInt(after ?? "0", 10)).toBeGreaterThan(Number.parseInt(before ?? "0", 10));
     chat?.dispatchEvent(key("Home"));
     expect(shell?.style.getPropertyValue("--studio-chat-col")).toBe("280px");
-    deck?.dispatchEvent(key("End"));
-    expect(shell?.style.getPropertyValue("--studio-deck-h")).toBe("560px");
     // 더블클릭이면 기본값(장면 252 / 조수 400 / 덱 236)으로 돌아온다.
     scenes?.dispatchEvent(new Event("dblclick", { bubbles: true }));
     expect(shell?.style.getPropertyValue("--studio-scenes-col")).toBe("252px");
@@ -404,7 +411,7 @@ describe("스튜디오 콘솔(재개편)", () => {
     expect(names().some((text) => text.includes("안채"))).toBe(true);
   });
 
-  it("작업·변경 탭은 처음 나타날 때만 열고, 같은 갱신으로는 사용자가 둔 탭을 빼앗지 않는다", () => {
+  it("새 작업·변경은 배지만 세우고 사용자가 고른 탭을 앗지 않는다", () => {
     const { shell, root } = standaloneShell();
     const project = store.getCurrent();
     const plan = {
@@ -427,7 +434,9 @@ describe("스튜디오 콘솔(재개편)", () => {
     };
 
     shell.setWorkPlan(plan, true);
-    expect(findByTestId(root, "ai-studio-tab-work")?.className).toContain("is-on");
+    // 이제 팀원·레인 활동은 좌 레일이 실시간으로 보여준다 — 드로워를 빼앗지 않는다.
+    expect(findByTestId(root, "ai-studio-tab-work")?.className).not.toContain("is-on");
+    expect(findByTestId(root, "ai-studio-deck")?.className).toContain("is-collapsed");
 
     findByTestId(root, "ai-studio-tab-tools")?.click();
     expect(findByTestId(root, "ai-studio-tab-tools")?.className).toContain("is-on");
@@ -437,7 +446,8 @@ describe("스튜디오 콘솔(재개편)", () => {
 
     findByTestId(root, "ai-studio-tab-activity")?.click();
     shell.setChangePreview(preview);
-    expect(findByTestId(root, "ai-studio-tab-changes")?.className).toContain("is-on");
+    // 변경도 마찬가지 — 배지만 서고 탭은 사용자가 정한다.
+    expect(findByTestId(root, "ai-studio-tab-changes")?.className).not.toContain("is-on");
 
     findByTestId(root, "ai-studio-tab-activity")?.click();
     expect(findByTestId(root, "ai-studio-tab-activity")?.className).toContain("is-on");
@@ -464,6 +474,7 @@ describe("스튜디오 콘솔(재개편)", () => {
         ],
       }],
     }, true);
+    findByTestId(root, "ai-studio-tab-work")?.click();
     expect(findByTestId(root, "ai-studio-tab-work")?.textContent).toContain("1/3");
     expect(findByTestId(root, "ai-studio-work-progress")).toBeTruthy();
     expect(findByTestId(root, "ai-studio-work")?.textContent).toContain("광장을 꾸민다");
@@ -471,22 +482,26 @@ describe("스튜디오 콘솔(재개편)", () => {
 
   it("실행 보드가 버스에 오르면 「작업」이 상세 페인(툴 인자 포함)을 열고 배지는 실행 중 인원을 센다", () => {
     const { root } = standaloneShell();
+    // 드로워는 기본 닫힘 — 보드가 뜨면 「작업」 탭으로 스스로 열린다.
+    expect(findByTestId(root, "ai-studio-deck")?.className).toContain("is-collapsed");
+    findByTestId(root, "ai-studio-tab-tools")?.click();
     let state = createTeamBoardState("team", "대장간 거리");
     state = reduceTeamBoard(state, { type: "agent_spawn", agentId: "lead", role: "orchestrator", mapId: null, mapName: null, task: state.task });
     state = reduceTeamBoard(state, { type: "agent_spawn", agentId: "b1", role: "builder", mapId: null, mapName: "시장 마을", task: "대장간 2채", memberId: "architect", label: "건축가" });
     state = reduceTeamBoard(state, { type: "agent_event", agentId: "b1", event: { type: "tool_start", id: "t1", name: "place_structure", args: { x: 13, y: 5 } } });
-    expect(root.style.getPropertyValue("--studio-deck-h")).toBe("236px");
+    const drawerBefore = findByTestId(root, "ai-studio-deck")?.className ?? "";
     publishTeamActivity(state);
-    // 기본 높이(236)의 덱은 보드가 뜨면 420 으로 한 번 자란다 — 상세 과정이 두 행만 보이지 않게. 저장하지 않는다.
-    expect(root.style.getPropertyValue("--studio-deck-h")).toBe("420px");
-    expect(localStorage.getItem("oprn:ai-studio-layout")).toBeNull();
+    // 버스는 좌 레일을 실시간으로 채우고 배지를 세운다 — 드로워 상태는 발행 전후로 같다.
+    expect(findByTestId(root, "ai-studio-team-row")).toBeTruthy();
+    expect(findByTestId(root, "ai-studio-deck")?.className).toBe(drawerBefore);
+    expect(findByTestId(root, "ai-studio-tab-work")?.textContent).toContain("2");
+    findByTestId(root, "ai-studio-tab-work")?.click();
     expect(findByTestId(root, "ai-studio-tab-work")?.className).toContain("is-on");
     expect(findByTestId(root, "ai-studio-tab-work")?.textContent).toContain("2");
     expect(findByTestId(root, "ai-team-work")?.dataset.detail).toBe("true");
     expect(findByTestId(root, "ai-team-tx-args")?.textContent).toBe("x: 13 · y: 5");
     expect(findByTestId(root, "ai-team-work-member")).toBeTruthy();
     publishTeamActivity(null);
-    expect(root.style.getPropertyValue("--studio-deck-h")).toBe("236px");
     expect(findByTestId(root, "ai-team-work")).toBeNull();
     expect(root.textContent).toContain("아직 작업 계획이 없습니다");
   });
@@ -509,6 +524,7 @@ describe("스튜디오 콘솔(재개편)", () => {
 
   it("도구 판은 「자주 쓰는」 절로 시작하고 필터가 카드를 걸러낸다", () => {
     const { root } = standaloneShell();
+    findByTestId(root, "ai-studio-tab-tools")?.click();
     const npcCard = root.querySelectorAll("[data-testid=ai-studio-tool-card]").find((card) => card.dataset.tool === "place_npc");
     expect(npcCard?.textContent).toContain("NPC 배치");
     expect(root.textContent).toContain("자주 쓰는");
@@ -528,6 +544,7 @@ describe("스튜디오 도구 덱 — 묶음 + 아이콘 (데크 P3)", () => {
   it("타일은 짓기 / 사람·이야기 / 보기·검사 세 묶음이고 「편집/조회」 반복 라벨이 없다", () => {
     // Break: 17장이 한 격자에 흰 카드로 늘어서고 카드마다 「편집」 이 붙어 정보가 0 이 된다.
     const { root } = standaloneShell();
+    findByTestId(root, "ai-studio-tab-tools")?.click();
     const grid = findByTestId(root, "ai-studio-tool-grid");
     expect(grid).toBeTruthy();
     const groups = grid?.querySelectorAll(".ai-studio-tool-group") ?? [];
@@ -539,5 +556,106 @@ describe("스튜디오 도구 덱 — 묶음 + 아이콘 (데크 P3)", () => {
       expect(card.childNodes.some((child) => (child as { tagName?: string }).tagName?.toLowerCase() === "svg")).toBe(true);
     }
     expect(cards.map((card) => card.textContent)).toContain("NPC 배치");
+  });
+});
+
+// ── 2026-09-16 재배치 — 가운데는 맵, 왼쪽은 채팅·실시간 조수 활동, 오른쪽은 지금 보는 채 chat ──
+describe("스튜디오 3분할 재배치", () => {
+  it("좌 레일에 실시간 조수 활동·채팅 목록·장면이 서고, 중앙은 맵, 오른쪽은 지금 보는 chat이다", () => {
+    const { root } = standaloneShell();
+    const left = findByTestId(root, "ai-studio-left");
+    expect(left).toBeTruthy();
+    expect(left ? findByTestId(left, "ai-studio-agents") : null).toBeTruthy();
+    expect(left ? findByTestId(left, "ai-studio-threads") : null).toBeTruthy();
+    expect(left ? findByTestId(left, "ai-studio-scenes") : null).toBeTruthy();
+    expect(findByTestId(root, "ai-studio-monitor")).toBeTruthy();
+    expect(findByTestId(root, "ai-studio-chat")).toBeTruthy();
+  });
+
+  it("레인 스레드를 고르면 오른쪽이 그 레인 스레드로 바뀌고, 감독을 고르면 돌아온다", () => {
+    const manager = createLaneManager({
+      onChange: () => undefined,
+      runAgent: async () => { throw new Error("이 테스트는 실행하지 않는다"); },
+    });
+    const { root } = standaloneShell({ laneManager: manager });
+    manager.add({
+      id: "lane_x",
+      label: "폐광 입구",
+      mapIds: ["map_blank_start"],
+      agentLabel: "지형",
+      provider: "google-antigravity",
+      model: "gemini-3.7-flash",
+      instruction: "갱도 입구를 정리한다",
+    });
+
+    const agentRow = findByTestId(root, "ai-studio-agent-row");
+    expect(agentRow?.textContent).toContain("지형");
+    expect(agentRow?.textContent).toContain("대기");
+
+    findByTestId(root, "ai-studio-thread-lane_x")?.click();
+    const chat = findByTestId(root, "ai-studio-chat");
+    expect(chat?.className).toContain("is-lane-thread");
+    expect(findByTestId(root, "lane-thread")).toBeTruthy();
+
+    findByTestId(root, "ai-studio-thread-director")?.click();
+    expect(chat?.className).not.toContain("is-lane-thread");
+    manager.dispose();
+  });
+});
+
+// ── 2026-09-16: 하단 덱을 오버레이 드로워로 — 맵이 세로를 다 쓴다 ──
+describe("스튜디오 덱 오버레이 드로워", () => {
+  it("덱은 그리드 행을 차지하지 않고, 드로워로 접힌 채 뜬다", () => {
+    const { root } = standaloneShell();
+    expect(root.className).toContain("is-deck-overlay");
+    const deck = findByTestId(root, "ai-studio-deck");
+    expect(deck?.className).toContain("is-drawer");
+    expect(deck?.className).toContain("is-collapsed");
+  });
+
+  it("탭이 새 레인·도구·작업… 이고 레인 표는 덱에서 빠졌으며, 탭을 고르면 드로워가 열린다", () => {
+    const { root } = standaloneShell();
+    expect(findByTestId(root, "ai-studio-tab-newLane")).toBeTruthy();
+    expect(findByTestId(root, "ai-studio-tab-lanes")).toBeNull();
+    expect(findByTestId(root, "lane-table")).toBeNull();
+
+    findByTestId(root, "ai-studio-tab-tools")?.click();
+    expect(findByTestId(root, "ai-studio-deck")?.className).not.toContain("is-collapsed");
+    expect(findByTestId(root, "ai-studio-tool-grid")).toBeTruthy();
+  });
+
+  it("좌 레일 「조수」 절의 ＋ 가 드로워를 새 레인 탭으로 연다", () => {
+    const { root } = standaloneShell();
+    findByTestId(root, "ai-studio-new-lane")?.click();
+    expect(findByTestId(root, "ai-studio-deck")?.className).not.toContain("is-collapsed");
+    expect(findByTestId(root, "ai-studio-tab-newLane")?.className).toContain("is-on");
+    expect(findByTestId(root, "lane-form")).toBeTruthy();
+  });
+});
+
+// ── 2026-09-16: 좌 레일은 레인뿐 아니라 «팀원» 의 실시간 활동도 보여준다 ──
+describe("좌 레일 실시간 활동 — 팀원", () => {
+  it("팀 보드가 오르면 좌 레일 조수 절에 팀원 행이 산다(이름·종류·맵·턴/툴·마지막 줄)", () => {
+    const { root } = standaloneShell();
+    expect(findByTestId(root, "ai-studio-team-row")).toBeNull();
+
+    let state = createTeamBoardState("team", "대장간 거리");
+    state = reduceTeamBoard(state, { type: "agent_spawn", agentId: "lead", role: "orchestrator", mapId: null, mapName: null, task: state.task });
+    state = reduceTeamBoard(state, {
+      type: "agent_spawn", agentId: "b1", role: "builder", mapId: "map_blank_start", mapName: "빈 맵", task: "대장간 2", memberId: "architect", label: "건축가",
+    });
+    state = reduceTeamBoard(state, { type: "agent_event", agentId: "b1", event: { type: "tool_start", id: "t1", name: "place_structure", args: { x: 13, y: 5 } } });
+    state = reduceTeamBoard(state, { type: "agent_event", agentId: "b1", event: { type: "tool_end", id: "t1", name: "place_structure", ok: true, summary: "x: 13 · y: 5" } });
+    publishTeamActivity(state);
+
+    const rows = root.querySelectorAll("[data-testid=ai-studio-team-row]");
+    expect(rows.length).toBe(2);
+    const builder = rows.find((row) => row.textContent.includes("건축가"));
+    expect(builder?.textContent).toContain("빈 맵");
+    expect(builder?.textContent).toContain("x: 13");
+    // 조수 수 배지에도 팀원이 함께 세어진다.
+    expect(findByTestId(root, "ai-studio-agents")?.textContent).toBeTruthy();
+    publishTeamActivity(null);
+    expect(findByTestId(root, "ai-studio-team-row")).toBeNull();
   });
 });
