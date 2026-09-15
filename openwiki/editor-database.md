@@ -1764,3 +1764,25 @@ TURN/BATTLE MENU` 칩. 전투 애니메이션 타이밍 표 헤더 `사운드...
 ## 특정 꾸러미의 명시적 교체 (2026-09-06)
 
 사용자가 특정 기본 꾸러미를 새로 만들라고 명시하면 `scripts/expand-concept-bundles.mts --project <id> --replace-bundle inn --evidence <dir> --apply`로 해당 id만 교체한다. 이 모드는 baseline 일치 조건 없이 지정한 꾸러미를 교체하므로 명시적 교체 요청에만 쓴다. 다른 꾸러미와 프로젝트 필드는 유지하며, 비어 있는 라이브러리에도 지정한 하나만 추가한다. CAS·저장 전 백업·raw/mirror/app 재로드 검증은 그대로 적용한다.
+
+## 생성 아이템 아트에 dry-run 가짜가 섞여 들어갔다 (2026-09-16)
+
+`scripts/oprn-generated-assets.mjs` 의 `dry-run` 은 실제 생성 대신 **자체 가짜 PNG**
+(`(x*17+y*31)%251` 그라데이션, `createFakePng`)를 써서 배관만 검사한다. 그 가짜가
+`public/assets/generated/starter/` 로 승격돼 있었다 — 실측(2026-09-15): PNG 221장 중 **5장**.
+
+| 파일 | 크기 | 리소스 id |
+|---|---|---|
+| `potion-red-icon.png` | 32×32 | `generated-item-potion-red-icon` |
+| `potion-red-image.png` | 64×64 | `generated-item-potion-red-image` |
+| `bronze-sword-icon.png` | 32×32 | `generated-equipment-bronze-sword-icon` |
+| `bronze-sword-image.png` | 64×64 | `generated-equipment-bronze-sword-image` |
+| `hero-01-charset.png` | 288×256 | 주인공 01 걷기 캐릭터셋 |
+
+검증이 "공백이 아니다"(`hasVariation`)만 봤고, 그 검사조차 **스캔라인 필터 0** 을 가정해 재인코딩된
+파일에서는 무의미했다. 지금은 `inspectPng` 가 필터를 실제로 풀어(`decodeRgba`) 픽셀을 보고,
+`isDryRunFake` 가 가짜 패턴을 잡아 승격을 거부한다. 계약은 `test/oprnGeneratedAssets.test.mjs` 다.
+
+재생성은 **아직 안 했다** — 이 5장은 AI 생성 아트라 같은 파이프라인(프롬프트는
+`src/assets/oprnGeneratedAssetPlan.json`)으로 다시 만들어야 한다. 저장소 안 CC0 팩 그림으로 갈아치우면
+그 파일들의 출처 기록(`prompt`/`rawPath`)이 거짓이 된다. 증거: `.omo/evidence/generated-asset-fakes/`.

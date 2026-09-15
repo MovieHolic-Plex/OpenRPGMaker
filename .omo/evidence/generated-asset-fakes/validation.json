@@ -1,0 +1,136 @@
+{
+  "mode": "validate-only",
+  "validations": [
+    {
+      "entryId": "potion-red-icon",
+      "resourceKind": "picture",
+      "target": "itemIcon",
+      "path": "public/assets/generated/starter/potion-red-icon.png",
+      "ok": false,
+      "inspection": {
+        "format": "png",
+        "width": 32,
+        "height": 32,
+        "mode": "rgba",
+        "byteSize": 363,
+        "dryRunFake": true,
+        "nonblank": true
+      },
+      "sha256": "5ef64d6194b5e1a2ae876b52599beb109778d6057f4cfe4bcfb0950907803de1",
+      "promotion": null,
+      "issues": [
+        "PNG is the dry-run fake placeholder (x*17+y*31 gradient); generate the real asset before promoting"
+      ]
+    },
+    {
+      "entryId": "potion-red-image",
+      "resourceKind": "picture",
+      "target": "itemImage",
+      "path": "public/assets/generated/starter/potion-red-image.png",
+      "ok": false,
+      "inspection": {
+        "format": "png",
+        "width": 64,
+        "height": 64,
+        "mode": "rgba",
+        "byteSize": 787,
+        "dryRunFake": true,
+        "nonblank": true
+      },
+      "sha256": "c245de3b0c4148aef32fb8f22e069cbbf5f9a409a377069c3ca515676334a006",
+      "promotion": null,
+      "issues": [
+        "PNG is the dry-run fake placeholder (x*17+y*31 gradient); generate the real asset before promoting"
+      ]
+    },
+    {
+      "entryId": "bronze-sword-icon",
+      "resourceKind": "picture",
+      "target": "equipmentIcon",
+      "path": "public/assets/generated/starter/bronze-sword-icon.png",
+      "ok": false,
+      "inspection": {
+        "format": "png",
+        "width": 32,
+        "height": 32,
+        "mode": "rgba",
+        "byteSize": 363,
+        "dryRunFake": true,
+        "nonblank": true
+      },
+      "sha256": "5ef64d6194b5e1a2ae876b52599beb109778d6057f4cfe4bcfb0950907803de1",
+      "promotion": null,
+      "issues": [
+        "PNG is the dry-run fake placeholder (x*17+y*31 gradient); generate the real asset before promoting"
+      ]
+    },
+    {
+      "entryId": "bronze-sword-image",
+      "resourceKind": "picture",
+      "target": "equipmentImage",
+      "path": "public/assets/generated/starter/bronze-sword-image.png",
+      "ok": false,
+      "inspection": {
+        "format": "png",
+        "width": 64,
+        "height": 64,
+        "mode": "rgba",
+        "byteSize": 787,
+        "dryRunFake": true,
+        "nonblank": true
+      },
+      "sha256": "c245de3b0c4148aef32fb8f22e069cbbf5f9a409a377069c3ca515676334a006",
+      "promotion": null,
+      "issues": [
+        "PNG is the dry-run fake placeholder (x*17+y*31 gradient); generate the real asset before promoting"
+      ]
+    },
+    {
+      "entryId": "hero-01-charset",
+      "resourceKind": "picture",
+      "target": "actorCharset",
+      "path": "public/assets/generated/starter/hero-01-charset.png",
+      "ok": false,
+      "inspection": {
+        "format": "png",
+        "width": 288,
+        "height": 256,
+        "mode": "rgba",
+        "byteSize": 5492,
+        "dryRunFake": true,
+        "nonblank": true
+      },
+      "sha256": "7baf01d85b960055402a31507bf1e5e8585070bbdaabc6b6a5570854feede953",
+      "promotion": null,
+      "issues": [
+        "PNG is the dry-run fake placeholder (x*17+y*31 gradient); generate the real asset before promoting"
+      ]
+    },
+    {
+      "entryId": "battle-icon-bag",
+      "resourceKind": "picture",
+      "target": "itemIcon",
+      "path": "public/assets/generated/starter/battle-icon-bag.png",
+      "ok": true,
+      "inspection": {
+        "format": "png",
+        "width": 64,
+        "height": 64,
+        "mode": "rgba",
+        "byteSize": 496,
+        "dryRunFake": false,
+        "nonblank": true
+      },
+      "sha256": "a1947e0ad4c51b2b5e936835968877e1fd1ff2f169c312daff972a232eeeeade",
+      "promotion": {
+        "entryId": "battle-icon-bag",
+        "resourceId": "generated-item-bag-icon",
+        "rawPath": "public/assets/generated/starter/battle-icon-bag.png",
+        "promotedPath": "public/assets/generated/starter/battle-icon-bag.png",
+        "sha256": "a1947e0ad4c51b2b5e936835968877e1fd1ff2f169c312daff972a232eeeeade",
+        "status": "promoted"
+      },
+      "issues": []
+    }
+  ]
+}

@@ -1,0 +1,1363 @@
+{
+ "scanned": 221,
+ "fakes": [
+  {
+   "path": "public/assets/generated/starter/bronze-sword-icon.png",
+   "size": "32x32",
+   "dryRunFake": true,
+   "sha256": "5ef64d6194b5e1a2ae876b52599beb109778d6057f4cfe4bcfb0950907803de1"
+  },
+  {
+   "path": "public/assets/generated/starter/bronze-sword-image.png",
+   "size": "64x64",
+   "dryRunFake": true,
+   "sha256": "c245de3b0c4148aef32fb8f22e069cbbf5f9a409a377069c3ca515676334a006"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-01-charset.png",
+   "size": "288x256",
+   "dryRunFake": true,
+   "sha256": "7baf01d85b960055402a31507bf1e5e8585070bbdaabc6b6a5570854feede953"
+  },
+  {
+   "path": "public/assets/generated/starter/potion-red-icon.png",
+   "size": "32x32",
+   "dryRunFake": true,
+   "sha256": "5ef64d6194b5e1a2ae876b52599beb109778d6057f4cfe4bcfb0950907803de1"
+  },
+  {
+   "path": "public/assets/generated/starter/potion-red-image.png",
+   "size": "64x64",
+   "dryRunFake": true,
+   "sha256": "c245de3b0c4148aef32fb8f22e069cbbf5f9a409a377069c3ca515676334a006"
+  }
+ ],
+ "all": [
+  {
+   "path": "public/assets/generated/starter/battle-icon-bag.png",
+   "size": "64x64",
+   "dryRunFake": false,
+   "sha256": "a1947e0ad4c51b2b5e936835968877e1fd1ff2f169c312daff972a232eeeeade"
+  },
+  {
+   "path": "public/assets/generated/starter/battle-icon-boot.png",
+   "size": "64x64",
+   "dryRunFake": false,
+   "sha256": "ed671c015b1e41224d60f5c377c41388572f6e19ad8496a85e8fad116ae6644c"
+  },
+  {
+   "path": "public/assets/generated/starter/battle-icon-cross.png",
+   "size": "64x64",
+   "dryRunFake": false,
+   "sha256": "40301ccc61e0905a9645ce47eb60c7fa757d911f5f08e8d1d0bf6cb09f1c90c5"
+  },
+  {
+   "path": "public/assets/generated/starter/battle-icon-exp.png",
+   "size": "64x64",
+   "dryRunFake": false,
+   "sha256": "4c714726865c62849454e46c85801c02aa4be17bd33cb44d35162156e17fab50"
+  },
+  {
+   "path": "public/assets/generated/starter/battle-icon-fire.png",
+   "size": "64x64",
+   "dryRunFake": false,
+   "sha256": "8f015a9cf2be824019156c0e25794c9bbf010c29e4b5f768215f1a0926686e8a"
+  },
+  {
+   "path": "public/assets/generated/starter/battle-icon-gold.png",
+   "size": "64x64",
+   "dryRunFake": false,
+   "sha256": "6011cdfb424a13b1e72dbb9291defacc41c96b15debcf6d10a789f2206b7996a"
+  },
+  {
+   "path": "public/assets/generated/starter/battle-icon-next.png",
+   "size": "64x64",
+   "dryRunFake": false,
+   "sha256": "ffcfdbb810da9b2db3f3294d6405163d91bd92dc5532e2fd994ed555f5a7dd74"
+  },
+  {
+   "path": "public/assets/generated/starter/battle-icon-shard.png",
+   "size": "64x64",
+   "dryRunFake": false,
+   "sha256": "a052b5dc921d344832d3915f54c3cd632df19d4cff7da6db9a1ed4c9a3f6009d"
+  },
+  {
+   "path": "public/assets/generated/starter/battle-icon-shield.png",
+   "size": "64x64",
+   "dryRunFake": false,
+   "sha256": "c4c1249e370fa96bf3ccc65351bafbd67c14209ab92f2036845a78780b83cb89"
+  },
+  {
+   "path": "public/assets/generated/starter/battle-icon-sword.png",
+   "size": "64x64",
+   "dryRunFake": false,
+   "sha256": "5c30fde02f350d06b97cd8d9949e469c911e21a09e79dd88c29ed9bd6ec88008"
+  },
+  {
+   "path": "public/assets/generated/starter/battle-icon-world.png",
+   "size": "64x64",
+   "dryRunFake": false,
+   "sha256": "93216dd975ac741d4f2d0bc2cb1f46d90eed32aaa77d9ef29fa93a4ab0bb61c1"
+  },
+  {
+   "path": "public/assets/generated/starter/bronze-sword-icon.png",
+   "size": "32x32",
+   "dryRunFake": true,
+   "sha256": "5ef64d6194b5e1a2ae876b52599beb109778d6057f4cfe4bcfb0950907803de1"
+  },
+  {
+   "path": "public/assets/generated/starter/bronze-sword-image.png",
+   "size": "64x64",
+   "dryRunFake": true,
+   "sha256": "c245de3b0c4148aef32fb8f22e069cbbf5f9a409a377069c3ca515676334a006"
+  },
+  {
+   "path": "public/assets/generated/starter/ether-blue-icon.png",
+   "size": "32x32",
+   "dryRunFake": false,
+   "sha256": "32b3926473045f6d3ba881395a5ce3862bf3c890f1873ddb1b1e3e745b53947e"
+  },
+  {
+   "path": "public/assets/generated/starter/ether-blue-image.png",
+   "size": "64x64",
+   "dryRunFake": false,
+   "sha256": "57b2f33f94a962fbb48f0c8a9e0876a110236a4f666b8780dd37614fadfbe32b"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-01-battle.png",
+   "size": "144x384",
+   "dryRunFake": false,
+   "sha256": "9277bb1f195fc44844febf72c66151e24249d50e45503f937b8ea2fcf1f95bc9"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-01-charset.png",
+   "size": "288x256",
+   "dryRunFake": true,
+   "sha256": "7baf01d85b960055402a31507bf1e5e8585070bbdaabc6b6a5570854feede953"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-01-face.png",
+   "size": "192x192",
+   "dryRunFake": false,
+   "sha256": "e0a23ce88fdc75c622ddc1bee331e869cdcba3bb1a4c61812b9824656489ec7c"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-01-face/00.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "b2871f98acb1cc8566bcc9c13bd02b5757853ccfdd2bcbc59d92b0a5afc36517"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-01-face/01.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "0e1bba644f6c69b7395e99e4160387543f73b3764976978053d90984fa97ae20"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-01-face/02.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "0ca0f22d080b1eea886f8e5be9817706f6a672de6c723ce61b4db767e239a251"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-01-face/03.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "b79cf69c686f4b7d7b8018c1c33d502479ffa4dd29edd1350506acd4d1f8f8ed"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-01-face/04.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "881266d5a2249997c628567e3fbb4e6328ed9aab04d45d43b56c1d00580dde54"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-01-face/05.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "e9b2d562ff5ec5079c90921f425c1f42182b170b01a9ab2b33cc31af0fa71171"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-01-face/06.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "f9ee10e8de3787b2675b8a3d5e24fe36a2031ac365cf45290b1949720ba773df"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-01-face/07.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "a20c2d3a65b5528ae1788ed80901600902357e751c3663e4f41c9f0b4495701d"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-01-face/08.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "c2a1054d9a5a31707a9fce93779cc4cf2a9cb7df2e21360c4d00e34e199adef2"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-01-face/09.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "aeb587f10f9da80c9b79c93850bab32a2881dc240f8e43c34146570173227cfc"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-01-face/10.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "6f22e75261cd15b7de13c24d61bdc78654044c35dbdff4d84b5c3c4f5e28b31c"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-01-face/11.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "a0ae9d38b8d6e8596bb2c4f617c5fb07ec271d662e53bd342d156de477f9fce3"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-01-face/12.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "a2460e7e503754e3e97a5d8a1454513d72b7f79ea22f16190e196a4a813e99c1"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-01-face/13.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "3414a769a0e43a6b42928a8c3406db92e3dd3a6a27ef92480015ee51424573da"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-01-face/14.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "c20f3614ed38de89079e18ec1d55b6a644e3e7bf52246d89803cfbb4608f24f2"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-01-face/15.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "1e140dcd4a179a89e95aaaa010b46a5d7f8a342940f66135dc9cdb1a1003c6f2"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-02-battle.png",
+   "size": "144x384",
+   "dryRunFake": false,
+   "sha256": "fd2523652e7a97c4067331c676dfa297a4122dfb08d1858c24bee400f8ee82e7"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-02-charset.png",
+   "size": "288x256",
+   "dryRunFake": false,
+   "sha256": "d8a680706e68f66ce053bece406f73156426e0799a1bec429f184d8dc2d45b14"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-02-face.png",
+   "size": "192x192",
+   "dryRunFake": false,
+   "sha256": "575c64e0353ade358bc28ab9d0c630ff4660c00e4ca199fad74ec8fddcff286d"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-02-face/00.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "2ef915720b4ef74032dc881e9075cb4427cca1a2fcac5bfaaa838eada3236dbc"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-02-face/01.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "155c75f4cafa26dbfbdd27513b35a7361f51891cad739088e29a3bb7267105aa"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-02-face/02.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "e4f2ffc2aa8f2f41c3d3dde485bd9a573731e30baf4e2a33f75881bdc00a96cc"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-02-face/03.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "cb5416db6e99e84c142695bdcbe5ed1e051444788397f93dc9661928e9cd5c28"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-02-face/04.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "66fa4ef3d9b180f45d03a5ac24abd7916490c104b09752d467811f373b5b9f1a"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-02-face/05.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "d778f90025854434686db853129484223e07f011574298805a721112476883cf"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-02-face/06.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "eb52f5ee96abffc5c7b8e5dd9276ee3b1d796769d5fac26f400a34332d2f2995"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-02-face/07.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "4fec6e73550e4ac34593cff28173b6400623e714e0f9fafc5a4413f7185c6efe"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-02-face/08.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "4b614bff9076600bc92e15fb4e7b9edea317bbca4ba192e37e35483995609d2e"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-02-face/09.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "0115c687e89eb2d4ee51cd1909da45a06b5ee375f45213a570c204867663c444"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-02-face/10.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "0b28d4ae1b22f735eb6776ccd4b9c8f77348f39796a15a3354a201eb27ffcca0"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-02-face/11.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "4982fe931c97835d59dcd57c344b224cf764da4d75e6514ccc18e0c6764946bf"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-02-face/12.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "acd02376c30ffa1e97ea31b2f0f497756842789845b0a18648db457e4d3bd7fe"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-02-face/13.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "4d5c3cc701869dcbb51890151662c54d541970ff406387cd19cc5ec5422d9405"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-02-face/14.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "9ce536483098514d84260802678704dbc90e9c154974216a1b82430ff18de328"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-02-face/15.png",
+   "size": "48x48",
+   "dryRunFake": false,
+   "sha256": "d0991325d34628a9e4f488553e7535c8766d48e29b299726914064c3f290aab9"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-03-battle.png",
+   "size": "144x384",
+   "dryRunFake": false,
+   "sha256": "eaa10613ff589a2c8a036ad9c41ff488fd80062b6a7b9718c6e83d6df52daa77"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-04-battle.png",
+   "size": "144x384",
+   "dryRunFake": false,
+   "sha256": "a1b28cdee3bb8b0e252e717f22aa2c32f28b6a89783786f95872a5e388a1cf93"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-05-battle.png",
+   "size": "144x384",
+   "dryRunFake": false,
+   "sha256": "f3ea3f7f5237a15f3d5fae0b55294b5a1c5390586889872453ac9543e8a4264e"
+  },
+  {
+   "path": "public/assets/generated/starter/hero-06-battle.png",
+   "size": "144x384",
+   "dryRunFake": false,
+   "sha256": "ed360e0f82b42ab5d8acec913313a5d9812a6f332b4fb7f39b35ed7ef3f38ad6"
+  },
+  {
+   "path": "public/assets/generated/starter/hires/hero-01-battle.png",
+   "size": "576x1536",
+   "dryRunFake": false,
+   "sha256": "6eedcf08eeef7b2af5f9693073c116a33e99463c7504111335f37919b86c68d0"
+  },
+  {
+   "path": "public/assets/generated/starter/hires/hero-02-battle.png",
+   "size": "576x1536",
+   "dryRunFake": false,
+   "sha256": "afb72c6a04b2c86866b749dd4799964ed5b2c2dac6aac8d85fd6fab63850d976"
+  },
+  {
+   "path": "public/assets/generated/starter/hires/hero-03-battle.png",
+   "size": "576x1536",
+   "dryRunFake": false,
+   "sha256": "951ddb50864555c97bf13522fd169f2f398a6ad71bcfd9e28d55e68a8237e184"
+  },
+  {
+   "path": "public/assets/generated/starter/hires/hero-04-battle.png",
+   "size": "576x1536",
+   "dryRunFake": false,
+   "sha256": "c30775d7768ae6fe14a88f340ff814c652aff070b823af759152bdd738c49a0c"
+  },
+  {
+   "path": "public/assets/generated/starter/hires/hero-05-battle.png",
+   "size": "576x1536",
+   "dryRunFake": false,
+   "sha256": "b955a4497c8a9ccaf077f9b975f8be405b74e5090fb4560e6fbad84ff841b9d5"
+  },
+  {
+   "path": "public/assets/generated/starter/hires/hero-06-battle.png",
+   "size": "576x1536",
+   "dryRunFake": false,
+   "sha256": "c90bf6e0e1e0bd685361604e9c3a9d565de72de2e8394f62c7dd9d1e3862e875"
+  },
+  {
+   "path": "public/assets/generated/starter/hires/idle/hero-01-battle.png",
+   "size": "768x192",
+   "dryRunFake": false,
+   "sha256": "2a32383bc042c90e86398c960c9263bf9fa46394f142645cd93100ea6d0fb4e9"
+  },
+  {
+   "path": "public/assets/generated/starter/hires/idle/hero-02-battle.png",
+   "size": "768x192",
+   "dryRunFake": false,
+   "sha256": "3434e8e44ce4e26f4801d268ca7e0d71322d8231b6a0c788fcb3107c80660f08"
+  },
+  {
+   "path": "public/assets/generated/starter/hires/idle/hero-03-battle.png",
+   "size": "768x192",
+   "dryRunFake": false,
+   "sha256": "589edbb79e5128187739095ec9927dc8506b450f6aa9e142255114448a7bf286"
+  },
+  {
+   "path": "public/assets/generated/starter/hires/idle/hero-04-battle.png",
+   "size": "768x192",
+   "dryRunFake": false,
+   "sha256": "fd30a16f3f3ac40b470a0153c71cf54611b5b42a556483e8b235795f38746703"
+  },
+  {
+   "path": "public/assets/generated/starter/hires/idle/hero-05-battle.png",
+   "size": "768x192",
+   "dryRunFake": false,
+   "sha256": "832a276c996f7e7316f3c0d00db9c88c257c3b22b83e79f238af1db22de1d182"
+  },
+  {
+   "path": "public/assets/generated/starter/hires/idle/hero-06-battle.png",
+   "size": "768x192",
+   "dryRunFake": false,
+   "sha256": "6c457228ce991b27643001ee00c016672057cdd3aa3bab0f4bb665dbeb9d3942"
+  },
+  {
+   "path": "public/assets/generated/starter/idle/hero-01-battle.png",
+   "size": "192x48",
+   "dryRunFake": false,
+   "sha256": "59ad02b3b2da7f88189e68531892a8a99ef390b94c7e20b79abe9bd33af1fc26"
+  },
+  {
+   "path": "public/assets/generated/starter/idle/hero-02-battle.png",
+   "size": "192x48",
+   "dryRunFake": false,
+   "sha256": "add5027e0d41b587f4e3f13fa1eea5352e1c0f7745ecc141b310592a66f62fea"
+  },
+  {
+   "path": "public/assets/generated/starter/idle/hero-03-battle.png",
+   "size": "192x48",
+   "dryRunFake": false,
+   "sha256": "b0e82b05568828af0cfec4ece4b57fe834d28f23652e3cf10bfa5b6e837c7cfb"
+  },
+  {
+   "path": "public/assets/generated/starter/idle/hero-04-battle.png",
+   "size": "192x48",
+   "dryRunFake": false,
+   "sha256": "bfd55817fabe325ee1867e234d1f72432e47a8b7e7b47fa9d65188be8d28a237"
+  },
+  {
+   "path": "public/assets/generated/starter/idle/hero-05-battle.png",
+   "size": "192x48",
+   "dryRunFake": false,
+   "sha256": "4f9fa14f978e8e032d27c3c14d8868795bdfe0a8d6b5995a0391b3664218f2c3"
+  },
+  {
+   "path": "public/assets/generated/starter/idle/hero-06-battle.png",
+   "size": "192x48",
+   "dryRunFake": false,
+   "sha256": "8f6296c37da417941a2c08e634d63218173a7793f2f9ea0308c443c2faf47e79"
+  },
+  {
+   "path": "public/assets/generated/starter/idle/monster-bat-01.png",
+   "size": "1536x192",
+   "dryRunFake": false,
+   "sha256": "ca8fcbdf8b0f5f409c3fabe9e561b2a052bf6d156e1abbecc2600400631944a4"
+  },
+  {
+   "path": "public/assets/generated/starter/idle/monster-golem-01.png",
+   "size": "1536x192",
+   "dryRunFake": false,
+   "sha256": "a940460bfad03e4eae92445802e1b3515051ff556c28303a7a94a277269ef514"
+  },
+  {
+   "path": "public/assets/generated/starter/idle/monster-slime-01.png",
+   "size": "1536x192",
+   "dryRunFake": false,
+   "sha256": "f09249279025d4391ca0d3712e2648cfda67dfd1b86bb52a31e073e41a82043f"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-angel-fallen.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "6d9ffd11334d0159c7abb263e7a4f23e8e52c5509c81f991935fb4f320309027"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-ant-soldier.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "60239109bf9ea9be0c7d54614c00b5b119d19ef9c3e658cf4c6cba72534afe38"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-ape-stone.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "ba2fba74750a7e941b5ee9670ee549d2fa9c2457e0cc9eadd6cf7c4f1f03a36f"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-aqualing-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "1bd5a5da5e731b87276f0a643272781bd3dd426a4fb7e00f2e5c4fe945455f2e"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-armor-living.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "379f38d551c53f755cb61184eaa6f3cddf111112c7a4722cb45c613b8e7a9c99"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-bandit-mask.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "e7a01318364d33f70567d844423a159cd1f12180250ab82cca6610f32ce23bb0"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-banshee-wail.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "0fa7d1f77019e055e3e8c61e3ccf3873de4c5a2b034366c5463399b30e65dc78"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-bat-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "fc38e07fb328d47480b9f27b2cc7b61f71a0f7222290c38c3bd7d9178a44dbe9"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-bat-cave.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "38be67d39197156b2e6d682a18ebe9e4caf29bbb825df178d2102d24bb2cd6cd"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-bat-vampire.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "09ad805a30220ed8e3d09e7670e7a04c042af6451b0b26e28b186637a37e16f0"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-bear-brown.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "cd4d9cedff1031a260ee363a4c1d3199e4ce4bb87c0bebc7a9830e7351f3025d"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-bee-giant.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "0fe40f155d4a7cba75dabd9c877cafe27eed924722a87e6afcad02297324370e"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-beetle-horn.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "4681ee9fef1937bc1dbc8652397b590e76f0a1dac54fa23859bf6b8f90a8cd05"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-behemoth-horn.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "5f128550ae2f54274324345af9d8bd859d87c9fb5e1e5a7e803e875adc57db53"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-bird-hawk.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "49693ccc36172d608fe3f0b5a68ee59a2c917810277ebb48731568754959bf2c"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-boar-tusk.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "56a63d2644d0bc422ed0e35f3d383936f0cab19a4e74e8a1eeb6fd72be2dcdbb"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-bonepile-crawler.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "d67b28263492802c800b194f50d080d577f8e8a41d21f4372e915946b11ba151"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-carbuncle-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "7edb01f4d06e1b2aceae0777d4e2f490a6eb384a8ed983030c8e5f6a5c199779"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-cat-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "d1e18779d2e9194ef54651c57dc56dad17ea7944b3c83370c9ea7b962c3f65b0"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-cat-shadow.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "b837d416e3d4c68f26b255035a8155d1a42563c0ffcdc475aeb14b7358b2db2f"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-centaur-plains.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "9603231b0bfc47aaee19b6633c4a777de33c4e837dba24a7afd93e6143777d5e"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-centipede-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "55d34934540c2fa99924a5a801d889a7830b2a0be47c65c3cc56614d62b3ec19"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-centipede-fire.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "b994d398485435d5555950a11fec5841dee81f5a94de9c60271ae3d0db688c25"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-cockatrice-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "a0596b4cf9a0fb1ea74e29fe783d860f77067f5d9f1b5d0d0ce52deedfb0f54c"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-crab-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "f5baa7378dea1bf19336f20a17f2ba1b9b120968212617ac23e9283b8a7b4e02"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-crab-rock.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "9e63aaf554dba436a8b558f3bde66b2a10add33c31fa15b50056bd7fd67e081a"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-deer-forest.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "9f0d2b75e36069a230b851646b77fc8c013bd87937d36ecc5c1ece8e7c6a5811"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-demon-lord.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "5c483c5c479167e8c6a44ea4fece8ba9f2a5e323af71e74a0d76604f9c804e4d"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-dragon-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "ebbff8d7c05c1ad19fab5b3bfc3d240518428acc5ca674cc067dd9ff44053cee"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-dragon-blue.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "8528bde03f60607840ecc0a762c8f214c5b38d4dcb25e3851b41f0161809825c"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-dragon-bone.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "1c557a14cf769d1ee2bd150dfa95d5f75c052dae3f05f366f4858d61a6a1fc3f"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-dragon-red.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "a2d46b5113ac04e2fc57782de685f9d9ecee81aabd2dc2fbb76613f0292c7a03"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-dragon-whelp.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "037483d3c09f3165b3f4b6f5345fe7e06cce71617545c39768ec814563e30cbf"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-eel-electric.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "f3b400f41763ba6981761cf3075c70af87eb0e09859698f1f60cfb4560a6015e"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-eye-floating.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "df2a4af87d86cbb686dfaf191c2cbe3d74d700d0719ceb63f45c78d22a4c4501"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-fish-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "d00278f4c80562c8c2e13eaf00c86ec4c74d06a35b631a6053f650775e1aeab8"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-fish-piranha.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "0f5fb73bcf629c7b7897016b67a7f280f483617c142a36c8ebe5c7a94aa6bda8"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-gargoyle-stone.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "be6f26e80c7e4ba149305a280404871ec9b5fa824b22994f7995b9455a18eefa"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-ghost-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "02eda64c530d0cc1a18392640faf41fe9f84026576e40920f6d38fe8696cd6fc"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-ghost-pale.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "2404c172bb67ba16a3b8efeab4d6e22314efa5edcdcf99d0d9f13e32aa19ea2f"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-ghoul-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "73921cdf2e318b0ab7782b62ca56327dbe4bc18b8f3d0f4cf2940d16933e65f3"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-ghoul-grave.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "0e1f72cf81cc2c5ea18f6d4630507043728350789d82a89e2c5c6b99ec4efb43"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-goat-mountain.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "3d6b652ec69ffa7395a25996260266bbf69f528205423a6a1c0a734edd84754f"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-goblin-brute.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "4eab5389019ef5c7b6cf0e69518f70465cba5b2b735bbaeed96964dce2dc4354"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-goblin-scout.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "daa3d1f9e4e440846fa1ce711e5db3a98e98e02961c19d2bee0243d99472ae99"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-golem-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "eef07b4fcfcb4c02724d019bfdfec27a1d39a972910479a49d861054a062d733"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-golem-clay.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "d7bebc65b8975d6d2f059944f47e041f385e934a0e2ebb2e712f17f99e135320"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-golem-crystal.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "a214a57fa4067fb106f3826e3bf394f08bf69204029ecf82d058affdf7947451"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-golem-iron.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "04f759b35acd59d005b31aa912557814e135e5dc69fbc053d40a49fc8654e5a3"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-golem-stone.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "c43817ec110253203d65c4be9f7d4848f8073286912489db6e3c749ef23277cd"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-griffin-sky.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "f14d449fc666ca4c91a883f6152cb85ad35fd00caafc80b1120db4b106f37e31"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-harpy-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "de95836c765da58df94ff48173eb34637132c6d41821b17825b0158371df5ce3"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-harpy-cliff.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "858765c3823c9736d6cc2f7dd3de2881c7b998a1387121c83cf9a71701d9508c"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-horse-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "04ddad19b201f28976a3ce64f3d4ab196beb354f39433e8b860d717ea514e77c"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-hound-hell.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "1b7eb38c6e95a936814a39b19216fceab907382001b3831564a17b194df53b17"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-hydra-three.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "87c4c8c629efa56b05632be6abbc856586eb1be39d643be416154e084749e328"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-imp-mischief.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "4f0e8a055e6417014849d85a24c4feaa1a508b82b89d0cc00419bc7bbe095aec"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-jackolantern-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "d0b22b4c714df39cf38b75ca2adc0ace1620d19579163bdfe6724ac7cb8f32ec"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-kappa-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "b2048f5956ca2cf58e64b022d24a0bc07c750f29778e37da7a808d03a8025354"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-king-slime-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "f506286fa16d1319c82eb4cdf33c31959dd3250efb4fc9f5b8f932d7c6cb108e"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-knight-fallen.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "f95687e9f8f8a44e7eb1d89c7191660c502102f5b80521a043d2337ab5cf4c72"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-kobold-digger.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "42329401f016dc4d1a59f38ca753dddd44a3fda52264b8873b8c5693e0129025"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-leafling-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "f1ae781b821c4c7bd2ca64913e6d1962dcbdc31a6b8fb562b92e4f66a357691a"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-lemora-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "f6c4b46a314ff116d07f2b42f6fadeaf32cf7c78ef39ab2cdc8583100b605a49"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-lich-frost.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "4ed519d841897b24b562248a530850235a6e53b9d045c299800eede094e0a363"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-lizardman-spear.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "f567e4f034da95c48c017d72441f8eb68b29e56c02a41d7d766957dd106603f3"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-mage-rogue.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "ed47ed44de851730bf1a2ab38c93c26778ee54078c1cd56c1971752d4225995d"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-mantis-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "f08906fd930cbf6fecf0958355329e63e672afe3ee8ca935952507b850f88e4e"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-mantis-blade.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "dc75536d101f411761205e6aba74dfcee154be986be2f7fa46604cd76d4fd7c5"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-mimic-chest.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "4922ba8fce231515c60addc9a436a2831cdd8af16b3375c98e27222af55fa021"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-minotaur-maze.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "f275e4c11a8606ed7ecf3ebe4fb46d197d1792c45f4294aa5d3afe7b668050ac"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-moth-dust.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "29025f298867abee43d5d28ecb23bce958cdfd7d6c68619c26ab810d9b445276"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-mummy-bandage.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "cbc824d6d9777ac38fcd7e48053f1a9f48d64ad01caad2d8d52017c14c388a21"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-ogre-club.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "cea402396bc17ceeeeeb00bb6874340061d1a5976b67828a4304e5a8d5eb722c"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-ontology-8da61312.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "bf9b207b2ffa15b1e46dbdd190b84f9526a932e4d6569f89b0d74cb3d362ada2"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-ooze-acid.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "930b33d4e50950b487ce88fb79f44bdbf44880a4addd74f313689966ef8a54f7"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-ooze-black.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "a1683cd4234a6a6b7d0aa0b49dbccbe40b098dc85a1fc29391536992cbc9442f"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-orc-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "dcdfe7c2867fe90e3db06b56118a747cf36853c2c2212d0d8eb866c453ec9686"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-orc-shaman.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "badfafb59ded3e84093b55eae0de3370057ecbc010579492b7fbbe9b8cd80023"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-orc-warrior.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "edae127646f35d58d7dea816fe027561eb06de9838e80389ae1c7e7097dbe426"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-parasite-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "2f55a4d31e7eebe179b64de01d0867c64d33847cd500fdde648b3b5860e8a031"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-phoenix-rebirth.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "57cedab653a43b46bda0ab6cb8d653ed271b21cd2c00849668b64e1e9b890cb9"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-plant-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "70c6e8c43cac858804069e1e886c7d57063f21854623e51192cd16718675304a"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-plant-carnivore.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "3b281214c36d051050a6ae7a869715c26420096b6a4db28b7c74419c64cf17e8"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-puppet-string.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "b094c96368641d06b65b070339886527fd53c2ad089cb9095ea377ae2f81f550"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-rat-giant.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "e2658dd7b43114274a2c843b0acc531feaa11813fb4ab76d902e4f84c2729a11"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-revenant-vengeful.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "40b76529d8ffcc593c8b0d9cb1fcf9869b2761e9cea4269e882ac81c1d685276"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-roc-giant.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "b1602fe6ab3bc63d20ce27dc0fed23c5834693a2d38e925f686712852eacefa7"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-salamander-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "77392af9d3295ed684318e849844f5add1e3a7889c2ba98e963aae730c295eb0"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-salamander-flame.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "90e2e4dd7f20acf7cd4ef62db61a14ee2c7dfcb3fdac2eadb2395638357273a5"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-scarecrow-field.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "9f7c058516ca88da3892e9a4c9f9be142781fec2966015bd8cc90062d5c8f840"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-scorpion-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "17c34d0e725e95a3e87db6eb25c68d87c5ca69536e20fe6dd4183c41704ae549"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-scorpion-sand.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "5517400a05677af88125c2f1774435cafc721960ec26afedece086914333b3fa"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-shark-land.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "a75f0c5db8d33f7c962f5b6af3182093f958ce5ee124865e4e816b6eb3606dbd"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-skeleton-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "5d120ed3181f8cfed50ebc84cc3fb652738f7fbd2cdab9c3a4de6c6b94c3c3c1"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-skeleton-archer.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "9b2a8c889927cdbe87f9a4850cad3285d8dc2b2db76dfaa828a1d39be8a7e26b"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-skeleton-bone.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "b9ed653bcd1ccf61d646f77098e8d27958afdd42680f55aab029733dc1ba621d"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-skeleton-knight.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "13e5092396974451c400f4cd0f90bedbf186b3ac5be20b73a9382bf60e23fa07"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-slime-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "22d4a49dadaf05ca84298c2ec24c4ddbd8b943594414c01b03f4bb43f9b02143"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-slime-blue.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "113844629a9114851fed5d8f1aaf65f3de8ba26ddb1c185f7f4aab22e1aa78c8"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-slime-cube.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "dc3b92cbd17a9408b2471a6752db383925219878c7cfa0ec3d3d1e240283645e"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-slime-green.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "54a649098f8f9faf65f96858fb01425c2ad90ac94f05bc46746648ea7ef6065c"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-slime-king.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "f506286fa16d1319c82eb4cdf33c31959dd3250efb4fc9f5b8f932d7c6cb108e"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-slime-metal.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "f03c538a440a0fd4380fc16b4f8de501c4b2edd3b24e0e47a6c3c7bb2e96375d"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-slime-red.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "e9b0bd0847f36453d363b89737ecb08517083ae9d91518f47459982160979bf8"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-snake-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "9c4fd8a62c9efd81da07c0317ed87f76ba287a726fb61e38f82a56b8aad3589b"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-snake-viper.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "fa7a65a08e6ebcba1922be3686c0b1f2e0ebba1bcd51952da676954eb3296139"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-sparkit-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "ee700972f58f5c390b921e8b4cb98a6f33a501769ff35c0fff54e124c1843763"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-specter-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "d08db7a6f2e8c9f22903ec7ca7797f1289f7d1eab6e0279926e36fd8ac5494b7"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-spider-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "ab4cef4d1afe477c51bf35b0d90ca502a3f72997e4bb6433c5e83be73e4f97fc"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-spider-cave.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "3733e8b1667042705fd1058777ac78bc59b9b56d75f76e74ff59f70e04caf78c"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-spider-widow.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "88357b1dbd547b58019645acaaa0bf3b39ea73d00825917454b930723855a217"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-spirit-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "5feaf829081688f9964664351e9e14c02734eb781bac872280e79e6bb2c63d57"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-spirit-dark.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "a4637d388a937586585224154e9b280ccfa9f76f38f0eb4bd51e516769889405"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-spirit-earth.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "39752ed445b66f5614b2dd7924655e4fc84fd555f535179ab8650c4c1085aa82"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-spirit-fire.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "d5a14b25b425da3161073fafaf484e1c704e4e9282a09a78d0aca8bed99c3ede"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-spirit-light.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "68cfa7d361880ac2b46925545f39b84b695395c6e2a705655ec736f0e74becc8"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-spirit-water.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "8284a871774344b5b7bdb2c9c94bfb90ecfc97f823dd99a0edc548bb140cc47c"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-spirit-wind.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "342c06bef8c7fbaf5ac1bc1d206210cc04155d2673038db7701acd19fb579e03"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-squid-deep.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "aad7541414437e480c0ab8b1852e5ca5b6a35d4612918955c7d84b4e9ca29e75"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-sword-flying.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "75877631937027a8f8f4e2a69079990ec3582af06d6c78b38ea4db3413a36aa5"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-sylph-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "686abd282039647235b18f7d51603d1f1609eaf4a35290a0aff3b454fe76a76f"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-sylph-air.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "c2fff22669d93e9ca28f8868d36ed92ca8338769112a1930a4d4dee0c10ba1f8"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-tiger-saber.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "35fb12a2be8b4f01f39cc8917dfab603840d8f6be82e02237bdef637eb51d19e"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-totem-cursed.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "6efbd0ebde0edd379987569e7ac14a7b617d1fb86c2cf5217a064599f4da97df"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-troll-cave.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "1b8d21c5340ff20d5dcf218faf52479aab2ec40700285586a7fbbdae2958d000"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-undine-sea.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "6f2002dcccc7ca314f16cfcc2ab69fdfc48edb243736851494abf7f8102d43ce"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-unicorn-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "7e4bf2fb641edd1f98016ef55111085508b337f60ffc76caa31370c4693e915f"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-wisp-blue.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "b5b92ff4fb5a3bfe82e9f2d832ddfe531b42bccaae053f2c20450c04ac496765"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-wolf-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "c735e29afa9ce64cf01930857daf0dbee8ff817f9865f6ef8a25d2e6b8e3351f"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-wolf-dire.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "4d6bf1f194657fb4753c21a3289c8db0e54763b1ee82fc8ed9d524fc18f65c0b"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-wolf-grey.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "85181a503fec87c0574357b5c905705d6118229ff64f425af01c4f18a97b65a6"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-worm-sand.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "963d96f01a7f036efd289d61b243a9808d9fcb6fce3b9887929ccaac1234b52b"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-wraith-dark.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "b17db0f971cad3264af2f23e322497cb51e4de7ff00c7dc143bdf37e8d40654c"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-wyvern-cliff.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "3c4a8d634412a7dcd5597c54ac7230a91408278b6c0d0f41888aa87d051a7026"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-zombie-01.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "9eba1ea6536f50647b5d5dfdcf42287059b5a5770f222db62b21df5f950275db"
+  },
+  {
+   "path": "public/assets/generated/starter/monster-zombie-rot.png",
+   "size": "384x384",
+   "dryRunFake": false,
+   "sha256": "43af75c7d780be34aff75bb9046110396b1ee8fa4046b58e9a09bfebbf7b9e20"
+  },
+  {
+   "path": "public/assets/generated/starter/oak-shield-icon.png",
+   "size": "32x32",
+   "dryRunFake": false,
+   "sha256": "2b3e0478d6dc2851c75ac74e276b8f8a911253ca0e9eebfc3257421ff0aec0f3"
+  },
+  {
+   "path": "public/assets/generated/starter/oak-shield-image.png",
+   "size": "64x64",
+   "dryRunFake": false,
+   "sha256": "bcee03e5d33f37486bc914b9f448d8f6d6909ec520e2c0c6cdada56f85ffa3f0"
+  },
+  {
+   "path": "public/assets/generated/starter/potion-red-icon.png",
+   "size": "32x32",
+   "dryRunFake": true,
+   "sha256": "5ef64d6194b5e1a2ae876b52599beb109778d6057f4cfe4bcfb0950907803de1"
+  },
+  {
+   "path": "public/assets/generated/starter/potion-red-image.png",
+   "size": "64x64",
+   "dryRunFake": true,
+   "sha256": "c245de3b0c4148aef32fb8f22e069cbbf5f9a409a377069c3ca515676334a006"
+  },
+  {
+   "path": "public/assets/generated/starter/sylph-hornet-transparent.png",
+   "size": "64x64",
+   "dryRunFake": false,
+   "sha256": "0dede0b45624a89af29500c9b2dd32ae775f4f465c7cb0b7f1be381de1c45e07"
+  },
+  {
+   "path": "public/assets/generated/starter/troop-preview-slime.png",
+   "size": "96x96",
+   "dryRunFake": false,
+   "sha256": "4e9419d86ad01cfb49c2b39a6f7faf55dacf11f26645d671c8f3153b0ecacd33"
+  }
+ ]
+}
