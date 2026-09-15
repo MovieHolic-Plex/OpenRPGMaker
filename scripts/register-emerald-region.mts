@@ -5,7 +5,10 @@ import assert from 'node:assert/strict';
 import {pathToFileURL} from 'node:url';
 import {createHash} from 'node:crypto';
 import {configFromEnv} from './supabase-resource-root/supabaseRest.mjs';
-const root=process.env.RPG_ZZU_SOURCE_ROOT??process.cwd();
+import { applyLegacyEnvAliases } from './lib/oprnEnv.mjs';
+
+applyLegacyEnvAliases();
+const root=process.env.OPRN_SOURCE_ROOT??process.cwd();
 const source=(file:string)=>pathToFileURL(path.join(root,'src',file)).href;
 const {loadProjectFromSupabase,saveProjectToSupabase}=await import(source('project/supabaseProjectSync.ts'));
 const {serialize,deserialize,serializeForComparison}=await import(source('project/io.ts'));

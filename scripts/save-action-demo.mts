@@ -1,7 +1,7 @@
 /**
  * 액션 전투 데모 프로젝트를 저장소의 실제 원격 영속 경로(saveProjectToSupabase)로 저장하고,
  * project id 로 다시 읽어 액션 전투 계약이 왕복을 견뎠는지 검증한다.
- * 실행: npm run content:action:save   (project id 는 RPG_ZZU_ACTION_PROJECT_ID 로 덮어쓸 수 있다)
+ * 실행: npm run content:action:save   (project id 는 OPRN_ACTION_PROJECT_ID 로 덮어쓸 수 있다)
  * scripts/save-stardew-demo.mts 와 같은 패턴 — 로컬 저장은 쓰지 않는다.
  */
 import fs from "node:fs";
@@ -19,6 +19,9 @@ import {
 import { isActionCombatMap, normalizeEnemyActionProfile } from "../src/project/actionCombat.ts";
 import { loadProjectFromSupabase, saveProjectToSupabase } from "../src/project/supabaseProjectSync.ts";
 import type { Project } from "../src/project/types.ts";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 function loadEnvFiles(filePaths: readonly string[]): Record<string, string> {
   const env: Record<string, string> = {};
@@ -113,7 +116,7 @@ const fileEnv = loadEnvFiles([".env", ".env.local"]);
 const config = {
   url: (process.env.VITE_SUPABASE_URL ?? fileEnv.VITE_SUPABASE_URL ?? "").replace(/\/$/, ""),
   anonKey: process.env.VITE_SUPABASE_ANON_KEY ?? fileEnv.VITE_SUPABASE_ANON_KEY ?? "",
-  projectId: process.env.RPG_ZZU_ACTION_PROJECT_ID ?? ACTION_DEMO_PROJECT_ID,
+  projectId: process.env.OPRN_ACTION_PROJECT_ID ?? ACTION_DEMO_PROJECT_ID,
 };
 if (!config.url || !config.anonKey) throw new Error("Supabase URL and anon key are required in .env or .env.local");
 

@@ -8,7 +8,7 @@ import {
 } from "@/editor/bgmInstallClient";
 import { el } from "@/util/dom";
 
-const REMOTE_HINT = "원격 접속에서는 BGM 설치가 잠겨 있습니다. .env.local 에 RPG_ZZU_BGM_INSTALL_REMOTE=1 을 넣고 서버를 다시 시작하세요.";
+const REMOTE_HINT = "원격 접속에서는 BGM 설치가 잠겨 있습니다. .env.local 에 OPRN_BGM_INSTALL_REMOTE=1 을 넣고 서버를 다시 시작하세요.";
 
 function gigabytes(bytes: number): string {
   return `${(bytes / 1_000_000_000).toFixed(2)}GB`;

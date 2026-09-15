@@ -11,6 +11,7 @@ import {
 } from "../community-site/lib/playRoute";
 import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
+import { EXPORT_SAVE_NAMESPACE_PREFIX } from "@/player/exportSaveNamespacePrefix";
 import { describe, expect, it } from "vitest";
 
 const PLAYER_HTML = "<!doctype html><html><head><title>Player</title></head><body><div id=\"app\"></div></body></html>";
@@ -56,9 +57,11 @@ describe("community player boot configuration", () => {
     expect(html).not.toContain('<script id="owned">');
     expect(html).not.toContain("</script><script");
     expect(paths.baseHref).toBe(`/play/${encodeURIComponent(slug)}/`);
+    // 커뮤니티 사이트가 주입하는 접두사는 플레이어가 스스로 만드는 접두사와 같은 상수여야 한다.
+    expect(paths.config.saveNamespace).toBe(`${EXPORT_SAVE_NAMESPACE_PREFIX}${slug}`);
     expect(bootConfigFromHtml(html)).toEqual({
       projectUrl: `/play/${encodeURIComponent(slug)}/project.json`,
-      saveNamespace: `rpgzzu-export:${slug}`,
+      saveNamespace: `oprn-export:${slug}`,
       returnUrl: `/ko/games/${encodeURIComponent(slug)}`,
       hostFeatures: ["exit", "fullscreen"],
     });

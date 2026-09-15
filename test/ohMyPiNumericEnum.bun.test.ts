@@ -68,7 +68,7 @@ describe("numeric tool enums at the real Antigravity SDK wire boundary", () => {
   });
 
   test("Opus text-only control reaches the real fetch and response parser", async () => {
-    expect(process.env.RPG_ZZU_OH_MY_PI_TEST_STUB).not.toBe("1");
+    expect(process.env.OPRN_OH_MY_PI_TEST_STUB).not.toBe("1");
     let requests = 0;
     const result = await completeProvider("google-antigravity", {
       model: "claude-opus-4-6", messages: [{ role: "user", content: "READY" }],
@@ -85,7 +85,7 @@ describe("numeric tool enums at the real Antigravity SDK wire boundary", () => {
 
   for (const [label, tools] of [["captured48", capturedTools], ["captured48+sparse", [...capturedTools, ...sparse]], ["full-corpus", corpus]] as const) {
     test.each(models)(`${label}: preserves membership, numeric arguments and images on %s`, async (model: string) => {
-      expect(process.env.RPG_ZZU_OH_MY_PI_TEST_STUB).not.toBe("1");
+      expect(process.env.OPRN_OH_MY_PI_TEST_STUB).not.toBe("1");
       const calls = label === "captured48" ? responseCalls : [...responseCalls,
         { name: "upsert_autotile_group", args: { group: { neighborhood: 8 } } }];
       const body = { model, tools, messages: [{ role: "user", content: [

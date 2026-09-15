@@ -4,8 +4,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 const dir = mkdtempSync(join(tmpdir(), "rpgzzu-oh-my-pi-c-"));
-process.env.RPG_ZZU_OH_MY_PI_AUTH_PATH = join(dir, "auth.json");
-delete process.env.RPG_ZZU_OH_MY_PI_TEST_STUB;
+process.env.OPRN_OH_MY_PI_AUTH_PATH = join(dir, "auth.json");
+delete process.env.OPRN_OH_MY_PI_TEST_STUB;
 
 // 경계가 갈렸다: 자격·갱신·상태는 Node 쪽 aiAuthRuntime, 모델 호출만 pi-ai 런타임이다.
 const { completeProvider } = await import("../scripts/lib/ohMyPiPiAiRuntime.ts");

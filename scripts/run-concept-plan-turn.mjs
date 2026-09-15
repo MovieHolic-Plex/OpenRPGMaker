@@ -1,9 +1,12 @@
 
 import { chromium } from "@playwright/test";
 import { writeFileSync } from "node:fs";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 const BASE = process.env.PROBE_BASE ?? "http://127.0.0.1:9843";
-const AUTH = process.env.RPG_ZZU_OH_MY_PI_AUTH_PATH ?? "";
+const AUTH = process.env.OPRN_OH_MY_PI_AUTH_PATH ?? "";
 const OUT = process.env.AUDIT_OUT ?? "/tmp/concept-plan-verify.json";
 const PROMPT = process.env.AUDIT_PROMPT ?? "여관 지어줘";
 

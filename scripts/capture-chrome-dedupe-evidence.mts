@@ -3,7 +3,7 @@
  * 내놓는지 실측하는 증거 캡처. 3개 UI 모드 x (전체 화면 · 좌패널 · 각 메뉴 팝업).
  *
  * 사용:
- *   RPG_ZZU_URL=http://127.0.0.1:9861 CHROME_DEDUPE_LABEL=before \
+ *   OPRN_URL=http://127.0.0.1:9861 CHROME_DEDUPE_LABEL=before \
  *     npx tsx scripts/capture-chrome-dedupe-evidence.mts
  *
  * 출력: output/evidence/chrome-dedupe/<label>/*.png + surface.json
@@ -12,8 +12,11 @@
 import { chromium, type Page } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const BASE = process.env["RPG_ZZU_URL"] ?? "http://127.0.0.1:9861";
+applyLegacyEnvAliases();
+
+const BASE = process.env["OPRN_URL"] ?? "http://127.0.0.1:9861";
 const LABEL = process.env["CHROME_DEDUPE_LABEL"] ?? "before";
 const OUT = join(process.cwd(), "output", "evidence", "chrome-dedupe", LABEL);
 type Mode = "beginner" | "standard" | "expert";

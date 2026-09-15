@@ -11,7 +11,7 @@ function envConfig(): { readonly anonKey: string; readonly projectId: string; re
   return { anonKey, projectId, url };
 }
 
-const describeLive = process.env.RPG_ZZU_LIVE_SUPABASE_ROUNDTRIP === "1" ? describe : describe.skip;
+const describeLive = process.env.OPRN_LIVE_SUPABASE_ROUNDTRIP === "1" ? describe : describe.skip;
 
 describeLive("live Supabase canonical project roundtrip", () => {
   it("persists normalized RM2003 utility database records into current_json", async () => {

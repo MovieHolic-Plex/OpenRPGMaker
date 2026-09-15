@@ -4,8 +4,11 @@
 import fs from "node:fs";
 import { loadProjectFromSupabase, saveProjectToSupabase } from "../src/project/supabaseProjectSync.ts";
 import type { MapTreeNode, Project } from "../src/project/types.ts";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const PROJECT_ID = process.env.RPG_ZZU_PROJECT_ID ?? "rpg-zzu-dew-30min";
+applyLegacyEnvAliases();
+
+const PROJECT_ID = process.env.OPRN_PROJECT_ID ?? "rpg-zzu-dew-30min";
 const SRC = process.argv[2] ?? "output/evidence/wipe-village-dungeon/project-after.json";
 
 function loadEnv(): Record<string, string> {

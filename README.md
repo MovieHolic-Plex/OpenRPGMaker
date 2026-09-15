@@ -99,8 +99,10 @@ npm run dev
 - **단독 동반 서비스**가 필요할 때만:
 
 ```bash
-npm run ai:oauth # 127.0.0.1:17832, 토큰은 서버의 ~/.rpg-zzu 에 보관
+npm run ai:oauth # 127.0.0.1:17832, 토큰은 서버의 ~/.oprn 에 보관 (옛 ~/.rpg-zzu 파일은 첫 읽기에 한 번 복사됩니다)
 ```
+
+환경 변수 이름은 2026-09 에 `RPG_ZZU_*` 에서 `OPRN_*` 로 바뀌었습니다. 옛 이름도 이번 릴리스까지는 경고 한 줄과 함께 그대로 읽힙니다(`scripts/lib/oprnEnv.mjs` 가 새 이름으로 옮겨 줍니다).
 
 API 사용이 필요한 경우 `AI 설정 → API / 게이트웨이`로 전환해 OpenAI 호환 엔드포인트·모델·키를 입력할 수 있습니다. OAuth access/refresh token은 브라우저 localStorage나 프로젝트 데이터에 저장하지 않습니다.
 

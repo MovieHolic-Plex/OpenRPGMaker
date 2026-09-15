@@ -10,6 +10,7 @@ import {
   parseStructureKitFile,
   planImport,
   StructureKitFileError,
+  STRUCTURE_KIT_FILE_SUFFIX,
   type ImportPlan,
 } from "@/editor/harnessSuggestion/structureKitFile";
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
@@ -37,7 +38,7 @@ export function pickAndImportStructureKits(tilesetId: TilesetId, onDone: () => v
     const file = input.files?.[0];
     if (!file) return;
     if (isProjectFileName(file.name)) {
-      toast("이건 프로젝트 파일입니다. 구조물 파일(.rpgzzu-kit.json)을 골라 주세요.", "error");
+      toast(`이건 프로젝트 파일입니다. 구조물 파일(${STRUCTURE_KIT_FILE_SUFFIX})을 골라 주세요.`, "error");
       return;
     }
     const reader = new FileReader();

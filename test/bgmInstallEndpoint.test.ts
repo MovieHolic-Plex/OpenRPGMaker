@@ -180,13 +180,13 @@ it.each(["unrelated", "corrupt"])("does not bypass trusted verification for 281 
 }, 20000);
 
 it.each(["dev", "preview"] as const)("loads server-only remote opt-in from .env.local in %s", async mode => {
-  vi.stubEnv("RPG_ZZU_BGM_INSTALL_REMOTE", undefined);
+  vi.stubEnv("OPRN_BGM_INSTALL_REMOTE", undefined);
   const install = vi.fn(async () => ({}));
-  const h = await harness({ install }, { mode, env: "RPG_ZZU_BGM_INSTALL_REMOTE=1\n", onRequest: request => {
+  const h = await harness({ install }, { mode, env: "OPRN_BGM_INSTALL_REMOTE=1\n", onRequest: request => {
     Object.defineProperty(request.socket, "remoteAddress", { configurable: true, value: "203.0.113.1" });
   } });
   try {
-    expect(process.env.RPG_ZZU_BGM_INSTALL_REMOTE).toBeUndefined();
+    expect(process.env.OPRN_BGM_INSTALL_REMOTE).toBeUndefined();
     expect((await (await h.request("/api/bgm/status")).json()).remoteAllowed).toBe(true);
     expect((await h.request("/api/bgm/install", { method: "POST" })).status).toBe(202);
     await h.installationSettled;
@@ -194,8 +194,23 @@ it.each(["dev", "preview"] as const)("loads server-only remote opt-in from .env.
   } finally { await h.close(); }
 }, 20000);
 
-it("preview stays loopback-only without opt-in and ignores forwarded addresses", async () => {
+// 옛 이름 호환(한 릴리스): 사용자 .env.local 에 아직 RPG_ZZU_BGM_INSTALL_REMOTE=1 이 남아 있어도 원격 opt-in 이 살아 있어야 한다.
+// 이 값은 process.env 가 아니라 Vite loadEnv 객체에서 오므로, 별칭 심을 그 객체에도 적용했는지 여기서 고정한다.
+it.each(["dev", "preview"] as const)("still honours the legacy RPG_ZZU_BGM_INSTALL_REMOTE opt-in from .env.local in %s", async mode => {
+  vi.stubEnv("OPRN_BGM_INSTALL_REMOTE", undefined);
   vi.stubEnv("RPG_ZZU_BGM_INSTALL_REMOTE", undefined);
+  const install = vi.fn(async () => ({}));
+  const h = await harness({ install }, { mode, env: "RPG_ZZU_BGM_INSTALL_REMOTE=1\n", onRequest: request => {
+    Object.defineProperty(request.socket, "remoteAddress", { configurable: true, value: "203.0.113.1" });
+  } });
+  try {
+    expect(process.env.OPRN_BGM_INSTALL_REMOTE).toBeUndefined();
+    expect((await (await h.request("/api/bgm/status")).json()).remoteAllowed).toBe(true);
+  } finally { await h.close(); }
+}, 20000);
+
+it("preview stays loopback-only without opt-in and ignores forwarded addresses", async () => {
+  vi.stubEnv("OPRN_BGM_INSTALL_REMOTE", undefined);
   const install = vi.fn(async () => ({}));
   const h = await harness({ install }, { mode: "preview", onRequest: request => {
     Object.defineProperty(request.socket, "remoteAddress", { configurable: true, value: "203.0.113.1" });

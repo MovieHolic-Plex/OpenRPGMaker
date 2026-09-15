@@ -335,9 +335,9 @@ section("s9", 9, "증거와 재현 방법", "숫자는 모두 브라우저에서
 <pre># 격리된 개발 서버(공유 서버는 HMR 이 깨져 가짜 결함을 만든다)
 npx vite --configLoader runner --host 127.0.0.1 --port 9977 --strictPort
 
-RPG_ZZU_URL=http://127.0.0.1:9977 npx tsx scripts/capture-left-sidebar-tools.mts beginner
-RPG_ZZU_URL=http://127.0.0.1:9977 npx tsx scripts/probe-toolbar-clipping.mts
-RPG_ZZU_URL=http://127.0.0.1:9977 npx tsx scripts/probe-sidebar-keyboard.mts</pre>
+OPRN_URL=http://127.0.0.1:9977 npx tsx scripts/capture-left-sidebar-tools.mts beginner
+OPRN_URL=http://127.0.0.1:9977 npx tsx scripts/probe-toolbar-clipping.mts
+OPRN_URL=http://127.0.0.1:9977 npx tsx scripts/probe-sidebar-keyboard.mts</pre>
 <div class="callout"><b>이 리뷰는 코드를 고치지 않았다.</b> 소스는 한 줄도 건드리지 않고 읽기와 측정만 했다. 위 §8의 순서는 제안이고, 착수 여부는 감독 판단이다.</div>`);
 
 const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"/>

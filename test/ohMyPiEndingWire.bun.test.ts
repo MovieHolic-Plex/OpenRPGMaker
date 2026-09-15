@@ -14,7 +14,7 @@ function record(value: unknown): Record<string, unknown> {
 }
 describe("endingReached emitted provider schema and native scene agreement", () => {
   for (const model of ["gemini-3.7-flash", "claude-opus-4-6"]) test(`${model} carries a nonempty ending ID, never a boolean`, async () => {
-    assert.notEqual(process.env.RPG_ZZU_OH_MY_PI_TEST_STUB, "1");
+    assert.notEqual(process.env.OPRN_OH_MY_PI_TEST_STUB, "1");
     const tool = PLAY_TOOLS.find(entry => entry.name === "run_scene_test");
     if (!tool) throw new Error("Missing scene tool");
     const project = createBlankProject();

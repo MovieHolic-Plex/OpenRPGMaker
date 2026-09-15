@@ -13,8 +13,11 @@ import { runPiAgent } from "./lib/piAgentRuntime.ts";
 import { runPiTeam } from "./lib/piTeamRuntime.ts";
 import { createPiAgentNdjsonStream } from "./lib/piAgentStream.ts";
 import type { PiAgentRequest } from "../src/ai/piAgent/protocol.ts";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const port = Number(process.env.RPG_ZZU_OH_MY_PI_WORKER_PORT || 0);
+applyLegacyEnvAliases();
+
+const port = Number(process.env.OPRN_OH_MY_PI_WORKER_PORT || 0);
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {

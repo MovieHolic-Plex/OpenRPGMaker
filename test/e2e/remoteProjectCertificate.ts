@@ -69,13 +69,13 @@ export function validateRemoteCertificateEnvironment(
   env: RemoteCertificateEnvironment,
   options: { readonly allowTestLocalhost?: boolean } = {},
 ): RemoteCertificateResult {
-  if (env.RPGZZU_E2E_REMOTE_CERTIFICATE !== CERTIFICATE) return failure("certificate");
-  if (env.RPGZZU_E2E_REMOTE_ISOLATION_MARKER !== ISOLATION_MARKER) return failure("isolation-marker");
-  const projectRef = env.RPGZZU_E2E_REMOTE_PROJECT_REF ?? "";
+  if (env.OPRN_E2E_REMOTE_CERTIFICATE !== CERTIFICATE) return failure("certificate");
+  if (env.OPRN_E2E_REMOTE_ISOLATION_MARKER !== ISOLATION_MARKER) return failure("isolation-marker");
+  const projectRef = env.OPRN_E2E_REMOTE_PROJECT_REF ?? "";
   if (!PROJECT_REF.test(projectRef)) return failure("project-ref");
-  const dedicatedUrl = parseCertificateUrl(env.RPGZZU_E2E_REMOTE_URL, projectRef, options.allowTestLocalhost === true);
+  const dedicatedUrl = parseCertificateUrl(env.OPRN_E2E_REMOTE_URL, projectRef, options.allowTestLocalhost === true);
   if (!dedicatedUrl) return failure("dedicated-url");
-  const dedicatedKey = env.RPGZZU_E2E_REMOTE_ANON_KEY?.trim() ?? "";
+  const dedicatedKey = env.OPRN_E2E_REMOTE_ANON_KEY?.trim() ?? "";
   if (!JWT_SHAPE.test(dedicatedKey)) return failure("dedicated-key");
   const ordinaryUrl = parseOrdinaryUrl(env.VITE_SUPABASE_URL);
   if (ordinaryUrl !== dedicatedUrl) return failure("ordinary-url");

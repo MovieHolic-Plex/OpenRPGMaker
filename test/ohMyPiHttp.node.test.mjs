@@ -36,7 +36,7 @@ describe("oh-my-pi companion HTTP", () => {
     assert.equal(
       companionPublicOrigin(
         { headers: { origin: "http://127.0.0.1:9888" } },
-        { RPG_ZZU_PUBLIC_ORIGIN: "http://mdc-server:9888" },
+        { OPRN_PUBLIC_ORIGIN: "http://mdc-server:9888" },
       ),
       "http://mdc-server:9888",
     );

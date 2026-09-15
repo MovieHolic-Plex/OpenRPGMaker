@@ -1,12 +1,15 @@
 /**
  * 보충 캡처: 전투 전용 11행(m2-098~108, context=troop) + 검색 전용/정보 행.
- * Usage: RPG_ZZU_URL=http://127.0.0.1:9877 node scripts/capture-all-commands-supplement.mjs
+ * Usage: OPRN_URL=http://127.0.0.1:9877 node scripts/capture-all-commands-supplement.mjs
  */
 import { chromium } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9877";
+applyLegacyEnvAliases();
+
+const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9877";
 const OUT = path.resolve("output/evidence/all-commands-sweep");
 fs.mkdirSync(OUT, { recursive: true });
 

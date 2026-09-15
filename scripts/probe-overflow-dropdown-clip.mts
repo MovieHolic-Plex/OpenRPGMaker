@@ -3,8 +3,11 @@
 import { chromium } from "@playwright/test";
 import { join } from "node:path";
 import { mkdirSync } from "node:fs";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9977";
+applyLegacyEnvAliases();
+
+const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9977";
 const OUT = join(process.cwd(), "output", "evidence", "left-sidebar-review", "shots");
 
 async function main(): Promise<void> {

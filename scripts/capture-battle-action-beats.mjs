@@ -5,6 +5,9 @@
 import { chromium } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 const OUT = process.env.SCRATCH || "output/evidence/battle-action-beats";
 fs.mkdirSync(OUT, { recursive: true });
@@ -28,7 +31,7 @@ await page.addInitScript((seed) => {
   window.localStorage.clear();
 }, project);
 
-const base = process.env.RPGZZU_DEV_URL || "http://127.0.0.1:9999/";
+const base = process.env.OPRN_DEV_URL || "http://127.0.0.1:9999/";
 await page.goto(base, { waitUntil: "domcontentloaded", timeout: 60_000 });
 await page.waitForTimeout(1200);
 

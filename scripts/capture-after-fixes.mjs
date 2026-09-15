@@ -1,12 +1,15 @@
 /**
  * after 캡처: 수정된 8개 다이얼로그만 before와 같은 조건으로 재촬영.
- * Usage: RPG_ZZU_URL=http://127.0.0.1:9877 AFTER_OUT=output/evidence/all-commands-after node scripts/capture-after-fixes.mjs
+ * Usage: OPRN_URL=http://127.0.0.1:9877 AFTER_OUT=output/evidence/all-commands-after node scripts/capture-after-fixes.mjs
  */
 import { chromium } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9877";
+applyLegacyEnvAliases();
+
+const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9877";
 const OUT = path.resolve(process.env.AFTER_OUT ?? "output/evidence/all-commands-after");
 fs.mkdirSync(OUT, { recursive: true });
 

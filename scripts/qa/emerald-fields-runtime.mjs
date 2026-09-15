@@ -4,7 +4,10 @@ import assert from 'node:assert/strict';
 import {pathToFileURL} from 'node:url';
 import {chromium} from 'playwright';
 import {PNG} from 'pngjs';
-const root=process.env.RPG_ZZU_QA_SOURCE_ROOT??process.cwd();
+import { applyLegacyEnvAliases } from '../lib/oprnEnv.mjs';
+
+applyLegacyEnvAliases();
+const root=process.env.OPRN_QA_SOURCE_ROOT??process.cwd();
 const {runRuntimeQa,startPlayerQaServer}=await import(pathToFileURL(path.join(root,'scripts/lib/runtimeQaRun.mjs')));
 const out=path.resolve('output/evidence/emerald-fields');
 const walks=JSON.parse(fs.readFileSync(`${out}/walks.json`,'utf8'));

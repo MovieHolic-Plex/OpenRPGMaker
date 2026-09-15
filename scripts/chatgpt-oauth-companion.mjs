@@ -6,9 +6,12 @@ import { createServer } from "node:http";
 import { handleCompanionRequest, isCompanionPath } from "./lib/ohMyPiHttp.mjs";
 import { createOhMyPiAdapters, stopOhMyPiWorker } from "./lib/ohMyPiPiAi.mjs";
 import { readRequestJson, writeCompanionResult } from "./lib/companionHttpUtil.mjs";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 const host = "127.0.0.1";
-const port = Number(process.env.RPG_ZZU_OAUTH_PORT || 17832);
+const port = Number(process.env.OPRN_OAUTH_PORT || 17832);
 
 const adapters = await createOhMyPiAdapters();
 

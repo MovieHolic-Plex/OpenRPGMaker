@@ -4,13 +4,16 @@
  * 단위 테스트로는 "고를 수 있다"까지만 증명된다. 사용자가 겪는 것은 선택이 **다시 열어도
  * 남아 있는가** 이므로, 여기서는 선택 후 새로고침까지 통과시킨다.
  *
- * 실행: RPG_ZZU_URL=http://127.0.0.1:9801 node scripts/qa-two-provider-settings.mjs <출력디렉터리>
+ * 실행: OPRN_URL=http://127.0.0.1:9801 node scripts/qa-two-provider-settings.mjs <출력디렉터리>
  */
 import { chromium } from "playwright";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9801";
+applyLegacyEnvAliases();
+
+const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9801";
 const OUT = process.argv[2] ?? "output/evidence/two-provider-settings";
 const EXPECTED = ["google-antigravity", "openai-codex"];
 

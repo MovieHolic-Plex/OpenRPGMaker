@@ -98,7 +98,7 @@ in `vite.config.ts`, mounts the same endpoint in dev and preview:
   remains offline through the installer itself. Errors appear in status; DELETE aborts the
   reserved/running job without reporting cancellation as an install failure.
 - Loopback addresses are allowed by default. Remote use requires server-only
-  `RPG_ZZU_BGM_INSTALL_REMOTE=1` and a restart. The plugin uses Vite `loadEnv` with resolved
+  `OPRN_BGM_INSTALL_REMOTE=1` and a restart. The plugin uses Vite `loadEnv` with resolved
   mode/envDir, including preview; `.env.local` values are not automatically in `process.env`.
   Forwarded request headers cannot opt a client in. This is a host-wide permission, not user
   authentication; enable it only on a trusted editor network. Credentials stay in server gh.

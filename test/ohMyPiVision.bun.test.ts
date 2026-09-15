@@ -168,7 +168,7 @@ describe("oh-my-pi user image conversion", () => {
   test("returns HTTP 400 when the worker receives a malformed image", async () => {
     // Given: subscribe to readiness before sending a real loopback HTTP request.
     const worker = spawn(process.execPath, [new URL("../scripts/oh-my-pi-worker.ts", import.meta.url).pathname], {
-      env: { ...process.env, RPG_ZZU_OH_MY_PI_WORKER_PORT: "0", RPG_ZZU_OH_MY_PI_TEST_STUB: "0" },
+      env: { ...process.env, OPRN_OH_MY_PI_WORKER_PORT: "0", OPRN_OH_MY_PI_TEST_STUB: "0" },
       stdio: ["ignore", "pipe", "inherit"],
       timeout: 10_000,
     });
