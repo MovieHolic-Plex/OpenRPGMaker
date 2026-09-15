@@ -2177,3 +2177,21 @@ e2e `ai-ui-audit-fixes` F10.
 - Lane receipts: `output/evidence/event-command-completion/legacy-ai/`. Browser QA uses an owned
   strict-port 21050 server and private loopback namespace to avoid host network-change failures;
   remote writes are intercepted and the disposable database edit is discarded through its real UI.
+
+## 의도 선언과 커버리지 감사는 각자 예산을 쓴다 (2026-09-16)
+
+`createLlmIntentDeclarer`(`src/ai/intentDeclarationClient.ts`)는 한 턴에 모델을 **두 번** 부른다 —
+라우팅 선언(`INTENT_SYSTEM_PROMPT`)과 독립 커버리지 감사(`REQUEST_COVERAGE_AUDIT`). 예전에는 이 둘이
+컨트롤러 하나(20초)를 나눠 썼다. 실측(2026-09-15 라이브, `output/ai-activity/e1c80a58…`·`72e8599d…`):
+라우팅이 20016~20073ms  쓰고 성공한 뒤 같은 벽에 감사가 잘렸고, 그 실패가
+`Request coverage unverified: 시간 초과(20000ms)` 라는 **닫을 수 없는** 필수 항목을 만들었다.
+모델은 그 항목을 닫으려 `repair_acceptance`·`correct_verification` 를 반복하다 툴 예산을 태우고
+(`stoppedReason: max-tool-calls`) 초안을 버렸다 — 제안 2건 · 적용 0건.
+
+지금은 감사가 **자체 컨트롤러와 자체 20초**를 가진다(`auditCoverage`). 라우팅의 지연이 감사 결과를
+지우지 못하고, 감사 자체가 실패하면 그대로 미확인 항목으로 남는다(게이트는 약해지지 않는다). 계약은
+`test/intentDeclarationClient.test.ts` 의 "커버리지 감사는 라우팅과 다른 예산을 쓴다" 가 고정한다 —
+감사가 라우팅과 같은 signal 을 받으면 그 테스트가 실패한다.
+
+이 항목은 **관찰된 사고의 원인**이라는 뜻이지, 검증 미완료 초안을 적용해도 된다는 뜻이 아니다.
+미적용 초안의 검수는 `evaluateForReview`(초안 자체 평가)와 독립 검수 게이트가 그대로 판정한다.
