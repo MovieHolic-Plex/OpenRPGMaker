@@ -12,10 +12,10 @@ import {
 } from "@/ai/aiRecordDb";
 import { isConversationTurnContext } from "@/ai/conversationTurnContext";
 import { conversationTranscriptCompacted, indexConversationMaps, isConversationMapIndex, type ConversationMapIndex } from "@/ai/mapConversationStore";
-import { supabaseProjectConfig } from "@/project/supabaseProjectConfig";
 import { enqueueRemoteWrite, registerRemoteOutboxSender } from "@/project/remoteOutbox";
 import type { ProjectIdentity } from "@/project/store";
-import { listSupabaseConversations, recordSupabaseConversation, type SupabaseConversationInput } from "@/project/supabaseProjectSync";
+import { projectRepository } from "@/project/persistence/repository";
+import type { SupabaseConversationInput } from "@/project/supabaseProjectSync";
 import type { Project } from "@/project/types";
 
 export interface ConversationRecord { id: string; title: string; model: string; savedAt: number; entries: AuditEntry[]; projectContextKey?: string; mapIndex?: ConversationMapIndex; }
@@ -303,7 +303,7 @@ registerRemoteOutboxSender("ai-conversation", async (payload) => {
   // Equal milliseconds can contain a later local save; retry that snapshot, not the queued copy.
   const snapshot = local?.savedAt === payload.savedAt ? local
     : { title: payload.title, model: payload.model, entries: payload.entries };
-  const result = await recordSupabaseConversation({ conversationId: payload.conversationId, title: snapshot.title,
+  const result = await projectRepository().ai.recordConversation({ conversationId: payload.conversationId, title: snapshot.title,
     model: snapshot.model, entries: snapshot.entries, savedAt: payload.savedAt, destinationProjectId: destination,
     ...(scope === null ? {} : { projectContextKey: scope }) });
   if (result.kind === "not-configured") throw new Error("supabase not configured");
@@ -313,7 +313,7 @@ registerRemoteOutboxSender("ai-conversation", async (payload) => {
 
 export async function saveConversation(record: ConversationRecord): Promise<ConversationSaveOutcome> {
   // Freeze origin before the first await, even when a retired session saves after project switching.
-  const config = supabaseProjectConfig();
+  const config = projectRepository().currentTarget();
   const destinationProjectId = record.projectContextKey?.startsWith("remote:")
     ? record.projectContextKey.slice(7) : config?.projectId ?? null;
   let compacted: ConversationRecord & { mapIndex: ConversationMapIndex };
@@ -343,7 +343,7 @@ export async function saveConversation(record: ConversationRecord): Promise<Conv
     savedAt: compacted.savedAt,
   };
   // Payload carries only the destination id, never credentials. Retry cannot adopt the current project.
-  void recordSupabaseConversation(remoteInput, config).catch((error: unknown) => {
+  void projectRepository().ai.recordConversation(remoteInput, config).catch((error: unknown) => {
     console.error("[ai-conversation] Supabase mirror failed:", error);
     enqueueRemoteWrite({ id: compacted.id, kind: "ai-conversation", payload: remoteInput, error });
   });
@@ -534,7 +534,7 @@ export interface ConversationArchiveHydrationOptions {
 export async function hydrateConversationArchive(options: ConversationArchiveHydrationOptions): Promise<{
   readonly imported: number; readonly skipped: number; readonly rejected: number; readonly durable: boolean;
 }> {
-  const captured = supabaseProjectConfig();
+  const captured = projectRepository().currentTarget();
   if (!captured) throw new Error("Conversation recovery is not configured");
   const config = { ...captured, projectId: options.projectContextKey.startsWith("remote:")
     ? options.projectContextKey.slice(7) : captured.projectId };
@@ -553,7 +553,7 @@ export async function hydrateConversationArchive(options: ConversationArchiveHyd
   const pageSize = 100;
   for (let offset = 0; ; offset += pageSize) {
     requireCurrent();
-    const rows = await listSupabaseConversations({ offset, limit: pageSize, includeEntries: true,
+    const rows = await projectRepository().ai.listConversations({ offset, limit: pageSize, includeEntries: true,
       projectContextKey: options.projectContextKey, signal: options.signal }, config);
     requireCurrent();
     for (const row of rows) {
