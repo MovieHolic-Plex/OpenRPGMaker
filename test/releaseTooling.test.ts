@@ -7,9 +7,11 @@ import {
   buildReleaseSections,
   bumpVersion,
   collectReleaseItems,
+  decideReleaseKind,
   parseCommitSubject,
   renderReleaseNotes,
 } from "../scripts/lib/releaseNotes.mjs";
+import { changelogEntryFor } from "../scripts/lib/releaseFiles.mjs";
 
 describe("parseDescribe", () => {
   it("태그·커밋 수·sha 를 분해한다", () => {
@@ -184,5 +186,62 @@ describe("renderReleaseNotes", () => {
   it("생략한 커밋이 있으면 밝힌다", () => {
     const notes = renderReleaseNotes({ version: "0.1.0", date: "2026-09-16", sections, omitted: 4100 });
     expect(notes).toContain("4100");
+  });
+});
+
+describe("decideReleaseKind", () => {
+  const commits = (subjects: readonly string[]) =>
+    subjects.map((subject, index) => ({ sha: String(index).repeat(7).slice(0, 7), subject }));
+
+  it("feat 와 깨지는 변경은 MINOR", () => {
+    expect(decideReleaseKind(commits(["feat: 추가"]))).toBe("minor");
+    expect(decideReleaseKind(commits(["fix!: 저장 포맷 교체"]))).toBe("minor");
+  });
+
+  it("고치는 것은 PATCH", () => {
+    expect(decideReleaseKind(commits(["fix: 고침"]))).toBe("patch");
+    expect(decideReleaseKind(commits(["refactor: 정리"]))).toBe("patch");
+  });
+
+  it("규약 밖 메시지도 PATCH 로 다 — 동작이 바뀌었을 수 있다", () => {
+    expect(decideReleaseKind(commits(["그냥 메시지"]))).toBe("patch");
+  });
+
+  it("문서·테스트·잡무만 였으면 낼 릴리스가 없다", () => {
+    expect(decideReleaseKind(commits(["docs: 문서", "chore: 잡무", "test: 테스트"]))).toBeNull();
+  });
+
+  it("머지만 있거나 커밋이 없으면 null", () => {
+    expect(decideReleaseKind([])).toBeNull();
+    expect(decideReleaseKind(commits(["Merge branch 'x' (#1)"]))).toBeNull();
+  });
+});
+
+describe("changelogEntryFor", () => {
+  const text = [
+    "# 변경 기록",
+    "",
+    "<!-- releases -->",
+    "",
+    "## 0.2.0 — 2026-09-16",
+    "",
+    "### 기능",
+    "",
+    "- 새 기능",
+    "",
+    "## 0.1.0 — 2026-09-15",
+    "",
+    "- 옛 기능",
+  ].join("\n");
+
+  it("한 버전의 절만 낸다", () => {
+    const entry = changelogEntryFor(text, "0.2.0");
+    expect(entry).toContain("0.2.0");
+    expect(entry).toContain("- 새 기능");
+    expect(entry).not.toContain("0.1.0");
+  });
+
+  it("없는 버전이면 null", () => {
+    expect(changelogEntryFor(text, "9.9.9")).toBeNull();
   });
 });

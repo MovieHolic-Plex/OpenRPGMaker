@@ -91,7 +91,7 @@ gh release create v0.2.0 --title "v0.2.0" --notes-from-tag
 
 ## 아직 안 한 것
 
-- **release-please**: 릴리스가 주기적으로 돌기 시작하면 붙인다(지금 붙이면 릴리스 PR 이 계속 열려 있다).
+- **release-please(GitHub Actions)**: 이 저장소의 Actions 는 꺼져 있어(enabled=false) 쓸 수 없다. 대신 아래 로컬 자동화가 같은 의미를 한다 — 켜게 되면 그대로 쓸 수 있다.
   커밋 규약은 이미 있어 그대로 동작한다.
 - **업데이터·채널**: 데스크톱 패키징 뒤. stable/beta/nightly 는 프리릴리스 태그(`0.2.0-beta.1`)로 가른다.
 - **아티팩트 매니페스트의 도구 버전**: 내보낸 플레이어(sdk-manifest.json)에 아직 앱 버전이 안 들어간다.
@@ -107,3 +107,30 @@ npm run build:app && grep -rhoE '0\.1\.0-dev\.[0-9]+\+g[0-9a-f]+' dist/assets | 
 ```
 
 실제 릴리스 절차는 임시 저장소에서 먼저 돌려볼 수 있다(커밋·태그가 그 저장소 안에서만 만들어지므로 안전하다).
+
+## 자동화 — 제안 PR 과 발행 타이머
+
+수동 경로(`npm run release`)는 급할 때 쓰고, 평소에는 자동화가 "잊지 않게" 한다. 둘 다
+`scripts/lib/releaseFiles.mjs` 를 공유하므로 산출물이 갈라지지 않는다.
+
+```bash
+npm run release:auto                 # ① 발행 + ② 제안 (멱등)
+npm run release:auto -- --dry-run    # 계획만 (아무것도 쓰지 않음)
+```
+
+**① 발행** — 릴리스 PR 이 머지됐는데(= main 의 package.json 버전이 마지막 태그와 다르면)
+그 커밋에 주석 태그를 만들고 GitHub Release 를 낸다. 태그 본문은 CHANGELOG 의 그 절이다.
+
+**② 제안** — 마지막 태그 이후 커밋이 있으면 `release/next` 브랜치를 origin/main 에서 다시
+만들어 범프 + CHANGELOG 항목을 커밋하고 PR 을 생성/갱신한다. 트리가 같으면 아무것도 하지
+않으므로 매일 돌아도 조용하다. **머지하는 순간이 릴리스 결정**이다 — 이 스크립트는 사람이
+머지하지 않으면 아무 릴리스도 내지 않는다.
+
+범프 규칙(자동 제안): `feat` 와 깨지는 변경(`!`)은 MINOR, `fix`·`perf`·`refactor`·비규약
+메시지는 PATCH, 문서·테스트·잡무만 쌓였으면 제안하지 않는다. 덮어쓰려면 `--kind`.
+
+타이머(user systemd): `rpg-zzu-release.timer` → 하루 1회. 끄려면
+`systemctl --user disable --now rpg-zzu-release.timer`. `--major`(1.0.0 선언)는 어느
+경로에서도 사람만 한다.
+
+검증: `node scripts/run-vitest.mjs run test/releaseTooling.test.ts`

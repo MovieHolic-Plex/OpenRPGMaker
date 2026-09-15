@@ -145,3 +145,17 @@ export function bumpVersion(version, kind) {
       throw new Error(`모르는 범프 종류입니다: ${kind} (가능: ${RELEASE_KINDS.join(", ")})`);
   }
 }
+
+/**
+ * 자동 제안의 범프 종류를 정한다.
+ * 0.x 에서는 feat 와 깨지는 변경이 MINOR, 고치는 것은 PATCH 다.
+ * 문서·테스트·잡무만 쌓였으면 null 이다.
+ * 규약 밖 메시지는 PATCH 로 센다.
+ */
+export function decideReleaseKind(commits) {
+  const items = collectReleaseItems(commits);
+  if (items.length === 0) return null;
+  if (items.some((item) => item.breaking || item.type === "feat")) return "minor";
+  const patchy = items.some((item) => item.type === null || ["fix", "perf", "refactor"].includes(item.type));
+  return patchy ? "patch" : null;
+}
