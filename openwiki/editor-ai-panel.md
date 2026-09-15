@@ -1,5 +1,26 @@
 # Editor AI Panel & Tools
 
+## 결과 보고서 모달 — 변경 지점마다 before/after 한 쌍 (2026-09-15, P2)
+
+「보고서 열기」(작업 탭 검토 스트립 · 로그 카드 「넓게 보기」)가 열던 넓은 뷰어는 맵 하나의 **전체 diff bbox 한 쌍**이었다 —
+AI 가 한 맵의 북쪽과 남쪽을 같이 고치면 bbox 가 맵 전체가 되어 사진이 아무것도 말하지 못했다("적용 전 후 사진이 여러 개
+떠야 하는 거 아니냐"). P2 는 변경을 **지점**으로 묶어 지점마다 한 쌍을 세로로 나열한다.
+
+| 조각 | 파일 | 계약 |
+|---|---|---|
+| 지점 계산 | `src/project/changeSites.ts` | 순수 함수 `computeChangeSites(before, after, {pad=3, gap=4, maxSites=12})`. 바뀐 칸(타일 lower/upper diff + 이벤트 추가·삭제·이동 좌표 — 이동은 출발·도착 둘 다)을 체비셰프 거리 ≤ gap 으로 뭉쳐 `ChangeSite` 목록으로. 맵 추가·삭제·크기 변경은 전체 맵 지점 하나. 상한을 넘으면 **gap 을 두 배씩 키워** 다시 뭉친다 — 지점을 자르지 않는다(안 보여주는 변경이 없어야 한다). `SiteRect` 는 RegionRect 와 구조 동일(레이어: src/editor 를 import 하지 않는다). 스택·속성 변경은 그림에 안 나오므로 ledger 의 몫. |
+| 보고서 모드 | `aiChangePreview.ts` | `ChangePreviewInput.sites?/report?/findings?`. `openWideChangeViewer` 는 `sites.length > 0` 이면 `.ai-change-wide.is-report`: 머리(제목 + 「변경 지점 N곳」 + 칩) · brief(팀 보고 문장 `ai-change-report-brief` + 검수 지적 `ai-change-report-findings`) · `ai-change-report-sites`(지점마다 `ai-change-report-site`: 번호·맵 이름·`placeLabel`·`statsLabel` + before/after 쌍, 렌더 폭 560) · ledger. 나란히/겹쳐 보기 토글은 보고서 모드에 없다. sites 가 없으면 기존 한 쌍 동작 그대로(기존 호출자 무수정). |
+| 배선 | `aiPiAgentCommand.ts` | `reviewInput` 에 `sites: computeChangeSites(base, merged.project)` + `report: boardState.report` + `findings`(검수 실패 지적 모음). 검토 카드의 「넓게 보기」와 버스 `openReport` 가 같은 input 을 쓰므로 두 경로 다 보고서 모드다. |
+| 스타일 | `19-assistant-cards.css` 4절 | `.ai-change-wide.is-report`(brief 행 유무로 grid-template-rows 분기, :has) · 지점 구획 · 쌍 캔버스 상한 44vh. |
+
+fixture 함정(실측): `test/piAgentRunOutcome.test.ts` 의 최소 맵 fixture 가 `lowerTiles/events` 없이 GameMap 을 사칭하다
+실제 `computeChangeSites` 를 타고 터졌다 — 방어 코드 대신 fixture 를 계약대로 채웠다(`mapWith`).
+
+검증: `test/changeSites.test.ts`(뭉침·이동 양쪽 마킹·mixed·맵 추가/삭제/크기·gap 배증 상한·빈 diff) ·
+`test/aiChangePreview.test.ts` 보고서 모드 3건(지점 수 = 구획 수 = 렌더 호출/2 · 머리 brief · sites 없으면 기존 동작) ·
+`scripts/qa/ai-work-tab-qa.mjs` (d2) 단계 — 실제 맵 복제에 두 군집 + 이벤트를 심고 **실제 캔버스 렌더**로 지점별 쌍을
+검사한다(`05-report-modal.png`).
+
 ## 조수 데크 「대화|작업」 탭 + 스튜디오 상세 — 팀원이 어디서 일하는지 한 곳 (2026-09-14, A안)
 
 계획서: `docs/2026-09-14-team-panel-plan.html` + A안 목업 `docs/2026-09-14-team-panel-plan-assets/proposed-a/`.

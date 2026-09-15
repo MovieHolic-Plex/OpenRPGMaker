@@ -230,6 +230,54 @@ async function runViewport(browser, width, height) {
   check(`${width}: 압축 보기에는 툴 인자 줄이 없다`, (await page.getByTestId("ai-team-tx-args").count()) === 0);
   await page.screenshot({ path: join(dir, "03-work-single-run.png") });
 
+  // (d2) 보고서 모달 — 실제 computeChangeSites + openWideChangeViewer + 실제 캔버스 렌더.
+  // 현재 맵을 복제해 멀리 떨어진 두 타일 군집 + 이벤트 추가 → 지점 ≥2 — 「사진이 여러 쌍」을 실제 렌더로 본다.
+  const reportSeed = await page.evaluate(async () => {
+    const source = await (await fetch("/src/editor/panels/aiPiAgentCommand.ts")).text();
+    const pick = (needle, fallback) => source.match(new RegExp(`from "([^"]*${needle}[^"]*)"`))?.[1] ?? fallback;
+    const load = async (url) => await import(/* @vite-ignore */ url);
+    const [{ store }, sitesMod, previewMod] = await Promise.all([
+      load(pick("project/store", "/src/project/store.ts")),
+      load(pick("project/changeSites", "/src/project/changeSites.ts")),
+      load(pick("panels/aiChangePreview", "/src/editor/panels/aiChangePreview.ts")),
+    ]);
+    const project = store.getCurrent();
+    const mapId = Object.keys(project.maps)[0];
+    const before = structuredClone(project);
+    const after = structuredClone(project);
+    const map = after.maps[mapId];
+    const stamp = (cx, cy, w, h) => {
+      const sample = map.lowerTiles.find((tile) => tile !== map.lowerTiles[cy * map.width + cx]) ?? 1;
+      for (let y = cy; y < cy + h; y += 1) for (let x = cx; x < cx + w; x += 1) map.lowerTiles[y * map.width + x] = sample;
+    };
+    stamp(4, 4, 5, 3);
+    stamp(map.width - 10, map.height - 8, 4, 4);
+    const donor = map.events[0];
+    if (donor) map.events = [...map.events, { ...structuredClone(donor), id: "qa-report-npc", x: 6, y: map.height - 6 }];
+    const sites = sitesMod.computeChangeSites(before, after);
+    previewMod.openWideChangeViewer({
+      before, after, mapId, title: "Pi 팀 결과", sites, state: "proposed",
+      chips: [`타일 ${sites.reduce((acc, s) => acc + s.tilesChanged, 0)}칸`, "이벤트 +1"],
+      report: "북쪽에 대장간 앞마당을 닦고 남쪽 숲길을 정비했습니다. 검수 지적 1건은 재배정으로 고쳤습니다.",
+      findings: ["(20,9) 돌길 한 칸 끓김 — 재배정으로 수정됨"],
+    });
+    return { sites: sites.length };
+  });
+  check(`${width}: 보고서 재료는 지점 ≥2 를 만든다`, reportSeed.sites >= 2, `sites=${reportSeed.sites}`);
+  await page.getByTestId("ai-change-wide").waitFor({ state: "visible", timeout: 10_000 });
+  const siteCount = await page.getByTestId("ai-change-report-site").count();
+  check(`${width}: 보고서 모달이 지점마다 한 구획을 그린다`, siteCount === reportSeed.sites, `sections=${siteCount}`);
+  await page.waitForFunction((expected) => document.querySelectorAll('[data-testid="ai-change-report-site"] canvas').length === expected, reportSeed.sites * 2, { timeout: 15_000 });
+  const canvases = await page.locator('[data-testid="ai-change-report-site"] canvas').count();
+  check(`${width}: 지점마다 before/after 캔버스 한 쌍이 붙는다`, canvases === reportSeed.sites * 2, `canvases=${canvases}`);
+  const briefText = await page.getByTestId("ai-change-report-brief").textContent();
+  check(`${width}: 보고서 머리에 팀 보고·검수 지적이 실린다`, (briefText ?? "").includes("대장간") && (briefText ?? "").includes("돌길 한 칸"), (briefText ?? "").slice(0, 60));
+  check(`${width}: 보고서 모드에는 겹쳐 보기 토글이 없다`, (await page.getByTestId("ai-change-wide-mode-side").count()) === 0);
+  await page.screenshot({ path: join(dir, "05-report-modal.png") });
+  await page.getByTestId("ai-change-wide-close").click();
+  await page.waitForTimeout(150);
+  check(`${width}: 닫기로 보고서가 닫힌다`, (await page.getByTestId("ai-change-wide").count()) === 0);
+
   // (e) 스튜디오 — 덱 「작업」이 상세 페인
   await seed(page, "running");
   await page.waitForTimeout(200);
@@ -269,7 +317,7 @@ try {
   await browser.close();
 }
 const status = failures.length === 0 ? "전부 통과" : `실패 ${failures.length}건`;
-writeFileSync(join(OUT, "SUMMARY.md"), `# 「작업」 탭 QA — ${status}\n\n${summary.join("\n")}\n\n즉시 확인: 1440x900/01-work-team-running.png · 02-work-review-strip.png · 03-work-single-run.png · 04-studio-work-detail.png\n`);
+writeFileSync(join(OUT, "SUMMARY.md"), `# 「작업」 탭 QA — ${status}\n\n${summary.join("\n")}\n\n즉시 확인: 1440x900/01-work-team-running.png · 02-work-review-strip.png · 03-work-single-run.png · 04-studio-work-detail.png · 05-report-modal.png\n`);
 console.log(summary.join("\n"));
 console.log(status);
 process.exit(failures.length === 0 ? 0 : 1);

@@ -84,7 +84,9 @@ vi.mock("@/editor/tools/applyChangesetToStore", () => ({
 
 const { runPiCommand } = await import("@/editor/panels/aiPiAgentCommand");
 
-const projectWith = (name: string) => ({ maps: { map_a: { id: "map_a", name, width: 4, height: 4 } } });
+// GameMap 계약대로 타일·이벤트 배열을 채운다 — reviewInput 이 실제 computeChangeSites 를 탄다.
+const mapWith = (name: string) => ({ id: "map_a", name, width: 4, height: 4, lowerTiles: new Array(16).fill(0), upperTiles: new Array(16).fill(0), events: [] });
+const projectWith = (name: string) => ({ maps: { map_a: mapWith(name) } });
 
 const harness = () => {
   const outcomeCalls: (Record<string, unknown> | null)[] = [];
@@ -102,7 +104,7 @@ beforeEach(() => {
   h.planError = false;
   h.requests.length = 0; h.results.length = 0; h.bubbles.length = 0;
   h.assistantTexts.length = 0; h.boardStates.length = 0; h.reviewActions.length = 0;
-  h.project = { maps: { map_a: { id: "map_a", name: "A", width: 4, height: 4 } } };
+  h.project = projectWith("A");
   h.piApply = "auto"; h.harmony = true; h.harmonyError = false;
 });
 
