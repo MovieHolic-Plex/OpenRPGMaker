@@ -151,17 +151,71 @@ function rejectWrite(house: HouseSnapshot, cell?: Cell): never {
     { code: "protected-house-write", mapId: house.mapId, ...cell });
 }
 
-/** Called after every global postprocessor, before commit (also for dry-run). No tool/selection/spec exemption. */
+const EMPTY_KEYS: ReadonlySet<string> = new Set<string>();
+
+/** sameOwner 와 같은 판정을 색인 키로 옮긴다. 이어 붙이면 맵·집 id 에 든 구분자가 두 짝을
+ *  같은 키로 만들 수 있으므로 JSON 배열로 굳힌다. */
+function ownerKey(house: HouseSnapshot): string {
+  return JSON.stringify([house.mapId, house.source, house.id]);
+}
+
+/** 셀에서 바로 잰 경계 — rect 가 아니다. 지붕 데크 사다리처럼 rect 밖에 붙는 칸이 있다. */
+type HouseIndex = { readonly keys: ReadonlySet<string>; readonly minX: number; readonly minY: number; readonly maxX: number; readonly maxY: number };
+const EMPTY_INDEX: HouseIndex = { keys: EMPTY_KEYS, minX: 1, minY: 1, maxX: 0, maxY: 0 };
+
+/** 스냅숏 하나의 셀 키 집합·경계 — 같은 집이 바깥·안쪽 루프에서 반복해 나오므로 한 번만 만든다. */
+function houseIndexOf(cache: Map<HouseSnapshot, HouseIndex>, house: HouseSnapshot | undefined): HouseIndex {
+  if (!house) return EMPTY_INDEX;
+  const known = cache.get(house);
+  if (known) return known;
+  const keys = new Set<string>();
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const cell of house.cells) {
+    keys.add(cellKey(cell));
+    if (cell.x < minX) minX = cell.x;
+    if (cell.y < minY) minY = cell.y;
+    if (cell.x > maxX) maxX = cell.x;
+    if (cell.y > maxY) maxY = cell.y;
+  }
+  const index: HouseIndex = { keys, minX, minY, maxX, maxY };
+  cache.set(house, index);
+  return index;
+}
+
+/** 경계가 안 닿으면 칸도 안 겹친다 — 마을 대부분의 짝이 여기서 끝난다. */
+function boundsTouch(a: HouseIndex, b: HouseIndex): boolean {
+  return a.minX <= b.maxX && b.minX <= a.maxX && a.minY <= b.maxY && b.minY <= a.maxY;
+}
+
+/**
+ * Called after every global postprocessor, before commit (also for dry-run). No tool/selection/spec exemption.
+ *
+ * 마을 한 채를 지을 때마다 세 번 불린다(fences/decor/landscape). 예전에는 짝마다
+ * `before.find(...)` 로 훑고 `new Set(...cells.map(cellKey))` 를 **안쪽 루프에서** 다시 만들어
+ * 집 H채·칸 C개에 O(H²·C) 의 문자열을 찍었다 — 실프로젝트 「지역」 탭 열기 2.5 초 중 1.9 초가
+ * 여기였다(2026-09-15 CPU 프로파일, output/evidence/db-tab-perf/profile-regions-after.txt).
+ * 판정은 그대로 두고, 소유자 색인과 셀 키 집합을 한 번만 만들도록 끌어올렸다.
+ */
 export function assertHouseProtection(before: readonly HouseSnapshot[], project: Project, built: readonly HouseSnapshot[]): void {
   const after = captureHouseProtection(project);
+  const keys = new Map<HouseSnapshot, HouseIndex>();
+  const afterByOwner = new Map<string, HouseSnapshot[]>();
+  for (const owner of after) {
+    const bucket = afterByOwner.get(ownerKey(owner));
+    if (bucket) bucket.push(owner);
+    else afterByOwner.set(ownerKey(owner), [owner]);
+  }
+  const beforeByOwner = new Map<string, HouseSnapshot>();
+  for (const old of before) if (!beforeByOwner.has(ownerKey(old))) beforeByOwner.set(ownerKey(old), old);
+
   for (const house of [...before, ...built]) {
     const map = project.maps[house.mapId];
     if (!map || map.id !== house.mapId || map.tilesetId !== house.tilesetId || map.tileSize !== house.tileSize
       || map.width < house.width || map.height < house.height) rejectWrite(house);
-    const owners = after.filter((owner) => sameOwner(owner, house));
+    const owners = afterByOwner.get(ownerKey(house)) ?? [];
     const owner = owners[0];
     if (owners.length !== 1 || !owner || !containsRect(owner.rect, house.rect)) rejectWrite(house);
-    const covered = new Set(owner.cells.map(cellKey));
+    const covered = houseIndexOf(keys, owner).keys;
     for (const cell of house.cells) {
       const index = cell.y * map.width + cell.x;
       if (!covered.has(cellKey(cell)) || map.lowerTiles[index] !== cell.lower || map.upperTiles[index] !== cell.upper
@@ -169,14 +223,14 @@ export function assertHouseProtection(before: readonly HouseSnapshot[], project:
     }
   }
   for (const [index, house] of after.entries()) {
-    const oldHouse = before.find((old) => sameOwner(old, house));
-    const cells = new Set(house.cells.map(cellKey));
-    for (const other of after.slice(index + 1)) {
+    const oldCells = houseIndexOf(keys, beforeByOwner.get(ownerKey(house))).keys;
+    const mine = houseIndexOf(keys, house);
+    for (let next = index + 1; next < after.length; next += 1) {
+      const other = after[next]!;
       if (other.mapId !== house.mapId) continue;
-      const oldOther = before.find((old) => sameOwner(old, other));
-      const oldCells = new Set(oldHouse?.cells.map(cellKey));
-      const oldOtherCells = new Set(oldOther?.cells.map(cellKey));
-      const overlap = other.cells.find((cell) => cells.has(cellKey(cell))
+      if (!boundsTouch(mine, houseIndexOf(keys, other))) continue;
+      const oldOtherCells = houseIndexOf(keys, beforeByOwner.get(ownerKey(other))).keys;
+      const overlap = other.cells.find((cell) => mine.keys.has(cellKey(cell))
         && (!oldCells.has(cellKey(cell)) || !oldOtherCells.has(cellKey(cell))));
       if (overlap) throw new ToolError("새 집의 보호 영역이 다른 완성된 집과 겹칩니다.", { code: "house-overlap", mapId: house.mapId, x: overlap.x, y: overlap.y });
     }
