@@ -32,12 +32,38 @@ raw-http-request=/home/main/.omp/logs/http-400-requests/<ts>-<id>.json
 "`-high`/`-medium`/`-low` 는 독립 모델이 아니라 `gemini-3.7-flash` 의 `thinking.effortRouting`
 대상 이름" 이고 그 ID 는 Cloud Code Assist 가 거부한다.
 
-## 아직 증명 못 한 것 (추측 금지)
-- **접미사가 원인이라고 단정할 수 없다.** 단순 completions 경로는 `reasoning=low/off/high` 모두 HTTP 200 이고,
-  `/v1/agent/run` 프로브(`thinkingLevel=low|medium|high`)도 200 이었다. 즉 "wire 가 `-low`" 만으로 400 이 되지는 않는다.
-  다른 인자(요청 본문의 `labels`/`sessionId`/`systemInstruction` 등)가 함께 문제일 수 있다.
-- 따라서 **수정은 아직 하지 않았다.** 다음 라운드에서 덤프 본문을 이분 탐색해 어떤 인자가 거부되는지 좁혀야 한다.
+## 원인 확정 (같은 날 이어서) — 출력 토큰 예산이었다
 
-## 이 발견이 막고 있는 것
-목표의 "실모델로 DB 검토→적용/폐기 를 실제로 돌린다" 항목. 이 400 이 먼저 풀려야 턴이 `review` 단계에 닿는다.
-브라우저 표면 검증(검토→적용→폐기, 스텁 모델)은 이미 통과해 있다(`.omo/evidence/db-ai-review/`).
+접미사 모델도 시스템 프롬프트도 아니었다. **요청의 `max_tokens` 가 상한을 넘었다.**
+
+같은 요청에서 `max_tokens` 만 바꾼 실측:
+
+| max_tokens | 결과 |
+|---|---|
+| 65536 | **200** |
+| 65535 | 200 |
+| 100000 | **400** |
+| 200000 (앱 기본값) | 400 |
+
+대조 실험으로 배제한 것:
+- **effort 접미사**: `-low` 든 `-high` 든 400 이었다(자율성을 바꿔 wire 모델을 바꿔도 동일).
+- **시스템 프롬프트**: 같은 위키 프롬프트(3082자)를 낮은 `max_tokens` 로 보내면 200.
+- **자격**: `agy` CLI 가 같은 머신에서 정상 동작하고, 앱도 Cloud Code Assist 에 도달한다.
+
+앱 기본값은 `src/ai/llmClient.ts` 의 `DEFAULT_MAX_TOKENS = 200_000` 이고, 그 값이 **레코드 준비 호출**에 그대로 실려 나갔다.
+
+## 고침과 그 효과 (실측)
+
+고침: PR #861 — `providerCapability()` 에 이미 있던 `maxTokensCeiling` 자리를 Antigravity 경로에 채우고(65536), 초과분을 클램프한다.
+
+수정 후 라이브 실행에서:
+- `~/.omp/logs/http-400-requests/` 에 **새 덤프가 한 건도 생기지 않았다**(직전 400 은 수정 전 07:14).
+- 실제 모델이 344초 동안 살아서 쓰기 툴 `upsert_enemy` 를 **13회** 호출했다.
+- 최소 프롬프트 실행에서는 **`phase:review` 에 도달**하고 독립 검토가 실제 판정을 남겼다:
+  `independent-review {"status":"changes_requested","revision":2,"summary":"슬라임(enemy_slime)의 최대 HP가 78에서 300으로 정상 변경되었으며..."}`
+
+## 남은 벽 (이 400 과 다른 문제)
+
+검토 뒤 세션이 **수리 루프**로 들어가고, 그때 툴 호출 예산이 바닥나 턴이 `max-tool-calls` 로 끝난다
+(`balanced` 예산 16 · `max` 예산 48 로도 도달 못 함, 제안 13건). 배경: 툴 233개 노출 · 입력 토큰 43만.
+즉 실모델이 **검토까지는 가지만**, 검토 가능한 초안으로 정착해 사용자가 적용/폐기를 누르는 지점은 아직 못 봤다.
