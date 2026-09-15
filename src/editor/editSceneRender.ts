@@ -9,6 +9,7 @@ import { tilePassability } from "@/project/collision";
 import { tileStackAt, topTileInStack } from "@/project/mapOverlayTiles";
 import { store, type ProjectChangeCell } from "@/project/store";
 import { renderWalkEncounterOverlay } from "@/editor/walkEncounterOverlay";
+import { resetCullableTiles, trackCullableTile } from "@/player/playSceneTileCulling";
 import type { GameMap, MapId } from "@/project/types";
 export { editorEventMarkerTexture, eventMarkerTileScale, renderEventLayerClickFeedback } from "@/editor/editSceneEventMarkers";
 
@@ -57,6 +58,9 @@ export function renderEditScene(context: EditSceneRenderContext): EditSceneRende
   const mapOnlyCapture = isMapOnlyCaptureMode();
   const state = editorState.get();
 
+  // 전체 재렌더: 이전 타일 객체를 전부 파괴하므로 컬링 추적 목록도 비운다.
+  // removeAll(true) 이후 새로 만드는 객체는 renderTileCellLayer 에서 다시 추적된다.
+  resetCullableTiles(context.scene);
   context.tileLayer.removeAll(true);
   context.tileIndex?.clear();
   context.overlayLayer.removeAll(true);
@@ -142,14 +146,14 @@ function renderTileCellLayer(
     if (lower >= 0) {
       const lowerTile = createChipsetTileObject(context.scene, map, tileset, x, y, lower);
       lowerTile.setAlpha(lowerAlpha);
-      addTileObject(context, objects, lowerTile, 0);
+      addTileObject(context, objects, lowerTile, 0, x, y);
     } else {
-      addTileObject(context, objects, createEmptyTile(context.scene, x, y, context.backgroundPreview === true), 0);
+      addTileObject(context, objects, createEmptyTile(context.scene, x, y, context.backgroundPreview === true), 0, x, y);
     }
     for (const stackedLower of tileStackAt(map, "lower", i)) {
       const lowerTile = createChipsetTileObject(context.scene, map, tileset, x, y, stackedLower);
       lowerTile.setAlpha(lowerAlpha);
-      addTileObject(context, objects, lowerTile, 1);
+      addTileObject(context, objects, lowerTile, 1, x, y);
     }
   } else {
     const dimUpper = activeLayer === "lower";
@@ -158,12 +162,12 @@ function renderTileCellLayer(
       const upperTile = createChipsetTileObject(context.scene, map, tileset, x, y, upper);
       if (dimUpper) tintIfPossible(upperTile, 0xc8d9bf);
       // depth 2 was too close to lower(0); keep upper clearly above lower stacks for canopy preview
-      addTileObject(context, objects, upperTile, 20);
+      addTileObject(context, objects, upperTile, 20, x, y);
     }
     for (const stackedUpper of tileStackAt(map, "upper", i)) {
       const upperTile = createChipsetTileObject(context.scene, map, tileset, x, y, stackedUpper);
       if (dimUpper) tintIfPossible(upperTile, 0xc8d9bf);
-      addTileObject(context, objects, upperTile, 21);
+      addTileObject(context, objects, upperTile, 21, x, y);
     }
   }
   context.tileIndex?.set(tileIndexKey(layer, x, y), objects);
@@ -174,10 +178,15 @@ function addTileObject(
   context: EditSceneRenderContext,
   objects: Phaser.GameObjects.GameObject[],
   object: Phaser.GameObjects.GameObject,
-  depth: number
+  depth: number,
+  x: number,
+  y: number
 ): void {
   if ("setDepth" in object && typeof object.setDepth === "function") object.setDepth(depth);
   context.tileLayer.add(object);
+  // 컬링 추적 — update() 의 syncTileCulling 이 화면 밖 타일의 visible 을 끈다.
+  // setVisible 이 없는 객체(예: 테스트 mock)는 trackCullableTile 가 자동으로 건너뛴다.
+  trackCullableTile(context.scene, object, x, y);
   objects.push(object);
 }
 
