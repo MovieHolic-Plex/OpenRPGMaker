@@ -1,6 +1,6 @@
 import { join } from "node:path";
-import { BrowserWindow, Menu, app, protocol, shell } from "electron";
-import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME } from "../shared/channels";
+import { BrowserWindow, Menu, app, ipcMain, protocol, shell } from "electron";
+import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME, OPRN_CHANNELS } from "../shared/channels";
 import { registerIpcHandlers } from "./ipc";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
 import { createWindowSessionRegistry } from "./sessions";
@@ -12,6 +12,37 @@ protocol.registerSchemesAsPrivileged([
 
 const sessions = createWindowSessionRegistry();
 const rendererDir = process.env.OPRN_RENDERER_DIR ?? join(app.getAppPath(), "dist");
+
+const closing = new Set<number>();
+const closeTimers = new Map<number, ReturnType<typeof setTimeout>>();
+
+function destroyWindow(window: BrowserWindow): void {
+  const id = window.webContents.id;
+  const timer = closeTimers.get(id);
+  if (timer) clearTimeout(timer);
+  closeTimers.delete(id);
+  if (!window.isDestroyed()) window.destroy();
+}
+
+// 닫기는 flush → ack → destroy 다(설계서 7.3). 렌더러가 10초 안에 flush-done 을 부르지 않으면 강제로 닫는다.
+function installCloseFlow(window: BrowserWindow): void {
+  const id = window.webContents.id;
+  window.on("close", (event) => {
+    if (closing.has(id)) return;
+    if (!sessions.get(id)) return;
+    event.preventDefault();
+    closing.add(id);
+    window.webContents.send(OPRN_CHANNELS.lifecycleFlushBeforeClose);
+    closeTimers.set(id, setTimeout(() => destroyWindow(window), 10_000));
+  });
+  window.on("closed", () => {
+    closing.delete(id);
+    const timer = closeTimers.get(id);
+    if (timer) clearTimeout(timer);
+    closeTimers.delete(id);
+    sessions.close(id);
+  });
+}
 
 function createWindow(): BrowserWindow {
   const window = new BrowserWindow({
@@ -35,7 +66,7 @@ function createWindow(): BrowserWindow {
     if (url.startsWith("https://")) void shell.openExternal(url);
     return { action: "deny" };
   });
-  window.on("closed", () => sessions.close(window.webContents.id));
+  installCloseFlow(window);
 
   const smokePage = process.env.OPRN_SMOKE_PAGE;
   const devServerUrl = process.env.ELECTRON_RENDERER_URL;
@@ -58,6 +89,11 @@ app.whenReady().then(() => {
   buildMenu();
   registerAppProtocol(rendererDir);
   registerAssetProtocol(sessions);
+  ipcMain.handle(OPRN_CHANNELS.lifecycleFlushDone, (event) => {
+    const window = BrowserWindow.fromWebContents(event.sender);
+    if (window) destroyWindow(window);
+    return true;
+  });
   registerIpcHandlers(sessions);
   createWindow();
   app.on("activate", () => {

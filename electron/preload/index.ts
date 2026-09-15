@@ -34,6 +34,12 @@ const bridge = {
     read: invoke(OPRN_CHANNELS.assetsRead),
     pruneUnused: invoke(OPRN_CHANNELS.assetsPruneUnused),
   },
+  lifecycle: {
+    onFlushBeforeClose: (callback: () => void): void => {
+      ipcRenderer.on(OPRN_CHANNELS.lifecycleFlushBeforeClose, () => callback());
+    },
+    flushDone: invoke(OPRN_CHANNELS.lifecycleFlushDone),
+  },
   companionOrigin: null,
 } as const;
 

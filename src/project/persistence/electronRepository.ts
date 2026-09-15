@@ -40,7 +40,12 @@ export type OprnBridgeAssets = {
   read(payload: { readonly projectDir: string; readonly sha256: string }): Promise<Uint8Array>;
   pruneUnused(payload: { readonly projectDir: string; readonly referenced: readonly string[] }): Promise<readonly string[]>;
 };
+export type OprnBridgeLifecycle = {
+  readonly onFlushBeforeClose: (callback: () => void) => void;
+  readonly flushDone: () => Promise<unknown>;
+};
 export type OprnBridge = {
+  readonly lifecycle: OprnBridgeLifecycle;
   readonly project: OprnBridgeProject;
   readonly commits: OprnBridgeCommits;
   readonly ai: OprnBridgeAi;
