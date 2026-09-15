@@ -40,7 +40,7 @@ import {
 } from "./supabaseProjectConfig";
 import type { DbPersistenceDisabledReason, DbPersistenceStatus } from "./persistenceStatus";
 import { projectRepository } from "./persistence/repository";
-import { sameProjectTarget } from "./persistence/target";
+import { isRemoteTarget, sameProjectTarget, type ProjectTarget } from "./persistence/target";
 import type { ProjectRepository } from "./persistence/types";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
 import { repairMapTreeOrphans } from "@/project/mapTree";
@@ -240,7 +240,7 @@ class ProjectStore {
   /** Load/adoption lineage is separate from the local-edit counter used by catch-up saves. */
   private contentLineage = 0;
   private readonly persistenceTargets = new WeakMap<ProjectPersistenceReceipt, {
-    readonly target: SupabaseProjectConfig;
+    readonly target: ProjectTarget;
     readonly contentLineage: number;
     readonly projectAtSubmit: Project;
   }>();
@@ -373,7 +373,7 @@ class ProjectStore {
    */
   async loadSharedDemo(): Promise<Project | null> {
     const base = this.repository.currentTarget();
-    if (!base) return null;
+    if (!base || !isRemoteTarget(base)) return null;
     const target: SupabaseProjectConfig = { ...base, projectId: SHARED_DEMO_PROJECT_ID };
     let snapshot;
     try {
@@ -526,7 +526,7 @@ class ProjectStore {
 
     const baseConfig = this.repository.currentTarget();
     const draft = supabaseProjectConfigDraft();
-    if (!baseConfig || !draft.url || !draft.anonKey) {
+    if (!baseConfig || !isRemoteTarget(baseConfig) || !draft.url || !draft.anonKey) {
       throw new NewRemoteProjectTransactionError(
         "configuration",
         "Supabase 연결을 확인한 뒤 다시 시도하세요.",
@@ -973,6 +973,7 @@ class ProjectStore {
     const config = this.repository.currentTarget();
     if (
       !config
+      || !isRemoteTarget(config)
       || config.projectId !== input.expectedProjectId
       || config.url !== input.expectedTargetUrl
       || await sha256HexText(config.anonKey.trim()) !== input.expectedAnonKeyDigest
@@ -1111,7 +1112,7 @@ class ProjectStore {
       && this.mutationGeneration === receipt.mutationGeneration
       && authority?.contentLineage === this.contentLineage
       && !!target && !!config
-      && target.projectId === config.projectId && target.url === config.url && target.anonKey === config.anonKey;
+      && sameProjectTarget(target, config);
   }
 
   /** Read-only verification of a store-issued save receipt. Failed attempts are always retryable. */
@@ -1607,7 +1608,7 @@ class ProjectStore {
   private async readRemoteProject(): Promise<{
     readonly project: Project | null;
     readonly authority: ProjectWriteAuthority | null;
-    readonly target: SupabaseProjectConfig | null;
+    readonly target: ProjectTarget | null;
   }> {
     const target = this.repository.currentTarget();
     const lineage = this.contentLineage;
