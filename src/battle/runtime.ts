@@ -280,6 +280,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     entry: BattleActionResultSnapshot,
     kind: BattleTimelineEntrySnapshot["kind"] = entry.hit ? "damage" : "miss",
     commandKind?: BattleTimelineEntrySnapshot["commandKind"],
+    resource?: "hp" | "mp",
   ): void {
     lastActionResult = entry;
     actionLog.push(entry);
@@ -293,6 +294,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       amount: entry.amount,
       critical: entry.critical,
       skillName: entry.skillName,
+      ...(resource ? { resource } : {}),
     });
   }
   let result: BattleResult | undefined;
@@ -1694,13 +1696,19 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const beforeMp = target.mp;
     if (hp > 0) target.hp = Math.min(target.maxHp, target.hp + hp);
     if (mp > 0) target.mp = Math.min(target.maxMp, target.mp + mp);
+    // HP 와 MP 증가분을 하나의 amount 로 합산하지 않는다. 합산하면 화면 원장이 그 합계를
+    // HP 변화로 읽어, 마력약(MP+30/HP+0)이 표시 HP 를 250→280 으로 올렸다가 다음 국면에
+    // 250 으로 되돌렸다(실측). 자원별로 나누고 어느 자원인지 함께 넘긴다.
+    const hpGain = target.hp - beforeHp;
+    const mpGain = target.mp - beforeMp;
+    const resource: "hp" | "mp" = hpGain > 0 ? "hp" : "mp";
     recordAction({
       userRecordId: user.recordId,
       targetId: target.id,
       hit: true,
-      amount: (target.hp - beforeHp) + (target.mp - beforeMp),
+      amount: resource === "hp" ? hpGain : mpGain,
       critical: false,
-    }, "healing", "item");
+    }, "healing", "item", resource);
   }
 
   function itemStateEffectsForBattle(item: {
@@ -2028,6 +2036,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       { userRecordId: user.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, skillName: skill?.name },
       timelineKind,
       commandKind,
+      effectKind === "healing" ? affects : undefined,
     );
     if (skill?.animationId) {
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
@@ -2098,7 +2107,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       amount: applied.amount,
       critical: applied.critical,
       skillName: skill?.name,
-    }, timelineKind, commandKind);
+    }, timelineKind, commandKind, effectKind === "healing" ? affects : undefined);
     if (skill?.animationId) {
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
       attachAnimationToLatestTimeline(lastAnimation);

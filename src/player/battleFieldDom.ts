@@ -512,7 +512,8 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
     : feedback.blocked
       ? "0"
       : feedback.healing
-        ? `+${feedback.amount}`
+        // MP 회복은 HP 팝업과 같은 초록 +N 으로 두면 어느 눈금이 움직였는지 알 수 없다.
+        ? (feedback.resource === "mp" ? `MP +${feedback.amount}` : `+${feedback.amount}`)
         : `-${feedback.amount}`;
   const anchor = findBattlerNode(field, feedback.targetId);
   if (anchor) {

@@ -19,6 +19,9 @@ import { TILE_SIZE } from "@/assets/bundled";
 
 export interface CullableImage {
   visible?: boolean;
+  /** Phaser GameObject 는 파괴되면 active=false 가 된다. 증분 재렌더 경로에서
+   *  파괴된 객체가 추적 목록에 남아 setVisible 을 부르면 런타임 에러가 나므로 건너뛴다. */
+  active?: boolean;
   setVisible?(value: boolean): unknown;
 }
 
@@ -111,6 +114,7 @@ export function syncTileCulling(host: object, viewport: CullViewport | undefined
     const y = ys[index];
     const visible = x >= next.minX && x <= next.maxX && y >= next.minY && y <= next.maxY;
     const image = images[index];
+    if (image.active === false) continue;
     if (image.visible === visible) continue;
     image.setVisible?.(visible);
   }

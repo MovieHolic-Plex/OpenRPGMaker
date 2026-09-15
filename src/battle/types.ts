@@ -315,6 +315,9 @@ export interface BattleTimelineEntrySnapshot {
   readonly stateId?: string;
   readonly reason?: "natural" | "hit" | "battleEnd" | "effect" | "strictCap";
   readonly success?: boolean;
+  /** 회복 엔트리가 어느 자원에 작용했는가. 표시 계층이 이 값을 HP 원장에 그대로 쓰면
+   *  MP 회복이 HP 로 새어 들어간다(실측: 마력약 MP+30 → 표시 HP 250→280). */
+  readonly resource?: "hp" | "mp";
   /** kind === "wait" 인 엔트리의 일시정지 시간(ms). 시퀀서가 이 값만큼 다음 비트를 늦춘다. */
   readonly waitMs?: number;
   /** 이 액션이 재생할 전투 애니메이션. 시퀀서가 비트 재생 시점에 이 스냅샷으로
@@ -430,8 +433,12 @@ export interface BattleEventStateSnapshot {
   readonly relationships?: Readonly<Record<string, RelationshipState>>;
   // 레거시 호환 플래그(setFlag) — applyBattleRewardsToSession 이 세션 flags 로 되돌려 쓴다.
   readonly flags?: Readonly<Record<string, boolean>>;
-  // 타이머 잔여 초(timer 커맨드) — applyBattleRewardsToSession 이 세션 timers 로 되돌려 쓴다.
+  // 타이머 여 초(timer 커맨드) — applyBattleRewardsToSession 이 세션 timers 로 되돌려 쓴다.
+  // timer 조건 평가가 진입 시점 사본을 읽어야 하므로 전체 사본이다.
   readonly timers?: Readonly<Record<string, number>>;
+  /** 이 전투가 timer 커맨드로 실제 쓴 키만. 이게 없으면 write-back 이 전투 중 맵 이
+   *  줄여 둔 타이머를 진입 시점 값으로 되돌려 만료를 취소한다(실측: 세션 1초 / 런타임 0초). */
+  readonly timerWrites?: Readonly<Record<string, number>>;
   // 전투 중 changeEquipment 가 갱신한 장비 스냅샷 — 세션 actorEquipment 로 되돌려 쓴다.
   readonly actorEquipment?: Readonly<Record<string, ActorInitialEquipment>>;
   // 전투 중 promoteActor 가 갱신한 직업 오버라이드 — 세션 classOverrides 로 되돌려 쓴다

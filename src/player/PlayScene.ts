@@ -14,7 +14,7 @@ import { startSession, type PlaySession } from "@/project/session";
 import { Input } from "@/player/input";
 import type { StepResult } from "@/player/interpreter";
 import { RuntimeDomOverlay } from "@/player/runtimeDom";
-import { resumeAudioState, stopAllAudio } from "@/player/audio";
+import { AUDIO_HANDOFF_REGISTRY_KEY, resumeAudioState, stopAllAudio } from "@/player/audio";
 import { startMapBgm } from "@/player/mapBgm";
 import { ensureTilesetTexture } from "@/editor/tilesetImage";
 import type { GameMap, MapId, MoveCommand, TilesetDef, Trigger } from "@/project/types";
@@ -322,8 +322,14 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     // 씬 종료(모드 전환/타이틀 복귀/게임 파괴) 시 모든 오디오 정지.
     this.events.once("shutdown", () => clearAllSceneEmotes(this));
     this.events.once("destroy", () => clearAllSceneEmotes(this));
-    this.events.once("shutdown", stopAllAudio);
-    this.events.once("destroy", stopAllAudio);
+    // 모드 전환이 이미 소유권을 가져갔으면(타이틀 복귀가 새 BGM 을 켠 뒤 이 씬의 실제
+    // 파괴가 도착한 경우) 멈추지 않는다 — 공유 엔진이라 새 트랙까지 지운다.
+    const stopAllAudioOnTeardown = (): void => {
+      if (this.registry?.get(AUDIO_HANDOFF_REGISTRY_KEY) === true) return;
+      stopAllAudio();
+    };
+    this.events.once("shutdown", stopAllAudioOnTeardown);
+    this.events.once("destroy", stopAllAudioOnTeardown);
     const destroyZoneFeedback = (): void => {
       if (!this.zoneFeedback) return;
       destroyPlaySceneZoneFeedback(this.zoneFeedback);

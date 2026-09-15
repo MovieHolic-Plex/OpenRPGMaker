@@ -608,6 +608,16 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     return selected;
   }
 
+  /** 대상 목록에서 다시 그려진 선택 행을 스크롤포트 안으로 당긴다. cycleTarget 과 대상 국면의
+   *  setMenuCursor 는 syncView() 뒤 곳바로 반환해서 아래 따라가기 블록에 닿지 않는다 —
+   *  6체처럼 포트(4행)를 넘는 목록에서 커서를 옮기면 선택 행이 화면 밖에 남았다(2026-09-15
+   *  실측: enemy-5/6 선택 시 scrollTop 0, 행 bottom > 포트 bottom). */
+  function followTargetCursor(testId?: string): void {
+    const repainted = commandHost.querySelector<HTMLElement>('button.battle-command[data-testid^="battle-target-"][aria-pressed="true"]')
+      ?? (testId ? commandHost.querySelector<HTMLElement>(`button.battle-command[data-testid="${testId}"]`) : null);
+    repainted?.scrollIntoView({ block: "nearest" });
+  }
+
   function setMenuCursor(snapshot: BattleSnapshot, button: HTMLButtonElement, focus: boolean): void {
     if (button.disabled || !commandHost.contains(button)) return;
     const testId = button.dataset.testid;
@@ -620,6 +630,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       options.runtime.setSelectedTarget(targetId);
       directorState = targetSelectDirectorState(options.runtime.snapshot());
       syncView();
+      // 대상 국면은 여기서 조기 반환한다 — 아래 따라가기 블록에 지 않으므로, 다시 그려진
+      // 목록에서 선택 행을 직접 스크롤포트 안으로 당긴다. 6체처럼 포트(4행)를 넘는 목록에서
+      // 커서를 옮기면 선택 행이 화면 밖에 남았다(2026-09-15 실측: enemy-5/6 선택 시
+      // scrollTop 0, 행 bottom > 포트 bottom).
+      followTargetCursor(testId);
       return;
     }
     if (focus && selected && document.activeElement !== selected) selected.focus({ preventScroll: true });
@@ -655,6 +670,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       options.runtime.setSelectedTarget(nextId);
       directorState = targetSelectDirectorState(options.runtime.snapshot());
       syncView();
+      followTargetCursor();
       return true;
     }
     const atEnd = direction > 0 ? selectedIndex === ids.length - 1 : selectedIndex <= 0;
@@ -662,6 +678,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       enemyTargetCursorOnCancel = true;
       playBattleCue("command-select");
       syncView();
+      followTargetCursor();
       return true;
     }
     const baseIndex = selectedIndex >= 0 ? selectedIndex : direction > 0 ? -1 : 0;
@@ -670,6 +687,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     options.runtime.setSelectedTarget(nextId);
     directorState = targetSelectDirectorState(options.runtime.snapshot());
     syncView();
+    followTargetCursor();
     return true;
   }
 

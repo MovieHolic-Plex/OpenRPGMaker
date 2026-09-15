@@ -4,6 +4,7 @@ import { PlayScene } from "@/player/PlayScene";
 import { runEvent } from "@/player/playSceneInterpreter";
 import { claimForeground, foregroundOwner } from "@/player/foregroundControl";
 import { startSession } from "@/project/session";
+import type { AudioTrackState } from "@/project/session";
 import { mountBattleScene, type BattleDomOptions } from "@/player/battleDom";
 import { createSkinBattleTransition } from "@/player/battleTransition";
 import { bounded, deferred, encounterHarness, required } from "./fixtures/npcEncounterPipeline";
@@ -25,7 +26,7 @@ afterEach(() => {
   vi.mocked(mountBattleScene).mockClear();
 });
 
-async function setup() {
+async function setup(initialBgm: AudioTrackState = { resourceId: "cc0-bgm-rtp-fld-003", loop: true }) {
   const f = fixture = encounterHarness("parallel");
   f.page.trigger = { kind: "action" };
   const host = document.createElement("div"); document.body.append(host);
@@ -34,7 +35,7 @@ async function setup() {
   f.scene.playBattle = PlayScene.prototype.playBattle.bind(f.scene);
   f.scene.showRuntimeOverlay = PlayScene.prototype.showRuntimeOverlay.bind(f.scene);
   f.scene.clearRuntimeOverlay = PlayScene.prototype.clearRuntimeOverlay.bind(f.scene);
-  f.scene.session.audio.bgm = { resourceId: "cc0-bgm-rtp-fld-003", loop: true };
+  f.scene.session.audio.bgm = { ...initialBgm };
   const beforeAudio = structuredClone(f.scene.session.audio);
   const beforeGold = f.scene.session.gold;
   const mounted = deferred<BattleDomOptions>();
@@ -60,6 +61,19 @@ async function setup() {
 }
 
 describe("result-confirm transition failure", () => {
+  // 저작한 필드 볼륨은 전투를 한 번 거쳐도 살아 있어야 한다. exitBattleAudio 는 진입 때
+  // 기억한 **전체** 트랙 기록을 쓴다 — 호출부가 resourceId 만 넘기면 폴백이 gain 을 안 실어
+  // volume 0(음소거)·저음량이 기본 믹서 값으로 되돌아온다(2026-09-15 실측).
+  it("keeps the authored field volume through the battle round trip", async () => {
+    const f = await setup({ resourceId: "cc0-bgm-rtp-fld-003", loop: true, volume: 0 });
+    vi.mocked(createSkinBattleTransition).mockReturnValueOnce({
+      cover: async () => undefined, reveal: async () => undefined, exit: async () => undefined, destroy: vi.fn(),
+    });
+    f.confirm();
+    await bounded(f.pending);
+    expect(f.scene.session.audio.bgm).toEqual({ resourceId: "cc0-bgm-rtp-fld-003", loop: true, volume: 0 });
+  });
+
   it.each(["factory-throw", "exit-throw", "exit-reject"] as const)("settles and releases the event after %s without committing victory", async kind => {
     const f = await setup();
     const error = new Error(kind);

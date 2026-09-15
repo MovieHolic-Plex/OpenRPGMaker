@@ -114,6 +114,8 @@ interface Window {
   };
   // DB 모달 인라인 AI 바의 마지막 전송 요청 — E2E가 실 LLM 호출 없이 전송 도달을 검증.
   __oprnDbAiLastRequest?: { readonly message: string; readonly at: string };
+  // 이 빌드의 버전 메타(src/brand.ts) — 버그 리포트가 커밋과 빌드 시각을 인용할 수 있게 한다.
+  __oprnVersion?: () => import("@/brand").AppVersionMeta;
   __oprnCamera?: () => OprnCameraDebug;
   __oprnJuiceLog?: () => readonly OprnRuntimeJuiceLogEntry[];
   __oprnInput?: {

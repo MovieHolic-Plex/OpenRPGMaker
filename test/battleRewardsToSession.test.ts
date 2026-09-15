@@ -192,4 +192,52 @@ describe("battle rewards to play session", () => {
 
     expect(session.monsterInstances[companion.instance.instanceId]?.exp).toBe(100);
   });
+
+  // 타이머의 진행(tick)은 맵 씬 소관이고 전투는 진입 시점 사본만 들고 있다. 사본 전체를
+  // 되돌려 쓰면 전투 중 만료된 타이머가 진입 값으로 되살아나고, 이후 프레임도 만료된
+  // 타이머를 건너뛰므로 자동 교정되지 않는다(2026-09-15 실측: 세션 1초 / 런타임 0초).
+  describe("battle timer write-back", () => {
+    function sessionWithTimer(seconds: number) {
+      const project = createBlankProject();
+      const session = startSession(project);
+      session.timers.timer1 = seconds;
+      return { project, session };
+    }
+
+    it("does not resurrect a timer the battle never wrote", () => {
+      const { project, session } = sessionWithTimer(0);
+
+      applyBattleRewardsToSession(session, {
+        result: "victory",
+        rewards: { exp: 0, gold: 0, items: [] },
+        eventState: { switches: {}, variables: {}, inventory: {}, timers: { timer1: 1 }, timerWrites: {} },
+      }, project);
+
+      expect(session.timers.timer1).toBe(0);
+    });
+
+    it("still writes back a timer the battle set", () => {
+      const { project, session } = sessionWithTimer(0);
+
+      applyBattleRewardsToSession(session, {
+        result: "victory",
+        rewards: { exp: 0, gold: 0, items: [] },
+        eventState: { switches: {}, variables: {}, inventory: {}, timers: { timer1: 7 }, timerWrites: { timer1: 7 } },
+      }, project);
+
+      expect(session.timers.timer1).toBe(7);
+    });
+
+    it("merges the whole snapshot when the writer did not report its keys", () => {
+      const { project, session } = sessionWithTimer(0);
+
+      applyBattleRewardsToSession(session, {
+        result: "victory",
+        rewards: { exp: 0, gold: 0, items: [] },
+        eventState: { switches: {}, variables: {}, inventory: {}, timers: { timer1: 3 } },
+      }, project);
+
+      expect(session.timers.timer1).toBe(3);
+    });
+  });
 });
