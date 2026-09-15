@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **68쪽 / 2694KB / 약 758,433 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **68쪽 / 2696KB / 약 758,808 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -64,7 +64,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-pre-edit-routing.md` | 13 | `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `event-editor.part-4.css`, `figma-editor.css`, `figma-editor/10-map-tree.css`, `rm2k3.part-1.css`, `shell/editor-responsive-expert.css`, `src/editor/tools/worldTools.ts`, `src/styles/editor/event-editor.balanced.css`, `test/modalEscapeLayerGate.test.ts`, `test/regionTaskHouseProtection.test.ts`, `test/worldAiExclusion.test.ts`, `worldTools.ts` |
 | `openwiki/editor-validation.md` | 8 | `final-layout.json`, `test/aiBlockedEventRelocation.test.ts`, `test/aiToolDiscoveryEscalation.test.ts`, `test/databaseSystemView.test.ts`, `test/interiorLongTable.test.ts`, `test/p0ProjectSchema.test.ts`, `test/projectLint.test.ts`, `viewport-matrix.json` |
 | `openwiki/editor-workflows-misc.md` | 11 | `.qa.json`, `default.json`, `game.html`, `release.json`, `runtime.json`, `src/editor/authoringTestGate.ts`, `src/styles/editor/event-editor-help.css`, `test/audioDescriptionCommandSurfaces.test.ts`, `test/devRuntimeArchive.test.ts`, `test/mapSurfaceFocus.test.ts`, `test/runtimePictureStacking.test.ts` |
-| `openwiki/emerald-fields.md` | 20 | `ANALYSIS.md`, `VISUAL-SUMMARY.md`, `cliff-contours.json`, `editor-saved-proof.json`, `emerald-wide-v2/reloaded-project.json`, `exit-seam-proof.json`, `fidelity/fidelity-proof.json`, `fidelity/reference-vs-editor.png`, `fidelity/runtime-visual/SUMMARY.md`, `inspection-16-fixed/manifest.json`, `inspection-16/REVIEW.md`, `map-open-saved.png`, `output/evidence/emerald-fields/fidelity/VALIDATION.md`, `output/evidence/emerald-region/supabase-proof.json`, `output/evidence/emerald-wide/reloaded-project.json`, `region-saved.png`, `road-graph.json`, `verify-shots/runtime-qa/emerald-fields/SUMMARY.md`, `verify-shots/runtime-qa/emerald-wide-v2/SUMMARY.md`, `verify-shots/runtime-qa/emerald-wide/SUMMARY.md` |
+| `openwiki/emerald-fields.md` | 15 | `ANALYSIS.md`, `VISUAL-SUMMARY.md`, `cliff-contours.json`, `editor-saved-proof.json`, `emerald-basin-atlas.png`, `emerald-wide-v2/reloaded-project.json`, `exit-seam-proof.json`, `fidelity/fidelity-proof.json`, `fidelity/reference-vs-editor.png`, `fidelity/runtime-visual/SUMMARY.md`, `inspection-16-fixed/manifest.json`, `inspection-16/REVIEW.md`, `map-open-saved.png`, `region-saved.png`, `road-graph.json` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/horror-authoring.md` | 2 | `motion-sheet.png`, `projectLint.test.ts` |
 | `openwiki/large-village-generation.md` | 4 | `-standalone.html`, `HANDOFF.json`, `output/evidence/town-reference/town-reference.html`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
@@ -81,7 +81,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/spatial-authoring-controller.md` | 1 | `storeMutationInstrumentation.test.ts` |
 | `openwiki/spatial-geography-compiler.md` | 1 | `.omo/ulw-execute/tile-to-world/execution-policy.md` |
 | `openwiki/spatial-geography-ui.md` | 2 | `lake-persistence.json`, `lake-regions-desktop.png` |
-| `openwiki/testing.md` | 29 | `../dialogue.css`, `.omo/gates-vitest-report.json`, `X.quarantine.test.ts`, `X.test.ts`, `aiChatObservability.test.ts`, `aiChatPanelTransportError.test.ts`, `aiSelectionChipScope.test.ts`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/actionRpgAuthoringAcceptance.test.ts`, `test/aiEventPlacementSurfaceGate.test.ts`, `test/databaseKoreanRtpDefaults.test.ts`, `test/dialoguePreviewPresentationCss.test.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/interiorConceptAssemblies.test.ts`, `test/regionTaskRun.test.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
+| `openwiki/testing.md` | 28 | `../dialogue.css`, `X.quarantine.test.ts`, `X.test.ts`, `aiChatObservability.test.ts`, `aiChatPanelTransportError.test.ts`, `aiSelectionChipScope.test.ts`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/actionRpgAuthoringAcceptance.test.ts`, `test/aiEventPlacementSurfaceGate.test.ts`, `test/databaseKoreanRtpDefaults.test.ts`, `test/dialoguePreviewPresentationCss.test.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/interiorConceptAssemblies.test.ts`, `test/regionTaskRun.test.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
 | `openwiki/ui-discovery-pilot.md` | 3 | `direct/RESULTS.json`, `output/evidence/ui-discovery-v2/report.html`, `trace.json` |
 | `openwiki/village-design.md` | 3 | `depth-review.json`, `output/evidence/house-heights/REVIEW.md`, `output/village-direction/index.html` |
@@ -640,7 +640,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L17` Quick routing
 - `L25` For AI agents
 
-### `openwiki/emerald-fields.md` — 22KB · 191줄 · ~6,877 토큰
+### `openwiki/emerald-fields.md` — 23KB · 206줄 · ~7,252 토큰
 
 - `L15` 95% 이상 유사도 요청에 따른 계곡 개정
 - `L35` 저장·재현 보호
@@ -654,6 +654,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L149` 16분할 검토 후 절벽 형태 재수정
   - `L162` 두 번째 16분할 재검토 — 길 연결과 주변 구성
 - `L177` 비취 대계곡 지역 등록 (2026-09-14)
+- `L192` 프로젝트 공통 기본 장소 (2026-09-15 정정)
 
 ### `openwiki/growth-trees.md` — 23KB · 256줄 · ~7,027 토큰
 

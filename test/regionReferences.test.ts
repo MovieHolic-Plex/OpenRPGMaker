@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
 import { REGION_REFERENCES, PLACE_REFERENCES, readRegionReference, regionReferenceContext } from "@/project/regionReferences";
+import emeraldSnapshot from "@/project/regionReferences/emerald-basin.json";
 import snapshot from "@/project/regionReferences/walled-settlement.json";
 import lakeSnapshot from "@/project/regionReferences/lake-village.json";
 import { renderSpatialPlacesStage, spatialPlacesTabChrome } from "@/editor/panels/spatialPlacesTab";
@@ -28,6 +29,27 @@ describe("completed region references", () => {
     expect(JSON.stringify(project)).toBe(before);
     expect(regionReferenceContext()).toContain(id);
   });
+  it("shows the full emerald field as a default natural place without a project-owned region", () => {
+    const session = { ...spatialSession(), tab: "places" as const, mode: "design" as const, source: "defaults" as const, placeKindFilter: "natural" as const };
+    const card = listSpatialGalleryCards(session).find(c => c.regionReferenceId === "emerald-basin-80x64");
+    expect(card?.source).toBe("default");
+    const project = createBlankProject();
+    expect(project.maps[emeraldSnapshot.map.id]).toBeUndefined();
+    const before = JSON.stringify(project), lower: number[] = [], upper: number[] = [];
+    let row: number | null = 0;
+    while (row !== null) {
+      const result = runTool({ project }, "read_region_reference", { id: card!.regionReferenceId, row, rows: 16 });
+      expect(result.ok, result.summary).toBe(true);
+      const page = result.data as ReturnType<typeof readRegionReference>;
+      lower.push(...page.map.lowerTiles); upper.push(...page.map.upperTiles);
+      row = page.map.nextRow;
+    }
+    expect(lower).toEqual(emeraldSnapshot.map.lowerTiles);
+    expect(upper).toEqual(emeraldSnapshot.map.upperTiles);
+    expect(JSON.stringify(project)).toBe(before);
+    expect(renderSpatialPlacesStage(session, card, () => {}).canvas.querySelector("img")?.getAttribute("src"))
+      .toBe("/assets/region-references/emerald-basin.png");
+  });
   it("reads the castle raster rather than the settlement and exposes it in the gallery", () => {
     const castleId = "castle-town-100x100", lower: number[] = [], upper: number[] = [];
     let row: number | null = 0;
@@ -52,7 +74,7 @@ describe("completed region references", () => {
     const cards = listSpatialGalleryCards(session);
     const lake = readRegionReference("lake-village-60x60", 0, 16);
     expect(lake.map.lowerTiles).toEqual(lakeSnapshot.map.lowerTiles.slice(0, 60 * 16));
-    for (const place of PLACE_REFERENCES) {
+    for (const place of PLACE_REFERENCES.filter(p => p.sourceMapId === lakeSnapshot.map.id)) {
       const page = readRegionReference(place.id, 0, 16);
       const expected = Array.from({length: place.height}, (_, y) => lakeSnapshot.map.lowerTiles.slice((place.y+y)*60+place.x, (place.y+y)*60+place.x+place.width)).flat();
       expect(page.map.lowerTiles).toEqual(expected);

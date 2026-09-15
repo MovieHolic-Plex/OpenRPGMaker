@@ -188,3 +188,18 @@ QA는 호환 스키마 커밋 `858f254e5`의 별도 `/tmp/rpg-zzu-fields-runtime
   공간 문서 외 프로젝트·맵·타일셋·리소스가 모두 불변임을 assert한다.
 - 증거: `output/evidence/emerald-region/supabase-proof.json`, `editor-saved-proof.json`,
   `region-saved.png`, `map-open-saved.png`.
+
+## 프로젝트 공통 기본 장소 (2026-09-15 정정)
+
+프로젝트 내부 지역 등록만으로는 다른 프로젝트의 기본 카탈로그에 나타나지 않는다.
+사용자가 지정한 공통 진입점은 「장소 → 기본 설계」다. `PLACE_REFERENCES`에
+`emerald-basin-80x64` / 비취 대계곡을 자연 장소 사례로 등록한다. 별도 프로젝트 선택이나
+공간 설계 활성화가 필요 없다. 호수마을 부분 장소와 달리 전체 80×64 맵을 읽는다.
+
+- `src/project/regionReferences/emerald-basin.json`: Supabase 저장본에서 재로드한 맵·타일셋.
+- `public/assets/region-references/emerald-basin.png`: 동일 맵의 검증된 전체 미리보기.
+- `emerald-basin-atlas.png`: 전용 업로드 타일셋 원본. `tilesetPreview`로 AI 참고 조회에 노출한다.
+- 프로젝트별 기존 지역 연결은 보존한다. 공통 항목은 완성 배치 참고 자료이며 자동 생성·배치
+  계약으로 취급하지 않는다. 기존 맵·프로젝트 데이터를 자동 변경하지 않는다.
+- `test/regionReferences.test.ts`: 프로젝트 맵 부재 상태의 기본 자연 장소 조회, 전체 타일
+  페이지 재조합, 원본 프로젝트 불변 검증.
