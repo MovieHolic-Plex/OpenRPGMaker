@@ -104,4 +104,14 @@ describe("storage boundary policy", () => {
     expect(files.length).toBeGreaterThan(0);
     expect(statSync("electron/local-store").isDirectory()).toBe(true);
   });
+
+  it("shared layer stands alone — no node:, src, or electron imports", () => {
+    const offenders = sourceFiles("electron/shared").flatMap((file) =>
+      importSources(read(file))
+        .filter((source) => source.startsWith("node:") || source.includes("electron/") || source.startsWith("../") || source.includes("/src/"))
+        .map((source) => `${file}: ${source}`));
+
+    expect(offenders).toEqual([]);
+    expect(sourceFiles("electron/shared").length).toBeGreaterThan(0);
+  });
 });
