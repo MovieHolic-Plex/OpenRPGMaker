@@ -53,7 +53,8 @@ await page.evaluate(async () => {
   const { switchDatabaseActiveTab } = await import(/* @vite-ignore */ "/src/editor/panels/database.ts");
   switchDatabaseActiveTab("enemies", document.querySelector(".database-modal-body"));
 });
-await page.waitForTimeout(900);
+// 탭이 실제로 그려질 때까지 기다린다 — 고정 대기는 느린 기계에서 거짓 결과를 만든다.
+await page.waitForFunction(() => document.querySelector('[data-testid^="db-record-row-"]') !== null, null, { timeout: 20_000 });
 await snap(page, "01-database-enemies");
 
 // 실제 오버레이를 모킹한 send 로 다시 마운트한다. 헤더의 원래 토글은 숨기고 새 토글을 그 자리에 둔다.
