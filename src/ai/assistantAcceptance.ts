@@ -5,6 +5,7 @@ import { isFunctionalCriterionKind, parseFunctionalCriterion, type FunctionalCri
 import { VERIFICATION_TOOL_NAMES } from "./agentVerification";
 import { verificationInput, parseSceneInteractionTargets } from "./toolVerificationEvidence";
 import { isSceneTestInput, type SceneInteractionReceipt } from "@/testing/sceneTestRunner";
+import { DB_COLLECTIONS, type DbCollection } from "@/editor/tools/queryTools";
 
 export type AcceptanceStatus = "pending" | "working" | "verifying" | "verified" | "blocked";
 export interface AcceptanceSnapshot {
@@ -51,9 +52,13 @@ export type ProjectAcceptanceCriterion =
   | { readonly kind: "wikiDeclaration"; readonly documentId: string; readonly combatMode: WikiCombatMode; readonly sourceQuote: string }
   | { readonly kind: "projectTitle"; readonly title: Project["meta"]["title"] }
   | { readonly kind: "itemValues"; readonly itemId: ItemRecord["id"]; readonly name?: ItemRecord["name"]; readonly price?: ItemRecord["price"] }
+  // DB 레코드의 저장된 필드값 — 적 stats 같은 속성 변경에는 정확한 평가자가 없어 항목을 닫을 수 없었다.
+  // 실측(2026-09-16 라이브): 그 미닫힘 항목을 repair_acceptance 로 닫으려다 라운드 예산을 다 쓰고 초안이 검토에 닿지 못했다.
+  | { readonly kind: "dbRecordValues"; readonly collection: DbCollection; readonly recordId: string;
+      readonly fields: Readonly<Record<string, string | number | boolean>> }
   | { readonly kind: "projectPreserve"; readonly scope: "project" | "authored"; readonly allowedChanges: readonly ProjectPreservationChange[] };
 export function isProjectAcceptanceKind(kind: string): boolean {
-  return kind === "projectTitle" || kind === "itemValues" || kind === "projectPreserve" || kind === "wikiDeclaration";
+  return kind === "projectTitle" || kind === "itemValues" || kind === "projectPreserve" || kind === "wikiDeclaration" || kind === "dbRecordValues";
 }
 export type AcceptanceCriterion =
   | ProjectAcceptanceCriterion
@@ -114,6 +119,8 @@ export const ACCEPTANCE_EXAMPLES: Readonly<Record<AcceptanceCriterion["kind"], A
   gameTitle: Object.freeze({ kind: "gameTitle", title: "작은 열쇠" }),
   projectTitle: Object.freeze({ kind: "projectTitle", title: "Exact title" }),
   itemValues: Object.freeze({ kind: "itemValues", itemId: "item_id", name: "Potion", price: 37.5 }),
+  dbRecordValues: Object.freeze({ kind: "dbRecordValues", collection: "enemies" as const, recordId: "enemy_id",
+    fields: Object.freeze({ "stats.maxHp": 300 }) }),
   projectPreserve: Object.freeze({ kind: "projectPreserve", scope: "project", allowedChanges: Object.freeze([Object.freeze({ kind: "projectTitle" as const })]) }),
   wikiDeclaration: Object.freeze({ kind: "wikiDeclaration", documentId: "w_combat_preference", combatMode: "contact", sourceQuote: "Record my contact battle preference." }),
 });
@@ -180,6 +187,7 @@ function criterion(value: unknown, index: number, issues: AcceptanceIssue[]): Ac
     reachability: ["kind", "target", "from", "to"], toolVerdict: ["kind", "tool", "args", "interactionTargets"],
     actionCombat: ["kind", "target"], gameTitle: ["kind", "title"],
     projectTitle: ["kind", "title"], itemValues: ["kind", "itemId", "name", "price"],
+    dbRecordValues: ["kind", "collection", "recordId", "fields"],
     projectPreserve: ["kind", "scope", "allowedChanges"],
     wikiDeclaration: ["kind", "documentId", "combatMode", "sourceQuote"],
   };
@@ -208,6 +216,23 @@ function criterion(value: unknown, index: number, issues: AcceptanceIssue[]): Ac
     return { kind: value.kind, itemId: value.itemId,
       ...(typeof value.name === "string" ? { name: value.name } : {}),
       ...(typeof value.price === "number" ? { price: value.price } : {}) };
+  }
+  if (value.kind === "dbRecordValues") {
+    const collection = DB_COLLECTIONS.find(entry => entry === value.collection);
+    if (!collection) return invalid("collection", DB_COLLECTIONS.join(" | "));
+    if (!text(value.recordId)) return invalid("recordId", "nonempty exact record ID in that collection");
+    const raw = value.fields;
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return invalid("fields", "object of dotted field path → exact stored value");
+    const fields: Record<string, string | number | boolean> = {};
+    for (const [path, expected] of Object.entries(raw as Record<string, unknown>)) {
+      if (path.trim().length === 0) return invalid("fields", "nonempty dotted field path");
+      if (typeof expected !== "string" && typeof expected !== "number" && typeof expected !== "boolean") {
+        return invalid("fields", "expected value must be string, number or boolean (exact)");
+      }
+      fields[path] = expected;
+    }
+    if (Object.keys(fields).length === 0) return invalid("fields", "at least one dotted field path");
+    return { kind: value.kind, collection, recordId: value.recordId, fields };
   }
   if (value.kind === "projectPreserve") {
     if (value.scope !== "project" && value.scope !== "authored") return invalid("scope", "project | authored");

@@ -1,5 +1,6 @@
 import type { OpenAiToolSchema } from "./llmClient";
 import { WIKI_COMBAT_MODES } from "@/project/world/types";
+import { DB_COLLECTIONS } from "@/editor/tools/queryTools";
 import { ACCEPTANCE_EXAMPLES } from "./assistantAcceptance";
 // Provider normalization flattens unions and drops branch-required fields. Expose
 // the field superset directly, with canonical kind-specific shapes on the wire.
@@ -20,12 +21,16 @@ const npcReward = { type: "object", properties: {
 }, required: ["target", "grants"], additionalProperties: false };
 export const ACCEPTANCE_CRITERIA_SCHEMA = { type: "array", minItems: 1, items: {
   type: "object", required: ["kind"], additionalProperties: false,
-  description: `Use only the fields for the chosen kind. Project kinds: projectTitle requires title for both stored title fields; itemValues requires itemId and at least one of name/price; projectPreserve requires scope and allowedChanges (empty is allowed). scope=project compares every Project field; scope=authored excludes only coordinator-owned wiki documents using existing authored identity. Allowed changes are projectTitle, itemName/itemPrice with itemId, or itemAddition with a previously absent itemId. Preservation alone never proves the requested new value or addition exists. wikiDeclaration requires documentId,combatMode,sourceQuote: an unsuperseded explicit declaration and a canonical user source matching the full host request with that unique exact quote. It proves only a stored preference, never operational combat. Missing or mixed-kind fields fail closed. Canonical scoped shapes: ${JSON.stringify(ACCEPTANCE_EXAMPLES)}`,
+  description: `Use only the fields for the chosen kind. Project kinds: projectTitle requires title for both stored title fields; itemValues requires itemId and at least one of name/price; dbRecordValues requires collection, recordId and fields (dotted path → exact stored value). projectPreserve requires scope and allowedChanges (empty is allowed). scope=project compares every Project field; scope=authored excludes only coordinator-owned wiki documents using existing authored identity. Allowed changes are projectTitle, itemName/itemPrice with itemId, or itemAddition with a previously absent itemId. Preservation alone never proves the requested new value or addition exists. wikiDeclaration requires documentId,combatMode,sourceQuote: an unsuperseded explicit declaration and a canonical user source matching the full host request with that unique exact quote. It proves only a stored preference, never operational combat. Missing or mixed-kind fields fail closed. Canonical scoped shapes: ${JSON.stringify(ACCEPTANCE_EXAMPLES)}`,
   properties: {
     kind: { type: "string", enum: Object.keys(ACCEPTANCE_EXAMPLES) },
     title: { type: "string", description: "Required for gameTitle or projectTitle. gameTitle requires nonempty, non-whitespace exact literal Unicode title displayed by the title screen, using settings or their runtime default, not meta.title; graphic-only logos cannot prove literal text. projectTitle checks both meta.title and system.titleScreen.title as exact stored strings, including empty strings. Neither trims nor normalizes Unicode. Runtime enforces kind-specific validity." },
     documentId: { type: "string" }, combatMode: { type: "string", enum: [...WIKI_COMBAT_MODES] }, sourceQuote: { type: "string" },
     itemId: { type: "string" }, name: { type: "string" }, price: { type: "number", minimum: 0 },
+    collection: { type: "string", enum: [...DB_COLLECTIONS], description: "Required for dbRecordValues: the database collection holding the record." },
+    recordId: { type: "string", description: "Required for dbRecordValues: exact existing record ID in that collection." },
+    fields: { type: "object", additionalProperties: { type: ["string", "number", "boolean"] },
+      description: `Required for dbRecordValues: dotted field path → exact stored value (e.g. {"stats.maxHp": 300}). Proves stored field values, never runtime combat behavior. ${JSON.stringify(ACCEPTANCE_EXAMPLES.dbRecordValues)}` },
     scope: { type: "string", enum: ["project", "authored"] },
     allowedChanges: { type: "array", items: { type: "object", properties: {
       kind: { type: "string", enum: ["projectTitle", "itemName", "itemPrice", "itemAddition"] }, itemId: { type: "string" },

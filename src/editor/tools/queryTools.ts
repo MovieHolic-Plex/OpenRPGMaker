@@ -665,15 +665,15 @@ const listProjectCommits: ToolDefinition = {
 // 2026-08-23 실측: `elements`/`monsterSpecies` 가 목록에 없어서 모델이 `speciesId:"element_fire"`,
 // `elementRates:{element_fire:...}` 처럼 id 를 발명했고 무결성 검증에서 거부된 뒤
 // "속성 id 를 조회할 기능이 없다"며 작업 3건을 건너뛰었다. 참조 대상은 반드시 조회 가능해야 한다.
-const DB_COLLECTIONS = [
+export const DB_COLLECTIONS = [
   "actors", "classes", "skills", "items", "equipment", "enemies", "troops", "states",
   "battleAnimations", "switches", "variables", "commonEvents", "quests", "maps",
   "elements", "monsterSpecies", "lifeSkills", "farmAnimalSpecies", "crops",
   "characterAppearances",
 ] as const;
-type DbCollection = (typeof DB_COLLECTIONS)[number];
+export type DbCollection = (typeof DB_COLLECTIONS)[number];
 
-function collectionRecords(project: Project, collection: DbCollection): readonly Record<string, unknown>[] {
+export function collectionRecords(project: Project, collection: DbCollection): readonly Record<string, unknown>[] {
   const named = (list: readonly Record<string, unknown>[]): readonly Record<string, unknown>[] => list;
   switch (collection) {
     case "switches": return named(project.switches as unknown as Record<string, unknown>[]);

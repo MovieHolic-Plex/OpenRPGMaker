@@ -8,6 +8,7 @@ import { passageBounds } from "@/project/footprint";
 import type { GameMap, Project } from "@/project/types";
 import { ACCEPTANCE_EXAMPLES, type AcceptanceIssue, type AcceptanceCriterion, type AcceptanceItemSnapshot, type AcceptanceRegion, type AcceptanceTarget, type ProjectAcceptanceCriterion, type AcceptanceSource } from "./assistantAcceptance";
 import type { ToolVerificationEvidence } from "./toolVerificationEvidence";
+import { collectionRecords } from "@/editor/tools/queryTools";
 
 type Evidence = AcceptanceItemSnapshot["evidence"][number];
 export function acceptanceFingerprint(value: unknown): string {
@@ -75,6 +76,7 @@ export function visualFingerprint(project: Project, map: GameMap): string {
 export function criterionTargets(criterion: AcceptanceCriterion): readonly AcceptanceTarget[] {
   switch (criterion.kind) {
     case "wikiDeclaration": case "projectTitle": case "itemValues": case "projectPreserve":
+    case "dbRecordValues":
     case "gameTitle": case "toolVerdict": case "npcReward": case "functionalUnresolved": return [];
     case "shopPurchase": return [criterion.target];
     case "mapRoundTrip": return [criterion.target, criterion.destination];
@@ -154,6 +156,21 @@ export function evaluateAcceptanceCriterion(criterion: AcceptanceCriterion, inpu
     case "projectPreserve": {
       const passed = projectPreserved(criterion, input);
       return { expected, observed: passed ? "Original baseline preserved outside allowed changes" : "Unallowed change or invalid baseline target", passed };
+    }
+    case "dbRecordValues": {
+      // 저장된 필드값을 본다 — 런타임 전투 동작을 증명하지는 않는다(그 조항은 여전히 functionalUnresolved 다).
+      // 같은 id 가 둘 이상이면 어느 쪽을 검증했는지 말할 수 없으므로 실패한다(itemValues 와 같은 규칙).
+      const matches = collectionRecords(input.project, criterion.collection).filter(record => record.id === criterion.recordId);
+      const record = matches.length === 1 ? matches[0] : undefined;
+      const observed: Record<string, unknown> = {};
+      let passed = record !== undefined;
+      for (const [path, expectedValue] of Object.entries(criterion.fields)) {
+        const actual = path.split(".").reduce<unknown>((value, key) =>
+          value && typeof value === "object" ? (value as Record<string, unknown>)[key] : undefined, record);
+        observed[path] = actual ?? null;
+        if (actual !== expectedValue) passed = false;
+      }
+      return { expected, observed: JSON.stringify({ matches: matches.length, ...observed }), passed };
     }
     case "gameTitle": {
       // Match titleScreen.renderTitleScreen/renderTitleNodes without importing DOM
