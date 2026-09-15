@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **69쪽 / 2753KB / 약 775,983 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **69쪽 / 2756KB / 약 776,771 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 420KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2217 | ~119,171 |
+| `openwiki/editor-ai-panel.md` | 423KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2219 | ~119,959 |
 | `openwiki/editor-ai-tools.md` | 195KB | 82KB ⚠상한 초과 — 절을 더 쪼개라 | 1504 | ~54,515 |
 | `openwiki/editor-database.md` | 305KB | 61KB ⚠상한 초과 — 절을 더 쪼개라 | 1785 | ~88,502 |
 | `openwiki/editor-event-authoring.md` | 136KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 744 | ~39,120 |
@@ -260,7 +260,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L46` 설치 지점
 - `L52` 테스트
 
-### `openwiki/editor-ai-panel.md` — 420KB · 2217줄 · ~119,171 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 423KB · 2219줄 · ~119,959 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L3` 결과 보고서 모달 — 변경 지점마다 before/after 한 쌍 (2026-09-15, P2)
 - `L24` 조수 데크 「대화|작업」 탭 + 스튜디오 상세 — 팀원이 어디서 일하는지 한 곳 (2026-09-14, A안)
@@ -304,15 +304,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1957` 타일셋 이해 · 검토 위저드 (T1a/T1b)
 - `L1983` 저장 · 내보내기 · 프로젝트 생성
 - `L1991` 제공자 · OAuth · 동반 서비스
-- `L2021` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
-- `L2064` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
-- `L2097` 배치 의존성과 완료 멱등성 (2026-09-06)
-- `L2105` 모험 완료와 실제 적용 횟수 (2026-09-05)
-- `L2110` Assistant clean conversation — Phase 1 (2026-09-06)
-- `L2147` Assistant deck width resize (2026-09-07)
-  - `L2159` Legacy AI contract verification (2026-09-08)
-- `L2181` 의도 선언과 커버리지 감사는 각자 예산을 쓴다 (2026-09-16)
-- `L2198` 동반 서비스 자격: CLI 토큰 채택과 env 의 한계 (2026-09-16)
+- `L2023` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L2066` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+- `L2099` 배치 의존성과 완료 멱등성 (2026-09-06)
+- `L2107` 모험 완료와 실제 적용 횟수 (2026-09-05)
+- `L2112` Assistant clean conversation — Phase 1 (2026-09-06)
+- `L2149` Assistant deck width resize (2026-09-07)
+  - `L2161` Legacy AI contract verification (2026-09-08)
+- `L2183` 의도 선언과 커버리지 감사는 각자 예산을 쓴다 (2026-09-16)
+- `L2200` 동반 서비스 자격: CLI 토큰 채택과 env 의 한계 (2026-09-16)
 
 ### `openwiki/editor-ai-tools.md` — 195KB · 1504줄 · ~54,515 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
