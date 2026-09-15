@@ -201,3 +201,10 @@
   청취·수정용 페이지를 함께 생성한다(`dist/se-staging/audition.html`, 635개 전곡 재생).
 - EasyRPG RTP SE 96개는 **유지한다.** 피커에서 CC0 카탈로그가 앞에 오고 RTP 가 뒤에 온다
   (BGM 과 같은 서열) — 기존 프로젝트의 `easyrpg-sound-*` 참조가 깨지지 않는다.
+
+## Shared blue-haired traveler expressions (2026-09-15)
+
+- User-provided 16-expression image, derived from the existing EasyRPG Actor1 portrait, explicitly supplied for the app common resource library.
+- Original supplied master: `shared/faceset/source/blue-traveler-expressions.png`.
+- Runtime sheet: `shared/faceset/blue-traveler-expressions.png`; standalone faces: `shared/faceset/blue-traveler-expressions/00.png` through `15.png`.
+- Imported by per-cell nearest-neighbor center sampling, without facial repainting. User expression order and labels are retained.
