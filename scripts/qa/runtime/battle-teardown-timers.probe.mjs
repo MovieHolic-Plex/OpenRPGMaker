@@ -43,7 +43,7 @@ try {
     window.__timerLog = [];
     const original = window.setTimeout;
     window.setTimeout = function (fn, ms, ...rest) {
-      const record = { id: null, ms: typeof ms === "number" ? ms : -1, scheduledAt: performance.now(), firedAt: null, clearedAt: null, stack: String(new Error().stack || "").split("\n").slice(2, 5).join(" | ") };
+      const record = { id: null, ms: typeof ms === "number" ? ms : -1, scheduledAt: performance.now(), firedAt: null, clearedAt: null, stack: String(new Error().stack || "").split("\n").slice(2, 11).join(" | ") };
       window.__timerLog.push(record);
       const wrapped = function (...args) {
         record.firedAt = performance.now();
@@ -66,7 +66,7 @@ try {
       for (const record of records) {
         for (const node of record.addedNodes) {
           if (node.nodeType === 1 && node.matches && node.matches("audio[data-oprn-audio]")) {
-            window.__audioAfterDestroy.push({ at: Math.round(performance.now() - window.__battleGoneAt) });
+            window.__audioAfterDestroy.push({ at: Math.round(performance.now() - window.__battleGoneAt), src: String(node.currentSrc || node.src || "").split("/").pop() });
           }
         }
       }
@@ -112,6 +112,7 @@ try {
   }
   report.sawResultPanel = sawResult;
   report.lastUi = lastUi;
+  report.battleResult = await page.evaluate(() => window.__oprnDebug?.readState?.().battleResult ?? null);
   // 씬이 사라진 뒤 600ms 동안 발화한 타이머를 본다.
   await page.waitForTimeout(600);
   report.raw = await page.evaluate(() => {
@@ -144,4 +145,4 @@ report.pass =
   && report.raw.audioAfterDestroy.length === 0
   && report.raw.firedAfterDestroy.filter((r) => r.ms === 260).length === 0;
 await writeFile(resolve(out, "result.json"), JSON.stringify(report, null, 1));
-console.log(JSON.stringify({ sawResultPanel: report.sawResultPanel, lastUi: report.lastUi, ...report.raw, pass: report.pass, errors: report.errors.slice(0, 2) }, null, 1));
+console.log(JSON.stringify({ sawResultPanel: report.sawResultPanel, battleResult: report.battleResult, lastUi: report.lastUi, ...report.raw, pass: report.pass, errors: report.errors.slice(0, 2) }, null, 1));

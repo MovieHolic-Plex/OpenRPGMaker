@@ -9,6 +9,7 @@ export type BattleAudioContext = { readonly project: Project; readonly session: 
 import { beginBattleResultAudio, playAuthoredBattleResultCue } from "@/player/battleAudio";
 import { playBattleSfx as playSynthVoice, type BattleSfxKind } from "@/player/battleSfx";
 import { HIT_INTENSITY_STYLE, hitIntensityStageVariables, type BattleHitIntensity } from "@/player/battleHitIntensity";
+import { scheduleBattleTimer } from "@/player/battleTimerScope";
 
 export type BattleJuiceEvent =
   | "command-select"
@@ -182,7 +183,8 @@ export function flashBattleField(
     if (shake) {
       root.classList.add("battle-screen-shake");
     }
-    window.setTimeout(() => {
+    // 전투 스코프 타이머 — teardown 이 남은 것을 끊는다(실측: 이 700ms 가 씬 파괴 뒤에 발화했다).
+    scheduleBattleTimer(() => {
       root.classList.remove(className, "battle-screen-shake");
     }, kind === "victory" || kind === "defeat" ? 700 : kind === "critical" || intensity === "crushing" ? 400 : 280);
   });
