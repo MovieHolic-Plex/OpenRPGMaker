@@ -10,6 +10,7 @@ import {
   renderEventLayerClickFeedback,
 } from "@/editor/editSceneRender";
 import { planEditSceneRenderForStoreChange } from "@/editor/editSceneRenderPlan";
+import { resetCullableTiles, syncTileCulling } from "@/player/playSceneTileCulling";
 import { createBlankProject, DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults";
 import { store } from "@/project/store";
 
@@ -531,5 +532,258 @@ describe("edit scene event rendering", () => {
 
     expect(plan.kind).toBe("full");
     expect(stats.tileObjectsUpdated).toBe(128 * 128);
+  });
+});
+
+describe("edit scene tile culling", () => {
+  // 컬링 추적이 일어나려면 객체에 setVisible 이 있어야 한다. 기본 mock 은 없으므로
+  // setVisible/visible/active 를 갖춘 타일 객체를 만드는 전용 scene/container 를 쓴다.
+  type CullTile = {
+    kind: "rectangle" | "image";
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    fillColor?: number;
+    fillAlpha?: number;
+    alpha?: number;
+    origin?: readonly [number, number];
+    depth?: number;
+    visible: boolean;
+    active: boolean;
+    setVisibleCalls: number;
+    setOrigin(x: number, y?: number): CullTile;
+    setAlpha(alpha: number): CullTile;
+    setDepth(depth: number): CullTile;
+    setStrokeStyle(lineWidth: number, color: number, alpha?: number): CullTile;
+    setVisible(value: boolean): CullTile;
+  };
+
+  function cullTile(kind: "rectangle" | "image", x: number, y: number, width = 16, height = 16): CullTile {
+    const tile: CullTile = {
+      kind,
+      x,
+      y,
+      width,
+      height,
+      visible: true,
+      active: true,
+      setVisibleCalls: 0,
+      setOrigin() { return tile; },
+      setAlpha() { return tile; },
+      setDepth() { return tile; },
+      setStrokeStyle() { return tile; },
+      setVisible(value: boolean) { tile.visible = value; tile.setVisibleCalls += 1; return tile; },
+    };
+    return tile;
+  }
+
+  function cullScene(): { scene: Phaser.Scene; tiles: CullTile[]; tileLayer: Phaser.GameObjects.Container; overlayLayer: Phaser.GameObjects.Container; gridGraphics: Phaser.GameObjects.Graphics } {
+    const tiles: CullTile[] = [];
+    // tileLayer.add 로 들어오는 객체만 컬링 추적 대상이다. overlayLayer.add 로 들어오는
+    // 시작 위치 표시 같은 오버레이는 tiles 배열에서 제외한다.
+    const tileLayer: Phaser.GameObjects.Container = {
+      removeAll: () => undefined,
+      remove: (object: CullTile) => { const i = tiles.indexOf(object); if (i >= 0) tiles.splice(i, 1); return object; },
+      sort: () => undefined,
+      add: (object: CullTile) => { tiles.push(object); return object; },
+    } as unknown as Phaser.GameObjects.Container;
+    const overlayLayer: Phaser.GameObjects.Container = {
+      removeAll: () => undefined,
+      remove: () => undefined,
+      add: () => undefined,
+    } as unknown as Phaser.GameObjects.Container;
+    const gridGraphics: Phaser.GameObjects.Graphics = {
+      clear: () => undefined,
+      lineStyle: () => undefined,
+      moveTo: () => undefined,
+      lineTo: () => undefined,
+      strokePath: () => undefined,
+    } as unknown as Phaser.GameObjects.Graphics;
+    const scene = {
+      add: {
+        container: () => ({ x: 0, y: 0, add: () => undefined }),
+        graphics: () => ({ clear: () => undefined, lineStyle: () => undefined, moveTo: () => undefined, lineTo: () => undefined, strokePath: () => undefined }),
+        image: (x: number, y: number) => cullTile("image", x, y),
+        rectangle: (x: number, y: number, w: number, h: number, fillColor?: number, fillAlpha?: number) => {
+          const t = cullTile("rectangle", x, y, w, h);
+          t.fillColor = fillColor;
+          t.fillAlpha = fillAlpha;
+          return t;
+        },
+        sprite: (x: number, y: number) => cullTile("image", x, y),
+        circle: () => cullTile("rectangle", 0, 0),
+        text: () => cullTile("rectangle", 0, 0),
+      },
+      textures: { exists: () => true },
+    } as unknown as Phaser.Scene;
+    return { scene, tiles, tileLayer, overlayLayer, gridGraphics };
+  }
+
+  it("renderEditScene 가 만든 타일은 syncTileCulling 이 화면 밖을 숨긴다", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    // 64×64 빈 맵 — 화면(320×240) 밖 타일이 대부분이다.
+    map.width = 64;
+    map.height = 64;
+    map.lowerTiles = new Array<number>(64 * 64).fill(-1);
+    map.upperTiles = new Array<number>(64 * 64).fill(-1);
+    store.replace(project);
+    editorState.set({ currentMapId: map.id, layer: "lower", tool: "select", showGrid: false });
+
+    const { scene, tiles, tileLayer, overlayLayer, gridGraphics } = cullScene();
+    renderEditScene({
+      scene,
+      tileLayer,
+      overlayLayer,
+      gridGraphics,
+      mapId: map.id,
+      tileIndex: new Map(),
+    });
+
+    // 모든 타일이 만들어졌고, 아직 컬링이 적용되지 않아 전부 보인다.
+    expect(tiles.length).toBe(64 * 64);
+    expect(tiles.every((t) => t.visible)).toBe(true);
+
+    // 320×240 화면이 (0,0)에 있을 때 — 보이는 타일은 ~20×15=300칸, 여유 2칸 포함 ~24×19.
+    syncTileCulling(scene, { x: 0, y: 0, width: 320, height: 240 });
+
+    const visibleCount = tiles.filter((t) => t.visible).length;
+    const hiddenCount = tiles.length - visibleCount;
+    // 화면 밖 타일이 숨겨졌다 — 4096칸 중 보이는 것은 ~400칸(여유 포함), 나머지 숨김.
+    expect(visibleCount).toBeLessThan(600);
+    expect(hiddenCount).toBeGreaterThan(tiles.length - 600);
+    // 숨겨진 타일은 setVisible(false) 로 한 번 쓰였다.
+    expect(tiles.some((t) => !t.visible && t.setVisibleCalls === 1)).toBe(true);
+  });
+
+  it("같은 화면 창으로 두 번째 syncTileCulling 은 아무것도 쓰지 않는다", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    map.width = 32;
+    map.height = 32;
+    map.lowerTiles = new Array<number>(32 * 32).fill(-1);
+    map.upperTiles = new Array<number>(32 * 32).fill(-1);
+    store.replace(project);
+    editorState.set({ currentMapId: map.id, layer: "lower", tool: "select", showGrid: false });
+
+    const { scene, tiles, tileLayer, overlayLayer, gridGraphics } = cullScene();
+    renderEditScene({
+      scene,
+      tileLayer,
+      overlayLayer,
+      gridGraphics,
+      mapId: map.id,
+      tileIndex: new Map(),
+    });
+
+    syncTileCulling(scene, { x: 0, y: 0, width: 320, height: 240 });
+    const writesAfterFirst = tiles.reduce((sum, t) => sum + t.setVisibleCalls, 0);
+
+    // 같은 창 — 타일 경계를 넘지 않았으므로 아무것도 쓰지 않는다.
+    syncTileCulling(scene, { x: 0, y: 0, width: 320, height: 240 });
+    const writesAfterSecond = tiles.reduce((sum, t) => sum + t.setVisibleCalls, 0);
+    expect(writesAfterSecond).toBe(writesAfterFirst);
+  });
+
+  it("resetCullableTiles 뒤에는 같은 host 의 이전 추적이 비워진다", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    map.width = 16;
+    map.height = 16;
+    map.lowerTiles = new Array<number>(16 * 16).fill(-1);
+    map.upperTiles = new Array<number>(16 * 16).fill(-1);
+    store.replace(project);
+    editorState.set({ currentMapId: map.id, layer: "lower", tool: "select", showGrid: false });
+
+    const { scene, tiles, tileLayer, overlayLayer, gridGraphics } = cullScene();
+    renderEditScene({
+      scene,
+      tileLayer,
+      overlayLayer,
+      gridGraphics,
+      mapId: map.id,
+      tileIndex: new Map(),
+    });
+    // 컬링을 적용해 타일을 숨긴다.
+    syncTileCulling(scene, { x: 1000, y: 1000, width: 320, height: 240 });
+    expect(tiles.every((t) => !t.visible)).toBe(true);
+
+    // reset 후 같은 host 로 다시 렌더하면 새 타일이 추적된다.
+    resetCullableTiles(scene);
+    const { tiles: freshTiles, tileLayer: freshTileLayer, overlayLayer: freshOverlayLayer, gridGraphics: freshGridGraphics } = cullScene();
+    // 같은 scene 객체를 쓰되 freshTileLayer 가 새 타일을 받도록 한다.
+    renderEditScene({
+      scene,
+      tileLayer: freshTileLayer,
+      overlayLayer: freshOverlayLayer,
+      gridGraphics: freshGridGraphics,
+      mapId: map.id,
+      tileIndex: new Map(),
+    });
+
+    // reset 덕분에 새 타일은 visible=true 로 시작하고, 이전 tiles 는 건드리지 않는다.
+    expect(freshTiles.every((t) => t.visible)).toBe(true);
+    // 이전 tiles 는 여전히 숨겨진 채 — reset 이 추적을 비웠으니 syncTileCulling 이 안 건드린다.
+    expect(tiles.every((t) => !t.visible)).toBe(true);
+
+    // 같은 host 에 대해 컬링을 적용하면 freshTiles 만 반응한다.
+    syncTileCulling(scene, { x: 1000, y: 1000, width: 320, height: 240 });
+    expect(freshTiles.every((t) => !t.visible)).toBe(true);
+    // 이전 tiles 의 setVisibleCalls 는 그대로 — reset 후 더 이상 추적되지 않는다.
+    expect(tiles.every((t) => t.setVisibleCalls === 1)).toBe(true);
+  });
+
+  it("증분 렌더 후에도 화면 밖 새 타일이 컬링된다", () => {
+    // 회귀 테스트: renderEditSceneTileCells 가 새 타일을 visible=true 로 만든 뒤,
+    // 카메라가 안 움직이면 sameWindow early-out 으로 컬링이 안 걸린다.
+    // invalidateCullingWindow 가 applied 창을 버려 다음 syncTileCulling 이 재계산한다.
+    // 이 테스트는 fix 가 없으면 실패해야 한다 — 화면 밖 새 타일이 visible=true 로 남는다.
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    map.width = 64;
+    map.height = 64;
+    map.lowerTiles = new Array<number>(64 * 64).fill(-1);
+    map.upperTiles = new Array<number>(64 * 64).fill(-1);
+    store.replace(project);
+    editorState.set({ currentMapId: map.id, layer: "lower", tool: "paint", showGrid: false });
+
+    const { scene, tiles, tileLayer, overlayLayer, gridGraphics } = cullScene();
+    const tileIndex: EditSceneTileIndex = new Map();
+    renderEditScene({
+      scene,
+      tileLayer,
+      overlayLayer,
+      gridGraphics,
+      mapId: map.id,
+      tileIndex,
+    });
+
+    // 화면을 (0,0) 에 고정하고 컬링 적용 — 화면 밖 타일이 숨겨진다.
+    const viewport = { x: 0, y: 0, width: 320, height: 240 };
+    syncTileCulling(scene, viewport);
+    // 컬링 마진이 2타일(32px) 이므로 pixel x > 352 (타일 22 이후) 는 확실히 화면 밖.
+    const offscreenBefore = tiles.filter((t) => t.x > 352);
+    expect(offscreenBefore.length).toBeGreaterThan(0);
+    expect(offscreenBefore.every((t) => !t.visible)).toBe(true);
+
+    // 증분 렌더 — 화면 밖 먼 셀(60,60)을 칠한다. 8방 이웃도 재렌더된다.
+    renderEditSceneTileCells(
+      { scene, tileLayer, overlayLayer, gridGraphics, mapId: map.id, tileIndex },
+      [{ x: 60, y: 60, layer: "lower" }],
+    );
+
+    // 새 타일이 만들어졌다 — (60,60) 근처 픽셀 좌표 960 근처.
+    const newTilesNearPaint = tiles.filter((t) => t.x >= 940 && t.x <= 980 && t.y >= 940 && t.y <= 980);
+    expect(newTilesNearPaint.length).toBeGreaterThan(0);
+    // 아직 컬링이 안 걸려서 새 타일은 보인다.
+    expect(newTilesNearPaint.every((t) => t.visible)).toBe(true);
+
+    // invalidateCullingWindow 덕분에 sameWindow early-out 없이 재계산한다.
+    syncTileCulling(scene, viewport);
+
+    // 핵심 검증: 화면 밖 새 타일이 숨겨졌다. fix 가 없으면 visible=true 로 남는다.
+    const offscreenAfter = tiles.filter((t) => t.x > 352);
+    expect(offscreenAfter.every((t) => !t.visible)).toBe(true);
   });
 });

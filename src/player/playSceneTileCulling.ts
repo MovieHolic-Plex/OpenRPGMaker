@@ -19,6 +19,9 @@ import { TILE_SIZE } from "@/assets/bundled";
 
 export interface CullableImage {
   visible?: boolean;
+  /** Phaser GameObject 는 파괴되면 active=false 가 된다. 증분 재렌더 경로에서
+   *  파괴된 객체가 추적 목록에 남아 setVisible 을 부르면 런타임 에러가 나므로 건너뛴다. */
+  active?: boolean;
   setVisible?(value: boolean): unknown;
 }
 
@@ -58,6 +61,16 @@ export function resetCullableTiles(host: object): void {
   lastTrackedTiles = null;
 }
 
+/**
+ * 적용된 컬링 창을 버린다. 다음 syncTileCulling 이 같은 viewport 라도 강제로 재계산한다.
+ * 증분 재렌더(renderEditSceneTileCells)가 새 타일을 visible=true 로 만든 뒤,
+ * 카메라가 움직이지 않았으면 sameWindow early-out 으로 컬링이 안 걸린다.
+ * 증분 렌더 뒤에 이 함수를 부르면 다음 update() 프레임이 새 타일을 컬링한다.
+ */
+export function invalidateCullingWindow(host: object): void {
+  appliedWindows.delete(host);
+}
+
 // 한 번의 renderTiles 는 타일 1만~2.1만개를 **같은 host** 로 추적한다. 칸마다 WeakMap 을
 // 조회하지 않도록 직전 짝을 기억한다 — 맵을 그리는 동안 항상 적중한다.
 //
@@ -90,6 +103,10 @@ export interface CullViewport {
 /**
  * 카메라가 보는 영역 밖 타일을 숨긴다. viewport 는 월드 픽셀(카메라 worldView).
  * 창이 직전과 같으면 아무것도 하지 않는다.
+ *
+ * 증분 재렌더 경로(에디터)에서 파괴된 객체가 배열에 남아 누적될 수 있다.
+ * 파괴된 항목이 절반을 넘으면 배열을 compaction 한다 — 전체 재렌더(resetCullableTiles)
+ * 가 자주 일어나지 않는 긴 페인트 세션에서 배열이 무한 자라는 것을 막는다.
  */
 export function syncTileCulling(host: object, viewport: CullViewport | undefined): void {
   const tiles = cullableTiles.get(host);
@@ -106,14 +123,40 @@ export function syncTileCulling(host: object, viewport: CullViewport | undefined
   if (applied && sameWindow(applied, next)) return;
   appliedWindows.set(host, next);
   const { images, xs, ys } = tiles;
+  let deadCount = 0;
   for (let index = 0; index < images.length; index += 1) {
     const x = xs[index];
     const y = ys[index];
     const visible = x >= next.minX && x <= next.maxX && y >= next.minY && y <= next.maxY;
     const image = images[index];
+    if (image.active === false) { deadCount += 1; continue; }
     if (image.visible === visible) continue;
     image.setVisible?.(visible);
   }
+  if (deadCount > 0 && deadCount * 2 >= images.length) compactCullableTiles(tiles);
+}
+
+/**
+ * 파괴된 항목을 빼고 살아있는 항목만 남겨 배열을 다시 만든다.
+ * syncTileCulling 이 이미 전체를 순회했으므로 추가 순회 비용은 같다.
+ */
+function compactCullableTiles(tiles: CullableTiles): void {
+  const { images, xs, ys } = tiles;
+  const liveImages: CullableImage[] = [];
+  const liveXs: number[] = [];
+  const liveYs: number[] = [];
+  for (let index = 0; index < images.length; index += 1) {
+    if (images[index].active === false) continue;
+    liveImages.push(images[index]);
+    liveXs.push(xs[index]);
+    liveYs.push(ys[index]);
+  }
+  images.length = 0;
+  xs.length = 0;
+  ys.length = 0;
+  images.push(...liveImages);
+  xs.push(...liveXs);
+  ys.push(...liveYs);
 }
 
 function sameWindow(left: TileWindow, right: TileWindow): boolean {

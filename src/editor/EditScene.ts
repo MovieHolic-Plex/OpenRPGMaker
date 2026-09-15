@@ -65,6 +65,7 @@ import { renderHoverTilePreview, shouldShowPaintHoverPreview } from "@/editor/ed
 import { planEditSceneRenderForStoreChange } from "@/editor/editSceneRenderPlan";
 import { renderEditScene, renderEditSceneTileCells, type EditSceneRenderStats, type EditSceneTileIndex } from "@/editor/editSceneRender";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
+import { resetCullableTiles, syncTileCulling } from "@/player/playSceneTileCulling";
 import {
   cancelPastePreview,
   clearSelection,
@@ -502,6 +503,8 @@ export class EditScene extends PhaserRuntime.Scene {
     this.rightRegionGesture = null;
     // 미뤄 둔 초점은 씬과 함께 버린다 — 아래 stopPan 이 재생을 시도하기 전에 비워야 한다.
     this.deferredCameraFocus = null;
+    // 컬링 추적 목록을 풀어 씬이 내려가도 객체를 붙잡지 않게 한다.
+    resetCullableTiles(this);
 
     this.stopPan();
     this.unsubStore?.();
@@ -569,6 +572,19 @@ export class EditScene extends PhaserRuntime.Scene {
     if (this.activeCameraFocus && shouldDeferCameraFocus(this.pointerGestureState())) this.cancelCameraFocus();
     this.syncNavigationGeometry();
     this.syncPublishedViewport();
+    this.syncTileCullingFrame();
+  }
+
+  /**
+   * 화면 밖 타일의 visible 을 끈다. renderEditScene 가 타일을 만들 때 trackCullableTile 로
+   * 추적해 둔다. 카메라가 타일 경계를 넘을 때만 다시 계산하므로 무변화 프레임은 거의 공짜다.
+   * 큰 맵(128×128 = 타일 3만 개)에서 화면에 보이는 것은 수백 칸인데, Phaser 의 Container 는
+   * 절두체 컬링이 없어 이걸 직접 해주지 않으면 화면 밖 타일도 매 프레임 렌더 큐에 들어간다.
+   */
+  private syncTileCullingFrame(): void {
+    const view = this.cameras?.main?.worldView;
+    if (!view || view.width <= 0 || view.height <= 0) return;
+    syncTileCulling(this, view);
   }
 
   private observeNavigationGeometry(): void {
