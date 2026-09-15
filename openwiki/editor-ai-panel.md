@@ -2195,3 +2195,22 @@ e2e `ai-ui-audit-fixes` F10.
 
 이 항목은 **관찰된 사고의 원인**이라는 뜻이지, 검증 미완료 초안을 적용해도 된다는 뜻이 아니다.
 미적용 초안의 검수는 `evaluateForReview`(초안 자체 평가)와 독립 검수 게이트가 그대로 판정한다.
+## 동반 서비스 자격: CLI 토큰 채택과 env 의 한계 (2026-09-16)
+
+편집기의 챗은 동반 서비스가 `~/.oprn/oh-my-pi-auth.json` 의 자격으로 나간다. 이 저장소가
+`~/.codex/auth.json`(Codex CLI 로그인)을 **한 번 옮기는** 경로가 `scripts/lib/aiAuthRuntime.ts` 의
+`adoptCodexCliCredentials` 인데, 조건이 좁다:
+
+- `store.has("openai-codex")` 가 참이면 채택하지 않는다 — 저장소에 이미 항목이 있으면(설령 refresh 가
+  죽었어도) CLI 의 새 토큰으로 갈아타지 않는다.
+- `declined` 로 사용자가 연결을 끊었으면 되살리지 않는다(해제가 눈속임이 되지 않게).
+
+그리고 `OH_MY_PI_PROVIDERS` 의 `envVars`(예: `OPENAI_CODEX_OAUTH_TOKEN`)는
+`publicProviderStatus()` 의 `env` 플래그만 바꾼다 —  전송에 쓰이는 자격을 바꾸지 않는다.
+그래서 실측(2026-09-16): Codex 는 `401 refresh_token_reused`, Antigravity 는
+`400 Cloud Code Assist` 로 둘 다 죽어 있었고, env 로는 우회되지 않았다. 복구는 사용자의 재로그인
+(또는 저장소 항목을 지워 CLI 채택 경로를 타게 하는 것)이며, **에이전트가 임의로 자격 저장소를
+고쳐서는 안 된다** — 사용자 소유 비밀이고 `declined` 의미를 깨뜨릴 수 있다.
+
+이 상태에서 실제 모델 QA 는 돌지 않는다. `scripts/qa/db-ai-review-live.mjs` 는 그 사실을
+`process.exitCode = 1` 과 상태줄로 정직하게 보고한다(이번에 고침).
