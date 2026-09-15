@@ -105,6 +105,22 @@ describe('scheduled battle foreground handoff', () => {
     expect(f.battle).toHaveBeenCalledTimes(1); // The real self-switch condition deactivates this page.
   });
 
+  it('delivers a committed result when the battle itself deactivates its page', async () => {
+    const f = setup(); f.scene.running = true; f.scene.inputEnabled = false;
+    updateParallelEvents(f.scene, 0);
+    const entered = f.when(() => f.battle.mock.calls.length === 1);
+    f.scene.running = false; f.scene.setInputEnabled(true); updateParallelEvents(f.scene, 0);
+    await bounded(entered);
+    // 트룹 이밌트의 write-back 이 전투를 끝내면서 이 페이지 조건을 스스로 껐다.
+    f.scene.session.selfSwitches ??= {};
+    f.scene.session.selfSwitches.trainer = { ...(f.scene.session.selfSwitches.trainer ?? {}), A: true };
+    f.scene.session.battleResult = 'escape';
+    const released = f.when(() => !f.scene.running && f.scene.inputEnabled);
+    f.battleResult.resolve('victory'); await bounded(released);
+    expect(f.scene.session.battleResult).toBe('victory');
+    expect(f.scene.session.flags.encounterComplete).toBe(true);
+  });
+
   it('does not run two simultaneous parallel battle owners', () => {
     const f = setup();
     const second = structuredClone(f.event); second.id = 'second';
