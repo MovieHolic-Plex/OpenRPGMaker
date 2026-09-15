@@ -663,6 +663,20 @@ function ruleText(rule: ClusterRuleHint): string {
   return `${kindLabel(rule.kind)} 규칙 ${rule.id}`;
 }
 
+/** One request inlines at most this much original evidence, however large the model window is.
+ *
+ * 실측 2026-09-16 (dev showcase + DB 지시, 실제 라이브 턴): 인텐트가 선언되면 추출이 도메인과
+ * 참조 쇄를 고정점까지 따라가 **639 엔트리 / 입력 419,153 토큰**을 매 라운드 보냈다
+ * (툴 스키마 90,193 + 원본 ~325,000). 그 결과 한 턴이 텍스트 탐색에 라운드 예산을 다 쓰고
+ * `턴 종료(max-tool-calls)` 로 끝나 검토 단계에 정착하지 못했다. 같은 프로젝트를 인텐트 없이
+ * 추출하면 116 엔트리 / 143,877 토큰이었다 — 차이는 인텐트 기반 폐쇄가 만든 ~523 엔트리다.
+ *
+ * 창이 큰 모델의 능력을 지우는 것이 아니라, 한 요청에 **인라인**하는 양만 제한한다.
+ * 제외된 엔트리는 매니페스트(omitted.count)에 남아 `get_original_context` 로 페이지된다 —
+ * 근거를 없애지 않고 옮긴다.
+ */
+export const GROUNDED_ORIGINALS_TOKEN_CEILING = 120_000;
+
 /** Budget the actual writer model, complete native schemas, conversation and originals together.
  * Original evidence is appended after history compaction, never prose-sliced. The legacy
  * working-window cap governs history, not how much original data a large model can see.
@@ -685,7 +699,10 @@ export function buildGroundedRequest(
     historyChars = Math.max(0, historyChars - overflow * 4);
     request = compactMessagesForRequest(messages, historyChars);
   }
-  const remaining = windowTokens - reserveTokens - toolsTokens - estimateContextTokens(request);
+  const remaining = Math.min(
+    windowTokens - reserveTokens - toolsTokens - estimateContextTokens(request),
+    GROUNDED_ORIGINALS_TOKEN_CEILING,
+  );
   const grounding = original.message(remaining);
   request.push(grounding.message);
   const inputTokens = estimateContextTokens(request) + toolsTokens;
