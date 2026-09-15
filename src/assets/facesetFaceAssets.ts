@@ -24,6 +24,7 @@ export const LEGACY_FACESET_SHEET_IDS: readonly string[] = [
   "easyrpg-faceset-people2",
   "generated-actor-hero-01-face",
   "generated-actor-hero-02-face",
+  "shared-blue-traveler-expressions",
 ];
 
 export const FACESET_FACE_ASSETS: readonly FacesetFaceAsset[] = [
@@ -139,6 +140,22 @@ export const FACESET_FACE_ASSETS: readonly FacesetFaceAsset[] = [
   { id: "generated-actor-hero-02-face-13", name: "hero-02-face 얼굴 14", path: "assets/generated/starter/hero-02-face/13.png", sheetResourceId: "generated-actor-hero-02-face", sheetIndex: 13 },
   { id: "generated-actor-hero-02-face-14", name: "hero-02-face 얼굴 15", path: "assets/generated/starter/hero-02-face/14.png", sheetResourceId: "generated-actor-hero-02-face", sheetIndex: 14 },
   { id: "generated-actor-hero-02-face-15", name: "hero-02-face 얼굴 16", path: "assets/generated/starter/hero-02-face/15.png", sheetResourceId: "generated-actor-hero-02-face", sheetIndex: 15 },
+  { id: "shared-blue-traveler-expressions-00", name: "푸른 머리 여행자 · 01 기본 미소", path: "assets/shared/faceset/blue-traveler-expressions/00.png", sheetResourceId: "shared-blue-traveler-expressions", sheetIndex: 0 },
+  { id: "shared-blue-traveler-expressions-01", name: "푸른 머리 여행자 · 02 행복한 눈웃음", path: "assets/shared/faceset/blue-traveler-expressions/01.png", sheetResourceId: "shared-blue-traveler-expressions", sheetIndex: 1 },
+  { id: "shared-blue-traveler-expressions-02", name: "푸른 머리 여행자 · 03 활짝 웃음", path: "assets/shared/faceset/blue-traveler-expressions/02.png", sheetResourceId: "shared-blue-traveler-expressions", sheetIndex: 2 },
+  { id: "shared-blue-traveler-expressions-03", name: "푸른 머리 여행자 · 04 흐뭇함 / 만족", path: "assets/shared/faceset/blue-traveler-expressions/03.png", sheetResourceId: "shared-blue-traveler-expressions", sheetIndex: 3 },
+  { id: "shared-blue-traveler-expressions-04", name: "푸른 머리 여행자 · 05 놀람", path: "assets/shared/faceset/blue-traveler-expressions/04.png", sheetResourceId: "shared-blue-traveler-expressions", sheetIndex: 4 },
+  { id: "shared-blue-traveler-expressions-05", name: "푸른 머리 여행자 · 06 당황 / 민망함", path: "assets/shared/faceset/blue-traveler-expressions/05.png", sheetResourceId: "shared-blue-traveler-expressions", sheetIndex: 5 },
+  { id: "shared-blue-traveler-expressions-06", name: "푸른 머리 여행자 · 07 의심 / 시큰둥함", path: "assets/shared/faceset/blue-traveler-expressions/06.png", sheetResourceId: "shared-blue-traveler-expressions", sheetIndex: 6 },
+  { id: "shared-blue-traveler-expressions-07", name: "푸른 머리 여행자 · 08 진지함 / 무표정", path: "assets/shared/faceset/blue-traveler-expressions/07.png", sheetResourceId: "shared-blue-traveler-expressions", sheetIndex: 7 },
+  { id: "shared-blue-traveler-expressions-08", name: "푸른 머리 여행자 · 09 불만 / 짜증", path: "assets/shared/faceset/blue-traveler-expressions/08.png", sheetResourceId: "shared-blue-traveler-expressions", sheetIndex: 8 },
+  { id: "shared-blue-traveler-expressions-09", name: "푸른 머리 여행자 · 10 분노 / 고함", path: "assets/shared/faceset/blue-traveler-expressions/09.png", sheetResourceId: "shared-blue-traveler-expressions", sheetIndex: 9 },
+  { id: "shared-blue-traveler-expressions-10", name: "푸른 머리 여행자 · 11 슬픔 / 울먹임", path: "assets/shared/faceset/blue-traveler-expressions/10.png", sheetResourceId: "shared-blue-traveler-expressions", sheetIndex: 10 },
+  { id: "shared-blue-traveler-expressions-11", name: "푸른 머리 여행자 · 12 울음 / 눈물", path: "assets/shared/faceset/blue-traveler-expressions/11.png", sheetResourceId: "shared-blue-traveler-expressions", sheetIndex: 11 },
+  { id: "shared-blue-traveler-expressions-12", name: "푸른 머리 여행자 · 13 걱정 / 불안", path: "assets/shared/faceset/blue-traveler-expressions/12.png", sheetResourceId: "shared-blue-traveler-expressions", sheetIndex: 12 },
+  { id: "shared-blue-traveler-expressions-13", name: "푸른 머리 여행자 · 14 자신감 / 결의", path: "assets/shared/faceset/blue-traveler-expressions/13.png", sheetResourceId: "shared-blue-traveler-expressions", sheetIndex: 13 },
+  { id: "shared-blue-traveler-expressions-14", name: "푸른 머리 여행자 · 15 수줍은 미소 / 호감", path: "assets/shared/faceset/blue-traveler-expressions/14.png", sheetResourceId: "shared-blue-traveler-expressions", sheetIndex: 14 },
+  { id: "shared-blue-traveler-expressions-15", name: "푸른 머리 여행자 · 16 윙크 / 장난스러움", path: "assets/shared/faceset/blue-traveler-expressions/15.png", sheetResourceId: "shared-blue-traveler-expressions", sheetIndex: 15 },
 ];
 
 /** 생성 시리즈(hero-XX-face) 낱장 얼굴 id. 저장본 해석·검증을 위해 FACESET_FACE_ASSETS 등록은

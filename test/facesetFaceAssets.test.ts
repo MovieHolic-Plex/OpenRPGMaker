@@ -10,12 +10,12 @@ import {
 } from "@/assets/facesetFaceAssets";
 
 describe("얼굴 낱장 에셋 목록", () => {
-  it("7장의 시트를 16칸씩 쪼갠 112개 낱장을 등록한다", () => {
-    expect(LEGACY_FACESET_SHEET_IDS).toHaveLength(7);
-    expect(FACESET_FACE_ASSETS).toHaveLength(112);
+  it("8장의 시트를 16칸씩 쪼갠 128개 낱장을 등록한다", () => {
+    expect(LEGACY_FACESET_SHEET_IDS).toHaveLength(8);
+    expect(FACESET_FACE_ASSETS).toHaveLength(128);
 
     const ids = new Set(FACESET_FACE_ASSETS.map((face) => face.id));
-    expect(ids.size).toBe(112);
+    expect(ids.size).toBe(128);
     for (const sheetId of LEGACY_FACESET_SHEET_IDS) {
       expect(FACESET_FACE_ASSETS.filter((face) => face.sheetResourceId === sheetId)).toHaveLength(16);
     }
@@ -30,7 +30,7 @@ describe("얼굴 낱장 에셋 목록", () => {
     for (const id of GENERATED_FACESET_FACE_IDS) {
       expect(id.startsWith("generated-actor-hero-")).toBe(true);
     }
-    expect(AUTHORABLE_FACESET_FACE_ASSETS).toHaveLength(112 - GENERATED_FACESET_FACE_IDS.size);
+    expect(AUTHORABLE_FACESET_FACE_ASSETS).toHaveLength(128 - GENERATED_FACESET_FACE_IDS.size);
     for (const face of AUTHORABLE_FACESET_FACE_ASSETS) {
       expect(GENERATED_FACESET_FACE_IDS.has(face.id)).toBe(false);
     }

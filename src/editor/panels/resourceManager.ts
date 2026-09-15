@@ -51,6 +51,8 @@ export const RESOURCE_MANAGER_CATEGORIES = [
   { kind: "title", label: "타이틀" },
 ] as const satisfies readonly ResourceCategory[];
 
+const expressionViews = new WeakSet<HTMLElement>();
+
 const audioEditors = new WeakMap<HTMLElement, AudioDescriptionEditor>();
 
 function audioEditorFor(container: HTMLElement): AudioDescriptionEditor {
@@ -174,6 +176,12 @@ export function renderResourceManager(
   renderResourceWorkbench(container, {
     categories: RESOURCE_MANAGER_CATEGORIES,
     selectedKind: selectedResourceKind,
+    expressionView: expressionViews.has(container) && selectedResourceKind === "faceset",
+    onSelectExpressions: () => {
+      expressionViews.add(container);
+      if (editor.kind === "faceset") renderResourceManager(container);
+      else editor.selectKind("faceset");
+    },
     profiles: project.resourceProfiles,
     uploaded,
     kindSelect: kindSel,
@@ -186,7 +194,11 @@ export function renderResourceManager(
     ...(selectedResourceKind === "music" || selectedResourceKind === "sound"
       ? { audioPanes: editor.render(selectedResourceKind, { import: onImport, delete: deleteUploadedAsset }) }
       : {}),
-    onSelectKind: kind => editor.selectKind(kind),
+    onSelectKind: kind => {
+      const wasExpressions = expressionViews.delete(container);
+      if (kind === editor.kind && wasExpressions) renderResourceManager(container);
+      else editor.selectKind(kind);
+    },
     onImport,
     ...(recentAssetId === undefined ? {} : { recentAssetId }),
     onDropFile,
