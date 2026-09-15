@@ -57,7 +57,11 @@ export function renderSpatialAuthoringShell(
 
   const onSelect = (id: string): void => {
     const card = cards.find(card => card.id === id);
-    if (card) selectSpatialGalleryEntry(card);
+    if (card) {
+      selectSpatialGalleryEntry(card);
+      // 갤러리에서 카드를 골랐으니 목록 보기를 끍다 — canonical 카드는 편집기로 들어간다.
+      patchSpatialSession({ listView: false });
+    }
     if (tab === "tiles") {
       const tilesetId = cards.find((card) => card.id === id)?.tilesetId;
       if (tilesetId) setSelectedTileset(tilesetId);
@@ -73,7 +77,7 @@ export function renderSpatialAuthoringShell(
     refresh();
   };
 
-  if (selected?.canonicalSource && !selected.regionMapId && tab !== "objects" && tab !== "tiles" && session.mode === "design" && !session.legacyOrigin && canUseCompositionWorkspace(selected.canonicalSource)) {
+  if (selected?.canonicalSource && !selected.regionMapId && tab !== "objects" && tab !== "tiles" && session.mode === "design" && !session.legacyOrigin && !session.listView && canUseCompositionWorkspace(selected.canonicalSource)) {
     const workspace = renderSpatialCompositionWorkspace(session, selected, refresh);
     workspace.addEventListener("keydown", event => handleShellKey(event, selected, refresh));
     latestShellRefresh = refresh; installSpatialEscapeLayer(); host.append(workspace); return;

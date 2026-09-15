@@ -1,3 +1,63 @@
+## 장소 편집 1차 UX 수리 — 이름·툴바·속성·카드 (2026-09-15)
+
+장소 탭의 네 가지 결함을 고쳤다. 실측 근거와 함께 남긴다.
+
+**1. 이름이 제목이 됐다.** `spatialCompositionWorkspace.ts` 헤더의 고정 문구 "장소 편집" 을
+설계 이름으로 바꾸고 인라인 편집을 붙였다(`composition-title` 버튼 → `composition-title-input`).
+Enter 저장 · Esc 취소 · blur 저장. 이름은 **각 종류의 초안 명령**으로 고친다
+(`mutateWorkingSpace` / `mutateWorkingPlace` / `mutateWorkingGeography`) — 라이브러리 레코드를
+직접 고치면 저장 상태가 "읽기" 에 머물러 사용자가 초안이 생긴 걸 모른다. 실측으로 확인:
+이름 변경 후 제목·선택 드롭다운·인스펙터 입력이 모두 갱신되고 상태가 "적용하지 않은 변경이 있습니다" 로 바뀐다.
+
+**2. 툴바 15개 → 5개 + `⋯ 더 보기`.** `renderSpatialChrome` 의 한 줄 15버튼은 대부분
+비활성이라 무엇을 누를 수 있는지가 오히려 안 보였다. 추가·미리보기·적용·되돌리기·다시 실행만
+남기고 활성화·복제·삭제·삭제 확인·시공·시드·새로고침·분리는 `details.spatial-more` 안으로
+옮겼다. 삭제 확인이 떠 있으면 `open` 으로 강제해 접힌 채로 두지 않는다.
+`renderBrowserChrome` 도 같은 규칙으로 복제를 오버플로로 내렸고 요약 라벨을 `⋯ 더 보기` 로 통일했다.
+테스트는 이 버튼들을 직접 누르지 않는다(실측: `spatial-duplicate`·`spatial-activate`·`spatial-detach`·
+`spatial-refresh` 를 클릭하는 테스트 0건). e2e `spatial-authoring.spec.ts` 도 "숨은 툴바 버튼을
+가정하지 않는다" 를 규약으로 적어 두었다.
+
+**3. 속성 패널을 폈다.** 복합 편집기 우측의 접힌 `<details> 기존 설계와 생성 규칙` 을 걷어내고
+인스펙터를 바로 렌더한다. 이름 입력이 이 안에 있었기 때문에 **이름 수정 경로가 사실상 없었다.**
+`asset-browser.css` 의 중첩 인스펙터 리셋은 `.spatial-asset-browser` 에만 걸려 있었다 —
+`.spatial-mixed-workspace` 를 같은 선택자에 추가하지 않으면 좁은 폭에서 `.spatial-inspector` 가
+`display:none` 으로 사라진다.
+
+**4. 카드 이름 잘림.** `.spatial-card{min-height:168px}` + `.spatial-card-caption{min-height:48px}`
+조합에서 캡션의 세 줄(이름·부제·배지)이 48px 안으로 짓눌려 **13px 글자가 6px 상자에 잘렸다**
+(실측 `getBoundingClientRect().height === 6`). 캡션을 `min-height:auto; align-content:start;
+grid-auto-rows:auto` 로 풀고 카드 최소 높이를 184px(120 썸네일 + 62 캡션)로 올렸다. 이름 상자 18px 확보.
+
+> **함정 (실측으로 데었다):** 이 잘림을 고칠 때 `.spatial-gallery-grid{align-items:start}` 를
+> 먼저 시도했다. `getBoundingClientRect` 는 카드 182px·이름 18px 로 **정상을 보고했지만**
+> 실제 화면에서는 그리드 행이 43px 씩만 전진해 카드가 서로 **겹쳐** 캡션이 다음 카드 밑에 깔렸다.
+> 숫자만 보고 통과시키면 놓친다. 카드 테두리를 그려 픽셀로 확인하라
+> (`output/evidence/places-ux-audit/after/card-outline.png`).
+
+검증: `npm run typecheck:app` exit 0, `npm run gates -- --only css` 기준선 대비 회귀 0,
+`test/spatialMixedComposition` · `spatialCompositionWorkspace` · `spatialUnifiedPlaces` ·
+`spatialIntegratedAuthoring` · `spatialPlacePlacedUi` · `spatialNewPlace` 37건 통과.
+증거 스크린샷은 `output/evidence/places-ux-audit/{before,after}/`.
+
+### 2차 (같은 날) — 갤러리 복귀와 속성 패널 통합
+
+**← 장소 목록.** 세션에 `listView: boolean` 을 추가했다(`spatialAuthoringSession.ts`).
+`spatialShell.ts` 의 복합 편집기 분기가 `!session.listView` 를 함께 본다 — canonical 설계가
+선택된 채로도 카드 갤러리로 돌아갈 수 있다. 헤더의 `composition-back-to-list` 버튼이
+`listView: true` 로 켜고, 갤러리 카드 클릭(`spatialShell.onSelect`)이 다시 끈다.
+설계 선택 `<select>`(`composition-design`)는 **지우지 않고** 빵부스러기 우측의 보조
+빠른 전환으로 내렸다 — 테스트 4건(`spatialIntegratedAuthoring` 등)과 QA 스크립트 6건이
+이 testid 로 `selectOption` 을 쓴다. 완전 제거하려면 그 10곳을 같이 손봐야 한다.
+
+**속성 패널 통합.** 우측이 「배치 속성」과 「속성」 두 덩어리여서 이름이 제목·인스펙터
+h3·이름 입력까지 세 번 보였다. 「속성」 하나로 합치고(인스펙터 → 「캔버스」 소제목 →
+타일셋·크기·선택 컨트롤 → 건물로 묶기), 중복 이름 h3 는 복합 편집기 안에서만 CSS 로 숨겼다
+(`.spatial-mixed-workspace .asset-browser-detail .spatial-inspector-name`).
+
+아직 안 한 것(후속): 층·방 트리. 「복합 공간 편집기」 절의 단일 캔버스 평탄화 금지 규약과
+충돌하므로 층별 편집 라우팅을 먼저 정해야 한다.
+
 ## 장소 통합 진행: 방·층과 재료 (2026-09-14)
 
 새 건물의 기존 구조 편집기에 「방 추가」「층 추가」를 붙였다. 원본 방을 복제해 덮지 않고

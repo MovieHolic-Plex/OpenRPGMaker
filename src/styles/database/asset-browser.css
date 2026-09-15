@@ -5,6 +5,25 @@
 .asset-browser-top { padding: 18px 20px 14px; border-bottom: 1px solid var(--db-studio-border-subtle); }
 .asset-browser-heading h2 { margin: 0 0 5px; font-size: 21px; line-height: 1.3; }
 .asset-browser-heading p { margin: 0 0 14px; color: var(--db-studio-text-3); font-size: 13px; }
+/* 제목이 곧 이름이다 — 누르면 그 자리에서 고친다. 이전에는 "장소 편집" 고정 문구였고
+   이름 입력칸은 오른쪽 패널의 접힌 details 안에 숨어 있었다. */
+.asset-browser-title { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; margin: 0 0 5px; padding: 2px 6px 2px 0; border: 0; border-bottom: 2px solid transparent; border-radius: 4px; background: none; color: var(--db-studio-text-1); font: inherit; font-size: 21px; font-weight: 700; line-height: 1.3; text-align: left; cursor: text; }
+.asset-browser-title::after { content: "✎"; flex: none; font-size: 15px; font-weight: 400; color: var(--db-studio-text-3); opacity: 0; transition: opacity 120ms ease; }
+.asset-browser-title:hover { border-bottom-color: var(--db-studio-border-default); }
+.asset-browser-title:hover::after, .asset-browser-title:focus-visible::after { opacity: 1; }
+.asset-browser-title:focus-visible { outline: 2px solid var(--db-studio-accent); outline-offset: 2px; }
+.asset-browser-title-input { max-width: 100%; margin: 0 0 5px; padding: 2px 6px 2px 0; border: 0; border-bottom: 2px solid var(--db-studio-accent); border-radius: 0; background: none; color: var(--db-studio-text-1); font: inherit; font-size: 21px; font-weight: 700; line-height: 1.3; }
+.asset-browser-title-input:focus { outline: none; }
+/* 복합 편집기 상단 빵부스러기 — ← 장소 목록이 주 경로, 드롭다운은 빠른 전환. */
+.asset-browser-crumbs { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: 12px; }
+.asset-browser-crumb { padding: 4px 8px; margin-left: -8px; border: 0; border-radius: 6px; background: none; color: var(--db-studio-accent); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+.asset-browser-crumb:hover { background: var(--db-studio-accent-soft); }
+.asset-browser-crumb-sep { color: var(--db-studio-text-3); }
+.asset-browser-crumb-current { color: var(--db-studio-text-3); }
+.asset-browser-switch { max-width: 220px; margin-left: auto; padding: 5px 8px; border: 1px solid var(--db-studio-border-default); border-radius: 7px; background: var(--db-studio-surface); color: var(--db-studio-text-2); font: inherit; font-size: 12px; }
+.asset-browser-detail-sub { margin: 16px 0 8px; padding-top: 12px; border-top: 1px solid var(--db-studio-border-subtle); font-size: 12px; color: var(--db-studio-text-3); }
+/* 제목이 이미 이름을 보여 준다 — 합쳐진 속성 패널 안 인스펙터의 이름 h3 는 중복이다. */
+.spatial-mixed-workspace .asset-browser-detail .spatial-inspector-name { display: none; }
 .asset-browser-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
 .asset-browser-actions .spatial-action,
 .asset-browser-button { padding: 8px 12px; border: 1px solid var(--db-studio-border-default); border-radius: 7px; background: var(--db-studio-surface); color: var(--db-studio-text-1); font: inherit; font-size: 12px; cursor: pointer; }
@@ -43,7 +62,10 @@
 .asset-browser-empty { grid-column: 1 / -1; padding: 60px 20px; text-align: center; color: var(--db-studio-text-3); font-size: 13px; }
 .asset-browser-pagination { display: flex; justify-content: center; align-items: center; gap: 14px; padding: 20px 0 4px; font-size: 12px; }
 .asset-browser-detail { min-width: 0; min-height: 0; overflow: auto; border-left: 1px solid var(--db-studio-border-subtle); padding: 16px; background: var(--db-studio-surface); }
-.database-modal-body .spatial-asset-browser .asset-browser-detail .spatial-inspector { position: static; inset: auto; display: block; width: auto; max-height: none; margin: 0; padding: 0; border: 0; overflow: visible; box-shadow: none; }
+/* 오른쪽 속성 패널 안에 들어간 인스펙터는 띄우는 패널이 아니다. 복합 편집기도 같은 규칙을
+   타야 한다 — 안 그러면 좁은 폭에서 .spatial-inspector 가 display:none 으로 사라진다. */
+.database-modal-body .spatial-asset-browser .asset-browser-detail .spatial-inspector,
+.database-modal-body .spatial-mixed-workspace .asset-browser-detail .spatial-inspector { position: static; inset: auto; display: block; width: auto; max-height: none; margin: 0; padding: 0; border: 0; overflow: visible; box-shadow: none; }
 .asset-browser-detail .spatial-object-hero { margin: 12px 0; }
 .asset-browser-detail .spatial-object-actions { margin: 14px 0; }
 .asset-browser-detail .spatial-object-actions button { width: 100%; padding: 10px; border-radius: 7px; }
