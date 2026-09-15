@@ -15,6 +15,7 @@ import { PRODUCT_BRAND } from "@/brand";
 import { DEFAULT_OH_MY_PI_PROVIDER, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { parseImageDelivery, type ImageDelivery } from "./imageDelivery";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
+import { ANTIGRAVITY_PROVIDER_ID } from "@/ai/oauth/credentials";
 
 // OpenAI 메시지 규약(우리가 쓰는 필드만).
 export interface ToolCall { id: string; type: "function"; function: { name: string; arguments: string } }
@@ -464,11 +465,33 @@ export interface ProviderCapability {
  *
  * hasTools 는 공급자별 제약이 다시 생길 때를 위한 자리다 — 현재 판정에는 쓰이지 않는다.
  */
+/**
+ * Cloud Code Assist(Gemini)의 maxOutputTokens 상한 — **실측 2026-09-16**.
+ *
+ * `max_tokens` 를 65536 으로 보내면 200, 100000 으로 보내면 400
+ * `Cloud Code Assist API error (400): Request contains an invalid argument.` 였다.
+ * 기본 설정(200000)이 그대로 나가서 **DB AI 턴이 매번 레코드 준비 단계에서 죽었다**
+ * ("프로젝트 기록 준비 실패: 요청 실패(400)") — 요청 덤프
+ * `/home/main/.omp/logs/http-400-requests/*.json` 의 `generationConfig.maxOutputTokens` 가 그 증거다.
+ */
+export const GEMINI_MAX_OUTPUT_TOKENS = 65_536;
+
 export function providerCapability(
-  _config: AiConfig,
+  config: AiConfig,
   _opts?: { readonly hasTools?: boolean },
 ): ProviderCapability {
-  return { supportsStreaming: true, supportsReasoningField: true, supportsMessageName: true };
+  return {
+    supportsStreaming: true,
+    supportsReasoningField: true,
+    supportsMessageName: true,
+    maxTokensCeiling: config.providerId === ANTIGRAVITY_PROVIDER_ID ? GEMINI_MAX_OUTPUT_TOKENS : undefined,
+  };
+}
+
+/** 상한이 선언된 공급자에서 max_tokens 를 상한으로 낮춘다(선언이 없으면 그대로 둔다). */
+export function clampMaxTokens(capability: ProviderCapability, maxTokens: number): number {
+  const ceiling = capability.maxTokensCeiling;
+  return ceiling !== undefined && maxTokens > ceiling ? ceiling : maxTokens;
 }
 
 // 공급자 제약으로 본문/전송 방식을 조정한 사실을 개발자에게 한 번만 알린다(매 요청 스팸 방지).
@@ -500,13 +523,12 @@ function stripMessageNames(messages: readonly ChatMessage[]): readonly ChatMessa
 function requestBody(config: AiConfig, req: ChatRequest, stream: boolean): string {
   const capability = providerCapability(config, { hasTools: Boolean(req.tools && req.tools.length > 0) });
   // 공급자 max_tokens 상한이 선언돼 있으면 클램프한다.
-  let maxTokens = config.maxTokens;
-  if (capability.maxTokensCeiling !== undefined && maxTokens > capability.maxTokensCeiling) {
+  const maxTokens = clampMaxTokens(capability, config.maxTokens);
+  if (maxTokens !== config.maxTokens) {
     warnCapabilityOnce(
       `maxTokens:${config.model}`,
-      `[llmClient] 공급자 제약: ${config.model} 의 max_tokens 를 ${maxTokens} → ${capability.maxTokensCeiling} 로 클램프했습니다(실측 기반 상한).`,
+      `[llmClient] 공급자 제약: ${config.model} 의 max_tokens 를 ${config.maxTokens} → ${maxTokens} 로 클램프했습니다(실측 기반 상한).`,
     );
-    maxTokens = capability.maxTokensCeiling;
   }
   const body: Record<string, unknown> = {
     model: config.model,
