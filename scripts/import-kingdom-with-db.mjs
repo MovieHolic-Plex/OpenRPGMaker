@@ -1,7 +1,10 @@
 import { chromium } from "playwright";
 import { readFile } from "node:fs/promises";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:4173";
+applyLegacyEnvAliases();
+
+const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:4173";
 const project = JSON.parse(await readFile("output/evidence/kingdom-legacy/project-export.json", "utf8"));
 
 const browser = await chromium.launch({ headless: true });

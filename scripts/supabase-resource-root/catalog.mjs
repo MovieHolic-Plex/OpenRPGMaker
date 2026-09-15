@@ -79,7 +79,7 @@ const BUILTIN_ROOT_FILES = [
   },
   {
     resourceId: "rpg-zzu-title-blue",
-    name: "RPG Zzu Blue Title",
+    name: "OPRN Blue Title",
     resourceKind: "title",
     promotedPath: "public/assets/generated/title/default-title-blue.png",
   },

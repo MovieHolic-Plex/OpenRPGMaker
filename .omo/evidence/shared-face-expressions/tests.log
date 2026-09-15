@@ -1,0 +1,27 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/resourceManagerMonsterCatalog.test.ts test/resourceManagerRevealImport.test.ts test/databaseResourcePickerDialog.test.ts
+
+
+ RUN  v3.2.4 /home/main/.codex/worktrees/2226/rpg-zzu
+
+8:06:00 PM [vite] (ssr) warning: Duplicate member "isConnected" in class body
+49 |
+50 |    /** True while attached under document.body (or any parent chain). */
+51 |    get isConnected(): boolean {
+   |        ^
+52 |      let node: FakeNode | null = this;
+53 |      const body = (globalThis.document as unknown as { body?: FakeNode }).body;
+
+  Plugin: vite:esbuild
+  File: /home/main/.codex/worktrees/2226/rpg-zzu/test/fakeDom.ts
+ ✓ test/resourceManagerRevealImport.test.ts (3 tests) 36ms
+ ✓ test/resourceManagerMonsterCatalog.test.ts (4 tests) 1134ms
+   ✓ resource manager monster tab > lists the full monster resource catalog, not just the single RTP profile  306ms
+   ✓ resource manager monster tab > lists an uploaded monster once and keeps it deletable  379ms
+ ✓ test/databaseResourcePickerDialog.test.ts (8 tests) 967ms
+
+ Test Files  3 passed (3)
+      Tests  15 passed (15)
+   Start at  20:05:45
+   Duration  17.61s (transform 19.50s, setup 0ms, collect 42.50s, tests 2.14s, environment 631ms, prepare 1.22s)

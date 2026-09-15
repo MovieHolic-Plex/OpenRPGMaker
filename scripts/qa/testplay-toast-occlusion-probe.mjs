@@ -24,7 +24,7 @@ const context = await browser.newContext({ viewport: { width: 1280, height: 800 
 const page = await context.newPage();
 page.setDefaultTimeout(TIMEOUT);
 page.setDefaultNavigationTimeout(TIMEOUT);
-await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 await page.goto(`${BASE_URL}/?blankProject=1`, { waitUntil: "domcontentloaded" });
 await page.locator('[data-testid="edit-canvas"] canvas').first().waitFor({ state: "visible" });
 await page.locator('[data-testid="mode-play"]').waitFor({ state: "visible" });

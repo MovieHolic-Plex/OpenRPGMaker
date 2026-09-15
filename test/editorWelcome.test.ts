@@ -57,7 +57,7 @@ beforeEach(() => {
   document.body.replaceChildren();
   vi.useRealTimers();
   setMatchMedia(false);
-  delete (window as Window & { __RPG_ZZU_E2E_PROJECT__?: unknown }).__RPG_ZZU_E2E_PROJECT__;
+  delete (window as Window & { __OPRN_E2E_PROJECT__?: unknown }).__OPRN_E2E_PROJECT__;
   Object.defineProperty(navigator, "webdriver", {
     configurable: true,
     get: () => false,
@@ -70,7 +70,7 @@ afterEach(() => {
   clearStorage();
   document.body.replaceChildren();
   document.body.classList.remove("director-briefing-open");
-  delete (window as Window & { __RPG_ZZU_E2E_PROJECT__?: unknown }).__RPG_ZZU_E2E_PROJECT__;
+  delete (window as Window & { __OPRN_E2E_PROJECT__?: unknown }).__OPRN_E2E_PROJECT__;
   window.history.replaceState({}, "", "/");
   vi.unstubAllGlobals();
 });
@@ -115,9 +115,9 @@ describe("automation boot context", () => {
     expect(isAutomationBootContext()).toBe(false);
     expect(shouldSuppressEditorWelcomeForAutomation()).toBe(false);
 
-    (window as Window & { __RPG_ZZU_E2E_PROJECT__?: unknown }).__RPG_ZZU_E2E_PROJECT__ = { meta: {} };
+    (window as Window & { __OPRN_E2E_PROJECT__?: unknown }).__OPRN_E2E_PROJECT__ = { meta: {} };
     expect(isAutomationBootContext()).toBe(true);
-    delete (window as Window & { __RPG_ZZU_E2E_PROJECT__?: unknown }).__RPG_ZZU_E2E_PROJECT__;
+    delete (window as Window & { __OPRN_E2E_PROJECT__?: unknown }).__OPRN_E2E_PROJECT__;
 
     Object.defineProperty(navigator, "webdriver", {
       configurable: true,

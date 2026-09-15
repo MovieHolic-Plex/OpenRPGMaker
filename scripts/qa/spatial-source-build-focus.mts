@@ -72,7 +72,7 @@ async function runViewport(page: Page, viewport: { readonly width: number; reado
   page.setDefaultTimeout(30000);
   await page.addInitScript(() => {
     localStorage.setItem("oprn:editor-welcome-dismissed", "1");
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.goto(`${base}/?blankProject=1&aiBridge=0`, { waitUntil: "domcontentloaded", timeout: 120000 });
   await page.getByTestId("toolbar-database").waitFor({ state: "visible", timeout: 120000 });

@@ -23,7 +23,7 @@ function input(id: string, value: string, event = "input") {
 function mount() { document.body.replaceChildren(); renderCharacterGraphicsTab(document.body, mount); }
 function importedRow() { return { textureKey, characterIndex: 0, label: "미검토 이름 수정", note: "검토 대기", status: "pending", faceResourceId: null }; }
 function importJson(mappings: unknown[]) {
-  input("db-cg-import-json", JSON.stringify({ schema: "rpg-zzu-npc-face-mapping", version: 1, mappings }));
+  input("db-cg-import-json", JSON.stringify({ schema: "oprn-npc-face-mapping", version: 1, mappings }));
   get("db-cg-import-apply").click();
 }
 function sprite() { return listCharacterSprites(store.getCurrent()).find((row) => row.textureKey === textureKey && row.characterIndex === 0)!; }
@@ -49,7 +49,7 @@ describe("Character/Face Graphics database surface", () => {
     expect(sprite().label).toBe("미검토 이름 수정");
   });
   it("imports a real File through the file input and signals completion through the store", async () => {
-    const file = new File([JSON.stringify({ schema: "rpg-zzu-npc-face-mapping", version: 1, mappings: [importedRow()] })], "mapping.json", { type: "application/json" });
+    const file = new File([JSON.stringify({ schema: "oprn-npc-face-mapping", version: 1, mappings: [importedRow()] })], "mapping.json", { type: "application/json" });
     const control = get("db-cg-import-file") as HTMLInputElement;
     Object.defineProperty(control, "files", { configurable: true, value: [file] });
     let unsubscribe = () => {};

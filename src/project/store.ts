@@ -10,18 +10,10 @@ import { ensureScarloxyPokemonInteriors } from "./defaults/scarloxyPokemonInteri
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
 import { defaultTitleScreenSettings, ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
 import { isSaveSkippedLocation, loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
-import {
-  loadProjectFromSupabase,
-  loadProjectForPersistenceProof,
-  loadProjectSnapshotFromSupabase,
-  saveProjectMapPatchToSupabase,
-  saveProjectToSupabase,
-  type SupabaseSaveResult,
-  type ProjectWriteAuthority,
-} from "./supabaseProjectSync";
+import type { SupabaseSaveResult, ProjectWriteAuthority } from "./supabaseProjectSync";
 import { isSharedDemoProjectId, SHARED_DEMO_PROJECT_ID } from "./sharedDemoProject";
 import { projectWithoutEventDrafts } from "./eventDrafts";
-import { activateSpatialProjectFromRaw, assertCanonicalReplacement, ProjectRoutingError, sameProjectTarget } from "./spatial/saveRouting";
+import { assertCanonicalReplacement, ProjectRoutingError } from "./spatial/saveRouting";
 import { SpatialPersistenceError, type MirrorStatus } from "./spatial/persistence";
 import { applyAudioDescriptionDelta } from "./audioDescriptions";
 import { applyMonsterMetadataDelta } from "./monsterMetadata";
@@ -41,13 +33,15 @@ import { syncProjectToUrl } from "./projectUrl";
 import {
   saveSupabaseSelectedProjectId,
   stageSupabaseProjectConfigDraft,
-  supabaseProjectConfig,
   supabaseProjectConfigDraft,
   supabaseProjectConfigDraftWithSource,
   type SupabaseProjectConfig,
   type SupabaseProjectConfigSource,
 } from "./supabaseProjectConfig";
-import { dbPersistenceStatus, type DbPersistenceDisabledReason, type DbPersistenceStatus } from "./persistenceStatus";
+import type { DbPersistenceDisabledReason, DbPersistenceStatus } from "./persistenceStatus";
+import { projectRepository } from "./persistence/repository";
+import { sameProjectTarget } from "./persistence/target";
+import type { ProjectRepository } from "./persistence/types";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
 import { repairMapTreeOrphans } from "@/project/mapTree";
 import { sha256HexText } from "@/util/sha256";
@@ -267,6 +261,10 @@ class ProjectStore {
   private loadedRemoteProjectId: string | null = null;
   private localProjectSessionId = randomUuid();
 
+  /** 부를 때마다 고른다 — 테스트가 import 뒤 setProjectRepositoryForTest 로 바꿔 끼우기 때문이다. */
+  private get repository(): ProjectRepository {
+    return projectRepository();
+  }
 
   constructor() {
     this.current = createBlankProject();
@@ -289,7 +287,7 @@ class ProjectStore {
         this.remotePersistenceEnabled = false;
         this.remotePersistenceDisabledReason = "dev-showcase";
       } else {
-        const status = dbPersistenceStatus({ disabledReason: null });
+        const status = this.repository.status(null);
         if (status.kind === "not-configured") {
           this.remotePersistenceEnabled = false;
           this.remotePersistenceDisabledReason = null;
@@ -374,12 +372,12 @@ class ProjectStore {
    * 데모 부재가 부팅을 벨리면 안 되므로 여기서 throw 하지 않는다.
    */
   async loadSharedDemo(): Promise<Project | null> {
-    const base = supabaseProjectConfig();
+    const base = this.repository.currentTarget();
     if (!base) return null;
     const target: SupabaseProjectConfig = { ...base, projectId: SHARED_DEMO_PROJECT_ID };
     let snapshot;
     try {
-      snapshot = await loadProjectSnapshotFromSupabase(target);
+      snapshot = await this.repository.loadSnapshot(target);
     } catch (error) {
       log.warn("공용 데모 읽기 실패 — 첫 방문 폴백 경로로 진행", error);
       return null;
@@ -440,13 +438,13 @@ class ProjectStore {
 
     if (configured && projectId) {
       // URL projectId wins over stored custom draft — update URL first so
-      // subsequent supabaseProjectConfig() / autosave target the new row.
+      // subsequent repository.currentTarget() / autosave target the new row.
       syncProjectToUrl({ projectId, projectName: project.meta?.title ?? null });
       saveSupabaseSelectedProjectId(projectId);
       this.remotePersistenceEnabled = true;
       this.remotePersistenceDisabledReason = null;
       this.loadedRemoteProjectId = projectId;
-      const target = supabaseProjectConfig();
+      const target = this.repository.currentTarget();
       this.writeAuthority = target ? { mode: "create", target: { ...target } } : null;
       this.syncProjectUrlBar();
     } else {
@@ -477,13 +475,13 @@ class ProjectStore {
     dependencies: TransactionalNewRemoteProjectDependencies = {
       createProjectId: () => `oprn-${randomUuid().replace(/-/g, "").slice(0, 10)}`,
       reloadTarget: async (config) => {
-        const snapshot = await loadProjectForPersistenceProof(config);
+        const snapshot = await projectRepository().loadForProof(config);
         if (snapshot && snapshot.projectId !== config.projectId) {
           throw new NewRemoteProjectTransactionError("reload", "재로드한 온라인 사본의 프로젝트 ID가 일치하지 않습니다.");
         }
         return snapshot?.project ?? null;
       },
-      saveTarget: (candidate, config) => saveProjectToSupabase(candidate, config),
+      saveTarget: (candidate, config) => projectRepository().save(candidate, config),
     },
   ): Promise<{ readonly projectId: string }> {
     const promoteShowcase = options.source === "dev-showcase";
@@ -526,7 +524,7 @@ class ProjectStore {
     }
     assertSourceCurrent();
 
-    const baseConfig = supabaseProjectConfig();
+    const baseConfig = this.repository.currentTarget();
     const draft = supabaseProjectConfigDraft();
     if (!baseConfig || !draft.url || !draft.anonKey) {
       throw new NewRemoteProjectTransactionError(
@@ -595,7 +593,7 @@ class ProjectStore {
     // 원격 원본이 없어 이 플래그가 계속 켜져 있을 수 있다. 데모 소스의 정합성은
     // assertSourceCurrent(계보·세대·식별자 동일성)가 이미 보장한다.
     if (!promoteShowcase && !sharedDemoSession && (this.dirtySinceLastPersist
-      || this.contentLineage !== lineageAfterFlush || !sameProjectTarget(baseConfig, supabaseProjectConfig()))) {
+      || this.contentLineage !== lineageAfterFlush || !sameProjectTarget(baseConfig, this.repository.currentTarget()))) {
       throw new NewRemoteProjectTransactionError(
         "concurrent-edit",
         "준비 중 현재 프로젝트가 변경되어 전환을 취소했습니다. 변경 내용을 저장한 뒤 다시 시도하세요.",
@@ -779,16 +777,19 @@ class ProjectStore {
   }
 
   getDbPersistenceStatus(): DbPersistenceStatus {
-    return dbPersistenceStatus({ disabledReason: this.remotePersistenceDisabledReason });
+    return this.repository.status(this.remotePersistenceDisabledReason);
   }
 
   /** Explicit raw activation. Ambiguous local edits require recovery, never marker-only token adoption. */
   async activateSpatialAuthoring(): Promise<ProjectFlushResult> {
-    const target = supabaseProjectConfig();
+    const repository = this.repository;
+    const target = repository.currentTarget();
     if (!this.loaded || !this.remotePersistenceEnabled || !target || !this.writeAuthority
       || !sameProjectTarget(this.writeAuthority.target, target)) {
       throw new ProjectRoutingError("authority-required", "Load the legacy target before explicit activation.");
     }
+    const activateLegacy = repository.activateLegacy;
+    if (!activateLegacy) throw new ProjectRoutingError("authority-required", "This storage cannot activate a legacy target.");
     if (this.persistInFlight) throw new ProjectRoutingError("activation-stale", "A save is in progress; activation must start from an independent raw capture.");
     if (this.persistenceRecovery.kind === "blocked" && this.persistenceRecovery.error.code === "activation-stale") {
       throw this.persistenceRecovery.error;
@@ -805,8 +806,8 @@ class ProjectStore {
     }
     const run = (async (): Promise<ProjectFlushResult> => {
       try {
-        const saved = await activateSpatialProjectFromRaw(target);
-        if (this.contentLineage !== lineage || !sameProjectTarget(target, supabaseProjectConfig())) return saved;
+        const saved = await activateLegacy.call(repository, target);
+        if (this.contentLineage !== lineage || !sameProjectTarget(target, this.repository.currentTarget())) return saved;
         if (this.mutationGeneration !== generation) {
           throw new ProjectRoutingError("activation-stale", "The remote activation was accepted, but newer local edits were not adopted or published. Reload or export a copy before saving.", {
             projectId: target.projectId, sha256: saved.sha256, mirror: saved.mirror,
@@ -825,7 +826,7 @@ class ProjectStore {
         this.emit({ scope: "project", origin: "system", projectSwitch: false });
         return saved;
       } catch (error) {
-        if (this.contentLineage === lineage && sameProjectTarget(target, supabaseProjectConfig())) {
+        if (this.contentLineage === lineage && sameProjectTarget(target, this.repository.currentTarget())) {
           if (error instanceof SpatialPersistenceError || error instanceof ProjectRoutingError) {
             this.persistenceRecovery = { kind: "blocked", error, actions: ["reload", "export-copy"] };
           }
@@ -857,7 +858,7 @@ class ProjectStore {
   }
 
   async reconnectRemotePersistence(): Promise<ProjectDbReconnectResult> {
-    const status = dbPersistenceStatus({ disabledReason: null });
+    const status = this.repository.status(null);
     if (status.kind !== "ready") return { kind: "not-configured" };
     try {
       const { project, authority } = await this.readRemoteProject();
@@ -912,7 +913,7 @@ class ProjectStore {
    * 외부 스크립트/다른 세션 저장분을 즉시 반영할 때 사용.
    */
   async reloadFromRemote(options: { readonly force?: boolean } = {}): Promise<ReloadFromRemoteResult> {
-    const projectId = supabaseProjectConfig()?.projectId ?? null;
+    const projectId = this.repository.currentTarget()?.projectId ?? null;
     if (!this.remotePersistenceEnabled) {
       return {
         kind: "disabled",
@@ -969,7 +970,7 @@ class ProjectStore {
     readonly expectedProjectId: string;
     readonly expectedTargetUrl: string;
   }): Promise<ReloadFromRemoteResult | { readonly kind: "target-mismatch" }> {
-    const config = supabaseProjectConfig();
+    const config = this.repository.currentTarget();
     if (
       !config
       || config.projectId !== input.expectedProjectId
@@ -1104,7 +1105,7 @@ class ProjectStore {
   isPersistenceReceiptCurrent(receipt: ProjectPersistenceReceipt): boolean {
     const authority = this.persistenceTargets.get(receipt);
     const target = authority?.target;
-    const config = supabaseProjectConfig();
+    const config = this.repository.currentTarget();
     return this.loaded && this.remotePersistenceEnabled
       && this.lastPersistenceReceipt === receipt
       && this.mutationGeneration === receipt.mutationGeneration
@@ -1123,7 +1124,7 @@ class ProjectStore {
     if (options.signal?.aborted) return { kind: "cancelled", receipt };
     if (!this.remotePersistenceEnabled) return { kind: "disabled", receipt };
     try {
-      const read = await loadProjectForPersistenceProof(target, options.signal);
+      const read = await this.repository.loadForProof(target, options.signal);
       if (options.signal?.aborted) return { kind: "cancelled", receipt };
       if (!this.remotePersistenceEnabled) return { kind: "disabled", receipt };
       if (!read) return { kind: "failed", receipt, message: "Saved project not found" };
@@ -1362,39 +1363,22 @@ class ProjectStore {
       this.stopHealthCheck();
       return;
     }
-    const config = supabaseProjectConfig();
-    if (!config) {
+    if (!this.repository.currentTarget()) {
       this.stopHealthCheck();
       return;
     }
-    try {
-      // GET with limit=0 on a known table in the rpg_zzu schema.
-      // Must include Accept-Profile (same as supabaseJsonHeaders "read")
-      // so PostgREST resolves the table correctly. A 200 means the DB is
-      // genuinely reachable and a flush should succeed.
-      const response = await fetch(`${config.url}/rest/v1/projects?limit=0`, {
-        headers: {
-          apikey: config.anonKey,
-          Authorization: `Bearer ${config.anonKey}`,
-          Accept: "application/json",
-          "Accept-Profile": "rpg_zzu",
-        },
-        signal: AbortSignal.timeout(8000),
+    const reachable = await this.repository.probe();
+    if (this.contentLineage !== lineage || this.healthCheckTimer !== timer) return;
+    if (reachable) {
+      log.info("Health check: DB reachable, attempting flush");
+      this.stopHealthCheck();
+      this.clearAutoSaveRetry();
+      this.autoSaveRetryCount = 0;
+      void this.saveCurrentWithAutoSaveState().catch((error) => {
+        log.error("Health-check-triggered flush failed", error);
       });
-      if (this.contentLineage !== lineage || this.healthCheckTimer !== timer) return;
-      if (response.ok) {
-        log.info(`Health check: DB reachable (${response.status}), attempting flush`);
-        this.stopHealthCheck();
-        this.clearAutoSaveRetry();
-        this.autoSaveRetryCount = 0;
-        void this.saveCurrentWithAutoSaveState().catch((error) => {
-          log.error("Health-check-triggered flush failed", error);
-        });
-      } else {
-        log.warn(`Health check: server responded ${response.status} — not triggering flush`);
-      }
-    } catch {
-      // Network unreachable — keep waiting for next tick or online event.
+    } else {
+      log.warn("Health check: DB not reachable — not triggering flush");
     }
   }
 
@@ -1438,7 +1422,7 @@ class ProjectStore {
     // Status subscribers run synchronously and may replace the project (and even
     // start its own flush). This request no longer authorizes a write after that.
     if (this.contentLineage !== lineage) return { kind: "disabled" };
-    const target = supabaseProjectConfig();
+    const target = this.repository.currentTarget();
     const canonical = Object.hasOwn(this.current, "spatialAuthoring") || this.writeAuthority?.mode === "canonical";
     const run = (async (): Promise<ProjectFlushResult> => {
       try {
@@ -1453,11 +1437,11 @@ class ProjectStore {
           && this.remotePersistenceEnabled
           && result.kind === "saved"
           && (!canonical || this.contentLineage === lineage)
-          && target !== null && sameProjectTarget(target, supabaseProjectConfig())
+          && target !== null && sameProjectTarget(target, this.repository.currentTarget())
         ) {
           result = await this.persistCurrent();
         }
-        if (target && !sameProjectTarget(target, supabaseProjectConfig())) return result;
+        if (target && !sameProjectTarget(target, this.repository.currentTarget())) return result;
         if (this.contentLineage === lineage) {
           this.setAutoSaveState(autoSaveStateForFlushResult(
             result,
@@ -1470,7 +1454,7 @@ class ProjectStore {
         }
         return result;
       } catch (error) {
-        if (target && !sameProjectTarget(target, supabaseProjectConfig())) throw error;
+        if (target && !sameProjectTarget(target, this.repository.currentTarget())) throw error;
         if (error instanceof SpatialPersistenceError || error instanceof ProjectRoutingError) {
           this.persistenceRecovery = { kind: "blocked", error, actions: ["reload", "export-copy"] };
           this.clearAutoSaveRetry();
@@ -1508,7 +1492,7 @@ class ProjectStore {
       return this.remotePersistenceDisabledReason === null ? { kind: "not-configured" } : { kind: "disabled" };
     }
     // Snapshot local state at submit time. Paint during await must win over the response.
-    const config = supabaseProjectConfig();
+    const config = this.repository.currentTarget();
     if (!config) return { kind: "not-configured" };
     if (this.persistenceRecovery.kind === "blocked" && this.persistenceRecovery.error.code === "activation-stale") {
       throw this.persistenceRecovery.error;
@@ -1527,8 +1511,8 @@ class ProjectStore {
     const commitBaseline = this.persistedBaseline;
     const authority = this.writeAuthority ?? undefined;
     const result = commitBaseline
-      ? await saveProjectMapPatchToSupabase({ project: submittedProject, baseProject: commitBaseline, authority }, target)
-      : await saveProjectToSupabase(submittedProject, target, authority);
+      ? await this.repository.saveMapPatch({ project: submittedProject, baseProject: commitBaseline, authority }, target)
+      : await this.repository.save(submittedProject, target, authority);
     if (result.kind === "not-configured") return result;
     if (result.kind === "conflict") return result;
     const savedProject = result.project ?? submittedProject;
@@ -1554,7 +1538,7 @@ class ProjectStore {
     recordManualProjectCommitAfterSave(savedProject, commitBaseline);
     // Historical saves retain proof, but cannot adopt a baseline, metadata or dirty state
     // into a replacement project (including a replacement during the hash await).
-    if (this.contentLineage !== lineageAtSubmit || !sameProjectTarget(target, supabaseProjectConfig())) return receipt ? { ...result, receipt } : result;
+    if (this.contentLineage !== lineageAtSubmit || !sameProjectTarget(target, this.repository.currentTarget())) return receipt ? { ...result, receipt } : result;
     if (result.authority) this.writeAuthority = result.authority;
     this.persistenceRecovery = { kind: "ready", ...(result.mirror ? { mirror: result.mirror } : {}) };
     this.persistedBaseline = acceptedBaseline;
@@ -1625,18 +1609,18 @@ class ProjectStore {
     readonly authority: ProjectWriteAuthority | null;
     readonly target: SupabaseProjectConfig | null;
   }> {
-    const target = supabaseProjectConfig();
+    const target = this.repository.currentTarget();
     const lineage = this.contentLineage;
     const generation = this.mutationGeneration;
     let authority: ProjectWriteAuthority | null = null;
     try {
-      const project = await loadProjectFromSupabase(target, value => { authority = value; });
-      if (this.contentLineage !== lineage || this.mutationGeneration !== generation || (target && !sameProjectTarget(target, supabaseProjectConfig()))) {
+      const project = await this.repository.loadProject(target, value => { authority = value; });
+      if (this.contentLineage !== lineage || this.mutationGeneration !== generation || (target && !sameProjectTarget(target, this.repository.currentTarget()))) {
         throw new ProjectRoutingError("target-changed", "Local content or target changed while loading; the late response was not adopted.");
       }
       return { project, authority, target };
     } catch (error) {
-      if (this.contentLineage === lineage && target && sameProjectTarget(target, supabaseProjectConfig())
+      if (this.contentLineage === lineage && target && sameProjectTarget(target, this.repository.currentTarget())
         && (error instanceof SpatialPersistenceError || error instanceof ProjectRoutingError)) {
         this.persistenceRecovery = { kind: "blocked", error, actions: ["reload", "export-copy"] };
       }
@@ -1723,7 +1707,7 @@ class ProjectStore {
   /** 주소창에 ?project=&name= 반영 (공유/북마크). */
   private syncProjectUrlBar(): void {
     if (!this.remotePersistenceEnabled) return;
-    const projectId = supabaseProjectConfig()?.projectId;
+    const projectId = this.repository.currentTarget()?.projectId;
     if (!projectId) return;
     syncProjectToUrl({
       projectId,

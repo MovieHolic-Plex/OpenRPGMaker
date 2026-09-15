@@ -1,4 +1,4 @@
-# RPG ZZU Project Wiki
+# OPRN Studio Project Wiki
 
 This is the AI-facing wiki entry point for this specific editor project. It is meant to be read before modifying the codebase, especially by coding agents that need to understand how to safely operate on the editor.
 
@@ -56,7 +56,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
 
 ## Project identity
 
-RPG ZZU is a browser-based top-down tile JRPG maker/editor. It combines:
+OPRN Studio is a browser-based top-down tile JRPG maker/editor. It combines:
 
 - An editor mode for maps, events, resources, database records, and project save/import/export.
 - A play mode for testing authored projects.

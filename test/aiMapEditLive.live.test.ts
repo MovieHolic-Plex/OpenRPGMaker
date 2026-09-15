@@ -8,7 +8,7 @@
  *
  * 실행 (dev 서버가 /api/cpen 프록시를 제공해야 한다):
  *   npm run dev  # 별도 터미널, https://127.0.0.1:9999
- *   RPG_ZZU_AI_MAP_EDIT=1 NODE_TLS_REJECT_UNAUTHORIZED=0 \
+ *   OPRN_AI_MAP_EDIT=1 NODE_TLS_REJECT_UNAUTHORIZED=0 \
  *     node scripts/run-vitest.mjs run test/aiMapEditLive.live.test.ts --configLoader bundle
  */
 import { describe, expect, it } from "vitest";
@@ -21,7 +21,7 @@ import { GOLDEN_TASKS, scoreProject, type GoldenTask } from "@/evals";
 
 /** 수정 과제만 — 신규 시공 과제는 evals 스위트가 본다. */
 const MODIFY_TASK_IDS = ["road-fix", "npc-line-fix"] as const;
-const TURN_TIMEOUT_MS = Number(process.env.RPG_ZZU_AI_MAP_EDIT_TIMEOUT_MS ?? 180000);
+const TURN_TIMEOUT_MS = Number(process.env.OPRN_AI_MAP_EDIT_TIMEOUT_MS ?? 180000);
 
 function loadEnv(): Record<string, string> {
   const env: Record<string, string> = {};
@@ -40,7 +40,7 @@ function aiConfig(env: Record<string, string>): AiConfig {
   // `src/ai/ohMyPiProviders.ts` 에 등록조차 없는 고아 ID 였다.
   // `defaultModelForAuthMode` 는 그 제공자 카탈로그 첫 항목(= `provider.defaultModel`)을
   // 돌려주므로 에디터가 실제로 쓰는 모델과 이 재현 경로가 갈라지지 않는다.
-  const model = env.RPG_ZZU_AI_MODEL
+  const model = env.OPRN_AI_MODEL
     || env.VITE_LLM_MODEL
     || defaultModelForAuthMode("chatgpt", DEFAULT_OH_MY_PI_PROVIDER);
   return {
@@ -76,7 +76,7 @@ async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   }
 }
 
-const describeLive = process.env.RPG_ZZU_AI_MAP_EDIT === "1" ? describe : describe.skip;
+const describeLive = process.env.OPRN_AI_MAP_EDIT === "1" ? describe : describe.skip;
 
 describeLive("실제 LLM 수정 요청 — 맵을 새로 만들지 않는다 (live)", () => {
   for (const id of MODIFY_TASK_IDS) {

@@ -18,7 +18,8 @@ import { createLogger } from "@/util/logger";
 import { currentHumanEditorIdentity, type EditorIdentity } from "./editorIdentity";
 import { projectWithoutEventDrafts } from "./eventDrafts";
 import { serialize } from "./io";
-import { recordProjectCommitToSupabase, type ProjectCommitReviewStatus } from "./supabaseProjectSync";
+import type { ProjectCommitReviewStatus } from "./supabaseProjectSync";
+import { projectRepository } from "./persistence/repository";
 import type { ChangeSummary } from "@/project/types";
 import type { Project } from "./types";
 
@@ -40,7 +41,7 @@ let editActivityCursor = 0;
 /**
  * 이번 커밋에 실을 행위 기록을 꺼내고 커서를 전진시킨다.
  *
- * **모든 커밋 경로가 여기를 지난다** — `recordProjectCommitToSupabase` 호출부가
+ * **모든 커밋 경로가 여기를 지난다** — `commits.record` 호출부가
  * 이 파일의 두 곳(`recordProjectCommit`, `recordManualProjectCommitAfterSave)뿐이라
  * 초크포인트가 성립한다. 호출부마다 붙이면 새 경로가 생길 때 조용히 빠진다.
  *
@@ -80,7 +81,7 @@ export async function recordProjectCommit(input: CommitLogInput): Promise<Commit
   const persistedProject = projectWithoutEventDrafts(input.project);
   const editActivity = drainEditActivityForCommit();
   const serialized = serialize(persistedProject);
-  const result = await recordProjectCommitToSupabase({
+  const result = await projectRepository().commits.record({
     project: persistedProject,
     identity: input.identity ?? currentHumanEditorIdentity(),
     reviewStatus: input.reviewStatus,
@@ -140,7 +141,7 @@ export function recordManualProjectCommitAfterSave(project: Project, baseline?: 
   // dedup early-return 뒤에 드레인한다 — 변경 없는 저장(가장 흔한 경우)에서 커서를
   // 전진시키면 다음 진짜 저장이 행위 기록을 잃는다.
   const editActivity = drainEditActivityForCommit();
-  void recordProjectCommitToSupabase({
+  void projectRepository().commits.record({
     project: persistedProject,
     identity: currentHumanEditorIdentity(),
     reviewStatus: "direct",
@@ -153,7 +154,7 @@ export function recordManualProjectCommitAfterSave(project: Project, baseline?: 
     // 커밋 기록 요청이 실패하면(네트워크 오류 등) baseline을 전진시키지 않는다 —
     // 미리 전진시키면 이후 동일 내용 재저장이 dedup에 걸려 그 커밋이 영구히 기록되지 않는다.
     //
-    // resolve 됐다고 기록된 것은 아니다. `recordProjectCommitToSupabase` 는 supabase 미설정과
+    // resolve 됐다고 기록된 것은 아니다. `commits.record` 는 supabase 미설정과
     // project_commits/project_changes 테이블 누락을 **정상 resolve(not-configured)** 로 돌려준다.
     // 이전 구현은 `.then()` 에서 kind 를 보지 않아 그 경우에도 baseline 을 전진시켰고,
     // 나중에 설정이 붙은 뒤 동일 내용 재저장이 dedup 에 걸려 그 커밋이 영구히 사라졌다.

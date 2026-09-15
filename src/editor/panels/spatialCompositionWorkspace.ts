@@ -1,12 +1,18 @@
 import { startPlaceContainer } from "./spatialPlaceContainer";
 import { selectSpatialGalleryEntry } from "./spatialGalleryNavigation";
+import { mutateWorkingPlace } from "./spatialPlaceCommands";
+import { placeDraftTarget, withPlaceName } from "./spatialPlaceDraft";
+import { mutateWorkingSpace } from "./spatialSpaceCommands";
+import { spaceDraftTarget } from "./spatialSpaceDraft";
+import { mutateWorkingGeography } from "./spatialGeographyCommands";
+import { geographyDraftTarget, withGeographyName } from "./spatialGeographyDraft";
 import { el } from "@/util/dom";
 import { randomUuid } from "@/util/id";
 import { designNode, spatialId } from "@/project/spatial/domain";
 import { COMPOSITION_KINDS, paintComposition } from "@/project/spatial/composition";
 import type { SpatialComposition, SpatialDesignReference, SpatialKind, SpatialPoint } from "@/project/spatial/types";
 import { visibleAuthoringProject } from "./spatialAuthoringAccess";
-import { spatialProjectKey, pushSpatialBreadcrumb, openSpatialDestination, type SpatialAuthoringSession } from "./spatialAuthoringSession";
+import { spatialProjectKey, pushSpatialBreadcrumb, openSpatialDestination, patchSpatialSession, type SpatialAuthoringSession } from "./spatialAuthoringSession";
 import { listSpatialGalleryCards, type SpatialGalleryCard } from "./spatialCatalog";
 import { renderSpatialCardThumb } from "./spatialGallery";
 import { renderSpatialChrome, renderSpatialInspector } from "./spatialStage";
@@ -15,7 +21,19 @@ import { openTilesetTileBrowser } from "./tilesetTileBrowser";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { wouldCycleComposition, COMPOSITION_COLLECTIONS, COMPOSITION_NAMES, compositionPreview, currentComposition, defaultComposition, editComposition, editExistingComponent } from "./spatialCompositionAccess";
 
-type State = { material: "tile" | SpatialKind; query: string; brush: number; layer: "lower" | "upper"; tool: "select" | "paint" | "erase" | "restore"; source?: SpatialDesignReference; selected?: string; zoom: number; error: string | null; undo: SpatialComposition[] };
+type State = { material: "tile" | SpatialKind; query: string; brush: number; layer: "lower" | "upper"; tool: "select" | "paint" | "erase" | "restore"; source?: SpatialDesignReference; selected?: string; zoom: number; error: string | null; undo: SpatialComposition[]; renaming?: boolean };
+
+/**
+ * 이름은 각 종류의 초안 명령으로 고쳐야 한다 — 라이브러리 레코드를 직접 건드리면
+ * 저장 상태가 "읽기" 에 머물러 사용자가 초안이 생긴 걸 모른다.
+ */
+function renameCanonicalDesign(card: SpatialGalleryCard, source: SpatialDesignReference, name: string): void {
+  if (source.kind === "space") { mutateWorkingSpace(spaceDraftTarget(card), current => ({ ...current, name })); return; }
+  if (source.kind === "place") { mutateWorkingPlace(placeDraftTarget(card), current => withPlaceName(current, name)); return; }
+  if (source.kind === "region" || source.kind === "world") {
+    mutateWorkingGeography(geographyDraftTarget(card, source.kind), current => withGeographyName(current, name));
+  }
+}
 const states = new Map<string, State>();
 const PX = 24;
 export function renderSpatialCompositionWorkspace(session: SpatialAuthoringSession, card: SpatialGalleryCard, rerender: () => void): HTMLElement {
@@ -178,15 +196,65 @@ export function renderSpatialCompositionWorkspace(session: SpatialAuthoringSessi
     button("선택 삭제", () => moveMember(selectedMember.id, null), "composition-remove"),
     el("p", { text: "끌어서 이동 · 방향키로 한 칸 이동 · Delete로 삭제" }),
   ] }) : el("p", { text: "배치한 항목을 선택하면 이동하거나 삭제할 수 있습니다." });
+  const designName = designNode(project.spatialAuthoring!.library, source).design.name;
+  const finishRename = (value: string): void => {
+    const next = value.trim();
+    state.renaming = false;
+    if (next && next !== designName) renameCanonicalDesign(card, source, next);
+    rerender();
+  };
+  const title = state.renaming
+    ? el("input", {
+      class: "asset-browser-title-input",
+      value: designName,
+      attrs: { type: "text", "aria-label": `${COMPOSITION_NAMES[source.kind]} 이름`, maxlength: "60" },
+      dataset: { testid: "composition-title-input" },
+      on: {
+        keydown: event => {
+          if (!(event instanceof KeyboardEvent)) return;
+          if (event.key === "Enter") { event.preventDefault(); finishRename((event.currentTarget as HTMLInputElement).value); }
+          if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); state.renaming = false; rerender(); }
+        },
+        blur: event => { if (state.renaming) finishRename((event.currentTarget as HTMLInputElement).value); },
+      },
+    })
+    : el("button", {
+      class: "asset-browser-title",
+      text: designName,
+      attrs: { type: "button", title: "클릭해서 이름을 고칩니다 (Enter 저장 · Esc 취소)" },
+      dataset: { testid: "composition-title" },
+      on: { click: () => { state.renaming = true; rerender(); } },
+    });
+  if (state.renaming) queueMicrotask(() => {
+    const input = document.querySelector<HTMLInputElement>('[data-testid="composition-title-input"]');
+    input?.focus(); input?.select();
+  });
   const cards = listSpatialGalleryCards({ ...session, tab: source.kind === "space" ? "places" : session.tab, source: "all" });
-  const picker = el("select", { dataset: { testid: "composition-design" }, attrs: { "aria-label": `${COMPOSITION_NAMES[source.kind]} 선택` }, children: cards.map(item => el("option", { text: item.name, attrs: { value: item.id, ...(item.id === card.id ? { selected: "" } : {}) } })), on: { change: event => { const chosen = cards.find(item => item.id === (event.currentTarget as HTMLSelectElement).value); if (chosen) selectSpatialGalleryEntry(chosen); rerender(); } } });
+  // 주 경로는 「← 장소 목록」(카드 갤러리). 드롭다운은 보조 빠른 전환으로 남긴다 —
+  // 테스트 4건·QA 스크립트 6건이 `composition-design` 을 프로그램으로 쓴다.
+  const backToList = el("button", {
+    class: "asset-browser-crumb",
+    text: "← 장소 목록",
+    attrs: { type: "button", title: "카드 목록으로 돌아갑니다. 이 장소는 선택된 채로 남습니다." },
+    dataset: { testid: "composition-back-to-list" },
+    on: { click: () => { patchSpatialSession({ listView: true }); rerender(); } },
+  });
+  const picker = el("select", { class: "asset-browser-switch", dataset: { testid: "composition-design" }, attrs: { "aria-label": `다른 ${COMPOSITION_NAMES[source.kind]}로 바꾸기`, title: "다른 장소로 바로 바꿥니다" }, children: cards.map(item => el("option", { text: item.name, attrs: { value: item.id, ...(item.id === card.id ? { selected: "" } : {}) } })), on: { change: event => { const chosen = cards.find(item => item.id === (event.currentTarget as HTMLSelectElement).value); if (chosen) selectSpatialGalleryEntry(chosen); rerender(); } } });
   return el("div", { class: "spatial-shell spatial-mixed-workspace", dataset: { testid: `spatial-shell-${session.tab}` }, attrs: { tabindex: "0" }, children: [
-    el("header", { class: "asset-browser-top", children: [el("div", { class: "asset-browser-heading", children: [el("h2", { text: `${source.kind === "space" ? "장소" : COMPOSITION_NAMES[source.kind]} 편집` }), el("p", { text: `타일과 ${materialKinds.map(kind => COMPOSITION_NAMES[kind]).join("·")}을 함께 배치하세요.` })] }), picker, renderSpatialChrome(session, rerender, { browser: true })] }),
+    el("header", { class: "asset-browser-top", children: [
+      el("div", { class: "asset-browser-crumbs", children: [backToList, el("span", { class: "asset-browser-crumb-sep", text: "›" }), el("span", { class: "asset-browser-crumb-current", text: card.source === "default" ? "기본 설계" : "내 설계" }), picker] }),
+      el("div", { class: "asset-browser-heading", children: [title, el("p", { text: `타일과 ${materialKinds.map(kind => COMPOSITION_NAMES[kind]).join("·")}을 함께 배치합니다. 이름을 누르면 바로 고칩니다.` })] }),
+      renderSpatialChrome(session, rerender, { browser: true }),
+    ] }),
     el("div", { class: "spatial-mixed-body", children: [palette, el("section", { class: "spatial-mixed-stage", children: [tools, ...(state.error ? [el("p", { class: "spatial-mixed-error", attrs: { role: "alert" }, text: state.error })] : []), camera] }),
-      el("aside", { class: "asset-browser-detail", children: [el("h3", { text: "배치 속성" }), atlasSelect, size, memberControls,
+      // 속성 하나로 묶는다 — 이전엔 「배치 속성」과 「속성」 둘로 갈리고 이름이 여러 번 보였다.
+      el("aside", { class: "asset-browser-detail", children: [
+        el("h3", { text: "속성" }),
+        renderSpatialInspector(card, true, rerender),
+        el("h4", { class: "asset-browser-detail-sub", text: "캔버스" }), atlasSelect, size, memberControls,
         ...((source.kind === "space" || source.kind === "place") ? [button("건물로 묶기", () => { state.error = startPlaceContainer(source); rerender(); }, "composition-create-building"),
           el("p", { class: "spatial-mixed-hint", text: "현재 장소를 첫 방으로 넣은 새 건물을 만듭니다. 그 안에서 별도 지도의 방·층을 추가하고 출입을 연결하세요." })] : []),
-        el("details", { children: [el("summary", { text: "기존 설계와 생성 규칙" }), renderSpatialInspector(card, true, rerender)] })] })] }),
+      ] })] }),
   ] });
 }
 function button(text: string, click: () => void, testid?: string, active = false): HTMLButtonElement {

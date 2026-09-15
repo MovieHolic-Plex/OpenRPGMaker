@@ -146,7 +146,7 @@ function installBrowserProbe({ name, projectUrl }) {
   if (projectUrl) qa.arm('title', '() => !!document.querySelector("[data-testid=title-new-game]")', null, 120000, false);
   else {
     for (const key of ['oprn:editor-welcome-dismissed', 'oprn:standard-welcome-seen', 'oprn:coachmarks-basic-v1']) localStorage.setItem(key, '1');
-    localStorage.setItem('rpg-zzu:editor-ui-mode', 'expert');
+    localStorage.setItem('oprn:editor-ui-mode', 'expert');
     localStorage.setItem('oprn:editor-ui-mode', 'expert');
     qa.arm('editor-canvas', '() => !!document.querySelector("[data-testid=edit-canvas]")', null, 120000, false);
   }

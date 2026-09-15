@@ -42,7 +42,7 @@ page.on('console', message => {
 });
 
 await page.addInitScript(() => {
-  localStorage.setItem('rpg-zzu:editor-ui-mode', 'standard');
+  localStorage.setItem('oprn:editor-ui-mode', 'standard');
   localStorage.setItem('oprn:ai-panel-collapsed', '1');
   localStorage.removeItem('oprn:map-location-layer');
   // 하네스는 인위적 마우스 이벤트를 합성/전달하지 않는다 — 실제 브라우저 이벤트 경로로만 검증한다.

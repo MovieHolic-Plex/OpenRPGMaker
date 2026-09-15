@@ -15,7 +15,7 @@ export interface PiTeamRole {
   /** 팀장처럼 소수 툴만 집어 쓸 때. */
   readonly toolNames?: readonly string[];
   readonly maxTurns: number;
-  systemPrompt(project: Project, mapIds: readonly string[], task: string, team?: PiTeamSpec): string[];
+  systemPrompt(project: Project, mapIds: readonly string[], task: string, team?: PiTeamSpec, currentMapId?: string | null): string[];
 }
 
 export const ORCHESTRATOR_TOOL_NAMES = ["get_map_region", "get_database_records", "run_lint"] as const;
@@ -27,12 +27,21 @@ export const PI_TEAM_ROLES: Record<PiTeamRoleId, PiTeamRole> = {
     toolNames: [...ORCHESTRATOR_TOOL_NAMES],
     // 배정과 수령이 갈리면서 턴이 늘었다(assign → check/wait → review → 수정 → finish).
     maxTurns: 20,
-    systemPrompt(project, mapIds, task, team) {
+    systemPrompt(project, mapIds, task, team, currentMapId) {
       const candidates = mapIds.length > 0
         ? ["이번 작업에 쓸 수 있는 맵:", ...describeScopedMaps(project, mapIds)]
         : ["프로젝트의 맵:", ...describeScopedMaps(project, Object.keys(project.maps))];
+      // 사용자가 보고 있는 맵이 기본 대상이다. 후보를 제한한 사용자(`/pi team a,b`)의 뜻이 우선이라 후보 밖이면 말하지 않는다.
+      const here = currentMapId && project.maps[currentMapId] && (mapIds.length === 0 || mapIds.includes(currentMapId))
+        ? [
+          "사용자가 지금 보고 있는 맵(기본 대상):",
+          ...describeScopedMaps(project, [currentMapId]),
+          "지시가 다른 맵을 지목하지 않으면 이 맵에서 일한다. 「여기」「이 맵」「현재 맵」은 이 맵을 뜻한다.",
+        ]
+        : [];
       return [
         "너는 웹 JRPG 메이커 시공 팀의 팀장이다. 직접 시공하지 않는다. 지시를 맵 단위 작업으로 쪼개 팀원에게 맡기고, 결과를 검수 팀원으로 확인한다.",
+        ...here,
         ...candidates,
         ...(team ? describeTeamMembers(team) : []),
         "팀원은 소개에 맞는 일만 맡긴다(예: 장식 팀원에게 집을 짓게 하지 않는다). member 를 비우면 첫 시공 팀원이 맡는다.",

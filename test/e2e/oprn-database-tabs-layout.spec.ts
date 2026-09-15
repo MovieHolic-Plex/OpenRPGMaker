@@ -73,7 +73,7 @@ function expectStableTop(actual: number, expected: number, label: string): void 
 async function installExpertEditorState(page: import("@playwright/test").Page): Promise<void> {
   await page.addInitScript(() => {
     localStorage.setItem("oprn:editor-ui-mode", "expert");
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
     localStorage.setItem("oprn:editor-welcome-dismissed", "1");
     localStorage.setItem("oprn:coachmarks-basic-v1", "1");
     localStorage.setItem("oprn:standard-welcome-seen", "1");

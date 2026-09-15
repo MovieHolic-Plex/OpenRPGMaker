@@ -5,13 +5,16 @@
  * page.route 로 가로챈다. 스텁이 응답만 만들고, 요청(엔드포인트·헤더·본문)은 앱이 만든
  * 그대로 기록한다 — 이게 "라우트가 하나로 합쳐졌다"의 유일한 실물 증거다.
  *
- * 사용: RPG_ZZU_URL=http://127.0.0.1:9761 node scripts/screenshot-preference-memory.mjs
+ * 사용: OPRN_URL=http://127.0.0.1:9761 node scripts/screenshot-preference-memory.mjs
  */
 import { chromium } from "playwright";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9761";
+applyLegacyEnvAliases();
+
+const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9761";
 const OUT = "output/evidence/ai-preference-memory";
 const VIEWPORT = { width: 1500, height: 940 };
 

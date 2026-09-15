@@ -6,12 +6,12 @@ import { installVitePreloadRecovery } from "@/app/moduleLoadRecovery";
 installVitePreloadRecovery();
 import { PRODUCT_BRAND } from "@/brand";
 import { deserialize } from "@/project/io";
-import { RPGZZU_EXTENSION } from "@/project/package";
+import { OPRN_EXTENSION } from "@/project/package";
 import type { Project } from "@/project/types";
 import { renderPlayer } from "@/player/player";
 import { renderOprnGameFilePicker } from "@/player/oprnGameFilePicker";
 import { readStandalonePayload } from "@/player/standalonePayload";
-import { setSaveSlotStorageNamespace } from "@/player/saveSlots";
+import { adoptLegacyExportSaves, setSaveSlotStorageNamespace } from "@/player/saveSlots";
 import { setExportedProject } from "@/player/exportProjectStoreShim";
 import {
   resolveExportSaveNamespace,
@@ -79,7 +79,7 @@ async function loadBundledProject(boot: OpenRpgBootConfig): Promise<BundledProje
   try {
     const response = await fetch(boot.projectUrl ?? new URL("project.json", window.location.href));
     if (response.status === 404) {
-      return { ok: false, message: `이 주소에는 번들된 게임이 없습니다. ${RPGZZU_EXTENSION} 게임 파일을 열어 주세요.` };
+      return { ok: false, message: `이 주소에는 번들된 게임이 없습니다. ${OPRN_EXTENSION} 게임 파일을 열어 주세요.` };
     }
     if (!response.ok) return { ok: false, message: `project.json 로드 실패 (${response.status})` };
     return { ok: true, project: deserialize(await response.text()) };
@@ -103,11 +103,18 @@ function startPlayer(
 ): void {
   try {
     setExportedProject(project);
-    setSaveSlotStorageNamespace(resolveExportSaveNamespace(project, {
+    const saveNamespace = resolveExportSaveNamespace(project, {
       source,
       hostSaveNamespace: boot.saveNamespace,
       pathname: window.location.pathname,
-    }));
+    });
+    setSaveSlotStorageNamespace(saveNamespace);
+    // 개명 전 접두사로 남은 이 게임의 세이브를 한 번 복사한다. 저장소 접근이 막힌 환경에서도 부팅은 막지 않는다.
+    try {
+      adoptLegacyExportSaves(window.localStorage, saveNamespace);
+    } catch (error) {
+      console.warn("[oprn] 옛 세이브 입양을 건너뜁니다:", error);
+    }
     document.title = project.meta.title || `${PRODUCT_BRAND} Player`;
     // 호스트(커뮤니티 사이트)가 주입한 returnUrl/hostFeatures — 잘못된 값은 조용히 무시된다.
     const host = parseHostBridge(boot);

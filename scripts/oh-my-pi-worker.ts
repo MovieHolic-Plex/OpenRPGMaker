@@ -13,8 +13,11 @@ import { runPiAgent } from "./lib/piAgentRuntime.ts";
 import { runPiTeam } from "./lib/piTeamRuntime.ts";
 import { createPiAgentNdjsonStream } from "./lib/piAgentStream.ts";
 import type { PiAgentRequest } from "../src/ai/piAgent/protocol.ts";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const port = Number(process.env.RPG_ZZU_OH_MY_PI_WORKER_PORT || 0);
+applyLegacyEnvAliases();
+
+const port = Number(process.env.OPRN_OH_MY_PI_WORKER_PORT || 0);
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -30,7 +33,7 @@ const server = Bun.serve({
   // /agent/run 은 턴 시작·툴 호출·응답 끝에만 이벤트를 쓰므로 모델이 10초 넘게 생각하면 스트림이
   // 끊기고, Node 쪽 fetch 는 `terminated` 를 던지고 워커는 클라이언트 중단으로 오해해 에이전트를
   // 전부 abort 했다(실측 2026-09-14: 팀 모드 "마을 만들어줘" 가 매번 25~110초 만에 실패). 실행
-  // 상한은 piAgentRuntime 의 timeoutMs(기본 10분)가 따로 들고 있으므로 유휴 타임아웃은 끈다.
+  // 상한은 piAgentRuntime 의 timeoutMs(기본 PI_AGENT_DEFAULT_TIMEOUT_MS, 3000초)가 따로 들고 있으므로 유휴 타임아웃은 끈다.
   idleTimeout: 0,
   async fetch(request) {
     const url = new URL(request.url);

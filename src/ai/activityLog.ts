@@ -8,8 +8,7 @@ import {
   remoteOutboxStats,
   scheduleRemoteOutboxBootFlush,
 } from "@/project/remoteOutbox";
-import { supabaseProjectConfig } from "@/project/supabaseProjectConfig";
-import { recordSupabaseAiActivityLog } from "@/project/supabaseProjectSync";
+import { projectRepository } from "@/project/persistence/repository";
 import { randomUuid } from "@/util/id";
 import { AI_ACTIVITY_DISK_ENDPOINT } from "./activityLogEndpoint";
 import { aiActivityRunId } from "./activityRunId";
@@ -471,7 +470,7 @@ function aiActivityRemoteInput(record: AiActivityLogRecord) {
 }
 
 registerRemoteOutboxSender("ai-activity", async (payload) => {
-  const result = await recordSupabaseAiActivityLog(payload as ReturnType<typeof aiActivityRemoteInput>);
+  const result = await projectRepository().ai.recordActivity(payload as ReturnType<typeof aiActivityRemoteInput>);
   // 미설정은 "보냈다"로 볼 수 없다 — 큐에 남겨서 설정이 붙은 뒤에 밀어 넣는다.
   if (result.kind === "not-configured") throw new Error("supabase not configured");
 });
@@ -506,7 +505,7 @@ async function persistAiActivityNow(input: AiActivityLogInput): Promise<AiActivi
   let persisted: AiActivityLogRecord["persisted"] = "local";
   const remoteInput = aiActivityRemoteInput(base);
   try {
-    const remote = await recordSupabaseAiActivityLog(remoteInput);
+    const remote = await projectRepository().ai.recordActivity(remoteInput);
     if (remote.kind === "saved") persisted = "both";
     else if (remote.kind === "not-configured") persisted = "local";
   } catch (error) {
@@ -613,7 +612,7 @@ function warnMirrorFailure(reason: string): void {
  * 아무 표시도 없어서 «남는 줄 알고» 계속 썼다. 조용한 유실이 가장 나쁘다.
  */
 export function aiActivityPersistenceState(): { readonly remote: boolean; readonly diskMirror: boolean } {
-  return { remote: supabaseProjectConfig() !== null, diskMirror: mirrorState !== "disabled" };
+  return { remote: projectRepository().currentTarget() !== null, diskMirror: mirrorState !== "disabled" };
 }
 
 let localOnlyWarned = false;

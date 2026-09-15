@@ -1,6 +1,7 @@
 import { spatialProjectKey, patchSpatialSession, selectSpatialDesign, type SpatialAuthoringSession } from "@/editor/panels/spatialAuthoringSession";
 import { visibleAuthoringProject } from "@/editor/panels/spatialAuthoringAccess";
 import { listSpatialGalleryCards, type SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
+import { deferredSpatialCardThumb } from "@/editor/panels/spatialCardThumbs";
 import { renderSpatialCardThumb } from "@/editor/panels/spatialGallery";
 import { renderSpatialInspector, renderSpatialChrome, renderSpatialSourceChips } from "@/editor/panels/spatialStage";
 import { tilesetImageUrl } from "@/editor/tilesetImage";
@@ -85,7 +86,11 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
       el("p", { text: "다른 타일셋을 선택하거나 검색어를 바꿔 보세요." }),
     ] }));
     for (const card of matches.slice(state.page * PAGE_SIZE, (state.page + 1) * PAGE_SIZE)) {
-      const art = el("div", { class: "asset-browser-card-art", children: [renderSpatialCardThumb(card)] });
+      // 검색 입력·카드 선택마다 이 목록이 통째로 다시 그려진다 — 썸네일은 보일 때 굽는다.
+      const art = el("div", {
+        class: "asset-browser-card-art",
+        children: [deferredSpatialCardThumb(card, () => renderSpatialCardThumb(card))],
+      });
       grid.append(el("button", {
         class: `asset-browser-card${selected?.id === card.id ? " is-selected" : ""}`,
         attrs: { type: "button", "aria-pressed": String(selected?.id === card.id) },

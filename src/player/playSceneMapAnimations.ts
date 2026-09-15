@@ -17,8 +17,8 @@ import type { BattleAnimationRecord, CharacterFootprint, ShowAnimationTarget } f
 import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 
 const MAP_ANIMATION_DEPTH = 800_000;
-const RAW_TEXTURE_PREFIX = "__rpg_zzu_battle_animation_raw_";
-const CHROMA_TEXTURE_PREFIX = "__rpg_zzu_battle_animation_";
+const RAW_TEXTURE_PREFIX = "__oprn_battle_animation_raw_";
+const CHROMA_TEXTURE_PREFIX = "__oprn_battle_animation_";
 
 export type ShowAnimationTileResolver = {
   readonly player: { readonly x: number; readonly y: number };

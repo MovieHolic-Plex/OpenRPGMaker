@@ -8,7 +8,10 @@ import { PNG } from 'pngjs';
 import { configFromEnv } from './supabase-resource-root/supabaseRest.mjs';
 import type { ProjectWriteAuthority } from '../src/project/supabaseProjectSync';
 import type { GameMap, GameEvent, TilesetDef } from '../src/project/types';
-const sourceRoot = process.env.RPG_ZZU_SOURCE_ROOT ?? process.cwd();
+import { applyLegacyEnvAliases } from './lib/oprnEnv.mjs';
+
+applyLegacyEnvAliases();
+const sourceRoot = process.env.OPRN_SOURCE_ROOT ?? process.cwd();
 const source = (file: string) => pathToFileURL(path.join(sourceRoot, 'src', file)).href;
 const { loadProjectFromSupabase, saveProjectToSupabase } = await import(source('project/supabaseProjectSync.ts'));
 const { serialize, deserialize, serializeForComparison } = await import(source('project/io.ts'));

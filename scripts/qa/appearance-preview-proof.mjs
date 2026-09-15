@@ -29,7 +29,7 @@ try {
   page.on("pageerror", (error) => browserErrors.push(String(error)));
   page.on("requestfailed", (request) => browserErrors.push(`${request.url()} ${request.failure()?.errorText}`));
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
     window.__appearanceBoot = new Promise((resolve, reject) => {
       const timer = setTimeout(() => { observer.disconnect(); reject(new Error("Editor did not boot")); }, 180000);
       const observer = new MutationObserver(() => {

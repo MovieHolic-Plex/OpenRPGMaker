@@ -20,7 +20,7 @@ const html = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>상점 결함 수정 · 모던 런타임 전환 — rpg-zzu</title>
+<title>상점 결함 수정 · 모던 런타임 전환 — oprn</title>
 <style>
 ${REPORT_CSS}</style>
 </head>

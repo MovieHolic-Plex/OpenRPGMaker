@@ -19,7 +19,7 @@ test.beforeEach(async ({ page }) => {
   await mkdir(OUT, { recursive: true });
   await page.addInitScript(() => {
     localStorage.setItem("oprn:editor-ui-mode", "standard");
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "standard");
+    localStorage.setItem("oprn:editor-ui-mode", "standard");
     localStorage.setItem("oprn:editor-welcome-dismissed", "1");
     localStorage.setItem("oprn:coachmarks-basic-v1", "1");
     localStorage.setItem("oprn:standard-welcome-seen", "1");
@@ -94,7 +94,7 @@ test("the beginner map flyout shows the same thumbnails and nesting", async ({ p
   test.setTimeout(180_000);
   await page.addInitScript(() => {
     localStorage.setItem("oprn:editor-ui-mode", "beginner");
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "beginner");
+    localStorage.setItem("oprn:editor-ui-mode", "beginner");
   });
   await page.setViewportSize({ height: 1000, width: 1600 });
   await page.goto("/?freshProject=1");

@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { extractProjectWiki } from "@/ai/projectWikiClient";
 import { defaultAiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
+import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 import { createProjectWikiCoordinator } from "@/editor/projectWikiCoordinator";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import type { ProjectWikiPatch, ProjectWorld } from "@/project/world";
@@ -119,10 +120,12 @@ describe("project-record preparation response boundary", () => {
     '[]\n' + fence('{"upserts":[]}'),
     '```text\nnot json\n```\n' + fence('{"upserts":[]}'),
     'Explanation: {"upserts":[]}',
-  ])("rejects invalid or ambiguous output atomically %#", async (content) => {
+  ])("defers invalid or ambiguous output without touching the project %#", async (content) => {
     const h = preparation(content);
 
-    await expect(h.prepare()).rejects.toThrow();
+    // The record is auxiliary: a malformed reply must never be written, and must never
+    // become an authoring gate either. Rejecting here killed the whole turn upstream.
+    await expect(h.prepare()).resolves.toEqual({ kind: "deferred", reason: "extraction-invalid" });
 
     expect(h.patches).toEqual([]);
     expect(h.project).toEqual(h.before);
@@ -140,10 +143,42 @@ describe("project-record preparation response boundary", () => {
       return fence(JSON.stringify({ upserts: [valid, invalid] }));
     });
 
-    await expect(h.prepare()).rejects.toThrow();
+    // Atomic: the valid sibling is dropped with the invalid one — nothing is half-written.
+    await expect(h.prepare()).resolves.toEqual({ kind: "deferred", reason: "extraction-invalid" });
 
     expect(h.project).toEqual(h.before);
     expect(h.updateWorld).not.toHaveBeenCalled();
     expect(h.flush).not.toHaveBeenCalled();
+  });
+
+  // 회귀(2026-09-15): 위키 추출이 스키마에 안 맞는 답을 받으면 턴 전체가 죽어 툴이 한 개도
+  // 돌지 않았다 — 맵에 아무것도 시공되지 않고 실시간 고스트도 뜨지 않았다. 기록 갱신은
+  // 보조 단계이고, 모델 답이 깨진 것은 저작을 막을 이유가 아니다.
+  it("keeps authoring alive when the record reply does not match the schema", async () => {
+    // The declaration cache is module-level and keyed by the request facts; a sibling test in
+    // this file asks the same thing, so without this reset the intent round never runs here.
+    resetIntentDeclarationCache();
+    const h = preparation(JSON.stringify({ action: "direct", reason: "not a wiki patch" }));
+    const session = new AssistantSession(h.project, {
+      config: { ...defaultAiConfig(), agentMode: "chat" },
+      prepareProjectWiki: h.coordinator.prepare,
+      declareIntent: async (...args: Parameters<ReturnType<typeof fixedDeclarer>>) => {
+        h.order.push("intent");
+        return fixedDeclarer({ mode: "question" })(...args);
+      },
+      chat: async (): Promise<ChatResult> => {
+        h.order.push("main-loop");
+        return { message: { role: "assistant", content: "" }, finishReason: "stop" };
+      },
+    });
+
+    const result = await session.sendUserMessage("Proceed with the pending work");
+
+    expect(result.stoppedReason).not.toBe("error");
+    expect(result.error).toBeUndefined();
+    // The turn must reach the authoring loop, not stop at the record step.
+    expect(h.order).toEqual(["extraction", "intent", "main-loop"]);
+    expect(h.project).toEqual(h.before);
+    expect(h.updateWorld).not.toHaveBeenCalled();
   });
 });

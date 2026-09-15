@@ -12,7 +12,7 @@ import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
 import { createPiToolset, type PiToolShape } from "../../src/ai/piAgent/toolAdapter.ts";
 import { createDeltaRelay } from "../../src/ai/piAgent/deltaRelay.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
-import { changedProjectKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
+import { changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
 import type { Project } from "../../src/project/types.ts";
 
@@ -21,7 +21,7 @@ export interface RunPiAgentOptions {
   readonly providerApiKeys?: Record<string, string | undefined>;
   readonly onEvent?: (event: PiAgentEvent) => void;
   readonly signal?: AbortSignal;
-  /** 전체 실행 상한(ms). 기본 10분. */
+  /** 전체 실행 상한(ms). 기본 PI_AGENT_DEFAULT_TIMEOUT_MS(3000초). */
   readonly timeoutMs?: number;
   /** 역할별 툴 범위. 레지스트리 선택에 더해 팀 런타임의 커스텀 툴(assign_map_agent 등)을 붙인다. */
   readonly readOnlyTools?: boolean;
@@ -30,7 +30,7 @@ export interface RunPiAgentOptions {
 }
 
 const DEFAULT_MAX_TURNS = 40;
-const DEFAULT_TIMEOUT_MS = 10 * 60_000;
+const DEFAULT_TIMEOUT_MS = PI_AGENT_DEFAULT_TIMEOUT_MS;
 
 /** 읽기 전용 실행에 덧붙이는 한 줄. 강제는 툴 목록이 하고(쓰기 툴 미제공), 이 문장은 이유를 말한다. */
 const READ_ONLY_INSTRUCTION =

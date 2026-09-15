@@ -15,7 +15,7 @@ try {
   page.setDefaultTimeout(120_000);
   page.on("pageerror", error => errors.push(error.message));
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
     localStorage.setItem("oprn:storyboard-mode", "list");
     window.__controlsReady = new Promise((resolve, reject) => {
       const timer = setTimeout(() => { observer.disconnect(); reject(new Error("Editor boot deadline")); }, 180_000);

@@ -15,7 +15,7 @@ const out='output/evidence/night-monster-upgrade/editor';await fs.mkdir(out,{rec
 const errors=[];page.on('pageerror',e=>errors.push(String(e)));
 page.on('requestfailed',r=>console.log('requestfailed',new URL(r.url()).pathname,r.failure()?.errorText));
 try {
- await page.addInitScript(seed=>{localStorage.clear();window.__RPG_ZZU_E2E_PROJECT__=seed;localStorage.setItem('oprn:editor-ui-mode','expert');},project);
+ await page.addInitScript(seed=>{localStorage.clear();window.__OPRN_E2E_PROJECT__=seed;localStorage.setItem('oprn:editor-ui-mode','expert');},project);
  await page.route(`http://127.0.0.1:${port}/**`, async route => {
   const request=route.request();
   const response=await fetch(request.url(),{method:request.method(),body:request.postDataBuffer()??undefined,headers:request.headers()});

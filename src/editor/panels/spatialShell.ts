@@ -30,8 +30,19 @@ import {
   spatialGalleryEmptyCopy,
   syncSpatialFeedbackSelection,
 } from "@/editor/panels/spatialFeedback";
-import { dismissAuthoringPreview, hasAuthoringPreview } from "@/editor/panels/spatialAuthoringAccess";
+import { dismissAuthoringPreview, hasAuthoringPreview, visibleAuthoringProject } from "@/editor/panels/spatialAuthoringAccess";
+import { spatialPlacesChrome, visiblePlaceSelection } from "@/editor/panels/spatialPlaceCommands";
+import { spatialSpacesChrome } from "@/editor/panels/spatialSpacesTab";
+import {
+  designUsage,
+  jumpToUsageRow,
+  matchesUsageFilter,
+  usageChromeState,
+  usageSummary,
+  type SpatialUsageFilter,
+} from "@/editor/panels/spatialUsage";
 import { selectSpatialGalleryEntry } from "./spatialGalleryNavigation";
+import type { SpatialGalleryCard as GalleryCard } from "@/editor/panels/spatialCatalog";
 import { el } from "@/util/dom";
 
 export function renderSpatialAuthoringShell(
@@ -50,6 +61,7 @@ export function renderSpatialAuthoringShell(
     session = spatialSession();
   }
   const selected = visibleSpatialSelection(session);
+  const placesGallery = tab === "places" && session.mode === "design";
   // 지난 화면의 오류 배너·삭제 확인이 새 선택에 따라오면 안 된다.
   syncSpatialFeedbackSelection(`${session.tab}:${session.mode}:${session.source}:${selected?.id ?? ""}`);
 
@@ -57,7 +69,14 @@ export function renderSpatialAuthoringShell(
 
   const onSelect = (id: string): void => {
     const card = cards.find(card => card.id === id);
-    if (card) selectSpatialGalleryEntry(card);
+    if (card) {
+      selectSpatialGalleryEntry(card);
+      // 장소 갤러리에서는 첫 클릭이 선택, 같은 카드 재클릭(또는 편집 버튼)이 편집기 진입이다 —
+      // 선택 카드의 맵에 놓기·배치 보기 액션을 건너뛰지 않게 한다.
+      if (placesGallery && card.canonicalSource) patchSpatialSession({ listView: card.id !== selected?.id });
+      else if (!placesGallery) patchSpatialSession({ listView: false });
+      usageChromeState.openPopoverCardId = null;
+    }
     if (tab === "tiles") {
       const tilesetId = cards.find((card) => card.id === id)?.tilesetId;
       if (tilesetId) setSelectedTileset(tilesetId);
@@ -73,7 +92,7 @@ export function renderSpatialAuthoringShell(
     refresh();
   };
 
-  if (selected?.canonicalSource && !selected.regionMapId && tab !== "objects" && tab !== "tiles" && session.mode === "design" && !session.legacyOrigin && canUseCompositionWorkspace(selected.canonicalSource)) {
+  if (selected?.canonicalSource && !selected.regionMapId && tab !== "objects" && tab !== "tiles" && session.mode === "design" && !session.legacyOrigin && !session.listView && canUseCompositionWorkspace(selected.canonicalSource)) {
     const workspace = renderSpatialCompositionWorkspace(session, selected, refresh);
     workspace.addEventListener("keydown", event => handleShellKey(event, selected, refresh));
     latestShellRefresh = refresh; installSpatialEscapeLayer(); host.append(workspace); return;
@@ -97,13 +116,79 @@ export function renderSpatialAuthoringShell(
   wireMode(chrome, "spatial-mode-design", () => onMode("design"));
   wireMode(chrome, "spatial-mode-instances", () => onMode("instances"));
 
+  const project = visibleAuthoringProject();
+  // 기본 카탈로그 카드의 localId 는 라이브러리 설계 id 와 겹치므로 canonical 만 쓰임을 갖는다.
+  const designIdOf = (card: GalleryCard): string | undefined => card.canonicalSource?.id;
+  const galleryCards = placesGallery
+    ? cards.filter((card) => matchesUsageFilter(designUsage(project, designIdOf(card)), usageChromeState.filter))
+    : cards;
+  const aiPlacedCount = placesGallery
+    ? cards.filter((card) => designUsage(project, designIdOf(card)).ai > 0).length
+    : 0;
+  const usageChip = (filter: SpatialUsageFilter, label: string): HTMLElement => el("button", {
+    class: `spatial-source-chip${usageChromeState.filter === filter ? " is-active" : ""}`,
+    text: label,
+    attrs: { type: "button", "aria-pressed": String(usageChromeState.filter === filter) },
+    dataset: { testid: `spatial-usage-filter-${filter}` },
+    on: { click: () => { usageChromeState.filter = filter; usageChromeState.openPopoverCardId = null; usageChromeState.galleryScrollTop = 0; refresh(); } },
+  });
+  const renderCell = (card: GalleryCard): HTMLElement => {
+    const isSelected = card.id === selected?.id;
+    const button = renderSpatialGalleryCard(card, isSelected, onSelect);
+    if (!isSelected || !card.canonicalSource) return el("div", { class: "spatial-card-cell", children: [button] });
+    const usage = designUsage(project, designIdOf(card));
+    const build = card.kind === "places" ? spatialPlacesChrome(visiblePlaceSelection(card), refresh).build
+      : card.kind === "spaces" ? spatialSpacesChrome(card, refresh).build : undefined;
+    const popoverOpen = usageChromeState.openPopoverCardId === card.id;
+    const actions = el("div", { class: "spatial-cell-actions", dataset: { testid: "spatial-cell-actions" }, children: [
+      el("button", {
+        class: "spatial-action is-primary", text: "맵에 놓기",
+        attrs: { type: "button", title: "이 설계로 새 맵을 생성해 미리보기를 만듭니다 — 적용을 누르면 확정", ...(build ? {} : { disabled: "" }) },
+        dataset: { testid: "spatial-cell-build" },
+        on: build ? { click: () => { build(); refresh(); } } : undefined,
+      }),
+      el("button", {
+        class: "spatial-action", text: "편집",
+        attrs: { type: "button" },
+        dataset: { testid: "spatial-cell-edit" },
+        on: { click: () => { selectSpatialGalleryEntry(card); patchSpatialSession({ listView: false }); usageChromeState.openPopoverCardId = null; refresh(); } },
+      }),
+      ...(usage.rows.length ? [el("button", {
+        class: "spatial-action", text: `배치 ${usage.rows.length} ${popoverOpen ? "▴" : "▾"}`,
+        attrs: { type: "button", "aria-expanded": String(popoverOpen) },
+        dataset: { testid: "spatial-cell-usage" },
+        on: { click: () => { usageChromeState.openPopoverCardId = popoverOpen ? null : card.id; refresh(); } },
+      })] : []),
+    ] });
+    return el("div", {
+      class: "spatial-card-cell is-selected",
+      children: [button, actions, ...(popoverOpen ? [renderUsagePopover(card, usage)] : [])],
+    });
+  };
   const gallery = el("div", {
     class: "spatial-gallery",
     dataset: { testid: "spatial-gallery" },
     children: [
-      renderSpatialSourceChips(session, onSource),
-      cards.length === 0
+      el("div", { class: "spatial-gallery-filters", children: [
+        renderSpatialSourceChips(session, onSource),
+        ...(placesGallery ? [el("div", { class: "spatial-usage-chips", dataset: { testid: "spatial-usage-chips" }, children: [
+          el("span", { class: "spatial-usage-chips-label", text: "쓰임" }),
+          usageChip("all", "전체"), usageChip("placed", "배치됨"), usageChip("idle", "안 쓰임"),
+          usageChip("ai", aiPlacedCount > 0 ? `AI가 놓음 ${aiPlacedCount}` : "AI가 놓음"),
+        ] })] : []),
+      ] }),
+      galleryCards.length === 0
         ? (() => {
+          if (cards.length > 0) {
+            return el("div", {
+              class: "spatial-gallery-empty",
+              dataset: { testid: "spatial-gallery-empty" },
+              children: [
+                el("p", { class: "spatial-gallery-empty-title", text: "조건에 맞는 설계가 없습니다" }),
+                el("p", { class: "spatial-gallery-empty-body", text: "쓰임 필터를 「전체」로 되돌려 보세요." }),
+              ],
+            });
+          }
           const copy = spatialGalleryEmptyCopy(session.mode, session.tab);
           return el("div", {
             class: "spatial-gallery-empty",
@@ -116,7 +201,9 @@ export function renderSpatialAuthoringShell(
         })()
         : el("div", {
           class: "spatial-gallery-grid",
-          children: cards.map((card) => renderSpatialGalleryCard(card, card.id === selected?.id, onSelect)),
+          children: placesGallery
+            ? galleryCards.map(renderCell)
+            : galleryCards.map((card) => renderSpatialGalleryCard(card, card.id === selected?.id, onSelect)),
         }),
     ],
   });
@@ -133,12 +220,29 @@ export function renderSpatialAuthoringShell(
     class: "spatial-shell",
     dataset: { testid: `spatial-shell-${tab}`, ...(villageStudio ? { legacyOrigin: "villages" } : {}) },
     attrs: { tabindex: "0" },
-    children: [chrome, el("div", { class: "spatial-body", children: [gallery, stage] })],
+    // 셀은 정확히 두 행(chrome / 본문)이다. 목적 스트립을 셀의 세 번째 자식으로 넣으면
+    // 본문이 암시 행으로 밀려 잘린다 — 둘을 한 래퍼로 묶어 둘째 행에 넣는다.
+    children: [chrome, placesGallery
+      ? el("div", { class: "spatial-shell-main", children: [purposeStrip(), el("div", { class: "spatial-body", children: [gallery, stage] })] })
+      : el("div", { class: "spatial-body", children: [gallery, stage] })],
   });
   shell.addEventListener("keydown", (event) => handleShellKey(event, selected, refresh));
   latestShellRefresh = refresh;
   installSpatialEscapeLayer();
   host.append(shell);
+  // 셸은 리프레시마다 통째로 다시 만들어져 스크롤이 0 으로 돌아간다. 장소 갤러리에서는 그러면
+  // 카드 액션을 누른 사용자가 목록 맨 위로 튕기고, 카드 아래에 붙는 배치 팝오버는 화면 밖에 남는다.
+  // 다른 탭은 이 기억을 쓰지 않는다 — 탭을 오가며 남의 목록 위치가 복원되면 안 된다.
+  const grid = shell.querySelector<HTMLElement>(".spatial-gallery-grid");
+  if (grid) {
+    if (placesGallery) {
+      grid.scrollTop = usageChromeState.galleryScrollTop;
+      grid.addEventListener("scroll", () => { usageChromeState.galleryScrollTop = grid.scrollTop; }, { passive: true });
+      if (usageChromeState.openPopoverCardId !== null) {
+        shell.querySelector<HTMLElement>('[data-testid="spatial-usage-popover"]')?.scrollIntoView({ block: "nearest" });
+      }
+    }
+  }
 }
 
 let latestShellRefresh: (() => void) | null = null;
@@ -166,6 +270,57 @@ function installSpatialEscapeLayer(): void {
     event.stopPropagation();
     latestShellRefresh?.();
   }, true);
+}
+
+/** 목적 스트립은 갤러리 칼럼(~400px)이 아니라 셀 폭 전체를 쓴다 — 칼럼 안에선 세 줄로 접힐다. */
+function purposeStrip(): HTMLElement {
+  return el("div", {
+    class: "spatial-purpose",
+    dataset: { testid: "spatial-purpose" },
+    children: [
+      el("strong", { class: "spatial-purpose-lead", text: "여기서 만든 장소가 정본입니다. AI는 여기서 골라 쓸 뿐입니다." }),
+      el("span", { class: "spatial-purpose-steps", children: [
+        purposeStep(1, "사람이 설계를 만든다", true), purposeArrow(),
+        purposeStep(2, "맵에 놓는다"), purposeArrow(),
+        purposeStep(3, "AI도 여기서 골라 쓴다"),
+      ] }),
+      el("span", { class: "spatial-purpose-tail", text: "AI가 놓은 것도 여기서 찾아 고칠 수 있습니다" }),
+    ],
+  });
+}
+
+function purposeStep(step: number, label: string, active = false): HTMLElement {
+  return el("span", { class: `spatial-purpose-step${active ? " is-active" : ""}`, children: [
+    el("span", { class: "spatial-purpose-step-no", text: String(step) }),
+    el("span", { text: label }),
+  ] });
+}
+
+function purposeArrow(): HTMLElement {
+  return el("span", { class: "spatial-purpose-arrow", text: "→", attrs: { "aria-hidden": "true" } });
+}
+
+function renderUsagePopover(card: GalleryCard, usage: ReturnType<typeof designUsage>): HTMLElement {
+  return el("div", {
+    class: "spatial-usage-popover",
+    dataset: { testid: "spatial-usage-popover" },
+    children: [
+      el("div", { class: "spatial-usage-popover-head", children: [
+        el("strong", { text: `${card.name} — 배치된 곳 ${usage.rows.length}` }),
+        el("span", { class: "spatial-usage-popover-count", text: usageSummary(usage) }),
+      ] }),
+      ...usage.rows.map((row) => el("div", { class: "spatial-usage-row", dataset: { testid: "spatial-usage-row", origin: row.origin }, children: [
+        el("span", { class: `spatial-usage-origin${row.origin === "ai" ? " is-ai" : ""}`, text: row.origin === "ai" ? "✦ AI 배치" : "직접 배치" }),
+        el("span", { class: "spatial-usage-where", text: `「${row.mapName}」 (${row.x}, ${row.y})` }),
+        el("button", {
+          class: "spatial-action", text: "맵으로 →",
+          attrs: { type: "button", title: "DB 창을 닫고 그 맵의 그 자리로 이동합니다", ...(row.mapId ? {} : { disabled: "" }) },
+          dataset: { testid: "spatial-usage-jump" },
+          on: row.mapId ? { click: () => { jumpToUsageRow(row); } } : undefined,
+        }),
+      ] })),
+    ],
+  });
 }
 
 function wireMode(chrome: HTMLElement, testid: string, onClick: () => void): void {

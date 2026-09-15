@@ -32,14 +32,29 @@ describe("팀 역할", () => {
     const all = PI_TEAM_ROLES.orchestrator.systemPrompt(project, [], "x").join("\n");
     expect(all).toMatch(/map_a/); expect(all).toMatch(/map_b/);
   });
+  // 실측(2026-09-15): 후보만 43맵 주고 「여기」 힌트가 없으면 팀장이 다른 40×40 마을에 배정했다(재현 실행 1).
+  // 사용자가 보고 있는 맵을 기본 대상으로 말해 준다 — 후보 목록은 그대로라 다른 맵을 지목한 지시도 된다.
+  it("팀장 프롬프트는 사용자가 보고 있는 맵을 기본 대상으로 말한다", () => {
+    const project = seeded();
+    const lines = PI_TEAM_ROLES.orchestrator.systemPrompt(project, [], "여기에 마을", undefined, "map_b");
+    const text = lines.join("\n");
+    expect(text).toMatch(/보고 있는 맵[^\n]*\n- map_b "B" 10×10/);
+    expect(text).toMatch(/「여기」/);
+    // 힌트는 후보 목록보다 앞에 온다 — 목록이 길어도 기본 대상이 먼저 읽힌다.
+    expect(text.indexOf("보고 있는 맵")).toBeLessThan(text.indexOf("프로젝트의 맵:"));
+    // 현재 맵이 없거나 후보 밖이면 힌트도 없다 — 후보를 제한한 사용자의 뜻이 우선이다.
+    expect(PI_TEAM_ROLES.orchestrator.systemPrompt(project, [], "x").join("\n")).not.toMatch(/보고 있는 맵/);
+    expect(PI_TEAM_ROLES.orchestrator.systemPrompt(project, ["map_a"], "x", undefined, "map_b").join("\n")).not.toMatch(/보고 있는 맵/);
+    expect(PI_TEAM_ROLES.orchestrator.systemPrompt(project, [], "x", undefined, "map_zzz").join("\n")).not.toMatch(/보고 있는 맵/);
+  });
 });
 
 describe("/pi team 파서", () => {
   const project = seeded();
   it("team 키워드는 팀 모드, 맵 목록은 후보", () => {
-    expect(parsePiCommand("/pi team 마을 셋", project, "map_a")).toEqual({ mode: "team", mapIds: [], task: "마을 셋" });
-    expect(parsePiCommand("/pi team map_a,map_b 마을", project, "map_a")).toEqual({ mode: "team", mapIds: ["map_a", "map_b"], task: "마을" });
-    expect(parsePiCommand("/pi 마을", project, "map_a")).toEqual({ mode: "single", mapIds: ["map_a"], task: "마을" });
+    expect(parsePiCommand("/pi team 마을 셋", project, "map_a")).toEqual({ mode: "team", mapIds: [], currentMapId: "map_a", task: "마을 셋" });
+    expect(parsePiCommand("/pi team map_a,map_b 마을", project, "map_a")).toEqual({ mode: "team", mapIds: ["map_a", "map_b"], currentMapId: "map_a", task: "마을" });
+    expect(parsePiCommand("/pi 마을", project, "map_a")).toEqual({ mode: "single", mapIds: ["map_a"], currentMapId: "map_a", task: "마을" });
   });
 });
 

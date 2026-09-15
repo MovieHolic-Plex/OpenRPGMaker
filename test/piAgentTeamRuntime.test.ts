@@ -1,7 +1,7 @@
 // 팀 런타임의 배정 계약. 하위 에이전트는 가짜 실행기로 갈음하고(LLM 은 결정적으로 만들 수 없다)
 // 팀장 툴을 직접 호출해 런타임의 락·예산·병합·안전망을 검증한다.
 import { describe, expect, it } from "vitest";
-import type { PiAgentDoneEvent, PiAgentEvent, PiAgentRequest } from "@/ai/piAgent/protocol";
+import { PI_AGENT_DEFAULT_TIMEOUT_MS, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "@/ai/piAgent/protocol";
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import type { PiTeamSpec } from "@/ai/piAgent/teamSpec";
 import { commitChangeset, runTool } from "@/editor/tools";
@@ -270,5 +270,53 @@ describe("team model roles", () => {
     } });
     expect(calls[0]).toMatchObject({ provider: "google-antigravity", model: "gemini-3.8-flash", thinkingLevel: "high" });
     expect(calls[1]).toMatchObject({ provider: "openai-codex", model: "deep-model", thinkingLevel: "medium" });
+  });
+});
+
+describe("팀 런타임 — 실행 상한", () => {
+  // 사용자 요청(2026-09-15): 요청 상한 600초 → 3000초. 상한은 규약 상수 하나가 말하고 런타임이 그 값을 쓴다.
+  it("기본 실행 상한은 3000초다", () => {
+    expect(PI_AGENT_DEFAULT_TIMEOUT_MS).toBe(3000 * 1000);
+  });
+
+  // 깨질 것: 규약(protocol.ts)은 「팀은 하위 에이전트마다 같은 값이 걸린다」 고 말하는데, child() 가 timeoutMs 를
+  // 빠뜨리면 시공·검수는 런타임 기본값으로 돌아 사용자가 올린 상한이 팀장에게만 적용된다.
+  it("timeoutMs 가 팀장·시공·검수 하위 에이전트에 그대로 실린다", async () => {
+    const seen: (number | undefined)[] = [];
+    const runAgent = async (req: PiAgentRequest, opts: { extraTools?: readonly PiToolShape[]; timeoutMs?: number }): Promise<PiAgentDoneEvent> => {
+      seen.push(opts.timeoutMs);
+      const extra = opts.extraTools ?? [];
+      if (extra.some((tool) => tool.name === "assign_map_agent")) {
+        await callTool(extra, "assign_map_agent", { mapId: "map_a", task: "집", member: "builder" });
+        await callTool(extra, "wait_agents", {});
+        await callTool(extra, "review_map", { mapId: "map_a" });
+        await callTool(extra, "finish", { report: "끝" });
+        return doneWith(req.project);
+      }
+      const report = extra.find((tool) => tool.name === "report_review");
+      if (report) {
+        await report.execute("call", { ok: true, findings: [] });
+        return doneWith(req.project);
+      }
+      const mapId = req.mapIds[0]!;
+      return doneWith(built(req.project, mapId, `지어짐:${mapId}`), [`maps.${mapId}`]);
+    };
+
+    await runPiTeam(request(seeded()), { runAgent: runAgent as RunPiTeamOptions["runAgent"], timeoutMs: 1234 });
+    // 팀장 → 시공 → 검수 순으로 셋이 돌았고, 셋 다 같은 상한을 받았다.
+    expect(seen).toEqual([1234, 1234, 1234]);
+  });
+});
+
+describe("팀 런타임 — 현재 맵", () => {
+  // 깨질 것: 요청의 currentMapId 가 팀장 프롬프트에 안 실리면 브라우저가 현재 맵을 보내도 팀장은 모른다.
+  it("요청의 currentMapId 가 팀장 시스템 프롬프트의 기본 대상으로 실린다", async () => {
+    let orchestratorPrompt = "";
+    const runAgent = async (req: PiAgentRequest, opts: { extraTools?: readonly PiToolShape[] }): Promise<PiAgentDoneEvent> => {
+      if ((opts.extraTools ?? []).some((tool) => tool.name === "assign_map_agent")) orchestratorPrompt = (req.systemPrompt ?? []).join("\n");
+      return doneWith(req.project);
+    };
+    await runPiTeam({ ...request(seeded()), currentMapId: "map_b" }, { runAgent: runAgent as RunPiTeamOptions["runAgent"] });
+    expect(orchestratorPrompt).toMatch(/보고 있는 맵[^\n]*\n- map_b "B" 10×10/);
   });
 });

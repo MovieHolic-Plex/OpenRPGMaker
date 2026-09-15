@@ -17,6 +17,9 @@ import { readRequestJson, writeCompanionResult } from "./scripts/lib/companionHt
 import { devPlayerBundlesPlugin } from "./scripts/lib/devPlayerBundles";
 import { audioDeliveryPlugin } from "./scripts/lib/audioDelivery";
 import { bgmInstallPlugin } from "./scripts/lib/bgmInstall";
+import { applyLegacyEnvAliases } from "./scripts/lib/oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 const DEFAULT_DEV_SERVER_PORT = 9999;
 
@@ -103,7 +106,7 @@ function isLoopbackAddress(address: string | undefined): boolean {
 const LOCAL_ONLY_PROXY_PATHS = ["/api/ai"] as const;
 function localOnlyAiProxyPlugin(): Plugin {
   return {
-    name: "rpgzzu-local-only-ai-proxy",
+    name: "oprn-local-only-ai-proxy",
     // configureServer 에서 반환 함수를 쓰지 않고 즉시 등록하면 내부 proxy 미들웨어보다 앞선다.
     configureServer(server) {
       for (const proxyPath of LOCAL_ONLY_PROXY_PATHS) {
@@ -255,7 +258,7 @@ function aiActivityDiskPlugin(): Plugin {
     });
   }
   return {
-    name: "rpgzzu-ai-activity-disk",
+    name: "oprn-ai-activity-disk",
     configureServer(server) {
       attachActivityMirror(server);
     },
@@ -411,7 +414,7 @@ function editActivityDiskPlugin(): Plugin {
     });
   }
   return {
-    name: "rpgzzu-edit-activity-disk",
+    name: "oprn-edit-activity-disk",
     configureServer(server) {
       attachEditMirror(server);
     },
@@ -445,7 +448,7 @@ function codexOAuthPlugin(): Plugin {
         if (req.method === "OPTIONS") {
           res.statusCode = 204;
           res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-          res.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Rpgzzu-Provider");
+          res.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Oprn-Provider");
           res.end();
           return;
         }
@@ -470,7 +473,7 @@ function codexOAuthPlugin(): Plugin {
     });
   }
   return {
-    name: "rpgzzu-codex-oauth",
+    name: "oprn-codex-oauth",
     configureServer(server) {
       attachCompanion(server);
       // 워커는 모듈 그래프를 부팅 때 한 번 로드하는 오래 사는 Bun 자식이라, 코드를 고쳐도
@@ -511,7 +514,7 @@ export default defineConfig(({ mode }) => {
     // 키가 없으면 프록시를 아예 등록하지 않는다 — 빈 Bearer 로 401 을 받고 원인을 못 찾는 대신
     // /api/ai 가 404 로 명확히 실패하고, 클라이언트의 "API 키 없음" 안내가 정상 동작한다.
     console.warn(
-      "[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요."
+      "[oprn] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요."
     );
   }
   // 키가 있는 경로만 프록시를 등록한다(빈 Bearer 전송 금지). 접근은 localOnlyAiProxyPlugin 이 루프백으로 제한.
@@ -525,7 +528,7 @@ export default defineConfig(({ mode }) => {
     // 프록시 모드인데 서버 키가 없으면 클라이언트는 센티널만 보내고 PostgREST 는 401 을 준다.
     // "저장이 안 되는데 원인 모름"이 되지 않게 부팅에서 크게 알린다.
     console.warn(
-      "[rpg-zzu] VITE_SUPABASE_USE_PROXY=1 인데 SUPABASE_ANON_KEY 가 없습니다 — /supabase 요청이 401 로 떨어집니다. .env.local 에 서버 전용 키를 넣으세요.",
+      "[oprn] VITE_SUPABASE_USE_PROXY=1 인데 SUPABASE_ANON_KEY 가 없습니다 — /supabase 요청이 401 로 떨어집니다. .env.local 에 서버 전용 키를 넣으세요.",
     );
   }
   proxy[SUPABASE_PROXY_PATH] = {

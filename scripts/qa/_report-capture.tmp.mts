@@ -46,7 +46,7 @@ async function capture(page: Page, name: string, project: Project) {
   const pageErrors: string[] = [];
   page.on("pageerror", (e) => pageErrors.push(String(e.message ?? e)));
   await page.addInitScript((seed) => {
-    (window as unknown as { __RPG_ZZU_E2E_PROJECT__?: unknown }).__RPG_ZZU_E2E_PROJECT__ = seed;
+    (window as unknown as { __OPRN_E2E_PROJECT__?: unknown }).__OPRN_E2E_PROJECT__ = seed;
     const uiMode = window.localStorage.getItem("oprn:editor-ui-mode");
     window.localStorage.clear();
     if (uiMode !== null) window.localStorage.setItem("oprn:editor-ui-mode", uiMode);

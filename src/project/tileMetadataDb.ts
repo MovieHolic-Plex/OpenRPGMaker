@@ -1,4 +1,5 @@
-import { loadProjectSnapshotFromSupabase, recordSupabaseAiAnalysisRun, saveProjectToSupabase, type ProjectWriteAuthority, type SupabaseSaveResult } from "./supabaseProjectSync";
+import type { ProjectWriteAuthority, SupabaseSaveResult } from "./supabaseProjectSync";
+import { projectRepository } from "./persistence/repository";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import type { Project } from "@/project/types";
 
@@ -37,12 +38,17 @@ export async function clearCanonicalProjectStore(): Promise<void> {
 }
 
 export async function loadProjectFromSupabaseCanonicalStore(): Promise<StoredProject> {
-  const snapshot = await loadProjectSnapshotFromSupabase();
+  const repository = projectRepository();
+  const target = repository.currentTarget();
+  const snapshot = target ? await repository.loadSnapshot(target) : null;
   return snapshot ? { found: true, project: snapshot.project, authority: snapshot.authority } : { found: false, project: null };
 }
 
 export async function saveProjectToSupabaseCanonicalStore(project: Project, authority?: ProjectWriteAuthority): Promise<SupabaseSaveResult> {
-  return saveProjectToSupabase(projectWithoutEventDrafts(project), undefined, authority);
+  const repository = projectRepository();
+  const target = repository.currentTarget();
+  if (!target) return { kind: "not-configured" };
+  return repository.save(projectWithoutEventDrafts(project), target, authority);
 }
 
 export async function clearSupabaseCanonicalProjectStore(): Promise<void> {
@@ -50,7 +56,7 @@ export async function clearSupabaseCanonicalProjectStore(): Promise<void> {
 }
 
 export async function recordAiAnalysisRun(input: AiAnalysisRunInput): Promise<void> {
-  await recordSupabaseAiAnalysisRun(input);
+  await projectRepository().ai.recordAnalysisRun(input);
   // 타일셋 분석도 통합 AI 활동 로그에 남긴다 (로컬 + 가능 시 activity 테이블).
   if (aiActivityRecorder) {
     void Promise.resolve(

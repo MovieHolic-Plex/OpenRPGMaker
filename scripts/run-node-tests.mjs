@@ -16,6 +16,9 @@
 import { readdirSync, statSync, existsSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { join, relative } from "node:path";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 const ROOT = process.cwd();
 const TEST_DIR = join(ROOT, "test");

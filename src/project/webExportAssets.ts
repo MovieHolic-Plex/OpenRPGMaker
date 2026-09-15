@@ -88,7 +88,7 @@ export function dataUrlBytes(dataUrl: string): Uint8Array {
 
 export function safeFileName(value: string): string {
   const safe = value.trim().replace(/[<>:"/\\|?*\u0000-\u001f]+/g, "-").replace(/\s+/g, "-");
-  return safe || "rpg-zzu";
+  return safe || "oprn";
 }
 
 // 바이너리 dataUrl 문자열 폭발·오탐 방지(기존).

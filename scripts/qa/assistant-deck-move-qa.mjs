@@ -11,13 +11,16 @@
  * 만들 수 없으므로, 그 릴리스 경로가 도는지만 본다. 유닛 테스트가 같은 경로를 고정한다.
  *
  * Usage:
- *   RPG_ZZU_URL=http://127.0.0.1:9841 node scripts/qa/assistant-deck-move-qa.mjs --label after
+ *   OPRN_URL=http://127.0.0.1:9841 node scripts/qa/assistant-deck-move-qa.mjs --label after
  */
 import { chromium } from "playwright";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { applyLegacyEnvAliases } from "../lib/oprnEnv.mjs";
 
-const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9841";
+applyLegacyEnvAliases();
+
+const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9841";
 const label = (() => {
   const i = process.argv.indexOf("--label");
   return i > 0 ? process.argv[i + 1] : "run";

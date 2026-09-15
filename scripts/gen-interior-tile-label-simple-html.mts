@@ -424,7 +424,7 @@ const html = `<!DOCTYPE html>
       fuzzy: fuzzyD,
       unknown: unknownD.map((e) => ({ tile: e.tile, label: e.label, why: e.why, layer: e.layer, from: e.from })),
     })};
-    const STORAGE = "rpgzzu-tile-simple-v3";
+    const STORAGE = "oprn-tile-simple-v3";
     function load(){ try { return JSON.parse(localStorage.getItem(STORAGE)||"{}"); } catch { return {}; } }
     function collect(){
       const o = load();

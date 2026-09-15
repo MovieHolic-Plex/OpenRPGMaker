@@ -43,7 +43,7 @@ test("loop13 certifies M2 PDF command authoring persistence and runtime skip", a
   await writeJson("004-editor-export.json", exported);
 
   await page.addInitScript((project) => {
-    window.__RPG_ZZU_E2E_PROJECT__ = project;
+    window.__OPRN_E2E_PROJECT__ = project;
     window.localStorage.clear();
   }, exported.project);
   await page.reload();

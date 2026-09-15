@@ -7,7 +7,7 @@ const sections = ["general", "background", "clouds", "bgm", "battle", "restricti
 
 async function openSettings(page: Page, mode = "standard"): Promise<void> {
   await page.addInitScript((mode) => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", mode);
+    localStorage.setItem("oprn:editor-ui-mode", mode);
     localStorage.setItem("oprn:editor-ui-mode", mode);
     localStorage.setItem("oprn:editor-welcome-dismissed", "1");
     localStorage.setItem("oprn:coachmarks-basic-v1", "1");

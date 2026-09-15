@@ -1,3 +1,5 @@
+import { EXPORT_SAVE_NAMESPACE_PREFIX } from "../../src/player/exportSaveNamespacePrefix";
+
 export const PLAYER_HOST_FEATURES = ["exit", "fullscreen"] as const;
 
 export type PlayerHostFeature = (typeof PLAYER_HOST_FEATURES)[number];
@@ -35,7 +37,7 @@ export function createPlayerBootPaths(options: CreatePlayerBootPathsOptions): Pl
     baseHref,
     config: {
       projectUrl: `${baseHref}project.json`,
-      saveNamespace: `rpgzzu-export:${options.slug}`,
+      saveNamespace: `${EXPORT_SAVE_NAMESPACE_PREFIX}${options.slug}`,
       returnUrl: `/${options.lang}/games/${encodedSlug}`,
       hostFeatures: PLAYER_HOST_FEATURES,
     },

@@ -39,6 +39,18 @@ const SCANNED_EXTENSIONS = new Set([".ts", ".tsx", ".css", ".html", ".json", ".w
  * - 에셋 경로(`/assets/…/rm2k3/…png`) — 파일을 옮겨야 하므로 Phase 5 범위. 아래
  *   isExempt 가 아니라 스캔 시 경로 줄을 건너뛰는 방식으로 처리한다.
  */
+/**
+ * 옛 **값** 리터럴 규칙 — 그 값은 사용자 파일이나 브라우저 저장소에 남아 있어 읽기 호환이 필요하다.
+ * 그래서 `const LEGACY_<NAME> = "<값>";` 형태의 **선언 줄 하나**에만 허용하고, 그 밖의 어떤 줄에서도
+ * (비교·조립·메시지 포함) 리터럴을 직접 쓰지 못하게 한다. 쓰는 쪽은 상수를 import 한다.
+ * 선언 줄을 통째로 면제하는 대신 형태를 고정해서, 면제 파일 목록이 늘어나지 않게 한다.
+ */
+function legacyLiteral(label: string, literal: string): { readonly label: string; readonly re: RegExp } {
+  const escaped = literal.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const declaration = String.raw`^\s*(?:export\s+)?const\s+LEGACY_[A-Z0-9_]+\s*=\s*"${escaped}"\s*;?\s*$`;
+  return { label, re: new RegExp(`^(?!${declaration.slice(1)}).*${escaped}`) };
+}
+
 const FORBIDDEN_PATTERNS: readonly { readonly label: string; readonly re: RegExp }[] = [
   { label: "RPG Maker 제품명", re: /RPG\s+MAKER/i },
   { label: "RPG 만들기(한국 정식 제품명)", re: /RPG\s*만들기/ },
@@ -54,7 +66,68 @@ const FORBIDDEN_PATTERNS: readonly { readonly label: string; readonly re: RegExp
   { label: "window 전역 __rpgzzu", re: /__rpgzzu/ },
   { label: "구 저장 키 접두사 rpg-zzu", re: /rpg-zzu[:.]/ },
   { label: "심볼 접두사 RM2K3_", re: /RM2K3_/ },
+  // ── 2026-09-15 이름 스윕(rpgzzu → oprn) 뒤 다시 못 들어오게 막는 형태들 ──────────
+  // LEGACY_RPGZZU_EXTENSION / LEGACY_RPGZZU_MIME 는 옛 파일을 계속 읽기 위한 값이라 남긴다.
+  { label: "구 식별자 접두사 RPGZZU_ (LEGACY_ 제외)", re: /(?<!LEGACY_)RPGZZU_/ },
+  { label: "구 window 전역 __RPG_ZZU_", re: /__RPG_ZZU_/ },
+  { label: "구 동반 서비스 헤더 X-Rpgzzu-*", re: /x-rpgzzu/i },
+  { label: "구 Phaser 텍스처 키 __rpg_zzu_", re: /__rpg_zzu_/ },
+  { label: "구 드래그 MIME application/x-rpg(-)zzu-", re: /application\/x-rpg-?zzu-/ },
+  { label: "구 CustomEvent 이름 rpgzzu:", re: /rpgzzu:(?!\/\/)/ },
+  // ── 2026-09-15 2차 스윕: 저장소 밖에서 오거나 디스크에 남는 이름 ─────────────────────
+  // 환경 변수는 scripts/lib/oprnEnv.mjs 가 옛 이름을 새 이름으로 옮겨 주므로 코드는 OPRN_* 만 읽는다.
+  { label: "구 환경 변수 접두사 RPG_ZZU_", re: /RPG_ZZU_[A-Z]/ },
+  { label: "구 자격 파일 디렉터리 ~/.rpg-zzu/", re: /\.rpg-zzu(?:\/|["'`])/ },
+  // 아래 넷은 사용자 파일·브라우저 저장소에 남은 값이라 **읽기 호환**이 필요하다. 값 리터럴은
+  // `LEGACY_*` 상수 선언 줄에만 둘 수 있고(legacyLiteral 참조) 다른 줄은 그 상수를 import 해야 한다.
+  legacyLiteral("구 구조물 파일 판별자 rpgzzu-structure-kits", "rpgzzu-structure-kits"),
+  legacyLiteral("구 구조물 파일 접미사 rpgzzu-kit", "rpgzzu-kit"),
+  legacyLiteral("구 캐릭터·얼굴 schema id rpg-zzu-npc-face-mapping", "rpg-zzu-npc-face-mapping"),
+  legacyLiteral("구 내보내기 세이브 네임스페이스 rpgzzu-export:", "rpgzzu-export:"),
 ];
+
+/**
+ * scripts/·test/ 는 출하물이 아니지만 같은 이름이 남으면 스윕이 끝나지 않는다.
+ * src 규칙 중 데이터 식별자와 겹칠 수 없는 형태만 고른다 — `rpg-zzu-<slug>` 는
+ * Supabase 프로젝트 행 id 이고 `rpg_zzu` 는 Postgres 스키마 이름이라 잡지 않는다.
+ */
+const TOOLING_FORBIDDEN_PATTERNS: readonly { readonly label: string; readonly re: RegExp }[] = [
+  { label: "구 window 전역 __RPG_ZZU_", re: /__RPG_ZZU_/ },
+  { label: "제거된 window 별칭 __rpgzzu*", re: /__rpgzzu/ },
+  { label: "구 동반 서비스 헤더 X-Rpgzzu-*", re: /x-rpgzzu/i },
+  { label: "개명된 스크립트 파일 rpgzzu-*.mjs", re: /rpgzzu-(?:tools|mcp-server|assistant)/ },
+  { label: "구 저장 키 접두사 rpg-zzu: (QA 스크립트가 심던 값)", re: /rpg-zzu:(?=[a-z])/ },
+  { label: "구 제품명 RPG ZZU", re: /RPG\s+ZZU/i },
+  { label: "구 Phaser 텍스처 키 __rpg_zzu_", re: /__rpg_zzu_/ },
+  // 환경 변수 이름(RPGZZU_DEV_* 등)까지 OPRN_ 으로 옮겼으므로 LEGACY_ 를 뺀 RPGZZU_ 전부를 잡는다.
+  { label: "구 식별자 접두사 RPGZZU_ (LEGACY_ 제외)", re: /(?<!LEGACY_)RPGZZU_[A-Z]/ },
+  // ── 2026-09-15 2차 스윕 — src 와 같은 여섯 형태. 옛 값을 **읽어 주는** 파일과 그 검사만 아래 목록으로 면제한다.
+  { label: "구 환경 변수 접두사 RPG_ZZU_", re: /RPG_ZZU_[A-Z]/ },
+  { label: "구 자격 파일 디렉터리 ~/.rpg-zzu/", re: /\.rpg-zzu(?:\/|["'`])/ },
+  { label: "구 구조물 파일 판별자 rpgzzu-structure-kits", re: /rpgzzu-structure-kits/ },
+  { label: "구 구조물 파일 접미사 rpgzzu-kit", re: /rpgzzu-kit/ },
+  { label: "구 캐릭터·얼굴 schema id rpg-zzu-npc-face-mapping", re: /rpg-zzu-npc-face-mapping/ },
+  { label: "구 내보내기 세이브 네임스페이스 rpgzzu-export:", re: /rpgzzu-export:/ },
+];
+
+/** scripts/·test/ 스캔 면제 — 각각 옛 이름을 **값으로** 검사하거나 목록으로 들고 있다. */
+const TOOLING_EXEMPT_FILES: readonly string[] = [
+  "test/detsukuruBrandStrings.test.ts",   // 이 목록 자체
+  "test/appStorageMigration.test.ts",     // 구 저장 키 접두사 마이그레이션을 형태별로 검증
+  "test/aiActivityLogEndpoint.test.ts",   // 옛 엔드포인트가 사라졌음을 not.toContain 으로 고정
+  "test/communitySaveBoot.test.ts",       // 다른 리스팅의 구 저장 키가 이관되지 않고 보존되는지 검사하는 fixture
+  "test/communitySaveIsolation.test.mjs", // 같은 검사의 실브라우저 판
+  // ── 2026-09-15 2차 스윕: 옛 값을 읽어 주는 곳과 그 사실을 검사하는 테스트 ──────────────
+  "scripts/lib/oprnEnv.mjs",              // RPG_ZZU_*/RPGZZU_* → OPRN_* 별칭 심 — 옛 접두사를 값으로 든다
+  "test/oprnEnv.test.ts",                 // 별칭 심 계약 — 옛 이름을 일부러 넣어 새 이름으로 옮겨지는지 본다
+  "scripts/lib/ohMyPiAuthStore.mjs",      // ~/.rpg-zzu 자격 파일을 ~/.oprn 으로 한 번 복사하는 입양 경로
+  "test/ohMyPiAuthStore.node.test.mjs",   // 그 입양(옛 파일 유지·한 번 알림)을 검사
+  "test/bgmInstallEndpoint.test.ts",      // .env.local 의 옛 RPG_ZZU_BGM_INSTALL_REMOTE 가 loadEnv 객체에서도 읽히는지 검사
+  "test/structureKitFile.test.ts",        // 옛 판별자 rpgzzu-structure-kits 파일이 계속 열리는지 검사
+  "test/characterGraphics.test.ts",       // 옛 카탈로그 v1 fixture(rpg-zzu-npc-face-mapping)가 계속 가져와지는지 검사
+  "test/exportSaveAdoption.test.ts",      // 옛 rpgzzu-export: 세이브가 첫 부팅에 입양되는지 검사
+];
+const TOOLING_SCANNED_EXTENSIONS = new Set([".ts", ".tsx", ".mts", ".mjs", ".cjs", ".js", ".sh"]);
 
 /**
  * `rpg-zzu-` (하이픈)은 **데이터 식별자**여서 위 패턴에 넣지 않았다. 남아 있는 것과 이유 —
@@ -185,12 +258,27 @@ function isExempt(relativePath: string): boolean {
   return EXEMPT_PREFIXES.some((prefix) => normalized === prefix || normalized.startsWith(prefix));
 }
 
+const COMMENT_STRIPPABLE_EXTENSIONS = new Set([".ts", ".tsx", ".mts", ".mjs", ".cjs", ".js"]);
+
 function shippingSource(source: string, extension: string): string {
-  if (extension === ".ts" || extension === ".tsx") {
+  if (COMMENT_STRIPPABLE_EXTENSIONS.has(extension)) {
     const file = ts.createSourceFile(`source${extension}`, source, ts.ScriptTarget.Latest, true);
     return ts.createPrinter({ removeComments: true }).printFile(file);
   }
   return source;
+}
+
+function walkTooling(dir: string, out: string[] = []): string[] {
+  for (const entry of readdirSync(dir)) {
+    const full = join(dir, entry);
+    if (statSync(full).isDirectory()) {
+      if (entry === "fixtures" || entry === "node_modules") continue; // 데이터 · 외부 패키지
+      walkTooling(full, out);
+      continue;
+    }
+    if (TOOLING_SCANNED_EXTENSIONS.has(extname(entry))) out.push(full);
+  }
+  return out;
 }
 
 describe("탈-쯔구르: 출하 문자열", () => {
@@ -204,8 +292,11 @@ describe("탈-쯔구르: 출하 문자열", () => {
     for (const file of walk(SRC_ROOT)) {
       const rel = relative(REPO_ROOT, file);
       if (isExempt(rel)) continue;
+      const raw = readFileSync(file, "utf8");
+      // 원문에 어떤 패턴도 없으면 주석 제거(느린 TS 프린터)를 건너뛴다 — 대부분의 파일이 여기서 끝난다.
+      if (!FORBIDDEN_PATTERNS.some(({ re }) => re.test(raw))) continue;
       // Source comments document compatibility/history but are not shipped UI or identifiers.
-      const lines = shippingSource(readFileSync(file, "utf8"), extname(file)).split(/\r?\n/);
+      const lines = shippingSource(raw, extname(file)).split(/\r?\n/);
       lines.forEach((line, index) => {
         if (ASSET_PATH_LINE.test(line)) return;
         for (const { label, re } of FORBIDDEN_PATTERNS) {
@@ -214,6 +305,23 @@ describe("탈-쯔구르: 출하 문자열", () => {
       });
     }
     expect(offenders, `금지 표현 ${offenders.length}건:\n${offenders.join("\n")}`).toEqual([]);
+  });
+
+  it("scripts·test 에도 스윕한 구 이름 식별자가 남아 있지 않다", () => {
+    const offenders: string[] = [];
+    for (const file of [...walkTooling(join(REPO_ROOT, "scripts")), ...walkTooling(join(REPO_ROOT, "test"))]) {
+      const rel = relative(REPO_ROOT, file).replace(/\\/g, "/");
+      if (TOOLING_EXEMPT_FILES.includes(rel)) continue;
+      const raw = readFileSync(file, "utf8");
+      if (!TOOLING_FORBIDDEN_PATTERNS.some(({ re }) => re.test(raw))) continue;
+      const lines = shippingSource(raw, extname(file)).split(/\r?\n/);
+      lines.forEach((line, index) => {
+        for (const { label, re } of TOOLING_FORBIDDEN_PATTERNS) {
+          if (re.test(line)) offenders.push(`${rel}:${index + 1} [${label}] ${line.trim().slice(0, 120)}`);
+        }
+      });
+    }
+    expect(offenders, `구 이름 ${offenders.length}건:\n${offenders.join("\n")}`).toEqual([]);
   });
 
   it("엔트리 HTML·manifest 에도 남아 있지 않다", () => {

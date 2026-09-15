@@ -1,0 +1,16 @@
+[
+  {
+    "name": "unrelated-project",
+    "url": "http://mdc-server:9888/?project=rpg-zzu-region-reference-walled-settlement-v1&aiBridge=0&name=%EC%82%AC%EC%A7%84+%EC%B0%B8%EA%B3%A0+%C2%B7+%EB%B0%95%EA%B3%B5+%EB%A7%88%EC%9D%84&map=map_reference_gabled_houses_20260913",
+    "defaultPlace": true,
+    "previewLoaded": true,
+    "errors": []
+  },
+  {
+    "name": "saved-project",
+    "url": "http://mdc-server:9888/?project=rpg-zzu-house-template-gallery&aiBridge=0&name=%ED%98%B8%EC%88%98+%EB%A7%88%EC%9D%84&map=spatial-geography%3A30%3Asmall-village%3Aexample%3A20260913",
+    "defaultPlace": true,
+    "previewLoaded": true,
+    "errors": []
+  }
+]

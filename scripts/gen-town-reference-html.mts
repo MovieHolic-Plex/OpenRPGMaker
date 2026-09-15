@@ -129,7 +129,7 @@ ${rows.map(fig).join("\n")}
 </div>
 
 <footer>
-  RPG ZZU · 실렌더 증거 · 정본 경로 <code>src/editor/tools/authorVillageTool.ts</code> → <code>villageBuilder.buildVillageDomain</code><br>
+  OPRN · 실렌더 증거 · 정본 경로 <code>src/editor/tools/authorVillageTool.ts</code> → <code>villageBuilder.buildVillageDomain</code><br>
   값의 정의: <code>src/editor/tools/village/authoringData.ts</code> (원형·범위) · 읽는 순서: <code>openwiki/large-village-generation.md</code>
 </footer>
 </main></body></html>`;

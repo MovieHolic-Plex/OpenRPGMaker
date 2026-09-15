@@ -13,7 +13,7 @@ let server;
 try {
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
     localStorage.setItem("oprn:database.activeTab", "battleCommands");
   });
   await page.goto(`http://127.0.0.1:${process.env.DEV_SERVER_PORT ?? "19841"}/?blankProject=1`, { waitUntil: "domcontentloaded", timeout: 120000 });

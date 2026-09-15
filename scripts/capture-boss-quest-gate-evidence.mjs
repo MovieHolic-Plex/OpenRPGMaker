@@ -221,7 +221,7 @@ console.log(`   툴 ${evidence.toolCount}개 · 페이즈 ${evidence.boss.pages.
 
 console.log("→ 2/5 에디터 전투 이벤트 패널");
 await page.addInitScript((seed) => {
-  window.__RPG_ZZU_E2E_PROJECT__ = seed;
+  window.__OPRN_E2E_PROJECT__ = seed;
 }, showcase);
 await open(`${BASE}/`);
 await page.getByTestId("toolbar-database").click();

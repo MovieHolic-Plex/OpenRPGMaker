@@ -28,9 +28,9 @@ function dropEvent(sourcePath: readonly number[]): Event {
     clientY: { value: 1 },
     dataTransfer: {
       value: {
-        types: ["application/x-rpgzzu-event-command-path", "text/plain"],
+        types: ["application/x-oprn-event-command-path", "text/plain"],
         getData: (type: string) =>
-          type === "application/x-rpgzzu-event-command-path" || type === "text/plain" ? payload : "",
+          type === "application/x-oprn-event-command-path" || type === "text/plain" ? payload : "",
         setData: vi.fn(),
         effectAllowed: "move",
         dropEffect: "move",

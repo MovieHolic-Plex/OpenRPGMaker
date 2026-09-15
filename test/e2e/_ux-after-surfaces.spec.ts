@@ -13,7 +13,7 @@ mkdirSync(OUT, { recursive: true });
 
 async function boot(page: Page): Promise<void> {
   await page.setViewportSize({ width: 1600, height: 1000 });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1");
   const guest = page.getByTestId("login-guest");
   if (await guest.isVisible().catch(() => false)) await guest.click();

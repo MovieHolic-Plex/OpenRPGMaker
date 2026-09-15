@@ -7,8 +7,8 @@ import { createOhMyPiAdapters, stopOhMyPiWorker } from "../scripts/lib/ohMyPiPiA
 // 않아 모든 Pi 실행이 실패했는데 원인은 서버 콘솔에만 남아 사용자가 알 방법이 없었다.
 describe("oh-my-pi 워커 기동 실패", () => {
   it("기동에서 죽은 워커의 stderr 원인을 호출자 오류에 싣는다", async () => {
-    const previous = process.env.RPG_ZZU_OH_MY_PI_WORKER_COMMAND;
-    process.env.RPG_ZZU_OH_MY_PI_WORKER_COMMAND =
+    const previous = process.env.OPRN_OH_MY_PI_WORKER_COMMAND;
+    process.env.OPRN_OH_MY_PI_WORKER_COMMAND =
       `>&2 echo "error: Cannot find module '@oh-my-pi/pi-agent-core'"; exit 1`;
     try {
       const adapters = await createOhMyPiAdapters();
@@ -22,8 +22,8 @@ describe("oh-my-pi 워커 기동 실패", () => {
       );
     } finally {
       stopOhMyPiWorker();
-      if (previous === undefined) delete process.env.RPG_ZZU_OH_MY_PI_WORKER_COMMAND;
-      else process.env.RPG_ZZU_OH_MY_PI_WORKER_COMMAND = previous;
+      if (previous === undefined) delete process.env.OPRN_OH_MY_PI_WORKER_COMMAND;
+      else process.env.OPRN_OH_MY_PI_WORKER_COMMAND = previous;
     }
   });
 });

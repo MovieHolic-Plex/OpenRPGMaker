@@ -9,6 +9,18 @@ export interface SelectEditorMapOptions {
   readonly clearEventSelection?: boolean;
 }
 
+/**
+ * `selectEditorMap` 이 실제로 이 맵을 열 수 있는가.
+ *
+ * 화면 전환(크로스페이드)을 깔기 전에 먼저 묻는다 — 열 수 없는 맵에 베일부터 씌우면
+ * 아무 일도 안 일어나는 전환이 한 번 깜빡이고, 호출부는 성공/실패를 동기로 못 받는다.
+ */
+export function canOpenEditorMap(mapId: MapId): boolean {
+  const map = store.getCurrent().maps[mapId];
+  if (!map) return false;
+  return !exceedsMapDimensionLimit(map.width, map.height);
+}
+
 export function selectEditorMap(mapId: MapId, options: SelectEditorMapOptions = {}): boolean {
   const project = store.getCurrent();
   const map = project.maps[mapId];

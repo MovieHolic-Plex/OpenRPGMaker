@@ -6,9 +6,12 @@ import { createServer } from "node:http";
 import { handleCompanionRequest, isCompanionPath } from "./lib/ohMyPiHttp.mjs";
 import { createOhMyPiAdapters, stopOhMyPiWorker } from "./lib/ohMyPiPiAi.mjs";
 import { readRequestJson, writeCompanionResult } from "./lib/companionHttpUtil.mjs";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 const host = "127.0.0.1";
-const port = Number(process.env.RPG_ZZU_OAUTH_PORT || 17832);
+const port = Number(process.env.OPRN_OAUTH_PORT || 17832);
 
 const adapters = await createOhMyPiAdapters();
 
@@ -33,7 +36,7 @@ const server = createServer(async (request, response) => {
       response.writeHead(204, {
         "Access-Control-Allow-Origin": cors,
         "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, X-Rpgzzu-Provider",
+        "Access-Control-Allow-Headers": "Content-Type, X-Oprn-Provider",
         Vary: "Origin",
       });
       return response.end();
@@ -55,7 +58,7 @@ const server = createServer(async (request, response) => {
   }
 });
 
-server.listen(port, host, () => console.log(`[rpg-zzu] AI companion (oh-my-pi): http://${host}:${port}`));
+server.listen(port, host, () => console.log(`[oprn] AI companion (oh-my-pi): http://${host}:${port}`));
 function shutdown() {
   server.close();
   stopOhMyPiWorker();

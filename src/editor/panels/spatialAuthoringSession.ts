@@ -32,6 +32,8 @@ export type SpatialAuthoringSession = SpatialTabSlice & {
   readonly placeKindFilter: SpatialPlaceKindFilter | null;
   readonly regionKindFilter: SpatialRegionKindFilter | null;
   readonly inspectorOpen: boolean;
+  /** true 이면 canonical 설계가 선택되어 있어도 카드 갤러리를 보여 준다 (「← 장소 목록」). */
+  readonly listView: boolean;
 };
 
 const DEFAULT_CAMERA: SpatialCamera = { x: 0, y: 0, zoom: 1 };
@@ -48,6 +50,7 @@ type StoredSession = {
   readonly placeKindFilter: SpatialPlaceKindFilter | null;
   readonly regionKindFilter: SpatialRegionKindFilter | null;
   readonly inspectorOpen: boolean;
+  readonly listView: boolean;
 };
 
 function defaultStored(tab: SpatialShellTab = "places"): StoredSession {
@@ -66,6 +69,7 @@ function defaultStored(tab: SpatialShellTab = "places"): StoredSession {
     placeKindFilter: null,
     regionKindFilter: null,
     inspectorOpen: false,
+    listView: false,
   };
 }
 
@@ -78,6 +82,7 @@ function view(stored: StoredSession): SpatialAuthoringSession {
     placeKindFilter: stored.placeKindFilter,
     regionKindFilter: stored.regionKindFilter,
     inspectorOpen: stored.inspectorOpen,
+    listView: stored.listView,
   };
 }
 
@@ -127,6 +132,7 @@ export function patchSpatialSession(patch: Partial<SpatialAuthoringSession>): Sp
     placeKindFilter: patch.placeKindFilter === undefined ? current.placeKindFilter : patch.placeKindFilter,
     regionKindFilter: patch.regionKindFilter === undefined ? current.regionKindFilter : patch.regionKindFilter,
     inspectorOpen: patch.inspectorOpen === undefined ? current.inspectorOpen : patch.inspectorOpen,
+    listView: patch.listView === undefined ? current.listView : patch.listView,
   });
 }
 

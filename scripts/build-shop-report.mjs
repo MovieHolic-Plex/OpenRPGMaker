@@ -25,7 +25,7 @@ const html = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>상점 저작 · 런타임 해부 — rpg-zzu</title>
+<title>상점 저작 · 런타임 해부 — oprn</title>
 <style>
   :root{
     --ink:#171412; --ink-2:#4a423c; --ink-3:#7c7169;
@@ -423,7 +423,7 @@ output/evidence/shop-report/*.png          # 캡처 17장
 이미 고쳐진 회귀가 재현됐다. 상점 e2e 를 돌릴 때는 서버 기동 시각을 먼저 확인하는 게 안전하다.</div>
 
 <footer>
-  rpg-zzu 상점 저작·런타임 해부 · 2026-08-29 · HEAD <code>f67cac85</code><br>
+  oprn 상점 저작·런타임 해부 · 2026-08-29 · HEAD <code>f67cac85</code><br>
   캡처 스펙 <span class="path">test/e2e/_shop-report-shots.spec.ts</span> ·
   이미지는 이 HTML 안에 base64 로 들어 있어 파일 하나만 옮겨도 그대로 보인다.
 </footer>

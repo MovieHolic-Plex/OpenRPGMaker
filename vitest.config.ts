@@ -1,5 +1,8 @@
 import { configDefaults, defineConfig } from "vitest/config";
 import { fileURLToPath, URL } from "node:url";
+import { applyLegacyEnvAliases } from "./scripts/lib/oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 export default defineConfig({
   resolve: {

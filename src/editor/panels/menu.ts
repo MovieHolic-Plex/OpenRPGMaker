@@ -30,7 +30,7 @@ import {
   projectPackageFileName,
   readProjectPackage,
   LEGACY_RPGZZU_MIME,
-  RPGZZU_MIME,
+  OPRN_MIME,
 } from "@/project/package";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { createStandaloneHtmlExport } from "@/project/standaloneExport";
@@ -1023,7 +1023,7 @@ async function doExportStandaloneHtml(): Promise<void> {
 function doImport(): void {
   const input = document.createElement("input");
   input.type = "file";
-  input.accept = `${RPGZZU_MIME},${LEGACY_RPGZZU_MIME},application/zip,.oprn,.rpgzzu,application/json,.json`;
+  input.accept = `${OPRN_MIME},${LEGACY_RPGZZU_MIME},application/zip,.oprn,.rpgzzu,application/json,.json`;
   input.addEventListener("change", () => {
     const file = input.files?.[0];
     if (!file) return;
@@ -1041,7 +1041,7 @@ function doImport(): void {
 
 function isProjectPackageFile(file: File): boolean {
   const name = file.name.toLowerCase();
-  return name.endsWith(".oprn") || name.endsWith(".rpgzzu") || file.type === RPGZZU_MIME || file.type === LEGACY_RPGZZU_MIME;
+  return name.endsWith(".oprn") || name.endsWith(".rpgzzu") || file.type === OPRN_MIME || file.type === LEGACY_RPGZZU_MIME;
 }
 
 async function replaceProjectFromPackage(file: File): Promise<void> {

@@ -1,0 +1,54 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>
+ body{margin:0;padding:32px 36px;background:#0b0d12;width:1560px;font-family:"Noto Sans CJK KR",sans-serif;color:#e6e9ef;}
+ h1{font-size:21px;margin:0 0 6px;} .sub{color:#8b95a7;font-size:13.5px;margin-bottom:20px;line-height:1.6;}
+ .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+ .box{background:#12151c;border:1px solid #232834;border-radius:9px;padding:16px 18px;}
+ .box h2{font-size:14px;margin:0 0 10px;color:#8ab4f8;}
+ pre{margin:0;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12.5px;line-height:1.7;color:#cdd3de;white-space:pre-wrap;}
+ .verdict{margin-top:18px;background:#102a1c;border:1px solid #23543a;border-radius:9px;padding:16px 20px;}
+ .verdict h2{color:#6ee7a0;font-size:15px;margin:0 0 8px;}
+ .verdict p{margin:0 0 6px;font-size:13.5px;color:#cfe6d8;line-height:1.7;}
+ .eq{color:#f2c94c;font-weight:700;}
+ code{font-family:"JetBrains Mono",monospace;background:#1b2029;padding:1px 6px;border-radius:4px;font-size:12.5px;}
+</style></head><body>
+<h1>npm run gates — 기준선 대비 판정</h1>
+<div class="sub">저장소 기준선(<code>.omo/gates-baseline.json</code>, 2026-09-12)은 이미 빨간불이라 <b>새로 생긴 실패만</b> 회귀로 본다.
+게이트가 8건을 "새로 실패"로 짚었으므로, 내 변경이 원인인지 <b>merge-base에서 같은 테스트를 돌려</b> 갈랐다.</div>
+<div class="cols">
+ <div class="box"><h2>① 내 브랜치 (688578b3f)</h2><pre>typecheck:app  exit=0  errors=0  files=0
+vitest         exit=1  failed=28  passed=22201  files=14
+css            exit=0  budget=0  graph=0
+browser        exit=0  파일=1
+surface        exit=0  축=10
+
+기준선 대비 회귀 8건:
+   tests test/aiAssistantSession.test.ts: 새로 실패 [단독 재실행도 테스트 실패 1건]
+   tests test/aiCompletionAccounting.test.ts: 새로 실패 [단독 재실행도 테스트 실패 1건]
+   tests test/interiorObjectCatalog.test.ts: 새로 실패 [단독 재실행도 테스트 실패 1건]
+   tests test/interiorPipelineMapReplacement.test.ts: 새로 실패 [단독 재실행도 테스트 실패 1건]
+   tests test/interiorRoomWalkabilitySeal.test.ts: 새로 실패 [단독 재실행도 테스트 실패 1건]
+   tests test/placeConceptTool.test.ts: 새로 실패 [단독 재실행도 테스트 실패 2건]
+   tests test/spatialAssetResolver.test.ts: 새로 실패 [단독 재실행도 테스트 실패 4건]
+   tests test/workPlanMapOutcomes.test.ts: 새로 실패 [단독 재실행도 테스트 실패 1건]</pre></div>
+ <div class="box"><h2>② merge-base d6245baed — 내 변경 <u>없음</u></h2><pre>같은 8개 파일 실행:
+
+ Test Files  8 failed (8)
+      Tests  12 failed | 162 passed (174)
+
+실패 테스트 이름·줄번호가 ①과 완전히 동일:
+  aiAssistantSession.test.ts:1802
+  aiCompletionAccounting.test.ts:116
+  interiorObjectCatalog.test.ts:96
+  interiorPipelineMapReplacement.test.ts:240
+  interiorRoomWalkabilitySeal.test.ts:105
+  placeConceptTool.test.ts:93, :422
+  spatialAssetResolver.test.ts:22, :89 (4건)
+  workPlanMapOutcomes.test.ts:143</pre></div>
+</div>
+<div class="verdict">
+ <h2>판정: 내 변경으로 생긴 회귀 0건</h2>
+ <p>내 브랜치와 merge-base가 <span class="eq">12 failed | 162 passed (174)로 완전히 동일</span>하다. 8건은 전부 기준선(09-12) 이후 main 이 끌고 온 기존 실패다 — 내 변경과 무관하다.</p>
+ <p>내 변경이 닿는 스위트는 전부 통과: <code>mapGrowthOnFixRequests</code>(11) · <code>authorVillageScopeGate</code>(17) · <code>aiSpecGate</code>(44) · <code>aiSpecGateHardening</code> · <code>aiSpecGateFreshMap</code> · <code>intentDeclaration</code> · <code>authorVillageFacade</code> · <code>constructionContracts</code> · <code>buildSpecOverlapRecovery</code>.</p>
+ <p>다른 게이트 축은 전부 초록: typecheck:app exit 0 · css exit 0 · browser exit 0 · surface exit 0.</p>
+</div>
+</body></html>

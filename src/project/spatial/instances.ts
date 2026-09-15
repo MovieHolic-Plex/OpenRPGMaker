@@ -7,6 +7,7 @@ import type * as S from "./types";
 export type SpatialInstantiation = S.SpatialPoint & {
   readonly source: S.SpatialDesignReference; readonly rootId: string;
   readonly level: number; readonly seed: number; readonly generatorVersion: string;
+  readonly origin?: S.SpatialProvenance["origin"];
 };
 type PendingOccurrence = S.SpatialPoint & {
   readonly id: S.SpatialId; readonly source: S.SpatialDesignReference;
@@ -38,6 +39,7 @@ export function instantiateSpatialDesign(input: unknown, context: SpatialResolut
       objects: { ...snapshot.library.objects, [entry.source.id]: { ...own(snapshot.library.objects, entry.source.id), chips: entry.chipOverrides } } };
     additions.set(entry.id, { id: entry.id, kind: entry.source.kind, parentId: entry.parentId, parentSlot: entry.parentSlot, source: snapshot.root,
       x: entry.x, y: entry.y, level: entry.level, seed: request.seed, generatorVersion: request.generatorVersion, bindings: [],
+      ...(request.origin === undefined ? {} : { origin: request.origin }),
       snapshot: { ...snapshot, library, ports: nodePorts(node).map(port => ({ ...port, localPortId: port.id, id: occurrencePortId(entry.id, port.id) })) } });
     for (const slot of designSlots(node)) for (let index = 0; index < slot.quantity; index++) {
       pending.push({ id: occurrenceChildId(entry.id, slot.id, index), parentId: entry.id, parentSlot: { slotId: slot.id, index }, source: slot.source,

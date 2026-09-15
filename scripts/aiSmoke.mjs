@@ -81,7 +81,7 @@ async function main() {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
-        "X-Title": "RPG ZZU Smoke",
+        "X-Title": "OPRN Smoke",
       },
       body: JSON.stringify(body),
     });

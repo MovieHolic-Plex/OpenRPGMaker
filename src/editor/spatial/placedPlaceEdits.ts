@@ -1,6 +1,6 @@
 import { assertNever, findOccurrenceChildId, own, requireOccurrenceAssociations, SpatialOperationError } from "@/project/spatial/domain";
 import { occurrenceSubtree } from "@/project/spatial/ownership";
-import type { PlaceDesign, SpatialChildSlot, SpatialId, SpatialParentSlot, SpatialPoint, SpatialSource } from "@/project/spatial/types";
+import type { PlaceDesign, SpatialChildSlot, SpatialId, SpatialParentSlot, SpatialPoint, SpatialProvenance, SpatialSource } from "@/project/spatial/types";
 import type { Project } from "@/project/types";
 import type { SpatialAuthoringController, SpatialAuthoringDraft, SpatialAuthoringPreview, SpatialAuthoringResult } from "./authoringTypes";
 import type { SpatialCompileRequest } from "./compilerTypes";
@@ -9,7 +9,7 @@ export type PlacedPlaceEdit = { readonly parentId: SpatialId } & (
   | { readonly kind: "move"; readonly slot: SpatialParentSlot; readonly position: SpatialPoint & { readonly level: number } }
   | { readonly kind: "delete"; readonly slot: SpatialParentSlot; readonly externalConnections: "reject" | "remove" }
   | { readonly kind: "add"; readonly slot: SpatialChildSlot<"space" | "place">; readonly rootId: SpatialId;
-      readonly seed: number; readonly generatorVersion: string }
+      readonly seed: number; readonly generatorVersion: string; readonly origin?: SpatialProvenance["origin"] }
 );
 
 export type PlacedPlaceChild = SpatialPoint & {
@@ -112,7 +112,8 @@ export function previewPlacedPlaceEdit(controller: SpatialAuthoringController, d
       }
       case "add": {
         const instantiated = controller.preview(draft, { operation: { kind: "instantiate", request: { source: edit.slot.source,
-          rootId: edit.rootId, x: edit.slot.x, y: edit.slot.y, level: edit.slot.level, seed: edit.seed, generatorVersion: edit.generatorVersion } } });
+          rootId: edit.rootId, x: edit.slot.x, y: edit.slot.y, level: edit.slot.level, seed: edit.seed, generatorVersion: edit.generatorVersion,
+          ...(edit.origin === undefined ? {} : { origin: edit.origin }) } } });
         switch (instantiated.kind) { case "error": return instantiated; case "ok": break; default: return assertNever(instantiated); }
         const continued = controller.continueDraft(instantiated.value);
         switch (continued.kind) { case "error": return continued; case "ok": break; default: return assertNever(continued); }

@@ -122,7 +122,7 @@ async function installTransport(page: Page, ending: Ending, mapId: string, log: 
 
 async function boot(page: Page): Promise<string> {
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "standard");
+    localStorage.setItem("oprn:editor-ui-mode", "standard");
     localStorage.setItem("oprn:standard-welcome-seen", "1");
     localStorage.setItem("oprn:coachmarks-basic-v1", "1");
     localStorage.setItem("oprn:ai-config", JSON.stringify({ agentMode: "chat" }));

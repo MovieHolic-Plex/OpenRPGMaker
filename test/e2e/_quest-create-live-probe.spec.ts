@@ -41,7 +41,7 @@ test("live: 퀘스트 만들어줘 does work in a real browser", async ({ page }
   });
   page.on("response", async (res) => {
     const url = res.url();
-    if (!/\/(api|auth|__rpgzzu|v1)\b/.test(url)) return;
+    if (!/\/(api|auth|__oprn|v1)\b/.test(url)) return;
     let body = "";
     try {
       body = (await res.text()).slice(0, 400);
@@ -54,10 +54,10 @@ test("live: 퀘스트 만들어줘 does work in a real browser", async ({ page }
 
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "standard");
-    localStorage.setItem("rpg-zzu:coachmarks-basic-v1", "1");
-    localStorage.removeItem("rpg-zzu:ai-panel-collapsed");
-    for (const key of ["rpg-zzu:editor-layout", "rpg-zzu:editor-layout:v2", "rpg-zzu:editor-layout:v3", "rpg-zzu:editor-layout:v4"]) {
+    localStorage.setItem("oprn:editor-ui-mode", "standard");
+    localStorage.setItem("oprn:coachmarks-basic-v1", "1");
+    localStorage.removeItem("oprn:ai-panel-collapsed");
+    for (const key of ["oprn:editor-layout", "oprn:editor-layout:v2", "oprn:editor-layout:v3", "oprn:editor-layout:v4"]) {
       localStorage.removeItem(key);
     }
   });
@@ -69,14 +69,14 @@ test("live: 퀘스트 만들어줘 does work in a real browser", async ({ page }
   await expect(page.getByTestId("ai-input")).toBeVisible({ timeout: 20_000 });
 
   const before = await page.evaluate(() => {
-    const store = (window as unknown as { __rpgzzuStore?: { getCurrent?: () => { quests?: unknown[]; maps?: Record<string, { events?: unknown[] }> } } }).__rpgzzuStore;
+    const store = (window as unknown as { __oprnStore?: { getCurrent?: () => { quests?: unknown[]; maps?: Record<string, { events?: unknown[] }> } } }).__oprnStore;
     const project = store?.getCurrent?.();
     const eventCount = project ? Object.values(project.maps ?? {}).reduce((n, map) => n + (map.events?.length ?? 0), 0) : -1;
     return {
       quests: project?.quests ?? null,
       eventCount,
-      providerId: JSON.parse(localStorage.getItem("rpg-zzu:ai-config") ?? "{}").providerId ?? null,
-      config: localStorage.getItem("rpg-zzu:ai-config"),
+      providerId: JSON.parse(localStorage.getItem("oprn:ai-config") ?? "{}").providerId ?? null,
+      config: localStorage.getItem("oprn:ai-config"),
     };
   });
   log(`BEFORE quests=${JSON.stringify(before.quests)} events=${before.eventCount} provider=${before.providerId}`);
@@ -94,7 +94,7 @@ test("live: 퀘스트 만들어줘 does work in a real browser", async ({ page }
   await page.screenshot({ path: path.join(OUT, "04-after-45s.png") });
 
   const after = await page.evaluate(() => {
-    const store = (window as unknown as { __rpgzzuStore?: { getCurrent?: () => { quests?: unknown[]; maps?: Record<string, { events?: unknown[] }> } } }).__rpgzzuStore;
+    const store = (window as unknown as { __oprnStore?: { getCurrent?: () => { quests?: unknown[]; maps?: Record<string, { events?: unknown[] }> } } }).__oprnStore;
     const project = store?.getCurrent?.();
     const eventCount = project ? Object.values(project.maps ?? {}).reduce((n, map) => n + (map.events?.length ?? 0), 0) : -1;
     const logText = [...document.querySelectorAll("[data-testid=ai-command-row], [data-testid=ai-command-row-assistant], [data-testid=ai-command-row-user], .ai-chat-log, .ai-work-strip")]
@@ -104,7 +104,7 @@ test("live: 퀘스트 만들어줘 does work in a real browser", async ({ page }
     return {
       quests: project?.quests ?? null,
       eventCount,
-      providerId: JSON.parse(localStorage.getItem("rpg-zzu:ai-config") ?? "{}").providerId ?? null,
+      providerId: JSON.parse(localStorage.getItem("oprn:ai-config") ?? "{}").providerId ?? null,
       sendDisabled: (document.querySelector("[data-testid=ai-send]") as HTMLButtonElement | null)?.disabled ?? null,
       inputValue: (document.querySelector("[data-testid=ai-input]") as HTMLTextAreaElement | null)?.value ?? null,
       panelText: (document.querySelector("[data-testid=ai-panel]")?.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 1200),

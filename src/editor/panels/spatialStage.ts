@@ -182,31 +182,47 @@ export function renderSpatialChrome(
       el("div", {
         class: "spatial-actions",
         children: [
+          // 자주 쓰는 다섯 개만 꺼낸다 — 나머지는 ⋯ 안으로. 펼쳐 놓은 15개는 대부분
+          // 비활성이라 무엇을 누를 수 있는지가 오히려 안 보였다.
           ...(selected?.regionReferenceId ? [] : [
-            actionButton("spatial-activate", "장소 설계 활성화", Boolean(chrome?.activate), chrome?.activate),
             actionButton("spatial-add", "추가", Boolean(chrome?.add), chrome?.add),
-            actionButton("spatial-duplicate", "복제", Boolean(chrome?.duplicate), chrome?.duplicate),
-            actionButton("spatial-delete", "삭제", Boolean(chrome?.delete), chrome?.delete),
             actionButton("spatial-preview", "미리보기", Boolean(chrome?.preview), chrome?.preview),
-            ...renderSpatialBuildChrome(session.tab, chrome),
             actionButton("spatial-apply", "적용", Boolean(chrome?.apply), chrome?.apply),
-            actionButton("spatial-refresh", "새로고침", Boolean(chrome?.refresh), chrome?.refresh),
-            actionButton("spatial-detach", "분리", Boolean(chrome?.detach), chrome?.detach),
             actionButton("spatial-undo", "되돌리기", Boolean(chrome?.undo), chrome?.undo),
             actionButton("spatial-redo", "다시 실행", Boolean(chrome?.redo), chrome?.redo),
+            el("details", {
+              class: "spatial-more",
+              // 삭제 확인이 떠 있으면 접힌 채로 두지 않는다 — 확인 버튼이 안에 있다.
+              attrs: chrome?.deleteOpen ? { open: "" } : {},
+              dataset: { testid: "spatial-more" },
+              children: [
+                el("summary", { text: "⋯ 더 보기" }),
+                el("div", {
+                  class: "spatial-more-body",
+                  children: [
+                    actionButton("spatial-activate", "장소 설계 활성화", Boolean(chrome?.activate), chrome?.activate),
+                    actionButton("spatial-duplicate", "복제", Boolean(chrome?.duplicate), chrome?.duplicate),
+                    actionButton("spatial-delete", "삭제", Boolean(chrome?.delete), chrome?.delete),
+                    el("button", {
+                      class: "spatial-delete-confirm",
+                      text: "삭제 확인",
+                      attrs: { type: "button", ...(chrome?.deleteOpen ? {} : { hidden: "" }) },
+                      dataset: { testid: "spatial-delete-confirm" },
+                      on: chrome?.onDeleteConfirm ? { click: chrome.onDeleteConfirm } : undefined,
+                    }),
+                    ...renderSpatialBuildChrome(session.tab, chrome),
+                    actionButton("spatial-refresh", "새로고침", Boolean(chrome?.refresh), chrome?.refresh),
+                    actionButton("spatial-detach", "분리", Boolean(chrome?.detach), chrome?.detach),
+                  ],
+                }),
+              ],
+            }),
           ]),
           el("span", {
             class: "spatial-save-state",
             text: chrome?.saveState ?? "읽기",
             attrs: { title: "편집 상태 — 읽기 · 초안 · 미리보기 · 적용" },
             dataset: { testid: "spatial-save-state" },
-          }),
-          el("button", {
-            class: "spatial-delete-confirm",
-            text: "확인",
-            attrs: { type: "button", ...(chrome?.deleteOpen ? {} : { hidden: "" }) },
-            dataset: { testid: "spatial-delete-confirm" },
-            on: chrome?.onDeleteConfirm ? { click: chrome.onDeleteConfirm } : undefined,
           }),
           el("span", {
             class: "spatial-preview-error",
@@ -360,10 +376,11 @@ function renderBrowserChrome(session: SpatialAuthoringSession, onChange: () => v
   const chrome = domainChrome(session, onChange);
   const panel = renderSpatialBuildPanel(session.tab);
   const more = el("details", { class: "asset-browser-more", attrs: chrome?.deleteOpen ? { open: "" } : {}, children: [
-    el("summary", { text: "배치·관리" }),
+    el("summary", { text: "⋯ 더 보기" }),
     el("div", { class: "asset-browser-more-body", children: [
       actionButton("spatial-mode-instances", "맵에 배치된 항목", true, () => { patchSpatialSession({ mode: "instances" }); onChange(); }),
       ...(chrome?.activate && session.tab !== "spaces" ? [actionButton("spatial-activate", "장소 설계 활성화", true, chrome.activate)] : []),
+      ...(chrome?.duplicate ? [actionButton("spatial-duplicate", "복제", true, chrome.duplicate)] : []),
       actionButton("spatial-delete", "삭제", Boolean(chrome?.delete), chrome?.delete),
       ...(chrome?.deleteOpen ? [actionButton("spatial-delete-confirm", "삭제 확인", true, chrome.onDeleteConfirm)] : []),
       ...renderSpatialBuildChrome(session.tab, chrome),
@@ -374,7 +391,6 @@ function renderBrowserChrome(session: SpatialAuthoringSession, onChange: () => v
     ...(session.breadcrumb.length ? [actionButton("spatial-back", "← 상위 항목", true, () => restoreGeographyParent(onChange))] : []),
     ...(session.tab === "spaces" && chrome?.activate ? [actionButton("spatial-activate", "장소 배치 시작", true, chrome.activate)] : []),
     actionButton("spatial-add", `+ 새 ${TAB_LABEL[session.tab]}`, Boolean(onAdd ?? chrome?.add) && (session.tab !== "spaces" || Boolean(workingProject().spatialAuthoring)), onAdd ?? chrome?.add),
-    ...(chrome?.duplicate ? [actionButton("spatial-duplicate", "복제", true, chrome.duplicate)] : []),
     actionButton("spatial-preview", "변경 미리보기", Boolean(chrome?.preview), chrome?.preview),
     actionButton("spatial-apply", "변경 적용", Boolean(chrome?.apply), chrome?.apply),
     actionButton("spatial-undo", "되돌리기", Boolean(chrome?.undo), chrome?.undo),

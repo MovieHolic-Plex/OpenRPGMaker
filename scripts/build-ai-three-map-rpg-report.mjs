@@ -206,9 +206,9 @@ const html = `<!DOCTYPE html>
   <h2>이 증거를 다시 만드는 방법</h2>
   <ul>
     <li>저작 + Supabase 저장/재로드 검증:
-      <code>RPG_ZZU_AI_THREE_MAP=1 node node_modules/vitest/vitest.mjs run test/aiThreeMapRpg.live.test.ts --configLoader bundle</code></li>
+      <code>OPRN_AI_THREE_MAP=1 node node_modules/vitest/vitest.mjs run test/aiThreeMapRpg.live.test.ts --configLoader bundle</code></li>
     <li>스크린샷 증거 수집:
-      <code>RPG_ZZU_AI_THREE_MAP_SHOTS=1 npx playwright test test/e2e/ai-three-map-rpg-evidence.spec.ts</code></li>
+      <code>OPRN_AI_THREE_MAP_SHOTS=1 npx playwright test test/e2e/ai-three-map-rpg-evidence.spec.ts</code></li>
     <li>이 HTML 재생성: <code>node scripts/build-ai-three-map-rpg-report.mjs</code></li>
   </ul>
   <div class="note">

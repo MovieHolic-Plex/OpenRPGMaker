@@ -5,6 +5,7 @@ import {
   serializeStructureKitFile,
   structureKitFileName,
   StructureKitFileError,
+  STRUCTURE_KIT_FILE_FORMAT,
   STRUCTURE_KIT_FILE_VERSION,
 } from "@/editor/harnessSuggestion/structureKitFile";
 import { store } from "@/project/store";
@@ -34,7 +35,8 @@ function well(): SectionStructureKitDef {
 describe("serializeStructureKitFile", () => {
   it("판별자·버전·타일셋·킷을 담는다", () => {
     const json = JSON.parse(serializeStructureKitFile(tileset(), [well()], AT));
-    expect(json.format).toBe("rpgzzu-structure-kits");
+    expect(json.format).toBe("oprn-structure-kits");
+    expect(STRUCTURE_KIT_FILE_FORMAT).toBe("oprn-structure-kits");
     expect(json.version).toBe(STRUCTURE_KIT_FILE_VERSION);
     expect(json.exportedAt).toBe(AT);
     expect(json.tileset.id).toBe(DEFAULT_TILESET_ID);
@@ -82,7 +84,7 @@ describe("parseStructureKitFile", () => {
 
   it("origin 이 알 수 없는 값이면 거른다 — user/ai 가 아닌 값을 통과시키지 않는다", () => {
     const text = JSON.stringify({
-      format: "rpgzzu-structure-kits",
+      format: STRUCTURE_KIT_FILE_FORMAT,
       version: STRUCTURE_KIT_FILE_VERSION,
       tileset: { id: DEFAULT_TILESET_ID, name: "합본 마을" },
       kits: [{ ...well(), ai: { description: "d", placementRules: "p", origin: "system" } }],
@@ -93,7 +95,7 @@ describe("parseStructureKitFile", () => {
 
   it("role 이 알 수 없는 값이면 거르고, 알려진 값이면 통과시킨다", () => {
     const text = JSON.stringify({
-      format: "rpgzzu-structure-kits",
+      format: STRUCTURE_KIT_FILE_FORMAT,
       version: STRUCTURE_KIT_FILE_VERSION,
       tileset: { id: DEFAULT_TILESET_ID, name: "합본 마을" },
       kits: [
@@ -116,7 +118,7 @@ describe("parseStructureKitFile", () => {
 
   it("더 새 버전이면 던지고 이유를 말한다", () => {
     const text = JSON.stringify({
-      format: "rpgzzu-structure-kits",
+      format: STRUCTURE_KIT_FILE_FORMAT,
       version: STRUCTURE_KIT_FILE_VERSION + 1,
       tileset: { id: "x", name: "x" },
       kits: [],
@@ -134,7 +136,7 @@ describe("parseStructureKitFile", () => {
       else kits.push({ ...good, id: `k${i}` });
     }
     const text = JSON.stringify({
-      format: "rpgzzu-structure-kits",
+      format: STRUCTURE_KIT_FILE_FORMAT,
       version: STRUCTURE_KIT_FILE_VERSION,
       exportedAt: AT,
       tileset: { id: DEFAULT_TILESET_ID, name: "합본 마을" },
@@ -152,7 +154,7 @@ describe("parseStructureKitFile", () => {
 
   it("section 이 아닌 킷은 거른다", () => {
     const text = JSON.stringify({
-      format: "rpgzzu-structure-kits",
+      format: STRUCTURE_KIT_FILE_FORMAT,
       version: STRUCTURE_KIT_FILE_VERSION,
       tileset: { id: DEFAULT_TILESET_ID, name: "합본 마을" },
       kits: [{ id: "h", kind: "house", name: "집", houseKitId: "log", wings: [], learnedFrom: "user-paint" }],
@@ -165,19 +167,46 @@ describe("parseStructureKitFile", () => {
 
 describe("structureKitFileName", () => {
   it("낱개는 구조물 이름을 쓴다", () => {
-    expect(structureKitFileName("합본 마을", [well()])).toBe("우물.rpgzzu-kit.json");
+    expect(structureKitFileName("합본 마을", [well()])).toBe("우물.oprn-kit.json");
   });
 
   it("묶음은 타일셋 이름과 개수를 쓴다", () => {
     expect(structureKitFileName("합본 마을", [well(), { ...well(), id: "k2" }]))
-      .toBe("합본 마을-구조물-2개.rpgzzu-kit.json");
+      .toBe("합본 마을-구조물-2개.oprn-kit.json");
+  });
+});
+
+// 2026-09 제품명 스윕 전에 내보낸 파일은 판별자가 `rpgzzu-structure-kits` 다. 사용자 디스크에 남아 있는
+// 그 파일이 계속 열려야 하므로 옛 판별자를 받되, 읽은 결과는 새 판별자로 정규화한다.
+describe("옛 판별자 호환", () => {
+  it("rpgzzu-structure-kits 파일을 읽고 format 을 새 판별자로 정규화한다", () => {
+    const text = JSON.stringify({
+      format: "rpgzzu-structure-kits",
+      version: STRUCTURE_KIT_FILE_VERSION,
+      tileset: { id: DEFAULT_TILESET_ID, name: "합본 마을" },
+      kits: [well()],
+    });
+    const { file, diagnostics } = parseStructureKitFile(text);
+    expect(file.format).toBe(STRUCTURE_KIT_FILE_FORMAT);
+    expect(file.kits).toHaveLength(1);
+    expect(diagnostics).toEqual([]);
+  });
+
+  it("옛 판별자를 받는다고 해서 아무 판별자나 받지는 않는다", () => {
+    const text = JSON.stringify({
+      format: "someone-elses-kits",
+      version: STRUCTURE_KIT_FILE_VERSION,
+      tileset: { id: DEFAULT_TILESET_ID, name: "합본 마을" },
+      kits: [well()],
+    });
+    expect(() => parseStructureKitFile(text)).toThrow(StructureKitFileError);
   });
 });
 
 describe("planImport", () => {
   function fileWith(kits: SectionStructureKitDef[], tilesetId = DEFAULT_TILESET_ID) {
     return parseStructureKitFile(JSON.stringify({
-      format: "rpgzzu-structure-kits",
+      format: STRUCTURE_KIT_FILE_FORMAT,
       version: STRUCTURE_KIT_FILE_VERSION,
       tileset: { id: tilesetId, name: "합본 마을" },
       kits,
@@ -295,7 +324,7 @@ describe("어휘 왕복 — 내보내고 다시 가져와도 값이 남는다", 
 
   it("모르는 zone 은 조건째로 버린다 — 틀린 필수 조건은 조건 없음보다 나쁘다", () => {
     const text = JSON.stringify({
-      format: "rpgzzu-structure-kits",
+      format: STRUCTURE_KIT_FILE_FORMAT,
       version: 1,
       tileset: { id: tileset().id, name: tileset().name },
       kits: [{
@@ -309,7 +338,7 @@ describe("어휘 왕복 — 내보내고 다시 가져와도 값이 남는다", 
 
   it("행렬 밖 칸 힌트는 버린다", () => {
     const text = JSON.stringify({
-      format: "rpgzzu-structure-kits",
+      format: STRUCTURE_KIT_FILE_FORMAT,
       version: 1,
       tileset: { id: tileset().id, name: tileset().name },
       kits: [{ ...vocabularyWall(), cellHints: [{ dx: 9, dy: 9, growth: "both" }, { dx: 0, dy: 2, growth: "both" }] }],
@@ -322,7 +351,7 @@ describe("어휘 왕복 — 내보내고 다시 가져와도 값이 남는다", 
      적은 구조물이 파일을 거치며 어휘를 전부 잃었다. */
   it("자유 문장이 비어도 축만 적힌 메타는 살아남는다", () => {
     const text = JSON.stringify({
-      format: "rpgzzu-structure-kits",
+      format: STRUCTURE_KIT_FILE_FORMAT,
       version: 1,
       tileset: { id: tileset().id, name: tileset().name },
       kits: [{

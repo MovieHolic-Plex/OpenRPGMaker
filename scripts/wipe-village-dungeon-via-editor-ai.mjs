@@ -7,9 +7,12 @@
 import { chromium } from "playwright";
 import { readFileSync, appendFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9173";
-const PROJECT_ID = process.env.RPG_ZZU_PROJECT_ID ?? "rpg-zzu-dew-30min";
+applyLegacyEnvAliases();
+
+const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9173";
+const PROJECT_ID = process.env.OPRN_PROJECT_ID ?? "rpg-zzu-dew-30min";
 const EVIDENCE = "output/evidence/wipe-village-dungeon";
 const TURN_MS = Number(process.env.AI_TURN_TIMEOUT_MS ?? 600_000);
 

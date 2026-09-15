@@ -1,16 +1,19 @@
 /**
  * Real-editor visual/interaction QA for the compact AI acceptance note.
  * Usage: node scripts/qa/ai-acceptance-compact.mjs
- * Env: RPG_ZZU_URL (default http://127.0.0.1:9857), QA_CAPTURE=0 for image-free functional QA.
+ * Env: OPRN_URL (default http://127.0.0.1:9857), QA_CAPTURE=0 for image-free functional QA.
  * Publishes acceptance through aiChatPanel send → turnRunner.showAcceptance.
  * No live LLM. No remote DB writes.
  */
 import { chromium } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { applyLegacyEnvAliases } from "../lib/oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 
-const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9857";
+const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9857";
 const OUT = path.resolve("output/evidence/ai-acceptance-compact");
 const SHOT = path.join(OUT, "qa");
 const CAPTURE = process.env.QA_CAPTURE !== "0";
@@ -108,7 +111,7 @@ async function boot(page) {
     json: { choices: [{ message: { role: "assistant", content: "fixture-noop" }, finish_reason: "stop" }] },
   }));
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "standard");
+    localStorage.setItem("oprn:editor-ui-mode", "standard");
     localStorage.setItem("oprn:editor-welcome-dismissed", "1");
     localStorage.setItem("oprn:standard-welcome-seen", "1");
     localStorage.setItem("oprn:coachmarks-basic-v1", "1");

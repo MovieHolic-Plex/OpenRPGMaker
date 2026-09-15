@@ -4,9 +4,10 @@ import { dirname, join, resolve } from "node:path";
 import { loadEnv, type Connect, type Plugin } from "vite";
 import { CATALOG_RELATIVE_DIR, listInstalledCatalogFiles } from "./bgmCatalogDir";
 import { installRelease, readTrustedManifest, type BgmManifest } from "./bgm-release.mjs";
+import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
 
 export type BgmInstallOptions = {
-  /** 테스트 주입용. 기본은 루프백 + RPG_ZZU_BGM_INSTALL_REMOTE opt-in. */
+  /** 테스트 주입용. 기본은 루프백 + OPRN_BGM_INSTALL_REMOTE opt-in. */
   readonly allowAddress?: (address: string | undefined) => boolean;
   /** 테스트 주입용. 기본은 bgm-release.mjs 의 installRelease. */
   readonly install?: (input: {
@@ -126,7 +127,7 @@ export function bgmInstallPlugin(options: BgmInstallOptions = {}): Plugin {
       if (path !== "/install") { next(); return; }
       if (!allowAddress(address)) {
         send(response, 403, {
-          error: "원격 접속에서는 BGM 설치가 잠겨 있습니다. .env.local 에 RPG_ZZU_BGM_INSTALL_REMOTE=1 을 넣고 서버를 다시 시작하세요.",
+          error: "원격 접속에서는 BGM 설치가 잠겨 있습니다. .env.local 에 OPRN_BGM_INSTALL_REMOTE=1 을 넣고 서버를 다시 시작하세요.",
         });
         return;
       }
@@ -144,11 +145,14 @@ export function bgmInstallPlugin(options: BgmInstallOptions = {}): Plugin {
   };
 
   return {
-    name: "rpgzzu-bgm-install",
+    name: "oprn-bgm-install",
     configResolved(config) {
       projectRoot = config.root;
       // Vite does not copy non-VITE .env values into process.env (including preview).
-      remoteAllowed = loadEnv(config.mode, config.envDir, "").RPG_ZZU_BGM_INSTALL_REMOTE === "1";
+      // 옛 이름(RPG_ZZU_*)은 process.env 가 아니라 이 loadEnv 객체에 들어 있으므로 별칭을 여기서 푼다.
+      const loaded = loadEnv(config.mode, config.envDir, "");
+      applyLegacyEnvAliases(loaded);
+      remoteAllowed = loaded.OPRN_BGM_INSTALL_REMOTE === "1";
     },
     configureServer(server) { server.middlewares.use("/api/bgm", handler); },
     configurePreviewServer(server) { server.middlewares.use("/api/bgm", handler); },

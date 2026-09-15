@@ -31,6 +31,15 @@ export interface CameraFocusTarget {
    * 눌렀는데 아무 일도 안 나는 것이 더 나쁘므로 이 옵션을 쓰지 않는다.
    */
   readonly onlyIfOffscreen?: boolean;
+  /**
+   * 팬하지 않고 목적지에 **세운다**.
+   *
+   * 맵 전환에서만 쓴다. 다른 맵으로 넘어가면 출발점과 목적지가 서로 다른 좌표계라 팬이
+   * 보여 줄 관계가 없고, 크로스페이드가 걷힌 직후에 낯선 맵을 가로지르는 팬이 또 도는 것이
+   * 사용자가 말한 「확확 전환」이다(editor/assistantViewSwitch.ts). 연속성은 베일이 갖고,
+   * 카메라는 이미 도착해 있어야 한다.
+   */
+  readonly immediate?: boolean;
 }
 
 /**

@@ -1,6 +1,6 @@
 import { PRODUCT_BRAND } from "@/brand";
 import type { Project } from "@/project/types";
-import { RPGZZU_EXTENSION } from "@/project/package";
+import { OPRN_EXTENSION } from "@/project/package";
 import {
   isOprnGameFile,
   OPRN_GAME_FILE_ACCEPT,
@@ -26,7 +26,7 @@ export function renderOprnGameFilePicker(root: HTMLElement, options: OprnGameFil
 
   const help = document.createElement("p");
   help.className = "oprn-game-file-picker-help";
-  help.textContent = `${RPGZZU_EXTENSION} 게임 파일 하나를 이 창에 끌어다 놓거나 아래에서 고르세요.`;
+  help.textContent = `${OPRN_EXTENSION} 게임 파일 하나를 이 창에 끌어다 놓거나 아래에서 고르세요.`;
 
   const status = document.createElement("p");
   status.className = "oprn-game-file-picker-status";
@@ -69,7 +69,7 @@ export function renderOprnGameFilePicker(root: HTMLElement, options: OprnGameFil
     const file = input.files?.[0];
     if (!file) return;
     if (!isOprnGameFile(file)) {
-      status.textContent = `${RPGZZU_EXTENSION} 게임 파일이 아닙니다: ${file.name}`;
+      status.textContent = `${OPRN_EXTENSION} 게임 파일이 아닙니다: ${file.name}`;
       return;
     }
     void open(file);
@@ -88,7 +88,7 @@ export function renderOprnGameFilePicker(root: HTMLElement, options: OprnGameFil
     const dropped = Array.from(event.dataTransfer?.files ?? []);
     const file = pickOprnGameFile(dropped);
     if (!file) {
-      status.textContent = `${RPGZZU_EXTENSION} 게임 파일을 찾지 못했습니다.`;
+      status.textContent = `${OPRN_EXTENSION} 게임 파일을 찾지 못했습니다.`;
       return;
     }
     void open(file);

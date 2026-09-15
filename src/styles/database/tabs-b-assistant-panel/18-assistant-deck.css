@@ -86,7 +86,8 @@
 }
 
 /* 유휴·빈 대화·포커스 없음 = 컴포저만 좁게. 포커스·턴·대화가 있으면 열린 폭. */
-.ai-chat-panel.chat-dock-float.is-assistant-idle:not(.is-composer-focused):not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck {
+/* 「작업」 탭이 열려 있으면 유휴여도 열린 폭 — 검토 대기는 턴이 없는 유휴인데, 그 순간 팀원 열이 480 으로 접힐 수 없다. */
+.ai-chat-panel.chat-dock-float.is-assistant-idle:not(.is-composer-focused):not(.is-studio):not(.is-history-open):not(.is-collapsed):not(.is-work-tab) .ai-deck {
   width: min(var(--ai-float-bar-width, var(--ai-float-compact-width)), calc(100% - var(--ai-deck-inset) - 12px));
 }
 

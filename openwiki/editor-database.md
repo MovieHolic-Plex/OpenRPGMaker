@@ -1,3 +1,125 @@
+## 장소 편집 1차 UX 수리 — 이름·툴바·속성·카드 (2026-09-15)
+
+장소 탭의 네 가지 결함을 고쳤다. 실측 근거와 함께 남긴다.
+
+**1. 이름이 제목이 됐다.** `spatialCompositionWorkspace.ts` 헤더의 고정 문구 "장소 편집" 을
+설계 이름으로 바꾸고 인라인 편집을 붙였다(`composition-title` 버튼 → `composition-title-input`).
+Enter 저장 · Esc 취소 · blur 저장. 이름은 **각 종류의 초안 명령**으로 고친다
+(`mutateWorkingSpace` / `mutateWorkingPlace` / `mutateWorkingGeography`) — 라이브러리 레코드를
+직접 고치면 저장 상태가 "읽기" 에 머물러 사용자가 초안이 생긴 걸 모른다. 실측으로 확인:
+이름 변경 후 제목·선택 드롭다운·인스펙터 입력이 모두 갱신되고 상태가 "적용하지 않은 변경이 있습니다" 로 바뀐다.
+
+**2. 툴바 15개 → 5개 + `⋯ 더 보기`.** `renderSpatialChrome` 의 한 줄 15버튼은 대부분
+비활성이라 무엇을 누를 수 있는지가 오히려 안 보였다. 추가·미리보기·적용·되돌리기·다시 실행만
+남기고 활성화·복제·삭제·삭제 확인·시공·시드·새로고침·분리는 `details.spatial-more` 안으로
+옮겼다. 삭제 확인이 떠 있으면 `open` 으로 강제해 접힌 채로 두지 않는다.
+`renderBrowserChrome` 도 같은 규칙으로 복제를 오버플로로 내렸고 요약 라벨을 `⋯ 더 보기` 로 통일했다.
+테스트는 이 버튼들을 직접 누르지 않는다(실측: `spatial-duplicate`·`spatial-activate`·`spatial-detach`·
+`spatial-refresh` 를 클릭하는 테스트 0건). e2e `spatial-authoring.spec.ts` 도 "숨은 툴바 버튼을
+가정하지 않는다" 를 규약으로 적어 두었다.
+
+**3. 속성 패널을 폈다.** 복합 편집기 우측의 접힌 `<details> 기존 설계와 생성 규칙` 을 걷어내고
+인스펙터를 바로 렌더한다. 이름 입력이 이 안에 있었기 때문에 **이름 수정 경로가 사실상 없었다.**
+`asset-browser.css` 의 중첩 인스펙터 리셋은 `.spatial-asset-browser` 에만 걸려 있었다 —
+`.spatial-mixed-workspace` 를 같은 선택자에 추가하지 않으면 좁은 폭에서 `.spatial-inspector` 가
+`display:none` 으로 사라진다.
+
+**4. 카드 이름 잘림.** `.spatial-card{min-height:168px}` + `.spatial-card-caption{min-height:48px}`
+조합에서 캡션의 세 줄(이름·부제·배지)이 48px 안으로 짓눌려 **13px 글자가 6px 상자에 잘렸다**
+(실측 `getBoundingClientRect().height === 6`). 캡션을 `min-height:auto; align-content:start;
+grid-auto-rows:auto` 로 풀고 카드 최소 높이를 184px(120 썸네일 + 62 캡션)로 올렸다. 이름 상자 18px 확보.
+
+> **함정 (실측으로 데었다):** 이 잘림을 고칠 때 `.spatial-gallery-grid{align-items:start}` 를
+> 먼저 시도했다. `getBoundingClientRect` 는 카드 182px·이름 18px 로 **정상을 보고했지만**
+> 실제 화면에서는 그리드 행이 43px 씩만 전진해 카드가 서로 **겹쳐** 캡션이 다음 카드 밑에 깔렸다.
+> 숫자만 보고 통과시키면 놓친다. 카드 테두리를 그려 픽셀로 확인하라
+> (`output/evidence/places-ux-audit/after/card-outline.png`).
+
+검증: `npm run typecheck:app` exit 0, `npm run gates -- --only css` 기준선 대비 회귀 0,
+`test/spatialMixedComposition` · `spatialCompositionWorkspace` · `spatialUnifiedPlaces` ·
+`spatialIntegratedAuthoring` · `spatialPlacePlacedUi` · `spatialNewPlace` 37건 통과.
+증거 스크린샷은 `output/evidence/places-ux-audit/{before,after}/`.
+
+### 2차 (같은 날) — 갤러리 복귀와 속성 패널 통합
+
+**← 장소 목록.** 세션에 `listView: boolean` 을 추가했다(`spatialAuthoringSession.ts`).
+`spatialShell.ts` 의 복합 편집기 분기가 `!session.listView` 를 함께 본다 — canonical 설계가
+선택된 채로도 카드 갤러리로 돌아갈 수 있다. 헤더의 `composition-back-to-list` 버튼이
+`listView: true` 로 켜고, 갤러리 카드 클릭(`spatialShell.onSelect`)이 다시 끈다.
+설계 선택 `<select>`(`composition-design`)는 **지우지 않고** 빵부스러기 우측의 보조
+빠른 전환으로 내렸다 — 테스트 4건(`spatialIntegratedAuthoring` 등)과 QA 스크립트 6건이
+이 testid 로 `selectOption` 을 쓴다. 완전 제거하려면 그 10곳을 같이 손봐야 한다.
+
+**속성 패널 통합.** 우측이 「배치 속성」과 「속성」 두 덩어리여서 이름이 제목·인스펙터
+h3·이름 입력까지 세 번 보였다. 「속성」 하나로 합치고(인스펙터 → 「캔버스」 소제목 →
+타일셋·크기·선택 컨트롤 → 건물로 묶기), 중복 이름 h3 는 복합 편집기 안에서만 CSS 로 숨겼다
+(`.spatial-mixed-workspace .asset-browser-detail .spatial-inspector-name`).
+
+### 3차 (같은 날) — 이 탭이 뭔지 말하게 한다: 목적·쓰임·배치 감사
+
+사용자 지적: 「장소에서 뭔 할 수 있는지 안 와닿B」. 1·2차는 버튼 위치를 고쳤고 존재 이유는
+손대지 않았다. 이 탭은 **사용자와 AI 가 공유하는 어휘집**이다 — `src/ai/spatialContext.ts` 가
+AI 에게 `list_spatial_designs kind:place` 로 완성된 집을 찾으라고 지시하고, `spatialTools.ts` 에
+list/get/upsert/preview_build/apply_build/edit_occurrence 6개 툴이 이 라이브러리를 겨눈다.
+
+**중요 — AI 위임 버튼은 넣지 않는다.** 감독자 판단: AI 에게 장소 배치를 맡기면 결과가 나쁘다.
+단, 버튼을 빼도 `place_concept`·`author_village` 는 이 탭 UI 와 무관하게 돌아간다 —
+제거는 품질 조치가 아니라 **위임을 권하지 않는다는 자세**다. 그래서 origin 배지가
+"출처 표시"가 아니라 **감사 추적**이 된다: AI 가 어디에 뭐를 놓았는지 찾아 고치는 수단.
+
+**(a) occurrence origin.** `SpatialOccurrence.origin?: "user"|"builtin"|"legacy"|"ai"` 추가
+(`types.ts`, guards 허용목록에 `origin` 추가, `SpatialInstantiation` 으로 전달).
+AI 경로(`spatialTools` apply_build, `spatialConceptTools`, `legacyHouseInterior`)는 `"ai"`,
+편집기 경로(`spatialBuildActions`, `spatialPlacePlaced`, `spatialPlaceRooms`, `placedSpaceMembers`)는
+`"user"` 를 찍는다. `authoringRefresh` 는 원본 값을 이어받는다.
+**기존 데이터는 필드가 없다** — `occurrenceOrigin()` 이 generatorVersion 태그로 읽는다
+(`spatial-ai*`·`spatial-legacy-house*` → ai, 그 밖 → user). 명시 필드가 항상 이긴다.
+
+**(b) 쓰임.** `spatialUsage.ts` 가 occurrences 를 설계별로 집계한다(루트뿐 아니라 다른 장소 안에
+방으로 들어간 자식 배치도 센다). 카드에 「맵 N곳 · AI n · 직접 m」 또는 「아직 안 쓰임」,
+갤러리에 쓰임 필터(전체/배치됨/안 쓰임/AI가 놓음), 선택 카드에 배치 팝오버(출처 배지 · 맵·좌표 ·
+「맵으로 →」). 점프는 `focusEditorRegion` + `requestDatabaseModalClose("x")` 를 쓴다
+(databaseModal 은 **지연 import** — 정적이면 모달→DB탭→갤러리→이 모듈 순환이 생긴다).
+
+> **함정 (실측으로 잡았다):** 쓰임을 `canonicalSource?.id ?? localId` 로 찾으면 **틀린다**.
+> 기본 카탈로그 카드의 localId 와 라이브러리 설계 id 가 둘 다 `inn` 이라, 기본 「여관」 카드가
+> 내 설계의 배치를 빌려 「맵 1곳 · AI 1」 로 표시됐다. **canonical 카드만 쓰임을 갖는다.**
+
+**(c) 목적과 액션.** 셀 폭 전체에 목적 스트립(「여기서 만든 장소가 정본입니다. AI는 여기서 골라
+쓸 뿐입니다.」 + 3단계). **갤러리 칼럼(~400px) 안에 넣지 마라** — 세 줄로 접혀 안 읽힌다.
+선택 카드에 「맵에 놓기」(기존 `chrome.build` → new-maps 미리보기)·「편집」·「배치 N」.
+카드가 `<button>` 이라 안에 버튼을 넣을 수 없어 `.spatial-card-cell` 로 감싼다.
+장소 갤러리는 **첫 클릭이 선택, 같은 카드 재클릭이 편집기 진입**이다(액션 줄을 볼 틈을 준다).
+
+> **함정 (또 실측):** 셸은 **정확히 두 행**짜리 그리드다(`chrome` / 본문). 목적 스트립을
+> `.spatial-shell` 의 **세 번째 자식**으로 넣으면 본문이 암시 행으로 밀려 `overflow` 에 잘렸다 —
+> DOM 에는 있는데 화면에 없어서, 프로브가 `spatial-purpose` 를 기다리는 동안 스크린샷은 깨끗했다.
+> 스트립과 본문을 `.spatial-shell-main`(그리드 행 auto·minmax(0,1fr)) 한 겹으로 묶어 둘째 행에 넣는다.
+
+> **함정 (팝오버가 화면 밖에 낳았다):** 셸은 리프레시마다 통째로 다시 만들어진다 — 카드 버튼 하나를
+> 눌러도 `.spatial-gallery-grid` 의 `scrollTop` 이 0 으로 돌아가고, 카드 아래에 붙는 팝오버는
+> 뷰포트 밖에 낙았다(실측: 그리드 2153 → 0, 팝오버 y=2724 · 뷰포트 280~824). 사용자에겐
+> 「배치 N 을 누르면 목록 맨 위로 튕기고 아무것도 안 뜨는」 증상이다. `usageChromeState.galleryScrollTop`
+> 으로 스크롤을 이어받고, 열린 팝오버가 있으면 `scrollIntoView({block:"nearest"})` 로 맞춘다
+> (실측: 2153 유지, 팝오버 y=571 · 가시). 필터 칩은 다른 결과집합이라 **의도적으로 0 으로 되돌린다**.
+
+> **CSS 예산:** 새 규칙에 `var(--db-studio-*, #HEX)` 폴백을 쓰면 `hexLiterals` 래칫이 막는다
+> (spatial-shell.css 31 → 43). 토큰은 `.database-modal-backdrop`(studio-theme.css)에 정의돼 있으므로
+> 새 규칙은 폴백 없이 `var(--db-studio-*)` 만 쓴다.
+
+> **기존 결함 (이 PR 밖, 재현 확인됨):** 장소 갤러리에서 시공→적용을 하면
+> `referenced: child:40:occ_…:sign:0` 이 잡히지 않고 셀이 날아간다. **1·2차 이전 코드에서도
+> 똑같이 재현된다** (96e8473ee 에서 별도 워크트리로 확인: 같은 예외, `galleryPresent:false`).
+> 이번 변경의 회귀가 아니다. 다만 「맵에 놓기」가 카드 주 액션이 되면서 **더 쉽게 밟힌다** —
+> 다음 순위로 고쳐야 한다. `ownership.ts:40` (strong 참조) 와 시공 compile scope 를 볼 것.
+
+검증: `typecheck:app` 0, `gates --only css` 회귀 0(budget·graph 통과), `test/spatialOccurrenceOrigin.test.ts`
+(신규 3건) 포함 관련 10파일 **97건** 통과. 증거: `output/evidence/places-ux-audit/phase3/`
+(01 목적·쓰임, 02 AI 필터, 03 배치 팝오버). 프로브: `scripts/tmp-phase3-probe.mjs`(gitignore).
+
+아직 안 한 것(후속): 위 시공→적용 결함, 층·방 트리. 층·방 트리는 「복합 공간 편집기」 절의
+단일 캔버스 평탄화 금지 규약과 충돌하므로 층별 편집 라우팅을 먼저 정해야 한다.
+
 ## 장소 통합 진행: 방·층과 재료 (2026-09-14)
 
 새 건물의 기존 구조 편집기에 「방 추가」「층 추가」를 붙였다. 원본 방을 복제해 덮지 않고
@@ -148,7 +270,7 @@ until those removals have real ownership evidence.
 - System 그룹의 `characterGraphics` (`db-tab-character-graphics`)는 `databaseCharacterGraphicsView.ts`가 기존 workspace/list/detail 빌더로 렌더한다. 주민 관계(`characters`)와 다른 면이며, 새로운 자산 목록이나 자동 이벤트 변경 경로를 만들지 않는다.
 - `project/characterGraphics.ts`가 기존 `resourceProfiles`의 얼굴 `graphicAttributes`/`graphicNote`, charset `characterSlots`를 읽고 쓴다. 이름은 sprite의 경우 기존 `charsetLabels`, 얼굴은 profile.name이다. 두 그림의 종류·나이·성별·피부·머리·의상·역할은 독립이며 명확한 글자 특징만 기본 표시한다. 모호함은 빈칸이다.
 - 상태는 pending/mapped/no-face, 품질은 unspecified/exact/approximate다. pending 이름 편집은 검토 완료가 아니며, no-face는 명시적인 값이다. 그림으로 얼굴을 지정해도 속성을 복사하지 않고 기존 맵·이벤트 명령을 바꾸지 않는다.
-- `rpg-zzu-npc-face-mapping` v1 `mappings`를 가져올 때 label/note/status/faceResourceId를 보존하며 품질 생략은 unspecified다. v2는 같은 mappings에 attributes/quality를 더하고 `faces: [{resourceId,label,note,attributes}]`를 갖는다. 전체 검증 후 history + labeled store.update 한 번으로 적용한다. 중복·잘못된 칸·알 수 없는 얼굴은 전체 가져오기를 거부한다.
+- `oprn-npc-face-mapping`(2026-09 개명 전 id `rpg-zzu-npc-face-mapping` 도 가져오기에서 받는다) v1 `mappings`를 가져올 때 label/note/status/faceResourceId를 보존하며 품질 생략은 unspecified다. v2는 같은 mappings에 attributes/quality를 더하고 `faces: [{resourceId,label,note,attributes}]`를 갖는다. 전체 검증 후 history + labeled store.update 한 번으로 적용한다. 중복·잘못된 칸·알 수 없는 얼굴은 전체 가져오기를 거부한다.
 - QA 진입: 기존 데이터베이스 → 시스템 → 캐릭터·얼굴. `db-cg-view-sprites`/`db-cg-view-faces`, `db-cg-import-file`, `db-cg-import-json`/`db-cg-import-apply`, `db-cg-export`가 공개 표면이다. 이름·속성 필터와 얼굴 후보 필터는 독립된 editor-only 상태다. 테스트: `characterGraphics.test.ts`, `characterGraphicsLoad.test.ts`, `databaseCharacterGraphics.test.ts`; 브라우저/원격 저장 검증은 별도다.
 ## Character appearance catalog v1 (2026-09-06)
 
@@ -604,6 +726,7 @@ Database tabs, record views, battle database records, utility records, reference
 ## Database Editor
 
 - **얼굴은 리소스 목록에서도 낱장이다 (2026-08-27):** 얼굴 한 칸 = 파일 한 장 모델은 피커뿐 아니라 **리소스 관리자(얼굴 그래픽) 목록**에서도 지켜야 한다. `defaultResourceProfiles()` 는 `AUTHORABLE_FACESET_FACE_ASSETS` 80장을 48×48 `kind: "faceset"` 프로필로 등록하고, `EASYRPG_RTP_ASSETS` 의 faceset 행(4×4 시트)은 **건너뛴다** — 시트는 v3 로드 해석용으로만 등록돼 있는 레거시다. 이미 저장된 프로젝트에 남은 시트 프로필은 `ensureBundledResourceProfiles()` 가 `LEGACY_FACESET_SHEET_IDS` 기준으로 걷어내므로, 로드 한 번으로 수렴한다. 실측 회귀: 이 등록을 빼먹으면 피커는 낱장인데 리소스 관리자는 192×192 시트 5장만 보여 저자 눈에는 "전혀 나뉘지 않은" 상태가 된다. 얼굴 표면을 손볼 때는 피커·이벤트 명령 미리보기·**리소스 관리자**·런타임 상태 메뉴를 같이 확인하라.
+- **공용 표정 16종 (2026-09-15):** 사용자 제공 푸른 머리 여행자 시트를 `public/assets/shared/faceset/source/blue-traveler-expressions.png`에 보존한다. `node scripts/prepare-shared-faceset.mjs`는 1254×1254 원본을 칸별 중심점 샘플링해 192×192로 변환하고, `node scripts/slice-faceset-sheets.mjs`가 48×48 낱장 16개와 카탈로그를 생성한다. `shared-blue-traveler-expressions-00..15`는 공용 내장 리소스이며 리소스 관리자에서는 **얼굴 그래픽 → 표정 관리** 하위 섹션에 캐릭터별 4×4 묶음으로 노출된다. `src/assets/faceExpressionSets.ts`가 묶음을 정의하고 `resourceExpressionSection.ts`가 캐릭터 선택·16종 미리보기를 렌더링한다. 일반 얼굴 그래픽 목록에서는 이 묶음의 낱장을 제외하되 DB 피커·AI 목록·새 프로젝트의 개별 ID와 01~16 이름은 유지한다. UI 검증 증거: `output/evidence/expression-manager/`. 생성기 origin `shared`는 숨김 대상 `generated`와 다르다. 프로젝트 업로드 복사본을 만들지 않는다. 얼굴 이름과 순서는 생성기의 `SHARED_EXPRESSION_NAMES`가 소유한다. 검증: 분할기 `--verify`, `test/facesetFaceAssets.test.ts`, `test/databaseResourcePickerDialog.test.ts`; 브라우저/원격 참조 저장 증거는 `output/evidence/shared-expressions/`.
 - **생성 얼굴 시리즈는 저작 목록에서 내렸다 (2026-09-12):** `generated-actor-hero-01/02-face-NN` 낱장 32장은 `GENERATED_FACESET_FACE_IDS` 에 묶여 리소스 관리자·DB 얼굴 피커·AI 리소스 카탈로그·캐릭터 그래픽 탭·에디터 워밍업에서 전부 빠진다. 다만 **해석·검증 등록은 유지**한다 — `FACESET_FACE_ASSETS`(112장 전체)·`resolveFacesetFaceAssetUrl`·`collectResourceIds`·`faceIdForSheetCell` 매핑은 그대로라, 이 얼굴을 가리키는 저장본도 깨지지 않는다(시트 id 와 같은 "등록만 남기기" 패턴). 저장본에 남은 프로필 행은 `ensureBundledResourceProfiles()` 가 로드 때 걷어낸다. 완전 삭제가 아니라 숨김이다 — 파일·id·해석 경로를 지우면 참조 프로젝트가 역직렬화에서 던진다.
 - **리소스 관리자 목록은 프로필을 정본 id 하나로 접는다 (2026-09-12):** 번들 프로젝트의 `resourceProfiles` 는 같은 시트를 두 네임스페이스로 등록한다 — 번들 textureKey(`tex_easyrpg_chipset_*`, `tex_easyrpg_charset_*`)와 RTP 매니페스트 id(`easyrpg-chipset-*`, `easyrpg-charset-*`). 데이터상 둘 다 유효한 id 라 프로필은 **지우지 않는다**(액터 `characterResourceId` 가 `easyrpg-charset-*` 로 저장되고, `characterSlots`·`graphicAttributes` 같은 저작 메타가 어느 id 로도 온다 — `characterGraphics.test.ts` 가 두 id 공존을 요구). 다만 목록에 카드가 두 장이면 중복으로 읽히므로 `resourceManagerUtils.dedupeListedProfiles` 가 표시 단계에서만 접는다: (a) `assetId` 가 업로드 자산과 겹치는 프로필(오디오·몬스터 카탈로그의 `Object.hasOwn(uploaded, id)` 와 같은 규칙 — 이미지 import 는 uploaded+profile 을 같은 id 로 둘 다 쓴다), (b) 정본 id 가 같은 별칭 프로필. 정본 대응은 `canonicalResourceProfileId`: charset 은 `findCharsetAsset().textureKey`, chipset 은 번들 경로 파일명(`-transparent` 제거)에서 유도 — `tex_tiles_default` 는 프로필로 등록되지 않는 런타임 키라 `easyrpg-chipset-exterior` 는 별칭만으로 남아 그대로 보인다. 카테고리 배지 수도 같은 목록을 센다. 계약: `test/resourceManagerDedup.test.ts`, `test/e2e/oprn-resource-manager.spec.ts`.
 - **시트 업로드는 앱이 쪼갠다 (2026-08-27):** 저자가 192×192(16칸)·96×96(4칸) 시트를 업로드하면 `planFacesetSheetSplit` → `sliceFacesetSheetDataUrls`(canvas)가 48×48 낱장으로 잘라 `<base>-00..-15` 리소스로 등록한다. `decideFacesetUploadDimensions` 는 더 이상 시트를 거부하지 않는다 — 저자에게 터미널에서 `npm run assets:slice-faces` 를 돌리라고 요구하지 않는다(그 스크립트는 레포 내장 에셋 재생성 전용이다). 계약: `test/facesetSheetSlicing.test.ts`, `test/facesetUploadDimension.test.ts`.
@@ -723,7 +846,7 @@ The Database modal was modernized in six waves while keeping every hard contract
 
   Contracts: `test/databaseTabIcons.test.ts` (icon coverage, house SVG spec, no color literals, no emoji, no CSS `content` glyph on `.db-tab`, no `attr(data-short)`) and `test/e2e/database-sidebar-rail-modern.spec.ts` (runs on **Firefox** - on hosts whose Docker bridges churn, Chromium aborts every module load with `ERR_NETWORK_CHANGED` and renders a blank page). Evidence: `output/evidence/db-rail-modern/`.
 - **Per-modal tab render cache (2026-08-24):** Ordinary sidebar clicks reuse the detached DOM of tabs already visited in the current Database modal, avoiding repeated list/thumbnail/detail-form construction. The cache is scoped by modal host and exact `Project` object identity; every `store.update`/`replace`, undo/redo, AI/external project refresh, or renderer-time normalization changes that identity and drops all older entries. `refreshDatabasePanel` and programmatic G006 `switchDatabaseActiveTab` always render fresh because their target selection/session state may have changed. Debounced callbacks from a detached tab may invalidate only their old entry and must never repaint the currently active tab. Contract tests: `test/databaseRecordPartialRender.test.ts` (same-project DOM reuse + project-mutation invalidation); browser validation should sweep all 24 tab buttons and include an edit -> other tab -> undo -> return scenario.
-- **Gallery view + category filter chips (W3):** `databaseRecordViewSession.ts` persists per-collection view mode (`rpg-zzu.database.viewMode`, `"gallery"|"list"`) and category filter (`rpg-zzu.database.categoryFilter`). Icon-bearing collections (items/equipment/actors/enemies/skills/classes/troops/states/battleAnimations) default to gallery; switch/variable/terms and other text collections stay list-only. Toggle buttons `db-view-toggle-gallery` / `db-view-toggle-list` are only rendered for gallery-eligible collections. Gallery cards (`button.db-gallery-card`, testid `db-record-card-<id>`) render a 48px thumbnail + name + category tag, windowed by the virtualizer (`databaseListVirtualizer.ts` columns option — 3 columns ≤1100px modal width, 4 above). Filter chips (`db-filter-chip-<id>`, "전체" = `db-filter-chip-all`) appear for items (ITEM_TYPES) and equipment (slots); they AND with the search query. The list view is preserved as a toggle — never remove it.
+- **Gallery view + category filter chips (W3):** `databaseRecordViewSession.ts` persists per-collection view mode (`oprn:database.viewMode`, `"gallery"|"list"`) and category filter (`rpg-zzu.database.categoryFilter`). Icon-bearing collections (items/equipment/actors/enemies/skills/classes/troops/states/battleAnimations) default to gallery; switch/variable/terms and other text collections stay list-only. Toggle buttons `db-view-toggle-gallery` / `db-view-toggle-list` are only rendered for gallery-eligible collections. Gallery cards (`button.db-gallery-card`, testid `db-record-card-<id>`) render a 48px thumbnail + name + category tag, windowed by the virtualizer (`databaseListVirtualizer.ts` columns option — 3 columns ≤1100px modal width, 4 above). Filter chips (`db-filter-chip-<id>`, "전체" = `db-filter-chip-all`) appear for items (ITEM_TYPES) and equipment (slots); they AND with the search query. The list view is preserved as a toggle — never remove it.
 - **Modern control primitives (W4):** `src/editor/panels/databaseControls.ts` adds `sliderStepperField` (range+number pair, `-slider`/`-stepper` testid suffixes, clamped + step-normalized both ways), `segmentedControl` (native radio group — testid on the group, `-option` on each radio), `toggleSwitch` (checkbox `role="switch"`, Space/click native), and `avatarChipRow` (faceset circular chips, `aria-pressed`, `-chip` testid + `data-actor-id`). Existing `textField`/`numberField`/`selectField` signatures are unchanged. No custom focus traps; Escape keeps the modal's top-level routing.
 - **Item/equipment inspectors (W4):** `databaseItemRecordView.ts` renders a header (96px icon + name `db-field-name` + type tag) above the workbench. Medicine HP/MP recovery % uses the slider/stepper (`db-field-item-hp-percent-stepper` etc., 0–100 step 5); 대상(scope) is a segmented control; usable actors are avatar chips (`db-field-item-usable-actors`, equipment items keep per-actor checkboxes `db-field-item-usable-actor-<id>`); menu/battle flags are toggles. `databaseEquipmentRecordView.ts` promotes the summary chip row (`db-equipment-summary-chips`, pure `equipmentEffectSummaryChips`) into the header next to icon + name + slot segmented control. The legacy duplicate name field was removed from `databaseRecordViews.ts recordForm` for items/equipment — the inspector headers own `db-field-name` (one element, Playwright strict-mode safe).
 - **System Studio + section nav (W4.5, revised 2026-08-25):** `databaseSystemView.ts` splits the tab into 9 mounted sections (`db-system-nav-<slug>`: overview/party/display/resources/startup/optin/time/typechart/title). `overview` is the default and exclusively owns `databaseSystemStudio.ts`: the project-backed 시작 설정/파티/화면/시간 cards, a derived semantic state registry, the project-backed 전투 규칙/기능 확장/타이틀 cards, and a live title/current-value preview. The overview is a read-only summary and adds no authored fields; every ordinary card value must come from an existing `Project` field or a derived index. Unimplemented Save/Economy/Input editors stay hidden rather than appearing as placeholder cards, hard-coded completion/warning claims are forbidden, and preview facts are non-interactive until a real destination exists. State usage comes from `buildStoryFlagUsageIndex`, and card navigation delegates to the existing section/tab buttons. Switching sections only toggles DOM visibility — it never calls `store.update` (zero snapshots). Field testids (`db-field-system-*`) remain reachable inside hidden sections; structural contracts (party slots, time enable, type-list change re-render) are unchanged. `system-studio.css` consumes the shared cream Database palette, with a 184px section nav, 248px preview, and 18px content gutter beside the 56px global icon rail. Contracts: `test/databaseSystemStudio.test.ts`, `test/databaseSystemSections.test.ts`, `test/e2e/database-icon-rail.spec.ts`, and the ≥95% structural parity capture in `test/e2e/system-studio-visual.spec.ts`. Browser evidence: `output/evidence/system-studio/system-studio-backed-settings-1586x992.png`.
@@ -981,7 +1104,7 @@ Phase 1은 탐색·선택·표현 변경뿐이다. 방 마이그레이션과 마
 - **구조물 스탬프는 사람 팔레트 전용이다 (2026-08-31).** 집 시공은 `author_house`.
 - **`repeatability` 가 시공 반복을 지배한다.** 이 값이 없으면 우물·간판처럼 한 채로 완결인 구조물도 이어 찍힌다. `ai.repeatability === "fixed"` 면 1회로 고정하고 `undefined` 는 기존 동작을 유지한다 — 하위 호환. 이 반복 규칙은 사람 팔레트/`applyStampStructureKit` 경로의 계약이다.
 - **AI 가 받는 것이 넓어졌다.** `src/ai/contextBuilder.ts` 가 구조물마다 설명·배치규칙·반복 여부를 함께 출력하고(설명은 100자로 자른다), `structureKitTools.ts` 의 도구 응답도 `ai` 를 싣는다. 이름만 보고 추측하던 상태를 끝낸 것이다.
-- **파일 포맷은 `rpgzzu-structure-kits` v1**(`structureKitFile.ts`). 파일에 들어가는 순간 사진이 된다 — 받는 쪽에 같은 코드가 없어도 열린다. 가져오기는 `planImport` 가 3단으로 판정한다: 포맷·버전 검증(미래 버전 거부) → 칩셋 경계 확인(`structure-kit-import-mismatch`) → 서명 기준 중복 판정. 같은 파일을 두 번 넣어도 사본이 쌓이지 않는다.
+- **파일 포맷은 `oprn-structure-kits` v1**(`structureKitFile.ts`; 파일 접미사 `.oprn-kit.json`. 2026-09 개명 전 판별자 `rpgzzu-structure-kits` 파일도 읽어 새 판별자로 정규화한다). 파일에 들어가는 순간 사진이 된다 — 받는 쪽에 같은 코드가 없어도 열린다. 가져오기는 `planImport` 가 3단으로 판정한다: 포맷·버전 검증(미래 버전 거부) → 칩셋 경계 확인(`structure-kit-import-mismatch`) → 서명 기준 중복 판정. 같은 파일을 두 번 넣어도 사본이 쌓이지 않는다.
 - 내보내기·가져오기 진입점: 도구줄 `structure-kit-export`(체크된 행이 있으면 **지금 보이는 그 선택**만, 없으면 앨범 전체) / `structure-kit-import`, 확인창은 `structure-kit-import-list` + `structure-kit-import-confirm`. 다운로드는 `src/util/downloadBlob.ts` 한 곳을 지난다 — anchor 를 DOM 에 붙였다 떼고 `revokeObjectURL` 을 동기 호출하지 않는, `menu.ts` 에서 겪은 3-버그 회피 패턴이다.
 - 커버리지: `test/structureKitRasterModel.test.ts`(칸 계산·페인트·크기조절·부위 CRUD·굽기), `test/structureKitFile.test.ts`(직렬화·검증·`planImport`·origin 보존), `test/structureKitEditorDialog.test.ts`, `test/structureKitTools.test.ts`(repeatability), `test/downloadBlob.test.ts`, 그리고 브라우저 왕복은 `test/e2e/db-structure-editor.spec.ts` 3케이스.
 

@@ -18,7 +18,7 @@ page.on('console', m => { if(m.type()==='error')console.log('CONSOLE',m.text().s
 page.on('requestfailed', r => console.log('REQUESTFAILED',r.url().slice(0,200),r.failure()?.errorText));
 page.on('pageerror', e => { errors.push(e.message); console.log('PAGEERROR', e.message); });
 try {
-  await page.addInitScript(() => { localStorage.setItem('rpg-zzu:editor-ui-mode', 'expert'); localStorage.setItem('oprn:editor-ui-mode', 'expert'); });
+  await page.addInitScript(() => { localStorage.setItem('oprn:editor-ui-mode', 'expert'); localStorage.setItem('oprn:editor-ui-mode', 'expert'); });
   console.log('Loading editor');
   await page.goto(`${base}/?freshProject=1`, { waitUntil: 'domcontentloaded', timeout: 180000 });
   console.log('Waiting for database launcher');

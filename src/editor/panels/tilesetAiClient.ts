@@ -1,6 +1,6 @@
 // 타일셋 매핑 호출. **전송은 llmClient.chatCompletion 하나로 모은다.**
 //
-// 예전에는 이 파일이 직접 fetch 하면서 companion/proxyAuth 분기와 X-Rpgzzu-Provider·Authorization
+// 예전에는 이 파일이 직접 fetch 하면서 companion/proxyAuth 분기와 X-Oprn-Provider·Authorization
 // 헤더를 손으로 조립했다. 그 중복 때문에 에디터 AI 가 OAuth 전용으로 바뀐 뒤 여기만 갱신되지 않아
 // 타일셋 AI 가 무증상으로 죽어 있었다(실측 2026-08-21). 헤더·인증·엔드포인트 판정을 llmClient 에
 // 넘기면 그 사고 유형이 구조적으로 막히고, 1회 자동 재시도·타임아웃·전송 건강/모델 강등 보고도 함께 붙는다.

@@ -30,7 +30,7 @@ describe("downloadBlob", () => {
       originalAppend(...(children as never[]));
     };
 
-    downloadBlob(new Blob(["x"]), "우물.rpgzzu-kit.json");
+    downloadBlob(new Blob(["x"]), "우물.oprn-kit.json");
     expect(appended).toContain("a");
     expect(body.querySelector("a")).toBeNull(); // click 후 제거됐다
   });

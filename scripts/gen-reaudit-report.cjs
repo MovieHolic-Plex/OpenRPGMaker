@@ -57,7 +57,7 @@ ul{padding-left:20px;margin:10px 0}li{margin:5px 0}
 const html = `<!doctype html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>타일 의미 표 재감사 보고서 · rpg-zzu</title>
+<title>타일 의미 표 재감사 보고서 · oprn</title>
 <style>${CSS}</style></head><body><div class="wrap">
 
 <h1>여섯 칩셋 타일 의미 표 재감사</h1>

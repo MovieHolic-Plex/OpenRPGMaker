@@ -7,43 +7,51 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 const root = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(root, "..");
 
-function envFileValue(name) {
+/** .env.local → .env 순으로 읽어 첫 정의를 남긴다(앞 파일이 이긴다). 옛 이름은 별칭 심이 새 이름으로 옮긴다. */
+function envFileValues() {
+  const values = {};
   for (const file of [join(repoRoot, ".env.local"), join(repoRoot, ".env")]) {
     if (!existsSync(file)) continue;
     for (const line of readFileSync(file, "utf8").split(/\r?\n/)) {
-      if (line.startsWith(`${name}=`)) {
-        return line.slice(name.length + 1).trim().replace(/^["']|["']$/g, "");
-      }
+      const separator = line.indexOf("=");
+      if (separator <= 0 || line.startsWith("#")) continue;
+      const name = line.slice(0, separator).trim();
+      if (name in values) continue;
+      values[name] = line.slice(separator + 1).trim().replace(/^["']|["']$/g, "");
     }
   }
-  return "";
+  applyLegacyEnvAliases(values);
+  return values;
 }
 
 // 0.0.0.0:9888 은 Tailscale(`mdc-server`) 에서 연다. Origin/Host 가 빠져도
 // 로그인 시작 URL 이 127.0.0.1 로 새지 않게 공개 origin 을 고정한다.
-const publicOrigin = process.env.RPG_ZZU_PUBLIC_ORIGIN
-  || envFileValue("RPG_ZZU_PUBLIC_ORIGIN")
+const publicOrigin = process.env.OPRN_PUBLIC_ORIGIN
+  || envFileValues().OPRN_PUBLIC_ORIGIN
   || "http://mdc-server:9888";
-console.log(`[rpg-zzu] preview public origin ${publicOrigin}`);
+console.log(`[oprn] preview public origin ${publicOrigin}`);
 
 const vite = fileURLToPath(new URL("../node_modules/vite/bin/vite.js", import.meta.url));
 const preview = spawn(
   process.execPath,
   [vite, "preview", "--configLoader", "runner", "--host", "0.0.0.0", "--port", "9888", "--strictPort"],
-  { stdio: "inherit", env: { ...process.env, RPG_ZZU_PUBLIC_ORIGIN: publicOrigin } },
+  { stdio: "inherit", env: { ...process.env, OPRN_PUBLIC_ORIGIN: publicOrigin } },
 );
 
 // 종료 사유를 남긴다 — 이게 없으면 preview 가 조용히 exit 1 로 죽어 원인을 못 읽는다.
 preview.on("exit", (code, signal) => {
-  console.log(`[rpg-zzu] vite preview exited: code=${code ?? "null"} signal=${signal ?? "none"}`);
+  console.log(`[oprn] vite preview exited: code=${code ?? "null"} signal=${signal ?? "none"}`);
   process.exit(signal ? 1 : (code ?? 0));
 });
 preview.on("error", (error) => {
-  console.error(`[rpg-zzu] vite preview failed to start: ${error.message}`);
+  console.error(`[oprn] vite preview failed to start: ${error.message}`);
   process.exit(1);
 });
 for (const signal of ["SIGINT", "SIGTERM"]) {

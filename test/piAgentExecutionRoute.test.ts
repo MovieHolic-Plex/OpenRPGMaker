@@ -46,12 +46,14 @@ describe("자율성 다이얼 → Pi 실행 계획", () => {
 });
 
 describe("평문 지시는 팀 비트만 고른다", () => {
-  it("단독은 현재 맵이 범위, 팀은 후보 맵 없음", () => {
-    expect(plainPiCommand("  집 지어  ", "single", "map_a")).toEqual({ mode: "single", mapIds: ["map_a"], task: "집 지어" });
-    expect(plainPiCommand("집 지어", "team", "map_a")).toEqual({ mode: "team", mapIds: [], task: "집 지어" });
+  // 실측(2026-09-15): 팀 모드가 현재 맵을 버려 팀장이 43맵 중 엉뚱한 맵에 배정했다. 사용자는 보통 «지금 보고 있는 맵» 을
+  // 고치라고 말하므로, 팀도 현재 맵을 안다 — 후보는 그대로 프로젝트 전체(다른 맵을 지목한 지시가 되게)이고 기본 대상만 현재 맵이다.
+  it("단독은 현재 맵이 범위, 팀은 후보 맵 없음 + 현재 맵을 기본 대상으로 싣는다", () => {
+    expect(plainPiCommand("  집 지어  ", "single", "map_a")).toEqual({ mode: "single", mapIds: ["map_a"], currentMapId: "map_a", task: "집 지어" });
+    expect(plainPiCommand("집 지어", "team", "map_a")).toEqual({ mode: "team", mapIds: [], currentMapId: "map_a", task: "집 지어" });
   });
   it("현재 맵이 없으면 범위가 비고 지시는 그대로다", () => {
-    expect(plainPiCommand("map_a 집 지어", "single", null)).toEqual({ mode: "single", mapIds: [], task: "map_a 집 지어" });
+    expect(plainPiCommand("map_a 집 지어", "single", null)).toEqual({ mode: "single", mapIds: [], currentMapId: null, task: "map_a 집 지어" });
   });
 });
 

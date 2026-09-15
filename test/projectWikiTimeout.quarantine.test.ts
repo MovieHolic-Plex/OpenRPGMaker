@@ -349,13 +349,32 @@ describe("own extraction timeout through the normal user-turn boundary", () => {
     expect(h.session.getProposedProject()).toEqual(h.before);
   });
 
-  it.for(["unknown-timeout", "network", "malformed", "protected", "supersession", "concurrent", "save"])("keeps %s errors fatal", async (failure, context) => {
+  // 「형식 오류만 유예」(2026-09-15): 응답 모양이 틀린 것은 이번 턴 기록을 포기할 뿐이고,
+  // 보호 문서 침범·역전 supersede 는 모델이 프로젝트를 잘못 읽었다는 판정이라 그대로 치명적이다.
+  it("defers a malformed reply and keeps authoring instead of killing the turn", async (context) => {
+    const h = fixture(context.signal);
+    const pending = h.run();
+    await h.started.promise;
+    h.transport.resolve(response("not JSON"));
+    const result = await pending;
+
+    expect(result.stoppedReason).not.toBe("error");
+    expect(h.outcomes).toEqual([{ kind: "deferred", reason: "extraction-invalid" }]);
+    expect(h.events.filter(event => event.type === "status" && event.text.startsWith("wiki:deferred extraction-invalid"))).toHaveLength(1);
+    // The request still reaches the authoring loop — that is the whole point of deferring.
+    expect(h.order.slice(0, 4)).toEqual(["extraction", "intent", "planner", "authoring"]);
+    // The record itself is untouched: a malformed patch is never half-written.
+    expect(h.flush).not.toHaveBeenCalled();
+    expect(h.deliveries).toEqual([]);
+    expect(store.getCurrent().world).toEqual(h.before.world);
+  });
+
+  it.for(["unknown-timeout", "network", "protected", "supersession", "concurrent", "save"])("keeps %s errors fatal", async (failure, context) => {
     const h = fixture(context.signal, failure === "save" ? { flush: async () => { throw new Error("Persistence failure"); } } : {});
     const pending = h.run();
     const request = await h.started.promise;
     if (failure === "unknown-timeout") h.transport.reject(new DOMException("Unknown deadline", "TimeoutError"));
     else if (failure === "network") h.transport.reject(new Error("Provider failure"));
-    else if (failure === "malformed") h.transport.resolve(response("not JSON"));
     else if (failure === "protected") h.transport.resolve(response(patch(request, { id: "w_manual" })));
     else if (failure === "supersession") {
       const payload = JSON.parse(patch(request));

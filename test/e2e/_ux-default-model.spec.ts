@@ -10,7 +10,7 @@ const FORCED = "gemini-3.7-flash";
 test("default model: 새 부팅에서 두 모델 슬롯이 강제 기본값이다", async ({ page }) => {
   test.setTimeout(180_000);
   await page.setViewportSize({ width: 1600, height: 1000 });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1");
   const guest = page.getByTestId("login-guest");
   if (await guest.isVisible().catch(() => false)) await guest.click();

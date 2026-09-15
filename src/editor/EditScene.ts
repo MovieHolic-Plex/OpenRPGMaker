@@ -116,6 +116,8 @@ import { editorWorkingEvents } from "@/project/eventDrafts";
 import { findEventCoveringPoint } from "@/project/eventFootprintQuery";
 import { topTileInStack } from "@/project/mapOverlayTiles";
 import type { MapId } from "@/project/types";
+import { clearMapDissolveVeil } from "@/editor/mapDissolveVeil";
+import { prefersReducedMotion } from "@/util/reducedMotion";
 import { toast } from "@/util/toast";
 
 const PhaserRuntime = getLoadedPhaser();
@@ -537,6 +539,9 @@ export class EditScene extends PhaserRuntime.Scene {
       delete editWindow.__oprnEditVisibleArea;
     }
     this.clearBuildPaletteOverlay();
+    // 씬이 내려가는 중에 전환이 걸려 있으면 그 뒷정리(reveal)가 영영 오지 않는다 —
+    // 다음 씬이 종이색 판에 덮인 채로 뜨는 것은 하드컷보다 나쁘다.
+    clearMapDissolveVeil();
     this.regionTaskBadge?.remove();
     this.regionTaskBadge = null;
     this.activeRegionTask = null;
@@ -2038,7 +2043,9 @@ export class EditScene extends PhaserRuntime.Scene {
     this.activeCameraFocus = motion;
     const distance = Math.hypot(lookAt.x - startX, lookAt.y - startY) * startZoom;
     const duration = Math.min(650, Math.max(300, 300 + distance * 0.15));
-    const reducedMotion = typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // 팬을 돌리지 않는 두 경우. 동작 줄이기는 접근성이고, `immediate` 는 맵 전환이다 —
+    // 둘 다 「마지막 프레임만 실행」으로 목적지에 그대로 세운다.
+    const arriveNow = prefersReducedMotion() || target.immediate === true;
     // 카메라가 움직이면 DOM 마커·선택 팔레트 오버레이·AI 뷰포트 스냅샷이 전부 낡는다.
     // 손 팬은 onPanMove 에서 이미 이 셋을 되맞추는데 프로그램 팬은 아무것도 하지 않아
     // 조수가 데려간 화면에서 마커가 엉뚱한 자리에 남고 AI 는 이전 위치를 계속 읽었다.
@@ -2064,7 +2071,7 @@ export class EditScene extends PhaserRuntime.Scene {
       this.activeCameraFocus = null;
       this.afterCameraMoved();
     };
-    if (reducedMotion) advance(camera, 1);
+    if (arriveNow) advance(camera, 1);
     else camera.pan(lookAt.x, lookAt.y, duration, "Sine.easeInOut", true, advance);
   }
 

@@ -3,6 +3,9 @@ import path from "node:path";
 import { createFarmingDemoProject } from "../src/project/defaults/defaultProject.ts";
 import { loadProjectFromSupabase, saveProjectToSupabase } from "../src/project/supabaseProjectSync.ts";
 import type { Project } from "../src/project/types.ts";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 const DEFAULT_PROJECT_ID = "rpg-zzu-stardew-demo";
 const RESIDENT_IDS = [
@@ -129,7 +132,7 @@ const fileEnv = loadEnvFiles([".env", ".env.local"]);
 const config = {
   url: (process.env.VITE_SUPABASE_URL ?? fileEnv.VITE_SUPABASE_URL ?? "").replace(/\/$/, ""),
   anonKey: process.env.VITE_SUPABASE_ANON_KEY ?? fileEnv.VITE_SUPABASE_ANON_KEY ?? "",
-  projectId: process.env.RPG_ZZU_STARDEW_PROJECT_ID ?? DEFAULT_PROJECT_ID,
+  projectId: process.env.OPRN_STARDEW_PROJECT_ID ?? DEFAULT_PROJECT_ID,
 };
 if (!config.url || !config.anonKey) throw new Error("Supabase URL and anon key are required in .env or .env.local");
 

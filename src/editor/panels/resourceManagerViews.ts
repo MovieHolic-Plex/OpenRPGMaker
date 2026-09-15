@@ -1,3 +1,5 @@
+import { FACE_EXPRESSION_SETS, isFaceExpressionResource } from "@/assets/faceExpressionSets";
+import { renderExpressionSection } from "./resourceExpressionSection";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { getMonsterResource, listMonsterResources, type MonsterResource } from "@/assets/monsterResourceCatalog";
 import { store } from "@/project/store";
@@ -21,6 +23,8 @@ export type ResourceCategory = {
 export type ResourceWorkbenchOptions = {
   readonly categories: readonly ResourceCategory[];
   readonly selectedKind: ResourceProfile["kind"];
+  readonly expressionView?: boolean;
+  readonly onSelectExpressions?: () => void;
   readonly profiles: readonly ResourceProfile[];
   readonly uploaded: readonly UploadedAsset[];
   readonly kindSelect: HTMLSelectElement;
@@ -53,7 +57,8 @@ export function renderResourceWorkbench(container: HTMLElement, options: Resourc
   // 1장뿐이라, 프로필만 보여주면 생성 아트·Scarloxy 팩 160여 종이 전부 숨는다.
   const monsterResources = listMonsterResources(project);
   let selectedProfiles = dedupeListedProfiles(options.profiles, options.uploaded)
-    .filter((profile) => profile.kind === options.selectedKind);
+    .filter((profile) => profile.kind === options.selectedKind)
+    .filter((profile) => options.selectedKind !== "faceset" || !isFaceExpressionResource(profile.assetId));
   let selectedUploaded = options.uploaded.filter((asset) => resourceKindFromUpload(asset.kind) === options.selectedKind);
   if (options.selectedKind === "monster") {
     const derived = monsterResourceEntries(project, monsterResources);
@@ -108,7 +113,7 @@ export function renderResourceWorkbench(container: HTMLElement, options: Resourc
 
   shell.append(
     resourceCategoryList(options, monsterResources.length),
-    options.audioPanes?.entries ?? resourceEntryList(selectedProfiles, selectedUploaded, options.actions, handleSelect, () => selectedItem, options.onImport, options.selectedKind, options.recentAssetId),
+    options.expressionView && options.selectedKind === "faceset" ? renderExpressionSection(profile => handleSelect({ type: "profile", profile })) : options.audioPanes?.entries ?? resourceEntryList(selectedProfiles, selectedUploaded, options.actions, handleSelect, () => selectedItem, options.onImport, options.selectedKind, options.recentAssetId),
     options.audioPanes?.commands ?? resourceCommandPanel(options, previewWell, () => selectedItem)
   );
 
@@ -248,8 +253,8 @@ function resourceCategoryList(options: ResourceWorkbenchOptions, monsterTotal: n
 
   const listedProfiles = dedupeListedProfiles(options.profiles, options.uploaded);
   for (const category of options.categories) {
-    const selected = category.kind === options.selectedKind;
-    const countProfiles = listedProfiles.filter(p => p.kind === category.kind).length;
+    const selected = category.kind === options.selectedKind && !options.expressionView;
+    const countProfiles = listedProfiles.filter(p => p.kind === category.kind && (category.kind !== "faceset" || !isFaceExpressionResource(p.assetId))).length;
     const countUploaded = options.uploaded.filter(u => resourceKindFromUpload(u.kind) === category.kind).length;
     const totalCount = category.kind === "monster" ? monsterTotal : countProfiles + countUploaded;
 
@@ -273,6 +278,16 @@ function resourceCategoryList(options: ResourceWorkbenchOptions, monsterTotal: n
         on: { click: () => options.onSelectKind(category.kind) },
       })
     );
+    if (category.kind === "faceset" && options.onSelectExpressions) {
+      const active = options.selectedKind === "faceset" && options.expressionView;
+      list.append(el("button", {
+        class: `rm-category-row rm-expression-category${active ? " active" : ""}`,
+        attrs: { type: "button", role: "option", "aria-label": "표정 관리", "aria-selected": String(!!active) },
+        dataset: { testid: "resource-category-expressions" },
+        children: [el("span", { text: "↳ 표정 관리" }), el("span", { class: "rm-category-badge", text: String(FACE_EXPRESSION_SETS.length) })],
+        on: { click: options.onSelectExpressions },
+      }));
+    }
   }
   return list;
 }

@@ -37,7 +37,7 @@ export interface ChatGptAuthStatus {
  * 동반 서비스는 셸 환경 변수(예: `ANTHROPIC_API_KEY`)만 있어도 `connected:true` 를 준다.
  * 그 자격은 에디터가 만들지도 못하고 지우지도 못하므로, 화면이 그것을 "연결됨"이라 말하면
  * 연결 해제 버튼이 거짓이 되고 감독은 자기가 제어할 수 없는 상태를 보게 된다.
- * 그래서 에디터는 `~/.rpg-zzu/oh-my-pi-auth.json` 에 실제로 저장된 자격만 인정한다.
+ * 그래서 에디터는 `~/.oprn/oh-my-pi-auth.json` 에 실제로 저장된 자격만 인정한다.
  */
 export function hasStoredCompanionCredential(status: ChatGptAuthStatus): boolean {
   return status.connected && status.env !== true && status.expired !== true;

@@ -7,12 +7,12 @@ import { tapKey, startNewGameFromTitle } from "./runtimeInput";
 
 declare const process: {
   readonly env: {
-    readonly RPG_ZZU_EVIDENCE_URL?: string;
+    readonly OPRN_EVIDENCE_URL?: string;
   };
 };
 
 const EVIDENCE_DIR = "output/evidence/city-start-editor";
-const APP_URL = process.env.RPG_ZZU_EVIDENCE_URL ?? "/";
+const APP_URL = process.env.OPRN_EVIDENCE_URL ?? "/";
 const INTERIOR_MAP_ID = "map_starter_house_interior";
 const CITY_DOOR = { x: 33, y: 38 } as const;
 const CITY_RETURN = { x: 33, y: 39 } as const;
