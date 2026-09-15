@@ -6,6 +6,8 @@ import { resourceReferenceMessage } from "@/editor/databaseReferences";
 import { store } from "@/project/store";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
+import { projectRepository } from "@/project/persistence/repository";
+import { uploadedAssetForImport } from "@/editor/uploadedAssetStorage";
 import {
   getResourceProfileSpec,
   RESOURCE_PROFILE_SPECS,
@@ -214,7 +216,7 @@ function importImageResource(file: File, kind: ResourceKind, container: HTMLElem
       return;
     }
     void prepareImportedImageDataUrl(rawDataUrl, normalizeToPng || urlDecision.normalizeToPng).then(
-      ({ dataUrl, width, height }) => {
+      async ({ dataUrl, width, height }) => {
         const facesetPlan = kind === "faceset" ? planFacesetSheetSplit(width, height) : null;
         if (facesetPlan !== null) {
           void importFacesetSheetAsFaces(dataUrl, file.name, facesetPlan, container);
@@ -227,7 +229,8 @@ function importImageResource(file: File, kind: ResourceKind, container: HTMLElem
         }
         const spec = getResourceProfileSpec(kind);
         const id = genId(`${kind}_img`);
-        const asset: UploadedAsset = {
+        const asset = await uploadedAssetForImport({
+          repository: projectRepository(),
           id,
           name: file.name.replace(/\.[^.]+$/, ""),
           kind,
@@ -240,7 +243,7 @@ function importImageResource(file: File, kind: ResourceKind, container: HTMLElem
             width,
             height,
           },
-        };
+        });
         store.update((project) => {
           project.assets.uploaded[id] = asset;
           project.resourceProfiles.push({
