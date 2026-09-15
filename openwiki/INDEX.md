@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **68쪽 / 2705KB / 약 761,529 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **68쪽 / 2711KB / 약 763,398 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,16 +15,16 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 411KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2122 | ~116,452 |
-| `openwiki/editor-ai-tools.md` | 195KB | 82KB ⚠상한 초과 — 절을 더 쪼개라 | 1504 | ~54,516 |
-| `openwiki/editor-database.md` | 284KB | 59KB ⚠상한 초과 — 절을 더 쪼개라 | 1584 | ~82,227 |
-| `openwiki/editor-event-authoring.md` | 136KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 744 | ~39,121 |
+| `openwiki/editor-ai-panel.md` | 411KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2122 | ~116,450 |
+| `openwiki/editor-ai-tools.md` | 195KB | 82KB ⚠상한 초과 — 절을 더 쪼개라 | 1504 | ~54,515 |
+| `openwiki/editor-database.md` | 286KB | 61KB ⚠상한 초과 — 절을 더 쪼개라 | 1585 | ~82,626 |
+| `openwiki/editor-event-authoring.md` | 136KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 744 | ~39,120 |
 | `openwiki/editor-event-commands.md` | 57KB | 32KB | 202 | ~15,410 |
 | `openwiki/editor-interior-room-harness.md` | 92KB | 6KB | 445 | ~26,704 |
-| `openwiki/editor-pre-edit-routing.md` | 113KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 605 | ~32,349 |
+| `openwiki/editor-pre-edit-routing.md` | 113KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 605 | ~32,346 |
 | `openwiki/editor-workflows-misc.md` | 65KB | 30KB | 458 | ~17,883 |
-| `openwiki/runtime-battle.md` | 143KB | 31KB | 611 | ~40,897 |
-| `openwiki/runtime-project-schema.md` | 142KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 949 | ~38,435 |
+| `openwiki/runtime-battle.md` | 143KB | 31KB | 611 | ~40,896 |
+| `openwiki/runtime-project-schema.md` | 142KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 949 | ~38,434 |
 | `openwiki/runtime-sessions.md` | 89KB | 46KB | 318 | ~23,590 |
 | `openwiki/testing.md` | 197KB | 48KB | 1830 | ~54,406 |
 
@@ -36,7 +36,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 |---|---|---|
 | `openwiki/editor-ai-panel.md` | 25 | 1767, 1768, 1769, 1770, 1771, 1772, 1786, 1796 |
 | `openwiki/editor-ai-tools.md` | 6 | 1151, 1152, 1156, 1158, 1160, 1347 |
-| `openwiki/editor-database.md` | 7 | 649, 653, 654, 655, 664, 690, 693 |
+| `openwiki/editor-database.md` | 7 | 650, 654, 655, 656, 665, 691, 694 |
 | `openwiki/editor-event-authoring.md` | 16 | 310, 311, 314, 319, 320, 321, 322, 323 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 109, 122, 123, 125, 128, 129 |
@@ -89,7 +89,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 ## 페이지별 절 좌표
 
-### `openwiki/PROJECT_WIKI.md` — 10KB · 121줄 · ~2,568 토큰
+### `openwiki/PROJECT_WIKI.md` — 10KB · 121줄 · ~2,570 토큰
 
 - `L5` Purpose
 - `L16` Required pre-edit read order
@@ -132,7 +132,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L182` 감독 절차
 - `L193` 알려진 함정
 
-### `openwiki/ai-context-compaction.md` — 17KB · 201줄 · ~5,060 토큰
+### `openwiki/ai-context-compaction.md` — 17KB · 201줄 · ~5,058 토큰
 
 - `L7` 대화 복원과 실행 체크포인트의 경계 (2026-09-09)
 - `L40` 1. 3개 예산·압축 계층의 분리와 실행 순서
@@ -164,16 +164,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L40` 3단계 — 이름 삭제 (메이저 정리)
 - `L45` 개별 판단 메모
 
-### `openwiki/ai-workflow.md` — 35KB · 261줄 · ~9,499 토큰
+### `openwiki/ai-workflow.md` — 37KB · 267줄 · ~10,226 토큰
 
 - `L5` Before changing files
 - `L13` While changing files
-  - `L155` Request-bound NPC prerequisite proof (CR-NPC-PREREQ-01, 2026-09-07)
-- `L211` After changing files
-- `L218` Tool-calling architecture (human review map)
-- `L228` Headless Tool and MCP Access
-- `L237` Live editor AI assistant MCP (same UI session)
-- `L256` Refreshing the wiki
+  - `L161` Request-bound NPC prerequisite proof (CR-NPC-PREREQ-01, 2026-09-07)
+- `L217` After changing files
+- `L224` Tool-calling architecture (human review map)
+- `L234` Headless Tool and MCP Access
+- `L243` Live editor AI assistant MCP (same UI session)
+- `L262` Refreshing the wiki
 
 ### `openwiki/architecture.md` — 10KB · 68줄 · ~2,605 토큰
 
@@ -260,7 +260,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L46` 설치 지점
 - `L52` 테스트
 
-### `openwiki/editor-ai-panel.md` — 411KB · 2122줄 · ~116,452 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 411KB · 2122줄 · ~116,450 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L3` 결과 보고서 모달 — 변경 지점마다 before/after 한 쌍 (2026-09-15, P2)
 - `L24` 조수 데크 「대화|작업」 탭 + 스튜디오 상세 — 팀원이 어디서 일하는지 한 곳 (2026-09-14, A안)
@@ -311,7 +311,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2089` Assistant deck width resize (2026-09-07)
   - `L2101` Legacy AI contract verification (2026-09-08)
 
-### `openwiki/editor-ai-tools.md` — 195KB · 1504줄 · ~54,516 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 195KB · 1504줄 · ~54,515 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 오프닝 미디어 배선 — 스틸 카탈로그·배경음악·부분 편집 (2026-09-14)
 - `L40` 오프닝 시네마틱 AI 저작 — system.opening (2026-09-14)
@@ -358,7 +358,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1467` 실제 이미지 입력 보존 (2026-09-07)
 - `L1481` Physical tile passage exposure (2026-09-08)
 
-### `openwiki/editor-database.md` — 284KB · 1584줄 · ~82,227 토큰 · 통째읽기 잘림 · 깨진 줄 7
+### `openwiki/editor-database.md` — 286KB · 1585줄 · ~82,626 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
 - `L1` 장소 통합 진행: 방·층과 재료 (2026-09-14)
 - `L14` 새 장소 생성 흐름 (2026-09-14, 2단계)
@@ -398,51 +398,51 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L572` 계절·날씨 / 동물·축사 저작 표면 (2026-08-25)
 - `L585` 생활 기술·제작 저작 표면 (2026-08-24)
 - `L604` Database Editor
-- `L698` Beginner-centric adversarial review (2026-08)
-- `L702` DB UI modernization (2026-08)
-- `L738` P2 spatial authoring (2026-08-25)
-- `L750` 맵 그룹 — 개념 우선 탐색 Phase 1 (2026-09-05)
-- `L772` 오브젝트·공간 수정 복구 (2026-09-13)
-- `L794` 오브젝트 브라우저와 공간 배치 작업대 (2026-09-13)
-- `L815` 맵 그룹 — 공간 저작 셸 UX 계약 (2026-09-12)
-- `L854` 타일 작업대 — 공간 셸 안 레이아웃 계약 (2026-09-13)
-- `L885` 오토타일 설정 — 9칸/11칸/커스텀 카드 (2026-09-01)
-- `L906` 공간 종류와 구조물은 다른 면이다 (2026-09-01)
-- `L925` 맵 → 개념 꾸러미 (2026-09-02 시작, 2026-09-05 개념 우선 Phase 1)
-- `L956` '구조물' 탭 — 두 출처 앨범 + 방 종류 문법 (2026-08-28)
-- `L969` '구조물' 편집기와 파일 입출력 (2026-08-29)
-- `L988` 삭제 가드는 묶음 조건(all/any/not) 안까지 본다 (2026-08-29 실측 결함 수정)
-- `L1008` '진영' 탭과 몬스터 소속 진영 (2026-08-29)
-  - `L1023` 몬스터 폼의 소속 진영 (`databaseEnemyRecordView.ts`)
-  - `L1031` 다 만들어 놓고 못 쓰던 이유 — `[편집]` 이 화면 밖 67px 에 있었다 (2026-08-29 실측)
-  - `L1043` 구조물 어휘 — 역할·레이어·테마·증분 축·칸 힌트 (2026-08-30)
-  - `L1094` 편집기를 맵 타일 편집기 수준으로 (2026-08-30 실측)
-- `L1116` Battle-animation editor autoplay (2026-09-05)
-- `L1123` 스킬 탭 `연출` 카드 = 살아 있는 애니메이션 스테이지 (2026-08-30)
-- `L1134` 데이터베이스 30탭 UI/UX 계약 (2026-08-30 실측)
-  - `L1149` 헤더는 설명문이 아니라 아이콘 칩 한 줄이다
-  - `L1227` 숫자 입력은 스테퍼를 먼저 붙이고 그다음 스피너를 지운다
-  - `L1241` 줄상자 바닥은 1.35 다 (1.25 는 큰 한글 제목에서 깎인다)
-  - `L1284` 이미지 실패는 빈 상자가 아니라 라벨 붙은 자리표시자다
-- `L1293` '마을' 탭 — 마을 하네스 값을 사람이 저작한다 (2026-08-30)
-  - `L1317` 붓을 고르면 화면이 흔들렸다 — 재부모가 스크롤·포커스를 지운다 (2026-08-30 실측)
-- `L1360` 날개마다 층수를 정한다 — 계단식 2층 (2026-09-11)
-  - `L1371` 지붕 가장자리 판정은 "다른 지붕면인가"다 (2026-09-11 실측 결함)
-- `L1379` '마을' 탭 — 숫자칸을 그림으로 바꾼다 (2026-08-31)
-  - `L1395` AI로 몬스터·아이템 생성 (2026-08-30)
-  - `L1416` AI 어시스턴트 바 — 진행·결과가 바 안에 보인다 (2026-09-03)
-  - `L1450` AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)
-- `L1466` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
-- `L1543` 직업 승급 트리 · 스킬 트리 (2026-09-05)
-- `L1549` 미회수 편집 후속 통합 (2026-09-05)
-- `L1553` 마을 설계서 (2026-09-05)
-- `L1558` 구조물 증분 메타 정정 (2026-09-05)
-- `L1566` 개념 회수 UI 직접 렌더 QA (2026-09-05)
-- `L1570` Battle-animation preview-first graphic controls (Phase 2, 2026-09-05)
-- `L1577` 검토한 실내 기본값의 원격 반영 (2026-09-05)
-- `L1581` 특정 꾸러미의 명시적 교체 (2026-09-06)
+- `L699` Beginner-centric adversarial review (2026-08)
+- `L703` DB UI modernization (2026-08)
+- `L739` P2 spatial authoring (2026-08-25)
+- `L751` 맵 그룹 — 개념 우선 탐색 Phase 1 (2026-09-05)
+- `L773` 오브젝트·공간 수정 복구 (2026-09-13)
+- `L795` 오브젝트 브라우저와 공간 배치 작업대 (2026-09-13)
+- `L816` 맵 그룹 — 공간 저작 셸 UX 계약 (2026-09-12)
+- `L855` 타일 작업대 — 공간 셸 안 레이아웃 계약 (2026-09-13)
+- `L886` 오토타일 설정 — 9칸/11칸/커스텀 카드 (2026-09-01)
+- `L907` 공간 종류와 구조물은 다른 면이다 (2026-09-01)
+- `L926` 맵 → 개념 꾸러미 (2026-09-02 시작, 2026-09-05 개념 우선 Phase 1)
+- `L957` '구조물' 탭 — 두 출처 앨범 + 방 종류 문법 (2026-08-28)
+- `L970` '구조물' 편집기와 파일 입출력 (2026-08-29)
+- `L989` 삭제 가드는 묶음 조건(all/any/not) 안까지 본다 (2026-08-29 실측 결함 수정)
+- `L1009` '진영' 탭과 몬스터 소속 진영 (2026-08-29)
+  - `L1024` 몬스터 폼의 소속 진영 (`databaseEnemyRecordView.ts`)
+  - `L1032` 다 만들어 놓고 못 쓰던 이유 — `[편집]` 이 화면 밖 67px 에 있었다 (2026-08-29 실측)
+  - `L1044` 구조물 어휘 — 역할·레이어·테마·증분 축·칸 힌트 (2026-08-30)
+  - `L1095` 편집기를 맵 타일 편집기 수준으로 (2026-08-30 실측)
+- `L1117` Battle-animation editor autoplay (2026-09-05)
+- `L1124` 스킬 탭 `연출` 카드 = 살아 있는 애니메이션 스테이지 (2026-08-30)
+- `L1135` 데이터베이스 30탭 UI/UX 계약 (2026-08-30 실측)
+  - `L1150` 헤더는 설명문이 아니라 아이콘 칩 한 줄이다
+  - `L1228` 숫자 입력은 스테퍼를 먼저 붙이고 그다음 스피너를 지운다
+  - `L1242` 줄상자 바닥은 1.35 다 (1.25 는 큰 한글 제목에서 깎인다)
+  - `L1285` 이미지 실패는 빈 상자가 아니라 라벨 붙은 자리표시자다
+- `L1294` '마을' 탭 — 마을 하네스 값을 사람이 저작한다 (2026-08-30)
+  - `L1318` 붓을 고르면 화면이 흔들렸다 — 재부모가 스크롤·포커스를 지운다 (2026-08-30 실측)
+- `L1361` 날개마다 층수를 정한다 — 계단식 2층 (2026-09-11)
+  - `L1372` 지붕 가장자리 판정은 "다른 지붕면인가"다 (2026-09-11 실측 결함)
+- `L1380` '마을' 탭 — 숫자칸을 그림으로 바꾼다 (2026-08-31)
+  - `L1396` AI로 몬스터·아이템 생성 (2026-08-30)
+  - `L1417` AI 어시스턴트 바 — 진행·결과가 바 안에 보인다 (2026-09-03)
+  - `L1451` AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)
+- `L1467` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
+- `L1544` 직업 승급 트리 · 스킬 트리 (2026-09-05)
+- `L1550` 미회수 편집 후속 통합 (2026-09-05)
+- `L1554` 마을 설계서 (2026-09-05)
+- `L1559` 구조물 증분 메타 정정 (2026-09-05)
+- `L1567` 개념 회수 UI 직접 렌더 QA (2026-09-05)
+- `L1571` Battle-animation preview-first graphic controls (Phase 2, 2026-09-05)
+- `L1578` 검토한 실내 기본값의 원격 반영 (2026-09-05)
+- `L1582` 특정 꾸러미의 명시적 교체 (2026-09-06)
 
-### `openwiki/editor-event-authoring.md` — 136KB · 744줄 · ~39,121 토큰 · 통째읽기 잘림 · 깨진 줄 16
+### `openwiki/editor-event-authoring.md` — 136KB · 744줄 · ~39,120 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
 - `L3` 구역(로케이션) 조건분기 (OPRN-OUT-020, 2026-09-10)
 - `L25` 구역 드나듦 트리거 (2026-09-10)
@@ -574,7 +574,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L453` AI 툴·액션 이유 (2026-09-02)
 - `L463` 검증
 
-### `openwiki/editor-pre-edit-routing.md` — 113KB · 605줄 · ~32,349 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 113KB · 605줄 · ~32,346 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L7` Exterior door backing
 - `L17` Tile brush reliability (2026-09-06)
@@ -642,7 +642,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L17` Quick routing
 - `L25` For AI agents
 
-### `openwiki/emerald-fields.md` — 22KB · 191줄 · ~6,877 토큰
+### `openwiki/emerald-fields.md` — 23KB · 206줄 · ~7,252 토큰
 
 - `L15` 95% 이상 유사도 요청에 따른 계곡 개정
 - `L35` 저장·재현 보호
@@ -656,6 +656,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L149` 16분할 검토 후 절벽 형태 재수정
   - `L162` 두 번째 16분할 재검토 — 길 연결과 주변 구성
 - `L177` 비취 대계곡 지역 등록 (2026-09-14)
+- `L192` 프로젝트 공통 기본 장소 (2026-09-15 정정)
 
 ### `openwiki/growth-trees.md` — 23KB · 256줄 · ~7,027 토큰
 
@@ -694,7 +695,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L144` 안티-게이밍 규칙
 - `L154` 이 페이지를 갱신해야 하는 변경
 
-### `openwiki/large-village-generation.md` — 29KB · 538줄 · ~8,337 토큰
+### `openwiki/large-village-generation.md` — 29KB · 539줄 · ~8,483 토큰
 
 - `L9` 내장 AI 시공 순서 (2026-09-12, 아래 과거 하네스 순서보다 우선)
 - `L35` 저장된 건물 오브젝트로 마을 만들기 (2026-09-12)
@@ -725,7 +726,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L501` 아직 약한 부분 (솔직히)
 - `L518` 관련 위키
 - `L526` author_village 스코프 계약 (2026-09-04 적대 리뷰 반영)
-- `L535` 대로 병합 검증 (2026-09-05)
+- `L536` 대로 병합 검증 (2026-09-05)
 
 ### `openwiki/location-layer-affordance-audit.md` — 13KB · 130줄 · ~3,930 토큰
 
@@ -781,7 +782,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L163` 4. 위키를 읽는 법
 - `L175` 5. 끝났다고 말할 수 있는 조건
 
-### `openwiki/runtime-action-combat.md` — 26KB · 300줄 · ~6,633 토큰
+### `openwiki/runtime-action-combat.md` — 26KB · 300줄 · ~6,635 토큰
 
 - `L12` Activation contract
 - `L33` Architecture and pure rule modules
@@ -812,7 +813,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 143KB · 611줄 · ~40,897 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 143KB · 611줄 · ~40,896 토큰 · 통째읽기 잘림
 
 - `L3` 전투 UI/UX·모션 적대적 리뷰 5축 후속 (2026-09-14)
 - `L74` Native event battle admission (2026-09-08)
@@ -862,7 +863,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L215` Saved uploaded tilesets in the actual player (2026-09-14)
 - `L236` 맵 배경(패럴랙스) 렌더 (2026-09-14)
 
-### `openwiki/runtime-project-schema.md` — 142KB · 949줄 · ~38,435 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 142KB · 949줄 · ~38,434 토큰 · 통째읽기 잘림
 
 - `L1` 지역 하위 장소의 단일 계약 (2026-09-14)
 - `L11` 직접 그린 방을 포함하는 다층 장소 (2026-09-14)
@@ -995,7 +996,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L83` Ownership and regeneration
 - `L106` Contract fixtures and proof
 
-### `openwiki/spatial-geography-ui.md` — 14KB · 237줄 · ~3,598 토큰
+### `openwiki/spatial-geography-ui.md` — 14KB · 237줄 · ~3,597 토큰
 
 - `L7` Public modules
 - `L26` Settlement regions (2026-09-12)
@@ -1025,7 +1026,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L58` Lifecycle and compatibility
 - `L89` Reproduction
 
-### `openwiki/spatial-place-compiler.md` — 15KB · 211줄 · ~3,783 토큰
+### `openwiki/spatial-place-compiler.md` — 16KB · 225줄 · ~4,013 토큰
 
 - `L29` Shared interior shell and activity zones (2026-09-14)
 - `L37` Houses with a yard and four floors (2026-09-12)
@@ -1035,6 +1036,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L136` Furniture overlapping the north wall
 - `L155` Reviewed interior space catalog (2026-09-13)
   - `L182` Frozen placement vocabulary
+- `L212` Reviewed default places (2026-09-15)
 
 ### `openwiki/spatial-placed-space-edits.md` — 5KB · 75줄 · ~1,209 토큰
 
