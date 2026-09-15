@@ -17,11 +17,11 @@ const URL = `https://${REF}.supabase.co`;
 
 function validEnv(): RemoteCertificateEnvironment {
   return {
-    RPGZZU_E2E_REMOTE_CERTIFICATE: "isolated-owned-fixture-v1",
-    RPGZZU_E2E_REMOTE_URL: URL,
-    RPGZZU_E2E_REMOTE_ANON_KEY: KEY,
-    RPGZZU_E2E_REMOTE_ISOLATION_MARKER: "rpg-zzu-e2e-owned-only",
-    RPGZZU_E2E_REMOTE_PROJECT_REF: REF,
+    OPRN_E2E_REMOTE_CERTIFICATE: "isolated-owned-fixture-v1",
+    OPRN_E2E_REMOTE_URL: URL,
+    OPRN_E2E_REMOTE_ANON_KEY: KEY,
+    OPRN_E2E_REMOTE_ISOLATION_MARKER: "rpg-zzu-e2e-owned-only",
+    OPRN_E2E_REMOTE_PROJECT_REF: REF,
     VITE_SUPABASE_URL: `${URL}/`,
     VITE_SUPABASE_ANON_KEY: KEY,
   };
@@ -29,20 +29,20 @@ function validEnv(): RemoteCertificateEnvironment {
 
 describe("remote certificate environment gate", () => {
   const invalid: Array<[string, (env: Record<string, string | undefined>) => void]> = [
-    ["absent certificate", (env) => delete env.RPGZZU_E2E_REMOTE_CERTIFICATE],
-    ["wrong certificate", (env) => { env.RPGZZU_E2E_REMOTE_CERTIFICATE = "wrong"; }],
-    ["absent marker", (env) => delete env.RPGZZU_E2E_REMOTE_ISOLATION_MARKER],
-    ["wrong marker", (env) => { env.RPGZZU_E2E_REMOTE_ISOLATION_MARKER = "wrong"; }],
-    ["missing dedicated URL", (env) => delete env.RPGZZU_E2E_REMOTE_URL],
-    ["missing dedicated key", (env) => delete env.RPGZZU_E2E_REMOTE_ANON_KEY],
-    ["missing ref", (env) => delete env.RPGZZU_E2E_REMOTE_PROJECT_REF],
-    ["malformed URL", (env) => { env.RPGZZU_E2E_REMOTE_URL = "not-a-url"; }],
-    ["HTTP live URL", (env) => { env.RPGZZU_E2E_REMOTE_URL = "http://localhost"; env.VITE_SUPABASE_URL = "http://localhost"; }],
-    ["non Supabase host", (env) => { env.RPGZZU_E2E_REMOTE_URL = "https://example.com"; env.VITE_SUPABASE_URL = "https://example.com"; }],
-    ["host ref mismatch", (env) => { env.RPGZZU_E2E_REMOTE_URL = "https://zzzzzzzzzzzzzzzzzzzz.supabase.co"; env.VITE_SUPABASE_URL = env.RPGZZU_E2E_REMOTE_URL; }],
-    ["malformed ref", (env) => { env.RPGZZU_E2E_REMOTE_PROJECT_REF = "short"; }],
-    ["empty key", (env) => { env.RPGZZU_E2E_REMOTE_ANON_KEY = ""; }],
-    ["malformed key", (env) => { env.RPGZZU_E2E_REMOTE_ANON_KEY = "not-jwt"; }],
+    ["absent certificate", (env) => delete env.OPRN_E2E_REMOTE_CERTIFICATE],
+    ["wrong certificate", (env) => { env.OPRN_E2E_REMOTE_CERTIFICATE = "wrong"; }],
+    ["absent marker", (env) => delete env.OPRN_E2E_REMOTE_ISOLATION_MARKER],
+    ["wrong marker", (env) => { env.OPRN_E2E_REMOTE_ISOLATION_MARKER = "wrong"; }],
+    ["missing dedicated URL", (env) => delete env.OPRN_E2E_REMOTE_URL],
+    ["missing dedicated key", (env) => delete env.OPRN_E2E_REMOTE_ANON_KEY],
+    ["missing ref", (env) => delete env.OPRN_E2E_REMOTE_PROJECT_REF],
+    ["malformed URL", (env) => { env.OPRN_E2E_REMOTE_URL = "not-a-url"; }],
+    ["HTTP live URL", (env) => { env.OPRN_E2E_REMOTE_URL = "http://localhost"; env.VITE_SUPABASE_URL = "http://localhost"; }],
+    ["non Supabase host", (env) => { env.OPRN_E2E_REMOTE_URL = "https://example.com"; env.VITE_SUPABASE_URL = "https://example.com"; }],
+    ["host ref mismatch", (env) => { env.OPRN_E2E_REMOTE_URL = "https://zzzzzzzzzzzzzzzzzzzz.supabase.co"; env.VITE_SUPABASE_URL = env.OPRN_E2E_REMOTE_URL; }],
+    ["malformed ref", (env) => { env.OPRN_E2E_REMOTE_PROJECT_REF = "short"; }],
+    ["empty key", (env) => { env.OPRN_E2E_REMOTE_ANON_KEY = ""; }],
+    ["malformed key", (env) => { env.OPRN_E2E_REMOTE_ANON_KEY = "not-jwt"; }],
     ["ordinary URL absent", (env) => delete env.VITE_SUPABASE_URL],
     ["ordinary URL mismatch", (env) => { env.VITE_SUPABASE_URL = "https://zzzzzzzzzzzzzzzzzzzz.supabase.co"; }],
     ["ordinary key absent", (env) => delete env.VITE_SUPABASE_ANON_KEY],
@@ -70,7 +70,7 @@ describe("remote certificate environment gate", () => {
   });
 
   it("permits HTTP localhost only under the explicit fake option", () => {
-    const env = { ...validEnv(), RPGZZU_E2E_REMOTE_URL: "http://127.0.0.1:54321", VITE_SUPABASE_URL: "http://127.0.0.1:54321" };
+    const env = { ...validEnv(), OPRN_E2E_REMOTE_URL: "http://127.0.0.1:54321", VITE_SUPABASE_URL: "http://127.0.0.1:54321" };
     expect(validateRemoteCertificateEnvironment(env).ok).toBe(false);
     expect(validateRemoteCertificateEnvironment(env, { allowTestLocalhost: true }).ok).toBe(true);
   });

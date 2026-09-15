@@ -27,7 +27,7 @@ import { store } from "@/project/store";
 
 /** RM2K3 스크롤 속도는 프레임당 px — 논리 프레임은 60Hz 다(`playSceneMovement`). */
 export const BACKGROUND_FRAMES_PER_SECOND = 60;
-const TEXTURE_PREFIX = "__rpg_zzu_map_background_";
+const TEXTURE_PREFIX = "__oprn_map_background_";
 const SIGNATURE_SEPARATOR = "\u0000";
 
 /** 한 장의 배경을 그리는 데 필요한 값. 저작(`MapBackground`)에서 파생된다. */

@@ -45,7 +45,7 @@ const html = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>상점 피드백: RM2003 System SE 배선 + 수량 상한 — rpg-zzu</title>
+<title>상점 피드백: RM2003 System SE 배선 + 수량 상한 — oprn</title>
 <style>
 ${REPORT_CSS}
   .se-on{color:#2b6b45;font-weight:700}
@@ -291,7 +291,7 @@ const setIndex = (next: number, cause: SelectCause = "key"): void =&gt; {
 </ul>
 
 <footer>
-  rpg-zzu · 상점 피드백(RM2003 System SE + 수량 상한) · 2026-08-29 ·
+  oprn · 상점 피드백(RM2003 System SE + 수량 상한) · 2026-08-29 ·
   캡처 7장은 <span class="path">output/evidence/shop-feedback/</span> 의 실제 실행 결과이며 base64 로 이 파일에 박혀 있다 ·
   근거: liblcf <span class="path">rpg/system.h</span>, <span class="path">rpg/sound.h</span> ·
   EasyRPG Player <span class="path">scene_shop.cpp</span>, <span class="path">window_shopbuy.cpp</span>

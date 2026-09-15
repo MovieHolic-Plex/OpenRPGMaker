@@ -14,7 +14,7 @@
 //   npx vite-node --script scripts/qa/testplay-recovery-browser-qa.mts -- --port 9852
 //
 // 시드 계약: src/editor/devShowcaseProjects.ts:95 createE2eProjectForLocation 이
-// window.__RPG_ZZU_E2E_PROJECT__ 를 structuredClone 한다. isE2eProject 는 version/maps/
+// window.__OPRN_E2E_PROJECT__ 를 structuredClone 한다. isE2eProject 는 version/maps/
 // startMapId/database 를 요구하므로 **역직렬화된 Project** 를 넣어야 한다.
 import { chromium, type Page } from "@playwright/test";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
@@ -129,7 +129,7 @@ async function runCase(
   });
 
   await page.addInitScript((seed) => {
-    (window as unknown as { __RPG_ZZU_E2E_PROJECT__?: unknown }).__RPG_ZZU_E2E_PROJECT__ = seed;
+    (window as unknown as { __OPRN_E2E_PROJECT__?: unknown }).__OPRN_E2E_PROJECT__ = seed;
     const uiMode = window.localStorage.getItem("oprn:editor-ui-mode");
     window.localStorage.clear();
     if (uiMode !== null) window.localStorage.setItem("oprn:editor-ui-mode", uiMode);

@@ -428,7 +428,7 @@ const html = `<!doctype html>
 </head>
 <body>
 <div class="wrap">
-  <div class="kicker">RPG ZZU · 편집기 조수 · 개념 꾸러미</div>
+  <div class="kicker">OPRN · 편집기 조수 · 개념 꾸러미</div>
   <h1>「여관 지어줘」가 왜 매번 같은 여관을 내놓는가</h1>
   <div class="meta">${esc(branch)} @ ${esc(sha)} · ${esc(now)} · 아래 그림은 전부 이 저장소의 <code>place_concept</code> 파이프라인과 실내 칩셋으로 실제 렌더한 것. 방안 A·B·C 그림은 <b>코드를 고치지 않고 입력(꾸러미 구조)만 바꿔</b> 그 방안의 결과를 흉내 낸 것이다.</div>
   <p class="lede">짧게 말하면 — AI 가 여관을 「꾸미는」 게 아니다. AI 는 시설명 한 단어(<code>query:"여관"</code>)를 넣고, 그 뒤는 <b>난수가 전혀 없는 결정적 생성기</b>가 사용자 DB 의 「여관」 구조를 그대로 맵으로 편다. 같은 입력 → 같은 출력. 아래에서 (1) 왜 같은지, (2) 그 증거, (3) 다르게 만들 네 가지 길을 그림으로 본다.</p>

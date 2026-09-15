@@ -496,7 +496,7 @@ const html = `<!doctype html>
 <body><div class="wrap">
 
 <header class="top">
-  <div class="kicker">RPG Zzu · Tile-Placement Benchmark Report</div>
+  <div class="kicker">OPRN · Tile-Placement Benchmark Report</div>
   <h1>combined_town 9문항 벤치마크 — 하네스를 걷어내면 모델은 무엇을 할 수 있나</h1>
   <p>앞선 보고서 <a href="${HARNESS_REPORT}">EasyRPG RTP Combined Town ChipSet — 구현 · AI 사용 보고서</a>는
   480칸짜리 시트를 "번호에 의미가 붙은 재료 카탈로그"로 승격시킨 <b>코드 계층</b>을 설명한다.

@@ -2,8 +2,11 @@
 import { chromium } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9977";
+applyLegacyEnvAliases();
+
+const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9977";
 const OUT = join(process.cwd(), "output", "evidence", "left-sidebar-review", "shots");
 const MD = join(process.cwd(), "output", "evidence", "left-sidebar-review", "toolbar-clipping-measure.md");
 

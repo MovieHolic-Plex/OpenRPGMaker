@@ -5,13 +5,16 @@
  * 무엇을 시키는가" 이므로, 여기서는 실제 패널을 열어 안내 문구·코드 줄·주소를 읽는다.
  * Codex 는 1455 점유 여부에 따라 코드 입력(device) 또는 자동 완료(browser) 로 갈린다.
  *
- * 실행: RPG_ZZU_URL=http://127.0.0.1:9833 node scripts/qa-codex-login-paths.mjs <출력디렉터리>
+ * 실행: OPRN_URL=http://127.0.0.1:9833 node scripts/qa-codex-login-paths.mjs <출력디렉터리>
  */
 import { chromium } from "playwright";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9833";
+applyLegacyEnvAliases();
+
+const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9833";
 const OUT = process.argv[2] ?? "output/evidence/codex-login-paths";
 
 const browser = await chromium.launch({ headless: true });

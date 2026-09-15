@@ -10,9 +10,12 @@ import { getOhMyPiProvider } from "../../src/ai/ohMyPiProviders.ts";
 import type { ImageDelivery } from "../../src/ai/imageDelivery.ts";
 import { convertUserContent, hasImagePart, ImageTransportError } from "./ohMyPiUserContent.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
+import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 function testStub(): boolean {
-  return process.env.RPG_ZZU_OH_MY_PI_TEST_STUB === "1";
+  return process.env.OPRN_OH_MY_PI_TEST_STUB === "1";
 }
 
 function textOf(content: unknown): string {

@@ -103,9 +103,9 @@ test.describe("데이터베이스 구조물 편집기", () => {
     const downloadPromise = page.waitForEvent("download");
     await page.getByTestId("structure-kit-export").click();
     const download = await downloadPromise;
-    expect(download.suggestedFilename()).toContain(".rpgzzu-kit.json");
+    expect(download.suggestedFilename()).toContain(".oprn-kit.json");
 
-    const savedPath = testInfo.outputPath("kits.rpgzzu-kit.json");
+    const savedPath = testInfo.outputPath("kits.oprn-kit.json");
     await download.saveAs(savedPath);
 
     const chooserPromise = page.waitForEvent("filechooser");

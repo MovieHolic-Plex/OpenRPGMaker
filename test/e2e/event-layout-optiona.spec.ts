@@ -97,7 +97,7 @@ async function openEditorForProject(page: Page): Promise<{ readonly mapId: strin
   await row.click();
   // 정식 경로 별칭(@/… )을 쓰면 브라우저에서 리졸브되지 않으므로 Vite 가 서빙하는 절대 URL 을 쓴다.
   // TS 는 절대 경로를 해석하지 못하므로 런타임 문자열로만 넘긴다.
-  // 시드 주입 경로(/ ?freshProject 등)에서는 `window.__RPG_ZZU_E2E_PROJECT__` 가
+  // 시드 주입 경로(/ ?freshProject 등)에서는 `window.__OPRN_E2E_PROJECT__` 가
   // 페이지 로드 후 삭제될 수 있고 게스트 로그인이 뜬다. 프로젝트 스토어의 현재 시작 맵을
   // 직접 읽어 열고, 로그인 모달이 뜨면 게스트로 진행한다.
   const guest = page.getByTestId("login-guest");

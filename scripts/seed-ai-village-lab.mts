@@ -37,7 +37,7 @@ project.maps = { [MAP_ID]: map };
 project.mapTree = { mapId: MAP_ID, children: [] };
 project.startMapId = MAP_ID;
 project.startPos = { x: 50, y: 50 };
-project.meta = { ...project.meta, title: "AI 마을 실험", author: "RPG ZZU" };
+project.meta = { ...project.meta, title: "AI 마을 실험", author: "OPRN" };
 
 console.log("seed →", AI_VILLAGE_LAB_PROJECT_ID, "100x100 blank grass");
 const saved = await saveProjectToSupabase(project, config);

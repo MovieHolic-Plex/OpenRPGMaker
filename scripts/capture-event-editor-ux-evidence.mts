@@ -7,8 +7,11 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, EventPage, Project } from "@/project/types";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9999";
+applyLegacyEnvAliases();
+
+const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9999";
 const OUT = join(process.cwd(), "output", "evidence", "event-editor-ux-progressive");
 
 function targetProject(): Project {
@@ -89,7 +92,7 @@ async function main(): Promise<void> {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 
   await page.addInitScript((seed) => {
-    (window as unknown as { __RPG_ZZU_E2E_PROJECT__?: unknown }).__RPG_ZZU_E2E_PROJECT__ = seed;
+    (window as unknown as { __OPRN_E2E_PROJECT__?: unknown }).__OPRN_E2E_PROJECT__ = seed;
     window.localStorage.clear();
   }, project);
 
@@ -119,14 +122,14 @@ async function main(): Promise<void> {
     const injected = await page.evaluate((seed) => {
       const w = window as unknown as {
         __oprnStore?: { replace?: (p: unknown) => void };
-        __RPG_ZZU_STORE__?: { replace?: (p: unknown) => void };
+        __OPRN_STORE__?: { replace?: (p: unknown) => void };
       };
       if (w.__oprnStore?.replace) {
         w.__oprnStore.replace(seed);
-        return "rpgzzuStore";
+        return "oprnStore";
       }
       // fallback: set e2e seed and reload
-      (window as unknown as { __RPG_ZZU_E2E_PROJECT__?: unknown }).__RPG_ZZU_E2E_PROJECT__ = seed;
+      (window as unknown as { __OPRN_E2E_PROJECT__?: unknown }).__OPRN_E2E_PROJECT__ = seed;
       return "seed-only";
     }, project);
     console.log("inject", injected);

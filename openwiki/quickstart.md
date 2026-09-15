@@ -90,7 +90,8 @@ gh가 없으면 Release의 `rpg-zzu-bgm-v1.tar`를 받아
 로컬 설치보다 우선할 수 있다. 음악 리소스 선택 창의 「전체 받기」도 같은 검증 설치기를 쓴다.
 Vite dev/preview는 설치 후 선택 창을 다시 열면 목록·재생이 갱신되며 재빌드가 필요 없다.
 정적 배포·내보내기는 설치 후 빌드해야 파일이 포함된다. 원격 설치는 서버 전용
-`RPG_ZZU_BGM_INSTALL_REMOTE=1` opt-in과 서버 재시작이 필요하다(기본은 루프백만 허용).
+`OPRN_BGM_INSTALL_REMOTE=1` opt-in과 서버 재시작이 필요하다(기본은 루프백만 허용).
+환경 변수 이름은 2026-09 에 `RPG_ZZU_*` 에서 `OPRN_*` 로 바뀌었다. 옛 이름도 이번 릴리스까지는 경고 한 줄과 함께 그대로 읽힌다(`scripts/lib/oprnEnv.mjs` 가 새 이름으로 옮겨 준다).
 SHA-256 검증·손상 복구·잠금 복구·관리자 제작 명령은 `openwiki/bgm-catalog.md`.
 
 ## 2. 검증 — 무엇이 진짜 게이트인가

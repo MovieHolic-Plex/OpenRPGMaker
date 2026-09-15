@@ -1,12 +1,15 @@
 /**
  * 보충 캡처 2: 그리드 미노출 네이티브 22종(newCommand) + 은퇴 M2 2행(newM2Command).
- * Usage: RPG_ZZU_URL=http://127.0.0.1:9877 node scripts/capture-all-commands-supplement2.mjs
+ * Usage: OPRN_URL=http://127.0.0.1:9877 node scripts/capture-all-commands-supplement2.mjs
  */
 import { chromium } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9877";
+applyLegacyEnvAliases();
+
+const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9877";
 const OUT = path.resolve("output/evidence/all-commands-sweep");
 
 const NATIVES = [

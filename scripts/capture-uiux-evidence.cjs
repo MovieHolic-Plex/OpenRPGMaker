@@ -19,7 +19,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
       localStorage.removeItem("oprn:save-slot:v5:" + i);
       localStorage.removeItem("oprn:save-slot:" + i);
     }
-    window.__RPG_ZZU_E2E_PROJECT__ = JSON.parse(json);
+    window.__OPRN_E2E_PROJECT__ = JSON.parse(json);
   }, PROJECT_JSON);
   await page.goto(URL, { waitUntil: "domcontentloaded" });
   await page.waitForSelector('[data-testid="mode-play"]', { timeout: 30000 });

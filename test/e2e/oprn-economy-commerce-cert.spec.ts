@@ -57,7 +57,7 @@ test("loop10 certifies economy party shop and inn commands", async ({ page }) =>
   await page.getByTestId("event-editor-modal-close").click();
 
   await page.addInitScript((project) => {
-    window.__RPG_ZZU_E2E_PROJECT__ = project;
+    window.__OPRN_E2E_PROJECT__ = project;
     window.localStorage.clear();
   }, editorExport.project);
   await page.reload();

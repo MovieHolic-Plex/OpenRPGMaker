@@ -37,7 +37,7 @@ export function serializeForComparison(project: Project): string {
   });
 }
 
-/** Human-readable project.json for .rpgzzu packages and debug dumps only. */
+/** Human-readable project.json for .oprn packages and debug dumps only. */
 export function serializePretty(project: Project): string {
   return JSON.stringify(projectJson(project), null, 2);
 }

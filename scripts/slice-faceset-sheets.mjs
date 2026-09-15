@@ -28,6 +28,13 @@ const FACE_COUNT = COLUMNS * ROWS;
 
 // 시트 목록은 하드코딩이다 — 디렉터리 스캔으로 자동 수집하면 낱장 결과물(하위 디렉터리)이나
 // 얼굴이 아닌 정사각 이미지까지 다시 쪼개려 든다.
+const SHARED_EXPRESSION_NAMES = [
+  "기본 미소", "행복한 눈웃음", "활짝 웃음", "흐뭇함 / 만족",
+  "놀람", "당황 / 민망함", "의심 / 시큰둥함", "진지함 / 무표정",
+  "불만 / 짜증", "분노 / 고함", "슬픔 / 울먹임", "울음 / 눈물",
+  "걱정 / 불안", "자신감 / 결의", "수줍은 미소 / 호감", "윙크 / 장난스러움",
+];
+
 const SHEETS = [
   sheet("assets/easyrpg/faceset/Actor1.png", "easyrpg-faceset-actor1", "easyrpg"),
   sheet("assets/easyrpg/faceset/Actor2.png", "easyrpg-faceset-actor2", "easyrpg"),
@@ -36,6 +43,7 @@ const SHEETS = [
   sheet("assets/easyrpg/faceset/People2.png", "easyrpg-faceset-people2", "easyrpg"),
   sheet("assets/generated/starter/hero-01-face.png", "generated-actor-hero-01-face", "generated"),
   sheet("assets/generated/starter/hero-02-face.png", "generated-actor-hero-02-face", "generated"),
+  sheet("assets/shared/faceset/blue-traveler-expressions.png", "shared-blue-traveler-expressions", "shared"),
 ];
 
 function sheet(sheetPath, sheetResourceId, origin) {
@@ -61,6 +69,7 @@ function faceEntries(sheetSpec) {
 
 // EasyRPG 시트에서 온 얼굴만 " · EasyRPG" 출처를 붙인다. 생성 에셋은 우리가 만든 그림이다.
 function faceName(sheetSpec, index) {
+  if (sheetSpec.origin === "shared") return `푸른 머리 여행자 · ${String(index + 1).padStart(2, "0")} ${SHARED_EXPRESSION_NAMES[index]}`;
   const label = `${sheetSpec.stem} 얼굴 ${index + 1}`;
   return sheetSpec.origin === "easyrpg" ? `${label} · EasyRPG` : label;
 }

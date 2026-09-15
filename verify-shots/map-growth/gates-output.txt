@@ -1,0 +1,15 @@
+typecheck:app  exit=0  errors=0  files=0
+vitest         exit=1  failed=28  passed=22201  files=14
+css            exit=0  budget=0  graph=0
+browser        exit=0  파일=1
+surface        exit=0  축=10
+
+기준선 대비 회귀 8건:
+   tests test/aiAssistantSession.test.ts: 새로 실패 [단독 재실행도 테스트 실패 1건]
+   tests test/aiCompletionAccounting.test.ts: 새로 실패 [단독 재실행도 테스트 실패 1건]
+   tests test/interiorObjectCatalog.test.ts: 새로 실패 [단독 재실행도 테스트 실패 1건]
+   tests test/interiorPipelineMapReplacement.test.ts: 새로 실패 [단독 재실행도 테스트 실패 1건]
+   tests test/interiorRoomWalkabilitySeal.test.ts: 새로 실패 [단독 재실행도 테스트 실패 1건]
+   tests test/placeConceptTool.test.ts: 새로 실패 [단독 재실행도 테스트 실패 2건]
+   tests test/spatialAssetResolver.test.ts: 새로 실패 [단독 재실행도 테스트 실패 4건]
+   tests test/workPlanMapOutcomes.test.ts: 새로 실패 [단독 재실행도 테스트 실패 1건]

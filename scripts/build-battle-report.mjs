@@ -13,7 +13,7 @@ const html = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RPG ZZU 전투 시스템 극한 리뷰 & 수정 보고서</title>
+<title>OPRN 전투 시스템 극한 리뷰 & 수정 보고서</title>
 <style>
   :root {
     --bg: #0a0e1a;
@@ -122,7 +122,7 @@ const html = `<!DOCTYPE html>
 <body>
 
 <div class="hero">
-  <h1>⚔️ RPG ZZU 전투 시스템 극한 리뷰</h1>
+  <h1>⚔️ OPRN 전투 시스템 극한 리뷰</h1>
   <p class="subtitle">극단적 리뷰어 모드 · Playwright 실전 플레이 · 스크린샷 27장 · 코드 4,000줄 분석</p>
   <div class="score-row">
     <span class="score-badge score-before">수정 전 38/100</span>

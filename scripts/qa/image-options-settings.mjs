@@ -58,7 +58,7 @@ try {
     await page.screenshot({ path: resolve(output, width + "-codex-default.png") });
     const wire = [];
     await page.route("**/v1/images/generations", async (route) => {
-      const selection = { provider: route.request().headers()["x-rpgzzu-provider"], model: route.request().postDataJSON().model };
+      const selection = { provider: route.request().headers()["x-oprn-provider"], model: route.request().postDataJSON().model };
       wire.push(selection);
       if (selection.model === "codex-image-default") {
         await route.fulfill({ json: { image: { dataUrl: "data:image/png;base64,AAAA", provider: selection.provider, model: "gpt-image-2" } } });

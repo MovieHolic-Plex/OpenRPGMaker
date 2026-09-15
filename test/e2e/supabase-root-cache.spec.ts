@@ -33,7 +33,7 @@ const ROOT_RESOURCE_IDS = [
   "generated-troop-preview-slime",
 ] as const;
 
-const supabaseRootCacheTest = process.env.RPG_ZZU_SUPABASE_ROOT_BROWSER_QA === "1" ? test : test.skip;
+const supabaseRootCacheTest = process.env.OPRN_SUPABASE_ROOT_BROWSER_QA === "1" ? test : test.skip;
 
 supabaseRootCacheTest("Supabase-root generated resources are available and locally cacheable in the browser", async ({ page }, testInfo) => {
   await page.goto("/?supabaseRecovered=1&supabaseRootCacheEvidence=1");

@@ -46,7 +46,7 @@ it("status 를 못 읽는 환경(정적 배포)에서는 배너가 없다", () =
 it("원격 차단이면 버튼을 잠그고 opt-in 방법을 알려준다", () => {
   const banner = bgmInstallBanner({ kind: "music", onInstalled: () => {}, status: status({ remoteAllowed: false }) });
   expect(banner?.querySelector<HTMLButtonElement>("[data-testid=bgm-install-button]")?.disabled).toBe(true);
-  expect(find(banner, "bgm-install-error")?.textContent).toContain("RPG_ZZU_BGM_INSTALL_REMOTE");
+  expect(find(banner, "bgm-install-error")?.textContent).toContain("OPRN_BGM_INSTALL_REMOTE");
 });
 
 it("서버가 보낸 오류를 그대로 보여준다", () => {

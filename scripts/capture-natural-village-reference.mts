@@ -2,6 +2,9 @@ import fs from "node:fs";
 import path from "node:path";
 import { chromium, type Page } from "playwright";
 import { REFERENCE_PROJECT_ID, STAGE_MAP_IDS } from "./natural-village/blueprint.ts";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 class NaturalVillageCaptureError extends Error {
   constructor(readonly code: "editor-load" | "capture-timeout" | "capture-mismatch" | "invalid-png" | "network-failure", message: string) {
@@ -10,7 +13,7 @@ class NaturalVillageCaptureError extends Error {
   }
 }
 
-const baseUrl = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9999";
+const baseUrl = process.env.OPRN_URL ?? "http://127.0.0.1:9999";
 const captureIteration = process.env.CAPTURE_ITERATION ?? "iteration-02";
 const outputDir = path.resolve("output", "evidence", "natural-village", "reference", captureIteration);
 fs.mkdirSync(outputDir, { recursive: true });

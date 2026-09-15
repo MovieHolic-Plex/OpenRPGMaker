@@ -1,6 +1,9 @@
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SetupError, requireNode24, ensureDependencies, readConfiguration, validateConfig, probeProject, setupLocal, runCommand, reportError } from './setup-local.mjs';
+import { applyLegacyEnvAliases } from './lib/oprnEnv.mjs';
+
+applyLegacyEnvAliases();
 
 const ORIGIN = 'http://127.0.0.1:9999';
 const openBrowser = url => runCommand(process.platform === 'darwin' ? '/usr/bin/open' : 'xdg-open', [url]);
@@ -70,7 +73,7 @@ async function main() {
   // Override runtime settings only. Never rewrite existing env files, leak a
   // legacy VITE key into the browser, inherit TLS, or reuse a worktree port.
   process.env.DEV_SERVER_NO_TLS = '1';
-  process.env.RPG_ZZU_PUBLIC_ORIGIN = ORIGIN;
+  process.env.OPRN_PUBLIC_ORIGIN = ORIGIN;
   process.env.VITE_SUPABASE_ANON_KEY = '';
   // Vite must use exactly the normalized snapshot that passed the probe, even
   // if an env file changes while the request is in flight.

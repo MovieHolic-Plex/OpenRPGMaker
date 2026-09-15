@@ -63,7 +63,7 @@ test("authors dew-village demo through editor modules and exports fixture", asyn
       paintRect(hillId, 14, 3, 5, 4, TILE.WATER);
 
       store.update((draft) => {
-        draft.meta = { ...draft.meta, title: demoTitle, author: "RPG ZZU" };
+        draft.meta = { ...draft.meta, title: demoTitle, author: "OPRN" };
         draft.system = {
           ...draft.system,
           titleScreen: {

@@ -335,14 +335,14 @@ section("s9", 9, "증거와 재현 방법", "숫자는 모두 브라우저에서
 <pre># 격리된 개발 서버(공유 서버는 HMR 이 깨져 가짜 결함을 만든다)
 npx vite --configLoader runner --host 127.0.0.1 --port 9977 --strictPort
 
-RPG_ZZU_URL=http://127.0.0.1:9977 npx tsx scripts/capture-left-sidebar-tools.mts beginner
-RPG_ZZU_URL=http://127.0.0.1:9977 npx tsx scripts/probe-toolbar-clipping.mts
-RPG_ZZU_URL=http://127.0.0.1:9977 npx tsx scripts/probe-sidebar-keyboard.mts</pre>
+OPRN_URL=http://127.0.0.1:9977 npx tsx scripts/capture-left-sidebar-tools.mts beginner
+OPRN_URL=http://127.0.0.1:9977 npx tsx scripts/probe-toolbar-clipping.mts
+OPRN_URL=http://127.0.0.1:9977 npx tsx scripts/probe-sidebar-keyboard.mts</pre>
 <div class="callout"><b>이 리뷰는 코드를 고치지 않았다.</b> 소스는 한 줄도 건드리지 않고 읽기와 측정만 했다. 위 §8의 순서는 제안이고, 착수 여부는 감독 판단이다.</div>`);
 
 const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>RPG ZZU · 좌측 사이드바 도구 적대적 리뷰</title>
+<title>OPRN · 좌측 사이드바 도구 적대적 리뷰</title>
 <style>${CSS}</style></head><body>
 <div class="top"><div class="top-in">
 <div class="brand"><div class="logo">✦</div><div><h1>좌측 사이드바 도구 — 적대적 리뷰</h1><p>선택 · 칠하기 · 지우기 · 채우기 · 장면 · 집기 · 화면 밀기 · 통행 표시 · 2026-08-27</p></div></div>
@@ -375,7 +375,7 @@ const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"/>
 </div>
 </div>
 ${sections.join("\n")}
-<footer>RPG ZZU · 좌측 사이드바 도구 적대적 리뷰 · 2026-08-27<br/>
+<footer>OPRN · 좌측 사이드바 도구 적대적 리뷰 · 2026-08-27<br/>
 실화면 ${"IMGCOUNT"}장 base64 내장 · 측정은 127.0.0.1:9977 격리 개발 서버 · 소스 수정 없음</footer>
 </div></body></html>`;
 

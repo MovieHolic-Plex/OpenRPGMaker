@@ -8,8 +8,8 @@ import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 
 const EVIDENCE_DIR = "evidence/browser-screenshots/event-editor-controls-1-3-5-6";
 const TEAM_ARTIFACTS_DIR = ".omo/teams/team-15e46b80/artifacts";
-declare const process: { readonly env: { readonly RPG_ZZU_E2E_BASE_URL?: string } };
-const APP_URL = process.env.RPG_ZZU_E2E_BASE_URL ?? "";
+declare const process: { readonly env: { readonly OPRN_E2E_BASE_URL?: string } };
+const APP_URL = process.env.OPRN_E2E_BASE_URL ?? "";
 
 test.setTimeout(60_000);
 

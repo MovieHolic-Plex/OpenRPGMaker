@@ -23,13 +23,13 @@ console.log("seed events", map.events.length, "version", project.version, "db", 
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage();
 await page.addInitScript((seed) => {
-  (window as Window & { __RPG_ZZU_E2E_PROJECT__?: unknown }).__RPG_ZZU_E2E_PROJECT__ = seed;
+  (window as Window & { __OPRN_E2E_PROJECT__?: unknown }).__OPRN_E2E_PROJECT__ = seed;
   window.localStorage.clear();
 }, project);
 await page.goto("http://127.0.0.1:9173/?blankProject=1", { waitUntil: "networkidle" });
 await page.waitForTimeout(2500);
 const dump = await page.evaluate(() => {
-  const seed = (window as Window & { __RPG_ZZU_E2E_PROJECT__?: any }).__RPG_ZZU_E2E_PROJECT__;
+  const seed = (window as Window & { __OPRN_E2E_PROJECT__?: any }).__OPRN_E2E_PROJECT__;
   const seedInfo = seed && typeof seed === "object"
     ? {
         hasVersion: "version" in seed,

@@ -21,14 +21,17 @@ import {
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import http from "node:http";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const PORT = Number(process.env.RPGZZU_DEV_PORT || 9999);
-const HOST = process.env.RPGZZU_DEV_HOST || "0.0.0.0";
-const RESTART_MS = Number(process.env.RPGZZU_DEV_RESTART_MS || 1500);
-const HEALTH_MS = Number(process.env.RPGZZU_DEV_HEALTH_MS || 5000);
-const HEALTH_GRACE_MS = Number(process.env.RPGZZU_DEV_HEALTH_GRACE_MS || 25000);
-const HEALTH_FAILS = Number(process.env.RPGZZU_DEV_HEALTH_FAILS || 3);
+const PORT = Number(process.env.OPRN_DEV_PORT || 9999);
+const HOST = process.env.OPRN_DEV_HOST || "0.0.0.0";
+const RESTART_MS = Number(process.env.OPRN_DEV_RESTART_MS || 1500);
+const HEALTH_MS = Number(process.env.OPRN_DEV_HEALTH_MS || 5000);
+const HEALTH_GRACE_MS = Number(process.env.OPRN_DEV_HEALTH_GRACE_MS || 25000);
+const HEALTH_FAILS = Number(process.env.OPRN_DEV_HEALTH_FAILS || 3);
 const LOG_DIR = join(ROOT, "output", "dev");
 const LOG_PATH = join(LOG_DIR, "dev-keepalive.log");
 const OUT_PATH = join(LOG_DIR, "dev-keepalive.out.log");

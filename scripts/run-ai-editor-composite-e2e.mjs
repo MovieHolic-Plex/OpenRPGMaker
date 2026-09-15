@@ -9,6 +9,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { chromium } from "playwright";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 const projectId = process.argv[2]?.trim();
 if (!projectId || projectId.startsWith("--") || !process.argv.includes("--execute")) {
@@ -34,7 +37,7 @@ const supabase = {
 };
 if (!supabase.url || !supabase.anonKey) throw new Error("Supabase 설정이 없습니다.");
 
-const baseUrl = process.env.RPGZZU_EDITOR_URL ?? "http://127.0.0.1:9999";
+const baseUrl = process.env.OPRN_EDITOR_URL ?? "http://127.0.0.1:9999";
 const outputDir = path.resolve(".omo/evidence/editor-ai-phase2");
 fs.mkdirSync(outputDir, { recursive: true });
 const prompt = [

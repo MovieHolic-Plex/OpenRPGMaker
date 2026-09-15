@@ -53,7 +53,7 @@ test("decorated ambiguous answer links retain AA contrast and disambiguation at 
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "standard");
+    localStorage.setItem("oprn:editor-ui-mode", "standard");
     localStorage.setItem("oprn:standard-welcome-seen", "1");
     localStorage.setItem("oprn:coachmarks-basic-v1", "1");
     localStorage.setItem("oprn:ai-config", JSON.stringify({ agentMode: "chat" }));

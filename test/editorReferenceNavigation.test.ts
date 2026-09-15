@@ -108,11 +108,15 @@ describe("editor reference navigation", () => {
     })).toBe(true);
 
     expect(editorState.get().currentMapId).toBe(house.id);
+    // 맵을 건너뛰면 팬하지 않고 **도착시킨다**(`immediate`). 새 맵은 좌표계가 통째로 달라
+    // 출발점이 목적지와 아무 관계가 없고, 전환 직후에 낯선 맵을 가로지르는 팬이 또 도는 것이
+    // 「확확 전환」의 두 번째 덜컹이다. 연속성은 크로스페이드가 갖는다(assistantViewSwitch).
     expect(cameraRequests).toEqual([{
       mapId: house.id,
       tileX: 6,
       tileY: 9,
       bounds: { x: 6, y: 9, width: 1, height: 1 },
+      immediate: true,
     }]);
     expect(highlights).toEqual([{
       mapId: house.id,

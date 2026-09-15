@@ -3,7 +3,7 @@
  * Run from repo root:  npx tsx community-site/scripts/validate-interop.mts [baseUrl]
  *
  * - Asset download must be editor UploadedAsset-shaped and decode to a real image.
- * - Game download must open with the EDITOR'S OWN .rpgzzu reader.
+ * - Game download must open with the EDITOR'S OWN .oprn reader (readProjectPackage; legacy .rpgzzu bytes use the same format).
  */
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -32,7 +32,7 @@ console.log(`asset OK: ${asset.name} (${asset.kind}), ${imgBytes.length} bytes P
 const gameRes = await fetch(`${BASE}/api/games/${GAME_SLUG}/download`);
 assert(gameRes.ok, `game download HTTP ${gameRes.status}`);
 const dir = await mkdtemp(path.join(tmpdir(), "openrpg-interop-"));
-const pkgPath = path.join(dir, "game.rpgzzu");
+const pkgPath = path.join(dir, "game.oprn");
 await writeFile(pkgPath, Buffer.from(await gameRes.arrayBuffer()));
 const pkgBlob = new Blob([await readFile(pkgPath)]);
 const names = await readProjectPackageEntryNames(pkgBlob);

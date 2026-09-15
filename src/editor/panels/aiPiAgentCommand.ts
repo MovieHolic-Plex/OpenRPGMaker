@@ -28,7 +28,7 @@ import {
   reduceTeamBoard,
   type TeamBoardState,
 } from "@/ai/piAgent/teamBoardState";
-import { changeChipsWithAreas, renderChangePreviewCard } from "./aiChangePreview";
+import { changeChipsWithAreas, openWideChangeViewer, renderChangePreviewCard, type ChangePreviewInput } from "./aiChangePreview";
 import { loadAiConfig } from "@/ai/llmClient";
 import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
 import { summarizeChanges } from "@/editor/tools/changeset";
@@ -36,9 +36,10 @@ import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { changedAreaLabels } from "@/project/changeAreas";
+import { computeChangeSites } from "@/project/changeSites";
 import { buildChangeLedger, type ChangeLedger } from "@/project/changeLedger";
 import { createTeamBoard } from "./aiTeamBoard";
-import { publishTeamActivity } from "@/ai/piAgent/teamActivity";
+import { publishTeamActivity, setTeamReviewActions } from "@/ai/piAgent/teamActivity";
 import { loadTeamSpec } from "@/ai/piAgent/teamSpecStore";
 
 export const PI_COMMAND_PREFIX = "/pi";
@@ -207,6 +208,7 @@ export async function runPiCommand(
 
   let boardState: TeamBoardState = createTeamBoardState(command.mode, command.task);
   const board = createTeamBoard(boardState);
+  setTeamReviewActions(null);
   surface.appendCard(board.root);
   const sync = (): void => { board.update(boardState); publishTeamActivity(boardState); };
   const push = (event: PiAgentEvent): void => {
@@ -435,36 +437,53 @@ export async function runPiCommand(
   // 기본은 검토 후 적용: 보드 발의 검토 카드에서 사용자가 승인해야 프로젝트가 바뀐다.
   // 기준(base)이 그 사이 바뀌면 applyProposedProject 가 stale-base 로 거절한다.
   if ((config.piApply ?? "review") === "auto" && !harmonyManualReview) return apply();
-  boardState = markTeamBoardReview(boardState, receiptChips); sync();
   surface.setStatus("변경 확인 대기");
   // 적용 전에도 «무엇이 바뀔 것인가» 를 보여준다 — 여기가 사용자가 결정하는 자리다.
   // 같은 카드·같은 렌더러를 쓰고 배지만 「적용 전」 이다(두 번째 어휘를 만들지 않는다).
-  const reviewPreview = receiptMapId === null ? null : renderChangePreviewCard({
+  // 보고서 모드 재료 — 지점 목록(여러 곳을 곤치면 사진도 여러 쌍) + 팀 보고 문장 + 검수 지적.
+  const reviewSites = computeChangeSites(base, merged.project);
+  const reviewFindings = boardState.agents.flatMap((agent) => agent.review && !agent.review.ok ? agent.review.findings : []);
+  const reviewInput: ChangePreviewInput | null = receiptMapId === null ? null : {
     before: base,
     after: merged.project,
     mapId: receiptMapId,
     title: receiptTitle,
+    sites: reviewSites,
+    ...(boardState.report ? { report: boardState.report } : {}),
+    ...(reviewFindings.length > 0 ? { findings: reviewFindings } : {}),
     detail: team ? `아직 프로젝트에 반영하지 않았습니다 — 툴콜 ${toolCalls}회, 바뀐 맵·항목 ${changedCount}개.`
       : "아직 프로젝트에 반영하지 않았습니다.",
     chips: receiptChips,
     ledger: receiptLedger,
     state: "proposed",
-  });
-  publishFinalOutcome();
-  finishLog({ applied: false, changedCount, stoppedReason: "검토 대기" });
+  };
+  const reviewPreview = reviewInput ? renderChangePreviewCard(reviewInput) : null;
+  // 로그 카드의 적용/버리기와 작업 탭 검토 스트립이 **같은 클로저**를 부른다 — 두 경로, 한 동작.
+  const applyReviewed = (): void => { board.setReview(null); setTeamReviewActions(null); void apply(); };
+  const discardReviewed = (): void => {
+    board.setReview(null);
+    setTeamReviewActions(null);
+    changedCount = 0;
+    publishFinalOutcome();
+    boardState = markTeamBoardDiscarded(boardState); sync();
+    finishLog({ applied: false, changedCount, stoppedReason: "버림" });
+    surface.setStatus("대기");
+    surface.appendBubble("system", "Pi 결과를 버렸습니다. 프로젝트는 그대로입니다.");
+  };
   board.setReview({
     ...(reviewPreview ? { preview: reviewPreview } : {}),
-    onApply: () => { board.setReview(null); void apply(); },
-    onDiscard: () => {
-      board.setReview(null);
-      changedCount = 0;
-      publishFinalOutcome();
-      boardState = markTeamBoardDiscarded(boardState); sync();
-      finishLog({ applied: false, changedCount, stoppedReason: "버림" });
-      surface.setStatus("대기");
-      surface.appendBubble("system", "Pi 결과를 버렸습니다. 프로젝트는 그대로입니다.");
-    },
+    onApply: applyReviewed,
+    onDiscard: discardReviewed,
   });
+  setTeamReviewActions({
+    apply: applyReviewed,
+    discard: discardReviewed,
+    ...(reviewInput ? { openReport: () => { openWideChangeViewer(reviewInput); } } : {}),
+  });
+  // 「검토 대기」 게시는 버스 액션 등록 **뒤**다 — 작업 탭 스트립은 버스 게시 때만 다시 그리므로, 먼저 게시하면 버튼이 비활성으로 굳는다.
+  boardState = markTeamBoardReview(boardState, receiptChips); sync();
+  publishFinalOutcome();
+  finishLog({ applied: false, changedCount, stoppedReason: "검토 대기" });
   return true;
 }
 

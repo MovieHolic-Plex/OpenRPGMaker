@@ -13,11 +13,11 @@ import { startNewGameFromTitle } from "./runtimeInput";
 const CONFIG_KEY = "oprn:supabase-project-config";
 const BOOTSTRAP_KEY = "oprn:project-e2e.bootstrap";
 const DEDICATED_INPUTS = [
-  "RPGZZU_E2E_REMOTE_CERTIFICATE",
-  "RPGZZU_E2E_REMOTE_ISOLATION_MARKER",
-  "RPGZZU_E2E_REMOTE_PROJECT_REF",
-  "RPGZZU_E2E_REMOTE_URL",
-  "RPGZZU_E2E_REMOTE_ANON_KEY",
+  "OPRN_E2E_REMOTE_CERTIFICATE",
+  "OPRN_E2E_REMOTE_ISOLATION_MARKER",
+  "OPRN_E2E_REMOTE_PROJECT_REF",
+  "OPRN_E2E_REMOTE_URL",
+  "OPRN_E2E_REMOTE_ANON_KEY",
 ] as const;
 const remoteConfigured = DEDICATED_INPUTS.some((name) => process.env[name] !== undefined);
 const remoteCertificateTest = test;

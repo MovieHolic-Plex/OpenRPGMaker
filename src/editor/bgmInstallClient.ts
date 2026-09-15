@@ -1,7 +1,7 @@
 import { setInstalledBgmFiles } from "@/assets/installedBgm";
 
 /** 설치가 끝나 리소스 목록을 다시 만들어야 할 때 window 에 실린다. */
-export const BGM_INSTALLED_EVENT = "rpgzzu:bgm-installed";
+export const BGM_INSTALLED_EVENT = "oprn:bgm-installed";
 
 const STATUS_URL = "/api/bgm/status";
 const INSTALL_URL = "/api/bgm/install";

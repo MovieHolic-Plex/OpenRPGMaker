@@ -5,6 +5,9 @@
 import { chromium } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 const OUT = path.resolve("output/evidence/system2-gauge-chrome");
 fs.mkdirSync(OUT, { recursive: true });
@@ -13,7 +16,7 @@ const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
 page.setDefaultTimeout(45_000);
 
-const base = process.env.RPG_ZZU_URL || "http://127.0.0.1:9999/";
+const base = process.env.OPRN_URL || "http://127.0.0.1:9999/";
 const bust = `cb=${Date.now()}`;
 await page.goto(`${base}?blankProject=1&${bust}`, { waitUntil: "networkidle", timeout: 90_000 });
 await page.waitForTimeout(2000);

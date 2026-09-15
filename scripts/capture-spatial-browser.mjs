@@ -6,7 +6,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 page.on('pageerror', e => console.log('PAGEERROR',e.message));
 try {
-await page.addInitScript(() => { localStorage.setItem('oprn:editor-welcome-dismissed','1'); localStorage.setItem('rpg-zzu:editor-ui-mode','expert'); });
+await page.addInitScript(() => { localStorage.setItem('oprn:editor-welcome-dismissed','1'); localStorage.setItem('oprn:editor-ui-mode','expert'); });
 await page.goto(`${process.argv[2] ?? 'http://127.0.0.1:9999'}/?blankProject=1&aiBridge=0`, { timeout: 120000, waitUntil: 'domcontentloaded' });
 await page.getByTestId('toolbar-database').waitFor({ timeout: 120000 });
 await page.getByTestId('toolbar-database').click();

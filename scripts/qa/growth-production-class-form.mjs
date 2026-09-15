@@ -26,7 +26,7 @@ try {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   const remoteWrites = await blockRemoteWrites(page);
-  await page.addInitScript(() => localStorage.setItem('rpg-zzu:editor-ui-mode', 'expert'));
+  await page.addInitScript(() => localStorage.setItem('oprn:editor-ui-mode', 'expert'));
   await page.goto('http://127.0.0.1:9898/?freshProject=1', { waitUntil: 'domcontentloaded', timeout: 120000 });
   await page.getByTestId('toolbar-database').click();
   const tab = async id => {

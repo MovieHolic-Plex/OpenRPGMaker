@@ -4,7 +4,7 @@ import { openDatabase, switchDatabaseTab } from "./oprn-database-helpers";
 async function openEnemies(page: Page): Promise<void> {
   await page.addInitScript(() => {
     localStorage.setItem("oprn:editor-ui-mode", "expert");
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   // Dev module requests can be cancelled by host network changes; retry the whole boot.
   for (let attempt = 0; attempt < 3; attempt += 1) {

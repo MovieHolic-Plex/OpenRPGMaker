@@ -36,7 +36,7 @@ describe("oh-my-pi companion HTTP", () => {
     assert.equal(
       companionPublicOrigin(
         { headers: { origin: "http://127.0.0.1:9888" } },
-        { RPG_ZZU_PUBLIC_ORIGIN: "http://mdc-server:9888" },
+        { OPRN_PUBLIC_ORIGIN: "http://mdc-server:9888" },
       ),
       "http://mdc-server:9888",
     );
@@ -56,7 +56,7 @@ describe("oh-my-pi companion HTTP", () => {
     assert.equal(resolveCompanionProvider({ url: "/auth/status" }), "google-antigravity");
     assert.equal(resolveCompanionProvider({ url: "/auth/status?provider=groq" }), "groq");
     assert.equal(
-      resolveCompanionProvider({ url: "/v1/chat/completions", headers: { "x-rpgzzu-provider": "anthropic" } }),
+      resolveCompanionProvider({ url: "/v1/chat/completions", headers: { "x-oprn-provider": "anthropic" } }),
       "anthropic",
     );
     assert.equal(
@@ -132,7 +132,7 @@ describe("oh-my-pi companion HTTP", () => {
       {
         method: "POST",
         url: "/v1/chat/completions",
-        headers: { "x-rpgzzu-provider": "openrouter" },
+        headers: { "x-oprn-provider": "openrouter" },
         body: { model: "openai/gpt-5.5", messages: [] },
       },
       adapters,
@@ -154,7 +154,7 @@ describe("oh-my-pi companion HTTP", () => {
       {
         method: "POST",
         url: "/v1/images/generations",
-        headers: { "x-rpgzzu-provider": "google-antigravity" },
+        headers: { "x-oprn-provider": "google-antigravity" },
         body: { prompt: "슬라임", model: "gemini-3.1-flash-image" },
       },
       {

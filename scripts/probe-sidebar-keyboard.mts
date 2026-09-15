@@ -1,8 +1,11 @@
 /** 실측: 사이드바 도구 버튼을 키보드로 활성화할 수 있는가 + 활성화 후 포커스는 어디로 가는가.
  *  A1(포커스 body 낙하) / A2(Space 기본동작 취소) 두 주장을 브라우저에서 직접 확인한다. */
 import { chromium } from "@playwright/test";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9977";
+applyLegacyEnvAliases();
+
+const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9977";
 
 async function main(): Promise<void> {
   const browser = await chromium.launch({ args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu"] });

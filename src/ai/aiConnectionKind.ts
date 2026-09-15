@@ -11,7 +11,7 @@
 //
 // 레지스트리에는 Antigravity·Codex 두 제공자만 있고 둘 다 oauth 다. 그래서 자격 축은 실질적으로
 // 한 값이고, 사용자의 선택은 "어느 구독으로 갈 것인가"다. 두 제공자 모두 자격을 동반 서비스가
-// 자기 저장소(~/.rpg-zzu/oh-my-pi-auth.json)에 보관하므로 **브라우저에 비밀을 남기지 않는다.**
+// 자기 저장소(~/.oprn/oh-my-pi-auth.json)에 보관하므로 **브라우저에 비밀을 남기지 않는다.**
 // `configForConnectionKind` 가 그것을 강제한다.
 
 import { DEFAULT_BASE_URL, type AiConfig } from "@/ai/llmClient";

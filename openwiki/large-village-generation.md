@@ -530,6 +530,7 @@ npx tsx scripts/diagnose-road-through-house.mts
 - 스코프 비교는 키 순서 안정 직렬화다.
 - NPC 수는 하한 90%(최소 2명 관용)로 판정한다. best-effort 집 수는 4채 이하에서 exact와 같다.
 - 기존 맵 bounds 하한 16·맵 전체 하한 20·새 맵 20×20 이상. new 타깃의 plannedMap은 생략 가능(생략하면 target 값).
+- **bounds 없는 기존 맵은 집 수가 요구하는 크기까지 스스로 커진다 (2026-09-15).** 성장 목표는 신축과 같은 `estimateVillageSize(houseCount)` — 예전에는 `MIN_BOUNDS_SIZE`(16)까지만 키워서 30×30 맵에 집 20채를 우겨넣었다. `bounds` 를 명시하면 사용자가 정한 사각형이므로 성장 없이 하한 미달만 거부한다. 축소는 하지 않는다(좌상단 기준 확장, 확장부는 잔디, 이벤트 불변).
 - 길 재시도 리포트가 warnings에 기계 가독으로 남는다(시도·침범 추이·잔존 분류).
 
 ## 대로 병합 검증 (2026-09-05)

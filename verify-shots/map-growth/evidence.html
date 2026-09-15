@@ -1,0 +1,101 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; padding:36px 40px; background:#0f1115; color:#e6e9ef;
+         font-family: "Noto Sans CJK KR","Noto Sans KR",-apple-system,"Segoe UI",sans-serif; width:1600px; }
+  h1 { font-size:26px; margin:0 0 6px; letter-spacing:-0.3px; }
+  .sub { color:#98a2b3; font-size:14.5px; margin-bottom:26px; line-height:1.6; }
+  .sub b { color:#f2c94c; font-weight:600; }
+  .grid { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  .card { background:#171a21; border:1px solid #262b36; border-radius:10px; padding:16px 18px; }
+  .card h3 { font-size:15px; margin:0 0 12px; color:#8ab4f8; font-weight:600; }
+  .row { display:flex; gap:10px; margin-bottom:8px; align-items:flex-start; }
+  .tag { flex:0 0 auto; font-size:11px; padding:3px 8px; border-radius:5px; font-weight:700; margin-top:1px; min-width:52px; text-align:center; }
+  .before { background:#3a1d1d; color:#ff8a8a; }
+  .after  { background:#173324; color:#6ee7a0; }
+  .guard  { background:#2b2438; color:#c4a7f7; }
+  .note   { background:#1e2c3a; color:#7dc4f0; min-width:110px; }
+  .calc   { background:#2a2a1c; color:#e0d16a; }
+  .txt { font-size:13px; line-height:1.65; color:#cdd3de; }
+  .mono { font-family: "JetBrains Mono", ui-monospace, monospace; font-size:12px; color:#b6c2d9; }
+  .viz { margin-top:22px; background:#171a21; border:1px solid #262b36; border-radius:10px; padding:18px 20px; }
+  .viz h3 { font-size:15px; margin:0 0 4px; color:#8ab4f8; }
+  .viz p { margin:0 0 14px; font-size:13px; color:#98a2b3; }
+  .foot { margin-top:20px; display:flex; gap:14px; align-items:center; }
+  .pill { background:#173324; color:#6ee7a0; border:1px solid #23543a; border-radius:999px; padding:8px 16px; font-size:13.5px; font-weight:600; }
+  .pill.gray { background:#1b1f27; color:#98a2b3; border-color:#2a2f3a; font-weight:400; }
+</style></head><body>
+<h1>「맵 고쳐줘」 요청이 맵 크기를 바꾸지 않던 결함 — 네 지점 수정</h1>
+<div class="sub">
+  <b>resize_map 도구는 처음부터 있었고 core 로 상시 노출돼 있었다.</b> 그런데도 수정 요청은 맵 크기를 한 번도 바꾸지 않았다 —
+  네 계층이 같은 방향으로 막고 있었기 때문이다. 아래 before/after 는 수정 전후 코드를 실제로 실행해 받은 문자열이다.
+</div>
+<div class="grid">
+  
+<div class="card">
+  <h3>1. buildSpec — 기존 맵 확장 선언</h3>
+  <div class="row"><span class="tag before">before</span><div class="txt">에셋 '확장 마을' 영역(24,24) 30×20가 맵 크기 30×30 밖입니다.</div></div>
+  <div class="row"><span class="tag after">after</span><div class="txt">통과 — 40×40 확장을 전제로 (24,24) 30×20 마을 승인</div></div>
+  <div class="row"><span class="tag guard">guard</span><div class="txt">plannedMap 20×20가 기존 맵 'm1' 30×30보다 작습니다. 기존 맵의 plannedMap 은 확장(현재 크기 이상)만 선언할 수 있습니다 — 줄이려면 경계 밖 이벤트를 먼저 move_event/remove_event 로 정리한 뒤 resize_map 을 직접 호출하세요.</div></div>
+  
+  <div class="row"><span class="tag calc">코드 계산</span><div class="txt mono">plannedGrowthForSpec → {"width":54,"height":44}</div></div>
+</div>
+  <div class="card">
+    <h3>2. specGate — 거부 문구가 resize_map 경로를 들고 온다</h3>
+    <div class="row"><span class="tag before">before</span><div class="txt">거부 안내가 전부 「영역을 좁히세요」 쪽으로만 유도 → 모델의 최소 수리는 늘 축소였다</div></div>
+    <div class="row"><span class="tag after">after</span><div class="txt mono">맵 'm1'이 요구 영역보다 작습니다 — 영역을 좁히는 대신 키우는 것도 정답입니다. resize_map({mapId:"m1", width:26, height:26})을 먼저 호출한 뒤, 같은 크기를 plannedMap 으로 선언한 set_build_spec 을 제출하세요.</div></div>
+    <div class="row"><span class="tag calc">코드 계산</span><div class="txt">필요한 크기는 plannedGrowthForSpec 이 계산 — 모델이 숫자를 발명하지 않는다</div></div>
+  </div>
+  
+<div class="card">
+  <h3>3. author_village — 기존 맵 성장 목표</h3>
+  <div class="row"><span class="tag before">before</span><div class="txt">MIN_BOUNDS_SIZE(16×16)까지만 — 30×30 맵은 그대로 두고 집을 우겨넣음</div></div>
+  <div class="row"><span class="tag after">after</span><div class="txt">집 수 환산값까지 성장: 집 12채 → 64×40, 집 20채 → 74×52</div></div>
+  <div class="row"><span class="tag guard">guard</span><div class="txt">bounds 를 명시하면 성장 없음(사용자가 정한 사각형), 축소 없음</div></div>
+  
+  
+</div>
+  
+<div class="card">
+  <h3>4. intentDeclaration — 문장의 규모가 크기가 된다</h3>
+  <div class="row"><span class="tag before">before</span><div class="txt">construction 필드 없음 → 수량이 선언 계층에서 버려짐(환산기 호출자 0)</div></div>
+  <div class="row"><span class="tag after">after</span><div class="txt">{"scale":"large","houseCount":20}</div></div>
+  
+  <div class="row"><span class="tag note">모델이 읽는 노트</span><div class="txt mono">[시공 규모] 선언된 수량: 규모 large · 집 20채. 코드가 환산한 권장 맵 크기는 74×52(집 20채 기준)이다. 대상 맵 'm_town' 은 30×30 로 부족하다. resize_map({mapId:"m_town", width:74, height:52}) 를 먼저 호출해 키운 뒤 시공하라 — 좌상단 기준 확장이라 기존 타일·이벤트는 그대로고 늘어난 칸만 잔디가 된다. 요청한 수량을 줄여 기존 크기에 우겨넣지 말 것.</div></div>
+  
+</div>
+</div>
+<div class="viz">
+  <h3>실제 결과: 집 20채를 요청한 30×30 마을</h3>
+  <p>좌상단 기준 확장 — 기존 타일·이벤트는 그 자리에 그대로 있고, 늘어난 칸만 잔디가 된다(비파괴).</p>
+  <canvas id="c" width="1520" height="320"></canvas>
+</div>
+<div class="foot">
+  <div class="pill">신규 회귀 테스트 11건 + 기존 스위트 178건 통과</div>
+  <div class="pill gray">typecheck:app exit 0</div>
+  <div class="pill gray">test/mapGrowthOnFixRequests.test.ts · test/authorVillageScopeGate.test.ts</div>
+</div>
+<script>
+  const ctx = document.getElementById("c").getContext("2d");
+  const S = 4.4, ox = 40, oy = 26;
+  ctx.fillStyle = "#1d3524"; ctx.fillRect(ox, oy, 74*S, 52*S);
+  ctx.strokeStyle = "#3f7a55"; ctx.lineWidth = 1;
+  for (let x = 0; x <= 74; x += 2) { ctx.beginPath(); ctx.globalAlpha=.18; ctx.moveTo(ox+x*S, oy); ctx.lineTo(ox+x*S, oy+52*S); ctx.stroke(); }
+  for (let y = 0; y <= 52; y += 2) { ctx.beginPath(); ctx.globalAlpha=.18; ctx.moveTo(ox, oy+y*S); ctx.lineTo(ox+74*S, oy+y*S); ctx.stroke(); }
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = "#26303f"; ctx.fillRect(ox, oy, 30*S, 30*S);
+  ctx.strokeStyle = "#ff8a8a"; ctx.lineWidth = 2.5; ctx.setLineDash([7,4]);
+  ctx.strokeRect(ox, oy, 30*S, 30*S); ctx.setLineDash([]);
+  ctx.strokeStyle = "#6ee7a0"; ctx.lineWidth = 2.5; ctx.strokeRect(ox, oy, 74*S, 52*S);
+  ctx.font = "600 15px 'Noto Sans CJK KR', sans-serif";
+  ctx.fillStyle = "#ff8a8a"; ctx.fillText("before 30×30", ox+12, oy+24);
+  ctx.fillStyle = "#98a2b3"; ctx.font = "13px 'Noto Sans CJK KR', sans-serif";
+  ctx.font = "11.5px 'Noto Sans CJK KR', sans-serif";
+  ctx.fillText("기존 내용 보존", ox+12, oy+30*S-12);
+  ctx.font = "13px 'Noto Sans CJK KR', sans-serif";
+  ctx.fillStyle = "#6ee7a0"; ctx.font = "600 15px 'Noto Sans CJK KR', sans-serif";
+  ctx.fillText("after 74×52 — estimateVillageSize(집 20채)", ox+31*S, oy+52*S+26);
+  ctx.fillStyle = "#98a2b3"; ctx.font = "13px 'Noto Sans CJK KR', sans-serif";
+  ctx.fillText("늘어난 칸 = 잔디(비파괴 확장)", ox+31*S, oy+26);
+</script>
+</body></html>

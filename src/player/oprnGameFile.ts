@@ -4,15 +4,15 @@ import {
   LEGACY_RPGZZU_MIME,
   ProjectPackageError,
   readProjectPackage,
-  RPGZZU_EXTENSION,
-  RPGZZU_MIME,
+  OPRN_EXTENSION,
+  OPRN_MIME,
 } from "@/project/package";
 import type { Project } from "@/project/types";
 
 export const OPRN_GAME_FILE_ACCEPT = [
-  RPGZZU_MIME,
+  OPRN_MIME,
   LEGACY_RPGZZU_MIME,
-  RPGZZU_EXTENSION,
+  OPRN_EXTENSION,
   LEGACY_RPGZZU_EXTENSION,
 ].join(",");
 
@@ -23,9 +23,9 @@ export type OprnGameFileRead =
 export function isOprnGameFile(file: Pick<File, "name" | "type">): boolean {
   const name = file.name.toLowerCase();
   return (
-    name.endsWith(RPGZZU_EXTENSION)
+    name.endsWith(OPRN_EXTENSION)
     || name.endsWith(LEGACY_RPGZZU_EXTENSION)
-    || file.type === RPGZZU_MIME
+    || file.type === OPRN_MIME
     || file.type === LEGACY_RPGZZU_MIME
   );
 }

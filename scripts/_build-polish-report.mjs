@@ -28,7 +28,7 @@ const html = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>영역 다듬기 구현 보고서 · rpg-zzu</title>
+<title>영역 다듬기 구현 보고서 · oprn</title>
 <style>
   :root {
     --bg: #0f1115; --panel: #171a21; --panel-2: #1d212a; --line: #2a2f3a;
@@ -94,7 +94,7 @@ const html = `<!doctype html>
 <div class="wrap">
 
 <header class="top">
-  <p class="kicker">rpg-zzu · 구현 보고서</p>
+  <p class="kicker">oprn · 구현 보고서</p>
   <h1>영역 다듬기 — 선택한 칸을 주변에 이어붙이기</h1>
   <p class="sub">선택 영역 AI 작업에 「주변과 어울리게 다듬기」 경로를 추가했다. 영역 안에서는 타일·이벤트 전권을 주고, 대신 주변을 읽어 브리핑하고, 결과가 주변과 얼마나 맞물리는지 숫자로 검토시킨다. 화면·수치는 모두 실제 실행에서 캡처한 것이다.</p>
 </header>

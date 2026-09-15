@@ -8,7 +8,7 @@
  *
  * 실행 (dev 서버가 /api/cpen 프록시를 제공해야 한다):
  *   npm run dev  # 별도 터미널, https://127.0.0.1:9999
- *   RPG_ZZU_AI_THREE_MAP=1 NODE_TLS_REJECT_UNAUTHORIZED=0 \
+ *   OPRN_AI_THREE_MAP=1 NODE_TLS_REJECT_UNAUTHORIZED=0 \
  *     node scripts/run-vitest.mjs run test/aiThreeMapRpg.live.test.ts --configLoader bundle
  */
 import { describe, expect, it } from "vitest";
@@ -145,7 +145,7 @@ function finalizeProject(draft: Project): Project {
 
 declare const process: { readonly env: Record<string, string | undefined>; exit(code: number): never };
 
-const describeLive = process.env.RPG_ZZU_AI_THREE_MAP === "1" ? describe : describe.skip;
+const describeLive = process.env.OPRN_AI_THREE_MAP === "1" ? describe : describe.skip;
 
 describeLive("내장 AI 로 맵 3개 RPG 저작 (live)", () => {
   it("AI 툴 호출로 3맵 + 전이를 만들고 Supabase 저장 후 재로드로 검증한다", async () => {

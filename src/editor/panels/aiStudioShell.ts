@@ -8,6 +8,7 @@
 
 import type { WorkItem, WorkPlan } from "@/ai/workPlan";
 import { addMap } from "@/editor/actions";
+import { withAssistantViewTransition } from "@/editor/assistantViewSwitch";
 import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { readAgentBrief } from "@/editor/panels/aiAgentBrief";
@@ -27,6 +28,9 @@ import {
 import type { ToolDefinition } from "@/editor/tools/types";
 import { TOOL_LABELS, toolGroup, toolIconKey, toolLabel, type ToolGroup } from "./aiToolLabels";
 import { deckIcon } from "./aiDeckIcons";
+import { subscribeTeamActivity } from "@/ai/piAgent/teamActivity";
+import { teamBoardTotals, type TeamBoardState } from "@/ai/piAgent/teamBoardState";
+import { createTeamWorkPane } from "./aiTeamWorkPane";
 import { findParentMapId, isMapTreeFolder, mapTreeNodeLabel } from "@/project/mapTree";
 import { store } from "@/project/store";
 import type { MapId, MapTreeNode, Project } from "@/project/types";
@@ -578,13 +582,24 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     return planningView;
   };
 
+  // 실행 보드(teamActivity 버스) — 조수 데크의 「작업」 탭과 같은 상태, 스튜디오는 상세(detail)로 그린다.
+  let teamBoard: TeamBoardState | null = null;
+  const teamWork = createTeamWorkPane({ detail: true });
+
   const renderDeck = (): void => {
     if (deckTab === "tools") {
       deckPane.replaceChildren(renderToolsPane(toolQuery, options.onUseTool));
       return;
     }
     if (deckTab === "work") {
-      deckPane.replaceChildren(renderWorkPane(workPlan, workActive));
+      if (teamBoard) {
+        teamWork.update(teamBoard);
+        // 자율 실행 체크리스트가 함께 있으면 좌: 계획, 우: 실행 보드.
+        if (workPlan) deckPane.replaceChildren(el("div", { class: "ai-studio-work-split", children: [renderWorkPane(workPlan, workActive), teamWork.root] }));
+        else deckPane.replaceChildren(teamWork.root);
+      } else {
+        deckPane.replaceChildren(renderWorkPane(workPlan, workActive));
+      }
       return;
     }
     if (deckTab === "planning") {
@@ -634,7 +649,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     const name = `새 장면 ${Object.keys(project.maps).length + 1}`;
     const mapId = addMap(name, DEFAULT_SCENE_SIZE.width, DEFAULT_SCENE_SIZE.height);
     if (!mapId) return;
-    selectEditorMap(mapId);
+    withAssistantViewTransition(mapId, () => { selectEditorMap(mapId); });
     refreshScenes();
     refreshMonitor();
   };
@@ -800,6 +815,11 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
   };
 
   const refreshWorkBadge = (): void => {
+    if (teamBoard) {
+      const sum = teamBoardTotals(teamBoard);
+      setBadge("work", sum.running > 0 ? String(sum.running) : sum.agents > 0 ? String(sum.agents) : "");
+      return;
+    }
     if (!workPlan) {
       setBadge("work", null);
       return;
@@ -808,6 +828,36 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     const done = items.filter((item) => item.status === "done").length;
     setBadge("work", `${done}/${items.length}`);
   };
+
+  // 실행 보드가 뜨면 덱을 한 번 키운다 — 236px 기본 높이면 상세 과정이 두 행밖에 안 보인다. 사용자가 저장한 높이가
+  // 아니면(드래그해 둔 값) 손대지 않고, 보드가 사라질 때 우리가 키운 값 그대로면 기본으로 되돌린다. 저장은 안 한다.
+  const BOARD_DECK_HEIGHT = 420;
+  let deckGrownForBoard = false;
+  const growDeckForBoard = (): void => {
+    if (layoutSizes.deck !== SPLITTER_DEFAULTS.deck) return;
+    applySplitterSize("deck", BOARD_DECK_HEIGHT, false);
+    deckGrownForBoard = true;
+    requestCanvasFit();
+  };
+  const restoreDeckAfterBoard = (): void => {
+    if (!deckGrownForBoard) return;
+    deckGrownForBoard = false;
+    if (layoutSizes.deck !== BOARD_DECK_HEIGHT) return;
+    applySplitterSize("deck", SPLITTER_DEFAULTS.deck, false);
+    requestCanvasFit();
+  };
+
+  const unsubscribeTeamActivity = subscribeTeamActivity((state) => {
+    const appeared = state !== null && teamBoard === null;
+    const vanished = state === null && teamBoard !== null;
+    teamBoard = state;
+    teamWork.update(state);
+    refreshWorkBadge();
+    if (appeared) growDeckForBoard();
+    if (vanished) restoreDeckAfterBoard();
+    if (appeared && attachedTo) showTab("work");
+    else if (deckTab === "work") renderDeck();
+  });
 
   showTab("tools");
 
@@ -848,6 +898,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     setDeckTab: showTab,
     dispose() {
       detach();
+      unsubscribeTeamActivity();
       splitterCleanup?.();
       splitterCleanup = null;
     },
@@ -954,7 +1005,9 @@ function walkScenes(
         dataset: { testid: "ai-studio-scene", mapId: node.mapId, kind: interior ? "interior" : "map" },
         on: {
           click: () => {
-            selectEditorMap(node.mapId);
+            // 장면 목록은 스튜디오에서 가장 자주 눌리는 화면 전환이다 — 하드컷이면
+            // 목록을 훑는 동안 캔버스가 계속 확확 갈린다(editor/assistantViewSwitch.ts).
+            withAssistantViewTransition(node.mapId, () => { selectEditorMap(node.mapId); });
           },
         },
         children: [

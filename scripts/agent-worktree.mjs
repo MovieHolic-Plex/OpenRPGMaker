@@ -121,7 +121,7 @@ function nextFreePort() {
 // 워킹트리(미커밋 포함)를 커밋 객체로 박제한다. 임시 인덱스를 쓰므로 실제 인덱스·워킹트리는
 // 건드리지 않는다 — 다른 에이전트가 작업 중이어도 안전하다.
 function snapshot(message) {
-  const indexFile = join(mkdtempSync(join(tmpdir(), "rpgzzu-snap-")), "index");
+  const indexFile = join(mkdtempSync(join(tmpdir(), "oprn-snap-")), "index");
   const env = { ...process.env, GIT_INDEX_FILE: indexFile };
   git(["read-tree", "HEAD"], { env });
   git(["add", "-A"], { env });

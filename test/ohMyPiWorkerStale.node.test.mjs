@@ -7,8 +7,8 @@ import { after, describe, it } from "node:test";
 // 저장소(자격 파일 경로)는 모듈 로드 시점에 정해지므로 env 가 import 보다 먼저다 — static import 는
 // 모듈 본문보다 먼저 평가되니 동적 import 를 쓴다.
 const dir = mkdtempSync(join(tmpdir(), "rpgzzu-worker-stale-"));
-process.env.RPG_ZZU_OH_MY_PI_AUTH_PATH = join(dir, "auth.json");
-process.env.RPG_ZZU_OH_MY_PI_TEST_STUB = "1";
+process.env.OPRN_OH_MY_PI_AUTH_PATH = join(dir, "auth.json");
+process.env.OPRN_OH_MY_PI_TEST_STUB = "1";
 
 // 기동 횟수를 세는 스텁 워커. 진짜 워커 대신 띄우므로 «새 프로세스가 떴는가» 만 관측한다 —
 // 모델 호출은 이 테스트의 대상이 아니다.
@@ -29,7 +29,7 @@ writeFileSync(stubWorker, [
 // `exec` 로 셸 자신을 대신시킨다: 셸을 남기면 kill 이 셸에만 닿아 자식이 살아남고, 그 자식이
 // 물고 있는 stdio 파이프가 node 테스트 프로세스를 끝나지 않게 붙잡는다(실측: 테스트는 통과했는데
 // 프로세스가 안 끝났다).
-process.env.RPG_ZZU_OH_MY_PI_WORKER_COMMAND = `exec ${process.execPath} ${stubWorker}`;
+process.env.OPRN_OH_MY_PI_WORKER_COMMAND = `exec ${process.execPath} ${stubWorker}`;
 
 const { createOhMyPiAdapters, markOhMyPiWorkerStale, stopOhMyPiWorker } = await import("../scripts/lib/ohMyPiPiAi.mjs");
 
@@ -48,8 +48,8 @@ function spawnCount() {
 describe("oh-my-pi 워커 코드 갱신", () => {
   after(() => {
     stopOhMyPiWorker();
-    delete process.env.RPG_ZZU_OH_MY_PI_TEST_STUB;
-    delete process.env.RPG_ZZU_OH_MY_PI_WORKER_COMMAND;
+    delete process.env.OPRN_OH_MY_PI_TEST_STUB;
+    delete process.env.OPRN_OH_MY_PI_WORKER_COMMAND;
     rmSync(dir, { recursive: true, force: true });
   });
 

@@ -10,10 +10,11 @@ import {
   parseStructureKitFile,
   planImport,
   StructureKitFileError,
+  STRUCTURE_KIT_FILE_SUFFIX,
   type ImportPlan,
 } from "@/editor/harnessSuggestion/structureKitFile";
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
-import { LEGACY_RPGZZU_EXTENSION, RPGZZU_EXTENSION } from "@/project/package";
+import { LEGACY_RPGZZU_EXTENSION, OPRN_EXTENSION } from "@/project/package";
 import { store } from "@/project/store";
 import type { TilesetId } from "@/project/types";
 import { el } from "@/util/dom";
@@ -26,7 +27,7 @@ import { toast } from "@/util/toast";
  */
 function isProjectFileName(name: string): boolean {
   const lower = name.toLowerCase();
-  return lower.endsWith(RPGZZU_EXTENSION) || lower.endsWith(LEGACY_RPGZZU_EXTENSION);
+  return lower.endsWith(OPRN_EXTENSION) || lower.endsWith(LEGACY_RPGZZU_EXTENSION);
 }
 
 export function pickAndImportStructureKits(tilesetId: TilesetId, onDone: () => void): void {
@@ -37,7 +38,7 @@ export function pickAndImportStructureKits(tilesetId: TilesetId, onDone: () => v
     const file = input.files?.[0];
     if (!file) return;
     if (isProjectFileName(file.name)) {
-      toast("이건 프로젝트 파일입니다. 구조물 파일(.rpgzzu-kit.json)을 골라 주세요.", "error");
+      toast(`이건 프로젝트 파일입니다. 구조물 파일(${STRUCTURE_KIT_FILE_SUFFIX})을 골라 주세요.`, "error");
       return;
     }
     const reader = new FileReader();

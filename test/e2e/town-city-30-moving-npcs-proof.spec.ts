@@ -7,12 +7,12 @@ import { startNewGameFromTitle } from "./runtimeInput";
 
 declare const process: {
   readonly env: {
-    readonly RPG_ZZU_EVIDENCE_URL?: string;
+    readonly OPRN_EVIDENCE_URL?: string;
   };
 };
 
 const EVIDENCE_DIR = "output/evidence/city-30-moving-npcs";
-const APP_URL = process.env.RPG_ZZU_EVIDENCE_URL ?? "/";
+const APP_URL = process.env.OPRN_EVIDENCE_URL ?? "/";
 const DIALOGUE_NPC_ID = "event_city_walker_11";
 
 type RuntimeEventSnapshot = {

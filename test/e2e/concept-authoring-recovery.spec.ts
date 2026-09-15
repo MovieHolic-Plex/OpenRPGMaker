@@ -5,7 +5,7 @@ test("concept layout, zone, membership and seed painting remain editable", async
   test.setTimeout(180_000);
   await page.setViewportSize({ width: 1440, height: 980 });
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "standard");
+    localStorage.setItem("oprn:editor-ui-mode", "standard");
   });
   await page.goto("/?blankProject=1", { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 90_000 });

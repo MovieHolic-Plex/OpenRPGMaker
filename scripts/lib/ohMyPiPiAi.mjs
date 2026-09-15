@@ -13,6 +13,9 @@ import {
   seedOAuthForTests,
   startProviderLogin,
 } from "./aiAuthRuntime.ts";
+import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 let workerPortPromise;
 let workerChild;
@@ -38,7 +41,7 @@ function startWorker() {
   promise = new Promise((resolve, reject) => {
     const script = fileURLToPath(new URL("../oh-my-pi-worker.ts", import.meta.url));
     // Tests point this at a script that crashes on startup to pin the failure contract.
-    const command = process.env.RPG_ZZU_OH_MY_PI_WORKER_COMMAND;
+    const command = process.env.OPRN_OH_MY_PI_WORKER_COMMAND;
     const child = command
       ? spawn(command, [], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env }, shell: true })
       : spawn("bun", [script], {

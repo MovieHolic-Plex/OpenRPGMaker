@@ -55,7 +55,7 @@ const rows = evidence.captured
     return `<tr>
       <td class="chan-cell"><b>${esc(found?.short ?? "?")}</b><br><span class="muted">${esc(found?.label ?? "")}</span></td>
       <td><code>${esc(url.pathname)}</code></td>
-      <td><code>${esc(c.headers["x-rpgzzu-provider"] ?? "—")}</code></td>
+      <td><code>${esc(c.headers["x-oprn-provider"] ?? "—")}</code></td>
       <td>${c.headers.authorization ? '<span class="bad">있음</span>' : '<span class="ok">없음</span>'}</td>
       <td>${c.maxTokens ?? "—"}</td>
       <td>${c.temperature ?? "—"}</td>
@@ -177,7 +177,7 @@ footer.doc code{font-size:12px}
 <div class="wrap">
 
 <header class="doc">
-  <div class="eyebrow">RPG-ZZU · 에디터 AI</div>
+  <div class="eyebrow">OPRN · 에디터 AI</div>
   <h1>AI 가 사람의 성향을 기억한다</h1>
   <p class="lede">
     같은 말을 매번 다시 하지 않아도 되게 만들었다. 되돌리기·정정·직접 선언을 보고 취향을 익히고,
@@ -407,7 +407,7 @@ ${rows}
 npm run dev -- --host 127.0.0.1 --port 9761 --strictPort
 
 <span class="dim"># 2) 증거 캡처 — 스크린샷 10장 + 요청 기록</span>
-RPG_ZZU_URL=http://127.0.0.1:9761 node scripts/screenshot-preference-memory.mjs
+OPRN_URL=http://127.0.0.1:9761 node scripts/screenshot-preference-memory.mjs
 
 <span class="dim"># 3) 이 보고서 다시 굽기</span>
 node scripts/build-preference-memory-report.mjs

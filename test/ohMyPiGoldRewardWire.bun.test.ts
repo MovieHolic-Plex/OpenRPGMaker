@@ -21,7 +21,7 @@ const apiKey = JSON.stringify({ token: "offline-gold-sentinel", projectId: "offl
 
 describe("goldDelta at the actual installed Antigravity wire and response boundaries", () => {
   for (const model of ["gemini-3.7-flash", "claude-opus-4-6"]) test(`${model} preserves exact and atLeast currency values without STRING defaulting`, async () => {
-    assert.notEqual(process.env.RPG_ZZU_OH_MY_PI_TEST_STUB, "1");
+    assert.notEqual(process.env.OPRN_OH_MY_PI_TEST_STUB, "1");
     const tool = PLAY_TOOLS.find(entry => entry.name === "run_scene_test");
     if (!tool) throw new Error("Missing scene tool");
     const project = createBlankProject();

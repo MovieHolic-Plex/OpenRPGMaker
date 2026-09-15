@@ -1,0 +1,14 @@
+ RUN  v3.2.4 /home/main/paseo-workspace/worktrees/3lblgwmp/robust-cougar
+
+ ✓ test/mapGrowthOnFixRequests.test.ts (11 tests) 8519ms
+   ✓ 1. buildSpec — 기존 맵도 확장 plannedMap 을 선언할 수 있다 > 현재 크기보다 큰 plannedMap 은 경계 기준이 되어 맵 밖 에셋을 통과시킨다  566ms
+   ✓ 1. buildSpec — 기존 맵도 확장 plannedMap 을 선언할 수 있다 > 현재 크기보다 작은 plannedMap 은 거부된다 — 축소는 resize_map 의 이벤트 가드를 지나야 한다  564ms
+   ✓ 2. specGate — 맵이 작아서 막힐 때 resize_map 경로를 실어 보낸다 > 밑그림 없는 차단 초안에 plannedMap 과 resize_map 호출이 들어간다  2589ms
+   ✓ 2. specGate — 맵이 작아서 막힐 때 resize_map 경로를 실어 보낸다 > 맵 밖 에셋으로 거부된 set_build_spec 도 확장 경로를 안내한다  1791ms
+   ✓ 2. specGate — 맵이 작아서 막힐 때 resize_map 경로를 실어 보낸다 > 키운 뒤에는 같은 밑그림이 통과한다 — 막힘→확장→시공이 한 경로로 이어진다  2982ms
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+   Start at  20:26:32
+   Duration  42.26s (transform 21.64s, setup 0ms, collect 31.97s, tests 8.52s, environment 0ms, prepare 596ms)
+

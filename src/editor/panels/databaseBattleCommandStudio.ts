@@ -13,7 +13,7 @@ import { battleCommandCssEditor } from "./databaseBattleCommandCss";
 let selectedClassId = "";
 let includeSwitch = false;
 let status = "명령을 빈 위치로 끌거나 메뉴에 추가를 누르세요.";
-const MIME = "application/x-rpg-zzu-battle-command";
+const MIME = "application/x-oprn-battle-command";
 type RowOccurrence = { readonly classId: string; readonly menu: string; readonly index: number };
 type Drag = { readonly source: "catalog" | "menu"; readonly id: string; readonly classId: string; readonly menu: string; readonly catalog: string; readonly token: string; readonly occurrence?: RowOccurrence };
 let drag: Drag | undefined;

@@ -45,7 +45,7 @@ page.on('console', message => {
 });
 
 await page.addInitScript(() => {
-  localStorage.setItem('rpg-zzu:editor-ui-mode', 'standard');
+  localStorage.setItem('oprn:editor-ui-mode', 'standard');
   localStorage.setItem('oprn:ai-panel-collapsed', '1');
   localStorage.removeItem('oprn:map-location-layer');
 });

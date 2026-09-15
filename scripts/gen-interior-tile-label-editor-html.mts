@@ -628,7 +628,7 @@ const html = `<!DOCTYPE html>
   </datalist>
 
   <script>
-    const STORAGE = "rpgzzu-interior-tile-editor-v2";
+    const STORAGE = "oprn-interior-tile-editor-v2";
     const DRAFTS = ${cardsJson};
     const mapW = ${map.width};
 

@@ -1,5 +1,60 @@
 # Editor AI Panel & Tools
 
+## 결과 보고서 모달 — 변경 지점마다 before/after 한 쌍 (2026-09-15, P2)
+
+「보고서 열기」(작업 탭 검토 스트립 · 로그 카드 「넓게 보기」)가 열던 넓은 뷰어는 맵 하나의 **전체 diff bbox 한 쌍**이었다 —
+AI 가 한 맵의 북쪽과 남쪽을 같이 고치면 bbox 가 맵 전체가 되어 사진이 아무것도 말하지 못했다("적용 전 후 사진이 여러 개
+떠야 하는 거 아니냐"). P2 는 변경을 **지점**으로 묶어 지점마다 한 쌍을 세로로 나열한다.
+
+| 조각 | 파일 | 계약 |
+|---|---|---|
+| 지점 계산 | `src/project/changeSites.ts` | 순수 함수 `computeChangeSites(before, after, {pad=3, gap=4, maxSites=12})`. 바뀐 칸(타일 lower/upper diff + 이벤트 추가·삭제·이동 좌표 — 이동은 출발·도착 둘 다)을 체비셰프 거리 ≤ gap 으로 뭉쳐 `ChangeSite` 목록으로. 맵 추가·삭제·크기 변경은 전체 맵 지점 하나. 상한을 넘으면 **gap 을 두 배씩 키워** 다시 뭉친다 — 지점을 자르지 않는다(안 보여주는 변경이 없어야 한다). `SiteRect` 는 RegionRect 와 구조 동일(레이어: src/editor 를 import 하지 않는다). 스택·속성 변경은 그림에 안 나오므로 ledger 의 몫. |
+| 보고서 모드 | `aiChangePreview.ts` | `ChangePreviewInput.sites?/report?/findings?`. `openWideChangeViewer` 는 `sites.length > 0` 이면 `.ai-change-wide.is-report`: 머리(제목 + 「변경 지점 N곳」 + 칩) · brief(팀 보고 문장 `ai-change-report-brief` + 검수 지적 `ai-change-report-findings`) · `ai-change-report-sites`(지점마다 `ai-change-report-site`: 번호·맵 이름·`placeLabel`·`statsLabel` + before/after 쌍, 렌더 폭 560) · ledger. 나란히/겹쳐 보기 토글은 보고서 모드에 없다. sites 가 없으면 기존 한 쌍 동작 그대로(기존 호출자 무수정). |
+| 배선 | `aiPiAgentCommand.ts` | `reviewInput` 에 `sites: computeChangeSites(base, merged.project)` + `report: boardState.report` + `findings`(검수 실패 지적 모음). 검토 카드의 「넓게 보기」와 버스 `openReport` 가 같은 input 을 쓰므로 두 경로 다 보고서 모드다. |
+| 스타일 | `19-assistant-cards.css` 4절 | `.ai-change-wide.is-report`(brief 행 유무로 grid-template-rows 분기, :has) · 지점 구획 · 쌍 캔버스 상한 44vh. |
+
+fixture 함정(실측): `test/piAgentRunOutcome.test.ts` 의 최소 맵 fixture 가 `lowerTiles/events` 없이 GameMap 을 사칭하다
+실제 `computeChangeSites` 를 타고 터졌다 — 방어 코드 대신 fixture 를 계약대로 채웠다(`mapWith`).
+
+검증: `test/changeSites.test.ts`(뭉침·이동 양쪽 마킹·mixed·맵 추가/삭제/크기·gap 배증 상한·빈 diff) ·
+`test/aiChangePreview.test.ts` 보고서 모드 3건(지점 수 = 구획 수 = 렌더 호출/2 · 머리 brief · sites 없으면 기존 동작) ·
+`scripts/qa/ai-work-tab-qa.mjs` (d2) 단계 — 실제 맵 복제에 두 군집 + 이벤트를 심고 **실제 캔버스 렌더**로 지점별 쌍을
+검사한다(`05-report-modal.png`).
+
+## 조수 데크 「대화|작업」 탭 + 스튜디오 상세 — 팀원이 어디서 일하는지 한 곳 (2026-09-14, A안)
+
+계획서: `docs/2026-09-14-team-panel-plan.html` + A안 목업 `docs/2026-09-14-team-panel-plan-assets/proposed-a/`.
+1단계(좌하단 독립 팀 데크)는 「AI 가 어디서 일하는지」를 두 패널로 갈랐고, 스튜디오 모드에서는 셸 뒤에 묻혀
+보이지도 않았다. A안은 팀 데크를 **조수 데크 안 탭**으로 합치고, 스튜디오 덱의 「작업」 탭이 같은 상태를
+**상세**로 그린다. 단독 `/pi` 도 같은 자리다 — 「팀/단독」 구분이 사용자에게 사라진다.
+
+| 조각 | 파일 | 계약 |
+|---|---|---|
+| 과정 로그 | `src/ai/piAgent/teamBoardState.ts` | `TeamBoardAgent.log: TeamAgentLogEntry[]`(kind `task·turn·tool·text·error·review·done`) + `droppedLog`, 상한 `TEAM_AGENT_LOG_CAP`=200. 툴 행은 `tool_start` 에서 `ok:null` 로 열리고 같은 id 의 `tool_end` 가 제자리에서 닫는다. **`tool.args?: string`** — `formatToolArgs(event.args)`(객체는 `k: v · k: v`, 200자 상한)가 `tool_start` 에서 붙고 닫혀도 유지된다. 상세 보기만 그린다. |
+| 버스 | `src/ai/piAgent/teamActivity.ts` | 보드 상태(`publishTeamActivity`) · 중지 슬롯(`setTeamStopHandler`/`requestTeamStop`) · **검토 액션 슬롯**(`setTeamReviewActions`/`currentTeamReviewActions`: `apply·discard·openReport?`). `runPiCommand` 가 「검토 대기」 게시 **직전**에 로그 카드 `setReview` 와 **같은 클로저**를 등록하고, 적용·버리기·새 실행 시작에서 null 로 지운다. `openReport` 는 `openWideChangeViewer(reviewInput)` — 2단계 보고서 모달의 진입점. |
+| 작업 페인 | `src/editor/panels/aiTeamWorkPane.ts` | `createTeamWorkPane({ detail? })` → `section.ai-team-work[data-detail]`: 빈 안내 · `.ai-team-work-body[.is-single]`(팀원 열 `ul` + 과정 열) · 검토 스트립(`ai-team-work-review`: 버리기 · 보고서 열기 · 적용, 버스 액션이 없으면 disabled) · 푸터(합계·보고·오류·적용 문장). **에이전트가 1명이면 `is-single`** — 팀원 열을 숨기고 과정만(목업 a3). 팀원 클릭은 고정, 새 실행(task 가 바뀜)이면 해제. |
+| 과정 열 | `src/editor/panels/aiTeamTranscript.ts` | `createTeamTranscript({ detail? })`. 툴 행은 조수 작업 타임라인과 같은 어휘(`ai-act-chip/label/sum/status`, `aiToolLabels`). detail 이면 `ai-team-tx-args` 인자 줄 + 요약 줄바꿈 허용. 같은 팀원이면 새 행만 덧붙이고 닫힌 툴 행은 제자리 교체. |
+| 조수 데크 | `aiChatPanel.ts` | 레일 아래 `div.ai-work-tabs[role=tablist]`(`ai-work-tab-chat` + 배지 `ai-work-tab-badge`, `ai-work-tab-work` + 인원 `ai-work-tab-count` + 점 `.ai-work-tab-live[data-state]`). 실행 상태가 null 이면 탭 줄은 hidden. 「작업」이면 `.ai-chat-body[hidden]` + 페인 표시 + `panel.is-work-tab`. 컴포저는 항상 아래(DOM 순서: 레일 → 팀 막대 → 탭 → 채팅 본문 → 작업 페인 → 결과 줄 → 컴포저). |
+| 스튜디오 | `aiStudioShell.ts` | 셸이 버스를 직접 구독한다. 보드가 있으면 덱 「작업」 = `createTeamWorkPane({ detail: true })`(WorkPlan 도 있으면 `.ai-studio-work-split` 좌: 계획 우: 보드), 없으면 기존 WorkPlan 체크리스트. 배지 = 실행 중 인원(없으면 인원, 없으면 `done/total`). 보드가 **처음** 나타날 때만 「작업」으로 전환(setWorkPlan 과 같은 규칙). **덱 높이가 기본(236)이면 보드가 뜰 때 420 으로 한 번 키우고**(`applySplitterSize("deck", 420, false)` — 저장 안 함), 보드가 사라질 때 우리가 키운 값 그대로면 기본으로 되돌린다; 드래그해 둔 높이는 손대지 않는다. 조수 패널은 `is-studio` 에서 데크 탭 줄을 숨기고 탭을 「대화」로 되돌린다. |
+| 스타일 | `src/styles/database/tabs-b-assistant-panel/22-team-work.css` + 18 | 토큰만, `!important` 0. `.ai-deck > .ai-team-work { height: min(700px, 68vh) }` → 900 호스트 612 · 1080 호스트 700(목업 계약). `.ai-studio-deck-pane .ai-team-work { height: 100% }`. 18 의 유휴 컴팩트 폭(480) 규칙에 `:not(.is-work-tab)` — 검토 대기는 턴이 없는 유휴라서 그 순간 팀원 열이 480 으로 접히던 것을 막는다(QA 실측). |
+
+**자동 전환·배지 규칙(조수 데크, 스튜디오 밖):** 버스 phase 가 비실행(null·종결) → 실행(준비·실행 중·적용 중)으로
+바뀌면 「작업」으로 전환한다. 실행 → 비실행(답 도착)인데 「작업」을 보고 있었으면 「대화」에 배지 1 — 대화 탭을
+누르면 지운다. 상태가 null 이 되면 「대화」로 돌린다. 스튜디오에서는 전환·배지를 만들지 않는다(덱이 그린다).
+
+**걷어낸 것(1단계 셸):** `aiTeamDeck.ts`(레일·알약·좌측 앵커·폭 조절·자동 열림·z-order) · 조수 레일 「팀」 토글 ·
+`aiPanelLayout` 의 `oprn:ai-team-deck-*` 저장 · 22-team-deck.css 의 컨테이너 쿼리 컴팩트 규칙 · `editor.ts` 마운트.
+`aiDeckMoveChrome` 의 `anchorX/cssVars/store/hint` 매개화는 기본값이 조수 현행이라 남겨 두었다(`test/aiDeckMove.test.ts` 20건).
+
+검증: `test/piAgentTeamBoardLog.test.ts`(로그·인자 계약) · `test/aiTeamWorkPane.test.ts`(happy-dom: 빈 안내·순서·고정·is-single·
+검토 스트립 버스 액션·상세 인자·새 실행 고정 해제) · `test/aiStudioShell.test.ts`(버스 게시 → 「작업」 상세 페인·배지) ·
+`scripts/qa/ai-work-tab-qa.mjs`(dev 서버에서 실제 리듀서 상태를 게시해 1440/1920 — 팀 실행·검토 스트립·단독 실행·스튜디오 상세 4장,
+`output/evidence/ai-work-tab/SUMMARY.md` 부터 읽을 것). 버스에는 `page.evaluate` 동적 import 로 게시한다 — QA 용 코드 훅이 필요 없다.
+**단, 베어 경로 `/src/ai/piAgent/teamActivity.ts` 를 import 하면 안 된다**: HMR 로 무효화된 모듈은 앱이 `?t=…` 가 붙은 URL 로
+import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게시는 됐는데 구독자가 안 불려 DOM 이 빈 상태). QA 는 서빙되는
+`aiChatPanel.ts` 소스에서 import 지정자를 뽑아 그 URL 로 import 한다(`resolveAppModules`). 검토 액션도 같은 방법으로 세팅해 스트립
+버튼을 실제로 누른다. 게시만으로는 패널이 유휴(`is-assistant-idle`)라 실제 턴과 폭이 다를 수 있다 — 위 `:not(.is-work-tab)` 이 그 차이를 없앤다.
+
 ## 조수 채팅은 Pi 하나다 — 세션 경로를 걷어냈다 (2026-09-11)
 
 조수 세션이 deprecated 되면서 «어느 루프로 가는가» 를 답하던 경로 enum(`session` · `pi-agent`)이
@@ -1397,7 +1452,7 @@ and existing optional `wikiWarning` policy. See
 - Old configurations default to google-antigravity / gemini-3.1-flash-image,
   the actual image-output model, not the old gemini-3.8-flash fallback alias.
   Explicit saved image choices are never corrected by the chat model catalog.
-- imageGenerationClient reads this selection for X-Rpgzzu-Provider and the model
+- imageGenerationClient reads this selection for X-Oprn-Provider and the model
   body field on the existing /v1/images/generations endpoint. Explicit request
   providerId/model overrides win without changing storage. Reference validation,
   AbortSignal propagation and server error reporting retain their existing path.
@@ -1484,6 +1539,52 @@ Tests: `workPlan`(자세 표 6종 + 선언 없음 + 페이로드 전달), `assis
 - 검증: `test/editSceneCameraFocus.test.ts`, `test/editorCameraFocusPlan.test.ts`, `test/editorReferenceNavigation.test.ts`; 실제 Phaser 프레임·맵 전환·휠 중단·동작 줄이기는 `test/e2e/assistant-camera-motion.spec.ts`, 증거 `.omo/evidence/assistant-camera-motion/`.
 
 
+## 조수의 맵 전환은 크로스페이드다 — 하드컷 금지 (2026-09-15)
+
+**같은 맵 안의 이동만 부드러웠다.** 위 절의 팬은 `target.mapId === 씬의 현재 맵` 일 때만 돌고,
+맵이 바뀌면 `selectEditorMap` → `editorState.set({currentMapId})` → `redrawWhenViewStateChanges`
+→ `redraw()` 가 **한 프레임에** 캔버스를 통째로 갈아 끼웠다. 카메라는
+`planEditorCameraCenter(preserveLookAt:false)` 로 새 맵 한가운데에 붙고, 그 **뒤에** 목표로
+300–650ms 팬이 또 돌았다 — 한 번의 이동에 덜컹이 둘(하드컷 + 낯선 맵 가로지르기)이다.
+조수가 여러 맵을 오가는 턴에서 이게 되풀이되는 것이 감독이 말한 「확확 전환」이다.
+
+- **어휘는 크로스페이드다.** 맵 전환은 좌표계가 통째로 달라 팬이 보여 줄 공간 관계가 없다
+  (motion vocabulary: Crossfade = 같은 영역에서 정체성을 «교환» 한다. Slide/Layout animation 이 아니다).
+  옛 화면을 캔버스 종이색(`--bg-canvas`)으로 덮고, 덮인 동안 맵·카메라·강조를 갈아 끼우고, 새 화면을
+  같은 종이색에서 띄운다. 덮기 130ms / 걷기 200ms.
+- **소유 경계.** 판정은 순수 모듈 `src/editor/assistantViewTransition.ts`
+  (`planAssistantViewTransition` → `cut`|`dissolve`, `remainingCoverMs`). 실제 재생은
+  `src/editor/mapDissolveVeil.ts`. 둘을 묶어 호출부에 내보내는 한 문이
+  `src/editor/assistantViewSwitch.ts` 다 — **조합 모듈인 `editorReferenceNavigation` 에 두면
+  `agentFocus → editorReferenceNavigation → agentFocus` 순환이 생겨서** 별도 모듈이다.
+  화면을 바꾸는 세 진입(`focusAcceptedAgentChanges`, `focusEditorRegion`,
+  `navigateToEditorReference` 의 map 갈래)이 전부 이 문을 지난다.
+- **`apply()` 안에 화면이 바뀌는 일을 전부 넣어라.** 맵 선택·카메라·강조를 한 묶음으로 넣어야
+  덮인 동안 다 끝난다. 절반만 넣으면 나머지 절반이 베일 밖에서 그대로 덜컹인다.
+- **맵을 건너뛴 카메라는 팬하지 않는다** — `CameraFocusTarget.immediate`. 베일이 연속성을 갖고
+  카메라는 이미 도착해 있다. 같은 맵이면 이 깃발을 주지 않는다(기존 팬이 그대로 소유).
+- **걷기는 새 맵이 실제로 그려진 뒤에 시작한다**(`afterNextPaint`, rAF 2회 + 400ms 탈출구).
+  실측(swiftshader, 24×18 맵): 안 기다렸더니 베일이 걷힌 뒤 **빈 종이색 캔버스**가 500ms 드러났다 —
+  하드컷보다 나쁘다.
+- **끼어들기는 이어 덮는다.** 걷히는 중에 새 전환이 오면 0 부터 다시 틀지 않고 지금 보이는
+  불투명도에서 남은 만큼만 덮는다(`remainingCoverMs`). 덮이기 전에 연달아 오는 전환은 **한 번의
+  깜빡임으로 흡수된다**(코얼레싱) — 조수가 맵을 연달아 갈아 끼울 때 깜빡임이 배로 늘지 않는다.
+- **호스트는 `[data-testid="edit-canvas"]` 다. `.phaser-container` 로 찾지 마라** — 플레이어도 같은
+  클래스를 쓰므로(`player/playSurface.ts`) 테스트 플레이 창이 열려 있으면 게임 화면을 덮을 수 있다.
+  베일은 캔버스 **위의 DOM 오버레이까지** 덮어야 한다(로케이션 상자·고스트 마커·활동 칩은 옛 맵
+  좌표에 붙어 있다) — 그래서 `--z-canvas-veil: 30`(칩 22 위, 툴바 40 아래)이고, 캔버스 엘리먼트의
+  opacity 를 건드리는 방식은 쓰지 않는다.
+- **동작 줄이기는 전환을 제거한다**(대체하지 않는다). `prefers-reduced-motion` 의 단일 창구는
+  `src/util/reducedMotion.ts` — 팬과 디졸브가 각자 matchMedia 를 읽으면 한쪽만 꺼져
+  「즉시 갈아 끼운 뒤 300ms 팬」 같은 반쪽 상태가 난다.
+- 검증: `test/assistantViewTransition.test.ts`(순수 판정), `test/editorReferenceNavigation.test.ts`
+  (`immediate` 계약); 실제 브라우저의 불투명도 곡선·교체 시점·도착 카메라·같은 맵 제외·동작 줄이기는
+  `test/e2e/assistant-map-switch-dissolve.spec.ts`. 사람이 볼 필름스트립은
+  `node scripts/qa/assistant-map-switch-filmstrip.mjs`(CDP 스크린캐스트 — `element.screenshot()`
+  한 장이 330ms 전환보다 오래 걸려 중간 프레임을 못 뜬다), 증거
+  `.omo/evidence/assistant-map-switch-dissolve/`.
+
+
 AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, visual polish, dock modes, and harness integration.
 
 > **Encoding note:** Some Korean descriptive text has EUC-KR→UTF-8 mojibake from the original source commit. English terms, file paths, and code references are intact. For accurate Korean, consult the referenced source files. Partial automated restoration applied; remaining garbled CJK is irreversibly corrupted.
@@ -1550,7 +1651,7 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
   - Tests: `test/aiSharedSurface.test.ts`(전환 진입점 0건 + dataset 고정), `test/aiPanelChrome.test.ts`(next-steps 위치·예제 6개), `test/aiPanelModernShell.test.ts`, `test/aiMoreMenuLayout.test.ts`(구 `aiGlassPanelWidth.test.ts` 에서 살아남은 CSS 계약 2개), `test/commandRegistry.test.ts`(도크 명령 4개 부재), E2E `test/e2e/assistant-single-dock.spec.ts`(구 `chat-dock-switch.spec.ts` 대체 — 1600/1100/900 폭과 새로고침에서 캡슐이 캔버스 안, 로그 마운트 1개, 접힘 왕복 지속). 삭제된 테스트: `test/chatDock.test.ts`, `test/aiGlassFold.test.ts`, `test/workspaceBarAssistantDock.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `scripts/qa/assistant-side-seam-hittest.mjs`(side seam 이 없다). QA: `scripts/qa/assistant-resize-collapse-qa.mjs` 는 캡슐 1회만 측정한다(대상 = `ai-command-bar`). 계측 재현: `node scripts/capture-hud-dock-collapse.mjs --tag <이름>` — 도크별 편집 캔버스 폭을 `getBoundingClientRect` 로 재고 표면 3컷을 찍는다(산출물은 저장소에 넣지 않는다).
   - 이 항목은 아래 2026-08-30 항목들 가운데 도크를 전제한 문장을 상위 갱신한다 — 「조수 패널의 크기 조절은 `aiChatResizeChrome.ts` 가 소유한다」(도크별 소유자 3종 → 캡슐 폭 한 축), 「유리 도크는 접힌 입력줄로 시작해 아래로 펼친다」(유리 카드 자체가 없다), 「☰ 메타 메뉴는 어느 도크에서도 숨지 않는다」(도크가 하나라 숨을 조건이 없다), 「접힘은 …」의 `GLASS_FOLD_IDLE_MS` 8초 유휴 접힘(삭제), 「잘림 게이트는 …」의 세 도크 × 세 상태 축(표면 한 장 × 세 상태로 줄었다).
 
-- **답변 속 이름은 눌러 갈 수 있다 — 링킬은 마크다운이 아니라 **이름 색인**이 만들기 때문이다 (2026-08-30):** 조수가 `‘상인 하나의 집’(실내 맵 1초)` 처럼 저작물 이름을 말하면 그 이름이 그 자리로 가는 버튼이 된다. 모델에게 링킬 문법을 가르치지 **않았다** — UX 정상 정책이 답변에서 내부 ID 노출을 금지하므로(`promptPolicies.ts` 마무리 톤) `[라벨](rpgzzu://map/…)` 같은 경로는 정책과 싸운다. 대슴 생산된 필수 경로는 산문 후처리다:
+- **답변 속 이름은 눌러 갈 수 있다 — 링킬은 마크다운이 아니라 **이름 색인**이 만들기 때문이다 (2026-08-30):** 조수가 `‘상인 하나의 집’(실내 맵 1초)` 처럼 저작물 이름을 말하면 그 이름이 그 자리로 가는 버튼이 된다. 모델에게 링킬 문법을 가르치지 **않았다** — UX 정상 정책이 답변에서 내부 ID 노출을 금지하므로(`promptPolicies.ts` 마무리 톤) `[라벨](oprn://map/…)` 같은 경로는 정책과 싸운다. 대슴 생산된 필수 경로는 산문 후처리다:
   - 색인과 탐색은 순수 모듈 `src/editor/aiAnswerLinks.ts` 가 소유한다(DOM·store·Phaser 미의지). `buildEditorReferenceIndex(project)` 는 맵 이름 + 이름 있는 맵 이벤트 페이지 이름을 **긴 이름 우선**으로 색인하고(그래서 `상인 하나의 집` 이 `상인 하나` 보다 이긴다), 같은 이름이 여러 곳이면 한 곳을 고르지 않고 `ambiguous` 로 남긴다 — 짐짝으로 다른 집에 데려가는 것은 거짓이다. 클릭은 이름을 및은 찾기 창(`openMapEventSearchModal({ initialQuery })`, 범위를 자동으로 전체로 올린다)을 열어 사용자가 고르게 한다.
   - **한국어 경계 계산이 이 기능의 진짜 난이도다.** 앞은 단어 문자면 거부(`새마을` 속 `마을`)하고, 뒤는 **완전한 조사 하나 + 보조사 하나까지** 소비한 다음 한글·단어 문자가 아닌 종결만 허용한다. 그래서 `집에서는`·`집으로도`·`집하고`는 링킬지만 `마을길`·`마을회관`·`마을이장`·`마을도로`·`마을지도`는 링킬가 아니다. 경계를 "단어 문자가 아님"으로만 런토이면 한국어는 조사 앞에서 링킬가 전부 사라진다 — 상반 생산 답변은 거의 다 조사가 붙는다.
   - DOM 추가는 `src/editor/panels/aiAnswerLinkRender.ts` 의 `renderAssistantAnswer(text)` 하나다. 마크다운을 그린 뒤 **텍스트 노드만** 쓸고 `PRE/CODE/A/BUTTON` 서부트리는 건드리지 않는다(토큰 문법이 아니니 `renderMarkdown` 자식을 건드리면 세계관 배택·AI 문서 문서까지 전부 링킬가 된다). 조수/시스템 말풍서을 그리는 자리는 세 곳(`aiConversationLog.appendConversationBubble`, `renderStreamedMarkdown`, `aiChatPanel` 의 선택지 칩 재렌더)이고 세 곳 다 이 함수를 부른다 — 하나만 `renderMarkdown` 으로 되돌리면 그 경로에서만 링킬가 조용하게 사라진다.
@@ -1671,7 +1772,7 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 
 - **영역작업(AI) 검증게이트 배제 (2026-08-30):** AI 가 만든 영역/제안 결과를 **적용 전에 반려하거나 조용히 고치는 경로는 없다.** 예전에는 `validateLayoutPlacement` 의 error 와 `reviewRegionDraft` 의 blockers 가 적용을 막고, `repairLayoutPlacement`·결정론 수리가 AI 배치를 옮기거나 지웠다. 실측 결과 (1) 휴리스틱 한 건이 제안 전체를 반려해 사용자에게 아무것도 남지 않았고(나무 0그루 오판, 호수 마을 전면 반려), (2) 조용한 수리 때문에 유령 미리보기에서 본 것과 적용 결과가 달라 "AI 가 깐 게 사라졌다" 가 됐다. 이제 두 검증기는 **진단**만 낸다: 이슈·지표는 검토 카드와 채팅 경고 줄로 보이고, 적용 여부는 사용자 결정(적용/버리기)과 되돌리기가 정한다. 남은 거부 사유는 **기준 프로젝트 변경(stale base)** 과 채팅 경로의 **무결성 커밋 게이트**(참조 무결성) 뿐이다. `validateLayoutPlacement`/`repairLayoutPlacement` 자체는 마을 빌더·저작 스크립트용으로 남아 있다. Owner: `src/editor/regionTask/harnessReview.ts`, `src/editor/regionTask/pendingRegionApply.ts`, `src/editor/regionTask/runRegionTask.ts`, `src/editor/panels/aiProposalCard.ts`. Tests: `test/regionTaskApplyFlow.test.ts`, `test/tilemapHarnessSafetyBlockers.test.ts`, `test/layoutPlacementValidate.test.ts`.
 - **Same-origin companion (2026-08-27):** 브라우저 LLM 엔드포인트는 항상 페이지 오리진의 `/v1` 이다. `127.0.0.1:17832` 은 oh-my-pi 단독 동반 서비스(`npm run ai:oauth`)가 **그 머신 루프백**에서 듣는 주소이지, 원격 preview 탭이 치면 안 된다. `vite.config.ts` `codexOAuthPlugin` 이 `configureServer` 와 `configurePreviewServer` 둘 다에 `/auth`·`/v1` 을 붙인다. `npm start`(mdc-server:9888 Tailscale) 는 같은 오리진으로 Gemini 완결을 보낸다.
-- **원격 OAuth launch (2026-08-27):** Google Antigravity 는 데스크톱 클라라 `redirect_uri` 가 `http://127.0.0.1:PORT/oauth-callback` 만 통과한다. mdc-server 호스트를 callback 으로 넣으면 Google 이 `invalid_request` 로 거절한다. 그래서 `RPG_ZZU_PUBLIC_ORIGIN`(없으면 `Origin`/`Host`) 으로 **로그인 시작 URL만** `http://mdc-server:9888/oauth/launch?port=` 로 바꾸고, 돌아온 localhost 콜백 URL 은 `POST /auth/oauth-paste` 로 서버가 대신 GET 한다. env 키는 `.env.local` 의 `RPG_ZZU_PUBLIC_ORIGIN`. `npm start` 는 값이 없으면 `http://mdc-server:9888` 로 고정한다.
+- **원격 OAuth launch (2026-08-27):** Google Antigravity 는 데스크톱 클라라 `redirect_uri` 가 `http://127.0.0.1:PORT/oauth-callback` 만 통과한다. mdc-server 호스트를 callback 으로 넣으면 Google 이 `invalid_request` 로 거절한다. 그래서 `OPRN_PUBLIC_ORIGIN`(없으면 `Origin`/`Host`) 으로 **로그인 시작 URL만** `http://mdc-server:9888/oauth/launch?port=` 로 바꾸고, 돌아온 localhost 콜백 URL 은 `POST /auth/oauth-paste` 로 서버가 대신 GET 한다. env 키는 `.env.local` 의 `OPRN_PUBLIC_ORIGIN`. `npm start` 는 값이 없으면 `http://mdc-server:9888` 로 고정한다.
 - **OAuth 빠른 선택 (2026-08-24 / 기본 2026-08-25):** `aiAuthSettings.ts` 는 OAuth 모드에서 **ChatGPT(`openai-codex`) ↔ Google Gemini(`google-antigravity`) 두 카드**를 `role="radiogroup"` 퀵 선택으로 노출한다(테스트 `test/aiAuthSettingsSeparation.test.ts`). 공장 기본 제공자는 **`google-antigravity` + `gemini-3.7-flash`** 다(`DEFAULT_OH_MY_PI_PROVIDER`, `DEFAULT_MODEL`). 저장된 providerId·모델은 덮어쓰지 않는다. providerId 가 없는 옛 blob 은 Codex 시절 암시 기본이므로 `openai-codex` 로 남긴다. Gemini 퀵 카드는 Antigravity 로그인으로 라우팅한다(`google-gemini-cli` 는 레지스트리에서 사라졌다). 모델 목록에는 제공자와 무관한 GPT/Claude 항목을 섞지 않고 `gemini-3.7-flash`(빠른 기본)와 `gemini-3.1-pro`(품질 우선)만 먼저 보여준다. 이미 저장된 제공자·모델은 설정을 다시 열 때 덮어쓰지 않는다. 선택하면 providerId·select 값·aria 체크·onChange·상태 조회·기존 로그인 라우팅(`startChatGptLogin`) 을 전부 동기화한다. Gemini 카드는 구독·CLI를 암시하지 않고 `Google 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다.`라고 안내한다. 드롭다운으로 다른 OAuth 제공자를 고르면 어느 카드도 체크되지 않되 첫 카드는 `tabindex=0` 을 유지해 키보드 사용자가 돌아올 수 있다. 제공자/종류 변경·취소는 내부 인증 연산 세대 카운터를 올려, 늦게 도착한 버전·상태·로그인 결과가 새 선택의 화면(연결 해제 크롬 포함)을 덮어쓰지 못하게 한다. API 키 제공자, 키 저장·연결 해제·폴링 최대 시도·오류(A/B) 의미는 그대로다. OAuth 는 언제나 로컬 oh-my-pi pi-ai 워커(`startChatGptLogin`)가 처리한다 — 비밀은 브라우저에 남지 않는다.
 - **Google OAuth 자격 완전성 (2026-08-24):** Antigravity/Gemini CLI 자격은 access/refresh 토큰뿐 아니라 Cloud Code Assist `projectId`까지 있어야 실제 요청이 가능하다. `publicProviderStatus`(`scripts/lib/aiAuthRuntime.ts`)는 이 두 제공자의 오래된 불완전 자격을 `connected:false`로 내려 UI가 `연결됨`/`다시 확인`을 거짓 표시하지 않고 새 로그인을 시작하게 한다. 요청용 자격을 만들 때도 `projectId`와 OAuth 계정 메타데이터를 보존해야 한다. 토큰 세 필드만 복사한 뒤 갱신 결과를 저장본 위에 병합하지 않고 통째로 덮어쓰면 첫 completion이 방금 로그인한 `projectId`를 지워 다음 호출까지 망가뜨린다. 회귀 테스트: `test/ohMyPiComplete.bun.test.ts`의 projectId 없음/있음 상태 경계와 completion 후 보존 경계.
 - **영역 작업 인증 게이트:** 영역 작업(`runRegionTask`)·AI 채팅은 LLM 호출을 하므로 OAuth/apiKey 가 미연동이면 401 `LlmError` 로 실패한다. 일상적인 설정 진입점은 하단 상태바가 아니라 편집기 헤더의 **AI 설정**(`topbar-ai-settings`)이다. `getAiConnectionStatus`와 `aiConnectionStatus.ts`는 상태 평가/단위 계약을 위해 남아 있다. `defaultAiConfig()`는 env `VITE_LLM_API_URL`이 있으면 apiKey 모드를 유지하고, env가 없으면 chatgpt OAuth가 기본이다. 단위 테스트: `test/aiConnectionStatus.test.ts`, `test/aiLlmClient.test.ts`, `test/aiChatPanelSettings.test.ts`.
@@ -1770,7 +1871,7 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 - **시공이 적용된 턴이 끝나면 밑그림은 물러나고, 다음 턴이 되살리지 않는다 (2026-09-03):** 사용자 보고 — "조수와의 채팅이 끝나도 밑그림이 사라지지 않는다". 위 2026-08-30 수정은 **전 칸 done** 일 때만 감췄는데, 실제 런에서는 모델이 에셋 하나를 건너뛰거나 스펙 자동 확장(`expandSpecWithRegions`)이 planned 칸을 덧붙여 전량 done 이 거의 성립하지 않았다. 게다가 스펙은 세션이 살아 있는 동안 유지되므로 다음 질문·조회 턴의 `syncAgentBlueprintWithSpec` 이 그 계획을 다시 깔았다. 고침: `aiTurnRunner` 의 apply-now 분기에서 `applied === true` 면 정산 직후 `retireAgentBlueprint()` 를 부른다 — 현재 칸의 shape-key 를 `retiredKeys`(맵별)로 기록하고 칸을 비운다. `syncAgentBlueprintWithSpec` → `applySpec` 은 물러난 키를 건너뛰므로 같은 스펙이 다시 와도 그 칸은 그려지지 않고, 그 뒤 자동 확장으로 **새로** 덧붙은 칸만 계획으로 나온다. `setAgentBlueprintFromSpec`(= 새 `set_build_spec`)과 `clearAgentBlueprint` 는 기록을 비운다(새 계획은 새 계획이다). 적용되지 않은 턴(중단·오류·게이트 거부·쓰기 0건)은 물러나지 않는다 — 계획은 아직 유효하고 정산이 planned 로 되돌려 둔다. 상태줄의 「밑그림 확정 — 에셋 N개」도 `isAgentBlueprintComplete` 대신 `agentBlueprintForMap(...).length > 0`(실제로 보이는 칸이 있는가)로 판정한다. 회귀 테스트 `test/agentBlueprintTurnEnd.test.ts` 「일부만 지은 계획도 적용된 턴이 끝나면 물러나고, 다음 턴이 되살리지 않는다」. 같은 파일의 fetch 대본은 이제 **`tools` 가 실린 요청만** LLM 라운드로 센다 — 패널이 턴 앞에 붙이는 의도 선언 호출(`createLlmIntentDeclarer`, json 응답·툴 없음)이 1라운드 툴콜 대본을 가져가 6케이스가 전부 빨간 기준선이었다.
 - **조수 카메라는 사용자 제스처 중에 끼어들지 않는다 (2026-08-29):** `editorCameraFocus.ts` 는 목표 계산(`planCameraFocus`, `onlyIfOffscreen` 이면 화면 밖일 때만 움직인다)과 **양보 판정**(`shouldDeferCameraFocus(PointerGestureState)`)을 순수 함수로 들고 있고, `EditScene.panCameraToTile` 은 `pointerGestureState()` 로 다섯 가지를 먹인다: 페인트 스트로크(`isPainting`), 손 팬(`cameraPanController.active()`), 도형·선택·이벤트 드래그(`dragOperationHandler.busy()`), 우클릭 영역 제스처(`rightRegionGesture`), 붙여넣기 미리보기(`editorState.pastePreview`). `isPainting` + 팬만 보던 이전 판정은 **모든 드래그를 놓쳤다** — `pointerdown` 은 `beginDragOperation` 이 true 를 주면 `isPainting` 을 세우기 전에 반환하고 `beginRightRegionGesture` 는 오히려 false 로 내리므로, 드래그 중에 조수 팬이 끼어들면 `commitShapeDrag`/`commitEventMoveDrag` 가 팬 거리만큼 밀린 타일을 커밋한다(조용한 저작 데이터 손상). `DragOperationHandler.busy()` 는 `active()` 와 달리 아직 문턱을 못 넘은 `eventDragCandidate` 까지 센다. 프로그램 팬의 뒷정리는 마지막 프레임에만 한다 — `camera.pan(x,y,duration,ease,force,cb)` 의 6번째 인자는 onComplete 가 아니라 **onUpdate** 라서 `progress === 1` 로 걸러야 300ms 동안 매 프레임 DOM 마커를 지웠다 다시 만들지 않는다. Tests: `test/editSceneCameraFocus.test.ts`, `test/agentFocus.test.ts`, `test/eventListCameraFocus.test.ts`.
 - **제공자는 둘뿐이다 (자체 OAuth, 2026-08-27):** `src/ai/ohMyPiProviders.ts` 에는 `google-antigravity`(Gemini/agy, 기본) 와 `openai-codex` **두 행만** 있다 — 예전에는 omp 카탈로그의 69종을 베껴 뒀지만 로그인 경로가 붙은 것은 이 둘뿐이라 나머지는 고를 수 없는 죽은 UI 였다. id 문자열은 `src/ai/oauth/credentials.ts` 에서 가져오므로 전송과 UI 가 같은 상수를 본다. 설정은 `AiConfig.providerId` 로 저장되고 두 제공자 사이를 실제로 오갈 수 있다(`editorHasProviderChoice()` = true).
-- **인증은 Node, 완성만 Bun (2026-08-27):** 동반 서비스(`vite.config.ts` 플러그인 + `scripts/chatgpt-oauth-companion.mjs`)가 `/auth/providers`, `/auth/status?provider=`, `/auth/login`, `/auth/refresh`, `/auth/logout`, `/v1/chat/completions`(헤더 `X-Rpgzzu-Provider`) 를 노출한다. **로그인·갱신·상태·요청 자격은 `scripts/lib/aiAuthRuntime.ts` 가 순수 Node 에서 처리한다** — pi-ai 의 `getOAuthApiKey`/`getProviderDefinition`/`refreshOAuthToken` 의존은 없다. Bun 워커(`scripts/oh-my-pi-worker.ts`)는 `/complete` **하나만** 남았고 이미 해결된 `apiKey` 를 본문으로 받는다(자격을 들지 않는다). 실측: bun 이 PATH 에 없을 때 `/auth/providers` 와 `/auth/status` 가 **HTTP 200** 이다 — 예전에는 둘 다 HTTP 500 `bun 이 필요합니다` 였다. 모델 호출(completion)은 pi-ai 가 bun:sqlite 를 싣기 때문에 여전히 Bun 이 필요하다. 모르는 제공자 id 는 400 으로 닫는다. 비밀은 `~/.rpg-zzu/oh-my-pi-auth.json`(`RPG_ZZU_OH_MY_PI_AUTH_PATH`)에만 남고 브라우저로 가지 않는다. `/auth/key` 는 두 제공자가 모두 구독 로그인이라 400 으로 거절한다.
+- **인증은 Node, 완성만 Bun (2026-08-27):** 동반 서비스(`vite.config.ts` 플러그인 + `scripts/chatgpt-oauth-companion.mjs`)가 `/auth/providers`, `/auth/status?provider=`, `/auth/login`, `/auth/refresh`, `/auth/logout`, `/v1/chat/completions`(헤더 `X-Oprn-Provider`) 를 노출한다. **로그인·갱신·상태·요청 자격은 `scripts/lib/aiAuthRuntime.ts` 가 순수 Node 에서 처리한다** — pi-ai 의 `getOAuthApiKey`/`getProviderDefinition`/`refreshOAuthToken` 의존은 없다. Bun 워커(`scripts/oh-my-pi-worker.ts`)는 `/complete` **하나만** 남았고 이미 해결된 `apiKey` 를 본문으로 받는다(자격을 들지 않는다). 실측: bun 이 PATH 에 없을 때 `/auth/providers` 와 `/auth/status` 가 **HTTP 200** 이다 — 예전에는 둘 다 HTTP 500 `bun 이 필요합니다` 였다. 모델 호출(completion)은 pi-ai 가 bun:sqlite 를 싣기 때문에 여전히 Bun 이 필요하다. 모르는 제공자 id 는 400 으로 닫는다. 비밀은 `~/.oprn/oh-my-pi-auth.json`(`OPRN_OH_MY_PI_AUTH_PATH`; 2026-09 개명 전 `~/.rpg-zzu` 파일은 첫 읽기에 한 번 복사되고 옛 파일은 남는다)에만 남고 브라우저로 가지 않는다. `/auth/key` 는 두 제공자가 모두 구독 로그인이라 400 으로 거절한다.
 - **Codex 로그인은 브라우저 우선, device 는 대체 (2026-08-27):** `src/ai/oauth/codexBrowserOAuth.ts` 의 `beginCodexLogin` 이 경로를 고른다. **1455 를 잡으면** 루프백 PKCE 원클릭(`auth.openai.com/oauth/authorize`, `code_challenge_method=S256`, `id_token_add_organizations=true`, `codex_cli_simplified_flow=true`, `originator=codex_cli_rs`)으로 가고, **EADDRINUSE 면** device 코드 흐름으로 내려가며 그 이유를 `instructions` 로 사용자에게 말한다. 포트 점유가 아닌 실패(EACCES 등)는 device 로 숨기지 않고 그대로 올린다. `CODEX_BROWSER_REDIRECT_URI` = `http://localhost:1455/auth/callback` 은 **상수여야 한다** — OpenAI 허용목록에 이 값만 있어 임의 포트로 옮기면 인가는 통과하고 토큰 교환이 403 이 된다(omp 의 `loginOpenAICodex` 주석과 동일한 근거). 실측: 이 개발 머신은 1455 도 docker-proxy 가 잡고 있어 device 경로로 내려간다. 회귀 테스트 `test/codexBrowserOAuthFlow.test.ts`(9케이스: 인가 파라미터 전량, PKCE SHA-256/base64url, 경로 선택 3분기).
 - **OAuth 와이어는 우리 코드다 (2026-08-27):** `src/ai/oauth/codexDeviceOAuth.ts` = ChatGPT device 흐름(`.../deviceauth/usercode` → 403/404 는 승인 대기 → `.../deviceauth/token` → `oauth/token`, 폴링 상한 120). `src/ai/oauth/antigravityOAuth.ts` = Google 인가 코드 흐름 + cloudcode-pa `v1internal:loadCodeAssist` 프로젝트 발견(daily → production 폴백) + `v1internal:onboardUser` 프로비저닝(최대 5회). `src/ai/oauth/credentials.ts` 의 `packRequestApiKey` 가 요청 시점 자격을 만든다: Antigravity 는 `token`+`projectId`+`refreshToken`+`expiresAt` JSON, Codex 는 access 토큰 문자열. **만료 자격과 projectId 없는 Antigravity 자격은 던진다** — 갱신 책임을 호출부로 되돌리는 안전핀이다. 라이브 확인: `npx vite-node --script scripts/verify-ported-oauth-live.mts`(기본은 부작용 없음, `--login`/`--refresh` 선택).
 - **콜백 포트 정책은 제공자마다 다르다 (2026-08-27):** `scripts/lib/oauth/loopbackCallbackServer.mjs` 가 `node:http` 를 import 하는 유일한 파일이다. `startOAuthCallbackServer` 는 **먼저 바인드하고** 그 포트로 `redirectUri` 를 만든다. **Antigravity(Google)** 는 51121 을 선호하되 점유되면 임의 포트로 붙는다 — Google 은 루프백 포트를 고정하지 않는다(RFC 8252 §7.3). 실측: 이 개발 머신은 51121 을 docker-proxy 가 잡고 있어서, 포트를 고정하면 로그인이 백그라운드에서 EADDRINUSE 로 죽는데 화면에는 계속 "브라우저에서 로그인하세요"만 떠 있었다. **Codex** 는 반대로 `allowPortFallback:false` 로 열어 EADDRINUSE 를 그대로 올린다(허용목록 고정 포트라 대체 포트는 곧 403). 붙여넣기 경로(`/auth/oauth-paste`)는 두 콜백 경로 `/oauth-callback`(Antigravity)·`/auth/callback`(Codex)을 모두 받는다 — 하나만 받으면 원격 preview 에서 Codex 브라우저 로그인을 끝낼 수 없다. **루프백은 두 주소를 함께 듣는다**: `redirect_uri` 의 호스트명은 `localhost` 인데 실측 이 머신의 `getent hosts localhost` 는 `::1` 을 먼저 준다 — IPv4 만 듣고 있으면 브라우저가 `[::1]:PORT` 로 붙어 콜백이 영원히 도착하지 않는다. 그래서 127.0.0.1 과 ::1 을 같은 포트로 함께 바인드한다(`handle.hosts` 로 확인 가능). `0.0.0.0`/`::` 로 넓히지는 않는다 — LAN 의 아무나 인가 코드를 밀어넣을 수 있다. 회귀 테스트 `test/oauthLoopbackCallback.node.test.mjs`(11케이스: 폴백·폴백금지·IPv6 실연결·redirectUri 이름 연결) + `test/ohMyPiHttp.node.test.mjs`(붙여넣기 두 경로).
@@ -1881,7 +1982,7 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 
 - **Same-origin companion (2026-08-27):** 브라우저 LLM 엔드포인트는 항상 페이지 오리진의 `/v1` 이다. `127.0.0.1:17832` 은 oh-my-pi 단독 동반 서비스(`npm run ai:oauth`)가 **그 머신 루프백**에서 듣는 주소이지, 원격 preview 탭이 치면 안 된다. `vite.config.ts` `codexOAuthPlugin` 이 `configureServer` 와 `configurePreviewServer` 둘 다에 `/auth`·`/v1` 을 붙인다. `npm start`(mdc-server:9888 Tailscale) 는 같은 오리진으로 Gemini 완결을 보낸다.
 
-- **원격 OAuth launch (2026-08-27):** Google Antigravity 는 데스크톱 클라라 `redirect_uri` 가 `http://127.0.0.1:PORT/oauth-callback` 만 통과한다. mdc-server 호스트를 callback 으로 넣으면 Google 이 `invalid_request` 로 거절한다. 그래서 `RPG_ZZU_PUBLIC_ORIGIN`(없으면 `Origin`/`Host`) 으로 **로그인 시작 URL만** `http://mdc-server:9888/oauth/launch?port=` 로 바꾸고, 돌아온 localhost 콜백 URL 은 `POST /auth/oauth-paste` 로 서버가 대신 GET 한다. env 키는 `.env.local` 의 `RPG_ZZU_PUBLIC_ORIGIN`. `npm start` 는 값이 없으면 `http://mdc-server:9888` 로 고정한다.
+- **원격 OAuth launch (2026-08-27):** Google Antigravity 는 데스크톱 클라라 `redirect_uri` 가 `http://127.0.0.1:PORT/oauth-callback` 만 통과한다. mdc-server 호스트를 callback 으로 넣으면 Google 이 `invalid_request` 로 거절한다. 그래서 `OPRN_PUBLIC_ORIGIN`(없으면 `Origin`/`Host`) 으로 **로그인 시작 URL만** `http://mdc-server:9888/oauth/launch?port=` 로 바꾸고, 돌아온 localhost 콜백 URL 은 `POST /auth/oauth-paste` 로 서버가 대신 GET 한다. env 키는 `.env.local` 의 `OPRN_PUBLIC_ORIGIN`. `npm start` 는 값이 없으면 `http://mdc-server:9888` 로 고정한다.
 
 - **OAuth 빠른 선택 (2026-08-24 / 기본 2026-08-25):** `aiAuthSettings.ts` 는 OAuth 모드에서 **ChatGPT(`openai-codex`) ↔ Google Gemini(`google-antigravity`) 두 카드**를 `role="radiogroup"` 퀵 선택으로 노출한다(테스트 `test/aiAuthSettingsSeparation.test.ts`). 공장 기본 제공자는 **`google-antigravity` + `gemini-3.7-flash`** 다(`DEFAULT_OH_MY_PI_PROVIDER`, `DEFAULT_MODEL`). 저장된 providerId·모델은 덮어쓰지 않는다. providerId 가 없는 옛 blob 은 Codex 시절 암시 기본이므로 `openai-codex` 로 남긴다. Gemini 퀵 카드는 Antigravity 로그인으로 라우팅한다(`google-gemini-cli` 는 레지스트리에서 사라졌다). 모델 목록에는 제공자와 무관한 GPT/Claude 항목을 섞지 않고 `gemini-3.7-flash`(빠른 기본)와 `gemini-3.1-pro`(품질 우선)만 먼저 보여준다. 이미 저장된 제공자·모델은 설정을 다시 열 때 덮어쓰지 않는다. 선택하면 providerId·select 값·aria 체크·onChange·상태 조회·기존 로그인 라우팅(`startChatGptLogin`) 을 전부 동기화한다. Gemini 카드는 구독·CLI를 암시하지 않고 `Google 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다.`라고 안내한다. 드롭다운으로 다른 OAuth 제공자를 고르면 어느 카드도 체크되지 않되 첫 카드는 `tabindex=0` 을 유지해 키보드 사용자가 돌아올 수 있다. 제공자/종류 변경·취소는 내부 인증 연산 세대 카운터를 올려, 늦게 도착한 버전·상태·로그인 결과가 새 선택의 화면(연결 해제 크롬 포함)을 덮어쓰지 못하게 한다. API 키 제공자, 키 저장·연결 해제·폴링 최대 시도·오류(A/B) 의미는 그대로다. OAuth 는 언제나 로컬 oh-my-pi pi-ai 워커(`startChatGptLogin`)가 처리한다 — 비밀은 브라우저에 남지 않는다.
 
@@ -1891,7 +1992,7 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 
 - **제공자는 둘뿐이다 (자체 OAuth, 2026-08-27):** `src/ai/ohMyPiProviders.ts` 에는 `google-antigravity`(Gemini/agy, 기본) 와 `openai-codex` **두 행만** 있다 — 예전에는 omp 카탈로그의 69종을 베껴 뒀지만 로그인 경로가 붙은 것은 이 둘뿐이라 나머지는 고를 수 없는 죽은 UI 였다. id 문자열은 `src/ai/oauth/credentials.ts` 에서 가져오므로 전송과 UI 가 같은 상수를 본다. 설정은 `AiConfig.providerId` 로 저장되고 두 제공자 사이를 실제로 오갈 수 있다(`editorHasProviderChoice()` = true).
 
-- **인증은 Node, 완성만 Bun (2026-08-27):** 동반 서비스(`vite.config.ts` 플러그인 + `scripts/chatgpt-oauth-companion.mjs`)가 `/auth/providers`, `/auth/status?provider=`, `/auth/login`, `/auth/refresh`, `/auth/logout`, `/v1/chat/completions`(헤더 `X-Rpgzzu-Provider`) 를 노출한다. **로그인·갱신·상태·요청 자격은 `scripts/lib/aiAuthRuntime.ts` 가 순수 Node 에서 처리한다** — pi-ai 의 `getOAuthApiKey`/`getProviderDefinition`/`refreshOAuthToken` 의존은 없다. Bun 워커(`scripts/oh-my-pi-worker.ts`)는 `/complete` **하나만** 남았고 이미 해결된 `apiKey` 를 본문으로 받는다(자격을 들지 않는다). 실측: bun 이 PATH 에 없을 때 `/auth/providers` 와 `/auth/status` 가 **HTTP 200** 이다 — 예전에는 둘 다 HTTP 500 `bun 이 필요합니다` 였다. 모델 호출(completion)은 pi-ai 가 bun:sqlite 를 싣기 때문에 여전히 Bun 이 필요하다. 모르는 제공자 id 는 400 으로 닫는다. 비밀은 `~/.rpg-zzu/oh-my-pi-auth.json`(`RPG_ZZU_OH_MY_PI_AUTH_PATH`)에만 남고 브라우저로 가지 않는다. `/auth/key` 는 두 제공자가 모두 구독 로그인이라 400 으로 거절한다.
+- **인증은 Node, 완성만 Bun (2026-08-27):** 동반 서비스(`vite.config.ts` 플러그인 + `scripts/chatgpt-oauth-companion.mjs`)가 `/auth/providers`, `/auth/status?provider=`, `/auth/login`, `/auth/refresh`, `/auth/logout`, `/v1/chat/completions`(헤더 `X-Oprn-Provider`) 를 노출한다. **로그인·갱신·상태·요청 자격은 `scripts/lib/aiAuthRuntime.ts` 가 순수 Node 에서 처리한다** — pi-ai 의 `getOAuthApiKey`/`getProviderDefinition`/`refreshOAuthToken` 의존은 없다. Bun 워커(`scripts/oh-my-pi-worker.ts`)는 `/complete` **하나만** 남았고 이미 해결된 `apiKey` 를 본문으로 받는다(자격을 들지 않는다). 실측: bun 이 PATH 에 없을 때 `/auth/providers` 와 `/auth/status` 가 **HTTP 200** 이다 — 예전에는 둘 다 HTTP 500 `bun 이 필요합니다` 였다. 모델 호출(completion)은 pi-ai 가 bun:sqlite 를 싣기 때문에 여전히 Bun 이 필요하다. 모르는 제공자 id 는 400 으로 닫는다. 비밀은 `~/.oprn/oh-my-pi-auth.json`(`OPRN_OH_MY_PI_AUTH_PATH`; 2026-09 개명 전 `~/.rpg-zzu` 파일은 첫 읽기에 한 번 복사되고 옛 파일은 남는다)에만 남고 브라우저로 가지 않는다. `/auth/key` 는 두 제공자가 모두 구독 로그인이라 400 으로 거절한다.
 
 - **Codex 로그인은 브라우저 우선, device 는 대체 (2026-08-27):** `src/ai/oauth/codexBrowserOAuth.ts` 의 `beginCodexLogin` 이 경로를 고른다. **1455 를 잡으면** 루프백 PKCE 원클릭(`auth.openai.com/oauth/authorize`, `code_challenge_method=S256`, `id_token_add_organizations=true`, `codex_cli_simplified_flow=true`, `originator=codex_cli_rs`)으로 가고, **EADDRINUSE 면** device 코드 흐름으로 내려가며 그 이유를 `instructions` 로 사용자에게 말한다. 포트 점유가 아닌 실패(EACCES 등)는 device 로 숨기지 않고 그대로 올린다. `CODEX_BROWSER_REDIRECT_URI` = `http://localhost:1455/auth/callback` 은 **상수여야 한다** — OpenAI 허용목록에 이 값만 있어 임의 포트로 옮기면 인가는 통과하고 토큰 교환이 403 이 된다(omp 의 `loginOpenAICodex` 주석과 동일한 근거). 실측: 이 개발 머신은 1455 도 docker-proxy 가 잡고 있어 device 경로로 내려간다. 회귀 테스트 `test/codexBrowserOAuthFlow.test.ts`(9케이스: 인가 파라미터 전량, PKCE SHA-256/base64url, 경로 선택 3분기).
 

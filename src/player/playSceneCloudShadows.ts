@@ -21,7 +21,7 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 
 /** 상층 타일·캐릭터(25만)보다 위, 맵 애니메이션·날씨(80만)·시간 틴트·조명(90만)보다 아래. */
 export const CLOUD_SHADOW_DEPTH = 700_000;
-export const CLOUD_SHADOW_TEXTURE_KEY = "__rpg_zzu_cloud_shadow_blob";
+export const CLOUD_SHADOW_TEXTURE_KEY = "__oprn_cloud_shadow_blob";
 /** 텍스처 한 변(px). 실루엣은 이 상자를 가득 채운다. */
 const CLOUD_SHADOW_TEXTURE_SIZE = 256;
 /**

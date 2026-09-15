@@ -46,7 +46,7 @@ test("preview stays current while faces are edited and branches are traversed", 
   }];
   await page.addInitScript(seed => {
     localStorage.setItem("oprn:editor-ui-mode", "standard");
-    window.__RPG_ZZU_E2E_PROJECT__ = seed;
+    window.__OPRN_E2E_PROJECT__ = seed;
   }, project);
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/?blankProject=1");

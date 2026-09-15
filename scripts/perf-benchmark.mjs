@@ -258,7 +258,7 @@ async function writeEvidence(result) {
 
 function printReport(result) {
   const { budgets, measurements, checks } = result;
-  console.log("RPG ZZU performance benchmark");
+  console.log("OPRN performance benchmark");
   console.log(`Generated: ${result.generatedAt}`);
   console.log("");
   printTable([

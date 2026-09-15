@@ -382,7 +382,7 @@ export function isCompanionBaseUrl(url: string): boolean {
  * 전송 축 — 요청이 어디로 나가는가.
  *
  * - `companion`: 로컬 동반 서비스(oh-my-pi). 자격 증명은 그쪽이 보관하고, 브라우저는
- *   `X-Rpgzzu-Provider` 로 제공자만 지목한다. **에디터 UI 는 항상 이쪽이다.**
+ *   `X-Oprn-Provider` 로 제공자만 지목한다. **에디터 UI 는 항상 이쪽이다.**
  * - `gateway`: `config.baseUrl` 로 직접 나간다(`Authorization: Bearer`). 노드 스크립트·evals·
  *   벤치마크처럼 **설정을 직접 주입하는 소비자 전용**이고 사용자 UI 는 없다.
  *
@@ -428,7 +428,7 @@ export function isProxyAuth(config: AiConfig): boolean {
 function headers(config: AiConfig): Record<string, string> {
   const h: Record<string, string> = { "Content-Type": "application/json" };
   if (usesOhMyPiCompanion(config)) {
-    h["X-Rpgzzu-Provider"] = parseOhMyPiProvider(config.providerId);
+    h["X-Oprn-Provider"] = parseOhMyPiProvider(config.providerId);
     return h;
   }
   // proxyAuth: 프록시가 서버 측에서 Authorization 을 주입한다 — 클라이언트는 키를 보내지 않는다.

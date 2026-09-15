@@ -30,7 +30,7 @@ page.on("console", (message) => {
 });
 
 await page.addInitScript(() => {
-  localStorage.setItem("rpg-zzu:editor-ui-mode", "standard");
+  localStorage.setItem("oprn:editor-ui-mode", "standard");
   localStorage.setItem("oprn:ai-panel-collapsed", "1");
   // 새로고침 뒤의 「복원」 검사가 이 스크립트에 지워지면 안 된다 — 첫 로드에서만 초기화한다.
   if (!sessionStorage.getItem("loc-fix-qa-init")) {

@@ -89,7 +89,7 @@ try {
   page.setDefaultTimeout(20000);
   remoteWrites = await blockRemoteWrites(page);
   page.on('pageerror', error => errors.push(error.message));
-  await page.addInitScript(() => localStorage.setItem('rpg-zzu:editor-ui-mode', 'expert'));
+  await page.addInitScript(() => localStorage.setItem('oprn:editor-ui-mode', 'expert'));
   await page.goto(`${base}/?freshProject=1`, { waitUntil: 'domcontentloaded', timeout: 120000 });
   // Cold Vite dependency optimization is boot work, not a UI interaction deadline.
   await armDomState(page, () => Boolean(document.querySelector('[data-testid="toolbar-database"]')), undefined, 120000);

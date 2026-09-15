@@ -107,7 +107,7 @@ function responseForUploadedAsset(parsed: ParsedDataUrl): Response {
   return new Response(body, {
     headers: {
       "Content-Type": parsed.contentType,
-      "X-RPG-ZZU-Resource-Root": "supabase-current-json-assets-uploaded",
+      "X-OPRN-Resource-Root": "supabase-current-json-assets-uploaded",
     },
   });
 }

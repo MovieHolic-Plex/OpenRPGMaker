@@ -28,7 +28,7 @@ const html = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RPG ZZU로 '포켓몬 레드' 수준? — 5에이전트 적대적 감사 (정정 v3)</title>
+<title>OPRN로 '포켓몬 레드' 수준? — 5에이전트 적대적 감사 (정정 v3)</title>
 <style>
   :root{
     --bg:#0d0b10; --panel:#17131c; --panel2:#211a28; --line:#322a3d;
@@ -125,7 +125,7 @@ const html = `<!DOCTYPE html>
   <img class="bg" src="${I.village}" alt="">
   <div class="hero-text">
     <div class="warn">⚠ 정정 리포트 v3 · 적대적 감사</div>
-    <h1>RPG ZZU로 <em>'포켓몬 레드'</em> 수준?</h1>
+    <h1>OPRN로 <em>'포켓몬 레드'</em> 수준?</h1>
     <p class="sub">5개 적대적 서브에이전트가 코드를 라인 단위로 뜯어본 결과 — 이전 리뷰(9.0/10)는 표면 읽기였다. 진실은: <b>RM2k3 엔진에 포켓몬 스킨을 씌운 것</b>이지, Gen 1 엔진이 아니다.</p>
     <div class="meta">5 에이전트 · 5레인 병렬 감사 · 코드 49K줄 · 2026-07-24</div>
   </div>
@@ -395,7 +395,7 @@ monsterBox: MonsterInstanceId[]  <span class="c">// 단일 flat 배열</span>
   <div class="scoreboard">
     <div class="score-lbl">최종 평점 (포켓몬 레드 Gen1 재현도) — 5에이전트 검증 기준</div>
     <div class="score">2.5 / 10</div>
-    <div class="verdict-txt">RPG ZZU는 "포켓몬 레드 엔진"이 아니다. <b>"몬스터 잡는 RM2k3 JRPG 메이커"</b>다. 포획·진화·6파티·타입상성 엔진은 있으나 — 데미지 공식·상태효과·포획 정밀도·필드기술·UX가 <b>전부 Gen1이 아니라 RM2k3</b>다. 스킨 CSS로 포켓몬 색을 칠해도 인터랙션 모델은 RM2k3 그대로.<br><br>v1(7.2점)·v2(9.0점) 리뷰 모두 표면 읽기였다 — "필드가 존재한다"를 "기능이 작동한다"로 착각했다.</div>
+    <div class="verdict-txt">OPRN는 "포켓몬 레드 엔진"이 아니다. <b>"몬스터 잡는 RM2k3 JRPG 메이커"</b>다. 포획·진화·6파티·타입상성 엔진은 있으나 — 데미지 공식·상태효과·포획 정밀도·필드기술·UX가 <b>전부 Gen1이 아니라 RM2k3</b>다. 스킨 CSS로 포켓몬 색을 칠해도 인터랙션 모델은 RM2k3 그대로.<br><br>v1(7.2점)·v2(9.0점) 리뷰 모두 표면 읽기였다 — "필드가 존재한다"를 "기능이 작동한다"로 착각했다.</div>
     <div class="breakdown">
       <div class="bd"><div class="b-n p-low">18%</div><div class="b-l">배틀 수학</div></div>
       <div class="bd"><div class="b-n p-low">25%</div><div class="b-l">상태/기술</div></div>

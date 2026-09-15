@@ -1,6 +1,10 @@
 // Shared companion router for vite middleware and the standalone OAuth process.
 // Missing provider falls back to Antigravity (same factory default as src/ai/ohMyPiProviders.ts).
 
+import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
+
+applyLegacyEnvAliases();
+
 const DEFAULT_PROVIDER = "google-antigravity";
 
 function headerMap(headers) {
@@ -42,7 +46,7 @@ export function isCompanionPath(url = "") {
 const LOOPBACK_LAUNCH = new Map();
 
 export function companionPublicOrigin(req = {}, env = process.env) {
-  const fromEnv = String(env.RPG_ZZU_PUBLIC_ORIGIN ?? "").trim().replace(/\/$/, "");
+  const fromEnv = String(env.OPRN_PUBLIC_ORIGIN ?? "").trim().replace(/\/$/, "");
   if (fromEnv) return fromEnv;
   const headers = headerMap(req.headers);
   const origin = (headers.origin ?? "").trim().replace(/\/$/, "");
@@ -94,7 +98,7 @@ export function resolveCompanionProvider(req = {}) {
   const query = url.includes("?") ? new URLSearchParams(url.slice(url.indexOf("?") + 1)) : new URLSearchParams();
   const fromQuery = query.get("provider");
   const headers = headerMap(req.headers);
-  const fromHeader = headers["x-rpgzzu-provider"];
+  const fromHeader = headers["x-oprn-provider"];
   const body = req.body && typeof req.body === "object" ? req.body : {};
   const fromBody = typeof body.provider === "string" ? body.provider : "";
   const raw = (fromQuery || fromHeader || fromBody || "").trim();

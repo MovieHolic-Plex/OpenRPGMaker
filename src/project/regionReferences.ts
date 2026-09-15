@@ -1,3 +1,4 @@
+import emeraldSnapshot from "./regionReferences/emerald-basin.json";
 import snapshot from "./regionReferences/walled-settlement.json";
 import lakeSnapshot from "./regionReferences/lake-village.json";
 import castleSnapshot from "./regionReferences/castle-town.json";
@@ -49,7 +50,7 @@ export const REGION_REFERENCES = [{
   limitations: "외관 참고 사례. 실내·낚시·수영·NPC 상호작용은 포함하지 않는다.",
 }] as const;
 
-export const PLACE_REFERENCES = [
+const LAKE_PLACE_REFERENCES = [
   { id: "lake-pier-workyard", name: "호숫가 선착장 작업터", x: 29, y: 33, width: 14, height: 13,
     rules: ["T자 선착장과 양끝 사다리. 진입 공터의 상자·통은 가운데 통로를 비우고 옆으로 모은다."] },
   { id: "lake-well-rest", name: "호수마을 우물 쉼터", x: 20, y: 35, width: 10, height: 11,
@@ -59,6 +60,24 @@ export const PLACE_REFERENCES = [
 ].map(place => ({ ...REGION_REFERENCES[2], ...place, kind: "completed-place" as const,
   preview: `/assets/region-references/${place.id}.png`,
   limitations: "호수마을 저장본에서 추출한 읽기 전용 배치 사례. 이벤트는 포함하지 않는다." }));
+
+
+/** Shipped place examples remain visible even in a new, empty project. */
+export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, {
+  id: "emerald-basin-80x64", name: "비취 대계곡", kind: "completed-place" as const,
+  placeKind: "natural" as const, revision: 1, x: 0, y: 0, width: 80, height: 64,
+  tilesetId: emeraldSnapshot.tileset.id,
+  preview: "/assets/region-references/emerald-basin.png",
+  tilesetPreview: "/assets/region-references/emerald-basin-atlas.png",
+  sourceProjectId: "rpg-zzu-house-template-gallery", sourceMapId: emeraldSnapshot.map.id,
+  rules: [
+    "쌍폭포에서 시작된 강이 굽어 흐르고 지류와 합류한다. 다리는 양쪽 강둑과 길을 잇는다.",
+    "대각 절벽의 윗선과 아랫선을 연결하고, 계단 높이를 해당 절벽 높이에 맞춘다.",
+    "서쪽·동쪽·남쪽 길을 맵 끝까지 연결해 다음 맵으로 이어질 자리를 남긴다.",
+    "활엽수·침엽수·관목은 군락으로 모으고 다리 입구와 계단 동선은 비운다.",
+  ],
+  limitations: "완성 필드 배치 참고 사례. 프로젝트와 관계없이 표시된다. 자동 생성·현재 맵 배치 기능은 포함하지 않는다.",
+}];
 
 
 export function regionReference(id: string) {
@@ -72,8 +91,8 @@ export function readRegionReference(id: string, row = 0, rows = 8) {
   if (!Number.isInteger(row) || !Number.isInteger(rows) || row < 0 || row >= reference.height || rows < 1 || rows > 16) {
     throw new Error("row must be within the map; rows must be 1..16");
   }
-  const place = PLACE_REFERENCES.find(p => p.id === id);
-  const source = reference.id === "castle-town-100x100" ? castleSnapshot : reference.id === "walled-settlement-43x45" ? snapshot : lakeSnapshot;
+  const place = LAKE_PLACE_REFERENCES.find(p => p.id === id);
+  const source = reference.id === "emerald-basin-80x64" ? emeraldSnapshot : reference.id === "castle-town-100x100" ? castleSnapshot : reference.id === "walled-settlement-43x45" ? snapshot : lakeSnapshot;
   const crop = (tiles: number[]) => Array.from({length: reference.height}, (_, y) => tiles.slice((y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0), (y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0) + reference.width)).flat();
   const selected = place ? { ...source, map: { ...source.map, width: place.width, height: place.height, lowerTiles: crop(source.map.lowerTiles), upperTiles: crop(source.map.upperTiles), events: [] } } : source;
   const endRow = Math.min(reference.height, row + rows), { map, tileset } = selected;

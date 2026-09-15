@@ -3,7 +3,7 @@
 //
 // 둘의 공통 계약:
 //  - 전송은 로컬 동반 서비스(oh-my-pi)다.
-//  - 자격 증명은 동반 서비스의 ~/.rpg-zzu/oh-my-pi-auth.json 에만 있다.
+//  - 자격 증명은 동반 서비스의 ~/.oprn/oh-my-pi-auth.json 에만 있다.
 //  - 둘 다 oauth 이므로 브라우저에는 API 키 입력칸도, 저장되는 비밀도 없다.
 //
 // AiConnectionKindId 의 "API 키" 값은 주입 설정의 타입 호환을 위해 남아 있지만 이 레지스트리에

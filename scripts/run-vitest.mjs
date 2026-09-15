@@ -2,6 +2,9 @@
 import { spawnSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 function canonicalizeWindowsDrive(path) {
   if (process.platform !== "win32") return path;
@@ -43,9 +46,9 @@ function canonicalizeRootArgs(args, defaultRoot) {
  * 기본 상한은 머신 메모리(98GB)와 무관하게 **프로세스당** 걸리므로 RAM 이 남아도 소용이 없다.
  *
  * 그래서 8GB 를 기본으로 깔아 둔다(근본 수정은 그 파일을 세 파일로 가른 것 — 각 피크 3.13/2.06/2.88GB).
- * 사용자가 이미 `--max-old-space-size` 를 줬으면 그 값을 존중한다. 더 키우려면 `RPG_ZZU_VITEST_HEAP_MB`.
+ * 사용자가 이미 `--max-old-space-size` 를 줬으면 그 값을 존중한다. 더 키우려면 `OPRN_VITEST_HEAP_MB`.
  */
-const DEFAULT_HEAP_MB = process.env.RPG_ZZU_VITEST_HEAP_MB ?? "8192";
+const DEFAULT_HEAP_MB = process.env.OPRN_VITEST_HEAP_MB ?? "8192";
 function withHeapOption(nodeOptions) {
   const current = nodeOptions ?? "";
   if (/--max-old-space-size/.test(current)) return current;

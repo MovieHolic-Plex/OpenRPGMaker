@@ -3,10 +3,10 @@
  * HTML 리포트용 스크린샷 증거를 모은다.
  *
  * 프로젝트는 `test/aiThreeMapRpg.live.test.ts` 가 Supabase 에 저장한 것을 그대로
- * 읽어 주입한다(에디터 실제 로드 경로 = `__RPG_ZZU_E2E_PROJECT__`).
+ * 읽어 주입한다(에디터 실제 로드 경로 = `__OPRN_E2E_PROJECT__`).
  *
  * 실행:
- *   RPG_ZZU_AI_THREE_MAP_SHOTS=1 npx playwright test test/e2e/ai-three-map-rpg-evidence.spec.ts
+ *   OPRN_AI_THREE_MAP_SHOTS=1 npx playwright test test/e2e/ai-three-map-rpg-evidence.spec.ts
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -31,7 +31,7 @@ async function shot(page: Page, file: string, title: string, caption: string): P
 }
 
 test("AI 저작 3맵 RPG — 에디터/런타임 증거 스크린샷", async ({ page }) => {
-  test.skip(process.env.RPG_ZZU_AI_THREE_MAP_SHOTS !== "1", "증거 수집 전용 스펙");
+  test.skip(process.env.OPRN_AI_THREE_MAP_SHOTS !== "1", "증거 수집 전용 스펙");
   expect(existsSync(PROJECT_JSON), `먼저 aiThreeMapRpg.live.test.ts 를 돌려라: ${PROJECT_JSON}`).toBe(true);
 
   type EvidenceEvent = {

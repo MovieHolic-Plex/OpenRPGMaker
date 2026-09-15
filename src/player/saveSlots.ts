@@ -1,5 +1,6 @@
 import { LifeReconciliationError, parseLifeState, preserveUnresolvedLifeSource, reconcileLifeState } from "@/project/lifeRecovery";
 import { isLocalSaveSourceKey, isSaveIdentity, publicationSaveKey, requireSaveIdentity, saveIdentity, saveIdentityBlocker, saveScopeBlocker, type SaveIdentity } from "./savePublication";
+import { legacyExportSaveNamespace } from "./exportSaveNamespacePrefix";
 import { PublicationError } from "../project/publication";
 export { setSavePublication } from "./savePublication";
 import { isDetectionEncounterCompletions } from '@/project/npcBehavior';
@@ -302,6 +303,37 @@ export function readAutosave(storage: Storage): AutosaveReadResult {
 
 export function setSaveSlotStorageNamespace(namespace: string | null): void {
   saveSlotStorageNamespace = namespace?.trim() || null;
+}
+
+/** 한 네임스페이스 아래에 있을 수 있는 세이브 키 접미사 전부 — 수동 3슬롯·오토세이브의 v5 키와 그 이전(v4) 키. */
+const NAMESPACED_SAVE_KEY_SUFFIXES: readonly string[] = [
+  ...([1, 2, 3] as const).flatMap((slot) => [`:save-slot:v5:${slot}`, `:save-slot:${slot}`]),
+  ":save-slot:v5:auto",
+  ":save-slot:auto",
+];
+
+/**
+ * 2026-09 제품명 스윕 전(`rpgzzu-export:<id>`)에 저장된 세이브를 새 네임스페이스(`oprn-export:<id>`)로 **복사**한다.
+ * 플레이어 브라우저의 localStorage 는 우리가 마이그레이션해 줄 수 없는 저장소 밖 상태라 첫 부팅에서 입양한다.
+ *
+ * - 새 네임스페이스에 키가 하나라도 있으면 아무것도 하지 않는다(이미 새 이름으로 플레이 중인 사람의 세이브를 덮지 않는다).
+ * - 이 게임의 고정된 키 8개만 본다. localStorage 를 훑지 않는다 — 커뮤니티에서는 다른 리스팅의 저장소를 건드리면 안 된다.
+ * - 옛 키는 지우지 않는다(이전 릴리스 플레이어로 돌아가도 세이브가 있어야 한다).
+ * - 대응하는 옛 접두사가 없는 네임스페이스(호스트가 주입한 임의 값)는 건드리지 않는다.
+ * 반환값은 복사한 키 수.
+ */
+export function adoptLegacyExportSaves(storage: Storage, namespace: string): number {
+  const legacyNamespace = legacyExportSaveNamespace(namespace);
+  if (!legacyNamespace) return 0;
+  if (NAMESPACED_SAVE_KEY_SUFFIXES.some((suffix) => storage.getItem(`${namespace}${suffix}`) !== null)) return 0;
+  let copied = 0;
+  for (const suffix of NAMESPACED_SAVE_KEY_SUFFIXES) {
+    const value = storage.getItem(`${legacyNamespace}${suffix}`);
+    if (value === null) continue;
+    storage.setItem(`${namespace}${suffix}`, value);
+    copied += 1;
+  }
+  return copied;
 }
 
 export function createSaveSnapshot(project: Project, input: PlaySession): SaveSnapshot {

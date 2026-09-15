@@ -4,6 +4,7 @@
 
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 import { TILE } from "@/project/defaults/constants";
+import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { tilePassability } from "@/project/collision";
 import { roleCapabilities } from "@/project/tileRoles";
 import { parseContextFooter } from "./contextFooter";
@@ -42,13 +43,25 @@ export interface BuildSpec {
   pathWidth?: number;
   density?: "spacious" | "normal" | "dense";
   layoutStyle?: "straight" | "curved" | "random";
-  /** 아직 생성되지 않은 맵의 합성 차원 — planned-map descriptor. */
+  /**
+   * 이 밑그림이 전제하는 맵 차원 — planned-map descriptor.
+   *
+   * 두 가지를 같은 필드로 선언한다:
+   *  1. 아직 생성되지 않은 맵의 합성 차원(create_map/author_village(kind:"new") 직전).
+   *  2. **기존 맵을 resize_map 으로 키운 뒤의 차원**(2026-09-15). 기존 맵에서는 현재 크기 이상만
+   *     받는다 — 축소는 이벤트·시작 좌표 가드가 필요해서 resize_map 본체가 따로 거부한다.
+   *
+   * 왜 2번이 필요한가(실측): 기존 맵은 검증이 `map.width` 로 고정돼 있어 "맵을 키우고 거기에 놓겠다"는
+   * 밑그림을 **제출할 방법 자체가 없었다**. 모델은 경계 밖 에셋 오류를 받고 가장 싼 수리(에셋을 안쪽으로
+   * 밀거나 줄이기)를 택했고, 그래서 "마을 좀 넓혀줘" 가 맵 크기를 한 번도 바꾸지 않았다.
+   */
   plannedMap?: { mapId: string; width: number; height: number };
 }
 
 export interface SpecIssue {
   severity: "error" | "warning";
-  code?: "spec-new-plan-overlap" | "spec-existing-content" | "spec-destroy-confirmation";
+  code?: "spec-new-plan-overlap" | "spec-existing-content" | "spec-destroy-confirmation"
+    | "spec-asset-out-of-map" | "spec-planned-shrink";
   message: string;
 }
 
@@ -160,6 +173,67 @@ function coerceCoordinate(value: number): number {
   return typeof coerced === "number" ? coerced : value;
 }
 
+/**
+ * planned-map descriptor 검사. 새 맵은 합성 차원을 그대로, 기존 맵은 **확장만** 받는다.
+ * 축소를 여기서 거부하는 이유: 작아진 밑그림은 경계 밖 이벤트·시작 좌표를 조용히 버리는 계획이 되고,
+ * 그 가드는 resize_map 본체에만 있다. 줄이려면 move_event/remove_event 로 먼저 정리하게 한다.
+ */
+function checkPlannedMap(
+  plannedMap: Record<string, unknown>,
+  mapId: string,
+  map: GameMap | undefined,
+  issues: SpecIssue[],
+): { width: number; height: number } | null {
+  const plannedId = typeof plannedMap.mapId === "string" ? plannedMap.mapId : null;
+  const pw = Number.isInteger(plannedMap.width) ? (plannedMap.width as number) : null;
+  const ph = Number.isInteger(plannedMap.height) ? (plannedMap.height as number) : null;
+  if (plannedId === null || plannedId !== mapId) {
+    issues.push({ severity: "error", message: `plannedMap.mapId('${plannedId ?? "?"}')가 BuildSpec.mapId('${mapId}')와 다릅니다.` });
+    return null;
+  }
+  if (pw === null || ph === null || pw < 1 || ph < 1) {
+    issues.push({ severity: "error", message: "plannedMap.width/height는 1 이상의 정수여야 합니다." });
+    return null;
+  }
+  if (map !== undefined && (pw < map.width || ph < map.height)) {
+    issues.push({
+      severity: "error",
+      code: "spec-planned-shrink",
+      message:
+        `plannedMap ${pw}×${ph}가 기존 맵 '${mapId}' ${map.width}×${map.height}보다 작습니다. `
+        + "기존 맵의 plannedMap 은 확장(현재 크기 이상)만 선언할 수 있습니다 — 줄이려면 경계 밖 이벤트를 먼저 "
+        + "move_event/remove_event 로 정리한 뒤 resize_map 을 직접 호출하세요.",
+    });
+    return null;
+  }
+  return { width: pw, height: ph };
+}
+
+/**
+ * 이 밑그림이 요구하는 최소 맵 크기 — 경계 밖 에셋이 있을 때 "얼마로 키우면 되는가"를 코드가 계산한다.
+ * 모델이 숨은 숫자를 다시 발명하지 않게 거부 응답이 이 값을 그대로 실어 보낸다. 확장이 필요 없으면 null.
+ */
+export function plannedGrowthForSpec(
+  map: Pick<GameMap, "width" | "height">,
+  spec: Pick<BuildSpec, "assets">,
+): { width: number; height: number } | null {
+  let width = map.width;
+  let height = map.height;
+  for (const asset of spec.assets) {
+    const x = coerceCoordinate(asset.x);
+    const y = coerceCoordinate(asset.y);
+    const w = coerceCoordinate(asset.w);
+    const h = coerceCoordinate(asset.h);
+    if (![x, y, w, h].every((value) => Number.isInteger(value))) continue;
+    if (x < 0 || y < 0) continue; // 음수 좌표는 확장으로 풀 수 없다 — 좌표 자체가 틀렸다.
+    width = Math.max(width, x + w);
+    height = Math.max(height, y + h);
+  }
+  if (width <= map.width && height <= map.height) return null;
+  if (width > MAX_TOOL_MAP_DIMENSION || height > MAX_TOOL_MAP_DIMENSION) return null;
+  return { width, height };
+}
+
 export function validateBuildSpec(project: Project, spec: unknown): SpecIssue[] {
   const issues: SpecIssue[] = [];
   const rawSpec: unknown = spec;
@@ -167,28 +241,26 @@ export function validateBuildSpec(project: Project, spec: unknown): SpecIssue[] 
 
   const mapId = typeof rawSpec.mapId === "string" ? rawSpec.mapId : null;
   const map = mapId === null ? undefined : project.maps[mapId];
-  // planned-map descriptor: 아직 생성되지 않은 맵의 합성 차원을 제공하면
-  // 에셋 경계 검증에 사용한다. mapId 불일치/차원 오류는 error.
+  // planned-map descriptor: 새 맵의 합성 차원, 또는 기존 맵을 키운 뒤의 차원을 제공하면
+  // 에셋 경계 검증에 사용한다. mapId 불일치/차원 오류/기존 맵 축소는 error.
   const plannedMap = isRecord(rawSpec.plannedMap) ? rawSpec.plannedMap : null;
   let effectiveWidth: number | undefined;
   let effectiveHeight: number | undefined;
   if (mapId === null) {
     issues.push({ severity: "error", message: "BuildSpec.mapId는 문자열이어야 합니다." });
+  } else if (plannedMap !== null) {
+    const planned = checkPlannedMap(plannedMap, mapId, map, issues);
+    if (planned !== null) {
+      effectiveWidth = planned.width;
+      effectiveHeight = planned.height;
+    } else if (map !== undefined) {
+      // 잘못된 planned 선언이 기존 맵의 경계 검증까지 꺼 버리면 안 된다 — 현재 크기로 계속 잰다.
+      effectiveWidth = map.width;
+      effectiveHeight = map.height;
+    }
   } else if (map !== undefined) {
     effectiveWidth = map.width;
     effectiveHeight = map.height;
-  } else if (plannedMap !== null) {
-    const plannedId = typeof plannedMap.mapId === "string" ? plannedMap.mapId : null;
-    const pw = Number.isInteger(plannedMap.width) ? (plannedMap.width as number) : null;
-    const ph = Number.isInteger(plannedMap.height) ? (plannedMap.height as number) : null;
-    if (plannedId === null || plannedId !== mapId) {
-      issues.push({ severity: "error", message: `plannedMap.mapId('${plannedId ?? "?"}')가 BuildSpec.mapId('${mapId}')와 다릅니다.` });
-    } else if (pw === null || ph === null || pw < 1 || ph < 1) {
-      issues.push({ severity: "error", message: "plannedMap.width/height는 1 이상의 정수여야 합니다." });
-    } else {
-      effectiveWidth = pw;
-      effectiveHeight = ph;
-    }
   } else {
     issues.push({ severity: "error", message: `맵 '${mapId}'을 찾을 수 없습니다.` });
   }
@@ -211,7 +283,11 @@ export function validateBuildSpec(project: Project, spec: unknown): SpecIssue[] 
     seenIds.add(checked.id);
 
     if (effectiveWidth !== undefined && effectiveHeight !== undefined && !insideMap(checked, effectiveWidth, effectiveHeight)) {
-      issues.push({ severity: "error", message: `에셋 '${checked.id}' 영역(${checked.x},${checked.y}) ${checked.w}×${checked.h}가 맵 크기 ${effectiveWidth}×${effectiveHeight} 밖입니다.` });
+      issues.push({
+        severity: "error",
+        code: "spec-asset-out-of-map",
+        message: `에셋 '${checked.id}' 영역(${checked.x},${checked.y}) ${checked.w}×${checked.h}가 맵 크기 ${effectiveWidth}×${effectiveHeight} 밖입니다.`,
+      });
     }
     checkedAssets.push(checked);
   });
