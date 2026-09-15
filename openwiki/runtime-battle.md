@@ -71,6 +71,32 @@
   중 하나를 골라야 하는 플레이 표면 정책이라 별도 과제), 포켓몬 뒷모습 슬롯(아트 에셋 대기).
   증거 스크립트는 리뷰 당시 `verify-shots/adv-review-{1..5}/` 와 `verify-shots/after/` 에 남겼다(커밋하지 않음).
 
+## 회복 자원·인트로 배너·타이머 write-back 계약 (2026-09-15)
+
+전투 적대적 리뷰 후속으로 고친 세 계약이다. 이 절과 다른 서술이 충돌하면 이 절이 맞다.
+
+- **회복은 자원을 들고 다닌다.** 아이템 회복 결과 `amount` 에 HP 증가와 MP 증가를 합산하지 않는다.
+  `BattleTimelineEntrySnapshot.resource` (`"hp" | "mp"`) 가 표시 계층까지 내려가고,
+  `battlePresentation.applyFeedback` 은 `resource === "mp"` 인 healing 을 **HP 원장에 적용하지 않는다**
+  (MP 표기는 원장이 아니라 최종 스냅샷에서 바로 읽는다). 실측 결함: 마력약(MP+30/HP+0)을 쓰면 파티 카드
+  HP 가 250→280 으로 올다가 다음 커맨드 국면에 250 으로 되돌아갔다. 같은 순간 메시지는
+  `주인공에게 30 피해!`(팝업은 `+30`) 였다 — `impactLine` 이 `rolled > 0` 을 피해로 먼저 판정했기 때문이다.
+  이제 회복 여부는 부호가 아니라 **타임라인 kind** 로 정해지고, 메시지는 `MP를 30 회복했다!` 처럼 자원을 밝힌다.
+  팝업도 MP 회복은 `MP +30` 으로 구분한다. 회귀: `test/battleRecoveryResourceDisplay.test.ts`.
+- **상태 유지 회복(`stateRecovery`)도 healing 이다.** `feedbackFromTimeline` 이 kind 를 healing 로 분류하지
+  않으면 양수 회복량이 피해로 재생되어 팝업 `-8` / HP 50→42 / 메시지 `8 회복했다` 가 한 화면에 겹친다.
+- **인트로 배너는 커버가 걷힌 뒤에 뜬다.** `.battle-message-window` 의 `rm2000-banner-in` 지연은
+  `[data-battle-director-step="intro"]` 에만 `--battle-reveal-ms`(기본 300ms)를 더한다. 실측 결함:
+  씬 마운트 874ms → 커버 960/960px 인 946ms 에 배너 opacity 0.718 — 판이 닫힌 채 페이드인해서 커버가
+  배너 글자를 가로질러 잘라먹었다(글래스 스킨). acting/impact/targetSelect 는 지연 0 을 유지한다 —
+  전투 중 메시지까지 늦추면 읽는 리듬이 끊긴다. 계측: `scripts/qa/runtime/battle-adversarial-0915.probe.mjs`.
+- **전투 종료 write-back 은 전투가 실제로 쓴 타이머만 되돌린다.** `BattleEventStateSnapshot.timers` 는
+  timer 조건 평가를 위해 진입 시점 사본 전체를 유지하지만, 세션 반영은 `timerWrites`(전투 이벤트의 `timer`
+  커맨드가 기록한 키만)로 한다. 타이머 진행(tick)은 맵 씬(`playSceneTimers`) 소관이라, 사본 전체를 쓰면
+  전투 중 만료된 타이머가 진입 값으로 되살아나고 이후 프레임은 만료된 타이머를 건너뛰므로 자동 교정되지
+  않는다. `friendshipWrites`/`relationshipWrites` 와 같은 "쓴 키만" 관례다. `timerWrites` 없는 구 스냅샷은
+  예전처럼 `timers` 전체를 병합한다. 회귀: `test/battleRewardsToSession.test.ts` 의 `battle timer write-back`.
+
 ## Native event battle admission (2026-09-08)
 
 - `project/battleAdmission.ts` supplies typed missing/empty-troop errors to the
