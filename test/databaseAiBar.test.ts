@@ -199,7 +199,7 @@ describe("createDatabaseAiBar — DOM 계약", () => {
     expect(send).not.toHaveBeenCalled();
   });
 
-  it("보내기: 풋터가 붙은 메시지로 전송하고, 진행 → 도구 → 완료를 바 안에 그린다", async () => {
+  it("보내기: 풋터가 붙은 메시지로 전송하고, 진행 → 도구 → 검토 → 적용 → 되돌리기를 한 자리에 그린다", async () => {
     const scheduler = manualScheduler();
     const turn = deferred<AiBridgeTurnResult>();
     const auditLog: AiBridgeAuditEntry[] = [{ kind: "user", text: "이전 턴" }];
@@ -210,6 +210,7 @@ describe("createDatabaseAiBar — DOM 계약", () => {
       return turn.promise;
     });
     const undo = vi.fn(() => true);
+    const apply = vi.fn(() => Promise.resolve(null));
     const handle = mount({
       send,
       status: () => ({ ready: true, turnBusy: busy, configReady: true, lastStatus: "", bridgeConnected: false, panelMounted: true }),
@@ -217,6 +218,7 @@ describe("createDatabaseAiBar — DOM 계약", () => {
       schedule: scheduler.schedule,
       undo,
       undoLabel: () => "AI 적 튜닝",
+      apply,
     });
     handle.setOpen(true);
     const input = handle.element.querySelector<HTMLInputElement>("[data-testid='database-ai-input']")!;
@@ -245,17 +247,37 @@ describe("createDatabaseAiBar — DOM 계약", () => {
     expect(status.dataset.phase).toBe("working");
     expect(turnRegion.querySelector("[data-testid='database-ai-turn-tools']")?.textContent).toContain("maxHp 18→120");
 
-    // 턴 종료: 답변·완료 상태·되돌리기.
+    // 턴 종료: 세션이 초안을 넘기고(deferApply) 답변이 온다. 프로젝트는 아직 그대로 — 검토 대기.
     auditLog.push({ kind: "assistant", text: "슬라임을 **중반** 난이도로 맞췄습니다." });
     busy = false;
-    turn.resolve(okResult({ audit: auditLog, lastAssistantText: "슬라임을 **중반** 난이도로 맞췄습니다." }));
+    const beforeProject = structuredClone(createBlankProject()) as { database: Record<string, unknown[]> } & Project;
+    beforeProject.database.enemies = [...beforeProject.database.enemies, {
+      id: "enemy_slime", name: "슬라임", graphicHue: 0, transparent: false, flying: false,
+      stats: { maxHp: 18, maxMp: 0, attack: 5, defense: 3, mind: 1, agility: 4 },
+      rewards: { exp: 3, gold: 2, dropRatePercent: 0 }, skillIds: [], actions: [], stateRates: {}, elementRates: {},
+    }] as typeof beforeProject.database.enemies;
+    const afterProject = structuredClone(beforeProject);
+    (afterProject.database.enemies as Array<{ id: string; stats: { maxHp: number } }>).find((e) => e.id === "enemy_slime")!.stats.maxHp = 120;
+    turn.resolve(okResult({
+      audit: auditLog,
+      lastAssistantText: "슬라임을 **중반** 난이도로 맞췄습니다.",
+      pendingProposal: { callCount: 1, summary: "tune_enemy", before: beforeProject, after: afterProject },
+    }));
     await turn.promise;
-    await Promise.resolve();
-    expect(status.dataset.phase).toBe("done");
+    for (let i = 0; i < 3; i += 1) await Promise.resolve();
+    expect(status.dataset.phase).toBe("review");
     expect(turnRegion.querySelector("[data-testid='database-ai-turn-answer']")?.textContent).toContain("슬라임을 중반 난이도로 맞췄습니다.");
     expect(run.disabled).toBe(false);
     expect(turnRegion.querySelector<HTMLButtonElement>("[data-testid='database-ai-turn-abort']")?.hidden).toBe(true);
     const undoButton = turnRegion.querySelector<HTMLButtonElement>("[data-testid='database-ai-turn-undo']")!;
+    // 검토 중에는 되돌릴 것이 없다 — 적용이 아직 안 됐다.
+    expect(undoButton.hidden).toBe(true);
+
+    // 적용 → 그때야 되돌리기가 나온다.
+    turnRegion.querySelector<HTMLButtonElement>("[data-testid='database-ai-turn-apply']")!.click();
+    for (let i = 0; i < 4; i += 1) await Promise.resolve();
+    expect(apply).toHaveBeenCalledTimes(1);
+    expect(status.dataset.phase).toBe("done");
     expect(undoButton.hidden).toBe(false);
     expect(undoButton.textContent).toContain("AI 적 튜닝");
     undoButton.click();
@@ -433,6 +455,36 @@ describe("createDatabaseAiBar — 검토 후 적용", () => {
     const status = handle.element.querySelector<HTMLElement>("[data-testid='database-ai-turn-status']")!;
     expect(status.textContent).toContain("프로젝트는 그대로입니다");
     expect(handle.element.querySelector<HTMLElement>(".database-ai-composer")!.hidden).toBe(false);
+  });
+
+  it("초안이 넘어오지 않은 검토 턴은 쓰기 툴이 돌았어도 ‘반영됐다’고 말하지 않고 되돌리기도 숨긴다", async () => {
+    // 실측 2026-09-15 라이브: tune_enemy 등 3개가 돌고 턴이 max-tool-calls 로 끝나 초안이 검수 미완료로 버려졌다.
+    // 예전 판정은 저장소가 그대로인데 「완료 · 바꾼 것 3개 — 화면에 바로 반영됐어요」라고 했다.
+    const audit: AiBridgeAuditEntry[] = [
+      { kind: "tool", name: "tune_enemy", summary: "슬라임 maxHp 78→300", mode: "write", ok: true },
+      { kind: "tool", name: "tune_enemy", summary: "슬라임 exp 32→40", mode: "write", ok: true },
+    ];
+    const handle = mountReview({
+      send: () => Promise.resolve(okResult({
+        audit,
+        pendingProposal: null,
+        runOutcome: { execution: "budget-exhausted", goal: "incomplete", delivery: "draft", imageAttached: false } as never,
+        status: { ready: true, turnBusy: false, configReady: true, lastStatus: "검수 미완료", bridgeConnected: false, panelMounted: true },
+      })),
+      undoLabel: () => "AI 적 튀닝",
+    });
+    await runTurn(handle);
+
+    const status = handle.element.querySelector<HTMLElement>("[data-testid='database-ai-turn-status']")!;
+    expect(status.dataset.phase).toBe("error");
+    expect(status.textContent).toContain("프로젝트는 그대로입니다");
+    expect(status.textContent).toContain("예산");
+    expect(status.textContent).not.toContain("반영됐어요");
+    expect(handle.element.querySelectorAll("[data-testid='database-ai-card']")).toHaveLength(0);
+    // 적용된 것이 없으니 되돌릴 것도 없다 — 쓰기 툴 개수로 되돌리기를 내주면 엉뚱한 이전 편집을 되돌린다.
+    expect(handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-turn-undo']")!.hidden).toBe(true);
+    // 바꾼 것 목록은 보여 준다 — 무엇을 하려 했는지는 사용자가 알아야 한다.
+    expect(handle.element.querySelector("[data-testid='database-ai-turn-tools']")?.textContent).toContain("78→300");
   });
 
   it("검토가 걸려 있는 동안에는 새 요청을 보내지 않는다", async () => {

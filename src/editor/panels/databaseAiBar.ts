@@ -29,6 +29,7 @@ import {
   type AiBridgeStatus,
   type AiBridgeTurnResult,
 } from "@/editor/aiAssistantBridge";
+import type { RunOutcome } from "@/ai/runOutcome";
 import { pendingHistoryLabels, undoMapEdit } from "@/editor/mapEditHistory";
 import { databaseTabLabel, TAB_GROUPS, type DatabaseTab } from "@/editor/panels/database";
 import { describeDatabaseChanges, renderDatabaseChangeCards } from "@/editor/panels/databaseAiChangeCards";
@@ -58,9 +59,28 @@ export interface DatabaseAiTurnSummary {
   readonly statusText: string;
   /** 쓰기 툴 요약(실패 포함, 「실패 — 」 접두어). */
   readonly tools: readonly string[];
-  /** 실제로 적용된 쓰기 툴 수. 되돌리기 버튼의 근거. */
+  /** 이 턴이 **실행한** 쓰기 툴 수(실패 제외). 적용됐다는 뜻이 아니다 — 그건 `applied`. */
   readonly changed: number;
   readonly answer: string;
+  /**
+   * 프로젝트에 실제로 반영됐는가. 되돌리기 버튼의 유일한 근거.
+   * 검토 게이트(deferApply) 턴은 쓰기 툴이 돌았어도 턴 종료 시점에는 언제나 false 다 — 적용은 「적용」 단추가 한다.
+   * 실측(2026-09-15 라이브): 도구 3개가 돌고 턴이 max-tool-calls 로 끝나 초안이 검수 미완료로 버려졌는데,
+   * 예전 판정(쓰기 툴 개수 > 0 → "반영됐어요")은 저장소가 그대로인데 반영됐다고 말했다.
+   */
+  readonly applied: boolean;
+}
+
+/** 변경이 담긴 초안이 왜 검토로 넘어오지 않았는지 — 세션이 준 결과로 사람 말 한 줄. */
+function droppedDraftReason(outcome: RunOutcome | null | undefined, lastStatus: string | undefined): string {
+  switch (outcome?.execution) {
+    case "budget-exhausted": return "툴 호출 예산이 다 떨어져서 검수까지 가지 못했어요";
+    case "awaiting-user": return "AI 가 묻는 것이 있어요 — 채팅 패널에서 답해 주세요";
+    case "cancelled": return "중단됐어요";
+    case "blocked":
+    case "failed": return lastStatus?.trim() || "세션이 초안을 승인하지 않았어요";
+    default: return lastStatus?.trim() || "세션이 초안을 넘기지 않았어요";
+  }
 }
 
 export interface DatabaseAiBarDeps {
@@ -167,7 +187,16 @@ function plainAnswer(text: string): string {
 /** 감사 항목(브리지 audit)을 단계·도구 요약·마지막 답변으로 접는다. */
 export function summarizeDatabaseAiTurn(
   entries: readonly AiBridgeAuditEntry[],
-  options: { readonly busy: boolean; readonly error?: string; readonly pending?: { readonly summary: string } },
+  options: {
+    readonly busy: boolean;
+    readonly error?: string;
+    readonly pending?: { readonly summary: string };
+    /**
+     * 검토 게이트로 보낸 턴. 초안이 오지 않았으면 쓰기 툴이 돌았어도 **적용되지 않은 것**이다.
+     * 사유는 세션 결과(runOutcome)에서 가져온다. 이 필드가 없는 호출자(MCP·구 경로)는 즉시 적용 세계다.
+     */
+    readonly deferred?: { readonly outcome: RunOutcome | null | undefined; readonly lastStatus?: string };
+  },
 ): DatabaseAiTurnSummary {
   // 읽기 툴(도구 탐색·조회)은 화면을 바꾸지 않으므로 「바꾼 것」에서 뺀다. 실패한 호출은
   // 보여 주되 세지 않는다 — 「바꾼 것 3개」라 해 놓고 하나는 실패였으면 숫자가 거짓이다.
@@ -186,12 +215,12 @@ export function summarizeDatabaseAiTurn(
     }
   }
   if (options.error) {
-    return { phase: "error", statusText: `실패 — ${options.error}`, tools, changed, answer };
+    return { phase: "error", statusText: `실패 — ${options.error}`, tools, changed, answer, applied: false };
   }
   if (options.busy) {
     return changed > 0
-      ? { phase: "working", statusText: `적용 준비 중 · 바꾼 것 ${changed}개`, tools, changed, answer }
-      : { phase: "thinking", statusText: "생각하는 중…", tools, changed, answer };
+      ? { phase: "working", statusText: `초안 작성 중 · 바꾼 것 ${changed}개`, tools, changed, answer, applied: false }
+      : { phase: "thinking", statusText: "생각하는 중…", tools, changed, answer, applied: false };
   }
   // 검토 대기: 아직 프로젝트는 그대로다. 이 문장이 카드 목록 위에서 「무엇이 걸려 있나」를 말한다.
   if (options.pending) {
@@ -201,13 +230,34 @@ export function summarizeDatabaseAiTurn(
       tools,
       changed,
       answer,
+      applied: false,
     };
   }
+  // 검토 게이트 턴인데 초안이 안 왔다: 세션이 즉시 적용하지 않았으므로(deferApply) 프로젝트는 그대로다.
+  // 쓰기 툴이 돌았다고 "반영됐다"고 보고하는 것이 이 표면이 없애려던 바로 그 거짓말이다(실측 2026-09-15).
+  if (options.deferred) {
+    if (changed > 0) {
+      return {
+        phase: "error",
+        statusText: `검토할 초안이 넘어오지 않았어요 — ${droppedDraftReason(options.deferred.outcome, options.deferred.lastStatus)}. 프로젝트는 그대로입니다`,
+        tools, changed, answer, applied: false,
+      };
+    }
+    if (tools.length > 0) {
+      return { phase: "done", statusText: "끝났지만 적용할 변경이 없어요 — 아래 실패 내용을 확인하세요", tools, changed, answer, applied: false };
+    }
+    return {
+      phase: "done",
+      statusText: answer ? "답변했어요 · 데이터 변경 없음" : "끝났지만 답이 비어 있어요 — 채팅 패널에서 확인하세요",
+      tools, changed, answer, applied: false,
+    };
+  }
+  // 즉시 적용 세계(deferApply 없는 호출자): 쓰기 툴이 성공했으면 그 자리에서 적용된 것이다.
   if (changed > 0) {
-    return { phase: "done", statusText: `완료 · 바꾼 것 ${changed}개 — 화면에 바로 반영됐어요`, tools, changed, answer };
+    return { phase: "done", statusText: `완료 · 바꾼 것 ${changed}개 — 화면에 바로 반영됐어요`, tools, changed, answer, applied: true };
   }
   if (tools.length > 0) {
-    return { phase: "done", statusText: "끝났지만 적용된 변경은 없어요 — 아래 실패 내용을 확인하세요", tools, changed, answer };
+    return { phase: "done", statusText: "끝났지만 적용된 변경은 없어요 — 아래 실패 내용을 확인하세요", tools, changed, answer, applied: false };
   }
   return {
     phase: "done",
@@ -215,6 +265,7 @@ export function summarizeDatabaseAiTurn(
     tools,
     changed,
     answer,
+    applied: false,
   };
 }
 
@@ -515,8 +566,8 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
       const labelHost = applyButton.querySelector(".database-ai-turn-action-label");
       if (labelHost) labelHost.textContent = pendingChanges.length > 0 ? `적용 ${pendingChanges.length}건` : "적용";
     }
-    // 되돌리기는 **이미 적용된** 변경에만 붙는다. 검토 중에는 되돌릴 것이 없다.
-    const label = finished && summary.changed > 0 && !reviewing ? undoLabel() : null;
+    // 되돌리기는 **이미 적용된** 변경에만 붙는다 — 쓰기 툴이 돌았다는 것과 적용됐다는 것은 다른 사실이다.
+    const label = finished && summary.applied ? undoLabel() : null;
     undoButton.hidden = !label;
     if (label) {
       const labelHost = undoButton.querySelector(".database-ai-turn-action-label");
@@ -590,6 +641,8 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
           busy: false,
           ...(result.ok ? {} : { error: result.error || "알 수 없는 오류" }),
           ...(pendingSummary !== null ? { pending: { summary: pendingSummary } } : {}),
+          // 이 표면은 항상 deferApply 로 보낸다 — 초안이 없으믄 적용도 없다.
+          deferred: { outcome: result.runOutcome, lastStatus: result.status.lastStatus },
         }));
         setBusy(false);
       })
