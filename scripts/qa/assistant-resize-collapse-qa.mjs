@@ -6,13 +6,16 @@
  * 한 번씩 돌았지만, 도크 축이 2026-08-31 에 사라져 표면은 입력줄 캡슐 하나다.
  *
  * Usage:
- *   RPG_ZZU_URL=http://127.0.0.1:9823 node scripts/qa/assistant-resize-collapse-qa.mjs --label before
+ *   OPRN_URL=http://127.0.0.1:9823 node scripts/qa/assistant-resize-collapse-qa.mjs --label before
  */
 import { chromium } from "playwright";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { applyLegacyEnvAliases } from "../lib/oprnEnv.mjs";
 
-const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9823";
+applyLegacyEnvAliases();
+
+const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9823";
 const label = (() => {
   const i = process.argv.indexOf("--label");
   return i > 0 ? process.argv[i + 1] : "run";

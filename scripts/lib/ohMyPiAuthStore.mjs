@@ -1,12 +1,15 @@
 // Disk auth for oh-my-pi providers. Tokens/keys stay on the machine, never in the browser.
-// Path: $RPG_ZZU_OH_MY_PI_AUTH_PATH or ~/.rpg-zzu/oh-my-pi-auth.json
+// Path: $OPRN_OH_MY_PI_AUTH_PATH or ~/.rpg-zzu/oh-my-pi-auth.json
 
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { homedir } from "node:os";
+import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 export function defaultOhMyPiAuthPath() {
-  return process.env.RPG_ZZU_OH_MY_PI_AUTH_PATH
+  return process.env.OPRN_OH_MY_PI_AUTH_PATH
     || join(homedir(), ".rpg-zzu", "oh-my-pi-auth.json");
 }
 

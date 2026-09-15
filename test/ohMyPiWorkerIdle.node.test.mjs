@@ -19,7 +19,7 @@ describe("oh-my-pi 워커는 유휴 연결을 끊지 않는다", () => {
   after(() => child?.kill());
 
   it(`${IDLE_SECONDS}초 유휴 뒤에도 같은 연결로 요청을 마칠 수 있다`, { timeout: 60_000 }, async () => {
-    child = spawn("bun", [WORKER], { env: { ...process.env, RPG_ZZU_OH_MY_PI_WORKER_PORT: "0" }, stdio: ["ignore", "pipe", "pipe"] });
+    child = spawn("bun", [WORKER], { env: { ...process.env, OPRN_OH_MY_PI_WORKER_PORT: "0" }, stdio: ["ignore", "pipe", "pipe"] });
     const port = await new Promise((resolve, reject) => {
       child.stdout.on("data", (chunk) => { const match = String(chunk).match(/READY (\d+)/u); if (match) resolve(Number(match[1])); });
       child.on("exit", (code) => reject(new Error(`worker exited (${code})`)));

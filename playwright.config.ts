@@ -1,4 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
+import { applyLegacyEnvAliases } from "./scripts/lib/oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 const devServerPort = process.env.DEV_SERVER_PORT ?? "9173";
 const devServerUrl = `http://127.0.0.1:${devServerPort}`;

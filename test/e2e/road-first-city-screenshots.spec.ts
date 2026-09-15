@@ -5,12 +5,12 @@ import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 
 declare const process: {
   readonly env: {
-    readonly RPG_ZZU_EVIDENCE_URL?: string;
+    readonly OPRN_EVIDENCE_URL?: string;
   };
 };
 
 const EVIDENCE_DIR = "output/evidence/chaotic-city";
-const APP_URL = process.env.RPG_ZZU_EVIDENCE_URL ?? "/";
+const APP_URL = process.env.OPRN_EVIDENCE_URL ?? "/";
 
 test.use({ serviceWorkers: "block" });
 

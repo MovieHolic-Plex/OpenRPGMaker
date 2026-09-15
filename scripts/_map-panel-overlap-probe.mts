@@ -3,8 +3,11 @@
  * 사용: npx tsx scripts/_map-panel-overlap-probe.mts
  */
 import { chromium } from "@playwright/test";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9977";
+applyLegacyEnvAliases();
+
+const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9977";
 
 async function run(): Promise<void> {
   const browser = await chromium.launch({ args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu"] });

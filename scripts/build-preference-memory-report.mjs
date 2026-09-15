@@ -407,7 +407,7 @@ ${rows}
 npm run dev -- --host 127.0.0.1 --port 9761 --strictPort
 
 <span class="dim"># 2) 증거 캡처 — 스크린샷 10장 + 요청 기록</span>
-RPG_ZZU_URL=http://127.0.0.1:9761 node scripts/screenshot-preference-memory.mjs
+OPRN_URL=http://127.0.0.1:9761 node scripts/screenshot-preference-memory.mjs
 
 <span class="dim"># 3) 이 보고서 다시 굽기</span>
 node scripts/build-preference-memory-report.mjs

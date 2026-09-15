@@ -17,6 +17,9 @@ import { readRequestJson, writeCompanionResult } from "./scripts/lib/companionHt
 import { devPlayerBundlesPlugin } from "./scripts/lib/devPlayerBundles";
 import { audioDeliveryPlugin } from "./scripts/lib/audioDelivery";
 import { bgmInstallPlugin } from "./scripts/lib/bgmInstall";
+import { applyLegacyEnvAliases } from "./scripts/lib/oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 const DEFAULT_DEV_SERVER_PORT = 9999;
 

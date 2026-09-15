@@ -2,7 +2,7 @@
  * 진단 전용(`_` 접두): 실제 모델 턴 뒤 새로 생긴 실내 맵의 **설계 실체**를 덤프한다 —
  * 맵 크기, 하네스 플랜의 방(id·크기·테마), 개념 오버레이의 방별 물건, seed, 타일 해시.
  * 「모델이 템플릿을 그대로 복사했나, 설계를 고쳤나」를 인자 없이도 맵에서 읽는다.
- *   AUDIT_OUT=/tmp/x.json AUDIT_PROMPT='여관 지어줘' RPG_ZZU_OH_MY_PI_AUTH_PATH=... DEV_SERVER_PORT=<port> E2E_RETRIES=0 \
+ *   AUDIT_OUT=/tmp/x.json AUDIT_PROMPT='여관 지어줘' OPRN_OH_MY_PI_AUTH_PATH=... DEV_SERVER_PORT=<port> E2E_RETRIES=0 \
  *   npx playwright test test/e2e/_concept-plan-verify.spec.ts --project=chromium --workers=1
  */
 import { expect, test, type Page } from "@playwright/test";

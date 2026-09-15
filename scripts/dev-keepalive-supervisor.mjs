@@ -16,6 +16,9 @@ import {
 } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const LOG_DIR = join(ROOT, "output", "dev");
@@ -24,7 +27,7 @@ const OUT_PATH = join(LOG_DIR, "dev-supervisor.out.log");
 const ERR_PATH = join(LOG_DIR, "dev-supervisor.err.log");
 const PID_PATH = join(LOG_DIR, "dev-supervisor.pid");
 const KEEP_SCRIPT = join(ROOT, "scripts", "dev-keepalive.mjs");
-const RESTART_MS = Number(process.env.RPGZZU_SUP_RESTART_MS || 2000);
+const RESTART_MS = Number(process.env.OPRN_SUP_RESTART_MS || 2000);
 const WANT_DETACH = process.argv.includes("--detach");
 
 mkdirSync(LOG_DIR, { recursive: true });

@@ -7,7 +7,7 @@ import {
   generateProviderImage,
 } from "../scripts/lib/ohMyPiImageRuntime.ts";
 
-const originalStub = process.env.RPG_ZZU_OH_MY_PI_TEST_STUB;
+const originalStub = process.env.OPRN_OH_MY_PI_TEST_STUB;
 const apiKey = JSON.stringify({ token: "test-image-access", projectId: "test-image-project" });
 const base64 = "aW1hZ2U=";
 
@@ -35,11 +35,11 @@ function imageFetch(requests: unknown[]): typeof fetch {
 }
 
 describe("image model resolution", () => {
-  beforeEach(() => { delete process.env.RPG_ZZU_OH_MY_PI_TEST_STUB; });
+  beforeEach(() => { delete process.env.OPRN_OH_MY_PI_TEST_STUB; });
   afterEach(() => {
     mock.restore();
-    if (originalStub === undefined) delete process.env.RPG_ZZU_OH_MY_PI_TEST_STUB;
-    else process.env.RPG_ZZU_OH_MY_PI_TEST_STUB = originalStub;
+    if (originalStub === undefined) delete process.env.OPRN_OH_MY_PI_TEST_STUB;
+    else process.env.OPRN_OH_MY_PI_TEST_STUB = originalStub;
   });
 
   test("rejects an unavailable explicit model before completion or transport", async () => {
@@ -91,7 +91,7 @@ describe("image model resolution", () => {
   });
 
   test("keeps stub selection independent of the catalog and completion", async () => {
-    process.env.RPG_ZZU_OH_MY_PI_TEST_STUB = "1";
+    process.env.OPRN_OH_MY_PI_TEST_STUB = "1";
     const completion = spyOn(piAi, "complete");
     const lookup = spyOn(catalog, "getBundledModel");
     const requests: unknown[] = [];

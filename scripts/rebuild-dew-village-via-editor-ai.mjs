@@ -12,8 +12,11 @@ import { chromium } from "playwright";
 import { readFileSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9173";
+applyLegacyEnvAliases();
+
+const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9173";
 const PROJECT_ID = process.env.DEW_PROJECT_ID ?? "rpg-zzu-dew-village";
 const EVIDENCE = "output/evidence/dew-village-ai-rebuild";
 const TURN_TIMEOUT_MS = Number(process.env.AI_TURN_TIMEOUT_MS ?? 420_000);

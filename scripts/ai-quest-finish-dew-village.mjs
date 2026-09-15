@@ -5,8 +5,11 @@
 import { chromium } from "playwright";
 import { readFileSync, writeFileSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9173";
+applyLegacyEnvAliases();
+
+const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9173";
 const PROJECT_ID = "rpg-zzu-dew-village";
 const EVIDENCE = "output/evidence/dew-village-ai-rebuild";
 

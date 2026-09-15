@@ -7,8 +7,8 @@ import { after, describe, it } from "node:test";
 // 실제 제공자 엔드포인트를 친다. stub 모드를 끄고, 저장소 경로는 import 보다 먼저 정한다
 // (aiAuthRuntime 이 로드 시점에 저장소를 만든다).
 const dir = mkdtempSync(join(tmpdir(), "rpgzzu-auth-live-"));
-delete process.env.RPG_ZZU_OH_MY_PI_TEST_STUB;
-process.env.RPG_ZZU_OH_MY_PI_AUTH_PATH = join(dir, "auth.json");
+delete process.env.OPRN_OH_MY_PI_TEST_STUB;
+process.env.OPRN_OH_MY_PI_AUTH_PATH = join(dir, "auth.json");
 
 const { createOhMyPiAdapters, stopOhMyPiWorker } = await import("../scripts/lib/ohMyPiPiAi.mjs");
 const { cancelProviderLogin } = await import("../scripts/lib/aiAuthRuntime.ts");

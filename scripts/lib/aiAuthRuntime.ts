@@ -36,6 +36,9 @@ import {
 import { getOhMyPiProvider, OH_MY_PI_PROVIDERS } from "../../src/ai/ohMyPiProviders.ts";
 import { createOhMyPiAuthStore, defaultOhMyPiAuthPath } from "./ohMyPiAuthStore.mjs";
 import { startOAuthCallbackServer } from "./oauth/loopbackCallbackServer.mjs";
+import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 const store = createOhMyPiAuthStore(defaultOhMyPiAuthPath());
 
@@ -43,7 +46,7 @@ const store = createOhMyPiAuthStore(defaultOhMyPiAuthPath());
 const PROJECT_SCOPED_PROVIDERS = new Set<string>([ANTIGRAVITY_PROVIDER_ID]);
 
 function testStub(): boolean {
-  return process.env.RPG_ZZU_OH_MY_PI_TEST_STUB === "1";
+  return process.env.OPRN_OH_MY_PI_TEST_STUB === "1";
 }
 
 function isKnown(provider: string): provider is PortedOAuthProviderId {

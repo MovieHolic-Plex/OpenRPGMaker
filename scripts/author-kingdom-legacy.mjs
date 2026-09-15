@@ -6,8 +6,11 @@
 import { chromium } from "playwright";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:4173";
+applyLegacyEnvAliases();
+
+const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:4173";
 const OUT = "output/evidence/kingdom-legacy";
 const TITLE = "왕국의 유산";
 const MAP_NAME = "왕국 광장";

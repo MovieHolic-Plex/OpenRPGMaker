@@ -1,6 +1,9 @@
 import { complete } from "@oh-my-pi/pi-ai";
 import { getBundledModel } from "@oh-my-pi/pi-catalog";
 import { ImageReferenceError, parseImageReferences } from "../../src/ai/imageReferences";
+import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 export const IMAGE_PROVIDER_ID = "google-antigravity";
 export const DEFAULT_IMAGE_MODEL = "gemini-3.1-flash-image";
@@ -29,7 +32,7 @@ function statusError(message: string, status: number): Error & { status?: number
 }
 
 function testStub(): boolean {
-  return process.env.RPG_ZZU_OH_MY_PI_TEST_STUB === "1";
+  return process.env.OPRN_OH_MY_PI_TEST_STUB === "1";
 }
 
 function collectInlineImages(node: unknown, out: { mimeType: string; base64: string }[]): void {

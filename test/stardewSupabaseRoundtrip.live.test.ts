@@ -12,12 +12,12 @@ function envConfig(): SupabaseProjectConfig {
   if (!url || !anonKey) throw new Error("Supabase env is missing");
   return {
     anonKey,
-    projectId: process.env.RPG_ZZU_STARDEW_PROJECT_ID ?? "rpg-zzu-stardew-demo",
+    projectId: process.env.OPRN_STARDEW_PROJECT_ID ?? "rpg-zzu-stardew-demo",
     url,
   };
 }
 
-const describeLive = process.env.RPG_ZZU_LIVE_SUPABASE_ROUNDTRIP === "1" ? describe : describe.skip;
+const describeLive = process.env.OPRN_LIVE_SUPABASE_ROUNDTRIP === "1" ? describe : describe.skip;
 
 describeLive("Stardew demo: Supabase 저장·재로드", () => {
   it("생활 콘텐츠의 전체 계약을 원격 왕복 뒤에도 보존한다", async () => {

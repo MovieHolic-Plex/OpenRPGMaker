@@ -3,7 +3,10 @@ import path from 'node:path';
 import assert from 'node:assert/strict';
 import {pathToFileURL} from 'node:url';
 import {chromium} from 'playwright';
-const root=process.env.RPG_ZZU_QA_SOURCE_ROOT??process.cwd();
+import { applyLegacyEnvAliases } from '../lib/oprnEnv.mjs';
+
+applyLegacyEnvAliases();
+const root=process.env.OPRN_QA_SOURCE_ROOT??process.cwd();
 const {runRuntimeQa,startPlayerQaServer}=await import(pathToFileURL(path.join(root,'scripts/lib/runtimeQaRun.mjs')));
 const out=path.resolve('output/evidence/emerald-wide'),runtimeOut=path.resolve('verify-shots/runtime-qa/emerald-wide');
 const walks=JSON.parse(fs.readFileSync(`${out}/walks.json`,'utf8'));

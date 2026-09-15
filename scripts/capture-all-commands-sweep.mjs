@@ -1,13 +1,16 @@
 /**
  * 전수 캡처: 이벤트 명령어 피커 탭 1~4 + 모든 명령어의 편집 다이얼로그.
  * playwright 실브라우저로 직접 눌러서 찍는다.
- * Usage: RPG_ZZU_URL=http://127.0.0.1:9877 node scripts/capture-all-commands-sweep.mjs
+ * Usage: OPRN_URL=http://127.0.0.1:9877 node scripts/capture-all-commands-sweep.mjs
  */
 import { chromium } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9877";
+applyLegacyEnvAliases();
+
+const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9877";
 const OUT = path.resolve("output/evidence/all-commands-sweep");
 fs.mkdirSync(OUT, { recursive: true });
 

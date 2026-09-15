@@ -7,8 +7,8 @@ import { after, describe, it } from "node:test";
 // 저장소는 aiAuthRuntime **모듈 로드 시점**에 만들어진다. 그래서 경로 env 는 import 보다 먼저
 // 정해져야 한다 — static import 는 모듈 본문보다 먼저 평가되므로 동적 import 를 쓴다.
 const dir = mkdtempSync(join(tmpdir(), "rpgzzu-auth-w-"));
-process.env.RPG_ZZU_OH_MY_PI_AUTH_PATH = join(dir, "auth.json");
-process.env.RPG_ZZU_OH_MY_PI_TEST_STUB = "1";
+process.env.OPRN_OH_MY_PI_AUTH_PATH = join(dir, "auth.json");
+process.env.OPRN_OH_MY_PI_TEST_STUB = "1";
 
 const { createOhMyPiAdapters, stopOhMyPiWorker } = await import("../scripts/lib/ohMyPiPiAi.mjs");
 
@@ -18,7 +18,7 @@ const CODEX = "openai-codex";
 describe("인증은 Node, 완성만 Bun 워커", () => {
   after(() => {
     stopOhMyPiWorker();
-    delete process.env.RPG_ZZU_OH_MY_PI_TEST_STUB;
+    delete process.env.OPRN_OH_MY_PI_TEST_STUB;
     rmSync(dir, { recursive: true, force: true });
   });
 

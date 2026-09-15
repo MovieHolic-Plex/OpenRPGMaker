@@ -14,9 +14,12 @@
 import { chromium } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
+
+applyLegacyEnvAliases();
 
 const PORT = process.env.DEV_SERVER_PORT ?? "9841";
-const BASE = process.env.RPG_ZZU_URL ?? `http://127.0.0.1:${PORT}/`;
+const BASE = process.env.OPRN_URL ?? `http://127.0.0.1:${PORT}/`;
 const OUT = path.resolve("output/evidence/header-unify");
 fs.mkdirSync(OUT, { recursive: true });
 

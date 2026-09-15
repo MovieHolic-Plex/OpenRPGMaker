@@ -4,13 +4,16 @@
  * 실제 편집기 셸에서 명령 편집 다이얼로그를 열고, 스크린샷 뿐 아니라 **커밋된 명령 필드**를
  * 함께 기록한다. 그림만으로는 「눌렀는데 저장은 안 됐다」를 구별할 수 없다.
  *
- * Usage: RPG_ZZU_URL=http://127.0.0.1:9851 node scripts/capture-coordinate-move-form.mjs
+ * Usage: OPRN_URL=http://127.0.0.1:9851 node scripts/capture-coordinate-move-form.mjs
  */
 import { chromium } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
+import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
-const BASE = process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9851";
+applyLegacyEnvAliases();
+
+const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9851";
 const OUT = path.resolve("verify-shots/oprn-013");
 fs.mkdirSync(OUT, { recursive: true });
 

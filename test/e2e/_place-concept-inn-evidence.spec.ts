@@ -8,7 +8,7 @@
  *  4. 칩이 런타임에서 작동한다 — 테스트 플레이로 침대 앞에서 조사하면 여관(inn) 창이 뜬다.
  *
  * 실행(인증 파일 경로 필수 — 에이전트 셸 HOME 이 다를 수 있다):
- *   RPG_ZZU_OH_MY_PI_AUTH_PATH=/home/main/.rpg-zzu/oh-my-pi-auth.json DEV_SERVER_PORT=9877 \
+ *   OPRN_OH_MY_PI_AUTH_PATH=/home/main/.rpg-zzu/oh-my-pi-auth.json DEV_SERVER_PORT=9877 \
  *   npx playwright test test/e2e/_place-concept-inn-evidence.spec.ts --project=chromium --workers=1
  * 산출: reports/place-concept-inn/e2e/*.png + receipt.json (보고서 생성기가 읽는다).
  */

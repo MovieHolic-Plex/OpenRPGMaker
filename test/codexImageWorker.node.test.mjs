@@ -32,7 +32,7 @@ describe("Codex native image real worker dispatch and transport", () => {
     const listening = once(server, "listening"); server.listen(0, "127.0.0.1"); await listening;
     worker = spawn("bun", ["--preload", "./test/codexImageWorker.preload.ts", "./scripts/oh-my-pi-worker.ts"], {
       cwd: new URL("..", import.meta.url), stdio: ["ignore", "pipe", "pipe"],
-      env: { ...process.env, RPG_ZZU_OH_MY_PI_WORKER_PORT: "0", RPG_ZZU_OH_MY_PI_TEST_STUB: "0", CODEX_IMAGE_TEST_UPSTREAM: "http://127.0.0.1:" + server.address().port },
+      env: { ...process.env, OPRN_OH_MY_PI_WORKER_PORT: "0", OPRN_OH_MY_PI_TEST_STUB: "0", CODEX_IMAGE_TEST_UPSTREAM: "http://127.0.0.1:" + server.address().port },
     });
     let stderr = ""; worker.stderr.on("data", data => { stderr += data; });
     workerPort = await new Promise((resolve, reject) => {
