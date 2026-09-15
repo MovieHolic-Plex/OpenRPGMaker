@@ -15,6 +15,8 @@ const h = vi.hoisted(() => ({
   boardStates: [] as { phase?: string; applied?: string | null }[],
   spills: [] as { mapIds: readonly string[]; keys: readonly string[] }[],
   bubbles: [] as string[],
+  // 검토 액션 버스 — runPiCommand 가 「검토 대기」 게시 직전에 등록하고 적용·버리기·새 실행에서 null 로 지운다.
+  reviewActions: [] as ({ apply: () => void; discard: () => void; openReport?: () => void } | null)[],
   project: {
     maps: { map_a: { id: "map_a", name: "A", width: 4, height: 4 } },
   } as unknown,
@@ -57,8 +59,12 @@ vi.mock("@/editor/panels/aiChangePreview", () => ({
   changeChipsWithAreas: () => [],
   // 보드 검토 카드는 «적용 전» 카드 요소를 받는다 — 이 테스트는 그 전달 사실만 본다.
   renderChangePreviewCard: (input: Record<string, unknown>) => ({ nodeType: 1, dataset: { state: input.state } }) as unknown as HTMLElement,
+  openWideChangeViewer: () => {},
 }));
-vi.mock("@/ai/piAgent/teamActivity", () => ({ publishTeamActivity: () => {} }));
+vi.mock("@/ai/piAgent/teamActivity", () => ({
+  publishTeamActivity: () => {},
+  setTeamReviewActions: (actions: { apply: () => void; discard: () => void; openReport?: () => void } | null) => { h.reviewActions.push(actions); },
+}));
 vi.mock("@/ai/piAgent/teamSpecStore", () => ({ loadTeamSpec: () => ({ version: 1, orchestratorNotes: "", members: [] }) }));
 vi.mock("@/ai/piAgent/mapBundle", () => ({
   mergeMapBundles: (_base: unknown, bundles: { project: unknown }[]) => ({
@@ -95,7 +101,7 @@ const harness = () => {
 beforeEach(() => {
   h.planError = false;
   h.requests.length = 0; h.results.length = 0; h.bubbles.length = 0;
-  h.assistantTexts.length = 0; h.boardStates.length = 0;
+  h.assistantTexts.length = 0; h.boardStates.length = 0; h.reviewActions.length = 0;
   h.project = { maps: { map_a: { id: "map_a", name: "A", width: 4, height: 4 } } };
   h.piApply = "auto"; h.harmony = true; h.harmonyError = false;
 });
@@ -148,6 +154,17 @@ describe("Pi 경로 실행 결과 4축", () => {
     // 적용 전에도 비교 카드가 검토 자리에 선다 — 없으면 사용자는 빈 카드로 결정해야 했다.
     const review = h.outcomes.at(-1) as { preview?: { dataset?: { state?: string } } } | null;
     expect(review?.preview?.dataset?.state).toBe("proposed");
+
+    // 「작업」 탭 스트립이 누르는 버스 액션은 같은 실행에서 등록된다 — 시작 시 null 로 지우고, 검토 대기 직전에 apply·discard·openReport 를 건다.
+    expect(h.reviewActions[0]).toBeNull();
+    const bus = h.reviewActions.at(-1)!;
+    expect(typeof bus?.apply).toBe("function");
+    expect(typeof bus?.discard).toBe("function");
+    expect(typeof bus?.openReport).toBe("function");
+    // 버스의 버리기는 카드의 버리기와 같은 클로저다 — 결과가 no-change 로 갈아엎히고 버스 슬롯도 비워진다.
+    bus!.discard();
+    expect(outcomeCalls.at(-1)).toMatchObject({ delivery: "no-change" });
+    expect(h.reviewActions.at(-1)).toBeNull();
   });
 
   it("바뀐 것이 없으면: response-final + no-change", async () => {

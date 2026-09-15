@@ -52,6 +52,9 @@ import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai
 import { store } from "@/project/store";
 import { parsePiCommand, plainPiCommand, runPiCommand, type ParsedPiCommand, type PiChangeReceipt } from "./aiPiAgentCommand";
 import { createTeamPanel } from "./aiTeamPanel";
+import { createTeamWorkPane } from "./aiTeamWorkPane";
+import { setTeamStopHandler, subscribeTeamActivity } from "@/ai/piAgent/teamActivity";
+import type { TeamBoardPhase } from "@/ai/piAgent/teamBoardState";
 import { DEFAULT_PI_TEAM, resolvePiRunPlan, type PiRunPlan } from "@/ai/piAgent/executionRoute";
 import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
@@ -1882,6 +1885,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     abortNoticeShown = false;
     runSurface.turnBusy = true;
     refreshAbortButton();
+    // 팀 데크의 「중지」 는 이 컨트롤러를 모른다 — 버스에 같은 abort 경로를 걸어 둔다(두 버튼, 한 동작).
+    setTeamStopHandler(() => abortActiveTurn());
     // 유휴 판정을 갱신해야 로그 카드가 펼쳐진다 — 이 경로는 세션 턴 러너를 거치지 않아 스스로 부른다.
     syncGlassIdle();
     try {
@@ -1903,6 +1908,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     } finally {
       // 다음 턴이 이번 4축을 물고 가지 않게 한다 — 세션 경로 beginWorkPlanTurn 의 슬롯 클리어와 같은 수명.
       piRunOutcome = null;
+      setTeamStopHandler(null);
       if (activeAbortController === piRunController) activeAbortController = null;
       piRunController = null;
       runSurface.turnBusy = false;
@@ -2194,6 +2200,34 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     attrs: { type: "button", title: "AI 패널 접기", "aria-label": "AI 패널 접기", "aria-expanded": String(!collapsed) },
     dataset: { testid: "ai-collapse" },
   }) as HTMLButtonElement;
+  // 「대화|작업」 탭 — 실행이 있을 때만 보이고, 작업 탭은 팀원 열+과정 열(aiTeamWorkPane)을 담는다.
+  // 동작 배선(setWorkTab 본체·버스 구독)은 패널 생성 뒤에 붙는다 — body·panel 이 그때 생긴다.
+  let setWorkTab: (next: "chat" | "work") => void = () => {};
+  const workTabBadge = el("span", { class: "ai-work-tab-badge", attrs: { hidden: "" }, dataset: { testid: "ai-work-tab-badge" } });
+  const chatTabButton = el("button", {
+    class: "ai-work-tab",
+    attrs: { type: "button", role: "tab", "aria-selected": "true" },
+    dataset: { testid: "ai-work-tab-chat" },
+    children: [el("span", { text: "대화" }), workTabBadge],
+    on: { click: () => setWorkTab("chat") },
+  }) as HTMLButtonElement;
+  const workTabCount = el("span", { class: "ai-work-tab-count" });
+  const workTabLive = el("span", { class: "ai-work-tab-live", attrs: { "aria-hidden": "true" }, dataset: { state: "idle" } });
+  const workTabButton = el("button", {
+    class: "ai-work-tab",
+    attrs: { type: "button", role: "tab", "aria-selected": "false" },
+    dataset: { testid: "ai-work-tab-work" },
+    children: [el("span", { text: "작업" }), workTabCount, workTabLive],
+    on: { click: () => setWorkTab("work") },
+  }) as HTMLButtonElement;
+  const workTabs = el("div", {
+    class: "ai-work-tabs",
+    attrs: { role: "tablist", "aria-label": "조수 보기", hidden: "" },
+    dataset: { testid: "ai-work-tabs" },
+    children: [chatTabButton, workTabButton],
+  });
+  const workPane = createTeamWorkPane();
+  workPane.root.hidden = true;
   const collapsedRestore = createDirectorRestoreButton();
   // 접힘 상태에서도 되돌리기가 남아야 한다 — 컴포저 행은 접히면 display:none 이다.
   // 클릭을 컴포저 버튼으로 위임해 동작·배지·말풍선이 한 경로만 지나게 한다.
@@ -2722,7 +2756,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const deck = el("div", {
     class: "ai-deck",
     dataset: { testid: "ai-deck" },
-    children: [rail.root, teamPanel.root, body, outcomeSlot, commandBar],
+    children: [rail.root, teamPanel.root, workTabs, body, workPane.root, outcomeSlot, commandBar],
   });
   deckRoot = deck;
 
@@ -2740,6 +2774,45 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   teamPanel.onToggle((open) => panel.classList.toggle("is-team-open", open));
   panelRoot = panel;
+  // 「대화|작업」 탭 본체 — 작업 탭이면 채팅 본문을 숨기고 작업 페인을 보인다. 컴포저는 항상 남는다.
+  let workTab: "chat" | "work" = "chat";
+  setWorkTab = (next) => {
+    workTab = next;
+    chatTabButton.setAttribute("aria-selected", String(next === "chat"));
+    workTabButton.setAttribute("aria-selected", String(next === "work"));
+    const work = next === "work" && !workTabs.hidden;
+    body.hidden = work;
+    workPane.root.hidden = !work;
+    panel.classList.toggle("is-work-tab", work);
+    if (next === "chat") { workTabBadge.hidden = true; workTabBadge.textContent = ""; }
+  };
+  const runningTeamPhase = (phase: TeamBoardPhase | null): boolean =>
+    phase === "준비" || phase === "실행 중" || phase === "적용 중";
+  let lastTeamPhase: TeamBoardPhase | null = null;
+  const unsubscribeTeamActivityTabs = subscribeTeamActivity((state) => {
+    workPane.update(state);
+    workTabs.hidden = state === null;
+    workTabCount.textContent = state && state.agents.length > 0 ? String(state.agents.length) : "";
+    const phase = state?.phase ?? null;
+    workTabLive.dataset.state = !state ? "idle"
+      : runningTeamPhase(phase) ? "run"
+      : phase === "검토 대기" ? "attention"
+      : phase === "실패" ? "error"
+      : phase === "적용됨" || phase === "완료" ? "done"
+      : "idle";
+    const wasRunning = runningTeamPhase(lastTeamPhase);
+    const isRunning = runningTeamPhase(phase);
+    // 새 실행 시작 → 작업 탭 자동 전환. 실행 종료(답 도착) 시 작업 탭을 보고 있었으면 대화 탭에 배지.
+    // 스튜디오에서는 데크 탭이 숨어 있으므로 자동 전환·배지를 만들지 않는다(스튜디오 덱이 같은 상태를 그린다).
+    if (isRunning && !wasRunning && !studio) setWorkTab("work");
+    else if (state !== null && wasRunning && !isRunning && workTab === "work" && !studio) {
+      workTabBadge.textContent = "1";
+      workTabBadge.hidden = false;
+    }
+    if (state === null && workTab === "work") setWorkTab("chat");
+    lastTeamPhase = phase;
+    setWorkTab(workTab);
+  });
   // 오버레이가 컴포저를 덮지 않도록 "바 + 열린 팝오버"의 최상단까지를 실측해 CSS 변수로 흘린다.
   // (bottom 76px 고정은 칩 행 + 여러 줄 입력으로 커진 바를 덮었다 — H01 실측.)
   // 하단 여백(--ai-command-bar-inset)도 같은 실측에서 나온다 — 144px 하드코딩은 실제
@@ -3015,6 +3088,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         applyCollapsed();
       }
       panel.classList.add("is-studio");
+      setWorkTab("chat"); // 스튜디오에서는 데크 탭 대신 스튜디오 덱의 「작업」이 같은 상태를 그린다.
       applySize(); // 크기만 해제하고 배경 농도·글자 크기 설정은 유지한다.
       // 로그 슬롯은 기록 마운트. is-history-open 은 다른 오버레이라 붙이지 않는다.
       historyOpen = true;
@@ -3376,6 +3450,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     clearAutoCollapseTimer();
     resizeChrome.dispose();
     moveChrome.dispose();
+    unsubscribeTeamActivityTabs();
     studioShell?.dispose();
     studioShell = null;
 

@@ -6,6 +6,8 @@ import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { createStudioShell } from "@/editor/panels/aiStudioShell";
+import { publishTeamActivity } from "@/ai/piAgent/teamActivity";
+import { createTeamBoardState, reduceTeamBoard } from "@/ai/piAgent/teamBoardState";
 import { renderTopbar } from "@/editor/panels/menu";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { createBlankProject } from "@/project/defaults";
@@ -39,6 +41,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  publishTeamActivity(null);
   teardownAiChatPanel();
   restoreDom?.();
   restoreDom = null;
@@ -464,6 +467,28 @@ describe("스튜디오 콘솔(재개편)", () => {
     expect(findByTestId(root, "ai-studio-tab-work")?.textContent).toContain("1/3");
     expect(findByTestId(root, "ai-studio-work-progress")).toBeTruthy();
     expect(findByTestId(root, "ai-studio-work")?.textContent).toContain("광장을 꾸민다");
+  });
+
+  it("실행 보드가 버스에 오르면 「작업」이 상세 페인(툴 인자 포함)을 열고 배지는 실행 중 인원을 센다", () => {
+    const { root } = standaloneShell();
+    let state = createTeamBoardState("team", "대장간 거리");
+    state = reduceTeamBoard(state, { type: "agent_spawn", agentId: "lead", role: "orchestrator", mapId: null, mapName: null, task: state.task });
+    state = reduceTeamBoard(state, { type: "agent_spawn", agentId: "b1", role: "builder", mapId: null, mapName: "시장 마을", task: "대장간 2채", memberId: "architect", label: "건축가" });
+    state = reduceTeamBoard(state, { type: "agent_event", agentId: "b1", event: { type: "tool_start", id: "t1", name: "place_structure", args: { x: 13, y: 5 } } });
+    expect(root.style.getPropertyValue("--studio-deck-h")).toBe("236px");
+    publishTeamActivity(state);
+    // 기본 높이(236)의 덱은 보드가 뜨면 420 으로 한 번 자란다 — 상세 과정이 두 행만 보이지 않게. 저장하지 않는다.
+    expect(root.style.getPropertyValue("--studio-deck-h")).toBe("420px");
+    expect(localStorage.getItem("oprn:ai-studio-layout")).toBeNull();
+    expect(findByTestId(root, "ai-studio-tab-work")?.className).toContain("is-on");
+    expect(findByTestId(root, "ai-studio-tab-work")?.textContent).toContain("2");
+    expect(findByTestId(root, "ai-team-work")?.dataset.detail).toBe("true");
+    expect(findByTestId(root, "ai-team-tx-args")?.textContent).toBe("x: 13 · y: 5");
+    expect(findByTestId(root, "ai-team-work-member")).toBeTruthy();
+    publishTeamActivity(null);
+    expect(root.style.getPropertyValue("--studio-deck-h")).toBe("236px");
+    expect(findByTestId(root, "ai-team-work")).toBeNull();
+    expect(root.textContent).toContain("아직 작업 계획이 없습니다");
   });
 
   it("빈 대화에는 장면 정보만 보이고 추천은 없다", () => {
