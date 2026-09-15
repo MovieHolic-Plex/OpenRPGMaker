@@ -4,7 +4,7 @@
  * 무엇을 증명하나:
  *  - 스크립트된 AI 턴(=실 LLM 없음, /v1/chat/completions 목업) 한 번이 맵 캔버스 호스트에
  *    ai-ghost-phase-chip 과 agent-ghost-preview 마커를 실제로 띄운다.
- *  - 칩 문구가 ghostPhaseChipInfo 계약(`… 중 · n/N 셀 · <tool>`)을 그대로 따른다.
+ *  - 칩 문구가 ghostPhaseChipInfo 계약(`… 중 · n/N 셀`)을 그대로 따른다.
  *
  * 왜 목업 경로인가: loadAiConfig()(src/ai/llmClient.ts)는 저장된 authMode/baseUrl/apiKey 를
  * 무시하고 언제나 oh-my-pi 동반 서비스로 나간다(dev 에서는 같은 오리진 `/v1`). 그래서
@@ -140,13 +140,42 @@ interface TurnPlan {
   rect: { x: number; y: number; w: number; h: number };
 }
 
+/** 한 메시지의 content 를 문자열로 — 파트 배열(텍스트+이미지)도 텍스트만 이어붙인다. */
+function messageText(content: unknown): string {
+  if (typeof content === "string") return content;
+  if (!Array.isArray(content)) return "";
+  return content.map((part) => (part && typeof part === "object" && (part as { type?: string }).type === "text"
+    ? String((part as { text?: string }).text ?? "") : "")).join("");
+}
+
 async function installScriptedTurn(page: Page, plan: () => TurnPlan): Promise<void> {
   let toolRounds = 0;
   await page.route("**/v1/chat/completions", async (route) => {
-    const body = route.request().postDataJSON() as { tools?: readonly unknown[] } | null;
+    const body = route.request().postDataJSON() as
+      { tools?: readonly unknown[]; messages?: readonly { role: string; content: unknown }[] } | null;
     const hasTools = (body?.tools ?? []).length > 0;
+    const messages = body?.messages ?? [];
     let message: Record<string, unknown>;
-    if (!hasTools) {
+    // 턴 앞뒤로 툴 없는 라운드가 셋이다 — 기록 추출(위키), 플래너, 독립 검수. 셋을 구분하지
+    // 않으면 엉뚱한 답이 가고, 기록 라운드는 스키마 위반으로 유예를 타 이 스펙이 보려는
+    // 고스트가 아니라 유예 경로를 보게 된다. 각 라운드는 자기 프로토콜로 답한다.
+    const wikiRound = messageText(messages[0]?.content).startsWith("Extract new project knowledge into JSON");
+    const reviewPayload = (() => {
+      const text = messageText(messages[1]?.content);
+      if (!text.trim()) return null;
+      try {
+        const value = JSON.parse(text) as { kind?: string; revision?: unknown };
+        return value.kind === "independent-review" ? value : null;
+      } catch { return null; }
+    })();
+    if (wikiRound) {
+      // 이 스펙의 주제는 고스트다. 기록은 "새 사실 없음"으로 정상 종료시킨다.
+      message = { role: "assistant", content: JSON.stringify({ upserts: [] }) };
+    } else if (reviewPayload) {
+      message = { role: "assistant", content: JSON.stringify({
+        revision: reviewPayload.revision, verdict: "approved", summary: "Fixture review", findings: [],
+      }) };
+    } else if (!hasTools) {
       message = { role: "assistant", content: JSON.stringify({ action: "direct", reason: "단일 지형 채우기로 충분" }) };
     } else if (toolRounds === 0) {
       toolRounds += 1;
@@ -290,13 +319,13 @@ test.describe("에이전트 고스트 순차 공개 + 상태칩", () => {
 
     const turn = startTurn(page, "광장 가운데에 둥근 연못을 만들어줘");
 
-    // 경계 2: 칩이 붙는다. 문구는 진행(`… 중 · n/N 셀 · <tool>`) 또는 완료 중 하나여야 한다.
+    // 경계 2: 칩이 붙는다. 문구는 진행(`… 중 · n/N 셀`) 또는 완료 중 하나여야 한다.
     // 좌→우 와이프는 420ms 라(GHOST_WIPE_DURATION_MS) 중간 프레임을 잡는 폴링은 타이밍 운이 된다 —
     // 진행 문구 자체의 형식은 유닛(ghostPhaseChipInfo)에서 고정하고, 여기서는 "칩이 두 계약 중
     // 하나를 항상 보여준다"만 확인한다.
     const chip = page.locator(CHIP);
     await expect(chip).toHaveCount(1, { timeout: 60_000 });
-    await expect(chip).toHaveText(/(중 · \d+\/\d+ 셀 · \S+|초안 완성)/u, { timeout: 60_000 });
+    await expect(chip).toHaveText(/(중 · \d+\/\d+ 셀|초안 완성)/u, { timeout: 60_000 });
     chipTimeline.push((await chip.textContent()) ?? "");
 
     // 칩과 고스트 마커는 맵 캔버스 호스트(캔버스의 부모)에 붙는다.
