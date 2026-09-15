@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { decodeRgba, isDryRunFake } from "./lib/dryRunFakePng.mjs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { inflateSync } from "node:zlib";
@@ -152,61 +153,7 @@ function hasVariation(pixels, width, height) {
   return false;
 }
 
-/** PNG 스캔라인 필터(0~4)를 풀어 RGBA 픽셀 버퍼로 돌려준다. 지원하지 않는 필터면 null. */
-function decodeRgba(inflated, width, height) {
-  const bpp = 4;
-  const stride = width * bpp;
-  const out = Buffer.alloc(stride * height);
-  let pos = 0;
-  for (let y = 0; y < height; y += 1) {
-    if (pos + 1 + stride > inflated.length) return null;
-    const filter = inflated[pos];
-    pos += 1;
-    const rowStart = y * stride;
-    const prevStart = rowStart - stride;
-    for (let x = 0; x < stride; x += 1) {
-      const value = inflated[pos + x];
-      const left = x >= bpp ? out[rowStart + x - bpp] : 0;
-      const up = y > 0 ? out[prevStart + x] : 0;
-      const upLeft = y > 0 && x >= bpp ? out[prevStart + x - bpp] : 0;
-      let recon;
-      if (filter === 0) recon = value;
-      else if (filter === 1) recon = value + left;
-      else if (filter === 2) recon = value + up;
-      else if (filter === 3) recon = value + ((left + up) >> 1);
-      else if (filter === 4) {
-        const p = left + up - upLeft;
-        const pa = Math.abs(p - left);
-        const pb = Math.abs(p - up);
-        const pc = Math.abs(p - upLeft);
-        recon = value + (pa <= pb && pa <= pc ? left : pb <= pc ? up : upLeft);
-      } else {
-        return null;
-      }
-      out[rowStart + x] = recon & 255;
-    }
-    pos += stride;
-  }
-  return out;
-}
 
-/** dry-run 전용 가짜 픽셀인가 — 실제 그림이 우연히 이 공식을 만족할 수는 없다. */
-function isDryRunFake(pixels, width, height) {
-  const stride = width * 4;
-  const stepX = Math.max(1, Math.floor(width / 16));
-  const stepY = Math.max(1, Math.floor(height / 16));
-  let sampled = 0;
-  for (let y = 0; y < height; y += stepY) {
-    for (let x = 0; x < width; x += stepX) {
-      const value = (x * 17 + y * 31) % 251;
-      const offset = y * stride + x * 4;
-      if (pixels[offset] !== value || pixels[offset + 1] !== (80 + value) % 251
-        || pixels[offset + 2] !== (160 + value) % 251 || pixels[offset + 3] !== 255) return false;
-      sampled += 1;
-    }
-  }
-  return sampled >= 4;
-}
 
 function createFakePng(width, height) {
   const stride = 1 + width * 4;
