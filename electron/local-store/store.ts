@@ -1,12 +1,13 @@
 import { createHash, randomUUID } from "node:crypto";
-import { mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { decodeDataUrlBytes, dataUrlExtension, dataUrlMime } from "../../src/project/persistence/core/dataUrl";
 import { canonicalJsonString } from "../../src/project/persistence/core/canonicalJson";
 import { deserializeStoredProjectJson } from "../../src/project/persistence/core/loadRepair";
 import { mapPatchChangeSet, planMapPatch, readMapPatchSnapshot } from "../../src/project/persistence/core/mapPatch";
 import type { MapSaveConflict } from "../../src/project/persistence/core/mapMerge";
 import { projectWire, type ProjectWire } from "../../src/project/persistence/core/projectWire";
-import type { GameMap, Project } from "../../src/project/types";
+import type { GameMap, Project, UploadedAsset, UploadedAssetRef } from "../../src/project/types";
 import { applyStorePragmas, openNodeSqliteDriver, readDataVersion, type Driver, type DriverValue } from "./driver";
 import { LocalStoreError } from "./errors";
 import { ASSETS_DIR, BACKUPS_DIR, LOCAL_STORE_FORMAT_VERSION, META_KEYS, PROJECT_STORE_FILE, STORE_DDL } from "./schema";
@@ -110,6 +111,33 @@ export type LocalAnalysisRunInput = {
 
 export type LocalStoreRow = Readonly<Record<string, unknown>>;
 
+export type LocalAssetInput = {
+  readonly mime: string;
+  readonly extension: string;
+  readonly originalName?: string;
+  readonly kind?: string;
+};
+
+export type LocalAssetRow = {
+  readonly sha256: string;
+  readonly mime: string;
+  readonly bytes: number;
+  readonly extension: string;
+  readonly originalName: string | null;
+  readonly kind: string | null;
+  readonly createdAt: string;
+};
+
+export type LocalMediaSeparationResult = {
+  readonly changed: boolean;
+  readonly migratedAssetIds: readonly string[];
+  readonly project: Project;
+  readonly sha256: string | null;
+  readonly revision: number;
+};
+
+const MEDIA_SEPARATION_LABEL = "미디어 분리";
+
 export type LocalProjectStore = {
   readonly projectDir: string;
   readonly projectId: string;
@@ -126,6 +154,11 @@ export type LocalProjectStore = {
   listConversations(options: LocalConversationListOptions): readonly LocalStoreRow[];
   loadConversation(conversationId: string): LocalStoreRow | null;
   recordAnalysisRun(input: LocalAnalysisRunInput): void;
+  putAsset(bytes: Uint8Array, input: LocalAssetInput): Promise<UploadedAssetRef>;
+  assetBytes(sha256: string): Promise<Uint8Array>;
+  listAssets(): readonly LocalAssetRow[];
+  pruneUnusedAssets(referenced: readonly string[]): Promise<readonly string[]>;
+  separateInlineMedia(project: Project): Promise<LocalMediaSeparationResult>;
   exportSerialized(): string | null;
   backup(): string;
   dataVersion(): number;
@@ -255,6 +288,57 @@ function clampLimit(limit: number): number {
   return Math.max(1, Math.min(100, Math.floor(limit)));
 }
 
+function sha256HexOfBytes(bytes: Uint8Array): string {
+  return createHash("sha256").update(bytes).digest("hex");
+}
+
+function insertCommit(driver: Driver, projectId: string, input: LocalCommitInput, now: string): string {
+  const commitId = randomUUID();
+  driver.prepare(
+    `INSERT INTO commits (commit_id, project_id, parent_commit_id, created_at, message, summary, review_status,
+       author_id, author_kind, author_label, agent_name, current_sha256, diff_json, tool_names_json, edit_activity_json)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  ).run([
+    commitId,
+    projectId,
+    input.parentCommitId ?? null,
+    now,
+    input.summary,
+    input.summary,
+    input.reviewStatus,
+    input.identity.id,
+    input.identity.kind,
+    input.identity.label,
+    input.identity.agentName ?? null,
+    readProjectRow(driver)?.sha256 ?? null,
+    jsonOrNull(input.diff),
+    jsonOrNull(input.toolNames ?? []),
+    jsonOrNull(input.editActivity),
+  ]);
+  return commitId;
+}
+
+function writeAssetBytes(
+  projectDir: string,
+  driver: Driver,
+  bytes: Uint8Array,
+  input: LocalAssetInput,
+  now: string,
+): UploadedAssetRef {
+  const sha256 = sha256HexOfBytes(bytes);
+  const assetsDir = join(projectDir, ASSETS_DIR);
+  mkdirSync(assetsDir, { recursive: true });
+  const filePath = join(assetsDir, `${sha256}.${input.extension}`);
+  if (!existsSync(filePath)) writeFileSync(filePath, bytes);
+  driver.prepare(
+    `INSERT INTO assets (sha256, mime, bytes, extension, original_name, kind, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT(sha256) DO UPDATE SET mime = excluded.mime, extension = excluded.extension,
+       original_name = excluded.original_name, kind = excluded.kind`,
+  ).run([sha256, input.mime, bytes.byteLength, input.extension, input.originalName ?? null, input.kind ?? null, now]);
+  return { sha256, mime: input.mime, bytes: bytes.byteLength, extension: input.extension };
+}
+
 function sqlLiteral(value: string): string {  if (value.includes("'")) throw new LocalStoreError("backup-path", "backup path must not contain a quote");
   return `'${value}'`;
 }
@@ -332,29 +416,7 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
       return target;
     },
     recordCommit(input: LocalCommitInput): string {
-      const commitId = randomUUID();
-      driver.prepare(
-        `INSERT INTO commits (commit_id, project_id, parent_commit_id, created_at, message, summary, review_status,
-           author_id, author_kind, author_label, agent_name, current_sha256, diff_json, tool_names_json, edit_activity_json)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      ).run([
-        commitId,
-        projectId,
-        input.parentCommitId ?? null,
-        clock(),
-        input.summary,
-        input.summary,
-        input.reviewStatus,
-        input.identity.id,
-        input.identity.kind,
-        input.identity.label,
-        input.identity.agentName ?? null,
-        readProjectRow(driver)?.sha256 ?? null,
-        jsonOrNull(input.diff),
-        jsonOrNull(input.toolNames ?? []),
-        jsonOrNull(input.editActivity),
-      ]);
-      return commitId;
+      return insertCommit(driver, projectId, input, clock());
     },
     listCommits(limit: number): readonly LocalCommitRow[] {
       return driver.prepare(
@@ -477,6 +539,83 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
         jsonOrNull(input.result),
         clock(),
       ]);
+    },
+    putAsset(bytes: Uint8Array, input: LocalAssetInput): Promise<UploadedAssetRef> {
+      return Promise.resolve(writeAssetBytes(options.projectDir, driver, bytes, input, clock()));
+    },
+    assetBytes(sha256: string): Promise<Uint8Array> {
+      const row = driver.prepare("SELECT extension FROM assets WHERE sha256 = ?").get([sha256]);
+      if (!row) return Promise.reject(new LocalStoreError("asset", `asset ${sha256} is not registered`));
+      return Promise.resolve(new Uint8Array(readFileSync(join(options.projectDir, ASSETS_DIR, `${sha256}.${String(row.extension)}`))));
+    },
+    listAssets(): readonly LocalAssetRow[] {
+      return driver
+        .prepare("SELECT sha256, mime, bytes, extension, original_name, kind, created_at FROM assets ORDER BY created_at ASC, sha256 ASC")
+        .all([])
+        .map((row) => ({
+          sha256: String(row.sha256),
+          mime: String(row.mime),
+          bytes: Number(row.bytes),
+          extension: String(row.extension),
+          originalName: nullableText(row.original_name),
+          kind: nullableText(row.kind),
+          createdAt: nullableText(row.created_at) ?? "",
+        }));
+    },
+    pruneUnusedAssets(referenced: readonly string[]): Promise<readonly string[]> {
+      const keep = new Set(referenced);
+      const removed: string[] = [];
+      for (const row of driver.prepare("SELECT sha256, extension FROM assets").all([])) {
+        const sha256 = String(row.sha256);
+        if (keep.has(sha256)) continue;
+        const filePath = join(options.projectDir, ASSETS_DIR, `${sha256}.${String(row.extension)}`);
+        if (existsSync(filePath)) unlinkSync(filePath);
+        driver.prepare("DELETE FROM assets WHERE sha256 = ?").run([sha256]);
+        removed.push(sha256);
+      }
+      return Promise.resolve(removed);
+    },
+    async separateInlineMedia(project: Project): Promise<LocalMediaSeparationResult> {
+      const migratedAssetIds: string[] = [];
+      const uploaded: Record<string, UploadedAsset> = {};
+      for (const [id, asset] of Object.entries(project.assets.uploaded)) {
+        if (asset.ref || !asset.dataUrl) {
+          uploaded[id] = asset;
+          continue;
+        }
+        const bytes = decodeDataUrlBytes(asset.dataUrl);
+        const mime = dataUrlMime(asset.dataUrl) ?? "application/octet-stream";
+        const ref = writeAssetBytes(
+          options.projectDir,
+          driver,
+          bytes,
+          { mime, extension: dataUrlExtension(asset.dataUrl, mime), originalName: asset.name, kind: asset.kind },
+          clock(),
+        );
+        const rest: UploadedAsset = { ...asset };
+        delete rest.dataUrl;
+        uploaded[id] = { ...rest, ref };
+        migratedAssetIds.push(id);
+      }
+      const current = readProjectRow(driver);
+      if (migratedAssetIds.length === 0) {
+        return { changed: false, migratedAssetIds: [], project, sha256: current?.sha256 ?? null, revision: current?.revision ?? 0 };
+      }
+      const nextProject: Project = { ...project, assets: { ...project.assets, uploaded } };
+      const wire = await projectWire(nextProject);
+      const revision = driver.transaction(() => writeProjectRow(driver, nextProject, wire, projectId, clock()));
+      insertCommit(
+        driver,
+        projectId,
+        {
+          identity: { id: "oprn-media-separation", label: MEDIA_SEPARATION_LABEL, kind: "system" },
+          reviewStatus: "direct",
+          summary: MEDIA_SEPARATION_LABEL,
+          toolNames: [],
+        },
+        clock(),
+      );
+      return { changed: true, migratedAssetIds, project: nextProject, sha256: wire.sha256, revision };
     },
     dataVersion(): number {
       return readDataVersion(driver);

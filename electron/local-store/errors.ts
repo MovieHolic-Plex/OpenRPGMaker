@@ -12,4 +12,5 @@ export type LocalStoreFault =
   | "cas"
   | "backup-path"
   | "row"
+  | "asset"
   | "usage";
