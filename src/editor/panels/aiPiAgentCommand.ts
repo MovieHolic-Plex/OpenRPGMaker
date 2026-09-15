@@ -36,6 +36,7 @@ import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { changedAreaLabels } from "@/project/changeAreas";
+import { computeChangeSites } from "@/project/changeSites";
 import { buildChangeLedger, type ChangeLedger } from "@/project/changeLedger";
 import { createTeamBoard } from "./aiTeamBoard";
 import { publishTeamActivity, setTeamReviewActions } from "@/ai/piAgent/teamActivity";
@@ -439,11 +440,17 @@ export async function runPiCommand(
   surface.setStatus("변경 확인 대기");
   // 적용 전에도 «무엇이 바뀔 것인가» 를 보여준다 — 여기가 사용자가 결정하는 자리다.
   // 같은 카드·같은 렌더러를 쓰고 배지만 「적용 전」 이다(두 번째 어휘를 만들지 않는다).
+  // 보고서 모드 재료 — 지점 목록(여러 곳을 곤치면 사진도 여러 쌍) + 팀 보고 문장 + 검수 지적.
+  const reviewSites = computeChangeSites(base, merged.project);
+  const reviewFindings = boardState.agents.flatMap((agent) => agent.review && !agent.review.ok ? agent.review.findings : []);
   const reviewInput: ChangePreviewInput | null = receiptMapId === null ? null : {
     before: base,
     after: merged.project,
     mapId: receiptMapId,
     title: receiptTitle,
+    sites: reviewSites,
+    ...(boardState.report ? { report: boardState.report } : {}),
+    ...(reviewFindings.length > 0 ? { findings: reviewFindings } : {}),
     detail: team ? `아직 프로젝트에 반영하지 않았습니다 — 툴콜 ${toolCalls}회, 바뀐 맵·항목 ${changedCount}개.`
       : "아직 프로젝트에 반영하지 않았습니다.",
     chips: receiptChips,

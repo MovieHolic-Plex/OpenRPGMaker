@@ -9,6 +9,7 @@ import {
 } from "@/editor/panels/aiChangePreview";
 import type { ChangeSummary } from "@/editor/tools/types";
 import { buildChangeLedger } from "@/project/changeLedger";
+import { computeChangeSites } from "@/project/changeSites";
 import { createBlankProject } from "@/project/defaults";
 import type { GameEvent, Project } from "@/project/types";
 import { documentListenerCount, FakeElement, findByTestId, installFakeDom } from "./fakeDom";
@@ -462,6 +463,58 @@ describe("변경 내역(긴 명세)", () => {
       renderShot: stubRenderer(),
     });
     expect(requireTestId(card(viewer.root), "ai-change-ledger")).not.toBeNull();
+    viewer.close();
+  });
+});
+
+describe("보고서 모드 — sites 가 있으면 지점마다 한 쌍", () => {
+  it("지점 수만큼 쌍을 그리고, 머리에 지점 수·팀 보고·검수 지적이 서고, 모드 토글은 없다", async () => {
+    const { before, after, mapId } = tilePair();
+    const renderShot = stubRenderer();
+    const sites = computeChangeSites(before, after);
+    expect(sites.length).toBe(1);
+    const viewer = openWideChangeViewer({
+      before, after, mapId, title: "Pi 팀 결과", sites, renderShot,
+      report: "대장간 2채를 세우고 앞마당 돌길을 놓았습니다.",
+      findings: ["(20,9) 돌길 한 칸 끊김"],
+    });
+    const root = card(viewer.root);
+    expect(root.className).toContain("is-report");
+    expect(requireTestId(root, "ai-change-wide").querySelectorAll('[data-testid="ai-change-report-site"]').length).toBe(1);
+    expect(findByTestId(root, "ai-change-wide-mode-side")).toBeNull();
+    expect(findByTestId(root, "ai-change-report-brief")!.textContent).toContain("대장간 2채");
+    expect(findByTestId(root, "ai-change-report-findings")!.textContent).toContain("돌길 한 칸 끊김");
+    expect(root.querySelector(".ai-change-wide-title")!.textContent).toContain("변경 지점 1곳");
+    await flushMicrotasks();
+    expect((renderShot as ReturnType<typeof vi.fn>).mock.calls.length).toBe(2);
+    viewer.close();
+  });
+
+  it("멀리 떨어진 두 군집이면 쌍도 두 개다 — 사진 한 장이 맵 전체가 되지 않는다", async () => {
+    const { before, after, mapId } = tilePair();
+    const map = after.maps[mapId]!;
+    const farIndex = (map.height - 2) * map.width + (map.width - 2);
+    map.lowerTiles[farIndex] = (map.lowerTiles[farIndex] ?? 0) + 1;
+    const renderShot = stubRenderer();
+    const sites = computeChangeSites(before, after);
+    expect(sites.length).toBe(2);
+    const viewer = openWideChangeViewer({ before, after, mapId, title: "결과", sites, renderShot });
+    const root = card(viewer.root);
+    const sections = root.querySelectorAll('[data-testid="ai-change-report-site"]');
+    expect(sections.length).toBe(2);
+    expect(root.querySelectorAll('[data-testid="ai-change-report-before"]').length).toBe(2);
+    expect(root.querySelectorAll('[data-testid="ai-change-report-after"]').length).toBe(2);
+    await flushMicrotasks();
+    expect((renderShot as ReturnType<typeof vi.fn>).mock.calls.length).toBe(4);
+    viewer.close();
+  });
+
+  it("sites 가 없으면 기존 한 쌍 동작 그대로다", () => {
+    const { before, after, mapId } = tilePair();
+    const viewer = openWideChangeViewer({ before, after, mapId, title: "변경", renderShot: stubRenderer() });
+    const root = card(viewer.root);
+    expect(root.className).not.toContain("is-report");
+    expect(findByTestId(root, "ai-change-wide-mode-side")).toBeTruthy();
     viewer.close();
   });
 });

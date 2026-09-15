@@ -11,12 +11,14 @@ import { renderRegionSnapshot } from "@/editor/regionSnapshot";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import type { ChangeSummary } from "@/editor/tools/types";
 import type { ChangeLedger, ChangeLedgerEntry } from "@/project/changeLedger";
+import type { ChangeSite } from "@/project/changeSites";
 import type { GameMap, MapId, Project } from "@/project/types";
 import { el } from "@/util/dom";
 
 const CHANGE_BOUNDS_PAD = 3;
 const CARD_SHOT_WIDTH = 320;
 const WIDE_SHOT_WIDTH = 900;
+const REPORT_SHOT_WIDTH = 560;
 const FALLBACK_TEXT = "미리보기 불가";
 
 export interface ChangePreviewShot {
@@ -47,6 +49,15 @@ export interface ChangePreviewInput {
    * 없으면(변경 0건) 내역 구획을 그리지 않는다.
    */
   readonly ledger?: ChangeLedger;
+  /**
+   * 변경 지점 목록(computeChangeSites). 있으면 넓은 뷰어가 보고서 모드로 바뀝다 — 맵 하나의 전체 bbox 한 쌍이
+   * 아니라 **지점마다 before/after 한 쌍**을 세로로 늘어놓는다(AI 가 여러 곳을 고칠 수 있다).
+   */
+  readonly sites?: readonly ChangeSite[];
+  /** 팀 보고 문장(team_report) — 보고서 모드 머리에 실린다. */
+  readonly report?: string;
+  /** 검수 지적 — 보고서 모드 머리에 목록으로 실린다. */
+  readonly findings?: readonly string[];
 }
 
 const defaultRenderShot: ChangeShotRenderer = (project, map, region, targetWidth) =>
@@ -369,21 +380,81 @@ function modeButton(mode: "side" | "overlay", label: string, onPick: (mode: "sid
   });
 }
 
-/** 넓은 비교 뷰어 — body 오버레이. 나란히 / 겹쳐 보기 두 모드. */
+function siteSection(
+  input: ChangePreviewInput,
+  site: ChangeSite,
+  index: number,
+  renderShot: ChangeShotRenderer,
+): HTMLElement {
+  const before = shotFigure("before", "ai-change-report-before");
+  const after = shotFigure("after", "ai-change-report-after");
+  const section = el("section", {
+    class: "ai-change-report-site",
+    dataset: { testid: "ai-change-report-site", kind: site.kind, mapId: site.mapId },
+    children: [
+      el("header", {
+        class: "ai-change-report-site-head",
+        children: [
+          el("span", { class: "ai-change-report-site-index", text: String(index + 1) }),
+          el("span", { class: "ai-change-report-site-map", text: site.mapName }),
+          el("span", { class: "ai-change-report-site-place", text: site.placeLabel }),
+          ...(site.statsLabel ? [el("span", { class: "ai-change-report-site-stats", text: site.statsLabel })] : []),
+        ],
+      }),
+      el("div", {
+        class: "ai-change-pair ai-change-report-pair",
+        children: [before.figure, el("span", { class: "ai-change-arrow", text: "→" }), after.figure],
+      }),
+    ],
+  });
+  attachShot(before.canvasHost, input.before, site.mapId, site.region, REPORT_SHOT_WIDTH, renderShot);
+  attachShot(after.canvasHost, input.after, site.mapId, site.region, REPORT_SHOT_WIDTH, renderShot);
+  return section;
+}
+
+/** 보고서 머리 — 팀 보고 문장과 검수 지적. 지점 사진이 「어디」라면 이쪽은 「무엇·왜」다. */
+function reportBrief(input: ChangePreviewInput): HTMLElement | null {
+  const findings = input.findings ?? [];
+  if (!input.report && findings.length === 0) return null;
+  return el("div", {
+    class: "ai-change-report-brief",
+    dataset: { testid: "ai-change-report-brief" },
+    children: [
+      ...(input.report ? [el("p", { class: "ai-change-report-text", text: input.report })] : []),
+      ...(findings.length > 0
+        ? [el("ul", {
+          class: "ai-change-report-findings",
+          dataset: { testid: "ai-change-report-findings" },
+          children: findings.map((finding) => el("li", { text: finding })),
+        })]
+        : []),
+    ],
+  });
+}
+
+/** 넓은 비교 뷰어 — body 오버레이. 나란히 / 겹쳐 보기 두 모드. sites 가 있으면 보고서 모드다. */
 export function openWideChangeViewer(input: ChangePreviewInput): { readonly root: HTMLElement; readonly close: () => void } {
   const renderShot = input.renderShot ?? defaultRenderShot;
-  const panesMatch = changePreviewPanesMatch(input.before, input.after, input.mapId);
-  const region = panesMatch ? null : changePreviewRegion(input.before, input.after, input.mapId);
+  const sites = input.sites ?? [];
+  const reportMode = sites.length > 0;
+  const panesMatch = !reportMode && changePreviewPanesMatch(input.before, input.after, input.mapId);
+  const region = panesMatch || reportMode ? null : changePreviewRegion(input.before, input.after, input.mapId);
   const before = shotFigure("before", "ai-change-wide-shot-before", "ai-change-wide-shot");
   const after = shotFigure("after", "ai-change-wide-shot-after", "ai-change-wide-shot");
 
-  const body: HTMLElement = panesMatch
-    ? wordDiffNote(input.chips ?? [])
-    : el("div", {
-      class: "ai-change-wide-body",
-      dataset: { mode: "side" },
-      children: [before.figure, after.figure],
-    });
+  const body: HTMLElement = reportMode
+    ? el("div", {
+      class: "ai-change-report-sites",
+      dataset: { testid: "ai-change-report-sites" },
+      children: sites.map((site, index) => siteSection(input, site, index, renderShot)),
+    })
+    : panesMatch
+      ? wordDiffNote(input.chips ?? [])
+      : el("div", {
+        class: "ai-change-wide-body",
+        dataset: { mode: "side" },
+        children: [before.figure, after.figure],
+      });
   const setMode = (mode: "side" | "overlay"): void => {
     body.dataset.mode = mode;
   };
@@ -416,9 +487,9 @@ export function openWideChangeViewer(input: ChangePreviewInput): { readonly root
   const head = el("header", {
     class: "ai-change-wide-head",
     children: [
-      el("h3", { class: "ai-change-wide-title", text: input.title }),
+      el("h3", { class: "ai-change-wide-title", text: reportMode ? `${input.title} — 변경 지점 ${sites.length}곳` : input.title }),
       chipRow(input.chips ?? []),
-      ...(panesMatch
+      ...(panesMatch || reportMode
         ? []
         : [el("div", {
           class: "ai-change-wide-modes",
@@ -435,16 +506,17 @@ export function openWideChangeViewer(input: ChangePreviewInput): { readonly root
   });
   // 넓게 보기는 명세를 **자르지 않고** 담는 자리다 — 잘린 항목은 여기서 전부 읽힌다.
   const ledger = input.ledger ? ledgerSection(input.ledger) : null;
+  const brief = reportMode ? reportBrief(input) : null;
   const root = el("div", {
-    class: "ai-change-wide",
+    class: reportMode ? "ai-change-wide is-report" : "ai-change-wide",
     attrs: { role: "dialog", "aria-modal": "true" },
     dataset: { testid: "ai-change-wide" },
-    children: [head, body, ...(ledger ? [ledger] : [])],
+    children: [head, ...(brief ? [brief] : []), body, ...(ledger ? [ledger] : [])],
   });
   root.addEventListener("click", onBackdropClick);
   document.addEventListener("keydown", onKeydown);
   document.body.append(root);
-  if (!panesMatch) {
+  if (!panesMatch && !reportMode) {
     attachShot(before.canvasHost, input.before, input.mapId, region, WIDE_SHOT_WIDTH, renderShot);
     attachShot(after.canvasHost, input.after, input.mapId, region, WIDE_SHOT_WIDTH, renderShot);
   }
