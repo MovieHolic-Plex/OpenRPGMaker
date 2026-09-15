@@ -152,6 +152,7 @@ import {
   implicitSpecFromContext,
   implicitSpecFromScope,
   normalizeBuildSpec,
+  plannedGrowthForSpec,
   protectedCellsInRegions,
   toolWritesTiles,
   uncoveredRegionsBySpec,
@@ -273,6 +274,7 @@ import {
   SPEC_REMEDY_FIELDS,
   autoExpandedAssetKind,
   buildSpecPlanLabel,
+  growthGuidanceLine,
   isSpecGatePass,
   plannedTargetMismatch,
   regionContains,
@@ -1574,6 +1576,12 @@ export class AssistantSession {
       };
       const demanded = recovery.remedyFields;
       const fieldList = demanded.join("·");
+      // 경계 밖 에셋을 "영역을 좁히세요"로만 돌려주면 모델은 맵을 키우는 선택지를 영영 보지 못한다
+      // (2026-09-15 진단: 「마을 넓혀줘」가 맵 크기를 한 번도 안 바꾸던 네 원인 중 하나).
+      // 확장으로 풀 수 있으면 필요한 크기를 코드가 계산해 resize_map 경로와 함께 내려보낸다.
+      const growth = errors.some((issue) => issue.code === "spec-asset-out-of-map") && Array.isArray(spec.assets)
+        ? this.plannedGrowthFor(spec.mapId, spec.assets)
+        : null;
       if (repeated) {
         issues.push({
           severity: "error",
@@ -1594,6 +1602,7 @@ export class AssistantSession {
             "새 에셋 간 교차를 고치세요: 실제 도로는 kind:\"road\"로 명시하면 road-road 교차가 허용됩니다. 같은 층 terrain-road는 buildOrder에 두 kind를 모두 넣고 terrain을 먼저 두어야 합니다. id·style·재료 라벨로 kind는 바뀌지 않습니다. terrain-terrain 겹침·중복은 어떤 순서나 overExisting으로도 허용되지 않으므로 영역을 비겹침으로 분할하세요. clear와 후속 배치의 겹침은 두 kind를 모두 넣고 clear를 먼저 두세요. 수정한 set_build_spec을 재제출하세요.",
           ] : []),
           ...(!recovery.newPlanOverlap && demanded.length === 0 ? ["지적된 필드·맵 크기·좌표를 고쳐 set_build_spec을 재제출하세요."] : []),
+          ...(growth ? [growthGuidanceLine(spec.mapId, growth)] : []),
         ].join(" "),
       });
       return {
@@ -1615,6 +1624,16 @@ export class AssistantSession {
       summary: `밑그림 확정: ${normalized.title ?? normalized.mapId} — 에셋 ${normalized.assets.length}개(${kinds})`,
       data: normalized,
     };
+  }
+
+  /**
+   * 이 에셋들을 담으려면 맵이 얼마여야 하는가 — 확장이 필요 없거나 맵을 모르면 null.
+   * 숫자는 코드가 계산해 거부 응답에 실어 보낸다(모델 창작 아님).
+   */
+  private plannedGrowthFor(mapId: string, assets: readonly SpecAsset[]): { width: number; height: number } | null {
+    const map = this.ctx.project.maps[mapId];
+    if (!map) return null;
+    return plannedGrowthForSpec(map, { assets: [...assets] });
   }
 
   // 공간 쓰기 툴 게이트. 통과하면 warning 목록, 차단이면 사유가 담긴 ToolResult.
@@ -1659,14 +1678,22 @@ export class AssistantSession {
       const seeded = this.seedSpecForFreshItemMap(mapId, name, regions);
       if (seeded) return seeded;
       // 차단할 때는 재제출물의 초안까지 실어 보낸다 — "체크리스트" 만 주면 같은 턴에 다시 막힐 밑그림이 온다.
-      const draft = { mapId, title: this.currentTurnInstruction.slice(0, 40) || "작업 밑그림",
-        assets: regions.filter(region => region.w > 0 && region.h > 0).map((region, index) => ({
-          id: `${autoExpandedAssetKind(name)}${index + 1}`, kind: autoExpandedAssetKind(name),
-          x: region.x, y: region.y, w: region.w, h: region.h })) };
+      const draftAssets = regions.filter(region => region.w > 0 && region.h > 0).map((region, index) => ({
+        id: `${autoExpandedAssetKind(name)}${index + 1}`, kind: autoExpandedAssetKind(name),
+        x: region.x, y: region.y, w: region.w, h: region.h }));
+      // 이 호출이 현재 맵 밖으로 나간다면 초안에 plannedMap(확장 후 크기)을 실어 보낸다 —
+      // 그러지 않으면 모델은 "경계 밖" 오류만 받고 에셋을 안쪽으로 밀어 넣는 수리를 택한다(맵은 영영 안 커진다).
+      const growth = this.plannedGrowthFor(mapId, draftAssets);
+      const draft = {
+        mapId, title: this.currentTurnInstruction.slice(0, 40) || "작업 밑그림",
+        ...(growth ? { plannedMap: { mapId, ...growth } } : {}),
+        assets: draftAssets,
+      };
       return specGateResult(`스펙 게이트: '${name}' 차단 — 이 맵의 밑그림(스펙)이 없습니다`, [
         "공간 빌드는 set_build_spec으로 밑그림을 제출해 검증을 통과한 뒤에만 실행됩니다.",
         "체크리스트: 대상 맵, 에셋별 영역(x,y,w,h)·종류·스타일, 통로 너비(pathWidth), 밀도(density), 배치 스타일(layoutStyle).",
         "현재 컨텍스트 선택 영역이 있으면 암묵적 명세로 인정됩니다. 없으면 필요한 영역을 직접 산정해 set_build_spec으로 제출하세요.",
+        ...(growth ? [growthGuidanceLine(mapId, growth)] : []),
         `이 호출의 영역으로 만든 초안입니다. 그대로 또는 고쳐서 set_build_spec 으로 먼저 제출하세요: ${JSON.stringify(draft)}`,
       ]);
     }
@@ -2381,7 +2408,13 @@ export class AssistantSession {
     }
 
     // 선언이 확정한 것은 본문 모델도 봐야 한다 — 안 그러면 모델이 같은 것을 되묻는다(2026-09-03 실측: 대장간).
-    const intentNote = formatIntentNote(intent, { clarifyBypassed });
+    // 대상 맵의 실제 크기는 코드가 아는 사실이다 — 노트가 "지금 얼마인데 얼마가 필요하다"를 말할 수 있게 넘긴다.
+    const noteTargetMapId = intent.targetMapId ?? resolveContextMapId(this.contextOptions) ?? null;
+    const noteTargetMap = noteTargetMapId ? this.ctx.project.maps[noteTargetMapId] : undefined;
+    const intentNote = formatIntentNote(intent, {
+      clarifyBypassed,
+      targetMap: noteTargetMap ? { id: noteTargetMap.id, width: noteTargetMap.width, height: noteTargetMap.height } : null,
+    });
     if (intentNote) this.pushOrchestrationMessage(intentNote);
     const actionRecipe = selectActionArenaAuthoringRecipe(intent);
     if (actionRecipe) this.pushOrchestrationMessage(buildActionArenaAuthoringGuide(actionRecipe));

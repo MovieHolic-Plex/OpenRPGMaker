@@ -39,6 +39,20 @@ export function specFingerprint(value: unknown): string {
   return JSON.stringify(value) ?? "null";
 }
 
+/**
+ * 맵을 키우면 풀리는 거부에 붙이는 한 줄 — 필요한 크기와 순서를 명시한다.
+ *
+ * 왜 필요한가(2026-09-15 진단): 게이트의 거부 문구가 전부 "영역을 좁히세요" 쪽으로만 안내해서,
+ * 맵이 작아서 생긴 실패에서도 모델은 에셋을 안쪽으로 밀거나 줄였다. resize_map 은 내내 열려 있었지만
+ * 거부 경로 어느 줄도 그 이름을 부르지 않았다. 숫자는 코드(plannedGrowthForSpec)가 계산해 넘긴다.
+ */
+export function growthGuidanceLine(mapId: string, growth: { width: number; height: number }): string {
+  return `맵 '${mapId}'이 요구 영역보다 작습니다 — 영역을 좁히는 대신 키우는 것도 정답입니다. `
+    + `resize_map({mapId:"${mapId}", width:${growth.width}, height:${growth.height}})을 먼저 호출한 뒤, `
+    + `같은 크기를 plannedMap:{mapId:"${mapId}", width:${growth.width}, height:${growth.height}} 으로 선언한 set_build_spec 을 제출하세요. `
+    + `확장은 좌상단 기준이라 기존 타일·이벤트는 그대로 있고 늘어난 칸만 잔디가 됩니다(비파괴적).`;
+}
+
 export function specGateResult(summary: string, guidance: readonly string[]): ToolResult {
   return {
     ok: false,

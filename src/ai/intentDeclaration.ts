@@ -16,6 +16,7 @@ import type { ToolDomain } from "@/editor/tools/types";
 import type { RequestRequirement } from "./requestCoverage";
 import { QUICK_REPLY_MARKER } from "./interviewPrompt";
 import { parseActionCombatRequirements, type AcceptanceTarget } from "./assistantAcceptance";
+import { estimateVillageSize, parseConstructionDeclaration, type ConstructionDeclaration } from "./constructionDeclaration";
 
 export type IntentMode = "create" | "modify" | "question" | "other";
 export type IntentSpace = "interior" | "outdoor" | "both" | "none" | "unclear";
@@ -79,6 +80,14 @@ export interface IntentDeclaration {
   readonly actionCombat?: { readonly targets: readonly AcceptanceTarget[] };
   /** Only explicit state-dependent NPC behavior imposes a multipage outcome gate. */
   readonly statefulNpcs?: boolean;
+  /**
+   * 문장에 나온 시공 규모(크기어·집 수·주민 수·새 맵 이름). 코드가 권장 맵 크기로 환산한다.
+   *
+   * 2026-09-15: 이 필드가 없어서 「큰 마을로 넓혀줘」의 수량이 선언 계층에서 통째로 버려졌고,
+   * 환산기(constructionDeclaration)는 호출자 0인 죽은 코드였다. 크기를 정하는 주체가 없으니
+   * 수정 요청은 늘 현재 맵 사각형 안에서 풀렸다.
+   */
+  readonly construction?: ConstructionDeclaration;
 
   /** Only explicit create/modify NPC reward requests; never inferred from authored commands. */
   readonly npcRewards?: NpcRewardRequirements;
@@ -141,6 +150,7 @@ Fields:
 - "adventure": 시작 마을·던전 탐험·파티 모험을 구성하라는 전체 모험 저작 요청이면 {"village":true,"dungeon":true,"party":true,"battle":true}. 각 항목은 요청한 것만 true. 단순 NPC 추가/질문/DB 시드만/입구 표지판만 요청은 생략한다. 모험 JRPG 장르 프리셋 + 파티·던전 탐험 + 시작 마을·기본 전투 적은 네 항목 모두 true다.
 - "actionCombat": 실제 필드 액션 전투(공격 적중·처치·피격·회피·스태미나·원거리 적·보상)의 작동을 요구하면 {"targets":[{"mapId":"기존 실제 ID"} 또는 {"newMapName":"새로 만들 정확한 맵 이름"}]}로 필수 검증 대상을 선언한다. 턴제 전투, 장르 질문, 액션을 제외한 요청은 생략한다. 단어가 아니라 요청한 행동으로 판단한다. 이 선언은 계획 교체나 acceptance 수리로 지울 수 없는 완료 조건이다.
 - "statefulNpcs": 사용자가 상태에 따라 달라지는 NPC 행동/대사를 명시했을 때만 true. 보통의 한 페이지 안내 NPC, 인사, 상점이라는 이유로 true를 만들지 않는다.
+- "construction": 마을·집·시설을 짓거나 넓히라는 요청에서 **문장에 실제로 나온 수량만** 옮긴다. {"scale":"small|medium|large|vast","houseCount":20,"npcCount":8,"targetName":"강호 장터 마을"}. 크기어 대응: 아기자기한·작은=small, 보통=medium, 큰·넓은=large, 아주 큰·광활한=vast. 없는 값은 넣지 않는다(추측 금지). width/height는 쓰지 않는다 — 크기 환산은 코드가 한다. 「더 크게」「넓혀줘」「집 더 지어줘」처럼 있는 마을을 키우라는 요청도 mode=modify 로 두고 여기에 규모를 적는다. 공간 시공이 아니면 생략한다.
 
 - "npcRewards": ONLY for explicit create/modify requests to make an NPC grant currency, items or collected monsters. Omit for ordinary dialogue/NPCs, questions, and reward removal requests. Array example: [{"target":{"eventId":"known_event_id"},"grants":[{"kind":"item","id":"known_item_id","count":2}],"oneTime":true}]. Grant kind may also be "monster" or "gold". Currency uses {"kind":"gold","count":20} with NO id/name, not an inventory item. Do not reinterpret an item named gold/골드 as currency or invent a gold item to represent money. When an ID is unknown, replace target eventId with eventName, or item/monster grant id with name. Each target or item/monster reference must contain exactly ONE of those keys, never both; omit unused keys rather than writing null. Optional mapId belongs inside target. Preserve every requested grant. count is a positive integer for an explicit amount; omit count for an unspecified positive amount. oneTime=true ONLY when requested. Choices are zero-based and only declared when requested; repeatChoices describes the second interaction, normally omitted. Use IDs only when known, otherwise exact names (must resolve uniquely at completion); do not invent IDs or substitute actors/changeParty for collected monsters. If the requested target/reward cannot be identified, include an incomplete requirement so completion remains blocked, not an omitted contract. These expectations come from the REQUEST, never the eventual event commands, and must not be weakened to pass completion.
 - "functionalAcceptance": ONLY requested working purchases or map round-trip travel, not a shop decoration, map listing, genre label, question, or excluded behavior. Array of immutable expectations, never success flags/scripts. Purchase: {"kind":"shopPurchase","target":{"mapId":"actual map"},"start":{"x":1,"y":1},"seller":{"eventId":"known seller"},"item":{"id":"known item"},"count":2,"unitPrice":10}. Round trip: {"kind":"mapRoundTrip","target":{"mapId":"origin"},"start":{"x":1,"y":1},"destination":{"mapId":"destination"},"outgoing":{"eventId":"outgoing transfer"},"returning":{"eventId":"return transfer"}}. Use exact eventName/name instead of invented eventId/id; a new map uses newMapName instead of mapId. Start must be the requested actual project entry, supplied in facts, never a convenient test teleport. Preserve requested seller, stock, price/count, origin/destination and both authored transfers. For missing/ambiguous/unsupported targets or unspecified price/count include {"kind":"functionalUnresolved","reason":"Identify the missing request expectations"}; do not drop the requested behavior. Existing npcRewards already creates mandatory real-interaction acceptance. Non-requested behaviors MUST be omitted.
@@ -329,6 +339,10 @@ export function parseIntentDeclaration(raw: string, facts: IntentFacts): IntentP
       ...(authoring && parsed.functionalAcceptance !== undefined ? { functionalAcceptance: parseFunctionalRequirements(parsed.functionalAcceptance) } : {}),
       ...(authoring && parsed.functionalRefinements !== undefined ? { functionalRefinements: parseFunctionalRefinements(parsed.functionalRefinements) } : {}),
       ...(authoring && parsed.statefulNpcs === true ? { statefulNpcs: true } : {}),
+      ...(authoring ? (() => {
+        const construction = parseConstructionDeclaration(parsed.construction);
+        return construction ? { construction } : {};
+      })() : {}),
       summary: readString(parsed.summary, 200) ?? facts.userText.trim().slice(0, 200),
       source: "llm",
     },
@@ -429,6 +443,12 @@ export function formatIntentAudit(intent: IntentDeclaration, elapsedMs: number):
     intent.needsPlan ? "plan" : "single",
     intent.clarify ? "clarify" : null,
     intent.resetsContext ? "reset" : null,
+    intent.construction
+      ? `construction=${[
+        intent.construction.scale ?? null,
+        intent.construction.houseCount !== undefined ? `houses:${intent.construction.houseCount}` : null,
+      ].filter((part) => part !== null).join("/") || "declared"}`
+      : null,
     intent.tools.length > 0 ? `tools=${intent.tools.join(",")}` : null,
     `${elapsedMs}ms`,
   ];
@@ -478,7 +498,48 @@ export function formatScopeNote(scope: ScopeNoteInput, intent: IntentDeclaration
  * 「야외/실내/둘 다?」를 되물었다. 선언은 코드만 읽고 모델은 못 봤기 때문이다. 모델이 읽은 선언이라
  * 폴백·이어가기에는 붙이지 않는다.
  */
-export function formatIntentNote(intent: IntentDeclaration, options: { readonly clarifyBypassed?: boolean } = {}): string | null {
+export interface IntentNoteTargetMap {
+  readonly id: string;
+  readonly width: number;
+  readonly height: number;
+}
+
+/**
+ * 선언된 시공 규모 → 모델이 읽는 한 줄. 숫자는 코드(estimateVillageSize)가 정한다.
+ *
+ * 2026-09-15: 규모를 아는 계층과 크기를 정하는 계층이 끊겨 있어서 「마을 넓혀줘」가 맵 크기를
+ * 한 번도 바꾸지 않았다. 기존 맵이 권장 크기보다 작으면 여기서 resize_map 을 먼저 부르라고 못박는다.
+ */
+function formatConstructionNote(intent: IntentDeclaration, targetMap: IntentNoteTargetMap | null): string | null {
+  const construction = intent.construction;
+  if (!construction) return null;
+  const size = estimateVillageSize(construction);
+  const declared = [
+    construction.scale ? `규모 ${construction.scale}` : null,
+    construction.houseCount !== undefined ? `집 ${construction.houseCount}채` : null,
+    construction.npcCount !== undefined ? `주민 ${construction.npcCount}명` : null,
+  ].filter((part): part is string => part !== null).join(" · ");
+  const head = `[시공 규모] 선언된 수량: ${declared || "수량 없음"}. 코드가 환산한 권장 맵 크기는 ${size.width}×${size.height}(집 ${size.houseCount}채 기준)이다.`;
+  if (intent.mode === "modify") {
+    if (!targetMap) {
+      return `${head} 대상 맵이 이보다 작으면 resize_map 으로 먼저 키운 뒤 그 자리에 시공하라 — 좌상단 기준 확장이라 기존 타일·이벤트는 그대로다.`;
+    }
+    if (targetMap.width >= size.width && targetMap.height >= size.height) {
+      return `${head} 대상 맵 '${targetMap.id}' 은 ${targetMap.width}×${targetMap.height} 로 이미 충분하다 — 크기는 그대로 두고 안에서 고쳐라.`;
+    }
+    const width = Math.max(targetMap.width, size.width);
+    const height = Math.max(targetMap.height, size.height);
+    return `${head} 대상 맵 '${targetMap.id}' 은 ${targetMap.width}×${targetMap.height} 로 부족하다. `
+      + `resize_map({mapId:"${targetMap.id}", width:${width}, height:${height}}) 를 먼저 호출해 키운 뒤 시공하라 — `
+      + `좌상단 기준 확장이라 기존 타일·이벤트는 그대로고 늘어난 칸만 잔디가 된다. 요청한 수량을 줄여 기존 크기에 우겨넣지 말 것.`;
+  }
+  return `${head} 새 맵이면 이 크기를 그대로 써라 — author_village(target:{kind:"new", width:${size.width}, height:${size.height}}) 또는 create_map 에 같은 값을 넣는다.`;
+}
+
+export function formatIntentNote(
+  intent: IntentDeclaration,
+  options: { readonly clarifyBypassed?: boolean; readonly targetMap?: IntentNoteTargetMap | null } = {},
+): string | null {
   if (intent.source !== "llm") return null;
   const lines: string[] = [];
   if (intent.adventure) lines.push(ADVENTURE_AUTHORING_GUIDE);
@@ -523,5 +584,7 @@ export function formatIntentNote(intent: IntentDeclaration, options: { readonly 
       lines.push("[의도] 지금 맵 위 야외 시공이다(author_house/author_village/fill_region/place_props). 집은 author_house(interior:\"linked-interior\")가 기본이다 — 실내맵과 양방향 전이가 함께 생긴다. 겉모습만 필요하면 명시적으로 interior:\"exterior-only\". 독립 실내 세션은 만들지 말 것. 이미 확인된 의도이므로 되묻지 말고 진행하라.");
     }
   }
+  const constructionNote = formatConstructionNote(intent, options.targetMap ?? null);
+  if (constructionNote) lines.push(constructionNote);
   return lines.length > 0 ? lines.join("\n") : null;
 }

@@ -1,0 +1,27 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+ body { margin:0; padding:30px 34px; background:#0b0d12; width:1500px;
+        font-family:"JetBrains Mono",ui-monospace,"Noto Sans CJK KR",monospace; }
+ h2 { color:#e6e9ef; font-size:17px; margin:0 0 4px; font-family:"Noto Sans CJK KR",sans-serif; }
+ .sub { color:#8b95a7; font-size:13px; margin-bottom:18px; font-family:"Noto Sans CJK KR",sans-serif; }
+ pre { margin:0; background:#12151c; border:1px solid #232834; border-radius:9px; padding:20px 22px;
+       color:#cdd3de; font-size:13.5px; line-height:1.75; white-space:pre-wrap; }
+ .ok { color:#6ee7a0; font-weight:700; }
+</style></head><body>
+<h2>신규 회귀 테스트 — test/mapGrowthOnFixRequests.test.ts</h2>
+<div class="sub">네 수정 지점을 실제 세션(AssistantSession)과 검증기로 통과시킨다. 마지막 케이스는 수정 전에는 구조적으로 불가능했던 「막힘 → 확장 → 시공」 경로다.</div>
+<pre> RUN  v3.2.4 /home/main/paseo-workspace/worktrees/3lblgwmp/robust-cougar
+
+ <span class="ok">✓</span> test/mapGrowthOnFixRequests.test.ts (11 tests) 8519ms
+   <span class="ok">✓</span> 1. buildSpec — 기존 맵도 확장 plannedMap 을 선언할 수 있다 &gt; 현재 크기보다 큰 plannedMap 은 경계 기준이 되어 맵 밖 에셋을 통과시킨다  566ms
+   <span class="ok">✓</span> 1. buildSpec — 기존 맵도 확장 plannedMap 을 선언할 수 있다 &gt; 현재 크기보다 작은 plannedMap 은 거부된다 — 축소는 resize_map 의 이벤트 가드를 지나야 한다  564ms
+   <span class="ok">✓</span> 2. specGate — 맵이 작아서 막힐 때 resize_map 경로를 실어 보낸다 &gt; 밑그림 없는 차단 초안에 plannedMap 과 resize_map 호출이 들어간다  2589ms
+   <span class="ok">✓</span> 2. specGate — 맵이 작아서 막힐 때 resize_map 경로를 실어 보낸다 &gt; 맵 밖 에셋으로 거부된 set_build_spec 도 확장 경로를 안내한다  1791ms
+   <span class="ok">✓</span> 2. specGate — 맵이 작아서 막힐 때 resize_map 경로를 실어 보낸다 &gt; 키운 뒤에는 같은 밑그림이 통과한다 — 막힘→확장→시공이 한 경로로 이어진다  2982ms
+
+ <span class="ok">Test Files  1 passed (1)</span>
+      <span class="ok">Tests  11 passed (11)</span>
+   Start at  20:26:32
+   Duration  42.26s (transform 21.64s, setup 0ms, collect 31.97s, tests 8.52s, environment 0ms, prepare 596ms)
+
+</pre>
+</body></html>
