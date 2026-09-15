@@ -22,3 +22,63 @@ export const PRODUCT_BRAND = "OPRN Studio";
 
 /** 한 줄 소개 — meta description·manifest·도움말 개요가 공유한다. */
 export const PRODUCT_TAGLINE = "브라우저에서 돌아가는 AI 협업 탑다운 RPG 제작 워크벤치";
+
+// ── 버전 (2026-09-16) ────────────────────────────────────
+// 값은 빌드 시 vite define 이 주입한다(scripts/lib/appVersion.mjs). 소스에 숫자를 손으로
+// 적지 않는다 — 손으로 적으면 배포본과 저장소의 숫자가 조용히 갈다.
+//
+// 여기서 읽는 것은 **빌드 식별자**다. 릴리스 버전(0.1.0)의 정본은 package.json 이고,
+// 그 숫자를 올리는 것은 `npm run release` 뿐이다(openwiki/release-and-version.md).
+// 둘을 섞으면 매 머지마다 사용자에게 보이는 버전이 바뀐다 — 실측 하루 머지 26건.
+//
+// 주입이 없는 번들(vitest·번역 스크립트)에서도 죽지 않게 typeof 로 막는다.
+// define 이 없으면 이 식별자들은 선언되지 않은 채 남고, typeof 는 그 경우 안전하다.
+
+/** 빌드 시점의 버전 메타. scripts/lib/appVersion.d.mts 와 같은 모양이다. */
+export type AppVersionMeta = {
+  /** package.json 의 릴리스 버전. */
+  readonly version: string;
+  /** 사람이 읽는 라벨 — `0.1.0`  `0.1.0-dev.184+gddc7a88`. */
+  readonly label: string;
+  /** 가장 가까운 `v*` 태그. 없으면 null. */
+  readonly tag: string | null;
+  /** 그 태그 이후 커밋 수(태그가 없으면 저장소 전체 커밋 수). */
+  readonly commitsSinceTag: number;
+  /** `g` + 짧은 sha. git 을 못 쓰면 `unknown`. */
+  readonly commit: string;
+  /** 추적 중인 파일이 수정된 채로 빌드됐는가. */
+  readonly dirty: boolean;
+  /** 빌드 시각(ISO). */
+  readonly builtAt: string;
+};
+
+declare const __APP_VERSION__: string | undefined;
+declare const __APP_VERSION_META__: AppVersionMeta | undefined;
+
+/** 사람이 읽는 빌드 라벨. 예: `0.1.0`, `0.1.0-dev.184+gddc7a88`. */
+export const APP_VERSION: string = typeof __APP_VERSION__ === "string" ? __APP_VERSION__ : "0.0.0-nogit";
+
+/** 라벨을 만들기 전 단계까지 포함한 메타. 도구와 버그 리포트가 쓴다. */
+export const APP_VERSION_META: AppVersionMeta =
+  typeof __APP_VERSION_META__ === "object" && __APP_VERSION_META__ !== null && typeof __APP_VERSION_META__.label === "string"
+    ? __APP_VERSION_META__
+    : { version: APP_VERSION, label: APP_VERSION, tag: null, commitsSinceTag: 0, commit: "unknown", dirty: false, builtAt: "" };
+
+/** 제품명 + 버전 — 도움말·정보·로그의 한 줄. */
+export function appVersionLine(): string {
+  return `${PRODUCT_BRAND} ${APP_VERSION}`;
+}
+
+/** 버그 리포트에 붙일 상세 — 커밋·기준 태그·빌드 시각. */
+export function appVersionDetail(): string {
+  const parts = [`커밋 ${APP_VERSION_META.commit}`];
+  if (APP_VERSION_META.tag) parts.push(`기준 태그 ${APP_VERSION_META.tag} +${APP_VERSION_META.commitsSinceTag}`);
+  if (APP_VERSION_META.builtAt) parts.push(`빌드 ${APP_VERSION_META.builtAt}`);
+  if (APP_VERSION_META.dirty) parts.push("수정된 트리에서 빌드됨");
+  return parts.join(" · ");
+}
+
+// 콘솔·헤드리스 도구가 읽는 훅. 다른 `__oprn*` 훅과 같은 규약이다(모듈 로드 시 설치).
+if (typeof window !== "undefined") {
+  window.__oprnVersion = () => APP_VERSION_META;
+}
