@@ -103,23 +103,33 @@ function fnv1a32(input: string): number {
   return hash >>> 0;
 }
 
-function seedFromMapName(name: string): number {
-  const normalized = fnv1a32(name);
+function seedFromMapId(mapId: string): number {
+  const normalized = fnv1a32(`map-bgm:${mapId}`);
   return normalized === 0 ? 1 : normalized;
 }
 
-// @/util/rng mulberry32 maps 0→1, so raw seed 0 and 1 pick the same BGM.
-// Hash the decimal seed with a BGM namespace *before* that collapse so 0 vs 1 differ.
-// Tile RNG in generate_map stays on its own mulberry32 and is not mixed here.
-function namespacedBgmSeed(seed: number): number {
-  const mixed = fnv1a32(`${seed}:map-bgm`);
-  return mixed === 0 ? 1 : mixed;
+function usedBgmResourceIds(draft: Project, excludeMapId: string): string[] {
+  const used: string[] = [];
+  for (const map of Object.values(draft.maps)) {
+    if (map.id === excludeMapId || map.bgm?.mode !== "custom") continue;
+    const resourceId = map.bgm.resourceId;
+    if (typeof resourceId === "string" && resourceId.length > 0) used.push(resourceId);
+  }
+  return used;
 }
+
+ // @/util/rng mulberry32 maps 0→1, so raw seed 0 and 1 pick the same BGM.
+ // Hash the decimal seed with a BGM namespace *before* that collapse so 0 vs 1 differ.
+ // Tile RNG in generate_map stays on its own mulberry32 and is not mixed here.
+ function namespacedBgmSeed(seed: number): number {
+   const mixed = fnv1a32(`${seed}:map-bgm`);
+   return mixed === 0 ? 1 : mixed;
+ }
 
 export function assignCreatedMapBgm(
   map: GameMap,
   args: Record<string, unknown>,
-  options?: { readonly themeOrName?: string; readonly defaultSeed?: number },
+  options?: { readonly themeOrName?: string; readonly draft?: Project },
 ): string {
   const explicitBgm = args.bgm;
   if (explicitBgm && typeof explicitBgm === "object" && !Array.isArray(explicitBgm)) {
@@ -145,9 +155,10 @@ export function assignCreatedMapBgm(
   }
   const themeOrName = options?.themeOrName ?? map.name;
   const seed = typeof args.seed === "number" && Number.isInteger(args.seed)
-    ? args.seed
-    : (options?.defaultSeed ?? seedFromMapName(themeOrName));
-  const resourceId = recommendMapBgm(themeOrName, namespacedBgmSeed(seed));
+    ? namespacedBgmSeed(args.seed)
+    : seedFromMapId(map.id);
+  const excludeIds = options?.draft !== undefined ? usedBgmResourceIds(options.draft, map.id) : undefined;
+  const resourceId = recommendMapBgm(themeOrName, seed, excludeIds);
   map.bgm = { mode: "custom", resourceId };
   return resourceId;
 }
@@ -159,8 +170,7 @@ const createMap: ToolDefinition = {
   // 설명을 "명시 요청 때만" 으로 바꿔도 선택은 그대로였다(3/3). 스키마에서 감추면 0/3.
   // 맵 밖은 이미 엔진이 통행 불가라(project/collision.ts canMove 의 inBounds) 테두리 벽은 화면 장식일 뿐이고,
   // 작은 맵에서는 면적만 먹는다(12×10 지하실 = 120칸 중 40칸). 런타임 호출 호환은 남긴다 — 과거 대화
-  // 재생·저장 스크립트가 같은 인자를 넘겨도 같은 결과가 나와야 한다(ai-tools-deprecation-roadmap 1~2단계).
-  description: `새 맵을 생성한다(테두리 없는 잔디 평지, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. 이름에서 테마를 읽어 BGM을 고른다(bgm/bgmResourceId가 있으면 그걸 쓴다). 실내 시설·방을 만들라는 요청에서 빈 맵만 만들고 끝내지 말 것 — 실내는 place_concept 또는 start_interior_room_session 이 새 mapId 까지 함께 시공한다.`,
+  description: `새 맵을 생성한다(테두리 없는 잔디 평지, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. 이름에서 테마를 읽어 BGM을 고른다(seed 생략 시 맵 id에서 유도 + 이미 쓴 곡 회피, bgm/bgmResourceId가 있으면 그걸 쓴다). 실내 시설·방을 만들라는 요청에서 빈 맵만 만들고 끝내지 말 것 — 실내는 place_concept 또는 start_interior_room_session 이 새 mapId 까지 함께 시공한다.`,
   mode: "write",
   parameters: {
     type: "object",
@@ -170,7 +180,7 @@ const createMap: ToolDefinition = {
       height: { type: "integer", description: `세로 타일 수(3 이상, 최대 ${MAX_TOOL_MAP_DIMENSION})` },
       id: { type: "string", description: "맵 id(생략 시 자동 생성)" },
       // border 는 여기 없다 — 위 주석 참조. run() 은 인자를 계속 받는다(런타임 호환).
-      seed: { type: "integer", description: "BGM 선택 시드(생략 시 이름 해시)" },
+      seed: { type: "integer", description: "명시 BGM 선택 시드(생략 시 맵 id에서 유도, 이미 쓴 곡 회피)" },
       bgmResourceId: { type: "string", description: "맵 BGM 리소스 id. 있으면 자동 선택을 건너뛴다." },
       bgm: {
         type: "object",
@@ -210,7 +220,7 @@ const createMap: ToolDefinition = {
     }
     const border = (borderArg as "none" | "wall" | undefined) ?? "none";
     if (border === "wall") borderWalls(map);
-    const bgmResourceId = assignCreatedMapBgm(map, args);
+    const bgmResourceId = assignCreatedMapBgm(map, args, { draft });
     draft.maps[id] = map;
     // mapTree.mapId가 유효하지 않으면(빈 프로젝트) 이 맵을 트리 루트로 채택, 아니면 자식으로 추가.
     if (!draft.maps[draft.mapTree.mapId]) {

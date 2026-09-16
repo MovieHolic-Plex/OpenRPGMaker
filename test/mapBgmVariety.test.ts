@@ -98,6 +98,68 @@ describe("recommendMapBgm", () => {
     expect(catalogId(recommendMapBgm("village", 1, pool))).toBe(STARTER_DEFAULT_BGM_ID);
   });
 });
+describe("자동 BGM 다양성 (seed 생략 반복)", () => {
+  it("generate_map을 seed 없이 같은 테마로 두 번 만들면 다른 곡이다 (풀이 허용할 때)", () => {
+    const ctx: ToolContext = { project: createEmptyToolProject() };
+    const first = runTool(
+      ctx,
+      "generate_map",
+      { theme: "village", width: 12, height: 12, id: "gen_variety_1", chokepoints: 0 },
+      { dryRun: false },
+    );
+    const second = runTool(
+      ctx,
+      "generate_map",
+      { theme: "village", width: 12, height: 12, id: "gen_variety_2", chokepoints: 0 },
+      { dryRun: false },
+    );
+    expect(first.ok, first.summary).toBe(true);
+    expect(second.ok, second.summary).toBe(true);
+    const firstBgm = (first.data as { bgmResourceId: string }).bgmResourceId;
+    const secondBgm = (second.data as { bgmResourceId: string }).bgmResourceId;
+    catalogId(firstBgm);
+    catalogId(secondBgm);
+    expect(secondBgm).not.toBe(firstBgm);
+  });
+
+  it("같은 id로 재생하면 같은 BGM이다", () => {
+    const runOnce = (): string => {
+      const ctx: ToolContext = { project: createEmptyToolProject() };
+      const result = runTool(
+        ctx,
+        "generate_map",
+        { theme: "forest", width: 12, height: 12, id: "gen_replay", chokepoints: 0 },
+        { dryRun: false },
+      );
+      expect(result.ok, result.summary).toBe(true);
+      return (result.data as { bgmResourceId: string }).bgmResourceId;
+    };
+    expect(runOnce()).toBe(runOnce());
+  });
+
+  it("create_map도 seed 없이 같은 이름 반복이면 다른 곡이다 (풀이 허용할 때)", () => {
+    const ctx: ToolContext = { project: createEmptyToolProject() };
+    const first = runTool(
+      ctx,
+      "create_map",
+      { name: "숲속 마을", width: 8, height: 8, id: "map_variety_1" },
+      { dryRun: false },
+    );
+    const second = runTool(
+      ctx,
+      "create_map",
+      { name: "숲속 마을", width: 8, height: 8, id: "map_variety_2" },
+      { dryRun: false },
+    );
+    expect(first.ok, first.summary).toBe(true);
+    expect(second.ok, second.summary).toBe(true);
+    const firstBgm = (first.data as { bgmResourceId: string }).bgmResourceId;
+    const secondBgm = (second.data as { bgmResourceId: string }).bgmResourceId;
+    catalogId(firstBgm);
+    catalogId(secondBgm);
+    expect(secondBgm).not.toBe(firstBgm);
+  });
+});
 
 describe("generate_map BGM", () => {
   it("테마마다 custom BGM 을 심고 요약/data 에 담는다", () => {
@@ -279,24 +341,22 @@ describe("create_map BGM", () => {
     expect(ctx.project.maps.map_bgm_empty).toBeUndefined();
   });
 
-  it("시드 없이 같은 이름을 두 번 만들면 같은 BGM 이다", () => {
-    const ctx: ToolContext = { project: createEmptyToolProject() };
-    const first = runTool(
-      ctx,
-      "create_map",
-      { name: "달빛 마을", width: 8, height: 8, id: "map_hash_1" },
-      { dryRun: false },
-    );
-    const second = runTool(
-      ctx,
-      "create_map",
-      { name: "달빛 마을", width: 8, height: 8, id: "map_hash_2" },
-      { dryRun: false },
-    );
-    expect(first.ok, first.summary).toBe(true);
-    expect(second.ok, second.summary).toBe(true);
-    expect(ctx.project.maps.map_hash_1?.bgm).toEqual(ctx.project.maps.map_hash_2?.bgm);
-    expect(ctx.project.maps.map_hash_1?.bgm?.mode).toBe("custom");
-    catalogId((ctx.project.maps.map_hash_1?.bgm as { resourceId: string }).resourceId);
+  it("같은 id로 재생하면 같은 BGM이다 (id 유도 결정성)", () => {
+    const runOnce = (): string => {
+      const ctx: ToolContext = { project: createEmptyToolProject() };
+      const result = runTool(
+        ctx,
+        "create_map",
+        { name: "달빛 마을", width: 8, height: 8, id: "map_replay" },
+        { dryRun: false },
+      );
+      expect(result.ok, result.summary).toBe(true);
+      const bgm = ctx.project.maps.map_replay?.bgm;
+      expect(bgm?.mode).toBe("custom");
+      const resourceId = (bgm as { resourceId: string }).resourceId;
+      catalogId(resourceId);
+      return resourceId;
+    };
+    expect(runOnce()).toBe(runOnce());
   });
 });
