@@ -8,16 +8,17 @@
 //     그 뒤로 실제 시각 버그(faceset 시트가 96px 클립 위에 원본 크기로 그려짐)가 계속 배포됐고,
 //     `test/quickAuthoringPreviewIdentity.test.ts` 의 실패 테스트 2건을 아무도 이 사고와 연결하지 못했다.
 //     빌드는 초록이었다 — 아무도 안 읽는 CSS 파일은 컴파일러가 잡아주지 않기 때문이다.
-//  2. 이중 @import — 같은 번들 안에서 서로 다른 배럴이 같은 파일을 두 번 부르는 케이스가
-//     5건(합계 1,276줄: 226+477+352+129+92) 있다. Vite 의 postcss-import 는 **첫 번째 위치**로
-//     dedup 하므로, 두 번째 배럴이 선언한 cascade 순서 계약은 거짓말이 된다.
-//     나중 배럴을 읽고 우선순위를 추론한 사람은 반드시 틀린 결론에 도달한다.
+//  2. 이중 @import — 같은 번들 안에서 서로 다른 배럴이 같은 파일을 두 번 부르는 케이스.
+//     Vite 의 postcss-import 는 **첫 번째 위치**로 dedup 하므로, 두 번째 배럴이 선언한
+//     cascade 순서 계약은 거짓말이 된다. 나중 배럴을 읽고 우선순위를 추론한 사람은
+//     반드시 틀린 결론에 도달한다. (P0 기준선의 5건은 2026-09-11 Task 7 에서 해소됐다.)
 //
-// 현재 상태 실측 (2026-08-28): 엔트리 6개 · CSS 249개 · 도달 248개 · 고아 1 · 이중 5 ·
-// 미등록 슬라이스 2 · 번호 충돌 1그룹(3파일). 전부 아래 ALLOWLIST 에 유예돼 있으므로 게이트는 초록이다.
+// 현재 상태 실측 (2026-09-17): 엔트리 6개 · CSS 290개 · 도달 290개 · 고아 0 · 이중 0 ·
+// 미등록 슬라이스 0 · 번호 충돌 0. **ALLOWLIST 네 개가 전부 비어 있다** — 초록의 이유는
+// 유예가 아니라 빚을 갚았기 때문이다. (2026-08-28 판 주석은 "전부 유예돼 초록"이라고
+// 정반대로 말하고 있었고, 그 문장이 실제로 리뷰어를 오도했다.)
 //
-// 기준선 철학은 scripts/verify-gates.mjs 와 같다: 이 저장소는 이미 빨간불이므로
-// "전부 초록"을 요구하면 게이트가 즉시 비활성화된다. 기존 위반은 아래 ALLOWLIST 로 유예하고
+// 기준선 철학은 scripts/verify-gates.mjs 와 같다: 기존 위반은 아래 ALLOWLIST 로 유예하고
 // **새로 생긴 위반만** 회귀로 취급한다. 유예 항목을 고치면 목록에서 한 줄 지우면 끝이다.
 //
 // 사용:
@@ -26,6 +27,7 @@
 //   node scripts/check-css-graph.mjs --print-baseline # 현재 상태를 ALLOWLIST 스니펫으로 출력(붙여넣기용)
 import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
 import { join, dirname, resolve, relative, basename } from "node:path";
+import { parseImports, stripCssComments } from "./lib/css-import-re.mjs";
 
 const ROOT = process.cwd();
 const SRC_DIR = join(ROOT, "src");
@@ -88,15 +90,8 @@ function walk(dir, filter, files = []) {
 }
 
 // 주석 안의 @import 는 죽은 코드다. 지우지 않고 세면 "등록됐다"는 거짓 초록이 나온다.
-const stripComments = (css) => css.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, " "));
+// stripComments / CSS_IMPORT_RE 는 scripts/lib/css-import-re.mjs 로 옮겼다.
 
-// `@import "a.css"` / `@import url(a.css)` / 작은따옴표 / media query 꼬리표를 모두 받는다.
-// `i` 플래그가 필요한 이유: CSS 문법상 at-rule 키워드와 `url(` 은 ASCII 대소문자를 구분하지 않는다.
-// 즉 `@IMPORT` / `@Import` / `URL(...)` 은 브라우저와 postcss-import 가 정상 처리하는 유효한 등록이다.
-// 실측: 현재 저장소의 @import 259건은 전부 소문자라 이 플래그로 집계가 바뀌지 않는다(249/248/1/5/2/1 동일).
-// 하지만 없으면 누가 대문자로 한 줄 쓰는 순간 **정상 배럴 등록을 못 읽어** 멀쩡한 파일을 고아로 오탐한다.
-const CSS_IMPORT_RE =
-  /@import\s+(?:url\(\s*(?:"([^"]*)"|'([^']*)'|([^)"'\s]+))\s*\)|"([^"]*)"|'([^']*)')/gi;
 // TS 쪽 엔트리: `import "@/styles/index.css";` 또는 `import "./styles.css";`
 const TS_CSS_IMPORT_RE = /(?:^|\n)\s*import\s+(?:"([^"]+\.css)"|'([^']+\.css)')\s*;?/g;
 
@@ -112,14 +107,16 @@ function resolveSpecifier(spec, fromFile) {
 }
 
 function readImports(file) {
-  const css = stripComments(readFileSync(file, "utf8"));
+  // 파서는 scripts/lib/css-import-re.mjs 하나다. css-flatten.mjs 와 같은 정의를 써야
+  // "한 도구에만 보이는 @import" 가 생기지 않는다(2026-09-17 세탁 경로 참조).
+  const raw = readFileSync(file, "utf8");
+  const css = stripCssComments(raw);
   const found = [];
-  for (const match of css.matchAll(CSS_IMPORT_RE)) {
-    const spec = match[1] ?? match[2] ?? match[3] ?? match[4] ?? match[5];
-    const target = resolveSpecifier(spec, file);
+  for (const imp of parseImports(raw)) {
+    const target = resolveSpecifier(imp.spec, file);
     if (!target) continue;
-    const line = css.slice(0, match.index).split("\n").length;
-    found.push({ spec, target, line });
+    const line = css.slice(0, imp.index).split("\n").length;
+    found.push({ spec: imp.spec, target, line });
   }
   return found;
 }

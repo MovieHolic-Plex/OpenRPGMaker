@@ -3,8 +3,10 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import postcss from "postcss";
-
-const IMPORT_RE = /@import\s+(?:url\(\s*)?["']([^"']+)["']\s*\)?([^;]*);/g;
+// @import 파서는 scripts/lib/css-import-re.mjs 하나만 쓴다.
+// 예전엔 여기 따로 정규식이 있었고 따옴표를 필수로 요구해, `@import url(x.css)` 형태가
+// 이 도구에만 안 보였다 — 표면 검사에서 시트를 통째로 숨기는 세탁 경로가 됐다.
+import { parseImports, stripCssComments } from "./lib/css-import-re.mjs";
 
 export function flattenImports(entryAbs) {
   const order = [];
@@ -17,11 +19,9 @@ export function flattenImports(entryAbs) {
     if (copy > 1) return; // postcss-import 는 첫 위치로 dedup 한다
     let src;
     try { src = fs.readFileSync(abs, "utf8"); } catch { return; }
-    src = src.replace(/\/\*[\s\S]*?\*\//g, "");
-    for (const m of src.matchAll(IMPORT_RE)) {
-      const tail = m[2] ?? "";
-      const lm = /layer\(\s*([\w.-]+)\s*\)/.exec(tail);
-      walk(path.resolve(path.dirname(abs), m[1]), depth + 1, lm ? lm[1] : layer);
+    src = stripCssComments(src);
+    for (const imp of parseImports(src)) {
+      walk(path.resolve(path.dirname(abs), imp.spec), depth + 1, imp.layer ?? layer);
     }
   };
   walk(entryAbs, 0, null);
