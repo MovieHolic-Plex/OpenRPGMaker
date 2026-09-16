@@ -107,23 +107,26 @@ async function main() {
         const supabaseAnonKey = args.supabaseAnonKey ?? process.env.VITE_SUPABASE_ANON_KEY;
         if (!supabaseUrl || !supabaseAnonKey) throw new Error("Supabase 자격증명이 필요합니다: --url/--anon-key 또는 VITE_SUPABASE_URL/VITE_SUPABASE_ANON_KEY 환경변수");
         const headers = { apikey: supabaseAnonKey, Authorization: `Bearer ${supabaseAnonKey}`, Accept: "application/json", "Accept-Profile": "rpg_zzu" };
-        const fetchRows = async (table) => {
-          const response = await fetch(`${supabaseUrl}/rest/v1/${table}?project_id=eq.${projectId}&select=*`, { headers });
+        const fetchRows = async (table, filter) => {
+          const response = await fetch(`${supabaseUrl}/rest/v1/${table}?${filter}&select=*`, { headers });
           if (!response.ok) throw new Error(`${table}: ${response.status} ${await response.text()}`);
           return await response.json();
         };
         const storeModule = await withTsModule(STORE_ENTRY, "oprn-local-store.mjs", async (m) => m);
-        const store = await storeModule.openLocalProjectStore({ projectDir: args.projectDir });
+        const store = await storeModule.initLocalProjectStore({ projectDir: args.projectDir });
         try {
-          const [projectRows, commitRows, changeRows, activityRows, conversationRows, analysisRows] = await Promise.all([
-            fetchRows("projects"), fetchRows("project_commits"), fetchRows("project_changes"),
-            fetchRows("ai_activity_logs"), fetchRows("ai_conversations"), fetchRows("ai_analysis_runs"),
+          const projectRows = await fetchRows("projects", `project_id=eq.${projectId}`);
+          const commitRows = await fetchRows("project_commits", `project_id=eq.${projectId}`);
+const [activityRows, conversationRows, analysisRows] = await Promise.all([
+            fetchRows("ai_activity_logs", `project_id=eq.${projectId}`),
+            fetchRows("ai_conversations", `project_id=eq.${projectId}`),
+            fetchRows("ai_analysis_runs", `project_id=eq.${projectId}`),
           ]);
           const projectRow = projectRows[0];
           if (!projectRow?.current_json) throw new Error(`Supabase에 프로젝트 문서가 없습니다: ${projectId}`);
           const serialized = typeof projectRow.current_json === "string" ? projectRow.current_json : JSON.stringify(projectRow.current_json);
           const saved = await store.saveSerialized(serialized);
-          store.bulkImportSupabase({ commits: commitRows, changes: changeRows, aiActivityLogs: activityRows, aiConversations: conversationRows, aiAnalysisRuns: analysisRows });
+          store.bulkImportSupabase({ commits: commitRows, aiActivityLogs: activityRows, aiConversations: conversationRows, aiAnalysisRuns: analysisRows });
           const media = await store.separateInlineMedia(store.loadSnapshot()?.project ?? projectFromJson(serialized));
           printJson({ kind: saved.kind, sha256: saved.sha256, revision: saved.revision, projectId, projectDir: args.projectDir, mediaSeparated: media.changed, migratedAssets: media.migratedAssetIds.length, ...store.info() });
         } finally { store.close(); }
