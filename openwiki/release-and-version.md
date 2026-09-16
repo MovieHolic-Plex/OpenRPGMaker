@@ -75,6 +75,27 @@ gh release create v0.2.0 --title "v0.2.0" --notes-from-tag
 - `1.0.0` 조건: 로컬 SQLite 저장 + 데스크톱 패키징 + 업데이트 채널. 그 전까지는 정직하게 0.x.
 - 되돌릴 때도 숫자는 내려가지 않는다 — 새 버전으로 다시 낸다.
 
+## 데스크톱 산출물을 릴리스에 붙인다 (2026-09-16)
+
+Electron 배포는 GitHub Release 에 바이너리를 붙이는 게 본류다. 이 저장소의 절차:
+
+```bash
+# 1. 패키지 빌드 (OS별 — 맥 dmg·zip 은 맥 호스트에서, 리눅스 AppImage 는 어디서나)
+npm run electron:package            # → dist-packages/OPRN Studio-<version>.AppImage
+
+# 2. 정식 릴리스 태그에 업로드 (npm run release → push → gh release create 를 마친 뒤)
+gh release upload v0.3.0 dist-packages/OPRN\ Studio-0.3.0.*
+```
+
+- **프리릴리스 태그로 미리 보기**: 병합 전 브랜치의 도그푸딩 바이너리는 정식 태그에 붙이지 않는다
+  (바이너리가 태그와 어긋난다). `v<version>-electron-preview.N` + `--prerelease` 로 올리고,
+  정식 릴리스가 나오면 지운다. 실측: `v0.3.0-electron-preview.1`(PR #874, Linux AppImage 335MB).
+- **AppImage 크기 참고**: production node_modules 를 asar 에 넣지 않는 설정(`files: ["dist/**", "dist-electron/**"]`)
+  때문에 ~330MB 다. electron 본체가 대부분이다.
+- **서명·자동 업데이트는 아직 없다**(`publish: null`, 설계서 비목표). 채널이 생기면 `electron-builder` 의
+  publish 설정과 latest.yml 을 같이 도입한다.
+- GitHub Release 파일 상한(2GB/파일) 안이므로 AppImage·dmg 모두 문제없다.
+
 ## 커밋 메시지가 릴리스 노트의 원고다
 
 `npm run release` 는 `git log` 에서 노트를 만든다(`scripts/lib/releaseNotes.mjs`). 손으로 쓰는 노트는
