@@ -8,6 +8,7 @@ import { playAudioCommand } from "@/player/audio";
 export type BattleAudioContext = { readonly project: Project; readonly session: PlaySession };
 import { beginBattleResultAudio, playAuthoredBattleResultCue } from "@/player/battleAudio";
 import { playBattleSfx as playSynthVoice, type BattleSfxKind } from "@/player/battleSfx";
+import { playBattleSample, preloadBattleSamples } from "@/player/battleSeSamples";
 import { HIT_INTENSITY_STYLE, hitIntensityStageVariables, type BattleHitIntensity } from "@/player/battleHitIntensity";
 import { scheduleBattleTimer } from "@/player/battleTimerScope";
 
@@ -79,6 +80,14 @@ const SYNTH_VOICE: Record<BattleJuiceEvent, BattleSfxKind> = {
 // 샘플은 원음이 커서 0.4 에서 대략 같은 라우드니스로 들린다.
 const DEFAULT_VOLUME = 0.4;
 
+/** 전투에서 져질 수 있는 샘플 SE 전부를 미리 디코드해 둔다 — 전투 진입(마운트)에서 호출한다. */
+export function preloadBattleJuiceSamples(): void {
+  const ids = new Set<string>();
+  for (const id of Object.values(BATTLE_SFX)) ids.add(id);
+  for (const id of Object.values(SFX_FALLBACK)) if (id) ids.add(id);
+  preloadBattleSamples([...ids]);
+}
+
 export function emitBattleJuice(event: BattleJuiceEvent, target?: HTMLElement | null, context?: BattleAudioContext): void {
   playBattleCue(event, context);
   if (!target) return;
@@ -137,6 +146,9 @@ export function playBattleCue(event: BattleJuiceEvent, context?: BattleAudioCont
 }
 
 function tryPlay(soundResourceId: string): boolean {
+  // 디코딩 캐시에 있으면 WebAudio 로 즉시 재생 — 요소 경로는 새 요소마다 로드를 기다리므로
+  // 임팩트 발화가 그만큼 늦게 들린다. 캐시 미스면 false 로 요소 경로가 소리를 낸다.
+  if (playBattleSample(soundResourceId, DEFAULT_VOLUME)) return true;
   const url = resolveAssetResourceUrl(soundResourceId, { project: store.getCurrent() });
   if (!url) return false;
   const audio = new Audio(url);
