@@ -167,6 +167,10 @@ const hashKey = (key) => createHash("sha1").update(key).digest("hex").slice(0, 1
 // 래칫 대상 문자열. 줄 번호 없음 — 파일·레이어·값이 같으면 같은 승자로 본다.
 export const ratchetOf = (w) => `${w.where.replace(/:\d+$/, "")} [${w.layer}] ${w.value}`;
 
+// 파일 경로를 뺀 래칫. 시트를 **옮기기만** 했을 때 캐스케이드가 그대로인지 증명할 때 쓴다
+// (Phase 3·4 의 대규모 이동). 레이어와 값은 그대로 비교하므로 이동에 섞인 실제 변경은 잡는다.
+const stripFile = (s) => s.replace(/^.*?( \[)/, "$1");
+
 export function encodeBaseline(perEntry) {
   const tables = { files: [], layers: [], values: [] };
   const maps = { files: new Map(), layers: new Map(), values: new Map() };
@@ -203,6 +207,43 @@ export function decodeBaseline(doc) {
     out[entry] = { winners, contested: e.contested ?? {} };
   }
   return out;
+}
+
+/**
+ * 기준선(디코드된 것)과 현재 승자 맵을 비교한다.
+ * @param {Record<string, {winners: Record<string,string>, contested: Record<string,string>}>} before
+ * @param {Record<string, Record<string, object>>} current 엔트리 → 승자 레코드 맵
+ * @param {{ ignoreFile?: boolean }} opts ignoreFile 이면 파일 경로를 빼고 비교한다(순수 이동 증명용).
+ */
+export function diffWinners(before, current, { ignoreFile = false } = {}) {
+  const norm = (s) => (ignoreFile ? stripFile(s) : s);
+  const changes = [];
+  for (const entry of [...new Set([...Object.keys(before), ...Object.keys(current)])].sort()) {
+    const b = before[entry];
+    const cur = current[entry];
+    if (!b) { changes.push({ entry, name: "(번들 전체)", before: "(없음)", after: "새 엔트리" }); continue; }
+    if (!cur) { changes.push({ entry, name: "(번들 전체)", before: "있음", after: "(사라짐)" }); continue; }
+    // 해시 → 현재 키 이름. 사라진 키는 기준선의 경쟁 키 원문으로, 그것도 없으면 해시로 부른다.
+    const nameOf = new Map();
+    const curByHash = new Map();
+    for (const key of Object.keys(cur)) {
+      const h = hashKey(key);
+      nameOf.set(h, key);
+      curByHash.set(h, cur[key]);
+    }
+    for (const h of new Set([...Object.keys(b.winners), ...curByHash.keys()])) {
+      const was = b.winners[h] === undefined ? undefined : norm(b.winners[h]);
+      const now = curByHash.has(h) ? norm(ratchetOf(curByHash.get(h))) : undefined;
+      if (was === now) continue;
+      changes.push({
+        entry,
+        name: nameOf.get(h) ?? b.contested[h] ?? `(사라진 키 ${h})`,
+        before: b.winners[h] ?? "(없음 — 새 선언)",
+        after: curByHash.has(h) ? readableOf(curByHash.get(h)) : "(사라짐)",
+      });
+    }
+  }
+  return changes.sort((a, b2) => a.entry.localeCompare(b2.entry) || a.name.localeCompare(b2.name));
 }
 
 // ── CLI ───────────────────────────────────────────────────────────────────────
@@ -259,33 +300,9 @@ function main() {
 
   warnIfStale(baselinePath, "css-winners");
   const before = decodeBaseline(JSON.parse(readFileSync(baselinePath, "utf8")));
-  const changes = [];
-  for (const entry of [...new Set([...Object.keys(before), ...Object.keys(perEntry)])].sort()) {
-    const b = before[entry];
-    const cur = perEntry[entry];
-    if (!b) { changes.push({ entry, name: "(번들 전체)", before: "(없음)", after: "새 엔트리" }); continue; }
-    if (!cur) { changes.push({ entry, name: "(번들 전체)", before: "있음", after: "(사라짐)" }); continue; }
-    // 해시 → 현재 키 이름. 사라진 키는 기준선의 경쟁 키 원문으로, 그것도 없으면 해시로 부른다.
-    const nameOf = new Map();
-    const curByHash = new Map();
-    for (const key of Object.keys(cur)) {
-      const h = hashKey(key);
-      nameOf.set(h, key);
-      curByHash.set(h, cur[key]);
-    }
-    for (const h of new Set([...Object.keys(b.winners), ...curByHash.keys()])) {
-      const was = b.winners[h];
-      const now = curByHash.has(h) ? ratchetOf(curByHash.get(h)) : undefined;
-      if (was === now) continue;
-      changes.push({
-        entry,
-        name: nameOf.get(h) ?? b.contested[h] ?? `(사라진 키 ${h})`,
-        before: was ?? "(없음 — 새 선언)",
-        after: curByHash.has(h) ? readableOf(curByHash.get(h)) : "(사라짐)",
-      });
-    }
-  }
-  changes.sort((a, b) => a.entry.localeCompare(b.entry) || a.name.localeCompare(b.name));
+  const ignoreFile = args.includes("--ignore-file");
+  const changes = diffWinners(before, perEntry, { ignoreFile });
+  if (ignoreFile) console.error("  (--ignore-file: 파일 경로를 뺀 비교 — 순수 이동 증명용)");
 
   if (args.includes("--json")) {
     console.log(JSON.stringify({ changed: changes.length, changes }, null, 1));

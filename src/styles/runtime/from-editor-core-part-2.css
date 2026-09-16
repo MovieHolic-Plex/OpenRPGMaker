@@ -6,6 +6,10 @@
    들어가지만, 원본 editor/core.part-2.css 는 그 사슬에 없었다. 조상 스코프가 없는 .battle-* 규칙이 출하 게임에서 새로 매치되지 않도록
    모든 선택자 앞에 특이도 0 의 `:where(body:has(.editor-layout))` 을 붙인다 — 특이도·레이어·위치가 그대로라 편집기 캐스케이드는
    불변이고, 플레이어 문서에는 .editor-layout 이 없어 어느 규칙도 매치되지 않는다. */
+/* 주: 원본 표면 `editor/` 는 2026-09-17 에 해체됐다(계획 Task 11) — 21장은 map/, 5장은 shell/dialogs/.
+   파일명의 `from-editor-` 는 **역사적 출처 표기**이며 현재 디렉터리를 뜻하지 않는다.
+   위 헤더가 말하는 원본은 지금 `map/core.part-2.css` 에 있다. */
+
 
 /* editor/core.part-2.css:2-5 — [레이어 보존] 전투 화면(runtime 어휘) 규칙 — runtime 레이어의 .battle-* 과 특이도로 경쟁하던 오늘의 관계를 유지 */
 :where(body:has(.editor-layout)) .battle-enemy:disabled {

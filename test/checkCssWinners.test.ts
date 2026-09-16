@@ -10,6 +10,7 @@ import { describe, expect, it } from "vitest";
 import {
   computeWinners,
   decodeBaseline,
+  diffWinners,
   encodeBaseline,
   formatWinners,
   ratchetOf,
@@ -258,5 +259,39 @@ describe("기준선 인코딩", () => {
       sheets: [sheet("a.css", ".a { color: red } .b { color: red } .c { color: red }")],
     });
     expect(encodeBaseline({ "e.css": winners }).values).toEqual(["red"]);
+  });
+});
+
+describe("diffWinners — 이동 증명용 비교", () => {
+  const mk = (name: string, css: string) => computeWinners({ sheets: [sheet(name, css)] });
+
+  it("파일이 옮겨지면 기본 비교는 변경으로 본다", () => {
+    const before = { "e.css": { winners: {}, contested: {} } };
+    const a = mk("editor/x.css", ".p { color: red }");
+    const b = mk("map/x.css", ".p { color: red }");
+    const baseline = decodeBaseline({ ...encodeBaseline({ "e.css": a }) });
+    expect(diffWinners(baseline, { "e.css": b }, { ignoreFile: false })).toHaveLength(1);
+    void before;
+  });
+
+  it("--ignore-file 이면 경로만 바뀐 이동은 변경이 아니다", () => {
+    const a = mk("editor/x.css", ".p { color: red }");
+    const b = mk("map/x.css", ".p { color: red }");
+    const baseline = decodeBaseline({ ...encodeBaseline({ "e.css": a }) });
+    expect(diffWinners(baseline, { "e.css": b }, { ignoreFile: true })).toHaveLength(0);
+  });
+
+  it("--ignore-file 이어도 값 변경은 잡는다", () => {
+    const a = mk("editor/x.css", ".p { color: red }");
+    const b = mk("map/x.css", ".p { color: blue }");
+    const baseline = decodeBaseline({ ...encodeBaseline({ "e.css": a }) });
+    expect(diffWinners(baseline, { "e.css": b }, { ignoreFile: true })).toHaveLength(1);
+  });
+
+  it("--ignore-file 이어도 레이어 변경은 잡는다", () => {
+    const a = computeWinners({ sheets: [sheet("editor/x.css", "@layer map { .p { color: red } }")] });
+    const b = computeWinners({ sheets: [sheet("map/x.css", "@layer shell { .p { color: red } }")] });
+    const baseline = decodeBaseline({ ...encodeBaseline({ "e.css": a }) });
+    expect(diffWinners(baseline, { "e.css": b }, { ignoreFile: true })).toHaveLength(1);
   });
 });

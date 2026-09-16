@@ -107,7 +107,7 @@ function fontShorthandFamilies(css: string): string[] {
 // 2026-09-11 Task 13: 옛 src/styles/event/event-editor-legacy.part-1.css 도 범위였다. 그 시트는 구성 요소 버킷으로 접혔고,
 // 남아 있던 두 규칙(.db-field / .db-field-hint → event/command-forms/forms.css) 에는 font: 단축 속성이 없어 범위에서 뺀다
 // (이벤트 버킷 전체를 넣으면 리터럴 패밀리를 쓰는 이벤트 규칙까지 새로 잡혀 이 가드의 범위가 바뀐다).
-const SHORTHAND_SCOPES = ["src/styles/runtime/", "src/styles/database/", "src/styles/editor/world-panel.css"];
+const SHORTHAND_SCOPES = ["src/styles/runtime/", "src/styles/database/", "src/styles/map/world-panel.css"];
 
 /**
  * 픽셀 글꼴에 없는 기하 심볼(U+25C7 U+2726 U+25C8 ...)을 그리는 슬롯. 토큰으로 바꾸면

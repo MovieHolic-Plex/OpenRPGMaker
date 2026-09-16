@@ -215,7 +215,8 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const fingerprinted = violations.filter((v) => FINGERPRINT_RULES.has(v.rule));
   if (args.includes("--baseline")) {
     const known = [...new Set(fingerprinted.map(fingerprint))].sort();
-    fs.writeFileSync(BASELINE_PATH, JSON.stringify({ counts, known }, null, 2) + "\n");
+    // generatedAt 을 같이 적는다 — 없으면 유예 목록이 몇 달 낡아도 아무도 모른다(baseline-age.mjs).
+    fs.writeFileSync(BASELINE_PATH, JSON.stringify({ generatedAt: new Date().toISOString(), counts, known }, null, 2) + "\n");
     console.log(`baseline saved: ${known.length} known fingerprints, ${violations.length} violations`);
     process.exit(0);
   }

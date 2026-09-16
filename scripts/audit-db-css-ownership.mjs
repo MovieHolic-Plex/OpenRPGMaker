@@ -40,7 +40,7 @@ const classify = file => {
 // 구성 요소 버킷 command-forms/forms.css 로 접혔다. 기준 트리(재편성 전)에서는 옛 경로로 읽되 새 경로 이름으로 기록해,
 // 파일 이동이 "삭제된 선언" 으로 잡히지 않게 한다.
 const EVENT_LEGACY_MOVED = { from: 'src/styles/event/event-editor-legacy.part-1.css', to: 'src/styles/event/command-forms/forms.css' };
-const relevant = file => file.startsWith('src/styles/database/') || [EVENT_LEGACY_MOVED.to, 'src/styles/editor/world-panel.css'].includes(file);
+const relevant = file => file.startsWith('src/styles/database/') || [EVENT_LEGACY_MOVED.to, 'src/styles/map/world-panel.css'].includes(file);
 const baseSource = file => (file === EVENT_LEGACY_MOVED.to && !baseFiles.has(file) ? readBase(EVENT_LEGACY_MOVED.from) : readBase(file));
 const before = files.filter(relevant).flatMap(file => declarations(baseSource(file), file));
 const after = files.filter(relevant).flatMap(file => declarations(readFileSync(file, 'utf8'), file));

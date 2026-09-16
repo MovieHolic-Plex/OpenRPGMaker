@@ -308,7 +308,7 @@ describe("작업 기록 창의 두 탭", () => {
 });
 
 describe("행위 기록 CSS 계약", () => {
-  const css = readFileSync(join(repoRoot, "src/styles/editor/map-history.css"), "utf8");
+  const css = readFileSync(join(repoRoot, "src/styles/map/map-history.css"), "utf8");
 
   it("hidden 접기가 author display 선언에 밀리지 않는 특이도로 선언돼 있다", () => {
     // `.edit-activity-fields { display: grid }` 는 (0,1,0) 이므로 속성 선택자를 덧댄
