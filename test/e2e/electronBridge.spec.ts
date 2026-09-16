@@ -151,5 +151,33 @@ test("시작 화면이 연 폴더로 편집기가 부팅한다 (P4.3 시작 화�
   await expect(page.getByTestId("db-required-panel")).toHaveCount(0);
   expect(page.url()).toContain("app://oprn/index.html");
 
+  // I3: 활동 미러 2종이 앱에서도 받아지는가. 클라이언트는 페이지 출처 **상대 경로**로 fetch 하므로
+  // app:// 에서는 프로토콜 핸들러가 받아야 한다. 예전에는 받는 쪽이 없어 404 였고, 404 는 fetch 가
+  // throw 하지 않으며 클라이언트는 첫 실패에 미러를 스스로 꺼서 로그가 조용히 0줄이 됐다.
+  const mirror = await page.evaluate(async () => {
+    const probe = async (url: string, body: unknown) => {
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        return { status: response.status, text: await response.text() };
+      } catch (error) {
+        return { status: -1, text: String(error) };
+      }
+    };
+    return {
+      edit: await probe("/__oprn/edit-activity", { entries: [{ seq: 1, at: "2026-09-16T00:00:00.000Z", scope: "project", label: "스모크 편집", origin: "human" }] }),
+      ai: await probe("/__oprn/ai-activity", { id: "smoke-run", channel: "chat", instruction: "스모크", result: { ok: true } }),
+    };
+  });
+  expect(mirror).toEqual({
+    edit: { status: 204, text: "" },
+    ai: { status: 204, text: "" },
+  });
+  expect(existsSync(join(projectDir, "output", "edit-activity", "edits.jsonl"))).toBe(true);
+  expect(existsSync(join(projectDir, "output", "ai-activity", "activity.jsonl"))).toBe(true);
+
   await shutdown(app);
 });

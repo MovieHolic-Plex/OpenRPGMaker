@@ -65,6 +65,10 @@ export function createProjectSessionRegistry() {
       for (const session of byProjectDir.values()) if (session.store.projectId === projectId) return session;
       return null;
     },
+    firstProjectDir(): string | null {
+      for (const session of byProjectDir.values()) return session.projectDir;
+      return null;
+    },
   };
 }
 

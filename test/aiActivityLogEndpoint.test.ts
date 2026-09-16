@@ -7,6 +7,8 @@ import { buildAiActivityLogRecord, buildAiActivityMirrorRequest } from "../src/a
 // 404 는 fetch 가 throw 하지 않으므로 타입도 런타임도 이 드리프트를 못 잡는다 — 테스트가 유일한 방어선이다.
 describe("ai activity disk mirror endpoint", () => {
   const viteConfig = readFileSync(new URL("../vite.config.ts", import.meta.url), "utf8");
+  // 2026-09-16 (I3): 미러 본체가 플러그인에서 공용 모듈로 나왔다 — 계약은 본체를 본다.
+  const core = readFileSync(new URL("../scripts/lib/activityMirror.mjs", import.meta.url), "utf8");
   const client = readFileSync(new URL("../src/ai/activityLog.ts", import.meta.url), "utf8");
 
   const e2eConsumers = [
@@ -14,9 +16,11 @@ describe("ai activity disk mirror endpoint", () => {
     "ice-grand-expanse-play.spec.ts",
     "title-play-controls.spec.ts",
   ].map((name) => readFileSync(new URL(`./e2e/${name}`, import.meta.url), "utf8"));
-  it("vite dev 미들웨어가 클라이언트와 같은 경로를 매칭한다", () => {
-    expect(viteConfig).toContain(`const AI_ACTIVITY_DISK_ENDPOINT = "${AI_ACTIVITY_DISK_ENDPOINT}"`);
-    expect(viteConfig).toContain("req.url?.startsWith(AI_ACTIVITY_DISK_ENDPOINT)");
+  it("공용 본체가 클라이언트와 같은 경로를 매칭한다", () => {
+    expect(core).toContain(`export const AI_ACTIVITY_DISK_ENDPOINT = "${AI_ACTIVITY_DISK_ENDPOINT}"`);
+    expect(core).toContain("pathname?.startsWith(AI_ACTIVITY_DISK_ENDPOINT)");
+    // vite 도 같은 본체를 쓴다 — 예전에는 껍데기마다 자기 미들웨어를 들고 있었다.
+    expect(viteConfig).toContain("createActivityMirrorMiddleware");
   });
 
   it("클라이언트는 경로 문자열을 다시 적지 않고 상수를 쓴다", () => {

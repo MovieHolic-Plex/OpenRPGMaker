@@ -97,7 +97,7 @@ app.whenReady().then(async () => {
     event.returnValue = companionServer?.origin ?? null;
   });
   buildMenu();
-  registerAppProtocol(rendererDir);
+  registerAppProtocol(rendererDir, () => sessions.firstProjectDir() ?? process.cwd());
   registerAssetProtocol(sessions);
   ipcMain.handle(OPRN_CHANNELS.lifecycleFlushDone, (event) => {
     const window = BrowserWindow.fromWebContents(event.sender);

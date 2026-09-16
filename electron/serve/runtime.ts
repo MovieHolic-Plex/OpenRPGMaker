@@ -6,6 +6,7 @@ import { createStoreHandlers } from "../main/dispatch";
 import { createProjectSessionRegistry } from "../main/sessions";
 import { OPRN_CHANNELS } from "../shared/channels";
 import { createCompanionMiddleware } from "../../scripts/lib/companion/middleware.mjs";
+import { createActivityMirrorMiddleware } from "../../scripts/lib/activityMirrorMiddleware.mjs";
 
 const BRIDGE_PATH = "/__oprn/bridge";
 const BRIDGE_SCRIPT_PATH = "/__oprn/bridge.js";
@@ -73,6 +74,9 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
   await sessions.open(SESSION_KEY, projectDir);
   const handlers = createStoreHandlers(sessions);
   const companion = createCompanionMiddleware();
+  // 활동 미러 2종도 같은 본체를 쓴다 — 예전에는 vite 플러그인에만 있어서 로컬 서버로 연
+  // 브라우저 탭의 편집·AI 로그가 404 로 조용히 사라졌다(I3). 페이지와 같은 출처라 CORS 는 없다.
+  const activityMirror = createActivityMirrorMiddleware({ baseDir: projectDir });
   const token = randomUUID();
 
   const dispatchBridge = async (payload: unknown): Promise<unknown> => {
@@ -129,6 +133,11 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
     void (async () => {
       const url = new URL(request.url ?? "/", `http://${LOOPBACK}`);
       let passedThrough = false;
+      activityMirror(request, response, () => {
+        passedThrough = true;
+      });
+      if (!passedThrough) return;
+      passedThrough = false;
       await companion(request, response, () => {
         passedThrough = true;
       });
