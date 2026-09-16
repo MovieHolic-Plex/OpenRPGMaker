@@ -220,8 +220,8 @@ VITE_BGM_CDN_BASE=https://cheapcdn.sgp1.cdn.digitaloceanspaces.com
   TMPDIR=/dev/shm/rpg-zzu-issue693-audio-r2/tmp VITE_CACHE_DIR=/dev/shm/rpg-zzu-issue693-audio-r2/vite node scripts/qa/issue693-midi-authoring.mjs
   ```
 
+- **AI 곡 고르기 (`recommend_bgm`, 2026-09-17):** 분위기/장면 질의 → 후보 10개(기본, 최대 20) + 전체 설명 1호출 읽기 툴. 제목만 보고 1등을 집는 버릇을 끊기 위해 `list_resources`(240자 잘림)+`get_audio_resource` N번을 하나로 합쳤다. 검색 0건은 빈 목록(엉뚱한 1등 금지). 시스템 프롬프트 RESOURCE_HINT가 BGM은 이 툴로 고르게 안내. 회귀: `test/recommendBgm.test.ts`.
 - **`searchResources("bgm", query)`** exposes the same catalog to AI tools (`list_resources`).
-  Labels are `title — category (m:ss)`.
 - **Default project**: map and battle BGM point at starter catalog tracks; the default title is
   silent (`defaultSystem()`, `defaultTitleScreenSettings()`). `legacyAudioRepair.ts` also repairs
   unplayable `.mid` references to the starter tracks — it must only ever target starter ids,

@@ -144,7 +144,7 @@ const generateMap: ToolDefinition = {
   name: "generate_map",
   description:
     `테마(village/forest/cave) 맵을 생성한다. 좌표 입구/POI를 생략한 cave는 던전 칩셋과 방 연결 구조 생성기를 사용한다. dungeonDesign으로 역할·연결·시드를 설계한다(다른 테마의 기본은 테두리 없는 평지, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 입구→모든 POI 도달성을 생성기가 보장(생성→검사→통로 수리 루프). `
-    + "테마에 맞는 BGM을 CC0 카탈로그에서 고른다(같은 seed면 같은 곡, bgm/bgmResourceId가 있으면 그걸 쓴다). "
+    + "테마에 맞는 BGM을 CC0 카탈로그에서 고른다(seed 생략 시 맵 id에서 유도 + 이미 쓴 곡 회피, bgm/bgmResourceId가 있으면 그걸 쓴다). "
     + "연결 던전은 방과 통로를 암반 속에 구성한다. 기존 평지 경로는 장애물을 안쪽에 산포하며 외곽 4변을 강제로 봉인하지 않는다.",
   mode: "write",
   parameters: {
@@ -159,7 +159,7 @@ const generateMap: ToolDefinition = {
       entrance: { ...COORD_SCHEMA, description: "{x,y} 입구(생략 시 좌측 중앙)" },
       pois: { type: "array", description: "[{x,y}] 관심 지점", items: COORD_SCHEMA },
       chokepoints: { type: "integer", description: "장애물 밀도(0~100, 기본 12)" },
-      seed: { type: "integer", description: "타일 산포·BGM 선택 시드(BGM은 별도 네임스페이스, 생략 시 1)" },
+      seed: { type: "integer", description: "타일 산포 시드(BGM 자동 선택은 맵 id에서 유도, 생략 시 타일 기본 1)" },
       bgmResourceId: { type: "string", description: "맵 BGM 리소스 id. 있으면 자동 선택을 건너뛴다." },
       bgm: {
         type: "object",
@@ -207,7 +207,7 @@ const generateMap: ToolDefinition = {
       const entranceIndex = Math.max(0, plan.graph?.rooms.findIndex(r => r.role === "entrance") ?? 0);
       const entrance = landings[entranceIndex]!;
       if (!draft.maps[draft.startMapId]) { draft.startMapId = id; draft.startPos = { ...entrance }; }
-      const bgmResourceId = assignCreatedMapBgm(map, args, { themeOrName: theme, defaultSeed: 1 });
+      const bgmResourceId = assignCreatedMapBgm(map, args, { themeOrName: theme, draft });
       return { ...built, summary: `연결 동굴 '${map.name}' — 방 ${landings.length}개. 전체 맵 시각 검토 필요.`, data: { ...(built.data as object), mapId: id, entrance, pois: landings, border: "none", generationProfile: tilesetId, generationLayout: plan.layout === "connected" ? "connected-dungeon" : "single-room", bgmResourceId } };
     }
     const palette = resolveMapGenerationPalette(draft, generationProfile, generationProfile.palettes[theme]);
@@ -276,7 +276,7 @@ const generateMap: ToolDefinition = {
       }
     }
 
-    const bgmResourceId = assignCreatedMapBgm(map, args, { themeOrName: theme, defaultSeed: 1 });
+    const bgmResourceId = assignCreatedMapBgm(map, args, { themeOrName: theme, draft });
 
     draft.maps[id] = map;
     if (!draft.maps[draft.mapTree.mapId]) {
