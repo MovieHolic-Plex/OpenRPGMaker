@@ -48,3 +48,31 @@ AFTER {"maxHp":78, "statusText":"적용 실패 — 변경을 적용하지 못했
 - 라운드 예산이 빠듯해 검토 도달이 **비결정적**이다: 같은 조건에서 phase:review 도달과 미도달(max-tool-calls)이 모두 관측됐다.
 - `dbRecordValues` 는 저장된 필드값만 증명한다 — 타임 전투 동작은 여전히 미평가 항목으로 남는다.
 - 이 검증은 dev showcase 프로젝트 + 원격 저장이 꺼진 경로다(프로젝트 행을 쓰지 않는다).
+
+## 재현성 실측 — 컨텍스트가 지배 변수였다 (2026-09-16 후속)
+
+검토 도달은 **프롬프트 크기**에 크게 좌우된다(같은 프롬프트 · 같은 예산):
+
+| 프롬프트(입력 토큰) | 결과 |
+|---|---|
+| 338k (원본 인라인 상한이 있던 때) | 검토 도달 → 적용 성공(78→300 + 되돌리기) · 폐기 성공 |
+| 426k (상한 되돌림 후, 인라인 639/639) | 3회 연속 `max-tool-calls` 로 종료(제안 2~5건), 검토 미도달 |
+
+- 라운드 예산을 48→64 로 올려 1회 더 시도했지만 **여전히 미도달** → 그 상향은 되돌렸다
+  (`AGENT_RUN_MAX_TOTAL_STEPS === 48` 을 고정하는 계약도 함께 깨졌다).
+- 즉 남은 벽은 "라운드가 모자람" 이라기보다 **한 라운드가 너무 비싼 것**(42.6만 토큰 · 툴 233개)이다.
+- 상한(원본 인라인 캡)은 계약을 깨서 되돌렸으므로, 이 벽은 **제품 결정**(그라운딩 인라인 정책 vs 예산)이 필요하다.
+
+## 다른 경로에서 만난 기존 버그 (내 변경 아님 — main 에서 동일 재현)
+
+`?devProject=1`(marketTown 없이) 과 기본 프로젝트 경로는 DB AI 턴이 33초 만에
+`실패 — Cannot read properties of undefined (reading 'trim')` 로 죽는다.
+**main(74ee3bb80) dev 서버에서 같은 하네스로 돌려 동일하게 재현**했다 — 기존 결함이며 이 PR 과 무관하다.
+
+## 최종 회귀 분류 (main 대비)
+
+- 저장소 `npm run gates` 는 `.omo/gates-baseline.json`(2026-09-12) 대비 "회귀 23건" 을 보고하지만,
+  그 파일이 낡아 **다른 PR 들의 머지 실패가 섞인다**. 직접 비교 결과: 무관 영역(`audioDescription*`, `interior*`,
+  `playerRunControls`, `spatialAssetResolver` 등) **11파일 44건이 이미 main 에서 실패**한다.
+- 내 변경이 닿는 파일: `aiAssistantSession` 은 main 과 **같은 1건**만 실패, `assistantAcceptanceProvider`·
+  `assistantOriginalContext` 는 통과 → **이 브랜치가 새로 만든 실패 0건**.
