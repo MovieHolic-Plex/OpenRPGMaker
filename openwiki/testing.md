@@ -667,6 +667,16 @@ checkpoints, remote schema, distributed/two-tab writer guarantee or P4/P5 is ver
 
 ## Canonical project storage versus AI history (2026-09-06)
 
+### 데스크톱(Electron) 스모크는 이렇게 돈다 (2026-09-16)
+
+- 브리지 왕복: `xvfb-run -a npx playwright test --config playwright.electron.config.ts`
+  (`test/e2e/electronBridge.spec.ts`) — 폴더 열기 → 저장 → 재기동 → 같은 sha256, 에셋 put/read, 백업.
+- 앱 부팅: `xvfb-run -a node scripts/qa/electronAppBootProbe.mjs` — 실제 렌더러(dist)로 폴더를 연 채
+  띄워 편집기 셸·본문, 상태 `ready`, DB 연결 화면 부재, **메뉴 저장이 리비전을 올리는 것**까지 판정한다.
+  헤드리스에서 폴더 선택 대화상자를 자동화할 수 없으므로 `OPRN_OPEN_PROJECT_DIR` 진입점을 쓴다.
+- 함정: playwright 의 `app.process()` 는 종료 뒤 호출하면 던진다(`Cannot read properties of undefined`).
+  종료 헬퍼에서 이 호출을 감싸지 않으면 종료가 성공해도 스모크가 죽어 "브리지가 깨졌다" 로 오진된다.
+
 `test/noLocalProjectDb.test.ts` guards project/editor source against a local
 canonical-project database. A direct `typeof indexedDB` capability check does not
 read or write project data and is allowed. Every actual IndexedDB reference,
