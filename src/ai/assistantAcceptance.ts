@@ -48,11 +48,6 @@ type ScopedTarget = { readonly target: AcceptanceTarget; readonly region?: Accep
 export type ProjectPreservationChange =
   | { readonly kind: "projectTitle" }
   | { readonly kind: "itemName" | "itemPrice" | "itemAddition"; readonly itemId: ItemRecord["id"] }
-  // DB 레코드 필드 허용 — "다른 건 건드리지 마" 를 DB 편집에도 증명 가능하게 한다.
-  // 실측(2026-09-16): 허용 목록에 DB 가 없어 보존 항목을 닫을 수 없었고, 모델이 repair_acceptance
-  // 를 반복하다 라운드 예산을 소진해 초안이 검토에 닿지 못했다.
-  | { readonly kind: "dbRecordValues"; readonly collection: DbCollection; readonly recordId?: string;
-      readonly recordName?: string; readonly fields: Readonly<Record<string, string | number | boolean>> };
 export type ProjectAcceptanceCriterion =
   | { readonly kind: "wikiDeclaration"; readonly documentId: string; readonly combatMode: WikiCombatMode; readonly sourceQuote: string }
   | { readonly kind: "projectTitle"; readonly title: Project["meta"]["title"] }
@@ -175,16 +170,6 @@ function preservationChange(value: unknown): ProjectPreservationChange | null {
   if ((value.kind === "itemName" || value.kind === "itemPrice" || value.kind === "itemAddition")
     && text(value.itemId) && Object.keys(value).every(key => key === "kind" || key === "itemId")) {
     return { kind: value.kind, itemId: value.itemId };
-  }
-  if (value.kind === "dbRecordValues"
-    && Object.keys(value).every(key => key === "kind" || key === "collection" || key === "recordId" || key === "recordName" || key === "fields")) {
-    const collection = DB_COLLECTIONS.find(entry => entry === value.collection);
-    const fields = dbFields(value.fields);
-    const byId = text(value.recordId) ? value.recordId : undefined;
-    const byName = text(value.recordName) ? value.recordName : undefined;
-    if (collection && fields && (byId === undefined) !== (byName === undefined)) {
-      return { kind: value.kind, collection, ...(byId !== undefined ? { recordId: byId } : { recordName: byName! }), fields };
-    }
   }
   return null;
 }
