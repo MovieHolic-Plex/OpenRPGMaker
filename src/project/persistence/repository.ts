@@ -39,3 +39,14 @@ export function currentRemoteTarget(): RemoteProjectTarget | null {
 export function setProjectRepositoryForTest(repository: ProjectRepository | null): void {
   override = repository;
 }
+
+/** 시작 화면이 주 프로세스에 열어 둔 폴더를 이 렌더러 세션에 붙인다. 웹 빌드에서는 no-op. */
+export async function adoptElectronOpenProject(): Promise<boolean> {
+  if (!hasElectronBridge()) return false;
+  try {
+    return await createElectronRepository().adoptOpenProject();
+  } catch (error) {
+    console.error("[persistence] 열린 프로젝트 폴더 채택에 실패했습니다:", error);
+    return false;
+  }
+}

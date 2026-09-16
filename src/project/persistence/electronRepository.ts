@@ -216,10 +216,6 @@ export function createElectronRepository(): ElectronRepository {
         const resolved = requireOpened(target);
         return electronBridge().commits.list({ projectDir: resolved.projectDir, limit });
       },
-      listSync(limit, target?) {
-        const resolved = requireOpened(target);
-        return electronBridge().commits.listSync({ projectDir: resolved.projectDir, limit });
-      },
       async hydrateTip(target?) {
         const resolved = requireOpened(target);
         return (await electronBridge().commits.list({ projectDir: resolved.projectDir, limit: 1 }))[0]?.commitId ?? null;
