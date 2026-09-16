@@ -46,8 +46,14 @@ export interface PiRunLogHandle {
   readonly id: string;
   /** 시작 pending 행의 기록. */
   readonly started: Promise<void>;
-  /** 종료(또는 적용·버림) 기록. 같은 id 로 upsert 된다. */
-  readonly finish: (facts: PiRunFacts) => Promise<void>;
+  /**
+   * 종료(또는 적용·버림) 기록. 같은 id 로 upsert 된다.
+   *
+   * 이 실행의 감사 행을 함께 돌려준다 — 활동 로그에만 쓰고 끝나면 브리지
+   * (`window.__oprnAiBridge.audit()`)가 이 경로를 못 본다(2026-09-16 실측: Pi 턴이 성공한 뒤에도
+   * audit() 이 `[]` 였다). 행을 만드는 자리가 여기 하나라, 소비자가 늘어도 두 벌로 갈라지지 않는다.
+   */
+  readonly finish: (facts: PiRunFacts) => Promise<readonly AuditEntry[]>;
 }
 
 export function startPiRunLog(context: PiRunContext): PiRunLogHandle {
@@ -68,16 +74,20 @@ export function startPiRunLog(context: PiRunContext): PiRunLogHandle {
   return {
     id,
     started: write({ ok: false, pending: true }),
-    finish: (facts) => write(
-      {
-        ok: facts.error === undefined,
-        applied: facts.applied,
-        ...(facts.error ? { error: facts.error } : {}),
-        ...(facts.stoppedReason ? { stoppedReason: facts.stoppedReason } : {}),
-        ...(facts.board.report ? { assistantText: facts.board.report } : {}),
-      },
-      { toolCalls: agentToolCalls(facts.board), audit: runAudit(context, facts) },
-    ),
+    finish: async (facts) => {
+      const audit = runAudit(context, facts);
+      await write(
+        {
+          ok: facts.error === undefined,
+          applied: facts.applied,
+          ...(facts.error ? { error: facts.error } : {}),
+          ...(facts.stoppedReason ? { stoppedReason: facts.stoppedReason } : {}),
+          ...(facts.board.report ? { assistantText: facts.board.report } : {}),
+        },
+        { toolCalls: agentToolCalls(facts.board), audit },
+      );
+      return audit;
+    },
   };
 }
 

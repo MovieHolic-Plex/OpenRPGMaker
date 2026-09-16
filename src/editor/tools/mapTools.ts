@@ -359,6 +359,20 @@ const paintTiles: ToolDefinition = {
     // 홈 레이어가 단일 판정되는 타일(투명 배경 칩 = 상위 전용 등)은 요청과 무관하게 홈에 놓는다.
     let routedNote: string | null = null;
     const tileset = draft.tilesets[map.tilesetId];
+    // 합법 정의역은 -1(비움) 과 0~count-1 뿐이다.
+    //
+    // 다른 타일 인자를 받는 도구와 **같은 계약**이다(palettePreset·groupSample·visionQuery·
+    // tileMetadata·vocabulary 는 모두 tile-out-of-range 를 던진다). 여기만 검증이 빠져 있어서
+    // 범위 밖 인덱스가 조용히 지도 데이터에 저장됐다 — 실측(2026-09-16): 모델이 tile_query 로
+    // `타일 인덱스 범위 밖: 99999 (0~479)` 를 받고도 이어서 paint_tiles 를 호출했고, 툴은 성공으로
+    // 통과해 map.lowerTiles 에 99999 가 그대로 기록됐다. 타일셋에 없는 칸은 렌더되지 않으므로
+    // 사용자에게는 «빈 칸» 이 된다.
+    if (tileset && (!Number.isInteger(tile) || tile < -1 || tile >= tileset.count)) {
+      throw new ToolError(
+        `타일 인덱스 범위 밖: ${tile} (-1=비움, 0~${tileset.count - 1}) — tile_query 로 존재하는 인덱스를 확인하세요.`,
+        { code: "tile-out-of-range", mapId: map.id },
+      );
+    }
     if (tile >= 0 && tileset) {
       const home = tileLayerHome(tileset, tile);
       if (home !== "both" && home !== layer) {

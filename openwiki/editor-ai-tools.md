@@ -1,5 +1,24 @@
 # Editor AI Tools & Vocabulary
 
+## paint_tiles 타일 인덱스 검증 — 유일하게 빠져 있던 가드 (2026-09-16)
+
+실측 경로: 실제 모델(gemini-3.7-flash)에게 「타일 id 99999 를 (3,3) 에 칠해줘」를 시켰다.
+모델은 먼저 `tile_query` 로 **`타일 인덱스 범위 밖: 99999 (0~479)`** 를 정직하게 받았는데,
+이어서 호출한 `paint_tiles` 는 그 값을 **성공(초록 체크)** 으로 통과시켰고, 적용 후 그리드 실측에서
+`map.lowerTiles[(3,3)] = 99999` 가 그대로 기록됐다(타일셋에 없는 칸이라 렌더되지 않고 «빈 칸» 이 된다).
+
+원인: `tile` 범위 검사를 **`paint_tiles` 만** 하지 않았다. 형제 도구들은 모두 거부한다 —
+`palettePresetTools` · `groupSampleTool` · `visionQueryTools` · `tileMetadataTools` ·
+`v3/vocabularyTools` 가 `tile-out-of-range` 를 던진다.
+
+계약(고정된 것): `paint_tiles` 의 합법 정의역은 **-1(비움) 과 0~count-1** 뿐이고, 그 밖은
+`tile-out-of-range` 로 거부된다. 거부는 **지도를 그대로 둔다**(부분 적용 없음). `tileLayerHome()` 이
+범위 밖 값에 대해 `priority[tile] ?? "lower"` 로 조용히 lower 를 돌려주던 폴백은 이제 검증을 통과한
+값에만 적용된다.
+
+회귀 고정: `test/tileToolsV2.test.ts` 의 «paint_tiles 타일 인덱스 계약» 4건
+(범위 밖·음수 상한 밖 거부 / -1 허용 / 경계값 count-1 정상).
+
 ## 오프닝 미디어 배선 — 스틸 카탈로그·배경음악·부분 편집 (2026-09-14)
 
 사용자 지적: "이미지 생성이야 codex cli 나 뭐 그런것들로 만들게 할 수 있잖아". 맞았다 — 생성 인프라는 이미 범용인데

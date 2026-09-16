@@ -15,6 +15,7 @@ import { runPiAgentViaCompanion } from "@/ai/piAgent/client";
 import { deriveRunOutcome } from "@/ai/runOutcome";
 import type { RunOutcome, RunOutcomeFacts } from "@/ai/runOutcome";
 import { startPiRunLog, type PiRunContext, type PiRunFacts } from "@/ai/piAgent/activityLog";
+import type { AuditEntry } from "@/ai/session/types";
 import { mergeMapBundles } from "@/ai/piAgent/mapBundle";
 import { changedProjectKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentMode, type PiAgentThinkingLevel } from "@/ai/piAgent/protocol";
 import {
@@ -136,6 +137,14 @@ export interface PiCommandSurface {
   readonly showChangeReceipt?: (input: PiChangeReceipt) => void;
   /** 실행 종료 4축(실행·목표·전달·이미지) — 패널의 ai-run-outcome 라인이 그린다. 생략하면 아무도 안 보고 안 그린다. */
   readonly setRunOutcome?: (outcome: RunOutcome) => void;
+  /**
+   * 실행이 끝나면 그 실행의 감사 행을 넘긴다.
+   *
+   * Pi 경로는 세션이 없어 패널의 `controller.auditHistory` 를 아무도 채우지 않았다 — 그래서
+   * 브리지(`window.__oprnAiBridge.audit()`)가 Pi 턴에서 항상 빈 배열이었고, 이 API 를 읽는
+   * QA 스펙들이 툴 호출을 0으로 봤다(2026-09-16 실측). 행을 만드는 자리는 활동 로그 하나다.
+   */
+  readonly onRunAudit?: (rows: readonly AuditEntry[]) => void;
 }
 
 export async function runPiCommand(
@@ -212,7 +221,10 @@ export async function runPiCommand(
   const runLog = startPiRunLog(logContext);
   // boardState 는 push 마다 새 객체로 갈아 끼워지므로 호출 시점의 것을 싣는다.
   const finishLog = (facts: Omit<PiRunFacts, "board">): void => {
-    void runLog.finish({ ...facts, board: boardState });
+    void runLog.finish({ ...facts, board: boardState }).then(
+      (rows) => surface.onRunAudit?.(rows),
+      () => { /* 기록 실패는 이미 삼켜진다 — 감사 전달도 실행을 막지 않는다 */ },
+    );
   };
 
   let boardState: TeamBoardState = createTeamBoardState(command.mode, command.task);
