@@ -1,7 +1,7 @@
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { createProjectPackage, projectPackageFileName } from "@/project/package";
-import { SpatialPersistenceError, type PersistenceFault } from "@/project/spatial/persistence";
+import { SpatialPersistenceError, type PersistenceFault } from "@/project/spatial/persistenceTypes";
 import { ProjectRoutingError, type ProjectRoutingFault } from "@/project/spatial/saveRouting";
 import { store, type AutoSaveState, type ProjectPersistenceRecovery } from "@/project/store";
 import { el } from "@/util/dom";

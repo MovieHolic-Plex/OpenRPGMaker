@@ -1,4 +1,5 @@
-import type { ProjectWriteAuthority, SupabaseSaveResult } from "./supabaseProjectSync";
+import type { ProjectWriteAuthority } from "./spatial/saveRouting";
+import type { SaveResult } from "./persistence/types";
 import { projectRepository } from "./persistence/repository";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import type { Project } from "@/project/types";
@@ -29,7 +30,7 @@ export async function loadProjectFromCanonicalStore(): Promise<StoredProject> {
   return loadProjectFromSupabaseCanonicalStore();
 }
 
-export async function saveProjectToCanonicalStore(project: Project, authority?: ProjectWriteAuthority): Promise<SupabaseSaveResult> {
+export async function saveProjectToCanonicalStore(project: Project, authority?: ProjectWriteAuthority): Promise<SaveResult> {
   return saveProjectToSupabaseCanonicalStore(project, authority);
 }
 
@@ -44,7 +45,7 @@ export async function loadProjectFromSupabaseCanonicalStore(): Promise<StoredPro
   return snapshot ? { found: true, project: snapshot.project, authority: snapshot.authority } : { found: false, project: null };
 }
 
-export async function saveProjectToSupabaseCanonicalStore(project: Project, authority?: ProjectWriteAuthority): Promise<SupabaseSaveResult> {
+export async function saveProjectToSupabaseCanonicalStore(project: Project, authority?: ProjectWriteAuthority): Promise<SaveResult> {
   const repository = projectRepository();
   const target = repository.currentTarget();
   if (!target) return { kind: "not-configured" };

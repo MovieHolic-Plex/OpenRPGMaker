@@ -43,20 +43,6 @@ function devServerHttps(): { key: Buffer; cert: Buffer } | undefined {
   return { key: readFileSync(key), cert: readFileSync(cert) };
 }
 
-/**
- * 브라우저가 Supabase 로 나갈 때 쓰는 같은-오리진 경로. `src/project/supabaseProxyPath.ts` 와 반드시 같아야 한다.
- * (순환 import 를 만들지 않기 위해 값만 복제하고, 계약은 테스트가 고정한다.)
- */
-const SUPABASE_PROXY_PATH = "/supabase";
-
-/** /supabase 프록시가 바라보는 실제 Supabase(Kong) 오리진. */
-function supabaseUpstreamUrl(mode: string): string {
-  const env = loadEnv(mode, process.cwd(), "");
-  const raw = (env.SUPABASE_UPSTREAM_URL ?? env.VITE_SUPABASE_URL ?? "").trim().replace(/\/$/, "");
-  // 상대 경로(이미 프록시 경로로 설정된 경우)는 업스트림이 될 수 없다.
-  return /^https?:\/\//.test(raw) ? raw : "http://dbserver:8100";
-}
-
 function devServerPort(mode: string): number {
   const rawPort = loadEnv(mode, process.cwd(), "").DEV_SERVER_PORT;
   const port = Number(rawPort ?? DEFAULT_DEV_SERVER_PORT);
@@ -70,27 +56,6 @@ function devServerPort(mode: string): number {
 function gatewayApiKey(mode: string): string {
   const fromEnvFiles = loadEnv(mode, process.cwd(), "").APITOPIA_API_KEY;
   return (fromEnvFiles ?? process.env.APITOPIA_API_KEY ?? "").trim();
-}
-
-/**
- * /supabase 프록시가 주입하는 Supabase anon 키. 서버 전용(non-VITE) 이라 클라이언트 번들에
- * 인라인되지 않는다 — /api/ai 와 정확히 같은 패턴이다.
- *
- * 왜: VITE_SUPABASE_ANON_KEY 는 접두사 때문에 번들에 그대로 박힌다. 지금 rpg_zzu 는 RLS 가
- * 없고(DRAFT_20260706_auth_rls.sql 미적용) anon 에게 SELECT/INSERT/UPDATE 가 열려 있으므로,
- * 빌드 산출물을 받은 사람은 전체 프로젝트·AI 대화·활동 로그를 읽고 쓸 수 있다
- * (2026-08-29 실측: project_id 필터 없이 ai_activity_logs 12,735행 전체 조회됨).
- * 키를 서버에 두면 그 열람 통로가 이 오리진 경유로 좁아진다.
- */
-function supabaseAnonKey(mode: string): string {
-  const fromEnvFiles = loadEnv(mode, process.cwd(), "").SUPABASE_ANON_KEY;
-  return (fromEnvFiles ?? process.env.SUPABASE_ANON_KEY ?? "").trim();
-}
-
-/** 브라우저가 프록시 모드로 뜨는지(클라이언트에 실 키를 주지 않는 모드). */
-function supabaseUseProxy(mode: string): boolean {
-  const raw = (loadEnv(mode, process.cwd(), "").VITE_SUPABASE_USE_PROXY ?? "").trim();
-  return raw === "1" || raw === "true";
 }
 
 // 루프백 여부 판정 — IPv4/IPv6/IPv4-mapped-IPv6 모두 커버.
@@ -520,36 +485,6 @@ export default defineConfig(({ mode }) => {
   }
   // 키가 있는 경로만 프록시를 등록한다(빈 Bearer 전송 금지). 접근은 localOnlyAiProxyPlugin 이 루프백으로 제한.
   const proxy: Record<string, ProxyOptions> = {};
-  // Supabase(Kong) 는 평문 HTTP 라, dev 서버를 HTTPS 로 열면 브라우저가 mixed content 로 차단한다.
-  // 같은 오리진의 /supabase 로 프록시해 두면 페이지 프로토콜과 무관하게 항상 붙는다(CORS 도 불필요).
-  // 업스트림은 .env 의 절대 URL 을 그대로 쓴다 — node 스크립트들이 같은 값을 쓰므로 .env 는 절대 URL 로 유지한다.
-  const supabaseKey = supabaseAnonKey(mode);
-  const useSupabaseProxy = supabaseUseProxy(mode);
-  if (useSupabaseProxy && !supabaseKey) {
-    // 프록시 모드인데 서버 키가 없으면 클라이언트는 센티널만 보내고 PostgREST 는 401 을 준다.
-    // "저장이 안 되는데 원인 모름"이 되지 않게 부팅에서 크게 알린다.
-    console.warn(
-      "[oprn] VITE_SUPABASE_USE_PROXY=1 인데 SUPABASE_ANON_KEY 가 없습니다 — /supabase 요청이 401 로 떨어집니다. .env.local 에 서버 전용 키를 넣으세요.",
-    );
-  }
-  proxy[SUPABASE_PROXY_PATH] = {
-    target: supabaseUpstreamUrl(mode),
-    changeOrigin: true,
-    rewrite: (path: string) => path.replace(new RegExp(`^${SUPABASE_PROXY_PATH}`), ""),
-    // 키가 있으면 클라이언트가 보낸 자격증명을 서버 값으로 덮는다. headers 옵션 대신
-    // proxyReq.setHeader 를 쓰는 이유: 들어온 헤더는 소문자로 정규화돼 있어서 `Authorization`
-    // 을 새로 얹으면 `authorization` 과 중복 전송될 수 있다. setHeader 는 대소문자 무관하게 교체한다.
-    ...(supabaseKey
-      ? {
-          configure: (proxyServer) => {
-            proxyServer.on("proxyReq", (proxyReq) => {
-              proxyReq.setHeader("apikey", supabaseKey);
-              proxyReq.setHeader("authorization", `Bearer ${supabaseKey}`);
-            });
-          },
-        }
-      : {}),
-  };
   if (apitopiaKey) {
     proxy["/api/ai"] = {
       target: "https://apitopia.labs.mengmota.com/v1",

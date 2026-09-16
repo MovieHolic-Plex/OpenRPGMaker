@@ -2,7 +2,7 @@ import { deserialize, serialize } from "../io";
 import { projectWithoutEventDrafts } from "../eventDrafts";
 import { setUploadedAssetResolver } from "./assetAccessors";
 import type { ProjectWriteAuthority } from "../spatial/saveRouting";
-import type { DbPersistenceDisabledReason } from "../persistenceStatus";
+import type { DbPersistenceDisabledReason } from "./types";
 import type { UploadedAssetRef } from "../types";
 import type { LocalProjectTarget, ProjectTarget } from "./target";
 import type {
@@ -43,13 +43,23 @@ export type OprnBridgeAssets = {
 export type OprnBridgeLifecycle = {
   readonly onFlushBeforeClose: (callback: () => void) => void;
   readonly flushDone: () => Promise<unknown>;
+  /** 파일 → 저장(CmdOrCtrl+S). 메뉴가 보내는 flush 요청. */
+  readonly onSaveRequest: (callback: () => void) => void;
 };
+export type OprnBridgeStart = {
+  readonly openFolder: () => Promise<{ readonly projectDir: string; readonly isNew: boolean; readonly projectId: string | null } | null>;
+  /** 새 폴더 프로젝트를 만든다. `seed` 를 주면 그 직렬화 문서를 새 폴더에 심는다(장르 프리셋 등). */
+  readonly createProject: (input: { readonly title?: string; readonly seed?: string }) => Promise<{ readonly projectDir: string; readonly projectId: string } | null>;
+};
+
 export type OprnBridge = {
   readonly lifecycle: OprnBridgeLifecycle;
   readonly project: OprnBridgeProject;
   readonly commits: OprnBridgeCommits;
   readonly ai: OprnBridgeAi;
   readonly assets: OprnBridgeAssets;
+  /** 시작 화면이 쓰는 새 프로젝트/폴더 열기. 편집기도 같은 경로로 폴더를 만든다. */
+  readonly start: OprnBridgeStart;
 };
 
 declare global {
@@ -58,6 +68,20 @@ declare global {
 
 export function hasElectronBridge(): boolean {
   return typeof window !== "undefined" && window.oprn !== undefined;
+}
+
+/**
+ * 주 프로세스가 이미 열어 둔 폴더를 읽는다. 없으면 null.
+ *
+ * 시작 화면(`app://oprn/start-screen.html`)은 **별도 문서**라서, 사용자가 고른 폴더는
+ * 렌더러 모듈 상태로 넘어오지 않고 주 프로세스의 세션에만 남는다. 편집기 문서가 부팅할 때
+ * 이 값으로 세션에 다시 붙는다 — 안 붙으면 store.load() 가 대상을 못 찾아 DB 연결 설정
+ * 화면으로 떨어진다.
+ */
+export async function openFolderHeldByMainProcess(): Promise<string | null> {
+  if (!hasElectronBridge()) return null;
+  const status = await electronBridge().project.status();
+  return status.kind === "ready" && status.projectDir ? status.projectDir : null;
 }
 
 function electronBridge(): OprnBridge {
@@ -167,6 +191,10 @@ export function createElectronRepository(): ElectronRepository {
       list(limit, target?) {
         const resolved = requireOpened(target);
         return electronBridge().commits.list({ projectDir: resolved.projectDir, limit });
+      },
+      listSync(limit, target?) {
+        const resolved = requireOpened(target);
+        return electronBridge().commits.listSync({ projectDir: resolved.projectDir, limit });
       },
       async hydrateTip(target?) {
         const resolved = requireOpened(target);

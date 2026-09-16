@@ -1,28 +1,115 @@
-import type { Project, UploadedAssetRef } from "../types";
+import type { Project, UploadedAssetRef, ChangeSummary } from "../types";
 import type { CanonicalSave, ProjectWriteAuthority } from "../spatial/saveRouting";
-import type { DbPersistenceDisabledReason, DbPersistenceStatus } from "../persistenceStatus";
-import type {
-  SupabaseAiActivityLogInput,
-  SupabaseAiAnalysisRunInput,
-  SupabaseConversationInput,
-  SupabaseProjectCommitInput,
-  SupabaseProjectCommitListItem,
-  SupabaseProjectMapPatchInput,
-  SupabaseProjectSnapshot,
-  SupabaseSaveResult,
-} from "../supabaseProjectSync";
+import type { MirrorStatus } from "../spatial/persistenceTypes";
+import type { EditorIdentity } from "../editorIdentity";
+import type { EditActivityCommitAttachment } from "@/editor/editActivityLog";
+import type { MapSaveConflict } from "./core/mapMerge";
 import type { ProjectTarget } from "./target";
 
-// 중립 이름. 지금은 sync 모듈의 타입에 대한 별칭이고, Supabase 퇴역 단계에서 정의가 이쪽으로 온다.
-export type ProjectSnapshot = SupabaseProjectSnapshot;
-export type SaveResult = SupabaseSaveResult;
-export type MapPatchInput = SupabaseProjectMapPatchInput;
-export type CommitInput = SupabaseProjectCommitInput;
-export type CommitListItem = SupabaseProjectCommitListItem;
-export type AiActivityInput = SupabaseAiActivityLogInput;
-export type AiAnalysisRunInput = SupabaseAiAnalysisRunInput;
-export type ConversationInput = SupabaseConversationInput;
-export type PersistenceStatus = DbPersistenceStatus;
+// 포트가 정의를 소유한다. 예전에는 sync 모듈이 정의하고 여기서 별칭만 붙였다 —
+// 그러면 모듈을 지울 수 없다. sync 모듈은 이제 이쪽을 다시 내보낸다.
+export type CommitReviewStatus = "approved" | "direct";
+
+export type ProjectSnapshot = {
+  readonly authority: ProjectWriteAuthority;
+  readonly projectId: string | null;
+  readonly project: Project;
+  readonly sha256: string | null;
+};
+
+export type SaveResult =
+  | { readonly kind: "not-configured" }
+  | { readonly kind: "conflict"; readonly conflicts: readonly MapSaveConflict[] }
+  | {
+      readonly kind: "saved";
+      readonly project?: Project;
+      readonly sha256?: string;
+      readonly commitId?: string;
+      readonly authority?: ProjectWriteAuthority;
+      readonly mirror?: MirrorStatus;
+    };
+
+export type MapPatchInput = {
+  readonly baseProject: Project;
+  readonly changedMapIds?: readonly string[];
+  readonly project: Project;
+  readonly authority?: ProjectWriteAuthority;
+};
+
+export type AiAnalysisRunInput = {
+  readonly promptContext: unknown;
+  readonly result: unknown;
+  readonly selectedTiles: readonly number[];
+  readonly tilesetId: string;
+};
+
+export type CommitInput = {
+  readonly diff?: ChangeSummary;
+  readonly identity: EditorIdentity;
+  readonly project: Project;
+  readonly reviewStatus: CommitReviewStatus;
+  readonly serialized?: string;
+  readonly summary: string;
+  readonly toolNames: readonly string[];
+  /** 직전 원격 커밋 id — 계보 연결. 없으면 null parent. */
+  readonly parentCommitId?: string | null;
+  /**
+   * 이 커밋 경계 안에서 일어난 편집 행위 기록. `patch_json.edits` 로 들어간다.
+   * `projectCommitLog` 가 커서로 잘라 넣는다 — 호출부가 직접 채우지 않는다.
+   */
+  readonly editActivity?: EditActivityCommitAttachment;
+};
+
+export type CommitListItem = {
+  readonly agentName: string | null;
+  readonly authorId: string | null;
+  readonly authorKind: string | null;
+  readonly authorLabel: string | null;
+  readonly commitId: string;
+  readonly createdAt: string | null;
+  readonly message: string;
+  readonly reviewStatus: string | null;
+  readonly summary: string | null;
+};
+
+export type AiActivityInput = {
+  readonly logId: string;
+  /** 탭 1개당 uuid 하나. 같은 project_id 를 쓰는 다른 워크트리/탭의 턴과 갈라내는 유일한 키. */
+  readonly runId?: string;
+  readonly channel: string;
+  readonly instruction: string;
+  readonly mapId?: string;
+  readonly payload: unknown;
+};
+
+export type ConversationInput = {
+  readonly conversationId: string;
+  /** Captured before local persistence. No credentials are serialized into the outbox. */
+  readonly destinationProjectId?: string | null;
+  readonly title: string;
+  readonly model: string;
+  readonly projectContextKey?: string;
+  readonly entries: unknown;
+  /** epoch ms */
+  readonly savedAt: number;
+};
+
+export type DbPersistenceDisabledReason = "dev-showcase" | "load-failed" | "shared-demo";
+
+export type DbConfigField = "url" | "anonKey";
+
+/** 설정 출처. 예전엔 supabaseProjectConfig 의 별칭이었다 — 포트가 자기 어휘로 소유한다. */
+export type DbPersistenceConfigSource = "custom" | "env" | "legacy";
+
+export type PersistenceStatus =
+  | { readonly kind: "disabled"; readonly reason: DbPersistenceDisabledReason }
+  | {
+      readonly kind: "not-configured";
+      readonly missing: readonly DbConfigField[];
+      readonly projectId: string;
+      readonly source: DbPersistenceConfigSource;
+    }
+  | { readonly kind: "ready"; readonly projectId: string; readonly source: DbPersistenceConfigSource; readonly url: string };
 
 export type LoadSnapshotOptions = {
   readonly overlayMaps?: boolean;
@@ -80,6 +167,8 @@ export interface ProjectRepository {
   readonly commits: {
     record(input: CommitInput, target?: ProjectTarget | null): Promise<SaveResult>;
     list(limit: number, target?: ProjectTarget | null): Promise<readonly CommitListItem[]>;
+    /** 동기 도구(툴 프레임워크가 동기라) 를 위한 동기 판 — 선택. 없는 어댑터는 비동기 list 만 있다. */
+    listSync?(limit: number, target?: ProjectTarget | null): readonly CommitListItem[];
     hydrateTip(target?: ProjectTarget | null): Promise<string | null>;
     peekTip(projectId: string): string | null;
     seedTip(projectId: string, commitId: string | null | undefined): void;

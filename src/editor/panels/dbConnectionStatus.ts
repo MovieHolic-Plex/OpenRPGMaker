@@ -1,10 +1,15 @@
 import { openPersistenceRecovery, persistenceStatusLabel, persistenceSurfaceVisible } from "@/editor/persistenceRecoveryUi";
-import type { DbPersistenceStatus } from "@/project/persistenceStatus";
+import type { PersistenceStatus as DbPersistenceStatus } from "@/project/persistence/types";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 
 type StatusRefresh = () => void;
 type OpenSettings = () => void;
+
+/** 저장 상태 칩. P6 이후에는 열어 볼 온라인 설정이 없다 — 칩은 상태만 보여준다. */
+export function renderDbConnectionStatus(status: DbPersistenceStatus, onRefresh: StatusRefresh): HTMLElement {
+  return renderOnlineSaveStatus(status, onRefresh, () => undefined);
+}
 
 export function renderOnlineSaveStatus(
   status: DbPersistenceStatus,

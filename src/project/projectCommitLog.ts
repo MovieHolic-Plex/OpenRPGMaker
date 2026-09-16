@@ -18,7 +18,7 @@ import { createLogger } from "@/util/logger";
 import { currentHumanEditorIdentity, type EditorIdentity } from "./editorIdentity";
 import { projectWithoutEventDrafts } from "./eventDrafts";
 import { serialize } from "./io";
-import type { ProjectCommitReviewStatus } from "./supabaseProjectSync";
+import type { CommitReviewStatus } from "./persistence/types";
 import { projectRepository } from "./persistence/repository";
 import type { ChangeSummary } from "@/project/types";
 import type { Project } from "./types";
@@ -28,7 +28,7 @@ const log = createLogger("project-commits");
 export type CommitLogInput = {
   readonly project: Project;
   readonly identity?: EditorIdentity;
-  readonly reviewStatus: ProjectCommitReviewStatus;
+  readonly reviewStatus: CommitReviewStatus;
   readonly summary: string;
   readonly diff?: ChangeSummary;
   readonly toolNames?: readonly string[];
@@ -67,7 +67,7 @@ function drainEditActivityForCommit(): EditActivityCommitAttachment | undefined 
 export type CommitRow = {
   readonly commitId: string | null;
   readonly persisted: boolean;
-  readonly reviewStatus: ProjectCommitReviewStatus;
+  readonly reviewStatus: CommitReviewStatus;
   readonly summary: string;
   readonly toolNames: readonly string[];
   readonly recordedAt: string;

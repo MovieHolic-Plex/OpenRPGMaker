@@ -1,7 +1,7 @@
 import { PRODUCT_BRAND } from "@/brand";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { currentHumanEditorIdentity, setOwnerLabel, type EditorIdentity } from "@/project/editorIdentity";
-import type { SupabaseProjectCommitListItem } from "@/project/supabaseProjectSync";
+import type { CommitListItem } from "@/project/persistence/types";
 import { projectRepository } from "@/project/persistence/repository";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
@@ -367,7 +367,7 @@ async function refreshCommitPanel(panel: HTMLElement): Promise<void> {
   }
 }
 
-function renderCommitPanelRows(panel: HTMLElement, commits: readonly SupabaseProjectCommitListItem[]): void {
+function renderCommitPanelRows(panel: HTMLElement, commits: readonly CommitListItem[]): void {
   const body = el("div", { class: "team-commit-list", dataset: { testid: "commit-history-list" } });
   if (commits.length === 0) {
     body.append(el("div", { class: "team-commit-empty", text: "표시할 커밋이 없습니다.", dataset: { testid: "commit-history-empty" } }));
@@ -404,7 +404,7 @@ function commitPanelHeader(panel: HTMLElement): HTMLElement {
   });
 }
 
-function commitRow(commit: SupabaseProjectCommitListItem): HTMLElement {
+function commitRow(commit: CommitListItem): HTMLElement {
   const kind = commit.authorKind === "agent" ? "agent" : "human";
   return el("article", {
     class: "team-commit-row",

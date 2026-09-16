@@ -47,6 +47,12 @@ if (typeof window !== "undefined" && window.location) {
     window.oprn?.lifecycle.onFlushBeforeClose(() => {
       void store.flush().finally(() => { void window.oprn?.lifecycle.flushDone(); });
     });
+    // 파일 → 저장(CmdOrCtrl+S). 저장은 store 가 소유하므로 메뉴는 요청만 보내고 여기서 flush 한다.
+    window.oprn?.lifecycle.onSaveRequest(() => {
+      void store.flush().catch((error) => {
+        console.error("[store] 메뉴 저장 실패:", error);
+      });
+    });
   }
 
   window.addEventListener("beforeunload", (event) => {
