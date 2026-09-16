@@ -17,10 +17,12 @@ vi.mock("@/editor/panels/aiPiAgentCommand", async (importOriginal) => ({
 }));
 
 // 의도 선언의 판정만 고정한다 — 나머지(buildIntentFacts·createLlmIntentDeclarer)는 실물을 쓴다.
+// 의도 선언의 판정만 고정한다 — 나머지(buildIntentFacts·createLlmIntentDeclarer)는 실물을 쓴다.
 // wait 는 «분류 창을 붙잡아 두는» 게이트다 — 그 구간의 패널 상태를 관측하려면 분류가 끝나면 안 된다.
 const intentDecl = vi.hoisted(() => ({
   mode: "other" as string, source: "llm", needsPlan: false, clarify: null as string | null,
   error: undefined as string | undefined, calls: 0, wait: null as Promise<void> | null,
+  tools: [] as string[],
 }));
 vi.mock("@/ai/intentDeclarationClient", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/ai/intentDeclarationClient")>()),
@@ -28,7 +30,7 @@ vi.mock("@/ai/intentDeclarationClient", async (importOriginal) => ({
     intentDecl.calls += 1;
     if (intentDecl.wait) await intentDecl.wait;
     return {
-      intent: { mode: intentDecl.mode, source: intentDecl.source, needsPlan: intentDecl.needsPlan, clarify: intentDecl.clarify },
+      intent: { mode: intentDecl.mode, source: intentDecl.source, needsPlan: intentDecl.needsPlan, clarify: intentDecl.clarify, tools: intentDecl.tools },
       error: intentDecl.error, elapsedMs: 1,
     } as never;
   }),
@@ -76,6 +78,7 @@ beforeEach(() => {
   vi.stubEnv("VITE_LLM_API_KEY", "");
   vi.mocked(runPiCommand).mockClear();
   intentDecl.mode = "other";
+  intentDecl.tools = [];
   intentDecl.calls = 0;
   intentDecl.error = undefined; intentDecl.source = "llm"; intentDecl.needsPlan = false; intentDecl.clarify = null;
   intentDecl.wait = null;
@@ -191,6 +194,39 @@ describe("자율성 다이얼 → Pi 실행 계획", () => {
     const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
     await send(panel, "맵 이름을 숲길로 바꿔줘");
     expect(lastPlan()).toMatchObject({ routineEdit: false });
+  });
+
+  it("쓰기 발화는 의도가 연 도메인만 초기 노출로 싣는다", async () => {
+    // modify 선언은 편집 3도메인을 연다 — 나머지는 find_tools·폴백이 실행 중 얹는다.
+    intentDecl.mode = "modify";
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    await send(panel, "집 한 채 지어줘");
+    expect(lastPlan()?.toolDomains).toEqual(expect.arrayContaining(["core", "tile", "map", "event"]));
+  });
+
+  it("선언한 툴의 도메인도 함께 연다", async () => {
+    intentDecl.mode = "other";
+    intentDecl.tools = ["place_npc"];
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    await send(panel, "NPC 하나 놓아줘");
+    expect(lastPlan()?.toolDomains).toEqual(expect.arrayContaining(["core", "event"]));
+  });
+
+  it("선언이 빈 손이면 좁힐 근거가 없다 — 전량 노출로 떨어진다", async () => {
+    // Break: 신호 없이 좁히면 필요한 툴이 선언에서 빠진 채 시작한다 — 폴백이 있어도 낭비다.
+    intentDecl.mode = "other";
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    await send(panel, "이것저것 해줘");
+    expect(lastPlan()?.toolDomains).toBeUndefined();
+  });
+
+  it("질문 승격 턴은 도메인을 좁히지 않는다 — 읽기는 넓어야 답한다", async () => {
+    intentDecl.mode = "question";
+    intentDecl.tools = ["place_npc"];
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    await send(panel, "뭐가 있지?");
+    expect(lastPlan()).toMatchObject({ readOnly: true });
+    expect(lastPlan()?.toolDomains).toBeUndefined();
   });
 
   it("읽기 전용 다이얼은 분류 호출 자체를 건너뛴다", async () => {

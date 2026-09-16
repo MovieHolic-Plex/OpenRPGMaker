@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createPiToolset, selectPiToolDefinitions } from "@/ai/piAgent/toolAdapter";
+import { createPiToolset, harvestFindToolsNames, resolvePiToolShape, selectPiToolDefinitions } from "@/ai/piAgent/toolAdapter";
 import { TOOL_REGISTRY } from "@/editor/tools/toolRegistry";
 import { createBlankProject } from "@/project/defaults";
 
@@ -54,5 +54,41 @@ describe("piAgent toolAdapter", () => {
     expect(body.dataTruncated).toBe(true);
     expect(body.dataPreview?.length).toBe(64);
     expect(body.hint).toMatch(/잘렸습니다/);
+  });
+
+  describe("에스컬레이션 해석기", () => {
+    it("find_tools 결과에서 후보 이름을 수확한다", () => {
+      const found = harvestFindToolsNames({
+        ok: true,
+        summary: "3개 발견",
+        data: { matches: [{ name: "fill_region" }, { name: "set_project_settings" }, { noName: true }, "junk"] },
+      });
+      expect(found).toEqual(["fill_region", "set_project_settings"]);
+      expect(harvestFindToolsNames({ ok: false, summary: "x" })).toEqual([]);
+      expect(harvestFindToolsNames({ ok: true, summary: "x" })).toEqual([]);
+      expect(harvestFindToolsNames({ ok: true, summary: "x", data: {} })).toEqual([]);
+    });
+
+    it("실행 경계 안의 이름만 셰이프로 만든다", async () => {
+      const ctx = { project: createBlankProject() };
+      // 쓰기 가능 실행 — 쓰기 툴도 만든다.
+      expect(resolvePiToolShape(ctx, "set_project_settings")).toBeTruthy();
+      // 읽기 전용 실행 — 쓰기 툴은 절대 못 만든다(질문 승격의 구조적 보장).
+      expect(resolvePiToolShape(ctx, "set_project_settings", { readOnly: true })).toBeUndefined();
+      expect(resolvePiToolShape(ctx, "get_project_summary", { readOnly: true })).toBeTruthy();
+      // toolNames 는 하드 경계다 — 목록 밖 이름은 못 만든다(팀 역할 제한).
+      expect(resolvePiToolShape(ctx, "set_project_settings", { toolNames: ["get_project_summary"] })).toBeUndefined();
+      expect(resolvePiToolShape(ctx, "get_project_summary", { toolNames: ["get_project_summary"] })).toBeTruthy();
+      // 레지스트리에 없는 이름·빈 이름은 언제나 undefined.
+      expect(resolvePiToolShape(ctx, "not_a_tool")).toBeUndefined();
+      expect(resolvePiToolShape(ctx, "")).toBeUndefined();
+      // 만들어진 셰이프는 실제로 실행된다 — 같은 ctx·onCall 배선을 탄다.
+      const calls: string[] = [];
+      const shape = resolvePiToolShape(ctx, "set_project_settings", { onCall: (record) => calls.push(record.name) });
+      const out = await shape!.execute("e1", { title: "승격됨" });
+      expect(JSON.parse(out.content[0]!.text)).toMatchObject({ ok: true });
+      expect(ctx.project.meta.title).toBe("승격됨");
+      expect(calls).toEqual(["set_project_settings"]);
+    });
   });
 });
