@@ -31,6 +31,7 @@ import {
 import { changeChipsWithAreas, openWideChangeViewer, renderChangePreviewCard, type ChangePreviewInput } from "./aiChangePreview";
 import { loadAiConfig } from "@/ai/llmClient";
 import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
+import { adoptSpatialToolProof, authorMergedSpatialProposal } from "@/editor/tools/spatialToolState";
 import { summarizeChanges } from "@/editor/tools/changeset";
 import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { store } from "@/project/store";
@@ -320,9 +321,16 @@ export async function runPiCommand(
     return false;
   }
   // 팀 모드는 런타임이 이미 맵 묶음으로 병합해 돌려준다. 단일 범위 지정은 여기서 병합한다.
-  const merged = !team && command.mapIds.length > 0
+  const mergedFromBundles = !team && command.mapIds.length > 0;
+  const merged = mergedFromBundles
     ? mergeMapBundles(base, results.map((done, index) => ({ mapIds: groups[index]!, project: done.project })))
     : { project: results[0]!.project, spills: [], conflicts: [] as string[] };
+  // 수용 게이트는 «도구가 만든 제안»이라는 증거를 요구하는데, 그 프루프는 객체 정체성에 살아
+  // 동반 서비스(워커)에서 건너오지 못한다. 묶음을 여기서 병합했으면 살아있는 문서 위에 얹었다는
+  // 증거를 다시 찍고, 워커 결과를 그대로 적용하는 경우(팀·전체 범위)는 워커가 실어 보낸
+  // 다이제스트를 되붙인다 — 없으면 게이트가 정당하게 거절한다.
+  if (mergedFromBundles) authorMergedSpatialProposal(merged.project, base);
+  else adoptSpatialToolProof(merged.project, results[0]!.spatialProof, base);
   if (merged.conflicts.length > 0) {
     surface.appendBubble("system", `에이전트 둘 이상이 같은 맵을 바꿨습니다(뒤의 결과 채택): ${merged.conflicts.map((id) => `\`${id}\``).join(", ")}`);
   }

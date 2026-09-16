@@ -1,0 +1,38 @@
+{
+  "live": "test/support/spatialSpaceCompilerFixture (spatialAuthoring 있음, map_blank_start)",
+  "runs": [
+    {
+      "name": "team-proof",
+      "task": "/pi team 증거포함 마을을 정비해줘",
+      "prefix": "01-team-proof",
+      "studio": true,
+      "wire": "spatialProof 있음",
+      "reviewCard": true,
+      "outcome": "적용했습니다 — 팀, 툴콜 3회, 바뀐 맵·항목 1개.",
+      "pass": true,
+      "note": "adoptSpatialToolProof 경로(워커 결과를 그대로 적용)"
+    },
+    {
+      "name": "team-noproof",
+      "task": "/pi team 증거없음 마을을 한 번 더 정비해줘",
+      "prefix": "02-team-noproof",
+      "studio": true,
+      "wire": "spatialProof 없음(수정 전 워커)",
+      "reviewCard": true,
+      "outcome": "적용 실패(commit-rejected): Canonical AI acceptance requires an issued tool proposal",
+      "pass": true,
+      "note": "수정 전 증상 재현 — 사용자 스크린샷과 같은 문구"
+    },
+    {
+      "name": "map-scoped",
+      "task": "/pi 증거포함 우물을 하나 더 놓아줘",
+      "prefix": "03-map-scoped",
+      "studio": false,
+      "wire": "spatialProof 있음",
+      "reviewCard": true,
+      "outcome": "적용했습니다.",
+      "pass": true,
+      "note": "authorMergedSpatialProposal 경로(브라우저가 묶음을 병합한 뒤 승인 재발급)"
+    }
+  ]
+}

@@ -91,8 +91,8 @@ canonical project through `assertSpatialToolChange`: schema/reference checks plu
 pairs, even when `spatialAuthoring` JSON is unchanged. This happens before baseline
 lint subtraction. An existing projection error cannot waive another mutation with
 the same lint atom (T17-AV-1). Genuine repairs producing valid projections remain
-allowed, as do unrelated edits with pre-existing legacy lint errors. The permanent
-`test/spatialToolProjectionBoundary.test.ts` covers registered runner -> shared
+allowed, as do unrelated edits with pre-existing legacy lint errors. The quarantined
+`test/spatialToolProjectionBoundary.quarantine.test.ts` (outside `npm test`) covers registered runner -> shared
 acceptance -> real store/history -> deserialize, including the clean-baseline
 rejection control and independent entry/return acceptance checks.
 Generic hierarchy edits cannot gain authority by passing an otherwise well-formed
@@ -104,6 +104,35 @@ rasters after preview.
 live content, equal-content foreign project replacements, unissued snapshots and
 post-tool tampering before history/store writes. Its existing undo, annotations,
 commit recording and canonical store persistence routing remain in place.
+
+## 프로세스 경계를 넘는 증거 (2026-09-16)
+
+수용 증거(프루프)는 객체 정체성(WeakMap)에 살아 브라우저 프로세스 안에서만 읽힌다. 그런데
+`/pi` 와 레인은 프로젝트를 동반 서비스 워커에 보내고 결과를 JSON으로 돌려받는다 — 도구는 워커
+안에서 돌고, 프루프는 그 프로세스에 남는다. 그래서 canonical(`spatialAuthoring` 있음)
+프로젝트에서는 **무엇을 바꿔도** 적용이 반려됐다(실측 2026-09-16): 맵만 고친 팀 실행은
+`적용 실패(commit-rejected): Canonical AI acceptance requires an issued tool proposal`,
+계층까지 고친 실행은 `Spatial hierarchy changes require the validated spatial tools`. 41턴짜리
+시공이 통째로 버려지고 보드에는 «적용 실패»만 남았다.
+
+이제 워커는 `done` 이벤트에 `spatialProof: { baseline, spatial, proposed }` 다이제스트를 싣고
+(`piAgentRuntime` · `piTeamRuntime`), 브라우저가 `adoptSpatialToolProof` 로 **지금 살아있는
+프로젝트를 계보로 다시 이어 붙인다**. 기준(`baseline`)이 지금 프로젝트와 다르면 붙이지 않는다 —
+낡은 사본이나 남의 프로젝트에 남의 증거만 옮겨 붙일 수는 없다. 묶음을 브라우저에서 병합하는
+경로(`/pi 맵 지정`, 레인)는 병합 뒤 `authorMergedSpatialProposal` 로 승인을 다시 찍는다.
+계층 문서가 살아있는 문서와 다르면 찍지 않으므로, 병합이 실어 온 계층 편집은 그대로 거절된다.
+사후 변조 검사(`proposed` 불일치)·기준 검사·커밋 게이트는 그대로다.
+
+회귀: `test/piSpatialProofWire.test.ts` (기본 스위트 — 증거 있음/없음, 낡은 기준, 병합 승인,
+병합이 실어 온 계층 편집 거절). 브라우저 before/after 증거는 `scripts/spatial-wire-fixture.mts` 로
+canonical 프로젝트를 만들고 `scripts/capture-pi-spatial-apply.mjs` 를 워크트리 dev 서버에 돌려
+`verify-shots/pi-spatial-apply/` 에 남긴다(2026-09-16 실측: 팀·증거 있음 = `적용했습니다 — 팀, 툴콜 3회,
+바뀐 맵·항목 1개.` + 영수증, 팀·증거 없음 = `적용 실패(commit-rejected): Canonical AI acceptance
+requires an issued tool proposal`, 맵 범위·증거 있음 = 병합 경로도 적용 완료).
+격리 스위트인 `test/spatialToolAcceptance.quarantine.test.ts` 와
+`test/spatialToolProjectionBoundary.quarantine.test.ts` 는 `applyProposedProject` 가
+`base`/`baseline` 을 필수로 받게 바뀐 뒤 갱신되지 않아 지금은 게이트에 도달하기 전에
+`TypeError` 로 죽는다(격리라 기본 실행에서 빠져 이 경계를 지키지 못했다).
 
 The actual `approvalPolicy.ts` at this base returns `apply-now` for successful
 writes. These tools do not replace that policy with a new approval gate. Conversely,

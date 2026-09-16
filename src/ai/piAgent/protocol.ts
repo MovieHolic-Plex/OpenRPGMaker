@@ -1,4 +1,5 @@
 import type { SpecialistModels } from "../modelRoles";
+import type { SpatialToolProof } from "@/editor/tools/spatialToolState";
 // Pi 에이전트 경로의 공용 규약. 브라우저(클라이언트)·동반 서비스(Node)·Bun 워커(런타임)가 같은
 // 요청/이벤트 모양을 쓴다. 전송은 NDJSON 한 줄 = 이벤트 하나.
 //
@@ -94,7 +95,11 @@ export type PiAgentEvent =
   | { readonly type: "tool_start"; readonly id: string; readonly name: string; readonly args: unknown }
   | { readonly type: "tool_end"; readonly id: string; readonly name: string; readonly ok: boolean; readonly summary: string }
   | { readonly type: "error"; readonly message: string }
-  | { readonly type: "done"; readonly project: Project; readonly stats: PiAgentStats; readonly changedKeys: readonly string[] };
+  /**
+   * 쓰기 실행의 정본 증거. 프루프가 객체 정체성에 살아 이 경계를 넘지 못하므로 다이제스트로
+   * 실어 보낸다 — 브라우저의 수용 게이트가 이걸로 «도구가 만든 제안»임을 확인한다.
+   */
+  | { readonly type: "done"; readonly project: Project; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spatialProof?: SpatialToolProof | null };
 
 export type PiAgentDoneEvent = Extract<PiAgentEvent, { type: "done" }>;
 

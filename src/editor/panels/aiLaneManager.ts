@@ -24,6 +24,7 @@ import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
+import { authorMergedSpatialProposal } from "@/editor/tools/spatialToolState";
 
 export interface LaneApplySuccess {
   readonly ok: true;
@@ -218,6 +219,10 @@ export function createLaneManager(options: LaneManagerOptions = {}): LaneManager
     // 지금 프로젝트 위에 이 레인의 묶음만 얹는다. 묶음 밖(다른 레인이 적용된 것, 사람이 고친 다른 맵)은
     // `current` 에서 그대로 살아남는다 — 이것이 «레인 A 적용이 레인 B 를 죽이지 않는» 지점이다.
     const merged = mergeMapBundles(current, [{ mapIds: lane.spec.mapIds, project: lane.result.project, base: lane.base }]);
+    // 워커가 돌려준 프루프는 자기 프로세스에만 살아 여기로 오지 않는다. 이 레인은 묶음 밖 drift 를
+    // 이미 묶음 키 비교로 걸렀고 지금 프로젝트 위에 묶음만 얹었으므로, 살아있는 문서 기준으로
+    // 증거를 다시 찍는다 — 계층 문서가 달라졌다면 그대로 거절된다.
+    authorMergedSpatialProposal(merged.project, current);
     const applied = await applyProposedProject(merged.project, {
       // 기준은 «지금» 으로 새로 잡는다. 제안 자체가 지금 위에 얹힌 것이므로 전체 등가 기준을
       // 그대로 요구하면 이 레인이 방금 읽은 그 기준과 같아 통과한다. 묶음 충돌은 위에서 이미 걸렀다.

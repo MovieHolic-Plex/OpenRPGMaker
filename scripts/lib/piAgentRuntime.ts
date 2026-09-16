@@ -10,6 +10,7 @@ import { completeProvider } from "./ohMyPiPiAiRuntime.ts";
 import { Agent } from "@oh-my-pi/pi-agent-core";
 import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
 import { createPiToolset, type PiToolShape } from "../../src/ai/piAgent/toolAdapter.ts";
+import { exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.ts";
 import { createDeltaRelay } from "../../src/ai/piAgent/deltaRelay.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
 import { changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
@@ -168,6 +169,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     project: ctx.project,
     stats: { ms: Date.now() - started, turns, toolCalls, toolErrors, ...(usage ? { usage } : {}) },
     changedKeys: changedProjectKeys(base, ctx.project),
+    // 정본 증거는 이 프로세스 안에만 살아 있다 — 브라우저 수용 게이트가 쓸 수 있게 다이제스트로 내보낸다.
+    spatialProof: exportSpatialToolProof(ctx.project),
   };
   emit(done);
   return done;
