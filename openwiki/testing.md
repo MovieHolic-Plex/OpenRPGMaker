@@ -118,6 +118,10 @@ vitest CPU 시간의 25%(2,056초 / 8,363초)를 먹고 부하 때 재실행을 
 - 파일은 **삭제하지 않았다**. `X.test.ts` → `X.quarantine.test.ts` 로 이름만 바꿨다(깊이 유지 → 상대 import 생존).
 - 기본 스위트 제외: `vitest.config.ts` exclude 의 `test/**/*.quarantine.test.ts`.
 - 다시 돌리기: `npm run test:quarantine`. 되돌리기: `.quarantine` 만 떼고 **초록으로 고친 뒤에만** 넣는다.
+  (2026-09-16 실측 정정: 기본 config 의 exclude 가 `test:quarantine` 인자에도 걸려서
+  `npm run test:quarantine` 이 "No test files found" 로 끝나고 있었다 — 되돌리기 전제인 «일단 돌려보기» 가
+  불가능했다. `vitest.quarantine.config.ts` 를 따로 두어 실제로 돌게 고쳤다.
+  표본 3개 실측: `agentBlueprintTurnEnd` 14 실패 · `aiAssistantAfterUx` 2 실패 · `actionRpgAuthoringAcceptance` 1 실패/1 통과 — 원장대로 여전히 빨간불이다.)
 - 실패 종류(격리 시점): 단정 146 · 스위트 에러 8 · 타임아웃 2.
 
 격리 자체는 실패를 고친 게 아니라 부기를 바꾼 것이다 — 절대 실패 수가 줄어도
