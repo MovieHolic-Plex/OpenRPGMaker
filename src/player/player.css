@@ -1,6 +1,9 @@
 @layer tokens, base, runtime, overrides;
 
 @import "../styles/tokens.css";
+/* 플레이어는 다크 문서다(아래 `color-scheme: dark`). tokens.css 는 에디터 라이트 팔레트이므로
+   바로 뒤에서 런타임이 쓰는 토큰만 다크로 덮는다. 위 import 와 같은 언레이어라 순서로 이긴다. */
+@import "../styles/runtime/tokens.dark.css";
 @import "../styles/runtime/playerRuntime.css";
 
 html {

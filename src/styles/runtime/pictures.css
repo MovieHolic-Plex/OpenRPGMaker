@@ -17,10 +17,13 @@
   }
 
   .picture-layer-label {
-    background: var(--bg-glass, rgba(24, 28, 40, 0.88));
-    border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.17));
+    /* 다크 글래스 라벨. 값은 토큰이 공급한다 — 플레이어는 runtime/tokens.dark.css 가,
+       에디터는 tokens.css 가 준다. 폴백에 다크 값을 적어 두면 토큰이 라이트일 때
+       조용히 흰 칩으로 렌더되면서도 코드는 다크처럼 읽힌다(2026-09-17 실측). */
+    background: var(--bg-glass);
+    border: 1px solid var(--border-strong);
     border-radius: var(--radius-s, 6px);
-    color: var(--text-1, #e9ecf3);
+    color: var(--text-1);
     display: inline-block;
     font-family: var(--font-ui, system-ui, sans-serif);
     font-size: 14px;
