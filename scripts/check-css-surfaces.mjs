@@ -96,11 +96,17 @@ export function runSurfaceChecks({ stylesRoot, srcRoot, registry, entries }) {
 
   // 토큰 정의 수집 (R4)
   const defsBySurface = new Map(); // surface|null -> Set(name)
+  // :root / html 에 정의된 토큰은 문서 전역이라 표면 경계와 무관하게 어디서든 해소된다.
+  // 이걸 표면별로만 세면 거짓 빨간불이 난다 — 2026-09-17 실측 3건:
+  //   shell/figma-editor/01-shell-topbar-team.css:1 의 `:root` 가 정의한 --editor-panel-bg 를
+  //   database/light-theme.css 가 읽는데 "미정의 변수 (폴백 없음)" 로 보고했다.
+  const rootDefs = new Set();
   for (const d of decls) {
     if (!d.prop.startsWith("--")) continue;
     const s = surfaceOfFile(d.file, registry);
     if (!defsBySurface.has(s)) defsBySurface.set(s, new Set());
     defsBySurface.get(s).add(d.prop);
+    if (/(^|,)\s*(:root|html)\b/.test(d.sel ?? "")) rootDefs.add(d.prop);
   }
   const tokenDefs = defsBySurface.get("tokens") ?? new Set();
   const tsDefs = new Set();
@@ -109,6 +115,11 @@ export function runSurfaceChecks({ stylesRoot, srcRoot, registry, entries }) {
     const src = fs.readFileSync(f, "utf8");
     for (const m of src.matchAll(/setProperty\(\s*[`"'](--[\w-]+)/g)) tsDefs.add(m[1]);
     for (const m of src.matchAll(/setProperty\(\s*`(--[\w-]*)\$\{/g)) tsDefs.add(m[1] + "*");
+    // 스킨·테마가 토큰을 객체 리터럴로 들고 있다가 통째로 주입하는 형태:
+    //   src/battle/skins/registry.ts:41  "--battle-text-muted": "#9aa4c4",
+    // 값이 문자열 리터럴인 것만 인정한다. types.ts 의 `"--x"?: string;` 같은 타입
+    // 시그니처는 값이 식별자라 걸리지 않는다 — 타입 선언을 정의로 세면 안 된다.
+    for (const m of src.matchAll(/[`"'](--[\w-]+)[`"']\s*:\s*[`"']/g)) tsDefs.add(m[1]);
   }
   const tsDefined = (name) => tsDefs.has(name) || [...tsDefs].some((k) => k.endsWith("*") && name.startsWith(k.slice(0, -1)));
 
@@ -146,11 +157,17 @@ export function runSurfaceChecks({ stylesRoot, srcRoot, registry, entries }) {
     // R4
     for (const u of parseVarUses(d.value)) {
       const definedHere = defsBySurface.get(surface)?.has(u.name);
-      if (tokenDefs.has(u.name) || definedHere || tsDefined(u.name)) continue;
+      if (tokenDefs.has(u.name) || definedHere || rootDefs.has(u.name) || tsDefined(u.name)) continue;
       const fallbackOk = u.fallback !== null && (!/var\(/.test(u.fallback) || parseVarUses(u.fallback).every((f) => tokenDefs.has(f.name)));
       if (fallbackOk) continue;
       const key = `R4|${d.file}|${d.line}|${u.name}`;
-      if (!seenRule.has(key)) { seenRule.add(key); push("R4", surface, d.file, d.line, d.sel, u.name, `미정의 변수 ${u.name} (폴백 없음)`); }
+      // 메시지를 두 갈래로 나눈다: 정의가 정말 없는 것과, 다른 표면 스코프에만 있는 것.
+      // 예전엔 둘 다 "미정의 (폴백 없음)" 이라 스코프 문제를 오진하게 만들었다.
+      const elsewhere = [...defsBySurface].filter(([s, set]) => s !== surface && set.has(u.name)).map(([s]) => s);
+      const why = elsewhere.length
+        ? `표면 밖 토큰 ${u.name} (${elsewhere.join("/")} 스코프에만 정의 — tokens.css 로 올리거나 자기 표면에 정의할 것)`
+        : `미정의 변수 ${u.name} (정의가 어디에도 없다)`;
+      if (!seenRule.has(key)) { seenRule.add(key); push("R4", surface, d.file, d.line, d.sel, u.name, why); }
     }
     // R5 — 선택자의 클래스 전부가 소스에 없을 때만
     const classes = classTokens(d.sel);
