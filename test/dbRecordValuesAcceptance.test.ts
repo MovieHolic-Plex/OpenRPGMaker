@@ -67,31 +67,8 @@ describe("dbRecordValues 수용 기준", () => {
     expect(ACCEPTANCE_EXAMPLES.dbRecordValues).toBeDefined();
     expect(ACCEPTANCE_CRITERIA_SCHEMA.items.properties.kind.enum).toContain("dbRecordValues");
     expect(ACCEPTANCE_CRITERIA_SCHEMA.items.properties.collection.enum).toContain("enemies");
-    expect(ACCEPTANCE_CRITERIA_SCHEMA.items.properties.allowedChanges.items.properties.kind.enum).toContain("dbRecordValues");
   });
 
-  it("보존 허용 목록에 DB 필드를 넣으면 그 필드만 바뀐 초안이 통과한다", () => {
-    const { project, recordId } = slimeProject();
-    const baseline = structuredClone(project);
-    project.database.enemies[0].stats.maxHp = 300;
-    const input = { kind: "projectPreserve", scope: "project",
-      allowedChanges: [{ kind: "dbRecordValues", collection: "enemies", recordId, fields: { "stats.maxHp": 300 } }] };
-    const criteria = parseAcceptanceCriteria([input]);
-    expect(criteria).not.toBeNull();
-    expect(evaluateAcceptanceCriterion(criteria![0] as AcceptanceCriterion, { project, baseline, bindings: new Map(), reviewed: () => false }).passed).toBe(true);
-  });
-
-  it("허용되지 않은 다른 값이 함께 바뀌면 보존은 실패한다", () => {
-    const { project, recordId } = slimeProject();
-    const baseline = structuredClone(project);
-    project.database.enemies[0].stats.maxHp = 300;
-    project.database.enemies[0].stats.attack += 1;
-    const input = { kind: "projectPreserve", scope: "project",
-      allowedChanges: [{ kind: "dbRecordValues", collection: "enemies", recordId, fields: { "stats.maxHp": 300 } }] };
-    const criteria = parseAcceptanceCriteria([input]);
-    expect(criteria).not.toBeNull();
-    expect(evaluateAcceptanceCriterion(criteria![0] as AcceptanceCriterion, { project, baseline, bindings: new Map(), reviewed: () => false }).passed).toBe(false);
-  });
   it("id 를 모를 때는 유일한 이름으로 해석한다 — id 를 지어내지 않는다", () => {
     const { project } = slimeProject();
     project.database.enemies[0].stats.maxHp = 300;

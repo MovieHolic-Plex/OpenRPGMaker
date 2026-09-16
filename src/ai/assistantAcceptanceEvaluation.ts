@@ -109,16 +109,6 @@ function readPath(value: unknown, path: string): unknown {
   return path.split(".").reduce<unknown>((node, key) =>
     node && typeof node === "object" ? (node as Record<string, unknown>)[key] : undefined, value);
 }
-function writePath(target: unknown, path: string, value: unknown): void {
-  const keys = path.split(".");
-  let node = target as Record<string, unknown> | undefined;
-  for (const key of keys.slice(0, -1)) {
-    if (!node || typeof node[key] !== "object" || node[key] === null) return;
-    node = node[key] as Record<string, unknown>;
-  }
-  const last = keys.at(-1)!;
-  if (node && Object.hasOwn(node, last)) node[last] = value;
-}
 /** Restore only explicitly allowed fields on a detached copy, then compare with
  * the immutable request baseline. IDs, array order and all other values survive. */
 function projectPreserved(criterion: Extract<ProjectAcceptanceCriterion, { kind: "projectPreserve" }>, input: AcceptanceEvaluation): boolean {
@@ -129,14 +119,6 @@ function projectPreserved(criterion: Extract<ProjectAcceptanceCriterion, { kind:
       // Creating/removing a title-screen settings object is not only a title edit.
       if (Boolean(current.system.titleScreen) !== Boolean(input.baseline.system.titleScreen)) return false;
       if (current.system.titleScreen && input.baseline.system.titleScreen) current.system.titleScreen.title = input.baseline.system.titleScreen.title;
-      continue;
-    }
-    if (change.kind === "dbRecordValues") {
-      // 허용된 DB 필드만 기준선 값으로 되돌린다 — 그 밖의 차이는 보존 위반으로 남는다.
-      const after = resolveDbRecord(current, change);
-      const before = resolveDbRecord(input.baseline, change);
-      if (!after.record || !before.record) return false;
-      for (const path of Object.keys(change.fields)) writePath(after.record, path, readPath(before.record, path));
       continue;
     }
     const before = input.baseline.database.items.filter(item => item.id === change.itemId);
