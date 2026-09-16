@@ -34,7 +34,6 @@
 .db-enemy-dialog input,
 .db-enemy-dialog select {
   background-color: var(--oprn-enemy-table-bg);
-  border-color: var(--oprn-shadow) var(--oprn-light) var(--oprn-light) var(--oprn-shadow);
   border-style: solid;
   border-width: 1px;
   color: var(--text-primary);
@@ -171,7 +170,6 @@
 
 .db-enemy-graphic-list {
   background: var(--oprn-enemy-table-bg);
-  border: 1px inset var(--oprn-shadow);
   display: grid;
   max-height: 220px;
   overflow: auto;
@@ -185,11 +183,9 @@
   text-align: left;
 }
 
-.db-enemy-graphic-list button.active,
-.db-enemy-graphic-list button:hover {
-  background: var(--oprn-highlight);
-  color: var(--oprn-light);
-}
+/* .db-enemy-graphic-list button 의 active/hover 강조 규칙이 여기 있었다.
+   두 선언 모두 정의된 적 없는 --oprn-highlight/--oprn-light 를 읽어 통째로 폐기되고
+   있었고, .db-enemy-graphic-list 는 TS 어디서도 발행하지 않는다(참조 0건). */
 
 .db-enemy-hue-field {
   display: grid;
@@ -220,7 +216,6 @@
 }
 
 .db-enemy-condition-detail {
-  border: 1px inset var(--oprn-shadow);
   display: grid;
   gap: 6px;
   margin-top: 8px;
@@ -247,8 +242,6 @@
 }
 
 .db-enemy-context-menu {
-  background: var(--oprn-chrome);
-  border-color: var(--oprn-light) var(--oprn-shadow) var(--oprn-shadow) var(--oprn-light);
   border-style: solid;
   border-width: 1px;
   box-shadow: var(--shadow-popover);
@@ -273,8 +266,10 @@
 }
 
 .db-enemy-context-menu button:hover:not(:disabled) {
-  background: var(--oprn-highlight);
-  color: var(--oprn-light);
+  /* --oprn-highlight/--oprn-light 는 정의된 적이 없어 두 선언이 통째로 폐기됐고,
+     컨텍스트 메뉴 항목에 hover 피드백이 아예 없었다(2026-09-17 실측).
+     정본 토큰으로 되살린다. 글자색은 밝은 배경 위라 그대로 둔다. */
+  background: var(--control-bg-hover);
 }
 
 .db-enemy-context-menu button:disabled {
@@ -325,7 +320,8 @@
 
 .db-enemy-menu-icon.copy {
   border: 1px solid var(--oprn-enemy-menu-ink);
-  box-shadow: -3px -3px 0 -1px var(--oprn-chrome), -3px -3px 0 0 var(--oprn-enemy-menu-ink);
+  /* 겹친 문서 아이콘을 그리던 box-shadow 는 --oprn-chrome 이 정의된 적이 없어
+     통째로 폐기되고 있었다. 되살리려면 --oprn-chrome 부터 정의해야 한다. */
 }
 
 .db-enemy-menu-icon.paste {
