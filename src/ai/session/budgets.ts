@@ -19,4 +19,4 @@ export const MAX_SPEC_REJECTIONS = 3;
  * 하니스가 사용자 개입 없이 소비할 수 있는 총 턴 수를 묶는다. 소진 시
  * agent_run_budget_exhausted 감사를 남기고 멈추며, 사용자의 「계속」 한마디로 재가동된다.
  */
-export const AGENT_RUN_MAX_TOTAL_STEPS = 64;
+export const AGENT_RUN_MAX_TOTAL_STEPS = 48;

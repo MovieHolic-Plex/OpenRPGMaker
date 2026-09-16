@@ -47,7 +47,7 @@ describe("resolveAutonomy", () => {
     expect(resolveAutonomy("balanced")).toEqual({
       reasoningEffort: "low",
       agentMode: "auto",
-      budgetCap: 24,
+      budgetCap: 16,
       planOnly: false,
       readOnly: false,
     });
@@ -57,7 +57,7 @@ describe("resolveAutonomy", () => {
     expect(resolveAutonomy("autonomous")).toEqual({
       reasoningEffort: "medium",
       agentMode: "auto",
-      budgetCap: 48,
+      budgetCap: 32,
       planOnly: false,
       readOnly: false,
     });
@@ -67,7 +67,7 @@ describe("resolveAutonomy", () => {
     expect(resolveAutonomy("max")).toEqual({
       reasoningEffort: "high",
       agentMode: "auto",
-      budgetCap: 64,
+      budgetCap: 48,
       planOnly: false,
       readOnly: false,
     });
@@ -89,6 +89,6 @@ describe("resolveAutonomy", () => {
   it("returns a fresh object per call", () => {
     const first = resolveAutonomy("balanced");
     first.budgetCap = -1;
-    expect(resolveAutonomy("balanced").budgetCap).toBe(24);
+    expect(resolveAutonomy("balanced").budgetCap).toBe(16);
   });
 });
