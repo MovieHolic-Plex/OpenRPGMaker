@@ -30,6 +30,7 @@
 //   node scripts/check-css-budget.mjs --json              # 기계 판독용 출력
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
+import { warnIfStale } from "./lib/baseline-age.mjs";
 
 const ROOT = process.cwd();
 const DEFAULT_BASELINE = resolve(ROOT, ".omo/css-budget-baseline.json");
@@ -58,6 +59,7 @@ const value = (name, fallback) => {
 const asJson = flag("--json");
 const saveBaseline = flag("--save-baseline");
 const baselinePath = resolve(value("--baseline", DEFAULT_BASELINE));
+warnIfStale(baselinePath, "css-budget");
 
 function walk(dir, predicate, out = []) {
   for (const entry of readdirSync(dir)) {

@@ -112,6 +112,9 @@ jobs:
       # (선택자, 속성) 승자 래칫. 위의 넷은 선언을 **세기만** 해서, @layer 우선순위 한 줄을
       # 역순으로 뒤집어도 지문 해시까지 동일하게 통과했다(2026-09-17 적대적 리뷰 D 실측).
       - run: node scripts/check-css-winners.mjs
+      # TS 클래스 ↔ CSS 규칙 교차검증. npm 스크립트로만 있고 자동 경로엔 없어서
+      # exit 1 인 채로 방치돼 있었다.
+      - run: node scripts/check-dead-css-classes.mjs
 
   # 이벤트 에디터 표면 스냅샷 게이트. css-gates 와 같은 이유로 **별도 job** 이다 —
   # 같은 job 의 선행 step 이 이미 빨간불이면 이 게이트는 영원히 실행되지 않는다.

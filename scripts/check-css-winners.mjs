@@ -25,6 +25,7 @@ import { fileURLToPath } from "node:url";
 import postcss from "postcss";
 import { declarationsOf, flattenImports, emitOrder, specificity } from "./css-flatten.mjs";
 import { discoverEntries } from "./lib/css-entries.mjs";
+import { warnIfStale } from "./lib/baseline-age.mjs";
 
 // 레이어 "직속". 같은 레이어의 모든 서브레이어보다 강하다(CSS Cascade 5 §6.4.4).
 const DIRECT = Number.MAX_SAFE_INTEGER;
@@ -256,6 +257,7 @@ function main() {
     return 1;
   }
 
+  warnIfStale(baselinePath, "css-winners");
   const before = decodeBaseline(JSON.parse(readFileSync(baselinePath, "utf8")));
   const changes = [];
   for (const entry of [...new Set([...Object.keys(before), ...Object.keys(perEntry)])].sort()) {

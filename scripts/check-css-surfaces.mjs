@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { flattenImports, indexDeclarations } from "./css-flatten.mjs";
+import { warnIfStale } from "./lib/baseline-age.mjs";
 
 const BASELINE_PATH = "scripts/css-surfaces.baseline.json";
 // 기준선 지문을 남기는 규칙. R1 은 표면별 카운트(unlayered, hubs)로 래칫한다.
@@ -218,6 +219,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     console.log(`baseline saved: ${known.length} known fingerprints, ${violations.length} violations`);
     process.exit(0);
   }
+  warnIfStale(BASELINE_PATH, "css-surfaces");
   const baseline = fs.existsSync(BASELINE_PATH) ? JSON.parse(fs.readFileSync(BASELINE_PATH, "utf8")) : { counts: {}, known: [] };
   const known = new Set(baseline.known);
   const enforce = new Set(args.flatMap((a, i) => (a === "--enforce" ? [args[i + 1]] : [])));

@@ -195,14 +195,21 @@
   }
 }
 
+/* 구형 3D 베벨 리셋(위/왼쪽 밝게, 아래/오른쪽 어둡게 + 각진 모서리 + :active 반전).
+   현대화된 버튼은 `.db-ws-btn` 이 (0,4,0) 으로 이걸 덮으므로 실제 영향은 그 클래스를
+   안 쓴 버튼들이다. 제외 목록은 "이 리셋을 받으면 안 되는 컴포넌트" 를 적는 자리다.
+
+   .db-overview-pulse-card 를 뺀 이유(2026-09-17 실측): 개요 탭 카드 7장 중 2장만
+   <button> 인데, 이 규칙이 (0,3,1) 로 카드 규칙 (0,2,0) 을 이겨서 그 2장만
+   모서리 0px(나머지 8px) + 아래/오른쪽 테두리 0.1(나머지 0.08) 로 렌더됐다. */
 .database-modal-body .btn,
-.database-modal-body button:not(.db-tab):not(.event-custom-select-trigger) {
+.database-modal-body button:not(.db-tab):not(.event-custom-select-trigger):not(.db-overview-pulse-card) {
   border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-radius: 0;
 }
 
 .database-modal-body .btn:active,
-.database-modal-body button:not(.db-tab):not(.event-custom-select-trigger):active {
+.database-modal-body button:not(.db-tab):not(.event-custom-select-trigger):not(.db-overview-pulse-card):active {
   border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
 }
 
