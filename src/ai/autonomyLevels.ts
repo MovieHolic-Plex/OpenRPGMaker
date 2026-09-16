@@ -46,10 +46,12 @@ const RESOLUTIONS: Readonly<Record<AutonomyLevel, AutonomyResolution>> = {
   // readonly 는 planOnly 가 아니다: ask 레일은 플래너를 스킵하므로(plannerSkipReasonFor "composer:ask")
   // 계획이 애초에 생기지 않는다. planOnly 를 켜면 실행할 수 없는 계획만 남는다.
   confirm: { reasoningEffort: "low", agentMode: "chat", budgetCap: 6, planOnly: true, readOnly: false },
-  balanced: { reasoningEffort: "low", agentMode: "auto", budgetCap: 16, planOnly: false, readOnly: false },
-  autonomous: { reasoningEffort: "medium", agentMode: "auto", budgetCap: 32, planOnly: false, readOnly: false },
-  // budgetCap 48 = AGENT_RUN_MAX_TOTAL_STEPS(assistantSession) — 자율 런 전체 예산과 일치.
-  max: { reasoningEffort: "high", agentMode: "auto", budgetCap: 48, planOnly: false, readOnly: false },
+  balanced: { reasoningEffort: "low", agentMode: "auto", budgetCap: 24, planOnly: false, readOnly: false },
+  autonomous: { reasoningEffort: "medium", agentMode: "auto", budgetCap: 48, planOnly: false, readOnly: false },
+  // budgetCap 64 = AGENT_RUN_MAX_TOTAL_STEPS(assistantSession) — 자율 런 전체 예산과 일치.
+  // 2026-09-16 실측: 큰 프로젝트(입력 426k · 툴 233개)의 DB 편집 턴이 48라운드로는 검토 단계에
+  // 닿지 못했다(제안 5건 · budget-exhausted). 라운드를 늘려 검토까지 가게 한다.
+  max: { reasoningEffort: "high", agentMode: "auto", budgetCap: 64, planOnly: false, readOnly: false },
 };
 
 /** 레벨을 세션 노브로 푼다. 호출마다 새 객체를 돌려준다(호출자 변이가 테이블을 오염시키지 않는다). */
