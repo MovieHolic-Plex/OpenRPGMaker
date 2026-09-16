@@ -5,7 +5,6 @@ import { AI_RECORD_STORES, resetAiRecordDbForTest, writeAiRecords } from "@/ai/a
 import { AssistantSession } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import * as activity from "@/ai/activityLog";
-import * as sync from "@/project/supabaseProjectSync";
 import { store } from "@/project/store";
 import { getAiAssistantAudit } from "@/editor/aiAssistantBridge";
 import { renderAiChatPanel, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
@@ -28,7 +27,6 @@ it.each(["indexeddb", "memory"] as const)("opens interrupted legacy history with
   vi.stubGlobal("localStorage", { getItem: (key: string) => values.get(key) ?? null,
     setItem: (key: string, value: string) => values.set(key, value), removeItem: (key: string) => values.delete(key) });
   vi.spyOn(store, "getProjectIdentity").mockReturnValue({ kind: "remote", id: "boot-recovery" });
-  vi.spyOn(sync, "recordSupabaseConversation").mockResolvedValue({ kind: "not-configured" });
   vi.spyOn(activity, "recordAiActivity").mockImplementation(async entry => activity.buildAiActivityLogRecord(entry));
   // Observe admission at the actual session boundary. Fail closed if old boot code enters;
   // this test asserts admission, not tool execution or successful crash reconciliation.

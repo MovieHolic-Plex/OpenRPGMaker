@@ -9,35 +9,18 @@
 // 누락 → **정상 resolve**)를 구분하지 않아 dedup baseline 이 전진했다. 설정이 붙은 뒤 동일 내용
 // 재저장이 dedup 에 걸려 그 커밋이 영구히 기록되지 않았다.
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { _resetEventDraftVaultForTest } from "@/project/eventDraftVault";
-import type { Project } from "@/project/types";
+import type { MemoryRepository } from "@/project/persistence/memoryRepository";
+import type { MemoryProjectSession } from "./support/projectSession";
 
 type CommitCallInput = { readonly summary: string; readonly diff?: { readonly tilesChanged: number; readonly systemChanged: boolean } };
-// `not-configured` 도 정상 resolve 형태라 union 으로 못박는다 — 좁혀두면 dedup 테스트에서
-// mockImplementation 이 타입 에러가 난다(그게 바로 이 테스트가 잡는 결함의 형태다).
-type CommitCallResult = { readonly kind: "saved"; readonly commitId: string } | { readonly kind: "not-configured" };
 
-// hoisted 로 만들어야 vi.resetModules() 이후에도 같은 spy 를 계속 관찰할 수 있다 —
-// 팩토리 안에서 새로 만들면 리셋마다 spy 가 갈려서 호출 이력이 사라진다.
-const remote = vi.hoisted(() => ({
-  loadProjectFromSupabase: vi.fn(async () => null),
-  recordProjectCommitToSupabase: vi.fn(
-    async (_input: CommitCallInput): Promise<CommitCallResult> => ({ kind: "saved", commitId: "commit-1" }),
-  ),
-  saveProjectMapPatchToSupabase: vi.fn(async (input: { project: Project }) => ({
-    kind: "saved" as const,
-    project: structuredClone(input.project),
-  })),
-  saveProjectToSupabase: vi.fn(async (project: Project) => ({ kind: "saved" as const, project: structuredClone(project) })),
-}));
-
-vi.mock("@/project/supabaseProjectSync", () => remote);
-vi.mock("@/assets/supabaseResourceCache", () => ({
-  cacheSupabaseRootResources: vi.fn(async () => ({ skipped: [] })),
-}));
+let session: MemoryProjectSession | null = null;
+let recordSpy: MockInstance<MemoryRepository["commits"]["record"]> | null = null;
+let saveSpy: MockInstance<MemoryRepository["save"]> | null = null;
 
 /** fire-and-forget `.then()` 체인이 끝날 때까지 마이크로태스크를 비운다. */
 async function flushPending(): Promise<void> {
@@ -45,18 +28,25 @@ async function flushPending(): Promise<void> {
 }
 
 function commitSummaries(): readonly string[] {
-  return remote.recordProjectCommitToSupabase.mock.calls.map(([input]) => input.summary);
+  return (recordSpy?.mock.calls ?? []).map(([input]) => (input as CommitCallInput).summary);
 }
 
-beforeEach(() => {
+beforeEach(async () => {
   vi.resetModules();
   vi.clearAllMocks();
-  remote.recordProjectCommitToSupabase.mockImplementation(async () => ({ kind: "saved" as const, commitId: "commit-1" }));
+  // 전송 목 대신 저장소를 심고 그 커밋 기록을 본다 — 검증 대상은 "무엇을 기록했는가" 다.
+  const { installMemoryProjectSession } = await import("./support/projectSession");
+  session = installMemoryProjectSession();
+  recordSpy = vi.spyOn(session.repository.commits, "record");
+  saveSpy = vi.spyOn(session.repository, "save");
+  recordSpy.mockImplementation(async () => ({ kind: "saved" as const, commitId: "commit-1" }));
   _resetEventDraftVaultForTest();
 });
 
 afterEach(() => {
   _resetEventDraftVaultForTest();
+  session?.dispose();
+  session = null;
   vi.clearAllMocks();
 });
 
@@ -77,8 +67,8 @@ describe("수동 저장 커밋 summary 는 실제 diff 다", () => {
     await flushPending();
 
     expect(result.kind).toBe("saved");
-    expect(remote.recordProjectCommitToSupabase).toHaveBeenCalledTimes(1);
-    const input = remote.recordProjectCommitToSupabase.mock.calls[0]![0];
+    expect(recordSpy).toHaveBeenCalledTimes(1);
+    const input = recordSpy!.mock.calls[0]![0] as CommitCallInput;
     expect(input.summary).toBe("변경 저장: 타일 5");
     // 회귀 가드: 예전 구현은 diff 자체가 systemChanged 뿐이었다.
     expect(input.diff?.tilesChanged).toBe(5);
@@ -102,14 +92,14 @@ describe("수동 저장 커밋 summary 는 실제 diff 다", () => {
 
     expect(result.kind).toBe("saved");
     // baseline 이 없으면 전체 저장 경로로 간다(map patch 아님).
-    expect(remote.saveProjectToSupabase).toHaveBeenCalledTimes(1);
+    expect(saveSpy).toHaveBeenCalledTimes(1);
     expect(commitSummaries()).toEqual(["변경 저장: 시스템"]);
   });
 });
 
 describe("dedup baseline 은 실제 기록에만 전진한다", () => {
   it("not-configured 로 resolve 되면 baseline 이 전진하지 않아 동일 내용 재저장이 다시 시도된다", async () => {
-    remote.recordProjectCommitToSupabase.mockImplementation(async () => ({ kind: "not-configured" as const }));
+    recordSpy!.mockImplementation(async () => ({ kind: "not-configured" as const }));
     const { recordManualProjectCommitAfterSave } = await import("@/project/projectCommitLog");
     const baseline = createBlankProject();
     const saved = structuredClone(baseline);
@@ -117,15 +107,15 @@ describe("dedup baseline 은 실제 기록에만 전진한다", () => {
 
     recordManualProjectCommitAfterSave(saved, baseline);
     await flushPending();
-    expect(remote.recordProjectCommitToSupabase).toHaveBeenCalledTimes(1);
+    expect(recordSpy).toHaveBeenCalledTimes(1);
 
     // supabase 설정이 붙었다고 가정하고 같은 내용을 다시 저장한다.
-    remote.recordProjectCommitToSupabase.mockImplementation(async () => ({ kind: "saved" as const, commitId: "commit-2" }));
+    recordSpy!.mockImplementation(async () => ({ kind: "saved" as const, commitId: "commit-2" }));
     recordManualProjectCommitAfterSave(saved, baseline);
     await flushPending();
 
     // 이전 구현은 여기서 dedup 에 걸려 이 커밋이 영구히 사라졌다.
-    expect(remote.recordProjectCommitToSupabase).toHaveBeenCalledTimes(2);
+    expect(recordSpy).toHaveBeenCalledTimes(2);
   });
 
   it("saved 로 resolve 되면 baseline 이 전진해 동일 내용 재저장을 건너뛴다", async () => {
@@ -139,6 +129,6 @@ describe("dedup baseline 은 실제 기록에만 전진한다", () => {
     recordManualProjectCommitAfterSave(saved, baseline);
     await flushPending();
 
-    expect(remote.recordProjectCommitToSupabase).toHaveBeenCalledTimes(1);
+    expect(recordSpy).toHaveBeenCalledTimes(1);
   });
 });

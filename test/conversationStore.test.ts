@@ -7,10 +7,11 @@
 // Node 에는 IndexedDB 가 없어 fake-indexeddb 로 실제 IDB 의미론을 돌린다.
 import "fake-indexeddb/auto";
 import { IDBFactory } from "fake-indexeddb";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from "vitest";
 import type { AuditEntry } from "@/ai/assistantSession";
-import { recordSupabaseConversation } from "@/project/supabaseProjectSync";
 import { resetAiRecordDbForTest } from "@/ai/aiRecordDb";
+import type { MemoryRepository } from "@/project/persistence/memoryRepository";
+import { installMemoryProjectSession, type MemoryProjectSession } from "./support/projectSession";
 import {
   CONVERSATION_ARGS_MAX_CHARS,
   CONVERSATION_MAX_RECORDS,
@@ -28,11 +29,10 @@ import {
   type ConversationRecord,
 } from "@/ai/conversationStore";
 
-vi.mock("@/project/supabaseProjectSync", () => ({
-  recordSupabaseConversation: vi.fn(),
-}));
-
-const recordSupabaseConversationMock = vi.mocked(recordSupabaseConversation);
+// 원격 미러는 포트가 받는다. 예전에는 sync 모듈을 목킹했는데 그 목은 기본 어댑터가 Supabase 일 때만
+// 살아 있었다 — 저장소를 심고 그 ai.recordConversation 을 본다.
+let session: MemoryProjectSession | null = null;
+let recordConversationSpy: MockInstance<MemoryRepository["ai"]["recordConversation"]> | null = null;
 
 const originalLocalStorageDescriptor = Object.getOwnPropertyDescriptor(globalThis, "localStorage");
 const originalIndexedDb = globalThis.indexedDB;
@@ -86,8 +86,9 @@ const bulkyRecord = (id: string, savedAt: number, toolCalls: number, charsPerCal
   record(id, savedAt, [user(`대화 ${id}`), ...Array.from({ length: toolCalls }, (_, index) => bulkyTool(`place_${index}`, charsPerCall))]);
 
 beforeEach(() => {
-  recordSupabaseConversationMock.mockReset();
-  recordSupabaseConversationMock.mockResolvedValue({ kind: "not-configured" });
+  session = installMemoryProjectSession();
+  recordConversationSpy = vi.spyOn(session.repository.ai, "recordConversation");
+  recordConversationSpy.mockResolvedValue({ kind: "not-configured" });
   installStorage(createMemoryStorage());
   // 테스트마다 새 IndexedDB 세계 — 연결 캐시와 이관 표식도 같이 리셋한다.
   globalThis.indexedDB = new IDBFactory();
@@ -96,6 +97,8 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.restoreAllMocks();
+  session?.dispose();
+  session = null;
   globalThis.indexedDB = originalIndexedDb;
   resetAiRecordDbForTest();
   if (originalLocalStorageDescriptor) {
@@ -146,7 +149,7 @@ describe("conversationStore", () => {
     };
     await saveConversation(record("reason", 400, [user("검토해줘"), withReason]));
     expect((await loadConversation("reason"))?.entries).toEqual([user("검토해줘"), withReason]);
-    const remote = recordSupabaseConversationMock.mock.calls.at(-1)?.[0] as { entries?: AuditEntry[] } | undefined;
+    const remote = recordConversationSpy!.mock.calls.at(-1)?.[0] as { entries?: AuditEntry[] } | undefined;
     expect(remote?.entries).toEqual([user("검토해줘"), withReason]);
   });
 
@@ -221,7 +224,7 @@ describe("conversationStore", () => {
     const failureReported = new Promise<void>(resolve => {
       vi.spyOn(console, "error").mockImplementation(() => resolve());
     });
-    recordSupabaseConversationMock.mockRejectedValueOnce(failure);
+    recordConversationSpy!.mockRejectedValueOnce(failure);
 
     await saveConversation(record("remote-failure", 400));
     await failureReported;
@@ -356,7 +359,7 @@ describe("conversationStore — 압축", () => {
   it("Given 인자가 큰 툴콜 When 저장한다 Then 원격 미러도 로컬과 같은 압축본을 받는다", async () => {
     await saveConversation(record("mirror", 3, [user("미러"), bulkyTool("paint_cells", CONVERSATION_ARGS_MAX_CHARS * 4)]));
 
-    const remote = recordSupabaseConversationMock.mock.calls.at(-1)?.[0] as { entries?: AuditEntry[] } | undefined;
+    const remote = recordConversationSpy!.mock.calls.at(-1)?.[0] as { entries?: AuditEntry[] } | undefined;
     const remoteTool = remote?.entries?.[1];
     expect(remoteTool?.kind).toBe("tool");
     if (remoteTool?.kind !== "tool") return;

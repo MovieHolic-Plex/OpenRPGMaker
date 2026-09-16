@@ -3,18 +3,25 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { closePersistenceRecovery } from "@/editor/persistenceRecoveryUi";
 import { reloadProjectFromDbNow, saveProjectNow } from "@/editor/saveActions";
 import { createBlankProject } from "@/project/defaults";
-import { SpatialPersistenceError } from "@/project/spatial/persistence";
+import { SpatialPersistenceError } from "@/project/spatial/persistenceTypes";
 import { ProjectRoutingError } from "@/project/spatial/saveRouting";
 import { store } from "@/project/store";
+import { setProjectRepositoryForTest } from "@/project/persistence/repository";
+import type { ProjectRepository } from "@/project/persistence/types";
 import { resetToastsForTest, toast } from "@/util/toast";
 
-vi.mock("@/project/supabaseProjectConfig", () => ({
-  supabaseProjectConfig: () => ({ projectId: "recovery-fixture", url: "http://127.0.0.1:9", anonKey: "local" }),
-}));
 vi.mock("@/editor/editorState", () => ({ editorState: { get: () => ({ currentMapId: null }) } }));
 vi.mock("@/editor/mapSelection", () => ({ focusProjectStartMap: vi.fn() }));
 
+// 저장 대상은 세션의 저장소가 정본이다 — 설정 모듈을 목킹하면 코드가 더 이상 읽지 않아 목이 죽는다.
+let liveTarget = { url: "http://127.0.0.1:9", projectId: "recovery-fixture", anonKey: "local" };
+
 beforeEach(() => {
+  liveTarget = { url: "http://127.0.0.1:9", projectId: "recovery-fixture", anonKey: "local" };
+  setProjectRepositoryForTest({
+    kind: "remote",
+    currentTarget: () => liveTarget,
+  } as unknown as ProjectRepository);
   vi.useFakeTimers();
   vi.spyOn(store, "isLoaded").mockReturnValue(true);
   vi.spyOn(store, "hasUnsavedChanges").mockReturnValue(true);
@@ -32,6 +39,7 @@ afterEach(() => {
   closePersistenceRecovery();
   resetToastsForTest();
   document.body.replaceChildren();
+  setProjectRepositoryForTest(null);
   vi.restoreAllMocks();
   vi.useRealTimers();
 });

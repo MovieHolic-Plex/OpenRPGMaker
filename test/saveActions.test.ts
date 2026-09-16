@@ -1,5 +1,7 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { reloadProjectFromDbNow, saveProjectNow } from "@/editor/saveActions";
+import { setProjectRepositoryForTest } from "@/project/persistence/repository";
+import type { ProjectRepository } from "@/project/persistence/types";
 
 type MockFlushResult =
   | { readonly kind: "conflict"; readonly conflicts: readonly { readonly mapId: string; readonly name: string }[] }
@@ -20,7 +22,6 @@ const mocks = vi.hoisted(() => ({
   reloadFromRemote: vi.fn(),
   getCurrent: vi.fn(),
   isSharedDemoSession: vi.fn(() => false),
-  supabaseProjectConfig: vi.fn(),
   editorGet: vi.fn(() => ({ currentMapId: "start" })),
   editorSet: vi.fn(),
   focusProjectStartMap: vi.fn(),
@@ -44,9 +45,19 @@ vi.mock("@/util/toast", () => ({
   dismissToastsByKey: mocks.dismissToastsByKey,
 }));
 
-vi.mock("@/project/supabaseProjectConfig", () => ({
-  supabaseProjectConfig: mocks.supabaseProjectConfig,
-}));
+// 저장 대상은 세션의 저장소가 정본이다 — 설정 모듈을 목킹하면 코드가 더 이상 읽지 않아 목이 죽는다.
+// 테스트마다 심어야 한다: 앞 테스트에서 지우면 다음 테스트가 대상 없이 돌아 조용히 다른 경로를 탄다.
+let liveTarget = { url: "http://127.0.0.1:9", projectId: "recovery-fixture", anonKey: "local-anon" };
+beforeEach(() => {
+  liveTarget = { url: "http://127.0.0.1:9", projectId: "recovery-fixture", anonKey: "local-anon" };
+  setProjectRepositoryForTest({
+    kind: "remote",
+    currentTarget: () => liveTarget,
+  } as unknown as ProjectRepository);
+});
+afterEach(() => {
+  setProjectRepositoryForTest(null);
+});
 
 vi.mock("@/editor/editorState", () => ({
   editorState: {
@@ -70,16 +81,10 @@ describe("saveProjectNow", () => {
     mocks.getPersistenceRecovery.mockReset();
     mocks.reloadFromRemote.mockReset();
     mocks.getCurrent.mockReset();
-    mocks.supabaseProjectConfig.mockReset();
     mocks.isLoaded.mockReturnValue(true);
     mocks.hasUnsavedChanges.mockReturnValue(true);
     mocks.getAutoSaveState.mockReturnValue({ kind: "idle" });
     mocks.getPersistenceRecovery.mockReturnValue({ kind: "ready" });
-    mocks.supabaseProjectConfig.mockReturnValue({
-      projectId: "recovery-fixture",
-      url: "http://127.0.0.1:9",
-      anonKey: "local-anon",
-    });
   });
 
   it("shows a saving toast immediately and a completion toast after flush resolves", async () => {
@@ -104,7 +109,6 @@ describe("reloadProjectFromDbNow", () => {
     mocks.hasUnsavedChanges.mockReset();
     mocks.reloadFromRemote.mockReset();
     mocks.getCurrent.mockReset();
-    mocks.supabaseProjectConfig.mockReset();
     mocks.editorGet.mockReset();
     mocks.editorSet.mockReset();
     mocks.focusProjectStartMap.mockReset();
@@ -112,19 +116,10 @@ describe("reloadProjectFromDbNow", () => {
     mocks.hasUnsavedChanges.mockReturnValue(true);
     mocks.editorGet.mockReturnValue({ currentMapId: "start" });
     mocks.getCurrent.mockReturnValue({ maps: { start: {} } });
-    mocks.supabaseProjectConfig.mockReturnValue({
-      projectId: "recovery-fixture",
-      url: "http://127.0.0.1:9",
-      anonKey: "local-anon",
-    });
   });
 
   it("rejects a changed target and does not reload", async () => {
-    mocks.supabaseProjectConfig.mockReturnValue({
-      projectId: "other-fixture",
-      url: "http://127.0.0.1:9",
-      anonKey: "local-anon",
-    });
+    liveTarget = { ...liveTarget, projectId: "other-fixture" };
     const result = await reloadProjectFromDbNow({ force: true, expectedProjectId: "recovery-fixture" });
     expect(result).toBe(false);
     expect(mocks.reloadFromRemote).not.toHaveBeenCalled();

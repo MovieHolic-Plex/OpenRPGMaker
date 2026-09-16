@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createFakePostgrest } from "./fakePostgrest";
-import { createSupabaseRepository } from "@/project/persistence/supabaseRepository";
 import { createLocalRepositoryFixture } from "../localStore/localRepositoryFixture";
 import { createHouseTemplateGalleryProject } from "@/project/defaults/defaultProject";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
@@ -214,21 +213,3 @@ describeRepositoryContract("local (real SQLite in a temp folder)", async () => {
 });
 
 
-describeRepositoryContract("supabase (fake PostgREST)", (projectId) => {
-  const origin = "http://contract-transport.invalid";
-  const postgrest = createFakePostgrest();
-  vi.stubEnv("VITE_SUPABASE_USE_PROXY", "0");
-  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
-  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", projectId);
-  vi.stubEnv("VITE_SUPABASE_URL", origin);
-  vi.stubGlobal("window", {
-    location: { hostname: "127.0.0.1", pathname: "/", search: "" },
-    localStorage: { getItem: () => null, setItem: () => undefined, removeItem: () => undefined },
-  });
-  vi.stubGlobal("fetch", postgrest.fetch);
-  return {
-    repository: createSupabaseRepository(),
-    target: { url: origin, anonKey: "test-anon-key", projectId },
-    cleanup: () => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); },
-  };
-});

@@ -24,10 +24,6 @@ import {
 } from "@/editor/panels/aiConversationHistoryModal";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
-vi.mock("@/project/supabaseProjectSync", () => ({
-  recordSupabaseConversation: vi.fn(async () => undefined),
-}));
-
 let restoreDom: (() => void) | null = null;
 const originalLocalStorage = Object.getOwnPropertyDescriptor(globalThis, "localStorage");
 
