@@ -8,6 +8,7 @@ import { passageBounds } from "@/project/footprint";
 import type { GameMap, Project } from "@/project/types";
 import { ACCEPTANCE_EXAMPLES, type AcceptanceIssue, type AcceptanceCriterion, type AcceptanceItemSnapshot, type AcceptanceRegion, type AcceptanceTarget, type ProjectAcceptanceCriterion, type AcceptanceSource } from "./assistantAcceptance";
 import type { ToolVerificationEvidence } from "./toolVerificationEvidence";
+import { collectionRecords, type DbCollection } from "@/editor/tools/queryTools";
 
 type Evidence = AcceptanceItemSnapshot["evidence"][number];
 export function acceptanceFingerprint(value: unknown): string {
@@ -75,6 +76,7 @@ export function visualFingerprint(project: Project, map: GameMap): string {
 export function criterionTargets(criterion: AcceptanceCriterion): readonly AcceptanceTarget[] {
   switch (criterion.kind) {
     case "wikiDeclaration": case "projectTitle": case "itemValues": case "projectPreserve":
+    case "dbRecordValues":
     case "gameTitle": case "toolVerdict": case "npcReward": case "functionalUnresolved": return [];
     case "shopPurchase": return [criterion.target];
     case "mapRoundTrip": return [criterion.target, criterion.destination];
@@ -82,6 +84,14 @@ export function criterionTargets(criterion: AcceptanceCriterion): readonly Accep
     case "mapDimensions": case "eventCount": case "targetChange": case "preserve": case "imageReviewed": case "reachability": case "actionCombat": return [criterion.target];
     default: return assertNever(criterion);
   }
+}
+/** id 또는 유일한 이름으로 레코드를 찾는다. 이름 해석이 모호하거나 없으면 검증하지 않는다 —
+ * 어느 레코드를 검증했는지 말할 수 없기 때문이다(커버리지 감사는 읽기 전에 돌아 id 를 모른다). */
+function resolveDbRecord(project: Project, selector: { readonly collection: DbCollection; readonly recordId?: string; readonly recordName?: string }): { record?: Record<string, unknown>; matches: number } {
+  const all = collectionRecords(project, selector.collection);
+  const byId = selector.recordId !== undefined && selector.recordId !== "";
+  const matches = byId ? all.filter(record => record.id === selector.recordId) : all.filter(record => record.name === selector.recordName);
+  return { record: matches.length === 1 ? matches[0] : undefined, matches: matches.length };
 }
 export interface AcceptanceEvaluation {
   readonly source?: AcceptanceSource;
@@ -94,6 +104,21 @@ export interface AcceptanceEvaluation {
   readonly reviewed: (map: GameMap, region: AcceptanceRegion) => boolean;
   readonly actionProven?: (map: GameMap) => boolean;
 }
+/** 점 경로 읽기/쓰기 — 허용된 DB 필드만 기준선 값으로 되돌려 비교에서 중립화한다. */
+function readPath(value: unknown, path: string): unknown {
+  return path.split(".").reduce<unknown>((node, key) =>
+    node && typeof node === "object" ? (node as Record<string, unknown>)[key] : undefined, value);
+}
+function writePath(target: unknown, path: string, value: unknown): void {
+  const keys = path.split(".");
+  let node = target as Record<string, unknown> | undefined;
+  for (const key of keys.slice(0, -1)) {
+    if (!node || typeof node[key] !== "object" || node[key] === null) return;
+    node = node[key] as Record<string, unknown>;
+  }
+  const last = keys.at(-1)!;
+  if (node && Object.hasOwn(node, last)) node[last] = value;
+}
 /** Restore only explicitly allowed fields on a detached copy, then compare with
  * the immutable request baseline. IDs, array order and all other values survive. */
 function projectPreserved(criterion: Extract<ProjectAcceptanceCriterion, { kind: "projectPreserve" }>, input: AcceptanceEvaluation): boolean {
@@ -104,6 +129,14 @@ function projectPreserved(criterion: Extract<ProjectAcceptanceCriterion, { kind:
       // Creating/removing a title-screen settings object is not only a title edit.
       if (Boolean(current.system.titleScreen) !== Boolean(input.baseline.system.titleScreen)) return false;
       if (current.system.titleScreen && input.baseline.system.titleScreen) current.system.titleScreen.title = input.baseline.system.titleScreen.title;
+      continue;
+    }
+    if (change.kind === "dbRecordValues") {
+      // 허용된 DB 필드만 기준선 값으로 되돌린다 — 그 밖의 차이는 보존 위반으로 남는다.
+      const after = resolveDbRecord(current, change);
+      const before = resolveDbRecord(input.baseline, change);
+      if (!after.record || !before.record) return false;
+      for (const path of Object.keys(change.fields)) writePath(after.record, path, readPath(before.record, path));
       continue;
     }
     const before = input.baseline.database.items.filter(item => item.id === change.itemId);
@@ -154,6 +187,19 @@ export function evaluateAcceptanceCriterion(criterion: AcceptanceCriterion, inpu
     case "projectPreserve": {
       const passed = projectPreserved(criterion, input);
       return { expected, observed: passed ? "Original baseline preserved outside allowed changes" : "Unallowed change or invalid baseline target", passed };
+    }
+    case "dbRecordValues": {
+      // 저장된 필드값을 본다 — 런타임 전투 동작을 증명하지는 않는다(그 조항은 여전히 functionalUnresolved 다).
+      // 같은 id 가 둘 이상이면 어느 쪽을 검증했는지 말할 수 없으므로 실패한다(itemValues 와 같은 규칙).
+      const { record, matches } = resolveDbRecord(input.project, criterion);
+      const observed: Record<string, unknown> = {};
+      let passed = record !== undefined;
+      for (const [path, expectedValue] of Object.entries(criterion.fields)) {
+        const actual = readPath(record, path);
+        observed[path] = actual ?? null;
+        if (actual !== expectedValue) passed = false;
+      }
+      return { expected, observed: JSON.stringify({ matches, ...observed }), passed };
     }
     case "gameTitle": {
       // Match titleScreen.renderTitleScreen/renderTitleNodes without importing DOM

@@ -2274,3 +2274,21 @@ e2e `ai-ui-audit-fixes` F10.
   드로워 접기 버튼, Esc. 열려 있으면 손잡이는 숨는다. 작업·변경이 새로 떠도 배지만 세우고 드로워를 빼앗지 않는다(2026-09-16 변경). 레인을 만들면 드로워가 닫히고 그 스레드가 오른쪽에 선다.
 - 검증: `test/aiStudioShell.test.ts` 27(드로워 3 포함) · `test/aiStudioColumnCollapse.test.ts` 3 · `test/piAgentLanes.test.ts` 11 ·
   `npm run typecheck:app` 0 · CSS 예산/그래프 0 회귀 · `scripts/capture-studio-drawer.mjs` → `output/evidence/studio-drawer/qa/`(1600·1024 × 6 상태).
+
+## 수용 기준: DB 레코드 값과 지연 적용의 런 수명 (2026-09-16)
+
+실모델 DB 편집이 **검토에 닿지 못하고, 닿아도 적용이 반려되던** 결함들을 라이브 실측으로 고쳤다(PR #863).
+
+| 증상 (라이브 실측) | 원인 | 고침 |
+|---|---|---|
+| 모델이 `repair_acceptance` 를 반복하다 라운드 소진(16라운드 중 9회 헛 조회) | DB 레코드 속성 변경에 정확한 평가자가 없어 `functionalUnresolved` 로 남았다 | `dbRecordValues` 기준 — 컬렉션 + (recordId **또는** 유일하게 해석되는 recordName) + 점 경로 값. 모호한 이름·부재 레코드는 실패 |
+| "다른 건 건드리지 마" 조항을 닫을 수 없음 | `projectPreserve.allowedChanges` 에 DB 허용이 없었다 | allowedChanges 에 `dbRecordValues` 허용 추가(허용 필드만 기준선 값으로 되돌린 뒤 전체를 비교) |
+| 닫을 수 없는 미평가 항목이 계속 생김 | 코드가 붙인 `[컨텍스트] …` footer 가 "인용되지 않은 요청 스트" 로 회계됐다 | 의도 사실(`userText`)·수용 원문에서 `stripContextFooter` 적용 — footer 의 사실은 currentMapId·selection 으로 따로 간다 |
+| 독립 검수 **승인**까지 는데 적용이 매번 반려 | `aiTurnRunner.finishTurn` 이 턴 종료 시 무조건 `session.retireRun()` → 승인이 런 시그널에 묶여 있어 무효화 | 검토 대기로 초안을 넘긴 턴(`heldProposalForReview`)은 retire 하지 않는다 |
+
+**실모델 라이브 실증:** 검토 승인 → `STORE_DURING_REVIEW` 무변경(정직한 보류) →
+적용 시 store 78→300 + 되돌리기 라 / 폐기 시 무변경·되돌리기 없음.
+증거 `.omo/evidence/db-ai-review/live-review-chain.md`, 계약 `test/dbRecordValuesAcceptance.test.ts`(10건).
+
+**남은 한계:** 라운드 예산이 빠듯해 검토 도달이 비결정적이고(도달·미도달 모두 관측),
+`dbRecordValues` 는 저장된 필드값만 증명한다(런타임 전투 동작은 여전히 미평가 항목).

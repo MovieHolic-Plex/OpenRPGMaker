@@ -239,6 +239,9 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
     setAgentGhostDraftMapProvider((mapId) => session.getProposedProject().maps[mapId]);
     let highlightedRegionThisTurn = false;
     let turnFailed = false; // 접힘 레일 알림 점의 색(완료=초록/오류=빨강) 결정용.
+    // 검토 대기로 초안을 넘긴 턴인가. 이 턴은 런을 retire 하지 않는다 — 승인이 런 시그널에
+    // 묶여 있어 retire 하면 표면의 「적용」이 영원히 반려된다(실측 2026-09-16: signalAborted=true).
+    let heldProposalForReview = false;
     let turnResult: TurnResult | null = null;
     // 마일스톤 이벤트와 반환 원장은 같은 적용분이다. 합산하지 않고 최대값으로 맞춘다.
     let appliedWriteCount = 0;
@@ -586,7 +589,9 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       syncAgentBlueprintWithSpec(session.getActiveSpec());
       retireOwnedPresentation();
       deps.surface.endTurnProgress();
-      session.retireRun();
+      // 검토 대기로 넘긴 턴은 런을 살려 둔다(위 플래그 주석). 사용자가 적용/폐기하거나 다음 턴이
+      // 시작될 때 beginRunOperation 이 이 런을 retire 한다.
+      if (!heldProposalForReview) session.retireRun();
       retireActiveTurn = undefined;
       deps.applyingProposal = false;
       if (deps.surface.activeAbortController === abortController) deps.surface.activeAbortController = null;
@@ -786,6 +791,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       // 검토 게이트 표면은 여기서 멈춘다 — 초안을 넘기고 적용은 그 표면의 「적용」이 한다.
       if (runOpts?.deferApply === true && applyMode === "apply-now" && deps.holdProposal) {
         deps.holdProposal(result.proposedCalls, assistantBubble);
+        heldProposalForReview = true;
         settleBlueprintForTurnEnd(null);
         deps.surface.setStatus("검토 대기");
       } else if (runOpts?.composerMode !== "ask" && applyMode === "apply-now") {

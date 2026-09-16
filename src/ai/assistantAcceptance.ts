@@ -5,6 +5,7 @@ import { isFunctionalCriterionKind, parseFunctionalCriterion, type FunctionalCri
 import { VERIFICATION_TOOL_NAMES } from "./agentVerification";
 import { verificationInput, parseSceneInteractionTargets } from "./toolVerificationEvidence";
 import { isSceneTestInput, type SceneInteractionReceipt } from "@/testing/sceneTestRunner";
+import { DB_COLLECTIONS, type DbCollection } from "@/editor/tools/queryTools";
 
 export type AcceptanceStatus = "pending" | "working" | "verifying" | "verified" | "blocked";
 export interface AcceptanceSnapshot {
@@ -46,14 +47,23 @@ type ScopedTarget = { readonly target: AcceptanceTarget; readonly region?: Accep
 /** Finite authored changes, not arbitrary paths or executable checks. */
 export type ProjectPreservationChange =
   | { readonly kind: "projectTitle" }
-  | { readonly kind: "itemName" | "itemPrice" | "itemAddition"; readonly itemId: ItemRecord["id"] };
+  | { readonly kind: "itemName" | "itemPrice" | "itemAddition"; readonly itemId: ItemRecord["id"] }
+  // DB 레코드 필드 허용 — "다른 건 건드리지 마" 를 DB 편집에도 증명 가능하게 한다.
+  // 실측(2026-09-16): 허용 목록에 DB 가 없어 보존 항목을 닫을 수 없었고, 모델이 repair_acceptance
+  // 를 반복하다 라운드 예산을 소진해 초안이 검토에 닿지 못했다.
+  | { readonly kind: "dbRecordValues"; readonly collection: DbCollection; readonly recordId?: string;
+      readonly recordName?: string; readonly fields: Readonly<Record<string, string | number | boolean>> };
 export type ProjectAcceptanceCriterion =
   | { readonly kind: "wikiDeclaration"; readonly documentId: string; readonly combatMode: WikiCombatMode; readonly sourceQuote: string }
   | { readonly kind: "projectTitle"; readonly title: Project["meta"]["title"] }
   | { readonly kind: "itemValues"; readonly itemId: ItemRecord["id"]; readonly name?: ItemRecord["name"]; readonly price?: ItemRecord["price"] }
+  // DB 레코드의 저장된 필드값 — 적 stats 같은 속성 변경에는 정확한 평가자가 없어 항목을 닫을 수 없었다.
+  // 실측(2026-09-16 라이브): 그 미닫힘 항목을 repair_acceptance 로 닫으려다 라운드 예산을 다 쓰고 초안이 검토에 닿지 못했다.
+  | { readonly kind: "dbRecordValues"; readonly collection: DbCollection; readonly recordId?: string;
+      readonly recordName?: string; readonly fields: Readonly<Record<string, string | number | boolean>> }
   | { readonly kind: "projectPreserve"; readonly scope: "project" | "authored"; readonly allowedChanges: readonly ProjectPreservationChange[] };
 export function isProjectAcceptanceKind(kind: string): boolean {
-  return kind === "projectTitle" || kind === "itemValues" || kind === "projectPreserve" || kind === "wikiDeclaration";
+  return kind === "projectTitle" || kind === "itemValues" || kind === "projectPreserve" || kind === "wikiDeclaration" || kind === "dbRecordValues";
 }
 export type AcceptanceCriterion =
   | ProjectAcceptanceCriterion
@@ -114,6 +124,8 @@ export const ACCEPTANCE_EXAMPLES: Readonly<Record<AcceptanceCriterion["kind"], A
   gameTitle: Object.freeze({ kind: "gameTitle", title: "작은 열쇠" }),
   projectTitle: Object.freeze({ kind: "projectTitle", title: "Exact title" }),
   itemValues: Object.freeze({ kind: "itemValues", itemId: "item_id", name: "Potion", price: 37.5 }),
+  dbRecordValues: Object.freeze({ kind: "dbRecordValues", collection: "enemies" as const, recordId: "enemy_id",
+    fields: Object.freeze({ "stats.maxHp": 300 }) }),
   projectPreserve: Object.freeze({ kind: "projectPreserve", scope: "project", allowedChanges: Object.freeze([Object.freeze({ kind: "projectTitle" as const })]) }),
   wikiDeclaration: Object.freeze({ kind: "wikiDeclaration", documentId: "w_combat_preference", combatMode: "contact", sourceQuote: "Record my contact battle preference." }),
 });
@@ -147,12 +159,32 @@ export function parseAcceptanceRegion(value: unknown): AcceptanceRegion | null {
     || value.w === 0 || value.h === 0) return null;
   return { x: value.x, y: value.y, w: value.w, h: value.h };
 }
+function dbFields(value: unknown): Record<string, string | number | boolean> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const fields: Record<string, string | number | boolean> = {};
+  for (const [path, expected] of Object.entries(value as Record<string, unknown>)) {
+    if (path.trim().length === 0) return null;
+    if (typeof expected !== "string" && typeof expected !== "number" && typeof expected !== "boolean") return null;
+    fields[path] = expected;
+  }
+  return Object.keys(fields).length > 0 ? fields : null;
+}
 function preservationChange(value: unknown): ProjectPreservationChange | null {
   if (!acceptanceRecord(value)) return null;
   if (value.kind === "projectTitle") return Object.keys(value).length === 1 ? { kind: value.kind } : null;
   if ((value.kind === "itemName" || value.kind === "itemPrice" || value.kind === "itemAddition")
     && text(value.itemId) && Object.keys(value).every(key => key === "kind" || key === "itemId")) {
     return { kind: value.kind, itemId: value.itemId };
+  }
+  if (value.kind === "dbRecordValues"
+    && Object.keys(value).every(key => key === "kind" || key === "collection" || key === "recordId" || key === "recordName" || key === "fields")) {
+    const collection = DB_COLLECTIONS.find(entry => entry === value.collection);
+    const fields = dbFields(value.fields);
+    const byId = text(value.recordId) ? value.recordId : undefined;
+    const byName = text(value.recordName) ? value.recordName : undefined;
+    if (collection && fields && (byId === undefined) !== (byName === undefined)) {
+      return { kind: value.kind, collection, ...(byId !== undefined ? { recordId: byId } : { recordName: byName! }), fields };
+    }
   }
   return null;
 }
@@ -180,6 +212,7 @@ function criterion(value: unknown, index: number, issues: AcceptanceIssue[]): Ac
     reachability: ["kind", "target", "from", "to"], toolVerdict: ["kind", "tool", "args", "interactionTargets"],
     actionCombat: ["kind", "target"], gameTitle: ["kind", "title"],
     projectTitle: ["kind", "title"], itemValues: ["kind", "itemId", "name", "price"],
+    dbRecordValues: ["kind", "collection", "recordId", "recordName", "fields"],
     projectPreserve: ["kind", "scope", "allowedChanges"],
     wikiDeclaration: ["kind", "documentId", "combatMode", "sourceQuote"],
   };
@@ -208,6 +241,18 @@ function criterion(value: unknown, index: number, issues: AcceptanceIssue[]): Ac
     return { kind: value.kind, itemId: value.itemId,
       ...(typeof value.name === "string" ? { name: value.name } : {}),
       ...(typeof value.price === "number" ? { price: value.price } : {}) };
+  }
+  if (value.kind === "dbRecordValues") {
+    const collection = DB_COLLECTIONS.find(entry => entry === value.collection);
+    if (!collection) return invalid("collection", DB_COLLECTIONS.join(" | "));
+    const byId = text(value.recordId) ? (value.recordId as string) : undefined;
+    const byName = text(value.recordName) ? (value.recordName as string) : undefined;
+    // 커버리지 감사는 읽기 전에 돌므로 레코드 id 를 모른다. 이름만 있을 때는 평가 시점에 그 컬렉션에서
+    // 유일하게 해석되는 이름이어야 한다 — id 를 지어내지 않는다.
+    if ((byId === undefined) === (byName === undefined)) return invalid("recordId", "exactly one of recordId or recordName (the name must resolve uniquely)");
+    const fields = dbFields(value.fields);
+    if (!fields) return invalid("fields", "object of dotted field path → exact stored value (at least one string, number or boolean)");
+    return { kind: value.kind, collection, ...(byId !== undefined ? { recordId: byId } : { recordName: byName! }), fields };
   }
   if (value.kind === "projectPreserve") {
     if (value.scope !== "project" && value.scope !== "authored") return invalid("scope", "project | authored");
