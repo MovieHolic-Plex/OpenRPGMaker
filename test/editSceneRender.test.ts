@@ -584,7 +584,7 @@ describe("edit scene tile culling", () => {
     // 시작 위치 표시 같은 오버레이는 tiles 배열에서 제외한다.
     const tileLayer: Phaser.GameObjects.Container = {
       removeAll: () => undefined,
-      remove: () => undefined,
+      remove: (object: CullTile) => { const i = tiles.indexOf(object); if (i >= 0) tiles.splice(i, 1); return object; },
       sort: () => undefined,
       add: (object: CullTile) => { tiles.push(object); return object; },
     } as unknown as Phaser.GameObjects.Container;
@@ -686,7 +686,7 @@ describe("edit scene tile culling", () => {
     expect(writesAfterSecond).toBe(writesAfterFirst);
   });
 
-  it("resetCullableTiles 뒤에는 이전 추적이 남지 않는다", () => {
+  it("resetCullableTiles 뒤에는 같은 host 의 이전 추적이 비워진다", () => {
     const project = createBlankProject();
     const map = project.maps[project.startMapId];
     map.width = 16;
@@ -705,13 +705,85 @@ describe("edit scene tile culling", () => {
       mapId: map.id,
       tileIndex: new Map(),
     });
+    // 컬링을 적용해 타일을 숨긴다.
     syncTileCulling(scene, { x: 1000, y: 1000, width: 320, height: 240 });
     expect(tiles.every((t) => !t.visible)).toBe(true);
 
-    // 전체 재렌더 시뮬레이션 — resetCullableTiles 후 이전 추적은 버린다.
+    // reset 후 같은 host 로 다시 렌더하면 새 타일이 추적된다.
     resetCullableTiles(scene);
-    syncTileCulling(scene, { x: 0, y: 0, width: 320, height: 240 });
-    // reset 했으므로 이전 tiles 는 더 이상 건드리지 않는다 — 여전히 숨겨진 채로 남는다.
+    const { tiles: freshTiles, tileLayer: freshTileLayer, overlayLayer: freshOverlayLayer, gridGraphics: freshGridGraphics } = cullScene();
+    // 같은 scene 객체를 쓰되 freshTileLayer 가 새 타일을 받도록 한다.
+    renderEditScene({
+      scene,
+      tileLayer: freshTileLayer,
+      overlayLayer: freshOverlayLayer,
+      gridGraphics: freshGridGraphics,
+      mapId: map.id,
+      tileIndex: new Map(),
+    });
+
+    // reset 덕분에 새 타일은 visible=true 로 시작하고, 이전 tiles 는 건드리지 않는다.
+    expect(freshTiles.every((t) => t.visible)).toBe(true);
+    // 이전 tiles 는 여전히 숨겨진 채 — reset 이 추적을 비웠으니 syncTileCulling 이 안 건드린다.
     expect(tiles.every((t) => !t.visible)).toBe(true);
+
+    // 같은 host 에 대해 컬링을 적용하면 freshTiles 만 반응한다.
+    syncTileCulling(scene, { x: 1000, y: 1000, width: 320, height: 240 });
+    expect(freshTiles.every((t) => !t.visible)).toBe(true);
+    // 이전 tiles 의 setVisibleCalls 는 그대로 — reset 후 더 이상 추적되지 않는다.
+    expect(tiles.every((t) => t.setVisibleCalls === 1)).toBe(true);
+  });
+
+  it("증분 렌더 후에도 화면 밖 새 타일이 컬링된다", () => {
+    // 회귀 테스트: renderEditSceneTileCells 가 새 타일을 visible=true 로 만든 뒤,
+    // 카메라가 안 움직이면 sameWindow early-out 으로 컬링이 안 걸린다.
+    // invalidateCullingWindow 가 applied 창을 버려 다음 syncTileCulling 이 재계산한다.
+    // 이 테스트는 fix 가 없으면 실패해야 한다 — 화면 밖 새 타일이 visible=true 로 남는다.
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    map.width = 64;
+    map.height = 64;
+    map.lowerTiles = new Array<number>(64 * 64).fill(-1);
+    map.upperTiles = new Array<number>(64 * 64).fill(-1);
+    store.replace(project);
+    editorState.set({ currentMapId: map.id, layer: "lower", tool: "paint", showGrid: false });
+
+    const { scene, tiles, tileLayer, overlayLayer, gridGraphics } = cullScene();
+    const tileIndex: EditSceneTileIndex = new Map();
+    renderEditScene({
+      scene,
+      tileLayer,
+      overlayLayer,
+      gridGraphics,
+      mapId: map.id,
+      tileIndex,
+    });
+
+    // 화면을 (0,0) 에 고정하고 컬링 적용 — 화면 밖 타일이 숨겨진다.
+    const viewport = { x: 0, y: 0, width: 320, height: 240 };
+    syncTileCulling(scene, viewport);
+    // 컬링 마진이 2타일(32px) 이므로 pixel x > 352 (타일 22 이후) 는 확실히 화면 밖.
+    const offscreenBefore = tiles.filter((t) => t.x > 352);
+    expect(offscreenBefore.length).toBeGreaterThan(0);
+    expect(offscreenBefore.every((t) => !t.visible)).toBe(true);
+
+    // 증분 렌더 — 화면 밖 먼 셀(60,60)을 칠한다. 8방 이웃도 재렌더된다.
+    renderEditSceneTileCells(
+      { scene, tileLayer, overlayLayer, gridGraphics, mapId: map.id, tileIndex },
+      [{ x: 60, y: 60, layer: "lower" }],
+    );
+
+    // 새 타일이 만들어졌다 — (60,60) 근처 픽셀 좌표 960 근처.
+    const newTilesNearPaint = tiles.filter((t) => t.x >= 940 && t.x <= 980 && t.y >= 940 && t.y <= 980);
+    expect(newTilesNearPaint.length).toBeGreaterThan(0);
+    // 아직 컬링이 안 걸려서 새 타일은 보인다.
+    expect(newTilesNearPaint.every((t) => t.visible)).toBe(true);
+
+    // invalidateCullingWindow 덕분에 sameWindow early-out 없이 재계산한다.
+    syncTileCulling(scene, viewport);
+
+    // 핵심 검증: 화면 밖 새 타일이 숨겨졌다. fix 가 없으면 visible=true 로 남는다.
+    const offscreenAfter = tiles.filter((t) => t.x > 352);
+    expect(offscreenAfter.every((t) => !t.visible)).toBe(true);
   });
 });

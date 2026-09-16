@@ -9,7 +9,7 @@ import { tilePassability } from "@/project/collision";
 import { tileStackAt, topTileInStack } from "@/project/mapOverlayTiles";
 import { store, type ProjectChangeCell } from "@/project/store";
 import { renderWalkEncounterOverlay } from "@/editor/walkEncounterOverlay";
-import { resetCullableTiles, trackCullableTile } from "@/player/playSceneTileCulling";
+import { invalidateCullingWindow, resetCullableTiles, trackCullableTile } from "@/player/playSceneTileCulling";
 import type { GameMap, MapId } from "@/project/types";
 export { editorEventMarkerTexture, eventMarkerTileScale, renderEventLayerClickFeedback } from "@/editor/editSceneEventMarkers";
 
@@ -107,6 +107,10 @@ export function renderEditSceneTileCells(
   if ("sort" in context.tileLayer && typeof context.tileLayer.sort === "function") {
     context.tileLayer.sort("depth");
   }
+  // 새 타일이 visible=true 로 만들어졌다. 카메라가 안 움직였으면 sameWindow early-out 으로
+  // 컬링이 안 걸리므로, 적용 창을 무효화해 다음 update() 가 강제 재계산하게 한다.
+  // 새 타일이 없으면 무효화할 필요가 없다 — 파괴된 타일은 active===false 가드가 처리한다.
+  if (tileObjectsUpdated > 0) invalidateCullingWindow(context.scene);
   return { tileObjectsUpdated };
 }
 
