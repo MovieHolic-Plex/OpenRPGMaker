@@ -11,15 +11,33 @@ AFTER {"maxHp":78, "statusText":"적용 실패 — 변경을 적용하지 못했
 ```
 즉 실모델이 초안을 만들고, 독립 검수가 **승인**하고, 표면에 바뀐 레코드 카드가 뜬다. 남은 것은 **적용 클릭** 하나다.
 
-## 적용이 막히는 정확한 조건 (계측 실측)
+## 적용이 막히던 조건 — 계측으로 특정하고 고쳤다
+
 `assistantSession.isDraftReviewApproved()` 에 임시 계측을 넣어 적용 시점 값을 떴다(계측은 되돌렸다):
 ```
-검토 중  {"composerMode":"do","baselineCurrent":true,"hasReviewTurn":true,"signalAborted":false,"reviewStatus":"approved","identityMatch":true}
-적용 시점 {..., "signalAborted":true, ...}
+검토 중   {"composerMode":"do","baselineCurrent":true,"hasReviewTurn":true,"signalAborted":false,"reviewStatus":"approved","identityMatch":true}
+적용 시점  {..., "signalAborted":true, ...}
 ```
-→ 승인·기준선·정체성은 모두 살아 있는데 **런 시그널만 중단**되어 있다. 턴이 끝나면서 런이 retire 되고,
-그 시그널을 승인 정체성의 일부로 요구하는 탓에 **지연 적용(deferred)의 승인이 무효화**된다.
-표면의 적용은 `applyProposal` 의 `if (!session.isDraftReviewApproved()) return "rejected";` 에서 끝난다.
+승인·기준선·정체성은 살아 있는데 **런 시그널만** 죽어 있었다. retire 주체를 스택으로 잡으니
+`aiTurnRunner.finishTurn` 이었고(턴 종료 시 무조건 `session.retireRun()`), 승인이 런 시그널에 묶여 있어
+**지연 적용(deferred)의 승인이 무효화**됐다.
+
+고침: 검토 대기로 초안을 넘 턴(`heldProposalForReview`)은 `finishTurn` 에서 런을 retire 하지 않는다.
+사용자가 적용/폐기하거나 다음 턴이 시작될 때 `beginRunOperation` 이 retire 한다.
+
+## 라이브 실증 — 검토 → 적용 / 검토 → 폐기 (실모델)
+```
+[적용] independent-review {"status":"approved","revision":2}
+       STORE_DURING_REVIEW {"maxHp":78,"unchanged":true}
+       AFTER {"maxHp":300,"phase":"done","statusText":"적용됐어요 · 레코드 1건 — 화면에 바로 반영됩니다",
+              "undoHidden":false,"undoLabel":"되돌리기: AI: 적 '슬라임' 수정 외 1건"}
+
+[폐기] independent-review {"status":"approved","revision":3}
+       STORE_DURING_REVIEW {"maxHp":78,"unchanged":true}
+       AFTER {"maxHp":78,"phase":"done","statusText":"버렸어요 · 레코드 1건 — 프로젝트는 그대로입니다","undoHidden":true}
+```
+두 경우 모두 검토 단계에서는 프로젝트가 바뀌지 않고, 적용은 store 에 반영되며 되돌리기가 남고,
+폐기는 아무것도 남기지 않는다.
 
 ## 그 전에 고친 세 가지 (같은 라이브로 확정)
 1. **정확한 평가자 없음** — DB 레코드 속성 변경이 `functionalUnresolved` 로 남고 모델이 `repair_acceptance` 로 닫으려다 라운드를 태웠다(16라운드 중 9회 헛 조회). → `dbRecordValues` 기준 추가(PR #863).
@@ -27,6 +45,6 @@ AFTER {"maxHp":78, "statusText":"적용 실패 — 변경을 적용하지 못했
 3. **감사는 읽기 전에 돌아 id 를 모른다** — "Identify the database record ID for '슬라임' …" 이라는 닫을 수 없는 항목이 생겼다. → recordName(유일 해석) 허용(PR #863).
 
 ## 아직 남은 한계
-- 적용 게이트(위 시그널 수명) — 이 노트 시점의 마지막 벽.
 - 라운드 예산이 빠듯해 검토 도달이 **비결정적**이다: 같은 조건에서 phase:review 도달과 미도달(max-tool-calls)이 모두 관측됐다.
-- `dbRecordValues` 는 저장된 필드값만 증명한다 — 런타임 전투 동작은 여전히 미평가 항목이다.
+- `dbRecordValues` 는 저장된 필드값만 증명한다 — 타임 전투 동작은 여전히 미평가 항목으로 남는다.
+- 이 검증은 dev showcase 프로젝트 + 원격 저장이 꺼진 경로다(프로젝트 행을 쓰지 않는다).
