@@ -48,6 +48,8 @@ export type OprnBridge = {
   readonly closeIsHostDriven: boolean;
   /** AI 동반 서비스 출처. 일렉트론은 루프백 주소, 브라우저는 페이지와 같은 출처라 null 이다. */
   readonly companionOrigin: string | null;
+  /** 동반 서비스 실행별 토큰(설계 7.4). 루프백은 같은 머신의 다른 프로세스에 열려 있다. */
+  readonly companionToken: string | null;
   /** 내용 주소 자산을 열 수 있는 접두사. 일렉트론은 oprn-asset 스킴, 브라우저 로컬 서버는 HTTP 경로다. */
   readonly assetBaseUrl: (projectId: string) => string;
   readonly lifecycle: OprnBridgeLifecycle;

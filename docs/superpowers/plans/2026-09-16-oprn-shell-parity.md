@@ -32,8 +32,11 @@
   - 증거: `test/activityMirror.test.ts` 가 임시 폴더에 진짜로 쓰고 다시 읽는다(AI jsonl·index·failedTools, 편집 배치 seq 교체, 빈 배치 204, GET latest, 413 상한, 경로 탈출 방어). 계약 테스트 2종이 `vite.config.ts` 텍스트가 아니라 **공용 본체**를 보도록 옮겼고, 세 껍데기가 모두 `createActivityMirrorMiddleware`/`handleActivityMirror` 를 부르는지 단언한다.
   - 남은 것: 없음 — 앱의 `app://` 경로도 E2E 가 지나간다(`electronBridge.spec.ts` 에서 두 엔드포인트에 POST → 204 → 연 프로젝트 폴더에 `edits.jsonl`·`activity.jsonl` 생성).
   - 함정(실측): 프로토콜 핸들러에서 `new Response("", { status: 204 })` 는 TypeError 를 던지고, 렌더러에는 `TypeError: Failed to fetch` 로만 보인다. 204/205/304 는 본문을 가질 수 없으므로 `body.length > 0 ? body : null` 로 넘겨야 한다.
-- **I4. 토큰 잠금(설계 §7.4).** 루프백 동반 서비스와 로컬 서버에 실행별 토큰 + 허용 오리진 검사를 넣는다.
-  - 증거: 토큰 없는 요청이 403, 있는 요청이 200.
+- **I4. 토큰 잠금(설계 §7.4) — 완료.** 동반 서비스 미들웨어가 `X-Oprn-Companion-Token` 을 요구한다(타이밍 세이프). 앱은 실행마다 `randomUUID()` 를 만들어 `companion.token` IPC 로, 로컬 서버는 브리지 설정으로 페이지에 준다. 렌더러는 토큰이 있으면 싣고 없으면 안 싣는다(vite dev 와 같은 코드로 돌아야 한다).
+  - 면제는 한 경로뿐: `/oauth/launch` — OAuth 는 탑레벨 내비게이션(`window.open`)이라 커스텀 헤더를 실을 수 없다. 여기에 걸면 로그인이 불가능해진다.
+  - 함정(실측): 프리플라이트(OPTIONS)는 토큰 검사보다 **먼저** 통과해야 한다 — 프리플라이트는 실제 헤더를 싣지 않으므로 403 을 주면 본 요청이 아예 안 가고 렌더러에는 `Failed to fetch` 로만 보인다.
+  - 증거: `test/companionToken.test.ts` 가 진짜 HTTP 서버로 403/통과/프리플라이트/면제를 확인하고, `test/serve/localServer.test.ts` 가 로컬 서버에서도 같은 것을 본다.
+  - 남은 것: 오리진 검사를 토큰과 **별개로** 조이기(지금은 토큰이 주 방어선이고 오리진은 CORS 응답용이다).
 - **I5. 패키징(P5).** `electron-builder`로 맥 dmg·zip + 리눅스 AppImage, `asar: true`. `src/brand.ts` 상수에서 앱 id·제품명을 만든다.
   - 증거: dmg를 열어 임시 폴더에 새 프로젝트 → 편집 → 저장 → 재시작 후 같은 sha256.
 

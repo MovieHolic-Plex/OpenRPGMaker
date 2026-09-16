@@ -96,6 +96,9 @@ app.whenReady().then(async () => {
   ipcMain.on(OPRN_CHANNELS.companionOrigin, (event) => {
     event.returnValue = companionServer?.origin ?? null;
   });
+  ipcMain.on(OPRN_CHANNELS.companionToken, (event) => {
+    event.returnValue = companionServer?.token ?? null;
+  });
   buildMenu();
   registerAppProtocol(rendererDir, () => sessions.firstProjectDir() ?? process.cwd());
   registerAssetProtocol(sessions);

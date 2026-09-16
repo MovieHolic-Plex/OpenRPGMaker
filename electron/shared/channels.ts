@@ -25,6 +25,7 @@ export const OPRN_CHANNELS = {
   lifecycleFlushBeforeClose: "oprn:lifecycle.flush-before-close",
   lifecycleFlushDone: "oprn:lifecycle.flush-done",
   companionOrigin: "oprn:companion.origin",
+  companionToken: "oprn:companion.token",
   startRecentProjects: "oprn:start.recentProjects",
   startOpenFolder: "oprn:start.openFolder",
   startOpenRecent: "oprn:start.openRecent",

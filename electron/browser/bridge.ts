@@ -1,6 +1,10 @@
 import { OPRN_CHANNELS } from "../shared/channels";
 
-type BrowserBridgeConfig = { readonly endpoint: string; readonly token: string };
+type BrowserBridgeConfig = {
+  readonly endpoint: string;
+  readonly token: string;
+  readonly companionToken?: string | null;
+};
 
 declare global {
   interface Window {
@@ -107,4 +111,5 @@ async function readAsset(payload: unknown): Promise<Uint8Array> {
     importFile: async () => null,
   },
   companionOrigin: null,
+  companionToken: window.__OPRN_BRIDGE__?.companionToken ?? null,
 };

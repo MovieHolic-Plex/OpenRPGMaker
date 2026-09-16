@@ -16,6 +16,7 @@ function fakeBridge(): OprnBridge {
   return {
     closeIsHostDriven: true,
     companionOrigin: "http://127.0.0.1:1234",
+    companionToken: "test-companion-token",
     assetBaseUrl: (projectId: string) => `oprn-asset://${projectId}/`,
     project: {
       status: async () => ({ kind: "ready", projectId: PROJECT_ID, projectDir: DIR }),

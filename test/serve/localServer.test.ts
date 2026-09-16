@@ -51,7 +51,7 @@ describe("로컬 서버가 브라우저에 로컬 정본을 연다", () => {
   it("index.html 에 브리지 설정과 스크립트를 주입하고 브리지 원문을 준다", async () => {
     const html = await (await fetch(`${server.url}/`)).text();
 
-    expect(html).toContain(`window.__OPRN_BRIDGE__={"endpoint":"/__oprn/bridge","token":"${server.token}"}`);
+    expect(html).toContain(`window.__OPRN_BRIDGE__={"endpoint":"/__oprn/bridge","token":"${server.token}","companionToken":"`);
     expect(html).toContain('<script src="/__oprn/bridge.js"></script>');
     expect(html).toContain('<div id="app">');
 
@@ -63,6 +63,17 @@ describe("로컬 서버가 브라우저에 로컬 정본을 연다", () => {
     const response = await bridge(OPRN_CHANNELS.projectStatus, undefined, null);
 
     expect(response.status).toBe(403);
+  });
+
+  it("동반 서비스(AI)도 실행별 토큰을 요구한다 — 페이지 출처라도 예외가 아니다", async () => {
+    const denied = await fetch(`${server.url}/auth/status?provider=google-antigravity`);
+    expect(denied.status).toBe(403);
+
+    const allowed = await fetch(`${server.url}/auth/status?provider=google-antigravity`, {
+      headers: { "x-oprn-companion-token": server.companionToken },
+    });
+    // 제공자가 없어 핸들러 자체는 실패해도 된다 — 403 만 아니면 잠금을 통과한 것이다.
+    expect(allowed.status).not.toBe(403);
   });
 
   it("정적 파일 경로 탈출을 막는다", async () => {

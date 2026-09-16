@@ -48,6 +48,8 @@ export type LocalProjectServerOptions = {
 export type LocalProjectServer = {
   readonly url: string;
   readonly token: string;
+  /** 동반 서비스(AI) 실행별 토큰(설계 7.4). 페이지는 브리지 설정에서 받는다. */
+  readonly companionToken: string;
   readonly projectDir: string;
   close(): Promise<void>;
 };
@@ -73,7 +75,10 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
   const sessions = createProjectSessionRegistry();
   await sessions.open(SESSION_KEY, projectDir);
   const handlers = createStoreHandlers(sessions);
-  const companion = createCompanionMiddleware();
+  // 동반 서비스도 실행별 토큰을 요구한다(설계 7.4) — 루프백·페이지 출처 모두 같은 머신의 다른
+  // 프로세스에 열려 있다. 렌더러는 브리지 설정에서 토큰을 받아 fetch 헤더로 실어 보낸다.
+  const companionToken = randomUUID();
+  const companion = createCompanionMiddleware({ token: companionToken });
   // 활동 미러 2종도 같은 본체를 쓴다 — 예전에는 vite 플러그인에만 있어서 로컬 서버로 연
   // 브라우저 탭의 편집·AI 로그가 404 로 조용히 사라졌다(I3). 페이지와 같은 출처라 CORS 는 없다.
   const activityMirror = createActivityMirrorMiddleware({ baseDir: projectDir });
@@ -122,7 +127,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       response.end(bytes);
       return;
     }
-    const config = `<script>window.__OPRN_BRIDGE__=${JSON.stringify({ endpoint: BRIDGE_PATH, token })}</script>`;
+    const config = `<script>window.__OPRN_BRIDGE__=${JSON.stringify({ endpoint: BRIDGE_PATH, token, companionToken })}</script>`;
     const injection = `${config}<script src="${BRIDGE_SCRIPT_PATH}"></script>`;
     const html = bytes.toString("utf8").replace("</head>", `${injection}</head>`);
     response.writeHead(200, { "content-type": contentType, "cache-control": "no-store" });
@@ -186,6 +191,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
   return {
     url: `http://${LOOPBACK}:${port}`,
     token,
+    companionToken,
     projectDir,
     async close(): Promise<void> {
       companion.dispose();

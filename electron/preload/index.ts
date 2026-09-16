@@ -13,6 +13,13 @@ const bridge = {
       return null;
     }
   })(),
+  companionToken: (() => {
+    try {
+      return ipcRenderer.sendSync(OPRN_CHANNELS.companionToken) ?? null;
+    } catch {
+      return null;
+    }
+  })(),
   project: {
     status: invoke(OPRN_CHANNELS.projectStatus),
     probe: invoke(OPRN_CHANNELS.projectProbe),
