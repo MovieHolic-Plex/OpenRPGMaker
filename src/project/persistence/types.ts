@@ -77,6 +77,8 @@ export interface ProjectRepository {
   saveMapPatch(input: MapPatchInput, target: ProjectTarget): Promise<SaveResult>;
   /** 원격 전용: legacy 행을 spatial 정본으로 승격. 없는 어댑터에서는 store 가 ProjectRoutingError 를 던진다. */
   activateLegacy?(target: ProjectTarget): Promise<CanonicalSave>;
+  /** 폴더 정본을 `backups/` 사본으로 만들고 그 경로를 돌려준다. 파일을 가진 어댑터만 제공한다. */
+  backup?(target?: ProjectTarget | null): Promise<string>;
   readonly commits: {
     record(input: CommitInput, target?: ProjectTarget | null): Promise<SaveResult>;
     list(limit: number, target?: ProjectTarget | null): Promise<readonly CommitListItem[]>;

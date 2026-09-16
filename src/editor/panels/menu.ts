@@ -43,6 +43,7 @@ import { downloadBlob } from "@/util/downloadBlob";
 import { clearChildren, el } from "@/util/dom";
 import { createLogger } from "@/util/logger";
 import { toast } from "@/util/toast";
+import { projectRepository } from "@/project/persistence/repository";
 import { persistenceSurfaceVisible } from "@/editor/persistenceRecoveryUi";
 import { reloadProjectFromDbNow, saveProjectNow } from "@/editor/saveActions";
 import { uiLabel, type UiCopyKey } from "@/editor/uiCopy";
@@ -682,6 +683,7 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
         // 라벨 구분: 전에는 프로젝트/게임 메뉴에 「내보내기...」가 따로 있어 같은 말로 다른 일을
         // 했다. 둘을 한 자리에 모으고 무엇을 내보내는지 이름에 쓴다.
         item("프로젝트 파일 내보내기...", "menu-project-export", () => void exportProjectPackage()),
+        item("백업 만들기", "menu-project-backup", () => void doBackupProject()),
         item("게임 및 배포...", "menu-project-publication", () => void openPublishingDialog({
           project: store.getCurrent(),
           opener: topbar.querySelector<HTMLElement>('[data-testid="menu-project"]'),
@@ -959,6 +961,21 @@ function doLoad(topbar: HTMLElement): void {
 // 프로젝트 내보내기(도그푸딩 결함 ⑪ 수리). 과거 결함 ①: `await store.flush()`가 저장 오류 시
 // reject → 함수 전체가 무반응으로 중단(다운로드 없음). anchor 부착·revoke 지연(과거 결함 ②③)은
 // downloadBlob 로 옮겼다.
+/** 폴더 정본을 사본으로 남긴다 — 파일을 가진 어댑터(앱·로컬 서버)만 제공한다. */
+async function doBackupProject(): Promise<void> {
+  const repository = projectRepository();
+  if (!repository.backup) {
+    toast("이 저장소에서는 백업을 만들 수 없습니다", "error");
+    return;
+  }
+  try {
+    await store.flush();
+    toast(`백업을 만들었습니다: ${await repository.backup()}`, "ok");
+  } catch (error) {
+    toast(error instanceof Error ? `백업 실패: ${error.message}` : "백업 실패", "error");
+  }
+}
+
 export async function exportProjectPackage(): Promise<void> {
   try {
     // 최신 상태 저장 시도는 유지하되, 실패해도 내보내기는 진행한다(메모리의 현재 상태를 내보냄).

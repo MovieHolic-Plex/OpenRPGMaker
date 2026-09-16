@@ -45,6 +45,8 @@
     "archive:runtime": "vite-node scripts/archive-runtime.mts",
     "build:app": "vite build --configLoader runner",
     "build:fast": "vite build --configLoader runner",
+    "build:electron": "node scripts/build-electron.mjs",
+    "electron:smoke": "npm run build:fast && npm run build:electron && playwright test -c playwright.electron.config.ts",
     "build:player": "vite build --config vite.player.config.ts --configLoader runner && node scripts/build-player-sdk.mjs",
     "build:community": "node scripts/build-community.mjs",
     "preview": "vite preview --configLoader runner",

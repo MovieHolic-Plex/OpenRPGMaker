@@ -5,12 +5,18 @@ import {
   type OhMyPiAuthKind,
 } from "@/ai/ohMyPiProviders";
 
-const companionOrigin = DEFAULT_CHATGPT_BASE_URL.replace(/\/v1\/?$/u, "");
+const DEFAULT_ORIGINLESS_COMPANION = DEFAULT_CHATGPT_BASE_URL.replace(/\/v1\/?$/u, "");
+
+/** 일렉트론은 페이지 출처가 app:// 라 루프백 동반 서비스 출처를 브리지에서 받는다(설계 7.4). */
+function companionOrigin(): string {
+  if (typeof window !== "undefined" && window.oprn?.companionOrigin) return window.oprn.companionOrigin;
+  return DEFAULT_ORIGINLESS_COMPANION;
+}
 
 export function companionAuthUrl(path: string, providerId?: string): string {
   const provider = parseOhMyPiProvider(providerId, DEFAULT_OH_MY_PI_PROVIDER);
   const query = new URLSearchParams({ provider });
-  return `${companionOrigin}${path}?${query.toString()}`;
+  return `${companionOrigin()}${path}?${query.toString()}`;
 }
 
 /**
@@ -196,7 +202,7 @@ export interface CompanionProvider {
  * 레지스트리를 대체하지는 않는다(오프라인에서도 목록은 보여야 한다). 어긋남 진단용이다.
  */
 export async function fetchCompanionProviders(): Promise<readonly CompanionProvider[]> {
-  const response = await companionFetch(`${companionOrigin}/auth/providers`);
+  const response = await companionFetch(`${companionOrigin()}/auth/providers`);
   if (!response.ok) {
     throw new ChatGptCompanionResponseError(response.status, await readErrorBody(response));
   }

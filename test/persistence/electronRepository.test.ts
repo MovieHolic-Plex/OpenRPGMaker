@@ -3,7 +3,7 @@ import { createHouseTemplateGalleryProject } from "@/project/defaults/defaultPro
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { serialize } from "@/project/io";
 import { createElectronRepository, hasElectronBridge, type OprnBridge } from "@/project/persistence/electronRepository";
-import { projectRepository } from "@/project/persistence/repository";
+import { adoptElectronOpenProject, projectRepository } from "@/project/persistence/repository";
 import { setUploadedAssetResolver } from "@/project/persistence/assetAccessors";
 
 const PROJECT = projectWithoutEventDrafts(createHouseTemplateGalleryProject());
@@ -14,6 +14,9 @@ const PROJECT_ID = "uuid-demo";
 
 function fakeBridge(): OprnBridge {
   return {
+    closeIsHostDriven: true,
+    companionOrigin: "http://127.0.0.1:1234",
+    assetBaseUrl: (projectId: string) => `oprn-asset://${projectId}/`,
     project: {
       status: async () => ({ kind: "ready", projectId: PROJECT_ID, projectDir: DIR }),
       probe: async () => true,
@@ -43,6 +46,10 @@ function fakeBridge(): OprnBridge {
       list: async () => [],
       read: async () => new Uint8Array([1, 2, 3]),
       pruneUnused: async () => [],
+    },
+    lifecycle: {
+      onFlushBeforeClose: () => {},
+      flushDone: async () => true,
     },
   };
 }
@@ -82,11 +89,46 @@ describe("electron repository", () => {
     expect(repository.assets.url("b".repeat(64))).toBe("oprn-asset://" + PROJECT_ID + "/" + "b".repeat(64));
   });
 
+  it("백업은 브리지로 폴더 사본을 만든다", async () => {
+    vi.stubGlobal("window", { oprn: fakeBridge() });
+    const repository = createElectronRepository();
+    await repository.open(DIR);
+
+    await expect(repository.backup?.()).resolves.toContain("backups");
+  });
+
   it("열기 전에는 not-configured 다", () => {
     vi.stubGlobal("window", { oprn: fakeBridge() });
     const repository = createElectronRepository();
 
     expect(repository.currentTarget()).toBeNull();
     expect(repository.status(null).kind).toBe("not-configured");
+  });
+
+  it("브리지가 알려준 열린 폴더를 채택한다 — 시작 화면에서 넘어온 편집기 부팅 경로", async () => {
+    vi.stubGlobal("window", { oprn: fakeBridge() });
+    const repository = createElectronRepository();
+
+    expect(repository.currentTarget()).toBeNull();
+    expect(await repository.adoptOpenProject()).toBe(true);
+    expect(repository.currentTarget()).toEqual({ kind: "local", projectDir: DIR, projectId: PROJECT_ID });
+    expect(repository.status(null)).toMatchObject({ kind: "ready", projectId: PROJECT_ID });
+    await expect(repository.loadSnapshot({ kind: "local", projectDir: DIR, projectId: PROJECT_ID })).resolves.toMatchObject({ sha256: SHA });
+  });
+
+  it("메인에 열린 세션이 없으면 채택하지 않는다", async () => {
+    const bridge = fakeBridge();
+    vi.stubGlobal("window", { oprn: { ...bridge, project: { ...bridge.project, status: async () => ({ kind: "not-configured" }) } } });
+    const repository = createElectronRepository();
+
+    expect(await repository.adoptOpenProject()).toBe(false);
+    expect(repository.currentTarget()).toBeNull();
+    expect(repository.status(null).kind).toBe("not-configured");
+  });
+
+  it("부팅 채택은 브리지가 없으면 no-op 이다", async () => {
+    vi.stubGlobal("window", {});
+
+    expect(await adoptElectronOpenProject()).toBe(false);
   });
 });
