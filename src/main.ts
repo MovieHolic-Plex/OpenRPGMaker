@@ -18,6 +18,7 @@ import { addEvent } from "@/editor/eventActions";
 import { addEventPage, ensureEventPages } from "@/editor/eventPages";
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { store } from "@/project/store";
+import { hasElectronBridge } from "@/project/persistence/electronRepository";
 
 // 첫 import 에서 이미 설치됐다(idempotent). 진입점에 남겨두는 이유는 부팅 순서에서
 // 이게 1번이라는 사실을 코드로 읽히게 하려는 것 — 누가 import 를 정리해도 의도가 남는다.
@@ -41,7 +42,15 @@ if (typeof window !== "undefined" && window.location) {
       document.body.classList.add(flag.replace(/([A-Z])/g, "-$1").toLowerCase());
     }
   }
+  if (hasElectronBridge()) {
+    // 닫기는 주 프로세스가 flush-before-close 로 연다 — 브라우저 beforeunload 경고와 겹치지 않게 한다.
+    window.oprn?.lifecycle.onFlushBeforeClose(() => {
+      void store.flush().finally(() => { void window.oprn?.lifecycle.flushDone(); });
+    });
+  }
+
   window.addEventListener("beforeunload", (event) => {
+    if (hasElectronBridge()) return;
     // Local-first: flush whenever dirty, not only when autosave UI says pending/saving.
     // Paint during an in-flight save can leave dirty=true while status briefly reads "saved".
     if (store.hasUnsavedChanges()) {
@@ -77,6 +86,7 @@ async function registerPwaIfEnabled(): Promise<void> {
 }
 
 function shouldLoadPwaModule(): boolean {
+  if (hasElectronBridge()) return false;
   if (import.meta.env.PROD) return true;
   return new URLSearchParams(window.location.search).has("enablePwa");
 }

@@ -2,6 +2,7 @@ import { sha256HexBytes } from "../util/sha256";
 import { parseRuntimeManifest, ReleaseError, type RuntimeManifest } from "./gameRelease";
 import { parsePublication, PublicationError } from "./publication";
 import { assertUniquePaths } from "./playerDeploymentPaths";
+import { uploadedAssetBytes } from "./persistence/assetAccessors";
 import { dataUrlBytes, invalidExportDependencyBytes } from "./webExportAssets";
 import type { FetchBytes } from "./playerDeploymentTypes";
 import type { PreparedWebExport } from "./webExportTypes";
@@ -57,7 +58,7 @@ export async function publicationAssetEntries(prepared: PreparedWebExport, archi
     ...prepared.assets.filter(asset => asset.kind === "public").map(asset => asset.zipPath)]);
   const entries = await Promise.all([...publicPaths].map(async name => ({ name, bytes: await archive.read(`public/${name}`) })));
   for (const asset of prepared.assets) {
-    if (asset.kind === "uploaded") entries.push({ name: asset.zipPath, bytes: dataUrlBytes(asset.asset.dataUrl) });
+    if (asset.kind === "uploaded") entries.push({ name: asset.zipPath, bytes: await uploadedAssetBytes(asset.asset) });
   }
   assertUniquePaths(entries.map(entry => entry.name));
   if (entries.some(entry => invalidExportDependencyBytes(entry.bytes))) throw new ReleaseError("integrity");

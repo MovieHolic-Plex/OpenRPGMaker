@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <title>프로젝트 시작</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: #F7F3EA; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .panel { background: #FFFDF8; border: 1px solid #E7E0D0; border-radius: 8px; padding: 32px; width: 480px; }
+    h1 { font-size: 20px; margin-bottom: 24px; color: #333; }
+    .actions { display: flex; flex-direction: column; gap: 12px; }
+    button { padding: 12px 16px; border: 1px solid #D4CCC0; border-radius: 6px; background: #FFF; cursor: pointer; font-size: 14px; text-align: left; }
+    button:hover { background: #F0EBE2; }
+    .recent { margin-top: 24px; }
+    .recent h2 { font-size: 14px; color: #888; margin-bottom: 8px; }
+    .recent-item { padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+    .recent-item:hover { background: #F0EBE2; }
+    .empty { color: #aaa; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <h1>프로젝트 시작</h1>
+    <div class="actions">
+      <button id="btn-new">새 프로젝트</button>
+      <button id="btn-open">프로젝트 폴더 열기</button>
+    </div>
+    <div class="recent" id="recent-section">
+      <h2>최근 프로젝트</h2>
+      <div id="recent-list"></div>
+    </div>
+  </div>
+  <script>
+    async function loadRecent() {
+      const entries = await window.oprn.start.recentProjects();
+      const list = document.getElementById("recent-list");
+      if (!entries.length) { list.innerHTML = '<p class="empty">최근 프로젝트가 없습니다.</p>'; return; }
+      list.innerHTML = "";
+      for (const entry of entries) {
+        const item = document.createElement("div");
+        item.className = "recent-item";
+        item.textContent = entry.title || entry.projectDir;
+        item.onclick = async () => {
+          const result = await window.oprn.start.openFolder();
+          if (result && result.projectId) window.location.href = "/index.html";
+        };
+        list.appendChild(item);
+      }
+    }
+    document.getElementById("btn-new").onclick = async () => {
+      const result = await window.oprn.start.createProject({ title: "새 프로젝트" });
+      if (result && result.projectId) window.location.href = "/index.html";
+    };
+    document.getElementById("btn-open").onclick = async () => {
+      const result = await window.oprn.start.openFolder();
+      if (result && result.projectId) window.location.href = "/index.html";
+    };
+    loadRecent();
+  </script>
+</body>
+</html>

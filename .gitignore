@@ -283,3 +283,5 @@ verify-shots/battle-skin-trio/
 # Growth DB adversarial review — defect + save/reload receipts.
 !.omo/evidence/growth-db-review/
 !.omo/evidence/growth-db-review/**
+
+dist-electron/

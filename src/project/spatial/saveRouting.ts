@@ -3,13 +3,13 @@ import type { SupabaseProjectConfig } from "../supabaseProjectConfig";
 import { captureRawLegacySnapshot, publishSpatialProject, syncSpatialMirrors } from "./persistence";
 import { convertLegacySpatialSnapshot } from "./legacyImport";
 import type { AcceptedSpatialPublication, MirrorStatus, ServerSHA } from "./persistenceTypes";
-import { sameProjectTarget } from "../persistence/target";
+import { sameProjectTarget, type ProjectTarget } from "../persistence/target";
 
 export { sameProjectTarget };
 
 /** Authority belongs to a loaded target, never a Project object's identity or local hash. */
 export type ProjectWriteAuthority = {
-  readonly target: SupabaseProjectConfig;
+  readonly target: ProjectTarget;
 } & (
   | { readonly mode: "create" | "legacy" }
   | { readonly mode: "canonical"; readonly serverSHA: ServerSHA; readonly revision?: number }

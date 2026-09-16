@@ -103,6 +103,7 @@
   "devDependencies": {
     "@oh-my-pi/pi-ai": "^17.4.0",
     "@playwright/test": "^1.61.0",
+    "electron": "^38.8.6",
     "fake-indexeddb": "^6.2.5",
     "fix-webm-duration": "^1.0.6",
     "happy-dom": "^20.10.6",

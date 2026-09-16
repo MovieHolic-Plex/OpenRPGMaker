@@ -6,6 +6,7 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
+import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 
 /** 브라우저 <video> 가 확실히 재생하는 컨테이너만 통과시킨다(업로드 데이터 URL 화이트리스트). */
 const MOVIE_DATA_URL_PREFIXES = ["data:video/webm", "data:video/mp4", "data:video/ogg"] as const;
@@ -37,7 +38,7 @@ export type MovieResourceEntry = {
  */
 export function listMovieResources(project: Pick<Project, "assets">): readonly MovieResourceEntry[] {
   return Object.values(project.assets.uploaded)
-    .filter((asset) => asset.kind === "movie" || isMovieMedia(asset.dataUrl))
+    .filter((asset) => asset.kind === "movie" || isMovieMedia(uploadedAssetUrl(asset)))
     .map((asset) => ({ id: asset.id, name: asset.name.trim() || asset.id }))
     .sort((left, right) => left.name.localeCompare(right.name, "ko"));
 }
@@ -52,8 +53,9 @@ export function resolveMovieResourceUrl(
   project: Pick<Project, "assets">
 ): string | null {
   if (!resourceId) return null;
-  const uploaded = project.assets.uploaded[resourceId]?.dataUrl;
-  if (uploaded !== undefined) return isMovieMedia(uploaded) ? uploaded : null;
+  const uploadedAsset = project.assets.uploaded[resourceId];
+  const uploaded = uploadedAsset ? uploadedAssetUrl(uploadedAsset) : "";
+  if (uploaded !== "") return isMovieMedia(uploaded) ? uploaded : null;
   const resolved = resolveAssetResourceUrl(resourceId, { project });
   if (resolved !== null && isMovieMedia(resolved)) return resolved;
   return null;

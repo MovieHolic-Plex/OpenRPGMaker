@@ -53,8 +53,8 @@ function forbiddenLocalDbReferences(text: string): readonly string[] {
   );
 }
 
-describe("canonical project persistence has no local DB fallback", () => {
-  it("does not keep old local DB implementation files", async () => {
+describe("렌더러는 로컬 DB 를 열지 않는다 — 정본 SQLite 는 electron/local-store 가 연다", () => {
+  it("옛 로컬 DB 구현 파일이 남아 있지 않다", async () => {
     const fs = await loadFs();
 
     for (const path of removedLocalDbFiles) {
@@ -62,7 +62,7 @@ describe("canonical project persistence has no local DB fallback", () => {
     }
   });
 
-  it("does not access IndexedDB SQLite or local JSON fallback in runtime source", async () => {
+  it("렌더러 소스가 IndexedDB·SQLite·로컬 JSON 폴백에 접근하지 않는다", async () => {
     const fs = await loadFs();
     const files = runtimeSourceRoots.flatMap((root) => sourceFiles(fs, root));
     const offenders: string[] = [];
@@ -75,7 +75,7 @@ describe("canonical project persistence has no local DB fallback", () => {
     expect(offenders).toEqual([]);
   });
 
-  it("permits a capability check without permitting a local project database", () => {
+  it("가능성 검사(typeof indexedDB)는 허용하되 로컬 프로젝트 DB 접근은 허용하지 않는다", () => {
     expect(forbiddenLocalDbReferences('const available = typeof indexedDB !== "undefined";')).toEqual([]);
   });
 

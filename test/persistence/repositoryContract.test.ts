@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createFakePostgrest } from "./fakePostgrest";
 import { createSupabaseRepository } from "@/project/persistence/supabaseRepository";
+import { createLocalRepositoryFixture } from "../localStore/localRepositoryFixture";
 import { createHouseTemplateGalleryProject } from "@/project/defaults/defaultProject";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { serialize, serializeForComparison } from "@/project/io";
@@ -159,6 +160,38 @@ export function describeRepositoryContract(name: string, factory: FixtureFactory
       expect(one?.conversation_id).toBe("conv-1");
     });
 
+    it("자산: 넣은 바이트를 ref 로 돌려주고 url·list·prune 이 같은 자산을 본다", async () => {
+      const { repository } = await open();
+      const bytes = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]);
+
+      const stored = await repository.assets.put(bytes, {
+        mime: "image/png",
+        extension: "png",
+        originalName: "a.png",
+        kind: "sprite",
+      });
+
+      expect(stored.ref.sha256).toMatch(/^[0-9a-f]{64}$/);
+      expect(stored.ref.bytes).toBe(bytes.byteLength);
+      expect(stored.ref.extension).toBe("png");
+      expect((await repository.assets.list()).map((asset) => asset.sha256)).toContain(stored.ref.sha256);
+      expect(repository.assets.url(stored.ref.sha256)).not.toBe("");
+
+      const removed = await repository.assets.pruneUnused([]);
+
+      expect(removed).toContain(stored.ref.sha256);
+      expect(await repository.assets.list()).toHaveLength(0);
+    });
+
+    it("자산: 문서에 ref 를 넣을지 dataUrl 을 넣을지 어댑터가 알려준다", async () => {
+      const { repository } = await open();
+
+      const stored = await repository.assets.put(new Uint8Array([1, 2, 3]), { mime: "audio/mpeg", extension: "mp3" });
+
+      if (repository.supportsAssetRefs) expect(stored.dataUrl).toBeNull();
+      else expect(stored.dataUrl?.startsWith("data:audio/mpeg;base64,")).toBe(true);
+    });
+
     it("대상이 null 이면 쓰기는 not-configured", async () => {
       const { repository } = await open();
       const project = createHouseTemplateGalleryProject();
@@ -173,6 +206,11 @@ export function describeRepositoryContract(name: string, factory: FixtureFactory
 describeRepositoryContract("memory", (projectId) => {
   const target: ProjectTarget = { url: "memory://contract", anonKey: "memory", projectId };
   return { repository: createMemoryRepository({ target }), target };
+});
+
+describeRepositoryContract("local (real SQLite in a temp folder)", async () => {
+  const fixture = await createLocalRepositoryFixture();
+  return { repository: fixture.repository, target: fixture.target, cleanup: () => { fixture.close(); } };
 });
 
 

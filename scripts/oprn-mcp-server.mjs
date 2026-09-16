@@ -5,14 +5,18 @@ import { fileURLToPath } from "node:url";
 import { withTsModule } from "./ontology-ts-loader.mjs";
 
 const HEADLESS_ENTRY = resolve(fileURLToPath(new URL("../src/headless/index.ts", import.meta.url)));
+const STORE_ENTRY = resolve(fileURLToPath(new URL("../electron/local-store/store.ts", import.meta.url)));
 const PROTOCOL_VERSION = "2024-11-05";
 
 function parseArgs(argv) {
-  const parsed = { projectPath: undefined, auditLogPath: undefined };
+  const parsed = { projectPath: undefined, projectDir: undefined, auditLogPath: undefined };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === "--project") {
       parsed.projectPath = argv[i + 1];
+      i += 1;
+    } else if (arg === "--project-dir") {
+      parsed.projectDir = argv[i + 1];
       i += 1;
     } else if (arg === "--audit-log") {
       parsed.auditLogPath = argv[i + 1];
@@ -29,6 +33,19 @@ function loadProject(module, projectPath) {
     return module.loadHeadlessProjectFromPackage(bytes);
   }
   return module.loadHeadlessProject(bytes.toString("utf8"));
+}
+
+async function loadProjectFromDirectory(projectDir) {
+  return await withTsModule(STORE_ENTRY, "oprn-local-store.mjs", async (storeModule) => {
+    const store = await storeModule.openLocalProjectStore({ projectDir });
+    try {
+      const snapshot = store.loadSnapshot();
+      if (!snapshot) throw new Error(`project folder has no document yet: ${projectDir}`);
+      return snapshot.project;
+    } finally {
+      store.close();
+    }
+  });
 }
 
 function send(message) {
@@ -135,12 +152,14 @@ function startFramedJsonRpc() {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  if (!args.projectPath) {
-    throw new Error("Usage: node scripts/oprn-mcp-server.mjs --project <file.json|file.oprn> [--audit-log <path>]   (legacy .rpgzzu still opens)");
+  if (!args.projectPath && !args.projectDir) {
+    throw new Error("Usage: node scripts/oprn-mcp-server.mjs (--project <file.json|file.oprn> | --project-dir <projectDir>) [--audit-log <path>]   (legacy .rpgzzu still opens)");
   }
   const rpc = startFramedJsonRpc();
   await withTsModule(HEADLESS_ENTRY, "headless.mjs", async (module) => {
-    const project = loadProject(module, args.projectPath);
+    const project = args.projectDir
+      ? await loadProjectFromDirectory(args.projectDir)
+      : loadProject(module, args.projectPath);
     rpc.setHandler((request) => handleRequest(module, project, args.auditLogPath, request));
     await rpc.done;
   });

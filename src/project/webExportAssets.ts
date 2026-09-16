@@ -49,7 +49,7 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
   for (const id of usedUploadedIds) {
     const asset = project.assets.uploaded[id];
     if (!asset) continue;
-    const zipPath = `assets/uploaded/${safeFileName(asset.id)}.${uploadedAssetExtension(asset.dataUrl)}`;
+    const zipPath = `assets/uploaded/${safeFileName(asset.id)}.${asset.ref ? asset.ref.extension : uploadedAssetExtension(asset.dataUrl ?? "")}`;
     assets.set(zipPath, { kind: "uploaded", asset, zipPath });
   }
   return [...assets.values()].sort((left, right) => left.zipPath.localeCompare(right.zipPath));
@@ -65,7 +65,7 @@ export function collectUsedUploadedAssetIds(project: Project): Set<string> {
 }
 
 export function estimateAssetBytes(asset: WebExportAsset): number {
-  return asset.kind === "uploaded" ? dataUrlBytes(asset.asset.dataUrl).length : 0;
+  return asset.kind === "uploaded" ? (asset.asset.ref ? asset.asset.ref.bytes : dataUrlBytes(asset.asset.dataUrl ?? "").length) : 0;
 }
 
 export function exportAssetSourceUrl(sourcePath: string): string {

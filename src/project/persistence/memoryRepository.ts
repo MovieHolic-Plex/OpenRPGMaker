@@ -6,9 +6,10 @@ import type { ProjectWriteAuthority } from "../spatial/saveRouting";
 import type { Project } from "../types";
 import { randomUuid } from "@/util/id";
 import { sha256HexText } from "@/util/sha256";
+import { createMemoryAssetStore } from "./assetMemoryStore";
 import { mapPatchChangeSet, planMapPatch, readMapPatchSnapshot } from "./core/mapPatch";
 import { projectWire } from "./core/projectWire";
-import type { ProjectTarget } from "./target";
+import { isLocalTarget, type ProjectTarget } from "./target";
 import type {
   AiActivityInput, AiAnalysisRunInput, CommitInput, CommitListItem, ConversationInput, ConversationListOptions,
   LoadSnapshotOptions, MapPatchInput, PersistenceStatus, ProjectRepository, ProjectSnapshot, SaveResult,
@@ -70,13 +71,14 @@ export function createMemoryRepository(options: { readonly target: ProjectTarget
 
   const repository: MemoryRepository = {
     kind: "memory",
+    ...createMemoryAssetStore(),
     rows,
     currentTarget,
     status(disabledReason: DbPersistenceDisabledReason | null): PersistenceStatus {
       if (disabledReason) return { kind: "disabled", reason: disabledReason };
       const target = currentTarget();
       if (!target) return { kind: "not-configured", missing: ["url", "anonKey"], projectId: "", source: "legacy" };
-      return { kind: "ready", projectId: target.projectId, source: "custom", url: target.url };
+      return { kind: "ready", projectId: target.projectId, source: "custom", url: isLocalTarget(target) ? target.projectDir : target.url };
     },
     probe: () => Promise.resolve(currentTarget() !== null),
     async loadProject(target, onAuthority) {
