@@ -71,7 +71,7 @@ describe("스크래치 세션(원격 저장 비활성)의 맵 편집 락", () =>
   it("취득 대기 중 스크래치 전환되면 잡은 락을 즉시 반납한다", async () => {
     const pendingResolvers: ((response: Response) => void)[] = [];
     const fetchMock = vi.fn<typeof fetch>((input, init) => {
-      if (init?.method === "DELETE") return Promise.resolve(new Response("", { status: 204 }));
+      if (init?.method === "DELETE") return Promise.resolve(new Response(null, { status: 204 }));
       return new Promise<Response>((resolve) => {
         pendingResolvers.push(resolve);
       });

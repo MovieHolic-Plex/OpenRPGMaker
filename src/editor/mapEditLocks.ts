@@ -126,8 +126,11 @@ if (typeof window !== "undefined" && typeof window.addEventListener === "functio
 export async function checkoutMapForEditing(mapId: MapId, mapName: string): Promise<void> {
   // 원격 저장이 꺼진 세션(fresh/blank/dev-showcase)은 공유 원격 락을 잡지 않는다 —
   // 잡아도 자기 프로젝트를 보호하지 못하고 같은 map id를 쓰는 다른 세션만 차단한다.
+  // 로컬 폴더 정본(앱·로컬 서버)도 마찬가지다 — 단일 작성자 저장소에 다중 세션 락은
+  // 의미가 없고, 빌드에 박힌 원격 자격으로 CSP 에 막히는 REST 호출만 나간다
+  // (2026-09-17 패키징 실측).
   // dedup보다 먼저 판정해, 라이브→스크래치 전환 시 보유 중이던 락도 반납한다.
-  if (!store.isRemotePersistenceEnabled()) {
+  if (!store.isRemotePersistenceEnabled() || store.usesLocalProjectFolder()) {
     const heldMapId = status.kind === "held" ? status.mapId : null;
     stopHeartbeat();
     if (heldMapId) void releaseMapLock(heldMapId, heldLockConfig ?? undefined);
@@ -159,7 +162,7 @@ export async function checkoutMapForEditing(mapId: MapId, mapName: string): Prom
     const result = await acquireMapLock(config, mapId, mapName);
     if (version !== requestVersion) return;
     // 대기 중 세션이 스크래치 모드로 전환된 경우 — 방금 잡은 락을 취득에 쓴 설정으로 즉시 반납한다.
-    if (!store.isRemotePersistenceEnabled()) {
+    if (!store.isRemotePersistenceEnabled() || store.usesLocalProjectFolder()) {
       stopHeartbeat();
       void releaseMapLock(mapId, config);
       setStatus({ kind: "idle" });
@@ -181,7 +184,7 @@ export async function checkoutMapForEditing(mapId: MapId, mapName: string): Prom
 }
 
 export async function takeoverMapLock(mapId: MapId, mapName: string): Promise<void> {
-  if (!store.isRemotePersistenceEnabled()) return;
+  if (!store.isRemotePersistenceEnabled() || store.usesLocalProjectFolder()) return;
   const config = supabaseProjectConfig();
   checkedMapId = mapId;
   requestVersion += 1;
@@ -193,7 +196,7 @@ export async function takeoverMapLock(mapId: MapId, mapName: string): Promise<vo
   }
   try {
     const result = await upsertOwnMapLock(config, mapId, mapName);
-    if (!store.isRemotePersistenceEnabled()) {
+    if (!store.isRemotePersistenceEnabled() || store.usesLocalProjectFolder()) {
       void releaseMapLock(mapId, config);
       setStatus({ kind: "idle" });
       return;
@@ -308,7 +311,7 @@ function scheduleHeartbeat(mapId: MapId, mapName: string): void {
   stopHeartbeat();
   heartbeatTimer = setTimeout(() => {
     // 세션이 스크래치 모드로 전환되면 갱신을 멈추고 보유 락을 반납한다.
-    if (!store.isRemotePersistenceEnabled()) {
+    if (!store.isRemotePersistenceEnabled() || store.usesLocalProjectFolder()) {
       stopHeartbeat();
       if (status.kind === "held") {
         void releaseMapLock(status.mapId, heldLockConfig ?? undefined);
@@ -320,7 +323,7 @@ function scheduleHeartbeat(mapId: MapId, mapName: string): void {
     if (!config || status.kind !== "held" || status.mapId !== mapId) return;
     void acquireMapLock(config, mapId, mapName)
       .then((result) => {
-        if (!store.isRemotePersistenceEnabled()) {
+        if (!store.isRemotePersistenceEnabled() || store.usesLocalProjectFolder()) {
           void releaseMapLock(mapId, config);
           setStatus({ kind: "idle" });
           return;

@@ -113,10 +113,12 @@ app.whenReady().then(async () => {
     const result = await dialog.showOpenDialog({ properties: ["openDirectory"], title: "프로젝트 폴더 열기" });
     if (result.canceled || result.filePaths.length === 0) return null;
     const dir = result.filePaths[0];
-    if (!sessions.directoryExists(dir)) return { projectDir: dir, isNew: true, projectId: null };
+    // project.sqlite 가 없는 폴더도 그냥 연다 — 스토어가 만들어지고 렌더러의 store.load()
+    // 가 빈 프로젝트를 심는다. isNew 는 시작 화면이 “새 프로젝트로 채택” 토스트를 띄우는 용도다.
+    const isNew = !sessions.directoryExists(dir);
     const session = await sessions.open(event.sender.id, dir);
     rememberRecentProject(dir, session.store.info().title ?? dir);
-    return { projectDir: dir, isNew: false, projectId: session.store.projectId };
+    return { projectDir: dir, isNew, projectId: session.store.projectId };
   });
   ipcMain.handle(OPRN_CHANNELS.startOpenRecent, async (event: IpcMainInvokeEvent, payload: unknown) => {
     const input = payload as { readonly projectDir?: unknown };

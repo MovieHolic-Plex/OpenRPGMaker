@@ -109,6 +109,10 @@ export async function bootApp(root: HTMLElement): Promise<void> {
     // 실패하면 예전 계약(새 project id 빈 프로젝트 발급)으로 폴백한다. 자동화/데모 부팅은 제외.
     const firstVisit =
       typeof window !== "undefined"
+      // 호스트가 폴더를 열어둔 채 띄웠으면 첫 방문이 아니다 — 채택된 로컬 정본이 사용자의
+      // 작업이다. 이걸 빼면 원격 설정이 없는 패키징 앱이 공용 데모 fetch 를 시도하고 CSP 에
+      // 막혀 로드 실패 화면으로 떨어진다(2026-09-16 패키징 실측).
+      && !store.hasAdoptedLocalProject()
       && shouldOpenSharedDemoAtBoot({
         deepLinkedProject: deepLinkedProjectAtBoot,
         automation: isAutomationBootContext(),
