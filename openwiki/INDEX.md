@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **69쪽 / 2774KB / 약 782,222 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **69쪽 / 2776KB / 약 782,832 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 432KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2295 | ~122,844 |
+| `openwiki/editor-ai-panel.md` | 434KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2316 | ~123,454 |
 | `openwiki/editor-ai-tools.md` | 195KB | 82KB ⚠상한 초과 — 절을 더 쪼개라 | 1504 | ~54,515 |
 | `openwiki/editor-database.md` | 305KB | 61KB ⚠상한 초과 — 절을 더 쪼개라 | 1785 | ~88,502 |
 | `openwiki/editor-event-authoring.md` | 136KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 744 | ~39,120 |
@@ -34,7 +34,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/editor-ai-panel.md` | 25 | 1825, 1826, 1827, 1828, 1829, 1830, 1844, 1854 |
+| `openwiki/editor-ai-panel.md` | 25 | 1846, 1847, 1848, 1849, 1850, 1851, 1865, 1875 |
 | `openwiki/editor-ai-tools.md` | 6 | 1151, 1152, 1156, 1158, 1160, 1347 |
 | `openwiki/editor-database.md` | 7 | 772, 776, 777, 778, 787, 813, 816 |
 | `openwiki/editor-event-authoring.md` | 16 | 310, 311, 314, 319, 320, 321, 322, 323 |
@@ -259,7 +259,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L46` 설치 지점
 - `L52` 테스트
 
-### `openwiki/editor-ai-panel.md` — 432KB · 2295줄 · ~122,844 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 434KB · 2316줄 · ~123,454 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L3` 결과 보고서 모달 — 변경 지점마다 before/after 한 쌍 (2026-09-15, P2)
 - `L24` 조수 데크 「대화|작업」 탭 + 스튜디오 상세 — 팀원이 어디서 일하는지 한 곳 (2026-09-14, A안)
@@ -267,55 +267,56 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L135` 단독 작업은 결과 중심으로 표시한다 (2026-09-14)
 - `L155` 단순 수정은 별도 계획·시각 검토를 생략한다 (2026-09-14)
 - `L178` Five model roles and whole-map harmony review (2026-09-14)
-- `L255` Retained map planning items and explicit reuse (2026-09-10, OPRN-019)
-- `L296` Run outcome line: four independent axes (2026-09-09)
-- `L347` P3 run retirement and stale drafts (2026-09-07)
-- `L427` Map-scoped conversation archive (2026-09-08)
-  - `L487` Editor history surface
-- `L529` Independent result review and repair (2026-09-06)
-- `L632` Combined P2 and independent-review ownership (2026-09-07)
-- `L666` P2 run outcomes and user scope actions (2026-09-06)
-  - `L722` Canonical requirements and genuine user actions
-- `L794` User-confirmed interaction approach correction (CR-P7-1, 2026-09-08)
-- `L831` Live large-world QA: plan repair and final audit (2026-09-07)
-- `L920` Assistant control audit fixes (2026-09-07)
-- `L931` World structure activity labels (2026-09-06)
-- `L940` Multi-map construction specifications (2026-09-06)
-- `L1007` Plan authoring has no small-plan quota (2026-09-06)
-- `L1026` Acceptance sticky note (2026-09-07)
-  - `L1076` Session-owned acceptance contract
-- `L1414` 자동 프로젝트 위키 (2026-09-07)
-- `L1446` Independent image generation settings (2026-09-07)
-- `L1447` Independent image generation settings (2026-09-08)
-- `L1485` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
-- `L1492` Map-targeted work outcomes (2026-09-06)
-- `L1507` 계획 항목의 연속 실행 증거 (2026-09-05)
-- `L1513` 계획 규모와 선언 자세 (2026-09-09)
-- `L1523` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
-- `L1532` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
-- `L1542` 조수의 맵 전환은 크로스페이드다 — 하드컷 금지 (2026-09-15)
-- `L1606` 패널 셸 · 도크 · 접기 · 컴포저
-- `L1754` 세션 수명 · 대화 컨텍스트
-- `L1771` 제안 적용 · 복구 · 완성도 린트
-- `L1858` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
-- `L1919` 영역 작업 · 시공 · 실내/집 파이프라인
-- `L1943` 툴 노출 · 프롬프트 · 의도 판정 · NPC
-- `L1957` 타일셋 이해 · 검토 위저드 (T1a/T1b)
-- `L1983` 저장 · 내보내기 · 프로젝트 생성
-- `L1991` 제공자 · OAuth · 동반 서비스
-- `L2023` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
-- `L2066` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
-- `L2099` 배치 의존성과 완료 멱등성 (2026-09-06)
-- `L2107` 모험 완료와 실제 적용 횟수 (2026-09-05)
-- `L2112` Assistant clean conversation — Phase 1 (2026-09-06)
-- `L2149` Assistant deck width resize (2026-09-07)
-  - `L2161` Legacy AI contract verification (2026-09-08)
-- `L2183` 의도 선언과 커버리지 감사는 각자 예산을 쓴다 (2026-09-16)
-- `L2200` 동반 서비스 자격: CLI 토큰 채택과 env 의 한계 (2026-09-16)
-- `L2219` 에이전트 레인 — 묶음별 병렬 실행과 레인별 적용 (2026-09-15)
-- `L2248` 스튜디오 3분할 — 가운데는 맵, 왼쪽은 실시간 조수·채팅, 오른쪽은 지금 보는 채팅 (2026-09-16)
-- `L2264` 하단 덱 → 오버레이 드로워 (2026-09-16)
-- `L2278` 수용 기준: DB 레코드 값과 지연 적용의 런 수명 (2026-09-16)
+  - `L226` 검수 응답 재시도와 정직한 보고 (2026-09-16)
+- `L276` Retained map planning items and explicit reuse (2026-09-10, OPRN-019)
+- `L317` Run outcome line: four independent axes (2026-09-09)
+- `L368` P3 run retirement and stale drafts (2026-09-07)
+- `L448` Map-scoped conversation archive (2026-09-08)
+  - `L508` Editor history surface
+- `L550` Independent result review and repair (2026-09-06)
+- `L653` Combined P2 and independent-review ownership (2026-09-07)
+- `L687` P2 run outcomes and user scope actions (2026-09-06)
+  - `L743` Canonical requirements and genuine user actions
+- `L815` User-confirmed interaction approach correction (CR-P7-1, 2026-09-08)
+- `L852` Live large-world QA: plan repair and final audit (2026-09-07)
+- `L941` Assistant control audit fixes (2026-09-07)
+- `L952` World structure activity labels (2026-09-06)
+- `L961` Multi-map construction specifications (2026-09-06)
+- `L1028` Plan authoring has no small-plan quota (2026-09-06)
+- `L1047` Acceptance sticky note (2026-09-07)
+  - `L1097` Session-owned acceptance contract
+- `L1435` 자동 프로젝트 위키 (2026-09-07)
+- `L1467` Independent image generation settings (2026-09-07)
+- `L1468` Independent image generation settings (2026-09-08)
+- `L1506` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
+- `L1513` Map-targeted work outcomes (2026-09-06)
+- `L1528` 계획 항목의 연속 실행 증거 (2026-09-05)
+- `L1534` 계획 규모와 선언 자세 (2026-09-09)
+- `L1544` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
+- `L1553` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
+- `L1563` 조수의 맵 전환은 크로스페이드다 — 하드컷 금지 (2026-09-15)
+- `L1627` 패널 셸 · 도크 · 접기 · 컴포저
+- `L1775` 세션 수명 · 대화 컨텍스트
+- `L1792` 제안 적용 · 복구 · 완성도 린트
+- `L1879` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
+- `L1940` 영역 작업 · 시공 · 실내/집 파이프라인
+- `L1964` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+- `L1978` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+- `L2004` 저장 · 내보내기 · 프로젝트 생성
+- `L2012` 제공자 · OAuth · 동반 서비스
+- `L2044` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L2087` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+- `L2120` 배치 의존성과 완료 멱등성 (2026-09-06)
+- `L2128` 모험 완료와 실제 적용 횟수 (2026-09-05)
+- `L2133` Assistant clean conversation — Phase 1 (2026-09-06)
+- `L2170` Assistant deck width resize (2026-09-07)
+  - `L2182` Legacy AI contract verification (2026-09-08)
+- `L2204` 의도 선언과 커버리지 감사는 각자 예산을 쓴다 (2026-09-16)
+- `L2221` 동반 서비스 자격: CLI 토큰 채택과 env 의 한계 (2026-09-16)
+- `L2240` 에이전트 레인 — 묶음별 병렬 실행과 레인별 적용 (2026-09-15)
+- `L2269` 스튜디오 3분할 — 가운데는 맵, 왼쪽은 실시간 조수·채팅, 오른쪽은 지금 보는 채팅 (2026-09-16)
+- `L2285` 하단 덱 → 오버레이 드로워 (2026-09-16)
+- `L2299` 수용 기준: DB 레코드 값과 지연 적용의 런 수명 (2026-09-16)
 
 ### `openwiki/editor-ai-tools.md` — 195KB · 1504줄 · ~54,515 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
