@@ -14,7 +14,7 @@ afterAll(() => {
 });
 
 function runTool(args: readonly string[]): unknown {
-  const output = execFileSync("node", ["scripts/rpgzzu-tools.mjs", ...args], {
+  const output = execFileSync("node", ["scripts/oprn-tools.mjs", ...args], {
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],
   });

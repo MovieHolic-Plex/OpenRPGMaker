@@ -11,7 +11,7 @@ Gate for this stage (from the spec): the local adapter passes the shared contrac
 2. `scripts/oprn-store.mjs` — CLI: `init`, `import-json`, `import-package`, `export-json`, `backup`, `info`.
 3. Contract test gains a local (real SQLite in a temp dir) adapter: 11 + 11 + 11 = 33 cases.
 4. §3 guard policy: SQLite driver import allowed only under `electron/local-store/**`; `electron/**` may import only `src/brand.ts`, `src/project/types/**`, `src/project/persistence/core/**`; `src/**` may import from electron only `electron/shared/**`; renderer adapter file names must not contain `sqlite`; the existing `src/project` + `src/editor` local-DB ban stays.
-5. Headless tools open a folder: `--project-dir <dir>` on `scripts/rpgzzu-tools.mjs` and the MCP servers.
+5. Headless tools open a folder: `--project-dir <dir>` on `scripts/oprn-tools.mjs` and the MCP servers.
 
 ## Decisions (with reasons)
 
@@ -39,7 +39,7 @@ npx vitest run test/persistence --reporter=dot
 npx vitest run test/noLocalProjectDb.test.ts --reporter=dot
 npx tsc --noEmit -p tsconfig.app.json
 node scripts/oprn-store.mjs init <tmpdir> && node scripts/oprn-store.mjs info <tmpdir>
-node scripts/rpgzzu-tools.mjs --list
+node scripts/oprn-tools.mjs --list
 ```
 
 ## Left for later stages
