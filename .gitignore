@@ -285,3 +285,4 @@ verify-shots/battle-skin-trio/
 !.omo/evidence/growth-db-review/**
 
 dist-electron/
+release/
