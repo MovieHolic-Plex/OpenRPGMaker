@@ -1602,7 +1602,7 @@ Tests: `workPlan`(자세 표 6종 + 선언 없음 + 페이로드 전달), `assis
 - **어휘는 크로스페이드다.** 맵 전환은 좌표계가 통째로 달라 팬이 보여 줄 공간 관계가 없다
   (motion vocabulary: Crossfade = 같은 영역에서 정체성을 «교환» 한다. Slide/Layout animation 이 아니다).
   옛 화면을 캔버스 종이색(`--bg-canvas`)으로 덮고, 덮인 동안 맵·카메라·강조를 갈아 끼우고, 새 화면을
-  같은 종이색에서 띄운다. 덮기 130ms / 걷기 200ms.
+  같은 종이색에서 띄운다. 덮기 80ms / 걷기 120ms.
 - **소유 경계.** 판정은 순수 모듈 `src/editor/assistantViewTransition.ts`
   (`planAssistantViewTransition` → `cut`|`dissolve`, `remainingCoverMs`). 실제 재생은
   `src/editor/mapDissolveVeil.ts`. 둘을 묶어 호출부에 내보내는 한 문이
@@ -1618,11 +1618,33 @@ Tests: `workPlan`(자세 표 6종 + 선언 없음 + 페이로드 전달), `assis
   `mapList.ts applyTreeSelection` 이 폴더 행(`isFolder`)과 열 수 없는 맵(`canOpenEditorMap` false)을
   먼저 갈라 내고, 남은 경우를 `withAssistantViewTransition` 안에서 맵 선택 + `rerenderMapList()` +
   `focusMapRow()` 한 묶음으로 실행한다. 목록 하이라이트와 로우 포커스는 베일 **밖**(목록 패널)에
-  있으므로 `apply()` 밖에 두면 캔버스만 130ms 늦게 바뀌어 반쪽 덜컹이가 된다.
-  ArrowUp/Down 행 훑기(`focusRelativeRow`)는 일부러 태우지 않는다 — 키마다 330ms 전환이 끼면
+  있으므로 `apply()` 밖에 두면 캔버스만 덮기(80ms)만큼 늦게 바뀌어 반쪽 덜컹이가 된다.
+  ArrowUp/Down 행 훑기(`focusRelativeRow`)는 일부러 태우지 않는다 — 키마다 전환이 끼면
   훑기가 깜빡임이 된다(훑기는 «고르기» 가 아니라 «지나가기» 다).
+- **전환 계약을 «밀리초 임계값» 으로 검증하지 마라 (2026-09-16 실측).**
+  `map-list-switch-dissolve.spec.ts` 의 동작 줄이기 항목은 `swapLatencyMs < 130` 이었는데, 그 값은
+  전환이 아니라 **맵 재구축 시간**이 지배한다(실측 117–124ms). 즉 재구축이 6ms 만 느려져도 거짓
+  실패하는 운 좋은 통과였다 — 상수를 80 으로 낮추자 실제로 그렇게 터졌다. 계약은 «덮기를
+  기다렸는가» 이므로 **베일에 페이드가 하나도 안 걸렸는가**(`fadeDurations` 가 빈 배열)로 바꿨다.
+  같은 이유로 지속시간·교체 순간 불투명도를 `getComputedStyle` **폴링 표본**으로 읽지 않는다:
+  부하가 높으면 루프가 맵 재구축 동안 700ms 넘게 굶어 120ms 걷기 페이드를 통째로 놓치고
+  «시간이 있는 보간이었다» 는 단정이 거짓 실패한다. `Element.prototype.animate` 를 걸어
+  **계획값**을 받고, 교체 순간의 불투명도는 `editorState` 구독자(=교체와 같은 태스크)에서 읽는다.
 - **맵을 건너뛴 카메라는 팬하지 않는다** — `CameraFocusTarget.immediate`. 베일이 연속성을 갖고
   카메라는 이미 도착해 있다. 같은 맵이면 이 깃발을 주지 않는다(기존 팬이 그대로 소유).
+- **페이드는 200ms 지만, 전환 전체는 그보다 길다 — 그리고 그 나머지는 줄일 수 없다 (2026-09-16).**
+  목록 클릭 한 번을 WAAPI 시계로 분해한 실측(swiftshader, 40×30 맵, `sidebar-map-switch-timing.mjs`):
+  클릭 → 새 화면이 다 드러나기까지 **847ms** = 덮기 130 + **베일 유지 428** + 걷기 200 + 클릭·재구축 89.
+  유지 구간은 «새 맵이 실제로 그려지기를 기다리는» 필수 시간이다(`afterNextPaint` 의 rAF 2회 +
+  맵 재구축 자체 — 베일 밖에서 직접 재면 동기 42–57ms + 다음 페인트까지 270–343ms). 그걸 줄이면
+  빈 종이색 캔버스가 드러나 하드컷보다 나빠진다. 그래서 «너무 느리다» 에 대해 줄일 수 있는 것은
+  페이드뿐이고, 그 둘을 130/200 → **80/120** 으로 낮췄다(= 전환에서 **130ms 가 결정적으로 줄었다**).
+  종단 평균은 같은 스크립트로 847 → **781ms** 였다 — 나머지 차이는 호스트 부하 노이즈이므로
+  (이 박스는 loadavg 50–62 를 오간다) 인용할 숫자는 페이드 합과 유지 구간이다.
+  80ms 는 60fps 에서 다섯 프레임이라 하드컷을 여전히 가린다.
+  **전환 시간을 다시 재려면 `node scripts/qa/sidebar-map-switch-timing.mjs`** (`BASE_URL` 로 워크트리
+  dev 서버를 가리킨다). 폴링 표본으로 재면 안 된다 — 맵 재구축이 메인 스레드를 동기로 잡아
+  루프가 그 구간을 놓치고 «커버 시작» 이 «교체» 보다 늦게 찍힌다(실측).
 - **걷기는 새 맵이 실제로 그려진 뒤에 시작한다**(`afterNextPaint`, rAF 2회 + 400ms 탈출구).
   실측(swiftshader, 24×18 맵): 안 기다렸더니 베일이 걷힌 뒤 **빈 종이색 캔버스**가 500ms 드러났다 —
   하드컷보다 나쁘다.
@@ -1644,7 +1666,7 @@ Tests: `workPlan`(자세 표 6종 + 선언 없음 + 페이로드 전달), `assis
   폴더 행·동작 줄이기), 증거 `.omo/evidence/map-list-switch-dissolve/`. 사람이 볼 필름스트립은
   `node scripts/qa/assistant-map-switch-filmstrip.mjs`(`FILMSTRIP_DRIVER=map-list` 는 목록 클릭 경로, 기본은 조수 경로; 프레임마다 그 순간의 베일 불투명도를 `frames.json` 에 적는다.
   CDP 스크린캐스트 — `element.screenshot()`
-  한 장이 330ms 전환보다 오래 걸려 중간 프레임을 못 뜬다), 증거
+  한 장이 전환 전체(페이드 200ms + 그보다 긴 베일 유지)보다 오래 걸려 중간 프레임을 못 뜬다), 증거
   `.omo/evidence/assistant-map-switch-dissolve/`.
 
 

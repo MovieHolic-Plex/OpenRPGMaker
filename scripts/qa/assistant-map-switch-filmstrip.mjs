@@ -78,9 +78,13 @@ if (driver === "map-list") {
 }
 await page.waitForTimeout(600);
 
-// 전환은 330ms 다(덮기 130 + 걷기 200). `element.screenshot()` 한 장이 그보다 오래 걸려서
+// 전환은 200ms 다(덮기 80 + 걷기 120). `element.screenshot()` 한 장이 그보다 오래 걸려서
 // 실제 속도로는 중간 프레임을 못 뜬다. 스크린캐스트는 렌더러가 프레임을 **밀어 주므로**
 // 메인 스레드를 막지 않는다 — 찍히는 것은 손대지 않은 진짜 전환이다.
+//
+// 다만 페이드 200ms 는 «전체» 가 아니다: 베일은 새 맵이 실제로 그려질 때까지(rAF 2회 +
+// 탈출구) 불투명하게 더 머문다. 실측(swiftshader)에서 클릭 → 새 화면이 다 드러나기까지
+// 847ms 중 순수 페이드가 330ms 였고, 지금은 200ms + 같은 유지 구간이다.
 const cdp = await context.newCDPSession(page);
 const shots = [];
 cdp.on("Page.screencastFrame", async ({ data, sessionId, metadata }) => {

@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { ASSISTANT_DISSOLVE_COVER_MS, ASSISTANT_DISSOLVE_REVEAL_MS } from "@/editor/assistantViewTransition";
 
 const evidence = path.resolve(".omo/evidence/assistant-map-switch-dissolve");
 
@@ -50,8 +51,27 @@ test("assistant map switch: crossfade covers the cut, camera arrives framed, red
 
   // ── 1. 다른 맵으로: 베일이 실제로 화면을 덮고, 덮인 뒤에 맵이 바뀐다 ──
   // 표본은 rAF 가 아니라 타이머로 뜬다. 소프트웨어 GL(swiftshader)에서 이 편집 캔버스의
-  // rAF 는 7fps 까지 떨어져(실측) 330ms 전환을 서너 점으로만 보게 된다 — 베일은 WAAPI
+  // rAF 는 7fps 까지 떨어져(실측) 전환을 서너 점으로만 보게 된다 — 베일은 WAAPI
   // 자체 시계로 도므로 타이머가 정직한 관찰자다.
+  //
+  // 지속시간은 표본이 아니라 `Element.prototype.animate` 가 받은 **계획값**으로 모은다
+  // (2026-09-16 실측): 호스트 부하가 높으면 폴링 루프가 맵 재구축 동안 수백 ms 굶어
+  // 짧아진 걷기 페이드를 통째로 놓친다 — 그러면 «시간이 있는 보간이었다» 는 단정이 거짓 실패한다.
+  await page.evaluate(() => {
+    const w = window as any;
+    w.__dissolveFades = [];
+    const original = Element.prototype.animate;
+    Element.prototype.animate = function patched(keyframes: Keyframe[] | PropertyIndexedKeyframes | null, options?: number | KeyframeAnimationOptions) {
+      const animation = original.call(this, keyframes as Keyframe[], options as KeyframeAnimationOptions);
+      if (this instanceof HTMLElement && this.classList.contains("map-dissolve-veil")) {
+        w.__dissolveFades.push({
+          duration: Number((options as KeyframeAnimationOptions | undefined)?.duration ?? 0),
+          to: String((keyframes as Keyframe[])?.[1]?.opacity ?? ""),
+        });
+      }
+      return animation;
+    };
+  });
   const crossMap = await page.evaluate(async () => {
     const w = window as any;
     const veilOpacity = (): number => {
@@ -59,21 +79,20 @@ test("assistant map switch: crossfade covers the cut, camera arrives framed, red
       if (!node) return -1;
       return Number.parseFloat(getComputedStyle(node).opacity);
     };
-    // 「깜빡인 것이 아니라 페이드했다」는 표본으로 증명하지 않는다 — 덮기가 130ms 인데 이
-    // 루프는 메인 스레드가 맵을 다시 그리는 동안 130ms 까지 굶는다(실측). 대신 베일에 실제로
-    // 걸린 애니메이션의 **지속시간**을 모은다: 시간이 있는 보간이었다는 결정적 증거다.
-    const durations = (): number[] => {
-      const node = document.querySelector<HTMLElement>("[data-testid='map-dissolve-veil']");
-      return (node?.getAnimations() ?? []).map((animation) => Number(animation.effect?.getTiming().duration ?? 0));
-    };
     const samples: { t: number; opacity: number; mapId: string }[] = [];
-    const seenDurations = new Set<number>();
     const startedAt = performance.now();
     const mapBefore = w.__oprnEditMapViewport().mapId;
+    w.__dissolveFades.length = 0;
+    // 교체와 같은 태스크에서 베일 불투명도를 찍는다 — 폴링이 굶어도 이 값은 정확하다.
+    let swapFrameOpacity = -1;
+    const unsubscribe = w.__dissolveQA.editorState.subscribe((next: { currentMapId: string | null }) => {
+      if (swapFrameOpacity >= 0 || next.currentMapId !== "dissolve-qa-b") return;
+      swapFrameOpacity = veilOpacity();
+      unsubscribe();
+    });
     w.__dissolveQA.focusEditorRegion({ mapId: "dissolve-qa-b", x: 34, y: 25, w: 4, h: 3 });
     let covered = false;
     while (performance.now() - startedAt < 8000) {
-      for (const duration of durations()) seenDurations.add(duration);
       await new Promise((resolve) => setTimeout(resolve, 10));
       const opacity = veilOpacity();
       samples.push({ t: performance.now() - startedAt, opacity, mapId: w.__oprnEditMapViewport().mapId });
@@ -84,7 +103,8 @@ test("assistant map switch: crossfade covers the cut, camera arrives framed, red
     return {
       mapBefore,
       samples,
-      durations: [...seenDurations],
+      durations: [...new Set(w.__dissolveFades.map((fade: { duration: number }) => fade.duration))],
+      swapFrameOpacity,
       veilAtEnd: veilOpacity(),
       mapAfter: w.__oprnEditMapViewport().mapId,
     };
@@ -96,13 +116,14 @@ test("assistant map switch: crossfade covers the cut, camera arrives framed, red
   // 베일이 붙었고, 한 번은 거의 다 덮였다.
   expect(Math.max(...crossMap.samples.map((s) => s.opacity))).toBeGreaterThan(0.9);
   // 덮기·걷기가 **시간이 있는 보간**으로 돌았다 — 한 프레임 토글이 아니다.
-  // 값은 ASSISTANT_DISSOLVE_COVER_MS / ASSISTANT_DISSOLVE_REVEAL_MS 와 같아야 한다.
-  expect(crossMap.durations).toContain(130);
-  expect(crossMap.durations).toContain(200);
-  // 교체는 **덮인 뒤에만** 일어난다: 맵이 바뀐 첫 프레임의 베일은 불투명해야 한다.
-  const swapFrame = crossMap.samples.find((s) => s.mapId === "dissolve-qa-b");
-  expect(swapFrame).toBeDefined();
-  expect(swapFrame!.opacity).toBeGreaterThan(0.9);
+  // 값은 소유 모듈의 상수와 같아야 한다(숫자를 여기 박으면 상수를 바꿀 때 계약이 조용히 어긋난다).
+  expect(crossMap.durations).toContain(ASSISTANT_DISSOLVE_COVER_MS);
+  expect(crossMap.durations).toContain(ASSISTANT_DISSOLVE_REVEAL_MS);
+  // 교체는 **덮인 뒤에만** 일어난다: 교체와 같은 태스크에서 읽은 베일이 불투명해야 한다.
+  expect(
+    crossMap.swapFrameOpacity,
+    "맵이 베일 밖에서 먼저 바뀌었다 — 덮이기 전에 하드컷이 보인다"
+  ).toBeGreaterThan(0.9);
   // 그리고 끝에는 반드시 걷힌다 — 종이색에 갇히면 하드컷보다 나쁘다.
   expect(crossMap.veilAtEnd).toBeLessThan(0.01);
 
