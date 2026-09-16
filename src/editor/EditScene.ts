@@ -63,7 +63,7 @@ import {
 } from "@/editor/eventMarkerTooltipPlacement";
 import { renderHoverTilePreview, shouldShowPaintHoverPreview } from "@/editor/editSceneHoverPreview";
 import { planEditSceneRenderForStoreChange } from "@/editor/editSceneRenderPlan";
-import { renderEditScene, renderEditSceneTileCells, type EditSceneRenderStats, type EditSceneTileIndex } from "@/editor/editSceneRender";
+import { renderEditScene, renderEditSceneTileCells, applyCameraView, type EditSceneRenderStats, type EditSceneTileIndex } from "@/editor/editSceneRender";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { resetCullableTiles, syncTileCulling } from "@/player/playSceneTileCulling";
 import {
@@ -226,6 +226,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private lastRenderedMapId: MapId | null = null;
   private lastRenderStateKey = "";
   private lastCameraViewKey = "";
+  private lastAppliedZoom = 0;
   private readonly tileIndex: EditSceneTileIndex = new Map();
   private cameraPanController: CameraPanController | null = null;
   private cameraScrollbars: CameraScrollbars | null = null;
@@ -1664,6 +1665,7 @@ export class EditScene extends PhaserRuntime.Scene {
     }
     this.lastRenderedMapId = mid;
     this.lastRenderStateKey = this.renderStateKey(mid);
+    this.lastAppliedZoom = editorState.get().zoom;
     const cameraViewKey = this.cameraViewKey(mid);
     const resetCamera = cameraViewKey !== this.lastCameraViewKey;
     if (mapChanged || resetCamera) this.cancelCameraFocus(false);
@@ -1785,10 +1787,17 @@ export class EditScene extends PhaserRuntime.Scene {
   private redrawWhenViewStateChanges(): void {
     const mid = this.mapId();
     if (!mid) return;
+    const state = editorState.get();
+    if (state.zoom !== this.lastAppliedZoom) {
+      // 줌은 카메라 속성이다 — 타일 오브젝트는 줌에 의존하지 않으므로 전체 재렌더 없이
+      // 카메라 기하만 다시 적용한다. 타일 오브젝트 재생성은 O(N²)라(Phaser 컨테이너
+      // 재부모화·remove 의 indexOf) 줌 단계마다 돌면 큰 맵에서 프리즈가 된다.
+      this.applyCameraZoomOnly(mid);
+    }
     const nextKey = this.renderStateKey(mid);
     if (nextKey === this.lastRenderStateKey) {
       // 붙여넣기 미리보기 고스트 — editorState 변화(위치 이동 등)마다 갱신.
-      if (editorState.get().pastePreview) {
+      if (state.pastePreview) {
         this.renderPastePreviewGhost();
       } else {
         this.clearPastePreviewGhost();
@@ -1799,6 +1808,17 @@ export class EditScene extends PhaserRuntime.Scene {
     this.redraw();
   }
 
+  private applyCameraZoomOnly(mid: MapId): void {
+    const map = store.getCurrent().maps[mid];
+    if (!map) return;
+    this.lastAppliedZoom = editorState.get().zoom;
+    applyCameraView(this, map, true);
+    this.lastCameraViewKey = this.cameraViewKey(mid);
+    this.syncNavigationGeometry();
+    this.layoutMapBackgroundPreview();
+    this.publishMapViewport();
+  }
+
   private renderStateKey(mapId: MapId): string {
     const state = editorState.get();
     const selection = state.selection;
@@ -1807,7 +1827,6 @@ export class EditScene extends PhaserRuntime.Scene {
       : "none";
     return [
       mapId,
-      state.zoom,
       state.tool,
       state.paintShape,
       state.layer,
