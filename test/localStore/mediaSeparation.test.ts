@@ -7,6 +7,7 @@ import { createHouseTemplateGalleryProject } from "@/project/defaults/defaultPro
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import type { Project } from "@/project/types";
 import { initLocalProjectStore, type LocalProjectStore } from "../../electron/local-store/store";
+import { createProjectSessionRegistry } from "../../electron/main/sessions";
 
 const PNG_BYTES = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 const DATA_URL = `data:image/png;base64,${Buffer.from(PNG_BYTES).toString("base64")}`;
@@ -98,5 +99,25 @@ describe("local store assets", () => {
     expect(existsSync(join(projectDir, "assets", `${orphan.sha256}.png`))).toBe(false);
     expect(existsSync(join(projectDir, "assets", `${used.sha256}.png`))).toBe(true);
     expect(store.listAssets().map((asset) => asset.sha256)).toEqual([used.sha256]);
+  });
+});
+
+describe("폴더를 열 때 인라인 미디어를 자동으로 분리한다", () => {
+  it("open 이 base64 를 파일로 옮기고 분리 커밋을 한 번만 남긴다", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "oprn-open-migrate-"));
+    const seeded = await initLocalProjectStore({ projectDir: dir });
+    await seeded.saveProject(projectWithInlineAsset());
+    seeded.close();
+
+    const sessions = createProjectSessionRegistry();
+    const session = await sessions.open(1, dir);
+
+    const migrated = session.store.loadSnapshot()?.project.assets.uploaded.asset_inline;
+    expect(migrated?.dataUrl).toBeUndefined();
+    expect(migrated?.ref?.sha256).toMatch(/^[0-9a-f]{64}$/);
+    expect(session.store.listCommits(5).filter((commit) => commit.summary === MEDIA_COMMIT_SUMMARY)).toHaveLength(1);
+
+    sessions.close(1);
+    await rm(dir, { force: true, recursive: true });
   });
 });

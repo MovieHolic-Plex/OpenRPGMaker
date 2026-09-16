@@ -5,12 +5,28 @@ import {
   type OhMyPiAuthKind,
 } from "@/ai/ohMyPiProviders";
 
-const companionOrigin = DEFAULT_CHATGPT_BASE_URL.replace(/\/v1\/?$/u, "");
+const DEFAULT_ORIGINLESS_COMPANION = DEFAULT_CHATGPT_BASE_URL.replace(/\/v1\/?$/u, "");
+
+/** 일렉트론은 페이지 출처가 app:// 라 루프백 동반 서비스 출처를 브리지에서 받는다(설계 7.4). */
+function companionOrigin(): string {
+  if (typeof window !== "undefined" && window.oprn?.companionOrigin) return window.oprn.companionOrigin;
+  return DEFAULT_ORIGINLESS_COMPANION;
+}
+
+/**
+ * 동반 서비스 실행별 토큰. 루프백은 같은 머신의 다른 프로세스에도 열려 있어 오리진 검사만으로는
+ * 부족하다(curl 은 오리진을 안 보내고 DNS 리바인딩은 속일 수 있다). 없으면 헤더를 붙이지 않는다 —
+ * 토큰을 걸지 않은 서버(vite dev)와 같은 코드로 돌아야 하기 때문이다.
+ */
+function companionToken(): string | null {
+  if (typeof window !== "undefined" && window.oprn?.companionToken) return window.oprn.companionToken;
+  return null;
+}
 
 export function companionAuthUrl(path: string, providerId?: string): string {
   const provider = parseOhMyPiProvider(providerId, DEFAULT_OH_MY_PI_PROVIDER);
   const query = new URLSearchParams({ provider });
-  return `${companionOrigin}${path}?${query.toString()}`;
+  return `${companionOrigin()}${path}?${query.toString()}`;
 }
 
 /**
@@ -124,8 +140,12 @@ async function companionFetch(url: string, init?: RequestInit): Promise<Response
   const timer = controller && typeof setTimeout === "function"
     ? setTimeout(() => controller.abort(), COMPANION_TIMEOUT_MS)
     : undefined;
+  const token = companionToken();
+  const withToken: RequestInit = token
+    ? { ...init, headers: { ...(init?.headers ?? {}), "x-oprn-companion-token": token } }
+    : (init ?? {});
   try {
-    return await fetch(url, controller ? { ...init, signal: controller.signal } : init);
+    return await fetch(url, controller ? { ...withToken, signal: controller.signal } : withToken);
   } catch (error) {
     // 우리가 건 abort 는 네트워크 단절과 원인이 다르다 — 진단 문구를 갈라 쓸 수 있게 표시한다.
     throw new ChatGptCompanionUnreachableError(error, controller?.signal.aborted ? "timeout" : "network");
@@ -196,7 +216,7 @@ export interface CompanionProvider {
  * 레지스트리를 대체하지는 않는다(오프라인에서도 목록은 보여야 한다). 어긋남 진단용이다.
  */
 export async function fetchCompanionProviders(): Promise<readonly CompanionProvider[]> {
-  const response = await companionFetch(`${companionOrigin}/auth/providers`);
+  const response = await companionFetch(`${companionOrigin()}/auth/providers`);
   if (!response.ok) {
     throw new ChatGptCompanionResponseError(response.status, await readErrorBody(response));
   }

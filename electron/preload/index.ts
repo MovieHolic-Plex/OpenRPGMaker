@@ -4,6 +4,22 @@ import { OPRN_CHANNELS } from "../shared/channels";
 const invoke = (channel: string) => (payload?: unknown) => ipcRenderer.invoke(channel, payload);
 
 const bridge = {
+  closeIsHostDriven: true,
+  // 동반 서비스 출처는 실행할 때마다 다른 포트라 프리로드 시점에 한 번 동기로 받는다.
+  companionOrigin: (() => {
+    try {
+      return ipcRenderer.sendSync(OPRN_CHANNELS.companionOrigin) ?? null;
+    } catch {
+      return null;
+    }
+  })(),
+  companionToken: (() => {
+    try {
+      return ipcRenderer.sendSync(OPRN_CHANNELS.companionToken) ?? null;
+    } catch {
+      return null;
+    }
+  })(),
   project: {
     status: invoke(OPRN_CHANNELS.projectStatus),
     probe: invoke(OPRN_CHANNELS.projectProbe),
@@ -18,7 +34,6 @@ const bridge = {
   commits: {
     record: invoke(OPRN_CHANNELS.commitsRecord),
     list: invoke(OPRN_CHANNELS.commitsList),
-    listSync: (payload: unknown) => ipcRenderer.sendSync(OPRN_CHANNELS.commitsListSync, payload),
   },
   ai: {
     recordActivity: invoke(OPRN_CHANNELS.aiRecordActivity),
@@ -34,6 +49,7 @@ const bridge = {
     read: invoke(OPRN_CHANNELS.assetsRead),
     pruneUnused: invoke(OPRN_CHANNELS.assetsPruneUnused),
   },
+  assetBaseUrl: (projectId: string) => `oprn-asset://${projectId}/`,
   lifecycle: {
     onFlushBeforeClose: (callback: () => void): void => {
       ipcRenderer.on(OPRN_CHANNELS.lifecycleFlushBeforeClose, () => callback());
@@ -43,10 +59,10 @@ const bridge = {
   start: {
     recentProjects: invoke(OPRN_CHANNELS.startRecentProjects),
     openFolder: invoke(OPRN_CHANNELS.startOpenFolder),
+    openRecent: invoke(OPRN_CHANNELS.startOpenRecent),
     createProject: invoke(OPRN_CHANNELS.startCreateProject),
     importFile: invoke(OPRN_CHANNELS.startImportFile),
   },
-  companionOrigin: null,
 } as const;
 
 contextBridge.exposeInMainWorld("oprn", bridge);

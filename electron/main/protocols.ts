@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { extname, normalize, resolve, sep } from "node:path";
 import { protocol } from "electron";
 import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME } from "../shared/channels";
+import { handleActivityMirror, isActivityMirrorPath } from "../../scripts/lib/activityMirror.mjs";
 import type { SessionRegistry } from "./sessions";
 
 const MIME_BY_EXTENSION: Record<string, string> = {
@@ -40,10 +41,29 @@ function fileResponse(target: string): Response {
   });
 }
 
-export function registerAppProtocol(rendererDir: string): void {
+export function registerAppProtocol(rendererDir: string, activityLogBaseDir: () => string): void {
   const root = resolve(rendererDir);
-  protocol.handle(OPRN_APP_SCHEME, (request) => {
+  protocol.handle(OPRN_APP_SCHEME, async (request) => {
     const url = new URL(request.url);
+    // 활동 미러 2종은 페이지가 **상대 경로**로 부른다(/__oprn/ai-activity). app:// 에서는
+    // 이 프로토콜 핸들러가 그 요청을 받는다 — 예전에는 받는 쪽이 아예 없어서 앱의 편집·AI
+    // 로그가 404 로 조용히 사라졌다(I3).
+    if (isActivityMirrorPath(url.pathname)) {
+      const result = handleActivityMirror({
+        method: request.method,
+        url: url.pathname + url.search,
+        bodyText: request.method === "POST" ? await request.text() : "",
+        baseDir: activityLogBaseDir(),
+      });
+      if (result) {
+        // 204·304 는 본문을 가질 수 없다 — 빈 문자열을 넘기면 Response 생성자가 TypeError 를
+        // 던지고, 프로토콜 핸들러 밖에서는 `Failed to fetch` 로만 보인다(2026-09-16 실측).
+        return new Response(result.body.length > 0 ? result.body : null, {
+          status: result.status,
+          headers: result.contentType ? { "content-type": result.contentType } : {},
+        });
+      }
+    }
     const relative = url.pathname === "/" || url.pathname === "" ? "index.html" : url.pathname.replace(/^\//, "");
     const target = resolve(root, normalize(relative));
     if (target !== resolve(root, "index.html") && !target.startsWith(root + sep)) {

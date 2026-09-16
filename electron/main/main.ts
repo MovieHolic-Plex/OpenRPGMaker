@@ -3,7 +3,8 @@ import { BrowserWindow, Menu, app, dialog, ipcMain, protocol, shell, type IpcMai
 import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME, OPRN_CHANNELS } from "../shared/channels";
 import { registerIpcHandlers } from "./ipc";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
-import { createWindowSessionRegistry } from "./sessions";
+import { createProjectSessionRegistry } from "./sessions";
+import { startCompanionServer, type CompanionServer } from "./companion";
 import { listRecentProjects, rememberRecentProject } from "./recent";
 
 protocol.registerSchemesAsPrivileged([
@@ -11,7 +12,8 @@ protocol.registerSchemesAsPrivileged([
   { scheme: OPRN_ASSET_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } },
 ]);
 
-const sessions = createWindowSessionRegistry();
+const sessions = createProjectSessionRegistry();
+let companionServer: CompanionServer | null = null;
 const rendererDir = process.env.OPRN_RENDERER_DIR ?? join(app.getAppPath(), "dist");
 
 const closing = new Set<number>();
@@ -89,9 +91,16 @@ function buildMenu(): void {
   ]));
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  companionServer = await startCompanionServer();
+  ipcMain.on(OPRN_CHANNELS.companionOrigin, (event) => {
+    event.returnValue = companionServer?.origin ?? null;
+  });
+  ipcMain.on(OPRN_CHANNELS.companionToken, (event) => {
+    event.returnValue = companionServer?.token ?? null;
+  });
   buildMenu();
-  registerAppProtocol(rendererDir);
+  registerAppProtocol(rendererDir, () => sessions.firstProjectDir() ?? process.cwd());
   registerAssetProtocol(sessions);
   ipcMain.handle(OPRN_CHANNELS.lifecycleFlushDone, (event) => {
     const window = BrowserWindow.fromWebContents(event.sender);
@@ -108,6 +117,14 @@ app.whenReady().then(() => {
     const session = await sessions.open(event.sender.id, dir);
     rememberRecentProject(dir, session.store.info().title ?? dir);
     return { projectDir: dir, isNew: false, projectId: session.store.projectId };
+  });
+  ipcMain.handle(OPRN_CHANNELS.startOpenRecent, async (event: IpcMainInvokeEvent, payload: unknown) => {
+    const input = payload as { readonly projectDir?: unknown };
+    const dir = typeof input?.projectDir === "string" ? input.projectDir : "";
+    if (!dir || !sessions.directoryExists(dir)) return null;
+    const session = await sessions.open(event.sender.id, dir);
+    rememberRecentProject(dir, session.store.info().title ?? dir);
+    return { projectDir: dir, projectId: session.store.projectId };
   });
   ipcMain.handle(OPRN_CHANNELS.startCreateProject, async (event: IpcMainInvokeEvent, payload: unknown) => {
     const input = payload as { readonly title?: string };
@@ -130,4 +147,8 @@ app.whenReady().then(() => {
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
+});
+
+app.on("will-quit", () => {
+  void companionServer?.close();
 });
