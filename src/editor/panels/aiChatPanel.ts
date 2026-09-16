@@ -1926,8 +1926,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    * Pi 턴 하나 — 조수 채팅의 유일한 실행 경로다(2026-09-11). 명시 `/pi` 든 평문이든 여기로 모인다:
    * 중단 버튼·상태·보드·영수증 배선이 한 곳에 있어야 두 입구가 어긋나지 않는다.
    */
-  const runPiTurn = async (command: ParsedPiCommand, displayText: string, plan: PiRunPlan | null, opts?: { readonly questionPromoted?: boolean }): Promise<void> => {
-    if (turnBusy) {
+  const runPiTurn = async (command: ParsedPiCommand, displayText: string, plan: PiRunPlan | null, opts?: { readonly questionPromoted?: boolean; readonly slotClaimed?: boolean }): Promise<void> => {
+    // slotClaimed: 호출자(평문 경로)가 의도 분류 전에 이미 슬롯을 잡았다. 그 경우 turnBusy=true 는
+    // «다른 턴이 점유 중» 이 아니라 «이 턴의 분류 단계» 다 — 여기서 다시 거부하면 자기 턴을 죽인다.
+    if (turnBusy && opts?.slotClaimed !== true) {
       toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
       return;
     }
@@ -1953,6 +1955,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         showChangeReceipt: showPiChangeReceipt,
         // 종료 4축 — 세션이 없는 Pi 경로가 직접 게시한다(2026-09-11 실측: 20턴 내내 미렌더).
         setRunOutcome: (outcome) => { piRunOutcome = outcome; refreshRunOutcome(); },
+        // Pi 경로는 세션도 없고 auditHistory 를 채우는 곳도 없어서, 브리지 audit() 이 늘 빈 배열이었다
+        // (2026-09-16 실측). 세션 항목과 같은 자리에 누적해 bridge·내보내기가 같은 원천을 본다.
+        onRunAudit: (rows) => { controller.auditHistory.push(...rows); },
       }, plan ? {
         readOnly: plan.readOnly,
         routineEdit: plan.routineEdit,
@@ -2014,7 +2019,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       return;
     }
     if (!ensureConfigReadyForSend()) return;
-    if (selectionTaskActive && currentSelectionForRegionTask() && turnBusy) {
+    // 턴 슬롯은 **의도 분류 전에** 잡는다.
+    //
+    // 왜: 예전에는 의도 분류(`plainPiTurn`)가 끝난 뒤에야 `runPiTurn` 안에서 turnBusy 가 섰다.
+    // 그 구간(최대 6s, 실측 2026-09-16: 1.2s~7.5s)에 브리지는 turnBusy=false·전송 버튼 활성으로
+    // 보였고, 그 창에서 들어온 두 번째 전송은 아래 `input.value = ""` 를 지나간 뒤 runPiTurn
+    // 가드에 걸려 «입력만 비워진 채» 거부됐다 — 사용자가 타이핑한 문장이 사라졌다.
+    // 이 가드는 그 둘을 한 자리에서 막는다: 거부는 입력을 건드리기 전에 일어난다.
+    if (turnBusy) {
       toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
       return;
     }
@@ -2031,15 +2043,27 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     if (selectionTaskActive && currentSelectionForRegionTask()) {
       // 영역 작업은 별도 파이프라인(하드 클립·블렌드 폴리시·고스트 프리뷰)을 쓴다 — Pi 이관은 별도 작업.
-      if (turnBusy) {
-        toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
-        return;
-      }
       await sendSelectionRegionTask(text);
       return;
     }
-    const { command, plan, questionPromoted } = await plainPiTurn(text);
-    await runPiTurn(command, text, plan, { questionPromoted });
+    // 분류가 끝날 때까지 슬롯을 잡아 둔다 — 분류 창이 «유휴» 로 보이지 않게 하고,
+    // 어떤 실패 경로로도 슬롯은 반드시 풀린다(안 풀면 패널이 영구히 잠긴다).
+    runSurface.turnBusy = true;
+    refreshSendEnabled();
+    let classified: { readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean };
+    try {
+      classified = await plainPiTurn(text);
+    } catch (error) {
+      // 슬롯을 반드시 돌려놓고, 실패를 unhandled rejection 으로 흘리지 않는다 — 이 호출자는
+      // 클릭 리스너(`void send()`)라 받아 줄 사람이 없다(2026-09-16 실측: 분류가 던지면 vitest 가
+      // unhandled error 로 잡았고 사용자에게는 아무 표시도 남지 않았다).
+      runSurface.turnBusy = false;
+      refreshSendEnabled();
+      setStatus("대기");
+      appendBubble("system", `지시를 해석하지 못했습니다: ${error instanceof Error ? error.message : String(error)}`);
+      return;
+    }
+    await runPiTurn(classified.command, text, classified.plan, { questionPromoted: classified.questionPromoted, slotClaimed: true });
   };
 
   sendButton.addEventListener("click", () => void send());

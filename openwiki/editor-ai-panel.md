@@ -1,5 +1,29 @@
 # Editor AI Panel & Tools
 
+## 턴 슬롯은 의도 분류 전에 잡는다 + Pi 턴 감사 누적 (2026-09-16)
+
+실측(2026-09-16, 실제 OAuth 모델 `google-antigravity`/`gemini-3.7-flash` 로 조수를 구동): 전송 직후
+**1.2s~7.5s** 구간에서 브리지가 `turnBusy=false`·전송 버튼 활성·중단 버튼 숨김으로 보였는데 상태줄은
+`의도 읽는 중…` 이었다. 원인은 `send()` 가 `await plainPiTurn(text)`(의도 분류, timeout 6s)를 끝낸
+**뒤에야** `runPiTurn` 안에서 `turnBusy` 를 세운 것.
+
+그 창에서 두 번째 지시를 보내면: 클릭이 받아들여지고 `input.value = ""` 를 지나간 뒤 runPiTurn 가드에
+걸려 거부됐다 — **사용자가 타이핑한 문장이 복원되지 않고 사라졌다**(대화에 흔적도 남지 않음).
+
+- 슬롯을 분류 **전에** 잡는다(`runSurface.turnBusy = true; refreshSendEnabled();`). 거부는 입력을
+  건드리기 전에 일어나므로 문장이 보존된다. `runPiTurn` 은 `slotClaimed` 로 «자기 슬롯» 인지 구분한다
+  (구분이 없으면 자기가 잡은 슬롯에 자기가 걸려 턴이 죽는다).
+- 분류가 던지면 슬롯을 풀고 로그에 한 줄 남긴다 — 호출자가 클릭 리스너(`void send()`)라 받아 줄
+  사람이 없어, 예전에는 unhandled rejection 이 되고 사용자에겐 아무 표시도 없었다.
+
+Pi 턴의 감사 행 누적: `startPiRunLog().finish()` 가 감사 행을 **돌려준다**. 패널은 그 행을
+`controller.auditHistory` 에 넣는다(`onRunAudit`). 이전에는 그 행이 활동 로그로만 가서, 세션이 없는
+Pi 경로에서 `window.__oprnAiBridge.audit()` 이 **항상 `[]`** 였다(실측: 턴이 성공하고 카드까지 뜬 뒤에도
+0건) — 이 API 를 읽는 QA 스펙들(`_adversarial-tile-qa.spec.ts` 등)이 툴 호출을 0으로 봤다.
+
+회귀 고정: `test/aiChatPanelComposerMode.test.ts` «의도 분류 구간의 턴 상태와 입력 보존» 2건 ·
+`test/piAgentRunLog.test.ts` «종료는 기록한 것과 같은 감사 행을 돌려준다».
+
 ## 결과 보고서 모달 — 변경 지점마다 before/after 한 쌍 (2026-09-15, P2)
 
 「보고서 열기」(작업 탭 검토 스트립 · 로그 카드 「넓게 보기」)가 열던 넓은 뷰어는 맵 하나의 **전체 diff bbox 한 쌍**이었다 —
