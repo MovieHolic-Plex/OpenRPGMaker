@@ -197,7 +197,7 @@ function testsGate() {
 // `.omo/css-budget-baseline.json` 과 인라인 유예 목록으로 이미 래칫을 구현하고 있어서,
 // exit != 0 은 그 자체로 "새 위반"을 뜻한다. 여기서 또 기준선을 씌우면 이중 유예가 된다.
 function cssGate() {
-  // 네 개를 전부 돌린다. 2026-09-17 이전에는 budget·graph 둘만 돌았고,
+  // 다섯 개를 전부 돌린다. 2026-09-17 이전에는 budget·graph 둘만 돌았고,
   // 표면 규칙 전체(R1–R6)를 보는 check-css-surfaces 와 렌더 증명 기반인
   // check-css-live-classes 는 **어떤 자동 경로에도 없었다**. GitHub Actions 도
   // 리포지터리 수준에서 꺼져 있다(.github/workflows/parity.yml:98-100).
@@ -207,6 +207,8 @@ function cssGate() {
     ["check-css-graph.mjs", run("node", ["scripts/check-css-graph.mjs"])],
     ["check-css-live-classes.mjs", run("node", ["scripts/check-css-live-classes.mjs"])],
     ["check-css-surfaces.mjs", run("node", ["scripts/check-css-surfaces.mjs", "--enforce", "all"])],
+    // 앞의 넷은 선언을 **세기만** 한다. 누가 이기는지는 이 다섯 번째만 본다.
+    ["check-css-winners.mjs", run("node", ["scripts/check-css-winners.mjs"])],
   ];
   const failures = checks.filter(([, r]) => r.code !== 0).map(([n, r]) => `${n} exit=${r.code}`);
   return {
@@ -216,6 +218,7 @@ function cssGate() {
     graphExitCode: checks[1][1].code,
     liveClassesExitCode: checks[2][1].code,
     surfacesExitCode: checks[3][1].code,
+    winnersExitCode: checks[4][1].code,
     failures,
     out: checks.map(([, r]) => r.out).join("").trimEnd(),
   };
@@ -450,7 +453,7 @@ if (asJson) {
     const gate = report.css;
     console.log(
       `css            exit=${gate.exitCode}  budget=${gate.budgetExitCode}  graph=${gate.graphExitCode}` +
-        `  live=${gate.liveClassesExitCode}  surfaces=${gate.surfacesExitCode}`,
+        `  live=${gate.liveClassesExitCode}  surfaces=${gate.surfacesExitCode}  winners=${gate.winnersExitCode}`,
     );
     // 실패했을 때만 스크립트 출력을 그대로 보여준다 — 어느 지표가 얼마나 늘었는지,
     // 어느 파일이 고아인지는 그 출력에 이미 파일 경로까지 찍혀 있다.

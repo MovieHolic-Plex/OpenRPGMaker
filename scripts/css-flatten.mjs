@@ -29,31 +29,35 @@ export function flattenImports(entryAbs) {
 }
 
 function contextOf(node) {
-  let layer = null;
+  const layers = [];
   const at = [];
   for (let p = node.parent; p && p.type !== "root"; p = p.parent) {
     if (p.type !== "atrule") continue;
-    if (p.name === "layer") layer = p.params.trim();
+    if (p.name === "layer") layers.push(p.params.trim());
     else at.push(`@${p.name} ${p.params.trim()}`);
   }
-  return { layer, at: at.reverse().join(" / ") };
+  return { layers: layers.reverse(), at: at.reverse().join(" / ") };
 }
 
-function declsOfFile(entry, rootAbs) {
-  let src;
-  try { src = fs.readFileSync(entry.file, "utf8"); } catch { return []; }
-  const ast = postcss.parse(src, { from: entry.file });
-  const rel = path.relative(rootAbs, entry.file);
+// 한 시트의 선언 목록. `layer` 는 `@import … layer(X)` 가 부여한 레이어다.
+//
+// layer 필드는 **실효 레이어 경로**다. import 가 준 레이어와 파일 안 `@layer` 가 겹치면
+// 점으로 이어 붙인다 — `layer(runtime)` 으로 들어온 시트가 안에서 다시 `@layer runtime {`
+// 으로 감싸면 `runtime.runtime` 서브레이어이고, 서브레이어는 부모 직속에게 **진다**.
+// 예전엔 이 함수가 파일 안 이름 하나만 남기고 import 레이어를 버려서 둘을 구분할 수 없었다.
+// 현재 리포에 이 모양인 시트가 9개 있다(components 3, shell 1, map 1, runtime 4).
+export function declarationsOf({ name, css, layer = null }) {
+  const ast = postcss.parse(css, { from: name });
   const out = [];
   ast.walkRules((rule) => {
-    if (rule.parent?.type === "atrule" && rule.parent.name === "keyframes") return;
+    if (rule.parent?.type === "atrule" && /keyframes$/.test(rule.parent.name)) return;
     const ctx = contextOf(rule);
-    const layer = ctx.layer ?? entry.layer;
+    const eff = [layer, ...ctx.layers].filter(Boolean).join(".") || null;
     for (const sel of rule.selectors.map((s) => s.replace(/\s+/g, " ").trim())) {
       rule.each((d) => {
         if (d.type !== "decl") return;
         out.push({
-          file: rel, line: d.source.start.line, sel, layer, at: ctx.at,
+          file: name, line: d.source.start.line, sel, layer: eff, at: ctx.at,
           prop: d.prop.toLowerCase(), value: d.value.replace(/\s+/g, " ").trim(), imp: Boolean(d.important),
         });
       });
@@ -62,19 +66,32 @@ function declsOfFile(entry, rootAbs) {
   return out;
 }
 
+function declsOfFile(entry, rootAbs) {
+  let src;
+  try { src = fs.readFileSync(entry.file, "utf8"); } catch { return []; }
+  return declarationsOf({ name: path.relative(rootAbs, entry.file), css: src, layer: entry.layer });
+}
+
 // CSS 는 @import 가 규칙보다 앞에 와야 하므로, 허브 자신의 규칙은 그 허브가 import 한 모든 시트 뒤에 온다.
 // 따라서 자식(깊이 큰 파일)을 먼저 내보내고 부모 자신의 선언은 부모의 부분 트리가 끝날 때 내보낸다.
-export function indexDeclarations(order, rootAbs) {
-  const decls = [];
-  let seq = 0;
-  const emit = (entry) => { for (const d of declsOfFile(entry, rootAbs)) decls.push({ seq: seq++, ...d }); };
+export function emitOrder(order) {
+  const out = [];
   const stack = [];
   for (const entry of order) {
     if (entry.copy > 1) continue;
-    while (stack.length && stack[stack.length - 1].depth >= entry.depth) emit(stack.pop());
+    while (stack.length && stack[stack.length - 1].depth >= entry.depth) out.push(stack.pop());
     stack.push(entry);
   }
-  while (stack.length) emit(stack.pop());
+  while (stack.length) out.push(stack.pop());
+  return out;
+}
+
+export function indexDeclarations(order, rootAbs) {
+  const decls = [];
+  let seq = 0;
+  for (const entry of emitOrder(order)) {
+    for (const d of declsOfFile(entry, rootAbs)) decls.push({ seq: seq++, ...d });
+  }
   return decls;
 }
 

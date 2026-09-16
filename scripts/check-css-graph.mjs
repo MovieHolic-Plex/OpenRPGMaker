@@ -25,9 +25,11 @@
 //   node scripts/check-css-graph.mjs                 # 검사 + 요약 (exit 1 = 새 위반)
 //   node scripts/check-css-graph.mjs --json          # 기계 판독용 출력
 //   node scripts/check-css-graph.mjs --print-baseline # 현재 상태를 ALLOWLIST 스니펫으로 출력(붙여넣기용)
-import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { join, dirname, resolve, relative, basename } from "node:path";
 import { parseImports, stripCssComments } from "./lib/css-import-re.mjs";
+// 엔트리 발견은 scripts/lib/css-entries.mjs 하나만 쓴다 — 승자 게이트와 같은 목록을 봐야 한다.
+import { discoverEntries, walk, resolveSpecifier as resolveCssSpecifier } from "./lib/css-entries.mjs";
 
 const ROOT = process.cwd();
 const SRC_DIR = join(ROOT, "src");
@@ -36,16 +38,9 @@ const SRC_DIR = join(ROOT, "src");
 const CSS_ROOTS = ["src/styles", "src/player", "src/benchmark"];
 
 // 엔트리는 하드코딩하지 않고 src/**/*.ts 의 `import "....css"` 로 **발견**한다.
-// 엔트리가 늘거나 옮겨져도 게이트가 따라가야 하기 때문이다. 스캔이 0건이면 아래 폴백을 쓴다.
+// 엔트리가 늘거나 옮겨져도 게이트가 따라가야 하기 때문이다. 목록·폴백은 scripts/lib/css-entries.mjs.
 // (2026-09-11 Task 7 이후) TS 가 직접 붙이던 database 시트(curve-editors·battle-studio·animation-editor 등)는
 // database/index.css 진입 시트로 흡수됐다 — 폴백은 편집기·플레이어·벤치마크 엔트리와 두 지연 진입 시트만 둔다.
-const FALLBACK_ENTRIES = [
-  "src/styles/index.css", // src/main.ts
-  "src/styles/event/index.css", // src/editor/panels/eventEditor/modal.ts
-  "src/styles/database/index.css", // src/editor/panels/databaseModal.ts
-  "src/player/player.css", // src/player/exportEntry.ts
-  "src/benchmark/ui/styles.css", // src/benchmark/ui/landing.ts
-];
 
 // ── 유예 목록 (P0 기준선) ───────────────────────────────────────────────────────
 // 여기 있는 항목은 "이미 알고 있는 빚"이다. 고치는 순간 해당 줄을 지우면 게이트가 다시 지켜준다.
@@ -79,32 +74,13 @@ const asJson = flag("--json");
 
 const toRel = (abs) => relative(ROOT, abs).split("\\").join("/");
 
-function walk(dir, filter, files = []) {
-  if (!existsSync(dir)) return files;
-  for (const entry of readdirSync(dir)) {
-    const full = join(dir, entry);
-    if (statSync(full).isDirectory()) walk(full, filter, files);
-    else if (filter(full)) files.push(full);
-  }
-  return files;
-}
 
 // 주석 안의 @import 는 죽은 코드다. 지우지 않고 세면 "등록됐다"는 거짓 초록이 나온다.
 // stripComments / CSS_IMPORT_RE 는 scripts/lib/css-import-re.mjs 로 옮겼다.
 
 // TS 쪽 엔트리: `import "@/styles/index.css";` 또는 `import "./styles.css";`
-const TS_CSS_IMPORT_RE = /(?:^|\n)\s*import\s+(?:"([^"]+\.css)"|'([^']+\.css)')\s*;?/g;
 
 // `@/` 별칭은 vite.config.ts 의 alias 와 같게 src/ 로 푼다.
-function resolveSpecifier(spec, fromFile) {
-  const clean = spec.split("?")[0].split("#")[0].trim();
-  if (!clean) return null;
-  if (/^[a-z]+:\/\//i.test(clean)) return null; // 원격 @import 는 그래프 밖
-  const abs = clean.startsWith("@/")
-    ? join(SRC_DIR, clean.slice(2))
-    : resolve(dirname(fromFile), clean);
-  return abs.endsWith(".css") ? abs : `${abs}.css`;
-}
 
 function readImports(file) {
   // 파서는 scripts/lib/css-import-re.mjs 하나다. css-flatten.mjs 와 같은 정의를 써야
@@ -113,7 +89,7 @@ function readImports(file) {
   const css = stripCssComments(raw);
   const found = [];
   for (const imp of parseImports(raw)) {
-    const target = resolveSpecifier(imp.spec, file);
+    const target = resolveCssSpecifier(imp.spec, file, SRC_DIR);
     if (!target) continue;
     const line = css.slice(0, imp.index).split("\n").length;
     found.push({ spec: imp.spec, target, line });
@@ -122,25 +98,7 @@ function readImports(file) {
 }
 
 // ── 엔트리 발견 ─────────────────────────────────────────────────────────────────
-const tsFiles = walk(SRC_DIR, (f) => /\.(ts|tsx|mts)$/.test(f));
-const entries = new Map(); // 절대경로 → 이 엔트리를 들여온 TS 파일들
-for (const ts of tsFiles) {
-  const source = readFileSync(ts, "utf8");
-  for (const match of source.matchAll(TS_CSS_IMPORT_RE)) {
-    const target = resolveSpecifier(match[1] ?? match[2], ts);
-    if (!target || !existsSync(target)) continue;
-    if (!entries.has(target)) entries.set(target, []);
-    entries.get(target).push(toRel(ts));
-  }
-}
-let entryDiscovery = "scan";
-if (entries.size === 0) {
-  entryDiscovery = "fallback";
-  for (const rel of FALLBACK_ENTRIES) {
-    const abs = join(ROOT, rel);
-    if (existsSync(abs)) entries.set(abs, ["(fallback)"]);
-  }
-}
+const { entries, discovery: entryDiscovery } = discoverEntries(ROOT);
 
 // ── 그래프 순회 ─────────────────────────────────────────────────────────────────
 // 엔트리마다 **따로** 순회한다. postcss-import 의 dedup 범위는 번들 1개이므로,
