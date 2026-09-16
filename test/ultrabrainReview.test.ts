@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { defaultAiConfig, loadAiConfig, saveAiConfig } from "@/ai/llmClient";
 import { configForUltrabrain } from "@/ai/ultrabrainConfig";
-import { parseHarmonyReview, reviewMapHarmony } from "@/ai/ultrabrainReview";
+import { parseHarmonyReview, reviewMapHarmony, unusableReviewReason } from "@/ai/ultrabrainReview";
 
 const mocks = vi.hoisted(() => ({ chat: vi.fn(), render: vi.fn() }));
 vi.mock("@/ai/llmClient", async importOriginal => ({ ...await importOriginal<typeof import("@/ai/llmClient")>(), chatCompletion: mocks.chat }));
@@ -50,11 +50,45 @@ describe("Ultrabrain whole-map review", () => {
     const before = createBlankProject(), after = structuredClone(before);
     Object.values(after.maps)[0]!.lowerTiles[0] = 123;
     mocks.chat.mockResolvedValue({ finishReason: "stop", message: { content: "{}" } });
-    await expect(reviewMapHarmony(before, after, "검수", defaultAiConfig())).rejects.toThrow("이미지 전달");
+    await expect(reviewMapHarmony(before, after, "검수", defaultAiConfig())).rejects.toThrow("imageDelivery=");
     mocks.chat.mockResolvedValue({ finishReason: "length", message: { content: "{}" }, imageDelivery: [{ messageIndex: 1, partIndex: 1 }] });
-    await expect(reviewMapHarmony(before, after, "검수", defaultAiConfig())).rejects.toThrow("검수 완료");
+    await expect(reviewMapHarmony(before, after, "검수", defaultAiConfig())).rejects.toThrow("finish=length");
     expect(() => parseHarmonyReview('{"harmonious":true,"summary":"ok","findings":["bad"]}', "m")).toThrow();
     await expect(reviewMapHarmony(before, after, "검수", defaultAiConfig(), { signal: AbortSignal.abort() })).rejects.toThrow();
+  });
+
+  it("names the exact unusable condition instead of blaming the image path", () => {
+    const ok = { message: { role: "assistant" as const, content: "{}" }, finishReason: "stop", imageDelivery: [{ messageIndex: 1, partIndex: 1 }] };
+    expect(unusableReviewReason(ok)).toBeNull();
+    expect(unusableReviewReason({ ...ok, finishReason: "length" })).toBe("finish=length");
+    expect(unusableReviewReason({ ...ok, message: { role: "assistant" as const, content: "" } })).toBe("content=비어 있음");
+    expect(unusableReviewReason({ ...ok, message: { role: "assistant" as const, content: [{ type: "text" as const, text: "x" }] } })).toBe("contentType=object");
+    expect(unusableReviewReason({ ...ok, imageDelivery: [] })).toBe("imageDelivery=[]");
+    expect(unusableReviewReason({ ...ok, message: { role: "assistant" as const, content: "{}", tool_calls: [{ id: "call_1", type: "function" as const, function: { name: "x", arguments: "{}" } }] } })).toBe("toolCalls=1");
+  });
+
+  it("retries a response that came back without final output and still accepts the verdict", async () => {
+    const before = createBlankProject(), after = structuredClone(before);
+    Object.values(after.maps)[0]!.lowerTiles[0] = 123;
+    mocks.chat
+      .mockResolvedValueOnce({ finishReason: "stop", message: { content: "" }, imageDelivery: [{ messageIndex: 1, partIndex: 1 }] })
+      .mockResolvedValue({ finishReason: "stop", message: { content: JSON.stringify({ harmonious: true, summary: "어울립니다.", findings: [] }) }, imageDelivery: [{ messageIndex: 1, partIndex: 1 }] });
+    const reviews = await reviewMapHarmony(before, after, "검수", defaultAiConfig());
+    expect(reviews).toHaveLength(1);
+    expect(reviews[0]).toMatchObject({ harmonious: true });
+    expect(mocks.chat).toHaveBeenCalledTimes(3);
+  });
+
+  it("does not retry after cancellation", async () => {
+    const before = createBlankProject(), after = structuredClone(before);
+    Object.values(after.maps)[0]!.lowerTiles[0] = 123;
+    const controller = new AbortController();
+    mocks.chat.mockImplementation(async () => {
+      controller.abort();
+      return { finishReason: "stop", message: { content: "" }, imageDelivery: [{ messageIndex: 1, partIndex: 1 }] };
+    });
+    await expect(reviewMapHarmony(before, after, "검수", defaultAiConfig(), { signal: controller.signal })).rejects.toThrow();
+    expect(mocks.chat).toHaveBeenCalledTimes(1);
   });
 
   it("cancels a pending image load without calling the reviewer", async () => {

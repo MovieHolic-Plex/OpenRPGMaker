@@ -399,9 +399,11 @@ export async function runPiCommand(
         return false;
       }
       const message = error instanceof Error ? error.message : String(error);
-      surface.appendBubble("system", `Ultrabrain 검수 미완료: ${message} 자동 적용하지 않고 검토할 초안을 남겼습니다.`);
+      surface.appendBubble("system", `Ultrabrain 조화 검수를 완료하지 못했습니다: ${message} — 검수 지적으로 세지 않고, 적용 전 확인용 초안을 남겼습니다.`);
       push({ type: "agent_spawn", agentId: "ultrabrain", role: "reviewer", mapId: null, mapName: null, task: "전체 맵 조화 검수", label: "Ultrabrain" });
-      push({ type: "review", agentId: "ultrabrain", mapId: null, ok: false, findings: [message] });
+      // 검수를 «하지 못한 것» 은 «지적»이 아니다. 예전에는 findings=[오류문구] 로 발행되어
+      // 보드에 「지적 1건」 이 생겼다 — 프로바이더 빈응답이 작품 결함처럼 보였다.
+      push({ type: "agent_event", agentId: "ultrabrain", event: { type: "error", message: `검수 불가 — ${message}` } });
     }
   }
   harmonyManualReview = needsHarmonyReview && !harmonyApproved;
