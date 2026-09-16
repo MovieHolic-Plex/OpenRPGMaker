@@ -1,3 +1,25 @@
+## 로컬 SQLite 정본과 저장소 포트 (2026-09-16)
+
+정본이 "원격 Postgres 프로젝트 행"에서 "사용자가 고른 폴더의 `project.sqlite`"로 옮겨가는 중이다.
+설계는 `docs/superpowers/specs/2026-09-15-oprn-local-sqlite-store-design.md`, P1(포트 추출)은
+PR #845, P2(로컬 어댑터·Electron 셸)는 브랜치 `local-store/p2`가 main에 병합된 상태다.
+
+- **포트**: `src/project/persistence/types.ts`의 `ProjectRepository` 하나를 `repository.ts`가
+  호출 시점에 고른다 — preload 브리지(`window.oprn`)가 있으면 Electron 어댑터, 없으면 기존
+  Supabase 어댑터. store와 주변 모듈은 더 이상 Supabase를 직접 부르지 않는다.
+- **로컬 어댑터**: `electron/local-store/`는 `node:sqlite`(`DatabaseSync`)만 쓰는 Node 전용
+  라이브러리다. electron을 import하지 않으므로 헤드리스 도구가 같은 폴더를 같은 라이브러리로 연다.
+  폴더 모양은 `project.sqlite` + `assets/` + `backups/`(`VACUUM INTO`), 형식 버전은 `meta`에 있다.
+  스키마는 9테이블(meta·project·maps·commits·changes·ai_activity_logs·ai_conversations·
+  ai_analysis_runs·assets)이고, 저장은 단일 트랜잭션 + sha256 CAS + 리비전 증가다.
+  PRAGMA는 `journal_mode=WAL`·`synchronous=FULL`·`busy_timeout=5000`·`foreign_keys=ON`.
+- **가드**: SQLite 드라이버 import는 `electron/local-store/**`만, `electron/**`는 `src/brand.ts`·
+  `src/project/types/**`·`src/project/persistence/core/**`만, `src/**`는 `electron/shared/**`만
+  import한다. 렌더러 파일 이름에 `sqlite`를 쓰지 않는다. `test/noLocalProjectDb.test.ts`가 이 경계를 지킨다.
+- **헤드리스**: `scripts/oprn-store.mjs`(init·info·import-json·import-package·export-json·backup·
+  import-supabase)와 `scripts/oprn-tools.mjs --project-dir <dir>`가 폴더 프로젝트를 연다.
+  계약은 `test/localStore/headlessProjectDir.test.ts`(폴더 열기)와 `test/persistence/*`(공유 계약).
+
 ## 지역 하위 장소의 단일 계약 (2026-09-14)
 
 `RegionDesign.places`는 내부 `space/place` 둘 다 참조할 수 있다. AI 공개 참조는 모두
