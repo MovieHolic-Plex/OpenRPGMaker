@@ -366,20 +366,28 @@
   top: 12px;
   z-index: 20;
 }
-/* 플레이어 CSS closure 안의 unlayered 소유자다. unlayered 선언은 뒤의 @layer runtime보다
-   항상 우선하므로 runtime/pictures.css 에 중복 선언하지 않는다. 슬롯의 인라인 z-index를
-   이 26 stacking context 안에 가둬 dialogue-overlay(39) 위로 새지 않게 한다. */
+/* .picture-layer 의 단독 소유자다. runtime/pictures.css 에 중복 선언하지 않는다.
+   이 파일은 runtime/index.css:48 에서 `layer(runtime)` 으로 들어와 **직속 runtime** 이고,
+   pictures.css 는 자기 안에서 다시 `@layer runtime {` 로 감싸 `runtime.runtime`
+   서브레이어가 된다. 서브레이어는 부모 직속에게 지므로 여기가 이긴다.
+   슬롯의 인라인 z-index 를 이 26 stacking context 안에 가둬 dialogue-overlay(39) 위로
+   새지 않게 한다. */
 .picture-layer {
   inset: 0;
   pointer-events: none;
   position: absolute;
   z-index: 26;
 }
-/* .picture-layer-item 은 runtime/pictures.css(@layer runtime) 가 단독 소유한다.
+/* .picture-layer-item 은 runtime/pictures.css 가 단독 소유한다.
    여기 있던 텍스트-칩 스타일은 .picture-layer-label 로 옮겨갔다(pictures.css:19-28).
-   이 파일은 unlayered 라 레이어드 규칙을 전부 이기므로, 남겨 두면
+   이 파일이 직속 runtime 이라 서브레이어인 pictures.css 를 이기므로, 남겨 두면
    src/player/runtimeDom.ts 가 만드는 이미지 픽처 컨테이너에 흰 상자 + 파란 테두리를
-   씌운다. pictures.css 는 어떤 특정도로도 되찾을 수 없다(unlayered > layered). */
+   씌운다. pictures.css 는 특정도를 아무리 올려도 되찾을 수 없다 —
+   레이어 우선순위는 특이도보다 먼저 결정되기 때문이다.
+
+   (2026-09-17 이전 주석은 "이 파일은 unlayered 라 레이어드 규칙을 전부 이긴다"고
+   설명했지만 이 파일은 layer(runtime) 으로 들어온다. 결론은 맞고 이유가 틀렸다 —
+   그 틀린 이유를 믿고 pictures.css 의 @layer 래퍼를 지우면 버그가 돌아온다.) */
 .runtime-screen-effect {
   inset: 0;
   pointer-events: none;
