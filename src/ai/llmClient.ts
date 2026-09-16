@@ -460,12 +460,6 @@ export interface ProviderCapability {
 }
 
 /**
- * 설정에서 공급자 능력을 판정한다. 지금 남은 공급자(apitopia·동반 서비스 OAuth)는 스트리밍·
- * reasoning·message name 을 모두 지원하므로 제한이 없다.
- *
- * hasTools 는 공급자별 제약이 다시 생길 때를 위한 자리다 — 현재 판정에는 쓰이지 않는다.
- */
-/**
  * Cloud Code Assist(Gemini)의 maxOutputTokens 상한 — **실측 2026-09-16**.
  *
  * `max_tokens` 를 65536 으로 보내면 200, 100000 으로 보내면 400
@@ -475,6 +469,13 @@ export interface ProviderCapability {
  * `/home/main/.omp/logs/http-400-requests/*.json` 의 `generationConfig.maxOutputTokens` 가 그 증거다.
  */
 export const GEMINI_MAX_OUTPUT_TOKENS = 65_536;
+
+/**
+ * 설정에서 공급자 능력을 판정한다. 지금 남은 공급자(apitopia·동반 서비스 OAuth)는 스트리밍·
+ * reasoning·message name 을 모두 지원하므로 제한이 없다.
+ *
+ * hasTools 는 공급자별 제약이 다시 생길 때를 위한 자리다 — 현재 판정에는 쓰이지 않는다.
+ */
 
 export function providerCapability(
   config: AiConfig,
