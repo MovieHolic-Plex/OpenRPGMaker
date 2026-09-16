@@ -17,8 +17,23 @@ PR #845, P2(로컬 어댑터·Electron 셸)는 브랜치 `local-store/p2`가 mai
   `src/project/types/**`·`src/project/persistence/core/**`만, `src/**`는 `electron/shared/**`만
   import한다. 렌더러 파일 이름에 `sqlite`를 쓰지 않는다. `test/noLocalProjectDb.test.ts`가 이 경계를 지킨다.
 - **헤드리스**: `scripts/oprn-store.mjs`(init·info·import-json·import-package·export-json·backup·
-  import-supabase)와 `scripts/oprn-tools.mjs --project-dir <dir>`가 폴더 프로젝트를 연다.
+  import-supabase)와 `scripts/oprn-tools.mjs --project-dir <dir>`가 폴더를 연다.
   계약은 `test/localStore/headlessProjectDir.test.ts`(폴더 열기)와 `test/persistence/*`(공유 계약).
+- **패키징(P5 진입, 2026-09-17)**: `electron-builder.config.mjs` + `npm run package`/`package:dir`
+  → `release/linux-unpacked`(asar 안에 dist/+dist-electron/). 개발 스모크(`electron:smoke`는
+  `dist-electron/main.cjs`를 직접 띄운다)와 다른 경로라 `scripts/qa/verifyPackagedApp.mjs`
+  (`npm run qa:package`, 헤드리스는 xvfb-run 필요)가 실제 바이너리로 시작 화면→폴더 열기→
+  편집기 캔버스→폴더 영속화를 증명한다. 실측으로 잡은 패키징 전용 결함 셋:
+  - 시작 화면이 폴더를 열어둔 채 부팅해도 첫 방문 게이트가 공용 데모 fetch를 시도해 CSP에
+    막혀 로드 실패 화면으로 떨어졌다 → `store.hasAdoptedLocalProject()`를 게이트에 추가
+    (`src/app/mode.ts`).
+  - 비어 있는 로컬 폴더(새 프로젝트)는 `project.load`가 null을 돌려 "선택한 작업을 찾지
+    못했습니다"로 DB 연결 화면에 갇혔다 → `store.load()`가 로컬 대상+빈 문서를 "새
+    프로젝트"로 채택하고 dirty로 둬 첫 flush가 폴더에 심는다. 회귀는
+    `test/persistence/localFolderBoot.test.ts`.
+  - `mapEditLocks`가 `isRemotePersistenceEnabled()`만 보고 원격 REST(`map_edit_locks`)를
+    불러 CSP 에러를 냈다 — 로컬 정본은 단일 작성자라 `store.usesLocalProjectFolder()`로
+    락 경로 전체를 스킵한다.
 
 ## 지역 하위 장소의 단일 계약 (2026-09-14)
 

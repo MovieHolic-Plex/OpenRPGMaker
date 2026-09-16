@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **69쪽 / 2771KB / 약 781,412 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **69쪽 / 2775KB / 약 782,623 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -24,7 +24,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-pre-edit-routing.md` | 114KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 626 | ~32,872 |
 | `openwiki/editor-workflows-misc.md` | 65KB | 30KB | 458 | ~17,883 |
 | `openwiki/runtime-battle.md` | 150KB | 31KB | 678 | ~43,069 |
-| `openwiki/runtime-project-schema.md` | 144KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 971 | ~38,999 |
+| `openwiki/runtime-project-schema.md` | 145KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 986 | ~39,400 |
 | `openwiki/runtime-sessions.md` | 89KB | 46KB | 318 | ~23,589 |
 | `openwiki/testing.md` | 197KB | 48KB | 1830 | ~54,473 |
 
@@ -77,7 +77,6 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/runtime-project-schema.md` | 11 | `.json`, `.png`, `interiorLoadConsistency.test.ts`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/io.test.ts`, `test/mapPlanningReuse.test.ts`, `transactionalRemoteSourceLineage.test.ts` |
 | `openwiki/runtime-sessions.md` | 1 | `output/evidence/stardew/stardew-supabase.json` |
 | `openwiki/se-catalog.md` | 8 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `labels.json`, `placed.json`, `test/audioDescriptionCommandSurfaces.test.ts` |
-| `openwiki/spatial-ai-tools.md` | 1 | `test/spatialToolProjectionBoundary.test.ts` |
 | `openwiki/spatial-authoring-controller.md` | 1 | `storeMutationInstrumentation.test.ts` |
 | `openwiki/spatial-geography-compiler.md` | 1 | `.omo/ulw-execute/tile-to-world/execution-policy.md` |
 | `openwiki/spatial-geography-ui.md` | 2 | `lake-persistence.json`, `lake-regions-desktop.png` |
@@ -888,53 +887,53 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L215` Saved uploaded tilesets in the actual player (2026-09-14)
 - `L236` 맵 배경(패럴랙스) 렌더 (2026-09-14)
 
-### `openwiki/runtime-project-schema.md` — 144KB · 971줄 · ~38,999 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 145KB · 986줄 · ~39,400 토큰 · 통째읽기 잘림
 
 - `L1` 로컬 SQLite 정본과 저장소 포트 (2026-09-16)
-- `L23` 지역 하위 장소의 단일 계약 (2026-09-14)
-- `L33` 직접 그린 방을 포함하는 다층 장소 (2026-09-14)
-- `L42` 장소 재료의 포함 관계 (2026-09-14)
-- `L51` 혼합 하위 재료 구성 (2026-09-13)
-- `L70` Truthful migrated-load state (2026-09-07)
-- `L103` Explicit publication identity and Save6 (2026-09-06)
-- `L161` Spatial canonical routing (task6 backend increment, 2026-09-07)
-- `L203` P1 accepted-save receipts and read-only proof (2026-09-06)
-- `L253` Opening and game-over cinematic settings (2026-09-06)
-- `L270` 적 전투 이미지 크기 (2026-09-06)
-- `L274` Project monster metadata overrides (foundation, 2026-09-07)
-- `L316` Project audio description overrides
-  - `L345` Concurrent persistence
-  - `L370` Editor preservation and playable export
-- `L384` Character/face authoring metadata (2026-09-06)
-- `L391` Character appearance sets v1 (2026-09-06)
-- `L428` New-project save/reload verification (2026-09-05)
-- `L436` Task15 nonvisual economy command contract (2026-09-08)
-- `L447` Independent game Save5 boundary (2026-09-06)
-- `L453` Life ownership in Save5 (2026-09-06)
-- `L469` Placement safety core (task12, 2026-09-06)
-- `L481` Project-authored equipment slots (2026-09-05)
-- `L489` 전투 명령 CSS (2026-09-05)
-- `L493` 기본 카탈로그 삭제 보존 (2026-09-05)
-- `L497` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
-- `L510` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
-- `L518` 세계 법칙의 명시적 부재 (2026-09-05)
-- `L522` Showcase media save-copy durability (issue #693, 2026-09-08)
-- `L562` 공용 첫 방문 데모 — 읽기 전용 저장 계약 (2026-09-14)
-- `L596` Project schema & persistence
-- `L825` Variable arithmetic & loop runtime (2026-08-07)
-- `L829` Canonical event-draft projection (2026-07-30)
-- `L835` P2 general buildings and home decorations (2026-08-25)
-- `L842` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
-- `L860` Boot normalizers must not create dangling references (2026-08-30)
-- `L886` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
-- `L920` 성장 트리 선택 확장 (2026-09-05)
-- `L926` 마을 설계서 (2026-09-05)
-- `L932` 공포 게임 제작 기능 (2026-09-05)
-  - `L936` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
-- `L940` NPC 표시 이름 (2026-09-05)
-- `L953` 연결 실내 도면의 영속성 (2026-09-05)
-- `L957` 개념 장소 형상 (2026-09-05)
-- `L961` Optional village decoration attachments (2026-09-13)
+- `L38` 지역 하위 장소의 단일 계약 (2026-09-14)
+- `L48` 직접 그린 방을 포함하는 다층 장소 (2026-09-14)
+- `L57` 장소 재료의 포함 관계 (2026-09-14)
+- `L66` 혼합 하위 재료 구성 (2026-09-13)
+- `L85` Truthful migrated-load state (2026-09-07)
+- `L118` Explicit publication identity and Save6 (2026-09-06)
+- `L176` Spatial canonical routing (task6 backend increment, 2026-09-07)
+- `L218` P1 accepted-save receipts and read-only proof (2026-09-06)
+- `L268` Opening and game-over cinematic settings (2026-09-06)
+- `L285` 적 전투 이미지 크기 (2026-09-06)
+- `L289` Project monster metadata overrides (foundation, 2026-09-07)
+- `L331` Project audio description overrides
+  - `L360` Concurrent persistence
+  - `L385` Editor preservation and playable export
+- `L399` Character/face authoring metadata (2026-09-06)
+- `L406` Character appearance sets v1 (2026-09-06)
+- `L443` New-project save/reload verification (2026-09-05)
+- `L451` Task15 nonvisual economy command contract (2026-09-08)
+- `L462` Independent game Save5 boundary (2026-09-06)
+- `L468` Life ownership in Save5 (2026-09-06)
+- `L484` Placement safety core (task12, 2026-09-06)
+- `L496` Project-authored equipment slots (2026-09-05)
+- `L504` 전투 명령 CSS (2026-09-05)
+- `L508` 기본 카탈로그 삭제 보존 (2026-09-05)
+- `L512` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
+- `L525` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
+- `L533` 세계 법칙의 명시적 부재 (2026-09-05)
+- `L537` Showcase media save-copy durability (issue #693, 2026-09-08)
+- `L577` 공용 첫 방문 데모 — 읽기 전용 저장 계약 (2026-09-14)
+- `L611` Project schema & persistence
+- `L840` Variable arithmetic & loop runtime (2026-08-07)
+- `L844` Canonical event-draft projection (2026-07-30)
+- `L850` P2 general buildings and home decorations (2026-08-25)
+- `L857` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
+- `L875` Boot normalizers must not create dangling references (2026-08-30)
+- `L901` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
+- `L935` 성장 트리 선택 확장 (2026-09-05)
+- `L941` 마을 설계서 (2026-09-05)
+- `L947` 공포 게임 제작 기능 (2026-09-05)
+  - `L951` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
+- `L955` NPC 표시 이름 (2026-09-05)
+- `L968` 연결 실내 도면의 영속성 (2026-09-05)
+- `L972` 개념 장소 형상 (2026-09-05)
+- `L976` Optional village decoration attachments (2026-09-13)
 
 ### `openwiki/runtime-sessions.md` — 89KB · 318줄 · ~23,589 토큰 · 통째읽기 잘림
 
@@ -986,15 +985,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L82` 마을 생활 공간 장식 (2026-09-13)
 - `L126` 겹치는 숲과 외곽 풀밭 (2026-09-13)
 
-### `openwiki/spatial-ai-tools.md` — 14KB · 187줄 · ~3,904 토큰
+### `openwiki/spatial-ai-tools.md` — 17KB · 216줄 · ~4,714 토큰
 
 - `L3` 장소 단일 계약 (2026-09-14)
 - `L19` Ownership
 - `L50` 저장된 건물 외형 찾기 (2026-09-14 갱신)
 - `L78` Preview versus publication
-- `L113` Legacy adapters and context
-- `L155` Evidence and integration boundary
-- `L172` Completed region references (2026-09-13)
+- `L108` 프로세스 경계를 넘는 증거 (2026-09-16)
+- `L142` Legacy adapters and context
+- `L184` Evidence and integration boundary
+- `L201` Completed region references (2026-09-13)
 
 ### `openwiki/spatial-authoring-controller.md` — 18KB · 294줄 · ~4,590 토큰
 

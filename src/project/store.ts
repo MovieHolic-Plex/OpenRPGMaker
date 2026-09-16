@@ -40,7 +40,7 @@ import {
 } from "./supabaseProjectConfig";
 import type { DbPersistenceDisabledReason, DbPersistenceStatus } from "./persistenceStatus";
 import { projectRepository } from "./persistence/repository";
-import { isRemoteTarget, sameProjectTarget, type ProjectTarget } from "./persistence/target";
+import { isLocalTarget, isRemoteTarget, sameProjectTarget, type ProjectTarget } from "./persistence/target";
 import type { ProjectRepository } from "./persistence/types";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
 import { repairMapTreeOrphans } from "@/project/mapTree";
@@ -279,6 +279,7 @@ class ProjectStore {
   }
 
   async load(): Promise<Project> {
+    let seededNewLocalProject = false;
     try {
       const devShowcaseProject = devProjectFactory?.() ?? null;
       if (devShowcaseProject) {
@@ -295,31 +296,48 @@ class ProjectStore {
           throw new DbConnectionRequiredError("온라인 저장 설정이 필요합니다.");
         } else {
           const { project, authority, target } = await this.readRemoteProject();
-          if (!project) {
+          if (!project && target !== null && isLocalTarget(target)) {
+            // 비어 있는 로컬 폴더는 "새 프로젝트"다 — 호스트(앱·로컬 서버)가 폴더를
+            // 열어줬는데 "작업을 찾지 못함" 오류로 떨어지면 온라인 선택지가 없는 패키징
+            // 앱이 DB 연결 화면에 갇힌다(2026-09-17 패키징 실측: db-required-panel).
+            // 빈 문서를 채택하고 dirty 로 둬 첫 flush 가 폴더에 심는다.
+            this.adoptProject(createBlankProject(), { restoreVault: false });
+            this.loadedRemoteProjectId = target.projectId;
+            this.writeAuthority = { mode: "legacy", target };
+            this.remotePersistenceEnabled = true;
+            this.remotePersistenceDisabledReason = null;
+            this.persistedBaseline = null;
+            seededNewLocalProject = true;
+            resetManualProjectCommitBaseline(this.current);
+            this.syncProjectUrlBar();
+          } else if (!project) {
             this.remotePersistenceEnabled = true;
             this.remotePersistenceDisabledReason = null;
             this.persistedBaseline = null;
             throw new DbConnectionRequiredError("선택한 작업을 찾지 못했습니다.");
+          } else {
+            this.adoptProject(project, { restoreVault: true });
+            const loadedProjectId = target?.projectId;
+            const sharedDemo = isSharedDemoProjectId(loadedProjectId);
+            // 공용 데모 행은 어떤 경로로 열리든 읽기 전용이다 — ?project= 딥링크나
+            // 작업 선택 목록에서 골라도 쓰기 권한·자동저장을 쥐지 않는다.
+            this.writeAuthority = sharedDemo ? null : authority;
+            if (loadedProjectId) this.loadedRemoteProjectId = loadedProjectId;
+            else this.beginLocalProjectSession();
+            this.remotePersistenceEnabled = !sharedDemo;
+            this.remotePersistenceDisabledReason = sharedDemo ? "shared-demo" : null;
+            this.persistedBaseline = sharedDemo ? null : structuredClone(projectWithoutEventDrafts(this.current));
+            resetManualProjectCommitBaseline(this.current);
+            this.syncProjectUrlBar();
           }
-          this.adoptProject(project, { restoreVault: true });
-          const loadedProjectId = target?.projectId;
-          const sharedDemo = isSharedDemoProjectId(loadedProjectId);
-          // 공용 데모 행은 어떤 경로로 열리든 읽기 전용이다 — ?project= 딥링크나
-          // 작업 선택 목록에서 골라도 쓰기 권한·자동저장을 쥐지 않는다.
-          this.writeAuthority = sharedDemo ? null : authority;
-          if (loadedProjectId) this.loadedRemoteProjectId = loadedProjectId;
-          else this.beginLocalProjectSession();
-          this.remotePersistenceEnabled = !sharedDemo;
-          this.remotePersistenceDisabledReason = sharedDemo ? "shared-demo" : null;
-          this.persistedBaseline = sharedDemo ? null : structuredClone(projectWithoutEventDrafts(this.current));
-          resetManualProjectCommitBaseline(this.current);
-          this.syncProjectUrlBar();
         }
       }
       this.loaded = true;
       this.dirtySinceLastPersist = false;
       // Defer remote rewrite of normalize fixes so boot is not blocked on Tailscale/dbserver RTT.
       this.dirtySinceLastPersist = false;
+      // 방금 채택한 새 로컬 프로젝트는 폴더에 문서가 없다 — 첫 flush 대상으로 dirty 를 되돌린다.
+      if (seededNewLocalProject) this.dirtySinceLastPersist = true;
       await this.normalizeCurrentProject({ persistIfChanged: false });
       this.refreshSupabaseResourceCache();
     } catch (error) {
@@ -343,6 +361,31 @@ class ProjectStore {
 
   isLoaded(): boolean {
     return this.loaded;
+  }
+
+  /**
+   * 호스트(앱·로컬 서버)가 폴더를 열어둔 채 이 렌더러를 띄웠는가.
+   *
+   * 첫 방문 게이트가 이걸 봐야 한다 — 호스트가 폴더를 열어줬는데도 "이 기기에 저장된 선택이
+   * 없다"는 이유로 원격 공용 데모를 부르면, 원격 설정이 없는 패키징 앱에서는 CSP 가 그 fetch 를
+   * 막아 **로드 실패 화면**으로 떨어진다(2026-09-16 패키징 실측). 채택된 로컬 정본이 있으면
+   * 그게 곷 사용자의 작업이다.
+   */
+  hasAdoptedLocalProject(): boolean {
+    return this.repository.currentTarget() !== null;
+  }
+
+  /**
+   * 현재 저장 대상이 로컬 폴더 정본인가(원격 Supabase 행이 아님).
+   *
+   * 협업 락·원격 전용 표면이 판별에 쓴다 — `isRemotePersistenceEnabled()` 는 로컬 폴더에서도
+   * true(폴더가 곧 저장소)라 "원격에 쓰는가"의 답이 아니다. 로컬 정본은 단일 작성자라
+   * 다중 세션 락이 의미 없고, 원격 자격이 빌드에 박혀 있으면 CSP 에 막히는 REST 호출만
+   * 나간다(2026-09-17 패키징 실측).
+   */
+  usesLocalProjectFolder(): boolean {
+    const target = this.repository.currentTarget();
+    return target !== null && isLocalTarget(target);
   }
 
   // 부팅 실패 복구(도그푸딩 결함 ②): 로드 실패 상태에서 대체 프로젝트(예제/빈)를 메모리로 연다.
