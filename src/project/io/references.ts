@@ -133,7 +133,7 @@ export function collectProjectItemReferenceIds(project: Project): ReadonlySet<st
 }
 
 export function collectProjectReferenceIssues(project: Project): string[] {
-  const issues: string[] = [...growthIssues(project), ...characterAppearanceReferenceIssues(project)];
+  const issues: string[] = [];
   const check = (fn: () => void): void => {
     try {
       fn();
@@ -141,6 +141,11 @@ export function collectProjectReferenceIssues(project: Project): string[] {
       issues.push(cause instanceof Error ? cause.message : String(cause));
     }
   };
+  // 이 함수의 계약은 «이슈 수집» 이다 — 개별 검증기가 던진 예외도 이슈 문자열로 남기고
+  // 호출자(에디터 부팅의 refreshAuthoringJourney)를 죽이지 않는다. 정규화를 거치지 않은
+  // 프로젝트(옛 JSON·e2e 시드)에서 검증기가 undefined 필드를 만나 던지면 화면이 통째로
+  // 뜨지 않았다. 파일 아래쪽 검증기들은 이미 check() 를 쓰고 있었다 — 계약을 전부로 넓힌다.
+  check(() => issues.push(...growthIssues(project), ...characterAppearanceReferenceIssues(project)));
   const switchIds = new Set(project.switches.map((record) => record.id));
   const variableIds = new Set(project.variables.map((record) => record.id));
   const actorIds = new Set(project.database.actors.map((record) => record.id));
@@ -182,37 +187,37 @@ export function collectProjectReferenceIssues(project: Project): string[] {
     ]),
   };
 
-  validateActorRecords(project, classIds, animationIds, context, issues);
-  validateClassRecords(project, classIds, actorIds, skillIds, equipmentIds, animationIds, issues);
-  validateSkillRecords(project, skillIds, animationIds, context, issues);
-  validateItemRecords(project, actorIds, classIds, skillIds, animationIds, resourceIds, switchIds, issues);
-  validateEquipmentRecords(project, actorIds, classIds, skillIds, resourceIds, issues);
-  validateEnemyRecords(project, itemIds, skillIds, resourceIds, context.switchIds, speciesIds, issues);
-  validateElementRates(project, issues);
-  validateMonsterSpeciesRecords(project, skillIds, resourceIds, issues);
-  validateCropRecords(project, itemIds, resourceIds, issues);
-  validateLifeAuthoringRecords(project, itemIds, issues);
-  validateFarmAnimalReferences(project, itemIds, issues);
-  validateSpatialReferences(project, itemIds, resourceIds, issues);
-  validateTroopRecords(project, enemyIds, context, issues);
+  check(() => validateActorRecords(project, classIds, animationIds, context, issues));
+  check(() => validateClassRecords(project, classIds, actorIds, skillIds, equipmentIds, animationIds, issues));
+  check(() => validateSkillRecords(project, skillIds, animationIds, context, issues));
+  check(() => validateItemRecords(project, actorIds, classIds, skillIds, animationIds, resourceIds, switchIds, issues));
+  check(() => validateEquipmentRecords(project, actorIds, classIds, skillIds, resourceIds, issues));
+  check(() => validateEnemyRecords(project, itemIds, skillIds, resourceIds, context.switchIds, speciesIds, issues));
+  check(() => validateElementRates(project, issues));
+  check(() => validateMonsterSpeciesRecords(project, skillIds, resourceIds, issues));
+  check(() => validateCropRecords(project, itemIds, resourceIds, issues));
+  check(() => validateLifeAuthoringRecords(project, itemIds, issues));
+  check(() => validateFarmAnimalReferences(project, itemIds, issues));
+  check(() => validateSpatialReferences(project, itemIds, resourceIds, issues));
+  check(() => validateTroopRecords(project, enemyIds, context, issues));
   for (const animation of project.database.battleAnimations) check(() => validateAnimationResource(animation, resourceIds));
   for (const terrain of project.database.terrains ?? []) {
     check(() => validateOptionalResource(`terrain ${terrain.id}: battleBackgroundResourceId`, terrain.battleBackgroundResourceId, resourceIds));
     check(() => validateOptionalResource(`terrain ${terrain.id}: footstepSoundResourceId`, terrain.footstepSoundResourceId, resourceIds));
   }
 
-  collectExistingIdIssues("system.startActorIds", project.system.startActorIds, actorIds, issues);
+  check(() => collectExistingIdIssues("system.startActorIds", project.system.startActorIds, actorIds, issues));
   if (project.system.initialTroopId && !troopIds.has(project.system.initialTroopId)) issues.push("system.initialTroopId does not exist.");
   if (project.system.timeSystem?.enabled && project.system.timeSystem.onDayEnd && !commonEventIds.has(project.system.timeSystem.onDayEnd)) issues.push("system.timeSystem.onDayEnd does not exist.");
-  validateP0SystemReferences(project, itemIds, switchIds, issues);
-  validateP2SystemReferences(project, itemIds, switchIds, mapIds, issues);
+  check(() => validateP0SystemReferences(project, itemIds, switchIds, issues));
+  check(() => validateP2SystemReferences(project, itemIds, switchIds, mapIds, issues));
   check(() => validateSystemResources(project.system, resourceIds));
-  collectExistingIdIssues("session.partyActorIds", project.session.partyActorIds, actorIds, issues);
-  validateEndings(project, switchIds, variableIds, issues);
-  validateMapConnections(project, mapIds, issues);
-  validateCommonEvents(project, switchIds, context, issues);
-  validateMapRecords(project, switchIds, variableIds, resourceIds, context, issues);
-  validateScheduledEventIds(project, issues);
+  check(() => collectExistingIdIssues("session.partyActorIds", project.session.partyActorIds, actorIds, issues));
+  check(() => validateEndings(project, switchIds, variableIds, issues));
+  check(() => validateMapConnections(project, mapIds, issues));
+  check(() => validateCommonEvents(project, switchIds, context, issues));
+  check(() => validateMapRecords(project, switchIds, variableIds, resourceIds, context, issues));
+  check(() => validateScheduledEventIds(project, issues));
   return issues;
 }
 
@@ -1353,7 +1358,7 @@ function validateActorEquipment(
   equipmentIds: ReadonlySet<string>,
   issues: string[]
 ): void {
-  for (const id of Object.values(equipment)) {
+  for (const id of Object.values(equipment ?? {})) {
     if (id && !equipmentIds.has(id)) issues.push(`actor ${actorId}: initialEquipment does not exist: ${id}`);
   }
 }
