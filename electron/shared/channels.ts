@@ -12,7 +12,6 @@ export const OPRN_CHANNELS = {
   projectBackup: "oprn:project.backup",
   commitsRecord: "oprn:commits.record",
   commitsList: "oprn:commits.list",
-  commitsListSync: "oprn:commits.listSync",
   aiRecordActivity: "oprn:ai.recordActivity",
   aiListActivity: "oprn:ai.listActivity",
   aiRecordConversation: "oprn:ai.recordConversation",

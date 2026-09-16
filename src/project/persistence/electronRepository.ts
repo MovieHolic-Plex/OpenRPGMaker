@@ -24,7 +24,6 @@ export type OprnBridgeProject = {
 export type OprnBridgeCommits = {
   record(payload: unknown): Promise<SaveResult>;
   list(payload: { readonly projectDir: string; readonly limit: number }): Promise<readonly CommitListItem[]>;
-  listSync(payload: { readonly projectDir: string; readonly limit: number }): readonly CommitListItem[];
 };
 export type OprnBridgeAi = {
   recordActivity(payload: unknown): Promise<SaveResult>;
@@ -194,9 +193,6 @@ export function createElectronRepository(): ElectronRepository {
       async hydrateTip(target?) {
         const resolved = requireOpened(target);
         return (await electronBridge().commits.list({ projectDir: resolved.projectDir, limit: 1 }))[0]?.commitId ?? null;
-      },
-      peekTip(projectId) {
-        return (opened && opened.projectId === projectId) ? electronBridge().commits.listSync({ projectDir: opened.projectDir, limit: 1 })[0]?.commitId ?? null : null;
       },
       seedTip: () => {},
     },

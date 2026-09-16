@@ -153,7 +153,6 @@ export function createMemoryRepository(options: { readonly target: ProjectTarget
         if (!resolved) return null;
         return (await repository.commits.list(1, resolved))[0]?.commitId ?? null;
       },
-      peekTip: (projectId) => tips.get(projectId) ?? null,
       seedTip(projectId, commitId) { if (commitId) tips.set(projectId, commitId); },
     },
     ai: {

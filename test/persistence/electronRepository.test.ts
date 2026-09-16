@@ -31,7 +31,6 @@ function fakeBridge(): OprnBridge {
     commits: {
       record: async () => ({ kind: "saved", commitId: "c1" }),
       list: async () => [{ commitId: "c1", message: "요약", reviewStatus: "direct", authorId: null, authorKind: null, authorLabel: null, agentName: null, createdAt: null, summary: "요약" }],
-      listSync: () => [],
     },
     ai: {
       recordActivity: async () => ({ kind: "saved" }),

@@ -27,7 +27,6 @@ const bridge = {
   commits: {
     record: invoke(OPRN_CHANNELS.commitsRecord),
     list: invoke(OPRN_CHANNELS.commitsList),
-    listSync: (payload: unknown) => ipcRenderer.sendSync(OPRN_CHANNELS.commitsListSync, payload),
   },
   ai: {
     recordActivity: invoke(OPRN_CHANNELS.aiRecordActivity),

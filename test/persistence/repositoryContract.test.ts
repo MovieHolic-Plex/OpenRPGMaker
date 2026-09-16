@@ -132,7 +132,6 @@ export function describeRepositoryContract(name: string, factory: FixtureFactory
       expect(list[0]?.commitId).toBe(recorded.commitId);
       expect(list[0]?.message).toBe("첫 커밋");
       expect(list[0]?.authorLabel).toBe("테스터");
-      expect(repository.commits.peekTip(target.projectId)).toBe(recorded.commitId);
     });
 
     it("AI 활동: 기록한 로그가 목록에 있고 runId 필터가 먹는다", async () => {

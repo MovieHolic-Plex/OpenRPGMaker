@@ -83,7 +83,6 @@ export interface ProjectRepository {
     record(input: CommitInput, target?: ProjectTarget | null): Promise<SaveResult>;
     list(limit: number, target?: ProjectTarget | null): Promise<readonly CommitListItem[]>;
     hydrateTip(target?: ProjectTarget | null): Promise<string | null>;
-    peekTip(projectId: string): string | null;
     seedTip(projectId: string, commitId: string | null | undefined): void;
   };
   readonly ai: {

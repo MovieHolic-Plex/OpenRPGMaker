@@ -4,7 +4,6 @@ type BrowserBridgeConfig = { readonly endpoint: string; readonly token: string }
 
 declare global {
   interface Window {
-    oprn?: unknown;
     __OPRN_BRIDGE__?: BrowserBridgeConfig;
   }
 }
@@ -64,7 +63,7 @@ async function readAsset(payload: unknown): Promise<Uint8Array> {
   return base64ToBytes(String(await call(OPRN_CHANNELS.assetsRead, payload)));
 }
 
-window.oprn = {
+(window as unknown as { oprn?: unknown }).oprn = {
   closeIsHostDriven: false,
   assetBaseUrl: () => "/__oprn/asset/",
   project: {
@@ -81,7 +80,6 @@ window.oprn = {
   commits: {
     record: invoke(OPRN_CHANNELS.commitsRecord),
     list: invoke(OPRN_CHANNELS.commitsList),
-    listSync: () => [],
   },
   ai: {
     recordActivity: invoke(OPRN_CHANNELS.aiRecordActivity),

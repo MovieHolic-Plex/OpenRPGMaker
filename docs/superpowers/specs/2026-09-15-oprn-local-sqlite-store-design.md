@@ -137,7 +137,7 @@ spatial 발행의 분기는 포트 바깥으로 나오지 않는다. 지금 `rou
 **어댑터 셋.**
 
 - Supabase 어댑터. 지금 sync 모듈과 spatial persistence 를 그대로 감싼다. 동작 변화 없음이 목표이고, 8절 이관이 끝나면 통째로 지운다. 에셋 `put` 은 지금처럼 데이터 URL 을 돌려줘 옛 경로가 그대로 산다.
-- Electron 어댑터. preload 가 contextBridge 로 노출한 `window.oprn` 을 부르고, 브리지는 `ipcRenderer.invoke` 로 메인에 넘긴다. 저장 시 직렬화한 텍스트를 보내 메인이 같은 바이트로 sha256 을 계산한다. 메인은 채널 입력을 zod 로 검증한다(이미 의존성). 동기 호출은 한 곳만 허용한다. AI 도구 `list_project_commits` 가 동기 XHR 을 쓰고 있어(`src/editor/tools/queryTools.ts`), 브리지에서 커밋 목록 하나만 `sendSync` 로 열고 나머지는 전부 비동기다.
+- Electron 어댑터. preload 가 contextBridge 로 노출한 `window.oprn` 을 부르고, 브리지는 `ipcRenderer.invoke` 로 메인에 넘긴다. 저장 시 직렬화한 텍스트를 보내 메인이 같은 바이트로 sha256 을 계산한다. 메인은 채널 입력을 zod 로 검증한다(이미 의존성). **동기 호출은 없다** — 2026-09-16 에 마지막 예외(`commits.listSync`/`peekTip`)를 지웠다. 호출자가 0곳이었고(포트에만 있고 아무도 안 부름), AI 도구 `list_project_commits` 의 동기 XHR 은 브리지가 아니라 Supabase PostgREST 를 직접 보는 **별개 경로**였다(`src/editor/tools/queryTools.ts`). 그래서 두 껍데기의 브리지 모양이 이제 같다.
 - 메모리 어댑터. store 단위 테스트와 브라우저 e2e 하네스용이다. 지금 `__OPRN_E2E_PROJECT__` 시드가 하던 일을 맡고, 저장 상태 표시는 "이 세션에만 저장" 이다. `devProjectPersistence` 의 개발용 덮어쓰기는 P6 에서 정리한다.
 
 **메인 프로세스 로컬 스토어.** `electron/local-store/` 에 Node 전용 라이브러리로 두고 4절의 스키마와 저장 규칙을 구현한다. `electron` 모듈을 import 하지 않아 노드 스크립트와 헤드리스 Pi 에이전트가 같은 라이브러리로 폴더를 직접 연다. 드라이버는 `node:sqlite` 의 `DatabaseSync` 를 40줄 안팎의 `Driver` 인터페이스 뒤에 둔다. 실험 API 표시가 남아 있어 깨지면 `better-sqlite3` 로 갈아 끼울 자리다.

@@ -18,7 +18,6 @@ type BridgeProbe = {
   readonly savedKind: string;
   readonly revisionAfter: number;
   readonly commits: number;
-  readonly syncCommits: number;
   readonly assetUrlProjectId: string;
 };
 
@@ -74,7 +73,6 @@ async function probeThroughBridge(page: Page, projectDir: string): Promise<Bridg
     });
     const after = await bridge.project.load();
     const commits = await bridge.commits.list({ projectDir: dir, limit: 5 });
-    const syncCommits = bridge.commits.listSync({ projectDir: dir, limit: 5 });
     return {
       projectId: String(opened.projectId),
       sha256Before: String(loaded.sha256),
@@ -82,7 +80,6 @@ async function probeThroughBridge(page: Page, projectDir: string): Promise<Bridg
       savedKind: String(saved.kind),
       revisionAfter: Number(after.revision),
       commits: Array.isArray(commits) ? commits.length : -1,
-      syncCommits: Array.isArray(syncCommits) ? syncCommits.length : -1,
       assetUrlProjectId: String(opened.projectId),
     };
   }, projectDir);
@@ -96,7 +93,6 @@ test("bridge opens a real folder, saves through the store, and reloads after res
   expect(before.projectId).toMatch(/^[0-9a-f-]{36}$/);
   expect(before.savedKind).toBe("saved");
   expect(before.revisionAfter).toBeGreaterThan(before.revisionBefore);
-  expect(before.syncCommits).toBe(before.commits);
 
   const second = await launch();
   const after = await second.page.evaluate(async (dir: string) => {

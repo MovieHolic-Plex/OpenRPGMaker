@@ -11,7 +11,6 @@ import {
   loadProjectFromSupabase,
   loadProjectSnapshotFromSupabase,
   loadSupabaseConversation,
-  peekLastRemoteCommitTip,
   recordProjectCommitToSupabase,
   recordSupabaseAiActivityLog,
   recordSupabaseAiAnalysisRun,
@@ -97,7 +96,6 @@ export function createSupabaseRepository(): ProjectRepository {
       record: (input, target) => recordProjectCommitToSupabase(input, remoteOrNull(target)),
       list: (limit, target) => listProjectCommitsFromSupabase(limit, remoteOrNull(target)),
       hydrateTip: (target) => hydrateLastRemoteCommitTip(remoteOrNull(target)),
-      peekTip: (projectId) => peekLastRemoteCommitTip(projectId),
       seedTip: (projectId, commitId) => seedLastRemoteCommitTip(projectId, commitId),
     },
     ai: {
