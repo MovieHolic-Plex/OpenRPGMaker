@@ -223,6 +223,27 @@ or truncated verdicts and cancellation never count as approval. Draft changes st
 Negative/unavailable reviews keep the existing manual proposal card even in auto-apply mode;
 only all-positive review allows automatic application. Findings appear in chat and the board log.
 
+### 검수 응답 재시도와 정직한 보고 (2026-09-16)
+
+두 검수 호출(Vision 관찰 · Ultrabrain 판정)은 **쓸 수 있는 응답을 받을 때까지 최대 2회** 묻는다
+(`requestUsableReviewCompletion`). 이유는 실측이다: 프로바이더가 가끔 **최종 출력 없이** 끝난
+응답을 *예외가 아니라 200 정상 응답*으로 돌려준다(실측 2026-09-16: 빈 본문 + `finish=stop`,
+또는 `Cloud Code Assist API returned a thought-only response without final output`).
+`llmClient` 의 일시 오류 재시도는 **예외에만** 걸리므로 이 모양은 그 재시도를 통과해 나갔다 —
+그래서 검수 계층에서 «모양» 까지 보고 재시도한다. 중단 신호는 재시도하지 않는다.
+
+실패 문구도 고쳤다. 예전에는 네 갈래(비-stop 마감 · 툴콜 · 본문이 문자열이 아님/비어 있음 ·
+이미지 미전달)를 한 문장(`이미지 전달 또는 검수 완료를 확인하지 못했습니다`)으로 뭉쳐 던져,
+빈응답까지 «이미지 전달 실패» 로 읽혔다 — 그 문구를 받은 사람은 이미지 경로를 의심했지만
+같은 호출이 그대로 성공하기도 했다(같은 날 실측: 실제 앱 호출 200/stop/문자열 422자/delivery 정상).
+지금은 `finish=length`, `content=비어 있음`, `imageDelivery=[]` 처럼 어긋난 조건을 그대로 남긴다.
+
+그리고 **검수를 못 한 것은 «지적» 이 아니다**. 예전에는 catch 에서 오류문구를 `findings` 로
+발행해 보드에 「검수 지적 1건」이 생겼다(작품 결함처럼 보였다). 지금은 Ultrabrain 행을 `실패` +
+`검수 불가 — <사유>` 로 남기고, 버블도 «검수 지적으로 세지 않는다» 고 말한다.
+정책은 그대로다: 검수를 못 한 초안은 **승인으로 세지 않고**, 자동 적용 모드에서도 수동 검토
+카드를 유지한다. 회귀: `test/ultrabrainReview.test.ts`(재시도·정확한 사유·재시도 안 하는 취소).
+
 AI settings exposes five role sections, including **Ultrabrain · 계획과 최종 판단**.
 `ultrabrainConfig.ts` defaults to Google Antigravity / `gemini-3.8-flash` / `high`.
 Writer model/provider changes and the autonomy dial do not overwrite it. These preferences
