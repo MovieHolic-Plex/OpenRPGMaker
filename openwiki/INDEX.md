@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **69쪽 / 2782KB / 약 784,818 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **69쪽 / 2783KB / 약 784,938 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -785,16 +785,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L107` Combat acceptance slice
 - `L119` Verification
 
-### `openwiki/quickstart.md` — 17KB · 182줄 · ~4,990 토큰
+### `openwiki/quickstart.md` — 18KB · 183줄 · ~5,110 토큰
 
 - `L6` 0. 여기서 에이전트가 실제로 헤매는 이유 (실측 2026-08-30)
 - `L17` 1. 환경 — 여기가 틀리면 이후 전부 헛수고
 - `L45` 1a. Mac novice launcher / private setup (Phase 1, 2026-09-06)
 - `L81` 1b. 전체 BGM은 Release 팩으로 설치
 - `L97` 2. 검증 — 무엇이 진짜 게이트인가
-- `L119` 3. 어디를 고치나 — 기능 → 진입 파일
-- `L164` 4. 위키를 읽는 법
-- `L176` 5. 끝났다고 말할 수 있는 조건
+- `L120` 3. 어디를 고치나 — 기능 → 진입 파일
+- `L165` 4. 위키를 읽는 법
+- `L177` 5. 끝났다고 말할 수 있는 조건
 
 ### `openwiki/release-and-version.md` — 8KB · 137줄 · ~2,338 토큰
 

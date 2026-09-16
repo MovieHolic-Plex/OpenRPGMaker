@@ -139,6 +139,13 @@ function testsGate() {
     "--reporter=json",
     "--outputFile",
     reportPath,
+    // 워커 수를 명시한다. 기본값에 맡기면 이 박스(32코어)에서 vitest 가 고르는 수가 환경마다 달라지고,
+    // 실측(2026-09-16, 40파일·301케이스)에서 워커 수가 시간을 지배했다:
+    //   W1 121.7s / W2 70.4s / W4 51.0s / W8 41.0s / W16 39.3s / W32 41.1s — 8에서 포화한다.
+    // 케이스 수·통과 수는 모든 워커 수에서 동일했다(301 passed).
+    // 32로 올려도 이득이 없고, 이 저장소는 vitest 가 ~9.4GiB 로 OOM-kill 된 전례가 있어 8로 둔다.
+    "--maxWorkers=8",
+    "--minWorkers=1",
     ...changedArgs,
   ]);
 
