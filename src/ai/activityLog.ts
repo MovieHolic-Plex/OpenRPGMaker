@@ -472,7 +472,7 @@ function aiActivityRemoteInput(record: AiActivityLogRecord) {
 registerRemoteOutboxSender("ai-activity", async (payload) => {
   const result = await projectRepository().ai.recordActivity(payload as ReturnType<typeof aiActivityRemoteInput>);
   // 미설정은 "보냈다"로 볼 수 없다 — 큐에 남겨서 설정이 붙은 뒤에 밀어 넣는다.
-  if (result.kind === "not-configured") throw new Error("supabase not configured");
+  if (result.kind === "not-configured") throw new Error("원격 저장소에 연결되어 있지 않습니다");
 });
 
 /**

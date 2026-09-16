@@ -55,6 +55,9 @@ const bridge = {
       ipcRenderer.on(OPRN_CHANNELS.lifecycleFlushBeforeClose, () => callback());
     },
     flushDone: invoke(OPRN_CHANNELS.lifecycleFlushDone),
+    onSaveRequest: (callback: () => void): void => {
+      ipcRenderer.on(OPRN_CHANNELS.lifecycleSave, () => callback());
+    },
   },
   start: {
     recentProjects: invoke(OPRN_CHANNELS.startRecentProjects),

@@ -175,9 +175,8 @@ export const ONTOLOGY_CAPABILITIES = [
       "src/project/io/guards.ts",
       "src/project/io/references.ts",
       "src/project/io/migration.ts",
-      "src/project/supabaseProjectSync.ts",
     ],
-    testSurfaces: ["test/io.test.ts", "test/storePersistence.test.ts", "test/supabaseProjectSync.test.ts"],
+    testSurfaces: ["test/io.test.ts", "test/storePersistence.test.ts"],
     docsSurfaces: ["docs/specs/2026-06-18-oprn-overhaul-design.md"],
     commonTasks: [
       {

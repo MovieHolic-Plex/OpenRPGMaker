@@ -1,5 +1,5 @@
 import type { GameEvent, MapId, Project } from "@/project/types";
-import { supabaseProjectConfig } from "@/project/supabaseProjectConfig";
+import { projectRepository } from "@/project/persistence/repository";
 
 export type EventDraftVaultEntry = {
   readonly mapId: MapId;
@@ -262,5 +262,5 @@ export function _resetEventDraftVaultForTest(): void {
 }
 
 function resolveVaultProjectId(): string {
-  return supabaseProjectConfig()?.projectId ?? "local";
+  return projectRepository().currentTarget()?.projectId ?? "local";
 }

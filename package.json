@@ -4,7 +4,12 @@
   "description": "웹 기반 탑뷰 타일 JRPG 메이커 (MVP)",
   "private": true,
   "type": "module",
+  "main": "dist-electron/main.cjs",
   "scripts": {
+    "electron:build": "node scripts/build-electron.mjs",
+    "electron:dev": "node scripts/build-electron.mjs && node scripts/electron-dev.mjs",
+    "electron:start": "node scripts/build-electron.mjs && vite build --configLoader runner && electron .",
+    "electron:package": "node scripts/build-electron.mjs && vite build --configLoader runner && electron-builder --config scripts/electron-builder.config.mjs",
     "mac:launch": "node scripts/mac-launch.mjs",
     "setup:local": "node scripts/setup-local.mjs",
     "bgm:pack": "vite-node --script scripts/build-bgm-release.mts",

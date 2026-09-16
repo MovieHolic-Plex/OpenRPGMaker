@@ -4,7 +4,6 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import * as llm from "@/ai/llmClient";
 import * as adapter from "@/editor/tools/applyChangesetToStore";
-import * as sync from "@/project/supabaseProjectSync";
 import * as activity from "@/ai/activityLog";
 import { AI_RECORD_STORES, readAllAiRecords, resetAiRecordDbForTest, writeAiRecords } from "@/ai/aiRecordDb";
 import type { RunCheckpoint } from "@/ai/runCheckpointStore";
@@ -28,7 +27,6 @@ beforeEach(() => {
   vi.stubEnv("VITE_SUPABASE_URL", ""); vi.stubEnv("VITE_SUPABASE_ANON_KEY", ""); vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "");
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null }); store.replace(createBlankProject());
   vi.spyOn(store, "getProjectIdentity").mockReturnValue({ kind: "remote", id: "P" });
-  vi.spyOn(sync, "recordSupabaseConversation").mockResolvedValue({ kind: "not-configured" });
   vi.spyOn(activity, "recordAiActivity").mockImplementation(async entry => activity.buildAiActivityLogRecord(entry));
 });
 afterEach(async () => {

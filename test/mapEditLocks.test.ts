@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
+import type { ProjectRepository } from "@/project/persistence/types";
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
@@ -66,30 +67,24 @@ afterEach(() => {
   vi.resetModules();
 });
 
-describe("잠금 소유자 라벨", () => {
-  it("내부 '브라우저 xxxx' 라벨을 사람이 읽을 문구로 바꾼다", async () => {
-    const { lockOwnerPhrase } = await import("@/editor/mapEditLocks");
-    expect(lockOwnerPhrase("브라우저 481e")).toBe("다른 브라우저 탭(481e)에서 편집 중");
-    expect(lockOwnerPhrase("동료 A")).toBe("동료 A 세션이 편집 중");
-  });
-});
 
-describe("맵 편집 잠금 가져오기", () => {
-  it("기존 소유자 조회 없이 현재 세션으로 upsert하고 held 상태로 바꾼다", async () => {
+describe("로컬 폴더 세션", () => {
+  it("원격 대상이 아니면 잠금 API 를 부르지 않고 idle 로 남는다", async () => {
     const fetchMock = vi.fn<typeof fetch>(async () => new Response("", { status: 201 }));
     vi.stubGlobal("fetch", fetchMock);
-    const mapEditLocks: MapEditLocksModule = await import("@/editor/mapEditLocks");
-    const { getMapEditLockStatus, takeoverMapLock } = mapEditLocks;
-    if (!takeoverMapLock) throw new Error("takeoverMapLock export missing");
+    // 로컬 폴더 정본 세션. 예전에는 `isRemotePersistenceEnabled()` 가 이 경우에도 참이라
+    // dbserver 로 잠금 요청이 나갔다(실제 앱 부팅에서 재현).
+    const { setProjectRepositoryForTest } = await import("@/project/persistence/repository");
+    setProjectRepositoryForTest({
+      kind: "local",
+      currentTarget: () => ({ kind: "local", projectDir: "/tmp/oprn-local", projectId: "uuid-local" }),
+    } as unknown as ProjectRepository);
+    const { checkoutMapForEditing, getMapEditLockStatus } = await import("@/editor/mapEditLocks");
 
-    await takeoverMapLock("map_1", "시작 마을");
+    await checkoutMapForEditing("map_1", "시작 마을");
 
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    const request = fetchMock.mock.calls[0];
-    const init = request?.[1];
-    expect(init?.method).toBe("POST");
-    expect(String(init?.body)).toContain("\"owner_session_id\":\"session-self\"");
-    expect(getMapEditLockStatus()).toMatchObject({ kind: "held", mapId: "map_1", mapName: "시작 마을" });
-    expect(findByTestId(fakeBody(), "toast")?.textContent).toContain("편집 권한");
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(getMapEditLockStatus().kind).toBe("idle");
   });
 });
+

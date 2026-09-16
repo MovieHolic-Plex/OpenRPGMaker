@@ -7,7 +7,6 @@ import * as llm from "@/ai/llmClient";
 import * as activity from "@/ai/activityLog";
 import * as adapter from "@/editor/tools/applyChangesetToStore";
 import * as commits from "@/project/projectCommitLog";
-import * as sync from "@/project/supabaseProjectSync";
 import { AI_RECORD_STORES, readAllAiRecords, resetAiRecordDbForTest, writeAiRecords } from "@/ai/aiRecordDb";
 import * as checkpoints from "@/ai/runCheckpointStore";
 import { readLatestRunCheckpoint, type RunCheckpoint } from "@/ai/runCheckpointStore";
@@ -45,7 +44,6 @@ beforeEach(async () => {
   project.tilesets = { [map.tilesetId]: tileset };
   store.replace(project); resetMapEditHistory();
   vi.spyOn(store, "getProjectIdentity").mockReturnValue({ kind: "remote", id: checkpointHost.projectId });
-  vi.spyOn(sync, "recordSupabaseConversation").mockResolvedValue({ kind: "not-configured" });
   vi.spyOn(activity, "recordAiActivity").mockImplementation(async entry => activity.buildAiActivityLogRecord(entry));
   await writeAiRecords(AI_RECORD_STORES.conversations, [{ id: checkpointHost.conversationId, title: "Original request", model: "fixture", savedAt: 1,
     projectContextKey: checkpointHost.projectContextKey, entries: [{ kind: "user", text: "Create a marker" }] }]);

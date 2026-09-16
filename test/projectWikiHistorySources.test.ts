@@ -10,7 +10,6 @@ vi.mock("@/project/store", () => ({ store: {
 } }));
 vi.mock("@/editor/mapEditHistory", () => ({ recordProjectSnapshot: vi.fn() }));
 vi.mock("@/ai/projectWikiClient", () => ({ extractProjectWiki: vi.fn() }));
-vi.mock("@/project/supabaseProjectSync", () => ({ recordSupabaseConversation: vi.fn() }));
 
 beforeEach(() => { globalThis.indexedDB = new IDBFactory(); resetAiRecordDbForTest(); });
 

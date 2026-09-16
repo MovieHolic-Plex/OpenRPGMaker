@@ -141,13 +141,6 @@ function mockEditorDependencies(): void {
       node.textContent = "zoom";
     },
   }));
-  vi.doMock("@/editor/panels/dbConnectionSettings", () => ({
-    renderDbConnectionStatus: () => {
-      const button = document.createElement("button");
-      button.dataset.testid = "db-connection-status";
-      return button;
-    },
-  }));
   vi.doMock("@/editor/panels/mapList", () => ({
     renderMapList: (node: HTMLElement) => {
       node.textContent = "maps";

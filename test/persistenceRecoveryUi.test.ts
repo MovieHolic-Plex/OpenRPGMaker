@@ -4,9 +4,11 @@ import { saveProjectNow } from "@/editor/saveActions";
 import { renderOnlineSaveStatus } from "@/editor/panels/dbConnectionStatus";
 import { closePersistenceRecovery } from "@/editor/persistenceRecoveryUi";
 import { createBlankProject } from "@/project/defaults";
-import { SpatialPersistenceError } from "@/project/spatial/persistence";
+import { SpatialPersistenceError } from "@/project/spatial/persistenceTypes";
 import { ProjectRoutingError } from "@/project/spatial/saveRouting";
 import { store, type AutoSaveState, type ProjectPersistenceRecovery } from "@/project/store";
+import { setProjectRepositoryForTest } from "@/project/persistence/repository";
+import type { ProjectRepository } from "@/project/persistence/types";
 import type { Project } from "@/project/types";
 
 const mocks = vi.hoisted(() => ({
@@ -18,17 +20,6 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/util/toast", () => ({ toast: mocks.toast, dismissToastsByKey: vi.fn() }));
 vi.mock("@/editor/editorState", () => ({ editorState: { get: () => ({ currentMapId: null }) } }));
 vi.mock("@/editor/mapSelection", () => ({ focusProjectStartMap: vi.fn() }));
-vi.mock("@/project/supabaseProjectConfig", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/project/supabaseProjectConfig")>();
-  return {
-    ...actual,
-    supabaseProjectConfig: () => ({
-      projectId: mocks.liveProjectId.current,
-      url: "http://127.0.0.1:9",
-      anonKey: "local-anon",
-    }),
-  };
-});
 vi.mock("@/util/downloadBlob", () => ({ downloadBlob: mocks.downloadBlob }));
 vi.mock("@/project/package", () => ({
   createProjectPackage: () => new Blob(["draft"]),
@@ -63,6 +54,15 @@ beforeEach(() => {
   dirty = true;
   projectId.current = "recovery-fixture";
   mocks.liveProjectId.current = "recovery-fixture";
+  // 저장 대상은 세션의 저장소가 정본이다 — 설정 모듈을 목킹하면 코드가 더 이상 읽지 않아 목이 죽는다.
+  setProjectRepositoryForTest({
+    kind: "remote",
+    currentTarget: () => ({
+      url: "http://127.0.0.1:9",
+      projectId: mocks.liveProjectId.current,
+      anonKey: "local-anon",
+    }),
+  } as unknown as ProjectRepository);
   vi.spyOn(store, "getAutoSaveState").mockImplementation(() => autoSaveState);
   vi.spyOn(store, "getPersistenceRecovery").mockImplementation(() => recovery);
   vi.spyOn(store, "hasUnsavedChanges").mockImplementation(() => dirty);
@@ -90,6 +90,7 @@ beforeEach(() => {
 afterEach(() => {
   closePersistenceRecovery();
   document.body.replaceChildren();
+  setProjectRepositoryForTest(null);
   vi.restoreAllMocks();
   vi.unstubAllEnvs();
 });

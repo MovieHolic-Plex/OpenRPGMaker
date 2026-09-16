@@ -227,37 +227,6 @@ describe("UXC D14/D19/D27/D29 에디터 셸 크롬", () => {
   });
 });
 
-describe("UXC D20 편집 잠금 UX", () => {
-  it("잠금 마지막 활동 시각을 분 단위 문구로 표시한다", () => {
-    const status: MapEditLockStatus = {
-      expiresAt: "2026-07-07T10:05:00.000Z",
-      kind: "locked",
-      mapId: "map_1",
-      mapName: "마을",
-      ownerLabel: "브라우저 bbf2",
-      updatedAt: "2026-07-07T10:00:00.000Z",
-    };
-
-    expect(mapEditLockLastActivityText(status, Date.parse("2026-07-07T10:03:20.000Z"))).toBe("3분 전 활동");
-  });
-
-  it("최근 활동 잠금은 확인이 필요하고 오래된 활동은 즉시 인수할 수 있다", () => {
-    const recent: MapEditLockStatus = {
-      expiresAt: "2026-07-07T10:02:00.000Z",
-      kind: "locked",
-      mapId: "map_1",
-      mapName: "마을",
-      ownerLabel: "다른 세션",
-      updatedAt: "2026-07-07T10:00:45.000Z",
-    };
-    const old: MapEditLockStatus = { ...recent, updatedAt: "2026-07-07T10:00:00.000Z" };
-    const now = Date.parse("2026-07-07T10:01:40.000Z");
-
-    expect(isMapEditLockTakeoverImmediate(recent, now)).toBe(false);
-    expect(isMapEditLockTakeoverImmediate(old, now)).toBe(true);
-  });
-});
-
 describe("UXC D30 새 이벤트 모달 상태", () => {
   it("새 이벤트 모달 제목과 취소 안내에 자동 저장/복구 상태를 표시한다", () => {
     const mapId = store.getCurrent().startMapId;

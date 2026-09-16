@@ -21,7 +21,7 @@ import type {
   ProjectSnapshot,
   SaveResult,
 } from "@/project/persistence/types";
-import type { DbPersistenceDisabledReason } from "@/project/persistenceStatus";
+import type { DbPersistenceDisabledReason } from "@/project/persistence/types";
 import type { ProjectWriteAuthority } from "@/project/spatial/saveRouting";
 import { initLocalProjectStore } from "../../electron/local-store/store";
 

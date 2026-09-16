@@ -3,11 +3,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as db from "@/ai/aiRecordDb";
 import * as conversations from "@/ai/conversationStore";
 import type { ConversationRecord } from "@/ai/conversationStore";
+import { installElectronBridgeSession, type ElectronBridgeSession } from "./support/electronBridgeSession";
 
 const scope = "remote:recovery-test";
-const state = vi.hoisted(() => ({ config: { url: "https://recovery.invalid", anonKey: "test-only", projectId: "recovery-test" } }));
-vi.mock("@/project/supabaseProjectConfig", () => ({ supabaseProjectConfig: () => state.config }));
 const records = db.AI_RECORD_STORES.conversations;
+let session: ElectronBridgeSession | null = null;
+
+function serveList(entered: () => void, response: Promise<Response>): void {
+  session!.setConversationListImpl(async () => { entered(); return (await response).json(); });
+}
 function local(id = "record", savedAt = 100): ConversationRecord {
   return { id, title: "Local", model: "model", savedAt, projectContextKey: scope,
     entries: [{ kind: "user", text: "aaaa", context: { mapId: "A", mapName: "Map A" } }],
@@ -30,19 +34,25 @@ beforeEach(() => {
   vi.stubGlobal("localStorage", { getItem: (key: string) => values.get(key) ?? null,
     setItem: (key: string, value: string) => values.set(key, value), removeItem: (key: string) => values.delete(key) });
 });
-afterEach(() => { db.resetAiRecordDbForTest(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
+afterEach(() => {
+  session?.dispose();
+  session = null;
+  db.resetAiRecordDbForTest();
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+});
 
 describe.each(["indexeddb", "memory"] as const)("explicit recovery admission on %s", backend => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.stubGlobal("indexedDB", backend === "indexeddb" ? new IDBFactory() : undefined);
     db.resetAiRecordDbForTest();
+    session = await installElectronBridgeSession({ projectDir: "/tmp/oprn-history-recovery", projectId: "recovery-test" });
   });
 
   it.each(["created", "entries", "nested", "title", "model", "mapIndex", "undefined-property"] as const)("preserves %s changed during retrieval, even below the remote timestamp", async field => {
     if (field !== "created") await put(local());
     const started = deferred<void>(), response = deferred<Response>();
-    const transport = vi.fn(async () => { started.resolve(); return response.promise; });
-    vi.stubGlobal("fetch", transport);
+    serveList(() => started.resolve(), response.promise);
     const recovery = conversations.hydrateConversationArchive({ projectContextKey: scope });
     await started.promise;
     const changed = local();
@@ -56,13 +66,13 @@ describe.each(["indexeddb", "memory"] as const)("explicit recovery admission on 
     response.resolve(Response.json([wire()]));
     expect(await recovery).toMatchObject({ imported: 0, skipped: 1, rejected: 0, durable: backend === "indexeddb" });
     expect(await read()).toEqual(changed);
-    expect(transport).toHaveBeenCalledOnce();
+    expect(session!.calls.conversationList).toBe(1);
   });
 
   it("captures memory-backed records by value rather than retaining aliases", async () => {
     await put(local());
     const started = deferred<void>(), response = deferred<Response>();
-    vi.stubGlobal("fetch", async () => { started.resolve(); return response.promise; });
+    serveList(() => started.resolve(), response.promise);
     const recovery = conversations.hydrateConversationArchive({ projectContextKey: scope });
     await started.promise;
     const changed = (await read())!;
@@ -76,25 +86,22 @@ describe.each(["indexeddb", "memory"] as const)("explicit recovery admission on 
   it.each([50, 100, 900])("replaces only an unchanged strictly older baseline (remote=%s), then is idempotent", async savedAt => {
     await put(local());
     const remote = { ...local("record", savedAt), title: "Remote", entries: [{ kind: "user" as const, text: "remote whole transcript" }] };
-    const transport = vi.fn(async (_input, init) => {
-      expect(init?.method ?? "GET").toBe("GET");
-      return Response.json([wire(remote)]);
-    });
-    vi.stubGlobal("fetch", transport);
+    session!.setConversationListImpl(async () => [wire(remote)]);
     expect(await conversations.hydrateConversationArchive({ projectContextKey: scope })).toMatchObject({ imported: savedAt > 100 ? 1 : 0, skipped: savedAt > 100 ? 0 : 1 });
     expect((await read())?.entries).toEqual(savedAt > 100 ? remote.entries : local().entries);
     expect(await conversations.hydrateConversationArchive({ projectContextKey: scope })).toMatchObject({ imported: 0, skipped: 1 });
-    expect(transport).toHaveBeenCalledTimes(2);
+    expect(session!.calls.conversationList).toBe(2);
   });
 
   it("keeps one baseline across all remote pages", async () => {
     const page2 = deferred<void>(), response = deferred<Response>();
-    vi.stubGlobal("fetch", async (input: RequestInfo | URL) => {
-      if (new URL(String(input)).searchParams.get("offset") === "0") {
+    session!.setConversationListImpl(async options => {
+      if (Number(options.offset ?? 0) === 0) {
         await put(local("later", 1));
-        return Response.json(Array.from({ length: 100 }, (_, index) => wire(local(`page1-${index}`, 900))));
+        return Array.from({ length: 100 }, (_, index) => wire(local(`page1-${index}`, 900)));
       }
-      page2.resolve(); return response.promise;
+      page2.resolve();
+      return (await response.promise).json();
     });
     const recovery = conversations.hydrateConversationArchive({ projectContextKey: scope });
     await page2.promise;
@@ -106,7 +113,7 @@ describe.each(["indexeddb", "memory"] as const)("explicit recovery admission on 
   it.each(["tombstone", "foreign", "owner"] as const)("preserves a pending %s decision", async change => {
     const started = deferred<void>(), response = deferred<Response>();
     let current = true;
-    vi.stubGlobal("fetch", async () => { started.resolve(); return response.promise; });
+    serveList(() => started.resolve(), response.promise);
     const recovery = conversations.hydrateConversationArchive({ projectContextKey: scope, isCurrent: () => current });
     const outcome = change === "owner" ? expect(recovery).rejects.toMatchObject({ name: "AbortError" }) : recovery;
     await started.promise;
@@ -141,7 +148,7 @@ describe.each(["indexeddb", "memory"] as const)("explicit recovery admission on 
         return mutate(key, update);
       });
     }
-    vi.stubGlobal("fetch", async () => Response.json([wire()]));
+    session!.setConversationListImpl(async () => [wire()]);
     expect(await conversations.hydrateConversationArchive({ projectContextKey: scope })).toMatchObject({ imported: 0, skipped: 1 });
     expect(intercepted).toBe(true);
     expect(await read()).toEqual(changed);

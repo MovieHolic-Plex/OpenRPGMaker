@@ -1,7 +1,7 @@
 import { removeLegacySpriteReferences } from "../defaults/defaultAssets";
 import { projectWithoutEventDrafts } from "../eventDrafts";
 import { deserialize, serialize } from "../io";
-import type { DbPersistenceDisabledReason } from "../persistenceStatus";
+import type { DbPersistenceDisabledReason } from "./types";
 import type { ProjectWriteAuthority } from "../spatial/saveRouting";
 import type { Project } from "../types";
 import { randomUuid } from "@/util/id";
@@ -147,6 +147,12 @@ export function createMemoryRepository(options: { readonly target: ProjectTarget
         const tip = list[0]?.commitId;
         if (tip) tips.set(resolved.projectId, tip);
         return Promise.resolve(list);
+      },
+      listSync(limit, target?) {
+        const resolved = resolve(target);
+        if (!resolved) throw new Error("온라인 저장 연결이 필요합니다");
+        const n = Math.max(1, Math.min(100, Math.floor(limit)));
+        return bucket(commits, resolved.projectId).slice(0, n);
       },
       async hydrateTip(target?) {
         const resolved = resolve(target);

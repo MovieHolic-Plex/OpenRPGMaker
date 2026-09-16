@@ -61,10 +61,10 @@ afterEach(async () => {
 });
 
 describe("mounted project E2E bridge", () => {
-  it("installs exactly four frozen methods and returns detached recursively frozen snapshots", async () => {
+  it("installs the snapshot seam and returns detached recursively frozen snapshots", async () => {
     const { module, store } = await loadBridgeModule();
     const bridge = window.__oprnProjectE2E!;
-    expect(Object.keys(bridge).sort()).toEqual(["currentProject", "flush", "initializeRemoteFixture", "reloadRemote"]);
+    expect(Object.keys(bridge).sort()).toEqual(["currentProject", "flush"]);
     expect(Object.isFrozen(bridge)).toBe(true);
     const snapshot = bridge.currentProject();
     expect(Object.isFrozen(snapshot)).toBe(true);
@@ -78,37 +78,7 @@ describe("mounted project E2E bridge", () => {
     expect(window.__oprnProjectE2E).toBe(first);
   }, 60_000);
 
-  it("denies missing/wrong capability before invoking either remote store method", async () => {
-    const { store } = await loadBridgeModule();
-    const bridge = window.__oprnProjectE2E!;
-    const init = vi.spyOn(store, "loadNewRemoteProjectForE2E");
-    const reload = vi.spyOn(store, "reloadFromRemoteForE2E");
-    const blankProject = createBlankProject();
-    const proof = { capability: "wrong", expectedCanonicalPayload: serialize(blankProject), expectedProjectId: PROJECT_ID, expectedTargetUrl: URL };
-    await expect(bridge.initializeRemoteFixture({ blankProject, projectId: PROJECT_ID, title: "owned" }, proof)).resolves.toEqual({ kind: "denied", reason: "capability-required" });
-    await expect(bridge.reloadRemote(proof)).resolves.toEqual({ kind: "denied", reason: "capability-required" });
-    expect(init).not.toHaveBeenCalled();
-    expect(reload).not.toHaveBeenCalled();
-  });
-
-  it("maps authorized initialization and reload to the mounted singleton with exact proof", async () => {
-    const { store } = await loadBridgeModule();
-    const bridge = window.__oprnProjectE2E!;
-    const blankProject = createBlankProject();
-    const init = vi.spyOn(store, "loadNewRemoteProjectForE2E").mockResolvedValue({ projectId: PROJECT_ID });
-    const reload = vi.spyOn(store, "reloadFromRemoteForE2E").mockResolvedValue({ kind: "reloaded", projectId: PROJECT_ID, title: "owned" });
-    const proof = { capability: CAPABILITY, expectedCanonicalPayload: serialize(blankProject), expectedProjectId: PROJECT_ID, expectedTargetUrl: URL };
-    const initialized = await bridge.initializeRemoteFixture({ blankProject, projectId: PROJECT_ID, title: "owned" }, proof);
-    expect(initialized.kind).toBe("authorized");
-    expect(init).toHaveBeenCalledOnce();
-    expect(init.mock.calls[0]![1]).toMatchObject({ expectedCurrentProjectId: PROJECT_ID, expectedProjectId: PROJECT_ID, expectedTargetUrl: URL, title: "owned" });
-    const reloaded = await bridge.reloadRemote({ ...proof, expectedCanonicalPayload: bridge.currentProject().canonicalPayload });
-    expect(reloaded.kind).toBe("authorized");
-    expect(reload).toHaveBeenCalledOnce();
-    expect(reload.mock.calls[0]![0]).toMatchObject({ expectedProjectId: PROJECT_ID, expectedTargetUrl: URL });
-  });
-
-  it("cleanup removes only the bridge and remount consumes no stale capability", async () => {
+  it("cleanup removes only the bridge and remount installs a fresh one", async () => {
     const { module } = await loadBridgeModule();
     const first = window.__oprnProjectE2E;
     expect(first).toBeDefined();
@@ -118,13 +88,6 @@ describe("mounted project E2E bridge", () => {
     const second = window.__oprnProjectE2E!;
     expect(second).toBeDefined();
     expect(second).not.toBe(first);
-    const blankProject = createBlankProject();
-    await expect(second.initializeRemoteFixture({ blankProject, projectId: PROJECT_ID, title: "owned" }, {
-      capability: CAPABILITY,
-      expectedCanonicalPayload: serialize(blankProject),
-      expectedProjectId: PROJECT_ID,
-      expectedTargetUrl: URL,
-    })).resolves.toEqual({ kind: "denied", reason: "capability-required" });
   });
 
   it("does not install without WebDriver", async () => {

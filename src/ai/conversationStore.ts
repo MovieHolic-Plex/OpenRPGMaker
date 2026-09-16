@@ -15,7 +15,7 @@ import { conversationTranscriptCompacted, indexConversationMaps, isConversationM
 import { enqueueRemoteWrite, registerRemoteOutboxSender } from "@/project/remoteOutbox";
 import type { ProjectIdentity } from "@/project/store";
 import { projectRepository } from "@/project/persistence/repository";
-import type { SupabaseConversationInput } from "@/project/supabaseProjectSync";
+import type { ConversationInput } from "@/project/persistence/types";
 import type { Project } from "@/project/types";
 
 export interface ConversationRecord { id: string; title: string; model: string; savedAt: number; entries: AuditEntry[]; projectContextKey?: string; mapIndex?: ConversationMapIndex; }
@@ -333,7 +333,7 @@ export async function saveConversation(record: ConversationRecord): Promise<Conv
     return { ok: false, durable: false, evicted: 0 };
   }
   // 원격 미러도 로컬과 **같은 압축본**을 받는다 — 정본이 하나여야 하고, 매 툴콜마다 수 MB 를 보내지 않는다.
-  const remoteInput: SupabaseConversationInput = {
+  const remoteInput: ConversationInput = {
     conversationId: compacted.id,
     destinationProjectId,
     title: compacted.title,

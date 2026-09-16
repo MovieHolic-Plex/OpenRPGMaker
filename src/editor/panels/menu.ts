@@ -18,7 +18,7 @@ import {
 } from "@/editor/aiStudioMode";
 import { openHelpModal } from "@/editor/panels/helpModal";
 import { openDatabaseModal } from "@/editor/panels/databaseModal";
-import { openDbConnectionSettings, renderDbConnectionStatus } from "@/editor/panels/dbConnectionSettings";
+import { renderDbConnectionStatus } from "@/editor/panels/dbConnectionStatus";
 import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
 import { openWorldPanel } from "@/editor/panels/worldEntries";
@@ -667,7 +667,7 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
       // 「저장」은 톱바의 저장 버튼(toolbar-save, Ctrl+S)이 집이다 — 여기엔 두지 않는다.
       return [
         item("새 프로젝트", "menu-project-new", () => void newProject()),
-        item("열기", "menu-project-load", () => doLoad(topbar)),
+        item("열기", "menu-project-load", () => void doLoad()),
         item("저장본 다시 불러오기", "menu-project-reload-db", () => void reloadProjectFromDb(topbar)),
         { kind: "separator" },
         // 데모 로더 9개가 이 메뉴 최상위에 나란히 붙어 14줄을 만들고 있었다 — 하위 메뉴로 접는다.
@@ -843,16 +843,14 @@ async function newProject(): Promise<void> {
   const choiceId = selection.choiceId;
   const packId = choiceId === null ? null : newProjectChoiceById(choiceId)?.packId ?? null;
   const seed = createNewProjectSeed(packId);
-  const result = await store.loadNewRemoteProject(seed, { title });
-  const { focusProjectStartMap } = await import("@/editor/mapSelection");
-  focusProjectStartMap();
+  const { createProjectFolderWithSeed } = await import("@/editor/projectFolderActions");
+  const created = await createProjectFolderWithSeed(title, seed);
+  if (!created) {
+    toast("새 프로젝트는 데스크톱 앱에서 폴더를 골라 만듭니다.", "error");
+    return;
+  }
   const genreSuffix = choiceId ? ` — 시작 장르: ${newProjectChoiceLabel(choiceId)}` : "";
-  toast(
-    result.projectId
-      ? `'${title}' 프로젝트를 만들었습니다 — 새 작업으로 온라인 저장됩니다${genreSuffix}`
-      : `'${title}' 프로젝트를 만들었습니다 (온라인 저장 미연결)${genreSuffix}`,
-    "ok",
-  );
+  toast(`'${title}' 프로젝트를 만들었습니다 — 새 폴더에 저장됩니다${genreSuffix}`, "ok");
   if (choiceId) {
     // 프리셋으로 만들면 장르 프롬프트를 AI 조수에 바로 자동 전송한다 —
     // 엔진 토글은 씨앗에 들어 있고, AI는 그 위의 콘텐츠만 채운다.
@@ -869,6 +867,8 @@ async function newProject(): Promise<void> {
       }
     }
   }
+  // 새 폴더를 여는 것은 주 프로세스가 했다 — 문서를 다시 띄우면 부팅 attach 가 그 폴더를 연다.
+  window.location.reload();
 }
 
 async function newSkyStairProject(): Promise<void> {
@@ -952,10 +952,14 @@ async function reloadProjectFromDb(_topbar: HTMLElement): Promise<void> {
   await reloadProjectFromDbNow();
 }
 
-function doLoad(topbar: HTMLElement): void {
-  openDbConnectionSettings(() => renderTopbar(topbar), {
-    autoLoadProjects: true,
-  });
+async function doLoad(): Promise<void> {
+  const { openProjectFolder } = await import("@/editor/projectFolderActions");
+  const opened = await openProjectFolder();
+  if (!opened) {
+    toast("폴더 열기는 데스크톱 앱에서만 됩니다.", "error");
+    return;
+  }
+  window.location.reload();
 }
 
 // 프로젝트 내보내기(도그푸딩 결함 ⑪ 수리). 과거 결함 ①: `await store.flush()`가 저장 오류 시
