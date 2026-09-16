@@ -1455,6 +1455,12 @@ Evidence expectations:
   포트는 `ss -tlnp` 로 실측해서 고른다 — `wt create` 가 배정한 포트도 이미 점유돼 있을 수 있다.
 - 브라우저 QA 중에 다른 에이전트가 `src/` 를 편집하면 HMR 리로드가 끼어들어
   `ERR_NETWORK_CHANGED` 가 쏟아지고 편집기 부팅이 깨진다. 소스가 조용할 때 브라우저 증거를 잡아라.
+- **`page.evaluate` 안에서 `import("/src/project/store.ts")` 로 store 를 잡으면 앱과 다른
+  모듈 인스턴스가 될 수 있다** (2026-09 spatial-lifecycle 실측). HMR 무효화 후 vite dev는 앱이
+  쓰는 모듈을 `?t=<timestamp>` 쿼리 URL로 다시 싣는데, clean 경로로 import하면 두 번째 복제
+  모듈이 로드된다 — `store.replace()` 가 격리 인스턴스에 쓰여 UI는 옛 프로젝트를 계속 보여준다.
+  대응: `performance.getEntriesByType("resource")` 에서 앱이 실제 로드한 `store.ts` URL을 찾아
+  그 URL로 import한다(`scripts/capture-spatial-lifecycle.mjs` 의 `appModule` 패턴 참조).
 
 ### `locator.click()` 은 잘림 버그를 구조적으로 못 잡는다 (2026-08-29 실측)
 
