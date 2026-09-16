@@ -70,19 +70,109 @@ function createWindow(): BrowserWindow {
   installCloseFlow(window);
 
   const hasOpenProject = sessions.get(window.webContents.id) !== null;
-  const startScreen = process.env.OPRN_SMOKE_PAGE === undefined && !hasOpenProject;
+  // QA 하니스용 진입점(OPRN_SMOKE_PAGE·OPRN_RENDERER_DIR 와 같은 계열): 폴더를 주면 시작 화면을
+  // 건너뛰고 그 폴더를 연 채로 편집기를 띄운다. GUI 폴더 선택 대화상자를 자동화할 수 없어서
+  // "앱이 폴더를 열고 편집기로 들어간다" 를 헤드리스에서 확인할 유일한 길이다.
+  const bootProjectDir = process.env.OPRN_OPEN_PROJECT_DIR;
+  const startScreen = process.env.OPRN_SMOKE_PAGE === undefined && bootProjectDir === undefined && !hasOpenProject;
   const smokePage = process.env.OPRN_SMOKE_PAGE;
   const devServerUrl = process.env.ELECTRON_RENDERER_URL;
   if (smokePage) void window.loadFile(smokePage);
   else if (startScreen) void window.loadURL(`${OPRN_APP_SCHEME}://oprn/start-screen.html`);
   else if (devServerUrl) void window.loadURL(devServerUrl);
   else void window.loadURL(`${OPRN_APP_SCHEME}://oprn/index.html`);
+  if (bootProjectDir !== undefined) {
+    void sessions.open(window.webContents.id, bootProjectDir).then(() => {
+      if (window.isDestroyed()) return;
+      if (devServerUrl) void window.loadURL(devServerUrl);
+      else void window.loadURL(`${OPRN_APP_SCHEME}://oprn/index.html`);
+    });
+  }
   return window;
+}
+
+/** 렌더러 문서 주소. 개발 중에는 dev 서버, 배포는 app:// 다. */
+function rendererEntryUrl(): string {
+  return process.env.ELECTRON_RENDERER_URL ?? `${OPRN_APP_SCHEME}://oprn/index.html`;
+}
+
+/** 폴더를 이 창의 세션으로 열고 편집기 문서로 넘긴다. 파일 메뉴가 쓰는 경로. */
+async function adoptFolder(window: BrowserWindow, projectDir: string, title?: string): Promise<void> {
+  const session = await sessions.open(window.webContents.id, projectDir);
+  rememberRecentProject(projectDir, title ?? session.store.info().title ?? projectDir);
+  if (!window.isDestroyed()) void window.loadURL(rendererEntryUrl());
+}
+
+function focusedWindow(): BrowserWindow | null {
+  return BrowserWindow.getFocusedWindow() ?? BrowserWindow.getAllWindows()[0] ?? null;
 }
 
 function buildMenu(): void {
   Menu.setApplicationMenu(Menu.buildFromTemplate([
     { role: "appMenu" },
+    {
+      label: "파일",
+      submenu: [
+        {
+          label: "새 프로젝트",
+          accelerator: "CmdOrCtrl+N",
+          click: () => {
+            const window = focusedWindow();
+            if (!window) return;
+            void dialog.showOpenDialog(window, { properties: ["openDirectory", "createDirectory"], title: "새 프로젝트 폴더 선택" })
+              .then((result) => (result.canceled || result.filePaths.length === 0 ? null : adoptFolder(window, result.filePaths[0], "새 프로젝트")));
+          },
+        },
+        {
+          id: "file-open-folder",
+          label: "폴더 열기",
+          accelerator: "CmdOrCtrl+O",
+          click: () => {
+            const window = focusedWindow();
+            if (!window) return;
+            // 메뉴 경로는 폴더에 project.sqlite 가 없어도 연다 — initLocalProjectStore 가 만든다.
+            void dialog.showOpenDialog(window, { properties: ["openDirectory"], title: "프로젝트 폴더 열기" })
+              .then((result) => (result.canceled || result.filePaths.length === 0 ? null : adoptFolder(window, result.filePaths[0])));
+          },
+        },
+        { type: "separator" },
+        {
+          id: "file-save",
+          label: "저장",
+          accelerator: "CmdOrCtrl+S",
+          click: () => {
+            // 저장은 렌더러 store 가 소유한다(디바운스·권한·영수증). 메인이 할 일은 "지금 저장하라" 를
+            // 알리는 것뿐이다 — 여기서 직접 쓰면 렌더러의 미저장 변경을 건너뛰고 옛 상태를 저장한다.
+            focusedWindow()?.webContents.send(OPRN_CHANNELS.lifecycleSave);
+          },
+        },
+        {
+          label: "백업 만들기",
+          click: () => {
+            const window = focusedWindow();
+            const session = window ? sessions.get(window.webContents.id) : null;
+            if (!window || !session) return;
+            try {
+              const path = session.store.backup();
+              void dialog.showMessageBox(window, { type: "info", message: "백업을 만들었습니다", detail: path });
+            } catch (error) {
+              void dialog.showMessageBox(window, { type: "error", message: "백업에 실패했습니다", detail: String(error) });
+            }
+          },
+        },
+        { type: "separator" },
+        {
+          label: "프로젝트 폴더 보기",
+          click: () => {
+            const window = focusedWindow();
+            const session = window ? sessions.get(window.webContents.id) : null;
+            if (session) void shell.openPath(session.projectDir);
+          },
+        },
+        { type: "separator" },
+        { role: "close" },
+      ],
+    },
     { role: "editMenu" },
     { role: "viewMenu" },
     { role: "windowMenu" },
@@ -110,11 +200,13 @@ app.whenReady().then(() => {
     return { projectDir: dir, isNew: false, projectId: session.store.projectId };
   });
   ipcMain.handle(OPRN_CHANNELS.startCreateProject, async (event: IpcMainInvokeEvent, payload: unknown) => {
-    const input = payload as { readonly title?: string };
+    const input = payload as { readonly title?: string; readonly seed?: string };
     const result = await dialog.showOpenDialog({ properties: ["openDirectory", "createDirectory"], title: "새 프로젝트 폴더 선택" });
     if (result.canceled || result.filePaths.length === 0) return null;
     const dir = result.filePaths[0];
     const session = await sessions.open(event.sender.id, dir);
+    // 시드(장르 프리셋 등)를 새 폴더에 심는다 — 빈 폴더로 시작하면 렌더러가 리로드 뒤에 적용할 수 없다.
+    if (typeof input.seed === "string" && input.seed.length > 0) await session.store.saveSerialized(input.seed);
     rememberRecentProject(dir, input.title ?? "새 프로젝트");
     return { projectDir: dir, projectId: session.store.projectId };
   });

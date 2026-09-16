@@ -25,6 +25,7 @@ export const OPRN_CHANNELS = {
   assetsPruneUnused: "oprn:assets.pruneUnused",
   lifecycleFlushBeforeClose: "oprn:lifecycle.flush-before-close",
   lifecycleFlushDone: "oprn:lifecycle.flush-done",
+  lifecycleSave: "oprn:lifecycle.save",
   startRecentProjects: "oprn:start.recentProjects",
   startOpenFolder: "oprn:start.openFolder",
   startCreateProject: "oprn:start.createProject",
