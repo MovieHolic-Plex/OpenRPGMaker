@@ -1,5 +1,27 @@
 # Runtime Battle Behavior
 
+## 공격 효과음 지연 — 샘플 SE 디코드 캐시 (2026-09-15)
+
+- **증상과 원인.** 전투 타격음(샘플 SE)이 임팩트 비트에 맞춰 발화돼도 소리가 늦게 들렸다는
+  사용자 보고. 발화 시점은 정확했다 — 원인은 재생 경로였다. `battleJuice.tryPlay` 와
+  `battleAnimationDom.playTimingSound` 는 **소리 한 번마다 `new Audio(url)` + `play()`** 를
+  했고, HTMLAudioElement 는 새 요소마다 로드를 기다린 뒤에야 소리가 난다. Chromium 루프백
+  실측(Attack1.wav): 첫 재생 74.9ms, 반복 재생 6~52ms 가 출력 레이턴시(~10ms) 위에 누적됐다.
+  개발 서버 재검증·콜드 캐시·로드가 높은 박스에서는 이 지연이 수백 ms 로 자란다.
+- **계약.** `src/player/battleSeSamples.ts` 가 자원 id 별로 `fetch + decodeAudioData` 버퍼를
+  캐시하고 `AudioBufferSourceNode` 로 즉시 재생한다(실측 매 타격 0.0~0.2ms). 실패는 비대칭이다:
+  WebAudio 부재와 네트워크 실패는 캐시하지 않고 다음 재생에서 재시도, 디코딩 불가 포맷만 영구
+  실패(null)로 기록한다. `playBattleSample` 이 false 를 돌려주면 호출부가 기존 요소 경로로
+  폴백해 소리를 내므로 **사건 1개 = 소리 1개** 계약과 샘플 볼륨(0.4)은 그대로다.
+- **프리로드 지점은 두 개다.** (1) `mountBattleScene` 진입에서 `preloadBattleJuiceSamples()`
+  가 `BATTLE_SFX` + `SFX_FALLBACK` 전부를 디코딩해 둔다 — 블라인드 전환(300ms+) 안에 끝나는
+  양이라 첫 타격부터 정시에 소리가 난다. (2) `mountBattleAnimationPlayback` 은 저작 애니메이션의
+  `soundResourceIds` 를 마운트 시점에 미리 적재한다 — 프레임이 렌더될 때 정시에 난다.
+- **합성 보이스와 컨텍스트를 나누지 않는다.** 샘플 캐시는 `battleSfx.battleAudioContext()` 로
+  합성 보이스와 같은 AudioContext 를 쓴다 — 컨텍스트가 둘이면 언락 시점이 갈라져 한쪽만
+  무음이 된다. 회귀: `test/battleSeSamples.test.ts`(happy-dom 지시자 필수 — 이 저장소 vitest
+  기본 환경은 node 라 `window` 가 없고 battleSfx 가드가 항상 단락된다).
+
 ## 전투 UI/UX·모션 적대적 리뷰 5축 후속 (2026-09-14)
 
 읽기 전용 리뷰어 5명(전환·인트로 / 커맨드·대상 / 타격 피드백 / HUD·결과 / 스킨·반응형)이 출하 경로

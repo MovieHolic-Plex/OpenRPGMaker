@@ -9,6 +9,7 @@ import {
   battleAnimationSheetAssetScale,
   battleAnimationSheetRendering,
 } from "@/player/battleAnimationPlayback";
+import { playBattleSample, preloadBattleSamples } from "@/player/battleSeSamples";
 import {
   BATTLE_EFFECT_CSS_VARIABLES,
   flashCssVariables,
@@ -77,6 +78,8 @@ export function mountBattleAnimationPlayback(
   if (!lastAnimation) return undefined;
 
   const record = battleAnimationRecord(lastAnimation.animationId);
+  // 착탄 프레임의 효과음을 마운트 시점에 미리 디코딩한다 — 프레임이 렌더될 때 정시에 난다.
+  preloadBattleSamples(lastAnimation.soundResourceIds);
   const element = document.createElement("div");
   element.className = "battle-animation";
   element.dataset.testid = "battle-animation";
@@ -584,6 +587,8 @@ function setEffectVariables(
 }
 
 function playTimingSound(soundResourceId: string | undefined): void {
+  // 디코딩 캐시에 있으면 즉시 — 새 요소의 로드 지연이 애니메이션 착탄음을 늦게 만든다.
+  if (soundResourceId && playBattleSample(soundResourceId, 0.4)) return;
   const url = resolveAssetResourceUrl(soundResourceId, { project: store.getCurrent() });
   if (!url) return;
   const audio = new Audio(url);
