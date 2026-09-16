@@ -23,7 +23,16 @@ PR #845, P2(로컬 어댑터·Electron 셸)는 브랜치 `local-store/p2`가 mai
   → `release/linux-unpacked`(asar 안에 dist/+dist-electron/). 개발 스모크(`electron:smoke`는
   `dist-electron/main.cjs`를 직접 띄운다)와 다른 경로라 `scripts/qa/verifyPackagedApp.mjs`
   (`npm run qa:package`, 헤드리스는 xvfb-run 필요)가 실제 바이너리로 시작 화면→폴더 열기→
-  편집기 캔버스→폴더 영속화를 증명한다. 실측으로 잡은 패키징 전용 결함 셋:
+  편집기 캔버스→폴더 영속화를 증명한다.
+  - **출하 번들 env 스크럽**: `supabaseProjectConfig`가 `import.meta.env`를 통째로 직렬화하므로
+    `.env.local`의 모든 `VITE_*`(Supabase 주소·키, LLM 키 등)가 번들에 박힌다. `package`/`package:dir`는
+    `build:packaged`(`vite build --mode packaged`)를 타고 `.env.packaged`가 `.env.local`보다 우선해
+    원격·비밀 변수를 빈 문자열로 덮는다 — 패키징 앱의 원격 연결은 사용자가 설정 화면에서 넣는다.
+    새 `VITE_*` 비밀을 추가하면 `.env.packaged`에도 빈 값으로 나열해야 한다.
+  - **「폴더 열기」의 isNew**: `start:openFolder`가 `project.sqlite` 없는 폴더에 `projectId:null`을
+    돌려 시작 화면이 무반응이었다 → `sessions.open`을 무조건 타서 스토어를 만들고 `isNew`만 정보로
+    둔다(아래 빈 폴더 채택과 같은 경로로 빈 프로젝트가 열린다).
+  실측으로 잡은 패키징 전용 결함 셋:
   - 시작 화면이 폴더를 열어둔 채 부팅해도 첫 방문 게이트가 공용 데모 fetch를 시도해 CSP에
     막혀 로드 실패 화면으로 떨어졌다 → `store.hasAdoptedLocalProject()`를 게이트에 추가
     (`src/app/mode.ts`).

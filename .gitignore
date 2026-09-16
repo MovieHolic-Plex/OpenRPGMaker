@@ -60,6 +60,7 @@ rpg-zzu-*.png
 .env
 .env.*
 !.env.example
+!.env.packaged
 .DS_Store
 Thumbs.db
 # Windows 예약 장치명 — 셸에서 `> nul` 오타로 생긴다. git 이 인덱싱에 실패해
