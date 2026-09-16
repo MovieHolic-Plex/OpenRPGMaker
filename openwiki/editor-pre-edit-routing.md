@@ -4,6 +4,27 @@
 
 Read this before editing editor-facing behavior. Identifies which workflow owns a request and lists agent cautions.
 
+## 편집기 재렌더 비용 — 줌은 카메라 경로다 (2026-09-16)
+
+`EditScene` 의 전체 재렌더(`redraw`)는 타일 GameObject 를 전부 파괴하고 다시 만든다.
+Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식을 이전 display list 에서
+떼는데(`removeFromDisplayList` → `DisplayList.remove` → `ArrayUtils.Remove` 의 `indexOf`),
+`Container.remove`/`removeAll(true)` 의 destroy 경로도 같은 `indexOf` 를 탄다.
+
+- **`renderStateKey` 에 `zoom` 을 다시 넣지 마라.** 타일 오브젝트의 모양·좌표는 줌에
+  의존하지 않는다. 줌 변경은 `redrawWhenViewStateChanges` → `applyCameraZoomOnly`
+  (`applyCameraView(preserveLookAt=true)` + 내비 기하 + 배경 레이아웃 + 뷰포트 게시)가
+  처리하고, 화면 밖 타일 컬링은 다음 `update()` 가 `worldView` 변화를 보고 스스로 다시 계산한다.
+  실측(48×48 / 96×96):  1단계가 723~862ms / 11.4~17.5초 → 41~100ms / 67~110ms.
+- 비용이 의심되면 먼저 재라: `test/e2e/_large-map-perf.spec.ts` (진단 스펙, 맵 크기별
+  줌·페인트·정지 프레임). 수치와 원인은 `reports/2026-09-16-editor-zoom-rebuild-perf.md`.
+- 남은 비용(미해결): 페인트 증분 렌더의 `tileLayer.sort("depth")` 가 자식 전체를 매 스토어
+  변경마다 정렬한다. lower/upper 컨테이너 분리, `scene.make`+`addAt` 으로 재부모화 회피가
+  후보 수정이다.
+- `src/project/io/references.ts` 의 참조 검증은 **이슈 수집 계약**이다 — 검증기가 던진
+  예외도 `check()` 가 이슈 문자열로 남긴다. 새 검증기를 추가할 때도 이 계약을 깨지 마라
+  (비정규 프로젝트에서 예외가 새면 에디터 부팅이 통째로 죽는다. 실측 2026-09-16).
+
 ## Exterior door backing
 
 AI house and village authoring places lower-layer tile 359 at `(x, y-1)` and

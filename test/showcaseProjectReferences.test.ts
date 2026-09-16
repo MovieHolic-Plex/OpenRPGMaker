@@ -4,7 +4,7 @@ import { createEmberQuestProject } from "@/project/defaults/emberQuestGame";
 import { createModernNocturneProject } from "@/project/defaults/modernNocturneGame";
 import { createSkyStairProject } from "@/editor/content/skyStairGame";
 import { createBlankProject } from "@/project/defaults";
-import { validateProjectReferences } from "@/project/io/references";
+import { collectProjectReferenceIssues, validateProjectReferences } from "@/project/io/references";
 import type { Project } from "@/project/types";
 
 /**
@@ -36,5 +36,38 @@ describe("쇼케이스 프로젝트 참조 무결성", () => {
       );
       expect(dangling.map((crop) => `${name}:${crop.id}`)).toEqual([]);
     }
+  });
+});
+
+/**
+ * 정규화를 거치지 않은 프로젝트(옛 JSON 저장본·e2e 시드)는 레코드에 필드가 없다.
+ * 참조 검증은 그 사실을 **이슈로 보고**해야지, 던져서 에디터 부팅(refreshAuthoringJourney)
+ * 을 죽이면 안 된다 — 실측: initialEquipment 없는 배우에서 Object.values(undefined),
+ * learnedSkills 없는 클래스에서 .map(undefined) 이 Uncaught TypeError 로 부팅을 멈췄다.
+ */
+describe("비정규 프로젝트 참조 검증", () => {
+  function stripFields(): Project {
+    const project = createBlankProject();
+    const actor = project.database.actors[0];
+    const klass = project.database.classes[0];
+    expect(actor, "빈 프로젝트에 배우가 있어야 이 회귀를 재현할 수 있다").toBeDefined();
+    expect(klass, "빈 프로젝트에 클래스가 있어야 이 회귀를 재현할 수 있다").toBeDefined();
+    const actorRecord = actor as unknown as Record<string, unknown>;
+    const classRecord = klass as unknown as Record<string, unknown>;
+    delete actorRecord.initialEquipment;
+    delete classRecord.learnedSkills;
+    delete classRecord.battleCommands;
+    delete classRecord.equipmentPermissions;
+    return project;
+  }
+
+  it("레코드에 필드가 없어도 던지지 않고 이슈 목록을 돌려준다", () => {
+    const issues = collectProjectReferenceIssues(stripFields());
+    expect(Array.isArray(issues)).toBe(true);
+  });
+
+  it("initialEquipment 가 없는 배우는 장비 이슈가 아니라 조용히 통과한다", () => {
+    const issues = collectProjectReferenceIssues(stripFields());
+    expect(issues.filter((issue) => issue.includes("initialEquipment"))).toEqual([]);
   });
 });

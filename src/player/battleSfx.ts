@@ -39,6 +39,12 @@ export function unlockBattleSfx(): void {
   ensureContext();
 }
 
+/** 샘플 캐시(battleSeSamples)가 합성 보이스와 같은 컨텍스트를 쓰게 내준다 —
+ *  컨텍스트가 둘이면 언락 시점이 갈라져 한쪽만 무음이 된다. */
+export function battleAudioContext(): AudioContext | undefined {
+  return ensureContext();
+}
+
 interface ToneSpec {
   readonly freq: number;
   readonly type?: OscillatorType;

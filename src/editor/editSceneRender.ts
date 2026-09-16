@@ -316,7 +316,7 @@ function renderSelection(context: EditSceneRenderContext): void {
   context.overlayLayer.add(inner);
 }
 
-function applyCameraView(scene: Phaser.Scene, map: GameMap, preserveLookAt: boolean): void {
+export function applyCameraView(scene: Phaser.Scene, map: GameMap, preserveLookAt: boolean): void {
   const mapW = map.width * TILE_SIZE;
   const mapH = map.height * TILE_SIZE;
   const cam = scene.cameras.main;

@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **69쪽 / 2763KB / 약 779,048 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **69쪽 / 2769KB / 약 780,847 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,15 +15,15 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 430KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2277 | ~122,236 |
+| `openwiki/editor-ai-panel.md` | 432KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2295 | ~122,844 |
 | `openwiki/editor-ai-tools.md` | 195KB | 82KB ⚠상한 초과 — 절을 더 쪼개라 | 1504 | ~54,515 |
 | `openwiki/editor-database.md` | 305KB | 61KB ⚠상한 초과 — 절을 더 쪼개라 | 1785 | ~88,502 |
 | `openwiki/editor-event-authoring.md` | 136KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 744 | ~39,120 |
 | `openwiki/editor-event-commands.md` | 57KB | 32KB | 202 | ~15,410 |
 | `openwiki/editor-interior-room-harness.md` | 92KB | 6KB | 445 | ~26,704 |
-| `openwiki/editor-pre-edit-routing.md` | 113KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 605 | ~32,346 |
+| `openwiki/editor-pre-edit-routing.md` | 114KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 626 | ~32,872 |
 | `openwiki/editor-workflows-misc.md` | 65KB | 30KB | 458 | ~17,883 |
-| `openwiki/runtime-battle.md` | 148KB | 31KB | 656 | ~42,404 |
+| `openwiki/runtime-battle.md` | 150KB | 31KB | 678 | ~43,069 |
 | `openwiki/runtime-project-schema.md` | 142KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 949 | ~38,434 |
 | `openwiki/runtime-sessions.md` | 89KB | 46KB | 318 | ~23,589 |
 | `openwiki/testing.md` | 197KB | 48KB | 1830 | ~54,473 |
@@ -41,7 +41,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 109, 122, 123, 125, 128, 129 |
 | `openwiki/editor-observability.md` | 1 | 310 |
-| `openwiki/editor-pre-edit-routing.md` | 5 | 418, 427, 434, 436, 459 |
+| `openwiki/editor-pre-edit-routing.md` | 5 | 439, 448, 455, 457, 480 |
 | `openwiki/state-system.md` | 2 | 3, 84 |
 
 ## 없는 파일을 가리키는 참조
@@ -260,7 +260,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L46` 설치 지점
 - `L52` 테스트
 
-### `openwiki/editor-ai-panel.md` — 430KB · 2277줄 · ~122,236 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 432KB · 2295줄 · ~122,844 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L3` 결과 보고서 모달 — 변경 지점마다 before/after 한 쌍 (2026-09-15, P2)
 - `L24` 조수 데크 「대화|작업」 탭 + 스튜디오 상세 — 팀원이 어디서 일하는지 한 곳 (2026-09-14, A안)
@@ -316,6 +316,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2219` 에이전트 레인 — 묶음별 병렬 실행과 레인별 적용 (2026-09-15)
 - `L2248` 스튜디오 3분할 — 가운데는 맵, 왼쪽은 실시간 조수·채팅, 오른쪽은 지금 보는 채팅 (2026-09-16)
 - `L2264` 하단 덱 → 오버레이 드로워 (2026-09-16)
+- `L2278` 수용 기준: DB 레코드 값과 지연 적용의 런 수명 (2026-09-16)
 
 ### `openwiki/editor-ai-tools.md` — 195KB · 1504줄 · ~54,515 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
@@ -584,30 +585,31 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L453` AI 툴·액션 이유 (2026-09-02)
 - `L463` 검증
 
-### `openwiki/editor-pre-edit-routing.md` — 113KB · 605줄 · ~32,346 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 114KB · 626줄 · ~32,872 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
-- `L7` Exterior door backing
-- `L17` Tile brush reliability (2026-09-06)
-- `L55` Combo Brush (2026-09-10, OPRN-OUT-022)
-  - `L60` 용어 (코드와 UI 가 같은 말을 쓴다)
-  - `L72` 소유 경계
-  - `L84` 근거 규칙 — 번호 인접으로 추론하지 않는다
-  - `L95` 검토 책임
-  - `L107` 경계와 진단
-  - `L117` 회귀 이음줌
-- `L129` Pre-edit routing
-  - `L131` 명명 로케이션 레이어 (2026-09-10)
-  - `L213` 로케이션 역할과 겹침 클릭 (2026-09-12)
-  - `L251` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
-  - `L253` 로케이션 앵커 — 좌표 대신 이름으로 가리키기 (2026-09-12)
-  - `L306` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
-  - `L366` Automatic usage guides disabled (2026-09-06)
-  - `L376` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
-- `L478` Agent cautions
-- `L488` 헤더 용어 정본과 중복 감사 (2026-08-30)
-  - `L519` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
-  - `L551` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
-  - `L580` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
+- `L7` 편집기 재렌더 비용 — 줌은 카메라 경로다 (2026-09-16)
+- `L28` Exterior door backing
+- `L38` Tile brush reliability (2026-09-06)
+- `L76` Combo Brush (2026-09-10, OPRN-OUT-022)
+  - `L81` 용어 (코드와 UI 가 같은 말을 쓴다)
+  - `L93` 소유 경계
+  - `L105` 근거 규칙 — 번호 인접으로 추론하지 않는다
+  - `L116` 검토 책임
+  - `L128` 경계와 진단
+  - `L138` 회귀 이음줌
+- `L150` Pre-edit routing
+  - `L152` 명명 로케이션 레이어 (2026-09-10)
+  - `L234` 로케이션 역할과 겹침 클릭 (2026-09-12)
+  - `L272` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
+  - `L274` 로케이션 앵커 — 좌표 대신 이름으로 가리키기 (2026-09-12)
+  - `L327` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
+  - `L387` Automatic usage guides disabled (2026-09-06)
+  - `L397` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
+- `L499` Agent cautions
+- `L509` 헤더 용어 정본과 중복 감사 (2026-08-30)
+  - `L540` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
+  - `L572` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
+  - `L601` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
 
 ### `openwiki/editor-storage-chest.md` — 1KB · 15줄 · ~333 토큰
 
@@ -834,34 +836,35 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 148KB · 656줄 · ~42,404 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 150KB · 678줄 · ~43,069 토큰 · 통째읽기 잘림
 
-- `L3` 전투 UI/UX·모션 적대적 리뷰 5축 후속 (2026-09-14)
-- `L74` 회복 자원·인트로 배너·타이머 write-back 계약 (2026-09-15)
-- `L119` Native event battle admission (2026-09-08)
-- `L165` Supported action authoring (2026-09-07)
-- `L177` 적별 전투 표시 크기 (2026-09-06)
-- `L187` Capture-only victory (2026-09-08)
-- `L198` Event friendship and live level changes (2026-09-06)
-- `L217` Sequential battle event completion (2026-09-08)
-- `L252` Battle-event continuation and cancellation (2026-09-06)
-- `L295` 전투 명령 custom CSS (2026-09-05)
-- `L299` 빈 페이지와 실행 빈도 계약 (2026-09-05)
-  - `L316` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
-- `L334` 지원 전투 시스템은 둘뿐이다 (2026-08-28)
-- `L347` Roguelike run boundary (2026-08-24)
-- `L352` Battle rules & runtime
-  - `L367` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
-  - `L392` 커맨드/대상 메뉴 기하와 글자 가시성 계약
-  - `L408` 스킨 CSS 캐스케이드와 저작 가능 스킨
-  - `L412` Gen 1(포켓몬식) 규칙 모델
-  - `L420` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
-  - `L439` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
-- `L477` Starter hero battle sheets (2026-08-29)
-- `L498` Per-actor back battlers (2026-08-29)
-- `L516` Battle input and visibility P0 contract (2026-07-30)
-- `L527` 배틀러 idle 애니메이션 (2026-08-30)
-- `L653` 필드 아이템 상태 부여 복구 (2026-09-05)
+- `L3` 공격 효과음 지연 — 샘플 SE 디코드 캐시 (2026-09-15)
+- `L25` 전투 UI/UX·모션 적대적 리뷰 5축 후속 (2026-09-14)
+- `L96` 회복 자원·인트로 배너·타이머 write-back 계약 (2026-09-15)
+- `L141` Native event battle admission (2026-09-08)
+- `L187` Supported action authoring (2026-09-07)
+- `L199` 적별 전투 표시 크기 (2026-09-06)
+- `L209` Capture-only victory (2026-09-08)
+- `L220` Event friendship and live level changes (2026-09-06)
+- `L239` Sequential battle event completion (2026-09-08)
+- `L274` Battle-event continuation and cancellation (2026-09-06)
+- `L317` 전투 명령 custom CSS (2026-09-05)
+- `L321` 빈 페이지와 실행 빈도 계약 (2026-09-05)
+  - `L338` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
+- `L356` 지원 전투 시스템은 둘뿐이다 (2026-08-28)
+- `L369` Roguelike run boundary (2026-08-24)
+- `L374` Battle rules & runtime
+  - `L389` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
+  - `L414` 커맨드/대상 메뉴 기하와 글자 가시성 계약
+  - `L430` 스킨 CSS 캐스케이드와 저작 가능 스킨
+  - `L434` Gen 1(포켓몬식) 규칙 모델
+  - `L442` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
+  - `L461` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
+- `L499` Starter hero battle sheets (2026-08-29)
+- `L520` Per-actor back battlers (2026-08-29)
+- `L538` Battle input and visibility P0 contract (2026-07-30)
+- `L549` 배틀러 idle 애니메이션 (2026-08-30)
+- `L675` 필드 아이템 상태 부여 복구 (2026-09-05)
 
 ### `openwiki/runtime-m2-flow-controls.md` — 30KB · 185줄 · ~8,377 토큰
 
