@@ -6,7 +6,7 @@
 import { writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createFarmingDemoProject } from "@/project/defaults";
+import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { serialize } from "@/project/io";
 import { validateProjectReferences } from "@/project/io/references";
 

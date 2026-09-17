@@ -11,7 +11,8 @@ import {
   stateBehavior,
 } from "@/battle/battleStates";
 import type { MutableBattler } from "@/battle/battleBattlers";
-import { createBlankProject, createScarloxyPokemonDemoProject } from "@/project/defaults";
+import { createBlankProject } from "@/project/defaults";
+import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
 import { scarloxySpeciesId } from "@/project/defaults/scarloxyPokemonDemoGame";
 import type { Project, StateRecord } from "@/project/types";
 

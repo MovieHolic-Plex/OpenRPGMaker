@@ -61,7 +61,17 @@ function run(command, commandArgs) {
   });
   // spawnSync 의 status 가 진짜 종료 코드다. 파이프를 거치면 마지막 명령의 코드로 뒤바뀐다
   // (`tsc | tail` 이 exit 0 으로 보였던 원인).
-  return { code: result.status ?? -1, out: `${result.stdout ?? ""}${result.stderr ?? ""}` };
+  //
+  // status 가 null 이면 **정상 종료가 아니다** — 시그널로 죽었거나(신호: result.signal) 스폰 자체가
+  // 실패했다(ENOBUFS 등: result.error). 예전에는 둘 다 -1 로 뭉개서, 2026-09-17 에 전체 게이트가
+  // 31분 51초 만에 `exit=-1` 로 죽었을 때 **원인을 특정할 수 없었다**(cgroup oom_kill 은 0이었다).
+  // 다음에 같은 일이 나면 최소한 무엇이 죽였는지는 남도록 시그널과 에러를 함께 돌려준다.
+  return {
+    code: result.status ?? -1,
+    signal: result.signal ?? null,
+    error: result.error ? `${result.error.code ?? result.error.name}: ${result.error.message}` : null,
+    out: `${result.stdout ?? ""}${result.stderr ?? ""}`,
+  };
 }
 
 /**
@@ -131,7 +141,7 @@ function testsGate() {
   // A runner/bootstrap failure must not be allowed to reuse evidence from an older run.
   // Remove the fixed evidence file first; only this invocation may recreate it.
   rmSync(reportPath, { force: true });
-  const { code } = run("node", [
+  const { code, signal, error } = run("node", [
     "scripts/run-vitest.mjs",
     "run",
     "--configLoader",
@@ -139,18 +149,32 @@ function testsGate() {
     "--reporter=json",
     "--outputFile",
     reportPath,
-    // 워커 수를 명시한다. 기본값에 맡기면 이 박스(32코어)에서 vitest 가 고르는 수가 환경마다 달라지고,
-    // 실측(2026-09-16, 40파일·301케이스)에서 워커 수가 시간을 지배했다:
-    //   W1 121.7s / W2 70.4s / W4 51.0s / W8 41.0s / W16 39.3s / W32 41.1s — 8에서 포화한다.
-    // 케이스 수·통과 수는 모든 워커 수에서 동일했다(301 passed).
-    // 32로 올려도 이득이 없고, 이 저장소는 vitest 가 ~9.4GiB 로 OOM-kill 된 전례가 있어 8로 둔다.
+    // 워커 수 상한. 이건 **상한일 뿐**이고, cgroup 으로 묶인 환경(CI 슬라이스)에서는
+    // run-vitest.mjs 가 메모리 예산을 보고 이보다 낮출 수 있다 — 워커당 힙이 최악 파일의
+    // 피크(3.13GB) 아래로 내려가면 그 파일이 heap limit 으로 죽기 때문이다.
+    //
+    // 로컬(상한 없음) 기준 실측(2026-09-16, 40파일·301케이스): W1 121.7s / W2 70.4s /
+    // W4 51.0s / W8 41.0s / W16 39.3s / W32 41.1s — 8에서 포화하고, 케이스·통과 수는 동일했다.
+    // 2026-09-17 에 표본 173파일로 다시 재도 W8/16/24/32 가 201~204초로 차이가 없었다
+    // (그때 벽시계를 지배한 건 워커 수가 아니라 박스 경합이었다).
     "--maxWorkers=8",
     "--minWorkers=1",
     ...changedArgs,
   ]);
 
   if (!existsSync(reportPath)) {
-    throw new Error(`vitest JSON 리포트가 생성되지 않았다: ${reportPath} (exit=${code})`);
+    // 여기서 죽는 경우가 진짜 곤란한 경우다 — 리포트가 없으니 무엇이 실패했는지도 모른다.
+    // 그래서 시그널·스폰 에러를 함께 찍는다(2026-09-17 에 exit=-1 만 남고 원인 불명이었다).
+    const why = [
+      `exit=${code}`,
+      signal ? `signal=${signal}` : null,
+      error ? `error=${error}` : null,
+    ].filter(Boolean).join(" ");
+    throw new Error(
+      `vitest JSON 리포트가 생성되지 않았다: ${reportPath} (${why})\n` +
+      "  signal 이 찍혔으면 vitest 가 외부에서 죽은 것이다 — cgroup 예산(ci.slice 의 MemoryMax)과\n" +
+      "  `node scripts/ci-resource-report.mjs report` 의 oom_kill 수를 먼저 확인하라.",
+    );
   }
   const parsed = JSON.parse(readFileSync(reportPath, "utf8"));
   const results = parsed.testResults ?? [];

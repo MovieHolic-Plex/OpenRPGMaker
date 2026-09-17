@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createSampleAdventureProject } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 
 type QualityCategory = {

@@ -24,7 +24,7 @@
 //   · scroll 이벤트에서 scrollLeft/Top 을 0 으로 되돌리는 가드 → 같은 이유로 클릭이 깨진다.
 // 둘 다 "화면 밖 마커를 클릭 가능하게 둔다" 는 전제를 유지한 채 스크롤만 막으려 한 것이 원인이다.
 import { expect, test } from "@playwright/test";
-import { createSampleAdventureProject } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { startNewGameFromTitle } from "./runtimeInput";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 

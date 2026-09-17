@@ -96,6 +96,10 @@ SHA-256 검증·손상 복구·잠금 복구·관리자 제작 명령은 `openwi
 
 ## 2. 검증 — 무엇이 진짜 게이트인가
 
+**워크트리·세션 에이전트는 이 표의 명령을 스스로 실행하지 마라.** `npm run gates` / `npm test` / vitest / 전체 typecheck /
+`git stash` 는 감독자 전용이거나, 사용자가 **이 세션에서** 돌리라고 명시한 때만이다.
+정본: `AGENTS.md` «워크트리·세션 에이전트는 gates / vitest / stash 금지».
+
 | 명령 | 무엇을 재나 | 기준선 (실측) | 언제 쓰나 |
 |---|---|---|---|
 | `npm run typecheck:app` | `src` 만 (`tsconfig.app.json`) | **0 에러 / exit 0** — 초록 | 코드 바꿨으면 항상 |

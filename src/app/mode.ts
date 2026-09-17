@@ -370,7 +370,7 @@ function renderLoadFailureScreen(_error: unknown): void {
   sample.textContent = "예제 작업으로 시작";
   sample.title = "기존 저장본을 바꾸지 않고 예제를 엽니다.";
   sample.addEventListener("click", () => {
-    void import("@/project/defaults").then(async ({ createSampleAdventureProject }) => {
+    void import("@/project/defaults/defaultProject").then(async ({ createSampleAdventureProject }) => {
       await store.loadFallbackProject(createSampleAdventureProject());
       await finishEditorBoot(performance.now());
     });

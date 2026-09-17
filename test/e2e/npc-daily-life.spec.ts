@@ -8,7 +8,7 @@
 // 실제 4분이 걸린다. 테스트가 검증하려는 것은 시계 속도가 아니라 **시간표가 작동하는가** 이므로
 // minutesPerRealSecond 만 올려 같은 메커니즘을 빠르게 통과시킨다.
 import { expect, test } from "@playwright/test";
-import { createSampleAdventureProject } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { startNewGameFromTitle } from "./runtimeInput";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 

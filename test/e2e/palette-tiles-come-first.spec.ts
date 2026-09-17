@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { createSampleAdventureProject } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 
 test.setTimeout(120_000);

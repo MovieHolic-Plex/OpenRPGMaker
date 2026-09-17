@@ -5,7 +5,7 @@
 // 그래서 타일 id 를 확인하는 데서 멈추지 않고, 실제 통행 판정으로 걸어서 확인한다.
 import { describe, expect, it } from "vitest";
 import { canMove, tilePassability } from "@/project/collision";
-import { createScarloxyPokemonDemoProject } from "@/project/defaults";
+import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
 import { CENTER_MAP_ID, HOME_MAP_ID, INTERIOR_TILESET_ID, LAB_MAP_ID, ensureScarloxyPokemonInteriors } from "@/project/defaults/scarloxyPokemonInteriors";
 import { deserialize, serialize } from "@/project/io";
 import { canTravelBetweenMaps } from "@/testing/mapTravelReachability";

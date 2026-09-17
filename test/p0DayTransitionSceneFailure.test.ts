@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { createFarmingDemoProject } from "@/project/defaults";
+import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";
 import type { PlaySceneContext } from "@/player/playSceneTypes";

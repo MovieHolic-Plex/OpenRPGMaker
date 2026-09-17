@@ -4,7 +4,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { serialize } from "@/project/io";
-import { createSampleAdventureProject } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 
 const outPath = process.argv[2];
 if (!outPath) throw new Error("usage: tmp-player-movement-fixture.mts <out.json>");

@@ -21,7 +21,7 @@ describe("store.loadFallbackProject — 로드 실패 복구", () => {
     vi.resetModules();
 
     const { store } = await import("@/project/store");
-    const { createSampleAdventureProject } = await import("@/project/defaults");
+    const { createSampleAdventureProject } = await import("@/project/defaults/defaultProject");
     expect(store.isLoaded()).toBe(false);
 
     await store.loadFallbackProject(createSampleAdventureProject());

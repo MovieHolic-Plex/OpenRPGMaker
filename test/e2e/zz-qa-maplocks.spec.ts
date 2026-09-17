@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { createHouseTemplateGalleryProject } from "@/project/defaults";
+import { createHouseTemplateGalleryProject } from "@/project/defaults/defaultProject";
 import { serialize } from "@/project/io";
 
 // Adversarial QA for the map-edit-lock fix: scratch sessions (remotePersistenceEnabled=false)

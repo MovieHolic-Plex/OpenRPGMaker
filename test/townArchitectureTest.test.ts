@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createTownArchitectureTestMap, TILE } from "@/project/defaults";
+import { TILE } from "@/project/defaults";
+import { createTownArchitectureTestMap } from "@/editor/content/townShowcaseMaps";
 import { describeChipsetTile, SAND_TILE } from "@/project/defaults/chipsetMapping";
 
 describe("town architecture vision test map", () => {

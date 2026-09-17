@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { createBlankProject, createSampleAdventureProject } from "@/project/defaults";
+import { createBlankProject } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { seedHomeDungeonComplexTroops } from "@/project/defaults/complexMonsterAuthoring";
 
 describe("database image matching", () => {

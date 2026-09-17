@@ -5,7 +5,7 @@ import { transitionToNextDay } from "@/player/dayTransition";
 import { renderFarmOverlays } from "@/player/playSceneFarming";
 import { applySaveSnapshot, createSaveSnapshot, readSaveSlot, saveSlotKey, saveToSlot } from "@/player/saveSlots";
 import { isFarmPlotsRecord } from "@/player/saveSlotValidation";
-import { createFarmingDemoProject } from "@/project/defaults";
+import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { normalizeCropRecord } from "@/project/farmModel";
 import { calendarDayKey } from "@/project/gameTime";
 import { ITEM_QUANTITY_MAX } from "@/project/itemQuantities";

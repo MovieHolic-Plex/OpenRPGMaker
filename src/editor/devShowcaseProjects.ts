@@ -1,5 +1,5 @@
+import { createBlankProject } from "@/project/defaults";
 import {
-  createBlankProject,
   createDbExtractedHouseTemplateProject,
   createHouseTemplateGalleryProject,
   createLogCabinShowcaseProject,
@@ -16,9 +16,8 @@ import {
   createTownArchitectureTestProject,
   createTownCityShowcaseProject,
   createTownHouseShowcaseProject,
-  type SmallHouseVariantIndex,
-  type TownHouseShowcaseStyle,
-} from "@/project/defaults";
+} from "@/project/defaults/defaultProject";
+import type { SmallHouseVariantIndex, TownHouseShowcaseStyle } from "@/editor/content/townShowcaseMaps";
 import { createVillageShoppingStreetProject } from "@/editor/content/villageShoppingStreetProject";
 import { createModernNocturneProject } from "@/project/defaults/modernNocturneGame";
 import type { Project } from "@/project/types";

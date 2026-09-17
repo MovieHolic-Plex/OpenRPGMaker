@@ -8,20 +8,16 @@ import {
 } from "./constants";
 import { paintRoadRect, shapeRoadEdges, type RoadRect } from "./roadAutotile";
 import { addStarterVillageNpcs } from "./starterVillageNpcs";
-export {
-  createTownArchitectureCityMap,
-  createTownArchitectureTestMap,
-  createDbExtractedHouseTemplateMap,
-  createSmallHouseCityMap,
-  createSmallHouseVariantMap,
-  createSmallHouseVariantMaps,
-  createTownCityShowcaseMap,
-  createTownHouseShowcaseMap,
-  type SmallHouseVariantIndex,
-  type TownHouseShowcaseStyle,
-} from "@/editor/content/townShowcaseMaps";
-export { createMarketTownMap, marketTownStartPos } from "./marketTownMap";
-// villageShoppingStreetBuild 는 toolRunner/store 순환을 유발하므로 defaultMaps 에서 re-export 하지 않음.
+// 쇼케이스·마켓타운 맵 빌더는 **여기서 re-export 하지 않는다**.
+// 통과용 re-export 한 줄이 `@/editor/content/townShowcaseMaps` → dbExtractedHouseTemplate →
+// houseKit ↔ houseInteriors(인테리어 파이프라인 전체)를 이 파일의 그래프에 끌어왔고,
+// defaultMaps 는 defaultProject → `@/project/defaults` 배럴로 이어지므로 그 배럴을 import 하는
+// 테스트 1,244개가 파일마다 그 그래프를 다시 평가했다(실측 2026-09-17: 배럴 335모듈·6.8MB,
+// 파일당 collect 1.40 s. 이 줄들을 끊으면 162모듈·0.87 s).
+// 필요한 쪽은 원본에서 직접 가져가라:
+//   import { createTownCityShowcaseMap, ... } from "@/editor/content/townShowcaseMaps";
+//   import { createMarketTownMap, marketTownStartPos } from "@/project/defaults/marketTownMap";
+// villageShoppingStreetBuild 도 같은 이유(+ toolRunner/store 순환)로 re-export 하지 않는다.
 // createVillageShoppingStreet* 는 villageShoppingStreetMap / defaultProject 경로를 사용.
 
 const STARTER_MAP_SIZE = 30;

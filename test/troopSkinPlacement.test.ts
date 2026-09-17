@@ -10,7 +10,7 @@ import {
   resolveSkinEnemyPositions,
 } from "@/battle/battlerPlacements";
 import { BATTLE_SKINS } from "@/battle/skins/registry";
-import { createScarloxyPokemonDemoProject } from "@/project/defaults";
+import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
 import type { BattleSkinId } from "@/battle/skins/types";
 
 const SKIN_IDS = Object.keys(BATTLER_PLACEMENTS) as BattleSkinId[];

@@ -7,7 +7,7 @@
 // 계측 방식: Audio 생성자를 감싸 src 와 play() 호출을 기록한다. 헤드리스에서 자동재생이
 // 거부될 수 있으므로 "재생 시도된 URL" 을 근거로 삼는다(엔진이 무엇을 틀려 했는지가 관심사다).
 import { expect, test } from "@playwright/test";
-import { createSampleAdventureProject } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { startNewGameFromTitle } from "./runtimeInput";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 

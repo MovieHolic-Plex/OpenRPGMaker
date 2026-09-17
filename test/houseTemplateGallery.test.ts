@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createHouseTemplateGalleryProject, DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
+import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
+import { createHouseTemplateGalleryProject } from "@/project/defaults/defaultProject";
 import { isRoadTile } from "@/project/defaults/roadAutotile";
 import { deserialize, serialize } from "@/project/io";
 import type { GameMap } from "@/project/types";

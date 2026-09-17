@@ -2,7 +2,8 @@ import { performance } from "node:perf_hooks";
 import { pathToFileURL } from "node:url";
 
 import { canMove } from "../src/project/collision";
-import { createBlankProject, createSampleAdventureProject } from "../src/project/defaults";
+import { createBlankProject } from "../src/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { ICE_GRAND_EXPANSE_BOSS_EVENT, ICE_GRAND_EXPANSE_GUARDS } from "../src/project/defaults/iceGrandExpanseBoss";
 import { ICE_GRAND_EXPANSE_CHECKPOINTS } from "../src/project/defaults/iceGrandExpanseCheckpoints";
 import { ICE_GRAND_EXPANSE_FIELD_SPAWNS } from "../src/project/defaults/iceGrandExpanseFieldSpawns";

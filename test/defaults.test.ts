@@ -2,23 +2,8 @@
 // 빈 프로젝트 무결성 검증 — v2 스키마(3레이어/Database/Map Tree).
 
 import { describe, it, expect } from "vitest";
-import {
-  createBlankProject,
-  createSampleAdventureProject,
-  ensureSwitchVariableSlots,
-  createBlankMap,
-  createStarterMap,
-  TILE,
-  DEFAULT_TILESET_ID,
-  DEFAULT_TILESET_NAME,
-  DEFAULT_TILESET_TEXTURE_KEY,
-  DEFAULT_TILE_SIZE,
-  DEFAULT_EASYRPG_CHARSET_ID,
-  LEGACY_RM_TILESET_ID,
-  LEGACY_RM_TILESET_TEXTURE_KEY,
-  ensureBundledResourceProfiles,
-  removeLegacyRmTileset,
-} from "@/project/defaults";
+import { createBlankProject, ensureSwitchVariableSlots, createBlankMap, createStarterMap, TILE, DEFAULT_TILESET_ID, DEFAULT_TILESET_NAME, DEFAULT_TILESET_TEXTURE_KEY, DEFAULT_TILE_SIZE, DEFAULT_EASYRPG_CHARSET_ID, LEGACY_RM_TILESET_ID, LEGACY_RM_TILESET_TEXTURE_KEY, ensureBundledResourceProfiles, removeLegacyRmTileset } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { TERRAIN_TAG, describeChipsetTile, dirtLikeTiles, tileLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { TILE_SIZE as RUNTIME_TILE_SIZE } from "@/assets/bundled";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";

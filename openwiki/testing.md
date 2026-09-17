@@ -50,6 +50,10 @@
 
 ## 게이트 반복은 `--changed` 로 좁힌다 (2026-09-13)
 
+**워크트리·세션 에이전트는 `npm run gates` / vitest 를 스스로 돌리지 말라.** 게이트는 감독자가 돌린다.
+사용자가 이 세션에서 테스트/게이트를 명시하지 않으면 `--changed` 도 금지. `git stash` 도 금지.
+정본: `AGENTS.md` «워크트리·세션 에이전트는 gates / vitest / stash 금지».
+
 `npm run gates` 는 축 넷(typecheck·vitest·css·surface)을 전부 돈다. vitest 축만 **23,700여 건 / 2,244 파일**이라
 부하에 따라 13~26분이 걸린다. 반복 중에 매번 전체를 돌릴 이유가 없다:
 

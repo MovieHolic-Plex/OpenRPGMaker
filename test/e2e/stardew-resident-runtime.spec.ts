@@ -1,6 +1,6 @@
 import { mkdirSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
-import { createFarmingDemoProject } from "@/project/defaults";
+import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { startNewGameFromTitle, tapKey } from "./runtimeInput";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 

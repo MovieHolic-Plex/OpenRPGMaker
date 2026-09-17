@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createSampleAdventureProject } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { TILE } from "@/project/defaults/constants";
 import { CHIPSET_TILE_GROUPS } from "@/project/defaults/chipsetMapping";
 import fixture from "@/project/defaults/fixtures/dew-village-demo.json";

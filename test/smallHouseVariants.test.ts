@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { createSmallHouseVariantMaps, createSmallHouseVariantProject, DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
+import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
+import { createSmallHouseVariantMaps } from "@/editor/content/townShowcaseMaps";
+import { createSmallHouseVariantProject } from "@/project/defaults/defaultProject";
 import { stampDbExtractedHouse } from "@/editor/content/dbExtractedHouseTemplate";
 import { isRoadTile } from "@/project/defaults/roadAutotile";
 import type { GameMap } from "@/project/types";

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createSampleAdventureProject } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { startSession } from "@/project/session";
 import { createSaveSnapshot, saveToSlot, snapshotLoadBlocker, type SaveSnapshot } from "@/player/saveSlots";
 

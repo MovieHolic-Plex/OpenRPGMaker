@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { createHouseTemplateGalleryProject } from "@/project/defaults";
+import { createHouseTemplateGalleryProject } from "@/project/defaults/defaultProject";
 import { serialize } from "@/project/io";
 
 const STORAGE_KEY = "oprn:supabase-project-config";

@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { contributeBundle } from "@/project/bundles";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
-import { createBlankProject, createFarmingDemoProject } from "@/project/defaults";
+import { createBlankProject } from "@/project/defaults";
+import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { placeableKey } from "@/project/placeables";
 import { changeItem, startSession } from "@/project/session";
 import { depositShipping } from "@/project/shipping";

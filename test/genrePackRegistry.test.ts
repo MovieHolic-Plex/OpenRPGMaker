@@ -13,7 +13,8 @@ import {
   welcomeGenrePresetById,
   welcomeGenreSystemPresetPlanById,
 } from "@/editor/welcomeGenrePresets";
-import { createBlankProject, createFarmingDemoProject } from "@/project/defaults";
+import { createBlankProject } from "@/project/defaults";
+import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { isGenrePackId } from "@/project/genrePackId";
 
 describe("genre pack registry contract", () => {

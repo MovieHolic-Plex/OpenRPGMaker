@@ -3,7 +3,7 @@
 // validateLayoutPlacement 가 error 를 냈고, 그 결과 "이 맵에 뭘 시켜도 적용이 거부"됐다.
 // 지금은 적용 경로가 repairLayoutPlacement 로 먼저 고치므로 남는 error 가 0이어야 한다.
 import { describe, expect, it } from "vitest";
-import { createSampleAdventureProject } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { repairLayoutPlacement } from "@/project/lint/layoutPlacementRepair";
 import { layoutValidationBlocking } from "@/project/lint/layoutPlacementValidate";
 

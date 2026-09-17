@@ -10,7 +10,8 @@
 // 불가능한 교착이 됐다.
 
 import { describe, expect, it } from "vitest";
-import { createBlankProject, createSampleAdventureProject } from "@/project/defaults";
+import { createBlankProject } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { ensureBundledBattleAnimations } from "@/project/defaults/defaultDatabase";
 import { ensureDefaultDatabaseIconResources } from "@/project/defaults/defaultDatabaseIconResources";
 import { collectProjectReferenceIssues } from "@/project/io/references";

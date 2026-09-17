@@ -3,7 +3,8 @@
 // 결정적 구성: LLM 없이 에디터 도구(run)를 Node에서 직접 실행해 프로젝트를 만든 뒤 시드한다.
 import { expect, test, type Page } from "@playwright/test";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
-import { createBlankProject, createScarloxyPokemonDemoProject } from "@/project/defaults";
+import { createBlankProject } from "@/project/defaults";
+import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
 import { scarloxySpeciesId } from "@/project/defaults/scarloxyPokemonDemoGame";
 import { DB_TOOLS } from "@/editor/tools/dbTools";
 import type { Project } from "@/project/types";
