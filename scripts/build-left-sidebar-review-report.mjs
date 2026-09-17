@@ -222,7 +222,7 @@ section("s4", 4, "P1 — 같은 도구가 화면마다 다른 이름, 다른 그
 </ul>
 ${fig("standard-layer-switcher.png", "표준 모드 레이어 전환 3버튼", "레이어 버튼 3개 — 아이콘이 셋 다 똑같다. 열이 좁아져 글자가 <code>ellipsis</code>로 잘리면 구별 정보가 완전히 사라진다.")}
 <h3>커서 — 8개 도구, 구별되는 커서는 6개</h3>
-<p>캔버스 커서는 <code>body[data-editor-tool]</code>로 갈린다(<code>src/editor/toolCursor.ts</code>). 매핑은 <code>src/styles/editor/core.part-1.css:204-210</code>에 7줄뿐이다.</p>
+<p>캔버스 커서는 <code>body[data-editor-tool]</code>로 갈린다(<code>src/editor/toolCursor.ts</code>). 매핑은 <code>src/styles/map/core.part-1.css:204-210</code>에 7줄뿐이다.</p>
 <table>
 <tr><th>도구</th><th>커서</th><th>문제</th></tr>
 <tr><td>paint</td><td><code>crosshair</code></td><td rowspan="2"><span class="sev p1">select 와 똑같다</span> — 클릭 한 번이 “칠해짐”과 “선택만 됨”으로 갈리는데 예고 신호가 없다</td></tr>

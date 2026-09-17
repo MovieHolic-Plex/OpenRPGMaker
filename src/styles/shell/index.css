@@ -20,8 +20,8 @@
 @import "./figma-editor/11-canvas-toolbar-uxc.css" layer(shell);
 @import "./editor-ui-modes.css" layer(shell);
 @import "./studio-bar.modern.css" layer(shell);
-@import "../editor/cluster-ai-modal.css" layer(shell);
-@import "../editor/audio-test-dialog.css" layer(shell);
-@import "../editor/help-modal.css" layer(shell);
-@import "../editor/ai-settings-modal.css" layer(shell);
-@import "../editor/local-diagnostics.css" layer(shell);
+@import "./dialogs/cluster-ai-modal.css" layer(shell);
+@import "./dialogs/audio-test-dialog.css" layer(shell);
+@import "./dialogs/help-modal.css" layer(shell);
+@import "./dialogs/ai-settings-modal.css" layer(shell);
+@import "./dialogs/local-diagnostics.css" layer(shell);

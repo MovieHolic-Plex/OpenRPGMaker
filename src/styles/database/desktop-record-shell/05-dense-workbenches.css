@@ -821,7 +821,7 @@
   }
 
   .database-modal-body .oprn-record-classes .db-class-curve-graph i {
-    background: var(--accent-primary, #4a57d6);
+    background: var(--accent-primary, var(--accent));
     border-radius: 1px 1px 0 0;
     display: block;
     min-height: 1px;

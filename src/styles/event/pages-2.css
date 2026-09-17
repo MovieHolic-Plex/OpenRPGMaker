@@ -235,7 +235,7 @@
 .transfer-player-button[data-testid="transfer-player-ok"],
 .event-page-move-route-footer-button[data-testid="event-page-move-route-ok"],
 .event-subdialog-backdrop[data-testid="event-graphic-dialog"] .event-graphic-picker-footer .btn:first-child {
-  background: var(--accent, var(--accent));
+  background: var(--accent);
   border-color: color-mix(in srgb, var(--accent, var(--accent-border)) 86%, black);
   color: var(--text-inverse, var(--text-1));
 }
@@ -932,7 +932,7 @@
   padding: 4px 10px 4px 5px;
 }
 
-.companion-card:hover { border-color: color-mix(in srgb, var(--accent, #4A57D6) 55%, transparent); }
+.companion-card:hover { border-color: color-mix(in srgb, var(--accent) 55%, transparent); }
 
 .companion-card-name { font: 650 12px/16px var(--font-ui); }
 
@@ -972,7 +972,7 @@
 .event-page-validation-badge.error { color: var(--danger, #C6403D); }
 
 .event-command-issue-badge.warning,
-.event-page-validation-badge.warning { color: var(--status-warning, #8A5E00); }
+.event-page-validation-badge.warning { color: var(--status-warning, var(--warning)); }
 
 .event-page-validation-badge::before { content: attr(data-label); }
 

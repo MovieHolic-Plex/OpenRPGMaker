@@ -218,75 +218,11 @@ body[data-editor-tool="pan"] .editor-layout .canvas-area .phaser-container:activ
   image-rendering: crisp-edges;
 }
 
-.brush-control {
-  align-items: center;
-  display: grid;
-  gap: 2px;
-  grid-template-columns: auto repeat(3, minmax(0, 1fr));
-  margin-top: var(--space-1);
-}
-
-.brush-control-label {
-  color: var(--text-dim);
-  font-size: 11px;
-  font-weight: 700;
-}
-
 .brush-size-btn {
   font-size: 11px;
   height: 24px;
   min-width: 0;
   padding: 0 var(--space-1);
-}
-
-.tile-tool-status {
-  align-items: stretch;
-  background: var(--bg);
-  border: 1px solid var(--border-soft);
-  display: grid;
-  gap: var(--space-1);
-  grid-template-columns: 36px minmax(0, 1fr);
-  margin-top: var(--space-1);
-  padding: var(--space-1);
-  pointer-events: none;
-}
-
-.selected-tile-preview {
-  background-color: var(--bg-panel-2);
-  background-repeat: no-repeat;
-  border: 1px solid var(--border);
-  height: 34px;
-  image-rendering: pixelated;
-  width: 34px;
-}
-
-.tile-tool-status-grid {
-  display: grid;
-  gap: 2px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.tile-tool-status-cell {
-  display: flex;
-  gap: 3px;
-  min-width: 0;
-}
-
-.tile-tool-status-label {
-  color: var(--text-dim);
-  flex: 0 0 auto;
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.tile-tool-status-value {
-  color: var(--text);
-  flex: 1 1 auto;
-  font: 600 10px/1.25 var(--font-mono);
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 .command-catalog-row {
   display: grid;

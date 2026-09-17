@@ -117,7 +117,6 @@
 }
 
 .database-modal-body .db-state-control > span {
-  color: var(--oprn-text);
   font: 400 12px/16px var(--font-ui);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -126,11 +125,8 @@
 
 .database-modal-body .db-state-control input,
 .database-modal-body .db-state-rate-row input {
-  background: var(--oprn-field);
-  border-color: var(--oprn-mid) var(--oprn-light) var(--oprn-light) var(--oprn-mid);
   border-style: solid;
   border-width: 1px;
-  color: var(--oprn-text);
   font: 400 12px/16px var(--font-ui);
   min-height: 20px;
   min-width: 0;
@@ -159,7 +155,6 @@
 }
 
 .database-modal-body .db-state-color-control i {
-  border-color: var(--oprn-light) var(--oprn-mid) var(--oprn-mid) var(--oprn-light);
   border-style: solid;
   border-width: 1px;
   display: block;
@@ -199,20 +194,15 @@
   text-align: center;
 }
 
-.database-modal-body .db-state-rate-row.grade-a b { color: var(--oprn-state-rate-a); }
-.database-modal-body .db-state-rate-row.grade-b b { color: var(--oprn-state-rate-b); }
-.database-modal-body .db-state-rate-row.grade-c b { color: var(--oprn-state-rate-c); }
-.database-modal-body .db-state-rate-row.grade-d b { color: var(--oprn-state-rate-d); }
-.database-modal-body .db-state-rate-row.grade-e b { color: var(--oprn-state-rate-e); }
+/* 등급 A~E 의 색 구분 규칙이 여기 있었다. --oprn-state-rate-a~e 가 정의된 적이 없어
+   다섯 등급이 전부 currentColor(var(--text-1))로 렌더되고 있었다(2026-09-17 브라우저 실측).
+   상태 탭은 그 사이 모던 슬레이트로 재설계됐고 "약함/조금 약함/보통/강함/무효" 라벨이
+   이미 구분을 준다. 색을 되살리면 재설계 이전으로 돌아가므로 죽은 선언만 지운다. */
 
 .database-modal-body .db-state-animation-preview {
   align-items: center;
-  background:
-    linear-gradient(45deg, var(--oprn-state-preview-a) 25%, transparent 25% 75%, var(--oprn-state-preview-a) 75%),
-    linear-gradient(45deg, var(--oprn-state-preview-b) 25%, var(--oprn-state-preview-c) 25% 75%, var(--oprn-state-preview-b) 75%);
-  background-position: 0 0, 6px 6px;
-  background-size: 12px 12px;
-  border-color: var(--oprn-mid) var(--oprn-light) var(--oprn-light) var(--oprn-mid);
+  /* 체크무늬 배경(--oprn-state-preview-a/b/c)은 정의된 적이 없어 두 gradient 가 통째로
+     폐기되고 단색으로 렌더돼 왔다. background-position/size 도 그래서 무의미했다. */
   border-style: solid;
   border-width: 1px;
   display: grid;
@@ -222,8 +212,6 @@
 }
 
 .database-modal-body .db-state-summary {
-  background: var(--oprn-face);
-  border-color: var(--oprn-mid) var(--oprn-light) var(--oprn-light) var(--oprn-mid);
   border-style: solid;
   border-width: 1px;
   grid-area: summary;

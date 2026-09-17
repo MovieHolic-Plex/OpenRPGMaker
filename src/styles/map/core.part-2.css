@@ -25,28 +25,9 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
    (540px)媛 醫뚯륫 ?⑤꼸???섏퀜 map-tree瑜?移⑤쾾?섏? ?딅룄濡?遺紐?flex ?곸뿭留?   李⑥??섍쾶 override. specificity瑜??꾪빐 ???대옒?ㅻ? ?④퍡 吏??
    flex:1 + min-height:0 ?쇰줈 遺紐??곸뿭??留욎떠 以꾩뼱?ㅺ퀬, ?댁슜???섏튂硫?   .tile-palette ??overflow-y:auto 媛 ?몃줈 ?ㅽ겕濡ㅼ쓣 ?쒓났?쒕떎.
    height:auto ??chipset-sheet??540px 怨좎젙??臾댄슚?뷀븯??遺紐⑥뿉 留욎텣?? */
-.chipset-sheet.tile-palette {
-  min-height: 0;
-}
-.tile-cell {
-  width: 100%;
-  aspect-ratio: 1;
-  border: 2px solid var(--border-soft);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  background: var(--bg-panel-2);
-  transition: border-color 0.1s, transform 0.08s;
-  overflow: hidden;
-}
-.tile-cell:hover {
-  border-color: var(--border-strong);
-}
 .tile-cell.active {
   border-color: var(--accent);
   box-shadow: 0 0 0 1px var(--accent);
-}
-.tile-cell canvas {
-  image-rendering: pixelated;
 }
 
 /* ?? ?뚮젅?댁뼱 ?덉씠?꾩썐 ?? */
@@ -82,7 +63,7 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 }
 .choices .choice-btn:hover {
   background: rgba(245, 208, 74, 0.18);
-  border-color: #8A6B2F;
+  border-color: var(--gold);
 }
 
 /* ?? ?대깽???몄쭛湲??? */
@@ -218,7 +199,7 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 
 .project-load-error-actions .btn.primary,
 .db-required-copy .btn.primary {
-  background: var(--accent, #4A57D6);
+  background: var(--accent);
   border-color: transparent;
   color: var(--on-accent, #fff);
   border-radius: 9999px;

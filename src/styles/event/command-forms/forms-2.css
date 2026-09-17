@@ -539,7 +539,7 @@
 .event-command-settings-group > legend {
   padding: 0 6px;
   font: 700 12px/1.2 Tahoma, "Malgun Gothic", sans-serif;
-  color: var(--oprn-command-blue, var(--accent, #4A57D6));
+  color: var(--oprn-command-blue, var(--accent));
 }
 
 .event-command-settings-hint {
@@ -616,18 +616,18 @@
 }
 
 .input-number-digit-chip:hover {
-  border-color: var(--accent, #4A57D6);
+  border-color: var(--accent);
   color: var(--text-1, #2A2521);
 }
 
 .input-number-digit-chip.active {
-  background: color-mix(in srgb, var(--accent, #4A57D6) 22%, transparent);
-  border-color: var(--accent, #4A57D6);
-  color: var(--accent, #4A57D6);
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .input-number-digit-chip:focus-visible {
-  outline: 2px solid var(--accent, #4A57D6);
+  outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
 
@@ -718,7 +718,7 @@
 
 .event-command-frame-live-label {
   font: 700 11px/1.2 Tahoma, "Malgun Gothic", sans-serif;
-  color: var(--oprn-command-blue, var(--accent, #4A57D6));
+  color: var(--oprn-command-blue, var(--accent));
 }
 
 .event-command-frame-live {
@@ -750,8 +750,8 @@
 }
 
 .event-command-frame-walk-chip.active {
-  border-color: var(--accent, #4A57D6);
-  color: var(--accent, #4A57D6);
+  border-color: var(--accent);
+  color: var(--accent);
   background: var(--accent-muted, rgba(110, 168, 255, 0.16));
 }
 
@@ -768,8 +768,8 @@
 }
 
 .event-command-frame-dir.active {
-  border-color: var(--accent, #4A57D6);
-  color: var(--accent, #4A57D6);
+  border-color: var(--accent);
+  color: var(--accent);
   background: var(--accent-muted, rgba(110, 168, 255, 0.16));
 }
 
@@ -810,7 +810,7 @@
 }
 
 .event-command-frame-sheet-cell.active {
-  border-color: var(--accent, #4A57D6);
+  border-color: var(--accent);
   box-shadow: 0 0 0 1px var(--shadow-pop);
 }
 
@@ -842,8 +842,8 @@
 }
 
 .event-command-frame-door-step.active {
-  border-color: var(--accent, #4A57D6);
-  color: var(--accent, #4A57D6);
+  border-color: var(--accent);
+  color: var(--accent);
   background: var(--accent-muted, rgba(110, 168, 255, 0.16));
 }
 
@@ -856,7 +856,7 @@
 }
 
 .m2-erase-event-card .m2-command-intent-title {
-  color: var(--oprn-command-blue, #4A57D6);
+  color: var(--oprn-command-blue, var(--accent));
   font-weight: 700;
 }
 
@@ -874,10 +874,10 @@
 }
 
 .m2-erase-event-preview {
-  border: 1px solid color-mix(in srgb, var(--accent, #4A57D6) 35%, var(--border-default, rgba(42,37,33,.20)));
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border-default, rgba(42,37,33,.20)));
   border-radius: 10px;
   padding: 10px 12px;
-  background: color-mix(in srgb, var(--accent, #4A57D6) 8%, transparent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
 }
 
 .m2-erase-event-preview-title {

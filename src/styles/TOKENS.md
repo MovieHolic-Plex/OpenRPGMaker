@@ -80,10 +80,6 @@ for(const m of s.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) console.log(`| \`${m[1]
 | `--font-mono` | `"Cascadia Mono", "JetBrains Mono", "SFMono-Regular", Consolas, monospace` |
 | `--font-pixel` | `"NeoDunggeunmo", "Galmuri11", "Galmuri9", "GulimChe", "DotumChe", "MS Gothic", monospace` |
 | `--font-serif` | `Georgia, "Noto Serif KR", serif` |
-| `--bp-sm` | `640px` |
-| `--bp-md` | `900px` |
-| `--bp-lg` | `1280px` |
-| `--bp-xl` | `1488px` |
 | `--z-below` | `0` |
 | `--z-base` | `1` |
 | `--z-raised` | `2` |
@@ -136,6 +132,45 @@ for(const m of s.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) console.log(`| \`${m[1]
 | `runtime` | `src/styles/runtime/` + `dialogue.css` | `runtime/index.css` | 기존대로 | 플레이어 런타임. 내용 불변 |
 | `overrides` | `src/styles/overrides.css` | 자체 | `index.css` | 표면 경계를 넘어야 하는 예외. 항목마다 이유 주석과 만기일 |
 
+### 서브레이어 함정 — `@layer x { }` 를 "중복이니 정리" 하지 마라
+
+`@import "x.css" layer(components)` 로 들어온 파일이 **내부에서 다시** `@layer components { }`
+로 감싸면, 실효 레이어는 `components` 가 아니라 `components.components` **서브레이어**가 된다.
+그리고 CSS Cascade 5 §6.4.4 에 따라 **서브레이어는 부모 직속 규칙에게 진다.**
+
+```
+@import "a.css" layer(runtime);      a.css 안이 평범하면 → [runtime]        직속
+@import "b.css" layer(runtime);      b.css 안이 @layer runtime { } 면 → [runtime.runtime] 서브
+                                     같은 선택자·같은 속성이면 a.css 가 이긴다
+```
+
+읽는 사람 눈에는 "이미 `layer(runtime)` 인데 한 번 더 적은 멱등 선언"으로 보인다. 아니다.
+**래퍼를 지우면 그 파일이 직속으로 승격해서 승자가 뒤집힌다.**
+
+현재 이 모양인 시트 **10개**(2026-09-17 실측, 4개 번들 전수):
+
+| 파일 | 실효 레이어 |
+|---|---|
+| `components/app-modal.css` | `components.components` |
+| `components/empty-state.css` | `components.components` |
+| `components/grid-4.css` | `components.components` |
+| `shell/editor-welcome.css` | `shell.shell` |
+| `map/world-panel.css` | `map.editor` |
+| `database/from-editor-world-panel.css` | `database.editor` |
+| `runtime/minimap.css` | `runtime.runtime` |
+| `runtime/pictures.css` | `runtime.runtime` |
+| `runtime/touchpad.css` | `runtime.runtime` |
+| `runtime/transitions.css` | `runtime.runtime` |
+
+**오늘 이 10개 때문에 뒤집히는 승자는 0건이다** — 잠복 함정이지 현행 버그가 아니다.
+그러나 `runtime/pictures.css` 는 실제로 이 메커니즘에 의존한다: 래퍼를 지우면
+`tabs-b-status-menu-main.css` 를 이겨 버려 이미지 픽처에 흰 상자 + 파란 테두리가 돌아온다.
+그래서 그 파일 헤더에 «지우지 말 것» 경고가 붙어 있다.
+
+**게이트가 지켜 준다.** `scripts/check-css-winners.mjs` 가 실효 레이어 경로까지 계산하므로
+래퍼를 지우면 즉시 잡힌다(실측: pictures.css 래퍼 제거 → 승자 54건 변경, 레이어가
+`[runtime.runtime]` 으로 찍혀 원인이 바로 보인다).
+
 레이어 순서 선언은 `index.css` 첫 줄 하나뿐이다:
 
 ```css
@@ -143,9 +178,28 @@ for(const m of s.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) console.log(`| \`${m[1]
 ```
 
 ## 3. 규칙
-- 토큰은 tokens.css 에서만 `:root` 로 정의한다. 다른 파일의 `:root` 재정의 금지(게이트 R4).
+- 토큰은 tokens.css 에서만 `:root` 로 정의한다. 다른 파일의 `:root` 재정의 금지.
+  **현재 미준수**: `:root` 정의 토큰 262개 중 tokens.css 는 104개뿐이고 158개가
+  다른 시트(`runtime/system.css` 44, `editor/core.part-1.css` 33, `dialogue.css` 30,
+  `event/shell.css` 26 …)에 흩어져 있다. 게이트는 아직 이걸 강제하지 않는다.
 - 표면 사설 토큰은 표면 접두어(`--ev-*`, `--db-*`, `--map-*`, `--shell-*`)를 쓰고 표면 루트 선택자 아래에서만 정의한다(게이트 R4).
-- `var(--x)` 는 정의가 있거나 토큰으로 떨어지는 폴백이 있어야 한다. 리터럴 폴백(`var(--x, #fff)`) 금지(게이트 R4).
+- `var(--x)` 는 정의가 있어야 한다. 게이트 R4 가 미정의 참조를 잡는다.
+- **브레이크포인트는 토큰이 될 수 없다.** `@media` 조건절은 커스텀 속성을 평가하지 않는다
+  (`@media (max-width: var(--bp-md))` 는 무효 쿼리가 되어 규칙이 조용히 죽는다).
+  `--bp-*` 4개는 2026-09-17 에 삭제했다 — 참조 0이었고 애초에 쓸 수 없는 토큰이었다.
+
+  **리터럴 폴백(`var(--x, #fff)`)을 쓰지 마라.** 단, 게이트는 아직 이것을 막지 않는다 —
+  `check-css-surfaces.mjs:150` 은 리터럴 폴백을 **무조건 통과 조건**으로 취급한다.
+  즉 이 규칙은 현재 사람이 지켜야 한다. 왜 위험한지 실측 사례 두 가지:
+
+  1. **토큰이 정의되면 폴백은 죽는다.** 런타임 시트들이 `var(--text-1, #f4f7ff)` 처럼
+     다크 폴백을 성실히 적었지만 `--text-1` 이 라이트로 정의돼 있어 한 번도 실행되지
+     않았다. 코드는 다크처럼 읽히는데 화면은 라이트였다(2026-09-17, 터치 버튼 대비 1.15:1).
+  2. **토큰이 없으면 폴백이 팔레트를 우회한다.** `--border-color` 는 리포 어디에도
+     정의가 없어서 `var(--border-color, rgba(42,37,33,0.12))` 의 크림이 그대로 렌더됐다
+     (map-props.css 17건). 폐기된 팔레트가 조용히 살아남는 통로다.
+
+  폴백이 필요하면 **토큰으로** 떨어뜨려라: `var(--x, var(--border-default))`.
 - 색·간격·그림자 리터럴은 tokens.css 밖에서 쓰지 않는다. 필요하면 토큰을 추가한다.
 - `!important` 는 `overrides` 레이어에서만, 이유 주석과 만기일과 함께(게이트 R3).
 - "뒤에 와야" 류 순서 주석은 설계 결함 신호다. 레이어 순서로 풀어라(게이트 R6).

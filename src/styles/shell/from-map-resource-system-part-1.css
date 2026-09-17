@@ -2,6 +2,10 @@
    표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
    규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
    각 규칙 앞 주석은 원본 파일:줄 이다. */
+/* 주: 원본 표면 `editor/` 는 2026-09-17 에 해체됐다(계획 Task 11) — 21장은 map/, 5장은 shell/dialogs/.
+   파일명의 `from-editor-` 는 **역사적 출처 표기**이며 현재 디렉터리를 뜻하지 않는다.
+   위 헤더가 말하는 원본은 지금 `map/resource-system.part-1.css` 에 있다. */
+
 
 /* map/resource-system.part-1.css:1-3 */
 .left-panel-stack[data-testid="left-palette-root"] > .empty-hint {
@@ -14,74 +18,16 @@
 }
 
 /* map/resource-system.part-1.css:19-31 */
-.right-tab {
-  border: 1px solid transparent;
-  border-radius: var(--radius-s);
-  color: var(--text);
-  flex: 1 1 0;
-  font-size: 11px;
-  line-height: 1.15;
-  min-height: 24px;
-  min-width: 0;
-  padding: 3px var(--space-2);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 
 /* map/resource-system.part-1.css:33-45 */
-.right-panel-collapse {
-  background: var(--bg-panel-2);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-s);
-  color: var(--text);
-  cursor: pointer;
-  flex: 0 0 24px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  line-height: 1;
-  min-height: 24px;
-  padding: 0;
-}
 
 /* map/resource-system.part-1.css:47-51 */
-.right-panel-collapse:hover,
-.right-panel-collapse:focus-visible {
-  background: var(--surface-selected);
-  outline: none;
-}
 
 /* map/resource-system.part-1.css:53-70 */
-.right-panel-restore {
-  align-items: center;
-  align-self: stretch;
-  background: var(--bg-panel);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-s);
-  color: var(--text);
-  cursor: pointer;
-  display: flex;
-  flex: 0 0 24px;
-  font-family: inherit;
-  font-size: 11px;
-  font-weight: 700;
-  justify-content: center;
-  padding: 4px 2px;
-  text-orientation: mixed;
-  writing-mode: vertical-rl;
-}
 
 /* map/resource-system.part-1.css:72-77 */
-.right-panel-restore:hover,
-.right-panel-restore:focus-visible {
-  background: var(--surface-selected);
-  outline: 2px solid var(--accent-primary);
-  outline-offset: -2px;
-}
 
 /* map/resource-system.part-1.css:79-81 */
-.right-panel-restore[hidden] {
-  display: none;
-}
 
 /* map/resource-system.part-1.css:83-85 */
 .editor-layout.no-right-panel .right-panel {

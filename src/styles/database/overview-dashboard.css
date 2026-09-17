@@ -115,14 +115,32 @@
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
+/* 이 그리드에는 <article> 5장과 <button> 2장이 섞여 있다. 버튼은 UA 스타일시트가
+   `font: 400 13.3333px Arial` 과 `text-align: center` 를 주는데, 폰트는 폼 컨트롤로
+   상속되지 않으므로 여기서 명시적으로 끊어 주지 않으면 버튼 2장만 같은 줄에서
+   Arial·가운데 정렬로 혼자 튄다(2026-09-17 실측: 나머지 5장은 system-ui 14px 좌측). */
 .database-modal-backdrop .db-overview-pulse-card {
   background: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-subtle);
   border-radius: 8px;
   display: grid;
+  font: inherit;
   gap: 5px;
   min-width: 0;
   padding: 14px;
+  text-align: inherit;
+}
+
+/* 세계관·설정집 카드만 클릭으로 탭을 이동한다. 나머지와 생김새가 같은데 커서도 호버도
+   없어서 누를 수 있다는 단서가 하나도 없었다. */
+.database-modal-backdrop :is(.db-overview-canon, .db-overview-codex) {
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.database-modal-backdrop :is(.db-overview-canon, .db-overview-codex):hover {
+  background: var(--db-studio-surface-2);
+  border-color: var(--db-studio-border-strong);
 }
 
 .database-modal-backdrop .db-overview-pulse-card > span {

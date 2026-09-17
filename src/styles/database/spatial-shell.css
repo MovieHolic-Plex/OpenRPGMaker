@@ -24,7 +24,7 @@
   min-height: 0;
   overflow: hidden;
   background: var(--db-studio-canvas, #F7F8F8);
-  color: var(--db-studio-text-1, #0F172A);
+  color: var(--db-studio-text-1, var(--text-1));
 }
 
 /* 목적 스트립 + 본문을 셀의 둘째 행 하나로 묶는다. */
@@ -48,7 +48,7 @@
 .database-modal-body .spatial-kind-guidance {
   flex-basis: 100%;
   margin: 0;
-  color: var(--db-studio-text-2, #475569);
+  color: var(--db-studio-text-2, var(--text-2));
   font-size: 12px;
   line-height: 1.5;
 }
@@ -74,7 +74,7 @@
   border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
   border-radius: 8px;
   background: var(--db-studio-surface, #fff);
-  color: var(--db-studio-text-2, #475569);
+  color: var(--db-studio-text-2, var(--text-2));
   font: 600 12px/1.2 inherit;
 }
 
@@ -145,9 +145,9 @@
 .database-modal-body .spatial-inspector-toggle.is-active,
 .database-modal-body .spatial-source-chip.is-active,
 .database-modal-body .spatial-card.is-selected {
-  border-color: var(--db-studio-accent, #4A57D6);
+  border-color: var(--db-studio-accent, var(--accent));
   background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
-  color: var(--db-studio-accent, #4A57D6);
+  color: var(--db-studio-accent, var(--accent));
   box-shadow: inset 0 0 0 1px var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
 }
 
@@ -365,7 +365,7 @@
 }
 
 .database-modal-body .spatial-card:focus-visible {
-  outline: 2px solid var(--db-studio-accent, #4A57D6);
+  outline: 2px solid var(--db-studio-accent, var(--accent));
   outline-offset: 2px;
 }
 
@@ -447,7 +447,7 @@
 .database-modal-body .spatial-inspector-name,
 .database-modal-body .spatial-crumb-label {
   font: 650 13px/1.2 inherit;
-  color: var(--db-studio-text-1, #0F172A);
+  color: var(--db-studio-text-1, var(--text-1));
 }
 
 .database-modal-body .spatial-card-sub,
@@ -461,7 +461,7 @@
   padding: 1px 6px;
   border-radius: 999px;
   background: var(--db-studio-well, #EEF2F6);
-  color: var(--db-studio-text-2, #475569);
+  color: var(--db-studio-text-2, var(--text-2));
   font: 600 10px/1.4 inherit;
 }
 

@@ -13,7 +13,7 @@
 //      (Chromium 실측 6개 표면). 기준선을 고쳐도 재발 지점은 탭 규칙 쪽이라 여기서 본다.
 //
 // 검사 범위는 `src/styles/database/**` — 기준선이 사는 트리이고 PR #227 이 스윕한 범위다.
-// `src/styles/editor/**` 에는 `background:` 단축이 아직 여러 건 남아 있는데, 그 규칙들은
+// `src/styles/map/**` 에는 `background:` 단축이 아직 여러 건 남아 있는데, 그 규칙들은
 // 특이성이 기준선보다 낮아(`.db-detail-form select` = (0,1,1) < (0,2,1)) 화살표를 지우지
 // 못한다 — 갚아야 할 부채지만 이 가드의 대상은 아니다.
 import { readFileSync, readdirSync, statSync } from "node:fs";

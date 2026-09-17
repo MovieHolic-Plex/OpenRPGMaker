@@ -922,9 +922,9 @@
    문구는 comboBrushBadge 가, 생김새는 이 규칙 하나가 책임진다. */
 .sidebar-brush-state.is-combo-brush {
   padding-inline: var(--space-1);
-  border: 1px solid var(--accent, #4A57D6);
+  border: 1px solid var(--accent);
   border-radius: var(--radius-sm, 4px);
-  color: var(--accent, #4A57D6);
+  color: var(--accent);
   font-weight: 600;
 }
 

@@ -228,18 +228,34 @@ function testsGate() {
 // `.omo/css-budget-baseline.json` 과 인라인 유예 목록으로 이미 래칫을 구현하고 있어서,
 // exit != 0 은 그 자체로 "새 위반"을 뜻한다. 여기서 또 기준선을 씌우면 이중 유예가 된다.
 function cssGate() {
-  const budget = run("node", ["scripts/check-css-budget.mjs"]);
-  const graph = run("node", ["scripts/check-css-graph.mjs"]);
+  // 여섯 개를 전부 돌린다. 2026-09-17 이전에는 budget·graph 둘만 돌았고,
+  // 표면 규칙 전체(R1–R6)를 보는 check-css-surfaces 와 렌더 증명 기반인
+  // check-css-live-classes 는 **어떤 자동 경로에도 없었다**. GitHub Actions 도
+  // 리포지터리 수준에서 꺼져 있다(.github/workflows/parity.yml:98-100).
+  // 그 결과 표면 게이트가 2026-09-15 에 빨개진 것을 이틀 동안 아무도 몰랐다.
+  const checks = [
+    ["check-css-budget.mjs", run("node", ["scripts/check-css-budget.mjs"])],
+    ["check-css-graph.mjs", run("node", ["scripts/check-css-graph.mjs"])],
+    ["check-css-live-classes.mjs", run("node", ["scripts/check-css-live-classes.mjs"])],
+    ["check-css-surfaces.mjs", run("node", ["scripts/check-css-surfaces.mjs", "--enforce", "all"])],
+    // 앞의 넷은 선언을 **세기만** 한다. 누가 이기는지는 이 다섯 번째만 본다.
+    ["check-css-winners.mjs", run("node", ["scripts/check-css-winners.mjs"])],
+    // TS 가 붙이는 클래스 ↔ CSS 규칙 교차검증. package.json 에 `gates:dead-css` 로 있었지만
+    // 어떤 자동 경로에도 없어서 exit 1 인 채로 방치돼 있었다(2026-09-17 발견).
+    ["check-dead-css-classes.mjs", run("node", ["scripts/check-dead-css-classes.mjs"])],
+  ];
+  const failures = checks.filter(([, r]) => r.code !== 0).map(([n, r]) => `${n} exit=${r.code}`);
   return {
     name: "css",
-    exitCode: budget.code === 0 && graph.code === 0 ? 0 : 1,
-    budgetExitCode: budget.code,
-    graphExitCode: graph.code,
-    failures: [
-      ...(budget.code === 0 ? [] : [`check-css-budget.mjs exit=${budget.code}`]),
-      ...(graph.code === 0 ? [] : [`check-css-graph.mjs exit=${graph.code}`]),
-    ],
-    out: `${budget.out}${graph.out}`.trimEnd(),
+    exitCode: failures.length === 0 ? 0 : 1,
+    budgetExitCode: checks[0][1].code,
+    graphExitCode: checks[1][1].code,
+    liveClassesExitCode: checks[2][1].code,
+    surfacesExitCode: checks[3][1].code,
+    winnersExitCode: checks[4][1].code,
+    deadClassesExitCode: checks[5][1].code,
+    failures,
+    out: checks.map(([, r]) => r.out).join("").trimEnd(),
   };
 }
 
@@ -470,7 +486,11 @@ if (asJson) {
   }
   if (report.css) {
     const gate = report.css;
-    console.log(`css            exit=${gate.exitCode}  budget=${gate.budgetExitCode}  graph=${gate.graphExitCode}`);
+    console.log(
+      `css            exit=${gate.exitCode}  budget=${gate.budgetExitCode}  graph=${gate.graphExitCode}` +
+        `  live=${gate.liveClassesExitCode}  surfaces=${gate.surfacesExitCode}` +
+        `  winners=${gate.winnersExitCode}  dead=${gate.deadClassesExitCode}`,
+    );
     // 실패했을 때만 스크립트 출력을 그대로 보여준다 — 어느 지표가 얼마나 늘었는지,
     // 어느 파일이 고아인지는 그 출력에 이미 파일 경로까지 찍혀 있다.
     if (gate.exitCode !== 0 && gate.out) {

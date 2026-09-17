@@ -44,7 +44,7 @@
   --db-studio-on-accent: #FFFFFF;
   /* modern/enemies.css 가 폴백과 함께 쓰던 미정의 변수. 정식 토큰으로 승격한다. */
   --db-studio-surface-2: rgba(15, 23, 42, 0.03);
-  /* 경고 계열. 기존 --warning(#8A5E00) 은 올리브-골드라 이 앰버와 색이 달라 재사용하지
+  /* 경고 계열. 기존 --warning(var(--warning)) 은 올리브-골드라 이 앰버와 색이 달라 재사용하지
      않는다 — 재사용하면 카운터는 줄지만 화면이 바뀐다. 값은 그대로 두고 이름만 준다. */
   --db-studio-warning: #B45309;
   --db-studio-warning-strong: #92400E;
@@ -87,7 +87,10 @@
   --success: var(--db-studio-success);
   --shadow-pop: var(--db-studio-shadow-pop);
   --shadow-modal: var(--db-studio-shadow-pop);
-  --focus-ring: 0 0 0 2px rgba(74, 87, 214, 0.35);
+  /* --focus-ring 재정의를 지웠다(2026-09-17). 정본(tokens.css)과 알파만 달랐고
+     (0.35 vs 0.45) 그 차이 때문에 키보드 사용자가 셸 → DB 모달로 넘어갈 때마다 포커스
+     표시가 옅어졌다. 같은 앱 안에서 포커스 표시가 표면마다 다를 이유가 없다.
+     전투 씬(runtime/battle/01-scene-base.css, 4px/0.55)은 게임 크롬이라 그대로 둔다. */
   --focus-outline: 2px solid var(--db-studio-accent);
 
   /* legacy aliases */
@@ -383,7 +386,7 @@
   text-overflow: ellipsis;
 }
 /* Cards/legends: studio-v2. Row thumbnails: record-list-modern.
-   Actor identity portrait: desktop-record-shell/13-actor-studio. */
+   Actor identity portrait: desktop-record-shell/15-actor-studio. */
 
 /* empty state card */
 .database-modal-backdrop .database-modal-window .db-empty-state,

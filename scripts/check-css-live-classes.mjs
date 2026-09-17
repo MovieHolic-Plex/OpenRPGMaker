@@ -40,6 +40,7 @@
 //                                                           # 게이트 자체를 검증할 때 시트 루트를 갈아끼운다
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import { warnIfStale } from "./lib/baseline-age.mjs";
 
 const ROOT = process.cwd();
 // 세 경로 모두 환경변수로 바꿔 끼울 수 있다 — 그래야 이 게이트의 안전장치(0 기준선 거부,
@@ -366,6 +367,7 @@ if (!existsSync(BASELINE)) {
   process.exit(2);
 }
 
+warnIfStale(BASELINE, "css-live-classes");
 const base = JSON.parse(readFileSync(BASELINE, "utf8"));
 const failures = compare(base);
 const changes = valueChanges(base);

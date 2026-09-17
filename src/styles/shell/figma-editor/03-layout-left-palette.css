@@ -137,9 +137,6 @@
     justify-content: center;
   }
 
-  .palette-option-button,
-  .chipset-band-button,
-  .stamp-button,
   .used-location-button {
     background: var(--control-bg);
     border: 1px solid var(--editor-line);

@@ -40,7 +40,7 @@ const classify = file => {
 // 구성 요소 버킷 command-forms/forms.css 로 접혔다. 기준 트리(재편성 전)에서는 옛 경로로 읽되 새 경로 이름으로 기록해,
 // 파일 이동이 "삭제된 선언" 으로 잡히지 않게 한다.
 const EVENT_LEGACY_MOVED = { from: 'src/styles/event/event-editor-legacy.part-1.css', to: 'src/styles/event/command-forms/forms.css' };
-const relevant = file => file.startsWith('src/styles/database/') || [EVENT_LEGACY_MOVED.to, 'src/styles/editor/world-panel.css'].includes(file);
+const relevant = file => file.startsWith('src/styles/database/') || [EVENT_LEGACY_MOVED.to, 'src/styles/map/world-panel.css'].includes(file);
 const baseSource = file => (file === EVENT_LEGACY_MOVED.to && !baseFiles.has(file) ? readBase(EVENT_LEGACY_MOVED.from) : readBase(file));
 const before = files.filter(relevant).flatMap(file => declarations(baseSource(file), file));
 const after = files.filter(relevant).flatMap(file => declarations(readFileSync(file, 'utf8'), file));
@@ -64,7 +64,7 @@ const owners = {
   actions: exact(shared, actionSelector, 'shared intrinsic-width 32px CRUD chrome'),
   rows: sharedRule('.db-list-row', 'listRow emits db-list-row and db-ws-row together; shared row radius'),
   thumbnails: exact('src/styles/database/record-list-modern.css', `${db} .db-list-row .db-list-thumb`, 'ordinary DB row 24px'),
-  actorPortrait: exact('src/styles/database/desktop-record-shell/13-actor-studio.css', `${db} .db-actor-identity-cell .db-list-thumb, .db-actor-identity-cell .db-list-thumb-crop, .db-actor-avatar-fallback`, 'actor identity 36px portrait', '@media (min-width: 901px)'),
+  actorPortrait: exact('src/styles/database/desktop-record-shell/15-actor-studio.css', `${db} .db-actor-identity-cell .db-list-thumb, .db-actor-identity-cell .db-list-thumb-crop, .db-actor-avatar-fallback`, 'actor identity 36px portrait', '@media (min-width: 901px)'),
   composition: exact(navigation, `${db} .db-ws-card-body > .db-ws-btn`, 'grid direct-child action alignment'),
   modalBody: exact('src/styles/database/sidebar.css', '.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-body', 'bounded modal body containing independent detail scrollers'),
   legends: sharedRule(':is(.db-ws-card-title, fieldset > legend, .db-panel > h4, .db-ws-card-head h4)', 'native legend typography and placement'),

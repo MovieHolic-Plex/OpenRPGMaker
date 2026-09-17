@@ -59,7 +59,7 @@ describe("편집기 z 층 순서", () => {
   });
 
   it("툴팁 CSS 가 하드코딩 대신 그 토큰을 쓴다", () => {
-    const tooltipCss = readFileSync(resolve(ROOT, "src/styles/editor/delayed-tooltip.css"), "utf8");
+    const tooltipCss = readFileSync(resolve(ROOT, "src/styles/map/delayed-tooltip.css"), "utf8");
     expect(tooltipCss).toContain("z-index: var(--z-tooltip)");
   });
 

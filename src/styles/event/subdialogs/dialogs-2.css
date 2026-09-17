@@ -596,7 +596,7 @@
 .event-subdialog-close:focus-visible {
   background: color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 74%, var(--bg-raised));
   border-color: color-mix(in srgb, var(--accent, var(--accent-border)) 48%, var(--border-soft, var(--border-subtle)));
-  color: var(--accent, var(--accent));
+  color: var(--accent);
   outline: 2px solid color-mix(in srgb, var(--accent, var(--accent-border)) 28%, transparent);
   outline-offset: 1px;
 }
@@ -726,7 +726,7 @@
 .event-command-picker-tab[aria-selected="true"] {
   background: var(--surface-panel, var(--bg-raised));
   box-shadow: 0 1px 4px var(--shadow-pop);
-  color: var(--accent, var(--accent));
+  color: var(--accent);
 }
 
 .event-command-picker-page {

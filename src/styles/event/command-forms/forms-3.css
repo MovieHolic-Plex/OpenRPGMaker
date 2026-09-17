@@ -127,8 +127,8 @@
 
 .event-command-text-speaker-field input:focus,
 .event-command-text-editor textarea:focus {
-  border-color: var(--accent, #4A57D6);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, #4A57D6) 14%, transparent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent);
   outline: none;
 }
 
@@ -186,9 +186,9 @@
 }
 
 .event-command-text-tool:hover {
-  background: color-mix(in srgb, var(--accent, #4A57D6) 8%, var(--bg-raised, #FFFDF8));
-  border-color: color-mix(in srgb, var(--accent, #4A57D6) 42%, var(--border-subtle, rgba(42,37,33,.16)));
-  color: var(--accent, #4A57D6);
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-raised, #FFFDF8));
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--border-subtle, rgba(42,37,33,.16)));
+  color: var(--accent);
 }
 
 .event-command-text-tool:active {
@@ -321,7 +321,7 @@
 
 .event-command-text-palette-code {
   font: 600 11px/1.2 var(--font-mono, "Cascadia Mono", Consolas, monospace);
-  color: var(--accent, #4A57D6);
+  color: var(--accent);
 }
 
 .event-command-text-palette-name {
@@ -330,7 +330,7 @@
 }
 
 .event-command-text-palette-button:hover {
-  border-color: color-mix(in srgb, var(--accent, #4A57D6) 55%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
 .event-command-text-body-field {

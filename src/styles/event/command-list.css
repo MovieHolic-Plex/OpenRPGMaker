@@ -510,7 +510,7 @@
 
 .event-command-context-menu button:hover,
 .event-command-context-menu button:focus {
-  background: var(--accent, var(--accent));
+  background: var(--accent);
   color: var(--text-inverse, var(--text-1));
   outline: 0;
 }
@@ -821,13 +821,13 @@
 .event-contents-fieldset .cmd-line-marker[data-cmd-depth="2"],
 .event-contents-fieldset .cmd-line-marker[data-cmd-depth="3"],
 .event-contents-fieldset .cmd-line-marker[data-cmd-depth="4"] {
-  background-color: color-mix(in srgb, var(--accent, #4A57D6) 6%, transparent);
+  background-color: color-mix(in srgb, var(--accent) 6%, transparent);
 }
 
 .event-contents-fieldset .cmd-item[data-cmd-depth="2"] > .cmd-head,
 .event-contents-fieldset .cmd-item[data-cmd-depth="3"] > .cmd-head,
 .event-contents-fieldset .cmd-item[data-cmd-depth="4"] > .cmd-head {
-  background-color: color-mix(in srgb, var(--accent, #4A57D6) 10%, transparent);
+  background-color: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 /* zebra 줄무늬는 스레드 틴트/레일과 충돌하므로 비활성화(아래 transparent 규칙 없음).
@@ -883,7 +883,7 @@
 
 .event-contents-fieldset .cmd-line-marker.cmd-marker-fork {
   color: var(--event-modern-accent, var(--accent));
-  background-color: color-mix(in srgb, var(--accent, #4A57D6) 12%, transparent);
+  background-color: color-mix(in srgb, var(--accent) 12%, transparent);
   background-image: repeating-linear-gradient(
     to right,
     transparent 0,

@@ -463,11 +463,6 @@
   transform-origin: top left;
 }
 
-.region-task-compare-arrow {
-  color: var(--editor-text-muted);
-  font-size: 16px;
-}
-
 .region-task-compare {
   align-items: center;
   display: flex;

@@ -375,7 +375,7 @@
     background: var(--bg-raised);
     border: 0;
     border-top: 1px solid var(--db-modern-line-soft);
-    color: var(--db-light-accent, #4a57d6);
+    color: var(--db-light-accent, var(--accent));
     cursor: pointer;
     padding: 8px;
     width: 100%;

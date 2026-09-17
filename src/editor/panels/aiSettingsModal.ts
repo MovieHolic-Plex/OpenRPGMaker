@@ -991,7 +991,7 @@ function modelField(
     dataset: { testid: presetTestid },
     attrs: { "aria-label": `${label} 추천 모델` },
   }) as HTMLSelectElement;
-  // 무효 모델 경고. 스타일은 styles/editor/ai-auth-connection.css 의 .ai-model-warning 이 맡는다
+  // 무효 모델 경고. 스타일은 styles/shell/dialogs/ai-settings-modal.css 의 .ai-model-warning 이 맡는다
   // (예전에는 이 파일이 CSS 를 편집할 수 없다는 이유로 색·크기를 인라인 style 로 칠했다 —
   //  테마를 따라가지 못하는 값이었다).
   const warning = el("div", {

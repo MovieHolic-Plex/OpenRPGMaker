@@ -210,7 +210,6 @@
   text-align: center;
 }
 .system-shell-button,
-.main-menu-button,
 .game-over-panel button {
   background: var(--runtime-window-fill-fallback);
   border: 1px solid var(--runtime-glass-hairline);
@@ -222,7 +221,6 @@
   padding: 6px 10px;
 }
 .system-shell-button:focus-visible,
-.main-menu-button:focus-visible,
 .game-over-panel button:focus-visible {
   background: var(--runtime-window-selected-bg);
   border-color: var(--runtime-window-focus);
@@ -234,16 +232,10 @@
 .system-shell-button.is-corrupt {
   color: #a33a32;
 }
-.system-shell-message,
-.system-shell-corrupt,
-.system-shell-meta,
 .menu-section,
 .menu-section-title {
   font-size: 12px;
   line-height: 1.35;
-}
-.system-shell-corrupt {
-  color: #f07a70;
 }
 .menu-section-title {
   border-top: 1px solid rgba(255, 255, 255, 0.28);

@@ -437,8 +437,8 @@
 }
 
 .m2-command-intent-card {
-  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 88%, var(--accent, #4A57D6) 12%);
-  border: 1px solid color-mix(in srgb, var(--border-subtle, rgba(42,37,33,.12)) 70%, var(--accent, #4A57D6) 30%);
+  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 88%, var(--accent) 12%);
+  border: 1px solid color-mix(in srgb, var(--border-subtle, rgba(42,37,33,.12)) 70%, var(--accent) 30%);
   border-radius: 8px;
   display: grid;
   gap: 8px;
@@ -884,7 +884,7 @@
 }
 
 .fork-branch-item-kind {
-  color: var(--accent, #4A57D6);
+  color: var(--accent);
   font: 700 11px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   padding-top: 4px;
 }

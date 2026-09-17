@@ -105,10 +105,11 @@
   --font-pixel: "NeoDunggeunmo", "Galmuri11", "Galmuri9", "GulimChe", "DotumChe", "MS Gothic", monospace;
   --font-serif: Georgia, "Noto Serif KR", serif;
 
-  --bp-sm: 640px;
-  --bp-md: 900px;
-  --bp-lg: 1280px;
-  --bp-xl: 1488px;
+  /* 브레이크포인트 토큰(--bp-sm/md/lg/xl)은 2026-09-17 에 삭제했다. 참조가 0이었고,
+     0인 이유가 "아직 안 썼다"가 아니라 **쓸 수 없다**이기 때문이다 — CSS 커스텀 속성은
+     `@media` 조건절에서 평가되지 않는다(`@media (max-width: var(--bp-md))` 는 무효 쿼리가
+     되어 규칙 전체가 조용히 죽는다). `@custom-media` 는 아직 어느 브라우저에도 없다.
+     다시 넣지 마라. 브레이크포인트를 한곳에서 관리하려면 빌드 단계(postcss)가 필요하다. */
 
   --z-below: 0;
   --z-base: 1;

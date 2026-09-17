@@ -10,7 +10,10 @@
   }
 
   .runtime-transition-blind {
-    background: var(--bg-canvas, #05070c);
+    /* 커버 색은 토큰이 공급한다. 폴백을 두지 않는 이유: --bg-canvas 는 항상 정의돼 있어
+       폴백이 실행되지 않는데, 다크 값을 폴백에 적어 두면 "여기 다크가 있다"는 착각만 남는다.
+       실제로 2026-09-17 까지 이 줄은 #EEF1F4(거의 흰색)로 렌더됐다. */
+    background: var(--bg-canvas);
     left: 0;
     position: absolute;
     right: 0;
