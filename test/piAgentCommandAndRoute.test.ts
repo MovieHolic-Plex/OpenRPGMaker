@@ -18,20 +18,24 @@ describe("/pi 명령 파서", () => {
     expect(parsePiCommand("/pi 집 지어줘", ctx.project, "map_a")).toEqual({ mode: "single", mapIds: ["map_a"], currentMapId: "map_a", task: "집 지어줘" });
     expect(parsePiCommand("/pi 집 지어줘", ctx.project, null)).toEqual({ mode: "single", mapIds: [], currentMapId: null, task: "집 지어줘" });
   });
-  it("실존하는 맵 id 목록은 병렬 범위로 읽는다", () => {
-    expect(parsePiCommand("/pi map_a,map_b 집 한 채", ctx.project, "map_a")).toEqual({ mode: "single", mapIds: ["map_a", "map_b"], currentMapId: "map_a", task: "집 한 채" });
-    expect(parsePiCommand("/pi map_a,map_a 집", ctx.project, null)).toEqual({ mode: "single", mapIds: ["map_a"], currentMapId: null, task: "집" });
+  // scopedByUser 는 이 갈래에서만 켜진다 — 사용자가 맵을 **직접 적은** 턴과 현재 맵으로 채운
+  // 기본값을 구별한다. 병합이 범위 밖을 버리는 것은 전자뿐이다(2026-09-17).
+  it("실존하는 맵 id 목록은 병렬 범위로 읽고, 사용자가 정한 범위로 표시한다", () => {
+    expect(parsePiCommand("/pi map_a,map_b 집 한 채", ctx.project, "map_a")).toEqual({ mode: "single", mapIds: ["map_a", "map_b"], currentMapId: "map_a", scopedByUser: true, task: "집 한 채" });
+    expect(parsePiCommand("/pi map_a,map_a 집", ctx.project, null)).toEqual({ mode: "single", mapIds: ["map_a"], currentMapId: null, scopedByUser: true, task: "집" });
     // 없는 id 는 지시문의 첫 단어일 뿐이다.
     expect(parsePiCommand("/pi map_zzz 집", ctx.project, "map_a")).toEqual({ mode: "single", mapIds: ["map_a"], currentMapId: "map_a", task: "map_zzz 집" });
   });
   it("/team 은 /pi team 과 같은 뜻이다 — Pi 가 유일한 경로라 접두사는 의식일 뿐이다", () => {
-    expect(parsePiCommand("/team 마을 셋", ctx.project, "map_a")).toEqual({ mode: "team", mapIds: [], task: "마을 셋" });
-    expect(parsePiCommand("/pi team 마을 셋", ctx.project, "map_a")).toEqual({ mode: "team", mapIds: [], task: "마을 셋" });
-    expect(parsePiCommand("/team map_a,map_b 집 두 채", ctx.project, "map_a")).toEqual({ mode: "team", mapIds: ["map_a", "map_b"], task: "집 두 채" });
-    expect(parsePiCommand("/pi team map_a,map_b 집 두 채", ctx.project, "map_a")).toEqual({ mode: "team", mapIds: ["map_a", "map_b"], task: "집 두 채" });
+    // currentMapId 는 팀장이 「여기」를 푸는 기준이라 팀 턴에도 늘 실린다(2026-09-15) — 이 기대값은
+    // 그때 갱신되지 않아 계속 빨간불이었다.
+    expect(parsePiCommand("/team 마을 셋", ctx.project, "map_a")).toEqual({ mode: "team", mapIds: [], currentMapId: "map_a", task: "마을 셋" });
+    expect(parsePiCommand("/pi team 마을 셋", ctx.project, "map_a")).toEqual({ mode: "team", mapIds: [], currentMapId: "map_a", task: "마을 셋" });
+    expect(parsePiCommand("/team map_a,map_b 집 두 채", ctx.project, "map_a")).toEqual({ mode: "team", mapIds: ["map_a", "map_b"], currentMapId: "map_a", scopedByUser: true, task: "집 두 채" });
+    expect(parsePiCommand("/pi team map_a,map_b 집 두 채", ctx.project, "map_a")).toEqual({ mode: "team", mapIds: ["map_a", "map_b"], currentMapId: "map_a", scopedByUser: true, task: "집 두 채" });
     // 팀 키워드로 시작하는 일반 단어는 명령이 아니다.
     expect(parsePiCommand("/teamspeak 열어줘", ctx.project, "map_a")).toBeNull();
-    expect(parsePiCommand("/team", ctx.project, "map_a")).toEqual({ mode: "team", mapIds: [], task: "" });
+    expect(parsePiCommand("/team", ctx.project, "map_a")).toEqual({ mode: "team", mapIds: [], currentMapId: "map_a", task: "" });
   });
 });
 

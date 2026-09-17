@@ -26,6 +26,8 @@ export type StatusMenuKeyboardState = {
   readonly mode: StatusMenuKeyboardMode;
   /** 레일이 실제로 그리는 항목들 — 접힌 그룹 열기 항목도 포함한다. */
   readonly commandIds?: readonly StatusMenuRailId[];
+  /** 레일 열 수. 2 이상이면 ←→ 도 커서를 움직이고 ↑↓ 는 열 수만큼 뛴다(허브 타일). 기본 1. */
+  readonly columns?: number;
 };
 
 export type StatusMenuKeyboardAction =
@@ -55,9 +57,12 @@ export function reduceStatusMenuKeyboard(
   key: RuntimeMenuKey
 ): StatusMenuKeyboardResult {
   const dir = directionForKey(key);
-  if (dir === "down" || dir === "up") {
+  const columns = Math.max(1, state.columns ?? 1);
+  if (dir && (columns > 1 || dir === "up" || dir === "down")) {
+    const ids = state.commandIds && state.commandIds.length > 0 ? state.commandIds : STATUS_MENU_COMMAND_IDS;
+    const index = Math.max(0, ids.indexOf(state.selectedCommand));
     return {
-      selectedCommand: nextStatusCommand(state.selectedCommand, dir === "down" ? 1 : -1, state.commandIds),
+      selectedCommand: ids[moveCursorIndex(index, ids.length, dir, { columns })] ?? "items",
       mode: state.mode,
       action: "select",
     };
@@ -76,17 +81,6 @@ export function reduceStatusMenuKeyboard(
       : { selectedCommand: state.selectedCommand, mode: "main", action: "close" };
   }
   return { selectedCommand: state.selectedCommand, mode: state.mode, action: "none" };
-}
-
-function nextStatusCommand(
-  current: StatusMenuRailId,
-  delta: number,
-  commandIds: readonly StatusMenuRailId[] = STATUS_MENU_COMMAND_IDS
-): StatusMenuRailId {
-  const ids = commandIds.length > 0 ? commandIds : STATUS_MENU_COMMAND_IDS;
-  const currentIndex = ids.indexOf(current);
-  const base = currentIndex >= 0 ? currentIndex : 0;
-  return ids[wrapIndex(base + delta, ids.length)] ?? "items";
 }
 
 function wrapIndex(index: number, length: number): number {

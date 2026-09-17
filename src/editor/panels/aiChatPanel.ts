@@ -551,6 +551,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const raw = loadAiConfig().autonomyLevel;
     return resolveAutonomy(isAutonomyLevel(raw) ? raw : "balanced");
   };
+  /** 지금 다이얼 단계의 사람이 읽는 이름(「균형」 등). 상한 안내 문구가 이 이름을 부른다. */
+  const currentAutonomyLabel = (): string | null => {
+    const raw = loadAiConfig().autonomyLevel;
+    const id = isAutonomyLevel(raw) ? raw : "balanced";
+    return AUTONOMY_LEVELS.find((level) => level.id === id)?.label ?? null;
+  };
   const derivedComposerMode = (): ComposerMode => (currentAutonomy().readOnly ? "ask" : "do");
   const applyPanelFontSize = (size: AiFontSize): void => {
     applyAiFontSize(panel, size);
@@ -1983,6 +1989,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         routineEdit: plan.routineEdit,
         planOnly: plan.planOnly,
         maxTurns: plan.maxTurns,
+        // 상한에 걸려 멈췄을 때 「무엇을 올리면 되는지」를 말하려면 단계 이름이 필요하다.
+        // 숫자만으로 역추론하지 않는다 — 레인·팀도 같은 maxTurns 를 다른 출처로 보낸다.
+        ...(currentAutonomyLabel() ? { autonomyLabel: currentAutonomyLabel()! } : {}),
         thinkingLevel: plan.thinkingLevel,
         ...(opts?.toolDomains ? { toolDomains: opts.toolDomains } : {}),
         ...(opts?.intentNote ? { intentNote: opts.intentNote } : {}),

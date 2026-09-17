@@ -62,6 +62,20 @@ describe("runtime keyboard menus", () => {
   });
 });
 
+describe("status menu grid cursor (hub skin)", () => {
+  it("columns>1 이면 ←→ 도 격자를 움직이고 ↑↓ 는 열 수만큼 뛴다(토러스 래핑)", () => {
+    const ids = ["items", "skills", "equipment", "party-menu", "record-menu", "system-menu"] as const;
+    const base = { mode: "main" as const, commandIds: ids, columns: 3 };
+    expect(reduceStatusMenuKeyboard({ ...base, selectedCommand: "items" }, "ArrowRight").selectedCommand).toBe("skills");
+    expect(reduceStatusMenuKeyboard({ ...base, selectedCommand: "items" }, "ArrowDown").selectedCommand).toBe("party-menu");
+    expect(reduceStatusMenuKeyboard({ ...base, selectedCommand: "items" }, "ArrowLeft").selectedCommand).toBe("system-menu");
+    expect(reduceStatusMenuKeyboard({ ...base, selectedCommand: "party-menu" }, "ArrowDown").selectedCommand).toBe("items");
+    expect(reduceStatusMenuKeyboard({ ...base, selectedCommand: "items" }, "ArrowRight").action).toBe("select");
+    // 1열은 기존과 같다 — ←→ 는 none
+    expect(reduceStatusMenuKeyboard({ selectedCommand: "items", mode: "main", commandIds: ids }, "ArrowRight").action).toBe("none");
+  });
+});
+
 describe("runtime cursor pure helpers", () => {
   it("classifies confirm/cancel keys (RM2003 Z/X + Enter/Esc/Space)", () => {
     for (const key of ["z", "Z", "Enter", " ", "e"]) expect(isConfirmKey(key)).toBe(true);

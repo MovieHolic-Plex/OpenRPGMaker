@@ -44,6 +44,7 @@
 @import "../database/tabs-b-status-menu-base.css" layer(runtime);
 @import "../database/tabs-b-status-menu-main.css" layer(runtime);
 @import "./statusMenuEdgeDock.css" layer(runtime);
+@import "./statusMenuSkins.css" layer(runtime);
 @import "./playLoading.css" layer(runtime);
 @import "./actionHud.css" layer(runtime);
 @import "./timer.css" layer(runtime);

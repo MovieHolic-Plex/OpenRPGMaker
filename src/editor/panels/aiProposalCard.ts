@@ -15,7 +15,7 @@ import { summarizeChanges } from "@/editor/tools";
 import { commitGateNotice } from "@/ai/aiGateNotice";
 import { reviewOverInsertion } from "@/ai/overInsertionReview";
 import { showAiGateNotice } from "@/editor/ui/aiGateModal";
-import { mapDestructionConfirmRequest } from "@/ai/mapDestructionConfirm";
+import { mapDestructionConfirmRequest, mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
 import { showConfirm } from "@/editor/ui/modal";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import {
@@ -252,7 +252,12 @@ export function createProposalHost(options: {
     // 맵 규모 파괴만 사람이 한 번 본다 — 정책 예외의 근거는 ai/mapDestructionConfirm 머리말.
     // applyingCalls.add **앞**에 두는 이유: 취소는 시도가 아니다. 뒤에 두면 취소한 배치가
     // "적용 중"으로 남아 같은 제안을 다시 눌러도 조용히 거부된다.
-    const mapDestruction = mapDestructionConfirmRequest(calls);
+    // 이름(clear_map)으로 먼저 보고, 없으면 결과(사라진 맵·비워진 이벤트)로 본다 — `remove_map`
+    // 처럼 이름 목록 밖의 소실도 같은 모달을 탄다. 순서가 중요하다: clear_map 은 맵을 지우지
+    // 않으므로 차집합으로는 안 잡힌다. reset_project 는 소실이 곧 의도라 결과 판정에서 뺀다.
+    const resetsProject = calls.some((call) => call.name === "reset_project");
+    const mapDestruction = mapDestructionConfirmRequest(calls)
+      ?? (resetsProject ? null : mapLossConfirmRequest(store.getCurrent(), session.getProposedProject()));
     if (mapDestruction) {
       const approved = await showConfirm({
         title: mapDestruction.title,
@@ -263,7 +268,7 @@ export function createProposalHost(options: {
       });
       if (!approved || !ownsApply()) {
         if (!approved) {
-          appendBubble("system", "맵 전체 청소를 취소했습니다 — 프로젝트는 그대로입니다.");
+          appendBubble("system", mapDestruction.cancelNotice);
           setStatus("대기");
         }
         return "rejected";

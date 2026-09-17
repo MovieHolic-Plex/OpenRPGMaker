@@ -141,6 +141,10 @@ export type BattleUiStyle =
   | "rm2003" // 측면 전투(2026-09-03 되살림 — 그 전 몇 시간은 rm2000 의 옛 id 였다)
   | "classic"; // legacy alias, remapped by resolveSkinId → rm2000
 
+/** ESC(X) 게임 메뉴 스킨 — @/player/menuSkins/registry 의 id union. 프로젝트 파일에 저장되므로
+ *  id 를 함부로 바꾸지 않는다. 미설정·미지값은 resolveMenuSkinId 가 workbench 로 푼다. */
+export type MenuUiStyle = "workbench" | "party-first" | "party-first-warm" | "hub" | "sheet";
+
 /** 전투 아군측 배틀러 소스 — actors: 파티 액터가 직접 싸움(기본),
  *  monsters: 잡은 파티 몬스터가 필드에 나서 싸움(포켓몬식). */
 export type BattleParty = "actors" | "monsters";
@@ -1105,6 +1109,8 @@ export interface SystemRecords {
   initialTroopId?: TroopId;
   battleFlow?: BattleFlow;
   battleUiStyle?: BattleUiStyle;
+  /** ESC(X) 게임 메뉴 디자인. 생략 = workbench(작업대, 지금 화면). */
+  menuUiStyle?: MenuUiStyle;
   /** Project-wide, scoped battle menu CSS; absent preserves the selected skin. */
   battleCommandCss?: string;
   battleParty?: BattleParty;

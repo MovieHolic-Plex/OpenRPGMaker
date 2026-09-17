@@ -23,6 +23,8 @@ const h = vi.hoisted(() => ({
     maps: { map_a: { id: "map_a", name: "A", width: 4, height: 4 } },
   } as unknown,
   piApply: "auto" as "auto" | "review",
+  /** showConfirm 의 대답. 맵 소실 확인 모달을 사람 없이 굴린다. */
+  confirmAnswer: true,
 }));
 
 vi.mock("@/ai/ultrabrainReview", () => ({ reviewMapHarmony: async () => {
@@ -77,7 +79,11 @@ vi.mock("@/ai/piAgent/mapBundle", () => ({
   }),
 }));
 vi.mock("@/project/authoredProjectBaseline", () => ({ AuthoredProjectBaseline: class {} }));
-vi.mock("@/project/store", () => ({ store: { getCurrent: () => h.project } }));
+// subscribe 가 빠져 있어 mapEditHistory 의 모듈 초기화가 즉시 죽었다 — 파일 전체가 로드조차
+// 되지 않아 여기 담긴 12개 케이스가 통째로 침묵했다(main 기준으로도 빨간불).
+vi.mock("@/project/store", () => ({ store: { getCurrent: () => h.project, subscribe: () => () => {} } }));
+// 실제 모달을 띄우지 않는다. 맵 소실 확인은 별도 케이스에서 반환값을 갈아 끼워 검사한다.
+vi.mock("@/editor/ui/modal", () => ({ showConfirm: async () => h.confirmAnswer }));
 vi.mock("@/ai/llmClient", () => ({ loadAiConfig: () => ({ providerId: "google-antigravity", model: "m", piApply: h.piApply }) }));
 vi.mock("@/editor/tools/changeset", () => ({ summarizeChanges: () => ({}) }));
 vi.mock("@/editor/tools/applyChangesetToStore", () => ({
@@ -110,6 +116,9 @@ beforeEach(() => {
   h.assistantTexts.length = 0; h.boardStates.length = 0; h.reviewActions.length = 0;
   h.project = projectWith("A");
   h.piApply = "auto"; h.harmony = true; h.harmonyError = false;
+  // 예전에는 mergeMapBundles 목이 매 턴 splice 로 비워 줘서 눈에 안 띄었다. 평문 턴이 더 이상
+  // 병합을 타지 않으므로(2026-09-17) 여기서 직접 비우지 않으면 다음 케이스로 샌다.
+  h.spills.length = 0; h.errorEvents.length = 0; h.confirmAnswer = true;
 });
 
 describe("Pi 경로 실행 결과 4축", () => {
@@ -239,11 +248,60 @@ describe("Pi 경로 실행 결과 4축", () => {
     h.spills.push({ mapIds: ["map_a"], keys: ["switches"] });
     const { outcomeCalls, surface } = harness();
 
-    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "스위치를 바꿔라" }, surface());
+    // 사용자가 `/pi map_a …` 로 범위를 직접 적은 턴만 병합이 범위 밖을 버린다(2026-09-17).
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], scopedByUser: true, task: "스위치를 바꿔라" }, surface());
 
     expect(h.bubbles.some((line) => line.includes("적용했습니다") && line.includes("범위 밖 1건 버림") && line.includes("switches"))).toBe(true);
     // outcome 축 자체는 적용 성공을 그대로 말한다 — spill 은 성공을 지우지 않는다(4축 독립).
     expect(outcomeCalls.at(-1)).toMatchObject({ delivery: "applied", execution: "response-final" });
+  });
+
+  // 2026-09-17 실측: 「회복약 아이템 만들어줘」에 대해 병합이 `database` 를 버리고, 에이전트는
+  // 「등록을 완료했습니다」라고 답하고, 시스템은 「프로젝트는 바뀌지 않았습니다」로 끝냈다.
+  // 화면의 모든 어휘가 성공을 가리켰고 바뀐 것은 0바이트였다.
+  it("한 일이 전부 범위 밖이면 성공이 아니라 실패로 끝난다", async () => {
+    h.results.push({ project: projectWith("A"), toolErrors: 0 }); // 병합 뒤 base 와 같아진다
+    h.spills.push({ mapIds: ["map_a"], keys: ["database"] });
+    h.assistantTexts.push("회복약 아이템 등록을 완료했습니다.");
+    const { surface } = harness();
+
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], scopedByUser: true, task: "회복약 만들어줘" }, surface());
+
+    expect(h.bubbles.some((line) => line.includes("적용되지 않았습니다") && line.includes("database"))).toBe(true);
+    expect(h.bubbles.some((line) => line.includes("프로젝트는 바뀌지 않았습니다"))).toBe(false);
+    expect(h.boardStates.at(-1)?.phase).toBe("실패");
+    expect(h.applyCalls).toBe(0);
+  });
+
+  // 같은 실측: 시공이 「실패 · 17턴 · 중단」으로 끝났는데 검수는 「검수 통과」를 찍었고, 그 부분
+  // 결과가 auto 설정에서 확인 없이 적용돼 맵 12개가 사라졌다.
+  it("상한에 걸려 끊긴 실행은 auto 설정이어도 자동 적용하지 않는다", async () => {
+    h.results.push({ project: projectWith("하다 만 것"), toolErrors: 0 });
+    h.errorEvents.push("턴 상한(16)을 넘어 중단했습니다.");
+    h.piApply = "auto"; h.harmony = true;
+    const { surface } = harness();
+
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "마을 만들어줘" }, surface());
+
+    expect(h.applyCalls).toBe(0);
+    expect(h.bubbles.some((line) => line.includes("중단된 작업의 일부"))).toBe(true);
+    // 원인과 해법을 사람 말로 — 영문 원문(Request was aborted)이 그대로 나가던 자리다.
+    expect(h.bubbles.some((line) => line.includes("Request was aborted"))).toBe(false);
+  });
+
+  it("상한 안내는 다이얼 단계 이름과 다시 보내는 법을 함께 말한다", async () => {
+    h.results.push({ project: projectWith("A"), toolErrors: 0 });
+    h.errorEvents.push("턴 상한(16)을 넘어 중단했습니다.");
+    const { surface } = harness();
+
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "마을" }, surface(), { autonomyLabel: "균형" });
+
+    // 문구는 error 이벤트 하나에서 갈라져 보드 행·실행 요약·적용 캡션으로 퍼진다. 갈라지기 전에
+    // 고쳐 두므로 보드가 들고 있는 error 를 보면 모든 표면이 같은 말을 하는지 알 수 있다.
+    const shown = h.bubbles.concat(
+      h.boardStates.map((state) => String((state as { error?: string }).error ?? "")),
+    );
+    expect(shown.some((line) => line.includes("균형") && line.includes("16턴") && line.includes("다이얼"))).toBe(true);
   });
 });
 

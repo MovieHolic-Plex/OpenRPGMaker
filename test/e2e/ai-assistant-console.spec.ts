@@ -69,7 +69,12 @@ async function shot(page: Page, name: string): Promise<void> {
 async function assertFloatComposerOnly(page: Page): Promise<void> {
   const floatHost = page.getByTestId("chat-float-host");
   await expect(floatHost.getByTestId("ai-command-bar")).toBeVisible();
-  expect(await floatHost.locator(".ai-chat-log").count()).toBe(0);
+  // 로그 요소는 조수 덱 안에 **있다**(ai-deck > ai-chat-body > ai-glass-log > .ai-chat-log).
+  // 계약은 「없다」가 아니라 「첫 방문에 보이지 않는다」다 — 비어 있는 덱이 접혀 있기 때문이다.
+  // 예전 단언(count === 0)은 도크 축을 걷은 뒤(c67743607) 실측과 어긋난 채 남아 있었다.
+  const log = floatHost.locator(".ai-chat-log");
+  expect(await log.count()).toBe(1);
+  await expect(log).not.toBeVisible();
   expect(await floatHost.getByTestId("ai-rising-overlay").count()).toBe(0);
   expect(await page.getByTestId("ai-start-visual-gallery").count()).toBe(0);
   expect(await page.getByTestId("ai-empty-cta").count()).toBe(0);
@@ -109,17 +114,26 @@ test.describe("AI 감독 console contract", () => {
       await shot(page, `slash-${viewport.name}`);
       await page.getByTestId("ai-input").fill("");
 
+      // 도크 축은 2026-08-31(c67743607)에 걷혔다 — 조수가 붙을 자리는 플로팅 하나뿐이고
+      // 전환 진입점 5개(chat-dock-toggle·ai-dock-mode-btn·ai-chat-detach·ai-more-dock·
+      // ai-command-menu-dock)와 chatDock.ts 가 함께 지워졌다. 이 스펙은 그때 갱신되지 않아
+      // 없는 버튼을 30초 기다리다 죽고 있었다. 부재를 계약으로 고정한다.
       await page.getByTestId("ai-command-menu-toggle").click();
-      await page.getByTestId("ai-command-menu-dock").click();
-      const sidePanel = page.getByTestId("chat-side-panel");
-      await expect(sidePanel.getByTestId("ai-panel")).toBeVisible();
+      const commandMenu = page.getByTestId("ai-command-menu");
+      await expect(commandMenu).toBeVisible();
+      expect(await page.getByTestId("ai-command-menu-dock").count()).toBe(0);
+      expect(await page.getByTestId("chat-dock-toggle").count()).toBe(0);
+      expect(await page.getByTestId("ai-dock-mode-btn").count()).toBe(0);
+      expect(await page.getByTestId("chat-side-panel").count()).toBe(0);
       // 헤더 명패(ai-director-plate)는 2026-08-28 에 폐기됐다 — 조수의 얼굴을 노출하지 않는다.
       // 부재를 계약으로 고정해 두어야 되살아나는 것을 잡는다.
-      expect(await sidePanel.getByTestId("ai-director-plate").count()).toBe(0);
-      expect(await sidePanel.getByTestId("ai-director-face").count()).toBe(0);
-      await expect(sidePanel.getByTestId("ai-panel")).not.toContainText("🤖");
+      const panelHost = page.getByTestId("chat-float-host");
+      expect(await panelHost.getByTestId("ai-director-plate").count()).toBe(0);
+      expect(await panelHost.getByTestId("ai-director-face").count()).toBe(0);
+      await expect(panelHost.getByTestId("ai-panel")).not.toContainText("🤖");
+      await page.keyboard.press("Escape");
       await assertEmptyQueueHidden(page);
-      await shot(page, `side-plate-${viewport.name}`);
+      await shot(page, `single-dock-${viewport.name}`);
 
       // 접기 버튼은 화면에 없다(숨은 훅 컨테이너로 옮겼다). 검사 대상은 버튼의 가시성이 아니라
       // **접기 상태 기계**이므로 DOM 으로 직접 눌러 같은 경로를 태운다.

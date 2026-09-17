@@ -18,6 +18,7 @@ import {
   type StatusMenuRailId,
 } from "@/player/playerStatusMenuModel";
 import { reduceStatusMenuKeyboard, type RuntimeMenuKey } from "@/player/runtimeKeyboardMenu";
+import { menuSkinFor } from "@/player/menuSkins/registry";
 import { directionForKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
 import type { RuntimeJuiceEvent } from "@/player/runtimeJuice";
 import type { ActorInitialEquipment, SkillId } from "@/project/types";
@@ -243,6 +244,10 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   };
   function focusMenuArea(nextMode: "main" | "function"): void {
     mode = nextMode;
+    // 첫 화면이 작업 패널이 아닌 스킨(파티 개요·허브·시트)은 main 과 function 의 오른쪽 내용이 다르다.
+    // 포커스만 옮기면 빈 자리에 커서가 서므로 모드가 바뀔 때 한 번 다시 그린다. workbench 는 그대로 포커스만 옮긴다.
+    const landing = currentMenu()?.dataset.menuSkinLanding;
+    if (landing && landing !== "work") renderMenu(undefined, selectedCommand);
     const menu = currentMenu();
     if (!menu) return;
     menu.dataset.statusMenuScreen = mode;
@@ -272,7 +277,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       return;
     }
     mode = "main";
-    selectedCommand = statusMenuRailIdForCommand(selectedCommand);
+    selectedCommand = statusMenuRailIdForCommand(selectedCommand, store.getCurrent(), options.getActiveScene()?.getSession());
     openGroupId = undefined;
     resetSubscreenState();
     options.emitMenuJuice("menu-open", renderMenu());
@@ -297,24 +302,28 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       return rejectInput();
     }
 
-    if (direction === "right" || isConfirmMenuKey(key)) {
+    // 격자 레일(허브 타일)은 →← 가 진입/복귀가 아니라 커서 이동이다. 진입은 Enter 로만.
+    const railColumns = menuSkinFor(store.getCurrent()).railColumns;
+    const grid = railColumns > 1;
+    if ((!grid && direction === "right") || isConfirmMenuKey(key)) {
       if (isStatusMenuGroupEntryId(selectedCommand)) openGroupId = selectedCommand;
       focusMenuArea("function");
       options.emitMenuJuice("menu-confirm", currentMenu());
       return true;
     }
-    if (direction === "left") return true;
+    if (!grid && direction === "left") return true;
 
     if (isRailNavKey(key)) {
-      // Horizontal input moves focus between the rail and its preview.
+      // 1열: 가로 입력도 세로 이동으로 접는다(레일과 미리보기 사이 초점 이동). 격자: 방향 그대로.
       const railDir = directionForKey(key);
-      const railKey: RuntimeMenuKey =
-        railDir === "right" || railDir === "down" ? "ArrowDown" : "ArrowUp";
+      const railKey: RuntimeMenuKey = grid
+        ? key
+        : railDir === "right" || railDir === "down" ? "ArrowDown" : "ArrowUp";
       const session = options.getActiveScene()?.getSession();
       const commandIds = session
         ? listStatusMenuRailIds(store.getCurrent(), session)
         : undefined;
-      const next = reduceStatusMenuKeyboard({ selectedCommand: statusMenuRailIdForCommand(selectedCommand), mode, commandIds }, railKey);
+      const next = reduceStatusMenuKeyboard({ selectedCommand: statusMenuRailIdForCommand(selectedCommand, store.getCurrent(), session), mode, commandIds, columns: railColumns }, railKey);
       if (commandIds && !commandIds.includes(next.selectedCommand)) {
         selectedCommand = commandIds[0] ?? "items";
       } else {
@@ -550,7 +559,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       options.emitMenuJuice("menu-back", renderMenu(undefined, selectedCommand));
       return;
     }
-    selectedCommand = statusMenuRailIdForCommand(selectedCommand);
+    selectedCommand = statusMenuRailIdForCommand(selectedCommand, store.getCurrent(), options.getActiveScene()?.getSession());
     openGroupId = undefined;
     mode = "main";
     options.emitMenuJuice("menu-back", renderMenu(undefined, selectedCommand));

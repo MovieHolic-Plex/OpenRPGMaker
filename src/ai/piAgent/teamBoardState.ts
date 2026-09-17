@@ -229,9 +229,18 @@ export function markTeamBoardApplied(state: TeamBoardState, text: string): TeamB
   return { ...state, phase: "적용됨", applied: text };
 }
 
-/** 적용 없이 끝난 정상 종료 — 계획만·답변·변경 없음. 「적용됨」은 실제 커밋된 실행에만 쓴다. */
+/**
+ * 적용 없이 끝난 정상 종료 — 계획만·답변·변경 없음. 「적용됨」은 실제 커밋된 실행에만 쓴다.
+ *
+ * 이미 실패로 접힌 판은 다시 펴지 않는다. 예전에는 무조건 `phase: "완료"` 로 덮어써서, 리듀서가
+ * `error` 이벤트로 찍어 둔 「실패」가 마지막에 지워졌다 — 화면에는 빨간 「시공 … 실패」 행 위에
+ * 초록 「완료」 칩이 같이 떴다(2026-09-17 실측: 턴 상한 중단 7회 전부). 두 어휘가 한 판에 서면
+ * 사용자는 물론이고 활동 로그도 이 실행을 성공으로 적는다.
+ */
 export function markTeamBoardDone(state: TeamBoardState, text: string): TeamBoardState {
-  return { ...state, phase: "완료", applied: text };
+  if (state.phase === "실패") return { ...state, applied: text };
+  const failedAgent = state.agents.some((agent) => agent.state === "실패");
+  return { ...state, phase: failedAgent ? "실패" : "완료", applied: text };
 }
 
 /** 결과가 나왔지만 사용자의 승인을 기다린다. */
