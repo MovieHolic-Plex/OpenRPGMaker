@@ -161,16 +161,16 @@ function renderCanonCard(project: ReturnType<typeof store.getCurrent>, host: HTM
   const canon = resolveWorldCanon(project.worldCanon);
   return el("button", {
     class: "db-overview-pulse-card db-overview-canon",
-    attrs: { type: "button", title: "자료집 「이 세계」 탭 열기" },
+    attrs: { type: "button", title: "자료집 「세계 개요」 탭 열기" },
     dataset: { testid: "db-overview-canon" },
     on: { click: () => jumpToTab(host, "worldCanon") },
     children: [
-      el("span", { text: "세계관" }),
+      el("span", { text: "세계 개요" }),
       el("strong", { text: authored ? (canon.name || "이름 없는 세계") : "이 세계를 적어 보세요" }),
       el("p", {
         text: authored
-          ? (canon.premise || `없는 것 ${canon.absences.length} · 톤 ${canon.tones.length}`)
-          : "이름·전제·없는 것 — 조수가 이 한 장에 맞춰 만든다",
+          ? (canon.premise || `없는 것 ${canon.absences.length}개 · 톤 ${canon.tones.length}종`)
+          : "이름·전제·없는 것 — 조수는 이 한 장에 맞춰 만든다",
       }),
     ],
   });
@@ -187,7 +187,7 @@ function renderCodexCard(project: ReturnType<typeof store.getCurrent>, host: HTM
       el("span", { text: "설정집" }),
       el("strong", { text: count > 0 ? `낱장 카드 ${count}장` : "낱장 카드를 적어 보세요" }),
       el("p", {
-        text: "인물·장소·사건 낱장 카드 — AI가 항상 읽는 한 장(이름·요약)은 「이 세계」에 둔다",
+        text: "인물·장소·사건 낱장 카드 — 이름과 요약 한 줄은 「이 세계」가 함께 읽는다",
       }),
     ],
   });
