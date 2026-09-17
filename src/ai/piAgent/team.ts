@@ -26,7 +26,7 @@ export const PI_TEAM_ROLES: Record<PiTeamRoleId, PiTeamRole> = {
     label: "팀장",
     toolNames: [...ORCHESTRATOR_TOOL_NAMES],
     // 배정과 수령이 갈리면서 턴이 늘었다(assign → check/wait → review → 수정 → finish).
-    maxTurns: 20,
+    maxTurns: 100,
     systemPrompt(project, mapIds, task, team, currentMapId) {
       const candidates = mapIds.length > 0
         ? ["이번 작업에 쓸 수 있는 맵:", ...describeScopedMaps(project, mapIds)]
@@ -61,7 +61,7 @@ export const PI_TEAM_ROLES: Record<PiTeamRoleId, PiTeamRole> = {
   builder: {
     id: "builder",
     label: "시공",
-    maxTurns: 40,
+    maxTurns: 200,
     systemPrompt(project, mapIds) {
       return [
         ...buildPiAgentSystemPrompt(project, mapIds),
@@ -73,7 +73,7 @@ export const PI_TEAM_ROLES: Record<PiTeamRoleId, PiTeamRole> = {
     id: "reviewer",
     label: "검수",
     readOnly: true,
-    maxTurns: 10,
+    maxTurns: 50,
     systemPrompt(project, mapIds) {
       return [
         "너는 팀의 검수 에이전트다. 읽기 도구만 있다. 아무것도 고치지 않는다.",

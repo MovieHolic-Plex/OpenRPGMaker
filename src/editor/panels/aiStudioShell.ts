@@ -759,7 +759,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     provider: laneDefaults.provider,
     model: laneDefaults.model,
     instruction: "",
-    maxTurns: 12,
+    maxTurns: 60,
   };
   let laneNotice: string | null = null;
   let laneSignature = "";

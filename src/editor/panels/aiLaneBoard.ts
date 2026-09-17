@@ -135,7 +135,7 @@ function renderNewLaneForm(input: NewLanePaneInput): HTMLElement {
 
   const turnsInput = el("input", {
     class: "ai-lane-input is-narrow",
-    attrs: { type: "number", min: "1", max: "60", value: String(input.form.maxTurns), "aria-label": "턴 상한" },
+    attrs: { type: "number", min: "1", max: "600", value: String(input.form.maxTurns), "aria-label": "턴 상한" },
     dataset: { testid: "lane-turns" },
     on: { input: () => input.onFormChange({ maxTurns: Number(turnsInput.value) || 1 }) },
   }) as HTMLInputElement;

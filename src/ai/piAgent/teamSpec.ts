@@ -41,7 +41,7 @@ export const DEFAULT_TEAM_MEMBERS: readonly PiTeamMember[] = [
     summary: "집·길·지형 등 맵 위 구조물을 짓는다. 기본 시공 담당.",
     prompt: "너는 팀의 시공 에이전트다. 팀장이 준 작업만 하고, 끝나면 무엇을 어디에 만들었는지 좌표와 함께 한두 문장으로 보고한다.",
     toolDomains: [],
-    maxTurns: 40,
+    maxTurns: 200,
     enabled: true,
   },
   {
@@ -51,7 +51,7 @@ export const DEFAULT_TEAM_MEMBERS: readonly PiTeamMember[] = [
     summary: "완성된 구역에 소품·나무·꽃·울타리 같은 장식을 얹는다. 구조물은 새로 짓지 않는다.",
     prompt: "너는 팀의 장식 에이전트다. 이미 지어진 집과 길은 그대로 두고, 빈 땅에 소품·나무·꽃·울타리로 생활감을 더한다. 통행로를 막지 않는다. 끝나면 무엇을 어디에 놓았는지 보고한다.",
     toolDomains: ["core", "tile", "map"],
-    maxTurns: 30,
+    maxTurns: 150,
     enabled: false,
   },
   {
@@ -61,7 +61,7 @@ export const DEFAULT_TEAM_MEMBERS: readonly PiTeamMember[] = [
     summary: "읽기 도구로 결과를 확인하고 ok/findings 를 보고한다.",
     prompt: "get_map_region 과 run_lint(reachability 포함)로 작업 결과를 확인한다: 요청한 구조물이 실제로 있는가, 길이 이어지는가, 집과 길이 겹치지 않는가, lint error 가 없는가.",
     toolDomains: [],
-    maxTurns: 10,
+    maxTurns: 50,
     enabled: true,
   },
 ];
@@ -111,7 +111,7 @@ export function normalizeTeamSpec(raw: unknown): PiTeamSpec {
       summary: str(m.summary).trim().slice(0, 200),
       prompt: str(m.prompt).trim().slice(0, 4000),
       toolDomains: domains,
-      maxTurns: Number.isFinite(maxTurns) && maxTurns >= 1 ? Math.min(120, Math.round(maxTurns)) : kind === "reviewer" ? 10 : 40,
+      maxTurns: Number.isFinite(maxTurns) && maxTurns >= 1 ? Math.min(600, Math.round(maxTurns)) : kind === "reviewer" ? 50 : 200,
       ...(str(m.model).trim() ? { model: str(m.model).trim() } : {}),
       enabled: m.enabled !== false,
     });

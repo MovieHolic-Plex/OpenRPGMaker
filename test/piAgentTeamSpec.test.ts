@@ -32,7 +32,7 @@ describe("팀 명세", () => {
     expect(spec.members.map((m) => m.id)).toEqual(["member", "reviewer", "reviewer-2"]);
     expect(spec.members[0]!.toolDomains).toEqual(["tile"]);
     expect(spec.members[0]!.maxTurns).toBe(12);
-    expect(spec.members[1]!.maxTurns).toBe(10);
+    expect(spec.members[1]!.maxTurns).toBe(50);
     expect(normalizeTeamSpec({ members: [] }).members.length).toBe(3);
     expect(normalizeTeamSpec(null).members.length).toBe(3);
   });
