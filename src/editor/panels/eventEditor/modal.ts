@@ -284,8 +284,18 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   const footer = renderModalFooter(request, closeHandler, requestClose);
   windowEl.append(header, body, footer, resizeHandle);
   backdrop.append(windowEl);
+  // 맵 더블클릭으로 열면 pointerdown 은 캔버스에서 나고, 모달이 붙는 순간
+  // 이어지는 click 이 백드롭(창 바깥)으로 떨어질 수 있다. 스튜디오 모니터는
+  // 뷰포트 중앙이 아니라서 그 click 이 창이 아니라 어두운 면에 맞는다.
+  // dblclick 유령만 막으면 click 이 requestClose 를 호출해 편집기가 즉시 닫힌다.
+  let backdropPointerStarted = false;
+  backdrop.addEventListener("pointerdown", (event) => {
+    backdropPointerStarted = event.target === backdrop;
+  });
   backdrop.addEventListener("click", (event) => {
-    if (event.target === backdrop) requestClose();
+    if (event.target !== backdrop) return;
+    if (!backdropPointerStarted) return;
+    requestClose();
   });
   let stableRendered = false;
   const refresh = () => {
