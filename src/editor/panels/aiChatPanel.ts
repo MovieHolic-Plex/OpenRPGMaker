@@ -477,6 +477,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // Empty read-only receipts disappear when the turn finishes.
   let workCard: AiWorkCard | null = null;
   let workCardTitle = "";
+  let pendingReviewPrompt: HTMLElement | null = null;
   const ensureWorkCard = (): AiWorkCard => {
     if (workCard) return workCard;
     workCard = createInlineWorkCard({ title: workCardTitle || "작업 중", onStop: () => abortActiveTurn() });
@@ -776,7 +777,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    * Pi 명령은 «무엇이 바뀌었나» 만 알고 카드·되돌리기·스튜디오 「변경」 탭은 패널에 있다. 그래서
    * 렌더를 명령에 넣지 않고 이 훅으로 되돌린다 — 명령은 DOM 을 모른 채로 남는다.
    */
-  const showPiChangeReceipt = (input: PiChangeReceipt): void => {
+  const showPiChangeReceipt = (input: PiChangeReceipt, targetCard?: AiWorkCard): void => {
     // 맵이 안 바뀐 실행은 그릴 영역이 없다 — 칩만 남은 가짜 카드를 만들지 않는다.
     if (!input.mapId) return;
     const preview: ChangePreviewInput = {
@@ -794,7 +795,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     };
     lastStudioChange = preview;
     studioShell?.setChangePreview(preview);
-    ensureWorkCard().attachChange(preview);
+    (targetCard ?? ensureWorkCard()).attachChange(preview);
   };
 
   /**
@@ -1960,6 +1961,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
       return;
     }
+    pendingReviewPrompt?.remove();
+    pendingReviewPrompt = null;
     workCardTitle = (displayText || command.task).replace(/\s+/gu, " ").trim().slice(0, 48);
     if (displayText) appendBubble("user", displayText);
     if (opts?.questionPromoted) appendBubble("system", "프로젝트를 바꾸지 않고 확인해서 답할게요.");
@@ -1969,6 +1972,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     abortNoticeShown = false;
     runSurface.turnBusy = true;
     refreshAbortButton();
+    let reviewCard: AiWorkCard | null = null;
     // 팀 데크의 「중지」 는 이 컨트롤러를 모른다 — 버스에 같은 abort 경로를 걸어 둔다(두 버튼, 한 동작).
     setTeamStopHandler(() => abortActiveTurn());
     // 유휴 판정을 갱신해야 로그 카드가 펼쳐진다 — 이 경로는 세션 턴 러너를 거치지 않아 스스로 부른다.
@@ -1976,12 +1980,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     try {
       await runPiCommand(command, {
         appendBubble: (role, line) => appendBubble(role, line),
-        appendProcess: (text) => ensureWorkCard().attachElement(el("p", { class: "ai-work-process-note", text })),
+        appendProcess: (text) => (reviewCard ?? ensureWorkCard()).attachElement(el("p", { class: "ai-work-process-note", text })),
         appendCard: (element) => { appendChangeCard(element); },
+        appendReviewPrompt: (element) => {
+          reviewCard = ensureWorkCard();
+          pendingReviewPrompt?.remove();
+          pendingReviewPrompt = element;
+          log.append(element);
+          element.scrollIntoView({ block: "nearest" });
+        },
         setStatus,
         getCurrentMapId: () => editorState.get().currentMapId ?? null,
         signal: piRunController.signal,
-        showChangeReceipt: showPiChangeReceipt,
+        showChangeReceipt: (receipt) => showPiChangeReceipt(receipt, reviewCard ?? undefined),
+        onReviewResolved: (applied) => { reviewCard?.finish({ ok: true, message: applied ? "적용 완료" : "버림" }); },
         // 종료 4축 — 세션이 없는 Pi 경로가 직접 게시한다(2026-09-11 실측: 20턴 내내 미렌더).
         setRunOutcome: (outcome) => { piRunOutcome = outcome; refreshRunOutcome(); },
         // Pi 경로는 세션도 없고 auditHistory 를 채우는 곳도 없어서, 브리지 audit() 이 늘 빈 배열이었다
