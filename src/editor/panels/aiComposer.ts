@@ -37,9 +37,9 @@ import { deckIcon } from "./aiDeckIcons";
 import { anchoredPopupPosition } from "./popupPosition";
 
 /** 서로 배타적인 컴포저 팝오버. 하나가 열리면 나머지는 닫힌다. */
-export type ComposerPopover = "suggest" | "menu" | "preference" | "context" | "planning" | "team";
+export type ComposerPopover = "suggest" | "menu" | "preference" | "context" | "planning" | "team" | "settings";
 
-const POPOVER_KINDS = ["suggest", "menu", "preference", "context", "planning", "team"] as const;
+const POPOVER_KINDS = ["suggest", "menu", "preference", "context", "planning", "team", "settings"] as const;
 
 export { COMPOSER_MODES, COMPOSER_MODE_LABEL, type ComposerMode };
 
@@ -341,9 +341,11 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     attrs: { "aria-label": "AI 적용 모드" }, dataset: { testid: "ai-composer-apply-mode" },
     children: PI_APPLY_MODES.map(mode => el("option", { attrs: { value: mode.id, title: mode.description }, text: mode.label })),
   }) as HTMLSelectElement;
+  let paintSettingsSummary = (): void => {};
   const syncApplyMode = () => {
     const mode = normalizePiApplyMode(loadAiConfig().piApply);
     applyModeSelect.value = mode;
+    paintSettingsSummary();
     applyModeSelect.title = `${PI_APPLY_MODES.find(item => item.id === mode)!.description} 변경한 모드는 다음 요청부터 사용합니다.`;
   };
   syncApplyMode();
@@ -352,6 +354,40 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     saveAiConfig({ ...loadAiConfig(), piApply: normalizePiApplyMode(applyModeSelect.value) });
     syncApplyMode();
   });
+
+  const settingsToggle = el("button", {
+    class: "ai-composer-team-toggle",
+    text: "작업 설정",
+    attrs: { type: "button", "aria-label": "작업 설정", "aria-haspopup": "dialog", "aria-expanded": "false" },
+    dataset: { testid: "ai-composer-settings" },
+    on: { click: () => {
+      openPopover(openState === "settings" ? null : "settings");
+      if (openState === "settings") settingsPopover.querySelector<HTMLElement>("select, button")?.focus();
+    } },
+  });
+  paintSettingsSummary = (): void => {
+    const mode = normalizePiApplyMode(applyModeSelect.value);
+    const labels = { default: "기본", yolo: "YOLO", auto: "자동", review: "검토 후 적용", step: "단계별 적용" };
+    settingsToggle.textContent = `작업 설정 · ${labels[mode]}`;
+  };
+  paintSettingsSummary();
+  const settingRow = (title: string, hint: string, control: HTMLElement): HTMLElement => el("label", {
+    class: "ai-chat-setting-row",
+    children: [el("span", { text: title }), control, el("small", { text: hint })],
+  });
+  const settingsPopover = el("div", {
+    class: "ai-composer-popover ai-chat-settings",
+    attrs: { role: "dialog", "aria-label": "작업 설정" },
+    dataset: { testid: "ai-composer-settings-popover" },
+    children: [
+      el("strong", { text: "작업 설정" }),
+      el("small", { text: "다음에 보내는 요청부터 사용합니다." }),
+      ...(autonomySelect ? [settingRow("AI가 할 일", "질문만 할지, 직접 작업을 맡길지 선택하세요.", autonomySelect)] : []),
+      settingRow("변경 적용 방식", "결과를 바로 반영하거나 확인 후 적용합니다.", applyModeSelect),
+      ...(teamToggle ? [settingRow("작업 인원", "혼자 또는 팀으로 · 작업량과 검토도 설정합니다.", teamToggle)] : []),
+    ],
+  });
+  settingsPopover.hidden = true;
 
   // ── 모델 칩 ──
   const modelChip = el("span", { class: "ai-composer-model", dataset: { testid: "ai-composer-model" } });
@@ -370,9 +406,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
       el("div", {
         class: "ai-composer-actions-lead",
         children: [
-          ...(teamToggle ? [teamToggle] : []),
-          applyModeSelect,
-          ...(autonomySelect ? [autonomySelect] : []),
+          settingsToggle,
           options.undoAppliedButton,
           options.contextChips,
           options.queueIndicator,
@@ -400,6 +434,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     // 팝오버는 셸의 형제로 두고(추천은 흐름, 나머지는 absolute) — 흐름 밖.
     children: [
       suggestPopover,
+      settingsPopover,
       commandMenu,
       preferencePopover,
       planningPopover,
@@ -416,6 +451,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
 
   // 성향·맥락 팝오버는 호출자가 안 주면 없는 종류다 — 없는 종류를 열어도 조용히 무시된다.
   const popoverOf = (kind: ComposerPopover): HTMLElement | null => {
+    if (kind === "settings") return settingsPopover;
     if (kind === "team") return teamMenu?.root ?? null;
     if (kind === "suggest") return suggestPopover;
     if (kind === "menu") return commandMenu;
@@ -424,6 +460,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     return options.contextMeterPopover ?? null;
   };
   const toggleOf = (kind: ComposerPopover): HTMLElement | null => {
+    if (kind === "settings") return settingsToggle;
     if (kind === "team") return teamToggle;
     if (kind === "menu") return menuToggle;
     if (kind === "preference") return preferenceToggle;
@@ -502,7 +539,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     if (openState === null || event.key !== "Escape") return;
     const previous = openState;
     openPopover(null);
-    if (previous === "team") teamToggle?.focus();
+    if (previous === "team" || previous === "settings") settingsToggle.focus();
   };
   if (typeof document !== "undefined" && typeof document.addEventListener === "function") {
     document.addEventListener("pointerdown", onDocumentPointerDown);

@@ -1781,3 +1781,26 @@ body:has([data-testid='resource-modal']) .ai-chat-panel .ai-deck {
 .ai-team-menu .ai-team-menu-settings { border: 0; border-top: 1px solid var(--border-subtle); border-radius: 0; width: 100%; text-align: left; padding: 10px 0 0; background: transparent; }
 
 .ai-team-menu button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Composer options are disclosed together, with labels instead of an unlabeled chip row. */
+.ai-chat-settings {
+  width: min(300px, calc(100vw - 24px));
+  padding: 16px;
+  display: grid;
+  gap: 8px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  color: var(--text-1);
+}
+.ai-chat-settings[hidden] { display: none; }
+.ai-chat-settings small { color: var(--text-2); font-size: 12px; line-height: 1.5; }
+.ai-chat-setting-row { display: grid; gap: 6px; padding-top: 10px; font-size: 13px; }
+.ai-chat-settings .ai-chat-setting-row > :is(select, button) {
+  width: 100%;
+  min-height: 34px;
+  padding: 6px 10px;
+  font-size: 13px;
+  text-align: left;
+}
+.ai-chat-setting-row:has(> button[hidden]) { display: none; }
