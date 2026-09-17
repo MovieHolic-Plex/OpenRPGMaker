@@ -455,3 +455,17 @@ keydown 을 document **캡처** 단계에서 잡아 `stopPropagation` 하므로(
   subscribes to exact input/scroll/resize/render events, and covers all three
   desktop sizes, assistant states, both scroll endpoints and edit alignment.
   Full build/gates and independent screenshot review remain lead-owned.
+
+### Common expression recovery (2026-09-17)
+
+The common expression selector now contains 76 characters / 1216 expressions:
+Actor1, Actor2, People1 and People2 (16 each), Monster 1–12. Monster 13–16 are not imported.
+`src/assets/faceExpressionSets.ts` registers the selector; `scripts/shared-face-expression-sources.json`
+records stable stems, base portrait mapping, original attachment filenames and source hashes.
+Masters live in `public/assets/shared/faceset/source/`. Rebuild with
+`node scripts/prepare-shared-faceset.mjs --all` then `node scripts/slice-faceset-sheets.mjs`.
+Verify using `node scripts/slice-faceset-sheets.mjs --verify` (1328 total faces including 112 base/generated faces).
+The preparation command checks source hashes before center-sampling each cell to 48px;
+explicit cell bounds exclude gutters in three older supplied sheets.
+Preserve the masters, manifest, runtime sheets, generated singles and both TS catalogs together in Git:
+registration in a temporary worktree alone does not preserve the import after that worktree is removed.

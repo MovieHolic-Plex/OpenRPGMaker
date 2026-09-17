@@ -208,3 +208,12 @@
 - Original supplied master: `shared/faceset/source/blue-traveler-expressions.png`.
 - Runtime sheet: `shared/faceset/blue-traveler-expressions.png`; standalone faces: `shared/faceset/blue-traveler-expressions/00.png` through `15.png`.
 - Imported by per-cell nearest-neighbor center sampling, without facial repainting. User expression order and labels are retained.
+
+## Restored common expression library (2026-09-17)
+
+- 76 user-supplied expression masters: Actor1/Actor2/People1/People2 (16 each), Monster (1–12).
+- Preserved originals: `shared/faceset/source/*-expressions.png`.
+- Source filenames, SHA-256 hashes, base face mapping and stable stems: `scripts/shared-face-expression-sources.json`.
+- Preparation: `node scripts/prepare-shared-faceset.mjs --all`, then `node scripts/slice-faceset-sheets.mjs`.
+- Each master yields a 192×192 sheet and 16 standalone 48×48 PNGs. Per-cell nearest-neighbor sampling; no repainting or invented expressions.
+- These are supplied derivatives of the existing EasyRPG portraits; the existing EasyRPG attribution remains applicable. User supply does not establish a new license.
