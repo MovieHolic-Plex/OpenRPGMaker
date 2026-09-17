@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-17T00:30:33.904Z",
+  "generatedAt": "2026-09-17T01:48:05.109Z",
   "counts": {
     "tokens": {
       "important": 0,
@@ -477,12 +477,12 @@
     "R2|database/desktop-record-shell/09-final-readability-fixes.css|.database-modal-body .oprn-record-states .oprn-detail-states > .db-field:first-child > input|oprn-detail-states",
     "R2|database/desktop-record-shell/09-final-readability-fixes.css|.database-modal-body .oprn-record-states .oprn-detail-states > .db-field:first-child|oprn-detail-states",
     "R2|database/desktop-record-shell/12-spatial-authoring.css|.database-modal-backdrop .db-studio-empty .empty-state__action--primary|empty-state__action--primary",
-    "R2|database/desktop-record-shell/13-actor-studio.css|.database-modal-body .db-actor-studio-workspace .oprn-maximum-button|oprn-maximum-button",
-    "R2|database/desktop-record-shell/13-actor-studio.css|.db-actor-table-row .numeric|numeric",
     "R2|database/desktop-record-shell/14-party-ux-fixes.css|.database-modal-body :is(.oprn-detail-form, .db-detail-form) fieldset fieldset > legend|oprn-detail-form",
     "R2|database/desktop-record-shell/14-party-ux-fixes.css|.database-modal-body :is(.oprn-detail-form, .db-detail-form) input[type=\"checkbox\"]|oprn-detail-form",
     "R2|database/desktop-record-shell/14-party-ux-fixes.css|.database-modal-body :is(.oprn-detail-form, .db-detail-form) label:has(> input[type=\"checkbox\"])|oprn-detail-form",
     "R2|database/desktop-record-shell/14-party-ux-fixes.css|.database-modal-body :is(.oprn-detail-form, .db-detail-form) legend|oprn-detail-form",
+    "R2|database/desktop-record-shell/15-actor-studio.css|.database-modal-body .db-actor-studio-workspace .oprn-maximum-button|oprn-maximum-button",
+    "R2|database/desktop-record-shell/15-actor-studio.css|.db-actor-table-row .numeric|numeric",
     "R2|database/desktop.css|.database-modal-body .oprn-detail-enemies > .db-enemy-bm101-workbench|oprn-detail-enemies",
     "R2|database/desktop.css|.database-modal-body .oprn-detail-troops .db-troop-battle-preview-stage|oprn-detail-troops",
     "R2|database/desktop.css|.database-modal-body .oprn-record-troops .oprn-maximum-button|oprn-maximum-button",
