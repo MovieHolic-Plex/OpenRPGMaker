@@ -15,7 +15,7 @@
 </p>
 <p align="center"><i>OPRN Studio 웰컴 화면 — 템플릿에서 새 게임을 시작하거나 AI 어시스턴트와 함께 기획할 수 있습니다.</i></p>
 
-> **필요 환경:** Node.js 24 LTS, npm. 프로젝트 저장용 Supabase 설정은 [`openwiki/quickstart.md`](openwiki/quickstart.md)의 로컬 설정 절차를 따르세요. 다른 사람의 `.env.local`을 복사하거나 커밋하지 마세요.
+> **필요 환경:** Node.js 24 LTS, npm. 프로젝트 저장은 SQLite 폴더를 사용합니다. 브라우저 호스팅은 [`openwiki/team-project-host.md`](openwiki/team-project-host.md)를 따르세요. 다른 사람의 `.env.local`을 복사하거나 커밋하지 마세요.
 
 ## Quick Start
 
@@ -23,7 +23,9 @@
 npm ci
 npm run dev              # 개발 서버 (http://localhost:9999) — 메인 체크아웃 전용
 npm run dev:worktree     # git 워크트리용 — 체크아웃별 고정 포트를 스스로 배정·기록(.env.local DEV_SERVER_PORT)
-npm run build            # 프로덕션 빌드
+npm run build:packaged   # 호스팅/데스크톱 렌더러 빌드
+npm run build:electron   # 저장 브리지 빌드
+npm start -- --project-dir /path/to/project  # 기존 SQLite 프로젝트 호스트 (기본 mdc-server:9888)
 npm test                 # 단위 테스트
 npm run typecheck:app    # 앱 타입 검사
 ```
@@ -38,7 +40,7 @@ npm run typecheck:app    # 앱 타입 검사
 | **전투** | RM2K3 사이드뷰 ATB, DB 구동 능력치/보상/스킬/방어/도주 |
 | **리소스** | 타일셋/스프라이트 임포트(base64 → IndexedDB), 내장 32비트 픽셀 에셋 |
 | **AI 어시스턴트** | Codex ChatGPT OAuth same-origin 브릿지, 또는 OpenAI 호환 API/게이트웨이 |
-| **저장 / 내보내기** | Supabase 원격 저장, 로컬 저장, JSON import/export |
+| **저장 / 내보내기** | SQLite 프로젝트 폴더, 팀 호스트, JSON import/export |
 
 ## 스크린샷
 
