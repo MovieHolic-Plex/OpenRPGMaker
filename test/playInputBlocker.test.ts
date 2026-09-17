@@ -73,6 +73,48 @@ describe("play pointer blocker", () => {
     cleanup();
   });
 
+  // 실측 2026-09-17: 편집기 타일 검색창에 포커스가 한 번 들어가면 테스트 플레이에서
+  // 방향키가 죽는다. input.ts 의 두 이동 경로가 isTextEntryFocused() 로 스스로를 끄기
+  // 때문이다. 차단기가 mousedown 을 preventDefault 하므로 브라우저 기본 포커스 이전도
+  // 취소된다 — 플레이 화면을 눌러도 영영 복구되지 않는다. 눌림을 가로채는 쪽이 포커스
+  // 이전까지 책임진다.
+  it("returns keyboard ownership to play when a stranded text field holds focus", () => {
+    const stranded = document.createElement("input");
+    stranded.type = "search";
+    document.body.append(stranded);
+    const root = document.createElement("div");
+    document.body.append(root);
+    const cleanup = installPlayPointerBlocker(root);
+    stranded.focus();
+    expect(document.activeElement).toBe(stranded);
+
+    root.dispatchEvent(new Event("pointerdown", { bubbles: true, cancelable: true }));
+    expect(document.activeElement).not.toBe(stranded);
+
+    cleanup();
+    stranded.remove();
+    root.remove();
+  });
+
+  it("leaves focus alone while the pointer merely moves over play", () => {
+    const stranded = document.createElement("input");
+    stranded.type = "search";
+    document.body.append(stranded);
+    const root = document.createElement("div");
+    document.body.append(root);
+    const cleanup = installPlayPointerBlocker(root);
+    stranded.focus();
+
+    for (const type of ["pointermove", "mousemove", "mouseover", "pointerover", "wheel"]) {
+      root.dispatchEvent(new Event(type, { bubbles: true, cancelable: true }));
+    }
+    expect(document.activeElement).toBe(stranded);
+
+    cleanup();
+    stranded.remove();
+    root.remove();
+  });
+
   it("automation receives the same production pointer semantics", () => {
     const navigatorPrototype = Object.getPrototypeOf(navigator);
     const original = Object.getOwnPropertyDescriptor(navigatorPrototype, "webdriver");
