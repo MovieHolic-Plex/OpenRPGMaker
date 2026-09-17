@@ -219,7 +219,7 @@ function executeM2Command(
       target: fieldString(command.fields, "target", "this-event"),
       x: destination.x,
       y: destination.y,
-      speed: Math.max(1, Math.min(6, fieldNumber(command.fields, "speed", 4))),
+      speed: Math.max(1, Math.min(8, fieldNumber(command.fields, "speed", 4))),
       wait: fieldBoolean(command.fields, "wait", true),
       // 기본값은 단계에 싣지 않는다 — 옛 고정 좌표 명령이 내는 단계는 바이트 단위로
       // 이전과 같은 모양이어야 한다(기존 계약 테스트가 toEqual 로 재는 자리다).
