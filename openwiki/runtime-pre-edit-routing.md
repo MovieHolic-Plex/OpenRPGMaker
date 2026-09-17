@@ -6,6 +6,8 @@
   결과는 명령이 지정한 변수/스위치에 쓴다 — `session.flags.pathfindSucceeded` 는 호환용
   전역 한 칸이라 병렬 이벤트가 서로의 결과를 덮는다. `onFailure: "stop"` 은 전경
   (`playSceneInterpreter`)과 병렬(`playSceneSchedulers`) **양쪽**에 있어야 한다.
+  `Pathfind Move` 의 `speed` 는 페이지와 같은 1–8 스케일이다(기본 4) — 1–6 으로 묶으면
+  페이지 속도 7·8 이 Pathfind 구간에서만 무시된다.
   `MoveRoute.skippable` 은 개별 루트 단계용이라 재사용하지 않았다(사유는 M2 페이지).
   상세: `openwiki/runtime-m2-flow-controls.md`.
 - **구역 드나듦 트리거는 걸음 완료·순간이동·이벤트 종료 세 지점에서만 판정한다 (2026-09-10):**
