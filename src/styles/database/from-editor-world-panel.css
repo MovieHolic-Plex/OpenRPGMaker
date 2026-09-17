@@ -641,7 +641,8 @@
   padding: 10px 12px;
 }
 .world-document-workspace .world-card.active {
-  box-shadow: inset 2px 0 0 var(--db-studio-accent);
+  border-color: var(--db-studio-accent-border);
+  box-shadow: inset 3px 0 0 var(--db-studio-accent), var(--db-studio-shadow);
 }
 .world-document-workspace .world-card.active .world-card-title {
   letter-spacing: 0;
