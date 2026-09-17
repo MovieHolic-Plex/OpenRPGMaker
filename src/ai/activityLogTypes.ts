@@ -41,6 +41,7 @@ export type AiActivityResult = {
    * 종료 기록이 못 남아도 «무슨 지시였고 언제 시작했는지» 는 남는다.
    */
   readonly pending?: boolean;
+  readonly applyMode?: import("./piAgent/applyMode").PiApplyMode;
   /**
    * 소유권이 끊긴 뒤에 정착한 턴(프로젝트 전환 중 늦게 도착한 결과). 이전에는 이 경로가
    * 활동 로그를 통째로 건너뛰어서 존재 자체가 안 남았다(aiChatPanel 의 ownsTurn 조기 반환).

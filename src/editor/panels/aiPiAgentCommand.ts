@@ -256,6 +256,7 @@ export async function runPiCommand(
   // 이 실행 하나가 활동 로그 행 하나다. 시작은 pending, 끝은 같은 id 로 upsert —
   // 죽은 실행도 "무슨 지시였고 언제 시작했는지" 가 남는다(세션 턴과 같은 관례).
   const logContext: PiRunContext = {
+    applyMode,
     instruction: command.task,
     mode: command.mode,
     mapIds: command.mapIds,
