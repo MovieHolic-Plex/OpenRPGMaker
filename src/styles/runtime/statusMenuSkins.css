@@ -1,0 +1,180 @@
+/* ESC 메뉴 스킨 — 렌더러(playerStatusMenu.ts)가 루트에 쓰는 data-menu-skin-* 속성으로만 스코프한다.
+   기하는 전부 320×240 논리 무대(statusMenuEdgeDock.css 와 같은 좌표계)다. 기본 스킨 workbench 는
+   이 파일의 어떤 규칙에도 걸리지 않는다 — 속성값이 glyph / collapsed / work / glass 라서.
+   색은 전부 rgba(TOKENS.md §4.1). 설계: docs/superpowers/specs/2026-09-17-esc-menu-skins-design.md */
+
+/* ── 컬러 아이콘 레일 ─────────────────────────────────────────────────────────
+   글리프(::before content:attr(data-icon))를 비우고 data-icon-name 별 배경 이미지를 깐다.
+   그림은 전투 HUD 가 쓰는 starter battle-icon-* 와 CC0 아이템 아이콘 — 새 리소스가 아니다. */
+.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon {
+  background: center / contain no-repeat;
+  flex: 0 0 10px;
+  height: 10px;
+  width: 10px;
+}
+.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon::before { content: ""; }
+.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="bag"] { background-image: url("/assets/generated/starter/battle-icon-bag.png"); }
+.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="fire"] { background-image: url("/assets/generated/starter/battle-icon-fire.png"); }
+.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="sword"] { background-image: url("/assets/generated/starter/battle-icon-sword.png"); }
+.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="cross"] { background-image: url("/assets/generated/starter/battle-icon-cross.png"); }
+.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="next"] { background-image: url("/assets/generated/starter/battle-icon-next.png"); }
+.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="shield"] { background-image: url("/assets/generated/starter/battle-icon-shield.png"); }
+.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="shard"] { background-image: url("/assets/generated/starter/battle-icon-shard.png"); }
+.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="world"] { background-image: url("/assets/generated/starter/battle-icon-world.png"); }
+.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="boot"] { background-image: url("/assets/generated/starter/battle-icon-boot.png"); }
+.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="map"] { background-image: url("/assets/cc0/jetrel/icons/map.png"); }
+.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="gear"] { background-image: url("/assets/cc0/jetrel/icons/gear.png"); }
+.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="crystal"] { background-image: url("/assets/cc0/jetrel/icons/crystal.png"); }
+.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="warp-scroll"] { background-image: url("/assets/cc0/jetrel/icons/warp-scroll.png"); }
+.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="clock"] { background-image: url("/assets/cc0/jetrel/icons/clock.png"); }
+.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="book-magic"] { background-image: url("/assets/cc0/jetrel/icons/book-magic.png"); }
+/* 선택되지 않은 명령의 아이콘은 살짝 죽여 커서 위치가 색으로도 읽히게 한다. */
+.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command:not(.selected) .status-menu-command-icon { filter: saturate(0.8) brightness(0.85); }
+
+/* ── 평탄 레일: 최대 10항목이 독 높이(152px)에 들어가야 한다 → 15px 행 ── */
+.oprn-status-menu[data-menu-skin-rail="flat"] .status-menu-command-rail { gap: 0; }
+.oprn-status-menu[data-menu-skin-rail="flat"] .status-menu-command-rail > .status-menu-command {
+  flex: 0 0 15px;
+  font-size: 6.5px;
+  gap: 4px;
+  padding: 1px 4px;
+}
+.oprn-status-menu[data-menu-skin-rail="flat"] .status-menu-command-icon { flex-basis: 9px; height: 9px; width: 9px; }
+.oprn-status-menu[data-menu-skin-rail="flat"] .status-menu-command-rail::after {
+  height: 11px;
+  top: 2px;
+  transform: translateY(calc(var(--status-menu-cursor-index, 0) * 15px));
+}
+
+/* ── 첫 화면: 파티 개요(landing party·sheet) — 작업 패널 자리에 4행 ── */
+.oprn-status-menu .status-menu-party-overview {
+  bottom: 49px;
+  box-sizing: border-box;
+  display: grid;
+  gap: 3px;
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+  left: 88px;
+  min-height: 0;
+  overflow: hidden;
+  position: absolute;
+  right: 17px;
+  top: 39px;
+}
+.oprn-status-menu .status-menu-overview-row {
+  align-items: center;
+  background: var(--runtime-glass-card);
+  border: 1px solid transparent;
+  border-radius: 3px;
+  box-sizing: border-box;
+  display: grid;
+  gap: 5px;
+  grid-template-columns: 30px minmax(0, 1fr);
+  min-height: 0;
+  padding: 2px 5px 2px 3px;
+}
+.oprn-status-menu .status-menu-overview-row.crit { background: rgba(190, 55, 50, 0.16); border-color: rgba(255, 127, 118, 0.35); }
+.oprn-status-menu .status-menu-overview-row .status-menu-face { border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); }
+.oprn-status-menu .status-menu-overview-info { display: grid; gap: 2px; min-width: 0; }
+.oprn-status-menu .status-menu-overview-head { align-items: baseline; display: flex; gap: 4px; min-width: 0; }
+.oprn-status-menu .status-menu-overview-head .status-menu-actor-name { font-size: 8px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.oprn-status-menu .status-menu-overview-head .status-menu-actor-subline { color: var(--status-edge-muted); font-size: 6px; white-space: nowrap; }
+.oprn-status-menu .status-menu-overview-chip {
+  border-radius: 2px;
+  font-size: 5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  margin-left: auto;
+  padding: 1.5px 2.5px;
+}
+.oprn-status-menu .status-menu-overview-chip.crit { background: rgba(220, 70, 60, 0.8); color: rgba(255, 255, 255, 1); }
+.oprn-status-menu .status-menu-overview-vital {
+  align-items: center;
+  display: grid;
+  gap: 3px;
+  grid-template-columns: 9px minmax(0, 1fr) max-content;
+}
+.oprn-status-menu .status-menu-overview-vital-label { color: var(--status-edge-muted); font-size: 5px; font-weight: 800; letter-spacing: 0.06em; }
+.oprn-status-menu .status-menu-overview-value { font-size: 6.5px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* 트랙·채움은 파티 개요와 사이드 파티가 같이 쓴다. HP 초록 · 주의 호박 · 위험 빨강 · MP 파랑 — 메뉴 어디서든 같은 뜻. */
+.oprn-status-menu .status-menu-overview-track {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  height: 3px;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
+.oprn-status-menu .status-menu-overview-fill { border-radius: 2px; display: block; height: 100%; }
+.oprn-status-menu .status-menu-overview-track.hp .status-menu-overview-fill { background: linear-gradient(90deg, rgba(63, 154, 103, 1), rgba(106, 193, 142, 1)); }
+.oprn-status-menu .status-menu-overview-track.hp.warn .status-menu-overview-fill { background: linear-gradient(90deg, rgba(184, 119, 42, 1), rgba(232, 169, 74, 1)); }
+.oprn-status-menu .status-menu-overview-track.hp.crit .status-menu-overview-fill { background: linear-gradient(90deg, rgba(179, 64, 58, 1), rgba(255, 127, 118, 1)); }
+.oprn-status-menu .status-menu-overview-track.mp .status-menu-overview-fill { background: linear-gradient(90deg, rgba(85, 112, 201, 1), rgba(124, 151, 226, 1)); }
+
+/* ── 사이드 파티: 작업 패널 오른쪽 열(function 모드) ──
+   .has-side 는 .has-showcase 와 같은 격자를 쓰되 오른쪽 열 하나에 쇼케이스(위)와 파티 미니(아래)를 겹쳐 담는다.
+   두 클래스가 함께 붙으면 이 규칙이 뒤에 와서 이긴다(같은 레이어·같은 특이도). */
+.oprn-status-menu .status-menu-detail.has-side {
+  column-gap: 8px;
+  grid-template-areas: "title title" "list side";
+  grid-template-columns: minmax(0, 1fr) 76px;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+.oprn-status-menu .status-menu-detail.has-side > .status-menu-detail-title { grid-area: title; }
+.oprn-status-menu .status-menu-detail.has-side > .status-menu-detail-list,
+.oprn-status-menu .status-menu-detail.has-side > .status-menu-detail-empty { grid-area: list; }
+.oprn-status-menu .status-menu-detail-side {
+  align-content: start;
+  border-left: 1px solid var(--status-edge-border);
+  box-sizing: border-box;
+  display: grid;
+  gap: 5px;
+  grid-area: side;
+  min-height: 0;
+  overflow: hidden;
+  padding-left: 7px;
+}
+.oprn-status-menu .status-menu-detail-side > .status-menu-detail-showcase { border-left: 0; grid-area: auto; order: 0; padding-left: 0; }
+/* 쇼케이스는 제 높이를 다 갖고(스탯 증감 줄이 잘리지 않게), 파티 미니가 남은 자리를 받아 넘치면 자기 아래만 자른다. */
+.oprn-status-menu .status-menu-detail-side { grid-template-rows: auto minmax(0, 1fr); }
+.oprn-status-menu .status-menu-detail-side > .status-menu-detail-showcase .status-menu-showcase-frame { height: 24px; width: 24px; }
+/* 옆 열(133px)에 쇼케이스 전체(설명·사실 5줄·스탯 증감 4줄)와 파티 4행이 같이 들어가지 않는다.
+   설명과 표는 하단 메시지 줄이 같은 내용을 이미 말하므로(효과·대상·스탯 증감) 옆 열에서는 접고, 아이콘·이름·수량만 남긴다. */
+.oprn-status-menu .status-menu-detail-side > .status-menu-detail-showcase .status-menu-showcase-description,
+.oprn-status-menu .status-menu-detail-side > .status-menu-detail-showcase .status-menu-stat-delta { display: none; }
+.oprn-status-menu .status-menu-detail-side > .status-menu-side-party { min-height: 0; order: 1; overflow: hidden; }
+.oprn-status-menu .status-menu-side-party {
+  align-content: start;
+  display: grid;
+  font: 500 5.5px/1.25 var(--runtime-ui-font);
+  gap: 1px;
+  min-height: 0;
+}
+.oprn-status-menu .status-menu-side-party-title { color: var(--status-edge-muted); font-size: 5px; font-weight: 800; letter-spacing: 0.06em; }
+.oprn-status-menu .status-menu-side-party-row {
+  align-items: center;
+  border-radius: 2px;
+  display: grid;
+  gap: 3px;
+  grid-template-columns: 10px minmax(0, 1fr);
+  padding: 1px 2px;
+}
+.oprn-status-menu .status-menu-side-party-row.crit { background: rgba(190, 55, 50, 0.18); }
+.oprn-status-menu .status-menu-side-party-body { display: grid; gap: 1px; min-width: 0; }
+.oprn-status-menu .status-menu-side-party-head { display: flex; font-weight: 600; gap: 3px; justify-content: space-between; min-width: 0; }
+.oprn-status-menu .status-menu-side-party-head .status-menu-actor-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.oprn-status-menu .status-menu-side-party-value { color: var(--status-edge-muted); font-variant-numeric: tabular-nums; font-weight: 500; white-space: nowrap; }
+.oprn-status-menu .status-menu-side-party-row .status-menu-overview-track { height: 2px; }
+
+/* ── 톤: 남색과 금(warm) — 변수와 패널 표면만 바꾼다 ── */
+.oprn-status-menu.main-menu[data-menu-skin-tone="warm"] {
+  --status-edge-ivory: rgba(246, 240, 226, 0.98);
+  --status-edge-muted: rgba(205, 192, 168, 0.86);
+  --status-edge-amber: rgba(227, 176, 75, 0.95);
+  --status-edge-amber-soft: rgba(227, 176, 75, 0.2);
+  --status-edge-border: rgba(227, 196, 120, 0.45);
+}
+.oprn-status-menu.main-menu[data-menu-skin-tone="warm"]::before {
+  background: linear-gradient(180deg, rgba(24, 30, 66, 0.92), rgba(10, 14, 40, 0.95));
+  box-shadow: 0 0 0 1px rgba(10, 14, 40, 0.9), 0 0 0 2px rgba(227, 196, 120, 0.22), 0 4px 12px rgba(3, 5, 14, 0.4);
+}

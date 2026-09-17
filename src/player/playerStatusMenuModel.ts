@@ -1,6 +1,7 @@
 import { defaultActorFaceResourceId } from "@/project/actorModel";
 import type { PlaySession } from "@/project/session";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
+import { effectiveActorClassId } from "@/project/sessionClass";
 import { isGiftSystemEnabled } from "@/project/friendship";
 import { resolveTerms } from "@/project/terms";
 import type { Project } from "@/project/types";
@@ -177,6 +178,9 @@ export type PlayerStatusMenuPartyRow = {
   readonly actorId: string;
   readonly name: string;
   readonly levelLabel: string;
+  /** 직업 이름과 숫자 레벨 — 파티 개요(첫 화면)가 "전사 · Lv 12" 로 쓴다. */
+  readonly className: string;
+  readonly level: number;
   readonly condition: string;
   /** 얼굴 낱장 파일 한 장의 리소스 id. 렌더러는 이 이미지를 통째로 그린다. */
   readonly faceResourceId?: string;
@@ -242,6 +246,7 @@ export function createPlayerStatusMenuSnapshot(
   options: StatusMenuSnapshotOptions = {}
 ): PlayerStatusMenuSnapshot {
   const actorsById = new Map(project.database.actors.map((actor) => [actor.id, actor]));
+  const classesById = new Map(project.database.classes.map((record) => [record.id, record]));
   const terms = resolveTerms(project);
   const hpTerm = terms.hp;
   const mpTerm = terms.mp;
@@ -251,10 +256,13 @@ export function createPlayerStatusMenuSnapshot(
     const vitals = session.actorVitals[actorId];
     const level = session.actorLevels[actorId] ?? actor.initialLevel;
     const hpRatio = vitalRatio(vitals?.hp, vitals?.maxHp);
+    const classId = effectiveActorClassId(project, session, actorId);
     return [{
       actorId,
       name: resolveActorName(session, actor),
       levelLabel: `L${level}`,
+      className: (classId ? classesById.get(classId)?.name : undefined) ?? "직업 없음",
+      level,
       condition: "정상",
       faceResourceId: resolveActorFaceResourceId(session, actor, project) ?? defaultActorFaceResourceId(actor),
       hpLabel: vitals ? `${hpTerm} ${vitals.hp}/${vitals.maxHp}` : `${hpTerm} 0/0`,
