@@ -18,10 +18,11 @@ import {
 } from "../../src/ai/piAgent/toolAdapter.ts";
 import { exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.ts";
 import { createDeltaRelay } from "../../src/ai/piAgent/deltaRelay.ts";
+import { applyMapDeltas, diffMapsForDelta } from "../../src/ai/piAgent/mapDelta.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
 import { changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
-import type { Project } from "../../src/project/types.ts";
+import type { GameMap, Project } from "../../src/project/types.ts";
 
 export interface RunPiAgentOptions {
   readonly apiKey?: string;
@@ -146,6 +147,19 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   emit({ type: "start", provider: request.provider, model: String((model as { id?: string }).id ?? ""), toolCount: tools.length });
   // 모델 스트림 조각은 버리지 않고 합쳐 중계한다 — 이게 없어서 모델이 생각하는 동안 와이어가 비었다(실측 2026-09-14).
   const deltas = createDeltaRelay(emit);
+  // 캔버스 시공 표시(고스트)의 재료. 결과 프로젝트는 맨 끝 `done` 에만 실리므로, 툴마다 «바뀐 칸만»
+  // 흘리지 않으면 브라우저 캔버스는 턴이 끝날 때까지 조용하다(2026-09-17 회귀: Pi 가 조수 채팅의
+  // 유일한 실행 경로가 된 뒤 시공 표시가 통째로 사라졌다).
+  //
+  // 섀도우를 한 번만 복제하고 증분으로 따라가는 이유: 툴마다 전체를 다시 복제하면 43맵 프로젝트에서
+  // 툴 호출 하나가 수십 MB 복제가 된다. 여기서는 diff 가 어차피 훑는 것만 훑고, 적용은 바뀐 칸뿐이다.
+  let ghostShadow = structuredClone(base.maps ?? {}) as Record<string, GameMap>;
+  const emitMapDelta = (): void => {
+    const changes = diffMapsForDelta(ghostShadow, ctx.project.maps ?? {});
+    if (changes.length === 0) return;
+    ghostShadow = applyMapDeltas(ghostShadow, changes);
+    emit({ type: "map_delta", maps: changes });
+  };
   const unsubscribe = agent.subscribe((event: { type: string; [key: string]: unknown }) => {
     if (event.type === "message_update") {
       const part = event.assistantMessageEvent as { type?: string; delta?: unknown } | undefined;
@@ -159,8 +173,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       turns += 1;
       emit({ type: "turn", index: turns });
       if (turns > maxTurns) {
+        // abort 에 사유를 실어야 한다. 사유 없이 부르면 pi-agent-core 가 합성하는 aborted 메시지의
+        // errorMessage 가 일반 문구 "Request was aborted" 가 되고, 아래 message_end 가 그것을 사용자에게
+        // 보낸다(실측 2026-09-17: 「마을 만들어달라」가 균형 레벨 16턴을 넘길 때마다 그 영문만 보였다).
         fatal = `턴 상한(${maxTurns})을 넘어 중단했습니다.`;
-        agent.abort();
+        agent.abort(fatal);
       }
       return;
     }
@@ -180,6 +197,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         ok: record ? record.ok : !event.isError,
         summary: record?.summary ?? (event.isError ? "실행 실패(인자 검증 또는 예외)" : ""),
       });
+      // 순서 계약: 무엇을 했나(tool_end) 다음에 무엇이 바뀌었나(map_delta). 브라우저 다리가
+      // 실행 중 도구 이름을 먼저 세우고 그 아래 칸을 그린다.
+      emitMapDelta();
       return;
     }
     if (event.type === "message_end") {
@@ -192,19 +212,21 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       if (text.trim()) emit({ type: "assistant", text });
       if (message.usage) usage = message.usage;
       if (message.stopReason === "error" || message.errorMessage) {
-        fatal = message.errorMessage ?? "제공자 오류";
+        // 우리가 먼저 정한 사유(턴·시간 상한, 클라이언트 끊김)가 있으면 그것이 이긴다 — 코어가 합성한
+        // aborted 메시지의 문구로 덮어쓰지 않는다.
+        fatal = fatal ?? message.errorMessage ?? "제공자 오류";
         emit({ type: "error", message: fatal });
       }
     }
   });
   const timer = setTimeout(() => {
     fatal = fatal ?? "시간 상한을 넘어 중단했습니다.";
-    agent.abort();
+    agent.abort(fatal);
   }, options.timeoutMs ?? DEFAULT_TIMEOUT_MS);
   const onAbort = () => {
     fatal = fatal ?? "클라이언트가 중단했습니다.";
     console.error(`[pi-agent] aborted by client after ${turns} turns / ${toolCalls} tool calls`);
-    agent.abort();
+    agent.abort(fatal);
   };
   options.signal?.addEventListener("abort", onAbort, { once: true });
   try {
@@ -215,6 +237,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     unsubscribe();
     deltas.dispose();
   }
+  // 마지막 한 방울 — 툴 경계 밖에서 바뀐 것까지 캔버스에 닿게 한다. 이미 보낸 것은 diff 가 걸러낸다.
+  emitMapDelta();
   if (fatal && toolCalls === 0) throw Object.assign(new Error(fatal), { status: 502 });
   const done: PiAgentDoneEvent = {
     type: "done",
