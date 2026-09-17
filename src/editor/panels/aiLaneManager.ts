@@ -63,6 +63,7 @@ export interface LaneManagerOptions {
 }
 
 export interface LaneStartOptions {
+  readonly maxTurns?: number;
   /** 후속 지시 — 이 지시문으로 갈아 끼우고 같은 묶음 위에서 다시 돈다. */
   readonly instruction?: string;
 }
@@ -125,7 +126,7 @@ export function createLaneManager(options: LaneManagerOptions = {}): LaneManager
     list().filter((other) => other.spec.id !== lane.spec.id && other.status === "running" && lanesOverlap(other, lane) .length > 0);
 
   const startLane = async (id: string, options: LaneStartOptions = {}): Promise<LaneStartOutcome> => {
-    const lane = states.get(id);
+    let lane = states.get(id);
     if (!lane) return { ok: false, issue: `레인 ${id} 를 찾을 수 없습니다` };
     if (lane.status === "running") return { ok: false, issue: "이미 실행 중입니다" };
     if (lane.spec.mapIds.length === 0) return { ok: false, issue: "묶음이 비어 있습니다 — 맵을 하나 이상 고르세요" };
@@ -135,6 +136,11 @@ export function createLaneManager(options: LaneManagerOptions = {}): LaneManager
     if (busy.length > 0) {
       const names = busy.map((other) => other.spec.label).join(", ");
       return { ok: false, issue: `같은 묶음을 이미 돌리는 레인이 있습니다: ${names}` };
+    }
+    if (options.maxTurns !== undefined) {
+      if (!Number.isInteger(options.maxTurns) || options.maxTurns < 1 || options.maxTurns > 600) return { ok: false, issue: "작업 예산을 다시 선택해 주세요." };
+      lane = { ...lane, spec: { ...lane.spec, maxTurns: options.maxTurns } };
+      states.set(id, lane);
     }
     // 출발 사본은 지금 프로젝트를 얼려 잡는다. 레인이 도는 동안 사람이 다른 맵을 고쳐도
     // 이 레인의 음이 그대로면 적용된다 — 그게 레인별 적용의 계약이다.
