@@ -1,0 +1,507 @@
+// editor/tools/village/morphologyBuild.ts
+// 형태 유형 계획(morphologyPlan)을 맵에 시공한다 — 기존 스탬퍼(킷 집·레시피 집·길 오토타일·울타리 타일·
+// 경작지 오토타일·나무 원자)를 그대로 쓴다. 새 타일 어휘는 없다.
+//
+// 두 단계로 나뉜다. ① 봉인 전: 연못 → 뼈대 길 → 필지 위 집 → 문 앞 옆길. ② 봉인 후(layoutPlan 등록 뒤):
+// 필지 둘레 울타리 → 밭·과수원·풀밭·산울타리 → 거리 기울기 나무 → 녹지 큰나무. 집을 봉인한 뒤에
+// 환경 쓰기가 오는 순서는 기존 시공기와 같다.
+
+import { stampAuthoredHouseForm } from "@/editor/authoredHouseFormStamp";
+import { stampFootprintHouseKit, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
+import { stampHouseDoorBackground } from "@/editor/houseInteriors";
+import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
+import { DEFAULT_FARMLAND_AUTOTILE_GROUP, DEFAULT_TALL_GRASS_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
+import type { AutotileGroup } from "@/project/types";
+import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
+import { TILE } from "@/project/defaults/constants";
+import type { GameMap, Project } from "@/project/types";
+import { mulberry32, type Rng } from "@/util/rng";
+import { protectedHouseCells } from "../houseProtection";
+import { CONSTRUCTION_TOOLS_V3 } from "../v3";
+import {
+  coordKey,
+  DOOR_BOTTOM_TILE,
+  DOOR_TOP_TILE,
+  FENCE_BOTTOM_LEFT,
+  FENCE_BOTTOM_RIGHT,
+  FENCE_END_LEFT,
+  FENCE_END_RIGHT,
+  FENCE_GATE_HALF_WIDTH,
+  FENCE_SIDE_RAIL,
+  FENCE_TOP_LEFT,
+  FENCE_TOP_RAIL,
+  FENCE_TOP_RIGHT,
+  HOUSE_KITS,
+  pointInRect,
+  requireTool,
+  ROAD_TILES,
+  type BuiltHouse,
+  type Plaza,
+  type Point,
+  type Rect,
+  type VillageIntent,
+} from "./constants";
+import { applyRoofDeck, houseBlockedCells } from "./houses";
+import {
+  OCC,
+  planVillageMorphology,
+  type HouseSlot,
+  type MorphologyExit,
+  type MorphologyPlan,
+  type VillageMorphology,
+} from "./morphologyPlan";
+import { paintRoadStrip } from "./roads";
+
+const CONIFER_TOP = 260;
+const CONIFER_BOTTOM = 290;
+const BROADLEAF_TOP_LEFT = 262;
+const BROADLEAF_TOP_RIGHT = 263;
+const BROADLEAF_BOTTOM_LEFT = 292;
+const BROADLEAF_BOTTOM_RIGHT = 293;
+const BUSH_TILE = 289;
+
+/** 프로브·테스트용 — 마지막 시공의 계획(맵과 대조해 어느 단계가 길을 지웠는지 찾는다). */
+export const morphologyDebugSink: { lastPlan?: MorphologyPlan } = {};
+
+export interface MorphologyBuildArgs {
+  readonly draft: Project;
+  readonly map: GameMap;
+  readonly area: Rect;
+  readonly seed: number;
+  readonly intent: VillageIntent;
+  readonly morphology: VillageMorphology;
+  readonly maxHouses: number;
+  /** 물·기존 집·숲 밴드·시작 좌표 등 절대 못 쓰는 칸(index). */
+  readonly blocked: ReadonlySet<number>;
+  /** 숲 밴드 — 집은 피하고 길은 지난다. */
+  readonly softBlocked?: ReadonlySet<number>;
+  readonly windows: HouseKitWindowsOption | undefined;
+  readonly paintDoorTiles: boolean;
+  readonly warnings: string[];
+}
+
+export interface MorphologyFinishReport {
+  readonly fenceTiles: number;
+  readonly fieldCells: number;
+  readonly trees: number;
+}
+
+export interface MorphologyBuild {
+  readonly plan: MorphologyPlan;
+  readonly houses: BuiltHouse[];
+  readonly slots: HouseSlot[];
+  readonly plaza: Plaza;
+  readonly exits: readonly MorphologyExit[];
+  /** 집 봉인(layoutPlan 등록) 뒤에 부른다 — 울타리·밭·나무. */
+  finish(): MorphologyFinishReport;
+}
+
+export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBuild {
+  const { draft, map, area, seed, intent, warnings } = args;
+  const rng = mulberry32((seed ^ 0x3c6ef35f) >>> 0);
+  const templates = intent.templateCatalog.filter((template) =>
+    !template.form || intent.kitMix === "mixed" || template.form.kitId === intent.kitMix);
+  const plan = planVillageMorphology({
+    morphology: args.morphology,
+    area,
+    mapWidth: map.width,
+    mapHeight: map.height,
+    seed,
+    maxHouses: args.maxHouses,
+    templates,
+    blocked: args.blocked, ...(args.softBlocked ? { softBlocked: args.softBlocked } : {}),
+    roadWidth: intent.roadWidth,
+  });
+  morphologyDebugSink.lastPlan = plan;
+  warnings.push(`형태 마을 계획: ${plan.notes.join(" / ")}`);
+  const occ = plan.occupancy;
+  const W = map.width;
+  const lowerAt = (x: number, y: number): number => map.lowerTiles[y * W + x] ?? TILE.EMPTY;
+  const upperAt = (x: number, y: number): number => map.upperTiles[y * W + x] ?? TILE.EMPTY;
+  const inMap = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < W && y < map.height;
+
+  // ① 연못 — 물 fill(타원). 길·집보다 먼저.
+  if (plan.pond) paintPond(draft, map, plan.pond, warnings);
+
+  // ② 뼈대 길.
+  for (const stroke of plan.roads) {
+    const cells = stroke.cells.filter((cell) => inMap(cell.x, cell.y) && !isWaterChipsetTile(lowerAt(cell.x, cell.y)));
+    paintRoadStrip(map, intent.pathStyle, cells);
+  }
+
+  // ③ 필지 위 집 — 문은 필지 앞면(남쪽) 행 바로 위.
+  const houses: BuiltHouse[] = [];
+  const slots: HouseSlot[] = [];
+  const usedKits = new Set<HouseKitId>();
+  for (const slot of plan.houses) {
+    const { template, bbox } = slot;
+    const form = template.form;
+    const unused = HOUSE_KITS.filter((id) => !usedKits.has(id));
+    const pool = usedKits.size < 3 && unused.length > 0 ? unused : HOUSE_KITS;
+    const kitId: HouseKitId = template.kitId
+      ?? form?.kitId
+      ?? (intent.kitMix === "mixed" ? pool[Math.floor(rng() * pool.length)]! : intent.kitMix);
+    const stories: 1 | 2 | 3 = template.stories === 3 ? 3 : template.stories === 2 ? 2 : 1;
+    const result = form
+      ? stampAuthoredHouseForm(map, form, { x: bbox.x, y: bbox.y })
+      : stampFootprintHouseKit(map, {
+        kitId,
+        stories,
+        ...(template.lowWall ? { lowWall: true } : {}),
+        wings: template.wingsAt(bbox.x, bbox.y),
+        windows: args.windows,
+      });
+    if (!result.ok || !result.doorAt) {
+      warnings.push(`형태 마을 집 시공 실패(${template.name}): ${result.reason ?? "문 좌표 없음"}`);
+      continue;
+    }
+    const doorAt = result.doorAt;
+    const topIndex = (doorAt.y - 1) * W + doorAt.x;
+    const bottomIndex = doorAt.y * W + doorAt.x;
+    if (args.paintDoorTiles) {
+      map.lowerTiles[topIndex] = DOOR_TOP_TILE;
+      map.lowerTiles[bottomIndex] = DOOR_BOTTOM_TILE;
+    } else {
+      stampHouseDoorBackground(map, doorAt);
+    }
+    if (template.roofDeck) applyRoofDeck(map, bbox, doorAt);
+    const houseIndex = houses.length;
+    houses.push({
+      bbox,
+      doorAt,
+      doorTiles: { top: map.lowerTiles[topIndex] ?? DOOR_TOP_TILE, bottom: map.lowerTiles[bottomIndex] ?? DOOR_BOTTOM_TILE },
+      front: { x: doorAt.x, y: doorAt.y + 1 },
+      kitId,
+      stories,
+      templateId: template.id,
+      ...(form ? { formId: form.id } : {}),
+      ...(intent.houseOwners[houseIndex] ? { ownerName: intent.houseOwners[houseIndex] } : {}),
+      ...(intent.housePrograms[houseIndex] ? { program: intent.housePrograms[houseIndex] } : {}),
+    });
+    slots.push(slot);
+    usedKits.add(kitId);
+  }
+
+  // ④ 문 앞 옆길 — 문 앞 칸에서 앞면 방향으로 길까지(최대 6칸), 못 닿으면 4-이웃 BFS.
+  const houseCells = houseBlockedCells(houses);
+  for (const [index, house] of houses.entries()) {
+    const slot = slots[index]!;
+    // 계획 옆길은 필지 가운데 열에서 출발했다 — 실제 문(형태마다 위치가 다르다)이 다른 열이면 문 앞에서 그 옆길까지 한 번 더 잇는다.
+    const planned = slot.spur !== undefined && plannedSpurUsable(map, area, slot.spur, houseCells, args.blocked) ? [...slot.spur] : undefined;
+    if (planned) {
+      paintRoadStrip(map, intent.pathStyle, planned);
+      for (const cell of planned) occ[cell.y * W + cell.x] = OCC.spur;
+    }
+    const spur = spurToRoad(map, area, house.front, slot.frontDir, houseCells, args.blocked);
+    const frontIsRoad = ROAD_TILES.has(map.lowerTiles[house.front.y * W + house.front.x] ?? TILE.EMPTY);
+    if (spur.length === 0 && !frontIsRoad) {
+      warnings.push(`형태 마을: 집 ${index + 1} 문 앞에서 길을 못 찾았다(${house.front.x},${house.front.y})`);
+      continue;
+    }
+    if (spur.length > 0) {
+      paintRoadStrip(map, intent.pathStyle, spur);
+      for (const cell of spur) occ[cell.y * W + cell.x] = OCC.spur;
+    }
+  }
+
+  const finish = (): MorphologyFinishReport => {
+    const sealed = new Set(protectedHouseCells(map).map(({ x, y }) => y * W + x));
+    const free = (x: number, y: number): boolean =>
+      inMap(x, y) && pointInRect({ x, y }, area) && !sealed.has(y * W + x)
+      && lowerAt(x, y) === TILE.GRASS && upperAt(x, y) === TILE.EMPTY && !ROAD_TILES.has(lowerAt(x, y));
+    let fenceTiles = 0;
+    for (const [index, house] of houses.entries()) fenceTiles += paintParcelFence(map, area, slots[index]!, house, sealed);
+    let fieldCells = 0;
+    const fieldRng = mulberry32((seed ^ 0x2f6b1a4d) >>> 0);
+    for (const field of plan.fields) fieldCells += paintField(map, field.rect, field.kind, free, fieldRng, occ);
+    let trees = 0;
+    for (const anchor of plan.bigTrees) if (canStampBigTree(anchor.x, anchor.y, free, occ, W)) { stampBigTree(map, anchor.x, anchor.y); markBig(occ, W, anchor.x, anchor.y); trees += 1; }
+    // 뒷마당 나무 — 세 필지 중 하나, 뒷마당이 2행 이상일 때.
+    for (const [index, slot] of slots.entries()) {
+      if (index % 3 !== 1) continue;
+      const back = slot.bbox.y - 1 - slot.parcel.y;
+      if (back < 3) continue;
+      const x = slot.parcel.x + 1, y = slot.parcel.y + 1;
+      if (canStampBigTree(x, y, free, occ, W)) { stampBigTree(map, x, y); markBig(occ, W, x, y); trees += 1; }
+    }
+    trees += paintTreeGradient(map, area, occ, free, intent, mulberry32((seed ^ 0x51f15e3d) >>> 0));
+    return { fenceTiles, fieldCells, trees };
+  };
+
+  return { plan, houses, slots, plaza: plan.plaza, exits: plan.exits, finish };
+}
+
+// ───────────────────────── 연못 ─────────────────────────
+
+function paintPond(draft: Project, map: GameMap, rect: Rect, warnings: string[]): void {
+  try {
+    const fill = requireTool(CONSTRUCTION_TOOLS_V3, "fill_region");
+    const result = fill.run(draft, { mapId: map.id, rect, material: "물", layer: "lower", shape: "ellipse" });
+    if (result.warnings) warnings.push(...result.warnings);
+  } catch (err) {
+    warnings.push(`형태 마을 연못 실패: ${err instanceof Error ? err.message : String(err)}`);
+  }
+}
+
+// ───────────────────────── 옆길 ─────────────────────────
+
+/** 계획 단계 옆길이 맵에서도 통하는지 — 칸이 모두 영역 안·집 아닌·물 아닌 칸이고, 끝이 길에 붙어야 한다. */
+function plannedSpurUsable(map: GameMap, area: Rect, spur: readonly Point[], houseCells: ReadonlySet<string>, blocked: ReadonlySet<number>): boolean {
+  const W = map.width;
+  const isRoad = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < W && y < map.height && ROAD_TILES.has(map.lowerTiles[y * W + x] ?? TILE.EMPTY);
+  if (spur.length === 0) return false;
+  for (const cell of spur) {
+    if (!pointInRect(cell, area) || houseCells.has(coordKey(cell.x, cell.y)) || blocked.has(cell.y * W + cell.x)) return false;
+    if (isWaterChipsetTile(map.lowerTiles[cell.y * W + cell.x] ?? TILE.EMPTY)) return false;
+  }
+  const last = spur[spur.length - 1]!;
+  return [[0, 1], [1, 0], [-1, 0], [0, -1]].some(([dx, dy]) => isRoad(last.x + dx!, last.y + dy!));
+}
+
+function spurToRoad(
+  map: GameMap,
+  area: Rect,
+  front: Point,
+  dir: "down" | "east" | "west",
+  houseCells: ReadonlySet<string>,
+  blocked: ReadonlySet<number>,
+): Point[] {
+  const W = map.width;
+  const isRoad = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < W && y < map.height && ROAD_TILES.has(map.lowerTiles[y * W + x] ?? TILE.EMPTY);
+  const passable = (x: number, y: number): boolean =>
+    pointInRect({ x, y }, area) && !houseCells.has(coordKey(x, y)) && !blocked.has(y * W + x)
+    && !isWaterChipsetTile(map.lowerTiles[y * W + x] ?? TILE.EMPTY);
+  if (isRoad(front.x, front.y)) return [];
+  const step = dir === "down" ? { dx: 0, dy: 1 } : dir === "east" ? { dx: 1, dy: 0 } : { dx: -1, dy: 0 };
+  const straight: Point[] = [];
+  let x = front.x, y = front.y;
+  for (let i = 0; i < 6; i += 1) {
+    if (!passable(x, y)) break;
+    straight.push({ x, y });
+    x += step.dx; y += step.dy;
+    if (isRoad(x, y)) return straight;
+  }
+  // BFS 폴백 — 문 앞에서 가장 가까운 길 칸까지(최대 10칸).
+  const start = coordKey(front.x, front.y);
+  const prev = new Map<string, string | null>([[start, null]]);
+  const queue: Point[] = [front];
+  let head = 0;
+  while (head < queue.length) {
+    const cell = queue[head++]!;
+    if (Math.abs(cell.x - front.x) + Math.abs(cell.y - front.y) > 10) continue;
+    for (const next of [{ x: cell.x, y: cell.y + 1 }, { x: cell.x + 1, y: cell.y }, { x: cell.x - 1, y: cell.y }, { x: cell.x, y: cell.y - 1 }]) {
+      const key = coordKey(next.x, next.y);
+      if (prev.has(key)) continue;
+      if (isRoad(next.x, next.y)) {
+        const path: Point[] = [];
+        let cursor: string | null = coordKey(cell.x, cell.y);
+        while (cursor !== null) {
+          const [px, py] = cursor.split(",").map(Number) as [number, number];
+          path.push({ x: px, y: py });
+          cursor = prev.get(cursor) ?? null;
+        }
+        return path.reverse();
+      }
+      if (!passable(next.x, next.y)) continue;
+      prev.set(key, coordKey(cell.x, cell.y));
+      queue.push(next);
+    }
+  }
+  return [];
+}
+
+// ───────────────────────── 필지 울타리 ─────────────────────────
+
+/**
+ * 필지 둘레 울타리(정본 문법): 뒷줄 378/379/380, 세로 변 408, 앞줄 438/379/410 + 문 게이트(409/439 마감).
+ * 뒷줄은 용마루 행(bbox.y-1) 위에 있을 때만 친다 — 지붕 위 울타리 금지. 길·소품·봉인 칸은 건너뛴다.
+ */
+function paintParcelFence(map: GameMap, area: Rect, slot: HouseSlot, house: BuiltHouse, sealed: ReadonlySet<number>): number {
+  const W = map.width;
+  const { parcel, bbox } = slot;
+  const lastX = parcel.x + parcel.w - 1;
+  const lastY = parcel.y + parcel.h - 1;
+  let placed = 0;
+  const setFence = (x: number, y: number, tile: number): void => {
+    if (x < 0 || y < 0 || x >= W || y >= map.height || !pointInRect({ x, y }, area)) return;
+    const index = y * W + x;
+    if (sealed.has(index)) return;
+    const lower = map.lowerTiles[index] ?? TILE.EMPTY;
+    if (ROAD_TILES.has(lower) || isWaterChipsetTile(lower) || lower !== TILE.GRASS) return;
+    if ((map.upperTiles[index] ?? TILE.EMPTY) !== TILE.EMPTY) return;
+    map.upperTiles[index] = tile;
+    placed += 1;
+  };
+  const gateL = house.doorAt.x - FENCE_GATE_HALF_WIDTH;
+  const gateR = house.doorAt.x + FENCE_GATE_HALF_WIDTH;
+  // 앞줄(문 앞 행) — 게이트 양옆 끝 조각, 바깥 끝 모서리.
+  for (let x = parcel.x; x <= lastX; x += 1) {
+    if (x >= gateL && x <= gateR) continue;
+    const tile = x === parcel.x ? FENCE_BOTTOM_LEFT : x === lastX ? FENCE_BOTTOM_RIGHT : x === gateL - 1 ? FENCE_END_RIGHT : x === gateR + 1 ? FENCE_END_LEFT : FENCE_TOP_RAIL;
+    setFence(x, lastY, tile);
+  }
+  // 뒷줄 — 용마루 행보다 위일 때만.
+  if (parcel.y < bbox.y - 1) {
+    for (let x = parcel.x; x <= lastX; x += 1) {
+      setFence(x, parcel.y, x === parcel.x ? FENCE_TOP_LEFT : x === lastX ? FENCE_TOP_RIGHT : FENCE_TOP_RAIL);
+    }
+  }
+  // 세로 변.
+  for (let y = parcel.y + 1; y < lastY; y += 1) {
+    setFence(parcel.x, y, FENCE_SIDE_RAIL);
+    setFence(lastX, y, FENCE_SIDE_RAIL);
+  }
+  return placed;
+}
+
+// ───────────────────────── 밭·과수원·풀밭 ─────────────────────────
+
+function paintGroupCells(map: GameMap, group: AutotileGroup, cells: readonly Point[]): void {
+  if (cells.length === 0) return;
+  const body = group.memberTileIds[0]!;
+  for (const cell of cells) map.lowerTiles[cell.y * map.width + cell.x] = body;
+  shapeAutotileGroupAround(map, group, cells);
+}
+
+function paintField(
+  map: GameMap,
+  rect: Rect,
+  kind: "farm" | "orchard" | "meadow",
+  free: (x: number, y: number) => boolean,
+  rng: Rng,
+  occ: Uint8Array,
+): number {
+  const W = map.width;
+  const cells: Point[] = [];
+  for (let y = rect.y; y < rect.y + rect.h; y += 1) for (let x = rect.x; x < rect.x + rect.w; x += 1) if (free(x, y)) cells.push({ x, y });
+  if (cells.length < rect.w * rect.h * 0.7) return 0;
+  let painted = 0;
+  if (kind === "farm") {
+    paintGroupCells(map, DEFAULT_FARMLAND_AUTOTILE_GROUP, cells);
+    painted = cells.length;
+  } else if (kind === "meadow") {
+    paintGroupCells(map, DEFAULT_TALL_GRASS_AUTOTILE_GROUP, cells);
+    painted = cells.length;
+  } else {
+    // 과수원 — 2×2 활엽수를 3칸 간격 격자로, 열마다 반 칸 엇갈림.
+    for (let y = rect.y; y + 1 < rect.y + rect.h; y += 3) {
+      const offset = ((y - rect.y) / 3) % 2 === 1 ? 1 : 0;
+      for (let x = rect.x + offset; x + 1 < rect.x + rect.w; x += 3) {
+        if (!canStampBigTree(x, y, free, occ, W)) continue;
+        stampBigTree(map, x, y);
+        markBig(occ, W, x, y);
+        painted += 4;
+      }
+    }
+  }
+  // 산울타리 — 밭 위·아래 바깥 행에 덤불을 한 칸 건너 60%.
+  if (kind !== "meadow") {
+    for (const y of [rect.y - 1, rect.y + rect.h]) {
+      for (let x = rect.x; x < rect.x + rect.w; x += 2) {
+        if (rng() > 0.6 || !free(x, y)) continue;
+        map.upperTiles[y * W + x] = BUSH_TILE;
+        occ[y * W + x] = OCC.field;
+        painted += 1;
+      }
+    }
+  }
+  return painted;
+}
+
+// ───────────────────────── 나무 ─────────────────────────
+
+function canStampBigTree(x: number, y: number, free: (x: number, y: number) => boolean, occ: Uint8Array, W: number): boolean {
+  for (const [cx, cy] of [[x, y], [x + 1, y], [x, y + 1], [x + 1, y + 1]] as const) {
+    if (!free(cx, cy)) return false;
+    const value = occ[cy * W + cx] ?? OCC.reserved;
+    if (value !== OCC.free && value !== OCC.commons && value !== OCC.field) return false;
+  }
+  return true;
+}
+
+function stampBigTree(map: GameMap, x: number, y: number): void {
+  const W = map.width;
+  map.upperTiles[y * W + x] = BROADLEAF_TOP_LEFT;
+  map.upperTiles[y * W + x + 1] = BROADLEAF_TOP_RIGHT;
+  map.lowerTiles[(y + 1) * W + x] = BROADLEAF_BOTTOM_LEFT;
+  map.lowerTiles[(y + 1) * W + x + 1] = BROADLEAF_BOTTOM_RIGHT;
+}
+
+function markBig(occ: Uint8Array, W: number, x: number, y: number): void {
+  for (const [cx, cy] of [[x, y], [x + 1, y], [x, y + 1], [x + 1, y + 1]] as const) occ[cy * W + cx] = OCC.reserved;
+}
+
+function stampConifer(map: GameMap, x: number, y: number): void {
+  const W = map.width;
+  map.upperTiles[y * W + x] = CONIFER_TOP;
+  map.lowerTiles[(y + 1) * W + x] = CONIFER_BOTTOM;
+}
+
+/**
+ * 거리 기울기 나무 — 마을 세포(길·필지·밭·녹지·연못)에서 멀어질수록 짙어진다.
+ * 3칸 안은 비우고, 10칸 밖은 침엽수 45%·활엽수 군락까지. edgeTrees=none 이면 0, dense 면 1.6배.
+ */
+function paintTreeGradient(
+  map: GameMap,
+  area: Rect,
+  occ: Uint8Array,
+  free: (x: number, y: number) => boolean,
+  intent: VillageIntent,
+  rng: Rng,
+): number {
+  if (intent.edgeTrees === "none") return 0;
+  const scale = intent.edgeTrees === "dense" ? 1.6 : 1;
+  const W = map.width;
+  const dist = new Uint16Array(W * map.height).fill(0xffff);
+  const queue: number[] = [];
+  for (let y = area.y; y < area.y + area.h; y += 1) {
+    for (let x = area.x; x < area.x + area.w; x += 1) {
+      const index = y * W + x;
+      if ((occ[index] ?? OCC.free) !== OCC.free) { dist[index] = 0; queue.push(index); }
+    }
+  }
+  let head = 0;
+  while (head < queue.length) {
+    const index = queue[head++]!;
+    const x = index % W, y = Math.floor(index / W);
+    const d = dist[index]! + 1;
+    for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]] as const) {
+      if (!pointInRect({ x: nx, y: ny }, area)) continue;
+      const nIndex = ny * W + nx;
+      if (dist[nIndex]! <= d) continue;
+      dist[nIndex] = d;
+      queue.push(nIndex);
+    }
+  }
+  const candidates: number[] = [];
+  for (let y = area.y; y < area.y + area.h - 1; y += 1) {
+    for (let x = area.x; x < area.x + area.w; x += 1) {
+      const index = y * W + x;
+      if ((dist[index] ?? 0) >= 3) candidates.push(index);
+    }
+  }
+  for (let i = candidates.length - 1; i > 0; i -= 1) { const j = Math.floor(rng() * (i + 1)); [candidates[i], candidates[j]] = [candidates[j]!, candidates[i]!]; }
+  const cap = Math.floor(area.w * area.h * 0.14);
+  let placed = 0;
+  const taken = new Set<number>();
+  for (const index of candidates) {
+    if (placed >= cap) break;
+    const x = index % W, y = Math.floor(index / W);
+    const d = dist[index]!;
+    const p = Math.min(0.5, (d - 2) * 0.07) * scale;
+    if (rng() > p) continue;
+    if (taken.has(index) || taken.has(index + W)) continue;
+    if (!free(x, y) || !free(x, y + 1)) continue;
+    if (d >= 5 && rng() < 0.3 && x + 1 < area.x + area.w && free(x + 1, y) && free(x + 1, y + 1) && !taken.has(index + 1) && !taken.has(index + W + 1)) {
+      stampBigTree(map, x, y);
+      for (const k of [index, index + 1, index + W, index + W + 1]) { taken.add(k); occ[k] = OCC.reserved; }
+      placed += 1;
+      continue;
+    }
+    stampConifer(map, x, y);
+    taken.add(index); taken.add(index + W);
+    occ[index] = OCC.reserved; occ[index + W] = OCC.reserved;
+    placed += 1;
+  }
+  return placed;
+}

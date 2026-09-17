@@ -112,6 +112,9 @@ import { completeVillageTrees } from "./treeCompletion";
 import { plantCompactVillageTrees, dressCompactVillageGround } from "./compactVegetation";
 import { decorateVillageSpaces } from "./spaceDecoration";
 import { planOrganicVillageLake, paintOrganicVillageLake } from "./organicLake";
+import { buildMorphologyVillage, type MorphologyBuild } from "./morphologyBuild";
+import { MORPHOLOGY_LABEL, VILLAGE_MORPHOLOGIES, type VillageMorphology } from "./morphologyTypes";
+import type { MorphologyExit } from "./morphologyPlan";
 
 export type VillageBuildDomainArgs = Readonly<Record<string, unknown>>;
 
@@ -242,7 +245,10 @@ export function buildVillageDomain(
     perf.push(`${label}=${((Date.now() - perfMark) / 1000).toFixed(1)}s`);
     perfMark = Date.now();
   };
-  const plaza = villagePlaza(area, intent.plazaLayout, intent.settlementLayout, rng);
+  // 형태 유형 마을(2026-09-17) — 뼈대 길·필지 먼저. 오브젝트 마을·compact 에선 쓰지 않는다.
+  const morphology: VillageMorphology | undefined = intent.morphology && !objectCatalog && !compact ? intent.morphology : undefined;
+  if (intent.morphology && !morphology) warnings.push("morphology 는 저장 건물 마을·compact 구성에선 무시했다.");
+  let plaza = villagePlaza(area, intent.plazaLayout, intent.settlementLayout, rng);
   if (objectCatalog && (compact || (area.w >= 90 && area.h >= 90))) {
     const width = compact ? Math.min(16, area.w - 12) : 20, height = compact ? Math.min(10, area.h - 12) : 14;
     const x = Math.max(area.x + 4, Math.min(area.x + area.w - width - 4, plaza.centerX - Math.floor(width / 2)));
@@ -250,13 +256,13 @@ export function buildVillageDomain(
     Object.assign(plaza, { rect: { x, y, w: width, h: height }, centerX: x + Math.floor(width / 2), centerRow: y + Math.floor(height / 2) });
   }
   // 면적 비례 기본 집 수(2026-07-17) — 요청이 없으면 100×100에도 8채가 깔리던 밀도 붕괴 방지.
-  const targetHouses = housePlan.explicit
+  let targetHouses = housePlan.explicit
     ? housePlan.count
     : presetValues.houseCount
       ?? Math.min(MAX_HOUSES, Math.max(DEFAULT_HOUSES, Math.round((area.w * area.h) / 380)));
   // 대로 골격(대형 맵, 리서치 spine-first): 곡선 밴드를 집 배치 전에 예약해 구멍 없는 대로 보장.
   // 단일 축(2026-09-17): 격자 마을만 2축 십자, 유기적 배치는 시드·비율로 한 축만.
-  const boulevard = villageBoulevard(area, plaza, seed, intent.settlementLayout);
+  const boulevard = morphology ? null : villageBoulevard(area, plaza, seed, intent.settlementLayout);
   const reservedWaterCells = new Set<number>();
   if (terrainMasks) for (let i = 0; i < terrainMasks.roles.length; i++) if (terrainMasks.roles[i] === "water") reservedWaterCells.add(i);
   const lakeAvoid = new Set(reservedWaterCells);
@@ -293,16 +299,39 @@ export function buildVillageDomain(
     ? intersectRects(area, { x: plaza.centerX - 30, y: plaza.centerRow - 30, w: 61, h: 61 })
     : area;
   // 스케치 프리패스 — 솔버 격자 전에 유기적 후보점을 뽑아 buildHouses에 넘긴다.
-  const sketchSites = sketchHouseSites({
+  const sketchSites = morphology ? [] : sketchHouseSites({
     area: coreArea,
     plaza,
     seed,
     targetHouses,
     boulevard: boulevard ? { ewRow: boulevard.ewRow, nsCol: boulevard.nsCol, axis: boulevard.axis } : null,
   });
+  // 형태 유형 경로 — 뼈대 길 → 필지 → 집 → 옆길을 여기서 한 번에 깐다. 길 시공기(paintVillageRoadsChecked)는 건너뛴다.
+  let morph: MorphologyBuild | undefined;
+  if (morphology) {
+    // 물·기존 집은 길도 못 지난다. 숲 띠와 시작 위치는 집만 피한다 — 출구 길은 숲 띠를 지나 가장자리로
+    // 나가야 하고, 시작 위치(맵 가운데) 한 칸이 막히면 큰길 가운데가 뚫려 길 성분이 갈라진다(2026-09-18 s3 재현).
+    const morphBlocked = new Set<number>(houseBlockedIdx);
+    const morphForest = new Set<number>();
+    if (draft.startMapId === map.id) {
+      const startIndex = draft.startPos.y * map.width + draft.startPos.x;
+      if (!reservedWaterCells.has(startIndex) && !(terrainBlockedCells(terrainMasks)?.has(startIndex) ?? false)) {
+        morphBlocked.delete(startIndex);
+        morphForest.add(startIndex);
+      }
+    }
+    if (terrainMasks) for (let i = 0; i < terrainMasks.roles.length; i += 1) if (terrainMasks.roles[i] === "forest") morphForest.add(i);
+    morph = buildMorphologyVillage({
+      draft, map, area, seed, intent, morphology,
+      maxHouses: housePlan.explicit ? housePlan.count : MAX_HOUSES,
+      blocked: morphBlocked, softBlocked: morphForest, windows, paintDoorTiles: !doorEventsPlanned, warnings,
+    });
+    plaza = morph.plaza;
+    if (!housePlan.explicit) targetHouses = Math.max(1, morph.houses.length);
+  }
   // 자연 시공 순서: 집 배치·마감·보호 등록 → 광장·대로·집 연결 길 → 울타리
   // (예전엔 길→집이라 길이 집 자리를 선점하는 느낌이 났음)
-  const houses = objectCatalog ? buildObjectHouses(draft, map, area, plaza, targetHouses,
+  const houses = morph ? morph.houses : objectCatalog ? buildObjectHouses(draft, map, area, plaza, targetHouses,
     objectCatalog, merged, intent, seed, houseBlockedIdx) : buildHouses(
     map, coreArea, plaza, targetHouses, rng, windows, intent, warnings,
     houseBlockedIdx.size > 0 ? houseBlockedIdx : undefined,
@@ -348,7 +377,7 @@ export function buildVillageDomain(
     );
   }
   assertHouseProtection(existingHouses, draft, []);
-  setVillageHarnessLayoutPlan(map, area, plaza, houses, intent, seed, fencesEnabled, merged.settlementLayout, boulevard);
+  setVillageHarnessLayoutPlan(map, area, plaza, houses, intent, seed, fencesEnabled, merged.settlementLayout, boulevard, morph?.exits, morphology);
   if (compact && map.layoutPlan) {
     map.layoutPlan.notes = "작은 회벽·석벽 주택의 조밀한 마을. 10×10 초과 큰집 최대 2채, 모든 집 15×15 이하. 집 → 길 → 군락 나무 → 비대칭 호수·243계열 풀밭·장터·마당.";
     map.layoutPlan.regions.find(region => region.role === "plaza")?.tags?.push("composition:compact");
@@ -374,7 +403,7 @@ export function buildVillageDomain(
   // 길 시공 강제 훅 — 시공→침범 점검→롤백 재시도(최대 100회), 시뮬레이션식.
   // 재시도 리포트는 기계 가독으로 warnings에 남겨 맹목 재시도를 막는다.
   const roadRetryBox: { report: import("./roads").RoadRetryReport | undefined } = { report: undefined };
-  paintVillageRoadsChecked({
+  if (!morph) paintVillageRoadsChecked({
     draft,
     map,
     plaza,
@@ -418,8 +447,11 @@ export function buildVillageDomain(
   const landmarkNotes: string[] = [];
   const { templateCatalog: _templates, ...decorationIntent } = intent;
   const decorationPlan: VillageDecorationPlan = {
-    area, plaza, houses, seed, intent: decorationIntent,
-    fences: fencesEnabled, decor: decorEnabled, landscape: boulevard !== null && !objectCatalog,
+    area, plaza, houses, seed,
+    // 형태 마을의 녹지는 잔디다 — 장터 요구가 없으면 데크·정원 울타리를 얹지 않는다.
+    intent: morph && !requirements?.landmarks.includes("market") ? { ...decorationIntent, plazaStyle: "empty" } : decorationIntent,
+    // 형태 마을은 필지 둘레 울타리를 스스로 친다(finish).
+    fences: fencesEnabled && !morph, decor: decorEnabled, landscape: boulevard !== null && !objectCatalog,
   };
   let decorPlaced = houseDecorPlaced;
   if (!compact && !skipTerrain && requirements && requirements.landmarks.length > 0) {
@@ -429,7 +461,14 @@ export function buildVillageDomain(
   }
   const compactTrees = compact && decorEnabled ? plantCompactVillageTrees(draft, map, area, seed, reservedWaterCells) : undefined;
   assertSealed();
-  if (decorEnabled && !compact) {
+  if (morph) {
+    // 울타리·밭·과수원·산울타리·거리 기울기 나무 — 집 봉인 뒤, 물 시공 전.
+    const finished = morph.finish();
+    if (fencesEnabled) landmarkNotes.push(`morphology fences ${finished.fenceTiles}`);
+    decorPlaced += finished.trees + finished.fieldCells;
+    landmarkNotes.push(`morphology fields ${finished.fieldCells}칸 trees ${finished.trees}`);
+    assertSealed();
+  } else if (decorEnabled && !compact) {
     decorPlaced += placeVillageTrees(draft, map, area, plaza, houses, seed, intent, warnings, terrainMasks?.waterRects);
     assertSealed();
   }
@@ -564,12 +603,13 @@ export function buildVillageDomain(
     };
   }
   const themeLabel = intent.theme ? `「${intent.theme}」 ` : "";
+  const morphologyLabel = morphology ? ` 형태 ${MORPHOLOGY_LABEL[morphology]},` : "";
   const reqNote = requirements && requirements.landmarks.length > 0
     ? ` 필수[${requirements.landmarks.join(",")}]`
     : "";
   return {
     summary:
-      `마을 시공 ${themeLabel}: 집 ${houses.length}/${targetHouses}, 울타리 ${fencesEnabled ? audit.fencedHouses : 0}/${houses.length}, ` +
+      `마을 시공 ${themeLabel}:${morphologyLabel} 집 ${houses.length}/${targetHouses}, 울타리 ${fencesEnabled ? audit.fencedHouses : 0}/${houses.length}, ` +
       `길 ${intent.pathStyle}, 마당 ${intent.yardStyle}, 광장 ${intent.plazaStyle}/${intent.plazaLayout}, ` +
       `소품 ${decorEnabled ? decorPlaced : 0}, 문 연결 ${audit.doorsConnected}/${houses.length}, ` +
       `길 성분 ${audit.roadComponents}, NPC ${audit.npcCount}, 내부 ${houseInteriors.length} (창문 ${audit.windowCount}).` +
@@ -594,6 +634,7 @@ export function buildVillageDomain(
         roadWidth: intent.roadWidth,
         roadNaturalness: intent.roadNaturalness,
         settlementLayout: intent.settlementLayout,
+        ...(morphology ? { morphology } : {}),
       },
       housesBuilt: houses.length,
       ...(objectCatalog ? { houseSource: "objects", exteriorDoors: objectAccess, treeCompletion } : {}),
@@ -1134,6 +1175,14 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
           enum: ["center", "north", "south", "west", "east"],
           description: "광장 위치 바이어스(기본 center).",
         },
+        morphology: {
+          type: "string",
+          enum: [...VILLAGE_MORPHOLOGIES],
+          description:
+            "취락 형태 유형(2026-09-17). street=가로촌(큰길 하나에 집 줄), green=광장촌(렌즈형 녹지·연못을 두 호가 감싼다), "
+            + "round=환촌(원형 녹지·링 길·남쪽 입구), cluster=괴촌(관심도 성장 시뮬레이션). 지정하면 뼈대 길 → 길에 면한 필지 → "
+            + "집 → 필지 뒤 밭·과수원 → 거리 기울기 나무 순서로 짓고 settlementLayout 은 무시한다. 생략하면 예전 광장 고리 문법.",
+        },
         bounds: {
           type: "object",
           description: "기존 맵 안에서 마을을 배치할 경계 사각형. 지정 시 그 안에 광장/집/길/NPC를 배치한다.",
@@ -1429,6 +1478,7 @@ function hasExplicitVillageIntent(args: Record<string, unknown>): boolean {
     || args.plazaStyle !== undefined
     || args.edgeTrees !== undefined
     || args.plazaLayout !== undefined
+    || args.morphology !== undefined
     || (Array.isArray(args.housePlans) && args.housePlans.length > 0)
     || (Array.isArray(args.npcs) && args.npcs.length > 0),
   );
@@ -1475,8 +1525,12 @@ function resolveVillageIntent(
     defaultSettlement,
     "settlementLayout",
   );
+  const morphology = args.morphology === undefined || args.morphology === null || args.morphology === ""
+    ? undefined
+    : coerceEnum(args.morphology, VILLAGE_MORPHOLOGIES, "street", "morphology");
   return {
     theme,
+    ...(morphology ? { morphology } : {}),
     ...(forestDensity ? { forestDensity } : {}),
     templateCatalog,
     ...(presetId ? { presetId } : {}),
@@ -1719,6 +1773,9 @@ function setVillageHarnessLayoutPlan(
   fencesEnabled: boolean,
   settlementLayout: unknown,
   boulevard: Boulevard | null,
+  // 형태 유형 마을은 실제 출구가 계획에서 나온다 — 평가기 앵커를 그 좌표로 기록한다.
+  exitOverride?: readonly MorphologyExit[],
+  morphology?: VillageMorphology,
 ): void {
   const kitLabel: Record<HouseKitId, string> = {
     "blue-stone": "파랑 석벽",
@@ -1756,6 +1813,7 @@ function setVillageHarnessLayoutPlan(
           "commons",
           "road-loop",
           ...(settlementLayout === "street-grid" ? ["street-grid"] : []),
+          ...(morphology ? [`morphology:${morphology}`] : []),
           // 어떤 사용자 프리셋으로 지었는지 — 같은 마을을 다시 뽑을 때의 단서.
           ...(intent.presetId ? [`preset:${intent.presetId}`] : []),
           intent.plazaStyle,
@@ -1788,11 +1846,13 @@ function setVillageHarnessLayoutPlan(
       }),
     ],
     // 출구는 paintPlazaAndAvenue 와 같은 (seed, layout, boulevard) 로 뽑아야 평가기 앵커와 실제 길이 일치한다.
-    roadAnchors: villageExitAnchors(area, plaza, seed, intent.settlementLayout, boulevard).map((anchor) => ({
-      id: `${anchor.side}-exit`,
-      x: anchor.x,
-      y: anchor.y,
-    })),
+    roadAnchors: exitOverride
+      ? exitOverride.map((exit) => ({ id: exit.id, x: exit.x, y: exit.y }))
+      : villageExitAnchors(area, plaza, seed, intent.settlementLayout, boulevard).map((anchor) => ({
+        id: `${anchor.side}-exit`,
+        x: anchor.x,
+        y: anchor.y,
+      })),
     notes: "직접 저작 자연 마을의 비대칭 집·집 먼저 골목 골격·시드로 고른 출구·층별 창 분리 문법을 적용한 하네스 설계도",
   });
 }

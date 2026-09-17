@@ -153,6 +153,11 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
         countPolicy: { type: "string", enum: ["exact", "best-effort"], description: "exact=정확히 houseCount, best-effort=85% 하한(4채 이하는 exact와 같음)." },
         groundTheme: { type: "string", enum: ["grass", "snow"], description: "Whole-settlement ground preset. theme remains descriptive." },
         settlementLayout: { type: "string", enum: ["plaza-ring", "street-grid", "clusters"] },
+        morphology: {
+          type: "string",
+          enum: ["street", "green", "round", "cluster"],
+          description: "취락 형태 유형. street=가로촌(큰길 하나·집 줄·뒷골목), green=광장촌(렌즈형 녹지와 연못을 두 호가 감싼다), round=환촌(원형 녹지·링 길·남쪽 입구), cluster=괴촌(관심도 성장 시뮬레이션). 지정하면 뼈대 길 → 길에 면한 필지 → 집 → 밭·과수원 → 거리 기울기 나무 순서로 짓고 settlementLayout 은 무시한다. 마을을 '잘 깔아 달라'는 요청엔 이 값을 고르는 것이 기본이다.",
+        },
         npcCount: { type: "integer", minimum: 0, maximum: 512, description: "Requested village NPC population. 하한 90%(최소 2명 관용)로 판정 — 1~2명 어긋남은 실패가 아니다." },
         residents: {
           type: "array",
