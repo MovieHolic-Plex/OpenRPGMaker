@@ -43,6 +43,38 @@ export const stairQaScenario = {
       shot: true,
     },
     {
+      id: "climb-left",
+      note: "왼쪽 칸 앞에서 조사 → 대사 → 전이 → 1칸 계단 맵 (옆칸도 전이 확인)",
+      ops: [
+        { kind: "teleport", mapId: "map_stair3_qa", x: 4, y: 6 },
+        { kind: "waitForPosition", mapId: "map_stair3_qa", x: 4, y: 6, timeoutMs: 15000 },
+        { kind: "face", dir: "up" },
+        { kind: "action" },
+        { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 15000 },
+        { kind: "pressUntil", key: "Enter", testid: "dialogue-box", state: "absent", maxPresses: 6 },
+        { kind: "waitForPosition", mapId: "map_stair1_qa", x: 6, y: 6, timeoutMs: 15000 },
+        { kind: "hold", dir: null, ms: 900 },
+      ],
+      expect: { mapId: "map_stair1_qa" },
+      shot: true,
+    },
+    {
+      id: "climb-right",
+      note: "오른쪽 칸 앞에서 조사 → 대사 → 전이 → 1칸 계단 맵 (옆칸도 전이 확인)",
+      ops: [
+        { kind: "teleport", mapId: "map_stair3_qa", x: 6, y: 6 },
+        { kind: "waitForPosition", mapId: "map_stair3_qa", x: 6, y: 6, timeoutMs: 15000 },
+        { kind: "face", dir: "up" },
+        { kind: "action" },
+        { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 15000 },
+        { kind: "pressUntil", key: "Enter", testid: "dialogue-box", state: "absent", maxPresses: 6 },
+        { kind: "waitForPosition", mapId: "map_stair1_qa", x: 6, y: 6, timeoutMs: 15000 },
+        { kind: "hold", dir: null, ms: 900 },
+      ],
+      expect: { mapId: "map_stair1_qa" },
+      shot: true,
+    },
+    {
       id: "stair1-closeup",
       note: "1칸 계단 남쪽에 서서 촬영 — 칩이 캐릭터 아래에 그려지는지",
       ops: [

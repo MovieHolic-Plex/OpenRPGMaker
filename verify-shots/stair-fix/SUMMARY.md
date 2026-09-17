@@ -20,10 +20,12 @@
 - 신규 4 + 관련 기존(`interiorEventApproach`, `characterDepthYSort`, `conceptFacilityLevels`) 14건 전부 통과.
 - `test/placeConceptTool.test.ts` 2건 실패는 기준선(HEAD)에서도 동일 — 본 변경과 무관한 기존 결함(책장 배치).
 
-- 결과: `verify-shots/runtime-qa/stair-qa/SUMMARY.md` — 비트 4개 전부 통과.
+- 결과: `verify-shots/runtime-qa/stair-qa/SUMMARY.md` — 비트 6개 전부 통과 (가운데+왼쪽+오른쪽 칸 전이 전부).
 - 샷(추적 디렉토리에 보존 — `verify-shots/runtime-qa/`는 gitignored라 원본은 미추적):
   - `R-3wide-front.png` — 3칸 계단(141/111/171)이 게임 화면에 정상 렌더.
   - `R-transfer-arrival.png` — 가운데 칸 조사 → 대사 → 전이 발동 후 1칸 맵 도착.
+  - `R-transfer-left.png` — 왼쪽 칸 조사 → 전이 발동 후 1칸 맵 도착 (옆칸 전이 증거).
+  - `R-transfer-right.png` — 오른쪽 칸 조사 → 전이 발동 후 1칸 맵 도착 (옆칸 전이 증거).
   - `R-1wide-closeup.png` — 1칸 계단(474) 앞에 선 캐릭터.
   - `R-1wide-stand.png` — 1칸 계단 칸 위에 직접 선 캐릭터. 칩이 캐릭터 얼굴 위로 뜨지 않고 뒤에 그려짐.
   - `A-3wide-transfers.png` / `B-1wide-depth.png`는 실물 타일셋 PNG로 합성한 설명용 도식.
