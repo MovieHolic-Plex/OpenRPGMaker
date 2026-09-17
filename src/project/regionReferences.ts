@@ -1,3 +1,4 @@
+import { SHIP_PLACE_REFERENCES, shipPlaceSnapshot } from "./shipPlaceReferences";
 import emeraldSnapshot from "./regionReferences/emerald-basin.json";
 import snapshot from "./regionReferences/walled-settlement.json";
 import lakeSnapshot from "./regionReferences/lake-village.json";
@@ -63,7 +64,7 @@ const LAKE_PLACE_REFERENCES = [
 
 
 /** Shipped place examples remain visible even in a new, empty project. */
-export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, {
+export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFERENCES, {
   id: "emerald-basin-80x64", name: "비취 대계곡", kind: "completed-place" as const,
   placeKind: "natural" as const, revision: 1, x: 0, y: 0, width: 80, height: 64,
   tilesetId: emeraldSnapshot.tileset.id,
@@ -92,7 +93,7 @@ export function readRegionReference(id: string, row = 0, rows = 8) {
     throw new Error("row must be within the map; rows must be 1..16");
   }
   const place = LAKE_PLACE_REFERENCES.find(p => p.id === id);
-  const source = reference.id === "emerald-basin-80x64" ? emeraldSnapshot : reference.id === "castle-town-100x100" ? castleSnapshot : reference.id === "walled-settlement-43x45" ? snapshot : lakeSnapshot;
+  const source = shipPlaceSnapshot(id) ?? (reference.id === "emerald-basin-80x64" ? emeraldSnapshot : reference.id === "castle-town-100x100" ? castleSnapshot : reference.id === "walled-settlement-43x45" ? snapshot : lakeSnapshot);
   const crop = (tiles: number[]) => Array.from({length: reference.height}, (_, y) => tiles.slice((y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0), (y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0) + reference.width)).flat();
   const selected = place ? { ...source, map: { ...source.map, width: place.width, height: place.height, lowerTiles: crop(source.map.lowerTiles), upperTiles: crop(source.map.upperTiles), events: [] } } : source;
   const endRow = Math.min(reference.height, row + rows), { map, tileset } = selected;
