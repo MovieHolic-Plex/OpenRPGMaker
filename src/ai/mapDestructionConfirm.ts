@@ -14,7 +14,8 @@
 //  - 그 외 모든 경로: applyProposedProject 가 mapDestructionApproved 없이는 거부한다(안전망).
 
 import type { ProposedCall } from "./assistantSession";
-import { isMapDestruction } from "./approvalPolicy";
+import type { Project } from "@/project/types";
+import { emptiedEventMapIds, isMapDestruction, removedMapIds } from "./approvalPolicy";
 
 /** 맵 규모 파괴를 포함한 제안인가. 이름 기반이라 diff 계산 전에도 답할 수 있다. */
 export function proposalHasMapDestruction(calls: readonly ProposedCall[]): boolean {
@@ -25,6 +26,8 @@ export interface MapDestructionConfirmRequest {
   readonly title: string;
   readonly message: string;
   readonly confirmLabel: string;
+  /** 취소했을 때 표면이 그대로 띄우는 한 줄. 표면마다 문안을 다시 짜면 어휘가 갈라진다. */
+  readonly cancelNotice: string;
 }
 
 /** 툴 결과 data 에서 사람이 읽을 수치를 꺼낸다 — 모델 문장이 아니라 실행 결과가 근거다. */
@@ -70,5 +73,48 @@ export function mapDestructionConfirmRequest(
       "적용 후에도 Ctrl+Z 되돌리기로 복구할 수 있습니다.",
     ].join("\n"),
     confirmLabel: destroying.length === 1 ? "맵 비우기" : `맵 ${destroying.length}개 비우기`,
+    cancelNotice: "맵 전체 청소를 취소했습니다 — 프로젝트는 그대로입니다.",
+  };
+}
+
+/** 결과 기반 소실 확인 요청. 규모를 알아야 취소 문안도 규모를 말할 수 있다. */
+export interface MapLossConfirmRequest extends MapDestructionConfirmRequest {
+  readonly removedMapIds: readonly string[];
+  readonly emptiedMapIds: readonly string[];
+}
+
+/**
+ * 맵이 **사라지거나 통째로 비는** 적용의 허가 요청. 근거는 모델 문장도 툴 이름도 아니고 base ↔
+ * 제안의 실제 차이다 — 실행 경로(세션·`/pi`·팀)가 늘어도 이 판정은 그대로 성립한다.
+ * 소실이 없으면 null 이고, 호출부는 묻지 않고 그대로 적용한다.
+ */
+export function mapLossConfirmRequest(before: Project, proposed: Project): MapLossConfirmRequest | null {
+  const removed = removedMapIds(before, proposed);
+  const emptied = emptiedEventMapIds(before, proposed);
+  if (removed.length === 0 && emptied.length === 0) return null;
+  const describe = (id: string): string => {
+    const map = before.maps[id];
+    const name = map?.name?.trim() ? map.name : id;
+    return `· ${name}(${id}) — ${map ? `${map.width}×${map.height}` : "크기 불명"}, 이벤트 ${map?.events?.length ?? 0}개`;
+  };
+  const headline = [
+    removed.length > 0 ? `맵 ${removed.length}개를 프로젝트에서 지웁니다.` : null,
+    emptied.length > 0 ? `맵 ${emptied.length}개는 남지만 이벤트가 전부 사라집니다.` : null,
+  ].filter((line) => line !== null).join(" ");
+  const label = removed.length > 0 ? `맵 ${removed.length}개 삭제` : `이벤트 비우기(맵 ${emptied.length}개)`;
+  return {
+    title: "맵 소실 확인",
+    message: [
+      `${headline} 남는 맵은 ${Object.keys(proposed.maps ?? {}).length}개입니다.`,
+      "",
+      ...removed.map(describe),
+      ...(emptied.length > 0 ? ["", "이벤트가 비는 맵:", ...emptied.map(describe)] : []),
+      "",
+      "적용 후에도 Ctrl+Z 되돌리기로 복구할 수 있습니다.",
+    ].join("\n"),
+    confirmLabel: label,
+    cancelNotice: `${label}를 취소했습니다 — 프로젝트는 그대로입니다.`,
+    removedMapIds: removed,
+    emptiedMapIds: emptied,
   };
 }

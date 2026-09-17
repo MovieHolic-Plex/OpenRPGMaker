@@ -35,6 +35,8 @@ import { createPiGhostBridge } from "./aiPiGhostBridge";
 import { loadAiConfig } from "@/ai/llmClient";
 import { composePiTask } from "@/ai/piAgent/executionRoute";
 import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
+import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
+import { showConfirm } from "@/editor/ui/modal";
 import { adoptSpatialToolProof, authorMergedSpatialProposal } from "@/editor/tools/spatialToolState";
 import { summarizeChanges } from "@/editor/tools/changeset";
 import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
@@ -55,6 +57,14 @@ export interface ParsedPiCommand {
   readonly mapIds: readonly string[];
   /** 사용자가 보고 있는 맵. 팀장이 「여기」를 해석하는 기준 — 후보(mapIds)와 별개다. 비우면 실행 시 패널의 현재 맵으로 채운다. */
   readonly currentMapId?: string | null;
+  /**
+   * 사용자가 `/pi 맵id,맵id …` 로 **직접 맵을 적었다**. 평문 턴이 현재 맵으로 채운 기본값과 구분한다.
+   *
+   * 왜 필요한가: `mapIds` 만으로는 「이 맵들만 고쳐라」(계약)와 「보통 이 맵일 것이다」(추측)가
+   * 구별되지 않았고, 병합이 둘을 똑같이 계약으로 취급해 평문 턴의 DB·시스템 변경을 조용히
+   * 버렸다(2026-09-17 실측). 범위를 좁히는 것은 사용자가 좁혔을 때뿐이다.
+   */
+  readonly scopedByUser?: boolean;
   readonly task: string;
 }
 
@@ -85,7 +95,7 @@ export function parsePiCommand(text: string, project: Project, currentMapId: str
   if (!rest) return { mode, mapIds: fallback, currentMapId, task: "" };
   const [first = "", ...others] = rest.split(/\s+/);
   const mapIds = splitMapList(first, project);
-  if (mapIds && others.length > 0) return { mode, mapIds, currentMapId, task: others.join(" ") };
+  if (mapIds && others.length > 0) return { mode, mapIds, currentMapId, scopedByUser: true, task: others.join(" ") };
   return { mode, mapIds: fallback, currentMapId, task: rest };
 }
 
@@ -114,6 +124,11 @@ export interface PiRunOptions {
   readonly planOnly?: boolean;
   /** 다이얼의 작업 예산 → Pi 턴 상한. */
   readonly maxTurns?: number;
+  /**
+   * 그 상한을 정한 다이얼 단계의 이름(「균형」 등). 워커는 숫자만 알기 때문에 상한에 걸려 멈췄을 때
+   * 「무엇을 올리면 되는지」를 말할 수 없다 — 이름은 여기서만 붙일 수 있다.
+   */
+  readonly autonomyLabel?: string;
   /** Legacy caller hint. Role-specific reasoning takes precedence in Pi execution. */
   readonly thinkingLevel?: PiAgentThinkingLevel;
   /**
@@ -271,14 +286,38 @@ export async function runPiCommand(
   // 결과 프로젝트가 맨 끝 `done` 에만 실려서 턴 내내 캔버스가 조용하다(2026-09-17 회귀).
   // 단일·병렬·팀이 다리 **하나**를 공유한다: 에이전트마다 소유한 맵이 다르므로 증분은 그대로 겹친다.
   const ghost = createPiGhostBridge({ baseProject: base });
-  const wrap = (mapIds: readonly string[], index: number) => (event: PiAgentEvent): void => {
+  // 워커의 「턴 상한(N)을 넘어 중단했습니다.」를 다이얼 어휘로 옮긴다. 옮기는 자리가 여기인 이유:
+  // 이 문장은 `error` 이벤트 하나에서 갈라져 보드 행·실행 요약·적용 캡션·영수증·활동 로그 다섯
+  // 군데로 퍼진다. 갈라지기 전에 한 번 고쳐야 다섯 군데가 같은 말을 한다.
+  // 왜 필요한가(2026-09-17 실측): 상한에 걸린 7번 모두 원인도 해법도 화면에 없었다 — 사용자는
+  // 자기가 내린 다이얼이 원인인 줄 모른 채 「끝났지만 바뀐 게 없습니다」만 봤다.
+  const TURN_CAP_PATTERN = /^턴 상한\((\d+)\)을 넘어 중단했습니다\.$/;
+  // 상한·시간에 걸려 **중간에 끊긴** 실행인가. 끊긴 실행의 결과물은 «완성된 것»이 아니라
+  // «하다 만 것»이라 자동 적용하지 않는다(아래 harmonyManualReview). 회수 가능한 스트림 오류
+  // (토큰 만료 등)와 구별해야 한다 — 그쪽은 끝까지 갔으면 성공이 맞다.
+  const STOPPED_PATTERNS = [TURN_CAP_PATTERN, /^시간 상한을 넘어 중단했습니다\.$/, /^Request was aborted$/];
+  let stoppedByLimit = false;
+  const explainTurnCap = (message: string): string => {
+    const text = message.trim();
+    if (STOPPED_PATTERNS.some((pattern) => pattern.test(text))) stoppedByLimit = true;
+    const hit = TURN_CAP_PATTERN.exec(text);
+    if (!hit) return message;
+    const label = options.autonomyLabel;
+    const dial = label ? `자율성 「${label}」의 작업 한도` : "작업 한도";
+    return `${dial}(${hit[1]}턴)에 도달해 중단했습니다 — 한 일은 남기지 않았습니다. 자율성 다이얼을 올려 다시 보내세요.`;
+  };
+  const wrap = (mapIds: readonly string[], index: number) => (raw: PiAgentEvent): void => {
     // heartbeat 는 연결 생존 신호다 — 클라이언트 워치독이 이미 소뱄했고, 보드에는 그릴 것이 없다.
-    if (event.type === "heartbeat") return;
+    if (raw.type === "heartbeat") return;
+    // 오류 문구는 갈라지기 **전에** 한 번만 고친다(explainTurnCap 주석 참고).
+    const event: PiAgentEvent = raw.type === "error" ? { ...raw, message: explainTurnCap(raw.message) } : raw;
     ghost.handleEvent(event);
     if (event.type === "assistant") lastAssistantText = event.text;
+    // 팀 모드의 오류도 실행 요약에 실린다. 예전에는 여기서 곧장 return 해 streamErrors 가 늘 비었고,
+    // 팀 런은 오류를 한 건도 안 낸 것처럼 기록됐다.
+    if (event.type === "error" && streamErrors.length < 3) streamErrors.push(event.message);
     if (team) { push(event); return; }
     const agentId = mapIds.join(",") || `agent-${index + 1}`;
-    if (event.type === "error") { if (streamErrors.length < 3) streamErrors.push(event.message); }
     if (event.type === "start") {
       push({ type: "agent_spawn", agentId, role: "builder", mapId: mapIds[0] ?? null, mapName: mapIds[0] ? base.maps[mapIds[0]]?.name ?? null : null, task: command.task });
     }
@@ -302,9 +341,11 @@ export async function runPiCommand(
       const planned = await runPiAgentViaCompanion({
         mode: "single", provider: brain.providerId!, model: brain.model,
         task: `${PLAN_ONLY_PREFIX}${modelTask}`, mapIds: command.mapIds, ...here, project: base,
+        scopeStrict: command.scopedByUser === true,
         readOnly: true, maxTurns: options.maxTurns, thinkingLevel: brain.reasoningEffort,
-      }, { signal: surface.signal, onEvent: event => {
-        if (event.type === "heartbeat") return;
+      }, { signal: surface.signal, onEvent: raw => {
+        if (raw.type === "heartbeat") return;
+        const event: PiAgentEvent = raw.type === "error" ? { ...raw, message: explainTurnCap(raw.message) } : raw;
         ghost.handleEvent(event);
         push({ type: "agent_event", agentId: "ultrabrain-plan", event });
         if (event.type === "assistant") plan = event.text;
@@ -327,6 +368,8 @@ export async function runPiCommand(
         mapIds,
         ...here,
         project: base,
+        // 평문 턴의 기본 대상 맵은 계약이 아니다 — 계약으로 읽히면 모델이 DB·시스템을 손대지 않는다.
+        scopeStrict: command.scopedByUser === true,
         ...(readOnly ? { readOnly: true } : {}),
         ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),
         thinkingLevel: options.planOnly || team ? brain.reasoningEffort : deep.thinkingLevel,
@@ -366,7 +409,13 @@ export async function runPiCommand(
     return false;
   }
   // 팀 모드는 런타임이 이미 맵 묶음으로 병합해 돌려준다. 단일 범위 지정은 여기서 병합한다.
-  const mergedFromBundles = !team && command.mapIds.length > 0;
+  //
+  // 「범위 지정」은 사용자가 `/pi 맵id …` 로 직접 적었을 때뿐이다. 평문 턴도 현재 맵을 mapIds 에
+  // 채우기 때문에 예전 조건(`command.mapIds.length > 0`)은 **모든 평문 턴**을 맵 묶음으로 잘랐고,
+  // 그 밖(데이터베이스·시스템·퀘스트)의 변경을 전부 버렸다 — 사용자가 시킨 그 일을(2026-09-17 실측).
+  // 에이전트가 둘 이상이면 결과가 여럿이라 병합이 여전히 유일한 합치는 길이다.
+  const mergedFromBundles = !team && command.mapIds.length > 0
+    && (command.scopedByUser === true || groups.length > 1);
   const merged = mergedFromBundles
     ? mergeMapBundles(base, results.map((done, index) => ({ mapIds: groups[index]!, project: done.project })))
     : { project: results[0]!.project, spills: [], conflicts: [] as string[] };
@@ -388,23 +437,46 @@ export async function runPiCommand(
   toolErrorCount += results.reduce((sum, done) => sum + done.stats.toolErrors, 0);
   const changedKeys = changedProjectKeys(base, merged.project);
   changedCount = changedKeys.length;
+  // 에이전트가 한 일이 **전부** 범위 밖이라 버려진 턴. 이건 「바뀐 것이 없다」가 아니라 실패다.
+  //
+  // 2026-09-17 실측: 「회복약 아이템 하나 만들어줘」에 대해 ① 계획이 "DB 변경은 병합 때 빠질 수
+  // 있다"고 예고하고 ② 병합이 `database` 를 버리고 ③ 에이전트가 "등록을 완료했습니다"라고 답하고
+  // ④ 시스템이 "프로젝트는 바뀌지 않았습니다"로 끝냈다. 네 문장이 한 화면에서 서로를 부정했고,
+  // 화면의 모든 어휘(초록 「완료」 칩·「대기」 상태·성공으로 적힌 활동 로그)가 성공을 가리켰다.
+  // 여기서 성공 어휘를 끊는다 — 무엇이 왜 버려졌는지 말하고, 실행 기록에도 실패로 남긴다.
+  const droppedEverything = changedCount === 0 && spilledKeys.length > 0 && !options.planOnly;
   if (changedCount === 0) {
     const answer = lastAssistantText.trim();
+    const spillList = spilledKeys.map((key) => `\`${key}\``).join(", ");
+    const spillReason = `요청한 변경이 이번 실행의 범위(${scopeText}) 밖이라 적용되지 않았습니다 — 버린 것: ${spillList}.`
+      + " 에이전트의 답과 달리 프로젝트는 그대로입니다.";
     // 「적용됨」은 커밋된 실행에만 쓴다 — 계획 턴과 답(질문) 턴은 바뀌지 않는 것이 정상이고,
     // "바뀐 것이 없다" 로 끝내면 성공한 질문이 실패로 읽힌다(2026-09-12 실측).
     const caption = options.planOnly
       ? "계획만 세웠습니다. 실행하려면 같은 지시를 다시 보내세요."
-      : answer
-        ? "프로젝트는 바뀌지 않았습니다."
-        : "Pi 에이전트가 끝났지만 프로젝트에 바뀐 것이 없습니다.";
+      : droppedEverything
+        ? spillReason
+        : answer
+          ? "프로젝트는 바뀌지 않았습니다."
+          : "Pi 에이전트가 끝났지만 프로젝트에 바뀐 것이 없습니다.";
     ghost.dispose();
     publishFinalOutcome();
-    boardState = markTeamBoardDone(
-      boardState,
-      options.planOnly ? "계획만 세웠습니다." : answer ? "답변했습니다 — 프로젝트는 그대로입니다." : "바뀐 것이 없습니다.",
-    ); sync();
-    finishLog({ applied: false, changedCount: 0, stoppedReason: options.planOnly ? "계획만" : answer ? "답변" : "변경 없음" });
-    surface.setStatus("대기");
+    boardState = droppedEverything
+      ? markTeamBoardFailed(boardState, spillReason)
+      : markTeamBoardDone(
+        boardState,
+        options.planOnly ? "계획만 세웠습니다." : answer ? "답변했습니다 — 프로젝트는 그대로입니다." : "바뀐 것이 없습니다.",
+      );
+    sync();
+    finishLog({
+      applied: false,
+      changedCount: 0,
+      stoppedReason: options.planOnly ? "계획만" : droppedEverything ? "범위 밖 버림" : answer ? "답변" : "변경 없음",
+      // 실행 기록의 ok 는 error 유무로 정해진다(activityLog). 버려진 턴을 성공으로 적으면
+      // `npm run ai:log --failed` 가 이 실패를 영영 못 본다.
+      ...(droppedEverything ? { error: spillReason } : {}),
+    });
+    surface.setStatus(droppedEverything ? "적용 실패" : "대기");
     // 답이 곧 결과인 턴은 본문 말풍선이 먼저다 — 보드의 잘린 한 줄·시스템 줄이 답 앞에 서지 않게 한다.
     if (answer) surface.appendBubble("assistant", answer);
     surface.appendBubble("system", caption);
@@ -453,10 +525,49 @@ export async function runPiCommand(
       push({ type: "agent_event", agentId: "ultrabrain", event: { type: "error", message: `검수 불가 — ${message}` } });
     }
   }
-  harmonyManualReview = needsHarmonyReview && !harmonyApproved;
+  // 시공이 실패한 런의 부분 결과는 자동 적용하지 않는다 — 사람이 반드시 본다.
+  //
+  // 2026-09-17 실측: 「맵 전부 지워줘」에서 시공이 「실패 · 17턴 · 중단」으로 끝났는데 검수는
+  // 「검수 통과」를 찍었고, 그 부분 결과가 그대로 적용돼 맵 12개가 사라졌다. 「tile_paint 로 길을
+  // 그려줘」·「여기 좀 허전한데」도 실패한 채로 타일 220·181칸을 적용 후보로 내놨다.
+  // 검수는 결과물만 보므로 시공의 실패를 알지 못한다 — 실패 사실은 여기서만 합칠 수 있다.
+  const builderFailed = stoppedByLimit;
+  if (builderFailed) {
+    surface.appendBubble(
+      "system",
+      "시공이 끝까지 가지 못했습니다 — 아래 변경은 **중단된 작업의 일부**입니다. 검수 결과와 무관하게 확인하고 적용하세요.",
+    );
+  }
+  harmonyManualReview = (needsHarmonyReview && !harmonyApproved) || builderFailed;
   // 명세는 한 번만 계산해 검토 카드와 영수증이 **같은 것**을 쓴다 — 두 번 만들면 두 화면이 갈라진다.
   const receiptLedger = buildChangeLedger(base, merged.project);
   const apply = async (): Promise<boolean> => {
+    // 맵·이벤트가 사라지는 적용만 사람이 한 번 더 본다. 근거는 툴 이름이 아니라 base ↔ 제안의
+    // 실제 차이다. 검토 카드가 아니라 apply() 안에 두는 이유: 자동 적용(piApply="auto")에는 카드
+    // 자체가 없어서, 카드에만 붙이면 그 경로가 그대로 뚫린다(2026-09-17 실측: 「맵 전부 지워줘」
+    // 한 줄에 맵 16→4, 이벤트 20→0, 확인 한 번 없이 「적용 완료」).
+    const loss = mapLossConfirmRequest(base, merged.project);
+    if (loss) {
+      const approved = await showConfirm({
+        title: loss.title,
+        message: loss.message,
+        confirmLabel: loss.confirmLabel,
+        cancelLabel: "그만두기",
+        danger: true,
+      });
+      if (!approved) {
+        // 취소는 되돌리기가 아니라 무변경이다. 초안도 함께 걷는다 — 「지우지 말라」는 답은
+        // 결과를 남겨 둘 이유가 아니다(discardReviewed 와 같은 정리를 한다).
+        ghost.dispose();
+        changedCount = 0;
+        publishFinalOutcome();
+        boardState = markTeamBoardDiscarded(boardState); sync();
+        finishLog({ applied: false, changedCount: 0, stoppedReason: "삭제 취소" });
+        surface.setStatus("대기");
+        surface.appendBubble("system", loss.cancelNotice);
+        return false;
+      }
+    }
     // 초안이 진짜 타일이 되는 순간 밑그림은 지운다 — 같은 그림이 두 겹으로 남지 않게
     // (세션 경로의 aiProposalCard.applyProposal 과 같은 관례).
     ghost.dispose();
@@ -468,6 +579,7 @@ export async function runPiCommand(
     summary: `Pi ${team ? "팀" : "에이전트"}: ${command.task.slice(0, 80)}`,
     toolNames: [team ? "pi_team" : "pi_agent"],
     diff: changed,
+    mapDestructionApproved: loss !== null,
     snapshotLabel: `Pi ${team ? "팀" : "에이전트"} ${scopeText}`,
     snapshotMapId: command.mapIds[0] ?? surface.getCurrentMapId(),
     reason: `Pi ${team ? "팀" : `에이전트 ${groups.length}개`}, 툴콜 ${toolCalls}회`,

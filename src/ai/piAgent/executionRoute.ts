@@ -39,7 +39,7 @@ export interface PiRunPlan {
   readonly readOnly: boolean;
   /** 실행하지 않고 계획만 세운다. Pi 에는 세션 플래너가 없으므로 프롬프트 지시로 만들고, readOnly 와 함께 쓴다. */
   readonly planOnly: boolean;
-  /** 다이얼의 작업 예산 → Pi 턴 상한. */
+  /** 다이얼의 **턴** 예산 → Pi 턴 상한. 도구 호출 예산(`budgetCap`)과 단위가 다르다. */
   readonly maxTurns: number;
   /** 다이얼의 추론 강도 → Pi thinking level. */
   readonly thinkingLevel: PiAgentThinkingLevel;
@@ -53,7 +53,7 @@ export function resolvePiRunPlan(autonomy: AutonomyResolution): PiRunPlan {
   return {
     readOnly: autonomy.readOnly || autonomy.planOnly,
     planOnly: autonomy.planOnly,
-    maxTurns: autonomy.budgetCap,
+    maxTurns: autonomy.piMaxTurns,
     thinkingLevel: autonomy.reasoningEffort,
   };
 }
@@ -136,9 +136,12 @@ function formatPiVillageNote(input: PiIntentNoteInput): string | null {
     );
   } else if (targetMap) {
     lines.push(
-      `지금 맵 '${targetMap.id}'(${targetMap.width}×${targetMap.height})에는 이미 내용이 있다. 이 턴의 범위는 이 맵 하나라 새 맵(target:{kind:"new"}·create_map)은 결과에서 버려진다 — 쓰지 말 것. `
+      // 「새 맵은 버려진다」는 평문 턴이 언제나 맵 묶음으로 잘리던 시절의 사실이다. 2026-09-17
+      // 이후 평문 턴은 잘리지 않으므로(aiPiAgentCommand 의 mergedFromBundles) 그 문장을 지웠다 —
+      // 남겨 두면 모델이 할 수 있는 일을 못 한다고 믿고 「빈 맵을 열어 달라」며 거절한다.
+      `지금 맵 '${targetMap.id}'(${targetMap.width}×${targetMap.height})에는 이미 내용이 있다. 되도록 이 맵 안에서 해결한다. `
         + `빈 땅이 있으면 그 사각형(16×16 이상)을 target:{kind:"existing", mapId:"${targetMap.id}", bounds:{x,y,w,h}} 로 지정해 거기에 짓고, 기존 마을을 손보는 요청이면 손볼 사각형을 bounds 로 준다. `
-        + "fullMap:true 는 기존 내용을 지우므로 사용자가 «전부 다시» 라고 했을 때만. 빈 땅도 없고 그런 지시도 없으면 아무것도 바꾸지 말고 「빈 맵을 열어 다시 지시해 달라」고 답한다.",
+        + "fullMap:true 는 기존 내용을 지우므로 사용자가 «전부 다시» 라고 했을 때만. 빈 땅도 없고 그런 지시도 없으면 새 맵(target:{kind:\"new\"})을 만들어 거기에 짓고 무엇을 했는지 보고한다.",
     );
   } else {
     lines.push(`대상 맵이 없다 → target:{kind:"new", width:${size.width}, height:${size.height}}.`);

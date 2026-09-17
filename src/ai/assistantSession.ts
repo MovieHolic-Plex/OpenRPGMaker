@@ -53,6 +53,7 @@ import { buildWorldDigest, normalizeProjectWorld } from "@/project/world";
 import { applyProposedProject, captureProposalBase, type ProposalBase, type ApplyProposedProjectResult } from "@/editor/tools/applyChangesetToStore";
 import { AuthoredProjectBaseline, authoredIdentity } from "@/project/authoredProjectBaseline";
 import { isDestructiveOutcome, isMapDestruction } from "@/ai/approvalPolicy";
+import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
 import { contextFooterMapId, stripContextFooter } from "@/ai/contextFooter";
 import {
   continuationIntentDeclaration,
@@ -3364,16 +3365,22 @@ export class AssistantSession {
     // 맵 규모 파괴는 자동 적용하지 않는다 — 이 경로에는 모달을 띄울 사람이 없다. 초안은 그대로
     // 남겨 두고, 턴이 끝날 때 표면(aiProposalCard)의 적용 경로에서 사용자가 확인하고 적용한다.
     // 조용히 통과시키면 "무엇이 사라졌는지 화면에서 봤다"는 승인 전제가 사라진다.
+    const proposed = this.getProposedProject();
+    // 이름으로 못 잡는 소실(맵 삭제·이벤트 전멸)도 같은 이유로 자동 적용하지 않는다. 이름만 보던
+    // 시절에는 `remove_map` 이 그냥 지나갔다. 여기서 막지 않으면 applyProposedProject 의 안전망이
+    // 거절하고, 그 거절은 failMilestoneApply 로 가 **자율 런 전체를 중단**시킨다 — 조용히 건너뛰고
+    // 사용자가 표면에서 확인하게 하는 편이 옳다.
     const mapDestruction = calls.find((call) => isMapDestruction(call.name));
-    if (mapDestruction) {
+    const loses = mapLossConfirmRequest(this.baselineProject, proposed);
+    if (mapDestruction || loses) {
+      const what = mapDestruction ? mapDestruction.name : "맵·이벤트 소실";
       this.pushAudit({
         kind: "status",
-        text: `agent_run:map-destruction-needs-approval "${completed.title}" — ${mapDestruction.name} 는 자동 적용하지 않습니다 (프로젝트 저장소 변경 없음)`,
+        text: `agent_run:map-destruction-needs-approval "${completed.title}" — ${what} 는 자동 적용하지 않습니다 (프로젝트 저장소 변경 없음)`,
       });
-      onEvent({ type: "status", text: `맵 전체 청소는 자동 적용하지 않습니다 — 확인 후 적용하세요: ${completed.title}` });
+      onEvent({ type: "status", text: `맵·이벤트가 사라지는 변경은 자동 적용하지 않습니다 — 확인 후 적용하세요: ${completed.title}` });
       return;
     }
-    const proposed = this.getProposedProject();
     await this.prepareCheckpointApply();
     operation.assertCurrent();
     const applied = await operation.wait(applyProposedProject(proposed, {

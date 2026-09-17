@@ -19,6 +19,7 @@ import {
   type LaneState,
 } from "@/ai/piAgent/lane";
 import { mapBundleSpill, mergeMapBundles } from "@/ai/piAgent/mapBundle";
+import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
 import type { PiAgentDoneEvent, PiAgentEvent, PiAgentRequest } from "@/ai/piAgent/protocol";
 import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { store } from "@/project/store";
@@ -232,6 +233,17 @@ export function createLaneManager(options: LaneManagerOptions = {}): LaneManager
     // 이미 묶음 키 비교로 걸렀고 지금 프로젝트 위에 묶음만 얹었으므로, 살아있는 문서 기준으로
     // 증거를 다시 찍는다 — 계층 문서가 달라졌다면 그대로 거절된다.
     authorMergedSpatialProposal(merged.project, current);
+    // 레인은 무인 실행이라 모달을 띄울 사람이 없다 — 대신 규모를 레인 알림에 실어 사람이 보드에서
+    // 본 뒤 결정하게 한다. 조용히 통과시키면 스튜디오 보드가 「맵 전부 지워줘」류를 확인 없이
+    // 확정하는 두 번째 구멍이 된다(채팅 경로는 2026-09-17 에 그 구멍으로 맵 12개를 잃었다).
+    const laneLoss = mapLossConfirmRequest(current, merged.project);
+    if (laneLoss) {
+      return {
+        ok: false,
+        reason: "commit-rejected",
+        issue: `${laneLoss.confirmLabel} — 레인은 맵·이벤트가 사라지는 변경을 자동 확정하지 않습니다. 채팅에서 같은 지시를 내려 확인 후 적용하세요.`,
+      };
+    }
     const applied = await applyProposedProject(merged.project, {
       // 기준은 «지금» 으로 새로 잡는다. 제안 자체가 지금 위에 얹힌 것이므로 전체 등가 기준을
       // 그대로 요구하면 이 레인이 방금 읽은 그 기준과 같아 통과한다. 묶음 충돌은 위에서 이미 걸렀다.

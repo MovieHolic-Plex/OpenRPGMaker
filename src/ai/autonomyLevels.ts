@@ -28,6 +28,19 @@ export interface AutonomyResolution {
   agentMode: NonNullable<AiConfig["agentMode"]>;
   /** 이 레벨이 한 런에서 쓸 수 있는 작업 예산(도구 호출 상한의 의미). */
   budgetCap: number;
+  /**
+   * Pi 루프의 **턴** 상한. budgetCap 과 단위가 다르다 — 한 턴은 모델 왕복 한 번이고 그 안에
+   * 도구를 여러 번 부른다.
+   *
+   * 왜 따로 두나(2026-09-17 실측): `resolvePiRunPlan` 이 `maxTurns: autonomy.budgetCap` 으로
+   * 두 단위를 같은 것으로 취급했다. 그래서 「균형」(16)이 다이얼을 **안 건드린 것**(워커 기본값
+   * `DEFAULT_MAX_TURNS = 40`)보다 strictly 나빴고, 실제로 7번의 턴 상한 중단 중 4번이 이것이었다.
+   *
+   * 값의 근거는 이 저장소가 이미 쓰는 턴 스케일이다(`teamSpec.ts`): 짓는 역할 40, 검토 역할 10,
+   * 상한 클램프 120. 그래서 실행하는 레벨은 40 아래로 내려가지 않는다 — 다이얼을 고르는 행위가
+   * 안 고르는 것보다 나쁜 결과를 내면 그건 컨트롤이 아니다.
+   */
+  piMaxTurns: number;
   /** true면 계획만 세우고 실행하지 않는다(승인 대기). */
   planOnly: boolean;
   /**
@@ -42,14 +55,17 @@ export interface AutonomyResolution {
 
 const RESOLUTIONS: Readonly<Record<AutonomyLevel, AutonomyResolution>> = {
   // budgetCap 4: 조회 몇 번. confirm(6)과 값을 겹치지 않게 둔다 — 예산은 자율성에 따라 단조 증가한다.
-  readonly: { reasoningEffort: "low", agentMode: "chat", budgetCap: 4, planOnly: false, readOnly: true },
+  // piMaxTurns 10 = teamSpec 의 검토 역할 예산. 쓰기를 안 하므로 짓는 예산이 필요 없다.
+  readonly: { reasoningEffort: "low", agentMode: "chat", budgetCap: 4, piMaxTurns: 10, planOnly: false, readOnly: true },
   // readonly 는 planOnly 가 아니다: ask 레일은 플래너를 스킵하므로(plannerSkipReasonFor "composer:ask")
   // 계획이 애초에 생기지 않는다. planOnly 를 켜면 실행할 수 없는 계획만 남는다.
-  confirm: { reasoningEffort: "low", agentMode: "chat", budgetCap: 6, planOnly: true, readOnly: false },
-  balanced: { reasoningEffort: "low", agentMode: "auto", budgetCap: 16, planOnly: false, readOnly: false },
-  autonomous: { reasoningEffort: "medium", agentMode: "auto", budgetCap: 32, planOnly: false, readOnly: false },
+  confirm: { reasoningEffort: "low", agentMode: "chat", budgetCap: 6, piMaxTurns: 10, planOnly: true, readOnly: false },
+  // 여기부터는 실제로 짓는다 — piMaxTurns 는 워커 기본값(40) 아래로 내려가지 않는다.
+  balanced: { reasoningEffort: "low", agentMode: "auto", budgetCap: 16, piMaxTurns: 40, planOnly: false, readOnly: false },
+  autonomous: { reasoningEffort: "medium", agentMode: "auto", budgetCap: 32, piMaxTurns: 60, planOnly: false, readOnly: false },
   // budgetCap 48 = AGENT_RUN_MAX_TOTAL_STEPS(assistantSession) — 자율 런 전체 예산과 일치.
-  max: { reasoningEffort: "high", agentMode: "auto", budgetCap: 48, planOnly: false, readOnly: false },
+  // piMaxTurns 120 = teamSpec 이 스스로 거는 클램프 상한(Math.min(120, …)).
+  max: { reasoningEffort: "high", agentMode: "auto", budgetCap: 48, piMaxTurns: 120, planOnly: false, readOnly: false },
 };
 
 /** 레벨을 세션 노브로 푼다. 호출마다 새 객체를 돌려준다(호출자 변이가 테이블을 오염시키지 않는다). */

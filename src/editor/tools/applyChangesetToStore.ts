@@ -25,7 +25,7 @@ import { assertHouseProtection, captureHouseProtection } from "./houseProtection
 import type { EditActivityField, EditActivityOrigin } from "@/editor/editActivityLog";
 import type { ProjectChangeAnnotation } from "@/project/store";
 import type { RunOperation } from "@/ai/runOperation";
-import { isMapDestruction } from "@/ai/approvalPolicy";
+import { emptiedEventMapIds, isMapDestruction, removedMapIds } from "@/ai/approvalPolicy";
 
 /**
  * AI/툴 적용을 행위 로그에 남길 주석으로 바꾼다.
@@ -257,11 +257,14 @@ export interface ApplyProposedProjectOptions {
   readonly snapshotLabel?: string;
   readonly snapshotMapId?: string | null;
   /**
-   * 맵 규모 파괴(clear_map)를 사용자가 승인했음을 밝히는 플래그. **모델이 아니라 표면이 채운다.**
-   * 채팅 표면은 showConfirm 을 통과한 뒤에만 true 를 넘긴다(aiProposalCard). 자율 런은 이런 배치를
-   * 자동 적용하지 않는다(AssistantSession.maybeAutoApplyMilestone) — 모달을 띄울 사람이 없기 때문이다.
-   * toolNames 로 판정하는 이유: 이 경로는 도구 실행 전에 합의된 스냅샷을 받으므로 args 를 다시
-   * 뜯을 필요가 없고, /pi 처럼 자기 검토 카드를 가진 표면은 실제 툴 이름을 넘기지 않아 스스로 빠진다.
+   * 맵 규모 파괴(타일 전체 청소·맵 삭제·이벤트 전멸)를 사용자가 승인했음을 밝히는 플래그.
+   * **모델이 아니라 표면이 채운다** — showConfirm 을 통과한 뒤에만 true 다(aiProposalCard·
+   * aiPiAgentCommand). 자율 런은 이런 배치를 자동 적용하지 않는다
+   * (AssistantSession.maybeAutoApplyMilestone) — 모달을 띄울 사람이 없기 때문이다.
+   *
+   * 2026-09-17 이전에는 이 게이트가 `toolNames` 만 봤고, 주석에 「`/pi` 는 자기 검토 카드가 있으니
+   * 스스로 빠진다」고 적혀 있었다. 그 전제가 틀렸다 — 검토 카드의 [적용]은 파괴를 따로 묻지 않고,
+   * 자동 적용(`piApply="auto"`)에는 카드 자체가 없다. 그래서 판정은 이름이 **아니라** 결과다.
    */
   readonly mapDestructionApproved?: boolean;
   readonly resetProject?: boolean;
@@ -306,8 +309,19 @@ export async function applyProposedProject(
   }
   // 맵 규모 파괴는 사람이 봐야 적용된다. 권위(위)와 불변식(아래) 검사를 통과한 배치라도,
   // "무엇이 사라졌는지 화면에서 봤다"는 전제 없이는 되돌리기가 유일한 복구라는 정책이 성립하지 않는다.
-  if (options.mapDestructionApproved !== true && options.toolNames.some((name) => isMapDestruction(name))) {
-    const issue = "맵 전체 청소는 사용자 허가가 필요합니다 — 채팅에서 확인 후 적용하세요.";
+  //
+  // 소실은 **이름이 아니라 결과**로 잡는다 — 이름 목록은 실행 경로가 늘 때마다 빈다(2026-09-17
+  // 실측: `/pi` 한 줄이 맵 12개를 지우고 이벤트 20개를 날렸는데 toolNames 가 ["pi_agent"] 라
+  // 게이트가 울리지 않았다). resetProject 는 예외다: 프로젝트 전체 교체는 맵 소실이 곧 의도이고
+  // 그 경로는 자기 확인을 따로 받는다.
+  const losesMaps = options.resetProject === true
+    ? false
+    : removedMapIds(before, proposed).length > 0 || emptiedEventMapIds(before, proposed).length > 0;
+  if (options.mapDestructionApproved !== true
+    && (losesMaps || options.toolNames.some((name) => isMapDestruction(name)))) {
+    const issue = losesMaps
+      ? "맵·이벤트가 사라지는 변경은 사용자 허가가 필요합니다 — 채팅에서 확인 후 적용하세요."
+      : "맵 전체 청소는 사용자 허가가 필요합니다 — 채팅에서 확인 후 적용하세요.";
     return { ok: false, reason: "map-destruction-unapproved", issue, issues: [issue] };
   }
   const wikiProjectIdentity = JSON.stringify(store.getProjectIdentity());
