@@ -72,4 +72,26 @@ describe("actionable atomic acceptance diagnostics", () => {
     ]);
     expect(map.events[0]?.x).toBe(1);
   });
+
+  it("does not abandon reachability just because a roaming NPC exists", () => {
+    const project = createBlankProject(), map = project.maps[target.mapId];
+    map.events.push({
+      id: "rover", x: 1, y: 0, trigger: { kind: "action" }, commands: [],
+      pages: [{
+        id: "rover", name: "rover", conditions: [], graphic: {},
+        trigger: { kind: "action" }, priority: "same",
+        movement: { type: "random", speed: 2, frequency: 3 }, commands: [],
+      }],
+    });
+    const ledger = new AssistantAcceptanceLedger("goal", "Routes", project);
+    ledger.adopt([{ id: "routes", title: "Routes", criteria: [
+      { kind: "reachability", target, from: { x: 0, y: 0 }, to: [{ x: 2, y: 0 }] },
+      { kind: "reachability", target, from: { x: 0, y: 0 }, to: [{ x: 1, y: 0 }] },
+    ] }]);
+    expect(ledger.evaluate(project).items[0]?.evidence).toMatchObject([
+      { passed: true },
+      { passed: false, issues: [{ criterionIndex: 1, field: "criteria[1].to[0]", code: "cell-moving-event-start",
+        mapId: target.mapId, cell: { x: 1, y: 0 }, blocker: { kind: "event", eventId: "rover" } }] },
+    ]);
+  });
 });

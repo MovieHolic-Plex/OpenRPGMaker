@@ -1651,6 +1651,20 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
   실제로 움직이든 안 움직이든 통과한다 — "안 움직인다" 류 회귀를 이 러너로 증명하지 말라.
   단위 레벨은 `test/runtimeEventPageMovement.test.ts`, 실물은 브라우저 Test Play 로 잡는다.
 
+## NPC 배회 런타임 QA — `npm run qa:runtime -- --scenario npc-movement` (2026-09-17)
+
+AI 조수가 `place_npc` 로 만든 NPC 가 제자리에만 있던 회귀를 출하 플레이어(`player.html`)에서 본다.
+픽스처 `test/fixtures/projects/npc-movement-qa.json` 은 등대 마을 시작점 (14,18) 에
+`roam-kid`(12,17)·`roam-dog`(16,19) 와 기존 배회 NPC 를 둔다.
+
+- 하네스 시나리오(`scripts/qa/runtime/npc-movement.scenario.mjs`): 플레이어 고정 + 240프레임 후
+  샷 2장. 증거 디렉터리 `verify-shots/runtime-qa/npc-movement/`.
+- 좌표 판정 probe(`scripts/qa/runtime/npc-movement.probe.mjs`): `__oprnCharacterSprites` 로
+  배회 NPC 가 실제로 옮겼는지 본다. **같은 디렉터리를 쓰면 하네스 샷을 덮어쓰므로**
+  `QA_OUT_DIR=verify-shots/runtime-qa/npc-movement-probe` 로 분리 실행한다.
+- 저작 쪽 단위 테스트는 `test/npcMovementInference.test.ts`. 수용 게이트가 이동형 NPC 때문에
+  reachability 를 포기하지 않는 계약은 `test/assistantAcceptanceDiagnostics.test.ts`.
+
 ## fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
 
 `vitest.config.ts` 는 `environment: "node"` 라서 DOM 전역이 하나도 없다. `test/fakeDom.ts` 의

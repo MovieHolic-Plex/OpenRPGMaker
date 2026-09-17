@@ -1501,3 +1501,33 @@ normal session dispatch in both directions on a three-chip fixture, unrelated
 project/meta equality, native refusals and JSON/harness persistence. The offline
 session fixture stops after dispatch; it neither applies to a live project nor
 claims final acceptance. Real AI repair and final build/gates remain parent-owned.
+
+## NPC 자율 이동 아키타입 추론 (2026-09-17)
+
+`place_npc`/`make_villager`의 `movement` 생략 시 이름으로 추론한다(명시 우선).
+구현: `src/editor/tools/eventTools.ts`의 `inferNpcMovementArchetype` + `resolveNpcMovement`.
+
+- 추격/습격/매복/스토커 → `approach` (플레이어에게 다가옴)
+- 상점 주인·문지기·간판·안내 + `isShopRoleNpcName` → `fixed` (대화 거점)
+- 아이·행상·떠돌이·동물(개·새는 독립 단어일 때만) → `random` (배회)
+- 그 외 모호 → `fixed` (오판 비용 비대칭: 통로 막힘 방지)
+- 추론 결과는 `diff.warnings`에 기록 ("이동 추론 → random(배회)…") — 모델이 다음 호출에서 명시하도록 유도
+- `movement` enum에 `approach` 추가 (`fixed|random|approach`)
+- `place_battle_blocker`에 `fightMovement` (`fixed|random`, 생략 시 fixed) 추가 — "길을 지키는" 원형 유지 + 순찰 옵션
+- `make_hunting_ground`의 `chase` 생략 시 기본값 `true`로 변경 (명시 `false` 존중) — 보이는 몬스터는 추격이 자연스러움
+
+Acceptance 게이트 완화 (`src/ai/assistantAcceptanceEvaluation.ts`):
+이전에는 `movement ≠ fixed` 이벤트 하나라도 있으면 reachability 전체를 포기
+(`conditional-movement-unsupported`)해 모델이 fixed만 고르는 인센티브가 됐다.
+이제는 이동형을 정적 차단자에서 제외하고, 시작 셀에 from/to가 겹칠 때만
+`cell-moving-event-start` 실패. 프롬프트(`src/ai/eventPageSemantics.ts`)도
+"생략 시 fixed"에서 "생략 시 아키타입 추론"으로 갱신.
+
+Tests: `test/npcMovementInference.test.ts` (8건).
+런타임 증거: `scripts/qa/runtime/npc-movement.probe.mjs` + `verify-shots/runtime-qa/npc-movement/`
+(배회 NPC 4명 전원 이동 확인, before/after PNG).
+
+런타임 증거 디렉토리 분리 (2026-09-17):
+`npc-movement` 시나리오 하네스 실행과 probe 직접 실행은 같은 `verify-shots/runtime-qa/npc-movement/`를
+쓰면 서로 덮어쓴다(실측). probe는 `QA_OUT_DIR=verify-shots/runtime-qa/npc-movement-probe`로 분리 실행한다.
+하네스 쪽은 플레이어 고정 + NPC 배치 차이 샷 2장, probe 쪽은 스프라이트 좌표 직접 판정(results.json) + before/after PNG.
