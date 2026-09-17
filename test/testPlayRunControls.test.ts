@@ -24,6 +24,7 @@ import { store } from "@/project/store";
 import { closeTestPlayModal, openTestPlayModal } from "@/editor/panels/testPlayModal";
 
 const AUTO_START_KEY = "oprn:test-play-auto-start";
+const SKIP_OPENING_KEY = "oprn:test-play-skip-opening";
 
 // happy-dom 환경에는 localStorage 가 없다 — 생족 기억 스토랬지를 원래 번짜리에 심는다.
 function memoryStorage(): Storage {
@@ -182,5 +183,43 @@ describe("test play skip-title option", () => {
 
     button("test-play-restart")?.click();
     expect(skipTitle.checked).toBe(true);
+  });
+});
+
+describe("test play skip-opening option", () => {
+  it("keeps the opening independent of the title choice and remembers it", async () => {
+    await openTestPlayModal();
+    const skipOpening = checkbox("test-play-skip-opening");
+    // 기본값은 «오프닝 재생» — 기존 동작을 조용히 바꾸지 않는다.
+    expect(skipOpening.checked).toBe(false);
+    expect(lastRenderOptions().shouldPlayOpening?.()).toBe(true);
+
+    skipOpening.checked = true;
+    skipOpening.dispatchEvent(new Event("change"));
+    // 타이틀 선호(자동 시작)는 그대로 두고 현재 런만 다시 연다.
+    expect(storage.getItem(SKIP_OPENING_KEY)).toBe("1");
+    expect(storage.getItem(AUTO_START_KEY)).toBeNull();
+    expect(runControls.restartRun).toHaveBeenCalledTimes(1);
+    expect(checkbox("test-play-skip-title").checked).toBe(true);
+    // 같은 창이 그대로 열려 있어도 다음 런은 오프닝을 건너뛴다.
+    expect(lastRenderOptions().shouldPlayOpening?.()).toBe(false);
+
+    closeTestPlayModal();
+    await openTestPlayModal();
+    expect(checkbox("test-play-skip-opening").checked).toBe(true);
+    expect(lastRenderOptions().shouldPlayOpening?.()).toBe(false);
+  });
+
+  it("returns to the title instead of restarting when the title screen is the start mode", async () => {
+    storage.setItem(AUTO_START_KEY, "0");
+    await openTestPlayModal();
+    const skipOpening = checkbox("test-play-skip-opening");
+
+    skipOpening.checked = true;
+    skipOpening.dispatchEvent(new Event("change"));
+
+    expect(runControls.restartRun).not.toHaveBeenCalled();
+    expect(runControls.returnToTitle).toHaveBeenCalledTimes(1);
+    expect(storage.getItem(AUTO_START_KEY)).toBe("0");
   });
 });
