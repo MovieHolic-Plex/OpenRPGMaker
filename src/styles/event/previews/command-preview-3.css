@@ -365,14 +365,6 @@
   min-height: 150px;
 }
 
-.event-command-text-preview-canvas .ecp-message-window {
-  background: var(--runtime-dialogue-glass-surface, rgba(8, 15, 28, .94));
-}
-
-.event-command-text-preview-canvas .ecp-message-speaker-nameplate {
-  background: var(--runtime-dialogue-glass-surface-strong, rgba(11, 21, 38, .98));
-}
-
 .event-command-edit-columns:has(.event-command-text-editor) > .event-command-preview-panel {
   display: none;
 }
