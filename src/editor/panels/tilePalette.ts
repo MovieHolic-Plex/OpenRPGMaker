@@ -5,7 +5,6 @@ import { getEditorChrome } from "@/editor/editorUiMode";
 import { renderBasicLeftRail } from "@/editor/panels/basicLeftRail";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
 import { makeTileToolbar } from "@/editor/panels/tileToolbar";
-import { makeInspectionControls } from "@/editor/panels/tileToolbarMenus";
 import { makePaintShapeSelect } from "@/editor/panels/tileToolOptions";
 import { makeSidebarMapHeader } from "@/editor/panels/sidebarMapHeader";
 import { makeSidebarSurface } from "@/editor/panels/sidebarSurface";
@@ -107,14 +106,7 @@ export function renderTilePalette(container: HTMLElement): void {
       root.append(makeTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
     }
     renderEventEditor(root);
-    if (map && tileset) {
-      // 검사 컨트롤(⋯ 오버플로·핀)은 타일 모드와 같은 utils 자리에 둔다 —
-      // 고치기 전 분기에 있던 것을 셸 안으로 옮긴 것이지 제거가 아니다.
-      root.append(el("div", {
-        class: "sidebar-utilities",
-        children: [makeInspectionControls({ map, rerender: renderPalettePreservingViewport, state, tileset })],
-      }));
-    }
+    // 검사 컨트롤(⋯ 오버플로·핀)은 도구막대 행 끝에 있다(tileToolbar.ts) — 사이드바 아래 줄은 비웠다.
     shell.append(root);
     container.append(shell);
     applyRovingTabindex(container);
@@ -296,7 +288,8 @@ function makePaletteSurface(input: {
   root.append(palette);
 
   root.append(makeSelectedTileStatus(state.selectedTile, tileset, map));
-  const utilities = el('div', { class: 'sidebar-utilities', children: [makeInspectionControls(model), assist.section] });
+  // ⋯ 검사·기록 메뉴는 도구막대 행 끝으로 옮겼다(2026-09-17) — 이 줄엔 붓 보조·조합만 남는다.
+  const utilities = el('div', { class: 'sidebar-utilities', children: [assist.section] });
   // 타일 속성은 인라인이 아니라 창이다 — 인스펙터 본문 346px 가 좌패널(526px)에서
   // 팔레트를 2px 로 눌렀다. 진입은 위 선택칩의 ⚙. (tilePropsDialog.ts 헤더 주석)
 

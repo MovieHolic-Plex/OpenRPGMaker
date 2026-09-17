@@ -1,0 +1,444 @@
+/* 조수가 한 일 — 캔버스 하단 가로 띠(aiWorkStrip.ts, 방향 G 2026-09-17).
+   토스트 스택과 같은 좌하단 앵커. 오른쪽 끝은 조수 창(펼침 480px / 접힘 알약)에 맞춘다.
+   카드 146px, 펼친 카드 330px, 나머지는 64px 썸네일 칩. 머리 알약으로 띠 전체를 접는다. */
+.ai-work-strip {
+  --ai-work-strip-height: 128px;
+  --ai-work-card-width: 146px;
+  --ai-work-card-open-width: 330px;
+  --ai-work-card-mini-width: 64px;
+  position: fixed;
+  /* 왼쪽 끝 = 캔버스 왼쪽(aiWorkStrip.syncAnchor 가 잰다) + 여백. 좌패널 위에 뜨지 않는다. */
+  /* 캔버스 좌하단 ≡ 버튼(약 40px) 오른쪽부터. */
+  left: calc(var(--ai-work-strip-left, 0px) + 60px);
+  bottom: var(--space-4);
+  /* 조수 창이 접혀 있으면 오른쪽 알약(≈96px)만 피한다. */
+  right: 130px;
+  /* 조수 데크와 같은 층(40). 토스트(2700)처럼 모달 위로 뜨면 테스트 플레이 창을 가린다. */
+  z-index: var(--z-toolbar);
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+  min-height: 0;
+  pointer-events: none;
+  font-family: var(--font-ui);
+  color: var(--text-1);
+}
+
+/* 조수 창이 펼쳐져 있을 때는 그 왼쪽 가장자리에서 끝난다(유휴 컴포저 480px + inset). */
+body:has(.ai-chat-panel:not(.is-collapsed)) .ai-work-strip {
+  right: calc(var(--ai-float-compact-width, 480px) + var(--space-3) + var(--space-3));
+}
+
+.ai-work-strip[hidden] {
+  display: none;
+}
+
+.ai-work-strip > * {
+  pointer-events: auto;
+}
+
+/* 머리 알약 「조수가 한 일 N ⌄」 */
+.ai-work-strip-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: 30px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-pill);
+  border: var(--stroke-1) solid var(--ai-deck-border, rgba(20, 24, 40, 0.1));
+  background: var(--ai-deck-glass, var(--bg-glass-panel));
+  backdrop-filter: blur(20px) saturate(1.08);
+  -webkit-backdrop-filter: blur(20px) saturate(1.08);
+  box-shadow: var(--shadow-pop);
+  font: var(--font-weight-bold) var(--font-size-sm)/1 var(--font-ui);
+  color: var(--text-1);
+  cursor: pointer;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.ai-work-strip.is-running .ai-work-strip-toggle::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--warning);
+  box-shadow: 0 0 0 3px var(--warning-muted);
+}
+
+.ai-work-strip-count {
+  color: var(--text-2);
+  font-weight: var(--font-weight-medium);
+}
+
+.ai-work-strip-toggle-chevron {
+  color: var(--text-3);
+  transition: transform 160ms ease;
+}
+
+.ai-work-strip.is-folded .ai-work-strip-toggle-chevron {
+  transform: rotate(180deg);
+}
+
+.ai-work-strip.is-folded .ai-work-strip-cards,
+.ai-work-strip.is-folded .ai-work-strip-overflow {
+  display: none;
+}
+
+/* 「+N」 — 숨긴 오래된 카드 */
+.ai-work-strip-overflow {
+  flex: 0 0 auto;
+  height: 30px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-pill);
+  border: var(--stroke-1) solid var(--ai-deck-border, rgba(20, 24, 40, 0.1));
+  background: var(--ai-deck-glass, var(--bg-glass-panel));
+  font: var(--font-weight-bold) var(--font-size-xs)/1 var(--font-ui);
+  color: var(--text-2);
+  cursor: pointer;
+}
+
+.ai-work-strip-overflow[hidden] {
+  display: none;
+}
+
+/* 카드 줄 — 오래된 것 왼쪽, 최신 오른쪽. 넘치면 가로 스크롤(최신 쪽으로 붙인다). */
+.ai-work-strip-cards {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding-top: var(--space-2);
+  scrollbar-width: thin;
+  justify-content: flex-end;
+}
+
+.ai-work-card {
+  flex: 0 0 var(--ai-work-card-width);
+  width: var(--ai-work-card-width);
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-l);
+  border: var(--stroke-1) solid var(--ai-deck-border, rgba(20, 24, 40, 0.1));
+  background: var(--ai-deck-glass, var(--bg-glass-panel));
+  backdrop-filter: blur(20px) saturate(1.08);
+  -webkit-backdrop-filter: blur(20px) saturate(1.08);
+  box-shadow: var(--shadow-pop);
+  cursor: pointer;
+  transition: width 160ms ease, flex-basis 160ms ease;
+  outline: none;
+}
+
+.ai-work-card:focus-visible {
+  box-shadow: 0 0 0 2px var(--accent), var(--shadow-pop);
+}
+
+.ai-work-card[hidden] {
+  display: none;
+}
+
+.ai-work-card[data-state="running"] {
+  background: var(--warning-muted);
+}
+
+.ai-work-card.is-undone {
+  opacity: 0.6;
+}
+
+.ai-work-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2);
+}
+
+.ai-work-card-head {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.ai-work-card-thumb {
+  flex: 0 0 auto;
+  width: 54px;
+  height: 40px;
+  border-radius: var(--radius-s);
+  border: var(--stroke-1) solid rgba(20, 24, 40, 0.12);
+  background: var(--bg-inset);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ai-work-card-thumb canvas,
+.ai-change-thumb canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+.ai-change-thumb {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ai-change-thumb.is-text {
+  font: var(--font-weight-bold) var(--font-size-xs)/1.2 var(--font-ui);
+  color: var(--text-2);
+  padding: 0 var(--space-1);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.ai-work-card-spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--warning-muted);
+  border-top-color: var(--warning);
+  animation: ai-work-card-spin 900ms linear infinite;
+}
+
+.ai-work-card-mark {
+  font: var(--font-weight-bold) 16px/1 var(--font-ui);
+}
+
+.ai-work-card-mark.is-done {
+  color: var(--success);
+}
+
+.ai-work-card-mark.is-failed {
+  color: var(--danger);
+}
+
+.ai-work-card-text {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.ai-work-card-title {
+  font: var(--font-weight-bold) var(--font-size-sm)/1.3 var(--font-ui);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ai-work-card-meta {
+  font: var(--font-size-xs)/1.3 var(--font-ui);
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 진행 중 도구 행 — 채팅 로그의 라이브 행(ai-activity-live.css)을 그대로 쓴다. 카드 폭에 맞춰 한 줄. */
+.ai-work-card-live:empty {
+  display: none;
+}
+
+.ai-work-card-live .ai-activity-live {
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--font-size-xs);
+}
+
+.ai-work-card-live .ai-activity-live-line {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ai-work-card-bar {
+  height: 5px;
+  border-radius: 3px;
+  background: var(--warning-muted);
+  overflow: hidden;
+}
+
+.ai-work-card-bar-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--warning);
+  transition: width 240ms ease;
+}
+
+.ai-work-card-bar.is-indeterminate .ai-work-card-bar-fill {
+  width: 40%;
+  animation: ai-work-card-slide 1.2s ease-in-out infinite;
+}
+
+.ai-work-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1);
+  min-height: 22px;
+}
+
+.ai-work-card-step-count {
+  font: var(--font-size-xs)/1 var(--font-ui);
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.ai-work-card-actions {
+  display: flex;
+  gap: 4px;
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.ai-work-card-action {
+  height: 22px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-s);
+  border: var(--stroke-1) solid rgba(20, 24, 40, 0.12);
+  background: var(--bg-raised);
+  font: var(--font-weight-medium) var(--font-size-xs)/1 var(--font-ui);
+  color: var(--text-1);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ai-work-card-action:hover {
+  background: var(--bg-inset);
+}
+
+.ai-work-card-stop {
+  color: var(--danger);
+}
+
+/* 접힌 카드는 짧은 라벨(보기·되돌리기), 펼친 카드는 긴 라벨(맵에서 보기·이 작업만 되돌리기). */
+.ai-work-card:not(.is-open) .ai-work-card-action-full,
+.ai-work-card.is-open .ai-work-card-action-short {
+  display: none;
+}
+
+/* 펼친 카드 — 전→후·명세·단계·동작. 나머지는 썸네일 칩으로 준다. */
+.ai-work-card.is-open {
+  flex-basis: var(--ai-work-card-open-width);
+  width: var(--ai-work-card-open-width);
+  cursor: default;
+}
+
+.ai-work-card.is-open .ai-work-card-body {
+  cursor: pointer;
+}
+
+.ai-work-card-detail {
+  display: none;
+}
+
+.ai-work-card.is-open .ai-work-card-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: 0 var(--space-2) var(--space-2);
+  max-height: min(56vh, 520px);
+  overflow: auto;
+}
+
+.ai-work-card.is-open .ai-change-card {
+  margin: 0;
+}
+
+.ai-work-card-steps-head {
+  font: var(--font-weight-bold) var(--font-size-xs)/1 var(--font-ui);
+  color: var(--text-2);
+  padding-top: var(--space-1);
+  border-top: var(--stroke-1) solid rgba(20, 24, 40, 0.08);
+}
+
+.ai-work-card-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* 단계 행(aiChatRenderers.renderToolActivityEntry) — 데크 로그의 세 칸 격자를 카드 폭에 맞춰 그대로 쓴다. */
+.ai-work-card-steps .ai-tool-activity-line.ai-act {
+  align-items: center;
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  font-size: var(--font-size-sm);
+  padding: var(--space-1) 0;
+}
+
+.ai-work-card-steps .ai-tool-activity-line + .ai-tool-activity-line {
+  border-top: var(--stroke-1) solid rgba(20, 24, 40, 0.06);
+}
+
+.ai-work-card-steps .ai-tool-failure {
+  font-size: var(--font-size-sm);
+}
+
+/* 변경 카드의 「되돌리기」 는 카드 머리의 「이 작업만 되돌리기」 와 같은 동작 — 한 번만 보인다. */
+.ai-work-card .ai-change-card .ai-change-card-actions {
+  display: none;
+}
+
+.ai-work-card.is-mini {
+  flex-basis: var(--ai-work-card-mini-width);
+  width: var(--ai-work-card-mini-width);
+}
+
+.ai-work-card.is-mini .ai-work-card-text,
+.ai-work-card.is-mini .ai-work-card-live,
+.ai-work-card.is-mini .ai-work-card-bar,
+.ai-work-card.is-mini .ai-work-card-foot {
+  display: none;
+}
+
+.ai-work-card.is-mini .ai-work-card-thumb {
+  width: 100%;
+}
+
+/* 띠가 떠 있으면 토스트는 그 위에 쌓인다(bottom 은 데이터베이스 모달 규칙이 소유하므로 margin 으로). */
+body:has(.ai-work-strip:not([hidden])) .toast-stack {
+  margin-bottom: var(--ai-work-strip-height, 128px);
+}
+
+@keyframes ai-work-card-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes ai-work-card-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(260%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-work-card-spinner,
+  .ai-work-card-bar.is-indeterminate .ai-work-card-bar-fill {
+    animation: none;
+  }
+
+  .ai-work-card {
+    transition: none;
+  }
+}
+
+.ai-work-card-change:empty,
+.ai-work-card-extras:empty {
+  display: none;
+}

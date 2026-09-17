@@ -1,9 +1,15 @@
+import { existsSync, readFileSync } from "node:fs";
 import { defineConfig, devices } from "@playwright/test";
 import { applyLegacyEnvAliases } from "./scripts/lib/oprnEnv.mjs";
+import { readEnvPort } from "./scripts/lib/worktreeDevPort.mjs";
 
 applyLegacyEnvAliases();
 
-const devServerPort = process.env.DEV_SERVER_PORT ?? "9173";
+// 기본 포트는 이 체크아웃의 고정 포트(.env.local DEV_SERVER_PORT)다. 예전 기본 9173 은 모든 체크아웃이
+// 공유하는 값이라 reuseExistingServer 가 남의 워크트리 서버를 집어 「남의 코드를 검증」했다
+// (openwiki/agent-worktrees.md 실측 2026-08-29). 명시 env 가 있으면 그것이 이긴다.
+const assignedPort = existsSync(".env.local") ? readEnvPort(readFileSync(".env.local", "utf8")) : null;
+const devServerPort = process.env.DEV_SERVER_PORT ?? (assignedPort === null ? "9173" : String(assignedPort));
 const devServerUrl = `http://127.0.0.1:${devServerPort}`;
 
 /* `_` 로 시작하는 스펙(`_vxace-shots`, `_quest-playthrough`,
@@ -66,6 +72,7 @@ export default defineConfig({
     },
   ],
   webServer: {
+    // 명시 --port 라 워크트리에서도 통과한다(dev-server.mjs 는 포트 없는 'npm run dev' 만 거절한다).
     command: `npm run dev -- --host 127.0.0.1 --port ${devServerPort} --strictPort`,
     // E2E_FREEZE_DEV_SERVER: 이 실행이 서버를 직접 띄웠을 때만 HMR·파일 감시를 끈다.
     // 병렬 에이전트가 src/ 를 저장해도 QA 중인 페이지가 리로드로 날아가지 않는다.

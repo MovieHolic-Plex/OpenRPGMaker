@@ -9,6 +9,14 @@
 // 인코딩하면 라우트 → `/pi team` 문자열 → 파서 왕복이 생겨 한 비트를 네 곳에서 표현하게 된다.
 
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
+import { estimateVillageSize } from "@/ai/constructionDeclaration";
+import {
+  formatIntentNote,
+  formatScopeNote,
+  type IntentDeclaration,
+  type IntentNoteTargetMap,
+  type IntentSelectionFact,
+} from "@/ai/intentDeclaration";
 import type { PiAgentThinkingLevel } from "./protocol";
 
 export type PiApplyMode = "review" | "auto";
@@ -50,3 +58,94 @@ export function resolvePiRunPlan(autonomy: AutonomyResolution): PiRunPlan {
   };
 }
 
+
+/** 노트가 판단에 쓰는 대상 맵 사실 — 크기와 «이미 내용이 있는가»(authorVillageScope.isLivedMap). */
+export interface PiIntentNoteTargetMap extends IntentNoteTargetMap {
+  /** 기본 풀 아닌 타일이나 이벤트가 하나라도 있으면 true. author_village 가 bounds·fullMap 없이는 거절하는 맵이다. */
+  readonly lived: boolean;
+}
+
+/** 선언 → Pi 본문 노트 재료. 전부 코드가 아는 값이다. */
+export interface PiIntentNoteInput {
+  readonly intent: IntentDeclaration;
+  /** 선언이 가리킨 맵, 없으면 지금 열린 맵. 시공 규모 노트가 «키워라/충분하다» 를 이 크기로 판단한다. */
+  readonly targetMap: PiIntentNoteTargetMap | null;
+  /** 사용자의 선택 사각형. 있으면 «그 안에서» 경계와 author_village target 을 못박는다. */
+  readonly selection: IntentSelectionFact | null;
+}
+
+/**
+ * 선언이 확정한 것을 Pi 본문(계획 턴·실행 턴·팀장)이 읽는 한 덩어리로 만든다.
+ *
+ * 세션 경로는 `formatIntentNote`·`formatScopeNote` 를 오케스트레이션 메시지로 밀어 넣었는데, 채팅이
+ * Pi 로 이사한 2026-09-11 에 이 둘이 딸려 오지 않았다. 선언은 툴 도메인(`intentToolDomains`)만 열고
+ * 끝났고, «author_village 로 지어라·권장 크기는 W×H·선택 사각형 안에서» 는 아무 모델도 못 봤다 —
+ * 그래서 「마을을 만들어달라」가 paint_road 다섯 번으로 끝났다(2026-09-17 실측). 계획 턴은 읽기 전용이라
+ * author_village 를 목록에서조차 볼 수 없으므로, 이 노트가 유일하게 이름을 알려 주는 자리다.
+ *
+ * clarifyBypassed 는 늘 true 다 — Pi 경로에는 되묻는 자리가 없어서 «가장 그럴듯한 해석으로 진행하고
+ * 첫 문장에 밝혀라» 가 정직한 지시다.
+ */
+export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
+  const intentNote = formatIntentNote(input.intent, { clarifyBypassed: true, targetMap: input.targetMap });
+  const villageNote = formatPiVillageNote(input);
+  const scopeNote = input.selection
+    ? formatScopeNote({ mapId: input.selection.mapId, region: input.selection }, input.intent)
+    : null;
+  const parts = [intentNote, villageNote, scopeNote].filter((part): part is string => typeof part === "string" && part.length > 0);
+  return parts.length > 0 ? parts.join("\n") : null;
+}
+
+/**
+ * 지시문 뒤에 노트를 붙인다. 사용자 문장이 먼저다 — 로그·보드·요약·조화 검수는 `command.task`(사용자
+ * 문장)를 그대로 쓰고, 모델에 가는 문자열만 이걸 쓴다.
+ */
+export function composePiTask(task: string, intentNote: string | null | undefined): string {
+  return intentNote ? `${task}\n\n${intentNote}` : task;
+}
+
+/**
+ * 선언이 author_village 를 고른 턴의 마을 노트 — 마을 이론(집 → 길 → 나무 → 호수·마당)은 그 한 호출 안에 있다.
+ *
+ * 2026-09-17 실측(빈 20×15 맵, 「마을을 만들어달라」): 선언은 tools 첫 자리에 author_village 를 적었지만 그
+ * 이름은 모델에 닿지 않았고, 수량이 없어 [시공 규모] 도 붙지 않았다. 계획 턴은 읽기 전용이라 author_village 를
+ * 목록에서 볼 수도 없어 «fill_region 으로 길, author_house 2채, place_props» 를 짰고, 실행은 그 산문을 따라
+ * 16턴을 다 쓰고 집 2채로 끝났다. 도구 계층은 이미 다 준비돼 있다 — 빈 기존 맵은 bounds 없이 전체 시공되고
+ * 집 수에 필요한 크기로 스스로 넓힌다(authorVillageToolDef). 여기서는 그 사실을 모델에게 말로 전할 뿐이다.
+ *
+ * 새 맵(kind:"new")을 권하지 않는다: 평문 채팅의 범위는 지금 맵 하나(mapIds:[currentMapId])라서 최상위에
+ * 새로 달린 맵은 mergeMapBundles 가 범위 밖으로 버린다(authorVillageSupport 는 새 마을 맵을 루트의 자식으로
+ * 단다). 그러니 «내용이 있는 맵» 에서는 빈 땅 bounds 아니면 사용자에게 돌려보내는 것이 정직하다.
+ */
+function formatPiVillageNote(input: PiIntentNoteInput): string | null {
+  const { intent, targetMap, selection } = input;
+  if (intent.source !== "llm" || intent.mode === "question" || !intent.tools.includes("author_village")) return null;
+  const size = estimateVillageSize(intent.construction);
+  const declaredCount = intent.construction?.houseCount;
+  const lines = [
+    "[마을 시공] 선언이 author_village 를 골랐다. 집 한 채가 아니라 마을이므로 author_house 를 채마다 부르지 말고 "
+      + "author_village 한 호출로 짓는다 — 집·길·나무·호수·광장·마당을 설계서 순서(집 → 길 → 나무 → 호수·마당)로 코드가 시공한다. "
+      + "paint_road·fill_region·place_props 로 길과 나무를 손으로 깔지 말 것(마을 이론을 건너뛴 결과가 된다).",
+  ];
+  if (selection && intent.useSelection) {
+    lines.push("target 은 아래 [선택 영역] 노트의 사각형이다.");
+  } else if (targetMap && !targetMap.lived) {
+    lines.push(
+      `지금 맵 '${targetMap.id}'(${targetMap.width}×${targetMap.height})은 비어 있다 → target:{kind:"existing", mapId:"${targetMap.id}"} 로 맵 전체에 짓는다(bounds·fullMap 불필요). `
+        + `집 수에 필요한 크기(${size.width}×${size.height})로 코드가 스스로 넓히니 resize_map 은 부르지 않는다.`,
+    );
+  } else if (targetMap) {
+    lines.push(
+      `지금 맵 '${targetMap.id}'(${targetMap.width}×${targetMap.height})에는 이미 내용이 있다. 이 턴의 범위는 이 맵 하나라 새 맵(target:{kind:"new"}·create_map)은 결과에서 버려진다 — 쓰지 말 것. `
+        + `빈 땅이 있으면 그 사각형(16×16 이상)을 target:{kind:"existing", mapId:"${targetMap.id}", bounds:{x,y,w,h}} 로 지정해 거기에 짓고, 기존 마을을 손보는 요청이면 손볼 사각형을 bounds 로 준다. `
+        + "fullMap:true 는 기존 내용을 지우므로 사용자가 «전부 다시» 라고 했을 때만. 빈 땅도 없고 그런 지시도 없으면 아무것도 바꾸지 말고 「빈 맵을 열어 다시 지시해 달라」고 답한다.",
+    );
+  } else {
+    lines.push(`대상 맵이 없다 → target:{kind:"new", width:${size.width}, height:${size.height}}.`);
+  }
+  lines.push(
+    `houseCount:${size.houseCount}${declaredCount === undefined ? "(수량 선언이 없어 코드 기본값)" : ""}, countPolicy:"best-effort", forestDensity 는 반드시 넣는다. `
+      + "끝나면 evaluate_village_look 한 번으로 확인하고 보고한다.",
+  );
+  return lines.join(" ");
+}
