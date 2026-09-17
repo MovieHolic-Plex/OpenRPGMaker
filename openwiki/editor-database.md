@@ -643,6 +643,7 @@ Party record tabs use the final section of `studio-v2.css`: actors, classes, ski
 ## 세계관 그룹 — 세계 개요 · 설정집 (2026-09-18)
 
 - **세계 개요 v2:** 본문이 AI 미터+hero stat+이름/전제+뼈대+법칙 2열+본문 순서다. 뼈대(톤·시대·기술 천장·없는 것)와 법칙은 속성 사이드바가 아니라 본문 카드에 둔다 — 272px 사이드바에선 법칙 2열이 1열 덫에 걸린다. 본문 타이핑은 미터·힌트·stat 값을 다시 렌더 없이 갱신한다. testid: `db-world-canon-ai-meter`, `db-world-canon-hero-stats`, `db-world-canon-hero-stat-body`(값 span), `db-world-canon-frame`, `db-world-canon-laws`. CSS: `world-canon-meter`, `world-canon-law-grid`(799px 이하 1열), 카드 헤드 래핑.
+- **잘림 신호:** 본문이 600자를 넘으면 hero stat이 warn 톤으로 `뒤 N자 잘림`을 표시한다(값은 `600 / 600자` 고정). 증거 `verify-shots/world-lore-v2/trunc/`.
 - **설정집 v2:** 헤더 아래 stat 스트립(낱장·인물·장소세력·사건·검사 지적, warn/good 톤). testid `db-world-codex-stats`, 래퍼 `world-codex-lead-wrap`. 검사 지적은 카드에 붙은 것만 센다(`byEntityId` 합) — 전역 lint 수백 건을 그대로 두면 카드 1장짜리 설정집과 어울리지 않는다. "깨끗함"은 카드 첨부 0건일 때만.
 - **폴리시 (2026-09-18):** Studio v2 문법 안에서만 — 새 토큰 없음. 미터 바 8px+accent-soft 표면, 법칙 카드 canvas 표면, 선택 카드 좌측 accent 레일, 위키 헤더 hairline+12px 리듬, 톤 칩 on 700. 카드 헤드 래핑은 같은 `database` 레이어라 파일 순서가 아니라 특이성으로 이긴다(풀 체인 0-5-0). 증거 `verify-shots/world-lore-v2/polish2/`(넘침 0, 에러는 자동저장 기준선 17과 동일).
 - **구 레이아웃 기록 (2026-09-06):** `worldCanon`의 표시 이름은 「세계 개요」이며 stable tab/field testid는 유지한다.

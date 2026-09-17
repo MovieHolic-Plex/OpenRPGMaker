@@ -116,7 +116,10 @@ describe("database world canon view", () => {
     const host = renderTab();
     setInput(host, "db-world-canon-body", "가".repeat(700));
     expect(findByTestId(host, "db-world-canon-ai-meter")?.textContent).toContain("뒤 100자는 발췌 밖");
-    expect(findByTestId(host, "db-world-canon-hero-stat-body")?.textContent).toContain("600 / 600자");
+    const stat = findByTestId(host, "db-world-canon-hero-stat-body");
+    expect(stat?.textContent).toContain("600 / 600자");
+    expect(stat?.textContent).toContain("뒤 100자 잘림");
+    expect(stat?.className).toContain("db-ws-stat-warn");
     expect(findByTestId(host, "db-world-canon-hero-stats")).toBeTruthy();
   });
 

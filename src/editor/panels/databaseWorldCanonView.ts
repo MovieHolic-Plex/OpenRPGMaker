@@ -34,7 +34,8 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     {
       label: "AI 전달 본문",
       value: `${Math.min(600, canon.body.trim().length)} / 600자`,
-      hint: "앞부분만 읽는다",
+      hint: canon.body.trim().length > 600 ? `뒤 ${canon.body.trim().length - 600}자 잘림` : "앞부분만 읽는다",
+      tone: canon.body.trim().length > 600 ? "warn" : "neutral",
       testid: "db-world-canon-hero-stat-body",
     },
     { label: "톤", value: `${canon.tones.length}종`, hint: "8종 중" },
@@ -59,8 +60,15 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     if (hint) hint.textContent = excerptHint(filled);
     meterText.textContent = excerptHint(filled);
     meterFill.setAttribute("style", `width:${Math.min(100, Math.round((Math.min(600, filled) / 600) * 100))}%`);
-    const statValue = heroStats.querySelector("[data-testid='db-world-canon-hero-stat-body'] .db-ws-stat-value");
+    const statTile = heroStats.querySelector("[data-testid='db-world-canon-hero-stat-body']");
+    const statValue = statTile?.querySelector(".db-ws-stat-value");
     if (statValue) statValue.textContent = `${Math.min(600, filled)} / 600자`;
+    const statHint = statTile?.querySelector(".db-ws-stat-hint");
+    if (statHint) statHint.textContent = filled > 600 ? `뒤 ${filled - 600}자 잘림` : "앞부분만 읽는다";
+    if (statTile) {
+      statTile.classList.remove("db-ws-stat-neutral", "db-ws-stat-warn", "db-ws-stat-good", "db-ws-stat-bad");
+      statTile.classList.add(filled > 600 ? "db-ws-stat-warn" : "db-ws-stat-neutral");
+    }
   }
   hintLine();
   const aiPreview = el("pre", { class: "world-ai-preview", dataset: { testid: "world-canon-ai-preview" } });
