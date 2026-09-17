@@ -1805,8 +1805,10 @@ TURN/BATTLE MENU` 칩. 전투 애니메이션 타이밍 표 헤더 `사운드...
 ## Game menu design options (2026-09-18)
 
 The System overview has a dedicated Game menu card showing the current skin.
-Display contains resolution only; the `menu` section owns the selector, description
-and preview. Existing `system.menuUiStyle` values require no migration.
+Display contains resolution only; the `menu` section owns a responsive gallery of twelve preview buttons.
+Each button includes a screenshot, label, description and `aria-pressed` selection
+state; Enter/Space activates the native button. Re-selecting the active skin is a
+no-op. Existing `system.menuUiStyle` values require no migration.
 
 System → Game menu → Game menu design is populated from `menuSkins/registry.ts`.
 There are now twelve choices, including four RPG Maker era designs, classic blue windows, a paper journal and
