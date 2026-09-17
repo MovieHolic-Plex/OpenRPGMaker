@@ -66,13 +66,18 @@ export function registerPageMoveRoutes(scene: PageMoveRouteSceneContext): void {
   }
 }
 
+export function clampNpcSetting(value: number): number {
+  if (!Number.isFinite(value)) return 3;
+  return Math.min(8, Math.max(1, Math.trunc(value)));
+}
+
 export function npcMoveDurationMs(speed: number): number {
-  const rank = clampSetting(speed);
+  const rank = clampNpcSetting(speed);
   return Math.max(80, 640 - rank * 80);
 }
 
 export function npcMoveIntervalMs(frequency: number): number {
-  const rank = clampSetting(frequency);
+  const rank = clampNpcSetting(frequency);
   return Math.max(80, 1040 - rank * 160);
 }
 
@@ -114,8 +119,8 @@ function configurePageMover(
   // 막히면 걸음을 소비하는 기존 동작을 유지한다 — playSceneTypes §retryBlockedSteps.
   mover.retryBlockedSteps = movement.type === "living";
   mover.directionFix = animationType === "fixedDirection" || animationType === "fixedDirectionStep";
-  mover.speedRank = clampSetting(movement.speed);
-  mover.frequencyRank = clampSetting(movement.frequency);
+  mover.speedRank = clampNpcSetting(movement.speed);
+  mover.frequencyRank = clampNpcSetting(movement.frequency);
   mover.moveDurationMs = npcMoveDurationMs(movement.speed);
   mover.moveIntervalMs = npcPageMoveIntervalMs(movement);
   mover.sightRange = normalizeOptionalRange(movement.sightRange);
@@ -128,11 +133,6 @@ function removePageRouteForEvent(scene: PageMoveRouteSceneContext, eventId: stri
   for (const key of [...scene.pageMoveRouteKeys]) {
     if (key.startsWith(`${eventId}:`)) scene.pageMoveRouteKeys.delete(key);
   }
-}
-
-function clampSetting(value: number): number {
-  if (!Number.isFinite(value)) return 3;
-  return Math.min(8, Math.max(1, Math.trunc(value)));
 }
 
 function normalizeOptionalRange(value: number | undefined): number | undefined {

@@ -10,7 +10,7 @@ import { runtimeEventViewsForMap, runtimeEventViewById } from "@/project/runtime
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import { findChasePath } from "@/player/chaseAi";
 import { startPlayerRoute } from "@/player/playerRouteState";
-import { npcMoveDurationMs } from "@/player/playScenePageMoveRoutes";
+import { clampNpcSetting, npcMoveDurationMs } from "@/player/playScenePageMoveRoutes";
 import type { StepResult } from "@/player/interpreter";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { MoveCommand } from "@/project/types";
@@ -129,6 +129,7 @@ export async function playPathfindMove(scene: PlaySceneContext, step: PathfindSt
     const mover = scene.autonomousNPCs.get(plan.target);
     if (!mover) return settle("missingTarget", "이동 루트 등록 직후 무버가 사라졌다");
     mover.stopOnBlocked = true;
+    mover.speedRank = clampNpcSetting(effective.speed);
     mover.moveDurationMs = npcMoveDurationMs(effective.speed);
     mover.moveIntervalMs = 0;
     if (previousMover?.activeMove) {

@@ -16,7 +16,7 @@ import { commerceOverlayText } from "@/player/playSceneCommerce";
 import type { AutonomousMover, PlaySceneContext, ParallelProcess } from "@/player/playSceneTypes";
 import { assertNever } from "@/player/playSceneTypes";
 import { resourceDisplayName } from "@/player/resourceDisplay";
-import { npcMoveDurationMs, npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
+import { clampNpcSetting, npcMoveDurationMs, npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
 import { applyTimerStep, updateRuntimeTimers } from "@/player/playSceneTimers";
 import { runtimeEventViewById } from "@/project/runtimeEventState"
 import { applyCameraControl } from "@/player/playSceneCamera";
@@ -44,8 +44,8 @@ export function registerAutonomousMover(
     console.warn(`[player] moveEvent target event missing: ${eventId}`);
     return;
   }
-  const speed = clampMoverSetting(view.movement.speed);
-  const frequency = clampMoverSetting(view.movement.frequency);
+  const speed = clampNpcSetting(view.movement.speed);
+  const frequency = clampNpcSetting(view.movement.frequency);
   scene.autonomousNPCs.set(eventId, {
     moves,
     step: 0,
@@ -63,11 +63,6 @@ export function registerAutonomousMover(
     moveIntervalMs: timing?.moveIntervalMs ?? npcMoveIntervalMs(frequency),
     activeMove: null,
   });
-}
-
-function clampMoverSetting(value: number): number {
-  if (!Number.isFinite(value)) return 3;
-  return Math.min(8, Math.max(1, Math.trunc(value)));
 }
 
 export function updateParallelEvents(scene: PlaySceneContext, deltaMs: number): void {
