@@ -156,7 +156,10 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       ],
     }),
     ...(landingOnly
-      ? [skin.landing === "hub" ? renderPartyStrip(options.project, snapshot) : renderPartyOverview(options.project, snapshot)]
+      ? [skin.landing === "hub"
+          ? renderPartyStrip(options.project, snapshot)
+          // 사이드 시트는 140px 폭에 4행이라 얼굴을 22px 로 줄인다(파티 퍼스트는 30px).
+          : renderPartyOverview(options.project, snapshot, skin.landing === "sheet" ? 22 : 30)]
       : [detailPanel]),
     ...(showParty ? [renderPartyPanel(options.project, snapshot)] : []),
     renderFooter(
@@ -418,7 +421,7 @@ function renderPartyFace(
 // ── 스킨 첫 화면: 파티 개요(party·sheet) ──
 // 작업 패널 자리에 파티 4명을 크게 그린다 — 얼굴 30px · 이름 · 직업 · Lv · HP/MP 게이지+숫자 · 「위험」 칩.
 // 상태이상 칩은 세션에 필드 상태이상 데이터가 없어 아직 없다(스펙 §2).
-function renderPartyOverview(project: PlayerStatusMenuOptions["project"], snapshot: PlayerStatusMenuSnapshot): HTMLElement {
+function renderPartyOverview(project: PlayerStatusMenuOptions["project"], snapshot: PlayerStatusMenuSnapshot, faceSize: number): HTMLElement {
   const overview = el("section", {
     class: "status-menu-party-overview",
     attrs: { "aria-label": "파티 상태" },
@@ -434,7 +437,7 @@ function renderPartyOverview(project: PlayerStatusMenuOptions["project"], snapsh
       attrs: { "aria-label": `${row.name} ${row.levelLabel} ${row.hpLabel} ${row.mpLabel}` },
       dataset: { testid: `status-menu-overview-row-${index}` },
       children: [
-        renderPartyFace(project, row, index, 30, `status-menu-overview-face-${index}`),
+        renderPartyFace(project, row, index, faceSize, `status-menu-overview-face-${index}`),
         el("div", {
           class: "status-menu-overview-info",
           children: [

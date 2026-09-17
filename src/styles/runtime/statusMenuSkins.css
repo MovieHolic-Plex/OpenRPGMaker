@@ -286,3 +286,80 @@
 .oprn-status-menu .status-menu-strip-body .status-menu-actor-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .oprn-status-menu .status-menu-strip-body .status-menu-overview-track { height: 2.5px; }
 .oprn-status-menu .status-menu-strip-value { color: var(--status-edge-muted); font-size: 5.5px; font-variant-numeric: tabular-nums; font-weight: 500; white-space: nowrap; }
+
+/* ── 사이드 시트(landing sheet): 첫 화면만 오른쪽 140px 시트. 지도는 왼쪽에 남고 오른쪽으로 갈수록만 어둡다. function 모드는 기본 판 ── */
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"]::before {
+  box-shadow: -4px 0 14px rgba(3, 5, 14, 0.45);
+  inset: 6px 6px 6px 174px;
+}
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"]::after {
+  background: linear-gradient(90deg, rgba(6, 8, 18, 0.04), rgba(6, 8, 18, 0.12) 50%, rgba(6, 8, 18, 0.5));
+}
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-header {
+  gap: 4px;
+  left: 181px;
+  padding-bottom: 4px;
+  right: 13px;
+  top: 12px;
+}
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-heading { font-size: 9px; }
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-location,
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-gold,
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-time { font-size: 6px; }
+/* 파티 개요 4행 — 얼굴 22px(렌더러가 크기를 정한다), 행 26px */
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-party-overview {
+  bottom: auto;
+  gap: 2px;
+  height: 110px;
+  left: 181px;
+  right: 13px;
+  top: 28px;
+}
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-overview-row {
+  gap: 3px;
+  grid-template-columns: 22px minmax(0, 1fr);
+  padding: 1px 3px 1px 2px;
+}
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-overview-info { gap: 1px; }
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-overview-head .status-menu-actor-name { font-size: 6.5px; }
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-overview-head .status-menu-actor-subline { font-size: 5px; }
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-overview-chip { font-size: 4.5px; padding: 0 2px; }
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-overview-vital { gap: 2px; grid-template-columns: 8px minmax(0, 1fr) max-content; line-height: 1.1; }
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-overview-vital-label { font-size: 4.5px; }
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-overview-value { font-size: 5.5px; line-height: 1.1; }
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-overview-head { line-height: 1.15; }
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-overview-track { height: 2px; }
+/* 명령 격자 2열 × 5행(12px) — 10항목 평탄 레일이 68px 에 들어간다. 세로 커서 막대는 왼쪽 열만 가리키므로 끄고 선택 바탕으로 */
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-command-rail {
+  border-right: 0;
+  bottom: auto;
+  display: grid;
+  gap: 2px;
+  grid-auto-rows: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  height: 68px;
+  left: 181px;
+  padding: 0;
+  right: 13px;
+  top: 142px;
+  width: auto;
+}
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-command-rail::after { display: none; }
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-command-rail > .status-menu-command {
+  flex: none;
+  font-size: 6px;
+  gap: 3px;
+  height: 12px;
+  padding: 0 3px;
+}
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-command-icon { flex-basis: 8px; height: 8px; width: 8px; }
+/* 푸터 — 시트 폭에 맞추고, 첫 화면엔 메시지 줄이 비어 있으므로 접는다 */
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-footer {
+  bottom: 12px;
+  font-size: 5.5px;
+  gap: 0;
+  left: 181px;
+  right: 13px;
+}
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-message { display: none; }
+.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-controls { padding-top: 3px; }

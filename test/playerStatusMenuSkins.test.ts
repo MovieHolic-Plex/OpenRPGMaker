@@ -154,6 +154,23 @@ describe("status menu skins", () => {
     }
   });
 
+  it("sheet 는 party 와 같은 DOM 이되 얼굴이 22px 로 작다(140px 시트에 4행)", () => {
+    const restore = installFakeDom();
+    try {
+      const menu = render("sheet");
+      expect(menu.getAttribute("data-menu-skin-landing")).toBe("sheet");
+      expect(menu.getAttribute("data-menu-skin-rail")).toBe("flat");
+      expect(findByTestId(menu, "status-menu-party-overview")).not.toBeNull();
+      expect(findByTestId(menu, "status-menu-detail")).toBeNull();
+      expect(findByTestId(menu, "status-menu-overview-face-0")?.getAttribute("style")).toContain("width:22px");
+      expect(findByTestId(render("party-first"), "status-menu-overview-face-0")?.getAttribute("style")).toContain("width:30px");
+      // 2열 격자: 조작 안내는 허브와 같다.
+      expect(findByTestId(menu, "status-menu-controls")?.textContent).toContain("←→");
+    } finally {
+      restore();
+    }
+  });
+
   it("party-first-warm 은 톤만 warm 이고 나머지는 party-first 와 같다", () => {
     const restore = installFakeDom();
     try {
