@@ -23,14 +23,14 @@
 // remove 는 미커밋 변경이나 미병합 커밋이 있으면 거부한다. 커밋되지 않은 작업은 reflog 로도
 // 회수할 수 없으므로, 정말 버릴 때만 --force-dirty 를 명시한다.
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync, writeFileSync, symlinkSync, mkdtempSync, mkdirSync, statSync, unlinkSync, rmSync, rmdirSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync, symlinkSync, mkdtempSync, unlinkSync, rmSync, rmdirSync } from "node:fs";
 import { join, dirname, basename, resolve } from "node:path";
 import { tmpdir } from "node:os";
+import { ensureWorktreeDevPort, readEnvPort, stripEnvPort } from "./lib/worktreeDevPort.mjs";
 
 const REPO = resolve(process.cwd());
 const REPO_NAME = basename(REPO);
 const PARENT = dirname(REPO);
-const PORT_BASE = 9801;
 const COPIED_ENV_FILES = [".env", ".env.local"];
 
 function git(args, options = {}) {
@@ -60,62 +60,6 @@ function listWorktrees() {
   }
   if (current.path) entries.push(current);
   return entries.filter((entry) => resolve(entry.path) !== REPO);
-}
-
-let gitCommonDirCache;
-function gitCommonDir() {
-  if (!gitCommonDirCache) {
-    try {
-      gitCommonDirCache = git(["rev-parse", "--path-format=absolute", "--git-common-dir"]);
-    } catch {
-      gitCommonDirCache = join(REPO, ".git");
-    }
-  }
-  return gitCommonDirCache;
-}
-
-/**
- * create 가 동시에 여러 개 돌면 스캔→기록 사이에 같은 포트를 고를 수 있다.
- * .git 아래의 mkdir 락(원자적)으로 포트 스캔+기록 구간만 직렬화한다.
- * 락을 쥔 프로세스가 죽으면 디렉터리가 남으므로 60초 지난 락은 회수한다.
- */
-function withPortLock(fn) {
-  const lockDir = join(gitCommonDir(), "wt-port.lock");
-  const tick = new Int32Array(new SharedArrayBuffer(4));
-  for (;;) {
-    try {
-      mkdirSync(lockDir);
-      break;
-    } catch (error) {
-      if (error.code !== "EEXIST") throw error;
-      try {
-        if (Date.now() - statSync(lockDir).mtimeMs > 60_000) rmdirSync(lockDir);
-      } catch {
-        /* 회수 경합 — 다음 루프에서 재시도 */
-      }
-      Atomics.wait(tick, 0, 0, 50);
-    }
-  }
-  try {
-    return fn();
-  } finally {
-    rmdirSync(lockDir);
-  }
-}
-
-/** 이미 쓰이는 포트를 피해 다음 빈 포트를 고른다(워크트리 .env.local 스캔). */
-function nextFreePort() {
-  const used = new Set();
-  for (const entry of listWorktrees()) {
-    const envLocal = join(entry.path, ".env.local");
-    if (!existsSync(envLocal)) continue;
-    const match = /^DEV_SERVER_PORT=(\d+)$/m.exec(readFileSync(envLocal, "utf8"));
-    if (match) used.add(Number(match[1]));
-  }
-  for (let port = PORT_BASE; port < PORT_BASE + 100; port += 1) {
-    if (!used.has(port)) return port;
-  }
-  throw new Error("빈 DEV_SERVER_PORT 를 찾지 못했습니다.");
 }
 
 // 워킹트리(미커밋 포함)를 커밋 객체로 박제한다. 임시 인덱스를 쓰므로 실제 인덱스·워킹트리는
@@ -165,28 +109,21 @@ function provision(path, { force = false } = {}) {
       // 배정이 "이미 있음"으로 건너뛰어 모든 워크트리가 같은 포트를 갖는다 — 새로 복사되는
       // 경우에만 지워서 고유 배정이 동작하게 한다.
       if (file === ".env.local" && !existed) {
-        content = content.replace(/^DEV_SERVER_PORT=\d+\n?/gm, "");
+        content = stripEnvPort(content);
       }
       writeFileSync(destination, content, "utf8");
       applied.push(`${file} 복사`);
     }
   }
 
-  // 포트 고유 배정 — vite.config.devServerPort() 가 loadEnv 로 읽는다.
-  const envLocal = join(path, ".env.local");
-  const current = existsSync(envLocal) ? readFileSync(envLocal, "utf8") : "";
-  let port = /^DEV_SERVER_PORT=(\d+)$/m.exec(current)?.[1];
-  if (!port) {
-    port = withPortLock(() => {
-      // 락 안에서 다시 읽는다 — 기다리는 동안 다른 프로세스가 배정했을 수 있다.
-      const latest = existsSync(envLocal) ? readFileSync(envLocal, "utf8") : "";
-      const existing = /^DEV_SERVER_PORT=(\d+)$/m.exec(latest)?.[1];
-      if (existing) return existing;
-      const assigned = String(nextFreePort());
-      writeFileSync(envLocal, `${latest.trimEnd()}\nDEV_SERVER_PORT=${assigned}\n`.trimStart(), "utf8");
-      return assigned;
-    });
-    applied.push(`DEV_SERVER_PORT=${port}`);
+  // 포트 고유 배정 — vite.config.devServerPort() 가 loadEnv 로 읽고, dev-server.mjs 가 같은 값을 --port 로 준다.
+  // 값이 있어도 다른 체크아웃과 겹치거나(손으로 복사한 .env.local 이 메인의 배정을 물고 온다) 예약
+  // 포트(9999·9888)면 미배정으로 보고 새로 준다 — 2026-09-17 실측 9개 워크트리가 전부 9841 이었다.
+  const assigned = ensureWorktreeDevPort(path);
+  const port = String(assigned.port);
+  if (assigned.reason !== "kept") {
+    const why = assigned.reason === "missing" ? "없어서" : assigned.reason === "duplicate" ? `${assigned.previous} 가 다른 체크아웃과 겹쳐` : `${assigned.previous} 가 예약 포트라`;
+    applied.push(`DEV_SERVER_PORT=${port} (${why} 배정)`);
   }
   return { port, applied };
 }
@@ -197,7 +134,7 @@ function announce(path, branch, port) {
   console.log(`  포트    ${port}  (npm run dev:worktree)`);
   console.log(`\n에이전트에게 줄 지시:`);
   console.log(`  cwd = ${path}`);
-  console.log(`  dev 서버는 'npm run dev:worktree' (포트 ${port}). 'npm run dev' 는 9999 하드코딩이라 메인과 충돌한다.`);
+  console.log(`  dev 서버는 'npm run dev:worktree' (포트 ${port} 고정). 'npm run dev' 는 메인 전용(9999)이라 워크트리에서는 거절된다.`);
 }
 
 /** 이름 생략 시 자동 이름. 경로와 브랜치 ref 둘 다 충돌하지 않을 때까지 suffix 를 올린다. */
@@ -410,9 +347,7 @@ function list() {
   }
   for (const entry of entries) {
     const envLocal = join(entry.path, ".env.local");
-    const port = existsSync(envLocal)
-      ? (/^DEV_SERVER_PORT=(\d+)$/m.exec(readFileSync(envLocal, "utf8"))?.[1] ?? "?")
-      : "?";
+    const port = existsSync(envLocal) ? (readEnvPort(readFileSync(envLocal, "utf8")) ?? "?") : "?";
     // 미커밋 변경과 main 대비 뒤처짐은 워크트리 안에만 보여서 `git branch -vv` 로는 안 보인다.
     // 회수되지 않은 작업을 상시 드러내려고 함께 출력한다.
     const missing = !existsSync(entry.path);
