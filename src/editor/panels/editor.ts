@@ -300,7 +300,7 @@ function leftDockPanels(): readonly PanelId[] {
     left: getWorkspaceLayout().docks.left,
     paletteRail: getEditorChrome().paletteRail,
     mapTree: getEditorChrome().mapTree,
-  });
+  }).filter(id => id !== "maps");
 }
 
 /**

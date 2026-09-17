@@ -6,8 +6,8 @@
 기본 편집기에서 우하단 float 데크와 「조수가 한 일」 가로 띠는 더 이상 만들지 않는다.
 아래 과거 float/deck/작업 탭 설명보다 이 절과 현재 소스가 우선한다.
 
-- `aiSidebarWorkspace.ts` / `editor.ts`: 기존 맵·타일 패널과 AI를 왼쪽 탭으로 전환한다.
-  두 DOM 모두 유지하므로 전환 중 대화·입력은 사라지지 않는다. 접으면 48px 레일만 남고
+- `aiSidebarWorkspace.ts` / `editor.ts`: 왼쪽을 AI / 맵 / 타일 탭으로 전환한다.
+  각 DOM을 유지하므로 전환 중 대화·입력은 사라지지 않는다. 접으면 48px 레일만 남고
   리사이저도 숨겨 맵 공간을 반환한다. 펼침은 선택 탭을 유지하고, 레일의 AI/맵 버튼은 해당 탭을
   바로 연다. 접힘은 `oprn:ai-sidebar-collapsed`에 저장한다. `oprn:ai-sidebar-show` /
   `oprn:ai-sidebar-tools`가 공개 AI 열기·접기와 연결된다. 옛 float 위치·접힘 값은 적용하지 않는다.
@@ -18,7 +18,10 @@
 - `aiTeamSidebar.ts`: `teamActivity` + 세션 `laneSession()`을 구독한다. 실제 하위 팀원만 원형
   아바타·이름·상태로 표시하고, 총괄/flat 보고용 가상 `agent` 행은 제외한다. 상세는 사용자 클릭으로만
   연다. `aiTeamTranscript`의 실제 로그와 변경 요약을 사용하며 재생성하지 않는 textarea에 팀원별
-  초안을 보관한다. 오른쪽 `속성`은 실제 `renderMapProps`, `팀 설정`은 기존 `createTeamPanel`이다.
+  초안을 보관한다. 오른쪽은 팀원과 `팀 설정`(`createTeamPanel`)만 가진다.
+- `mapSidebarSection.ts`: 맵 탭은 맵 목록(`renderMapList`)과 맵 속성(`renderMapProps`)을 가진다.
+  속성은 현재 맵을 따라 갱신하고 좁은 패널에 맞게 한 열로 표시한다. 타일 도크는 maps 호스트를
+  만들지 않으며, 기존 타일 내부 맵 드롭다운(`sidebar-map-switcher`)은 유지한다.
 - **후속 요청 계약:** 현재 Pi 워커에 live inbox가 없다. 실행·적용·팀 검토 중에는 전송을 막고
   이유를 표시한다. 완료 후에는 선택 팀원의 맵·역할 프롬프트·이전 보고를 기존 lane 실행에 넘긴다.
   `LaneSpec.readOnly/toolDomains`를 요청에 전달해 검토 담당을 쓰기 에이전트로 바꾸지 않는다.

@@ -2,7 +2,6 @@
 // the main conversation. Follow-ups use the existing scoped lane/apply lifecycle.
 import { el } from "@/util/dom";
 import { store } from "@/project/store";
-import { editorState } from "@/editor/editorState";
 import { currentTeamReviewActions, subscribeTeamActivity } from "@/ai/piAgent/teamActivity";
 import type { TeamBoardAgent, TeamBoardState } from "@/ai/piAgent/teamBoardState";
 import type { LaneState } from "@/ai/piAgent/lane";
@@ -10,7 +9,6 @@ import { loadTeamSpec } from "@/ai/piAgent/teamSpecStore";
 import { deckIcon, type DeckIconName } from "./aiDeckIcons";
 import { createTeamTranscript } from "./aiTeamTranscript";
 import { laneSession } from "./aiLaneSession";
-import { renderMapProps } from "./mapProps";
 
 interface Member {
   key: string;
@@ -31,11 +29,10 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
   const manager = laneSession();
   let activity: TeamBoardState | null = null;
   let selected: string | null = null;
-  let view: "team" | "props" | "settings" = "team";
+  let view: "team" | "settings" = "team";
   let tab: "chat" | "changes" = "chat";
   let disposed = false;
   let rosterSignature = "";
-  let propertyMapId: string | null = null;
   const drafts = new Map<string, string>();
   const followUps = new Map<string, string>();
   const notices = new Map<string, string>();
@@ -75,7 +72,6 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     class: "ai-team-member-detail", attrs: { hidden: "", "aria-label": "선택한 팀원" }, dataset: { testid: "ai-member-detail" },
     children: [el("header", { class: "ai-team-member-head", children: [avatar, el("div", { children: [title, stateText] }), close] }), tabs, content, notice, actions, composer],
   });
-  const props = el("button", { class: "ai-team-rail-tab", attrs: { type: "button", "aria-pressed": "false" }, text: "속성", on: { click: () => { view = "props"; propertyMapId = null; render(); } } });
   const team = el("button", { class: "ai-team-rail-tab", attrs: { type: "button", "aria-pressed": "true" }, text: "AI 팀", on: { click: () => { view = "team"; render(); } } });
   const roster = el("div", { class: "ai-team-avatar-list", dataset: { testid: "ai-team-avatar-list" }, attrs: { "aria-label": "팀원" } });
   const empty = el("p", { class: "ai-team-sidebar-empty", text: "팀 작업\n없음" });
@@ -86,7 +82,7 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
   });
   const root = el("aside", {
     class: "ai-team-sidebar", dataset: { testid: "ai-team-sidebar" }, attrs: { "aria-label": "AI 팀 패널" },
-    children: [el("div", { class: "ai-team-rail-tabs", children: [props, team] }), roster, empty, settings, detail],
+    children: [el("div", { class: "ai-team-rail-tabs", children: [team] }), roster, empty, settings, detail],
   });
 
   const members = (): Member[] => [
@@ -125,14 +121,6 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     detail.hidden = view === "team" && selected === null;
     if (detail.hidden) return;
     tabs.hidden = view !== "team"; composer.hidden = view !== "team"; notice.hidden = true; actions.replaceChildren();
-    if (view === "props") {
-      title.textContent = "맵 속성"; stateText.textContent = "현재 맵"; avatar.replaceChildren(deckIcon("map"));
-      if (propertyMapId !== editorState.get().currentMapId || !content.contains(changes)) {
-        propertyMapId = editorState.get().currentMapId ?? null;
-        changes.replaceChildren(); renderMapProps(changes); content.replaceChildren(changes);
-      }
-      return;
-    }
     if (view === "settings") {
       title.textContent = "AI 팀 설정"; stateText.textContent = "역할 · 모델 · 작업 범위"; avatar.replaceChildren(deckIcon("gear"));
       if (!content.contains(options.settings)) content.replaceChildren(options.settings);
@@ -205,7 +193,7 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
       if (focusKey) Array.from(roster.querySelectorAll<HTMLButtonElement>("button")).find(b => b.dataset.agentId === focusKey)?.focus();
     }
     empty.hidden = rows.length > 0;
-    props.setAttribute("aria-pressed", String(view === "props")); team.setAttribute("aria-pressed", String(view === "team"));
+    team.setAttribute("aria-pressed", String(view === "team"));
     renderDetail();
   }
   async function sendFollowUp(): Promise<void> {
@@ -259,10 +247,10 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     activity = next; render();
   });
   const unsubscribeLanes = manager.subscribe(() => render());
-  const unsubscribeEditor = editorState.subscribe(() => { if (view === "props" && propertyMapId !== editorState.get().currentMapId) renderDetail(); });
+
   const unsubscribeStore = store.subscribe((_project, change) => {
     if (change?.projectSwitch) { selected = null; view = "team"; drafts.clear(); followUps.clear(); activity = null; render(); }
   });
   render();
-  return { root, dispose: () => { disposed = true; unsubscribeTeam(); unsubscribeLanes(); unsubscribeEditor(); unsubscribeStore(); root.removeEventListener("keydown", onKey); root.remove(); } };
+  return { root, dispose: () => { disposed = true; unsubscribeTeam(); unsubscribeLanes(); unsubscribeStore(); root.removeEventListener("keydown", onKey); root.remove(); } };
 }
