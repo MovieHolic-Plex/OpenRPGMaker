@@ -139,7 +139,7 @@ import {
   type AiFontSize,
 } from "./aiPanelLayout";
 import { narrateAiActivity } from "@/editor/aiActivityNarration";
-import { formatAiRunningStatus, formatToolActivityLine, renderToolActivityEntry, renderWorkPlanChecklist, renderRunOutcome, type AutonomousRunBudget } from "./aiChatRenderers";
+import { formatAiRunningStatus, formatToolActivityLine, renderWorkPlanChecklist, renderRunOutcome, type AutonomousRunBudget } from "./aiChatRenderers";
 import type { RunOutcome } from "@/ai/runOutcome";
 import { closeWorkPlanBook, openWorkPlanBook, updateWorkPlanBook } from "./aiWorkPlanModal";
 import {
@@ -147,7 +147,8 @@ import {
 } from "./aiConversationLog";
 import { anchoredPopupPosition } from "./popupPosition";
 import { createProposalHost, setAssistantMessageBadge } from "./aiProposalCard";
-import { changeChipsWithAreas, renderChangePreviewCard, type ChangePreviewInput } from "./aiChangePreview";
+import { changeChipsWithAreas, type ChangePreviewInput } from "./aiChangePreview";
+import { beginAiWorkCard, type AiWorkCard } from "./aiWorkStrip";
 import { createStudioShell, type StudioShell } from "./aiStudioShell";
 import { changedAreaLabels } from "@/project/changeAreas";
 import { buildChangeLedger } from "@/project/changeLedger";
@@ -470,6 +471,22 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     readonly finalize: () => void;
   };
   const pendingActivitySwaps: PendingActivitySwap[] = [];
+  // 작업 띠 카드(aiWorkStrip). 턴에서 첫 도구가 돌기 시작하거나 변경이 생기면 만들고, 턴이 끝나면 닫는다.
+  // 말만 한 턴(조회·질문)은 카드가 비어 있으므로 닫을 때 띠에서 뺀다.
+  let workCard: AiWorkCard | null = null;
+  let workCardTitle = "";
+  const ensureWorkCard = (): AiWorkCard => {
+    if (workCard) return workCard;
+    workCard = beginAiWorkCard({ title: workCardTitle || "작업 중", onStop: () => abortActiveTurn() });
+    return workCard;
+  };
+  const finishWorkCard = (result: { readonly ok: boolean; readonly message?: string }): void => {
+    const card = workCard;
+    workCard = null;
+    if (!card) return;
+    card.finish(result);
+    card.discardIfEmpty();
+  };
   // AI 턴/영역 작업이 끝나면 맵 우선으로 다시 접을지. 오류면 열린 상태를 유지한다.
   let collapseAfterAiWork = false;
   // executeTurn/영역 작업 콜백은 패널 크롬을 만들기 전에 정의되므로, 접힘 상태도
@@ -580,6 +597,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (!mapId || !project.maps[mapId]) return null;
       return renderMapChip({ project, mapId, region, icon: toolIconKey(name) });
     },
+    // 툴 행·카드는 로그가 아니라 작업 띠로 간다(방향 G). 복원(live 아님) 행은 그리지 않는다 —
+    // 지난 대화의 작업은 「작업 기록」 메뉴가 갖고 있고, 띠는 이번 세션에 한 일만 쌓는다.
+    workSink: {
+      appendToolEntry: (entry, meta) => {
+        if (meta.live) ensureWorkCard().appendStep(entry);
+      },
+      noteReadOnlyTool: (_name, live) => {
+        if (live) ensureWorkCard().noteReadOnly();
+      },
+      appendCard: (card) => {
+        ensureWorkCard().attachElement(card);
+      },
+    },
   });
   const {
     appendBubble,
@@ -630,8 +660,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     });
     runningActivity = { toolName, row, line };
     refreshLiveActivity();
-    log.append(row);
-    log.scrollTop = log.scrollHeight;
+    ensureWorkCard().live.replaceChildren(row);
     refreshRunningStatus(false);
   };
   const completeLiveActivity = (
@@ -641,23 +670,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   ): void => {
     const matchedLiveActivity = runningActivity?.toolName === toolName;
     if (!matchedLiveActivity) bumpToolProgress();
-    const before = new Set<Element>(log.querySelectorAll(".ai-tool-activity-line"));
     studioToolLines.unshift(formatToolActivityLine(toolName, result));
     if (studioToolLines.length > 40) studioToolLines.length = 40;
     studioShell?.setToolLines(studioToolLines);
-    appendToolLine(toolName, result, args, { live: true });
-    const rendered = [...log.querySelectorAll<HTMLElement>(".ai-tool-activity-line")].find((entry) => !before.has(entry))
-      ?? renderToolActivityEntry(toolName, result);
+    // 완료 행은 작업 띠 카드의 단계 목록에 붙는다(workSink). 조회성 성공 호출은 행이 없다(null).
+    const rendered = appendToolLine(toolName, result, args, { live: true });
     if (!runningActivity || runningActivity.toolName !== toolName) return;
 
     const activity = runningActivity;
     const liveRow = activity.row;
-    const completedHost = rendered.parentElement;
-    if (!completedHost) {
+    const completedHost = rendered?.parentElement ?? null;
+    if (!rendered || !completedHost) {
       liveRow.remove();
       if (runningActivity === activity) runningActivity = null;
       refreshRunningStatus(false);
-      log.scrollTop = log.scrollHeight;
       return;
     }
     rendered.remove();
@@ -683,7 +709,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       completedHost.append(liveRow);
       if (runningActivity === activity) runningActivity = null;
       refreshRunningStatus(false);
-      log.scrollTop = log.scrollHeight;
     };
     const pending: PendingActivitySwap = { cancel: () => {}, finalize };
     pendingActivitySwaps.push(pending);
@@ -715,7 +740,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     );
     // 항목별 before → after 명세 — 큰 위임의 검토는 칩이 아니라 이걸로 한다.
     const ledger = buildChangeLedger(input.before, input.after);
-    const card = renderChangePreviewCard({
+    lastStudioChange = {
       before: input.before,
       after: input.after,
       mapId: input.mapId,
@@ -730,22 +755,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         noteAiChangeUndone({ toolNames: input.calls.map((call) => call.name) });
         undoMapEdit();
       },
-    });
-    lastStudioChange = {
-      before: input.before,
-      after: input.after,
-      mapId: input.mapId,
-      title: input.title,
-      ...(input.detail ? { detail: input.detail } : {}),
-      chips,
-      ledger,
-      onUndo: () => {
-        noteAiChangeUndone({ toolNames: input.calls.map((call) => call.name) });
-        undoMapEdit();
-      },
     };
     studioShell?.setChangePreview(lastStudioChange);
-    appendChangeCard(card);
+    ensureWorkCard().attachChange(lastStudioChange);
   };
 
   /**
@@ -772,7 +784,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     };
     lastStudioChange = preview;
     studioShell?.setChangePreview(preview);
-    appendChangeCard(renderChangePreviewCard(preview));
+    ensureWorkCard().attachChange(preview);
   };
 
   /**
@@ -1662,6 +1674,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     clearAgentGhostRunningTool();
     runningActivity?.row.remove();
     runningActivity = null;
+    finishWorkCard({ ok: true });
     panel.classList.remove("is-turn-running");
     syncGlassIdle();
   };
@@ -1679,6 +1692,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       appendBubble("system", "사용자가 중단했습니다.");
       abortNoticeShown = true;
     }
+    workCard?.setTitle(`${workCardTitle || "작업"} — 중지됨`);
     setStatus(regionOwner ? "중단 중…" : "대기");
     refreshAbortButton();
     recordAiUiEvent({ surface: "panel", action: AI_UI_ACTIONS.turnAbort, detail: { toolsSoFar, droppedQueue } });
@@ -1731,6 +1745,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     pendingQuestion = false;
     closeToolActivity();
+    workCardTitle = (displayAs ?? trimmed).replace(/\s+/gu, " ").trim().slice(0, 48);
     if (!opts?.replay) attachRewindAffordance(appendBubble("user", displayAs ?? trimmed), trimmed);
     const session = ensureSession();
     // 두 턴 사이에 사용자가 데이터베이스(개념 꾸러미 등)를 고쳤을 수 있다 — 승인 대기 제안이 없으면
@@ -1950,7 +1965,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     try {
       await runPiCommand(command, {
         appendBubble: (role, line) => appendBubble(role, line),
-        appendCard: (element) => { appendChangeCard(element); log.scrollTop = log.scrollHeight; },
+        appendCard: (element) => { appendChangeCard(element); },
         setStatus,
         getCurrentMapId: () => editorState.get().currentMapId ?? null,
         signal: piRunController.signal,

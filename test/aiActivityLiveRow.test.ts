@@ -11,6 +11,7 @@ import {
   teardownAiChatPanel,
   type AiActivityScheduler,
 } from "@/editor/panels/aiChatPanel";
+import { getAiWorkStripElement, resetAiWorkStripForTest } from "@/editor/panels/aiWorkStrip";
 import type { RegionTaskOptions, RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -107,6 +108,7 @@ beforeEach(async () => {
 
 afterEach(() => {
   teardownAiChatPanel();
+  resetAiWorkStripForTest();
   restoreWindow?.();
   progressTick = null;
   restoreDom?.();
@@ -116,6 +118,13 @@ afterEach(() => {
   vi.unstubAllEnvs();
   vi.unstubAllGlobals();
 });
+
+/** 라이브 행·완료 행은 채팅 로그가 아니라 캔버스 하단 작업 띠의 카드에 붙는다(방향 G, 2026-09-17). */
+function strip(): FakeElement {
+  const root = getAiWorkStripElement() as unknown as FakeElement | null;
+  if (!root) throw new Error("작업 띠가 없다");
+  return root;
+}
 
 describe("AI 도구 라이브 활동 행", () => {
   it("최소 표시 시간 동안 라이브 행을 유지한 뒤 예약 콜백에서 완료 행으로 바꾼다", async () => {
@@ -141,7 +150,7 @@ describe("AI 도구 라이브 활동 행", () => {
       options.onEvent?.({ type: "tool_started", name: "paint_road", args: { mapId }, index: 1 });
 
       assertInsideRunner(() => {
-        liveRow = findByTestId(panel, "ai-activity-live");
+        liveRow = findByTestId(strip(), "ai-activity-live");
         expect(liveRow).toBeTruthy();
         expect(liveRow?.querySelector(".ai-activity-live-spinner")).toBeTruthy();
         const liveText = liveRow?.textContent ?? "";
@@ -164,14 +173,14 @@ describe("AI 도구 라이브 활동 행", () => {
       });
 
       assertInsideRunner(() => {
-        expect(findByTestId(panel, "ai-activity-live")).toBe(liveRow);
-        expect(findByTestId(panel, "ai-tool-entry")).toBeNull();
+        expect(findByTestId(strip(), "ai-activity-live")).toBe(liveRow);
+        expect(findByTestId(strip(), "ai-tool-entry")).toBeNull();
         expect(activity.pending).toHaveLength(1);
         expect(activity.pending[0]?.delayMs).toBe(AI_ACTIVITY_MIN_DWELL_MS);
 
         activity.pending[0]?.callback();
-        expect(findByTestId(panel, "ai-activity-live")).toBeNull();
-        const entries = panel.querySelectorAll("[data-testid=ai-tool-entry]");
+        expect(findByTestId(strip(), "ai-activity-live")).toBeNull();
+        const entries = strip().querySelectorAll("[data-testid=ai-tool-entry]");
         expect(entries).toHaveLength(1);
         expect(entries[0]).toBe(liveRow);
         expect(entries[0]?.textContent).toContain("길 6칸");
@@ -213,8 +222,8 @@ describe("AI 도구 라이브 활동 행", () => {
         args: { mapId, x: 1, y: 2, w: 3, h: 4 },
         result: { ok: true, summary: "선택 영역 조회" },
       });
-      expect(panel.querySelectorAll("[data-testid=ai-tool-entry]")).toHaveLength(0);
-      expect(findByTestId(panel, "ai-tool-activity-toggle")?.textContent).toContain("조회 1");
+      expect(strip().querySelectorAll("[data-testid=ai-tool-entry]")).toHaveLength(0);
+      expect(findByTestId(strip(), "ai-work-card-step-count")?.textContent).toContain("조회 1");
       return { ...successfulRegionResult(0), applied: false, proposedCalls: 0 };
     });
 
@@ -233,8 +242,9 @@ describe("AI 도구 라이브 활동 행", () => {
     // The panel catches runner errors. Re-await its real promise so an assertion
     // thrown inside the runner cannot be converted into a passing error turn.
     await expect(runner.mock.results[0]?.value).resolves.toMatchObject({ ok: true, applied: false, proposedCalls: 0 });
-    expect(panel.querySelectorAll("[data-testid=ai-tool-entry]")).toHaveLength(0);
-    expect(findByTestId(panel, "ai-tool-activity-toggle")?.textContent).toContain("조회 1");
+    expect(strip().querySelectorAll("[data-testid=ai-tool-entry]")).toHaveLength(0);
+    // 조회만 한 턴은 「조수가 한 일」 이 아니다 — 턴이 끝나면 카드가 띠에서 빠진다.
+    expect(strip().querySelectorAll("[data-testid=ai-work-card]")).toHaveLength(0);
     expect(getAgentGhostPreviewState().runningToolName).toBe("");
     expect(getAgentGhostPreviewState().runningToolMapId).toBeNull();
     expect(findByTestId(panel, "ai-ghost-phase-chip")).toBeNull();
@@ -266,16 +276,16 @@ describe("AI 도구 라이브 활동 행", () => {
         result: { ok: true, summary: "첫 번째 길" },
       });
       assertInsideRunner(() => {
-        expect(findByTestId(panel, "ai-tool-entry")).toBeNull();
-        expect(findByTestId(panel, "ai-activity-live")?.textContent).toContain("길을 그리는 중");
+        expect(findByTestId(strip(), "ai-tool-entry")).toBeNull();
+        expect(findByTestId(strip(), "ai-activity-live")?.textContent).toContain("길을 그리는 중");
       });
 
       options.onEvent?.({ type: "tool_started", name: "place_npc", args: { mapId }, index: 2 });
       assertInsideRunner(() => {
-        const entries = panel.querySelectorAll("[data-testid=ai-tool-entry]");
+        const entries = strip().querySelectorAll("[data-testid=ai-tool-entry]");
         expect(entries).toHaveLength(1);
         expect(entries[0]?.textContent).toContain("첫 번째 길");
-        expect(findByTestId(panel, "ai-activity-live")?.textContent).toContain("사람을 만드는 중");
+        expect(findByTestId(strip(), "ai-activity-live")?.textContent).toContain("사람을 만드는 중");
         expect(activity.pending[0]?.cancelled).toBe(true);
       });
 
@@ -286,8 +296,8 @@ describe("AI 도구 라이브 활동 행", () => {
         result: { ok: true, summary: "두 번째 NPC" },
       });
       assertInsideRunner(() => {
-        expect(panel.querySelectorAll("[data-testid=ai-tool-entry]")).toHaveLength(1);
-        expect(findByTestId(panel, "ai-activity-live")?.textContent).toContain("사람을 만드는 중");
+        expect(strip().querySelectorAll("[data-testid=ai-tool-entry]")).toHaveLength(1);
+        expect(findByTestId(strip(), "ai-activity-live")?.textContent).toContain("사람을 만드는 중");
       });
       return successfulRegionResult(1);
     });
@@ -305,8 +315,8 @@ describe("AI 도구 라이브 활동 행", () => {
 
     expect(runner).toHaveBeenCalledTimes(1);
     if (runnerAssertionFailure) throw runnerAssertionFailure;
-    expect(findByTestId(panel, "ai-activity-live")).toBeNull();
-    const entries = panel.querySelectorAll("[data-testid=ai-tool-entry]");
+    expect(findByTestId(strip(), "ai-activity-live")).toBeNull();
+    const entries = strip().querySelectorAll("[data-testid=ai-tool-entry]");
     expect(entries).toHaveLength(2);
     expect(entries[0]?.textContent).toContain("첫 번째 길");
     expect(entries[1]?.textContent).toContain("두 번째 NPC");

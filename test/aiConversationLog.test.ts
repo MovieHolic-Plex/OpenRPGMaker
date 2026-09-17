@@ -12,7 +12,6 @@ function makeLog(): {
   const log = document.createElement("div");
   const host = createConversationLogHost({
     log,
-    revealVolatileZone: () => undefined,
     removeStartScreen: () => undefined,
   });
   return { log, host };
@@ -82,18 +81,28 @@ describe("conversation log command rows", () => {
     expect(row?.querySelector("strong")?.textContent).toBe("초안");
   });
 
-  it("attaches tool activity to the last command row instead of a bubble", () => {
-    // Break: appendToolLine still wraps the group in ai-chat-bubble.
-    const { log, host } = makeLog();
+  it("tool lines leave the log entirely — they are handed to the work sink (방향 G)", () => {
+    // Break: appendToolLine attaches ai-tool-activity to the command row again.
+    const log = document.createElement("div");
+    const received: HTMLElement[] = [];
+    const host = createConversationLogHost({
+      log,
+      removeStartScreen: () => undefined,
+      workSink: {
+        appendToolEntry: (entry) => void received.push(entry),
+        noteReadOnlyTool: () => undefined,
+        appendCard: () => undefined,
+      },
+    });
 
     host.appendBubble("user", "길 깔아줘");
-    host.appendToolLine("paint_road", { ok: true, summary: "길을 그렸습니다" });
+    const entry = host.appendToolLine("paint_road", { ok: true, summary: "길을 그렸습니다" }, undefined, { live: true });
 
-    const activity = findByTestId(log as unknown as FakeElement, "ai-tool-activity");
-    const row = log.querySelector("[data-testid=ai-command-row]");
-    expect(activity).toBeTruthy();
-    expect(activity?.className).not.toContain("ai-chat-bubble");
-    expect(row?.contains(activity as unknown as Node)).toBe(true);
+    expect(entry).not.toBeNull();
+    expect(received).toEqual([entry]);
+    expect(findByTestId(log as unknown as FakeElement, "ai-tool-activity")).toBeNull();
+    expect(findByTestId(log as unknown as FakeElement, "ai-tool-entry")).toBeNull();
+    expect(log.querySelectorAll("[data-testid=ai-command-row]")).toHaveLength(1);
   });
 
   it("attaches a tile grid to the last command row instead of a bubble", () => {
@@ -119,7 +128,7 @@ describe("conversation log command rows", () => {
   });
 });
 
-describe("작업 타임라인 — 한국어 라벨 · 진행 중 펼침 · 완료 후 요약 접힘 (데크 2026-09-03)", () => {
+describe("작업 행 — 한국어 라벨 · 조회는 개수만 · 복원 경로 표시 (데크 2026-09-03 → 띠 2026-09-17)", () => {
   let restoreDom: (() => void) | null = null;
   beforeEach(() => {
     restoreDom = installFakeDom();
@@ -132,16 +141,28 @@ describe("작업 타임라인 — 한국어 라벨 · 진행 중 펼침 · 완�
 
   function makeHost(renderChip?: Parameters<typeof createConversationLogHost>[0]["renderChip"]) {
     const log = document.createElement("div");
-    const host = createConversationLogHost({ log, removeStartScreen: () => undefined, ...(renderChip ? { renderChip } : {}) });
-    return { log, host };
+    const entries: Array<{ entry: HTMLElement; live: boolean; name: string }> = [];
+    const reads: Array<{ name: string; live: boolean }> = [];
+    const host = createConversationLogHost({
+      log,
+      removeStartScreen: () => undefined,
+      workSink: {
+        appendToolEntry: (entry, meta) => void entries.push({ entry, live: meta.live, name: meta.name }),
+        noteReadOnlyTool: (name, live) => void reads.push({ name, live }),
+        appendCard: () => undefined,
+      },
+      ...(renderChip ? { renderChip } : {}),
+    });
+    return { log, host, entries, reads };
   }
 
   it("라이브 행은 한국어 라벨 + 요약 + 상태이고, 함수 이름은 title 로 내려간다", () => {
     // Break: 행이 `✓ place_npc …` 한 줄 텍스트로 돌아가거나 라벨이 함수 이름 그대로다.
-    const { log, host } = makeHost();
+    const { host, entries } = makeHost();
     host.appendBubble("user", "상인 세워줘");
     host.appendToolLine("place_npc", { ok: true, summary: "상인 「두리」 (27,15)" }, { x: 27, y: 15 }, { live: true });
-    const entry = findByTestId(log as unknown as FakeElement, "ai-tool-entry");
+    const entry = entries[0]?.entry as unknown as FakeElement | undefined;
+    expect(entry?.dataset.testid).toBe("ai-tool-entry");
     expect(entry?.querySelector(".ai-act-label")?.textContent).toBe("NPC 배치");
     expect(entry?.querySelector(".ai-act-sum")?.textContent).toBe("상인 「두리」 (27,15)");
     expect(entry?.querySelector(".ai-act-status")).not.toBeNull();
@@ -149,33 +170,28 @@ describe("작업 타임라인 — 한국어 라벨 · 진행 중 펼침 · 완�
     expect(entry?.textContent).not.toContain("place_npc");
   });
 
-  it("진행 중(live)엔 목록이 펼쳐지고 헤더는 단계 수, 닫으면 접히고 라벨 요약이 붙는다", () => {
-    // Break: 완료 뒤에도 펼쳐져 영수증을 밀어내거나, 접힌 헤더가 「작업 2」 처럼 무엇을 했는지 말하지 않는다.
-    const { log, host } = makeHost();
+  it("조회 툴(get_*)은 행 없이 개수만 알리고, 쓰기 툴만 행이 된다", () => {
+    // Break: 조회가 단계 행으로 남아 카드가 「작업 3단계」 로 부푼다.
+    const { host, entries, reads } = makeHost();
     host.appendBubble("user", "우물 놓고 상인 세워줘");
-    host.appendToolLine("get_map_region", { ok: true, summary: "60×45" }, { x: 0, y: 0, w: 60, h: 45 }, { live: true });
+    expect(host.appendToolLine("get_map_region", { ok: true, summary: "60×45" }, { x: 0, y: 0, w: 60, h: 45 }, { live: true })).toBeNull();
     host.appendToolLine("stamp_structure", { ok: true, summary: "우물 1" }, { x: 24, y: 11 }, { live: true });
     host.appendToolLine("place_npc", { ok: true, summary: "상인 2" }, { x: 22, y: 14 }, { live: true });
-    const list = log.querySelector(".ai-tool-activity-list") as unknown as FakeElement;
-    const toggle = findByTestId(log as unknown as FakeElement, "ai-tool-activity-toggle");
-    expect(list.hidden).toBe(false);
-    // 조회 툴(get_*)은 노이즈로 세지 않는다 — 단계는 쓰기 2.
-    expect(toggle?.textContent).toBe("작업 2단계");
-    host.closeToolActivity();
-    expect(list.hidden).toBe(true);
-    expect(toggle?.textContent).toBe("작업 2단계 · 건물 찍기 → NPC 배치");
+    expect(reads).toEqual([{ name: "get_map_region", live: true }]);
+    expect(entries.map((item) => item.name)).toEqual(["stamp_structure", "place_npc"]);
+    expect(entries.every((item) => item.live)).toBe(true);
   });
 
-  it("복원 경로(live 아님)는 접힌 채 붙고 조회만 있으면 「조회 N건」", () => {
-    // Break: 복원된 대화가 펼쳐진 목록으로 화면을 채운다(e2e assistant-change-preview 계약).
-    const { log, host } = makeHost();
+  it("복원 경로(live 아님)는 live=false 로 표시돼 띠가 걸러낼 수 있다", () => {
+    // Break: 복원된 대화의 툴콜이 이번 세션의 작업 카드로 쌓인다.
+    const { host, entries, reads } = makeHost();
     host.appendBubble("user", "맵 좀 봐줘");
     host.appendToolLine("get_map_region", { ok: true, summary: "60×45" });
     host.appendToolLine("show_map_region", { ok: true, summary: "보임" });
-    const list = log.querySelector(".ai-tool-activity-list") as unknown as FakeElement;
-    const toggle = findByTestId(log as unknown as FakeElement, "ai-tool-activity-toggle");
-    expect(list.hidden).toBe(true);
-    expect(toggle?.textContent).toBe("조회 2건");
+    host.appendToolLine("paint_road", { ok: true, summary: "길 3칸" });
+    expect(reads.map((item) => item.live)).toEqual([false, false]);
+    expect(entries).toHaveLength(1);
+    expect(entries[0]?.live).toBe(false);
   });
 
   it("renderChip 이 주어지면 행 앞에 맵 칩을 꽂고, null 이면 아이콘 칩", () => {
@@ -183,12 +199,11 @@ describe("작업 타임라인 — 한국어 라벨 · 진행 중 펼침 · 완�
     const chip = document.createElement("span");
     chip.className = "ai-act-chip";
     chip.dataset.testid = "fake-chip";
-    const { log, host } = makeHost((name) => (name === "place_npc" ? chip : null));
+    const { host, entries } = makeHost((name) => (name === "place_npc" ? chip : null));
     host.appendBubble("user", "상인");
     host.appendToolLine("place_npc", { ok: true, summary: "상인 1" }, { x: 1, y: 1 }, { live: true });
     host.appendToolLine("configure_game_systems", { ok: true, summary: "설정" }, {}, { live: true });
-    const entries = log.querySelectorAll("[data-testid=ai-tool-entry]");
-    expect(findByTestId(entries[0] as unknown as FakeElement, "fake-chip")).toBe(chip);
-    expect(entries[1]?.querySelector(".ai-act-chip")?.className).toContain("is-icon");
+    expect(findByTestId(entries[0]!.entry as unknown as FakeElement, "fake-chip")).toBe(chip);
+    expect(entries[1]?.entry.querySelector(".ai-act-chip")?.className).toContain("is-icon");
   });
 });

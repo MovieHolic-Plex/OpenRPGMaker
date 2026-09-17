@@ -1,0 +1,60 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+.deck{position:absolute;right:16px;bottom:16px;width:600px;display:flex;flex-direction:column;overflow:hidden}
+.head{display:flex;align-items:center;gap:10px;height:42px;padding:0 10px 0 16px;border-bottom:1px solid rgba(20,24,40,.08)}
+.head .title{font-weight:800;font-size:13.5px}.head .sub{color:#6b7280}
+.head .sp{flex:1}
+.body{padding:14px 16px 6px;display:flex;flex-direction:column;gap:12px;max-height:520px}
+.me{align-self:flex-end;max-width:78%;background:#eef0f5;border-radius:14px 14px 4px 14px;padding:9px 13px;font-size:13.5px;line-height:1.45}
+.me .who{display:block;font-size:11px;color:#8a93a3;margin-bottom:2px;text-align:right}
+.card{border:1px solid rgba(20,24,40,.10);border-radius:14px;background:#fff;overflow:hidden}
+.card .ch{display:flex;align-items:center;gap:10px;padding:12px 14px 0}
+.card .ch h3{font-size:15px;font-weight:800;letter-spacing:-.01em}
+.card .ch .time{margin-left:auto;color:#9aa1ad;font-size:12px}
+.card .row{display:flex;gap:12px;padding:10px 14px}
+.card .thumb{width:150px;height:96px;flex:none}
+.card .facts{flex:1;display:flex;flex-direction:column;gap:8px}
+.card .facts p{font-size:13.5px;line-height:1.5}
+.card .chips{display:flex;gap:6px;flex-wrap:wrap}
+.card .steps{display:flex;align-items:center;gap:8px;padding:8px 14px;border-top:1px solid rgba(20,24,40,.07);background:#fafbfd;font-size:12.5px;color:#55607a}
+.card .steps .s{display:inline-flex;align-items:center;gap:6px}
+.card .steps .s::before{content:"✓";color:#22a06b;font-weight:800}
+.card .steps .arrow{color:#c3c8d3}
+.card .steps .meta{margin-left:auto;color:#9aa1ad}
+.card .acts{display:flex;gap:8px;padding:10px 14px;border-top:1px solid rgba(20,24,40,.07)}
+.card .acts .sp{flex:1}
+.next{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;color:#3b4252}
+.next .chip{background:#fff;border:1px dashed rgba(59,91,219,.45);color:#3b5bdb;height:28px;cursor:pointer}
+.comp{padding:10px 12px 12px;border-top:1px solid rgba(20,24,40,.08);display:flex;flex-direction:column;gap:8px}
+.comp .under{display:flex;align-items:center;gap:8px;font-size:12px;color:#8a93a3;padding:0 4px}
+.comp .under .sp{flex:1}
+</style>
+<div class="stage">
+  <div class="note"><div class="t">A · 결과 카드 우선</div>
+    말풍선 대신 <b>바뀐 것</b>이 답이다. 도구 호출은 한 줄 요약으로 접고, 카드마다 <b>맵에서 보기 · 되돌리기</b>가 붙는다. 레일 아이콘 7개 → <b>3개</b>, 작성줄 조작 5개 → <b>2개</b>.
+  </div>
+  <div class="deck glass">
+    <div class="head"><span class="dot"></span><span class="title">조수</span><span class="sub">시장 마을 · 대기 중</span><span class="sp"></span>
+      <span class="btn ghost">🕘 기록</span><span class="icon">⋯</span><span class="icon">⌄</span></div>
+    <div class="body">
+      <div class="me"><span class="who">나 · 방금</span>시장 광장 북쪽에 우물 하나 놓고, 상인 두 명 세워줘</div>
+      <div class="card">
+        <div class="ch"><h3>우물 1 · 상인 2 를 광장 북쪽에 놓았습니다</h3><span class="time">6초</span></div>
+        <div class="row">
+          <div class="thumb"><span class="pin" style="left:66px;top:36px"></span><span class="callout" style="left:6px;bottom:6px;padding:3px 7px;font-size:11px">(24,11)</span></div>
+          <div class="facts">
+            <p>우물은 돌길과 맞닿게 두어 동선이 끊기지 않습니다. 상인 <b>하나</b>·<b>두리</b>는 서로 마주보게 세웠습니다.</p>
+            <div class="chips"><span class="chip ok">타일 9칸</span><span class="chip ok">이벤트 +2</span><span class="chip info">DB 1건</span></div>
+          </div>
+        </div>
+        <div class="steps"><span class="s">빈 자리 찾기</span><span class="arrow">→</span><span class="s">우물 놓기</span><span class="arrow">→</span><span class="s">상인 세우기</span><span class="meta">3단계 · 펼치기 ▸</span></div>
+        <div class="acts"><span class="btn">🗺 맵에서 보기</span><span class="btn">↶ 되돌리기</span><span class="sp"></span><span class="btn ghost">세부 기록</span></div>
+      </div>
+      <div class="next">다음으로: <span class="chip">두리에게 상점 창 붙이기</span><span class="chip">상인 대화 쓰기</span><span class="chip">광장에 벤치 놓기</span></div>
+    </div>
+    <div class="comp">
+      <div class="input">이 맵에 무엇을 할까요?<span class="mode" style="margin-left:auto">알아서 ▾</span><span class="send">↑</span></div>
+      <div class="under"><span>Enter 보내기 · Shift+Enter 줄바꿈</span><span class="sp"></span><span>모델·팀 설정은 ⋯ 안에</span></div>
+    </div>
+  </div>
+</div>
