@@ -70,7 +70,8 @@ body.ai-studio-open .authoring-journey-host {
   --studio-chat-col: 400px;
   --studio-scenes-w: var(--studio-scenes-col);
   --studio-chat-w: var(--studio-chat-col);
-  --studio-deck-h: 236px;
+  /* 덱(레인 보드) 높이 — 1440 에서 4레인이 스크롤 없이 보인다(§11 결정 2). 1280 은 아래 미디어쿼리. */
+  --studio-deck-h: 284px;
   --studio-splitter: 8px;
   background: var(--bg-inset);
   color: var(--text-1);
@@ -78,14 +79,15 @@ body.ai-studio-open .authoring-journey-host {
   flex: 1 1 auto;
   font-variant-numeric: tabular-nums;
   gap: 10px;
-  /* 열: 좌 레일 | 손잡이 | 모니터 | 손잡이 | 지금 보는 채팅 — 손잡이는 소음을 내지 않는 8px 기둥.
-     덱은 그리드 행이 아니라 오버레이 드로워다(23-agent-lanes.css). */
+  /* 열: 장면 | 손잡이 | 모니터 | 손잡이 | 지금 보는 채팅 — 손잡이는 소음을 내지 않는 8px 기둥.
+     행: 위 3열 | 아래 덱(레인 보드, 그리드 행 — 2026-09-17 §11 로 오버레이 드로워 폐기). */
   grid-template-columns: var(--studio-scenes-w) var(--studio-splitter) minmax(0, 1fr) var(--studio-splitter) var(--studio-chat-w);
   grid-template-rows: minmax(0, 1fr) auto;
   min-height: 0;
   min-width: 0;
   padding: 10px;
   pointer-events: auto;
+  position: relative;
   transition: grid-template-columns var(--transition-med);
 }
 
@@ -278,16 +280,6 @@ body.ai-studio-open .authoring-journey-host {
 
 .ai-studio-search-input::placeholder {
   color: var(--text-placeholder);
-}
-
-.ai-studio-search.is-deck {
-  height: 28px;
-  margin: 0;
-  width: 168px;
-}
-
-.ai-studio-search.is-hidden {
-  display: none;
 }
 
 /* ── 장면 레일 ─────────────────────────────────────────────────────────────── */
@@ -840,19 +832,22 @@ body.ai-studio-open .authoring-journey-host {
   display: none;
 }
 
-/* ── 덱 ───────────────────────────────────────────────────────────────────── */
+/* ── 덱 = 레인 보드 ─────────────────────────────────────────────────────── */
 .ai-studio-deck {
   display: grid;
   grid-column: 3;
   grid-row: 2;
-  /* 첫 행은 덱 손잡이(8px) — 머리띠 바로 위 띠 */
-  grid-template-rows: var(--studio-splitter) 40px var(--studio-deck-h);
+  grid-template-rows: 40px var(--studio-deck-h);
   position: relative;
 }
 
-/* 접혀도 --studio-deck-h 행이 남으면 모니터 아래가 빈 섬이 된다. 손잡이+머리만. */
+/* 접으면 머리 한 줄(탭 + 캡션)만. 레인 0 이면 한 줄 안내만큼만. */
 .ai-studio-deck.is-collapsed {
-  grid-template-rows: var(--studio-splitter) 40px;
+  grid-template-rows: 40px;
+}
+
+.ai-studio-deck.is-empty:not(.is-collapsed) {
+  grid-template-rows: 40px auto;
 }
 
 .ai-studio-deck-head {
@@ -861,7 +856,27 @@ body.ai-studio-open .authoring-journey-host {
   display: flex;
   gap: 8px;
   justify-content: space-between;
+  min-width: 0;
   padding: 0 8px 0 6px;
+}
+
+.ai-studio-deck-lead {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  min-width: 0;
+}
+
+.ai-studio-deck-caption {
+  color: var(--text-2);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-studio-deck[data-running]:not([data-running="0"]) .ai-studio-deck-caption {
+  color: var(--accent);
 }
 
 .ai-studio-deck.is-collapsed .ai-studio-deck-head {
@@ -995,116 +1010,34 @@ body.ai-studio-open .authoring-journey-host {
   height: var(--studio-deck-h);
   min-height: 0;
   overflow: auto;
-  padding: 12px;
+  padding: 8px 10px 10px;
+}
+
+.ai-studio-deck.is-empty .ai-studio-deck-pane {
+  height: auto;
+  padding: 6px 12px 8px;
 }
 
 .ai-studio-deck.is-collapsed .ai-studio-deck-pane {
   display: none;
 }
 
-/* 도구 판 */
-.ai-studio-tools {
-  display: grid;
-  gap: 14px;
-}
-
-.ai-studio-tool-section {
-  display: grid;
-  gap: 8px;
-}
-
-.ai-studio-tool-section.is-group {
-  gap: 0;
-}
-
-.ai-studio-tool-summary {
+.ai-studio-ghost-btn.is-accent {
   align-items: center;
-  border-radius: 6px;
-  color: var(--text-2);
-  cursor: pointer;
-  display: flex;
-  font-size: 12px;
-  font-weight: 600;
-  gap: 6px;
-  list-style: none;
-  padding: 6px 4px;
-  user-select: none;
-}
-
-.ai-studio-tool-summary::-webkit-details-marker {
-  display: none;
-}
-
-.ai-studio-tool-summary:hover {
-  background: var(--bg-hover);
-  color: var(--text-1);
-}
-
-.ai-studio-tool-summary .ee-icon {
-  transform: rotate(-90deg);
-  transition: transform var(--transition-med);
-}
-
-.ai-studio-tool-section[open] .ai-studio-tool-summary .ee-icon {
-  transform: rotate(0deg);
-}
-
-.ai-studio-tool-section[open] .ai-studio-tool-summary {
-  margin-bottom: 8px;
-}
-
-.ai-studio-tool-card {
-  cursor: pointer;
-  font: inherit;
-  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
-}
-
-.ai-studio-tool-card:hover {
-  transform: translateY(-1px);
-}
-
-.ai-studio-tool-card:active {
-  transform: scale(0.98);
-}
-
-.ai-studio-tool-card:focus-visible {
-  outline-offset: 1px;
-}
-
-.ai-studio-tool-icon {
-  align-items: center;
-  background: var(--bg-raised);
-  border-radius: 6px;
-  color: var(--text-2);
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
   display: inline-flex;
-  flex: 0 0 28px;
-  height: 28px;
-  justify-content: center;
-  width: 28px;
+  gap: 4px;
 }
 
-.ai-studio-tool-card.is-write .ai-studio-tool-icon {
-  background: var(--accent-muted);
-  color: var(--accent);
+.ai-studio-ghost-btn.is-accent:hover {
+  background: var(--accent-hover);
+  color: var(--on-accent);
 }
 
-.ai-studio-tool-text {
-  display: grid;
-  gap: 1px;
-  min-width: 0;
-}
-
-.ai-studio-tool-card b {
-  font-size: 13px;
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.ai-studio-tool-mode {
-  color: var(--text-2);
-  font-size: 12px;
+.ai-studio-ghost-btn .ai-studio-tab-badge {
+  margin-left: 4px;
 }
 
 /* 작업 판 */
@@ -1290,7 +1223,7 @@ body.ai-studio-open .authoring-journey-host {
   .ai-studio-shell {
     --studio-scenes-col: 228px;
     --studio-chat-col: 360px;
-    --studio-deck-h: 200px;
+    --studio-deck-h: 268px;
   }
 
   .ai-studio-scene {
@@ -1307,13 +1240,12 @@ body.ai-studio-open .authoring-journey-host {
   .ai-studio-shell {
     --studio-scenes-col: 196px;
     --studio-chat-col: 320px;
-    --studio-deck-h: 176px;
+    --studio-deck-h: 220px;
     gap: 8px;
     padding: 8px;
   }
 
-  .ai-studio-monitor-meta,
-  .ai-studio-search.is-deck {
+  .ai-studio-monitor-meta {
     display: none;
   }
 }
@@ -1697,83 +1629,7 @@ body.ai-studio-open .authoring-journey-host {
 }
 
 
-/* ── 데크(2026-09-03) 도구 덱 — 묶음 헤더 + 아이콘 타일. 「편집/조회」 라벨 규칙은 DOM 과 함께 걷었다. ── */
-.ai-studio-tool-grid {
-  display: grid;
-  gap: 0;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.ai-studio-tool-group {
-  border-right: 1px solid var(--border-subtle);
-  min-width: 0;
-  padding: 0 10px;
-}
-
-.ai-studio-tool-group:first-child {
-  padding-left: 0;
-}
-
-.ai-studio-tool-group:last-child {
-  border-right: 0;
-  padding-right: 0;
-}
-
-.ai-studio-tool-group-title {
-  color: var(--text-2);
-  font-size: 11.5px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  margin: 0 0 8px;
-}
-
-.ai-studio-tool-tiles {
-  display: grid;
-  gap: 6px;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-}
-
-.ai-studio-tool-card {
-  align-items: flex-start;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: 10px;
-  color: var(--text-1);
-  display: flex;
-  flex-direction: column;
-  font-size: 12px;
-  font-weight: 600;
-  gap: 6px;
-  justify-content: space-between;
-  line-height: 1.3;
-  min-height: 60px;
-  padding: 8px 10px 7px;
-  text-align: left;
-  word-break: keep-all;
-}
-
-/* 스튜디오 대화 열(≈380px)에서는 모델 칩을 숨긴다 — 모드 세그먼트·핀·보내기와 한 줄에 못 선다. */
-.ai-studio-shell .ai-composer-model {
-  display: none;
-}
-
-.ai-studio-tool-card .ai-deck-icon {
-  color: var(--accent-active);
-}
-
-.ai-studio-tool-card.is-inspect .ai-deck-icon,
-.ai-studio-tool-card.is-system .ai-deck-icon {
-  color: var(--text-2);
-}
-
-.ai-studio-tool-card:hover,
-.ai-studio-tool-card:focus-visible {
-  background: var(--accent-muted);
-  border-color: var(--accent-border);
-  outline: none;
-}
-
-/* ── 보존 기획 판(덱 「기획」 탭, OPRN-019) ─────────────────────────────────
+/* ── 보존 기획 판(덱 「기획」 팝오버, OPRN-019) ─────────────────────────────────
    목록은 이 맵의 저작 데이터를 직접 고치는 화면이라 「작업 판」과 같은 밀도·톤을 쓴다.
    은퇴 항목은 지워지지 않고 흐려진 채 남아, 삭제와 은퇴가 눈으로도 다른 일임을 말한다. */
 .ai-planning {

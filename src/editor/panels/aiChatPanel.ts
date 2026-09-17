@@ -151,6 +151,8 @@ import { createProposalHost, setAssistantMessageBadge } from "./aiProposalCard";
 import { changeChipsWithAreas, type ChangePreviewInput } from "./aiChangePreview";
 import { beginAiWorkCard, type AiWorkCard } from "./aiWorkStrip";
 import { createStudioShell, type StudioShell } from "./aiStudioShell";
+import { createLaneSummaryBar } from "./aiLaneSummaryBar";
+import { laneSession } from "./aiLaneSession";
 import { changedAreaLabels } from "@/project/changeAreas";
 import { buildChangeLedger } from "@/project/changeLedger";
 import { proposalHumanSummaryLine } from "./aiProposalSummary";
@@ -2756,8 +2758,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     },
     onOpenList: () => {
       openComposerPopover?.(null);
-      if (!studioShell?.attached()) studioButton.click();
-      studioShell?.setDeckTab("planning");
+      if (!studioShell?.attached()) applyStudio(true);
+      studioShell?.openPlanning();
     },
   });
   planningReuseControl = planningReuse;
@@ -2880,10 +2882,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   rail.root.append(commandMenu, composerShell.preferencePopover, composerShell.planningPopover, contextMeter.popover);
   // 팀 패널: 레일 아래 접힌 막대. 유휴 상태(본문 숨김)에서도 「누가 무엇을 하는지」 한 줄이 보인다.
   const teamPanel = createTeamPanel(loadAiConfig().piTeam ?? DEFAULT_PI_TEAM);
+  // 레인 요약 줄: 스튜디오 밖에서 레인이 돌고 있으면 「레인 2 작업 중 · 결과 1 대기 — 스튜디오에서 보기」.
+  // 판단(적용·버리기·중단)은 스튜디오 보드에서만 — 여기는 보이고 다시 들어가는 문이다. 레인 0 이면 사라진다.
+  const laneSummary = createLaneSummaryBar({
+    manager: laneSession(),
+    onOpenStudio: (laneId) => {
+      if (!studio) applyStudio(true);
+      if (laneId) studioShell?.selectLane(laneId);
+    },
+  });
   const deck = el("div", {
     class: "ai-deck",
     dataset: { testid: "ai-deck" },
-    children: [rail.root, teamPanel.root, workTabs, body, workPane.root, outcomeSlot, commandBar],
+    children: [rail.root, teamPanel.root, laneSummary.root, workTabs, body, workPane.root, outcomeSlot, commandBar],
   });
   deckRoot = deck;
 
@@ -3255,8 +3266,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       fillStudioInput(`${lead} (${tool.name})`);
     },
   });
-  studioButton.addEventListener("click", () => applyStudio(!studio));
-  const onStudioToggleRequest = (): void => applyStudio(!studio);
+  // 스튜디오를 «끄는» 길은 셸의 requestExit 를 지난다 — 작업 중·결과 대기 레인이 있으면 확인창이 먼저다.
+  const toggleStudio = (): void => {
+    if (studio && studioShell?.attached()) studioShell.requestExit();
+    else applyStudio(!studio);
+  };
+  studioButton.addEventListener("click", toggleStudio);
+  const onStudioToggleRequest = (): void => toggleStudio();
   if (typeof window !== "undefined") window.addEventListener(AI_STUDIO_TOGGLE_EVENT, onStudioToggleRequest);
 
   // float 컴포저 ☰ — 헤더 햄버거와 **동일한 항목 구현**(aiActionMenu.ts) + 스킬 찾기·설정.
@@ -3584,6 +3600,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     unsubscribeTeamActivityTabs();
     studioShell?.dispose();
     studioShell = null;
+    laneSummary.dispose();
 
     unsubscribeContextEditor();
     unsubscribeContextStore();
