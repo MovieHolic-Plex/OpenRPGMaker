@@ -105,10 +105,18 @@ Herd New worktree 훅은 `npm run wt adopt -- --path <checkout>` (또는 `WT_WOR
    가 `../rpg-zzu/node_modules` 를 허용하는데 이 상대 경로가 워크트리 루트 기준으로 풀리기 때문이다.
 3. **node_modules 정션** — 윈도우 junction (관리자 권한 불필요). 수 GB 중복 방지.
 4. **`.env` / `.env.local` 복사** — gitignored 라 워크트리에 따라오지 않는다.
-5. **`DEV_SERVER_PORT` 고유 배정** — 9801부터. 메인이 `--port 9999 --strictPort` 를 점유한다.
+5. **`DEV_SERVER_PORT` 고유 배정** — 9801부터(9888 preview·9999 메인 dev 는 예약). 메인이 `--port 9999 --strictPort` 를 점유한다.
 
-워크트리에서 dev 서버는 반드시 **`npm run dev:worktree`** 로 띄운다. `npm run dev` 는 9999를
-하드코딩하므로 메인과 충돌한다.
+워크트리에서 dev 서버는 반드시 **`npm run dev:worktree`** 로 띄운다. 두 스크립트는 `scripts/dev-server.mjs`
+를 지나며(2026-09-17), 거기서 포트가 고정된다:
+
+- `npm run dev` 는 **링크된 워크트리에서 거절**된다(`.git` 이 gitfile 이면 워크트리). 명시 `--port`(예약 아닌 값)
+  가 있을 때만 통과 — playwright 의 `webServer` 가 그렇게 부른다.
+- `npm run dev:worktree` 는 포트를 **스스로 배정·기록**한다. `.env.local` 의 값이 없거나, 다른 체크아웃과
+  겹치거나, 예약 포트면 미배정으로 보고 새 값을 `.env.local` 에 쓴다. 한 번 기록되면 같은 워크트리 = 같은 포트.
+  `.env.local` 이 없으면 메인 것을 복사(원본 배정 줄은 지움)한 뒤 기록한다. 명시 `-- --port N` 은 임시 우회다.
+- 실측(2026-09-17): 체크아웃 21개 중 9개가 메인의 `.env.local` 을 손으로 복사해 **전부 9841** 이었다.
+  `wt adopt` 도 「값이 있으면 그대로」 라 이 겹침을 못 고쳤다 — 지금은 `adopt` 도 같은 규칙으로 다시 배정한다.
 
 ### 동시 생성 (에이전트 수십 개)
 
@@ -139,10 +147,13 @@ for t in task-a task-b task-c; do npm run wt create "$t" & done; wait
 브라우저가 보던 것은 `/home/main/.herdr/worktrees/rpg-zzu/worktree`(다른 브랜치)의 dev 서버였다.
 `DEV_SERVER_PORT=<고유 포트>` 를 주고 다시 돌리자 3/3 통과했다.
 
+- `playwright.config.ts` 의 기본 포트는 이제 **이 체크아웃의 고정 포트**(`.env.local` DEV_SERVER_PORT)다
+  (2026-09-17). 9173 으로 떨어지는 것은 `.env.local` 에 배정이 없을 때뿐이다 — `npm run dev:worktree` 를 한 번
+  띄우면 배정이 생긴다. 명시 `DEV_SERVER_PORT` env 는 여전히 이긴다.
 - `npm run wt create` 로 만든 워크트리는 9801부터 고유 포트를 받으므로 이 함정에 걸리지 않는다.
-- **손으로 만든 워크트리**(`.claude/worktrees/*`, `git worktree add` 직접 호출 등)는 배정이 없어
-  기본 9173 으로 떨어진다. `npm run wt adopt -- --path <checkout>` 을 돌리거나, 최소한
-  e2e 실행 때 `DEV_SERVER_PORT` 를 명시한다.
+- **손으로 만든 워크트리**(`.claude/worktrees/*`, Paseo, codex, `git worktree add` 직접 호출 등)도
+  `npm run dev:worktree` 가 첫 실행에서 배정한다. `node_modules` 정션·env 복사까지 필요하면
+  `npm run wt adopt -- --path <checkout>`.
 - 이 실패 모드는 **조용하다**. 운이 나쁘면 실패가 아니라 "통과"로 보인다 — 남의 워크트리가
   같은 기능을 이미 갖고 있으면 내 변경을 검증하지 않고 초록이 뜬다. 확인 방법:
   `ss -tlnp | grep <port>` 로 pid 를 얻고 `ls -l /proc/<pid>/cwd` 로 그 서버의 워크트리를 본다.

@@ -21,7 +21,8 @@
 
 ```bash
 npm ci
-npm run dev              # 개발 서버 (http://localhost:9999)
+npm run dev              # 개발 서버 (http://localhost:9999) — 메인 체크아웃 전용
+npm run dev:worktree     # git 워크트리용 — 체크아웃별 고정 포트를 스스로 배정·기록(.env.local DEV_SERVER_PORT)
 npm run build            # 프로덕션 빌드
 npm test                 # 단위 테스트
 npm run typecheck:app    # 앱 타입 검사
