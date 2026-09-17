@@ -120,6 +120,9 @@ export type RenderPlayerOptions = {
   // 타이틀을 건너뛰고 새 런을 바로 시작한다. 편집 → 테스트 왕복마다 Enter 를 눌러
   // 타이틀을 통과하던 비용을 없앤다(startOverride / initialSession 가 있으면 이미 그 경로다).
   readonly autoStartRun?: boolean;
+  // 오프닝 시네마틱을 재생할지. 런이 시작될 때마다 다시 묻기 때문에 호스트(테스트 플레이 창)가
+  // 창을 다시 열지 않고도 체크박스를 반영할 수 있다. 없으면 기존대로 항상 재생한다.
+  readonly shouldPlayOpening?: () => boolean;
   // 호스트가 다시 시작 / 타이틀부터를 구동할 수 있도록 런 조작 손잡이를 넘긴다.
   readonly onRunControlsReady?: (controls: PlayerRunControls) => void;
   // 안전 모드로 부팅한다(자율 이동·자동/병렬 이벤트 억제). 복구 패널의 «안전 모드로 시작» 과
@@ -252,7 +255,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     if (!shellActive) return;
     stopGame();
     const opening = store.getCurrent().system.opening;
-    const bypass = request.session || options.startOverride || options.initialEventTestId || request.eventTestId;
+    const bypass = request.session || options.startOverride || options.initialEventTestId || request.eventTestId
+      || options.shouldPlayOpening?.() === false;
     if (!bypass && opening?.enabled && opening.scenes.length > 0) {
       stopTitleBgm();
       clearChildren(layout);
