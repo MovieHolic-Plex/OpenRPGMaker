@@ -41,6 +41,24 @@ LAN은 `--public-origin http://192.168.1.10:9840` 같은 실제 주소를 쓴다
 공유/커밋하지 않는다. 루프백 전용 실행에는 public-origin을 생략하면 기존 개인용 흐름이다.
 루프백 리버스 프록시도 public-origin을 지정하면 인증을 강제한다.
 
+## 기존 mdc-server 시작 명령의 SQLite 연결 (2026-09-18)
+
+`npm start`와 systemd가 직접 호출하는 `scripts/start-preview.mjs`는 이제
+`oprn-serve.mjs`를 실행한다. 예전 Vite preview는 `window.oprn`을 주입하지 않아
+SQLite 전환 후 저장 대상이 없는 메모리 어댑터로 열렸다.
+
+- `OPRN_PROJECT_DIR` 또는 `npm start -- --project-dir /path/to/project`로 **기존**
+  `project.sqlite` 폴더를 지정한다. 미설정/없는 폴더는 실행을 거절한다. 임의 프로젝트
+  선택·빈 프로젝트 생성·Supabase 자동 이관은 하지 않는다.
+- 폴더와 public origin 설정 우선순위는 CLI > 프로세스 env > `.env.local` > `.env`.
+  상대 폴더는 저장소 루트 기준이다. 기본 주소는 기존 `http://mdc-server:9888`이며
+  `--host`, `--port`, `--public-origin`, `--dist`, `--bridge`도 전달한다.
+- 처음 전환할 때 `npm run build:packaged`와 `npm run build:electron`이 필요하다.
+  서비스에 `OPRN_PROJECT_DIR`을 설정하고 재시작한다. 팀 로그인과 소유자 코드 파일은
+  위 `serve:project`와 같은 계약이다. 공유 호스트의 AI 제한도 그대로 적용된다.
+- `npm run preview`는 저장 브리지 없는 정적 번들 확인용으로 남는다.
+- 회귀 계약은 `test/startProjectHost.test.mjs`. 실행 여부는 완료 보고에서 구분한다.
+
 ## 저장·협업 계약
 
 - 전체 저장: 클라이언트가 읽은 `expectedSha`와 DB 정본을 트랜잭션 안에서 비교한다.

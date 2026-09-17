@@ -44,7 +44,9 @@ npm run wt -- adopt <이름> --path <워크트리 절대경로>   # node_modules
 
 ## 팀 SQLite 호스트 (2026-09-18)
 
-현재 Electron과 `npm run serve:project`는 로컬/서버 SQLite 정본을 사용한다.
+현재 Electron과 `npm run serve:project`, `npm start`는 로컬/서버 SQLite 정본을 사용한다.
+`npm start`에는 기존 SQLite 폴더를 `OPRN_PROJECT_DIR` 또는 `--project-dir`로 지정한다.
+`npm run preview`는 저장 브리지 없는 정적 미리보기다.
 팀 초대·호스팅·백업·충돌 처리 절차는 `openwiki/team-project-host.md`.
 아래 과거 Mac launcher/Supabase 설정 설명을 새 팀 호스트의 필수 설정으로 적용하지 않는다.
 
@@ -80,7 +82,7 @@ already provisioned Supabase access plus an **existing application project id**.
 - Keep the Terminal open; Ctrl-C stops the owned server. Bookmark the same origin and project id.
   Online saving depends on Supabase availability; export JSON for a separate backup.
   Bun is optional for editing and Node provider login, but needed for AI completions along with a
-  configured provider. `npm start` is the separate production preview, not this novice launcher.
+  configured provider. `npm start` is the separate SQLite project host (requires `OPRN_PROJECT_DIR`), not this novice launcher.
 - Linux verification does **not** establish Finder/macOS behavior. The narrow
   `.github/workflows/mac-onboarding.yml` job is dormant while Actions are disabled.
 
