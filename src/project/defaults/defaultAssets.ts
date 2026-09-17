@@ -1,3 +1,4 @@
+import { createTiboInteriorTileset, extendTiboInteriorDefaults, TIBO_INTERIOR_ID, TIBO_INTERIOR_TEXTURE } from "./tiboInterior";
 import type { AssetSet, GameMap, PassFlag, ResourceKind, ResourceProfile, SpriteDef, TilesetDef } from "../types";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { CC0_AUDIO_ASSETS } from "@/assets/cc0AudioAssets";
@@ -81,7 +82,10 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
   let changed = false;
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
     const tileset = bundledEasyRpgTileset(asset);
-    if (project.tilesets[tileset.id]) continue;
+    if (project.tilesets[tileset.id]) {
+      if (tileset.id === TIBO_INTERIOR_ID) changed = extendTiboInteriorDefaults(project.tilesets[tileset.id]) || changed;
+      continue;
+    }
     project.tilesets[tileset.id] = tileset;
     changed = true;
   }
@@ -175,6 +179,7 @@ function legacyRmTilesetReplacementId(map: Pick<GameMap, "id" | "name">): string
 }
 
 function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
+  if (asset.textureKey === TIBO_INTERIOR_TEXTURE) return createTiboInteriorTileset();
   const tileset = makeBundledTileset(bundledEasyRpgTilesetId(asset.textureKey), asset.name, asset.textureKey);
   tileset.tileMeta = Array.from({ length: tileset.count }, () => ({
     label: "",

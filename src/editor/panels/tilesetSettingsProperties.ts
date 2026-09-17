@@ -1,4 +1,4 @@
-import { BUNDLED_EASYRPG_CHIPSET_ASSETS, TILE_FRAME_COUNT } from "@/assets/bundled";
+import { BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledChipsetFrameCount, TILE_FRAME_COUNT } from "@/assets/bundled";
 import { CHIPSET_SLICING } from "@/assets/easyrpgRtp";
 import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
@@ -207,15 +207,16 @@ function isChipsetSource(image: TilesetDef["image"], project: ReturnType<typeof 
 function applyChipsetGeometry(tileset: TilesetDef): void {
   tileset.tilesPerRow = CHIPSET_SLICING.columns;
   tileset.tileSize = CHIPSET_SLICING.cellWidth;
-  resizeTilesetSlotArrays(tileset, TILE_FRAME_COUNT);
+  resizeTilesetSlotArrays(tileset, bundledChipsetFrameCount(tileset.image.id));
+  if (tileset.count > TILE_FRAME_COUNT) tileset.kind = "custom";
 }
 
 function needsChipsetGeometry(tileset: TilesetDef): boolean {
   return (
     tileset.tilesPerRow !== CHIPSET_SLICING.columns ||
     tileset.tileSize !== CHIPSET_SLICING.cellWidth ||
-    tileset.count !== TILE_FRAME_COUNT ||
-    tileset.passability.length !== TILE_FRAME_COUNT
+    tileset.count !== bundledChipsetFrameCount(tileset.image.id) ||
+    tileset.passability.length !== bundledChipsetFrameCount(tileset.image.id)
   );
 }
 

@@ -36,7 +36,7 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
   const noun = "오브젝트";
   const title = el("div", { class: "asset-browser-heading", children: [
     el("h2", { text: `${noun} 라이브러리` }),
-    el("p", { text: "타일셋에서 가구와 구조물을 찾아 편집하세요." }),
+    el("p", { text: "공용 오브젝트에서 가구와 소품을 골라 배치하거나, 복제해 내 오브젝트로 편집하세요." }),
   ] });
   const chrome = renderSpatialChrome(session, rerender, { browser: true, onAdd: () => addBlankObject(rerender, state.tilesetId ?? undefined) });
   const results = el("div", { class: "asset-browser-results", dataset: { testid: "spatial-browser-results" } });
@@ -96,7 +96,7 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
         attrs: { type: "button", "aria-pressed": String(selected?.id === card.id) },
         dataset: { cardId: card.id, testid: `spatial-card-${card.id}`, source: card.source },
         children: [art, el("strong", { text: card.name }), el("span", {
-          text: card.source === "default" ? "기본 제공" : card.compatibility ? "방 템플릿" : "내가 만든 항목",
+          text: card.source === "default" ? "공용 오브젝트" : card.compatibility ? "방 템플릿" : "내가 만든 항목",
         })],
         on: { click: () => {
           selectSpatialDesign(card.id); patchSpatialSession({ inspectorOpen: true }); rerender();
