@@ -135,6 +135,69 @@
   background: var(--db-studio-inset);
 }
 
+/* 오프닝 프리셋 카드. 고르는 기준이 «그림»이므로 썸네일이 먼저 서고 글이 뒤따른다. */
+.db-cinematic-workspace .db-cinematic-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(calc(var(--space-6) * 4), 1fr));
+  gap: var(--space-2);
+}
+
+.db-cinematic-workspace .db-cinematic-preset-card {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: var(--radius-s);
+  background: var(--db-studio-surface);
+  color: var(--db-studio-text-1);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.db-cinematic-workspace .db-cinematic-preset-card:hover,
+.db-cinematic-workspace .db-cinematic-preset-card:focus-visible {
+  border-color: var(--db-studio-accent);
+}
+
+.db-cinematic-workspace .db-cinematic-preset-card:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: var(--space-1);
+}
+
+.db-cinematic-workspace .db-cinematic-preset-cover {
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--radius-s);
+  background: var(--db-studio-inset);
+}
+
+.db-cinematic-workspace .db-cinematic-preset-cover > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.db-cinematic-workspace .db-cinematic-preset-name {
+  font-weight: 600;
+}
+
+.db-cinematic-workspace .db-cinematic-preset-mood,
+.db-cinematic-workspace .db-cinematic-preset-meta {
+  color: var(--db-studio-text-2);
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+}
+
+/* 배경음악 칸에는 40px 썸네일이 아니라 폭을 다 쓰는 오디오 카드가 온다. 공용 피커의 44px
+   칸에 밀어 넣으면 곡 이름이 한 글자씩 접힌다 — 여기 본문은 그리드라 공용 시트의
+   flex-wrap 처방(from-editor-audio-test-dialog.css)이 듣지 않는다. 한 칸으로 편다. */
+.db-cinematic-workspace .db-resource-picker-control-body:has(> .audio-resource-preview) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 /* The shipped play surface computes scale/placement from its logical
    resolution. Do not resize narration, images or videos independently here. */
 
