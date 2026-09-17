@@ -84,7 +84,9 @@ describe("hard cluster rule placement", () => {
   // 2026-07-08 회귀: 동반 타일이 이웃 칸의 "기존" 상위 오브젝트를 조용히 덮어쓰던 버그.
   it("동반 타일 위치의 상위 레이어에 다른 오브젝트가 있으면 배치를 거부한다", () => {
     const { ctx, map } = context();
-    map.upperTiles[at(map, 5, 4)] = 263; // 침엽수 상단(260) 자리에 이미 다른 오브젝트
+    // 침엽수 상단(260) 자리에 이미 다른 오브젝트 — 나무 상자 237. (예전 픽스처는 활엽수 반쪽 263 이었는데,
+    // 2026-09-18 부터 post-write 보정이 짝 없는 활엽수 반쪽을 걷어내므로 나무 계열이 아닌 소품으로 바꿨다.)
+    map.upperTiles[at(map, 5, 4)] = 237;
 
     const result = runTool(ctx, "paint_tiles", {
       cells: [{ x: 5, y: 5 }],
@@ -97,7 +99,7 @@ describe("hard cluster rule placement", () => {
     expectOk(result);
     const painted = currentMap(ctx, map.id);
     expect(result.summary).toContain("거부");
-    expect(painted.upperTiles[at(painted, 5, 4)]).toBe(263); // 기존 오브젝트 보존
+    expect(painted.upperTiles[at(painted, 5, 4)]).toBe(237); // 기존 오브젝트 보존
     expect(painted.upperTiles[at(painted, 5, 5)]).toBe(TILE.EMPTY);
   });
 

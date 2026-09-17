@@ -34,12 +34,23 @@ describe("place_props adversarial hardening", () => {
     expect(result.issues?.[0]?.code).toBe("material-not-prop");
   });
 
-  it("단일 타일 경로의 0배치는 placement-zero 실패다", () => {
+  it("단일 타일 경로의 0배치는 영역을 넓혀 재시도하고 그 사실을 경고로 남긴다", () => {
+    // 2026-09-18: 요청 영역이 꽉 차면 placement-zero 로 거부하던 것을, 2칸씩 최대 3번 넓혀 놓는다.
     const ctx: ToolContext = { project: createBlankProject() };
     const map = ctx.project.maps[MAP_ID];
     for (let y = 2; y < 8; y += 1) {
       for (let x = 2; x < 8; x += 1) map.upperTiles[y * map.width + x] = 288;
     }
+    const result = runTool(ctx, "place_props", { mapId: MAP_ID, area: { x: 2, y: 2, w: 6, h: 6 }, material: "팻말", count: 4 });
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.summary).toContain("넓힘");
+    expect((result.diff?.warnings ?? []).some((w) => w.includes("놓을 자리가 없어") && w.includes("넓혀"))).toBe(true);
+  });
+
+  it("맵을 다 채워 넓혀도 자리가 없으면 여전히 placement-zero 실패다", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    const map = ctx.project.maps[MAP_ID];
+    map.upperTiles.fill(288);
     const result = runTool(ctx, "place_props", { mapId: MAP_ID, area: { x: 2, y: 2, w: 6, h: 6 }, material: "팻말", count: 4 });
     expect(result.ok).toBe(false);
     expect(result.issues?.[0]?.code).toBe("placement-zero");

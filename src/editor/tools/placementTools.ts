@@ -156,7 +156,51 @@ const AREA_SCHEMA: JsonSchema = {
  * 산포 엔진 — place_props(v3)와 레거시 scatter_object 툴이 공유.
  * 새 코드는 ToolDefinition 이름 대신 이 함수를 호출할 것.
  */
+/**
+ * 2026-09-18 거부 대신 확장. 요청 영역에 한 개도 못 놓으면(우물 자리가 소품·길로 꽉 찬 광장 등) 바로
+ * 실패하던 것을, 영역을 2칸씩 최대 3번 넓혀 재시도한다. 그래도 0개면 원래 진단과 함께 실패한다.
+ * 넓혔으면 summary 앞에 붙여 알린다. 0개 배치는 여전히 성공이 아니다.
+ */
 export function runScatterObject(draft: Project, rawArgs: Record<string, unknown>): ToolExecResult {
+  return withAreaExpansion(draft, rawArgs, runScatterObjectOnce);
+}
+
+export function withAreaExpansion(draft: Project, rawArgs: Record<string, unknown>,
+  once: (draft: Project, args: Record<string, unknown>) => ToolExecResult): ToolExecResult {
+  try {
+    return once(draft, rawArgs);
+  } catch (error) {
+    if (!(error instanceof PropPlacementError)) throw error;
+    // expandArea:false — 호출자가 "이 칸에만" 을 뜻할 때(적격성 검사·정밀 배치) 확장을 끈다.
+    if (rawArgs.expandArea === false) throw error;
+    const area = rawArgs.area as { x?: unknown; y?: unknown; w?: unknown; h?: unknown } | undefined;
+    const map = typeof rawArgs.mapId === "string" ? draft.maps[rawArgs.mapId] : undefined;
+    if (!map || !area || [area.x, area.y, area.w, area.h].some(v => typeof v !== "number")) throw error;
+    const base = { x: area.x as number, y: area.y as number, w: area.w as number, h: area.h as number };
+    // 맵과 전혀 겹치지 않는 영역은 좌표 실수다 — 넓혀서 구제하지 않고 원래 진단(영역 밖)을 그대로 낸다.
+    const overlapsMap = base.x < map.width && base.y < map.height && base.x + base.w > 0 && base.y + base.h > 0;
+    if (!overlapsMap) throw error;
+    for (let step = 1; step <= 3; step += 1) {
+      const grow = step * 2;
+      const x = Math.max(0, base.x - grow), y = Math.max(0, base.y - grow);
+      const w = Math.min(map.width - x, base.w + grow * 2), h = Math.min(map.height - y, base.h + grow * 2);
+      if (x === base.x && y === base.y && w === base.w && h === base.h) break;
+      try {
+        const result = once(draft, { ...rawArgs, area: { x, y, w, h } });
+        return { ...result, summary: `(요청 영역에 자리가 없어 ${grow}칸 넓힘 → (${x},${y}) ${w}×${h}) ${result.summary}`,
+          warnings: [...(result.warnings ?? []), `요청 영역 (${base.x},${base.y}) ${base.w}×${base.h} 에는 놓을 자리가 없어 ${grow}칸 넓혀 배치했습니다.`] };
+      } catch (retryError) {
+        if (!(retryError instanceof PropPlacementError)) throw retryError;
+      }
+    }
+    // 넓혀도 자리가 없었다는 사실을 진단 앞에 붙인다 — 모델이 같은 자리를 다시 넓혀 달라고 하지 않도록.
+    error.message = `${error.message.split("\n")[0]} (영역을 6칸까지 넓혀 재시도했지만 자리가 없었습니다 — 다른 위치를 고르세요)${error.message.includes("\n") ? "\n" + error.message.split("\n").slice(1).join("\n") : ""}`;
+    throw error;
+  }
+}
+
+/** 영역 확장 없이 한 번만 시도한다 — place_props 처럼 바깥에서 이미 확장을 감싼 호출자용(이중 확장 방지). */
+export function runScatterObjectOnce(draft: Project, rawArgs: Record<string, unknown>): ToolExecResult {
     const args = parseArgs(rawArgs);
     const map = requireMap(draft, args.mapId);
     const tileset = draft.tilesets[map.tilesetId];

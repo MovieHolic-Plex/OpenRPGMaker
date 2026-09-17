@@ -7,7 +7,6 @@ import { stampHouseDoorBackground } from "@/editor/houseInteriors";
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap } from "@/project/types";
 import type { Rng } from "@/util/rng";
-import { ToolError } from "../types";
 import { houseFootprintCells, protectedHouseCells, HOUSE_WALL_LADDER, roofDeckLadderAttachment } from "../houseProtection";
 import type { TerrainConstraintMasks } from "../villageTerrainPass";
 import type { VillageSketchSite } from "./sketch";
@@ -221,7 +220,9 @@ export function buildHouses(
   // 형태 다양성 강제 — 카탈로그 34종(2026-07-17) 기준, 대형 마을(20+집)이 같은 꼴 반복이 되지 않게.
   const requiredTemplateKinds = Math.min(8, target, candidateTemplateIds.size);
   const hasMultiStoryCandidate = candidates.some((candidate) => (candidate.template.stories ?? 1) > 1);
-  const tryCandidates = (list: readonly HouseCandidate[]): void => {
+  // relaxForcedTemplates: 강제 templateId 가 어느 슬롯에도 안 맞을 때(카탈로그에 없는 id 포함) 형태 제약만 풀고
+  // 다시 시도하는 3차 패스용. 킷 강제·다양성 규칙은 그대로다. (2026-09-18 거부 대신 대체)
+  const tryCandidates = (list: readonly HouseCandidate[], relaxForcedTemplates = false): void => {
     for (const candidate of list) {
       if (houses.length >= target) break;
       if (!canPlaceHouse(area, plaza.rect, houses, candidate.bbox)) continue;
@@ -229,7 +230,7 @@ export function buildHouses(
       // 물 마스크 셀과 겹치는 후보는 버린다 — 나중에 지형 패스가 집을 침수시키지 않도록.
       if (terrainBlocked && bboxTouchesBlocked(candidate.bbox, terrainBlocked, map.width)) continue;
       const forced = intent.houseKits[houses.length];
-      const forcedTemplateId = intent.houseTemplates[houses.length];
+      const forcedTemplateId = relaxForcedTemplates ? undefined : intent.houseTemplates[houses.length];
       if (forced && candidate.template.kitId && candidate.template.kitId !== forced) continue;
       // 셀 레시피는 재료가 셀에 박혀 있다 — 재료를 하나로 고정한 마을(테마 원형·설계서)에는 그 재료의 레시피만 섞는다.
       const form = candidate.template.form;
@@ -303,20 +304,24 @@ export function buildHouses(
   if (houses.length < target && intent.settlementLayout !== "plaza-ring") {
     tryCandidates(shuffled(houseCandidates(area, plaza, target, intent.templateCatalog, "plaza-ring", boulevard), rng));
   }
+  // 3차: 강제 templateId 때문에 자리가 안 잡힌 슬롯은 형태 제약을 풀고 다른 형태로 채운다. 아래 검사가 슬롯별로 경고한다.
+  if (houses.length < target && intent.houseTemplates.some(Boolean)) {
+    tryCandidates(candidates, true);
+    if (houses.length < target && intent.settlementLayout !== "plaza-ring") {
+      tryCandidates(shuffled(houseCandidates(area, plaza, target, intent.templateCatalog, "plaza-ring", boulevard), rng), true);
+    }
+  }
   if (houses.length < target) {
     warnings.push(`집 후보 진단: 후보 ${candidates.length}개 중 ${houses.length}/${target} 시공 (area ${area.w}×${area.h})`);
   }
-  // Forced templateId is a hard contract — never silently under-build or shift indices.
+  // 2026-09-18 강제 templateId 를 못 맞추면 실패 대신 경고. 실측: 모델이 templateId 를 넣으면 슬롯이 안 맞아
+  // 마을 전체가 두 번 반려됐고, 세 번째에야 templateId 를 비워 성공했다. 집은 지어졌으니 "이 집만 다른 형태" 로 알린다.
   for (let i = 0; i < target; i += 1) {
     const forced = intent.houseTemplates[i];
     if (!forced) continue;
     const built = houses[i];
     if (!built || built.templateId !== forced) {
-      throw new ToolError(
-        `housePlans[${i}].templateId='${forced}' 배치 실패 (실제: ${built?.templateId ?? "없음"}). ` +
-          "후보 슬롯/맵 크기를 확인하거나 templateId를 비우세요.",
-        { code: "house-template-unplaced" },
-      );
+      warnings.push(`housePlans[${i}].templateId='${forced}' 는 이 자리에 맞지 않아 ${built ? `'${built.templateId}' 로 대체` : "생략"}했습니다.`);
     }
   }
   return houses;

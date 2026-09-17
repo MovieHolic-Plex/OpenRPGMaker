@@ -59,9 +59,43 @@ describe("repairTreePairs", () => {
     const project = createBlankProject();
     const map = project.maps[MAP];
     map.lowerTiles[3 * map.width + 3] = 292; // 활엽 좌하
+    map.lowerTiles[3 * map.width + 4] = 293; // 활엽 우하 — 2×2 는 짝으로만 존재한다
     const result = repairTreePairsOnProject(project);
-    expect(result.canopiesPlaced).toBeGreaterThanOrEqual(1);
+    expect(result.canopiesPlaced).toBeGreaterThanOrEqual(2);
     expect(map.upperTiles[2 * map.width + 3]).toBe(262);
+    expect(map.upperTiles[2 * map.width + 4]).toBe(263);
+  });
+
+  it("짝 없는 활엽수 반쪽은 수관을 올리지 않고 통째로 걷어낸다 — tile_erase 가 2×2 를 반만 물었을 때", () => {
+    // 2026-09-18 실측: 반쪽 위에 수관을 다시 올리면 lint hard 규칙(262 왼쪽에 263)이 영구히 깨져 초안 적용이 막혔다.
+    const project = createBlankProject();
+    const map = project.maps[MAP];
+    const at = (x: number, y: number) => y * map.width + x;
+    map.upperTiles[at(3, 2)] = 262; map.upperTiles[at(4, 2)] = 263;
+    map.lowerTiles[at(3, 3)] = 292; map.lowerTiles[at(4, 3)] = 293;
+    // 오른쪽 열만 지운 상태(erase rect 가 x=4 부터 시작)
+    map.upperTiles[at(4, 2)] = TILE.EMPTY; map.lowerTiles[at(4, 3)] = TILE.GRASS;
+    const result = repairTreePairsOnProject(project);
+    expect(result.orphanTrunksRemoved).toBe(1);
+    expect(map.lowerTiles[at(3, 3)]).toBe(TILE.GRASS);
+    expect(map.upperTiles[at(3, 2)]).toBe(TILE.EMPTY);
+    expect(map.upperTiles[at(4, 2)]).toBe(TILE.EMPTY);
+  });
+
+  it("대각으로 겹친 활엽수(293 자리에 다음 나무의 262)는 반쪽으로 보지 않는다", () => {
+    const project = createBlankProject();
+    const map = project.maps[MAP];
+    const at = (x: number, y: number) => y * map.width + x;
+    // 첫 나무 (3,2)-(4,3), 둘째 나무 (4,3)-(5,4): 둘째의 262 가 첫째의 293 칸(upper)에 앉는다.
+    map.upperTiles[at(3, 2)] = 262; map.upperTiles[at(4, 2)] = 263;
+    map.lowerTiles[at(3, 3)] = 292; map.lowerTiles[at(4, 3)] = 293;
+    map.upperTiles[at(4, 3)] = 262; map.upperTiles[at(5, 3)] = 263;
+    map.lowerTiles[at(4, 4)] = 292; map.lowerTiles[at(5, 4)] = 293;
+    const before = structuredClone(map);
+    const result = repairTreePairsOnProject(project);
+    expect(result.orphanTrunksRemoved).toBe(0);
+    expect(map.lowerTiles).toEqual(before.lowerTiles);
+    expect(map.upperTiles).toEqual(before.upperTiles);
   });
 
   it("밑동 위 덤불은 수관으로 덮어쓰지 않는다 — impassable 숲이 다시 뚫린다", () => {

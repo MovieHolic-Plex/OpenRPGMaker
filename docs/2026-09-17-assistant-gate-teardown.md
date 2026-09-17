@@ -105,10 +105,55 @@
 
 균형 런에서 `author_village` 는 4회 중 3회 실패했다(`housePlans[7].templateId='rect-tall' 배치 실패`, `조밀한 마을에는 houseObjectIds가 필요`) — 빌더 자체의 인자 계약 문제로, 4번째 호출에서 성공했다. 이건 게이트가 아니라 빌더 쪽 후속이다.
 
+## 3차 — 도구가 거부 대신 대체한다 (2026-09-18)
+
+사용자 지시: 「거부 잘 안하게 좀 해라」. 2차 이후 네 런(blank2·max2·blank3·max3)에서 실제로 난 거부를 모아 보면 세션 게이트는 더 이상 없고 **도구 하나하나의 인자 계약**만 남아 있었다. 전부 「모델이 조금 다르게 불렀다」는 이유로 결과를 통째로 버리는 종류다.
+
+| 거부 (2차 후 4런 합계) | 횟수 | 3차 처리 |
+|---|---|---|
+| `place_npc` 「일반 NPC에는 pages가 필요합니다」 | 4 | `dialogue.text` 만 있으면 그걸 첫 페이지로, 아무 대사도 없으면 인사 한 줄 기본. 경고로 알린다. 애매한 모양(null·빈 문자열·choices/when 동반)은 예전처럼 repair 힌트와 함께 거부 |
+| `place_props` 「영역 N×M 에 한 개도 놓지 못했습니다」 | 2 | 영역을 2칸씩 최대 3번(6칸) 넓혀 재시도. 넓혔으면 summary 앞·경고에 적는다. 맵과 안 겹치는 영역은 좌표 실수라 넓히지 않는다. 그래도 0이면 「6칸까지 넓혀 봤다」를 진단 앞에 붙여 실패 |
+| `author_village` 「housePlans[i].templateId='rect-tall' 배치 실패」 | 2 | 강제 형태가 안 맞으면 마을 전체 반려 → 그 집만 다른 형태로 짓고 집별 경고. 카탈로그에 없는 id 도 같다 |
+| `author_village` 「조밀한 마을에는 houseObjectIds가 필요」 | 1 | 저장된 집 없이 파라메트릭 집으로 진행(compact 나무·바닥 규칙은 유지) + 경고. 빈 배열도 없음으로 본다 |
+| `place_npc` charset 검색 실패(「경비병」) | 1 | 기본 주민 그래픽으로 대체, 경고에 원래 검색어와 `list_npc_graphics` 안내 |
+| `author_npc_cast` 「페이지 … 가 없습니다」 | 1 | 그 대사만 건너뛰고 경고. 주민 18명 캐스트가 한 페이지 때문에 전부 반려되지 않는다 |
+| `set_build_spec` 밑그림 검증 실패 | 1 | 1차에서 선택 사항이 됨 — 해가 없어 그대로 |
+
+### 4차 런에서 드러난 진짜 원인 하나 더
+
+3차 도구 수정 뒤 첫 재측정(r4)에서 거부는 균형 1회·최대 4회로 줄었는데, **두 런 모두 첫 턴이 「검사 미통과」로 끝나고 「계속」을 1~2번 받아야 적용됐다.** 결정적 검사가 찍은 lint 오류는 전부 같은 규칙이었다: `cluster-rule:adjacency:…broadleaf-tree-2x2 — 활엽수 상단은 262가 263 바로 왼쪽에 있어야 합니다`.
+
+감사 로그를 따라가면 순서가 이렇다. 모델이 광장을 정리하려고 `tile_erase (25,19) 4×4` 를 부른다 → 사각형이 2×2 활엽수의 **절반만** 문다 → 남은 반쪽 밑동 위에 쓰기 후처리(`repairTreePairs`)가 수관을 다시 올린다 → 262 옆에 263 이 없는 「조각난 나무」가 생긴다 → lint hard 오류 → 초안 적용 거부 → 모델이 지우기·칠하기를 12번 되풀이한다(r4 균형 런의 `tile_erase`·`paint_tiles` 호출 12회가 전부 이 자리다). 도구가 스스로 lint 불가 상태를 만들고, 검사가 그걸 근거로 모델을 벌하는 구조였다.
+
+`repairTreePairs` 에 활엽수 반쪽 제거를 넣었다: 짝(292↔293, 262↔263) 없는 반쪽은 수관을 올리지 않고 밑동·수관을 함께 걷어낸다. 대각 겹침(293 자리에 다음 나무의 262)은 규칙 그대로 짝으로 인정한다. 이 후처리는 모든 쓰기 도구 뒤에 돌므로 `tile_erase` 뿐 아니라 어떤 도구가 나무를 반만 물어도 lint 0 으로 돌아온다.
+
+![r4 균형 런 첫 턴 — 광장의 조각난 활엽수 때문에 「검사 미통과」](./2026-09-17-assistant-gate-teardown-assets/r4-balanced-turn1-lint-blocked.png)
+
+### 재측정 (r5, 같은 프롬프트 · 빈 맵)
+
+| | 2차 후 (blank3 / max3) | 3차 도구 수정 (r4) | 3차 + 나무 반쪽 제거 (r5) |
+|---|---|---|---|
+| 균형 16 첫 턴 | 126 s · 적용 | 224 s · **검사 미통과** → 「계속」 2회(114 s + 94 s) 뒤 적용 | **194 s · 적용** |
+| 균형 도구 호출 / 거부 | 19 / 4 | 50 / 1 | **38 / 0** |
+| 최대 48 첫 턴 | 349 s · 적용 | 391 s · **검사 미통과** → 「계속」 245 s 뒤 적용 | **102 s · 적용** |
+| 최대 도구 호출 / 거부 | 64 / 5 | 96 / 4 | **10 / 0** |
+
+r5 최대 런은 `author_village` 한 번으로 마을을 다 짓고 `author_npc_cast`·`place_props`·`run_lint` 로 마무리했다 — 되돌려 받은 게 없으니 되풀이할 것도 없었다. 실내는 이 런의 선택으로 만들지 않았다(문 0).
+
+![r5 최대 런 최종 맵 — 집 8 · 광장 · 우물 · 길, 102 s, 거부 0](./2026-09-17-assistant-gate-teardown-assets/r5-max-map.png)
+
+![r5 균형 런 최종 화면 — 첫 턴 적용, 「결정적 검사 통과 — 변경 맵 10개, lint error 0건」](./2026-09-17-assistant-gate-teardown-assets/r5-balanced-final.png)
+
+![r5 균형 런 전체 맵](./2026-09-17-assistant-gate-teardown-assets/r5-balanced-map.png)
+
+### 남긴 거부
+
+여전히 거부하는 것은 「추측이 손실을 낳는」 경우다: dialogue 에 choices/when 이 붙었는데 pages 가 없을 때, 맵과 전혀 겹치지 않는 영역, 6칸 넓혀도 자리가 없을 때, 완성된 집의 보호 영역을 `tile_erase` 로 지우려 할 때(r4 최대 런 1회 — 이건 맞는 거부다).
+
 ## 남은 문제 (후속)
 
 - ~~수용 원장~~ — 2차 해체로 제거(위 절).
-- **`author_village` 인자 계약.** `templateId` 배치 실패·`houseObjectIds` 요구로 3회 재시도. 빌더가 실패 대신 대체 템플릿으로 진행하게 해야 한다.
+- ~~`author_village` 인자 계약~~ — 3차에서 대체 템플릿·파라메트릭 집으로 진행(위 절).
 - **기존 콘텐츠 위 「마을 만들어줘」.** 모델이 철거를 택한다. `remove_map` 은 초안에서 확인 없이 지나갔고 `clear_map` 만 모달에 걸렸다. → PR #905(같은 날 main 병합)가 `mapLossConfirmRequest` 로 맵·이벤트 소실을 자동 적용에서 막았다. 남은 것은 「기존 맵에 있는 것을 지우지 않고 추가한다」를 기본 해석으로 두는 일.
 - **의도 분류.** 빈 맵 요청이 `modify` 로 분류되고 `imageReviewed` 영역이 리사이즈 뒤에도 20×15 다.
 - **죽은 모듈 정리.** `independentReview.ts`, `volumeContract.ts`, `buildSpec.ts` 의 경계·확장 헬퍼는 세션에서 더 이상 불리지 않는다. 테스트와 함께 지운다.
@@ -117,6 +162,7 @@
 
 - 변경 계약을 직접 검증하는 파일: `test/assistantIndependentReview.test.ts`(결정적 검사·예산 소진 적용·기준선 결함 제외), `test/aiSpecGate*.test.ts`(밑그림 선택 사항·구조물 보호 잔존), `test/advisoryLintProvenance.test.ts`(기준선 결함 vs 턴 중 유입 결함).
 - 옛 게이트를 검증하던 테스트 34 파일 101 케이스를 새 계약으로 고치거나 삭제했다(`assistantIndependentReviewCapacity`, `assistantReviewEvidenceOverflow` 는 기능이 사라져 파일 삭제). HEAD 와 A/B 로 비교해 이 변경이 새로 깨뜨린 테스트가 0 임을 확인했다(HEAD 에서 이미 실패하던 95 케이스는 그대로다).
+- 3차: 도구 계약 변경을 직접 검증하는 파일은 `test/npcAuditRepair.test.ts`(dialogue.text → 첫 페이지, 애매한 모양은 여전히 거부), `test/placePropsZeroPlacement.test.ts`·`test/placePropsAdversarialHardening.test.ts`·`test/scatterObject.test.ts`(영역 확장·맵 밖 비확장·expandArea:false), `test/villageBuilderSeam.test.ts`·`test/villageBuilder.test.ts`(강제 형태 대체), `test/villageCompactComposition.test.ts`(compact 무오브젝트), `test/npcGraphicRecovery.test.ts`·`test/toolRegistry.test.ts`·`test/placeNpcGraphicQuery.test.ts`(그래픽 대체), `test/repairTreePairs.test.ts`(활엽수 반쌍 제거·대각 겹침 보존). 관련 168 파일을 HEAD 와 A/B 비교해 새로 깨진 테스트 0.
 - `npm run gates` 는 돌리지 않았다(사용자 지시).
 
 ## 재현
