@@ -31,6 +31,7 @@ import {
   type TeamBoardState,
 } from "@/ai/piAgent/teamBoardState";
 import { changeChipsWithAreas, openWideChangeViewer, renderChangePreviewCard, type ChangePreviewInput } from "./aiChangePreview";
+import { createPiGhostBridge } from "./aiPiGhostBridge";
 import { loadAiConfig } from "@/ai/llmClient";
 import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
 import { adoptSpatialToolProof, authorMergedSpatialProposal } from "@/editor/tools/spatialToolState";
@@ -260,9 +261,14 @@ export async function runPiCommand(
   // 질문(읽기 전용)·계획 턴의 결과는 «바뀐 것» 이 아니라 **말**이다. 보드는 마지막 한 줄만 남기므로
   // 답이 될 문장을 따로 붙잡아 둔다 — 이게 없으면 질문 모드가 220자로 잘린 한 줄이 된다.
   let lastAssistantText = "";
+  // 캔버스 시공 표시(밑그림). 워커의 `map_delta` 를 초안으로 복원해 고스트를 그린다 — 이게 없으면
+  // 결과 프로젝트가 맨 끝 `done` 에만 실려서 턴 내내 캔버스가 조용하다(2026-09-17 회귀).
+  // 단일·병렬·팀이 다리 **하나**를 공유한다: 에이전트마다 소유한 맵이 다르므로 증분은 그대로 겹친다.
+  const ghost = createPiGhostBridge({ baseProject: base });
   const wrap = (mapIds: readonly string[], index: number) => (event: PiAgentEvent): void => {
     // heartbeat 는 연결 생존 신호다 — 클라이언트 워치독이 이미 소뱄했고, 보드에는 그릴 것이 없다.
     if (event.type === "heartbeat") return;
+    ghost.handleEvent(event);
     if (event.type === "assistant") lastAssistantText = event.text;
     if (team) { push(event); return; }
     const agentId = mapIds.join(",") || `agent-${index + 1}`;
@@ -290,6 +296,7 @@ export async function runPiCommand(
         readOnly: true, maxTurns: options.maxTurns, thinkingLevel: brain.reasoningEffort,
       }, { signal: surface.signal, onEvent: event => {
         if (event.type === "heartbeat") return;
+        ghost.handleEvent(event);
         push({ type: "agent_event", agentId: "ultrabrain-plan", event });
         if (event.type === "assistant") plan = event.text;
         if (event.type === "error") planError = event.message;
@@ -322,6 +329,7 @@ export async function runPiCommand(
   } catch (error) {
     if (surface.signal?.aborted) {
       // fetch 는 abort 에서 AbortError 를 던진다 — 실패가 아니라 중단이므로 중단 경로로 돌린다(실측 2026-09-11).
+      ghost.dispose();
       publishFinalOutcome();
       boardState = markTeamBoardAborted(boardState); sync();
       finishLog({ applied: false, changedCount: 0, stoppedReason: "중단" });
@@ -331,6 +339,7 @@ export async function runPiCommand(
     }
     const message = error instanceof Error ? error.message : String(error);
     streamErrors.push(message);
+    ghost.dispose();
     publishFinalOutcome();
     boardState = markTeamBoardFailed(boardState, message); sync();
     finishLog({ applied: false, changedCount: 0, error: message });
@@ -339,6 +348,7 @@ export async function runPiCommand(
     return false;
   }
   if (surface.signal?.aborted) {
+    ghost.dispose();
     publishFinalOutcome();
     boardState = markTeamBoardAborted(boardState); sync();
     finishLog({ applied: false, changedCount: 0, stoppedReason: "중단" });
@@ -378,6 +388,7 @@ export async function runPiCommand(
       : answer
         ? "프로젝트는 바뀌지 않았습니다."
         : "Pi 에이전트가 끝났지만 프로젝트에 바뀐 것이 없습니다.";
+    ghost.dispose();
     publishFinalOutcome();
     boardState = markTeamBoardDone(
       boardState,
@@ -418,6 +429,7 @@ export async function runPiCommand(
       harmonyApproved = reviews.every(review => review.harmonious);
     } catch (error) {
       if (surface.signal?.aborted) {
+        ghost.dispose();
         publishFinalOutcome();
         boardState = markTeamBoardAborted(boardState); sync();
         finishLog({ applied: false, changedCount, stoppedReason: "중단" });
@@ -436,6 +448,9 @@ export async function runPiCommand(
   // 명세는 한 번만 계산해 검토 카드와 영수증이 **같은 것**을 쓴다 — 두 번 만들면 두 화면이 갈라진다.
   const receiptLedger = buildChangeLedger(base, merged.project);
   const apply = async (): Promise<boolean> => {
+    // 초안이 진짜 타일이 되는 순간 밑그림은 지운다 — 같은 그림이 두 겹으로 남지 않게
+    // (세션 경로의 aiProposalCard.applyProposal 과 같은 관례).
+    ghost.dispose();
     const appliedResult = await applyProposedProject(merged.project, {
     base: proposalBase,
     baseline,
@@ -483,6 +498,9 @@ export async function runPiCommand(
   // 기준(base)이 그 사이 바뀌면 applyProposedProject 가 stale-base 로 거절한다.
   if ((config.piApply ?? "review") === "auto" && !harmonyManualReview) return apply();
   surface.setStatus("변경 확인 대기");
+  // 밀린 증분을 마저 그린다. 밑그림은 여기서 지우지 않는다 — 사용자가 「적용/버리기」를 고르는
+  // 동안 캔버스에 남아 있는 그 그림이 곧 판단 재료다. 정리는 두 버튼이 맡는다.
+  ghost.flush();
   // 적용 전에도 «무엇이 바뀔 것인가» 를 보여준다 — 여기가 사용자가 결정하는 자리다.
   // 같은 카드·같은 렌더러를 쓰고 배지만 「적용 전」 이다(두 번째 어휘를 만들지 않는다).
   // 보고서 모드 재료 — 지점 목록(여러 곳을 곤치면 사진도 여러 쌍) + 팀 보고 문장 + 검수 지적.
@@ -508,6 +526,7 @@ export async function runPiCommand(
   const discardReviewed = (): void => {
     board.setReview(null);
     setTeamReviewActions(null);
+    ghost.dispose();
     changedCount = 0;
     publishFinalOutcome();
     boardState = markTeamBoardDiscarded(boardState); sync();
