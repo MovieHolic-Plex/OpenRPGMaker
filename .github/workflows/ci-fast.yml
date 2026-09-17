@@ -34,6 +34,12 @@ jobs:
       - name: 타입체크 (src 만)
         run: npm run typecheck:app
 
+      # typecheck:app 은 src 만 본다. test/ · scripts/ · evals/ 의 import 계약은 아무도 안 보는데
+      # (`npx tsc --noEmit` 전체는 이 저장소에서 4GB 힙으로 OOM 이라 게이트로 못 쓴다),
+      # 실제로 #882/#883 이 머지되면서 e2e 스펙 2개가 배럴에서 빠진 심볼을 다시 가져왔다.
+      - name: 배럴 수출 계약
+        run: npm run gates:barrel
+
       # 에디터↔플레이어 데이터 왕복 계약. 9파일이라 바운드가 확실하다.
       - name: parity 스위트
         run: npm run test:parity
