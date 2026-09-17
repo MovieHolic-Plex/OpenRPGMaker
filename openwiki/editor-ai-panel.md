@@ -2607,7 +2607,9 @@ e2e `ai-ui-audit-fixes` F10.
 
 `src/ai/piAgent/applyMode.ts`가 적용 정책과 UI 어휘의 정본이다. 자율성(읽기/계획/턴 예산),
 모델, 팀 설정과 별개이며 `AiConfig.piApply`에 저장한다. 미설정·잘못된 값은 `default`,
-기존 명시 `review`/`auto`는 보존한다. 입력창 선택기와 AI 설정 → 동작에서 선택하며 실행
+`piApplyPolicyVersion: 1`이 없는 옛 `review` 공장값도 `default`로 전환한다.
+새 선택은 저장할 때 정책 버전을 함께 기록해 명시 `review`를 보존한다. `auto` 등 다른 값은 유지한다.
+Pi 활동 로그는 시작·종료 모두 `result.applyMode`에 실행 당시 모드를 기록한다. 입력창 선택기와 AI 설정 → 동작에서 선택하며 실행
 시점 값을 고정한다(실행 도중 바꾼 설정은 다음 요청에 적용).
 
 - `yolo` / YOLO: 실제 편집을 도구 완료 경계마다 반영. 별도 계획·조화 검수·삭제 확인 생략.
@@ -2637,3 +2639,5 @@ e2e `ai-ui-audit-fixes` F10.
 `piCheckpointProtocol.test.ts`(대기/일회성/중단/ACK), `piAgentExecutionRoute.test.ts`,
 `piAgentRunOutcome.test.ts`, 기존 팀·스트림 테스트. 브라우저는 `scripts/qa/ai-apply-modes.mjs`의
 격리 blankProject와 대본 전송을 사용한다. 증거: `output/evidence/ai-apply-modes/`.
+
+맵 확장 회귀 재현: `node scripts/qa/ai-map-resize.mjs`는 로컬 전용 편집기에서 구형 설정 전환과 새 review 선택 보존을 확인하고, 실제 `resize_map` → `createPiPublication`으로 20×15 → 28×21 즉시 반영을 확인한다. 외부 LLM/원격 저장은 사용하지 않는다. Vite HMR 직후 직접 동적 import로 store를 읽는 QA는 timestamp가 붙은 앱 모듈과 별도 인스턴스를 만들 수 있으므로 서버를 새로 시작해서 실행한다.
