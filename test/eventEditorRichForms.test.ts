@@ -157,6 +157,25 @@ describe("event editor rich forms", () => {
     expect(stage?.textContent).not.toContain("session.chests");
   });
 
+  it("authors farm template, display name, and capacity on the storage chest form", () => {
+    const replaceCommand = vi.fn<CommandEditContext["actions"]["replaceCommand"]>();
+    const body = renderBody(contextWithReplaceSpy(replaceCommand), {
+      kind: "openChest",
+      template: "farm",
+    });
+
+    expect(findByTestId(body, "open-chest-template")?.value).toBe("farm");
+    const name = findByTestId(body, "open-chest-display-name");
+    if (!name) throw new Error("missing open-chest-display-name");
+    name.value = "헛간";
+    name.dispatchEvent(new Event("input"));
+    expect(replaceCommand).toHaveBeenLastCalledWith([2], {
+      kind: "openChest",
+      displayName: "헛간",
+      template: "farm",
+    });
+  });
+
   it("previews Change Gold against the project's starting gold with a clamped result", () => {
     const replaceCommand = vi.fn<CommandEditContext["actions"]["replaceCommand"]>();
     const body = renderBody(contextWithReplaceSpy(replaceCommand), { kind: "changeGold", op: "+=", amount: 150 });

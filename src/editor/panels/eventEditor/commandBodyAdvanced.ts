@@ -12,6 +12,7 @@ import { editorState } from "@/editor/editorState";
 import { el } from "@/util/dom";
 import { databasePicker } from "./conditionForm";
 import { innBody, shopBody } from "./commandBodyCommerce";
+import { openChestBody } from "./commandBodyStorageChest";
 import {
   battleProcessingBody,
   changeActorHpBody,
@@ -23,7 +24,6 @@ import {
   craftRecipeBody,
   applyItemUpgradeBody,
   equipToolBody,
-  openChestBody,
   changeLevelBody,
   changePartyBody,
   enterHeroNameBody,

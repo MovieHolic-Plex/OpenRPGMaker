@@ -86,7 +86,7 @@ export function newCommand(kind: Command["kind"]): Command {
     case "equipTool":
       return { kind: "equipTool", itemId: "" };
     case "openChest":
-      return { kind: "openChest", chestId: "" };
+      return { kind: "openChest", chestId: "", template: "farm" };
     case "changeFriendship":
       return { kind: "changeFriendship", npcKey: "", delta: 20 };
     case "setRelationship":

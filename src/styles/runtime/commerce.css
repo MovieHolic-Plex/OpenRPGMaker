@@ -167,34 +167,91 @@
 /* ── 보관 상자: 소지품 ↔ 상자 입출고 ── */
 .runtime-chest-overlay {
   position: absolute;
-  left: 50%;
-  bottom: 24px;
-  transform: translateX(-50%);
-  width: min(480px, calc(100% - 24px));
   color: var(--runtime-window-text);
   font-family: var(--runtime-ui-font);
   font-size: var(--runtime-font-size-11);
+  z-index: 45;
+  pointer-events: auto;
+}
+
+.runtime-chest-overlay.is-bottom {
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  width: min(520px, calc(100% - 24px));
+}
+
+.runtime-chest-overlay.is-center {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(560px, calc(100% - 24px));
+}
+
+.runtime-chest-overlay.is-wide {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(720px, calc(100% - 16px));
 }
 
 .runtime-chest-window {
   display: grid;
-  gap: 6px;
-  padding: 8px 10px;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 12px solid transparent;
+  border-image-source: var(--runtime-window-skin);
+  border-image-slice: 24 fill;
+  border-image-repeat: stretch;
   background: var(--runtime-window-fill-fallback);
-  border: 1px solid var(--runtime-glass-hairline);
-  border-radius: var(--runtime-glass-radius-small);
-  max-height: 260px;
+  max-height: min(420px, 80vh);
   overflow: hidden;
 }
 
 .runtime-chest-title {
   color: var(--runtime-window-muted);
   font-weight: 700;
+  font-size: var(--runtime-font-size-13, 13px);
 }
 
 .runtime-chest-status {
   color: var(--runtime-window-highlight);
   min-height: 1em;
+}
+
+.runtime-chest-capacity {
+  color: var(--runtime-window-muted);
+  font-size: 10px;
+}
+
+.runtime-chest-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.runtime-chest-tab {
+  padding: 3px 8px;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
+  background: transparent;
+  color: var(--runtime-window-text);
+  font: 700 10px/1 var(--runtime-ui-font);
+}
+
+.runtime-chest-tab.selected,
+.runtime-chest-tab:focus-visible {
+  background: var(--runtime-window-selected-bg);
+}
+
+.runtime-chest-search {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 4px 8px;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
+  background: transparent;
+  color: var(--runtime-window-text);
 }
 
 .runtime-chest-columns {
@@ -219,15 +276,17 @@
   display: grid;
   gap: 3px;
   overflow-y: auto;
-  min-height: 72px;
-  max-height: 140px;
+  min-height: 96px;
+  max-height: 180px;
 }
 
 .runtime-chest-item,
-.runtime-chest-cancel {
+.runtime-chest-cancel,
+.runtime-chest-tool {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
   padding: 5px 8px;
   border: 1px solid transparent;
@@ -239,14 +298,54 @@
   cursor: default;
 }
 
+.runtime-chest-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.runtime-chest-toolbar .runtime-chest-tool,
+.runtime-chest-toolbar .runtime-chest-cancel {
+  width: auto;
+}
+
+.runtime-chest-qty {
+  width: 52px;
+  padding: 4px 6px;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
+  background: transparent;
+  color: var(--runtime-window-text);
+}
+
 .runtime-chest-item:focus-visible,
 .runtime-chest-item.selected,
-.runtime-chest-cancel:focus-visible {
+.runtime-chest-cancel:focus-visible,
+.runtime-chest-tool:focus-visible {
   background: var(--runtime-window-selected-bg);
   border-color: rgba(245, 251, 255, 0.76);
 }
 
+.runtime-chest-item-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  image-rendering: pixelated;
+}
+
+.runtime-chest-item-icon-fallback {
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  border: 1px solid var(--runtime-glass-hairline);
+}
+
 .runtime-chest-item-name {
+  flex: 1 1 auto;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -259,4 +358,11 @@
 .runtime-chest-empty {
   color: var(--runtime-window-muted);
   padding: 4px 6px;
+}
+
+.runtime-chest-gold {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
 }

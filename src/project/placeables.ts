@@ -9,6 +9,13 @@ export type ChestState = {
   readonly x: number;
   readonly y: number;
   inventory: Record<string, number>;
+  gold?: number;
+};
+
+export type ChestTransferOptions = {
+  readonly capacity?: number;
+  readonly allowedItemTypes?: readonly string[];
+  readonly itemType?: string;
 };
 
 export type PlaceableObjectState = {
@@ -65,11 +72,15 @@ export function depositToChest(
   session: PlaySession,
   chestId: string,
   itemId: ItemId,
-  count: number
+  count: number,
+  options: ChestTransferOptions = {},
 ): boolean {
   const chest = session.chests?.[chestId];
   if (!chest) return false;
   if (!isPositiveItemQuantity(count)) return false;
+  const allowed = options.allowedItemTypes ?? [];
+  if (allowed.length > 0 && (!options.itemType || !allowed.includes(options.itemType))) return false;
+  if (!chestAcceptsNewStack(chest.inventory, itemId, options.capacity)) return false;
   const playerCount = session.inventory[itemId] ?? 0;
   const chestCount = chest.inventory[itemId] ?? 0;
   if (!isItemQuantity(playerCount) || playerCount < count) return false;
@@ -145,4 +156,14 @@ export function inventoryEntries(inventory: Record<string, number> | undefined):
     .filter(([, count]) => (count ?? 0) > 0)
     .map(([itemId, count]) => ({ itemId, count: Math.trunc(count) }))
     .sort((a, b) => a.itemId.localeCompare(b.itemId));
+}
+
+function chestAcceptsNewStack(
+  inventory: Record<string, number> | undefined,
+  itemId: ItemId,
+  capacity: number | undefined,
+): boolean {
+  if (capacity === undefined) return true;
+  if ((inventory?.[itemId] ?? 0) > 0) return true;
+  return inventoryEntries(inventory).length < capacity;
 }

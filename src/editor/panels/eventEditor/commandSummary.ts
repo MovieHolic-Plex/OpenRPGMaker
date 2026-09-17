@@ -275,7 +275,11 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     ...resultVariableSummaryParts(cmd.resultVariableId),
   ),
   equipTool: (cmd) => commandLine("도구 장착", valuePart(cmd.itemId ? itemName(cmd.itemId) : "해제")),
-  openChest: (cmd) => commandLine("보관 상자", valuePart(cmd.chestId || "이 타일 상자")),
+  openChest: (cmd) => commandLine(
+    "보관 상자",
+    valuePart(cmd.displayName || cmd.chestId || "이 타일 상자"),
+    ...(cmd.template ? [plainPart(" · "), valuePart(cmd.template === "farm" ? "농장" : cmd.template === "warehouse" ? "창고" : "금고")] : []),
+  ),
   changeItem: (cmd) => commandLine(
     "아이템 변경",
     ...itemIconParts(cmd.itemId),

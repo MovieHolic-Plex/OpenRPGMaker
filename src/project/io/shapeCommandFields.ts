@@ -118,6 +118,32 @@ function validateCommandShape(label: string, value: unknown): void {
       return;
     case "openChest":
       if (command.chestId !== undefined) requireString(`${label}.chestId`, command.chestId);
+      if (command.displayName !== undefined) requireString(`${label}.displayName`, command.displayName);
+      if (command.template !== undefined) {
+        const template = requireString(`${label}.template`, command.template);
+        if (template !== "farm" && template !== "warehouse" && template !== "vault") {
+          throw new ProjectFormatError(`${label}.template must be farm, warehouse, or vault`);
+        }
+      }
+      if (command.layout !== undefined) {
+        const layout = requireString(`${label}.layout`, command.layout);
+        if (layout !== "center" && layout !== "bottom" && layout !== "wide") {
+          throw new ProjectFormatError(`${label}.layout must be center, bottom, or wide`);
+        }
+      }
+      if (command.showIcons !== undefined) requireBoolean(`${label}.showIcons`, command.showIcons);
+      if (command.capacity !== undefined) requireNumber(`${label}.capacity`, command.capacity);
+      if (command.allowBulk !== undefined) requireBoolean(`${label}.allowBulk`, command.allowBulk);
+      if (command.allowSort !== undefined) requireBoolean(`${label}.allowSort`, command.allowSort);
+      if (command.showCategories !== undefined) requireBoolean(`${label}.showCategories`, command.showCategories);
+      if (command.goldVault !== undefined) requireBoolean(`${label}.goldVault`, command.goldVault);
+      if (command.lockSwitchId !== undefined) requireString(`${label}.lockSwitchId`, command.lockSwitchId);
+      if (command.lockItemId !== undefined) requireString(`${label}.lockItemId`, command.lockItemId);
+      if (command.allowedItemTypes !== undefined) {
+        for (const [index, type] of requireArray(`${label}.allowedItemTypes`, command.allowedItemTypes).entries()) {
+          requireString(`${label}.allowedItemTypes[${index}]`, type);
+        }
+      }
       return;
     case "setTime":
       requireNumber(`${label}.hour`, command.hour);
