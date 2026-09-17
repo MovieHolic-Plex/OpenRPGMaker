@@ -1,3 +1,4 @@
+import { mergeTeamProject } from "./persistence/core/teamMerge";
 import { clearCopiedEventPage } from "@/editor/eventPageClipboard";
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 import { rewriteLegacyAdvancedDialogueInProject } from "@/project/io/rewriteLegacyDialogue";
@@ -639,6 +640,26 @@ class ProjectStore {
       return { kind: "failed", message: error instanceof Error ? error.message : "온라인 저장 연결 실패" };
     }
   }
+  /** A host notification may refresh only a clean, unchanged editor. Never overwrite edits made during I/O. */
+  async refreshFromHost(): Promise<boolean> {
+    if (!this.loaded || !this.remotePersistenceEnabled || this.dirtySinceLastPersist || this.persistInFlight) return false;
+    const generation = this.mutationGeneration, lineage = this.contentLineage;
+    const target = this.repository.currentTarget();
+    if (!target) return false;
+    const snapshot = await this.repository.loadSnapshot(target);
+    if (!snapshot || generation !== this.mutationGeneration || lineage !== this.contentLineage
+      || this.dirtySinceLastPersist || this.persistInFlight || !sameProjectTarget(target, this.repository.currentTarget())) return false;
+    if (this.persistedBaseline && serializeForComparison(snapshot.project) === serializeForComparison(this.persistedBaseline)) return true;
+    this.current = preserveEventDraftsOnProject(snapshot.project, this.current);
+    this.persistedBaseline = structuredClone(projectWithoutEventDrafts(snapshot.project));
+    this.writeAuthority = snapshot.authority;
+    this.lastPersistenceReceipt = null;
+    resetManualProjectCommitBaseline(this.current);
+    // External changes invalidate local undo snapshots; do not let Ctrl+Z undo a teammate's work.
+    this.emit({ scope: 'project', origin: 'system', projectSwitch: true });
+    return true;
+  }
+
   /**
    * DB에서 현재 projectId 프로젝트를 다시 읽어 에디터 메모리를 교체한다.
    * 외부 스크립트/다른 세션 저장분을 즉시 반영할 때 사용.
@@ -1265,7 +1286,23 @@ class ProjectStore {
     if (this.contentLineage !== lineageAtSubmit || !sameProjectTarget(target, this.repository.currentTarget())) return receipt ? { ...result, receipt } : result;
     if (result.authority) this.writeAuthority = result.authority;
     this.persistenceRecovery = { kind: "ready", ...(result.mirror ? { mirror: result.mirror } : {}) };
+    let receivedTeamChanges = false;
+    let reconciledTeamProject = false;
     this.persistedBaseline = acceptedBaseline;
+    if (this.repository.kind === 'local') {
+      receivedTeamChanges = serializeForComparison(savedProject) !== serializeForComparison(submittedProject);
+      if (receivedTeamChanges) {
+        const merged = mergeTeamProject(submittedProject, projectWithoutEventDrafts(this.current), savedProject);
+        if (merged.kind === 'merged') {
+          this.current = preserveEventDraftsOnProject(merged.project, this.current);
+          reconciledTeamProject = true;
+        } else {
+          // An edit made during I/O conflicts with an accepted team change. Keep its old
+          // base so the next save reports a conflict rather than silently rebasing it away.
+          this.persistedBaseline = structuredClone(submittedProject);
+        }
+      }
+    }
     this.lastPersistenceReceipt = receipt ?? null;
     if (receipt && diagnosticOwner && diagnosticOwner === diagnosticToken() && diagnosticObserved("authoring")) {
       publishDiagnostic({ category: "authoring", phase: "saved", generation: generationAtSubmit, storage: "remote" });
@@ -1280,7 +1317,7 @@ class ProjectStore {
       this.current.monsterMetadata,
       savedProject.monsterMetadata,
     );
-    if (JSON.stringify(audioDescriptions) !== JSON.stringify(this.current.audioDescriptions)
+    if (reconciledTeamProject || JSON.stringify(audioDescriptions) !== JSON.stringify(this.current.audioDescriptions)
       || JSON.stringify(monsterMetadata) !== JSON.stringify(this.current.monsterMetadata)) {
       const reconciledProject = { ...this.current };
       if (audioDescriptions === undefined) delete reconciledProject.audioDescriptions;
@@ -1289,7 +1326,7 @@ class ProjectStore {
       else reconciledProject.monsterMetadata = structuredClone(monsterMetadata);
       this.current = reconciledProject;
       // Synchronization is observable, but is not a new authored mutation.
-      this.emit({ scope: "project", origin: "system", projectSwitch: false });
+      this.emit({ scope: "project", origin: "system", projectSwitch: reconciledTeamProject && receivedTeamChanges });
     }
     // A synchronization subscriber may itself replace the project.
     if (this.contentLineage !== lineageAtSubmit) return receipt ? { ...result, receipt } : result;

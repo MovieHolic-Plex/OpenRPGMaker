@@ -42,6 +42,12 @@ npm run wt -- adopt <이름> --path <워크트리 절대경로>   # node_modules
 콘텐츠(맵·이벤트·데모) 작업이면 `.env.local` 의 `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` /
 `VITE_SUPABASE_PROJECT_ID` 가 있어야 하고, 저장+재로드까지 증명해야 끝이다 — 루트 `AGENTS.md` 의 하드 룰.
 
+## 팀 SQLite 호스트 (2026-09-18)
+
+현재 Electron과 `npm run serve:project`는 로컬/서버 SQLite 정본을 사용한다.
+팀 초대·호스팅·백업·충돌 처리 절차는 `openwiki/team-project-host.md`.
+아래 과거 Mac launcher/Supabase 설정 설명을 새 팀 호스트의 필수 설정으로 적용하지 않는다.
+
 ## 1a. Mac novice launcher / private setup (Phase 1, 2026-09-06)
 
 This path is for a person's own downloaded checkout, **not** agent worktree adoption above.
@@ -147,7 +153,7 @@ SHA-256 검증·손상 복구·잠금 복구·관리자 제작 명령은 `openwi
 | AI 턴·툴 호출·컨텍스트 | `src/ai/assistantSession.ts`(5,433줄 — 클래스만 남았다), `src/ai/session/*`(순수 표면 14모듈), `src/ai/llmClient.ts`, `src/ai/contextBuilder.ts`, `src/ai/approvalPolicy.ts` |
 | AI 툴 추가·수정 | `src/editor/tools/toolRegistry.ts` + `src/editor/tools/*` |
 | 우클릭 영역 작업(AI 로 영역 채우기) | `src/editor/panels/regionTaskModal.ts`, `src/editor/regionTask/*` |
-| 저장·불러오기·자동저장·원격 지속성 | `src/project/store.ts`, `src/editor/saveActions.ts`, `src/project/supabaseProjectSync.ts` |
+| 저장·불러오기·자동저장·원격 지속성 | `src/project/store.ts`, `src/editor/saveActions.ts`, `src/project/persistence/electronRepository.ts`, `electron/main/dispatch.ts` |
 | 프로젝트 JSON 스키마·마이그레이션 | `src/project/types/project.ts`, `src/project/io/shape.ts`, `src/project/io/references.ts` |
 | 기본 프로젝트·샘플 콘텐츠 | `src/project/defaults/defaultProject.ts`, `src/editor/content/` |
 | 세이브 슬롯·이어하기 | `src/player/saveSlots.ts`, `src/player/saveSlotValidation.ts` |
