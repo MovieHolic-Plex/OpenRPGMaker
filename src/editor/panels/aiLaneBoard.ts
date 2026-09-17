@@ -1,7 +1,8 @@
-// 레인 렌더 모듬 — 좌 레일의 실시간 조수 행·채팅 스레드 목록·오른쪽 레인 스레드·드로워의 새 레인 폼.
+// 레인 렌더 모듬 — 하단 덱의 레인 보드 표·오른쪽 레인 스레드·「＋ 새 레인」 팝오버 폼.
 //
 // 순수 렌더 모듈이다(상태를 만들지 않는다). 열려 있는 레인·폼 값·선택은 셸이 소유하고,
 // 여기는 «그려서 콜백으로 되돌려주는» 일만 한다.
+// 배치 결정: docs/superpowers/specs/2026-09-15-studio-agent-lanes-design.md §11 (2026-09-17, 하단 레인 보드).
 
 import { defaultModelForAuthMode, modelCatalogForAuthMode } from "@/ai/modelCatalog";
 import { OH_MY_PI_PROVIDERS } from "@/ai/ohMyPiProviders";
@@ -41,12 +42,13 @@ export interface LaneThreadInput {
   readonly onFollowUp: (id: string, text: string) => void;
 }
 
-function formatElapsed(ms: number | null): string {
+export function formatElapsed(ms: number | null): string {
   if (ms === null) return "—";
   const total = Math.max(0, Math.round(ms / 1000));
   const minutes = Math.floor(total / 60);
   const seconds = total % 60;
-  return `${minutes}:${String(seconds).padStart(2, "0")}`;
+  if (minutes === 0) return `${seconds}초`;
+  return `${minutes}분 ${String(seconds).padStart(2, "0")}초`;
 }
 
 export function laneStatusClass(status: LaneStatus): string {
@@ -193,104 +195,195 @@ function renderNewLaneForm(input: NewLanePaneInput): HTMLElement {
   });
 }
 
-/** 덱 드로워의 「세 레인」 탭 — 폼 하나만 담는다(레인 표는 좌 레일의 실시간 행이 대신한다). */
+/** 「＋ 새 레인」 팝오버 — 폼 하나만 담는다. */
 export function renderNewLanePane(input: NewLanePaneInput): HTMLElement {
   return el("div", {
     class: "ai-lane-pane",
     dataset: { testid: "lane-pane" },
     children: [
-      el("p", { class: "ai-lane-hint", text: "음 하나에 에이전트 하나 — 같은 음에 둘을 동시에 붙이면 시작이 거절됩니다." }),
+      el("p", { class: "ai-lane-hint", text: "묶음 하나에 에이전트 하나 — 같은 묶음에 둘을 동시에 붙이면 시작이 거절됩니다." }),
       renderNewLaneForm(input),
     ],
   });
 }
 
-export interface StudioThread {
-  /** "director" 또는 레인 id. */
-  readonly id: string;
-  readonly label: string;
-  readonly kind: "director" | "lane";
-  readonly status?: LaneStatus;
-  readonly detail?: string;
-}
+// ── 하단 레인 보드 (2026-09-17 §11) ──────────────────────────────────────────
+// 에이전트별 진행 상황은 이 표 하나로 본다. 열: 에이전트 · 상태 · 묶음(장면) · 턴·툴·경과 · 마지막 줄 · 동작.
+// 팀 실행(/pi team)의 팀장·팀원도 같은 표에 행으로 선다 — 두 시스템이 두 곳에 갈라져 보이지 않게.
 
-export interface AgentLiveListInput {
+export interface LaneBoardInput {
   readonly lanes: readonly LaneState[];
+  readonly teamAgents: readonly TeamBoardAgent[];
   readonly project: Project;
   readonly now: number;
   readonly selectedThreadId: string;
   readonly notice: string | null;
   readonly onSelectThread: (id: string) => void;
+  readonly onStart: (id: string) => void;
   readonly onStop: (id: string) => void;
   readonly onApply: (id: string) => void;
   readonly onDiscard: (id: string) => void;
+  /** 팀 행을 눌렀다 — 오른쪽 열에 팀 보드를 연다. */
+  readonly onOpenTeam: () => void;
 }
 
-export interface ThreadListInput {
-  readonly threads: readonly StudioThread[];
-  readonly selectedId: string;
-  readonly onSelect: (id: string) => void;
+export interface LaneBoardSummary {
+  readonly running: number;
+  readonly review: number;
+  readonly waiting: number;
+  readonly total: number;
+  /** 「작업 중 2 · 결과 대기 1 · 대기 1」. 레인이 없으면 빈 문자열. */
+  readonly text: string;
 }
 
-/** 좌 레일 「조수」 절 — 레인이 지금 무엇을 하는지 한 줄씩 산다. */
-export function renderAgentLiveList(input: AgentLiveListInput): HTMLElement {
-  const noticeLine = input.notice ? [el("p", { class: "ai-lane-notice", text: input.notice, dataset: { testid: "lane-notice" } })] : [];
-  if (input.lanes.length === 0) {
-    return el("div", {
-      class: "ai-studio-agents",
-      dataset: { testid: "ai-studio-agents" },
-      children: [
-        ...noticeLine,
-        el("p", { class: "ai-lane-empty-text", text: "세워 둔 조수가 없습니다 — 조수 ＋ 또는 아래 「도구」 드로워의 「새 레인」 에서 하나 세우세요." }),
-      ],
-    });
-  }
-  const rows = input.lanes.map((lane) => {
-    const actions = el("span", { class: "ai-lane-actions" });
-    if (lane.status === "running") actions.append(actionButton("중단", "agent-row-stop", () => input.onStop(lane.spec.id), "danger"));
-    if (lane.status === "review") {
-      actions.append(
-        actionButton("적용", "agent-row-apply", () => input.onApply(lane.spec.id), "primary"),
-        actionButton("버리기", "agent-row-discard", () => input.onDiscard(lane.spec.id)),
-      );
-    }
-    const live = lane.status === "running"
-      ? (lane.progress.lastLine || "모델이 시작하기를 기다리는 중…")
-      : lane.result?.summary ?? lane.error ?? "";
-    const selected = input.selectedThreadId === lane.spec.id;
-    return el("div", {
-      class: selected ? "ai-studio-agent-row is-selected" : "ai-studio-agent-row",
-      dataset: { testid: "ai-studio-agent-row", laneId: lane.spec.id, status: lane.status },
-      on: { click: () => input.onSelectThread(lane.spec.id) },
-      children: [
-        el("span", {
-          class: "ai-studio-agent-head",
-          children: [
-            el("b", { text: lane.spec.agentLabel }),
-            statusBadge(lane),
-            el("span", { class: "ai-studio-agent-map", text: laneMapNames(input.project, lane) }),
-          ],
-        }),
-        el("span", {
-          class: "ai-studio-agent-live",
-          text: `${lane.progress.turns}턴 · 툴 ${lane.progress.toolCalls} · ${formatElapsed(laneElapsedMs(lane, input.now))}`,
-        }),
-        ...(live ? [el("span", { class: "ai-studio-agent-line", text: live })] : []),
-        actions,
-      ],
-    });
-  });
+export function laneBoardSummary(lanes: readonly LaneState[], teamAgents: readonly TeamBoardAgent[]): LaneBoardSummary {
+  const running = lanes.filter((lane) => lane.status === "running").length + teamAgents.filter((agent) => agent.state === "실행 중").length;
+  const review = lanes.filter((lane) => lane.status === "review").length;
+  const waiting = lanes.filter((lane) => lane.status === "idle").length + teamAgents.filter((agent) => agent.state === "대기").length;
+  const total = lanes.length + teamAgents.length;
+  const parts: string[] = [];
+  if (running > 0) parts.push(`작업 중 ${running}`);
+  if (review > 0) parts.push(`결과 대기 ${review}`);
+  if (waiting > 0) parts.push(`대기 ${waiting}`);
+  if (parts.length === 0 && total > 0) parts.push(`끝난 레인 ${total}`);
+  return { running, review, waiting, total, text: parts.join(" · ") };
+}
+
+/** 레인 0 — 덱은 한 줄 미니 상태다. 접어도 같은 한 줄. */
+export const LANE_BOARD_EMPTY_TEXT = "레인 0 — 지시를 보내면 감독이 에이전트를 배정하고, 레인이 여기 한 줄씩 쌓입니다.";
+
+export function renderLaneBoardEmpty(notice: string | null): HTMLElement {
   return el("div", {
-    class: "ai-studio-agents",
-    dataset: { testid: "ai-studio-agents" },
-    children: [...noticeLine, ...rows],
+    class: "lane-board-empty",
+    dataset: { testid: "lane-board-empty" },
+    children: [
+      el("p", { class: "ai-lane-hint", text: LANE_BOARD_EMPTY_TEXT }),
+      ...(notice ? [el("p", { class: "ai-lane-notice", text: notice, dataset: { testid: "lane-notice" } })] : []),
+    ],
   });
 }
 
-/** 좌 레일 「팅」 절 — 감독 + 레인 스레드 목록. 고른 스레드가 오른쪽 열에 산다. */
-export interface TeamLiveRowsInput {
-  readonly agents: readonly TeamBoardAgent[];
-  readonly onOpenBoard: () => void;
+/** 「시공A」→「A」, 「검수」→「검」. 표 첫 칸의 동그란 글자. */
+export function laneAvatarLetter(label: string): string {
+  const trimmed = label.trim();
+  if (trimmed.length === 0) return "?";
+  const last = trimmed[trimmed.length - 1] ?? "";
+  return /^[A-Za-z0-9]$/u.test(last) ? last.toUpperCase() : trimmed[0] ?? "?";
+}
+
+function providerLabel(id: string): string {
+  return OH_MY_PI_PROVIDERS.find((provider) => provider.id === id)?.label ?? id;
+}
+
+function laneLastLine(lane: LaneState): string {
+  switch (lane.status) {
+    case "running":
+      return lane.progress.lastLine || "모델이 시작하기를 기다리는 중…";
+    case "review":
+      return lane.result?.summary ?? "결과 도착";
+    case "failed":
+      return lane.error ?? "실패";
+    case "stopped":
+      return lane.progress.lastLine ? `중단됨 — ${lane.progress.lastLine}` : "중단됨";
+    case "applied":
+      return "적용됨";
+    case "discarded":
+      return "버림";
+    default:
+      return "「시작」 을 누르면 출발합니다";
+  }
+}
+
+function laneProgressRatio(lane: LaneState): number {
+  if (lane.status === "review" || lane.status === "applied") return 1;
+  const max = lane.spec.maxTurns ?? 0;
+  if (max <= 0) return lane.status === "running" ? 0.15 : 0;
+  return Math.min(1, lane.progress.turns / max);
+}
+
+function progressCell(text: string, ratio: number, live: boolean): HTMLElement {
+  return el("div", {
+    class: "lane-cell lane-cell-progress",
+    children: [
+      el("span", { class: "lane-progress-text", text }),
+      el("span", {
+        class: live ? "lane-progress-bar is-live" : "lane-progress-bar",
+        attrs: { role: "progressbar", "aria-valuemin": "0", "aria-valuemax": "100", "aria-valuenow": String(Math.round(ratio * 100)) },
+        children: [el("span", { class: "lane-progress-fill", attrs: { style: `--progress:${ratio.toFixed(2)}` } })],
+      }),
+    ],
+  });
+}
+
+function laneRow(input: LaneBoardInput, lane: LaneState): HTMLElement {
+  const actions = el("div", { class: "lane-cell lane-cell-actions ai-lane-actions" });
+  // 행 클릭이 스레드를 여니, 버튼은 자기 일만 하고 행으로 번지지 않는다.
+  const guard = (fn: () => void) => (event: Event): void => { event.stopPropagation(); fn(); };
+  const add = (label: string, testId: string, fn: () => void, tone?: "primary" | "danger"): void => {
+    actions.append(el("button", {
+      class: `ai-lane-btn${tone ? ` is-${tone}` : ""}`,
+      text: label,
+      attrs: { type: "button" },
+      dataset: { testid: testId },
+      on: { click: guard(fn) },
+    }));
+  };
+  if (lane.status === "running") add("중단", "lane-row-stop", () => input.onStop(lane.spec.id), "danger");
+  if (lane.status === "review") {
+    add("적용", "lane-row-apply", () => input.onApply(lane.spec.id), "primary");
+    add("버리기", "lane-row-discard", () => input.onDiscard(lane.spec.id));
+  }
+  if (lane.status === "idle") add("시작", "lane-row-start", () => input.onStart(lane.spec.id), "primary");
+  if (lane.status === "failed" || lane.status === "stopped") add("다시 실행", "lane-row-start", () => input.onStart(lane.spec.id));
+  actions.append(el("button", {
+    class: "ai-lane-btn is-ghost lane-row-open",
+    text: "›",
+    attrs: { type: "button", title: "이 레인 스레드 열기", "aria-label": `${lane.spec.agentLabel} 스레드 열기` },
+    dataset: { testid: "lane-row-open" },
+    on: { click: guard(() => input.onSelectThread(lane.spec.id)) },
+  }));
+
+  const interiors = Math.max(0, lane.bundleIds.length - lane.spec.mapIds.length);
+  const elapsed = formatElapsed(laneElapsedMs(lane, input.now));
+  const turns = `${lane.progress.turns}${lane.spec.maxTurns ? `/${lane.spec.maxTurns}` : ""}턴`;
+  const selected = input.selectedThreadId === lane.spec.id;
+  return el("div", {
+    class: `lane-row ${laneStatusClass(lane.status)}${selected ? " is-selected" : ""}`,
+    attrs: { role: "row", tabindex: "0", "aria-selected": String(selected) },
+    dataset: { testid: "lane-row", laneId: lane.spec.id, status: lane.status },
+    on: {
+      click: () => input.onSelectThread(lane.spec.id),
+      keydown: ((event: KeyboardEvent) => {
+        if (event.key === "Enter" || event.key === " ") { event.preventDefault(); input.onSelectThread(lane.spec.id); }
+      }) as EventListener,
+    },
+    children: [
+      el("div", {
+        class: "lane-cell lane-cell-agent",
+        children: [
+          el("span", { class: `lane-avatar ${laneStatusClass(lane.status)}`, text: laneAvatarLetter(lane.spec.agentLabel), attrs: { "aria-hidden": "true" } }),
+          el("span", {
+            class: "lane-agent-body",
+            children: [
+              el("b", { class: "lane-agent-name", text: lane.spec.agentLabel }),
+              el("span", { class: "lane-agent-model", text: `${providerLabel(lane.spec.provider)} · ${lane.spec.model}` }),
+            ],
+          }),
+        ],
+      }),
+      el("div", { class: "lane-cell lane-cell-status", children: [statusBadge(lane)] }),
+      el("div", {
+        class: "lane-cell lane-cell-bundle",
+        children: [
+          el("span", { class: "lane-bundle-name", text: laneMapNames(input.project, lane) }),
+          el("span", { class: "lane-bundle-meta", text: interiors > 0 ? `실내 ${interiors} 포함` : "실내 0" }),
+        ],
+      }),
+      progressCell(`${turns} · 툴 ${lane.progress.toolCalls} · ${elapsed}`, laneProgressRatio(lane), lane.status === "running"),
+      el("div", { class: "lane-cell lane-cell-last", text: laneLastLine(lane), attrs: { title: laneLastLine(lane) } }),
+      actions,
+    ],
+  });
 }
 
 const TEAM_STATE_CLASS: Record<TeamBoardAgent["state"], string> = {
@@ -301,55 +394,83 @@ const TEAM_STATE_CLASS: Record<TeamBoardAgent["state"], string> = {
   "중단": "is-stopped",
 };
 
-/** 좌 레일 「조수」 절 — 팀 실행(/pi team)의 팀장·팀원도 레인과 나란히 실시간으로 보인다.
- *  팀 보드 자체(트랜스크립트·툴 인자)는 드로워의 「작업」 탭이고, 여기는 «누가 무엇을 하는 중» 한 줄씩이다. */
-export function renderTeamLiveRows(input: TeamLiveRowsInput): HTMLElement | null {
-  if (input.agents.length === 0) return null;
-  const rows = input.agents.map((agent) => el("div", {
-    class: "ai-studio-agent-row is-team",
-    dataset: { testid: "ai-studio-team-row", agentId: agent.agentId, state: agent.state },
-    on: { click: input.onOpenBoard },
+function teamRow(input: LaneBoardInput, agent: TeamBoardAgent): HTMLElement {
+  const selected = input.selectedThreadId === "team";
+  const last = agent.lastLine ?? "";
+  return el("div", {
+    class: `lane-row is-team ${TEAM_STATE_CLASS[agent.state]}${selected ? " is-selected" : ""}`,
+    attrs: { role: "row", tabindex: "0", "aria-selected": String(selected) },
+    dataset: { testid: "lane-team-row", agentId: agent.agentId, state: agent.state },
+    on: { click: () => input.onOpenTeam() },
     children: [
-      el("span", {
-        class: "ai-studio-agent-head",
+      el("div", {
+        class: "lane-cell lane-cell-agent",
         children: [
-          el("b", { text: agent.roleLabel }),
-          el("span", { class: "ai-lane-status " + TEAM_STATE_CLASS[agent.state], text: agent.state }),
-          el("span", { class: "ai-studio-agent-kind", text: agent.kindLabel }),
-          el("span", { class: "ai-studio-agent-map", text: agent.mapName ?? "프로젝트 전체" }),
+          el("span", { class: `lane-avatar ${TEAM_STATE_CLASS[agent.state]}`, text: laneAvatarLetter(agent.roleLabel), attrs: { "aria-hidden": "true" } }),
+          el("span", {
+            class: "lane-agent-body",
+            children: [
+              el("b", { class: "lane-agent-name", text: agent.roleLabel }),
+              el("span", { class: "lane-agent-model", text: `팀 · ${agent.kindLabel}` }),
+            ],
+          }),
         ],
       }),
-      el("span", {
-        class: "ai-studio-agent-live",
-        text: agent.turns + "턴 · 툴 " + agent.toolCalls + (agent.toolErrors > 0 ? " (실패 " + agent.toolErrors + ")" : ""),
+      el("div", { class: "lane-cell lane-cell-status", children: [el("span", { class: `ai-lane-status ${TEAM_STATE_CLASS[agent.state]}`, text: agent.state })] }),
+      el("div", {
+        class: "lane-cell lane-cell-bundle",
+        children: [el("span", { class: "lane-bundle-name", text: agent.mapName ?? "프로젝트 전체" })],
       }),
-      ...(agent.lastLine
-        ? [el("span", { class: agent.lastKind === "text" ? "ai-studio-agent-line is-text" : "ai-studio-agent-line", text: agent.lastLine })]
-        : []),
+      progressCell(`${agent.turns}턴 · 툴 ${agent.toolCalls}${agent.toolErrors > 0 ? ` (실패 ${agent.toolErrors})` : ""}`, agent.state === "완료" ? 1 : 0.15, agent.state === "실행 중"),
+      el("div", { class: "lane-cell lane-cell-last", text: last, attrs: { title: last } }),
+      el("div", {
+        class: "lane-cell lane-cell-actions ai-lane-actions",
+        children: [el("button", {
+          class: "ai-lane-btn is-ghost lane-row-open",
+          text: "›",
+          attrs: { type: "button", title: "팀 보드 열기", "aria-label": "팀 보드 열기" },
+          dataset: { testid: "lane-team-open" },
+          on: { click: (event) => { event.stopPropagation(); input.onOpenTeam(); } },
+        })],
+      }),
     ],
-  }));
-  return el("div", { class: "ai-studio-team-rows", dataset: { testid: "ai-studio-team-rows" }, children: rows });
+  });
 }
 
-export function renderThreadList(input: ThreadListInput): HTMLElement {
-  const rows = input.threads.map((thread) => {
-    const selected = thread.id === input.selectedId;
-    return el("button", {
-      class: selected ? "ai-studio-thread is-on" : "ai-studio-thread",
-      attrs: { type: "button", "aria-current": selected ? "true" : "false" },
-      dataset: { testid: `ai-studio-thread-${thread.id}`, kind: thread.kind },
-      on: { click: () => input.onSelect(thread.id) },
-      children: [
-        el("span", { class: "ai-studio-thread-label", text: thread.label }),
-        ...(thread.status ? [el("span", { class: `ai-lane-status ${laneStatusClass(thread.status)}`, text: LANE_STATUS_LABEL[thread.status] })] : []),
-        ...(thread.detail ? [el("span", { class: "ai-studio-thread-detail", text: thread.detail })] : []),
-      ],
-    });
+const BOARD_COLUMNS: readonly { readonly label: string; readonly cell: string }[] = [
+  { label: "에이전트", cell: "lane-cell-agent" },
+  { label: "상태", cell: "lane-cell-status" },
+  { label: "묶음 (장면)", cell: "lane-cell-bundle" },
+  { label: "턴 · 툴 · 경과", cell: "lane-cell-progress" },
+  { label: "마지막 줄", cell: "lane-cell-last" },
+  { label: "동작", cell: "lane-cell-actions" },
+];
+
+/** 하단 덱 「레인」 탭 — 표 하나. 행을 누르면 오른쪽 열이 그 레인 스레드로 바뀐다. */
+export function renderLaneBoard(input: LaneBoardInput): HTMLElement {
+  // 머리 셀도 본문과 같은 열 클래스를 단다 — 좁은 덱에서 컨테이너 쿼리가 열을 감출 때 머리도 같이 사라져야 한다.
+  const head = el("div", {
+    class: "lane-row is-head",
+    attrs: { role: "row" },
+    children: BOARD_COLUMNS.map((column) => el("div", {
+      class: `lane-cell lane-cell-head ${column.cell}`,
+      attrs: { role: "columnheader" },
+      text: column.label,
+    })),
   });
+  const rows = [
+    ...input.lanes.map((lane) => laneRow(input, lane)),
+    ...input.teamAgents.map((agent) => teamRow(input, agent)),
+  ];
   return el("div", {
-    class: "ai-studio-threads",
-    dataset: { testid: "ai-studio-threads" },
-    children: rows,
+    class: "lane-board",
+    dataset: { testid: "lane-table" },
+    attrs: { role: "table", "aria-label": "에이전트 레인" },
+    children: [
+      ...(input.notice ? [el("p", { class: "ai-lane-notice lane-board-notice", text: input.notice, dataset: { testid: "lane-notice" } })] : []),
+      head,
+      ...rows,
+    ],
   });
 }
 
@@ -443,7 +564,12 @@ export function renderLaneThread(input: LaneThreadInput): HTMLElement {
       ...(input.notice ? [el("p", { class: "ai-lane-notice", text: input.notice, dataset: { testid: "lane-notice" } })] : []),
       el("div", {
         class: "ai-lane-follow-up",
-        children: [followUpInput, actionButton("이 레인에게 보내기", "lane-follow-up-send", followUp, "primary")],
+        children: [
+          // 수신자 칩 — 이 입력은 감독이 아니라 «이 레인» 에게 간다(§11 결정 5).
+          el("span", { class: "ai-lane-receiver", text: `→ ${lane.spec.agentLabel}`, dataset: { testid: "lane-receiver" } }),
+          followUpInput,
+          actionButton("보내기", "lane-follow-up-send", followUp, "primary"),
+        ],
       }),
       actions,
     ],

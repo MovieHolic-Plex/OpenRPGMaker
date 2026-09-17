@@ -5,13 +5,15 @@
 // 사라진다 — 실표면 QA 에서「전체 2」가 한 번의 재렌더 뒤「전체 1」로 줄어 그 원인을 찾았다.
 // 레인은 «작업»이지 «화면»이 아니므로 화면보다 오래 살아야 한다.
 
+import { createLaneGhostSink } from "./aiLaneGhost";
 import { createLaneManager, type LaneManager } from "./aiLaneManager";
 
 let current: LaneManager | null = null;
 
 /** 이 브라우저 세션의 레인 매니저. 처음 부를 때 만든다. */
 export function laneSession(): LaneManager {
-  current ??= createLaneManager();
+  // 캔버스 시공 표시는 세션 매니저에만 꽂는다 — 레인이 스튜디오 안팎 어디서 돌든 같은 캔버스에 점선이 선다.
+  current ??= createLaneManager({ ghost: createLaneGhostSink() });
   return current;
 }
 
