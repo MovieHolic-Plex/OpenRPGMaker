@@ -22,11 +22,11 @@ export async function persistMediaImport(asset: MediaImportAsset): Promise<boole
     // deployment's shared project. Cancel/failure leaves source recovery intact.
     const sharedDemo = status.reason === "shared-demo";
     const accepted = await showConfirm({
-      title: "미디어를 새 온라인 사본에 저장",
+      title: "미디어를 새 폴더 사본에 저장",
       message: sharedDemo
-        ? "공용 예제 원본에는 파일을 추가할 수 없습니다. 현재 화면과 선택한 파일을 새 Supabase 프로젝트로 복사하고, 저장본을 다시 읽어 확인한 뒤 전환할까요? 공용 원본은 바뀌지 않습니다. 취소하면 파일을 가져오지 않습니다."
-        : "이 쇼케이스의 브라우저 저장소는 미디어 용량을 보장하지 못합니다. 현재 작업과 선택한 파일을 새 Supabase 프로젝트로 복사하고, 저장본을 다시 읽어 확인한 뒤 전환할까요? 기존 온라인 작업을 덮어쓰지 않으며 브라우저 원본도 유지됩니다. 취소하면 파일을 가져오지 않습니다.",
-      confirmLabel: "새 온라인 사본에 저장",
+        ? "공용 예제 원본에는 파일을 추가할 수 없습니다. 현재 화면과 선택한 파일을 새 폴더 프로젝트로 복사할까요? 공용 원본은 바뀌지 않습니다. 취소하면 파일을 가져오지 않습니다."
+        : "이 쇼케이스는 미디어 용량을 보장하지 못합니다. 현재 작업과 선택한 파일을 새 폴더 프로젝트로 복사할까요? 기존 온라인 작업을 덮어쓰지 않습니다. 취소하면 파일을 가져오지 않습니다.",
+      confirmLabel: "새 폴더 사본에 저장",
       cancelLabel: "취소 · 원본 유지",
     });
     if (!accepted) return false;
@@ -36,12 +36,12 @@ export async function persistMediaImport(asset: MediaImportAsset): Promise<boole
     }
     const candidate = structuredClone(source);
     addMedia(candidate, asset);
-    toast("새 온라인 사본을 저장하고 다시 읽어 확인하는 중...", "info");
-    // 데모 세션은 트랜잭션이 세션 상태로 소스 flush 를 건너뛴다 — source 지정은 쇼케이스만.
-    await store.loadNewRemoteProjectTransactionally(
-      candidate,
-      sharedDemo ? {} : { source: "dev-showcase" },
-    );
+    toast("새 폴더에 사본을 만들고 다시 읽어 확인하는 중...", "info");
+    const { createProjectFolderWithSeed } = await import("@/editor/projectFolderActions");
+    const created = await createProjectFolderWithSeed(source.meta?.title ?? "새 프로젝트", candidate);
+    if (!created) throw new NewRemoteProjectTransactionError("configuration", "새 폴더는 데스크톱 앱에서만 만들 수 있습니다. 파일을 다시 선택해 주세요.");
+    // 새 폴더가 열렸다 — 문서를 다시 띄워야 그 폴더로 부팅한다.
+    window.location.reload();
     return true;
   }
 

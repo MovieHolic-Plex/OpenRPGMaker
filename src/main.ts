@@ -19,6 +19,7 @@ import { addEventPage, ensureEventPages } from "@/editor/eventPages";
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { store } from "@/project/store";
 import { hasElectronBridge } from "@/project/persistence/electronRepository";
+import { adoptElectronOpenProject } from "@/project/persistence/repository";
 
 // 첫 import 에서 이미 설치됐다(idempotent). 진입점에 남겨두는 이유는 부팅 순서에서
 // 이게 1번이라는 사실을 코드로 읽히게 하려는 것 — 누가 import 를 정리해도 의도가 남는다.
@@ -42,15 +43,21 @@ if (typeof window !== "undefined" && window.location) {
       document.body.classList.add(flag.replace(/([A-Z])/g, "-$1").toLowerCase());
     }
   }
-  if (hasElectronBridge()) {
+  if (window.oprn?.closeIsHostDriven === true) {
     // 닫기는 주 프로세스가 flush-before-close 로 연다 — 브라우저 beforeunload 경고와 겹치지 않게 한다.
-    window.oprn?.lifecycle.onFlushBeforeClose(() => {
+    window.oprn.lifecycle.onFlushBeforeClose(() => {
       void store.flush().finally(() => { void window.oprn?.lifecycle.flushDone(); });
+    });
+    // 파일 → 저장(CmdOrCtrl+S). 저장은 store 가 소유하므로 메뉴는 요청만 보내고 여기서 flush 한다.
+    window.oprn?.lifecycle.onSaveRequest(() => {
+      void store.flush().catch((error) => {
+        console.error("[store] 메뉴 저장 실패:", error);
+      });
     });
   }
 
   window.addEventListener("beforeunload", (event) => {
-    if (hasElectronBridge()) return;
+    if (window.oprn?.closeIsHostDriven === true) return;
     // Local-first: flush whenever dirty, not only when autosave UI says pending/saving.
     // Paint during an in-flight save can leave dirty=true while status briefly reads "saved".
     if (store.hasUnsavedChanges()) {
@@ -77,7 +84,16 @@ if (import.meta.env.DEV && typeof window !== "undefined") {
 }
 
 void registerPwaIfEnabled();
-void bootApp(app).then(openClassicEventEditorCaptureIfRequested);
+void bootEditorWithOpenedProject(app).then(openClassicEventEditorCaptureIfRequested);
+
+/**
+ * 시작 화면이 폴더를 열어둔 채 편집기 창으로 넘어오면, 렌더러의 저장소는 그 사실을 모른다 —
+ * 부팅 전에 브리지로 조회해 세션을 이어받는다(설계 7.3). 브라우저에서는 no-op 이다.
+ */
+async function bootEditorWithOpenedProject(host: HTMLElement): Promise<void> {
+  await adoptElectronOpenProject();
+  await bootApp(host);
+}
 
 async function registerPwaIfEnabled(): Promise<void> {
   if (!shouldLoadPwaModule()) return;

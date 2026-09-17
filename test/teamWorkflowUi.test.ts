@@ -5,22 +5,21 @@ import { createBlankProject } from "@/project/defaults";
 import { setOwnerLabel } from "@/project/editorIdentity";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
+import { installMemoryProjectSession, type MemoryProjectSession } from "./support/projectSession";
 
-vi.mock("@/project/supabaseProjectSync", () => ({
-  listProjectCommitsFromSupabase: vi.fn(async () => [
-    {
-      agentName: null,
-      authorId: "session-1",
-      authorKind: "human",
-      authorLabel: "tester@example.com",
-      commitId: "commit-1",
-      createdAt: "2026-07-06T12:00:00.000Z",
-      message: "변경 저장",
-      reviewStatus: "direct",
-      summary: "타일 3",
-    },
-  ]),
-}));
+const COMMIT_ROWS = [
+  {
+    agentName: null,
+    authorId: "session-1",
+    authorKind: "human",
+    authorLabel: "tester@example.com",
+    commitId: "commit-1",
+    createdAt: "2026-07-06T12:00:00.000Z",
+    message: "변경 저장",
+    reviewStatus: "direct",
+    summary: "타일 3",
+  },
+] as const;
 
 const OWNER_LABEL_KEY = "oprn:editor-owner-label";
 const LAST_LOGIN_METHOD_KEY = "oprn:editor-last-login-method";
@@ -55,6 +54,7 @@ class MemoryStorage implements Storage {
 
 let restoreDom: (() => void) | null = null;
 let storage: MemoryStorage;
+let session: MemoryProjectSession | null = null;
 
 function fakeBody(): FakeElement {
   if (document.body instanceof FakeElement) return document.body;
@@ -101,12 +101,18 @@ beforeEach(() => {
   restoreDom = installFakeDom();
   installStorage();
   installWindow();
+  // 커밋 목록은 포트가 정본이다. 예전에는 sync 모듈을 목킹했는데, 그 목은 기본 어댑터가
+  // Supabase 일 때만 살아 있었다 — 기본값이 바뀌면 조용히 빈 목록을 검증하게 된다.
+  session = installMemoryProjectSession();
+  vi.spyOn(session.repository.commits, "list").mockResolvedValue([...COMMIT_ROWS]);
   store.replace(createBlankProject());
 });
 
 afterEach(() => {
   restoreDom?.();
   restoreDom = null;
+  session?.dispose();
+  session = null;
   Reflect.deleteProperty(globalThis, "localStorage");
   Reflect.deleteProperty(globalThis, "window");
   vi.restoreAllMocks();

@@ -149,6 +149,12 @@
 
 .battle-submenu-header {
   font-size: 16px;
+  /* 굵기는 지금까지 에디터 유래 규칙(from-editor-core-part-2.css 의 `.battle-submenu-header
+     { flex: 1 0 100%; font-weight: 700 }`)이 들고 있었다. 그 규칙은 런타임 어휘에 걸린
+     에디터 스타일이라 2026-09-17 에 지웠는데, 굵기만은 유지할 값이다 — 「스킬」·「아이템」은
+     목록의 제목이라 400 이면 항목과 구분되지 않는다. 런타임이 직접 소유한다.
+     rm2000 은 자기 값(600)을 따로 갖고 있어 영향이 없다(_rm2000.css:689). */
+  font-weight: 700;
 }
 
 .battle-target-prompt {

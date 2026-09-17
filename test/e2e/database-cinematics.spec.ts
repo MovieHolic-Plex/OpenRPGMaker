@@ -281,10 +281,9 @@ for (const matrix of [
       await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 90_000 });
       await project(page);
       expect(await page.evaluate(async () => {
-        const path = "/src/project/supabaseProjectConfig.ts";
-        const { supabaseProjectConfig }: typeof import("../../src/project/supabaseProjectConfig") = await import(path);
-        return supabaseProjectConfig() !== null;
-      }), "This isolated editor test must not inherit a live DB target").toBe(false);
+        const { projectRepository } = await import("/src/project/persistence/repository.ts");
+        return projectRepository().kind;
+      }), "이 격리 편집기 테스트는 브리지 없는 기본(메모리) 저장소여야 한다").toBe("memory");
       await openDatabase(page, matrix.mode);
       const untouched = await project(page);
       await tab(page, "opening");

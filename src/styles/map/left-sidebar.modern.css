@@ -1171,10 +1171,25 @@
    붓 옵션 66 + 필터 34)이 쌓여 시트가 좌패널의 60% 를 겨우 넘었다. 「어디에 그리는가」
    문맥(맵 이름 · 레이어)은 한 줄로 합치고, 나머지 줄은 크롬을 한 단계 낮춘다.
    DOM 순서(헤더→레이어→도구)는 editorMenuSidebarIa.test.ts 계약이라 그대로 두고
-   grid 배치만 바꾼다. 시트 행만 minmax(0,1fr) 이라 남는 세로는 전부 시트가 가져간다. */
-.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint {
+   grid 배치만 바꾼다. 시트 행만 minmax(0,1fr) 이라 남는 세로는 전부 시트가 가져간다.
+   이벤트 레이어도 같은 셸·그리드에 들어간다(renderTilePalette 이벤트 분기) —
+   바깥에 붙이면 이 배치가 안 닿아 맵 헤더가 전폭으로 벌어지고 탭이 다음 줄로 밀렸다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint,
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-event {
   display: grid;
   gap: 4px 6px;
+  grid-template-areas:
+    "maphead layers"
+    "toolbar toolbar"
+    "sheet sheet"
+    "utils utils";
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+}
+
+/* paint 전용 행(옵션·필터·선택칩)은 paint 페인에서만 열린다.
+   이벤트 페인은 같은 격자를 쓰되 빈 행이 0 높이라 자리가 남지 않는다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint {
   grid-template-areas:
     "maphead layers"
     "toolbar toolbar"
@@ -1183,22 +1198,24 @@
     "sheet sheet"
     "status status"
     "utils utils";
-  grid-template-columns: minmax(0, 1fr) auto;
   grid-template-rows: auto auto auto auto minmax(0, 1fr) auto auto;
 }
 
-.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .sidebar-map-header {
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .sidebar-map-header,
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-event > .sidebar-map-header {
   grid-area: maphead;
   margin: 0;
 }
 
-.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .left-layer-switcher {
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .left-layer-switcher,
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-event > .left-layer-switcher {
   align-self: center;
   grid-area: layers;
   margin: 0;
 }
 
-.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .oprn-tile-toolbar {
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .oprn-tile-toolbar,
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-event > .oprn-tile-toolbar {
   grid-area: toolbar;
   margin: 0;
 }
@@ -1217,12 +1234,23 @@
   grid-area: sheet;
 }
 
+/* 이벤트 목록이 시트 자리를 차지한다 — 남는 세로는 목록이 가져간다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-event > [data-testid="palette-event-pane"] {
+  display: flex;
+  flex-direction: column;
+  grid-area: sheet;
+  margin: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .selected-tile-status {
   grid-area: status;
   margin: 0;
 }
 
-.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .sidebar-utilities {
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .sidebar-utilities,
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-event > .sidebar-utilities {
   grid-area: utils;
 }
 

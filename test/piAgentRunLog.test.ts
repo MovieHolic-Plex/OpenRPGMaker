@@ -3,6 +3,7 @@ import { clearAiActivityLogs, listAiActivityLogs } from "@/ai/activityLog";
 import { startPiRunLog } from "@/ai/piAgent/activityLog";
 import { createTeamBoardState, reduceTeamBoard } from "@/ai/piAgent/teamBoardState";
 import type { TeamBoardState } from "@/ai/piAgent/teamBoardState";
+import type { AuditEntry } from "@/ai/session/types";
 
 function storageStub(): void {
   const storage = new Map<string, string>();
@@ -89,5 +90,24 @@ describe("Pi 실행 활동 로그", () => {
 
     const row = listAiActivityLogs().find((entry) => entry.id === run.id);
     expect(row?.result).toMatchObject({ ok: false, applied: false, error: "Pi 에이전트 실행 실패: 500" });
+  });
+
+  // 2026-09-16 실측 회귀: Pi 턴이 카드까지 뜨고 성공했는데도 `window.__oprnAiBridge.audit()` 이
+  // `[]` 였다. 감사 행은 여기서만 만들어지고 활동 로그로만 가고 끝났기 때문이다.
+  it("종료는 기록한 것과 같은 감사 행을 호출자에게 돌려준다 (브리지 감사 원천)", async () => {
+    const run = startPiRunLog({
+      instruction: "집 한 채", mode: "single", mapIds: ["map_a"], mapId: "map_a", mapName: "달빛 숲", provider: "p", model: "m",
+    });
+    await run.started;
+    const rows = await run.finish({ board: builtBoard(), applied: true, changedCount: 1, stoppedReason: "적용됨" });
+
+    expect(rows.length).toBeGreaterThan(0);
+    expect(rows.some((entry) => entry.kind === "user" && entry.text === "집 한 채")).toBe(true);
+    expect(rows.some((entry) => entry.kind === "status" && entry.text.includes("적용됨"))).toBe(true);
+    // 두 벌로 갈라지면 브리지와 로그가 다른 사실을 본다 — 같은 원천임을 여기서 고정한다.
+    const row = listAiActivityLogs().find((entry) => entry.id === run.id);
+    // tool 항목은 text 대신 summary 를 쓴다 — 합집합 타입이라 한 접근자로 편다.
+    const labelOf = (entry: AuditEntry): string => ("text" in entry ? entry.text : entry.summary);
+    expect(row?.audit.map(labelOf)).toEqual(rows.map(labelOf));
   });
 });

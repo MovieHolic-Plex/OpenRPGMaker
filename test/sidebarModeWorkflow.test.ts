@@ -56,7 +56,7 @@ describe("mode-specific sidebar painting workflow", () => {
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout", "requestAnimationFrame", "cancelAnimationFrame"] });
     resetBasicLeftRailForTests();
     resetTileToolbarMenusForTests();
-    localStorage.removeItem(SIDEBAR_PINS_KEY + 'expert');
+    localStorage.removeItem(SIDEBAR_PINS_KEY);
     resetInspectionPinsForTests();
     resetEditorUiModeForTests("beginner");
     store.replace(createBlankProject());
@@ -157,7 +157,7 @@ describe("mode-specific sidebar painting workflow", () => {
     expect(control("oprn-tool-undo").disabled).toBe(true);
   });
 
-  it("keeps standard daily tools direct and advanced actions reachable once through More", () => {
+  it("keeps standard daily tools direct and inspection actions reachable once through More", () => {
     resetEditorUiModeForTests("standard");
     renderTilePalette(host);
     for (const id of ["tool-paint", "tool-erase", "tool-fill", "tool-select", "oprn-tool-undo"]) {
@@ -166,6 +166,7 @@ describe("mode-specific sidebar painting workflow", () => {
     control('sidebar-tools-menu').click();
     control('tool-eyedropper').click();
     expect(editorState.get().tool).toBe('eyedropper');
+    // 검사 3종은 핀 없이는 오버플로 안에 한 번씩만 있다(표준이 전문가 capability 흡수).
     for (const [id] of advanced) expect(find(id)).toBeNull();
     control("oprn-tool-overflow").click();
     for (const [id] of advanced) {
@@ -174,8 +175,8 @@ describe("mode-specific sidebar painting workflow", () => {
     }
   });
 
-  it.each(advanced)("pins expert %s for direct access and returns Escape focus to its own trigger", (id, panelId) => {
-    resetEditorUiModeForTests("expert");
+  it.each(advanced)("pins standard %s for direct access and returns Escape focus to its own trigger", (id, panelId) => {
+    resetEditorUiModeForTests("standard");
     renderTilePalette(host);
     const pin = { 'oprn-tool-inspector': 'inspector', 'toolbar-toggle-ruleAudit': 'ruleAudit', 'toolbar-toggle-history': 'history' }[id];
     control('oprn-tool-overflow').click();

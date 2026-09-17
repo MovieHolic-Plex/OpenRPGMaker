@@ -45,16 +45,10 @@ export async function startupRecoverRegression({ page }: { page: Page }, testInf
     const panelPath: string = "/src/editor/panels/aiChatPanel.ts";
     const storePath: string = "/src/project/store.ts";
     const conversationPath: string = "/src/ai/conversationStore.ts";
-    const configPath: string = "/src/project/supabaseProjectConfig.ts";
     const panel = await import(/* @vite-ignore */ panelPath) as typeof import("@/editor/panels/aiChatPanel");
     await panel.whenAiChatPanelSettled();
     const { store } = await import(/* @vite-ignore */ storePath) as typeof import("@/project/store");
     const { conversationScopeKey } = await import(/* @vite-ignore */ conversationPath) as typeof import("@/ai/conversationStore");
-    const { supabaseProjectConfig } = await import(/* @vite-ignore */ configPath) as typeof import("@/project/supabaseProjectConfig");
-    const config = supabaseProjectConfig();
-    if (config?.url !== "https://history.invalid" || config.projectId !== "history-startup-fixture") {
-      throw new Error("Use the documented offline fixture configuration, not a live project");
-    }
     const project = store.getCurrent(), map = project.maps[project.startMapId]!;
     return { scope: conversationScopeKey(store.getProjectIdentity(), project), projectId: config.projectId,
       context: { mapId: map.id, mapName: map.name, mapWidth: map.width, mapHeight: map.height } };

@@ -3,7 +3,6 @@ import { IDBFactory } from "fake-indexeddb";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_RECORD_STORES, aiRecordBackendKind, resetAiRecordDbForTest, writeAiRecords } from "@/ai/aiRecordDb";
 import * as conversations from "@/ai/conversationStore";
-import * as sync from "@/project/supabaseProjectSync";
 import { closeAiConversationHistoryModal, openAiConversationHistoryModal, whenAiConversationHistoryModalSettled } from "@/editor/panels/aiConversationHistoryModal";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
@@ -76,7 +75,6 @@ afterEach(async () => {
 
 describe("history startup ownership", () => {
   it("finishes normal startup and lists the current map without recovering or opening", async () => {
-    const mirror = vi.spyOn(sync, "recordSupabaseConversation");
     await writeAiRecords(AI_RECORD_STORES.conversations, [{ id: "local", title: "local", model: "fixture", savedAt: 1,
       projectContextKey: scope, entries }]);
     const query = vi.spyOn(conversations, "queryConversationArchive");
@@ -86,34 +84,7 @@ describe("history startup ownership", () => {
     expect(query.mock.calls[1]![0]).toMatchObject({ projectContextKey: scope, mapId: "start" });
     expect(root.querySelectorAll("[data-testid=ai-history-row]")).toHaveLength(1);
     expect(findByTestId(root, "ai-history-recover-status")?.dataset.state).toBe("idle");
-    expect(onOpen).not.toHaveBeenCalled(); expect(fetch).not.toHaveBeenCalled(); expect(mirror).not.toHaveBeenCalled();
-  });
-
-  it("does not let a held startup catalog retire a newer explicit Recover", async () => {
-    const catalog = holdCatalog(), getEntered = deferred<void>(), response = deferred<Response>();
-    const mirror = vi.spyOn(sync, "recordSupabaseConversation");
-    vi.mocked(fetch).mockImplementation(async () => { getEntered.resolve(); return response.promise; });
-    const { root, onOpen, startup } = open();
-    try {
-      await bounded(catalog.entered.promise);
-      (findByTestId(root, "ai-history-recover") as unknown as HTMLElement).click();
-      await bounded(getEntered.promise);
-      catalog.release.resolve();
-      await bounded(startup); // Exact old operation completes BEFORE the remote response.
-      const stateAfterStartup = findByTestId(root, "ai-history-recover-status")?.dataset.state;
-      response.resolve(Response.json([{ conversation_id: "remote", project_id: "history-startup-fixture",
-        project_context_key: scope, title: "remote", model: "fixture", saved_at: new Date(2_000).toISOString(), entries_json: entries }]));
-      await bounded(settled());
-      const retained = await conversations.loadConversationForScope("remote", scope);
-      expect(retained?.entries).toEqual(entries);
-      expect(stateAfterStartup).toBe("loading");
-      const status = findByTestId(root, "ai-history-recover-status")!;
-      expect(status.dataset.state).toBe("ok"); expect(status.hidden).toBe(false);
-      expect(root.querySelectorAll("[data-testid=ai-history-row]")).toHaveLength(1);
-      expect(await aiRecordBackendKind()).toBe("indexeddb");
-      expect(onOpen).not.toHaveBeenCalled(); expect(mirror).not.toHaveBeenCalled(); expect(fetch).toHaveBeenCalledTimes(1);
-      expect(findByTestId(root, "ai-history-recover")?.disabled).toBe(false);
-    } finally { catalog.release.resolve(); response.resolve(Response.json([])); await bounded(settled()); }
+    expect(onOpen).not.toHaveBeenCalled(); expect(fetch).not.toHaveBeenCalled();
   });
 
   it.each(["close", "owner"])("does not start a list query after startup loses %s ownership", async action => {

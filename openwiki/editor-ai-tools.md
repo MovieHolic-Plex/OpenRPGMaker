@@ -1,5 +1,24 @@
 # Editor AI Tools & Vocabulary
 
+## paint_tiles 타일 인덱스 검증 — 유일하게 빠져 있던 가드 (2026-09-16)
+
+실측 경로: 실제 모델(gemini-3.7-flash)에게 「타일 id 99999 를 (3,3) 에 칠해줘」를 시켰다.
+모델은 먼저 `tile_query` 로 **`타일 인덱스 범위 밖: 99999 (0~479)`** 를 정직하게 받았는데,
+이어서 호출한 `paint_tiles` 는 그 값을 **성공(초록 체크)** 으로 통과시켰고, 적용 후 그리드 실측에서
+`map.lowerTiles[(3,3)] = 99999` 가 그대로 기록됐다(타일셋에 없는 칸이라 렌더되지 않고 «빈 칸» 이 된다).
+
+원인: `tile` 범위 검사를 **`paint_tiles` 만** 하지 않았다. 형제 도구들은 모두 거부한다 —
+`palettePresetTools` · `groupSampleTool` · `visionQueryTools` · `tileMetadataTools` ·
+`v3/vocabularyTools` 가 `tile-out-of-range` 를 던진다.
+
+계약(고정된 것): `paint_tiles` 의 합법 정의역은 **-1(비움) 과 0~count-1** 뿐이고, 그 밖은
+`tile-out-of-range` 로 거부된다. 거부는 **지도를 그대로 둔다**(부분 적용 없음). `tileLayerHome()` 이
+범위 밖 값에 대해 `priority[tile] ?? "lower"` 로 조용히 lower 를 돌려주던 폴백은 이제 검증을 통과한
+값에만 적용된다.
+
+회귀 고정: `test/tileToolsV2.test.ts` 의 «paint_tiles 타일 인덱스 계약» 4건
+(범위 밖·음수 상한 밖 거부 / -1 허용 / 경계값 count-1 정상).
+
 ## 오프닝 미디어 배선 — 스틸 카탈로그·배경음악·부분 편집 (2026-09-14)
 
 사용자 지적: "이미지 생성이야 codex cli 나 뭐 그런것들로 만들게 할 수 있잖아". 맞았다 — 생성 인프라는 이미 범용인데
@@ -1092,6 +1111,8 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 
 - **Authored-data capability parity (2026-08-26):** remaining Database/resource/map mutations that the editor already persisted but the assistant could not name now have typed facades: `upsert_life_skill`, `upsert_life_system` (daily weather + farm animal species), `upsert_battle_animation`, `upsert_resource` / `delete_resource`, `register_structure_kit`, and `shift_map`. `get_database_records` accepts `include:"full"` and lists `lifeSkills` / `farmAnimalSpecies` / `crops`. Intent keywords `생활`/`레시피`/`가축`/`날씨` activate `database`; `포획`/`몬스터 시스템` activate `system`; `사냥터` activates `map`. Pins keep the new write tools inside the 40-tool cap. `delete_resource` is destructive. Isolated event-command assist and tileset vision remain specialized generators; authored mutations they need now exist on the shared registry. Contract: `test/aiEditorCapabilityParity.test.ts`.
 
+- **Pi-path tool escalation (2026-09-13):** the Pi runtime now mounts tools mid-run instead of front-loading the whole registry. `runPiAgent` keeps `state.tools` as a live array (the core loop rebuilds each turn's request from it, so in-place `push` is next turn's declaration — `setTools` array replacement never reaches a running context). Two escalation paths share one resolver, `resolvePiToolShape` (`src/ai/piAgent/toolAdapter.ts`), which honors the run's hard boundaries (`readOnly` → read-mode only; `toolNames` → the role's list): (1) a successful `find_tools` result's `data.matches[].name` are harvested and pushed — declared from the next turn; (2) `resolveFallbackTool` rescues a direct call to an unexposed-but-registered name and also declares it. Declaration growth is capped at `MAX_ESCALATED_TOOLS = 16` per run (the cap bounds prompt size only — a rescued tool still executes undeclared). `antigravityToolEnumPayload` re-walks the live tool list per request so late-escalated integer-enum tools still get the numeric-enum wire workaround, while capture-time validation still fails fast on a malformed initial set. Read-only escalation is impossible: a readOnly run's `find_tools` may *find* write tools but the resolver refuses to make their shapes. Contracts: `test/piAgentToolEscalation.bun.test.ts` (real Agent loop with a scripted `streamFn` — harvest declares next turn, fallback rescues, readOnly boundary holds on both paths), `test/piAgentToolAdapter.test.ts` (resolver/harvest units), `test/aiChatPanelComposerMode.test.ts` (intent→`toolDomains` seeding).
+
 - **Editor-wide tool discovery and authored-data facades (2026-08-25):** the normal per-round exposure remains bounded by the 40-tool domain selector. `find_tools` is a read-only search tool that is *not* a `CORE_TOOL_NAMES` pin: `AssistantSession` attaches its schema outside the 40-tool window so interior/map pins and fair domain quotas stay intact. It searches the complete active registry by name/description/domain and returns up to six strict schemas. The session may remember at most 16 discovered tools for the current user turn and recomputes schemas on every LLM round; plan-required, quest-persist, and `set_build_spec` schemas are also reserved outside the 40-tool window. Audit rows `tools:escalated ...` and `tools:exposed ...` make the escalation observable. Discovery resets at the next user message and never bypasses registry mode, schema validation, approval classification, or deprecated-tool filtering. Canonical editor-wide mutations include `duplicate_map`, `manage_map_tree`, expanded `set_map_properties`, `duplicate_database_record`, destructive `delete_database_record`, `upsert_database_utility` for elements/terrains/battle commands, and `set_project_settings` for project identity, terms, resolution, system resources, initial party, and battle defaults. Keep broad editor concepts behind typed facades rather than adding one tool per form control. Contracts: `test/aiEditorFullToolCoverage.test.ts`, `test/aiToolDiscoveryEscalation.test.ts`, and `test/aiEditorFullToolSafety.test.ts`.
 
 - **Canvas AI workbench (2026-08-25):** the expert canvas toolbar now exposes four real quick actions through `src/editor/panels/canvasAiWorkbench.ts`: `만들기` arms the existing deterministic build palette and selection tool, `다듬기` sends the current tile selection through the bounded `openRegionTaskModal` preview/apply flow with a constrained polish prompt, `검사` opens `canvasInspectionPanel.ts` over deterministic `projectLint` results with camera focus and bounded AI-repair handoff, and `AI 요청` opens the same region-task composer for the current selection or whole map. The toolbar wiring lives in `editorZoomToolbar.ts`; browser proof is `test/e2e/canvas-ai-workbench.spec.ts`.
@@ -1501,3 +1522,33 @@ normal session dispatch in both directions on a three-chip fixture, unrelated
 project/meta equality, native refusals and JSON/harness persistence. The offline
 session fixture stops after dispatch; it neither applies to a live project nor
 claims final acceptance. Real AI repair and final build/gates remain parent-owned.
+
+## NPC 자율 이동 아키타입 추론 (2026-09-17)
+
+`place_npc`/`make_villager`의 `movement` 생략 시 이름으로 추론한다(명시 우선).
+구현: `src/editor/tools/eventTools.ts`의 `inferNpcMovementArchetype` + `resolveNpcMovement`.
+
+- 추격/습격/매복/스토커 → `approach` (플레이어에게 다가옴)
+- 상점 주인·문지기·간판·안내 + `isShopRoleNpcName` → `fixed` (대화 거점)
+- 아이·행상·떠돌이·동물(개·새는 독립 단어일 때만) → `random` (배회)
+- 그 외 모호 → `fixed` (오판 비용 비대칭: 통로 막힘 방지)
+- 추론 결과는 `diff.warnings`에 기록 ("이동 추론 → random(배회)…") — 모델이 다음 호출에서 명시하도록 유도
+- `movement` enum에 `approach` 추가 (`fixed|random|approach`)
+- `place_battle_blocker`에 `fightMovement` (`fixed|random`, 생략 시 fixed) 추가 — "길을 지키는" 원형 유지 + 순찰 옵션
+- `make_hunting_ground`의 `chase` 생략 시 기본값 `true`로 변경 (명시 `false` 존중) — 보이는 몬스터는 추격이 자연스러움
+
+Acceptance 게이트 완화 (`src/ai/assistantAcceptanceEvaluation.ts`):
+이전에는 `movement ≠ fixed` 이벤트 하나라도 있으면 reachability 전체를 포기
+(`conditional-movement-unsupported`)해 모델이 fixed만 고르는 인센티브가 됐다.
+이제는 이동형을 정적 차단자에서 제외하고, 시작 셀에 from/to가 겹칠 때만
+`cell-moving-event-start` 실패. 프롬프트(`src/ai/eventPageSemantics.ts`)도
+"생략 시 fixed"에서 "생략 시 아키타입 추론"으로 갱신.
+
+Tests: `test/npcMovementInference.test.ts` (8건).
+런타임 증거: `scripts/qa/runtime/npc-movement.probe.mjs` + `verify-shots/runtime-qa/npc-movement/`
+(배회 NPC 4명 전원 이동 확인, before/after PNG).
+
+런타임 증거 디렉토리 분리 (2026-09-17):
+`npc-movement` 시나리오 하네스 실행과 probe 직접 실행은 같은 `verify-shots/runtime-qa/npc-movement/`를
+쓰면 서로 덮어쓴다(실측). probe는 `QA_OUT_DIR=verify-shots/runtime-qa/npc-movement-probe`로 분리 실행한다.
+하네스 쪽은 플레이어 고정 + NPC 배치 차이 샷 2장, probe 쪽은 스프라이트 좌표 직접 판정(results.json) + before/after PNG.

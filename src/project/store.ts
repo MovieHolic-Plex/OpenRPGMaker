@@ -8,13 +8,15 @@ import { hasPendingFacesetSheetRepair, repairUploadedFacesetSheets } from "@/ass
 import { repairInteriorTransparentPropLayers } from "./defaults/interiorTransparentPropLayerRepair";
 import { ensureScarloxyPokemonInteriors } from "./defaults/scarloxyPokemonInteriors";
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
-import { defaultTitleScreenSettings, ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
+import { ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
 import { isSaveSkippedLocation, loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
-import type { SupabaseSaveResult, ProjectWriteAuthority } from "./supabaseProjectSync";
+import type { ProjectWriteAuthority } from "./spatial/saveRouting";
+import type { SaveResult } from "./persistence/types";
+import type { RemoteProjectTarget } from "./persistence/target";
 import { isSharedDemoProjectId, SHARED_DEMO_PROJECT_ID } from "./sharedDemoProject";
 import { projectWithoutEventDrafts } from "./eventDrafts";
 import { assertCanonicalReplacement, ProjectRoutingError } from "./spatial/saveRouting";
-import { SpatialPersistenceError, type MirrorStatus } from "./spatial/persistence";
+import { SpatialPersistenceError, type MirrorStatus } from "./spatial/persistenceTypes";
 import { applyAudioDescriptionDelta } from "./audioDescriptions";
 import { applyMonsterMetadataDelta } from "./monsterMetadata";
 import { serialize, serializeForComparison } from "./io";
@@ -22,25 +24,14 @@ import {
   applyEventDraftVault,
   clearEventDraftVault,
   loadEventDraftVaultFromLocalStorage,
-  listEventDraftVaultEntries,
   persistEventDraftVaultNow,
   preserveEventDraftsOnProject,
-  restoreEventDraftVaultEntries,
   syncEventDraftVaultFromProject,
 } from "./eventDraftVault";
-import { cacheSupabaseRootResources } from "@/assets/supabaseResourceCache";
 import { syncProjectToUrl } from "./projectUrl";
-import {
-  saveSupabaseSelectedProjectId,
-  stageSupabaseProjectConfigDraft,
-  supabaseProjectConfigDraft,
-  supabaseProjectConfigDraftWithSource,
-  type SupabaseProjectConfig,
-  type SupabaseProjectConfigSource,
-} from "./supabaseProjectConfig";
-import type { DbPersistenceDisabledReason, DbPersistenceStatus } from "./persistenceStatus";
+import type { DbPersistenceDisabledReason, PersistenceStatus as DbPersistenceStatus } from "./persistence/types";
 import { projectRepository } from "./persistence/repository";
-import { isRemoteTarget, sameProjectTarget, type ProjectTarget } from "./persistence/target";
+import { isLocalTarget, isRemoteTarget, sameProjectTarget, type ProjectTarget } from "./persistence/target";
 import type { ProjectRepository } from "./persistence/types";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
 import { repairMapTreeOrphans } from "@/project/mapTree";
@@ -152,8 +143,8 @@ export type LoadNewRemoteProjectResult = {
 
 export type TransactionalNewRemoteProjectDependencies = {
   readonly createProjectId: () => string;
-  readonly reloadTarget: (config: SupabaseProjectConfig) => Promise<Project | null>;
-  readonly saveTarget: (project: Project, config: SupabaseProjectConfig) => Promise<SupabaseSaveResult>;
+  readonly reloadTarget: (config: RemoteProjectTarget) => Promise<Project | null>;
+  readonly saveTarget: (project: Project, config: RemoteProjectTarget) => Promise<SaveResult>;
 };
 
 export class NewRemoteProjectTransactionError extends Error {
@@ -190,7 +181,6 @@ export type DeepReadonly<T> =
 
 export type ProjectE2EEffectiveTarget = {
   readonly projectId: string;
-  readonly source: SupabaseProjectConfigSource;
   readonly url: string;
 };
 
@@ -207,7 +197,6 @@ export class DbConnectionRequiredError extends Error {
     this.name = "DbConnectionRequiredError";
   }
 }
-
 
 /** 부트가 dev showcase 팩토리를 주입한다. 미설정이면 showcase 경로가 없다. */
 export type DevProjectFactory = () => Project | null;
@@ -279,6 +268,7 @@ class ProjectStore {
   }
 
   async load(): Promise<Project> {
+    let seededNewLocalProject = false;
     try {
       const devShowcaseProject = devProjectFactory?.() ?? null;
       if (devShowcaseProject) {
@@ -295,33 +285,49 @@ class ProjectStore {
           throw new DbConnectionRequiredError("온라인 저장 설정이 필요합니다.");
         } else {
           const { project, authority, target } = await this.readRemoteProject();
-          if (!project) {
+          if (!project && target !== null && isLocalTarget(target)) {
+            // 비어 있는 로컬 폴더는 "새 프로젝트"다 — 호스트(앱·로컬 서버)가 폴더를
+            // 열어줬는데 "작업을 찾지 못함" 오류로 떨어지면 온라인 선택지가 없는 패키징
+            // 앱이 DB 연결 화면에 갇힌다(2026-09-17 패키징 실측: db-required-panel).
+            // 빈 문서를 채택하고 dirty 로 둬 첫 flush 가 폴더에 심는다.
+            this.adoptProject(createBlankProject(), { restoreVault: false });
+            this.loadedRemoteProjectId = target.projectId;
+            this.writeAuthority = { mode: "legacy", target };
+            this.remotePersistenceEnabled = true;
+            this.remotePersistenceDisabledReason = null;
+            this.persistedBaseline = null;
+            seededNewLocalProject = true;
+            resetManualProjectCommitBaseline(this.current);
+            this.syncProjectUrlBar();
+          } else if (!project) {
             this.remotePersistenceEnabled = true;
             this.remotePersistenceDisabledReason = null;
             this.persistedBaseline = null;
             throw new DbConnectionRequiredError("선택한 작업을 찾지 못했습니다.");
+          } else {
+            this.adoptProject(project, { restoreVault: true });
+            const loadedProjectId = target?.projectId;
+            const sharedDemo = isSharedDemoProjectId(loadedProjectId);
+            // 공용 데모 행은 어떤 경로로 열리든 읽기 전용이다 — ?project= 딥링크나
+            // 작업 선택 목록에서 골라도 쓰기 권한·자동저장을 쥐지 않는다.
+            this.writeAuthority = sharedDemo ? null : authority;
+            if (loadedProjectId) this.loadedRemoteProjectId = loadedProjectId;
+            else this.beginLocalProjectSession();
+            this.remotePersistenceEnabled = !sharedDemo;
+            this.remotePersistenceDisabledReason = sharedDemo ? "shared-demo" : null;
+            this.persistedBaseline = sharedDemo ? null : structuredClone(projectWithoutEventDrafts(this.current));
+            resetManualProjectCommitBaseline(this.current);
+            this.syncProjectUrlBar();
           }
-          this.adoptProject(project, { restoreVault: true });
-          const loadedProjectId = target?.projectId;
-          const sharedDemo = isSharedDemoProjectId(loadedProjectId);
-          // 공용 데모 행은 어떤 경로로 열리든 읽기 전용이다 — ?project= 딥링크나
-          // 작업 선택 목록에서 골라도 쓰기 권한·자동저장을 쥐지 않는다.
-          this.writeAuthority = sharedDemo ? null : authority;
-          if (loadedProjectId) this.loadedRemoteProjectId = loadedProjectId;
-          else this.beginLocalProjectSession();
-          this.remotePersistenceEnabled = !sharedDemo;
-          this.remotePersistenceDisabledReason = sharedDemo ? "shared-demo" : null;
-          this.persistedBaseline = sharedDemo ? null : structuredClone(projectWithoutEventDrafts(this.current));
-          resetManualProjectCommitBaseline(this.current);
-          this.syncProjectUrlBar();
         }
       }
       this.loaded = true;
       this.dirtySinceLastPersist = false;
       // Defer remote rewrite of normalize fixes so boot is not blocked on Tailscale/dbserver RTT.
       this.dirtySinceLastPersist = false;
+      // 방금 채택한 새 로컬 프로젝트는 폴더에 문서가 없다 — 첫 flush 대상으로 dirty 를 되돌린다.
+      if (seededNewLocalProject) this.dirtySinceLastPersist = true;
       await this.normalizeCurrentProject({ persistIfChanged: false });
-      this.refreshSupabaseResourceCache();
     } catch (error) {
       if (error instanceof DbConnectionRequiredError) {
         this.loaded = false;
@@ -343,6 +349,31 @@ class ProjectStore {
 
   isLoaded(): boolean {
     return this.loaded;
+  }
+
+  /**
+   * 호스트(앱·로컬 서버)가 폴더를 열어둔 채 이 렌더러를 띄웠는가.
+   *
+   * 첫 방문 게이트가 이걸 봐야 한다 — 호스트가 폴더를 열어줬는데도 "이 기기에 저장된 선택이
+   * 없다"는 이유로 원격 공용 데모를 부르면, 원격 설정이 없는 패키징 앱에서는 CSP 가 그 fetch 를
+   * 막아 **로드 실패 화면**으로 떨어진다(2026-09-16 패키징 실측). 채택된 로컬 정본이 있으면
+   * 그게 곷 사용자의 작업이다.
+   */
+  hasAdoptedLocalProject(): boolean {
+    return this.repository.currentTarget() !== null;
+  }
+
+  /**
+   * 현재 저장 대상이 로컬 폴더 정본인가(원격 Supabase 행이 아님).
+   *
+   * 협업 락·원격 전용 표면이 판별에 쓴다 — `isRemotePersistenceEnabled()` 는 로컬 폴더에서도
+   * true(폴더가 곧 저장소)라 "원격에 쓰는가"의 답이 아니다. 로컬 정본은 단일 작성자라
+   * 다중 세션 락이 의미 없고, 원격 자격이 빌드에 박혀 있으면 CSP 에 막히는 REST 호출만
+   * 나간다(2026-09-17 패키징 실측).
+   */
+  usesLocalProjectFolder(): boolean {
+    const target = this.repository.currentTarget();
+    return target !== null && isLocalTarget(target);
   }
 
   // 부팅 실패 복구(도그푸딩 결함 ②): 로드 실패 상태에서 대체 프로젝트(예제/빈)를 메모리로 연다.
@@ -374,7 +405,7 @@ class ProjectStore {
   async loadSharedDemo(): Promise<Project | null> {
     const base = this.repository.currentTarget();
     if (!base || !isRemoteTarget(base)) return null;
-    const target: SupabaseProjectConfig = { ...base, projectId: SHARED_DEMO_PROJECT_ID };
+    const target: RemoteProjectTarget = { ...base, projectId: SHARED_DEMO_PROJECT_ID };
     let snapshot;
     try {
       snapshot = await this.repository.loadSnapshot(target);
@@ -403,324 +434,22 @@ class ProjectStore {
     return this.remotePersistenceDisabledReason === "shared-demo";
   }
 
-  /**
-   * Welcome/genre pipeline: blank/authored project for a NEW remote row.
-   * Keeps remote persistence on when DB is configured, mints a project id, and
-   * never reuses the previously loaded project id (so lake village etc. stay intact).
-   */
-  async loadNewRemoteProject(
-    project: Project,
-    options: { readonly projectId?: string; readonly title?: string } = {},
-  ): Promise<LoadNewRemoteProjectResult> {
-    const title = options.title?.trim();
-    if (title) {
-      nameNewProject(project, title);
-    }
-
-    const draft = supabaseProjectConfigDraft();
-    const configured = Boolean(draft.url && draft.anonKey);
-    const projectId =
-      options.projectId?.trim()
-      || (configured ? `oprn-${randomUuid().replace(/-/g, "").slice(0, 10)}` : null);
-    // 공용 데모 행은 어떤 발급 경로로도 쓰기 대상이 될 수 없다.
-    if (projectId === SHARED_DEMO_PROJECT_ID) {
-      throw new ProjectRoutingError("target-changed", "공용 데모 행은 덮어쓸 수 없습니다. 다른 프로젝트 ID를 사용하세요.");
-    }
-
-    // Full project switch — drop previous event drafts and copied pages; new world starts clean.
-    clearEventDraftVault();
-    clearCopiedEventPage();
-    persistEventDraftVaultNow();
-    this.adoptProject(project, { restoreVault: false });
-    this.persistedBaseline = null;
-    this.loaded = true;
-    this.dirtySinceLastPersist = true;
-
-    if (configured && projectId) {
-      // URL projectId wins over stored custom draft — update URL first so
-      // subsequent repository.currentTarget() / autosave target the new row.
-      syncProjectToUrl({ projectId, projectName: project.meta?.title ?? null });
-      saveSupabaseSelectedProjectId(projectId);
-      this.remotePersistenceEnabled = true;
-      this.remotePersistenceDisabledReason = null;
-      this.loadedRemoteProjectId = projectId;
-      const target = this.repository.currentTarget();
-      this.writeAuthority = target ? { mode: "create", target: { ...target } } : null;
-      this.syncProjectUrlBar();
-    } else {
-      this.beginLocalProjectSession();
-      this.remotePersistenceEnabled = false;
-      this.remotePersistenceDisabledReason = null;
-    }
-
-    // 부팅/웰컴 경로에서 즉시 원격 쓰기를 기다리지 않는다 — dbserver(Tailscale) 첫 연결
-    // 플레이크 한 번에 부팅이 벨려졌다(2026-08-18). 쓰기는 아래 scheduleAutoSave의
-    // 재시도/백오프 경로가 책임진다(load()의 부팅 지연 저장과 동일한 원칙).
-    await this.normalizeCurrentProject({ persistIfChanged: false });
-    this.emit({ scope: "project", projectSwitch: true });
-    if (this.remotePersistenceEnabled) this.scheduleAutoSave();
-    return { projectId };
-  }
-
-  /**
-   * Welcome/manual preset boundary. It prepares and verifies a new Supabase row
-   * without touching the open project, draft vault, config, or URL. Local state
-   * is committed only after current-project flush + target save + target reload.
-   */
-  async loadNewRemoteProjectTransactionally(
-    project: Project,
-    options: ({ readonly source?: "remote"; readonly projectId?: string }
-      | { readonly source: "dev-showcase"; readonly projectId?: never })
-      & { readonly title?: string; readonly signal?: AbortSignal } = {},
-    dependencies: TransactionalNewRemoteProjectDependencies = {
-      createProjectId: () => `oprn-${randomUuid().replace(/-/g, "").slice(0, 10)}`,
-      reloadTarget: async (config) => {
-        const snapshot = await projectRepository().loadForProof(config);
-        if (snapshot && snapshot.projectId !== config.projectId) {
-          throw new NewRemoteProjectTransactionError("reload", "재로드한 온라인 사본의 프로젝트 ID가 일치하지 않습니다.");
-        }
-        return snapshot?.project ?? null;
-      },
-      saveTarget: (candidate, config) => projectRepository().save(candidate, config),
-    },
-  ): Promise<{ readonly projectId: string }> {
-    const promoteShowcase = options.source === "dev-showcase";
-    // 공용 데모 세션도 쇼케이스와 같이 flush 할 자기 원격 원본이 없다 — 읽기 전용
-    // 행에 flush 를 시도하면 "disabled" 로 실패하므로, 소스 플러시를 건너뛰고 바로 사본을 만든다.
-    const sharedDemoSession = this.remotePersistenceDisabledReason === "shared-demo";
-    // Accepted metadata reconciliation can replace the root without changing ownership.
-    const sourceLineage = this.contentLineage;
-    const sourceGeneration = this.mutationGeneration;
-    const sourceIdentity = this.getProjectIdentity();
-    const candidate = structuredClone(project);
-    const assertSourceCurrent = (): void => {
-      if (options.signal?.aborted) {
-        throw new NewRemoteProjectTransactionError("cancelled", "온라인 사본 전환을 취소했습니다. 원본은 유지됩니다.");
-      }
-      const identity = this.getProjectIdentity();
-      if (this.contentLineage !== sourceLineage || this.mutationGeneration !== sourceGeneration
-        || identity.kind !== sourceIdentity.kind || identity.id !== sourceIdentity.id) {
-        throw new NewRemoteProjectTransactionError(
-          "concurrent-edit", "준비 중 현재 프로젝트가 변경되어 전환을 취소했습니다. 변경 내용을 확인한 뒤 다시 시도하세요.",
-        );
-      }
-    };
-    assertSourceCurrent();
-    if (promoteShowcase || sharedDemoSession) {
-      if (!this.loaded || this.remotePersistenceEnabled
-        || this.remotePersistenceDisabledReason !== (promoteShowcase ? "dev-showcase" : "shared-demo")) {
-        throw new NewRemoteProjectTransactionError("configuration", "브라우저 쇼케이스나 공용 데모에서만 사본 만들기 전환을 시작할 수 있습니다.");
-      }
-      // Do not flush a read-only/quota-constrained source. Its live edits and previous
-      // local recovery stay untouched; the detached candidate is the explicit new copy.
-    } else {
-      const flushResult = await this.flush();
-      if (flushResult.kind !== "saved") {
-        throw new NewRemoteProjectTransactionError(
-          flushResult.kind === "not-configured" ? "configuration" : "flush",
-          "현재 프로젝트를 Supabase에 저장하지 못해 새 프로젝트를 시작하지 않았습니다.",
-        );
-      }
-    }
-    assertSourceCurrent();
-
-    const baseConfig = this.repository.currentTarget();
-    const draft = supabaseProjectConfigDraft();
-    if (!baseConfig || !isRemoteTarget(baseConfig) || !draft.url || !draft.anonKey) {
-      throw new NewRemoteProjectTransactionError(
-        "configuration",
-        "Supabase 연결을 확인한 뒤 다시 시도하세요.",
-      );
-    }
-
-    const projectId = promoteShowcase ? dependencies.createProjectId() : options.projectId?.trim() || dependencies.createProjectId();
-    if (promoteShowcase && projectId === baseConfig.projectId) {
-      throw new NewRemoteProjectTransactionError("configuration", "온라인 사본은 기존 작업과 다른 새 프로젝트 ID가 필요합니다.");
-    }
-    // 공용 데모 원본은 어떤 전환 경로로도 쓰기 대상이 될 수 없다 — 사본은 항상 새 id 다.
-    if (projectId === SHARED_DEMO_PROJECT_ID) {
-      throw new NewRemoteProjectTransactionError("configuration", "공용 데모 원본은 덮어쓸 수 없습니다. 사본은 새 프로젝트 ID로 저장됩니다.");
-    }
-    const targetConfig: SupabaseProjectConfig = { ...baseConfig, projectId };
-    const title = options.title?.trim();
-    if (title) nameNewProject(candidate, title);
-    const lineageAfterFlush = this.contentLineage;
-
-    let saved: SupabaseSaveResult;
-    try {
-      saved = await dependencies.saveTarget(projectWithoutEventDrafts(candidate), targetConfig);
-    } catch (error) {
-      throw new NewRemoteProjectTransactionError(
-        "save",
-        error instanceof Error ? error.message : "새 Supabase 프로젝트 저장에 실패했습니다.",
-        error,
-      );
-    }
-    if (saved.kind !== "saved") {
-      throw new NewRemoteProjectTransactionError(
-        "save",
-        "새 Supabase 프로젝트 저장을 확인하지 못했습니다.",
-      );
-    }
-    assertSourceCurrent();
-
-    let reloaded: Project | null;
-    try {
-      reloaded = await dependencies.reloadTarget(targetConfig);
-    } catch (error) {
-      throw new NewRemoteProjectTransactionError(
-        "reload",
-        error instanceof Error ? error.message : "새 Supabase 프로젝트 재로드에 실패했습니다.",
-        error,
-      );
-    }
-    if (!reloaded) {
-      throw new NewRemoteProjectTransactionError(
-        "reload",
-        "저장한 새 Supabase 프로젝트를 다시 읽지 못했습니다.",
-      );
-    }
-
-    const expected = projectWithoutEventDrafts(promoteShowcase ? candidate : saved.project ?? candidate);
-    if (serializeForComparison(expected) !== serializeForComparison(projectWithoutEventDrafts(reloaded))) {
-      throw new NewRemoteProjectTransactionError(
-        "verify",
-        "새 Supabase 프로젝트의 저장본과 재로드 결과가 일치하지 않습니다.",
-      );
-    }
-    assertSourceCurrent();
-    // dirtySinceLastPersist 는 "원격에 아직 안 간 내 변경" — 읽기 전용 데모 세션에는
-    // 원격 원본이 없어 이 플래그가 계속 켜져 있을 수 있다. 데모 소스의 정합성은
-    // assertSourceCurrent(계보·세대·식별자 동일성)가 이미 보장한다.
-    if (!promoteShowcase && !sharedDemoSession && (this.dirtySinceLastPersist
-      || this.contentLineage !== lineageAfterFlush || !sameProjectTarget(baseConfig, this.repository.currentTarget()))) {
-      throw new NewRemoteProjectTransactionError(
-        "concurrent-edit",
-        "준비 중 현재 프로젝트가 변경되어 전환을 취소했습니다. 변경 내용을 저장한 뒤 다시 시도하세요.",
-      );
-    }
-
-    const localSnapshot = {
-      current: this.current,
-      dirtySinceLastPersist: this.dirtySinceLastPersist,
-      loaded: this.loaded,
-      loadedRemoteProjectId: this.loadedRemoteProjectId,
-      mutationGeneration: this.mutationGeneration,
-      persistedBaseline: this.persistedBaseline,
-      lastPersistenceReceipt: this.lastPersistenceReceipt,
-      contentLineage: this.contentLineage,
-      writeAuthority: this.writeAuthority,
-      persistenceRecovery: this.persistenceRecovery,
-      remotePersistenceDisabledReason: this.remotePersistenceDisabledReason,
-      remotePersistenceEnabled: this.remotePersistenceEnabled,
-    };
-    const draftVaultSnapshot = listEventDraftVaultEntries();
-    const previousHref = browserHref();
-
-    // Stage the only failure-prone browser write after every rollback snapshot
-    // exists but before deleting drafts or adopting the candidate.
-    let stagedConfig: ReturnType<typeof stageSupabaseProjectConfigDraft>;
-    try {
-      stagedConfig = stageSupabaseProjectConfigDraft({
-        anonKey: draft.anonKey,
-        projectId,
-        url: draft.url,
-      });
-    } catch (error) {
-      throw new NewRemoteProjectTransactionError(
-        "commit",
-        error instanceof Error ? error.message : "새 프로젝트 설정을 브라우저에 저장하지 못했습니다.",
-        error,
-      );
-    }
-
-    try {
-      clearEventDraftVault();
-      clearCopiedEventPage();
-      this.adoptProject(structuredClone(reloaded), { restoreVault: false });
-      this.writeAuthority = saved.authority ?? { mode: "legacy", target: targetConfig };
-      this.persistenceRecovery = { kind: "ready", ...(saved.mirror ? { mirror: saved.mirror } : {}) };
-      this.persistedBaseline = structuredClone(projectWithoutEventDrafts(reloaded));
-      this.loaded = true;
-      this.remotePersistenceEnabled = true;
-      this.remotePersistenceDisabledReason = null;
-      this.dirtySinceLastPersist = false;
-      this.mutationGeneration += 1;
-      resetManualProjectCommitBaseline(this.current);
-      syncProjectToUrl({ projectId, projectName: reloaded.meta?.title ?? null, clearDevProject: promoteShowcase });
-      saveSupabaseSelectedProjectId(projectId);
-      this.loadedRemoteProjectId = projectId;
-      stagedConfig.commit();
-    } catch (error) {
-      this.current = localSnapshot.current;
-      this.persistedBaseline = localSnapshot.persistedBaseline;
-      this.lastPersistenceReceipt = localSnapshot.lastPersistenceReceipt;
-      this.contentLineage = localSnapshot.contentLineage;
-      this.writeAuthority = localSnapshot.writeAuthority;
-      this.persistenceRecovery = localSnapshot.persistenceRecovery;
-      this.loaded = localSnapshot.loaded;
-      this.loadedRemoteProjectId = localSnapshot.loadedRemoteProjectId;
-      this.remotePersistenceEnabled = localSnapshot.remotePersistenceEnabled;
-      this.remotePersistenceDisabledReason = localSnapshot.remotePersistenceDisabledReason;
-      this.dirtySinceLastPersist = localSnapshot.dirtySinceLastPersist;
-      this.mutationGeneration = localSnapshot.mutationGeneration;
-      restoreEventDraftVaultEntries(draftVaultSnapshot);
-      try {
-        stagedConfig.rollback();
-      } catch (rollbackError) {
-        log.error("Failed to roll back staged Supabase config", rollbackError);
-      }
-      restoreBrowserHref(previousHref);
-      throw new NewRemoteProjectTransactionError(
-        "commit",
-        error instanceof Error ? error.message : "새 프로젝트의 로컬 전환을 완료하지 못했습니다.",
-        error,
-      );
-    }
-
-    // The old draft key is removed only after the switch can no longer reject.
-    persistEventDraftVaultNow(baseConfig.projectId);
-    if (promoteShowcase) {
-      this.autoSaveRetryCount = 0;
-      this.setAutoSaveState({ kind: "saved", at: Date.now() });
-    }
-    try {
-      this.emit({ scope: "project", projectSwitch: true });
-    } catch (error) {
-      log.error("Project listener failed after transactional switch", error);
-    }
-    this.refreshSupabaseResourceCache();
-    return { projectId };
-  }
-
-  /** Atomic target proof plus fixture switch for the private E2E bridge. */
-  async loadNewRemoteProjectForE2E(
-    project: Project,
-    input: {
-      readonly expectedAnonKeyDigest: string;
-      readonly expectedCurrentProjectId: string;
-      readonly expectedProjectId: string;
-      readonly expectedTargetUrl: string;
-      readonly title: string;
-    },
-  ): Promise<LoadNewRemoteProjectResult | { readonly kind: "target-mismatch" }> {
-    const draft = supabaseProjectConfigDraft();
-    if (
-      draft.projectId !== input.expectedCurrentProjectId
-      || draft.url.replace(/\/$/, "") !== input.expectedTargetUrl
-      || await sha256HexText(draft.anonKey.trim()) !== input.expectedAnonKeyDigest
-    ) {
-      return { kind: "target-mismatch" };
-    }
-    return this.loadNewRemoteProject(project, { projectId: input.expectedProjectId, title: input.title });
-  }
-
   // 테스트 전용: loaded 플래그와 원격 저장 활성화 상태를 직접 제어.
   // store.load()가 Supabase 네트워크/인증에 결합되어 있어 단위 테스트에서
   // flush()/persistCurrent() 경로만 격리하려 검증할 때 사용한다.
   /** @internal */
   isRemotePersistenceEnabled(): boolean {
     return this.remotePersistenceEnabled;
+  }
+
+  /**
+ * 이 세션이 원격 행을 향하는가 — 원격 전용 표면(원격 어댑터 이관 도구 등)의 게이트다.
+ * 로컬 폴더 정본에는 원격 자격증명이 없다. `isRemotePersistenceEnabled` 로 대신 걸면
+ * 로컬 세션에서도 참이 되어 원격 전용 코드가 자격증명을 찾게 된다.
+ */
+  isRemoteProjectSession(): boolean {
+    const target = this.repository.currentTarget();
+    return target !== null && isRemoteTarget(target);
   }
 
   _setPersistenceStateForTest(state: { loaded: boolean; remotePersistenceEnabled?: boolean; disabledReason?: DbPersistenceDisabledReason | null }): void {
@@ -764,13 +493,14 @@ class ProjectStore {
   /** Narrow E2E observation seam. It never exposes credentials or a live Project reference. */
   getE2ESnapshot(): ProjectE2ESnapshot {
     const project = structuredClone(projectWithoutEventDrafts(this.current));
-    const effectiveTarget = supabaseProjectConfigDraftWithSource();
+    // 대상은 세션의 저장소가 정본이다. 설정을 읽지 않으므로 로컬 세션에서도 사실대로 나온다.
+    const target = this.repository.currentTarget();
+    const remote = target !== null && isRemoteTarget(target) ? target : null;
     return deepFreeze({
       canonicalPayload: serialize(project),
       effectiveTarget: {
-        projectId: effectiveTarget.projectId,
-        source: effectiveTarget.source,
-        url: effectiveTarget.url.replace(/\/$/, ""),
+        projectId: remote?.projectId ?? "",
+        url: (remote?.url ?? "").replace(/\/$/, ""),
       },
       project,
     });
@@ -890,7 +620,6 @@ class ProjectStore {
         await this.normalizeCurrentProject();
         this.syncProjectUrlBar();
         this.emit({ scope: "project", projectSwitch: true });
-        this.refreshSupabaseResourceCache();
         return { kind: "connected", source: "remote" };
       }
       if (!isSharedDemoProjectId(status.projectId)) {
@@ -953,8 +682,8 @@ class ProjectStore {
       this.syncProjectUrlBar();
       // 같은 projectId의 원격 저장본을 다시 읽는 경로라 의도적으로 프로젝트 전환 표시를 하지 않는다.
       this.emit({ scope: "project" });
-      this.refreshSupabaseResourceCache();
-      return { kind: "reloaded", projectId: supabaseProjectConfigDraft().projectId, title: this.current.meta?.title ?? "" };
+      // 대상은 세션의 저장소가 정본이다 — 설정을 직접 읽으면 로컬 세션에서도 환경의 id 를 돌려준다.
+      return { kind: "reloaded", projectId: this.repository.currentTarget()?.projectId ?? "", title: this.current.meta?.title ?? "" };
     } catch (error) {
       return {
         kind: "failed",
@@ -965,24 +694,6 @@ class ProjectStore {
   }
 
   /** Atomic target proof plus forced reload for the private E2E bridge. */
-  async reloadFromRemoteForE2E(input: {
-    readonly expectedAnonKeyDigest: string;
-    readonly expectedProjectId: string;
-    readonly expectedTargetUrl: string;
-  }): Promise<ReloadFromRemoteResult | { readonly kind: "target-mismatch" }> {
-    const config = this.repository.currentTarget();
-    if (
-      !config
-      || !isRemoteTarget(config)
-      || config.projectId !== input.expectedProjectId
-      || config.url !== input.expectedTargetUrl
-      || await sha256HexText(config.anonKey.trim()) !== input.expectedAnonKeyDigest
-    ) {
-      return { kind: "target-mismatch" };
-    }
-    return this.reloadFromRemote({ force: true });
-  }
-
   /**
    * `change` 는 관측용 주석이다 — undo/AI 적용/원격 병합이 서로 구분되게 라벨을 실어 보낸다.
    * 생략하면 라벨 없는 project 스코프 변경으로 기록된다(`__oprnUnlabeledEditCount()` 에 집계).
@@ -1095,6 +806,16 @@ class ProjectStore {
   /** @internal */
   _setPersistedBaselineForTest(project: Project | null): void {
     this.persistedBaseline = project;
+  }
+
+  /**
+   * @internal "저장 직후, 바뀐 것 없음" 상태를 강제한다.
+   * store 는 모듈 싱글턴이라 같은 워커에서 앞선 파일이 더티 플래그를 남길 수 있다 —
+   * clean flush 경로를 검증하는 테스트는 그 잔여 상태에 기대면 순서에 따라 깨진다.
+   */
+  _setCleanPersistStateForTest(): void {
+    this.dirtySinceLastPersist = false;
+    this.lastPersistenceReceipt = null;
   }
 
   /** Historical acceptance belongs to its actual submitted owner, not the latest live revision. */
@@ -1581,7 +1302,6 @@ class ProjectStore {
       // Do not arm the 4s autosave debounce here — that left a "saved" gap.
       this.dirtySinceLastPersist = true;
     }
-    this.refreshSupabaseResourceCache();
     return receipt ? { ...result, receipt } : result;
   }
 
@@ -1692,23 +1412,12 @@ class ProjectStore {
     }
   }
 
-  private refreshSupabaseResourceCache(): void {
-    if (!this.remotePersistenceEnabled) return;
-    void cacheSupabaseRootResources(this.current)
-      .then((report) => {
-        if (report.skipped.length > 0) {
-          log.warn("Supabase resource cache skipped", report.skipped);
-        }
-      })
-      .catch((error) => {
-        log.error("Supabase resource cache refresh failed", error);
-      });
-  }
-
-  /** 주소창에 ?project=&name= 반영 (공유/북마크). */
+  /** 주소창에 ?project=&name= 반영 (공유/북마크). 로컬 폴더 대상에서는 주소가 아니라 폴더가 정본이다. */
   private syncProjectUrlBar(): void {
     if (!this.remotePersistenceEnabled) return;
-    const projectId = this.repository.currentTarget()?.projectId;
+    const target = this.repository.currentTarget();
+    if (target === null || !isRemoteTarget(target)) return;
+    const projectId = target.projectId;
     if (!projectId) return;
     syncProjectToUrl({
       projectId,
@@ -1718,28 +1427,6 @@ class ProjectStore {
 }
 
 export const store = new ProjectStore();
-
-function nameNewProject(project: Project, title: string): void {
-  const playerTitle = project.system.titleScreen?.title?.trim();
-  if (!playerTitle || playerTitle === defaultTitleScreenSettings().title) {
-    project.system.titleScreen = { ...(project.system.titleScreen ?? defaultTitleScreenSettings()), title };
-  }
-  project.meta = { ...project.meta, title };
-}
-
-function browserHref(): string | null {
-  if (typeof window === "undefined") return null;
-  return typeof window.location?.href === "string" ? window.location.href : null;
-}
-
-function restoreBrowserHref(href: string | null): void {
-  if (!href || typeof window === "undefined" || !window.history?.replaceState) return;
-  try {
-    window.history.replaceState(window.history.state, "", href);
-  } catch {
-    /* A malformed or cross-origin test location must not hide the original commit failure. */
-  }
-}
 
 function deepFreeze<T>(value: T): DeepReadonly<T> {
   if (value && typeof value === "object" && !Object.isFrozen(value)) {

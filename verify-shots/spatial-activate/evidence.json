@@ -7,7 +7,8 @@
       "get_spatial_design",
       "upsert_spatial_design",
       "preview_spatial_build",
-      "apply_spatial_build"
+      "apply_spatial_build",
+      "edit_spatial_occurrence"
     ],
     "list": {
       "ok": true,
@@ -90,8 +91,8 @@
         "settlementPresets": []
       }
     },
-    "capabilityIndexWorldLine": "- 월드: list_spatial_designs, get_geography_vocabulary, get_spatial_design, upsert_spatial_design, preview_spatial_build, plan_world, link_maps, build_world, lint_world",
-    "spatialRecipe": "- spatial-world: READ list_spatial_designs -> get_spatial_design -> get_geography_vocabulary | WRITE upsert_spatial_design -> preview_spatial_build -> apply_spatial_build | VERIFY check_reachability -> run_lint -> play_walkthrough. Canonical object→space→place→region→world. spatial-inactive or data.active=false = legacy project — use legacy tools. Author bottom-up; references must exist. Read get_geography_vocabulary before region/world terrain. Apply the issued previewId before any other write. Source edits never refresh built occurrences.",
+    "capabilityIndexWorldLine": "- 월드: list_spatial_designs, get_geography_vocabulary, get_spatial_design, upsert_spatial_design, preview_spatial_build, edit_spatial_occurrence, plan_world, link_maps, build_world, lint_world",
+    "spatialRecipe": "- spatial-world: READ list_spatial_designs -> get_spatial_design -> get_geography_vocabulary | WRITE upsert_spatial_design -> preview_spatial_build -> apply_spatial_build -> edit_spatial_occurrence | VERIFY check_reachability -> run_lint -> play_walkthrough. Canonical object→space→place→region→world. spatial-inactive or data.active=false = legacy project — use legacy tools. Author bottom-up; references must exist. Read get_geography_vocabulary before region/world terrain. Apply the issued previewId before any other write. Source edits never refresh built occurrences — call edit_spatial_occurrence refresh to rebuild them; move/delete/detach/clone/link/unlink edit existing occurrences through the same tool.",
     "activateErrorText": "공간 설계 활성화 실패: Load the legacy target before explicit activation."
   },
   "canonical": {

@@ -54,7 +54,14 @@ async function shutdown(app: ElectronApplication): Promise<void> {
     app.close().catch(() => {}),
     new Promise((resolvePromise) => setTimeout(resolvePromise, 5_000)),
   ]);
-  if (app.process().exitCode === null) app.process().kill("SIGKILL");
+  // 종료 뒤 app.process() 는 playwright 내부 핸들이 정리돼 던진다(실측: 종료가 성공했는데도
+  // 스모크가 여기서 죽어 "브리지가 깨졌다" 로 오진됐다). 이미 끝났으면 할 일이 없다.
+  try {
+    const child = app.process();
+    if (child?.exitCode === null) child.kill("SIGKILL");
+  } catch {
+    /* 앱과 playwright 핸들이 이미 정리됐다 */
+  }
 }
 
 async function probeThroughBridge(page: Page, projectDir: string): Promise<BridgeProbe> {

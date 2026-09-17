@@ -20,6 +20,7 @@ export function renderEventEditor(container: HTMLElement): void {
   hideEventListTooltip();
   const section = el("div", {
     class: "panel-section event-editor event-editor-sidebar",
+    dataset: { testid: "palette-event-pane" },
     on: {
       keydown: (event) => {
         if (event instanceof KeyboardEvent) handleEditorDeleteKey(event);

@@ -12,10 +12,10 @@ describe("projectRepository 선택기", () => {
     expect(projectRepository()).toBe(stub);
   });
 
-  it("주입을 지우면 기본 어댑터(remote)로 돌아간다", () => {
+  it("주입을 지우면 기본 어댑터(memory)로 돌아간다", () => {
     setProjectRepositoryForTest(stub);
     setProjectRepositoryForTest(null);
-    expect(projectRepository().kind).toBe("remote");
+    expect(projectRepository().kind).toBe("memory");
   });
 
   it("기본 어댑터는 한 번만 만들어진다", () => {

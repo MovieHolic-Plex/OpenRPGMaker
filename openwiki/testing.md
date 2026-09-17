@@ -118,6 +118,10 @@ vitest CPU 시간의 25%(2,056초 / 8,363초)를 먹고 부하 때 재실행을 
 - 파일은 **삭제하지 않았다**. `X.test.ts` → `X.quarantine.test.ts` 로 이름만 바꿨다(깊이 유지 → 상대 import 생존).
 - 기본 스위트 제외: `vitest.config.ts` exclude 의 `test/**/*.quarantine.test.ts`.
 - 다시 돌리기: `npm run test:quarantine`. 되돌리기: `.quarantine` 만 떼고 **초록으로 고친 뒤에만** 넣는다.
+  (2026-09-16 실측 정정: 기본 config 의 exclude 가 `test:quarantine` 인자에도 걸려서
+  `npm run test:quarantine` 이 "No test files found" 로 끝나고 있었다 — 되돌리기 전제인 «일단 돌려보기» 가
+  불가능했다. `vitest.quarantine.config.ts` 를 따로 두어 실제로 돌게 고쳤다.
+  표본 3개 실측: `agentBlueprintTurnEnd` 14 실패 · `aiAssistantAfterUx` 2 실패 · `actionRpgAuthoringAcceptance` 1 실패/1 통과 — 원장대로 여전히 빨간불이다.)
 - 실패 종류(격리 시점): 단정 146 · 스위트 에러 8 · 타임아웃 2.
 
 격리 자체는 실패를 고친 게 아니라 부기를 바꾼 것이다 — 절대 실패 수가 줄어도
@@ -666,6 +670,16 @@ owns final gates, independent verification and protected delivery. No durable
 checkpoints, remote schema, distributed/two-tab writer guarantee or P4/P5 is verified.
 
 ## Canonical project storage versus AI history (2026-09-06)
+
+### 데스크톱(Electron) 스모크는 이렇게 돈다 (2026-09-16)
+
+- 브리지 왕복: `xvfb-run -a npx playwright test --config playwright.electron.config.ts`
+  (`test/e2e/electronBridge.spec.ts`) — 폴더 열기 → 저장 → 재기동 → 같은 sha256, 에셋 put/read, 백업.
+- 앱 부팅: `xvfb-run -a node scripts/qa/electronAppBootProbe.mjs` — 실제 렌더러(dist)로 폴더를 연 채
+  띄워 편집기 셸·본문, 상태 `ready`, DB 연결 화면 부재, **메뉴 저장이 리비전을 올리는 것**까지 판정한다.
+  헤드리스에서 폴더 선택 대화상자를 자동화할 수 없으므로 `OPRN_OPEN_PROJECT_DIR` 진입점을 쓴다.
+- 함정: playwright 의 `app.process()` 는 종료 뒤 호출하면 던진다(`Cannot read properties of undefined`).
+  종료 헬퍼에서 이 호출을 감싸지 않으면 종료가 성공해도 스모크가 죽어 "브리지가 깨졌다" 로 오진된다.
 
 `test/noLocalProjectDb.test.ts` guards project/editor source against a local
 canonical-project database. A direct `typeof indexedDB` capability check does not
@@ -1455,6 +1469,12 @@ Evidence expectations:
   포트는 `ss -tlnp` 로 실측해서 고른다 — `wt create` 가 배정한 포트도 이미 점유돼 있을 수 있다.
 - 브라우저 QA 중에 다른 에이전트가 `src/` 를 편집하면 HMR 리로드가 끼어들어
   `ERR_NETWORK_CHANGED` 가 쏟아지고 편집기 부팅이 깨진다. 소스가 조용할 때 브라우저 증거를 잡아라.
+- **`page.evaluate` 안에서 `import("/src/project/store.ts")` 로 store 를 잡으면 앱과 다른
+  모듈 인스턴스가 될 수 있다** (2026-09 spatial-lifecycle 실측). HMR 무효화 후 vite dev는 앱이
+  쓰는 모듈을 `?t=<timestamp>` 쿼리 URL로 다시 싣는데, clean 경로로 import하면 두 번째 복제
+  모듈이 로드된다 — `store.replace()` 가 격리 인스턴스에 쓰여 UI는 옛 프로젝트를 계속 보여준다.
+  대응: `performance.getEntriesByType("resource")` 에서 앱이 실제 로드한 `store.ts` URL을 찾아
+  그 URL로 import한다(`scripts/capture-spatial-lifecycle.mjs` 의 `appModule` 패턴 참조).
 
 ### `locator.click()` 은 잘림 버그를 구조적으로 못 잡는다 (2026-08-29 실측)
 
@@ -1540,6 +1560,10 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
   `--project /tmp/chest-open.json`). 개방 SE·아이템 징글·동전 SE 세 개가 도달하고 `gold` 0→50, 열린 상자
   프레임이 03 샷에 남아야 통과다. 대사청 스크린샷은 타자기 첫 글자에서 잡힐 수 있다 — 문장은
   유닛 테스트(`test/placeChestSavepoint.test.ts`)가 재고 하네스는 소지금·오디오·프레임을 재다.
+  보관함은 `storage-savepoint` — `storage-savepoint-fixture.mts` 가 `place_storage_chest` /
+  `place_savepoint` / `place_chest` 를 시작점 북쪽 한 줄에 나란히 굽는다. 보관함은 보물상자와
+  다른 서랍장 그래픽(`object2#7`)이어야 하고, 조사하면 `chest-scene` 이 뜨며 크리스탈은
+  「기록했다」 대사를 낸다. 샷 10장.
 - **타자기를 고정 sleep 으로 기다리지 마라 — 결정 키 한 번으로 페이지를 완성시킨다** (2026-09-10).
   `visibleText` 로 대사 글자를 축으로 쓰면 관측 순간 본문이 `"▼"` 나 `"광▼"` 일 수 있다(실측:
   `loc-transition` 첫 실행에서 네 비트가 이 이유로 실패했다). `\>`(fastOn) 도 해결책이 아니다 —
@@ -1650,6 +1674,20 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
   페이지 이동은 굴리지 않는다. 그래서 `{ kind: "expect", eventAt: <원래 좌표> }` 는 NPC 가
   실제로 움직이든 안 움직이든 통과한다 — "안 움직인다" 류 회귀를 이 러너로 증명하지 말라.
   단위 레벨은 `test/runtimeEventPageMovement.test.ts`, 실물은 브라우저 Test Play 로 잡는다.
+
+## NPC 배회 런타임 QA — `npm run qa:runtime -- --scenario npc-movement` (2026-09-17)
+
+AI 조수가 `place_npc` 로 만든 NPC 가 제자리에만 있던 회귀를 출하 플레이어(`player.html`)에서 본다.
+픽스처 `test/fixtures/projects/npc-movement-qa.json` 은 등대 마을 시작점 (14,18) 에
+`roam-kid`(12,17)·`roam-dog`(16,19) 와 기존 배회 NPC 를 둔다.
+
+- 하네스 시나리오(`scripts/qa/runtime/npc-movement.scenario.mjs`): 플레이어 고정 + 240프레임 후
+  샷 2장. 증거 디렉터리 `verify-shots/runtime-qa/npc-movement/`.
+- 좌표 판정 probe(`scripts/qa/runtime/npc-movement.probe.mjs`): `__oprnCharacterSprites` 로
+  배회 NPC 가 실제로 옮겼는지 본다. **같은 디렉터리를 쓰면 하네스 샷을 덮어쓰므로**
+  `QA_OUT_DIR=verify-shots/runtime-qa/npc-movement-probe` 로 분리 실행한다.
+- 저작 쪽 단위 테스트는 `test/npcMovementInference.test.ts`. 수용 게이트가 이동형 NPC 때문에
+  reachability 를 포기하지 않는 계약은 `test/assistantAcceptanceDiagnostics.test.ts`.
 
 ## fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
 

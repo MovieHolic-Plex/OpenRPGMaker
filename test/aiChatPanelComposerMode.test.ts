@@ -17,12 +17,22 @@ vi.mock("@/editor/panels/aiPiAgentCommand", async (importOriginal) => ({
 }));
 
 // 의도 선언의 판정만 고정한다 — 나머지(buildIntentFacts·createLlmIntentDeclarer)는 실물을 쓴다.
-const intentDecl = vi.hoisted(() => ({ mode: "other" as string, source: "llm", needsPlan: false, clarify: null as string | null, error: undefined as string | undefined, calls: 0 }));
+// 의도 선언의 판정만 고정한다 — 나머지(buildIntentFacts·createLlmIntentDeclarer)는 실물을 쓴다.
+// wait 는 «분류 창을 붙잡아 두는» 게이트다 — 그 구간의 패널 상태를 관측하려면 분류가 끝나면 안 된다.
+const intentDecl = vi.hoisted(() => ({
+  mode: "other" as string, source: "llm", needsPlan: false, clarify: null as string | null,
+  error: undefined as string | undefined, calls: 0, wait: null as Promise<void> | null,
+  tools: [] as string[],
+}));
 vi.mock("@/ai/intentDeclarationClient", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/ai/intentDeclarationClient")>()),
   declareIntentCached: vi.fn(async () => {
     intentDecl.calls += 1;
-    return { intent: { ...intentDecl }, error: intentDecl.error, elapsedMs: 1 } as never;
+    if (intentDecl.wait) await intentDecl.wait;
+    return {
+      intent: { mode: intentDecl.mode, source: intentDecl.source, needsPlan: intentDecl.needsPlan, clarify: intentDecl.clarify, tools: intentDecl.tools },
+      error: intentDecl.error, elapsedMs: 1,
+    } as never;
   }),
 }));
 
@@ -68,8 +78,10 @@ beforeEach(() => {
   vi.stubEnv("VITE_LLM_API_KEY", "");
   vi.mocked(runPiCommand).mockClear();
   intentDecl.mode = "other";
+  intentDecl.tools = [];
   intentDecl.calls = 0;
   intentDecl.error = undefined; intentDecl.source = "llm"; intentDecl.needsPlan = false; intentDecl.clarify = null;
+  intentDecl.wait = null;
   store.replace(createBlankProject());
   editorState.set({ currentMapId: null, selection: null });
   restoreDom = installFakeDom();
@@ -184,6 +196,39 @@ describe("자율성 다이얼 → Pi 실행 계획", () => {
     expect(lastPlan()).toMatchObject({ routineEdit: false });
   });
 
+  it("쓰기 발화는 의도가 연 도메인만 초기 노출로 싣는다", async () => {
+    // modify 선언은 편집 3도메인을 연다 — 나머지는 find_tools·폴백이 실행 중 얹는다.
+    intentDecl.mode = "modify";
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    await send(panel, "집 한 채 지어줘");
+    expect(lastPlan()?.toolDomains).toEqual(expect.arrayContaining(["core", "tile", "map", "event"]));
+  });
+
+  it("선언한 툴의 도메인도 함께 연다", async () => {
+    intentDecl.mode = "other";
+    intentDecl.tools = ["place_npc"];
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    await send(panel, "NPC 하나 놓아줘");
+    expect(lastPlan()?.toolDomains).toEqual(expect.arrayContaining(["core", "event"]));
+  });
+
+  it("선언이 빈 손이면 좁힐 근거가 없다 — 전량 노출로 떨어진다", async () => {
+    // Break: 신호 없이 좁히면 필요한 툴이 선언에서 빠진 채 시작한다 — 폴백이 있어도 낭비다.
+    intentDecl.mode = "other";
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    await send(panel, "이것저것 해줘");
+    expect(lastPlan()?.toolDomains).toBeUndefined();
+  });
+
+  it("질문 승격 턴은 도메인을 좁히지 않는다 — 읽기는 넓어야 답한다", async () => {
+    intentDecl.mode = "question";
+    intentDecl.tools = ["place_npc"];
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    await send(panel, "뭐가 있지?");
+    expect(lastPlan()).toMatchObject({ readOnly: true });
+    expect(lastPlan()?.toolDomains).toBeUndefined();
+  });
+
   it("읽기 전용 다이얼은 분류 호출 자체를 건너뛴다", async () => {
     // Break: 질문 레벨에서도 선언 LLM 을 부르면 발화당 지연·비용이 이중으로 든다.
     const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
@@ -203,5 +248,52 @@ describe("자율성 다이얼 → Pi 실행 계획", () => {
     await send(panel, "집 한 채 지어줘");
 
     expect(findByTestId(panel, "ai-error-open-settings")).toBeNull();
+  });
+});
+
+// 2026-09-16 실측 회귀: 의도 분류(plainPiTurn, 최대 6s)가 끝난 뒤에야 turnBusy 가 서서, 그 구간에
+// 브리지는 turnBusy=false·전송 버튼은 활성으로 보였고(실측 1.2s~7.5s) 그 창에서 들어온 두 번째 전송은
+// input.value="" 를 지난 뒤 가드에 걸려 «입력만 비워진 채» 거부됐다 — 지시가 사라졌다.
+describe("의도 분류 구간의 턴 상태와 입력 보존", () => {
+  it("분류 중에는 전송이 잠기고, 그 창의 두 번째 지시는 입력을 남긴 채 거부된다", async () => {
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
+    const sendButton = findByTestId(panel, "ai-send") as unknown as { disabled?: boolean; click: () => void };
+
+    // 분류를 붙잡아 둔다 — 이 창이 관측 대상이다.
+    let release!: () => void;
+    intentDecl.wait = new Promise<void>((resolve) => { release = resolve; });
+
+    input.value = "집 한 채 지어줘";
+    sendButton.click();
+    await vi.waitFor(() => expect(intentDecl.calls).toBe(1), { timeout: 2_000, interval: 5 });
+
+    // Break: 여기서 disabled 가 false 면 «턴이 도는데 유휴로 보이는» 창이 다시 생긴다.
+    expect(sendButton.disabled).toBe(true);
+
+    input.value = "그리고 우물도 파줘";
+    sendButton.click();
+    await vi.waitFor(() => expect(sendButton.disabled).toBe(true), { timeout: 2_000, interval: 5 });
+
+    // Break: 예전에는 이 자리에서 입력창이 비워져 사용자가 다시 타이핑해야 했다.
+    expect(input.value).toBe("그리고 우물도 파줘");
+    // 거부는 «실행하지 않음» 까지 포함한다 — 두 번째 턴이 시작되면 안 된다.
+    expect(vi.mocked(runPiCommand).mock.calls.length).toBe(0);
+
+    release();
+    await vi.waitFor(() => expect(vi.mocked(runPiCommand).mock.calls.length).toBe(1), { timeout: 2_000, interval: 5 });
+  });
+
+  it("분류가 실패해도 턴 슬롯은 풀린다 (패널이 영구히 잠기지 않는다)", async () => {
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    intentDecl.wait = Promise.reject(new Error("분류 실패"));
+    intentDecl.wait.catch(() => {});
+    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
+    const sendButton = findByTestId(panel, "ai-send") as unknown as { disabled?: boolean; click: () => void };
+
+    input.value = "집 한 채 지어줘";
+    sendButton.click();
+
+    await vi.waitFor(() => expect(sendButton.disabled).toBe(false), { timeout: 2_000, interval: 5 });
   });
 });

@@ -53,7 +53,6 @@ const EXEMPT: Readonly<Record<string, string>> = {
   "panels/aiChangePreview.ts": "백로그: 자체 Escape 처리, 계층 미참여",
   "panels/aiHarnessModal.ts": "백로그: 자체 Escape 처리, 계층 미참여",
   "panels/clusterAiModal.ts": "백로그: 자체 Escape 처리, 계층 미참여",
-  "panels/dbConnectionSettings.ts": "백로그: Escape 처리 없음",
   "panels/eventEditor/characterIdAutocomplete.ts": "백로그: 자체 Escape 처리, 계층 미참여",
   "panels/eventEditor/commandListContextMenu.ts": "백로그: 자체 Escape 처리, 계층 미참여",
   "panels/mapContextMenu.ts": "백로그: 자체 Escape 처리, 계층 미참여",

@@ -36,7 +36,9 @@ export function registerIpcHandlers(sessions: SessionRegistry): void {
   ipcMain.handle(OPRN_CHANNELS.projectStatus, (event: IpcMainInvokeEvent) => {
     const session = sessions.get(event.sender.id);
     if (!session) return { kind: "not-configured" };
-    return { kind: "ready", projectId: session.store.projectId, source: "custom", url: session.projectDir };
+    // projectDir 를 함께 준다 — start 화면은 별도 문서라 모듈 상태가 넘어오지 않으므로,
+    // 렌더러가 부팅할 때 이 세션에 다시 붙는 근거는 이 값 하나뿐이다. url 은 옛 소비처 호환.
+    return { kind: "ready", projectId: session.store.projectId, projectDir: session.projectDir, source: "custom", url: session.projectDir };
   });
 
   ipcMain.handle(OPRN_CHANNELS.projectProbe, (event: IpcMainInvokeEvent) => sessions.get(event.sender.id) !== null);

@@ -18,13 +18,14 @@ export class ToolSchemaTransportError extends Error {
   }
 }
 
-/** Capture before complete(); return the post-normalization SDK onPayload hook. */
+/** Capture before complete(); return the post-normalization SDK onPayload hook.
+ * `tools` 는 요청마다 다시 걷는다 — Pi 에스컬레이션이 실행 중 툴을 덧붙이므로,
+ * 캡처 시점 스냅샷이면 늦게 승격된 정수-enum 툴이 우회를 못 받는다(실측 계약은 요청 페이로드다). */
 export function antigravityToolEnumPayload(
   model: string,
   tools: readonly { name: string; parameters: unknown }[],
 ): (payload: unknown) => unknown {
-  const fields: EnumField[] = [];
-  function collect(node: unknown, tool: string, path: string[]): void {
+  function collect(node: unknown, tool: string, path: string[], fields: EnumField[]): void {
     if (!record(node)) return;
     const numericType = node.type === "integer" || node.type === "number"
       || (Array.isArray(node.type) && node.type.some(type => type === "integer" || type === "number"));
@@ -40,17 +41,21 @@ export function antigravityToolEnumPayload(
     // as keywords. Unsupported structural translations are caught by exact path lookup.
     for (const key of ["properties", "$defs", "definitions", "patternProperties", "dependentSchemas"]) {
       const children = node[key];
-      if (record(children)) for (const [name, child] of Object.entries(children)) collect(child, tool, [...path, key, name]);
+      if (record(children)) for (const [name, child] of Object.entries(children)) collect(child, tool, [...path, key, name], fields);
     }
     for (const key of ["items", "additionalProperties", "contains", "not", "if", "then", "else", "anyOf", "oneOf", "allOf", "prefixItems"]) {
       const children = node[key];
-      if (Array.isArray(children)) children.forEach((child, index) => collect(child, tool, [...path, key, String(index)]));
-      else collect(children, tool, [...path, key]);
+      if (Array.isArray(children)) children.forEach((child, index) => collect(child, tool, [...path, key, String(index)], fields));
+      else collect(children, tool, [...path, key], fields);
     }
   }
-  for (const tool of tools) collect(tool.parameters, tool.name, []);
+
+  // 캡처 시점 검증은 유지한다 — 초기 노출의 깨진 enum 은 첫 fetch 전에 실패해야 한다(기존 계약).
+  for (const tool of tools) collect(tool.parameters, tool.name, [], []);
 
   return (payload) => {
+    const fields: EnumField[] = [];
+    for (const tool of tools) collect(tool.parameters, tool.name, [], fields);
     if (fields.length === 0) return payload;
     // Clone before any edit; errors cannot leak a partially rewritten payload.
     const copy: unknown = structuredClone(payload);

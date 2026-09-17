@@ -5,65 +5,33 @@
    편집기 스코프(2026-09-11 1단계 리뷰 반영): 이 리프는 runtime/index.css 를 통해 출하 플레이어 CSS 사슬(src/player/player.css)에도
    들어가지만, 원본 editor/core.part-2.css 는 그 사슬에 없었다. 조상 스코프가 없는 .battle-* 규칙이 출하 게임에서 새로 매치되지 않도록
    모든 선택자 앞에 특이도 0 의 `:where(body:has(.editor-layout))` 을 붙인다 — 특이도·레이어·위치가 그대로라 편집기 캐스케이드는
-   불변이고, 플레이어 문서에는 .editor-layout 이 없어 어느 규칙도 매치되지 않는다. */
-/* 주: 원본 표면 `editor/` 는 2026-09-17 에 해체됐다(계획 Task 11) — 21장은 map/, 5장은 shell/dialogs/.
+   불변이고, 플레이어 문서에는 .editor-layout 이 없어 어느 규칙도 매치되지 않는다.
+   주: 원본 표면 `editor/` 는 2026-09-17 에 해체됐다(계획 Task 11) — 21장은 map/, 5장은 shell/dialogs/.
    파일명의 `from-editor-` 는 **역사적 출처 표기**이며 현재 디렉터리를 뜻하지 않는다.
-   위 헤더가 말하는 원본은 지금 `map/core.part-2.css` 에 있다. */
+   위 헤더가 말하는 원본은 지금 `map/core.part-2.css` 에 있다.
 
+   ## 2026-09-17: `.battle-*` 아홉 규칙을 지웠다
 
-/* editor/core.part-2.css:2-5 — [레이어 보존] 전투 화면(runtime 어휘) 규칙 — runtime 레이어의 .battle-* 과 특이도로 경쟁하던 오늘의 관계를 유지 */
-:where(body:has(.editor-layout)) .battle-enemy:disabled {
-  color: var(--text-muted);
-  opacity: 0.55;
-}
+   이 파일에는 `.battle-enemy:disabled` · `.battle-actor` · `.battle-actor.defeated` ·
+   `.battle-actor-image` · `.battle-actor-label` · `.battle-command-panel` ·
+   `.battle-submenu-header` · `.battle-command:hover` · `.battle-animation` 아홉 규칙이 있었다.
+   전부 옛 에디터 전투 목업(평범한 flex 행 + 테두리 + hover 색)을 위한 스타일이고, 2026-09-11
+   마이그레이션이 "오늘의 승자를 지키려고" 바이트 그대로 옮겨 온 것이다. 그때 출하 플레이어로
+   새 나가지 않게 앞에 특이도 0 의 `:where(body:has(.editor-layout))` 을 붙였다.
 
-/* editor/core.part-2.css:6-9 — [레이어 보존] 전투 화면(runtime 어휘) 규칙 — runtime 레이어의 .battle-* 과 특이도로 경쟁하던 오늘의 관계를 유지 */
-:where(body:has(.editor-layout)) .battle-actor {
-  display: flex;
-  align-items: center;
-}
+   그 가드는 **출하 플레이어에는 제대로 먹었지만**, 정작 이 클래스를 달고 있는 DOM 이 하나뿐인
+   것이 문제였다 — 런타임 전투 씬(`battleFieldDom` · `battleCommandDom` · `qa/backBattlerHarness`).
+   에디터 안 「전투 테스트」는 그 씬을 `.editor-layout` 아래에 마운트하므로, 저작자가 전투를
+   미리 보는 바로 그 자리에서만 아홉 규칙이 살아나 런타임 스타일을 덮었다. 에디터에서 이
+   클래스들을 쓰는 표면은 없다(이벤트 미리보기는 `ecp-battle-enemy` 로 접두사가 다르다).
 
-/* editor/core.part-2.css:10-13 — [레이어 보존] 전투 화면(runtime 어휘) 규칙 — runtime 레이어의 .battle-* 과 특이도로 경쟁하던 오늘의 관계를 유지 */
-:where(body:has(.editor-layout)) .battle-actor.defeated {
-  opacity: 0.4;
-  filter: grayscale(1);
-}
+   실제 피해(실측 2026-09-17):
+     · `.battle-enemy:disabled { opacity: 0.55 }` — 적 배틀러는 `<button>` 이고 대상 선택
+       국면이 아닐 때 `disabled` 다. 즉 전투 시간 대부분 몬스터가 **55% 로 비쳐** 배경이
+       몸통 너머로 보였다. 감독 지적("몬스터가 왜 반투명하게 보이는거임?")의 원인.
+     · `.battle-command-panel { flex-wrap: wrap; justify-content: flex-end }` — 타깃 메뉴가
+       다음 열로 랩되어 오른쪽이 잘렸다. 18-pokemon-layout-redesign.css 가 이미 이 규칙을
+       이기려고 flex-flow 를 명시하는 우회를 들고 있었다(그 주석이 이 파일:48 을 지목한다).
 
-/* editor/core.part-2.css:14-18 — [레이어 보존] 전투 화면(runtime 어휘) 규칙 — runtime 레이어의 .battle-* 과 특이도로 경쟁하던 오늘의 관계를 유지 */
-:where(body:has(.editor-layout)) .battle-actor-image {
-  object-fit: contain;
-  image-rendering: pixelated;
-  flex: 0 0 auto;
-}
-
-/* editor/core.part-2.css:19-21 — [레이어 보존] 전투 화면(runtime 어휘) 규칙 — runtime 레이어의 .battle-* 과 특이도로 경쟁하던 오늘의 관계를 유지 */
-:where(body:has(.editor-layout)) .battle-actor-label {
-  flex: 1 1 auto;
-}
-
-/* editor/core.part-2.css:22-27 — [레이어 보존] 전투 화면(runtime 어휘) 규칙 — runtime 레이어의 .battle-* 과 특이도로 경쟁하던 오늘의 관계를 유지 */
-:where(body:has(.editor-layout)) .battle-command-panel {
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  border-top: 1px solid var(--border);
-  padding-top: var(--space-2);
-}
-
-/* editor/core.part-2.css:28-31 — [레이어 보존] 전투 화면(runtime 어휘) 규칙 — runtime 레이어의 .battle-* 과 특이도로 경쟁하던 오늘의 관계를 유지 */
-:where(body:has(.editor-layout)) .battle-submenu-header {
-  flex: 1 0 100%;
-  font-weight: 700;
-}
-
-/* editor/core.part-2.css:32-35 — [레이어 보존] 전투 화면(runtime 어휘) 규칙 — runtime 레이어의 .battle-* 과 특이도로 경쟁하던 오늘의 관계를 유지 */
-:where(body:has(.editor-layout)) .battle-command:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-/* editor/core.part-2.css:36-40 — [레이어 보존] 전투 화면(runtime 어휘) 규칙 — runtime 레이어의 .battle-* 과 특이도로 경쟁하던 오늘의 관계를 유지 */
-:where(body:has(.editor-layout)) .battle-animation {
-  border-radius: var(--radius);
-  font-family: var(--font-mono);
-  padding: var(--space-2) var(--space-3);
-}
+   되살릴 일이 있다면 에디터 전용 클래스를 새로 만들 것. 런타임 어휘(`.battle-*`)에 에디터
+   스타일을 거는 순간 전투 미리보기가 실제 게임과 달라진다. */

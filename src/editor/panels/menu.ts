@@ -18,7 +18,7 @@ import {
 } from "@/editor/aiStudioMode";
 import { openHelpModal } from "@/editor/panels/helpModal";
 import { openDatabaseModal } from "@/editor/panels/databaseModal";
-import { openDbConnectionSettings, renderDbConnectionStatus } from "@/editor/panels/dbConnectionSettings";
+import { renderDbConnectionStatus } from "@/editor/panels/dbConnectionStatus";
 import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
 import { openWorldPanel } from "@/editor/panels/worldEntries";
@@ -43,6 +43,7 @@ import { downloadBlob } from "@/util/downloadBlob";
 import { clearChildren, el } from "@/util/dom";
 import { createLogger } from "@/util/logger";
 import { toast } from "@/util/toast";
+import { projectRepository } from "@/project/persistence/repository";
 import { persistenceSurfaceVisible } from "@/editor/persistenceRecoveryUi";
 import { reloadProjectFromDbNow, saveProjectNow } from "@/editor/saveActions";
 import { uiLabel, type UiCopyKey } from "@/editor/uiCopy";
@@ -129,7 +130,16 @@ export function renderTopbar(topbar: HTMLElement): void {
     renderMenu("project", projectLabel, menuCommands("project", topbar), { chevron: true, className: "studio-project-button", title: `프로젝트 — ${projectLabel}` }),
     renderSaveButton(),
     renderTopbarSaveStatus(topbar),
-    ...renderToolCluster(topbar),
+    // 초보는 「도구 ▾」 메뉴가 집, 그 외는 인라인 아이콘 5개가 집이다(표준/전문가 통합).
+    ...(chrome.paletteRail
+      ? [renderMenu("tools", "도구", menuCommands("tools", topbar), { chevron: true })]
+      : [
+          toolButton({ testId: "toolbar-database", icon: "database", label: headerLabel("databaseShort"), title: headerLabel("database"), onClick: () => openDatabaseModal() }),
+          toolButton({ testId: "toolbar-resource-manager", icon: "image", label: headerLabel("resources"), title: headerLabel("resourceLibrary"), onClick: () => openResourceModal() }),
+          toolButton({ testId: "toolbar-world", icon: "globe", title: headerLabel("world"), onClick: () => openWorldPanel() }),
+          toolButton({ testId: "toolbar-sound-test", icon: "music", title: headerLabel("audio"), onClick: () => openAudioTestDialog() }),
+          toolButton({ testId: "toolbar-search", icon: "docSearch", title: headerLabel("mapEventSearch"), onClick: () => openMapEventSearchModal() }),
+        ]),
   );
   menuBar.append(lead);
 
@@ -228,31 +238,6 @@ export function autosaveStatusText(state: AutoSaveState): string {
   }
 }
 
-/**
- * 자료집·소재 버튼 + 도구 자리. 초보는 버튼을 두지 않는다(도구 메뉴가 담는다). 전문가는
- * 세계관·음악·찾기를 인라인 아이콘으로, 표준은 「도구 ▾」 메뉴로 낸다 — 같은 모드에 두 표면을
- * 함께 두지 않는다.
- */
-function renderToolCluster(topbar: HTMLElement): readonly HTMLElement[] {
-  const chrome = getEditorChrome();
-  const nodes: HTMLElement[] = [];
-  if (!chrome.paletteRail) {
-    nodes.push(
-      toolButton({ testId: "toolbar-database", icon: "database", label: headerLabel("databaseShort"), title: headerLabel("database"), onClick: () => openDatabaseModal() }),
-      toolButton({ testId: "toolbar-resource-manager", icon: "image", label: headerLabel("resources"), title: headerLabel("resourceLibrary"), onClick: () => openResourceModal() }),
-    );
-  }
-  if (chrome.toolStrip) {
-    nodes.push(
-      toolButton({ testId: "toolbar-world", icon: "globe", title: headerLabel("world"), onClick: () => openWorldPanel() }),
-      toolButton({ testId: "toolbar-sound-test", icon: "music", title: headerLabel("audio"), onClick: () => openAudioTestDialog() }),
-      toolButton({ testId: "toolbar-search", icon: "docSearch", title: headerLabel("mapEventSearch"), onClick: () => openMapEventSearchModal() }),
-    );
-  } else {
-    nodes.push(renderMenu("tools", "도구", menuCommands("tools", topbar), { chevron: true }));
-  }
-  return nodes;
-}
 
 type ToolButtonSpec = {
   readonly testId: string;
@@ -666,7 +651,7 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
       // 「저장」은 톱바의 저장 버튼(toolbar-save, Ctrl+S)이 집이다 — 여기엔 두지 않는다.
       return [
         item("새 프로젝트", "menu-project-new", () => void newProject()),
-        item("열기", "menu-project-load", () => doLoad(topbar)),
+        item("열기", "menu-project-load", () => void doLoad()),
         item("저장본 다시 불러오기", "menu-project-reload-db", () => void reloadProjectFromDb(topbar)),
         { kind: "separator" },
         // 데모 로더 9개가 이 메뉴 최상위에 나란히 붙어 14줄을 만들고 있었다 — 하위 메뉴로 접는다.
@@ -682,6 +667,7 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
         // 라벨 구분: 전에는 프로젝트/게임 메뉴에 「내보내기...」가 따로 있어 같은 말로 다른 일을
         // 했다. 둘을 한 자리에 모으고 무엇을 내보내는지 이름에 쓴다.
         item("프로젝트 파일 내보내기...", "menu-project-export", () => void exportProjectPackage()),
+        item("백업 만들기", "menu-project-backup", () => void doBackupProject()),
         item("게임 및 배포...", "menu-project-publication", () => void openPublishingDialog({
           project: store.getCurrent(),
           opener: topbar.querySelector<HTMLElement>('[data-testid="menu-project"]'),
@@ -841,16 +827,14 @@ async function newProject(): Promise<void> {
   const choiceId = selection.choiceId;
   const packId = choiceId === null ? null : newProjectChoiceById(choiceId)?.packId ?? null;
   const seed = createNewProjectSeed(packId);
-  const result = await store.loadNewRemoteProject(seed, { title });
-  const { focusProjectStartMap } = await import("@/editor/mapSelection");
-  focusProjectStartMap();
+  const { createProjectFolderWithSeed } = await import("@/editor/projectFolderActions");
+  const created = await createProjectFolderWithSeed(title, seed);
+  if (!created) {
+    toast("새 프로젝트는 데스크톱 앱에서 폴더를 골라 만듭니다.", "error");
+    return;
+  }
   const genreSuffix = choiceId ? ` — 시작 장르: ${newProjectChoiceLabel(choiceId)}` : "";
-  toast(
-    result.projectId
-      ? `'${title}' 프로젝트를 만들었습니다 — 새 작업으로 온라인 저장됩니다${genreSuffix}`
-      : `'${title}' 프로젝트를 만들었습니다 (온라인 저장 미연결)${genreSuffix}`,
-    "ok",
-  );
+  toast(`'${title}' 프로젝트를 만들었습니다 — 새 폴더에 저장됩니다${genreSuffix}`, "ok");
   if (choiceId) {
     // 프리셋으로 만들면 장르 프롬프트를 AI 조수에 바로 자동 전송한다 —
     // 엔진 토글은 씨앗에 들어 있고, AI는 그 위의 콘텐츠만 채운다.
@@ -867,6 +851,8 @@ async function newProject(): Promise<void> {
       }
     }
   }
+  // 새 폴더를 여는 것은 주 프로세스가 했다 — 문서를 다시 띄우면 부팅 attach 가 그 폴더를 연다.
+  window.location.reload();
 }
 
 async function newSkyStairProject(): Promise<void> {
@@ -950,15 +936,34 @@ async function reloadProjectFromDb(_topbar: HTMLElement): Promise<void> {
   await reloadProjectFromDbNow();
 }
 
-function doLoad(topbar: HTMLElement): void {
-  openDbConnectionSettings(() => renderTopbar(topbar), {
-    autoLoadProjects: true,
-  });
+async function doLoad(): Promise<void> {
+  const { openProjectFolder } = await import("@/editor/projectFolderActions");
+  const opened = await openProjectFolder();
+  if (!opened) {
+    toast("폴더 열기는 데스크톱 앱에서만 됩니다.", "error");
+    return;
+  }
+  window.location.reload();
 }
 
 // 프로젝트 내보내기(도그푸딩 결함 ⑪ 수리). 과거 결함 ①: `await store.flush()`가 저장 오류 시
 // reject → 함수 전체가 무반응으로 중단(다운로드 없음). anchor 부착·revoke 지연(과거 결함 ②③)은
 // downloadBlob 로 옮겼다.
+/** 폴더 정본을 사본으로 남긴다 — 파일을 가진 어댑터(앱·로컬 서버)만 제공한다. */
+async function doBackupProject(): Promise<void> {
+  const repository = projectRepository();
+  if (!repository.backup) {
+    toast("이 저장소에서는 백업을 만들 수 없습니다", "error");
+    return;
+  }
+  try {
+    await store.flush();
+    toast(`백업을 만들었습니다: ${await repository.backup()}`, "ok");
+  } catch (error) {
+    toast(error instanceof Error ? `백업 실패: ${error.message}` : "백업 실패", "error");
+  }
+}
+
 export async function exportProjectPackage(): Promise<void> {
   try {
     // 최신 상태 저장 시도는 유지하되, 실패해도 내보내기는 진행한다(메모리의 현재 상태를 내보냄).

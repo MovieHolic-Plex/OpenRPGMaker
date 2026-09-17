@@ -26,10 +26,10 @@ import {
 } from "@/app/perfMetrics";
 import { MAP_EDIT_HISTORY_EVENT } from "@/editor/mapEditHistory";
 import { editorState } from "@/editor/editorState";
-import { hasDeepLinkedProject, isAutomationBootContext, presentEditorWelcome, setEditorWelcomeDismissed, shouldPresentEditorWelcome } from "@/editor/editorWelcome";
+import { hasDeepLinkedProject, presentEditorWelcome, setEditorWelcomeDismissed, shouldPresentEditorWelcome } from "@/editor/editorWelcome";
 import { isForcedWelcomeRehearsal } from "@/editor/automationBootContext";
-import { shouldOpenSharedDemoAtBoot } from "@/project/sharedDemoProject";
-import { hasStoredSupabaseProjectSelection, supabaseProjectConfig } from "@/project/supabaseProjectConfig";
+import { hasElectronBridge, openFolderHeldByMainProcess, type ElectronRepository } from "@/project/persistence/electronRepository";
+import { projectRepository } from "@/project/persistence/repository";
 
 export type Mode = "edit" | "play";
 
@@ -56,7 +56,6 @@ let deepLinkedProjectAtBoot = false;
 // 첫 방문 게이트가 공용 데모를 열었는가 — false 면 빈 프로젝트 발급으로 폴백하는 근거.
 // 웰컴 억제·안내 토스트는 세션 상태(store.isSharedDemoSession)가 판단하므로
 // ?project= 데모 딥링크도 같은 경로를 탄다.
-let sharedDemoOpenedAtBoot = false;
 
 // 현재 모드 조회.
 export function getMode(): Mode {
@@ -103,34 +102,12 @@ export async function bootApp(root: HTMLElement): Promise<void> {
     });
     installAiUiEventCapture();
     deepLinkedProjectAtBoot = hasDeepLinkedProject();
-    // 첫 방문 게이트(2026-08-18 UX 리뷰 P0-1 → 2026-09-14 데모 전환): URL에 ?project= 없고,
-    // 이 기기에 저장된 선택한 작업도 없는 진짜 첫 방문은 「무엇을 만들지」 묻기 전에
-    // 잘 만든 공용 데모 마을을 읽기 전용으로 바로 연다. 데모 행이 아직 없거나 읽기가
-    // 실패하면 예전 계약(새 project id 빈 프로젝트 발급)으로 폴백한다. 자동화/데모 부팅은 제외.
-    const firstVisit =
-      typeof window !== "undefined"
-      && shouldOpenSharedDemoAtBoot({
-        deepLinkedProject: deepLinkedProjectAtBoot,
-        automation: isAutomationBootContext(),
-        devShowcase: createDevShowcaseProjectForLocation() !== null,
-        dbConfigured: supabaseProjectConfig() !== null,
-        storedSelection: hasStoredSupabaseProjectSelection(),
-      });
-    if (firstVisit) {
-      sharedDemoOpenedAtBoot = (await store.loadSharedDemo()) !== null;
-      if (!sharedDemoOpenedAtBoot) {
-        const { createBlankProject } = await import("@/project/defaults");
-        try {
-          await store.loadNewRemoteProject(createBlankProject(), { title: "새 프로젝트" });
-        } catch (mintError) {
-          // 발급 실패가 부팅을 벨려서는 안 된다 — 기존 로드 경로로 폴백.
-          console.error("[app] first-visit project mint failed; falling back to load:", mintError);
-          await store.load();
-        }
-      }
-    } else {
-      await store.load();
-    }
+    // Electron 에서는 시작 화면이 고른 폴더가 주 프로세스 세션에만 있다. 편집기 문서는 별개
+    // 문서라 모듈 상태가 안 넘어오므로 여기서 다시 붙는다 — 안 붙으면 store.load() 가 대상을
+    // 못 찾아 DB 연결 설정 화면으로 떨어진다(로컬 폴더 정본인데도).
+    await attachElectronFolderAtBoot();
+    // P6: 온라인 저장이 없다 — 첫 방문에 열 원격 데모 행도, 발급할 행도 없다. 항상 기존 로드 경로다.
+    await store.load();
   } catch (error) {
     // 오진 방지(도그푸딩 결함 ②): DB 연결이 정말 필요한 경우와, 연결은 되지만 저장된
     // 프로젝트 데이터가 무결성 검증에 실패한 경우(벽돌)를 구분해 다른 화면을 보여준다.
@@ -155,6 +132,24 @@ export async function bootApp(root: HTMLElement): Promise<void> {
 
   // 최초 편집 맵 = 시작 맵.
   await finishEditorBoot(startedAt);
+}
+
+/**
+ * 시작 화면이 열어 둔 폴더에 편집기 세션을 다시 붙인다. Electron 이 아니거나 열린 폴더가
+ * 없으면 null — 그때는 기존 로드 경로(데모/원격)가 그대로 탄다.
+ *
+ * 왜 필요한가: 시작 화면은 별도 문서(app://oprn/start-screen.html)라 사용자가 고른 폴더가
+ * 렌더러 모듈 상태로 넘어오지 않는다. 이 한 줄이 없으면 로컬 정본을 열어 뒀는데도 store.load()
+ * 가 대상을 못 찾아 「온라인 저장 설정이 필요합니다」 화면을 띄운다(실측).
+ */
+async function attachElectronFolderAtBoot(): Promise<string | null> {
+  if (!hasElectronBridge()) return null;
+  const projectDir = await openFolderHeldByMainProcess();
+  if (projectDir === null) return null;
+  const repository = projectRepository();
+  if (!("open" in repository)) return null;
+  await (repository as ElectronRepository).open(projectDir);
+  return projectDir;
 }
 
 async function finishEditorBoot(startedAt: number): Promise<void> {
@@ -305,12 +300,8 @@ function renderDbRequiredScreen(_error: unknown): void {
 }
 
 function openRequiredDbSettings(): void {
-  void import("@/editor/panels/dbConnectionSettings").then(({ openDbConnectionSettings }) => {
-    openDbConnectionSettings(() => {
-      if (store.isLoaded()) {
-        void finishEditorBoot(performance.now());
-      }
-    }, { autoLoadProjects: true, required: true });
+  void import("@/editor/projectFolderActions").then(async ({ openProjectFolder }) => {
+    if (await openProjectFolder()) window.location.reload();
   });
 }
 
@@ -437,10 +428,8 @@ function renderLoadFailureScreen(_error: unknown): void {
   openDb.dataset.testid = "load-error-open-db";
   openDb.textContent = "저장된 작업 선택";
   openDb.addEventListener("click", () => {
-    void import("@/editor/panels/dbConnectionSettings").then(({ openDbConnectionSettings }) => {
-      openDbConnectionSettings(() => {
-        if (store.isLoaded()) void finishEditorBoot(performance.now());
-      }, { autoLoadProjects: true });
+    void import("@/editor/projectFolderActions").then(async ({ openProjectFolder }) => {
+      if (await openProjectFolder()) window.location.reload();
     });
   });
   actions.append(openDb);

@@ -605,7 +605,12 @@ async function consumeBlockingStep(
       removeRuntimeEvent(scene, step.eventId);
       return resumeAfterSurface(scene, interpreter);
     case "openChest":
-      await playOpenChest(scene, { chestId: step.chestId });
+      await playOpenChest(scene, {
+        ...step,
+        mapId: scene.map.id,
+        x: scene.tileX,
+        y: scene.tileY,
+      });
       return resumeAfterSurface(scene, interpreter);
     case "shop":
       // 상점 원장은 맵+이벤트로 가른다 — 예전에는 전부 "global" 하나를 공유해서 대장간에서

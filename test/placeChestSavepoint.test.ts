@@ -126,8 +126,22 @@ describe("place_storage_chest", () => {
     expect(event.pages).toHaveLength(1);
     expect(event.trigger).toEqual({ kind: "action" });
     const page = event.pages![0];
-    expect(page.commands).toEqual([{ kind: "openChest", chestId: data.chestId }]);
+    expect(page.commands).toEqual([{ kind: "openChest", chestId: data.chestId, template: "farm", displayName: "창고" }]);
     expect(data.chestId).toBe(`storage_${data.eventId}`);
+  });
+  it("보물상자와 다른 그래픽을 쓴다 (보관함 식별)", () => {
+    const { project, mapId } = projectWithMap();
+    const itemId = project.database.items[0]?.id ?? "item_potion";
+    const chest = getTool("place_chest")!.run(project, { mapId, x: 3, y: 3, contents: { itemId } });
+    const storage = getTool("place_storage_chest")!.run(project, { mapId, x: 5, y: 5, name: "창고" });
+    const chestEvent = project.maps[mapId].events.find((entry) => entry.id === (chest.data as { eventId: string }).eventId)!;
+    const storageEvent = project.maps[mapId].events.find((entry) => entry.id === (storage.data as { eventId: string }).eventId)!;
+    const chestGraphic = chestEvent.pages![0].graphic;
+    const storageGraphic = storageEvent.pages![0].graphic;
+    expect(storageGraphic.sprite).toEqual({ type: "bundled", id: "tex_easyrpg_charset_object2" });
+    expect(chestGraphic.sprite).toEqual({ type: "bundled", id: "tex_easyrpg_charset_object1" });
+    expect(storageGraphic.pattern).not.toBe(chestGraphic.pattern);
+    expect(decodeCharsetFrameIndex(storageGraphic.pattern as number).characterIndex).toBe(7);
   });
 
   it("chestId를 지정하면 그대로 쓴다", () => {
@@ -143,11 +157,31 @@ describe("place_storage_chest", () => {
     expect(data.eventId).toBe("ev_box_home");
     expect(data.chestId).toBe("farm_main_chest");
     const event = project.maps[mapId].events.find((entry) => entry.id === data.eventId)!;
-    expect(event.pages![0].commands[0]).toEqual({ kind: "openChest", chestId: "farm_main_chest" });
+    expect(event.pages![0].commands[0]).toEqual({ kind: "openChest", chestId: "farm_main_chest", template: "farm" });
   });
 
   it("맵 밖이면 ToolError", () => {
     const { project, mapId } = projectWithMap();
     expect(() => getTool("place_storage_chest")!.run(project, { mapId, x: 999, y: 999 })).toThrow(/맵 밖/);
+  });
+
+  it("template·displayName 인자를 openChest에 싣는다", () => {
+    const { project, mapId } = projectWithMap();
+    const result = getTool("place_storage_chest")!.run(project, {
+      mapId,
+      x: 2,
+      y: 2,
+      name: "은행",
+      template: "vault",
+      displayName: "마을 금고",
+    });
+    const data = result.data as { eventId: string };
+    const event = project.maps[mapId].events.find((entry) => entry.id === data.eventId)!;
+    expect(event.pages![0].commands[0]).toEqual({
+      kind: "openChest",
+      chestId: `storage_${data.eventId}`,
+      template: "vault",
+      displayName: "마을 금고",
+    });
   });
 });

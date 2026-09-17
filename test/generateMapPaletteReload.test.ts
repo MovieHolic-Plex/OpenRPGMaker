@@ -6,39 +6,28 @@ import { markUserTileRuntimeMetadata, setTileLayerOverride } from "@/editor/runt
 import { passableFlag, blockedFlag } from "@/project/tilesetPassage";
 import { sha256HexText } from "@/util/sha256";
 import type { Project } from "@/project/types";
+import type { ElectronBridgeSession, SharedWire } from "./support/electronBridgeSession";
 
-// Only the persistence transport is replaced. Wire serialization, store load
-// normalization, mutation tracking, receipts and generate_map remain real.
-const remote = vi.hoisted(() => ({ wire: "", writes: 0 }));
-vi.mock("@/project/supabaseProjectSync", async importOriginal => {
-  const actual = await importOriginal<typeof import("@/project/supabaseProjectSync")>();
-  const save = async (project: Project) => {
-    remote.writes++;
-    remote.wire = serialize(project);
-    return { kind: "saved" as const, project: deserialize(remote.wire) };
-  };
-  return { ...actual, loadProjectFromSupabase: async () => deserialize(remote.wire),
-    saveProjectToSupabase: save, saveProjectMapPatchToSupabase: async ({ project }: { project: Project }) => save(project) };
-});
-vi.mock("@/assets/supabaseResourceCache", () => ({ cacheSupabaseRootResources: async () => ({ skipped: [] }) }));
+// 저장소만 바꿔 끼운다. 와이어 직렬화·store 로드 정규화·변이 추적·영수증·generate_map 은 전부 실제 코드다.
+let session: ElectronBridgeSession | null = null;
+const wire: SharedWire = { current: null };
 
 async function freshStore() {
-  vi.stubEnv("VITE_SUPABASE_URL", "https://generator.invalid");
-  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-only");
-  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "generator-contract");
-  vi.stubGlobal("fetch", vi.fn(() => { throw new Error("Unexpected network"); }));
   vi.resetModules();
+  const { installElectronBridgeSession } = await import("./support/electronBridgeSession");
+  // 인스턴스를 새로 만들되 저장 위치는 공유한다 — 실제 브리지도 폴더의 파일이 정본이다.
+  session = await installElectronBridgeSession({ projectDir: "/tmp/oprn-palette-reload", projectId: "generator-contract", wire });
   return (await import("@/project/store")).store;
 }
 
-afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); vi.useRealTimers(); remote.writes = 0; });
+afterEach(() => { session?.dispose(); session = null; vi.unstubAllEnvs(); vi.unstubAllGlobals(); vi.useRealTimers(); });
 
 describe("generator real store palette identity", () => {
   it.each(["captured", "authored-lower", "authored-upper", "native-upper"])(
     "%s -> real save receipt -> fresh load has identical rules and no migration", async mode => {
       // Prevent unrelated debounce autosaves; every operation is explicitly awaited.
       vi.useFakeTimers();
-      remote.wire = serialize(createBlankProject());
+      wire.current = serialize(createBlankProject());
       const store = await freshStore();
       await store.load();
       await store.flush();
@@ -71,9 +60,9 @@ describe("generator real store palette identity", () => {
       expect(await sha256HexText(serializeForComparison(fresh.getCurrent()))).toBe(identity);
       expect(fresh.hasUnsavedChanges()).toBe(false);
       expect(fresh.getAutoSaveState().kind).toBe("idle");
-      const writes = remote.writes;
+      const writes = session?.calls.save ?? 0;
       await fresh.flush();
-      expect(remote.writes).toBe(writes);
+      expect(session?.calls.save ?? 0).toBe(writes);
     },
   );
 });

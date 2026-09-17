@@ -207,8 +207,36 @@ defineCommand({
   kind: "openChest",
   family: "economy",
   label: "보관 상자",
-  fields: { chestId: f.text("상자 ID", { optional: true, placeholder: "비우면 공용 보관함" }) },
-  summary: (c) => (c.chestId ? `보관 상자 ${str(c.chestId)}` : "공용 보관함 열기"),
+  fields: {
+    chestId: f.text("상자 ID", { optional: true, placeholder: "비우면 이 타일 상자" }),
+    displayName: f.text("표시 이름", { optional: true }),
+    template: f.enum("양식", [
+      { value: "farm", label: "농장", key: "farm" },
+      { value: "warehouse", label: "창고", key: "warehouse" },
+      { value: "vault", label: "금고", key: "vault" },
+    ], { optional: true }),
+    layout: f.enum("창 배치", [
+      { value: "center", label: "중앙", key: "center" },
+      { value: "bottom", label: "하단", key: "bottom" },
+      { value: "wide", label: "넓은", key: "wide" },
+    ], { optional: true }),
+    showIcons: f.bool("아이콘", { optional: true }),
+    capacity: f.number("칸 수", { min: 1, optional: true }),
+    allowBulk: f.bool("대량 이동", { optional: true }),
+    allowSort: f.bool("정렬", { optional: true }),
+    showCategories: f.bool("분류 탭", { optional: true }),
+    goldVault: f.bool("골드 금고", { optional: true }),
+    lockSwitchId: f.switch("잠금 스위치", { optional: true }),
+    lockItemId: f.record("잠금 아이템", "item", { optional: true, allowEmpty: true }),
+  },
+  summary: (c) => {
+    const name = str(c.displayName) || str(c.chestId);
+    const template = str(c.template);
+    if (name && template) return `보관 상자 ${name} (${template})`;
+    if (name) return `보관 상자 ${name}`;
+    if (template) return `보관 상자 ${template}`;
+    return "이 타일 상자 열기";
+  },
 });
 
 // ── 동료 ──────────────────────────────────────────────────────────

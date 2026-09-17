@@ -21,7 +21,7 @@ import type {
   ProjectSnapshot,
   SaveResult,
 } from "@/project/persistence/types";
-import type { DbPersistenceDisabledReason } from "@/project/persistenceStatus";
+import type { DbPersistenceDisabledReason } from "@/project/persistence/types";
 import type { ProjectWriteAuthority } from "@/project/spatial/saveRouting";
 import { initLocalProjectStore } from "../../electron/local-store/store";
 
@@ -150,7 +150,6 @@ export async function createLocalRepositoryFixture(): Promise<LocalRepositoryFix
         if (tip) tips.set(resolved.projectId, tip);
         return Promise.resolve(tip);
       },
-      peekTip: (projectId: string): string | null => tips.get(projectId) ?? null,
       seedTip(projectId: string, commitId: string | null | undefined): void {
         if (commitId) tips.set(projectId, commitId);
       },

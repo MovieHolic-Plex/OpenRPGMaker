@@ -101,6 +101,7 @@ SHA-256 검증·손상 복구·잠금 복구·관리자 제작 명령은 `openwi
 | `npm run typecheck:app` | `src` 만 (`tsconfig.app.json`) | **0 에러 / exit 0** — 초록 | 코드 바꿨으면 항상 |
 | `npm run typecheck` | `src` + `test` 전체 | **빨간불** (`test/` 타입 에러 다수, exit 2) | 게이트로 쓰지 마라. 자기가 만진 테스트 파일만 눈으로 확인 |
 | `npm test` | Vitest 유닛/계약 **전체** | 약 **21,894건**(2,093 파일) 중 실패 83건, **1,715 s(28분 35초)** (2026-09-14 실측, 이 박스는 공유라 loadavg 49~71 — 한산하면 더 짧다). 워커 힙은 스크립트가 8GB 로 깐다 | 최종 게이트에서만. 반복 중에는 쓰지 마라 |
+| ↑ **워커 수가 시간을 지배한다** | 40파일·301케이스 고정 실측 (2026-09-16) | **W1 121.7s / W2 70.4s / W4 51.0s / W8 41.0s / W16 39.3s / W32 41.1s** — 8에서 포화. 케이스 수·통과 수는 모든 워커 수에서 동일(301 passed) | 게이트(`verify-gates.mjs`)는 `--maxWorkers=8` 을 명시한다. 32로 올려도 이득 없고, vitest 가 ~9.4GiB 로 OOM-kill 된 전례가 있다 |
 | `npm run test:changed` | HEAD 대비 **import 영향만** (`--changed`) | **254 s**(454 파일, 변경 6건) ↔ **1,247 파일에서 30분 초과 미완**(변경 3건 — 코어 모듈이면 전파가 전부에 가깝다) | 편집 중 반복. 잎 모듈을 만졌을 때만 이득 |
 | `npm test -- test/<name>.test.ts` | 파일 지정 | **16 s** (고정비 ≈16 s: 워커 스폰 + 앱 모듈 그래프) | 방금 만진 파일 하나 |
 | `npm run gates` | typecheck:app + vitest + css + surface 를 **기준선과 비교** | `.omo/gates-baseline.json` (추적 파일) | 변경 마무리. 새로 생긴 실패만 회귀로 본다 |

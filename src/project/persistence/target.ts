@@ -1,7 +1,9 @@
-import type { SupabaseProjectConfig } from "../supabaseProjectConfig";
-
-/** 원격 행 대상. url·projectId·anonKey — 지금의 SupabaseProjectConfig 와 같은 모양이다. */
-export type RemoteProjectTarget = SupabaseProjectConfig;
+/** 원격 행 대상. url·projectId·anonKey — 포트가 정의를 소유한다. */
+export type RemoteProjectTarget = {
+  readonly url: string;
+  readonly projectId: string;
+  readonly anonKey: string;
+};
 
 /** 로컬 폴더 대상. 폴더 경로와 프로젝트 UUID — 자격증명이 없다. */
 export type LocalProjectTarget = {

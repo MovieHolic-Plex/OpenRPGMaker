@@ -14,7 +14,9 @@
     .recent { margin-top: 24px; }
     .recent h2 { font-size: 14px; color: #888; margin-bottom: 8px; }
     .recent-item { padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+    button.recent-item { width: 100%; border: none; background: transparent; text-align: left; font-family: inherit; color: inherit; }
     .recent-item:hover { background: #F0EBE2; }
+    .recent-item.recent-missing { color: #aaa; text-decoration: line-through; }
     .empty { color: #aaa; font-size: 13px; }
   </style>
 </head>
@@ -30,32 +32,7 @@
       <div id="recent-list"></div>
     </div>
   </div>
-  <script>
-    async function loadRecent() {
-      const entries = await window.oprn.start.recentProjects();
-      const list = document.getElementById("recent-list");
-      if (!entries.length) { list.innerHTML = '<p class="empty">최근 프로젝트가 없습니다.</p>'; return; }
-      list.innerHTML = "";
-      for (const entry of entries) {
-        const item = document.createElement("div");
-        item.className = "recent-item";
-        item.textContent = entry.title || entry.projectDir;
-        item.onclick = async () => {
-          const result = await window.oprn.start.openFolder();
-          if (result && result.projectId) window.location.href = "/index.html";
-        };
-        list.appendChild(item);
-      }
-    }
-    document.getElementById("btn-new").onclick = async () => {
-      const result = await window.oprn.start.createProject({ title: "새 프로젝트" });
-      if (result && result.projectId) window.location.href = "/index.html";
-    };
-    document.getElementById("btn-open").onclick = async () => {
-      const result = await window.oprn.start.openFolder();
-      if (result && result.projectId) window.location.href = "/index.html";
-    };
-    loadRecent();
-  </script>
+  <!-- 인라인 스크립트 금지: app:// CSP 의 script-src 가 'self' 라 차단된다(프로토콜이 헤더로 준다). -->
+  <script src="/start-screen.js" defer></script>
 </body>
 </html>

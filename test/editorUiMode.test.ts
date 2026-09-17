@@ -79,24 +79,21 @@ describe("editorUiMode", () => {
     }
   });
 
-  it("defines distinct progressive chrome for beginner, standard, and expert", () => {
+  it("defines distinct progressive chrome for beginner and standard (expert aliases standard)", () => {
     const beginner = chromeForMode("beginner");
     const standard = chromeForMode("standard");
     const expert = chromeForMode("expert");
 
+    // 표준이 전문가 capability를 흡수했다 — expert는 standard와 동일 별칭이다.
+    expect(standard).toEqual(expert);
     expect(beginner.advancedSidebarControls).toBe(false);
-    expect(standard.advancedSidebarControls).toBe(false);
-    expect(expert.advancedSidebarControls).toBe(true);
+    expect(standard.advancedSidebarControls).toBe(true);
     expect(beginner.mapTree).toBe(false);
     expect(beginner.toolStrip).toBe(false);
     expect(beginner.canvasChromeDense).toBe(false);
-    expect(standard.mapTree).toBe(false);
-    expect(standard.toolStrip).toBe(false);
+    expect(standard.mapTree).toBe(true);
+    expect(standard.toolStrip).toBe(true);
     expect(standard.canvasChromeDense).toBe(true);
-    expect(expert.mapTree).toBe(true);
-    expect(expert.toolStrip).toBe(true);
-    expect(expert.canvasChromeDense).toBe(true);
-    expect(expert.helpMenu).toBe(true);
     expect(beginner.paletteRail).toBe(true);
     expect(beginner.leftPanelMaxWidthPx).toBe(null);
     expect(beginner.layerTermStyle).toBe("plain");
@@ -104,23 +101,17 @@ describe("editorUiMode", () => {
     expect(beginner.coachMarks).toBe(true);
     expect(beginner.standardWelcome).toBe(false);
     expect(standard.paletteRail).toBe(false);
-    expect(standard.leftPanelMaxWidthPx).toBe(300);
+    expect(standard.leftPanelMaxWidthPx).toBe(320);
     expect(standard.layerTermStyle).toBe("technical");
     expect(standard.prominentTestPlay).toBe(false);
     expect(standard.coachMarks).toBe(false);
-    expect(standard.standardWelcome).toBe(true);
-    expect(expert.paletteRail).toBe(false);
-    expect(expert.leftPanelMaxWidthPx).toBe(320);
-    expect(expert.layerTermStyle).toBe("technical");
-    expect(expert.prominentTestPlay).toBe(false);
-    expect(expert.coachMarks).toBe(false);
-    expect(expert.standardWelcome).toBe(false);
+    expect(standard.standardWelcome).toBe(false);
     expect("aiDenseSections" in beginner).toBe(false);
     expect("aiDenseSections" in standard).toBe(false);
     expect("aiDenseSections" in expert).toBe(false);
   });
 
-  it("pins beginner/standard/expert chrome flags for database nav, event chrome, jargon style", () => {
+  it("pins beginner/standard chrome flags for database nav, event chrome, jargon style", () => {
     const beginner = chromeForMode("beginner");
     const standard = chromeForMode("standard");
     const expert = chromeForMode("expert");
@@ -129,13 +120,14 @@ describe("editorUiMode", () => {
     expect(beginner.eventBeginnerChrome).toBe(true);
     expect(beginner.jargonStyle).toBe("plain");
 
+    // 표준이 전문가 capability를 흡수했다 — event 안내 크롬과 용어는 초보와 같다.
     expect(standard.databaseNav).toBe("grouped");
-    expect(standard.eventBeginnerChrome).toBe(true);
+    expect(standard.eventBeginnerChrome).toBe(false);
     expect(standard.jargonStyle).toBe("plain");
 
     expect(expert.databaseNav).toBe("grouped");
     expect(expert.eventBeginnerChrome).toBe(false);
-    expect(expert.jargonStyle).toBe("technical");
+    expect(expert.jargonStyle).toBe("plain");
 
     expect(parseEditorUiMode("basic")).toBe("beginner");
   });

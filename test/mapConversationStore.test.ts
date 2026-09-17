@@ -5,10 +5,6 @@ import { resetAiRecordDbForTest, writeAiRecords, AI_RECORD_DB_NAME } from "@/ai/
 import * as conversations from "@/ai/conversationStore";
 import { listConversations, loadConversation, saveConversation, type ConversationRecord } from "@/ai/conversationStore";
 
-vi.mock("@/project/supabaseProjectSync", () => ({
-  recordSupabaseConversation: vi.fn(async () => ({ kind: "not-configured" })),
-}));
-
 beforeEach(() => {
   globalThis.indexedDB = new IDBFactory();
   resetAiRecordDbForTest();

@@ -807,7 +807,26 @@ export function executeCommand(
       return resumeNext(frame);
     case "openChest": {
       const chestId = (command.chestId ?? "").trim() || resolveOpenChestId(state);
-      return pause("openChest", { kind: "openChest", chestId });
+      const {
+        displayName, template, layout, showIcons, capacity, allowBulk, allowSort,
+        showCategories, goldVault, lockSwitchId, lockItemId, allowedItemTypes,
+      } = command;
+      return pause("openChest", {
+        kind: "openChest",
+        chestId,
+        ...(displayName ? { displayName } : {}),
+        ...(template ? { template } : {}),
+        ...(layout ? { layout } : {}),
+        ...(showIcons !== undefined ? { showIcons } : {}),
+        ...(capacity !== undefined ? { capacity } : {}),
+        ...(allowBulk !== undefined ? { allowBulk } : {}),
+        ...(allowSort !== undefined ? { allowSort } : {}),
+        ...(showCategories !== undefined ? { showCategories } : {}),
+        ...(goldVault !== undefined ? { goldVault } : {}),
+        ...(lockSwitchId ? { lockSwitchId } : {}),
+        ...(lockItemId ? { lockItemId } : {}),
+        ...(allowedItemTypes && allowedItemTypes.length > 0 ? { allowedItemTypes } : {}),
+      });
     }
     case "changeFriendship":
       changeFriendship(state.session, command.npcKey, command.delta, resolveSocialHost(state));

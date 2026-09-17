@@ -7,6 +7,7 @@ import { modelForRole } from "@/ai/modelRoles";
 //   /pi map_a,map_b <지시>  맵마다 에이전트 하나씩 병렬
 //   /pi team <지시>         팀장이 맵을 나눠 시공·검수 에이전트를 띄운다. 후보는 프로젝트 전체, 기본 대상은 현재 맵
 //   /pi team map_a,map_b <지시>  팀장이 쓸 후보 맵을 제한
+//   (`/team …` 도 같은 뜻으로 남는다 — Pi 가 유일한 실행 경로가 된 뒤에도 호환용)
 //
 // 이 파일은 패널의 나머지와 최소 접점(말풍선·상태 표시·로그 붙이기)만 공유한다 — 기존 세션 루프는 건드리지 않는다.
 
@@ -15,6 +16,7 @@ import { runPiAgentViaCompanion } from "@/ai/piAgent/client";
 import { deriveRunOutcome } from "@/ai/runOutcome";
 import type { RunOutcome, RunOutcomeFacts } from "@/ai/runOutcome";
 import { startPiRunLog, type PiRunContext, type PiRunFacts } from "@/ai/piAgent/activityLog";
+import type { AuditEntry } from "@/ai/session/types";
 import { mergeMapBundles } from "@/ai/piAgent/mapBundle";
 import { changedProjectKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentMode, type PiAgentThinkingLevel } from "@/ai/piAgent/protocol";
 import {
@@ -44,6 +46,7 @@ import { publishTeamActivity, setTeamReviewActions } from "@/ai/piAgent/teamActi
 import { loadTeamSpec } from "@/ai/piAgent/teamSpecStore";
 
 export const PI_COMMAND_PREFIX = "/pi";
+export const TEAM_COMMAND_PREFIX = "/team";
 
 export interface ParsedPiCommand {
   readonly mode: PiAgentMode;
@@ -60,16 +63,22 @@ function splitMapList(first: string, project: Project): string[] | null {
   return [...new Set(candidates)];
 }
 
-/** `/pi 지시` → 현재 맵. `/pi a,b 지시` → 맵 a, b. `/pi team …` → 팀 모드. 맵 토큰은 프로젝트에 있는 id 일 때만 인정한다. */
+/** `/pi 지시` → 현재 맵. `/pi a,b 지시` → 맵 a, b. `/pi team …`·`/team …` → 팀 모드. 맵 토큰은 프로젝트에 있는 id 일 때만 인정한다. */
 export function parsePiCommand(text: string, project: Project, currentMapId: string | null): ParsedPiCommand | null {
   const trimmed = text.trim();
-  if (trimmed !== PI_COMMAND_PREFIX && !trimmed.startsWith(`${PI_COMMAND_PREFIX} `)) return null;
-  let rest = trimmed.slice(PI_COMMAND_PREFIX.length).trim();
   let mode: PiAgentMode = "single";
-  if (rest === "team" || rest.startsWith("team ")) {
+  let rest: string | null = null;
+  if (trimmed === TEAM_COMMAND_PREFIX || trimmed.startsWith(`${TEAM_COMMAND_PREFIX} `)) {
     mode = "team";
-    rest = rest.slice(4).trim();
+    rest = trimmed.slice(TEAM_COMMAND_PREFIX.length).trim();
+  } else if (trimmed === PI_COMMAND_PREFIX || trimmed.startsWith(`${PI_COMMAND_PREFIX} `)) {
+    rest = trimmed.slice(PI_COMMAND_PREFIX.length).trim();
+    if (rest === "team" || rest.startsWith("team ")) {
+      mode = "team";
+      rest = rest.slice(4).trim();
+    }
   }
+  if (rest === null) return null;
   const fallback = mode === "team" ? [] : currentMapId ? [currentMapId] : [];
   if (!rest) return { mode, mapIds: fallback, currentMapId, task: "" };
   const [first = "", ...others] = rest.split(/\s+/);
@@ -105,6 +114,11 @@ export interface PiRunOptions {
   readonly maxTurns?: number;
   /** Legacy caller hint. Role-specific reasoning takes precedence in Pi execution. */
   readonly thinkingLevel?: PiAgentThinkingLevel;
+  /**
+   * 의도 선언이 연 툴 도메인 — 초기 노출을 core+이 도메인들로 좁힌다(빠진 툴은 find_tools·
+   * 폴백 에스컬레이션이 실행 중 얹는다). 비우면 레지스트리 전량 노출.
+   */
+  readonly toolDomains?: readonly string[];
 }
 
 /** 적용 뒤 영수증(지금 → 적용 후) 재료. 렌더는 패널이 한다 — 되돌리기와 스튜디오 「변경」 탭이 거기 있다. */
@@ -136,6 +150,14 @@ export interface PiCommandSurface {
   readonly showChangeReceipt?: (input: PiChangeReceipt) => void;
   /** 실행 종료 4축(실행·목표·전달·이미지) — 패널의 ai-run-outcome 라인이 그린다. 생략하면 아무도 안 보고 안 그린다. */
   readonly setRunOutcome?: (outcome: RunOutcome) => void;
+  /**
+   * 실행이 끝나면 그 실행의 감사 행을 넘긴다.
+   *
+   * Pi 경로는 세션이 없어 패널의 `controller.auditHistory` 를 아무도 채우지 않았다 — 그래서
+   * 브리지(`window.__oprnAiBridge.audit()`)가 Pi 턴에서 항상 빈 배열이었고, 이 API 를 읽는
+   * QA 스펙들이 툴 호출을 0으로 봤다(2026-09-16 실측). 행을 만드는 자리는 활동 로그 하나다.
+   */
+  readonly onRunAudit?: (rows: readonly AuditEntry[]) => void;
 }
 
 export async function runPiCommand(
@@ -144,7 +166,7 @@ export async function runPiCommand(
   options: PiRunOptions = {},
 ): Promise<boolean> {
   if (!command.task) {
-    surface.appendBubble("system", "사용법: /pi <지시> · /pi 맵id,맵id <지시> · /pi team <지시>");
+    surface.appendBubble("system", "사용법: /pi <지시> · /pi 맵id,맵id <지시> · /team <지시>");
     return false;
   }
   const base = store.getCurrent();
@@ -212,7 +234,10 @@ export async function runPiCommand(
   const runLog = startPiRunLog(logContext);
   // boardState 는 push 마다 새 객체로 갈아 끼워지므로 호출 시점의 것을 싣는다.
   const finishLog = (facts: Omit<PiRunFacts, "board">): void => {
-    void runLog.finish({ ...facts, board: boardState });
+    void runLog.finish({ ...facts, board: boardState }).then(
+      (rows) => surface.onRunAudit?.(rows),
+      () => { /* 기록 실패는 이미 삼켜진다 — 감사 전달도 실행을 막지 않는다 */ },
+    );
   };
 
   let boardState: TeamBoardState = createTeamBoardState(command.mode, command.task);
@@ -289,6 +314,7 @@ export async function runPiCommand(
         ...(readOnly ? { readOnly: true } : {}),
         ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),
         thinkingLevel: options.planOnly || team ? brain.reasoningEffort : deep.thinkingLevel,
+        ...(options.toolDomains && options.toolDomains.length > 0 ? { toolDomains: options.toolDomains } : {}),
         ...(teamSpec ? { team: teamSpec } : {}),
       },
       { signal: surface.signal, onEvent: wrap(mapIds, index) },

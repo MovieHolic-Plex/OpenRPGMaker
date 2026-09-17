@@ -5,8 +5,8 @@
 PR #845, P2(로컬 어댑터·Electron 셸)는 브랜치 `local-store/p2`가 main에 병합된 상태다.
 
 - **포트**: `src/project/persistence/types.ts`의 `ProjectRepository` 하나를 `repository.ts`가
-  호출 시점에 고른다 — preload 브리지(`window.oprn`)가 있으면 Electron 어댑터, 없으면 기존
-  Supabase 어댑터. store와 주변 모듈은 더 이상 Supabase를 직접 부르지 않는다.
+  호출 시점에 고른다 — preload 브리지(`window.oprn`)가 있으면 Electron 어댑터, 없으면
+  **메모리 어댑터**. store와 주변 모듈은 더 이상 Supabase를 직접 부르지 않는다.
 - **로컬 어댑터**: `electron/local-store/`는 `node:sqlite`(`DatabaseSync`)만 쓰는 Node 전용
   라이브러리다. electron을 import하지 않으므로 헤드리스 도구가 같은 폴더를 같은 라이브러리로 연다.
   폴더 모양은 `project.sqlite` + `assets/` + `backups/`(`VACUUM INTO`), 형식 버전은 `meta`에 있다.
@@ -17,8 +17,65 @@ PR #845, P2(로컬 어댑터·Electron 셸)는 브랜치 `local-store/p2`가 mai
   `src/project/types/**`·`src/project/persistence/core/**`만, `src/**`는 `electron/shared/**`만
   import한다. 렌더러 파일 이름에 `sqlite`를 쓰지 않는다. `test/noLocalProjectDb.test.ts`가 이 경계를 지킨다.
 - **헤드리스**: `scripts/oprn-store.mjs`(init·info·import-json·import-package·export-json·backup·
-  import-supabase)와 `scripts/oprn-tools.mjs --project-dir <dir>`가 폴더 프로젝트를 연다.
+  import-supabase)와 `scripts/oprn-tools.mjs --project-dir <dir>`가 폴더를 연다.
   계약은 `test/localStore/headlessProjectDir.test.ts`(폴더 열기)와 `test/persistence/*`(공유 계약).
+- **패키징(P5 진입, 2026-09-17)**: `electron-builder.config.mjs` + `npm run package`/`package:dir`
+  → `release/linux-unpacked`(asar 안에 dist/+dist-electron/). 개발 스모크(`electron:smoke`는
+  `dist-electron/main.cjs`를 직접 띄운다)와 다른 경로라 `scripts/qa/verifyPackagedApp.mjs`
+  (`npm run qa:package`, 헤드리스는 xvfb-run 필요)가 실제 바이너리로 시작 화면→폴더 열기→
+  편집기 캔버스→폴더 영속화를 증명한다.
+  - **출하 번들 env 스크럽**: `supabaseProjectConfig`가 `import.meta.env`를 통째로 직렬화하므로
+    `.env.local`의 모든 `VITE_*`(Supabase 주소·키, LLM 키 등)가 번들에 박힌다. `package`/`package:dir`는
+    `build:packaged`(`vite build --mode packaged`)를 타고 `.env.packaged`가 `.env.local`보다 우선해
+    원격·비밀 변수를 빈 문자열로 덮는다 — 패키징 앱의 원격 연결은 사용자가 설정 화면에서 넣는다.
+    새 `VITE_*` 비밀을 추가하면 `.env.packaged`에도 빈 값으로 나열해야 한다.
+  - **「폴더 열기」의 isNew**: `start:openFolder`가 `project.sqlite` 없는 폴더에 `projectId:null`을
+    돌려 시작 화면이 무반응이었다 → `sessions.open`을 무조건 타서 스토어를 만들고 `isNew`만 정보로
+    둔다(아래 빈 폴더 채택과 같은 경로로 빈 프로젝트가 열린다).
+  실측으로 잡은 패키징 전용 결함 셋:
+  - 시작 화면이 폴더를 열어둔 채 부팅해도 첫 방문 게이트가 공용 데모 fetch를 시도해 CSP에
+    막혀 로드 실패 화면으로 떨어졌다 → `store.hasAdoptedLocalProject()`를 게이트에 추가
+    (`src/app/mode.ts`).
+  - 비어 있는 로컬 폴더(새 프로젝트)는 `project.load`가 null을 돌려 "선택한 작업을 찾지
+    못했습니다"로 DB 연결 화면에 갇혔다 → `store.load()`가 로컬 대상+빈 문서를 "새
+    프로젝트"로 채택하고 dirty로 둬 첫 flush가 폴더에 심는다. 회귀는
+    `test/persistence/localFolderBoot.test.ts`.
+  - `mapEditLocks`가 `isRemotePersistenceEnabled()`만 보고 원격 REST(`map_edit_locks`)를
+    불러 CSP 에러를 냈다 — 로컬 정본은 단일 작성자라 `store.usesLocalProjectFolder()`로
+    락 경로 전체를 스킵한다.
+
+### 데스크톱 앱이 실제로 뜬다 (2026-09-16)
+
+P4 셸 코드는 main 에 있었지만 **실행 진입점이 없어서** 아무도 앱을 켤 수 없었다. 이제 있다.
+
+- **실행**: `package.json` 의 `main` 이 `dist-electron/main.cjs` 를 가리키고,
+  `npm run electron:dev`(dev 서버 + Electron) · `npm run electron:start`(빌드 렌더러 + Electron) ·
+  `npm run electron:package`(electron-builder) 가 있다. 설정은 `scripts/electron-builder.config.mjs`
+  가 `src/brand.ts` 상수에서 만든다.
+- **세션 재부착**: 시작 화면은 별도 문서(`app://oprn/start-screen.html`)라 사용자가 고른 폴더가
+  렌더러 모듈 상태로 넘어오지 않는다. 편집기 부팅이 `electronRepository.openFolderHeldByMainProcess()`
+  로 주 프로세스 세션에 다시 붙는다(`src/app/mode.ts` 의 `attachElectronFolderAtBoot`).
+  이 한 줄이 없으면 로컬 폴더를 열어 뒀는데도 편집기가 「온라인 저장 설정이 필요합니다」 로 떨어진다.
+- **메뉴**: 파일 메뉴의 저장(`CmdOrCtrl+S`)은 메인이 `oprn:lifecycle.save` 를 보내고 렌더러가
+  `store.flush()` 로 처리한다. 메인이 직접 쓰면 렌더러의 미저장 변경을 건너뛴다.
+- **증거**: `scripts/qa/electronAppBootProbe.mjs` 가 폴더를 연 채 앱을 띄워 편집기 셸·본문 마운트,
+  상태 `ready`, DB 연결 화면 부재, 메뉴 저장이 `project.sqlite` 리비전을 올리는 것까지 본다.
+  저장·재기동 왕복은 `test/e2e/electronBridge.spec.ts`(playwright.electron.config.ts)가 맡는다.
+- **P6 완료 — 부팅 경로에서 Supabase 제거 (2026-09-16)**: 브리지 없는 웹 빌드의 폴백이
+  **메모리 어댑터**(`createMemoryRepository({ target: null })`)로 바뀌었다. 웹 빌드는 편집 도구가
+  아니라 QA 하네스다. 다음 모듈을 삭제했다: `supabaseProjectSync` · `supabaseProjectConfig` ·
+  `supabaseProxyPath` · `persistence/supabaseRepository` · `spatial/persistence` ·
+  `spatial/persistenceHttp` · vite의 `/supabase` 프록시. `saveRouting` 은 라우팅 오류·권한
+  타입만 남기고 재작성했고 `SpatialPersistenceError` 등은 `persistenceTypes` 로 옮깠다.
+  맵 편집 잠금(`mapEditLocks`)은 원격 행이 없어 성립하지 않으므로 계약 유지 스텁(idle)으로
+  퇴역했다 — `canEditMap` 은 항상 참.
+- **결합 경계 가드**: `test/persistence/supabaseCouplingBoundary.test.ts` 가 세 가지를 지킨다 —
+  ① `src/**` 어디에도 `/rest/v1` 문자열이 없을 것, ② 퇴역 모듈(`supabaseProjectSync` 등)이
+  부활하지 말 것, ③ 브리지 없는 기본 어댑터가 memory 종류일 것.
+- **이관 도구**: `test/support/projectSession.ts` 의 `installMemoryProjectSession()`(스토어·UI 주제),
+  `test/support/electronBridgeSession.ts` 의 `installElectronBridgeSession()`(비동기 전송 주제 — 저장을
+  붙잡을 수 있어야 "뒤 저장이 앞 저장을 기다린다" 가 증명된다). 이관은
+  `node scripts/qa/flip-default-check.mjs <파일>` 로 **양쪽 기본값에서 통과**해야 끝난다.
 
 ## 지역 하위 장소의 단일 계약 (2026-09-14)
 

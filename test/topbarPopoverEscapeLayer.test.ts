@@ -12,9 +12,6 @@ import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 //
 // teamWorkflowUi.test.ts 는 document.addEventListener 를 vi.fn() 으로 덮어써서 Escape
 // 라우팅을 볼 수 없다 — 그래서 계층 검증은 이 파일에서 따로 한다.
-vi.mock("@/project/supabaseProjectSync", () => ({
-  listProjectCommitsFromSupabase: vi.fn(async () => []),
-}));
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();

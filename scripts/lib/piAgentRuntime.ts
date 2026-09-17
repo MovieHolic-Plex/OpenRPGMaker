@@ -7,9 +7,15 @@ import { completeProvider } from "./ohMyPiPiAiRuntime.ts";
 // 이 파일만 oh-my-pi 코어를 알고 있다. 어댑터(src/ai/piAgent/*)는 순수라서, 코어를 바꾸려면
 // 이 파일 하나를 다시 쓰면 된다.
 
-import { Agent } from "@oh-my-pi/pi-agent-core";
+import { Agent, type StreamFn } from "@oh-my-pi/pi-agent-core";
 import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
-import { createPiToolset, type PiToolShape } from "../../src/ai/piAgent/toolAdapter.ts";
+import {
+  createPiToolset,
+  harvestFindToolsNames,
+  resolvePiToolShape,
+  type PiToolCallRecord,
+  type PiToolShape,
+} from "../../src/ai/piAgent/toolAdapter.ts";
 import { exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.ts";
 import { createDeltaRelay } from "../../src/ai/piAgent/deltaRelay.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
@@ -28,10 +34,14 @@ export interface RunPiAgentOptions {
   readonly readOnlyTools?: boolean;
   readonly toolNames?: readonly string[];
   readonly extraTools?: readonly PiToolShape[];
+  /** 모델 스트림 대체 — 테스트가 네트워크 없이 진짜 Agent 루프를 돌릴 때 쓰는 시임. */
+  readonly streamFn?: StreamFn;
 }
 
 const DEFAULT_MAX_TURNS = 40;
 const DEFAULT_TIMEOUT_MS = PI_AGENT_DEFAULT_TIMEOUT_MS;
+/** 한 실행에 에스컬레이션으로 얹을 수 있는 툴 상한 — 세션 경로의 16개 계약과 같다(발견은 무제한이 아니다). */
+const MAX_ESCALATED_TOOLS = 16;
 
 /** 읽기 전용 실행에 덧붙이는 한 줄. 강제는 툴 목록이 하고(쓰기 툴 미제공), 이 문장은 이유를 말한다. */
 const READ_ONLY_INSTRUCTION =
@@ -52,20 +62,53 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const model = resolvePiModel(request.provider, request.model);
   // 툴 요약은 어댑터(onCall)가 알고, 호출 id 는 코어 이벤트가 안다. 이름별 FIFO 로 둘을 맞춘다.
   const pendingSummaries = new Map<string, { ok: boolean; summary: string }[]>();
+  // `tools` 는 Agent.initialState 에 참조로 들어가 state.tools === context.tools 가 된다.
+  // 코어 루프가 매 턴 이 배열에서 요청을 만들므로, in-place push 가 곧 다음 턴의 선언이다 —
+  // 배열 교체(setTools)는 진행 중 루프에 닿지 않는다(컨텍스트가 같은 배열을 잡고 있어서다).
+  const tools: PiToolShape[] = [];
+  const exposed = new Set<string>();
+  let escalatedCount = 0;
+  const shapeFor = (name: string): PiToolShape | undefined =>
+    resolvePiToolShape(ctx, name, {
+      readOnly: options.readOnlyTools,
+      toolNames: options.toolNames,
+      onCall: recordCall,
+    });
+  // 선언 승격 — find_tools 수확과 폴백 구제가 공유. 상한은 프롬프트가 커지는 것만 묶는다.
+  const declare = (shape: PiToolShape): void => {
+    if (escalatedCount >= MAX_ESCALATED_TOOLS) return;
+    tools.push(shape);
+    exposed.add(shape.name);
+    escalatedCount += 1;
+  };
+  const recordCall = (record: PiToolCallRecord): void => {
+    const queue = pendingSummaries.get(record.name) ?? [];
+    queue.push({ ok: record.result.ok, summary: trimText(record.result.summary, 400) });
+    pendingSummaries.set(record.name, queue);
+    // find_tools 수확 — 발견된 이름을 다음 턴 요청부터 실제로 선언한다(세션의 에스컬레이션 이식).
+    if (record.name === "find_tools") {
+      for (const name of harvestFindToolsNames(record.result)) {
+        if (exposed.has(name)) continue;
+        const shape = shapeFor(name);
+        if (shape) declare(shape);
+      }
+    }
+  };
   const registryTools = createPiToolset(ctx, {
     domains: request.toolDomains,
     readOnly: request.readOnly || options.readOnlyTools,
     toolNames: options.toolNames,
-    onCall: ({ name, result }) => {
-      const queue = pendingSummaries.get(name) ?? [];
-      queue.push({ ok: result.ok, summary: trimText(result.summary, 400) });
-      pendingSummaries.set(name, queue);
-    },
+    onCall: recordCall,
   });
-  const tools: PiToolShape[] = [...registryTools, ...(options.extraTools ?? [])];
+  tools.push(...registryTools, ...(options.extraTools ?? []));
+  for (const tool of tools) exposed.add(tool.name);
   const writer = request.roleModels?.writer;
-  if (writer && !options.toolNames) tools.push(createWriterTool(writer, completeProvider,
-    options.providerApiKeys?.[writer.provider] ?? (writer.provider === request.provider ? options.apiKey : undefined)));
+  if (writer && !options.toolNames) {
+    const writerTool = createWriterTool(writer, completeProvider,
+      options.providerApiKeys?.[writer.provider] ?? (writer.provider === request.provider ? options.apiKey : undefined));
+    tools.push(writerTool);
+    exposed.add(writerTool.name);
+  }
   const systemPrompt = request.systemPrompt ? [...request.systemPrompt] : buildPiAgentSystemPrompt(base, request.mapIds);
   // 읽기 전용은 툴 목록으로 강제된다(options.readOnlyTools). 이 한 줄은 모델이 "왜 답만 하는지" 알게 한다 —
   // 이유를 모르면 쓰기를 시도하며 턴을 태운다.
@@ -80,9 +123,18 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       tools: tools as never,
     },
     ...(apiKey ? { getApiKey: () => apiKey as never } : {}),
+    ...(options.streamFn ? { streamFn: options.streamFn } : {}),
     ...(request.provider === "google-antigravity"
       ? { onPayload: antigravityToolEnumPayload(String((model as { id?: string }).id ?? ""), tools) as never }
       : {}),
+    // 미노출 툴 호출 구제 — 축소 노출(core+도메인) 아래서 모델이 find_tools 없이 곧바로 이름을
+    // 쳐도, 레지스트리에 있고 실행 경계(readOnly·toolNames) 안이면 실제로 실행된다.
+    // 경계 밖 이름은 undefined → 평범한 "tool not found" 결과가 모델의 자가수정을 돌린다.
+    resolveFallbackTool: (name: string) => {
+      const shape = shapeFor(name);
+      if (shape && !exposed.has(name)) declare(shape);
+      return shape as never;
+    },
   });
   const maxTurns = request.maxTurns ?? DEFAULT_MAX_TURNS;
   let turns = 0;

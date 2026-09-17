@@ -8,18 +8,18 @@ describe("confirmed welcome blank-project system preset boundary", () => {
     const openProject = createBlankProject();
     openProject.meta.title = "keep-open-project";
     const before = structuredClone(openProject);
-    const switchToVerifiedRemoteProject = vi.fn(async () => undefined);
+    const adoptProject = vi.fn(async () => undefined);
     const focusStartMap = vi.fn();
     const plan = welcomeGenreSystemPresetPlanById("partner-raise");
 
     const result = await applyWelcomeGenreSystemPresetPlan(plan, {
-      switchToVerifiedRemoteProject,
+      adoptProject,
       focusStartMap,
     });
 
     expect(openProject).toEqual(before);
-    expect(switchToVerifiedRemoteProject).toHaveBeenCalledOnce();
-    expect(switchToVerifiedRemoteProject).toHaveBeenCalledWith(result.project, { title: plan.title });
+    expect(adoptProject).toHaveBeenCalledOnce();
+    expect(adoptProject).toHaveBeenCalledWith(result.project, { title: plan.title });
     expect(result.project).not.toBe(openProject);
     expect(result.receipt.kind).toBe("blank-project-system-preset");
     expect(result.receipt.authoredContentSeeded).toBe(false);
@@ -31,7 +31,7 @@ describe("confirmed welcome blank-project system preset boundary", () => {
     await expect(applyWelcomeGenreSystemPresetPlan(
       welcomeGenreSystemPresetPlanById("farm-life"),
       {
-        switchToVerifiedRemoteProject: vi.fn(async () => { throw new Error("reload failed"); }),
+        adoptProject: vi.fn(async () => { throw new Error("reload failed"); }),
         focusStartMap,
       },
     )).rejects.toThrow("reload failed");

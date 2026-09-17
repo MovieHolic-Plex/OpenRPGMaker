@@ -9,7 +9,6 @@ vi.mock("@/ai/chatgptOAuthClient", async (original) => ({
   ...await original<typeof import("@/ai/chatgptOAuthClient")>(),
   fetchChatGptAuthStatus: vi.fn().mockResolvedValue({ connected: false }),
 }));
-vi.mock("@/project/supabaseProjectSync", () => ({ recordSupabaseConversation: vi.fn(async () => undefined) }));
 
 function control<T extends HTMLElement = HTMLElement>(id: string): T {
   const node = document.querySelector<T>(`[data-testid="${id}"]`);
