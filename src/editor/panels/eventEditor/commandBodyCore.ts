@@ -281,7 +281,7 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
             el("div", {
               children: [
                 el("strong", { text: "게임 화면 미리보기" }),
-                el("span", { text: "입력한 문장이 실제 창에서 보이는 모습" }),
+                el("span", { text: "게임 창(320×240)과 같은 규격을 축소한 모습 · 줄바꿈이 게임과 같습니다" }),
               ],
             }),
             el("span", { class: "event-command-text-live-chip", text: "LIVE" }),
