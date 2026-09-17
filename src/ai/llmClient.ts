@@ -1,3 +1,4 @@
+import { normalizePiApplyMode } from "./piAgent/applyMode";
 import { configForRole, parseRoleModels, type SpecialistModels } from "./modelRoles";
 // ai/llmClient.ts
 // OpenAI Chat Completions 호환 LLM 클라이언트(의존성 추가 없이 fetch 직접 구현).
@@ -153,6 +154,7 @@ export function defaultAiConfig(): AiConfig {
     agentMode: "auto",
     autonomyLevel: "balanced",
     piTeam: DEFAULT_PI_TEAM,
+    piApply: DEFAULT_PI_APPLY,
   };
 }
 
@@ -279,7 +281,7 @@ export function loadAiConfig(): AiConfig {
       // «Pi» 이므로 팀 비트만 살리고 나머지는 버린다 — 조수 세션은 deprecated 다. 옛 키는 이제
       // AiConfig 에 없으므로 느슨한 레코드로 읽는다(그 한 곳에만 남은 어휘).
       piTeam: parsed.piTeam === true || (parsed as { executionRoute?: unknown }).executionRoute === LEGACY_PI_TEAM_ROUTE,
-      piApply: parsed.piApply === "auto" ? "auto" : DEFAULT_PI_APPLY,
+      piApply: normalizePiApplyMode(parsed.piApply),
     };
   } catch {
     return base;

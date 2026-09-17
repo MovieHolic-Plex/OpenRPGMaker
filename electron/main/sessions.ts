@@ -33,13 +33,14 @@ async function separateInlineMediaOnOpen(store: LocalProjectStore): Promise<void
 }
 
 export function createProjectSessionRegistry() {
+  const borrowedTeams = new WeakSet<ProjectSession>();
   const byConsumer = new Map<SessionKey, ProjectSession>();
   const identities = new Map<SessionKey, string>();
   const opening = new Map<string, Promise<ProjectSession>>();
   const byProjectDir = new Map<string, ProjectSession>();
 
   return {
-    async open(key: SessionKey, projectDir: string): Promise<ProjectSession> {
+    async open(key: SessionKey, projectDir: string, sharedTeam?: TeamDirectory): Promise<ProjectSession> {
       projectDir = resolve(projectDir);
       if (existsSync(projectDir)) projectDir = realpathSync(projectDir);
       let pending = opening.get(projectDir);
@@ -50,8 +51,9 @@ export function createProjectSessionRegistry() {
           const store = await initLocalProjectStore({ projectDir });
           await separateInlineMediaOnOpen(store);
           let team: TeamDirectory;
-          try { team = openTeamDirectory(projectDir); } catch (error) { store.close(); throw error; }
+          try { team = sharedTeam ?? openTeamDirectory(projectDir); } catch (error) { store.close(); throw error; }
           const session = { projectDir, store, team, locks: new Map() };
+          if (sharedTeam) borrowedTeams.add(session);
           byProjectDir.set(projectDir, session);
           return session;
         })();
@@ -89,7 +91,7 @@ export function createProjectSessionRegistry() {
       if (stillUsed) return;
       byProjectDir.delete(session.projectDir);
       opening.delete(session.projectDir);
-      session.team.close();
+      if (!borrowedTeams.has(session)) session.team.close();
       session.store.close();
     },
     directoryExists(projectDir: string): boolean {

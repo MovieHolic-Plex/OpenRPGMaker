@@ -254,6 +254,8 @@ export interface ApplyProposedProjectOptions {
   readonly toolNames: readonly string[];
   /** 커밋 로그에 기록할 diff. 기본: summarizeChanges(before, proposed). */
   readonly diff?: ChangeSummary;
+  /** Trusted caller groups live milestones under its first undo snapshot. */
+  readonly skipSnapshot?: boolean;
   readonly snapshotLabel?: string;
   readonly snapshotMapId?: string | null;
   /**
@@ -365,7 +367,6 @@ export async function applyProposedProject(
   }
   if (options.operation?.signal.aborted) return { ok: false, reason: "retired-run", issue: "Run authority retired" };
   finishSpatialToolAcceptance(appliedProject);
-  recordProjectSnapshot(options.snapshotLabel, options.snapshotMapId);
   // diff 를 replace **전에** 계산한다 — 행위 로그 라벨이 이 시점에 확정돼야 하고,
   // summarizeChanges 는 before(교체 전 스토어)를 필요로 한다.
   const diff = options.diff ?? summarizeChanges(before, appliedProject);
@@ -383,7 +384,7 @@ export async function applyProposedProject(
   if (!isProposalBaseCurrent(options.base, options.resetProject === true)) {
     return { ok: false, reason: "stale-base", issue: "기준 프로젝트가 변경되었습니다. 최신 편집을 기준으로 다시 요청해주세요." };
   }
-  recordProjectSnapshot(options.snapshotLabel, options.snapshotMapId);
+  if (!options.skipSnapshot) recordProjectSnapshot(options.snapshotLabel, options.snapshotMapId);
   // Correlate at the mutation boundary: synchronous subscribers and the awaited
   // commit can both leave a later edit in the live store before this apply returns.
   const onApplied = (project: Project): void => {

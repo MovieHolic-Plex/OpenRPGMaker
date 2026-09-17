@@ -819,7 +819,7 @@ function playModeButton(mode: string): HTMLButtonElement {
 async function newProject(): Promise<void> {
   // 2026-08-18 UX 리뷰 P0: "현재 작업을 지우고" + 빨간 버튼은 위협적이고,
   // clearAll()은 열려 있던 원격 project id를 그대로 쓰며 공유 행을 덮어썼다.
-  // 새 프로젝트는 이름과 시작 장르를 받고 새 project id를 발급해 새 원격 행으로 저장한다.
+  // 새 프로젝트는 이름과 시작 장르를 받고 별도 SQLite 폴더에 저장한다.
   // 장르가 있으면 genrePacks.ts 정본 경로로 시스템 프리셋을 씨앗에 적용한다 —
   // 맵·이벤트·DB 레코드는 만들지 않고 system.* 토글만 설정된다.
   const selection = await showNewProjectDialog({ defaultValue: "새 프로젝트" });
@@ -829,9 +829,16 @@ async function newProject(): Promise<void> {
   const packId = choiceId === null ? null : newProjectChoiceById(choiceId)?.packId ?? null;
   const seed = createNewProjectSeed(packId);
   const { createProjectFolderWithSeed } = await import("@/editor/projectFolderActions");
-  const created = await createProjectFolderWithSeed(title, seed);
+  if (store.hasUnsavedChanges() && !store.isSharedDemoSession() && !(await saveProjectNow())) return;
+  let created: boolean;
+  try {
+    created = await createProjectFolderWithSeed(title, seed);
+  } catch (error) {
+    toast(`새 프로젝트를 만들지 못했습니다: ${error instanceof Error ? error.message : String(error)}`, "error");
+    return;
+  }
   if (!created) {
-    toast("새 프로젝트는 데스크톱 앱에서 폴더를 골라 만듭니다.", "error");
+    toast("프로젝트 저장 서버에 연결하거나 데스크톱 앱에서 열어 주세요.", "error");
     return;
   }
   const genreSuffix = choiceId ? ` — 시작 장르: ${newProjectChoiceLabel(choiceId)}` : "";
@@ -852,7 +859,7 @@ async function newProject(): Promise<void> {
       }
     }
   }
-  // 새 폴더를 여는 것은 주 프로세스가 했다 — 문서를 다시 띄우면 부팅 attach 가 그 폴더를 연다.
+  // 데스크톱은 열린 폴더, 웹은 hostProject 주소를 부팅 attach가 다시 연다.
   window.location.reload();
 }
 

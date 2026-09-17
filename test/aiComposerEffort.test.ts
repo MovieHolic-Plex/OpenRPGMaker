@@ -71,7 +71,14 @@ describe("aiComposer 자율성 셀렉트", () => {
       onNewChat: () => undefined,
     });
     expect(shell.autonomySelect).toBeNull();
-    expect((shell.actions as unknown as FakeElement).querySelector(".ai-composer-effort-select")).toBeNull();
+    expect((shell.actions as unknown as FakeElement).querySelector('[data-testid="ai-composer-autonomy"]')).toBeNull();
+  });
+
+  it("적용 정책은 자율성과 별도로 다섯 모드를 제공한다", () => {
+    const shell = render();
+    const select = (shell.actions as unknown as FakeElement).querySelector('[data-testid="ai-composer-apply-mode"]');
+    expect(select?.querySelectorAll("option").map(option => option.getAttribute("value"))).toEqual(["yolo", "auto", "default", "review", "step"]);
+    expect(select?.value).toBe("default");
   });
 
   it("자율성 선택지는 다이얼 전체를 한국어 라벨로 그린다", () => {
@@ -90,7 +97,7 @@ describe("aiComposer 자율성 셀렉트", () => {
   it("추론 강도 셀렉트를 그리지 않는다", () => {
     // Break: 수동 override 가 남으면 다이얼이 저장한 프리셋 값과 갈라진다.
     const shell = render();
-    const selects = (shell.actions as unknown as FakeElement).querySelectorAll(".ai-composer-effort-select");
+    const selects = (shell.actions as unknown as FakeElement).querySelectorAll('[data-testid="ai-composer-autonomy"]');
     expect([...selects].length).toBe(1);
   });
 

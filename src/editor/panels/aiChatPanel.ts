@@ -576,6 +576,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       composerShell.syncEffort(isAutonomyLevel(config.autonomyLevel) ? config.autonomyLevel : "balanced");
       // 팀 비트도 같은 값이다 — 설정에서 끄면 컴포저 토글이 따라와야 다음 평문이 어긋나지 않는다.
       composerShell.setPiTeam(config.piTeam ?? DEFAULT_PI_TEAM);
+      composerShell.syncApplyMode();
       teamPanel.setEnabled(config.piTeam ?? DEFAULT_PI_TEAM);
     },
     extraSections: settingsExtraSections,

@@ -19,8 +19,7 @@ import {
 } from "@/ai/intentDeclaration";
 import type { PiAgentThinkingLevel } from "./protocol";
 
-export type PiApplyMode = "review" | "auto";
-export const DEFAULT_PI_APPLY: PiApplyMode = "review";
+export { DEFAULT_PI_APPLY, type PiApplyMode } from "./applyMode";
 /** 팀 실행 기본값. 컴포저 「팀」 토글·설정 「Pi 팀 실행」 이 이 값을 덮는다. */
 export const DEFAULT_PI_TEAM = false;
 
