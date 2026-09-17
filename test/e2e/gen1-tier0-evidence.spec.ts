@@ -7,7 +7,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 import { exportedProject } from "./rm2k3-database-helpers";
-import { createScarloxyPokemonDemoProject } from "@/project/defaults";
+import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
 import { scarloxySpeciesId } from "@/project/defaults/scarloxyPokemonDemoGame";
 import { DB_TOOLS } from "@/editor/tools/dbTools";
 import type { Project } from "@/project/types";

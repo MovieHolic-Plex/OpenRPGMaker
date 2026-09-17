@@ -1,6 +1,6 @@
 {
   "panelClass": "ai-chat-panel is-assistant-idle chat-dock-float is-studio",
-  "panelStyle": "--ai-font-scale: 1; --ai-background-opacity: 82%; --ai-command-bar-clearance: 167px;",
+  "panelStyle": "--ai-font-scale: 1; --ai-background-opacity: 82%; --ai-command-bar-clearance: 169px;",
   "focus": "ai-studio-chat-collapse",
   "viewport": [
     1024,

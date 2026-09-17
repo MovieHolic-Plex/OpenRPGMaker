@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createBlankProject, createFarmingDemoProject } from "@/project/defaults";
+import { createBlankProject } from "@/project/defaults";
+import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { calendarDayKey } from "@/project/gameTime";
 import { startSession } from "@/project/session";
 import { createStatusMenuDetail } from "@/player/playerStatusMenuDetails";

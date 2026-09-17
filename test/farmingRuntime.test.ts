@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { DB_TOOLS } from "@/editor/tools/dbTools";
 import { MAP_TOOLS } from "@/editor/tools/mapTools";
 import { DEFAULT_FARMLAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
-import { createBlankProject, createFarmingDemoProject } from "@/project/defaults";
+import { createBlankProject } from "@/project/defaults";
+import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import {
   advanceGameDays,

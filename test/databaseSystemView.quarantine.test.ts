@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { getMapEditHistoryState, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { listDatabaseResourceOptions } from "@/editor/panels/databaseResourcePickerDialog";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
-import { createBlankProject, createSampleAdventureProject } from "@/project/defaults";
+import { createBlankProject } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 

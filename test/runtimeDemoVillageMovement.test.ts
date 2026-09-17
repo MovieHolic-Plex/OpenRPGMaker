@@ -3,7 +3,7 @@
 // 픽스처가 아니라 createSampleAdventureProject 의 실제 맵·통행 데이터를 쓰고,
 // 런타임 제품 함수(registerPageMoveRoutes + updateAutonomousNPCs)를 그대로 굴린다.
 import { describe, expect, it } from "vitest";
-import { createSampleAdventureProject } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";
 import { registerPageMoveRoutes } from "@/player/playScenePageMoveRoutes";

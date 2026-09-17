@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { createTownCityShowcaseMap, createTownHouseShowcaseMap, TILE, type TownHouseShowcaseStyle } from "@/project/defaults";
+import { TILE } from "@/project/defaults";
+import type { TownHouseShowcaseStyle } from "@/editor/content/townShowcaseMaps";
+import { createTownCityShowcaseMap, createTownHouseShowcaseMap } from "@/editor/content/townShowcaseMaps";
 import { SAND_TILE } from "@/project/defaults/chipsetMapping";
 import type { GameMap } from "@/project/types";
 

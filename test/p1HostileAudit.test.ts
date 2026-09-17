@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createFarmingDemoProject } from "@/project/defaults";
+import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import {
   advanceFarmAnimalProduction,
   feedFarmAnimal,

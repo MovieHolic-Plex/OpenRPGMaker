@@ -127,7 +127,9 @@ describe("action combat support", () => {
 
 describe("shipped project battle skin authoring", () => {
   it("출하 프로젝트 팩터리는 지원 중인 배틀 스킨만 저작한다", async () => {
-    const defaults = await import("@/project/defaults");
+    // 데모·쇼케이스 팩터리는 배럴이 아니라 defaultProject 에 있다(배럴은 가벼운 것만 내보낸다).
+    const defaults = await import("@/project/defaults/defaultProject");
+    const { createModernNocturneProject } = await import("@/project/defaults/modernNocturneGame");
     const { createSkyStairProject } = await import("@/editor/content/skyStairGame");
     const { createVillageShoppingStreetProject } = await import(
       "@/editor/content/villageShoppingStreetProject"
@@ -165,7 +167,7 @@ describe("shipped project battle skin authoring", () => {
       ["createTownArchitectureTestProject", defaults.createTownArchitectureTestProject],
       ["createTownCityShowcaseProject", defaults.createTownCityShowcaseProject],
       ["createTownHouseShowcaseProject", defaults.createTownHouseShowcaseProject],
-      ["createModernNocturneProject", defaults.createModernNocturneProject],
+      ["createModernNocturneProject", createModernNocturneProject],
       ["createSkyStairProject", createSkyStairProject],
     ] as const;
 

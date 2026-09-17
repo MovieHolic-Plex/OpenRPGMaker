@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createTownArchitectureCityMap, TILE } from "@/project/defaults";
+import { TILE } from "@/project/defaults";
+import { createTownArchitectureCityMap } from "@/editor/content/townShowcaseMaps";
 import { SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { TOWN_ARCHITECTURE_CITY_NPC_COUNT } from "@/project/defaults/townArchitectureCityNpcs";
 import type { GameMap } from "@/project/types";

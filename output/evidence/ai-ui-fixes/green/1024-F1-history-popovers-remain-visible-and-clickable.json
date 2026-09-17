@@ -1,10 +1,12 @@
 {
   "panelClass": "ai-chat-panel is-assistant-idle chat-dock-float is-history-open is-docked",
   "panelStyle": "--ai-font-scale: 1; --ai-background-opacity: 82%; --ai-command-bar-clearance: 723px;",
-  "focus": "ai-context-meter",
+  "focus": "ai-command-menu-toggle",
   "viewport": [
     1024,
     768
   ],
-  "errors": []
+  "errors": [
+    "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeHidden\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByTestId('ai-command-menu')\nExpected: hidden\nReceived: visible\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeHidden\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('ai-command-menu')\u001b[22m\n\u001b[2m    13 × locator resolved to <div role=\"menu\" data-testid=\"ai-command-menu\" class=\"ai-composer-popover ai-command-menu\">…</div>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n"
+  ]
 }

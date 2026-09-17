@@ -146,10 +146,13 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
     fixes.push({ layer: "build", action: "repair_house_doors", hint: "각 집에 116/146 문 한 쌍만 복구" });
     lookScore -= 0.12;
   }
-  if (metrics.exitRoads < 4) {
+  // 출구 수(2026-09-17): 예전엔 무조건 4방향을 요구해 유기적 마을도 십자 위상으로 몰았다.
+  // 이제 설계도(layoutPlan.roadAnchors)가 계획한 만큼만 요구하고, 설계도가 없으면 최소 2곳.
+  const plannedExits = Math.max(1, map.layoutPlan?.roadAnchors?.length ?? 2);
+  if (metrics.exitRoads < plannedExits) {
     structureOk = false;
-    issues.push(`마을 밖으로 이어지는 길이 ${metrics.exitRoads}/4방향뿐이다`);
-    fixes.push({ layer: "build", action: "repair_exit_roads", hint: "layoutPlan roadAnchors 네 곳을 중앙 도로망에 연결" });
+    issues.push(`마을 밖으로 이어지는 길이 ${metrics.exitRoads}/${plannedExits}곳뿐이다`);
+    fixes.push({ layer: "build", action: "repair_exit_roads", hint: "layoutPlan roadAnchors 각 좌표를 중앙 도로망에 연결" });
     lookScore -= 0.12;
   }
   // 품질 검사를 두 갈래로 나눈다.

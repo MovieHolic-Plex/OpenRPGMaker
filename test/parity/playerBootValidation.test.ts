@@ -1,6 +1,7 @@
 // test/parity/playerBootValidation.test.ts
 import { describe, expect, it } from "vitest";
-import { createBlankProject, createSampleAdventureProject, DEFAULT_SKILL_ID } from "@/project/defaults";
+import { createBlankProject, DEFAULT_SKILL_ID } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { deserialize, serialize } from "@/project/io";
 import { validateProjectForPlay } from "@/project/playBootValidation";
 import invalidReferenceProject from "../fixtures/projects/invalid-db-reference-v3.json";

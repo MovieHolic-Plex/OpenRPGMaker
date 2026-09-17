@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBattleRuntime } from "@/battle/runtime";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { createScarloxyPokemonDemoProject } from "@/project/defaults";
+import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
 import { deserialize, serialize } from "@/project/io";
 import { evolveMonster, giveMonster, monsterBattleStatsForSpecies } from "@/project/monsterCollection";
 import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";

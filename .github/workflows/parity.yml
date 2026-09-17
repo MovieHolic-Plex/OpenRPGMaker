@@ -1,8 +1,23 @@
 name: parity
 
+# 2026-09-17: 자동 트리거를 뗐다 — **수동 전용**이다.
+#
+# 이 저장소의 Actions 는 2026-08-04 이후 꺼져 있었다(actions/permissions → enabled:false).
+# 그 마지막 실행에서 unit-tests / e2e / ax-gates 가 실패했고, build 와 editor-player-parity 만
+# 초록이었다. 빨간 잡을 푸시마다 띄우는 것이 CI 가 무시되고 결국 꺼진 경로였다.
+#
+# 그래서 역할을 나눴다:
+#   - 푸시·PR 마다      → ci-fast.yml   (초록이 확인된 것만: typecheck:app / parity / build:app)
+#   - 야간·수동         → ci-full.yml   (verify-gates.mjs, 기준선 대비 회귀만 실패)
+#   - 이 파일           → 수동 전용. 아래 잡들을 하나씩 초록으로 만들어 ci-fast 로 옮겨라.
+#
+# 남아 있는 빨간 잡과 이유:
+#   unit-tests  — 생짜 `npm test`. 상시 실패가 있고 이 박스에선 완주도 못 했다(78분 무출력 사망).
+#                 ci-full 의 verify-gates 가 대체한다. 옮길 게 아니라 지울 후보다.
+#   ax-gates    — check-file-loc.mjs 가 clean HEAD 에서도 exit 1(미유예 위반 19건).
+#   e2e         — playwright. 초록 여부 미확인.
 on:
-  push:
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   editor-player-parity:

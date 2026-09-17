@@ -4,7 +4,8 @@
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
-import { createBlankProject, createSampleAdventureProject } from "@/project/defaults";
+import { createBlankProject } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { deserialize, serialize } from "@/project/io";
 import {
   applyMapDeletion,

@@ -1,6 +1,6 @@
 import { test, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
-import { createTownArchitectureCityProject } from "@/project/defaults";
+import { createTownArchitectureCityProject } from "@/project/defaults/defaultProject";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 
 declare const process: {

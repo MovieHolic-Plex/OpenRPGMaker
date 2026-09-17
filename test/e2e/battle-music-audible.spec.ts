@@ -4,7 +4,7 @@
 // (.mid) 였다. 브라우저는 MIDI 를 재생하지 못하므로 전투 진입 시 필드 음악이 멈춘 뒤
 // **아무 소리도 나지 않았다.** 실패는 콘솔 경고 한 줄뿐이라 눈에 띄지 않는다.
 import { expect, test } from "@playwright/test";
-import { createSampleAdventureProject } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 
 test.setTimeout(120_000);
 test.use({ serviceWorkers: "block" });

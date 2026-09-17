@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { applyDailyWeatherForDate } from "@/project/dailyWeather";
-import { createFarmingDemoProject } from "@/project/defaults";
+import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { advanceGameDays, resolveTimeSystem } from "@/project/gameTime";
 import { startSession } from "@/project/session";
 import { farmPlotAt, interactWithFarmPlot, syncFarmPlotsToDate } from "@/player/farming";

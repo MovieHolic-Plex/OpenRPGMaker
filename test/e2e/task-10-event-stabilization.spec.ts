@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
-import { createShopShowcaseProject } from "@/project/defaults";
+import { createShopShowcaseProject } from "@/project/defaults/defaultProject";
 import type { Command, Project } from "@/project/types";
 import { debugState } from "./eventEditorCertEvidence";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createBlankProject, createFarmingDemoProject } from "@/project/defaults";
+import { createBlankProject } from "@/project/defaults";
+import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { canMove, isPassable } from "@/project/collision";
 import { deserialize, serialize } from "@/project/io";
 import { collectProjectItemReferenceIds, validateProjectReferences } from "@/project/io/references";

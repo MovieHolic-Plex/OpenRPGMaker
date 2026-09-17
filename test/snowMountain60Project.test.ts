@@ -2,7 +2,7 @@
 // 지형 자체는 `snowMountain60.test.ts` 가 본다 — 여기는 **배선**만 본다.
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { canMove } from "@/project/collision";
-import { createSnowMountain60Project } from "@/project/defaults";
+import { createSnowMountain60Project } from "@/project/defaults/defaultProject";
 import { createDevShowcaseProjectForLocation } from "@/editor/devShowcaseProjects";
 import { SNOW_MOUNTAIN_HEIGHT, SNOW_MOUNTAIN_START, SNOW_MOUNTAIN_WIDTH } from "@/project/defaults/snowMountain60";
 import { projectLint } from "@/project/lint/projectLint";

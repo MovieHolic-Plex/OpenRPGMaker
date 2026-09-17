@@ -6,7 +6,7 @@
  */
 import { writeFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
-import { createSnowMountain60Project } from "@/project/defaults";
+import { createSnowMountain60Project } from "@/project/defaults/defaultProject";
 import { SNOW_MOUNTAIN_START } from "@/project/defaults/snowMountain60";
 import { startNewGameFromTitle, tapKey } from "./runtimeInput";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";

@@ -12,7 +12,7 @@ import {
   type Gen1StateRecordRef,
 } from "@/battle/gen1/status";
 import { gen1CanonicalTypeForId, gen1ElementIdForCanonical } from "@/battle/typeChart";
-import { createScarloxyPokemonDemoProject } from "@/project/defaults";
+import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
 
 function bytes(values: readonly number[]): { readonly next: () => number; readonly consumed: () => number } {
   let index = 0;

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { dailyWeatherForecast } from "@/project/dailyWeather";
-import { createFarmingDemoProject } from "@/project/defaults";
+import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { calendarDayKey } from "@/project/gameTime";
 import { feedFarmAnimal, petFarmAnimal } from "@/project/farmAnimals";
 import { ITEM_QUANTITY_MAX } from "@/project/itemQuantities";

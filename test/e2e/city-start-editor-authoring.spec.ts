@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
-import { createTownArchitectureCityProject, createStarterHouseInteriorMap } from "@/project/defaults";
+import { createStarterHouseInteriorMap } from "@/project/defaults";
+import { createTownArchitectureCityProject } from "@/project/defaults/defaultProject";
 import type { Project } from "@/project/types";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 import { tapKey, startNewGameFromTitle } from "./runtimeInput";

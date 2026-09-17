@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createFarmingDemoProject } from "@/project/defaults";
+import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { deserialize, serialize } from "@/project/io";
 import { placeObject, ensureChest } from "@/project/placeables";

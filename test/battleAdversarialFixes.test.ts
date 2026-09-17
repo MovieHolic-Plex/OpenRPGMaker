@@ -7,7 +7,7 @@ import { enemyBattlers, type MutableBattler } from "@/battle/battleBattlers";
 import { simulateBattle } from "@/battle/simulate";
 import { predictAttackDamage, predictSkillDamage } from "@/battle/battlePredict";
 import { createBattleRuntime } from "@/battle/runtime";
-import { createScarloxyPokemonDemoProject } from "@/project/defaults";
+import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
 import { scarloxySpeciesId } from "@/project/defaults/scarloxyPokemonDemoGame";
 import { startSession } from "@/project/session";
 import { giveMonster } from "@/project/monsterCollection";

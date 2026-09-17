@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createDbExtractedHouseTemplateMap, DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
+import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
+import { createDbExtractedHouseTemplateMap } from "@/editor/content/townShowcaseMaps";
 
 describe("DB-extracted user house template", () => {
   it("keeps fence and windows on upper while door and walls stay lower", () => {

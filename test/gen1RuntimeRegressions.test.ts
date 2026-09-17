@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createBattleRuntime } from "@/battle/runtime";
-import { createScarloxyPokemonDemoProject } from "@/project/defaults";
+import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
 import { scarloxySpeciesId } from "@/project/defaults/scarloxyPokemonDemoGame";
 import type { ActorParameterKey } from "@/project/types";
 

@@ -10,7 +10,7 @@
 // 서브하는지는 증명하지 못한다. 그래서 여기서는 **실행 중인 에디터의 페이지 컨텍스트**에서
 // 앱 자신의 모듈 그래프를 동적 import 해서 읽는다. 이게 통과하면 라벨은 화면까지 도달한다.
 import { expect, test } from "@playwright/test";
-import { createSampleAdventureProject } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 
 test.setTimeout(120_000);

@@ -52,54 +52,24 @@ export {
 } from "./defaults/defaultDatabase";
 export {
   createBlankMap,
-  createDbExtractedHouseTemplateMap,
   createLogCabinShowcaseMap,
   createRetroHouseShowcaseMap,
-  createSmallHouseVariantMap,
-  createSmallHouseVariantMaps,
-  createTownArchitectureCityMap,
-  createTownArchitectureTestMap,
-  createTownCityShowcaseMap,
-  createTownHouseShowcaseMap,
   createStarterMap,
   singleNodeTree,
-  type SmallHouseVariantIndex,
-  type TownHouseShowcaseStyle,
 } from "./defaults/defaultMaps";
-export {
-  createBlankProject,
-  createDbExtractedHouseTemplateProject,
-  createFarmingDemoProject,
-  createHouseTemplateGalleryProject,
-  createLogCabinShowcaseProject,
-  createMarketTownProject,
-  createRetroHouseShowcaseProject,
-  createSampleAdventureProject,
-  createScarloxyDemoProject,
-  createScarloxyPokemonDemoProject,
-  createSnowMountain60Project,
-  createIcePlain64Project,
-  createTrainingExamplesProject,
-  createShopShowcaseProject,
-  createSmallHouseVariantProject,
-  createTownArchitectureCityProject,
-  createTownArchitectureTestProject,
-  createTownCityShowcaseProject,
-  createTownHouseShowcaseProject,
-  ensureSwitchVariableSlots,
-} from "./defaults/defaultProject";
-export { createModernNocturneProject } from "./defaults/modernNocturneGame";
+export { createBlankProject, ensureSwitchVariableSlots } from "./defaults/blankProject";
 
-// 《천공의 계단》 — 비주얼 중심 7층 JRPG. 배럴에서 바로 내보내 에디터 메뉴가 쓴다.
-export {
-  createSkyStairProject,
-  SKY_BATTLE_BG,
-  SKY_BGM,
-  SKY_ENEMY_IDS,
-  SKY_ITEM,
-  SKY_MAP,
-  SKY_SWITCH,
-  SKY_TITLE,
-  SKY_TROOP,
-  SKY_VARIABLE,
-} from "@/editor/content/skyStairGame";
+// ─────────────────────────────────────────────────────────────────────────────
+// 이 배럴은 **가벼운 것만** 내보낸다. 데모·쇼케이스 프로젝트/맵 빌더와 《천공의 계단》은
+// 여기서 빠졌다 — 그것들이 `@/editor/content/*` → houseKit ↔ houseInteriors(에디터 인테리어
+// 파이프라인)를 끌어서, 이 배럴을 import 하는 테스트 1,244개가 파일마다 335모듈·6.8MB 를
+// 다시 평가하게 만들었다(실측 2026-09-17: 파일당 collect 1.40 s → 분리 후 162모듈·0.87 s).
+//
+// 옮겨간 곳:
+//   create*Project(데모·쇼케이스)  → "@/project/defaults/defaultProject"
+//   createModernNocturneProject    → "@/project/defaults/modernNocturneGame"
+//   createSkyStairProject, SKY_*   → "@/editor/content/skyStairGame"
+//   쇼케이스 맵 빌더·관련 타입      → "@/editor/content/townShowcaseMaps"
+//   createMarketTownMap 등          → "@/project/defaults/marketTownMap"
+// 새 데모 빌더를 여기에 다시 추가하지 마라. 추가하면 위 비용이 그대로 돌아온다.
+// ─────────────────────────────────────────────────────────────────────────────

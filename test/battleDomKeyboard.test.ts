@@ -5,7 +5,7 @@ import { deserialize } from "@/project/io";
 import { mountBattleScene } from "@/player/battleDom";
 import { introDirectorState } from "@/player/battleDirectorDom";
 import { store } from "@/project/store";
-import { createScarloxyPokemonDemoProject } from "@/project/defaults";
+import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
 import battleFixture from "./fixtures/projects/battle-v3.json";
 import "./battleOverhaulContracts.cases";
 

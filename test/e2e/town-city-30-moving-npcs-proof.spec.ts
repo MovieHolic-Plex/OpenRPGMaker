@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
-import { createTownArchitectureCityProject } from "@/project/defaults";
+import { createTownArchitectureCityProject } from "@/project/defaults/defaultProject";
 import { TOWN_ARCHITECTURE_CITY_NPC_COUNT } from "@/project/defaults/townArchitectureCityNpcs";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";

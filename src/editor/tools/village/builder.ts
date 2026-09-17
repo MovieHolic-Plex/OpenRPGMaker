@@ -95,11 +95,12 @@ import {
 import { villagePlaza } from "./plaza";
 import { sketchHouseSites } from "./sketch";
 import {
+  type Boulevard,
   boulevardCells,
   paintVillageRoadsChecked,
   plazaDeckBlockedCells,
   villageBoulevard,
-  villageRoadAnchors,
+  villageExitAnchors,
 } from "./roads";
 import { COORD_SCHEMA, VILLAGE_HOUSE_PLAN_SCHEMA, VILLAGE_NPC_PLAN_SCHEMA } from "../schemaShapes";
 
@@ -254,7 +255,8 @@ export function buildVillageDomain(
     : presetValues.houseCount
       ?? Math.min(MAX_HOUSES, Math.max(DEFAULT_HOUSES, Math.round((area.w * area.h) / 380)));
   // 대로 골격(대형 맵, 리서치 spine-first): 곡선 밴드를 집 배치 전에 예약해 구멍 없는 대로 보장.
-  const boulevard = villageBoulevard(area, plaza);
+  // 단일 축(2026-09-17): 격자 마을만 2축 십자, 유기적 배치는 시드·비율로 한 축만.
+  const boulevard = villageBoulevard(area, plaza, seed, intent.settlementLayout);
   const reservedWaterCells = new Set<number>();
   if (terrainMasks) for (let i = 0; i < terrainMasks.roles.length; i++) if (terrainMasks.roles[i] === "water") reservedWaterCells.add(i);
   const lakeAvoid = new Set(reservedWaterCells);
@@ -296,7 +298,7 @@ export function buildVillageDomain(
     plaza,
     seed,
     targetHouses,
-    boulevard: boulevard ? { ewRow: boulevard.ewRow, nsCol: boulevard.nsCol } : null,
+    boulevard: boulevard ? { ewRow: boulevard.ewRow, nsCol: boulevard.nsCol, axis: boulevard.axis } : null,
   });
   // 자연 시공 순서: 집 배치·마감·보호 등록 → 광장·대로·집 연결 길 → 울타리
   // (예전엔 길→집이라 길이 집 자리를 선점하는 느낌이 났음)
@@ -304,7 +306,7 @@ export function buildVillageDomain(
     objectCatalog, merged, intent, seed, houseBlockedIdx) : buildHouses(
     map, coreArea, plaza, targetHouses, rng, windows, intent, warnings,
     houseBlockedIdx.size > 0 ? houseBlockedIdx : undefined,
-    boulevard ? { ewRow: boulevard.ewRow, nsCol: boulevard.nsCol } : undefined,
+    boulevard ? { ewRow: boulevard.ewRow, nsCol: boulevard.nsCol, axis: boulevard.axis } : undefined,
     !doorEventsPlanned,
     sketchSites,
   );
@@ -346,7 +348,7 @@ export function buildVillageDomain(
     );
   }
   assertHouseProtection(existingHouses, draft, []);
-  setVillageHarnessLayoutPlan(map, area, plaza, houses, intent, seed, fencesEnabled, merged.settlementLayout);
+  setVillageHarnessLayoutPlan(map, area, plaza, houses, intent, seed, fencesEnabled, merged.settlementLayout, boulevard);
   if (compact && map.layoutPlan) {
     map.layoutPlan.notes = "작은 회벽·석벽 주택의 조밀한 마을. 10×10 초과 큰집 최대 2채, 모든 집 15×15 이하. 집 → 길 → 군락 나무 → 비대칭 호수·243계열 풀밭·장터·마당.";
     map.layoutPlan.regions.find(region => region.role === "plaza")?.tags?.push("composition:compact");
@@ -1716,6 +1718,7 @@ function setVillageHarnessLayoutPlan(
   seed: number,
   fencesEnabled: boolean,
   settlementLayout: unknown,
+  boulevard: Boulevard | null,
 ): void {
   const kitLabel: Record<HouseKitId, string> = {
     "blue-stone": "파랑 석벽",
@@ -1779,11 +1782,13 @@ function setVillageHarnessLayoutPlan(
         hasFence: fencesEnabled,
       })),
     ],
-    roadAnchors: villageRoadAnchors(area, plaza, seed).map((point, index) => ({
-      id: (["north-exit", "south-exit", "west-exit", "east-exit"] as const)[index]!,
-      ...point,
+    // 출구는 paintPlazaAndAvenue 와 같은 (seed, layout, boulevard) 로 뽑아야 평가기 앵커와 실제 길이 일치한다.
+    roadAnchors: villageExitAnchors(area, plaza, seed, intent.settlementLayout, boulevard).map((anchor) => ({
+      id: `${anchor.side}-exit`,
+      x: anchor.x,
+      y: anchor.y,
     })),
-    notes: "직접 저작 자연 마을의 비대칭 집·중앙 루프·네 방향 출구·층별 창 분리 문법을 적용한 하네스 설계도",
+    notes: "직접 저작 자연 마을의 비대칭 집·집 먼저 골목 골격·시드로 고른 출구·층별 창 분리 문법을 적용한 하네스 설계도",
   });
 }
 

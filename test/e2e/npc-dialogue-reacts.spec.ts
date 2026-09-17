@@ -6,7 +6,7 @@
 // 검증 방식: 같은 NPC 를 두 번 말 걸어 대사가 달라지는지 본다. 첫 번째는 퀘스트 미수락,
 // 두 번째는 종 복원 스위치를 켠 뒤. 대사가 같으면 층이 작동하지 않는 것이다.
 import { expect, test, type Page } from "@playwright/test";
-import { createSampleAdventureProject } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { startNewGameFromTitle } from "./runtimeInput";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 

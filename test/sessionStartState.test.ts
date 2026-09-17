@@ -8,7 +8,8 @@
  * 저작 표면과 런타임이 갈라진 자리였다.
  */
 import { describe, expect, it } from "vitest";
-import { createBlankProject, createFarmingDemoProject } from "@/project/defaults";
+import { createBlankProject } from "@/project/defaults";
+import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { startSession } from "@/project/session";
 
 describe("저작된 시작 상태 시드", () => {

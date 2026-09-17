@@ -1,10 +1,12 @@
 {
-  "panelClass": "ai-chat-panel chat-dock-float is-assistant-log-open",
-  "panelStyle": "--ai-font-scale: 1; --ai-background-opacity: 82%; --ai-command-bar-clearance: 644px;",
-  "focus": "ai-open-conversations",
+  "panelClass": "ai-chat-panel chat-dock-float is-assistant-log-open is-work-tab",
+  "panelStyle": "--ai-font-scale: 1; --ai-background-opacity: 82%; --ai-command-bar-clearance: 715px;",
+  "focus": null,
   "viewport": [
     1024,
     768
   ],
-  "errors": []
+  "errors": [
+    "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m\"final\"\u001b[39m\nReceived: \u001b[31m\"답변\"\u001b[39m"
+  ]
 }

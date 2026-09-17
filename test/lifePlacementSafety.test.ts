@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createBlankProject, createFarmingDemoProject } from "@/project/defaults";
+import { createBlankProject } from "@/project/defaults";
+import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { startSession } from "@/project/session";
 import { advanceSeasonalForage } from "@/project/seasonalForage";
 import { p2LifeProject } from "./fixtures/p2LifeSystems";

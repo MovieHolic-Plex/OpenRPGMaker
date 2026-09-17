@@ -1,10 +1,12 @@
 {
   "panelClass": "ai-chat-panel is-assistant-idle chat-dock-float",
-  "panelStyle": "--ai-font-scale: 1; --ai-background-opacity: 82%; --ai-command-bar-clearance: 167px;",
+  "panelStyle": "--ai-font-scale: 1; --ai-background-opacity: 82%; --ai-command-bar-clearance: 169px;",
   "focus": null,
   "viewport": [
     1440,
     900
   ],
-  "errors": []
+  "errors": [
+    "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.toast')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.toast')\u001b[22m\n"
+  ]
 }

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createMarketTownProject, DEFAULT_ITEM_ID, TILE } from "@/project/defaults";
+import { DEFAULT_ITEM_ID, TILE } from "@/project/defaults";
+import { createMarketTownProject } from "@/project/defaults/defaultProject";
 import { createMarketTownMap, marketTownStartPos } from "@/project/defaults/marketTownMap";
 import { SAND_TILE } from "@/project/defaults/chipsetMapping";
 import type { Command, GameMap } from "@/project/types";

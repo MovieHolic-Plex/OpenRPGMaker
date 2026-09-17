@@ -139,10 +139,25 @@ describe("build_village", () => {
     const dirt = new Set([421, 391, 451, 420, 422, 390, 392, 450, 452, 360, 362, 300]);
     const road = new Set([...sand, ...dirt]);
     const edgeHasRoad = (cells: readonly number[]) => cells.some((index) => road.has(map.lowerTiles[index] ?? -1));
-    expect(edgeHasRoad(Array.from({ length: map.width }, (_, x) => x))).toBe(true);
-    expect(edgeHasRoad(Array.from({ length: map.width }, (_, x) => (map.height - 1) * map.width + x))).toBe(true);
-    expect(edgeHasRoad(Array.from({ length: map.height }, (_, y) => y * map.width))).toBe(true);
-    expect(edgeHasRoad(Array.from({ length: map.height }, (_, y) => y * map.width + map.width - 1))).toBe(true);
+    // 출구(2026-09-17): 유기적 배치는 무조건 4방향 십자가 아니라 시드로 고른 2~3곳이다.
+    // 설계도가 계획한 출구마다 그 변에 실제 길이 닿아 있어야 하고, 계획한 출구 좌표 자체도 길이어야 한다.
+    const edgeCells = {
+      north: Array.from({ length: map.width }, (_, x) => x),
+      south: Array.from({ length: map.width }, (_, x) => (map.height - 1) * map.width + x),
+      west: Array.from({ length: map.height }, (_, y) => y * map.width),
+      east: Array.from({ length: map.height }, (_, y) => y * map.width + map.width - 1),
+    } as const;
+    const anchors = map.layoutPlan?.roadAnchors ?? [];
+    expect(anchors.length).toBeGreaterThanOrEqual(2);
+    expect(anchors.length).toBeLessThanOrEqual(4);
+    for (const anchor of anchors) {
+      const side = anchor.id.replace(/-exit$/, "") as keyof typeof edgeCells;
+      expect(edgeCells[side], anchor.id).toBeTruthy();
+      expect(edgeHasRoad(edgeCells[side]), `${anchor.id} 변에 길이 없다`).toBe(true);
+      expect(road.has(map.lowerTiles[anchor.y * map.width + anchor.x] ?? -1), `${anchor.id} 앵커 칸이 길이 아니다`).toBe(true);
+    }
+    const roadEdges = (Object.keys(edgeCells) as (keyof typeof edgeCells)[]).filter((side) => edgeHasRoad(edgeCells[side]));
+    expect(roadEdges.length).toBeLessThan(4);
 
     expect(map.layoutPlan?.kind).toBe("village-harness-natural-v2");
     const houseRegions = map.layoutPlan?.regions.filter((region) => region.role === "house") ?? [];
@@ -190,7 +205,7 @@ describe("build_village", () => {
       };
     }).metrics;
     expect(natural).toMatchObject({
-      exitRoads: 4,
+      exitRoads: anchors.length,
       adjacentWindowPairs: 0,
       orphanDoorTiles: 0,
       multiStoryHouses: expect.any(Number),
@@ -939,7 +954,7 @@ describe("build_village housePlans contract", () => {
     // F3: doorFronts 0 → 통과가 아니라 실패
     expect(report.issues.some((issue) => issue.includes("문 앞 좌표"))).toBe(true);
     // F2: layoutPlan.kind 없는 맵에도 타일 실측 검사(출구 길)가 실행된다
-    expect(report.issues.some((issue) => issue.includes("4방향"))).toBe(true);
+    expect(report.issues.some((issue) => issue.includes("마을 밖으로 이어지는 길이"))).toBe(true);
   });
 });
 

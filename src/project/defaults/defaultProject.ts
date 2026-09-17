@@ -1,14 +1,4 @@
-﻿import type {
-  CommonEvent,
-  GameEvent,
-  GameMap,
-  ItemRecord,
-  MapId,
-  Project,
-  SwitchDef,
-  VariableDef,
-} from "../types";
-import { SCHEMA_VERSION } from "../types";
+﻿import type { GameEvent, GameMap, ItemRecord, MapId, Project } from "../types";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
@@ -16,18 +6,6 @@ import { defaultFeatureCropRecords } from "./defaultFeatureItemRecords";
 import { DEFAULT_ACTOR_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ITEM_ID, DEFAULT_TILE_SIZE } from "./constants";
 import { defaultStarterActorIds } from "./defaultDatabasePartyRecords";
 import { placeableKey, type PlaceableObjectState } from "@/project/placeables";
-import { ensureItemSwitchDefs } from "@/project/itemSwitchDefs";
-import {
-  defaultAssetSet,
-  defaultResourceProfiles,
-  defaultTilesets,
-} from "./defaultAssets";
-import {
-  defaultDatabase,
-  defaultSession,
-  defaultSystem,
-  defaultTerms,
-} from "./defaultDatabase";
 import { configureScarloxyDemoProject, createScarloxyDemoMaps } from "./scarloxyDemoGame";
 import { configureScarloxyPokemonDemoProject, createScarloxyPokemonDemoMaps } from "./scarloxyPokemonDemoGame";
 import { createTrainingExampleMaps } from "./trainingExampleMaps";
@@ -45,20 +23,26 @@ import {
   createBlankMap,
   createLogCabinShowcaseMap,
   createRetroHouseShowcaseMap,
+  createStarterMap,
+} from "./defaultMaps";
+// 쇼케이스 맵 빌더는 원본에서 직접 가져온다. defaultMaps 를 경유하면 그 파일의 그래프에
+// 에디터 인테리어 파이프라인이 들어가고, 그건 `@/project/defaults` 배럴을 쓰는 테스트
+// 1,244개 전부의 비용이 된다(defaultMaps.ts 상단 주석 참조).
+import {
   createDbExtractedHouseTemplateMap,
   createSmallHouseCityMap,
   createSmallHouseVariantMap,
-  createStarterMap,
   createTownArchitectureCityMap,
   createTownArchitectureTestMap,
   createTownCityShowcaseMap,
   createTownHouseShowcaseMap,
-  createMarketTownMap,
-  marketTownStartPos,
   type SmallHouseVariantIndex,
   type TownHouseShowcaseStyle,
-  singleNodeTree,
-} from "./defaultMaps";
+} from "@/editor/content/townShowcaseMaps";
+import { createMarketTownMap, marketTownStartPos } from "./marketTownMap";
+import { createProjectWithMaps, ensureSwitchVariableSlots } from "./blankProject";
+// 가벼운 핵심은 blankProject.ts 에 있다. 옛 import 경로를 유지하려고 여기서 다시 내보낸다.
+export { createBlankProject, ensureSwitchVariableSlots } from "./blankProject";
 // 샘플 데모 export. 이 파일의 database.items / database.equipment 는 **파생물**이다 —
 // 생성: npm run fixture:sync (지키는 게이트: test/fixtureDefaultDatabaseDrift.test.ts).
 // 맵·이벤트는 콘텐츠 스크립트가 이 파일을 읽어 직접 생장시킨 생장분이다.
@@ -66,18 +50,6 @@ import {
 // test/fixtures/projects/ 밑에 2맵 저작 스모크 산출물을 따로 남긴다.
 import dewVillageDemoFixture from "./fixtures/dew-village-demo.json" with { type: "json" };
 const SHOP_SHOWCASE_GOLD_SWITCH_ID = "switch_shop_showcase_gold";
-const BLANK_PROJECT_START_MAP_ID = "map_blank_start";
-const BLANK_PROJECT_MAP_WIDTH = 20;
-const BLANK_PROJECT_MAP_HEIGHT = 15;
-
-export function createBlankProject(): Project {
-  const map = createBlankMap("빈 맵", BLANK_PROJECT_MAP_WIDTH, BLANK_PROJECT_MAP_HEIGHT);
-  map.id = BLANK_PROJECT_START_MAP_ID;
-  const project = createProjectWithMaps([map], 0);
-  project.system = { ...project.system, startActorIds: [DEFAULT_ACTOR_ID] };
-  project.session = { ...project.session, partyActorIds: [DEFAULT_ACTOR_ID] };
-  return project;
-}
 
 /** 예제 데모: 《이슬 마을의 종》 — 에디터 작성 export fixture. 별등 마을 코드 생성기는 제거됨. */
 export function createSampleAdventureProject(): Project {
@@ -1601,95 +1573,4 @@ function createProjectWithStarterMap(starter: GameMap): Project {
   return createProjectWithMaps([starter], 0);
 }
 
-function createProjectWithMaps(starters: readonly GameMap[], selectedIndex: number): Project {
-  const starter = starters[Math.max(0, Math.min(selectedIndex, starters.length - 1))] ?? createStarterMap();
-  const startMapId: MapId = starter.id;
-  const switches: SwitchDef[] = initialDefinitionSlots("sw");
-  const variables: VariableDef[] = initialDefinitionSlots("var");
-  const commonEvents: CommonEvent[] = [];
-  const maps = Object.fromEntries(starters.map((map) => [map.id, map])) as Record<MapId, GameMap>;
-  const project: Project = {
-    version: SCHEMA_VERSION,
-    meta: { title: "새 프로젝트", author: "", terms: defaultTerms() },
-    assets: defaultAssetSet(),
-    resourceProfiles: defaultResourceProfiles(),
-    tilesets: defaultTilesets(),
-    switches,
-    variables,
-    commonEvents,
-    database: defaultDatabase(),
-    system: defaultSystem(),
-    session: defaultSession(),
-    maps,
-    mapConnections: [],
-    mapTree: {
-      mapId: startMapId,
-      children: starters.filter((map) => map.id !== startMapId).map((map) => singleNodeTree(map.id)),
-    },
-    startMapId,
-    startPos: {
-      x: Math.floor(starter.width / 2),
-      y: Math.floor(starter.height / 2) + 1,
-    },
-    flags: {},
-    villageInfoDocuments: [],
-  };
-  ensureSwitchVariableSlots(project);
-  // 낡은 export 잔재 정리 — 적 elementRates 의 state_death 등(legacyRateKeyRepair.ts 주석 참조).
-  repairLegacyRateKeys(project);
-  // 재생 불가 BGM(MIDI) 참조 교체 — 픽스처는 defaultSystem() 변경이 닿지 않는다.
-  repairUnplayableSystemBgm(project);
-  return project;
-}
 
-// One classic picker block keeps first-use command forms immediately usable. This is
-// starter capacity, not a maximum: add/range actions grow the arrays on demand.
-const INITIAL_SWITCH_VARIABLE_SLOT_COUNT = 20;
-
-function initialDefinitionSlots(prefix: "sw" | "var"): { id: string; name: string }[] {
-  return Array.from({ length: INITIAL_SWITCH_VARIABLE_SLOT_COUNT }, (_, index) => ({
-    id: `${prefix}_${String(index + 1).padStart(4, "0")}`,
-    name: "",
-  }));
-}
-
-export function ensureSwitchVariableSlots(project: Project): boolean {
-  // 스위치 아이템이 켜는 스위치는 항상 정의가 존재해야 한다 — 없으면 저작자가
-  // 스위치 탭에서 후속 조건을 연결할 방법이 없다(기본 카탈로그 기동석 11종 참조).
-  const itemSwitchDefsChanged = ensureItemSwitchDefs(project);
-  const switchesChanged = ensureDefinitionSlots({
-    defs: project.switches,
-    session: project.session.switches,
-    defaultValue: false,
-  });
-  const variablesChanged = ensureDefinitionSlots({
-    defs: project.variables,
-    session: project.session.variables,
-    defaultValue: 0,
-  });
-  return itemSwitchDefsChanged || switchesChanged || variablesChanged;
-}
-
-function ensureDefinitionSlots<TValue>(options: {
-  readonly defs: { id: string; name: string }[];
-  readonly session: Record<string, TValue>;
-  readonly defaultValue: TValue;
-}): boolean {
-  const { defs, session, defaultValue } = options;
-  let changed = false;
-  const ids = new Set(defs.map((entry) => entry.id));
-  for (const id of Object.keys(session).sort()) {
-    if (ids.has(id)) continue;
-    defs.push({ id, name: "" });
-    ids.add(id);
-    changed = true;
-  }
-
-  for (const { id } of defs) {
-    if (Object.prototype.hasOwnProperty.call(session, id)) continue;
-    session[id] = defaultValue;
-    changed = true;
-  }
-
-  return changed;
-}

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createBlankMap, createBlankProject, createScarloxyPokemonDemoProject, ensureBundledTilesets } from "@/project/defaults";
+import { createBlankMap, createBlankProject, ensureBundledTilesets } from "@/project/defaults";
+import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
 import { ensureTilesetHarnesses } from "@/project/tilesetHarness";
 import { applyInteriorRoomLayer, ensureInteriorRoomHarness, interiorRoomTileGroups, INTERIOR_ROOM_DEMO_PLANS, INTERIOR_ROOM_TILESET_ID, runInteriorRoomPipeline } from "@/editor/interiorRoomPipeline";
 import { interiorObjectById } from "@/editor/interiorObjectCatalog";

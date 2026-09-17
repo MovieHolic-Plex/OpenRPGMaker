@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { createSampleAdventureProject } from "@/project/defaults";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { deserialize, serialize } from "@/project/io";
 import { shopKeyOf } from "@/player/playSceneShopVisit";
 

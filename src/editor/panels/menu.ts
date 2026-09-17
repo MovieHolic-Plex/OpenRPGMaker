@@ -23,7 +23,8 @@ import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
 import { openWorldPanel } from "@/editor/panels/worldEntries";
 import { deserialize, ProjectFormatError } from "@/project/io";
-import { createSampleAdventureProject, createScarloxyDemoProject, createScarloxyPokemonDemoProject, createSkyStairProject, createSnowMountain60Project, createIcePlain64Project, createTrainingExamplesProject, createFarmingDemoProject } from "@/project/defaults";
+import { createSampleAdventureProject, createScarloxyDemoProject, createScarloxyPokemonDemoProject, createSnowMountain60Project, createIcePlain64Project, createTrainingExamplesProject, createFarmingDemoProject } from "@/project/defaults/defaultProject";
+import { createSkyStairProject } from "@/editor/content/skyStairGame";
 import {
   createProjectPackage,
   ProjectPackageError,

@@ -94,6 +94,12 @@ function mockModeDependencies(): {
   }));
   // 실제 defaults 모듈은 프로젝트 그래프 전체를 끌어와 전체 스위트 부하에서
   // 동적 import가 vi.waitFor 타임아웃(1s)을 넘길 수 있다 — mock으로 결정론화.
+  // 무거운 쪽은 이제 defaultProject 다 — 배럴(@/project/defaults)은 가벼운 것만 내보낸다.
+  // 부팅 폴백 경로가 동적으로 부르는 건 defaultProject 이므로 둘 다 막아 둔다.
+  vi.doMock("@/project/defaults/defaultProject", () => ({
+    createSampleAdventureProject: () => ({ kind: "sample-fallback" }),
+    createBlankProject: () => ({ kind: "blank-fallback" }),
+  }));
   vi.doMock("@/project/defaults", () => ({
     createSampleAdventureProject: () => ({ kind: "sample-fallback" }),
     createBlankProject: () => ({ kind: "blank-fallback" }),

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
-import { createFarmingDemoProject } from "@/project/defaults";
+import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { absoluteGameMinutes } from "@/project/makers";
 import { placeableKey } from "@/project/placeables";
 import { calendarDayKey } from "@/project/gameTime";

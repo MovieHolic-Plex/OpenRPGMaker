@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createScarloxyPokemonDemoProject } from "@/project/defaults";
+import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
 import { battleSkillUseFailure, consumeBattleSkillResource } from "@/battle/battleSkillUse";
 
 const GEN1_TYPES = [
