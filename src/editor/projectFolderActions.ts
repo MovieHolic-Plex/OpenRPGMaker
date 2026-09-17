@@ -6,8 +6,8 @@ function startBridge(): NonNullable<Window["oprn"]>["start"] | undefined {
 }
 
 /**
- * 성공하면 주 프로세스가 이미 그 폴더를 열어 두었다 — 호출자는 `window.location.reload()` 로 그 폴더에 부팅해야 한다.
- * 브리지가 없으면(웹 QA 하네스) false.
+ * 성공하면 데스크톱은 새 폴더를 열고 웹은 새 프로젝트 URL을 설정한다. 호출자는 `window.location.reload()`로 부팅한다.
+ * 저장 브리지가 없는 정적 웹 미리보기는 false.
  */
 export async function createProjectFolderWithSeed(title: string, seed: Project): Promise<boolean> {
   const bridge = startBridge();

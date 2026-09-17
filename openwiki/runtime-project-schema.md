@@ -1,3 +1,9 @@
+## 웹 프로젝트 생성과 선택 (2026-09-18)
+
+브라우저 호스트는 기본 폴더의 `.oprn-projects/<uuid>`에 프로젝트별 SQLite를 만든다.
+`hostProject` URL과 RPC 헤더/에셋 경로로 탭별 저장 대상을 선택한다. 기본 프로젝트의 팀
+권한을 공유하며 생성은 owner 전용이다. 상세는 `team-project-host.md`의 웹 새 프로젝트 생성 절.
+
 ## 팀 프로젝트 서비스 (2026-09-18)
 
 현재 저장 경로와 팀 협업 계약은 [team-project-host.md](team-project-host.md)를 먼저 읽는다.
