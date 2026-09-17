@@ -24,7 +24,8 @@ const propertiesOpen = new WeakMap<HTMLElement, boolean>();
 
 export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): void {
   const canon = resolveWorldCanon(store.getCurrent().worldCanon);
-  const meterFill = el("i", {
+  const meterFill = el("div", {
+    class: "world-canon-meter-fill",
     attrs: {
       role: "progressbar",
       "aria-label": "AI 전달 본문 분량",

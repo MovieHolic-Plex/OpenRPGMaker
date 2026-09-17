@@ -573,17 +573,6 @@
   gap: 6px;
   margin-bottom: 12px;
 }
-.world-document-workspace .world-canon-meter-bar {
-  height: 6px;
-  background: var(--db-studio-inset);
-  border-radius: 999px;
-  overflow: hidden;
-}
-.world-document-workspace .world-canon-meter-bar > i {
-  display: block;
-  height: 100%;
-  background: var(--db-studio-accent);
-}
 .world-document-workspace .world-canon-meter-text {
   font: 400 12px/1.5 var(--font-ui);
   color: var(--db-studio-text-2);
@@ -635,6 +624,10 @@
   height: 8px;
   background: var(--db-studio-accent-soft);
   border: 1px solid var(--db-studio-accent-border);
+}
+.world-document-workspace .world-canon-meter-fill {
+  height: 100%;
+  background: var(--db-studio-accent);
 }
 .world-document-workspace .world-canon-meter-text {
   font-weight: 600;
