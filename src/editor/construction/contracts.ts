@@ -121,6 +121,8 @@ export type VillageGroundTheme = (typeof VILLAGE_GROUND_THEMES)[number];
 export const VILLAGE_SETTLEMENT_LAYOUTS = ["plaza-ring", "street-grid", "clusters"] as const;
 export { VILLAGE_MORPHOLOGIES, type VillageMorphology } from "@/editor/tools/village/morphologyTypes";
 import type { VillageMorphology } from "@/editor/tools/village/morphologyTypes";
+export { RELIEF_STYLES, type ReliefStyle } from "@/editor/tools/village/relief";
+import type { ReliefStyle } from "@/editor/tools/village/relief";
 export type VillageSettlementLayout = (typeof VILLAGE_SETTLEMENT_LAYOUTS)[number];
 
 export type VillageResidentPlan = {
@@ -144,6 +146,8 @@ export type AuthorVillageRequest = {
   readonly settlementLayout?: VillageSettlementLayout;
   /** 취락 형태 유형 — 있으면 뼈대 길·필지 먼저 짓고 settlementLayout 은 무시된다. */
   readonly morphology?: VillageMorphology;
+  /** 고저차 — hills 면 언덕·단구(혼합 칩셋 맵에서만 그려진다). */
+  readonly relief?: ReliefStyle;
   readonly npcCount?: number;
   /** 주민 이름·역할·대사 — 순서대로 소비된다. 없으면 주민은 대사 없이 놓이고 세션의 캐스트 라이터가 채운다. */
   readonly residents?: readonly VillageResidentPlan[];

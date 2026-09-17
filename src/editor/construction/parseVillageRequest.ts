@@ -26,11 +26,13 @@ import {
   type VillageGroundTheme,
   type VillageHousePlan,
   type VillageSettlementLayout,
+  RELIEF_STYLES,
+  type ReliefStyle,
   VILLAGE_MORPHOLOGIES,
   type VillageMorphology,
 } from "./contracts";
 
-const REQUEST_KEYS = ["target", "houseCount", "housePlans", "houseObjectIds", "composition", "multiStoreyCount", "houseClustering", "countPolicy", "groundTheme", "settlementLayout", "morphology", "npcCount", "residents", "theme", "forestDensity", "seed", "interior", "presetId", "fullMap"] as const;
+const REQUEST_KEYS = ["target", "houseCount", "housePlans", "houseObjectIds", "composition", "multiStoreyCount", "houseClustering", "countPolicy", "groundTheme", "settlementLayout", "morphology", "relief", "npcCount", "residents", "theme", "forestDensity", "seed", "interior", "presetId", "fullMap"] as const;
 const FOREST_DENSITIES = ["sparse", "normal", "dense", "impassable"] as const;
 const EXISTING_TARGET_KEYS = ["kind", "mapId", "bounds", "fullMap"] as const;
 const NEW_TARGET_KEYS = ["kind", "mapId", "name", "width", "height", "plannedMap"] as const;
@@ -76,6 +78,7 @@ export function parseAuthorVillageRequest(value: unknown): AuthorVillageRequest 
   const groundTheme = parseOptionalEnum(request["groundTheme"], VILLAGE_GROUND_THEMES, "authorVillage.groundTheme");
   const settlementLayout = parseOptionalEnum(request["settlementLayout"], VILLAGE_SETTLEMENT_LAYOUTS, "authorVillage.settlementLayout");
   const morphology = parseOptionalEnum(request["morphology"], VILLAGE_MORPHOLOGIES, "authorVillage.morphology");
+  const relief = parseOptionalEnum(request["relief"], RELIEF_STYLES, "authorVillage.relief");
   const npcCount = optionalInteger(request, "npcCount", "authorVillage");
   const fullMap = optionalBoolean(request, "fullMap", "authorVillage");
   const residents = parseResidents(request["residents"]);
@@ -94,6 +97,7 @@ export function parseAuthorVillageRequest(value: unknown): AuthorVillageRequest 
     ...(groundTheme === undefined ? {} : { groundTheme: groundTheme as VillageGroundTheme }),
     ...(settlementLayout === undefined ? {} : { settlementLayout: settlementLayout as VillageSettlementLayout }),
     ...(morphology === undefined ? {} : { morphology: morphology as VillageMorphology }),
+    ...(relief === undefined ? {} : { relief: relief as ReliefStyle }),
     ...(npcCount === undefined ? {} : { npcCount }),
     ...(residents === undefined ? {} : { residents }),
     ...(theme === undefined ? {} : { theme }),

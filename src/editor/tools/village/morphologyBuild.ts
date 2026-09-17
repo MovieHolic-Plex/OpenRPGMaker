@@ -1,6 +1,7 @@
 // editor/tools/village/morphologyBuild.ts
 // 형태 유형 계획(morphologyPlan)을 맵에 시공한다 — 기존 스탬퍼(킷 집·레시피 집·길 오토타일·울타리 타일·
-// 경작지 오토타일·나무 원자)를 그대로 쓴다. 새 타일 어휘는 없다.
+// 경작지 오토타일)를 그대로 쓴다. 나무만 타일셋에 따라 킷(treeKit.ts)을 고른다 — 합본 마을 원자 또는
+// 혼합 칩셋의 숲 나무 확장 띠(큰 참나무 4×5·활엽수 3×4·짙은 나무·덤불·숲 벽).
 //
 // 두 단계로 나뉜다. ① 봉인 전: 연못 → 뼈대 길 → 필지 위 집 → 문 앞 옆길. ② 봉인 후(layoutPlan 등록 뒤):
 // 필지 둘레 울타리 → 밭·과수원·풀밭·산울타리 → 거리 기울기 나무 → 녹지 큰나무. 집을 봉인한 뒤에
@@ -51,13 +52,17 @@ import {
   type VillageMorphology,
 } from "./morphologyPlan";
 import { paintRoadStrip } from "./roads";
+import {
+  canStampTree,
+  COMBINED_TOWN_TREE_KIT,
+  markTreeStamp,
+  stampTree,
+  treeStampCells,
+  type TreeKit,
+  type TreeStamp,
+} from "./treeKit";
 
-const CONIFER_TOP = 260;
-const CONIFER_BOTTOM = 290;
-const BROADLEAF_TOP_LEFT = 262;
-const BROADLEAF_TOP_RIGHT = 263;
-const BROADLEAF_BOTTOM_LEFT = 292;
-const BROADLEAF_BOTTOM_RIGHT = 293;
+/** 산울타리 덤불(합본 마을 289) — 혼합 칩셋 위 반쪽에도 같은 번호로 있다. */
 const BUSH_TILE = 289;
 
 /** 프로브·테스트용 — 마지막 시공의 계획(맵과 대조해 어느 단계가 길을 지웠는지 찾는다). */
@@ -75,6 +80,10 @@ export interface MorphologyBuildArgs {
   readonly blocked: ReadonlySet<number>;
   /** 숲 밴드 — 집은 피하고 길은 지난다. */
   readonly softBlocked?: ReadonlySet<number>;
+  /** 절벽 띠(고저차) — 집·옆길은 피하고 큰길만 지난다. */
+  readonly cliffBlocked?: ReadonlySet<number>;
+  /** 나무 어휘. 생략하면 합본 마을 원자(침엽수 1×2·활엽수 2×2). */
+  readonly treeKit?: TreeKit;
   readonly windows: HouseKitWindowsOption | undefined;
   readonly paintDoorTiles: boolean;
   readonly warnings: string[];
@@ -109,7 +118,7 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
     seed,
     maxHouses: args.maxHouses,
     templates,
-    blocked: args.blocked, ...(args.softBlocked ? { softBlocked: args.softBlocked } : {}),
+    blocked: args.blocked, ...(args.softBlocked ? { softBlocked: args.softBlocked } : {}), ...(args.cliffBlocked ? { cliffBlocked: args.cliffBlocked } : {}),
     roadWidth: intent.roadWidth,
   });
   morphologyDebugSink.lastPlan = plan;
@@ -184,15 +193,17 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
 
   // ④ 문 앞 옆길 — 문 앞 칸에서 앞면 방향으로 길까지(최대 6칸), 못 닿으면 4-이웃 BFS.
   const houseCells = houseBlockedCells(houses);
+  // 옆길은 절벽 띠를 뚫지 않는다(큰길만 비탈이 된다).
+  const spurBlocked = args.cliffBlocked ? new Set<number>([...args.blocked, ...args.cliffBlocked]) : args.blocked;
   for (const [index, house] of houses.entries()) {
     const slot = slots[index]!;
     // 계획 옆길은 필지 가운데 열에서 출발했다 — 실제 문(형태마다 위치가 다르다)이 다른 열이면 문 앞에서 그 옆길까지 한 번 더 잇는다.
-    const planned = slot.spur !== undefined && plannedSpurUsable(map, area, slot.spur, houseCells, args.blocked) ? [...slot.spur] : undefined;
+    const planned = slot.spur !== undefined && plannedSpurUsable(map, area, slot.spur, houseCells, spurBlocked) ? [...slot.spur] : undefined;
     if (planned) {
       paintRoadStrip(map, intent.pathStyle, planned);
       for (const cell of planned) occ[cell.y * W + cell.x] = OCC.spur;
     }
-    const spur = spurToRoad(map, area, house.front, slot.frontDir, houseCells, args.blocked);
+    const spur = spurToRoad(map, area, house.front, slot.frontDir, houseCells, spurBlocked);
     const frontIsRoad = ROAD_TILES.has(map.lowerTiles[house.front.y * W + house.front.x] ?? TILE.EMPTY);
     if (spur.length === 0 && !frontIsRoad) {
       warnings.push(`형태 마을: 집 ${index + 1} 문 앞에서 길을 못 찾았다(${house.front.x},${house.front.y})`);
@@ -205,9 +216,12 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
   }
 
   const finish = (): MorphologyFinishReport => {
+    const kit = args.treeKit ?? COMBINED_TOWN_TREE_KIT;
     const sealed = new Set(protectedHouseCells(map).map(({ x, y }) => y * W + x));
+    // 물 예정지(blocked)·절벽 띠는 지금 잔디여도 나무를 심지 않는다 — 나중에 물·절벽이 깔리면 수관만 떠 남는다.
     const free = (x: number, y: number): boolean =>
       inMap(x, y) && pointInRect({ x, y }, area) && !sealed.has(y * W + x)
+      && !args.blocked.has(y * W + x) && !(args.cliffBlocked?.has(y * W + x) ?? false)
       && lowerAt(x, y) === TILE.GRASS && upperAt(x, y) === TILE.EMPTY && !ROAD_TILES.has(lowerAt(x, y));
     let fenceTiles = 0;
     for (const [index, house] of houses.entries()) fenceTiles += paintParcelFence(map, area, slots[index]!, house, sealed);
@@ -215,16 +229,24 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
     const fieldRng = mulberry32((seed ^ 0x2f6b1a4d) >>> 0);
     for (const field of plan.fields) fieldCells += paintField(map, field.rect, field.kind, free, fieldRng, occ);
     let trees = 0;
-    for (const anchor of plan.bigTrees) if (canStampBigTree(anchor.x, anchor.y, free, occ, W)) { stampBigTree(map, anchor.x, anchor.y); markBig(occ, W, anchor.x, anchor.y); trees += 1; }
+    const plant = (stamp: TreeStamp, x: number, y: number): boolean => {
+      if (!canStampTree(stamp, x, y, free, occ, W)) return false;
+      stampTree(map, stamp, x, y);
+      markTreeStamp(occ, W, stamp, x, y);
+      trees += 1;
+      return true;
+    };
+    // 녹지 앵커 — 계획은 2×2 자리를 봤으므로 중간 나무가 안 들어가면 작은 나무로.
+    for (const anchor of plan.bigTrees) plant(kit.medium, anchor.x, anchor.y) || plant(kit.small, anchor.x, anchor.y);
     // 뒷마당 나무 — 세 필지 중 하나, 뒷마당이 2행 이상일 때.
     for (const [index, slot] of slots.entries()) {
       if (index % 3 !== 1) continue;
       const back = slot.bbox.y - 1 - slot.parcel.y;
       if (back < 3) continue;
       const x = slot.parcel.x + 1, y = slot.parcel.y + 1;
-      if (canStampBigTree(x, y, free, occ, W)) { stampBigTree(map, x, y); markBig(occ, W, x, y); trees += 1; }
+      plant(kit.medium, x, y) || plant(kit.small, x, y);
     }
-    trees += paintTreeGradient(map, area, occ, free, intent, mulberry32((seed ^ 0x51f15e3d) >>> 0));
+    trees += paintTreeGradient(map, area, occ, free, intent, mulberry32((seed ^ 0x51f15e3d) >>> 0), kit);
     return { fenceTiles, fieldCells, trees };
   };
 
@@ -383,14 +405,14 @@ function paintField(
     paintGroupCells(map, DEFAULT_TALL_GRASS_AUTOTILE_GROUP, cells);
     painted = cells.length;
   } else {
-    // 과수원 — 2×2 활엽수를 3칸 간격 격자로, 열마다 반 칸 엇갈림.
+    // 과수원 — 2×2 활엽수(합본 마을 원자, 혼합 칩셋에도 같은 번호)를 3칸 간격 격자로, 열마다 반 칸 엇갈림.
+    const fruitTree = COMBINED_TOWN_TREE_KIT.big;
     for (let y = rect.y; y + 1 < rect.y + rect.h; y += 3) {
       const offset = ((y - rect.y) / 3) % 2 === 1 ? 1 : 0;
       for (let x = rect.x + offset; x + 1 < rect.x + rect.w; x += 3) {
-        if (!canStampBigTree(x, y, free, occ, W)) continue;
-        stampBigTree(map, x, y);
-        markBig(occ, W, x, y);
-        painted += 4;
+        if (!canStampTree(fruitTree, x, y, free, occ, W)) continue;
+        painted += stampTree(map, fruitTree, x, y);
+        markTreeStamp(occ, W, fruitTree, x, y);
       }
     }
   }
@@ -410,36 +432,10 @@ function paintField(
 
 // ───────────────────────── 나무 ─────────────────────────
 
-function canStampBigTree(x: number, y: number, free: (x: number, y: number) => boolean, occ: Uint8Array, W: number): boolean {
-  for (const [cx, cy] of [[x, y], [x + 1, y], [x, y + 1], [x + 1, y + 1]] as const) {
-    if (!free(cx, cy)) return false;
-    const value = occ[cy * W + cx] ?? OCC.reserved;
-    if (value !== OCC.free && value !== OCC.commons && value !== OCC.field) return false;
-  }
-  return true;
-}
-
-function stampBigTree(map: GameMap, x: number, y: number): void {
-  const W = map.width;
-  map.upperTiles[y * W + x] = BROADLEAF_TOP_LEFT;
-  map.upperTiles[y * W + x + 1] = BROADLEAF_TOP_RIGHT;
-  map.lowerTiles[(y + 1) * W + x] = BROADLEAF_BOTTOM_LEFT;
-  map.lowerTiles[(y + 1) * W + x + 1] = BROADLEAF_BOTTOM_RIGHT;
-}
-
-function markBig(occ: Uint8Array, W: number, x: number, y: number): void {
-  for (const [cx, cy] of [[x, y], [x + 1, y], [x, y + 1], [x + 1, y + 1]] as const) occ[cy * W + cx] = OCC.reserved;
-}
-
-function stampConifer(map: GameMap, x: number, y: number): void {
-  const W = map.width;
-  map.upperTiles[y * W + x] = CONIFER_TOP;
-  map.lowerTiles[(y + 1) * W + x] = CONIFER_BOTTOM;
-}
-
 /**
  * 거리 기울기 나무 — 마을 세포(길·필지·밭·녹지·연못)에서 멀어질수록 짙어진다.
- * 3칸 안은 비우고, 10칸 밖은 침엽수 45%·활엽수 군락까지. edgeTrees=none 이면 0, dense 면 1.6배.
+ * 3칸 안은 비우고, 멀어질수록 큰 나무·숲 덩이가 섞인다. edgeTrees=none 이면 0, dense 면 1.6배.
+ * 절벽 띠는 거리 씨앗이 아니다 — 언덕 위·아래 잔디에도 나무가 붙어야 지형이 산다.
  */
 function paintTreeGradient(
   map: GameMap,
@@ -448,6 +444,7 @@ function paintTreeGradient(
   free: (x: number, y: number) => boolean,
   intent: VillageIntent,
   rng: Rng,
+  kit: TreeKit,
 ): number {
   if (intent.edgeTrees === "none") return 0;
   const scale = intent.edgeTrees === "dense" ? 1.6 : 1;
@@ -457,7 +454,8 @@ function paintTreeGradient(
   for (let y = area.y; y < area.y + area.h; y += 1) {
     for (let x = area.x; x < area.x + area.w; x += 1) {
       const index = y * W + x;
-      if ((occ[index] ?? OCC.free) !== OCC.free) { dist[index] = 0; queue.push(index); }
+      const value = occ[index] ?? OCC.free;
+      if (value !== OCC.free && value !== OCC.cliff) { dist[index] = 0; queue.push(index); }
     }
   }
   let head = 0;
@@ -484,6 +482,14 @@ function paintTreeGradient(
   const cap = Math.floor(area.w * area.h * 0.14);
   let placed = 0;
   const taken = new Set<number>();
+  const open = (x: number, y: number): boolean => free(x, y) && !taken.has(y * W + x);
+  const place = (stamp: TreeStamp, x: number, y: number): boolean => {
+    if (!canStampTree(stamp, x, y, open, occ, W)) return false;
+    stampTree(map, stamp, x, y);
+    for (const k of treeStampCells(stamp, x, y, W)) { taken.add(k); occ[k] = OCC.reserved; }
+    placed += 1;
+    return true;
+  };
   for (const index of candidates) {
     if (placed >= cap) break;
     const x = index % W, y = Math.floor(index / W);
@@ -492,16 +498,23 @@ function paintTreeGradient(
     if (rng() > p) continue;
     if (taken.has(index) || taken.has(index + W)) continue;
     if (!free(x, y) || !free(x, y + 1)) continue;
-    if (d >= 5 && rng() < 0.3 && x + 1 < area.x + area.w && free(x + 1, y) && free(x + 1, y + 1) && !taken.has(index + 1) && !taken.has(index + W + 1)) {
-      stampBigTree(map, x, y);
-      for (const k of [index, index + 1, index + W, index + W + 1]) { taken.add(k); occ[k] = OCC.reserved; }
-      placed += 1;
+    if (kit.id === "combined-town") {
+      // 예전 규칙 그대로 — 5칸 밖 30% 활엽수 2×2, 나머지 침엽수 1×2.
+      if (d >= 5 && rng() < 0.3 && place(kit.big, x, y)) continue;
+      place(kit.small, x, y);
       continue;
     }
-    stampConifer(map, x, y);
-    taken.add(index); taken.add(index + W);
-    occ[index] = OCC.reserved; occ[index + W] = OCC.reserved;
-    placed += 1;
+    // 숲 나무 킷 — 멀수록 큰 물체. 안 들어가면 한 단계 작은 것으로.
+    const roll = rng();
+    if (d >= 9 && kit.forest.length > 0 && roll < 0.35) {
+      const chunk = kit.forest[Math.floor(rng() * kit.forest.length)]!;
+      if (place(chunk, x, y)) continue;
+    }
+    if (d >= 6 && roll < 0.55 && place(kit.big, x, y)) continue;
+    if (d >= 4 && roll < 0.8 && place(kit.medium, x, y)) continue;
+    if (roll < 0.9 && place(kit.small, x, y)) continue;
+    const shrub = kit.shrubs[Math.floor(rng() * kit.shrubs.length)];
+    if (shrub) place(shrub, x, y);
   }
   return placed;
 }

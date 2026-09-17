@@ -82,6 +82,8 @@ export interface MorphologyPlanArgs {
   readonly blocked: ReadonlySet<number>;
   /** 숲 밴드 — 집·필지·밭은 못 들어가지만 큰길·옆길은 지나간다(출구가 숲 띠 너머에 있다). */
   readonly softBlocked?: ReadonlySet<number>;
+  /** 절벽 띠(고저차) — 집·필지·밭·옆길·골목 성장은 못 들어가고 큰길·링 길만 가로지른다(비탈이 된다). */
+  readonly cliffBlocked?: ReadonlySet<number>;
   readonly roadWidth: number;
 }
 
@@ -97,6 +99,8 @@ export const OCC = {
   pond: 7,
   /** 숲 예정지 — 길만 지난다. */
   forest: 8,
+  /** 절벽 띠 — 큰길만 지난다(옆길·골목 성장은 막힌다). */
+  cliff: 9,
 } as const;
 
 const MAX_TEMPLATE_W = 8;
@@ -104,9 +108,10 @@ const MAX_TEMPLATE_H = 9;
 
 class PlanGrid {
   readonly occ: Uint8Array;
-  constructor(readonly width: number, readonly height: number, readonly area: Rect, blocked: ReadonlySet<number>, softBlocked?: ReadonlySet<number>) {
+  constructor(readonly width: number, readonly height: number, readonly area: Rect, blocked: ReadonlySet<number>, softBlocked?: ReadonlySet<number>, cliffBlocked?: ReadonlySet<number>) {
     this.occ = new Uint8Array(width * height);
     if (softBlocked) for (const index of softBlocked) this.occ[index] = OCC.forest;
+    if (cliffBlocked) for (const index of cliffBlocked) this.occ[index] = OCC.cliff;
     for (const index of blocked) this.occ[index] = OCC.reserved;
     // 영역 밖은 예약(못 쓴다).
     for (let y = 0; y < height; y += 1) {
@@ -160,7 +165,7 @@ interface PlanCtx {
 
 export function planVillageMorphology(args: MorphologyPlanArgs): MorphologyPlan {
   const rng = mulberry32((args.seed ^ 0x6d0f2a31) >>> 0);
-  const grid = new PlanGrid(args.mapWidth, args.mapHeight, args.area, args.blocked, args.softBlocked);
+  const grid = new PlanGrid(args.mapWidth, args.mapHeight, args.area, args.blocked, args.softBlocked, args.cliffBlocked);
   const templates = args.templates.filter((template) =>
     template.w <= MAX_TEMPLATE_W && template.h <= MAX_TEMPLATE_H && !template.id.startsWith("estate"));
   if (templates.length === 0) throw new Error("형태 마을: 폭 8·높이 9 이하 집 형태가 하나도 없다.");
@@ -339,7 +344,7 @@ function jitter(rng: Rng, amplitude: number): number {
 function addRoad(ctx: PlanCtx, centerline: readonly Point[], width: 1 | 2 | 3, role: RoadRole): Point[] {
   const cells = thickenCells(centerline, width).filter((cell) => {
     const value = ctx.grid.get(cell.x, cell.y);
-    return value === OCC.free || value === OCC.road || value === OCC.spur || value === OCC.forest;
+    return value === OCC.free || value === OCC.road || value === OCC.spur || value === OCC.forest || value === OCC.cliff;
   });
   for (const cell of cells) ctx.grid.set(cell.x, cell.y, OCC.road);
   if (cells.length > 0) ctx.roads.push({ cells, width, role });

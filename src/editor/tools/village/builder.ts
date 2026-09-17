@@ -43,7 +43,7 @@ import { FOREST_DENSITIES, parseOptionalForestDensity } from "../forestDensity";
 import { resolveWorldGenRules } from "@/project/worldGenRules";
 import { isPassable } from "@/project/collision";
 import { scrubPlacementConflicts } from "@/project/lint/layoutPlacementValidate";
-import { isCombinedTownTileset } from "@/project/tilesetHarness/combinedTown";
+import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness/combinedTown";
 import { validateBuildSpec, type BuildSpec } from "@/ai/buildSpec";
 import {
   coordKey,
@@ -115,6 +115,8 @@ import { planOrganicVillageLake, paintOrganicVillageLake } from "./organicLake";
 import { buildMorphologyVillage, type MorphologyBuild } from "./morphologyBuild";
 import { MORPHOLOGY_LABEL, VILLAGE_MORPHOLOGIES, type VillageMorphology } from "./morphologyTypes";
 import type { MorphologyExit } from "./morphologyPlan";
+import { paintRelief, paintReliefStairs, planRelief, RELIEF_STYLES, tilesetHasCliffVocabulary, type ReliefPlan } from "./relief";
+import { treeKitForTileset } from "./treeKit";
 
 export type VillageBuildDomainArgs = Readonly<Record<string, unknown>>;
 
@@ -191,7 +193,7 @@ export function buildVillageDomain(
   const map = requireVillageMap(draft, mapId);
   // 타일셋 스코프 가드 — village/ 모듈의 원시 타일 id는 전부 combined_town 좌표다.
   const tilesetForMap = draft.tilesets?.[map.tilesetId];
-  if (!tilesetForMap || !isCombinedTownTileset(tilesetForMap)) {
+  if (!tilesetForMap || !isCombinedTownCompatibleTileset(tilesetForMap)) {
     throw new ToolError(
       `build_village는 combined_town 칩셋(${DEFAULT_TILESET_ID}) 전용이다 — 이 맵의 타일셋: ${map.tilesetId}. ` +
         "다른 타일 그림판에서는 문/울타리/돌마당 타일 id가 전부 다른 그림이 된다.",
@@ -306,6 +308,20 @@ export function buildVillageDomain(
     targetHouses,
     boulevard: boulevard ? { ewRow: boulevard.ewRow, nsCol: boulevard.nsCol, axis: boulevard.axis } : null,
   });
+  // 고저차 — 혼합 칩셋(합본 마을+레트로 월드맵)에서만, 형태 유형 경로에서만. 마을 중심부는 피한다.
+  let relief: ReliefPlan | undefined;
+  const reliefNotes: string[] = [];
+  if (intent.relief === "hills") {
+    if (!tilesetHasCliffVocabulary(tilesetForMap)) {
+      warnings.push(`relief=hills 는 「합본 마을+레트로 월드맵」 혼합 칩셋에서만 그린다 — 이 맵의 타일셋(${map.tilesetId})엔 절벽 어휘가 없어 건너뛴다.`);
+    } else if (!morphology) {
+      warnings.push("relief=hills 는 morphology(형태 유형) 경로에서만 깐다 — morphology 를 함께 지정하라.");
+    } else {
+      relief = planRelief({ area, mapWidth: map.width, mapHeight: map.height, seed, avoid: reliefAvoidRect(area, morphology) });
+      const painted = paintRelief(map, relief);
+      reliefNotes.push(...relief.notes, `relief painted ${painted.painted}`);
+    }
+  }
   // 형태 유형 경로 — 뼈대 길 → 필지 → 집 → 옆길을 여기서 한 번에 깐다. 길 시공기(paintVillageRoadsChecked)는 건너뛴다.
   let morph: MorphologyBuild | undefined;
   if (morphology) {
@@ -321,13 +337,19 @@ export function buildVillageDomain(
       }
     }
     if (terrainMasks) for (let i = 0; i < terrainMasks.roles.length; i += 1) if (terrainMasks.roles[i] === "forest") morphForest.add(i);
+    // 나무 어휘 — 혼합 칩셋에 숲 나무 확장 띠가 있으면 그 물체(큰 참나무·활엽수·덤불·숲 벽), 아니면 합본 마을 원자.
+    const treeKit = treeKitForTileset(tilesetForMap);
+    reliefNotes.push(`tree kit ${treeKit.id}`);
     morph = buildMorphologyVillage({
       draft, map, area, seed, intent, morphology,
       maxHouses: housePlan.explicit ? housePlan.count : MAX_HOUSES,
-      blocked: morphBlocked, softBlocked: morphForest, windows, paintDoorTiles: !doorEventsPlanned, warnings,
+      blocked: morphBlocked, softBlocked: morphForest, ...(relief ? { cliffBlocked: relief.cliff } : {}),
+      treeKit, windows, paintDoorTiles: !doorEventsPlanned, warnings,
     });
     plaza = morph.plaza;
     if (!housePlan.explicit) targetHouses = Math.max(1, morph.houses.length);
+    // 길이 절벽 면을 내려가는 칸은 돌계단(비취 대계곡 374).
+    if (relief) reliefNotes.push(`relief stairs ${paintReliefStairs(map, relief, (tile) => ROAD_TILES.has(tile))}`);
   }
   // 자연 시공 순서: 집 배치·마감·보호 등록 → 광장·대로·집 연결 길 → 울타리
   // (예전엔 길→집이라 길이 집 자리를 선점하는 느낌이 났음)
@@ -377,7 +399,7 @@ export function buildVillageDomain(
     );
   }
   assertHouseProtection(existingHouses, draft, []);
-  setVillageHarnessLayoutPlan(map, area, plaza, houses, intent, seed, fencesEnabled, merged.settlementLayout, boulevard, morph?.exits, morphology);
+  setVillageHarnessLayoutPlan(map, area, plaza, houses, intent, seed, fencesEnabled, merged.settlementLayout, boulevard, morph?.exits, morphology, relief !== undefined);
   if (compact && map.layoutPlan) {
     map.layoutPlan.notes = "작은 회벽·석벽 주택의 조밀한 마을. 10×10 초과 큰집 최대 2채, 모든 집 15×15 이하. 집 → 길 → 군락 나무 → 비대칭 호수·243계열 풀밭·장터·마당.";
     map.layoutPlan.regions.find(region => region.role === "plaza")?.tags?.push("composition:compact");
@@ -444,7 +466,7 @@ export function buildVillageDomain(
   // Houses and roads are complete. Reserve future water without painting it.
   const skipTerrain = args.skipTerrain === true || merged.skipTerrain === true;
   const deferDecoration = args.deferDecoration === true;
-  const landmarkNotes: string[] = [];
+  const landmarkNotes: string[] = [...reliefNotes];
   const { templateCatalog: _templates, ...decorationIntent } = intent;
   const decorationPlan: VillageDecorationPlan = {
     area, plaza, houses, seed,
@@ -603,7 +625,7 @@ export function buildVillageDomain(
     };
   }
   const themeLabel = intent.theme ? `「${intent.theme}」 ` : "";
-  const morphologyLabel = morphology ? ` 형태 ${MORPHOLOGY_LABEL[morphology]},` : "";
+  const morphologyLabel = morphology ? ` 형태 ${MORPHOLOGY_LABEL[morphology]}${relief ? "·언덕" : ""},` : "";
   const reqNote = requirements && requirements.landmarks.length > 0
     ? ` 필수[${requirements.landmarks.join(",")}]`
     : "";
@@ -635,6 +657,7 @@ export function buildVillageDomain(
         roadNaturalness: intent.roadNaturalness,
         settlementLayout: intent.settlementLayout,
         ...(morphology ? { morphology } : {}),
+        ...(relief ? { relief: "hills" as const } : {}),
       },
       housesBuilt: houses.length,
       ...(objectCatalog ? { houseSource: "objects", exteriorDoors: objectAccess, treeCompletion } : {}),
@@ -1183,6 +1206,17 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
             + "round=환촌(원형 녹지·링 길·남쪽 입구), cluster=괴촌(관심도 성장 시뮬레이션). 지정하면 뼈대 길 → 길에 면한 필지 → "
             + "집 → 필지 뒤 밭·과수원 → 거리 기울기 나무 순서로 짓고 settlementLayout 은 무시한다. 생략하면 예전 광장 고리 문법.",
         },
+        relief: {
+          type: "string",
+          enum: [...RELIEF_STYLES],
+          description:
+            "고저차(2026-09-18). hills=언덕·단구·2단 둔덕을 45° 대각 변과 남쪽 절벽 면으로 깐다. 「합본 마을+레트로 월드맵」 혼합 칩셋 맵에서만 "
+            + "그려지고(다른 칩셋엔 절벽 타일이 없다) morphology 와 함께 써야 한다. 집·밭은 언덕 띠를 피하고 큰길은 띠를 지나 비탈이 된다.",
+        },
+        tilesetId: {
+          type: "string",
+          description: "새 맵을 만들 때의 타일셋 id(생략 시 합본 마을). 언덕(relief)엔 easyrpg_chipset_combined_town_retro_world.",
+        },
         bounds: {
           type: "object",
           description: "기존 맵 안에서 마을을 배치할 경계 사각형. 지정 시 그 안에 광장/집/길/NPC를 배치한다.",
@@ -1269,18 +1303,36 @@ function coerceWindows(value: unknown): HouseKitWindowsOption | undefined {
   return { spacing };
 }
 
+/** 언덕 띠가 들어오면 안 되는 마을 중심부 — 형태별로 뼈대(큰길·렌즈·링)가 놓이는 자리. */
+function reliefAvoidRect(area: Rect, morphology: VillageMorphology): Rect {
+  switch (morphology) {
+    case "street":
+      // 큰길(가운데 높이 ±0.07h)과 양쪽 집 줄·뒷골목 — 폭 전체, 높이 26~74%.
+      return { x: area.x, y: area.y + Math.floor(area.h * 0.26), w: area.w, h: Math.ceil(area.h * 0.48) };
+    case "green":
+      // 렌즈(폭 72%)와 양쪽 큰길·북쪽 줄·남쓱 농로.
+      return { x: area.x + Math.floor(area.w * 0.08), y: area.y + Math.floor(area.h * 0.22), w: Math.ceil(area.w * 0.84), h: Math.ceil(area.h * 0.62) };
+    case "round":
+      return { x: area.x + Math.floor(area.w * 0.22), y: area.y + Math.floor(area.h * 0.16), w: Math.ceil(area.w * 0.56), h: Math.ceil(area.h * 0.7) };
+    case "cluster":
+      return { x: area.x + Math.floor(area.w * 0.3), y: area.y + Math.floor(area.h * 0.3), w: Math.ceil(area.w * 0.4), h: Math.ceil(area.h * 0.4) };
+  }
+}
+
 function createVillageMap(draft: Project, args: Record<string, unknown>, seed: number): string {
   const width = integerArg(args, "width", DEFAULT_SIZE, MIN_SIZE, MAX_SIZE);
   const height = integerArg(args, "height", DEFAULT_SIZE, MIN_SIZE, MAX_SIZE);
   const name = typeof args.name === "string" && args.name.trim().length > 0 ? args.name.trim() : "마을 50x50";
   const id = uniqueId(draft, "map_village", `${seed >>> 0}_${width}x${height}`);
   const size = width * height;
+  const tilesetId = typeof args.tilesetId === "string" && args.tilesetId.trim().length > 0 ? args.tilesetId.trim() : DEFAULT_TILESET_ID;
+  if (!draft.tilesets[tilesetId]) throw new ToolError(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { code: "tileset-not-found" });
   const map: GameMap = {
     id,
     name,
     width,
     height,
-    tilesetId: DEFAULT_TILESET_ID,
+    tilesetId,
     tileSize: DEFAULT_TILE_SIZE,
     lowerTiles: new Array<number>(size).fill(TILE.GRASS),
     upperTiles: new Array<number>(size).fill(TILE.EMPTY),
@@ -1479,6 +1531,7 @@ function hasExplicitVillageIntent(args: Record<string, unknown>): boolean {
     || args.edgeTrees !== undefined
     || args.plazaLayout !== undefined
     || args.morphology !== undefined
+    || args.relief !== undefined
     || (Array.isArray(args.housePlans) && args.housePlans.length > 0)
     || (Array.isArray(args.npcs) && args.npcs.length > 0),
   );
@@ -1528,9 +1581,13 @@ function resolveVillageIntent(
   const morphology = args.morphology === undefined || args.morphology === null || args.morphology === ""
     ? undefined
     : coerceEnum(args.morphology, VILLAGE_MORPHOLOGIES, "street", "morphology");
+  const relief = args.relief === undefined || args.relief === null || args.relief === "" || args.relief === false
+    ? undefined
+    : args.relief === true ? "hills" as const : coerceEnum(args.relief, RELIEF_STYLES, "none", "relief");
   return {
     theme,
     ...(morphology ? { morphology } : {}),
+    ...(relief && relief !== "none" ? { relief } : {}),
     ...(forestDensity ? { forestDensity } : {}),
     templateCatalog,
     ...(presetId ? { presetId } : {}),
@@ -1776,6 +1833,7 @@ function setVillageHarnessLayoutPlan(
   // 형태 유형 마을은 실제 출구가 계획에서 나온다 — 평가기 앵커를 그 좌표로 기록한다.
   exitOverride?: readonly MorphologyExit[],
   morphology?: VillageMorphology,
+  relief = false,
 ): void {
   const kitLabel: Record<HouseKitId, string> = {
     "blue-stone": "파랑 석벽",
@@ -1814,6 +1872,7 @@ function setVillageHarnessLayoutPlan(
           "road-loop",
           ...(settlementLayout === "street-grid" ? ["street-grid"] : []),
           ...(morphology ? [`morphology:${morphology}`] : []),
+          ...(relief ? ["relief:hills"] : []),
           // 어떤 사용자 프리셋으로 지었는지 — 같은 마을을 다시 뽑을 때의 단서.
           ...(intent.presetId ? [`preset:${intent.presetId}`] : []),
           intent.plazaStyle,

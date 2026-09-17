@@ -17,6 +17,7 @@ import { DEFAULT_COBBLE_AUTOTILE_GROUP, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAN
 import { HOUSE_TEMPLATE_DEFS, houseTemplateWingsAt } from "@/project/defaults/houseTemplateCatalog";
 import type { AuthoredHouseFormDef } from "@/project/defaults/authoredHouseFormCatalog";
 import type { VillageMorphology } from "./morphologyTypes";
+import type { ReliefStyle } from "./relief";
 import type { GameMap, MapId, Project } from "@/project/types";
 import type { Rng } from "@/util/rng";
 import type { YardDecorKind } from "../houseLotDecor";
@@ -56,6 +57,8 @@ export interface VillageIntent {
   readonly settlementLayout: SettlementLayout;
   /** 취락 형태 유형(2026-09-17). 있으면 뼈대 길·필지 먼저 짓는 형태 경로를 타고 settlementLayout 은 무시된다. */
   readonly morphology?: VillageMorphology;
+  /** 고저차 — hills 면 혼합 칩셋의 절벽 어휘로 언덕·단구를 깐다(형태 유형 경로에서만). */
+  readonly relief?: ReliefStyle;
   /** 집 순서별 마당 태그(LLM). 짧으면 스타일 팩으로 패딩. */
   readonly houseYards: readonly (readonly YardDecorKind[])[];
   /** 집 순서별 키트 강제(LLM). 없으면 kitMix. */

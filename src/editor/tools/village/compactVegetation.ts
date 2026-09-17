@@ -4,7 +4,7 @@ import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
-import { isCombinedTownTileset, isTreeCanopyTileId } from "@/project/tilesetHarness";
+import { isCombinedTownCompatibleTileset, isTreeCanopyTileId } from "@/project/tilesetHarness";
 import type { GameMap, MapLayoutRegion, Project, Rect, TilesetDef } from "@/project/types";
 import { mulberry32, type Rng } from "@/util/rng";
 import { protectedHouseCells } from "../houseProtection";
@@ -144,7 +144,7 @@ export function dressCompactVillageGround(project: Project, map: GameMap, area: 
 
 function townTileset(project: Project, map: GameMap): TilesetDef {
   const tileset = project.tilesets[map.tilesetId];
-  if (!tileset || !isCombinedTownTileset(tileset)) throw new ToolError("마을 식생은 combined_town 타일셋이 필요합니다.", { code: "compact-vegetation-tileset", mapId: map.id });
+  if (!tileset || !isCombinedTownCompatibleTileset(tileset)) throw new ToolError("마을 식생은 combined_town 타일셋이 필요합니다.", { code: "compact-vegetation-tileset", mapId: map.id });
   return tileset;
 }
 function requireLayer(tileset: TilesetDef, tile: number, layer: "lower" | "upper"): void {

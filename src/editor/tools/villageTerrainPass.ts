@@ -1,6 +1,7 @@
 // 방안 E 하이브리드: Blueprint/requirements → 제약 마스크 → 지형 패스(시공 솔버).
 // 지금 솔버 = fill_region(오토타일) + place_props. 이후 WFC로 water/forest 마스크만 교체 가능.
 
+import { TILE } from "@/project/defaults/constants";
 import type { GameMap, Project } from "@/project/types";
 import {
   broadleafCountFor,
@@ -21,6 +22,8 @@ import {
   treeFootprintCells,
   type ForestDensity,
 } from "./forestDensity";
+import { protectedHouseCells } from "./houseProtection";
+import { plantForestBand, treeKitForTileset } from "./village/treeKit";
 import { ToolError, type ToolDefinition } from "./types";
 import { environmentalRoadAt } from "./village/constants";
 import { isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness";
@@ -168,8 +171,22 @@ export function applyTerrainPassFromMasks(
     }
   }
 
+  // 숲 나무 확장 띠가 있는 혼합 칩셋이면 숲 띠를 그 킷(숲 벽·큰 참나무·활엽수·덤불)으로 채운다 —
+  // 합본 마을 원자(침엽수 1×2·활엽수 2×2)와 섞이면 한 맵에 나무 양식이 둘이 된다(2026-09-18).
+  const forestKit = treeKitForTileset(draft.tilesets?.[map.tilesetId]);
+  const forestKitApplies = phase !== "water" && forestKit.id === "forest-trees";
+  const sealed = forestKitApplies ? new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x)) : undefined;
   for (const rect of phase === "water" ? [] : unreservedAreas(masks.forestRects, masks.waterRects)) {
     if (rect.w < 2 || rect.h < 2) continue;
+    if (forestKitApplies && sealed) {
+      const W = map.width;
+      const free = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < W && y < map.height
+        && !sealed.has(y * W + x) && map.lowerTiles[y * W + x] === TILE.GRASS && (map.upperTiles[y * W + x] ?? -1) < 0;
+      const band = plantForestBand(map, rect, 7700 + rect.x * 13 + rect.y * 7, forestKit, free);
+      forestOps += band.placed;
+      notes.push(`terrainPass forest kit=${forestKit.id} 덩이 ${band.chunks} 물체 ${band.placed} (${band.cells}칸)`);
+      continue;
+    }
     // 왜 요청 밀도와 저작 규칙을 함께 받는가: 요청문은 이번 숲의 개수·패킹을 정하지만,
     // 생성 규칙은 밴드 깊이와 수종별 간격·자연도의 정본이다. 요청이 없으면 저작 개수도 그대로 쓴다.
     if (forestDensity && forestCompositionApplies(forestDensity)) {

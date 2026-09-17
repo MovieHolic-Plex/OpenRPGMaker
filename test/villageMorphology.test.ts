@@ -15,6 +15,8 @@ import {
 } from "@/editor/tools/village/morphologyPlan";
 import type { ToolContext } from "@/editor/tools/types";
 import type { GameMap } from "@/project/types";
+import { COMBINED_TOWN_RETRO_WORLD_TILESET_ID } from "@/project/defaults/constants";
+import { FOREST_TREE_CELLS } from "@/project/defaults/forestTreesExtension";
 
 const AREA: Rect = { x: 0, y: 0, w: 64, h: 64 };
 const templates = villageTemplateCatalog(undefined).templates;
@@ -138,5 +140,38 @@ describe("buildVillageDomain({ morphology })", () => {
     expect(result.summary).not.toContain("형태 ");
     const plazaTags = (context.project.maps.map_v!.layoutPlan?.regions ?? []).find((region) => region.role === "plaza")?.tags ?? [];
     expect(plazaTags.some((tag) => tag.startsWith("morphology:"))).toBe(false);
+  });
+});
+
+describe("buildVillageDomain — 나무 킷", () => {
+  function buildOn(tilesetId: string | undefined, morphology: VillageMorphology = "cluster"): GameMap {
+    const context: ToolContext = { project: createEmptyToolProject(`나무 킷 ${tilesetId ?? "기본"}`) };
+    runTool(context, "create_map", { id: "map_v", name: "마을", width: 64, height: 64, ...(tilesetId ? { tilesetId } : {}) });
+    const result = buildVillageDomain(context.project, { mapId: "map_v", seed: 7, theme: "평범한 마을", morphology });
+    expect(result.summary).toContain("형태 ");
+    return context.project.maps.map_v!;
+  }
+
+  it("혼합 칩셋(숲 나무 띠) 맵은 나무를 숲 나무 물체로 심는다 — 수관은 상위, 밑동·덤불은 하위, 예전 침엽수는 없다", () => {
+    const map = buildOn(COMBINED_TOWN_RETRO_WORLD_TILESET_ID);
+    let canopy = 0, lower = 0;
+    for (let index = 0; index < map.lowerTiles.length; index += 1) {
+      const up = map.upperTiles[index] ?? -1, low = map.lowerTiles[index] ?? -1;
+      const upCell = FOREST_TREE_CELLS.get(up), lowCell = FOREST_TREE_CELLS.get(low);
+      if (upCell) { canopy += 1; expect(upCell.kind, `상위 ${up}`).toBe("canopy"); }
+      if (lowCell) { lower += 1; expect(lowCell.kind, `하위 ${low}`).not.toBe("canopy"); }
+    }
+    // 숲 띠(terrain 마스크) + 거리 기울기 나무 — 둘 다 새 킷이라 수십 칸은 나온다.
+    expect(canopy).toBeGreaterThan(30);
+    expect(lower).toBeGreaterThan(30);
+    // 예전 침엽수(260/290)는 이 맵에 없다. 과수원 활엽수 2×2 는 합본 마을 번호를 그대로 쓸 수 있다.
+    expect(map.upperTiles.filter((tile) => tile === 260).length).toBe(0);
+    expect(map.lowerTiles.filter((tile) => tile === 290).length).toBe(0);
+  });
+
+  it("합본 마을 맵은 예전 원자(침엽수·활엽수)를 그대로 쓰고 숲 나무 번호는 나오지 않는다", () => {
+    const map = buildOn(undefined);
+    expect([...map.upperTiles, ...map.lowerTiles].some((tile) => FOREST_TREE_CELLS.has(tile))).toBe(false);
+    expect(map.upperTiles.filter((tile) => tile === 260 || tile === 262).length).toBeGreaterThan(0);
   });
 });
