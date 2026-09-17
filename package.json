@@ -104,7 +104,8 @@
     "test:watch": "node scripts/run-vitest.mjs --configLoader bundle",
     "build:standalone": "npm run build:standalone:bundle && npx tsx scripts/build-standalone-html.mts",
     "qa:standalone": "node scripts/qa-standalone-boot.mjs",
-    "build:standalone:bundle": "vite build --config vite.standalone.config.ts --configLoader runner"
+    "build:standalone:bundle": "vite build --config vite.standalone.config.ts --configLoader runner",
+    "serve:project": "node scripts/oprn-serve.mjs"
   },
   "dependencies": {
     "@oh-my-pi/pi-agent-core": "^17.4.0",

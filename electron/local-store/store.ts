@@ -1,10 +1,10 @@
 import { createHash, randomUUID } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, rmSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { decodeDataUrlBytes, dataUrlExtension, dataUrlMime } from "../../src/project/persistence/core/dataUrl";
 import { canonicalJsonString } from "../../src/project/persistence/core/canonicalJson";
 import { deserializeStoredProjectJson } from "../../src/project/persistence/core/loadRepair";
-import { mapPatchChangeSet, planMapPatch, readMapPatchSnapshot } from "../../src/project/persistence/core/mapPatch";
+import { mergeTeamProject, validateMergedTeamProject } from "../../src/project/persistence/core/teamMerge";
 import type { MapSaveConflict } from "../../src/project/persistence/core/mapMerge";
 import { projectWire, type ProjectWire } from "../../src/project/persistence/core/projectWire";
 import type { GameMap, Project, UploadedAsset, UploadedAssetRef } from "../../src/project/types";
@@ -13,7 +13,7 @@ import { LocalStoreError } from "./errors";
 import { ASSETS_DIR, BACKUPS_DIR, LOCAL_STORE_FORMAT_VERSION, META_KEYS, PROJECT_STORE_FILE, STORE_DDL } from "./schema";
 
 export type LocalStoreSaveResult =
-  | { readonly kind: "saved"; readonly sha256: string; readonly revision: number }
+  | { readonly kind: "saved"; readonly sha256: string; readonly revision: number; readonly serialized?: string }
   | { readonly kind: "conflict"; readonly conflicts: readonly MapSaveConflict[] };
 
 export type LocalProjectSnapshot = {
@@ -146,7 +146,7 @@ export type LocalProjectStore = {
   mapMirrors(): ReadonlyMap<string, LocalMapMirror>;
   loadSnapshot(): LocalProjectSnapshot | null;
   saveProject(project: Project): Promise<LocalStoreSaveResult>;
-  saveSerialized(serialized: string): Promise<LocalStoreSaveResult>;
+  saveSerialized(serialized: string, expectedSha?: string | null): Promise<LocalStoreSaveResult>;
   saveMapPatch(input: LocalMapPatchInput): Promise<LocalStoreSaveResult>;
   recordCommit(input: LocalCommitInput): string;
   listCommits(limit: number): readonly LocalCommitRow[];
@@ -334,6 +334,7 @@ function writeAssetBytes(
   input: LocalAssetInput,
   now: string,
 ): UploadedAssetRef {
+  if (!/^[a-zA-Z0-9]{1,12}$/.test(input.extension)) throw new LocalStoreError("asset", "invalid asset extension");
   const sha256 = sha256HexOfBytes(bytes);
   const assetsDir = join(projectDir, ASSETS_DIR);
   mkdirSync(assetsDir, { recursive: true });
@@ -348,8 +349,8 @@ function writeAssetBytes(
   return { sha256, mime: input.mime, bytes: bytes.byteLength, extension: input.extension };
 }
 
-function sqlLiteral(value: string): string {  if (value.includes("'")) throw new LocalStoreError("backup-path", "backup path must not contain a quote");
-  return `'${value}'`;
+function sqlLiteral(value: string): string {
+  return `'${value.replaceAll("'", "''")}'`;
 }
 
 function backupStamp(now: string): string {
@@ -394,47 +395,56 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
         revision: writeProjectRow(driver, project, wire, projectId, clock()),
       }));
     },
-    async saveSerialized(serialized: string): Promise<LocalStoreSaveResult> {
+    async saveSerialized(serialized: string, expectedSha?: string | null): Promise<LocalStoreSaveResult> {
       const parsed = deserializeStoredProjectJson(JSON.parse(serialized));
       const wire: ProjectWire = {
         serialized,
         json: JSON.parse(serialized),
         sha256: sha256HexOfText(serialized),
       };
-      return driver.transaction(() => ({
-        kind: "saved",
-        sha256: wire.sha256,
-        revision: writeProjectRow(driver, parsed, wire, projectId, clock()),
-      }));
+      return driver.transaction(() => {
+        if (expectedSha !== undefined && (readProjectRow(driver)?.sha256 ?? null) !== expectedSha) {
+          return { kind: "conflict", conflicts: [{ mapId: "project", name: "프로젝트가 다른 사용자에 의해 변경되었습니다" }] };
+        }
+        return { kind: "saved", sha256: wire.sha256, serialized,
+          revision: writeProjectRow(driver, parsed, wire, projectId, clock()) };
+      });
     },
     async saveMapPatch(input: LocalMapPatchInput): Promise<LocalStoreSaveResult> {
-      const changeSet = mapPatchChangeSet(input.baseProject, input.project, input.changedMapIds);
       for (let attempt = 0; attempt < MAP_PATCH_MAX_ATTEMPTS; attempt += 1) {
         const planned = readProjectRow(driver);
-        const latest = planned ? readMapPatchSnapshot(JSON.parse(planned.serialized)) : changeSet.canonicalBase;
-        const plan = await planMapPatch(changeSet, latest);
-        if (plan.kind === "conflict") return { kind: "conflict", conflicts: plan.conflicts };
+        const latest = planned ? deserializeStoredProjectJson(JSON.parse(planned.serialized)) : input.baseProject;
+        // Never trust a caller-supplied map-id list: all changed roots must participate.
+        const plan = mergeTeamProject(input.baseProject, input.project, latest);
+        if (plan.kind === "conflict") return plan;
+        validateMergedTeamProject(plan.project);
+        const wire = await projectWire(plan.project);
         const written = driver.transaction((): LocalStoreSaveResult | null => {
-          const inside = readProjectRow(driver);
-          if ((inside?.sha256 ?? null) !== (planned?.sha256 ?? null)) return null;
-          return {
-            kind: "saved",
-            sha256: plan.wire.sha256,
-            revision: writeProjectRow(driver, plan.mergedProject, plan.wire, projectId, clock()),
-          };
+          if ((readProjectRow(driver)?.sha256 ?? null) !== (planned?.sha256 ?? null)) return null;
+          return { kind: "saved", sha256: wire.sha256, serialized: wire.serialized,
+            revision: writeProjectRow(driver, plan.project, wire, projectId, clock()) };
         });
         if (written) return written;
       }
-      throw new LocalStoreError("cas", "project changed too often while saving a map patch");
+      throw new LocalStoreError("cas", "project changed too often while saving a patch");
     },
     exportSerialized(): string | null {
       return readProjectRow(driver)?.serialized ?? null;
     },
     backup(): string {
-      const backupsDir = join(options.projectDir, BACKUPS_DIR);
-      mkdirSync(backupsDir, { recursive: true });
-      const target = join(backupsDir, `${backupStamp(clock())}.sqlite`);
-      driver.exec(`VACUUM INTO ${sqlLiteral(target)}`);
+      const backupDir = join(options.projectDir, BACKUPS_DIR, `${backupStamp(clock())}-${randomUUID()}`);
+      mkdirSync(join(backupDir, ASSETS_DIR), { recursive: true });
+      const target = join(backupDir, PROJECT_STORE_FILE);
+      try {
+        driver.exec(`VACUUM INTO ${sqlLiteral(target)}`);
+        const snapshot = openNodeSqliteDriver(target);
+        try {
+          for (const row of snapshot.prepare('SELECT sha256,extension FROM assets').all([])) {
+            const name = `${String(row.sha256)}.${String(row.extension)}`;
+            copyFileSync(join(options.projectDir, ASSETS_DIR, name), join(backupDir, ASSETS_DIR, name));
+          }
+        } finally { snapshot.close(); }
+      } catch (error) { rmSync(backupDir, { recursive: true, force: true }); throw error; }
       return target;
     },
     recordCommit(input: LocalCommitInput): string {

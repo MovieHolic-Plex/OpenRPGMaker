@@ -1,13 +1,17 @@
-import { existsSync } from "node:fs";
+import { existsSync, realpathSync } from "node:fs";
+import { resolve } from "node:path";
+import { openTeamDirectory, type TeamDirectory, type TeamMember } from "../local-store/team";
 import { join } from "node:path";
 import { initLocalProjectStore, type LocalProjectStore } from "../local-store/store";
 
-/** 창 하나·탭 하나를 가리키는 키. Electron 은 webContents.id, 로컬 서버는 고정 문자열을 쓴다. */
+/** 창 하나·탭 하나를 가리키는 키. Electron 은 webContents.id, HTTP는 로그인 세션·브라우저 탭별 키를 쓴다. */
 export type SessionKey = string | number;
 
 export type ProjectSession = {
   readonly projectDir: string;
   readonly store: LocalProjectStore;
+  readonly team: TeamDirectory;
+  readonly locks: Map<string, { session: SessionKey; memberId: string; ownerLabel: string; expiresAt: number }>;
 };
 
 /**
@@ -30,16 +34,42 @@ async function separateInlineMediaOnOpen(store: LocalProjectStore): Promise<void
 
 export function createProjectSessionRegistry() {
   const byConsumer = new Map<SessionKey, ProjectSession>();
+  const identities = new Map<SessionKey, string>();
+  const opening = new Map<string, Promise<ProjectSession>>();
   const byProjectDir = new Map<string, ProjectSession>();
 
   return {
     async open(key: SessionKey, projectDir: string): Promise<ProjectSession> {
-      const existing = byProjectDir.get(projectDir)
-        ?? { projectDir, store: await initLocalProjectStore({ projectDir }) };
-      byProjectDir.set(projectDir, existing);
+      projectDir = resolve(projectDir);
+      if (existsSync(projectDir)) projectDir = realpathSync(projectDir);
+      let pending = opening.get(projectDir);
+      if (!pending) {
+        pending = (async () => {
+          const found = byProjectDir.get(projectDir);
+          if (found) return found;
+          const store = await initLocalProjectStore({ projectDir });
+          await separateInlineMediaOnOpen(store);
+          let team: TeamDirectory;
+          try { team = openTeamDirectory(projectDir); } catch (error) { store.close(); throw error; }
+          const session = { projectDir, store, team, locks: new Map() };
+          byProjectDir.set(projectDir, session);
+          return session;
+        })();
+        opening.set(projectDir, pending);
+      }
+      let existing: ProjectSession;
+      try { existing = await pending; } catch (error) { opening.delete(projectDir); throw error; }
+      if (byConsumer.has(key) && byConsumer.get(key) !== existing) this.close(key);
       byConsumer.set(key, existing);
-      await separateInlineMediaOnOpen(existing.store);
       return existing;
+    },
+    setMember(key: SessionKey, memberId: string): void { identities.set(key, memberId); },
+    member(key: SessionKey): TeamMember {
+      const session = byConsumer.get(key);
+      if (!session) throw new Error("no project session");
+      const member = session.team.member(identities.get(key) ?? session.team.owner().id);
+      if (!member) throw new Error("팀 접근 권한이 취소되었습니다");
+      return member;
     },
     get(key: SessionKey): ProjectSession | null {
       return byConsumer.get(key) ?? null;
@@ -53,9 +83,13 @@ export function createProjectSessionRegistry() {
       const session = byConsumer.get(key);
       if (!session) return;
       byConsumer.delete(key);
+      identities.delete(key);
+      for (const [resource, lease] of session.locks) if (lease.session === key) session.locks.delete(resource);
       const stillUsed = [...byConsumer.values()].some((entry) => entry === session);
       if (stillUsed) return;
       byProjectDir.delete(session.projectDir);
+      opening.delete(session.projectDir);
+      session.team.close();
       session.store.close();
     },
     directoryExists(projectDir: string): boolean {

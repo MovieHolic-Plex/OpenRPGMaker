@@ -64,20 +64,28 @@ export function characterDepth(priority: EventPriority, worldY: number): number 
 
 /**
  * 상위 맵 타일 depth.
- * - ★(통행 가능 upper): 항상 캐릭터 위 — 숲 수관.
+ * - ★(통행 가능 upper): 항상 캐릭터 위 — 숲 수관. 단, 밟고 올라서는 계단(tileMeta tags에 stair/계단/사다리 포함 —
+ *   1칸 계단 444/445/474/475의 "stairs"뿐 아니라 3칸 돌계단 111/141/171의 "stone stairs"/"돌계단"까지)은
+ *   수관처럼 위에 그려지면 칩이 사람 위로 뜨므로 ○扱い(캐릭터 아래)로 둔다.
  * - ○(통행 가능한 바닥/다리): 하층 지형 위, 모든 캐릭터 아래.
  * - ×(솔리드 upper): same-priority 캐릭터와 타일 하단 y 로 정렬 — 책상/가구.
  */
+function isWalkableStairTile(tileset: TilesetDef, tile: number): boolean {
+  const tags = tileset.tileMeta?.[tile]?.tags ?? [];
+  return tags.some((tag) => /stair/i.test(tag) || tag.includes("계단") || tag.includes("사다리"));
+}
 export function mapUpperTileDepth(tileset: TilesetDef, tile: number, tileY: number): number {
   const mark = passageMarkForTile(tileset, tile);
-  if (mark === "star") return MAP_UPPER_LAYER_DEPTH;
-  if (mark === "o") return MAP_LOWER_LAYER_DEPTH + tileY * 2 + 1;
+  const walkableStair = mark === "star" && isWalkableStairTile(tileset, tile);
+  if (mark === "star" && !walkableStair) return MAP_UPPER_LAYER_DEPTH;
+  if (mark === "o" || mark === "star") return MAP_LOWER_LAYER_DEPTH + tileY * 2 + 1;
   return characterDepth("same", characterSpriteY(tileY));
 }
 
-/** ★ 수관/꽃 등 — 고정 upper 컨테이너. 솔리드 가구는 false(y-sort). */
+/** ★ 수관/꽃 등 — 고정 upper 컨테이너. 솔리드 가구·밟는 계단은 false(y-sort/하위). */
 export function isAlwaysAboveCharacterUpperTile(tileset: TilesetDef, tile: number): boolean {
-  return passageMarkForTile(tileset, tile) === "star";
+  if (passageMarkForTile(tileset, tile) !== "star") return false;
+  return !isWalkableStairTile(tileset, tile);
 }
 
 export function placeCharacterSprite(sprite: CharacterSprite, priority: EventPriority): void {

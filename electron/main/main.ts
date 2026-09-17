@@ -1,5 +1,8 @@
+import { readFile } from "node:fs/promises";
+import { networkInterfaces } from "node:os";
+import { startLocalProjectServer, type LocalProjectServer } from "../serve/runtime";
 import { join } from "node:path";
-import { BrowserWindow, Menu, app, dialog, ipcMain, protocol, shell, type IpcMainInvokeEvent } from "electron";
+import { BrowserWindow, Menu, app, clipboard, dialog, ipcMain, protocol, shell, type IpcMainInvokeEvent } from "electron";
 import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME, OPRN_CHANNELS } from "../shared/channels";
 import { registerIpcHandlers } from "./ipc";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
@@ -13,6 +16,8 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 const sessions = createProjectSessionRegistry();
+const hosting = new Set<string>();
+const teamHosts = new Map<string, LocalProjectServer>();
 let companionServer: CompanionServer | null = null;
 const rendererDir = process.env.OPRN_RENDERER_DIR ?? join(app.getAppPath(), "dist");
 
@@ -109,12 +114,46 @@ function focusedWindow(): BrowserWindow | null {
   return BrowserWindow.getFocusedWindow() ?? BrowserWindow.getAllWindows()[0] ?? null;
 }
 
+/** The app owns the local host lifecycle; users do not install or start a DB/server. */
+async function hostCurrentTeam(): Promise<void> {
+  const window = focusedWindow();
+  if (!window) return;
+  const session = sessions.get(window.webContents.id);
+  if (!session) { await dialog.showMessageBox(window, { message: '프로젝트를 먼저 열어 주세요.' }); return; }
+  if (hosting.has(session.projectDir)) return;
+  hosting.add(session.projectDir);
+  try {
+    let host = teamHosts.get(session.projectDir);
+    if (!host) {
+      const ip = Object.values(networkInterfaces()).flat().find(address => address && !address.internal && address.family === 'IPv4')?.address;
+      if (!ip) throw new Error('연결된 로컬 네트워크를 찾을 수 없습니다.');
+      const browserBridgeSource = await readFile(join(app.getAppPath(), 'dist-electron/browser-bridge.js'), 'utf8');
+      host = await startLocalProjectServer({ projectDir: session.projectDir, distDir: rendererDir,
+        browserBridgeSource, sessions, host: '0.0.0.0', publicOrigin: `http://${ip}:0` });
+      teamHosts.set(session.projectDir, host);
+    }
+    clipboard.writeText(host.ownerAccessCode!);
+    await dialog.showMessageBox(window, { message: '팀 호스트가 실행 중입니다.',
+      detail: `${host.url}\n소유자 접속 코드를 클립보드에 복사했습니다. 브라우저에서 로그인한 뒤 팀 관리에서 동료의 접속 코드를 만드세요. 같은 네트워크에서 접속할 수 있으며, 앱을 종료하면 호스트도 종료됩니다.` });
+    await shell.openExternal(host.url);
+  } catch (error) { await dialog.showMessageBox(window, { type: 'error', message: '팀 호스트를 시작하지 못했습니다.', detail: error instanceof Error ? error.message : String(error) }); }
+  finally { hosting.delete(session.projectDir); }
+}
+
 function buildMenu(): void {
   Menu.setApplicationMenu(Menu.buildFromTemplate([
     { role: "appMenu" },
     {
       label: "파일",
       submenu: [
+        { label: "팀 협업 시작 / 관리", click: () => { void hostCurrentTeam(); } },
+        { label: "팀 호스트 중지", click: async () => {
+          const window = focusedWindow();
+          const projectDir = window ? sessions.get(window.webContents.id)?.projectDir : undefined;
+          if (!projectDir) return;
+          await teamHosts.get(projectDir)?.close(); teamHosts.delete(projectDir);
+        } },
+        { type: "separator" },
         {
           label: "새 프로젝트",
           accelerator: "CmdOrCtrl+N",
@@ -245,4 +284,5 @@ app.on("window-all-closed", () => {
 
 app.on("will-quit", () => {
   void companionServer?.close();
+  for (const host of teamHosts.values()) void host.close();
 });

@@ -1,5 +1,6 @@
-import type { ZodType } from "zod";
+import { z, type ZodType } from "zod";
 import { deserializeStoredProjectJson } from "../../src/project/persistence/core/loadRepair";
+import { canonicalJsonString } from "../../src/project/persistence/core/canonicalJson";
 import type { Project } from "../../src/project/types";
 import { OPRN_CHANNELS } from "../shared/channels";
 import {
@@ -20,6 +21,8 @@ import {
 } from "../shared/schemas";
 import type { SessionKey, SessionRegistry } from "./sessions";
 
+const services = new WeakMap<SessionRegistry, Readonly<Record<string, Handler>>>();
+
 type Handler = (key: SessionKey, payload: unknown) => unknown;
 
 /** zod 검증을 두 전송로가 같은 방식으로 통과시키기 위해 내보낸다. */
@@ -36,9 +39,49 @@ function projectFromSerialized(serialized: string): Project {
 
 /** 전송로(IPC·HTTP)와 무관한 저장소 채널 본문. */
 export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<string, Handler>> {
+  const cached = services.get(sessions);
+  if (cached) return cached;
   const store = (key: SessionKey) => sessions.require(key).store;
 
-  return {
+  const raw: Record<string, Handler> = {
+    [OPRN_CHANNELS.teamStatus]: (key) => {
+      const session = sessions.require(key);
+      const member = sessions.member(key);
+      return { team: session.team.info(), member, members: session.team.list(),
+        revision: session.store.info().revision,
+        locks: [...session.locks].filter(([, lease]) => lease.expiresAt > Date.now()).map(([resource, lease]) => ({ resource, ownerLabel: lease.ownerLabel, expiresAt: lease.expiresAt })) };
+    },
+    [OPRN_CHANNELS.teamInvite]: (key, payload) => {
+      requireOwner(key);
+      const input = z.object({ label: z.string().trim().min(1).max(80), role: z.enum(['editor', 'viewer']) }).parse(payload);
+      return sessions.require(key).team.invite(input.label, input.role);
+    },
+    [OPRN_CHANNELS.teamRevoke]: (key, payload) => {
+      requireOwner(key);
+      const { memberId } = z.object({ memberId: z.string().uuid() }).parse(payload);
+      const session = sessions.require(key);
+      session.team.revoke(memberId);
+      for (const [resource, lease] of session.locks) if (lease.memberId === memberId) session.locks.delete(resource);
+      return true;
+    },
+    [OPRN_CHANNELS.teamRename]: (key, payload) => {
+      requireOwner(key);
+      sessions.require(key).team.rename(z.object({ name: z.string().trim().min(1).max(80) }).parse(payload).name);
+      return true;
+    },
+    [OPRN_CHANNELS.teamLock]: (key, payload) => {
+      const input = z.object({ resource: z.string().min(1).max(300).refine(value => value === 'database' || /^map:.+/.test(value), 'invalid lock resource'), release: z.boolean().optional() }).parse(payload);
+      const session = sessions.require(key), member = sessions.member(key);
+      if (member.role === 'viewer') throw new Error('읽기 전용 팀원은 편집할 수 없습니다');
+      const lease = session.locks.get(input.resource);
+      if (lease && lease.expiresAt > Date.now() && lease.session !== key) {
+        return { kind: 'locked', ownerLabel: lease.ownerLabel, expiresAt: lease.expiresAt };
+      }
+      if (input.release) { session.locks.delete(input.resource); return { kind: 'released' }; }
+      const expiresAt = Date.now() + 90_000;
+      session.locks.set(input.resource, { session: key, memberId: member.id, ownerLabel: member.label, expiresAt });
+      return { kind: 'held', expiresAt };
+    },
     [OPRN_CHANNELS.projectStatus]: (key) => {
       const session = sessions.get(key);
       if (!session) return { kind: "not-configured" };
@@ -62,7 +105,7 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
 
     [OPRN_CHANNELS.projectSave]: async (key, payload) => {
       const input = parseOrThrow(saveProjectSchema, payload, OPRN_CHANNELS.projectSave);
-      return await store(key).saveSerialized(input.serialized);
+      return await store(key).saveSerialized(input.serialized, input.expectedSha);
     },
 
     [OPRN_CHANNELS.projectSaveMapPatch]: async (key, payload) => {
@@ -74,7 +117,7 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
       });
     },
 
-    [OPRN_CHANNELS.projectDataVersion]: (key) => store(key).dataVersion(),
+    [OPRN_CHANNELS.projectDataVersion]: (key) => store(key).info().revision,
 
     [OPRN_CHANNELS.projectSeparateMedia]: async (key) => {
       const target = store(key);
@@ -88,8 +131,9 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
 
     [OPRN_CHANNELS.commitsRecord]: (key, payload) => {
       const input = parseOrThrow(commitRecordSchema, payload, OPRN_CHANNELS.commitsRecord);
+      const member = sessions.member(key);
       const commitId = store(key).recordCommit({
-        identity: input.identity,
+        identity: { id: member.id, label: member.label, kind: 'human' },
         reviewStatus: input.reviewStatus,
         summary: input.summary,
         ...(input.parentCommitId === undefined ? {} : { parentCommitId: input.parentCommitId }),
@@ -187,10 +231,55 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
       return await store(key).pruneUnusedAssets(input.referenced);
     },
   };
+  function requireOwner(key: SessionKey): void {
+    if (sessions.member(key).role !== 'owner') throw new Error('팀 소유자만 할 수 있습니다');
+  }
+  const reads = new Set<string>([OPRN_CHANNELS.projectStatus, OPRN_CHANNELS.projectProbe, OPRN_CHANNELS.projectOpen,
+    OPRN_CHANNELS.projectLoad, OPRN_CHANNELS.projectDataVersion, OPRN_CHANNELS.teamStatus,
+    OPRN_CHANNELS.commitsList, OPRN_CHANNELS.aiListActivity, OPRN_CHANNELS.aiListConversations,
+    OPRN_CHANNELS.aiLoadConversation, OPRN_CHANNELS.assetsList, OPRN_CHANNELS.assetsRead]);
+  // Serialize service operations: lock ownership cannot change halfway through an async save.
+  let tail: Promise<unknown> = Promise.resolve();
+  const handlers = Object.fromEntries(Object.entries(raw).map(([channel, handler]) => [channel, (key: SessionKey, payload: unknown) => {
+    const run = async () => {
+      // Initial desktop open/status has no adopted folder yet.
+      if (!sessions.get(key) && [OPRN_CHANNELS.projectOpen, OPRN_CHANNELS.projectStatus, OPRN_CHANNELS.projectProbe].some(candidate => candidate === channel)) return handler(key, payload);
+      const member = sessions.member(key);
+      if (!reads.has(channel) && member.role === 'viewer') throw new Error('읽기 전용 팀원은 저장할 수 없습니다');
+      if (channel === OPRN_CHANNELS.assetsPruneUnused && sessions.require(key).team.list().length > 1) throw new Error('팀 작업 중에는 미사용 에셋 정리를 실행할 수 없습니다');
+      if ([OPRN_CHANNELS.assetsPruneUnused, OPRN_CHANNELS.projectSeparateMedia, OPRN_CHANNELS.projectBackup].some(candidate => candidate === channel)) requireOwner(key);
+      if (channel === OPRN_CHANNELS.projectSave || channel === OPRN_CHANNELS.projectSaveMapPatch) {
+        const input = channel === OPRN_CHANNELS.projectSave
+          ? saveProjectSchema.parse(payload) : saveMapPatchSchema.parse(payload);
+        const local = projectFromSerialized(input.serialized);
+        const base = 'baseSerialized' in input ? projectFromSerialized(input.baseSerialized) : store(key).loadSnapshot()?.project;
+        const session = sessions.require(key);
+        const conflicts = [...session.locks].filter(([resource, lease]) => {
+          if (lease.session === key || lease.expiresAt <= Date.now()) return false;
+          const value = (project: Project | undefined): unknown => resource.startsWith('map:')
+            ? project?.maps[resource.slice(4)] : resource === 'database' ? project?.database : project;
+          return canonicalJsonString(value(base) ?? null) !== canonicalJsonString(value(local) ?? null);
+        }).map(([resource, lease]) => ({ mapId: resource.replace(/^map:/, ''), name: `${lease.ownerLabel} 편집 중` }));
+        if (conflicts.length) return { kind: 'conflict', conflicts };
+      }
+      return handler(key, payload);
+    };
+    const result = tail.then(run);
+    tail = result.catch(() => {});
+    return result;
+  }]));
+  services.set(sessions, handlers);
+  return handlers;
+
 }
 
 /** 창 없는 전송로도 같은 표를 쓴다 — 두 전송로가 채널 목록에서 갈리지 않게 한다. */
 export const STORE_CHANNELS = [
+  OPRN_CHANNELS.teamStatus,
+  OPRN_CHANNELS.teamInvite,
+  OPRN_CHANNELS.teamRevoke,
+  OPRN_CHANNELS.teamRename,
+  OPRN_CHANNELS.teamLock,
   OPRN_CHANNELS.projectStatus,
   OPRN_CHANNELS.projectProbe,
   OPRN_CHANNELS.projectOpen,
