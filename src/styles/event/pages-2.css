@@ -972,7 +972,7 @@
 .event-page-validation-badge.error { color: var(--danger, #C6403D); }
 
 .event-command-issue-badge.warning,
-.event-page-validation-badge.warning { color: var(--status-warning, #8A5E00); }
+.event-page-validation-badge.warning { color: var(--status-warning, var(--warning)); }
 
 .event-page-validation-badge::before { content: attr(data-label); }
 

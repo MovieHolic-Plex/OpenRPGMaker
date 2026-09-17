@@ -34,8 +34,8 @@
 @keyframes ai-queue-pulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
 
 .ai-silenced-banner {
-  background: color-mix(in srgb, #8A5E00 16%, var(--bg-panel, var(--bg-surface)));
-  border: 1.5px solid color-mix(in srgb, #8A5E00 48%, transparent);
+  background: color-mix(in srgb, var(--warning) 16%, var(--bg-panel, var(--bg-surface)));
+  border: 1.5px solid color-mix(in srgb, var(--warning) 48%, transparent);
   border-radius: 12px;
   display: flex;
   align-items: center;

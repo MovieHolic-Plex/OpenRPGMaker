@@ -392,8 +392,8 @@
 }
 
 .event-script-preview-disclaimer {
-  background: color-mix(in srgb, var(--status-warning, #8A5E00) 10%, var(--surface-recessed, var(--bg-raised)));
-  border: 1px solid color-mix(in srgb, var(--status-warning, #8A5E00) 42%, var(--border-soft, var(--border-subtle)));
+  background: color-mix(in srgb, var(--status-warning, var(--warning)) 10%, var(--surface-recessed, var(--bg-raised)));
+  border: 1px solid color-mix(in srgb, var(--status-warning, var(--warning)) 42%, var(--border-soft, var(--border-subtle)));
   border-radius: 6px;
   color: var(--text-2);
   font: 600 11px/1.45 var(--font-ui);

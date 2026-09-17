@@ -802,7 +802,7 @@
 
 /* 범위 밖 값을 클램프했을 때 잠깐 깜빡여 "값이 바뀌었다"를 알린다 */
 .event-position-input.is-clamped {
-  outline: 2px solid var(--warning, #8A5E00);
+  outline: 2px solid var(--warning);
   transition: outline-color 0.2s ease;
 }
 

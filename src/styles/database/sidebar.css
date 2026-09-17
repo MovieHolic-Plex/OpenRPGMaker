@@ -95,7 +95,7 @@
 }
 
 .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab {
-  color: var(--db-studio-text-2, #475569) !important;
+  color: var(--db-studio-text-2, var(--text-2)) !important;
   font: 500 13px/1.4 var(--font-ui) !important;
   height: 34px !important;
   justify-content: flex-start !important;
@@ -311,7 +311,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group:hover {
-  color: var(--db-studio-text-2, #475569);
+  color: var(--db-studio-text-2, var(--text-2));
 }
 
 /* ---- search field — readable ----------------------------------------- */
@@ -321,7 +321,7 @@
   border: 1px solid var(--db-studio-border-default, rgba(15,23,42,.10));
   border-radius: 6px;
   box-sizing: border-box;
-  color: var(--db-studio-text-1, #0F172A);
+  color: var(--db-studio-text-1, var(--text-1));
   flex: 0 0 auto;
   font: 400 13px/1.4 var(--font-ui);
   height: 32px;
@@ -445,7 +445,7 @@
   background: transparent;
   border: 1px solid transparent;
   border-radius: 8px;
-  color: var(--db-studio-text-2, #475569);
+  color: var(--db-studio-text-2, var(--text-2));
   cursor: pointer;
   display: flex;
   flex: 0 0 auto;
@@ -467,7 +467,7 @@
    `color` 를 자식에 직접 선언하는 게 핵심 — 접힌 레일의 `.db-tab { color: transparent }` 는
    상속이므로 자식의 일반 선언에 진다(!important 불필요). */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab > .db-tab-icon {
-  color: var(--db-studio-text-2, #475569);
+  color: var(--db-studio-text-2, var(--text-2));
   flex: 0 0 auto;
   height: 18px;
   width: 18px;
@@ -509,7 +509,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab:hover {
   background: var(--db-studio-inset, #F1F5F9);
-  color: var(--db-studio-text-1, #0F172A);
+  color: var(--db-studio-text-1, var(--text-1));
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab:focus-visible {

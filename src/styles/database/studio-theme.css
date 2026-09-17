@@ -44,7 +44,7 @@
   --db-studio-on-accent: #FFFFFF;
   /* modern/enemies.css 가 폴백과 함께 쓰던 미정의 변수. 정식 토큰으로 승격한다. */
   --db-studio-surface-2: rgba(15, 23, 42, 0.03);
-  /* 경고 계열. 기존 --warning(#8A5E00) 은 올리브-골드라 이 앰버와 색이 달라 재사용하지
+  /* 경고 계열. 기존 --warning(var(--warning)) 은 올리브-골드라 이 앰버와 색이 달라 재사용하지
      않는다 — 재사용하면 카운터는 줄지만 화면이 바뀐다. 값은 그대로 두고 이름만 준다. */
   --db-studio-warning: #B45309;
   --db-studio-warning-strong: #92400E;

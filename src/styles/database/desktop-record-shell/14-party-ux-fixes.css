@@ -66,7 +66,7 @@
    `uppercase` 는 한글에 무효라 Latin 전제 토큰의 흔적이다 — 떼어낸다.
    ───────────────────────────────────────────────────────────────────────── */
 .database-modal-body :is(.oprn-detail-form, .db-detail-form) legend {
-  color: var(--text-2, #475569);
+  color: var(--text-2);
   letter-spacing: 0;
   text-transform: none;
 }
@@ -80,7 +80,7 @@
 
 /* 레코드 id(`#1`)는 2.29:1 이었다 — 보조 정보라도 AA 는 넘겨야 읽힌다. */
 .database-modal-body :is(.db-record-id, .oprn-record-id, .db-list-row-id) {
-  color: var(--text-2, #475569);
+  color: var(--text-2);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -151,7 +151,7 @@
    ───────────────────────────────────────────────────────────────────────── */
 .database-modal-body .oprn-record-list-pane .db-list-empty {
   align-content: center;
-  color: var(--text-2, #475569);
+  color: var(--text-2);
   display: grid;
   font: 400 12px/18px var(--font-ui);
   gap: 4px;
@@ -162,12 +162,12 @@
 }
 
 .database-modal-body .db-list-empty-title {
-  color: var(--text-1, #0f172a);
+  color: var(--text-1);
   font-weight: 600;
 }
 
 .database-modal-body .db-list-empty-hint {
-  color: var(--text-2, #475569);
+  color: var(--text-2);
   font-size: 11px;
 }
 
@@ -229,7 +229,7 @@ body:has(.database-modal-backdrop) .toast-stack {
 }
 
 .database-modal-body .db-class-exp-summary {
-  color: var(--text-2, #475569);
+  color: var(--text-2);
   font: 400 11.5px/16px var(--font-ui);
 }
 
@@ -261,7 +261,7 @@ body:has(.database-modal-backdrop) .toast-stack {
 }
 
 .database-modal-body .db-class-exp-graph i {
-  background: var(--accent-secondary, #8a6b2f);
+  background: var(--accent-secondary, var(--gold));
   border-radius: 1px 1px 0 0;
   display: block;
   min-height: 1px;
@@ -272,7 +272,7 @@ body:has(.database-modal-backdrop) .toast-stack {
 }
 
 .database-modal-body .oprn-record-classes .db-class-rate-name {
-  color: var(--text-1, #0f172a);
+  color: var(--text-1);
   font: 500 11.5px/16px var(--font-ui);
 }
 
@@ -291,7 +291,7 @@ body:has(.database-modal-backdrop) .toast-stack {
 
 /* 필드 아래 도움말 — `actor-field-help` 는 규칙이 없어 본문과 같은 크기로 렌더됐다. */
 .database-modal-body .actor-field-help {
-  color: var(--text-2, #475569);
+  color: var(--text-2);
   display: block;
   font: 400 11px/15px var(--font-ui);
   margin-top: 3px;

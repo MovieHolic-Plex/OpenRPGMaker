@@ -24,7 +24,7 @@
   align-content: stretch;
   background:
     radial-gradient(ellipse 80% 60% at 20% 20%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 58%),
-    radial-gradient(ellipse 70% 50% at 90% 80%, color-mix(in srgb, #8A6B2F 8%, transparent), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 90% 80%, color-mix(in srgb, var(--gold) 8%, transparent), transparent 55%),
     var(--bg-base, #F7F3EA);
   gap: 0;
   grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);

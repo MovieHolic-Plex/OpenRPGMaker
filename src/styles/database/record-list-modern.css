@@ -9,7 +9,7 @@
   border: 0;
   box-shadow: none;
   box-sizing: border-box;
-  color: var(--db-studio-text-1, #0F172A);
+  color: var(--db-studio-text-1, var(--text-1));
   cursor: pointer;
   display: flex;
   gap: 8px;
@@ -22,7 +22,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-list-row:hover {
   background: var(--db-studio-inset, #F1F5F9);
-  color: var(--db-studio-text-1, #0F172A);
+  color: var(--db-studio-text-1, var(--text-1));
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-list-row:focus-visible {

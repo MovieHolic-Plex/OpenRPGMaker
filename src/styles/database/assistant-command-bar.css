@@ -202,7 +202,7 @@ body.ai-chat-dock-float.ai-command-bar-active .editor-layout {
 }
 
 .ai-temperature-option[aria-checked="true"] {
-  background: color-mix(in srgb, var(--accent, var(--gold, #8a6b2f)) 15%, transparent);
+  background: color-mix(in srgb, var(--accent, var(--gold)) 15%, transparent);
   border-color: var(--accent-border);
   color: var(--text-1);
 }

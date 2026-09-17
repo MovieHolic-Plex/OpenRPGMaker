@@ -68,7 +68,7 @@
   border: 1px solid var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
   border-radius: 8px;
   background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
-  color: var(--db-studio-text-1, #0F172A);
+  color: var(--db-studio-text-1, var(--text-1));
   font: 600 12px/1.2 inherit;
 }
 
@@ -85,7 +85,7 @@
   padding: 8px;
   border-radius: 8px;
   background: var(--db-studio-well, #EEF2F6);
-  color: var(--db-studio-text-1, #0F172A);
+  color: var(--db-studio-text-1, var(--text-1));
   font: 500 12px/1.4 inherit;
 }
 

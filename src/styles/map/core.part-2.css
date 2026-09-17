@@ -63,7 +63,7 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 }
 .choices .choice-btn:hover {
   background: rgba(245, 208, 74, 0.18);
-  border-color: #8A6B2F;
+  border-color: var(--gold);
 }
 
 /* ?? ?대깽???몄쭛湲??? */
