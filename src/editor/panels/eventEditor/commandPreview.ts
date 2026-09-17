@@ -704,6 +704,7 @@ function itemStage(cmd: Extract<Command, { kind: "changeItem" }>, context?: Comm
 
 function storageChestStage(cmd: Extract<Command, { kind: "openChest" }>): HTMLElement {
   const shared = Boolean(cmd.chestId?.trim());
+  const title = cmd.displayName?.trim() || (cmd.template === "farm" ? "농장 상자" : cmd.template === "warehouse" ? "공동 창고" : cmd.template === "vault" ? "금고" : "보관 상자");
   const stage = el("div", {
     class: "ecp-storage-chest-stage",
     dataset: { testid: "open-chest-preview" },
@@ -713,7 +714,9 @@ function storageChestStage(cmd: Extract<Command, { kind: "openChest" }>): HTMLEl
       class: "ecp-storage-chest-heading",
       children: [
         el("strong", { text: "플레이 화면 예시" }),
+        el("span", { text: title }),
         el("span", { text: shared ? "여러 상자 공유" : "이 상자 전용" }),
+        ...(cmd.template || cmd.layout ? [el("span", { text: [cmd.template, cmd.layout].filter(Boolean).join(" · ") })] : []),
       ],
     }),
     el("div", {
