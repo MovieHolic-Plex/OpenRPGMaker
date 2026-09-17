@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **69쪽 / 2793KB / 약 788,124 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **69쪽 / 2797KB / 약 789,082 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 440KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2368 | ~125,108 |
-| `openwiki/editor-ai-tools.md` | 198KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1525 | ~55,325 |
+| `openwiki/editor-ai-tools.md` | 200KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1555 | ~55,976 |
 | `openwiki/editor-database.md` | 305KB | 61KB ⚠상한 초과 — 절을 더 쪼개라 | 1785 | ~88,502 |
 | `openwiki/editor-event-authoring.md` | 136KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 744 | ~39,120 |
 | `openwiki/editor-event-commands.md` | 57KB | 32KB | 202 | ~15,410 |
@@ -26,7 +26,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/runtime-battle.md` | 150KB | 31KB | 678 | ~43,069 |
 | `openwiki/runtime-project-schema.md` | 149KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 1028 | ~40,575 |
 | `openwiki/runtime-sessions.md` | 89KB | 46KB | 318 | ~23,589 |
-| `openwiki/testing.md` | 199KB | 48KB | 1850 | ~55,085 |
+| `openwiki/testing.md` | 201KB | 48KB | 1864 | ~55,392 |
 
 ## 한국어 산문이 깨진 페이지
 
@@ -72,7 +72,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/project-wiki.md` | 2 | `projectWikiSession.test.ts`, `projectWikiTimeout.test.ts` |
 | `openwiki/quickstart.md` | 1 | `src/project/supabaseProjectSync.ts` |
 | `openwiki/runtime-action-combat.md` | 1 | `export-player/player.html` |
-| `openwiki/runtime-battle.md` | 7 | `battle.css`, `hero-03-battle-idle.png`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `raw.png`, `reference.png`, `src/styles/runtime/battle.css`, `starter/hires/hero-0N-battle.png` |
+| `openwiki/runtime-battle.md` | 8 | `battle.css`, `hero-03-battle-idle.png`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `raw.png`, `reference.png`, `src/styles/runtime/battle.css`, `src/styles/runtime/battle/18-pokemon-layout-redesign.css`, `starter/hires/hero-0N-battle.png` |
 | `openwiki/runtime-m2-flow-controls.md` | 3 | `test/runtimePictureStacking.test.ts`, `verify-shots/runtime-qa/cloud-shadows/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md` |
 | `openwiki/runtime-pre-edit-routing.md` | 3 | `test/playerInputCss.test.ts`, `test/runtimeQaInstrumentationBoundary.test.ts`, `verify-shots/runtime-qa/emote/SUMMARY.md` |
 | `openwiki/runtime-project-schema.md` | 20 | `.json`, `.png`, `devMediaPromotion.test.ts`, `dist-electron/main.cjs`, `interiorLoadConsistency.test.ts`, `mediaImportDurability.test.ts`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `src/project/supabaseProjectSync.ts`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/io.test.ts`, `test/mapPlanningReuse.test.ts`, `test/sharedDemoStore.test.ts`, `test/supabaseCanonicalRoundtrip.live.test.ts`, `test/supabaseMapPatchRecovery.test.ts`, `test/supabaseProjectSync.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `transactionalRemoteSourceLineage.test.ts` |
@@ -320,7 +320,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2337` 하단 덱 → 오버레이 드로워 (2026-09-16)
 - `L2351` 수용 기준: DB 레코드 값과 지연 적용의 런 수명 (2026-09-16)
 
-### `openwiki/editor-ai-tools.md` — 198KB · 1525줄 · ~55,325 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 200KB · 1555줄 · ~55,976 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` paint_tiles 타일 인덱스 검증 — 유일하게 빠져 있던 가드 (2026-09-16)
 - `L22` 오프닝 미디어 배선 — 스틸 카탈로그·배경음악·부분 편집 (2026-09-14)
@@ -367,6 +367,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1458` 모험 저작 완료와 재시도 (2026-09-05)
 - `L1488` 실제 이미지 입력 보존 (2026-09-07)
 - `L1502` Physical tile passage exposure (2026-09-08)
+- `L1526` NPC 자율 이동 아키타입 추론 (2026-09-17)
 
 ### `openwiki/editor-database.md` — 305KB · 1785줄 · ~88,502 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
@@ -1112,7 +1113,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L110` Files to inspect before editing
 - `L122` Related pages
 
-### `openwiki/testing.md` — 199KB · 1850줄 · ~55,085 토큰 · 통째읽기 잘림
+### `openwiki/testing.md` — 201KB · 1864줄 · ~55,392 토큰 · 통째읽기 잘림
 
 - `L1` AI 세션 테스트의 모델 id 는 임의로 짓지 않는다 (2026-09-14)
 - `L17` 전체 스위트가 워커 힙에서 죽던 문제 (2026-09-11)
@@ -1185,16 +1186,17 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1528` 런타임(게임) 전용 비전 QA 하네스 (2026-08-28)
   - `L1530` 메뉴 적대적 플레이 회귀 (2026-09-05)
 - `L1667` sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
-- `L1674` fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
-  - `L1695` Shared fake DOM enhancement contracts (2026-09-08)
-- `L1727` bugfix-sweep 실제 표면 하네스 (2026-08-29)
-- `L1740` 마을 설계서 (2026-09-05)
-- `L1745` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
-- `L1755` 상점 진열 중심 편집 검증 (2026-09-05)
-- `L1763` 실제 DB로 나가는 전체 검사 요청 (2026-09-05 실측)
-- `L1769` Request-bound functional acceptance verification (2026-09-07)
-- `L1837` 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
-- `L1847` 실내 조립·형상 검증 (2026-09-05)
+- `L1674` NPC 배회 런타임 QA — `npm run qa:runtime -- --scenario npc-movement` (2026-09-17)
+- `L1688` fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
+  - `L1709` Shared fake DOM enhancement contracts (2026-09-08)
+- `L1741` bugfix-sweep 실제 표면 하네스 (2026-08-29)
+- `L1754` 마을 설계서 (2026-09-05)
+- `L1759` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
+- `L1769` 상점 진열 중심 편집 검증 (2026-09-05)
+- `L1777` 실제 DB로 나가는 전체 검사 요청 (2026-09-05 실측)
+- `L1783` Request-bound functional acceptance verification (2026-09-07)
+- `L1851` 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
+- `L1861` 실내 조립·형상 검증 (2026-09-05)
 
 ### `openwiki/tile-layer-policy.md` — 12KB · 165줄 · ~3,743 토큰
 

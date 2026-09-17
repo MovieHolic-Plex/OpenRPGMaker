@@ -53,6 +53,53 @@ import {
 
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
 const WANDER: EventPage["movement"] = { type: "random", speed: 2, frequency: 3 };
+const STALK: EventPage["movement"] = { type: "approach", speed: 3, frequency: 3 };
+
+/** NPC 이름 기반 이동 아키타입. 명시 movement가 없을 때만 추론한다(명시 우선). */
+type NpcMovementArchetype = "anchored" | "roaming" | "stalking" | "ambiguous";
+
+function inferNpcMovementArchetype(name: string): NpcMovementArchetype {
+  const spaced = name.trim().toLowerCase();
+  const needle = spaced.replace(/\s+/g, "");
+  if (!needle) return "ambiguous";
+  // 스토커가 최우선: "경비 추격자"는 다가와야지 문지기가 아니다.
+  if (/추격|습격|매복|스토커|stalker|ambush|chaser/u.test(needle)) return "stalking";
+  if (isShopRoleNpcName(name) || /문지기|경비|간판|안내판|안내인|gatekeeper|guard|signboard/u.test(needle)) return "anchored";
+  // 한 글자 토큰(개·새)은 독립 단어일 때만 친다 — "소개"가 배회하는 오탐 방지.
+  if (spaced.split(/\s+/).includes("개") || spaced.split(/\s+/).includes("새")) return "roaming";
+  if (/아이|꼬마|어린이|행상|떠돌이|배회|유랑|방랑|동물|강아지|고양이|닭|돼지|kid|child|peddler|wanderer|stray|dog|cat|chicken/u.test(needle)) return "roaming";
+  return "ambiguous";
+}
+
+/**
+ * 생략된 movement를 아키타입으로 추론한다. 명시값은 그대로 쓰고, 추론 결과는
+ * warnings에 남겨 모델이 다음 호출에서 명시하도록 유도한다.
+ */
+function resolveNpcMovement(
+  name: string,
+  explicit: unknown,
+  warnings: string[],
+): EventPage["movement"] {
+  if (typeof explicit === "string" && explicit.trim()) {
+    const trimmed = explicit.trim();
+    if (trimmed === "random") return WANDER;
+    if (trimmed === "approach") return STALK;
+    return PASSIVE;
+  }
+  switch (inferNpcMovementArchetype(name)) {
+    case "roaming":
+      warnings.push(`이동 추론 → random(배회): '${name}' 아키타입. 고정하려면 movement:"fixed" 명시.`);
+      return WANDER;
+    case "stalking":
+      warnings.push(`이동 추론 → approach(접근): '${name}' 아키타입. 고정하려면 movement:"fixed" 명시.`);
+      return STALK;
+    case "anchored":
+      warnings.push(`이동 추론 → fixed(제자리): '${name}' 대화 거점 아키타입. 배회시키려면 movement:"random" 명시.`);
+      return PASSIVE;
+    case "ambiguous":
+      return PASSIVE;
+  }
+}
 const DIALOGUE_COMMAND_KINDS: ReadonlySet<string> = new Set(["text", "choices"]);
 
 /** place_npc/make_villager face 인자 → FaceGraphic. 실제 배치된 charset 기준으로 맞춘다. */
@@ -586,7 +633,7 @@ const placeNpc: ToolDefinition = {
       name: { type: "string" },
       graphic: GRAPHIC_SPEC_SCHEMA,
       face: FACE_SCHEMA,
-      movement: { type: "string", enum: ["fixed", "random"], description: "자율 이동. 생략 시 fixed(제자리). 시장·광장·마을 주민처럼 돌아다니는 NPC는 random(배회). 상점 주인·간판 NPC·대화 거점은 fixed." },
+      movement: { type: "string", enum: ["fixed", "random", "approach"], description: "자율 이동. 생략 시 이름 아키타입 추론: 배회형(아이·행상·동물)→random, 추격형(추격자·매복)→approach, 대화 거점(상점 주인·문지기·간판)→fixed, 모호하면 fixed. 명시가 추론보다 우선." },
       pages: {
         type: "array",
         description:
@@ -648,10 +695,11 @@ const placeNpc: ToolDefinition = {
     const mergeSimilar = Boolean(similar) && (similar?.id === explicitId || shopRole || !explicitId);
     const id = mergeSimilar ? similar!.id : (explicitId ?? genId("ev_npc"));
     const reused = mergeSimilar;
-    const movement = !actionGuide && args.movement === "random" ? WANDER : PASSIVE;
     const normalizationWarnings: string[] = [];
     if (args.graphic === undefined) normalizationWarnings.push("graphic 생략 → query:\"villager\" 기본 적용");
     if (reused) normalizationWarnings.push(`근접 유사 NPC 재사용 → id:${id} (새 이벤트 대신 갱신)`);
+    // 명시 movement 우선, 생략 시 이름 아키타입 추론(guide 예외는 제자리).
+    const movement = actionGuide ? PASSIVE : resolveNpcMovement(name, args.movement, normalizationWarnings);
     const faceArg = resolvePlaceNpcFaceArg(args.face, graphic);
     const pages = compileSimplePages(id, name, actionGuide ? [{ text: ACTION_CONTROLS_GUIDE }] : args.pages as SimplePage[], graphic, {
       movement,
@@ -766,7 +814,7 @@ const makeVillager: ToolDefinition = {
       name: { type: "string" },
       graphic: GRAPHIC_SPEC_SCHEMA,
       home: COORD_SCHEMA,
-      movement: { type: "string", enum: ["fixed", "random"], description: "자율 이동. 생략 시 fixed(제자리). 돌아다니는 주민은 random(배회). 상점 주인은 fixed." },
+      movement: { type: "string", enum: ["fixed", "random", "approach"], description: "자율 이동. 생략 시 이름 아키타입 추론: 배회형(아이·행상·동물)→random, 추격형→approach, 상점 주인·대화 거점→fixed, 모호하면 fixed. 명시가 추론보다 우선." },
       schedule: npcScheduleSchema,
       dailyRoutine: {
         type: "object",
@@ -855,7 +903,9 @@ const makeVillager: ToolDefinition = {
     }
     const home = { x: homeLanding.x, y: homeLanding.y };
     const homeAdjusted = home.x !== homeRaw.x || home.y !== homeRaw.y;
-    const villagerMovement = (args.movement as string | undefined) === "random" ? WANDER : PASSIVE;
+    const warnings: string[] = [];
+    if (args.graphic === undefined) warnings.push("graphic 생략 → query:\"villager\" 기본 적용");
+    const villagerMovement = resolveNpcMovement(name, args.movement, warnings);
     const schedule = args.schedule !== undefined
       ? parseNpcSchedule(draft, args.schedule, "schedule")
       : routineSchedule(draft, map.id, home, args.dailyRoutine);
@@ -879,8 +929,7 @@ const makeVillager: ToolDefinition = {
     const reusedEvent = exactIdMatch ?? characterIdMatch ?? nearbyMatch;
     const id = reusedEvent?.id ?? explicitId ?? genId("ev_villager");
     const reused = reusedEvent !== undefined;
-    const warnings: string[] = [];
-    if (args.graphic === undefined && !reused) warnings.push("graphic 생략 → query:\"villager\" 기본 적용");
+    if (args.graphic === undefined && reused) { /* 비재사용 경고는 위에서 이미 기록 */ }
     if (homeAdjusted) warnings.push(`주민 위치 자동 조정: (${homeRaw.x}, ${homeRaw.y}) → (${home.x}, ${home.y})`);
     if (exactIdMatch) warnings.push(`동일 event id NPC 재사용 → id:${id} (새 이벤트 대신 갱신)`);
     else if (characterIdMatch) warnings.push(`동일 characterId NPC 재사용 → id:${id} (중복 이벤트 대신 갱신)`);
@@ -1722,6 +1771,7 @@ const placeBattleBlocker: ToolDefinition = {
       victory: { type: "array", description: "승리 후 대사", items: { type: "string" } },
       victoryItems: { type: "array", description: "[{itemId,amount}] 승리 보상", items: ITEM_AMOUNT_SCHEMA },
       graphic: GRAPHIC_SPEC_SCHEMA,
+      fightMovement: { type: "string", enum: ["fixed", "random"], description: "전투 페이지 이동. 생략 시 fixed(제자리 보초). 순찰형 몬스터는 random(배회)." },
       id: { type: "string" },
     },
     required: ["mapId", "x", "y", "troopId"],
@@ -1760,11 +1810,15 @@ const placeBattleBlocker: ToolDefinition = {
       victory,
       victoryItems,
       graphic,
+      fightMovement: args.fightMovement === "random"
+        ? { type: "random", speed: 2, frequency: 3 }
+        : { type: "fixed", speed: 3, frequency: 3 },
     });
     assertEventShape(event);
     upsertEventIntoMap(map, event);
     const warnings = [
       ...(args.graphic === undefined ? ['graphic 생략 → query:"monster" 기본 적용'] : []),
+      ...(args.fightMovement === "random" ? ["전투 페이지 이동 → random(배회): 순찰형 몬스터"] : []),
       ...(adjusted ? [placementAdjustedWarning(`전투 블로커 '${troopId}'`, { x: requestedX, y: requestedY }, { x, y })] : []),
     ];
     return {

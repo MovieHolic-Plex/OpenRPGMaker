@@ -21,5 +21,5 @@ export const EVENT_PAGE_SEMANTICS_BLOCK = [
   "- **쓰기 전에 조회하라(툴콜을 아끼지 마라).** find_events(현재 맵)로 기존 NPC의 페이지 수·조건을 보고 → 풍부한 예는 get_event 로 페이지/커맨드를 읽고 → get_story_state 로 이미 있는 스위치/퀘스트 플래그를 재사용하고 → get_database_records 로 아이템/액터 실제 id를 잡고 → list_npc_graphics 로 외형을 고른 뒤 place_npc. 플래그·아이템·다른 NPC id를 추측 생성하지 마라.",
   "- 상태별 페이지 패턴(조건이 **서로 달라야** 산다): (1) 재방문=기본+setSelfSwitch A / selfSwitch A 페이지 (2) 퀘스트=declare_story_flag 후 기본·진행·완료 페이지 (3) 호감=characterId+changeFriendship+friendshipAtLeast 페이지 (4) 시간·계절=timePhase/season 페이지 (5) 한 만남 안의 분기 대화는 그 페이지의 choices — 페이지를 늘리지 않는다.",
   "- 페이지마다 다른 모습이 필요하면 page.graphic 을 넣고, 호감/선물을 쓰면 place_npc 에 characterId 를 명시하라. 놓은 뒤 explain_event 로 지금 활성인 페이지가 의도한 기본 페이지인지 확인하라.",
-  "- **NPC 자율 이동(movement)은 생략 시 fixed(제자리)다.** 돌아다니는 주민·행상·아이·동물은 place_npc/make_villager 에 movement:\"random\"(배회)을 명시하라. 상점 주인·간판·대화 거점·스케줄 이동(set_npc_schedule/dailyRoutine) NPC는 fixed가 맞다. 배회가 필요하면 스케줄만으로 해결하지 마라 — 스케줄은 시간표 이동이고 평소 배회는 movement다.",
+  "- **NPC 자율 이동(movement)은 생략 시 이름 아키타입으로 추론된다.** 배회형(아이·행상·떠돌이·동물·kid/dog…)→random, 추격형(추격자·매복·스토커)→approach, 대화 거점(상점 주인·문지기·간판)→fixed, 모호하면 fixed. 추론 결과는 warnings에 기록된다. 의도와 다르면 movement를 명시하라 — 명시가 추론보다 우선한다. 상점 주인·간판·스케줄 이동(set_npc_schedule/dailyRoutine) NPC는 fixed가 맞다. 배회가 필요하면 스케줄만으로 해결하지 마라 — 스케줄은 시간표 이동이고 평소 배회는 movement다.",
 ].join("\n");

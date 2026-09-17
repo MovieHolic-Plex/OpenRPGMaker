@@ -256,7 +256,18 @@ function conservativeReachability(project: Project, map: GameMap, criterion: Ext
   });
   // Never assume a switch/page/route will open a path. Every potentially solid
   // authored page blocks its passage footprint; no runtime state is fabricated.
+  // 단, 이동형 이벤트(random/approach/chase/…)는 정적 차단자에서 제외한다 —
+  // 움직이는 NPC가 있다는 이유만으로 reachability 전체를 포기하던
+  // conditional-movement-unsupported 인센티브(모델이 fixed만 고름)를 없앤다.
+  // 이동형 시작 셀에 from/to가 겹치면 아래 movingHits에서 별도 실패한다.
+  const movingIds = new Set(
+    map.events
+      .filter((event) => event.moveRoute || event.pages?.some((page) => page.priority === "same"
+        && page.overlapForbidden !== false && page.movement.type !== "fixed"))
+      .map((event) => event.id),
+  );
   const blockers = map.events.flatMap(event => {
+    if (movingIds.has(event.id)) return [];
     const bounds = !event.pages?.length ? [passageBounds(event.x, event.y, { width: 1, height: 1 }, 1)]
       : event.pages.filter(page => page.priority === "same" && page.overlapForbidden !== false)
         .map(page => passageBounds(event.x, event.y, page.footprint ?? { width: 1, height: 1 }, page.passRows ?? page.footprint?.height ?? 1));
@@ -273,9 +284,16 @@ function conservativeReachability(project: Project, map: GameMap, criterion: Ext
     }
   }
   if (issues.length) return issues;
-  const moving = map.events.find(event => event.moveRoute || event.pages?.some(page => page.priority === "same"
-    && page.overlapForbidden !== false && page.movement.type !== "fixed"));
-  if (moving) return [failure({ field: "from", cell: criterion.from }, "conditional-movement-unsupported", { kind: "event", eventId: moving.id })];
+  // 움직이는 이벤트의 시작 셀에 from/to가 겹치면 실패(그 외에는 경로 탐색 그대로 통과).
+  const movingBlocked = (x: number, y: number): string | undefined =>
+    map.events.find((event) => movingIds.has(event.id) && event.x === x && event.y === y)?.id;
+  const movingHits = points
+    .map((point) => ({ point, eventId: movingBlocked(point.cell.x, point.cell.y) }))
+    .filter((entry): entry is { point: typeof points[number]; eventId: string } => entry.eventId !== undefined);
+  if (movingHits.length > 0) {
+    const first = movingHits[0]!;
+    return [failure(first.point, "cell-moving-event-start", { kind: "event", eventId: first.eventId })];
+  }
   const seen = new Set<string>([`${criterion.from.x},${criterion.from.y}`]);
   const queue = [criterion.from];
   for (let head = 0; head < queue.length; head += 1) {
