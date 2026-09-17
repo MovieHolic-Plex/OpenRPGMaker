@@ -6,8 +6,7 @@ import { store } from "@/project/store";
 import { currentTeamReviewActions, subscribeTeamActivity } from "@/ai/piAgent/teamActivity";
 import type { TeamBoardAgent, TeamBoardState } from "@/ai/piAgent/teamBoardState";
 import type { LaneState } from "@/ai/piAgent/lane";
-import { createTeamBudget } from "./aiTeamBudget";
-import { loadTeamSpec, saveTeamSpec, subscribeTeamSpec } from "@/ai/piAgent/teamSpecStore";
+import { loadTeamSpec } from "@/ai/piAgent/teamSpecStore";
 import { deckIcon, type DeckIconName } from "./aiDeckIcons";
 import { createTeamTranscript } from "./aiTeamTranscript";
 import { laneSession } from "./aiLaneSession";
@@ -27,7 +26,7 @@ const laneLabel: Record<LaneState["status"], string> = {
 };
 const terminalPhases = new Set(["적용됨", "완료", "버림", "중단", "실패"]);
 
-export function createAiTeamSidebar(options: { settings: HTMLElement }): { root: HTMLElement; dispose(): void } {
+export function createAiTeamSidebar(options: { settings: HTMLElement }): { root: HTMLElement; openSettings(): void; dispose(): void } {
   const manager = laneSession();
   let activity: TeamBoardState | null = null;
   let selected: string | null = null;
@@ -75,36 +74,9 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     attrs: { type: "button", "aria-pressed": String(id === tab) }, text: label, dataset: { memberTab: id },
     on: { click: () => { tab = id; renderDetail(); } },
   }));
-  const budget = createTeamBudget(maxTurns => {
-    const m = member();
-    if (!m) return;
-    const memberId = m.agent?.memberId ?? m.lane?.spec.memberId;
-    const spec = loadTeamSpec();
-    if (memberId && spec.members.some(s => s.id === memberId)) {
-      saveTeamSpec({ ...spec, members: spec.members.map(s => s.id === memberId ? { ...s, maxTurns } : s) });
-    } else {
-      try { localStorage.setItem(`oprn:team-budget:${m.key}`, String(maxTurns)); } catch { /* Session fallback below. */ }
-    }
-    budgetOverrides.set(m.key, maxTurns);
-    renderDetail();
-  });
-  const budgetOverrides = new Map<string, number>();
-  function selectedBudget(m: Member): number {
-    const memberId = m.agent?.memberId ?? m.lane?.spec.memberId;
-    const spec = loadTeamSpec().members.find(s => s.id === memberId);
-    if (spec) return spec.maxTurns;
-    if (budgetOverrides.has(m.key)) return budgetOverrides.get(m.key)!;
-    try {
-      const saved = Number(localStorage.getItem(`oprn:team-budget:${m.key}`));
-      if ([100, 300, 600].includes(saved)) return saved;
-    } catch { /* Storage may be unavailable. */ }
-    return m.lane?.spec.maxTurns ?? 300;
-  }
-  const budgetHint = el("small", { text: "다음 실행부터 적용" });
-  const budgetSection = el("div", { class: "ai-team-budget-section", children: [el("span", { text: "작업 예산" }), budget.root, budgetHint] });
   const detail = el("section", {
     class: "ai-team-member-detail", attrs: { hidden: "", "aria-label": "선택한 팀원" }, dataset: { testid: "ai-member-detail" },
-    children: [el("header", { class: "ai-team-member-head", children: [avatar, el("div", { children: [title, stateText] }), close] }), budgetSection, tabs, content, notice, actions, composer],
+    children: [el("header", { class: "ai-team-member-head", children: [avatar, el("div", { children: [title, stateText] }), close] }), tabs, content, notice, actions, composer],
   });
   const team = el("button", { class: "ai-team-rail-tab", attrs: { type: "button", "aria-pressed": "true" }, text: "AI 팀", on: { click: () => { view = "team"; render(); } } });
   const roster = el("div", { class: "ai-team-avatar-list", dataset: { testid: "ai-team-avatar-list" }, attrs: { "aria-label": "팀원" } });
@@ -154,7 +126,6 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     if (disposed) return;
     detail.hidden = view === "team" && selected === null;
     if (detail.hidden) return;
-    budgetSection.hidden = view !== "team";
     tabs.hidden = view !== "team"; composer.hidden = view !== "team"; notice.hidden = true; actions.replaceChildren();
     if (view === "settings") {
       title.textContent = "AI 팀 설정"; stateText.textContent = "역할 · 모델 · 작업 범위"; avatar.replaceChildren(deckIcon("gear"));
@@ -165,9 +136,6 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     }
     const m = member();
     if (!m) { selected = null; detail.hidden = true; return; }
-    const turns = selectedBudget(m);
-    budget.update(turns);
-    budgetHint.textContent = ([100, 300, 600].includes(turns) ? "" : "기존 사용자 설정 유지 · ") + "다음 실행부터 적용";
     title.textContent = m.name; stateText.textContent = m.state;
     avatar.replaceChildren(deckIcon(m.icon)); avatar.dataset.state = m.state;
     receiver.textContent = `${m.name}에게 · 후속 요청`;
@@ -271,8 +239,7 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     drafts.set(selected, text); render();
     // start() publishes running before yielding. Only clear a draft after that
     // acknowledgement; a rejected launch must leave the user's message intact.
-    const maxTurns = selectedBudget(m);
-    budgetOverrides.set(`lane:${lane.spec.id}`, maxTurns);
+    const maxTurns = loadTeamSpec().workBudget ?? 300;
     const pending = manager.start(lane.spec.id, { instruction, maxTurns });
     if (manager.get(lane.spec.id)?.status === "running") {
       drafts.delete(sourceKey); drafts.delete(`lane:${lane.spec.id}`);
@@ -296,12 +263,11 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     if (activity?.task !== next?.task) { if (!selected?.startsWith("lane:")) selected = null; followUps.clear(); }
     activity = next; render();
   });
-  const unsubscribeBudget = subscribeTeamSpec(() => renderDetail());
   const unsubscribeLanes = manager.subscribe(() => render());
 
   const unsubscribeStore = store.subscribe((_project, change) => {
     if (change?.projectSwitch) { selected = null; view = "team"; drafts.clear(); followUps.clear(); activity = null; render(); }
   });
   render();
-  return { root, dispose: () => { disposed = true; unsubscribeBudget(); unsubscribeTeam(); unsubscribeLanes(); unsubscribeStore(); root.removeEventListener("keydown", onKey); root.remove(); } };
+  return { root, openSettings: () => { view = "settings"; render(); options.settings.querySelector<HTMLElement>("button")?.focus(); }, dispose: () => { disposed = true; unsubscribeTeam(); unsubscribeLanes(); unsubscribeStore(); root.removeEventListener("keydown", onKey); root.remove(); } };
 }
