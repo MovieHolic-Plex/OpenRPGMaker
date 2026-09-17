@@ -1,8 +1,17 @@
+import { syncTeamReadOnlyUi } from './teamReadOnlyUi';
+import { setTeamRole } from '@/project/teamAccess';
 import { store } from '@/project/store';
 import type { TeamStatus } from '../../electron/shared/team';
 
 let latest: TeamStatus | null = null;
 export function teamSessionStatus(): TeamStatus | null { return latest; }
+
+export async function initializeTeamAccess(): Promise<void> {
+  if (!window.oprn?.team) return;
+  setTeamRole(null);
+  try { latest = await window.oprn.team.status(); setTeamRole(latest.member.role); }
+  catch { latest = null; }
+}
 
 /** Poll the durable revision, not PRAGMA data_version (same-connection writes do not change it). */
 export function startTeamSession(): void {
@@ -20,14 +29,17 @@ export function startTeamSession(): void {
     link.textContent = '팀 관리 ↗'; bar.append(link);
   }
   document.body.append(bar);
+  syncTeamReadOnlyUi();
   const poll = async () => {
     if (running) return;
     running = true;
     try {
       latest = await bridge.status();
+      setTeamRole(latest.member.role);
+      syncTeamReadOnlyUi();
       if (latest.revision !== seen && await store.refreshFromHost()) seen = latest.revision;
-      text.textContent = `${latest.team.name} · ${latest.member.label}${latest.member.role === 'viewer' ? ' · 읽기 전용' : ''}${seen >= 0 && latest.revision !== seen && store.hasUnsavedChanges() ? ' · 저장 후 팀 변경 반영' : ''}`;
-    } catch { latest = null; text.textContent = '팀 연결 끊김 · 저장 상태를 확인하세요'; }
+      text.textContent = `${latest.team.name} · ${latest.member.label}${latest.member.role === 'viewer' ? ' · 보기 전용 — 변경할 수 없습니다' : ''}${seen >= 0 && latest.revision !== seen && store.hasUnsavedChanges() ? ' · 저장 후 팀 변경 반영' : ''}`;
+    } catch { setTeamRole(null); syncTeamReadOnlyUi(); latest = null; text.textContent = '팀 연결 끊김 · 저장 상태를 확인하세요'; }
     finally { running = false; }
   };
   void poll();
