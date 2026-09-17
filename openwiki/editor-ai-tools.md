@@ -249,15 +249,27 @@ seed 경로이므로(여관 다층·저택 폴백·`facilityId:"composed"` 단�
 맵 규모 파괴는 그 전제를 깬다 — 한 콜로 맵 전체가 바뀌므로 적용 전 화면과 결과가 다른 맵이다.
 그래서 소실 규모가 승인 UX 를 가르고, 등록 지점은 하나다:
 
-- `MAP_DESTRUCTION_TOOLS`(`approvalPolicy.ts`) — 이름 기반 판정의 단일 소스.
+- `MAP_DESTRUCTION_TOOLS`(`approvalPolicy.ts`) — **이름 기반** 판정. 모달 문안을 만들 때 쓴다.
+- `removedMapIds`·`emptiedEventMapIds`(같은 파일) — **내용 기반** 판정. base ↔ 제안의 실제 차이를
+  본다. 툴 이름이 무엇이든, 아니 이름을 아예 안 넘겨도 맵·이벤트가 사라지면 걸린다.
 - 채팅 표면: `aiProposalCard` 가 적용 **직전** `showConfirm` 을 띄운다. 취소는 적용도 되돌리기도
   아니다(무변경). 모달 요청은 `applyingCalls.add` **앞**에서 만들어 취소가 재시도를 막지 않는다.
 - 자율 런: `AssistantSession.maybeAutoApplyMilestone` 이 이 배치를 **자동 적용하지 않는다**
   (모달을 띄울 사람이 없다). 초안은 남고 표면에서 확인 후 적용된다.
-- 안전망: `applyProposedProject` 가 `toolNames` 에 맵 규모 파괴가 있고
-  `mapDestructionApproved !== true` 면 `map-destruction-unapproved` 로 거부한다. `toolNames` 로
-  판정하는 이유는 이 경로가 도구 실행 전에 합의된 스냅샷을 받기 때문이고, `/pi` 처럼 자기 검토
-  카드를 가진 표면은 실제 툴 이름을 넘기지 않아 스스로 빠진다.
+- 안전망: `applyProposedProject` 가 **(a)** base 대비 맵이 사라졌거나 이벤트가 전멸했거나
+  **(b)** `toolNames` 에 맵 규모 파괴가 있으면, `mapDestructionApproved !== true` 일 때
+  `map-destruction-unapproved` 로 거부한다.
+
+  > **2026-09-17 정정.** 여기엔 원래 "`/pi` 처럼 자기 검토 카드를 가진 표면은 실제 툴 이름을
+  > 넘기지 않아 스스로 빠진다"라고 적혀 있었다. 틀렸다 — Pi 에는 그 카드가 없었다. 실측에서
+  > 「맵 전부 지워줘」 한 줄이 맵 16개를 4개로 줄였는데, `toolNames` 가 `["pi_agent"]` 라
+  > 이름 게이트가 한 번도 울리지 않았고 확인 모달도 거부도 없이 곧장 「적용 완료」였다.
+  > 이름만 보는 게이트는 "이름을 안 넘기는 경로"를 전부 놓친다. 그래서 내용 기반 판정을 더했다.
+
+  내용 판정이 5개 호출자 전부에 걸리므로, **적용 직전에 확인을 띄우는 책임도 5곳에 있다**:
+  `aiPiAgentCommand`(Pi 채팅)·`aiProposalCard`(제안 카드)·`clusterAiModal`(군집)은 `showConfirm`,
+  `assistantSession.maybeAutoApplyMilestone`(자율 런)은 **건너뛰고**(사람이 없다),
+  `aiLaneManager`(레인)은 **거부**한다 — 무인 레인은 소실을 자동 확정하지 않는다.
 
 모달 문안의 맵 이름·칸 수는 **툴 실행 결과(`result.data`)** 에서 온다 — 모델 문장이 아니다.
 수치를 못 꺼내도 요청은 만든다(fail-closed).
@@ -270,8 +282,9 @@ seed 경로이므로(여관 다층·저택 폴백·`facilityId:"composed"` 단�
 
 회귀: `test/clearMap.test.ts`(9건 — 등록/도메인, 잔디·허공 채움, 스택 제거, `confirmDestroy` 없이
 거부, 이벤트 유지+경고, `events:"remove"` 의 diff, 빈 채움에서 시작 칸 보존, 완성된 집 거부),
-`test/clearMapApproval.test.ts`(5건 — 모달 페이로드의 실측 수치, `applyProposedProject` 게이트 거부와
-승인 후 적용), `test/clearMapPanelApproval.test.ts`(4건 — 취소=무변경, 취소 후 재시도 가능,
+`test/clearMapApproval.test.ts`(7건 — 모달 페이로드의 실측 수치, `applyProposedProject` 게이트 거부와
+승인 후 적용, 그리고 내용 기반 판정 2건: 툴 이름이 `pi_agent` 여도 맵이 사라지면 거부 / 맵은 남아도
+이벤트가 전멸하면 거부), `test/clearMapPanelApproval.test.ts`(4건 — 취소=무변경, 취소 후 재시도 가능,
 확인 시 `mapDestructionApproved`, 비파괴 배치는 무질문).
 브라우저 증거: `test/e2e/clear-map-approval.spec.ts` → `.omo/evidence/clear-map-approval/`.
 그 스펙은 **실제 `clear_map` 드라이런 결과 → 실제 페이로드 → 실제 모달**을 검증하고, AI 턴 전체

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
-import { NON_TILE_SPATIAL_TOOLS, SPATIAL_BUILD_TOOLS, validateBuildSpec } from "@/ai/buildSpec";
+import { NON_TILE_SPATIAL_TOOLS, SPATIAL_BUILD_TOOLS, } from "@/ai/buildSpec";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 
@@ -64,23 +64,15 @@ describe("스펙 게이트 — 덮어쓰지 않는 배치와 재제출 초안", 
     expect(session.getProposedProject().maps.m1!.events.some(event => event.id === "npc_guide")).toBe(true);
   });
 
-  it("타일을 쓰는 툴은 여전히 막히되, 그대로 낼 수 있는 set_build_spec 초안을 함께 준다", async () => {
+  it("타일을 쓰는 툴도 빈 기준선 맵이면 밑그림 없이 실행된다", async () => {
     const session = new AssistantSession(projectWithMap(), { config: CONFIG, chat: scriptedChat([
       toolCallMsg("build_house", { mapId: "m1", x: 2, y: 2, width: 6, height: 7, material: "plaster" }, "c1"),
-      finalMsg("밑그림이 필요합니다."),
+      finalMsg("지었습니다."),
     ]) });
 
-    const blocked = (await toolEvents(session, "집 지어줘")).find(event => event.name === "build_house");
+    const house = (await toolEvents(session, "집 지어줘")).find(event => event.name === "build_house");
 
-    expect(blocked?.ok).toBe(false);
-    expect(blocked?.summary).toContain("스펙 게이트");
-    const guidance = blocked?.messages.join("\n") ?? "";
-    expect(guidance).toContain("set_build_spec");
-    const json = /\{"mapId":"m1"[\s\S]*?\}\]\}/.exec(guidance);
-    expect(json, guidance).not.toBeNull();
-    const parsed = JSON.parse(json![0]) as { mapId: string; assets: { x: number; y: number; w: number; h: number }[] };
-    expect(parsed.assets[0]).toMatchObject({ x: 2, y: 2, w: 6, h: 7 });
-    // 초안은 게이트 자체를 통과하는 밑그림이어야 한다 — 그대로 내도 또 막히면 안내가 아니라 함정이다.
-    expect(validateBuildSpec(session.getProposedProject(), parsed).filter(issue => issue.severity === "error")).toEqual([]);
+    expect(house?.ok).toBe(true);
+    expect(house?.summary).not.toContain("스펙 게이트");
   });
 });

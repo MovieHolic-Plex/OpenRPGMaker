@@ -757,8 +757,8 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         ghostPreviewUpdater.cancel();
         clearAgentGhostPreview();
         settleBlueprintForTurnEnd(null);
-        deps.surface.appendBubble("system", result.error ?? "독립 검수가 승인되지 않아 초안을 적용하지 않았습니다.");
-        deps.surface.setStatus("검수 미완료");
+        deps.surface.appendBubble("system", result.error ?? "결정적 검사(lint error 0)를 통과하지 못해 초안을 적용하지 않았습니다.");
+        deps.surface.setStatus("검사 미통과");
         if (result.error) appendErrorWithRetry(result.error, session, requestText, runOpts);
         return;
       }

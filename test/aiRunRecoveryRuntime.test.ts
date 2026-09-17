@@ -148,15 +148,11 @@ it("restores the same WorkPlan and immutable requirements, executing only its re
     session.retireRun(); response.resolve(final); await bounded(running); await bounded(session.whenCheckpointed());
     await recreate(image);
     let resumedRound = 0;
-    const reviewEntered = deferred<number>(), releaseReview = deferred<void>();
+    let reviewRequests = 0;
     const resumed = new AssistantSession(store.getCurrent(), { config: recoveryConfig, checkpoint: checkpointHost, declareIntent: fixedDeclarer({ mode: "other" }),
-      chat: async (phaseConfig, request) => {
-        const review = approvedReviewResponse(request);
-        if (review) {
-          reviewEntered.resolve(phaseConfig.maxTokens);
-          await releaseReview.promise;
-          return { ...review, usage: usage(16) };
-        }
+      chat: async (_phaseConfig, request) => {
+        // 2026-09-17 독립 검수 해체 — 검수 모델은 호출되지 않는다. 검사는 결정적(lint error 0)이라 라운드도 출력 토큰도 쓰지 않는다.
+        if (approvedReviewResponse(request)) { reviewRequests += 1; throw new Error("검수 모델은 더 이상 호출되지 않아야 한다"); }
         return resumedRound++ === 0
           ? { ...tool("set_title_screen", { title: "RECOVERED_TITLE" }), usage: usage(40) }
           : { ...final, usage: usage(60) };
@@ -164,22 +160,24 @@ it("restores the same WorkPlan and immutable requirements, executing only its re
     expect(resumed.restoreCheckpoint(await checkpoint(), true).kind).toBe("resumable");
     expect(resumed.getWorkPlan()).toEqual(saved.workPlan);
     const host = epochRunner(resumed);
-    const completing = host.runner.executeTurn(resumed, "Continue", (onEvent, signal) => resumed.resumeRecoveredRun(onEvent, signal), { composerMode: "do" });
-    try {
-      const offeredTokens = await bounded(Promise.race([reviewEntered.promise,
-        completing.then(() => { throw new Error("Recovered turn settled without entering independent review"); })]));
-      await bounded(resumed.whenCheckpointed());
-      const reviewing = await checkpoint();
-      expect(saved.budget.remainingOutputTokens).toBe(recoveryConfig.maxTokens - 64);
-      expect(offeredTokens).toBe(saved.budget.remainingOutputTokens - 40 - 60);
-      expect(reviewing.budget.remainingToolCalls).toBe(saved.budget.remainingToolCalls - 3);
-      expect(reviewing.budget.remainingOutputTokens).toBe(saved.budget.remainingOutputTokens - 40 - 60);
-    } finally { releaseReview.resolve(); await bounded(completing); }
+    const reviewed: import("@/ai/independentReview").ResultReview[] = [];
+    const completing = host.runner.executeTurn(resumed, "Continue", (onEvent, signal) => resumed.resumeRecoveredRun(event => {
+      if (event.type === "result_review") reviewed.push(event.review);
+      onEvent(event);
+    }, signal), { composerMode: "do" });
+    await bounded(completing);
+    expect(reviewRequests).toBe(0);
+    expect(reviewed.map(review => review.status)).toEqual(["approved"]);
+    expect(reviewed[0]?.summary).toContain("lint error 0건");
+    await bounded(resumed.whenCheckpointed());
+    expect(saved.budget.remainingOutputTokens).toBe(recoveryConfig.maxTokens - 64);
     expect(store.getCurrent().system.titleScreen?.title).toBe("RECOVERED_TITLE");
     const result = await checkpoint();
     expect(result.workPlan?.id).toBe(saved.workPlan.id);
     expect(result.runtime?.acceptance?.promises).toEqual(saved.runtime.acceptance.promises);
     expect(result.request).toEqual(saved.request);
+    // 소비된 예산은 재개 뒤의 writer 두 라운드(쓰기 40 + 마무리 60)만이다 — 결정적 검사는 예산을 쓰지 않는다.
+    expect(result.budget.remainingOutputTokens).toBe(saved.budget.remainingOutputTokens - 40 - 60);
     expect(result.budget.remainingToolCalls).toBeLessThan(saved.budget.remainingToolCalls);
     expect(host.deps.applyProposal).toHaveBeenCalledTimes(1);
   } finally { response.resolve(final); await bounded(running); }

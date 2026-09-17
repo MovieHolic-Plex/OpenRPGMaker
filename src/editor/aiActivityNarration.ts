@@ -60,7 +60,8 @@ const ACTIONS = {
   world: forms("월드를 구성하는 중", "월드를 구성했어요", "월드 구성을 실패했어요"),
   resource: forms("리소스를 정리하는 중", "리소스를 정리했어요", "리소스 정리를 실패했어요"),
   appearance: forms("외형 그림 후보를 요청하는 중", "외형 그림 후보를 요청했어요", "외형 그림 후보를 요청하지 못했어요"),
-  export: forms("게임을 내보내는 중", "게임을 내보냈어요", "게임 내보내기를 실패했어요"),
+  // 이 묶음에 든 툴은 파일을 만들지 않는다 — 「내보냈어요」는 거짓 완료 보고였다(2026-09-17 실측).
+  export: forms("내보내기 준비를 점검하는 중", "내보낼 준비를 점검했어요", "내보내기 점검을 마치지 못했어요"),
   play: forms("게임을 시험하는 중", "게임을 시험했어요", "게임 시험을 실패했어요"),
   history: forms("편집 내용을 되돌리는 중", "편집 내용을 되돌렸어요", "편집 내용 되돌리기를 실패했어요"),
   focusView: forms("화면을 옮기는 중", "화면을 옮겼어요", "화면을 옮기지 못했어요"),
@@ -125,7 +126,7 @@ addFamily(ACTIONS.battle, "set_action_combat make_action_enemy set_factions simu
 addFamily(ACTIONS.world, "build_world link_maps author_world_bridge author_world_mountain");
 addFamily(ACTIONS.resource, "upsert_resource delete_resource upsert_resource_profile delete_resource_profile create_tileset set_tileset_properties upsert_autotile_group delete_autotile_group upsert_palette_preset upsert_tile_group delete_tile_group set_audio_description");
 addFamily(ACTIONS.appearance, "generate_character_appearance");
-addFamily(ACTIONS.export, "export_game");
+addFamily(ACTIONS.export, "export_game check_export_readiness");
 addFamily(ACTIONS.play, "play_walkthrough run_scene_test run_action_combat_test");
 addFamily(ACTIONS.history, "revert_last_edit");
 addFamily(ACTIONS.focusView, "focus_editor_view");
@@ -140,6 +141,8 @@ function readOnlyAction(toolName: string): ActionForms | undefined {
   if (READ_ONLY_VILLAGE.has(toolName)) return ACTIONS.inspectVillage;
   if (READ_ONLY_QUALITY.has(toolName)) return ACTIONS.inspectQuality;
   if (READ_ONLY_QUEST.has(toolName)) return ACTIONS.inspectQuest;
+  // `check_` 로 시작하므로 아래 일반 규칙이 먼저 삼킨다 — 내보내기 점검은 「정보를 살펴봤어요」가 아니다.
+  if (toolName === "check_export_readiness" || toolName === "export_game") return ACTIONS.export;
   if (/^(?:get|read|list|show|query|analyze|find|suggest|preview|render|explain|check|evaluate)_/.test(toolName)) {
     return ACTIONS.inspect;
   }

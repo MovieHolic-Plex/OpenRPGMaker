@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   BUNDLED_EASYRPG_CHARSET_ASSETS,
   BUNDLED_EASYRPG_CHIPSET_ASSETS,
+  bundledChipsetFrameCount,
   bundledEasyRpgTilesetId,
 } from "@/assets/bundled";
 import { isColorKeyedChipsetTextureKey } from "@/assets/chipsetTransparency";
@@ -40,12 +41,14 @@ describe("bundled EasyRPG RTP assets", () => {
     for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
       const tileset = p.tilesets[bundledEasyRpgTilesetId(asset.textureKey)];
       const id = bundledEasyRpgTilesetId(asset.textureKey);
+      // 확장 시트(Tibo 실내 확장 1980칸·합본 마을+레트로 월드맵 960칸)는 480 이 아니다 —
+      // 번들 목록이 말하는 칸 수와 타일셋 정의가 같아야 한다.
       expect(tileset).toMatchObject({
         name: asset.name,
         image: { type: "bundled", id: asset.textureKey },
         tileSize: 16,
         tilesPerRow: 30,
-        count: 480,
+        count: bundledChipsetFrameCount(asset.textureKey),
       });
       // combined_town은 harness가 메타데이터를 채운 공식 디폴트 칩셋(bundled-default).
       // 테마 팩(interior/dungeon/scarloxy)이 있는 칩셋은 팩이 덮는 타일만 bundled-default,

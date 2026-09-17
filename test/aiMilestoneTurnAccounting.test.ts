@@ -11,17 +11,20 @@
 //
 // 이 결함은 **여러 항목으로 쪼개지는 복합 요청에서만** 난다 — 단발 요청은 마일스톤 플러시를
 // 거치지 않아 정산이 맞는다. 그래서 회귀 테스트도 마일스톤 경로로 재현한다.
+//
+// 2026-09-17 독립 검수(LLM 재심사) 해체: 검수 봉투(changes·toolResults·requiredProblems)에 대한 단언은
+// 삭제했다. 승인은 결정적 검사(변경 맵 lint error 0)로 나고, 검수 모델은 호출되지 않는다(reviews 0).
+// "적용은 검수 승인 뒤" 라는 순서 계약은 result_review 이벤트 시점의 store 로 그대로 고정한다.
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import type { ChatRequest } from "@/ai/llmClient";
-import type { ReviewInput } from "@/ai/independentReview";
 import { createBlankProject } from "@/project/defaults";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { fixedDeclarer } from "./intentFixture";
 import { HISTORICAL_PLACEMENT_CORRECTION } from "./fixtures/placementRequests";
-import { approvedReviewResponse, independentReviewPayload } from "./independentReviewFixture";
+import { independentReviewPayload } from "./independentReviewFixture";
 
 function installHermeticEnv(project: Project): void {
   vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
@@ -139,10 +142,10 @@ describe("마일스톤 턴 정산", () => {
     const project = createBlankProject();
     installHermeticEnv(project);
     const baseline = structuredClone(store.getCurrent());
-    const reviews: ReviewInput[] = [];
+    let reviews = 0;
     const storesAtReview: Project[] = [];
     const events: SessionEvent[] = [];
-    // Read, author, and inspect the item in one budget; title + final + review in the next.
+    // Read, author, and inspect the item in one budget; title + final in the next.
     const script = [
       toolCallResult("get_project_summary", {}, "split_summary"),
       toolCallResult("upsert_item", { item: { id: "item_split_budget", name: "연속 실행 약초", price: 20 } }, "split_item"),
@@ -155,13 +158,7 @@ describe("마일스톤 턴 정산", () => {
       config: { ...ORCH_CONFIG, maxToolCalls: 3 },
       declareIntent: fixedDeclarer({ mode: "modify", needsPlan: true }),
       chat: async (_config, request): Promise<ChatResult> => {
-        const review = independentReviewPayload(request);
-        const approval = approvedReviewResponse(request);
-        if (review && approval) {
-          reviews.push(review);
-          storesAtReview.push(structuredClone(store.getCurrent()));
-          return approval;
-        }
+        if (independentReviewPayload(request)) { reviews += 1; return exhausted(); }
         if (!request.tools?.length) return finalResult(JSON.stringify({
           action: "new_plan", goal: "아이템과 타이틀",
           layers: [{ title: "등록", items: [{
@@ -172,21 +169,23 @@ describe("마일스톤 턴 정산", () => {
         return script[index++] ?? exhausted();
       },
     });
-    const result = await session.sendUserMessage("아이템과 타이틀을 등록해줘", event => events.push(event), undefined, { autonomous: true });
+    const result = await session.sendUserMessage("아이템과 타이틀을 등록해줘", event => {
+      events.push(event);
+      if (event.type === "result_review") storesAtReview.push(structuredClone(store.getCurrent()));
+    }, undefined, { autonomous: true });
     expect(result.stoppedReason, result.error).toBe("final");
     expect(result.review?.status).toBe("approved");
-    expect(reviews).toHaveLength(1);
-    expect(storesAtReview).toEqual([baseline]);
-    expect(reviews[0]?.originalRequest).toBe("아이템과 타이틀을 등록해줘");
-    expect(reviews[0]?.changes).toContainEqual(expect.objectContaining({
-      path: "/database/items/item_split_budget", before: null,
-      after: expect.objectContaining({ name: "연속 실행 약초", price: 20 }),
-    }));
-    expect(events.filter(event => event.type === "result_review" || event.type === "milestone_applied")
-      .map(event => event.type)).toEqual(["result_review", "milestone_applied"]);
+    expect(result.review?.summary).toContain("lint error 0건");
+    expect(reviews).toBe(0);
+    // 첫 턴은 실행 한도(max-tool-calls)로 끝난다 — 예산 소진 초안은 결정적 검사를 거쳐 적용되고,
+    // 항목이 아직 열려 있으니 드라이버가 「계속」 턴을 연다. 적용은 언제나 검사 뒤다(store 는 검사 시점에 기준선).
+    expect(storesAtReview.length).toBeGreaterThanOrEqual(1);
+    expect(storesAtReview[0]).toEqual(baseline);
+    const reviewAndApply = events.filter(event => event.type === "result_review" || event.type === "milestone_applied").map(event => event.type);
+    // 예산 소진 턴의 결정적 검사 1회 + 「계속」 턴 종료 검사 1회, 적용은 항목이 닫힌 뒤 한 배치.
+    expect(reviewAndApply).toEqual(["result_review", "result_review", "milestone_applied"]);
     expect(result.proposedCalls).toEqual([]);
     expect(session.getHarnessSnapshot().workPlan?.layers[0]?.items[0]?.status).toBe("done");
-    expect(result.appliedCalls?.map((call) => call.name)).toEqual(["upsert_item", "set_title_screen"]);
     expect(store.getCurrent().database.items.find((item) => item.id === "item_split_budget")?.name).toBe("연속 실행 약초");
     expect(store.getCurrent().system.titleScreen?.title).toBe("연속 실행 모험");
     expect(session.getAuditEntries().filter(entry => entry.kind === "user").map(entry => entry.text))
@@ -197,19 +196,13 @@ describe("마일스톤 턴 정산", () => {
     const project = createBlankProject();
     installHermeticEnv(project);
     const baseline = structuredClone(store.getCurrent());
-    const reviews: ReviewInput[] = [];
+    let reviews = 0;
     const storesAtReview: Project[] = [];
     const events: SessionEvent[] = [];
     const script = steps();
     let index = 0;
     const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
-      const review = independentReviewPayload(request);
-      const approval = approvedReviewResponse(request);
-      if (review && approval) {
-        reviews.push(review);
-        storesAtReview.push(structuredClone(store.getCurrent()));
-        return approval;
-      }
+      if (independentReviewPayload(request)) { reviews += 1; return exhausted(); }
       return script[index++] ?? exhausted();
     };
     const session = new AssistantSession(project, {
@@ -217,7 +210,10 @@ describe("마일스톤 턴 정산", () => {
       config: { ...ORCH_CONFIG, maxToolCalls: continueOnce ? 10 : 40 }, chat,
       declareIntent: fixedDeclarer({ mode: "modify", needsPlan: true }),
     });
-    const result = await session.sendUserMessage(GOAL, event => events.push(event), undefined, {
+    const result = await session.sendUserMessage(GOAL, event => {
+      events.push(event);
+      if (event.type === "result_review") storesAtReview.push(structuredClone(store.getCurrent()));
+    }, undefined, {
       autonomous: true, instruction: GOAL, composerMode: "do",
     });
     // The original explicit instruction must not turn synthetic continuation into a new create request.
@@ -226,8 +222,12 @@ describe("마일스톤 턴 정산", () => {
     );
     expect(result.stoppedReason, result.error).toBe("final");
     expect(result.review?.status).toBe("approved");
-    expect(events.filter(event => event.type === "result_review" || event.type === "milestone_applied")
-      .map(event => event.type)).toEqual(["result_review", "milestone_applied"]);
+    expect(reviews).toBe(0);
+    const reviewAndApply = events.filter(event => event.type === "result_review" || event.type === "milestone_applied").map(event => event.type);
+    // 결정적 검사가 먼저, 적용은 그 뒤다. 자동 계속 런은 예산 소진 턴에서도 검사→적용을 한 번 더 거친다.
+    expect(reviewAndApply).toEqual(continueOnce
+      ? ["result_review", "result_review", "milestone_applied"]
+      : ["result_review", "milestone_applied"]);
     expect(result.proposedCalls).toHaveLength(0);
 
     // 1) 턴 결과가 "이 턴이 무엇을 지었는지" 를 계속 들고 있다.
@@ -237,25 +237,8 @@ describe("마일스톤 턴 정산", () => {
       "set_title_screen",
     ]);
 
-    expect(reviews).toHaveLength(1);
-    // Completed work stays detached until the reviewer receives all earlier writes.
-    expect(storesAtReview).toEqual([baseline]);
-    expect(reviews[0]?.originalRequest).toBe(GOAL);
-    expect(reviews[0]?.requiredProblems).toEqual([]);
-    for (let i = 0; i < WRITE_COUNT; i += 1) {
-      expect(reviews[0]?.changes).toContainEqual({
-        path: `/database/items/item_ledger_${i}`, before: null,
-        after: expect.objectContaining({ id: `item_ledger_${i}`, name: `원장 아이템 ${i}`, price: 10 + i }),
-      });
-      expect(reviews[0]?.toolResults).toContainEqual(expect.objectContaining({
-        name: "upsert_item", args: { item: { id: `item_ledger_${i}`, name: `원장 아이템 ${i}`, price: 10 + i } },
-        result: expect.objectContaining({ ok: true }),
-      }));
-    }
-    expect(reviews[0]?.changes).toContainEqual(expect.objectContaining({
-      path: "/system", before: baseline.system,
-      after: expect.objectContaining({ titleScreen: expect.objectContaining({ title: "원장 검증" }) }),
-    }));
+    // Completed work stays detached until the deterministic check has passed.
+    expect(storesAtReview[0]).toEqual(baseline);
 
     const items = store.getCurrent().database.items;
     expect(items.filter((item) => item.id.startsWith("item_ledger_"))).toHaveLength(WRITE_COUNT);

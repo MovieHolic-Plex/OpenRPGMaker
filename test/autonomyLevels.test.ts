@@ -28,6 +28,7 @@ describe("resolveAutonomy", () => {
       reasoningEffort: "low",
       agentMode: "chat",
       budgetCap: 4,
+      piMaxTurns: 10,
       planOnly: false,
       readOnly: true,
     });
@@ -38,6 +39,7 @@ describe("resolveAutonomy", () => {
       reasoningEffort: "low",
       agentMode: "chat",
       budgetCap: 6,
+      piMaxTurns: 10,
       planOnly: true,
       readOnly: false,
     });
@@ -48,6 +50,7 @@ describe("resolveAutonomy", () => {
       reasoningEffort: "low",
       agentMode: "auto",
       budgetCap: 16,
+      piMaxTurns: 40,
       planOnly: false,
       readOnly: false,
     });
@@ -58,6 +61,7 @@ describe("resolveAutonomy", () => {
       reasoningEffort: "medium",
       agentMode: "auto",
       budgetCap: 32,
+      piMaxTurns: 60,
       planOnly: false,
       readOnly: false,
     });
@@ -68,6 +72,7 @@ describe("resolveAutonomy", () => {
       reasoningEffort: "high",
       agentMode: "auto",
       budgetCap: 48,
+      piMaxTurns: 120,
       planOnly: false,
       readOnly: false,
     });
@@ -84,6 +89,34 @@ describe("resolveAutonomy", () => {
     const caps = LEVELS.map((level) => resolveAutonomy(level).budgetCap);
     expect([...caps].sort((a, b) => a - b)).toEqual(caps);
     expect(new Set(caps).size).toBe(caps.length);
+  });
+
+  // 2026-09-17 실측: budgetCap 이 그대로 Pi 의 `maxTurns` 로 실려서 「균형」(16턴)이 다이얼을
+  // **안 건드린 것**(워커 기본값 40턴)보다 나빴다. 7번의 턴 상한 중단 중 4번이 이 조합이었다.
+  // 다이얼을 고르는 행위가 안 고르는 것보다 나쁜 결과를 내면 그건 컨트롤이 아니다.
+  const WORKER_DEFAULT_MAX_TURNS = 40; // scripts/lib/piAgentRuntime.ts
+  it("실행하는 레벨의 턴 상한은 워커 기본값 아래로 내려가지 않는다", () => {
+    for (const level of LEVELS) {
+      const resolved = resolveAutonomy(level);
+      if (resolved.readOnly || resolved.planOnly) continue; // 짓지 않는 레벨엔 짓는 예산이 필요 없다
+      expect(resolved.piMaxTurns, level).toBeGreaterThanOrEqual(WORKER_DEFAULT_MAX_TURNS);
+    }
+  });
+
+  // Break: 둘을 다시 한 숫자로 합치면 위 결함이 그대로 돌아온다. 한 턴은 모델 왕복 한 번이고
+  // 그 안에서 도구를 여러 번 부르므로, 도구 예산과 턴 예산은 같은 수일 이유가 없다.
+  it("턴 예산과 도구 호출 예산은 다른 값이다", () => {
+    const executing = LEVELS.filter((level) => !resolveAutonomy(level).readOnly && !resolveAutonomy(level).planOnly);
+    expect(executing.length).toBeGreaterThan(0);
+    for (const level of executing) {
+      const { budgetCap, piMaxTurns } = resolveAutonomy(level);
+      expect(piMaxTurns, level).not.toBe(budgetCap);
+    }
+  });
+
+  it("keeps piMaxTurns non-decreasing with autonomy", () => {
+    const turns = LEVELS.map((level) => resolveAutonomy(level).piMaxTurns);
+    expect([...turns].sort((a, b) => a - b)).toEqual(turns);
   });
 
   it("returns a fresh object per call", () => {

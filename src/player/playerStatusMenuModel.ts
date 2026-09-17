@@ -1,10 +1,15 @@
 import { defaultActorFaceResourceId } from "@/project/actorModel";
 import type { PlaySession } from "@/project/session";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
+import { effectiveActorClassId } from "@/project/sessionClass";
 import { isGiftSystemEnabled } from "@/project/friendship";
 import { resolveTerms } from "@/project/terms";
 import type { Project } from "@/project/types";
 import { hasLifeLedgerData } from "@/player/lifeLedger";
+import { menuSkinFor } from "@/player/menuSkins/registry";
+import { buildQuestLog } from "@/player/questLog";
+import type { SaveSlotReadResult } from "@/player/saveSlots";
+import type { MenuSkinRailStyle } from "@/player/menuSkins/types";
 
 export const STATUS_MENU_COMMAND_IDS = [
   "items",
@@ -78,6 +83,29 @@ export function statusMenuGroupEntryLabel(entryId: StatusMenuGroupEntryId): stri
   return group.label;
 }
 
+/** 레일 구성은 스킨이 정한다 — collapsed(접힌 6항목) / flat(평탄 최대 10항목). */
+export function statusMenuRailStyle(project: Project): MenuSkinRailStyle {
+  return menuSkinFor(project).railStyle;
+}
+
+/** 평탄 레일 — 행동 3 + 파티 4 + 기록(하나면 그대로, 둘 이상이면 「기록 ▸」) + 저장 + 「시스템 ▸」(로드·대기·타이틀).
+    최대 10항목. 컬러 아이콘 스킨은 레일에서 파티 패널을 빼서 높이가 남으므로 그룹을 펼 수 있다.
+    저장은 자주 쓰는 명령이라 시스템 트레이 밖으로 꺼내고, 진행 손실 위험이 있는 타이틀은 여전히 트레이 안에 둔다. */
+function flatRailIds(visible: readonly StatusMenuCommandId[]): StatusMenuRailId[] {
+  const recordCount = visible.filter((id) => commandGroupIdOf(id) === "record").length;
+  const out: StatusMenuRailId[] = [];
+  for (const id of visible) {
+    const group = commandGroupIdOf(id);
+    if (group === "action" || group === "party") out.push(id);
+    else if (group === "record") {
+      if (recordCount === 1) out.push(id);
+      else if (!out.includes("record-menu")) out.push("record-menu");
+    } else if (id === "save") out.push(id);
+    else if (!out.includes("system-menu")) out.push("system-menu");
+  }
+  return out;
+}
+
 /** 그룹 열기 항목이 담는 실제 명령들(숨김 규칙 적용 후). */
 export function listStatusMenuGroupCommandIds(
   entryId: StatusMenuGroupEntryId,
@@ -87,22 +115,34 @@ export function listStatusMenuGroupCommandIds(
   const group = COLLAPSED_GROUPS.find((candidate) => candidate.entryId === entryId);
   if (!group) throw new Error(`Unknown status menu group entry: ${entryId}`);
   const visible = new Set(listStatusMenuCommandIds(project, session));
+  const flat = statusMenuRailStyle(project) === "flat";
   return STATUS_MENU_COMMAND_GROUPS
     .filter((candidate) => candidate.id === group.groupId)
     .flatMap((candidate) => candidate.commandIds)
-    .filter((id) => visible.has(id));
+    // 평탄 레일은 저장을 레일에 직접 두므로 시스템 트레이에서는 뺀다.
+    .filter((id) => visible.has(id) && !(flat && id === "save"));
 }
 
-/** 접힌 명령을 실행 중일 때 레일에서 강조할 항목. 펼친 명령은 자기 자신. */
-export function statusMenuRailIdForCommand(commandId: StatusMenuRailId): StatusMenuRailId {
+/** 접힌 명령을 실행 중일 때 레일에서 강조할 항목. 펼친 명령은 자기 자신.
+    project·session 을 주면 스킨의 레일 구성(평탄/접힘)을 따르고, 없으면 접힌 규칙으로 답한다. */
+export function statusMenuRailIdForCommand(
+  commandId: StatusMenuRailId,
+  project?: Project,
+  session?: PlaySession,
+): StatusMenuRailId {
   if (isStatusMenuGroupEntryId(commandId)) return commandId;
   const groupId = commandGroupIdOf(commandId);
+  if (project && session && statusMenuRailStyle(project) === "flat") {
+    if (listStatusMenuRailIds(project, session).includes(commandId)) return commandId;
+    return groupId === "record" ? "record-menu" : groupId === "system" ? "system-menu" : commandId;
+  }
   const collapsed = COLLAPSED_GROUPS.find((candidate) => candidate.groupId === groupId);
   return collapsed ? collapsed.entryId : commandId;
 }
 
 /** 레일 순서 = 화면 순서 = ↑↓ 이동 순서. */
 export function listStatusMenuRailIds(project: Project, session: PlaySession): StatusMenuRailId[] {
+  if (statusMenuRailStyle(project) === "flat") return flatRailIds(listStatusMenuCommandIds(project, session));
   const collapsedGroupIds = new Set(COLLAPSED_GROUPS.map((group) => group.groupId));
   const expanded = listStatusMenuCommandIds(project, session)
     .filter((id) => !collapsedGroupIds.has(commandGroupIdOf(id)));
@@ -140,6 +180,9 @@ export type PlayerStatusMenuPartyRow = {
   readonly actorId: string;
   readonly name: string;
   readonly levelLabel: string;
+  /** 직업 이름과 숫자 레벨 — 파티 개요(첫 화면)가 "전사 · Lv 12" 로 쓴다. */
+  readonly className: string;
+  readonly level: number;
   readonly condition: string;
   /** 얼굴 낱장 파일 한 장의 리소스 id. 렌더러는 이 이미지를 통째로 그린다. */
   readonly faceResourceId?: string;
@@ -205,6 +248,7 @@ export function createPlayerStatusMenuSnapshot(
   options: StatusMenuSnapshotOptions = {}
 ): PlayerStatusMenuSnapshot {
   const actorsById = new Map(project.database.actors.map((actor) => [actor.id, actor]));
+  const classesById = new Map(project.database.classes.map((record) => [record.id, record]));
   const terms = resolveTerms(project);
   const hpTerm = terms.hp;
   const mpTerm = terms.mp;
@@ -214,10 +258,13 @@ export function createPlayerStatusMenuSnapshot(
     const vitals = session.actorVitals[actorId];
     const level = session.actorLevels[actorId] ?? actor.initialLevel;
     const hpRatio = vitalRatio(vitals?.hp, vitals?.maxHp);
+    const classId = effectiveActorClassId(project, session, actorId);
     return [{
       actorId,
       name: resolveActorName(session, actor),
       levelLabel: `L${level}`,
+      className: (classId ? classesById.get(classId)?.name : undefined) ?? "직업 없음",
+      level,
       condition: "정상",
       faceResourceId: resolveActorFaceResourceId(session, actor, project) ?? defaultActorFaceResourceId(actor),
       hpLabel: vitals ? `${hpTerm} ${vitals.hp}/${vitals.maxHp}` : `${hpTerm} 0/0`,
@@ -303,4 +350,48 @@ function formatElapsedTime(elapsedMs: number): string {
 
 function assertNever(value: never): never {
   throw new Error(`Unhandled status menu command: ${String(value)}`);
+}
+
+/**
+ * 허브 타일의 한 줄 요약 — 타일을 열지 않아도 "몇 종·몇 명·무엇이 들었는지" 가 읽히게 한다.
+ * 빈 문자열은 요약 없음(타일이 라벨만 보인다).
+ */
+export function statusMenuCommandSummary(
+  id: StatusMenuRailId,
+  project: Project,
+  session: PlaySession,
+  slots: readonly SaveSlotReadResult[]
+): string {
+  const party = session.partyActorIds.length;
+  switch (id) {
+    case "items":
+      return `${Object.values(session.inventory).filter((count) => (count ?? 0) > 0).length}종`;
+    case "skills":
+    case "equipment":
+    case "status":
+    case "row":
+    case "formation":
+      return `${party}명`;
+    case "monsters":
+      return `${session.monsterParty.length}마리`;
+    case "quests":
+      return `${buildQuestLog(project, session).length}건`;
+    case "save":
+    case "load":
+      return `${slots.filter((slot) => slot.kind === "present").length}/${Math.max(slots.length, 1)}칸`;
+    case "wait":
+    case "to-title":
+    case "relationships":
+    case "life-ledger":
+      return "";
+    case "party-menu": {
+      const crit = createPlayerStatusMenuSnapshot(project, session).partyRows.filter((row) => row.hpLevel === "crit").length;
+      return crit > 0 ? `위험 ${crit} · ${party}명` : `${party}명 양호`;
+    }
+    case "record-menu":
+    case "system-menu":
+      return listStatusMenuGroupCommandIds(id, project, session)
+        .map((commandId) => statusMenuCommandLabel(commandId, true))
+        .join(" · ");
+  }
 }

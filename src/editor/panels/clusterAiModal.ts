@@ -24,6 +24,8 @@ import { editorState } from "@/editor/editorState";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { store } from "@/project/store";
+import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
+import { showConfirm } from "@/editor/ui/modal";
 import type { TileGroupMetadata, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
@@ -315,6 +317,23 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
     const base = session.getProposalBase();
     const proposed = session.getProposedProject();
     if (calls.some((call) => call.destructive) && !(await confirmDestructive())) return;
+    // 맵·이벤트가 실제로 사라지는 제안은 규모를 보여주고 따로 묻는다. `confirmDestructive()` 는
+    // 툴의 destructive 플래그만 보므로 결과로만 드러나는 소실을 놓친다 — 그리고 그 답이
+    // applyProposedProject 에 전달되지 않아 안전망이 이 경로를 통째로 거절하게 된다.
+    const clusterLoss = mapLossConfirmRequest(store.getCurrent(), proposed);
+    if (clusterLoss) {
+      const approved = await showConfirm({
+        title: clusterLoss.title,
+        message: clusterLoss.message,
+        confirmLabel: clusterLoss.confirmLabel,
+        cancelLabel: "그만두기",
+        danger: true,
+      });
+      if (!approved) {
+        appendBubble("system", clusterLoss.cancelNotice);
+        return;
+      }
+    }
     const warnings = proposalApprovalWarnings(calls);
     if (warnings.length > 0 && !(await confirmRuleApproval(warnings))) return;
     if (state.session !== session || session.getRunOperation() !== operation || operation.signal.aborted) return;
@@ -333,6 +352,7 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
       agentName: resolveSurfaceAiConfig("cluster").model,
       summary: label,
       toolNames: calls.map((call) => call.name),
+      mapDestructionApproved: clusterLoss !== null,
       snapshotLabel: label,
       snapshotMapId: currentMapId(),
     });

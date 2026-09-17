@@ -1,6 +1,8 @@
 // @vitest-environment happy-dom
 // R2 direct path: persistent soft-vocabulary origin/source normalization happens
-// BEFORE independent review, so the reviewed candidate equals the applied one.
+// BEFORE the draft check, so the checked candidate equals the applied one.
+// 2026-09-17 독립 검수 해체: 검수 모델은 호출되지 않는다(reviewRequests 0). "검사가 본 후보 = 적용된 후보" 는
+// result_review 이벤트 시점의 제안 프로젝트로 고정한다.
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY, chatCompletion, defaultAiConfig, type ChatRequest } from "@/ai/llmClient";
@@ -96,15 +98,16 @@ it("direct soft-confirm route reviews the normalized values and applies them equ
     declareIntent: fixedDeclarer({ mode: "modify", tools: ["place_props"] }),
     renderImages: async () => [{ label: "Current map", dataUrl: "data:image/png;base64,AA==" }],
   });
-  const result = await session.sendUserMessage("Scatter soft props");
+  const reviewedTilesets: string[] = [];
+  const result = await session.sendUserMessage("Scatter soft props", event => {
+    if (event.type === "result_review") reviewedTilesets.push(JSON.stringify(session.getProposedProject().tilesets));
+  });
   expect(result.review?.status, JSON.stringify({ review: result.review, tools: session.getAuditEntries().filter(entry => entry.kind === "tool") })).toBe("approved");
   expect(result.appliedCalls ?? []).toEqual([]);
-  // The reviewer already saw origin:user: normalization preceded review.
-  expect(reviewRequests.length).toBeGreaterThanOrEqual(1);
-  const changes = independentReviewPayload(reviewRequests[0]!)!.changes;
-  const tilesetChange = changes.find(change => change.path === "/tilesets");
-  expect(tilesetChange, JSON.stringify(changes.map(change => change.path))).toBeDefined();
-  expect(JSON.stringify(tilesetChange!.after)).toContain('"origin":"user"');
+  // The deterministic check already saw origin:user: normalization preceded the check. No reviewer model was called.
+  expect(reviewRequests).toHaveLength(0);
+  expect(reviewedTilesets).toHaveLength(1);
+  expect(reviewedTilesets[0]).toContain('"origin":"user"');
   expect(groupOrigin()).toBe("ai");
 
   // The real direct proposal host applies exactly the reviewed candidate.
@@ -113,9 +116,10 @@ it("direct soft-confirm route reviews the normalized values and applies them equ
     appendBubble: (_role, text) => { const node = document.createElement("div"); node.textContent = text; return node; },
     setStatus: () => {} });
   const beforeTiles = JSON.stringify(session.getProposedProject().tilesets);
+  expect(beforeTiles).toBe(reviewedTilesets[0]);
   expect(await host.applyProposal(result.proposedCalls)).toBe("applied");
   expect(groupOrigin()).toBe("user");
-  // Reviewed tilesets equal applied tilesets: no post-approval transformation.
+  // Checked tilesets equal applied tilesets: no post-approval transformation.
   expect(JSON.stringify(store.getCurrent().tilesets)).toBe(beforeTiles);
   expect(history.getMapEditHistoryEntries()).toHaveLength(1);
   expect(history.undoMapEdit()).toBe(true);

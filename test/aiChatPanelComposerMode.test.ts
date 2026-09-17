@@ -126,11 +126,13 @@ describe("자율성 다이얼 → Pi 실행 계획", () => {
     const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
     selectAutonomy(panel, "readonly");
     await send(panel, "이벤트가 몇 개지?");
-    expect(lastPlan()).toMatchObject({ readOnly: true, planOnly: false, maxTurns: 4 });
+    // maxTurns 는 budgetCap(도구 호출 예산)이 아니라 piMaxTurns(턴 예산)에서 온다 — 둘을
+    // 같은 수로 취급하던 배선이 「균형」을 다이얼 미지정보다 나쁘게 만들었다(2026-09-17).
+    expect(lastPlan()).toMatchObject({ readOnly: true, planOnly: false, maxTurns: 10 });
     // 확인(계획만)은 쓰기까지 막는다 — 계획을 세우면서 실행하면 그건 계획이 아니다.
     selectAutonomy(panel, "confirm");
     await send(panel, "마을 계획을 세워줘");
-    expect(lastPlan()).toMatchObject({ readOnly: true, planOnly: true, maxTurns: 6 });
+    expect(lastPlan()).toMatchObject({ readOnly: true, planOnly: true, maxTurns: 10 });
     expect(lastCommand()?.mode).toBe("single");
   });
 

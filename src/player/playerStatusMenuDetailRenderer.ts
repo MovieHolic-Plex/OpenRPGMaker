@@ -8,6 +8,8 @@ export type StatusMenuDetailPanelOptions = {
   /** 작업 패널(아이템·스킬·장뱄)에서 커서가 올라간 항목을 목록 옆 쇼케이스(큰 그림 + 이름 + 설명)로 보여준다.
       트레이·확인 카드는 거짓을 넘긴다. */
   readonly showcase?: boolean;
+  /** 오른쪽 열에 함께 둘 노드(스킨의 파티 미니). 있으면 쇼케이스도 같은 열(.status-menu-detail-side)에 들어간다. */
+  readonly side?: HTMLElement;
 };
 
 const detailContexts = new WeakMap<HTMLElement, { project: Project; detail: StatusMenuDetail; showcase: boolean }>();
@@ -22,7 +24,8 @@ export function updateStatusMenuDetailSelection(panel: HTMLElement, index: numbe
   const existing = panel.querySelector(".status-menu-detail-showcase");
   const next = context.showcase && entry ? renderDetailShowcase(project, entry) : null;
   existing?.remove();
-  if (next) panel.append(next);
+  // 사이드 열이 있으면 쇼케이스는 그 안에 산다(순서는 CSS order 가 정한다 — 쇼케이스 위, 파티 미니 아래).
+  if (next) (panel.querySelector(".status-menu-detail-side") ?? panel).append(next);
   panel.classList.toggle("has-showcase", Boolean(next));
   return entry?.unavailableReason ?? entry?.description ?? detail.hint;
 }
@@ -92,6 +95,7 @@ export function renderStatusMenuDetailPanel(
       attrs: { id: "life-ledger-tab-panel", role: detail.tabs ? "tabpanel" : "status" },
     }));
     if (detail.hint) panel.append(el("div", { class: "status-menu-detail-hint", text: detail.hint }));
+    appendSideColumn(panel, options.side);
     return panel;
   }
   const interactiveList = detail.entries.some((entry) => Boolean(entry.onActivate));
@@ -121,11 +125,12 @@ export function renderStatusMenuDetailPanel(
   }
   panel.append(list);
   // 쇼케이스는 목록 바깥의 별도 영역이다 — 행 안에 설명을 다시 넣으면 행 높이가 두 배가 되는 전력이 있다(위 주석).
+  const sideColumn = appendSideColumn(panel, options.side);
   if (options.showcase && interactiveList && selectedEntry) {
     const showcase = renderDetailShowcase(project, selectedEntry);
     if (showcase) {
       panel.classList.add("has-showcase");
-      panel.append(showcase);
+      (sideColumn ?? panel).append(showcase);
     }
   }
   // 조작 가능한 목록에서는 힌트 줄을 그리지 않는다 — 힌트가 행 하나 몫(14px)을 먹어
@@ -134,6 +139,15 @@ export function renderStatusMenuDetailPanel(
     panel.append(el("div", { class: "status-menu-detail-hint", text: detail.hint }));
   }
   return panel;
+}
+
+/** 스킨의 사이드 노드(파티 미니)를 오른쪽 열로 감싼다. 쇼케이스가 있으면 같은 열에 들어간다. */
+function appendSideColumn(panel: HTMLElement, side: HTMLElement | undefined): HTMLElement | undefined {
+  if (!side) return undefined;
+  const column = el("div", { class: "status-menu-detail-side", children: [side] });
+  panel.classList.add("has-side");
+  panel.append(column);
+  return column;
 }
 
 function renderDetailEntry(options: {

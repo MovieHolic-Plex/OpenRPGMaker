@@ -110,7 +110,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     tools.push(writerTool);
     exposed.add(writerTool.name);
   }
-  const systemPrompt = request.systemPrompt ? [...request.systemPrompt] : buildPiAgentSystemPrompt(base, request.mapIds);
+  const systemPrompt = request.systemPrompt
+    ? [...request.systemPrompt]
+    : buildPiAgentSystemPrompt(base, request.mapIds, request.scopeStrict !== false);
   // 읽기 전용은 툴 목록으로 강제된다(options.readOnlyTools). 이 한 줄은 모델이 "왜 답만 하는지" 알게 한다 —
   // 이유를 모르면 쓰기를 시도하며 턴을 태운다.
   if (request.readOnly) systemPrompt.push(READ_ONLY_INSTRUCTION);

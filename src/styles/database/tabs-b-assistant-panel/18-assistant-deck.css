@@ -1393,10 +1393,12 @@
   font-size: 13.5px;
   font-weight: 600;
   gap: 10px;
-  height: 44px;
+  /* 48px 은 터치 타깃 최소치이고 ai-assistant-console 계약이 그걸 지킨다. 도크 축이 걷히면서
+     이 플로팅 규칙이 유일한 최종 발언자가 됐는데 값이 44px 이라 계약이 깨져 있었다. */
+  height: 48px;
   justify-content: flex-start;
   letter-spacing: -0.01em;
-  min-height: 44px;
+  min-height: 48px;
   min-width: 0;
   overflow: visible;
   padding: 0 16px 0 14px;

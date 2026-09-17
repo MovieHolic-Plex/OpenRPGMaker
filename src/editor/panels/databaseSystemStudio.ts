@@ -1,3 +1,4 @@
+import { MENU_SKINS, resolveMenuSkinId } from "@/player/menuSkins/registry";
 import { listTitleMenuOptions } from "@/player/titleScreen";
 import { resolveFontSelection, FONT_ROLE_LABELS, FONT_ROLES, fontOptionsForRole } from "@/project/fontRegistry";
 import { listDatabaseResourceOptions } from "@/editor/panels/databaseResourcePickerDialog";
@@ -184,8 +185,8 @@ function primaryCardGrid(project: Project): HTMLElement {
     {
       id: "display",
       title: "화면",
-      description: "플레이 화면의 논리 해상도",
-      status: `${resolution.width}×${resolution.height}`,
+      description: "플레이 화면의 논리 해상도 · 게임 메뉴 디자인",
+      status: `${resolution.width}×${resolution.height} · 메뉴 ${MENU_SKINS[resolveMenuSkinId(project.system.menuUiStyle)].label}`,
       statusKind: "neutral",
       target: "display",
     },

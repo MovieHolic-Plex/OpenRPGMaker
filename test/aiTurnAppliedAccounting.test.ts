@@ -17,6 +17,7 @@ import { approvedReviewResponse, imageDeliveryForRequest } from "./independentRe
 import { approvedReview } from "./independentReviewFixture";
 import { fixedDeclarer } from "./intentFixture";
 import { runTool } from "@/editor/tools/toolRunner";
+import { getTool } from "@/editor/tools";
 import { store } from "@/project/store";
 import { installFakeDom } from "./fakeDom";
 import { HISTORICAL_PLACEMENT_CORRECTION } from "./fixtures/placementRequests";
@@ -124,20 +125,14 @@ describe("panel map completeness selection", () => {
       return "applied";
     });
     await h.runner.executeTurn(session, "바닥을 칠하고 기존 벽은 유지해줘", async () => result);
-    if (coverage === "complete") {
-      expect(result.review?.status).toBe("approved");
-      expect(h.appendBubble.mock.calls.filter(([, text]) => isProposalCompletenessWarning(text)).map(([, text]) => text)).toEqual(expected);
-      expect(result.proposedCalls.flatMap(call => call.result.diff?.warnings ?? []).filter(isProposalCompletenessWarning)).toEqual(expected);
-      expect(h.deps.applyProposal).toHaveBeenCalledWith(result.proposedCalls, expect.anything());
-      expect(store.getCurrent().maps.map_basement.lowerTiles).toEqual(session.getProposedProject().maps.map_basement.lowerTiles);
-    } else {
-      // The same native warning reaches independent review; its approval-shaped
-      // reply cannot let a partial/invalidated draft cross the panel apply gate.
-      expect(result.review?.status).toBe("changes_requested");
-      expect(result.review?.findings.filter(finding => isProposalCompletenessWarning(finding.problem)).map(finding => finding.problem)).toEqual(expected);
-      expect(h.deps.applyProposal).not.toHaveBeenCalled();
-      expect(store.getCurrent().maps.map_basement.lowerTiles).toEqual(ctx.project.maps.map_basement.lowerTiles);
-    }
+    // 2026-09-17: 완성도(밑그림 이행) 경고는 승인 조건이 아니다 — 결정적 검사(lint error 0)만 승인을 정한다.
+    // partial/invalidated 도 승인·적용되며, 같은 네이티브 사실은 패널 경고로만 전달된다.
+    expect(result.review?.status).toBe("approved");
+    expect(result.review?.findings).toEqual([]);
+    expect(h.appendBubble.mock.calls.filter(([, text]) => isProposalCompletenessWarning(text)).map(([, text]) => text)).toEqual(expected);
+    expect(result.proposedCalls.flatMap(call => call.result.diff?.warnings ?? []).filter(isProposalCompletenessWarning)).toEqual(expected);
+    expect(h.deps.applyProposal).toHaveBeenCalledWith(result.proposedCalls, expect.anything());
+    expect(store.getCurrent().maps.map_basement.lowerTiles).toEqual(session.getProposedProject().maps.map_basement.lowerTiles);
     expect(result.runOutcome?.goal).toBe("incomplete");
     expect(session.getAcceptanceSnapshot()?.status).not.toBe("verified");
   });
@@ -161,13 +156,17 @@ describe("panel map completeness selection", () => {
     expect(result.proposedCalls).toHaveLength(2);
     const expected = proposalCompletenessWarnings({ calls: result.proposedCalls, buildSpecs: session.getCompletionSpecs(result.proposedCalls) });
     expect(expected).toHaveLength(2);
+    // 2026-09-17: 예산이 소진돼도 결정적 검사를 통과한 초안은 final 로 승인된다 — 패널은 두 맵의 밑그림을
+    // 세션의 복수 선택(getCompletionSpecs)으로 고르고 경고를 단 뒤 적용한다.
+    expect(result.stoppedReason).toBe("final");
+    expect(result.review?.status).toBe("approved");
     const selection = vi.spyOn(session, "getCompletionSpecs");
     const h = setup(session);
     await h.runner.executeTurn(session, "Edit both maps", async () => result);
-    // The exhausted turn has no independent approval, so even real successful
-    // writes must stop before completeness decoration and application.
-    expect(selection).not.toHaveBeenCalled();
-    expect(h.deps.applyProposal).not.toHaveBeenCalled();
+    expect(selection).toHaveBeenCalledWith(result.proposedCalls);
+    // Both maps' warnings arrive in one panel bubble, one line each.
+    expect(h.appendBubble.mock.calls.filter(([, text]) => isProposalCompletenessWarning(text)).map(([, text]) => text)).toEqual([expected.join("\n")]);
+    expect(h.deps.applyProposal).toHaveBeenCalledWith(result.proposedCalls, expect.anything());
   });
 });
 
@@ -363,6 +362,10 @@ describe("independent review application boundary", () => {
 });
 
 
+const BROKEN_LINT = { summary: "lint: error 1건", data: { counts: { errors: 1, warnings: 0, infos: 0 }, issues: [
+  { severity: "error", code: "fixture-broken", message: "injected lint error" },
+] } };
+
 describe("applied baseline across rejected and unrelated requests", () => {
   it.each([false, true])("preserves earlier applied work through the real apply/sync boundary (autonomous=%s)", async autonomous => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(null, { status: 201 }));
@@ -373,8 +376,7 @@ describe("applied baseline across rejected and unrelated requests", () => {
       declareIntent: fixedDeclarer({ mode: "modify" }),
       yieldToUi: cooperativeNodeYield,
       chat: async (_config, request): Promise<ChatResult> => {
-        const review = approvedReviewResponse(request);
-        if (review) return turn === 1 ? { message: { role: "assistant", content: "Malformed review" }, finishReason: "stop" } : review;
+        if (approvedReviewResponse(request)) throw new Error("independent review request must not happen");
         if (writerRound++ > 0) return { message: { role: "assistant", content: "Writer finished" }, finishReason: "stop" };
         if (turn === 2) expect(session.getProposedProject().system.titleScreen?.title).toBe("Kept approved title");
         const args = turn === 0 ? { title: "Kept approved title" } : turn === 1 ? { title: "Rejected title" }
@@ -393,8 +395,16 @@ describe("applied baseline across rejected and unrelated requests", () => {
     expect(session.baselineProject).toEqual(store.getCurrent());
     expect(session.syncBaselineFromStoreIfClean(store.getCurrent())).toBe(true);
     turn = 1; writerRound = 0;
+    // 2026-09-17: 거부는 결정적 검사(run_lint error)가 만든다 — 같은 findings 가 반복되면 error 로 멈춘다.
+    // 결정적 검사는 기준선 → 초안 순으로 두 번 부른다. 기준선은 깨끗하고 초안만 깨진다.
+    let lintCalls = 0;
+    const lint = vi.spyOn(getTool("run_lint")!, "run").mockImplementation(() => (lintCalls++ % 2 === 0
+      ? { summary: "lint: error 0건", data: { counts: { errors: 0, warnings: 0, infos: 0 }, issues: [] } } : BROKEN_LINT));
     const rejected = await session.sendUserMessage("Replace the title", () => {}, undefined, { autonomous });
+    lint.mockRestore();
     expect(rejected.stoppedReason).toBe("error");
+    expect(rejected.error).toContain("결정적 검사 미통과");
+    expect(rejected.error).toContain("fixture-broken");
     expect(session.getProposedProject().system.titleScreen?.title).toBe("Rejected title");
     expect(session.baselineProject.system.titleScreen?.title).toBe("Kept approved title");
     expect(session.syncBaselineFromStoreIfClean(store.getCurrent())).toBe(false);

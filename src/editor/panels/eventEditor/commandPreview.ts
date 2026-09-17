@@ -1,5 +1,4 @@
 import { el } from "@/util/dom";
-import { renderEditorIcon } from "./editorIcons";
 import { store } from "@/project/store";
 import { shopGreetingText } from "@/project/shopMessages";
 import { resolveTerms } from "@/project/terms";
@@ -7,6 +6,7 @@ import { shopCatalogRecords } from "./shopEditorModel";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
 import { parseDialogueText } from "@/player/dialogue";
+import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
 import { dialoguePresentationCssVars, dialoguePresentationProfile } from "@/player/dialoguePresentation";
 import { prefersReducedMotion } from "@/player/characterLanding";
 import type { DialogueTextControl } from "@/player/dialoguePagination";
@@ -52,6 +52,8 @@ import type { ActiveFace, PreviewSimState } from "./previewSimulation";
 import { getSimSwitch, getSimVariable, getSimItem } from "./previewSimulation";
 
 const PREVIEW_FACE_SIZE = 96;
+/** 게임 대사창의 얼굴 칸(논리 px). `--runtime-dialogue-face-size` 와 같다. */
+const RUNTIME_FACE_SIZE = 48;
 
 export type CommandPreviewContext = {
   readonly face?: ActiveFace;
@@ -206,54 +208,85 @@ function applyPreviewPresentation(win: HTMLElement, emotion: string | undefined,
   if (replay) win.dataset.dialoguePhase = "enter";
 }
 
+/**
+ * 런타임 규격 무대. 대사·선택지 창은 게임(`player/dialogue.ts` + `styles/dialogue.css`)과
+ * **같은 클래스**로 320×240 논리 화면 안에 그리고, 무대 폭에 맞춰 통째로 축소한다
+ * (`.ecp-runtime-viewport` 의 `transform: scale(tan(atan2(100cqw, 320px)))`).
+ *
+ * 왜 (실측 2026-09-17): 예전 프리뷰는 자기 폰트(13px Malgun)·자기 패딩(10/12px)·자기 폭으로
+ * 창을 그렸다. 같은 대사가 게임에선 3줄, 다이얼로그 프리뷰에선 4줄, 인스펙터에선 5줄로
+ * 꺾였고 「최대 4줄」 안내가 잘못된 폭을 기준으로 판정됐다. 게임 창은 논리 300px 폭에
+ * 9px 글자다 — 그 비율을 그대로 축소해야 줄바꿈이 맞는다. 이 무대의 시각 규칙은 전부
+ * dialogue.css 가 소유하고, 여기서는 구조와 축소만 담당한다.
+ */
+function runtimeStage(overlayClass: string): { readonly frame: HTMLElement; readonly stage: HTMLElement; readonly overlay: HTMLElement } {
+  const frame = el("div", { class: "ecp-runtime-frame" });
+  const stage = el("div", {
+    class: "ecp-stage ecp-stage-runtime",
+    dataset: { testid: "ecp-runtime-stage" },
+    attrs: { "aria-label": "게임 화면 320×240 을 축소한 무대" },
+  });
+  const viewport = el("div", { class: "ecp-runtime-viewport", attrs: { "aria-hidden": "true" } });
+  const overlay = el("div", { class: `dialogue-overlay ${overlayClass}` });
+  viewport.append(overlay);
+  stage.append(viewport);
+  frame.append(stage);
+  return { frame, stage, overlay };
+}
+
 function messageWindowMock(
   speaker: string | undefined,
   body: string,
   face?: CommandPreviewContext["face"],
   presentation?: { readonly emotion?: string; readonly replay: boolean; readonly simState?: PreviewSimState }
 ): HTMLElement {
-  const stage = el("div", { class: "ecp-stage" });
-  // System.png 전체 시트를 border-image fill 로 쓰면 팔레트/숫자 스트립이 창을 덮는다.
-  // 메시지 프리뷰는 기본 창 스킨 CSS 목업만 사용한다 (상점 프리뷰와 동일 정책).
-  // 말하기 무대: 빈 본문이어도 게임 창에 샘플 대사와 얼굴이 보인다. "..." 만 남기지 않는다.
+  const { frame, overlay } = runtimeStage("position-bottom");
+  // 말하기 무대: 빈 본문이어도 게임 창에 샘플 대사가 보인다. "..." 만 남기지 않는다.
+  // 얼굴은 빌려 오지 않는다 — 이 명령엔 얼굴이 없으므로 게임에서도 얼굴 없이 뜬다.
   const authored = body.trim().length > 0;
-  const sampleFace = authored ? undefined : sampleSpeakerFace();
-  const shownFace = face ?? sampleFace;
   const shownBody = authored ? body : SPEAK_SAMPLE_BODY;
-  const faceClass = shownFace ? " with-face" : "";
-  const sideClass = shownFace?.position === "right" ? " face-right" : "";
   const speakerName = (speaker?.trim() ?? "") || (authored ? "" : SPEAK_SAMPLE_SPEAKER);
+  const faceRight = face?.position === "right";
   const win = el("div", {
-    class: "ecp-message-window" + sideClass + faceClass + (speakerName ? " has-speaker" : ""),
+    class: [
+      "dialogue-box",
+      "ecp-message-window",
+      "page-ready",
+      face ? "with-face" : "",
+      faceRight ? "face-right" : "",
+      speakerName ? "has-speaker" : "",
+    ]
+      .filter(Boolean)
+      .join(" "),
     dataset: { testid: "ecp-message-window", ...(authored ? {} : { sample: "true" }) },
   });
+  applySystemWindowSkinVariable(win);
   if (presentation) applyPreviewPresentation(win, presentation.emotion, presentation.replay);
-  // [중간-3] 직전 changeFace 상태가 있으면 화자 얼굴을 프리뷰에 반영.
-  // Crop only — no editor resource-id chrome inside the play mock.
-  if (shownFace) {
-    win.append(
-      renderFacesetCrop({
-        ...shownFace,
-        displaySize: PREVIEW_FACE_SIZE,
-      })
-    );
+  // 런타임과 같은 골격: .dialogue-content > [.dialogue-face] + .dialogue-text-column > .body
+  const content = el("div", { class: "dialogue-content ecp-message-content" + (faceRight ? " face-right" : "") });
+  if (face) {
+    const slot = el("div", { class: "dialogue-face ecp-message-face" });
+    slot.append(renderFacesetCrop({ ...face, displaySize: RUNTIME_FACE_SIZE }));
+    content.append(slot);
   }
-  const textCol = el("div", { class: "ecp-message-text" });
+  const textCol = el("div", { class: "dialogue-text-column" });
   textCol.append(renderPreviewDialogueBody(shownBody, presentation?.simState));
-  win.append(textCol);
+  content.append(textCol);
+  win.append(content);
   // 화자 네임플레이트는 창 밖(상단 가장자리)에 올려 본문과 시각적으로 분리한다.
   if (speakerName) {
     win.append(
       el("div", {
-        class: "ecp-message-speaker ecp-message-speaker-nameplate",
+        class: "speaker speaker-nameplate ecp-message-speaker ecp-message-speaker-nameplate",
         text: speakerName,
         dataset: { testid: "ecp-message-speaker" },
       })
     );
   }
-  stage.append(win);
+  win.append(el("div", { class: "dialogue-page-cursor", text: "▼", attrs: { "aria-hidden": "true" } }));
+  overlay.append(win);
   if (!authored) {
-    stage.append(
+    frame.append(
       el("div", {
         class: "ecp-message-sample-note",
         dataset: { testid: "ecp-message-sample-note" },
@@ -261,17 +294,9 @@ function messageWindowMock(
       })
     );
   }
-  return stage;
+  return frame;
 }
 
-/** 샘플 무대에 세울 얼굴. 파티 첫 배우의 faceset 을 그대로 빌린다. */
-function sampleSpeakerFace(): CommandPreviewContext["face"] | undefined {
-  const project = store.getCurrent();
-  const partyId = project.session?.partyActorIds?.[0];
-  const actor = project.database.actors.find((entry) => entry.id === partyId) ?? project.database.actors[0];
-  if (!actor?.faceResourceId) return undefined;
-  return { resourceId: actor.faceResourceId };
-}
 
 /** Resolve RM control codes the same way play-mode dialogue does (editor preview). */
 function renderPreviewDialogueBody(body: string, simState?: PreviewSimState): HTMLElement {
@@ -289,7 +314,7 @@ function renderPreviewDialogueBody(body: string, simState?: PreviewSimState): HT
     project,
   });
   const bodyEl = el("div", {
-    class: "ecp-message-body",
+    class: "body ecp-message-body",
     dataset: { testid: "ecp-message-body" },
   });
   let wrote = false;
@@ -543,33 +568,38 @@ function settingsMessageMock(cmd: Extract<Command, { kind: "displayTextSettings"
 }
 
 function choicesMock(cmd: Extract<Command, { kind: "choices" }>): HTMLElement {
-  const stage = el("div", { class: "ecp-stage" });
-  const win = el("div", { class: "ecp-message-window ecp-choice-window" });
+  // 게임의 선택지 창(`.dialogue-overlay.choices-active > .dialogue-box.choices > .choice-list`)
+  // 과 같은 골격. 첫 항목이 커서(◆)를 가진 채 뜨는 것도 게임 시작 상태 그대로다.
+  const { frame, overlay } = runtimeStage("position-bottom choices-active");
+  const win = el("div", { class: "dialogue-box choices ecp-message-window ecp-choice-window" });
+  applySystemWindowSkinVariable(win);
+  const list = el("div", { class: "choice-list" });
   const prompt = cmd.prompt?.trim();
-  if (prompt) win.append(el("div", { class: "ecp-message-body", text: prompt }));
-  const list = el("div", { class: "ecp-choice-list" });
+  if (prompt) list.append(el("div", { class: "choice-prompt-row ecp-message-body", text: prompt }));
   const options = cmd.options.filter((option) => option.text.trim().length > 0);
   options.forEach((option, index) =>
-    list.append(el("div", { class: "ecp-choice", children: [
-      renderEditorIcon("arrowRight"),
-      el("span", { class: "ecp-choice-label", text: option.text || `선택지 ${index + 1}` }),
-    ] }))
+    list.append(
+      el("div", {
+        class: "choice-btn ecp-choice" + (index === 0 ? " selected" : ""),
+        text: option.text || `선택지 ${index + 1}`,
+      })
+    )
   );
-  if (options.length === 0) list.append(el("div", { class: "ecp-choice empty", text: "선택지 없음" }));
+  if (options.length === 0) list.append(el("div", { class: "choice-btn ecp-choice empty", text: "선택지 없음" }));
   win.append(list);
+  overlay.append(win);
   if (cmd.cancelBehavior && cmd.cancelBehavior !== "disallow") {
-    stage.append(
-      win,
+    // 취소 결과는 게임 화면에 없는 정보다 — 무대 밖 캡션으로 둔다(창 테두리를 타지 않게).
+    frame.append(
       el("div", {
         class: "ecp-face-caption",
         text: `취소 → ${choiceCancelCaption(cmd.cancelBehavior)}`,
       })
     );
-    return stage;
   }
-  stage.append(win);
-  return stage;
+  return frame;
 }
+
 
 function choiceCancelCaption(behavior: NonNullable<Extract<Command, { kind: "choices" }>["cancelBehavior"]>): string {
   if (behavior === "branch") return "취소 분기";

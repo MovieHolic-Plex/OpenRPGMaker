@@ -16,6 +16,7 @@ import {
 } from "@/project/defaults/constants";
 import { DUNGEON_TEXTURE_KEY, INTERIOR_TEXTURE_KEY } from "@/project/tilesetHarness/themePacks";
 import { isWorldTileset, isWorldAnimatedTile } from "@/project/defaults/worldCoastMapping";
+import { isCombinedTownHalfTile, isCombinedTownRetroWorldTileset } from "@/project/defaults/combinedTownRetroWorld";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import type Phaser from "phaser";
@@ -79,9 +80,14 @@ export function supportsChipsetQuarterComposition(tileset: TilesetDef): boolean 
     || (tileset.image.type === "bundled" && tileset.image.id === DUNGEON_TEXTURE_KEY);
 }
 
-/** Interior fire and ungrafted World strips animate without enabling town road/tree rules. */
+/**
+ * Interior fire and ungrafted World strips animate without enabling town road/tree rules.
+ * The combined-town + retro-world sheet animates only its combined-town half (same tile ids,
+ * same water strips); the retro-world half stays still exactly like the standalone retro-world sheet.
+ */
 export function supportsChipsetTileAnimation(tileset: TilesetDef, tile: number): boolean {
   return isDefaultTilesetTexture(tileset)
+    || (isCombinedTownRetroWorldTileset(tileset) && isCombinedTownHalfTile(tile))
     || (isWorldTileset(tileset) && isWorldAnimatedTile(tile, tileset))
     || (tileset.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY
       && animationStripForTile(tile)?.baseTile === 124);

@@ -51,9 +51,14 @@ describe("native read delivery credit", () => {
         return calls(round, [write]);
       },
     });
+    // 거부된 쓰기만 남은 턴은 제안이 없어 그대로 max-tool-calls 로 끝난다.
     expect((await session.sendUserMessage("Read before editing")).stoppedReason).toBe("max-tool-calls");
     expect(session.getProposedProject().database.items.find(entry => entry.id === item.id)).toEqual(liveItem);
-    expect((await session.sendUserMessage("Continue the same edit")).stoppedReason).toBe("max-tool-calls");
+    // 2026-09-17: 예산 소진 = 초안 폐기가 아니다. 쓰기 제안이 있는 턴은 결정적 검사(lint error 0)를 거쳐 final 로 적용된다.
+    const continued = await session.sendUserMessage("Continue the same edit");
+    expect(continued.stoppedReason, continued.error).toBe("final");
+    expect(continued.assistantText).toContain("예산이 소진되어 여기까지의 초안을 적용합니다");
+    expect(continued.review?.status).toBe("approved");
     expect(round).toBe(2);
     expect(session.getAuditEntries().filter(entry => entry.kind === "tool" && entry.name === write.name).map(entry => entry.ok)).toEqual([false, true]);
     expect(session.getProposedProject().database.items.find(entry => entry.id === item.id)).toEqual({ ...liveItem, price: 654 });
@@ -139,7 +144,8 @@ describe("native read delivery credit", () => {
     for (let remaining = pageTotal + 3 - round; remaining > 0; remaining = pageTotal + 3 - round) {
       session.updateConfig({ ...config, maxToolCalls: Math.min(16, remaining) });
       const continued = await session.sendUserMessage("Continue the same repair");
-      expect(continued.stoppedReason, continued.error).toBe("max-tool-calls");
+      // 읽기(페이징)만 한 턴은 max-tool-calls 그대로; 마지막 턴은 쓰기가 성공해 예산 소진 초안이 결정적 검사를 거쳐 final 로 적용된다.
+      expect(continued.stoppedReason, continued.error).toBe(round === pageTotal + 3 ? "final" : "max-tool-calls");
     }
     expect(pageCount).toBe(pageTotal);
     expect(round).toBe(pageTotal + 3);

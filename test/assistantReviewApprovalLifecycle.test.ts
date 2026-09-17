@@ -1,7 +1,9 @@
+// 2026-09-17: 「does not admit approval inside a review event before checking its output budget」 삭제 —
+// 검수는 더 이상 모델 라운드를 소비하지 않으므로(결정적 lint 검사) 검수 응답 토큰이 예산을 넘기는 경로가 없다.
 import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { clearTimeout, setTimeout } from "node:timers";
-import { AssistantSession, type ProposedCall, type SessionEvent } from "@/ai/assistantSession";
+import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { createProposalHost } from "@/editor/panels/aiProposalCard";
 import { getMapEditHistoryState, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
@@ -12,7 +14,6 @@ import { fixedDeclarer } from "./intentFixture";
 import { independentReviewPayload } from "./independentReviewFixture";
 
 const final = (content: string): ChatResult => ({ message: { role: "assistant", content }, finishReason: "stop" });
-const approve = (revision: number): ChatResult => final(JSON.stringify({ revision, verdict: "approved", summary: "Title checked", findings: [] }));
 
 function deferred<T>() {
   let resolve: (value: T) => void = () => { throw new Error("Deferred not initialized"); };
@@ -44,7 +45,9 @@ afterEach(() => {
   restoreDom(); vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs();
 });
 
-function fixture(reviewer: (revision: number, attempt: number) => ChatResult | Promise<ChatResult> = approve) {
+// 검수 모델 요청(independentReviewPayload non-null)은 더 이상 발생하지 않는다 — reviewCalls 는 항상 0 이어야 한다.
+// `writer` 는 첫 툴 호출 뒤의 마무리 응답을 가로채 재시도 중간 상태를 붙잡을 수 있게 한다.
+function fixture(writer: (attempt: number) => ChatResult | Promise<ChatResult> = () => final("Writer finished")) {
   let writerCalls = 0, reviewCalls = 0;
   const session = new AssistantSession(store.getCurrent(), {
     config: { ...defaultAiConfig(), agentMode: "chat", maxToolCalls: 12, maxTokens: 16000 },
@@ -52,8 +55,8 @@ function fixture(reviewer: (revision: number, attempt: number) => ChatResult | P
     yieldToUi: cooperativeNodeYield,
     chat: async (_config, request) => {
       const input = independentReviewPayload(request);
-      if (input) return reviewer(input.revision, ++reviewCalls);
-      if (++writerCalls > 1) return final("Writer finished");
+      if (input) { reviewCalls++; throw new Error("independent review request must not happen"); }
+      if (++writerCalls > 1) return writer(writerCalls);
       return { message: { role: "assistant", content: null, tool_calls: [{ id: "title", type: "function", function: {
         name: "set_title_screen", arguments: JSON.stringify({ title: "Reviewed title" }),
       } }] }, finishReason: "tool_calls" };
@@ -72,12 +75,12 @@ describe("review approval ownership", () => {
     { autonomous: false, freshSignal: false }, { autonomous: false, freshSignal: true },
     { autonomous: true, freshSignal: false }, { autonomous: true, freshSignal: true },
   ])("requires fresh review after approval-event cancellation (%j)", async ({ autonomous, freshSignal }) => {
-    // Given an independently reviewed draft cancelled before application.
+    // Given a deterministically reviewed draft cancelled before application.
     const entered = deferred<number>();
     const release = deferred<ChatResult>();
-    const f = fixture((revision, attempt) => {
-      if (attempt === 1) return approve(revision);
-      entered.resolve(revision);
+    const f = fixture(attempt => {
+      if (attempt === 2) return final("Writer finished");
+      entered.resolve(attempt);
       return release.promise;
     });
     const before = store.getCurrent();
@@ -96,16 +99,20 @@ describe("review approval ownership", () => {
       expect(f.session.isDraftReviewApproved()).toBe(false);
       expect(store.getCurrent()).toBe(before);
       expect(getMapEditHistoryState().canUndo).toBe(false);
-      const revision = await bounded(entered.promise);
-      expect(f.reviewCalls()).toBe(2);
+      // The retried writer is held open before its deterministic review — nothing may apply yet.
+      expect(await bounded(entered.promise)).toBe(3);
+      expect(f.reviewCalls()).toBe(0);
       expect(f.writerCalls()).toBe(3);
+      expect(f.session.isDraftReviewApproved()).toBe(false);
       expect(await f.host.applyProposal(cancelled.proposedCalls)).toBe("rejected");
-      release.resolve(approve(revision));
+      release.resolve(final("Writer finished"));
       const retried = await bounded(retry);
 
-      // Then only the new current review authorizes the original edit, exactly once.
+      // Then only the new current deterministic review authorizes the original edit, exactly once.
       expect(retried.stoppedReason).toBe("final");
       expect(retried.review?.status).toBe("approved");
+      expect(retried.review?.summary).toBe("결정적 검사 통과 — 변경 맵 0개, lint error 0건.");
+      expect(f.reviewCalls()).toBe(0);
       if (!autonomous) expect(await f.host.applyProposal(retried.proposedCalls)).toBe("applied");
       expect(store.getCurrent().system.titleScreen?.title).toBe("Reviewed title");
       expect(f.session.getAuditEntries().filter(entry => entry.kind === "tool" && entry.name === "set_title_screen")).toHaveLength(1);
@@ -116,26 +123,6 @@ describe("review approval ownership", () => {
       release.resolve(final("Discarded test response"));
       await bounded(retry);
     }
-  });
-
-  it("does not admit approval inside a review event before checking its output budget", async () => {
-    const f = fixture(revision => ({ ...approve(revision), usage: { completion_tokens: 16000 } }));
-    const before = store.getCurrent();
-    const calls: ProposedCall[] = [];
-    let applying: ReturnType<typeof f.host.applyProposal> | undefined;
-    const result = await f.session.sendUserMessage("Change title", event => {
-      if (event.type === "tool_call") calls.push({ ...event, summary: event.result.summary, destructive: false });
-      if (event.type === "result_review") {
-        expect(calls).toHaveLength(1);
-        applying = f.host.applyProposal(calls);
-        expect(f.session.isDraftReviewApproved()).toBe(false);
-      }
-    });
-    expect(result.stoppedReason).toBe("token-budget");
-    expect(await applying).toBe("rejected");
-    expect(f.session.isDraftReviewApproved()).toBe(false);
-    expect(store.getCurrent()).toBe(before);
-    expect(getMapEditHistoryState().canUndo).toBe(false);
   });
 
   it.each(["result_review", "assistant_message"] satisfies SessionEvent["type"][])("retires approval when the %s subscriber throws", async boundary => {
@@ -159,8 +146,9 @@ describe("review approval ownership", () => {
     controller.abort();
     expect(f.session.isDraftReviewApproved()).toBe(false);
     const retried = await f.session.retryLastTurn();
-    expect(f.reviewCalls()).toBe(2);
+    expect(f.reviewCalls()).toBe(0);
     expect(retried.review?.status).toBe("approved");
+    expect(retried.review?.summary).toBe("결정적 검사 통과 — 변경 맵 0개, lint error 0건.");
   });
 
   it("retries an already-applied persistence proof without replaying writes or review", async () => {
@@ -196,7 +184,7 @@ describe("review approval ownership", () => {
     // Then the accepted revision is verified without any second edit or model request.
     expect(f.session.getRunEndProof(), f.session.getRunEndProof()?.reason).toMatchObject({ status: "succeeded", verified: true });
     expect(f.writerCalls()).toBe(2);
-    expect(f.reviewCalls()).toBe(1);
+    expect(f.reviewCalls()).toBe(0);
     expect(replace).not.toHaveBeenCalled();
     expect(store.getCurrent()).toBe(applied);
   });

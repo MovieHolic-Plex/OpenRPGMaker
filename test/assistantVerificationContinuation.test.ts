@@ -284,7 +284,9 @@ describe("normal session ownership through skip, replan and continuation", () =>
 });
 
 describe("authoring revalidates explicit checks before finalizing", () => {
-  it("continues after a final claim when a real write made the prior lint stale", async () => {
+  // 2026-09-17: 검수 모델이 낡은 명시 검사를 근거로 수리를 강제하던 경로는 없다(결정적 lint 검사만 승인 조건).
+  // 남은 안전장치는 검증 원장 — 쓰기 뒤 낡아진 run_lint 요구는 승인된 초안과 별개로 차단 사유로 남는다.
+  it("approves the draft deterministically but keeps a stale explicit lint as a blocking obligation after a real write", async () => {
     const project = createBlankProject();
     const item = project.database.items[0];
     const events: SessionEvent[] = [];
@@ -295,8 +297,6 @@ describe("authoring revalidates explicit checks before finalizing", () => {
           verificationChecks: [{ tool: "run_lint", args: {} }] }] }] } },
       { name: "run_lint", args: {} },
       { name: "upsert_item", args: { item: { id: item.id, price: 321 } } },
-      null,
-      { name: "run_lint", args: {} },
     ];
     let round = 0;
     const session = new AssistantSession(project, {
@@ -304,36 +304,33 @@ describe("authoring revalidates explicit checks before finalizing", () => {
       declareIntent: fixedDeclarer({ mode: "modify", space: "none", targetMapId: null, needsPlan: false, tools: ["run_lint", "upsert_item"] }),
       chat: async (_config, request): Promise<ChatResult> => {
         const review = independentReviewPayload(request);
-        if (review) {
-          reviews.push(review);
-          // The model pass cannot override a stale explicit check. The real
-          // review parser must request repair before accepting the rechecked draft.
-          return { finishReason: "stop", message: { role: "assistant", content: JSON.stringify({
-            revision: review.revision, verdict: "approved", summary: "REVALIDATED_FINAL", findings: [],
-          }) } };
-        }
+        if (review) { reviews.push(review); throw new Error("independent review request must not happen"); }
         const index = round++, call = calls[index];
         return call
           ? { finishReason: "tool_calls", message: { role: "assistant", content: null, tool_calls: [{
             id: `call-${index}`, type: "function", function: { name: call.name, arguments: JSON.stringify(call.args) },
           }] } }
-          : { finishReason: "stop", message: { role: "assistant", content: index < 5 ? "EARLY_FINAL" : "REVALIDATED_FINAL" } };
+          : { finishReason: "stop", message: { role: "assistant", content: "EARLY_FINAL" } };
       },
     });
     const result = await session.sendUserMessage("Change the item price and verify it", event => events.push(event));
-    expect(events.filter(event => event.type === "tool_call" && event.name === "run_lint")).toHaveLength(2);
-    expect(reviews).toHaveLength(2);
+    expect(events.filter(event => event.type === "tool_call" && event.name === "run_lint")).toHaveLength(1);
+    expect(reviews).toHaveLength(0);
     const ownedLint = session.getVerificationSnapshot().requirements.find(requirement => requirement.name === "run_lint");
-    expect(ownedLint).toMatchObject({ name: "run_lint", args: {} });
-    expect(reviews[0]?.requiredProblems.join("\n")).toContain(`[${ownedLint!.checkId}]`);
-    expect(reviews[1]?.requiredProblems).toEqual([]);
-    expect(events.filter(event => event.type === "result_review").map(event => event.review.status))
-      .toEqual(["changes_requested", "approved"]);
+    expect(ownedLint).toMatchObject({ name: "run_lint", args: {}, status: "stale" });
+    expect(events.filter(event => event.type === "result_review").map(event => event.review.status)).toEqual(["approved"]);
     expect(result.stoppedReason).toBe("final");
     expect(result.review?.status).toBe("approved");
+    expect(result.review?.summary).toBe("결정적 검사 통과 — 변경 맵 0개, lint error 0건.");
     expect(session.isDraftReviewApproved()).toBe(true);
-    expect(result.assistantText).toBe("REVALIDATED_FINAL");
+    // The terminal recap replaces the final text with the open verification notice, never the model's early claim.
+    expect(result.assistantText).toContain("검증이 아직 통과되지 않았습니다");
+    expect(result.assistantText).toContain("run_lint");
+    expect(result.assistantText).not.toContain("EARLY_FINAL");
     expect(session.getProposedProject().database.items.find(record => record.id === item.id)?.price).toBe(321);
+    // The verification ledger still owns the stale check: the run is blocked, not complete.
+    expect(result.completionAssessment?.blockingVerification.join("\n")).toContain(`[${ownedLint!.checkId}]`);
+    expect(result.runOutcome?.execution).toBe("blocked");
   });
 
   it("retains genuine advisory findings without inventing adopted requirements", () => {

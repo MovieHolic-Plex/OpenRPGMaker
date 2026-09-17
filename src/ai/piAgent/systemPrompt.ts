@@ -12,12 +12,22 @@ export function describeScopedMaps(project: Project, mapIds: readonly string[]):
   });
 }
 
-export function buildPiAgentSystemPrompt(project: Project, mapIds: readonly string[]): string[] {
+/**
+ * @param scopeStrict 사용자가 `/pi 맵id …` 로 범위를 **직접 적었는가**. true 면 그 맵들 밖은 계약
+ *   위반이고 병합이 실제로 버린다. false(평문 턴의 기본 대상 맵)면 범위는 출발점일 뿐이다 —
+ *   예전에는 이 둘을 구별하지 않아, 「회복약 아이템 만들어줘」 턴의 모델이 「데이터베이스는
+ *   건드리지 않는다」는 지시를 받았다. 사용자가 시킨 바로 그 일을 하지 말라는 지시였다(2026-09-17 실측).
+ */
+export function buildPiAgentSystemPrompt(project: Project, mapIds: readonly string[], scopeStrict = true): string[] {
   const scope = mapIds.length > 0
     ? [
-      `이번 작업의 대상 맵은 다음 ${mapIds.length}개다. 이 맵들과 여기서 파생되는 실내 맵만 편집한다.`,
+      scopeStrict
+        ? `이번 작업의 대상 맵은 다음 ${mapIds.length}개다. 이 맵들과 여기서 파생되는 실내 맵만 편집한다.`
+        : `이번 작업의 기본 대상 맵은 다음 ${mapIds.length}개다(사용자가 보고 있는 맵). 여기서 시작한다.`,
       ...describeScopedMaps(project, mapIds),
-      "다른 맵·데이터베이스·시작 위치·시스템 설정은 건드리지 않는다. 범위 밖 변경은 병합 때 버려진다.",
+      scopeStrict
+        ? "다른 맵·데이터베이스·시작 위치·시스템 설정은 건드리지 않는다. 범위 밖 변경은 병합 때 버려진다."
+        : "요청이 데이터베이스·시스템 설정·다른 맵을 필요로 하면 거기도 바꾼다 — 요청을 맵 안의 일로 축소하지 않는다.",
     ]
     : ["작업 범위는 프로젝트 전체다. 그래도 요청과 무관한 데이터는 건드리지 않는다."];
   return [

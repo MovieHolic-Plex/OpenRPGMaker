@@ -18,7 +18,7 @@ describe("session acceptance ownership", () => {
 
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import type { SessionEvent } from "@/ai/assistantSession";
-import { approvedReviewResponse } from "./independentReviewFixture";
+import { independentReviewPayload } from "./independentReviewFixture";
 import { fixedDeclarer } from "./intentFixture";
 
 type Call = { readonly name: string; readonly args: Record<string, unknown> };
@@ -34,8 +34,10 @@ function script(rounds: readonly (readonly Call[])[], acknowledgeImages = true) 
     chat: async (_config, request): Promise<ChatResult> => {
       const imageDelivery = acknowledgeImages ? request.messages.flatMap((message, messageIndex) => Array.isArray(message.content)
         ? message.content.flatMap((part, partIndex) => part.type === "image_url" ? [{ messageIndex, partIndex }] : []) : []) : undefined;
-      const review = approvedReviewResponse(request);
-      if (review) return { ...review, imageDelivery };
+      // 2026-09-17: 검수 모델은 호출되지 않는다(결정적 검사). 들어오면 테스트가 깨지도록 던진다.
+      if (independentReviewPayload(request)) throw new Error("unexpected independent-review request");
+      // 자율 continuation 의 플래너 호출은 재개로 답한다(라운드를 소비하지 않는다).
+      if (!request.tools?.length) return { message: { role: "assistant", content: JSON.stringify({ action: "resume" }) }, finishReason: "stop" };
       const batch = rounds[calls++];
       return batch ? { imageDelivery, message: { role: "assistant", content: null, tool_calls: batch.map((call, i) => ({ id: `c${calls}_${i}`, type: "function", function: { name: call.name, arguments: JSON.stringify(call.args) } })) }, finishReason: "tool_calls" }
         : { imageDelivery, message: { role: "assistant", content: "SCRIPTED_SUCCESS" }, finishReason: "stop" };
@@ -137,9 +139,12 @@ describe("acceptance controls actual session termination", () => {
       [{ name: "set_map_properties", args: { mapId: project.startMapId, name: "Changed after review" } }],
     ]);
     // When the real map tool changes the reviewed content; then prior review is stale.
-    await fixture.run();
+    // 2026-09-17: 수용 항목은 결정적 검사의 승인 조건이 아니므로 초안은 승인되지만, 원장은 낡은 검토를 인정하지 않는다.
+    const result = await fixture.run();
     expect(fixture.events.find(event => event.type === "tool_call" && event.name === "review_acceptance")).toMatchObject({ result: { ok: true } });
-    expect(snapshot(fixture.session)).toMatchObject({ status: "blocked", items: [{ id: "image", status: "blocked", evidence: [{ passed: false }] }] });
+    expect(result.review?.status).toBe("approved");
+    expect(fixture.session.getAcceptanceSnapshot()?.status).not.toBe("verified");
+    expect(snapshot(fixture.session)).toMatchObject({ items: [{ id: "image", evidence: [{ passed: false }] }] });
   });
 });
 
@@ -162,10 +167,14 @@ describe("applied acceptance lifecycle through real tools", () => {
         { name: "show_map_region", args: { mapId: target.mapId, x: 0, y: 0, w: 22, h: 17 } }],
     ]);
     // When the plan is already done but the first resize is insufficient.
+    // 2026-09-17: 결정적 검사는 21x17 초안도 승인·적용한다. 미달 치수는 적용된 맵의 수용 원장이 잡고,
+    // 자율 continuation 이 22x17 로 고쳐 다시 적용한다 — 두 번의 승인·적용이 남는다.
     await fixture.run(true);
     // Then final verification follows the applied map rather than the finished plan.
     expect(fixture.session.getAcceptanceSnapshot()).toMatchObject({ status: "verified", items: [{ id: "size", status: "verified" }] });
-    expect(fixture.events.some(event => event.type === "result_review" && event.review.status === "changes_requested")).toBe(true);
+    expect(fixture.events.filter(event => event.type === "result_review").map(event => event.review.status)).toEqual(["approved", "approved"]);
+    expect(fixture.events.filter(event => event.type === "milestone_applied")).toHaveLength(2);
+    expect(fixture.events.flatMap(event => event.type === "tool_call" && event.name === "resize_map" ? [event.args.width] : [])).toEqual([21, 22]);
     fixture.session.refreshAcceptance(fixture.project, event => fixture.events.push(event));
     expect(fixture.session.getAcceptanceSnapshot()?.status).not.toBe("verified");
     expect(fixture.events.at(-1)).toMatchObject({ type: "acceptance", snapshot: { items: [{ evidence: [{ observed: "20x15", passed: false }] }] } });

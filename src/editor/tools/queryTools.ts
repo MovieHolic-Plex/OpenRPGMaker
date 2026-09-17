@@ -527,14 +527,24 @@ export function runProjectLint(project: Project, args: Record<string, unknown>):
   const errors = issues.filter((issue) => issue.severity === "error").length;
   const warnings = issues.filter((issue) => issue.severity === "warning").length;
   const infos = issues.filter((issue) => issue.severity === "info").length;
-  return { summary: `lint: error ${errors}건 / warning ${warnings}건 / info ${infos}건`,
+  // `error 0건` 을 「결함 없이 통과」로 옮겨 적는 일이 실제로 있었다(2026-09-17 실측): 겹친 상자
+  // 이벤트가 duplicate-event warning 으로 이미 나와 있었는데도 클린으로 보고됐다. 설명문은
+  // 요약만 읽는 모델에 닿지 않으므로 검사 범위를 결과 줄에 같이 실어 보낸다.
+  const scope = errors === 0
+    ? " — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다."
+      + " 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것."
+    : "";
+  return { summary: `lint: error ${errors}건 / warning ${warnings}건 / info ${infos}건${scope}`,
     issues: issues.filter(issue => issue.relocation !== undefined),
     data: { counts: { errors, infos, warnings }, issues } };
 }
 
 const runLint: ToolDefinition = {
   name: "run_lint",
-  description: "projectLint, 타일셋 팔레트 lint, 타일 후검증을 실행해 무결성 issue 목록(error/warning/info)을 반환한다.",
+  description:
+    "projectLint, 타일셋 팔레트 lint, 타일 후검증을 실행해 무결성 issue 목록(error/warning/info)을 반환한다. "
+    + "검사 범위는 구조 무결성(참조·도달성·전이·이벤트 겹침·맵 크기·플래그 사용)이다. "
+    + "보상 중복, 경제 균형, 퀘스트 진행 순서 같은 게임플레이 설계 결함은 검사하지 않는다 — error 0 은 '설계가 옳다'는 뜻이 아니다.",
   mode: "read",
   parameters: {
     type: "object",

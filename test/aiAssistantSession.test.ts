@@ -1,3 +1,6 @@
+// 2026-09-17 독립 검수(LLM 재심사) 해체 — 승인은 결정적 검사(변경 맵 lint error 0)로만 난다. 검수 모델의 응답 형식
+// (raw 툴콜 마크업 거부·산문 재요구·감독 모델 복귀)을 검증하던 툴콜 루프 테스트 3개는 삭제했다. 스크립트가 검수 응답
+// 한 번을 소비하던 테스트는 그 단계를 빼고 새 계약(deterministic-review 감사·예산 소진 초안 적용)으로 고쳤다.
 import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { fixedDeclarer } from "./intentFixture";
 import { approvedReviewResponse, independentReviewPayload, imageDeliveryForRequest } from "./independentReviewFixture";
@@ -142,11 +145,14 @@ describe("자율 실행 드라이버", () => {
     expect(statuses.some((t) => t.includes("agent_run:auto-continue"))).toBe(true);
     expect(result.stoppedReason, result.error).toBe("final");
     expect(result.review?.status).toBe("approved");
-    expect(result.assistantText).toBe(result.review?.summary);
+    // 모델의 마지막 말이 본문이고 결정적 검사 결과가 뒤에 한 줄로 붙는다.
+    expect(result.assistantText).toContain(result.review!.summary);
     expect(result.appliedCalls?.map(call => call.args.title)).toEqual(["t1", "t2", "t3"]);
-    // Planner + writer: 11 calls across three turns, plus one separate reviewer call.
+    // Planner + writer: 11 calls across three turns. 검수 모델 호출은 없다 — 예산(라운드 상한)으로 끝난 두 턴과
+    // 마지막 final 턴이 각각 결정적 검사를 한 번씩 받는다.
     expect(index).toBe(11);
-    expect(statuses.filter(text => text.startsWith("independent-review "))).toHaveLength(1);
+    expect(statuses.filter(text => text.startsWith("deterministic-review "))).toHaveLength(3);
+    expect(statuses.filter(text => text.startsWith("예산 소진 초안 적용 — "))).toHaveLength(2);
     expect(statuses.filter((t) => t.startsWith("planner:start")).length).toBe(1);
     expect(statuses.filter((t) => t.includes("planner:skip driver-continue")).length).toBe(2);
     // 진행이 있는 항목은 막지 않는다 — 쓰기가 성공할 때마다 항목별 시도 수가 0으로 돌아간다.
@@ -220,8 +226,10 @@ describe("자율 실행 드라이버", () => {
     // 라운드 상한으로 끝난 턴이 여러 번 있었다(초기 턴 + 자동 계속 2회).
     expect(emitted.filter((t) => t.includes("자율 실행 계속")).length).toBe(2);
     expect(statusTexts(session).filter((t) => t.startsWith("턴 종료(max-tool-calls)")).length).toBeGreaterThan(1);
-    // 그래도 사용자에게 보이는 안내는 런 종료 시 한 번뿐이다.
-    expect(emitted.filter((t) => t === TOKEN_BUDGET_STATUS_TEXT)).toHaveLength(1);
+    // 2026-09-17: 예산 소진 턴은 결정적 검사를 통과한 초안을 적용하고 final 로 끝난다(예산 소진 = 초안 폐기 아님).
+    // 런이 예산 사유로 멈춘 것이 아니므로 예산 안내(TOKEN_BUDGET_STATUS_TEXT)는 한 번도 나오지 않는다.
+    expect(statusTexts(session).filter((t) => t.startsWith("예산 소진 초안 적용 — ")).length).toBeGreaterThan(1);
+    expect(emitted.filter((t) => t === TOKEN_BUDGET_STATUS_TEXT)).toHaveLength(0);
   }, 120000);
 
   it("(c) 턴이 사용자 질문으로 끝나면 드라이버는 자동 송신하지 않고 일시정지한다", async () => {
@@ -771,9 +779,16 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
       draft.startMapId = "missing-map";
       return draft;
     });
+    // 2026-09-17: 결정적 검사(run_lint)는 사라진 시작 맵을 잡아 버린다 — 이 테스트의 대상은 그 뒤의 커밋 게이트다.
+    // 검사만 깨끗하다고 보게 해서 승인된 초안이 커밋 게이트(적용 검증)에서 막히는 경로를 그대로 탄다.
+    const lintTool = getTool("run_lint");
+    if (!lintTool) throw new Error("run_lint is not registered");
+    const cleanLint = vi.spyOn(lintTool, "run").mockReturnValue({ ok: true, summary: "lint: error 0건",
+      data: { counts: { errors: 0, warnings: 0, infos: 0 }, issues: [] } } as never);
     await session.sendUserMessage("타이틀을 첫 제목으로 바꿔줘", (event) => {
       firstEvents.push(event);
     }, undefined, { autonomous: true });
+    cleanLint.mockRestore();
     expect(firstEvents.some(event => event.type === "result_review" && event.review.status === "approved")).toBe(true);
 
     expect(store.getCurrent().meta.title).not.toBe("first");
@@ -1048,7 +1063,8 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
     expect(completionCalls.filter(call => call.name === "verify_quest").map(call => call.args))
       .toEqual([{ questId: "q1" }, { questId: "q1" }]);
     expect(result.completionAssessment).toEqual(assessments.at(-1)?.assessment);
-    expect(lint.mock.calls.map(([checkedProject]) => checkedProject.meta.title)).toEqual([project.meta.title, "t2", "t2", "t2"]);
+    // 결정적 검사(deterministic-review)는 기준선(원제목) → 초안("t2") 순으로 run_lint 를 두 번 더 돈다.
+    expect(lint.mock.calls.map(([checkedProject]) => checkedProject.meta.title)).toEqual([project.meta.title, "t2", "t2", project.meta.title, "t2", "t2"]);
     expect(lint.mock.calls.at(-1)?.[0]).toEqual(store.getCurrent());
     const audits = gateStatusTexts(session);
     expect(audits.filter(t => t.startsWith("agent_run:verification-pass "))).toHaveLength(2);
@@ -1398,7 +1414,8 @@ describe("AssistantSession 툴콜 루프", () => {
 
     expect(result.stoppedReason, JSON.stringify({ error: result.error, review: result.review, events })).toBe("final");
     expect(result.review?.status).toBe("approved");
-    expect(result.assistantText).toBe(result.review?.summary);
+    // 모델의 마지막 말이 본문이고 결정적 검사 결과가 뒤에 한 줄로 붙는다.
+    expect(result.assistantText).toContain(result.review!.summary);
     expect(events).toEqual(["get_project_summary:true", "create_map:true", "show_map_region:true"]);
     // 읽기 툴은 제안에서 제외, 쓰기 툴만 포함.
     expect(result.proposedCalls.map((c) => c.name)).toEqual(["create_map"]);
@@ -1535,7 +1552,7 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(audit.entries.some((e: { kind: string }) => e.kind === "assistant")).toBe(true);
   }, 30000);
 
-  it("쓰기 툴이 시작되면 이후 호출은 실행 모델로 전환하고 독립 검수는 감독 모델로 돌아온다", async () => {
+  it("쓰기 툴이 시작되면 이후 호출은 실행 모델로 전환한다 — 검수 모델 호출은 없다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const steps = [
       PLANNER_DIRECT,
@@ -1548,8 +1565,7 @@ describe("AssistantSession 툴콜 루프", () => {
     const chat = async (config: { readonly model: string }, req: ChatRequest): Promise<ChatResult> => {
       seenModels.push(config.model);
       requests.push({ ...req, messages: [...req.messages] });
-      const approval = approvedReviewResponse(req);
-      if (approval) return approval;
+      if (independentReviewPayload(req)) throw new Error("검수 모델은 더 이상 호출되지 않아야 한다");
       if (index >= steps.length) throw new Error("scripted chat exhausted");
       return steps[index++];
     };
@@ -1562,19 +1578,15 @@ describe("AssistantSession 툴콜 루프", () => {
 
     expect(result.stoppedReason).toBe("final");
     expect(result.review?.status).toBe("approved");
-    expect(result.assistantText).toBe(result.review?.summary);
+    expect(result.review?.summary).toBe("결정적 검사 통과 — 변경 맵 0개, lint error 0건.");
+    // 모델의 마지막 말이 본문이고 결정적 검사 결과가 뒤에 한 줄로 붙는다.
+    expect(result.assistantText).toContain(result.review!.summary);
     expect(result.proposedCalls.map((call) => call.name)).toEqual(["set_title_screen"]);
-    expect(seenModels).toEqual(["supervisor-model", "supervisor-model", "executor-model", "supervisor-model"]);
+    // 플래너·첫 본문은 감독 모델, 쓰기가 시작된 뒤의 본문은 실행 모델. 결정적 검사는 모델을 부르지 않는다.
+    expect(seenModels).toEqual(["supervisor-model", "supervisor-model", "executor-model"]);
     expect(phases).toEqual(["plan", "execute", "review"]);
-    const reviewRequest = requests[3]!;
-    expect(reviewRequest.tool_choice).toBe("none");
-    expect(reviewRequest.tools).toEqual([]);
-    expect(reviewRequest.messages.map(message => message.role)).toEqual(["system", "user"]);
-    expect(independentReviewPayload(reviewRequest)).toMatchObject({
-      originalRequest: `${ORCH_GOAL}타이틀을 새 제목으로 바꿔줘`, requiredProblems: [],
-      toolResults: [expect.objectContaining({ name: "set_title_screen", result: expect.objectContaining({ ok: true }) })],
-    });
-    expect(JSON.stringify(reviewRequest.messages)).not.toContain("WRITER_SUCCESS_SENTINEL");
+    const reviewAudit = session.getAuditEntries().find(entry => entry.kind === "status" && entry.text.startsWith("deterministic-review "));
+    expect(reviewAudit?.kind).toBe("status");
     // Original project values and full native schemas reach the writer before its first write.
     const original = requests[1]?.messages.find(message => typeof message.content === "string"
       && message.content.startsWith('{"originalContext":'));
@@ -1589,7 +1601,7 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(session.getMessages().some((message) => typeof message.content === "string" && message.content.startsWith("[오케스트레이션] "))).toBe(false);
   }, 30000);
 
-  it("검수가 미이행을 발견하면 실행 모델로 한 번 재투입한 뒤 감독 모델이 최종 응답한다", async () => {
+  it("결정적 검사가 lint error 를 발견하면 실행 모델로 한 번 재투입한 뒤 고친 판을 승인한다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     const mapId = project.startMapId;
@@ -1617,21 +1629,24 @@ describe("AssistantSession 툴콜 루프", () => {
       inspectMap(mapId, project.maps[mapId]!.width, project.maps[mapId]!.height),
       assistantFinal("보완 실행 완료"),
     ];
+    // 첫 검사만 lint error 1건(꽃 자리가 비었다는 결정적 지적), 고친 뒤의 검사는 깨끗하다.
+    const lintTool = getTool("run_lint");
+    if (!lintTool) throw new Error("run_lint is not registered");
+    vi.spyOn(lintTool, "run")
+      // 결정적 검사는 기준선 → 초안 순으로 두 번 부른다. 기준선은 깨끗하다.
+      .mockReturnValueOnce({ ok: true, summary: "lint: error 0건", data: { counts: { errors: 0, warnings: 0, infos: 0 }, issues: [] } } as never)
+      .mockReturnValueOnce({ ok: true, summary: "lint: error 1건", data: { counts: { errors: 1, warnings: 0, infos: 0 }, issues: [
+        { severity: "error", code: "flower-area-empty", mapId, x: 4, y: 1, message: "Flower area is still empty" } ] } } as never)
+      .mockReturnValue({ ok: true, summary: "lint: error 0건", data: { counts: { errors: 0, warnings: 0, infos: 0 }, issues: [] } } as never);
     let index = 0;
     const seenModels: string[] = [];
-    const reviews: ReviewInput[] = [];
+    const reviews: { status: string; revision: number }[] = [];
+    const writerRequests: ChatRequest[] = [];
     const chat = async (config: { readonly model: string }, request: ChatRequest): Promise<ChatResult> => {
       seenModels.push(config.model);
-      const review = independentReviewPayload(request);
-      if (review) {
-        expect(config.model).toBe("gemini-2.5-flash");
-        reviews.push(review);
-        if (reviews.length === 1) return { ...assistantFinal(JSON.stringify({ revision: review.revision,
-          verdict: "changes_requested", summary: "Flower area is missing", findings: [{ id: "flowers", target: `/maps/${mapId}`,
-            problem: "Flower area is still empty", requestedChange: "Paint flowers at (4,1)-(5,2)", validation: "Inspect the changed region on the new revision" }] })),
-          imageDelivery: imageDeliveryForRequest(request) };
-        return approvedReviewResponse(request)!;
-      }
+      if (independentReviewPayload(request)) throw new Error("검수 모델은 더 이상 호출되지 않아야 한다");
+      writerRequests.push({ ...request, messages: [...request.messages] });
+      // 첫 검사 뒤의 재투입 라운드는 실행 모델이 받는다.
       if (reviews.length > 0) expect(config.model).toBe("gemini-2.5-flash-lite");
       if (index >= steps.length) throw new Error("scripted chat exhausted");
       return { ...steps[index++]!, imageDelivery: imageDeliveryForRequest(request) };
@@ -1640,7 +1655,7 @@ describe("AssistantSession 툴콜 루프", () => {
       // 합성 id(supervisor-model/executor-model)는 창을 모르는 모델이라 128K 기본값을 받는다. 전체 툴 카탈로그가
       // 이미 그 창의 대부분(활성 226툴 ≈ 100K 토큰)을 먹어 대화 몫이 ~11K 토큰뿐인데, 이 시나리오는 전체 맵
       // show_map_region 결과 + 캡처 이미지를 함께 실어야 한다 — 카탈로그에 4툴만 늘어도 그 경계를 넘어
-      // 문자 클램프가 캡처를 잘라낸다(2026-09-14 실측). 창이 분명한 모델로 재서 검수 재투입 계약만 재도록 한다
+      // 문자 클램프가 캡처를 잘라낸다(2026-09-14 실측). 창이 분명한 모델로 재서 재투입 계약만 재도록 한다
       // (같은 파일의 LARGE_REVIEW_CONFIG 와 같은 이유).
       config: { ...ORCH_CONFIG, model: "gemini-2.5-flash", liteModel: "gemini-2.5-flash-lite", maxToolCalls: 16, maxTokens: 8192 }, chat,
       renderImages: renderLifecycleImages });
@@ -1648,101 +1663,26 @@ describe("AssistantSession 툴콜 루프", () => {
 
     const result = await session.sendUserMessage(`${ORCH_GOAL}길과 꽃을 칠해줘`, (event) => {
       if (event.type === "phase") phases.push(event.value);
+      if (event.type === "result_review") reviews.push({ status: event.review.status, revision: event.review.revision });
     });
+    // 첫 검사 뒤 writer 에게 간 요청(재투입 라운드)에 결정적 findings 가 실려 있다.
+    const repairPrompt = JSON.stringify(writerRequests.slice(6).map(request => request.messages));
 
-    expect(result.stoppedReason, JSON.stringify({ error: result.error,
-      reviews: reviews.map(({ revision, requiredProblems }) => ({ revision, requiredProblems })) })).toBe("final");
+    expect(result.stoppedReason, JSON.stringify({ error: result.error, reviews })).toBe("final");
     expect(result.review?.status).toBe("approved");
     expect(result.assistantText).toContain(result.review!.summary);
-    // Independent draft approval does not erase the canonical unapplied status.
+    // Draft approval does not erase the canonical unapplied status.
     expect(result.completionAssessment?.acceptance?.status).toBe("verifying");
     expect(result.runOutcome).toMatchObject({ goal: "incomplete", delivery: "draft" });
     expect(result.proposedCalls.map((call) => call.name)).toEqual(["paint_tiles", "paint_tiles"]);
     expect(result.proposedCalls.every(call => (call.result.diff?.tilesChanged ?? 0) > 0)).toBe(true);
-    expect(reviews).toHaveLength(2);
+    expect(reviews.map(review => review.status)).toEqual(["changes_requested", "approved"]);
     expect(reviews[1]!.revision).toBeGreaterThan(reviews[0]!.revision);
-    expect(reviews[1]!.requiredProblems).toEqual([]);
+    // 재투입 프롬프트에는 결정적 findings(lint 코드·메시지·검증 기준)가 실린다.
+    expect(repairPrompt).toContain("flower-area-empty: Flower area is still empty");
+    expect(repairPrompt).toContain("run_lint error 0");
     expect(seenModels[0]).toBe("gemini-2.5-flash");
     expect(phases).toEqual(["plan", "execute", "review", "execute", "review"]);
-  }, 30000);
-
-  it("검수 응답이 raw 툴콜 마크업이면 원문 노출과 미검수 적용 없이 거부한다", async () => {
-    const { AssistantSession, createBlankProject } = await load();
-    const steps = [
-      PLANNER_DIRECT,
-      assistantToolCall("set_title_screen", { title: "새 제목" }, "c_title"),
-      assistantFinal("실행 완료"),
-    ];
-    let index = 0;
-    const requests: ChatRequest[] = [];
-    const chat = async (_config: unknown, req: ChatRequest): Promise<ChatResult> => {
-      requests.push({ ...req, messages: [...req.messages] });
-      if (index >= steps.length) throw new Error("scripted chat exhausted");
-      return steps[index++];
-    };
-    const project = createBlankProject();
-    installMilestoneHermeticEnv(project);
-    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 24 }, chat: (config, request) => {
-      if (independentReviewPayload(request)) {
-        requests.push(request);
-        return Promise.resolve(assistantFinal(RAW_TOOL_MARKUP_FIXTURE));
-      }
-      return chat(config, request);
-    } });
-    const phases: string[] = [];
-
-    const result = await session.sendUserMessage(`${ORCH_GOAL}타이틀을 새 제목으로 바꿔줘`, (event) => {
-      if (event.type === "phase") phases.push(event.value);
-    }, undefined, { autonomous: true });
-
-    expect(result.stoppedReason).toBe("error");
-    expect(result.review).toMatchObject({ status: "error", summary: "independent-review-malformed-json" });
-    expect(phases).toEqual(["plan", "execute", "review"]);
-    // One corrective re-ask, then closed: an off-protocol answer costs a round, never the gate.
-    expect(requests.filter(request => independentReviewPayload(request))).toHaveLength(2);
-    expect(session.isDraftReviewApproved()).toBe(false);
-    expect(store.getCurrent().meta.title).toBe(project.meta.title);
-    expect(getMapEditHistoryEntries()).toHaveLength(0);
-    expect(result.assistantText).not.toContain("<tool_call>");
-    const serializedMessages = JSON.stringify(session.getMessages());
-    expect(serializedMessages).not.toContain("<tool_call>");
-    expect(serializedMessages).not.toContain("<invoke name=");
-  }, 30000);
-
-  it("검수 응답이 산문이면 프로토콜만 한 번 다시 요구하고 그 판정으로 적용한다", async () => {
-    const { AssistantSession, createBlankProject } = await load();
-    const steps = [
-      PLANNER_DIRECT,
-      assistantToolCall("set_title_screen", { title: "새 제목" }, "c_title"),
-      assistantFinal("실행 완료"),
-    ];
-    let index = 0;
-    const chat = async (_config: unknown, req: ChatRequest): Promise<ChatResult> => {
-      void req;
-      if (index >= steps.length) throw new Error("scripted chat exhausted");
-      return steps[index++];
-    };
-    const project = createBlankProject();
-    installMilestoneHermeticEnv(project);
-    const reviewRequests: ChatRequest[] = [];
-    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 24 }, chat: (config, request) => {
-      if (independentReviewPayload(request)) {
-        reviewRequests.push(request);
-        if (reviewRequests.length === 1) return Promise.resolve(assistantFinal(RAW_TOOL_MARKUP_FIXTURE));
-        return Promise.resolve(approvedReviewResponse(request)!);
-      }
-      return chat(config, request);
-    } });
-
-    const result = await session.sendUserMessage(`${ORCH_GOAL}타이틀을 새 제목으로 바꿔줘`, () => {}, undefined, { autonomous: true });
-
-    expect(reviewRequests).toHaveLength(2);
-    // The retry repeats the same evidence and adds only the offending answer plus the protocol reminder.
-    expect(reviewRequests[1]!.messages).toHaveLength(reviewRequests[0]!.messages.length + 2);
-    expect(reviewRequests[1]!.messages.at(-1)?.content).toContain("exactly one JSON object");
-    expect(result.review).toMatchObject({ status: "approved" });
-    expect(result.stoppedReason).not.toBe("error");
-    expect(store.getCurrent().meta.title).toBe("새 제목");
   }, 30000);
 
   it("집 3채 NPC 5명 요청에서 집 1채만 만든 실행자의 완료 주장은 독립 검수의 구조화된 부족분으로 재투입한다", async () => {
@@ -1858,7 +1798,8 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(result.stoppedReason).toBe("final");
     expect(result.proposedCalls.map((call) => call.name)).toEqual(["set_title_screen"]);
     expect(result.review?.status).toBe("approved");
-    expect(result.assistantText).toBe(result.review?.summary);
+    // 모델의 마지막 말이 본문이고 결정적 검사 결과가 뒤에 한 줄로 붙는다.
+    expect(result.assistantText).toContain(result.review!.summary);
     expect(phases).toEqual(["plan", "execute", "review"]);
     expect(session.getAuditEntries().filter(entry => entry.kind === "status" && entry.text === "zero-change-rekick")).toHaveLength(1);
     expect(requests).toHaveLength(4);
@@ -2113,13 +2054,13 @@ describe("하네스 관측", () => {
     const injections = entries.filter(
       (entry) => entry.kind === "status" && entry.text.startsWith("오케스트레이션 주입: ")
     );
-    // The execution hint is still audited; review is now a structured verdict,
+    // The execution hint is still audited; the draft verdict is a deterministic check (lint error 0),
     // not a self-review prose injection into the writer transcript.
     expect(injections).toHaveLength(1);
-    const reviewAudit = entries.find(entry => entry.kind === "status" && entry.text.startsWith("independent-review "));
+    const reviewAudit = entries.find(entry => entry.kind === "status" && entry.text.startsWith("deterministic-review "));
     expect(reviewAudit?.kind).toBe("status");
-    expect(JSON.parse(reviewAudit && reviewAudit.kind === "status" ? reviewAudit.text.slice("independent-review ".length) : "null"))
-      .toMatchObject({ status: "approved", findings: [] });
+    expect(JSON.parse(reviewAudit && reviewAudit.kind === "status" ? reviewAudit.text.slice("deterministic-review ".length) : "null"))
+      .toMatchObject({ status: "approved", findings: [], summary: "결정적 검사 통과 — 변경 맵 0개, lint error 0건." });
     const turnEnd = entries.find((entry) => entry.kind === "status" && entry.text.startsWith("턴 종료(final)"));
     expect(turnEnd?.kind).toBe("status");
     expect(turnEnd && turnEnd.kind === "status" ? turnEnd.text : "").toMatch(/출력 토큰 ~\d+/);
@@ -2263,10 +2204,13 @@ describe("verification declaration and correction caller boundary", () => {
         return assistantFinal("Checks recorded.");
       } });
     const result = await session.sendUserMessage("Inspect the frozen scene.", event => events.push(event));
-    expect(result.stoppedReason, result.error).toBe(changedSeed ? "error" : "final");
+    // 2026-09-17: 검증 원장·수용(acceptance) 항목은 승인 조건이 아니다 — 초안은 결정적 검사(lint error 0)로 승인되고
+    // 턴은 final 로 끝난다. 원장의 상태(unverified / blocked)는 그대로 남아 아래에서 단언한다.
+    expect(result.stoppedReason, result.error).toBe("final");
     if (changedSeed) {
-      expect(result.review?.status).toBe("changes_requested");
-      expect(session.isDraftReviewApproved()).toBe(false);
+      // set_session_start 쓰기가 있는 판만 검사 대상이 된다 — lint error 0 이면 승인.
+      expect(result.review?.status).toBe("approved");
+      expect(session.isDraftReviewApproved()).toBe(true);
     }
     expect(session.getVerificationSnapshot().requirements).toHaveLength(1);
     expect(events.filter(e => e.type === "tool_call" && e.name === "correct_verification").map(e => e.type === "tool_call" && e.result.ok)).toEqual(changedSeed ? [false, true, true] : [false, true]);

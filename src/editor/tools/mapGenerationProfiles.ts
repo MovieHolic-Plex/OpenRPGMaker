@@ -1,4 +1,5 @@
 import type { Project } from "@/project/types";
+import { bundledChipsetFrameCount } from "@/assets/bundled";
 import { DEFAULT_TILE_COUNT, DEFAULT_TILE_SIZE, DEFAULT_TILES_PER_ROW } from "@/project/defaults/constants";
 import { ensureTilesetHarnesses } from "@/project/tilesetHarness";
 import { tileMetaLocked, tileMetaOrigin } from "@/project/tilesetPalette";
@@ -111,6 +112,16 @@ const PROFILES = [
     },
   },
   {
+    // 위 480칸이 합본 마을과 같은 ID 이므로 팔레트도 같다. 아래 반쪽(레트로 월드맵)은 생성이 안 쓴다.
+    tilesetId: "easyrpg_chipset_combined_town_retro_world",
+    layout: "settlement",
+    palettes: {
+      village: { base: 240, path: 360, obstacle: 306, accent: 288 },
+      forest: { base: 240, path: 360, obstacle: 290, accent: 318 },
+      cave: { base: 423, path: 360, obstacle: 306, accent: 385 },
+    },
+  },
+  {
     tilesetId: "modern_exteriors_nocturne",
     layout: "city",
     palettes: samePalette({ base: 0, path: 1, obstacle: 30, accent: 10 }),
@@ -167,11 +178,13 @@ export function resolveMapGenerationPalette(
       code: "incompatible-generation-palette",
     });
   };
-  // The numeric profiles address these bundled 480-cell atlases, not an uploaded
-  // replacement that happens to retain the same tileset ID.
+  // The numeric profiles address these bundled atlases, not an uploaded replacement
+  // that happens to retain the same tileset ID. The cell count must be the bundled
+  // sheet's own (480 for RM2K sheets; 960 for the combined-town + retro-world sheet,
+  // whose palette indices all sit in the combined-town half below 480).
   if (tileset.image.type !== "bundled" || tileset.image.id !== `tex_${profile.tilesetId}`
     || tileset.tileSize !== DEFAULT_TILE_SIZE || tileset.tilesPerRow !== DEFAULT_TILES_PER_ROW
-    || tileset.count !== DEFAULT_TILE_COUNT) {
+    || tileset.count < DEFAULT_TILE_COUNT || tileset.count !== bundledChipsetFrameCount(tileset.image.id)) {
     reject("atlas image / geometry");
   }
   // Use the same authored/default authority as reload, on a private copy. Reject

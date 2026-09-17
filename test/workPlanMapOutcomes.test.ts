@@ -9,7 +9,10 @@ import type { ChatResult } from "@/ai/llmClient";
 import { fixedDeclarer } from "./intentFixture";
 
 const CELLAR = "map_basement";
-const fillArgs = (mapId: string) => ({ mapId, material: "잔디", shape: "rect", rect: { x: 1, y: 1, w: 10, h: 8 } });
+const fillArgs = (mapId: string, rect = { x: 1, y: 1, w: 10, h: 8 }) => ({ mapId, material: "잔디", shape: "rect", rect });
+// 2026-09-17 밑그림 스펙 게이트 해체 — 밑그림이 없다는 이유로 fill_region 이 막히지 않는다. 포착된 지하실 실패는
+// 12×10 지하실을 벗어나는 rect(fill_region 이 invalid-args 로 거부)로 재현한다. 작업 결과 원장은 CELLAR 의 ok:false 만 본다.
+const OUTSIDE_CELLAR = { x: 1, y: 1, w: 20, h: 8 };
 const terrainItem = (id: string, mapId: string) => ({ id, title: id, instruction: "Fill the declared map", successTools: ["fill_region"], mapTargets: [mapId] });
 
 function setup() {
@@ -21,8 +24,8 @@ function setup() {
 function spec(session: AssistantSession, mapId: string) {
   return session["applyBuildSpec"]({ mapId, assets: [{ id: "floor", kind: "terrain", x: 0, y: 0, w: 12, h: 10 }], pathWidth: 1, density: "normal", layoutStyle: "straight" });
 }
-function fill(session: AssistantSession, mapId: string) {
-  const args = fillArgs(mapId);
+function fill(session: AssistantSession, mapId: string, rect?: { x: number; y: number; w: number; h: number }) {
+  const args = fillArgs(mapId, rect);
   const gate = session["specGate"]("fill_region", args);
   const result = "ok" in gate ? gate : runTool(session["ctx"], "fill_region", args);
   session["recordToolResult"]("fill_region", args, result);
@@ -59,12 +62,12 @@ describe("target-scoped work outcomes", () => {
     const before = structuredClone(session.getProposedProject().maps[mapId]);
     let village: ToolResult;
     let cellar: ToolResult;
-    if (failureFirst) { cellar = fill(session, CELLAR); village = fill(session, mapId); }
-    else { village = fill(session, mapId); cellar = fill(session, CELLAR); }
+    if (failureFirst) { cellar = fill(session, CELLAR, OUTSIDE_CELLAR); village = fill(session, mapId); }
+    else { village = fill(session, mapId); cellar = fill(session, CELLAR, OUTSIDE_CELLAR); }
     expect(village.ok).toBe(true);
     expect(session.getProposedProject().maps[mapId]).toEqual(before);
     expect(cellar.ok).toBe(false);
-    expect(cellar.issues?.map(issue => issue.code)).toContain("spec-gate");
+    expect(cellar.issues?.map(issue => issue.code)).toContain("invalid-args");
     expect(transfer(session, mapId).ok).toBe(true);
 
     await advance(session);
@@ -86,8 +89,8 @@ describe("target-scoped work outcomes", () => {
     await advance(session);
     expect(session.getWorkPlan()?.currentItemId).toBe("cellar");
     const villageBefore = structuredClone(session.getProposedProject().maps[mapId]);
-    if (failureFirst) { expect(fill(session, CELLAR).ok).toBe(false); expect(fill(session, mapId).ok).toBe(true); }
-    else { expect(fill(session, mapId).ok).toBe(true); expect(fill(session, CELLAR).ok).toBe(false); }
+    if (failureFirst) { expect(fill(session, CELLAR, OUTSIDE_CELLAR).ok).toBe(false); expect(fill(session, mapId).ok).toBe(true); }
+    else { expect(fill(session, mapId).ok).toBe(true); expect(fill(session, CELLAR, OUTSIDE_CELLAR).ok).toBe(false); }
     expect(transfer(session, mapId).ok).toBe(true);
     await advance(session);
     expect(session.getWorkPlan()?.currentItemId).toBe("cellar");
@@ -95,7 +98,7 @@ describe("target-scoped work outcomes", () => {
     const villageAfterLink = structuredClone(session.getProposedProject().maps[mapId]);
     expect(villageAfterLink?.lowerTiles).toEqual(villageBefore?.lowerTiles);
 
-    expect(spec(session, CELLAR).ok).toBe(true);
+    // 지하실 안에 들어오는 채우기만이 지하실 대상의 결과를 채운다.
     expect(fill(session, CELLAR).ok).toBe(true);
     expect(complete(session, "cellar").ok).toBe(true);
 

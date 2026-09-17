@@ -71,18 +71,27 @@ describe("Pi 턴 의도 노트", () => {
     expect(note).not.toContain("코드 기본값");
   });
 
-  // 평문 채팅의 범위는 지금 맵 하나 — 최상위에 새로 달린 마을 맵은 mergeMapBundles 가 버린다. 그래서 내용이
-  // 있는 맵에서는 새 맵을 권하지 않고, 빈 땅 bounds 아니면 사용자에게 돌려보내는 것이 정직하다.
-  it("내용이 있는 맵 + author_village 선언 → 새 맵 금지, 빈 땅 bounds 또는 되돌려 보내기", () => {
+  // 2026-09-17 정정. 여기엔 「새 맵은 결과에서 버려진다」·「빈 맵을 열어 다시 지시해 달라」가
+  // 박혀 있었다. 근거는 «평문 채팅은 언제나 맵 묶음으로 잘린다»였고, 그 전제가 사라졌다 —
+  // mergedFromBundles 는 이제 사용자가 맵을 직접 적었거나 묶음이 둘 이상일 때만 참이다.
+  // 전제가 죽은 지시를 남겨 두면 모델이 «할 수 있는 일»을 못 한다고 믿고 요청을 거절한다.
+  // (사용자가 범위를 직접 적은 턴에서는 여전히 잘리지만, 그때는 조용한 성공이 아니라
+  //  「적용 실패」+ 범위 밖 사유로 드러난다 — piAgentRunOutcome 의 droppedEverything 케이스.)
+  it("내용이 있는 맵 + author_village 선언 → 이 맵 안 bounds 우선, 최후엔 새 맵을 만들고 보고", () => {
     const note = buildPiIntentNote({
       intent: villageIntent,
       targetMap: { id: "map_village", width: 100, height: 100, lived: true },
       selection: null,
     });
     expect(note).toContain("이미 내용이 있다");
-    expect(note).toContain("새 맵(target:{kind:\"new\"}·create_map)은 결과에서 버려진다");
+    expect(note).toContain("되도록 이 맵 안에서 해결한다");
     expect(note).toContain('bounds:{x,y,w,h}');
-    expect(note).toContain("빈 맵을 열어 다시 지시해 달라");
+    // 최후 수단은 «거절» 이 아니라 «만들고 보고» 다.
+    expect(note).toContain("새 맵");
+    expect(note).toContain("무엇을 했는지 보고한다");
+    // 죽은 전제가 되살아나면 여기서 걸린다.
+    expect(note).not.toContain("버려진다");
+    expect(note).not.toContain("다시 지시해 달라");
   });
 
   it("선택 영역 안 시공이면 마을 노트는 target 을 선택 영역 노트에 맡긴다", () => {

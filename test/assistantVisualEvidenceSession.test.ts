@@ -60,8 +60,11 @@ describe("one visual evidence lifecycle", () => {
     expect(f.deliveredImages()).toBe(2);
     expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
     expect(f.session["adventureProblems"]()).toEqual([]);
-    expect(result.stoppedReason).toBe(stop);
-    if (stop === "final") expect(result.review?.status).toBe("approved");
+    // 2026-09-17: 예산 소진은 더 이상 초안 폐기가 아니다 — 결정적 검사(lint error 0)를 통과하면 final 로 바뀌어 적용된다.
+    expect(result.stoppedReason).toBe("final");
+    expect(result.review?.status).toBe("approved");
+    if (stop !== "final") expect(result.assistantText).toContain("예산이 소진되어 여기까지의 초안을 적용합니다");
+    else expect(result.assistantText).not.toContain("예산이 소진되어");
   });
 
   it.each(["empty", "failed"])("does not credit metadata when rendering is %s", async mode => {
@@ -83,13 +86,17 @@ describe("visual evidence invalidation and review boundaries", () => {
     const f = fixture();
     f.rounds[3] = [{ name: "resize_map", args: { mapId: f.project.startMapId, width: 21, height: 15 } }];
     // When finalizing and then undoing to the previously reviewed project.
-    await f.run();
+    const result = await f.run();
     expect(f.events.find(event => event.type === "tool_call" && event.name === "resize_map")).toMatchObject({ result: { ok: true } });
-    expect(f.session.getAcceptanceSnapshot()?.items.map(item => item.status)).toEqual(["blocked", "verified"]);
+    // 2026-09-17: 이미지 확인은 승인 조건이 아니라 턴은 결정적 검사로 승인되지만, 리사이즈된 맵의 영수증은 그대로
+    // 물러나 항목이 verified 로 돌아오지 않는다(blocked 가 아니라 verifying 에 머문다). 다른 맵은 건드리지 않는다.
+    expect(result.review?.status, result.error).toBe("approved");
+    expect(f.session.getAcceptanceSnapshot()?.items.map(item => item.status)).toEqual(["verifying", "verified"]);
     expect(f.session["adventureProblems"]()).toHaveLength(1);
     f.session.rebaseProject(f.project);
-    // Then undo cannot recreate either the retired image receipt or its review.
-    expect(f.session.getAcceptanceSnapshot()?.items.map(item => item.status)).toEqual(["blocked", "verified"]);
+    // Then undo cannot recreate either the retired image receipt or its review — the resized map's item
+    // falls back to working (no current receipt), never to verified; the untouched map keeps its receipt.
+    expect(f.session.getAcceptanceSnapshot()?.items.map(item => item.status)).toEqual(["working", "verified"]);
     expect(f.session["adventureProblems"]()).toHaveLength(1);
   });
 
