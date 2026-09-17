@@ -238,3 +238,12 @@
 - Preparation: `node scripts/prepare-shared-faceset.mjs --all`, then `node scripts/slice-faceset-sheets.mjs`.
 - Each master yields a 192×192 sheet and 16 standalone 48×48 PNGs. Per-cell nearest-neighbor sampling; no repainting or invented expressions.
 - These are supplied derivatives of the existing EasyRPG portraits; the existing EasyRPG attribution remains applicable. User supply does not establish a new license.
+
+
+### Forest harmony bundled snapshot (2026-09-18)
+`forest-harmony/chipset.png` packages the approved forest village atlas with
+existing town/retro-world components attributed above and user-reference-derived
+forest edits made using god-tibo-imagen (vegetation, canopy, trunks and end caps).
+Tile metadata and assemblies are in `src/assets/forestHarmonyTileset.json`.
+Tibo editing and bundling do not establish a new license or copyright clearance
+for reference-derived components. Existing component provenance still applies.
