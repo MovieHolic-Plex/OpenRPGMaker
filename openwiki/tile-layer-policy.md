@@ -162,3 +162,16 @@ DB 타일셋 편집기(`src/editor/panels/tilesetMetadataEditor.ts`), 테스트�
   먼저 부른다. 받침은 하위 레이어에만 의미가 있다(상위는 아래 지면이 이미 있다).
   스크립트로 그림을 굽는 곳도 같다 — `scripts/bake-village-archetype-previews.mts` 가
   같은 이유로 같은 처리를 한다.
+
+
+## 숲마을 공통 기본 칩셋 (2026-09-18)
+
+`forest_harmony` (표시명 `숲마을 · 거리별 잔디`)는 승인된 원격 프로젝트
+`oprn-hill-forest-harmony-20260918-a4e1`의 칩셋 스냅샷이다.
+이미지 `public/assets/forest-harmony/chipset.png` (480×1360), 정의
+`src/assets/forestHarmonyTileset.json` (16px, 30열, 2550칸)를 함께 유지한다.
+`bundled.ts`가 텍스처와 프레임 수를 등록하고 `defaultAssets.ts`가 복제된
+통행/레이어/오토타일/조립 정의를 생성한다. 새 프로젝트에 포함되며 기존 프로젝트는
+`ensureBundledTilesets` 정규화로 열 때 추가된다. 기존 맵의 타일셋은 바꾸지 않는다.
+원본 프로젝트에 기본 정의와 리소스 프로필을 저장하고 Supabase 재로드를 확인했다.
+신규/기존 등록, 반복 로딩 정의 유지, PNG 크기/칸 수 일치를 직접 확인했다.

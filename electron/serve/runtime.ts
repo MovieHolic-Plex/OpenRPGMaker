@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile, realpath, rm } from "node:fs/promises";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { extname, normalize, resolve, sep, basename } from "node:path";
 import { createStoreHandlers } from "../main/dispatch";
@@ -40,7 +40,7 @@ const MIME_BY_EXTENSION: Record<string, string> = {
 };
 
 export type LocalProjectServerOptions = {
-  /** 이 폴더만 연다. 브라우저가 다른 경로를 요구해도 무시한다. */
+  /** 기본 프로젝트. 추가 프로젝트는 이 폴더의 .oprn-projects 아래에 저장한다. */
   readonly projectDir: string;
   readonly sessions?: SessionRegistry;
   readonly distDir: string;
@@ -110,16 +110,56 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
   const activityMirror = createActivityMirrorMiddleware({ baseDir: projectDir });
   const token = randomUUID();
 
+  const projectsRoot = resolve(sessions.require(SESSION_KEY).projectDir, '.oprn-projects');
+  const projectPath = async (id: string): Promise<string> => {
+    if (!id) return projectDir;
+    if (!/^[0-9a-f-]{36}$/.test(id)) throw new Error('invalid project id');
+    const path = resolve(projectsRoot, id);
+    if (await realpath(projectsRoot) !== projectsRoot || await realpath(path) !== path || !sessions.directoryExists(path)) {
+      throw new Error('unknown project');
+    }
+    return path;
+  };
+
   const dispatchBridge = async (payload: unknown, key: string): Promise<unknown> => {
     if (!payload || typeof payload !== "object") throw new Error("invalid request");
     const body = payload as { readonly channel?: unknown; readonly payload?: unknown };
     const channel = typeof body.channel === "string" ? body.channel : "";
+    if (channel === OPRN_CHANNELS.startCreateProject) {
+      if (sessions.member(key).role !== 'owner') throw new Error('새 프로젝트는 팀 소유자만 만들 수 있습니다.');
+      const input = body.payload as { title?: unknown; seed?: unknown } | null;
+      if (typeof input?.title !== 'string' || !input.title.trim() || input.title.length > 200 || typeof input.seed !== 'string') {
+        throw new Error('프로젝트 이름과 시작 데이터가 필요합니다.');
+      }
+      const seed = JSON.parse(input.seed);
+      if (!seed || typeof seed !== 'object' || !seed.meta || typeof seed.meta !== 'object') throw new Error('invalid project seed');
+      seed.meta.title = input.title.trim();
+      const id = randomUUID();
+      await mkdir(projectsRoot, { recursive: true });
+      if (await realpath(projectsRoot) !== projectsRoot) throw new Error('invalid projects directory');
+      const dir = resolve(projectsRoot, id);
+      await mkdir(dir);
+      const temporaryKey = `create:${id}`;
+      try {
+        const created = await sessions.open(temporaryKey, dir, team);
+        await created.store.saveSerialized(JSON.stringify(seed), null);
+        const snapshot = created.store.loadSnapshot();
+        if (!snapshot || snapshot.project.meta.title !== seed.meta.title) throw new Error('새 프로젝트 저장을 확인하지 못했습니다.');
+        return { projectDir: id, projectId: created.store.projectId };
+      } catch (error) {
+        sessions.close(temporaryKey);
+        await rm(dir, { recursive: true, force: true });
+        throw error;
+      } finally {
+        sessions.close(temporaryKey);
+      }
+    }
     const handler = Object.hasOwn(handlers, channel) ? handlers[channel] : undefined;
     if (!handler) throw new Error(`${channel}: 알 수 없는 채널입니다`);
 
-    // 로컬 서버는 폴더 하나에 묶인다.
+    // 클라이언트가 보낸 디스크 경로 대신 인증된 탭의 프로젝트를 연다.
     if (channel === OPRN_CHANNELS.projectOpen) {
-      const opened = await handler(key, { projectDir });
+      const opened = await handler(key, { projectDir: sessions.require(key).projectDir });
       return shared ? { ...(opened as object), projectDir: 'host-project' } : opened;
     }
 
@@ -173,6 +213,9 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
   const server = createServer((request, response) => {
     void (async () => {
       const url = new URL(request.url ?? "/", `http://${LOOPBACK}`);
+      const requestedProject = url.searchParams.get('hostProject') ?? '';
+      const returnUrl = /^[0-9a-f-]{36}$/.test(requestedProject) ? `/?hostProject=${requestedProject}` : '/';
+      const entryLoginPage = loginPage.replace('action="/__oprn/login"', `action="/__oprn/login${returnUrl === '/' ? '' : returnUrl.slice(1)}"`);
       const expectedOrigin = publicOrigin ?? `http://${request.headers.host}`;
       // Reject DNS rebinding and cross-origin requests before any filesystem/AI handler.
       const allowedHost = publicOrigin ? new URL(publicOrigin).host : new URL(serverUrl).host;
@@ -186,11 +229,11 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       const signedIn = login && login.expiresAt > Date.now() ? team.member(login.memberId) : null;
       if (url.pathname === '/__oprn/login' && request.method === 'POST') {
         const member = team.authenticate(new URLSearchParams(await readRequestBody(request, 4096)).get('token') ?? '');
-        if (!member) { response.writeHead(401, { 'content-type': 'text/html; charset=utf-8' }).end(loginPage.replace('id="login-error" hidden', 'id="login-error"')); return; }
+        if (!member) { response.writeHead(401, { 'content-type': 'text/html; charset=utf-8' }).end(entryLoginPage.replace('id="login-error" hidden', 'id="login-error"')); return; }
         if (logins.size >= 256) { sendJson(response, 429, { error: '접속 세션이 너무 많습니다' }); return; }
         const id = randomUUID();
         logins.set(id, { memberId: member.id, expiresAt: Date.now() + 12 * 60 * 60 * 1000 });
-        response.writeHead(303, { location: '/', 'set-cookie': `${cookieName}=${id}; HttpOnly; SameSite=Strict; Path=/; Max-Age=43200${publicOrigin?.startsWith('https:') ? '; Secure' : ''}`, 'cache-control': 'no-store' }).end(); return;
+        response.writeHead(303, { location: returnUrl, 'set-cookie': `${cookieName}=${id}; HttpOnly; SameSite=Strict; Path=/; Max-Age=43200${publicOrigin?.startsWith('https:') ? '; Secure' : ''}`, 'cache-control': 'no-store' }).end(); return;
       }
       if (url.pathname === '/__oprn/logout' && request.method === 'POST') {
         if (cookie) logins.delete(cookie);
@@ -198,12 +241,12 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       }
       if (shared && !signedIn) {
         if (request.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) {
-          response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' }).end(loginPage);
+          response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' }).end(entryLoginPage);
         } else sendJson(response, 401, { error: '팀 접속 코드로 로그인하세요' });
         return;
       }
       if (url.pathname === '/__oprn/team' && request.method === 'GET') {
-        response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' }).end(inject(teamPage)); return;
+        response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' }).end(inject(teamPage.replaceAll('href="/"', `href="${returnUrl}"`))); return;
       }
       if (url.pathname === SHARED_CHARACTER_GRAPHICS_ENDPOINT) {
         if (shared && request.method !== 'GET' && signedIn?.role !== 'owner') {
@@ -228,10 +271,13 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
         try {
           const tab = request.headers['x-oprn-session'];
           if (tab !== undefined && (typeof tab !== 'string' || !/^[a-zA-Z0-9-]{1,80}$/.test(tab))) throw new Error('invalid tab id');
-          const key = `${cookie ?? 'local'}:${tab ?? 'default'}`;
+          const project = request.headers['x-oprn-project'] ?? '';
+          if (typeof project !== 'string') throw new Error('invalid project id');
+          const selectedDir = await projectPath(project);
+          const key = `${cookie ?? 'local'}:${tab ?? 'default'}:${project}`;
           if (!clients.has(key)) {
             if (clients.size >= 256) throw new Error('too many sessions');
-            await sessions.open(key, projectDir);
+            await sessions.open(key, selectedDir, team);
           }
           clients.set(key, Date.now());
           sessions.setMember(key, (signedIn ?? team.owner()).id);
@@ -247,15 +293,21 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
         return;
       }
       if (request.method === "GET" && url.pathname.startsWith(ASSET_PATH_PREFIX)) {
-        const sha256 = url.pathname.slice(ASSET_PATH_PREFIX.length);
-        const asset = sessions.require(SESSION_KEY).store.listAssets().find((row) => row.sha256 === sha256);
-        if (!asset) {
-          response.writeHead(404).end("unknown asset");
-          return;
-        }
-        const bytes = await sessions.require(SESSION_KEY).store.assetBytes(sha256);
-        response.writeHead(200, { "content-type": asset.mime, "cache-control": "private, no-cache", "content-security-policy": "sandbox" });
-        response.end(Buffer.from(bytes));
+        const parts = url.pathname.slice(ASSET_PATH_PREFIX.length).split('/');
+        const project = parts.length === 2 ? parts[0]! : '';
+        const sha256 = parts.at(-1);
+        const assetKey = `asset:${randomUUID()}`;
+        const assetSession = await sessions.open(assetKey, await projectPath(project), team);
+        try {
+          const asset = assetSession.store.listAssets().find((row) => row.sha256 === sha256);
+          if (!asset) {
+            response.writeHead(404).end("unknown asset");
+            return;
+          }
+          const bytes = await assetSession.store.assetBytes(asset.sha256);
+          response.writeHead(200, { "content-type": asset.mime, "cache-control": "private, no-cache", "content-security-policy": "sandbox" });
+          response.end(Buffer.from(bytes));
+        } finally { sessions.close(assetKey); }
         return;
       }
       if (request.method === "GET" || request.method === "HEAD") {

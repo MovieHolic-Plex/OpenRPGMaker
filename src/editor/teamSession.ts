@@ -24,7 +24,7 @@ export function startTeamSession(): void {
   const text = document.createElement('span');
   bar.append(text);
   if (!window.oprn?.closeIsHostDriven) {
-    const link = document.createElement('a'); link.href = '/__oprn/team'; link.target = '_blank'; link.rel = 'noopener';
+    const link = document.createElement('a'); link.href = '/__oprn/team' + (new URLSearchParams(location.search).has('hostProject') ? '?hostProject=' + encodeURIComponent(new URLSearchParams(location.search).get('hostProject')!) : ''); link.target = '_blank'; link.rel = 'noopener';
     Object.assign(link.style, { color: '#596c50', fontWeight: '600', whiteSpace: 'nowrap', textDecoration: 'none' });
     link.textContent = '팀 관리 ↗'; bar.append(link);
   }
