@@ -16,9 +16,9 @@ import { commerceOverlayText } from "@/player/playSceneCommerce";
 import type { AutonomousMover, PlaySceneContext, ParallelProcess } from "@/player/playSceneTypes";
 import { assertNever } from "@/player/playSceneTypes";
 import { resourceDisplayName } from "@/player/resourceDisplay";
-import { npcMoveDurationMs, npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
+import { clampNpcSetting, npcMoveDurationMs, npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
 import { applyTimerStep, updateRuntimeTimers } from "@/player/playSceneTimers";
-import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
+import { runtimeEventViewById } from "@/project/runtimeEventState"
 import { applyCameraControl } from "@/player/playSceneCamera";
 import { releaseCutsceneControlForOwner } from "@/player/cutsceneControl";
 import { applyLightingStep } from "@/player/playSceneLighting";
@@ -39,10 +39,13 @@ export function registerAutonomousMover(
   timing?: Pick<AutonomousMover, "moveDurationMs" | "moveIntervalMs" | "strategy">
 ): void {
   const project = store.getCurrent();
-  if (!runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions).some((event) => event.event.id === eventId)) {
+  const view = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, eventId);
+  if (!view) {
     console.warn(`[player] moveEvent target event missing: ${eventId}`);
     return;
   }
+  const speed = clampNpcSetting(view.movement.speed);
+  const frequency = clampNpcSetting(view.movement.frequency);
   scene.autonomousNPCs.set(eventId, {
     moves,
     step: 0,
@@ -54,10 +57,10 @@ export function registerAutonomousMover(
     through: false,
     animationEnabled: true,
     opacity: 255,
-    speedRank: 3,
-    frequencyRank: 3,
-    moveDurationMs: timing?.moveDurationMs ?? npcMoveDurationMs(3),
-    moveIntervalMs: timing?.moveIntervalMs ?? npcMoveIntervalMs(3),
+    speedRank: speed,
+    frequencyRank: frequency,
+    moveDurationMs: timing?.moveDurationMs ?? npcMoveDurationMs(speed),
+    moveIntervalMs: timing?.moveIntervalMs ?? npcMoveIntervalMs(frequency),
     activeMove: null,
   });
 }

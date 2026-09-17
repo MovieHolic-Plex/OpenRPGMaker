@@ -136,17 +136,22 @@
       닿지 않아 미디어쿼리 안전망을 따로 갖는다.
   - `createDialogueUI(host, schedule?)` 의 `schedule` 은 테스트용 타이머 주입 구멍이다
     (`createBattleTransition(host, schedule)` 과 같은 형태).
-- **자율 이동 등록·복귀 (2026-08-27 실측 수정).** 페이지 이동(무작위/접근/추격/사용자 지정/생활)은
+- **자율 이동 등록·복귀 (2026-08-27 실측 수정, 2026-09-17 속도 계약 추가).** 페이지 이동(무작위/접근/추격/사용자 지정/생활)은
   `src/player/playScenePageMoveRoutes.ts` 의 `registerPageMoveRoutes` 가 등록하고
-  `src/player/playSceneAutonomous.ts` 가 매 프레임 굴린다. 세 가지 함정이 있다.
+  `src/player/playSceneAutonomous.ts` 가 매 프레임 굴린다. 다섯 가지 함정이 있다.
   (1) 재등록 판정은 `pageMoveRouteKeys`/`pageMoveRouteEventIds` **와 무버 생존**을 함께 봐야 한다.
   키만 보면, 이동 루트 명령이나 `npcSchedules` 의 teleportNpc 가 무버를 지운 뒤 "이미 등록됨" 분기로
   들어가 NPC 가 맵 재로드까지 영구히 멈춘다(회귀: `test/runtimePageMovementAfterCommandRoute.test.ts`).
   (2) 플레이어 상대 이동(접근/도주/추격)의 위치 조회는 `eventPositions` → `session.eventLocations` →
   원본 이벤트 순이어야 한다. `map.events` 만 보고 못 찾을 때 플레이어 좌표로 대체하면 dx=dy=0 이 되어
   필드 스폰 몬스터와 `spawnEvent` 산출물이 한 칸도 움직이지 않는다(회귀: `test/runtimeSpawnedEventMovement.test.ts`).
-  (3) 시간 시스템이 켜져 있고 `event.schedule` 이 있으면 페이지 이동 등록을 **건너뛴다** —
-  일정이 있는 NPC 에게 이동 유형을 줘도 무시된다. 의도된 우선순위지만 저작자에게 보이지 않는다.
+  (3) 시간표 무버는 `commandMoveRouteEventIds` 에 들어가 페이지 이동 등록을 막는다 —
+  일정이 있는 NPC 에게 이동 유형을 줘도 시간표 구간에서는 무시된다. 의도된 우선순위지만 저작자에게 보이지 않는다.
+  (4) 명령 이동(`registerAutonomousMover`)은 페이지 `movement.speed/frequency` 를 물려받아 무버를 만든다 —
+  하드코딩 기본값 3 으로 만들면 페이지에서 8(빠름)을 골라도 명령 구간은 400ms/칸으로 걷는다.
+  (회귀: `test/runtimeEventPageMovement.test.ts` 의 명령 무버 속도 계승).
+  (5) 시간표 무버는 걷는 속도는 페이지 값을 유지하고 걸음 간격만 80ms 로 좁힌다 —
+  `configureScheduleMover` 가 속도를 4 로 덮으면 저작 속도가 시간표 구간에서만 무시된다.
 - **주인공 이동은 RPG Maker 식 프레임 정량화다 (2026-09-03).** `src/player/playSceneMovement.ts` 는 deltaMs 를
   60Hz 논리 틱으로 바꾸고(`takeLogicTicks`, 반올림 이월 누적기 → 어느 주사율에서도 1초 = 60틱) 틱마다 RM 의
   `Game_Player.update` 한 프레임을 돌린다: 안 걷고 있으면 그 프레임 입력(또는 강제 루트)으로 걸음을 시작, 그 다음
