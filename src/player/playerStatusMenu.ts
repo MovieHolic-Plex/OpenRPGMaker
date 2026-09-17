@@ -123,7 +123,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       class: "status-menu-sidebar",
       dataset: { testid: "status-menu-sidebar" },
       children: [
-        renderCommandRail({ snapshot, selectedCommand, actions: options.actions }),
+        renderCommandRail({ project: options.project, session: options.session, snapshot, selectedCommand, actions: options.actions }),
       ],
     }),
     detailPanel,
@@ -140,13 +140,15 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
 }
 
 type CommandRailRenderOptions = {
+  readonly project: PlayerStatusMenuOptions["project"];
+  readonly session: PlayerStatusMenuOptions["session"];
   readonly snapshot: PlayerStatusMenuSnapshot;
   readonly selectedCommand: StatusMenuRailId;
   readonly actions: PlayerStatusMenuActions;
 };
 
 function renderCommandRail(options: CommandRailRenderOptions): HTMLElement {
-  const selectedRailId = statusMenuRailIdForCommand(options.selectedCommand);
+  const selectedRailId = statusMenuRailIdForCommand(options.selectedCommand, options.project, options.session);
   const rail = el("nav", {
     class: "status-menu-command-rail status-menu-primary-dock",
     attrs: {

@@ -272,7 +272,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       return;
     }
     mode = "main";
-    selectedCommand = statusMenuRailIdForCommand(selectedCommand);
+    selectedCommand = statusMenuRailIdForCommand(selectedCommand, store.getCurrent(), options.getActiveScene()?.getSession());
     openGroupId = undefined;
     resetSubscreenState();
     options.emitMenuJuice("menu-open", renderMenu());
@@ -314,7 +314,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       const commandIds = session
         ? listStatusMenuRailIds(store.getCurrent(), session)
         : undefined;
-      const next = reduceStatusMenuKeyboard({ selectedCommand: statusMenuRailIdForCommand(selectedCommand), mode, commandIds }, railKey);
+      const next = reduceStatusMenuKeyboard({ selectedCommand: statusMenuRailIdForCommand(selectedCommand, store.getCurrent(), session), mode, commandIds }, railKey);
       if (commandIds && !commandIds.includes(next.selectedCommand)) {
         selectedCommand = commandIds[0] ?? "items";
       } else {
@@ -550,7 +550,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       options.emitMenuJuice("menu-back", renderMenu(undefined, selectedCommand));
       return;
     }
-    selectedCommand = statusMenuRailIdForCommand(selectedCommand);
+    selectedCommand = statusMenuRailIdForCommand(selectedCommand, store.getCurrent(), options.getActiveScene()?.getSession());
     openGroupId = undefined;
     mode = "main";
     options.emitMenuJuice("menu-back", renderMenu(undefined, selectedCommand));

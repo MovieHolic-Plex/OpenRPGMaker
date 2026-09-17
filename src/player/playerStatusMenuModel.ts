@@ -5,6 +5,8 @@ import { isGiftSystemEnabled } from "@/project/friendship";
 import { resolveTerms } from "@/project/terms";
 import type { Project } from "@/project/types";
 import { hasLifeLedgerData } from "@/player/lifeLedger";
+import { menuSkinFor } from "@/player/menuSkins/registry";
+import type { MenuSkinRailStyle } from "@/player/menuSkins/types";
 
 export const STATUS_MENU_COMMAND_IDS = [
   "items",
@@ -78,6 +80,29 @@ export function statusMenuGroupEntryLabel(entryId: StatusMenuGroupEntryId): stri
   return group.label;
 }
 
+/** 레일 구성은 스킨이 정한다 — collapsed(접힌 6항목) / flat(평탄 최대 10항목). */
+export function statusMenuRailStyle(project: Project): MenuSkinRailStyle {
+  return menuSkinFor(project).railStyle;
+}
+
+/** 평탄 레일 — 행동 3 + 파티 4 + 기록(하나면 그대로, 둘 이상이면 「기록 ▸」) + 저장 + 「시스템 ▸」(로드·대기·타이틀).
+    최대 10항목. 컬러 아이콘 스킨은 레일에서 파티 패널을 빼서 높이가 남으므로 그룹을 펼 수 있다.
+    저장은 자주 쓰는 명령이라 시스템 트레이 밖으로 꺼내고, 진행 손실 위험이 있는 타이틀은 여전히 트레이 안에 둔다. */
+function flatRailIds(visible: readonly StatusMenuCommandId[]): StatusMenuRailId[] {
+  const recordCount = visible.filter((id) => commandGroupIdOf(id) === "record").length;
+  const out: StatusMenuRailId[] = [];
+  for (const id of visible) {
+    const group = commandGroupIdOf(id);
+    if (group === "action" || group === "party") out.push(id);
+    else if (group === "record") {
+      if (recordCount === 1) out.push(id);
+      else if (!out.includes("record-menu")) out.push("record-menu");
+    } else if (id === "save") out.push(id);
+    else if (!out.includes("system-menu")) out.push("system-menu");
+  }
+  return out;
+}
+
 /** 그룹 열기 항목이 담는 실제 명령들(숨김 규칙 적용 후). */
 export function listStatusMenuGroupCommandIds(
   entryId: StatusMenuGroupEntryId,
@@ -87,22 +112,34 @@ export function listStatusMenuGroupCommandIds(
   const group = COLLAPSED_GROUPS.find((candidate) => candidate.entryId === entryId);
   if (!group) throw new Error(`Unknown status menu group entry: ${entryId}`);
   const visible = new Set(listStatusMenuCommandIds(project, session));
+  const flat = statusMenuRailStyle(project) === "flat";
   return STATUS_MENU_COMMAND_GROUPS
     .filter((candidate) => candidate.id === group.groupId)
     .flatMap((candidate) => candidate.commandIds)
-    .filter((id) => visible.has(id));
+    // 평탄 레일은 저장을 레일에 직접 두므로 시스템 트레이에서는 뺀다.
+    .filter((id) => visible.has(id) && !(flat && id === "save"));
 }
 
-/** 접힌 명령을 실행 중일 때 레일에서 강조할 항목. 펼친 명령은 자기 자신. */
-export function statusMenuRailIdForCommand(commandId: StatusMenuRailId): StatusMenuRailId {
+/** 접힌 명령을 실행 중일 때 레일에서 강조할 항목. 펼친 명령은 자기 자신.
+    project·session 을 주면 스킨의 레일 구성(평탄/접힘)을 따르고, 없으면 접힌 규칙으로 답한다. */
+export function statusMenuRailIdForCommand(
+  commandId: StatusMenuRailId,
+  project?: Project,
+  session?: PlaySession,
+): StatusMenuRailId {
   if (isStatusMenuGroupEntryId(commandId)) return commandId;
   const groupId = commandGroupIdOf(commandId);
+  if (project && session && statusMenuRailStyle(project) === "flat") {
+    if (listStatusMenuRailIds(project, session).includes(commandId)) return commandId;
+    return groupId === "record" ? "record-menu" : groupId === "system" ? "system-menu" : commandId;
+  }
   const collapsed = COLLAPSED_GROUPS.find((candidate) => candidate.groupId === groupId);
   return collapsed ? collapsed.entryId : commandId;
 }
 
 /** 레일 순서 = 화면 순서 = ↑↓ 이동 순서. */
 export function listStatusMenuRailIds(project: Project, session: PlaySession): StatusMenuRailId[] {
+  if (statusMenuRailStyle(project) === "flat") return flatRailIds(listStatusMenuCommandIds(project, session));
   const collapsedGroupIds = new Set(COLLAPSED_GROUPS.map((group) => group.groupId));
   const expanded = listStatusMenuCommandIds(project, session)
     .filter((id) => !collapsedGroupIds.has(commandGroupIdOf(id)));
