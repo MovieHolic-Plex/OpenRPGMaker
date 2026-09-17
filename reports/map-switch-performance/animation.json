@@ -1,0 +1,9 @@
+{
+  "tiles": 1000,
+  "listeners": 1,
+  "remaining": 0,
+  "frames": [
+    "one",
+    "two"
+  ]
+}

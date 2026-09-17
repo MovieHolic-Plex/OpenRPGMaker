@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type Phaser from "phaser";
 import { editorState, type Layer } from "@/editor/editorState";
 import {
@@ -13,6 +13,12 @@ import { planEditSceneRenderForStoreChange } from "@/editor/editSceneRenderPlan"
 import { resetCullableTiles, syncTileCulling } from "@/player/playSceneTileCulling";
 import { createBlankProject, DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults";
 import { store } from "@/project/store";
+
+// Renderer fixtures model appearance only; shared clock lifecycle is covered separately.
+vi.mock("@/editor/sharedTileAnimation", () => ({
+  createSharedAnimatedTile: (scene: Phaser.Scene, x: number, y: number, texture: string, frame: string, animation: string) =>
+    scene.add.sprite(x, y, texture, frame).play(animation),
+}));
 
 /** 빈 칸(하층 -1)만 있는 2×2 맵을 그려 타일 객체를 돌려준다. */
 function renderEmptyMap(options: { backgroundPreview?: boolean } = {}): readonly MockObject[] {

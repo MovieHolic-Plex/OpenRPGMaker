@@ -1,4 +1,5 @@
 import type Phaser from "phaser";
+import { createSharedAnimatedTile } from "@/editor/sharedTileAnimation";
 import { chipsetAnimationKey, TILE_SIZE } from "@/assets/bundled";
 import {
   ensureTilesetTexture,
@@ -137,7 +138,7 @@ function createLakeQuarterObject(
   const animationKey = quarterAnimationKey(textureKey, part.tile, sourceQ);
   const frameName = quarterFrameName(part.tile, sourceQ);
   const image = animationKey
-    ? scene.add.sprite(part.offsetX, part.offsetY, textureKey, frameName).play(animationKey)
+    ? createSharedAnimatedTile(scene, part.offsetX, part.offsetY, textureKey, frameName, animationKey)
     : scene.add.image(part.offsetX, part.offsetY, textureKey, frameName);
   image.setOrigin(0, 0);
   return image;
@@ -170,7 +171,7 @@ function createRawTileObject(scene: Phaser.Scene, tileset: TilesetDef, pixelX: n
   const baseAnimationKey = tilesetAnimationKeyForTile(tileset, tile);
   const animationKey = baseAnimationKey ? chipsetAnimationKey(textureKey, baseAnimationKey) : null;
   const image = animationKey
-    ? scene.add.sprite(pixelX, pixelY, textureKey, `tile_${tile}`).play(animationKey)
+    ? createSharedAnimatedTile(scene, pixelX, pixelY, textureKey, `tile_${tile}`, animationKey)
     : scene.add.image(pixelX, pixelY, textureKey, `tile_${tile}`);
   image.setOrigin(0, 0);
   return image;
