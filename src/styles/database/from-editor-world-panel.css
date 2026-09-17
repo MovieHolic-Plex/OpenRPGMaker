@@ -664,3 +664,39 @@
 .world-document-workspace .db-world-canon-chip.is-on {
   font-weight: 700;
 }
+/* 세계 개요·설정집 폴리시 2 (2026-09-18) — database 레이어라 map(editor) 레이어의
+   동급 규칙을 특이성과 무관하게 이긴다. 새 토큰 없음.
+   경고 블록 탈포화 / 칩·카드 호버·포커스 피드백. */
+.world-document-workspace .world-lint-item.warning {
+  background: var(--warning-muted);
+  color: var(--db-studio-warning-strong);
+}
+.world-document-workspace .world-lint-item.error {
+  background: var(--danger-muted);
+  color: var(--db-studio-danger);
+}
+.world-document-workspace .world-lint-item.info {
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-2);
+}
+.world-document-workspace .db-world-canon-chip,
+.world-document-workspace .world-tab,
+.world-document-workspace .world-relation-chip {
+  transition: background-color var(--transition-fast, 120ms ease), border-color var(--transition-fast, 120ms ease);
+}
+.world-document-workspace .db-world-canon-chip:hover,
+.world-document-workspace .world-tab:hover,
+.world-document-workspace .world-relation-chip:hover {
+  border-color: var(--db-studio-accent-border);
+  background: var(--db-studio-accent-soft);
+}
+.world-document-workspace .db-world-canon-chip:focus-visible,
+.world-document-workspace .world-tab:focus-visible,
+.world-document-workspace .world-relation-chip:focus-visible,
+.world-document-workspace .world-card:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+.world-document-workspace .world-card:hover {
+  border-color: var(--db-studio-border-strong);
+}
