@@ -1,0 +1,303 @@
+{
+  "checks": [
+    {
+      "label": "No bottom work strip",
+      "ok": true
+    },
+    {
+      "label": "Three team avatars",
+      "ok": true
+    },
+    {
+      "label": "Main execution details default collapsed",
+      "ok": true
+    },
+    {
+      "label": "Final answer and user question remain visible",
+      "ok": true
+    },
+    {
+      "label": "Execution details can be opened",
+      "ok": true
+    },
+    {
+      "label": "AI left / map center / team right",
+      "ok": true,
+      "detail": {
+        "ai": {
+          "x": 0,
+          "y": 96,
+          "width": 339,
+          "height": 904
+        },
+        "canvas": {
+          "x": 346,
+          "y": 123,
+          "width": 1010,
+          "height": 877
+        },
+        "team": {
+          "x": 1356,
+          "y": 49,
+          "width": 84,
+          "height": 951
+        }
+      }
+    },
+    {
+      "label": "Left header stays on one row",
+      "ok": true,
+      "detail": {
+        "x": 0,
+        "y": 96,
+        "width": 339,
+        "height": 62
+      }
+    },
+    {
+      "label": "Input has no nested border",
+      "ok": true
+    },
+    {
+      "label": "Overflow opens ai-preference-popover",
+      "ok": true
+    },
+    {
+      "label": "Overflow opens ai-planning-popover",
+      "ok": true
+    },
+    {
+      "label": "Overflow opens ai-context-panel",
+      "ok": true
+    },
+    {
+      "label": "Map toolbar is compact",
+      "ok": true
+    },
+    {
+      "label": "Encounter action is icon-only with a full accessible name",
+      "ok": true
+    },
+    {
+      "label": "Keyboard reveals encounter tooltip",
+      "ok": true
+    },
+    {
+      "label": "Encounter icon opens the existing settings",
+      "ok": true
+    },
+    {
+      "label": "map-location-layer-toggle reflects active state",
+      "ok": true
+    },
+    {
+      "label": "map-background-preview-toggle reflects active state",
+      "ok": true
+    },
+    {
+      "label": "More reveals PNG save without duplicating zoom choices",
+      "ok": true
+    },
+    {
+      "label": "Sidebar collapses to 48px and gives space to the map",
+      "ok": true
+    },
+    {
+      "label": "Hidden composer is removed from interaction",
+      "ok": true
+    },
+    {
+      "label": "Rail AI restores the previous draft",
+      "ok": true
+    },
+    {
+      "label": "Expand preserves the selected tools tab",
+      "ok": true
+    },
+    {
+      "label": "Member draft preserved",
+      "ok": true
+    },
+    {
+      "label": "Member result stays visible with process collapsed",
+      "ok": true
+    },
+    {
+      "label": "Member execution history is accessible",
+      "ok": true
+    },
+    {
+      "label": "Main draft survives palette switch",
+      "ok": true
+    },
+    {
+      "label": "Status update does not open member detail",
+      "ok": true
+    },
+    {
+      "label": "No pretending to send to a busy worker",
+      "ok": true
+    },
+    {
+      "label": "Reviewer follow-up stays read-only",
+      "ok": true,
+      "detail": {
+        "mode": "single",
+        "mapIds": [
+          "map_61035764-e0eb-45fa-84b3-e26863e27ea3"
+        ],
+        "readOnly": true,
+        "toolDomains": [],
+        "task": "get_map_region 과 run_lint(reachability 포함)로 작업 결과를 확인한다: 요청한 구조물이 실제로 있는가, 길이 이어지는가, 집과 길이 겹치지 않는가, lint error 가 없는가.\n이전 작업: 기존 집과 나무 유지 확인\n이전 보고: 기존 집과 나무를 확인했습니다. 이 확인 작업에서는 프로젝트를 변경하지 않았습니다.\n후속 요청: 기존 집과 나무가 유지되는지 다시 확인해줘."
+      }
+    },
+    {
+      "label": "Follow-up carries preceding context",
+      "ok": true
+    },
+    {
+      "label": "No document horizontal overflow at 1024",
+      "ok": true
+    },
+    {
+      "label": "Right rail contains no map properties entry",
+      "ok": true
+    },
+    {
+      "label": "Maps have a dedicated section",
+      "ok": true
+    },
+    {
+      "label": "Map properties live on the left",
+      "ok": true
+    },
+    {
+      "label": "Property form fits sidebar width",
+      "ok": true
+    },
+    {
+      "label": "Tiles retain their map dropdown",
+      "ok": true
+    },
+    {
+      "label": "Tiles no longer contain the map tree",
+      "ok": true
+    },
+    {
+      "label": "Tile map dropdown still opens its map list",
+      "ok": true
+    },
+    {
+      "label": "Collapse restores the map properties tab",
+      "ok": true
+    },
+    {
+      "label": "Team settings remain available",
+      "ok": true
+    },
+    {
+      "label": "Explicit studio retains fullscreen layout",
+      "ok": true,
+      "detail": {
+        "x": 0,
+        "y": 48,
+        "width": 1440,
+        "height": 952
+      }
+    },
+    {
+      "label": "Studio exit restores left sidebar",
+      "ok": true
+    },
+    {
+      "label": "Member changes tab shows its own report",
+      "ok": true
+    },
+    {
+      "label": "Failed follow-up preserves request for retry",
+      "ok": true
+    },
+    {
+      "label": "Transport failure is visible",
+      "ok": true
+    },
+    {
+      "label": "Failure message uses plain language",
+      "ok": true
+    },
+    {
+      "label": "Failure does not force details open",
+      "ok": true
+    },
+    {
+      "label": "Raw failure remains available in execution history",
+      "ok": true
+    },
+    {
+      "label": "Follow-up answer stays visible outside collapsed process",
+      "ok": true
+    },
+    {
+      "label": "Successful retry clears previous error",
+      "ok": true
+    },
+    {
+      "label": "Member result can be applied",
+      "ok": true
+    },
+    {
+      "label": "Member stop ends the running state",
+      "ok": true
+    },
+    {
+      "label": "Escape closes detail and restores avatar focus",
+      "ok": true
+    },
+    {
+      "label": "No browser exceptions",
+      "ok": true,
+      "detail": []
+    }
+  ],
+  "errors": [],
+  "requests": [
+    {
+      "mode": "team",
+      "mapIds": [],
+      "task": "입구에서 광장까지 길과 안내 주민의 배치 조건을 확인해줘. 집과 나무는 그대로 두고."
+    },
+    {
+      "mode": "single",
+      "mapIds": [
+        "map_61035764-e0eb-45fa-84b3-e26863e27ea3"
+      ],
+      "readOnly": true,
+      "toolDomains": [],
+      "task": "get_map_region 과 run_lint(reachability 포함)로 작업 결과를 확인한다: 요청한 구조물이 실제로 있는가, 길이 이어지는가, 집과 길이 겹치지 않는가, lint error 가 없는가.\n이전 작업: 기존 집과 나무 유지 확인\n이전 보고: 기존 집과 나무를 확인했습니다. 이 확인 작업에서는 프로젝트를 변경하지 않았습니다.\n후속 요청: 기존 집과 나무가 유지되는지 다시 확인해줘."
+    },
+    {
+      "mode": "single",
+      "mapIds": [
+        "map_61035764-e0eb-45fa-84b3-e26863e27ea3"
+      ],
+      "readOnly": false,
+      "task": "이전 작업: 안내 주민의 위치와 대사 검토\n이전 보고: 광장 입구의 빈 칸을 확인했습니다. 주민이 이동 통로를 막지 않도록 배치할 수 있습니다.\n후속 요청: 연결 실패 후에도 이 요청을 유지해줘."
+    },
+    {
+      "mode": "single",
+      "mapIds": [
+        "map_61035764-e0eb-45fa-84b3-e26863e27ea3"
+      ],
+      "readOnly": false,
+      "task": "이전 작업: 안내 주민의 위치와 대사 검토\n이전 보고: 광장 입구의 빈 칸을 확인했습니다. 주민이 이동 통로를 막지 않도록 배치할 수 있습니다.\n후속 요청: 연결 실패 후에도 이 요청을 유지해줘.\n후속 요청: 연결 실패 후에도 이 요청을 유지해줘."
+    },
+    {
+      "mode": "single",
+      "mapIds": [
+        "map_61035764-e0eb-45fa-84b3-e26863e27ea3"
+      ],
+      "readOnly": false,
+      "task": "이전 작업: 안내 주민의 위치와 대사 검토\n이전 보고: 광장 입구의 빈 칸을 확인했습니다. 주민이 이동 통로를 막지 않도록 배치할 수 있습니다.\n후속 요청: 연결 실패 후에도 이 요청을 유지해줘.\n후속 요청: 연결 실패 후에도 이 요청을 유지해줘.\n후속 요청: 중단 동작 확인"
+    }
+  ]
+}

@@ -157,6 +157,7 @@ export function createLaneManager(options: LaneManagerOptions = {}): LaneManager
       ...(lane.spec.maxTurns === undefined ? {} : { maxTurns: lane.spec.maxTurns }),
       ...(lane.spec.thinkingLevel === undefined ? {} : { thinkingLevel: lane.spec.thinkingLevel }),
     };
+    let answer = "";
     const onEvent = (event: PiAgentEvent): void => {
       ghost?.handleEvent(id, event);
       switch (event.type) {
@@ -169,6 +170,7 @@ export function createLaneManager(options: LaneManagerOptions = {}): LaneManager
           update(id, { type: "line", line: event.text.trim().slice(0, 200) });
           return;
         case "assistant":
+          answer = event.text;
           update(id, { type: "step", step: { kind: "assistant", text: event.text.slice(0, 400) } });
           return;
         case "tool_start":
@@ -198,6 +200,7 @@ export function createLaneManager(options: LaneManagerOptions = {}): LaneManager
         spills: mapBundleSpill(base, done.project, lane.spec.mapIds),
         conflicts: [],
         summary: `툴콜 ${done.stats.toolCalls}회 · 바뀐 키 ${done.changedKeys.length}개`,
+        answer,
       };
       update(id, { type: "done", result, at: clock() });
       // 결과 대기 동안 고스트는 남는다 — 사람이 «무엇이 바뀔지» 를 보고 적용·버리기를 고른다.

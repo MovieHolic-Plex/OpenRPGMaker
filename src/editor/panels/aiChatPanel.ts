@@ -1960,7 +1960,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     workCardTitle = (displayText || command.task).replace(/\s+/gu, " ").trim().slice(0, 48);
     if (displayText) appendBubble("user", displayText);
-    if (opts?.questionPromoted) appendBubble("system", "질문으로 읽었습니다 — 읽기 전용으로 실행합니다(쓰기 도구는 제공하지 않습니다).");
+    if (opts?.questionPromoted) appendBubble("system", "프로젝트를 바꾸지 않고 확인해서 답할게요.");
     // 기존 턴과 같은 중단 버튼을 쓴다 — 컨트롤러를 활성 자리에 앉히고 실행 중 표시(turnBusy)를 켠다.
     piRunController = new AbortController();
     activeAbortController = piRunController;
@@ -1974,6 +1974,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     try {
       await runPiCommand(command, {
         appendBubble: (role, line) => appendBubble(role, line),
+        appendProcess: (text) => ensureWorkCard().attachElement(el("p", { class: "ai-work-process-note", text })),
         appendCard: (element) => { appendChangeCard(element); },
         setStatus,
         getCurrentMapId: () => editorState.get().currentMapId ?? null,
