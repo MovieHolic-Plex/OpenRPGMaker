@@ -60,7 +60,7 @@ export type StepResult =
       tile: number;
     }
   | { kind: "moveEvent"; eventId: string; moves: MoveCommand[]; repeat: boolean; wait?: boolean }
-  | { kind: "openChest"; chestId: string }
+  | { kind: "openChest"; chestId: string } & import("@/project/storageChest").OpenChestFields
   | { kind: "openSaveMenu" }
   | { kind: "openMenuScreen" }
   | { kind: "openLoadMenu" }

@@ -127,6 +127,7 @@ export function parseChestsRecord(value: unknown): NonNullable<PlaySession["ches
       x: rawChest.x,
       y: rawChest.y,
       inventory,
+      ...(isNonNegativeSafeInteger(rawChest.gold) && rawChest.gold <= GOLD_MAX ? { gold: rawChest.gold } : {}),
     };
   }
   return parsed;

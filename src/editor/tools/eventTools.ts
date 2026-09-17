@@ -2145,6 +2145,8 @@ const placeStorageChest: ToolDefinition = {
       name: { type: "string" },
       id: { type: "string" },
       chestId: { type: "string", description: "session.chests 키. 생략 시 storage_<eventId>" },
+      template: { type: "string", description: "farm | warehouse | vault. 기본 farm" },
+      displayName: { type: "string", description: "플레이 창에 보이는 이름" },
     },
     required: ["mapId", "x", "y"],
   },
@@ -2167,7 +2169,17 @@ const placeStorageChest: ToolDefinition = {
     const name = (args.name as string | undefined) ?? "보관 상자";
     const chestIdRaw = typeof args.chestId === "string" ? args.chestId.trim() : "";
     const chestId = chestIdRaw || `storage_${id}`;
+    const templateRaw = typeof args.template === "string" ? args.template.trim() : "farm";
+    const template = templateRaw === "warehouse" || templateRaw === "vault" || templateRaw === "farm" ? templateRaw : "farm";
+    const displayNameRaw = typeof args.displayName === "string" ? args.displayName.trim() : "";
+    const displayName = displayNameRaw || (typeof args.name === "string" ? args.name.trim() : "") || undefined;
     const trigger: Trigger = { kind: "action" };
+    const openChest: Command = {
+      kind: "openChest",
+      chestId,
+      template,
+      ...(displayName ? { displayName } : {}),
+    };
     const event: GameEvent = {
       id,
       x,
@@ -2185,7 +2197,7 @@ const placeStorageChest: ToolDefinition = {
           overlapForbidden: true,
           animationType: "fixedGraphic",
           movement: PASSIVE,
-          commands: [{ kind: "openChest", chestId }],
+          commands: [openChest],
         },
       ],
     };

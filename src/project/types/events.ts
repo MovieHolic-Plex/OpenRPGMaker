@@ -49,6 +49,9 @@ export type Trigger =
  */
 export type SimpleTriggerKind = Exclude<Trigger, { kind: "locationTransition" }>["kind"];
 
+export type StorageChestTemplate = "farm" | "warehouse" | "vault";
+export type StorageChestLayout = "center" | "bottom" | "wide";
+
 export type SelfSwitchKey = "A" | "B" | "C" | "D";
 
 // 조건 분기(fork)에서 사용하는 조건. 페이지 출현 조건(EventPageCondition)의 상위 집합.
@@ -348,7 +351,22 @@ export type Command =
   | { kind: "craftRecipe"; recipeId: string; resultVariableId?: string }
   | { kind: "applyItemUpgrade"; upgradeId: string; resultVariableId?: string }
   | { kind: "equipTool"; itemId?: ItemId }
-  | { kind: "openChest"; chestId?: string }
+  | {
+      kind: "openChest";
+      chestId?: string;
+      displayName?: string;
+      template?: StorageChestTemplate;
+      layout?: StorageChestLayout;
+      showIcons?: boolean;
+      capacity?: number;
+      allowBulk?: boolean;
+      allowSort?: boolean;
+      showCategories?: boolean;
+      goldVault?: boolean;
+      lockSwitchId?: string;
+      lockItemId?: string;
+      allowedItemTypes?: readonly string[];
+    }
   | { kind: "changeFriendship"; npcKey?: string; delta: number }
   | { kind: "setRelationship"; npcKey?: string; state: RelationshipState }
   | { kind: "changeFactionStance"; a: string; b: string; op: "=" | "+=" | "-="; value: number }

@@ -57,12 +57,16 @@ export function applySystemWindowSkinVariable(node: HTMLElement, project?: Proje
   return applyWindowSkinVariable(node, skinId, source);
 }
 
+export function applyWindowSkinGraphic(node: HTMLElement, resourceId?: string, project?: Project): void {
+  const source = project ?? store.getCurrent();
+  const skinId = resolveWindowSkinResourceId(resourceId ?? source.system.systemResourceId);
+  node.dataset.systemResource = skinId;
+  applyWindowSkinResource(node, skinId, source);
+}
+
 /** Applies system window skin so DB systemResourceId changes are visible on runtime chrome. */
 export function applySystemGraphic(node: HTMLElement, project?: Project): void {
-  const source = project ?? store.getCurrent();
-  const resourceId = resolveWindowSkinResourceId(source.system.systemResourceId);
-  node.dataset.systemResource = resourceId;
-  applyWindowSkinResource(node, resourceId, source);
+  applyWindowSkinGraphic(node, undefined, project);
 }
 
 /**
