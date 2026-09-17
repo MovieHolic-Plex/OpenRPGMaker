@@ -1,4 +1,4 @@
-// 자료집 시스템 탭 「게임 메뉴 디자인」 — ESC 메뉴 스킨 5종을 고르고, 기본값은 저장에서 지운다.
+// 자료집 시스템 탭 「게임 메뉴 디자인」 — ESC 메뉴 스킨 12종을 고르고, 기본값은 저장에서 지운다.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
 import { listMenuSkinIds, MENU_SKINS } from "@/player/menuSkins/registry";
@@ -29,7 +29,7 @@ describe("system tab menu skin select", () => {
     cleanup = undefined;
   });
 
-  it("스킨 5종을 레지스트리 순서·라벨로 내놓고 기본이 선택돼 있다", () => {
+  it("스킨 12종을 레지스트리 순서·라벨로 내놓고 기본이 선택돼 있다", () => {
     const host = renderSystem();
     const select = findByTestId(host, "db-field-system-menu-ui-style");
     expect(select).not.toBeNull();

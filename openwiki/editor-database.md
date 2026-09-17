@@ -1802,6 +1802,29 @@ TURN/BATTLE MENU` 칩. 전투 애니메이션 타이밍 표 헤더 `사운드...
 등록 누락 회귀는 `test/regionReferences.test.ts`가 기본 카드 7종·이미지 파일·
 타일 전체 재조립으로 검증한다. 서버 파일만 바꾸지 말고 이 등록과 자산을 함께 출하한다.
 
+## Game menu design options (2026-09-18)
+
+System → Display → Game menu design is populated from `menuSkins/registry.ts`.
+There are now eight choices, including classic blue windows, a paper journal and
+a bottom command ribbon. Selection writes the optional `system.menuUiStyle`;
+workbench removes it. Descriptions and decoded PNG previews update immediately;
+the chosen design applies to the next play session. Preview files for new IDs
+must be committed alongside registry/type changes, or the editor displays a
+broken image despite the runtime skin working.
+
+Editor proof: start `npm run dev:worktree` with a private `VITE_CACHE_DIR`, then
+`OPRN_QA_EDITOR_URL=http://127.0.0.1:<port> node scripts/qa/menu-design-editor.mjs`.
+It checks eight options, the three new selections, system normalization round
+trips, loaded preview images, and default-key removal. This is a temporary editor
+control test, not authored remote content. Runtime proof uses the separate player
+harness documented in `runtime-sessions.md`.
+
+The 2026-09-18 follow-up expands the menu registry to **12** choices with
+`retro-2000`, `retro-2003`, `classic-xp`, `classic-vx`. Each has a committed actual
+player preview. The editor probe accepts skin IDs as arguments and an optional
+`OPRN_MENU_QA_OUT`; the era-specific evidence is under
+`verify-shots/runtime-qa/menu-eras/EDITOR.md`.
+
 ## 캐릭터·얼굴 연결 검토 개선 (2026-09-18)
 
 - `characterGraphics.ts`는 저장된 속성이 없을 때 캐릭터 이름뿐 아니라 기존 semantic 태그·성별·나이를 읽는다. 사용자 라벨/태그와 명시적 빈 속성 객체는 기본값보다 우선한다. People1 얼굴의 기존 육안 판독 메타데이터를 재사용하며, 사용자 얼굴 이름·속성·메모는 보존한다. 조회는 프로젝트 데이터를 변경하지 않는다.

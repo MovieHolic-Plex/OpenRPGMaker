@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { renderPlayerStatusMenu } from "@/player/playerStatusMenu";
+import { adoptStatusMenuPanel } from "@/player/playerStatusMenuControllerDom";
 import { createPlayerStatusMenuController } from "@/player/playerStatusMenuController";
 import type { PlayScene } from "@/player/PlayScene";
 import type { PlayerStatusMenuActions } from "@/player/playerStatusMenuTypes";
@@ -46,6 +47,44 @@ function render(skin: MenuUiStyle | undefined, mode: "main" | "function" = "main
 }
 
 describe("status menu skins", () => {
+  it("효과 표는 파티 미니에 밀리지 않고, 파티 첫 화면은 구형 패널을 중복 렌더하지 않는다", () => {
+    const restore = installFakeDom();
+    try {
+      const project = createBlankProject();
+      project.system.menuUiStyle = "party-first";
+      const session = startSession(project);
+      session.inventory = { [project.database.items[0]!.id]: 1 };
+      const menu = renderPlayerStatusMenu({ project, session, slots: [], actions: noopActions, mode: "function", selectedCommand: "items" });
+      expect(findByTestId(menu, "status-menu-item-facts")).not.toBeNull();
+      expect(findByTestId(menu, "status-menu-side-party")).toBeNull();
+      for (const skin of ["hub", "classic", "journal", "ribbon"] as const) {
+        expect(findByTestId(render(skin, "main", "party-menu"), "status-menu-party")).toBeNull();
+        expect(findByTestId(render(skin, "function", "party-menu"), "status-menu-party")).not.toBeNull();
+      }
+    } finally { restore(); }
+  });
+
+  it("허브 버튼의 DOM을 보존해도 아이템 요약은 최신 세션으로 바뀐다", () => {
+    const restore = installFakeDom();
+    try {
+      const project = createBlankProject();
+      project.system.menuUiStyle = "hub";
+      const session = startSession(project);
+      session.inventory = { [project.database.items[0]!.id]: 1 };
+      let waitModeEnabled = true;
+      const draw = () => renderPlayerStatusMenu({ project, session, slots: [], actions: noopActions, mode: "main", waitModeEnabled });
+      const menu = draw();
+      const button = findByTestId(menu, "status-menu-command-items");
+      expect(findByTestId(menu, "status-menu-command-summary-items")?.textContent).toBe("1종");
+      session.inventory = {};
+      waitModeEnabled = false;
+      adoptStatusMenuPanel(menu, draw());
+      expect(findByTestId(menu, "status-menu-command-items")).toBe(button);
+      expect(findByTestId(menu, "status-menu-command-summary-items")?.textContent).toBe("0종");
+      expect(findByTestId(menu, "status-menu-command-summary-system-menu")?.textContent).toContain("대기 OFF");
+    } finally { restore(); }
+  });
+
   it("기본 스킨은 workbench 속성을 달고 파티 개요·사이드 파티가 없다", () => {
     const restore = installFakeDom();
     try {
@@ -85,10 +124,10 @@ describe("status menu skins", () => {
     }
   });
 
-  it("party-first 는 function 모드에 작업 패널 + 사이드 파티를 그린다", () => {
+  it("party-first 는 단순 장비 액터 선택 화면에 사이드 파티를 그린다", () => {
     const restore = installFakeDom();
     try {
-      const menu = render("party-first", "function");
+      const menu = render("party-first", "function", "equipment");
       expect(findByTestId(menu, "status-menu-party-overview")).toBeNull();
       const detail = findByTestId(menu, "status-menu-detail");
       expect(detail).not.toBeNull();
@@ -248,6 +287,8 @@ describe("status menu skins — controller", () => {
       expect(menu.getAttribute("data-status-menu-screen")).toBe("function");
       expect(findByTestId(menu, "status-menu-detail")).not.toBeNull();
       expect(findByTestId(menu, "status-menu-party-strip")).toBeNull();
+      controller.handleKey("ArrowLeft");
+      expect(findByTestId(layout, "status-menu-controls")?.textContent).toContain("↑↓←→ 이동");
     } finally {
       if (previousWindow) Object.defineProperty(globalThis, "window", previousWindow);
       else delete (globalThis as { window?: unknown }).window;
@@ -295,7 +336,8 @@ describe("status menu skins — controller", () => {
       const entered = findByTestId(layout, "main-menu")!;
       expect(entered.getAttribute("data-status-menu-screen")).toBe("function");
       expect(findByTestId(entered, "status-menu-detail")).not.toBeNull();
-      expect(findByTestId(entered, "status-menu-side-party")).not.toBeNull();
+      // Empty inventories may show the mini-party; effect facts must never share that column.
+      if (findByTestId(entered, "status-menu-item-facts")) expect(findByTestId(entered, "status-menu-side-party")).toBeNull();
       expect(findByTestId(entered, "status-menu-party-overview")).toBeNull();
 
       expect(controller.handleKey("ArrowLeft")).toBe(true);
