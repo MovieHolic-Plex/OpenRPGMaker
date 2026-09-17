@@ -40,6 +40,13 @@ export function adoptStatusMenuPanel(existing: HTMLElement, next: HTMLElement): 
       button.className = updated.className;
       button.tabIndex = updated.tabIndex;
       button.setAttribute("aria-current", updated.getAttribute("aria-current") ?? "false");
+      // Preserve the focused button, but refresh session-derived copy (inventory,
+      // party health and command labels) instead of retaining the previous render.
+      for (const selector of [".status-menu-command-label", ".status-menu-command-summary"]) {
+        const copy = button.querySelector(selector);
+        const nextCopy = updated.querySelector(selector);
+        if (copy && nextCopy && copy.textContent !== nextCopy.textContent) copy.textContent = nextCopy.textContent;
+      }
     });
     rail.setAttribute("aria-activedescendant", nextRail.getAttribute("aria-activedescendant") ?? "");
     rail.style.cssText = nextRail.style.cssText;

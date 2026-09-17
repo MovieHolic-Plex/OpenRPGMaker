@@ -18,7 +18,9 @@ export type MenuSkin = {
   readonly railIcons: "glyph" | "painted";
   readonly railStyle: MenuSkinRailStyle;
   /** main 모드 커서 격자 열 수. 1 이면 ↑↓ 만 움직이고 → 가 진입, 2 이상이면 ←→ 도 커서를 움직이고 Enter 만 진입. */
-  readonly railColumns: 1 | 2 | 3;
+  readonly railColumns: 1 | 2 | 3 | 6;
   /** function 모드 작업 패널 오른쪽 열에 파티 미니를 붙인다. */
   readonly sideParty: boolean;
+  /** Optional landing artwork; omitted skins use the actor face. */
+  readonly partyArt?: "character";
 };

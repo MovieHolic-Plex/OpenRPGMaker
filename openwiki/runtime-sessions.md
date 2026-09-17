@@ -315,3 +315,57 @@ Esc 메뉴의 대상 유지·회복량 미리보기와 메뉴 입력 회귀 수�
 
 
 #593 후속 커밋은 선택 행에 공통 규칙과 같은 `border-radius: 3px`, `margin: 0`, `min-height: 0` 및 `bottom: auto`를 명시한다. 따라서 CSS 실사용 기준선은 상점 PR의 원래 기준선을 유지하며 메뉴의 속성 누락 검사는 통과한다.
+
+## Game menu designs and information ownership (2026-09-18)
+
+`system.menuUiStyle` now accepts eight registry IDs: `workbench`, `party-first`,
+`party-first-warm`, `hub`, `sheet`, `classic`, `journal`, `ribbon`. Missing/unknown
+values still resolve to workbench; normalization omits the explicit default.
+Classic uses separate blue windows; journal uses a paper palette with the landing
+rail on the right; ribbon uses four party cards and a six-column bottom rail.
+They share the existing detail controller and authored/runtime state boundaries.
+
+- `playerStatusMenu.ts` omits the decorative side party on pages with item facts,
+  equipment stat comparisons or tabs. Effect/eligibility/consumption information
+  is machine-derived and must not be replaced by an authored description/footer.
+- The legacy `status-menu-party` panel belongs to the party submenu (or workbench
+  preview). It must not also mount on a skin's own landing overview/strip.
+- `adoptStatusMenuPanel` preserves focused rail buttons while updating their label
+  and summary text. Inventory kinds and party health must reflect the current
+  session after item use. Hub system summaries receive the real wait-mode value.
+- `focusMenuArea` passes the skin's column count when refreshing footer copy;
+  returning with Left must not advertise Right-to-enter for a grid rail.
+- Shared skin presentation is in `src/styles/runtime/statusMenuSkins.css`; new
+  editor previews are actual player captures in `public/assets/ui/menu-skins/`.
+
+Browser proof: `node scripts/qa/runtime/menu-design.probe.mjs` uses
+`startPlayerQaServer` / `player.html` with the export store shim. Read
+`verify-shots/runtime-qa/menu-design/SUMMARY.md` first. Each of eight designs is
+exercised with real keyboard input, movement, item depletion/healing, skill tabs,
+equipment comparisons, wait toggle, save/load, and three viewport sizes. The
+fixture is a detached existing engine test project, not newly authored content.
+Review record: `docs/reviews/2026-09-18-menu-design.md`.
+
+### Four era-inspired menu windows (2026-09-18 follow-up)
+
+The registry now has **12** skins. New stable IDs: `retro-2000`, `retro-2003`,
+`classic-xp`, `classic-vx`. Their labels describe era and appearance; existing IDs
+and the workbench default are unchanged. `statusMenuLegacySkins.css` is imported
+by the shared runtime CSS closure, so editor play and shipping player agree.
+
+- 2000: opaque cobalt, square silver frame, right commands and numerical vitals.
+- 2003: teal/slate, beveled frame, right commands and inset vitality meters.
+- XP: translucent slate windows, left commands, walking characters and numbers.
+- VX: violet translucent windows, left commands, portrait rows and coloured meters.
+
+The optional registry `partyArt: "character"` uses `resolvePlayerSpriteResource`
+for each party member, `resolveActorAppearance` and the session character override,
+then the canonical `applyCharsetFrameCrop` (down-facing idle frame). Resource URLs
+use `resolveAssetResourceUrl`; no external skin images or standalone sprite crop
+math is introduced. Failure to resolve an image falls back to the existing face.
+
+Numeric HP/MP rows need enough room for the fourth actor. Browser checks bound
+both vital lines to their own row, not only to the whole stage. Proof:
+`OPRN_MENU_QA_OUT=verify-shots/runtime-qa/menu-eras node scripts/qa/runtime/menu-design.probe.mjs retro-2000 retro-2003 classic-xp classic-vx`.
+Read that directory's `SUMMARY.md` first. Previews are actual player captures at
+`public/assets/ui/menu-skins/<id>.png`. Details: `docs/reviews/2026-09-18-menu-eras.md`.

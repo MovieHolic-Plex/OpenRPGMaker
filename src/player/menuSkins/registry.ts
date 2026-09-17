@@ -42,6 +42,50 @@ export const MENU_SKINS: Record<MenuSkinId, MenuSkin> = {
     description: "오른쪽 시트만 뜨고 주인공과 지도가 그대로 보입니다. 파티가 위, 명령 격자가 아래.",
     landing: "sheet", tone: "glass", railIcons: "painted", railStyle: "flat", railColumns: 2, sideParty: true,
   },
+  classic: {
+    id: "classic",
+    label: "클래식 · 청색 창",
+    description: "청색 창과 밝은 이중 테두리. 왼쪽 명령과 오른쪽 파티를 분리한 고전적인 메뉴입니다.",
+    landing: "party", tone: "glass", railIcons: "glyph", railStyle: "collapsed", railColumns: 1, sideParty: false,
+  },
+  journal: {
+    id: "journal",
+    label: "여행 수첩 · 종이와 잉크",
+    description: "밝은 종이 위 파티 기록과 오른쪽 책갈피 명령. 여행 수첩처럼 펼쳐지는 메뉴입니다.",
+    landing: "party", tone: "glass", railIcons: "glyph", railStyle: "collapsed", railColumns: 1, sideParty: false,
+  },
+  ribbon: {
+    id: "ribbon",
+    label: "하단 바 · 파티 카드",
+    description: "파티를 네 장의 카드로 펼치고 아래 가로 명령 바를 좌우로 이동합니다. Enter로 선택합니다.",
+    landing: "party", tone: "glass", railIcons: "painted", railStyle: "collapsed", railColumns: 6, sideParty: false,
+  },
+  "retro-2000": {
+    id: "retro-2000",
+    label: "레트로 2000 · 청색 픽셀 창",
+    description: "짙은 청색과 각진 이중 테두리. 왼쪽 파티의 체력·마력을 숫자로 읽고 오른쪽에서 명령을 고릅니다.",
+    landing: "party", tone: "glass", railIcons: "glyph", railStyle: "collapsed", railColumns: 1, sideParty: false,
+  },
+  "retro-2003": {
+    id: "retro-2003",
+    label: "레트로 2003 · 청록 입체 창",
+    description: "청록빛 표면과 은색 입체 테두리. 왼쪽 파티와 오른쪽 명령·소지금 창을 분리합니다.",
+    landing: "party", tone: "glass", railIcons: "glyph", railStyle: "collapsed", railColumns: 1, sideParty: false,
+  },
+  "classic-xp": {
+    id: "classic-xp",
+    label: "클래식 XP · 안개빛 창",
+    description: "지도 위 반투명 회청색 창. 작은 보행 캐릭터와 숫자 상태표, 왼쪽 명령과 시간·소지금 창을 배치합니다.",
+    landing: "party", tone: "glass", railIcons: "glyph", railStyle: "collapsed", railColumns: 1, sideParty: false,
+    partyArt: "character",
+  },
+  "classic-vx": {
+    id: "classic-vx",
+    label: "클래식 VX · 보랏빛 초상 창",
+    description: "보랏빛 유리창과 둥근 흰 테두리. 큰 얼굴 초상, 색상 게이지, 왼쪽 명령·소지금 창으로 구성합니다.",
+    landing: "party", tone: "glass", railIcons: "glyph", railStyle: "collapsed", railColumns: 1, sideParty: false,
+  },
+
 };
 
 /** 미설정·미지값이 떨어지는 기본 스킨 = 지금 화면. */
