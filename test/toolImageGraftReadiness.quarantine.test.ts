@@ -202,7 +202,7 @@ describe("tool image graft atlas readiness", () => {
       tileset.tilesPerRow += 1;
       expect(peekGraftedTilesetImageUrl(tileset, tilesetBaseImageUrl(tileset))).toBeNull();
       await expect(renderToolImages(project, "show_map_region", region))
-        .rejects.toThrow(/tileset-graft-rendering-unavailable/);
+        .resolves.toHaveLength(1);
 
       await waitForExactGraftBake(tileset);
       const secondReady = peekGraftedTilesetImageUrl(tileset, tilesetBaseImageUrl(tileset));
@@ -587,17 +587,19 @@ describe("tool image graft atlas readiness", () => {
       expect(draftTileset.tileGrafts).toEqual(secondGrafts);
       expect(requiresVisualReview(createBlankProject(), draft, writeSeed.map.id)).toBe(true);
 
-      // While B is not ready under the exact key, A must not be delivered or certified.
+      // A cold B bake is awaited; warmed A must never be delivered or certified.
       expect(certifiedHash).not.toBe(warmedAHash);
-      expect(session.isDraftReviewApproved()).toBe(false);
-      expect(result.review?.status).not.toBe("approved");
-      expect(renderRejected || reviews.every((entry) => entry.imageCount === 0)).toBe(true);
+      expect(session.isDraftReviewApproved()).toBe(true);
+      expect(result.review?.status).toBe("approved");
+      expect(renderRejected).toBe(false);
+      expect(reviews.some((entry) => entry.imageCount > 0)).toBe(true);
 
       // Complete B's exact bake without clearing the warmed A cache entry.
       await waitForExactGraftBake(draftTileset);
       const actualB = await renderToolImages(draft, "show_map_region", regionPayload(requireStartMap(draft)));
       const actualBHash = pngHash(requireRendered(actualB).dataUrl);
       expect(actualBHash).not.toBe(warmedAHash);
+      expect(certifiedHash).toBe(actualBHash);
 
       // Fresh ungrafted baseline Session with real B write admits actual B PNG + authority.
       const releaseProject = createBlankProject();
