@@ -41,6 +41,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - Runtime battle: `openwiki/runtime-battle.md`
    - 지원 전투 시스템 2종(RM식 `rm2k3`/`rm2003`, 포켓몬식 `gen1`/`pokemon`) 정책과 지원 종료 목록: `openwiki/runtime-battle.md` 의 "지원 전투 시스템은 둘뿐이다 (2026-08-28)" 절
    - Runtime sessions & state: `openwiki/runtime-sessions.md`
+   - Team project host, local/remote SQLite, membership and asset ownership: `openwiki/team-project-host.md`
    - Runtime project schema & persistence: `openwiki/runtime-project-schema.md`
    - Runtime M2 flow controls: `openwiki/runtime-m2-flow-controls.md`
    - Runtime index: `openwiki/runtime-and-data.md` (slim TOC linking to the above)

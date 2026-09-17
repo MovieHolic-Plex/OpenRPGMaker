@@ -4,8 +4,8 @@ import { normalizeSystemRecords } from "@/project/databaseRecordModel";
 import { createBlankProject } from "@/project/defaults";
 
 describe("menu skin registry", () => {
-  it("5종을 레지스트리 순서로 등록하고 id·라벨·설명이 채워져 있다", () => {
-    expect(listMenuSkinIds()).toEqual(["workbench", "party-first", "party-first-warm", "hub", "sheet"]);
+  it("12종을 레지스트리 순서로 등록하고 id·라벨·설명이 채워져 있다", () => {
+    expect(listMenuSkinIds()).toEqual(["workbench", "party-first", "party-first-warm", "hub", "sheet", "classic", "journal", "ribbon", "retro-2000", "retro-2003", "classic-xp", "classic-vx"]);
     for (const id of listMenuSkinIds()) {
       const skin = MENU_SKINS[id];
       expect(skin.id).toBe(id);
@@ -35,7 +35,9 @@ describe("menu skin registry", () => {
   it("저장 정규화는 기본·미등록을 버리고 명시 선택만 남긴다", () => {
     const base = createBlankProject().system;
     expect(normalizeSystemRecords({ ...base, menuUiStyle: "workbench" }).menuUiStyle).toBeUndefined();
-    expect(normalizeSystemRecords({ ...base, menuUiStyle: "hub" }).menuUiStyle).toBe("hub");
+    for (const menuUiStyle of listMenuSkinIds().filter(id => id !== "workbench")) {
+      expect(normalizeSystemRecords({ ...base, menuUiStyle }).menuUiStyle).toBe(menuUiStyle);
+    }
     expect(normalizeSystemRecords({ ...base, menuUiStyle: "bogus" as never }).menuUiStyle).toBeUndefined();
     expect(normalizeSystemRecords(base).menuUiStyle).toBeUndefined();
   });

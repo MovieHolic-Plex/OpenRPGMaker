@@ -360,7 +360,8 @@ export function statusMenuCommandSummary(
   id: StatusMenuRailId,
   project: Project,
   session: PlaySession,
-  slots: readonly SaveSlotReadResult[]
+  slots: readonly SaveSlotReadResult[],
+  waitModeEnabled = true,
 ): string {
   const party = session.partyActorIds.length;
   switch (id) {
@@ -391,7 +392,7 @@ export function statusMenuCommandSummary(
     case "record-menu":
     case "system-menu":
       return listStatusMenuGroupCommandIds(id, project, session)
-        .map((commandId) => statusMenuCommandLabel(commandId, true))
+        .map((commandId) => statusMenuCommandLabel(commandId, waitModeEnabled))
         .join(" · ");
   }
 }

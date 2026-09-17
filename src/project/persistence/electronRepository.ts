@@ -15,8 +15,8 @@ export type OprnBridgeProject = {
   probe(): Promise<boolean>;
   open(payload: { readonly projectDir: string }): Promise<{ readonly projectId: string; readonly projectDir: string }>;
   load(payload: { readonly projectDir: string }): Promise<{ readonly serialized: string; readonly sha256: string; readonly revision: number } | null>;
-  save(payload: { readonly projectDir: string; readonly serialized: string; readonly expectedSha: string | null }): Promise<SaveResult>;
-  saveMapPatch(payload: { readonly projectDir: string; readonly baseSerialized: string; readonly serialized: string; readonly changedMapIds?: readonly string[] }): Promise<SaveResult>;
+  save(payload: { readonly projectDir: string; readonly serialized: string; readonly expectedSha: string | null }): Promise<SaveResult & { readonly serialized?: string }>;
+  saveMapPatch(payload: { readonly projectDir: string; readonly baseSerialized: string; readonly serialized: string; readonly changedMapIds?: readonly string[] }): Promise<SaveResult & { readonly serialized?: string }>;
   dataVersion(payload: { readonly projectDir: string }): Promise<number>;
   separateMedia(payload: { readonly projectDir: string }): Promise<{ readonly changed: boolean; readonly migratedAssetIds: readonly string[]; readonly revision: number }>;
   backup(payload: { readonly projectDir: string }): Promise<string>;
@@ -52,6 +52,7 @@ export type OprnBridgeStart = {
 };
 
 export type OprnBridge = {
+  readonly team?: import("../../../electron/shared/team").TeamBridge;
   /** true 면 닫기 절차를 호스트(일렉트론 메인)가 연다. 브라우저 로컬 서버는 false 라서 페이지가 직접 막는다. */
   readonly closeIsHostDriven: boolean;
   /** AI 동반 서비스 출처. 일렉트론은 루프백 주소, 브라우저는 페이지와 같은 출처라 null 이다. */
@@ -111,6 +112,7 @@ export type ElectronRepository = ProjectRepository & {
 
 export function createElectronRepository(): ElectronRepository {
   let opened: LocalProjectTarget | null = null;
+  let loadedSha: string | null = null;
 
   const openedRef = (target: ProjectTarget | null | undefined): LocalProjectTarget | null => {
     if (target !== undefined && target !== null) {
@@ -126,6 +128,7 @@ export function createElectronRepository(): ElectronRepository {
 
   const snapshotOf = (serialized: string | null | undefined, sha256: string | null | undefined, target: LocalProjectTarget): ProjectSnapshot | null => {
     if (!serialized) return null;
+    loadedSha = sha256 ?? null;
     return {
       authority: { mode: "legacy", target },
       project: deserialize(serialized),
@@ -144,12 +147,14 @@ export function createElectronRepository(): ElectronRepository {
     supportsAssetRefs: true,
     async open(projectDir: string): Promise<LocalProjectTarget> {
       const result = await electronBridge().project.open({ projectDir });
+      loadedSha = null;
       opened = { kind: "local", projectDir, projectId: result.projectId };
       return opened;
     },
     async adoptOpenProject(): Promise<boolean> {
       const status = await electronBridge().project.status();
       if (status.kind !== "ready" || !status.projectDir || !status.projectId) return false;
+      loadedSha = null;
       opened = { kind: "local", projectDir: status.projectDir, projectId: status.projectId };
       return true;
     },
@@ -183,8 +188,9 @@ export function createElectronRepository(): ElectronRepository {
       const resolved = requireOpened(target);
       const persisted = projectWithoutEventDrafts(project);
       const serialized = serialize(persisted);
-      const result = await electronBridge().project.save({ projectDir: resolved.projectDir, serialized, expectedSha: null });
-      return result.kind === "saved" ? { kind: "saved", project: persisted, sha256: result.sha256 } : result;
+      const result = await electronBridge().project.save({ projectDir: resolved.projectDir, serialized, expectedSha: loadedSha });
+      if (result.kind === "saved") loadedSha = result.sha256 ?? null;
+      return result.kind === "saved" ? { kind: "saved", project: result.serialized ? deserialize(result.serialized) : persisted, sha256: result.sha256 } : result;
     },
     async saveMapPatch(input: MapPatchInput, target) {
       const resolved = requireOpened(target);
@@ -196,7 +202,8 @@ export function createElectronRepository(): ElectronRepository {
         serialized: serialize(persisted),
         ...(input.changedMapIds ? { changedMapIds: input.changedMapIds } : {}),
       });
-      return result.kind === "saved" ? { kind: "saved", project: persisted, sha256: result.sha256 } : result;
+      if (result.kind === "saved") loadedSha = result.sha256 ?? null;
+      return result.kind === "saved" ? { kind: "saved", project: result.serialized ? deserialize(result.serialized) : persisted, sha256: result.sha256 } : result;
     },
     commits: {
       record(input: CommitInput, target?) {

@@ -47,7 +47,7 @@ export function executeModernCommand(
         target: fieldString(fields, "target", "this-event"),
         x: destination.ok ? destination.x : authored.x.fixedValue,
         y: destination.ok ? destination.y : authored.y.fixedValue,
-        speed: fieldNumber(fields, "speed", 4),
+        speed: Math.max(1, Math.min(8, Math.trunc(fieldNumber(fields, "speed", 4)))),
         wait: fieldBoolean(fields, "wait", true),
       });
       return true;

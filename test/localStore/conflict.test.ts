@@ -70,7 +70,7 @@ describe("local store map patches", () => {
     expect(store.info().revision).toBe(2);
   });
 
-  it("호출자가 changedMapIds 를 주면 그 목록만 병합한다", async () => {
+  it("changedMapIds 힌트로 실제 변경을 숨길 수 없다", async () => {
     const base = baseProject();
     const [aId, bId] = firstTwoMapIds(base);
     await store.saveProject(base);
@@ -81,7 +81,7 @@ describe("local store map patches", () => {
     expect(saved).toMatchObject({ kind: "saved" });
     const snapshot = store.loadSnapshot();
     expect(snapshot?.project.maps[aId]?.name).toBe(NAME_A);
-    expect(snapshot?.project.maps[bId]?.name).toBe(base.maps[bId]?.name);
+    expect(snapshot?.project.maps[bId]?.name).toBe(NAME_B);
   });
 
   it("바깥 연결이 쓴 뒤 data_version 이 바뀐다", async () => {

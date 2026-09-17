@@ -5,6 +5,7 @@ const invoke = (channel: string) => (payload?: unknown) => ipcRenderer.invoke(ch
 
 const bridge = {
   closeIsHostDriven: true,
+  team: { status: invoke(OPRN_CHANNELS.teamStatus), lock: invoke(OPRN_CHANNELS.teamLock) },
   // 동반 서비스 출처는 실행할 때마다 다른 포트라 프리로드 시점에 한 번 동기로 받는다.
   companionOrigin: (() => {
     try {

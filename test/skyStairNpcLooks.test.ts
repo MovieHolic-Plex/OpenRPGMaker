@@ -92,12 +92,14 @@ describe("천공의 계단 NPC 그래픽", () => {
   });
 
   it("사람 NPC 는 대사 앞에 charset 과 짝이 맞는 changeFace 를 갖는다", () => {
-    // 짝이 검증된 시트만 인덱스가 그대로 맞는다(src/assets/charsetFaceMap.ts 머리말).
-    const ALIGNED: Readonly<Record<string, string>> = {
-      tex_easyrpg_charset_people1: "easyrpg-faceset-people1",
-      tex_easyrpg_charset_people3: "easyrpg-faceset-people2",
-      tex_easyrpg_charset_actor1: "easyrpg-faceset-actor1",
-      tex_easyrpg_charset_actor2: "easyrpg-faceset-actor2",
+    // Face sheets contain two 8-character halves; actor2/4 need the second-half offset.
+    const ALIGNED: Readonly<Record<string, readonly [string, number]>> = {
+      tex_easyrpg_charset_people1: ["easyrpg-faceset-people1", 0],
+      tex_easyrpg_charset_people3: ["easyrpg-faceset-people2", 0],
+      tex_easyrpg_charset_actor1: ["easyrpg-faceset-actor1", 0],
+      tex_easyrpg_charset_actor2: ["easyrpg-faceset-actor1", 8],
+      tex_easyrpg_charset_actor3: ["easyrpg-faceset-actor2", 0],
+      tex_easyrpg_charset_actor4: ["easyrpg-faceset-actor2", 8],
     };
     let facedPages = 0;
     const problems: string[] = [];
@@ -123,7 +125,7 @@ describe("천공의 계단 NPC 그래픽", () => {
         const face = faces[0] as { resourceId: string };
         const aligned = ALIGNED[cell.textureKey];
         if (aligned) {
-          const expected = faceIdForSheetCell(aligned, cell.characterIndex);
+          const expected = faceIdForSheetCell(aligned[0], cell.characterIndex + aligned[1]);
           if (face.resourceId !== expected) {
             problems.push(
               `${ev.id}/${pg.id}: ${cell.textureKey}#${cell.characterIndex} 는 `

@@ -180,7 +180,12 @@ describe("자율성 다이얼 → Pi 실행 계획", () => {
     ["modify", "llm", false, null, true],
     ["modify", "llm", true, null, false],
     ["modify", "fallback", false, null, false],
-    ["create", "llm", false, null, false],
+    ["create", "llm", false, null, true],
+    ["create", "llm", true, null, false],
+    ["create", "fallback", false, null, false],
+    ["create", "llm", false, "어느 집인가요?", false],
+    ["question", "llm", false, null, false],
+    ["other", "llm", false, null, false],
     ["modify", "llm", false, "어느 집인가요?", false],
   ] as const)("기존 의도 판정을 재사용한다: %s/%s/plan=%s/clarify=%s", async (mode, source, needsPlan, clarify, routineEdit) => {
     Object.assign(intentDecl, { mode, source, needsPlan, clarify });
@@ -190,12 +195,24 @@ describe("자율성 다이얼 → Pi 실행 계획", () => {
     expect(intentDecl.calls).toBe(1);
   });
 
-  it("의도는 수정이어도 분류·감사 오류가 있으면 기존 절차를 유지한다", async () => {
-    intentDecl.mode = "modify";
+  it.each(["create", "modify"])("%s 분류·감사 오류가 있으면 기존 절차를 유지한다", async mode => {
+    intentDecl.mode = mode;
     intentDecl.error = "Request coverage extraction failed";
     const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
     await send(panel, "맵 이름을 숲길로 바꿔줘");
     expect(lastPlan()).toMatchObject({ routineEdit: false });
+  });
+
+  it.each(["create", "modify"])("집 한 채 요청은 %s 판정과 무관하게 현재 맵에서 바로 실행한다", async mode => {
+    intentDecl.mode = mode;
+    intentDecl.tools = ["author_house"];
+    const mapId = store.getCurrent().startMapId;
+    editorState.set({ currentMapId: mapId });
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    await send(panel, "이 맵에 집을 만들어라");
+    expect(lastCommand()).toMatchObject({ mode: "single", mapIds: [mapId], task: "이 맵에 집을 만들어라" });
+    expect(lastPlan()).toMatchObject({ routineEdit: true, readOnly: false, planOnly: false });
+    expect(intentDecl.calls).toBe(1);
   });
 
   it("쓰기 발화는 의도가 연 도메인만 초기 노출로 싣는다", async () => {

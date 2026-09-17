@@ -862,17 +862,19 @@
 
 /* Beginner: persistent materials, with the sheet owning its scroll and width. */
 .editor-layout .left-panel-stack .basic-left-rail > .basic-rail-section {
+  display: flex;
   flex: 1 1 auto;
+  flex-direction: column;
   min-height: 0;
   min-width: 0;
   gap: var(--space-2);
+  overflow: hidden;
 }
-
 .editor-layout .left-panel-stack .basic-left-rail .chipset-sheet.tile-palette {
   container-type: inline-size;
   flex: 1 1 auto;
   min-height: 0;
-  max-height: none;
+  max-height: 100%;
   overflow: auto;
 }
 

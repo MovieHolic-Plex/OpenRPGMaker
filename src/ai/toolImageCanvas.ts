@@ -1,4 +1,4 @@
-import { graftedTilesetImageUrl, peekGraftedTilesetImageUrl } from "@/assets/tileGraftImageCache";
+import { awaitGraftedTilesetImageUrl, peekGraftedTilesetImageUrl } from "@/assets/tileGraftImageCache";
 import { activeTileGrafts } from "@/assets/tileGrafts";
 import { tilesetBaseImageUrl } from "@/editor/tilesetImage";
 import type { TilesetDef } from "@/project/types";
@@ -75,22 +75,32 @@ export function canvasDataUrl(canvas: HTMLCanvasElement, limit = MAX_IMAGE_DIMEN
   return scaledPair.canvas.toDataURL("image/png");
 }
 
+/** Maximum wait for a cold graft atlas; missing sources still fail closed. */
+export const GRAFT_EVIDENCE_WAIT_MS = 5_000;
+
 /**
- * Load the atlas actually used by tool image evidence.
- * Active grafts require a complete bake already bound to geometry/grafts/base URL.
- * While pending, schedule that bake and fail closed immediately (no base-atlas proof,
- * no Session hang on held I/O). Ordinary editor CSS still uses tilesetImageUrl fallback.
+ * Load the exact composite atlas, including on the first review after a graft edit.
+ * Bound the wait so held source I/O cannot indefinitely block the assistant turn.
  */
-export function loadTilesetImage(tileset: TilesetDef): Promise<HTMLImageElement> {
+export async function loadTilesetImage(tileset: TilesetDef): Promise<HTMLImageElement> {
   const baseUrl = tilesetBaseImageUrl(tileset);
   if (activeTileGrafts(tileset).length === 0) return loadImageUrl(baseUrl);
   const ready = peekGraftedTilesetImageUrl(tileset, baseUrl);
   if (ready) return loadImageUrl(ready);
-  // Schedule the exact bake; evidence must not block the turn awaiting source I/O.
-  void graftedTilesetImageUrl(tileset, baseUrl);
-  return Promise.reject(new Error(
-    `tileset-graft-rendering-unavailable: tileset ${tileset.id}; graft atlas bake pending or incomplete; no approval`,
-  ));
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), GRAFT_EVIDENCE_WAIT_MS);
+  try {
+    const baked = await awaitGraftedTilesetImageUrl(tileset, baseUrl, controller.signal);
+    if (baked) return loadImageUrl(baked);
+    const reason = controller.signal.aborted
+      ? "graft atlas bake timed out after 5000ms; retry review when images finish loading"
+      : "graft atlas bake failed or incomplete; check source chipset images";
+    throw new Error(
+      `tileset-graft-rendering-unavailable: tileset ${tileset.id}; ${reason}; no approval`,
+    );
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function loadImageUrl(url: string): Promise<HTMLImageElement> {

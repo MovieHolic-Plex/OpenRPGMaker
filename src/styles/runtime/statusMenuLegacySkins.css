@@ -1,0 +1,185 @@
+/* Four era-inspired window systems. All geometry is in 320×240 logical pixels.
+   Original frames are CSS; portraits and characters use project-owned artwork. */
+.oprn-status-menu.main-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"]) {
+  --status-edge-ivory: rgba(250, 250, 255, 1);
+  --status-edge-muted: rgba(215, 225, 246, 1);
+  --status-edge-border: rgba(222, 230, 252, 0.9);
+  --status-edge-amber: rgba(249, 236, 153, 1);
+  --status-edge-amber-soft: rgba(183, 207, 255, 0.25);
+}
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"]) .status-menu-command-icon { display: none; }
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"]) .status-menu-command-rail::after { display: none; }
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"]) .status-menu-command { font-size: 8px; }
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"]) .status-menu-overview-row {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 1px 3px;
+}
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"]) .status-menu-overview-head { gap: 5px; }
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"]) .status-menu-overview-chip { border-radius: 0; padding: 1px 2px; }
+
+/* 2000: opaque cobalt, hard silver edging, text-only vitals and right commands. */
+.oprn-status-menu.main-menu[data-menu-skin="retro-2000"]::before {
+  background: linear-gradient(180deg, rgba(26, 37, 123, 1), rgba(8, 13, 68, 1));
+  border: 2px ridge rgba(226, 233, 255, 1);
+  border-radius: 0;
+  box-shadow: inset 0 0 0 1px rgba(4, 5, 25, 1);
+  inset: 4px;
+}
+.oprn-status-menu[data-menu-skin="retro-2000"] .status-menu-overview-track { display: none; }
+.oprn-status-menu[data-menu-skin="retro-2000"] .status-menu-overview-vital { grid-template-columns: 14px minmax(0, 1fr); }
+.oprn-status-menu[data-menu-skin="retro-2000"] .status-menu-overview-value { font-size: 8px; text-align: right; }
+.oprn-status-menu[data-menu-skin="retro-2000"] .status-menu-overview-vital-label { color: rgba(143, 218, 245, 1); font-size: 7px; }
+.oprn-status-menu[data-menu-skin="retro-2000"] .status-menu-face { border-radius: 0; }
+.oprn-status-menu[data-menu-skin="retro-2000"] .status-menu-command.selected {
+  background: rgba(65, 92, 182, 0.9);
+  border: 1px solid rgba(196, 222, 255, 1);
+  border-radius: 0;
+}
+.oprn-status-menu[data-menu-skin="retro-2000"][data-status-menu-screen="main"] .status-menu-party-overview {
+  border-right: 2px ridge var(--status-edge-border);
+  bottom: 45px;
+  gap: 6px;
+  left: 13px;
+  padding-right: 9px;
+  right: 89px;
+}
+.oprn-status-menu[data-menu-skin="retro-2000"][data-status-menu-screen="main"] .status-menu-primary-dock {
+  border: 0;
+  left: auto;
+  padding: 0;
+  right: 12px;
+  width: 65px;
+}
+
+/* 2003: separate slate/teal windows, beveled frame and metallic vitality bars. */
+.oprn-status-menu.main-menu[data-menu-skin="retro-2003"] {
+  --status-edge-amber-soft: rgba(123, 220, 195, 0.23);
+  --status-edge-muted: rgba(201, 231, 218, 1);
+}
+.oprn-status-menu.main-menu[data-menu-skin="retro-2003"]::before {
+  background: repeating-linear-gradient(0deg, rgba(30, 60, 55, 0.97) 0 1px, rgba(27, 53, 50, 0.97) 1px 2px);
+  border: 3px ridge rgba(193, 207, 197, 1);
+  border-radius: 2px;
+  inset: 5px;
+}
+.oprn-status-menu[data-menu-skin="retro-2003"] .status-menu-command.selected {
+  background: linear-gradient(180deg, rgba(103, 156, 144, 0.8), rgba(46, 87, 79, 0.8));
+  border: 1px solid rgba(214, 239, 224, 1);
+  border-radius: 0;
+}
+.oprn-status-menu[data-menu-skin="retro-2003"] .status-menu-overview-row { border-bottom: 1px solid rgba(195, 214, 197, 0.28); }
+.oprn-status-menu[data-menu-skin="retro-2003"] .status-menu-overview-track { border: 1px inset rgba(190, 206, 196, 0.7); border-radius: 0; height: 4px; }
+.oprn-status-menu[data-menu-skin="retro-2003"][data-status-menu-screen="main"] .status-menu-party-overview { left: 15px; padding-right: 8px; right: 89px; }
+.oprn-status-menu[data-menu-skin="retro-2003"][data-status-menu-screen="main"] .status-menu-primary-dock {
+  background: rgba(10, 29, 27, 0.65);
+  border: 2px ridge rgba(193, 207, 197, 1);
+  bottom: 50px;
+  box-sizing: border-box;
+  left: auto;
+  padding: 3px;
+  right: 12px;
+  width: 69px;
+}
+
+/* XP: windows float on a visible map; walking characters replace portraits. */
+.oprn-status-menu.main-menu[data-menu-skin="classic-xp"]::before {
+  background: rgba(8, 17, 33, 0.45);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  inset: 0;
+}
+.oprn-status-menu[data-menu-skin="classic-xp"] .status-menu-header { border-bottom: 0; }
+.oprn-status-menu[data-menu-skin="classic-xp"] .status-menu-character { display: block; image-rendering: pixelated; justify-self: center; }
+.oprn-status-menu[data-menu-skin="classic-xp"] .status-menu-overview-track { display: none; }
+.oprn-status-menu[data-menu-skin="classic-xp"] .status-menu-overview-vital { grid-template-columns: 16px minmax(0, 1fr); }
+.oprn-status-menu[data-menu-skin="classic-xp"] .status-menu-overview-vital-label { color: rgba(170, 201, 245, 1); font-size: 7px; }
+.oprn-status-menu[data-menu-skin="classic-xp"] .status-menu-overview-value { font-size: 7.5px; text-align: right; }
+.oprn-status-menu[data-menu-skin="classic-xp"] .status-menu-overview-info { gap: 3px; }
+.oprn-status-menu[data-menu-skin="classic-xp"] .status-menu-primary-dock,
+.oprn-status-menu[data-menu-skin="classic-xp"] .status-menu-party-overview,
+.oprn-status-menu[data-menu-skin="classic-xp"] .status-menu-detail {
+  background: linear-gradient(120deg, rgba(62, 82, 123, 0.83), rgba(32, 45, 76, 0.83));
+  border: 1px solid rgba(204, 218, 246, 0.95);
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 1px rgba(13, 20, 41, 0.65), 0 1px 2px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+}
+.oprn-status-menu[data-menu-skin="classic-xp"] .status-menu-party-overview { gap: 5px; left: 91px; padding: 4px; right: 10px; }
+.oprn-status-menu[data-menu-skin="classic-xp"] .status-menu-primary-dock { left: 10px; padding: 3px; width: 75px; }
+.oprn-status-menu[data-menu-skin="classic-xp"] .status-menu-detail { left: 91px; padding: 4px; right: 10px; }
+.oprn-status-menu[data-menu-skin="classic-xp"] .status-menu-command.selected {
+  background: linear-gradient(180deg, rgba(144, 178, 235, 0.38), rgba(126, 151, 198, 0.18));
+  border: 1px solid rgba(228, 237, 253, 0.8);
+  border-radius: 1px;
+}
+
+/* VX: translucent violet, round bright rim, full portraits and coloured meters. */
+.oprn-status-menu.main-menu[data-menu-skin="classic-vx"] {
+  --status-edge-muted: rgba(227, 219, 249, 1);
+  --status-edge-amber-soft: rgba(183, 171, 239, 0.35);
+}
+.oprn-status-menu.main-menu[data-menu-skin="classic-vx"]::before {
+  background: rgba(21, 15, 41, 0.4);
+  border: 0;
+  box-shadow: none;
+  inset: 0;
+}
+.oprn-status-menu[data-menu-skin="classic-vx"] .status-menu-header { border: 0; }
+.oprn-status-menu[data-menu-skin="classic-vx"] .status-menu-primary-dock,
+.oprn-status-menu[data-menu-skin="classic-vx"] .status-menu-party-overview,
+.oprn-status-menu[data-menu-skin="classic-vx"] .status-menu-detail {
+  background: linear-gradient(145deg, rgba(77, 61, 114, 0.93), rgba(34, 26, 65, 0.93));
+  border: 2px solid rgba(220, 214, 244, 0.94);
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 1px rgba(21, 15, 45, 0.8), 0 1px 2px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+}
+.oprn-status-menu[data-menu-skin="classic-vx"] .status-menu-primary-dock { left: 10px; padding: 3px; width: 75px; }
+.oprn-status-menu[data-menu-skin="classic-vx"] .status-menu-party-overview { gap: 5px; left: 91px; padding: 4px; right: 10px; }
+.oprn-status-menu[data-menu-skin="classic-vx"] .status-menu-detail { left: 91px; padding: 4px; right: 10px; }
+.oprn-status-menu[data-menu-skin="classic-vx"] .status-menu-overview-row { gap: 5px; grid-template-columns: 30px minmax(0, 1fr); }
+.oprn-status-menu[data-menu-skin="classic-vx"] .status-menu-face { border-radius: 0; box-shadow: none; }
+.oprn-status-menu[data-menu-skin="classic-vx"] .status-menu-overview-track { border-radius: 0; height: 4px; }
+.oprn-status-menu[data-menu-skin="classic-vx"] .status-menu-command.selected {
+  background: linear-gradient(180deg, rgba(203, 196, 251, 0.35), rgba(120, 105, 184, 0.28));
+  border: 1px solid rgba(233, 226, 255, 0.9);
+  border-radius: 2px;
+}
+
+/* Landing windows leave room below commands for real time and gold.
+   The header remains the semantic owner; absolute positioning just separates its fields. */
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-header { display: contents; }
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-heading { left: 15px; position: absolute; top: 12px; }
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-location { left: 46px; max-width: 190px; position: absolute; top: 16px; }
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"])[data-status-menu-screen="main"] .status-menu-primary-dock { bottom: auto; gap: 1px; height: 128px; }
+.oprn-status-menu:is([data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-primary-dock { bottom: auto; gap: 1px; height: 128px; }
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-command { flex-basis: 19px; }
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-gold,
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-time {
+  background: rgba(13, 18, 48, 0.7);
+  border: 1px solid var(--status-edge-border);
+  border-radius: 1px;
+  box-sizing: border-box;
+  font-size: 8px;
+  padding: 3px 5px;
+  position: absolute;
+  text-align: right;
+  top: 175px;
+  width: 69px;
+}
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"])[data-status-menu-screen="main"] .status-menu-gold { right: 12px; }
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"])[data-status-menu-screen="main"] .status-menu-time { right: 12px; top: 199px; }
+.oprn-status-menu:is([data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-gold { left: 10px; width: 75px; }
+.oprn-status-menu:is([data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-time { left: 10px; top: 199px; width: 75px; }
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-footer { bottom: 7px; }
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-message { display: none; }
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-controls { border: 0; padding: 0; }
+
+/* Numeric rows need room for name + HP + MP, including the fourth member. */
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] .status-menu-party-overview { bottom: 27px; }
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="classic-xp"]) .status-menu-overview-info { gap: 2px; line-height: 1.2; }
+/* Framed task rails include padding and borders inside their fixed height. */
+.oprn-status-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="function"] .status-menu-command { flex-basis: 21px; }
