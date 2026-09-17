@@ -1,5 +1,17 @@
 # Editor AI Tools & Vocabulary
 
+## 이식 타일 최초 검수 준비 대기 (2026-09-18)
+
+집 시공 후 합성 아틀라스 캐시가 비어 있으면 검수가 즉시
+`tileset-graft-rendering-unavailable`로 실패하던 경로를 수정했다.
+`src/ai/toolImageCanvas.ts`의 `loadTilesetImage`는 기존
+`awaitGraftedTilesetImageUrl`로 정확한 입력의 완전 합성을 최대 5초 기다린다.
+원본 시트로 대체하지 않으며, 시간 초과와 소스 누락/합성 실패를 구분한다.
+대기 종료 시 타이머·abort listener를 정리하고, 공유 베이크는 계속 진행하므로
+뒤늦게 로드가 완료되면 다음 검수에서 캐시를 사용할 수 있다.
+회귀 케이스: `test/toolImageGraftWait.test.ts` (최초 로드·실패·시간 초과 후 재시도).
+테스트 실행은 사용자 지시에 따른다.
+
 ## paint_tiles 타일 인덱스 검증 — 유일하게 빠져 있던 가드 (2026-09-16)
 
 실측 경로: 실제 모델(gemini-3.7-flash)에게 「타일 id 99999 를 (3,3) 에 칠해줘」를 시켰다.
