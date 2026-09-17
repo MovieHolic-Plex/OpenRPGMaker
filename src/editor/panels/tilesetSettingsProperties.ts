@@ -137,6 +137,7 @@ const CHIPSET_KO: Record<string, string> = {
   tex_easyrpg_chipset_retro_house: "레트로 집",
   tex_easyrpg_chipset_combined_town: "마을",
   tex_easyrpg_chipset_retro_world: "레트로 월드맵",
+  tex_easyrpg_chipset_combined_town_retro_world: "마을+레트로 월드맵",
 };
 
 function chipsetDisplayName(imageId: string): string {
