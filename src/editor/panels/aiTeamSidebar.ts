@@ -1,3 +1,4 @@
+import { friendlyExecutionError } from "@/ai/piAgent/userFacingCopy";
 // Live team members have a separate right rail. Opening a member never replaces
 // the main conversation. Follow-ups use the existing scoped lane/apply lifecycle.
 import { el } from "@/util/dom";
@@ -38,6 +39,11 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
   const notices = new Map<string, string>();
   const transcript = createTeamTranscript({ detail: true });
 
+  const processBody = el("div", { class: "ai-team-process-body" });
+  const process = el("details", { class: "ai-team-process", dataset: { testid: "ai-member-process" }, children: [el("summary", { text: "작업 과정" }), processBody] });
+  const resultText = el("p", { class: "ai-team-result", dataset: { testid: "ai-member-result" } });
+  const conversation = el("div", { children: [resultText, process] });
+  let processOwner: string | null = null;
   const title = el("strong");
   const stateText = el("span", { class: "ai-team-member-subtitle" });
   const avatar = el("span", { class: "ai-team-member-avatar" });
@@ -136,24 +142,33 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     // Keep the textarea node, selection and draft intact during streamed updates.
     if (input.dataset.owner !== m.key) { input.dataset.owner = m.key; input.value = drafts.get(m.key) ?? ""; }
     tabs.querySelectorAll<HTMLElement>("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.memberTab === tab)));
-    if (tab === "chat" && m.agent) {
-      if (!content.contains(transcript.root)) content.replaceChildren(transcript.root);
-      transcript.update(m.agent);
-    } else {
-      const nearBottom = content.scrollHeight - content.scrollTop - content.clientHeight < 32;
-      changes.replaceChildren();
-      if (m.lane && tab === "chat") {
-        changes.append(el("p", { class: "ai-team-member-assignment", text: m.lane.spec.instruction }));
-        for (const step of m.lane.steps) changes.append(el("p", { class: `ai-team-member-step is-${step.kind}`, text: step.text }));
-        if (m.lane.progress.lastLine && m.lane.status === "running") changes.append(el("p", { text: m.lane.progress.lastLine }));
-      } else {
-        const keys = m.agent?.changedKeys ?? m.lane?.result?.changedKeys ?? [];
-        changes.append(el("p", { text: m.agent?.summary || m.lane?.result?.summary || "아직 결과가 없습니다." }));
-        if (keys.length) changes.append(el("p", { class: "ai-team-member-assignment", text: `${m.agent?.mapName ?? m.lane?.spec.label ?? "현재 맵"} · 변경 항목 ${keys.length}개` }));
-        if (m.agent?.review) changes.append(el("p", { text: m.agent.review.ok ? "검토 통과" : m.agent.review.findings.join("\n") }));
+    if (processOwner !== m.key) { process.open = false; processOwner = m.key; }
+    if (tab === "chat") {
+      if (!content.contains(conversation)) content.replaceChildren(conversation);
+      if (m.agent) {
+        resultText.textContent = m.agent.summary || (m.state === "실행 중" ? "맡은 작업을 진행하고 있어요." : "아직 결과가 없어요.");
+        if (!processBody.contains(transcript.root)) processBody.replaceChildren(transcript.root);
+        transcript.update(m.agent);
+      } else if (m.lane) {
+        const lane = m.lane;
+        resultText.textContent = lane.status === "review" ? "결과가 준비됐어요. 변경 내용을 확인하고 적용해 주세요."
+          : lane.status === "applied" ? "변경 내용을 적용했어요."
+          : lane.status === "discarded" ? "변경안을 버렸어요."
+          : lane.status === "stopped" ? "작업을 중단했어요."
+          : lane.status === "failed" ? "작업을 끝내지 못했어요."
+          : lane.status === "running" ? "맡은 작업을 진행하고 있어요." : "요청을 기다리고 있어요.";
+        if (lane.result?.answer) resultText.textContent = lane.result.answer + "\n\n" + resultText.textContent;
+        if (lane.result?.spills.length) resultText.textContent += "\n선택한 범위를 벗어난 변경은 제외해요.";
+        processBody.replaceChildren(el("p", { class: "ai-team-member-assignment", text: lane.spec.instruction }),
+          ...lane.steps.map(step => el("p", { class: `ai-team-member-step is-${step.kind}`, text: step.text })),
+          ...(lane.error ? [el("p", { text: lane.error })] : []),
+          ...(notices.has(m.key) ? [el("p", { text: notices.get(m.key)! })] : []));
       }
+    } else {
+      const keys = m.agent?.changedKeys ?? m.lane?.result?.changedKeys ?? [];
+      changes.replaceChildren(el("p", { text: m.agent?.summary || m.lane?.result?.answer || (keys.length ? "변경 내용이 있어요. 적용하기 전에 확인해 주세요." : "변경한 내용이 없어요.") }));
+      if (m.agent?.review) changes.append(el("p", { text: m.agent.review.ok ? "확인을 마쳤어요." : m.agent.review.findings.join("\n") }));
       if (!content.contains(changes)) content.replaceChildren(changes);
-      if (nearBottom) content.scrollTop = content.scrollHeight;
     }
     if (m.lane) {
       const lane = m.lane;
@@ -171,7 +186,7 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
       }
     }
     const error = notices.get(m.key) ?? m.lane?.error;
-    if (error) { notice.textContent = error; notice.hidden = false; }
+    if (error) { notice.textContent = friendlyExecutionError(error); notice.hidden = false; }
     updateSend();
   }
   function render(): void {

@@ -1,3 +1,4 @@
+import { USER_FACING_REPORT_RULE } from "./userFacingCopy";
 // Pi 에이전트 기본 시스템 프롬프트. 순수 함수 — 프로젝트 요약과 작업 범위만 넣는다.
 // 기존 세션의 긴 규칙 텍스트는 대부분 툴 설명으로 옮겨져 있으므로 여기서는 범위·절차만 말한다.
 
@@ -32,6 +33,7 @@ export function buildPiAgentSystemPrompt(project: Project, mapIds: readonly stri
     : ["작업 범위는 프로젝트 전체다. 그래도 요청과 무관한 데이터는 건드리지 않는다."];
   return [
     "너는 웹 JRPG 메이커의 시공 에이전트다. 제공된 도구만으로 프로젝트를 편집하며, 도구 밖의 텍스트 편집은 없다.",
+    USER_FACING_REPORT_RULE,
     ...scope,
     "절차: 먼저 읽기 도구(get_map_region 등)로 현재 상태를 확인하고, 쓰기 도구를 호출한다. 도구가 ok:false 를 돌려주면 issues 를 읽고 인자를 고쳐 재시도한다. 같은 실패를 세 번 반복하지 않는다.",
     "필요한 도구가 보이지 않으면 find_tools 에 기능 키워드를 넣어 찾는다 — 발견된 도구는 다음 턴부터 바로 호출할 수 있다.",
