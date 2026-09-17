@@ -644,6 +644,7 @@ Party record tabs use the final section of `studio-v2.css`: actors, classes, ski
 
 - **세계 개요 v2:** 본문이 AI 미터+hero stat+이름/전제+뼈대+법칙 2열+본문 순서다. 뼈대(톤·시대·기술 천장·없는 것)와 법칙은 속성 사이드바가 아니라 본문 카드에 둔다 — 272px 사이드바에선 법칙 2열이 1열 덫에 걸린다. 본문 타이핑은 미터·힌트·stat 값을 다시 렌더 없이 갱신한다. testid: `db-world-canon-ai-meter`, `db-world-canon-hero-stats`, `db-world-canon-hero-stat-body`(값 span), `db-world-canon-frame`, `db-world-canon-laws`. CSS: `world-canon-meter`, `world-canon-law-grid`(799px 이하 1열), 카드 헤드 래핑.
 - **설정집 v2:** 헤더 아래 stat 스트립(낱장·인물·장소세력·사건·검사 지적, warn/good 톤). testid `db-world-codex-stats`, 래퍼 `world-codex-lead-wrap`. 값은 `currentWorld`+`summarizeWorldLint` 실측 — fresh 샘플에선 전역 lint가 수백 건 나올 수 있으니 "깨끗함"은 0건일 때만.
+- **폴리시 (2026-09-18):** Studio v2 문법 안에서만 — 새 토큰 없음. 미터 바 8px+accent-soft 표면, 법칙 카드 canvas 표면, 선택 카드 좌측 accent 레일, 위키 헤더 hairline+12px 리듬, 톤 칩 on 700. 증거 `verify-shots/world-lore-v2/polish/`(레이아웃 깨짐 0·넘침 0, 에러는 자동저장 기준선 17과 동일).
 - **구 레이아웃 기록 (2026-09-06):** `worldCanon`의 표시 이름은 「세계 개요」이며 stable tab/field testid는 유지한다.
 - 설정집 기본 목록은 256px 행 목록이다. 인물·장소·세력·사건·아이템·개념·제작 노트를 따로 탐색하고, 같은 항목/선택 경로로 갤러리 보기를 전환한다. 예전 `place-faction`/`item-concept` URL은 읽을 수 있지만 새 UI는 분리된 분류를 사용한다. 전체 프로젝트 검사는 목록 아래의 별도 disclosure에 두며 빈 문서 앞에 경고 개수를 쌓지 않는다.
 - 읽기 선택이 검색/분류 밖으로 나가면 상세를 비운다. 편집 중 초안은 보존하고 필터 밖이라는 표시를 제공한다. 관계 이동은 대상 종류로 분류를 전환하고 검색을 지운다. 새 항목·종류 변경을 확정하면 결과가 보이는 분류로 이동한다.

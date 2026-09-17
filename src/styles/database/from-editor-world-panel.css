@@ -622,3 +622,37 @@
 .world-document-workspace .db-ws-card-hint {
   flex-basis: 100%;
 }
+/* 세계 개요·설정집 폴리시 (2026-09-18) — Studio v2 문법 안에서만. 새 토큰 없음.
+   미터 가독 / 법칙 카드 표면 / 선택 카드 레일 마커 / 위키 헤더 리듬. */
+.world-document-workspace .world-canon-meter-bar {
+  height: 8px;
+  background: var(--db-studio-accent-soft);
+  border: 1px solid var(--db-studio-accent-border);
+}
+.world-document-workspace .world-canon-meter-text {
+  font-weight: 600;
+  color: var(--db-studio-text-1);
+}
+.world-document-workspace .world-canon-law-grid > .db-world-canon-law {
+  background: var(--db-studio-canvas);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.world-document-workspace .world-card.active {
+  box-shadow: inset 2px 0 0 var(--db-studio-accent);
+}
+.world-document-workspace .world-card.active .world-card-title {
+  letter-spacing: 0;
+}
+.world-document-workspace .world-wiki-header {
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+  margin-bottom: 12px;
+}
+.world-document-workspace .world-wiki-heading h3 {
+  letter-spacing: -0.01em;
+}
+.world-document-workspace .db-world-canon-chip.is-on {
+  font-weight: 700;
+}
