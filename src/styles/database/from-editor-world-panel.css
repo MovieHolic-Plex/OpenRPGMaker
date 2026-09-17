@@ -611,15 +611,17 @@
 .world-document-workspace .world-canon-workspace .db-ws-stats {
   margin-bottom: 12px;
 }
-/* 세계 개요 v2 — 제목+힌트 겹침 방지: 좁은 열에서 줄바꿈 허용. */
-.world-document-workspace .db-ws-card-head {
+/* 세계 개요 v2 — 제목+힌트 겹침 방지: 좁은 열에서 줄바꿈 허용.
+   같은 database 레이어 안이라 파일 순서가 아니라 특이성이 이긴다 —
+   workspace-modern.css(0-4-0)를 이기도록 풀 체인(0-5-0)으로 건다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .db-ws-card-head {
   flex-wrap: wrap;
   row-gap: 2px;
 }
-.world-document-workspace .db-ws-card-title {
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .db-ws-card-title {
   white-space: normal;
 }
-.world-document-workspace .db-ws-card-hint {
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .db-ws-card-hint {
   flex-basis: 100%;
 }
 /* 세계 개요·설정집 폴리시 (2026-09-18) — Studio v2 문법 안에서만. 새 토큰 없음.
