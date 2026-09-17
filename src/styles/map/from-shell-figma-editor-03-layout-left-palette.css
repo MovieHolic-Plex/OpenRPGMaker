@@ -54,19 +54,11 @@
   }
 
 /* shell/figma-editor/03-layout-left-palette.css:173-177 */
-.palette-option-row {
-    gap: 2px;
-    grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
-    margin-bottom: 8px;
-  }
 
 /* shell/figma-editor/03-layout-left-palette.css:191-200 */
 .palette-option-button.active,
-  .palette-option-button[aria-pressed="true"],
   .chipset-band-button.active,
-  .chipset-band-button[aria-pressed="true"],
-  .stamp-button.active,
-  .stamp-button[aria-pressed="true"] {
+  .stamp-button.active {
     background: var(--accent);
     border-color: var(--accent-border);
     color: var(--on-accent);
@@ -80,10 +72,6 @@
   }
 
 /* shell/figma-editor/03-layout-left-palette.css:208-211 */
-.structure-stamp-panel {
-    display: block;
-    margin: 8px 0 10px;
-  }
 
 /* shell/figma-editor/03-layout-left-palette.css:213-217 */
 .structure-stamp-panel .tile-brush-label,
@@ -93,25 +81,9 @@
   }
 
 /* shell/figma-editor/03-layout-left-palette.css:219-223 */
-.structure-stamp-panel .stamp-picker {
-    display: grid;
-    gap: 8px;
-    grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
-  }
 
 /* shell/figma-editor/03-layout-left-palette.css:225-228 */
-.structure-stamp-panel .stamp-button {
-    min-width: 0;
-    width: 100%;
-  }
 
 /* shell/figma-editor/03-layout-left-palette.css:230-233 */
-.chipset-band-nav {
-    gap: 2px;
-    margin-bottom: 10px;
-  }
 
 /* shell/figma-editor/03-layout-left-palette.css:235-237 */
-.chipset-band-button {
-    height: 34px;
-  }

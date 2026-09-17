@@ -131,7 +131,6 @@
     width: 18px;
   }
 
-  .team-identity-kind,
   .team-commit-kind,
   .team-commit-review {
     border: 1px solid var(--editor-line);
@@ -158,11 +157,6 @@
     position: absolute;
     white-space: nowrap;
     width: 1px;
-  }
-
-  .team-identity-kind-text {
-    color: var(--editor-text-muted);
-    font-size: 11px;
   }
 
   .team-login-backdrop {

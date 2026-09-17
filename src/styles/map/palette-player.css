@@ -110,26 +110,8 @@
 }
 
 /* ?? ?곗륫 而⑦뀓?ㅽ듃 ???? */
-.right-tabbar {
-  display: flex;
-  border-bottom: 1px solid var(--border-soft);
-  flex-shrink: 0;
-}
-.right-tab {
-  background: transparent;
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
-  font-family: inherit;
-  font-weight: 500;
-}
-.right-tab:hover {
-  color: var(--text);
-}
 .right-tab.active {
   border-bottom-color: var(--accent);
-}
-.right-tabbody {
-  overflow-y: auto;
 }
 
 

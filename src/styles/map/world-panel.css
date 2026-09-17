@@ -1,8 +1,4 @@
 @layer editor {
-  .world-panel-backdrop {
-    align-items: center;
-    justify-content: center;
-  }
 
   .world-panel {
     container-type: inline-size;
@@ -92,7 +88,6 @@
   }
 
   .world-tab,
-  .world-recent-chip,
   .world-relation-chip,
   .world-ref-chip {
     border: 1px solid var(--border-subtle);
@@ -129,7 +124,6 @@
     line-height: 1.5;
   }
 
-  .world-recent,
   .world-chip-row {
     display: flex;
     align-items: center;
@@ -137,7 +131,6 @@
     gap: 6px;
   }
 
-  .world-recent-chip,
   .world-relation-chip,
   .world-ref-chip {
     max-width: 100%;

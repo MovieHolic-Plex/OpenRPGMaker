@@ -43,7 +43,6 @@
 
 /* 선택 타일 + 타일셋 이름 한 줄 칩 (구 palette-tileset-badge 흡수) */
 
-.stamp-picker,
 .tile-brush-strip,
 .used-location-list {
   display: flex;
@@ -53,7 +52,6 @@
   scrollbar-width: thin;
 }
 
-.stamp-button,
 .used-location-button {
   flex: 0 0 auto;
   padding: 0 5px;

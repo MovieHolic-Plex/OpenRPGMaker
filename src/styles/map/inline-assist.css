@@ -90,13 +90,6 @@
   color: var(--on-accent);
 }
 
-.selection-action-chips-size {
-  color: var(--text-1);
-  font: 700 12px/1 var(--font-ui, system-ui, sans-serif);
-  padding: 10px 6px 10px 14px;
-  white-space: nowrap;
-}
-
 .selection-action-chip-dismiss {
   color: var(--text-1);
   font-size: 16px;

@@ -42,13 +42,6 @@
   }
 
 /* shell/figma-editor/05-canvas-statusbar.css:40-46 */
-.canvas-toolbar-label {
-    color: var(--editor-text-muted);
-    flex: 0 0 auto;
-    font-size: 15px;
-    padding: 0 8px;
-    white-space: nowrap;
-  }
 
 /* shell/figma-editor/05-canvas-statusbar.css:48-52 */
 .zoom-button {

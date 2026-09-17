@@ -9,9 +9,6 @@
   }
 
 /* shell/figma-editor/07-context-menu-responsive.css:13-15 */
-.left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.tile-palette {
-    min-height: min(200px, 26vh);
-  }
 
 /* shell/figma-editor/07-context-menu-responsive.css:17-19 */
 .left-panel-stack[data-testid="left-palette-root"] .brush-control-label {
@@ -30,12 +27,6 @@
 }
 
 /* shell/figma-editor/07-context-menu-responsive.css:57-60 */
-@media (max-width: 900px) {
-  .canvas-toolbar-label {
-        font-size: 13px;
-        padding: 0 4px;
-      }
-}
 
 /* shell/figma-editor/07-context-menu-responsive.css:62-65 */
 @media (max-width: 900px) {
@@ -62,12 +53,6 @@
 }
 
 /* shell/figma-editor/07-context-menu-responsive.css:101-104 */
-@media (min-width: 901px) and (max-width: 1320px) {
-  .canvas-toolbar-label {
-        font-size: 13px;
-        padding: 0 4px;
-      }
-}
 
 /* shell/figma-editor/07-context-menu-responsive.css:106-109 */
 @media (min-width: 901px) and (max-width: 1320px) {

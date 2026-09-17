@@ -138,11 +138,6 @@
 }
 
 /* shell/figma-editor/11-canvas-toolbar-uxc.css:137-139 */
-@media (max-width: 1320px) {
-  .canvas-toolbar-label {
-      font-size: 12px;
-    }
-}
 
 /* shell/figma-editor/11-canvas-toolbar-uxc.css:146-149 */
 .editor-canvas-scroll-shell {

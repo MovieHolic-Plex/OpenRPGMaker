@@ -259,6 +259,8 @@
   }
 
 /* shell/figma-editor/04-chipset-events.css:251-253 */
+/* !important 제거(2026-09-17): CDP 로 3개 UI 모드에서 이 요소의 border-left 선언자를 셌더니
+   **이 규칙 하나뿐**이었고 인라인 스타일도 없다. 이길 상대가 없는 플래그였다. */
 .canvas-area {
-    border-left: 0 !important;
+    border-left: 0;
   }

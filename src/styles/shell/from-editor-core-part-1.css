@@ -20,28 +20,17 @@ body {
 
 /* editor/core.part-1.css:71-76 */
 .topbar {
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
   flex-shrink: 0;
 }
 
 /* editor/core.part-1.css:77-82 */
 .topbar .title {
   font-weight: 600;
-  margin-right: auto;
-  font-size: 14px;
-  letter-spacing: 0.2px;
 }
 
 /* editor/core.part-1.css:83-92 */
 .topbar .mode-badge {
-  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.5px;
-  padding: 3px 10px;
-  border-radius: 10px;
-  background: var(--bg-panel-2);
   color: var(--text-dim);
   text-transform: uppercase;
 }
@@ -56,10 +45,8 @@ body {
 /* editor/core.part-1.css:158-164 */
 .editor-layout .left-panel,
 .editor-layout .right-panel {
-  width: 220px;
   background: var(--bg-panel);
   overflow-y: auto;
-  padding: var(--space-3);
 }
 
 /* editor/core.part-1.css:165-169 */
