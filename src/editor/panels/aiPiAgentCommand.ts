@@ -116,7 +116,7 @@ const PLAN_ONLY_PREFIX = "[계획 턴] 이번 실행에서는 프로젝트를 �
 
 /** 이 실행 하나가 해도 되는 것. 패널이 자율성 다이얼에서 풀어 넘긴다(`resolvePiRunPlan`). */
 export interface PiRunOptions {
-  /** 기존 의도 판정이 확인한 단순 수정. 단독·단일 맵일 때만 별도 모델 단계를 줄인다. */
+  /** 기존 의도 판정이 확인한 단순 생성·수정. 단독·단일 맵일 때만 별도 모델 단계를 줄인다. */
   readonly routineEdit?: boolean;
   /** 쓰기 툴 미제공 — 질문(읽기 전용) 턴. */
   readonly readOnly?: boolean;
