@@ -60,7 +60,7 @@ describe("System workspace contracts", () => {
     expect(document.activeElement).toBe(node(host, "db-field-system-resolution-width"));
     const sections = host.querySelectorAll(".db-system-section");
     const nav = node(host, "db-system-section-nav");
-    expect(nav.querySelectorAll(".db-system-section-button")).toHaveLength(10);
+    expect(nav.querySelectorAll(".db-system-section-button")).toHaveLength(11);
     expect(nav.querySelectorAll(".db-system-section-nav")).toHaveLength(0);
     node(host, "db-system-nav-party").click();
     expect(host.querySelectorAll(".db-system-section")).toEqual(sections);

@@ -1,7 +1,7 @@
 import { mkdir } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
 
-const sections = ["overview", "party", "display", "font", "resources", "startup", "optin", "time", "typechart", "title"] as const;
+const sections = ["overview", "party", "display", "menu", "font", "resources", "startup", "optin", "time", "typechart", "title"] as const;
 for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }]) {
   test(`System settings workspace at ${viewport.width}x${viewport.height}`, async ({ page }) => {
     test.setTimeout(180_000);
@@ -19,7 +19,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
     await page.getByTestId("db-tab-group-system").click();
     await page.getByTestId("db-tab-system").click();
     const nav = page.getByTestId("db-system-section-nav");
-    await expect(nav.locator(".db-system-section-button")).toHaveCount(10);
+    await expect(nav.locator(".db-system-section-button")).toHaveCount(11);
     const destinationTargets = await page.getByTestId("db-system-studio").locator("[data-system-target]").evaluateAll((buttons) => [...new Set(buttons.map((button) => (button as HTMLElement).dataset.systemTarget))].sort());
     expect(destinationTargets).toEqual(sections.filter((slug) => slug !== "overview").sort());
     await expect(page.locator(".db-system-studio-rule-grid .db-system-studio-card")).toHaveCount(3);
@@ -33,7 +33,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
     for (const slug of sections) {
       await page.getByTestId(`db-system-nav-${slug}`).click();
       await expect(page.locator(`[data-system-section="${slug}"]`)).toBeVisible();
-      await expect(page.locator(".db-system-section")).toHaveCount(10);
+      await expect(page.locator(".db-system-section")).toHaveCount(11);
       const facts = await page.evaluate(() => {
         const nav = document.querySelector<HTMLElement>(".db-system-section-nav")!;
         const body = document.querySelector<HTMLElement>(".db-system-sections")!;

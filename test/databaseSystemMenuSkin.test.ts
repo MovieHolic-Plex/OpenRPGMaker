@@ -54,12 +54,12 @@ describe("system tab menu skin select", () => {
     expect(store.getCurrent().system.menuUiStyle).toBeUndefined();
   });
 
-  it("저장된 선택으로 다시 열면 그 값이 선택돼 있고 스튜디오 화면 카드에도 라벨이 보인다", () => {
+  it("저장된 선택으로 다시 열면 그 값이 선택돼 있고 스튜디오 게임 메뉴 카드에도 라벨이 보인다", () => {
     store.update((draft) => {
       draft.system.menuUiStyle = "sheet";
     });
     const host = renderSystem();
     expect(findByTestId(host, "db-field-system-menu-ui-style")?.value).toBe("sheet");
-    expect(findByTestId(host, "db-system-studio-card-display")?.textContent).toContain(MENU_SKINS.sheet.label);
+    expect(findByTestId(host, "db-system-studio-card-menu")?.textContent).toContain(MENU_SKINS.sheet.label);
   });
 });

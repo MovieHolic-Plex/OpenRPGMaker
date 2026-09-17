@@ -17,7 +17,8 @@ try {
   await page.getByTestId('toolbar-database').click();
   await page.getByTestId('db-tab-group-system').click();
   await page.getByTestId('db-tab-system').click();
-  await page.getByTestId('db-system-nav-display').click();
+  await page.getByTestId('db-system-studio-card-menu').click();
+  await expect(page.getByTestId('db-system-nav-menu')).toHaveAttribute('aria-current', 'true');
   const select = page.getByTestId('db-field-system-menu-ui-style');
   await expect(select.locator('option')).toHaveCount(12);
   const labels = await select.locator('option').allTextContents();
@@ -36,6 +37,21 @@ try {
     expect(saved).toBe(skin);
     await page.getByTestId('db-system-menu-skin-preview').scrollIntoViewIfNeeded();
     await page.screenshot({ path: `${out}/editor-${skin}.png` });
+  }
+  for (const width of [1440, 1024]) {
+    await page.setViewportSize({ width, height: width === 1024 ? 768 : 1000 });
+    await page.getByTestId('db-system-nav-overview').click();
+    await expect(page.getByTestId('db-system-studio-card-menu')).toContainText(await select.locator('option:checked').textContent());
+    await page.screenshot({ path: `${out}/overview-${width}.png` });
+    await page.getByTestId('db-system-studio-card-menu').click();
+    await expect(select).toBeVisible();
+    expect(await select.evaluate(el => el.closest('[data-system-section]').dataset.systemSection)).toBe('menu');
+    expect(await page.locator('.db-system-sections').evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+    await page.screenshot({ path: `${out}/menu-section-${width}.png` });
+    await page.getByTestId('db-system-nav-display').click();
+    await expect(select).toBeHidden();
+    await expect(page.getByTestId('db-field-system-resolution-preset')).toBeVisible();
+    await page.getByTestId('db-system-nav-menu').click();
   }
   await select.selectOption('workbench');
   expect(await page.evaluate(async () => (await import('/src/project/store.ts')).store.getCurrent().system.menuUiStyle)).toBeUndefined();
