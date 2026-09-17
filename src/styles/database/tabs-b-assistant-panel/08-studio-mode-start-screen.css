@@ -1578,7 +1578,6 @@ body.ai-studio-open .authoring-journey-host {
 }
 
 .ai-start-card:hover {
-  border-color: color-mix(in srgb, var(--accent, #4c6ef5) 28%, var(--border-subtle));
   background: var(--control-bg-hover);
 }
 

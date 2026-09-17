@@ -65,6 +65,7 @@
 @import "./desktop-record-shell/10-tab-chrome-unify.css" layer(database);
 @import "./desktop-record-shell/11-life-authoring.css" layer(database);
 @import "./desktop-record-shell/12-spatial-authoring.css" layer(database);
+@import "./desktop-record-shell/13-actor-studio.css" layer(database);
 @import "./desktop-record-shell/14-party-ux-fixes.css" layer(database);
 @import "./virtual-list.css" layer(database);
 @import "./dock.css" layer(database);
@@ -80,7 +81,6 @@
 @import "./world-gen.css" layer(database);
 @import "./scratch-concept.css" layer(database);
 @import "./studio-theme.css" layer(database);
-@import "./desktop-record-shell/13-actor-studio.css" layer(database);
 @import "./workspace-modern.css" layer(database);
 @import "./village-design.css" layer(database);
 @import "./modern/crops-characters.css" layer(database);

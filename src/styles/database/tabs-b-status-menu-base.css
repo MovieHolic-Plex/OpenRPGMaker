@@ -116,50 +116,6 @@
   content: none;
 }
 /* 규칙 2 — 키 입력을 받지 않는 패널 전체를 감광. */
-.status-menu-body {
-  display: grid;
-  gap: 4px;
-  grid-column: 2;
-  grid-row: 1;
-  grid-template-columns: 120px minmax(0, 1fr);
-  min-height: 0;
-  overflow: hidden;
-}
-.status-menu-scene-header {
-  align-items: end;
-  display: grid;
-  gap: 2px;
-  grid-template-columns: max-content minmax(0, 1fr);
-  min-width: 0;
-}
-.status-menu-scene-hint {
-  margin: 0;
-  min-width: 0;
-  overflow: hidden;
-  text-align: right;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.status-menu-scene-list {
-  align-content: start;
-  display: grid;
-  gap: 2px;
-  grid-auto-rows: minmax(44px, max-content);
-  min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-width: thin;
-}
-.status-menu-scene-row {
-  align-items: start;
-  box-sizing: border-box;
-  display: grid;
-  gap: 4px;
-  grid-template-columns: 22px minmax(0, 1fr);
-  line-height: 1.08;
-  min-height: 44px;
-  text-align: left;
-}
 .status-menu-scene-row.status-menu-detail-action {
   white-space: normal;
 }
@@ -189,32 +145,10 @@
   display: grid;
   justify-content: center;
 }
-.status-menu-scene-copy {
-  display: grid;
-  gap: 1px;
-  min-width: 0;
-}
-.status-menu-scene-main {
-  display: grid;
-  gap: 4px;
-  grid-template-columns: minmax(56px, 0.44fr) minmax(0, 1fr);
-  min-width: 0;
-}
-.status-menu-scene-row .status-menu-detail-description,
-.status-menu-entry-effect,
-.status-menu-entry-performance {
+.status-menu-scene-row .status-menu-detail-description {
   display: block;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-.status-menu-entry-effect {
-  color: var(--runtime-glass-text);
-}
-.status-menu-entry-performance {
-  color: var(--runtime-glass-accent);
-}
-.status-menu-scene-empty {
-  padding: 6px;
 }

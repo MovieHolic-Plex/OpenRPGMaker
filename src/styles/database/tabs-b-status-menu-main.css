@@ -360,12 +360,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.main-menu-button {
-  position: absolute;
-  right: 12px;
-  top: 12px;
-  z-index: 20;
-}
 /* .picture-layer 의 단독 소유자다. runtime/pictures.css 에 중복 선언하지 않는다.
    이 파일은 runtime/index.css:48 에서 `layer(runtime)` 으로 들어와 **직속 runtime** 이고,
    pictures.css 는 자기 안에서 다시 `@layer runtime {` 로 감싸 `runtime.runtime`

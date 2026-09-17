@@ -1159,8 +1159,7 @@
   margin: 2px 0 0;
 }
 
-.tileset-ai-review-why summary,
-.tileset-knowledge-manual > summary {
+.tileset-ai-review-why summary {
   color: var(--text-2);
   cursor: pointer;
   font-size: 11px;
@@ -1213,11 +1212,6 @@
   text-underline-offset: 2px;
 }
 
-.tileset-knowledge-manual {
-  border-top: 1px solid var(--border-subtle);
-  padding-top: var(--space-2);
-}
-
 .tileset-knowledge-manual-body {
   display: grid;
   gap: var(--space-2);
@@ -1226,8 +1220,7 @@
 
 .tileset-ai-review-inbox button:focus-visible,
 .tileset-ai-review-inbox input:focus-visible,
-.tileset-ai-review-why summary:focus-visible,
-.tileset-knowledge-manual > summary:focus-visible {
+.tileset-ai-review-why summary:focus-visible {
   outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
 }
@@ -1827,18 +1820,6 @@
   display: grid;
   gap: 10px;
   min-width: 0;
-}
-
-.tileset-autotile-lead {
-  color: var(--text-2);
-  font: 400 12px/1.45 var(--font-ui);
-  margin: 0;
-}
-
-.tileset-autotile-intro-actions {
-  display: flex;
-  gap: 6px;
-  margin-top: 6px;
 }
 
 .tileset-autotile-groups {

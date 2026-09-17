@@ -458,7 +458,6 @@
   .database-modal-body .oprn-detail-troops .db-troop-battle-preview-stage {
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
-    height: 300px;
   }
 
   .database-modal-body .db-troop-preview-caption,

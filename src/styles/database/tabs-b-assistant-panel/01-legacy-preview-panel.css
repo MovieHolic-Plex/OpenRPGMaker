@@ -16,8 +16,7 @@ body:has(.right-panel) .ai-assistant-panel {
   box-shadow: var(--shadow-modal);
 }
 body:has(.database-modal-backdrop) .ai-assistant-panel,
-body:has(.database-modal-backdrop) .right-panel,
-body:has([data-testid='resource-modal']) .right-panel {
+body:has(.database-modal-backdrop) .right-panel {
   display: none;
 }
 .ai-assistant-header {
