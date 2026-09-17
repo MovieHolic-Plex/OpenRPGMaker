@@ -12,12 +12,6 @@
   position: relative;
 }
 
-.oprn-menu-glyph {
-  display: inline-flex;
-  font-size: 15px;
-  line-height: 1;
-}
-
 .toolbar-badge {
   align-items: center;
   background: var(--editor-panel-bg-2);

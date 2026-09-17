@@ -69,11 +69,6 @@
   min-width: 34px;
 }
 
-/* editor/responsive-a.css:115-117 */
-.oprn-toolbar-status {
-  height: 22px;
-}
-
 /* editor/responsive-a.css:119-121 */
 .editor-layout.no-right-panel .left-panel {
   grid-template-rows: minmax(0, 1fr) 180px;
