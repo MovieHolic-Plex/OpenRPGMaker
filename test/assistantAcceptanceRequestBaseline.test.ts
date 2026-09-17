@@ -109,8 +109,9 @@ describe("per-request acceptance baselines", () => {
     ] });
   });
 
+  // 2026-09-17 결정적 검사: 수용(acceptance) 항목은 승인 조건이 아니다. lint error 0 이면 초안은 승인·적용되고,
+  // 늦게 채택된 약속은 여전히 B 의 요청 시작 기준선(A 가 적용한 방)으로 평가된다 — 기준선이 초안으로 밀리지 않는다.
   it.each([false, true])("late adoption cannot baseline away B's earlier write (completed=%s)", async completed => {
-    // Completing an item cannot apply B before its late promises are reviewed.
     const { session, run, events, reviews, commit } = await afterRequestA();
     const authored = structuredClone(store.getCurrent());
     const history = getMapEditHistoryEntries();
@@ -124,29 +125,32 @@ describe("per-request acceptance baselines", () => {
         { id: "changed-room", title: "Changed room", criteria: [{ kind: "targetChange", target: room }] },
       ]), skip],
     ]);
-    // The reviewer checks against A's applied room, not B's already-mutated draft.
     expect(events.filter(event => event.type === "tool_call" && event.name === "set_map_properties")).toMatchObject([{ result: { ok: true } }]);
     if (completed) expect(events.find(event => event.type === "tool_call" && event.name === "complete_work_item")).toMatchObject({ result: { ok: true } });
-    expect(reviews.at(-1)?.acceptance).toMatchObject({ items: [
+    // The ledger measures against A's applied room, not B's already-mutated draft.
+    expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [
       { id: "created" }, { id: "original-change" },
       { id: "keep-room", evidence: [{ passed: false }] }, { id: "keep-region", status: "verified" },
       { id: "changed-room", status: "verified" },
     ] });
+    // 검수 모델은 호출되지 않고, 결정적 검사가 승인해 자율 런이 초안을 적용한다 …
+    expect(reviews).toHaveLength(0);
+    expect(events.some(event => event.type === "result_review" && event.review.status === "approved")).toBe(true);
+    expect(events.some(event => event.type === "milestone_applied")).toBe(true);
+    expect(store.getCurrent().maps[room.mapId]?.name).toBe("Changed before adoption");
+    expect(store.getCurrent()).not.toEqual(authored);
+    expect(getMapEditHistoryEntries().length).toBeGreaterThan(history.length);
+    expect(commit).toHaveBeenCalled();
+    // … 그러나 열린 수용 원장은 쓰기 없는 수리 라운드를 상한까지만 돌리고 정직하게 멈춘다.
     expect(result.stoppedReason).toBe("error");
-    expect(result.review?.status).toBe("changes_requested");
-    expect(session.getAcceptanceSnapshot()?.status).toBe("blocked");
-    expect(result.appliedCalls ?? []).toEqual([]);
-    expect(events.some(event => event.type === "milestone_applied")).toBe(false);
-    expect(store.getCurrent()).toEqual(authored);
-    expect(getMapEditHistoryEntries()).toEqual(history);
-    expect(commit).not.toHaveBeenCalled();
+    expect(result.error).toContain("완료 검증이 아직 미완성입니다");
+    expect(result.error).toContain("Keep room");
   });
 
   it("retains B's pre-write baseline across budget-driven synthetic continuation", async () => {
     // B's first item consumes the writer budget, with another item still open.
     const { session, run, events, reviews, config, commit } = await afterRequestA();
     const authored = structuredClone(store.getCurrent());
-    const history = getMapEditHistoryEntries();
     commit.mockClear();
     session.updateConfig({ ...config, agentMode: "chat", maxToolCalls: 4 });
     const result = await run([
@@ -159,28 +163,34 @@ describe("per-request acceptance baselines", () => {
         { id: "changed-room", title: "Changed room", criteria: [{ kind: "targetChange", target: room }] },
       ], twoStepItems), skip],
     ]);
-    // One continuation adopts the late promise; another retries the rejected review.
+    // 예산 소진은 초안 폐기가 아니다: 결정적 검사를 통과한 초안은 final 로 넘어간다. One continuation
+    // adopts the late promise; another exhausts the no-write acceptance repair path.
+    expect(reviews).toHaveLength(0);
     expect(result.recap?.process.filter(step => step.kind === "continue")).toHaveLength(2);
-    expect(reviews.at(-1)?.acceptance).toMatchObject({ items: [
+    // The late promise is still measured against B's pre-write baseline (A's applied room).
+    expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [
       { id: "created" }, { id: "original-change" },
       { id: "keep-room", evidence: [{ passed: false }] }, { id: "changed-room", status: "verified" },
     ] });
-    expect(result.review?.status).toBe("changes_requested");
-    expect(session.getAcceptanceSnapshot()?.status).toBe("blocked");
-    expect(result.appliedCalls ?? []).toEqual([]);
-    expect(events.some(event => event.type === "milestone_applied")).toBe(false);
-    expect(store.getCurrent()).toEqual(authored);
-    expect(getMapEditHistoryEntries()).toEqual(history);
-    expect(commit).not.toHaveBeenCalled();
+    expect(events.some(event => event.type === "result_review" && event.review.status === "approved")).toBe(true);
+    expect(events.some(event => event.type === "milestone_applied")).toBe(true);
+    expect(store.getCurrent().maps[room.mapId]?.name).toBe("Changed in first step");
+    expect(store.getCurrent()).not.toEqual(authored);
+    expect(commit).toHaveBeenCalled();
+    expect(result.stoppedReason).toBe("error");
+    expect(result.error).toContain("완료 검증이 아직 미완성입니다");
   });
 
   it("retains B's baseline when a manual continuation repairs and replans an unapplied draft", async () => {
-    // Missing criteria must block application, not become a new baseline on repair.
-    const { session, run, declareIntent, reviews, commit } = await afterRequestA();
-    const authored = structuredClone(store.getCurrent());
-    const history = getMapEditHistoryEntries();
+    // Missing criteria no longer block application, but repair must not turn the draft into a new baseline.
+    const { session, run, declareIntent, reviews, events, commit } = await afterRequestA();
     commit.mockClear();
-    await run([[plan([{ id: "repair", title: "Original repair", criteria: null }]), rename(room.mapId, "B changed room"), skip]]);
+    const first = await run([[plan([{ id: "repair", title: "Original repair", criteria: null }]), rename(room.mapId, "B changed room"), skip]]);
+    // The deterministic check approves and the autonomous run applies; the malformed promise still stops the run.
+    expect(events.some(event => event.type === "milestone_applied")).toBe(true);
+    expect(store.getCurrent().maps[room.mapId]?.name).toBe("B changed room");
+    expect(first.stoppedReason).toBe("error");
+    expect(first.error).toContain("완료 검증이 아직 미완성입니다");
     declareIntent.mockImplementation(fixedDeclarer({ mode: "modify", targetMapId: room.mapId, source: "continuation" }));
     // When a continuation repairs the old promise and adds a new one without new writes.
     const result = await run([
@@ -191,16 +201,15 @@ describe("per-request acceptance baselines", () => {
       [{ name: "repair_acceptance", args: { itemId: "repair", criteria: [{ kind: "preserve", target: room }] } }, skip],
     ]);
     // Then repair and duplicate IDs retain the old baseline; new continuation promises use B's too.
-    expect(reviews.at(-1)?.acceptance).toMatchObject({ items: [
+    expect(reviews).toHaveLength(0);
+    expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [
       { id: "created" }, { id: "original-change" },
       { id: "repair", title: "Original repair", evidence: [{ passed: false }] },
       { id: "changed-room", status: "verified" },
     ] });
-    expect(result.review?.status).toBe("changes_requested");
-    expect(session.getAcceptanceSnapshot()?.status).toBe("blocked");
+    expect(result.stoppedReason).toBe("error");
+    expect(result.error).toContain("완료 검증이 아직 미완성입니다");
     expect(result.appliedCalls ?? []).toEqual([]);
-    expect(store.getCurrent()).toEqual(authored);
-    expect(getMapEditHistoryEntries()).toEqual(history);
-    expect(commit).not.toHaveBeenCalled();
+    expect(store.getCurrent().maps[room.mapId]?.name).toBe("B changed room");
   });
 });

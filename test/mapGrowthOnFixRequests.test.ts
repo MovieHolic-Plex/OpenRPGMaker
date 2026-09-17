@@ -7,6 +7,7 @@
 //  2. specGate   — 거부 문구가 전부 "영역을 좁히세요" 로만 안내해, 모델의 최소 수리는 늘 축소였다.
 //  3. author_village — 기존 맵 성장 목표가 MIN_BOUNDS_SIZE(16, 도구 최소치)라 집 20채도 우겨넣었다.
 //  4. intentDeclaration — 문장의 수량을 크기로 바꾸는 유일한 환산기가 호출자 0인 죽은 코드였다.
+// 2026-09-17: 밑그림 스펙 게이트 해체 — 「밑그림 없는 차단 초안」 테스트는 사라진 차단(2번 계층)을 재던 것이라 삭제. 맵 밖 쓰기는 도구 자체의 out-of-bounds 로 거부된다.
 import { describe, expect, it } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { plannedGrowthForSpec, validateBuildSpec, type BuildSpec } from "@/ai/buildSpec";
@@ -109,30 +110,6 @@ describe("1. buildSpec — 기존 맵도 확장 plannedMap 을 선언할 수 있
 });
 
 describe("2. specGate — 맵이 작아서 막힐 때 resize_map 경로를 실어 보낸다", () => {
-  it("밑그림 없는 차단 초안에 plannedMap 과 resize_map 호출이 들어간다", async () => {
-    // Given: 20×20 맵 밖(18,18~26,26)에 집을 짓는 호출. 밑그림은 아직 없다.
-    const chat = scriptedChat([
-      toolCallMsg("build_house", { mapId: "m1", x: 18, y: 18, width: 8, height: 8, material: "plaster" }, "c1"),
-      finalMsg("맵을 먼저 키우겠습니다."),
-    ]);
-    const session = new AssistantSession(projectWithMap(), { config: CONFIG, chat });
-    const results: Array<{ name: string; ok: boolean; issues: string }> = [];
-
-    // When: 게이트가 막는다.
-    await session.sendUserMessage("여기 집 하나 더 지어줘", (event) => {
-      if (event.type === "tool_call") {
-        results.push({ name: event.name, ok: event.result.ok, issues: JSON.stringify(event.result.issues ?? []) });
-      }
-    });
-
-    // Then: 거부 안내가 "좁히세요"에서 끝나지 않고, 필요한 크기와 resize_map 호출을 그대로 준다.
-    const blocked = results.find((result) => result.name === "build_house");
-    expect(blocked?.ok).toBe(false);
-    expect(blocked!.issues).toContain("resize_map");
-    expect(blocked!.issues).toContain("width:26");
-    expect(blocked!.issues).toContain("plannedMap");
-  });
-
   it("맵 밖 에셋으로 거부된 set_build_spec 도 확장 경로를 안내한다", async () => {
     const chat = scriptedChat([
       toolCallMsg("set_build_spec", {

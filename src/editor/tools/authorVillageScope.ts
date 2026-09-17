@@ -158,8 +158,19 @@ function allowedAddedMapIds(state: VillageFacadeState): ReadonlySet<string> {
 /** 타깃 맵의 문 이벤트 transfer 명령이 interiorId를 가리키는가. */
 function isLinkedInteriorMap(draft: Project, exteriorMapId: string, interiorMapId: string): boolean {
   if (draft.spatialAuthoring !== undefined) return spatialReachableMaps(draft, exteriorMapId).has(interiorMapId);
-  const exterior = draft.maps[exteriorMapId];
-  return (exterior?.events ?? []).some(event => (event.pages ?? []).some(page => page.commands.some(command => command.kind === "transfer" && command.mapId === interiorMapId)));
+  // 2026-09-17: 직접 연결만 인정하면 2층(1층 실내에서만 transfer 로 닿는 맵)이 "undeclared map" 으로
+  // 거부돼 마을 전체가 실패했다(런 2). 외부 맵에서 transfer 를 따라 닿는 모든 맵을 실내로 본다.
+  const seen = new Set<string>([exteriorMapId]);
+  const queue = [exteriorMapId];
+  while (queue.length > 0) {
+    const current = draft.maps[queue.shift()!];
+    for (const event of current?.events ?? []) for (const page of event.pages ?? []) for (const command of page.commands) {
+      if (command.kind !== "transfer" || typeof command.mapId !== "string" || seen.has(command.mapId)) continue;
+      if (command.mapId === interiorMapId) return true;
+      seen.add(command.mapId); queue.push(command.mapId);
+    }
+  }
+  return false;
 }
 
 function assertMapSetAndContents(state: VillageFacadeState, allowedAdded: ReadonlySet<string>): void {

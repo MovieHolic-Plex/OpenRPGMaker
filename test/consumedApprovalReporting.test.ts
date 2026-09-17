@@ -2,6 +2,8 @@
 // reporting the recorded approved revision, while consumed authority stays unusable.
 // Real store + real subscription coupling + public session/autonomous apply;
 // only model transport is scripted.
+// 2026-09-17: 검수 모델(LLM 재심사)은 결정적 검사(run_lint error 0)로 바뀌었다. 거절은 검수 응답이
+// 아니라 run_lint 스파이의 error 로 만든다.
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
@@ -11,7 +13,8 @@ import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 import type { ChatRequest, ChatResult } from "@/ai/llmClient";
 import { fixedDeclarer } from "./intentFixture";
-import { approvedReviewResponse, independentReviewPayload } from "./independentReviewFixture";
+import { independentReviewPayload } from "./independentReviewFixture";
+import { getTool } from "@/editor/tools";
 
 const PROJECT_ID = "rpg-zzu-test-project";
 
@@ -75,22 +78,23 @@ function priceFixture() {
   let verdict: "approved" | "changes_requested" = "approved";
   const reviews: { revision: number; verdict: string }[] = [];
   const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+    // 검수 모델은 더 이상 호출되지 않는다 — 들어오면 기록만 남겨 단언에서 잡는다.
     const review = independentReviewPayload(request);
-    if (review) {
-      expect(request.tools).toEqual([]);
-      reviews.push({ revision: review.revision, verdict });
-      if (verdict === "approved") {
-        const approval = approvedReviewResponse(request);
-        if (approval) return approval;
-      }
-      return { message: { role: "assistant", content: JSON.stringify({ revision: review.revision,
-        verdict: "changes_requested", summary: "Fixture rejection",
-        findings: [{ id: "f", target: "/database/items/item_potion", problem: "rejected",
-          requestedChange: "do not apply", validation: "none" }] }) }, finishReason: "stop" };
-    }
+    if (review) { reviews.push({ revision: review.revision, verdict }); return finalResult("unexpected reviewer call"); }
     if (index >= steps.length) return finalResult("Finished, awaiting review");
     return steps[index++];
   };
+  // 결정적 검사: verdict 가 changes_requested 이면 run_lint 가 error 1건을 낸다.
+  const lint = getTool("run_lint")!;
+  const realLint = lint.run.bind(lint);
+  // 결정적 검사는 기준선 → 초안 순으로 run_lint 를 두 번 부른다. 기준선(원본 가격)은 실제 lint, 초안(444)만 깨진 것으로 본다.
+  vi.spyOn(lint, "run").mockImplementation((...args) => {
+    const checked = args[0] as { database: { items: { id: string; price: number }[] } };
+    const isDraft = checked.database.items.find(i => i.id === "item_potion")?.price === 444;
+    return verdict === "approved" || !isDraft ? realLint(...args)
+      : { summary: "lint: error 1건", data: { counts: { errors: 1, warnings: 0, infos: 0 }, issues: [
+        { severity: "error", code: "reference-validation", message: "Fixture rejection" }] } };
+  });
   const session = new AssistantSession(project, {
     config: ORCH_CONFIG, chat, yieldToUi: async () => {},
     // Mirror the production fallback intent for a DB edit (no target map, no readBeforeWrite),
@@ -121,10 +125,12 @@ describe("consumed approval reporting (subscribed autonomous apply)", () => {
       expect(result.appliedCalls?.map(call => call.name)).toEqual(["upsert_item"]);
       expect(store.getCurrent().database.items.find(i => i.id === "item_potion")?.price).toBe(333);
       expect(f.subscriptionFires()).toBeGreaterThanOrEqual(1);
-      expect(f.reviews).toHaveLength(1);
+      expect(f.reviews).toHaveLength(0);
       // The recorded historical verdict keeps its approved status and revision.
       expect(result.review?.status).toBe("approved");
-      expect(result.review?.revision).toBe(f.reviews[0]!.revision);
+      expect(result.review?.summary).toBe("결정적 검사 통과 — 변경 맵 0개, lint error 0건.");
+      expect(typeof result.review?.revision).toBe("number");
+      expect(f.session.getResultReview()).toEqual(result.review);
     } finally { f.done(); }
   }, 60_000);
 
@@ -134,13 +140,15 @@ describe("consumed approval reporting (subscribed autonomous apply)", () => {
       const first = await f.run();
       expect(first.review?.status).toBe("approved");
       expect(store.getCurrent().database.items.find(i => i.id === "item_potion")?.price).toBe(333);
-      // A new turn writes a new proposal (retiring the recorded verdict) and its
-      // reviewer rejects: the old approval must not replay as the new verdict.
+      // A new turn writes a new proposal (retiring the recorded verdict) and the
+      // deterministic check rejects it (lint error): the old approval must not replay as the new verdict.
       f.nextTurn("changes_requested", 444);
       const events: SessionEvent[] = [];
       const second = await f.session.sendUserMessage("Set potion price to 444",
         event => events.push(event), undefined, { autonomous: true });
       expect(second.review?.status).toBe("changes_requested");
+      expect(second.review?.summary).toContain("결정적 검사 미통과 — lint error 1건: reference-validation: Fixture rejection");
+      expect(f.reviews).toHaveLength(0);
       expect(store.getCurrent().database.items.find(i => i.id === "item_potion")?.price).toBe(333);
       expect(f.session.isDraftReviewApproved()).toBe(false);
     } finally { f.done(); }

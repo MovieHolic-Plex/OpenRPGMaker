@@ -1,3 +1,6 @@
+// 2026-09-17 조수 하네스 게이트 해체: 밑그림 스펙 게이트(자동 확장 spec-gate-auto-expand)·LLM 독립 검수(required-evidence
+// finding)·예산 소진 = 초안 폐기 규칙을 검증하던 단언은 삭제했다. 승인 기준은 변경 맵의 run_lint error 0(결정적 검사) 하나이고,
+// 예산 소진 시 검사를 통과한 초안은 final 로 적용된다. 수용(acceptance) 원장은 보고용으로 남지만 승인 조건이 아니다.
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import { defaultAiConfig, type AiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
@@ -36,12 +39,12 @@ function final(text = "완료했습니다."): ChatResult {
   return { message: { role: "assistant", content: text }, finishReason: "stop" };
 }
 
-function scriptedChat(steps: (ChatResult | (() => ChatResult))[]) {
+function scriptedChat(steps: (ChatResult | (() => ChatResult))[], fallback?: () => ChatResult) {
   let index = 0;
   return vi.fn(async (_config: AiConfig, request: ChatRequest): Promise<ChatResult> => {
     const review = approvedReviewResponse(request);
     if (review) return review;
-    const step = steps[index++];
+    const step = steps[index++] ?? fallback;
     if (!step) throw new Error("scripted chat exhausted");
     return { ...(typeof step === "function" ? step() : step), imageDelivery: imageDeliveryForRequest(request) };
   });
@@ -77,10 +80,15 @@ describe("completion accounting through real assistant sessions", () => {
     expect(result.proposedCalls.map(call => call.result.diff?.tilesChanged)).toEqual([80, 0]);
     expect(session.getCompletionSpecs(result.proposedCalls)).toEqual([PRESERVED_PAINT_SPEC]);
     expect(session.getWorkPlan()?.layers[0].items[0].status).toBe(quantity ? "in_progress" : "done");
-    expect(result.stoppedReason).toBe("max-tool-calls");
-    // Checklist progress is not canonical acceptance or delivery: these drafts are unapplied.
+    // 예산(maxToolCalls 1)이 바닥났지만 결정적 검사(lint error 0)를 통과했으니 초안은 폐기되지 않고 final 로 적용 대기한다.
+    expect(result.stoppedReason).toBe("final");
+    expect(result.review?.status).toBe("approved");
+    expect(events.some(event => event.type === "assistant_message" && event.content.includes("예산이 소진되어 여기까지의 초안을 적용합니다"))).toBe(true);
+    expect(session.getAuditEntries().some(entry => entry.kind === "status" && entry.text.startsWith("예산 소진 초안 적용 — 결정적 검사 통과"))).toBe(true);
+    expect(session.isDraftReviewApproved()).toBe(true);
+    // Checklist progress is not canonical acceptance or delivery: these drafts are unapplied (the panel applies).
     expect(session.getAcceptanceSnapshot()?.status).not.toBe("verified");
-    expect(result.runOutcome?.goal).toBe("incomplete");
+    expect(result.appliedCalls ?? []).toEqual([]);
   });
 
   it.each(["preserve", "targetChange"] as const)("applies maintenance once but retains canonical %s semantics", async (kind) => {
@@ -109,26 +117,34 @@ describe("completion accounting through real assistant sessions", () => {
           return toolCall("paint_tiles", WALL_PAINT_ARGS, "walls");
         },
         toolCall("show_map_region", { mapId: "map_basement", x: 0, y: 0, w: 12, h: 10 }, "image"),
-        ...Array.from({ length: kind === "preserve" ? 1 : 4 }, () => final()),
-      ]),
+        final(),
+        // targetChange 는 적용 뒤에도 수용 목표가 미충족이라 자율 드라이버가 「계속」을 보낸다 — 쓰기 없는 최종 응답만 계속 준다.
+      ], final),
     });
     const result = await session.sendUserMessage(plan.goal, event => events.push(event), undefined, { autonomous: true });
-    expect(result.stoppedReason, result.error).toBe(kind === "preserve" ? "final" : "error");
+    // 수용 원장은 승인 조건이 아니다: 벽 유지 쓰기가 0칸을 바꿔 targetChange 가 미충족이어도 lint error 0 이면 승인·적용된다.
     expect(session.getWorkPlan()?.layers[0].items[0].status).toBe("done");
-    expect(events.filter(event => event.type === "milestone_applied").map(event => event.toolCount)).toEqual(kind === "preserve" ? [2] : []);
-    expect(result.review?.status).toBe(kind === "preserve" ? "approved" : "changes_requested");
+    expect(events.filter(event => event.type === "milestone_applied").map(event => event.toolCount)).toEqual([2]);
+    expect(result.review).toMatchObject({ status: "approved", findings: [], summary: "결정적 검사 통과 — 변경 맵 1개, lint error 0건." });
     const writes = [...(result.appliedCalls ?? []), ...result.proposedCalls];
-    expect(result.proposedCalls).toHaveLength(kind === "preserve" ? 0 : 2);
-    expect(result.appliedCalls ?? []).toHaveLength(kind === "preserve" ? 2 : 0);
+    expect(result.proposedCalls).toHaveLength(0);
+    expect(result.appliedCalls ?? []).toHaveLength(2);
     expect(writes.map(call => call.result.diff?.tilesChanged)).toEqual([80, 0]);
     expect(proposalCompletenessWarnings({ buildSpecs: session.getCompletionSpecs(writes),
       calls: writes, project: session.getProposedProject() })).toEqual([]);
-    expect(session.getAcceptanceSnapshot()).toMatchObject({ status: kind === "preserve" ? "verified" : "blocked", items: [
-      { id: "walls", evidence: [{ passed: kind === "preserve" }] },
-    ] });
-    expect(result.runOutcome?.goal).toBe(kind === "preserve" ? "satisfied" : "incomplete");
-    expect(store.getCurrent().maps.map_basement.lowerTiles).toEqual(kind === "preserve"
-      ? session.getProposedProject().maps.map_basement.lowerTiles : project.maps.map_basement.lowerTiles);
+    expect(store.getCurrent().maps.map_basement.lowerTiles).toEqual(session.getProposedProject().maps.map_basement.lowerTiles);
+    // 원장의 의미는 그대로다 — preserve 는 0칸 변경으로 충족, targetChange 는 0칸 변경으로 미충족. 미충족 목표는 승인을 막지
+    // 않지만 자율 런의 완료는 막는다: 적용된 채로 「완료 검증이 아직 미완성입니다」 로 끝난다.
+    if (kind === "preserve") {
+      expect(result.stoppedReason, result.error).toBe("final");
+      expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "verified", items: [{ id: "walls", evidence: [{ passed: true }] }] });
+      expect(result.runOutcome).toMatchObject({ goal: "satisfied", delivery: "applied" });
+    } else {
+      expect(result.stoppedReason).toBe("error");
+      expect(result.error).toContain("완료 검증이 아직 미완성입니다");
+      expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ id: "walls", evidence: [{ passed: false }] }] });
+      expect(result.runOutcome).toMatchObject({ goal: "incomplete", delivery: "applied" });
+    }
   });
 
   it("accounts for both spatial milestones and applies each write once, only after independent review", async () => {
@@ -200,7 +216,9 @@ describe("completion accounting through real assistant sessions", () => {
   });
 
   describe.each(["active", "implicit"] as const)("%s spec expansion", (scope) => {
-    it.each(["invalid-args", "out-of-bounds", "throwing-tool"] as const)("does not retain a %s write; a successful retry expands and keeps the correct lifetime", async (failure) => {
+    // 2026-09-17: 자동 확장(spec-gate-auto-expand)·필수 증거(required-evidence) 검수 거부·거부 초안의 다음 턴 폐기 단언은
+    // 해체된 게이트를 재던 것이라 삭제. 남긴 것: 실패한 쓰기는 초안에 남지 않고, 재시도는 밑그림과 무관하게 그대로 들어간다.
+    it.each(["invalid-args", "out-of-bounds", "throwing-tool"] as const)("does not retain a %s write; a successful retry lands without a spec gate", async (failure) => {
       const project = projectWithMap();
       store.replace(project);
       resetMapEditHistory();
@@ -214,25 +232,11 @@ describe("completion accounting through real assistant sessions", () => {
         if (!fillRegion) throw new Error("fill_region must be registered");
         vi.spyOn(fillRegion, "run").mockImplementationOnce(() => { throw new Error("injected tool failure"); });
       }
-      const criteria = [{ kind: "targetChange", target: { mapId: "m1" }, region: retryRect }];
-      // Deliberately omit rendered evidence: approval-shaped reviewer JSON must
-      // still fail closed. An unrelated next request drops this rejected draft,
-      // while an explicit spec (unlike a selection) keeps its expanded lifetime.
-      const pendingFinal = (status: "verifying" | "blocked") => () => {
-        expect(session.getAcceptanceSnapshot()).toMatchObject({ status, items: [{
-          id: "acceptance-contract", status, evidence: [{ expected: JSON.stringify(criteria[0]), passed: false }],
-        }] });
-        return final("DRAFT_AWAITING_APPLICATION");
-      };
       const steps = [
         ...(scope === "active" ? [toolCall("set_build_spec", SPEC, "spec")] : []),
         toolCall("fill_region", { mapId: "m1", rect, material: "모래", shape: failure === "invalid-args" ? "invalid-shape" : "rect" }, "failed"),
         toolCall("fill_region", { mapId: "m1", rect: retryRect, material: "모래", shape: "rect" }, "retry"),
-        toolCall("repair_acceptance", { itemId: "acceptance-contract", criteria }, "repair"),
-        ...Array.from({ length: 2 }, () => pendingFinal("verifying")),
-        toolCall("paint_tiles", { mapId: "m1", from: { x: rect.x, y: rect.y }, to: { x: rect.x, y: rect.y }, mode: "rect", layer: "lower", tile: 281 }, "next-turn"),
-        // Arbitrary new prose cannot resume a stopped canonical requirement.
-        ...Array.from({ length: scope === "active" ? 2 : 4 }, () => pendingFinal("blocked")),
+        final("DRAFT_AWAITING_APPLICATION"),
       ];
       const chat = scriptedChat(steps);
       const session = new AssistantSession(project, { config: CONFIG, chat, declareIntent: fixedDeclarer({ mode: "modify" }) });
@@ -252,44 +256,19 @@ describe("completion accounting through real assistant sessions", () => {
       expect(fills.map((event) => event.result.ok)).toEqual([false, true]);
       expect(mapAfterFailure).toEqual(project.maps.m1);
       expect(specAfterFailure).toEqual(scope === "active" ? SPEC : null);
-      expect(fills[0].result.issues?.some((issue) => issue.code === "spec-gate-auto-expand")).toBe(false);
-      expect(fills[1].result.issues ?? []).toContainEqual(expect.objectContaining({ code: "spec-gate-auto-expand" }));
-      expect(result.stoppedReason).toBe("error");
-      expect(result.review?.status).toBe("changes_requested");
-      expect(session.isDraftReviewApproved()).toBe(false);
-      expect(result.review?.findings).toContainEqual(expect.objectContaining({ id: "required-0", target: "required-evidence" }));
-      expect(chat).toHaveBeenCalledTimes(scope === "active" ? 8 : 7);
-      expect(events.find((event) => event.name === "repair_acceptance")?.result.ok).toBe(true);
-      expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ id: "acceptance-contract", status: "blocked", evidence: [{ passed: false }] }] });
+      // 밑그림 밖 쓰기라도 게이트가 없다 — 차단도 자동 확장도 일어나지 않는다.
+      expect(fills.flatMap((event) => event.result.issues ?? []).some((issue) => issue.code === "spec-gate" || issue.code === "spec-gate-auto-expand")).toBe(false);
+      expect(result.stoppedReason, result.error).toBe("final");
+      expect(result.review).toMatchObject({ status: "approved", findings: [] });
+      expect(session.isDraftReviewApproved()).toBe(true);
+      expect(chat).toHaveBeenCalledTimes(steps.length);
+      // Chat mode: the approved draft waits for the panel; nothing is applied by the session.
       expect(result.appliedCalls ?? []).toEqual([]);
       expect(store.getCurrent()).toEqual(authored);
       expect(getMapEditHistoryEntries()).toEqual(history);
       expect(result.proposedCalls.map((call) => call.name)).toEqual(["fill_region"]);
       expect(session.getProposedProject().maps.m1.lowerTiles).not.toEqual(project.maps.m1.lowerTiles);
-      if (scope === "active") {
-        expect(session.getActiveSpec()?.assets).toEqual([SPEC.assets[0], expect.objectContaining(retryRect)]);
-      } else {
-        expect(session.getActiveSpec()).toBeNull();
-      }
-
-      const nextEvents: ToolEvent[] = [];
-      const next = await session.sendUserMessage("다음 칸 칠해줘", (event) => { if (event.type === "tool_call") nextEvents.push(event); });
-      expect(next.stoppedReason).toBe("error");
-      expect(session.isDraftReviewApproved()).toBe(false);
-      expect(chat).toHaveBeenCalledTimes(steps.length + (scope === "active" ? 4 : 2));
-      expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ id: "acceptance-contract", evidence: [{ passed: false }] }] });
-      expect(next.appliedCalls ?? []).toEqual([]);
-      expect(store.getCurrent()).toEqual(authored);
-      expect(getMapEditHistoryEntries()).toEqual(history);
-      const expected = { project: structuredClone(project) };
-      if (scope === "active") expect(tools.runTool(expected, "paint_tiles", {
-        mapId: "m1", from: { x: rect.x, y: rect.y }, to: { x: rect.x, y: rect.y }, mode: "rect", layer: "lower", tile: 281,
-      }).ok).toBe(true);
-      expect(session.getProposedProject().maps.m1).toEqual(expected.project.maps.m1);
-      expect(next.proposedCalls.map((call) => call.name)).toEqual(scope === "active" ? ["paint_tiles"] : []);
-      expect(nextEvents.map((event) => event.result.ok)).toEqual([scope === "active"]);
-      expect(nextEvents[0].result.issues?.some((issue) => issue.code === "spec-gate-auto-expand") ?? false).toBe(false);
-      if (scope === "implicit") expect(nextEvents[0].result.issues).toContainEqual(expect.objectContaining({ code: "spec-gate" }));
+      expect(session.getActiveSpec()).toEqual(scope === "active" ? SPEC : null);
     });
   });
 

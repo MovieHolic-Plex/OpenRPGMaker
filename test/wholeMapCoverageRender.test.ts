@@ -3,10 +3,9 @@ import { runTool } from "@/editor/tools";
 import { AssistantSession } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { MAX_IMAGE_DIMENSION, tileDrawSize } from "@/ai/toolImageCanvas";
-import type { ReviewInput } from "@/ai/independentReview";
 import { createBlankMap, createBlankProject } from "@/project/defaults";
 import { fixedDeclarer } from "./intentFixture";
-import { independentReviewPayload, approvedReviewResponse, imageDeliveryForRequest } from "./independentReviewFixture";
+import { independentReviewPayload, imageDeliveryForRequest } from "./independentReviewFixture";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -87,8 +86,9 @@ describe("show_map_region whole-map coverage", () => {
 });
 
 describe("review coverage of a map larger than the span cap", () => {
-  // A 40x40 map needs ceil(40/24)^2 = 4 clipped renders to satisfy the review gate's
-  // (0,0)-to-(w,h) coverage requirement. With complete coverage exempt it takes one.
+  // A 40x40 map used to need ceil(40/24)^2 = 4 clipped renders to satisfy the review gate's
+  // (0,0)-to-(w,h) coverage requirement. 2026-09-17 독립 검수 해체 이후 이미지 커버리지는 승인 조건이
+  // 아니다 — 여기서는 한 번의 whole-map 호출이 세션 경로에서 잘리지 않고, 결정적 검사로 승인되는 것만 고정한다.
   it("satisfies the coverage requirement with a single show_map_region call", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => new Response(null, { status: 201 })));
 
@@ -96,9 +96,8 @@ describe("review coverage of a map larger than the span cap", () => {
     const mapId = project.startMapId;
     project.maps[mapId] = { ...createBlankMap(mapId, 40, 40), id: mapId };
     const map = project.maps[mapId];
-    const reviewInputs: ReviewInput[] = [];
     const shownRegions: { w: number; h: number }[] = [];
-    let deliveredImages = 0;
+    let reviewRequests = 0;
     let writerRound = 0;
 
     const session = new AssistantSession(project, {
@@ -107,15 +106,9 @@ describe("review coverage of a map larger than the span cap", () => {
         tools: ["set_tileset_properties", "show_map_region"] }),
       renderImages: async () => [{ label: "whole map", dataUrl: "data:image/png;base64,AA==" }],
       chat: async (_config, request) => {
-        const review = independentReviewPayload(request);
-        if (review) {
-          reviewInputs.push(review);
-          deliveredImages = request.messages
-            .flatMap((message) => (Array.isArray(message.content) ? message.content : []))
-            .filter((part) => part.type === "image_url").length;
-          const response = approvedReviewResponse(request);
-          if (!response) throw new Error("expected approvedReviewResponse");
-          return response;
+        if (independentReviewPayload(request)) {
+          reviewRequests += 1;
+          throw new Error("검수 모델은 더 이상 호출되지 않아야 한다");
         }
         writerRound += 1;
         if (writerRound === 1) {
@@ -143,11 +136,10 @@ describe("review coverage of a map larger than the span cap", () => {
       }
     });
 
-    // One call, uncropped: the gate's required coverage is met without tiling.
+    // One call, uncropped.
     expect(shownRegions).toEqual([{ w: 40, h: 40 }]);
-    expect(deliveredImages).toBe(1);
-    const requiredProblems = reviewInputs.flatMap((input) => input.requiredProblems ?? []);
-    expect(requiredProblems.join("\n")).not.toContain("show_map_region");
+    expect(reviewRequests).toBe(0);
     expect(result.review?.status, JSON.stringify(result.review)).toBe("approved");
+    expect(result.review?.summary).toContain("lint error 0건");
   });
 });

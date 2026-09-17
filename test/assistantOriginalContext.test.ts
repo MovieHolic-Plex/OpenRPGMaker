@@ -55,7 +55,10 @@ describe("grounded first working request", () => {
     expect(context.omitted.count).toBe(0);
     expect(JSON.stringify(request.messages)).not.toContain("SENTINEL");
     expect(JSON.stringify(context)).not.toContain('"gold":913579');
-    expect(result.stoppedReason, result.error).toBe("max-tool-calls");
+    // 2026-09-17: 도구 예산 소진은 초안 폐기가 아니다 — 결정적 검사(lint error 0)를 통과하면 final 로 적용된다.
+    expect(result.stoppedReason, result.error).toBe("final");
+    expect(result.assistantText).toContain("예산이 소진되어 여기까지의 초안을 적용합니다");
+    expect(result.review?.status).toBe("approved");
     expect(session.getProposedProject().session).toEqual({ ...expectedSeed, gold: 472320 });
     expect(session.getProposedProject().testPresets).toEqual([{ ...expectedPresets[0], gold: 583422 }]);
     expect(project.session).toEqual(expectedSeed);
@@ -164,7 +167,10 @@ describe("session original snapshot lifecycle", () => {
       },
     });
     const result = await session.sendUserMessage("기존 설명은 보존하고 가격만 수정");
-    expect(result.stoppedReason, result.error).toBe("max-tool-calls");
+    // 2026-09-17: 예산 소진 뒤 결정적 검사(lint error 0)를 통과한 초안은 final 로 적용된다.
+    expect(result.stoppedReason, result.error).toBe("final");
+    expect(result.assistantText).toContain("예산이 소진되어 여기까지의 초안을 적용합니다");
+    expect(result.review?.status).toBe("approved");
     expect(session.getAuditEntries().filter(entry => entry.kind === "tool" && entry.name === "upsert_item").map(entry => entry.ok)).toEqual([false, false, true]);
     expect(session.getProposedProject().database.items.find(item => item.id === expected.id)).toEqual({ ...expected, price: 321 });
     expect(project.database.items.find(item => item.id === expected.id)).toEqual(expected);

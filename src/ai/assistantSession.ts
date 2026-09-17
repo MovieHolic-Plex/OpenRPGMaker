@@ -5,8 +5,9 @@ import { readLatestRunCheckpoint, saveRunCheckpoint, type RunCheckpoint, type Ru
 import { checkpointContentIdentity, reconcileRunCheckpoint, type RunRecovery, type RunRuntimeState } from "./runRecovery";
 import { ACCEPTANCE_EXAMPLES, acceptanceRecord, missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise, type AcceptanceSource, type RequirementWithdrawalAction } from "./assistantAcceptance";
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
-import { buildIndependentReviewRequest, isReviewProtocolViolation, parseIndependentReview, REVIEW_JSON_ONLY_REMINDER, reviewChanges, reviewEvidenceContexts, reviewEvidenceImages, reviewMapReferenceRoots, requiresVisualReview, type ResultReview, type ReviewEvidenceFit } from "./independentReview";
-import { mapVisualEvidenceUnavailable } from "./mapVisualEvidence";
+import { type ResultReview, type ReviewFinding } from "./independentReview";
+import type { LintIssue } from "@/project/lint/projectLint";
+import { runProjectLint } from "@/editor/tools/queryTools";
 import { parseFunctionalRequirements, type FunctionalCriterion } from "./functionalAcceptance";
 import { deriveRunOutcome, type RunOutcome } from "./runOutcome";
 import { RunOperation } from "./runOperation";
@@ -25,7 +26,6 @@ import { buildActionArenaAuthoringGuide, selectActionArenaAuthoringRecipe } from
 import { workTargetContractIssues, workTargetIssues, workToolOutcome, type WorkToolOutcome } from "./workPlanTargets";
 import { ToolReadEvidence } from "./toolReadEvidence";
 import { ToolVerificationEvidence, parseVerificationChecks, verificationInitialState, type VerificationRequirement, type ApproachPreview } from "./toolVerificationEvidence";
-import { runProjectLint } from "@/editor/tools/queryTools";
 import { isVerifyNpcRewardInput, npcRewardTargetSnapshot, VERIFY_NPC_REWARD_TOOL, type NpcRewardWitness } from "./npcRewardWitness";
 import { APPEARANCE_GENERATION_TOOL } from "@/editor/tools/characterAppearanceTools";
 import { OPENING_IMAGE_TOOL } from "@/editor/tools/cinematicTools";
@@ -86,7 +86,7 @@ import { applyVocabSoftConfirmApprovals, extractVocabSoftConfirm } from "@/proje
 import { syncDraftWikiWithLive } from "@/project/world";
 import type { Project } from "@/project/types";
 import { buildGroundedRequest, buildSystemPrompt, DEFAULT_BUDGET_CHARS, resolveContextMapId, resolveContextViewport, type ContextOptions } from "./contextBuilder";
-import { extractOriginalContext, GET_ORIGINAL_CONTEXT_TOOL, originalContextWindow, OriginalContextStore } from "./originalContext";
+import { extractOriginalContext, GET_ORIGINAL_CONTEXT_TOOL, OriginalContextStore } from "./originalContext";
 import {
   buildConversationTurnContext,
   mapTransitionNote,
@@ -143,19 +143,15 @@ import {
   type ImageUrlPart,
 } from "./llmClient";
 import {
-  NON_TILE_SPATIAL_TOOLS,
   SPATIAL_BUILD_TOOLS,
   TILE_WRITE_TOOLS,
   affectedRegions,
-  boundarySlackForTool,
-  checkRegionsAgainstSpecBoundary,
   implicitSpecFromContext,
   implicitSpecFromScope,
   normalizeBuildSpec,
   plannedGrowthForSpec,
   protectedCellsInRegions,
   toolWritesTiles,
-  uncoveredRegionsBySpec,
   validateBuildSpec,
   type AffectedRegion,
   type BuildSpec,
@@ -276,8 +272,6 @@ import {
   buildSpecPlanLabel,
   growthGuidanceLine,
   isSpecGatePass,
-  plannedTargetMismatch,
-  regionContains,
   specFingerprint,
   specGateResult,
   specNpcName,
@@ -365,6 +359,42 @@ export {
 } from "./session/sessionTools";
 export { SPEC_REMEDY_FIELDS } from "./session/buildSpecGate";
 export { writeDedupeKey } from "./session/eventTargets";
+
+
+/** lint error 의 신원 — 기준선에 이미 있던 결함과 초안이 새로 만든 결함을 가른다. */
+function lintErrorIdentity(issue: LintIssue): string {
+  return JSON.stringify([issue.code, issue.mapId ?? null, issue.eventId ?? null, issue.x ?? null, issue.y ?? null, issue.message]);
+}
+
+function lintErrors(project: Project): LintIssue[] {
+  // 세션 안의 run_lint 와 같은 레지스트리 경로를 탄다 — 테스트가 같은 스파이로 잡을 수 있고, 결과가 어긋날 수 없다.
+  const lint = runTool({ project }, "run_lint", {}, { dryRun: true });
+  const issues = Array.isArray((lint.data as { issues?: unknown } | undefined)?.issues)
+    ? ((lint.data as { issues: LintIssue[] }).issues) : [];
+  return issues.filter(issue => issue.severity === "error");
+}
+
+/**
+ * 결정적 초안 검사 — 변경된 맵에서 **초안이 새로 만든** lint error 만 본다. 검수 모델도 이미지도 원장도 없다.
+ *
+ * 기준선(baseline)에 이미 있던 결함은 초안의 책임이 아니다. 이걸 빼지 않으면 결함이 하나라도 있는
+ * 프로젝트에서는 어떤 초안도 영영 적용되지 않는다(실측: 테스트 픽스처의 sw_missing_xyz 참조 하나가
+ * 제목만 바꾼 초안을 막았다). 옛 하네스의 "lint 기준선 출처(provenance)" 규칙과 같은 뜻이다.
+ */
+export function deterministicDraftFindings(project: Project, changedMapIds: readonly string[], baseline?: Project): ReviewFinding[] {
+  const changed = new Set(changedMapIds);
+  const inherited = new Set(baseline ? lintErrors(baseline).map(lintErrorIdentity) : []);
+  return lintErrors(project)
+    .filter(issue => !inherited.has(lintErrorIdentity(issue)))
+    .filter(issue => issue.mapId === undefined || changed.size === 0 || changed.has(issue.mapId))
+    .map((issue, index): ReviewFinding => ({
+      id: `lint-${index + 1}`,
+      target: issue.mapId ? `${issue.mapId}${issue.x !== undefined ? ` (${issue.x},${issue.y})` : ""}` : "project",
+      problem: `${issue.code}: ${issue.message}`,
+      requestedChange: "run_lint 가 error 0건이 되도록 해당 위치를 고치세요.",
+      validation: "run_lint error 0",
+    }));
+}
 
 export class AssistantSession {
   private checkpointHost: AssistantSessionOptions["checkpoint"];
@@ -635,7 +665,6 @@ export class AssistantSession {
   private readonly appearanceProjectIdentity = store.getProjectIdentity();
   private turnAppearanceGeneration: AppearanceGenerationHandoff | undefined;
   private config: AiConfig;
-  private readonly reviewConfig?: AiConfig;
   private readonly chat: ChatFn;
   private readonly contextOptions: ContextOptions;
   // 비전 렌더러(브라우저 전용). 주입되면 '보여줘' 툴 이미지가 모델에 전달된다.
@@ -924,7 +953,6 @@ export class AssistantSession {
     this.storeBacked = project === store.getCurrent();
     this.checkpointHost = options.checkpoint;
     this.config = configForLegacySupervisor(options.config ?? loadAiConfig());
-    this.reviewConfig = options.reviewConfig;
     // 계량은 로그 파싱이 아니라 호출 지점에서 센다(sessionUsage.ts). 본문·플래너·검수·요약 콜이
     // 모두 이 한 겹을 지나므로, 여기서 세면 어떤 경로도 빠지지 않는다.
     const rawChat = options.chat ?? chatCompletion;
@@ -1647,6 +1675,18 @@ export class AssistantSession {
   //     같은 턴·새 맵도 보호하며, 선택 영역·밑그림 덮어쓰기 선언으로 해제되지 않는다.
   //     2026-09-03 적대적 리뷰: 보호가 제출 시점에만 돌아 밑그림 안에 지은 집을 같은 턴 clear 가 지웠고,
   //     확정 뒤 사용자가 판 호수를 다음 턴 채우기가 덮었고, 게이트 밖 tile_erase 가 절벽을 지웠다.
+  /**
+   * 2026-09-17 밑그림 스펙 게이트 해체.
+   *
+   * 실측(PR #892 후속 코멘트): 조수에게 마을을 맡긴 세 런에서 author_village 는 12회 중 0회 성공했다.
+   * 첫 거부 사유가 "에셋 'h_1'와 'road_main'가 교차합니다" — 집 앞까지 길이 오는 게 마을인데
+   * 게이트는 그 겹침을 오류로 보고, 모델이 3회 안에 규칙을 못 맞춰 계획이 폐기됐다.
+   * 빌더는 집·길 좌표를 코드가 계산하는 도구인데 게이트는 그 도구 앞에서 모델이 좌표를 먼저 찍으라고
+   * 요구했다. 둘 중 하나만 있어야 한다.
+   *
+   * 남긴 것은 하나 — 기존 구조물·물·절벽을 선언 없이 덮지 않는다. set_build_spec 은 선택 사항으로 남아
+   * confirmDestroy / overExisting 을 선언하는 용도로만 쓰인다. 밑그림이 없다는 이유로 막지 않는다.
+   */
   private specGate(name: string, args: Record<string, unknown>): ToolResult | SpecGatePass {
     if (
       name === "place_npc"
@@ -1658,177 +1698,32 @@ export class AssistantSession {
       const existing = this.ctx.project.maps[args.mapId]?.events.find((event) => event.id === args.id);
       if (existing?.x === args.x && existing.y === args.y) return { warnings: [] };
     }
-    const scoped = SPATIAL_BUILD_TOOLS.has(name);
+    if (!toolWritesTiles(name)) return { warnings: [] };
     const regions = this.gateRegions(name, args);
-    if (regions.length === 0) return { warnings: [] }; // mapId 없는 인자 형태 — 현 공간 툴셋엔 없음.
+    if (regions.length === 0) return { warnings: [] };
     const mapId = regions[0].mapId;
-    const activeSpec = this.getActiveSpec(mapId);
-    const currentItemId = this.workPlan?.currentItemId ?? null;
-    const itemViewSpec = this.workPlan ? this.inferredViewSpecForItem(getCurrentWorkItem(this.workPlan)) : this.turnViewSpec;
-    const viewSpec = this.turnViewSpec?.mapId === mapId
-      && itemViewSpec !== null
-      && this.turnViewSpec.assets.some(asset => asset.kind === "selection" || asset.kind === autoExpandedAssetKind(name))
-      ? this.turnViewSpec : null;
-    const specs = [activeSpec, this.turnImplicitSpec, viewSpec]
-      .filter((spec): spec is BuildSpec => spec !== null && spec.mapId === mapId);
-    if (scoped && specs.length === 0 && !NON_TILE_SPATIAL_TOOLS.has(name)) {
-      // 이 턴에 이 작업 항목이 만든 맵은 사용자 자산이 없는 빈 맵이다 — 보호할 기준선이 없으므로
-      // 밑그림 없음을 이유로 막으면 모델은 같은 항목을 닫지 도 못한 채 재시도만 반복한다(F4 연쇄).
-      // 받은 영역 그대로 암묵 밑그림을 시딩해 경고로 통과시킨다. 사용자 맵·계획 없는 턴·미선언 툴은 그대로 차단된다.
-      const seeded = this.seedSpecForFreshItemMap(mapId, name, regions);
-      if (seeded) return seeded;
-      // 차단할 때는 재제출물의 초안까지 실어 보낸다 — "체크리스트" 만 주면 같은 턴에 다시 막힐 밑그림이 온다.
-      const draftAssets = regions.filter(region => region.w > 0 && region.h > 0).map((region, index) => ({
-        id: `${autoExpandedAssetKind(name)}${index + 1}`, kind: autoExpandedAssetKind(name),
-        x: region.x, y: region.y, w: region.w, h: region.h }));
-      // 이 호출이 현재 맵 밖으로 나간다면 초안에 plannedMap(확장 후 크기)을 실어 보낸다 —
-      // 그러지 않으면 모델은 "경계 밖" 오류만 받고 에셋을 안쪽으로 밀어 넣는 수리를 택한다(맵은 영영 안 커진다).
-      const growth = this.plannedGrowthFor(mapId, draftAssets);
-      const draft = {
-        mapId, title: this.currentTurnInstruction.slice(0, 40) || "작업 밑그림",
-        ...(growth ? { plannedMap: { mapId, ...growth } } : {}),
-        assets: draftAssets,
-      };
-      return specGateResult(`스펙 게이트: '${name}' 차단 — 이 맵의 밑그림(스펙)이 없습니다`, [
-        "공간 빌드는 set_build_spec으로 밑그림을 제출해 검증을 통과한 뒤에만 실행됩니다.",
-        "체크리스트: 대상 맵, 에셋별 영역(x,y,w,h)·종류·스타일, 통로 너비(pathWidth), 밀도(density), 배치 스타일(layoutStyle).",
-        "현재 컨텍스트 선택 영역이 있으면 암묵적 명세로 인정됩니다. 없으면 필요한 영역을 직접 산정해 set_build_spec으로 제출하세요.",
-        ...(growth ? [growthGuidanceLine(mapId, growth)] : []),
-        `이 호출의 영역으로 만든 초안입니다. 그대로 또는 고쳐서 set_build_spec 으로 먼저 제출하세요: ${JSON.stringify(draft)}`,
-      ]);
-    }
-    if (scoped && activeSpec) {
-      const mismatch = plannedTargetMismatch(activeSpec, args);
-      if (mismatch) {
-        return specGateResult(`스펙 게이트: '${name}' 차단 — plannedMap 불일치`, [
-          mismatch,
-          "set_build_spec의 plannedMap과 새 맵 target의 mapId·width·height를 같은 값으로 맞춘 뒤 다시 호출하세요.",
-        ]);
-      }
-    }
-    // 명시 스펙 + 암묵 선택 영역(같은 맵)의 합집합으로 커버리지·허가를 판정한다.
-    const assets = specs.flatMap((spec) => spec.assets);
-
-    // 기존 내용 보호 — 기준선 맵 기준. 밑그림 안팎을 가리지 않고, 새 맵(기준선에 없음)은 대상이 아니다.
-    if (toolWritesTiles(name)) {
-      const baseline = this.baselineProject.maps[mapId];
-      if (baseline) {
-        const tileset = this.baselineProject.tilesets[baseline.tilesetId];
-        // Inferred locations are not a user-selected overwrite permission, even for
-        // an unclassified object whose inferred asset kind falls back to selection.
-        const overwriteAssets = specs.filter(spec => spec !== viewSpec).flatMap(spec => spec.assets);
-        const guarded = protectedCellsInRegions(baseline, regions, overwriteAssets, tileset);
-        if (guarded.count > 0) {
-          const at = guarded.sample ? `, 예: (${guarded.sample.x},${guarded.sample.y})` : "";
-          return specGateResult(`스펙 게이트: '${name}' 차단 — 기존 구조물·지형 ${guarded.count}칸을 덮습니다${at}`, [
-            "명세 밖 빈 영역은 자동 확장하지만, 기존 구조물 파괴 위험은 자동 보정하지 않습니다.",
-            "일반 구조물·물·절벽은 밑그림 안이라도 선언 없이 덮지 않습니다. 메타데이터로 기록된 완성된 집은 같은 턴·새 맵에서도 별도로 보호됩니다.",
-            "완성된 집 밖의 철거가 의도면 clear 에셋에 confirmDestroy:true 를, 그 위에 지을 거면 배치 에셋에 overExisting:\"clear\"|\"keep\" 을 넣은 set_build_spec 을 제출하세요. 이 선언과 선택 영역도 완성된 집 보호를 해제하지 않습니다.",
-            "기존 것을 피하려면 영역을 좁히세요.",
-          ]);
-        }
-      }
-    }
-    if (!scoped) return { warnings: [] };
-
-    if (viewSpec) {
-      if (!checkRegionsAgainstSpecBoundary(viewSpec.assets, regions, 0).covered) {
-        return specGateResult(`스펙 게이트: '${name}' 차단 — 화면 배치 영역 밖입니다`, [
-          `이 배치 지시의 영역만 사용하세요: ${viewSpec.assets.map(asset => `(${asset.x},${asset.y}) ${asset.w}×${asset.h}`).join(", ")}. 다른 작업은 별도 set_build_spec을 제출하세요.`,
-        ]);
-      }
-      this.turnViewSpecWorkItemId = currentItemId;
-    }
-
-    const slackCells = boundarySlackForTool(name);
-    const coverage = checkRegionsAgainstSpecBoundary(assets, regions, slackCells);
-    if (coverage.covered) return { warnings: [] };
-
-    const uncovered = uncoveredRegionsBySpec(assets, regions);
-    const expansion = this.expandSpecWithRegions(mapId, name, regions, uncovered);
-    if (expansion.warnings.length > 0) return expansion;
-    if (slackCells > 0 && coverage.slackWarning) {
-      return { warnings: [{ severity: "warning", code: "spec-gate-auto-expand", message: `명세를 자동 확장했습니다: ${coverage.slackWarning}` }] };
-    }
-    return { warnings: [] };
+    const baseline = this.baselineProject.maps[mapId];
+    if (!baseline) return { warnings: [] }; // 이 턴에 만든 새 맵 — 보호할 사용자 자산이 없다.
+    const tileset = this.baselineProject.tilesets[baseline.tilesetId];
+    const overwriteAssets = [this.getActiveSpec(mapId), this.turnImplicitSpec]
+      .filter((spec): spec is BuildSpec => spec !== null && spec.mapId === mapId)
+      .flatMap(spec => spec.assets);
+    const guarded = protectedCellsInRegions(baseline, regions, overwriteAssets, tileset);
+    if (guarded.count === 0) return { warnings: [] };
+    const at = guarded.sample ? `, 예: (${guarded.sample.x},${guarded.sample.y})` : "";
+    return specGateResult(`기존 구조물 보호: '${name}' 차단 — 기존 구조물·지형 ${guarded.count}칸을 덮습니다${at}`, [
+      "일반 구조물·물·절벽은 선언 없이 덮지 않습니다. 메타데이터로 기록된 완성된 집은 별도로 보호됩니다.",
+      "완성된 집 밖의 철거가 의도면 clear 에셋에 confirmDestroy:true 를, 그 위에 지을 거면 배치 에셋에 overExisting:\"clear\"|\"keep\" 을 넣은 set_build_spec 을 제출하세요.",
+      "기존 것을 피하려면 영역을 좁히세요.",
+    ]);
   }
 
-  /** 방금 이 작업 항목이 만든 맵이면 밑그림을 시딩해 통과시킨다. 그 맵은 기준선에 없어 보호할 사용자 자산이 없다.
-   *
-   * 조건은 전부 세션이 이미 가진 상태다: 작업계획의 현재 항목이 이 툴을 successTools 로 선언했고,
-   * 그 항목이 이 맵을 이번 턴에 만들었을 것. 사용자가 이전에 저작한 맵은 여전히 밑그림을 요구한다. */
-  private seedSpecForFreshItemMap(mapId: string, toolName: string, regions: readonly AffectedRegion[]): SpecGatePass | null {
-    if (!this.workPlan || !this.turnItemCreatedMapIds.has(mapId) || this.baselineProject.maps[mapId]) return null;
-    const item = getCurrentWorkItem(this.workPlan);
-    if (!item || !(item.successTools ?? []).includes(toolName)) return null;
-    const assets = regions.filter(region => region.w > 0 && region.h > 0).map((region, index): SpecAsset => ({
-      id: `auto-seed:${this.currentTurnIndex}:${toolName}:${index + 1}`,
-      kind: autoExpandedAssetKind(toolName),
-      x: region.x, y: region.y, w: region.w, h: region.h,
-      note: "스펙 게이트 자동 시딩(이번 항목이 만든 빈 맵)",
-    }));
-    if (assets.length === 0) return null;
-    const seeded: BuildSpec = { mapId, title: item.title, assets };
-    return {
-      warnings: [{ severity: "warning", code: "spec-gate-auto-seed",
-        message: `이번 항목이 만든 빈 맵이라 밑그림을 자동으로 세웠습니다: ${toolName} (${assets[0]!.x},${assets[0]!.y}) ${assets[0]!.w}×${assets[0]!.h}${assets.length > 1 ? ` 외 ${assets.length - 1}개` : ""}.` }],
-      // 쓰기가 실제로 성공했을 때만 밑그림이 남는다 — 자동 확장과 같은 계약.
-      commitExpansion: () => { this.turnImplicitSpec = seeded; },
-    };
-  }
-
-  /** 게이트가 볼 영향 영역. 홍수 채우기(paint_tiles mode=fill)는 시작점이 아니라 맵 전체다 — 면적 0 폴백은 검사를 건너뛴다. */
   private gateRegions(name: string, args: Record<string, unknown>): AffectedRegion[] {
     if (name === "paint_tiles" && args.mode === "fill" && typeof args.mapId === "string") {
       const map = this.ctx.project.maps[args.mapId];
       if (map) return [{ mapId: args.mapId, x: 0, y: 0, w: map.width, h: map.height }];
     }
     return affectedRegions(name, args);
-  }
-
-  private expandSpecWithRegions(
-    mapId: string,
-    toolName: string,
-    regions: readonly AffectedRegion[],
-    uncovered: readonly AffectedRegion[]
-  ): SpecGatePass {
-    if (uncovered.length === 0) return { warnings: [] };
-    const activeSpec = this.getActiveSpec(mapId);
-    const target = activeSpec ?? (this.turnImplicitSpec?.mapId === mapId ? this.turnImplicitSpec : null);
-    if (target === null) return { warnings: [] };
-
-    const additions = regions
-      .filter((region) => region.w > 0 && region.h > 0 && uncovered.some((cell) => regionContains(region, cell.x, cell.y)))
-      .map((region, index): SpecAsset => ({
-        id: `auto:${this.currentTurnIndex}:${toolName}:${target.assets.length + index + 1}`,
-        kind: autoExpandedAssetKind(toolName),
-        x: region.x,
-        y: region.y,
-        w: region.w,
-        h: region.h,
-        note: "스펙 게이트 자동 확장",
-      }));
-    if (additions.length === 0) return { warnings: [] };
-
-    const expanded = { ...target, assets: [...target.assets, ...additions] };
-    const listed = additions.slice(0, 3).map((asset) => `(${asset.x},${asset.y}) ${asset.w}×${asset.h}`).join(", ");
-    const extra = additions.length > 3 ? ` 외 ${additions.length - 3}개` : "";
-    return {
-      warnings: [{
-        severity: "warning",
-        code: "spec-gate-auto-expand",
-        message: `명세를 자동 확장했습니다: ${toolName} ${listed}${extra}.`,
-      }],
-      // The gate only prepares expansion; failed or throwing writes must leave no spec debt.
-      commitExpansion: () => {
-        if (target === activeSpec) {
-          this.rememberSpec(expanded);
-        } else {
-          // 선택 영역 암묵 스펙은 이 턴의 것이다 — activeSpec 으로 승격하지 않는다.
-          this.turnImplicitSpec = expanded;
-        }
-      },
-    };
   }
 
   exportAudit(): string {
@@ -2852,13 +2747,9 @@ export class AssistantSession {
 
   /** 플래너가 계획과 함께 선언한 최소 산출량. null 이면 이 런에는 볼륨 계약이 없다. */
   private armVolumeContractFromPlanner(bar: VolumeBar | null): void {
-    if (!bar || (bar.authoredMaps <= 0 && bar.multiPageNpcs <= 0 && bar.shops <= 0 && bar.quests <= 0)) return;
-    this.runVolumeBaseline = measureVolume(this.ctx.project);
-    this.runVolumeBar = bar;
-    this.pushAudit({
-      kind: "status",
-      text: `volume-contract:armed maps+${bar.authoredMaps} npcs+${bar.multiPageNpcs} shops+${bar.shops} quests+${bar.quests} (플래너 선언)`,
-    });
+    // 2026-09-17 해제. "맵 하나만 더" 계약이 마을 빌더의 실내 맵을 막았고(런 2: undeclared map),
+    // 미달 재주입은 예산만 태웠다. 산출량은 사용자가 결과를 보고 판단한다.
+    if (bar) this.pushAudit({ kind: "status", text: "volume-contract:disabled — 플래너 선언을 기록만 하고 강제하지 않습니다" });
   }
 
   private volumeGapsNow(): string[] {
@@ -3876,7 +3767,7 @@ export class AssistantSession {
     if (this.turnComposerMode === "ask") return { ...result, proposedCalls: [] };
     const review = this.getResultReview();
     if (this.turnProposals.size > 0 && (!this.isDraftReviewApproved() || result.stoppedReason !== "final")) {
-      const error = result.error ?? "독립 검수가 승인되지 않아 초안을 적용하지 않았습니다.";
+      const error = result.error ?? "결정적 검사(lint error 0)를 통과하지 못해 초안을 적용하지 않았습니다.";
       result = { ...result, assistantText: error, error, review: review ?? { status: "unapproved", revision: this.reviewRevision,
         summary: error, findings: [] } };
     } else if (review) result = { ...result, review };
@@ -4675,8 +4566,19 @@ export class AssistantSession {
     return [...this.turnAppliedMilestoneCalls, ...pending];
   }
 
+  /**
+   * 2026-09-17 독립 검수(LLM 재심사) 해체 → 결정적 검사.
+   *
+   * 실측: 검수 모델이 요약에는 "요청 조건대로 배치되고 검증되었습니다" 라 쓰고 판정은 changes_requested 를
+   * 냈다(rev 9). 필수 문제 목록에는 리사이즈 전 좌표로 만든 stale reachability finding, 24칸 단위 이미지
+   * 확인 누락, 수용 원장 항목이 섞여 있어 모델이 고칠 수 없는 것을 고치라고 했고, 수리 단계는 읽기 도구만
+   * 41회 돌리다 예산을 다 썼다. 세 런 모두 초안이 통째로 버려졐다.
+   *
+   * 지금 승인 기준은 하나다: 변경된 맵의 lint error 가 0 이다. 이미지 확인·검증 원장·수용 항목은
+   * 승인 조건이 아니다. lint error 가 있으면 그 목록을 findings 로 돌려 모델이 고치게 한다.
+   */
   private async reviewCurrentDraft(onEvent: (event: SessionEvent) => void, signal: AbortSignal | undefined,
-    remainingTokens: number): Promise<ResultReview> {
+    _remainingTokens: number): Promise<ResultReview> {
     const operation = this.runOperation;
     operation.assertCurrent();
     let revision = this.reviewRevision;
@@ -4684,29 +4586,17 @@ export class AssistantSession {
     this.approvedAuthoredIdentity = null;
     this.consumedApprovedRevision = null;
     const owner = this.reviewTurn;
-    const outputAtStart = this.estimatedOutputTotal;
     let candidate: { identity: string; acceptance: AcceptanceSnapshot | null } | null = null;
     let review: ResultReview;
-    /** Deterministic problems found before the reviewer ran, so a failure that stops the
-     * review from happening at all still reports them instead of only its own cause. */
-    let knownProblems: readonly string[] = [];
     try {
       if (signal?.aborted) throw new Error("independent-review-cancelled");
       if (!this.draftBaselineCurrent) throw new Error("independent-review-stale-baseline: regenerate from the current project before review");
-      const baseline = this.draftBaseline;
-      const preReviewProblems: string[] = [];
-      // R2: adopt newer live wiki-owned documents into the draft candidate so the
-      // reviewer sees the true final object. Draft-side wiki writes are writer
-      // content without a coordinator receipt and fail visibly as required problems.
       const wikiSync = syncDraftWikiWithLive(this.ctx.project.world, this.baselineProject.world, this.observedLiveWorld);
       if (wikiSync.changed) {
         this.ctx.project = { ...this.ctx.project, world: wikiSync.world };
         revision = ++this.reviewRevision;
         this.invalidateVerificationAfterWrite();
         this.imageEvidence.current(this.ctx.project);
-      }
-      for (const id of wikiSync.conflicts) {
-        preReviewProblems.push(`world/${id}: draft edits a wiki-owned document without a coordinator receipt; regenerate from the current project`);
       }
       if (this.reviewDraftTransform) {
         const prepared = this.reviewDraftTransform(this.getProposedProject());
@@ -4720,166 +4610,24 @@ export class AssistantSession {
       const identity = JSON.stringify(this.ctx.project);
       this.emitPhase(onEvent, "review");
       const draftAcceptance = this.acceptance?.evaluateForReview(this.ctx.project, this.verificationEvidence) ?? null;
-      const calls = this.turnWriteLedger(this.finalizeProposals(this.turnProposals));
-      const specs = this.getCompletionSpecs(calls);
-      const completionWarnings = [...new Set([...proposalCompletenessWarnings({ requestText: this.currentTurnInstruction,
-        intent: this.turnIntent, buildSpecs: specs, calls, project: this.ctx.project }),
-        ...this.inferredViewWarnings(calls), ...calls.flatMap(call => call.result.diff?.warnings ?? [])])];
-      // Declared placement obligations are deterministic; generic diff/count heuristics
-      // remain reviewer evidence, not a new gate on unrelated authored record types.
-      const placementProblems = specs.flatMap(spec => buildSpecCompletenessWarnings(spec, calls, true, this.ctx.project));
-      const requiredProblems = [...preReviewProblems, ...placementProblems,
-        ...this.completionProblems(), ...this.verificationEvidence.problems("blocking"),
-        ...(draftAcceptance?.items.flatMap(item => item.required === false || item.withdrawal || item.status === "verified" ? [] :
-          [item.reason ?? item.title, ...item.evidence.filter(entry => !entry.passed).map(entry => `${entry.expected}: ${entry.observed}`)]) ?? [])];
-      const changes = reviewChanges(this.reviewBaseline, this.ctx.project);
-      const mapReferenceRoots = reviewMapReferenceRoots(this.reviewBaseline, this.ctx.project, changes);
-      for (const change of changes) if (change.path === "/assets") {
-        requiredProblems.push(`${change.path}: asset transport changed without reviewable original evidence`);
-      }
-      const targetMapId = this.originalContext!.context.target.mapId;
-      const changedMapIds = new Set([...Object.keys(this.reviewBaseline.maps), ...Object.keys(this.ctx.project.maps)].filter(id =>
-        acceptanceFingerprint(this.reviewBaseline.maps[id]) !== acceptanceFingerprint(this.ctx.project.maps[id])
-        || requiresVisualReview(this.reviewBaseline, this.ctx.project, id)));
-      const mapIds = new Set(changedMapIds);
-      if (typeof targetMapId === "string") mapIds.add(targetMapId);
-      const evidence = (project: Project, prefix: string, reviewed: Iterable<string>, target: string) =>
-        reviewEvidenceContexts(project, { snapshotId: `${prefix}-${revision}`, mapIds: reviewed,
-          targetMapId: target, mapReferenceRoots, intent: this.turnIntent ?? null });
-      const receipts = this.imageEvidence.current(this.ctx.project);
-      for (const mapId of mapIds) {
-        const before = this.reviewBaseline.maps[mapId], after = this.ctx.project.maps[mapId];
-        if (!after) continue;
-        const visualChanged = requiresVisualReview(this.reviewBaseline, this.ctx.project, mapId);
-        const unavailable = visualChanged ? mapVisualEvidenceUnavailable(after, before) : null;
-        if (unavailable) requiredProblems.push(unavailable);
-        if (visualChanged && !coveredByImages(receipts, after, { x: 0, y: 0, w: after.width, h: after.height })) {
-          requiredProblems.push(`show_map_region: current rendered coverage of changed map ${mapId} required`
-            + ` — request x:0,y:0,w:${after.width},h:${after.height} in one call; complete coverage is not clipped`);
-        }
-      }
-      for (const receipt of this.reviewImages.keys()) if (!receipts.includes(receipt)) this.reviewImages.delete(receipt);
-      const config = { ...(this.reviewConfig ?? this.config), maxTokens: Math.min(16384, remainingTokens) };
-      if (signal?.aborted) throw new Error("independent-review-cancelled");
-      knownProblems = requiredProblems;
-      const captures = receipts.map(receipt => ({ mapId: receipt.mapId, images: this.reviewImages.get(receipt) ?? [] }));
-      const build = (reviewedIds: ReadonlySet<string>, target: string, fit: ReviewEvidenceFit) =>
-        buildIndependentReviewRequest(config, { revision,
-          originalRequest: this.currentTurnRequestText, changes, requiredProblems, completionWarnings, fit,
-          // Scoped to the maps this envelope reviews, so the narrowing rung sheds their
-          // renders too — the dominant cost — instead of only their text.
-          images: reviewEvidenceImages(captures, reviewedIds),
-          before: evidence(this.reviewBaseline, "before", reviewedIds, target),
-          after: evidence(this.ctx.project, "after", reviewedIds, target),
-          toolResults: this.reviewToolResults, acceptance: draftAcceptance }, signal);
-      // The reviewer is one-shot, so an oversized envelope is refused rather than truncated —
-      // but only after every cheaper way to make room is spent, because "no review" is the
-      // worst verdict this gate can reach. Rungs run cheapest-harm first and each one shrinks
-      // strictly further than the last:
-      //
-      //  1. complete evidence, every reviewed map.
-      //  2. the same evidence with its grids losslessly run-length encoded, in the change list
-      //     as well as in the before/after record — a map is diffed whole, so renaming a
-      //     512x512 one spends 3,670,409 chars restating its grids on top of the 2,599,025 that
-      //     side's evidence already costs. Packing keeps every cell value, so it costs the
-      //     reviewer nothing, and measured it holds the envelope flat as the map grows.
-      //  3. judge only the changed maps. The target map is where the user is standing, and an
-      //     unchanged one is surrounding context rather than the subject of this review, yet a
-      //     large one can overflow the envelope by itself. It has to leave the context target
-      //     too, which always includes its own map.
-      //  4. omit reference definitions that are byte-identical before and after — measured, the
-      //     tileset alone is 68,435 chars carried unchanged on both sides. The envelope names
-      //     what it omitted so the reviewer can request changes instead of approving blind.
-      //
-      // Required evidence (changed maps, their renders, deterministic problems, any before/after
-      // difference) is never dropped to make room; that would buy approval with less proof than
-      // the gate demands.
-      const [firstChangedMapId] = changedMapIds;
-      const ladder: [ReadonlySet<string>, string, ReviewEvidenceFit][] = [
-        [mapIds, targetMapId, "complete"],
-        [mapIds, targetMapId, "packed-grids"],
-      ];
-      if (firstChangedMapId !== undefined && changedMapIds.size < mapIds.size) {
-        ladder.push([changedMapIds, firstChangedMapId, "packed-grids"]);
-      }
-      const [narrowestIds, narrowestTarget] = ladder[ladder.length - 1]!;
-      ladder.push([narrowestIds, narrowestTarget, "shared-reference-omitted"]);
-      let request: ReturnType<typeof build> | undefined;
-      let refused: unknown;
-      for (const [reviewedIds, target, fit] of ladder) {
-        try {
-          request = build(reviewedIds, target, fit);
-          break;
-        } catch (cause) {
-          if (!(cause instanceof Error) || !cause.message.startsWith("independent-review-window-exceeded")) throw cause;
-          refused = cause;
-        }
-      }
-      if (!request) throw refused;
-      // Every admission the verdict depends on — cancellation, project identity, baseline freshness,
-      // image delivery — is bound to the response that carried it, so a second round cannot inherit
-      // the first round's evidence.
-      const ask = async (asked: ChatRequest): Promise<ChatResult> => {
-        const result = await operation.wait(this.chat(config, asked));
-        if (signal?.aborted) throw new Error("independent-review-cancelled");
-        if (identity !== JSON.stringify(this.ctx.project)) throw new Error("independent-review-stale-revision");
-        if (!this.draftBaselineCurrent || baseline !== this.draftBaseline) throw new Error("independent-review-stale-baseline: regenerate from the current project before review");
-        const undeliveredImage = asked.messages.some((message, messageIndex) => Array.isArray(message.content)
-          && message.content.some((part, partIndex) => part.type === "image_url"
-            && !result.imageDelivery?.some(delivery => delivery.messageIndex === messageIndex && delivery.partIndex === partIndex)));
-        if (undeliveredImage) throw new Error("independent-review-image-delivery-unacknowledged");
-        return result;
-      };
-      const response = await ask(request);
-      try {
-        review = parseIndependentReview(response, revision, requiredProblems);
-      } catch (cause) {
-        // A reviewer that answers off-protocol has not judged the draft, yet the draft paid for it with
-        // the whole turn (F6, `.omo/evidence/ai-assistant-failure-modes.md`). Buy exactly one corrective
-        // round: the retry repeats the same evidence plus the offending answer, the caller's output budget
-        // is measured after this returns, and a second slip still fails closed.
-        if (!isReviewProtocolViolation(cause)) throw cause;
-        this.pushAudit({ kind: "status", text: `independent-review-reask ${cause instanceof Error ? cause.message : String(cause)}` });
-        review = parseIndependentReview(await ask({ ...request, messages: [...request.messages,
-          { role: "assistant", content: String(response.message.content ?? "") },
-          { role: "user", content: REVIEW_JSON_ONLY_REMINDER }] }), revision, requiredProblems);
-      }
-      if (review.status === "approved") {
-        // Deferred to the post-callback admission below: publishing the verdict
-        // is not authority until owner/cancellation/budget checks pass. Both
-        // identities admit together there so the authored alternative cannot
-        // revive a retired approval.
-        candidate = { identity, acceptance: draftAcceptance };
-      }
+      const changedMapIds = [...new Set([...Object.keys(this.reviewBaseline.maps), ...Object.keys(this.ctx.project.maps)])]
+        .filter(id => acceptanceFingerprint(this.reviewBaseline.maps[id]) !== acceptanceFingerprint(this.ctx.project.maps[id]));
+      const findings = deterministicDraftFindings(this.ctx.project, changedMapIds, this.reviewBaseline);
+      const wikiFindings = wikiSync.conflicts.map((id, index): ReviewFinding => ({ id: `wiki-${index + 1}`, target: `world/${id}`,
+        problem: "draft edits a wiki-owned document without a coordinator receipt", requestedChange: "regenerate from the current project", validation: "no wiki conflict" }));
+      const all = [...findings, ...wikiFindings];
+      review = all.length === 0
+        ? { status: "approved", revision, findings: [], summary: `결정적 검사 통과 — 변경 맵 ${changedMapIds.length}개, lint error 0건.` }
+        : { status: "changes_requested", revision, findings: all, summary: `결정적 검사 미통과 — lint error ${all.length}건: ${all.slice(0, 3).map(f => f.problem).join(" / ")}${all.length > 3 ? " …" : ""}` };
+      if (review.status === "approved") candidate = { identity, acceptance: draftAcceptance };
     } catch (cause) {
-      const message = cause instanceof Error ? cause.message : String(cause);
-      // An unreviewable draft is never approved. But `independent-review-window-exceeded`
-      // is the harness refusing its own envelope, and reporting only that string buried the
-      // deterministic problems (failed lint, unmet acceptance) the user can actually act on.
-      //
-      // Name the remedy that works. This is reached only after the whole ReviewEvidenceFit
-      // ladder was refused, so "split the request" is advice that cannot succeed: what remains
-      // is a fixed floor (summary, start state, tileset, database reference) plus one map's
-      // grids, and no narrower request makes either smaller. A wider reviewer window does.
-      const reviewer = this.reviewConfig ?? this.config;
-      const summary = message.startsWith("independent-review-window-exceeded")
-        ? [`검수 증거가 검수 모델의 컨텍스트 창(${reviewer.model}, ${originalContextWindow(reviewer).toLocaleString("en-US")} 토큰)에 들어가지 않아 초안을 검수하지 못했습니다.`,
-          "격자 무손실 압축, 변경된 맵만 남기기, 양쪽이 동일한 참조 정의 생략까지 모두 적용한 뒤의 결과입니다."
-          + " 변경 범위를 나눠도 고정 증거(요약·시작 상태·타일셋·데이터베이스)와 맵 한 장의 타일 격자는 그대로 남으므로 줄어들지 않습니다.",
-          "컨텍스트 창이 더 큰 모델을 검수 모델로 지정하거나, 맵 크기를 줄이세요.",
-          ...knownProblems.map(problem => `- ${problem}`)].join("\n")
-        : message;
-      review = { status: "error", revision, findings: [], summary };
+      review = { status: "error", revision, findings: [], summary: cause instanceof Error ? cause.message : String(cause) };
     }
     if (owner !== this.reviewTurn) return { status: "error", revision, findings: [], summary: "independent-review-superseded" };
     this.resultReview = review;
-    this.pushAudit({ kind: "status", text: `independent-review ${JSON.stringify(review)}` });
+    this.pushAudit({ kind: "status", text: `deterministic-review ${JSON.stringify(review)}` });
     onEvent({ type: "result_review", review });
-    // The event may cancel, replace the draft, or start another attempt. Publishing
-    // the verdict is not authority to apply until those boundaries and budget pass.
-    if (candidate && owner === this.reviewTurn && !signal?.aborted
-      && this.estimatedOutputTotal - outputAtStart < remainingTokens
-      && candidate.identity === JSON.stringify(this.ctx.project)) {
+    if (candidate && owner === this.reviewTurn && !signal?.aborted && candidate.identity === JSON.stringify(this.ctx.project)) {
       this.approvedReviewIdentity = candidate.identity;
       this.approvedAuthoredIdentity = authoredIdentity(this.ctx.project);
       for (const item of candidate.acceptance?.items ?? []) this.acceptance?.review(item.id, review.summary, this.ctx.project, "pass");
@@ -5256,27 +5004,13 @@ export class AssistantSession {
         if (workPlanDecision !== null) this.recordWorkPlanDecision(workPlanDecision);
         if (signal?.aborted) return { assistantText: "사용자가 중단했습니다", proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted" };
         if (this.turnComposerMode !== "ask" && proposedByKey.size > 0) {
-          // A review consumes a round and the same output budget as the writer.
+          // 결정적 검사는 LLM 라운드도 출력 토큰도 쓰지 않는다 — 예산이 바닥이어도 돌린다.
           spentOutputTokens = this.estimatedOutputTotal - outputAtStart;
-          if (spentOutputTokens >= outputLimit || round + 1 >= roundCap) {
-            this.runExecution = "budget-exhausted";
-            return { assistantText: "독립 검수 예산이 부족하여 초안을 적용하지 않았습니다.", proposedCalls: this.finalizeProposals(proposedByKey),
-              stoppedReason: spentOutputTokens >= outputLimit ? "token-budget" : "max-tool-calls" };
-          }
-          round += 1;
-          this.checkpointRoundsUsed = round + 1;
           this.adoptAcceptance(undefined, onEvent);
           this.captureCheckpoint();
           await operation.wait(this.checkpointBestEffort());
           const review = await operation.wait(this.reviewCurrentDraft(onEvent, signal, outputLimit - spentOutputTokens));
-          spentOutputTokens = this.estimatedOutputTotal - outputAtStart;
           if (signal?.aborted) return { assistantText: "사용자가 중단했습니다", proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted" };
-          if (spentOutputTokens >= outputLimit) {
-            this.runExecution = "budget-exhausted";
-            this.approvedReviewIdentity = null;
-            this.approvedAuthoredIdentity = null;
-            return { assistantText: "독립 검수 중 출력 예산이 소진되어 적용하지 않았습니다.", proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "token-budget" };
-          }
           if (review.status !== "approved") {
             const failure = JSON.stringify([this.ctx.project, review.findings.map(({ target, problem, requestedChange }) => ({ target, problem, requestedChange }))]);
             const stalled = failure === this.lastReviewFailure;
@@ -5284,7 +5018,7 @@ export class AssistantSession {
             this.reviewAttempts += 1;
             if (review.status === "error" || stalled || this.reviewAttempts >= MAX_RALPH_ATTEMPTS_PER_ITEM) {
               this.runExecution = review.status === "error" ? "failed" : "blocked";
-              const error = `독립 검수 미승인: ${review.summary}${stalled ? " (동일 실패 반복)" : ""}`;
+              const error = `결정적 검사 미통과: ${review.summary}${stalled ? " (동일 실패 반복)" : ""}`;
               this.lastTurnFailed = review.status === "error";
               onEvent({ type: "assistant_message", content: error });
               return { assistantText: error, error, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error" };
@@ -5299,9 +5033,10 @@ export class AssistantSession {
           if (!this.draftBaselineCurrent) return { assistantText: this.resultReview?.summary ?? "Stale authored baseline",
             error: this.resultReview?.summary, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error" };
         }
-        // Only the independent review's conclusion may describe a changed result.
+        // 모델의 마지막 말이 사용자에게 가는 본문이다(질문·[선택지] 포함 — 드라이버의 일시정지 판정도 이 텍스트를 본다).
+        // 결정적 검사 결과는 그 뒤에 한 줄로 붙인다. 옛 LLM 검수는 자기 요약으로 본문을 갈아치웠다.
         assistantText = this.npcRewardFinalText(this.turnComposerMode !== "ask" && (proposedByKey.size > 0 || this.turnAppliedMilestoneCalls.length > 0)
-          ? sanitizeAssistantText(this.resultReview?.summary ?? finalText) : finalText);
+          ? [sanitizeAssistantText(finalText).trim(), this.resultReview?.summary ?? ""].filter(Boolean).join("\n\n") : finalText);
         onEvent({ type: "assistant_message", content: assistantText });
         this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
@@ -5716,22 +5451,43 @@ export class AssistantSession {
       if (spentOutputTokens >= outputLimit) {
         this.runExecution = "budget-exhausted";
         this.pushAudit({ kind: "status", text: `턴 종료(token-budget) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
-        return {
+        return await this.settleExhaustedDraft(onEvent, signal, proposedByKey, {
           assistantText: truncatedTurnText(assistantText, proposedByKey.size, "출력 토큰 예산", this.turnAppliedMilestoneCalls.length),
           proposedCalls: this.finalizeProposals(proposedByKey),
           stoppedReason: "token-budget",
-        };
+        });
       }
     }
 
-    // 라운드 안전핀 도달(기본 200 — 정상 작업에선 도달하지 않음) — 현재까지의 changeset을 제시.
-    // 자율 런은 이 상한을 턴마다 만난다. 안내는 런 경계에서만(finishRunRecap).
+    // 라운드 안전핀 도달 — 현재까지의 changeset을 제시.
     this.runExecution = "budget-exhausted";
     this.pushAudit({ kind: "status", text: `턴 종료(max-tool-calls) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
-    return {
+    return await this.settleExhaustedDraft(onEvent, signal, proposedByKey, {
       assistantText: truncatedTurnText(assistantText, proposedByKey.size, "도구 호출 예산", this.turnAppliedMilestoneCalls.length),
       proposedCalls: this.finalizeProposals(proposedByKey),
       stoppedReason: "max-tool-calls",
-    };
+    });
+  }
+
+  /**
+   * 2026-09-17 예산 소진 = 초안 전량 폐기 규칙 폐지.
+   *
+   * 실측: 균형 16, 최대 48, 「계속」 두 번 — 모두 max-tool-calls 로 끝나 3분간 그린 고스트가 빈 맵으로
+   * 돌아갔다. 예산이 바닥났다는 것은 모델이 더 못 한다는 뜻이지 지은 것이 틀렸다는 뜻이 아니다.
+   * 여기서 결정적 검사를 한 번 돌리고, 통과하면 final 로 바꿔 지금까지의 초안을 적용한다.
+   * 미통과면 원래대로 미적용으로 끝나되 무엇이 왜 남았는지 findings 를 싣는다.
+   */
+  private async settleExhaustedDraft(onEvent: (event: SessionEvent) => void, signal: AbortSignal | undefined,
+    proposedByKey: Map<string, ProposedCall>, exhausted: TurnResult): Promise<TurnResult> {
+    if (this.turnComposerMode === "ask" || proposedByKey.size === 0 || signal?.aborted) return exhausted;
+    const review = await this.runOperation.wait(this.reviewCurrentDraft(onEvent, signal, 0));
+    if (signal?.aborted || review.status !== "approved" || !this.draftBaselineCurrent) {
+      this.pushAudit({ kind: "status", text: `예산 소진 초안 미적용 — ${review.summary}` });
+      return { ...exhausted, error: `예산이 소진됐고 결정적 검사를 통과하지 못해 초안을 적용하지 않았습니다: ${review.summary}` };
+    }
+    this.pushAudit({ kind: "status", text: `예산 소진 초안 적용 — ${review.summary}` });
+    const text = `${exhausted.assistantText.trim()}\n\n예산이 소진되어 여기까지의 초안을 적용합니다(${review.summary}).`;
+    onEvent({ type: "assistant_message", content: text });
+    return { ...exhausted, assistantText: text, stoppedReason: "final" };
   }
 }

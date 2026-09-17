@@ -140,6 +140,10 @@ function sceneIdentity(args: Record<string, unknown>): unknown {
 }
 function compatible(name: string, original: Record<string, unknown>, args: Record<string, unknown>): boolean {
   if (key(original) === key(args)) return true;
+  // 2026-09-17: run_lint 는 현재 맵 상태의 함수다. 리사이즈 전 좌표로 만든 reachability finding 이
+  // 인자 완전 일치 규칙 때문에 error 0 재검사로도 안 지워져 영구 교착을 만들었다(PR #892 코멘트 finding-2).
+  // 같은 맵(또는 맵 미지정)의 통과는 그 맵의 이전 lint finding 을 해소한다.
+  if (name === "run_lint") return String(original.mapId ?? "") === String(args.mapId ?? "") || original.mapId === undefined || args.mapId === undefined;
   return name === "run_scene_test" && isSceneTestInput(original) && isSceneTestInput(args)
     && original.steps.some(step => step.kind === "interact")
     && original.steps.filter(step => step.kind === "interact").every(step => typeof step.eventId === "string")
