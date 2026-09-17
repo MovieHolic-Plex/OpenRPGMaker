@@ -1,3 +1,4 @@
+import { createForestHarmonyTileset, FOREST_HARMONY_TEXTURE } from "./forestHarmony";
 import { createTiboInteriorTileset, extendTiboInteriorDefaults, TIBO_INTERIOR_ID, TIBO_INTERIOR_TEXTURE } from "./tiboInterior";
 import { composeCombinedTownRetroWorldTileset } from "./combinedTownRetroWorld";
 import type { AssetSet, GameMap, PassFlag, ResourceKind, ResourceProfile, SpriteDef, TilesetDef } from "../types";
@@ -180,6 +181,7 @@ function legacyRmTilesetReplacementId(map: Pick<GameMap, "id" | "name">): string
 }
 
 function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
+  if (asset.textureKey === FOREST_HARMONY_TEXTURE) return createForestHarmonyTileset();
   if (asset.textureKey === TIBO_INTERIOR_TEXTURE) return createTiboInteriorTileset();
   if (asset.textureKey === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return createCombinedTownRetroWorldTileset();
   return bundledStandardChipsetTileset(asset);
