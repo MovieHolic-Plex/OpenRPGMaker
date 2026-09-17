@@ -2,6 +2,7 @@
 // 보이고, 펼치면 ① 지금 각 팀원이 하는 일 ② 팀원 명단 편집(추가·수정·끄기·삭제·기본값) ③ 팀장 지침이 나온다.
 // 상태는 teamActivity 버스(실행 중 보드 상태)와 teamSpecStore(명세)에서 온다. 이 파일은 그리기와 편집 폼만.
 
+import { createTeamBudget } from "./aiTeamBudget";
 import { el } from "@/util/dom";
 import { subscribeTeamActivity } from "@/ai/piAgent/teamActivity";
 import type { TeamBoardAgent, TeamBoardState } from "@/ai/piAgent/teamBoardState";
@@ -144,7 +145,7 @@ export function createTeamPanel(initialEnabled = false, options: { readonly alwa
       return wrap;
     };
     const name = el("input", { class: "ai-team-input", attrs: { type: "text", maxlength: "24", required: "", value: current.label }, dataset: { testid: "ai-team-form-label" } });
-    name.addEventListener("input", () => { draft = { ...current, label: name.value }; });
+    name.addEventListener("input", () => { draft = { ...(draft ?? current), label: name.value }; });
     const kind = el("select", { class: "ai-team-input", dataset: { testid: "ai-team-form-kind" } });
     for (const value of ["builder", "reviewer"] as PiTeamMemberKind[]) {
       const option = el("option", { text: KIND_LABEL[value], attrs: { value } });
@@ -170,11 +171,11 @@ export function createTeamPanel(initialEnabled = false, options: { readonly alwa
       chip.append(box, el("span", { text: DOMAIN_LABEL[domain] ?? domain }));
       domains.append(chip);
     }
-    const turns = el("input", { class: "ai-team-input ai-team-input-narrow", attrs: { type: "number", min: "1", max: "600", value: String(current.maxTurns) }, dataset: { testid: "ai-team-form-turns" } });
-    turns.addEventListener("input", () => { draft = { ...(draft ?? current), maxTurns: Number(turns.value) || current.maxTurns }; });
+    const budget = createTeamBudget(maxTurns => { draft = { ...(draft ?? current), maxTurns }; });
+    budget.update(current.maxTurns);
     form.append(
       field("이름", name), field("종류", kind), field("소개", summaryInput), field("프롬프트", prompt),
-      field("도구 범위 (비우면 전부)", domains), field("턴 상한", turns),
+      field("도구 범위 (비우면 전부)", domains), el("div", { class: "ai-team-field", children: [el("span", { text: "작업 예산" }), budget.root] }),
       el("p", { text: "모델은 AI 설정에서 선택합니다. 팀장은 Ultrabrain, 팀원의 실행·구조 검수는 Deep을 사용합니다." }),
     );
     const actions = el("div", { class: "ai-team-form-actions" });
@@ -206,7 +207,7 @@ export function createTeamPanel(initialEnabled = false, options: { readonly alwa
     const add = el("button", { class: "ai-team-btn", text: "팀원 추가", attrs: { type: "button" }, dataset: { testid: "ai-team-add" } });
     add.addEventListener("click", () => {
       const id = slugifyMemberId("member", new Set(spec.members.map((member) => member.id)));
-      const member: PiTeamMember = { id, label: "새 팀원", kind: "builder", summary: "", prompt: "", toolDomains: [], maxTurns: 150, enabled: true };
+      const member: PiTeamMember = { id, label: "새 팀원", kind: "builder", summary: "", prompt: "", toolDomains: [], maxTurns: 300, enabled: true };
       spec = saveTeamSpec({ ...spec, members: [...spec.members, member] });
       startEdit(member);
     });
