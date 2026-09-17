@@ -143,6 +143,18 @@ export function createDatabaseCinematicActions(options: {
       });
     },
 
+    /**
+     * 시퀀스 전체를 한 번의 되돌리기 단위로 갈아 끼운다(프리셋 적용).
+     * 장면을 하나씩 밀어 넣으면 되돌리기가 장면 수만큼 쌓여 «한 번 눌러 되돌리기»가 깨진다.
+     */
+    applySequence(sequence: CinematicSequence, label = "프리셋 적용"): boolean {
+      if (!active()) return false;
+      if (sequence.scenes.length > CINEMATIC_SCENE_LIMIT) return false;
+      return commit(label, project => {
+        writeSequence(project, target, structuredClone(sequence));
+      });
+    },
+
     addScene(): string | undefined {
       if (!active() || (read()?.scenes.length ?? 0) >= CINEMATIC_SCENE_LIMIT) return undefined;
       const id = genId("cinematic-scene");
