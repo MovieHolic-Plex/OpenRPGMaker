@@ -103,4 +103,37 @@ ol,ul{color:#c9cdd5}li{margin:.25rem 0}code{font:500 .86em ui-monospace,Consolas
 </ol>
 <p class="muted">목업의 수치(Lv 12, 1,240 G, 1:32, 임무 「등대 조사」)는 예시다. 얼굴·아이콘·필드는 실제 리소스와 실제 캡처다. 목업 소스: <code>.omo/esc-menu-proposal/mock/</code>(gitignore) — <code>build.mjs</code> 가 HTML 6장을 만들고 Playwright 로 찍는다.</p>
 </section>
+<section>
+<div class="eyebrow">Result · 2026-09-17</div><h2>구현 결과 — 메뉴 디자인은 자료집에서 고른다</h2>
+<p class="lede">세 방향을 전부 <b>스킨</b>으로 등록했다. 자료집 → 시스템 → 「화면」 절의 <b>게임 메뉴 디자인</b> 드롭다운에서 고르면 다음 테스트 플레이부터 ESC 메뉴가 그 모양으로 뜬다. 기본값 「작업대」는 지금 화면 그대로(DOM·CSS 무변경)이고, 아래 캡처는 모두 런타임 QA 하네스가 찍은 실화면(1280×960)이다.</p>
+<div class="grid2">
+<div><img src="2026-09-17-esc-menu-uiux-proposal-assets/after-editor-system-menu-skin-options.png" alt="자료집 시스템 탭 메뉴 디자인 드롭다운"><p class="cap">자료집 시스템 탭 「게임 메뉴 디자인」. 5종 — 작업대 · 파티 퍼스트(유리) · 파티 퍼스트(남색과 금) · 허브 타일 · 사이드 시트. 설명 한 줄과 320×240 미리보기가 따라온다.</p></div>
+<div><img src="2026-09-17-esc-menu-uiux-proposal-assets/after-editor-system-studio.png" alt="시스템 스튜디오 화면 카드"><p class="cap">스튜디오 개요의 「화면」 카드 상태에도 고른 메뉴 디자인이 보인다.</p></div>
+</div>
+<h3 style="margin-top:22px">파티 퍼스트 · 유리 (<code>party-first</code>)</h3>
+<div class="grid2">
+<div><img src="2026-09-17-esc-menu-uiux-proposal-assets/after-party-first-main.png" alt="파티 퍼스트 첫 화면"><p class="cap">ESC 한 번 = 파티 4행(얼굴 30px · 직업 · Lv · HP/MP 미터 · 위험 칩). 레일은 컬러 아이콘 10항목 평탄(파티 4개도 최상위).</p></div>
+<div><img src="2026-09-17-esc-menu-uiux-proposal-assets/after-party-first-items.png" alt="파티 퍼스트 아이템"><p class="cap">→ 로 들어간 아이템. 오른쪽 열은 쇼케이스(아이콘·이름·수량) + 파티 미니 4행. 효과·대상·스탯 증감은 하단 메시지 줄이 말한다.</p></div>
+</div>
+<h3 style="margin-top:22px">파티 퍼스트 · 남색과 금 (<code>party-first-warm</code>)</h3>
+<div class="grid2">
+<div><img src="2026-09-17-esc-menu-uiux-proposal-assets/after-party-first-warm-main.png" alt="남색과 금 첫 화면"><p class="cap">같은 골격, 남색 판 + 금 테두리 + 앰버 커서.</p></div>
+<div><img src="2026-09-17-esc-menu-uiux-proposal-assets/after-party-first-warm-equipment.png" alt="남색과 금 장비"><p class="cap">장비 후보 목록. 선택 행과 수량 강조가 앰버로 바뀐다.</p></div>
+</div>
+<h3 style="margin-top:22px">허브 타일 (<code>hub</code>)</h3>
+<div class="grid2">
+<div><img src="2026-09-17-esc-menu-uiux-proposal-assets/after-hub-main.png" alt="허브 첫 화면"><p class="cap">명령 6타일(아이콘 · 라벨 · 한 줄 요약: 아이템 7종 · 파티 위험 1 · 시스템 저장·로드·…) + 파티 스트립 4칸. ←→↑↓ 가 격자를 움직이고 Enter 로 들어간다.</p></div>
+<div><img src="2026-09-17-esc-menu-uiux-proposal-assets/after-hub-items.png" alt="허브 아이템"><p class="cap">들어가면 접힌 6항목 레일 + 작업 패널 — 작업대와 같은 배치에 컬러 아이콘·사이드 파티만 얹는다.</p></div>
+</div>
+<h3 style="margin-top:22px">사이드 시트 · 지도 노출 (<code>sheet</code>)</h3>
+<div class="grid2">
+<div><img src="2026-09-17-esc-menu-uiux-proposal-assets/after-sheet-main.png" alt="사이드 시트 첫 화면"><p class="cap">오른쪽 140px 시트만 뜬다. 주인공과 마을은 왼쪽에 그대로 — 오른쪽으로 갈수록만 어둡다. 파티 4행(얼굴 22px) + 명령 2열×5행.</p></div>
+<div><img src="2026-09-17-esc-menu-uiux-proposal-assets/after-sheet-items.png" alt="사이드 시트 아이템"><p class="cap">들어가면 전체 판으로 펼쳐진다(작업 패널은 시트 폭에 안 들어간다).</p></div>
+</div>
+<div class="grid2" style="margin-top:22px">
+<div class="card"><h3>목업과 다른 점</h3><p>① 헤더는 기존 「메뉴 · 장소 · 돈 · 시간」을 유지했다(제목 제거는 워크벤치 회귀를 만든다). ② 사이드 파티 옆의 쇼케이스는 아이콘·이름·수량만 남겼다 — 133px 열에 설명·사실표·스탯 증감 9줄과 파티 4행이 같이 들어가지 않고, 같은 내용이 하단 메시지 줄에 있다. ③ 허브·시트의 function 모드는 작업대 배치를 쓴다. ④ 장비 후보 목록을 슬롯 아래 같은 패널에 그리는 건 안 했다(기존 3단 백스택 유지).</p></div>
+<div class="card warn"><h3><span class="tag p1">남긴 일</span></h3><p>상태이상 칩(세션에 필드 상태이상 데이터가 없다 — <code>condition: "정상"</code> 하드코딩) · EXP 게이지(성장 곡선에서 읽어야 함) · 푸터의 진행 중 임무 한 줄 · 사용자 정의 스킨(CSS 등록) · 스킨별 미리보기 썸네일의 자동 갱신(지금은 캡처 축소판을 손으로 넣음).</p></div>
+</div>
+<p class="muted">코드: <code>src/player/menuSkins/registry.ts</code>(5종 등록 · <code>menuSkinFor</code>), <code>src/styles/runtime/statusMenuSkins.css</code>(전부 <code>data-menu-skin-*</code> 속성 스코프), 편집기 <code>databaseSystemView.ts</code> 의 <code>menuSkinFieldset</code>. 설계 <code>docs/superpowers/specs/2026-09-17-esc-menu-skins-design.md</code> · 계획 <code>docs/superpowers/plans/2026-09-17-esc-menu-skins.md</code>.</p>
+</section>
 </div></main></body></html>
