@@ -260,3 +260,21 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* 게임 메뉴 디자인(ESC 메뉴 스킨) — 설명 한 줄 + 320×240 미리보기 썸네일 */
+.database-modal-backdrop .db-system-menu-skin-description {
+  color: var(--db-studio-text-2);
+  font: 500 12px/1.5 var(--font-ui);
+  margin: 4px 0 8px;
+}
+
+.database-modal-backdrop .db-system-menu-skin-preview {
+  background: rgba(0, 0, 0, 1);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  display: block;
+  height: auto;
+  image-rendering: auto;
+  max-width: 100%;
+  width: 320px;
+}
