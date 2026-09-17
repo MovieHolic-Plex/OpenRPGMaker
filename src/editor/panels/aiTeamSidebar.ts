@@ -259,7 +259,7 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
         id, label: agent.mapName ?? mapId, mapIds: [mapId], agentLabel: agent.roleLabel,
         ...defaults, ...(spec?.model ? { model: spec.model } : {}),
         instruction: [spec?.prompt, `이전 작업: ${agent.task}`, `이전 보고: ${agent.summary || agent.lastLine}`].filter(Boolean).join("\n"),
-        memberId: agent.memberId,
+        memberId: agent.memberId ?? undefined,
         readOnly: agent.role === "reviewer", ...(spec ? { toolDomains: spec.toolDomains, maxTurns: spec.maxTurns } : {}),
       });
       followUps.set(agent.agentId, id);

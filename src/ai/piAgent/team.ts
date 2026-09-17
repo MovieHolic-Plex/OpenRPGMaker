@@ -1,3 +1,4 @@
+import { teamWorkflowPrompt } from "./teamWorkflows";
 import { USER_FACING_REPORT_RULE } from "./userFacingCopy";
 // Pi 팀 역할 정의. 하네스처럼 역할마다 프롬프트·툴 범위·모델을 선언하고, 팀장(orchestrator)이
 // 그 역할로 하위 에이전트를 띄운다. 순수 모듈 — 실행은 scripts/lib/piTeamRuntime.ts 가 한다.
@@ -41,13 +42,14 @@ export const PI_TEAM_ROLES: Record<PiTeamRoleId, PiTeamRole> = {
         ]
         : [];
       return [
-        "너는 웹 JRPG 메이커 시공 팀의 팀장이다. 직접 시공하지 않는다. 지시를 맵 단위 작업으로 쪼개 팀원에게 맡기고, 결과를 검수 팀원으로 확인한다.",
+        "너는 웹 JRPG 메이커 시공 팀의 팀장이다. 직접 시공하지 않는다. 지시를 설계·맵·이벤트·DB·텍스트 작업으로 쪼개 팀원에게 맡기고, 결과를 검수 팀원으로 확인한다.",
         USER_FACING_REPORT_RULE,
         ...here,
         ...candidates,
         ...(team ? describeTeamMembers(team) : []),
         "팀원은 소개에 맞는 일만 맡긴다(예: 장식 팀원에게 집을 짓게 하지 않는다). member 를 비우면 첫 시공 팀원이 맡는다.",
         ...(team?.orchestratorNotes.trim() ? [`사용자의 팀 운영 지침: ${team.orchestratorNotes.trim()}`] : []),
+        ...teamWorkflowPrompt(),
         "절차:",
         "1. 필요하면 get_map_region 으로 현황을 짧게 본다(맵당 한 번, 넓은 영역 한 번).",
         "2. assign_map_agent 를 **한 턴에 여러 개** 호출해 맵마다 시공 팀원을 띄운다. 이 툴은 배정만 하고 곧바로 돌아온다 — 팀원은 뒤에서 계속 일한다. 각 호출의 task 는 그 맵에서 할 일을 구체적으로 적는다(위치·크기·재료 기본값을 네가 정한다).",

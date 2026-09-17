@@ -38,7 +38,7 @@ export const DEFAULT_TEAM_MEMBERS: readonly PiTeamMember[] = [
     id: "builder",
     label: "시공",
     kind: "builder",
-    summary: "집·길·지형 등 맵 위 구조물을 짓는다. 기본 시공 담당.",
+    summary: "맵 시공·이벤트·DB·텍스트 제작과 설계·검사를 맡는 기본 제작 담당. 배정마다 전문 역할을 지정할 수 있다.",
     prompt: "너는 팀의 시공 에이전트다. 팀장이 준 작업만 하고, 끝나면 무엇을 어디에 만들었는지 좌표와 함께 한두 문장으로 보고한다.",
     toolDomains: [],
     maxTurns: 300,
@@ -129,8 +129,8 @@ export function describeTeamMembers(spec: PiTeamSpec): string[] {
   const builders = enabledMembers(spec, "builder");
   const reviewers = enabledMembers(spec, "reviewer");
   return [
-    `시공 팀원(assign_map_agent 의 member): ${builders.map((m) => `${m.id}「${m.label}」 — ${m.summary || m.prompt.slice(0, 60)}`).join(" / ") || "(없음)"}`,
-    `검수 팀원(review_map 의 member): ${reviewers.map((m) => `${m.id}「${m.label}」 — ${m.summary || m.prompt.slice(0, 60)}`).join(" / ") || "(없음 — 검수 생략)"}`,
+    `제작 팀원(assign_map_agent / assign_task_agent 의 member): ${builders.map((m) => `${m.id}「${m.label}」 — ${m.summary || m.prompt.slice(0, 60)}`).join(" / ") || "(없음)"}`,
+    `검수 팀원(review_map / assign_task_agent mode=read 의 member): ${reviewers.map((m) => `${m.id}「${m.label}」 — ${m.summary || m.prompt.slice(0, 60)}`).join(" / ") || "(없음 — 검수 생략)"}`,
   ];
 }
 
