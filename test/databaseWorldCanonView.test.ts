@@ -115,12 +115,15 @@ describe("database world canon view", () => {
   it("updates the hero meter and stat with the body without a rerender", () => {
     const host = renderTab();
     setInput(host, "db-world-canon-body", "가".repeat(700));
-    expect(findByTestId(host, "db-world-canon-ai-meter")?.textContent).toContain("뒤 100자는 발췌 밖");
+    const meter = findByTestId(host, "db-world-canon-ai-meter");
+    expect(meter?.textContent).toContain("뒤 100자는 발췌 밖");
+    expect(meter?.getAttribute("role")).toBe("status");
     const stat = findByTestId(host, "db-world-canon-hero-stat-body");
     expect(stat?.textContent).toContain("600 / 600자");
     expect(stat?.textContent).toContain("뒤 100자 잘림");
     expect(stat?.className).toContain("db-ws-stat-warn");
     expect(findByTestId(host, "db-world-canon-hero-stats")).toBeTruthy();
+    expect(findByTestId(host, "db-world-canon-identity")?.textContent).toContain("이름과 한 줄");
   });
 
   it("rejects an absence past the cap with feedback instead of silently dropping", () => {
