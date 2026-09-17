@@ -132,6 +132,8 @@ export function buildVillageDomain(
   const fencesEnabled = merged.fences !== false;
   const decorEnabled = merged.decor !== false;
   const warnings: string[] = [];
+  // 2026-09-18: compact 인데 저장된 집 오브젝트가 없으면 예전엔 거부였다. 이제 파라메트릭 집으로 짓고 알린다.
+  if (compact && !objectCatalog) warnings.push("조밀한 구성에 저장된 집(houseObjectIds)이 없어 기본 형태의 집으로 시공했습니다.");
   // 사용자 저작 데이터 층 — 데이터베이스 「마을」탭 레코드가 코드 기본값을 이긴다.
   // 우선순위: 명시 인자 > 프리셋 > 테마 추론 > 씨앗값 파생.
   const presetId = typeof merged.presetId === "string" ? merged.presetId.trim() : "";

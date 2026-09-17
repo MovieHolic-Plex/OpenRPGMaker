@@ -1,7 +1,7 @@
 // 실사용 감사 로그(2026-07-04) 회귀: place_npc가 graphic.query="people1"로 실패했고
 // 실패 요약에 원인이 없어 추적이 어려웠다. 시트명 질의 해석 + 실패 요약 원인 포함을 고정한다.
 import { describe, expect, it } from "vitest";
-import { CHARSET_SEMANTICS, findCharsetSemantic } from "@/assets/charsetSemantics";
+import { findCharsetSemantic } from "@/assets/charsetSemantics";
 import { resolveGraphicQuery } from "@/editor/tools/eventCompile";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
@@ -50,7 +50,8 @@ describe("place_npc graphic.query", () => {
     expect(findCharsetSemantic(textureKey ?? "", characterIndex)).toMatchObject({ gender: "female", age: "elder" });
   });
 
-  it("그래픽 해석 실패 시 요약에 원인 메시지가 포함된다", () => {
+  it("그래픽 해석 실패 시 기본 주민 그래픽으로 대체하고 경고에 원래 검색어를 남긴다", () => {
+    // 2026-09-18: 예전엔 graphic-not-found 로 거부했다(거부 잘 안하게).
     const project = createBlankProject();
     const ctx: ToolContext = { project };
     const result = runTool(ctx, "place_npc", {
@@ -62,22 +63,11 @@ describe("place_npc graphic.query", () => {
       graphic: { query: "존재하지않는그래픽xyz" },
       pages: [{ text: "..." }],
     });
-    expect(result.ok).toBe(false);
-    expect(result.summary).toContain("실행 실패:");
-    expect(result.summary).toContain("charset");
-    expect(result.issues?.[0]?.message).toContain("후보 라벨 예시");
-    // 라벨 문자열을 하드코딩하면 카탈로그를 고칠 때마다 이 테스트가 깨진다
-    // (실제로 깨졌다 — 2026-07-27 people1 idx0 이 "청년 남성 주민" → "남자아이" 로 정정됐다).
-    // 검사의 뜻은 "안내 메시지가 실제 카탈로그의 라벨을 예시로 보여 준다"이므로,
-    // 특정 라벨이 아니라 **카탈로그의 라벨 중 하나라도** 들어 있는지를 본다.
-    // 배열 첫 항목을 쓰면 안 된다 — 앞쪽은 몬스터 시트이고 안내 예시는 사람 시트부터 나온다.
-    const message = result.issues?.[0]?.message ?? "";
-    const labels = CHARSET_SEMANTICS.map((entry) => entry.label).filter(Boolean);
-    expect(labels.length, "카탈로그가 비었다").toBeGreaterThan(0);
-    expect(
-      labels.some((label) => message.includes(label)),
-      `안내 메시지에 카탈로그 라벨이 하나도 없다: ${message}`
-    ).toBe(true);
+    expect(result.ok, result.summary).toBe(true);
+    const warnings = [...(result.warnings ?? []), ...(result.diff?.warnings ?? [])];
+    expect(warnings.some((w) => w.includes("존재하지않는그래픽xyz") && w.includes("기본 주민 그래픽으로 대체"))).toBe(true);
+    const npc = ctx.project.maps[project.startMapId]?.events.find((event) => event.id === "npc_fail");
+    expect(npc?.pages?.[0]?.graphic.sprite?.id).toMatch(/^tex_easyrpg_charset_/);
   });
 
   it("default villager graphics diversify across sequential placements", () => {

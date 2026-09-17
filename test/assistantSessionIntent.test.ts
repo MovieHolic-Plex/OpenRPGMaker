@@ -102,12 +102,13 @@ describe("의도 선언이 세션 라우팅을 정한다", () => {
     expect(statuses(session).some((text) => text.startsWith("의도 확인:"))).toBe(true);
   }, 30000);
 
-  it("auto 모드는 되묻기를 건너뛰지만 미완성 acceptance 를 성공으로 게시하지 않는다(F-05)", async () => {
+  // 2026-09-17 수용 원장 해체: 「미완성 acceptance 를 성공으로 게시하지 않는다」(F-05 후반) 는 원장이 없어져 검증 대상이 아니다.
+  // 남은 계약은 되묻기 건너뛰기 — auto 모드는 질문 선언을 무시하고 본문 모델을 부르며, 쓰기가 없으면 적용도 없다.
+  it("auto 모드는 되묻기를 건너뛰고 본문 모델을 부른다(F-05 전반)", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const seen: ChatRequest[] = [];
     const project = createBlankProject();
     installHermetic(project);
-    const published: string[] = [];
     const session = new AssistantSession(project, {
       config: AUTO_CONFIG,
       chat: async (_config, request) => {
@@ -116,19 +117,15 @@ describe("의도 선언이 세션 라우팅을 정한다", () => {
       },
       declareIntent: fixedDeclarer({ space: "unclear", clarify: "실내인가요 야외인가요?", needsPlan: false }),
     });
-    const result = await session.sendUserMessage("집 하나 만들어줘", event => {
-      if (event.type === "assistant_message") published.push(event.content);
-    });
+    const result = await session.sendUserMessage("집 하나 만들어줘", () => {});
     expect(seen.length).toBeGreaterThan(0);
     expect(seen.length).toBeLessThanOrEqual(AUTO_CONFIG.maxToolCalls);
     expect(seen[0]?.tools?.length).toBeGreaterThan(0);
-    expect(result.stoppedReason).toBe("error");
-    expect(session.getAcceptanceSnapshot()?.status).toBe("blocked");
+    expect(result.assistantText).not.toContain("실내인가요 야외인가요?");
+    expect(statuses(session).some((text) => text.startsWith("의도 확인:"))).toBe(false);
+    expect(session.getAcceptanceSnapshot()).toBeNull();
     expect(result.proposedCalls).toEqual([]);
     expect(result.appliedCalls ?? []).toEqual([]);
-    expect(session.isDraftReviewApproved()).toBe(false);
-    expect(result.assistantText).not.toContain("WRITER_SUCCESS_SENTINEL");
-    expect(published.join("\n")).not.toContain("WRITER_SUCCESS_SENTINEL");
   }, 30000);
 
   it("선언자가 없으면 폴백 선언이다 — 되묻지 않고, 계획 여부는 플래너(direct)에게 넘긴다", async () => {

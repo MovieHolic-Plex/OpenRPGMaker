@@ -131,11 +131,12 @@ it("crashes after a real applied create before final transcript persistence; rec
   } finally { release.resolve(); await bounded(running); }
 });
 
-it("restores the same WorkPlan and immutable requirements, executing only its remaining task without resetting consumed budget", async () => {
+it("restores the same WorkPlan, executing only its remaining task without resetting consumed budget", async () => {
   const waiting = deferred<void>(), response = deferred<llm.ChatResult>(); let round = 0;
   const recoveryConfig = { ...config, maxTokens: 4096 };
   const usage = (completion_tokens: number) => ({ prompt_tokens: 100, completion_tokens, total_tokens: 100 + completion_tokens });
-  const plan = { goal: "Exact title", acceptance: [{ id: "title", title: "Exact title", criteria: [{ kind: "gameTitle", title: "RECOVERED_TITLE" }] }],
+  // 2026-09-17 수용 원장 제거 — 플래너는 acceptance 배열을 내지 않는다. 복구 계약은 WorkPlan·예산·요청만이다.
+  const plan = { goal: "Exact title",
     layers: [{ title: "Remaining", items: [{ title: "Set title", instruction: "Set exact title", successTools: ["set_title_screen"] }] }] };
   const session = new AssistantSession(store.getCurrent(), { config: recoveryConfig, checkpoint: checkpointHost, declareIntent: fixedDeclarer({ mode: "other" }),
     chat: reviewingChat(async () => { if (round++ === 0) return { ...tool("set_work_plan", plan), usage: usage(64) }; waiting.resolve(); return response.promise; }) });
@@ -143,7 +144,7 @@ it("restores the same WorkPlan and immutable requirements, executing only its re
   try {
     await bounded(waiting.promise); await bounded(session.whenCheckpointed());
     const saved = await checkpoint(), image = await crashImage();
-    if (!saved.runtime?.acceptance || !saved.workPlan) throw new Error("Missing canonical plan checkpoint");
+    if (!saved.workPlan) throw new Error("Missing canonical plan checkpoint");
     expect(saved.budget.remainingToolCalls).toBeLessThan(config.maxToolCalls);
     session.retireRun(); response.resolve(final); await bounded(running); await bounded(session.whenCheckpointed());
     await recreate(image);
@@ -174,7 +175,6 @@ it("restores the same WorkPlan and immutable requirements, executing only its re
     expect(store.getCurrent().system.titleScreen?.title).toBe("RECOVERED_TITLE");
     const result = await checkpoint();
     expect(result.workPlan?.id).toBe(saved.workPlan.id);
-    expect(result.runtime?.acceptance?.promises).toEqual(saved.runtime.acceptance.promises);
     expect(result.request).toEqual(saved.request);
     // 소비된 예산은 재개 뒤의 writer 두 라운드(쓰기 40 + 마무리 60)만이다 — 결정적 검사는 예산을 쓰지 않는다.
     expect(result.budget.remainingOutputTokens).toBe(saved.budget.remainingOutputTokens - 40 - 60);

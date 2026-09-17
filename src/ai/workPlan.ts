@@ -29,7 +29,6 @@ import { QUICK_REPLY_MARKER } from "@/ai/interviewPrompt";
 import { VERIFICATION_TOOL_NAMES } from "./agentVerification";
 import { activeTools, getTool } from "@/editor/tools/toolRegistry";
 import { parseAcceptance, type AcceptancePromise } from "./assistantAcceptance";
-import { ACCEPTANCE_PLANNER_GUIDE } from "./assistantAcceptanceTools";
 import { parseWorkTargetIds, workTargetContractIssues } from "./workPlanTargets";
 import { parseVerificationChecks, type VerificationCheck } from "./toolVerificationEvidence";
 export type WorkItemStatus = "pending" | "in_progress" | "done" | "skipped" | "blocked";
@@ -171,7 +170,7 @@ Harness contract:
 17. Verification successTools bind to accepted criteria on the item's mapTargets. Where no criterion resolves, declare verificationChecks:[{tool,args}] using complete validated tool input, or {tool,criterion:{promiseId,criterionIndex}}. Scenes also declare interactionTargets:[{stepIndex,mapId,eventId}] for every explicit interact step. Missing/invalid scope stays pending specification; the first probe is never a declaration. Accepted checks survive skipping/replanning and cannot be weakened. Do not invent additional game goals.
 18. Spatial authoring items MUST declare mapTargets:["exact_map_id"] (choose stable IDs for new maps). One map per authoring item, with that map's own single-map BuildSpec. Never combine terrain/buildings on different maps in one item. Put create_transfer_pair in a separate linking item with mapTargets:["map_a","map_b"] after both map authoring items in existing layer/item order. Each successTool is credited only for its declared targets; a no-op on A cannot discharge B. Include structure-authoring tools for promised buildings, not just fill_region, roads or transfers.
 ${NARRATIVE_HORROR_PLANNER_RULE}
-${ACCEPTANCE_PLANNER_GUIDE}
+Do NOT author acceptance or requirements arrays. The harness verifies results deterministically (lint error 0 on changed maps); declared acceptance contracts are ignored.
 
 JSON schema:
 {

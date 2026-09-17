@@ -136,7 +136,8 @@ describe("map-qualified unresolved finding ownership", () => {
     const correction = (checkId: string | undefined): Call => ({ name: "correct_verification", args: { checkId, args: f.args } });
     const probe: Call = { name: scene, args: f.args };
     const rounds: (() => Call[])[] = [
-      () => [{ name: "set_work_plan", args: { goal: "Reward ownership", acceptance: [{ id: "size", title: "Map", criteria: f.criteria }],
+      // 2026-09-17: 세션의 수용 원장은 사라졌다 — plan 의 acceptance 배열은 무시되므로 넣지 않는다.
+      () => [{ name: "set_work_plan", args: { goal: "Reward ownership",
         layers: [{ title: "Inspect", items: [{ title: "Reward", instruction: "Check reward", successTools: [scene],
           verificationChecks: [{ tool: scene, args: f.args, interactionTargets: [{ stepIndex: 2, mapId: "mapA", eventId: "shared_npc" }] }] }] }] } }, probe],
       () => {
@@ -163,7 +164,6 @@ describe("map-qualified unresolved finding ownership", () => {
       },
     });
     await session.sendUserMessage("Inspect reward ownership.", event => events.push(event));
-    expect(session.getAcceptanceSnapshot()?.status).toBe("blocked");
     expect(both?.findings).toHaveLength(2);
     expect(both?.requirements).toHaveLength(1);
     expect(originalId).toBe(both?.requirements[0]?.checkId);
@@ -182,6 +182,5 @@ describe("map-qualified unresolved finding ownership", () => {
     await session.sendUserMessage("Continue.", event => events.push(event));
     expect(session.getVerificationSnapshot().findings).toEqual([]);
     expect(session.getVerificationSnapshot().requirements).toHaveLength(1);
-    expect(session.getAcceptanceSnapshot()?.status).toBe("verified");
   });
 });

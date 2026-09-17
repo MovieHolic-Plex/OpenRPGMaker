@@ -119,14 +119,16 @@ describe('character asset recovery', () => {
     expect(store.getCurrent()).toEqual(before);
   });
 
-  it('keeps incompatible query rejection typed and atomic, with explicit retry and transparency already supported', () => {
+  it('falls back to the default villager graphic for an unmatched query, with a warning, and still accepts explicit retry and transparency', () => {
+    // 2026-09-18: 검색어 미매칭은 거부가 아니라 기본 주민 그래픽 + 경고다(거부 잘 안하게).
     const ctx = { project: store.getCurrent() };
-    const before = structuredClone(ctx.project);
     const args = { mapId, id: 'new-resident', x: 3, y: 3, name: 'Requested resident', pages: [{ text: 'Keep this request' }] };
     const result = runTool(ctx, 'place_npc', { ...args, graphic: { query: 'old woman monster' } });
-    expect(result.ok).toBe(false);
-    expect(result.issues?.[0]?.code).toBe('graphic-not-found');
-    expect(ctx.project).toEqual(before);
+    expect(result.ok, result.summary).toBe(true);
+    const warnings = [...(result.warnings ?? []), ...(result.diff?.warnings ?? [])];
+    expect(warnings.some((w) => w.includes('기본 주민 그래픽으로 대체'))).toBe(true);
+    const placed = ctx.project.maps[mapId]?.events.find((event) => event.id === 'new-resident');
+    expect(placed?.pages?.[0]?.graphic.sprite?.id).toMatch(/^tex_easyrpg_charset_/);
     const retry = runTool(ctx, 'place_npc', { ...args, graphic: { textureKey, characterIndex: 1 } });
     expect(retry.ok, retry.summary).toBe(true);
     const transparent = runTool(ctx, 'place_npc', { ...args, id: 'transparent-resident', graphic: { transparent: true } });

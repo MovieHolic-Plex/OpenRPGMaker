@@ -148,16 +148,14 @@ function assertRetry(ctx: ToolContext, args: Record<string, unknown>, pages: rea
 }
 
 describe("audited NPC repairs through the real runner", () => {
-  it("entry170: requires pages but supplies the original dialogue as a usable pages correction", () => {
+  it("entry170: dialogue.text alone becomes the first page instead of a rejection", () => {
+    // 2026-09-18: 예전엔 pages 를 요구하며 repair 힌트만 돌려줬다. 이제 dialogue.text 를 그대로 첫 페이지로 쓴다.
     const ctx = context();
-    const result = rejectWithoutMutation(ctx, entry170);
-    const repair = repairFrom(result);
-    const pages = [{ lines: [entry170.dialogue.text] }];
-    expect(repair, JSON.stringify(result)).toEqual({ path: "pages", example: pages });
-    if (!repair || !Array.isArray(repair.example)) throw new Error("Missing pages repair");
-    // Replay the parsed example, not a separately authored replacement.
-    expect(runTool(ctx, "place_npc", { ...entry170, pages: repair.example }).ok).toBe(true);
-    assertRetry(ctx, entry170, pages);
+    const result = runTool(ctx, "place_npc", entry170);
+    expect(result.ok, result.summary).toBe(true);
+    expect((result.diff?.warnings ?? []).some((w) => w.includes("dialogue.text → pages[0].lines"))).toBe(true);
+    const npc = ctx.project.maps[entry170.mapId]?.events.find((event) => event.id === entry170.id);
+    expect(JSON.stringify(npc?.pages?.[0]?.commands ?? [])).toContain(entry170.dialogue.text);
   });
 
   it("entry174: rejects the unknown M2 id and offers native text preserving all lines", () => {
@@ -207,16 +205,19 @@ describe("audited NPC repairs through the real runner", () => {
 
 describe("ambiguous NPC input remains rejected without lossy repairs", () => {
   it.each([
-    undefined, null, { text: 42 }, { text: "" }, { text: "Keep", when: { selfSwitch: "A" } }, { text: "Keep", choices: ["Yes", "No"] },
-  ])("does not invent pages for dialogue %j", dialogue => {
+    null, { text: 42 }, { text: "" }, { text: "Keep", when: { selfSwitch: "A" } }, { text: "Keep", choices: ["Yes", "No"] },
+  ])("does not invent pages for ambiguous dialogue %j", dialogue => {
     const ctx = context();
     expect(repairFrom(rejectWithoutMutation(ctx, { ...entry170, dialogue }))).toBeUndefined();
   });
 
-  it("does not invent dialogue for chest misuse", () => {
+  it("falls back to a greeting line when neither pages nor dialogue is given", () => {
+    // 2026-09-18: 아무 대사도 없는 NPC 는 거부 대신 인사 한 줄로 서 있게 한다(거부 잘 안하게).
     const ctx = context();
     const { dialogue: _dialogue, ...args } = entry170;
-    expect(repairFrom(rejectWithoutMutation(ctx, { ...args, name: "Treasure chest", contents: { gold: 50 } }))).toBeUndefined();
+    const result = runTool(ctx, "place_npc", args);
+    expect(result.ok, result.summary).toBe(true);
+    expect((result.diff?.warnings ?? []).some((w) => w.includes("인사 한 줄 기본 적용"))).toBe(true);
   });
 
   it.each([
