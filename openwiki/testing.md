@@ -1564,6 +1564,10 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
   `--project /tmp/chest-open.json`). 개방 SE·아이템 징글·동전 SE 세 개가 도달하고 `gold` 0→50, 열린 상자
   프레임이 03 샷에 남아야 통과다. 대사청 스크린샷은 타자기 첫 글자에서 잡힐 수 있다 — 문장은
   유닛 테스트(`test/placeChestSavepoint.test.ts`)가 재고 하네스는 소지금·오디오·프레임을 재다.
+  보관함은 `storage-savepoint` — `storage-savepoint-fixture.mts` 가 `place_storage_chest` /
+  `place_savepoint` / `place_chest` 를 시작점 북쪽 한 줄에 나란히 굽는다. 보관함은 보물상자와
+  다른 서랍장 그래픽(`object2#7`)이어야 하고, 조사하면 `chest-scene` 이 뜨며 크리스탈은
+  「기록했다」 대사를 낸다. 샷 10장.
 - **타자기를 고정 sleep 으로 기다리지 마라 — 결정 키 한 번으로 페이지를 완성시킨다** (2026-09-10).
   `visibleText` 로 대사 글자를 축으로 쓰면 관측 순간 본문이 `"▼"` 나 `"광▼"` 일 수 있다(실측:
   `loc-transition` 첫 실행에서 네 비트가 이 이유로 실패했다). `\>`(fastOn) 도 해결책이 아니다 —

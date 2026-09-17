@@ -2162,7 +2162,7 @@ const placeStorageChest: ToolDefinition = {
       code: "storage-chest-impassable",
     });
     const { x, y, adjusted } = placement;
-    const graphic = resolveGraphic({ query: "보물상자" }, { overrides: draft.charsetLabels });
+    const graphic = resolveGraphic({ query: "서랍장" }, { overrides: draft.charsetLabels });
     const id = (args.id as string | undefined) ?? genId("ev_storage_chest");
     const name = (args.name as string | undefined) ?? "보관 상자";
     const chestIdRaw = typeof args.chestId === "string" ? args.chestId.trim() : "";

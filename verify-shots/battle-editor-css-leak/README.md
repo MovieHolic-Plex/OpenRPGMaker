@@ -20,3 +20,28 @@
 재현: `test/e2e/_slime-opacity-probe.spec.ts`(배경 교체 판정),
 `test/e2e/_slime-opacity-cause.spec.ts`(`.editor-layout` 제거 후 재측정).
 회귀 가드: `test/battleEditorCssLeak.test.ts`.
+
+## cascade/
+
+아홉 규칙을 지운 변화를 **결정적으로** 잰 계산 스타일 덤프
+(`test/e2e/_battle-computed-style-dump.spec.ts`). `*.before.json` 은 규칙이 있던 상태,
+`*.after.json` 은 지운 뒤. 픽셀 비교로는 이 판정을 못 한다 — 이 표면은 배경 애니메이션과
+RNG 때문에 같은 코드로 두 번 찍어도 수만 픽셀이 다르다.
+
+변화는 세 갈래뿐이고 전부 **복원**이다:
+
+| 프로젝트 | 바뀐 속성 |
+|---|---|
+| pokemon | `color` ×18 · `border-top-color` ×12 · `::before/color` ×8 · `::before/border-top-color` ×8 |
+| genre | `color` ×18 · `border-top-color` ×12 · `::before/color` ×8 · `::before/border-top-color` ×8 |
+| rm2000 | `border-top-color` ×18 · `color` ×18 · `::before/color` ×6 · `::before/border-top-color` ×6 |
+
+- `color` — 적 서브트리가 에디터 `--text-muted`(#626e89) → **각 스킨 팔레트**로 복귀
+  (pokemon #282828, rm2000 #f8fbff). `border-top-color` 는 `currentColor` 라 함께 따라온다.
+- `.battle-command-panel` 의 `flex-wrap`·`justify-content` (rm2000 에서만 관측) —
+  `18-pokemon-layout-redesign.css:58` 이 이미 우회를 들고 싸우던 규칙이다.
+- `.battle-submenu-header` 의 `font-weight` — 유지할 값이라
+  `11-compact-hud-row.css` 가 직접 소유하도록 옮겼다(이 덤프에는 이동 후 상태가 찍혔다).
+
+`opacity` 는 이 덤프의 수집 목록에 없다 — 애니메이션이 만지는 속성이라 제외했다.
+헤드라인 수정(0.55 → 1)은 `_slime-opacity-cause.spec.ts` 가 따로 잰다.

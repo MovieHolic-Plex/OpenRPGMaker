@@ -185,33 +185,34 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
     });
   }
 
-  for (const mode of ["beginner", "standard"] as const) {
-    it(`${mode}: 음악·찾기를 도구 메뉴에서 연다`, () => {
-      // Break: 음악/찾기가 전문가 전용 버튼으로 되돌아가 초보·표준에서 도달 경로가 사라진다.
+  it("beginner: 음악·찾기를 도구 메뉴에서 연다", () => {
+    // Break: 음악/찾기가 인라인 버튼으로 되돌아가 초보에서 도달 경로가 사라진다.
+    resetEditorUiModeForTests("beginner");
+    const topbar = document.createElement("div");
+    renderTopbar(topbar);
+
+    const ids = commandIds(openMenu(topbar, "menu-tools"));
+    expect(ids, "beginner 도구 메뉴").toContain("menu-tools-audio");
+    expect(ids, "beginner 도구 메뉴").toContain("menu-tools-search");
+    // 같은 모드에 두 표면을 두지 않는다 — 메뉴가 있으면 인라인 버튼은 없다.
+    expect(findByTestId(fake(topbar), "toolbar-sound-test")).toBeNull();
+    expect(findByTestId(fake(topbar), "toolbar-search")).toBeNull();
+  });
+
+  for (const mode of ["standard", "expert"] as const) {
+    it(`${mode}: 세계관·음악·찾기는 인라인 아이콘 버튼이고 도구 메뉴는 없다`, () => {
+      // Break: 표준·전문가에 「도구 ▾」 메뉴와 인라인 버튼이 함께 남아 같은 동작이 두 자리에 놓인다.
+      // 표준이 전문가 capability를 흡수했다 — 표준도 인라인이다.
       resetEditorUiModeForTests(mode);
       const topbar = document.createElement("div");
       renderTopbar(topbar);
 
-      const ids = commandIds(openMenu(topbar, "menu-tools"));
-      expect(ids, `${mode} 도구 메뉴`).toContain("menu-tools-audio");
-      expect(ids, `${mode} 도구 메뉴`).toContain("menu-tools-search");
-      // 같은 모드에 두 표면을 두지 않는다 — 메뉴가 있으면 인라인 버튼은 없다.
-      expect(findByTestId(fake(topbar), "toolbar-sound-test")).toBeNull();
-      expect(findByTestId(fake(topbar), "toolbar-search")).toBeNull();
+      for (const id of ["toolbar-world", "toolbar-sound-test", "toolbar-search"]) {
+        expect(findByTestId(fake(topbar), id), id).not.toBeNull();
+      }
+      expect(findByTestId(fake(topbar), "menu-tools")).toBeNull();
     });
   }
-
-  it("expert: 세계관·음악·찾기는 인라인 아이콘 버튼이고 도구 메뉴는 없다", () => {
-    // Break: 전문가에 「도구 ▾」 메뉴와 인라인 버튼이 함께 남아 같은 동작이 두 자리에 놓인다.
-    resetEditorUiModeForTests("expert");
-    const topbar = document.createElement("div");
-    renderTopbar(topbar);
-
-    for (const id of ["toolbar-world", "toolbar-sound-test", "toolbar-search"]) {
-      expect(findByTestId(fake(topbar), id), id).not.toBeNull();
-    }
-    expect(findByTestId(fake(topbar), "menu-tools")).toBeNull();
-  });
 
   for (const mode of ["standard", "expert"] as const) {
     it(`${mode}: 자료집·소재는 톱바 버튼이 집이고 도구 메뉴에는 없다`, () => {
@@ -327,6 +328,27 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
       expect(order.indexOf('sidebar-map-header')).toBe(0);
       expect(layersAt).toBe(1);
       expect(toolsAt).toBe(layersAt + 1);
+    });
+  }
+  for (const mode of ["standard", "expert"] as const) {
+    it(`${mode}: 이벤트 레이어도 같은 셸·그리드에서 맵·탭 한 줄을 유지한다`, () => {
+      // Break: 이벤트 분기가 셸 밖에 붙으면 maphead/layers 한 줄 배치가 안 닿아
+      // 맵 헤더가 전폭으로 벌어지고 탭이 다음 줄로 밀린다(2026-09 실측).
+      resetEditorUiModeForTests(mode);
+      editorState.set({ layer: "event", tool: "event" });
+      const container = document.createElement("div");
+      document.body.append(container);
+      renderTilePalette(container);
+
+      const shell = findByTestId(fake(container), "palette-work-shell");
+      expect(shell, `${mode} 이벤트 셸`).not.toBeNull();
+      const pane = findByTestId(fake(container), "palette-work-pane-event");
+      expect(pane, `${mode} 이벤트 페인`).not.toBeNull();
+      const order = (pane?.children ?? []).map((child) => child.dataset.testid ?? "");
+      expect(order.indexOf("sidebar-map-header")).toBe(0);
+      expect(order.indexOf("left-layer-switcher")).toBe(1);
+      expect(order.indexOf("oprn-tile-toolbar")).toBe(2);
+      expect(order.indexOf("palette-event-pane")).toBe(3);
     });
   }
 });

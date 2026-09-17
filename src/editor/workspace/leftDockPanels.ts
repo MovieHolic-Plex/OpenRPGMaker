@@ -36,17 +36,19 @@ export type LeftDockResolution = {
   readonly left: readonly PanelId[];
   /** `chrome.paletteRail` — 초보 아이콘 레일 모드인가. */
   readonly paletteRail: boolean;
-  readonly mapTree?: boolean;
+  readonly mapTree?: boolean | undefined;
 };
 
 export function resolveLeftDockPanels(input: LeftDockResolution): readonly PanelId[] {
-  // A focused surface cannot be switched off leaving only its non-rendered map dock.
-  if (input.mapTree === false && !input.paletteRail) return ["tiles"];
   const owned = input.left.filter((id) => !LEFT_DOCK_EXTERNAL.includes(id));
-  const pinned = input.paletteRail && !owned.includes(LEFT_DOCK_RAIL_HOST)
-    ? [LEFT_DOCK_RAIL_HOST, ...owned]
-    : owned;
-  const resolved = sortPanels(pinned);
+  // 초보 레일은 tiles 호스트만 쓴다. 저장된 maps 도크는 플라이아웃이 담당하므로 여기 안 올린다.
+  if (input.paletteRail) return [LEFT_DOCK_RAIL_HOST];
+  // 표준/전문가의 작업 호스트(tiles)는 저장 레이아웃이 maps-only여도 마운트한다.
+  // 저장값은 건드리지 않는다 — 토글은 구성을 바꾸고, 호스트는 작업면이 비지 않게 남긴다.
+  const withTaskHost = owned.includes(LEFT_DOCK_RAIL_HOST)
+    ? owned
+    : [LEFT_DOCK_RAIL_HOST, ...owned];
+  const resolved = sortPanels(withTaskHost);
   return resolved.length > 0 ? resolved : preferredLeftDockPanels();
 }
 
@@ -57,16 +59,15 @@ export function isLeftDockPinned(id: PanelId, paletteRail: boolean): boolean {
 
 /**
  * 현재 크롬에서 도크 멤버십을 바꾸는 컨트롤을 제공해도 되는가.
- * 초보 타일은 고정 호스트이고, 초보 맵 도크는 `mapTree=false` 로 렌더되지 않는다. 레일의
- * 맵 버튼은 별도 플라이아웃 스위처이므로 둘 중 어느 것도 도크 토글로 내놓지 않는다.
+ * 초보는 레일 플라이아웃만 있고 도크 토글은 거짓말이 된다.
+ * 표준/전문가의 맵 도크는 구성 토글 대상이다.
  */
 export function isLeftDockPanelOffered(
   id: PanelId,
-  chrome: Pick<EditorChromeVisibility, "mapTree" | "paletteRail">,
+  chrome: Pick<EditorChromeVisibility, "paletteRail">,
 ): boolean {
-  if (isLeftDockPinned(id, chrome.paletteRail)) return false;
-  if (!chrome.mapTree) return false;
-  return id !== "maps" || chrome.mapTree;
+  if (chrome.paletteRail || isLeftDockPinned(id, chrome.paletteRail)) return false;
+  return true;
 }
 
 /**

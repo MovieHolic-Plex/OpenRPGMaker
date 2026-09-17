@@ -156,13 +156,13 @@ afterEach(() => {
 });
 
 describe("좌측 도크 구성은 워크스페이스 레이아웃을 따른다", () => {
-  it("Standard mounts its task host without changing a saved Expert maps-only layout", async () => {
+  it("Standard mounts its task host without changing a saved maps-only layout", async () => {
+    // 표준이 전문가 capability를 흡수했다 — 표준에서도 맵 도크 구성이 그대로 Mount된다.
     storage.setItem(UI_MODE_KEY, 'standard');
     setWorkspaceDocks(['maps']);
     const root = await mountEditor();
     expect(findByTestId(root, 'left-palette-root')).not.toBeNull();
-    expect(findByTestId(root, 'left-map-root')).toBeNull();
-    expect(findByTestId(root, 'map-tree-height-resizer')).toBeNull();
+    expect(findByTestId(root, 'left-map-root')).not.toBeNull();
     expect(JSON.parse(storage.getItem(WORKSPACE_KEY) ?? '{}').docks.left).toEqual(['maps']);
   }, 120_000);
   it("맵 패널을 닫으면 맵 호스트가 좌측 도크에서 사라진다", async () => {
@@ -265,8 +265,8 @@ describe("패널 메뉴는 실제로 되는 선택지만 제시한다", () => {
     expect(JSON.parse(storage.getItem(WORKSPACE_KEY) ?? "{}").docks.left).toEqual(["tiles", "maps"]);
   }, 120_000);
 
-  it("전문가 모드에서는 이 메뉴가 패널 토글의 유일한 집이다", async () => {
-    storage.setItem(UI_MODE_KEY, "expert");
+  it("표준 모드에서는 이 메뉴가 패널 토글의 유일한 집이다", async () => {
+    storage.setItem(UI_MODE_KEY, "standard");
     setWorkspaceDocks(["tiles", "maps"]);
     const { renderWorkspaceBar } = await import("@/editor/panels/workspaceBar");
 
@@ -275,7 +275,7 @@ describe("패널 메뉴는 실제로 되는 선택지만 제시한다", () => {
     const bodyRoot = fake(document.body as unknown as HTMLElement);
     const tilesToggle = findByTestId(bodyRoot, "workspace-panel-toggle-tiles");
     expect(findByTestId(bodyRoot, "workspace-panels-button")?.getAttribute("aria-label")).toBe("보기 — 패널과 편집 모드");
-    // 글리프만 있던 버튼은 편집 모드(초보/표준/전문가)의 유일한 진입점이면서 장식으로 읽혔다 —
+    // 글리프만 있던 버튼은 편집 모드(초보/표준)의 유일한 진입점이면서 장식으로 읽혔다 —
     // 화면 글자 「보기」가 반드시 함께 있어야 한다.
     expect(findByTestId(bodyRoot, "workspace-panels-button")?.textContent).toContain("보기");
     expect(tilesToggle).not.toBeNull();

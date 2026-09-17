@@ -66,24 +66,8 @@ const BEGINNER_CHROME: EditorChromeVisibility = {
 };
 
 const STANDARD_CHROME: EditorChromeVisibility = {
-  mapTree: false,
-  toolStrip: false,
-  canvasChromeDense: true,
-  helpMenu: true,
-  paletteRail: false,
-  advancedSidebarControls: false,
-  leftPanelMaxWidthPx: 300,
-  layerTermStyle: "technical",
-  prominentTestPlay: false,
-  coachMarks: false,
-  standardWelcome: true,
-  statusbarDensity: "full",
-  databaseNav: "grouped",
-  eventBeginnerChrome: true,
-  jargonStyle: "plain",
-};
-
-const EXPERT_CHROME: EditorChromeVisibility = {
+  // 표준이 전문가 capability를 흡수했다(맵 도크·검사 핀·도구 인라인) —
+  // mapTree 게이트는 도크 구성 단일 원천으로(editor.ts), 핀은 단일 키로 합쳤다.
   mapTree: true,
   toolStrip: true,
   canvasChromeDense: true,
@@ -96,11 +80,28 @@ const EXPERT_CHROME: EditorChromeVisibility = {
   coachMarks: false,
   standardWelcome: false,
   statusbarDensity: "full",
-  // 전문가도 그룹 사이드바를 쓴다 — 24개 플랫 리스트보다 그룹 스캔이 빠르다.
-  // "all"(플랫)은 renderDatabasePanel 의 폴백 분기로만 남는다.
   databaseNav: "grouped",
   eventBeginnerChrome: false,
-  jargonStyle: "technical",
+  jargonStyle: "plain",
+};
+
+const EXPERT_CHROME: EditorChromeVisibility = {
+  // Phase 2에서 제거 예정 — 지금은 표준과 동일 별칭이다.
+  mapTree: true,
+  toolStrip: true,
+  canvasChromeDense: true,
+  helpMenu: true,
+  paletteRail: false,
+  advancedSidebarControls: true,
+  leftPanelMaxWidthPx: 320,
+  layerTermStyle: "technical",
+  prominentTestPlay: false,
+  coachMarks: false,
+  standardWelcome: false,
+  statusbarDensity: "full",
+  databaseNav: "grouped",
+  eventBeginnerChrome: false,
+  jargonStyle: "plain",
 };
 
 type Listener = () => void;
