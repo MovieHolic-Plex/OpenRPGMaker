@@ -161,7 +161,7 @@ export function renderCharacterGraphicsTab(container: HTMLElement, _rerender?: (
       class: "db-cg-face-choice", attrs: { type: "button", title: `${face.label} · ${face.resourceId}`, "aria-label": `${face.label} 후보 선택`, "aria-pressed": String(state.candidateId === face.resourceId) },
       dataset: { testid: `db-cg-assign-${face.resourceId}`, recommendation },
       children: [imageThumbnail(face.resourceId, project, face.label, 64), el("strong", { text: face.label }),
-        el("small", { text: ({ paired: "원본 대응", similar: "유사 특징 · 동일인 미확인", none: "추천 근거 부족", conflict: "추천 제외 · 속성 확인" })[recommendation] }),
+        el("small", { class: "db-cg-recommendation", text: ({ paired: "원본 대응", similar: "유사 특징 · 동일인 미확인", none: "추천 근거 부족", conflict: "추천 제외 · 속성 확인" })[recommendation] }),
         el("small", { text: reasons.slice(0, 2).join(" · ") || "일치 근거 없음 · 직접 확인" }),
         ...(conflicts.length ? [el("small", { class: "db-cg-conflict", text: `차이 있음 · ${conflicts.join(" / ")}` })] : []),
       ],
@@ -267,6 +267,7 @@ export function renderCharacterGraphicsTab(container: HTMLElement, _rerender?: (
     { label: "캐릭터", testid: "db-cg-view-sprites", onClick: () => { state.view = "sprites"; redraw(); } },
     { label: "얼굴", testid: "db-cg-view-faces", onClick: () => { state.view = "faces"; redraw(); } },
   ]);
+  viewButtons.classList.add("db-cg-view-switch");
   viewButtons.querySelector(`[data-testid="db-cg-view-${state.view}"]`)!.setAttribute("aria-pressed", "true");
   const filters = filterControls(state[state.view], `db-cg-${state.view}`, state.view === "sprites" ? sprites : faces, refreshList);
   if (state.view === "sprites") filters.append(
@@ -275,7 +276,7 @@ export function renderCharacterGraphicsTab(container: HTMLElement, _rerender?: (
   );
   const selected = state.view === "sprites" ? selectedSprite : selectedFace;
   container.append(workspaceShell({ testid: "db-character-graphics", legacyClass: "db-character-graphics",
-    list: listPane({ title: state.view === "sprites" ? "캐릭터 그림" : "얼굴 그림", count: state.view === "sprites" ? sprites.length : faces.length, search: filters, chips: viewButtons, rows: [listHost] }),
+    list: listPane({ title: state.view === "sprites" ? "캐릭터 그림" : "얼굴 그림", count: state.view === "sprites" ? sprites.length : faces.length, search: el("div", { class: "db-cg-list-controls", children: [viewButtons, filters] }), rows: [listHost] }),
     detail: detailPane({ hero: selected ? detailHero({ title: selected.label, subtitle: state.view === "sprites" ? state.spriteKey : state.faceId, media: state.view === "sprites" && selectedSprite ? spriteImage(selectedSprite, 2) : imageThumbnail(selectedFace?.resourceId, store.getCurrent(), selected.label, 72) }) : undefined, body: detail }),
   }));
   refreshList(); refreshSelection(); refreshCandidates();
