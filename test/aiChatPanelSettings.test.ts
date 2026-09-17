@@ -53,29 +53,25 @@ function renderPanel(dock: "glass" | "side" | "float" = "side"): FakeElement {
 }
 
 describe("패널 접기", () => {
-  it("접기 버튼 클릭으로 접히고 상태가 localStorage에 저장된다", () => {
+  it("접기는 맵·타일 전환을 요청하고 AI 대화 DOM은 유지한다", () => {
     const panel = renderPanel();
-    // First visit boots open; restore click is a no-op if already expanded.
-    if (panel.classList.contains("is-collapsed")) {
+    const dispatch = vi.fn();
+    vi.stubGlobal("window", { dispatchEvent: dispatch });
+    try {
+      findByTestId(panel, "ai-collapse")?.click();
+      expect(dispatch.mock.calls[0]?.[0].type).toBe("oprn:ai-sidebar-tools");
+      expect(panel.classList.contains("is-collapsed")).toBe(false);
+      expect(storage.get("oprn:ai-panel-collapsed")).toBeUndefined();
       findByTestId(panel, "ai-collapsed-restore")?.click();
-    }
-    const collapse = findByTestId(panel, "ai-collapse");
-    expect(collapse).not.toBeNull();
-    expect(panel.classList.contains("is-collapsed")).toBe(false);
-
-    collapse?.click();
-    expect(panel.classList.contains("is-collapsed")).toBe(true);
-    expect(storage.get("oprn:ai-panel-collapsed")).toBe("1");
-
-    collapse?.click();
-    expect(panel.classList.contains("is-collapsed")).toBe(false);
-    expect(storage.get("oprn:ai-panel-collapsed")).toBe("0");
+      expect(dispatch.mock.calls[1]?.[0].type).toBe("oprn:ai-sidebar-show");
+    } finally { vi.unstubAllGlobals(); }
   });
 
-  it("부팅 시 저장된 펼침 선택('0')을 복원한다", () => {
-    storage.set("oprn:ai-panel-collapsed", "0");
+  it("이전 하단 덱의 접힘 설정이 있어도 왼쪽 AI는 펼쳐서 부팅한다", () => {
+    storage.set("oprn:ai-panel-collapsed", "1");
     const panel = renderPanel();
     expect(panel.classList.contains("is-collapsed")).toBe(false);
+    expect(panel.classList.contains("is-left-sidebar")).toBe(true);
   });
 });
 

@@ -13,6 +13,18 @@ export type DelayedTooltipTarget = {
 };
 
 export const DELAYED_TOOLTIP_ROLLOUT: readonly DelayedTooltipTarget[] = [
+  { label: "접기/펴기", name: "왼쪽 패널 접기/펼치기", testid: "sidebar-collapse" },
+  { label: "AI 대화", name: "AI 대화 패널 열기", testid: "sidebar-ai" },
+  { label: "맵·타일", name: "맵과 타일 패널 열기", testid: "sidebar-tools" },
+  { label: "걷기 전투", name: "걸을 때 적 만나기 설정", testid: "walk-encounter-list-open" },
+  { label: "구역 그리기", name: "구역 그리기 켜기/끄기", testid: "map-location-layer-toggle" },
+  { label: "배경 보기", name: "맵 배경 미리보기 켜기/끄기", testid: "map-background-preview-toggle" },
+  { label: "만들기", name: "선택 영역에 집·길·NPC 만들기", testid: "canvas-ai-create" },
+  { label: "다듬기", name: "선택 영역 다듬기", testid: "canvas-ai-polish" },
+  { label: "검사", name: "맵 통행·참조·이벤트 검사", testid: "canvas-ai-inspect" },
+  { label: "AI 요청", name: "선택 영역이나 현재 맵에 AI 요청", testid: "canvas-ai-ask" },
+  { label: "맵 저장", name: "현재 맵만 PNG로 저장", testid: "editor-map-screenshot-button" },
+  { label: "저장 도구", name: "맵 저장 도구 펼치기/접기", testid: "editor-canvas-toolbar-expand" },
   { label: "저장", name: "프로젝트 저장 (Ctrl+S)", testid: "toolbar-save" },
   { label: "명령 팔레트", name: "명령 팔레트 — 명령 실행 · 맵 이동 (Ctrl+K)", testid: "workspace-command-palette-button" },
   { label: "스튜디오", name: "AI 스튜디오 — 장면 모니터와 조수", testid: "topbar-ai-studio" },

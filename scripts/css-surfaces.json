@@ -306,6 +306,10 @@
         "ai-act-",
         "ai-assistant-",
         "ai-change-",
+        "ai-bubble",
+        "ai-conversation-",
+        "ai-glass-",
+        "ai-history-",
         "ai-chat-",
         "ai-command-bar-",
         "ai-composer-",
@@ -382,6 +386,7 @@
     }
   },
   "sharedStatePrefixes": [
+    "user",
     "is-",
     "has-",
     "active",

@@ -26,7 +26,7 @@ export interface DeckRail {
   setState(state: DeckState): void;
 }
 
-const NAME = "조수";
+const NAME = "AI";
 
 /** 상태 배지 톤 → 데크 상태. 「확인 필요」 는 톤이 아니라 승인 대기 사실이므로 패널이 직접 setState 한다. */
 export function deckStateOfTone(tone: AiStatusTone): DeckState {
@@ -52,7 +52,7 @@ export function createDeckRail(): DeckRail {
   const dot = el("span", { class: "ai-deck-rail-dot", attrs: { "aria-hidden": "true" }, dataset: { aiState: "idle" } });
   const ctx = el("span", { class: "ai-deck-rail-ctx", dataset: { testid: "ai-deck-rail-ctx" } });
   const statusSlot = el("span", { class: "ai-deck-rail-state" });
-  const actions = el("div", { class: "ai-deck-rail-actions", attrs: { role: "toolbar", "aria-label": "조수 도구" } });
+  const actions = el("div", { class: "ai-deck-rail-actions", attrs: { role: "toolbar", "aria-label": "AI 도구" } });
   const root = el("div", {
     class: "ai-deck-rail",
     dataset: { testid: "ai-deck-rail", aiState: "idle" },

@@ -152,6 +152,8 @@ export function createLaneManager(options: LaneManagerOptions = {}): LaneManager
       task: instruction,
       mapIds: lane.spec.mapIds,
       project: base,
+      ...(lane.spec.readOnly === undefined ? {} : { readOnly: lane.spec.readOnly }),
+      ...(lane.spec.toolDomains === undefined ? {} : { toolDomains: lane.spec.toolDomains }),
       ...(lane.spec.maxTurns === undefined ? {} : { maxTurns: lane.spec.maxTurns }),
       ...(lane.spec.thinkingLevel === undefined ? {} : { thinkingLevel: lane.spec.thinkingLevel }),
     };

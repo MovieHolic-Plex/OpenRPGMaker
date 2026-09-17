@@ -126,7 +126,7 @@ describe("스튜디오 셸 단독", () => {
 });
 
 describe("패널 스튜디오 모드", () => {
-  it("기본 부팅은 입력줄 캡슐이고 스튜디오 셸이 없다", () => {
+  it("기본 부팅은 왼쪽 AI 패널이고 스튜디오 셸이 없다", () => {
     const panel = renderPanel();
     expect(panel.classList.contains("is-studio")).toBe(false);
     expect(findByTestId(panel, "ai-studio-shell")).toBeNull();
@@ -155,7 +155,7 @@ describe("패널 스튜디오 모드", () => {
     expect(storage.get("oprn:ai-studio")).toBe("1");
   });
 
-  it("스튜디오를 끄면 입력줄 캡슐로 돌아가고 로그는 유리 마운트다", () => {
+  it("스튜디오를 끄면 왼쪽 AI 패널로 돌아가고 로그는 유리 마운트다", () => {
     const panel = renderPanel();
     findByTestId(panel, "ai-studio-toggle")?.click();
     expect(findByTestId(panel, "ai-studio-shell")).toBeTruthy();
@@ -632,22 +632,22 @@ describe("스튜디오 나가기 확인", () => {
   });
 });
 
-describe("스튜디오 밖 — 조수 카드의 레인 요약 줄", () => {
-  it("레인 0 이면 숨고, 레인이 돌면 요약이 서고, 「스튜디오에서 보기」 가 그 레인 스레드로 연다", async () => {
+describe("스튜디오 밖 — 오른쪽 팀원 패널", () => {
+  it("레인은 원형 팀원으로 나타나고 선택해도 메인 대화를 유지한다", () => {
     const panel = renderPanel();
-    const summary = findByTestId(panel, "ai-lane-summary");
-    expect(isHidden(summary)).toBe(true);
+    const mainLog = findByTestId(panel, "ai-chat-log");
+    expect(findByTestId(panel, "ai-lane-summary")).toBeNull();
+    expect(findByTestId(panel, "ai-team-member")).toBeNull();
     const manager = laneSession();
     manager.add({ id: "lane_s", label: "빈 맵", mapIds: [store.getCurrent().startMapId], agentLabel: "시공A", provider: "google-antigravity", model: "gemini-3.7-flash", instruction: "숲", maxTurns: 12 });
-    expect(isHidden(summary)).toBe(false);
-    expect(findByTestId(panel, "ai-lane-summary-headline")?.textContent).toBe("레인 대기 1");
-    findByTestId(panel, "ai-lane-summary-open")?.click();
-    expect(panel.classList.contains("is-studio")).toBe(true);
-    expect(findByTestId(panel, "ai-studio-chat")?.className).toContain("is-lane-thread");
-    expect(findByTestId(panel, "lane-receiver")?.textContent).toBe("→ 시공A");
-    manager.discard("lane_s");
-    findByTestId(panel, "ai-studio-toggle")?.click();
+    const avatar = findByTestId(panel, "ai-team-member");
+    expect(avatar?.textContent).toContain("시공A");
+    avatar?.click();
     expect(panel.classList.contains("is-studio")).toBe(false);
-    expect(isHidden(findByTestId(panel, "ai-lane-summary"))).toBe(true);
+    expect(findByTestId(panel, "ai-chat-log")).toBe(mainLog);
+    expect(findByTestId(panel, "ai-member-detail")?.hidden).toBe(false);
+    findByTestId(panel, "ai-member-close")?.click();
+    expect(findByTestId(panel, "ai-member-detail")?.hidden).toBe(true);
+    manager.discard("lane_s");
   });
 });
