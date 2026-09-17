@@ -131,6 +131,11 @@ describe("인터프리터 — 좌표 해석과 실패 정책", () => {
     expect(createInterpreter([move({ target: "player", x: 6, y: 6, wait: true })], session).start())
       .toEqual({ kind: "pathfindMove", target: "player", x: 6, y: 6, speed: 4, wait: true });
   });
+  it("Pathfind 속도는 페이지와 같은 1–8 스케일을 쓴다 — 8이 6으로 깎이지 않는다", () => {
+    const session = startSession(projectWithVariables());
+    expect(createInterpreter([move({ target: "player", x: 6, y: 6, speed: 8, wait: true })], session).start())
+      .toMatchObject({ kind: "pathfindMove", speed: 8 });
+  });
 
   it("변수 좌표를 읽어 목적지로 쓴다", () => {
     const session = startSession(projectWithVariables());
