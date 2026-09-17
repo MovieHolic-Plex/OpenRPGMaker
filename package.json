@@ -21,6 +21,7 @@
     "audit:db-css-ownership": "node scripts/audit-db-css-ownership.mjs",
     "gates:surface": "node scripts/check-surface-gates.mjs",
     "gates:surface:audit": "node scripts/audit-gate-mutations.mjs",
+    "check:player-tokens": "node scripts/check-player-bundle-tokens.mjs",
     "gates:dead-css": "node scripts/check-dead-css-classes.mjs",
     "gates:dead-css:report": "node scripts/check-dead-css-classes.mjs --report",
     "measure:css-deletable": "node scripts/measure-css-deletable.mjs",

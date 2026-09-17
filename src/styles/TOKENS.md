@@ -80,10 +80,6 @@ for(const m of s.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) console.log(`| \`${m[1]
 | `--font-mono` | `"Cascadia Mono", "JetBrains Mono", "SFMono-Regular", Consolas, monospace` |
 | `--font-pixel` | `"NeoDunggeunmo", "Galmuri11", "Galmuri9", "GulimChe", "DotumChe", "MS Gothic", monospace` |
 | `--font-serif` | `Georgia, "Noto Serif KR", serif` |
-| `--bp-sm` | `640px` |
-| `--bp-md` | `900px` |
-| `--bp-lg` | `1280px` |
-| `--bp-xl` | `1488px` |
 | `--z-below` | `0` |
 | `--z-base` | `1` |
 | `--z-raised` | `2` |
@@ -149,6 +145,9 @@ for(const m of s.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) console.log(`| \`${m[1]
   `event/shell.css` 26 …)에 흩어져 있다. 게이트는 아직 이걸 강제하지 않는다.
 - 표면 사설 토큰은 표면 접두어(`--ev-*`, `--db-*`, `--map-*`, `--shell-*`)를 쓰고 표면 루트 선택자 아래에서만 정의한다(게이트 R4).
 - `var(--x)` 는 정의가 있어야 한다. 게이트 R4 가 미정의 참조를 잡는다.
+- **브레이크포인트는 토큰이 될 수 없다.** `@media` 조건절은 커스텀 속성을 평가하지 않는다
+  (`@media (max-width: var(--bp-md))` 는 무효 쿼리가 되어 규칙이 조용히 죽는다).
+  `--bp-*` 4개는 2026-09-17 에 삭제했다 — 참조 0이었고 애초에 쓸 수 없는 토큰이었다.
 
   **리터럴 폴백(`var(--x, #fff)`)을 쓰지 마라.** 단, 게이트는 아직 이것을 막지 않는다 —
   `check-css-surfaces.mjs:150` 은 리터럴 폴백을 **무조건 통과 조건**으로 취급한다.
