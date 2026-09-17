@@ -1,7 +1,7 @@
-/* ── 에이전트 레인 (2026-09-15, 2026-09-16 재구성) ──────────────────────────
-   실시간 조수 행은 좌 레일(.ai-studio-agents > .ai-studio-agent-row), 레인 스레드는 오른쪽 열(.ai-lane-thread),
-   새 레인 폼은 오버레이 드로워의 「새 레인」 탭(.ai-lane-pane > .ai-lane-form), 장면 행 칩은 .ai-studio-lane-chip.
-   색은 tokens.css 변수만. !important 0. 글자 크기는 --ai-font-scale 로 스케일. */
+/* ── 에이전트 레인 (2026-09-15 → 2026-09-17 §11 하단 레인 보드) ───────────────
+   레인 표는 하단 덱(.lane-board > .lane-row), 레인 스레드는 오른쪽 열(.ai-lane-thread),
+   새 레인 폼은 덱 머리띠 위 팝오버(.ai-studio-popover > .ai-lane-pane > .ai-lane-form), 장면 행 칩은 .ai-studio-lane-chip,
+   스튜디오 밖 조수 카드의 요약 줄은 .ai-lane-summary. 색은 tokens.css 변수만. !important 0. 글자 크기는 --ai-font-scale 로 스케일. */
 
 
 .ai-lane-hint,
@@ -66,94 +66,6 @@
 .ai-lane-btn.is-danger { color: var(--danger); }
 .ai-lane-btn:disabled { cursor: not-allowed; opacity: 0.5; }
 
-/* 좌 레일: section headers stay fixed; their lists own overflow. */
-.ai-studio-left {
-  background: var(--bg-raised);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-l);
-  display: flex;
-  flex-direction: column;
-  grid-column: 1;
-  grid-row: 1 / 3;
-  min-height: 0;
-  min-width: 0;
-  overflow: hidden;
-}
-.ai-studio-rail-section {
-  display: flex;
-  flex-direction: column;
-  flex: 0 1 auto;
-  max-height: 35%;
-  min-height: 0;
-  border-bottom: 1px solid var(--border-subtle);
-}
-.ai-studio-left .ai-studio-scenes {
-  border: 0;
-  border-radius: 0;
-  flex: 1 1 0;
-  width: 100%;
-}
-.ai-studio-agents,
-.ai-studio-threads {
-  display: grid;
-  align-content: start;
-  gap: var(--space-1);
-  min-height: 0;
-  min-width: 0;
-}
-.ai-studio-rail-section > .ai-studio-agents,
-.ai-studio-rail-section > .ai-studio-threads {
-  overflow: auto;
-  padding: var(--space-2);
-}
-.ai-studio-agent-row {
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-s);
-  cursor: pointer;
-  display: grid;
-  gap: var(--space-1);
-  min-width: 0;
-  padding: var(--space-2);
-}
-.ai-studio-agent-row:hover,
-.ai-studio-thread:hover { background: var(--bg-hover); }
-.ai-studio-agent-row.is-selected,
-.ai-studio-thread.is-on { background: var(--accent-muted); }
-.ai-studio-agent-head {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
-  font-size: calc(12px * var(--ai-font-scale, 1));
-}
-.ai-studio-agent-map,
-.ai-studio-agent-live,
-.ai-studio-agent-line,
-.ai-studio-thread-detail {
-  color: var(--text-2);
-  font-size: calc(11px * var(--ai-font-scale, 1));
-  overflow-wrap: anywhere;
-}
-.ai-studio-agent-map { flex-basis: 100%; }
-.ai-studio-agent-row .ai-lane-actions { justify-content: flex-start; }
-.ai-studio-thread {
-  align-items: center;
-  background: transparent;
-  border: 0;
-  border-radius: var(--radius-s);
-  color: var(--text-1);
-  cursor: pointer;
-  display: flex;
-  flex-wrap: wrap;
-  font-family: var(--font-ui);
-  gap: var(--space-1);
-  padding: var(--space-2);
-  text-align: left;
-}
-.ai-studio-thread:focus-visible { outline: var(--focus-outline); }
-.ai-studio-thread-label { font-size: 13px; font-weight: var(--font-weight-semibold); }
-.ai-studio-thread-detail { flex-basis: 100%; }
-.ai-studio-shell.is-scenes-collapsed .ai-studio-rail-section { display: none; }
 .ai-studio-lane-thread-slot { display: none; min-height: 0; overflow: auto; }
 .ai-studio-chat.is-lane-thread .ai-studio-lane-thread-slot { display: block; }
 .ai-studio-chat.is-lane-thread .ai-studio-briefing,
@@ -360,107 +272,6 @@
 .ai-studio-lane-chip.is-failed { background: var(--danger-muted); color: var(--danger); }
 
 
-/* 좁은 덱(중앙 열만 차지한다)에서는 탭 라벨이 줄바꿈으로 부서진다 — 아이콘만 남기고 title 로 말한다. */
-.ai-studio-deck {
-  container-type: inline-size;
-}
-
-@container (max-width: 560px) {
-  .ai-studio-tab span:not(.ai-studio-tab-badge) {
-    display: none;
-  }
-}
-
-/* ── 하단 덱 → 오버레이 드로워 (2026-09-16) ─────────────────────────────
-   덱은 그리드 행을 차지하지 않는다. 맵 위로 올라오고, 닫히면 화면 밖으로 나간다.
-   닫힌 상태의 입구는 모니터 위 손잡이(.ai-studio-drawer-handle)와 좌 레일 ＋ 다. */
-.ai-studio-shell.is-deck-overlay {
-  position: relative;
-  grid-template-rows: minmax(0, 1fr);
-  overflow: hidden;
-  transition: none;
-}
-.ai-studio-shell.is-deck-overlay > .ai-studio-left,
-.ai-studio-shell.is-deck-overlay > .ai-studio-chat,
-.ai-studio-shell.is-deck-overlay > .ai-studio-splitter {
-  grid-row: 1;
-}
-
-.ai-studio-deck.is-drawer {
-  background: var(--bg-raised);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-l);
-  bottom: 10px;
-  box-shadow: var(--shadow-pop);
-  height: min(58%, 520px);
-  grid-area: auto;
-  grid-template-rows: auto minmax(0, 1fr);
-  left: calc(30px + var(--studio-scenes-w) + var(--studio-splitter));
-  position: absolute;
-  right: calc(30px + var(--studio-chat-w) + var(--studio-splitter));
-  transform: translateY(calc(100% + 20px));
-  transition: transform var(--transition-med);
-  z-index: 3;
-  visibility: hidden;
-  pointer-events: none;
-}
-.ai-studio-deck.is-drawer .ai-studio-deck-head {
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  padding: var(--space-2);
-}
-.ai-studio-deck.is-drawer .ai-studio-tabs { flex-wrap: wrap; }
-.ai-studio-deck.is-drawer .ai-studio-deck-actions { margin-left: auto; }
-.ai-studio-deck.is-drawer .ai-studio-deck-pane { height: auto; }
-.ai-studio-deck.is-drawer .ai-studio-tab { white-space: nowrap; }
-.ai-studio-deck.is-drawer .ai-studio-deck-collapse { flex-shrink: 0; }
-.ai-studio-deck.is-drawer .ai-lane-select,
-.ai-studio-deck.is-drawer .ai-lane-input { max-width: 100%; min-width: 0; }
-.ai-studio-deck.is-drawer .ai-lane-instruction { box-sizing: border-box; }
-.ai-studio-deck.is-drawer:not(.is-collapsed) {
-  visibility: visible;
-  pointer-events: auto;
-  transform: none;
-}
-
-.ai-studio-drawer-handle {
-  align-items: center;
-  background: var(--bg-raised);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-pill);
-  bottom: 10px;
-  box-shadow: var(--shadow-pop);
-  color: var(--text-2);
-  cursor: pointer;
-  display: inline-flex;
-  font-family: var(--font-ui);
-  font-size: calc(11.5px * var(--ai-font-scale, 1));
-  font-weight: var(--font-weight-semibold);
-  gap: 4px;
-  left: 50%;
-  padding: 5px 12px;
-  position: absolute;
-  transform: translateX(-50%);
-  z-index: 4;
-}
-
-.ai-studio-drawer-handle:hover {
-  background: var(--bg-hover);
-  color: var(--text-1);
-}
-
-.ai-studio-drawer-handle:focus-visible {
-  outline: var(--focus-outline);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ai-studio-deck.is-drawer { transition: none; }
-}
-
-.ai-studio-shell:not(.is-deck-collapsed) .ai-studio-drawer-handle {
-  display: none;
-}
-
 .ai-lane-pane {
   display: grid;
   gap: 8px;
@@ -469,45 +280,259 @@
   padding: 2px 10px 10px;
 }
 
-/* 드로워 본문은 자기 패딩을 갖는다 — 탭 머리와 분리해 글이 모서리에 붙지 않게. */
-.ai-studio-deck.is-drawer .ai-studio-deck-pane {
-  padding: 2px 4px 4px;
+
+/* ── 오른쪽 열: 스레드 전환 ────────────────────────────────────────────── */
+.ai-studio-back-director { flex: 0 0 auto; margin-right: 2px; }
+.ai-studio-back-director[hidden] { display: none; }
+.ai-studio-team-slot { display: none; min-height: 0; overflow: auto; }
+.ai-studio-chat.is-team-thread .ai-studio-team-slot { display: block; }
+.ai-studio-chat.is-team-thread .ai-studio-briefing,
+.ai-studio-chat.is-team-thread .ai-studio-chat-log,
+.ai-studio-chat.is-team-thread .ai-studio-work-slot,
+.ai-studio-chat.is-team-thread .ai-studio-composer { display: none; }
+.ai-studio-work-slot { border-bottom: 1px solid var(--border-subtle); flex: 0 0 auto; max-height: 40%; overflow: auto; padding: 8px 10px; }
+.ai-studio-work-slot[hidden] { display: none; }
+.ai-lane-receiver {
+  align-self: center;
+  background: var(--accent-muted);
+  border-radius: var(--radius-pill);
+  color: var(--accent);
+  flex: 0 0 auto;
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+  padding: 3px 9px;
+  white-space: nowrap;
 }
 
-/* 팀 실행(/pi team)의 팀장·팀원 행 — 좌 레일에서 레인과 나란히 선다(2026-09-16). */
-.ai-studio-team-rows {
-  border-top: 1px dashed var(--border-subtle);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-top: 4px;
-  padding-top: 6px;
+/* ── 하단 레인 보드 표 ─────────────────────────────────────────────────── */
+.lane-board {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
 }
-
-.ai-studio-agent-row.is-team::before {
+.lane-board-notice { padding: 0 6px 4px; }
+.lane-row {
+  align-items: center;
+  border-radius: var(--radius-s);
+  column-gap: 10px;
+  cursor: pointer;
+  display: grid;
+  /* 에이전트 · 상태 · 묶음 · 턴·툴·경과 · 마지막 줄 · 동작 — 1440 기본 폭(덱 ≈710px)에서 6열이 다 선다. */
+  grid-template-columns: minmax(112px, 1.1fr) 72px minmax(88px, 0.9fr) minmax(120px, 1fr) minmax(96px, 1.3fr) minmax(140px, auto);
+  min-height: 44px;
+  min-width: 0;
+  padding: 4px 8px;
+}
+.lane-row:not(.is-head):hover { background: var(--bg-hover); }
+.lane-row:focus-visible { outline: var(--focus-outline); outline-offset: -2px; }
+.lane-row.is-selected { background: var(--accent-muted); }
+.lane-row.is-head {
+  border-bottom: 1px solid var(--border-subtle);
+  border-radius: 0;
+  color: var(--text-3);
+  cursor: default;
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+  min-height: 26px;
+  padding-bottom: 2px;
+  padding-top: 0;
+  position: sticky;
+  top: -8px;
+  background: var(--bg-raised);
+  z-index: 1;
+}
+.lane-cell { min-width: 0; }
+.lane-cell-agent { align-items: center; display: flex; gap: 8px; }
+.lane-avatar {
+  align-items: center;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: 50%;
+  color: var(--text-2);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+  height: 24px;
+  justify-content: center;
+  width: 24px;
+}
+.lane-avatar.is-running { background: var(--accent-muted); border-color: var(--accent-border); color: var(--accent); }
+.lane-avatar.is-review { background: var(--warning-muted); color: var(--warning); }
+.lane-avatar.is-applied { background: var(--success-muted); color: var(--success); }
+.lane-avatar.is-failed { background: var(--danger-muted); color: var(--danger); }
+.lane-agent-body { display: grid; min-width: 0; }
+.lane-agent-name { font-size: calc(12.5px * var(--ai-font-scale, 1)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lane-agent-model,
+.lane-bundle-meta,
+.lane-progress-text,
+.lane-row:not(.is-head) .lane-cell-last {
+  color: var(--text-2);
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lane-cell-bundle { display: grid; }
+.lane-bundle-name { font-size: calc(12px * var(--ai-font-scale, 1)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lane-cell-progress { display: grid; gap: 4px; }
+.lane-progress-bar {
+  background: var(--border-subtle);
+  border-radius: 2px;
+  display: block;
+  height: 4px;
+  overflow: hidden;
+  width: min(100%, 140px);
+}
+.lane-progress-fill {
   background: var(--accent);
   border-radius: 2px;
-  bottom: 6px;
-  content: "";
-  left: 3px;
+  display: block;
+  height: 100%;
+  transform: scaleX(var(--progress, 0));
+  transform-origin: left center;
+  transition: transform var(--transition-med);
+  width: 100%;
+}
+.lane-row.is-review .lane-progress-fill { background: var(--warning); }
+.lane-row.is-applied .lane-progress-fill { background: var(--success); }
+.lane-row.is-failed .lane-progress-fill,
+.lane-row.is-stopped .lane-progress-fill { background: var(--text-3); }
+.lane-cell-last { font-family: var(--font-mono); }
+.lane-row.is-team .lane-cell-last { font-family: var(--font-ui); }
+.lane-cell-actions { justify-content: flex-end; }
+.lane-row.is-head .lane-cell-actions { display: block; text-align: right; }
+.lane-row.is-head .lane-cell-last { font-family: var(--font-ui); }
+.ai-lane-btn.is-ghost { background: transparent; border-color: transparent; color: var(--text-3); padding: 4px 8px; }
+.ai-lane-btn.is-ghost:hover { background: var(--control-bg-hover); color: var(--text-1); }
+.lane-row.is-team::before { content: none; }
+.lane-row.is-team .lane-avatar { border-style: dashed; }
+.lane-board-empty { padding: 2px 0; }
+
+/* 팝오버(새 레인·기획)가 덱 위로 뜬다 — 공통 판 규칙의 overflow:hidden 을 덱만 푼다(본문 스크롤은 .ai-studio-deck-pane 이 맡는다).
+   z-index 는 모니터(캔버스)보다 위. 좁은 덱은 컨테이너 쿼리로 마지막 줄 열을 감춘다 — 표가 6열로 부서지지 않게. */
+.ai-studio-deck { container-type: inline-size; overflow: visible; z-index: 5; }
+@container (max-width: 660px) {
+  /* 1280 기본 폭(덱 ≈552px): 마지막 줄 열을 감추고 나머지 5열을 조여 잘림 없이 선다. */
+  .lane-row { column-gap: 8px; grid-template-columns: minmax(100px, 1fr) 64px minmax(80px, 0.8fr) minmax(100px, 1fr) minmax(120px, auto); }
+  .lane-cell-last { display: none; }
+  .lane-cell-actions .ai-lane-btn { padding: 4px 7px; }
+  .lane-progress-bar { width: min(100%, 100px); }
+}
+@container (max-width: 560px) {
+  .ai-studio-tab span:not(.ai-studio-tab-badge) { display: none; }
+  .ai-studio-deck-actions .ai-studio-ghost-btn:not(.is-accent) { display: none; }
+}
+@container (max-width: 440px) {
+  .ai-studio-deck-caption { display: none; }
+}
+
+/* ── 덱 팝오버 (새 레인 · 기획) ───────────────────────────────────────── */
+.ai-studio-popover {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-l);
+  bottom: calc(100% + 6px);
+  box-shadow: var(--shadow-pop);
+  max-height: min(70vh, 560px);
+  overflow: auto;
   position: absolute;
-  top: 6px;
-  width: 2px;
+  right: 8px;
+  width: min(720px, calc(100% - 16px));
+  z-index: 6;
 }
+.ai-studio-popover[hidden] { display: none; }
+.ai-studio-popover[data-kind="planning"] { width: min(520px, calc(100% - 16px)); padding: 8px 10px; }
+.ai-lane-pane { display: grid; gap: 8px; min-height: 0; padding: 10px 12px 12px; }
 
-.ai-studio-agent-row.is-team {
-  position: relative;
+/* ── 모니터 모서리: 다른 장면의 레인 썸네일 ───────────────────────────── */
+.ai-studio-monitor-lanes {
+  bottom: 10px;
+  display: flex;
+  gap: 6px;
+  pointer-events: none;
+  position: absolute;
+  right: 10px;
+  z-index: 3;
 }
-
-.ai-studio-agent-kind {
-  background: var(--bg-inset);
-  border-radius: var(--radius-pill);
-  color: var(--text-3);
-  font-size: calc(10px * var(--ai-font-scale, 1));
-  padding: 1px 6px;
+.ai-studio-monitor-lanes[hidden] { display: none; }
+.ai-studio-monitor-lane {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-pop);
+  cursor: pointer;
+  display: grid;
+  gap: 3px;
+  padding: 4px;
+  pointer-events: auto;
 }
+.ai-studio-monitor-lane.is-running { border-color: var(--accent-border); }
+.ai-studio-monitor-lane.is-review { border-color: var(--warning); }
+.ai-studio-monitor-lane-thumb { border-radius: var(--radius-s); display: block; height: 60px; width: 96px; }
+.ai-studio-monitor-lane-label { display: grid; gap: 2px; justify-items: start; width: 96px; }
+.ai-studio-monitor-lane-label b { font-size: calc(11px * var(--ai-font-scale, 1)); max-width: 96px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-studio-monitor-lane-label .ai-studio-lane-chip { margin-left: 0; }
 
-.ai-studio-agent-line.is-text {
+/* ── 나가기 확인 ─────────────────────────────────────────────────────── */
+.ai-studio-exit-dialog {
+  align-items: center;
+  background: rgb(15 18 28 / 45%);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  position: absolute;
+  z-index: 8;
+}
+.ai-studio-exit-card {
+  background: var(--bg-raised);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-pop);
+  display: grid;
+  gap: 10px;
+  max-width: calc(100% - 40px);
+  padding: 20px 22px 16px;
+  width: 480px;
+}
+.ai-studio-exit-title { font-size: 17px; margin: 0; }
+.ai-studio-exit-text { color: var(--text-2); font-size: 13px; margin: 0; }
+.ai-studio-exit-lanes { background: var(--bg-inset); border-radius: var(--radius-m); display: grid; gap: 4px; list-style: none; margin: 0; padding: 8px 12px; }
+.ai-studio-exit-lanes li { align-items: center; display: flex; font-size: 12.5px; gap: 8px; }
+.ai-studio-exit-lane-meta { color: var(--text-2); }
+.ai-studio-exit-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+/* ── 스튜디오 밖: 조수 카드의 레인 요약 줄 ─────────────────────────────── */
+.ai-lane-summary {
+  align-items: center;
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-m);
+  display: flex;
   font-family: var(--font-ui);
-  white-space: pre-wrap;
+  gap: 8px;
+  margin: 4px 12px 0;
+  min-width: 0;
+  padding: 7px 10px;
 }
+.ai-lane-summary[hidden] { display: none; }
+.ai-lane-summary-dot { background: var(--accent); border-radius: 50%; flex: none; height: 8px; width: 8px; }
+.ai-lane-summary[data-state="review"] .ai-lane-summary-dot { background: var(--warning); }
+.ai-lane-summary[data-state="idle"] .ai-lane-summary-dot { background: var(--text-3); }
+.ai-lane-summary[data-state="running"] .ai-lane-summary-dot { box-shadow: 0 0 0 3px var(--accent-muted); }
+.ai-lane-summary-body { display: grid; flex: 1 1 auto; min-width: 0; }
+.ai-lane-summary-headline { color: var(--text-1); font-size: calc(12.5px * var(--ai-font-scale, 1)); }
+.ai-lane-summary-detail { color: var(--text-2); font-size: calc(11.5px * var(--ai-font-scale, 1)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-lane-summary-open {
+  background: transparent;
+  border: 0;
+  color: var(--accent);
+  cursor: pointer;
+  flex: none;
+  font: inherit;
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+  padding: 2px 4px;
+  white-space: nowrap;
+}
+.ai-lane-summary-open:hover { text-decoration: underline; }
+.ai-lane-summary-open:focus-visible { outline: var(--focus-outline); }

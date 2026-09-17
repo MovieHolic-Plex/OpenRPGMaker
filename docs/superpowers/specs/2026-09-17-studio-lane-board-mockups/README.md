@@ -58,7 +58,7 @@
 - 작업 중 레인은 캔버스 위에 **점선 고스트 박스**(레인 이름 + 턴 진행) 로 표시된다.
 - 다른 장면에서 작업 중인 레인은 모니터 모서리에 **라이브 썸네일**로 보인다. 썸네일 클릭 → 그 장면으로 전환.
 
-### 왼콽 장면 레일
+### 왼쪽 장면 레일
 - 장면 트리만 남긴다. 레인이 붙은 장면에 A/B/C 배지. §9 의 「조수」 레인 행 절은 제거.
 - 1280 에서는 접힌다(미니 레일). 보드는 그대로 4행.
 
@@ -80,3 +80,19 @@ node docs/superpowers/specs/2026-09-17-studio-lane-board-mockups/render.mjs
 ```
 
 `mock.html?v=entry|work|lane|narrow` 를 Playwright chromium 으로 찍는다. `map-full.png`·`thumb.png` 는 목업에 쓰인 정적 소재다. 비교 이미지는 실제 스튜디오 스크린샷(`.playwright-mcp/studio-qa/shots/03-deck-open-default.png`, gitignore) 과 `mock-1440-lanes.png` 를 ImageMagick 으로 이어 붙인 것이다.
+
+
+## 구현 결과
+
+같은 날 구현 PR 의 실화면. `scripts/capture-studio-lane-board.mjs` — 동반 서비스를 로컬 NDJSON 스트리밍 서버로 대체해
+레인 3개를 진짜 UI 로 세우고(＋ 새 레인 → 폼 → 레인 추가) 진짜 레인 매니저·고스트 싱크를 통과시킨 캡처다. 모델 호출은 없다.
+
+| | |
+|---|---|
+| ![레인 0](impl-02-studio-empty.png) 레인 0 — 덱은 한 줄 미니 상태 | ![4레인 실행](impl-04-studio-lanes-running-1440.png) 1440 — 작업 중 2 · 결과 대기 1, 달빛 숲 위 시공A 고스트, 모서리에 B·C 썸네일 |
+| ![레인 스레드](impl-05-lane-thread-review.png) 행 클릭 → 오른쪽이 시공B 스레드, 수신자 칩 `→ 시공B`, 이 레인만 적용 | ![나가기 확인](impl-06-exit-confirm.png) 「편집기로」 — 작업 중 레인이 있으면 확인창 |
+| ![1280](impl-07-studio-lanes-1280.png) 1280 — 마지막 줄 열을 감추고 5열 | ![스튜디오 밖](impl-08-standard-summary-line.png) 표준 편집기 — 조수 카드 요약 줄 + 캔버스 고스트 |
+| ![재진입](impl-09-reenter-from-summary.png) 「스튜디오에서 보기」 → 결과 대기 레인 스레드로 바로 | |
+
+목업과 다른 점: 1440 기본 열 폭(장면 252 · 채팅 400)에서 덱이 ≈710px 이라 「마지막 줄」 열이 목업보다 좁다.
+표 열 최소 폭을 조여 6열이 다 서게 했고, 660px 아래(1280 기본)에서는 그 열을 감춘다.

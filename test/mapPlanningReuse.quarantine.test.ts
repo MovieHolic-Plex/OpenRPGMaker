@@ -306,7 +306,8 @@ describe("스튜디오 덱 「기획」 탭", () => {
     });
     const root = shell.root as unknown as FakeElement;
 
-    const tab = findByTestId(root, "ai-studio-tab-planning");
+    // 2026-09-17 §11: 기획은 덱 탭이 아니라 머리띠의 「기획」 팝오버다.
+    const tab = findByTestId(root, "ai-studio-planning");
     expect(tab).toBeTruthy();
     expect(tab?.textContent).toContain("1");
     tab?.click();

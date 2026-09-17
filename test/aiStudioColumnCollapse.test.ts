@@ -38,7 +38,7 @@ afterEach(() => {
   localStorage.clear();
 });
 
-function boot(sizes?: { scenes: number; chat: number; deck: number }): void {
+function boot(sizes?: { scenes: number; chat: number }): void {
   if (sizes) localStorage.setItem(layoutKey, JSON.stringify(sizes));
   shell = createStudioShell({ onExit: () => {}, onFontZoom: () => {} });
   document.body.append(shell.root);
@@ -87,7 +87,7 @@ describe("studio column collapse layout", () => {
   });
 
   it("preserves saved expanded sizes through collapse and resizing after restore", () => {
-    const saved = { scenes: 316, chat: 464, deck: 300 };
+    const saved = { scenes: 316, chat: 464 };
     boot(saved);
     expectColumns(316, 464);
     control("scenes-collapse").click();
@@ -101,7 +101,7 @@ describe("studio column collapse layout", () => {
     key("scenes", "ArrowRight");
     key("chat", "ArrowLeft", true);
     expectColumns(332, 400);
-    expect(JSON.parse(localStorage.getItem(layoutKey) ?? "null")).toEqual({ scenes: 332, chat: 400, deck: 300 });
+    expect(JSON.parse(localStorage.getItem(layoutKey) ?? "null")).toEqual({ scenes: 332, chat: 400 });
     // The right handle grows leftwards; the left handle grows rightwards.
     for (const [column, endX] of [["scenes", 132], ["chat", 68]] as const) {
       control(`split-${column}`).dispatchEvent(new PointerEvent("pointerdown", { button: 0, clientX: 100 }));
@@ -109,7 +109,7 @@ describe("studio column collapse layout", () => {
       document.dispatchEvent(new PointerEvent("pointerup"));
     }
     expectColumns(364, 432);
-    expect(JSON.parse(localStorage.getItem(layoutKey) ?? "null")).toEqual({ scenes: 364, chat: 432, deck: 300 });
+    expect(JSON.parse(localStorage.getItem(layoutKey) ?? "null")).toEqual({ scenes: 364, chat: 432 });
     control("scenes-collapse").click();
     control("chat-collapse").click();
     expectColumns(52, 52);
@@ -123,12 +123,12 @@ describe("studio column collapse layout", () => {
     control("split-scenes").dispatchEvent(new MouseEvent("dblclick"));
     control("split-chat").dispatchEvent(new MouseEvent("dblclick"));
     expectColumns(252, 400);
-    expect(JSON.parse(localStorage.getItem(layoutKey) ?? "null")).toEqual({ scenes: 252, chat: 400, deck: 300 });
+    expect(JSON.parse(localStorage.getItem(layoutKey) ?? "null")).toEqual({ scenes: 252, chat: 400 });
   });
 
   it("좁은 화면에서는 가운데 맵을 지키려고 오른쪽 열부터 깎는다(저장값은 그대로)", () => {
     setViewport(1024);
-    const saved = { scenes: 252, chat: 400, deck: 300 };
+    const saved = { scenes: 252, chat: 400 };
     boot(saved);
     // 1024 - 36 - 252 - 400 = 336px 밖에 안 남는다 → 오른쪽을 376 까지 깎아 맵 360 을 만든다.
     expectColumns(252, 376);

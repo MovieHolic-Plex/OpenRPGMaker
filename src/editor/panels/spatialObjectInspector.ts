@@ -23,8 +23,8 @@ const COMMON_CHIPS = ["pass", "block", "sit", "sleep", "counter"] as const;
 
 function sourceLabel(card: SpatialGalleryCard): string {
   switch (card.source) {
-    case "default": return "기본 설계";
-    case "own": return "내 설계";
+    case "default": return "공용 오브젝트";
+    case "own": return "내 오브젝트";
     case "placed": return "배치";
     default: {
       const exhaustive: never = card.source;
@@ -70,7 +70,7 @@ export function renderSpatialObjectInspector(input: {
       el("div", {
         class: "spatial-object-actions",
         children: handlers.builtinLocked
-          ? [actionButton("spatial-object-copy", "내 설계로 복제", handlers.onCopyBuiltin)]
+          ? [actionButton("spatial-object-copy", "내 오브젝트로 복제", handlers.onCopyBuiltin)]
           : [actionButton("spatial-object-paint", "그림 편집", handlers.onEditGraphic)],
       }),
       ...(design ? [el("details", { class: "spatial-object-meta", children: [
