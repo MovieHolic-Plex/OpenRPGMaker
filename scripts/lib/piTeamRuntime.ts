@@ -1,3 +1,4 @@
+import { PiTeamMessaging, teamCommunicationPrompt } from "./piTeamMessaging.ts";
 // Pi 팀 런타임. 팀장 에이전트(orchestrator)가 커스텀 툴로 시공·검수 에이전트를 띄운다.
 // 하위 에이전트는 runPiAgent 를 그대로 재사용하고, 시공 결과는 맵 묶음 단위로 작업 사본(working)에
 // 도착 순서대로 병합된다.
@@ -99,6 +100,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   if (builders.length === 0) throw Object.assign(new Error("팀에 켜진 시공 팀원이 없습니다. 팀 패널에서 팀원을 켜 주세요."), { status: 400 });
 
   let ledger: TeamAssignmentLedger = createTeamAssignmentLedger(teamAssignmentBudget(builders.length));
+  const mailbox = new PiTeamMessaging(message => emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: message } }));
+  mailbox.register("orchestrator-1", "팀장", null);
   const progress = new Map<string, AgentProgress>();
   const outcomes = new Map<string, AgentOutcome>();
   const inflight: Inflight[] = [];
@@ -115,6 +118,13 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     apiKey: provider === request.provider ? options.apiKey : undefined,
     providerApiKeys: options.providerApiKeys,
     signal: options.signal,
+    extraTools: mailbox.tools(agentId),
+    subscribeTeamMessages: notify => {
+      const check = () => { if (mailbox.unread(agentId)) notify(); };
+      const unsubscribe = mailbox.subscribe(agentId, check);
+      check();
+      return unsubscribe;
+    },
     // 규약: 팀은 하위 에이전트마다 같은 상한이 걸린다. 빠뜨리면 시공·검수가 런타임 기본값으로 돌아 요청의 상한이 팀장에게만 적용된다.
     ...(options.timeoutMs !== undefined ? { timeoutMs: options.timeoutMs } : {}),
     onEvent: (event) => {
@@ -159,13 +169,14 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       type: "agent_spawn", agentId, role: "builder", mapId, mapName: mapName(mapId), task,
       memberId: member.id, label: member.label, ...(fixOf ? { fixOf } : {}),
     });
+    mailbox.register(agentId, member.label, mapId);
     const snapshot = structuredClone(working) as Project;
     const promise = (async (): Promise<AgentOutcome> => {
       try {
         const done = await runAgent(
           {
             ...request, ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
-            systemPrompt: memberSystemPrompt(member, snapshot, [mapId]), maxTurns: member.maxTurns,
+            systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), teamCommunicationPrompt(agentId)], maxTurns: member.maxTurns,
             ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
             ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
           },
@@ -186,6 +197,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         outcomes.set(agentId, outcome);
         emit({ type: "agent_done", agentId, ok: false, summary: message, stats: { ms: 0, turns: 0, toolCalls: 0, toolErrors: 0 }, changedKeys: [], spills: [], conflicts: [] });
         return outcome;
+      } finally {
+        mailbox.close(agentId);
       }
     })();
     inflight.push({ agentId, promise });
@@ -232,15 +245,19 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       },
     };
     const snapshot = structuredClone(working) as Project;
-    const done = await runAgent(
-      {
-        ...request, ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
-        systemPrompt: memberSystemPrompt(member, snapshot, [mapId]), maxTurns: member.maxTurns,
-        ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
-        ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
-      },
-      { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider), readOnlyTools: true, extraTools: [reportTool] },
-    );
+    mailbox.register(agentId, member.label, mapId);
+    let done: PiAgentDoneEvent;
+    try {
+      done = await runAgent(
+        {
+          ...request, ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
+          systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), teamCommunicationPrompt(agentId)], maxTurns: member.maxTurns,
+          ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
+          ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
+        },
+        { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider), readOnlyTools: true, extraTools: [...mailbox.tools(agentId), reportTool] },
+      );
+    } finally { mailbox.close(agentId); }
     toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns;
     const result = verdict ?? { ok: false, findings: ["검수 에이전트가 report_review 를 호출하지 않았습니다: " + summaryOf(done)] };
     ledger = recordTeamReview(ledger, { mapId, agentId, ok: result.ok });
@@ -250,6 +267,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   }
 
   const orchestratorTools: PiToolShape[] = [
+    ...mailbox.tools("orchestrator-1"),
     {
       name: "assign_map_agent",
       label: "assign_map_agent",
@@ -273,12 +291,22 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     {
       name: "wait_agents",
       label: "wait_agents",
-      description: "배정한 팀원이 끝날 때까지 기다렸다가 결과(요약·변경 키·범위 밖 변경)를 돌려준다. agentIds 를 비우면 진행 중인 배정 전부. 검수를 붙이거나 같은 맵에 다음 팀원을 배정하기 전에 부른다.",
+      description: "배정 결과를 최대 10초 기다린다. 팀장에게 메시지가 오면 일찍 돌아오므로 read_team_messages로 답한다. reason=completed가 아니면 실행 상태를 확인한다. agentIds 를 비우면 진행 중인 배정 전부. 검수를 붙이거나 같은 맵에 다음 팀원을 배정하기 전에 부른다.",
       parameters: { type: "object", properties: { agentIds: { type: "array", items: { type: "string" } } }, required: [], additionalProperties: false },
-      async execute(_id, params) {
+      async execute(_id, params, signal) {
         const ids = selectAgents((params as Record<string, unknown>)?.agentIds);
-        await Promise.all(inflight.filter((entry) => ids.includes(entry.agentId)).map((entry) => entry.promise));
-        return text({ agents: ids.map(reportFor) });
+        const controller = new AbortController();
+        const abort = () => controller.abort();
+        const parentSignal = signal ?? options.signal;
+        parentSignal?.addEventListener("abort", abort, { once: true });
+        if (parentSignal?.aborted) controller.abort();
+        try {
+          const reason = await Promise.race([
+            Promise.all(inflight.filter(entry => ids.includes(entry.agentId)).map(entry => entry.promise)).then(() => "completed"),
+            mailbox.wait("orchestrator-1", 10000, controller.signal),
+          ]);
+          return text({ reason, agents: ids.map(reportFor), unreadMessages: mailbox.unread("orchestrator-1") });
+        } finally { controller.abort(); parentSignal?.removeEventListener("abort", abort); }
       },
     },
     {
@@ -304,7 +332,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         if (running.length > 0) {
           throw new Error(`아직 ${running.map((assignment) => `${assignment.memberId}(${assignment.agentId}, ${assignment.mapId})`).join(", ")} 가 작업 중입니다. wait_agents 로 결과를 받은 뒤 보고하세요.`);
         }
+        if (mailbox.unread("orchestrator-1")) throw new Error("팀장에게 미열람 메시지 또는 반영 확인이 있습니다. read_team_messages로 확인하고 질문에 답한 뒤 finish 하세요.");
+        const outstanding = mailbox.outstanding();
         finished = str((params as Record<string, unknown>)?.report, "report");
+        if (outstanding.length) finished += `\n미확인 협의 ${outstanding.length}건: ${outstanding.map(m => `${m.id} ${m.from}→${m.to}: ${m.body}`).join("; ")}`;
         emit({ type: "team_report", text: finished });
         return text({ ok: true });
       },
@@ -315,15 +346,18 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   progress.set(orchestratorId, { turns: 0, toolCalls: 0, toolErrors: 0, lastLine: "" });
   emit({ type: "agent_spawn", agentId: orchestratorId, role: "orchestrator", mapId: null, mapName: null, task: request.task });
   const orch = PI_TEAM_ROLES.orchestrator;
-  const orchDone = await runAgent(
-    { ...request, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: orch.systemPrompt(base, request.mapIds, request.task, team, request.currentMapId), maxTurns: orch.maxTurns },
-    { ...child(orchestratorId), toolNames: orch.toolNames, extraTools: orchestratorTools },
-  );
+  let orchDone: PiAgentDoneEvent;
+  try {
+    orchDone = await runAgent(
+      { ...request, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: [...orch.systemPrompt(base, request.mapIds, request.task, team, request.currentMapId), teamCommunicationPrompt(orchestratorId)], maxTurns: orch.maxTurns },
+      { ...child(orchestratorId), toolNames: orch.toolNames, extraTools: orchestratorTools },
+    );
+  } finally { mailbox.close(orchestratorId); }
   // 팀장이 wait 없이 끝났을 수 있다(턴 상한·조기 finish 실패). 남은 배정을 거두어 병합한다 —
   // 여기서 놓치면 이미 끝난 시공 결과가 조용히 사라진다.
   await Promise.all(inflight.map((entry) => entry.promise));
   emit({ type: "agent_done", agentId: orchestratorId, ok: true, summary: finished ?? summaryOf(orchDone), stats: orchDone.stats, changedKeys: [], spills: [], conflicts: [] });
-  if (!finished) emit({ type: "team_report", text: summaryOf(orchDone) || "팀장이 finish 를 호출하지 않고 끝났습니다." });
+  if (!finished) emit({ type: "team_report", text: `${summaryOf(orchDone)} · 팀장이 finish를 호출하지 않았습니다. 미확인 협의 ${mailbox.outstanding().length}건.` });
 
   // 병합본은 살아있는 프로젝트 위에 묶음만 얹은 결과다. 시공 팀원의 프루프는 이 프로세스에만
   // 살아 있으므로, 브라우저의 수용 게이트가 확인할 수 있게 병합 시점에 증거를 다시 찍는다.
