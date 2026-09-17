@@ -351,10 +351,9 @@ describe("fill_region / tile_erase (면 채우기·부분 보호)", () => {
       count: 20,
       seed: 1,
     });
-    // 호수 안 전부에 강제 산포하면 0개 — placement-zero 가 올바른 동작이다
-    // (0그루를 ok 로 남기면 "빽빽한 숲"이 완성으로 보고된다. test/placePropsZeroPlacement.test.ts).
-    expect(props.ok, props.summary).toBe(false);
-    expect(props.issues?.[0]?.code).toBe("placement-zero");
+    // 2026-09-18: 호수 안에 자리가 없으면 거부 대신 영역을 넓혀 물가에 놓는다 — 물 위에는 여전히 한 그루도 없어야 한다.
+    expect(props.ok, props.summary).toBe(true);
+    expect(props.summary).toContain("넓힘");
     const map = ctx.project.maps[MAP_ID];
     let treesOnWater = 0;
     for (let y = 4; y < 14; y += 1) {

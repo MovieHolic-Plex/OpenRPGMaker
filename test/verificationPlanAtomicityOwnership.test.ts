@@ -22,7 +22,9 @@ describe.each(paths)("atomic verification adoption via %s", path => {
     if (path === "tool") expect(turn.result?.ok).toBe(true);
     expect(f.session.getVerificationSnapshot().requirements).toEqual([original, expect.objectContaining({ args: f.changed, status: "unverified" })]);
     await f.send([f.probe(f.changed), { name: "complete_work_item", args: {} }]);
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
+    // 2026-09-17 수용 원장 해체: 완료 판정은 계획 항목이 직접 선언한 verificationChecks 만 본다.
+    expect(f.session.getVerificationSnapshot().requirements.map(requirement => requirement.status)).toEqual(["passed", "passed"]);
+    expect(f.session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("done");
   });
 
   it.each(["same-item", "later-layer", "criterion"])("rejects contradictory pending resolutions across %s before either applies", async variant => {

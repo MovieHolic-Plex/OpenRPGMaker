@@ -3,7 +3,7 @@
 // 의존하면 dx=dy=0 이 되어 접근/도주가 영구히 정지한다.
 import { describe, expect, it } from "vitest";
 import { updateAutonomousNPCs } from "@/player/playSceneAutonomous";
-import { registerPageMoveRoutes } from "@/player/playScenePageMoveRoutes";
+import { npcMoveDurationMs, npcMoveIntervalMs, registerPageMoveRoutes } from "@/player/playScenePageMoveRoutes";
 import { movementScene } from "./runtimeEventPageFixtures";
 
 const TICK_MS = 16;
@@ -27,7 +27,11 @@ describe("스폰된 이벤트의 플레이어 상대 자율 이동", () => {
     };
     scene.eventPositions.mon_spawned = { x: 3, y: 3, direction: "down" };
     registerPageMoveRoutes(scene);
-    expect(scene.autonomousNPCs.get("mon_spawned")?.strategy).toBe("approach");
+    const approachMover = scene.autonomousNPCs.get("mon_spawned");
+    expect(approachMover?.speedRank).toBe(4);
+    expect(approachMover?.moveDurationMs).toBe(npcMoveDurationMs(4));
+    expect(approachMover?.frequencyRank).toBe(8);
+    expect(approachMover?.moveIntervalMs).toBe(npcMoveIntervalMs(8));
 
     const runtimeScene = runtimeSceneFor(scene, { x: 8, y: 3 });
     for (let tick = 0; tick < 60; tick += 1) updateAutonomousNPCs(runtimeScene, TICK_MS);

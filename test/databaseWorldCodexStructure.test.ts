@@ -32,6 +32,14 @@ describe("world codex tab structure", () => {
     expect(findByTestId(host, "db-world-codex-lead")).toBeTruthy();
   });
 
+  it("shows a header stat strip with entity counts", () => {
+    const host = renderCodex();
+    const stats = findByTestId(host, "db-world-codex-stats");
+    expect(stats).toBeTruthy();
+    expect(stats?.textContent).toContain("낱장 카드");
+    expect(stats?.textContent).toContain("검사 지적");
+  });
+
   it("keeps the canon tab on the same single-root contract", () => {
     const host = document.createElement("div") as unknown as FakeElement;
     renderWorldCanonTab(host as unknown as HTMLElement, () => {});

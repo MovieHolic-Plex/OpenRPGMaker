@@ -566,3 +566,130 @@
 @container (max-width: 799px) {
   .world-document-workspace .world-gallery-toggle { margin-left: auto; }
 }
+/* 세계 개요 v2 (2026-09-18) — Studio 토큰·프리미티브 유지, 구조만 추가.
+   AI 미터 / hero stat / 법칙 2열 그리드. */
+.world-document-workspace .world-canon-meter {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.world-document-workspace .world-canon-meter-text {
+  font: 400 12px/1.5 var(--font-ui);
+  color: var(--db-studio-text-2);
+}
+.world-document-workspace .world-canon-law-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+@container (max-width: 799px) {
+  .world-document-workspace .world-canon-law-grid { grid-template-columns: minmax(0, 1fr); }
+}
+/* 설정집 v2 (2026-09-18) — 헤더 아래 stat 스트립. 기존 toolbar 경계·토큰 유지. */
+.world-document-workspace .world-codex-lead-wrap {
+  display: grid;
+  gap: 0;
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+}
+.world-document-workspace .world-codex-lead-wrap .world-document-toolbar {
+  border-bottom: 0;
+}
+.world-document-workspace .world-codex-lead-wrap .db-ws-stats {
+  padding: 0 24px 12px;
+}
+/* 세계 개요 v2 — hero stat 리듬: stat 띠와 미터 사이 호흡. */
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .world-canon-workspace .db-ws-stats {
+  gap: 0;
+  margin-bottom: 16px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .world-canon-meter {
+  margin-bottom: 16px;
+}
+/* 세계 개요 v2 — 제목+힌트 겹침 방지: 좁은 열에서 줄바꿈 허용.
+   같은 database 레이어 안이라 파일 순서가 아니라 특이성이 이긴다 —
+   workspace-modern.css(0-4-0)를 이기도록 풀 체인(0-5-0)으로 건다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .db-ws-card-head {
+  flex-wrap: wrap;
+  row-gap: 2px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .db-ws-card-title {
+  white-space: normal;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .db-ws-card-hint {
+  flex-basis: 100%;
+}
+/* 세계 개요·설정집 폴리시 (2026-09-18) — Studio v2 문법 안에서만. 새 토큰 없음.
+   미터 가독 / 법칙 카드 표면 / 선택 카드 레일 마커 / 위키 헤더 리듬. */
+.world-document-workspace .world-canon-meter-bar {
+  height: 8px;
+  background: var(--db-studio-accent-soft);
+  border: 1px solid var(--db-studio-accent-border);
+}
+.world-document-workspace .world-canon-meter-fill {
+  height: 100%;
+  background: var(--db-studio-accent);
+}
+.world-document-workspace .world-canon-meter-text {
+  font-weight: 600;
+  color: var(--db-studio-text-1);
+}
+.world-document-workspace .world-canon-law-grid > .db-world-canon-law {
+  background: var(--db-studio-canvas);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.world-document-workspace .world-card.active {
+  border-color: var(--db-studio-accent-border);
+  box-shadow: inset 3px 0 0 var(--db-studio-accent), var(--db-studio-shadow);
+}
+.world-document-workspace .world-card.active .world-card-title {
+  letter-spacing: 0;
+}
+.world-document-workspace .world-wiki-header {
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+  margin-bottom: 12px;
+}
+.world-document-workspace .world-wiki-heading h3 {
+  letter-spacing: -0.01em;
+}
+.world-document-workspace .db-world-canon-chip.is-on {
+  font-weight: 700;
+}
+/* 세계 개요·설정집 폴리시 2 (2026-09-18) — database 레이어라 map(editor) 레이어의
+   동급 규칙을 특이성과 무관하게 이긴다. 새 토큰 없음.
+   경고 블록 탈포화 / 칩·카드 호버·포커스 피드백. */
+.world-document-workspace .world-lint-item.warning {
+  background: var(--warning-muted);
+  color: var(--db-studio-warning-strong);
+}
+.world-document-workspace .world-lint-item.error {
+  background: var(--danger-muted);
+  color: var(--db-studio-danger);
+}
+.world-document-workspace .world-lint-item.info {
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-2);
+}
+.world-document-workspace .db-world-canon-chip,
+.world-document-workspace .world-tab,
+.world-document-workspace .world-relation-chip {
+  transition: background-color var(--transition-fast, 120ms ease), border-color var(--transition-fast, 120ms ease);
+}
+.world-document-workspace .db-world-canon-chip:hover,
+.world-document-workspace .world-tab:hover,
+.world-document-workspace .world-relation-chip:hover {
+  border-color: var(--db-studio-accent-border);
+  background: var(--db-studio-accent-soft);
+}
+.world-document-workspace .db-world-canon-chip:focus-visible,
+.world-document-workspace .world-tab:focus-visible,
+.world-document-workspace .world-relation-chip:focus-visible,
+.world-document-workspace .world-card:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+.world-document-workspace .world-card:hover {
+  border-color: var(--db-studio-border-strong);
+}

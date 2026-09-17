@@ -1,3 +1,6 @@
+// 2026-09-17 수용 원장 해체: 수용 기준(requirements/acceptance criteria)에서 파생되던 검증 소유권을 재던 테스트
+// ("optional criterion authority …", "canonical tool verdict binds before execution …")는 삭제했다. 남은 것은 작업 계획
+// 항목이 직접 선언한 verificationChecks 계약(분류·skip 원자성·완료)이고, acceptance 스냅샷 단언은 뺐다(항상 null).
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
@@ -39,9 +42,8 @@ function rig(maxToolCalls = 4, project = createBlankProject()) {
       })) }, finishReason: "tool_calls" } : { imageDelivery, message: { role: "assistant", content: "FINAL_SENTINEL" }, finishReason: "stop" });
     },
   });
-  function snapshot() { return { plan: session.getWorkPlan(), acceptance: session.getAcceptanceSnapshot(), verification: session.getVerificationSnapshot() }; }
+  function snapshot() { return { plan: session.getWorkPlan(), verification: session.getVerificationSnapshot() }; }
   const plan = (declared = true): Call => ({ name: "set_work_plan", args: { goal: "Integration checks",
-    acceptance: [{ id: "preserve", title: "Map", criteria: [{ kind: "preserve", target: { mapId } }] }],
     layers: [{ title: "Checks", items: [{ id: "verify", title: "Verify", instruction: "Check the declared scene then inspect project",
       successTools: ["run_scene_test", "get_project_summary"], mapTargets: [mapId],
       // declared=false 는 스펙 미지정 요구를 만든다. 선언을 아예 비우면 더 이상 요구가 생기지
@@ -134,49 +136,7 @@ describe("PR687 adjudicated verification scheduling through normal dispatch", ()
     expect(f.snapshot().verification.requirements[0]).toEqual(required);
     expect(f.snapshot().verification.findings).toHaveLength(kind === "missing-target" ? 1 : 0);
     expect(f.snapshot().verification.attempts.at(-1)?.status).toBe(kind === "missing-target" ? "negative" : kind === "no-target" ? "setup-failure" : "unsuccessful");
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
     expect(result.runOutcome?.execution).toBe("blocked");
-  });
-
-  it("optional criterion authority does not turn ordinary optional scheduling into required verification", async () => {
-    const f = rig();
-    await f.send([{ name: "set_work_plan", args: { goal: "Optional route",
-      requirements: [{ id: "optional-route", title: "Optional route", required: false,
-        criteria: [{ kind: "reachability", target: { mapId: f.args.mapId }, from: { x: 10, y: 12 }, to: [{ x: 5, y: 8 }] }] }],
-      layers: [{ title: "Optional", items: [{ id: "optional", title: "Inspect", instruction: "Optional inspection", requirementIds: ["optional-route"] }] }],
-    } }, { name: "skip_work_item", args: { itemId: "optional" } }]);
-    expect(f.session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("skipped");
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
-    expect(f.snapshot().verification.findings).toEqual([]);
-  });
-
-  it("canonical tool verdict binds before execution and late adoption cannot reuse an exploratory pass", async () => {
-    const f = rig();
-    await f.send([probe(f.args)]);
-    expect(f.snapshot().verification.requirements).toEqual([]);
-    const declaration: Call = { name: "set_work_plan", args: { goal: "Canonical scene",
-      requirements: [{ id: "canonical", title: "Scene", criteria: [{ kind: "toolVerdict", tool: "run_scene_test", args: f.args }] }],
-      layers: [{ title: "Checks", items: [{ id: "canonical-item", title: "Inspect", instruction: "Inspect" }] }],
-    } };
-    await f.send([declaration]);
-    const original = f.snapshot().verification.requirements.find(requirement => requirement.acceptedCriterion?.kind === "toolVerdict");
-    expect(original).toMatchObject({ args: f.args, status: "unverified" });
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
-    await f.send([probe(f.args)]);
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
-    const protectedProject = f.session.getProposedProject();
-    const edited = structuredClone(protectedProject);
-    edited.session.gold = 99;
-    expect(f.session.syncBaselineFromStoreIfClean(edited)).toBe(true);
-    await f.send([probe({ ...f.args, start: { x: 4, y: 6 } })]);
-    expect(f.snapshot().verification.requirements.find(requirement => requirement.checkId === original!.checkId)?.status).toBe("stale");
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
-    await f.send([probe(f.args)]);
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
-    expect(f.session.getVerificationSnapshot().requirements[0]?.initialState).toEqual(original!.initialState);
-    expect(f.session.syncBaselineFromStoreIfClean(protectedProject)).toBe(true);
-    await f.send([probe(f.args)]);
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
   });
 
   it("normal final repair is bounded by authoritative findings without an acceptance declaration", async () => {
@@ -222,7 +182,6 @@ describe("PR687 adjudicated verification scheduling through normal dispatch", ()
     expect(calls).toMatchObject([{ result: { ok: false } }]);
     expect(f.boundary().after).toEqual(f.boundary().before);
     expect(f.session.getWorkPlan()?.layers[0]?.items[0]?.status).not.toBe("skipped");
-    if (status !== "passed") expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
     if (status === "pending-specification") {
       const pending = f.snapshot().verification.requirements[0]!;
       const declaration = f.plan();
@@ -235,6 +194,6 @@ describe("PR687 adjudicated verification scheduling through normal dispatch", ()
     expect(f.session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("done");
     await f.send([{ name: "skip_work_item", args: { itemId: "optional" } }]);
     expect(f.session.getWorkPlan()?.layers[0]?.items[1]?.status).toBe("skipped");
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
+    expect(f.snapshot().verification.requirements[0]?.status).toBe("passed");
   });
 });

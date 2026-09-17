@@ -180,10 +180,24 @@ P0 문법 고정 뒤에도 「가독성이 여전히 떨어진다」는 피드�
 - **규격**: 글자 12 · 13 · 15 · 18px, 라운딩 6 · 4px · 50%(점), `--text-3` 는 순백 위 12px 이상에서만, 버튼 여섯 묶음(채움 · 테두리 · 유령 · 아이콘 · 위험 · 칩). 값과 근거는 `DESIGN.md` 「One grammar, measured (2026-09-03)」.
 - **아이콘**: `src/editor/panels/eventEditor/editorIcons.ts` 의 `renderEditorIcon(name)` 하나만 쓴다(빌더는 저장소 공용 `buildSvgIcon`). 글리프 문자(↑ ✎ ✕ ⛶ ❝ ◇ …)를 버튼 텍스트로 넣지 말 것 — 게이트 C10 이 잡는다. 분류 아이콘은 `CategoryVisual.icon` + `renderCategoryIcon()`; `data-glyph` 는 호환용 속성으로만 남고 `::before` 는 꺼져 있다.
 - **탈출 규칙**: 툴바 팝오버(`<details>`)는 `makePopoverEscapable` 이 Escape 층 등록과 바깥 pointerdown 닫힘을 함께 건다. 닫기 확인창 문구는 실제 푸터 버튼(「적용」 「저장하고 닫기」)만 가리킨다 — 테스트 `test/eventEditorModalClose.test.ts`.
-- **헤더**: 맵 이름(`event-editor-map-name`) · 좌표 · 이벤트 표시명(페이지 이름과 다를 때만) · NPC 칩(연결됐을 때만). 「페이지 N/M」 카운터는 없고 순번은 이름 상자의 aria-label 이 말한다.
+- **헤더**: 이름 상자(`event-editor-name`) = **이벤트 이름**(`GameEvent.name`, 2026-09-18) · 맵 이름(`event-editor-map-name`) · 좌표 · 이벤트 ID 칩(≤1100px 에서는 접힘) · NPC 칩(연결됐을 때만). 이름을 아직 짓지 않은 옛 저작물은 빌려 쓰는 페이지 이름을 placeholder 로 보이고 옆에 「표시 이름: … (페이지 이름에서)」(`event-editor-identity`) 를 붙인다. 「페이지 N/M」 카운터는 없다.
 - **원시 ID**: 명령 요약과 이동 경로 대상은 `eventNameForSummary()`(commandSummary.ts) 로 이름을 보인다. `eventDisplayName` 정의는 `@/project/eventDisplayName` 로 옮겼다(eventMarkerUx ↔ commandSummary 순환 방지, 기존 import 경로는 재export).
 - **끝 행**: 명령 목록은 「선택 끝」「분기 끝」 마커 행을 두지 않는다(`branchGroupEndLabel` 삭제). 분기 머리 · 들여쓰기 · 빈 분기 행은 그대로.
 - **측정**: `QA_BASE_URL=http://127.0.0.1:<port> node scripts/qa-event-editor-ux.mjs --label <name>` — C7~C12 가 문법 게이트다. main 기준 RED(`.omo/evidence/event-editor-ux/p0-red/`) 와 구현 뒤 GREEN(`p0-green/`) 결과를 남겼다. 표면 스냅샷(글리프 → SVG, 끝 행 제거)은 의도한 변경이라 기준선을 다시 떴다.
+
+
+## 2026-09-17 적대적 리뷰 P0 다섯 가지 수정 (2026-09-18)
+
+근거: `docs/2026-09-17-event-editor-authoring-adversarial-review.md`. 실제로 NPC 하나를 저작하며 찍은 리뷰의 P0 다섯 개와 P1·P2 일부를 고쳤다. 계약이 바뀐 것만 적는다.
+
+- **이벤트 이름은 `GameEvent.name` 이다.** `eventDisplayName()`(`@/project/eventDisplayName`) 규칙: ① `name` → ② 이름 붙은 마지막 페이지(단 자동 이름 `페이지 N` 은 **이름으로 치지 않는다**) → ③ ID. 헤더의 큰 상자가 `name` 을 쓴다(`updateEvent(mapId, id, { name })`). 페이지 이름은 탭 더블클릭·F2·우클릭 「이름 바꾸기」(`evt-page-rename-N`, `event-page-menu-rename`)와 설정 열 맨 위 「페이지 이름」(`event-classic-name` > `event-page-name-input`)에서 고친다 — 이 컨트롤은 레일 그룹 밖 한 줄이라 «기타» 그룹을 만들지 않는다. 왜: 예전엔 이 상자가 활성 페이지 이름이었고 2페이지를 자동 이름 그대로 두고 저장하면 NPC 가 맵 툴팁·목록·인스펙터에서 전부 「페이지 2」로 불렸다.
+- **참조 조건은 비운 채 세운다.** 칩(스위치·스위치 2·변수·아이템·주인공)과 고급 조건·`compileConditionFromText` 폴백·빈 `not` 그룹 모두 `switchId/variableId/itemId/actorId: ""`. 첫 레코드(대개 퀘스트 스위치 0001)는 사용자의 선택이 아니다. 칩을 **실제로 클릭**하면 재렌더 뒤 그 행의 피커가 바로 열린다(`isTrusted` 클릭만 — 테스트의 합성 click 은 창을 띄우지 않는다). 레코드 피커는 지금 값이 목록에 없으면 **아무것도 미리 고르지 않고**(「선택」 비활성), 개명은 선택 행의 「이름 바꾸기」(`event-record-picker-rename-open`) 뒤에만 펼친다. 「+ 새 …」는 만든 레코드의 이름 상자를 펼치고 포커스를 준다. 구획 머리 숫자는 전체 일치 수고 200개 넘으면 「처음 N개만 표시」를 적는다.
+- **삽입 자리 규칙은 하나다.** 「+ 명령」·Enter(피커)·붙여넣기(Ctrl+V)·우클릭 「아래에 삽입…」/「아래에 주석 삽입」 전부 **선택 행 바로 아래, 같은 깊이**(`commandInspector.defaultInsertionPath / insertionPathAfter`). 여러 행을 골랐으면 마지막 뿌리 선택 아래. 선택이 없으면 루트 끝. 피커 제목이 자리를 말한다(「명령 추가 — 선택한 대기 바로 아래에」). 컨테이너를 명시한 호출(빈 분기 슬롯·「+ 이 분기에 명령 추가」·페이지 끝 줄)만 그 컨테이너 끝에 넣는다. 분기에 명령이 있어도 끝에 `event-command-branch-add-<path>` / `event-storyboard-branch-add-<path>` 줄이 남는다. 스토리 카드는 `user-select: none`.
+- **닫으면 편집 중 상태가 걷힌다.** `closeHandler` 가 `selectedEventPageId` 를 null 로 하고 window 에 `oprn:event-editor-closed`(`eventEditorLifecycleEvents.ts`) 를 알린다. EditScene 은 그 신호로 「편집 위치 x,y」 배너를 지운다. 맵 마커는 편집기가 페이지를 보고 있는 동안만 그 페이지를 그리고, 아니면 **게임 시작 시 켜질 페이지**(`eventPageAtGameStart` = `resolveEventPage(event, project.session, map.locations)`, 없으면 1페이지)를 그린다.
+- **좁은 화면(`narrow.css`, index.css 마지막 import).** 모달 창 grid 의 열을 `minmax(0, 1fr)` 로 못 박았다 — 예전엔 암묵 열이 헤더 max-content(1033px)로 커져 768 에서 「저장하고 닫기」가 화면 밖이었다. ≤1100: 빈 인스펙터 트랙을 예약하지 않고(1024 에서 960px 중 324px 가 빈 판이었다), 명령을 고르면 인스펙터가 오른쪽 **덮개**(absolute, `grid-column: 1 / -1`)로 뜬다. 스토리 카드는 어느 폭·높이에서도 한 줄 — `@media (max-height: 800px)` 의 세로 쌓기와 `@media (max-width: 1100px)` 의 `flex-basis: 158px`(세로 flex 트랙에서 높이가 됐다)를 되돌렸다.
+- **입력 change 는 포인터 제스처 뒤에 커밋한다**(`commitAfterPointerGesture.ts`, 이벤트 이름·페이지 이름 상자). 다른 버튼을 누르며 blur 된 change 가 본문을 동기 재렌더해 누르던 버튼이 pointerup 전에 교체됐다 — 「이름을 치고 + 를 눌렀는데 아무 일도 없다」의 원인.
+- P1·P2 에서 고친 것: 「크기와 통행」 입력 56px 보장 + 좁으면 미리보기를 아래로(컨테이너 쿼리) · 피커 트리거 라벨이 개명을 따라감(`recordsOf(kind)` 를 호출 시점에 읽음) · 3단계 서브다이얼로그 배경 반투명(불투명 밑판 제거) · 서브다이얼로그 첫 포커스는 본문의 첫 입력(`focusFirstControl`) · 검증 항목 클릭은 자기 열 안에서만 스크롤(`scrollIntoNearestScroller.ts`) · 커스텀 select 접근성 이름에서 select/button 글 제외(7,019자 → 「값」) · 아무것도 안 만든 빈 페이지엔 `page.invisible-collision` 경고를 내지 않음 · 검증 종 항목은 원인→기대→힌트만 보이고 코드·ID 는 title/dataset · 그래픽 피커 제목 「그래픽」.
+- **남긴 것**: 「움직임과 속도」 fieldset 7개(P1-13), 명령 피커 밀도·아이템 네이티브 select(P2-17), 스토리 뷰 삼중 라벨·자르기(P2-16), 첫 화면 입구 다섯 개(P2-15), 문구 잡음(P2-18). 표면 기준선 픽스처(`test/fixtures/eventEditor*Surface.baseline.json`)는 클래스 목록 변화로 갱신이 필요하다.
 
 ## NPC 일정 구조화 편집 (2026-08-24)
 
@@ -445,7 +459,7 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
     refresh 는 페이지 카운터만 갱신했다 — 그래서 상자는 1페이지 이름에 묶여 있었고, 2페이지를 고른
     뒤 이름을 고치면 **1페이지 이름이 바뀌었다**(실측: `페이지 2/4` 인데 상자는 `페이지 1`).
     이제 `change` 가 입력 시점에 활성 페이지를 다시 읽고, `refreshHeaderPageSegments` 가 포커스가
-    없을 때만 값을 맞추며, 페이지가 2장 이상이면 접근성 이름이 `페이지 이름 (n/N)` 이 된다.
+    없을 때만 값을 맞추며, 페이지가 2장 이상이면 접근성 이름이 `페이지 이름 (n/N)` 이 된다. **(2026-09-18 폐기: 이 상자는 이제 이벤트 이름이다 — 위 «P0 다섯 가지 수정» 참조.)**
   - 페이지 액션 아이콘 슬롯 제거: `.event-page-button-icon-{copy,paste,delete}` 는 글리프 CSS가 없어
     18px 빈 상자였다. 라벨만 남긴다.
   - 복제·복사·붙여넣기·순서·삭제는 모두 `toast` 로 결과를 말한다(예전 복사는 무반응이었다).

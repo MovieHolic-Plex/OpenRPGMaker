@@ -106,6 +106,13 @@ describe("UXC D13 이벤트 마커 편집 동선", () => {
     expect(shouldOfferEventLayerSwitch({ activeLayer: "lower", clickCount: 2, hasEvent: false })).toBe(false);
   });
 
+  it("이벤트 이름은 name 필드가 먼저고, 자동 페이지 이름(페이지 N)은 이름으로 치지 않는다", () => {
+    const named = namedEvent("페이지 1");
+    expect(eventDisplayName(named)).toBe("ev_npc");
+    expect(eventDisplayName({ ...named, name: "장터 상인" })).toBe("장터 상인");
+    expect(eventDisplayName({ ...named, pages: [...named.pages!, { ...named.pages![0]!, id: "page_2", name: "단골 창구" }] })).toBe("단골 창구");
+  });
+
   it("이벤트 이름과 명령 요약을 툴팁에 담는다", () => {
     const event = namedEvent("장터 상인");
     event.pages = event.pages.map((page) => ({

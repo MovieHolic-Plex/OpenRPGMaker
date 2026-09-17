@@ -1,0 +1,47 @@
+{
+  "base": "http://127.0.0.1:9821",
+  "errors": [
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}"
+  ],
+  "layout": {
+    "codex-empty": {
+      "window": {
+        "w": 1416,
+        "h": 876
+      },
+      "body": {
+        "clientH": 778,
+        "scrollH": 778
+      },
+      "firstChild": {
+        "cls": "db-ws-frame world-document-workspace world-codex-workspace",
+        "clientH": 778,
+        "scrollH": 778
+      },
+      "nestedScrollers": [],
+      "overflowing": [],
+      "cardActive": null
+    },
+    "codex-filled": {
+      "window": {
+        "w": 1416,
+        "h": 876
+      },
+      "body": {
+        "clientH": 778,
+        "scrollH": 778
+      },
+      "firstChild": {
+        "cls": "db-ws-frame world-document-workspace world-codex-workspace",
+        "clientH": 778,
+        "scrollH": 778
+      },
+      "nestedScrollers": [],
+      "overflowing": [],
+      "cardActive": {
+        "borderColor": "rgba(74, 87, 214, 0.16)",
+        "boxShadow": "rgb(74, 87, 214) 3px 0px 0px 0px inset, rgba(15, 23, 42, 0.08) 0px 1px 3px 0px"
+      }
+    }
+  }
+}

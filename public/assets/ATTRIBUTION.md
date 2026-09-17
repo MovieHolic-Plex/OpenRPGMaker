@@ -48,13 +48,27 @@
   from `vendor/easyrpg-rtp/ChipSet/Exterior.png`. Its `IHDR`, `PLTE`, and `IDAT` chunks are
   byte-identical to the vendor file; the only difference is an inserted `tRNS` chunk making
   palette index 0 transparent. The pixels are JasonPerry's CC0 replacement art, not Enterbrain's.
-- Derived sheet (2026-09-18): `easyrpg-chipset-combined-town-retro-world-transparent.png` (480×512) is
+- Derived sheet (2026-09-18): `easyrpg-chipset-combined-town-retro-world-transparent.png` (480×608) is
   produced by `scripts/gen-combined-town-retro-world-chipset.mjs`. Rows 0–255 are
   `easyrpg-chipset-combined-town-transparent.png` copied byte-for-byte; rows 256–511 are
   `easyrpg-chipset-retro-world-transparent.png` with its palette-index-0 colour (224,103,191) keyed to
-  alpha 0 (that file ships with no alpha at all). No pixels are authored here. The retro_World half
+  alpha 0 (that file ships with no alpha at all); rows 512–607 are `chipset-ext-forest-trees.png`
+  copied byte-for-byte (see the next section). No pixels are authored here. The retro_World half
   carries the mixed CC-BY/CC0/WTFPL attribution listed above, which is why the in-app name says
   "혼합 출처".
+
+## Forest trees extension strip (user-provided sheet)
+
+- File: `chipset-ext-forest-trees.png` (480×96 RGBA, six 16px rows, tile IDs 960–1139 inside the
+  mixed sheet above)
+- Source: a 32px-grid nature tileset the project owner pasted into the assistant on 2026-09-18
+  (480×256 native, shown zoomed 3.58× over a checkerboard). Only the trees and bushes were cut out —
+  big oak, broadleaf tree, dark tree, three bushes, and two dense-forest chunks — at native pixel
+  size (no downscaling); the grass autotiles and cave hollows on that sheet were left out.
+  Native pixels were recovered by block-averaging the zoomed screenshot; checkerboard fringe pixels
+  were dropped. Per-tile layer/passage table: `src/project/defaults/forestTreesExtension.ts`.
+- License: **not verified.** The owner supplied the image without naming its origin or licence.
+  Confirm the tileset's licence (and attribute its author here) before shipping this file publicly.
 
 ## Scarloxy — Monster Taming Game Essentials (MyPixelWorld Special Packs #01)
 

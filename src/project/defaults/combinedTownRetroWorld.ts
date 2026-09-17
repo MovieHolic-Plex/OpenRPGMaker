@@ -9,8 +9,10 @@ import {
   DEFAULT_TILE_COUNT,
   DEFAULT_TILE_SIZE,
   DEFAULT_TILES_PER_ROW,
+  RETRO_WORLD_CLIFF_WALKABLE_TILES,
   RETRO_WORLD_TILE_OFFSET,
 } from "./constants";
+import { appendForestTreesExtension } from "./forestTreesExtension";
 
 /**
  * 「합본 마을 + 레트로 월드맵」 혼합 칩셋의 타일셋 정의를 두 원본 정의에서 **조립**한다.
@@ -22,13 +24,16 @@ import {
  * 규약:
  *  · 위 480칸(0~479) = 합본 마을 그대로. ID 가 같으므로 TILE.* 상수·오토타일 기본 그룹·물
  *    애니 스트립이 그대로 맞는다.
- *  · 아래 480칸(480~959) = 레트로 월드맵. 통행·레이어·라벨은 원본 정의를 그대로 옮기고,
+ *  · 다음 480칸(480~959) = 레트로 월드맵. 통행·레이어·라벨은 원본 정의를 그대로 옮기고,
  *    타일 번호를 담는 필드(그룹 tileIds·오토타일 멤버/변형표)는 RETRO_WORLD_TILE_OFFSET 만큼 민다.
+ *  · 맨 아래 180칸(960~1139) = 숲 나무 확장 띠(forestTreesExtension.ts). 판정표가 코드에 있어
+ *    통행·레이어·라벨·그룹을 거기서 덧붙인다.
  *  · kind 는 "custom" — 480칸 규격 판정(isStandard480Tileset)에 걸리지 않게 하고, 그림판은
  *    Tibo 확장과 같은 확장 시트 경로를 탄다.
  *
- * 이 타일셋은 isCombinedTownTileset 이 아니다. 마을 시공(author_village·유기 호수 등)은 합본
- * 마을 전용 판정을 유지하며, 여기서는 붓·채우기·오토타일·맵 생성(settlement 프로필)만 기대한다.
+ * 이 타일셋은 isCombinedTownTileset 이 아니다(isCombinedTownCompatibleTileset 이다). 마을 시공은
+ * 호환 판정으로 위 반쪽 어휘를 그대로 쓰고, 언덕(relief)·숲 나무 킷처럼 아래 띠가 있어야 하는
+ * 것만 이 타일셋에서 추가로 켠다.
  */
 export function composeCombinedTownRetroWorldTileset(town: TilesetDef, retroWorld: TilesetDef): TilesetDef {
   assertStandardSheet(town, "합본 마을");
@@ -41,7 +46,7 @@ export function composeCombinedTownRetroWorldTileset(town: TilesetDef, retroWorl
     kind: "custom",
     tileSize: DEFAULT_TILE_SIZE,
     tilesPerRow: DEFAULT_TILES_PER_ROW,
-    count: COMBINED_TOWN_RETRO_WORLD_TILE_COUNT,
+    count: DEFAULT_TILE_COUNT * 2,
     passability: [...clone(town.passability), ...clone(retroWorld.passability)],
     priority: [...town.priority, ...retroWorld.priority],
     terrain: [...town.terrain, ...retroWorld.terrain],
@@ -57,6 +62,16 @@ export function composeCombinedTownRetroWorldTileset(town: TilesetDef, retroWorl
       ...(retroWorld.autotileGroups ?? []).map((group) => offsetAutotileGroup(group, offset)),
     ],
   };
+  // 절벽 어휘 통행 교정(2026-09-18, 마을 언덕): 대지 윗선·가장자리 테(잔디 위 가는 선)와 돌계단은 걸을 수 있어야
+  // 언덕 위 집에 닿는다. 단독 레트로 월드맵 하네스는 합본 마을 투명 인덱스 표를 옮긴 휴리스틱이라 이 칸들을 막았다.
+  for (const local of RETRO_WORLD_CLIFF_WALKABLE_TILES) {
+    tileset.passability[local + offset] = { up: true, down: true, left: true, right: true };
+  }
+  // 숲 나무 확장 띠(960~) — 그룹까지 덧붙이므로 팔레트 프리셋보다 먼저 붙인다.
+  appendForestTreesExtension(tileset);
+  if (tileset.count !== COMBINED_TOWN_RETRO_WORLD_TILE_COUNT) {
+    throw new Error(`혼합 칩셋 칸 수 ${tileset.count} ≠ ${COMBINED_TOWN_RETRO_WORLD_TILE_COUNT} — 확장 띠 상수가 어긋났다.`);
+  }
   if (town.palettePresets) tileset.palettePresets = clone(town.palettePresets);
   if (town.structureKits) tileset.structureKits = clone(town.structureKits);
   return tileset;

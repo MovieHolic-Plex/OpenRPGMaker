@@ -356,6 +356,21 @@ describe("routine edits", () => {
     expect(h.bubbles.join("\n")).not.toContain("Ultrabrain");
   });
 
+  it("a house with a new interior skips planning but retains review for the extra map", async () => {
+    h.planError = true;
+    h.harmony = false;
+    h.results.push({ project: {
+      maps: { map_a: mapWith("집 외관"), map_interior: { ...mapWith("집 실내"), id: "map_interior" } },
+    } });
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "이 맵에 집을 만들어라" },
+      harness().surface(), { routineEdit: true });
+    expect(h.requests).toHaveLength(1);
+    expect(h.requests[0]).toMatchObject({ model: "m", task: "이 맵에 집을 만들어라" });
+    expect(h.reviewCalls).toBe(1);
+    expect(h.applyCalls).toBe(0);
+    expect(h.outcomes.at(-1)).toBeTruthy();
+  });
+
   it("restores review when the actual change extends beyond the target map", async () => {
     h.harmony = false;
     h.results.push({ project: { ...projectWith("숲길"), switches: [{ id: "flag", name: "추가" }] } });

@@ -4,7 +4,6 @@ import { evalCondition } from "@/project/session";
 import { clearFurniturePush, furniturePushPosition } from './furniturePushAnimation';
 import { chipsetAnimationKey, TILE_SIZE } from "@/assets/bundled";
 import {
-  isDefaultTilesetTexture,
   supportsChipsetQuarterComposition,
   tilesetAnimationKeyForTile,
   tilesetTextureKey,
@@ -398,7 +397,9 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
     }
   }
   // lower 투명 칩: 정책이 정한 받침을 먼저 깔아 투명 픽셀이 검게 보이지 않게 한다.
-  const backingTile = layer === "lower" && isDefaultTilesetTexture(tileset) ? tileBackingTile(tileset, tile) : null;
+  // 받침은 정책(tileLayerPolicy)이 정한다 — 합본 마을 밑동뿐 아니라 혼합 칩셋(위 반쪽 밑동·숲 나무 띠)과
+  // 사용자가 받침을 확정한 커스텀 칩셋도 같은 답을 받는다. 규칙이 없으면 null 이라 그 밖은 전과 같다.
+  const backingTile = layer === "lower" ? tileBackingTile(tileset, tile) : null;
   if (backingTile !== null) {
     const backing = scene.add.image(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${backingTile}`);
     placeMapTileImage(scene, backing, tileset, backingTile, x, y, layer);

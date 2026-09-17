@@ -13,13 +13,15 @@ import { isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { inMapBounds, passableCellCount, setLower, setUpper, type Point } from "./mapHelpers";
 import { poissonScatter } from "./naturalScatter";
 import { naturalnessArg, naturalnessLabel, rngForTool } from "./naturalToolArgs";
-import { isPathSurfaceTile, measurePropRejections, PropPlacementError, propProtectionReasons, runScatterObject, type PropRejectionReason, type ScatterPacking } from "./placementTools";
+import { isPathSurfaceTile, measurePropRejections, PropPlacementError, propProtectionReasons, runScatterObjectOnce, type PropRejectionReason, type ScatterPacking, withAreaExpansion } from "./placementTools";
 import { ToolError, type ToolExecResult } from "./types";
 import { layerForVocabTile, type Rect } from "./v3/rmTypeExpander";
 
 const PROPS_EXAMPLE = { mapId: "map_1", area: { x: 2, y: 2, w: 18, h: 12 }, material: "침엽수", count: 8, naturalness: 0.6 };
 
 export type PlacePropsInput = {
+  /** false 면 0배치 때 영역을 넓혀 재시도하지 않는다(기본 true). */
+  readonly expandArea?: boolean;
   readonly mapId: string;
   readonly area: Rect;
   readonly material: string;
@@ -40,6 +42,12 @@ export type PlacePropsInput = {
 const NON_PROP_ROLE_LABELS: Readonly<Record<string, string>> = { wall: "벽", roof: "지붕", building: "건물·바닥", castle: "성채", water: "수역" };
 
 export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolExecResult {
+  // 2026-09-18 거부 대신 확장 — runScatterObject 와 같은 규칙(영역을 2칸씩 최대 3번).
+  return withAreaExpansion(draft, input as unknown as Record<string, unknown>,
+    (project, args) => placePropsOnDraftOnce(project, args as unknown as PlacePropsInput));
+}
+
+function placePropsOnDraftOnce(draft: Project, input: PlacePropsInput): ToolExecResult {
   const map = draft.maps[input.mapId];
   if (!map) throw new ToolError(`맵을 찾을 수 없습니다: ${input.mapId}`, { code: "missing-map", mapId: input.mapId });
   const tileset = draft.tilesets[map.tilesetId];
@@ -93,7 +101,8 @@ export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolE
   }
   if (access.kind === "group" && access.group.patternGrammar) {
     const soft = access.status === "soft" ? access.softConfirm : undefined;
-    const scattered = runScatterObject(draft, {
+    // 확장은 placePropsOnDraft 가 한 번만 감싼다 — 여기서 다시 감싸면 고리가 2배로 커진다.
+    const scattered = runScatterObjectOnce(draft, {
       ...args,
       groupId: access.group.id,
     });

@@ -57,17 +57,32 @@ export const TILE = {
 export const DEFAULT_SOLID_TILES = new Set<number>([TILE.WATER, TILE.WALL, TILE.TREE]);
 
 /**
- * 「합본 마을 + 레트로 월드맵」 혼합 칩셋(2026-09-18). 480×512 한 장 — 위 480칸은 합본 마을과
- * **같은 ID**(하네스·시맨틱·오토타일·물 애니가 그 번호에 묶여 있어 흔들 수 없다), 아래 480칸은
- * 레트로 월드맵(ID = 원본 + RETRO_WORLD_TILE_OFFSET). 시트는 scripts/gen-combined-town-retro-world-chipset.mjs,
- * 타일셋 조립은 defaults/combinedTownRetroWorld.ts. 이름의 「혼합 출처」는 레트로 월드맵 반쪽의
- * CC-BY/CC0/WTFPL 혼합(vendor/easyrpg-rtp/AUTHORS.md)을 그대로 이어받은 것이다.
+ * 「합본 마을 + 레트로 월드맵」 혼합 칩셋(2026-09-18). 480×608 한 장 — 위 480칸은 합본 마을과
+ * **같은 ID**(하네스·시맨틱·오토타일·물 애니가 그 번호에 묶여 있어 흔들 수 없다), 다음 480칸은
+ * 레트로 월드맵(ID = 원본 + RETRO_WORLD_TILE_OFFSET), 맨 아래 6행(180칸)은 숲 나무 확장 띠
+ * (FOREST_TREES_TILE_OFFSET 부터, defaults/forestTreesExtension.ts). 시트는
+ * scripts/gen-combined-town-retro-world-chipset.mjs, 타일셋 조립은 defaults/combinedTownRetroWorld.ts.
+ * 이름의 「혼합 출처」는 레트로 월드맵 반쪽의 CC-BY/CC0/WTFPL 혼합(vendor/easyrpg-rtp/AUTHORS.md)을
+ * 그대로 이어받은 것이다.
  */
 export const COMBINED_TOWN_RETRO_WORLD_TILESET_ID = "easyrpg_chipset_combined_town_retro_world";
 export const COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY = "tex_easyrpg_chipset_combined_town_retro_world";
 export const COMBINED_TOWN_RETRO_WORLD_NAME = "합본 마을+레트로 월드맵 · EasyRPG (혼합 출처)";
 export const RETRO_WORLD_TILE_OFFSET = DEFAULT_TILE_COUNT;
-export const COMBINED_TOWN_RETRO_WORLD_TILE_COUNT = DEFAULT_TILE_COUNT * 2;
+/**
+ * 숲 나무 확장 띠 — 사용자 제공 32px 격자 자연 시트의 나무·덤불만 원본 픽셀로 옮긴 6행(2026-09-18).
+ * 타일 번호 960~1139. 그림 public/assets/chipset-ext-forest-trees.png, 판정표 defaults/forestTreesExtension.ts.
+ */
+export const FOREST_TREES_TILE_OFFSET = DEFAULT_TILE_COUNT * 2;
+export const FOREST_TREES_ROWS = 6;
+export const FOREST_TREES_TILE_COUNT = FOREST_TREES_ROWS * DEFAULT_TILES_PER_ROW;
+export const COMBINED_TOWN_RETRO_WORLD_TILE_COUNT = DEFAULT_TILE_COUNT * 2 + FOREST_TREES_TILE_COUNT;
+/**
+ * 혼합 칩셋 아래 반쪽(레트로 월드맵)에서 통행 가능으로 고쳐 쓰는 칸(원본 ID) — 마을 언덕(2026-09-18) 어휘.
+ * 대지 윗선 138/139/140·가장자리 테 78/79/80/108/109/110 은 잔디 위 가는 선이고, 374 는 돌계단이다.
+ * 단독 레트로 월드맵 하네스는 합본 마을 투명 인덱스 표를 옮긴 휴리스틱이라 이 칸들을 막는다.
+ */
+export const RETRO_WORLD_CLIFF_WALKABLE_TILES: readonly number[] = [78, 79, 80, 108, 109, 110, 138, 139, 140, 374];
 
 export function bundledAssetRef(id: string): AssetRef {
   return { type: "bundled", id };
