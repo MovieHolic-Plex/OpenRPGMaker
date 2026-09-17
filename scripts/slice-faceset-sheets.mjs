@@ -35,6 +35,8 @@ const SHARED_EXPRESSION_NAMES = [
   "걱정 / 불안", "자신감 / 결의", "수줍은 미소 / 호감", "윙크 / 장난스러움",
 ];
 
+const SHARED_SETS = JSON.parse(await readFile(path.join(SCRIPT_DIR, "shared-face-expression-sources.json"), "utf8"));
+
 const SHEETS = [
   sheet("assets/easyrpg/faceset/Actor1.png", "easyrpg-faceset-actor1", "easyrpg"),
   sheet("assets/easyrpg/faceset/Actor2.png", "easyrpg-faceset-actor2", "easyrpg"),
@@ -43,7 +45,7 @@ const SHEETS = [
   sheet("assets/easyrpg/faceset/People2.png", "easyrpg-faceset-people2", "easyrpg"),
   sheet("assets/generated/starter/hero-01-face.png", "generated-actor-hero-01-face", "generated"),
   sheet("assets/generated/starter/hero-02-face.png", "generated-actor-hero-02-face", "generated"),
-  sheet("assets/shared/faceset/blue-traveler-expressions.png", "shared-blue-traveler-expressions", "shared"),
+  ...SHARED_SETS.map(set => sheet(`assets/shared/faceset/${set.stem}.png`, `shared-${set.stem}`, "shared")),
 ];
 
 function sheet(sheetPath, sheetResourceId, origin) {
@@ -69,7 +71,7 @@ function faceEntries(sheetSpec) {
 
 // EasyRPG 시트에서 온 얼굴만 " · EasyRPG" 출처를 붙인다. 생성 에셋은 우리가 만든 그림이다.
 function faceName(sheetSpec, index) {
-  if (sheetSpec.origin === "shared") return `푸른 머리 여행자 · ${String(index + 1).padStart(2, "0")} ${SHARED_EXPRESSION_NAMES[index]}`;
+  if (sheetSpec.origin === "shared") return `${SHARED_SETS.find(set => set.stem === sheetSpec.stem).name} · ${String(index + 1).padStart(2, "0")} ${SHARED_EXPRESSION_NAMES[index]}`;
   const label = `${sheetSpec.stem} 얼굴 ${index + 1}`;
   return sheetSpec.origin === "easyrpg" ? `${label} · EasyRPG` : label;
 }
