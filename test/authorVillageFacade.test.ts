@@ -226,8 +226,10 @@ describe("author_village facade", () => {
     const project = createExistingProject(36);
     const before = serialize(project);
 
+    // bounds 를 못박아 맵 확장을 막는다 — 참고 사례 소형 박공집(4×6)이 후보에 들어온 뒤로는
+    // 맵을 키워 주면 32채가 실제로 들어가서 부족분 롤백을 시험할 수 없다.
     const result = runFacade(project, {
-      target: EXISTING_TARGET,
+      target: { ...EXISTING_TARGET, bounds: { x: 0, y: 0, w: 36, h: 36 } },
       houseCount: 32,
       countPolicy: "exact",
       seed: 7,
@@ -237,6 +239,23 @@ describe("author_village facade", () => {
     expect(result.ok).toBe(false);
     expect(result.issues?.[0]?.code).toBe("village-count-shortfall");
     expect(serialize(project)).toBe(before);
+  });
+
+  it("keeps the upper floor of a two-storey house inside scope on a legacy project", () => {
+    // 레거시(spatialAuthoring 없음) 프로젝트: 문 이벤트는 1층만 가리키고 2층은 1층 계단 transfer 로 이어진다.
+    // 예전 스코프 검사는 문이 직접 가리키는 맵만 실내로 봐서 _f2 를 "undeclared map" 으로 거부했다.
+    const project = createExistingProject(48);
+    const result = runFacade(project, {
+      target: EXISTING_TARGET,
+      houseCount: 1,
+      countPolicy: "exact",
+      seed: 3,
+      interior: true,
+      housePlans: [{ templateId: "rect-2f" }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const upper = Object.keys(project.maps).filter((id) => id.endsWith("_f2"));
+    expect(upper).toHaveLength(1);
   });
 
   it("fails a colliding new map without suffixing or reusing it", () => {

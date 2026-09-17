@@ -2,6 +2,7 @@
 // 기존 세션의 긴 규칙 텍스트는 대부분 툴 설명으로 옮겨져 있으므로 여기서는 범위·절차만 말한다.
 
 import type { Project } from "@/project/types";
+import { HOUSE_VARIETY_POLICY_LINE } from "../promptPolicies";
 
 export function describeScopedMaps(project: Project, mapIds: readonly string[]): string[] {
   return mapIds.map((id) => {
@@ -25,5 +26,7 @@ export function buildPiAgentSystemPrompt(project: Project, mapIds: readonly stri
     "절차: 먼저 읽기 도구(get_map_region 등)로 현재 상태를 확인하고, 쓰기 도구를 호출한다. 도구가 ok:false 를 돌려주면 issues 를 읽고 인자를 고쳐 재시도한다. 같은 실패를 세 번 반복하지 않는다.",
     "필요한 도구가 보이지 않으면 find_tools 에 기능 키워드를 넣어 찾는다 — 발견된 도구는 다음 턴부터 바로 호출할 수 있다.",
     "완료하면 무엇을 했는지 한두 문장으로 보고하고 종료한다. 사용자에게 되묻지 않는다 — 판단이 필요하면 합리적인 기본값을 택하고 보고에 적는다.",
+    // 집 규칙은 채팅 세션과 같은 문장을 쓴다 — 툴 설명만으로는 모델이 templateId 를 비워 사각형만 깔았다(2026-09-17).
+    HOUSE_VARIETY_POLICY_LINE,
   ];
 }

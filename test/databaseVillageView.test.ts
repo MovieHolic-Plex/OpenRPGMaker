@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderVillageTab } from "@/editor/panels/databaseVillageView";
 import { HOUSE_SHAPE_PRESETS } from "@/editor/panels/databaseVillageModel";
-import { VILLAGE_ARCHETYPES, templateFromRecord, villageTemplateCatalog } from "@/editor/tools/village/authoringData";
+import { VILLAGE_ARCHETYPES, templateFromRecord, villageTemplateCatalog, villageFormTemplates } from "@/editor/tools/village/authoringData";
 import { createBlankProject } from "@/project/defaults";
 import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
 import { store } from "@/project/store";
@@ -108,7 +108,8 @@ describe("데이터베이스 「마을」탭 — 집 형태", () => {
     expect(record.clonedFrom).toBe("rect-large");
     expect(record.w).toBe(def.w);
     expect(record.wings).toEqual(def.wings.map((wing) => ({ ...wing })));
-    expect(villageTemplateCatalog(store.getCurrent()).templates).toHaveLength(HOUSE_TEMPLATE_DEFS.length + 1);
+    // 내장 34종 + 참고 사례 셀 레시피(폭 8 이하) + 복제한 사용자 형태 1종.
+    expect(villageTemplateCatalog(store.getCurrent()).templates).toHaveLength(HOUSE_TEMPLATE_DEFS.length + villageFormTemplates().length + 1);
   });
 
   it("크기·날개 편집이 프로젝트에 남고 규약 위반은 경고로 보인다", () => {
@@ -363,12 +364,13 @@ describe("데이터베이스 「마을」탭 — 배치 프리셋", () => {
   it("형태 화이트리스트는 카탈로그 전체를 내주고 고른 것만 저장한다", () => {
     const host = withTemplateAndPreset();
     const picker = findByTestId(host, "db-village-preset-template-picker");
-    expect(picker?.querySelectorAll("input")).toHaveLength(HOUSE_TEMPLATE_DEFS.length + 1);
+    // 내장 34종 + 참고 사례 셀 레시피 + 사용자 형태 1종 — 설계서 화이트리스트는 레시피도 고를 수 있어야 한다.
+    expect(picker?.querySelectorAll("input")).toHaveLength(HOUSE_TEMPLATE_DEFS.length + villageFormTemplates().length + 1);
 
     // 각 선택지에 집 그림 캔버스가 붙는다 — fakeDom 은 getContext()=null 이라
     // previewState 는 nocontext 가 된다. 픽셀은 e2e 가 보고, 여기서는 자리만 본다.
     const catalog = villageTemplateCatalog(store.getCurrent()).templates;
-    expect(catalog).toHaveLength(HOUSE_TEMPLATE_DEFS.length + 1);
+    expect(catalog).toHaveLength(HOUSE_TEMPLATE_DEFS.length + villageFormTemplates().length + 1);
     for (const template of catalog) {
       const shot = findByTestId(host, `db-village-preset-template-${template.id}-shot`);
       expect(shot?.tagName, template.id).toBe("CANVAS");
@@ -506,7 +508,7 @@ describe("데이터베이스 「마을」탭 — 내장 덮음", () => {
     expect(findByTestId(host, "db-village-template-hero")?.textContent).toContain("내장 덮음");
     expect(findByTestId(host, "db-village-template-id-usage")?.textContent).toContain("내장 대신 이 레코드가 시공됩니다");
     // 덮음이므로 후보 수는 늘지 않는다 — 이 숫자가 늘면 배지가 거짓말을 한 것이다.
-    expect(villageTemplateCatalog(store.getCurrent()).templates).toHaveLength(HOUSE_TEMPLATE_DEFS.length);
+    expect(villageTemplateCatalog(store.getCurrent()).templates).toHaveLength(HOUSE_TEMPLATE_DEFS.length + villageFormTemplates().length);
   });
 });
 
