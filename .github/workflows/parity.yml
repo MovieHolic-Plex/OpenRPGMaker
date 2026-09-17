@@ -11,6 +11,12 @@ name: parity
 #   - 야간·수동         → ci-full.yml   (verify-gates.mjs, 기준선 대비 회귀만 실패)
 #   - 이 파일           → 수동 전용. 아래 잡들을 하나씩 초록으로 만들어 ci-fast 로 옮겨라.
 #
+# 2026-09-17 추가: runs-on 을 ubuntu-latest 에서 self-hosted 로 바꿨다.
+#   호스티드 러너는 분 단위 과금이고 self-hosted 는 무료·무제한이다. 이 잡들은 꺼져 있어도
+#   언젠가 하나씩 켜서 고칠 물건이라, 그때 돈이 들면 안 된다. 노드도 박스 것(24.11.1)을
+#   쓴다 — 여기 박혀 있던 node-version: 20 은 로컬·ci-fast 와 어긋났다.
+#   이 규칙은 scripts/check-self-hosted-workflows.mjs 가 집행한다.
+#
 # 남아 있는 빨간 잡과 이유:
 #   unit-tests  — 생짜 `npm test`. 상시 실패가 있고 이 박스에선 완주도 못 했다(78분 무출력 사망).
 #                 ci-full 의 verify-gates 가 대체한다. 옮길 게 아니라 지울 후보다.
@@ -21,38 +27,26 @@ on:
 
 jobs:
   editor-player-parity:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, oprn-box]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
       - run: npm ci
       - run: npm run typecheck:app
       - run: npm run test:parity
 
   unit-tests:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, oprn-box]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
       - run: npm ci
       - run: npm run typecheck:app
       - run: npm test
       - run: npm run test:node
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, oprn-box]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
       - run: npm ci
       # 빌드 경고를 실패로 승격시킨다. esbuild 는 CSS 문법 오류를 경고로만 내고 exit 0 을
       # 주기 때문에, src/benchmark/ui/styles.css 가 규칙 0개로 출하되는 동안에도 CI 는
@@ -71,25 +65,17 @@ jobs:
           echo "빌드 경고 0건."
 
   e2e:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, oprn-box]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
 
   ax-gates:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, oprn-box]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
       - run: npm ci
       - run: node scripts/check-file-loc.mjs
       - run: node scripts/check-supabase-content-gate.mjs
@@ -100,13 +86,9 @@ jobs:
   # 에서도 exit 1, 미유예 위반 19건). 같은 job 에 넣으면 CSS 게이트는 영원히 실행되지 않는다.
   # 별도 job 이면 PR 에 독립된 status check 로 뜨고, 선행 게이트의 부채와 무관하게 동작한다.
   css-gates:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, oprn-box]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
       - run: npm ci
       # CSS 래칫: 다섯 지표는 내려갈 수만 있다. TOKENS.md §4.1(하드코딩 hex 금지)은
       # 기계 가드가 없어 593건(2026-07-06) → 1,940건(2026-08-28), 3.27배로 무너졌다.
@@ -141,13 +123,9 @@ jobs:
   # 주의: 이 저장소에서 Actions 는 리포지터리 수준에서 꺼져 있다. 실제 집행 경로는
   # `npm run gates` (verify-gates.mjs 의 surface 게이트)이고 같은 스크립트를 부른다.
   surface-gates:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, oprn-box]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
       - run: npm ci
       # 기준선 갱신 환경변수는 CI 에서 금지다(CI 가 기준선을 다시 쓰면 래칫이 사라진다).
       # check-surface-gates.mjs 와 test/surfaceGateSupport.ts 가 각각 이를 하드 실패로 막는다.
