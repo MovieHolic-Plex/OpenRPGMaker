@@ -4,6 +4,8 @@ import { protocol } from "electron";
 import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME } from "../shared/channels";
 import { handleActivityMirror, isActivityMirrorPath } from "../../scripts/lib/activityMirror.mjs";
 import type { SessionRegistry } from "./sessions";
+import { sharedCharacterGraphicsResponse } from "../../scripts/lib/sharedCharacterGraphics";
+import { SHARED_CHARACTER_GRAPHICS_ENDPOINT } from "../../src/project/sharedCharacterGraphicsSchema";
 
 const MIME_BY_EXTENSION: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
@@ -45,6 +47,15 @@ export function registerAppProtocol(rendererDir: string, activityLogBaseDir: () 
   const root = resolve(rendererDir);
   protocol.handle(OPRN_APP_SCHEME, async (request) => {
     const url = new URL(request.url);
+    if (url.pathname === SHARED_CHARACTER_GRAPHICS_ENDPOINT) {
+      if (request.method === "POST" && (request.headers.get("x-oprn-shared-catalog") !== "1" || Number(request.headers.get("content-length") ?? 0) > 2 * 1024 * 1024)) return new Response(null, { status: 403 });
+      try {
+        const text = request.method === "POST" ? await request.text() : "";
+        if (new TextEncoder().encode(text).length > 2 * 1024 * 1024) return new Response(null, { status: 413 });
+        const result = await sharedCharacterGraphicsResponse(request.method, text ? JSON.parse(text) : undefined);
+        return Response.json(result.body, { status: result.status, headers: { "cache-control": "no-store" } });
+      } catch { return Response.json({ error: "공용 자료 요청을 읽지 못했습니다." }, { status: 400 }); }
+    }
     // 활동 미러 2종은 페이지가 **상대 경로**로 부른다(/__oprn/ai-activity). app:// 에서는
     // 이 프로토콜 핸들러가 그 요청을 받는다 — 예전에는 받는 쪽이 아예 없어서 앱의 편집·AI
     // 로그가 404 로 조용히 사라졌다(I3).

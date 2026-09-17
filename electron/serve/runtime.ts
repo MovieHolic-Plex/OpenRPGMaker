@@ -7,6 +7,8 @@ import { createProjectSessionRegistry, type SessionRegistry } from "../main/sess
 import { OPRN_CHANNELS } from "../shared/channels";
 import { createCompanionMiddleware } from "../../scripts/lib/companion/middleware.mjs";
 import { createActivityMirrorMiddleware } from "../../scripts/lib/activityMirrorMiddleware.mjs";
+import { sharedCharacterGraphicsMiddleware } from "../../scripts/lib/sharedCharacterGraphics";
+import { SHARED_CHARACTER_GRAPHICS_ENDPOINT } from "../../src/project/sharedCharacterGraphicsSchema";
 
 import { loginPage, teamPage } from "./teamPage";
 
@@ -202,6 +204,13 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       }
       if (url.pathname === '/__oprn/team' && request.method === 'GET') {
         response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' }).end(inject(teamPage)); return;
+      }
+      if (url.pathname === SHARED_CHARACTER_GRAPHICS_ENDPOINT) {
+        if (shared && request.method !== 'GET' && signedIn?.role !== 'owner') {
+          sendJson(response, 403, { error: '호스트 공용 자료는 팀 소유자만 수정할 수 있습니다.' }); return;
+        }
+        sharedCharacterGraphicsMiddleware(request, response, () => {});
+        return;
       }
       if (!shared) {
         let passedThrough = false;

@@ -1,0 +1,13 @@
+{
+  "result": {
+    "acceptedStatus": 200,
+    "staleStatus": 409,
+    "conflict": {
+      "error": "공용 자료가 다른 창에서 변경됐습니다. 다시 불러온 뒤 적용하세요."
+    },
+    "restoreStatus": 200,
+    "restoredExactly": true,
+    "mapped": 94
+  },
+  "errors": []
+}
