@@ -1,6 +1,7 @@
 // 실사용 감사 로그(2026-07-04) 회귀: place_npc가 graphic.query="people1"로 실패했고
 // 실패 요약에 원인이 없어 추적이 어려웠다. 시트명 질의 해석 + 실패 요약 원인 포함을 고정한다.
 import { describe, expect, it } from "vitest";
+import { reviewedCharsetFace } from "@/assets/charsetFaceMap";
 import { findCharsetSemantic } from "@/assets/charsetSemantics";
 import { resolveGraphicQuery } from "@/editor/tools/eventCompile";
 import { runTool } from "@/editor/tools/toolRunner";
@@ -117,7 +118,9 @@ describe("place_npc graphic.query", () => {
         faces.add(face.resourceId);
         const g = event?.pages?.[0]?.graphic;
         const characterIndex = decodeCharsetFrameIndex(g?.pattern ?? 0).characterIndex;
-        // 낱장 얼굴 id 의 칸 접미사가 charset characterIndex 를 따라간다.
+        // Walking sheets have 8 slots, face sheets 16: actor2/4 use the second half.
+        const paired = reviewedCharsetFace(g?.sprite?.id ?? "", characterIndex);
+        if (paired) { expect(face.resourceId).toBe(paired.resourceId); continue; }
         expect(face.resourceId.endsWith(`-${String(characterIndex).padStart(2, "0")}`),
           `${face.resourceId} 가 charset 칸 ${characterIndex} 와 어긋난다`).toBe(true);
       }

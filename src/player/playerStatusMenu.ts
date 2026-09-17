@@ -15,6 +15,10 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { createStatusMenuDetail, type StatusMenuDetail } from "@/player/playerStatusMenuDetails";
 import { renderStatusMenuDetailPanel } from "@/player/playerStatusMenuDetailRenderer";
 import { applySystemGraphic } from "@/player/systemGraphics";
+import { findCharsetAsset } from "@/assets/charsetCatalog";
+import { applyCharsetFrameCrop } from "@/assets/charsetFrameCrop";
+import { resolvePlayerSpriteResource } from "@/player/playerSpriteResources";
+import { resolveActorAppearance } from "@/project/characterAppearances";
 import { menuSkinFor } from "@/player/menuSkins/registry";
 import type { PlayerStatusMenuActions, PlayerStatusMenuOptions } from "@/player/playerStatusMenuTypes";
 import { el } from "@/util/dom";
@@ -113,7 +117,10 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       ? "context-tray"
       : "work-panel";
   // 사이드 파티(스킨 옵션)는 작업 패널에서만 — 트레이·확인 카드·대상 선택은 파티 정보를 따로 갖거나 필요 없다.
-  const sideParty = skin.sideParty && mode === "function" && presentation === "work-panel" && !options.targetItemId
+  // Effects, equipment comparisons and tabbed pages need the full detail layout.
+  // Never hide decision-making information to make room for a second party view.
+  const needsFullDetail = Boolean(detail.tabs?.length) || detail.entries.some((entry) => entry.statDelta || entry.facts?.length);
+  const sideParty = skin.sideParty && !needsFullDetail && mode === "function" && presentation === "work-panel" && !options.targetItemId
     ? renderSidePartyMini(options.project, snapshot)
     : undefined;
   const detailPanel = renderStatusMenuDetailPanel(options.project, detail, {
@@ -129,7 +136,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   if (mode === "main") {
     detailPanel.setAttribute("inert", "");
   }
-  const showParty = selectedCommand === "party-menu";
+  const showParty = selectedCommand === "party-menu" && !landingOnly;
   panel.classList.toggle("has-party-overview", showParty);
   panel.append(
     el("header", {
@@ -151,7 +158,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
           snapshot,
           selectedCommand,
           actions: options.actions,
-          summaries: skin.landing === "hub" ? { slots: options.slots } : undefined,
+          summaries: skin.landing === "hub" ? { slots: options.slots, waitModeEnabled } : undefined,
         }),
       ],
     }),
@@ -159,7 +166,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       ? [skin.landing === "hub"
           ? renderPartyStrip(options.project, snapshot)
           // 사이드 시트는 140px 폭에 4행이라 얼굴을 22px 로 줄인다(파티 퍼스트는 30px).
-          : renderPartyOverview(options.project, snapshot, skin.landing === "sheet" ? 22 : 30)]
+          : renderPartyOverview(options.project, snapshot, skin.landing === "sheet" ? 22 : 30, skin.partyArt === "character" ? options.session : undefined)]
       : [detailPanel]),
     ...(showParty ? [renderPartyPanel(options.project, snapshot)] : []),
     renderFooter(
@@ -181,7 +188,7 @@ type CommandRailRenderOptions = {
   readonly selectedCommand: StatusMenuRailId;
   readonly actions: PlayerStatusMenuActions;
   /** 허브 타일: 명령마다 한 줄 요약(몇 종·몇 명·하위 명령)을 라벨 아래에 단다. */
-  readonly summaries?: { readonly slots: PlayerStatusMenuOptions["slots"] };
+  readonly summaries?: { readonly slots: PlayerStatusMenuOptions["slots"]; readonly waitModeEnabled: boolean };
 };
 
 function renderCommandRail(options: CommandRailRenderOptions): HTMLElement {
@@ -237,7 +244,7 @@ function renderCommandRail(options: CommandRailRenderOptions): HTMLElement {
         ...(options.summaries
           ? [el("span", {
               class: "status-menu-command-summary",
-              text: statusMenuCommandSummary(command.id, options.project, options.session, options.summaries.slots),
+              text: statusMenuCommandSummary(command.id, options.project, options.session, options.summaries.slots, options.summaries.waitModeEnabled),
               dataset: { testid: `status-menu-command-summary-${command.id}` },
             })]
           : []),
@@ -418,10 +425,30 @@ function renderPartyFace(
   });
 }
 
+/** The same actor appearance and session override as the field sprite. */
+function renderPartyCharacter(project: PlayerStatusMenuOptions["project"], session: PlayerStatusMenuOptions["session"], row: PlayerStatusMenuPartyRow, index: number, faceSize: number): HTMLElement {
+  const actor = project.database.actors.find((entry) => entry.id === row.actorId);
+  const effective = actor ? resolveActorAppearance(project, actor) : undefined;
+  const override = session.actorCharacterResourceIds?.[row.actorId];
+  const sprite = resolvePlayerSpriteResource(project, { ...session, partyActorIds: [row.actorId] });
+  const url = resolveAssetResourceUrl(sprite.resourceId, { project });
+  if (!url) return renderPartyFace(project, row, index, faceSize, `status-menu-overview-face-${index}`);
+  const node = el("span", {
+    class: "status-menu-character",
+    attrs: { role: "img", "aria-label": row.name },
+    dataset: { testid: `status-menu-overview-character-${index}` },
+  });
+  const requested = override ?? effective?.characterResourceId;
+  const requestedId = requested ? findCharsetAsset(requested)?.id ?? requested : undefined;
+  const characterIndex = override === undefined && requestedId === sprite.resourceId ? effective?.characterIndex ?? 0 : 0;
+  applyCharsetFrameCrop(node, url, { characterIndex, direction: "down", pattern: 1 }, 1);
+  return node;
+}
+
 // ── 스킨 첫 화면: 파티 개요(party·sheet) ──
 // 작업 패널 자리에 파티 4명을 크게 그린다 — 얼굴 30px · 이름 · 직업 · Lv · HP/MP 게이지+숫자 · 「위험」 칩.
 // 상태이상 칩은 세션에 필드 상태이상 데이터가 없어 아직 없다(스펙 §2).
-function renderPartyOverview(project: PlayerStatusMenuOptions["project"], snapshot: PlayerStatusMenuSnapshot, faceSize: number): HTMLElement {
+function renderPartyOverview(project: PlayerStatusMenuOptions["project"], snapshot: PlayerStatusMenuSnapshot, faceSize: number, characterSession?: PlayerStatusMenuOptions["session"]): HTMLElement {
   const overview = el("section", {
     class: "status-menu-party-overview",
     attrs: { "aria-label": "파티 상태" },
@@ -437,7 +464,9 @@ function renderPartyOverview(project: PlayerStatusMenuOptions["project"], snapsh
       attrs: { "aria-label": `${row.name} ${row.levelLabel} ${row.hpLabel} ${row.mpLabel}` },
       dataset: { testid: `status-menu-overview-row-${index}` },
       children: [
-        renderPartyFace(project, row, index, faceSize, `status-menu-overview-face-${index}`),
+        characterSession
+          ? renderPartyCharacter(project, characterSession, row, index, faceSize)
+          : renderPartyFace(project, row, index, faceSize, `status-menu-overview-face-${index}`),
         el("div", {
           class: "status-menu-overview-info",
           children: [
