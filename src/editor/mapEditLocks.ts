@@ -14,6 +14,7 @@ export type MapEditLockStatus =
       readonly ownerLabel: string;
       readonly expiresAt: string;
       readonly updatedAt?: string;
+      readonly canTakeover?: boolean;
     }
   | {
       readonly kind: "unavailable";
@@ -89,7 +90,8 @@ export function ensureCurrentMapLock(): void {
 let heldMap: { mapId: MapId; mapName: string } | null = null;
 let transition: Promise<void> = Promise.resolve();
 
-export async function checkoutMapForEditing(mapId: MapId, mapName: string): Promise<void> {
+export async function checkoutMapForEditing(mapId: MapId, mapName: string, options: { takeover?: boolean } = {}): Promise<void> {
+  let requestTakeover = options.takeover === true;
   const bridge = typeof window === 'undefined' ? undefined : window.oprn?.team;
   if (!bridge) { publish({ kind: 'idle' }); return; }
   const id = ++requestId;
@@ -114,12 +116,14 @@ export async function checkoutMapForEditing(mapId: MapId, mapName: string): Prom
           heldMap = null;
         }
         if (id !== requestId) return;
-        const result = await bridge.lock({ resource: `map:${mapId}` });
+        const takeover = requestTakeover;
+        requestTakeover = false; // Only the explicit click may reclaim a lease; renewals never do.
+        const result = await bridge.lock({ resource: `map:${mapId}`, ...(takeover ? { takeover: true } : {}) });
         if (result.kind === 'held') heldMap = { mapId, mapName };
         else if (heldMap?.mapId === mapId) heldMap = null;
         if (id !== requestId) return;
         if (result.kind === 'held') publish({ kind: 'held', mapId, mapName, expiresAt: new Date(result.expiresAt!).toISOString() });
-        else publish({ kind: 'locked', mapId, mapName, ownerLabel: result.ownerLabel ?? '다른 사용자', expiresAt: new Date(result.expiresAt ?? 0).toISOString() });
+        else publish({ kind: 'locked', mapId, mapName, ownerLabel: result.ownerLabel ?? '다른 사용자', canTakeover: result.canTakeover, expiresAt: new Date(result.expiresAt ?? 0).toISOString() });
       } catch (error) {
         if (id === requestId) publish({ kind: 'unavailable', mapId, mapName, reason: 'network-error', message: error instanceof Error ? error.message : '팀 연결을 확인하세요.' });
       }
@@ -133,6 +137,6 @@ export async function checkoutMapForEditing(mapId: MapId, mapName: string): Prom
 }
 
 export async function takeoverMapLock(mapId: MapId, mapName: string): Promise<void> {
-  // No forced takeover: the host grants an expired/released lease only.
-  await checkoutMapForEditing(mapId, mapName);
+  // The host permits explicit takeover by the owner or the same member in another tab.
+  await checkoutMapForEditing(mapId, mapName, { takeover: true });
 }

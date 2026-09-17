@@ -5,8 +5,8 @@ export type TeamStatus = {
   revision: number;
   locks: Array<{ resource: string; ownerLabel: string; expiresAt: number }>;
 };
-export type TeamLockResult = { kind: 'held' | 'released' | 'locked'; expiresAt?: number; ownerLabel?: string };
+export type TeamLockResult = { kind: 'held' | 'released' | 'locked'; expiresAt?: number; ownerLabel?: string; canTakeover?: boolean };
 export type TeamBridge = {
   status(): Promise<TeamStatus>;
-  lock(input: { resource: string; release?: boolean }): Promise<TeamLockResult>;
+  lock(input: { resource: string; release?: boolean; takeover?: boolean }): Promise<TeamLockResult>;
 };
