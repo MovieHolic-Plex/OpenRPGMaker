@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { openDatabaseModal, requestDatabaseModalClose } from "@/editor/panels/databaseModal";
+import { startModalDrag, stopModalDrag } from "@/editor/panels/databaseModalWindowDrag";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
@@ -132,5 +133,63 @@ describe("database modal dock mode (M8)", () => {
     dockToggle.click();
     backdrop.dispatchEvent(new Event("mousedown"));
     expect(document.querySelector("[data-testid='database-modal']")).toBeNull();
+  });
+
+  it("starts drag with inline fixed position and ignores header button presses", () => {
+    openDatabaseModal("actors");
+    const { windowEl } = modalParts();
+    const header = windowEl.querySelector(".database-modal-header");
+    if (!header) throw new Error("missing modal header");
+    const press = (target: unknown): void => {
+      const event = new Event("mousedown") as MouseEvent;
+      Object.defineProperties(event, {
+        button: { value: 0 },
+        clientX: { value: 100 },
+        clientY: { value: 100 },
+        target: { value: target },
+        preventDefault: { value: () => undefined },
+      });
+      startModalDrag(windowEl as unknown as HTMLElement, event);
+    };
+    // 헤더 빈 영역: 드래그 시작 + 인라인 fixed (ai-bar.css relative 앵커를 이긴다).
+    press(header);
+    expect(windowEl.classList.contains("floating")).toBe(true);
+    expect((windowEl as unknown as HTMLElement).style.position).toBe("fixed");
+    stopModalDrag();
+    windowEl.classList.remove("floating");
+    (windowEl as unknown as HTMLElement).style.position = "";
+    // 헤더 버튼 안 SVG 아이콘: event.target이 svg여도 드래그를 시작하지 않는다.
+    const maximize = windowEl.querySelector("[data-testid='database-modal-maximize']");
+    if (!maximize) throw new Error("missing maximize button");
+    const icon = maximize.querySelector("svg") ?? maximize;
+    press(icon);
+    expect(windowEl.classList.contains("floating")).toBe(false);
+    stopModalDrag();
+  });
+
+  it("maximizes with inline geometry and clears drag residue on dock", () => {
+    openDatabaseModal("actors");
+    const { windowEl, dockToggle } = modalParts();
+    const maximize = windowEl.querySelector("[data-testid='database-modal-maximize']");
+    if (!maximize) throw new Error("missing maximize button");
+    const inline = windowEl as unknown as HTMLElement;
+    // 최대화: sidebar 지오메트리 소유자를 인라인으로 이겨 창이 실제로 커진다.
+    maximize.click();
+    expect(windowEl.classList.contains("maximized")).toBe(true);
+    expect(inline.style.position).toBe("fixed");
+    expect(inline.style.width).toBe("calc(100vw - 16px)");
+    expect(inline.style.maxWidth).toBe("none");
+    // 복원: 인라인 잔재를 비워 CSS 기본 지오메트리로 돌아간다.
+    maximize.click();
+    expect(windowEl.classList.contains("maximized")).toBe(false);
+    expect(inline.style.position).toBe("");
+    expect(inline.style.width).toBe("");
+    // 도크: 드래그/최대화가 남긴 인라인 상태까지 정리한다.
+    inline.style.position = "fixed";
+    inline.style.width = "100px";
+    dockToggle.click();
+    expect(inline.style.position).toBe("");
+    expect(inline.style.width).toBe("");
+    expect(inline.style.maxWidth).toBe("");
   });
 });
