@@ -1,5 +1,7 @@
 // 2026-09-17: "uses bounded repair to correct the real NPC" 삭제 — 검수 모델이 NPC 보상 미완성을 changes_requested 로
 // 되돌리는 수리 루프를 검증했으나, 결정적 검사(lint error 0)에서 기능 수용은 승인 조건이 아니다.
+// 2026-09-17 저녁 수용 원장 해체: repair_acceptance 도구는 노출되지 않고 getAcceptanceSnapshot() 은 항상 null 이라,
+// 적용 뒤 확인은 원장 대신 verifyNpcRewardsPlayable(적용된 스토어) 로만 한다.
 import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
@@ -56,14 +58,11 @@ function harness(steps: readonly (ChatResult | Error)[], options: { required?: N
   const events: SessionEvent[] = [];
   const map = project.maps[project.startMapId];
   const region = { mapId: map.id, x: 0, y: 0, w: map.width, h: map.height };
-  // Real read and image tools keep successive NPC replacements grounded. The
-  // acceptance checks creation; the separate reward verifier checks the grants.
+  // Real read and image tools keep successive NPC replacements grounded; the
+  // separate reward verifier checks the grants.
   const groundedSteps = steps.flatMap((step) => !(step instanceof Error)
     && step.message.tool_calls?.some((tool) => tool.function.name === "upsert_event")
-    ? [call("get_map_region", region), step, call("show_map_region", region),
-      call("repair_acceptance", { itemId: "acceptance-contract", criteria: [
-        { kind: "eventCount", target: { mapId: map.id }, count: 1 },
-      ] })] : [step]);
+    ? [call("get_map_region", region), step, call("show_map_region", region)] : [step]);
   let index = 0;
   const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield,
     config: { ...config, ...(options.maxToolCalls ? { maxToolCalls: options.maxToolCalls } : {}) },
@@ -97,7 +96,8 @@ async function applyAndVerify(h: ReturnType<typeof harness>) {
   const applied = await applyProposedProject(h.session.getProposedProject(), { base: h.session.getProposalBase(), baseline: h.session.getDraftBaseline(), source: "agent", summary: "Requested reward", toolNames: ["upsert_event"] });
   expect(applied.ok).toBe(true);
   h.session.refreshAcceptance(store.getCurrent());
-  expect(h.session.getAcceptanceSnapshot()?.status).toBe("verified");
+  expect(h.session.getAcceptanceSnapshot()).toBeNull();
+  expect(verifyNpcRewardsPlayable(store.getCurrent(), REQUIRED).ok).toBe(true);
 }
 
 describe("NPC reward request lifetime in AssistantSession", () => {

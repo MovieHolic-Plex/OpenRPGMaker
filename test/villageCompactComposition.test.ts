@@ -103,7 +103,8 @@ describe("compact village composition contract", () => {
     const upperLog = { ...small, raster: { ...small.raster, cells: [...small.raster.cells, { x: 1, y: 4, tile: 133, layer: "upper" as const }] } };
     expect(() => compactHousePool([upperLog], [])).toThrow(/회벽·석벽/);
     expect(() => chooseCompactHouses(pool, 26, Array.from({ length: 3 }, () => ({ objectId: large.design.id })))).toThrow(/최대 2채/);
-    expect(() => villageObjectHouseCatalog(project, { composition: "compact" })).toThrow(/houseObjectIds/);
+    // 2026-09-18: compact 인데 오브젝트가 없으면 거부하지 않고 파라메트릭 집으로 진행한다(undefined).
+    expect(villageObjectHouseCatalog(project, { composition: "compact" })).toBeUndefined();
   });
 
   it("sizes from the selected small homes and carries the explicit composition through the facade parser", () => {

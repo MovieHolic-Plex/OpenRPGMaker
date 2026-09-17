@@ -28,8 +28,9 @@ import {
 } from "@/project/tileAlphaScan";
 import { userTileBackingOverride, userTileLayerOverride } from "@/editor/runtimeTileMetadata";
 import { isTransparentChipsetTile } from "@/project/defaults/chipsetMapping";
-import { TILE } from "@/project/defaults/constants";
-import { isCombinedTownTileset, isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness";
+import { RETRO_WORLD_TILE_OFFSET, TILE } from "@/project/defaults/constants";
+import { isForestTreesBackedTile } from "@/project/defaults/forestTreesExtension";
+import { isCombinedTownCompatibleTileset, isCombinedTownTileset, isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { isCustomTileset } from "@/project/tilesetKind";
 import type { TilesetDef } from "@/project/types";
 
@@ -70,8 +71,17 @@ const CANOPY_TILES = [260, 261, 262, 263] as const;
 /** 기본 칩셋 나무 밑동의 받침 — 런타임 렌더러가 예전부터 깔던 잔디와 같은 타일. */
 export const DEFAULT_TRUNK_BACKING_TILE = TILE.GRASS;
 
+/**
+ * 이 타일이 합본 마을 어휘로 읽히는가 — 합본 마을 자체이거나, 혼합 칩셋(합본 마을+레트로 월드맵)의
+ * 위 반쪽(번호 < 480, ID 불변)일 때. 혼합 칩셋은 kind "custom" 이라 isCombinedTownTileset 이 아니지만
+ * 밑동 290~293 의 받침 계약은 번호가 같으므로 그대로 성립한다(2026-09-18, 혼합 칩셋 밑동 흰 구멍).
+ */
+function combinedTownVocabulary(tileset: TilesetDef, tile: number): boolean {
+  return isCombinedTownTileset(tileset) || (isCombinedTownCompatibleTileset(tileset) && tile >= 0 && tile < RETRO_WORLD_TILE_OFFSET);
+}
+
 function isDefaultTransparent(tileset: TilesetDef, tile: number): boolean {
-  return isCombinedTownTileset(tileset) && isTransparentChipsetTile(tile);
+  return combinedTownVocabulary(tileset, tile) && isTransparentChipsetTile(tile);
 }
 
 /**
@@ -102,7 +112,7 @@ export function tileLayerPolicy(
   // 명시 `투명` 태그가 없을 때만 감지를 근거의 출처로 적는다 — 태그가 우선이다.
   const detectedSource = detectedTransparent && !taggedTransparent;
 
-  if (isCombinedTownTileset(tileset) && isTreeTrunkTileId(tile)) {
+  if (combinedTownVocabulary(tileset, tile) && isTreeTrunkTileId(tile)) {
     return {
       home,
       transparent,
@@ -115,7 +125,7 @@ export function tileLayerPolicy(
     };
   }
 
-  if (isCombinedTownTileset(tileset) && isTreeCanopyTileId(tile)) {
+  if (combinedTownVocabulary(tileset, tile) && isTreeCanopyTileId(tile)) {
     return {
       home,
       transparent,
@@ -227,8 +237,12 @@ function resolveBackingTile(tileset: TilesetDef, tile: number, home: TileLayerHo
   const choice = userTileBackingOverride(tileset, tile);
   if (choice === "none") return null;
   if (typeof choice === "number") return choice;
-  // 기본값: 기본 칩셋 나무 밑동만 잔디 받침(기존 렌더 동작과 동일).
-  if (isCombinedTownTileset(tileset) && isTreeTrunkTileId(tile) && isTransparentChipsetTile(tile)) {
+  // 기본값: 합본 마을 어휘의 나무 밑동만 잔디 받침(기존 렌더 동작과 동일). 혼합 칩셋 위 반쪽도 같은 번호다.
+  if (combinedTownVocabulary(tileset, tile) && isTreeTrunkTileId(tile) && isTransparentChipsetTile(tile)) {
+    return DEFAULT_TRUNK_BACKING_TILE;
+  }
+  // 혼합 칩셋 숲 나무 띠(960~) — 밑동·덤불·가장자리 칸은 하위에 살고 잔디를 받친다(판정표: forestTreesExtension.ts).
+  if (isCombinedTownCompatibleTileset(tileset) && isForestTreesBackedTile(tile)) {
     return DEFAULT_TRUNK_BACKING_TILE;
   }
   return null;

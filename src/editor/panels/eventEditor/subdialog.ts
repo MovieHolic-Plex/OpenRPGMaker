@@ -108,8 +108,18 @@ function renderHeader(options: EventSubdialogOptions, close: () => void): HTMLEl
   return header;
 }
 
+/**
+ * 처음 포커스는 **본문의 첫 입력**이다 — 글자 상자·선택기가 있으면 거기, 없으면 본문의 첫 버튼.
+ * 예전엔 창 전체에서 첫 컨트롤을 잡아 헤더의 「닫기 ×」에 갔다. 열자마자 타자를 치면 아무 데도
+ * 안 들어갔고, Enter 는 창을 닫았다(2026-09-17 적대적 리뷰 P1-10).
+ */
 function focusFirstControl(root: HTMLElement): void {
-  const first = root.querySelector("button, input, select, textarea");
+  const body = root.querySelector<HTMLElement>(".event-subdialog-body") ?? root;
+  const usable = (node: Element | null): node is HTMLElement =>
+    node instanceof HTMLElement && !("disabled" in node && (node as HTMLButtonElement).disabled) && node.getAttribute("aria-hidden") !== "true" && node.tabIndex >= 0;
+  const typing = Array.from(body.querySelectorAll<HTMLElement>("textarea, input:not([type=checkbox]):not([type=radio]):not([type=hidden]), select:not([aria-hidden=true])")).find(usable);
+  const first = typing ?? Array.from(body.querySelectorAll<HTMLElement>("button, input, select, textarea, [tabindex]")).find(usable)
+    ?? root.querySelector<HTMLElement>("button, input, select, textarea");
   if (first instanceof HTMLElement) first.focus();
 }
 

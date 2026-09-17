@@ -542,13 +542,33 @@ function shouldSkipSelect(select: HTMLSelectElement): boolean {
     || SKIP_SELECT_CLASSES.some((className) => select.classList.contains(className));
 }
 
+/**
+ * 접근성 이름. `<label>` 이 select 를 **감싸는** 폼에서는 label.textContent 에 옵션 전체가
+ * 들어간다 — 「값」 드롭다운의 aria-label 이 7,019자(변수 200개 이름 포함)였다(2026-09-17 리뷰 P1-12).
+ * label 의 글에서 select 자신(과 그 대체 트리거)의 글은 뺀다.
+ */
 function accessibleSelectName(select: HTMLSelectElement): string {
   const explicit = select.getAttribute("aria-label")?.trim();
   if (explicit) return explicit;
   const labels = Array.from(select.labels ?? [])
-    .map((label) => label.textContent?.trim() ?? "")
+    .map((label) => labelTextWithout(label, select))
     .filter(Boolean);
-  return labels.join(" ") || "옵션 선택";
+  const name = labels.join(" ").trim();
+  return name.length > 0 && name.length <= 120 ? name : (name ? `${name.slice(0, 117)}…` : "옵션 선택");
+}
+
+function labelTextWithout(label: HTMLElement, exclude: HTMLElement): string {
+  const parts: string[] = [];
+  const visit = (node: Node): void => {
+    if (node === exclude) return;
+    // 라벨 하나가 select 둘(값 + 변수)을 감싸는 폼도 있다 — 어떤 select 의 옵션 글도 이름이 아니다.
+    if (node instanceof HTMLSelectElement || node instanceof HTMLButtonElement) return;
+    if (node instanceof HTMLElement && (node.classList.contains("event-custom-select") || node.getAttribute("role") === "listbox")) return;
+    if (node.nodeType === Node.TEXT_NODE) { parts.push(node.textContent ?? ""); return; }
+    node.childNodes.forEach(visit);
+  };
+  visit(label);
+  return parts.join(" ").replace(/\s+/gu, " ").trim();
 }
 
 function restoreAttribute(element: HTMLElement, name: string, value: string | null): void {

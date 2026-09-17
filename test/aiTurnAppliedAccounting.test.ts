@@ -97,9 +97,6 @@ describe("panel map completeness selection", () => {
       { name: "paint_tiles", args: FLOOR_PAINT_ARGS },
       { name: "paint_tiles", args: { ...WALL_PAINT_ARGS, cells: coverage === "partial" ? WALL_PAINT_ARGS.cells.slice(1) : WALL_PAINT_ARGS.cells } },
       ...(coverage === "invalidated" ? [{ name: "paint_tiles", args: { ...WALL_PAINT_ARGS, tile: 342, cells: [{ x: 0, y: 0 }] } }] : []),
-      { name: "repair_acceptance", args: { itemId: "acceptance-contract", criteria: [
-        { kind: "targetChange", target: { mapId: "map_basement" }, region: { x: 1, y: 1, w: 10, h: 8 } },
-      ] } },
       { name: "show_map_region", args: { mapId: "map_basement", x: 0, y: 0, w: 12, h: 10 } },
     ];
     let writer = 0;
@@ -133,8 +130,8 @@ describe("panel map completeness selection", () => {
     expect(result.proposedCalls.flatMap(call => call.result.diff?.warnings ?? []).filter(isProposalCompletenessWarning)).toEqual(expected);
     expect(h.deps.applyProposal).toHaveBeenCalledWith(result.proposedCalls, expect.anything());
     expect(store.getCurrent().maps.map_basement.lowerTiles).toEqual(session.getProposedProject().maps.map_basement.lowerTiles);
-    expect(result.runOutcome?.goal).toBe("incomplete");
-    expect(session.getAcceptanceSnapshot()?.status).not.toBe("verified");
+    // 2026-09-17 수용 원장 해체: 목표 충족 축은 원장 위에 있었으므로 더 이상 판정되지 않는다(unassessed).
+    expect(result.runOutcome?.goal).toBe("unassessed");
   });
 
   it("uses the real session's plural selection instead of the most recent spec", async () => {

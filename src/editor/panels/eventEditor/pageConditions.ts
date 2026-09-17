@@ -55,6 +55,7 @@ export function renderPageConditions(
       enabled: switchConditionAt(page, 0) !== undefined,
       suffix: "",
       toggle: (enabled) => toggleSwitchCondition({ ...context, slot: 0 }, enabled),
+      pickerTestId: "event-page-switch-condition-picker-open",
     },
     {
       key: "switch2",
@@ -64,6 +65,7 @@ export function renderPageConditions(
       enabled: switchConditionAt(page, 1) !== undefined,
       suffix: "",
       toggle: (enabled) => toggleSwitchCondition({ ...context, slot: 1 }, enabled),
+      pickerTestId: "event-page-switch2-condition-picker-open",
     },
     {
       key: "variable",
@@ -73,6 +75,7 @@ export function renderPageConditions(
       enabled: page.conditions.some((item) => item.kind === "variable"),
       suffix: "이",
       toggle: (enabled) => toggleSimpleCondition(context, "variable", enabled),
+      pickerTestId: "event-page-variable-condition-picker-open",
     },
     {
       key: "item",
@@ -82,6 +85,7 @@ export function renderPageConditions(
       enabled: page.conditions.some((item) => item.kind === "item"),
       suffix: "",
       toggle: (enabled) => toggleSimpleCondition(context, "item", enabled),
+      pickerTestId: "event-page-item-condition-picker-open",
     },
     {
       key: "actor",
@@ -91,6 +95,7 @@ export function renderPageConditions(
       enabled: page.conditions.some((item) => item.kind === "actor"),
       suffix: "",
       toggle: (enabled) => toggleSimpleCondition(context, "actor", enabled),
+      pickerTestId: "event-page-actor-condition-picker-open",
     },
     {
       key: "timer1",
@@ -212,6 +217,11 @@ interface ConditionRowSpec {
   readonly enabled: boolean;
   readonly suffix: string;
   readonly toggle: (enabled: boolean) => void;
+  /**
+   * 참조가 있는 조건(스위치·변수·아이템·주인공)은 칩을 켠 직후 이 피커를 연다. 조건은 참조를 비운
+   * 채 세워지므로(pageConditionModel), 고르지 않으면 행이 「선택하세요」 오류를 보인다.
+   */
+  readonly pickerTestId?: string;
 }
 
 /** 조건 종류를 담고/빼는 칩. 켠 칩은 aria-pressed 로 상태를 말한다. */
@@ -222,8 +232,23 @@ function conditionChip(spec: ConditionRowSpec): HTMLElement {
     dataset: { testid: `event-condition-chip-${spec.key}` },
     text: spec.chipLabel,
   });
-  chip.addEventListener("click", () => spec.toggle(!spec.enabled));
+  chip.addEventListener("click", (event) => {
+    const enabling = !spec.enabled;
+    // 재렌더가 이 칩을 떼어 내므로, 살아남는 조상(모달 루트)을 **토글 전에** 잡아 둔다.
+    const scope = chip.closest<HTMLElement>('[data-testid="event-editor-modal"], [role="dialog"]') ?? document.body;
+    spec.toggle(enabling);
+    // 실제 클릭에서만 피커를 연다 — 테스트의 합성 click 과 프로그램 호출은 창을 띄우지 않는다.
+    if (enabling && spec.pickerTestId && event.isTrusted) openConditionPickerSoon(scope, spec.pickerTestId);
+  });
   return chip;
+}
+
+/** store 갱신으로 행이 다시 그려진 뒤, 그 행의 피커 버튼을 누른다. */
+function openConditionPickerSoon(scope: HTMLElement, pickerTestId: string): void {
+  if (typeof window === "undefined") return;
+  window.setTimeout(() => {
+    scope.querySelector<HTMLElement>(`[data-testid="${pickerTestId}"]`)?.click();
+  }, 0);
 }
 
 function conditionRow(

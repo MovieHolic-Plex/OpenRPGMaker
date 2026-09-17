@@ -103,7 +103,8 @@ describe("페이지 조건 저작 무결성", () => {
 
     chip.click();
 
-    expect(livePage(mapId).conditions).toEqual([{ kind: "item", itemId: DEFAULT_ITEM_ID, present: true }]);
+    // 첫 아이템에 조용히 묶지 않는다 — 빈 참조로 세우고 행의 「아이템을 선택하세요」가 고르게 한다(2026-09-18).
+    expect(livePage(mapId).conditions).toEqual([{ kind: "item", itemId: "", present: true }]);
     const openRoot = render(mapId, livePage(mapId));
     const row = findByTestId(openRoot, "event-condition-row-아이템");
     if (!row) throw new Error("enabled item row missing after chip toggle");

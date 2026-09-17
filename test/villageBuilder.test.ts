@@ -762,51 +762,29 @@ describe("build_village housePlans contract", () => {
     expect(interior.name).toContain("촌장 로안");
   });
 
-  it("hard-fails when forced templateId cannot place", () => {
+  it("substitutes another template and warns when a forced templateId cannot place", () => {
+    // 2026-09-18: 예전엔 house-template-unplaced 로 마을 전체를 반려했다(거부 잘 안하게 — 집별 경고로 대체).
     const ctx = { project: createEmptyToolProject() };
-    // tiny map with 4 houses all forced to impossible template id
-    let threw = false;
-    try {
-      runTool(ctx, "build_village", {
-        name: "실패 마을",
-        width: 36,
-        height: 36,
-        seed: 1,
-        interior: false,
-        doorEvent: false,
-        fences: false,
-        decor: false,
-        housePlans: [
-          { kitId: "blue-stone", templateId: "no-such-template" },
-          { kitId: "blue-stone", templateId: "no-such-template" },
-          { kitId: "blue-stone", templateId: "no-such-template" },
-          { kitId: "blue-stone", templateId: "no-such-template" },
-        ],
-      });
-    } catch (error) {
-      threw = true;
-      expect(String(error)).toMatch(/templateId|house-template|배치 실패|invalid/i);
-    }
-    // ToolError may be returned as result.ok false depending on runner — accept either
-    if (!threw) {
-      const result = runTool(ctx, "build_village", {
-        name: "실패 마을2",
-        width: 36,
-        height: 36,
-        seed: 1,
-        interior: false,
-        doorEvent: false,
-        fences: false,
-        decor: false,
-        housePlans: [
-          { kitId: "blue-stone", templateId: "no-such-template" },
-          { kitId: "blue-stone", templateId: "no-such-template" },
-          { kitId: "blue-stone", templateId: "no-such-template" },
-          { kitId: "blue-stone", templateId: "no-such-template" },
-        ],
-      });
-      expect(result.ok).toBe(false);
-    }
+    const result = runTool(ctx, "build_village", {
+      name: "대체 마을",
+      width: 36,
+      height: 36,
+      seed: 1,
+      interior: false,
+      doorEvent: false,
+      fences: false,
+      decor: false,
+      housePlans: [
+        { kitId: "blue-stone", templateId: "no-such-template" },
+        { kitId: "blue-stone", templateId: "no-such-template" },
+        { kitId: "blue-stone", templateId: "no-such-template" },
+        { kitId: "blue-stone", templateId: "no-such-template" },
+      ],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const data = result.data as { housesBuilt: number; warnings: string[] };
+    expect(data.housesBuilt).toBeGreaterThan(0);
+    expect(data.warnings.some((w) => w.includes("templateId='no-such-template'") && w.includes("대체"))).toBe(true);
   });
 
   it("파이프라인 재시도 정리가 기존 무관 맵을 보존한다 (스냅샷 와이프)", () => {

@@ -4,6 +4,7 @@ export {
   ensureTilesetHarnesses,
   harnessGroupForTile,
   harnessLayerForTile,
+  isCombinedTownCompatibleTileset,
   isCombinedTownTileset,
   isHarnessStackableTile,
   isTreeCanopyTileId,

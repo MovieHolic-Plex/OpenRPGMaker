@@ -5,6 +5,7 @@ import {
   npcMoveIntervalMs,
   registerPageMoveRoutes,
 } from "@/player/playScenePageMoveRoutes";
+import { registerAutonomousMover } from "@/player/playSceneSchedulers";
 import { movementScene, movementSceneWithPages, pageWith } from "./runtimeEventPageFixtures";
 
 describe("runtime event page movement", () => {
@@ -24,6 +25,18 @@ describe("runtime event page movement", () => {
     expect(mover?.moves.map((move) => move.kind)).toEqual(["move", "move", "move", "move"]);
     expect(mover?.moveDurationMs).toBe(npcMoveDurationMs(5));
     expect(mover?.moveIntervalMs).toBe(npcMoveIntervalMs(6));
+  });
+
+  it("inherits page speed for command-driven movers", () => {
+    const scene = movementScene({
+      movement: { type: "fixed", speed: 8, frequency: 8 },
+    });
+    registerAutonomousMover(scene, "npc", [{ kind: "move", dir: "right" }], false);
+    const mover = scene.autonomousNPCs.get("npc");
+    expect(mover?.speedRank).toBe(8);
+    expect(mover?.moveDurationMs).toBe(npcMoveDurationMs(8));
+    expect(mover?.frequencyRank).toBe(8);
+    expect(mover?.moveIntervalMs).toBe(npcMoveIntervalMs(8));
   });
 
   it("executes custom NPC move routes during play updates", () => {
@@ -146,6 +159,10 @@ describe("runtime event page movement", () => {
 
     expect(scene.autonomousNPCs.get("npc")).toMatchObject({
       strategy: "chase",
+      speedRank: 6,
+      moveDurationMs: npcMoveDurationMs(6),
+      frequencyRank: 7,
+      moveIntervalMs: npcMoveIntervalMs(7),
       sightRange: 5,
       giveUpRange: 9,
       pathfind: true,

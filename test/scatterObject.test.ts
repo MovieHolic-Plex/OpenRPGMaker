@@ -338,7 +338,8 @@ describe("scatter_object", () => {
     blockedByWater.map.lowerTiles.fill(TILE.GRASS);
     blockedByWater.map.lowerTiles[2 * blockedByWater.map.width + 2] = TILE.WATER;
 
-    expect(() => runScatter(blockedByWater.project, {
+    // 2026-09-18: 요청 칸이 물이면 거부 대신 영역을 넓혀 옆 풀밭에 놓는다 — 물 위엔 여전히 올리지 않는다.
+    const expanded = runScatter(blockedByWater.project, {
       mapId: blockedByWater.map.id,
       groupId: GROUP_ID,
       area: { x: 2, y: 1, w: 1, h: 2 },
@@ -346,8 +347,12 @@ describe("scatter_object", () => {
       minGap: 0,
       maxGap: 0,
       avoidProtected: false,
-    })).toThrow(expect.objectContaining({ code: "placement-zero", mapId: blockedByWater.map.id }));
-    expect(treeOrigins(blockedByWater.map)).toEqual([]);
+    });
+    expect(expanded.summary).toContain("넓힘");
+    const expandedOrigins = treeOrigins(blockedByWater.map);
+    expect(expandedOrigins).toHaveLength(1);
+    expect(expandedOrigins).not.toEqual([{ x: 2, y: 1 }]);
+    expect(blockedByWater.map.lowerTiles[2 * blockedByWater.map.width + 2]).toBe(TILE.WATER);
   });
 
   it("시작칸, 이벤트칸, transfer 목적지를 보호하고 부족 수량을 반환한다", () => {

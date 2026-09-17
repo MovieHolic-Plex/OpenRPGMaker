@@ -377,7 +377,12 @@
 
 .ecp-stage.pos-bottom { place-items: end center; }
 
-.ecp-message-window {
+/* 대사창의 생김새(폭·패딩·글자·유리·이름표)는 더 이상 여기서 정하지 않는다.
+   프리뷰 창은 `.dialogue-box.ecp-message-window` 로 게임과 같은 클래스를 달고
+   `.ecp-runtime-viewport`(320×240 논리 화면) 안에서 축소되므로 src/styles/dialogue.css 가
+   유일한 소유자다(2026-09-17). 아래 :not(.dialogue-box) 규칙은 얼굴 바꾸기·문장 설정 목업처럼 아직 옛 창을 쓰는 무대만 위한 것이다. */
+
+.ecp-message-window:not(.dialogue-box) {
   width: 100%;
   max-width: 96%;
   min-height: 72px;
@@ -404,18 +409,18 @@
   position: relative;
 }
 
-.ecp-message-window.has-speaker {
+.ecp-message-window:not(.dialogue-box).has-speaker {
   margin-top: 14px;
 }
 
-.ecp-message-window.with-face {
+.ecp-message-window:not(.dialogue-box).with-face {
   flex-direction: row;
   align-items: stretch;
   gap: 12px;
   min-height: 120px;
 }
 
-.ecp-message-window.face-right { flex-direction: row-reverse; }
+.ecp-message-window:not(.dialogue-box).face-right { flex-direction: row-reverse; }
 
 /* === 프리뷰 「말투·연출」 진입 재생 ===
    런타임과 **같은 keyframe** 을 쓴다. src/styles/dialogue.css 는 에디터 그래프에도
@@ -468,6 +473,7 @@
   box-shadow: none;
 }
 
+/* 얼굴 바꾸기·문장 설정 목업의 본문 열과 이름표. 런타임 규격 무대는 .dialogue-text-column 을 쓴다. */
 .ecp-message-text {
   display: flex;
   flex: 1 1 auto;
@@ -477,9 +483,9 @@
   min-width: 0;
 }
 
-.ecp-message-speaker { font-weight: 700; color: var(--oprn-command-teal, #ffd76e); font-size: 12px; }
+.ecp-message-speaker:not(.speaker-nameplate) { font-weight: 700; color: var(--oprn-command-teal, #ffd76e); font-size: 12px; }
 
-.ecp-message-speaker-nameplate {
+.ecp-message-speaker-nameplate:not(.speaker-nameplate) {
   position: absolute;
   left: 10px;
   top: -12px;
@@ -651,43 +657,7 @@
   border-color: var(--border-default, rgba(42,37,33,.20));
 }
 
-.ecp-choice-list { display: flex; flex-direction: column; gap: 3px; margin-top: 4px; }
-
-.ecp-choice-window,
-.ecp-choice-list,
-.ecp-choice {
-  min-width: 0;
-  max-width: 100%;
-}
-
-.ecp-choice {
-  display: grid;
-  grid-template-columns: 16px minmax(0, 1fr);
-  align-items: start;
-  gap: 5px;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--runtime-dialogue-radius-small, 3px);
-  font-size: 12px;
-  padding: 3px 7px;
-}
-
-.ecp-choice:first-child {
-  background: var(--runtime-dialogue-glass-accent-soft, rgba(124, 140, 255, 0.2));
-  border-color: var(--runtime-dialogue-glass-border, rgba(154, 170, 226, 0.18));
-  box-shadow: var(--runtime-dialogue-glass-focus-shadow, inset 2px 0 0 rgba(124, 140, 255, 0.96), inset 0 0 0 1px rgba(211, 232, 255, 0.34));
-}
-
 .ecp-choice.empty { opacity: 0.6; }
-
-.ecp-choice > .ee-icon { width: 16px; height: 16px; margin-top: 1px; }
-
-.ecp-choice-label {
-  min-width: 0;
-  white-space: pre-wrap;
-  word-break: normal;
-  overflow-wrap: anywhere;
-}
 
 /* 미니맵 */
 .ecp-map-stage { place-items: center; background: var(--bg-surface); }

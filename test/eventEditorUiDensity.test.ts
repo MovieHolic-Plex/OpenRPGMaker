@@ -81,10 +81,10 @@ describe("event editor UI density", () => {
     openEventMovement.clear();
   });
 
-  it("keeps page actions in the pagebar without a duplicate name field", () => {
+  it("keeps page actions in the pagebar; the body carries the page-name field (the header box is the event name)", () => {
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
     const nameField = host.querySelector('[data-testid="event-classic-name"]');
-    expect(nameField).toBeNull();
+    expect(nameField?.textContent).toContain("페이지 이름");
     expect(host.querySelector(".event-editor-pagebar")).not.toBeNull();
 
     expect(host.querySelector('[data-testid="evt-page-add"]')).not.toBeNull();

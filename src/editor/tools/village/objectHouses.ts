@@ -22,8 +22,10 @@ export interface VillageObjectHouse {
 export function villageObjectHouseCatalog(project: Project, args: Readonly<Record<string, unknown>>): readonly VillageObjectHouse[] | undefined {
   const plans = Array.isArray(args.housePlans) ? args.housePlans as Record<string, unknown>[] : [];
   const fixed = plans.flatMap(plan => typeof plan?.objectId === "string" ? [plan.objectId] : []);
-  if (args.houseObjectIds === undefined && fixed.length === 0) {
-    if (args.composition === "compact") throw new ToolError("조밀한 마을에는 저장된 집의 houseObjectIds가 필요합니다.", { code: "village-compact-objects" });
+  const noObjectIds = args.houseObjectIds === undefined || (Array.isArray(args.houseObjectIds) && args.houseObjectIds.length === 0);
+  if (noObjectIds && fixed.length === 0) {
+    // 2026-09-18: 예전엔 compact 인데 오브젝트가 없으면 실패였다. 저장된 집 없이도 마을은 지을 수 있다 —
+    // 오브젝트 카탈로그 없음(undefined)으로 돌려 파라메트릭 집으로 진행한다. compact 트리·바닥 규칙은 그대로 적용된다.
     return undefined;
   }
   if (args.houseObjectIds !== undefined && (!Array.isArray(args.houseObjectIds) || args.houseObjectIds.length === 0

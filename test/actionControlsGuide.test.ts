@@ -69,9 +69,10 @@ describe("action controls guide authoring", () => {
       expect(result.ok, result.summary).toBe(true);
     }
     expect(ctx.project.maps[mapId]?.events.filter((event) => event.id.startsWith("teacher_"))).toHaveLength(2);
-    const before = structuredClone(ctx.project);
-    expect(runTool(ctx, "place_npc", { mapId, x: 4, y: 4, name: "No pages" }).ok).toBe(false);
-    expect(ctx.project).toEqual(before);
+    // 2026-09-18: pages 없는 일반 NPC 는 거부 대신 인사 한 줄을 기본으로 받는다(거부 잘 안하게).
+    const defaulted = runTool(ctx, "place_npc", { mapId, x: 4, y: 4, name: "No pages" });
+    expect(defaulted.ok, defaulted.summary).toBe(true);
+    expect((defaulted.diff?.warnings ?? []).some((w) => w.includes("인사 한 줄 기본 적용"))).toBe(true);
   });
 
   it("derives displayed action keys from the runtime binding predicates", () => {

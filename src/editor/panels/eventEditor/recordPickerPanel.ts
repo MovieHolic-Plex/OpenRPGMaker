@@ -44,6 +44,8 @@ export type RecordPickerPanelRequest = {
 type PanelState = {
   query: string;
   selectedId: string;
+  /** 이름 상자를 펼친 레코드. 「이름 바꾸기」를 누르거나 「+ 새 …」로 방금 만든 것만 펼친다. */
+  renamingId: string;
 };
 
 type PanelHosts = {
@@ -83,6 +85,7 @@ function renderPanel(options: {
   const { request } = options;
   const state: PanelState = {
     query: "",
+    renamingId: "",
     selectedId: resolveInitialId(
       recordsOf(request.kind).filter(record => !request.disabledReason?.(record.id)),
       request.currentId,
@@ -175,9 +178,13 @@ function panelShell(options: {
           click: () => {
             const created = createRecord(request.kind, state.query);
             state.selectedId = created;
+            // 방금 만든 레코드는 이름을 지어야 쓸 수 있다 — 이름 상자를 펼치고 포커스를 준다.
+            // 예전엔 포커스가 이 버튼에 남아 저작자가 상자를 못 봤다(2026-09-17 리뷰 #8).
+            state.renamingId = canRenameRecord(request.kind) ? created : "";
             state.query = "";
             hosts.search.value = "";
             renderList(hosts, request, state, options.commit);
+            if (state.renamingId) focusRenameField(hosts);
           },
         },
       }),
@@ -244,6 +251,10 @@ function renderList(
   // 먼저 보여 주는 유일한 단서다. 표시 순서만 바뀌고 행 testid 는 레코드 번호를 따른다.
   const inMap = shown.filter((entry) => hosts.mapUsageOf(entry.record.id) > 0);
   const rest = shown.filter((entry) => hosts.mapUsageOf(entry.record.id) === 0);
+  // 구획 머리의 숫자는 **전체** 일치 수다. 예전엔 그려진 200개만 세어 「전체 1011 = 6 + 194」가 안 맞았다.
+  const inMapTotal = matches.filter((entry) => hosts.mapUsageOf(entry.record.id) > 0).length;
+  const restTotal = matches.length - inMapTotal;
+  const truncated = matches.length > shown.length;
 
   const appendRow = (entry: VisibleEntry): void => {
     hosts.list.append(
@@ -253,28 +264,51 @@ function renderList(
         selected: entry.record.id === state.selectedId,
         usage: hosts.usageOf(entry.record.id),
         disabledReason: request.disabledReason?.(entry.record.id),
+        renaming: entry.record.id === state.renamingId,
         onSelect: () => {
           state.selectedId = entry.record.id;
+          // 다른 행을 고르면 펼쳐 둔 이름 상자는 접는다 — 개명은 명시 동작 뒤에만.
+          if (state.renamingId !== entry.record.id) state.renamingId = "";
           renderList(hosts, request, state, commit);
           // 재렌더가 방금 누른 버튼을 없앤다. 포커스를 새로 그려진 같은 행으로 옮기지 않으면
           // body 로 떨어져 키보드 조작과 스크린리더 위치를 모두 잃는다.
           focusSelectedRow(hosts);
         },
         onConfirm: commit,
+        onBeginRename: () => {
+          state.selectedId = entry.record.id;
+          state.renamingId = entry.record.id;
+          renderList(hosts, request, state, commit);
+          focusRenameField(hosts);
+        },
         onRename: (name) => {
           renameRecord(request.kind, entry.record.id, name);
+          state.renamingId = "";
           renderList(hosts, request, state, commit);
+          focusSelectedRow(hosts);
+        },
+        onCancelRename: () => {
+          state.renamingId = "";
+          renderList(hosts, request, state, commit);
+          focusSelectedRow(hosts);
         },
       }),
     );
   };
 
   if (inMap.length > 0) {
-    hosts.list.append(sectionHeading("이 맵에서 쓰는 중", inMap.length, "map"));
+    hosts.list.append(sectionHeading("이 맵에서 쓰는 중", inMapTotal, "map"));
     inMap.forEach(appendRow);
-    hosts.list.append(sectionHeading("그 밖의 " + kindLabel, rest.length, "rest"));
+    hosts.list.append(sectionHeading("그 밖의 " + kindLabel, restTotal, "rest", truncated ? `처음 ${rest.length}개만 표시 — 검색으로 좁히세요` : undefined));
   }
   rest.forEach(appendRow);
+  if (truncated && inMap.length === 0) {
+    hosts.list.append(el("p", {
+      class: "event-record-picker-truncated",
+      text: `${matches.length}개 중 처음 ${shown.length}개만 표시합니다. 검색으로 좁히세요.`,
+      dataset: { testid: "event-record-picker-truncated" },
+    }));
+  }
 
   if (matches.length > RENDER_LIMIT) {
     hosts.list.append(
@@ -287,12 +321,13 @@ function renderList(
   updateConfirm(hosts.confirm, state, request);
 }
 
-function sectionHeading(label: string, count: number, slug: string): HTMLElement {
+function sectionHeading(label: string, count: number, slug: string, note?: string): HTMLElement {
   return el("div", {
     class: "event-record-picker-section",
     dataset: { testid: `event-record-picker-section-${slug}` },
     children: [
       el("span", { text: label }),
+      ...(note ? [el("span", { class: "event-record-picker-section-note", text: note })] : []),
       el("span", { class: "event-record-picker-section-count", text: String(count) }),
     ],
   });
@@ -337,6 +372,15 @@ function moveSelection(
   focusSelectedRow(hosts);
 }
 
+/** 펼친 이름 상자에 포커스 — 「+ 새 …」·「이름 바꾸기」 직후. */
+function focusRenameField(hosts: PanelHosts): void {
+  const input = hosts.list.querySelector<HTMLInputElement>(".event-record-picker-rename");
+  if (!input) return;
+  input.scrollIntoView({ block: "nearest" });
+  input.focus({ preventScroll: true });
+  input.select();
+}
+
 /** 선택된 행으로 포커스와 스크롤을 맞춘다. 재렌더로 사라진 포커스를 복구하는 유일한 지점. */
 function focusSelectedRow(hosts: PanelHosts): void {
   const row = hosts.list.querySelector<HTMLElement>(".event-record-picker-row.selected");
@@ -351,9 +395,12 @@ function recordRow(options: {
   readonly selected: boolean;
   readonly usage: number;
   readonly disabledReason?: string;
+  readonly renaming: boolean;
   readonly onSelect: () => void;
   readonly onConfirm: () => void;
+  readonly onBeginRename: () => void;
   readonly onRename: (name: string) => void;
+  readonly onCancelRename: () => void;
 }): HTMLElement {
   const { entry, kind } = options;
   const name = entry.record.name.trim();
@@ -401,36 +448,56 @@ function recordRow(options: {
     },
   });
 
-  // 이름 변경이 가능한 종류(스위치·변수)는 선택된 행 바로 아래에서 그 자리 편집한다.
-  if (options.selected && canRenameRecord(kind)) {
+  // 이름 변경이 가능한 종류(스위치·변수)는 선택된 행에 「이름 바꾸기」 버튼을 두고, 누른 뒤에만
+  // 행 아래에 이름 상자를 펼친다. 예전엔 선택만 해도 상자가 펼쳐져 있어서 9곳에서 쓰는 퀘스트
+  // 스위치를 실수로 개명하기 좋았다(2026-09-17 적대적 리뷰 P0-2).
+  if (options.selected && canRenameRecord(kind) && !options.disabledReason) {
+    const renameButton = el("button", {
+      class: "btn small event-record-picker-rename-open",
+      text: "이름 바꾸기",
+      attrs: { type: "button", title: `${recordKindLabel(kind)} 이름 바꾸기`, "aria-label": `${name || "이름 없음"} 이름 바꾸기` },
+      dataset: { testid: "event-record-picker-rename-open" },
+      on: {
+        click: (event) => {
+          event.stopPropagation();
+          options.onBeginRename();
+        },
+        dblclick: (event) => event.stopPropagation(),
+      },
+    });
+    row.insertBefore(renameButton, row.lastElementChild);
     return el("div", {
       class: "event-record-picker-row-group",
-      children: [row, renameField(entry, options.onRename)],
+      children: options.renaming ? [row, renameField(entry, options.onRename, options.onCancelRename)] : [row],
     });
   }
   return row;
 }
 
 /**
- * 선택된 행 아래에 이름 입력을 붙인다. 구 구현의 "적용" 버튼(이름 변경 전용)을 대체한다.
- * 버튼이 사라지는 대신 blur/Enter 로 반영되므로 저작자가 "적용이 뭐지"를 묻지 않아도 된다.
+ * 선택된 행 아래에 붙는 이름 입력. Enter·포커스 이탈 = 반영, Esc = 취소.
+ * 구 구현의 "적용" 버튼(이름 변경 전용)을 대체한다.
  */
-function renameField(entry: VisibleEntry, onRename: (name: string) => void): HTMLElement {
+function renameField(entry: VisibleEntry, onRename: (name: string) => void, onCancel: () => void): HTMLElement {
   const input = el("input", {
     class: "event-record-picker-rename",
     attrs: { type: "text", placeholder: "이름", "aria-label": "이름" },
     value: entry.record.name,
     dataset: { testid: "event-record-picker-name" },
   }) as HTMLInputElement;
+  let settled = false;
   const flush = (): void => {
-    if (input.value === entry.record.name) return;
-    onRename(input.value);
+    if (settled) return;
+    settled = true;
+    if (input.value === entry.record.name) onCancel();
+    else onRename(input.value);
   };
   input.addEventListener("blur", flush);
   input.addEventListener("keydown", (event) => {
-    if (event.key !== "Enter") return;
-    event.preventDefault();
-    flush();
+    // 목록의 ↑↓·Enter 처리와 섞이지 않게 여기서 멈춘다.
+    event.stopPropagation();
+    if (event.key === "Enter") { event.preventDefault(); flush(); }
+    else if (event.key === "Escape") { event.preventDefault(); settled = true; onCancel(); }
   });
   return el("div", {
     class: "event-record-picker-rename-row",
@@ -438,7 +505,12 @@ function renameField(entry: VisibleEntry, onRename: (name: string) => void): HTM
   });
 }
 
+/**
+ * 처음 선택 상태. 지금 값이 목록에 있으면 그것, 없으면 **아무것도 고르지 않는다.**
+ * 예전엔 첫 레코드를 미리 골라 놓아 「선택」 한 번에 0001 스위치가 걸렸다(2026-09-17 리뷰 P0-2).
+ * 아무것도 안 고른 상태에서 ↓ 를 누르면 첫 행으로 간다(moveSelection).
+ */
 function resolveInitialId(records: readonly RecordEntry[], currentId: string): string {
   if (records.some((record) => record.id === currentId)) return currentId;
-  return records[0]?.id ?? "";
+  return "";
 }

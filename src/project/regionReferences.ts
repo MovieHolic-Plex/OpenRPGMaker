@@ -1,5 +1,6 @@
 import { SHIP_PLACE_REFERENCES, shipPlaceSnapshot } from "./shipPlaceReferences";
 import emeraldSnapshot from "./regionReferences/emerald-basin.json";
+import hillForestSnapshot from "./regionReferences/hill-forest-village.json";
 import snapshot from "./regionReferences/walled-settlement.json";
 import lakeSnapshot from "./regionReferences/lake-village.json";
 import castleSnapshot from "./regionReferences/castle-town.json";
@@ -79,6 +80,23 @@ export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFEREN
     "활엽수·침엽수·관목은 군락으로 모으고 다리 입구와 계단 동선은 비운다.",
   ],
   limitations: "완성 필드 배치 참고 사례. 프로젝트와 관계없이 표시된다. 자동 생성·현재 맵 배치 기능은 포함하지 않는다.",
+}, {
+  // 2026-09-18: 혼합 칩셋(합본 마을+레트로 월드맵+숲 나무) 위에 시공기가 결정적으로 만든 괴촌·언덕 마을.
+  // 재생성: scripts/author-hill-forest-village-reference.mts (씨앗 7). 집 문 이벤트는 실내 맵이 없어 뺐다.
+  id: "hill-forest-village-64x64", name: "언덕 위 숲마을", kind: "completed-place" as const,
+  placeKind: "settlement" as const, revision: 1, x: 0, y: 0, width: 64, height: 64,
+  tilesetId: hillForestSnapshot.tileset.id,
+  preview: "/assets/region-references/hill-forest-village.png",
+  tilesetPreview: "/assets/easyrpg-chipset-combined-town-retro-world-transparent.png",
+  sourceProjectId: "oprn-hill-forest-village-reference-20260918", sourceMapId: hillForestSnapshot.map.id,
+  rules: [
+    "괴촌(Haufendorf): 큰길 하나에서 막다른 골목이 갈라지고 집 10채가 골목마다 붙는다. 문 앞은 모두 길에 닿는다.",
+    "언덕은 대지 윗선(139)·가장자리 테(78/79/80/108/110)·암벽 면(172→202)·45° 대각(18/19/48/49)으로 두르고, 큰길만 띠를 지난다. 둔덕 위에 2단 둔덕이 겹친다.",
+    "나무는 숲 나무 확장 띠(960~)다 — 큰 참나무 4×5, 활엽수 3×4, 짙은 나무 2×4, 덤불 3×3·2×2. 수관은 상위 레이어, 밑동은 하위+잔디 받침.",
+    "동쪽 숲 띠는 숲 벽 10×6·숲 기둥 4×6 덩이를 격자로 깔고 남은 자리에 나무를 흩뿌린다. 마을에서 멀수록 큰 나무가 잦다.",
+    "밭·과수원·풀밭과 산울타리 덤불(289)은 필지 바깥에 두고, 과수원 나무는 합본 마을 2×2 활엽수 그대로다.",
+  ],
+  limitations: "시공기 출력 그대로의 참고 사례(씨앗 7). 실내 맵과 집 문 이벤트는 포함하지 않는다. 주민 12명은 배치만 있고 대사는 없다.",
 }];
 
 
@@ -94,7 +112,7 @@ export function readRegionReference(id: string, row = 0, rows = 8) {
     throw new Error("row must be within the map; rows must be 1..16");
   }
   const place = LAKE_PLACE_REFERENCES.find(p => p.id === id);
-  const source = shipPlaceSnapshot(id) ?? (reference.id === "emerald-basin-80x64" ? emeraldSnapshot : reference.id === "castle-town-100x100" ? castleSnapshot : reference.id === "walled-settlement-43x45" ? snapshot : lakeSnapshot);
+  const source = shipPlaceSnapshot(id) ?? (reference.id === "emerald-basin-80x64" ? emeraldSnapshot : reference.id === "hill-forest-village-64x64" ? hillForestSnapshot : reference.id === "castle-town-100x100" ? castleSnapshot : reference.id === "walled-settlement-43x45" ? snapshot : lakeSnapshot);
   const crop = (tiles: number[]) => Array.from({length: reference.height}, (_, y) => tiles.slice((y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0), (y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0) + reference.width)).flat();
   const selected = place ? { ...source, map: { ...source.map, width: place.width, height: place.height, lowerTiles: crop(source.map.lowerTiles), upperTiles: crop(source.map.upperTiles), events: [] } } : source;
   const endRow = Math.min(reference.height, row + rows), { map, tileset } = selected;

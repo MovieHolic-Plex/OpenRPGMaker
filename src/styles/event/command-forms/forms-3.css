@@ -352,8 +352,10 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
+/* 미리보기 열을 넓힌다(2026-09-17): 무대는 320 논리 px 를 열 폭에 맞춰 축소하므로 열이 좁을수록
+   글자가 작아진다. 940px 창에서 약 460px → 배율 1.4 → 게임 9px 글자가 12.6px 로 보인다. */
 .event-command-edit-dialog .event-command-text-editor {
-  grid-template-columns: minmax(280px, .88fr) minmax(390px, 1.25fr);
+  grid-template-columns: minmax(320px, 1.05fr) minmax(360px, 1fr);
 }
 
 @media (max-width: 760px) {

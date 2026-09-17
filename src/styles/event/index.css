@@ -30,3 +30,4 @@
 @import "./previews/command-preview-2.css" layer(event);
 @import "./previews/command-preview-3.css" layer(event);
 @import "./previews/command-preview-4.css" layer(event);
+@import "./narrow.css" layer(event);
