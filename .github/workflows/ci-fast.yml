@@ -44,6 +44,12 @@ jobs:
       - name: 배럴 수출 계약
         run: npm run gates:barrel
 
+      # 워크플로가 GitHub 호스티드 러너로 새지 않는지. 호스티드는 분 단위 과금이고
+      # self-hosted 는 무료·무제한이라, 이 저장소의 CI 비용이 0인 건 전적으로 `runs-on` 에
+      # 달려 있다. 새 워크플로를 남들 하던 대로 `ubuntu-latest` 로 적으면 아무도 안 막는다.
+      - name: self-hosted 계약
+        run: npm run gates:self-hosted
+
       # 에디터↔플레이어 데이터 왕복 계약. 9파일이라 바운드가 확실하다.
       - name: parity 스위트
         run: npm run test:parity
