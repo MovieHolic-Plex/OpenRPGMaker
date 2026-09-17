@@ -133,3 +133,23 @@ DB 스냅샷의 에셋 목록으로 파일을 복사하며 실패 시 불완전 
   선택한 프로젝트만 백업하며 추가 프로젝트 전체를 재귀 백업하지 않는다. 팀 정보는 기본 DB에 있다.
 - 회귀 계약: `test/team/webProjectCreation.test.ts` (독립 저장, 원본 보존, 재시작 후 로드,
   로그인 리다이렉트, 잘못된 경로/시드, viewer 제한). 실행 여부는 완료 보고에서 구분한다.
+
+## 운영 systemd가 Vite preview에 고정된 경우 (2026-09-18)
+
+코드 머지만으로 서비스의 `ExecStart=...vite...preview`는 바뀌지 않는다. 이 상태는 HTTP 200이어도
+`window.oprn`이 없고 새 프로젝트/저장이 동작하지 않는다. 실제 운영 주소에서 브리지 존재와
+생성→저장→재로드를 확인해야 한다.
+
+기존 사용자 `rpg-zzu.service`를 저장 호스트로 전환하는 명시적 설치 명령:
+
+```bash
+npm run build:packaged
+npm run build:electron
+node scripts/install-project-host-service.mjs --project-dir /home/main/.local/share/oprn/web-workspace --public-origin http://mdc-server:9888 --init-new
+```
+
+`--init-new`는 기존 디렉터리를 거절하고 빈 SQLite 작업실만 초기화한다. 기존 프로젝트를
+연결하거나 재설치할 때는 이 옵션을 빼라. 설치기는 systemd drop-in으로 실행 명령을
+`start-preview.mjs`로 교체하고 서비스를 재시작한다. 기존 unit과 프로젝트는 덮어쓰지 않는다.
+기존 drop-in은 타임스탬프 사본으로 남긴다. 로그인 코드는 작업실의 `.oprn-host-access`에서
+확인하며 채팅·Git·증거 파일에 복사하지 않는다. 첫 로그인에는 쿼리 없는 운영 주소를 사용한다.
