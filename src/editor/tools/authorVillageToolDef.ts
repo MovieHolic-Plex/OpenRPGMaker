@@ -23,6 +23,7 @@ import {
 } from "./villageBuilder";
 import { RECT_SCHEMA } from "./schemaShapes";
 import { villageTemplateCatalog } from "./village/authoringData";
+import { villageFormTemplates } from "./village/authoringData";
 import { HOUSE_TEMPLATES, MIN_BOUNDS_SIZE } from "./village/constants";
 
 import { resolveVillageDesignInput } from "./village/designContract";
@@ -142,7 +143,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
               ownerName: { type: "string" },
               templateId: {
                 type: "string",
-                description: `선택 사항. 알려진 템플릿 id만 사용하고 확실하지 않으면 생략: ${HOUSE_TEMPLATES.map((template) => template.id).join(", ")}`,
+                description: `선택 사항. 알려진 템플릿 id만 사용하고 확실하지 않으면 생략: ${[...HOUSE_TEMPLATES, ...villageFormTemplates()].map((template) => template.id).join(", ")}. ref-walled-*/ref-castle-* 는 정주지·왕궁 도시 참고 사례에서 옮긴 박공집 셀 레시피다.`,
               },
               program: { type: "string", enum: ["dwelling", "shop", "inn", "workshop", "study", "manor"] },
             },

@@ -6,6 +6,7 @@
 // 저장된 레코드는 신뢰하지 않는다 — 열거형·범위를 여기서 좁히고, 못 쓰는 값은 경고로 흘린다.
 
 import { isHouseKitId, type HouseKitId } from "@/editor/houseKit";
+import { AUTHORED_HOUSE_FORM_DEFS, type AuthoredHouseFormDef } from "@/project/defaults/authoredHouseFormCatalog";
 import { HOUSE_TEMPLATE_DEFS, houseTemplateWingsAt, type HouseTemplateDef } from "@/project/defaults/houseTemplateCatalog";
 import type { Project } from "@/project/types";
 import type { VillageHouseTemplateRecord, VillageLayoutPresetRecord, VillageTemplateWing } from "@/project/types/village";
@@ -151,6 +152,33 @@ function defToTemplate(def: HouseTemplateDef): HouseTemplate {
   };
 }
 
+/**
+ * 저작 셀 레시피 → 슬롯 카탈로그 템플릿. 날개는 bbox 한 장이라 배치·보호·울타리는 기존
+ * 사각형 문법을 그대로 타고, 스탬프만 houses.ts 가 레시피로 분기한다.
+ */
+export function formToTemplate(form: AuthoredHouseFormDef): HouseTemplate {
+  const wing = { x: 0, y: 0, w: form.w, h: form.h };
+  return {
+    id: form.id,
+    name: form.name,
+    w: form.w,
+    h: form.h,
+    stories: form.stories,
+    kitId: form.kitId,
+    wings: [wing],
+    wingsAt: (x: number, y: number) => [{ x, y, w: form.w, h: form.h }],
+    form,
+  };
+}
+
+/**
+ * 마을 슬롯에 들어가는 저작 형태 — 폭이 슬롯 상한(8)을 넘는 레시피(저택·쌍박공 11칸)는
+ * author_house 로만 쓴다. 정주지·왕궁 도시 참고 형태가 여기서 34종 날개 형태와 같은 후보 풀에 섞인다.
+ */
+export function villageFormTemplates(): HouseTemplate[] {
+  return AUTHORED_HOUSE_FORM_DEFS.filter((form) => form.w <= VILLAGE_RANGE.templateW.max).map(formToTemplate);
+}
+
 /** 사용자 형태 레코드를 시공 가능한 템플릿으로 좁힌다. 규약 위반이면 이유를 준다. */
 export function templateFromRecord(record: VillageHouseTemplateRecord): { template: HouseTemplate } | { reason: string } {
   const { id, name, w, h } = record;
@@ -256,7 +284,7 @@ export interface TemplateCatalogResult {
 
 /**
  * 시공에 쓸 형태 카탈로그.
- *  · 내장 34종 + 사용자 형태. 같은 id면 사용자 것이 이긴다(오버라이드).
+ *  · 내장 34종 + 참고 사례 셀 레시피(폭 8 이하) + 사용자 형태. 같은 id면 사용자 것이 이긴다(오버라이드).
  *  · allowIds(프리셋 화이트리스트)가 있으면 그 id만 남긴다. 하나도 안 남으면 전체로 되돌린다.
  */
 export function villageTemplateCatalog(
@@ -266,6 +294,7 @@ export function villageTemplateCatalog(
   const warnings: string[] = [];
   const byId = new Map<string, HouseTemplate>();
   for (const def of HOUSE_TEMPLATE_DEFS) byId.set(def.id, defToTemplate(def));
+  for (const template of villageFormTemplates()) byId.set(template.id, template);
   for (const record of villageAuthoringData(project).templates) {
     const resolved = templateFromRecord(record);
     if ("reason" in resolved) {

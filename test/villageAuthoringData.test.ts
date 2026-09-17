@@ -5,6 +5,7 @@ import {
   templateFromRecord,
   villagePresetById,
   villageTemplateCatalog,
+  villageFormTemplates,
 } from "@/editor/tools/village/authoringData";
 import { templateRecordFromDef } from "@/editor/panels/databaseVillageModel";
 import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
@@ -56,7 +57,7 @@ describe("사용자 저작 마을 데이터 — 읽기", () => {
     const project = withAuthoring(createExistingProject(46));
     const { templates, warnings } = villageTemplateCatalog(project);
     expect(warnings).toEqual([]);
-    expect(templates.length).toBe(HOUSE_TEMPLATE_DEFS.length + 1);
+    expect(templates.length).toBe(HOUSE_TEMPLATE_DEFS.length + villageFormTemplates().length + 1);
     const mine = templates.find((template) => template.id === "my-longhouse");
     expect(mine?.name).toBe("내 장옥");
     expect(mine?.wingsAt(3, 4)).toEqual([{ x: 3, y: 4, w: 8, h: 7 }]);
@@ -66,7 +67,7 @@ describe("사용자 저작 마을 데이터 — 읽기", () => {
     const project = createExistingProject(46);
     project.villageTemplates = [{ ...structuredClone(USER_TEMPLATE), id: "rect-large", name: "내 직사각" }];
     const { templates } = villageTemplateCatalog(project);
-    expect(templates.length).toBe(HOUSE_TEMPLATE_DEFS.length);
+    expect(templates.length).toBe(HOUSE_TEMPLATE_DEFS.length + villageFormTemplates().length);
     expect(templates.find((template) => template.id === "rect-large")?.name).toBe("내 직사각");
   });
 
@@ -78,7 +79,7 @@ describe("사용자 저작 마을 데이터 — 읽기", () => {
       { id: "bad-kit", name: "모르는 킷", w: 6, h: 6, kitId: "nope", wings: [{ x: 0, y: 0, w: 6, h: 6 }] },
     ];
     const { templates, warnings } = villageTemplateCatalog(project);
-    expect(templates.length).toBe(HOUSE_TEMPLATE_DEFS.length);
+    expect(templates.length).toBe(HOUSE_TEMPLATE_DEFS.length + villageFormTemplates().length);
     expect(warnings).toHaveLength(3);
     expect(warnings.join(" ")).toContain("폭은 3~8칸");
     expect(warnings.join(" ")).toContain("바운딩 박스를 넘습니다");

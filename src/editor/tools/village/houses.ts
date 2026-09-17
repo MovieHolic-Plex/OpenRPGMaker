@@ -2,6 +2,7 @@
 // 집 배치·스탬프 — 후보 슬롯 생성, 키트 시공, 보호 마스크(footprint/스탠드오프), 문·용마루 복구.
 
 import { ALL_HOUSE_KIT_IDS, HOUSE_KITS as HOUSE_KIT_DEFS, stampFootprintHouseKit, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
+import { stampAuthoredHouseForm } from "@/editor/authoredHouseFormStamp";
 import { stampHouseDoorBackground } from "@/editor/houseInteriors";
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap } from "@/project/types";
@@ -121,7 +122,8 @@ export function clearHouseRidgeRowProps(map: GameMap, houses: readonly BuiltHous
       }
       // bright 키트 용마루 재스탬프 — 나무/소품이 지운 캡·용마루를 되살린다.
       // 2026-07-17 교정: 용마루(374)는 불투명 하위, 양끝 투명 캡만 상위.
-      if (kit.roof.kind === "bright") {
+      // 셀 레시피 집은 용마루가 레시피 안(bbox 첫 행)에 있으므로 bbox 위 행에 킷 용마루를 그리지 않는다.
+      if (kit.roof.kind === "bright" && !house.formId) {
         if (x === house.bbox.x || x === lastX) {
           if ((map.upperTiles[index] ?? TILE.EMPTY) === TILE.EMPTY) {
             map.upperTiles[index] = x === house.bbox.x ? kit.roof.upper.ridgeCapL : kit.roof.upper.ridgeCapR;
@@ -229,6 +231,9 @@ export function buildHouses(
       const forced = intent.houseKits[houses.length];
       const forcedTemplateId = intent.houseTemplates[houses.length];
       if (forced && candidate.template.kitId && candidate.template.kitId !== forced) continue;
+      // 셀 레시피는 재료가 셀에 박혀 있다 — 재료를 하나로 고정한 마을(테마 원형·설계서)에는 그 재료의 레시피만 섞는다.
+      const form = candidate.template.form;
+      if (form && !forced && !forcedTemplateId && intent.kitMix !== "mixed" && form.kitId !== intent.kitMix) continue;
       if (!forcedTemplateId && target >= 4 && houses.length === 0 && hasMultiStoryCandidate && (candidate.template.stories ?? 1) === 1) continue;
       if (!forcedTemplateId && usedTemplateIds.size < requiredTemplateKinds && usedTemplateIds.has(candidate.template.id)) continue;
       const unusedKits = HOUSE_KITS.filter((id) => !usedKitIds.has(id));
@@ -242,13 +247,15 @@ export function buildHouses(
       // housePlans[].templateId 가 있으면 그 템플릿만 허용(촌장 ㄱ자 등).
       if (forcedTemplateId && candidate.template.id !== forcedTemplateId) continue;
       const stories: 1 | 2 | 3 = candidate.template.stories === 3 ? 3 : candidate.template.stories === 2 ? 2 : 1;
-      const result = stampFootprintHouseKit(map, {
-        kitId,
-        stories,
-        ...(candidate.template.lowWall ? { lowWall: true } : {}),
-        wings: candidate.template.wingsAt(candidate.bbox.x, candidate.bbox.y),
-        windows,
-      });
+      const result = form
+        ? stampAuthoredHouseForm(map, form, { x: candidate.bbox.x, y: candidate.bbox.y })
+        : stampFootprintHouseKit(map, {
+          kitId,
+          stories,
+          ...(candidate.template.lowWall ? { lowWall: true } : {}),
+          wings: candidate.template.wingsAt(candidate.bbox.x, candidate.bbox.y),
+          windows,
+        });
       if (!result.ok || !result.doorAt) {
         warnings.push(`집 시공 실패(${candidate.template.name}): ${result.reason ?? "문 좌표 없음"}`);
         continue;
@@ -283,6 +290,7 @@ export function buildHouses(
         kitId,
         stories,
         templateId: candidate.template.id,
+        ...(form ? { formId: form.id } : {}),
         ...(intent.houseOwners[houseIndex] ? { ownerName: intent.houseOwners[houseIndex] } : {}),
         ...(intent.housePrograms[houseIndex] ? { program: intent.housePrograms[houseIndex] } : {}),
       });

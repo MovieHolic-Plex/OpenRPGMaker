@@ -1764,23 +1764,28 @@ function setVillageHarnessLayoutPlan(
           `multistory-target:${multiStoryTarget}`,
         ],
       },
-      ...houses.map((house) => ({
+      ...houses.map((house) => {
+        const form = house.formId ? intent.templateCatalog.find((template) => template.id === house.formId)?.form : undefined;
+        return {
         id: uniqueHouseRegionId(map, "village_house", reservedIds),
         role: "house",
-        label: house.objectExterior?.name ?? `${kitLabel[house.kitId]} ${house.stories > 1 ? `${house.stories}층 ` : ""}${house.templateId} 집`,
+        label: house.objectExterior?.name ?? form?.name ?? `${kitLabel[house.kitId]} ${house.stories > 1 ? `${house.stories}층 ` : ""}${house.templateId} 집`,
         ...house.bbox,
         kitId: house.objectExterior?.raster.kitId ?? house.kitId,
         shape: house.templateId,
         yardTheme: intent.yardStyle,
         tags: [...(house.objectExterior ? ["saved-object-exterior", ...(house.objectExterior.exteriorStories ? [`exterior-stories:${house.objectExterior.exteriorStories}`] : []), `object:${house.objectExterior.objectId}`, `object-revision:${house.objectExterior.revision}`] : [`${house.stories}f`]), `shape:${house.templateId}`, "authored-reference-grammar",
-          ...(intent.templateCatalog.find((template) => template.id === house.templateId)?.roofDeck ? ["roof-deck"] : [])],
+          ...(intent.templateCatalog.find((template) => template.id === house.templateId)?.roofDeck ? ["roof-deck"] : []),
+          // 셀 레시피 집 — 어느 참고 사례의 어느 집을 옮겼는지. 지역 탭 카드와 같은 id 다.
+          ...(form ? [`form:${form.id}`, ...(form.reference ? [`reference:${form.reference.id}`] : [])] : [])],
         doorAt: house.doorAt,
         front: house.front,
         ...(house.objectExterior ? { objectExterior: { objectId: house.objectExterior.objectId,
           revision: house.objectExterior.revision, doorApproaches: [...house.objectExterior.approaches],
           privateAccess: [...house.objectExterior.access] } } : {}),
         hasFence: fencesEnabled,
-      })),
+        };
+      }),
     ],
     // 출구는 paintPlazaAndAvenue 와 같은 (seed, layout, boulevard) 로 뽑아야 평가기 앵커와 실제 길이 일치한다.
     roadAnchors: villageExitAnchors(area, plaza, seed, intent.settlementLayout, boulevard).map((anchor) => ({

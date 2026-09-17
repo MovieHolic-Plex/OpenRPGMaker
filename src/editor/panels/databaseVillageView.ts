@@ -36,7 +36,7 @@ import {
   previewKitFor,
   villageArchetypeShotUrl,
   type HousePreviewSize,
-} from "@/editor/panels/villageHousePreview";
+ createScratchPreview, formPreviewMap } from "@/editor/panels/villageHousePreview";
 import { createMoodPreview, type MoodPreviewField } from "@/editor/panels/villageMoodPreview";
 import { visualSelect } from "@/editor/panels/villageVisualSelect";
 import { createGroundThemePreview } from "@/editor/panels/villageGroundPreview";
@@ -1556,7 +1556,13 @@ function presetTemplateWhitelist(
             input,
             // 그림은 덧붙임이다 — 칩셋이 없거나 스탬프가 거절되면 canvas 가 previewState=none
             // 으로 남을 뿐, 체크박스·이름은 그대로 동작한다.
-            createHousePreview({
+            // 셀 레시피(참고 사례 박공집)는 날개가 bbox 한 장이라 킷 스탬프로 그리면 사각형이 된다 — 레시피로 찍는다.
+            template.form ? createScratchPreview({
+              cacheKey: `form:${template.form.id}`,
+              label: `${template.name} 집 그림`,
+              testid: `db-village-preset-template-${template.id}-shot`,
+              build: () => formPreviewMap(template.form!, project),
+            }) : createHousePreview({
               id: template.id,
               name: template.name,
               w: template.w,
