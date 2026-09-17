@@ -31,18 +31,35 @@ import { paintMarketDeck } from "./plaza";
  * 동서 대로는 광장 남쪽(게이트 앞)을 전폭으로 관통, 남북 대로는 광장 동쪽에서 교차.
  * 대로 밴드는 집 배치 전에 예약되어(builder) 구멍 없는 곡선 대로가 보장된다.
  */
+export type BoulevardAxis = "both" | "ew" | "ns";
+
 export type Boulevard = {
   readonly ewRow: number;
   readonly nsCol: number;
   readonly width: number;
+  /** 어느 축을 실제로 깔지. 유기적 배치는 한 축만(십자 금지), street-grid 만 "both". */
+  readonly axis: BoulevardAxis;
 };
 
-export function villageBoulevard(area: Rect, plaza: Plaza): Boulevard | null {
+/**
+ * 대로 축 선택 (2026-09-17). 예전엔 대형 맵마다 두 축을 무조건 예약해 마을이 항상 십자로 읽혔다.
+ * 유기적 배치(plaza-ring/clusters)는 긴 변 방향 한 축만 깔고, 나머지 골격은 집에서 자란 길이 맡는다.
+ * 정방형에 가까우면(변 차이 < 12) 시드로 고른다. street-grid 는 계획 도시라 두 축 유지.
+ */
+export function villageBoulevardAxis(area: Rect, seed: number, layout?: string): BoulevardAxis {
+  if (layout === "street-grid") return "both";
+  if (area.w - area.h >= 12) return "ew";
+  if (area.h - area.w >= 12) return "ns";
+  return mulberry32((seed ^ 0x51ed270b) >>> 0)() < 0.5 ? "ew" : "ns";
+}
+
+export function villageBoulevard(area: Rect, plaza: Plaza, seed?: number, layout?: string): Boulevard | null {
   if (area.w < 72 || area.h < 72) return null;
   return {
     ewRow: plaza.rect.y + plaza.rect.h + 1,
     nsCol: plaza.rect.x + plaza.rect.w + 2,
     width: 3,
+    axis: seed === undefined ? "both" : villageBoulevardAxis(area, seed, layout),
   };
 }
 
@@ -102,20 +119,37 @@ export function villageBoulevardPath(area: Rect, plaza: Plaza, seed: number): {
   return boulevardPathAt(area, { ewRow: plaza.rect.y + plaza.rect.h + 1, nsCol: plaza.rect.x + plaza.rect.w + 2 }, seed);
 }
 
+/** 대로가 실제로 깔리는 축의 경로만. axis 가 "ew" 면 ns 는 빈 배열. */
+export function activeBoulevardPaths(area: Rect, boulevard: Boulevard, seed: number): {
+  readonly ew: readonly Point[];
+  readonly ns: readonly Point[];
+} {
+  const path = boulevardPathAt(area, boulevard, seed);
+  return {
+    ew: boulevard.axis === "ns" ? [] : path.ew,
+    ns: boulevard.axis === "ew" ? [] : path.ns,
+  };
+}
+
 /** 대로 밴드 전체 칸(폭 width, 전 구간). 집 예약·시공 양쪽이 같은 계산을 쓴다. seed가 있으면 곡선 경로 주변, 없으면 옛 직선. */
 export function boulevardCells(area: Rect, boulevard: Boulevard, seed?: number): Point[] {
   const half = Math.floor(boulevard.width / 2);
+  const axis = boulevard.axis ?? "both";
   if (seed === undefined) {
     const cells: Point[] = [];
-    for (let x = area.x; x < area.x + area.w; x += 1) {
-      for (let dy = -half; dy <= half; dy += 1) cells.push({ x, y: boulevard.ewRow + dy });
+    if (axis !== "ns") {
+      for (let x = area.x; x < area.x + area.w; x += 1) {
+        for (let dy = -half; dy <= half; dy += 1) cells.push({ x, y: boulevard.ewRow + dy });
+      }
     }
-    for (let y = area.y; y < area.y + area.h; y += 1) {
-      for (let dx = -half; dx <= half; dx += 1) cells.push({ x: boulevard.nsCol + dx, y });
+    if (axis !== "ew") {
+      for (let y = area.y; y < area.y + area.h; y += 1) {
+        for (let dx = -half; dx <= half; dx += 1) cells.push({ x: boulevard.nsCol + dx, y });
+      }
     }
     return cells;
   }
-  const path = boulevardPathAt(area, boulevard, seed);
+  const path = activeBoulevardPaths(area, boulevard, seed);
   const cells: Point[] = [];
   for (const cell of path.ew) {
     for (let dy = -half; dy <= half; dy += 1) cells.push({ x: cell.x, y: cell.y + dy });
@@ -199,7 +233,7 @@ export function paintVillageRoadsChecked(args: {
       paintRoadCellsAvoidingHouses(map, runIntent.pathStyle, boulevardBand, hardBlocked);
       assertSealed();
     }
-    paintPlazaAndAvenue(draft, map, plaza, area, runIntent, runSeed, warnings, throughBlocked, boulevard, seed);
+    paintPlazaAndAvenue(draft, map, plaza, area, runIntent, runSeed, warnings, throughBlocked, boulevard, seed, houses);
     assertSealed();
     connectHousesToRoads(draft, map, area, plaza, houses, runIntent, runSeed, warnings, hardBlocked);
     assertSealed();
@@ -297,6 +331,8 @@ export function paintPlazaAndAvenue(
   // 원본 시드에 묶어 둔다. layoutPlan.roadAnchors가 원본 시드로 기록되므로,
   // 재시도마다 앵커가 drift하면 exitRoads 게이트가 빈 칸을 읽고 오실패한다.
   topologySeed?: number,
+  // 집 먼저(2026-09-17) — 유기적 배치는 집 앞을 잇는 골격을 깐다. 비우면 광장 결절 골격만.
+  houses: readonly BuiltHouse[] = [],
 ): void {
   const pathStyle = intent.pathStyle;
   const width = intent.roadWidth;
@@ -320,12 +356,31 @@ export function paintPlazaAndAvenue(
   ];
   paintWideRoad(draft, map, pathStyle, loop, 1, Math.max(0.65, naturalness), seed + 7, warnings, houseBlocked);
 
-  // 대로 모드: 골격은 대로 2축이 담당하므로 가는 간선 4갈래는 깔지 않는다(스텁·평행 중복 원인).
-  if (boulevard) return;
+  const topology = topologySeed ?? seed;
+  if (intent.settlementLayout === "street-grid") {
+    // 격자 마을만 4변 간선(+ 대로 2축)을 유지한다 — 십자 위상이 의도인 유일한 배치.
+    // 대로 모드: 골격은 대로가 담당하므로 가는 간선 4갈래는 깔지 않는다(스텁·평행 중복 원인).
+    if (boulevard) return;
+    const routes = villageArteryRoutes(area, plaza, topology, naturalness, seed);
+    for (let route = 0; route < routes.length; route += 1) {
+      paintWideRoad(draft, map, pathStyle, routes[route]!, Math.max(1, width - 1), naturalness, seed + 20 + route * 11, warnings, houseBlocked);
+    }
+    return;
+  }
 
-  const routes = villageArteryRoutes(area, plaza, topologySeed ?? seed, naturalness, seed);
-  for (let route = 0; route < routes.length; route += 1) {
-    paintWideRoad(draft, map, pathStyle, routes[route]!, Math.max(1, width - 1), naturalness, seed + 20 + route * 11, warnings, houseBlocked);
+  // 유기적 배치(2026-09-17): 집 먼저, 길은 집 앞을 잇는 최소 신장 골격 + 시드로 고른 2~3변 출구.
+  // 예전엔 배치와 무관하게 광장→4변 간선을 먼저 깔아 어떤 시드든 십자로 읽혔다.
+  // 대로 축의 양 끝은 밴드가 이미 칠했으니, 여기선 대로가 아닌 변의 출구만 이어 준다.
+  const boulevardSides: readonly ExitSide[] = boulevard === null
+    ? []
+    : boulevard.axis === "ew" ? ["west", "east"] : boulevard.axis === "ns" ? ["north", "south"] : ["north", "south", "west", "east"];
+  const exits = villageExitAnchors(area, plaza, topology, intent.settlementLayout, boulevard)
+    .filter((anchor) => !boulevardSides.includes(anchor.side));
+  const network = villageStreetNetwork(area, plaza, houses, exits, topology, seed);
+  for (let i = 0; i < network.length; i += 1) {
+    const route = network[i]!;
+    const routeWidth = route.kind === "exit" ? Math.max(1, width - 1) : 1;
+    paintWideRoad(draft, map, pathStyle, route.points, routeWidth, naturalness, seed + 20 + i * 11, warnings, houseBlocked);
   }
 }
 
@@ -342,6 +397,251 @@ export function villageRoadAnchors(area: Rect, plaza: Plaza, seed: number): read
     { x: area.x, y: clamp(plaza.centerRow + spread(spreadY), area.y + 1, area.y + area.h - 2) },
     { x: area.x + area.w - 1, y: clamp(plaza.centerRow + spread(spreadY), area.y + 1, area.y + area.h - 2) },
   ];
+}
+
+export type ExitSide = "north" | "south" | "west" | "east";
+export type ExitAnchor = Point & { readonly side: ExitSide };
+const EXIT_SIDES: readonly ExitSide[] = ["north", "south", "west", "east"];
+
+/**
+ * 출구 앵커(2026-09-17) — 예전엔 4변 4앵커가 상수였다. 그래서 어떤 시드든 마을은 사방으로
+ * 길이 뻗는 십자 위상이 됐다. 유기적 배치(plaza-ring/clusters)는 시드로 2~3변만 고르고,
+ * street-grid 만 4변을 유지한다. 대로가 있으면 대로 축의 양 끝단이 출구다(+40%로 한 변 추가).
+ * 토폴로지 시드에 묶여 재시도(runSeed)에도 흔들리지 않는다 — layoutPlan.roadAnchors 와 일치해야 한다.
+ */
+export function villageExitAnchors(
+  area: Rect,
+  plaza: Plaza,
+  seed: number,
+  layout?: string,
+  boulevard: Boulevard | null = null,
+): readonly ExitAnchor[] {
+  const four = villageRoadAnchors(area, plaza, seed);
+  const bySide = (side: ExitSide): ExitAnchor => ({ ...four[EXIT_SIDES.indexOf(side)]!, side });
+  if (layout === "street-grid") return EXIT_SIDES.map(bySide);
+  const rng = mulberry32((seed ^ 0x3c6ef372) >>> 0);
+  if (boulevard !== null && boulevard.axis !== "both") {
+    const paths = activeBoulevardPaths(area, boulevard, seed);
+    const anchors: ExitAnchor[] = [];
+    if (paths.ew.length > 0) {
+      anchors.push({ ...paths.ew[0]!, side: "west" }, { ...paths.ew[paths.ew.length - 1]!, side: "east" });
+    }
+    if (paths.ns.length > 0) {
+      anchors.push({ ...paths.ns[0]!, side: "north" }, { ...paths.ns[paths.ns.length - 1]!, side: "south" });
+    }
+    if (rng() < 0.4) {
+      const rest = EXIT_SIDES.filter((side) => !anchors.some((anchor) => anchor.side === side));
+      const pick = rest[Math.floor(rng() * rest.length)];
+      if (pick !== undefined) anchors.push(bySide(pick));
+    }
+    return anchors;
+  }
+  if (boulevard !== null) return EXIT_SIDES.map(bySide);
+  const order = [...EXIT_SIDES];
+  for (let i = order.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(rng() * (i + 1));
+    [order[i], order[j]] = [order[j]!, order[i]!];
+  }
+  const count = rng() < 0.5 ? 2 : 3;
+  return order.slice(0, count)
+    .sort((a, b) => EXIT_SIDES.indexOf(a) - EXIT_SIDES.indexOf(b))
+    .map(bySide);
+}
+
+type StreetNode = { readonly at: Point; readonly bbox: Rect; readonly plaza: boolean };
+export type StreetRoute = { readonly kind: "street" | "exit"; readonly points: readonly Point[] };
+
+function dedupePoints(points: readonly Point[]): Point[] {
+  const out: Point[] = [];
+  for (const p of points) {
+    const prev = out[out.length - 1];
+    if (prev !== undefined && prev.x === p.x && prev.y === p.y) continue;
+    out.push({ x: p.x, y: p.y });
+  }
+  return out;
+}
+
+/** 광장 rect 변 위에서 `from` 에 가장 가까운 접점 — 광장은 문이 없으니 오는 방향의 변에 붙인다. */
+function plazaJoinPoint(rect: Rect, from: Point): Point {
+  const cx = clamp(from.x, rect.x, rect.x + rect.w - 1);
+  const cy = clamp(from.y, rect.y, rect.y + rect.h - 1);
+  if (from.y < rect.y) return { x: cx, y: rect.y };
+  if (from.y >= rect.y + rect.h) return { x: cx, y: rect.y + rect.h - 1 };
+  if (from.x < rect.x) return { x: rect.x, y: cy };
+  return { x: rect.x + rect.w - 1, y: cy };
+}
+
+/** 축 평행 구간 [a,b] 가 rect 안쪽 칸을 하나라도 지나는가. */
+function segmentHitsRect(a: Point, b: Point, box: Rect): boolean {
+  const x0 = Math.min(a.x, b.x);
+  const x1 = Math.max(a.x, b.x);
+  const y0 = Math.min(a.y, b.y);
+  const y1 = Math.max(a.y, b.y);
+  return x1 >= box.x && x0 <= box.x + box.w - 1 && y1 >= box.y && y0 <= box.y + box.h - 1;
+}
+
+function routeClear(points: readonly Point[], obstacles: readonly Rect[]): boolean {
+  for (let i = 0; i + 1 < points.length; i += 1) {
+    for (const box of obstacles) if (segmentHitsRect(points[i]!, points[i + 1]!, box)) return false;
+  }
+  return true;
+}
+
+/**
+ * 후보 열을 골라 경로를 만든다. 가운데 1/3 구간을 선호하고(양 끝에 붙으면 벽 밀착 골목처럼 보임),
+ * 구간 안에 깨끗한 열이 없으면 바깥으로 한 칸씩 넓혀 찾는다. 끝내 없으면 첫 후보로 그냥 간다 —
+ * 칠하는 단계의 집 마스크가 마지막 방어선이다.
+ */
+function pickClearRoute(
+  lo: number,
+  hi: number,
+  area: Rect,
+  rng: () => number,
+  obstacles: readonly Rect[],
+  build: (column: number) => Point[],
+): Point[] {
+  const minX = area.x + 1;
+  const maxX = area.x + area.w - 2;
+  const clear: number[] = [];
+  for (let x = Math.max(minX, lo); x <= Math.min(maxX, hi); x += 1) if (routeClear(build(x), obstacles)) clear.push(x);
+  if (clear.length > 0) {
+    const inner = clear.filter((x) => x >= lo + (hi - lo) * 0.3 && x <= lo + (hi - lo) * 0.7);
+    const pool = inner.length > 0 ? inner : clear;
+    return build(pool[Math.floor(rng() * pool.length)]!);
+  }
+  for (let d = 1; lo - d >= minX || hi + d <= maxX; d += 1) {
+    for (const x of [hi + d, lo - d]) {
+      if (x < minX || x > maxX) continue;
+      if (routeClear(build(x), obstacles)) return build(x);
+    }
+  }
+  return build(clamp(Math.round((lo + hi) / 2), minX, maxX));
+}
+
+/**
+ * 두 집 앞을 잇는 꺾인 골목 — 가로(a 앞 행) → 세로(빈 열) → 가로(b 앞 행).
+ * 세 구간 모두를 마을의 모든 집 몸통과 대조해 고른다(2026-09-17): 예전엔 세로 열만 두 footprint 를
+ * 피했고, a 앞 행의 가로 구간이 b 몸통(또는 제3의 집)을 관통했다. 대각 직선은 절대 만들지 않는다 —
+ * 회피 로직이 구멍을 내고 단일 성분 보수가 벽 밀착 골목으로 메우던 원인.
+ */
+function alleyRoute(a: StreetNode, b: StreetNode, area: Rect, rng: () => number, obstacles: readonly Rect[]): Point[] {
+  if (b.plaza) {
+    // 광장으로: 앞 행에서 빈 열로 꺾고, 접점 행까지 내려간 뒤 광장 변으로 — 열→접점 대각선 금지.
+    const probe = plazaJoinPoint(b.bbox, a.at);
+    const lo = Math.min(a.at.x, probe.x);
+    const hi = Math.max(a.at.x, probe.x);
+    return pickClearRoute(lo, hi, area, rng, obstacles, (column) => {
+      const join = plazaJoinPoint(b.bbox, { x: column, y: a.at.y });
+      return dedupePoints([a.at, { x: column, y: a.at.y }, { x: column, y: join.y }, join]);
+    });
+  }
+  const lo = Math.min(a.at.x, b.at.x);
+  const hi = Math.max(a.at.x, b.at.x);
+  return pickClearRoute(lo, hi, area, rng, obstacles, (column) =>
+    dedupePoints([a.at, { x: column, y: a.at.y }, { x: column, y: b.at.y }, b.at]));
+}
+
+/** 변 앵커 → 가장 가까운 결절. 북/남은 3~6칸 들어온 뒤 골목 규칙으로 꺾고, 동/서는 진입 행에서 바로 꺾는다. */
+function exitRoute(anchor: ExitAnchor, target: StreetNode, area: Rect, rng: () => number, obstacles: readonly Rect[]): Point[] {
+  const stepIn = 3 + Math.floor(rng() * 4);
+  const entry: Point = anchor.side === "north"
+    ? { x: anchor.x, y: Math.min(anchor.y + stepIn, area.y + area.h - 2) }
+    : anchor.side === "south"
+      ? { x: anchor.x, y: Math.max(anchor.y - stepIn, area.y + 1) }
+      : anchor;
+  const virtual: StreetNode = { at: entry, bbox: { x: entry.x, y: entry.y, w: 1, h: 1 }, plaza: false };
+  const tail = alleyRoute(virtual, target, area, rng, obstacles);
+  return dedupePoints([anchor, ...tail]);
+}
+
+/**
+ * 집 먼저 골격(2026-09-17) — 결절 = 집 앞(front) + 광장. 맨해튼 거리 Prim 최소 신장 트리로
+ * 모든 집을 잇고, 잎 결절 일부는 근처 결절과 한 번 더 이어 고리를 만든다(막다른 골목 완화).
+ * 출구는 가장 가까운 결절에 붙는다. 시드(seed)는 위상, jitterSeed 는 꺾는 열·고리 선택에만 쓴다 —
+ * 재시도마다 위상이 바뀌면 layoutPlan.roadAnchors 와 어긋난다.
+ */
+export function villageStreetNetwork(
+  area: Rect,
+  plaza: Plaza,
+  houses: readonly BuiltHouse[],
+  exits: readonly ExitAnchor[],
+  seed: number,
+  jitterSeed: number = seed,
+): readonly StreetRoute[] {
+  const rng = mulberry32((jitterSeed ^ 0x2545f491) >>> 0);
+  const topo = mulberry32((seed ^ 0x6a09e667) >>> 0);
+  const plazaNode: StreetNode = {
+    at: { x: plaza.centerX, y: plaza.rect.y + plaza.rect.h },
+    bbox: plaza.rect,
+    plaza: true,
+  };
+  const nodes: StreetNode[] = [plazaNode, ...houses.map((house) => ({ at: house.front, bbox: house.bbox, plaza: false }))];
+  const obstacles: readonly Rect[] = houses.map((house) => house.bbox);
+  const dist = (i: number, j: number): number => {
+    const a = nodes[i]!;
+    const b = nodes[j]!;
+    const pa = a.plaza ? plazaJoinPoint(a.bbox, b.at) : a.at;
+    const pb = b.plaza ? plazaJoinPoint(b.bbox, a.at) : b.at;
+    return Math.abs(pa.x - pb.x) + Math.abs(pa.y - pb.y);
+  };
+  const edges: [number, number][] = [];
+  const inTree = nodes.map((_, i) => i === 0);
+  for (let added = 1; added < nodes.length; added += 1) {
+    let best: [number, number] | null = null;
+    let bestDist = Number.POSITIVE_INFINITY;
+    for (let i = 0; i < nodes.length; i += 1) {
+      if (!inTree[i]) continue;
+      for (let j = 0; j < nodes.length; j += 1) {
+        if (inTree[j]) continue;
+        const d = dist(i, j);
+        if (d < bestDist) { bestDist = d; best = [i, j]; }
+      }
+    }
+    if (best === null) break;
+    inTree[best[1]] = true;
+    edges.push(best);
+  }
+  // 고리: 잎 결절(차수 1인 집)을 근처 비인접 결절과 잇는다. 최대 floor(집/4)개.
+  const degree = nodes.map(() => 0);
+  for (const [i, j] of edges) { degree[i]! += 1; degree[j]! += 1; }
+  const adjacent = (i: number, j: number): boolean => edges.some(([a, b]) => (a === i && b === j) || (a === j && b === i));
+  const leaves = nodes.map((_, i) => i).filter((i) => i > 0 && degree[i] === 1);
+  for (let i = leaves.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(topo() * (i + 1));
+    [leaves[i], leaves[j]] = [leaves[j]!, leaves[i]!];
+  }
+  let extra = 0;
+  const extraCap = Math.floor(houses.length / 4);
+  for (const leaf of leaves) {
+    if (extra >= extraCap) break;
+    let near = -1;
+    let nearDist = 14;
+    for (let j = 0; j < nodes.length; j += 1) {
+      if (j === leaf || adjacent(leaf, j)) continue;
+      const d = dist(leaf, j);
+      if (d <= nearDist) { nearDist = d; near = j; }
+    }
+    if (near < 0 || topo() >= 0.6) continue;
+    edges.push([leaf, near]);
+    extra += 1;
+  }
+  const routes: StreetRoute[] = edges.map(([i, j]) => {
+    // 광장은 항상 목적지 쪽(b)으로 두어 골목 규칙(집 앞 행에서 출발)이 성립하게 한다.
+    const [from, to] = nodes[i]!.plaza ? [nodes[j]!, nodes[i]!] : [nodes[i]!, nodes[j]!];
+    return { kind: "street", points: alleyRoute(from, to, area, rng, obstacles) };
+  });
+  for (const anchor of exits) {
+    let near = 0;
+    let nearDist = Number.POSITIVE_INFINITY;
+    for (let j = 0; j < nodes.length; j += 1) {
+      const node = nodes[j]!;
+      const p = node.plaza ? plazaJoinPoint(node.bbox, anchor) : node.at;
+      const d = Math.abs(p.x - anchor.x) + Math.abs(p.y - anchor.y);
+      if (d < nearDist) { nearDist = d; near = j; }
+    }
+    routes.push({ kind: "exit", points: exitRoute(anchor, nodes[near]!, area, rng, obstacles) });
+  }
+  return routes;
 }
 
 /**
@@ -894,6 +1194,14 @@ export function connectHousesToRoads(
     connectVillageAccessPoints(map, area, houses.map(house => house.front), intent.pathStyle, houseBlocked);
     return;
   }
+  // 유기적 배치(2026-09-17): 집 앞은 이미 골격 결절이다. 남은 문은 가장 가까운 길에 붙이고,
+  // 그래도 닿지 못한 문만 예전 광장 스퍼로 떨어진다. 예전엔 모든 문이 광장까지 스퍼를 끌어
+  // 광장이 결절점인 방사형(십자) 위상을 다시 만들었다.
+  let pending: readonly BuiltHouse[] = houses;
+  if (intent.settlementLayout !== "street-grid" && houses.length > 0) {
+    const unreachable = connectGatesToNearestRoad(map, area, houses.map(house => house.front), intent.pathStyle, houseBlocked);
+    pending = houses.filter(house => unreachable.some(gate => gate.x === house.front.x && gate.y === house.front.y));
+  }
   const pathStyle = intent.pathStyle;
   const leftEdge = plaza.rect.x;
   const rightEdge = plaza.rect.x + plaza.rect.w - 1;
@@ -901,8 +1209,8 @@ export function connectHousesToRoads(
   const plazaBottom = plaza.rect.y + plaza.rect.h - 1;
   const plazaLeft = plaza.rect.x;
   const plazaRight = plaza.rect.x + plaza.rect.w - 1;
-  for (let hi = 0; hi < houses.length; hi += 1) {
-    const house = houses[hi] as BuiltHouse;
+  for (let hi = 0; hi < pending.length; hi += 1) {
+    const house = pending[hi] as BuiltHouse;
     const points: Point[] = [house.front];
     const houseRight = house.bbox.x + house.bbox.w - 1;
     const houseLeft = house.bbox.x;
@@ -964,6 +1272,20 @@ export function connectHousesToRoads(
 /** Connect each saved house to the nearest connected street, instead of another long plaza spur. */
 export function connectVillageAccessPoints(map: GameMap, area: Rect, gates: readonly Point[], style: RoadStyle,
   blocked: ReadonlySet<string>): void {
+  const unreachable = connectGatesToNearestRoad(map, area, gates, style, blocked, true);
+  const first = unreachable[0];
+  if (first !== undefined) {
+    throw new ToolError(`건물 대문(${first.x},${first.y})을 길에 연결할 수 없습니다.`, { code: "village-object-road", mapId: map.id });
+  }
+}
+
+/**
+ * 문 → 가장 가까운 길 성분 BFS 연결. 닿지 못한 문을 돌려준다(던지지 않음) — paintOnce 재시도
+ * 루프는 예외를 잡지 않으므로, 유기적 배치의 보조 연결이 예외를 내면 시공 전체가 죽는다.
+ * `strict` 면 길 성분이 하나도 없을 때만 던진다(객체 외관 마을의 예전 계약 유지).
+ */
+export function connectGatesToNearestRoad(map: GameMap, area: Rect, gates: readonly Point[], style: RoadStyle,
+  blocked: ReadonlySet<string>, strict: boolean = false): Point[] {
   const inside = (p: Point): boolean => p.x >= area.x && p.y >= area.y && p.x < area.x + area.w && p.y < area.y + area.h;
   const neighbors = (p: Point): Point[] => [{ x: p.x, y: p.y + 1 }, { x: p.x - 1, y: p.y }, { x: p.x + 1, y: p.y }, { x: p.x, y: p.y - 1 }];
   const roadAt = environmentalRoadAt(map), seen = new Set<string>();
@@ -979,7 +1301,11 @@ export function connectVillageAccessPoints(map: GameMap, area: Rect, gates: read
     }
     if (cells.size > network.size) network = cells;
   }
-  if (network.size === 0) throw new ToolError("건물 대문을 연결할 공용 도로가 없습니다.", { code: "village-object-road", mapId: map.id });
+  if (network.size === 0) {
+    if (strict) throw new ToolError("건물 대문을 연결할 공용 도로가 없습니다.", { code: "village-object-road", mapId: map.id });
+    return [...gates];
+  }
+  const unreachable: Point[] = [];
   for (const gate of gates) {
     const gateKey = coordKey(gate.x, gate.y);
     if (network.has(gateKey)) continue;
@@ -997,10 +1323,11 @@ export function connectVillageAccessPoints(map: GameMap, area: Rect, gates: read
         previous.set(k, p); queue.push(next);
       }
     }
-    if (!end) throw new ToolError(`건물 대문(${gate.x},${gate.y})을 길에 연결할 수 없습니다.`, { code: "village-object-road", mapId: map.id });
+    if (!end) { unreachable.push(gate); continue; }
     const cells: Point[] = [];
     for (let p: Point | null = end; p; p = previous.get(coordKey(p.x, p.y)) ?? null) cells.push(p);
     paintRoadCellsAvoidingHouses(map, style, cells, blocked);
     for (const p of cells) network.add(coordKey(p.x, p.y));
   }
+  return unreachable;
 }
