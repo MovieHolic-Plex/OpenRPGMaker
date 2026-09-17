@@ -322,15 +322,6 @@
     }
 }
 
-/* map/resource-system.part-1.css:619-623 */
-@media (max-width: 520px) {
-  .oprn-toolbar-status {
-      max-width: 82px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-}
-
 /* map/resource-system.part-1.css:637-641 */
 .panel-section h3 {
   letter-spacing: 0;

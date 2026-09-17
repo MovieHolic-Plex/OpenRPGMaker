@@ -144,20 +144,6 @@
   width: 1px;
 }
 
-/* database/tabs-b-shell-layout.css:131-142 */
-.oprn-toolbar-status {
-  align-items: center;
-  background: var(--bg-surface);
-  border: 1px solid;
-  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
-  color: var(--text-primary);
-  display: inline-flex;
-  flex: 0 0 auto;
-  font: 600 11px/1 var(--font-ui);
-  padding: 0 6px;
-  white-space: nowrap;
-}
-
 /* database/tabs-b-shell-layout.css:148-151 */
 .editor-layout .left-panel,
 .editor-layout .right-panel {
