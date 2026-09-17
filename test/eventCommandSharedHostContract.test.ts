@@ -36,7 +36,8 @@ describe.each(["common", "troop"] as const)("%s command host", pickerContext => 
     document.body.append(host);
     renderDatabaseCommandListEditor(host, { commands, pickerContext, replaceCommands: next => { commands = next; replacements++; } });
     host.querySelector<HTMLElement>(".cmd-head")!.dispatchEvent(new KeyboardEvent("keydown", { key: "v", ctrlKey: true, bubbles: true }));
-    expect(commands).toEqual([...copied, { kind: "text", body: "existing" }]);
+    // 붙여넣기는 행 **바로 아래** — 「+ 명령」과 같은 자리 규칙(2026-09-18).
+    expect(commands).toEqual([{ kind: "text", body: "existing" }, ...copied]);
     expect(commands[0]).not.toBe(copied[0]);
     expect(replacements).toBe(1);
   });

@@ -10,6 +10,7 @@ import {
 } from "@/editor/eventPages";
 import { commandKindLabel } from "@/editor/panels/eventEditor/options";
 import { genId } from "@/util/id";
+import { eventDisplayName } from "@/project/eventDisplayName";
 import type {
   GameEvent,
   Command,
@@ -85,7 +86,7 @@ export function moveEvent(mapId: MapId, eventId: string, x: number, y: number): 
 export function updateEvent(
   mapId: MapId,
   eventId: string,
-  patch: Partial<Pick<GameEvent, "sprite" | "trigger" | "condition" | "schedule" | "characterId" | "giftPrefs" | "giftResponses" | "talkFriendship">>
+  patch: Partial<Pick<GameEvent, "name" | "sprite" | "trigger" | "condition" | "schedule" | "characterId" | "giftPrefs" | "giftResponses" | "talkFriendship">>
 ): void {
   const label = `이벤트 속성 변경: ${eventLogName(mapId, eventId)} — ${eventPatchCaption(patch)}`;
   store.update((p) => {
@@ -93,6 +94,13 @@ export function updateEvent(
     if (!m) return;
     const ev = m.events.find((e) => e.id === eventId);
     if (!ev) return;
+    if ("name" in patch) {
+      // 이벤트 이름은 페이지 이름과 별개의 필드다(eventDisplayName 참조). 빈 값은 필드를 지운다 —
+      // 그러면 표시 이름은 페이지에서 빌린 이름 → ID 순으로 내려간다.
+      const next = patch.name?.trim();
+      if (next) ev.name = next;
+      else delete ev.name;
+    }
     if ("sprite" in patch) ev.sprite = patch.sprite;
     if ("trigger" in patch && patch.trigger !== undefined) ev.trigger = patch.trigger;
     if ("condition" in patch) ev.condition = patch.condition;
@@ -259,19 +267,12 @@ function eventCommandChange(mapId: MapId, eventId: string, label: string): Proje
   return { scope: "map", mapId, eventId, label };
 }
 
-/**
- * 라벨에 박을 이벤트 이름. 규칙은 `eventMarkerUx.eventDisplayName`(마지막 이름 있는
- * 페이지)과 같지만 그 모듈은 패널 계층을 끌고 와 순환이 되므로 여기서 다시 쓴다.
- */
+/** 라벨에 박을 이벤트 이름 — 화면과 같은 규칙(`@/project/eventDisplayName`). */
 function eventLogName(mapId: MapId, eventId: string): string {
   const event = store.getCurrent().maps[mapId]?.events.find((e) => e.id === eventId);
   if (!event) return eventId;
-  const pages = event.pages ?? [];
-  for (let index = pages.length - 1; index >= 0; index -= 1) {
-    const name = pages[index]?.name.trim();
-    if (name) return name;
-  }
-  return event.id;
+  // 되돌리기 라벨도 화면과 같은 이름을 써야 한다 — 규칙은 eventDisplayName 하나다.
+  return eventDisplayName(event);
 }
 
 /** 경로에 지금 있는 루트 커맨드의 종류 이름. read 모드라 없는 분기를 만들지 않는다. */
@@ -284,6 +285,7 @@ function rootCommandKindCaption(mapId: MapId, eventId: string, path: number[]): 
 
 /** patch 키 → 사람이 읽는 이름. 라벨이 영어 필드명으로 새는 걸 막는다. */
 const EVENT_FIELD_LABELS: Readonly<Record<string, string>> = {
+  name: "이벤트 이름",
   sprite: "그림",
   trigger: "실행 방법",
   condition: "출현 조건",

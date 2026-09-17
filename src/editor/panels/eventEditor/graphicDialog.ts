@@ -4,7 +4,7 @@ import { openEventSubdialog } from "./subdialog";
 
 export function openNpcGraphicDialog(mapId: MapId, eventId: string, page: EventPage): void {
   openEventSubdialog({
-    title: "Graphic",
+    title: "그래픽",
     testId: "event-graphic-dialog",
     width: "narrow",
     render: (body, close) => {

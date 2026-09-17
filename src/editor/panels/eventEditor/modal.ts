@@ -4,6 +4,9 @@ import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { requestEditorEventDeletion } from "@/editor/eventDeletion";
 import { eventDisplayName } from "@/editor/eventMarkerUx";
+import { eventNameFromPages } from "@/project/eventDisplayName";
+import { announceEventEditorClosed } from "@/editor/eventEditorLifecycleEvents";
+import { commitAfterPointerGesture } from "./commitAfterPointerGesture";
 import {
   beginExistingEventDraft,
   checkpointEventDraft,
@@ -11,13 +14,13 @@ import {
   discardEventDraft,
   saveEventDraft,
 } from "@/editor/eventDraftActions";
-import { updateEventPage } from "@/editor/eventPages";
+import { updateEvent } from "@/editor/eventActions";
 import { eventDraftDiffById, eventDraftHasUserChanges } from "@/project/eventDrafts";
 import { showConfirm, type ConfirmOptions } from "@/editor/ui/modal";
 import { validateEventDraft, type EventDraftValidation } from "@/editor/eventDraftValidator";
 import { openSelectedEventTestModal } from "@/editor/panels/testPlayModal";
 import { store, type AutoSaveState } from "@/project/store";
-import type { EventPage, MapId } from "@/project/types";
+import type { MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { renderEditorIcon } from "./editorIcons";
 import { renderEventIdReadout } from "./eventIdReadout";
@@ -220,6 +223,10 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     if (closed) return;
     backdrop.dispatchEvent(new CustomEvent(EVENT_EDITOR_CLOSE_EVENT, { detail: { saved: saved === true } }));
     backdrop.remove();
+    // 「보고 있던 페이지」는 편집기 안의 상태다. 남겨 두면 맵 마커·툴팁·인스펙터가 닫힌 뒤에도
+    // 그 페이지(예: 그래픽 없는 2페이지)를 따라간다 — 맵은 게임 시작 시 켜질 페이지를 그려야 한다.
+    if (editorState.get().selectedEventPageId !== null) editorState.set({ selectedEventPageId: null });
+    announceEventEditorClosed({ mapId: request.mapId, eventId: request.eventId, saved: saved === true });
   };
   const requestClose = (): void => {
     if (closed || closeGuardOpen || minimized || !isTopModal(backdrop)) return;
@@ -472,40 +479,36 @@ function renderModalHeader(
     : null;
   const mapName = map?.name?.trim() || "";
 
-  const pages = ev?.pages ?? [];
-  const selectedPageId = editorState.get().selectedEventPageId;
-  const activePage = pages.find((p) => p.id === selectedPageId) ?? pages[0];
-  // 이 상자는 **활성 페이지**의 이름을 고친다. `GameEvent` 에는 `name` 필드가 아예 없고
-  // (`src/project/types/events.ts`), 이벤트의 표시 이름은 `eventDisplayName()` 이 **마지막으로
-  // 이름이 붙은 페이지**에서 뽑는다. 그런데 이 상자는 「이벤트 이름」이라고 라벨링돼 있었다.
-  // 그래서 페이지 2 를 고르고 이름을 고친 사용자는 이벤트를 고쳤다고 믿지만 실제로는 페이지
-  // 하나만 바뀌었고, 맵 마커(=eventDisplayName)와 모달 제목이 서로 다른 이름을 보였다.
-  // 라벨을 페이지 범위로 되돌리고, 이벤트 이름이 어떻게 정해지는지는 title 로 말한다.
-  const pageName = activePage?.name?.trim() || (ev?.draft?.kind === "new" ? "새 이벤트 (저장 전)" : "이벤트");
-  const pageOrdinal = activePage ? pages.indexOf(activePage) + 1 : 0;
-  const nameFieldLabel = pageOrdinal > 0 ? `페이지 ${pageOrdinal} 이름` : "페이지 이름";
+  // 이 상자는 **이벤트 이름**(`GameEvent.name`)을 고친다. 페이지 이름은 탭(더블클릭·우클릭 → 이름
+  // 바꾸기)과 설정 패널의 「페이지 이름」에서 고친다.
+  //
+  // 왜(2026-09-17 적대적 리뷰 P0-1): 이 자리는 원래 활성 페이지 이름이었고 라벨만 「페이지 이름」으로
+  // 고쳐 둔 상태였다. 이벤트 이름은 「마지막으로 이름 붙은 페이지」에서 뽑았기 때문에 2페이지를
+  // 자동 이름 그대로 두고 저장하면 NPC 가 맵 툴팁·목록·인스펙터에서 전부 「페이지 2」로 불렸다.
+  // 편집기 어디에도 이벤트 이름을 짓는 자리가 없었다. 모델에는 `name` 이 이미 있었다(place_npc 가 씀).
+  const authoredName = ev?.name?.trim() ?? "";
+  const borrowedName = ev ? eventNameFromPages(ev) : "";
   const eventIdentity = ev ? eventDisplayName(ev) : "";
 
   const nameInput = el("input", {
     class: "event-name",
-    value: pageName,
+    value: authoredName,
     attrs: {
       type: "text",
-      placeholder: "페이지 이름",
-      "aria-label": nameFieldLabel,
-      title: `${nameFieldLabel}입니다. 이벤트 이름은 마지막으로 이름 붙인 페이지를 따릅니다 — 지금은 "${eventIdentity}".`,
+      // 이름을 아직 짓지 않은 옛 저작물은 빌려 쓰는 페이지 이름을 placeholder 로 보인다 — 맵이 부르는 이름이
+      // 상자에 있어야 「이 상자가 그 이름을 정한다」가 읽힌다. 새 이벤트는 예시로 용도를 말한다.
+      placeholder: borrowedName || (ev?.draft?.kind === "new" ? "이벤트 이름 (예: 촌장 할아버지)" : "이벤트 이름"),
+      "aria-label": "이벤트 이름",
+      title: borrowedName && !authoredName
+        ? `이벤트 이름입니다. 아직 짓지 않아 페이지 이름 "${borrowedName}" 을 빌려 쓰고 있습니다.`
+        : "이벤트 이름입니다. 맵 툴팁·이벤트 목록·인스펙터가 이 이름으로 부릅니다.",
     },
-    dataset: { testid: "event-editor-name", pageId: activePage?.id ?? "" },
+    dataset: { testid: "event-editor-name" },
     on: {
-      // 활성 페이지를 **입력 시점에** 다시 읽는다.
-      //
-      // 실측 2026-08-30: 헤더는 모달을 열 때 한 번만 렌더되고 refresh 는 페이지 카운터만
-      // 갱신했다. 그래서 이 핸들러가 열 때 잡힌 `activePage`(=1페이지)를 계속 붙들고 있었고,
-      // 2페이지를 고른 뒤 이름을 고치면 **1페이지 이름이 바뀌었다**. 상자에 뜨는 값도
-      // 1페이지 이름에 묶여 있었다 (`페이지 2/4` 인데 상자는 `페이지 1`).
       change: () => {
-        const target = activeEventPageOf(mapId, eventId);
-        if (target) updateEventPage(mapId, eventId, target.id, { name: nameInput.value });
+        // 다른 곳을 누르며 blur 된 change 면 그 클릭이 끝난 뒤 커밋한다(commitAfterPointerGesture 주석).
+        const next = nameInput.value;
+        commitAfterPointerGesture(() => updateEvent(mapId, eventId, { name: next }));
       },
     },
   });
@@ -528,13 +531,14 @@ function renderModalHeader(
           // 그건 ID 가 아니라 **맵 events 배열의 순번**(findIndex+1)이었다 — 앞 이벤트를 지우면
           // 번호가 밀린다. 4자리 제로패딩이 "안정적인 식별자"라고 약속하고 지키지 않았다.
           //
-          // 이름 상자는 활성 페이지 이름이라, 이벤트 이름이 그와 다를 때만(=페이지 2 를 보는
-          // 중일 때) 이벤트 쪽 이름을 덧붙인다. 같을 땐 같은 문자열을 두 번 보여주지 않는다.
-          ...(eventIdentity && eventIdentity !== pageName
+          // 이름을 아직 짓지 않은 이벤트는 페이지 이름을 빌려 표시된다 — 그 사실을 상자 옆에서
+          // 말한다(`name` 필드가 없던 시절의 저작물). 지은 이름이 있으면 상자 값이 곧 표시 이름이라
+          // 같은 문자열을 두 번 보여주지 않는다.
+          ...(!authoredName && borrowedName
             ? [
                 el("span", {
                   class: "event-editor-identity",
-                  text: `이벤트: ${eventIdentity}`,
+                  text: `표시 이름: ${eventIdentity} (페이지 이름에서)`,
                   dataset: { testid: "event-editor-identity" },
                 }),
                 el("span", { class: "dot-sep" }),
@@ -780,35 +784,23 @@ function remotePersistenceLabel(autoSave: AutoSaveState): { readonly text: strin
   }
 }
 
-function activeEventPageOf(mapId: MapId, eventId: string): EventPage | undefined {
-  const pages = store.getCurrent().maps[mapId]?.events.find((entry) => entry.id === eventId)?.pages ?? [];
-  const selectedPageId = editorState.get().selectedEventPageId;
-  return pages.find((page) => page.id === selectedPageId) ?? pages[0];
-}
-
 function refreshHeaderPageSegments(header: HTMLElement, request: OpenEventEditorRequest): void {
   const map = store.getCurrent().maps[request.mapId];
   const ev = map?.events.find((entry) => entry.id === request.eventId);
-  const pages = ev?.pages ?? [];
-  const selectedPageId = editorState.get().selectedEventPageId;
-  const activePage = pages.find((page) => page.id === selectedPageId) ?? pages[0];
-  // 「페이지 N/M」 카운터는 바로 아래 탭 줄과 같은 정보라 없앴다(2026-09-03). 페이지 순번은
-  // 이름 상자의 aria-label 이 말한다.
-  if (!activePage) return;
+  // 「페이지 N/M」 카운터는 바로 아래 탭 줄과 같은 정보라 없앴다(2026-09-03).
+  if (!ev) return;
   const nameInput = header.querySelector<HTMLInputElement>('[data-testid="event-editor-name"]');
   if (!nameInput) return;
-  // 같은 페이지를 보고 있으면 사용자가 타이핑 중인 값을 뺏지 않는다. 페이지가 바뀌었으면 상자에
-  // 남은 글자는 **다른 페이지의 이름**이므로 포커스가 있더라도 덮어쓴다 — 모달이 열릴 때
-  // focus trap 이 이 상자를 먼저 잡으므로 "포커스 있으면 건드리지 않기"만으로는 상자가 열 때의
-  // 페이지 이름에 그대로 묶여 있었다.
-  if (nameInput.dataset.pageId !== activePage.id) {
-    nameInput.value = activePage.name;
-    nameInput.dataset.pageId = activePage.id;
+  // 이 상자는 이벤트 이름이다. 페이지를 바꿔도 값이 달라질 이유가 없고, 사용자가 타이핑 중인
+  // 값을 store 갱신이 뺏으면 안 된다 — 포커스가 없을 때만 모델을 따라간다(place_npc 등 외부 변경).
+  const authored = ev.name?.trim() ?? "";
+  if (document.activeElement !== nameInput && nameInput.value !== authored) nameInput.value = authored;
+  const identity = header.querySelector<HTMLElement>('[data-testid="event-editor-identity"]');
+  if (identity) {
+    const borrowed = eventNameFromPages(ev);
+    identity.hidden = Boolean(authored) || !borrowed;
+    if (!identity.hidden) identity.textContent = `표시 이름: ${eventDisplayName(ev)} (페이지 이름에서)`;
   }
-  // 페이지가 여러 장이면 이 상자는 "이벤트"가 아니라 그 페이지의 이름이다 — 이름을 정직하게 붙인다.
-  const label = pages.length > 1 ? `페이지 이름 (${pages.indexOf(activePage) + 1}/${pages.length})` : "이벤트 이름";
-  nameInput.setAttribute("aria-label", label);
-  nameInput.title = pages.length > 1 ? "지금 고른 페이지의 이름이에요. 페이지마다 따로 지을 수 있어요." : "이벤트 이름";
 }
 
 function refreshModalHeaderSaveState(header: HTMLElement, footer: HTMLElement): void {

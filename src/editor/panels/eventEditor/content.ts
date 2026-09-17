@@ -60,6 +60,8 @@ import {
 } from "./commandInspector";
 import { createCommandToolbarHistory, type CommandToolbarHistory } from "./commandToolbarHistory";
 import { openEventCommandPicker } from "./commandPicker";
+import { defaultInsertionPath, describeInsertionPath } from "./commandInspector";
+import { scrollIntoNearestScroller } from "./scrollIntoNearestScroller";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
 import {
   appendEventRailGroup,
@@ -268,7 +270,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       onOpenEditor: openStoryboardEditor,
       onMove: (path, direction) => actions.moveCommand(path, direction),
       onDelete: (path) => actions.deleteCommand(path),
-      onAddNext: () => openCommandPickerForActions(actions),
+      onAddNext: () => openCommandPickerForActions(actions, undefined, activePage.commands),
       onAddToBranch: (containerPath) => openCommandPickerForActions(actions, containerPath),
       // 빈 이벤트 CTA: 말하기 / 장소 옮기기 / 상점 열기는 피커를 거치지 않고 바로 편집면으로.
       onQuickStart: (kind) => {
@@ -479,7 +481,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       const target = row?.querySelector<HTMLElement>(".cmd-head");
       if (!target) return false;
       target.focus({ preventScroll: true });
-      target.scrollIntoView?.({ block: "center", inline: "nearest" });
+      scrollIntoNearestScroller(target, "center");
       return true;
     },
   };
@@ -769,7 +771,8 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
     attrs: { "aria-label": "이 페이지가 하는 일 도구" },
     children: [
       toolbarButton("plus", "명령", "event-command-toolbar-add", () => {
-        openCommandPickerForActions(actions);
+        // 선택한 행 바로 아래에 — 자리 규칙은 openCommandPickerForActions 주석.
+        openCommandPickerForActions(actions, undefined, page.commands);
       }, false, true),
       el("div", {
         class: "event-editor-command-search-field",
@@ -947,7 +950,7 @@ function renderEmptyCommandLine(
   eventId: string,
   pageId: string,
 ): HTMLElement {
-  const openPicker = () => openCommandPickerForActions(actions);
+  const openPicker = () => openCommandPickerForActions(actions, []);
   const line = el("button", {
     class: "cmd-empty-line",
     text: "+ 여기에 명령 추가",
@@ -1026,18 +1029,31 @@ function renderEmptyCommandLine(
   });
 }
 
+/**
+ * 명령 피커를 연다. 자리 규칙은 하나다(commandInspector.defaultInsertionPath):
+ *  - `containerPath` 를 준 호출(빈 분기 슬롯·분기 추가 줄·페이지 끝 줄)은 그 컨테이너 끝에,
+ *  - 아니면 **선택한 행 바로 아래 같은 깊이**, 선택이 없으면 루트 끝에.
+ * 피커 제목이 어디에 들어가는지 말한다 — 예전엔 표시가 없어 분기 안 행을 고르고 추가한 명령이
+ * 분기 밖으로 들어갔는지 알 수 없었다(2026-09-17 적대적 리뷰 P0-3).
+ */
 function openCommandPickerForActions(
   actions: CommandListActions,
-  containerPath: readonly number[] = [],
+  containerPath?: readonly number[],
+  rootCommands: readonly Command[] = [],
 ): void {
   if (document.querySelector('[data-testid="event-command-picker"]')) return;
+  const insertPath = containerPath ? undefined : defaultInsertionPath(rootCommands);
+  const where = containerPath
+    ? (containerPath.length === 0 ? "이 페이지의 마지막에" : "이 분기의 마지막에")
+    : describeInsertionPath(rootCommands, insertPath);
   openEventCommandPicker({
-    title: "명령 추가",
+    title: `명령 추가 — ${where}`,
     context: "map",
     // 명령을 고르면 피커를 먼저 닫는다. 편집 창이 피커 위에 쌓이면 확인이 뒤 창에 먹힌다.
     onSelect: (command) => {
       openNewEventCommandDialog(command, (editedCommand) => {
-        actions.addCommand(containerPath, editedCommand);
+        if (insertPath) actions.insertCommand(insertPath, editedCommand);
+        else actions.addCommand(containerPath ?? [], editedCommand);
       });
     },
   });
@@ -1046,12 +1062,15 @@ function openCommandPickerForActions(
 export function openActiveEventCommandPicker(mapId: MapId, eventId: string): boolean {
   const pageId = activePageIdOf(mapId, eventId);
   if (!pageId || document.querySelector('[data-testid="event-command-picker"]')) return false;
+  const commands = activePageCommands(mapId, eventId, pageId);
+  const insertPath = defaultInsertionPath(commands);
   openEventCommandPicker({
-    title: "명령 추가",
+    title: `명령 추가 — ${describeInsertionPath(commands, insertPath)}`,
     context: "map",
     onSelect: (command) => {
       openNewEventCommandDialog(command, (editedCommand) => {
-        addEventPageCommand(mapId, eventId, pageId, editedCommand);
+        if (insertPath) insertEventPageCommandAt(mapId, eventId, pageId, insertPath, editedCommand);
+        else addEventPageCommand(mapId, eventId, pageId, editedCommand);
       });
     },
   });
