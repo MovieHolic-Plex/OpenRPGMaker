@@ -22,7 +22,9 @@ import {
   stampFootprintHouseKit,
   type HouseKitId,
 } from "@/editor/houseKit";
+import { stampAuthoredHouseForm } from "@/editor/authoredHouseFormStamp";
 import { applyRoofDeck } from "@/editor/tools/village/houses";
+import type { AuthoredHouseFormDef } from "@/project/defaults/authoredHouseFormCatalog";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 import type { VillageHouseTemplateRecord } from "@/project/types/village";
@@ -120,6 +122,25 @@ export function housePreviewMap(
       stamped.doorAt,
     );
   }
+  return { map, tileset };
+}
+
+/**
+ * 저작 셀 레시피(정주지·왕궁 도시 참고 형태) 한 채를 찍은 스크래치 맵. 날개 문법 미리보기와
+ * 같은 여백·같은 렌더러를 쓰되 스탬프만 레시피다 — 화이트리스트 카드가 사각형 킷 집을
+ * 레시피인 척 보여 주지 않게 한다. 문 두 칸은 실내 없는 시공과 같이 문 타일(116/146)로 칠한다.
+ */
+export function formPreviewMap(
+  form: AuthoredHouseFormDef,
+  project: Project,
+): { readonly map: GameMap; readonly tileset: TilesetDef } | undefined {
+  const tileset = houseKitTileset(project);
+  if (!tileset) return undefined;
+  const map = createBlankMap(form.name || form.id, form.w + MARGIN * 2, form.h + MARGIN * 2, tileset.id, tileset.tileSize);
+  const stamped = stampAuthoredHouseForm(map, form, { x: MARGIN, y: MARGIN });
+  if (!stamped.ok || !stamped.doorAt) return undefined;
+  map.lowerTiles[(stamped.doorAt.y - 1) * map.width + stamped.doorAt.x] = 116;
+  map.lowerTiles[stamped.doorAt.y * map.width + stamped.doorAt.x] = 146;
   return { map, tileset };
 }
 

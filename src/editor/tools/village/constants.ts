@@ -15,6 +15,7 @@ import { MIXABLE_HOUSE_KIT_IDS } from "@/editor/houseKit";
 import type { HouseInteriorProgram, InteriorBlueprintSource } from "@/editor/houseInteriors";
 import { DEFAULT_COBBLE_AUTOTILE_GROUP, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import { HOUSE_TEMPLATE_DEFS, houseTemplateWingsAt } from "@/project/defaults/houseTemplateCatalog";
+import type { AuthoredHouseFormDef } from "@/project/defaults/authoredHouseFormCatalog";
 import type { GameMap, MapId, Project } from "@/project/types";
 import type { Rng } from "@/util/rng";
 import type { YardDecorKind } from "../houseLotDecor";
@@ -219,6 +220,11 @@ export interface HouseTemplate {
   readonly wings: readonly FootprintWing[];
   /** wings를 시공 좌표로 평행이동한 것. houseTemplateWingsAt의 얇은 래퍼. */
   wingsAt(x: number, y: number): FootprintWing[];
+  /**
+   * 저작 셀 레시피(정주지·왕궁 도시 참고 형태 등). 있으면 날개 문법 대신 셀 그대로 찍는다 —
+   * wings 는 bbox 한 장이고 kitId 는 레시피의 명목 재료다.
+   */
+  readonly form?: AuthoredHouseFormDef;
 }
 
 export interface HouseCandidate {
@@ -242,6 +248,8 @@ export interface BuiltHouse {
   readonly kitId: HouseKitId;
   readonly stories: 1 | 2 | 3;
   readonly templateId: string;
+  /** 셀 레시피로 찍은 집 — 용마루 재스탬프 같은 킷 문법 후처리를 건너뛴다. */
+  readonly formId?: string;
   /** Explicit owner for interiors (preferred over NPC-index heuristic). */
   readonly ownerName?: string;
   /** Explicit interior program (preferred over ownerName regex). */

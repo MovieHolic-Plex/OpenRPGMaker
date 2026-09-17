@@ -3,6 +3,7 @@ import emeraldSnapshot from "./regionReferences/emerald-basin.json";
 import snapshot from "./regionReferences/walled-settlement.json";
 import lakeSnapshot from "./regionReferences/lake-village.json";
 import castleSnapshot from "./regionReferences/castle-town.json";
+import { REFERENCE_HOUSE_FORM_DEFS } from "./defaults/referenceHouseFormCatalog";
 
 /** Fixed authored examples, independent of procedural RegionDesign and the active project. */
 export const REGION_REFERENCES = [{
@@ -109,8 +110,19 @@ export function readRegionReference(id: string, row = 0, rows = 8) {
   } });
 }
 
+/**
+ * 참고 사례에서 저작 카탈로그로 옮겨진 집 형태 안내 — 그림만 보고 끝나지 않게, 모델이 바로 지목할
+ * templateId 를 준다(2026-09-17: 정주지 4종·왕궁 도시 23종).
+ */
+function referenceHouseFormNote(referenceId: string): string {
+  const forms = REFERENCE_HOUSE_FORM_DEFS.filter(form => form.reference?.id === referenceId);
+  if (forms.length === 0) return "";
+  const first = forms[0]!.id, last = forms[forms.length - 1]!.id;
+  return `\n집 형태 ${forms.length}종은 저작 카탈로그에 있다(templateId ${first}~${last}) — author_house templateId 와 author_village housePlans[].templateId 로 그대로 짓고, 마을 시공기 기본 후보에도 섞인다. 폭 9 이상(${forms.filter(form => form.w > 8).map(form => form.id).join(", ") || "없음"})은 author_house 전용.`;
+}
+
 export function regionReferenceContext(): string {
   return "## 지역 — 완성 맵 참고 사례\n" + [...REGION_REFERENCES, ...PLACE_REFERENCES].map(r =>
-    `- ${r.name} (${r.id}, ${r.width}×${r.height}): ${r.rules.join(" ")}\n실제 배치: read_region_reference({id:'${r.id}',row:0,rows:8}), nextRow로 이어 읽기. 읽기 전용 참고 자료이며 생성 계약이 아니다.`
+    `- ${r.name} (${r.id}, ${r.width}×${r.height}): ${r.rules.join(" ")}\n실제 배치: read_region_reference({id:'${r.id}',row:0,rows:8}), nextRow로 이어 읽기. 읽기 전용 참고 자료이며 생성 계약이 아니다.${referenceHouseFormNote(r.id)}`
   ).join("\n");
 }

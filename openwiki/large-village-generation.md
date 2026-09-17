@@ -48,6 +48,33 @@ AI 초안 간 꾸미기 이월과 완성 맵 직렬화를 검사한다. 관련 �
   기존 facade와 같은 85%/최소 4채 하한을 만족해야 한다. 용량 부족은 전체 초안 롤백이다.
 - `roads.ts`는 공용 대문에서 이미 연결된 길까지 장애물을 피하는 경로를 만든다.
   `market.ts`는 완결된 가판 조각과 상품을 놓고 중앙 통로·손님이 서는 칸을 비워 둔다.
+
+## 참고 사례 집 형태(정주지·왕궁 도시) — 2026-09-17
+
+`src/project/regionReferences.ts`의 「성벽으로 둘러싸인 정주지」「왕궁이 있는 이중 성벽 도시」는
+읽기 전용 참고 사례라 집 스타일이 시공에 닿지 않았다. 지금은 스냅샷에서 건물을 잘라 **저작 집 형태
+(셀 레시피)** 로 합친다.
+
+- `project/defaults/referenceHouseFormExtract.ts`: 지붕·벽·문 타일과 지붕 오버레이(캡·트림·창문)로
+  이어진 덩어리 하나가 집 하나. 문(116/146)은 벽 타일로 되돌리고 `doorAt`만 남긴다. 같은 래스터는
+  한 번만. 명목 킷은 지붕색+벽 재료(주황 지붕+회벽 = timber-hall 타일), 층수는 열마다 이어진
+  벽 칸 수(5→2층).
+- `project/defaults/referenceHouseFormCatalog.ts`: 정주지 4종(`ref-walled-01..04`), 왕궁 도시
+  23종(`ref-castle-01..23`). `authoredHouseFormCatalog.AUTHORED_HOUSE_FORM_DEFS`에 합쳐져
+  `author_house` templateId 열거에 바로 들어간다.
+- 마을 시공기: `village/authoringData.villageFormTemplates()`가 폭 8 이하 레시피를 34종 날개
+  형태와 같은 슬롯 후보 풀에 넣는다(`HouseTemplate.form`). `houses.ts`는 레시피면
+  `stampAuthoredHouseForm`으로 찍고 `BuiltHouse.formId`를 남기며, 용마루 재스탬프를 건너뛴다.
+  재료를 하나로 고정한 마을(테마 원형·설계서 kitMix)에는 그 재료의 레시피만 섞인다.
+  layoutPlan 집 영역에 `form:<id>`·`reference:<참고 id>` 태그가 남는다.
+- 설계서 화이트리스트(`templateIds`)와 `housePlans[].templateId`로 레시피를 고를 수 있다.
+  폭 9 이상(쌍박공 11칸, 저택 13칸)은 `author_house` 전용이다.
+- 스코프 검사 교정(같은 날): `authorVillageScope.ts`가 문 이벤트가 직접 가리키는 맵만 실내로 봐서,
+  레거시(spatialAuthoring 없음) 프로젝트의 2층 집 위층(`_f2`)은 언제나 "undeclared map"이었다.
+  이제 새로 생긴 맵 안에서 transfer 사슬(문→1층→계단→2층)을 따라간다. 2층 레시피가 자주 놓이면서 드러났다.
+- 검증: `test/referenceHouseForms.test.ts`(스냅샷 셀 일치·규약·전부 스탬프),
+  `test/villageReferenceForms.test.ts`(기본 시공에 레시피 집 등장·셀 보존·문 타일·강제·재료 고정).
+  원형 미리보기 PNG는 `scripts/bake-village-archetype-previews.mts`로 다시 굽는다.
   `lakeside.ts`는 길 단계에서 쉼터를 연결하고, 물을 칠한 뒤 접근을 막지 않는 벤치를 놓는다.
   오브젝트 경로에서 기존 대형 조경의 별도 호수·눈밭·지하 계단은 추가하지 않는다.
 - 최종 QA는 원본 외형 셀, 모든 현관의 사유 통로, 시작점부터 현관·가판·쉼터의 **착지 칸**까지

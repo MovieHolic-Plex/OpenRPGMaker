@@ -226,8 +226,10 @@ describe("author_village facade", () => {
     const project = createExistingProject(36);
     const before = serialize(project);
 
+    // bounds 를 못박아 맵 확장을 막는다 — 참고 사례 소형 박공집(4×6)이 후보에 들어온 뒤로는
+    // 맵을 키워 주면 32채가 실제로 들어가서 부족분 롤백을 시험할 수 없다.
     const result = runFacade(project, {
-      target: EXISTING_TARGET,
+      target: { ...EXISTING_TARGET, bounds: { x: 0, y: 0, w: 36, h: 36 } },
       houseCount: 32,
       countPolicy: "exact",
       seed: 7,
