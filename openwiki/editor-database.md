@@ -1856,3 +1856,18 @@ player preview. The editor probe accepts skin IDs as arguments and an optional
 - 상세 본문을 `face-detail` inline-size 컨테이너로 사용한다. 실제 상세 너비가 720px 이하이면 비교/후보를 세로 배치하므로 모달 크기 변경에도 대응한다.
 - 원본 대응 배지와 후보 선택 테두리를 강조하고 카드 제목/안내를 별도 줄로 배치한다. 매칭 데이터와 추천 기준은 변경하지 않는다.
 - 브라우저 확인: 1440×1000, 1024×900에서 캐릭터 선택·후보 선택·연결 적용·얼굴 탭 전환. 캡처는 로컬 `output/evidence/character-face-ui/`. 테스트/게이트는 세션 명시 요청이 없어 실행하지 않음.
+
+## 캐릭터·얼굴은 프로젝트 밖 공용 자료 (2026-09-18 저장 범위 수정)
+
+- `?blankProject=1`은 저장하지 않는 프로젝트다. 이전 화면이 `store.update`로 `resourceProfiles.characterSlots`에만 쓰던 구조에서는 임시 탭을 잃으면 연결도 사라지고 다른 프로젝트에서는 보이지 않았다. 추천 후보 필터와 별개의 저장 범위 결함이다.
+- `databaseCharacterGraphicsView.ts`는 이제 호스트 공용 카탈로그를 읽고 편집한다. `sharedCharacterGraphics.ts`의 투영은 기본 리소스만 포함하고 게임 문서·이벤트·액터·프로젝트 undo를 변경하지 않는다. 프로젝트 업로드 자산은 공용 자료로 올리지 않는다. 원본 대응표/추천을 확정된 수동 연결로 자동 승격하지 않는다.
+- `GET/POST /__oprn/shared-character-graphics`는 Vite dev/preview, Electron app 프로토콜, 프로젝트 HTTP 호스트에 연결된다. 같은 호스트 사용자에 속한 프로젝트들은 같은 자료를 읽는다. 서로 다른 호스트/OS 계정 사이의 클라우드 동기화는 아니다. 팀 호스트에서는 로그인 후 조회하며 공용 수정은 owner만 허용한다.
+- 저장 위치는 `OPRN_SHARED_CHARACTER_GRAPHICS_FILE`, 없으면 `${XDG_DATA_HOME:-~/.local/share}/oprn/character-graphics.json`. 프로젝트 폴더·워크트리·dist 밖에 있으며 이전 저장본은 `.previous`에 보존된다. 프로세스 간 배타 파일 잠금, 현재 문서 SHA 비교, 임시 파일 fsync+rename, 수락 파일 재읽기를 사용한다. 잠금 보유 프로세스가 비정상 종료한 경우 호스트를 모두 중지하고 `.lock`을 확인한 뒤 제거한다. JSON 파일과 `.previous`를 함께 백업한다.
+- 초기 읽기 실패는 빈 자료로 대체하지 않고 편집을 막는다. POST 수락 전에는 성공이라고 표시하지 않는다. 저장 중 편집 잠금, 충돌/오류 안내, 실패한 변경의 JSON 보관, 명시적 다시 불러오기를 제공한다. 이름·속성·메모는 입력 중 포커스를 유지하고 change(다른 칸으로 이동/Enter) 때 저장한다.
+- 기존 프로젝트의 선택적 메타데이터와 IO 계약은 계속 보존한다. 「이 프로젝트의 기존 매핑 가져오기」는 기본 자산의 명시적 슬롯/얼굴 속성을 JSON 초안에 옮긴다. 사용자가 확인하고 「JSON 적용」하면 공용 저장된다. 알 수 없는 ID와 프로젝트 업로드 얼굴은 공용 가져오기에서 제외된다. 기존 v1/v2 JSON 입력도 계속 지원한다.
+- 확인: 격리된 호스트 카탈로그를 사용한 Firefox 실측에서 임시 프로젝트 연결 → 다른 새 프로젝트 재조회(`mapped`), 게임 문서 불변, 저장 충돌 후 기존 연결 유지/JSON 보관을 확인했다. 1440×1000 / 1024×900 캡처와 `browser-proof.json`은 `output/evidence/shared-character-faces/`. 회귀 명세는 `databaseCharacterGraphics.test.ts`, `sharedCharacterGraphicsStore.test.ts`; 세션 규칙에 따라 vitest/게이트는 실행하지 않았다.
+- 복구 조사: Supabase 프로젝트 123개의 `current_json.resourceProfiles`에는 이 섹션의 `characterSlots` 저장본이 없었다. 이는 브라우저에만 남았던 편집이나 별도 JSON 백업의 부재까지 증명하지 않는다. 공용 저장 수정과 과거 수동 매핑 복구를 구별한다.
+
+### 공용 기본 매핑 재저작 (2026-09-18)
+
+사용자의 재매핑 지시로 `src/assets/sharedCharacterGraphics.json`을 원본 그림에서 새로 저작했다. 168칸 중 94칸 연결(정확 68·근사 26), 74칸 얼굴 없음, 원본 얼굴 메타데이터 80개다. 공용 저장 파일이 없는 호스트는 이 자료로 시작하며, 이미 저장된 호스트 파일은 우선하여 사용자 편집을 보존한다. 각 근사 대응의 차이는 `note`에 남긴다. `Actor3 #5`를 여성 얼굴에 순번으로 연결하지 않으며, 검은 고양이·Scarloxy 전용 그림·물건·빈 칸에 억지 얼굴을 주지 않는다. 시트·얼굴 대조 PNG, 호스트 저장 후 재읽기, Supabase 전용 행 `oprn-shared-character-graphics`의 저장(201) 후 재조회 근거는 `.omo/evidence/shared-character-faces/README.md`에 보존한다. Supabase는 재저작 자료의 원격 보관본이고 편집기의 공용 저장 정본은 호스트 파일이다.
