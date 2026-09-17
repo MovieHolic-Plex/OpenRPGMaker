@@ -12,11 +12,11 @@ describe("aiDeckRail — 데크 상태 레일", () => {
     restoreDom = null;
   });
 
-  it("이름은 「조수」 이고 헤더·얼굴 클래스는 되살리지 않는다", () => {
+  it("이름은 「AI」 이고 헤더·얼굴 클래스는 되살리지 않는다", () => {
     // Break: 레일이 .ai-chat-header / .ai-director-* 이름을 다시 쓰면 aiPanelChrome 계약과 충돌한다.
     const rail = createDeckRail();
     expect(rail.root.dataset.testid).toBe("ai-deck-rail");
-    expect(rail.root.querySelector(".ai-deck-rail-name")?.textContent).toBe("조수");
+    expect(rail.root.querySelector(".ai-deck-rail-name")?.textContent).toBe("AI");
     expect(rail.root.querySelector(".ai-chat-header")).toBeNull();
     expect(rail.root.querySelector(".ai-director-name")).toBeNull();
     expect(rail.root.querySelector(".ai-director-face")).toBeNull();

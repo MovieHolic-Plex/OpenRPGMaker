@@ -56,11 +56,28 @@ jobs:
         if: always()
         run: node scripts/ci-resource-report.mjs report "전체 게이트"
 
-      - name: vitest 리포트 업로드
+      # 리포트를 **박스 디스크에** 남긴다. actions/upload-artifact 를 쓰지 않는 이유:
+      # 계정의 아티팩트 저장소 쿼터가 이미 차 있다(2026-09-17 실측, 첫 ci-full 실행에서
+      # `Failed to CreateArtifact: Artifact storage quota has been hit`). 이 저장소가 쓰는
+      # 아티팩트는 0개·0.0MB 이므로 다른 저장소가 먹은 것이고, 여기서 고칠 수 없다.
+      # 어차피 러너가 우리 박스라 업로드는 왕복일 뿐이다 — 로컬에 두면 용량 제한도,
+      # 14일 만료도 없고 `jq` 로 바로 열어볼 수 있다.
+      - name: vitest 리포트 보관
         if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: gates-vitest-report
-          path: .omo/gates-vitest-report.json
-          if-no-files-found: warn
-          retention-days: 14
+        run: |
+          set -euo pipefail
+          dest="$HOME/ci/reports/$(date -u +%Y%m%d-%H%M%S)-run${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          mkdir -p "$dest"
+          for f in .omo/gates-vitest-report.json .omo/gates-baseline.json; do
+            [ -f "$f" ] && cp "$f" "$dest/" || echo "없음: $f"
+          done
+          git rev-parse HEAD > "$dest/commit.txt"
+          echo "보관 위치: $dest"
+          ls -la "$dest"
+          {
+            echo "### vitest 리포트"
+            echo ""
+            echo "러너 박스의 \`$dest\` 에 있다 (아티팩트 쿼터 소진으로 업로드 대신 로컬 보관)."
+          } >> "$GITHUB_STEP_SUMMARY"
+          # 30일 넘은 보관본은 지운다. 리포트 하나가 수 MB 라 방치하면 쌓인다.
+          find "$HOME/ci/reports" -maxdepth 1 -type d -mtime +30 -exec rm -rf {} + 2>/dev/null || true

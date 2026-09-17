@@ -423,7 +423,10 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     popover.style.maxWidth = `${Math.max(0, window.innerWidth - 16)}px`;
     popover.style.maxHeight = `${Math.min(420, window.innerHeight - 16)}px`;
     const rect = popover.getBoundingClientRect();
-    const position = anchoredPopupPosition(toggle.getBoundingClientRect(), rect, {
+    // Overflow controls become hidden when their destination popover opens.
+    const toggleRect = toggle.getBoundingClientRect();
+    const anchor = toggleRect.width || toggleRect.height ? toggle : menuToggle;
+    const position = anchoredPopupPosition(anchor.getBoundingClientRect(), rect, {
       width: window.innerWidth, height: window.innerHeight,
     }, 6);
     // The deck's glass establishes a containing block, so keep the popover absolute

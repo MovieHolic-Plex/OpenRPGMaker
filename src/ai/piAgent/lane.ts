@@ -26,6 +26,9 @@ export interface LaneSpec {
   readonly instruction: string;
   readonly maxTurns?: number;
   readonly thinkingLevel?: PiAgentThinkingLevel;
+  /** Preserve the selected team member's capabilities for a scoped follow-up. */
+  readonly readOnly?: boolean;
+  readonly toolDomains?: readonly string[];
 }
 
 export interface LaneStep {

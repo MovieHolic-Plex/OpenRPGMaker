@@ -51,7 +51,7 @@ function liveSummary(spec: PiTeamSpec, state: TeamBoardState | null): string {
   return parts.join(" · ") || state.phase;
 }
 
-export function createTeamPanel(initialEnabled = false): TeamPanelHandle {
+export function createTeamPanel(initialEnabled = false, options: { readonly alwaysVisible?: boolean } = {}): TeamPanelHandle {
   let enabled = initialEnabled;
   let spec = loadTeamSpec();
   let activity: TeamBoardState | null = null;
@@ -245,7 +245,7 @@ export function createTeamPanel(initialEnabled = false): TeamPanelHandle {
   };
 
   const render = (): void => {
-    const visible = enabled || activity?.mode === "team";
+    const visible = options.alwaysVisible === true || enabled || activity?.mode === "team";
     root.hidden = !visible;
     if (!visible && open) setOpen(false);
     const running = Boolean(activity && (activity.phase === "실행 중" || activity.phase === "적용 중" || activity.phase === "준비"));
