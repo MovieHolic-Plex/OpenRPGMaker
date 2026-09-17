@@ -614,6 +614,7 @@ Party record tabs use the final section of `studio-v2.css`: actors, classes, ski
 - Footer: `지금 저장` (`database-footer-apply`) is the filled primary; `닫기` (`database-footer-ok`) is ghost. Dirty 3-way Save/Discard/Keep is unchanged.
 - Keep G006 in-modal `switchDatabaseActiveTab`, gallery+list toggles, and every `db-field-*` / `db-record-row-*` / `db-record-card-*` / `db-system-nav-*` / `db-type-chart-*` testid.
 - **Modal geometry has exactly one owner (2026-08-27):** `.database-modal-backdrop .database-modal-window:has(.db-shared-workspace)` in `src/styles/database/sidebar.css` declares the studio frame's `width` / `height` / `max-*` / `min-*`. No tab-content selector (`:has(.oprn-record-*)`, `:has(.db-elements-classic)`, `:has(:is(...workspace...))`) may declare window geometry again — that pattern is what made the modal jump 1628 → 1584 → 1530 px between sidebar tabs (98px width, 49px horizontal shift, measured at 1920x1200). `test/e2e/database-modal-size-invariant.spec.ts` walks every `DATABASE_TAB_SPECS` entry at 1920x1200 / 1280x800 / 1024x768 and fails on **any** non-zero delta in the window's `width` / `height` / `left` / `top`. `.maximized`, `.floating`, `.is-docked`, `.village-info-window`, and `.ai-settings-window` are separate modes and keep their own geometry.
+- **Floating/maximized는 앵커 두 겹을 인라인으로 이긴다 (2026-09-18 실측):** `ai-bar.css`의 `.database-modal-backdrop .database-modal-window { position: relative }`(0,2,0, `tabs-a.part-1.css`보다 나중에 import)가 `.floating { position: fixed }`(0,2,0)와 동점이라 소스 순서로 이겼고, `.maximized`(0,2,0)는 `sidebar.css`의 지오메트리 단일 소유자(`:has(.db-shared-workspace)`, (0,3,0))에 졌다. 증상: 드래그 후 `position: relative`로 남아 커서를 못 따라오고(left/top만 20px 이동), 최대화는 left/top만 8px로 가고 크기 그대로(2000×1200 실측: 1628×900 유지). 선택자 특이성 경쟁은 CSS 게이트 R2에 새 지문을 남기므로(기존 `.floating`/`.maximized`도 기준선 실패), `startModalDrag`·`toggleMaximizedDatabaseModal`·`applyDockMode`에서 인라인 스타일(`position/left/top/width/height`, 최대화는 `max-*` 포함)로 이기고 해제 시 비운다. 또한 헤더 버튼 안 SVG 아이콘에서 시작한 mousedown이 드래그를 유발했으므로 `startModalDrag`는 `closest("button")`으로 거른다.
 - `.db-body.db-shared-workspace` is the invariant content boundary for every registered Database tab. The modal shell owns the viewport, `.db-tabs` owns the labeled rail, and tab-specific workbenches may scroll or reflow only inside that shared boundary; active-tab content must not resize the modal, sidebar, footer, or workspace frame.
 - The pinned Overview is a whole-game pulse, not a combat-stat dashboard. It surfaces world/maps, story/events, cast, game systems/data, readiness, and start-point summaries (`db-overview-game-pulse`, `-world`, `-story`, `-cast`, `-systems`, `-readiness`) from the current project and retains same-modal navigation.
 - **2026-08-26 navigation/overview correction (supersedes the stale W2/W5 bullets below):** the complete registered tab order uses one labeled 220px grouped rail, collapsing to 56px only below 800px. The Overview leads with project identity/readiness and whole-game summaries; its `AI 어시스턴트` action enters the editor-wide assistant with the current Database screen as context. Do not visually hide desktop labels or restore balance-only analytics as the Overview's primary information architecture.
@@ -640,9 +641,14 @@ Party record tabs use the final section of `studio-v2.css`: actors, classes, ski
 테스트: `projectWikiCodex.test.ts`, `projectWikiManualEdit.test.ts`.
 전체 AI 연결과 지속성은 [프로젝트 위키](project-wiki.md)를 따른다.
 
-## 세계관 그룹 — 세계 개요 · 설정집 (2026-09-06)
+## 세계관 그룹 — 세계 개요 · 설정집 (2026-09-18)
 
-- **문서 작업실 개편:** `worldCanon`의 표시 이름은 「세계 개요」이며 stable tab/field testid는 유지한다. 제목·전제·본문이 중앙 문서를 구성하고 톤·시대·기술 수준·금지 항목·법칙은 `src/editor/panels/worldDocumentProperties.ts`의 접을 수 있는 속성에 둔다. 두 탭 모두 `workspaceShell`의 단일 루트/모달 크기 계약을 유지한다.
+- **세계 개요 v2:** 본문이 AI 미터+hero stat+이름/전제+뼈대+법칙 2열+본문 순서다. 뼈대(톤·시대·기술 천장·없는 것)와 법칙은 속성 사이드바가 아니라 본문 카드에 둔다 — 272px 사이드바에선 법칙 2열이 1열 덫에 걸린다. 본문 타이핑은 미터·힌트·stat 값을 다시 렌더 없이 갱신한다. testid: `db-world-canon-ai-meter`, `db-world-canon-hero-stats`, `db-world-canon-hero-stat-body`(값 span), `db-world-canon-frame`, `db-world-canon-laws`. CSS: `world-canon-meter`, `world-canon-law-grid`(799px 이하 1열), 카드 헤드 래핑.
+- **이름 카드·미터:** 이름 카드는 `이름과 한 줄` 제목을 단다(카드 순서의 랜드마크). 미터 텍스트는 `role=status`, 막대는 `role=progressbar`(0/600/현재값, 타이핑마다 `aria-valuenow` 갱신).
+- **잘림 신호:** 본문이 600자를 넘으면 hero stat이 warn 톤으로 `뒤 N자 잘림`을 표시한다(값은 `600 / 600자` 고정). 증거 `verify-shots/world-lore-v2/trunc/`.
+- **폴리시 (2026-09-18):** Studio v2 문법 안에서만 — 새 토큰 없음. 미터 바 8px+accent-soft 표면, 법칙 카드 canvas 표면, 선택 카드 좌측 accent 레일, 위키 헤더 hairline+12px 리듬, 톤 칩 on 700. 카드 헤드 래핑은 같은 `database` 레이어라 파일 순서가 아니라 특이성으로 이긴다(풀 체인 0-5-0). 증거 `verify-shots/world-lore-v2/polish2/`(넘침 0, 에러는 자동저장 기준선 17과 동일).
+- **폴리시 2 (2026-09-18):** `database` 레이어라 `map(editor)` 레이어 동급 규칙을 특이성과 무관하게 이긴다. lint 경고·에러 블록 탈포화(루트 muted + Studio strong/danger), 칩·카드 호버 피드백, 포커스 링. 증거 `verify-shots/world-lore-v2/p2/`.
+- **구 레이아웃 기록 (2026-09-06):** `worldCanon`의 표시 이름은 「세계 개요」이며 stable tab/field testid는 유지한다.
 - 설정집 기본 목록은 256px 행 목록이다. 인물·장소·세력·사건·아이템·개념·제작 노트를 따로 탐색하고, 같은 항목/선택 경로로 갤러리 보기를 전환한다. 예전 `place-faction`/`item-concept` URL은 읽을 수 있지만 새 UI는 분리된 분류를 사용한다. 전체 프로젝트 검사는 목록 아래의 별도 disclosure에 두며 빈 문서 앞에 경고 개수를 쌓지 않는다.
 - 읽기 선택이 검색/분류 밖으로 나가면 상세를 비운다. 편집 중 초안은 보존하고 필터 밖이라는 표시를 제공한다. 관계 이동은 대상 종류로 분류를 전환하고 검색을 지운다. 새 항목·종류 변경을 확정하면 결과가 보이는 분류로 이동한다.
 - `world-panel.css`의 **unlayered 문서 스코프**가 공용 DB 스타일보다 문서 크기에서 우선한다. `.world-edit-body`/`.db-world-canon-body`는 최소 320px, 16px/1.65이며 `field-sizing: content`로 장문만큼 늘어난다. 문서 영역이 스크롤을 소유한다. 제목은 26px이고 일반 DB 입력의 13px 규칙에 눌리지 않는다.
@@ -1795,3 +1801,13 @@ TURN/BATTLE MENU` 칩. 전투 애니메이션 타이밍 표 헤더 `사운드...
 이미지는 `scripts/qa/render-ship-place-references.py`로 재생성한다.
 등록 누락 회귀는 `test/regionReferences.test.ts`가 기본 카드 7종·이미지 파일·
 타일 전체 재조립으로 검증한다. 서버 파일만 바꾸지 말고 이 등록과 자산을 함께 출하한다.
+
+## 캐릭터·얼굴 연결 검토 개선 (2026-09-18)
+
+- `characterGraphics.ts`는 저장된 속성이 없을 때 캐릭터 이름뿐 아니라 기존 semantic 태그·성별·나이를 읽는다. 사용자 라벨/태그와 명시적 빈 속성 객체는 기본값보다 우선한다. People1 얼굴의 기존 육안 판독 메타데이터를 재사용하며, 사용자 얼굴 이름·속성·메모는 보존한다. 조회는 프로젝트 데이터를 변경하지 않는다.
+- `characterFaceCandidates.ts`가 기본 대응표와 양쪽 속성·이름·메모로 후보를 정렬하고 일치 근거/속성 차이를 노출한다. `reviewedCharsetFace`는 `charsetFaceMap.ts`의 사람 시트 대응만 제공한다. 짝 없는 시트의 NPC 폴백과 몬스터 인덱스는 확정 근거가 아니다. People1 4·5는 차이 확인 문구를 붙인다. 추천은 저장된 연결 또는 동일 인물 판정이 아니다.
+- DB 화면은 걷는 모습/현재 얼굴/선택 후보, 대화창 예시, 후보 목록을 보여준다. 후보 클릭은 editor-only 초안이며 `db-cg-apply-face`로 확정할 때만 history + store.update를 남긴다. 현재 얼굴 재선택은 적용 불가, 캐릭터·프로젝트 전환은 후보를 초기화한다. 기존 이벤트는 변경하지 않는다.
+- 표정 세트는 기본적으로 인물별 후보 하나로 묶고, 모든 표정 토글 또는 검색으로 개별 표정을 찾는다. 후보는 처음 48개와 더 보기로 렌더하며 이름·메모·ID/속성 필터를 지원한다. 속성과 JSON 입력은 접을 수 있다. `no-face`/`pending` 변경 시 얼굴과 일치 품질을 함께 해제한다. 품질 입력은 연결된 얼굴이 있을 때만 활성화한다.
+- 회귀 명세: `characterFaceCandidates.test.ts`, `databaseCharacterGraphics.test.ts`. 세션 규칙에 따라 테스트/게이트는 실행하지 않았다. 실제 편집기 표면 캡처: `output/evidence/character-face/`.
+
+- 실제 편집기에서 후보 선택 → 명시적 적용(`mapped`, 지정 얼굴 ID) → undo(`null`)를 확인했다. 1440×1000 / 1024×768 캡처에서 가로 넘침은 없었다(1024: clientWidth/scrollWidth 768/768). 목록의 숨은 이미지 로드 프로브가 공용 썸네일 CSS에 의해 시트 전체로 노출되던 문제도 프로브를 DOM 밖에 두어 수정했다. 원격 연결 데이터 수정은 없으며 UI 관찰은 저장하지 않는 세션에서 수행했다.

@@ -477,10 +477,13 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
       // 드래그/최대화가 남긴 상태를 정리하고 우측 고정으로 전환한다.
       stopModalDrag();
       windowEl.classList.remove("maximized", "floating");
+      windowEl.style.position = "";
       windowEl.style.left = "";
       windowEl.style.top = "";
       windowEl.style.width = "";
       windowEl.style.height = "";
+      windowEl.style.maxWidth = "";
+      windowEl.style.maxHeight = "";
       maximizeButton.replaceChildren(windowIcon("maximize"));
       // 도크는 모달이 아니다 — 포커스를 가두지 않고 맵과 병행 조작하는 보조 패널.
       windowEl.setAttribute("role", "complementary");
@@ -604,10 +607,24 @@ function toggleMaximizedDatabaseModal(button: HTMLButtonElement): void {
   if (isMaximized) {
     stopModalDrag();
     windowEl.classList.remove("floating");
+    // `sidebar.css`의 지오메트리 단일 소유자(`:has(.db-shared-workspace)`, (0,3,0))가
+    // `.maximized` CSS(0,2,0)보다 이겨 left/top만 8px로 가고 크기는 그대로 둔다
+    // (2026-09-18 실측). CSS 특이성 경쟁 대신 인라인 스타일로 이긴다(R2 추가 없음).
+    windowEl.style.position = "fixed";
+    windowEl.style.left = "8px";
+    windowEl.style.top = "8px";
+    windowEl.style.width = "calc(100vw - 16px)";
+    windowEl.style.height = "calc(100vh - 16px)";
+    windowEl.style.maxWidth = "none";
+    windowEl.style.maxHeight = "none";
+  } else {
+    windowEl.style.position = "";
     windowEl.style.left = "";
     windowEl.style.top = "";
     windowEl.style.width = "";
     windowEl.style.height = "";
+    windowEl.style.maxWidth = "";
+    windowEl.style.maxHeight = "";
   }
   button.replaceChildren(windowIcon(isMaximized ? "restore" : "maximize"));
   button.title = isMaximized ? "창 크기로 복원" : "전체 화면";
