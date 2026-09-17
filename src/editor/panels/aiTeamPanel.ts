@@ -3,6 +3,7 @@
 // 상태는 teamActivity 버스(실행 중 보드 상태)와 teamSpecStore(명세)에서 온다. 이 파일은 그리기와 편집 폼만.
 
 import { deckIcon } from "./aiDeckIcons";
+import { createTeamBudget } from "./aiTeamBudget";
 import { el } from "@/util/dom";
 import { subscribeTeamActivity } from "@/ai/piAgent/teamActivity";
 import type { TeamBoardAgent, TeamBoardState } from "@/ai/piAgent/teamBoardState";
@@ -171,16 +172,17 @@ export function createTeamPanel(initialEnabled = false, options: { readonly alwa
       chip.append(box, el("span", { text: DOMAIN_LABEL[domain] ?? domain }));
       domains.append(chip);
     }
-    const turns = el("input", { class: "ai-team-input ai-team-input-narrow", attrs: { type: "number", min: "1", max: "120", value: String(current.maxTurns) }, dataset: { testid: "ai-team-form-turns" } });
-    turns.addEventListener("input", () => { draft = { ...(draft ?? current), maxTurns: Number(turns.value) || current.maxTurns }; });
+    const budget = createTeamBudget(maxTurns => { draft = { ...(draft ?? current), maxTurns }; });
+    budget.update(current.maxTurns);
     const back = el("button", { class: "ai-team-btn is-quiet", text: "← 팀원 목록", attrs: { type: "button" } });
     back.addEventListener("click", cancelEdit);
     const advanced = el("details", { class: "ai-team-settings-advanced", dataset: { testid: "ai-team-advanced" }, children: [
       el("summary", { text: "고급 설정" }),
-      field("세부 지시", prompt), field("사용할 기능 (비우면 모두)", domains), field("최대 작업 횟수", turns),
+      field("세부 지시", prompt), field("사용할 기능 (비우면 모두)", domains), el("div", { class: "ai-team-field", children: [el("span", { text: "작업 예산" }), budget.root] }),
     ] });
     form.append(back, el("h3", { class: "ai-team-settings-heading", text: "팀원 설정" }),
       field("이름", name), field("역할", kind), field("한 줄 소개", summaryInput), advanced);
+
     const actions = el("div", { class: "ai-team-form-actions" });
     const save = el("button", { class: "ai-team-btn is-primary", text: "저장", attrs: { type: "submit" }, dataset: { testid: "ai-team-form-save" } });
     const cancel = el("button", { class: "ai-team-btn", text: "취소", attrs: { type: "button" } });
@@ -215,7 +217,7 @@ export function createTeamPanel(initialEnabled = false, options: { readonly alwa
     const add = el("button", { class: "ai-team-btn", text: "팀원 추가", attrs: { type: "button" }, dataset: { testid: "ai-team-add" } });
     add.addEventListener("click", () => {
       const id = slugifyMemberId("member", new Set(spec.members.map((member) => member.id)));
-      const member: PiTeamMember = { id, label: "새 팀원", kind: "builder", summary: "", prompt: "", toolDomains: [], maxTurns: 30, enabled: true };
+      const member: PiTeamMember = { id, label: "새 팀원", kind: "builder", summary: "", prompt: "", toolDomains: [], maxTurns: 300, enabled: true };
       spec = saveTeamSpec({ ...spec, members: [...spec.members, member] });
       startEdit(member);
     });

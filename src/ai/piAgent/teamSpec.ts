@@ -38,10 +38,10 @@ export const DEFAULT_TEAM_MEMBERS: readonly PiTeamMember[] = [
     id: "builder",
     label: "맵 만들기",
     kind: "builder",
-    summary: "집과 길을 만들고 지형을 다듬어요.",
+    summary: "맵과 이벤트, 게임 데이터를 만들고 필요한 내용을 살펴봐요.",
     prompt: "너는 팀의 시공 에이전트다. 팀장이 준 작업만 하고, 끝나면 무엇을 어디에 만들었는지 좌표와 함께 한두 문장으로 보고한다.",
     toolDomains: [],
-    maxTurns: 40,
+    maxTurns: 300,
     enabled: true,
   },
   {
@@ -51,7 +51,7 @@ export const DEFAULT_TEAM_MEMBERS: readonly PiTeamMember[] = [
     summary: "기존 건물과 길을 유지하며 나무와 소품을 더해요.",
     prompt: "너는 팀의 장식 에이전트다. 이미 지어진 집과 길은 그대로 두고, 빈 땅에 소품·나무·꽃·울타리로 생활감을 더한다. 통행로를 막지 않는다. 끝나면 무엇을 어디에 놓았는지 보고한다.",
     toolDomains: ["core", "tile", "map"],
-    maxTurns: 30,
+    maxTurns: 300,
     enabled: false,
   },
   {
@@ -61,7 +61,7 @@ export const DEFAULT_TEAM_MEMBERS: readonly PiTeamMember[] = [
     summary: "직접 바꾸지 않고, 잘 만들어졌는지 확인해요.",
     prompt: "get_map_region 과 run_lint(reachability 포함)로 작업 결과를 확인한다: 요청한 구조물이 실제로 있는가, 길이 이어지는가, 집과 길이 겹치지 않는가, lint error 가 없는가.",
     toolDomains: [],
-    maxTurns: 10,
+    maxTurns: 300,
     enabled: true,
   },
 ];
@@ -111,7 +111,7 @@ export function normalizeTeamSpec(raw: unknown): PiTeamSpec {
       summary: str(m.summary).trim().slice(0, 200),
       prompt: str(m.prompt).trim().slice(0, 4000),
       toolDomains: domains,
-      maxTurns: Number.isFinite(maxTurns) && maxTurns >= 1 ? Math.min(120, Math.round(maxTurns)) : kind === "reviewer" ? 10 : 40,
+      maxTurns: Number.isFinite(maxTurns) && maxTurns >= 1 ? Math.min(600, Math.round(maxTurns)) : 300,
       ...(str(m.model).trim() ? { model: str(m.model).trim() } : {}),
       enabled: m.enabled !== false,
     });
@@ -129,8 +129,8 @@ export function describeTeamMembers(spec: PiTeamSpec): string[] {
   const builders = enabledMembers(spec, "builder");
   const reviewers = enabledMembers(spec, "reviewer");
   return [
-    `시공 팀원(assign_map_agent 의 member): ${builders.map((m) => `${m.id}「${m.label}」 — ${m.summary || m.prompt.slice(0, 60)}`).join(" / ") || "(없음)"}`,
-    `검수 팀원(review_map 의 member): ${reviewers.map((m) => `${m.id}「${m.label}」 — ${m.summary || m.prompt.slice(0, 60)}`).join(" / ") || "(없음 — 검수 생략)"}`,
+    `제작 팀원(assign_map_agent / assign_task_agent 의 member): ${builders.map((m) => `${m.id}「${m.label}」 — ${m.summary || m.prompt.slice(0, 60)}`).join(" / ") || "(없음)"}`,
+    `검수 팀원(review_map / assign_task_agent mode=read 의 member): ${reviewers.map((m) => `${m.id}「${m.label}」 — ${m.summary || m.prompt.slice(0, 60)}`).join(" / ") || "(없음 — 검수 생략)"}`,
   ];
 }
 

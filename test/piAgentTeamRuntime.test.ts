@@ -320,3 +320,160 @@ describe("팀 런타임 — 현재 맵", () => {
     expect(orchestratorPrompt).toMatch(/보고 있는 맵[^\n]*\n- map_b "B" 10×10/);
   });
 });
+
+it("외부·실내 담당이 직접 출입구를 협의하고 팀장은 대기 중 질문에 답한다", async () => {
+  const events: PiAgentEvent[] = [];
+  let releaseOutside!: () => void;
+  const assigned = new Promise<void>(resolve => { releaseOutside = resolve; });
+  const result = await runPiTeam(request(seeded()), {
+    onEvent: event => events.push(event),
+    runAgent: async (req, opts) => {
+      const tools = opts.extraTools ?? [];
+      if (tools.some(t => t.name === "assign_map_agent")) {
+        await callTool(tools, "assign_map_agent", { mapId: "map_a", task: "외부" });
+        await callTool(tools, "assign_map_agent", { mapId: "map_b", task: "실내" });
+        releaseOutside();
+        const pending = await callTool(tools, "wait_agents", {});
+        expect(pending.reason).toBe("messages");
+        const inbox = await callTool(tools, "read_team_messages", {});
+        const question = (inbox.messages as { id: string; from: string }[])[0]!;
+        await callTool(tools, "send_team_message", { to: question.from, kind: "reply", replyTo: question.id, body: "문 위치 유지" });
+        for (let i = 0; i < 4; i++) {
+          const waited = await callTool(tools, "wait_agents", {});
+          if (waited.unreadMessages) await callTool(tools, "read_team_messages", {});
+          if ((waited.agents as { state: string }[]).every(a => a.state !== "실행 중")) break;
+        }
+        await callTool(tools, "finish", { report: "출입구 협의 완료" });
+        return doneWith(req.project);
+      }
+      if (req.mapIds[0] === "map_a") {
+        await assigned;
+        await callTool(tools, "send_team_message", { to: "orchestrator-1", kind: "question", body: "외부 문 유지?" });
+        const chief = await callTool(tools, "wait_team_messages", {});
+        const response = (chief.messages as { id: string; body: string }[])[0]!;
+        expect(response.body).toBe("문 위치 유지");
+        await callTool(tools, "acknowledge_team_message", { messageId: response.id });
+        await callTool(tools, "send_team_message", { to: "builder-2", kind: "question", body: "실내 진입 좌표?" });
+        const inside = await callTool(tools, "wait_team_messages", {});
+        const door = (inside.messages as { id: string; body: string }[])[0]!;
+        expect(door.body).toBe("map_b (8,12)");
+        await callTool(tools, "acknowledge_team_message", { messageId: door.id });
+        return doneWith(built(req.project, "map_a", door.body), ["maps.map_a"]);
+      }
+      const received = await callTool(tools, "wait_team_messages", {});
+      const message = (received.messages as { id: string; from: string }[])[0]!;
+      await callTool(tools, "send_team_message", { to: message.from, kind: "reply", replyTo: message.id, body: "map_b (8,12)" });
+      return doneWith(built(req.project, "map_b", "실내 완료"), ["maps.map_b"]);
+    },
+  });
+  expect(result.project.maps.map_a?.name).toBe("map_b (8,12)");
+  expect(result.project.maps.map_b?.name).toBe("실내 완료");
+  expect(events.some(e => e.type === "agent_event" && e.event.type === "assistant" && e.event.text.includes("builder-1 → builder-2"))).toBe(true);
+  expect(events.find(e => e.type === "team_report")).toMatchObject({ text: "출입구 협의 완료" });
+});
+
+it("읽기 설계 두 작업을 병렬 배정하고 보고서를 받아 공통 텍스트를 적용한다", async () => {
+  let release!: () => void;
+  const gate = new Promise<void>(resolve => { release = resolve; });
+  let started = 0;
+  const project = seeded();
+  const result = await runPiTeam(request(project), {
+    runAgent: async (req, opts) => {
+      const tools = opts.extraTools ?? [];
+      if (tools.some(t => t.name === "assign_task_agent")) {
+        await callTool(tools, "assign_task_agent", { task: "용어집", mode: "read" });
+        await callTool(tools, "assign_task_agent", { task: "UI 번역안", mode: "read", member: "reviewer" });
+        expect(started).toBe(2);
+        await expect(callTool(tools, "finish", { report: "끝" })).rejects.toThrow(/아직 실행/);
+        release();
+        const reports = await callTool(tools, "wait_agents", {});
+        expect((reports.agents as { summary: string }[]).map(a => a.summary)).toEqual(["용어집: 여관=Inn", "UI 번역안: 여관=Inn"]);
+        await callTool(tools, "assign_task_agent", { task: "제목 번역 적용: Inn", mode: "project" });
+        await callTool(tools, "wait_agents", {});
+        await callTool(tools, "finish", { report: "제목 번역 완료" });
+        return doneWith(req.project);
+      }
+      if (req.readOnly) {
+        expect(opts.readOnlyTools).toBe(true);
+        started++;
+        await gate;
+        await callTool(tools, "report_task", { report: `${req.task}: 여관=Inn` });
+        return doneWith(req.project);
+      }
+      expect(opts.readOnlyTools).toBe(false);
+      const updated = structuredClone(req.project);
+      updated.meta.title = "Inn";
+      await callTool(tools, "report_task", { report: "제목을 Inn으로 적용" });
+      // Deliberately no declared changedKeys: the runtime derives actual changes.
+      return doneWith(updated);
+    },
+  });
+  expect(result.project.meta.title).toBe("Inn");
+  expect(result.project.maps).toEqual(project.maps);
+  expect(result.changedKeys).toContain("meta");
+});
+
+it("프로젝트 제작과 맵 쓰기를 양방향으로 잠그고 직렬 결과를 보존한다", async () => {
+  let releaseMap!: () => void;
+  let releaseProject!: () => void;
+  const mapGate = new Promise<void>(resolve => { releaseMap = resolve; });
+  const projectGate = new Promise<void>(resolve => { releaseProject = resolve; });
+  const result = await runPiTeam(request(seeded()), {
+    runAgent: async (req, opts) => {
+      const tools = opts.extraTools ?? [];
+      if (tools.some(t => t.name === "assign_task_agent")) {
+        await callTool(tools, "assign_map_agent", { mapId: "map_a", task: "구역 시공" });
+        await expect(callTool(tools, "assign_task_agent", { task: "공통 정의", mode: "project" })).rejects.toThrow(/진행 중인 쓰기/);
+        releaseMap();
+        await callTool(tools, "wait_agents", {});
+        await callTool(tools, "assign_task_agent", { task: "공통 정의", mode: "project" });
+        await expect(callTool(tools, "assign_map_agent", { mapId: "map_b", task: "맵 수정" })).rejects.toThrow(/공통 데이터 제작 중/);
+        await expect(callTool(tools, "assign_task_agent", { task: "겹친 수정", mode: "project" })).rejects.toThrow(/진행 중인 쓰기/);
+        releaseProject();
+        await callTool(tools, "wait_agents", {});
+        return doneWith(req.project);
+      }
+      if (tools.some(t => t.name === "report_task")) {
+        await projectGate;
+        expect(req.project.maps.map_a?.name).toBe("시공 완료");
+        const updated = structuredClone(req.project);
+        updated.meta.title = "공통 정의 완료";
+        await callTool(tools, "report_task", { report: "정의 완료" });
+        return doneWith(updated);
+      }
+      await mapGate;
+      return doneWith(built(req.project, "map_a", "시공 완료"), ["maps.map_a"]);
+    },
+  });
+  expect(result.project.maps.map_a?.name).toBe("시공 완료");
+  expect(result.project.meta.title).toBe("공통 정의 완료");
+});
+
+it.each(["mutation", "missing-report"])("읽기 작업의 잘못된 반환(%s)은 적용하지 않고 실패로 보고한다", async failure => {
+  const project = seeded();
+  const result = await runPiTeam(request(project), {
+    runAgent: async (req, opts) => {
+      const tools = opts.extraTools ?? [];
+      if (tools.some(t => t.name === "assign_task_agent")) {
+        await callTool(tools, "assign_task_agent", { task: "검사", mode: "read" });
+        const report = await callTool(tools, "wait_agents", {});
+        expect((report.agents as { state: string }[])[0]?.state).toBe("실패");
+        const finish = await callTool(tools, "finish", { report: "검사 결과" });
+        expect(finish.ok).toBe(true);
+        return doneWith(req.project);
+      }
+      if (failure === "mutation") await callTool(tools, "report_task", { report: "검사 완료" });
+      return doneWith(built(req.project, "map_a", "허용되지 않은 변경"));
+    },
+  });
+  expect(result.project).toEqual(project);
+});
+
+it.each([{ readOnly: true }, { mapIds: ["map_a"], scopeStrict: true }])("프로젝트 배정은 원래 요청 권한을 넓히지 않는다: %j", async scope => {
+  await runPiTeam({ ...request(seeded()), ...scope }, {
+    runAgent: async (req, opts) => {
+      await expect(callTool(opts.extraTools ?? [], "assign_task_agent", { task: "전체 수정", mode: "project" })).rejects.toThrow();
+      return doneWith(req.project);
+    },
+  });
+});

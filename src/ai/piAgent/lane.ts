@@ -25,6 +25,8 @@ export interface LaneSpec {
   readonly model: string;
   readonly instruction: string;
   readonly maxTurns?: number;
+  /** Team identity retained for follow-up budget preferences. */
+  readonly memberId?: string;
   readonly thinkingLevel?: PiAgentThinkingLevel;
   /** Preserve the selected team member's capabilities for a scoped follow-up. */
   readonly readOnly?: boolean;

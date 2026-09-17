@@ -28,7 +28,7 @@ describe("resolveAutonomy", () => {
       reasoningEffort: "low",
       agentMode: "chat",
       budgetCap: 4,
-      piMaxTurns: 10,
+      piMaxTurns: 50,
       planOnly: false,
       readOnly: true,
     });
@@ -39,7 +39,7 @@ describe("resolveAutonomy", () => {
       reasoningEffort: "low",
       agentMode: "chat",
       budgetCap: 6,
-      piMaxTurns: 10,
+      piMaxTurns: 50,
       planOnly: true,
       readOnly: false,
     });
@@ -50,7 +50,7 @@ describe("resolveAutonomy", () => {
       reasoningEffort: "low",
       agentMode: "auto",
       budgetCap: 16,
-      piMaxTurns: 40,
+      piMaxTurns: 200,
       planOnly: false,
       readOnly: false,
     });
@@ -61,7 +61,7 @@ describe("resolveAutonomy", () => {
       reasoningEffort: "medium",
       agentMode: "auto",
       budgetCap: 32,
-      piMaxTurns: 60,
+      piMaxTurns: 300,
       planOnly: false,
       readOnly: false,
     });
@@ -72,7 +72,7 @@ describe("resolveAutonomy", () => {
       reasoningEffort: "high",
       agentMode: "auto",
       budgetCap: 48,
-      piMaxTurns: 120,
+      piMaxTurns: 600,
       planOnly: false,
       readOnly: false,
     });
@@ -94,7 +94,7 @@ describe("resolveAutonomy", () => {
   // 2026-09-17 실측: budgetCap 이 그대로 Pi 의 `maxTurns` 로 실려서 「균형」(16턴)이 다이얼을
   // **안 건드린 것**(워커 기본값 40턴)보다 나빴다. 7번의 턴 상한 중단 중 4번이 이 조합이었다.
   // 다이얼을 고르는 행위가 안 고르는 것보다 나쁜 결과를 내면 그건 컨트롤이 아니다.
-  const WORKER_DEFAULT_MAX_TURNS = 40; // scripts/lib/piAgentRuntime.ts
+  const WORKER_DEFAULT_MAX_TURNS = 200; // scripts/lib/piAgentRuntime.ts
   it("실행하는 레벨의 턴 상한은 워커 기본값 아래로 내려가지 않는다", () => {
     for (const level of LEVELS) {
       const resolved = resolveAutonomy(level);
