@@ -1,3 +1,4 @@
+import { friendlyExecutionError } from "@/ai/piAgent/userFacingCopy";
 import { configForUltrabrain } from "@/ai/ultrabrainConfig";
 import { modelForRole } from "@/ai/modelRoles";
 // 채팅 패널의 `/pi` 명령. Pi 에이전트(Bun 쪽 oh-my-pi 루프)를 돌리고, 결과 프로젝트에서 맵 묶음만
@@ -160,6 +161,7 @@ export interface PiChangeReceipt {
 export interface PiCommandSurface {
   readonly appendBubble: (role: "system" | "assistant", text: string) => unknown;
   /** 로그에 카드 같은 임의 요소를 붙인다(변경 영수증과 같은 자리). */
+  readonly appendProcess?: (text: string) => void;
   readonly appendCard: (element: HTMLElement) => void;
   readonly setStatus: (text: string) => void;
   readonly getCurrentMapId: () => string | null;
@@ -276,7 +278,7 @@ export async function runPiCommand(
   const scopeText = team
     ? (command.mapIds.length > 0 ? `후보 맵 ${command.mapIds.join(", ")}` : "프로젝트 전체")
     : groups.map((g) => g.join(",") || "전체").join(" · ");
-  surface.setStatus(team ? "Pi 팀 실행 중…" : "작업 중…");
+  surface.setStatus(team ? "팀원들이 작업하고 있어요." : "작업하고 있어요.");
 
   // 단일·병렬 모드의 평평한 이벤트는 그룹 단위 행으로 감싸 보드에 넣는다. 팀 모드는 런타임이 이미 감싸서 보낸다.
   // 질문(읽기 전용)·계획 턴의 결과는 «바뀐 것» 이 아니라 **말**이다. 보드는 마지막 한 줄만 남기므로
@@ -334,7 +336,7 @@ export async function runPiCommand(
     const modelTask = composePiTask(command.task, options.intentNote);
     let executionTask = modelTask;
     if (!readOnly && !team && !routineEdit) {
-      surface.setStatus(`Ultrabrain · 계획 작성 (${brain.model})`);
+      surface.setStatus("어떻게 바꿀지 정리하고 있어요.");
       let plan = "";
       let planError = "";
       push({ type: "agent_spawn", agentId: "ultrabrain-plan", role: "orchestrator", mapId: null, mapName: null, task: command.task, label: "Ultrabrain · 계획" });
@@ -355,7 +357,7 @@ export async function runPiCommand(
       if (planError || !plan.trim() || planned.changedKeys.length) throw new Error(planError || "Ultrabrain 계획을 완료하지 못했습니다.");
       push({ type: "agent_done", agentId: "ultrabrain-plan", ok: true, summary: plan,
         stats: planned.stats, changedKeys: [], spills: [], conflicts: [] });
-      surface.appendBubble("assistant", `Ultrabrain 계획\n${plan}`);
+      (surface.appendProcess ?? ((text: string) => surface.appendBubble("assistant", text)))(`계획\n${plan}`);
       executionTask = `${modelTask}\n\nUltrabrain 실행 계획:\n${plan}`;
     }
     results = await Promise.all(groups.map((mapIds, index) => runPiAgentViaCompanion(
@@ -386,7 +388,7 @@ export async function runPiCommand(
       boardState = markTeamBoardAborted(boardState); sync();
       finishLog({ applied: false, changedCount: 0, stoppedReason: "중단" });
       surface.setStatus("대기");
-      surface.appendBubble("system", "Pi 에이전트를 중단했습니다. 적용된 변경은 없습니다.");
+      surface.appendBubble("system", "작업을 중단했어요. 변경한 내용은 적용하지 않았어요.");
       return false;
     }
     const message = error instanceof Error ? error.message : String(error);
@@ -395,8 +397,9 @@ export async function runPiCommand(
     publishFinalOutcome();
     boardState = markTeamBoardFailed(boardState, message); sync();
     finishLog({ applied: false, changedCount: 0, error: message });
-    surface.setStatus("Pi 에이전트 실패");
-    surface.appendBubble("system", `Pi 에이전트 실패: ${message}`);
+    surface.setStatus("작업을 마치지 못했어요.");
+    surface.appendProcess?.(message);
+    surface.appendBubble("system", `${friendlyExecutionError(message)} 변경한 내용은 적용하지 않았어요.`);
     return false;
   }
   if (surface.signal?.aborted) {
@@ -405,7 +408,7 @@ export async function runPiCommand(
     boardState = markTeamBoardAborted(boardState); sync();
     finishLog({ applied: false, changedCount: 0, stoppedReason: "중단" });
     surface.setStatus("대기");
-    surface.appendBubble("system", "Pi 에이전트를 중단했습니다. 적용된 변경은 없습니다.");
+    surface.appendBubble("system", "작업을 중단했어요. 변경한 내용은 적용하지 않았어요.");
     return false;
   }
   // 팀 모드는 런타임이 이미 맵 묶음으로 병합해 돌려준다. 단일 범위 지정은 여기서 병합한다.
@@ -426,11 +429,13 @@ export async function runPiCommand(
   if (mergedFromBundles) authorMergedSpatialProposal(merged.project, base);
   else adoptSpatialToolProof(merged.project, results[0]!.spatialProof, base);
   if (merged.conflicts.length > 0) {
-    surface.appendBubble("system", `에이전트 둘 이상이 같은 맵을 바꿨습니다(뒤의 결과 채택): ${merged.conflicts.map((id) => `\`${id}\``).join(", ")}`);
+    surface.appendBubble("system", "여러 팀원이 같은 맵을 바꿔 마지막 변경을 선택했어요. 적용할 내용을 확인해 주세요.");
+    surface.appendProcess?.(`에이전트 둘 이상이 같은 맵을 바꿨습니다(뒤의 결과 채택): ${merged.conflicts.map((id) => `\`${id}\``).join(", ")}`);
   }
   spilledKeys.push(...merged.spills.flatMap((spill) => spill.keys));
+  if (spilledKeys.length) surface.appendBubble("system", "선택한 작업 범위를 벗어난 변경은 제외했어요.");
   for (const spill of merged.spills) {
-    surface.appendBubble("system", `범위 밖 변경을 버렸습니다 \`${spill.mapIds.join(",")}\`: ${spill.keys.map((key) => `\`${key}\``).join(", ")}`);
+    surface.appendProcess?.(`범위 밖 변경을 버렸습니다 \`${spill.mapIds.join(",")}\`: ${spill.keys.map((key) => `\`${key}\``).join(", ")}`);
   }
   const changed = summarizeChanges(base, merged.project);
   const toolCalls = results.reduce((sum, done) => sum + done.stats.toolCalls, 0);
@@ -458,7 +463,7 @@ export async function runPiCommand(
         ? spillReason
         : answer
           ? "프로젝트는 바뀌지 않았습니다."
-          : "Pi 에이전트가 끝났지만 프로젝트에 바뀐 것이 없습니다.";
+          : "확인을 마쳤어요. 프로젝트는 바꾸지 않았어요.";
     ghost.dispose();
     publishFinalOutcome();
     boardState = droppedEverything
@@ -478,15 +483,20 @@ export async function runPiCommand(
     });
     surface.setStatus(droppedEverything ? "적용 실패" : "대기");
     // 답이 곧 결과인 턴은 본문 말풍선이 먼저다 — 보드의 잘린 한 줄·시스템 줄이 답 앞에 서지 않게 한다.
-    if (answer) surface.appendBubble("assistant", answer);
-    surface.appendBubble("system", caption);
+    if (answer && !droppedEverything) surface.appendBubble("assistant", answer);
+    if (streamErrors.length) {
+      surface.appendProcess?.(streamErrors.join("\n"));
+      surface.appendBubble("system", stoppedByLimit ? "작업 한도에 도달해 끝까지 마치지 못했어요. 작업 범위를 줄이거나 자율성 설정을 조정해 다시 요청해 주세요." : "작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요.");
+    }
+    if (droppedEverything) surface.appendProcess?.(spillReason);
+    surface.appendBubble("system", droppedEverything ? "요청한 변경이 선택한 작업 범위를 벗어나 적용하지 않았어요. 작업 범위를 바꿔 다시 요청해 주세요." : caption);
     return true;
   }
   // 영수증이 그릴 맵: 먼저 바뀐 맵, 없으면 지시 범위의 첫 맵, 그것도 없으면 프로젝트의 첫 맵.
   // 마지막 후보가 없으면 맵 없는 프로젝트에서 영수증이 통째로 사라진다(그림은 못 그려도 이름은 남아야 한다).
   const receiptMapId = changedKeys.find((key) => key.startsWith("maps."))?.slice("maps.".length)
     ?? command.mapIds[0] ?? surface.getCurrentMapId() ?? Object.keys(merged.project.maps)[0] ?? null;
-  const receiptTitle = team ? `Pi 팀 — ${scopeText}` : "변경 내용";
+  const receiptTitle = "변경 내용";
   // 카운터가 없는 영역(퀘스트·스토리 플래그·캐릭터·맵 연결…)까지 한 줄에 — 검토 카드와 영수증이
   // 같은 칩을 쓴다. 이게 없으면 그런 턴은 "적용/버리기" 만 있는 빈 카드로 끝났다.
   const receiptChips = changeChipsWithAreas(changed, changedAreaLabels(base, merged.project));
@@ -499,11 +509,11 @@ export async function runPiCommand(
     try {
       const reviews = await reviewMapHarmony(base, merged.project, command.task, config, {
         signal: surface.signal,
-        onStatus: text => surface.setStatus(text),
+        onStatus: text => { surface.appendProcess?.(text); surface.setStatus("바뀐 내용이 잘 맞는지 확인하고 있어요."); },
         onReview: review => {
           push({ type: "agent_spawn", agentId: `ultrabrain-${review.mapId}`, role: "reviewer", mapId: review.mapId,
             mapName: merged.project.maps[review.mapId]?.name ?? null, task: "전체 맵 조화 검수", label: "Ultrabrain" });
-          surface.appendBubble("assistant", `Ultrabrain · ${merged.project.maps[review.mapId]?.name ?? review.mapId}\n${review.summary}${review.findings.length ? "\n" + review.findings.map(f => `• ${f}`).join("\n") : ""}`);
+          (surface.appendProcess ?? ((text: string) => surface.appendBubble("assistant", text)))(`확인 기록 · ${merged.project.maps[review.mapId]?.name ?? review.mapId}\n${review.summary}${review.findings.length ? "\n" + review.findings.map(f => `• ${f}`).join("\n") : ""}`);
           push({ type: "review", agentId: `ultrabrain-${review.mapId}`, mapId: review.mapId, ok: review.harmonious, findings: [...review.findings] });
         },
       });
@@ -518,7 +528,8 @@ export async function runPiCommand(
         return false;
       }
       const message = error instanceof Error ? error.message : String(error);
-      surface.appendBubble("system", `Ultrabrain 조화 검수를 완료하지 못했습니다: ${message} — 검수 지적으로 세지 않고, 적용 전 확인용 초안을 남겼습니다.`);
+      surface.appendProcess?.(message);
+      surface.appendBubble("system", "변경 내용을 끝까지 확인하지 못했어요. 아직 적용하지 않았으니 직접 확인하고 적용해 주세요.");
       push({ type: "agent_spawn", agentId: "ultrabrain", role: "reviewer", mapId: null, mapName: null, task: "전체 맵 조화 검수", label: "Ultrabrain" });
       // 검수를 «하지 못한 것» 은 «지적»이 아니다. 예전에는 findings=[오류문구] 로 발행되어
       // 보드에 「지적 1건」 이 생겼다 — 프로바이더 빈응답이 작품 결함처럼 보였다.
@@ -535,7 +546,7 @@ export async function runPiCommand(
   if (builderFailed) {
     surface.appendBubble(
       "system",
-      "시공이 끝까지 가지 못했습니다 — 아래 변경은 **중단된 작업의 일부**입니다. 검수 결과와 무관하게 확인하고 적용하세요.",
+      "작업을 끝까지 마치지 못했어요. 아래 변경은 **완성되지 않은 결과**예요. 직접 확인하고 적용해 주세요.",
     );
   }
   harmonyManualReview = (needsHarmonyReview && !harmonyApproved) || builderFailed;
@@ -590,7 +601,8 @@ export async function runPiCommand(
       boardState = markTeamBoardFailed(boardState, reason); sync();
       finishLog({ applied: false, changedCount, error: reason });
       surface.setStatus("적용 실패");
-      surface.appendBubble("system", reason);
+      surface.appendProcess?.(reason);
+      surface.appendBubble("system", "변경 내용을 적용하지 못했어요. 현재 맵과 작업 과정을 확인해 주세요.");
       return false;
     }
     applied = true;
@@ -601,14 +613,14 @@ export async function runPiCommand(
       : `변경 내용을 적용했습니다${spillNotice}${errorDigest()}.`;
     boardState = markTeamBoardApplied(boardState, appliedText); sync();
     finishLog({ applied: true, changedCount, stoppedReason: "적용됨" });
-    surface.setStatus(team ? "Pi 팀 적용 완료" : "적용 완료");
-    if (team || !surface.showChangeReceipt || !receiptMapId) surface.appendBubble("system", appliedText);
+    surface.setStatus("적용 완료");
+    if (team || !surface.showChangeReceipt || !receiptMapId) surface.appendBubble("system", `변경 내용을 적용했어요.${spilledKeys.length ? " 선택한 범위를 벗어난 변경은 제외했어요." : ""}${streamErrors.length ? " 작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요." : ""}`);
     surface.showChangeReceipt?.({
       before: base,
       after: merged.project,
       mapId: receiptMapId,
       title: receiptTitle,
-      detail: appliedText,
+      detail: `변경 내용을 적용했어요.${spilledKeys.length ? " 선택한 범위를 벗어난 변경은 제외했어요." : ""}${streamErrors.length ? " 작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요." : ""}`,
       chips: receiptChips,
       ledger: receiptLedger,
       toolNames: [team ? "pi_team" : "pi_agent"],
@@ -635,8 +647,7 @@ export async function runPiCommand(
     sites: reviewSites,
     ...(boardState.report ? { report: boardState.report } : {}),
     ...(reviewFindings.length > 0 ? { findings: reviewFindings } : {}),
-    detail: team ? `아직 프로젝트에 반영하지 않았습니다 — 툴콜 ${toolCalls}회, 바뀐 맵·항목 ${changedCount}개.`
-      : "아직 프로젝트에 반영하지 않았습니다.",
+    detail: "아직 적용하지 않았어요. 변경 내용을 확인하고 적용해 주세요.",
     chips: receiptChips,
     ledger: receiptLedger,
     state: "proposed",
@@ -653,7 +664,7 @@ export async function runPiCommand(
     boardState = markTeamBoardDiscarded(boardState); sync();
     finishLog({ applied: false, changedCount, stoppedReason: "버림" });
     surface.setStatus("대기");
-    surface.appendBubble("system", "Pi 결과를 버렸습니다. 프로젝트는 그대로입니다.");
+    surface.appendBubble("system", "변경안을 버렸어요. 프로젝트는 그대로예요.");
   };
   board.setReview({
     ...(reviewPreview ? { preview: reviewPreview } : {}),
