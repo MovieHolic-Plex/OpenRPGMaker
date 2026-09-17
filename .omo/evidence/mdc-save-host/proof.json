@@ -1,0 +1,13 @@
+{
+  "bridge": true,
+  "status": "ready",
+  "projectId": "fb866e84-2919-4882-b2ba-0edf71a65636",
+  "saved": "saved",
+  "reloadedSameContent": true,
+  "shaMatches": true,
+  "reopened": {
+    "projectId": "fb866e84-2919-4882-b2ba-0edf71a65636",
+    "hasDocument": true
+  },
+  "errors": []
+}
