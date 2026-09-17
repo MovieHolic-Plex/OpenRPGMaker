@@ -242,7 +242,7 @@ export function defaultResourceProfiles(): ResourceProfile[] {
       tileWidth: tileWidthForEasyRpgKind("chipset"),
       tileHeight: tileHeightForEasyRpgKind("chipset"),
       imageWidth: 480,
-      // 확장 시트(Tibo 1056·합본 마을+레트로 월드맵 512)는 256 이 아니다 — 칸 수에서 유도한다.
+      // 확장 시트(Tibo 1056·합본 마을+레트로 월드맵+숲 나무 608)는 256 이 아니다 — 칸 수에서 유도한다.
       imageHeight: bundledChipsetSheetHeight(asset.textureKey),
       assetId: asset.textureKey,
     })),
