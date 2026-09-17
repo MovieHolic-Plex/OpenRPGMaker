@@ -80,7 +80,27 @@ function cgroupLimit(fileName, parse) {
   }
 }
 
-/** vitest 가 실제로 띄울 워커 수. CLI 가 지정했으면 그 값, 아니면 Node 가 보는 병렬도. */
+/**
+ * cgroup 이 허용하는 코어 수. 없으면 null.
+ *
+ * **`os.availableParallelism()` 을 쓰면 안 된다.** 중첩 슬라이스에서 틀린 값을 준다 —
+ * 실측(2026-09-17): 리프에 CPUQuota=300% 를 걸고 부모 ci-full.slice(600%) / 조부모
+ * ci.slice(800%) 아래에서 돌렸더니 **8** 이 나왔다. 체인에서 가장 **느슨한** 쿼터를 집는다.
+ * (조상에 쿼터가 없는 단순한 경우엔 리프 값을 맞게 준다 — 그래서 알아채기 어렵다.)
+ * 위의 cgroupLimit 은 체인의 **최솟값**을 취하므로 실효 상한이 나온다.
+ */
+function cgroupCpus() {
+  return cgroupLimit("cpu.max", (raw) => {
+    const [quota, period] = raw.split(/\s+/);
+    if (quota === "max") return null;
+    const parsedQuota = Number(quota);
+    const parsedPeriod = Number(period);
+    if (!Number.isFinite(parsedQuota) || !Number.isFinite(parsedPeriod) || parsedPeriod <= 0) return null;
+    return Math.max(1, Math.floor(parsedQuota / parsedPeriod));
+  });
+}
+
+/** vitest 가 실제로 띄울 워커 수. CLI 가 지정했으면 그 값, 아니면 cgroup 이 주는 코어 수. */
 function plannedWorkers(args) {
   for (let index = 0; index < args.length; index += 1) {
     const value = args[index].startsWith("--maxWorkers=")
@@ -89,8 +109,7 @@ function plannedWorkers(args) {
     const parsed = Number.parseInt(value ?? "", 10);
     if (Number.isFinite(parsed) && parsed > 0) return parsed;
   }
-  // Node 24 는 cgroup cpu.max 를 존중한다(확인: CPUQuota=200% → availableParallelism()=2).
-  return Math.max(1, availableParallelism());
+  return Math.max(1, cgroupCpus() ?? availableParallelism());
 }
 
 /**
@@ -143,15 +162,29 @@ const OVERCOMMIT_FACTOR = 2;
  */
 function cgroupBudget(args) {
   const memoryMax = cgroupLimit("memory.max", (raw) => (raw === "max" ? null : Number(raw)));
-  if (memoryMax == null || !Number.isFinite(memoryMax)) return null;
+  const cpus = cgroupCpus();
+  const hasMemory = memoryMax != null && Number.isFinite(memoryMax);
+  if (!hasMemory && cpus == null) return null;
 
-  const usableMb = Math.floor((memoryMax * 0.75) / 1024 / 1024);
-  const memoryWorkers = Math.max(1, Math.floor((usableMb * OVERCOMMIT_FACTOR) / MIN_WORKER_HEAP_MB));
-  const workers = Math.max(1, Math.min(plannedWorkers(args), memoryWorkers));
+  // CPU 상한은 **호출자가 --maxWorkers 를 명시했어도** 덮는다. verify-gates 는 8을 주지만
+  // full 레인은 6코어다(ci-full.slice). 8워커가 6코어를 나눠 갖는 건 스로틀만 늘린다.
+  let workers = plannedWorkers(args);
+  if (cpus != null) workers = Math.min(workers, cpus);
+
+  let usableMb = null;
+  let heapMb = FALLBACK_HEAP_MB;
+  if (hasMemory) {
+    usableMb = Math.floor((memoryMax * 0.75) / 1024 / 1024);
+    const memoryWorkers = Math.max(1, Math.floor((usableMb * OVERCOMMIT_FACTOR) / MIN_WORKER_HEAP_MB));
+    workers = Math.min(workers, memoryWorkers);
+  }
+  workers = Math.max(1, workers);
   // 힙은 최악 파일(피크 3.13GB)을 담을 수 있어야 한다 — 이 아래로 내리면 그 파일이
   // `Ineffective mark-compacts near heap limit` 으로 죽고 결과를 못 내놓는다.
-  const heapMb = Math.min(FALLBACK_HEAP_MB, Math.max(MIN_WORKER_HEAP_MB, Math.floor(usableMb / workers)));
-  return { workers, heapMb, usableMb };
+  if (usableMb != null) {
+    heapMb = Math.min(FALLBACK_HEAP_MB, Math.max(MIN_WORKER_HEAP_MB, Math.floor(usableMb / workers)));
+  }
+  return { workers, heapMb, usableMb, cpus };
 }
 
 function heapMbFor(budget) {
@@ -179,8 +212,10 @@ function withWorkerCap(args, budget) {
     if (arg === "--maxWorkers" || arg === "--minWorkers") { index += 1; continue; }
     stripped.push(arg);
   }
+  const memoryPart = budget.usableMb == null ? "메모리 상한 없음" : `${Math.floor(budget.usableMb / 1024)}GiB`;
+  const cpuPart = budget.cpus == null ? "CPU 상한 없음" : `${budget.cpus}코어`;
   console.error(
-    `[run-vitest] cgroup 예산 ${Math.floor(budget.usableMb / 1024)}GiB → 워커 ${budget.workers}개 ` +
+    `[run-vitest] cgroup 예산 ${cpuPart} / ${memoryPart} → 워커 ${budget.workers}개 ` +
     `× 힙 ${budget.heapMb}MB 로 낮춘다 (워커당 최소 ${MIN_WORKER_HEAP_MB}MB 보장).`,
   );
   return [...stripped, `--maxWorkers=${budget.workers}`, "--minWorkers=1"];
