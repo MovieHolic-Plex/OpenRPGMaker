@@ -1617,11 +1617,6 @@ describe("AssistantSession 툴콜 루프", () => {
       PLANNER_DIRECT,
       assistantToolCall("set_build_spec", spec, "c_spec"),
       assistantToolCall("paint_tiles", { mapId, mode: "rect", layer: "lower", tile: 421, from: { x: 1, y: 1 }, to: { x: 2, y: 2 } }, "c_road"),
-      assistantToolCall("repair_acceptance", { itemId: "acceptance-contract", criteria: [
-        { kind: "targetChange", target: { mapId }, region: { x: 1, y: 1, w: 2, h: 2 } },
-        { kind: "targetChange", target: { mapId }, region: { x: 4, y: 1, w: 2, h: 2 } },
-        { kind: "imageReviewed", target: { mapId } },
-      ] }),
       inspectMap(mapId, project.maps[mapId]!.width, project.maps[mapId]!.height),
       assistantFinal("1차 실행 완료"),
       assistantToolCall("get_map_region", { mapId, x: 4, y: 1, w: 2, h: 2 }, "c_read_flowers"),
@@ -1666,14 +1661,14 @@ describe("AssistantSession 툴콜 루프", () => {
       if (event.type === "result_review") reviews.push({ status: event.review.status, revision: event.review.revision });
     });
     // 첫 검사 뒤 writer 에게 간 요청(재투입 라운드)에 결정적 findings 가 실려 있다.
-    const repairPrompt = JSON.stringify(writerRequests.slice(6).map(request => request.messages));
+    // (플래너 1 + 1차 실행 4 라운드 뒤부터가 재투입 라운드다.)
+    const repairPrompt = JSON.stringify(writerRequests.slice(5).map(request => request.messages));
 
     expect(result.stoppedReason, JSON.stringify({ error: result.error, reviews })).toBe("final");
     expect(result.review?.status).toBe("approved");
     expect(result.assistantText).toContain(result.review!.summary);
-    // Draft approval does not erase the canonical unapplied status.
-    expect(result.completionAssessment?.acceptance?.status).toBe("verifying");
-    expect(result.runOutcome).toMatchObject({ goal: "incomplete", delivery: "draft" });
+    // 2026-09-17 수용 원장 해체: 목표 충족 축은 판정되지 않고(unassessed), 초안 승인은 결정적 검사만으로 정해진다.
+    expect(result.runOutcome).toMatchObject({ goal: "unassessed", delivery: "draft" });
     expect(result.proposedCalls.map((call) => call.name)).toEqual(["paint_tiles", "paint_tiles"]);
     expect(result.proposedCalls.every(call => (call.result.diff?.tilesChanged ?? 0) > 0)).toBe(true);
     expect(reviews.map(review => review.status)).toEqual(["changes_requested", "approved"]);
@@ -2220,7 +2215,8 @@ describe("verification declaration and correction caller boundary", () => {
     expect(snapshot.requirements[0]?.interactionTargets).toEqual(declaration.interactionTargets);
     expect(snapshot.requirements[0]?.status).toBe(changedSeed ? "unverified" : "passed");
     expect(snapshot.findings).toEqual([]);
-    expect(session.getAcceptanceSnapshot()?.status).toBe(changedSeed ? "blocked" : "verified");
+    // 2026-09-17 수용 원장 해체: 계획이 직접 선언한 검증 요구만 완료를 막는다(원장 status 는 더 이상 없다).
+    expect((result.completionAssessment?.blockingVerification.length ?? 0) > 0).toBe(changedSeed);
   });
   it.each(["wire114", "wire281", "dummy-removal", "cross-map", "weaker-assertion", "write-after-pass", "foreign-owner"])("retains the correct terminal contract for %s", async variant => {
     const { AssistantSession } = await load();
@@ -2260,9 +2256,10 @@ describe("verification declaration and correction caller boundary", () => {
         const call = rounds[cursor++];
         return call ? assistantToolCall(call.name, call.args, `ownership-${cursor}`) : assistantFinal("Checks recorded.");
       } });
-    await session.sendUserMessage("Inspect the scoped checks.", event => events.push(event));
+    const result = await session.sendUserMessage("Inspect the scoped checks.", event => events.push(event));
     const blocked = ["cross-map", "weaker-assertion", "write-after-pass", "foreign-owner"].includes(variant);
-    expect(session.getAcceptanceSnapshot()?.status).toBe(blocked ? "blocked" : "verified");
+    // 2026-09-17 수용 원장 해체: 완료를 막는 것은 계획이 직접 선언한 검증 요구·실행 findings 뿐이다.
+    expect((result.completionAssessment?.blockingVerification.length ?? 0) > 0, JSON.stringify(result.completionAssessment)).toBe(blocked);
     if (variant === "wire114") {
       expect(session.getVerificationSnapshot().attempts[0]?.status).toBe("unsuccessful");
       expect(session.getVerificationSnapshot().findings).toEqual([]);

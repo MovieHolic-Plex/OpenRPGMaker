@@ -142,8 +142,20 @@ export function charsetGraphic(textureKey: string, characterIndex: number | unde
 }
 
 // query 문자열을 별칭/자유 질의 매처로 해석해 charset 그래픽을 만든다.
-export function resolveGraphicQuery(query: string, pick?: NpcGraphicPickOptions): EventPageGraphic {
-  const entry = pickNpcGraphic(query, pick ?? {});
+export type GraphicQueryResolveOptions = NpcGraphicPickOptions & {
+  /** 검색어가 카탈로그에 없어 기본 주민 그래픽으로 대체했을 때 호출된다(경고 전달용). */
+  readonly onFallback?: (message: string) => void;
+};
+
+export function resolveGraphicQuery(query: string, pick?: GraphicQueryResolveOptions): EventPageGraphic {
+  // 2026-09-18 거부 대신 기본값: "경비병" 같은 라벨이 카탈로그에 없으면 실패하던 것을 기본 주민 그래픽으로 대체한다.
+  // 어떤 그림이든 서 있는 NPC 가 없는 NPC 보다 낫다. 정확한 그림이 필요하면 list_npc_graphics 로 고르면 된다.
+  const { onFallback, ...pickOptions } = pick ?? {};
+  let entry = pickNpcGraphic(query, pickOptions);
+  if (!entry) {
+    entry = pickNpcGraphic("villager", pickOptions) ?? pickNpcGraphic("주민", {});
+    if (entry) onFallback?.(`graphic.query "${query}" 에 맞는 charset 이 없어 기본 주민 그래픽으로 대체했습니다. 정확한 그림은 list_npc_graphics 로 고르세요.`);
+  }
   if (!entry) {
     const examples = npcGraphicExampleLabels(12).join(", ");
     throw new ToolError(
@@ -155,7 +167,7 @@ export function resolveGraphicQuery(query: string, pick?: NpcGraphicPickOptions)
 }
 
 // GraphicSpec을 EventPageGraphic으로 변환.
-export function resolveGraphic(spec: GraphicSpec | undefined, pick?: NpcGraphicPickOptions): EventPageGraphic {
+export function resolveGraphic(spec: GraphicSpec | undefined, pick?: GraphicQueryResolveOptions): EventPageGraphic {
   if (!spec) return { transparent: true };
   if ("transparent" in spec) return { transparent: true };
   if ("query" in spec) return resolveGraphicQuery(spec.query, pick);

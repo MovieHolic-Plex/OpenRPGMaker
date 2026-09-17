@@ -14,6 +14,7 @@ import {
   passageBounds,
 } from "@/project/footprint";
 import { store } from "@/project/store";
+import { resolveEventPage } from "@/project/io/pageResolution";
 import { projectFontStack } from "@/project/fontRegistry";
 import type {
   CharacterFootprint,
@@ -128,7 +129,7 @@ export function renderEventMarkers(context: EventMarkerRenderContext, map: GameM
     const cy = event.y * TILE_SIZE + TILE_SIZE / 2;
     const position = { x: cx, y: cy };
     if (activeLayer === "event") {
-      const page = eventPageForEditorMarker(event, selectedId, state.selectedEventPageId);
+      const page = eventPageForEditorMarker(event, selectedId, state.selectedEventPageId, project, map);
       const graphic = page?.graphic ?? (event.sprite ? { sprite: event.sprite } : undefined);
       const body = normalizeCharacterFootprint(page?.footprint);
       const passRows = normalizePassRows(page?.passRows, body.height);
@@ -315,15 +316,43 @@ function createEditableEventSprite(
   return sprite;
 }
 
+/**
+ * 맵에 그릴 페이지. 편집기가 이 이벤트의 어떤 페이지를 **보고 있는 동안**은 그 페이지(편집 중 미리보기),
+ * 아니면 **게임을 새로 시작했을 때 켜질 페이지**다. 예전엔 후자가 무조건 1페이지였고, 편집기가 닫혀도
+ * `selectedEventPageId` 가 남아 2페이지 그래픽(없음)을 계속 그렸다(2026-09-17 적대적 리뷰 P0-4).
+ */
 function eventPageForEditorMarker(
   event: GameEvent,
   selectedEventId: string | null,
-  selectedEventPageId: string | null
+  selectedEventPageId: string | null,
+  project: Project,
+  map: GameMap,
 ): EventPage | undefined {
   const selectedPage = event.id === selectedEventId && selectedEventPageId
     ? event.pages?.find((page) => page.id === selectedEventPageId)
     : undefined;
-  return selectedPage ?? event.pages?.[0];
+  return selectedPage ?? eventPageAtGameStart(event, project, map);
+}
+
+/**
+ * 새 게임 시작 직후 이 이벤트가 켤 페이지 — 저작한 시작 상태(`project.session`)로 페이지 조건을 평가한다.
+ * 어느 페이지도 조건을 못 채우면(게임에서는 보이지 않는 이벤트) 마커는 1페이지 모습으로 자리를 표시한다.
+ */
+export function eventPageAtGameStart(event: GameEvent, project: Project, map: GameMap): EventPage | undefined {
+  const start = project.session;
+  const resolved = resolveEventPage(
+    event,
+    {
+      switches: start?.switches ?? {},
+      variables: start?.variables ?? {},
+      selfSwitches: start?.selfSwitches,
+      inventory: start?.inventory,
+      partyActorIds: start?.partyActorIds,
+      gold: start?.gold,
+    },
+    { locations: map.locations },
+  );
+  return resolved ?? event.pages?.[0];
 }
 
 function createEventBadgeMarker(scene: Phaser.Scene, x: number, y: number): Phaser.GameObjects.Container {

@@ -20,7 +20,8 @@ describe.each(["natural", "dense"] as const)("tree footprint eligibility (%s)", 
     };
     const before = structuredClone(map);
     expect(() => placePropsOnDraft(project, {
-      mapId: map.id, area: { x: 3, y: 3, w: 1, h: 2 }, material: "침엽수", count: 1, seed: 7, packing,
+      // expandArea:false — 이 검사는 "그 자리 적격성" 이다. 기본값(확장)이면 옆 칸에 놓여 검사 뜻이 사라진다.
+      mapId: map.id, area: { x: 3, y: 3, w: 1, h: 2 }, material: "침엽수", count: 1, seed: 7, packing, expandArea: false,
     })).toThrowError(expect.objectContaining({ code: "placement-zero" }));
     expect(map).toEqual(before);
     expect(repairTreePairsOnProject(project)).toEqual({ canopiesPlaced: 0, orphanTrunksRemoved: 0 });

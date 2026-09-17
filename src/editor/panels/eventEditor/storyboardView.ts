@@ -306,6 +306,15 @@ export function renderStoryboard(
       children: [leaf],
     });
   };
+  // 명령이 있는 분기의 끝에도 넣을 자리를 남긴다(명령 목록 보기의 cmd-branch-add 와 같은 이유).
+  const renderBranchAddButton = (containerPath: number[]): HTMLElement =>
+    el("button", {
+      class: "event-storyboard-branch-empty event-storyboard-branch-add",
+      text: "+ 이 분기에 명령 추가",
+      attrs: { type: "button", title: "이 분기의 마지막에 명령을 하나 넣어줍니다" },
+      dataset: { testid: `event-storyboard-branch-add-${containerPath.join("-")}` },
+      on: { click: () => opts?.onAddToBranch?.(containerPath) },
+    });
   const renderBranchCommands = (branchCommands: readonly Command[], pathPrefix: number[]): HTMLElement[] =>
     branchCommands.map((command, commandIndex) => {
       const path = [...pathPrefix, commandIndex];
@@ -358,7 +367,10 @@ export function renderStoryboard(
                 children: [
                   el("div", { class: "branch-h event-storyboard-branch-label", text: branch.label || "이름 없는 분기" }),
                   ...(branch.commands.length > 0
-                    ? renderBranchCommands(branch.commands, [...path, branch.pathSegment])
+                    ? [
+                        ...renderBranchCommands(branch.commands, [...path, branch.pathSegment]),
+                        renderBranchAddButton([...path, branch.pathSegment]),
+                      ]
                     : [el("button", {
                         class: "event-storyboard-branch-empty",
                         text: branchEmptyActionLabel,
@@ -456,7 +468,10 @@ export function renderStoryboard(
               text: branch.label || "이름 없는 분기",
             }),
             ...(branch.commands.length > 0
-              ? renderBranchCommands(branch.commands, [idx, branch.pathSegment])
+              ? [
+                  ...renderBranchCommands(branch.commands, [idx, branch.pathSegment]),
+                  renderBranchAddButton([idx, branch.pathSegment]),
+                ]
               : [el("button", {
                   class: "event-storyboard-branch-empty",
                   text: branchEmptyActionLabel,

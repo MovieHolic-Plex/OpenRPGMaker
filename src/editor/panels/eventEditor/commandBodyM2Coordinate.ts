@@ -131,7 +131,7 @@ function coordinateMoveBody(context: CommandEditContext, cmd: M2Command): HTMLEl
   });
 
   const speedInput = el("input", {
-    attrs: { type: "number", min: "1", max: "6", step: "1" },
+    attrs: { type: "number", min: "1", max: "8", step: "1" },
     value: String(clampSpeed(Number(cmd.fields.speed ?? 4))),
     dataset: { testid: "coordinate-move-speed-input" },
   }) as HTMLInputElement;
@@ -346,7 +346,7 @@ function coordinateMoveBody(context: CommandEditContext, cmd: M2Command): HTMLEl
         yControls.sourceField,
         yControls.numberField,
         yControls.variableField,
-        fieldBlock("속도(1–6)", speedInput, "coordinate-move-speed-field"),
+        fieldBlock("속도(1–8)", speedInput, "coordinate-move-speed-field"),
         fieldBlock("도착까지 대기", waitCheckbox, "coordinate-move-wait-field"),
         fieldBlock("실패하면", failure.root, "coordinate-move-failure-field"),
         fieldBlock("대체 목적지", fallbackControl.root, "coordinate-move-fallback-field"),
@@ -376,7 +376,7 @@ function targetKindOf(stored: string): TargetKind {
 
 function clampSpeed(value: number): number {
   if (!Number.isFinite(value)) return 4;
-  return Math.max(1, Math.min(6, Math.trunc(value)));
+  return Math.max(1, Math.min(8, Math.trunc(value)));
 }
 
 function targetEventLabel(eventId: string): string {

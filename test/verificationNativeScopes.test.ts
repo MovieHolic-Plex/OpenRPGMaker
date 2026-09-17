@@ -42,9 +42,10 @@ function declaration(call: Call, checkId?: string): VerificationCheck {
     ...(call.name === "run_scene_test" ? { interactionTargets: [] } : {}) };
 }
 
+// 2026-09-17: 수용 원장이 사라져 plan 의 acceptance 배열은 무시된다. 검증 계약은 항목의 verificationChecks 만 담고,
+// 미해소 요구는 verificationEvidence.problems("blocking") 로 complete_work_item 을 막는다.
 function plan(project: Project, name: string, checks?: readonly VerificationCheck[], mapTargets: string[] = [project.startMapId]): Call {
   return { name: "set_work_plan", args: { goal: "Native verification",
-    acceptance: [{ id: "preserve", title: "Preserve map", criteria: [{ kind: "preserve", target: { mapId: project.startMapId } }] }],
     layers: [{ title: "Inspection", items: [{ id: "same-scheduling-id", title: "Check", instruction: "Check",
       successTools: [name], mapTargets, ...(checks ? { verificationChecks: checks } : {}) }] }] } };
 }
@@ -92,7 +93,6 @@ describe("native verification scopes through the real session and terminal accep
     const original = f.session.getVerificationSnapshot().requirements[0]!;
     expect(results(f.events, "set_work_plan").map(result => result.ok)).toEqual([true]);
     expect(original).toMatchObject({ name, args: call.args, mapTargets: [project.startMapId], status: "unverified" });
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
     expect(f.session.getWorkPlan()?.layers[0]?.items[0]?.status).not.toBe("done");
     await f.send([call, complete]);
     expect(results(f.events, name).length).toBeGreaterThan(0);
@@ -101,7 +101,6 @@ describe("native verification scopes through the real session and terminal accep
     expect(f.session.getVerificationSnapshot().requirements).toEqual([{ ...original, status: "passed" }]);
     expect(f.session.getVerificationSnapshot().findings).toEqual([]);
     expect(f.session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("done");
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
     expect(f.session.getProposedProject()).toEqual(project);
   });
 
@@ -113,7 +112,6 @@ describe("native verification scopes through the real session and terminal accep
     const pending = f.session.getVerificationSnapshot().requirements[0]!;
     expect(pending).toMatchObject({ args: null, mapTargets: [project.startMapId], status: "pending-specification" });
     expect(results(f.events, name).every(result => parseToolVerdict(name, result).pass)).toBe(true);
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
     const priorAttemptCount = f.session.getVerificationSnapshot().attempts.length;
     await f.send([plan(project, name, [declaration(call, pending.checkId)]), complete]);
     // The adoption response precedes terminal advisory checks. In particular, an earlier
@@ -121,7 +119,7 @@ describe("native verification scopes through the real session and terminal accep
     const expected = { checkId: pending.checkId, ownerId: pending.ownerId,
       args: call.args, mapTargets: pending.mapTargets, status: "unverified" };
     expect(results(f.events, "set_work_plan").at(-1)?.data).toMatchObject({
-      verification: { requirements: [expected] }, acceptance: { status: "blocked" },
+      verification: { requirements: [expected] }, acceptance: null,
     });
     const specified = f.session.getVerificationSnapshot().requirements;
     expect(specified).toHaveLength(1);
@@ -136,12 +134,10 @@ describe("native verification scopes through the real session and terminal accep
       expect(specified[0]).toMatchObject({ ...expected, status: "passed" });
     } else {
       expect(specified[0]).toMatchObject(expected);
-      expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
     }
     await f.send([call, complete]);
     expect(results(f.events, "complete_work_item").map(result => result.ok)).toEqual([false, true]);
     expect(f.session.getVerificationSnapshot().requirements).toEqual([{ ...specified[0], status: "passed" }]);
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
   });
 
   it.each(mapTools)("%s rejects a foreign map declaration and resolves the pending ID only on its retained map", async name => {
@@ -157,17 +153,14 @@ describe("native verification scopes through the real session and terminal accep
     await f.send([plan(project, name, [declaration(foreign)]), ...(name === "run_action_combat_test" ? [] : [foreign])]);
     const pending = f.session.getVerificationSnapshot().requirements[0]!;
     expect(pending).toMatchObject({ args: null, mapTargets: [project.startMapId], status: "pending-specification" });
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
     await f.send([plan(project, name, [declaration(own, pending.checkId)])]);
     expect(f.session.getVerificationSnapshot().requirements).toHaveLength(1);
     expect(f.session.getVerificationSnapshot().requirements[0]).toMatchObject({ checkId: pending.checkId,
       ownerId: pending.ownerId, args: own.args, mapTargets: pending.mapTargets, status: "unverified" });
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
     if (name !== "run_action_combat_test") {
       await f.send([own, complete]);
       expect(results(f.events, name).every(result => parseToolVerdict(name, result).pass)).toBe(true);
       expect(f.session.getVerificationSnapshot().requirements[0]?.status).toBe("passed");
-      expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
     } else {
       expect(results(f.events, name)).toEqual([]);
     }
@@ -181,7 +174,6 @@ describe("native verification scopes through the real session and terminal accep
     const pending = f.session.getVerificationSnapshot().requirements[0]!;
     await f.send([plan(project, call.name, [declaration(call, pending.checkId)], []), call]);
     expect(f.session.getVerificationSnapshot().requirements.find(check => check.checkId === pending.checkId)).toEqual(pending);
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
     expect(f.session.getWorkPlan()?.layers[0]?.items[0]?.status).not.toBe("done");
   });
 
@@ -193,15 +185,13 @@ describe("native verification scopes through the real session and terminal accep
     await f.send([plan(project, call.name, [declaration(call)])]);
     const original = f.session.getVerificationSnapshot().requirements[0]!;
     expect(original.status).toBe("unverified");
-    const before = { plan: f.session.getWorkPlan(), acceptance: f.session.getAcceptanceSnapshot(), verification: f.session.getVerificationSnapshot() };
+    const before = { plan: f.session.getWorkPlan(), verification: f.session.getVerificationSnapshot() };
     const candidate = plan(project, call.name, [declaration(changed, original.checkId)]);
     candidate.args.goal = "Rejected replacement";
-    (candidate.args.acceptance as unknown[]).push({ id: "candidate-only", title: "New promise", criteria: null });
     await f.send([candidate]);
     const rejection = results(f.events, "set_work_plan").at(-1)!;
     expect(rejection.ok).toBe(false);
     expect(rejection.data).toMatchObject({ ...before, conflicts: [{ checkId: original.checkId, reason: expect.any(String) }] });
-    expect(f.session.getAcceptanceSnapshot()?.items.some(item => item.id === "candidate-only")).toBe(false);
     expect(f.session.getWorkPlan()?.goal).toBe(before.plan?.goal);
     await f.send([changed]);
     // 2026-09-17 toolVerificationEvidence.compatible(): run_lint 는 같은 맵(또는 맵 미지정)이면 인자가 달라도 호환 —
@@ -209,6 +199,5 @@ describe("native verification scopes through the real session and terminal accep
     expect(f.session.getVerificationSnapshot().requirements).toEqual([{ ...original, status: "passed" }]);
     await f.send([call, complete]);
     expect(f.session.getVerificationSnapshot().requirements).toEqual([{ ...original, status: "passed" }]);
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
   });
 });

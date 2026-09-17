@@ -62,8 +62,10 @@ export function switchVariablePicker(options: SwitchVariablePickerOptions): Swit
 
   const labelOf = (id: string): string => {
     if (!id) return "(선택)";
+    // 목록은 **지금** 읽는다 — 피커 안에서 이름을 바꾸면 열 때 잡은 `list` 는 옛 이름이라 트리거가
+    // 「(이름 없음)」, 미리보기는 새 이름을 말했다(2026-09-17 리뷰 P1-7).
     return (
-      list.find((entry) => entry.id === id)?.name.trim() ||
+      recordsOf(kind).find((entry) => entry.id === id)?.name.trim() ||
       Array.from(select.querySelectorAll("option")).find((option) => option.value === id)?.textContent ||
       "(선택)"
     );

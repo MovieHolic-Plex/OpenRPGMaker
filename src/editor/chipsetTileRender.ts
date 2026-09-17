@@ -66,7 +66,7 @@ export function createChipsetTileObject(
   const roadTile = isDefaultTilesetTexture(tileset) ? roadAutotileTileForCell(map, { x, y }) : null;
   if (roadTile !== null) return createRawTileObject(scene, tileset, x * TILE_SIZE, y * TILE_SIZE, roadTile);
   // 투명 칩이 lower 에 단독이면 투명 부분이 검게 보임 → 정책이 정한 받침 타일과 합성.
-  const backingTile = isDefaultTilesetTexture(tileset) ? tileBackingTile(tileset, tile) : null;
+  const backingTile = tileBackingTile(tileset, tile);
   if (backingTile !== null) {
     return createBackedTileObject(scene, tileset, x, y, tile, backingTile);
   }

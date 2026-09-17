@@ -105,6 +105,8 @@ export function villageDomainArgs(request: AuthorVillageRequest): VillageBuildDo
     ...(request.forestDensity ? { forestDensity: request.forestDensity } : {}),
     ...(request.groundTheme === undefined ? {} : { groundTheme: request.groundTheme }),
     ...(request.settlementLayout === undefined ? {} : { settlementLayout: request.settlementLayout }),
+    ...(request.morphology === undefined ? {} : { morphology: request.morphology }),
+    ...(request.relief === undefined ? {} : { relief: request.relief }),
     ...(request.npcCount === undefined ? {} : { npcCount: request.npcCount }),
     ...(request.residents === undefined ? {} : { npcs: request.residents }),
     ...(request.seed === undefined ? {} : { seed: request.seed }),

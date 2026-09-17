@@ -3,7 +3,7 @@ import { configForLegacySupervisor } from "./ultrabrainConfig";
 import { genId as newCheckpointRunId } from "@/util/id";
 import { readLatestRunCheckpoint, saveRunCheckpoint, type RunCheckpoint, type RunCheckpointKey } from "./runCheckpointStore";
 import { checkpointContentIdentity, reconcileRunCheckpoint, type RunRecovery, type RunRuntimeState } from "./runRecovery";
-import { ACCEPTANCE_EXAMPLES, acceptanceRecord, missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise, type AcceptanceSource, type RequirementWithdrawalAction } from "./assistantAcceptance";
+import { ACCEPTANCE_EXAMPLES, acceptanceRecord, type AcceptanceSnapshot, type AcceptancePromise, type AcceptanceSource, type RequirementWithdrawalAction } from "./assistantAcceptance";
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 import { type ResultReview, type ReviewFinding } from "./independentReview";
 import type { LintIssue } from "@/project/lint/projectLint";
@@ -1288,47 +1288,31 @@ export class AssistantSession {
     onEvent?.({ type: "acceptance", snapshot });
   }
 
-  private spatialAcceptanceRequired(): boolean {
-    const intent = this.turnIntent;
-    if (this.turnComposerMode === "ask" || intent?.mode === "question") return false;
-    if (intent && (intent.mode === "create" || intent.mode === "modify")
-      && (intent.space !== "none" || intent.targetMapId !== null)) return true;
-    const names = [...(intent?.tools ?? []), ...(this.workPlan?.layers.flatMap(layer => layer.items.flatMap(item => item.successTools ?? [])) ?? [])];
-    return names.some(name => this.isSpatialAcceptanceTool(name));
-  }
-
-  private isSpatialAcceptanceTool(name: string): boolean {
-    const tool = getTool(name);
-    return tool?.mode === "write" && (tool.domains?.includes("map") === true || SPATIAL_BUILD_TOOLS.has(name) || TILE_WRITE_TOOLS.has(name));
-  }
-
   private adoptPlanAcceptance(onEvent?: (event: SessionEvent) => void): void {
     const plan = this.workPlan;
     this.adoptAcceptance(plan?.acceptance || plan?.requirements
       ? [...(plan.acceptance ?? []), ...(plan.requirements ?? [])] : undefined, onEvent);
   }
 
+  /**
+   * 2026-09-17 수용 원장(acceptance ledger) 해체.
+   *
+   * 실측(최대 런 첫 턴 526 s): 절반이 `review_acceptance` 41회 중 38회 실패였다. 사유는 전부
+   * `image-review-unavailable` — 타일셋 그래프트 렌더가 안 돼 imageReviewed 기준을 영영 만족할 수 없는데
+   * 모델은 8분간 같은 도구를 두드렸다. `complete_work_item` 은 targetChange 기준이 "Draft is not yet applied"
+   * 라며 거부했다 — 초안이니 당연히 아직 적용 전이다. 원장이 스스로 만족 불가능한 계약을 세우고 그걸 근거로
+   * 완료를 막는 구조다. 결정적 lint 검사가 승인을 맡은 지금, 원장은 남길 이유가 없다.
+   *
+   * 원장을 만들지 않는다. `this.acceptance` 는 항상 null 이고, 그래서 acceptance 도구는 노출되지 않으며
+   * `acceptanceOpen()` 은 false, 자동 계속·complete_work_item·최종 문구 어디에도 개입하지 않는다.
+   * 플래너가 낸 acceptance/requirements 배열은 파싱만 되고 무시된다. 검증 요구(verification requirements) 채택은 유지.
+   */
   private adoptAcceptance(promises: readonly AcceptancePromise[] | undefined, onEvent?: (event: SessionEvent) => void,
     request?: { readonly baseline: Project; readonly source: AcceptanceSource }): void {
-    if (!promises && (this.acceptance || !this.spatialAcceptanceRequired())) {
-      this.adoptVerificationRequirements();
-      return;
-    }
-    const goal = this.acceptance?.goal ?? this.workPlan?.goal ?? this.currentTurnInstruction;
-    if (!this.acceptance) {
-      this.acceptance = new AssistantAcceptanceLedger(`acceptance-${++this.acceptanceSequence}`, goal, this.acceptanceRequestBaseline, this.imageEvidence,
-        (project, requirement) => {
-          const captured = this.npcRewardRequirements;
-          const original = captured && !("invalidReason" in captured)
-            ? captured.find(entry => acceptanceFingerprint(entry) === acceptanceFingerprint(requirement)) : undefined;
-          return verifyNpcRewardsPlayable(project, [original ?? requirement], this.npcRewardWitnesses);
-        });
-      this.acceptanceAppliedProject = structuredClone(this.baselineProject);
-    }
-    this.acceptance.adopt(promises ?? missingAcceptance(goal), request?.baseline ?? this.acceptanceRequestBaseline, request?.source ?? this.acceptanceRequestSource);
-    this.publishAcceptance(onEvent);
-    const malformed = this.acceptance.getSnapshot().items.filter(item => item.issues?.length);
-    if (malformed.length) this.pushOrchestrationMessage(`Acceptance contract requires repair before content generation. Use repair_acceptance for these item IDs; valid promises and baselines remain unchanged.\n${JSON.stringify({ code: "malformed-criteria", items: malformed })}`);
+    void onEvent; void request;
+    if (promises?.length) this.pushAudit({ kind: "status", text: `acceptance:disabled — 플래너 수용 계약 ${promises.length}건을 기록만 하고 강제하지 않습니다` });
+    this.adoptVerificationRequirements();
+    return;
   }
 
   getVerificationSnapshot(includeAttempts = true) { return this.verificationEvidence.snapshot(includeAttempts); }
@@ -5186,9 +5170,6 @@ export class AssistantSession {
               }
             }
           } else {
-            if (!this.acceptance && this.isSpatialAcceptanceTool(name)) {
-              this.adoptAcceptance(missingAcceptance(this.currentTurnInstruction), publishToolEvent);
-            }
             const readGate = tool?.mode === "write" ? this.readEvidence.beforeWrite(this.ctx.project, name, args) : null;
             const dedupeKey = writeDedupeKey(name, args);
             const cached = dedupeKey ? this.turnWriteDedupe.get(dedupeKey) : undefined;

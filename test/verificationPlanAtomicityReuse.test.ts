@@ -1,5 +1,8 @@
 // 검증 계획 원자성 매트릭스 3/3 — 재사용·장면 상호작용 계열.
 // 자매 파일: ...Atomicity.test.ts(1/3), ...Ownership.test.ts(2/3).
+// 2026-09-17 수용 원장 해체: 수용 기준(acceptance reachability)에서 파생되던 검증 소유권 재사용 테스트
+// ("exact … reuses an accepted criterion", "pending criterion-reference resolution", "a malformed new scope …")는 삭제했다.
+// 남은 것은 작업 계획 항목이 직접 선언한 verificationChecks 의 원자성 계약이다. acceptance 스냅샷 단언은 뺐다(항상 null).
 import { describe, expect, it } from "vitest";
 import { fixture, paths, rejected } from "./helpers/verificationPlanAtomicityFixture";
 
@@ -9,10 +12,7 @@ describe.each(paths)("atomic verification adoption via %s", path => {
     await f.setup();
     const turn = await f.replace(path, f.plan([f.check(f.changed), { tool: f.name, criterion: { promiseId: "missing", criterionIndex: 0 } }]));
     if (turn.result?.ok === false) rejected(turn);
-    else {
-      expect(f.session.getVerificationSnapshot().requirements.filter(check => check.args === null)).toHaveLength(1);
-      expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
-    }
+    else expect(f.session.getVerificationSnapshot().requirements.filter(check => check.args === null)).toHaveLength(1);
   });
 
   it("compatible repeated pending resolution preserves ID, owner and targets but needs fresh execution", async () => {
@@ -24,7 +24,8 @@ describe.each(paths)("atomic verification adoption via %s", path => {
     expect(f.session.getVerificationSnapshot().requirements).toEqual([expect.objectContaining({ checkId: pending.checkId,
       ownerId: pending.ownerId, mapTargets: pending.mapTargets, args: f.args, status: "unverified" })]);
     await f.send([f.probe(), { name: "complete_work_item", args: {} }]);
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
+    expect(f.session.getVerificationSnapshot().requirements).toEqual([expect.objectContaining({ checkId: pending.checkId, status: "passed" })]);
+    expect(f.session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("done");
   });
 
   it.each(["omitted", "changed"])("specified retained targets cannot be %s at any proof status", async variant => {
@@ -38,21 +39,6 @@ describe.each(paths)("atomic verification adoption via %s", path => {
       rejected(await f.replace(path, candidate), original.checkId);
     }
   }, 30000);
-
-  it.each(["reference", "exact-args"])("exact %s reuses an accepted criterion without losing independent declarations", async variant => {
-    const f = fixture();
-    const plan = f.plan();
-    plan.acceptance.push({ id: "route", title: "Route", criteria: [{ kind: "reachability", target: { mapId: f.mapId }, from: f.route.from, to: f.route.targets }] });
-    await f.send([{ name: "set_work_plan", args: plan }, f.probe()]);
-    const original = f.session.getVerificationSnapshot().requirements[0]!;
-    expect(original).toMatchObject({ status: "passed", criterion: { promiseId: "route", criterionIndex: 0 } });
-    const declaration = variant === "reference" ? { tool: f.name, criterion: original.criterion } : f.check();
-    const turn = await f.replace(path, f.plan([declaration]));
-    if (path === "tool") expect(turn.result?.ok).toBe(true);
-    expect(f.session.getVerificationSnapshot()).toEqual(turn.before.verification);
-    await f.replace(path, f.plan([declaration, f.check(f.changed)]));
-    expect(f.session.getVerificationSnapshot().requirements).toEqual([original, expect.objectContaining({ args: f.changed, status: "unverified" })]);
-  });
 
   it("rejection preserves an existing negative finding and its exact proof history", async () => {
     const f = fixture();
@@ -72,21 +58,6 @@ describe.each(paths)("atomic verification adoption via %s", path => {
     expect(f.session.getVerificationSnapshot().requirements).toEqual([original]);
   });
 
-  it("pending criterion-reference resolution retains owner and needs new exact execution", async () => {
-    const f = fixture();
-    const pending = await f.setup("unverified", null);
-    await f.send([f.probe()]);
-    const candidate = f.plan([{ tool: f.name, checkId: pending.checkId, criterion: { promiseId: "new-route", criterionIndex: 0 } }]);
-    candidate.acceptance.push({ id: "new-route", title: "New", criteria: [{ kind: "reachability", target: { mapId: f.mapId }, from: f.route.from, to: f.route.targets }] });
-    const turn = await f.replace(path, candidate);
-    if (path === "tool") expect(turn.result?.ok).toBe(true);
-    expect(f.session.getVerificationSnapshot().requirements.find(check => check.checkId === pending.checkId)).toMatchObject({
-      ownerId: pending.ownerId, mapTargets: pending.mapTargets, args: f.args, status: "unverified", criterion: { promiseId: "new-route", criterionIndex: 0 },
-    });
-    await f.send([f.probe(), { name: "complete_work_item", args: {} }]);
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
-  });
-
   it.each(["invalid-id", "discarded-item", "alias-array"])("raw declaration preflight survives %s normalization", async variant => {
     const f = fixture();
     const original = await f.setup();
@@ -102,19 +73,6 @@ describe.each(paths)("atomic verification adoption via %s", path => {
       Reflect.deleteProperty(layer, "items");
     }
     rejected(await f.replace(path, candidate), variant === "invalid-id" ? undefined : original.checkId);
-  });
-
-  it("a malformed new scope cannot silently reuse an unrelated accepted criterion", async () => {
-    const f = fixture();
-    const plan = f.plan();
-    plan.acceptance.push({ id: "route", title: "Route", criteria: [{ kind: "reachability", target: { mapId: f.mapId }, from: f.route.from, to: f.route.targets }] });
-    await f.send([{ name: "set_work_plan", args: plan }, f.probe()]);
-    const turn = await f.replace(path, f.plan([{ tool: f.name, args: { mapId: f.mapId } }]));
-    if (turn.result?.ok === false) rejected(turn);
-    else {
-      expect(f.session.getVerificationSnapshot().requirements.filter(check => check.args === null)).toHaveLength(1);
-      expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
-    }
   });
 
   it("scene interaction ownership is immutable even with identical executable args", async () => {
