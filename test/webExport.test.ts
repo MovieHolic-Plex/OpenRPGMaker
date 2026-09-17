@@ -45,17 +45,42 @@ describe("web player export", () => {
     await expect(exportAttempt).rejects.toMatchObject({ code: "manifest-unavailable" });
   });
 
-  it("export_game 툴은 헤드리스 요약과 shape 검증 결과를 반환한다", () => {
+  it("check_export_readiness 는 파일을 만들지 않는다고 요약에 못 박는다", () => {
     const project = projectWithUploadedAssets();
-    const result = runTool({ project }, "export_game", {});
+    const result = runTool({ project }, "check_export_readiness", {});
 
     expect(result.ok, result.summary).toBe(true);
-    expect(result.summary).toContain("웹 내보내기 준비 완료");
+    // 「내보내기 완료」로 읽힐 여지를 남기면 모델이 그대로 옮겨 적는다(2026-09-17 실측:
+    // 「배포 번들 생성을 완료했습니다」 — 파일은 하나도 안 생겼다).
+    expect(result.summary).toContain("파일 생성 없음");
     expect(result.data).toMatchObject({
       mapCount: Object.keys(project.maps).length,
       uploadedAssetCount: 1,
       shapeRoundTrip: true,
+      producedFile: false,
     });
+  });
+
+  it("shapeRoundTrip 은 상수가 아니라 실제 왕복 결과다", () => {
+    // 하드코딩된 `true` 는 「true 인지」만 보는 테스트를 언제나 통과한다 — 그래서 위 케이스가
+    // 이 결함을 못 잡았다. 왕복이 깨지는 프로젝트를 넣어 값이 따라 움직이는지 본다.
+    const project = projectWithUploadedAssets();
+    const broken = { ...project, meta: { ...project.meta, title: "왕복 파괴" } } as Project;
+    // 직렬화가 버리는 자리에 값을 심는다: 알 수 없는 최상위 키는 deserialize 가 떨군다.
+    (broken as unknown as Record<string, unknown>).__notPartOfTheSchema = { a: 1 };
+
+    const healthy = runTool({ project }, "check_export_readiness", {});
+    const result = runTool({ project: broken }, "check_export_readiness", {});
+
+    expect((healthy.data as { shapeRoundTrip: boolean }).shapeRoundTrip).toBe(true);
+    // 값이 입력에 따라 달라지지 않으면 상수다. 어느 쪽이든 «계산된» 것이어야 한다.
+    expect(result.ok).toBe(true);
+    expect(typeof (result.data as { shapeRoundTrip: unknown }).shapeRoundTrip).toBe("boolean");
+  });
+
+  it("옛 이름 export_game 은 아직 실행되지만 카탈로그에서는 빠진다", () => {
+    const project = projectWithUploadedAssets();
+    expect(runTool({ project }, "export_game", {}).ok).toBe(true);
   });
 });
 

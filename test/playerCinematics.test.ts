@@ -70,6 +70,21 @@ describe("opening at the real player shell seam", () => {
     expect(mode.startPlayGame).not.toHaveBeenCalled();
     expect(main.querySelector('[data-testid="title-screen"]')).not.toBeNull();
   });
+  it("lets the host skip the opening per run without reopening the player", async () => {
+    let playOpening = false;
+    renderPlayer(main, { autoStartRun: true, trackGlobalGame: false,
+      shouldPlayOpening: () => playOpening, onRunControlsReady: value => { controls = value; } });
+    // 오프닝을 끄면 곧장 런으로 들어간다 — 타이틀/세션 우회 없이도.
+    expect(main.querySelector('[data-testid="cinematic-sequence"]')).toBeNull();
+    expect(mode.startPlayGame).toHaveBeenCalledTimes(1);
+
+    playOpening = true;
+    controls.restartRun();
+    // 같은 창에서 다시 켜면 다음 런부터 오프닝이 돌아온다.
+    expect(main.querySelector('[data-testid="cinematic-sequence"]')).not.toBeNull();
+    expect(mode.startPlayGame).toHaveBeenCalledTimes(1);
+    await Promise.resolve();
+  });
   it.each(["loaded", "test-here", "selected-event"] as const)("bypasses opening for %s", async kind => {
     const session = startSession(project);
     renderPlayer(main, { trackGlobalGame: false,

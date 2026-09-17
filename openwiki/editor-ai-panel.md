@@ -1,5 +1,38 @@
 # Editor AI Panel & Tools
 
+## 밑그림이 Pi 경로로 돌아왔다 — 워커가 툴마다 `map_delta` 를 흘린다 (2026-09-17)
+
+사용자 지적: 「AI 에이전트들이 뭘 하는지 실시간으로 보였는데 지금 아예 안 보인다」. 원인은 고스트
+고장이 아니라 **경로 이사**다. 조수 채팅의 평문 지시는 2026-09-11 이후 전부 `runPiTurn` 으로 가는데,
+`src/ai/piAgent/**` 와 `aiPiAgentCommand.ts` 에는 고스트 호출이 **한 줄도 없었다**. 고스트를 먹이는
+코드는 옛 세션 러너(`aiTurnRunner.ts`)와 영역 파이프라인에만 있다.
+
+구조적 이유: Pi 는 루프가 Bun 워커에 있고 결과 프로젝트가 **맨 끝 `done` 에만** 실린다. 그래서
+base↔초안 diff 로 굴러가던 고스트가 턴 내내 먹을 재료가 없었다.
+
+| 조각 | 자리 | 계약 |
+| --- | --- | --- |
+| 증분 | `src/ai/piAgent/mapDelta.ts` | `diffMapsForDelta(before, after)` / `applyMapDeltas(maps, deltas)`. 순수 함수 한 쌍이라 워커·브라우저가 같은 코드를 쓴다. 손대지 않은 맵은 **같은 객체 그대로** 돌려준다(43맵 프로젝트에서 이 동일성이 곧 비용이다). |
+| 발행 | `scripts/lib/piAgentRuntime.ts` | `tool_execution_end` 마다 섀도우와 `ctx.project.maps` 를 견줘 `map_delta` 를 낸다. 섀도우는 **한 번만** 복제하고 증분으로 따라간다 — 툴마다 다시 복제하면 호출 하나가 수십 MB 다. 순서 계약: `tool_end` → `map_delta`. 마지막 한 방울을 `done` 직전에 한 번 더 낸다. |
+| 수신 | `src/editor/panels/aiPiGhostBridge.ts` | 초안 맵을 증분 복원하고 **기존 고스트 기계를 그대로** 돌린다(`replaceAgentGhostPreviewFromProjectDiff`). 스로틀·flush·cancel 은 세션 경로와 같은 `createThrottledAgentGhostPreviewUpdater` 다. `setAgentGhostDraftMapProvider` 로 초안 맵을 공급해 렌더러가 컴포지터 경로(오토타일·밑동 합성)를 쓴다 — 없으면 셀이 단색 사각형이 된다. |
+| 배선 | `src/editor/panels/aiPiAgentCommand.ts` | 다리는 실행당 **하나**이고 이벤트 래퍼가 전부 그곳을 지난다 — 단일·병렬·팀이 같은 길이다(팀은 `agent_event` 한 겹만 벗긴다). 병렬·팀에서 에이전트마다 소유한 맵이 달라 증분은 그대로 겹쳐 쌓인다. |
+
+인코딩: 바뀐 칸이 층의 **8분의 1** 을 넘으면 칸 목록 대신 층 배열을 통째로 싣는다(칸 하나가 JSON 약
+16바이트, 배열 한 칸이 약 2바이트라 그 지점에서 통째가 싸다). 맵 크기가 바뀌면 인덱스 의미가 달라져
+언제나 통째다. **맵 밖 변경(데이터베이스·퀘스트·스위치)은 담지 않는다** — 캔버스에 그릴 자리가 없고,
+최상위 키를 통째로 나르는 설계는 실측으로 기각됐다(tilesets 1,501 KB · database 485 KB).
+
+밑그림 수명: 실행 내내 → 「검토 대기」 동안 **남는다**(사용자가 적용·버리기를 고르는 화면이 곧 판단
+재료다) → 적용·버리기·중단·실패·변경 없음에서 `dispose()`. 적용 직전에 지우는 것은 세션 경로의
+`aiProposalCard.applyProposal` 과 같은 관례다 — 초안이 진짜 타일이 되면 같은 그림이 두 겹으로 남는다.
+
+게이트: `test/e2e/pi-ghost-live.spec.ts` — `/v1/agent/run` 을 페이지 안에서 NDJSON 으로 대본화하고
+`done` 직전에 스트림을 붙잡아 「턴 도중」 창을 만든다(`route.fulfill` 은 본문을 한 덩어리로 줘서 이
+창이 안 생긴다). 세 경계를 단언한다: 턴 도중 마커·칸 수·실행 중 도구 → 검토 대기까지 잔존 → 버리면
+0. 세션 경로만 보던 `test/e2e/agent-ghost-sequence.spec.ts` 는 이 회귀를 못 잡는다. 단위는
+`test/piAgentMapDelta.test.ts`(증분 왕복 9건) · `test/aiPiGhostBridge.test.ts`(다리 8건).
+눈 증거: `node scripts/capture-pi-ghost-live.mjs` → `output/evidence/pi-ghost-live/`.
+
 ## 턴 슬롯은 의도 분류 전에 잡는다 + Pi 턴 감사 누적 (2026-09-16)
 
 실측(2026-09-16, 실제 OAuth 모델 `google-antigravity`/`gemini-3.7-flash` 로 조수를 구동): 전송 직후
@@ -2057,7 +2090,7 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 
 - Save/import/export flows are centered in `src/editor/saveActions.ts` and the store/persistence layer in `src/project/store.ts`; check adjacent editor actions if a UI button needs to trigger them.
 
-- `게임 > ?대낫?닿린...` is the web-player export path. It calls `createWebPlayerExportPackage()` to serialize the current project as `project.json`, prune event drafts and unused uploaded assets, collect runtime public assets, include the prebuilt `dist/export-player` bundle, and download one ZIP without adding JSZip. The headless read tool `export_game {}` uses the same preparation path and returns map count, asset count, estimated JSON bytes, and shape-roundtrip status without triggering a browser download.
+- `게임 > ?대낫?닿린...` is the web-player export path. It calls `createWebPlayerExportPackage()` to serialize the current project as `project.json`, prune event drafts and unused uploaded assets, collect runtime public assets, include the prebuilt `dist/export-player` bundle, and download one ZIP without adding JSZip. The headless read tool `check_export_readiness {}` uses the same preparation path and returns map count, asset count, estimated JSON bytes, and a genuinely computed shape-roundtrip status. It produces **no file** — `data.producedFile` is always `false`, and its summary says so, because the old name `export_game` led the model to report 「배포 번들 생성을 완료했습니다」 when nothing had been written (2026-09-17). `export_game` still executes under the old name but is marked deprecated and dropped from the catalog.
 
 - Project menu creation flows distinguish blank authoring from sample content: `???꾨줈?앺듃` clears to `createBlankProject()`, while `?덉젣濡??쒖옉` loads `createSampleAdventureProject()` (?딆씠??마을??醫끹?editor-export fixture). Keep that separation when adding project-start entry points.
 

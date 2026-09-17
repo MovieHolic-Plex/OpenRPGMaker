@@ -1,3 +1,4 @@
+import tiboRecovered from "./tiboRecoveredTileset.json";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { loadUploadedTilesets, registerUploadedTilesets } from "./uploadedTilesets";
 import type Phaser from "phaser";
@@ -72,6 +73,7 @@ const CORE_BUNDLED_IMAGE_ASSETS = [
 ] as const satisfies readonly BundledImageAsset[];
 
 export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
+  {textureKey:"tex_tibo_interior_expanded",path:"assets/tibo-interior/interior-expanded.png",name:"실내 확장 · Tibo"},
   { textureKey: "tex_easyrpg_chipset_dungeon", path: "assets/easyrpg-chipset-dungeon-transparent.png", name: "던전 · EasyRPG (CC0)" },
   { textureKey: "tex_easyrpg_chipset_interior", path: "assets/easyrpg-chipset-interior-transparent.png", name: "실내 · EasyRPG (CC0)" },
   { textureKey: "tex_easyrpg_chipset_ship", path: "assets/easyrpg-chipset-ship-transparent.png", name: "배 · EasyRPG (CC0)" },
@@ -85,6 +87,8 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   { textureKey: "tex_modern_exteriors_nocturne", path: "assets/modern-exteriors/modern-city-atlas.png", name: "Modern Exteriors · 네온 녹턴" },
   ...SCARLOXY_CHIPSET_ASSETS,
 ] as const satisfies readonly BundledImageAsset[];
+
+export function bundledChipsetFrameCount(key: string): number { return key === "tex_tibo_interior_expanded" ? tiboRecovered.count : TILE_FRAME_COUNT; }
 
 export function bundledEasyRpgTilesetId(textureKey: string): string {
   return textureKey.startsWith("tex_") ? textureKey.slice(4) : textureKey;
@@ -172,7 +176,7 @@ export function registerBundledFrames(scene: Phaser.Scene, project?: Project): v
       console.error(`[assets] ${asset.textureKey} 가 로드되지 않았습니다. EasyRPG ChipSet 파일을 확인하세요.`);
       continue;
     }
-    registerTileFrames(scene, asset.textureKey);
+    registerTileFrames(scene, asset.textureKey, bundledChipsetFrameCount(asset.textureKey));
   }
   registerTileAnimations(scene, [
     TEX_TILESET,

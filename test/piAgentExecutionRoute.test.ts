@@ -25,7 +25,7 @@ describe("자율성 다이얼 → Pi 실행 계획", () => {
     // Break: readOnly 가 꺼지면 질문 턴이 프로젝트를 바꾼다 — 다이얼이 「읽기 전용」인데 실행되면
     // 사용자가 고른 유일한 안전장치가 사라진다.
     expect(resolvePiRunPlan(resolveAutonomy("readonly"))).toEqual({
-      readOnly: true, planOnly: false, maxTurns: 4, thinkingLevel: "low",
+      readOnly: true, planOnly: false, maxTurns: 10, thinkingLevel: "low",
     });
   });
   it("계획(확인) 턴은 실행도 막는다", () => {
@@ -33,15 +33,25 @@ describe("자율성 다이얼 → Pi 실행 계획", () => {
     const plan = resolvePiRunPlan(resolveAutonomy("confirm"));
     expect(plan.readOnly).toBe(true);
     expect(plan.planOnly).toBe(true);
-    expect(plan.maxTurns).toBe(6);
+    expect(plan.maxTurns).toBe(10);
   });
-  it("실행 레벨은 예산·추론이 단조 증가한다", () => {
+  it("실행 레벨은 턴 상한·추론이 단조 증가한다", () => {
     const balanced = resolvePiRunPlan(resolveAutonomy("balanced"));
     const autonomous = resolvePiRunPlan(resolveAutonomy("autonomous"));
     const max = resolvePiRunPlan(resolveAutonomy("max"));
     expect([balanced.readOnly, balanced.planOnly]).toEqual([false, false]);
-    expect([balanced.maxTurns, autonomous.maxTurns, max.maxTurns]).toEqual([16, 32, 48]);
+    expect([balanced.maxTurns, autonomous.maxTurns, max.maxTurns]).toEqual([40, 60, 120]);
     expect([balanced.thinkingLevel, autonomous.thinkingLevel, max.thinkingLevel]).toEqual(["low", "medium", "high"]);
+  });
+  // Break: 여기서 budgetCap(도구 호출 예산)을 다시 집어넣으면 「균형」이 16턴으로 돌아가고,
+  // 다이얼을 고르는 것이 **안 고르는 것**(워커 기본 40턴)보다 나빠진다 — 2026-09-17 에 재현한
+  // 턴 상한 중단 7건 중 4건이 이 조합이었다. 자율성 레벨은 turn 예산에서만 값을 가져온다.
+  it("턴 상한은 도구 호출 예산이 아니라 piMaxTurns 에서 온다", () => {
+    for (const level of ["balanced", "autonomous", "max"] as const) {
+      const autonomy = resolveAutonomy(level);
+      expect(resolvePiRunPlan(autonomy).maxTurns, level).toBe(autonomy.piMaxTurns);
+      expect(resolvePiRunPlan(autonomy).maxTurns, level).not.toBe(autonomy.budgetCap);
+    }
   });
 });
 

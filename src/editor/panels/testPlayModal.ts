@@ -39,9 +39,34 @@ let playRunControls: PlayerRunControls | null = null;
 // 타이틀 건너뛰기 체크박스. 저장된 선호를 화면에 드러내는 유일한 노드이므로, 버튼이
 // 선호를 바꿀 때마다 같이 맞춰준다(숨은 상태가 다음 실행을 바꾸는 일을 없앤다).
 let skipTitleCheckbox: HTMLInputElement | null = null;
+// 오프닝 건너뛰기 체크박스. 타이틀 건너뛰기와 같은 규칙으로 저장된 선호를 드러낸다.
+let skipOpeningCheckbox: HTMLInputElement | null = null;
 
 /** 작업자가 마지막으로 고른 자동 시작 여부. 기본값은 ON — 편집→테스트 왕복에서 타이틀 걷기를 없앤다. */
 const AUTO_START_STORAGE_KEY = `${STORAGE_PREFIX}test-play-auto-start`;
+
+/**
+ * 오프닝 시네마틱을 건너뛸지. 기본값은 OFF(= 오프닝 재생) — 타이틀 건너뛰기를 켜도 오프닝은
+ * 나오던 기존 동작을 그대로 두고, 반복 테스트에서만 끌 수 있게 한다.
+ */
+const SKIP_OPENING_STORAGE_KEY = `${STORAGE_PREFIX}test-play-skip-opening`;
+
+export function readTestPlaySkipOpening(): boolean {
+  try {
+    return window.localStorage.getItem(SKIP_OPENING_STORAGE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function writeTestPlaySkipOpening(skipOpening: boolean): void {
+  try {
+    window.localStorage.setItem(SKIP_OPENING_STORAGE_KEY, skipOpening ? "1" : "0");
+  } catch {
+    /* private mode / quota — 선택을 기억하지 못해도 테스트는 계속 돌아야 한다. */
+  }
+  if (skipOpeningCheckbox) skipOpeningCheckbox.checked = skipOpening;
+}
 
 export function readTestPlayAutoStart(): boolean {
   try {
@@ -98,6 +123,8 @@ export async function openTestPlayModal(
       // 전체 테스트 플레이 창은 창을 가득 채운다(정수 배율이면 1214x640 창에서 27% 만 그렸다).
       surfaceScaleMode: "fit",
       autoStartRun: readTestPlayAutoStart(),
+      // 런이 시작될 때마다 다시 읽는다 — 창을 열어둔 채 체크박스를 바꿔도 다음 런부터 바로 먹는다.
+      shouldPlayOpening: () => !readTestPlaySkipOpening(),
       safeMode: openOptions.safeMode === true,
       // 예비검사가 고친 항목은 부팅을 막지 않고 토스트로만 드러낸다(실제 부팅은 고친 프로젝트로 돌아간다).
       onBootRepairs: (repairs) => toast(`시작 전 자동 복구: ${repairs.join(" · ")}`, "info"),
@@ -278,6 +305,7 @@ export function closeTestPlayModal(): void {
   battleSceneController = null;
   playRunControls = null;
   skipTitleCheckbox = null;
+  skipOpeningCheckbox = null;
   removePlayWindowKeydown?.();
   removePlayWindowKeydown = null;
   // Runtime teardown must finish while store.getCurrent() still resolves to the
@@ -353,6 +381,19 @@ function openTestPlayShell(
     dataset: { testid: "test-play-skip-title-label" },
     children: [skipTitleInput, " 타이틀 건너뛰기"],
   });
+  // 오프닝도 같은 선택지다: 타이틀을 건너뛰어도 오프닝은 매 런마다 다시 나왔다.
+  const skipOpeningInput = el("input", {
+    attrs: { type: "checkbox" },
+    dataset: { testid: "test-play-skip-opening" },
+  }) as HTMLInputElement;
+  skipOpeningInput.checked = readTestPlaySkipOpening();
+  skipOpeningInput.addEventListener("change", () => setSkipOpening(skipOpeningInput.checked));
+  const skipOpeningLabel = el("label", {
+    class: "test-play-close test-play-skip-title",
+    attrs: { title: "체크하면 오프닝 시네마틱을 건너뛰고 바로 플레이한다" },
+    dataset: { testid: "test-play-skip-opening-label" },
+    children: [skipOpeningInput, " 오프닝 건너뛰기"],
+  });
   const restoreButton = el("button", {
     class: "test-play-close window-control restore",
     text: "창",
@@ -378,7 +419,7 @@ function openTestPlayShell(
       dataset: { testid: "mode-edit" },
       on: { click: () => closeTestPlayModal() },
     }),
-    ...(shellOptions.runControls ? [skipTitleLabel, restartRunButton, bootTitleButton] : []),
+    ...(shellOptions.runControls ? [skipTitleLabel, skipOpeningLabel, restartRunButton, bootTitleButton] : []),
     restoreButton,
     maximizeButton,
     el("button", {
@@ -419,7 +460,10 @@ function openTestPlayShell(
   // 모달 뒤의 편집기 게임은 그릴 필요도, 키를 받을 이유도 없다 — 플레이 프레임에 양보한다.
   suspendEditorGame();
   windowNode.dataset.editorGameSuspended = String(isEditorGameSuspended());
-  if (shellOptions.runControls) skipTitleCheckbox = skipTitleInput;
+  if (shellOptions.runControls) {
+    skipTitleCheckbox = skipTitleInput;
+    skipOpeningCheckbox = skipOpeningInput;
+  }
   restoreButton.addEventListener("click", () => setTestPlayWindowMode(windowNode, "windowed"));
   maximizeButton.addEventListener("click", () => setTestPlayWindowMode(windowNode, "fullscreen"));
   removePlayWindowKeydown = bindPlayWindowHotkeys(windowNode, shellOptions.runControls === true);
@@ -444,6 +488,17 @@ function setSkipTitle(skipTitle: boolean): void {
     return;
   }
   bootPlayTitle();
+}
+
+// 오프닝 선택도 지금 창에 바로 보여야 한다. 타이틀 선호는 건드리지 않고 현재 시작 방식대로 다시 연다
+// (자동 시작이면 런을 다시, 타이틀 모드면 타이틀로 — 다음 «새 게임» 이 새 선택으로 열린다).
+function setSkipOpening(skipOpening: boolean): void {
+  writeTestPlaySkipOpening(skipOpening);
+  if (readTestPlayAutoStart()) {
+    playRunControls?.restartRun();
+    return;
+  }
+  playRunControls?.returnToTitle();
 }
 
 function setTestPlayWindowMode(windowNode: HTMLElement, mode: TestPlayWindowMode): void {

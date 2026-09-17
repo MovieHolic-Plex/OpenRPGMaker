@@ -22,11 +22,18 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import http from "node:http";
 import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
+import { isLinkedWorktree, MAIN_DEV_PORT } from "./lib/worktreeDevPort.mjs";
 
 applyLegacyEnvAliases();
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const PORT = Number(process.env.OPRN_DEV_PORT || 9999);
+const PORT = Number(process.env.OPRN_DEV_PORT || MAIN_DEV_PORT);
+// 이 스크립트는 포트를 쥔 프로세스를 죽여서(freePort) 자리를 만든다. 워크트리에서 기본값으로 돌리면
+// 메인 체크아웃의 9999 서버를 죽이고 그 자리에 남의 브랜치를 앉힌다 — 명시 포트 없이는 거절한다.
+if (isLinkedWorktree(ROOT) && !process.env.OPRN_DEV_PORT) {
+  console.error(`[dev:keep] 이 디렉터리는 git 워크트리다. ${MAIN_DEV_PORT} 는 메인 체크아웃의 포트라 keepalive 를 거절한다 — 'npm run dev:worktree' 를 쓰거나 OPRN_DEV_PORT=<이 워크트리의 고정 포트> 를 명시하라.`);
+  process.exit(2);
+}
 const HOST = process.env.OPRN_DEV_HOST || "0.0.0.0";
 const RESTART_MS = Number(process.env.OPRN_DEV_RESTART_MS || 1500);
 const HEALTH_MS = Number(process.env.OPRN_DEV_HEALTH_MS || 5000);

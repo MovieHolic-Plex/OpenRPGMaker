@@ -40,11 +40,12 @@ describe("tool command-row titles", () => {
     const log = document.createElement("div");
     const host = createConversationLogHost({
       log,
-      revealVolatileZone: () => undefined,
       removeStartScreen: () => undefined,
     });
-    host.appendToolLine("paint_road", { ok: true, summary: "paint_road" });
-    return log;
+    // 툴 행은 로그가 아니라 작업 띠로 간다 — 만들어진 행 자체를 본다.
+    const entry = host.appendToolLine("paint_road", { ok: true, summary: "paint_road" });
+    if (!entry) throw new Error("쓰기 툴 행이 만들어져야 한다");
+    return entry;
   }
 
   it("hides raw ids in standard plain-language titles", () => {

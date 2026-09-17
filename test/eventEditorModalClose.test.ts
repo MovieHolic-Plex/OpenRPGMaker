@@ -74,6 +74,13 @@ function keydown(key: string): KeyboardEvent {
   return event as KeyboardEvent;
 }
 
+/** 백드롭에서 시작한 닫기 제스처 — 맵 더블클릭이 열어 둔 직후의 유령 click 과 구분한다. */
+function dismissViaBackdrop(): void {
+  const node = modal();
+  node.dispatchEvent(new Event("pointerdown", { bubbles: true }));
+  node.click();
+}
+
 describe("event editor modal close draft cleanup", () => { beforeEach(() => {
   _resetEventDraftVaultForTest();
   restoreFakeDom = installFakeDom();
@@ -111,7 +118,7 @@ for (const closeAttempt of ["cancel", "escape", "backdrop"] as const) {
 
     if (closeAttempt === "cancel") document.querySelector<HTMLElement>('[data-testid="event-editor-cancel"]')?.click();
     if (closeAttempt === "escape") modal().dispatchEvent(keydown("Escape"));
-    if (closeAttempt === "backdrop") modal().click();
+    if (closeAttempt === "backdrop") dismissViaBackdrop();
     await Promise.resolve();
 
     // 가드 다이얼로그가 뜨고 모달은 아직 살아 있어야 한다(무경고 데이터 손실 금지).
@@ -134,7 +141,7 @@ for (const closeAttempt of ["cancel", "escape", "backdrop"] as const) {
 
     if (closeAttempt === "cancel") document.querySelector<HTMLElement>('[data-testid="event-editor-cancel"]')?.click();
     if (closeAttempt === "escape") modal().dispatchEvent(keydown("Escape"));
-    if (closeAttempt === "backdrop") modal().click();
+    if (closeAttempt === "backdrop") dismissViaBackdrop();
     await Promise.resolve();
 
     document.querySelector<HTMLElement>('[data-testid="app-modal-cancel"]')?.click();
@@ -174,6 +181,16 @@ it("closes silently on cancel when nothing changed", () => {
   expect(document.querySelector('[data-testid="app-modal-confirm"]')).toBeNull();
   expect(document.querySelector('[data-testid="event-editor-modal"]')).toBeNull();
   expect(store.getCurrent().maps[store.getCurrent().startMapId].events[0]?.draft).toBeUndefined();
+});
+
+it("does not close when the opening map double-click's click lands on the backdrop", () => {
+  // 스튜디오 모니터는 뷰포트 중앙이 아니다. 맵 더블클릭의 두 번째 click 은
+  // pointerdown 이 캔버스에서 난 채로, 방금 열린 백드롭(창 바깥 어두운 면)에 떨어진다.
+  // 그 click 으로 닫히면 편집기가 열린 것처럼 보이다가 바로 사라진다.
+  seedOpenEventEditor();
+  modal().click();
+  expect(document.querySelector('[data-testid="event-editor-modal"]')).not.toBeNull();
+  expect(document.querySelector('[data-testid="app-modal-confirm"]')).toBeNull();
 });
 
 it("keeps Apply changes as the new draft baseline and discards only later edits", async () => {

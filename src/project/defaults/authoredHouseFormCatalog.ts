@@ -18,6 +18,7 @@
 //  · 레시피는 원점(0,0) 기준. doorAt 은 문 두 칸의 아래쪽 칸(stampHouseDoorBackground 규약).
 
 import type { HouseKitId } from "@/editor/houseKit";
+import { REFERENCE_HOUSE_FORM_DEFS } from "./referenceHouseFormCatalog";
 
 export interface AuthoredHouseFormRow {
   /** 하위 레이어 셀 — -1 은 그대로 둔다. */
@@ -40,9 +41,15 @@ export interface AuthoredHouseFormDef {
   /** 지상층 문 위치 — 두 칸 문의 아래쪽 칸(레시피 로컬 좌표). */
   readonly doorAt: { readonly x: number; readonly y: number };
   readonly rows: readonly AuthoredHouseFormRow[];
+  /**
+   * 완성 맵 참고 사례에서 잘라 온 형태면 그 출처 — regionReferences 항목 id 와 원본 좌상단.
+   * 마을 시공기가 layoutPlan 태그(reference:<id>)로 남기고, 테스트가 스냅샷과 셀 일치를 확인한다.
+   */
+  readonly reference?: { readonly id: string; readonly x: number; readonly y: number };
 }
 
-export const AUTHORED_HOUSE_FORM_DEFS: readonly AuthoredHouseFormDef[] = [
+/** 손으로 굳힌 형태. 참고 사례에서 잘라 온 형태는 아래 AUTHORED_HOUSE_FORM_DEFS 에서 합친다. */
+export const HAND_AUTHORED_HOUSE_FORM_DEFS: readonly AuthoredHouseFormDef[] = [
   {
     // '고양이' 프로젝트 맵에 유저가 직접 그린 2층 저택을 셀 단위로 굳힌 형태.
     // 탑 지붕(계단 사선) + 우측 슬라브 + 중간 회벽(2층 발코니 문) + 발코니 데크·난간
@@ -77,6 +84,15 @@ export const AUTHORED_HOUSE_FORM_DEFS: readonly AuthoredHouseFormDef[] = [
       { tiles: [75, 76, 76, 76, 76, 76, 76, 76, 76, 76, 76, 76, 77] },
     ],
   },
+];
+
+/**
+ * 저작 형태 전체 = 손으로 굳힌 형태 + 참고 사례(정주지·왕궁 도시)에서 잘라 온 형태.
+ * author_house 의 templateId 열거와 마을 시공기의 슬롯 후보가 같은 목록을 본다.
+ */
+export const AUTHORED_HOUSE_FORM_DEFS: readonly AuthoredHouseFormDef[] = [
+  ...HAND_AUTHORED_HOUSE_FORM_DEFS,
+  ...REFERENCE_HOUSE_FORM_DEFS,
 ];
 
 /** id로 저작 형태를 찾는다. 알 수 없는 id는 undefined — 호출부가 다른 카탈로그로 넘긴다. */

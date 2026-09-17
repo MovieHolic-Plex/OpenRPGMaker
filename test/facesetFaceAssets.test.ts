@@ -10,12 +10,12 @@ import {
 } from "@/assets/facesetFaceAssets";
 
 describe("얼굴 낱장 에셋 목록", () => {
-  it("8장의 시트를 16칸씩 쪼갠 128개 낱장을 등록한다", () => {
-    expect(LEGACY_FACESET_SHEET_IDS).toHaveLength(8);
-    expect(FACESET_FACE_ASSETS).toHaveLength(128);
+  it("83장의 시트를 16칸씩 쪼갠 1328개 낱장을 등록한다", () => {
+    expect(LEGACY_FACESET_SHEET_IDS).toHaveLength(83);
+    expect(FACESET_FACE_ASSETS).toHaveLength(1328);
 
     const ids = new Set(FACESET_FACE_ASSETS.map((face) => face.id));
-    expect(ids.size).toBe(128);
+    expect(ids.size).toBe(1328);
     for (const sheetId of LEGACY_FACESET_SHEET_IDS) {
       expect(FACESET_FACE_ASSETS.filter((face) => face.sheetResourceId === sheetId)).toHaveLength(16);
     }
@@ -30,7 +30,7 @@ describe("얼굴 낱장 에셋 목록", () => {
     for (const id of GENERATED_FACESET_FACE_IDS) {
       expect(id.startsWith("generated-actor-hero-")).toBe(true);
     }
-    expect(AUTHORABLE_FACESET_FACE_ASSETS).toHaveLength(128 - GENERATED_FACESET_FACE_IDS.size);
+    expect(AUTHORABLE_FACESET_FACE_ASSETS).toHaveLength(1328 - GENERATED_FACESET_FACE_IDS.size);
     for (const face of AUTHORABLE_FACESET_FACE_ASSETS) {
       expect(GENERATED_FACESET_FACE_IDS.has(face.id)).toBe(false);
     }
@@ -81,5 +81,24 @@ describe("얼굴 낱장 에셋 목록", () => {
       sheetResourceId: "generated-actor-hero-01-face",
       sheetIndex: 0,
     });
+  });
+});
+
+// A surviving UI alone is not a complete import: all common character sets must
+// resolve to sixteen physical assets and retain their stable resource ids.
+describe("복구된 공용 표정", () => {
+  it("76캐릭터의 1216표정을 중복 없이 제공한다", async () => {
+    const { FACE_EXPRESSION_SETS } = await import("@/assets/faceExpressionSets");
+    expect(FACE_EXPRESSION_SETS).toHaveLength(76);
+    const allFaces = FACE_EXPRESSION_SETS.flatMap(set => [...set.faces]);
+    expect(allFaces).toHaveLength(1216);
+    expect(new Set(allFaces.map(face => face.id)).size).toBe(1216);
+    for (const set of FACE_EXPRESSION_SETS) {
+      expect(set.faces).toHaveLength(16);
+      expect(set.faces.every(face => face.sheetResourceId === set.id)).toBe(true);
+    }
+    for (const stem of ["monster-white-dragon", "monster-hood-skeleton", "monster-beast", "monster-red-helm"]) {
+      expect(FACE_EXPRESSION_SETS.some(set => set.id === `shared-${stem}-expressions`)).toBe(true);
+    }
   });
 });

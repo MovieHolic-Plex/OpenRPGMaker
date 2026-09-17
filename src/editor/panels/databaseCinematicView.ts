@@ -9,6 +9,8 @@ import {
 } from "@/editor/panels/databaseCinematicControls";
 import { cinematicGameOverForm, cinematicSceneForm } from "@/editor/panels/databaseCinematicForms";
 import { createCinematicMediaFields } from "@/editor/panels/databaseCinematicMediaFields";
+import { createOpeningPresetGallery } from "@/editor/panels/databaseCinematicPresetGallery";
+import { buildOpeningPresetSequence } from "@/editor/openingPresets";
 import {
   createDatabaseCinematicPreview,
   type DatabaseCinematicPreview,
@@ -221,9 +223,26 @@ export function renderDatabaseCinematicTab(
         startPreview,
       ],
     });
+    // 프리셋은 오프닝 전용이다 — 게임 오버는 종료 메뉴 문구와 엮여 있어 통째로 갈아 끼울 게 아니다.
+    const presets = target === "opening" ? createOpeningPresetGallery({
+      sceneCount: () => actions.read()?.scenes.length ?? 0,
+      setStatus,
+      applyPreset: preset => {
+        if (!usable()) return false;
+        const applied = actions.applySequence(buildOpeningPresetSequence(preset, {
+          title: store.getCurrent().meta.title,
+        }), `「${preset.name}」 프리셋`);
+        if (applied) {
+          // 새 장면 id 로 갈렸으니 선택을 첫 장면으로 되돌린다.
+          selectedId = "";
+          redraw();
+        }
+        return applied;
+      },
+    }) : undefined;
     const scene = scenes.find(entry => entry.id === selectedId);
     const formContext = { actions, usable, mediaField: media.field };
-    sceneForm.replaceChildren(flags, scene ? cinematicSceneForm({
+    sceneForm.replaceChildren(...(presets ? [presets] : []), flags, scene ? cinematicSceneForm({
       ...formContext,
       scene,
       scenes,

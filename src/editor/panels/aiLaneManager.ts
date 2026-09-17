@@ -19,12 +19,14 @@ import {
   type LaneState,
 } from "@/ai/piAgent/lane";
 import { mapBundleSpill, mergeMapBundles } from "@/ai/piAgent/mapBundle";
+import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
 import type { PiAgentDoneEvent, PiAgentEvent, PiAgentRequest } from "@/ai/piAgent/protocol";
 import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
 import { authorMergedSpatialProposal } from "@/editor/tools/spatialToolState";
+import type { LaneGhostSink } from "./aiLaneGhost";
 
 export interface LaneApplySuccess {
   readonly ok: true;
@@ -56,6 +58,8 @@ export interface LaneManagerOptions {
   readonly clock?: () => number;
   readonly runAgent?: LaneAgentRunner;
   readonly onChange?: (lanes: readonly LaneState[]) => void;
+  /** 캔버스 시공 표시. 비우면 그리지 않는다(순수 테스트). 세션 매니저는 aiLaneGhost 를 꽂는다. */
+  readonly ghost?: LaneGhostSink;
 }
 
 export interface LaneStartOptions {
@@ -93,6 +97,7 @@ function describeToolArgs(args: unknown): string {
 export function createLaneManager(options: LaneManagerOptions = {}): LaneManager {
   const clock = options.clock ?? (() => Date.now());
   const runAgent: LaneAgentRunner = options.runAgent ?? ((request, runOptions) => runPiAgentViaCompanion(request, runOptions));
+  const ghost = options.ghost;
   const order: string[] = [];
   const states = new Map<string, LaneState>();
   const controllers = new Map<string, AbortController>();
@@ -137,6 +142,7 @@ export function createLaneManager(options: LaneManagerOptions = {}): LaneManager
     const controller = new AbortController();
     controllers.set(id, controller);
     update(id, { type: "start", base, at: clock(), ...(options.instruction === undefined ? {} : { instruction: options.instruction }) });
+    ghost?.start(id, base);
     update(id, { type: "step", step: { kind: "system", text: `출발 · ${lane.spec.agentLabel} · ${lane.spec.provider}/${lane.spec.model} · 음 ${lane.spec.mapIds.join(", ")}` } });
 
     const request: PiAgentRequest = {
@@ -150,6 +156,7 @@ export function createLaneManager(options: LaneManagerOptions = {}): LaneManager
       ...(lane.spec.thinkingLevel === undefined ? {} : { thinkingLevel: lane.spec.thinkingLevel }),
     };
     const onEvent = (event: PiAgentEvent): void => {
+      ghost?.handleEvent(id, event);
       switch (event.type) {
         case "heartbeat":
           return;
@@ -191,10 +198,13 @@ export function createLaneManager(options: LaneManagerOptions = {}): LaneManager
         summary: `툴콜 ${done.stats.toolCalls}회 · 바뀐 키 ${done.changedKeys.length}개`,
       };
       update(id, { type: "done", result, at: clock() });
+      // 결과 대기 동안 고스트는 남는다 — 사람이 «무엇이 바뀔지» 를 보고 적용·버리기를 고른다.
+      ghost?.finish(id, done.project, states.get(id)?.bundleIds ?? lane.spec.mapIds);
       return { ok: true };
     } catch (error) {
       const aborted = controller.signal.aborted;
       const message = error instanceof Error ? error.message : String(error);
+      ghost?.drop(id);
       if (aborted) { update(id, { type: "stopped", at: clock() }); return { ok: false, issue: "중단했습니다" }; }
       update(id, { type: "error", message, at: clock() });
       return { ok: false, issue: message };
@@ -223,6 +233,17 @@ export function createLaneManager(options: LaneManagerOptions = {}): LaneManager
     // 이미 묶음 키 비교로 걸렀고 지금 프로젝트 위에 묶음만 얹었으므로, 살아있는 문서 기준으로
     // 증거를 다시 찍는다 — 계층 문서가 달라졌다면 그대로 거절된다.
     authorMergedSpatialProposal(merged.project, current);
+    // 레인은 무인 실행이라 모달을 띄울 사람이 없다 — 대신 규모를 레인 알림에 실어 사람이 보드에서
+    // 본 뒤 결정하게 한다. 조용히 통과시키면 스튜디오 보드가 「맵 전부 지워줘」류를 확인 없이
+    // 확정하는 두 번째 구멍이 된다(채팅 경로는 2026-09-17 에 그 구멍으로 맵 12개를 잃었다).
+    const laneLoss = mapLossConfirmRequest(current, merged.project);
+    if (laneLoss) {
+      return {
+        ok: false,
+        reason: "commit-rejected",
+        issue: `${laneLoss.confirmLabel} — 레인은 맵·이벤트가 사라지는 변경을 자동 확정하지 않습니다. 채팅에서 같은 지시를 내려 확인 후 적용하세요.`,
+      };
+    }
     const applied = await applyProposedProject(merged.project, {
       // 기준은 «지금» 으로 새로 잡는다. 제안 자체가 지금 위에 얹힌 것이므로 전체 등가 기준을
       // 그대로 요구하면 이 레인이 방금 읽은 그 기준과 같아 통과한다. 묶음 충돌은 위에서 이미 걸렀다.
@@ -243,6 +264,7 @@ export function createLaneManager(options: LaneManagerOptions = {}): LaneManager
     }
     const spills = merged.spills.flatMap((entry) => entry.keys);
     update(id, { type: "applied" });
+    ghost?.drop(id);
     return { ok: true, changedKeys: lane.result.changedKeys, spills };
   };
 
@@ -259,6 +281,7 @@ export function createLaneManager(options: LaneManagerOptions = {}): LaneManager
     remove: (id) => {
       controllers.get(id)?.abort();
       controllers.delete(id);
+      ghost?.drop(id);
       states.delete(id);
       const index = order.indexOf(id);
       if (index >= 0) order.splice(index, 1);
@@ -267,9 +290,13 @@ export function createLaneManager(options: LaneManagerOptions = {}): LaneManager
     start: startLane,
     stop: (id) => {
       controllers.get(id)?.abort();
+      ghost?.drop(id);
       if (states.has(id)) update(id, { type: "stopped", at: clock() });
     },
-    discard: (id) => { if (states.has(id)) update(id, { type: "discarded" }); },
+    discard: (id) => {
+      ghost?.drop(id);
+      if (states.has(id)) update(id, { type: "discarded" });
+    },
     apply: applyLane,
     defaults: () => {
       const config = loadAiConfig();
@@ -284,6 +311,7 @@ export function createLaneManager(options: LaneManagerOptions = {}): LaneManager
       for (const controller of controllers.values()) controller.abort();
       controllers.clear();
       listeners.clear();
+      ghost?.dispose();
     },
   };
 }

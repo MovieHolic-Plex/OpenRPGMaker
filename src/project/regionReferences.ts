@@ -1,7 +1,9 @@
+import { SHIP_PLACE_REFERENCES, shipPlaceSnapshot } from "./shipPlaceReferences";
 import emeraldSnapshot from "./regionReferences/emerald-basin.json";
 import snapshot from "./regionReferences/walled-settlement.json";
 import lakeSnapshot from "./regionReferences/lake-village.json";
 import castleSnapshot from "./regionReferences/castle-town.json";
+import { REFERENCE_HOUSE_FORM_DEFS } from "./defaults/referenceHouseFormCatalog";
 
 /** Fixed authored examples, independent of procedural RegionDesign and the active project. */
 export const REGION_REFERENCES = [{
@@ -63,7 +65,7 @@ const LAKE_PLACE_REFERENCES = [
 
 
 /** Shipped place examples remain visible even in a new, empty project. */
-export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, {
+export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFERENCES, {
   id: "emerald-basin-80x64", name: "비취 대계곡", kind: "completed-place" as const,
   placeKind: "natural" as const, revision: 1, x: 0, y: 0, width: 80, height: 64,
   tilesetId: emeraldSnapshot.tileset.id,
@@ -92,7 +94,7 @@ export function readRegionReference(id: string, row = 0, rows = 8) {
     throw new Error("row must be within the map; rows must be 1..16");
   }
   const place = LAKE_PLACE_REFERENCES.find(p => p.id === id);
-  const source = reference.id === "emerald-basin-80x64" ? emeraldSnapshot : reference.id === "castle-town-100x100" ? castleSnapshot : reference.id === "walled-settlement-43x45" ? snapshot : lakeSnapshot;
+  const source = shipPlaceSnapshot(id) ?? (reference.id === "emerald-basin-80x64" ? emeraldSnapshot : reference.id === "castle-town-100x100" ? castleSnapshot : reference.id === "walled-settlement-43x45" ? snapshot : lakeSnapshot);
   const crop = (tiles: number[]) => Array.from({length: reference.height}, (_, y) => tiles.slice((y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0), (y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0) + reference.width)).flat();
   const selected = place ? { ...source, map: { ...source.map, width: place.width, height: place.height, lowerTiles: crop(source.map.lowerTiles), upperTiles: crop(source.map.upperTiles), events: [] } } : source;
   const endRow = Math.min(reference.height, row + rows), { map, tileset } = selected;
@@ -108,8 +110,19 @@ export function readRegionReference(id: string, row = 0, rows = 8) {
   } });
 }
 
+/**
+ * 참고 사례에서 저작 카탈로그로 옮겨진 집 형태 안내 — 그림만 보고 끝나지 않게, 모델이 바로 지목할
+ * templateId 를 준다(2026-09-17: 정주지 4종·왕궁 도시 23종).
+ */
+function referenceHouseFormNote(referenceId: string): string {
+  const forms = REFERENCE_HOUSE_FORM_DEFS.filter(form => form.reference?.id === referenceId);
+  if (forms.length === 0) return "";
+  const first = forms[0]!.id, last = forms[forms.length - 1]!.id;
+  return `\n집 형태 ${forms.length}종은 저작 카탈로그에 있다(templateId ${first}~${last}) — author_house templateId 와 author_village housePlans[].templateId 로 그대로 짓고, 마을 시공기 기본 후보에도 섞인다. 폭 9 이상(${forms.filter(form => form.w > 8).map(form => form.id).join(", ") || "없음"})은 author_house 전용.`;
+}
+
 export function regionReferenceContext(): string {
   return "## 지역 — 완성 맵 참고 사례\n" + [...REGION_REFERENCES, ...PLACE_REFERENCES].map(r =>
-    `- ${r.name} (${r.id}, ${r.width}×${r.height}): ${r.rules.join(" ")}\n실제 배치: read_region_reference({id:'${r.id}',row:0,rows:8}), nextRow로 이어 읽기. 읽기 전용 참고 자료이며 생성 계약이 아니다.`
+    `- ${r.name} (${r.id}, ${r.width}×${r.height}): ${r.rules.join(" ")}\n실제 배치: read_region_reference({id:'${r.id}',row:0,rows:8}), nextRow로 이어 읽기. 읽기 전용 참고 자료이며 생성 계약이 아니다.${referenceHouseFormNote(r.id)}`
   ).join("\n");
 }

@@ -8,6 +8,7 @@ import type { SpatialToolProof } from "@/editor/tools/spatialToolState";
 // 프로젝트가 실린다. 적용은 브라우저의 커밋 게이트가 그대로 맡는다.
 
 import type { Project } from "@/project/types";
+import type { PiMapDelta } from "./mapDelta";
 import type { PiTeamSpec } from "./teamSpec";
 
 export type PiAgentThinkingLevel = "off" | "low" | "medium" | "high";
@@ -24,6 +25,12 @@ export interface PiAgentRequest {
   readonly task: string;
   /** 에이전트가 소유하는 맵. 비우면 프로젝트 전체가 작업 범위다. */
   readonly mapIds: readonly string[];
+  /**
+   * `mapIds` 가 **계약**인가(사용자가 `/pi 맵id …` 로 직접 적었다), 아니면 단순 기본 대상인가.
+   * 기본 true — 옛 호출자(CLI·테스트)의 뜻은 「이 맵들만」이었다. 평문 채팅 턴만 false 로 보낸다.
+   * 계약일 때만 시스템 프롬프트가 「범위 밖은 건드리지 마라」를 말하고 병합이 실제로 버린다.
+   */
+  readonly scopeStrict?: boolean;
   /**
    * 사용자가 지금 보고 있는 맵. 팀장이 「여기」「이 맵」을 해석하는 기준이자, 다른 맵을 지목하지 않은 지시의 기본 대상이다.
    * 후보(mapIds)를 제한하지 않는다 — 실측(2026-09-15) 팀 모드가 이걸 버려 팀장이 43맵 중 엉뚱한 마을에 배정했다.
@@ -94,6 +101,12 @@ export type PiAgentEvent =
   | { readonly type: "assistant"; readonly text: string }
   | { readonly type: "tool_start"; readonly id: string; readonly name: string; readonly args: unknown }
   | { readonly type: "tool_end"; readonly id: string; readonly name: string; readonly ok: boolean; readonly summary: string }
+  /**
+   * 툴이 맵에 한 일. 바뀐 칸만 싣는다 — 캔버스 시공 표시(고스트)가 턴 내내 먹는 재료다.
+   * 결과 프로젝트는 맨 끝 `done` 에만 실리므로, 이게 없으면 턴이 끝날 때까지 캔버스가 조용하다.
+   * 맵 밖 변경(데이터베이스·퀘스트·스위치)은 그릴 자리가 없어 담지 않는다.
+   */
+  | { readonly type: "map_delta"; readonly maps: readonly PiMapDelta[] }
   | { readonly type: "error"; readonly message: string }
   /**
    * 쓰기 실행의 정본 증거. 프루프가 객체 정체성에 살아 이 경계를 넘지 못하므로 다이제스트로

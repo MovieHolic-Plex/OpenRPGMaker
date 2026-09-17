@@ -117,7 +117,7 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
 
 1. 병렬이 필요하면 `npm run wt create <name>` 로 **에이전트마다 격리 워크트리**를 만든다.
    절차·함정은 `openwiki/agent-worktrees.md` 참조. 다른 도구가 만든 워크트리(`.herdr/`, `.claude/worktrees/`)는
-   `node_modules`·`.env.local`·고유 포트가 없으므로 `npm run wt -- adopt <이름> --path <경로>` 로 먼저 보정한다 —
+   `node_modules`·`.env.local` 이 없으므로 `npm run wt -- adopt <이름> --path <경로>` 로 먼저 보정한다(dev 포트는 `npm run dev:worktree` 가 스스로 고정 배정한다; `npm run dev` 는 워크트리에서 거절된다) —
    보정 없이 실행하면 전역 tsc 가 잡혀 **저장소 설정이 깨진 것처럼 보이는 가짜 오류**가 난다 (`openwiki/quickstart.md` 1절).
 2. **저작 콘텐츠(맵·이벤트·데모) 작업은 워크트리로 병렬화하지 않는다.** Supabase 프로젝트 행이
    공유 싱글턴이라 git 이 충돌을 못 본다 — 직렬화하거나 project id 를 분리한다.
