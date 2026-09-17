@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **70쪽 / 2872KB / 약 811,903 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **70쪽 / 2874KB / 약 812,353 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 460KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2555 | ~131,547 |
+| `openwiki/editor-ai-panel.md` | 462KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2575 | ~131,997 |
 | `openwiki/editor-ai-tools.md` | 203KB | 85KB ⚠상한 초과 — 절을 더 쪼개라 | 1581 | ~57,042 |
 | `openwiki/editor-database.md` | 321KB | 61KB ⚠상한 초과 — 절을 더 쪼개라 | 1874 | ~93,139 |
 | `openwiki/editor-event-authoring.md` | 142KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 758 | ~40,840 |
@@ -34,7 +34,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/editor-ai-panel.md` | 25 | 2055, 2056, 2057, 2058, 2059, 2060, 2074, 2084 |
+| `openwiki/editor-ai-panel.md` | 25 | 2075, 2076, 2077, 2078, 2079, 2080, 2094, 2104 |
 | `openwiki/editor-ai-tools.md` | 6 | 1197, 1198, 1202, 1204, 1206, 1394 |
 | `openwiki/editor-database.md` | 7 | 778, 782, 783, 784, 793, 819, 822 |
 | `openwiki/editor-event-authoring.md` | 16 | 324, 325, 328, 333, 334, 335, 336, 337 |
@@ -55,7 +55,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/bgm-catalog.md` | 4 | `artifacts/bgm-release/bgm-release-v1.json`, `catalog.raw.json`, `output/evidence/agy-interface-smoke-transcript.json`, `output/evidence/audio-ai-final/ingestion-report.json` |
 | `openwiki/connected-dungeon-generation.md` | 1 | `verify-shots/runtime-qa/connected-dungeon-editor/SUMMARY.md` |
 | `openwiki/delayed-tooltip.md` | 1 | `src/styles/editor/delayed-tooltip.css` |
-| `openwiki/editor-ai-panel.md` | 67 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `06-page-modern-forms.css`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiTeamDeck.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `assistantP2ReviewIntegration.test.ts`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `functionalCompositeClarification.test.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/acceptance-live/README.md`, `output/evidence/ai-team-budget/SUMMARY.json`, `output/evidence/ai-team-sidebar/SUMMARY.md`, `output/evidence/assistant-clean-glass/phase-2/implementation.md`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `output/evidence/studio-drawer/qa/capture-report.json`, `output/evidence/ultrabrain/settings.png`, `plan-wire.json`, `regionIntentRouter.ts`, `review-input.png`, `roles-wire.json`, `scripts/qa/assistant-side-seam-hittest.mjs`, `specialists.png`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `src/styles/editor/ghost-phase-chip.css`, `test/agentBlueprintTurnEnd.test.ts`, `test/aiChatObservability.test.ts`, `test/aiChatPanelUxRepairs.test.ts`, `test/aiChatSessionScope.test.ts`, `test/aiComposerEffortPanel.test.ts`, `test/aiConversationRemoteHistory.test.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/aiNewGoalDraftRetirement.test.ts`, `test/aiNewGoalEarlyOwnership.test.ts`, `test/aiPanelContextSurfaces.test.ts`, `test/aiStickyChecklist.test.ts`, `test/aiToolCallSessionProtocol.test.ts`, `test/aiWorkItemStall.test.ts`, `test/assistantAcceptance.test.ts`, `test/assistantAcceptanceSession.test.ts`, `test/assistantImageTransport.test.ts`, `test/assistantSpatialObligations.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/editSceneCameraFocus.test.ts`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/regionTaskRun.test.ts`, `test/tilesetAiClient.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts`, `writer-wire.json` |
+| `openwiki/editor-ai-panel.md` | 68 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `06-page-modern-forms.css`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiPendingReview.ts`, `aiSkillDrawer.ts`, `aiTeamDeck.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `assistantP2ReviewIntegration.test.ts`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `functionalCompositeClarification.test.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/acceptance-live/README.md`, `output/evidence/ai-team-budget/SUMMARY.json`, `output/evidence/ai-team-sidebar/SUMMARY.md`, `output/evidence/assistant-clean-glass/phase-2/implementation.md`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `output/evidence/studio-drawer/qa/capture-report.json`, `output/evidence/ultrabrain/settings.png`, `plan-wire.json`, `regionIntentRouter.ts`, `review-input.png`, `roles-wire.json`, `scripts/qa/assistant-side-seam-hittest.mjs`, `specialists.png`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `src/styles/editor/ghost-phase-chip.css`, `test/agentBlueprintTurnEnd.test.ts`, `test/aiChatObservability.test.ts`, `test/aiChatPanelUxRepairs.test.ts`, `test/aiChatSessionScope.test.ts`, `test/aiComposerEffortPanel.test.ts`, `test/aiConversationRemoteHistory.test.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/aiNewGoalDraftRetirement.test.ts`, `test/aiNewGoalEarlyOwnership.test.ts`, `test/aiPanelContextSurfaces.test.ts`, `test/aiStickyChecklist.test.ts`, `test/aiToolCallSessionProtocol.test.ts`, `test/aiWorkItemStall.test.ts`, `test/assistantAcceptance.test.ts`, `test/assistantAcceptanceSession.test.ts`, `test/assistantImageTransport.test.ts`, `test/assistantSpatialObligations.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/editSceneCameraFocus.test.ts`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/regionTaskRun.test.ts`, `test/tilesetAiClient.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts`, `writer-wire.json` |
 | `openwiki/editor-ai-tools.md` | 21 | `aiCommandBar.ts`, `aiProposalModal.ts`, `projectWikiSession.test.ts`, `tabs-b-assistant-panel.css`, `test/aiEventPlacementSurfaceGate.test.ts`, `test/aiStaleProposal.test.ts`, `test/aiToolCallSessionProtocol.test.ts`, `test/aiToolDiscoveryEscalation.test.ts`, `test/applyProposedProjectHouseProtection.test.ts`, `test/assistantMapPreservationGuard.test.ts`, `test/clusterAiModalHouseProtection.test.ts`, `test/elementRatesPartialAccept.test.ts`, `test/intentClarify.test.ts`, `test/npcCastSession.test.ts`, `test/projectLint.test.ts`, `test/propRejectionDiagnostics.test.ts`, `test/questGraph.test.ts`, `test/refactorTools.test.ts`, `test/regionTaskRun.test.ts`, `test/volumeContractSession.test.ts`, `test/worldAiExclusion.test.ts` |
 | `openwiki/editor-database.md` | 41 | `.oprn-kit.json`, `builtinHouseStructureKits.ts`, `databaseCinematics.test.ts`, `desktop-record-shell.css`, `desktop-record-shell/13-actor-studio.css`, `editor-actor2.png`, `editor-conflict.png`, `editor-no-match.png`, `enemy-art-NNN.png`, `form-hierarchy-modern.css`, `houseKitTools.ts`, `observations.json`, `output/evidence/battle-animation-ux/p1-implementation.md`, `output/evidence/battle-animation-ux/p2-implementation.md`, `output/evidence/battle-rules-ux/st_01a07318-manual-qa.md`, `output/evidence/battle-rules-ux/verification.md`, `output/evidence/character-face-correction/actor2-before-after.png`, `output/evidence/concept-expansion/supabase-proof.json`, `output/evidence/concept-v2/supabase-proof.json`, `output/evidence/monster-concepts/b1/fix.md`, `output/evidence/monster-concepts/p2/verification.md`, `output/evidence/monster-concepts/r1/fix.md`, `output/evidence/places-ux-audit/after/card-outline.png`, `output/evidence/system-studio/system-studio-backed-settings-1586x992.png`, `output/spatial-ux-verify.mjs`, `reports/generated-effect-showcase-2026-08-24.html`, `reveal-fix.md`, `scripts/generate-default-item-icons.mts`, `scripts/lib/effectSheet/paintersMonster.mjs`, `scripts/lib/effectSheet/paintersUtility.mjs`, `scripts/tmp-phase3-probe.mjs`, `src/styles/editor/harness-suggestion.css`, `test/databaseModalAiConnection.test.ts`, `test/databaseStudioV2.test.ts`, `test/databaseSystemView.test.ts`, `test/databaseTilesetFolder.test.ts`, `test/p0ProjectSchema.test.ts`, `test/spatialLegacyImport.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `troops.part-1.css`, `verify-shots/runtime-qa/menu-eras/EDITOR.md` |
 | `openwiki/editor-event-authoring.md` | 14 | `03-legend-toolbar.css`, `05-force-modern-actor-page3.css`, `audit-before.md`, `event-editor-ai.css`, `event-editor.balanced.css`, `event-editor.part-3/08-inline-validation-badges.css`, `new-editor/REPORT.html`, `output/evidence/event-ai-assist-ux/960x900-compact.png`, `scripts/generated/toolCatalog.json`, `src/styles/editor/event-editor.balanced.css`, `src/styles/editor/event-editor.modernize.css`, `test/eventEditorTrustLoop.test.ts`, `verify-shots/page-preview-probe/02-preview-open.png`, `verify-shots/runtime-qa/cheolsu-keyboard-fixed/SUMMARY.md` |
@@ -77,7 +77,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/runtime-battle.md` | 8 | `battle.css`, `hero-03-battle-idle.png`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `raw.png`, `reference.png`, `src/styles/runtime/battle.css`, `src/styles/runtime/battle/18-pokemon-layout-redesign.css`, `starter/hires/hero-0N-battle.png` |
 | `openwiki/runtime-m2-flow-controls.md` | 3 | `test/runtimePictureStacking.test.ts`, `verify-shots/runtime-qa/cloud-shadows/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md` |
 | `openwiki/runtime-pre-edit-routing.md` | 4 | `editor/core.part-1.css`, `test/playerInputCss.test.ts`, `test/runtimeQaInstrumentationBoundary.test.ts`, `verify-shots/runtime-qa/emote/SUMMARY.md` |
-| `openwiki/runtime-project-schema.md` | 19 | `.json`, `.png`, `devMediaPromotion.test.ts`, `interiorLoadConsistency.test.ts`, `mediaImportDurability.test.ts`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `src/project/supabaseProjectSync.ts`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/io.test.ts`, `test/mapPlanningReuse.test.ts`, `test/sharedDemoStore.test.ts`, `test/supabaseCanonicalRoundtrip.live.test.ts`, `test/supabaseMapPatchRecovery.test.ts`, `test/supabaseProjectSync.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `transactionalRemoteSourceLineage.test.ts` |
+| `openwiki/runtime-project-schema.md` | 20 | `.json`, `.png`, `devMediaPromotion.test.ts`, `dist-electron/main.cjs`, `interiorLoadConsistency.test.ts`, `mediaImportDurability.test.ts`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `src/project/supabaseProjectSync.ts`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/io.test.ts`, `test/mapPlanningReuse.test.ts`, `test/sharedDemoStore.test.ts`, `test/supabaseCanonicalRoundtrip.live.test.ts`, `test/supabaseMapPatchRecovery.test.ts`, `test/supabaseProjectSync.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `transactionalRemoteSourceLineage.test.ts` |
 | `openwiki/runtime-sessions.md` | 2 | `output/evidence/stardew/stardew-supabase.json`, `verify-shots/runtime-qa/menu-design/SUMMARY.md` |
 | `openwiki/se-catalog.md` | 8 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `labels.json`, `placed.json`, `test/audioDescriptionCommandSurfaces.test.ts` |
 | `openwiki/spatial-authoring-controller.md` | 1 | `storeMutationInstrumentation.test.ts` |
@@ -264,74 +264,75 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L54` 설치 지점
 - `L60` 테스트
 
-### `openwiki/editor-ai-panel.md` — 460KB · 2555줄 · ~131,547 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 462KB · 2575줄 · ~131,997 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
-- `L3` 팀 분업 유즈케이스와 맵 밖 작업 배정 (2026-09-18)
-- `L31` 팀 내 A2A 메시징 (2026-09-18)
-- `L62` 왼쪽 AI 대화 + 오른쪽 팀원 아바타 (2026-09-18)
-- `L103` 빈 대화의 읽기 전용 프로젝트 제안 (2026-09-18)
-- `L113` 팀 설정 목록과 편집 화면 (2026-09-18)
-- `L122` 밑그림이 Pi 경로로 돌아왔다 — 워커가 툴마다 `map_delta` 를 흘린다 (2026-09-17)
-- `L155` 턴 슬롯은 의도 분류 전에 잡는다 + Pi 턴 감사 누적 (2026-09-16)
-- `L179` 결과 보고서 모달 — 변경 지점마다 before/after 한 쌍 (2026-09-15, P2)
-- `L200` 조수 데크 「대화|작업」 탭 + 스튜디오 상세 — 팀원이 어디서 일하는지 한 곳 (2026-09-14, A안)
-- `L234` 조수 채팅은 Pi 하나다 — 세션 경로를 걷어냈다 (2026-09-11)
-- `L317` 단독 작업은 결과 중심으로 표시한다 (2026-09-14)
-- `L337` 단순 생성·수정은 계획 필요 여부로 실행한다 (2026-09-18 갱신)
-- `L365` Five model roles and whole-map harmony review (2026-09-14)
-  - `L413` 검수 응답 재시도와 정직한 보고 (2026-09-16)
-- `L463` Retained map planning items and explicit reuse (2026-09-10, OPRN-019)
-- `L504` Run outcome line: four independent axes (2026-09-09)
-- `L555` P3 run retirement and stale drafts (2026-09-07)
-- `L635` Map-scoped conversation archive (2026-09-08)
-  - `L695` Editor history surface
-- `L737` Independent result review and repair (2026-09-06)
-- `L840` Combined P2 and independent-review ownership (2026-09-07)
-- `L874` P2 run outcomes and user scope actions (2026-09-06)
-  - `L930` Canonical requirements and genuine user actions
-- `L1002` User-confirmed interaction approach correction (CR-P7-1, 2026-09-08)
-- `L1039` Live large-world QA: plan repair and final audit (2026-09-07)
-- `L1128` Assistant control audit fixes (2026-09-07)
-- `L1139` World structure activity labels (2026-09-06)
-- `L1148` Multi-map construction specifications (2026-09-06)
-- `L1215` Plan authoring has no small-plan quota (2026-09-06)
-- `L1234` Acceptance sticky note (2026-09-07)
-  - `L1284` Session-owned acceptance contract
-- `L1622` 자동 프로젝트 위키 (2026-09-07)
-- `L1654` Independent image generation settings (2026-09-07)
-- `L1655` Independent image generation settings (2026-09-08)
-- `L1693` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
-- `L1700` Map-targeted work outcomes (2026-09-06)
-- `L1715` 계획 항목의 연속 실행 증거 (2026-09-05)
-- `L1721` 계획 규모와 선언 자세 (2026-09-09)
-- `L1731` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
-- `L1740` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
-- `L1750` 조수의 맵 전환은 크로스페이드다 — 하드컷 금지 (2026-09-15)
-- `L1836` 패널 셸 · 도크 · 접기 · 컴포저
-- `L1984` 세션 수명 · 대화 컨텍스트
-- `L2001` 제안 적용 · 복구 · 완성도 린트
-- `L2088` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
-- `L2149` 영역 작업 · 시공 · 실내/집 파이프라인
-- `L2173` 툴 노출 · 프롬프트 · 의도 판정 · NPC
-- `L2187` 타일셋 이해 · 검토 위저드 (T1a/T1b)
-- `L2213` 저장 · 내보내기 · 프로젝트 생성
-- `L2221` 제공자 · OAuth · 동반 서비스
-- `L2253` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
-- `L2296` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
-- `L2329` 배치 의존성과 완료 멱등성 (2026-09-06)
-- `L2337` 모험 완료와 실제 적용 횟수 (2026-09-05)
-- `L2342` Assistant clean conversation — Phase 1 (2026-09-06)
-- `L2379` Assistant deck width resize (2026-09-07)
-  - `L2391` Legacy AI contract verification (2026-09-08)
-- `L2413` 의도 선언과 커버리지 감사는 각자 예산을 쓴다 (2026-09-16)
-- `L2430` 동반 서비스 자격: CLI 토큰 채택과 env 의 한계 (2026-09-16)
-- `L2449` 에이전트 레인 — 묶음별 병렬 실행과 레인별 적용 (2026-09-15)
-- `L2478` 스튜디오 3분할 — 가운데는 맵, 왼쪽은 실시간 조수·채팅, 오른쪽은 지금 보는 채팅 (2026-09-16)
-- `L2494` 하단 덱 → 오버레이 드로워 (2026-09-16)
-- `L2508` 수용 기준: DB 레코드 값과 지연 적용의 런 수명 (2026-09-16)
-- `L2526` 조수 턴 예산 확대 (2026-09-18)
-- `L2534` 결과 본문과 접힌 작업 과정 (2026-09-18)
-- `L2544` 팀원 작업 예산 버튼 (2026-09-18)
+- `L3` 검토 대기 액션은 작업 과정 밖에 둔다 (2026-09-18)
+- `L23` 팀 분업 유즈케이스와 맵 밖 작업 배정 (2026-09-18)
+- `L51` 팀 내 A2A 메시징 (2026-09-18)
+- `L82` 왼쪽 AI 대화 + 오른쪽 팀원 아바타 (2026-09-18)
+- `L123` 빈 대화의 읽기 전용 프로젝트 제안 (2026-09-18)
+- `L133` 팀 설정 목록과 편집 화면 (2026-09-18)
+- `L142` 밑그림이 Pi 경로로 돌아왔다 — 워커가 툴마다 `map_delta` 를 흘린다 (2026-09-17)
+- `L175` 턴 슬롯은 의도 분류 전에 잡는다 + Pi 턴 감사 누적 (2026-09-16)
+- `L199` 결과 보고서 모달 — 변경 지점마다 before/after 한 쌍 (2026-09-15, P2)
+- `L220` 조수 데크 「대화|작업」 탭 + 스튜디오 상세 — 팀원이 어디서 일하는지 한 곳 (2026-09-14, A안)
+- `L254` 조수 채팅은 Pi 하나다 — 세션 경로를 걷어냈다 (2026-09-11)
+- `L337` 단독 작업은 결과 중심으로 표시한다 (2026-09-14)
+- `L357` 단순 생성·수정은 계획 필요 여부로 실행한다 (2026-09-18 갱신)
+- `L385` Five model roles and whole-map harmony review (2026-09-14)
+  - `L433` 검수 응답 재시도와 정직한 보고 (2026-09-16)
+- `L483` Retained map planning items and explicit reuse (2026-09-10, OPRN-019)
+- `L524` Run outcome line: four independent axes (2026-09-09)
+- `L575` P3 run retirement and stale drafts (2026-09-07)
+- `L655` Map-scoped conversation archive (2026-09-08)
+  - `L715` Editor history surface
+- `L757` Independent result review and repair (2026-09-06)
+- `L860` Combined P2 and independent-review ownership (2026-09-07)
+- `L894` P2 run outcomes and user scope actions (2026-09-06)
+  - `L950` Canonical requirements and genuine user actions
+- `L1022` User-confirmed interaction approach correction (CR-P7-1, 2026-09-08)
+- `L1059` Live large-world QA: plan repair and final audit (2026-09-07)
+- `L1148` Assistant control audit fixes (2026-09-07)
+- `L1159` World structure activity labels (2026-09-06)
+- `L1168` Multi-map construction specifications (2026-09-06)
+- `L1235` Plan authoring has no small-plan quota (2026-09-06)
+- `L1254` Acceptance sticky note (2026-09-07)
+  - `L1304` Session-owned acceptance contract
+- `L1642` 자동 프로젝트 위키 (2026-09-07)
+- `L1674` Independent image generation settings (2026-09-07)
+- `L1675` Independent image generation settings (2026-09-08)
+- `L1713` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
+- `L1720` Map-targeted work outcomes (2026-09-06)
+- `L1735` 계획 항목의 연속 실행 증거 (2026-09-05)
+- `L1741` 계획 규모와 선언 자세 (2026-09-09)
+- `L1751` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
+- `L1760` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
+- `L1770` 조수의 맵 전환은 크로스페이드다 — 하드컷 금지 (2026-09-15)
+- `L1856` 패널 셸 · 도크 · 접기 · 컴포저
+- `L2004` 세션 수명 · 대화 컨텍스트
+- `L2021` 제안 적용 · 복구 · 완성도 린트
+- `L2108` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
+- `L2169` 영역 작업 · 시공 · 실내/집 파이프라인
+- `L2193` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+- `L2207` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+- `L2233` 저장 · 내보내기 · 프로젝트 생성
+- `L2241` 제공자 · OAuth · 동반 서비스
+- `L2273` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L2316` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+- `L2349` 배치 의존성과 완료 멱등성 (2026-09-06)
+- `L2357` 모험 완료와 실제 적용 횟수 (2026-09-05)
+- `L2362` Assistant clean conversation — Phase 1 (2026-09-06)
+- `L2399` Assistant deck width resize (2026-09-07)
+  - `L2411` Legacy AI contract verification (2026-09-08)
+- `L2433` 의도 선언과 커버리지 감사는 각자 예산을 쓴다 (2026-09-16)
+- `L2450` 동반 서비스 자격: CLI 토큰 채택과 env 의 한계 (2026-09-16)
+- `L2469` 에이전트 레인 — 묶음별 병렬 실행과 레인별 적용 (2026-09-15)
+- `L2498` 스튜디오 3분할 — 가운데는 맵, 왼쪽은 실시간 조수·채팅, 오른쪽은 지금 보는 채팅 (2026-09-16)
+- `L2514` 하단 덱 → 오버레이 드로워 (2026-09-16)
+- `L2528` 수용 기준: DB 레코드 값과 지연 적용의 런 수명 (2026-09-16)
+- `L2546` 조수 턴 예산 확대 (2026-09-18)
+- `L2554` 결과 본문과 접힌 작업 과정 (2026-09-18)
+- `L2564` 팀원 작업 예산 버튼 (2026-09-18)
 
 ### `openwiki/editor-ai-tools.md` — 203KB · 1581줄 · ~57,042 토큰 · 통째읽기 잘림 · 깨진 줄 6
 

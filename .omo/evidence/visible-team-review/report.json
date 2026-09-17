@@ -1,0 +1,63 @@
+{
+  "checks": [
+    {
+      "label": "Details remain collapsed",
+      "ok": true
+    },
+    {
+      "label": "Decision outside all collapsed details",
+      "ok": true
+    },
+    {
+      "label": "Apply and discard immediately visible",
+      "ok": true
+    },
+    {
+      "label": "Draft not applied before click",
+      "ok": true
+    },
+    {
+      "label": "Apply visible at 1024px",
+      "ok": true
+    },
+    {
+      "label": "No running or review-needed card after apply",
+      "ok": true
+    },
+    {
+      "label": "Apply changes canonical project",
+      "ok": true
+    },
+    {
+      "label": "Applied outcome has no pending draft",
+      "ok": true
+    },
+    {
+      "label": "Discard keeps previous canonical project",
+      "ok": true
+    },
+    {
+      "label": "Discard removes decision card",
+      "ok": true
+    },
+    {
+      "label": "Failed apply preserves visible retry and discard",
+      "ok": true
+    },
+    {
+      "label": "Failed apply does not create a running card",
+      "ok": true
+    },
+    {
+      "label": "Stale apply preserves user changes",
+      "ok": true
+    },
+    {
+      "label": "No browser errors",
+      "ok": true,
+      "detail": []
+    }
+  ],
+  "errors": [],
+  "mode": "deterministic team stream; real editor and apply/discard paths"
+}

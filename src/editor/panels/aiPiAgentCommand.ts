@@ -1,3 +1,4 @@
+import { createPendingReviewPrompt } from "./aiPendingReview";
 import { friendlyExecutionError } from "@/ai/piAgent/userFacingCopy";
 import { configForUltrabrain } from "@/ai/ultrabrainConfig";
 import { modelForRole } from "@/ai/modelRoles";
@@ -163,6 +164,9 @@ export interface PiCommandSurface {
   /** 로그에 카드 같은 임의 요소를 붙인다(변경 영수증과 같은 자리). */
   readonly appendProcess?: (text: string) => void;
   readonly appendCard: (element: HTMLElement) => void;
+  /** User decisions remain visible outside collapsed process details. */
+  readonly appendReviewPrompt?: (element: HTMLElement) => void;
+  readonly onReviewResolved?: (applied: boolean) => void;
   readonly setStatus: (text: string) => void;
   readonly getCurrentMapId: () => string | null;
   /** 패널의 중단 버튼. 끊기면 진행 중인 요청을 모두 취소하고 아무것도 적용하지 않는다. */
@@ -227,7 +231,7 @@ export async function runPiCommand(
   /** 종료 시점의 4축 하나를 게시한다. 종료 경로가 여러 개라서 하나로 모은다. */
   const publishFinalOutcome = (): void => {
     if (!surface.setRunOutcome) return;
-    const hasPendingDraft = changedCount > 0 && ((config.piApply ?? "review") !== "auto" || harmonyManualReview);
+    const hasPendingDraft = !applied && changedCount > 0 && ((config.piApply ?? "review") !== "auto" || harmonyManualReview);
     publishOutcome({
       execution: surface.signal?.aborted ? "cancelled"
         : streamErrors.length > 0 && changedCount === 0 ? "blocked" : "response-final",
@@ -654,10 +658,28 @@ export async function runPiCommand(
   };
   const reviewPreview = reviewInput ? renderChangePreviewCard(reviewInput) : null;
   // 로그 카드의 적용/버리기와 작업 탭 검토 스트립이 **같은 클로저**를 부른다 — 두 경로, 한 동작.
-  const applyReviewed = (): void => { board.setReview(null); setTeamReviewActions(null); void apply(); };
+  let applying = false;
+  let settled = false;
+  const clearReview = (): void => { settled = true; prompt.root.remove(); board.setReview(null); setTeamReviewActions(null); surface.onReviewResolved?.(applied); };
+  const applyReviewed = (): void => {
+    if (applying || settled) return;
+    applying = true;
+    prompt.setBusy(true);
+    void (async () => {
+      try {
+        const success = await apply();
+        if (success || changedCount === 0) clearReview();
+      } catch {
+        surface.appendBubble("system", "변경 내용을 적용하지 못했어요. 다시 적용하거나 변경안을 버려 주세요.");
+      } finally {
+        applying = false;
+        if (!settled) prompt.setBusy(false);
+      }
+    })();
+  };
   const discardReviewed = (): void => {
-    board.setReview(null);
-    setTeamReviewActions(null);
+    if (applying || settled) return;
+    clearReview();
     ghost.dispose();
     changedCount = 0;
     publishFinalOutcome();
@@ -666,6 +688,11 @@ export async function runPiCommand(
     surface.setStatus("대기");
     surface.appendBubble("system", "변경안을 버렸어요. 프로젝트는 그대로예요.");
   };
+  const prompt = createPendingReviewPrompt({
+    apply: applyReviewed, discard: discardReviewed,
+    ...(reviewInput ? { report: () => { openWideChangeViewer(reviewInput); } } : {}),
+  });
+  (surface.appendReviewPrompt ?? surface.appendCard)(prompt.root);
   board.setReview({
     ...(reviewPreview ? { preview: reviewPreview } : {}),
     onApply: applyReviewed,
