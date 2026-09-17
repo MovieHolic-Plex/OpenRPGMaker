@@ -291,7 +291,7 @@ function openChestUi(scene: PlaySceneContext, chest: ChestState, presentation: R
             })
           )
       );
-      const chestRows = inventoryEntries(chest.inventory)
+      const chestRows: HTMLElement[] = inventoryEntries(chest.inventory)
         .filter((entry) => matchesFilter(itemById.get(entry.itemId), entry.itemId))
         .map((entry, index) =>
           itemRow({
