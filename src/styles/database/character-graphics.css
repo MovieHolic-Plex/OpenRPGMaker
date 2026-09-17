@@ -181,3 +181,12 @@
   margin: var(--space-2) 0;
   font-size: 12px;
 }
+
+.db-character-graphics .db-cg-candidates > .db-cg-expression-toggle {
+  width: 100%;
+  min-width: 100%;
+}
+
+.db-character-graphics .db-cg-face-grid > .db-ws-empty {
+  grid-column: 1 / -1;
+}

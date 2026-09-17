@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { listCharacterFaces, listCharacterSprites, updateCharacterSprite } from "@/project/characterGraphics";
-import { rankCharacterFaces } from "@/project/characterFaceCandidates";
-import { reviewedCharsetFace } from "@/assets/charsetFaceMap";
+import { listCharacterFaces, listCharacterSprites, seedGraphicAttributes, updateCharacterSprite } from "@/project/characterGraphics";
+import { isRecommendedCharacterFace, rankCharacterFaces } from "@/project/characterFaceCandidates";
+import { faceGraphicForCharset, npcFaceGraphic, reviewedCharsetFace } from "@/assets/charsetFaceMap";
 
 describe("character face evidence", () => {
   it("uses written semantic age and gender without saving or borrowing paired-face traits", () => {
@@ -32,4 +32,45 @@ describe("character face evidence", () => {
     expect(ranked.find((candidate) => candidate.face.resourceId === "easyrpg-faceset-people1-07")?.conflicts).toContain("나이: 어린이 ↔ 노년");
     expect(sprite.faceResourceId).toBeNull();
   });
+  it("uses both halves of each actor face sheet in editor and NPC tool paths", () => {
+    const pairs = [["actor1", "actor1", 0], ["actor2", "actor1", 8], ["actor3", "actor2", 0], ["actor4", "actor2", 8]] as const;
+    for (const [charset, faceset, offset] of pairs) for (let slot = 0; slot < 8; slot++) {
+      const expected = `easyrpg-faceset-${faceset}-${String(slot + offset).padStart(2, "0")}`;
+      const texture = `tex_easyrpg_charset_${charset}`;
+      expect(reviewedCharsetFace(texture, slot)?.resourceId).toBe(expected);
+      expect(faceGraphicForCharset(texture, slot)?.resourceId).toBe(expected);
+      expect(npcFaceGraphic(`easyrpg-charset-${charset}`, slot)?.resourceId).toBe(expected);
+    }
+  });
+
+  it("does not recommend children for unknown age or claim a pair from gender alone", () => {
+    const project = createBlankProject();
+    const gentleman = listCharacterSprites(project).find((row) => row.textureKey === "tex_easyrpg_charset_people2" && row.characterIndex === 0)!;
+    const ranked = rankCharacterFaces(gentleman, listCharacterFaces(project));
+    expect(ranked.find((candidate) => candidate.face.resourceId === "easyrpg-faceset-people1-00")?.recommendation).toBe("conflict");
+    expect(ranked.filter(isRecommendedCharacterFace).some((candidate) => candidate.face.attributes.age === "어린이")).toBe(false);
+    const broadMatch = { resourceId: "test-face", label: "남성", attributes: { kind: "사람", gender: "남성" }, note: "" };
+    expect(rankCharacterFaces(gentleman, [broadMatch])[0]?.recommendation).toBe("none");
+  });
+
+  it("vetoes reviewed-table priority when independent authored traits contradict it", () => {
+    const project = createBlankProject();
+    const boy = listCharacterSprites(project).find((row) => row.textureKey === "tex_easyrpg_charset_people1" && row.characterIndex === 0)!;
+    const face = listCharacterFaces(project).find((row) => row.resourceId === "easyrpg-faceset-people1-00")!;
+    const result = rankCharacterFaces(boy, [{ ...face, attributes: { ...face.attributes, gender: "여성" } }])[0]!;
+    expect(result.recommendation).toBe("conflict");
+    expect(result.score).toBeLessThan(100);
+    expect(isRecommendedCharacterFace(result)).toBe(false);
+  });
+
+  it("reads face source descriptions independently and does not read a white headband as white hair", () => {
+    const project = createBlankProject();
+    const face = listCharacterFaces(project).find((row) => row.resourceId === "easyrpg-faceset-actor2-05")!;
+    expect(face.label).toBe("청록 머리 여성");
+    expect(face.attributes.gender).toBe("여성");
+    const fighter = listCharacterSprites(project).find((row) => row.textureKey === "tex_easyrpg_charset_actor3" && row.characterIndex === 5)!;
+    expect(rankCharacterFaces(fighter, [face])[0]?.recommendation).toBe("conflict");
+    expect(seedGraphicAttributes("흰 머리띠 여성").hair).toBeUndefined();
+  });
+
 });

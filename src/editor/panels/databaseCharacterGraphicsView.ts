@@ -5,7 +5,7 @@ import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEdit
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { GRAPHIC_ATTRIBUTE_AXES, applyCharacterGraphicsImport, exportCharacterGraphics, graphicSpriteKey, listCharacterFaces, listCharacterSprites, parseCharacterGraphicsImport, updateCharacterFace, updateCharacterSprite, updateCharacterSpriteLabel, type CharacterFace, type CharacterSprite, type GraphicAttributes, type GraphicAttributeAxis, type GraphicMappingStatus, type GraphicMatchQuality } from "@/project/characterGraphics";
-import { rankCharacterFaces } from "@/project/characterFaceCandidates";
+import { isRecommendedCharacterFace, rankCharacterFaces } from "@/project/characterFaceCandidates";
 import { downloadBlob } from "@/util/downloadBlob";
 import { el } from "@/util/dom";
 import { field, selectField, textField } from "./databaseControls";
@@ -24,6 +24,7 @@ type ViewState = {
   candidateId?: string;
   candidateLimit: number;
   showExpressions: boolean;
+  showAllFaces: boolean;
   sprites: Filter;
   faces: Filter;
   picker: Filter;
@@ -38,7 +39,7 @@ const sessions = new WeakMap<HTMLElement, ViewState>();
 function stateFor(container: HTMLElement): ViewState {
   let state = sessions.get(container);
   if (!state || state.projectId !== store.getProjectIdentity().id) {
-    state = { projectId: store.getProjectIdentity().id, view: "sprites", candidateLimit: 48, showExpressions: false, sprites: { query: "", attributes: {} }, faces: { query: "", attributes: {} }, picker: { query: "", attributes: {} }, status: "", quality: "", json: "", message: "", error: false };
+    state = { projectId: store.getProjectIdentity().id, view: "sprites", candidateLimit: 48, showExpressions: false, showAllFaces: false, sprites: { query: "", attributes: {} }, faces: { query: "", attributes: {} }, picker: { query: "", attributes: {} }, status: "", quality: "", json: "", message: "", error: false };
     sessions.set(container, state);
   }
   return state;
@@ -144,9 +145,11 @@ export function renderCharacterGraphicsTab(container: HTMLElement, _rerender?: (
   const refreshCandidates = (): void => {
     const project = store.getCurrent();
     const candidates = listPickableFaces(project).filter((face) => matches(face, face.resourceId, state.picker));
-    const ordered = selectedSprite ? rankCharacterFaces(currentSprite(project), candidates) : candidates.map((face) => ({ face, reasons: [], conflicts: [] }));
+    const ordered = selectedSprite ? rankCharacterFaces(currentSprite(project), candidates) : [];
     const seen = new Set<string>();
-    const ranked = ordered.filter(({ face }) => {
+    const ranked = ordered.filter((candidate) => {
+      const { face } = candidate;
+      if (!state.showAllFaces && !state.picker.query.trim() && !isRecommendedCharacterFace(candidate)) return false;
       if (state.showExpressions || state.picker.query.trim()) return true;
       const group = expressionGroups.get(face.resourceId);
       if (!group) return true;
@@ -154,10 +157,11 @@ export function renderCharacterGraphicsTab(container: HTMLElement, _rerender?: (
       seen.add(group);
       return true;
     });
-    candidateHost.replaceChildren(...ranked.slice(0, state.candidateLimit).map(({ face, reasons, conflicts }) => el("button", {
+    candidateHost.replaceChildren(...ranked.slice(0, state.candidateLimit).map(({ face, reasons, conflicts, recommendation }) => el("button", {
       class: "db-cg-face-choice", attrs: { type: "button", title: `${face.label} · ${face.resourceId}`, "aria-label": `${face.label} 후보 선택`, "aria-pressed": String(state.candidateId === face.resourceId) },
-      dataset: { testid: `db-cg-assign-${face.resourceId}` },
+      dataset: { testid: `db-cg-assign-${face.resourceId}`, recommendation },
       children: [imageThumbnail(face.resourceId, project, face.label, 64), el("strong", { text: face.label }),
+        el("small", { text: ({ paired: "원본 대응", similar: "유사 특징 · 동일인 미확인", none: "추천 근거 부족", conflict: "추천 제외 · 속성 확인" })[recommendation] }),
         el("small", { text: reasons.slice(0, 2).join(" · ") || "일치 근거 없음 · 직접 확인" }),
         ...(conflicts.length ? [el("small", { class: "db-cg-conflict", text: `차이 있음 · ${conflicts.join(" / ")}` })] : []),
       ],
@@ -168,7 +172,7 @@ export function renderCharacterGraphicsTab(container: HTMLElement, _rerender?: (
       } },
     })));
     if (ranked.length > state.candidateLimit) candidateHost.append(el("button", { class: "db-cg-face-choice", attrs: { type: "button" }, text: `후보 더 보기 (${state.candidateLimit}/${ranked.length})`, on: { click: () => { state.candidateLimit += 48; refreshCandidates(); } } }));
-    if (!candidates.length) candidateHost.append(emptyState({ title: "조건에 맞는 얼굴이 없습니다", compact: true }));
+    if (!ranked.length) candidateHost.append(emptyState({ title: state.showAllFaces || state.picker.query.trim() ? "조건에 맞는 얼굴이 없습니다" : "추천할 근거가 충분한 얼굴이 없습니다", body: "전체 얼굴에서 직접 고르거나 캐릭터의 특징을 보완하세요.", compact: true }));
   };
   const filterControls = (filter: Filter, prefix: string, values: readonly { attributes: GraphicAttributes }[], refresh: () => void): HTMLElement => {
     const search = el("input", { attrs: { type: "search", "aria-label": "그림 이름·메모·ID 검색", placeholder: "이름·메모·ID 검색" }, value: filter.query, dataset: { testid: `${prefix}-search` } });
@@ -224,7 +228,7 @@ export function renderCharacterGraphicsTab(container: HTMLElement, _rerender?: (
     detail.push(sectionCard({ title: "얼굴 비교 · 연결", hint: "기본 대응표와 등록된 특징으로 후보를 정렬합니다. 추천은 동일 인물의 확정이 아닙니다.", children: [el("div", { class: "db-cg-workbench", children: [el("div", { class: "db-cg-review", children: [selectionHost, status,
       selectField("일치 품질", "db-cg-quality", selectedSprite.quality, QUALITIES, (value) => {
         mutate("캐릭터 얼굴 일치 품질", (project) => updateCharacterSprite(project, { ...currentSprite(project), quality: value as GraphicMatchQuality })); refreshList();
-      })] }), el("div", { class: "db-cg-candidates", children: [el("h3", { text: "얼굴 후보" }), filterControls(state.picker, "db-cg-picker", faces, refreshCandidates), el("label", { class: "db-cg-expression-toggle", children: [el("input", { attrs: { type: "checkbox", ...(state.showExpressions ? { checked: "" } : {}) }, on: { change: (event) => { state.showExpressions = (event.target as HTMLInputElement).checked; state.candidateLimit = 48; refreshCandidates(); } } }), el("span", { text: "모든 표정 보기" })] }), candidateHost] })] }),
+      })] }), el("div", { class: "db-cg-candidates", children: [el("h3", { text: "얼굴 후보" }), filterControls(state.picker, "db-cg-picker", faces, refreshCandidates), el("label", { class: "db-cg-expression-toggle", children: [el("input", { attrs: { type: "checkbox", ...(state.showAllFaces ? { checked: "" } : {}) }, dataset: { testid: "db-cg-show-all-faces" }, on: { change: (event) => { state.showAllFaces = (event.target as HTMLInputElement).checked; state.candidateLimit = 48; refreshCandidates(); } } }), el("span", { text: "전체 얼굴 보기 · 추천 제외 포함" })] }), el("label", { class: "db-cg-expression-toggle", children: [el("input", { attrs: { type: "checkbox", ...(state.showExpressions ? { checked: "" } : {}) }, on: { change: (event) => { state.showExpressions = (event.target as HTMLInputElement).checked; state.candidateLimit = 48; refreshCandidates(); } } }), el("span", { text: "모든 표정 보기" })] }), candidateHost] })] }),
     ] }));
     detail.push(metadata);
   } else if (selectedFace) {
