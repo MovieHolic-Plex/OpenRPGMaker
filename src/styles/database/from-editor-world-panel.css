@@ -608,8 +608,13 @@
 .world-document-workspace .world-codex-lead-wrap .db-ws-stats {
   padding: 0 24px 12px;
 }
-.world-document-workspace .world-canon-workspace .db-ws-stats {
-  margin-bottom: 12px;
+/* 세계 개요 v2 — hero stat 리듬: stat 띠와 미터 사이 호흡. */
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .world-canon-workspace .db-ws-stats {
+  gap: 0;
+  margin-bottom: 16px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .world-canon-meter {
+  margin-bottom: 16px;
 }
 /* 세계 개요 v2 — 제목+힌트 겹침 방지: 좁은 열에서 줄바꿈 허용.
    같은 database 레이어 안이라 파일 순서가 아니라 특이성이 이긴다 —
