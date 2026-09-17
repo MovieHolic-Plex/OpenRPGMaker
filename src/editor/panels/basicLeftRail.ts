@@ -1,12 +1,15 @@
 // editor/panels/basicLeftRail.ts
-// 초보: 상시 타일 팔레트 + 라벨 도구 + 맵 플라이아웃.
+// 초보: 상시 타일 팔레트 + 라벨 도구 + 하단 인라인 맵 필드 + 맵 플라이아웃.
 // 스펙: docs/superpowers/specs/2026-07-10-basic-mode-ai-ux-design.md §2.
 // - 도구 6개는 기존 data-testid(tool-*)를 유지한다.
 // - 하위/상위/이벤트 레이어는 레일에서 바로 고른다 (플라이아웃 없음).
-// - 맵만 플라이아웃으로 연다. 타일 선택은 상시 팔레트를 닫지 않는다.
+// - 맵은 하단 필드에서 바로 고르고, 전체 트리·필터·상세는 플라이아웃이 집이다.
 // - 상태는 모듈 레벨(재렌더에도 유지), 문서 리스너는 1회만 설치.
 
 import { editorState, type Layer, type Tool } from "@/editor/editorState";
+import { selectEditorMap } from "@/editor/mapSelection";
+import { openMapCreateDialog } from "@/editor/panels/mapCreateDialog";
+import { isMapTreeFolder } from "@/project/mapTree";
 import { makeTileBrushControls } from "@/editor/panels/tilePaletteStampStatus";
 import { dismissLocationDrawModeForLayer, dismissLocationDrawModeForTool, isLocationDrawMode } from "@/editor/locationDrawMode";
 import { selectMapModeTool, selectTileTool, selectPaletteStamp } from "@/editor/panels/tileToolbarActions";
@@ -16,9 +19,9 @@ import { openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { canEditMap } from "@/editor/mapEditLocks";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { basicTileLabel, makeBasicTilePalette } from "@/editor/panels/basicTilePalette";
-import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { store } from "@/project/store";
-import type { TilesetDef } from "@/project/types";
+import { tileLayerHome } from "@/editor/tileLayerClassification";
+import type { MapId, MapTreeNode, Project, TilesetDef } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { makeSvgIcon, type SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import { renderMapList } from "@/editor/panels/mapList";
@@ -156,6 +159,7 @@ export function renderBasicLeftRail(container: HTMLElement): void {
   } else {
     shell.append(makeTilesBody(state.selectedTile, state.layer, tileset));
   }
+  shell.append(makeInlineMapField(project, mapId));
   if (flyoutState.open === "maps") shell.append(makeMapFlyout());
   container.append(shell);
   restoreFocus(container, focusSnapshot);
@@ -372,6 +376,82 @@ function makeMapFlyout(): HTMLElement {
   });
   shell.classList.add("is-maps");
   return shell;
+}
+/**
+ * 초보 레일 하단의 상시 맵 필드 — 토글 없이 바로 여러 맵을 보고 고른다.
+ * 왜 목록 전체가 아니라 상위 5행인가: 레일은 타일 시트가 주인이고 맵은 아래 한 줄이다.
+ * 6행째부터는 플라이아웃(전체 트리·필터·상세)이 집이므로 여기서 두 번째 트리를 만들지 않는다.
+ */
+function makeInlineMapField(project: Project, activeId: MapId): HTMLElement {
+  const rows: Array<{ readonly id: MapId; readonly label: string; readonly meta: string; readonly isStart: boolean }> = [];
+  const walk = (node: MapTreeNode): void => {
+    if (rows.length >= 5) return;
+    if (!isMapTreeFolder(node) && node.mapId && project.maps[node.mapId]) {
+      const map = project.maps[node.mapId];
+      rows.push({
+        id: node.mapId,
+        label: map.name?.trim() ? map.name : node.mapId,
+        meta: `${map.width}×${map.height}`,
+        isStart: node.mapId === project.startMapId,
+      });
+    }
+    for (const child of node.children) {
+      if (rows.length >= 5) return;
+      walk(child);
+    }
+  };
+  walk(project.mapTree);
+  const field = el("div", {
+    class: "basic-rail-map-field",
+    attrs: { role: "group", "aria-label": "맵 바로 가기" },
+    dataset: { testid: "basic-map-field" },
+  });
+  const head = el("div", {
+    class: "basic-rail-map-head",
+    children: [
+      el("span", { class: "basic-rail-map-title", text: `맵 ${Object.keys(project.maps).length}` }),
+      el("button", {
+        class: "basic-rail-map-add",
+        text: "+ 새 맵",
+        attrs: { type: "button", title: "맵 추가" },
+        dataset: { testid: "basic-map-field-add" },
+        on: { click: () => openMapCreateDialog({ preset: "blank" }) },
+      }),
+    ],
+  });
+  field.append(head);
+  const list = el("div", {
+    class: "basic-rail-map-list",
+    attrs: { role: "listbox", "aria-label": "맵 목록" },
+    dataset: { testid: "basic-map-field-list" },
+  });
+  for (const row of rows) {
+    const active = row.id === activeId;
+    list.append(el("button", {
+      class: "basic-rail-map-row" + (active ? " is-active" : ""),
+      attrs: {
+        type: "button",
+        role: "option",
+        "aria-selected": String(active),
+        title: active ? `${row.label} — 보고 있는 맵` : `${row.label} (${row.meta})로 이동`,
+      },
+      dataset: { testid: `basic-map-field-row-${row.id}` },
+      on: { click: () => selectEditorMap(row.id) },
+      children: [
+        el("span", { class: "basic-rail-map-name", text: row.label + (row.isStart ? " · 시작" : "") }),
+        el("span", { class: "basic-rail-map-meta", text: row.meta, attrs: { "aria-hidden": "true" } }),
+      ],
+    }));
+  }
+  field.append(list);
+  field.append(el("button", {
+    class: "basic-rail-map-more",
+    text: "맵 전체 보기",
+    attrs: { type: "button", title: "맵 전체 목록 열기" },
+    dataset: { testid: "basic-map-field-more" },
+    on: { click: () => dispatchFlyout({ type: "toggle", id: "maps" }) },
+  }));
+  return field;
 }
 
 function makeTilesBody(selectedTile: number, layer: "lower" | "upper", tileset: TilesetDef): HTMLElement {

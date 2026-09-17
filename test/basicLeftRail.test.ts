@@ -6,6 +6,7 @@ import { uiLabel } from "@/editor/uiCopy";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { clearChildren } from "@/util/dom";
+import { createMapFromSpec } from "@/editor/actions";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
 function click(id: string): void {
@@ -236,5 +237,29 @@ describe("basic icon rail", () => {
     expect(findByTestId(container as unknown as FakeElement, `map-delete-${mapId}`)).toBeFalsy();
     expect(findByTestId(container as unknown as FakeElement, `map-more-${mapId}`)).toBeTruthy();
     expect(findByTestId(container as unknown as FakeElement, "basic-map-list-host")).toBeTruthy();
+  });
+  it("하단 맵 필드가 상시 렌더되고 행 클릭으로 맵을 바꾼다", () => {
+    createMapFromSpec({ name: "두번째맵" });
+    const project = store.getCurrent();
+    const second = Object.keys(project.maps).find((id) => id !== project.startMapId) ?? project.startMapId;
+    renderBasicLeftRail(container);
+    const field = findByTestId(container as unknown as FakeElement, "basic-map-field");
+    expect(field).toBeTruthy();
+    const row = findByTestId(container as unknown as FakeElement, `basic-map-field-row-${second}`);
+    expect(row).toBeTruthy();
+    (row as unknown as HTMLElement).click();
+    expect(editorState.get().currentMapId).toBe(second);
+    renderBasicLeftRail(container);
+    const active = findByTestId(container as unknown as FakeElement, `basic-map-field-row-${second}`);
+    expect(active?.getAttribute("aria-selected")).toBe("true");
+  });
+
+  it("하단 맵 필드의 전체 보기가 맵 플라이아웃을 연다", () => {
+    const more = findByTestId(container as unknown as FakeElement, "basic-map-field-more");
+    expect(more).toBeTruthy();
+    (more as unknown as HTMLElement).click();
+    renderBasicLeftRail(container);
+    expect(findByTestId(container as unknown as FakeElement, "basic-map-list-host")).toBeTruthy();
+    expect(findByTestId(container as unknown as FakeElement, "basic-map-field")).toBeTruthy();
   });
 });

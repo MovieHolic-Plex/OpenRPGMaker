@@ -992,4 +992,18 @@ describe("M2 generic map runtime executor", () => {
     expect(session.variables.calc_result).toBe(35);
     expect(session.variables.gold_value).toBe(25);
   });
+
+  it("records Pathfind Move runtime speed clamped to the 1–8 page scale", () => {
+    const session = mkM2Session();
+    const commands: Command[] = [
+      modernM2Command("Pathfind Move", { target: "event_guard", x: 14, y: 2, speed: 99, wait: true }),
+    ];
+    const random = vi.spyOn(Math, "random").mockReturnValue(0);
+    try {
+      drain(createInterpreter(commands, session));
+    } finally {
+      random.mockRestore();
+    }
+    expect(session.m2Runtime?.pathfinding).toEqual([{ target: "event_guard", x: 14, y: 2, speed: 8, wait: true }]);
+  });
 });
