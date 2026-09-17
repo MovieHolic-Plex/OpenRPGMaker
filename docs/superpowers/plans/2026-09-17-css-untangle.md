@@ -1372,3 +1372,59 @@ Task 11·12·13 이 `--compare` 로 소비. `check-css-winners.mjs` 이름을 �
 브라우저에서 실제 승자를 잰 적이 **한 번도 없다.** Phase 0 의 색상 판정은 CSS 캐스케이드
 규칙에 따른 정적 추론이다. **Task 1 Step 6, Task 2 Step 5, Task 3 Step 5, Task 4 Step 4 의
 "본 체크아웃에서 눈으로 본다"를 건너뛰면 이 계획은 근거를 잃는다.**
+
+---
+
+## 실행 후기 (2026-09-17) — 게이트가 초록인 채로 두 번 깨졌다
+
+계획을 실행하면서 **내가 낸 회귀가 2건** 나왔다. 둘 다 여섯 게이트 전부 초록인
+상태였고, 둘 다 **픽셀 비교**가 잡았다. 계획서가 게이트를 과신했다는 뜻이므로 남긴다.
+전체 서술과 화면은 `docs/superpowers/reports/2026-09-17-css-untangle.html`.
+
+### 회귀 ① — 문서 순서 (Task 13, 번호 계약 복구)
+
+`13-actor-studio.css` 를 `index.css:83 → :68` 로 올렸다. 승자 게이트가 0건이라
+안전하다고 봤는데, 배우 목록 행의 5열 정렬이 무너졌다.
+
+```
+record-list-modern.css:14
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-list-row
+  → display: flex            (0,4,0) · layer(database)
+15-actor-studio.css:90
+  .database-modal-body .db-actor-studio-workspace .db-actor-studio-table .db-actor-table-row
+  → display: grid            (0,4,0) · layer(database)
+```
+
+특정도도 레이어도 같아 승자를 **문서 순서**가 정한다. 승자 게이트의 키는
+(정확한 선택자, 속성, @조건) 이라 **선택자가 다른 두 규칙을 애초에 경쟁으로 안 본다.**
+이 계획의 Task 9 가 「전체 78,668키 중 경쟁이 성립하는 건 1%뿐」이라며 넘어간 축이다.
+그 1%에 걸렸다.
+
+고침은 계획이 적어 둔 대비책 그대로 — `15-actor-studio.css` 로 개명하고 위치는 :83 유지.
+**교훈: 번호 계약을 「파일을 옮겨서」 고치지 말고 「이름을 실제 순서에 맞춰서」 고쳐라.**
+
+### 회귀 ② — `:not()` 특정도 (Task 7 의 결함 수정 중)
+
+개요 탭 카드를 고치려고 베벨 리셋에 제외를 하나 붙였다:
+
+```
+  button:not(.db-tab):not(.event-custom-select-trigger)                        (0,3,1)
+→ button:not(.db-tab):not(.event-custom-select-trigger):not(.db-overview-pulse-card)
+                                                                              (0,4,1)
+```
+
+`:not()` 의 특정도는 **인자 중 가장 센 것**이라 제외 한 줄로 클래스가 하나 늘었고,
+이 리셋이 원래 지던 `(0,4,0)` 규칙들을 새로 이겼다. 개요 탭 카운트 칩 9개가
+`.db-overview-stat { border-radius: 10px }` 를 잃고 각졌다(계산값 0px).
+
+고침: `:not(:where(.db-overview-pulse-card))`. `:where()` 특정도는 0 이다.
+**교훈: 기존 규칙에 제외를 추가할 때는 반드시 `:where()` 로 감싸라.**
+
+### 이 계획에 반영할 것
+
+- Phase 3·4 의 검증 단계에 **「작업 시작점을 별도 워크트리 + 두 번째 dev 서버로 띄우고
+  전체 구간 픽셀 히트맵을 본다」**를 추가해야 한다. 체크포인트 간 비교로는 부족하다 —
+  회귀 ①은 체크포인트 비교에 0.548% 로 찍혀 있었는데 그때 읽지 않았다.
+- 승자 게이트 문서(Task 9)에 **「선택자가 다른 규칙끼리의 경쟁은 못 본다」**를
+  주의사항이 아니라 **실제로 깨진 사례**와 함께 적었다.
+- `!important` 는 CDP 로만 판정 가능하다는 결론은 유효했다. 42개 중 안전한 건 2개.
