@@ -159,8 +159,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       turns += 1;
       emit({ type: "turn", index: turns });
       if (turns > maxTurns) {
+        // abort 에 사유를 실어야 한다. 사유 없이 부르면 pi-agent-core 가 합성하는 aborted 메시지의
+        // errorMessage 가 일반 문구 "Request was aborted" 가 되고, 아래 message_end 가 그것을 사용자에게
+        // 보낸다(실측 2026-09-17: 「마을 만들어달라」가 균형 레벨 16턴을 넘길 때마다 그 영문만 보였다).
         fatal = `턴 상한(${maxTurns})을 넘어 중단했습니다.`;
-        agent.abort();
+        agent.abort(fatal);
       }
       return;
     }
@@ -192,19 +195,21 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       if (text.trim()) emit({ type: "assistant", text });
       if (message.usage) usage = message.usage;
       if (message.stopReason === "error" || message.errorMessage) {
-        fatal = message.errorMessage ?? "제공자 오류";
+        // 우리가 먼저 정한 사유(턴·시간 상한, 클라이언트 끊김)가 있으면 그것이 이긴다 — 코어가 합성한
+        // aborted 메시지의 문구로 덮어쓰지 않는다.
+        fatal = fatal ?? message.errorMessage ?? "제공자 오류";
         emit({ type: "error", message: fatal });
       }
     }
   });
   const timer = setTimeout(() => {
     fatal = fatal ?? "시간 상한을 넘어 중단했습니다.";
-    agent.abort();
+    agent.abort(fatal);
   }, options.timeoutMs ?? DEFAULT_TIMEOUT_MS);
   const onAbort = () => {
     fatal = fatal ?? "클라이언트가 중단했습니다.";
     console.error(`[pi-agent] aborted by client after ${turns} turns / ${toolCalls} tool calls`);
-    agent.abort();
+    agent.abort(fatal);
   };
   options.signal?.addEventListener("abort", onAbort, { once: true });
   try {
