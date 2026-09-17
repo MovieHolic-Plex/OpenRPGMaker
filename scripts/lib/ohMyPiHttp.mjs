@@ -35,6 +35,7 @@ export function isCompanionPath(url = "") {
     || path === "/v1/chat/completions"
     || path === "/v1/images/generations"
     || path === "/v1/agent/run"
+    || path === "/v1/agent/checkpoint"
   );
 }
 
@@ -186,6 +187,11 @@ export async function handleCompanionRequest(req, adapters) {
         dataUrl: `data:${image.mimeType};base64,${image.base64}`,
       },
     });
+  }
+
+  if (method === "POST" && path === "/v1/agent/checkpoint") {
+    if (typeof adapters.resolveCheckpoint !== "function") return json(501, { error: "적용 응답을 지원하지 않습니다." });
+    return json(200, await adapters.resolveCheckpoint(body));
   }
 
   if (method === "POST" && path === "/v1/agent/run") {

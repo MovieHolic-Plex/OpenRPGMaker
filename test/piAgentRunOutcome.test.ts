@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const h = vi.hoisted(() => ({
   planError: false,
   harmony: true,
+  verdicts: [] as boolean[],
   reviewCalls: 0,
   applyCalls: 0,
   harmonyError: false,
@@ -17,20 +18,23 @@ const h = vi.hoisted(() => ({
   boardStates: [] as { phase?: string; applied?: string | null }[],
   spills: [] as { mapIds: readonly string[]; keys: readonly string[] }[],
   bubbles: [] as string[],
+  process: [] as string[],
   // 검토 액션 버스 — runPiCommand 가 「검토 대기」 게시 직전에 등록하고 적용·버리기·새 실행에서 null 로 지운다.
   reviewActions: [] as ({ apply: () => void; discard: () => void; openReport?: () => void } | null)[],
   project: {
     maps: { map_a: { id: "map_a", name: "A", width: 4, height: 4 } },
   } as unknown,
-  piApply: "auto" as "auto" | "review",
+  piApply: "default" as "yolo" | "auto" | "default" | "review" | "step",
   /** showConfirm 의 대답. 맵 소실 확인 모달을 사람 없이 굴린다. */
   confirmAnswer: true,
 }));
 
+vi.mock("@/editor/panels/aiPendingReview", () => ({ createPendingReviewPrompt: () => ({ root: { remove() {} }, setBusy() {} }) }));
 vi.mock("@/ai/ultrabrainReview", () => ({ reviewMapHarmony: async () => {
   h.reviewCalls += 1;
   if (h.harmonyError) throw new Error("image unavailable");
-  return [{ mapId: "map_a", harmonious: h.harmony, summary: "review", findings: h.harmony ? [] : ["density"] }];
+  const harmonious = h.verdicts.shift() ?? h.harmony;
+  return [{ mapId: "map_a", harmonious, summary: "review", findings: harmonious ? [] : ["density"] }];
 } }));
 vi.mock("@/ai/piAgent/client", () => ({
   runPiAgentViaCompanion: async (request: Record<string, unknown>, options?: { onEvent?: (event: unknown) => void }) => {
@@ -101,6 +105,7 @@ const harness = () => {
   const outcomeCalls: (Record<string, unknown> | null)[] = [];
   const surface = () => ({
     appendBubble: (role: string, text: string) => { h.bubbles.push(`${role}:${text}`); return null; },
+    appendProcess: (text: string) => { h.process.push(text); },
     appendCard: () => {},
     setStatus: () => {},
     getCurrentMapId: () => "map_a",
@@ -110,12 +115,12 @@ const harness = () => {
 };
 
 beforeEach(() => {
-  h.planError = false;
+  h.planError = false; h.verdicts.length = 0;
   h.reviewCalls = 0; h.applyCalls = 0; h.outcomes.length = 0;
-  h.requests.length = 0; h.results.length = 0; h.bubbles.length = 0;
+  h.requests.length = 0; h.results.length = 0; h.bubbles.length = 0; h.process.length = 0;
   h.assistantTexts.length = 0; h.boardStates.length = 0; h.reviewActions.length = 0;
   h.project = projectWith("A");
-  h.piApply = "auto"; h.harmony = true; h.harmonyError = false;
+  h.piApply = "default"; h.harmony = true; h.harmonyError = false;
   // 예전에는 mergeMapBundles 목이 매 턴 splice 로 비워 줘서 눈에 안 띄었다. 평문 턴이 더 이상
   // 병합을 타지 않으므로(2026-09-17) 여기서 직접 비우지 않으면 다음 케이스로 샌다.
   h.spills.length = 0; h.errorEvents.length = 0; h.confirmAnswer = true;
@@ -136,7 +141,7 @@ describe("Pi 경로 실행 결과 4축", () => {
     expect((last as { visualDelivery?: unknown }).visualDelivery).toBeUndefined();
   });
 
-  it.each(["negative", "unavailable"])("Ultrabrain %s leaves a manual draft even in auto mode", async kind => {
+  it.each(["negative", "unavailable"])("Ultrabrain %s leaves a manual draft in DEFAULT mode", async kind => {
     h.harmony = false;
     h.harmonyError = kind === "unavailable";
     h.results.push({ project: projectWith("바뀜") });
@@ -152,7 +157,8 @@ describe("Pi 경로 실행 결과 4축", () => {
     const { outcomeCalls } = harness();
     const surface = () => ({
       appendBubble: (role: string, text: string) => { h.bubbles.push(`${role}:${text}`); return null; },
-      appendCard: () => {},
+      appendProcess: (text: string) => { h.process.push(text); },
+    appendCard: () => {},
       setStatus: () => {},
       getCurrentMapId: () => "map_a",
       setRunOutcome: (outcome: Record<string, unknown> | null) => { outcomeCalls.push(outcome); },
@@ -219,7 +225,7 @@ describe("Pi 경로 실행 결과 4축", () => {
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "바꿔라" }, surface());
 
     expect(outcomeCalls.at(-1)).toMatchObject({ execution: "response-final", delivery: "applied" });
-    expect(h.bubbles.some((line) => line.includes("오류 1건") && line.includes("OAuth token expired"))).toBe(true);
+    expect(h.boardStates.some(state => state.applied?.includes("오류 1건") && state.applied?.includes("OAuth token expired"))).toBe(true);
   });
 
   it("중단(signal aborted)이면 execution 이 cancelled", async () => {
@@ -232,7 +238,8 @@ describe("Pi 경로 실행 결과 4축", () => {
       { mode: "single", mapIds: ["map_a"], task: "바꿔라" },
       {
         appendBubble: (role: string, text: string) => { h.bubbles.push(`${role}:${text}`); return null; },
-        appendCard: () => {},
+        appendProcess: (text: string) => { h.process.push(text); },
+    appendCard: () => {},
         setStatus: () => {},
         getCurrentMapId: () => "map_a",
         setRunOutcome: (outcome: Record<string, unknown> | null) => { outcomeCalls.push(outcome); },
@@ -251,7 +258,7 @@ describe("Pi 경로 실행 결과 4축", () => {
     // 사용자가 `/pi map_a …` 로 범위를 직접 적은 턴만 병합이 범위 밖을 버린다(2026-09-17).
     await runPiCommand({ mode: "single", mapIds: ["map_a"], scopedByUser: true, task: "스위치를 바꿔라" }, surface());
 
-    expect(h.bubbles.some((line) => line.includes("적용했습니다") && line.includes("범위 밖 1건 버림") && line.includes("switches"))).toBe(true);
+    expect(h.boardStates.some(state => state.applied?.includes("범위 밖 1건 버림") && state.applied?.includes("switches"))).toBe(true);
     // outcome 축 자체는 적용 성공을 그대로 말한다 — spill 은 성공을 지우지 않는다(4축 독립).
     expect(outcomeCalls.at(-1)).toMatchObject({ delivery: "applied", execution: "response-final" });
   });
@@ -267,7 +274,7 @@ describe("Pi 경로 실행 결과 4축", () => {
 
     await runPiCommand({ mode: "single", mapIds: ["map_a"], scopedByUser: true, task: "회복약 만들어줘" }, surface());
 
-    expect(h.bubbles.some((line) => line.includes("적용되지 않았습니다") && line.includes("database"))).toBe(true);
+    expect(h.process.some((line) => line.includes("적용되지 않았습니다") && line.includes("database"))).toBe(true);
     expect(h.bubbles.some((line) => line.includes("프로젝트는 바뀌지 않았습니다"))).toBe(false);
     expect(h.boardStates.at(-1)?.phase).toBe("실패");
     expect(h.applyCalls).toBe(0);
@@ -275,16 +282,16 @@ describe("Pi 경로 실행 결과 4축", () => {
 
   // 같은 실측: 시공이 「실패 · 17턴 · 중단」으로 끝났는데 검수는 「검수 통과」를 찍었고, 그 부분
   // 결과가 auto 설정에서 확인 없이 적용돼 맵 12개가 사라졌다.
-  it("상한에 걸려 끊긴 실행은 auto 설정이어도 자동 적용하지 않는다", async () => {
+  it("상한에 걸려 끊긴 실행은 DEFAULT 설정이어도 자동 적용하지 않는다", async () => {
     h.results.push({ project: projectWith("하다 만 것"), toolErrors: 0 });
     h.errorEvents.push("턴 상한(16)을 넘어 중단했습니다.");
-    h.piApply = "auto"; h.harmony = true;
+    h.piApply = "default"; h.harmony = true;
     const { surface } = harness();
 
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "마을 만들어줘" }, surface());
 
     expect(h.applyCalls).toBe(0);
-    expect(h.bubbles.some((line) => line.includes("중단된 작업의 일부"))).toBe(true);
+    expect(h.bubbles.some((line) => line.includes("완성되지 않은 결과"))).toBe(true);
     // 원인과 해법을 사람 말로 — 영문 원문(Request was aborted)이 그대로 나가던 자리다.
     expect(h.bubbles.some((line) => line.includes("Request was aborted"))).toBe(false);
   });
@@ -311,7 +318,7 @@ describe("model role routing", () => {
     h.planError = true;
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface());
     expect(h.requests).toHaveLength(1);
-    expect(h.bubbles.some(text => text.includes("plan failed"))).toBe(true);
+    expect(h.process.some(text => text.includes("plan failed"))).toBe(true);
   });
   it("plans with Ultrabrain before Deep edits", async () => {
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface());
@@ -403,6 +410,36 @@ describe("routine edits", () => {
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "계획" }, harness().surface(), { routineEdit: true, planOnly: true });
     expect(h.requests).toHaveLength(1);
     expect(h.requests[0]).toMatchObject({ model: "gemini-3.8-flash", readOnly: true });
+    expect(h.applyCalls).toBe(0);
+  });
+});
+
+describe("five application modes", () => {
+  it("YOLO skips planning and visual review", async () => {
+    h.piApply = "yolo"; h.harmony = false;
+    h.results.push({ project: projectWith("YOLO") });
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface());
+    expect(h.requests).toHaveLength(1); expect(h.reviewCalls).toBe(0); expect(h.applyCalls).toBe(1);
+  });
+  it("AUTO repairs a failed review without asking the user", async () => {
+    h.piApply = "auto"; h.verdicts.push(false, true);
+    h.results.push({ project: projectWith("first") }, { project: projectWith("repaired") });
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface(), { routineEdit: true });
+    expect(h.reviewCalls).toBe(2); expect(h.applyCalls).toBe(1);
+    expect(h.requests[1]!.task).toContain("density");
+    expect(h.reviewActions.every(action => action === null)).toBe(true);
+  });
+  it("AUTO stops after two repairs instead of silently applying an unresolved draft", async () => {
+    h.piApply = "auto"; h.harmony = false;
+    h.results.push({ project: projectWith("first") }, { project: projectWith("second") }, { project: projectWith("third") });
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface(), { routineEdit: true });
+    expect(h.reviewCalls).toBe(3); expect(h.applyCalls).toBe(0);
+    expect(h.boardStates.at(-1)?.phase).toBe("실패");
+    expect(h.reviewActions.every(action => action === null)).toBe(true);
+  });
+  it("read-only refuses returned mutations even under YOLO", async () => {
+    h.piApply = "yolo"; h.results.push({ project: projectWith("forbidden") });
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "조회" }, harness().surface(), { readOnly: true });
     expect(h.applyCalls).toBe(0);
   });
 });

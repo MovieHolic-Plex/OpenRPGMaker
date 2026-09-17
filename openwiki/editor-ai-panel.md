@@ -2602,3 +2602,38 @@ e2e `ai-ui-audit-fixes` F10.
 검수 담당 부재·외부 클릭·Escape 초점 복원을 확인했다. 실제 모델 실행은 수행하지 않았다.
 팀장도 공통 예산을 사용한다. 최종 검토의 켜짐/꺼짐·보고 누락 계약은
 `test/piTeamSharedControls.test.ts`에 추가했으며 세션 테스트 금지 규칙에 따라 실행하지 않았다.
+
+## 다섯 적용 모드와 실제 맵 증분 반영 (2026-09-18)
+
+`src/ai/piAgent/applyMode.ts`가 적용 정책과 UI 어휘의 정본이다. 자율성(읽기/계획/턴 예산),
+모델, 팀 설정과 별개이며 `AiConfig.piApply`에 저장한다. 미설정·잘못된 값은 `default`,
+기존 명시 `review`/`auto`는 보존한다. 입력창 선택기와 AI 설정 → 동작에서 선택하며 실행
+시점 값을 고정한다(실행 도중 바꾼 설정은 다음 요청에 적용).
+
+- `yolo` / YOLO: 실제 편집을 도구 완료 경계마다 반영. 별도 계획·조화 검수·삭제 확인 생략.
+- `auto` / AUTO MODE: 실제 편집을 계속 반영하고 조화 검수 문제를 최대 두 번 수정·재검수.
+  해결 못 한 미적용 결과는 보류하고 보고한다. 이미 반영한 작업은 자동으로 되돌리지 않는다.
+- `default` / DEFAULT(기본): 일반 작업은 실제 반영. 맵 삭제·이벤트 전멸·`clear_map`은
+  반영 전에 확인. 검수 문제·미완료가 있으면 이미 반영한 부분과 미적용 초안을 구분해 안내.
+- `review` / 검토 후 적용: 종전처럼 작업 사본과 고스트로 만든 전체 초안을 승인 후 적용.
+- `step` / 단계별 적용: 워커의 `finish_stage({title})`가 의미 있는 작업 단위를 마감한다.
+  승인 전에는 다음 단계로 진행하지 않는다. 마지막 미마감 변경도 종료 전에 확인한다.
+  팀은 이 모드에서 앞 배정이 완료되어야 다음 배정을 받는다. 중단은 미승인 단계만 버린다.
+
+실시간 표시는 고스트가 아니다. `piAgentRuntime`의 직렬 도구 래퍼 → `checkpoint` NDJSON →
+`aiPiPublication` → 기존 `applyProposedProject` → `/v1/agent/checkpoint` 응답으로 실제 프로젝트가
+바뀐 뒤 워커가 계속한다. 응답에는 편집기가 정규화한 실제 프로젝트를 돌려주어 다음 증분의
+기준과 공간 증거가 일치한다. 단계 승인·DEFAULT 삭제 확인도 이 왕복에서 대기한다.
+`piCheckpointBroker`는 추측 불가능한 일회용 ID를 쓰며 거절·중단·시간 초과에서 대기를 폐기한다.
+팀은 하위 작업을 자기 맵 묶음으로 제한하고 전역 게시 큐에서 직렬 반영한다.
+
+무결성·공간 도구 증거·읽기 전용·명시 범위·동시 편집 충돌 검사는 모든 모드에 유지한다.
+`onApplied` 경계에서만 다음 적용 권한을 갱신하며, 임의의 현재 store 값을 새 기준으로 채택하지
+않는다. 실시간 모드는 첫 변경에 undo 스냅샷 하나를 남기고 후속 변경을 같은 작업으로 묶는다.
+단계 모드는 승인 단계별 스냅샷을 남긴다. 중단·오류 때도 이미 반영된 작업은 남고 되돌릴 수 있다.
+검수 완료 후 동일 프로젝트를 재적용하거나 이력을 하나 더 쌓지 않는다.
+
+검증: `test/piApplyModes.bun.test.ts`(실제 Agent 루프), `piPublication.test.ts`(적용/충돌/승인),
+`piCheckpointProtocol.test.ts`(대기/일회성/중단/ACK), `piAgentExecutionRoute.test.ts`,
+`piAgentRunOutcome.test.ts`, 기존 팀·스트림 테스트. 브라우저는 `scripts/qa/ai-apply-modes.mjs`의
+격리 blankProject와 대본 전송을 사용한다. 증거: `output/evidence/ai-apply-modes/`.

@@ -70,11 +70,11 @@ describe("평문 지시는 팀 비트만 고른다", () => {
 describe("AI 설정의 팀·적용 방식", () => {
   beforeEach(() => { (globalThis as { localStorage?: unknown }).localStorage = new MemoryStorage(); });
 
-  it("옛 blob 은 팀 꺼짐 + 검토 후 적용으로 백필한다", () => {
+  it("옛 blob 은 팀 꺼짐 + DEFAULT으로 백필한다", () => {
     localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ model: "gemini-3.7-flash" }));
     const config = loadAiConfig();
     expect(config.piTeam).toBe(DEFAULT_PI_TEAM);
-    expect(config.piApply).toBe("review");
+    expect(config.piApply).toBe("default");
   });
   it("팀 비트와 적용 방식은 저장되고 이상한 값은 기본으로 돌아간다", () => {
     saveAiConfig({ ...loadAiConfig(), piTeam: true, piApply: "auto" });
@@ -82,7 +82,11 @@ describe("AI 설정의 팀·적용 방식", () => {
     expect(loadAiConfig().piApply).toBe("auto");
     localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...JSON.parse(localStorage.getItem(AI_CONFIG_STORAGE_KEY)!), piTeam: "yes", piApply: "later" }));
     expect(loadAiConfig().piTeam).toBe(false);
-    expect(loadAiConfig().piApply).toBe("review");
+    expect(loadAiConfig().piApply).toBe("default");
+  });
+  it.each(["yolo", "auto", "default", "review", "step"] as const)("%s 모드가 저장·재로드된다", piApply => {
+    saveAiConfig({ ...loadAiConfig(), piApply });
+    expect(loadAiConfig().piApply).toBe(piApply);
   });
   it("경로 enum 시절의 `pi-team` 은 팀 비트로 승격한다", () => {
     // 옛 키를 버리면 사용자가 켜 둔 팀이 조용히 사라진다. `session`·`pi-agent` 는 둘 다 «Pi» 다.

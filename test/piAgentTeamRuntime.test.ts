@@ -477,3 +477,29 @@ it.each([{ readOnly: true }, { mapIds: ["map_a"], scopeStrict: true }])("프로�
     },
   });
 });
+
+it("live team checkpoints merge owned maps before another agent's final result", async () => {
+  const project = seeded();
+  const publications: Project[] = [];
+  const req = { ...request(project), applyMode: "default" as const };
+  const result = await runPiTeam(req, {
+    onCheckpoint: async checkpoint => { publications.push(structuredClone(checkpoint.project)); return checkpoint.project; },
+    runAgent: async (child, options) => {
+      if (options.extraTools?.some(t => t.name === "assign_map_agent")) {
+        await callTool(options.extraTools, "assign_map_agent", { mapId: "map_a", task: "A", member: "builder" });
+        await callTool(options.extraTools, "assign_map_agent", { mapId: "map_b", task: "B", member: "builder" });
+        await callTool(options.extraTools, "wait_agents", {});
+        return doneWith(child.project);
+      }
+      const id = child.mapIds[0]!;
+      const next = built(child.project, id, `live:${id}`);
+      await options.onCheckpoint!({ project: next, label: id, toolName: "set_map_properties" });
+      return doneWith(next, [`maps.${id}`]);
+    },
+  });
+  expect(publications).toHaveLength(2);
+  expect(publications.at(-1)!.maps.map_a!.name).toBe("live:map_a");
+  expect(publications.at(-1)!.maps.map_b!.name).toBe("live:map_b");
+  expect(result.project.maps.map_a!.name).toBe("live:map_a");
+  expect(result.project.maps.map_b!.name).toBe("live:map_b");
+});
