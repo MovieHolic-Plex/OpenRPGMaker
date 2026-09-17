@@ -21,6 +21,8 @@ export type VillageSketchSite = {
 export type VillageSketchBoulevard = {
   readonly ewRow: number;
   readonly nsCol: number;
+  /** 대로 축(2026-09-17). 비우면 2축으로 피한다. */
+  readonly axis?: "both" | "ew" | "ns";
 };
 
 export type SketchHouseSitesArgs = {
@@ -60,8 +62,9 @@ export function sketchHouseSites(args: SketchHouseSitesArgs): readonly VillageSk
     if (rectsOverlap(box, plazaBlock)) return false;
     const boulevard = args.boulevard ?? null;
     if (boulevard === null) return true;
-    const hitsEw = box.y <= boulevard.ewRow + 1 && box.y + box.h - 1 >= boulevard.ewRow - 1;
-    const hitsNs = box.x <= boulevard.nsCol + 1 && box.x + box.w - 1 >= boulevard.nsCol - 1;
+    const axis = boulevard.axis ?? "both";
+    const hitsEw = axis !== "ns" && box.y <= boulevard.ewRow + 1 && box.y + box.h - 1 >= boulevard.ewRow - 1;
+    const hitsNs = axis !== "ew" && box.x <= boulevard.nsCol + 1 && box.x + box.w - 1 >= boulevard.nsCol - 1;
     return !hitsEw && !hitsNs;
   };
   const sites: VillageSketchSite[] = [];

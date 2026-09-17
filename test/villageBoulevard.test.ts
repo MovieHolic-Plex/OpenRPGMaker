@@ -168,7 +168,8 @@ describe("build_village curved boulevard", () => {
       centerX: plazaRegion.x + Math.floor(plazaRegion.w / 2),
     };
     const area = data.bounds ?? { x: 0, y: 0, w: map.width, h: map.height };
-    const boulevard = villageBoulevard(area, plaza);
+    // 시드·배치를 builder 와 같게 줘야 같은 축(2026-09-17 단일 축)의 밴드를 비교한다.
+    const boulevard = villageBoulevard(area, plaza, 7, undefined);
     expect(boulevard).not.toBeNull();
     if (boulevard === null) return;
     const band = new Set(boulevardCells(area, boulevard, 7).map((cell) => `${cell.x},${cell.y}`));

@@ -109,6 +109,8 @@ AI 초안 간 꾸미기 이월과 완성 맵 직렬화를 검사한다. 관련 �
 > AI 경로 메모 (2026-09-04): 위 순서는 100×100 bbox 하네스 전용이다. AI `author_village` / `build_village`는 다르다. 지금은 스케치 후보(`sketchHouseSites`)를 먼저 뽑고 집을 찍은 뒤 길을 잇는다. Phase 2 순서는 sketch sites → houses/house-owned finishing → metadata + local snapshots → roads다.
 >
 > AI `build_village` 대로 (2026-09-05): 72칸 이상 맵의 자연형 골격은 이제 곡선이다. 명시적인 `street-grid`는 직선 밴드를 유지한다. `villageBoulevardPath`가 시드 고정 경유점을 잡고, 집 예약과 길 칠하기는 `boulevardCells` 한 칸 함수를 같이 쓴다.
+>
+> AI `build_village` 길 골격 (2026-09-17): 대로는 한 축만(`villageBoulevardAxis`), 출구는 시드로 2~3변(`villageExitAnchors`), 그리고 집이 찍힌 뒤 집 앞 결절을 MST 로 잇는 축 평행 골목망(`villageStreetNetwork`)이 길의 본체다. 아래 "십자 탈출" 절 참고.
 
 ---
 
@@ -536,3 +538,23 @@ npx tsx scripts/diagnose-road-through-house.mts
 ## 대로 병합 검증 (2026-09-05)
 
 시드 곡선 대로는 자연형 배치에 적용한다. 명시적 `settlementLayout: "street-grid"`는 예약과 시공 모두 직선 밴드를 사용해 격자 전면과 집 수를 유지한다. `authorVillageFacade.test.ts`의 100×100 눈 도시·집 20채·NPC 50명 계약과 `villageBoulevard.test.ts`의 곡선 연결성을 함께 검증한다.
+
+## 십자 탈출 — 집 먼저, 길은 나중 (2026-09-17)
+
+**증상.** 조수에게 마을을 맡기면 시드가 달라도 길은 항상 십자였다. 2026-09-04 의 T-join 회전과 09-05 의 곡선 대로는 십자를 *휘게* 했을 뿐 위상을 바꾸지 못했다.
+
+**세 원인.**
+
+1. `villageExitAnchors` 가 항상 4변 앵커를 냈고 `villageEvaluate` 의 `exitRoads=4` 게이트가 이를 계약으로 굳혔다. 출구 4개 + 중앙 광장 = 플러스.
+2. 대로가 동서·남북 두 축을 동시에 깔았다. 곡선이어도 두 축이 광장에서 교차하면 십자다.
+3. 스케치 프리패스가 집을 먼저 *뽑기는* 했지만, 길은 여전히 광장에서 앵커로 뻗는 4갈래(`villageArteryRoutes`)였다. 집은 길 사이에 끼워졌지 길이 집을 따라간 게 아니다.
+
+**지금.**
+
+- 출구: `villageExitAnchors(area, plaza, seed, layout, boulevard)` — 자연형은 시드로 2~3변, `street-grid` 는 4변. 대로 축이 있으면 그 축의 양 끝은 대로 끝점과 일치시킨다. `layoutPlan.roadAnchors` 는 실제 앵커를 `${side}-exit` id 로 기록한다.
+- 대로: `villageBoulevardAxis` — `street-grid` 면 both, 가로세로 차가 12 이상이면 긴 축, 아니면 시드. 집 힌트(`sketchHouseSites`/`buildHouses`)는 이 축을 받아 대로 양옆 정면 배치를 한 축에만 적용한다.
+- 골목망: `villageStreetNetwork(area, plaza, houses, exits, seed)` — 광장 결절 하나 + 집 앞(`front`) 결절들을 Prim MST 로 잇고, 결절 4개 이상이면 시드로 한두 개 고리를 추가한다. 간선은 `alleyRoute` 의 가로→세로→가로 축 평행 3구간이고, 후보 열은 **경로 전 구간을 모든 집 footprint 와 대조**해 고른다(가운데 1/3 선호, 없으면 바깥으로 확장, 끝내 없으면 칠하기 단계 집 마스크에 맡김). `wobblePath` 는 naturalness 0 에서 Bresenham 직선이므로 경유점이 축 평행이 아니면 대각선이 집을 가른다 — 그래서 대각 경유점을 금지한다.
+- 출구 연결: `exitRoute` 가 가장 가까운 결절에 붙는다. 북/남은 3~6칸 들어온 뒤 골목 규칙, 동/서는 진입 행에서 바로 꺾는다.
+- 게이트: `villageEvaluate` 의 exitRoads 목표는 `max(1, layoutPlan.roadAnchors.length)`.
+
+**남긴 것.** 골목망은 광장이 있어야 시작한다(광장 결절이 MST 루트). 광장 없는 마을은 여전히 옛 4갈래 경로로 떨어진다. 집 footprint 회피는 집만 본다 — 우물·나무·호수는 칠하기 단계 마스크와 재시도 리포트가 처리한다.

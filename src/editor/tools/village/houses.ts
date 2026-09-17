@@ -182,6 +182,8 @@ function bboxTouchesBlocked(bbox: Rect, blocked: ReadonlySet<number>, width: num
 export interface HouseBoulevardHint {
   readonly ewRow: number;
   readonly nsCol: number;
+  /** 대로 축(2026-09-17). 비우면 예전처럼 2축으로 본다. */
+  readonly axis?: "both" | "ew" | "ns";
 }
 
 export function buildHouses(
@@ -410,7 +412,8 @@ function houseCandidates(
 
   // 공통: 광장 위·아래 밴드. 대형 맵(72+)은 동서 대로(광장 남측 y+h+1, 폭3)와 겹치지 않게
   // 아래 밴드를 대로 남쪽 접면(frontage)으로 내린다 — 대로변 상가/주거 열 (2026-07-17).
-  const largeBoulevard = boulevard !== undefined;
+  // 대로가 남북 한 축뿐이면 동서 접면은 없다 — 아래 밴드를 대로 남쪽으로 내리지 않는다.
+  const largeBoulevard = boulevard !== undefined && (boulevard.axis ?? "both") !== "ns";
   const ewBoulevardRow = boulevard?.ewRow ?? plaza.rect.y + plaza.rect.h + 1;
   for (let col = 0; col < columns; col += 1) {
     const slotX = xStart + col * (slotWidth + HOUSE_MARGIN * 2);
@@ -454,7 +457,7 @@ function houseCandidates(
         for (let ring = 0; ring < columnRings; ring += 1) {
           const offset = (template.w + HOUSE_MARGIN * 2) * ring;
           // 대형 맵: 남북 대로와 겹치지 않게 오른쪽 밴드를 대로 동쪽 접면으로.
-          const rightBase = boulevard
+          const rightBase = boulevard && (boulevard.axis ?? "both") !== "ew"
             ? boulevard.nsCol + 2 + 1
             : plaza.rect.x + plaza.rect.w + HOUSE_MARGIN;
           candidates.push({
