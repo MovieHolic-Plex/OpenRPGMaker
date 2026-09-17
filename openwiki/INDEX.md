@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **69쪽 / 2817KB / 약 794,990 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **69쪽 / 2817KB / 약 794,981 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -21,7 +21,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-event-authoring.md` | 136KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 744 | ~39,120 |
 | `openwiki/editor-event-commands.md` | 57KB | 32KB | 202 | ~15,410 |
 | `openwiki/editor-interior-room-harness.md` | 92KB | 6KB | 445 | ~26,704 |
-| `openwiki/editor-pre-edit-routing.md` | 115KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 626 | ~32,923 |
+| `openwiki/editor-pre-edit-routing.md` | 115KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 626 | ~32,914 |
 | `openwiki/editor-workflows-misc.md` | 66KB | 30KB | 472 | ~18,148 |
 | `openwiki/runtime-battle.md` | 150KB | 31KB | 678 | ~43,069 |
 | `openwiki/runtime-project-schema.md` | 149KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 1028 | ~40,575 |
@@ -596,7 +596,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L453` AI 툴·액션 이유 (2026-09-02)
 - `L463` 검증
 
-### `openwiki/editor-pre-edit-routing.md` — 115KB · 626줄 · ~32,923 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 115KB · 626줄 · ~32,914 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L7` 편집기 재렌더 비용 — 줌은 카메라 경로다 (2026-09-16)
 - `L28` Exterior door backing
