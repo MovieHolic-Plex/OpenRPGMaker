@@ -125,6 +125,49 @@ describe("apply gate for unapproved map destruction", () => {
     expect(store.getCurrent().maps[TARGET]?.lowerTiles.every((tile) => tile === TILE.GRASS)).toBe(false);
   });
 
+  // 2026-09-17 실측: 「맵 전부 지워줘」 한 줄이 맵 12개를 지웠는데 실행 경로가 `/pi` 라
+  // toolNames 가 ["pi_agent"] 였고 이름 게이트가 한 번도 울리지 않았다. 확인 모달도 거부도 없이
+  // 곧장 「적용 완료」였다. 이제 판정은 이름이 아니라 base ↔ 제안의 실제 차이다.
+  it("맵이 사라지면 툴 이름이 무엇이든 거부한다 — /pi 도 예외가 아니다", async () => {
+    const { base, baseline } = capture();
+    const acceptedBytes = serialize(store.getCurrent());
+    const proposed = structuredClone(store.getCurrent());
+    delete proposed.maps[TARGET];
+
+    const result = await applyProposedProject(proposed, {
+      base, baseline, source: "agent", summary: "맵 삭제", toolNames: ["pi_agent"],
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) throw new Error("map removal reached the store unapproved");
+    expect(result.reason).toBe("map-destruction-unapproved");
+    expect(result.issue).toContain("사용자 허가");
+    expect(serialize(store.getCurrent())).toBe(acceptedBytes);
+    expect(store.getCurrent().maps[TARGET]).toBeDefined();
+  });
+
+  it("맵은 남아도 이벤트가 전부 사라지면 거부한다", async () => {
+    const withEvent = structuredClone(store.getCurrent());
+    const target = withEvent.maps[TARGET];
+    if (!target) throw new Error("fixture map missing");
+    target.events = [{ id: "ev_probe", x: 3, y: 3, pages: [] } as never];
+    store.replace(withEvent);
+    const { base, baseline } = capture();
+
+    const proposed = structuredClone(store.getCurrent());
+    const proposedTarget = proposed.maps[TARGET];
+    if (!proposedTarget) throw new Error("fixture map missing");
+    proposedTarget.events = [];
+
+    const result = await applyProposedProject(proposed, {
+      base, baseline, source: "agent", summary: "이벤트 비우기", toolNames: ["pi_agent"],
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) throw new Error("event wipe reached the store unapproved");
+    expect(result.reason).toBe("map-destruction-unapproved");
+  });
+
   it("applies the same preview once the user approved it", async () => {
     const { base, baseline } = capture();
     const { proposed } = clearedPreview();
