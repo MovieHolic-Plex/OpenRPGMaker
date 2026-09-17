@@ -30,3 +30,10 @@ it('does not release the old lease after a disabled save', async () => {
   expect(lock).not.toHaveBeenCalledWith({ resource: 'map:a', release: true });
   expect(m.canEditMap('b')).toBe(false);
 });
+it('sends takeover only for the explicit click, never for renewal', async () => {
+  const m = await import('@/editor/mapEditLocks');
+  await m.takeoverMapLock('a', 'A');
+  expect(lock).toHaveBeenLastCalledWith({ resource: 'map:a', takeover: true });
+  await vi.advanceTimersByTimeAsync(20_000);
+  expect(lock).toHaveBeenLastCalledWith({ resource: 'map:a' });
+});

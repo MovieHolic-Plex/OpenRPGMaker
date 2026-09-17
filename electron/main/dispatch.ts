@@ -70,12 +70,15 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
       return true;
     },
     [OPRN_CHANNELS.teamLock]: (key, payload) => {
-      const input = z.object({ resource: z.string().min(1).max(300).refine(value => value === 'database' || /^map:.+/.test(value), 'invalid lock resource'), release: z.boolean().optional() }).parse(payload);
+      const input = z.object({ resource: z.string().min(1).max(300).refine(value => value === 'database' || /^map:.+/.test(value), 'invalid lock resource'), release: z.boolean().optional(), takeover: z.boolean().optional() }).parse(payload);
       const session = sessions.require(key), member = sessions.member(key);
       if (member.role === 'viewer') throw new Error('읽기 전용 팀원은 편집할 수 없습니다');
       const lease = session.locks.get(input.resource);
       if (lease && lease.expiresAt > Date.now() && lease.session !== key) {
-        return { kind: 'locked', ownerLabel: lease.ownerLabel, expiresAt: lease.expiresAt };
+        const canTakeover = member.role === 'owner' || lease.memberId === member.id;
+        if (input.release || !input.takeover || !canTakeover) {
+          return { kind: 'locked', ownerLabel: lease.ownerLabel, expiresAt: lease.expiresAt, canTakeover };
+        }
       }
       if (input.release) { session.locks.delete(input.resource); return { kind: 'released' }; }
       const expiresAt = Date.now() + 90_000;
