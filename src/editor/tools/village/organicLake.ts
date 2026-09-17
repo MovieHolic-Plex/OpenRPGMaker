@@ -1,7 +1,7 @@
 import { TILE } from "@/project/defaults/constants";
 import { LAKE_AUTOTILE_TILE } from "@/project/defaults/lakeAutotile";
 import { footprintBounds, normalizeCharacterFootprint } from "@/project/footprint";
-import { isCombinedTownTileset } from "@/project/tilesetHarness";
+import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness";
 import type { GameMap, Project, Rect } from "@/project/types";
 import { mulberry32 } from "@/util/rng";
 import { protectedHouseCells } from "../houseProtection";
@@ -104,7 +104,7 @@ function smoothBank(bank: readonly number[]): number[] {
  * 3×4 terrain group, and shaping neighboring land would exceed this reservation. */
 export function paintOrganicVillageLake(project: Project, map: GameMap, plan: OrganicVillageLakePlan): number {
   const tileset = project.tilesets[map.tilesetId];
-  if (!tileset || !isCombinedTownTileset(tileset)) {
+  if (!tileset || !isCombinedTownCompatibleTileset(tileset)) {
     throw new ToolError("이 호수는 합본 마을 칩셋 전용입니다.", { code: "village-tileset-mismatch", mapId: map.id });
   }
   validatePlan(map, plan);

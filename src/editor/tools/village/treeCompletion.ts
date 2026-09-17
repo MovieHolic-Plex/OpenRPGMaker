@@ -5,7 +5,7 @@ import {
   acceptedCompanionTiles, adjacencyCompanionSatisfied, clusterAdjacencyParams,
   type ClusterAdjacencyParams,
 } from "@/project/lint/clusterRuleValidators";
-import { isCombinedTownTileset, isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness";
+import { isCombinedTownCompatibleTileset, isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness";
 import type { GameMap, Project, Rect } from "@/project/types";
 import { protectedHouseCells } from "../houseProtection";
 import { inMapBounds } from "../mapHelpers";
@@ -29,7 +29,7 @@ const isTree = (tile: number): boolean => isTreeCanopyTileId(tile) || isTreeTrun
  * This is an environmental construction step, never a global runner repair. */
 export function completeVillageTrees(project: Project, map: GameMap, area: Rect): VillageTreeCompletion {
   const tileset = project.tilesets[map.tilesetId];
-  if (!tileset || !isCombinedTownTileset(tileset)) return { canopiesPlaced: 0, trunksPlaced: 0, orphanTrunksRemoved: 0 };
+  if (!tileset || !isCombinedTownCompatibleTileset(tileset)) return { canopiesPlaced: 0, trunksPlaced: 0, orphanTrunksRemoved: 0 };
   const requirements = new Map<number, Requirement[]>();
   for (const group of tileset.tileGroups ?? []) {
     if (!group.tileIds.length || !group.tileIds.every(isTree)) continue;

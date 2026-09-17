@@ -89,7 +89,7 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   { textureKey: "tex_easyrpg_chipset_retro_house", path: "assets/easyrpg-chipset-retro-house-transparent.png", name: "레트로 집 · EasyRPG (혼합 출처)" },
   { textureKey: "tex_easyrpg_chipset_combined_town", path: "assets/easyrpg-chipset-combined-town-transparent.png", name: "합본 마을 · EasyRPG (CC0)" },
   { textureKey: "tex_easyrpg_chipset_retro_world", path: "assets/easyrpg-chipset-retro-world-transparent.png", name: "레트로 월드맵 · EasyRPG (혼합 출처)" },
-  // 480×512 확장 시트(960칸) — 위 480칸 합본 마을 그대로, 아래 480칸 레트로 월드맵(+480).
+  // 480×608 확장 시트(1140칸) — 위 480칸 합본 마을 그대로, 다음 480칸 레트로 월드맵(+480), 맨 아래 180칸 숲 나무 띠(960~).
   // 그림은 scripts/gen-combined-town-retro-world-chipset.mjs, 정의는 defaults/combinedTownRetroWorld.ts.
   { textureKey: COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, path: "assets/easyrpg-chipset-combined-town-retro-world-transparent.png", name: COMBINED_TOWN_RETRO_WORLD_NAME },
   { textureKey: "tex_modern_exteriors_nocturne", path: "assets/modern-exteriors/modern-city-atlas.png", name: "Modern Exteriors · 네온 녹턴" },

@@ -2,6 +2,8 @@
 import { describe, expect, it } from "vitest";
 import { REGION_REFERENCES, PLACE_REFERENCES, readRegionReference, regionReferenceContext } from "@/project/regionReferences";
 import emeraldSnapshot from "@/project/regionReferences/emerald-basin.json";
+import hillSnapshot from "@/project/regionReferences/hill-forest-village.json";
+import { COMBINED_TOWN_RETRO_WORLD_TILESET_ID } from "@/project/defaults/constants";
 import { SHIP_PLACE_REFERENCES } from "@/project/shipPlaceReferences";
 import ships from "@/project/regionReferences/ships.json";
 import { existsSync } from "node:fs";
@@ -52,6 +54,44 @@ describe("completed region references", () => {
     expect(JSON.stringify(project)).toBe(before);
     expect(renderSpatialPlacesStage(session, card, () => {}).canvas.querySelector("img")?.getAttribute("src"))
       .toBe("/assets/region-references/emerald-basin.png");
+  });
+  it("ships the hill forest village as a default settlement place with the mixed chipset frozen alongside", () => {
+    const hillId = "hill-forest-village-64x64";
+    const session = { ...spatialSession(), tab: "places" as const, mode: "design" as const, source: "defaults" as const, placeKindFilter: "settlement" as const };
+    const card = listSpatialGalleryCards(session).find(c => c.regionReferenceId === hillId);
+    expect(card?.source).toBe("default");
+    expect(card?.placeKind).toBe("settlement");
+    expect(existsSync("public/assets/region-references/hill-forest-village.png")).toBe(true);
+    const project = createBlankProject();
+    expect(project.maps[hillSnapshot.map.id]).toBeUndefined();
+    const before = JSON.stringify(project), lower: number[] = [], upper: number[] = [];
+    let row: number | null = 0;
+    while (row !== null) {
+      const result = runTool({ project }, "read_region_reference", { id: hillId, row, rows: 16 });
+      expect(result.ok, result.summary).toBe(true);
+      const page = result.data as ReturnType<typeof readRegionReference>;
+      expect(page.map.width).toBe(64);
+      lower.push(...page.map.lowerTiles); upper.push(...page.map.upperTiles);
+      for (const tile of page.tileset.tiles) {
+        expect(tile.passability).toEqual(hillSnapshot.tileset.passability[tile.tile]);
+        expect(tile.priority).toEqual(hillSnapshot.tileset.priority[tile.tile]);
+      }
+      row = page.map.nextRow;
+    }
+    expect(lower).toEqual(hillSnapshot.map.lowerTiles); expect(upper).toEqual(hillSnapshot.map.upperTiles);
+    expect(JSON.stringify(project)).toBe(before);
+    // 저장본은 혼합 칩셋(1140칸) 위의 마을이고, 숲 나무 확장 띠(960~)와 언덕 어휘(레트로 반쪽 480~959)를 실제로 쓴다.
+    expect(hillSnapshot.tileset.id).toBe(COMBINED_TOWN_RETRO_WORLD_TILESET_ID);
+    expect(hillSnapshot.tileset.count).toBe(1140);
+    const used = new Set([...hillSnapshot.map.lowerTiles, ...hillSnapshot.map.upperTiles]);
+    expect([...used].filter(tile => tile >= 960).length).toBeGreaterThan(50);
+    expect([...used].filter(tile => tile >= 480 && tile < 960).length).toBeGreaterThan(5);
+    // 주민 배치만 남기고 실내로 가는 집 문 이벤트는 뺐다.
+    expect(hillSnapshot.map.events.length).toBe(12);
+    expect(hillSnapshot.map.events.every(event => event.id.startsWith("ev_village_"))).toBe(true);
+    expect(renderSpatialPlacesStage(session, card, () => {}).canvas.querySelector("img")?.getAttribute("src"))
+      .toBe("/assets/region-references/hill-forest-village.png");
+    expect(regionReferenceContext()).toContain(hillId);
   });
   it("reads the castle raster rather than the settlement and exposes it in the gallery", () => {
     const castleId = "castle-town-100x100", lower: number[] = [], upper: number[] = [];

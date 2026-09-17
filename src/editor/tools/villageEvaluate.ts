@@ -8,6 +8,7 @@ import { DEFAULT_COBBLE_AUTOTILE_GROUP, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAN
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
+import { FOREST_TREE_CELLS } from "@/project/defaults/forestTreesExtension";
 import { resolveTimeSystem } from "@/project/gameTime";
 import type { GameMap, Project } from "@/project/types";
 import { checkReachability } from "@/project/lint/reachability";
@@ -19,6 +20,11 @@ const DIRT = new Set(DEFAULT_ROAD_AUTOTILE_GROUP.memberTileIds);
 const STONE = new Set<number>(DEFAULT_COBBLE_AUTOTILE_GROUP.memberTileIds);
 const TREE_UPPER = new Set([260, 261, 262, 263, 289]);
 const TREE_LOWER = new Set([290, 291, 292, 293]);
+/** 혼합 칩셋 숲 나무 확장 띠(960~)의 수관·밑동·가장자리 칸 — 합본 마을 원자와 같은 "나무 칸"으로 센다. */
+function isForestTreeCell(tile: number): boolean {
+  const cell = FOREST_TREE_CELLS.get(tile);
+  return cell !== undefined && cell.kind !== "empty";
+}
 const FENCE = new Set([378, 379, 380, 408, 409, 410, 438, 439]);
 const YARD_PROPS = new Set([349, 350, 351, 352, 327, 328, 288, 348, 237, 202, 203, 320, 234, 235, 236]);
 const WINDOWS = new Set([85, 87]);
@@ -595,7 +601,7 @@ export function countTreeCells(map: GameMap, area?: VillageCountArea): number {
       const index = y * map.width + x;
       const lower = map.lowerTiles[index] ?? TILE.EMPTY;
       const upper = map.upperTiles[index] ?? TILE.EMPTY;
-      if (TREE_UPPER.has(upper) || TREE_LOWER.has(lower) || TREE_LOWER.has(upper)) count += 1;
+      if (TREE_UPPER.has(upper) || TREE_LOWER.has(lower) || TREE_LOWER.has(upper) || isForestTreeCell(upper) || isForestTreeCell(lower)) count += 1;
     }
   }
   return count;
@@ -678,7 +684,7 @@ function collectMetrics(map: GameMap) {
       } else if (STONE.has(lower)) {
         roadCells += 1;
       }
-      if (TREE_UPPER.has(upper) || TREE_LOWER.has(lower) || TREE_LOWER.has(upper)) {
+      if (TREE_UPPER.has(upper) || TREE_LOWER.has(lower) || TREE_LOWER.has(upper) || isForestTreeCell(upper) || isForestTreeCell(lower)) {
         treeCells += 1;
         const edgeDistance = Math.min(x, y, map.width - 1 - x, map.height - 1 - y);
         if (edgeDistance >= 5) interiorTreeCells += 1;

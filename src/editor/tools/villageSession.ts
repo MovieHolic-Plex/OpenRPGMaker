@@ -8,6 +8,7 @@ import { assertLegacyVillageSession } from "./village/designContract";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { TILE } from "@/project/defaults/constants";
+import { FOREST_TREE_CELLS } from "@/project/defaults/forestTreesExtension";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import { loadSession as loadFromBag, saveSession as saveToBag, sessionExists } from "@/editor/roomHarness/sessionStore";
 import type { GameMap, Project } from "@/project/types";
@@ -1378,7 +1379,13 @@ function edgeBands(map: GameMap): { x: number; y: number; w: number; h: number }
 const TREE_CANOPY_TILES = new Set([260, 261, 262, 263]);
 const TREE_TRUNK_TILES = new Set([290, 291, 292, 293]);
 
-/** 맵 전체의 나무 칸 수 — 덤불(288/289)은 나무가 아니므로 세지 않는다. */
+/** 혼합 칩셋 숲 나무 띠의 나무 칸(덤불 물체 제외) — 합본 마을 원자와 같은 판정. */
+function isForestTreeCell(tile: number): boolean {
+  const cell = FOREST_TREE_CELLS.get(tile);
+  return cell !== undefined && cell.kind !== "empty" && !cell.object.id.endsWith("bush");
+}
+
+/** 맵 전체의 나무 칸 수 — 덤불(288/289·숲 띠 덤불)은 나무가 아니므로 세지 않는다. */
 function countTreeCells(map: GameMap): number {
   const upper = TREE_CANOPY_TILES;
   const lower = TREE_TRUNK_TILES;
@@ -1386,7 +1393,7 @@ function countTreeCells(map: GameMap): number {
   for (let i = 0; i < map.lowerTiles.length; i += 1) {
     const u = map.upperTiles[i] ?? 0;
     const l = map.lowerTiles[i] ?? 0;
-    if (upper.has(u) || lower.has(l) || lower.has(u)) n += 1;
+    if (upper.has(u) || lower.has(l) || lower.has(u) || isForestTreeCell(u) || isForestTreeCell(l)) n += 1;
   }
   return n;
 }
