@@ -76,7 +76,10 @@ describe("Character/Face Graphics database surface", () => {
   it("assigns by face image, preserves independent attributes, and explicitly clears to no-face", () => {
     get(`db-cg-sprite-${textureKey}-0`).click();
     input("db-cg-sprite-attribute-skin", "어두운");
+    input("db-cg-picker-search", faceId);
     get(`db-cg-assign-${faceId}`).click();
+    expect(sprite().faceResourceId).toBeNull();
+    get("db-cg-apply-face").click();
     expect(sprite()).toMatchObject({ status: "mapped", faceResourceId: faceId, quality: "unspecified" });
     input("db-cg-quality", "approximate", "change");
     get("db-cg-view-faces").click();
@@ -94,7 +97,9 @@ describe("Character/Face Graphics database surface", () => {
     project.resourceProfiles.push({ kind: "faceset", assetId: "uploaded-face-test", name: "업로드 얼굴" });
     mount();
     get(`db-cg-sprite-${textureKey}-0`).click();
+    input("db-cg-picker-search", "uploaded-face-test");
     get("db-cg-assign-uploaded-face-test").click();
+    get("db-cg-apply-face").click();
     expect(resourceReferenceMessage("uploaded-face-test")).not.toBeNull();
     input("db-cg-status", "no-face", "change");
     expect(resourceReferenceMessage("uploaded-face-test")).toBeNull();

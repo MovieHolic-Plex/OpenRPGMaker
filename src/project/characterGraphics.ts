@@ -3,6 +3,7 @@ import { findCharsetSemantic, upsertCharsetLabelOverride } from "@/assets/charse
 import { FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { PRODUCT_SLUG } from "@/brand";
+import { FACESET_PEOPLE1_FACES } from "@/assets/charsetFaceMap";
 import type { Project, ResourceProfile } from "./types";
 
 export const GRAPHIC_ATTRIBUTE_AXES = ["kind", "age", "gender", "skin", "hair", "clothing", "role"] as const;
@@ -57,7 +58,7 @@ export function seedGraphicAttributes(label: string): GraphicAttributes {
     age: [["어린이", /아이|소년|소녀|어린이/], ["청년", /청년|젊은/], ["중년", /중년/], ["노년", /노인|노파|할머니|할아버지/]],
     gender: [["남성", /남성|남자|소년|할아버지/], ["여성", /여성|여자|소녀|노파|할머니/]],
     skin: [["어두운", /어두운 피부|검은 피부/], ["밝은", /밝은 피부|하얀 피부/]],
-    hair: [["금발", /금발/], ["백발", /백발|흰 머리/], ["검은 머리", /검은 머리|흑발/], ["붉은 머리", /붉은 머리|빨간 머리/], ["갈색 머리", /갈색 머리/], ["대머리", /대머리/]],
+    hair: [["금발", /금발/], ["백발", /백발|흰 머리/], ["검은 머리", /검은 머리|흑발/], ["붉은 머리", /붉은 머리|빨간 머리/], ["갈색 머리", /갈색 머리/], ["푸른 머리", /청발|푸른 머리|파란 머리/], ["보라 머리", /보라 머리|보라색 머리/], ["초록 머리", /초록 머리|녹색 머리|청록 머리/], ["대머리", /대머리/]],
     clothing: [["갑옷", /갑옷/], ["로브", /로브/], ["정장", /정장/], ["전통옷", /전통옷|전통 의상/]],
     role: [["상인", /상인/], ["기사", /기사/], ["병사", /병사/], ["마법사", /마법사/], ["메이드", /메이드|하녀/], ["집사", /집사/], ["수녀", /수녀/], ["승려", /승려/]],
   };
@@ -91,9 +92,15 @@ export function listCharacterSprites(project: Project): CharacterSprite[] {
   return [...assets].flatMap(([textureKey, asset]) => Array.from({ length: 8 }, (_, characterIndex) => {
     const profile = profiles.get(textureKey);
     const slot = profile?.characterSlots?.find((entry) => entry.characterIndex === characterIndex);
-    const label = labels.get(graphicSpriteKey(textureKey, characterIndex)) ?? findCharsetSemantic(textureKey, characterIndex)?.label ?? `${asset.name} #${characterIndex}`;
+    const semantic = findCharsetSemantic(textureKey, characterIndex);
+    const label = labels.get(graphicSpriteKey(textureKey, characterIndex)) ?? semantic?.label ?? `${asset.name} #${characterIndex}`;
+    const authoredLabel = project.charsetLabels?.find((entry) => entry.textureKey === textureKey && entry.characterIndex === characterIndex);
+    const written = authoredLabel ? [label, ...(authoredLabel.tags ?? [])] : [label, ...(semantic?.tags ?? [])];
+    const defaults = seedGraphicAttributes(written.join(" "));
+    if (!authoredLabel && semantic?.gender && semantic.gender !== "none") defaults.gender = semantic.gender === "male" ? "남성" : "여성";
+    if (!authoredLabel && semantic?.age) defaults.age = ({ child: "어린이", youth: "청년", middle: "중년", elder: "노년" } as const)[semantic.age];
     return { textureKey, characterIndex, label, path: asset.path, sheetName: profile?.name ?? asset.name,
-      attributes: slot?.graphicAttributes ?? seedGraphicAttributes(label), status: slot?.status ?? "pending",
+      attributes: slot?.graphicAttributes ?? defaults, status: slot?.status ?? "pending",
       faceResourceId: slot?.faceResourceId ?? null, quality: slot?.quality ?? "unspecified", note: slot?.note ?? "" };
   }));
 }
@@ -105,8 +112,17 @@ export function listCharacterFaces(project: Project): CharacterFace[] {
     faces.set(resourceId, { resourceId, label, attributes: attributes ?? seedGraphicAttributes(label), note });
   };
   for (const face of FACESET_FACE_ASSETS) add(face.id, face.name);
+  for (const face of FACESET_PEOPLE1_FACES) add(face.resourceId, face.label, {
+    ...seedGraphicAttributes(face.label), gender: face.gender === "male" ? "남성" : face.gender === "female" ? "여성" : "",
+    ...(face.age ? { age: ({ child: "어린이", youth: "청년", middle: "중년", elder: "노년" } as const)[face.age] } : {}),
+  });
   for (const asset of Object.values(project.assets.uploaded)) if (asset.kind === "faceset") add(asset.id, asset.name);
-  for (const profile of project.resourceProfiles) if (profile.kind === "faceset" && profile.assetId) add(profile.assetId, profile.name, profile.graphicAttributes, profile.graphicNote);
+  for (const profile of project.resourceProfiles) if (profile.kind === "faceset" && profile.assetId) {
+    const bundled = FACESET_FACE_ASSETS.find((face) => face.id === profile.assetId);
+    const existing = faces.get(profile.assetId);
+    const label = bundled?.name === profile.name && existing ? existing.label : profile.name;
+    add(profile.assetId, label, profile.graphicAttributes ?? (label === existing?.label ? existing.attributes : undefined), profile.graphicNote);
+  }
   return [...faces.values()];
 }
 
