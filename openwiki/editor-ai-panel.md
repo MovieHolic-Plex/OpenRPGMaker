@@ -2572,3 +2572,25 @@ e2e `ai-ui-audit-fixes` F10.
 브라우저 재현은 `scripts/qa/ai-team-budget.mjs`와 `output/evidence/ai-team-budget/SUMMARY.json`.
 오른쪽 아바타의 `.ai-team-member` 스타일은 `.ai-team-avatar-list` 직계 자식으로 한정한다.
 설정 폼의 같은 클래스에 74px 폭이 새면 예산 폼과 저장 버튼이 스크롤 영역 밖으로 밀린다.
+
+## 왼쪽 팀 운영 메뉴 (2026-09-18)
+
+`aiComposer`의 팀 체크박스를 280px 커스텀 팝오버(`aiTeamMenu.ts`)로 교체했다.
+혼자/팀으로, 공통 예산 기본100·넉넉히300·오래 맡기기600, 완료 후 검토, 팀 구성 진입을 제공한다.
+팝오버 배타적 열림·바깥 클릭·Escape·뷰포트 보정은 기존 컴포저 소유자를 재사용한다.
+`PiTeamSpec.workBudget`과 `reviewAfterWork`는 기존 팀 명세 저장소에서 유지되며 기본은 300/true다.
+`enabledMembers`는 공통 예산을 적용하고 검토가 꺼졌으면 검수 담당을 실행 후보에서 제외한다.
+개별 예산 편집 UI는 제거했다. 과거 member.maxTurns는 호환 데이터로 남지만 팀 실행에는 공통 예산이 우선한다.
+검토 켜짐은 제작 후 최종 working 사본에 읽기 전용 report_task 검토를 실제 실행한다.
+검토 실패·보고 누락은 완료로 넘기지 않으며 기본 데이터 수용 검증은 끄지 않는다.
+담당이 없으면 메뉴에서 담당 설정 필요와 생략을 제공하며, 켜진 채 실행하면 명시적으로 거절한다.
+메뉴의 팀 구성은 오른쪽 기존 설정을 열고 역할·프롬프트·참여자를 편집한다.
+
+이전 API 호출의 reviewAfterWork 미지정은 기존 팀장 주도 검수를 유지한다. 브라우저 저장소는
+옛 명세를 읽을 때 이 필드를 true로 보정하므로 메뉴에서 보이는 검토 상태와 실행이 일치한다.
+
+브라우저 근거: `scripts/qa/ai-team-menu.mjs`, `output/evidence/ai-team-menu/SUMMARY.json`
+(12항목, 오류 0). 실측 280×225px. 결정적 응답 재생으로 공통 설정 전송·새로고침 유지·
+검수 담당 부재·외부 클릭·Escape 초점 복원을 확인했다. 실제 모델 실행은 수행하지 않았다.
+팀장도 공통 예산을 사용한다. 최종 검토의 켜짐/꺼짐·보고 누락 계약은
+`test/piTeamSharedControls.test.ts`에 추가했으며 세션 테스트 금지 규칙에 따라 실행하지 않았다.

@@ -30,13 +30,14 @@ import { COMPOSER_MODES, COMPOSER_MODE_LABEL, type ComposerMode } from "@/ai/com
 // 세션 계약과 기존 소비자가 이 경로로 어휘를 읽고 있다.
 import type { AiConfig } from "@/ai/llmClient";
 import { el } from "@/util/dom";
+import { createTeamMenu } from "./aiTeamMenu";
 import { deckIcon } from "./aiDeckIcons";
 import { anchoredPopupPosition } from "./popupPosition";
 
 /** 서로 배타적인 컴포저 팝오버. 하나가 열리면 나머지는 닫힌다. */
-export type ComposerPopover = "suggest" | "menu" | "preference" | "context" | "planning";
+export type ComposerPopover = "suggest" | "menu" | "preference" | "context" | "planning" | "team";
 
-const POPOVER_KINDS = ["suggest", "menu", "preference", "context", "planning"] as const;
+const POPOVER_KINDS = ["suggest", "menu", "preference", "context", "planning", "team"] as const;
 
 export { COMPOSER_MODES, COMPOSER_MODE_LABEL, type ComposerMode };
 
@@ -141,6 +142,7 @@ export interface ComposerOptions {
   readonly modelLabel?: string | null;
   /** Pi 팀 토글 — 팀은 경로가 아니라 Pi 루프의 실행 모드다(executionRoute.ts 머리말). 저장은 호출자가 맡는다. */
   readonly teamToggleOptions?: {
+    readonly onOpenSettings?: () => void;
     readonly initialTeam: boolean;
     readonly onTeamChange: (team: boolean) => void;
   };
@@ -309,34 +311,26 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   // (`AiConfig.piTeam`). 읽기 전용·계획 턴에서는 팀이 무의미하다(쓰기 툴이 없다) — 눌러도 아무 일이
   // 없는 컨트롤을 남기지 않으려고 숨긴다.
   let piTeam = options.teamToggleOptions?.initialTeam ?? false;
-  const teamToggle = options.teamToggleOptions
-    ? el("label", {
-      class: "ai-composer-team-toggle",
-      attrs: { title: "Pi 팀 — 팀장이 맵을 나눠 시공·검수 에이전트를 띄운다. 느리지만 검수와 수정 배정이 붙는다" },
-      dataset: { testid: "ai-composer-team" },
-      children: [
-        el("input", { attrs: { type: "checkbox" }, dataset: { testid: "ai-composer-team-input" } }) as HTMLInputElement,
-        el("span", { text: "팀" }),
-      ],
-    })
-    : null;
-  const teamInput = teamToggle ? teamToggle.querySelector("input") : null;
+  const teamToggle = options.teamToggleOptions ? el("button", {
+    class: "ai-composer-team-toggle", attrs: { type: "button", "aria-haspopup": "dialog", "aria-expanded": "false", "aria-label": "팀 작업 설정" },
+    dataset: { testid: "ai-composer-team" },
+    on: { click: () => { openPopover(openState === "team" ? null : "team"); if (openState === "team") teamMenu?.root.querySelector<HTMLElement>("button")?.focus(); } },
+  }) : null;
+  const teamMenu = options.teamToggleOptions ? createTeamMenu({
+    initialTeam: piTeam,
+    onTeamChange: next => { piTeam = next; paintTeam(); options.teamToggleOptions?.onTeamChange(next); },
+    onLabelChange: label => { if (teamToggle) teamToggle.textContent = label; },
+    onOpenSettings: () => { openPopover(null); options.teamToggleOptions?.onOpenSettings?.(); },
+  }) : null;
   paintTeam = (): void => {
-    if (teamInput) teamInput.checked = piTeam;
     const plan = resolveAutonomy(autonomyLevel);
-    if (teamToggle) teamToggle.hidden = plan.readOnly || plan.planOnly;
+    if (teamToggle) {
+      teamToggle.hidden = plan.readOnly || plan.planOnly;
+      teamToggle.dataset.team = String(piTeam);
+      if (teamToggle.hidden && openState === "team") openPopover(null);
+    }
   };
-  if (teamInput) {
-    teamInput.addEventListener("change", () => {
-      piTeam = teamInput.checked;
-      paintTeam();
-      options.teamToggleOptions?.onTeamChange(piTeam);
-    });
-  }
-  const setPiTeam = (next: boolean): void => {
-    piTeam = next;
-    paintTeam();
-  };
+  const setPiTeam = (next: boolean): void => { piTeam = next; teamMenu?.setTeam(next); paintTeam(); };
   paintTeam();
 
   // ── 모델 칩 ──
@@ -388,6 +382,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
       commandMenu,
       preferencePopover,
       planningPopover,
+      ...(teamMenu ? [teamMenu.root] : []),
       ...(options.contextMeterPopover ? [options.contextMeterPopover] : []),
       composer,
     ],
@@ -400,6 +395,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
 
   // 성향·맥락 팝오버는 호출자가 안 주면 없는 종류다 — 없는 종류를 열어도 조용히 무시된다.
   const popoverOf = (kind: ComposerPopover): HTMLElement | null => {
+    if (kind === "team") return teamMenu?.root ?? null;
     if (kind === "suggest") return suggestPopover;
     if (kind === "menu") return commandMenu;
     if (kind === "preference") return options.preferenceContent ? preferencePopover : null;
@@ -407,6 +403,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     return options.contextMeterPopover ?? null;
   };
   const toggleOf = (kind: ComposerPopover): HTMLElement | null => {
+    if (kind === "team") return teamToggle;
     if (kind === "menu") return menuToggle;
     if (kind === "preference") return preferenceToggle;
     if (kind === "planning") return planningToggle;
@@ -425,7 +422,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     const rect = popover.getBoundingClientRect();
     // Overflow controls become hidden when their destination popover opens.
     const toggleRect = toggle.getBoundingClientRect();
-    const anchor = toggleRect.width || toggleRect.height ? toggle : menuToggle;
+    const anchor = openState === "team" ? composer : toggleRect.width || toggleRect.height ? toggle : menuToggle;
     const position = anchoredPopupPosition(anchor.getBoundingClientRect(), rect, {
       width: window.innerWidth, height: window.innerHeight,
     }, 6);
@@ -482,7 +479,9 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   };
   const onDocumentKeyDown = (event: KeyboardEvent): void => {
     if (openState === null || event.key !== "Escape") return;
+    const previous = openState;
     openPopover(null);
+    if (previous === "team") teamToggle?.focus();
   };
   if (typeof document !== "undefined" && typeof document.addEventListener === "function") {
     document.addEventListener("pointerdown", onDocumentPointerDown);
@@ -521,6 +520,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     openKind: () => openState,
     measuredTop,
     dispose: () => {
+      teamMenu?.dispose();
       popoverResize?.disconnect();
       if (typeof window !== "undefined") window.removeEventListener("resize", positionPopover);
       options.input.removeEventListener("focus", onInputFocus);

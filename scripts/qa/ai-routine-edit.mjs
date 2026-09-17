@@ -52,9 +52,13 @@ try {
   });
   await page.getByTestId('ai-composer-autonomy').selectOption('balanced');
   assert.equal(await page.getByTestId('ai-team-panel').isVisible(), false);
-  await page.getByTestId('ai-composer-team-input').check();
+  await page.getByTestId('ai-composer-team').click();
+  await page.getByTestId('ai-team-menu').getByRole('button', { name: '팀으로', exact: true }).click();
+  await page.keyboard.press('Escape');
   assert.equal(await page.getByTestId('ai-team-panel').isVisible(), true);
-  await page.getByTestId('ai-composer-team-input').uncheck();
+  await page.getByTestId('ai-composer-team').click();
+  await page.getByTestId('ai-team-menu').getByRole('button', { name: '혼자', exact: true }).click();
+  await page.keyboard.press('Escape');
   assert.equal(await page.getByTestId('ai-team-panel').isVisible(), false);
   await page.getByTestId('ai-input').fill(task);
   await page.getByTestId('ai-send').click();
