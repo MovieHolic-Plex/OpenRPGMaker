@@ -5,7 +5,9 @@
 // 애니메이션이 만지는 속성(transform/opacity/animation/filter)은 제외한다.
 import { expect, test, type Page } from "@playwright/test";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
-import { createBlankProject, createScarloxyPokemonDemoProject } from "@/project/defaults";
+import { createBlankProject } from "@/project/defaults";
+// 데모 프로젝트 팩터리는 배럴이 아니라 defaultProject 에 있다 — 배럴은 가벼운 것만 내보낸다.
+import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
 import { openDatabase, switchDatabaseTab, DATABASE_TAB_SPECS } from "./oprn-database-helpers";
 import { mkdirSync, writeFileSync } from "node:fs";
 import type { Project } from "@/project/types";
