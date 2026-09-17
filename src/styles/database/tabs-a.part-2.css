@@ -201,15 +201,22 @@
 
    .db-overview-pulse-card 를 뺀 이유(2026-09-17 실측): 개요 탭 카드 7장 중 2장만
    <button> 인데, 이 규칙이 (0,3,1) 로 카드 규칙 (0,2,0) 을 이겨서 그 2장만
-   모서리 0px(나머지 8px) + 아래/오른쪽 테두리 0.1(나머지 0.08) 로 렌더됐다. */
+   모서리 0px(나머지 8px) + 아래/오른쪽 테두리 0.1(나머지 0.08) 로 렌더됐다.
+
+   ⚠ 제외는 반드시 `:not(:where(...))` 로 적어라. 맨 처음 `:not(.db-overview-pulse-card)` 로
+   썼더니 특정도가 (0,3,1) → **(0,4,1)** 로 올라가, 이 리셋이 원래 지던 (0,4,0) 규칙들을
+   새로 이겨 버렸다. 실제 피해(브라우저 실측): 개요 탭 카운트 칩 9개가
+   `.db-overview-stat { border-radius: 10px }` (0,4,0) 을 잃고 각진 모서리가 됐고,
+   타일·시스템 탭 버튼도 같이 각져서 픽셀이 0.292% 움직였다. `:not()` 의 특정도는
+   인자 중 가장 센 것이고 `:where()` 는 0 이므로, 감싸면 목록만 늘고 특정도는 그대로다. */
 .database-modal-body .btn,
-.database-modal-body button:not(.db-tab):not(.event-custom-select-trigger):not(.db-overview-pulse-card) {
+.database-modal-body button:not(.db-tab):not(.event-custom-select-trigger):not(:where(.db-overview-pulse-card)) {
   border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-radius: 0;
 }
 
 .database-modal-body .btn:active,
-.database-modal-body button:not(.db-tab):not(.event-custom-select-trigger):not(.db-overview-pulse-card):active {
+.database-modal-body button:not(.db-tab):not(.event-custom-select-trigger):not(:where(.db-overview-pulse-card)):active {
   border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
 }
 

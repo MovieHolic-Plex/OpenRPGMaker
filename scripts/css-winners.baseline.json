@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-09-17T01:48:14.188Z",
+ "generatedAt": "2026-09-17T02:02:41.586Z",
  "note": "키는 sha1(선택자|속성|조건) 앞 12자리. 값은 `files layers values` 색인 3개. 줄 번호는 일부러 뺐다 — 줄이 밀리는 것만으로 대량 오보가 난다. 갱신: node scripts/check-css-winners.mjs --save-baseline",
  "discovery": "scan",
  "files": [
@@ -35205,9 +35205,9 @@
     "286a286b92d5": "130 3 280",
     "0a2bf1f66af6": "150 3 1081",
     "daf9cfec3f3c": "150 3 3735",
-    "19349fd92bc5": "69 3 2485",
-    "ffb1ff0edd3e": "69 3 2487",
-    "07ecc43bd2c0": "69 3 14",
+    "f6974d9091a6": "69 3 2485",
+    "5cadb6f2f831": "69 3 2487",
+    "caaa600fe841": "69 3 14",
     "7fedb78fdc68": "137 3 281",
     "ad57d6cb6d0c": "137 3 14",
     "7bdfe64d8419": "147 3 280",
