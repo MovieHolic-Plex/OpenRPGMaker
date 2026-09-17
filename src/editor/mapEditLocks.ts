@@ -86,39 +86,50 @@ export function ensureCurrentMapLock(): void {
   if (map && (status.kind === 'idle' || status.mapId !== mapId)) void checkoutMapForEditing(mapId, map.name);
 }
 
+let heldMap: { mapId: MapId; mapName: string } | null = null;
+let transition: Promise<void> = Promise.resolve();
+
 export async function checkoutMapForEditing(mapId: MapId, mapName: string): Promise<void> {
   const bridge = typeof window === 'undefined' ? undefined : window.oprn?.team;
   if (!bridge) { publish({ kind: 'idle' }); return; }
   const id = ++requestId;
-  const previous = status.kind === 'held' ? status.mapId : null;
   if (renewTimer) clearInterval(renewTimer);
   publish({ kind: 'checking', mapId, mapName });
-  const acquire = async () => {
-    try {
-      const result = await bridge.lock({ resource: `map:${mapId}` });
-      if (id !== requestId) {
-        if (result.kind === 'held' && (status.kind === 'idle' || status.mapId !== mapId)) void bridge.lock({ resource: `map:${mapId}`, release: true }).catch(() => {});
-        return;
+  let queued = false;
+  const attempt = (): Promise<void> => {
+    if (queued) return transition;
+    queued = true;
+    const run = async () => {
+      if (id !== requestId) return;
+      try {
+        // Keep the old lease alive until its changes are safely saved. Selection
+        // status is separate from ownership, including after failures/retries.
+        if (heldMap && heldMap.mapId !== mapId) {
+          await bridge.lock({ resource: `map:${heldMap.mapId}` });
+          const saved = await store.flush();
+          if (id !== requestId) return;
+          if (saved.kind !== 'saved') throw new Error(saved.kind === 'conflict'
+            ? '이전 맵의 저장 충돌을 먼저 해결하세요.' : '이전 맵을 저장하지 못했습니다. 연결과 편집 권한을 확인하세요.');
+          await bridge.lock({ resource: `map:${heldMap.mapId}`, release: true });
+          heldMap = null;
+        }
+        if (id !== requestId) return;
+        const result = await bridge.lock({ resource: `map:${mapId}` });
+        if (result.kind === 'held') heldMap = { mapId, mapName };
+        else if (heldMap?.mapId === mapId) heldMap = null;
+        if (id !== requestId) return;
+        if (result.kind === 'held') publish({ kind: 'held', mapId, mapName, expiresAt: new Date(result.expiresAt!).toISOString() });
+        else publish({ kind: 'locked', mapId, mapName, ownerLabel: result.ownerLabel ?? '다른 사용자', expiresAt: new Date(result.expiresAt ?? 0).toISOString() });
+      } catch (error) {
+        if (id === requestId) publish({ kind: 'unavailable', mapId, mapName, reason: 'network-error', message: error instanceof Error ? error.message : '팀 연결을 확인하세요.' });
       }
-      if (result.kind === 'held') publish({ kind: 'held', mapId, mapName, expiresAt: new Date(result.expiresAt!).toISOString() });
-      else publish({ kind: 'locked', mapId, mapName, ownerLabel: result.ownerLabel ?? '다른 사용자', expiresAt: new Date(result.expiresAt ?? 0).toISOString() });
-    } catch (error) {
-      if (id === requestId) publish({ kind: 'unavailable', mapId, mapName, reason: 'network-error', message: error instanceof Error ? error.message : '팀 연결을 확인하세요.' });
-    }
+    };
+    transition = transition.then(run).finally(() => { queued = false; });
+    return transition;
   };
-  if (previous && previous !== mapId) {
-    try {
-      const saved = await store.flush();
-      if (saved.kind === 'conflict') throw new Error('이전 맵의 저장 충돌을 먼저 해결하세요.');
-      await bridge.lock({ resource: `map:${previous}`, release: true });
-    } catch (error) {
-      if (id === requestId) publish({ kind: 'unavailable', mapId, mapName, reason: 'network-error', message: error instanceof Error ? error.message : '저장 실패' });
-      return;
-    }
-  }
-  if (id !== requestId) return;
-  await acquire();
-  if (id === requestId) renewTimer = setInterval(() => { void acquire(); }, 20_000);
+  // Retry the entire transition, including save/release, after transient failures.
+  renewTimer = setInterval(() => { void attempt(); }, 20_000);
+  await attempt();
 }
 
 export async function takeoverMapLock(mapId: MapId, mapName: string): Promise<void> {

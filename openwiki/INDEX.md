@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **70쪽 / 2850KB / 약 804,913 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **70쪽 / 2851KB / 약 805,313 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -20,7 +20,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-database.md` | 316KB | 61KB ⚠상한 초과 — 절을 더 쪼개라 | 1859 | ~91,794 |
 | `openwiki/editor-event-authoring.md` | 142KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 758 | ~40,840 |
 | `openwiki/editor-event-commands.md` | 61KB | 32KB | 242 | ~16,671 |
-| `openwiki/editor-interior-room-harness.md` | 92KB | 6KB | 445 | ~26,704 |
+| `openwiki/editor-interior-room-harness.md` | 92KB | 6KB | 445 | ~26,751 |
 | `openwiki/editor-pre-edit-routing.md` | 115KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 626 | ~32,914 |
 | `openwiki/editor-workflows-misc.md` | 66KB | 30KB | 472 | ~18,148 |
 | `openwiki/runtime-battle.md` | 150KB | 31KB | 678 | ~43,069 |
@@ -545,7 +545,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L59` Validation
 - `L61` Two new-project surfaces, one choice model (2026-09-11)
 
-### `openwiki/editor-interior-room-harness.md` — 92KB · 445줄 · ~26,704 토큰 · 통째읽기 잘림
+### `openwiki/editor-interior-room-harness.md` — 92KB · 445줄 · ~26,751 토큰 · 통째읽기 잘림
 
 - `L5` 던전 천장과 단차의 구분 — 사용자 정정 (2026-09-13)
 - `L19` 대형 광산 저작 접합 교정 (2026-09-13)
@@ -1134,13 +1134,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L110` Files to inspect before editing
 - `L122` Related pages
 
-### `openwiki/team-project-host.md` — 7KB · 88줄 · ~2,087 토큰
+### `openwiki/team-project-host.md` — 8KB · 101줄 · ~2,440 토큰
 
 - `L3` 소유와 실행 위치
 - `L20` 실행
 - `L44` 저장·협업 계약
 - `L70` 백업과 이전
 - `L80` 검증 근거
+- `L89` 적대적 리뷰 수정 (2026-09-18)
 
 ### `openwiki/testing.md` — 201KB · 1872줄 · ~55,637 토큰 · 통째읽기 잘림
 

@@ -35,3 +35,27 @@ it('requires membership for HTML, assets and RPC; revocation invalidates an exis
   expect((await rpc(viewer, 'oprn:team.status')).status).toBe(401);
   expect((await fetch(base, { headers: { cookie: owner, origin: 'https://other.example' } })).status).toBe(403);
 });
+
+it('scopes login and logout cookies to the hosted project', async () => {
+  root = await mkdtemp(join(tmpdir(), 'oprn-cookie-host-'));
+  await writeFile(join(root, 'index.html'), '<html><head></head></html>');
+  server = await startLocalProjectServer({ projectDir: join(root, 'a'), distDir: root,
+    browserBridgeSource: '', publicOrigin: 'http://127.0.0.1:0' });
+  const other = await startLocalProjectServer({ projectDir: join(root, 'b'), distDir: root,
+    browserBridgeSource: '', publicOrigin: 'http://127.0.0.1:0' });
+  try {
+    const login = async (host: LocalProjectServer) => {
+      const response = await fetch(host.url + '/__oprn/login', { method: 'POST', redirect: 'manual',
+        body: new URLSearchParams({ token: host.ownerAccessCode! }) });
+      return response.headers.get('set-cookie')!.split(';')[0]!;
+    };
+    const a = await login(server), b = await login(other);
+    expect(a.split('=')[0]).not.toBe(b.split('=')[0]);
+    const cookie = a + '; ' + b;
+    for (const host of [server, other]) {
+      expect((await fetch(host.url + '/__oprn/team', { headers: { cookie } })).status).toBe(200);
+    }
+    await fetch(other.url + '/__oprn/logout', { method: 'POST', redirect: 'manual', headers: { cookie } });
+    expect((await fetch(server.url + '/__oprn/team', { headers: { cookie } })).status).toBe(200);
+  } finally { await other.close(); }
+});

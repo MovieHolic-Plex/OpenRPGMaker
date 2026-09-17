@@ -236,6 +236,7 @@ function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElem
     el("button", {
       class: "btn small",
       text: "복제",
+      dataset: { testid: "db-duplicate-record" },
       on: {
         click: () => {
           const selected = selectedRecordIdForSession(collection);
