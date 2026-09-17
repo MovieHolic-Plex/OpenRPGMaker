@@ -73,8 +73,9 @@ export interface AiConfig {
   // Pi 팀 실행: 컴포저 「팀」 토글·설정 「Pi 팀 실행」 공용 비트. 옛 blob 의 `executionRoute: "pi-team"`
   // 은 loadAiConfig 가 이 값으로 승격한다(경로 enum 은 없앴다 — executionRoute.ts 머리말).
   piTeam?: boolean;
-  // Pi 경로의 적용 방식: review = 검토 카드에서 승인 후 적용(기본), auto = 게이트 통과 즉시 적용.
+  // 적용 모드는 DEFAULT가 기본. 이전 review 공장값은 정책 버전으로 구분한다.
   piApply?: PiApplyMode;
+  piApplyPolicyVersion?: 1;
 }
 
 // 기본값. apiKey는 localStorage 우선, 비어 있으면 dev env(VITE_LLM_API_KEY 등) 폴백.
@@ -281,7 +282,9 @@ export function loadAiConfig(): AiConfig {
       // «Pi» 이므로 팀 비트만 살리고 나머지는 버린다 — 조수 세션은 deprecated 다. 옛 키는 이제
       // AiConfig 에 없으므로 느슨한 레코드로 읽는다(그 한 곳에만 남은 어휘).
       piTeam: parsed.piTeam === true || (parsed as { executionRoute?: unknown }).executionRoute === LEGACY_PI_TEAM_ROUTE,
-      piApply: normalizePiApplyMode(parsed.piApply),
+      piApply: parsed.piApplyPolicyVersion !== 1 && parsed.piApply === "review"
+        ? DEFAULT_PI_APPLY : normalizePiApplyMode(parsed.piApply),
+      piApplyPolicyVersion: 1,
     };
   } catch {
     return base;
@@ -293,7 +296,7 @@ export function saveAiConfig(config: AiConfig): void {
   // 제공자는 저장 시점에도 레지스트리 값으로 정규화한다. 프로그램 경로(설정 저장·마이그레이션)가
   // 레지스트리 밖 id 를 디스크에 남기면 다음 판독이 흔들리기 때문 — 두 제공자 중 하나로 못박되,
   // 사용자가 고른 Codex 를 Antigravity 로 되돌리지는 않는다.
-  const normalized: AiConfig = { ...config, providerId: parseOhMyPiProvider(config.providerId) };
+  const normalized: AiConfig = { ...config, piApplyPolicyVersion: 1, providerId: parseOhMyPiProvider(config.providerId) };
   localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify(normalized));
 }
 

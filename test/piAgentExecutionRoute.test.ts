@@ -88,6 +88,15 @@ describe("AI 설정의 팀·적용 방식", () => {
     saveAiConfig({ ...loadAiConfig(), piApply });
     expect(loadAiConfig().piApply).toBe(piApply);
   });
+  it("옛 review 기본값은 DEFAULT로 전환하고 새 명시 선택은 보존한다", () => {
+    localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ piApply: "review", piTeam: true }));
+    expect(loadAiConfig().piApply).toBe("default");
+    expect(loadAiConfig().piTeam).toBe(true);
+    saveAiConfig({ ...loadAiConfig(), piApply: "review" });
+    expect(loadAiConfig().piApply).toBe("review");
+    saveAiConfig({ ...loadAiConfig(), model: "kept-model" });
+    expect(loadAiConfig().piApply).toBe("review");
+  });
   it("경로 enum 시절의 `pi-team` 은 팀 비트로 승격한다", () => {
     // 옛 키를 버리면 사용자가 켜 둔 팀이 조용히 사라진다. `session`·`pi-agent` 는 둘 다 «Pi» 다.
     localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ executionRoute: "pi-team" }));

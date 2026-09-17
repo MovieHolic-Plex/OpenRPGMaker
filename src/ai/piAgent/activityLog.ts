@@ -18,6 +18,7 @@ import { randomUuid } from "@/util/id";
 import type { TeamBoardState } from "./teamBoardState";
 
 export interface PiRunContext {
+  readonly applyMode?: import("./applyMode").PiApplyMode;
   readonly instruction: string;
   /** single = 에이전트 하나(맵마다 병렬일 수 있다), team = 팀장 + 시공·검수. */
   readonly mode: "single" | "team";
@@ -66,7 +67,7 @@ export function startPiRunLog(context: PiRunContext): PiRunLogHandle {
       model: context.model,
       ...(context.mapId ? { mapId: context.mapId } : {}),
       ...(context.mapName ? { mapName: context.mapName } : {}),
-      result,
+      result: { ...result, ...(context.applyMode ? { applyMode: context.applyMode } : {}) },
       ...extra,
     }).then(() => undefined, () => {
       /* 기록 실패가 실행을 막지 않는다 — 세션 턴과 같은 규칙 */

@@ -437,6 +437,7 @@ export function buildAiActivityLogRecord(input: AiActivityLogInput): AiActivityL
         ? { assistantText: clipText(input.result.assistantText, 2000) }
         : {}),
       ...(input.result.pending ? { pending: true } : {}),
+      ...(input.result.applyMode ? { applyMode: input.result.applyMode } : {}),
       ...(input.result.orphaned ? { orphaned: true } : {}),
       ...(commitIds.length > 0 ? { commitIds } : {}),
     },
