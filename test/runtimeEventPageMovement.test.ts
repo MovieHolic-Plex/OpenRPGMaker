@@ -159,6 +159,10 @@ describe("runtime event page movement", () => {
 
     expect(scene.autonomousNPCs.get("npc")).toMatchObject({
       strategy: "chase",
+      speedRank: 6,
+      moveDurationMs: npcMoveDurationMs(6),
+      frequencyRank: 7,
+      moveIntervalMs: npcMoveIntervalMs(7),
       sightRange: 5,
       giveUpRange: 9,
       pathfind: true,
