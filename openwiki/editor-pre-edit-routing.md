@@ -4,6 +4,24 @@
 
 Read this before editing editor-facing behavior. Identifies which workflow owns a request and lists agent cautions.
 
+## 맵 전환과 물 타일 애니메이션 공유 (2026-09-18)
+
+`chipsetTileRender`의 애니메이션 타일·호수 쿼터는 `sharedTileAnimation`을 통해
+**씬·애니메이션 키마다 숨겨진 Sprite 하나**를 공유한다. 각 타일은 Image이고,
+`animationupdate` 때 프레임만 따라간다. 알파·틴트·컨테이너·컬링은 타일별로 유지한다.
+마지막 Image가 파괴되면 공유 Sprite도 파괴한다. 새 타일은 현재 공유 프레임부터 시작한다.
+
+9/16의 재생성 비용 설명은 불완전했다. 실제 CPU 프로파일에서 물 맵 전환의 주범은
+`AnimationState.destroy → AnimationManager.off → EventEmitter.removeListener`였다.
+타일마다 Sprite를 만들면 각 Sprite가 같은 전역 `remove` 이벤트에 구독하므로,
+수만 개를 개별 해제할 때 리스너 배열을 매번 훑고 복사한다. **타일별 Sprite로 되돌리지 마라.**
+NPC·캐릭터 Sprite와 런타임 렌더 경로는 이 변경의 대상이 아니다.
+
+96×96 물 맵 왕복의 동기 선택 처리: 10.01~13.92초 → 0.32~0.46초.
+브라우저에서 1,000개 Image의 두 프레임 재생, 공유 리스너 1개, 전량 파괴 후 0개를 확인했다.
+실측 범위·근거: `reports/2026-09-18-map-switch-performance.md`.
+회귀 계약: `test/sharedTileAnimation.test.ts` (이 세션에서는 저장소 규칙에 따라 실행하지 않음).
+
 ## 편집기 재렌더 비용 — 줌은 카메라 경로다 (2026-09-16)
 
 `EditScene` 의 전체 재렌더(`redraw`)는 타일 GameObject 를 전부 파괴하고 다시 만든다.

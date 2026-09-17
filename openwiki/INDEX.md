@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **70쪽 / 2885KB / 약 815,822 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **70쪽 / 2886KB / 약 816,246 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -21,7 +21,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-event-authoring.md` | 142KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 758 | ~40,840 |
 | `openwiki/editor-event-commands.md` | 61KB | 32KB | 242 | ~16,671 |
 | `openwiki/editor-interior-room-harness.md` | 92KB | 6KB | 445 | ~26,751 |
-| `openwiki/editor-pre-edit-routing.md` | 115KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 626 | ~32,914 |
+| `openwiki/editor-pre-edit-routing.md` | 116KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 644 | ~33,338 |
 | `openwiki/editor-workflows-misc.md` | 66KB | 30KB | 472 | ~18,148 |
 | `openwiki/runtime-battle.md` | 150KB | 31KB | 678 | ~43,069 |
 | `openwiki/runtime-project-schema.md` | 150KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 1043 | ~40,943 |
@@ -41,7 +41,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 109, 122, 123, 125, 128, 129 |
 | `openwiki/editor-observability.md` | 1 | 310 |
-| `openwiki/editor-pre-edit-routing.md` | 5 | 439, 448, 455, 457, 480 |
+| `openwiki/editor-pre-edit-routing.md` | 5 | 457, 466, 473, 475, 498 |
 | `openwiki/state-system.md` | 2 | 3, 84 |
 
 ## 없는 파일을 가리키는 참조
@@ -617,31 +617,32 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L453` AI 툴·액션 이유 (2026-09-02)
 - `L463` 검증
 
-### `openwiki/editor-pre-edit-routing.md` — 115KB · 626줄 · ~32,914 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 116KB · 644줄 · ~33,338 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
-- `L7` 편집기 재렌더 비용 — 줌은 카메라 경로다 (2026-09-16)
-- `L28` Exterior door backing
-- `L38` Tile brush reliability (2026-09-06)
-- `L76` Combo Brush (2026-09-10, OPRN-OUT-022)
-  - `L81` 용어 (코드와 UI 가 같은 말을 쓴다)
-  - `L93` 소유 경계
-  - `L105` 근거 규칙 — 번호 인접으로 추론하지 않는다
-  - `L116` 검토 책임
-  - `L128` 경계와 진단
-  - `L138` 회귀 이음줌
-- `L150` Pre-edit routing
-  - `L152` 명명 로케이션 레이어 (2026-09-10)
-  - `L234` 로케이션 역할과 겹침 클릭 (2026-09-12)
-  - `L272` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
-  - `L274` 로케이션 앵커 — 좌표 대신 이름으로 가리키기 (2026-09-12)
-  - `L327` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
-  - `L387` Automatic usage guides disabled (2026-09-06)
-  - `L397` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
-- `L499` Agent cautions
-- `L509` 헤더 용어 정본과 중복 감사 (2026-08-30)
-  - `L540` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
-  - `L572` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
-  - `L601` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
+- `L7` 맵 전환과 물 타일 애니메이션 공유 (2026-09-18)
+- `L25` 편집기 재렌더 비용 — 줌은 카메라 경로다 (2026-09-16)
+- `L46` Exterior door backing
+- `L56` Tile brush reliability (2026-09-06)
+- `L94` Combo Brush (2026-09-10, OPRN-OUT-022)
+  - `L99` 용어 (코드와 UI 가 같은 말을 쓴다)
+  - `L111` 소유 경계
+  - `L123` 근거 규칙 — 번호 인접으로 추론하지 않는다
+  - `L134` 검토 책임
+  - `L146` 경계와 진단
+  - `L156` 회귀 이음줌
+- `L168` Pre-edit routing
+  - `L170` 명명 로케이션 레이어 (2026-09-10)
+  - `L252` 로케이션 역할과 겹침 클릭 (2026-09-12)
+  - `L290` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
+  - `L292` 로케이션 앵커 — 좌표 대신 이름으로 가리키기 (2026-09-12)
+  - `L345` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
+  - `L405` Automatic usage guides disabled (2026-09-06)
+  - `L415` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
+- `L517` Agent cautions
+- `L527` 헤더 용어 정본과 중복 감사 (2026-08-30)
+  - `L558` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
+  - `L590` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
+  - `L619` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
 
 ### `openwiki/editor-storage-chest.md` — 2KB · 17줄 · ~571 토큰
 
