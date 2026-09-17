@@ -1,0 +1,36 @@
+import { store } from '@/project/store';
+import type { TeamStatus } from '../../electron/shared/team';
+
+let latest: TeamStatus | null = null;
+export function teamSessionStatus(): TeamStatus | null { return latest; }
+
+/** Poll the durable revision, not PRAGMA data_version (same-connection writes do not change it). */
+export function startTeamSession(): void {
+  const bridge = window.oprn?.team;
+  if (!bridge) return;
+  let seen = -1, running = false;
+  const bar = document.createElement('aside');
+  bar.setAttribute('aria-label', '팀 연결 상태');
+  Object.assign(bar.style, { position: 'fixed', bottom: '14px', left: 'min(340px, 24vw)', maxWidth: 'calc(100vw - 360px)', zIndex: '90', display: 'flex', alignItems: 'center', gap: '10px', background: '#fffdf8', color: '#625b4e', border: '1px solid #ddd4c4', borderRadius: '10px', boxShadow: '0 3px 12px #3027190d', padding: '9px 12px', fontSize: '11px' });
+  const text = document.createElement('span');
+  bar.append(text);
+  if (!window.oprn?.closeIsHostDriven) {
+    const link = document.createElement('a'); link.href = '/__oprn/team'; link.target = '_blank'; link.rel = 'noopener';
+    Object.assign(link.style, { color: '#596c50', fontWeight: '600', whiteSpace: 'nowrap', textDecoration: 'none' });
+    link.textContent = '팀 관리 ↗'; bar.append(link);
+  }
+  document.body.append(bar);
+  const poll = async () => {
+    if (running) return;
+    running = true;
+    try {
+      latest = await bridge.status();
+      if (latest.revision !== seen && await store.refreshFromHost()) seen = latest.revision;
+      text.textContent = `${latest.team.name} · ${latest.member.label}${latest.member.role === 'viewer' ? ' · 읽기 전용' : ''}${seen >= 0 && latest.revision !== seen && store.hasUnsavedChanges() ? ' · 저장 후 팀 변경 반영' : ''}`;
+    } catch { latest = null; text.textContent = '팀 연결 끊김 · 저장 상태를 확인하세요'; }
+    finally { running = false; }
+  };
+  void poll();
+  const timer = window.setInterval(() => { void poll(); }, 3000);
+  window.addEventListener('pagehide', () => clearInterval(timer), { once: true });
+}

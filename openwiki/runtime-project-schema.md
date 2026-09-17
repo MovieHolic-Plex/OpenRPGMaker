@@ -1,3 +1,10 @@
+## 팀 프로젝트 서비스 (2026-09-18)
+
+현재 저장 경로와 팀 협업 계약은 [team-project-host.md](team-project-host.md)를 먼저 읽는다.
+Electron IPC와 브라우저 HTTP가 같은 서비스로 SQLite·에셋을 사용한다. 일반 정적 웹 빌드의
+메모리 폴백과 `scripts/oprn-serve.mjs`가 주입하는 브리지 실행 경로를 혼동하지 않는다.
+아래 9월 16일의 «웹은 QA 전용», «로컬 단일 작성자라 잠금 없음» 설명은 과거 상태다.
+
 ## 로컬 SQLite 정본과 저장소 포트 (2026-09-16)
 
 정본이 "원격 Postgres 프로젝트 행"에서 "사용자가 고른 폴더의 `project.sqlite`"로 옮겨가는 중이다.

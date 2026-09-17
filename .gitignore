@@ -284,3 +284,7 @@ verify-shots/battle-skin-trio/
 dist-electron/
 dist-packages/
 .flip-default-check.*
+
+# Local team-host access codes (never commit or include in project backups).
+.oprn-host-access
+.oprn-host-access.*.tmp

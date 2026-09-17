@@ -1,6 +1,14 @@
 export const OPRN_CHANNEL_PREFIX = "oprn:" as const;
 
 export const OPRN_CHANNELS = {
+  teamStatus: "oprn:team.status",
+  teamInvite: "oprn:team.invite",
+  teamRevoke: "oprn:team.revoke",
+  teamRename: "oprn:team.rename",
+  teamLock: "oprn:team.lock",
+  companionOrigin: "oprn:companion.origin",
+  companionToken: "oprn:companion.token",
+  startOpenRecent: "oprn:start.openRecent",
   projectStatus: "oprn:project.status",
   projectProbe: "oprn:project.probe",
   projectOpen: "oprn:project.open",
