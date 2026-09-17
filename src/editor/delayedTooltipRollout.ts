@@ -15,7 +15,8 @@ export type DelayedTooltipTarget = {
 export const DELAYED_TOOLTIP_ROLLOUT: readonly DelayedTooltipTarget[] = [
   { label: "접기/펴기", name: "왼쪽 패널 접기/펼치기", testid: "sidebar-collapse" },
   { label: "AI 대화", name: "AI 대화 패널 열기", testid: "sidebar-ai" },
-  { label: "맵·타일", name: "맵과 타일 패널 열기", testid: "sidebar-tools" },
+  { label: "타일", name: "타일 패널 열기", testid: "sidebar-tools" },
+  { label: "맵", name: "맵 목록과 속성 열기", testid: "sidebar-maps" },
   { label: "걷기 전투", name: "걸을 때 적 만나기 설정", testid: "walk-encounter-list-open" },
   { label: "구역 그리기", name: "구역 그리기 켜기/끄기", testid: "map-location-layer-toggle" },
   { label: "배경 보기", name: "맵 배경 미리보기 켜기/끄기", testid: "map-background-preview-toggle" },
