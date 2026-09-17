@@ -66,3 +66,7 @@ detached draft while leaving the live place unchanged. It never activates or
 saves a remote project. Local evidence: `output/evidence/spatial-kinds-0912/`.
 This is editor UI evidence; authored building publication and runtime navigation
 require their own remote-save/reload and dedicated player QA evidence.
+
+## Shared objects (2026-09-17)
+
+자료집 → 맵 → 오브젝트 exposes the default source as **공용 오브젝트**, and authored objects as **내 오브젝트**. Other spatial tabs keep their existing labels. The shared source includes the restored **실내 확장 · Tibo** tileset (357 kits); its rail entry narrows the list to this pack. Assets and registration metadata ship in the repository and are seeded by defaultAssets for both new and loaded projects. Existing kit IDs, multi-tile dimensions and collision data are preserved. Shared objects use the existing copy-to-edit and placement flows. Source sheets, rejected iterations and recovery project snapshots are not shipped as library entries.

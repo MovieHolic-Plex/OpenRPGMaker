@@ -349,8 +349,8 @@ export function renderSpatialSourceChips(
 ): HTMLElement {
   const chips: Array<{ id: SpatialAuthoringSession["source"]; label: string }> = [
     { id: "all", label: "모두" },
-    { id: "defaults", label: "기본 설계" },
-    { id: "own", label: "내 설계" },
+    { id: "defaults", label: session.tab === "objects" ? "공용 오브젝트" : "기본 설계" },
+    { id: "own", label: session.tab === "objects" ? "내 오브젝트" : "내 설계" },
   ];
   return el("div", {
     class: "spatial-source-chips",

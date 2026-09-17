@@ -62,8 +62,8 @@ export function spatialSourceLabel(card: SpatialGalleryCard): string {
   if (card.compatibility === "room-rule") return "호환 방 규칙";
   if (card.compatibility === "house-shape") return "건물 외형 · 호환 도안";
   switch (card.source) {
-    case "default": return "기본 설계";
-    case "own": return "내 설계";
+    case "default": return card.kind === "objects" ? "공용 오브젝트" : "기본 설계";
+    case "own": return card.kind === "objects" ? "내 오브젝트" : "내 설계";
     case "placed": return "배치된 곳";
     default: {
       const exhaustive: never = card.source;

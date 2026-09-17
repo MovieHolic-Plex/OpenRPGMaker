@@ -1,0 +1,35 @@
+import assert from 'node:assert/strict';
+import {mkdir} from 'node:fs/promises';
+import {chromium} from 'playwright';
+const base=process.argv[2] ?? 'http://127.0.0.1:9835';
+const out='output/evidence/shared-objects';
+await mkdir(out,{recursive:true});
+const browser=await chromium.launch({headless:true});
+try {
+ const page=await browser.newPage({viewport:{width:1600,height:1000}});
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/*',r=>new URL(r.request().url()).origin===new URL(base).origin?r.continue():r.abort());
+ await page.addInitScript(()=>{localStorage.setItem('oprn:editor-ui-mode','expert');localStorage.setItem('oprn:editor-welcome-dismissed','1');});
+ await page.goto(`${base}/?blankProject=1&aiBridge=0`);
+ await page.getByTestId('toolbar-database').waitFor({timeout:120000});
+ await page.getByTestId('toolbar-database').click();
+ const group=page.getByTestId('db-tab-group-world');
+ if(await group.getAttribute('aria-expanded')==='false')await group.click();
+ await page.getByTestId('db-tab-spatial-objects').click();
+ const shared=page.getByTestId('spatial-source-defaults');
+ assert.equal(await shared.innerText(),'공용 오브젝트');await shared.click();
+ await page.locator('[data-tileset-id="tibo_interior_expanded"]').click();
+ assert.equal(await page.locator('.asset-browser-count').innerText(),'357개');
+ await page.getByTestId('spatial-browser-search').fill('따뜻한 목재 서랍장');
+ assert.equal(await page.locator('.asset-browser-count').innerText(),'1개');
+ await page.locator('.asset-browser-card').click();
+ await page.waitForTimeout(1500);
+ await page.screenshot({path:`${out}/shared-objects.png`});
+ await page.getByTestId('spatial-object-copy').click();
+ await page.waitForTimeout(500);
+ assert.ok((await page.locator('body').innerText()).includes('내 오브젝트'));
+ const copied=await page.evaluate(async()=>{const {visibleAuthoringProject}=await import('/src/editor/panels/spatialAuthoringAccess.ts');return visibleAuthoringProject().tilesets.tibo_interior_expanded.structureKits.some(k=>k.id!=='tibo-warm-dresser' && k.name.includes('따뜻한 목재 서랍장'));});
+ assert.equal(copied,true);
+ assert.deepEqual(errors,[]);
+ console.log('PASS: shared object filter, 357 restored props, search, selection and editable copy, no page errors');
+} finally {await browser.close();}
