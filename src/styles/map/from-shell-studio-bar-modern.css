@@ -111,3 +111,20 @@
 .canvas-toolbar .canvas-ai-action.is-ask:hover {
   background: var(--accent-border);
 }
+
+/* Compact map tools: one icon per action; zoom retains its numeric value. */
+.canvas-toolbar.is-icon-toolbar { gap: 3px; padding: 5px; border-radius: var(--radius-l); }
+.canvas-toolbar.is-icon-toolbar > .btn,
+.canvas-toolbar.is-icon-toolbar .canvas-ai-action,
+.canvas-toolbar.is-icon-toolbar .map-save-button { display: inline-flex; align-items: center; justify-content: center; width: 34px; min-width: 34px; height: 34px; min-height: 34px; padding: 0; background: transparent; border: 0; border-radius: var(--radius-s); color: var(--text-2); }
+.canvas-toolbar.is-icon-toolbar svg { width: 18px; height: 18px; flex-shrink: 0; }
+.canvas-toolbar.is-icon-toolbar .canvas-ai-action > span { display: none; }
+.canvas-toolbar.is-icon-toolbar > .btn:hover,
+.canvas-toolbar.is-icon-toolbar .canvas-ai-action:hover { background: var(--bg-hover); color: var(--text-1); }
+.canvas-toolbar.is-icon-toolbar > .btn[aria-pressed="true"],
+.canvas-toolbar.is-icon-toolbar .canvas-ai-action.is-ask { background: var(--accent-muted); color: var(--accent); }
+.canvas-toolbar.is-icon-toolbar .canvas-toolbar-zoom-group { border-left: 1px solid var(--border-subtle); padding-left: 6px; margin-left: 3px; }
+.canvas-toolbar.is-icon-toolbar button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.canvas-toolbar.is-icon-toolbar.is-expanded .canvas-toolbar-zoom-menu { display: none; }
+.canvas-toolbar.is-icon-toolbar .canvas-toolbar-zoom-group.is-menu-open .canvas-toolbar-zoom-menu { display: inline-flex; }

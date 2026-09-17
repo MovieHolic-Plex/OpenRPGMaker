@@ -38,6 +38,7 @@
 @import "./tabs-b-assistant-panel/22-team-work.css" layer(database);
 @import "./tabs-b-assistant-panel/23-agent-lanes.css" layer(database);
 @import "./tabs-b-assistant-panel/24-assistant-work-strip.css" layer(database);
+@import "./tabs-b-assistant-panel/25-team-sidebar.css" layer(database);
 @import "./skill-item-visuals.css" layer(database);
 @import "./record-thumbs.css" layer(database);
 @import "./character-graphics.css" layer(database);

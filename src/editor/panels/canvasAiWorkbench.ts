@@ -1,3 +1,4 @@
+import { deckIcon } from "./aiDeckIcons";
 import { editorState, type EditorState, type TileSelection } from "@/editor/editorState";
 import { setBuildPaletteEnabled } from "@/editor/panels/buildPalette";
 import { openCanvasInspectionPanel } from "@/editor/panels/canvasInspectionPanel";
@@ -52,7 +53,7 @@ export function renderCanvasAiWorkbench(deps: CanvasAiWorkbenchDeps = defaultDep
       attrs: { "aria-label": title, title, type: "button" },
       dataset: { testid: `canvas-ai-${action}` },
       children: [
-        makeSvgIcon(icon),
+        action === "ask" ? deckIcon("spark") : makeSvgIcon(icon),
         el("span", { text: label }),
       ],
       on: { click: () => executeCanvasAiAction(action, deps) },

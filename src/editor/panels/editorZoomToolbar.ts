@@ -1,3 +1,5 @@
+import { makeSvgIcon } from "./tileToolbarIcons";
+import { installDelayedTooltips } from "@/editor/delayedTooltipRollout";
 import { EDITOR_ZOOM_LEVELS, editorState, type EditorZoom } from "@/editor/editorState";
 import { getEditorChrome } from "@/editor/editorUiMode";
 import { createMapScreenshot, MapScreenshotError, type MapScreenshot } from "@/editor/mapScreenshot";
@@ -37,7 +39,9 @@ export function renderCanvasToolbar(container: HTMLElement): void {
   const chrome = getEditorChrome();
   const currentZoom = editorState.get().zoom;
   container.dataset.uiDensity = chrome.canvasChromeDense ? "expert" : "beginner";
-  container.classList.add("is-zoom-stepper");
+  container.classList.add("is-zoom-stepper", "is-icon-toolbar");
+  container.setAttribute("role", "toolbar");
+  container.setAttribute("aria-label", "맵 도구바");
   if (!chrome.canvasChromeDense) {
     container.classList.add("is-basic-chrome");
     container.classList.add("is-docked-chrome");
@@ -100,7 +104,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
   }
   zoomGroup.append(menu);
   container.append(el("button", {
-    class: "btn walk-encounter-list-button", text: "걸을 때 적 만나기",
+    class: "btn walk-encounter-list-button", children: [makeSvgIcon("combat")],
     attrs: { type: "button", title: "범위 목록 · 추가 · 편집 · 삭제" },
     dataset: { testid: "walk-encounter-list-open" }, on: { click: openWalkEncounterList },
   }));
@@ -109,7 +113,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
   const locationLayerOn = locationLayerState().enabled;
   container.append(el("button", {
     class: `btn map-location-layer-button${locationLayerOn ? " is-active" : ""}`,
-    text: locationLayerOn ? "구역 그리기" : "로케이션",
+    children: [makeSvgIcon("pin")],
     attrs: {
       type: "button",
       title: locationLayerOn
@@ -126,7 +130,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
   const backgroundPreviewOn = mapBackgroundPreviewEnabled();
   container.append(el("button", {
     class: `btn map-background-preview-button${backgroundPreviewOn ? " is-active" : ""}`,
-    text: "맵 배경",
+    children: [makeSvgIcon("image")],
     attrs: {
       type: "button",
       title: backgroundPreviewOn
@@ -141,6 +145,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
   // Basic: zoom only (always expanded). Expert: ⋯ expand + build palette + map screenshot.
   if (!chrome.canvasChromeDense) {
     container.append(zoomGroup);
+    installDelayedTooltips(container);
     return;
   }
   const saveAction = el("div", {
@@ -150,7 +155,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
     children: [
       el("button", {
         class: "oprn-tool-button map-save-button",
-        text: "맵 저장",
+        children: [makeSvgIcon("save")],
         attrs: { title: "현재 맵만 PNG로 저장", "aria-label": "현재 맵만 PNG로 저장" },
         dataset: { testid: "editor-map-screenshot-button" },
         on: { click: () => void downloadCurrentMapScreenshot() },
@@ -162,7 +167,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
       class: "canvas-toolbar-expand",
       text: "⋯",
       // hover 자동 노출을 없앴으므로 이 버튼이 확대/맵저장 컨트롤을 여닫는 유일한 토글이다.
-      attrs: { type: "button", title: "확대·맵 저장 펼치기/접기", "aria-label": "확대·맵 저장 펼치기/접기", "aria-expanded": String(container.classList.contains("is-expanded")) },
+      attrs: { type: "button", title: "맵 저장 도구 펼치기/접기", "aria-label": "맵 저장 도구 펼치기/접기", "aria-expanded": String(container.classList.contains("is-expanded")) },
       dataset: { testid: "editor-canvas-toolbar-expand", uiDensity: "expert" },
       on: {
         click: () => {
@@ -174,7 +179,8 @@ export function renderCanvasToolbar(container: HTMLElement): void {
         },
       },
     });
-  container.append(zoomGroup, expandButton, aiWorkbench, saveAction);
+  container.append(zoomGroup, aiWorkbench, expandButton, saveAction);
+  installDelayedTooltips(container);
 }
 
 function readCanvasToolbarExpanded(): boolean {

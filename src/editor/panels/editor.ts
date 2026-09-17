@@ -38,6 +38,7 @@ import { installEditorToolHook } from "@/editor/editorToolHook";
 import { cleanupProjectE2EBridge } from "@/editor/editorToolHook";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { createAiSidebarWorkspace } from "@/editor/panels/aiSidebarWorkspace";
 import { closeSidebarSurface, teardownSidebarSurfaces } from '@/editor/panels/sidebarSurface';
 import { refreshAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { showConfirm } from "@/editor/ui/modal";
@@ -120,6 +121,7 @@ let phaserHost: HTMLElement | null = null;
 let canvasToolbarRoot: HTMLElement | null = null;
 let chatFloatRoot: HTMLElement | null = null;
 let aiChatPanelRoot: HTMLElement | null = null;
+let aiSidebarWorkspace: ReturnType<typeof createAiSidebarWorkspace> | null = null;
 let mapLockBannerRoot: HTMLElement | null = null;
 let authoringJourneyRoot: HTMLElement | null = null;
 // 저장 모드 배너 호스트는 항상 DOM에 두고 내용만 갈아 끼운다 — 공용 데모 → 사본 전환처럼
@@ -160,7 +162,7 @@ export function renderEditor(main: HTMLElement): void {
   // 클래스와 `--ai-chat-side-width` 를 갈라 잡았다 — side 가 사라지면서 캔버스는 항상
   // 전폭이고 이 변수는 영구 0 이다.
   const layout = el("div", {
-    class: "editor-layout chat-dock-float",
+    class: "editor-layout chat-dock-float has-ai-sidebar",
     dataset: { testid: "editor-layout" },
   });
   layout.style.setProperty("--ai-chat-side-width", "0px");
@@ -196,7 +198,7 @@ export function renderEditor(main: HTMLElement): void {
   });
   const authoringJourney = el("div", { class: "authoring-journey-host" });
   const chatFloatHost = el("div", {
-    class: "ai-chat-float-host",
+    class: "ai-chat-float-host ai-chat-sidebar-host",
     dataset: { testid: "chat-float-host" },
   });
   leftResizer = el("div", {
@@ -212,12 +214,16 @@ export function renderEditor(main: HTMLElement): void {
   canvasArea.append(bannerHost);
   persistenceBannerHost = bannerHost;
   paintPersistenceBanner();
-  canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, authoringJourney, cursorDiagnostics, chatFloatHost);
-  layout.append(left, leftResizer, canvasArea);
+  canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, authoringJourney, cursorDiagnostics);
+  aiSidebarWorkspace?.dispose();
+  aiSidebarWorkspace = createAiSidebarWorkspace(left, chatFloatHost, () => { applyLayout(); scheduleFitCanvas(); });
+  layout.append(aiSidebarWorkspace.root, leftResizer, canvasArea);
   const aiPanel = renderAiChatPanel({
     getAssistantTemperature: () => assistantTemperature,
     onAssistantTemperatureChange: setAssistantTemperature,
   });
+  const teamSidebar = aiPanel.querySelector<HTMLElement>(".ai-team-sidebar");
+  if (teamSidebar) layout.append(teamSidebar);
   main.append(layout, projectExportNodeElement());
 
   leftRoot = left;
@@ -398,6 +404,8 @@ export function applyEditorUiModeLayout(): void {
 }
 
 export function teardownEditor(): void {
+  aiSidebarWorkspace?.dispose();
+  aiSidebarWorkspace = null;
   teardownSidebarSurfaces();
   teardownAiChatPanel();
   registerAiBootIntentTarget(null);
@@ -472,7 +480,7 @@ function mountAssistantOverlay(): void {
   if (!chatFloatRoot || !aiChatPanelRoot) return;
   editorState.set({ assistantTemperature });
   aiChatPanelRoot.dataset.temperature = assistantTemperature;
-  aiChatPanelRoot.classList.add("chat-dock-float");
+  aiChatPanelRoot.classList.add("is-left-sidebar");
   if (aiChatPanelRoot.classList.contains("is-history-open")) {
     aiChatPanelRoot.classList.add("is-docked");
   }
@@ -588,7 +596,7 @@ function onWindowResize(): void {
 function applyLayout(): void {
   if (!leftRoot || !leftResizer) return;
   const chrome = getEditorChrome();
-  const layoutEl = leftRoot.parentElement;
+  const layoutEl = leftRoot.closest<HTMLElement>(".editor-layout") ?? leftRoot.parentElement;
   let usableWidth = window.innerWidth;
   if (layoutEl) {
     const cs =
@@ -603,6 +611,17 @@ function applyLayout(): void {
     usableWidth = layoutWidth - padL - padR;
   }
   const resizerWidth = leftResizer.offsetWidth || 6;
+  if (aiSidebarWorkspace) {
+    const collapsed = aiSidebarWorkspace.isCollapsed();
+    const width = collapsed ? 48 : Math.max(280, Math.min(340, leftWidth, Math.max(280, usableWidth - 420)));
+    aiSidebarWorkspace.root.style.width = `${width}px`;
+    leftRoot.style.width = "100%";
+    leftRoot.style.setProperty("--map-tree-height", `${effectiveMapTreeHeight()}px`);
+    leftResizer.style.display = collapsed ? "none" : "";
+    syncMapTreeCollapsedChrome();
+    setEditorLeftSafe(`${width + (collapsed ? 0 : resizerWidth)}px`);
+    return;
+  }
   // 조수는 캔버스 위에 떠 있으므로 레이아웃 폭 예산을 먹지 않는다. side 도크가 있던
   // 시절에는 여기서 1/3 을 잘라 갔다 — 이제 캔버스가 그 폭을 되돌려 받는다.
   layoutEl?.style?.setProperty?.("--ai-chat-side-width", "0px");

@@ -33,6 +33,14 @@
   `ai-new-chat`(「새 대화」)은 e2e 계약이다. 대신 포인터가 얹힌 동안만 속성을 떼었다가
   떠날 때 되돌려 네이티브 팝업과 겹치지 않게 한다.
 
+## 맵 도구바·접이식 왼쪽 레일 (2026-09-18)
+
+`editorZoomToolbar.ts`의 맵 도구바는 아이콘 중심이다. 걷기 전투·구역 그리기·배경 보기,
+만들기·다듬기·검사·AI 요청, PNG 저장에 기존 지연 툴팁을 명시 설치한다.
+토글은 `aria-pressed` 및 색으로 상태를 유지하며 배율 숫자는 계속 표시한다.
+`aiSidebarWorkspace.ts`의 AI/맵 탭과 접기 버튼도 같은 설치기를 쓴다.
+브라우저 확인: `scripts/qa/ai-team-sidebar.mjs` (설정 열기, 토글 상태, 초점 툴팁, 접힘 폭·초안 유지).
+
 ## 1차 롤아웃 대상
 
 톱바(`toolbar-save`, `workspace-command-palette-button`, `topbar-ai-studio`,
