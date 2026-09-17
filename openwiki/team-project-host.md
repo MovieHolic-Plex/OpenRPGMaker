@@ -69,7 +69,8 @@ SQLite 전환 후 저장 대상이 없는 메모리 어댑터로 열렸다.
 - 병합한 전체 저장본을 응답으로 돌려준다. renderer는 submit 이후 로컬 편집을 보존하면서
   서버가 수락한 baseline과 팀 변경을 반영한다. 예전 로컬 문서를 응답이라고 꾸미지 않는다.
 - 맵 선택 시 호스트가 90초 lease를 부여하고 20초마다 갱신한다. 다른 세션의 살아 있는
-  lease가 있으면 UI와 저장 서비스가 편집을 막는다. 강제 뺏기는 없다.
+  lease가 있으면 UI와 저장 서비스가 편집을 막는다. 명시적인 「편집 권한 가져오기」는
+  같은 팀원의 다른 탭 또는 팀 owner에게만 허용한다. 갱신/재시도는 권한을 강제로 가져오지 않는다.
   DB 레코드는 optimistic conflict 검사를 사용한다. `database` 전체 lease도 서비스에서
   제공하지만 DB 모달이 자동 획득하는 형태는 아니다.
 - 팀 상태/정본 revision을 3초마다 조회한다. `PRAGMA data_version`은 같은 연결의 쓰기에
@@ -153,3 +154,11 @@ node scripts/install-project-host-service.mjs --project-dir /home/main/.local/sh
 `start-preview.mjs`로 교체하고 서비스를 재시작한다. 기존 unit과 프로젝트는 덮어쓰지 않는다.
 기존 drop-in은 타임스탬프 사본으로 남긴다. 로그인 코드는 작업실의 `.oprn-host-access`에서
 확인하며 채팅·Git·증거 파일에 복사하지 않는다. 첫 로그인에는 쿼리 없는 운영 주소를 사용한다.
+
+## 맵 편집 권한 가져오기 (2026-09-18)
+
+`team.lock({takeover:true})`는 owner 또는 기존 lease와 같은 member만 허용한다. viewer는
+항상 거절하며 다른 editor에게는 `canTakeover:false`를 돌려 버튼을 비활성화한다. 기존
+소유 세션은 다음 20초 갱신에서 잠김으로 전환되고, 그 전이라도 서버는 해당 맵 변경 저장을
+거절한다. 명시적 클릭의 첫 요청에만 takeover를 보내므로 탭끼리 자동으로 권한을 빼앗지 않는다.
+기존 안내만 있고 일반 checkout만 호출하던 버튼을 실제 takeover 요청으로 연결했다.

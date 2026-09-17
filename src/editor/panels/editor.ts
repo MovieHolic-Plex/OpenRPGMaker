@@ -22,7 +22,6 @@ import {
   getMapEditLockStatus,
   isMapEditLockTakeoverImmediate,
   lockOwnerPhrase,
-  mapEditLockLastActivityText,
   subscribeMapEditLocks,
   takeoverMapLock,
   type MapEditLockStatus,
@@ -920,13 +919,13 @@ function renderMapEditLockBanner(container: HTMLElement): void {
   container.append(
     el("span", {
       class: "map-lock-banner-text",
-      text: `${lockOwnerPhrase(status.ownerLabel)} · ${mapEditLockLastActivityText(status)}`,
+      text: `${lockOwnerPhrase(status.ownerLabel)}님이 편집 중입니다.`,
       dataset: { testid: "map-lock-banner-text" },
     }),
     el("button", {
       class: "map-lock-takeover-button",
       text: "편집 권한 가져오기",
-      attrs: { type: "button", title: "현재 맵 편집 권한 가져오기" },
+      attrs: { type: "button", title: status.canTakeover === false ? "본인의 다른 탭 또는 팀 소유자만 편집 권한을 가져올 수 있습니다" : "현재 맵 편집 권한 가져오기", ...(status.canTakeover === false ? { disabled: "" } : {}) },
       dataset: { testid: "map-lock-banner-takeover" },
       on: {
         click: () => void requestMapLockTakeover(status),
@@ -942,7 +941,7 @@ async function requestMapLockTakeover(status: Extract<MapEditLockStatus, { reado
     // 커스텀 인앱 모달(§2.4) — 네이티브 confirm 대체.
     const confirmed = await showConfirm({
       title: "편집 권한 가져오기",
-      message: `${lockOwnerPhrase(status.ownerLabel)}이고 최근까지 활동했습니다. 편집 권한을 가져올까요? (상대 세션은 읽기 전용이 됩니다)`,
+      message: `${lockOwnerPhrase(status.ownerLabel)}님이 편집 중입니다. 이 탭으로 편집 권한을 가져올까요? 다른 탭의 미저장 변경은 자동으로 합쳐지지 않습니다.`,
       confirmLabel: "가져오기",
     });
     if (!confirmed) return;

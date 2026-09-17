@@ -106,3 +106,19 @@ describe('record merge policy', () => {
     expect(mergeTeamProject(base, b, a).kind).toBe('conflict');
   });
 });
+
+it('allows explicit same-member takeover without allowing renewals or release to steal it back', async () => {
+  const { invoke, sessions, a } = await setup();
+  const resource = 'map:takeover';
+  expect(await invoke[C.teamLock]!('a', { resource })).toMatchObject({ kind: 'held' });
+  expect(await invoke[C.teamLock]!('b', { resource })).toMatchObject({ kind: 'locked', canTakeover: true });
+  expect(await invoke[C.teamLock]!('b', { resource, takeover: true })).toMatchObject({ kind: 'held' });
+  expect(await invoke[C.teamLock]!('a', { resource })).toMatchObject({ kind: 'locked' });
+  expect(await invoke[C.teamLock]!('a', { resource, release: true, takeover: true })).toMatchObject({ kind: 'locked' });
+  const editor = a.team.invite('editor', 'editor');
+  sessions.setMember('a', editor.member.id);
+  expect(await invoke[C.teamLock]!('a', { resource, takeover: true })).toMatchObject({ kind: 'locked', canTakeover: false });
+  const viewer = a.team.invite('viewer', 'viewer');
+  sessions.setMember('a', viewer.member.id);
+  await expect(invoke[C.teamLock]!('a', { resource, takeover: true })).rejects.toThrow('읽기 전용');
+});
