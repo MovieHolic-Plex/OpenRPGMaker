@@ -39,7 +39,7 @@ export interface RunPiAgentOptions {
   readonly streamFn?: StreamFn;
 }
 
-const DEFAULT_MAX_TURNS = 40;
+const DEFAULT_MAX_TURNS = 200;
 const DEFAULT_TIMEOUT_MS = PI_AGENT_DEFAULT_TIMEOUT_MS;
 /** 한 실행에 에스컬레이션으로 얹을 수 있는 툴 상한 — 세션 경로의 16개 계약과 같다(발견은 무제한이 아니다). */
 const MAX_ESCALATED_TOOLS = 16;

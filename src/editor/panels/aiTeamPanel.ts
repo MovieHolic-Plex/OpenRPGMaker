@@ -170,7 +170,7 @@ export function createTeamPanel(initialEnabled = false, options: { readonly alwa
       chip.append(box, el("span", { text: DOMAIN_LABEL[domain] ?? domain }));
       domains.append(chip);
     }
-    const turns = el("input", { class: "ai-team-input ai-team-input-narrow", attrs: { type: "number", min: "1", max: "120", value: String(current.maxTurns) }, dataset: { testid: "ai-team-form-turns" } });
+    const turns = el("input", { class: "ai-team-input ai-team-input-narrow", attrs: { type: "number", min: "1", max: "600", value: String(current.maxTurns) }, dataset: { testid: "ai-team-form-turns" } });
     turns.addEventListener("input", () => { draft = { ...(draft ?? current), maxTurns: Number(turns.value) || current.maxTurns }; });
     form.append(
       field("이름", name), field("종류", kind), field("소개", summaryInput), field("프롬프트", prompt),
@@ -206,7 +206,7 @@ export function createTeamPanel(initialEnabled = false, options: { readonly alwa
     const add = el("button", { class: "ai-team-btn", text: "팀원 추가", attrs: { type: "button" }, dataset: { testid: "ai-team-add" } });
     add.addEventListener("click", () => {
       const id = slugifyMemberId("member", new Set(spec.members.map((member) => member.id)));
-      const member: PiTeamMember = { id, label: "새 팀원", kind: "builder", summary: "", prompt: "", toolDomains: [], maxTurns: 30, enabled: true };
+      const member: PiTeamMember = { id, label: "새 팀원", kind: "builder", summary: "", prompt: "", toolDomains: [], maxTurns: 150, enabled: true };
       spec = saveTeamSpec({ ...spec, members: [...spec.members, member] });
       startEdit(member);
     });
