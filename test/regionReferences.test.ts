@@ -2,6 +2,9 @@
 import { describe, expect, it } from "vitest";
 import { REGION_REFERENCES, PLACE_REFERENCES, readRegionReference, regionReferenceContext } from "@/project/regionReferences";
 import emeraldSnapshot from "@/project/regionReferences/emerald-basin.json";
+import { SHIP_PLACE_REFERENCES } from "@/project/shipPlaceReferences";
+import ships from "@/project/regionReferences/ships.json";
+import { existsSync } from "node:fs";
 import snapshot from "@/project/regionReferences/walled-settlement.json";
 import lakeSnapshot from "@/project/regionReferences/lake-village.json";
 import { renderSpatialPlacesStage, spatialPlacesTabChrome } from "@/editor/panels/spatialPlacesTab";
@@ -87,6 +90,29 @@ describe("completed region references", () => {
       const result = runTool({project:createBlankProject()}, "read_region_reference", {});
       expect(JSON.stringify(result.data)).toContain(place.id);
     }
+  });
+  it("ships all seven saved maps as default places independent of project activation", () => {
+    const session = { ...spatialSession(), tab: "places" as const, mode: "design" as const, source: "defaults" as const };
+    const cards = listSpatialGalleryCards(session);
+    expect(SHIP_PLACE_REFERENCES).toHaveLength(7);
+    for (const entry of SHIP_PLACE_REFERENCES) {
+      const expected = ships.maps[entry.sourceMapId as keyof typeof ships.maps];
+      const lower: number[] = [], upper: number[] = [];
+      let row: number | null = 0;
+      while (row !== null) {
+        const page = readRegionReference(entry.id, row, 16);
+        lower.push(...page.map.lowerTiles); upper.push(...page.map.upperTiles);
+        expect(page.map.events).toEqual(expected.events);
+        row = page.map.nextRow;
+      }
+      expect(lower).toEqual(expected.lowerTiles); expect(upper).toEqual(expected.upperTiles);
+      const card = cards.find(c => c.regionReferenceId === entry.id)!;
+      expect(card.source).toBe("default");
+      expect(renderSpatialPlacesStage(session, card, () => {}).canvas.querySelector("img")?.getAttribute("src")).toBe(entry.preview);
+      expect(existsSync(`public${entry.preview}`)).toBe(true);
+      expect(regionReferenceContext()).toContain(entry.id);
+    }
+    expect(ships.maps.map_bluewave_harbor.width).toBe(64);
   });
   it("rejects unknown IDs and invalid pages; returned rasters cannot mutate the source", () => {
     expect(() => readRegionReference("missing")).toThrow();

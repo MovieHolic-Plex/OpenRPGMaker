@@ -1782,3 +1782,16 @@ TURN/BATTLE MENU` 칩. 전투 애니메이션 타이밍 표 헤더 `사운드...
 검증이 "공백이 아니다"(`hasVariation`)만 봤고, 그 검사조차 **스캔라인 필터 0** 을 가정해 재인코딩된
 파일에서는 무의미했다. 지금은 `inspectPng` 가 필터를 실제로 풀어(`decodeRgba`) 픽셀을 보고,
 `isDryRunFake` 가 가짜 패턴을 잡아 승격을 거부한다. 계약은 두 층이다 — `test/oprnGeneratedAssets.test.mjs`(러너가 가짜를 승격하지 않는가)와 `test/generatedAssetPlaceholder.test.mjs`(저장소 `public/assets/generated/**` 전체를 훑어 가짜가 **0장**인가). 판정 함수는 `scripts/lib/dryRunFakePng.mjs` 하나를 공유한다. 2026-06 의 가짜 5장은 2026-09-16 에 `agy` 파이프라인 재실행으로 복구했다 — 그때 `--print-timeout 900s` 가 필요하고(기본 180s 로는 에이전트 이미지 생성이 끝나지 않는다), 증거는 `.omo/evidence/generated-asset-fakes/` 에 있다. 복구 뒤 계약의 허용 목록은 비었으므로, 다시 채워지면 그건 부채를 새로 만든 것이다.
+
+## 배·항구 공통 기본 장소 (2026-09-17)
+
+`shipPlaceReferences.ts`의 갑판 3종·선내 3종·돌부두는 `PLACE_REFERENCES`에
+등록한 공통 기본 장소 사례다. 프로젝트 DB에 있는 내 장소와 별개이며 빈 프로젝트에도
+나타난다. `regionReferences/ships.json`에는 원격 저장을 확인했던
+`rpg-zzu-ship-20260913`의 승인본 타일·이벤트·그림 자산을 보존한다.
+항구는 건물을 제거한 64×44 버전이다. 기존 사례와 마찬가지로 읽기 전용이며
+카드 조회만으로 현재 프로젝트에 지도를 배치하지 않는다.
+`read_region_reference`는 각 배의 실제 타일을 행 단위로 반환한다.
+이미지는 `scripts/qa/render-ship-place-references.py`로 재생성한다.
+등록 누락 회귀는 `test/regionReferences.test.ts`가 기본 카드 7종·이미지 파일·
+타일 전체 재조립으로 검증한다. 서버 파일만 바꾸지 말고 이 등록과 자산을 함께 출하한다.
