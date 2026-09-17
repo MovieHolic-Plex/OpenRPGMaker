@@ -12,7 +12,7 @@ import "./styles/index.css";
 // src/storageBoot.ts 헤더 주석 — 진입점 본문의 함수 호출로는 안 된다(import 호이스팅).
 import "@/storageBoot";
 import "@/editor/editorUiMode";
-import { startTeamSession } from "@/editor/teamSession";
+import { initializeTeamAccess, startTeamSession } from "@/editor/teamSession";
 import { bootApp } from "@/app/mode";
 import { editorState } from "@/editor/editorState";
 import { addEvent } from "@/editor/eventActions";
@@ -93,6 +93,7 @@ void bootEditorWithOpenedProject(app).then(openClassicEventEditorCaptureIfReques
  */
 async function bootEditorWithOpenedProject(host: HTMLElement): Promise<void> {
   await adoptElectronOpenProject();
+  await initializeTeamAccess();
   await bootApp(host);
   startTeamSession();
 }

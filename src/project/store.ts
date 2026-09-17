@@ -1,3 +1,4 @@
+import { canWriteTeamProject } from './teamAccess';
 import { mergeTeamProject } from "./persistence/core/teamMerge";
 import { clearCopiedEventPage } from "@/editor/eventPageClipboard";
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
@@ -329,7 +330,7 @@ class ProjectStore {
       // Defer remote rewrite of normalize fixes so boot is not blocked on Tailscale/dbserver RTT.
       this.dirtySinceLastPersist = false;
       // 방금 채택한 새 로컬 프로젝트는 폴더에 문서가 없다 — 첫 flush 대상으로 dirty 를 되돌린다.
-      if (seededNewLocalProject) this.dirtySinceLastPersist = true;
+      if (seededNewLocalProject && canWriteTeamProject()) this.dirtySinceLastPersist = true;
       await this.normalizeCurrentProject({ persistIfChanged: false });
     } catch (error) {
       if (error instanceof DbConnectionRequiredError) {
@@ -515,6 +516,7 @@ class ProjectStore {
 
   /** Explicit raw activation. Ambiguous local edits require recovery, never marker-only token adoption. */
   async activateSpatialAuthoring(): Promise<ProjectFlushResult> {
+    if (!canWriteTeamProject()) return { kind: "disabled" };
     const repository = this.repository;
     const target = repository.currentTarget();
     if (!this.loaded || !this.remotePersistenceEnabled || !target || !this.writeAuthority
@@ -733,6 +735,7 @@ class ProjectStore {
       readonly commitHistory?: () => void;
     } = {},
   ): Project {
+    if (!canWriteTeamProject()) return this.current;
     assertCanonicalReplacement(project, this.writeAuthority);
     ensureSwitchVariableSlots(project);
     removeLegacySpriteReferences(project);
@@ -766,6 +769,7 @@ class ProjectStore {
 
   /** Full project switch (new/import/sample). Drops event-draft vault for the previous project. */
   replaceProject(project: Project, change?: ProjectChangeAnnotation, onApplied?: (project: Project) => void): Project {
+    if (!canWriteTeamProject()) return this.current;
     assertCanonicalReplacement(project, this.writeAuthority);
     clearEventDraftVault();
     clearCopiedEventPage();
@@ -779,6 +783,7 @@ class ProjectStore {
   }
 
   update(mutator: (draft: Project) => void, change: ProjectChangeDescriptor = { scope: "project" }): void {
+    if (!canWriteTeamProject()) return;
     const draft: Project = structuredClone(this.current);
     mutator(draft);
     assertCanonicalReplacement(draft, this.writeAuthority);
@@ -798,6 +803,7 @@ class ProjectStore {
     mapMutator: (draft: GameMap) => void,
     change: { readonly cells?: readonly ProjectChangeCell[] } & ProjectChangeAnnotation = {}
   ): void {
+    if (!canWriteTeamProject()) return;
     const currentMap = this.current.maps[mapId];
     if (!currentMap) return;
     const draftMap: GameMap = structuredClone(currentMap);
@@ -892,6 +898,7 @@ class ProjectStore {
   }
 
   async flush(): Promise<ProjectFlushResult> {
+    if (!canWriteTeamProject()) return { kind: "disabled" };
     if (this.autoSaveTimer) {
       clearTimeout(this.autoSaveTimer);
       this.autoSaveTimer = null;
@@ -916,6 +923,7 @@ class ProjectStore {
   }
 
   async clearAll(): Promise<void> {
+    if (!canWriteTeamProject()) return;
     assertCanonicalReplacement(createBlankProject(), this.writeAuthority);
     clearEventDraftVault();
     clearCopiedEventPage();
@@ -935,6 +943,7 @@ class ProjectStore {
    * Used by the event editor when a store race briefly drops the event mid-edit.
    */
   restoreEventDraftFromVault(mapId: MapId, eventId: string): boolean {
+    if (!canWriteTeamProject()) return false;
     if (this.current.maps[mapId]?.events.some((entry) => entry.id === eventId)) return true;
     const withVault = applyEventDraftVault(structuredClone(this.current));
     if (!withVault.maps[mapId]?.events.some((entry) => entry.id === eventId)) return false;
@@ -1221,6 +1230,7 @@ class ProjectStore {
   }
 
   private async persistCurrent(): Promise<ProjectFlushResult> {
+    if (!canWriteTeamProject()) return { kind: "disabled" };
     // Always checkpoint open drafts to localStorage before remote I/O so a
     // tab crash mid-save can still recover the event editor session.
     syncEventDraftVaultFromProject(this.current);
@@ -1355,7 +1365,7 @@ class ProjectStore {
     this.persistenceRecovery = { kind: "ready" };
     clearEventDraftVault();
     clearCopiedEventPage();
-    if (options.restoreVault) {
+    if (options.restoreVault && canWriteTeamProject()) {
       loadEventDraftVaultFromLocalStorage();
       this.current = applyEventDraftVault(project);
     } else {
@@ -1389,6 +1399,7 @@ class ProjectStore {
   }
 
   private async normalizeCurrentProject(options: { readonly persistIfChanged?: boolean } = {}): Promise<void> {
+    if (!canWriteTeamProject()) return;
     const persistIfChanged = options.persistIfChanged !== false;
     // Helpers can report transient changes while reaching the same final structure.
     // Compare raw records, not deserialize/canonical hashing: no authored fields are forgiven.
