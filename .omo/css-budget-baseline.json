@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-17T00:30:29.260Z",
+  "generatedAt": "2026-09-17T08:48:06.016Z",
   "metrics": {
-    "hexLiterals": 1340,
+    "hexLiterals": 1346,
     "important": 673,
-    "undefinedVars": 37,
+    "undefinedVars": 38,
     "globalRootFiles": 10,
-    "cssFileCount": 288
+    "cssFileCount": 285
   },
   "details": {
     "hexByFile": {
@@ -25,8 +25,8 @@
       "src/styles/database/desktop-record-shell/04-modern-records.css": 2,
       "src/styles/database/desktop-record-shell/05-dense-workbenches.css": 1,
       "src/styles/database/desktop-record-shell/12-spatial-authoring.css": 1,
-      "src/styles/database/desktop-record-shell/13-actor-studio.css": 2,
       "src/styles/database/desktop-record-shell/14-party-ux-fixes.css": 3,
+      "src/styles/database/desktop-record-shell/15-actor-studio.css": 2,
       "src/styles/database/enemies.part-1.css": 2,
       "src/styles/database/from-editor-core-part-2.css": 4,
       "src/styles/database/from-editor-event-editor-legacy-part-1.css": 3,
@@ -100,12 +100,9 @@
       "src/styles/runtime/battle/08-640-target-panels.css": 45,
       "src/styles/runtime/battle/09-keyboard-result-panel.css": 24,
       "src/styles/runtime/battle/13-compact-victory-box.css": 3,
-      "src/styles/runtime/battle/14-pokemon-skin-layout.css": 7,
       "src/styles/runtime/battle/15-juice-capture-fx.css": 7,
-      "src/styles/runtime/battle/16-pokemon-battlers-hud.css": 21,
       "src/styles/runtime/battle/17-sprint-a-polish.css": 24,
-      "src/styles/runtime/battle/18-pokemon-layout-redesign.css": 15,
-      "src/styles/runtime/battle/20-pokemon-reference-restyle.css": 11,
+      "src/styles/runtime/battle/20-pokemon-skin.css": 60,
       "src/styles/runtime/battle/21-gen1-hud-type-badge.css": 5,
       "src/styles/runtime/battle-skins/_bravely.css": 19,
       "src/styles/runtime/battle-skins/_chrono.css": 15,
@@ -218,6 +215,7 @@
       "--oprn-surface-raised",
       "--oprn-text",
       "--pop-x",
+      "--runtime-font-size-13",
       "--shadow-sm",
       "--studio-play",
       "--studio-select",
@@ -328,6 +326,9 @@
         "src/styles/runtime/battle/06-damage-flash-targeting.css",
         "src/styles/runtime/battle/06-damage-flash-targeting.css"
       ],
+      "--runtime-font-size-13": [
+        "src/styles/runtime/commerce.css"
+      ],
       "--shadow-sm": [
         "src/styles/map/region-task.css"
       ],
@@ -396,8 +397,8 @@
       "src/styles/database/desktop-record-shell/10-tab-chrome-unify.css",
       "src/styles/database/desktop-record-shell/11-life-authoring.css",
       "src/styles/database/desktop-record-shell/12-spatial-authoring.css",
-      "src/styles/database/desktop-record-shell/13-actor-studio.css",
       "src/styles/database/desktop-record-shell/14-party-ux-fixes.css",
+      "src/styles/database/desktop-record-shell/15-actor-studio.css",
       "src/styles/database/desktop.css",
       "src/styles/database/dock.css",
       "src/styles/database/elements.css",
@@ -585,13 +586,10 @@
       "src/styles/runtime/battle/11-compact-hud-row.css",
       "src/styles/runtime/battle/12-compact-party-target.css",
       "src/styles/runtime/battle/13-compact-victory-box.css",
-      "src/styles/runtime/battle/14-pokemon-skin-layout.css",
       "src/styles/runtime/battle/15-juice-capture-fx.css",
-      "src/styles/runtime/battle/16-pokemon-battlers-hud.css",
       "src/styles/runtime/battle/17-sprint-a-polish.css",
-      "src/styles/runtime/battle/18-pokemon-layout-redesign.css",
       "src/styles/runtime/battle/19-adversarial-review-3.css",
-      "src/styles/runtime/battle/20-pokemon-reference-restyle.css",
+      "src/styles/runtime/battle/20-pokemon-skin.css",
       "src/styles/runtime/battle/21-gen1-hud-type-badge.css",
       "src/styles/runtime/commerce.css",
       "src/styles/runtime/from-database-modern-utility-records.css",

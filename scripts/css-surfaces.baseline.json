@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-17T01:48:05.109Z",
+  "generatedAt": "2026-09-17T08:47:51.030Z",
   "counts": {
     "tokens": {
       "important": 0,
@@ -2126,6 +2126,8 @@
     "R2|map/left-sidebar.modern.css|.editor-layout .left-panel-stack[data-testid=\"left-palette-root\"] .oprn-toolbar-menu|editor-layout",
     "R2|map/left-sidebar.modern.css|.editor-layout .left-panel-stack[data-testid=\"left-palette-root\"] .oprn-toolbar-menu|left-panel-stack",
     "R2|map/left-sidebar.modern.css|.editor-layout .left-panel-stack[data-testid=\"left-palette-root\"] .oprn-toolbar-menu|oprn-toolbar-menu",
+    "R2|map/left-sidebar.modern.css|.editor-layout .left-panel-stack[data-testid=\"left-palette-root\"] .palette-work-pane.is-event > [data-testid=\"palette-event-pane\"]|editor-layout",
+    "R2|map/left-sidebar.modern.css|.editor-layout .left-panel-stack[data-testid=\"left-palette-root\"] .palette-work-pane.is-event > [data-testid=\"palette-event-pane\"]|left-panel-stack",
     "R2|map/left-sidebar.modern.css|.editor-layout .left-panel-stack[data-testid=\"left-palette-root\"] .palette-work-pane.is-paint > .chipset-sheet|editor-layout",
     "R2|map/left-sidebar.modern.css|.editor-layout .left-panel-stack[data-testid=\"left-palette-root\"] .palette-work-pane.is-paint > .chipset-sheet|left-panel-stack",
     "R2|map/left-sidebar.modern.css|.editor-layout .left-panel-stack[data-testid=\"left-palette-root\"] .palette-work-pane.is-paint > .left-layer-switcher|editor-layout",
@@ -2436,7 +2438,6 @@
     "R2|map/responsive-a.css|.editor-layout.no-right-panel .palette-option-row|no-right-panel",
     "R2|map/responsive-a.css|.editor-layout.no-right-panel .quick-tile-picker|editor-layout",
     "R2|map/responsive-a.css|.editor-layout.no-right-panel .quick-tile-picker|no-right-panel",
-    "R2|map/rule-audit.css|.oprn-menu-glyph|oprn-menu-glyph",
     "R2|map/rule-audit.css|.oprn-rule-audit-dropdown .rule-audit-panel|oprn-rule-audit-dropdown",
     "R2|map/rule-audit.css|.oprn-rule-audit-dropdown .rule-audit-panel|rule-audit-panel",
     "R2|map/rule-audit.css|.oprn-rule-audit-dropdown|oprn-rule-audit-dropdown",
