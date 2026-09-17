@@ -10,6 +10,8 @@ export function renderWorldCodexTab(host: HTMLElement, container: HTMLElement = 
   const project = store.getCurrent();
   const world = currentWorld(project);
   const lint = summarizeWorldLint(world, project);
+  const attachedCount = Array.from(lint.byEntityId.values()).reduce((sum, issues) => sum + issues.length, 0);
+  const attachedCards = lint.byEntityId.size;
   const countBy = (type: string): number => world.entities.filter((entity) => entity.type === type).length;
   const stats = statStrip([
     { label: "낱장 카드", value: `${world.entities.length}장` },
@@ -18,9 +20,9 @@ export function renderWorldCodexTab(host: HTMLElement, container: HTMLElement = 
     { label: "사건", value: `${countBy("event")}건` },
     {
       label: "검사 지적",
-      value: `${lint.all.length}건`,
-      tone: lint.all.length > 0 ? "warn" : "good",
-      hint: lint.all.length > 0 ? "카드에 표시" : "깨끗함",
+      value: `${attachedCount}건`,
+      tone: attachedCount > 0 ? "warn" : "good",
+      hint: attachedCount > 0 ? `카드 ${attachedCards}장` : "깨끗함",
     },
   ], { testid: "db-world-codex-stats" });
   const workspace = workspaceShell({
