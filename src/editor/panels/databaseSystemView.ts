@@ -60,6 +60,8 @@ import type {
 } from "@/project/types";
 import { el } from "@/util/dom";
 import { playAudioCommand, stopAudioCommand } from "@/player/audio";
+import { DEFAULT_MENU_SKIN_ID, listMenuSkinIds, MENU_SKINS, resolveMenuSkinId } from "@/player/menuSkins/registry";
+import type { MenuSkinId } from "@/player/menuSkins/types";
 import { calculatePlaySurfaceScale } from "@/player/playSurfaceScale";
 import { listTitleMenuOptions, renderTitleFxStack, titleIntroClass } from "@/player/titleScreen";
 import {
@@ -272,7 +274,7 @@ function systemSectionNodes(
         systemHelp("빈 슬롯을 선택하면 뒤의 멤버가 앞으로 이동합니다. 이 순서는 시작 파티와 플레이 세션에 함께 적용됩니다."),
       ]),
     ]),
-    display: section("display", [playResolutionFieldset(project, rerender)]),
+    display: section("display", [playResolutionFieldset(project, rerender), menuSkinFieldset(project)]),
     font: section("font", [systemFontFieldset(project, rerender)]),
     resources: section("resources", [
       rm2k3Fieldset("공유 그래픽", [
@@ -639,6 +641,50 @@ function fontRoleField(
     rerender();
   });
   return field(FONT_ROLE_LABELS[role], select);
+}
+
+/** 스킨 미리보기 썸네일(320×240, 하네스 캡처 축소판). public/assets/ui/menu-skins/<id>.png */
+export function menuSkinPreviewUrl(id: MenuSkinId): string {
+  return `/assets/ui/menu-skins/${id}.png`;
+}
+
+/**
+ * 「게임 메뉴 디자인」 — ESC(X) 메뉴 스킨. 레지스트리 순서대로 5종을 내놓고, 기본(workbench)은 저장에서 지운다
+ * (normalizeSystemRecords 와 같은 계약). 설명·미리보기는 다시 그리지 않고 제자리에서 바꾼다.
+ */
+function menuSkinFieldset(project: Project): HTMLElement {
+  const saved = resolveMenuSkinId(project.system.menuUiStyle);
+  const select = el("select", { dataset: { testid: "db-field-system-menu-ui-style" } });
+  for (const id of listMenuSkinIds()) {
+    select.append(el("option", { text: MENU_SKINS[id].label, attrs: { value: id, title: MENU_SKINS[id].description } }));
+  }
+  select.value = saved;
+  const description = el("p", {
+    class: "db-system-menu-skin-description",
+    text: MENU_SKINS[saved].description,
+    dataset: { testid: "db-system-menu-skin-description" },
+  });
+  const preview = el("img", {
+    class: "db-system-menu-skin-preview",
+    attrs: { src: menuSkinPreviewUrl(saved), alt: `${MENU_SKINS[saved].label} 미리보기`, width: "320", height: "240", loading: "lazy" },
+    dataset: { testid: "db-system-menu-skin-preview" },
+  });
+  select.addEventListener("change", () => {
+    const id = resolveMenuSkinId(select.value);
+    updateSystem((draft) => {
+      if (id === DEFAULT_MENU_SKIN_ID) delete draft.system.menuUiStyle;
+      else draft.system.menuUiStyle = id;
+    });
+    description.textContent = MENU_SKINS[id].description;
+    preview.setAttribute("src", menuSkinPreviewUrl(id));
+    preview.setAttribute("alt", `${MENU_SKINS[id].label} 미리보기`);
+  });
+  return rm2k3Fieldset("게임 메뉴 디자인", [
+    systemHelp("ESC(X) 로 여는 게임 메뉴의 생김새입니다. 다음 테스트 플레이부터 적용됩니다."),
+    field("메뉴 디자인", select),
+    description,
+    preview,
+  ]);
 }
 
 function playResolutionFieldset(project: Project, rerender: SystemRefresh): HTMLElement {

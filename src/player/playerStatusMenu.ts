@@ -2,6 +2,7 @@ import {
   createPlayerStatusMenuSnapshot,
   isStatusMenuGroupEntryId,
   statusMenuCommandGroupLabel,
+  statusMenuCommandSummary,
   statusMenuRailIdForCommand,
   type StatusMenuCommandId,
   type StatusMenuGroupEntryId,
@@ -14,6 +15,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { createStatusMenuDetail, type StatusMenuDetail } from "@/player/playerStatusMenuDetails";
 import { renderStatusMenuDetailPanel } from "@/player/playerStatusMenuDetailRenderer";
 import { applySystemGraphic } from "@/player/systemGraphics";
+import { menuSkinFor } from "@/player/menuSkins/registry";
 import type { PlayerStatusMenuActions, PlayerStatusMenuOptions } from "@/player/playerStatusMenuTypes";
 import { el } from "@/util/dom";
 
@@ -33,6 +35,9 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     elapsedMs: options.elapsedMs,
     waitModeEnabled,
   });
+  // 스킨(자료집 → 시스템 → 화면)은 DOM 골격을 바꾸지 않는다 — 루트 속성만 쓰고 CSS 가 배치·색·아이콘을 갈아입는다.
+  // 렌더러가 갈라지는 곳은 첫 화면(landing)·사이드 파티·허브 요약뿐이다. 기본 workbench 는 지금 화면 그대로.
+  const skin = menuSkinFor(options.project);
   const panel = el("div", {
     class: "main-menu oprn-status-menu system-panel",
     attrs: {
@@ -40,7 +45,16 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       "aria-modal": "true",
       role: "dialog",
     },
-    dataset: { testid: "main-menu", statusMenuScreen: mode, statusMenuLayout: "workbench" },
+    dataset: {
+      testid: "main-menu",
+      statusMenuScreen: mode,
+      statusMenuLayout: "workbench",
+      menuSkin: skin.id,
+      menuSkinTone: skin.tone,
+      menuSkinLanding: skin.landing,
+      menuSkinIcons: skin.railIcons,
+      menuSkinRail: skin.railStyle,
+    },
   });
   applySystemGraphic(panel);
   // Keep authored metadata while the shared runtime palette paints the menu.
@@ -93,17 +107,25 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     getScene: options.getScene,
     onCommand: options.actions.onCommand,
   });
-  const detailPanel = renderStatusMenuDetailPanel(options.project, detail, {
-    selectedActionIndex: options.selectedDetailActionIndex,
-    // 쇼케이스는 작업 패널에서만 — 트레이·확인 카드는 명령 버튼 목록이라 그릴 그림이 없다.
-    showcase: !options.targetItemId && selectedCommand !== "to-title" && !isStatusMenuGroupEntryId(selectedCommand),
-  });
-  detailPanel.dataset.statusMenuPresentation = selectedCommand === "to-title"
+  const presentation = selectedCommand === "to-title"
     ? "confirmation-card"
     : isStatusMenuGroupEntryId(selectedCommand)
       ? "context-tray"
       : "work-panel";
+  // 사이드 파티(스킨 옵션)는 작업 패널에서만 — 트레이·확인 카드·대상 선택은 파티 정보를 따로 갖거나 필요 없다.
+  const sideParty = skin.sideParty && mode === "function" && presentation === "work-panel" && !options.targetItemId
+    ? renderSidePartyMini(options.project, snapshot)
+    : undefined;
+  const detailPanel = renderStatusMenuDetailPanel(options.project, detail, {
+    selectedActionIndex: options.selectedDetailActionIndex,
+    // 쇼케이스는 작업 패널에서만 — 트레이·확인 카드는 명령 버튼 목록이라 그릴 그림이 없다.
+    showcase: !options.targetItemId && presentation === "work-panel",
+    side: sideParty,
+  });
+  detailPanel.dataset.statusMenuPresentation = presentation;
   detailPanel.dataset.statusMenuCommand = selectedCommand;
+  // 첫 화면이 작업 패널이 아닌 스킨(파티 퍼스트·허브·시트)은 main 모드에서 작업 패널을 그리지 않는다.
+  const landingOnly = mode === "main" && skin.landing !== "work";
   if (mode === "main") {
     detailPanel.setAttribute("inert", "");
   }
@@ -123,16 +145,29 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       class: "status-menu-sidebar",
       dataset: { testid: "status-menu-sidebar" },
       children: [
-        renderCommandRail({ snapshot, selectedCommand, actions: options.actions }),
+        renderCommandRail({
+          project: options.project,
+          session: options.session,
+          snapshot,
+          selectedCommand,
+          actions: options.actions,
+          summaries: skin.landing === "hub" ? { slots: options.slots } : undefined,
+        }),
       ],
     }),
-    detailPanel,
+    ...(landingOnly
+      ? [skin.landing === "hub"
+          ? renderPartyStrip(options.project, snapshot)
+          // 사이드 시트는 140px 폭에 4행이라 얼굴을 22px 로 줄인다(파티 퍼스트는 30px).
+          : renderPartyOverview(options.project, snapshot, skin.landing === "sheet" ? 22 : 30)]
+      : [detailPanel]),
     ...(showParty ? [renderPartyPanel(options.project, snapshot)] : []),
     renderFooter(
       mode,
       options.message ?? (mode === "function"
         ? selectedEntryDescription(detail, options.selectedDetailActionIndex) ?? interactiveHint(detail)
-        : undefined)
+        : undefined),
+      skin.railColumns
     )
   );
   panel.append(statusMenuDebug(selectedCommand, mode));
@@ -140,13 +175,18 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
 }
 
 type CommandRailRenderOptions = {
+  readonly project: PlayerStatusMenuOptions["project"];
+  readonly session: PlayerStatusMenuOptions["session"];
   readonly snapshot: PlayerStatusMenuSnapshot;
   readonly selectedCommand: StatusMenuRailId;
   readonly actions: PlayerStatusMenuActions;
+  /** 허브 타일: 명령마다 한 줄 요약(몇 종·몇 명·하위 명령)을 라벨 아래에 단다. */
+  readonly summaries?: { readonly slots: PlayerStatusMenuOptions["slots"] };
 };
 
 function renderCommandRail(options: CommandRailRenderOptions): HTMLElement {
-  const selectedRailId = statusMenuRailIdForCommand(options.selectedCommand);
+  const selectedRailId = statusMenuRailIdForCommand(options.selectedCommand, options.project, options.session);
+  const selectedRailIndex = Math.max(0, options.snapshot.commands.findIndex((command) => command.id === selectedRailId));
   const rail = el("nav", {
     class: "status-menu-command-rail status-menu-primary-dock",
     attrs: {
@@ -154,7 +194,8 @@ function renderCommandRail(options: CommandRailRenderOptions): HTMLElement {
       "aria-label": "게임 메뉴",
       tabindex: "0",
       "aria-activedescendant": `status-menu-command-${selectedRailId}`,
-      style: `--status-menu-cursor-y:${Math.max(0, options.snapshot.commands.findIndex((command) => command.id === selectedRailId)) * 26}px`,
+      // y 픽셀은 workbench 행 간격(26px) 기준. 행 높이가 다른 스킨(평탄 레일)은 index 로 자기 간격을 곱한다.
+      style: `--status-menu-cursor-y:${selectedRailIndex * 26}px;--status-menu-cursor-index:${selectedRailIndex}`,
     },
     dataset: { testid: "status-menu-command-rail" },
   });
@@ -188,9 +229,18 @@ function renderCommandRail(options: CommandRailRenderOptions): HTMLElement {
           dataset: {
             testid: `status-menu-command-icon-${command.id}`,
             icon: statusMenuCommandIcon(command.id),
+            // 컬러 아이콘 스킨의 CSS 가 배경 이미지를 고르는 이름. 글리프(data-icon)는 기본 스킨용으로 남긴다.
+            iconName: statusMenuCommandIconName(command.id),
           },
         }),
         el("span", { class: "status-menu-command-label", text: label }),
+        ...(options.summaries
+          ? [el("span", {
+              class: "status-menu-command-summary",
+              text: statusMenuCommandSummary(command.id, options.project, options.session, options.summaries.slots),
+              dataset: { testid: `status-menu-command-summary-${command.id}` },
+            })]
+          : []),
         ...(command.opensGroup
           ? [el("span", { class: "status-menu-command-legacy-suffix", text: " ▸", attrs: { "aria-hidden": "true" } })]
           : []),
@@ -223,6 +273,31 @@ function statusMenuCommandIcon(commandId: StatusMenuRailId): string {
     case "load": return "↑";
     case "wait": return "Ⅱ";
     case "to-title": return "⌂";
+  }
+  return assertNever(commandId);
+}
+
+/** 컬러 아이콘 스킨의 아이콘 이름 — styles/runtime/statusMenuSkins.css 의 [data-icon-name] 규칙과 1:1.
+    그림은 전투 HUD 가 이미 쓰는 starter battle-icon-* 와 CC0 아이템 아이콘(crystal·map·clock·gear…)이다. */
+function statusMenuCommandIconName(commandId: StatusMenuRailId): string {
+  switch (commandId) {
+    case "items": return "bag";
+    case "skills": return "fire";
+    case "equipment": return "sword";
+    case "party-menu": return "cross";
+    case "record-menu": return "map";
+    case "system-menu": return "gear";
+    case "status": return "cross";
+    case "row": return "next";
+    case "formation": return "shield";
+    case "monsters": return "shard";
+    case "quests": return "map";
+    case "relationships": return "world";
+    case "life-ledger": return "book-magic";
+    case "save": return "crystal";
+    case "load": return "warp-scroll";
+    case "wait": return "clock";
+    case "to-title": return "boot";
   }
   return assertNever(commandId);
 }
@@ -309,19 +384,20 @@ function renderPartyFace(
   project: PlayerStatusMenuOptions["project"],
   row: PlayerStatusMenuPartyRow,
   index: number,
+  boxSize = 22,
+  testId = `status-menu-face-${index}`,
 ): HTMLElement {
-  // 파티 얼굴 상자는 22×22px 로 그린다. 얼굴은 낱장 파일(48×48) 한 장이므로
-  // 상자 크기로 축소해 통째로 건다 — 시트 열/행 계산은 없다.
+  // 파티 얼굴 상자는 기본 22×22px 로 그린다(파티 개요 30px · 사이드 파티 12px). 얼굴은 낱장 파일(48×48)
+  // 한 장이므로 상자 크기로 축소해 통째로 건다 — 시트 열/행 계산은 없다.
   // 그리는 기하를 인라인으로 잡는다 — 예전 `.actor-sheet-crop` 공용 생상은 진짜 시트(charset)
   // 후손이라 얼굴은 이제 그 생상을 실지 않는다.
-  const boxSize = 22;
   const url = resolveAssetResourceUrl(row.faceResourceId, { project });
   if (!url) {
     return el("span", {
       class: "status-menu-face missing",
       text: row.name.trim().slice(0, 1),
       attrs: { role: "img", "aria-label": row.name },
-      dataset: { testid: `status-menu-face-${index}` },
+      dataset: { testid: testId },
     });
   }
   return el("span", {
@@ -338,8 +414,141 @@ function renderPartyFace(
         `height:${boxSize}px`,
       ].join(";"),
     },
-    dataset: { testid: `status-menu-face-${index}` },
+    dataset: { testid: testId },
   });
+}
+
+// ── 스킨 첫 화면: 파티 개요(party·sheet) ──
+// 작업 패널 자리에 파티 4명을 크게 그린다 — 얼굴 30px · 이름 · 직업 · Lv · HP/MP 게이지+숫자 · 「위험」 칩.
+// 상태이상 칩은 세션에 필드 상태이상 데이터가 없어 아직 없다(스펙 §2).
+function renderPartyOverview(project: PlayerStatusMenuOptions["project"], snapshot: PlayerStatusMenuSnapshot, faceSize: number): HTMLElement {
+  const overview = el("section", {
+    class: "status-menu-party-overview",
+    attrs: { "aria-label": "파티 상태" },
+    dataset: { testid: "status-menu-party-overview" },
+  });
+  if (snapshot.emptyPartyLabel) {
+    overview.append(el("div", { class: "status-menu-empty", text: snapshot.emptyPartyLabel }));
+    return overview;
+  }
+  snapshot.partyRows.forEach((row, index) => {
+    overview.append(el("article", {
+      class: `status-menu-overview-row ${row.hpLevel}`,
+      attrs: { "aria-label": `${row.name} ${row.levelLabel} ${row.hpLabel} ${row.mpLabel}` },
+      dataset: { testid: `status-menu-overview-row-${index}` },
+      children: [
+        renderPartyFace(project, row, index, faceSize, `status-menu-overview-face-${index}`),
+        el("div", {
+          class: "status-menu-overview-info",
+          children: [
+            el("div", {
+              class: "status-menu-overview-head",
+              children: [
+                el("span", { class: "status-menu-actor-name", text: row.name }),
+                el("span", { class: "status-menu-actor-subline", text: `${row.className} · Lv ${row.level}` }),
+                ...(row.hpLevel === "crit" ? [el("span", { class: "status-menu-overview-chip crit", text: "위험" })] : []),
+              ],
+            }),
+            renderOverviewVital("HP", row.hpValueLabel, row.hpRatio, `hp ${row.hpLevel}`, `status-menu-overview-hp-${index}`),
+            renderOverviewVital("MP", row.mpValueLabel, row.mpRatio, "mp", `status-menu-overview-mp-${index}`),
+          ],
+        }),
+      ],
+    }));
+  });
+  return overview;
+}
+
+/** 라벨 + 트랙 + 숫자 한 줄. 트랙은 renderOverviewTrack 이 그려 사이드 파티와 같은 모양을 쓴다. */
+function renderOverviewVital(label: string, value: string, ratio: number, variant: string, testId: string): HTMLElement {
+  return el("div", {
+    class: "status-menu-overview-vital",
+    children: [
+      el("span", { class: "status-menu-overview-vital-label", text: label }),
+      renderOverviewTrack(ratio, variant, testId),
+      el("span", { class: "status-menu-overview-value", text: value }),
+    ],
+  });
+}
+
+/** 허브 첫 화면의 파티 스트립 — 타일 격자 아래 4칸(얼굴 24px·이름·HP/MP 트랙·HP 수치). */
+function renderPartyStrip(project: PlayerStatusMenuOptions["project"], snapshot: PlayerStatusMenuSnapshot): HTMLElement {
+  return el("section", {
+    class: "status-menu-party-strip",
+    attrs: { "aria-label": "파티" },
+    dataset: { testid: "status-menu-party-strip" },
+    children: snapshot.partyRows.map((row, index) => el("div", {
+      class: `status-menu-strip-card ${row.hpLevel}`,
+      dataset: { testid: `status-menu-strip-card-${index}` },
+      children: [
+        renderPartyFace(project, row, index, 24, `status-menu-strip-face-${index}`),
+        el("div", {
+          class: "status-menu-strip-body",
+          children: [
+            el("span", { class: "status-menu-actor-name", text: row.name }),
+            renderOverviewTrack(row.hpRatio, `hp ${row.hpLevel}`, `status-menu-strip-hp-${index}`),
+            renderOverviewTrack(row.mpRatio, "mp", `status-menu-strip-mp-${index}`),
+            el("span", { class: "status-menu-strip-value", text: row.hpValueLabel }),
+          ],
+        }),
+      ],
+    })),
+  });
+}
+
+function renderOverviewTrack(ratio: number, variant: string, testId: string): HTMLElement {
+  const percent = `${Math.round(ratio * 1000) / 10}%`;
+  return el("div", {
+    class: `status-menu-overview-track ${variant}`,
+    attrs: {
+      role: "meter",
+      "aria-valuemin": "0",
+      "aria-valuemax": "100",
+      "aria-valuenow": String(Math.round(ratio * 100)),
+    },
+    dataset: { testid: testId },
+    children: [el("span", { class: "status-menu-overview-fill", attrs: { style: `width:${percent}` } })],
+  });
+}
+
+// ── 스킨 사이드 파티: 작업 패널 오른쪽 열의 파티 미니(function 모드) ──
+// 회복약을 고르면서 누가 아픈지 보이게 한다 — 얼굴 12px · 이름 · HP 숫자 · HP/MP 트랙.
+function renderSidePartyMini(project: PlayerStatusMenuOptions["project"], snapshot: PlayerStatusMenuSnapshot): HTMLElement {
+  const aside = el("aside", {
+    class: "status-menu-side-party",
+    attrs: { "aria-label": "파티 상태" },
+    dataset: { testid: "status-menu-side-party" },
+    children: [el("div", { class: "status-menu-side-party-title", text: "파티" })],
+  });
+  if (snapshot.emptyPartyLabel) {
+    aside.append(el("div", { class: "status-menu-empty", text: snapshot.emptyPartyLabel }));
+    return aside;
+  }
+  snapshot.partyRows.forEach((row, index) => {
+    aside.append(el("div", {
+      class: `status-menu-side-party-row ${row.hpLevel}`,
+      attrs: { "aria-label": `${row.name} ${row.hpLabel} ${row.mpLabel}` },
+      dataset: { testid: `status-menu-side-party-row-${index}` },
+      children: [
+        renderPartyFace(project, row, index, 10, `status-menu-side-party-face-${index}`),
+        el("div", {
+          class: "status-menu-side-party-body",
+          children: [
+            el("div", {
+              class: "status-menu-side-party-head",
+              children: [
+                el("span", { class: "status-menu-actor-name", text: row.name }),
+                el("span", { class: "status-menu-side-party-value", text: row.hpValueLabel }),
+              ],
+            }),
+            renderOverviewTrack(row.hpRatio, `hp ${row.hpLevel}`, `status-menu-side-party-hp-${index}`),
+            renderOverviewTrack(row.mpRatio, "mp", `status-menu-side-party-mp-${index}`),
+          ],
+        }),
+      ],
+    }));
+  });
+  return aside;
 }
 
 /** 숫자 한 줄 + 그 줄을 덮는 게이지. 행도 폭도 늘지 않는다. */
@@ -393,7 +602,8 @@ function interactiveHint(detail: StatusMenuDetail): string | undefined {
 
 function renderFooter(
   mode: "main" | "function",
-  message: string | undefined
+  message: string | undefined,
+  railColumns: number
 ): HTMLElement {
   const footer = el("footer", { class: "status-menu-footer" });
   footer.append(el("div", {
@@ -404,14 +614,16 @@ function renderFooter(
   }));
   footer.append(el("span", {
     class: "status-menu-controls",
-    text: statusMenuControls(mode),
+    text: statusMenuControls(mode, railColumns),
     dataset: { testid: "status-menu-controls" },
   }));
   return footer;
 }
 
-export function statusMenuControls(mode: "main" | "function"): string {
-  return mode === "main" ? "↑↓ 메뉴 이동   → / Enter 선택   Esc 게임으로" : "↑↓ 항목 이동   Enter 결정   ← 메뉴   Esc 뒤로";
+export function statusMenuControls(mode: "main" | "function", railColumns = 1): string {
+  if (mode === "function") return "↑↓ 항목 이동   Enter 결정   ← 메뉴   Esc 뒤로";
+  // 격자 레일(허브 타일)은 → 가 선택이 아니라 이동이다.
+  return railColumns > 1 ? "↑↓←→ 이동   Enter 선택   Esc 게임으로" : "↑↓ 메뉴 이동   → / Enter 선택   Esc 게임으로";
 }
 
 function statusMenuDebug(selectedCommand: StatusMenuRailId, mode: "function" | "main"): HTMLElement {
