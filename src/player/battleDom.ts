@@ -607,8 +607,16 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       ? buttons.find((button) => button.dataset.battleTargetId === selectedTargetId)
       : undefined;
     const savedId = preferredTestId ?? cursorByContext.get(context);
+    // 메뉴를 처음 열 때는 **쓸 수 있는** 첫 행에 선다. 비활성 행에도 커서가 설 수 있다는
+    // 계약(aria-disabled 경로)은 그대로다 — 화살표로 가서 사유를 읽을 수 있다. 다만 기본
+    // 자리로 삼지는 않는다: gen1 전투는 「공격」이 영구 비활성인데(“사용 가능한 기술이 있어
+    // 통상 공격을 쓸 수 없습니다”) 커서가 그 위에서 시작해, 확인키를 눌러도 아무 일도
+    // 일어나지 않는 화면이 첫인상이었다(실측 2026-09-17, monster-collect 프리셋).
+    // 전부 비활성이면 예전처럼 첫 행에 선다 — 그때는 사유를 읽는 것이 유일하게 할 일이다.
+    const firstUsable = buttons.find((button) => button.dataset.battleCommandInert !== "true");
     const selected = buttons.find((button) => button.dataset.testid === savedId)
       ?? selectedTarget
+      ?? firstUsable
       ?? buttons[0];
     if (!selected.dataset.testid) return undefined;
     cursorByContext.set(context, selected.dataset.testid);

@@ -16,13 +16,10 @@
 @import "./battle/11-compact-hud-row.css" layer(runtime);
 @import "./battle/12-compact-party-target.css" layer(runtime);
 @import "./battle/13-compact-victory-box.css" layer(runtime);
-@import "./battle/14-pokemon-skin-layout.css" layer(runtime);
 @import "./battle/15-juice-capture-fx.css" layer(runtime);
-@import "./battle/16-pokemon-battlers-hud.css" layer(runtime);
 @import "./battle/17-sprint-a-polish.css" layer(runtime);
-@import "./battle/18-pokemon-layout-redesign.css" layer(runtime);
 @import "./battle/19-adversarial-review-3.css" layer(runtime);
-@import "./battle/20-pokemon-reference-restyle.css" layer(runtime);
+@import "./battle/20-pokemon-skin.css" layer(runtime);
 @import "./battle/21-gen1-hud-type-badge.css" layer(runtime);
 @import "./battle-skins/_pokemon.css" layer(runtime);
 @import "./battle-skins/_rm2000.css" layer(runtime);

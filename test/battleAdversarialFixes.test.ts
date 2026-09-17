@@ -345,7 +345,7 @@ describe("gen1 attack command legality (dead-command fix)", () => {
     expect(rt.snapshot().targetSelection).toBeUndefined();
   });
 
-  it("gen1 + gauge: 모든 기술의 PP 가 소진되면 attack(Struggle)은 대상 선택을 연다", () => {
+  it("gen1 + gauge: 모든 기술의 PP 가 소진되면 attack(Struggle)이 합법으로 받아들여진다", () => {
     const project = scarloxyProject();
     const actorId = project.system.startActorIds[0];
     const actorRecord = project.database.actors.find((entry) => entry.id === actorId);
@@ -369,6 +369,70 @@ describe("gen1 attack command legality (dead-command fix)", () => {
     });
     for (let i = 0; i < 1000 && rt.snapshot().phase !== "actorCommand"; i++) rt.tick(1000);
     rt.beginActorCommand({ kind: "attack" });
+    // 이 테스트가 지키는 것은 "Struggle 이 합법으로 받아들여진다"이지 특정 국면이 아니다.
+    // 거부의 서명은 바로 위 테스트와 같다 — actorCommand 에 머물고 targetSelection 이 빈다.
+    // 받아들여진 경우는 둘로 갈린다: 후보가 여럿이면 대상 목록이 열리고, 포켓몬 스킨 +
+    // 단일 후보면 목록을 건너뛰고 바로 실행된다(runtime.autoConfirmSingleTarget, 2026-09-17).
+    // 이 트룹(troop_pkmn_grass_a)은 적이 하나라 후자다 — 자동 확정 동작 자체는 아래
+    // "포켓몬 단일 대상 자동 확정" 블록이 대조군까지 포함해 못박는다.
+    const after = rt.snapshot();
+    const rejected = after.phase === "actorCommand" && after.targetSelection === undefined;
+    expect(rejected).toBe(false);
+  });
+});
+
+describe("포켓몬 단일 대상 자동 확정", () => {
+  function actorActCount(rt: ReturnType<typeof createBattleRuntime>): number {
+    return rt.snapshot().timeline.filter(
+      (entry) => entry.side === "actor" && (entry.kind === "action" || entry.kind === "damage" || entry.kind === "miss")
+    ).length;
+  }
+
+  function runTo(rt: ReturnType<typeof createBattleRuntime>): void {
+    for (let i = 0; i < 1000 && rt.snapshot().phase !== "actorCommand"; i++) rt.tick(1000);
+  }
+
+  function start(project: Project, troopId: string) {
+    const rt = createBattleRuntime({ project, troopId, canEscape: true, canLose: true, battleFlow: "gauge", rng: () => 0.5 });
+    runTo(rt);
+    return rt;
+  }
+
+  it("포켓몬 스킨 + 적 1마리: 대상 목록을 건너뛰고 바로 실행한다", () => {
+    const rt = start(scarloxyProject(), "troop_pkmn_grass_a");
+    expect(rt.snapshot().enemies.length).toBe(1);
+    const skillId = rt.snapshot().actors[0]?.skillIds[0];
+    if (!skillId) throw new Error("actor has no skill");
+    const before = actorActCount(rt);
+    rt.beginActorCommand({ kind: "skill", skillId });
+    expect(rt.snapshot().phase).not.toBe("targetSelect");
+    expect(rt.snapshot().targetSelection).toBeUndefined();
+    expect(actorActCount(rt)).toBeGreaterThan(before);
+  });
+
+  // gen1 은 적을 한 마리씩만 내보낸다(runtime.ts 의 gen1EnemyOrderIds + activeSlots 기본 1) —
+  // 그래서 장르 프리셋 경로에서는 후보가 늘 하나였고 대상 선택이 언제나 헛걸음이었다.
+  // 후보가 여럿인 경우는 "스킨만 포켓몬으로 바꾼" 경로에서 생긴다(battleModel 이 gen1 이 아님).
+  it("포켓몬 스킨 + gen1 아님 + 적 2마리: 대상 목록이 열린다", () => {
+    const project = scarloxyProject();
+    project.system.battleModel = undefined;
+    const rt = start(project, "troop_pkmn_new_pair");
+    expect(rt.snapshot().enemies.length).toBe(2);
+    const skillId = rt.snapshot().actors[0]?.skillIds[0];
+    if (!skillId) throw new Error("actor has no skill");
+    rt.beginActorCommand({ kind: "skill", skillId });
+    expect(rt.snapshot().phase).toBe("targetSelect");
+    expect(rt.snapshot().targetSelection?.targetIds.length).toBe(2);
+  });
+
+  it("다른 스킨은 적이 1마리여도 목록이 열린다 — 취소 경로 계약 보존", () => {
+    const project = scarloxyProject();
+    project.system.battleUiStyle = "rm2000";
+    const rt = start(project, "troop_pkmn_grass_a");
+    expect(rt.snapshot().enemies.length).toBe(1);
+    const skillId = rt.snapshot().actors[0]?.skillIds[0];
+    if (!skillId) throw new Error("actor has no skill");
+    rt.beginActorCommand({ kind: "skill", skillId });
     expect(rt.snapshot().phase).toBe("targetSelect");
   });
 });
