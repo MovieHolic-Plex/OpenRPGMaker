@@ -1804,8 +1804,12 @@ TURN/BATTLE MENU` 칩. 전투 애니메이션 타이밍 표 헤더 `사운드...
 
 ## Game menu design options (2026-09-18)
 
-System → Display → Game menu design is populated from `menuSkins/registry.ts`.
-There are now eight choices, including classic blue windows, a paper journal and
+The System overview has a dedicated Game menu card showing the current skin.
+Display contains resolution only; the `menu` section owns the selector, description
+and preview. Existing `system.menuUiStyle` values require no migration.
+
+System → Game menu → Game menu design is populated from `menuSkins/registry.ts`.
+There are now twelve choices, including four RPG Maker era designs, classic blue windows, a paper journal and
 a bottom command ribbon. Selection writes the optional `system.menuUiStyle`;
 workbench removes it. Descriptions and decoded PNG previews update immediately;
 the chosen design applies to the next play session. Preview files for new IDs
@@ -1814,7 +1818,7 @@ broken image despite the runtime skin working.
 
 Editor proof: start `npm run dev:worktree` with a private `VITE_CACHE_DIR`, then
 `OPRN_QA_EDITOR_URL=http://127.0.0.1:<port> node scripts/qa/menu-design-editor.mjs`.
-It checks eight options, the three new selections, system normalization round
+It checks twelve options, selections, dedicated menu navigation at 1440/1024px, system normalization round
 trips, loaded preview images, and default-key removal. This is a temporary editor
 control test, not authored remote content. Runtime proof uses the separate player
 harness documented in `runtime-sessions.md`.

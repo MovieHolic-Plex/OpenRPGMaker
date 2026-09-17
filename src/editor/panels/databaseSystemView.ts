@@ -99,6 +99,7 @@ export type SystemSectionSlug =
   | "overview"
   | "party"
   | "display"
+  | "menu"
   | "font"
   | "resources"
   | "startup"
@@ -133,6 +134,7 @@ const SYSTEM_SECTION_ORDER: readonly { readonly slug: SystemSectionSlug; readonl
   { slug: "overview", label: "개요" },
   { slug: "party", label: "초기 파티" },
   { slug: "display", label: "화면" },
+  { slug: "menu", label: "게임 메뉴" },
   { slug: "font", label: "폰트" },
   { slug: "resources", label: "리소스" },
   { slug: "startup", label: "시작 설정" },
@@ -274,7 +276,8 @@ function systemSectionNodes(
         systemHelp("빈 슬롯을 선택하면 뒤의 멤버가 앞으로 이동합니다. 이 순서는 시작 파티와 플레이 세션에 함께 적용됩니다."),
       ]),
     ]),
-    display: section("display", [playResolutionFieldset(project, rerender), menuSkinFieldset(project)]),
+    display: section("display", [playResolutionFieldset(project, rerender)]),
+    menu: section("menu", [menuSkinFieldset(project)]),
     font: section("font", [systemFontFieldset(project, rerender)]),
     resources: section("resources", [
       rm2k3Fieldset("공유 그래픽", [
@@ -2290,6 +2293,7 @@ function titleScreenWorkbenchPreview(
 const SYSTEM_SECTION_HELP: Record<Exclude<SystemSectionSlug, "overview">, string> = {
   party: "게임을 시작할 멤버와 순서를 정합니다.",
   display: "게임 화면의 크기와 맵에 미치는 영향을 확인합니다.",
+  menu: "플레이 중 ESC 또는 X로 여는 메뉴의 디자인을 선택하고 미리 확인합니다.",
   font: "화면 역할마다 글꼴을 고르고 실제 문장으로 비교합니다.",
   resources: "프로젝트에서 공유하는 그래픽을 선택합니다.",
   startup: "전투 방식, 기본 소리와 보상 규칙을 정합니다.",

@@ -9,7 +9,7 @@ import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsa
 import type { Project, StoryFlagKind, TitleScreenSettings } from "@/project/types";
 import { el } from "@/util/dom";
 
-type SystemStudioTarget = "party" | "display" | "font" | "resources" | "startup" | "optin" | "time" | "typechart" | "title";
+type SystemStudioTarget = "party" | "display" | "menu" | "font" | "resources" | "startup" | "optin" | "time" | "typechart" | "title";
 
 type StudioCard = {
   readonly id: string;
@@ -185,10 +185,18 @@ function primaryCardGrid(project: Project): HTMLElement {
     {
       id: "display",
       title: "화면",
-      description: "플레이 화면의 논리 해상도 · 게임 메뉴 디자인",
-      status: `${resolution.width}×${resolution.height} · 메뉴 ${MENU_SKINS[resolveMenuSkinId(project.system.menuUiStyle)].label}`,
+      description: "플레이 화면의 논리 해상도",
+      status: `${resolution.width}×${resolution.height}`,
       statusKind: "neutral",
       target: "display",
+    },
+    {
+      id: "menu",
+      title: "게임 메뉴",
+      description: "ESC · X 메뉴 디자인 선택과 미리보기",
+      status: MENU_SKINS[resolveMenuSkinId(project.system.menuUiStyle)].label,
+      statusKind: "neutral",
+      target: "menu",
     },
     {
       id: "time",
