@@ -1,0 +1,48 @@
+{
+  "checks": [
+    {
+      "name": "Automatic grounded suggestion appears",
+      "ok": true
+    },
+    {
+      "name": "Agent runs read-only with bounded turns",
+      "ok": true
+    },
+    {
+      "name": "Returned project is never applied",
+      "ok": true
+    },
+    {
+      "name": "Locate keeps proposal visible",
+      "ok": true
+    },
+    {
+      "name": "Suggestion fills request with exact target",
+      "ok": true
+    },
+    {
+      "name": "Draft never auto-sends or starts another inspection",
+      "ok": true
+    },
+    {
+      "name": "Compact suggestion has no horizontal overflow",
+      "ok": true
+    },
+    {
+      "name": "Dismissed suggestion stays dismissed",
+      "ok": true
+    },
+    {
+      "name": "No browser errors",
+      "ok": true
+    }
+  ],
+  "requests": [
+    {
+      "readOnly": true,
+      "maxTurns": 4,
+      "mode": "single"
+    }
+  ],
+  "errors": []
+}
