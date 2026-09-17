@@ -2042,9 +2042,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           : null,
         selection: selection ?? null,
       });
-      // 기존 분류 결과를 재사용한다. 실패/모호함/생성/다단계 요청은 기존 절차를 유지한다.
+      // 계획 필요 여부가 규모 기준이다. 단순 생성도 수정과 같은 경로를 쓰며 실패·모호함은 제외한다.
       plan = { ...plan, routineEdit: !declared.error && declared.intent.source === "llm"
-        && declared.intent.mode === "modify" && declared.intent.needsPlan === false
+        && (declared.intent.mode === "create" || declared.intent.mode === "modify")
+        && declared.intent.needsPlan === false
         && declared.intent.clarify === null };
       if (declared.intent.mode === "question") {
         plan = { ...plan, readOnly: true };
