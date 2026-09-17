@@ -447,6 +447,8 @@ using real save/load/merge functions aren't evidence of a live Supabase write.
 
 ## Character/face authoring metadata (2026-09-06)
 
+**2026-09-18:** The character/face editor now uses a host-owned shared catalog outside the project. Existing optional profile fields remain loadable/exportable for compatibility and explicit migration. See `editor-database.md` «캐릭터·얼굴은 프로젝트 밖 공용 자료». Shared catalog writes never rewrite authored actors/events or participate in project undo.
+
 `ResourceProfile` optionally carries standalone-face `graphicAttributes`/`graphicNote`, or charset `characterSlots: [{characterIndex,graphicAttributes,status,faceResourceId,quality,note}]`. Seven independent string axes are kind/age/gender/skin/hair/clothing/role. Sprite names remain in `Project.charsetLabels`; face names use the existing profile name. No parallel asset registry, project version bump, or SQL migration is introduced.
 
 `characterGraphics.validateCharacterGraphicsProject` runs in `validateProjectV4`, rejecting malformed attributes, duplicate canonical sprite slots and unknown mapped face IDs. Non-mapped states require an explicit null face ID; pending/no-face are distinct. Existing projects keep these optional fields absent; display-only literal-label suggestions do not write metadata on load. Texture-key/resource-ID profile aliases resolve to the annotated profile rather than hiding edits. Whole-project serialize/deserialize, packages and Supabase current_json retain the fields; the existing missing-only bundled-profile supplementation preserves annotated profiles.
