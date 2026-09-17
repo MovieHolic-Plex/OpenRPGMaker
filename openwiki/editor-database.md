@@ -1842,3 +1842,11 @@ player preview. The editor probe accepts skin IDs as arguments and an optional
 - `rankCharacterFaces` 결과는 paired/similar/none/conflict. 속성 충돌은 대응표 가산점보다 우선하며 충돌 시 +100을 주지 않는다. 나이가 비어 있으면 어린이 얼굴은 추천에서 제외한다. 성별·종류만 같은 후보나 이름 토큰 겹침만 있는 후보는 추천하지 않는다. 머리/의상/역할 일치 또는 명시적 나이+성별 일치는 **유사 특징**일 뿐이다.
 - 기본 UI는 paired/similar만 표시하고 나머지는 검색 또는 전체 얼굴 보기에서 경고와 함께 수동 선택 가능하다. 중절모 신사는 소년 얼굴 대신 근거 부족 빈 상태를 표시한다. 원본 대응/유사 특징/근거 부족/추천 제외를 구별한다. 기존 연결이나 이벤트를 자동 교체하지 않는다.
 - 증거: `output/evidence/character-face-correction/actor2-before-after.png`, `editor-actor2.png`, `editor-no-match.png`, `editor-conflict.png`, `observations.json`. 비교 PNG는 실제 엔진 크롭과 원본 에셋 및 변경 전후 함수 출력으로 만든 브라우저 캡처다. AI 생성 이미지가 아니다. 테스트 명세는 갱신했으며 세션 규칙에 따라 테스트/게이트는 실행하지 않았다.
+
+### 캐릭터·얼굴 화면 레이아웃 보정 (2026-09-18)
+
+- 전환 버튼과 검색·필터를 `db-cg-list-controls`에 묶어 목록 창의 2–3행에 명시 배치한다. `listToolbar`를 chips 슬롯에 직접 넣으면 공통 CSS가 footer 행으로 보낸다.
+- 썸네일·이름/검토 상태·번호는 전용 3열/2행 그리드다. `modern/crops-characters.css`의 공통 썸네일 행 flex 규칙보다 구체적인 선택자를 유지한다.
+- 상세 본문을 `face-detail` inline-size 컨테이너로 사용한다. 실제 상세 너비가 720px 이하이면 비교/후보를 세로 배치하므로 모달 크기 변경에도 대응한다.
+- 원본 대응 배지와 후보 선택 테두리를 강조하고 카드 제목/안내를 별도 줄로 배치한다. 매칭 데이터와 추천 기준은 변경하지 않는다.
+- 브라우저 확인: 1440×1000, 1024×900에서 캐릭터 선택·후보 선택·연결 적용·얼굴 탭 전환. 캡처는 로컬 `output/evidence/character-face-ui/`. 테스트/게이트는 세션 명시 요청이 없어 실행하지 않음.
