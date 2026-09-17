@@ -1147,7 +1147,7 @@ body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
   display: none;
 }
 
-:is(.ai-deck, .ai-studio-composer) .ai-composer-team-toggle:has(input:checked) {
+:is(.ai-deck, .ai-studio-composer) .ai-composer-team-toggle[data-team="true"] {
   background: var(--accent-muted);
   border-color: var(--accent-border);
   color: var(--accent-active);
@@ -1753,3 +1753,19 @@ body:has([data-testid='resource-modal']) .ai-chat-panel .ai-deck {
 .ai-chat-suggestions > button { align-self: flex-start; border: 0; background: transparent; padding-left: 0; }
 .ai-chat-suggestions details { font-size: 11px; color: var(--text-3); }
 .ai-chat-suggestions summary { cursor: pointer; }
+
+/* Compact shared team controls, anchored by the existing composer popover owner. */
+.ai-team-menu { position: absolute; z-index: 6; background: var(--bg-raised); color: var(--text-1); border: 1px solid var(--border-default); box-shadow: var(--shadow-pop); width: 280px; padding: 12px; border-radius: 10px; font-size: 12px; }
+.ai-team-menu [hidden] { display: none; }
+.ai-team-menu-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 0; }
+.ai-team-menu-row:first-child { padding-top: 0; }
+.ai-team-menu-modes { display: flex; gap: 3px; padding: 3px; background: var(--bg-inset); border-radius: 6px; }
+.ai-team-menu button { cursor: pointer; font: inherit; color: var(--text-2); background: var(--bg-raised); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 5px 8px; }
+.ai-team-menu button[aria-pressed="true"], .ai-team-menu button[aria-checked="true"] { color: var(--accent); background: var(--accent-muted); border-color: var(--accent); }
+.ai-team-menu-budget { border-block: 1px solid var(--border-subtle); padding: 10px 0; }
+.ai-team-menu-budget > span { display: block; margin-bottom: 7px; }
+.ai-team-menu .ai-team-budget { gap: 5px; }
+.ai-team-menu .ai-team-budget button { padding: 6px 3px; font-size: 11px; outline: none; }
+.ai-team-menu .ai-team-menu-settings { border: 0; border-top: 1px solid var(--border-subtle); border-radius: 0; width: 100%; text-align: left; padding: 10px 0 0; background: transparent; }
+
+.ai-team-menu button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }

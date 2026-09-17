@@ -98,6 +98,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   const team = request.team ? normalizeTeamSpec(request.team) : defaultTeamSpec();
   const builders = enabledMembers(team, "builder");
   const reviewers = enabledMembers(team, "reviewer");
+  if (team.reviewAfterWork && reviewers.length === 0) throw Object.assign(new Error("완료 후 검토 담당이 없습니다. 팀 구성에서 검수 담당을 켜거나 완료 후 검토를 꺼 주세요."), { status: 400 });
   if (builders.length === 0) throw Object.assign(new Error("팀에 켜진 시공 팀원이 없습니다. 팀 패널에서 팀원을 켜 주세요."), { status: 400 });
 
   let ledger: TeamAssignmentLedger = createTeamAssignmentLedger(teamAssignmentBudget(builders.length));
@@ -432,13 +433,23 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let orchDone: PiAgentDoneEvent;
   try {
     orchDone = await runAgent(
-      { ...request, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: [...orch.systemPrompt(base, request.mapIds, request.task, team, request.currentMapId), teamCommunicationPrompt(orchestratorId)], maxTurns: orch.maxTurns },
+      { ...request, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: [...orch.systemPrompt(base, request.mapIds, request.task, team, request.currentMapId), teamCommunicationPrompt(orchestratorId)], maxTurns: team.workBudget ?? orch.maxTurns },
       { ...child(orchestratorId), toolNames: orch.toolNames, extraTools: orchestratorTools },
     );
   } finally { mailbox.close(orchestratorId); }
   // 팀장이 wait 없이 끝났을 수 있다(턴 상한·조기 finish 실패). 남은 배정을 거두어 병합한다 —
   // 여기서 놓치면 이미 끝난 시공 결과가 조용히 사라진다.
   await Promise.all(inflight.map((entry) => entry.promise));
+  if (team.reviewAfterWork) {
+    const finalReview = startTask(
+      `제작이 끝난 최종 결과를 읽기 전용으로 검토하라. 사용자 요청: ${request.task}\n요청 충족 여부, 남은 문제와 확인 근거를 report_task로 보고한다. 직접 수정하지 않는다.`,
+      "read", reviewers[0]!,
+    );
+    const outcome = await inflight.find(entry => entry.agentId === finalReview.agentId)!.promise;
+    if (!outcome.ok) throw new Error(`완료 후 검토를 끝내지 못했습니다: ${outcome.summary}`);
+    finished = `${finished ?? summaryOf(orchDone)}\n완료 후 검토: ${outcome.summary}`;
+    emit({ type: "team_report", text: finished });
+  }
   emit({ type: "agent_done", agentId: orchestratorId, ok: true, summary: finished ?? summaryOf(orchDone), stats: orchDone.stats, changedKeys: [], spills: [], conflicts: [] });
   if (!finished) emit({ type: "team_report", text: `${summaryOf(orchDone)} · 팀장이 finish를 호출하지 않았습니다. 미확인 협의 ${mailbox.outstanding().length}건.` });
 

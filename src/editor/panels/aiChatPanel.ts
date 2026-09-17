@@ -2784,6 +2784,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 바깥 클릭 판정은 데크 전체 — 레일의 ⋯ 가 바 밖에 있다(데크 조립 전엔 바 기준).
     isInside: (target) => (deckRoot ?? composerShell.commandBar).contains(target),
     teamToggleOptions: {
+      onOpenSettings: () => teamSidebar.openSettings(),
       initialTeam: loadAiConfig().piTeam ?? DEFAULT_PI_TEAM,
       onTeamChange: (team) => {
         saveAiConfig({ ...loadAiConfig(), piTeam: team });

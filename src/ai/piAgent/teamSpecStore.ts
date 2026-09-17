@@ -21,7 +21,8 @@ export function loadTeamSpec(): PiTeamSpec {
   const raw = storage()?.getItem(TEAM_SPEC_STORAGE_KEY);
   if (!raw) return (cached = defaultTeamSpec());
   try {
-    return (cached = normalizeTeamSpec(JSON.parse(raw)));
+    const normalized = normalizeTeamSpec(JSON.parse(raw));
+    return (cached = { ...normalized, reviewAfterWork: normalized.reviewAfterWork ?? true });
   } catch {
     return (cached = defaultTeamSpec());
   }

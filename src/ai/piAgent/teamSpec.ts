@@ -28,6 +28,8 @@ export interface PiTeamSpec {
   readonly version: 1;
   /** 팀장 프롬프트에 덧붙일 사용자 지침(선택). */
   readonly orchestratorNotes: string;
+  readonly workBudget?: number;
+  readonly reviewAfterWork?: boolean;
   readonly members: readonly PiTeamMember[];
 }
 
@@ -67,7 +69,7 @@ export const DEFAULT_TEAM_MEMBERS: readonly PiTeamMember[] = [
 ];
 
 export function defaultTeamSpec(): PiTeamSpec {
-  return { version: 1, orchestratorNotes: "", members: DEFAULT_TEAM_MEMBERS.map((member) => ({ ...member, toolDomains: [...member.toolDomains] })) };
+  return { version: 1, orchestratorNotes: "", workBudget: 300, reviewAfterWork: true, members: DEFAULT_TEAM_MEMBERS.map((member) => ({ ...member, toolDomains: [...member.toolDomains] })) };
 }
 
 const ID_PATTERN = /^[a-z][a-z0-9_-]{0,31}$/;
@@ -88,7 +90,7 @@ function str(value: unknown, fallback = ""): string {
 /** 저장된 JSON 을 명세로 정규화한다. 깨진 항목은 버리고, 팀원이 하나도 없으면 기본 팀으로 돌아간다. */
 export function normalizeTeamSpec(raw: unknown): PiTeamSpec {
   if (!raw || typeof raw !== "object") return defaultTeamSpec();
-  const rec = raw as { members?: unknown; orchestratorNotes?: unknown };
+  const rec = raw as { members?: unknown; orchestratorNotes?: unknown; workBudget?: unknown; reviewAfterWork?: unknown };
   const seen = new Set<string>();
   const members: PiTeamMember[] = [];
   for (const item of Array.isArray(rec.members) ? rec.members : []) {
@@ -117,11 +119,12 @@ export function normalizeTeamSpec(raw: unknown): PiTeamSpec {
     });
   }
   if (members.length === 0) return defaultTeamSpec();
-  return { version: 1, orchestratorNotes: str(rec.orchestratorNotes).slice(0, 2000), members };
+  return { version: 1, orchestratorNotes: str(rec.orchestratorNotes).slice(0, 2000), workBudget: [100, 300, 600].includes(Number(rec.workBudget)) ? Number(rec.workBudget) : 300, ...(typeof rec.reviewAfterWork === "boolean" ? { reviewAfterWork: rec.reviewAfterWork } : {}), members };
 }
 
 export function enabledMembers(spec: PiTeamSpec, kind?: PiTeamMemberKind): PiTeamMember[] {
-  return spec.members.filter((member) => member.enabled && (!kind || member.kind === kind));
+  return spec.members.filter((member) => member.enabled && (!kind || member.kind === kind) && (spec.reviewAfterWork !== false || member.kind !== "reviewer"))
+    .map(member => ({ ...member, maxTurns: spec.workBudget ?? 300 }));
 }
 
 /** 팀장이 배정 툴에서 참고하는 팀원 목록 문장. */
