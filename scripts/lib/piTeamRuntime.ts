@@ -1,3 +1,4 @@
+import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
 import { PiTeamMessaging, teamCommunicationPrompt } from "./piTeamMessaging.ts";
 // Pi 팀 런타임. 팀장 에이전트(orchestrator)가 커스텀 툴로 시공·검수 에이전트를 띄운다.
@@ -161,7 +162,24 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     return { spills: merged.spills.flatMap((spill) => [...spill.keys]), conflicts };
   }
 
+  // Only accepted child writes enter the shared team project. Serialize publication across members.
+  let publication: Promise<unknown> = Promise.resolve();
+  const checkpointFor = (mapId: string | null, snapshot: Project) => async (checkpoint: PiProjectCheckpoint, signal?: AbortSignal): Promise<Project> => {
+    const next = publication.then(async () => {
+      const proposed = mapId
+        ? mergeMapBundles(working, [{ mapIds: [mapId], project: checkpoint.project, base: snapshot }]).project
+        : checkpoint.project;
+      authorMergedSpatialProposal(proposed, working);
+      const accepted = await options.onCheckpoint?.({ ...checkpoint, project: proposed, spatialProof: exportSpatialToolProof(proposed) }, signal);
+      working = structuredClone(accepted ?? proposed);
+      return working;
+    });
+    publication = next;
+    return await next;
+  };
+
   function startAssign(mapId: string, task: string, member: PiTeamMember): AgentOutcome | Record<string, unknown> {
+    if (request.applyMode === "step" && (runningAssignments(ledger).length || runningTasks().length)) throw new Error("단계별 적용은 앞 작업 승인·완료 후 다음 작업을 배정합니다. wait_agents를 먼저 호출하세요.");
     if (projectWriter()) throw new Error("프로젝트 공통 데이터 제작 중입니다. wait_agents 후 맵 작업을 배정하세요.");
     if (!working.maps[mapId]) throw new Error(`맵 '${mapId}' 이 프로젝트에 없습니다. 후보: ${candidateMaps.join(", ")}`);
     const agentId = `builder-${counters.builder + 1}`;
@@ -186,7 +204,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
             ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
           },
-          child(agentId, request.roleModels?.deep?.provider ?? request.provider),
+          { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider),
+            ...(options.onCheckpoint ? { onCheckpoint: checkpointFor(mapId, snapshot) } : {}) },
         );
         const { spills, conflicts } = mergeOutcome(agentId, mapId, snapshot, done);
         ledger = settleAssignment(ledger, agentId, true);
@@ -213,6 +232,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
 
   /** Read-only designs can run alongside construction; project writes own the entire working copy. */
   function startTask(task: string, mode: "read" | "project", member: PiTeamMember): Record<string, unknown> {
+    if (request.applyMode === "step" && (runningAssignments(ledger).length || runningTasks().length)) throw new Error("단계별 적용은 앞 작업 승인·완료 후 이어집니다. wait_agents를 먼저 호출하세요.");
     if (tasks.size >= 64) throw new Error("팀 작업 배정 상한(64)에 도달했습니다. 남은 작업을 보고하세요.");
     if (mode === "project") {
       if (request.readOnly || options.readOnlyTools || member.kind === "reviewer") throw new Error("읽기 전용 요청/검수 팀원에게 프로젝트 쓰기를 맡길 수 없습니다.");
@@ -252,7 +272,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             "종료 전에 반드시 report_task로 산출물과 남은 문제를 전달한다. 이 작업의 보고 도구는 report_task다.",
             teamCommunicationPrompt(agentId),
           ],
-        }, { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider), readOnlyTools: mode === "read", extraTools: [...mailbox.tools(agentId), reportTool] });
+        }, { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider), readOnlyTools: mode === "read", ...(mode === "project" && options.onCheckpoint ? { onCheckpoint: checkpointFor(null, snapshot) } : {}), extraTools: [...mailbox.tools(agentId), reportTool] });
         toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns;
         if (!report) throw new Error("report_task 결과가 없어 작업을 완료 처리하지 않았습니다.");
         const changes = changedProjectKeys(snapshot, done.project);
@@ -398,6 +418,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         : "검수 팀원이 없다. 호출하면 실패한다 — finish 로 바로 보고하라.",
       parameters: { type: "object", properties: { mapId: { type: "string" }, focus: { type: "string" }, ...(reviewers.length > 0 ? { member: { type: "string", enum: reviewers.map((m) => m.id) } } : {}) }, required: ["mapId"], additionalProperties: false },
       async execute(_id, params) {
+        if (request.applyMode === "yolo") return text({ skipped: true, reason: "YOLO에서는 검수를 생략합니다." });
         if (reviewers.length === 0) throw new Error("팀에 켜진 검수 팀원이 없습니다. 검수를 건너뛰고 finish 하세요.");
         const rec = (params ?? {}) as Record<string, unknown>;
         return text(await review(str(rec.mapId, "mapId"), typeof rec.focus === "string" ? rec.focus : undefined, pickMember(rec.member, reviewers, "검수")));
@@ -440,7 +461,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   // 팀장이 wait 없이 끝났을 수 있다(턴 상한·조기 finish 실패). 남은 배정을 거두어 병합한다 —
   // 여기서 놓치면 이미 끝난 시공 결과가 조용히 사라진다.
   await Promise.all(inflight.map((entry) => entry.promise));
-  if (team.reviewAfterWork) {
+  if (team.reviewAfterWork && request.applyMode !== "yolo") {
     const finalReview = startTask(
       `제작이 끝난 최종 결과를 읽기 전용으로 검토하라. 사용자 요청: ${request.task}\n요청 충족 여부, 남은 문제와 확인 근거를 report_task로 보고한다. 직접 수정하지 않는다.`,
       "read", reviewers[0]!,

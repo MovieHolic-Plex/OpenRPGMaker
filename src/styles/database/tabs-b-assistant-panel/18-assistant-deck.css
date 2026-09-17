@@ -1126,6 +1126,11 @@ body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
   padding: 0 4px;
 }
 
+/* 적용 모드는 긴 한국어 모드명도 선택 상태에서 읽을 수 있어야 한다. */
+:is(.ai-deck, .ai-studio-composer) .ai-composer-apply-mode {
+  max-width: 128px;
+}
+
 /* 팀 토글 — 지시줄의 28px 알약. 켜지면 액센트(선택 칩과 같은 토큰). 다이얼이 쓰기를 허용할 때만
    보이므로([hidden] 은 읽기 전용·계획 턴) 자리를 차지하지 않는다. */
 :is(.ai-deck, .ai-studio-composer) .ai-composer-team-toggle {

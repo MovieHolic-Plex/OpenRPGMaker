@@ -1,3 +1,4 @@
+import type { PiApplyMode } from "./applyMode";
 import type { SpecialistModels } from "../modelRoles";
 import type { SpatialToolProof } from "@/editor/tools/spatialToolState";
 // Pi 에이전트 경로의 공용 규약. 브라우저(클라이언트)·동반 서비스(Node)·Bun 워커(런타임)가 같은
@@ -16,6 +17,7 @@ export type PiAgentThinkingLevel = "off" | "low" | "medium" | "high";
 export type PiAgentMode = "single" | "team";
 
 export interface PiAgentRequest {
+  readonly applyMode?: PiApplyMode;
   /** 기본 single. team 이면 팀장 에이전트가 맵별 시공·검수 에이전트를 띄운다. */
   readonly mode?: PiAgentMode;
   readonly roleModels?: SpecialistModels;
@@ -84,7 +86,14 @@ export const PI_AGENT_DELTA_FLUSH_MS = 1_000;
 
 export interface PiTeamAgentStats extends PiAgentStats {}
 
+export interface PiProjectCheckpoint {
+  readonly project: Project;
+  readonly label: string;
+  readonly toolName: string;
+  readonly spatialProof?: SpatialToolProof | null;
+}
 export type PiAgentEvent =
+  | ({ readonly type: "checkpoint"; readonly checkpointId: string } & PiProjectCheckpoint)
   | { readonly type: "start"; readonly provider: string; readonly model: string; readonly toolCount: number }
   // ── 팀 이벤트. 하위 에이전트의 진행은 agent_event 로 감싸서 흘린다(보드가 행 단위로 그린다). ──
   | { readonly type: "team_start"; readonly task: string; readonly roles: readonly { id: PiTeamRoleId; label: string }[] }

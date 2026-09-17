@@ -326,3 +326,16 @@ describe("oh-my-pi companion HTTP", () => {
     }
   });
 });
+
+it("forwards one-use project checkpoint decisions through the companion", async () => {
+  assert.equal(isCompanionPath("/v1/agent/checkpoint?provider=google-antigravity"), true);
+  const decision = { checkpointId: "test-run-capability", ok: true, project: { maps: {} } };
+  let received;
+  const response = await handleCompanionRequest({ method: "POST", url: "/v1/agent/checkpoint", body: decision }, {
+    resolveCheckpoint: async body => { received = body; return { ok: true }; },
+  });
+  assert.equal(response.status, 200);
+  assert.deepEqual(received, decision);
+  const missing = await handleCompanionRequest({ method: "POST", url: "/v1/agent/checkpoint", body: decision }, {});
+  assert.equal(missing.status, 501);
+});

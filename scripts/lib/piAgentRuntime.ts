@@ -1,3 +1,6 @@
+import { finishSpatialToolAcceptance, authorMergedSpatialProposal } from "../../src/editor/tools/spatialToolState.ts";
+import { mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
+import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
 import { createWriterTool } from "./piWriterTool.ts";
 import { completeProvider } from "./ohMyPiPiAiRuntime.ts";
 // Bun 전용 Pi 에이전트 런타임. `@oh-my-pi/pi-agent-core` 루프에 레지스트리 툴을 붙여 프로젝트
@@ -25,6 +28,7 @@ import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
 import type { GameMap, Project } from "../../src/project/types.ts";
 
 export interface RunPiAgentOptions {
+  readonly onCheckpoint?: (checkpoint: PiProjectCheckpoint, signal?: AbortSignal) => Promise<Project | void>;
   readonly apiKey?: string;
   readonly providerApiKeys?: Record<string, string | undefined>;
   readonly onEvent?: (event: PiAgentEvent) => void;
@@ -71,12 +75,14 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const tools: PiToolShape[] = [];
   const exposed = new Set<string>();
   let escalatedCount = 0;
-  const shapeFor = (name: string): PiToolShape | undefined =>
-    resolvePiToolShape(ctx, name, {
-      readOnly: options.readOnlyTools,
+  const shapeFor = (name: string): PiToolShape | undefined => {
+    const shape = resolvePiToolShape(ctx, name, {
+      readOnly: request.readOnly || options.readOnlyTools,
       toolNames: options.toolNames,
       onCall: recordCall,
     });
+    return shape ? wrapTool(shape) : undefined;
+  };
   // 선언 승격 — find_tools 수확과 폴백 구제가 공유. 상한은 프롬프트가 커지는 것만 묶는다.
   const declare = (shape: PiToolShape): void => {
     if (escalatedCount >= MAX_ESCALATED_TOOLS) return;
@@ -97,13 +103,57 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       }
     }
   };
+  const incremental = !!request.applyMode && request.applyMode !== "review" && !request.readOnly && !options.readOnlyTools && !!options.onCheckpoint;
+  let accepted = structuredClone(base) as Project;
+  let executionQueue: Promise<unknown> = Promise.resolve();
+  let rejected = false;
+  const checkpoint = async (label: string, toolName: string, signal?: AbortSignal): Promise<void> => {
+    if (!incremental || changedProjectKeys(accepted, ctx.project).length === 0) return;
+    const scoped = request.scopeStrict !== false && request.mapIds.length > 0;
+    const project = scoped ? mergeMapBundles(accepted, [{ mapIds: request.mapIds, project: ctx.project }]).project : ctx.project;
+    if (scoped) authorMergedSpatialProposal(project, accepted);
+    if (changedProjectKeys(accepted, project).length === 0) return;
+    try {
+      const published = await options.onCheckpoint!({ project: structuredClone(project), label, toolName, spatialProof: exportSpatialToolProof(project) }, signal ?? options.signal);
+      accepted = structuredClone(published ?? project);
+      ctx.project = published ?? project;
+      finishSpatialToolAcceptance(ctx.project);
+    } catch (error) {
+      rejected = true;
+      fatal = error instanceof Error ? error.message : String(error);
+      agent.abort(fatal);
+      throw error;
+    }
+  };
+  const wrapTool = (tool: PiToolShape): PiToolShape => !incremental ? tool : ({ ...tool,
+    execute(id, params, signal) {
+      const result = executionQueue.then(async () => {
+        if (rejected) throw new Error("적용이 중단되었습니다.");
+        signal?.throwIfAborted();
+        const result = await tool.execute(id, params, signal);
+        if (request.applyMode !== "step") await checkpoint(tool.name, tool.name, signal);
+        return result;
+      });
+      executionQueue = result.catch(() => undefined);
+      return result;
+    },
+  });
   const registryTools = createPiToolset(ctx, {
     domains: request.toolDomains,
     readOnly: request.readOnly || options.readOnlyTools,
     toolNames: options.toolNames,
     onCall: recordCall,
   });
-  tools.push(...registryTools, ...(options.extraTools ?? []));
+  tools.push(...registryTools.map(wrapTool), ...(options.extraTools ?? []));
+  if (incremental && request.applyMode === "step") tools.push(wrapTool({
+    name: "finish_stage", label: "단계 적용",
+    description: "지형·건물/길·NPC/이벤트 등 의미 있는 한 단계를 마친 뒤 호출한다. 사용자 승인 전에는 다음 단계로 진행하지 않는다.",
+    parameters: { type: "object", properties: { title: { type: "string" } }, required: ["title"] },
+    async execute(_id, params, signal) {
+      await checkpoint(String((params as { title?: string }).title || "작업 단계"), "finish_stage", signal);
+      return { content: [{ type: "text", text: "단계가 적용되었습니다. 다음 단계로 진행하세요." }] };
+    },
+  }));
   for (const tool of tools) exposed.add(tool.name);
   const writer = request.roleModels?.writer;
   if (writer && !options.toolNames) {
@@ -118,6 +168,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 읽기 전용은 툴 목록으로 강제된다(options.readOnlyTools). 이 한 줄은 모델이 "왜 답만 하는지" 알게 한다 —
   // 이유를 모르면 쓰기를 시도하며 턴을 태운다.
   if (request.readOnly) systemPrompt.push(READ_ONLY_INSTRUCTION);
+  if (incremental && request.applyMode === "step") systemPrompt.push("작업을 지형, 건물·길, NPC·이벤트 등 의미 있는 단계로 나누고 각 단계를 끝낼 때 반드시 finish_stage를 호출하라. 승인 결과를 받기 전 다음 단계의 쓰기 도구를 호출하지 마라. 도구 호출마다 승인받지 말고 작업 단위로 묶어라.");
+  if (request.applyMode === "yolo") systemPrompt.push("YOLO: 별도 검수·승인 요청 없이 요청한 변경을 최대한 실행하라. 사용자 범위와 데이터 형식은 지켜라.");
   if (writer && tools.some(tool => tool.name === "consult_writer")) systemPrompt.push("You are Deep, responsible for careful implementation and validation. For story, lore, NPC dialogue or quest prose, consult_writer delegates authorship to Writer. Pass relevant context, then apply its output using project tools. Do not call Writer for mechanical work.");
   const apiKey = options.providerApiKeys ? options.providerApiKeys[request.provider] : options.apiKey;
   const agent = new Agent({
@@ -245,7 +297,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     unsubscribe();
     deltas.dispose();
   }
+  if (rejected) throw new Error(fatal || "적용이 중단되었습니다.");
   // 마지막 한 방울 — 툴 경계 밖에서 바뀐 것까지 캔버스에 닿게 한다. 이미 보낸 것은 diff 가 걸러낸다.
+  if (!fatal && !rejected) await checkpoint("마지막 단계", "finish_stage");
   emitMapDelta();
   if (fatal && toolCalls === 0) throw Object.assign(new Error(fatal), { status: 502 });
   const done: PiAgentDoneEvent = {

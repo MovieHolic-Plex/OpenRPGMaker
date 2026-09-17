@@ -1,3 +1,4 @@
+import { PI_APPLY_MODES, normalizePiApplyMode } from "@/ai/piAgent/applyMode";
 import { modelForRole, type RoleModel } from "@/ai/modelRoles";
 // AI 설정 전용 모달 — 채팅 본문과 분리된 설정 표면.
 // loadAiConfig/saveAiConfig 자동 저장 계약을 유지한다.
@@ -388,13 +389,12 @@ export function renderAiSettingsForm(options: {
     class: "ai-config-select",
     dataset: { testid: "ai-config-pi-apply" },
     children: [
-      el("option", { attrs: { value: "review" }, text: "검토 후 적용" }),
-      el("option", { attrs: { value: "auto" }, text: "바로 적용" }),
+      ...PI_APPLY_MODES.map(mode => el("option", { attrs: { value: mode.id, title: mode.description }, text: mode.label })),
     ],
   }) as HTMLSelectElement;
   piApplySelect.value = config.piApply ?? DEFAULT_PI_APPLY;
   piApplySelect.addEventListener("change", () => persist(false));
-  const piApplyRow = settingsRow("결과 적용", "검토 후 적용은 보드의 검토 카드에서 승인해야 프로젝트가 바뀝니다. 바로 적용은 게이트만 통과하면 즉시 반영합니다.", piApplySelect);
+  const piApplyRow = settingsRow("결과 적용", "YOLO·AUTO·DEFAULT는 실제 맵을 실시간 편집합니다. 검토 후 적용·단계별 적용은 승인 전까지 초안으로 남습니다.", piApplySelect);
   const fontSizeSelect = el("select", {
     class: "ai-config-select",
     dataset: { testid: "ai-font-size" },
@@ -486,7 +486,7 @@ export function renderAiSettingsForm(options: {
     agentMode: agentModeSelect.value === "chat" ? "chat" : "auto",
     autonomyLevel: isAutonomyLevel(autonomySelect.value) ? autonomySelect.value : "balanced",
     piTeam: piTeamSelect.value === "team",
-    piApply: piApplySelect.value === "auto" ? "auto" : DEFAULT_PI_APPLY,
+    piApply: normalizePiApplyMode(piApplySelect.value),
   });
 
   let autoSaveTimer: number | null = null;

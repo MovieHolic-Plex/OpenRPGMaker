@@ -1,3 +1,5 @@
+import { createPiPublication } from "./aiPiPublication";
+import { isLiveApplyMode, normalizePiApplyMode } from "@/ai/piAgent/applyMode";
 import { createPendingReviewPrompt } from "./aiPendingReview";
 import { friendlyExecutionError } from "@/ai/piAgent/userFacingCopy";
 import { configForUltrabrain } from "@/ai/ultrabrainConfig";
@@ -39,7 +41,7 @@ import { composePiTask } from "@/ai/piAgent/executionRoute";
 import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
 import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
 import { showConfirm } from "@/editor/ui/modal";
-import { adoptSpatialToolProof, authorMergedSpatialProposal } from "@/editor/tools/spatialToolState";
+import { adoptSpatialToolProof, authorMergedSpatialProposal, exportSpatialToolProof } from "@/editor/tools/spatialToolState";
 import { summarizeChanges } from "@/editor/tools/changeset";
 import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { store } from "@/project/store";
@@ -169,7 +171,7 @@ export interface PiCommandSurface {
   readonly onReviewResolved?: (applied: boolean) => void;
   readonly setStatus: (text: string) => void;
   readonly getCurrentMapId: () => string | null;
-  /** 패널의 중단 버튼. 끊기면 진행 중인 요청을 모두 취소하고 아무것도 적용하지 않는다. */
+  /** 중단 시 미승인 변경을 폐기한다. 실시간·단계별 모드에서 이미 적용한 작업은 남는다. */
   readonly signal?: AbortSignal;
   /**
    * 적용이 끝난 뒤 영수증 카드(지금 → 적용 후)를 남긴다. 없으면 카드 없이 끝난다 —
@@ -201,6 +203,8 @@ export async function runPiCommand(
   const proposalBase = captureProposalBase(base);
   const baseline = new AuthoredProjectBaseline(base);
   const config = loadAiConfig();
+  const applyMode = normalizePiApplyMode(config.piApply);
+  const publication = createPiPublication(base, applyMode, surface);
   const brain = configForUltrabrain(config);
   const deep = modelForRole(config, "deep");
   const effective = options.planOnly || (command.mode === "team" && !options.readOnly)
@@ -224,6 +228,7 @@ export async function runPiCommand(
   let changedCount = 0;
   let applied = false;
   let harmonyManualReview = false;
+  let unpublishedChanges = false;
   /** 사실 팩 하나를 4축으로 투영한다 — 목표 축은 수용 검사의 소유라 여기선 늘 unassessed. */
   const publishOutcome = (facts: Omit<RunOutcomeFacts, "acceptance" | "visualDelivery">): void => {
     surface.setRunOutcome?.(deriveRunOutcome({ ...facts, acceptance: null }));
@@ -231,12 +236,12 @@ export async function runPiCommand(
   /** 종료 시점의 4축 하나를 게시한다. 종료 경로가 여러 개라서 하나로 모은다. */
   const publishFinalOutcome = (): void => {
     if (!surface.setRunOutcome) return;
-    const hasPendingDraft = !applied && changedCount > 0 && ((config.piApply ?? "review") !== "auto" || harmonyManualReview);
+    const hasPendingDraft = !applied && unpublishedChanges && changedCount > 0 && (!isLiveApplyMode(applyMode) || harmonyManualReview);
     publishOutcome({
       execution: surface.signal?.aborted ? "cancelled"
         : streamErrors.length > 0 && changedCount === 0 ? "blocked" : "response-final",
       hasPendingDraft,
-      hasApplied: applied,
+      hasApplied: applied || publication.count > 0,
       persistence: "none",
     });
   };
@@ -310,14 +315,14 @@ export async function runPiCommand(
     if (!hit) return message;
     const label = options.autonomyLabel;
     const dial = label ? `자율성 「${label}」의 작업 한도` : "작업 한도";
-    return `${dial}(${hit[1]}턴)에 도달해 중단했습니다 — 한 일은 남기지 않았습니다. 자율성 다이얼을 올려 다시 보내세요.`;
+    return `${dial}(${hit[1]}턴)에 도달해 중단했습니다 — ${publication.count ? "이미 반영한 변경은 남아 있습니다." : "아직 적용하지 않은 결과는 초안으로 남습니다."} 자율성 다이얼을 올려 다시 보내세요.`;
   };
   const wrap = (mapIds: readonly string[], index: number) => (raw: PiAgentEvent): void => {
     // heartbeat 는 연결 생존 신호다 — 클라이언트 워치독이 이미 소뱄했고, 보드에는 그릴 것이 없다.
     if (raw.type === "heartbeat") return;
     // 오류 문구는 갈라지기 **전에** 한 번만 고친다(explainTurnCap 주석 참고).
     const event: PiAgentEvent = raw.type === "error" ? { ...raw, message: explainTurnCap(raw.message) } : raw;
-    ghost.handleEvent(event);
+    if (!isLiveApplyMode(applyMode)) ghost.handleEvent(event);
     if (event.type === "assistant") lastAssistantText = event.text;
     // 팀 모드의 오류도 실행 요약에 실린다. 예전에는 여기서 곧장 return 해 streamErrors 가 늘 비었고,
     // 팀 런은 오류를 한 건도 안 낸 것처럼 기록됐다.
@@ -339,7 +344,7 @@ export async function runPiCommand(
     // 이름이 남고, 실행 턴이 그 이름을 따라간다(노트 없이는 산문 계획 → paint_road 손작업으로 흘렀다).
     const modelTask = composePiTask(command.task, options.intentNote);
     let executionTask = modelTask;
-    if (!readOnly && !team && !routineEdit) {
+    if (!readOnly && !team && !routineEdit && applyMode !== "yolo") {
       surface.setStatus("어떻게 바꿀지 정리하고 있어요.");
       let plan = "";
       let planError = "";
@@ -352,7 +357,7 @@ export async function runPiCommand(
       }, { signal: surface.signal, onEvent: raw => {
         if (raw.type === "heartbeat") return;
         const event: PiAgentEvent = raw.type === "error" ? { ...raw, message: explainTurnCap(raw.message) } : raw;
-        ghost.handleEvent(event);
+        if (!isLiveApplyMode(applyMode)) ghost.handleEvent(event);
         push({ type: "agent_event", agentId: "ultrabrain-plan", event });
         if (event.type === "assistant") plan = event.text;
         if (event.type === "error") planError = event.message;
@@ -367,6 +372,7 @@ export async function runPiCommand(
     results = await Promise.all(groups.map((mapIds, index) => runPiAgentViaCompanion(
       {
         mode: team ? "team" : "single",
+        applyMode,
         provider: options.planOnly || team ? brain.providerId! : deep.provider,
         model: options.planOnly || team ? brain.model : deep.model,
         ...(!options.planOnly ? { roleModels: { deep, writer: modelForRole(config, "writer") } } : {}),
@@ -382,7 +388,16 @@ export async function runPiCommand(
         ...(options.toolDomains && options.toolDomains.length > 0 ? { toolDomains: options.toolDomains } : {}),
         ...(teamSpec ? { team: teamSpec } : {}),
       },
-      { signal: surface.signal, onEvent: wrap(mapIds, index) },
+      { signal: surface.signal, onEvent: wrap(mapIds, index),
+        onCheckpoint: readOnly || applyMode === "review" ? undefined : async checkpoint => {
+          // Parallel explicit map requests publish only their owned bundle on the latest accepted base.
+          if (!team && (command.scopedByUser || groups.length > 1) && mapIds.length) {
+            const next = mergeMapBundles(publication.project, [{ mapIds, project: checkpoint.project }]).project;
+            authorMergedSpatialProposal(next, publication.project);
+            return publication.publish({ ...checkpoint, project: next, spatialProof: exportSpatialToolProof(next) });
+          } else return publication.publish(checkpoint);
+        },
+      },
     )));
   } catch (error) {
     if (surface.signal?.aborted) {
@@ -390,9 +405,9 @@ export async function runPiCommand(
       ghost.dispose();
       publishFinalOutcome();
       boardState = markTeamBoardAborted(boardState); sync();
-      finishLog({ applied: false, changedCount: 0, stoppedReason: "중단" });
+      finishLog({ applied: publication.count > 0, changedCount: publication.count, stoppedReason: "중단" });
       surface.setStatus("대기");
-      surface.appendBubble("system", "작업을 중단했어요. 변경한 내용은 적용하지 않았어요.");
+      surface.appendBubble("system", publication.count ? "작업을 중단했어요. 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요." : "작업을 중단했어요. 변경한 내용은 적용하지 않았어요.");
       return false;
     }
     const message = error instanceof Error ? error.message : String(error);
@@ -400,19 +415,29 @@ export async function runPiCommand(
     ghost.dispose();
     publishFinalOutcome();
     boardState = markTeamBoardFailed(boardState, message); sync();
-    finishLog({ applied: false, changedCount: 0, error: message });
+    finishLog({ applied: publication.count > 0, changedCount: publication.count, error: message });
     surface.setStatus("작업을 마치지 못했어요.");
     surface.appendProcess?.(message);
-    surface.appendBubble("system", `${friendlyExecutionError(message)} 변경한 내용은 적용하지 않았어요.`);
+    surface.appendBubble("system", `${friendlyExecutionError(message)} ${publication.count ? "이미 반영한 변경은 남아 있으며 되돌릴 수 있어요." : "변경한 내용은 적용하지 않았어요."}`);
     return false;
   }
   if (surface.signal?.aborted) {
     ghost.dispose();
     publishFinalOutcome();
     boardState = markTeamBoardAborted(boardState); sync();
-    finishLog({ applied: false, changedCount: 0, stoppedReason: "중단" });
+    finishLog({ applied: publication.count > 0, changedCount: publication.count, stoppedReason: "중단" });
     surface.setStatus("대기");
-    surface.appendBubble("system", "작업을 중단했어요. 변경한 내용은 적용하지 않았어요.");
+    surface.appendBubble("system", publication.count ? "작업을 중단했어요. 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요." : "작업을 중단했어요. 변경한 내용은 적용하지 않았어요.");
+    return false;
+  }
+  if (readOnly && results.some(result => changedProjectKeys(base, result.project).length > 0)) {
+    ghost.dispose();
+    streamErrors.push("읽기 전용 실행이 변경을 반환했습니다. 적용하지 않았습니다.");
+    publishFinalOutcome();
+    boardState = markTeamBoardFailed(boardState, streamErrors.at(-1)!); sync();
+    finishLog({ applied: false, changedCount: 0, error: streamErrors.at(-1)! });
+    surface.appendBubble("system", streamErrors.at(-1)!);
+    surface.setStatus("적용 거부");
     return false;
   }
   // 팀 모드는 런타임이 이미 맵 묶음으로 병합해 돌려준다. 단일 범위 지정은 여기서 병합한다.
@@ -423,7 +448,7 @@ export async function runPiCommand(
   // 에이전트가 둘 이상이면 결과가 여럿이라 병합이 여전히 유일한 합치는 길이다.
   const mergedFromBundles = !team && command.mapIds.length > 0
     && (command.scopedByUser === true || groups.length > 1);
-  const merged = mergedFromBundles
+  let merged = mergedFromBundles
     ? mergeMapBundles(base, results.map((done, index) => ({ mapIds: groups[index]!, project: done.project })))
     : { project: results[0]!.project, spills: [], conflicts: [] as string[] };
   // 수용 게이트는 «도구가 만든 제안»이라는 증거를 요구하는데, 그 프루프는 객체 정체성에 살아
@@ -441,11 +466,12 @@ export async function runPiCommand(
   for (const spill of merged.spills) {
     surface.appendProcess?.(`범위 밖 변경을 버렸습니다 \`${spill.mapIds.join(",")}\`: ${spill.keys.map((key) => `\`${key}\``).join(", ")}`);
   }
-  const changed = summarizeChanges(base, merged.project);
+  let changed = summarizeChanges(base, merged.project);
   const toolCalls = results.reduce((sum, done) => sum + done.stats.toolCalls, 0);
   toolErrorCount += results.reduce((sum, done) => sum + done.stats.toolErrors, 0);
-  const changedKeys = changedProjectKeys(base, merged.project);
+  let changedKeys = changedProjectKeys(base, merged.project);
   changedCount = changedKeys.length;
+  unpublishedChanges = changedProjectKeys(publication.project, merged.project).length > 0;
   // 에이전트가 한 일이 **전부** 범위 밖이라 버려진 턴. 이건 「바뀐 것이 없다」가 아니라 실패다.
   //
   // 2026-09-17 실측: 「회복약 아이템 하나 만들어줘」에 대해 ① 계획이 "DB 변경은 병합 때 빠질 수
@@ -503,15 +529,15 @@ export async function runPiCommand(
   const receiptTitle = "변경 내용";
   // 카운터가 없는 영역(퀘스트·스토리 플래그·캐릭터·맵 연결…)까지 한 줄에 — 검토 카드와 영수증이
   // 같은 칩을 쓴다. 이게 없으면 그런 턴은 "적용/버리기" 만 있는 빈 카드로 끝났다.
-  const receiptChips = changeChipsWithAreas(changed, changedAreaLabels(base, merged.project));
+  let receiptChips = changeChipsWithAreas(changed, changedAreaLabels(base, merged.project));
   // Review the merged postprocessed draft once; preserve whole-map context.
   // Negative/unavailable review keeps the existing manual proposal path, never auto-applies.
   // 예상보다 범위가 커졌으면 검토를 복원한다. 생략을 "검수 통과"로 기록하지 않는다.
-  const needsHarmonyReview = !routineEdit || changedKeys.some(key => key !== `maps.${command.mapIds[0]}`);
+  const needsHarmonyReview = applyMode !== "yolo" && (applyMode === "auto" || !routineEdit || changedKeys.some(key => key !== `maps.${command.mapIds[0]}`));
   let harmonyApproved = false;
   if (needsHarmonyReview) {
     try {
-      const reviews = await reviewMapHarmony(base, merged.project, command.task, config, {
+      let reviews = await reviewMapHarmony(base, merged.project, command.task, config, {
         signal: surface.signal,
         onStatus: text => { surface.appendProcess?.(text); surface.setStatus("바뀐 내용이 잘 맞는지 확인하고 있어요."); },
         onReview: review => {
@@ -522,18 +548,39 @@ export async function runPiCommand(
         },
       });
       harmonyApproved = reviews.every(review => review.harmonious);
+      // AUTO owns bounded repair; unresolved changes never masquerade as reviewed success.
+      for (let attempt = 0; applyMode === "auto" && !harmonyApproved && attempt < 2; attempt++) {
+        surface.signal?.throwIfAborted();
+        const repairBase = publication.count ? publication.project : merged.project;
+        surface.setStatus(`AI가 검수 문제를 수정하고 있어요 (${attempt + 1}/2).`);
+        const repaired = await runPiAgentViaCompanion({
+          mode: "single", provider: deep.provider, model: deep.model, project: repairBase,
+          mapIds: command.mapIds, ...here, scopeStrict: command.scopedByUser === true,
+          task: `사용자 요청: ${command.task}\n기존 요청 범위를 유지하며 다음 검수 문제만 수정하세요.\n${reviews.filter(r => !r.harmonious).map(r => `${r.mapId}: ${r.summary} ${r.findings.join("; ")}`).join("\n")}`,
+          applyMode: "auto", maxTurns: options.maxTurns, thinkingLevel: deep.thinkingLevel,
+        }, { signal: surface.signal, onEvent: wrap(command.mapIds, 0), onCheckpoint: c => publication.publish(c) });
+        merged = { ...merged, project: repaired.project };
+        adoptSpatialToolProof(merged.project, repaired.spatialProof, publication.count ? publication.project : base);
+        reviews = await reviewMapHarmony(base, merged.project, command.task, config, { signal: surface.signal });
+        harmonyApproved = reviews.every(review => review.harmonious);
+      }
+      changed = summarizeChanges(base, merged.project);
+      changedKeys = changedProjectKeys(base, merged.project);
+      changedCount = changedKeys.length;
+      unpublishedChanges = changedProjectKeys(publication.project, merged.project).length > 0;
+      receiptChips = changeChipsWithAreas(changed, changedAreaLabels(base, merged.project));
     } catch (error) {
       if (surface.signal?.aborted) {
         ghost.dispose();
         publishFinalOutcome();
         boardState = markTeamBoardAborted(boardState); sync();
-        finishLog({ applied: false, changedCount, stoppedReason: "중단" });
+        finishLog({ applied: publication.count > 0, changedCount, stoppedReason: "중단" });
         surface.setStatus("대기");
         return false;
       }
       const message = error instanceof Error ? error.message : String(error);
       surface.appendProcess?.(message);
-      surface.appendBubble("system", "변경 내용을 끝까지 확인하지 못했어요. 아직 적용하지 않았으니 직접 확인하고 적용해 주세요.");
+      surface.appendBubble("system", publication.count ? "변경 내용을 끝까지 검수하지 못했어요. 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요." : "변경 내용을 끝까지 확인하지 못했어요. 아직 적용하지 않았으니 직접 확인하고 적용해 주세요.");
       push({ type: "agent_spawn", agentId: "ultrabrain", role: "reviewer", mapId: null, mapName: null, task: "전체 맵 조화 검수", label: "Ultrabrain" });
       // 검수를 «하지 못한 것» 은 «지적»이 아니다. 예전에는 findings=[오류문구] 로 발행되어
       // 보드에 「지적 1건」 이 생겼다 — 프로바이더 빈응답이 작품 결함처럼 보였다.
@@ -550,19 +597,29 @@ export async function runPiCommand(
   if (builderFailed) {
     surface.appendBubble(
       "system",
-      "작업을 끝까지 마치지 못했어요. 아래 변경은 **완성되지 않은 결과**예요. 직접 확인하고 적용해 주세요.",
+      publication.count ? "작업을 끝까지 마치지 못했어요. 이미 반영한 부분 결과가 남아 있으니 확인하거나 되돌려 주세요." : "작업을 끝까지 마치지 못했어요. 아래 변경은 **완성되지 않은 결과**예요. 직접 확인하고 적용해 주세요.",
     );
   }
   harmonyManualReview = (needsHarmonyReview && !harmonyApproved) || builderFailed;
+  if (applyMode === "auto" && harmonyManualReview && publication.count > 0) {
+    // AUTO reports unresolved work; it never turns into a manual approval mode.
+    merged = { ...merged, project: publication.project };
+    changed = summarizeChanges(base, merged.project);
+    changedKeys = changedProjectKeys(base, merged.project);
+    changedCount = changedKeys.length;
+    unpublishedChanges = changedProjectKeys(publication.project, merged.project).length > 0;
+    receiptChips = changeChipsWithAreas(changed, changedAreaLabels(base, merged.project));
+  }
   // 명세는 한 번만 계산해 검토 카드와 영수증이 **같은 것**을 쓴다 — 두 번 만들면 두 화면이 갈라진다.
   const receiptLedger = buildChangeLedger(base, merged.project);
   const apply = async (): Promise<boolean> => {
+    surface.signal?.throwIfAborted();
     // 맵·이벤트가 사라지는 적용만 사람이 한 번 더 본다. 근거는 툴 이름이 아니라 base ↔ 제안의
     // 실제 차이다. 검토 카드가 아니라 apply() 안에 두는 이유: 자동 적용(piApply="auto")에는 카드
     // 자체가 없어서, 카드에만 붙이면 그 경로가 그대로 뚫린다(2026-09-17 실측: 「맵 전부 지워줘」
     // 한 줄에 맵 16→4, 이벤트 20→0, 확인 한 번 없이 「적용 완료」).
-    const loss = mapLossConfirmRequest(base, merged.project);
-    if (loss) {
+    const loss = mapLossConfirmRequest(publication.project, merged.project);
+    if (loss && applyMode !== "yolo" && applyMode !== "auto") {
       const approved = await showConfirm({
         title: loss.title,
         message: loss.message,
@@ -583,18 +640,21 @@ export async function runPiCommand(
         return false;
       }
     }
+    surface.signal?.throwIfAborted();
     // 초안이 진짜 타일이 되는 순간 밑그림은 지운다 — 같은 그림이 두 겹으로 남지 않게
     // (세션 경로의 aiProposalCard.applyProposal 과 같은 관례).
     ghost.dispose();
-    const appliedResult = await applyProposedProject(merged.project, {
-    base: proposalBase,
-    baseline,
+    const alreadyPublished = publication.count > 0 && changedProjectKeys(publication.project, merged.project).length === 0;
+    const appliedResult = alreadyPublished ? { ok: true as const } : await applyProposedProject(merged.project, {
+    base: publication.count ? publication.authority : proposalBase,
+    baseline: publication.count ? publication.baseline : baseline,
     source: "agent",
     agentName: `pi${team ? "-team" : ""}:${provider}/${config.model}`,
     summary: `Pi ${team ? "팀" : "에이전트"}: ${command.task.slice(0, 80)}`,
     toolNames: [team ? "pi_team" : "pi_agent"],
     diff: changed,
-    mapDestructionApproved: loss !== null,
+    mapDestructionApproved: loss !== null || applyMode === "yolo" || applyMode === "auto",
+    skipSnapshot: applyMode !== "step" && publication.count > 0,
     snapshotLabel: `Pi ${team ? "팀" : "에이전트"} ${scopeText}`,
     snapshotMapId: command.mapIds[0] ?? surface.getCurrentMapId(),
     reason: `Pi ${team ? "팀" : `에이전트 ${groups.length}개`}, 툴콜 ${toolCalls}회`,
@@ -617,23 +677,42 @@ export async function runPiCommand(
       : `변경 내용을 적용했습니다${spillNotice}${errorDigest()}.`;
     boardState = markTeamBoardApplied(boardState, appliedText); sync();
     finishLog({ applied: true, changedCount, stoppedReason: "적용됨" });
-    surface.setStatus("적용 완료");
+    surface.setStatus(harmonyManualReview && applyMode !== "yolo" ? "반영됨 · 확인할 문제 있음" : "적용 완료");
     if (team || !surface.showChangeReceipt || !receiptMapId) surface.appendBubble("system", `변경 내용을 적용했어요.${spilledKeys.length ? " 선택한 범위를 벗어난 변경은 제외했어요." : ""}${streamErrors.length ? " 작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요." : ""}`);
     surface.showChangeReceipt?.({
       before: base,
       after: merged.project,
       mapId: receiptMapId,
       title: receiptTitle,
-      detail: `변경 내용을 적용했어요.${spilledKeys.length ? " 선택한 범위를 벗어난 변경은 제외했어요." : ""}${streamErrors.length ? " 작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요." : ""}`,
+      detail: `${harmonyManualReview && applyMode !== "yolo" ? "변경은 반영됐지만 검수 문제 또는 미완료 항목이 남아 있어요." : "변경 내용을 적용했어요."}${applyMode === "step" ? " 되돌리기는 마지막으로 적용한 단계부터 복구합니다." : ""}${spilledKeys.length ? " 선택한 범위를 벗어난 변경은 제외했어요." : ""}${streamErrors.length ? " 작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요." : ""}`,
       chips: receiptChips,
       ledger: receiptLedger,
       toolNames: [team ? "pi_team" : "pi_agent"],
     });
     return true;
   };
-  // 기본은 검토 후 적용: 보드 발의 검토 카드에서 사용자가 승인해야 프로젝트가 바뀐다.
+  // 정책에 따라 자동 반영하거나 미적용 초안을 검토 카드에 남긴다.
   // 기준(base)이 그 사이 바뀌면 applyProposedProject 가 stale-base 로 거절한다.
-  if ((config.piApply ?? "review") === "auto" && !harmonyManualReview) return apply();
+  if (applyMode === "yolo" || (isLiveApplyMode(applyMode) && !harmonyManualReview)
+    || (applyMode === "step" && publication.count > 0 && changedProjectKeys(publication.project, merged.project).length === 0)) return apply();
+  if (applyMode === "auto" && harmonyManualReview && publication.count === 0) {
+    ghost.dispose();
+    surface.appendBubble("system", "AI가 문제를 해결하지 못해 결과 적용을 보류했어요. 요청을 보완해 다시 실행해 주세요.");
+    publishFinalOutcome();
+    boardState = markTeamBoardFailed(boardState, "검수 문제 미해결 · 적용 보류"); sync();
+    finishLog({ applied: false, changedCount, error: "검수 문제 미해결" });
+    surface.setStatus("적용 보류");
+    return false;
+  }
+  if (publication.count > 0 && changedProjectKeys(publication.project, merged.project).length === 0) {
+    // Live work is already real; do not present an imaginary pending draft.
+    if (applyMode === "default") {
+      await showConfirm({ title: "반영한 작업 확인", message: "이미 반영한 작업에 검수 문제 또는 미완료 항목이 있어요. 작업 기록을 확인해 주세요. 변경은 되돌리기로 복구할 수 있어요.", confirmLabel: "확인", cancelLabel: "닫기" });
+      surface.signal?.throwIfAborted();
+    }
+    surface.appendBubble("system", "반영한 변경에 확인할 문제가 남아 있어요. 작업 기록을 확인하거나 되돌릴 수 있어요.");
+    return apply();
+  }
   surface.setStatus("변경 확인 대기");
   // 밀린 증분을 마저 그린다. 밑그림은 여기서 지우지 않는다 — 사용자가 「적용/버리기」를 고르는
   // 동안 캔버스에 남아 있는 그 그림이 곧 판단 재료다. 정리는 두 버튼이 맡는다.
@@ -641,17 +720,18 @@ export async function runPiCommand(
   // 적용 전에도 «무엇이 바뀔 것인가» 를 보여준다 — 여기가 사용자가 결정하는 자리다.
   // 같은 카드·같은 렌더러를 쓰고 배지만 「적용 전」 이다(두 번째 어휘를 만들지 않는다).
   // 보고서 모드 재료 — 지점 목록(여러 곳을 곤치면 사진도 여러 쌍) + 팀 보고 문장 + 검수 지적.
-  const reviewSites = computeChangeSites(base, merged.project);
+  const reviewBase = publication.count ? publication.project : base;
+  const reviewSites = computeChangeSites(reviewBase, merged.project);
   const reviewFindings = boardState.agents.flatMap((agent) => agent.review && !agent.review.ok ? agent.review.findings : []);
   const reviewInput: ChangePreviewInput | null = receiptMapId === null ? null : {
-    before: base,
+    before: reviewBase,
     after: merged.project,
     mapId: receiptMapId,
     title: receiptTitle,
     sites: reviewSites,
     ...(boardState.report ? { report: boardState.report } : {}),
     ...(reviewFindings.length > 0 ? { findings: reviewFindings } : {}),
-    detail: "아직 적용하지 않았어요. 변경 내용을 확인하고 적용해 주세요.",
+    detail: publication.count ? "일부는 이미 반영했어요. 여기에는 아직 적용하지 않은 나머지 변경을 표시합니다." : "아직 적용하지 않았어요. 변경 내용을 확인하고 적용해 주세요.",
     chips: receiptChips,
     ledger: receiptLedger,
     state: "proposed",

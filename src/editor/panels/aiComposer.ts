@@ -1,3 +1,5 @@
+import { PI_APPLY_MODES, normalizePiApplyMode } from "@/ai/piAgent/applyMode";
+import { loadAiConfig, saveAiConfig } from "@/ai/llmClient";
 // editor/panels/aiComposer.ts
 // 컴포저 셸 — 텍스트 영역 + 고정 액션 행 한 줄 + 팝오버 4종. 세로 버튼 열은 없다.
 //
@@ -77,6 +79,7 @@ export interface ComposerElements {
   /** Pi 팀 토글. `teamToggleOptions` 를 주지 않았으면 null. 읽기 전용·계획 턴에서는 숨는다. */
   readonly teamToggle: HTMLElement | null;
   readonly setPiTeam: (team: boolean) => void;
+  readonly syncApplyMode: () => void;
   readonly syncEffort: (autonomy: AutonomyLevel) => void;
   readonly setModelLabel: (label: string | null) => void;
   readonly openPopover: (kind: ComposerPopover | null) => void;
@@ -333,6 +336,23 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   const setPiTeam = (next: boolean): void => { piTeam = next; teamMenu?.setTeam(next); paintTeam(); };
   paintTeam();
 
+  const applyModeSelect = el("select", {
+    class: "ai-composer-effort-select ai-composer-apply-mode",
+    attrs: { "aria-label": "AI 적용 모드" }, dataset: { testid: "ai-composer-apply-mode" },
+    children: PI_APPLY_MODES.map(mode => el("option", { attrs: { value: mode.id, title: mode.description }, text: mode.label })),
+  }) as HTMLSelectElement;
+  const syncApplyMode = () => {
+    const mode = normalizePiApplyMode(loadAiConfig().piApply);
+    applyModeSelect.value = mode;
+    applyModeSelect.title = `${PI_APPLY_MODES.find(item => item.id === mode)!.description} 변경한 모드는 다음 요청부터 사용합니다.`;
+  };
+  syncApplyMode();
+  applyModeSelect.addEventListener("focus", syncApplyMode);
+  applyModeSelect.addEventListener("change", () => {
+    saveAiConfig({ ...loadAiConfig(), piApply: normalizePiApplyMode(applyModeSelect.value) });
+    syncApplyMode();
+  });
+
   // ── 모델 칩 ──
   const modelChip = el("span", { class: "ai-composer-model", dataset: { testid: "ai-composer-model" } });
   const setModelLabel = (label: string | null): void => {
@@ -351,6 +371,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
         class: "ai-composer-actions-lead",
         children: [
           ...(teamToggle ? [teamToggle] : []),
+          applyModeSelect,
           ...(autonomySelect ? [autonomySelect] : []),
           options.undoAppliedButton,
           options.contextChips,
@@ -515,6 +536,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     teamToggle,
     setPiTeam,
     syncEffort,
+    syncApplyMode,
     setModelLabel,
     openPopover,
     openKind: () => openState,
