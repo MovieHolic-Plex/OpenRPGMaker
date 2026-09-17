@@ -175,7 +175,10 @@ export function createTeamPanel(initialEnabled = false, options: { readonly alwa
     back.addEventListener("click", cancelEdit);
     const advanced = el("details", { class: "ai-team-settings-advanced", dataset: { testid: "ai-team-advanced" }, children: [
       el("summary", { text: "고급 설정" }),
-      field("세부 지시", prompt), field("사용할 기능 (비우면 모두)", domains), el("div", { class: "ai-team-field", children: [el("span", { text: "작업 예산" }), budget.root] }),
+      // 「작업 예산」은 여기 없다 — a0e7a24b 에서 팀 전체 설정으로 옮겼다(aiTeamMenu.ts).
+      // 그 커밋이 선언(`const budget = createTeamBudget(…)`)과 import 는 지웠는데 이 사용처만
+      // 남겨서 `tsc` 가 TS2304 로 막혔다. 팀원별로 되돌리려면 저쪽에서 먼저 떼야 한다.
+      field("세부 지시", prompt), field("사용할 기능 (비우면 모두)", domains),
     ] });
     form.append(back, el("h3", { class: "ai-team-settings-heading", text: "팀원 설정" }),
       field("이름", name), field("역할", kind), field("한 줄 소개", summaryInput), advanced);
