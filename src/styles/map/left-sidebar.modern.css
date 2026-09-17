@@ -998,6 +998,18 @@
   max-width: 100%;
 }
 
+/* 도구막대 행 끝의 ⋯ (검사·기록, 2026-09-17 이관). 글자 라벨은 숨기고 아이콘·배지만 — 좌패널 폭에서
+   되돌리기·도구 4·도구 메뉴와 한 줄에 서야 한다. 이름은 title/aria-label 로 남는다. */
+.oprn-tile-toolbar > .sidebar-inspection-controls {
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  margin-left: auto;
+}
+
+.oprn-tile-toolbar > .sidebar-inspection-controls [data-testid="oprn-tool-overflow"] > .sidebar-tool-label {
+  display: none;
+}
+
 .sidebar-paint-options {
   margin-bottom: var(--space-1);
   font: var(--font-size-sm)/var(--line-height-tight) var(--font-ui);

@@ -1,4 +1,4 @@
-/* AI 도구 실행 직후 채팅 로그에 나타나는 라이브 활동 행. */
+/* AI 도구 실행 직후 나타나는 라이브 활동 행 — 작업 띠 카드의 진행 칸에 붙는다(2026-09-17, aiWorkStrip). */
 .ai-activity-live {
   align-items: center;
   background: var(--accent-muted);

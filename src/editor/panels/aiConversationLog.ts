@@ -1,5 +1,8 @@
 // editor/panels/aiConversationLog.ts
-// RM @> 커맨드 로·추론·툴 활동·타일 시각 자료. 패널 클로저에서 팩토리로 상태만 공유한다.
+// RM @> 커맨드 로·추론·타일 시각 자료. 패널 클로저에서 팩토리로 상태만 공유한다.
+//
+// 2026-09-17(방향 G): 툴 활동·변경 카드는 더 이상 로그에 붙지 않는다. 이 호스트는 행을 **만들기만** 하고
+// `workSink`(작업 띠, aiWorkStrip) 에 넘긴다 — 대화 창에는 말풍선·질문·시각 자료만 남는다.
 
 import type { AuditEntry } from "@/ai/assistantSession";
 import type { ToolResult } from "@/editor/tools";
@@ -17,8 +20,6 @@ import {
   reasoningToggleText,
   renderToolActivityEntry,
 } from "./aiChatRenderers";
-import { deckIcon } from "./aiDeckIcons";
-import { toolLabelSummary } from "./aiToolLabels";
 import {
   aiDayKey,
   displayUserAuditText,
@@ -36,18 +37,6 @@ function logElements(log: HTMLElement): HTMLElement[] {
   return Array.from(log.childNodes).filter(
     (node): node is HTMLElement => Boolean(node && (node as HTMLElement).classList)
   );
-}
-
-function scrollToBottomAfterLayout(log: HTMLElement): void {
-  const pin = (): void => {
-    log.scrollTop = log.scrollHeight;
-  };
-  pin();
-  if (typeof requestAnimationFrame !== "function") return;
-  requestAnimationFrame(() => {
-    pin();
-    requestAnimationFrame(pin);
-  });
 }
 
 function lastCommandRow(log: HTMLElement): HTMLElement | null {
@@ -196,19 +185,34 @@ export function renderStreamedMarkdown(target: HTMLElement | null): void {
 export interface ConversationLogHost {
   appendBubble: (role: AiBubbleRole, text: string) => HTMLElement;
   appendReasoning: () => { box: HTMLElement; body: HTMLElement };
+  /**
+   * 툴 그룹 경계. 툴 활동이 작업 띠로 옮겨간 뒤(2026-09-17) 로그엔 접을 그룹이 없다 —
+   * 턴 러너·영역 작업 러너의 호출 계약만 유지하는 빈 동작이다.
+   */
   closeToolActivity: () => void;
   /**
-   * 툴 행 추가. `live` 는 지금 도는 턴의 행 — 그룹을 펼친 채 둔다. 복원(기록 재생) 경로는 live 가
-   * 아니어서 접힌 채 붙는다(e2e assistant-change-preview: 복원된 툴 호출은 접힌 한 줄 요약).
+   * 툴 행을 만들어 작업 띠(`workSink`)로 보낸다. 조회성 성공 호출은 행을 만들지 않고 개수만 알린다.
+   * `live` 는 지금 도는 턴의 행, 아니면 복원(기록 재생) 경로다. 돌려주는 값은 만든 행(없으면 null).
    */
-  appendToolLine: (name: string, result: ToolResult, args?: Record<string, unknown>, options?: { readonly live?: boolean }) => void;
+  appendToolLine: (name: string, result: ToolResult, args?: Record<string, unknown>, options?: { readonly live?: boolean }) => HTMLElement | null;
   appendTileThumbs: (tilesetId: string, tiles: readonly number[]) => void;
   appendTileGrid: (data: TileGridData) => void;
   appendAiDocument: (documentData: AiDocument) => void;
+  /** 변경 카드·보드를 작업 띠로 보낸다. 로그에는 붙지 않는다. */
   appendChangeCard: (card: HTMLElement) => HTMLElement;
   renderConversationEntry: (entry: AuditEntry) => void;
   clearLastReasoning: () => void;
   isLastReasoningBox: (node: HTMLElement) => boolean;
+}
+
+/** 로그가 만든 작업 산출물을 받는 쪽 — 실제 구현은 캔버스 하단 작업 띠(aiWorkStrip). */
+export interface ConversationWorkSink {
+  /** 쓰기·실패 툴 행. `live` 가 아니면 복원 경로다. */
+  appendToolEntry: (entry: HTMLElement, meta: { readonly name: string; readonly result: ToolResult; readonly live: boolean }) => void;
+  /** 조회성 성공 호출 — 행 없이 개수만. */
+  noteReadOnlyTool: (name: string, live: boolean) => void;
+  /** 변경 카드 등 이미 그려진 요소. */
+  appendCard: (card: HTMLElement) => void;
 }
 
 export type ToolChipRenderer = (
@@ -222,8 +226,10 @@ export function createConversationLogHost(options: {
   readonly removeStartScreen: () => void;
   /** 행 앞 맵 칩. 패널이 프로젝트·현재 맵을 알고 있어 여기서 주입한다(aiMapChip). */
   readonly renderChip?: ToolChipRenderer;
+  /** 툴 행·변경 카드를 받는 작업 띠. 없으면(단위 테스트) 만들기만 하고 버린다. */
+  readonly workSink?: ConversationWorkSink;
 }): ConversationLogHost {
-  const { log, removeStartScreen } = options;
+  const { log, removeStartScreen, workSink } = options;
 
   const appendBubble = (role: AiBubbleRole, text: string, at?: Date | string | null): HTMLElement =>
     appendConversationBubble({ log, role, text, removeStartScreen, at });
@@ -268,77 +274,20 @@ export function createConversationLogHost(options: {
     return { box, body: appendReasoningItem(body) };
   };
 
-  // 툴콜을 접이식 한 줄 요약으로 묶는다. 조회성 성공 호출은 목록에 넣지 않고 개수만 센다.
-  let toolActivity: {
-    list: HTMLElement;
-    toggle: HTMLElement;
-    count: number;
-    writeOrFailCount: number;
-    readOkCount: number;
-    /** 쓰기·실패 행의 툴 이름(접힌 헤더 요약용). */
-    names: string[];
-  } | null = null;
+  // 툴 행은 로그가 아니라 작업 띠의 카드로 간다. 조회성 성공 호출은 행 없이 개수만 알린다.
   let toolDetailSeq = 0;
-  /**
-   * 그룹 헤더(데크 2026-09-03). 펼침: 「작업 N단계」. 접힘: 「작업 N단계 · 라벨 → 라벨 → …」 —
-   * 접힌 한 줄이 무엇을 했는지 말해야 한다(「작업 1 ▸」 는 말하지 않았다). 조회만 있으면 「조회 N건」.
-   */
-  const refreshToolActivityToggle = (): void => {
-    if (!toolActivity) return;
-    const { count, writeOrFailCount, readOkCount, list, toggle, names } = toolActivity;
-    let text: string;
-    if (writeOrFailCount > 0) text = `작업 ${writeOrFailCount}단계`;
-    else if (readOkCount > 0) text = `조회 ${readOkCount}건`;
-    else text = `작업 ${count}단계`;
-    if (list.hidden && names.length > 0) text += ` · ${toolLabelSummary(names)}`;
-    toggle.replaceChildren(
-      deckIcon(list.hidden ? "chevron-right" : "chevron-down", { size: 15 }),
-      el("span", { class: "ai-tool-activity-toggle-text", text }),
-    );
-    toggle.setAttribute("aria-expanded", String(!list.hidden));
-  };
-  /** 턴이 끝났다(또는 다음 발화가 왔다) — 완료된 그룹은 요약 한 줄로 접는다(제안서 D3). */
-  const closeToolActivity = (): void => {
-    if (toolActivity) {
-      toolActivity.list.hidden = true;
-      refreshToolActivityToggle();
-    }
-    toolActivity = null;
-  };
+  const closeToolActivity = (): void => {};
   const appendToolLine = (
     name: string,
     result: ToolResult,
     args?: Record<string, unknown>,
     lineOptions: { readonly live?: boolean } = {},
-  ): void => {
-    if (!toolActivity) {
-      const list = el("div", { class: "ai-tool-activity-list" });
-      // 진행 중 턴의 그룹은 펼친 채 자란다. 복원 경로는 접힌 채 붙는다.
-      list.hidden = !lineOptions.live;
-      const toggle = el("button", {
-        class: "ai-tool-activity-toggle",
-        attrs: { type: "button", title: "작업 단계 펼치기/접기", "aria-label": "작업 단계 펼치기/접기" },
-        dataset: { testid: "ai-tool-activity-toggle" },
-      });
-      const group = el("div", { class: "ai-command-attachment ai-tool-activity", dataset: { testid: "ai-tool-activity" }, children: [toggle, list] });
-      const current = { list, toggle, count: 0, writeOrFailCount: 0, readOkCount: 0, names: [] as string[] };
-      toggle.addEventListener("click", () => {
-        list.hidden = !list.hidden;
-        refreshToolActivityToggle();
-      });
-      attachToLastRow(log, group);
-      toolActivity = current;
+  ): HTMLElement | null => {
+    const live = Boolean(lineOptions.live);
+    if (result.ok && isReadOnlyToolNoise(name)) {
+      workSink?.noteReadOnlyTool(name, live);
+      return null;
     }
-    toolActivity.count += 1;
-    const noiseRead = result.ok && isReadOnlyToolNoise(name);
-    if (noiseRead) {
-      toolActivity.readOkCount += 1;
-      refreshToolActivityToggle();
-      log.scrollTop = log.scrollHeight;
-      return;
-    }
-    toolActivity.writeOrFailCount += 1;
-    toolActivity.names.push(name);
     toolDetailSeq += 1;
     const plainToolNames = getEditorChrome().jargonStyle === "plain";
     const visibleResult = plainToolNames
@@ -352,9 +301,8 @@ export function createConversationLogHost(options: {
         title.textContent = title.textContent.replace(name, sanitizeUserFacingToolId(name));
       }
     }
-    toolActivity.list.append(entry);
-    refreshToolActivityToggle();
-    log.scrollTop = log.scrollHeight;
+    workSink?.appendToolEntry(entry, { name, result, live });
+    return entry;
   };
 
   const renderConversationEntry = (entry: AuditEntry): void => {
@@ -465,28 +413,11 @@ export function createConversationLogHost(options: {
     log.scrollTop = log.scrollHeight;
   };
 
-  // 변경 카드는 툴 활동보다 먼저 읽혀야 한다 — 사용자의 관심은 "무엇이 바뀌었나"이고
-  // 툴 호출 내역은 각주다. 이미 붙은 툴 활동은 떼어 카드 뒤로 옮기고 조용하게 만든다.
+  // 변경 카드는 작업 띠로 간다 — 대화 창에는 「무엇이 바뀌었나」 를 말로만 남긴다.
   const appendChangeCard = (card: HTMLElement): HTMLElement => {
     removeStartScreen();
-    const host = lastCommandRow(log) ?? log;
-    const wrap = el("div", {
-      class: "ai-command-attachment ai-change-card-host",
-      dataset: { testid: "ai-change-card-host" },
-      children: [card],
-    });
-    const tools = host.querySelector<HTMLElement>(".ai-tool-activity");
-    host.append(wrap);
-    if (tools) {
-      tools.classList.add("is-quiet");
-      tools.remove();
-      host.append(tools);
-    }
-    // 변경 카드는 전/후 캔버스 두 장이 들어있어 붙이는 순간의 높이가 최종 높이가 아니다.
-    // 그 자리에서 한 번만 스크롤하면 카드 밑(되돌리기 버튼)이 입력란 뒤로 잠긴다 — 레이아웃이
-    // 자리를 잡은 다음 한 번 더 맞춰준다.
-    scrollToBottomAfterLayout(log);
-    return wrap;
+    workSink?.appendCard(card);
+    return card;
   };
 
   return {

@@ -1,0 +1,67 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+html,body{background:#f6f7fa}
+.stage{background:#f6f7fa;padding:36px 44px;display:grid;grid-template-columns:1fr 1fr;gap:28px}
+h2{font-size:20px;font-weight:800;margin-bottom:4px}
+.sub{color:#6b7280;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;border:1px solid rgba(20,24,40,.1)}
+th,td{padding:10px 14px;text-align:left;font-size:13px;border-top:1px solid rgba(20,24,40,.07);vertical-align:top}
+th{background:#f0f2f7;font-size:12px;letter-spacing:.06em;color:#6b7280;border-top:0}
+td.b{color:#9a1c1c;text-decoration:line-through;text-decoration-color:rgba(154,28,28,.5)}
+td.a{font-weight:700}
+td.w{color:#6b7280;font-size:12px}
+.tools{background:#fff;border-radius:14px;border:1px solid rgba(20,24,40,.1);padding:16px}
+.tools .search{height:40px;border-radius:10px;background:#f3f4f8;display:flex;align-items:center;padding:0 14px;color:#8a93a3;margin-bottom:14px}
+.grp{margin-bottom:14px}
+.grp h4{font-size:12px;letter-spacing:.08em;color:#6b7280;margin-bottom:8px}
+.grp .row{display:flex;flex-wrap:wrap;gap:6px}
+.tool{display:inline-flex;flex-direction:column;gap:2px;padding:8px 12px;border-radius:10px;border:1px solid rgba(20,24,40,.1);min-width:150px}
+.tool b{font-size:13px}.tool span{font-size:11.5px;color:#6b7280}
+.bad{margin-top:14px;padding:12px 14px;border-radius:12px;background:#fff1f1;border:1px solid #f3c4c4;font-size:12.5px;line-height:1.5;color:#7a1f1f}
+.bad code{font-size:11px;background:#fff;padding:1px 5px;border-radius:4px}
+</style>
+<div class="stage">
+  <div>
+    <h2>보이는 글 전부 다시 쓴다</h2>
+    <div class="sub">지금 라벨은 내부 용어다. 사용자는 동사와 결과로 읽는다.</div>
+    <table>
+      <tr><th>지금</th><th>제안</th><th>이유</th></tr>
+      <tr><td class="b">맥락 —</td><td class="a">(삭제) · 필요하면 ⋯ 안 "기억 비우기"</td><td class="w">대시 하나는 정보가 아니다</td></tr>
+      <tr><td class="b">보존 기획 재사용 — 없음·전체·선택</td><td class="a">기획 노트 끼우기</td><td class="w">무엇이 보존됐는지 사용자는 모른다</td></tr>
+      <tr><td class="b">이전 대화로 설정집 정리</td><td class="a">대화로 설정집 만들기</td><td class="w">결과물이 앞에 와야 한다</td></tr>
+      <tr><td class="b">로컬 진단 보고서</td><td class="a">문제 신고하기</td><td class="w">개발자 용어</td></tr>
+      <tr><td class="b">사용 로그 내려받기 / 전체 기록</td><td class="a">기록 내려받기 (하나로)</td><td class="w">둘이 무엇이 다른지 알 수 없다</td></tr>
+      <tr><td class="b">완료 기준 다시 보기</td><td class="a">이번 요청의 완료 조건</td><td class="w">맥락 없이 뜬 문구</td></tr>
+      <tr><td class="b">gemini-3.7-flash · 균형 (2곳 노출)</td><td class="a">설정 안에서만 · 데크엔 "알아서 ▾"</td><td class="w">모델 ID 는 결과와 무관</td></tr>
+      <tr><td class="b">읽기 전용·확인·균형·자율·최대 (select)</td><td class="a">물어보고 · 알아서 · 끝까지 (3단 토글)</td><td class="w">5단계 차이를 설명한 곳이 없다</td></tr>
+      <tr><td class="b">작업 3단계 · find open area → place structure</td><td class="a">빈 자리 찾기 → 우물 놓기 → 상인 세우기</td><td class="w">도구 이름은 한국어 동사로</td></tr>
+      <tr><td class="b">대화 기록만 복원했습니다. 안전한 실행 복구 기록은 없습니다.</td><td class="a">(삭제) · 헤더에 "이어서" 배지만</td><td class="w">사용자에게 뜻이 없는 경고</td></tr>
+      <tr><td class="b">한 문장으로 지시</td><td class="a">이 맵에 무엇을 할까요? + 예시 칩 3개</td><td class="w">빈 상태가 아무것도 제안하지 않는다</td></tr>
+      <tr><td class="b">스튜디오 · ⋯ AI 요청 · 데크 (입구 3개)</td><td class="a">입구 1개 · 스튜디오는 "펼치기"로</td><td class="w">같은 대화가 다른 옷을 입고 있다</td></tr>
+    </table>
+  </div>
+  <div>
+    <h2>도구 목록 → "할 수 있는 일"</h2>
+    <div class="sub">229개 도구의 시스템 프롬프트를 그대로 보이지 않는다.</div>
+    <div class="tools">
+      <div class="search">🔍 무엇을 하고 싶은지 적어 보세요 (예: 집, 상인, 길)</div>
+      <div class="grp"><h4>마을·건물</h4><div class="row">
+        <div class="tool"><b>집 짓기</b><span>외장 + 실내까지 한 번에</span></div>
+        <div class="tool"><b>담·울타리 세우기</b><span>모양 따라 자동 연결</span></div>
+        <div class="tool"><b>길 내기</b><span>흙길·모랫길, 우회 자동</span></div>
+      </div></div>
+      <div class="grp"><h4>사람·상점</h4><div class="row">
+        <div class="tool"><b>주민 세우기</b><span>이름·대사·이동 패턴</span></div>
+        <div class="tool"><b>상점 열기</b><span>품목·가격은 DB 기준</span></div>
+        <div class="tool"><b>대화 쓰기</b><span>조건별 페이지</span></div>
+      </div></div>
+      <div class="grp"><h4>지형·소품</h4><div class="row">
+        <div class="tool"><b>영역 채우기</b><span>잔디·물·바닥</span></div>
+        <div class="tool"><b>소품 흩뿌리기</b><span>밀도 조절</span></div>
+        <div class="tool"><b>나무·숲</b><span>통행 가능 여부 자동</span></div>
+      </div></div>
+      <div class="muted" style="font-size:12px">… 8개 묶음 · 고급 사용자는 "원래 이름 보기" 토글</div>
+    </div>
+    <div class="bad"><b>지금 화면에 실제로 보이는 것</b> — <code>place_npc</code> 항목에 "보물상자·보관 상자·세이브포인트 등 오브젝트 기믹은 place_chest… 를 사용하세요 — place_npc로 흉내내지 마세요" 같은 <b>모델용 지시문</b>이 사용자에게 그대로 노출된다 (09-tools-browser.png).</div>
+  </div>
+</div>

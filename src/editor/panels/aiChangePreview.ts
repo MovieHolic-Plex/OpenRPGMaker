@@ -301,6 +301,23 @@ function ledgerSection(ledger: ChangeLedger): HTMLElement | null {
   return section;
 }
 
+/**
+ * 작업 띠 카드의 썸네일 — 「적용 후」 한 장. 같은 그림 두 장이 되는 변경(맵 밖)은 그림 대신
+ * 첫 칩(영역 이름·건수)을 글자로 보여 준다.
+ */
+export function renderChangeThumb(input: ChangePreviewInput, targetWidth: number): HTMLElement {
+  const host = el("div", { class: "ai-change-thumb", dataset: { testid: "ai-change-thumb" } });
+  const panesMatch = changePreviewPanesMatch(input.before, input.after, input.mapId);
+  const region = panesMatch ? null : changePreviewRegion(input.before, input.after, input.mapId);
+  if (!region) {
+    host.classList.add("is-text");
+    host.append(el("span", { class: "ai-change-thumb-text", text: input.chips?.[0] ?? "변경" }));
+    return host;
+  }
+  attachShot(host, input.after, input.mapId, region, targetWidth, input.renderShot ?? defaultRenderShot);
+  return host;
+}
+
 /** 인라인 변경 카드. 동기 반환 — 캔버스는 렌더러가 resolve 될 때 붙는다. */
 export function renderChangePreviewCard(input: ChangePreviewInput): HTMLElement {
   const renderShot = input.renderShot ?? defaultRenderShot;

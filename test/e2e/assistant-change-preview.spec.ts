@@ -62,9 +62,10 @@ async function seedConversationRecord(page: Page, storageKey: string): Promise<s
 async function mountRealChangeCard(page: Page): Promise<{ mounted: boolean; region: string; reason: string }> {
   return await page.evaluate(async () => {
     const load = async <T>(url: string): Promise<T> => (await import(/* @vite-ignore */ url)) as T;
-    const [{ store }, preview] = await Promise.all([
+    const [{ store }, preview, strip] = await Promise.all([
       load<typeof import("@/project/store")>("/src/project/store.ts"),
       load<typeof import("@/editor/panels/aiChangePreview")>("/src/editor/panels/aiChangePreview.ts"),
+      load<typeof import("@/editor/panels/aiWorkStrip")>("/src/editor/panels/aiWorkStrip.ts"),
     ]);
     const before = store.getCurrent();
     const mapId = before.startMapId ?? Object.keys(before.maps)[0];
@@ -90,7 +91,10 @@ async function mountRealChangeCard(page: Page): Promise<{ mounted: boolean; regi
     }
 
     const region = preview.changePreviewRegion(before, after, mapId);
-    const card = preview.renderChangePreviewCard({
+    // 변경 카드는 대화 창이 아니라 캔버스 하단 작업 띠의 카드에 붙는다(방향 G, 2026-09-17).
+    // 띠 카드를 하나 만들어 변경을 붙이고 펼친다 — 펼친 카드 안에 전/후 두 장이 그려진다.
+    const work = strip.beginAiWorkCard({ title: `광장 바닥 ${rectW}×${rectH} · 길 14칸` });
+    work.attachChange({
       before,
       after,
       mapId,
@@ -118,11 +122,8 @@ async function mountRealChangeCard(page: Page): Promise<{ mounted: boolean; regi
       }),
       onUndo: () => {},
     });
-    const log = [...document.querySelectorAll(".ai-chat-log")].find((node) => node.getClientRects().length > 0)
-      ?? document.querySelector(".ai-chat-log");
-    if (!log) return { mounted: false, region: "", reason: "no chat log" };
-    log.append(card);
-    card.scrollIntoView();
+    work.finish({ ok: true });
+    work.root.querySelector<HTMLElement>(".ai-work-card-body")?.click();
     return { mounted: true, region: region ? `${region.width}x${region.height}` : "", reason: "ok" };
   });
 }
@@ -135,11 +136,12 @@ async function mountRealChangeCard(page: Page): Promise<{ mounted: boolean; regi
 async function mountNonMapChangeCard(page: Page): Promise<{ mounted: boolean; reason: string }> {
   return await page.evaluate(async () => {
     const load = async <T>(url: string): Promise<T> => (await import(/* @vite-ignore */ url)) as T;
-    const [{ store }, preview, areas, ledger] = await Promise.all([
+    const [{ store }, preview, areas, ledger, strip] = await Promise.all([
       load<typeof import("@/project/store")>("/src/project/store.ts"),
       load<typeof import("@/editor/panels/aiChangePreview")>("/src/editor/panels/aiChangePreview.ts"),
       load<typeof import("@/project/changeAreas")>("/src/project/changeAreas.ts"),
       load<typeof import("@/project/changeLedger")>("/src/project/changeLedger.ts"),
+      load<typeof import("@/editor/panels/aiWorkStrip")>("/src/editor/panels/aiWorkStrip.ts"),
     ]);
     const before = store.getCurrent();
     const mapId = before.startMapId ?? Object.keys(before.maps)[0];
@@ -150,7 +152,8 @@ async function mountNonMapChangeCard(page: Page): Promise<{ mounted: boolean; re
     after.switches = [...after.switches, { id: "switch_bell", name: "종을 되찾았다" }];
     after.variables = [...after.variables, { id: "var_bells", name: "종 개수" }];
 
-    const card = preview.renderChangePreviewCard({
+    const work = strip.beginAiWorkCard({ title: "게임 제목과 진행 변수를 바꿨습니다" });
+    work.attachChange({
       before,
       after,
       mapId,
@@ -158,11 +161,8 @@ async function mountNonMapChangeCard(page: Page): Promise<{ mounted: boolean; re
       chips: preview.changeChipsWithAreas(undefined, areas.changedAreaLabels(before, after)),
       ledger: ledger.buildChangeLedger(before, after),
     });
-    const log = [...document.querySelectorAll(".ai-chat-log")].find((node) => node.getClientRects().length > 0)
-      ?? document.querySelector(".ai-chat-log");
-    if (!log) return { mounted: false, reason: "no chat log" };
-    log.append(card);
-    card.scrollIntoView();
+    work.finish({ ok: true });
+    work.root.querySelector<HTMLElement>(".ai-work-card-body")?.click();
     return { mounted: true, reason: "ok" };
   });
 }
@@ -201,10 +201,9 @@ test.describe("조수 변경 카드 + 넓은 비교 뷰어", () => {
     expect(await page.locator("[data-testid='ai-slash-list']").count()).toBe(0);
     await page.getByTestId("ai-input").fill("");
 
-    // 툴 호출은 접힌 한 줄 요약이어야 한다(펼치기 어포던스는 있다).
-    const toolToggle = page.getByTestId("ai-tool-activity-toggle").first();
-    await expect(toolToggle).toBeVisible();
-    await expect(page.locator(".ai-tool-activity-list").first()).toBeHidden();
+    // 복원된 대화의 툴 호출은 대화 창에 그려지지 않는다 — 말풍선만 남는다(방향 G).
+    expect(await page.locator("[data-testid='ai-tool-activity']").count()).toBe(0);
+    expect(await page.locator("[data-testid='ai-tool-entry']").count()).toBe(0);
 
     const mount = await mountRealChangeCard(page);
     expect(mount.reason).toBe("ok");
@@ -216,7 +215,8 @@ test.describe("조수 변경 카드 + 넓은 비교 뷰어", () => {
     const afterShot = page.getByTestId("ai-change-shot-after").locator("canvas");
     await expect(beforeShot).toBeVisible();
     await expect(afterShot).toBeVisible();
-    await expect(page.getByTestId("ai-change-undo")).toBeVisible();
+    // 되돌리기는 카드 머리의 「이 작업만 되돌리기」 하나다 — 변경 카드 안의 되돌리기는 띠에서 숨긴다.
+    await expect(page.getByTestId("ai-work-card-undo")).toBeVisible();
 
     // 두 캔버스가 실제로 다른 그림이어야 한다 — 같으면 before/after 가 증거가 아니다.
     const [beforePng, afterPng] = await Promise.all([
@@ -226,10 +226,11 @@ test.describe("조수 변경 카드 + 넓은 비교 뷰어", () => {
     expect(beforePng.length).toBeGreaterThan(1_000);
     expect(afterPng).not.toBe(beforePng);
 
-    // 변경 카드가 툴 활동보다 큰 면적을 차지해야 한다 — "무엇이 바뀌었나"가 주인공.
-    const cardBox = await card.boundingBox();
-    const toolBox = await page.locator(".ai-tool-activity").first().boundingBox();
-    expect((cardBox?.height ?? 0)).toBeGreaterThan((toolBox?.height ?? 0) * 2);
+    // 카드는 대화 창 밖, 작업 띠의 펼친 카드 안에 있다.
+    const work = page.getByTestId("ai-work-card").first();
+    await expect(work).toHaveClass(/is-open/);
+    expect(await page.locator(".ai-chat-log [data-testid='ai-change-card']").count()).toBe(0);
+    await expect(page.getByTestId("ai-work-card-undo")).toBeVisible();
 
     await page.screenshot({ path: path.join(EVIDENCE, "change-card-inline-1920.png"), animations: "disabled" });
 

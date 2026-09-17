@@ -1,0 +1,66 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+/* 대화: 우하단, 말만 */
+.chat{position:absolute;right:16px;bottom:16px;width:440px;overflow:hidden}
+.chat .head{display:flex;align-items:center;gap:8px;height:40px;padding:0 8px 0 14px;border-bottom:1px solid rgba(20,24,40,.08);font-weight:800}
+.chat .head .sp{flex:1}
+.chat .log{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.b{max-width:86%;padding:8px 12px;border-radius:14px;font-size:13.5px;line-height:1.5}
+.b.me{align-self:flex-end;background:#eef0f5;border-bottom-right-radius:4px}
+.b.ai{align-self:flex-start;background:#fff;border:1px solid rgba(20,24,40,.10);border-bottom-left-radius:4px}
+.ref{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 8px;border-radius:999px;background:#e8eefc;color:#2f4fb5;font-size:11.5px;font-weight:700;vertical-align:middle;margin-left:4px}
+.chat .comp{padding:10px 12px 12px;border-top:1px solid rgba(20,24,40,.08)}
+.chat .input{height:44px}
+/* 작업: 우상단, 한 일 */
+.work{position:absolute;right:16px;top:132px;width:340px;overflow:hidden}
+.work .head{display:flex;align-items:center;gap:8px;height:40px;padding:0 8px 0 14px;border-bottom:1px solid rgba(20,24,40,.08);font-weight:800}
+.work .head .sp{flex:1}
+.w{display:grid;grid-template-columns:64px 1fr;gap:10px;padding:10px 12px;border-top:1px solid rgba(20,24,40,.07);align-items:start}
+.w:first-of-type{border-top:0}
+.w .thumb{width:64px;height:48px}
+.w .t{font-weight:700;font-size:13px;line-height:1.35}
+.w .d{font-size:11.5px;color:#6b7280;margin-top:2px}
+.w .acts{display:flex;gap:4px;margin-top:6px}
+.w .acts .btn{height:24px;padding:0 8px;font-size:11.5px}
+.w.now{background:#fffaf0}
+.bar{height:5px;border-radius:3px;background:#f3e2c0;margin-top:7px;overflow:hidden}
+.bar i{display:block;width:66%;height:100%;background:#f59e0b}
+.work .foot{display:flex;gap:6px;padding:8px 12px;border-top:1px solid rgba(20,24,40,.08);font-size:12px;color:#3b5bdb;font-weight:700;justify-content:center}
+.link{position:absolute;right:120px;top:565px;width:2px;height:150px;border-left:2px dashed rgba(59,91,219,.55)}
+.link::after{content:"";position:absolute;left:-6px;top:-1px;width:10px;height:10px;border-radius:50%;background:#3b5bdb}
+</style>
+<div class="stage">
+  <div class="note"><div class="t">D · 대화와 작업을 분리</div>
+    <b>대화</b>는 말만 남는다 — 도구 로그·카드·진행 막대 없음. 조수가 <b>한 일</b>은 우상단 작업 패널에 쌓인다: 진행 중이면 막대, 끝나면 썸네일과 되돌리기. 말풍선의 <b>작업 2</b> 칩을 누르면 그 항목으로 간다.
+  </div>
+  <div class="work glass">
+    <div class="head"><span class="dot busy"></span>조수가 한 일 <span class="muted" style="font-weight:600">· 시장 마을</span><span class="sp"></span><span class="chip warn">1 진행 중</span><span class="icon">⌄</span></div>
+    <div class="w now">
+      <div class="thumb" style="background-position:-700px -330px"></div>
+      <div><div class="t">3 · 두리 무기점 상점 창 붙이기</div><div class="d">시공 중 · 상점 창 붙이기 (2/3) · 12초</div><div class="bar"><i></i></div>
+        <div class="acts"><span class="btn">■ 중지</span></div></div>
+    </div>
+    <div class="w">
+      <div class="thumb"><span class="pin" style="left:24px;top:14px;width:12px;height:12px"></span></div>
+      <div><div class="t">2 · 광장 북쪽 우물 1 · 상인 2</div><div class="d">완료 · (24,11) · 타일 9칸 · 이벤트 +2</div>
+        <div class="acts"><span class="btn">🗺 보기</span><span class="btn">↶ 되돌리기</span><span class="btn ghost">단계 3</span></div></div>
+    </div>
+    <div class="w">
+      <div class="thumb" style="background-position:-460px -520px"></div>
+      <div><div class="t">1 · 남쪽 돌길 정리</div><div class="d">어제 · 타일 41칸</div>
+        <div class="acts"><span class="btn">🗺 보기</span><span class="btn">↶ 되돌리기</span></div></div>
+    </div>
+    <div class="foot">전체 기록 · 이전 대화 · 내려받기</div>
+  </div>
+  <div class="link"></div>
+  <div class="chat glass">
+    <div class="head"><span class="dot"></span>조수<span class="sp"></span><span class="btn ghost">🕘</span><span class="icon">⋯</span><span class="icon">⌄</span></div>
+    <div class="log">
+      <div class="b me">시장 광장 북쪽에 우물 하나 놓고, 상인 두 명 세워줘</div>
+      <div class="b ai">우물은 돌길과 맞닿게 두었고, 상인 <b>하나</b>·<b>두리</b>는 마주보게 세웠습니다. <span class="ref">작업 2 ↗</span><br>다음으로 두리에게 상점 창을 붙일까요?</div>
+      <div class="b me">두리는 무기 상인으로, 검·방패만 팔게 해줘</div>
+      <div class="b ai"><span class="dot busy" style="width:7px;height:7px"></span> 상점 창을 붙이고 있습니다. <span class="ref">작업 3 ↗</span></div>
+    </div>
+    <div class="comp"><div class="input">이 맵에 무엇을 할까요?<span class="mode" style="margin-left:auto">알아서 ▾</span><span class="send">↑</span></div></div>
+  </div>
+</div>
