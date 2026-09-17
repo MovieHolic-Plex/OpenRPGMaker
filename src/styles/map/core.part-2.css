@@ -199,7 +199,7 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 
 .project-load-error-actions .btn.primary,
 .db-required-copy .btn.primary {
-  background: var(--accent, #4A57D6);
+  background: var(--accent);
   border-color: transparent;
   color: var(--on-accent, #fff);
   border-radius: 9999px;

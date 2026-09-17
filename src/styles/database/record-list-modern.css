@@ -26,14 +26,14 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-list-row:focus-visible {
-  outline: 2px solid var(--db-studio-accent, #4A57D6);
+  outline: 2px solid var(--db-studio-accent, var(--accent));
   outline-offset: -2px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-list-row.active {
   background: var(--db-studio-accent-soft, rgba(74,87,214,.08));
-  box-shadow: inset 2px 0 0 var(--db-studio-accent, #4A57D6);
-  color: var(--db-studio-accent, #4A57D6);
+  box-shadow: inset 2px 0 0 var(--db-studio-accent, var(--accent));
+  color: var(--db-studio-accent, var(--accent));
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-list-row.active::before {
@@ -58,7 +58,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-list-row.active .db-list-number {
   /* opacity 0.7 이 액센트색을 선택 행 틴트 위에서 2.76:1 까지 깎아 유일하게 남은 AA
      미달이었다. 색 자체는 5.20:1 로 통과하므로 투명도만 뺀다. */
-  color: var(--db-studio-accent, #4A57D6);
+  color: var(--db-studio-accent, var(--accent));
 }
 
 /* thumb 24px */
@@ -82,7 +82,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-list-row.active .db-list-sub {
   border-color: var(--db-studio-accent-border, rgba(74,87,214,.16));
-  color: var(--db-studio-accent, #4A57D6);
+  color: var(--db-studio-accent, var(--accent));
 }
 
 /* list well — hairline */

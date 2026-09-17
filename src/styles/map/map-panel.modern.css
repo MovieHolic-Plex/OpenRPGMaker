@@ -81,7 +81,7 @@
 
 /* ── 선택 행 — TOKENS.md 규정대로 연한 배경 + 좌측 레일 ────────────────────
    옛 규칙은 `background: var(--accent)` 채도 100% 슬래브였고, 그 위를 읽히게
-   하려고 메타 색을 color-mix(#fff 80%, #4A57D6) 로 하드코딩했다. 둘 다 없앤다. */
+   하려고 메타 색을 color-mix(#fff 80%, var(--accent)) 로 하드코딩했다. 둘 다 없앤다. */
 
 .map-tree-panel .map-item:hover {
   background: var(--bg-hover);

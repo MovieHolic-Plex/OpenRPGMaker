@@ -101,7 +101,7 @@
 .event-character-id-picker-row:hover,
 .event-character-id-picker-row.selected {
   background: color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 72%, var(--bg-raised));
-  color: var(--accent, var(--accent));
+  color: var(--accent);
 }
 
 .event-character-id-picker-row-id {
@@ -252,7 +252,7 @@
 .character-id-autocomplete-row:hover,
 .character-id-autocomplete-row.highlighted {
   background: color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 72%, var(--bg-raised));
-  color: var(--accent, var(--accent));
+  color: var(--accent);
 }
 
 .character-id-autocomplete-row-id {

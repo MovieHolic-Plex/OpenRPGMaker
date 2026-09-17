@@ -594,12 +594,12 @@
 }
 
 .move-route-editor .move-route-list-row.selected {
-  background: color-mix(in srgb, var(--accent, #4A57D6) 28%, transparent);
-  color: var(--accent, #4A57D6);
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  color: var(--accent);
 }
 
 .move-route-editor .move-route-path-preview {
-  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 70%, var(--accent, #4A57D6));
+  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 70%, var(--accent));
   border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
   border-radius: 6px;
   max-height: 220px;
@@ -711,7 +711,7 @@
 }
 
 .move-route-editor .move-route-add-command-directional .move-route-command-icon {
-  color: var(--accent, #4A57D6);
+  color: var(--accent);
   font-weight: 700;
 }
 

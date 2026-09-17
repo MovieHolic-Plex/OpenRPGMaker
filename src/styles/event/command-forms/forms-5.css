@@ -142,7 +142,7 @@
 }
 
 .battle-processing-preset:hover {
-  border-color: var(--accent, #4A57D6);
+  border-color: var(--accent);
 }
 
 .battle-processing-branch-controls {
@@ -242,7 +242,7 @@
 
 .party-member-intent {
   background: color-mix(in srgb, var(--accent-muted, rgba(110, 168, 255, 0.14)) 88%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent, #4A57D6) 35%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
   border-radius: 8px;
   display: grid;
   gap: 4px;
@@ -251,7 +251,7 @@
 }
 
 .party-member-intent-title {
-  color: var(--oprn-command-blue, var(--accent, #4A57D6));
+  color: var(--oprn-command-blue, var(--accent));
   font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
@@ -322,8 +322,8 @@
 }
 
 .change-parameters-param-chip.is-active {
-  border-color: var(--accent, #4A57D6);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #4A57D6) 40%, transparent);
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
   color: var(--text-1, #2A2521);
 }
 
@@ -414,7 +414,7 @@
 .record-browser-selected {
   align-items: center;
   background: var(--bg-inset, #EFE9DC);
-  border: 1px solid color-mix(in srgb, var(--accent, #4A57D6) 35%, var(--border-subtle, rgba(42,37,33,.20)));
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border-subtle, rgba(42,37,33,.20)));
   border-radius: 8px;
   display: flex;
   gap: 10px;
@@ -492,8 +492,8 @@
 }
 
 .record-browser-card.is-active {
-  border-color: var(--accent, #4A57D6);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #4A57D6) 40%, transparent);
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
 .record-browser-card-icon {
@@ -731,8 +731,8 @@
 }
 
 .actor-m2-chip.is-active {
-  border-color: var(--accent, #4A57D6);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #4A57D6) 40%, transparent);
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
 /* 타일 변경 폼의 실맵 캔버스 미리보기 호스트 */

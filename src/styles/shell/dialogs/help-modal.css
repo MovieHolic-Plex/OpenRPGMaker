@@ -93,7 +93,7 @@
 }
 
 .help-modal-close:hover {
-  border-color: var(--accent, #4A57D6);
+  border-color: var(--accent);
   background: var(--bg-hover, rgba(42, 37, 33, 0.06));
   color: var(--text-1, #2A2521);
 }
@@ -153,7 +153,7 @@
 }
 
 .help-modal-nav-item.active::before {
-  background: var(--accent, #4A57D6);
+  background: var(--accent);
 }
 
 .help-modal-body {
@@ -188,7 +188,7 @@
   width: 4px;
   height: 16px;
   border-radius: 999px;
-  background: var(--accent, #4A57D6);
+  background: var(--accent);
 }
 
 .help-modal-paragraph {
@@ -221,7 +221,7 @@
   width: 5px;
   height: 5px;
   border-radius: 1px;
-  background: var(--accent, #4A57D6);
+  background: var(--accent);
   opacity: 0.75;
   transform: rotate(45deg);
 }

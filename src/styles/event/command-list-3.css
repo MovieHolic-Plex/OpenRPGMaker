@@ -823,7 +823,7 @@
   box-shadow: inset 3px 0 0 var(--accent);
 }
 
-/* 선택 상태도 마찬가지다. 배지에 `--accent`(#4A57D6) 를 주면 #626B7D 배경 위에서
+/* 선택 상태도 마찬가지다. 배지에 `--accent`(var(--accent)) 를 주면 #626B7D 배경 위에서
    1.06:1 이 된다. 배지는 흰 숫자를 유지하고 선택 표시는 카드 테두리가 맡는다. */
 .event-editor .row.selected .n:not(.event-storyboard-card-thumb),
 .event-editor .row.is-selected .n:not(.event-storyboard-card-thumb) {

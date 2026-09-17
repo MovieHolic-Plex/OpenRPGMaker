@@ -650,7 +650,7 @@ body.event-editor-modal-open .coach-mark-card {
  */
 .event-editor {
   /* ── 목업 토큰 ── */
-  /* 액센트는 셸 토큰 하나로 통일한다 (DESIGN.md: 인디고 #4A57D6 단일 액센트).
+  /* 액센트는 셸 토큰 하나로 통일한다 (DESIGN.md: 인디고 var(--accent) 단일 액센트).
    * 목업 시절의 황동은 푸터 기본 버튼과 나란히 놓이면 액센트가 둘로 보였다. */
   --mk-accent: var(--accent);
   --mk-accent-ink: var(--on-accent);

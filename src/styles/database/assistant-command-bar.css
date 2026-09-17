@@ -129,7 +129,7 @@ body.ai-chat-dock-float.ai-command-bar-active .editor-layout {
 
 .ai-more-menu-item:hover,
 .ai-more-menu-item:focus-visible {
-  background: color-mix(in srgb, var(--accent, var(--accent)) 16%, transparent);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
 }
 
 .ai-temperature-section {

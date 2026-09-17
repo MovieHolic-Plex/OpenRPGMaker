@@ -312,7 +312,7 @@
 }
 
 .ecp-tile-chip.is-selected {
-  outline: 2px solid var(--accent, #4A57D6);
+  outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
 

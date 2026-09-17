@@ -503,7 +503,7 @@
 .database-modal-body .oprn-tileset-main .tileset-meaning-tag {
   background: var(--accent-soft, rgba(10, 36, 106, 0.14));
   border: 1px solid var(--border-soft, var(--border-default));
-  color: var(--accent, var(--accent));
+  color: var(--accent);
   font: 700 10px/14px var(--font-mono, "Cascadia Mono", Consolas, monospace);
   padding: 0 3px;
 }

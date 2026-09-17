@@ -122,8 +122,8 @@
 }
 
 .ghost-inline-approval.is-canvas-first {
-  background: color-mix(in srgb, var(--control-bg, var(--mix-base)) 96%, var(--editor-blue, #4A57D6));
-  border-color: color-mix(in srgb, var(--editor-blue, #4A57D6) 70%, var(--on-accent));
+  background: color-mix(in srgb, var(--control-bg, var(--mix-base)) 96%, var(--editor-blue, var(--accent)));
+  border-color: color-mix(in srgb, var(--editor-blue, var(--accent)) 70%, var(--on-accent));
   max-width: min(520px, calc(100vw - 24px));
 }
 
@@ -171,7 +171,7 @@
 }
 
 .region-task-badge {
-  background: color-mix(in srgb, var(--editor-blue, #4A57D6) 85%, rgba(42,37,33,.20));
+  background: color-mix(in srgb, var(--editor-blue, var(--accent)) 85%, rgba(42,37,33,.20));
   border-radius: 999px;
   color: var(--on-accent);
   font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
@@ -323,7 +323,7 @@
 }
 
 .command-palette-item.is-active {
-  background: color-mix(in srgb, var(--editor-blue, #4A57D6) 24%, transparent);
+  background: color-mix(in srgb, var(--editor-blue, var(--accent)) 24%, transparent);
 }
 
 /* 원본 보기(홀드) — 고스트 시각만 숨기고 툴바는 유지 */
@@ -338,7 +338,7 @@
 }
 
 .ghost-inline-btn.is-hold:active {
-  background: color-mix(in srgb, var(--editor-blue, #4A57D6) 40%, var(--mix-base));
+  background: color-mix(in srgb, var(--editor-blue, var(--accent)) 40%, var(--mix-base));
   color: var(--on-accent);
 }
 
@@ -389,7 +389,7 @@
 
 .ai-start-basic-chip:hover,
 .ai-start-basic-chip:focus-visible {
-  border-color: var(--editor-blue, #4A57D6);
+  border-color: var(--editor-blue, var(--accent));
   color: var(--editor-text, #2A2521);
   outline: none;
 }
@@ -424,7 +424,7 @@
 }
 
 .ai-start-history-search:focus-visible {
-  border-color: var(--editor-blue, #4A57D6);
+  border-color: var(--editor-blue, var(--accent));
   outline: none;
 }
 
@@ -450,7 +450,7 @@
 
 .ai-start-history-row:hover,
 .ai-start-history-row:focus-visible {
-  background: color-mix(in srgb, var(--editor-blue, #4A57D6) 14%, transparent);
+  background: color-mix(in srgb, var(--editor-blue, var(--accent)) 14%, transparent);
   outline: none;
 }
 

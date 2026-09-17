@@ -190,7 +190,7 @@
 .transfer-player-zoom-button.active {
   background: color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 78%, var(--bg-raised));
   border-color: var(--accent, var(--accent-border));
-  color: var(--accent, var(--accent));
+  color: var(--accent);
 }
 
 .transfer-player-map-row:hover,
@@ -200,7 +200,7 @@
 .event-graphic-resource-row:not(.disabled):hover,
 .event-graphic-resource-row.active {
   background: color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 72%, var(--bg-raised));
-  color: var(--accent, var(--accent));
+  color: var(--accent);
 }
 
 .event-page-move-route {
@@ -567,7 +567,7 @@
 
 .ecp-vital-gauge-fill.full.hp { background: var(--danger, #C4473A); }
 
-.ecp-vital-gauge-fill.full.mp { background: var(--accent, #4A57D6); }
+.ecp-vital-gauge-fill.full.mp { background: var(--accent); }
 
 .ecp-pattern-sprite.event-graphic-preview,
 .ecp-pattern-stage .event-graphic-preview {
@@ -733,7 +733,7 @@
 }
 
 .event-command-picker-view-toggle[aria-pressed="true"] {
-  border-color: color-mix(in srgb, var(--accent, #4A57D6) 60%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
   color: var(--accent, var(--text-1));
 }
 

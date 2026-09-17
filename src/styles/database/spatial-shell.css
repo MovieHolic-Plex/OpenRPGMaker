@@ -145,9 +145,9 @@
 .database-modal-body .spatial-inspector-toggle.is-active,
 .database-modal-body .spatial-source-chip.is-active,
 .database-modal-body .spatial-card.is-selected {
-  border-color: var(--db-studio-accent, #4A57D6);
+  border-color: var(--db-studio-accent, var(--accent));
   background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
-  color: var(--db-studio-accent, #4A57D6);
+  color: var(--db-studio-accent, var(--accent));
   box-shadow: inset 0 0 0 1px var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
 }
 
@@ -365,7 +365,7 @@
 }
 
 .database-modal-body .spatial-card:focus-visible {
-  outline: 2px solid var(--db-studio-accent, #4A57D6);
+  outline: 2px solid var(--db-studio-accent, var(--accent));
   outline-offset: 2px;
 }
 

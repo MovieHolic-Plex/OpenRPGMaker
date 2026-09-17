@@ -161,7 +161,7 @@
   border-color: var(--accent, var(--accent-border));
 }
 
-.event-command-issue-badge.info { color: var(--accent, #4A57D6); }
+.event-command-issue-badge.info { color: var(--accent); }
 
 @media (max-width: 900px) {
   .event-command-template-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }

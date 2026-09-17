@@ -73,7 +73,7 @@
      글자는 인디고(--gold-deep, 미오버라이드)로 나오는 식이다
      (04-chat-bubbles-proposals.css:144-146, 06-canvas-guides-panel-chrome.css:148).
      tokens.css 의 골드 패밀리가 다시 일관된 브론즈가 됐으므로 그대로 상속받는다. */
-  /* --brand-blue 재정의 삭제: #2f67c9 와 정본 #4A57D6 두 개의 "브랜드 파랑"이 공존했다.
+  /* --brand-blue 재정의 삭제: #2f67c9 와 정본 var(--accent) 두 개의 "브랜드 파랑"이 공존했다.
      --mix-base 재정의 삭제: #e6e0cf 는 폐기된 크림 팔레트의 값이고, color-mix() 12곳이
      이 토큰을 읽는다. 정본 #F7F8F8 을 상속받는다. */
 

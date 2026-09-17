@@ -167,7 +167,7 @@
 }
 
 .event-page-number-tabs .btn.event-page-tab-rich.active .event-page-tab-number {
-  color: var(--event-modern-accent, #4A57D6);
+  color: var(--event-modern-accent, var(--accent));
 }
 
 .event-page-tab-badges {

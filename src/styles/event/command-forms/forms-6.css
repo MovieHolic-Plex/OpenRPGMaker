@@ -128,7 +128,7 @@
 }
 
 .page3-range-input {
-  accent-color: var(--accent, #4A57D6);
+  accent-color: var(--accent);
   flex: 1 1 140px;
   min-width: 120px;
 }

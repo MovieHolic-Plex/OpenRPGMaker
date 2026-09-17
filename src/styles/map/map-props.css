@@ -173,7 +173,7 @@
   flex: 0 0 18px;
   margin: 0;
   padding: 0;
-  accent-color: var(--accent, #4A57D6);
+  accent-color: var(--accent);
 }
 
 .map-props-hint {
@@ -217,7 +217,7 @@
 
 .map-encounter-rate-row input[type="range"] {
   flex: 1;
-  accent-color: var(--accent, #4A57D6);
+  accent-color: var(--accent);
 }
 
 .map-encounter-rate-row input[type="number"] {
@@ -294,7 +294,7 @@
   text-align: right;
   font-size: 14px;
   font-weight: 600;
-  color: var(--accent, #4A57D6);
+  color: var(--accent);
 }
 
 .map-encounter-remove {
@@ -462,17 +462,17 @@
 }
 
 .map-delete-children-option:hover {
-  border-color: var(--accent, #4A57D6);
+  border-color: var(--accent);
   background: var(--bg-hover);
 }
 
 .map-delete-children-option.selected {
-  border-color: var(--accent, #4A57D6);
+  border-color: var(--accent);
   background: rgba(124, 156, 255, 0.08);
 }
 
 .map-delete-children-option input[type="radio"] {
-  accent-color: var(--accent, #4A57D6);
+  accent-color: var(--accent);
 }
 
 /* ── 맵 배경 탭 미리보기 (캔버스가 배경을 안 그리므로 확인은 여기서) ── */

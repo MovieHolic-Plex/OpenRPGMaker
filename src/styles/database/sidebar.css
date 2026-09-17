@@ -345,13 +345,13 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search:focus {
-  border-color: var(--db-studio-accent, #4A57D6);
+  border-color: var(--db-studio-accent, var(--accent));
   box-shadow: 0 0 0 2px rgba(74,87,214,.16);
   outline: none;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search:focus-visible {
-  outline: 2px solid var(--db-studio-accent, #4A57D6);
+  outline: 2px solid var(--db-studio-accent, var(--accent));
   outline-offset: 1px;
 }
 
@@ -474,7 +474,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active > .db-tab-icon {
-  color: var(--db-studio-accent, #4A57D6);
+  color: var(--db-studio-accent, var(--accent));
 }
 
 /* label text is the button's textContent — flex takes remaining space */
@@ -504,7 +504,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active[data-count]::after {
   background: var(--db-studio-accent-soft, rgba(74,87,214,.08));
   border-color: var(--db-studio-accent-border, rgba(74,87,214,.16));
-  color: var(--db-studio-accent, #4A57D6);
+  color: var(--db-studio-accent, var(--accent));
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab:hover {
@@ -513,7 +513,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab:focus-visible {
-  outline: 2px solid var(--db-studio-accent, #4A57D6);
+  outline: 2px solid var(--db-studio-accent, var(--accent));
   outline-offset: -2px;
 }
 
@@ -521,13 +521,13 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active {
   background: var(--db-studio-accent-soft, rgba(74,87,214,.08));
   border-color: var(--db-studio-accent-border, rgba(74,87,214,.16));
-  box-shadow: inset 2px 0 0 var(--db-studio-accent, #4A57D6);
-  color: var(--db-studio-accent, #4A57D6);
+  box-shadow: inset 2px 0 0 var(--db-studio-accent, var(--accent));
+  color: var(--db-studio-accent, var(--accent));
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active:hover {
   background: var(--db-studio-accent-soft, rgba(74,87,214,.08));
-  color: var(--db-studio-accent, #4A57D6);
+  color: var(--db-studio-accent, var(--accent));
 }
 
 /* collapsed icon+tooltip mode — hide label via transparent color + clip */

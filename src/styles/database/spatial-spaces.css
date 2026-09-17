@@ -55,7 +55,7 @@
 }
 
 .database-modal-body .spatial-space-board:focus-visible {
-  outline: 2px solid var(--db-studio-accent, #4A57D6);
+  outline: 2px solid var(--db-studio-accent, var(--accent));
   outline-offset: 2px;
 }
 
@@ -74,13 +74,13 @@
 }
 
 .database-modal-body .spatial-space-slot.is-required {
-  box-shadow: inset 0 0 0 1px var(--db-studio-accent, #4A57D6);
+  box-shadow: inset 0 0 0 1px var(--db-studio-accent, var(--accent));
 }
 
 .database-modal-body .spatial-space-object.is-selected,
 .database-modal-body .spatial-space-slot.is-selected,
 .database-modal-body .spatial-space-port.is-selected {
-  border-color: var(--db-studio-accent, #4A57D6);
+  border-color: var(--db-studio-accent, var(--accent));
   background: var(--db-studio-surface, #fff);
 }
 

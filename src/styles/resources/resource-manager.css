@@ -433,8 +433,8 @@
 
 .rm-profile-audio-badge {
   align-items: center;
-  background: color-mix(in srgb, var(--accent, #4A57D6) 18%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent, #4A57D6) 45%, var(--border-subtle, rgba(42,37,33,.12)));
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border-subtle, rgba(42,37,33,.12)));
   border-radius: 6px;
   color: var(--text-1, #2A2521);
   display: inline-flex;
