@@ -93,7 +93,7 @@ function objectCards(): SpatialGalleryCard[] {
         id,
         localId: kit.id,
         name: kit.name || kit.id,
-        source: "own",
+        source: tileset.id === "tibo_interior_expanded" && kit.id.startsWith("tibo-") ? "default" : "own",
         kind: "objects",
         usage: 0,
         tilesetId: tileset.id,

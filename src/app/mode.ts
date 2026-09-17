@@ -300,9 +300,17 @@ function renderDbRequiredScreen(_error: unknown): void {
 }
 
 function openRequiredDbSettings(): void {
-  void import("@/editor/projectFolderActions").then(async ({ openProjectFolder }) => {
-    if (await openProjectFolder()) window.location.reload();
-  });
+  if (hasElectronBridge()) {
+    void import("@/editor/projectFolderActions").then(async ({ openProjectFolder }) => {
+      if (await openProjectFolder()) window.location.reload();
+    });
+    return;
+  }
+  // 웹 preview(mdc-server:9888)에는 폴더 브리지가 없다. 조용히 return 하면
+  // 「작업 선택하기」가 죽은 버튼이 된다. 빈 로컬 세션으로 편집기를 연다.
+  const url = new URL(window.location.href);
+  if (!url.searchParams.has("blankProject")) url.searchParams.set("blankProject", "1");
+  window.location.assign(url.toString());
 }
 
 // 프로젝트 로드 실패(데이터 무결성 오류) 화면 — 빈 패널 대신 db-required-hero 레이아웃을 쓴다.
