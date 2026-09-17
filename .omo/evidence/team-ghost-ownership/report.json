@@ -1,0 +1,34 @@
+[
+  {
+    "name": "Failed worker rolled back while successful worker retained",
+    "ok": true
+  },
+  {
+    "name": "Final accepted project removes rejected preview",
+    "ok": true
+  },
+  {
+    "name": "New run clears old preview",
+    "ok": true
+  },
+  {
+    "name": "Old dispose preserves new preview and provider",
+    "ok": true
+  },
+  {
+    "name": "Late old events ignored",
+    "ok": true
+  },
+  {
+    "name": "Other worker completion preserves running indicator",
+    "ok": true
+  },
+  {
+    "name": "Review reconcile removes filtered changes",
+    "ok": true
+  },
+  {
+    "name": "Owner dispose clears provider",
+    "ok": true
+  }
+]

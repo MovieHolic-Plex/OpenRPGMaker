@@ -8,10 +8,10 @@
 //
 // 붙이는 자리는 `aiPiAgentCommand` 의 이벤트 래퍼 하나다 — 단일·병렬·팀 이벤트가 전부 그곳을
 // 지난다(팀은 `agent_event` 한 겹만 벗기면 된다). 병렬·팀에서 여러 에이전트가 동시에 흘려도
-// 에이전트마다 소유한 맵이 다르므로 맵 단위 증분은 그대로 겹쳐 쌓인다.
+// 중간 증분은 잠정 결과다. 실패한 팀원의 증분은 철회하고 최종 병합 결과로 보정한다.
 
 import type { PiAgentEvent } from "@/ai/piAgent/protocol";
-import { applyMapDeltas } from "@/ai/piAgent/mapDelta";
+import { applyMapDeltas, type PiMapDelta } from "@/ai/piAgent/mapDelta";
 import {
   clearAgentGhostPreview,
   clearAgentGhostRunningTool,
@@ -27,6 +27,8 @@ export interface PiGhostBridge {
   readonly handleEvent: (event: PiAgentEvent) => void;
   /** 밀린 갱신을 지금 그린다 — 실행이 끝났는데 마지막 증분이 스로틀 안에서 잠들지 않게. */
   readonly flush: () => void;
+  /** 검토 화면에는 실제 수용된 병합 결과만 표시한다. */
+  readonly reconcile: (project: Project) => void;
   /** 지금까지 쌓인 초안 맵. 검토 카드·테스트가 «무엇이 그려졌나» 를 묻는 창구다. */
   readonly draftProject: () => Project;
   /** 고스트를 지우고 초안 공급을 끊는다. 실행이 끝나는 모든 길(적용·폐기·중단·실패)에서 한 번. */
@@ -42,15 +44,16 @@ export interface PiGhostBridgeOptions {
   readonly throttleMs?: number;
 }
 
-/** 팀 이벤트를 한 겹 벗긴다. 중첩은 한 겹뿐이지만 방어적으로 끝까지 판다. */
-function unwrap(event: PiAgentEvent): PiAgentEvent {
-  let current = event;
-  while (current.type === "agent_event") current = current.event;
-  return current;
-}
+// 이전 실행의 타이머·검토 버튼은 새 실행의 전역 미리보기를 건드리지 못한다.
+let activeOwner: symbol | null = null;
 
 export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridge {
+  const owner = Symbol("pi-ghost");
+  activeOwner = owner;
+  clearAgentGhostPreview();
   const base = options.baseProject;
+  let journal: { agentId: string; deltas: readonly PiMapDelta[] }[] = [];
+  let runningAgentId: string | null = null;
   let maps: Record<string, GameMap> = { ...(base.maps ?? {}) };
   let disposed = false;
   const draftProject = (): Project => ({ ...base, maps } as Project);
@@ -62,7 +65,10 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
     getDraftProject: draftProject,
     isWriteTool: () => true,
     ...(options.throttleMs === undefined ? {} : { throttleMs: options.throttleMs }),
-    apply: options.apply ?? ((baseProject, draft) => { replaceAgentGhostPreviewFromProjectDiff(baseProject, draft); }),
+    apply: (baseProject, draft) => {
+      if (activeOwner !== owner) return;
+      (options.apply ?? replaceAgentGhostPreviewFromProjectDiff)(baseProject, draft);
+    },
     ...(options.setTimeoutFn ? { setTimeoutFn: options.setTimeoutFn } : {}),
     ...(options.clearTimeoutFn ? { clearTimeoutFn: options.clearTimeoutFn } : {}),
   });
@@ -72,16 +78,38 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
   // 필요하다. 없으면 셀이 단색 사각형으로 떨어진다.
   setAgentGhostDraftMapProvider((mapId: MapId) => maps[mapId]);
 
+  const reconcile = (project: Project): void => {
+    if (disposed || activeOwner !== owner) return;
+    maps = { ...project.maps };
+    journal = [];
+    schedule();
+    updater.flush();
+  };
+
   return {
+    reconcile,
     handleEvent(raw): void {
-      if (disposed) return;
-      const event = unwrap(raw);
+      if (disposed || activeOwner !== owner) return;
+      let event = raw;
+      let agentId = "root";
+      while (event.type === "agent_event") {
+        agentId = event.agentId;
+        event = event.event;
+      }
+      if (event.type === "agent_done" && !event.ok) {
+        journal = journal.filter(entry => entry.agentId !== event.agentId);
+        maps = journal.reduce((current, entry) => applyMapDeltas(current, entry.deltas), { ...base.maps });
+        schedule();
+      }
+      if (raw.type === "done") reconcile(raw.project);
       if (event.type === "tool_start") {
+        runningAgentId = agentId;
         setAgentGhostRunningTool(event.name, (event.args ?? undefined) as Record<string, unknown> | undefined);
         return;
       }
       if (event.type === "map_delta") {
         if (event.maps.length === 0) return;
+        journal.push({ agentId, deltas: event.maps });
         maps = applyMapDeltas(maps, event.maps);
         schedule();
         return;
@@ -89,12 +117,15 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
       // 실행이 끝나면 밀린 증분을 바로 그린다 — 마지막 한 칸이 스로틀 안에서 잠들면 «끝났는데
       // 아무것도 안 그려진» 상태로 남는다. 고스트를 지우는 건 dispose 의 몫이다(적용 전까지 남는다).
       if (event.type === "done" || event.type === "agent_done" || event.type === "error") {
-        clearAgentGhostRunningTool();
+        if (raw.type === "done" || runningAgentId === (event.type === "agent_done" ? event.agentId : agentId)) {
+          clearAgentGhostRunningTool();
+          runningAgentId = null;
+        }
         updater.flush();
       }
     },
     flush(): void {
-      if (disposed) return;
+      if (disposed || activeOwner !== owner) return;
       updater.flush();
     },
     draftProject,
@@ -102,6 +133,9 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
       if (disposed) return;
       disposed = true;
       updater.cancel();
+      journal = [];
+      if (activeOwner !== owner) return;
+      activeOwner = null;
       setAgentGhostDraftMapProvider(null);
       clearAgentGhostPreview();
     },
