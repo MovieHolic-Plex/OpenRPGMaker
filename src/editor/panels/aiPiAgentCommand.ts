@@ -33,6 +33,7 @@ import {
 import { changeChipsWithAreas, openWideChangeViewer, renderChangePreviewCard, type ChangePreviewInput } from "./aiChangePreview";
 import { createPiGhostBridge } from "./aiPiGhostBridge";
 import { loadAiConfig } from "@/ai/llmClient";
+import { composePiTask } from "@/ai/piAgent/executionRoute";
 import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
 import { adoptSpatialToolProof, authorMergedSpatialProposal } from "@/editor/tools/spatialToolState";
 import { summarizeChanges } from "@/editor/tools/changeset";
@@ -120,6 +121,11 @@ export interface PiRunOptions {
    * 폴백 에스컬레이션이 실행 중 얹는다). 비우면 레지스트리 전량 노출.
    */
   readonly toolDomains?: readonly string[];
+  /**
+   * 의도 선언이 확정한 것을 본문에 전하는 노트(`buildPiIntentNote`). 계획 턴·실행 턴·팀장이 같은 문자열을
+   * 읽는다. 로그·보드에는 싣지 않는다 — 거기는 사용자 문장(`command.task`)이다.
+   */
+  readonly intentNote?: string | null;
 }
 
 /** 적용 뒤 영수증(지금 → 적용 후) 재료. 렌더는 패널이 한다 — 되돌리기와 스튜디오 「변경」 탭이 거기 있다. */
@@ -284,7 +290,10 @@ export async function runPiCommand(
 
   let results: PiAgentDoneEvent[];
   try {
-    let executionTask = command.task;
+    // 모델이 읽는 지시문 = 사용자 문장 + 의도 노트. 계획 턴도 같은 것을 읽어야 계획에 author_village 같은
+    // 이름이 남고, 실행 턴이 그 이름을 따라간다(노트 없이는 산문 계획 → paint_road 손작업으로 흘렀다).
+    const modelTask = composePiTask(command.task, options.intentNote);
+    let executionTask = modelTask;
     if (!readOnly && !team && !routineEdit) {
       surface.setStatus(`Ultrabrain · 계획 작성 (${brain.model})`);
       let plan = "";
@@ -292,7 +301,7 @@ export async function runPiCommand(
       push({ type: "agent_spawn", agentId: "ultrabrain-plan", role: "orchestrator", mapId: null, mapName: null, task: command.task, label: "Ultrabrain · 계획" });
       const planned = await runPiAgentViaCompanion({
         mode: "single", provider: brain.providerId!, model: brain.model,
-        task: `${PLAN_ONLY_PREFIX}${command.task}`, mapIds: command.mapIds, ...here, project: base,
+        task: `${PLAN_ONLY_PREFIX}${modelTask}`, mapIds: command.mapIds, ...here, project: base,
         readOnly: true, maxTurns: options.maxTurns, thinkingLevel: brain.reasoningEffort,
       }, { signal: surface.signal, onEvent: event => {
         if (event.type === "heartbeat") return;
@@ -306,7 +315,7 @@ export async function runPiCommand(
       push({ type: "agent_done", agentId: "ultrabrain-plan", ok: true, summary: plan,
         stats: planned.stats, changedKeys: [], spills: [], conflicts: [] });
       surface.appendBubble("assistant", `Ultrabrain 계획\n${plan}`);
-      executionTask = `${command.task}\n\nUltrabrain 실행 계획:\n${plan}`;
+      executionTask = `${modelTask}\n\nUltrabrain 실행 계획:\n${plan}`;
     }
     results = await Promise.all(groups.map((mapIds, index) => runPiAgentViaCompanion(
       {
@@ -314,7 +323,7 @@ export async function runPiCommand(
         provider: options.planOnly || team ? brain.providerId! : deep.provider,
         model: options.planOnly || team ? brain.model : deep.model,
         ...(!options.planOnly ? { roleModels: { deep, writer: modelForRole(config, "writer") } } : {}),
-        task: options.planOnly ? `${PLAN_ONLY_PREFIX}${command.task}` : executionTask,
+        task: options.planOnly ? `${PLAN_ONLY_PREFIX}${modelTask}` : executionTask,
         mapIds,
         ...here,
         project: base,
