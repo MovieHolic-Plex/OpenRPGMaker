@@ -8,6 +8,7 @@ import type { SpatialToolProof } from "@/editor/tools/spatialToolState";
 // 프로젝트가 실린다. 적용은 브라우저의 커밋 게이트가 그대로 맡는다.
 
 import type { Project } from "@/project/types";
+import type { PiMapDelta } from "./mapDelta";
 import type { PiTeamSpec } from "./teamSpec";
 
 export type PiAgentThinkingLevel = "off" | "low" | "medium" | "high";
@@ -94,6 +95,12 @@ export type PiAgentEvent =
   | { readonly type: "assistant"; readonly text: string }
   | { readonly type: "tool_start"; readonly id: string; readonly name: string; readonly args: unknown }
   | { readonly type: "tool_end"; readonly id: string; readonly name: string; readonly ok: boolean; readonly summary: string }
+  /**
+   * 툴이 맵에 한 일. 바뀐 칸만 싣는다 — 캔버스 시공 표시(고스트)가 턴 내내 먹는 재료다.
+   * 결과 프로젝트는 맨 끝 `done` 에만 실리므로, 이게 없으면 턴이 끝날 때까지 캔버스가 조용하다.
+   * 맵 밖 변경(데이터베이스·퀘스트·스위치)은 그릴 자리가 없어 담지 않는다.
+   */
+  | { readonly type: "map_delta"; readonly maps: readonly PiMapDelta[] }
   | { readonly type: "error"; readonly message: string }
   /**
    * 쓰기 실행의 정본 증거. 프루프가 객체 정체성에 살아 이 경계를 넘지 못하므로 다이제스트로
