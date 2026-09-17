@@ -456,7 +456,11 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
    컨테이너 프리픽스(basic-flyout-map-host, 특이도 0,3,0)가 모던 레이어(0,2,0)를
    항상 이겨 이름·메타 말줄임과 배지 겹침이 났었다. */
 
-/* 초보 레일 하단 상시 맵 필드 — 플라이아웃 없이 바로 고르는 5행 목록. */
+.basic-rail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
 .basic-rail-map-field {
   border-top: 1px solid var(--border-subtle);
   display: flex;
