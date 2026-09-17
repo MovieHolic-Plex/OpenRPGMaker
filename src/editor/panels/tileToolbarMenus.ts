@@ -1,4 +1,4 @@
-import { getEditorChrome, subscribeEditorUiMode } from "@/editor/editorUiMode";
+import { subscribeEditorUiMode } from "@/editor/editorUiMode";
 import type { EditorState } from "@/editor/editorState";
 import { mapHistoryEntryCount, renderMapHistoryPanel } from "@/editor/panels/mapHistoryPanel";
 import { renderRuleAuditPanel, ruleAuditViolationCount } from "@/editor/panels/ruleAuditPanel";
@@ -181,7 +181,7 @@ export function makeOverflowDropdown(model: TileToolbarModel): HTMLElement {
   latestRerender = model.rerender;
   installDocumentListeners();
   const wrapper = makeToolbarMenuWrapper("toolbar-overflow-menu");
-  const pins = getEditorChrome().advancedSidebarControls ? inspectionPins() : [];
+  const pins = inspectionPins();
   const direct = openMenu !== null && openMenu !== "overflow" && pins.includes(openMenu);
   const panelOpen = openMenu === "overflow" || (!direct && openMenu !== null);
   const ruleCount = ruleAuditViolationCount();
@@ -246,15 +246,13 @@ export function makeOverflowDropdown(model: TileToolbarModel): HTMLElement {
 
   }
 
-  if (getEditorChrome().advancedSidebarControls) {
-    menu.append(makeOverflowSectionLabel("빠른 검사 고정"));
-    const labels = { inspector: "인스펙터", ruleAudit: "규칙 감사", history: "작업 기록" };
-    for (const id of INSPECTION_COMMANDS) menu.append(makeOptionItem(`${labels[id]} 고정`, pins.includes(id), false, () => {
+  menu.append(makeOverflowSectionLabel("빠른 검사 고정"));
+  const labels = { inspector: "인스펙터", ruleAudit: "규칙 감사", history: "작업 기록" };
+  for (const id of INSPECTION_COMMANDS) menu.append(makeOptionItem(`${labels[id]} 고정`, pins.includes(id), false, () => {
       toggleInspectionPin(id);
       openMenu = "overflow";
       model.rerender();
     }, `sidebar-pin-${id}`));
-  }
 
   menu.dataset.focusFallbackAnchor = "oprn-tool-overflow";
   wrapper.append(menu);
@@ -265,10 +263,8 @@ export function makeOverflowDropdown(model: TileToolbarModel): HTMLElement {
 export function makeInspectionControls(model: TileToolbarModel): HTMLElement {
   const row = el('div', { class: 'sidebar-inspection-controls', dataset: { testid: 'sidebar-inspection-controls' } });
   row.append(makeOverflowDropdown(model));
-  if (getEditorChrome().advancedSidebarControls) {
-    const makers = { inspector: makeInspectorDropdown, ruleAudit: makeRuleAuditDropdown, history: makeHistoryDropdown };
-    for (const id of inspectionPins()) row.append(makers[id](model));
-  }
+  const makers = { inspector: makeInspectorDropdown, ruleAudit: makeRuleAuditDropdown, history: makeHistoryDropdown };
+  for (const id of inspectionPins()) row.append(makers[id](model));
   return row;
 }
 
@@ -427,15 +423,13 @@ function makeMenuToggle(
       "aria-label": accessibleLabel,
       title: label,
     },
-    children: [makeMenuIcon(menu), ...(menu === "overflow" || getEditorChrome().advancedSidebarControls
-      ? [el("span", { class: "sidebar-tool-label", text: label })] : [])],
+    children: [makeMenuIcon(menu), el("span", { class: "sidebar-tool-label", text: label })],
     dataset: { testid: menuToggleTestId(menu) },
     on: {
       click: () => {
         document.dispatchEvent(new CustomEvent(SIDEBAR_SURFACE_OPEN, { detail: 'inspection' }));
         // overflow 토글은 인스펙터/규칙/기록 패널이 열려 있어도 닫아 1줄 상태를 복구한다.
-        const pinnedPanel = openMenu !== null && openMenu !== 'overflow'
-          && getEditorChrome().advancedSidebarControls && inspectionPins().includes(openMenu);
+        const pinnedPanel = openMenu !== null && openMenu !== 'overflow' && inspectionPins().includes(openMenu);
         const currentlyExpanded = menu === 'overflow' ? openMenu !== null && !pinnedPanel : openMenu === menu;
         openMenu = currentlyExpanded ? null : menu;
         rerender();

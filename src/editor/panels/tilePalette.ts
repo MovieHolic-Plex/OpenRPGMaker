@@ -85,17 +85,38 @@ export function renderTilePalette(container: HTMLElement): void {
   const state = editorState.get();
 
   if (state.layer === "event") {
+    // 바닥/덧그림과 같은 셸·그리드 안에 그린다 — 바깥에 나란히 붙이면
+    // .palette-work-pane.is-paint 의 maphead/layers 한 줄 배치가 안 닿아
+    // 맵 헤더가 전폭으로 벌어지고(실측 y9/w267) 탭이 다음 줄로 밀렸다.
+    // 내용만 시트→이벤트 목록으로 바뀌고 자리(map→layer→toolbar)는 그대로다.
     const project = store.getCurrent();
     const mapId = state.currentMapId ?? project.startMapId;
     const map = project.maps[mapId];
     const tileset = map ? project.tilesets[map.tilesetId] : undefined;
-    if (map) container.append(makeSidebarMapHeader(map, renderPalettePreservingViewport));
-    container.append(makeLeftLayerSwitcher(state.layer));
+    const shell = el("div", {
+      class: "panel-section palette-work-shell is-single-surface",
+      dataset: { testid: "palette-work-shell" },
+    });
+    const root = el("div", {
+      class: "palette-work-pane is-event",
+      dataset: { testid: "palette-work-pane-event" },
+    });
+    if (map) root.append(makeSidebarMapHeader(map, renderPalettePreservingViewport));
+    root.append(makeLeftLayerSwitcher(state.layer));
     if (map && tileset) {
-      container.append(makeTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
+      root.append(makeTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
     }
-    renderEventEditor(container);
-    if (map && tileset) container.append(makeInspectionControls({ map, rerender: renderPalettePreservingViewport, state, tileset }));
+    renderEventEditor(root);
+    if (map && tileset) {
+      // 검사 컨트롤(⋯ 오버플로·핀)은 타일 모드와 같은 utils 자리에 둔다 —
+      // 고치기 전 분기에 있던 것을 셸 안으로 옮긴 것이지 제거가 아니다.
+      root.append(el("div", {
+        class: "sidebar-utilities",
+        children: [makeInspectionControls({ map, rerender: renderPalettePreservingViewport, state, tileset })],
+      }));
+    }
+    shell.append(root);
+    container.append(shell);
     applyRovingTabindex(container);
     restoreFocus(container, focusSnapshot);
     return;

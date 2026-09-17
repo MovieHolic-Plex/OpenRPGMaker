@@ -104,7 +104,8 @@ describe("도구막대 오버플로 도달성", () => {
     }
     expectDirectSizes();
     host.querySelector<HTMLElement>('[data-testid="sidebar-tools-menu"]')!.click();
-    for (const testid of ['copy-button', 'paste-button', 'paint-shape-select']) {
+    // 칠하기 모양은 사이드바 옵션줄 소유 — 도구 표면에는 집기·밀기·통행+복사·붙여넣기만 있다.
+    for (const testid of ['copy-button', 'paste-button', 'tool-eyedropper', 'tool-pan', 'tool-collision']) {
       expect(host.querySelector(`[data-testid="sidebar-tools-surface"] [data-testid="${testid}"]`)).not.toBeNull();
     }
   });
