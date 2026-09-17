@@ -1,3 +1,5 @@
+import { createProjectSuggestions } from "./aiProjectSuggestions";
+import { focusEditorRegion } from "@/editor/editorReferenceNavigation";
 import { installDelayedTooltips } from "@/editor/delayedTooltipRollout";
 import { readLatestRunCheckpoint } from "@/ai/runCheckpointStore";
 import { reconcileRunCheckpoint, type RunRecovery } from "@/ai/runRecovery";
@@ -2831,13 +2833,24 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     class: "ai-chat-main",
     children: [glassLogMount, historyLogMount],
   });
+  const suggestions = createProjectSuggestions({
+    snapshot: () => ({
+      project: store.getCurrent(), projectId: store.getProjectIdentity().id,
+      mapId: mapContext().mapId ?? "",
+      active: !disposed && !turnBusy && log.childElementCount === 0 && !input.value.trim()
+        && document.visibilityState !== "hidden" && Boolean(suggestions.root.getClientRects().length),
+    }),
+    request: suggestion => {
+      input.value = suggestion.request;
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.focus();
+    },
+    locate: suggestion => focusEditorRegion({ mapId: suggestion.mapId, x: suggestion.x ?? 0, y: suggestion.y ?? 0, w: 1, h: 1 }, { highlight: true }),
+  });
   const body = el("div", {
     class: "ai-chat-body",
     dataset: { testid: "ai-chat-body" },
-    children: [el("div", {
-      class: "ai-chat-sidebar-welcome",
-      children: [deckIcon("spark", { size: 22 }), el("strong", { text: "무엇을 바꿔볼까요?" }), el("p", { text: "현재 맵에서 만들거나 다듬을 내용을 알려주세요. 팀 작업은 오른쪽에서 확인할 수 있어요." })],
-    }), mainColumn],
+    children: [suggestions.root, mainColumn],
   });
   const setLogFontSize = (delta: number): void => {
     const next = stepAiFontSize(loadAiFontSize(), delta);
@@ -3552,6 +3565,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     studioShell?.dispose();
     studioShell = null;
     teamSidebar.dispose();
+    suggestions.dispose();
 
     unsubscribeContextEditor();
     unsubscribeContextStore();

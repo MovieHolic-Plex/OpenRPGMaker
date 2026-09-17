@@ -2,6 +2,7 @@
 // 보이고, 펼치면 ① 지금 각 팀원이 하는 일 ② 팀원 명단 편집(추가·수정·끄기·삭제·기본값) ③ 팀장 지침이 나온다.
 // 상태는 teamActivity 버스(실행 중 보드 상태)와 teamSpecStore(명세)에서 온다. 이 파일은 그리기와 편집 폼만.
 
+import { deckIcon } from "./aiDeckIcons";
 import { createTeamBudget } from "./aiTeamBudget";
 import { el } from "@/util/dom";
 import { subscribeTeamActivity } from "@/ai/piAgent/teamActivity";
@@ -17,7 +18,7 @@ export interface TeamPanelHandle {
   dispose(): void;
 }
 
-const KIND_LABEL: Record<PiTeamMemberKind, string> = { builder: "시공", reviewer: "검수" };
+const KIND_LABEL: Record<PiTeamMemberKind, string> = { builder: "만들기", reviewer: "결과 확인" };
 const DOMAIN_LABEL: Record<string, string> = {
   core: "기본", tile: "타일", map: "맵", event: "이벤트", database: "데이터베이스", system: "시스템", world: "세계", quest: "퀘스트", battle: "전투",
 };
@@ -173,11 +174,15 @@ export function createTeamPanel(initialEnabled = false, options: { readonly alwa
     }
     const budget = createTeamBudget(maxTurns => { draft = { ...(draft ?? current), maxTurns }; });
     budget.update(current.maxTurns);
-    form.append(
-      field("이름", name), field("종류", kind), field("소개", summaryInput), field("프롬프트", prompt),
-      field("도구 범위 (비우면 전부)", domains), el("div", { class: "ai-team-field", children: [el("span", { text: "작업 예산" }), budget.root] }),
-      el("p", { text: "모델은 AI 설정에서 선택합니다. 팀장은 Ultrabrain, 팀원의 실행·구조 검수는 Deep을 사용합니다." }),
-    );
+    const back = el("button", { class: "ai-team-btn is-quiet", text: "← 팀원 목록", attrs: { type: "button" } });
+    back.addEventListener("click", cancelEdit);
+    const advanced = el("details", { class: "ai-team-settings-advanced", dataset: { testid: "ai-team-advanced" }, children: [
+      el("summary", { text: "고급 설정" }),
+      field("세부 지시", prompt), field("사용할 기능 (비우면 모두)", domains), el("div", { class: "ai-team-field", children: [el("span", { text: "작업 예산" }), budget.root] }),
+    ] });
+    form.append(back, el("h3", { class: "ai-team-settings-heading", text: "팀원 설정" }),
+      field("이름", name), field("역할", kind), field("한 줄 소개", summaryInput), advanced);
+
     const actions = el("div", { class: "ai-team-form-actions" });
     const save = el("button", { class: "ai-team-btn is-primary", text: "저장", attrs: { type: "submit" }, dataset: { testid: "ai-team-form-save" } });
     const cancel = el("button", { class: "ai-team-btn", text: "취소", attrs: { type: "button" } });
@@ -188,7 +193,8 @@ export function createTeamPanel(initialEnabled = false, options: { readonly alwa
       editing = null; draft = null;
       commit({ ...spec, members: spec.members.filter((other) => other.id !== member.id) });
     });
-    actions.append(save, cancel, remove);
+    remove.disabled = spec.members.length <= 1;
+    actions.append(remove, cancel, save);
     form.append(actions);
     form.addEventListener("submit", (event) => {
       event.preventDefault();
@@ -202,6 +208,10 @@ export function createTeamPanel(initialEnabled = false, options: { readonly alwa
 
   const renderRoster = (): HTMLElement => {
     const section = el("div", { class: "ai-team-section ai-team-roster", dataset: { testid: "ai-team-roster" } });
+    if (editing) {
+      const member = spec.members.find(m => m.id === editing);
+      if (member) { section.append(renderForm(member)); return section; }
+    }
     const head = el("div", { class: "ai-team-section-head" });
     head.append(el("h3", { class: "ai-team-section-title", text: `팀원 ${spec.members.length}` }));
     const add = el("button", { class: "ai-team-btn", text: "팀원 추가", attrs: { type: "button" }, dataset: { testid: "ai-team-add" } });
@@ -213,26 +223,26 @@ export function createTeamPanel(initialEnabled = false, options: { readonly alwa
     });
     const reset = el("button", { class: "ai-team-btn", text: "기본 팀으로", attrs: { type: "button" }, dataset: { testid: "ai-team-reset" } });
     reset.addEventListener("click", () => { editing = null; draft = null; spec = resetTeamSpec(); render(); });
-    head.append(add, reset);
+    head.append(add);
     section.append(head);
     const list = el("ul", { class: "ai-team-roster-list" });
     for (const member of spec.members) {
-      const item = el("li", { class: `ai-team-member role-${member.kind}${member.enabled ? "" : " is-off"}`, dataset: { testid: "ai-team-member", memberId: member.id } });
+      const item = el("li", { class: `ai-team-roster-member role-${member.kind}${member.enabled ? "" : " is-off"}`, dataset: { testid: "ai-team-member", memberId: member.id } });
       const row = el("div", { class: "ai-team-member-row" });
       const toggle = el("input", { attrs: { type: "checkbox", title: member.enabled ? "끄기" : "켜기", "aria-label": `${member.label} 사용` }, dataset: { testid: "ai-team-member-enabled" } });
       toggle.checked = member.enabled;
       toggle.addEventListener("change", () => updateMember(member.id, { enabled: toggle.checked }));
-      row.append(
-        toggle,
-        el("span", { class: "ai-team-role", text: KIND_LABEL[member.kind] }),
-        el("span", { class: "ai-team-member-name", text: member.label }),
-        el("span", { class: "ai-team-member-summary", text: member.summary || member.prompt.slice(0, 80) || "소개 없음" }),
-      );
-      const edit = el("button", { class: "ai-team-btn is-quiet", text: editing === member.id ? "닫기" : "편집", attrs: { type: "button", "aria-expanded": String(editing === member.id) }, dataset: { testid: "ai-team-member-edit" } });
-      edit.addEventListener("click", () => (editing === member.id ? cancelEdit() : startEdit(member)));
-      row.append(edit);
+      const edit = el("button", { class: "ai-team-settings-member", attrs: { type: "button", "aria-label": member.label + " 설정" }, dataset: { testid: "ai-team-member-edit" } });
+      const icon = member.kind === "reviewer" ? "shield" : member.toolDomains.includes("event") ? "user" : member.id === "decorator" ? "tree" : "map";
+      edit.append(el("span", { class: "ai-team-settings-avatar", children: [deckIcon(icon)] }),
+        el("span", { class: "ai-team-settings-copy", children: [
+          el("span", { class: "ai-team-member-name", text: member.label }),
+          el("span", { class: "ai-team-member-summary", text: member.summary || KIND_LABEL[member.kind] }),
+        ] }), deckIcon("chevron-right"));
+      edit.addEventListener("click", () => startEdit(member));
+      toggle.setAttribute("role", "switch");
+      row.append(edit, toggle);
       item.append(row);
-      if (editing === member.id) item.append(renderForm(member));
       list.append(item);
     }
     section.append(list);
@@ -241,7 +251,7 @@ export function createTeamPanel(initialEnabled = false, options: { readonly alwa
     notes.addEventListener("change", () => commit({ ...spec, orchestratorNotes: notes.value }));
     const notesField = el("label", { class: "ai-team-field" });
     notesField.append(el("span", { class: "ai-team-field-label", text: "팀장 지침" }), notes);
-    section.append(notesField);
+    section.append(el("details", { class: "ai-team-settings-advanced", children: [el("summary", { text: "팀 운영 설정" }), notesField, reset] }));
     return section;
   };
 
@@ -254,11 +264,14 @@ export function createTeamPanel(initialEnabled = false, options: { readonly alwa
     summary.textContent = liveSummary(spec, activity);
     root.classList.toggle("is-running", running);
     if (!open) return;
-    body.replaceChildren(renderNow(), renderRoster());
+    body.replaceChildren(renderRoster());
+    if (!editing && activity?.agents.length) {
+      body.append(el("details", { class: "ai-team-settings-advanced", children: [el("summary", { text: "최근 작업" }), renderNow()] }));
+    }
   };
 
   const unsubscribeSpec = subscribeTeamSpec((next) => { spec = next; render(); });
-  const unsubscribeActivity = subscribeTeamActivity((state) => { activity = state?.mode === "team" ? state : null; render(); });
+  const unsubscribeActivity = subscribeTeamActivity((state) => { activity = state?.mode === "team" ? state : null; if (!editing) render(); });
   render();
   return {
     root,

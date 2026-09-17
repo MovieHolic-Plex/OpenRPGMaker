@@ -1,0 +1,41 @@
+import { chromium } from "playwright";
+import { mkdirSync, writeFileSync } from "node:fs";
+const out = "output/evidence/ai-team-settings";
+mkdirSync(out, { recursive: true });
+const browser = await chromium.launch({ headless: true });
+const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+const checks = [];
+const check = (name, ok) => { checks.push({ name, ok }); if (!ok) throw Error(name); };
+try {
+  await page.goto("http://127.0.0.1:9826/?devProject=1&marketTown=1");
+  const guest = page.getByTestId("login-guest");
+  if (await guest.isVisible()) await guest.click();
+  await page.locator('[data-testid="edit-canvas"] canvas').waitFor({ timeout: 60000 });
+  await page.getByRole("button", { name: "AI 팀 설정", exact: true }).click();
+  const panel = page.getByTestId("ai-team-panel");
+  await panel.getByTestId("ai-team-member-edit").first().waitFor();
+  check("Roster has no exposed form", await panel.getByTestId("ai-team-member-form").count() === 0);
+  check("Roster rows use panel width", await panel.locator(".ai-team-roster-member").first().evaluate(n => n.clientWidth > 250));
+  await page.screenshot({ path: out + "/01-roster.png" });
+  await panel.getByTestId("ai-team-member-edit").first().click();
+  check("Editor replaces roster", await panel.locator(".ai-team-roster-list").count() === 0);
+  check("Advanced settings collapsed", !(await panel.getByTestId("ai-team-advanced").evaluate(n => n.open)));
+  await panel.getByTestId("ai-team-form-summary").fill("길과 집을 만드는 팀원");
+  await panel.getByTestId("ai-team-form-label").fill("맵 만들기");
+  await page.screenshot({ path: out + "/02-editor.png" });
+  await panel.getByTestId("ai-team-form-save").click();
+  await panel.getByTestId("ai-team-member-edit").first().click();
+  check("Editing name preserves description", await panel.getByTestId("ai-team-form-summary").inputValue() === "길과 집을 만드는 팀원");
+  await panel.getByRole("button", { name: "취소", exact: true }).click();
+  const toggle = panel.getByTestId("ai-team-member-enabled").first();
+  const was = await toggle.isChecked();
+  await toggle.click();
+  check("Participation switch saves", await panel.getByTestId("ai-team-member-enabled").first().isChecked() !== was);
+  await page.setViewportSize({ width: 1024, height: 800 });
+  check("Settings fit narrow panel", await panel.evaluate(n => n.scrollWidth <= n.clientWidth + 1));
+  await page.screenshot({ path: out + "/03-compact.png" });
+  console.log(JSON.stringify(checks));
+} finally {
+  writeFileSync(out + "/report.json", JSON.stringify(checks, null, 2));
+  await browser.close();
+}
