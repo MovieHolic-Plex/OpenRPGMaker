@@ -566,3 +566,59 @@
 @container (max-width: 799px) {
   .world-document-workspace .world-gallery-toggle { margin-left: auto; }
 }
+/* 세계 개요 v2 (2026-09-18) — Studio 토큰·프리미티브 유지, 구조만 추가.
+   AI 미터 / hero stat / 법칙 2열 그리드. */
+.world-document-workspace .world-canon-meter {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.world-document-workspace .world-canon-meter-bar {
+  height: 6px;
+  background: var(--db-studio-inset);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.world-document-workspace .world-canon-meter-bar > i {
+  display: block;
+  height: 100%;
+  background: var(--db-studio-accent);
+}
+.world-document-workspace .world-canon-meter-text {
+  font: 400 12px/1.5 var(--font-ui);
+  color: var(--db-studio-text-2);
+}
+.world-document-workspace .world-canon-law-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+@container (max-width: 799px) {
+  .world-document-workspace .world-canon-law-grid { grid-template-columns: minmax(0, 1fr); }
+}
+/* 설정집 v2 (2026-09-18) — 헤더 아래 stat 스트립. 기존 toolbar 경계·토큰 유지. */
+.world-document-workspace .world-codex-lead-wrap {
+  display: grid;
+  gap: 0;
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+}
+.world-document-workspace .world-codex-lead-wrap .world-document-toolbar {
+  border-bottom: 0;
+}
+.world-document-workspace .world-codex-lead-wrap .db-ws-stats {
+  padding: 0 24px 12px;
+}
+.world-document-workspace .world-canon-workspace .db-ws-stats {
+  margin-bottom: 12px;
+}
+/* 세계 개요 v2 — 제목+힌트 겹침 방지: 좁은 열에서 줄바꿈 허용. */
+.world-document-workspace .db-ws-card-head {
+  flex-wrap: wrap;
+  row-gap: 2px;
+}
+.world-document-workspace .db-ws-card-title {
+  white-space: normal;
+}
+.world-document-workspace .db-ws-card-hint {
+  flex-basis: 100%;
+}

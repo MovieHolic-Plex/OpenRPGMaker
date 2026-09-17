@@ -112,6 +112,14 @@ describe("database world canon view", () => {
     expect(hint?.textContent).toContain("뒤 100자는 발췌 밖");
   });
 
+  it("updates the hero meter and stat with the body without a rerender", () => {
+    const host = renderTab();
+    setInput(host, "db-world-canon-body", "가".repeat(700));
+    expect(findByTestId(host, "db-world-canon-ai-meter")?.textContent).toContain("뒤 100자는 발췌 밖");
+    expect(findByTestId(host, "db-world-canon-hero-stat-body")?.textContent).toContain("600 / 600자");
+    expect(findByTestId(host, "db-world-canon-hero-stats")).toBeTruthy();
+  });
+
   it("rejects an absence past the cap with feedback instead of silently dropping", () => {
     const full = Array.from({ length: 32 }, (_, index) => `금기${index}`);
     store.update((draft) => {
