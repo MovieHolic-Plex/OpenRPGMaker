@@ -56,6 +56,19 @@ export const TILE = {
 
 export const DEFAULT_SOLID_TILES = new Set<number>([TILE.WATER, TILE.WALL, TILE.TREE]);
 
+/**
+ * 「합본 마을 + 레트로 월드맵」 혼합 칩셋(2026-09-18). 480×512 한 장 — 위 480칸은 합본 마을과
+ * **같은 ID**(하네스·시맨틱·오토타일·물 애니가 그 번호에 묶여 있어 흔들 수 없다), 아래 480칸은
+ * 레트로 월드맵(ID = 원본 + RETRO_WORLD_TILE_OFFSET). 시트는 scripts/gen-combined-town-retro-world-chipset.mjs,
+ * 타일셋 조립은 defaults/combinedTownRetroWorld.ts. 이름의 「혼합 출처」는 레트로 월드맵 반쪽의
+ * CC-BY/CC0/WTFPL 혼합(vendor/easyrpg-rtp/AUTHORS.md)을 그대로 이어받은 것이다.
+ */
+export const COMBINED_TOWN_RETRO_WORLD_TILESET_ID = "easyrpg_chipset_combined_town_retro_world";
+export const COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY = "tex_easyrpg_chipset_combined_town_retro_world";
+export const COMBINED_TOWN_RETRO_WORLD_NAME = "합본 마을+레트로 월드맵 · EasyRPG (혼합 출처)";
+export const RETRO_WORLD_TILE_OFFSET = DEFAULT_TILE_COUNT;
+export const COMBINED_TOWN_RETRO_WORLD_TILE_COUNT = DEFAULT_TILE_COUNT * 2;
+
 export function bundledAssetRef(id: string): AssetRef {
   return { type: "bundled", id };
 }

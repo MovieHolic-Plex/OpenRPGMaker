@@ -16,8 +16,9 @@ export function compileConditionFromText(text: string, project: Project): Condit
   const matched: string[] = [];
   if (!raw) {
     return {
-      condition: { kind: "switch", switchId: project.switches[0]?.id ?? "", value: true },
-      warnings: ["빈 문장 → 기본 스위치 조건"],
+      // 비운 스위치 조건 — 첫 스위치(대개 퀘스트 진행 스위치)에 묶지 않는다. 호출자가 고르게 한다.
+      condition: { kind: "switch", switchId: "", value: true },
+      warnings: ["빈 문장 → 스위치를 고르지 않은 조건"],
       matched: [],
     };
   }
@@ -151,9 +152,8 @@ function compileLeaf(
     return { kind: "item", itemId: itemHit.id, present };
   }
 
-  warnings.push(`해석 실패 → 기본 스위치 조건: "${t}"`);
-  const fallback = project.switches[0]?.id ?? "";
-  return { kind: "switch", switchId: fallback, value: true };
+  warnings.push(`해석 실패 → 스위치를 고르지 않은 조건: "${t}"`);
+  return { kind: "switch", switchId: "", value: true };
 }
 
 type ConditionGoldOp = Extract<import("@/project/types").Condition, { kind: "gold" }>["op"];

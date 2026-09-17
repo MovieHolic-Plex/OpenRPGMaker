@@ -17,6 +17,11 @@ import {
   rawChipsetTextureKey,
 } from "@/assets/chipsetTransparency";
 import { CHIPSET_ANIMATION_FPS, CHIPSET_ANIMATION_STRIPS } from "@/project/defaults/chipsetAnimation";
+import {
+  COMBINED_TOWN_RETRO_WORLD_NAME,
+  COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY,
+  COMBINED_TOWN_RETRO_WORLD_TILE_COUNT,
+} from "@/project/defaults/constants";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { EASYRPG_PICTURE_ASSETS } from "@/assets/easyrpgRtp";
 import { FARMING_CROP_SPRITE_ASSETS } from "@/assets/farmingSprites";
@@ -84,11 +89,24 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   { textureKey: "tex_easyrpg_chipset_retro_house", path: "assets/easyrpg-chipset-retro-house-transparent.png", name: "레트로 집 · EasyRPG (혼합 출처)" },
   { textureKey: "tex_easyrpg_chipset_combined_town", path: "assets/easyrpg-chipset-combined-town-transparent.png", name: "합본 마을 · EasyRPG (CC0)" },
   { textureKey: "tex_easyrpg_chipset_retro_world", path: "assets/easyrpg-chipset-retro-world-transparent.png", name: "레트로 월드맵 · EasyRPG (혼합 출처)" },
+  // 480×512 확장 시트(960칸) — 위 480칸 합본 마을 그대로, 아래 480칸 레트로 월드맵(+480).
+  // 그림은 scripts/gen-combined-town-retro-world-chipset.mjs, 정의는 defaults/combinedTownRetroWorld.ts.
+  { textureKey: COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, path: "assets/easyrpg-chipset-combined-town-retro-world-transparent.png", name: COMBINED_TOWN_RETRO_WORLD_NAME },
   { textureKey: "tex_modern_exteriors_nocturne", path: "assets/modern-exteriors/modern-city-atlas.png", name: "Modern Exteriors · 네온 녹턴" },
   ...SCARLOXY_CHIPSET_ASSETS,
 ] as const satisfies readonly BundledImageAsset[];
 
-export function bundledChipsetFrameCount(key: string): number { return key === "tex_tibo_interior_expanded" ? tiboRecovered.count : TILE_FRAME_COUNT; }
+/** 번들 칩셋의 칸 수. 480칸 규격이 아닌 확장 시트(Tibo 실내 확장·합본 마을+레트로 월드맵)만 여기서 갈라진다. */
+export function bundledChipsetFrameCount(key: string): number {
+  if (key === "tex_tibo_interior_expanded") return tiboRecovered.count;
+  if (key === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return COMBINED_TOWN_RETRO_WORLD_TILE_COUNT;
+  return TILE_FRAME_COUNT;
+}
+
+/** 번들 칩셋 시트의 세로 픽셀 — 자료 보관함 프로필(imageHeight)이 실제 파일과 맞게 한다. */
+export function bundledChipsetSheetHeight(key: string): number {
+  return Math.ceil(bundledChipsetFrameCount(key) / TILES_PER_ROW) * TILE_SIZE;
+}
 
 export function bundledEasyRpgTilesetId(textureKey: string): string {
   return textureKey.startsWith("tex_") ? textureKey.slice(4) : textureKey;

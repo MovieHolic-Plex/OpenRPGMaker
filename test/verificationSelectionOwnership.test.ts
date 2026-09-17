@@ -168,10 +168,11 @@ function normalSession(f: ReturnType<typeof fixture>) {
   // A genuine independent requirement makes work-item completion observable;
   // the exploratory failed NPC must block it even when this check passes.
   const required: Call = { name: scene, args: { mapId: f.root.id, start: { x: 2, y: 2 }, steps: [{ kind: "expect", mapId: f.root.id }] } };
-  const plan: Call = { name: "set_work_plan", args: { goal: "Selection ownership", acceptance: [{ id: "size", title: "Map", criteria: [
-    { kind: "mapDimensions", target: { mapId: f.root.id }, width: f.root.width, height: f.root.height },
-  ] }], layers: [{ title: "Inspect", items: [{ id: "qa", title: "Check", instruction: "Inspect", successTools: [scene],
-    verificationChecks: [{ tool: scene, args: required.args, interactionTargets: [] }] }] }] } };
+  // 2026-09-17: 수용 원장이 사라져 plan 의 acceptance 배열은 무시된다. 완료를 막는 것은 항목이 직접 선언한
+  // verificationChecks 와 미해소 finding 뿐이다.
+  const plan: Call = { name: "set_work_plan", args: { goal: "Selection ownership",
+    layers: [{ title: "Inspect", items: [{ id: "qa", title: "Check", instruction: "Inspect", successTools: [scene],
+      verificationChecks: [{ tool: scene, args: required.args, interactionTargets: [] }] }] }] } };
   return { session, events, plan, required, async send(batch: Call[]) {
     calls = batch;
     await session.sendUserMessage("Inspect selection ownership.", event => events.push(event));
@@ -187,15 +188,13 @@ describe.each(["ordinary", "correct_verification"])("normal session selection ow
     await s.send([s.plan, probe, s.required]);
     const a = s.session.getVerificationSnapshot().findings[0]!;
     expect(a).toBeDefined();
-    expect(s.session.getAcceptanceSnapshot()?.status).toBe("blocked");
     expect(s.session.getVerificationSnapshot().requirements[0]?.status).toBe("passed");
     if (scenario === "two-negatives") f.breakTarget("mapB");
     f.route("mapB");
     expect(s.session.syncBaselineFromStoreIfClean(f.project)).toBe(true);
     await s.send([scenario === "two-negatives" ? probe : rerun(a.checkId), s.required]);
     const both = s.session.getVerificationSnapshot().findings;
-    // At the reviewed base the foreign pass incorrectly verifies acceptance.
-    expect(s.session.getAcceptanceSnapshot()?.status).toBe("blocked");
+    // A foreign-map pass must not resolve A's finding; the work item stays open.
     expect(both).toHaveLength(scenario === "two-negatives" ? 2 : 1);
     expect(both[0]).toEqual(a);
     expect(s.session.getWorkPlan()?.layers[0]?.items[0]?.status).not.toBe("done");
@@ -206,7 +205,6 @@ describe.each(["ordinary", "correct_verification"])("normal session selection ow
     await s.send([rerun(a.checkId), s.required]);
     if (scenario === "two-negatives") {
       expect(s.session.getVerificationSnapshot().findings).toEqual([both[1]]);
-      expect(s.session.getAcceptanceSnapshot()?.status).toBe("blocked");
       expect(s.session.getWorkPlan()?.layers[0]?.items[0]?.status).not.toBe("done");
       f.route("mapB");
       expect(f.probe()).toMatchObject({ ok: true, data: { ok: false } });
@@ -215,7 +213,6 @@ describe.each(["ordinary", "correct_verification"])("normal session selection ow
       await s.send([rerun(both[1]!.checkId), s.required]);
     }
     expect(s.session.getVerificationSnapshot().findings).toEqual([]);
-    expect(s.session.getAcceptanceSnapshot()?.status).toBe("verified");
     expect(s.session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("done");
     const results = s.events.filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call");
     expect(results.length).toBeGreaterThan(0);

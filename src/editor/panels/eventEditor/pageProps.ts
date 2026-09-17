@@ -60,6 +60,7 @@ import {
 } from "./eventEditorOpenState";
 
 import { relationshipStateName } from "@/project/relationshipState";
+import { commitAfterPointerGesture } from "./commitAfterPointerGesture";
 import { appearanceBindingControl } from "../appearanceBindingControl";
 import { getCharacterAppearance } from "@/project/characterAppearances";
 import { insideLocationSentence, mapLocationLabel } from "@/editor/mapLocationLabels";
@@ -68,27 +69,78 @@ import {
   locationTransitionTrigger,
   renderLocationTransitionTriggerFields,
 } from "@/editor/locationTriggerAuthoring";
-export function renderEventNameControl(
+/**
+ * 페이지 이름 상자(설정 패널 맨 위). 헤더의 큰 상자는 **이벤트** 이름이고(모달 참조), 페이지 이름은
+ * 여기와 탭(더블클릭·우클릭 → 이름 바꾸기)에서 고친다. 예전엔 이 컨트롤이 「이벤트 이름」이라고
+ * 써 놓고 페이지 이름을 고쳤다(2026-09-17 적대적 리뷰 P0-1).
+ */
+export function renderPageNameControl(
   mapId: MapId,
   eventId: string,
   page: EventPage,
+  pageIndex: number,
 ): HTMLElement {
   const name = el("input", {
-    attrs: { type: "text", placeholder: "이벤트 이름" },
+    attrs: { type: "text", placeholder: `페이지 ${pageIndex + 1}`, "aria-label": `페이지 ${pageIndex + 1} 이름` },
     value: page.name,
     dataset: { testid: "event-page-name-input" },
   }) as HTMLInputElement;
-  name.addEventListener("change", () => updateEventPage(mapId, eventId, page.id, { name: name.value }));
+  name.addEventListener("change", () => {
+    const next = name.value;
+    commitAfterPointerGesture(() => updateEventPage(mapId, eventId, page.id, { name: next }));
+  });
   return el("div", {
-    class: "event-editor-identity-row",
+    class: "event-editor-identity-row event-page-name-row",
     dataset: { testid: "event-classic-name" },
     children: [
       el("label", {
         class: "event-editor-name-field",
-        children: [el("span", { text: "이벤트 이름" }), name],
+        children: [el("span", { text: "페이지 이름" }), name],
       }),
     ],
   });
+}
+
+/**
+ * 탭 제목을 제자리에서 고치는 입력 상자로 바꾼다. Enter·포커스 이탈 = 확정, Esc = 취소.
+ * 빈 값은 자동 이름(`페이지 N`)으로 되돌린다 — 빈 이름의 탭은 어차피 그 글자로 보이므로 모델도 같게.
+ */
+export function beginPageTabRename(tab: HTMLElement, mapId: MapId, eventId: string, page: EventPage, index: number): void {
+  const title = tab.querySelector<HTMLElement>(".evt-page-segment-title");
+  if (!title || tab.querySelector(".evt-page-segment-rename")) return;
+  const input = el("input", {
+    class: "evt-page-segment-rename",
+    value: (page.name ?? "").trim(),
+    attrs: { type: "text", "aria-label": `페이지 ${index + 1} 이름`, placeholder: `페이지 ${index + 1}` },
+    dataset: { testid: `evt-page-rename-${index + 1}` },
+  }) as HTMLInputElement;
+  let settled = false;
+  const finish = (commit: boolean) => {
+    if (settled) return;
+    settled = true;
+    const next = input.value.trim() || `페이지 ${index + 1}`;
+    input.replaceWith(title);
+    tab.removeAttribute("draggable");
+    if (commit && next !== (page.name ?? "").trim()) {
+      updateEventPage(mapId, eventId, page.id, { name: next }, `페이지 이름 변경: ${page.name || `페이지 ${index + 1}`} → ${next}`);
+    } else {
+      tab.focus({ preventScroll: true });
+    }
+  };
+  input.addEventListener("keydown", (event) => {
+    // 탭 줄의 방향키·Delete 핸들러가 글자 편집을 가로채지 않게 여기서 멈춘다.
+    event.stopPropagation();
+    if (event.key === "Enter") { event.preventDefault(); finish(true); }
+    else if (event.key === "Escape") { event.preventDefault(); finish(false); }
+  });
+  input.addEventListener("blur", () => finish(true));
+  // 편집 중 클릭이 탭 전환·드래그로 새지 않게.
+  input.addEventListener("click", (event) => event.stopPropagation());
+  input.addEventListener("pointerdown", (event) => event.stopPropagation());
+  input.addEventListener("dblclick", (event) => event.stopPropagation());
+  title.replaceWith(input);
+  input.focus({ preventScroll: true });
+  input.select();
 }
 
 /**
@@ -287,7 +339,19 @@ export function renderClassicPageTabStrip(
           });
           editorState.set({ selectedEventPageId: page.id });
         },
-        keydown: (event) => handlePageTabKeydown(event, mapId, ev, pages, index),
+        keydown: (event) => {
+          // F2 = 이름 바꾸기(탭 줄 어디서나 같은 키).
+          if (event instanceof KeyboardEvent && event.key === "F2") {
+            event.preventDefault();
+            beginPageTabRename(tab, mapId, ev.id, page, index);
+            return;
+          }
+          handlePageTabKeydown(event, mapId, ev, pages, index);
+        },
+        dblclick: (event) => {
+          event.preventDefault();
+          beginPageTabRename(tab, mapId, ev.id, page, index);
+        },
         contextmenu: (event) => {
           if (!(event instanceof MouseEvent)) return;
           event.preventDefault();
@@ -298,6 +362,7 @@ export function renderClassicPageTabStrip(
             event: ev,
             page,
             index,
+            requestRename: () => beginPageTabRename(tab, mapId, ev.id, page, index),
             requestDelete: (target) => void requestEventPageDeletion(mapId, ev.id, target),
           });
         },
@@ -401,7 +466,7 @@ function pageTabTooltip(page: EventPage, index: number, canDrag: boolean): strin
   const conditions = page.conditions ?? [];
   const summary = conditions.length > 0 ? conditions.map(pageConditionSummary).join(" / ") : "조건 없음";
   const dragHint = canDrag ? "\n끌어다 놓아 순서를 바꿉니다 (뒤에 있을수록 조건이 맞을 때 이깁니다)" : "";
-  return `페이지 ${index + 1} — ${name}\n${summary}${dragHint}`;
+  return `페이지 ${index + 1} — ${name}\n${summary}${dragHint}\n더블클릭·F2: 이름 바꾸기`;
 }
 
 function pageConditionSummary(condition: EventPageCondition): string {
@@ -906,7 +971,9 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
     ],
   });
 
+  const pageIndex = Math.max(0, (event?.pages ?? []).findIndex((candidate) => candidate.id === page.id));
   wrap.append(
+    renderPageNameControl(mapId, eventId, page, pageIndex),
     presence,
     factOverlap,
     collapsibleSection({
@@ -1137,6 +1204,10 @@ function wrapPageSettingsAsAccordion(
     dataset: { testid: "event-editor-settings-accordion", railKey: openKey },
   });
   const claimed = new Set<HTMLElement>();
+  // 페이지 이름은 어느 그룹의 설정도 아니다 — 레일 위에 한 줄로 둔다(그룹으로 넣으면 «기타»가 생겨
+  // 4칸 계약이 깨지고, 접힌 그룹 안에 숨는다).
+  const pageNameRow = source.querySelector<HTMLElement>("[data-testid='event-classic-name']");
+  if (pageNameRow) claimed.add(pageNameRow);
   for (const group of groups) {
     const body = el("div", { class: "event-editor-settings-accordion-body" });
     for (const node of group.nodes) {
@@ -1153,7 +1224,7 @@ function wrapPageSettingsAsAccordion(
     rail.append(railGroup(group, body, openKey));
   }
   const leftovers = Array.from(source.children).filter(
-    (child): child is HTMLElement => child instanceof HTMLElement && child !== rail,
+    (child): child is HTMLElement => child instanceof HTMLElement && child !== rail && child !== pageNameRow,
   );
   if (leftovers.length > 0) {
     const body = el("div", { class: "event-editor-settings-accordion-body" });
@@ -1171,7 +1242,7 @@ function wrapPageSettingsAsAccordion(
     Array.from(node.childNodes).forEach((child) => replacement.append(child));
     node.replaceWith(replacement);
   });
-  source.replaceChildren(rail);
+  source.replaceChildren(...(pageNameRow ? [pageNameRow, rail] : [rail]));
   return source;
 }
 

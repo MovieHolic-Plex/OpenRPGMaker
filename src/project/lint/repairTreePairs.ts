@@ -53,6 +53,8 @@ export function repairTreePairsOnMap(
   let canopiesPlaced = 0;
   let orphanTrunksRemoved = 0;
 
+  orphanTrunksRemoved += removeBroadleafHalves(map);
+
   for (let y = 0; y < map.height; y += 1) {
     for (let x = 0; x < map.width; x += 1) {
       const index = y * map.width + x;
@@ -104,4 +106,60 @@ export function formatTreePairRepairSummary(result: TreePairRepairResult): strin
   if (result.canopiesPlaced > 0) parts.push(`수관 보완 ${result.canopiesPlaced}칸`);
   if (result.orphanTrunksRemoved > 0) parts.push(`고아 밑동 제거 ${result.orphanTrunksRemoved}칸`);
   return `나무 상·하 보정: ${parts.join(", ")}`;
+}
+
+// ── 활엽수 2×2 반쪽 제거 ──────────────────────────────────────────────────────
+// 실측(2026-09-18 마을 드라이브): tile_erase 사각형이 2×2 활엽수의 절반만 물면 나머지 절반이 남고,
+// 아래 수관 보정이 그 반쪽 위에 수관을 다시 올려 lint hard 규칙(262 왼쪽에 263 …)이 영구히 깨졌다.
+// 조수는 이 오류 때문에 초안을 적용받지 못하고 지우기·칠하기를 되풀이했다.
+// 규칙(combinedTownGroups.ts broadleafTreeGroup)을 그대로 따라 짝 없는 반쪽을 통째로 걷어낸다:
+//   292 의 오른쪽엔 293 또는 겹친 다음 나무의 262 · 293 의 왼쪽엔 292 · 262 의 오른쪽엔 263 · 263 의 왼쪽엔 262.
+const BROADLEAF = { topLeft: 262, topRight: 263, bottomLeft: 292, bottomRight: 293 } as const;
+
+function hasAnyTileAt(map: GameMap, x: number, y: number, accepted: readonly number[]): boolean {
+  if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
+  const index = y * map.width + x;
+  return accepted.includes(map.lowerTiles[index] ?? TILE.EMPTY) || accepted.includes(map.upperTiles[index] ?? TILE.EMPTY);
+}
+
+function clearTileAt(map: GameMap, x: number, y: number, tile: number): boolean {
+  if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
+  const index = y * map.width + x;
+  let changed = false;
+  if (map.upperTiles[index] === tile) { map.upperTiles[index] = TILE.EMPTY; changed = true; }
+  if (map.lowerTiles[index] === tile) { map.lowerTiles[index] = TILE.GRASS; changed = true; }
+  return changed;
+}
+
+/** 짝 없는 활엽수 반쪽(밑동+그 위 수관)을 제거한다. 제거된 밑동 수를 돌려준다. */
+function removeBroadleafHalves(map: GameMap): number {
+  let removed = 0;
+  // 한 반쪽을 걷어내면 이웃이 새로 고아가 될 수 있어 안정될 때까지 돈다(최대 4회 — 체인은 짧다).
+  for (let pass = 0; pass < 4; pass += 1) {
+    let changed = false;
+    for (let y = 0; y < map.height; y += 1) {
+      for (let x = 0; x < map.width; x += 1) {
+        const left = hasAnyTileAt(map, x, y, [BROADLEAF.bottomLeft]);
+        const right = hasAnyTileAt(map, x, y, [BROADLEAF.bottomRight]);
+        if (left && !hasAnyTileAt(map, x + 1, y, [BROADLEAF.bottomRight, BROADLEAF.topLeft])) {
+          if (clearTileAt(map, x, y, BROADLEAF.bottomLeft)) { removed += 1; changed = true; }
+          clearTileAt(map, x, y - 1, BROADLEAF.topLeft);
+        }
+        if (right && !hasAnyTileAt(map, x - 1, y, [BROADLEAF.bottomLeft])) {
+          if (clearTileAt(map, x, y, BROADLEAF.bottomRight)) { removed += 1; changed = true; }
+          clearTileAt(map, x, y - 1, BROADLEAF.topRight);
+        }
+        // 밑동 없는 수관 반쪽(밑동만 지워진 경우) — 아래에 짝 밑동이 없으면 수관도 걷어낸다.
+        if (hasAnyTileAt(map, x, y, [BROADLEAF.topLeft]) && !hasAnyTileAt(map, x, y + 1, [BROADLEAF.bottomLeft])
+          && !hasAnyTileAt(map, x + 1, y, [BROADLEAF.topRight])) {
+          if (clearTileAt(map, x, y, BROADLEAF.topLeft)) changed = true;
+        }
+        if (hasAnyTileAt(map, x, y, [BROADLEAF.topRight]) && !hasAnyTileAt(map, x - 1, y, [BROADLEAF.topLeft])) {
+          if (clearTileAt(map, x, y, BROADLEAF.topRight)) changed = true;
+        }
+      }
+    }
+    if (!changed) break;
+  }
+  return removed;
 }

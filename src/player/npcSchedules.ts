@@ -249,9 +249,11 @@ function configureScheduleMover(mover: AutonomousMover): void {
   mover.strategy = "sequence";
   // 시간표 경로는 A* 결과라 한 걸음을 잃으면 남은 계획이 전부 어긋난다.
   mover.retryBlockedSteps = true;
-  mover.speedRank = 4;
+  // 걷는 속도는 페이지 저작값을 물려받는다 — registerAutonomousMover 가 이미
+  // 페이지 speed/frequency 로 moveDurationMs 를 잡아 두므로 덮지 않는다.
+  // 걸음 간격만 시간표용 80ms 로 좁힌다(대기 없이 목적지로 향한다).
+  // interval 80ms 는 frequency 랭크 8 과 같은 값이므로 rank 도 맞춘다.
   mover.frequencyRank = 8;
-  mover.moveDurationMs = 320;
   mover.moveIntervalMs = 80;
   mover.pathfind = true;
 }

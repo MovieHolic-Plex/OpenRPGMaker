@@ -15,6 +15,7 @@ import { navigateToEventCommand } from "./content";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 
 import { renderEventValidationActions } from "./validationActions";
+import { scrollIntoNearestScroller } from "./scrollIntoNearestScroller";
 
 const closeBell = new WeakMap<HTMLDetailsElement, () => void>();
 
@@ -156,7 +157,8 @@ export function navigateToEventDraftIssue(issue: EventDraftIssue): void {
     target.setAttribute("tabindex", "-1");
   }
   target.focus({ preventScroll: true });
-  target.scrollIntoView?.({ block: "center", inline: "nearest" });
+  // 자기 열 안에서만 스크롤한다 — scrollIntoView 는 워크벤치까지 밀어 올려 열 머리를 잘랐다.
+  scrollIntoNearestScroller(target, "center");
 }
 
 function renderIssueRow(issue: EventDraftIssue, index: number, details: HTMLDetailsElement): HTMLElement {
@@ -173,12 +175,13 @@ function renderIssueRow(issue: EventDraftIssue, index: number, details: HTMLDeta
     },
     children: [
       el("span", { class: "event-draft-validation-severity", text: SEVERITY_LABEL[issue.severity] }),
-      el("span", { class: "event-draft-validation-message", children: [
-        el("span", { text: `${issue.code} · ${issue.pageId} · ${JSON.stringify(issue.commandPath ?? [])}` }),
-        el("span", { text: `${issue.field?.testId ?? ""}${issue.field?.selectTestId ? ` · ${issue.field.selectTestId}` : ""}${issue.field?.conditionPath ? ` · 조건 ${JSON.stringify(issue.field.conditionPath)}` : ""}` }),
-        el("span", { text: issue.cause ?? issue.message }),
-        el("span", { text: issue.expected ? `기대값: ${issue.expected}` : "" }),
-        el("span", { text: issue.hint ?? "" }),
+      // 사람이 읽는 줄만 보인다: 무슨 일인지(원인) → 어떻게 하면 되는지(힌트). 코드·페이지 ID·
+      // 명령 경로·testid 는 진단 복사(validationActions)와 dataset 에 남긴다 — 화면에 `page.invisible-collision ·
+      // page_e869… · []` 같은 내부 토큰을 늘어놓는 것은 위키 «조건 문구에 내부 토큰을 넣지 마라» 위반이었다.
+      el("span", { class: "event-draft-validation-message", attrs: { title: `${issue.code} · ${issue.pageId}${issue.commandPath?.length ? ` · ${JSON.stringify(issue.commandPath)}` : ""}` }, children: [
+        el("span", { class: "event-draft-validation-cause", text: issue.cause ?? issue.message }),
+        ...(issue.expected && issue.expected !== issue.hint ? [el("span", { class: "event-draft-validation-expected", text: issue.expected })] : []),
+        ...(issue.hint ? [el("span", { class: "event-draft-validation-hint", text: issue.hint })] : []),
       ] }),
     ],
     on: {

@@ -5,6 +5,7 @@
 
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import type { Command } from "@/project/types";
+import { resolveCommandAtPath } from "@/editor/eventCommandPaths";
 import { el } from "@/util/dom";
 import { renderEditorIcon } from "./editorIcons";
 import { commandKindLabel } from "./options";
@@ -110,6 +111,41 @@ export function setCommandSelectionListener(listener: (() => void) | undefined):
 /** 현재 선택된 명령 경로. 재렌더 후 선택 복원에 쓴다. */
 export function selectedCommandPath(): readonly number[] | undefined {
   return selectedPath;
+}
+
+/** `path` 가 가리키는 행 **바로 아래, 같은 깊이** 의 자리. 분기를 가진 행이면 그 묶음 전체 뒤다. */
+export function insertionPathAfter(path: readonly number[]): number[] {
+  const index = path[path.length - 1] ?? 0;
+  return [...path.slice(0, -1), index + 1];
+}
+
+/**
+ * 「+ 명령」·피커·붙여넣기가 공유하는 삽입 자리 규칙 하나(2026-09-17 적대적 리뷰 P0-3).
+ *
+ * 선택한 행이 있으면 그 행 바로 아래 같은 깊이, 없으면 루트 끝. 예전엔 「+ 명령」이 선택을 무시하고
+ * 최상위 끝에 넣었고 붙여넣기는 선택 행 **앞**에 넣어서, 분기 안 행을 고르고 명령을 추가하면
+ * 분기 밖 3번으로 들어갔다 — 거절해도 회복약을 받는 논리 버그를 사용자가 알 수 없었다.
+ *
+ * 여러 행을 골랐으면 마지막(트리 순서) 뿌리 선택 아래에 넣는다.
+ */
+export function defaultInsertionPath(commands: readonly Command[]): number[] | undefined {
+  const roots = selectedCommandRoots(selectedPaths);
+  const anchor = roots.length > 0
+    ? roots[roots.length - 1]
+    : selectedPath;
+  if (!anchor || anchor.length === 0) return undefined;
+  if (!resolveCommandAtPath([...commands], anchor)) return undefined;
+  return insertionPathAfter(anchor);
+}
+
+/** 삽입 자리를 사람 말로 — 피커 제목에 쓴다. */
+export function describeInsertionPath(commands: readonly Command[], path: readonly number[] | undefined): string {
+  if (!path) return "이 페이지의 마지막에";
+  const anchorIndex = (path[path.length - 1] ?? 1) - 1;
+  const anchorPath = [...path.slice(0, -1), anchorIndex];
+  const anchor = resolveCommandAtPath([...commands], anchorPath);
+  const depth = anchorPath.length > 1 ? " (분기 안)" : "";
+  return anchor ? `선택한 ${commandKindLabel(anchor.kind)} 바로 아래에${depth}` : "선택한 행 바로 아래에";
 }
 
 export function sameInspectorPath(a: readonly number[], b: readonly number[] | undefined): boolean {

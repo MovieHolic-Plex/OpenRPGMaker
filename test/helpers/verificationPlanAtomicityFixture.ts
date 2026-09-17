@@ -160,5 +160,5 @@ export function rejected(turn: Awaited<ReturnType<ReturnType<typeof fixture>["re
       ...(checkId ? { checkId } : {}), reason: expect.any(String) }),
   ]) });
   expect(turn.boundary).toEqual(turn.before);
-  expect(turn.boundary.acceptance?.items.some(item => item.id === "candidate-only")).toBe(false);
+  // 2026-09-17 수용 원장 해체: acceptance 스냅샷은 항상 null 이라 후보 약속(candidate-only) 채택 여부는 더 이상 잴 수 없다.
 }

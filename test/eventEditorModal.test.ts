@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { eventDisplayName } from "@/project/eventDisplayName";
 import { editorState } from "@/editor/editorState";
 import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
@@ -317,36 +318,60 @@ describe("RPG Maker style event editor entry points", () => {
     expect(store.getCurrent().maps[project.startMapId].events[0]?.pages?.[0]?.movement.route?.skippable).toBe(true);
   });
 
-  it("헤더 이름 상자는 활성 페이지를 따라가고, 그 페이지 이름만 고친다", () => {
-    // 실측 결함(2026-08-30): 헤더는 모달을 열 때 한 번만 렌더되고 refresh 는 페이지 카운터만
-    // 갱신했다. 그래서 상자는 1페이지 이름에 묶여 있었고(`페이지 2/4` 인데 상자는 `페이지 1`),
-    // 2페이지를 고른 뒤 이름을 고치면 **1페이지 이름이 바뀌었다**.
+  it("헤더 이름 상자는 이벤트 이름이다 — 페이지를 바꿔도 그대로고, 고치면 event.name 에 쓴다", () => {
+    // 2026-09-17 적대적 리뷰 P0-1: 이 상자는 활성 페이지 이름이었고, 이벤트 이름은 「마지막으로 이름
+    // 붙은 페이지」에서 뽑았다. 2페이지를 자동 이름 그대로 두고 저장하면 NPC 가 「페이지 2」로 불렸다.
     const project = createBlankProject();
     const map = project.maps[project.startMapId];
     const pages = [
       { ...eventPage(), id: "page-1", name: "첫 페이지" },
       { ...eventPage(), id: "page-2", name: "둘째 페이지" },
     ];
-    map.events = [{ ...gameEvent(pages[0]!), pages }];
+    map.events = [{ ...gameEvent(pages[0]!), name: "촌장 할아버지", pages }];
     store.replace(project);
     editorState.set({ currentMapId: project.startMapId, selectedEventId: "event-1", selectedEventPageId: "page-1" });
 
     openEventEditorModal(project.startMapId, "event-1");
     const nameInput = document.querySelector<HTMLInputElement>('[data-testid="event-editor-name"]');
     if (!nameInput) throw new Error("Expected the header name input");
-    expect(nameInput.value).toBe("첫 페이지");
+    expect(nameInput.value).toBe("촌장 할아버지");
+    expect(nameInput.getAttribute("aria-label")).toBe("이벤트 이름");
+    // 지은 이름이 있으면 「표시 이름」 안내 칩은 그리지 않는다.
+    expect(document.querySelector('[data-testid="event-editor-identity"]')).toBeNull();
 
     editorState.set({ selectedEventPageId: "page-2" });
-    // 「페이지 N/M」 카운터는 탭 줄과 중복이라 없앴다(2026-09-03). 순번은 이름 상자의 aria-label 이 말한다.
     expect(document.querySelector('[data-testid="event-editor-header-page-count"]')).toBeNull();
-    expect(nameInput.value).toBe("둘째 페이지");
-    expect(nameInput.getAttribute("aria-label")).toBe("페이지 이름 (2/2)");
+    expect(nameInput.value).toBe("촌장 할아버지");
 
-    nameInput.value = "이름 바꿈";
+    nameInput.value = "촌장";
     nameInput.dispatchEvent(new Event("change"));
 
-    const saved = store.getCurrent().maps[project.startMapId].events[0]?.pages ?? [];
-    expect(saved.map((page) => page.name)).toEqual(["첫 페이지", "이름 바꿈"]);
+    const saved = store.getCurrent().maps[project.startMapId].events[0];
+    expect(saved?.name).toBe("촌장");
+    expect(saved?.pages?.map((page) => page.name)).toEqual(["첫 페이지", "둘째 페이지"]);
+    expect(eventDisplayName(saved!)).toBe("촌장");
+  });
+
+  it("이름을 짓지 않은 이벤트는 자동 이름(페이지 N)을 이벤트 이름으로 치지 않는다", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    const pages = [
+      { ...eventPage(), id: "page-1", name: "페이지 1" },
+      { ...eventPage(), id: "page-2", name: "페이지 2" },
+    ];
+    map.events = [{ ...gameEvent(pages[0]!), pages }];
+    store.replace(project);
+    editorState.set({ currentMapId: project.startMapId, selectedEventId: "event-1", selectedEventPageId: "page-2" });
+
+    expect(eventDisplayName(map.events[0]!)).toBe("event-1");
+    openEventEditorModal(project.startMapId, "event-1");
+    const nameInput = document.querySelector<HTMLInputElement>('[data-testid="event-editor-name"]');
+    expect(nameInput?.value).toBe("");
+    // 빌려 올 페이지 이름도 없으니 안내 칩도 없다.
+    expect(document.querySelector('[data-testid="event-editor-identity"]')).toBeNull();
+    // 페이지 이름은 설정 패널의 「페이지 이름」 상자에서 고친다.
+    const pageName = document.querySelector<HTMLInputElement>('[data-testid="event-page-name-input"]');
+    expect(pageName?.value).toBe("페이지 2");
   });
 
   // 예전 계약: 모달 안에서 맨 Delete 를 누르면 확인 후 **이벤트가 통째로** 지워졌다.
@@ -490,13 +515,14 @@ describe("RPG Maker style event editor entry points", () => {
     expect(modal?.querySelector('[data-testid="event-editor-content"]')).not.toBeNull();
     expect(modal?.querySelector(".event-editor-workbench")).not.toBeNull();
     expect(modal?.querySelector('[data-testid="event-editor-render-error"]')).toBeNull();
-    expect(modal?.querySelector('[data-testid="event-editor-identity"]')?.textContent).toBe("이벤트: 단골 창구");
+    // name 필드가 없던 시절 저작물: 페이지 이름을 빌려 표시하고, 헤더가 그 사실을 말한다.
+    expect(modal?.querySelector('[data-testid="event-editor-identity"]')?.textContent).toBe("표시 이름: 단골 창구 (페이지 이름에서)");
     // 좌표 앞에 맵 이름 — 어느 맵의 (77, 17) 인지 헤더가 말한다(2026-09-03 제안서 §6).
     expect(modal?.querySelector('[data-testid="event-editor-map-name"]')?.textContent).toBe(project.maps[project.startMapId]!.name);
     expect(modal?.querySelector('[data-testid="event-editor-coords"]')?.textContent).toBe("77, 17");
     // NPC 가 연결되지 않은 이벤트는 「NPC 없음」 칩을 그리지 않는다.
     expect(modal?.querySelector('[data-testid="event-editor-npc-chip"]')).toBeNull();
-    expect(document.querySelector<HTMLInputElement>('[data-testid="event-editor-name"]')?.value).toBe("첫 방문");
+    expect(document.querySelector<HTMLInputElement>('[data-testid="event-editor-name"]')?.value).toBe("");
   });
 
 });

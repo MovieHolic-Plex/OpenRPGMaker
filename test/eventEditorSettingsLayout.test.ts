@@ -87,8 +87,8 @@ describe("event editor settings column layout", () => {
     // 「NPC와 일정」 레일 그룹에서 처음으로 실제로 보인다.
     expect(host.querySelector(".event-editor-top-strip")).toBeNull();
     const characterId = host.querySelector('[data-testid="event-character-id-field"]');
-    // 페이지 이름 컨트롤(event-classic-name)은 모달 헤더로 옮겨졌으므로 본문에는 없다.
-    expect(host.querySelector('[data-testid="event-classic-name"]')).toBeNull();
+    // 헤더 상자는 이벤트 이름(2026-09-18). 페이지 이름 컨트롤(event-classic-name)은 설정 본문 맨 위에 있다.
+    expect(host.querySelector('[data-testid="event-classic-name"] [data-testid="event-page-name-input"]')).not.toBeNull();
     expect(characterId).toBeTruthy();
     expect(main?.contains(characterId)).toBe(true);
     // 관계 상태와 연결 행동은 중복 disclosure 없이 카드에서 한 번에 보인다.

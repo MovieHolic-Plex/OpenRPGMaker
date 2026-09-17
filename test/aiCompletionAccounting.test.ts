@@ -1,6 +1,9 @@
 // 2026-09-17 조수 하네스 게이트 해체: 밑그림 스펙 게이트(자동 확장 spec-gate-auto-expand)·LLM 독립 검수(required-evidence
 // finding)·예산 소진 = 초안 폐기 규칙을 검증하던 단언은 삭제했다. 승인 기준은 변경 맵의 run_lint error 0(결정적 검사) 하나이고,
-// 예산 소진 시 검사를 통과한 초안은 final 로 적용된다. 수용(acceptance) 원장은 보고용으로 남지만 승인 조건이 아니다.
+// 예산 소진 시 검사를 통과한 초안은 final 로 적용된다.
+// 2026-09-17 저녁 2차 해체: 수용(acceptance) 원장은 더 이상 만들어지지 않는다 — 플래너가 낸 acceptance 배열은 audit 에
+// `acceptance:disabled` 로 기록만 되고, getAcceptanceSnapshot() 은 항상 null, runOutcome.goal 은 "unassessed" 다.
+// 수용 항목·`acceptance` 이벤트 스냅샷·「완료 검증이 아직 미완성입니다」 단언은 삭제했다.
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import { defaultAiConfig, type AiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
@@ -91,7 +94,7 @@ describe("completion accounting through real assistant sessions", () => {
     expect(result.appliedCalls ?? []).toEqual([]);
   });
 
-  it.each(["preserve", "targetChange"] as const)("applies maintenance once but retains canonical %s semantics", async (kind) => {
+  it.each(["preserve", "targetChange"] as const)("applies maintenance once; a declared %s acceptance is recorded but not enforced", async (kind) => {
     const { project } = preservedPaintContext();
     vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
     vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "rpg-zzu-test-project");
@@ -118,11 +121,10 @@ describe("completion accounting through real assistant sessions", () => {
         },
         toolCall("show_map_region", { mapId: "map_basement", x: 0, y: 0, w: 12, h: 10 }, "image"),
         final(),
-        // targetChange 는 적용 뒤에도 수용 목표가 미충족이라 자율 드라이버가 「계속」을 보낸다 — 쓰기 없는 최종 응답만 계속 준다.
-      ], final),
+      ]),
     });
     const result = await session.sendUserMessage(plan.goal, event => events.push(event), undefined, { autonomous: true });
-    // 수용 원장은 승인 조건이 아니다: 벽 유지 쓰기가 0칸을 바꿔 targetChange 가 미충족이어도 lint error 0 이면 승인·적용된다.
+    // 수용 원장은 만들어지지 않는다: 벽 유지 쓰기가 0칸을 바꿔 옛 targetChange 기준이 미충족이어도 lint error 0 이면 승인·적용된다.
     expect(session.getWorkPlan()?.layers[0].items[0].status).toBe("done");
     expect(events.filter(event => event.type === "milestone_applied").map(event => event.toolCount)).toEqual([2]);
     expect(result.review).toMatchObject({ status: "approved", findings: [], summary: "결정적 검사 통과 — 변경 맵 1개, lint error 0건." });
@@ -133,21 +135,15 @@ describe("completion accounting through real assistant sessions", () => {
     expect(proposalCompletenessWarnings({ buildSpecs: session.getCompletionSpecs(writes),
       calls: writes, project: session.getProposedProject() })).toEqual([]);
     expect(store.getCurrent().maps.map_basement.lowerTiles).toEqual(session.getProposedProject().maps.map_basement.lowerTiles);
-    // 원장의 의미는 그대로다 — preserve 는 0칸 변경으로 충족, targetChange 는 0칸 변경으로 미충족. 미충족 목표는 승인을 막지
-    // 않지만 자율 런의 완료는 막는다: 적용된 채로 「완료 검증이 아직 미완성입니다」 로 끝난다.
-    if (kind === "preserve") {
-      expect(result.stoppedReason, result.error).toBe("final");
-      expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "verified", items: [{ id: "walls", evidence: [{ passed: true }] }] });
-      expect(result.runOutcome).toMatchObject({ goal: "satisfied", delivery: "applied" });
-    } else {
-      expect(result.stoppedReason).toBe("error");
-      expect(result.error).toContain("완료 검증이 아직 미완성입니다");
-      expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ id: "walls", evidence: [{ passed: false }] }] });
-      expect(result.runOutcome).toMatchObject({ goal: "incomplete", delivery: "applied" });
-    }
+    // 플래너의 수용 계약은 기록만 된다 — preserve 든 targetChange 든 자율 런은 적용된 채로 final 로 끝나고 원장·목표 판정은 없다.
+    expect(result.stoppedReason, result.error).toBe("final");
+    expect(session.getAuditEntries().some(entry => entry.kind === "status"
+      && entry.text === "acceptance:disabled — 플래너 수용 계약 1건을 기록만 하고 강제하지 않습니다")).toBe(true);
+    expect(session.getAcceptanceSnapshot()).toBeNull();
+    expect(result.runOutcome).toMatchObject({ goal: "unassessed", delivery: "applied" });
   });
 
-  it("accounts for both spatial milestones and applies each write once, only after independent review", async () => {
+  it("accounts for both spatial milestones and applies each write once, only after the deterministic review", async () => {
     const project = projectWithMap();
     vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
     vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "rpg-zzu-test-project");
@@ -198,11 +194,9 @@ describe("completion accounting through real assistant sessions", () => {
     expect(session.getWorkPlan()?.layers[0].items.map((item) => item.status)).toEqual(["done", "done"]);
     expect(result.stoppedReason, result.error).toBe("final");
     expect(result.review?.status).toBe("approved");
-    expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "verified", items: acceptance.map(({ id }) => ({ id, status: "verified", evidence: [{ passed: true }] })) });
-    // Both criteria address one changed, unapplied map, so neither is verified early.
-    expect(events.filter((event) => event.type === "acceptance").map((event) => event.snapshot)).toContainEqual(expect.objectContaining({
-      status: "verifying", items: acceptance.map(({ id }) => expect.objectContaining({ id, status: "verifying", evidence: [expect.objectContaining({ passed: false })] })),
-    }));
+    // 수용 원장은 만들어지지 않는다: 두 구역 약속은 audit 에 기록만 되고 스냅샷은 항상 null 이다.
+    expect(session.getAcceptanceSnapshot()).toBeNull();
+    expect(events.filter((event) => event.type === "acceptance").every((event) => event.snapshot === null)).toBe(true);
     expect(events.filter((event) => event.type === "result_review" || event.type === "milestone_applied").map((event) => event.type)).toEqual(["result_review", "milestone_applied"]);
     expect(events.filter((event) => event.type === "milestone_applied").map((event) => event.toolCount)).toEqual([2]);
     expect(result.proposedCalls).toEqual([]);
@@ -287,7 +281,8 @@ describe("completion accounting through real assistant sessions", () => {
 
     const result = await session.sendUserMessage("지형 칠해줘", () => {});
     expect(result).toMatchObject({ stoppedReason: "error", error: failure.message,
-      runOutcome: { execution: "failed", goal: "incomplete", delivery: "no-change" } });
+      // 수용 원장이 없으니 목표 축은 unassessed 다.
+      runOutcome: { execution: "failed", goal: "unassessed", delivery: "no-change" } });
     expect(session.getActiveSpec()).toEqual(SPEC);
     expect(session.getProposedProject().maps.m1).toEqual(project.maps.m1);
     const response = session.getMessages().find((message) => message.role === "tool" && message.tool_call_id === "throw");

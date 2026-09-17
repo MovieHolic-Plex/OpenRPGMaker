@@ -138,6 +138,43 @@ Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/ma
 - Quest graph tools live in `src/editor/tools/questTools.ts`. Keep existing `create_quest` step compilation compatible, and use `define_quest` for authored narrative graphs with DAG nodes/edges over storyFlag or switch/variable completion conditions. `lint_quest`, `generate_walkthrough`, and `verify_quest` are read tools; generated walkthrough JSON must stay directly compatible with `run_scene_test`, using `manualHint` + `set` only when a real play step cannot be inferred.
 - `place_npc` SimplePage compilation is intentionally tolerant for common in-editor AI malformed shapes: `conditions` may be omitted, null, an array, or a single condition object; `commands` may be omitted, null, an array, or a single command object; and obvious command-kind aliases such as `command: "text"` or `kind: { command: "text" }` are normalized. Every normalization must emit a tool warning, while unrecoverable shapes should fail with a short `field / expected type / actual type / minimal example` ToolError instead of a raw TypeError.
 
+## 런타임 규격 무대 — 대사·선택지 미리보기는 게임 창을 축소해 그린다 (2026-09-17)
+
+- **무엇이 문제였나(실측).** 문장 표시 LIVE 미리보기·인스펙터 미리보기·「미리보기」 뷰가 각자
+  폰트(13px Malgun)·패딩(10/12px)·폭으로 창을 그려서 같은 대사가 **게임 3줄 / 다이얼로그 4줄 /
+  인스펙터 5줄**로 갈렸다. 「최대 4줄 / 50자 권장」 안내가 잘못된 폭을 기준으로 판정됐고,
+  빈 본문 샘플은 이 명령에 없는 얼굴(파티 첫 배우)을 빌려 와 절대 나올 수 없는 창을 보였다.
+  「미리보기」 뷰의 무대는 4:3 이 아닌 빈 판(1047×357)이었고 「취소 → 선택지 N」 캡션이 창
+  테두리를 타고 겹쳤다. 비교 근거: `docs/2026-09-17-event-editor-authoring-adversarial-review.md`
+  뒤의 preview-vs-game 캡처(이 세션 `.playwright-mcp/`).
+- **구조.** `commandPreview.ts` 의 `runtimeStage()` 가 `.ecp-runtime-frame > .ecp-stage.ecp-stage-runtime >
+  .ecp-runtime-viewport(320×240) > .dialogue-overlay.position-bottom` 을 만들고, `messageWindowMock` /
+  `choicesMock` 은 그 안에 **런타임과 같은 클래스**(`.dialogue-box.has-speaker.page-ready`,
+  `.dialogue-content > [.dialogue-face] + .dialogue-text-column > .body`, `.speaker.speaker-nameplate`,
+  `.dialogue-page-cursor`; 선택지는 `.dialogue-box.choices > .choice-list > .choice-prompt-row + .choice-btn.selected`)
+  를 단다. 테스트 계약용 `ecp-*` 클래스·testid(`ecp-message-window`·`ecp-message-body`·`ecp-message-speaker`·
+  `ecp-choice-window`·`ecp-choice`·`ecp-message-sample-note`)는 같은 요소에 함께 남긴다.
+  `applySystemWindowSkinVariable(win)` 도 게임처럼 호출한다. 얼굴은 `.dialogue-face` 안에 48 논리 px
+  (`RUNTIME_FACE_SIZE`)로 넣는다.
+- **축소 규칙(JS 없음).** `.ecp-stage-runtime { container-type: inline-size; aspect-ratio: 4/3 }`,
+  `.ecp-runtime-viewport { transform: scale(tan(atan2(100cqw, 320px))); transform-origin: 0 100% }`.
+  CSS 는 길이끼리 나눌 수 없어 `tan(atan2(y, x))` 로 단위 없는 비율을 얻는다. 배율 = 무대 폭 / 320.
+  다이얼로그(열 ≈460px) 1.4배 → 게임 9px 글자가 12.6px, 「미리보기」 뷰는 남은 높이에 맞춰
+  (`.event-page-preview .ecp-stage-runtime { flex: 1 1 auto; width: auto }`) 1.5~1.7배, 인스펙터(≈285px)는
+  0.9배다. 인스펙터 글자가 작은 것은 의도다 — 폭을 속이면 줄바꿈이 다시 틀어진다.
+- **캐스케이드 함정.** event 표면 CSS 는 dialogue.css 보다 뒤에 실려 같은 특이도면 이긴다. 그래서 옛
+  `.ecp-message-window` 시각 규칙은 `:not(.dialogue-box)` 로 좁혀 얼굴 바꾸기·문장 설정 목업만 받게 했고
+  (`command-preview.css`), `.event-command-text-preview-canvas .ecp-message-window { background }` 처럼
+  유리를 덮던 규칙은 지웠다(`command-preview-3.css`). 새 규칙은 `command-preview-4.css` 끝의
+  «런타임 규격 무대» 블록 하나다. `.ecp-message-text` 는 얼굴 바꾸기·문장 설정 목업이 아직 쓴다 — 지우지 마라.
+- **문장 다이얼로그 열 비율**은 `forms-3.css` 에서 미리보기 쪽을 넓혔다(`minmax(320px, 1.05fr) minmax(360px, 1fr)`).
+  무대가 폭으로 축소되므로 열이 좁을수록 글자가 작아진다.
+- **남긴 것.** 「미리보기」 탭 이름은 위키의 「스크립트 둘러보기」 계약과 여전히 다르다(뷰 토글 테스트가
+  이름을 잡고 있어 이번엔 두었다). 흉상/전신(`bust`/`full`) 얼굴은 48px 칸으로만 그린다. 게임 대사창이
+  반투명이라 창 뒤 NPC 가 검은 얼룩으로 비치는 런타임 현상은 미리보기가 아니라 dialogue.css 의 문제다.
+- 표면 기준선 `test/fixtures/eventEditor{Form,Interaction,Portal}Surface.baseline.json` 은 클래스 목록이
+  바뀌어 **의도된 차이**가 난다. 갱신은 각 테스트 머리말의 `*_UPDATE=1` 절차.
+
 ## 얼굴 상자(faceset-crop-box) 페인트 계약 (2026-08-28)
 
 - 얼굴 한 장은 `facesetPreview.faceImage()` 가 **상자(`.faceset-crop-box`) + 진짜 `<img>`
@@ -164,9 +201,12 @@ Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/ma
   폼 문구가 "통짜 전신 이미지"라고 말하지 않게 고쳤다.
 - 표시 옵션 줄(`.event-command-face-options`)은 필드 수만큼만 열을 만들어야 한다. 얼굴 칸 번호
   컨트롤이 삭제된 뒤에도 3열 선언이 남아 오른쪽에 죽은 열이 있었다.
-- 미리보기 대화창(`.ecp-message-window`)은 반투명 유리를 불투명 밑판 **위에** 올린다. 순서가
-  뒤집히면 `--bg-surface`(#F7F8F8) 가 유리를 덮어 `--runtime-window-text`(#FFF6E2) 글자가
-  1.0:1 로 사라진다. computed 색은 17.8:1 로 거짓말을 하므로 렌더된 픽셀로 검사한다.
+- (2026-09-17 이후) 대사·선택지 미리보기 창은 자기 유리를 갖지 않는다 — 게임과 같은
+  `.dialogue-box` 클래스로 320×240 논리 무대 안에 그려지고 dialogue.css 가 표면을 소유한다.
+  아래 «런타임 규격 무대» 절 참조. 얼굴 바꾸기·문장 설정 목업만 옛 `.ecp-message-window:not(.dialogue-box)`
+  규칙을 쓴다. 그 규칙에서 반투명 유리는 불투명 밑판 **위에** 와야 한다 — 순서가 뒤집히면
+  `--bg-surface`(#F7F8F8) 가 유리를 덮어 `--runtime-window-text`(#FFF6E2) 글자가 1.0:1 로
+  사라진다. computed 색은 17.8:1 로 거짓말을 하므로 렌더된 픽셀로 검사한다.
 - 게이트: `test/e2e/event-face-command-visual.spec.ts` + `npm run gates:css`(고아 CSS 0건).
 
 ## Staged edit, history, and nested drag invariants (2026-07-30)

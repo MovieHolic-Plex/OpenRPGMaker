@@ -136,10 +136,10 @@ describe("buildVillageDomain", () => {
     expect(data.warnings).toContain(`집 수 미달: ${data.housesBuilt}/32`);
   });
 
-  it("keeps a zero-house constrained build as an atomic compatibility failure", () => {
+  it("builds houses with substitute templates when forced templateIds cannot be placed, and warns per house", () => {
+    // 2026-09-18: 강제 templateId 미충족은 house-template-unplaced 통째 반려에서 집별 경고로 바뀌었다.
     // Given
     const context: ToolContext = { project: createExistingMapProject(36) };
-    const before = serialize(context.project);
     const impossiblePlan = Array.from({ length: 4 }, () => ({
       kitId: "blue-stone",
       templateId: "no-such-template",
@@ -157,9 +157,10 @@ describe("buildVillageDomain", () => {
     });
 
     // Then
-    expect(result.ok).toBe(false);
-    expect(result.issues?.[0]?.code).toBe("house-template-unplaced");
-    expect(serialize(context.project)).toBe(before);
+    expect(result.ok, result.summary).toBe(true);
+    const data = result.data as { housesBuilt: number; warnings: string[] };
+    expect(data.housesBuilt).toBeGreaterThan(0);
+    expect(data.warnings.filter((w) => w.includes("templateId='no-such-template'") && w.includes("대체")).length).toBe(data.housesBuilt);
   });
 
   it("rejects malformed legacy house input before mutating the ToolRunner project", () => {

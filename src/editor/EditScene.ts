@@ -51,6 +51,7 @@ import {
   type EventLayerClickFeedback,
 } from "@/editor/editSceneEventMarkers";
 import { retainEventLayerClickFeedback } from "@/editor/transientEditorChrome";
+import { EVENT_EDITOR_CLOSED_WINDOW_EVENT } from "@/editor/eventEditorLifecycleEvents";
 import {
   buildEventMarkerTooltipModel,
   eventLayerSwitchNotice,
@@ -307,6 +308,10 @@ export class EditScene extends PhaserRuntime.Scene {
   private regionSizeBadge: HTMLElement | null = null;
   private eventMarkerTooltipEl: HTMLElement | null = null;
   private eventMarkerTooltipKey = "";
+  private readonly handleEventEditorClosed = (): void => {
+    this.clearEventLayerClickFeedback();
+  };
+
   private readonly handleRegionTaskStatus = (event: Event): void => {
     const detail = regionTaskStatusDetail(event);
     if (!detail) return;
@@ -442,6 +447,8 @@ export class EditScene extends PhaserRuntime.Scene {
     this.scale.on("resize", this.handleResize, this);
     window.addEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
     window.addEventListener(REGION_TASK_STATUS_EVENT, this.handleRegionTaskStatus);
+    // 편집기가 닫히면 「편집 위치 x,y」 배너를 거둔다 — 결과물이 아니라 편집 중 크롬이다(2026-09-17 리뷰 P0-4).
+    window.addEventListener(EVENT_EDITOR_CLOSED_WINDOW_EVENT, this.handleEventEditorClosed);
     // 영역 작업 창이 닫히면 선택 칩 오버레이를 되살린다(열릴 때는 숨긴다).
     window.addEventListener(REGION_TASK_MODAL_EVENT, this.handleRegionTaskModalToggle);
     this.unsubInlineApproval = subscribeInlineProposalActions(() => this.refreshAgentGhostDomMarkers());
@@ -527,6 +534,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.clearAgentFocusHighlight();
     window.removeEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
     window.removeEventListener(REGION_TASK_STATUS_EVENT, this.handleRegionTaskStatus);
+    window.removeEventListener(EVENT_EDITOR_CLOSED_WINDOW_EVENT, this.handleEventEditorClosed);
     window.removeEventListener(REGION_TASK_MODAL_EVENT, this.handleRegionTaskModalToggle);
     this.unsubInlineApproval?.();
     this.unsubInlineApproval = null;

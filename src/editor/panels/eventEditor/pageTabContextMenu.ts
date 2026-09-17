@@ -25,6 +25,8 @@ export interface PageTabContextMenuRequest {
   readonly event: GameEvent;
   readonly page: EventPage;
   readonly index: number;
+  /** 탭 제자리 이름 바꾸기(pageProps.beginPageTabRename). 없으면 항목을 그리지 않는다. */
+  readonly requestRename?: () => void;
   readonly requestDelete: (page: EventPage) => void;
 }
 
@@ -81,7 +83,9 @@ export function openPageTabContextMenu(request: PageTabContextMenuRequest): void
     event.stopPropagation();
     close();
   });
-  menu.querySelector<HTMLElement>(`[data-testid="event-page-menu-duplicate"]`)?.focus();
+  // 첫 항목에 포커스 — 이름 바꾸기가 있으면 그것, 없으면 복제.
+  (menu.querySelector<HTMLElement>(`[data-testid="event-page-menu-rename"]`)
+    ?? menu.querySelector<HTMLElement>(`[data-testid="event-page-menu-duplicate"]`))?.focus();
 }
 
 function pageMenuItems(request: PageTabContextMenuRequest, close: () => void): PageMenuItem[] {
@@ -90,6 +94,18 @@ function pageMenuItems(request: PageTabContextMenuRequest, close: () => void): P
   const liveIndex = () => livePages().findIndex((candidate) => candidate.id === page.id);
   const pageCount = livePages().length;
   return [
+    ...(request.requestRename
+      ? [{
+          label: "이름 바꾸기",
+          shortcut: "F2",
+          icon: "",
+          testId: "event-page-menu-rename",
+          run: () => {
+            close();
+            request.requestRename?.();
+          },
+        } satisfies PageMenuItem]
+      : []),
     {
       label: "복제",
       shortcut: "",
