@@ -9,8 +9,11 @@ name: ci-full
 #   느린 이유는 스위트가 아니라 박스 경합이었다 — 이 잡은 32코어 중 5.64코어만 받았다.
 #   그래서 답은 "빨리 돌리기"가 아니라 "자리를 보장하고 가끔 돌리기"다.
 #
-#   실행은 self-hosted 러너에서 하고, 러너는 systemd 의 ci.slice(8코어/24GB) 안에 있다.
-#   러너가 1개라 잡이 직렬화되므로 전체 vitest 두 개가 동시에 뜨는 일이 구조적으로 없다.
+#   실행은 self-hosted 러너에서 하고, 러너는 systemd 슬라이스 안에 있다.
+#   ci.slice(8코어/24GB) 아래에 ci-fast.slice(4코어/8GB)와 ci-full.slice(6코어/16GB)가 있고,
+#   이 잡만 **oprn-full** 라벨을 쓴다 — 러너도 슬라이스도 fast 레인과 분리돼 있다.
+#   40분짜리가 2분짜리를 막지 않으면서, 겹쳐 돌아도 전체 vitest 가 굶지 않는다.
+#   "전체 vitest 두 개 동시 실행"은 위의 concurrency group 과 oprn-full 러너 1개가 막는다.
 #
 # 판정은 verify-gates.mjs 가 한다. 이 스크립트는 .omo/gates-baseline.json 과 대조해
 # **새로 생긴 실패만** 회귀로 보고 exit 1 을 낸다. 기준선은 CI 가 절대 갱신하지 않는다 —
@@ -28,7 +31,7 @@ concurrency:
 
 jobs:
   gates:
-    runs-on: [self-hosted, oprn-box]
+    runs-on: [self-hosted, oprn-full]
     # 러너가 1개라 앞선 잡을 기다릴 수 있다. self-hosted 잡 상한은 5일이라 여유롭게 잡아도 된다.
     timeout-minutes: 240
     steps:
@@ -37,8 +40,23 @@ jobs:
       - name: 환경 확인 (cgroup 예산이 실제로 걸려 있는지)
         run: |
           echo "node: $(node -v) / npm: $(npm -v)"
-          echo "availableParallelism: $(node -e 'console.log(require("os").availableParallelism())')"
-          echo "nproc(참고): $(nproc)"
+          echo "nproc(참고, 박스 전체): $(nproc)"
+          # ⚠ os.availableParallelism() 은 **믿을 수 없다**. 중첩 슬라이스에서 체인의
+          # 가장 느슨한 쿼터를 집는다(2026-09-17 실측: 리프 300% / 부모 600% / 조부모 800%
+          # 에서 8 반환). 그래서 cgroup 을 직접 훑어 찍는다 — run-vitest.mjs 도 같은 방식이다.
+          node -e '
+            const { readFileSync } = require("node:fs");
+            const { dirname, join } = require("node:path");
+            let dir = join("/sys/fs/cgroup", readFileSync("/proc/self/cgroup", "utf8").trim().split("\n").at(-1).split(":").at(2));
+            for (let i = 0; i < 32; i += 1) {
+              const read = (f) => { try { return readFileSync(join(dir, f), "utf8").trim(); } catch { return null; } };
+              const cpu = read("cpu.max"), mem = read("memory.max");
+              if (cpu || mem) console.log(`${dir.replace("/sys/fs/cgroup", "")}  cpu.max=${cpu ?? "-"}  memory.max=${mem ?? "-"}`);
+              const parent = dirname(dir);
+              if (parent === dir || !parent.startsWith("/sys/fs/cgroup")) break;
+              dir = parent;
+            }
+          '
 
       - run: npm ci
 
