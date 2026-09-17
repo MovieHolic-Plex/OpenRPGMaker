@@ -62,7 +62,7 @@ function assertLivedMapScope(state: VillageFacadeState): void {
   );
 }
 
-function isLivedMap(map: GameMap): boolean {
+export function isLivedMap(map: GameMap): boolean {
   if (map.events.length > 0) return true;
   // 기본 풀(GRASS/EMPTY) 아닌 타일이 하나라도 있으면 손댄 맵이다.
   for (let i = 0; i < map.lowerTiles.length; i += 1) {
