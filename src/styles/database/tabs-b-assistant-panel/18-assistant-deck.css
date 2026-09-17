@@ -1740,3 +1740,16 @@ body:has([data-testid='resource-modal']) .ai-chat-panel .ai-deck {
 }
 
 .ai-work-process-note { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; line-height: 1.7; }
+
+.ai-chat-panel.is-left-sidebar[data-ai-conversation="empty"]:not(.is-studio) .ai-chat-suggestions { margin: 0; padding: 24px 16px; overflow-y: auto; min-height: 0; }
+.ai-chat-suggestion-heading { display: flex; align-items: center; gap: 8px; color: var(--accent); }
+.ai-chat-suggestion-list { display: grid; gap: 12px; }
+.ai-chat-suggestion-card { display: grid; gap: 10px; padding: 16px; border: 1px solid var(--border-subtle); border-radius: 12px; background: var(--bg-raised); }
+.ai-chat-suggestions .ai-chat-suggestion-card strong { font-size: 13px; line-height: 1.6; }
+.ai-chat-suggestion-card p { font-size: 12px; color: var(--text-3); }
+.ai-chat-suggestion-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ai-chat-suggestions button { border: 1px solid var(--border-subtle); border-radius: 8px; background: var(--control-bg); color: var(--text-2); padding: 6px 9px; font: inherit; font-size: 11px; cursor: pointer; }
+.ai-chat-suggestions button:focus-visible { outline: var(--focus-outline); }
+.ai-chat-suggestions > button { align-self: flex-start; border: 0; background: transparent; padding-left: 0; }
+.ai-chat-suggestions details { font-size: 11px; color: var(--text-3); }
+.ai-chat-suggestions summary { cursor: pointer; }

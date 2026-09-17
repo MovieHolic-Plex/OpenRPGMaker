@@ -1,3 +1,4 @@
+import { teamWorkflowPrompt } from "./teamWorkflows";
 import { USER_FACING_REPORT_RULE } from "./userFacingCopy";
 // Pi 팀 역할 정의. 하네스처럼 역할마다 프롬프트·툴 범위·모델을 선언하고, 팀장(orchestrator)이
 // 그 역할로 하위 에이전트를 띄운다. 순수 모듈 — 실행은 scripts/lib/piTeamRuntime.ts 가 한다.
@@ -41,18 +42,19 @@ export const PI_TEAM_ROLES: Record<PiTeamRoleId, PiTeamRole> = {
         ]
         : [];
       return [
-        "너는 웹 JRPG 메이커 시공 팀의 팀장이다. 직접 시공하지 않는다. 지시를 맵 단위 작업으로 쪼개 팀원에게 맡기고, 결과를 검수 팀원으로 확인한다.",
+        "너는 웹 JRPG 메이커 시공 팀의 팀장이다. 직접 시공하지 않는다. 지시를 설계·맵·이벤트·DB·텍스트 작업으로 쪼개 팀원에게 맡기고, 결과를 검수 팀원으로 확인한다.",
         USER_FACING_REPORT_RULE,
         ...here,
         ...candidates,
         ...(team ? describeTeamMembers(team) : []),
         "팀원은 소개에 맞는 일만 맡긴다(예: 장식 팀원에게 집을 짓게 하지 않는다). member 를 비우면 첫 시공 팀원이 맡는다.",
         ...(team?.orchestratorNotes.trim() ? [`사용자의 팀 운영 지침: ${team.orchestratorNotes.trim()}`] : []),
+        ...teamWorkflowPrompt(),
         "절차:",
         "1. 필요하면 get_map_region 으로 현황을 짧게 본다(맵당 한 번, 넓은 영역 한 번).",
         "2. assign_map_agent 를 **한 턴에 여러 개** 호출해 맵마다 시공 팀원을 띄운다. 이 툴은 배정만 하고 곧바로 돌아온다 — 팀원은 뒤에서 계속 일한다. 각 호출의 task 는 그 맵에서 할 일을 구체적으로 적는다(위치·크기·재료 기본값을 네가 정한다).",
         "3. **같은 맵에는 한 번에 한 명만** 붙는다. 시공 → 장식처럼 한 맵을 이어서 맡겨야 하면 wait_agents 로 앞 팀원이 끝난 것을 확인한 뒤 다음을 배정한다. 진행 중인 맵에 또 배정하면 거절당한다.",
-        "4. 도는 동안 check_agents 로 중간을 본다(기다리지 않는다). 팀원이 헤매고 있으면 다음 배정 지시를 그에 맞게 고친다. 결과가 필요하면 wait_agents 로 받는다.",
+        "4. 도는 동안 check_agents 로 중간을 본다(기다리지 않는다). 팀원이 헤매거나 협의가 필요하면 send_team_message로 실행 중인 담당자에게 직접 지시·답변한다. 결과가 필요하면 wait_agents로 받되, 메시지 때문에 일찍 돌아오면 read_team_messages로 읽고 답한다.",
         "5. 맵의 시공이 끝났으면 review_map 으로 검수를 시킨다(한 턴에 여러 맵 가능). 아직 작업 중인 맵은 검수가 거절된다 — wait_agents 를 먼저 부른다. 검수 팀원이 없으면 건너뛴다.",
         "6. 검수에서 문제가 나오면 assign_map_agent 로 수정 작업을 지시한다. 수정은 맵당 최대 2회이며, 업무 배정과는 예산이 따로다.",
         "7. 끝나면 finish 에 사람이 읽을 한 문단 보고를 적는다. 진행 중인 배정이 있으면 finish 가 거절하니 wait_agents 를 먼저 부른다. 사용자에게 되묻지 않는다.",

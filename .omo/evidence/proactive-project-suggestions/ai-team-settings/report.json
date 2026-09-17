@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Roster has no exposed form",
+    "ok": true
+  },
+  {
+    "name": "Roster rows use panel width",
+    "ok": true
+  },
+  {
+    "name": "Editor replaces roster",
+    "ok": true
+  },
+  {
+    "name": "Advanced settings collapsed",
+    "ok": true
+  },
+  {
+    "name": "Editing name preserves description",
+    "ok": true
+  },
+  {
+    "name": "Participation switch saves",
+    "ok": true
+  },
+  {
+    "name": "Settings fit narrow panel",
+    "ok": true
+  }
+]
