@@ -134,10 +134,12 @@ function allowedAddedMapIds(state: VillageFacadeState): ReadonlySet<string> {
   }
   const declared = new Set(inspection.interiorMapIds);
   if (request.target.kind === "new") declared.add(request.target.mapId);
+  const linked = linkedInteriorMaps(draft, request.target.mapId, actuallyAdded);
   for (const id of actuallyAdded) {
     if (id === request.target.mapId) continue;
     // 실내 맵은 문 이벤트의 transfer 명령이 실제로 가리켜야 한다 — 그래야 "실내"다.
-    if (!declared.has(id) || !isLinkedInteriorMap(draft, request.target.mapId, id)) {
+    // 위층(_f2·_f3)은 1층의 계단 transfer 로 이어진다 — 문에서 직접 가리키지 않아도 실내다.
+    if (!declared.has(id) || !linked.has(id)) {
       scopeError(`Village added an undeclared map: ${id}.`, id);
     }
   }
@@ -155,11 +157,29 @@ function allowedAddedMapIds(state: VillageFacadeState): ReadonlySet<string> {
   return ids;
 }
 
-/** 타깃 맵의 문 이벤트 transfer 명령이 interiorId를 가리키는가. */
-function isLinkedInteriorMap(draft: Project, exteriorMapId: string, interiorMapId: string): boolean {
-  if (draft.spatialAuthoring !== undefined) return spatialReachableMaps(draft, exteriorMapId).has(interiorMapId);
-  const exterior = draft.maps[exteriorMapId];
-  return (exterior?.events ?? []).some(event => (event.pages ?? []).some(page => page.commands.some(command => command.kind === "transfer" && command.mapId === interiorMapId)));
+/**
+ * 타깃 맵에서 transfer 명령으로 닿는 새 맵 집합 — 문 이벤트가 가리키는 1층과, 거기서 계단 transfer 로
+ * 이어지는 위층(_f2·_f3)까지. 새로 생긴 맵만 따라가므로 기존 맵을 거쳐 밖으로 새지 않는다.
+ * (예전에는 문이 직접 가리키는 맵만 실내로 봐서, 레거시 프로젝트의 2층 집은 언제나 스코프 위반이 됐다 — 2026-09-17.)
+ */
+function linkedInteriorMaps(draft: Project, exteriorMapId: string, added: ReadonlySet<string>): ReadonlySet<string> {
+  if (draft.spatialAuthoring !== undefined) return spatialReachableMaps(draft, exteriorMapId);
+  const reachable = new Set<string>();
+  const queue = [exteriorMapId];
+  while (queue.length > 0) {
+    const mapId = queue.shift() as string;
+    for (const event of draft.maps[mapId]?.events ?? []) {
+      for (const page of event.pages ?? []) {
+        for (const command of page.commands) {
+          if (command.kind !== "transfer" || typeof command.mapId !== "string") continue;
+          if (reachable.has(command.mapId) || !added.has(command.mapId)) continue;
+          reachable.add(command.mapId);
+          queue.push(command.mapId);
+        }
+      }
+    }
+  }
+  return reachable;
 }
 
 function assertMapSetAndContents(state: VillageFacadeState, allowedAdded: ReadonlySet<string>): void {

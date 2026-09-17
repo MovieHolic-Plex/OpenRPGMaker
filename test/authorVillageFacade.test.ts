@@ -241,6 +241,23 @@ describe("author_village facade", () => {
     expect(serialize(project)).toBe(before);
   });
 
+  it("keeps the upper floor of a two-storey house inside scope on a legacy project", () => {
+    // 레거시(spatialAuthoring 없음) 프로젝트: 문 이벤트는 1층만 가리키고 2층은 1층 계단 transfer 로 이어진다.
+    // 예전 스코프 검사는 문이 직접 가리키는 맵만 실내로 봐서 _f2 를 "undeclared map" 으로 거부했다.
+    const project = createExistingProject(48);
+    const result = runFacade(project, {
+      target: EXISTING_TARGET,
+      houseCount: 1,
+      countPolicy: "exact",
+      seed: 3,
+      interior: true,
+      housePlans: [{ templateId: "rect-2f" }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const upper = Object.keys(project.maps).filter((id) => id.endsWith("_f2"));
+    expect(upper).toHaveLength(1);
+  });
+
   it("fails a colliding new map without suffixing or reusing it", () => {
     const project = createExistingProject();
     const before = serialize(project);
