@@ -58,7 +58,7 @@ try {
       { type: "turn", index: 1 },
       { type: "assistant", text: "후속 요청을 받았습니다. 앞선 작업의 맥락과 지정된 맵 범위를 확인했습니다." },
     ];
-    events.push({ type: "assistant", text: body.mode === "team" ? "길과 안내 주민의 배치 조건을 확인했어요. 오른쪽에서 담당별 내용을 확인할 수 있습니다. 이번에는 프로젝트를 변경하지 않았습니다." : "확인했습니다. 프로젝트는 변경하지 않았습니다." });
+    events.push({ type: "assistant", text: body.mode === "team" ? "길과 안내 주민의 배치 조건을 확인했어요. 오른쪽에서 담당별 내용을 확인할 수 있습니다. 이번에는 프로젝트를 변경하지 않았습니다. 안내 주민을 입구에 둘까요?" : "확인했습니다. 프로젝트는 변경하지 않았습니다." });
     events.push({ type: "done", project: body.project, changedKeys: [], stats });
     await route.fulfill({ status: 200, contentType: "application/x-ndjson", body: events.map(e => JSON.stringify(e)).join("\n") + "\n" });
   });
@@ -75,6 +75,13 @@ try {
   await page.waitForFunction(() => document.querySelector('[data-testid="ai-work-card"]')?.getAttribute("data-state") === "done");
   check("No bottom work strip", await page.getByTestId("ai-work-strip").count() === 0);
   check("Three team avatars", await page.getByTestId("ai-team-member").count() === 3);
+  const mainProcess = page.getByTestId("ai-work-process").first();
+  check("Main execution details default collapsed", !(await mainProcess.evaluate(n => n.open)));
+  check("Final answer and user question remain visible", await page.getByText(/안내 주민을 입구에 둘까요/).filter({ visible: true }).first().isVisible());
+  await mainProcess.locator("summary").click();
+  check("Execution details can be opened", await mainProcess.evaluate(n => n.open) && (await mainProcess.innerText()).length > 30);
+  await shot("10-main-process-expanded");
+  await mainProcess.locator("summary").click();
   const boxes = await page.evaluate(() => {
     const rect = testid => { const r = document.querySelector(`[data-testid="${testid}"]`).getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height }; };
     return { ai: rect("ai-panel"), canvas: rect("edit-canvas"), team: rect("ai-team-sidebar") };
@@ -135,6 +142,12 @@ try {
   check("Member draft preserved", (await page.getByTestId("ai-member-input").inputValue()).includes("안내 대사"));
   await page.getByTestId("ai-member-input").fill("안내 대사는 두 문장으로 짧게 해줘.");
   await shot("02-member-conversation");
+  const memberProcess = page.getByTestId("ai-member-process");
+  check("Member result stays visible with process collapsed", await page.getByTestId("ai-member-result").isVisible() && !(await memberProcess.evaluate(n => n.open)));
+  await memberProcess.locator("summary").click();
+  check("Member execution history is accessible", await memberProcess.evaluate(n => n.open) && (await memberProcess.innerText()).length > 30);
+  await shot("11-member-process-expanded");
+  await memberProcess.locator("summary").click();
   await page.getByTestId("ai-input").fill("주 대화 작성 중인 내용");
   await page.getByTestId("sidebar-tools").click();
   await page.getByTestId("sidebar-ai").click();
@@ -215,8 +228,15 @@ try {
   await page.waitForFunction(text => document.querySelector('[data-testid="ai-member-input"]')?.value === text, retryText);
   check("Failed follow-up preserves request for retry", await page.getByTestId("ai-member-input").inputValue() === retryText);
   check("Transport failure is visible", await page.locator('.ai-team-member-notice').isVisible());
+  check("Failure message uses plain language", !(await page.locator(".ai-team-member-notice").innerText()).includes("503"));
+  check("Failure does not force details open", !(await memberProcess.evaluate(n => n.open)));
+  await memberProcess.locator("summary").click();
+  check("Raw failure remains available in execution history", (await memberProcess.innerText()).includes("503"));
+  await shot("12-failure-process");
+  await memberProcess.locator("summary").click();
   await page.getByTestId("ai-member-send").click();
   await page.getByTestId("ai-member-apply").waitFor();
+  check("Follow-up answer stays visible outside collapsed process", (await page.getByTestId("ai-member-result").innerText()).includes("프로젝트는 변경하지 않았습니다.") && !(await memberProcess.evaluate(n => n.open)));
   check("Successful retry clears previous error", !(await page.locator('.ai-team-member-notice').isVisible()));
   await page.getByTestId("ai-member-apply").click();
   await page.locator('[data-testid="ai-team-member"][data-state="적용됨"]').waitFor();

@@ -1738,3 +1738,5 @@ body:has([data-testid='resource-modal']) .ai-chat-panel .ai-deck {
   padding: var(--space-2);
   white-space: pre-wrap;
 }
+
+.ai-work-process-note { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; line-height: 1.7; }

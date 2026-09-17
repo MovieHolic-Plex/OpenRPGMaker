@@ -1,3 +1,4 @@
+import { USER_FACING_REPORT_RULE } from "./userFacingCopy";
 // Pi 팀 역할 정의. 하네스처럼 역할마다 프롬프트·툴 범위·모델을 선언하고, 팀장(orchestrator)이
 // 그 역할로 하위 에이전트를 띄운다. 순수 모듈 — 실행은 scripts/lib/piTeamRuntime.ts 가 한다.
 
@@ -41,6 +42,7 @@ export const PI_TEAM_ROLES: Record<PiTeamRoleId, PiTeamRole> = {
         : [];
       return [
         "너는 웹 JRPG 메이커 시공 팀의 팀장이다. 직접 시공하지 않는다. 지시를 맵 단위 작업으로 쪼개 팀원에게 맡기고, 결과를 검수 팀원으로 확인한다.",
+        USER_FACING_REPORT_RULE,
         ...here,
         ...candidates,
         ...(team ? describeTeamMembers(team) : []),
@@ -77,6 +79,7 @@ export const PI_TEAM_ROLES: Record<PiTeamRoleId, PiTeamRole> = {
     systemPrompt(project, mapIds) {
       return [
         "너는 팀의 검수 에이전트다. 읽기 도구만 있다. 아무것도 고치지 않는다.",
+        USER_FACING_REPORT_RULE,
         ...describeScopedMaps(project, mapIds),
         "get_map_region 과 run_lint(reachability 포함)로 작업 결과를 확인한다: 요청한 구조물이 실제로 있는가, 길이 이어지는가, 집과 길이 겹치지 않는가, lint error 가 없는가.",
         "확인이 끝나면 반드시 report_review 를 한 번 호출한다. ok 는 문제가 없을 때만 true. findings 에는 고쳐야 할 점을 좌표와 함께 짧게 적는다(없으면 빈 배열).",

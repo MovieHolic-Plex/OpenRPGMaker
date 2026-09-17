@@ -51,6 +51,8 @@ export interface LaneResult {
   readonly spills: readonly string[];
   readonly conflicts: readonly string[];
   readonly summary: string;
+  /** Complete user-facing reply, separate from the diagnostic summary. */
+  readonly answer?: string;
 }
 
 export interface LaneState {
