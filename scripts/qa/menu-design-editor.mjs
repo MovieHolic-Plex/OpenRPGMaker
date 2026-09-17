@@ -20,13 +20,15 @@ try {
   await page.getByTestId('db-system-studio-card-menu').click();
   await expect(page.getByTestId('db-system-nav-menu')).toHaveAttribute('aria-current', 'true');
   const select = page.getByTestId('db-field-system-menu-ui-style');
-  await expect(select.locator('option')).toHaveCount(12);
-  const labels = await select.locator('option').allTextContents();
-  for (const skin of (process.argv.slice(2).length ? process.argv.slice(2) : ['classic', 'journal', 'ribbon', 'retro-2000', 'retro-2003', 'classic-xp', 'classic-vx'])) {
-    await select.selectOption(skin);
-    await expect(page.getByTestId('db-system-menu-skin-preview')).toHaveAttribute('src', `/assets/ui/menu-skins/${skin}.png`);
+  await expect(select.locator('button')).toHaveCount(12);
+  const labels = await select.locator('button strong').allTextContents();
+  for (const skin of (process.argv.slice(2).length ? process.argv.slice(2) : ['workbench', 'party-first', 'party-first-warm', 'hub', 'sheet', 'classic', 'journal', 'ribbon', 'retro-2000', 'retro-2003', 'classic-xp', 'classic-vx'])) {
+    await page.getByTestId(`db-system-menu-skin-${skin}`).click();
+    await expect(select.locator('[aria-pressed="true"]')).toHaveCount(1);
+    await expect(page.getByTestId(`db-system-menu-skin-${skin}`)).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByTestId(`db-system-menu-skin-${skin}`).locator('img')).toHaveAttribute('src', `/assets/ui/menu-skins/${skin}.png`);
     await page.waitForFunction(() => {
-      const img = document.querySelector('[data-testid="db-system-menu-skin-preview"]');
+      const img = document.querySelector('.db-system-menu-skin-card[aria-pressed="true"] img');
       return img?.complete && img.naturalWidth > 0;
     });
     const saved = await page.evaluate(async () => {
@@ -34,14 +36,14 @@ try {
       const { normalizeSystemRecords } = await import('/src/project/databaseRecordModel.ts');
       return normalizeSystemRecords(JSON.parse(JSON.stringify(store.getCurrent().system))).menuUiStyle;
     });
-    expect(saved).toBe(skin);
-    await page.getByTestId('db-system-menu-skin-preview').scrollIntoViewIfNeeded();
+    expect(saved).toBe(skin === 'workbench' ? undefined : skin);
+    await page.getByTestId(`db-system-menu-skin-${skin}`).locator('img').scrollIntoViewIfNeeded();
     await page.screenshot({ path: `${out}/editor-${skin}.png` });
   }
   for (const width of [1440, 1024]) {
     await page.setViewportSize({ width, height: width === 1024 ? 768 : 1000 });
     await page.getByTestId('db-system-nav-overview').click();
-    await expect(page.getByTestId('db-system-studio-card-menu')).toContainText(await select.locator('option:checked').textContent());
+    await expect(page.getByTestId('db-system-studio-card-menu')).toContainText(await select.locator('[aria-pressed="true"] strong').textContent());
     await page.screenshot({ path: `${out}/overview-${width}.png` });
     await page.getByTestId('db-system-studio-card-menu').click();
     await expect(select).toBeVisible();
@@ -53,9 +55,11 @@ try {
     await expect(page.getByTestId('db-field-system-resolution-preset')).toBeVisible();
     await page.getByTestId('db-system-nav-menu').click();
   }
-  await select.selectOption('workbench');
+  await page.getByTestId('db-system-menu-skin-workbench').focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByTestId('db-system-menu-skin-workbench')).toHaveAttribute('aria-pressed', 'true');
   expect(await page.evaluate(async () => (await import('/src/project/store.ts')).store.getCurrent().system.menuUiStyle)).toBeUndefined();
-  await writeFile(`${out}/EDITOR.md`, `# Editor menu selection\n\nPASS: 12 options, requested choices round-trip through system normalization, preview PNGs decode, default removes optional key.\n\n${labels.map(x => `- ${x}`).join('\n')}\n\n즉시 확인: editor-classic-vx.png\n`);
+  await writeFile(`${out}/EDITOR.md`, `# Editor menu selection\n\nPASS: 12 preview buttons, one selected card, requested choices round-trip through system normalization, preview PNGs decode, Enter restores the default, 1440/1024px navigation without horizontal overflow.\n\n${labels.map(x => `- ${x}`).join('\n')}\n\n즉시 확인: editor-classic-vx.png\n`);
   console.log('Editor: PASS — 12 choices, previews, normalization and default reset');
 } catch (error) {
   await page.screenshot({ path: `${out}/editor-FAIL.png` });

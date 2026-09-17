@@ -657,36 +657,55 @@ export function menuSkinPreviewUrl(id: MenuSkinId): string {
  */
 function menuSkinFieldset(project: Project): HTMLElement {
   const saved = resolveMenuSkinId(project.system.menuUiStyle);
-  const select = el("select", { dataset: { testid: "db-field-system-menu-ui-style" } });
-  for (const id of listMenuSkinIds()) {
-    select.append(el("option", { text: MENU_SKINS[id].label, attrs: { value: id, title: MENU_SKINS[id].description } }));
-  }
-  select.value = saved;
-  const description = el("p", {
+  let selected = saved;
+  const cards = new Map<MenuSkinId, HTMLButtonElement>();
+  const gallery = el("div", {
+    class: "db-system-menu-skin-gallery",
+    attrs: { role: "group", "aria-label": "게임 메뉴 디자인" },
+    dataset: { testid: "db-field-system-menu-ui-style" },
+  });
+  const status = el("p", {
     class: "db-system-menu-skin-description",
-    text: MENU_SKINS[saved].description,
+    attrs: { role: "status" },
+    text: `현재 디자인 · ${MENU_SKINS[saved].label}`,
     dataset: { testid: "db-system-menu-skin-description" },
   });
-  const preview = el("img", {
-    class: "db-system-menu-skin-preview",
-    attrs: { src: menuSkinPreviewUrl(saved), alt: `${MENU_SKINS[saved].label} 미리보기`, width: "320", height: "240", loading: "lazy" },
-    dataset: { testid: "db-system-menu-skin-preview" },
-  });
-  select.addEventListener("change", () => {
-    const id = resolveMenuSkinId(select.value);
-    updateSystem((draft) => {
-      if (id === DEFAULT_MENU_SKIN_ID) delete draft.system.menuUiStyle;
-      else draft.system.menuUiStyle = id;
+  for (const id of listMenuSkinIds()) {
+    const skin = MENU_SKINS[id];
+    const card = el("button", {
+      class: "db-system-menu-skin-card",
+      attrs: { type: "button", "aria-pressed": String(id === saved), "aria-label": skin.label },
+      dataset: { testid: `db-system-menu-skin-${id}` },
+      children: [
+        el("img", {
+          attrs: { src: menuSkinPreviewUrl(id), alt: "", width: "320", height: "240", loading: "lazy" },
+        }),
+        el("strong", { text: skin.label }),
+        el("span", { class: "db-system-menu-skin-card-description", text: skin.description }),
+        el("span", { class: "db-system-menu-skin-card-state", text: id === saved ? "✓ 선택됨" : "선택하기" }),
+      ],
     });
-    description.textContent = MENU_SKINS[id].description;
-    preview.setAttribute("src", menuSkinPreviewUrl(id));
-    preview.setAttribute("alt", `${MENU_SKINS[id].label} 미리보기`);
-  });
+    card.addEventListener("click", () => {
+      if (selected === id) return;
+      updateSystem((draft) => {
+        if (id === DEFAULT_MENU_SKIN_ID) delete draft.system.menuUiStyle;
+        else draft.system.menuUiStyle = id;
+      });
+      selected = id;
+      for (const [key, button] of cards) {
+        button.setAttribute("aria-pressed", String(key === id));
+        const badge = button.querySelector(".db-system-menu-skin-card-state");
+        if (badge) badge.textContent = key === id ? "✓ 선택됨" : "선택하기";
+      }
+      status.textContent = `현재 디자인 · ${skin.label}`;
+    });
+    cards.set(id, card);
+    gallery.append(card);
+  }
   return rm2k3Fieldset("게임 메뉴 디자인", [
-    systemHelp("ESC(X) 로 여는 게임 메뉴의 생김새입니다. 다음 테스트 플레이부터 적용됩니다."),
-    field("메뉴 디자인", select),
-    description,
-    preview,
+    systemHelp("원하는 디자인을 눌러 선택하세요. ESC(X) 메뉴에 다음 테스트 플레이부터 적용됩니다."),
+    status,
+    gallery,
   ]);
 }
 
