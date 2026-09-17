@@ -1,0 +1,1081 @@
+/* =========================================================================
+   포켓몬 전투 스킨 — 단일 소유 파일.
+   2026-09-17 통합: 구 14/16/18/20 층을 원래 순서 그대로 이어 붙였다.
+   왜 하나로 모았나: 규칙이 네 파일에 흩어져 각 층의 존재 이유가 "앞 층을 캐스케이드로
+   이기기"가 돼 있었다(구 20층 머리주석이 그렇게 명시). 같은 선택자의 width 가 다섯 번
+   재선언된 적도 있다. 층을 더 쌓는 대신 소유자를 하나로 만든다.
+
+   검증: 계산 스타일 덤프(test/e2e/_battle-computed-style-dump.spec.ts)로 통합 전후를
+   대조해 pokemon/genre/rm2000 세 프로젝트 × 두 국면에서 차이 0 을 확인했다. 이 표면은
+   픽셀 비교가 통하지 않는다 — 배경 애니메이션·유휴 프레임·RNG 때문에 같은 코드로 두 번
+   찍어도 수만 픽셀이 다르고, 잡음이 실제 차이보다 큰 경우도 있었다.
+
+   주의 — 여기가 전부는 아니다. pokemon 스코프 규칙이 아직 세 곳에 더 있다:
+     · 17-sprint-a-polish.css (2건, 감소 모션 전역 규칙)
+     · 19-adversarial-review-3.css (28건) — 이 파일보다 **먼저** 로드된다. 19층이 현재
+       이기고 있는 값(서브메뉴 grid-auto-rows: minmax(34px, auto), 「뒤로」 min-height: 42px)
+       을 여기서 재선언하면 조용히 뒤집힌다.
+     · 21-gen1-hud-type-badge.css (7건) — 이 파일보다 **뒤에** 로드된다(MP/ATB 감춤).
+   팔레트는 battle-skins/_pokemon.css 가 계속 소유한다.
+   ========================================================================= */
+
+
+/* ═══════════════ ① 씬 골격 · 정보 박스 · 서체 (구 14층) ═══════════════ */
+/* =========================================================================
+   포켓몬풍 전투 UI 스킨 — system.battleUiStyle = "pokemon"
+   (battleDom.ts가 .battle-scene에 data-battle-ui-style을 스탬프한다)
+   아래 규칙은 공통 compact HUD보다 구체적인 UI-style 선택자와 후순위 소스 순서로
+   레이아웃을 이긴다. 선언 우선순위 플래그는 사용하지 않는다.
+   레이아웃: 좌상단 적 정보 박스 + 필드 우하단 아군 정보 박스(플로팅),
+   하단 바는 좌측 메시지 창 / 우측 2열 명령 그리드.
+   ========================================================================= */
+
+.battle-scene[data-battle-ui-style="pokemon"] {
+  --pkmn-panel-bg: linear-gradient(180deg, #fdfdf4 0%, #edeadb 100%);
+  --pkmn-panel-border: #45443c;
+  --pkmn-text: #2e3238;
+  --pkmn-muted: #70747a;
+  --pkmn-accent: #e43b44;
+  /* 명령 열 최소 400px 는 메시지 창을 ~240px 로 짓눌러 짧은 문장도 3줄로 갈랐다
+     (코덱스 리뷰 C9). 명령 버튼 라벨은 2열 160px 이면 충분하다. */
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 38%);
+  grid-template-rows: minmax(0, 1fr) var(--battle-hud-height);
+  /* 행 간격 0 — 필드와 하단 밴드는 한 화면으로 읽혀야 한다. 이 값은 빌드마다 갈렸다:
+     에디터는 editor/core.part-2.css 의 `gap: var(--space-2)`(8px)를 상속해 필드 바닥과
+     밴드 사이에 어두운 거터가 생겼고(실측 447→456), 독립 플레이어(player.css)에는 그
+     선언이 없어 0 이었다. 여기서 못박아 두 빌드를 같게 만든다. 열 간격은 메시지/명령
+     두 창을 가르는 데 필요하므로 유지한다. */
+  row-gap: 0;
+}
+
+/* 트룹 이름 배너는 감춘다 — 적 정보 박스가 이름을 담당 */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-title {
+  display: none;
+}
+
+/* --- 좌상단 적 정보 박스 (모던 스킨이 숨긴 적 목록 패널을 부활·재배치) --- */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-panel {
+  display: block;
+  position: absolute;
+  /* absolute 그리드 자식은 배정된 그리드 영역이 containing block이 된다 — 씬 전체로 확장 */
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  right: auto;
+  bottom: auto;
+  z-index: 8;
+  border-image: none;
+  border-radius: 16px 16px 16px 4px;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row {
+  border: 0;
+  color: var(--pkmn-text);
+  text-shadow: none;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row::before {
+  display: none;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-hp {
+  color: var(--pkmn-muted);
+  margin-left: 10px;
+}
+
+/* --- 필드 우하단 아군 정보 박스 --- */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party {
+  position: absolute;
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  left: auto;
+  top: auto;
+  width: min(52%, 296px);
+  height: auto;
+  z-index: 8;
+  grid-template-rows: none;
+  grid-auto-rows: auto;
+  border-image: none;
+  border-radius: 16px 4px 16px 16px;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-name,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-hp,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-mp,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-state,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-atb-label {
+  text-shadow: none;
+}
+
+/* --- 하단 바: 좌측 메시지 창 --- */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-message-window {
+  border-image: none;
+  text-shadow: none;
+  align-content: center;
+}
+
+/* 클래식은 명령 단계에서 메시지 창을 숨기지만, 포켓몬풍은 항상 하단 좌측을 채운다 */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-director-step="command"] .battle-message-window {
+  display: grid;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-director-step="result"] .battle-message-window {
+  display: none;
+}
+
+/* --- 하단 바: 우측 명령 그리드 --- */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-panel {
+  background: var(--pkmn-panel-bg);
+  border-image: none;
+}
+
+/* 서브메뉴(기술/아이템/포획 목록)는 행이 길어 자동 높이로 전환.
+   `grid-template-rows` 는 여기서 선언하지 않는다 — 19-adversarial-review-3.css:72 가 같은
+   선택자에 `auto` 를 줘서 첫 행(헤더 「스킬」)이 내용 높이(18.25px)로 접힌다. 통합 전에는
+   19층이 뒤에 있어 그 값이 이겼고, 여기 `none` 을 남기면 순서가 뒤집혀 헤더 행이 34px 로
+   부푼다(실측 2026-09-17 계산 스타일 덤프). 열 구성은 아래 ③ 섹션이 소유한다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu:has(.battle-submenu-header) {
+  height: auto;
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command {
+  color: var(--pkmn-text);
+  text-shadow: none;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-text strong {
+  color: var(--pkmn-text);
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-text small {
+  color: var(--pkmn-muted);
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command::before {
+  display: none;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command:focus-visible,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command[data-battle-command-cursor="true"] {
+  outline: none;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-submenu-header {
+  color: var(--pkmn-muted);
+  text-shadow: none;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-prompt {
+  border-bottom-color: #d4d2c4;
+  color: var(--pkmn-accent);
+  text-shadow: none;
+}
+
+/* transform 은 여기서 건드리지 않는다 — `scale(1)` 재지정이 15층 포획 흡수(.battle-capture-absorbed
+   → scale(0))를 특정도로 덮어 몬스터가 구슬 옆에 그대로 서 있었다(2026-09-14 실측). */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-image {
+  transform-origin: 50% 100%;
+  image-rendering: pixelated;
+}
+
+/* ── 서체 통일 ──
+   01-scene-base.css:245 의 픽셀 폰트 허용목록은 `.battle-enemy-name` · `.battle-party
+   .battle-actor-*` 넷뿐이다. 포켓몬 스킨의 적 HUD 는 그 노드가 아니라 목록 패널
+   (`.battle-enemy-list-*`, battleCommandDom.enemyListRow)로 그려지므로 허용목록에서 빠져
+   system-ui 로 떨어졌다 — 좌우 대칭이어야 할 같은 HUD 컴포넌트가 아군은 픽셀 서체,
+   적은 시스템 고딕으로 렌더됐다(실측 NeoDunggeunmo vs system-ui). 커맨드·메시지도 같은
+   이유로 시스템 고딕이었다. 스킨 전체를 한 서체로 모은다.
+   `.battle-key-prompts` 는 제외한다 — 12px 픽셀 글꼴이 디더링으로 뭉개져 읽히지 않아
+   18층이 의도적으로 UI 폰트로 되돌린 자리다(18-pokemon-layout-redesign.css:94). */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-name,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-level,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-hp,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-message-line,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-text strong,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-text small,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-submenu-header,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-prompt,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-flow-status {
+  font-family: var(--runtime-pixel-font);
+}
+
+/* ── UI 크기: 320×240 클래식 폰트를 상속받아 왜소하던 것을 포켓몬 규모로 확대 ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-text strong {
+  line-height: 1.15;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-text small {
+  font-size: 13px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-message-window {
+  font-size: 19px;
+  line-height: 1.35;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-name,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-name {
+  font-size: 19px;
+  font-weight: 700;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-hp,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-mp {
+  font-size: 17px;
+}
+/* 적 정보 박스·아군 박스 HP 바를 조금 키워 균형 */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party {
+  width: min(64%, 420px);
+}
+/* 아군 정보 박스: 이름·HP가 한 줄에 안 들어가 잘리던 것을 세로로 편다 */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-status {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-vitals {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-hp,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-mp {
+  white-space: nowrap;
+  overflow: visible;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-stat-bar {
+  height: 12px;
+  margin-top: 2px;
+}
+
+/* 대상 선택 흰 박스/화살표는 포켓몬 1:1 대치에선 어색 — 모두 숨긴다 */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-brackets {
+  display: none;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-selected,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-targeted {
+  outline: 0;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-candidate::after {
+  content: none;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-candidate {
+  filter: none;
+}
+/* hit 포즈가 채도를 낮춰 배경에 묻히던 문제 — 흔들림만 남기고 밝기·채도는 유지 */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy[data-battle-pose="hit"] {
+  filter: brightness(1.15);
+}
+
+/* ═══════════════ ② 배틀러 · HP/레벨 배지 · 커서 (구 16층) ═══════════════ */
+/* =========================================================================
+   포켓몬 스킨 추가 다듬기 — 배치/스케일/불필요 HUD 정리
+   ========================================================================= */
+
+/* 아군: 좌하단에서 크게, 상대를 바라보도록 스프라이트만 좌우 반전 */
+/* (구) 적 노드 scale(1.28) 확대는 18-pokemon-layout-redesign.css 가 이미지 크기
+   제어로 대체하며 폐기 — 잔재를 남기면 모션/juice transform 의 덫이 된다. */
+
+/* 상대: 우상단, 발밑 타원 그림자 */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: -1;
+}
+
+/* 인필드 적 이름·HP HUD는 좌상단 정보 박스와 중복 — 포켓몬 스킨에서 숨김 */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-name,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-hud {
+  display: none;
+}
+
+/* 적 정보 박스: 숫자 대신 HP 바(포켓몬 문법) */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-bar {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: var(--battle-stat, 100%);
+}
+.battle-enemy-list-bar { display: none; } /* 클래식은 기존 숫자 표기 유지 */
+
+/* 명령이 없을 때 빈 크림 패널 숨김 */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-panel:not(:has(.battle-command)) {
+  visibility: hidden;
+}
+
+/* =========================================================================
+   파티 몬스터 출전 — 아군측 몬스터 스프라이트(back 근사)
+   팩에 back view가 없어 정면 시트를 좌우반전+확대해 '가까이서 본 뒷모습'을 흉내낸다.
+   ========================================================================= */
+.battle-actor-group .battle-monster-image {
+  width: 192px;
+  height: 192px;
+  image-rendering: pixelated;
+  object-fit: contain;
+}
+/* 아군측 back 근사: 좌우반전 + 확대(카메라에 가깝게). 포켓몬 스킨에서 더 크게. */
+.battle-actor-group .battle-monster-back {
+  transform: scaleX(-1) scale(1.85);
+  transform-origin: 50% 80%;
+}
+/* 몬스터 배틀러 노드는 캐릭터용 3열 스프라이트 프레이밍을 쓰지 않는다 */
+.battle-actor-group .battle-actor[data-monster-battler="true"] {
+  height: 240px;
+  width: 240px;
+}
+
+/* =========================================================================
+   포켓몬 정보 박스 정밀화 — 레벨 표시, 색상 HP 바(초록/노랑/빨강), 포켓몬 감성 명령
+   ========================================================================= */
+
+/* ── 레벨 배지 (이름 옆) ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-actor-level,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-level {
+  margin-left: 12px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-name,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-name {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0;
+}
+
+/* ── HP 바: 회색 트랙 + 색상 채움(포켓몬 3단계) ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-stat-bar-hp {
+  background: #3f423c;
+  border: 2px solid #26281f;
+  border-radius: 8px;
+  height: 14px;
+  overflow: hidden;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-stat-bar-hp::before {
+  background: linear-gradient(180deg, #7ee081 0%, #40b24a 100%);
+  transition: width 0.3s ease;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-stat-bar-hp[data-hp-state="mid"]::before {
+  background: linear-gradient(180deg, #f6d976 0%, #e2a52a 100%);
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-stat-bar-hp[data-hp-state="low"]::before {
+  background: linear-gradient(180deg, #f78d8d 0%, #df474b 100%);
+}
+/* ── MP 바: 파란색 채움(HP 초록과 구분) ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-stat-bar-mp {
+  background: #3f423c;
+  border: 2px solid #26281f;
+  border-radius: 8px;
+  height: 14px;
+  overflow: hidden;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-stat-bar-mp::before {
+  background: linear-gradient(180deg, #6db8f2 0%, #3a7bd5 100%);
+  transition: width 0.3s ease;
+}
+/* 적 정보 박스 HP 바도 동일 트랙/색 */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-bar {
+  background: #3f423c;
+  border: 2px solid #26281f;
+  border-radius: 8px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-bar::before {
+  background: linear-gradient(180deg, #7ee081 0%, #40b24a 100%);
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-bar[data-hp-state="mid"]::before {
+  background: linear-gradient(180deg, #f6d976 0%, #e2a52a 100%);
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-bar[data-hp-state="low"]::before {
+  background: linear-gradient(180deg, #f78d8d 0%, #df474b 100%);
+}
+
+/* ── 정보 박스에 "HP" 노란 라벨 (포켓몬 관습) ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row::after {
+  content: "HP";
+  font-size: 14px;
+  font-weight: 800;
+  color: #d8a72a;
+  align-self: center;
+  justify-self: start;
+}
+
+/* ── 명령 버튼: 좀 더 큼직하고 포켓몬 감성(둥근 흰 버튼, 선택 시 빨간 테) ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command {
+  border-width: 4px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command[data-battle-command-cursor="true"]::before,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command:focus-visible::before,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-menu .battle-command.battle-target-selected::before {
+  content: "▸";
+  display: inline-block;
+  flex: 0 0 auto;
+  position: static;
+  color: var(--pkmn-accent);
+  margin-right: 6px;
+  font-size: 18px;
+}
+
+/* ═══════════════ ③ 배경 · 스프라이트 · 타깃 화살표 · 결과 패널 (구 18층) ═══════════════ */
+/* =========================================================================
+   포켓몬 스킨 레이아웃 재설계 — 적대적 리뷰 2차(2026-08-02) 반영.
+   파일 끝에 두어 위의 개별 규칙들을 캐스케이드로 이긴다.
+   ========================================================================= */
+
+/* 씬 바탕: 루트 windowskin border-image(fill) 제거 후 드러나는 바탕은
+   어두운 프레임 색. 패널이 비는 순간에도 파란 타일/하늘색이 새지 않는다. */
+.battle-scene[data-battle-skin="pokemon"],
+.battle-scene[data-battle-ui-style="pokemon"] {
+  background: #14181f;
+  border-image: none;
+}
+
+/* 필드는 자기 영역을 항상 칠한다 — 배경 그림이 없어도 구멍이 없게. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-field {
+  background: linear-gradient(180deg, #8ecae6 0%, #a3d9a5 68%, #7fae6b 100%);
+}
+
+/* ── 적 스프라이트: 우상, 흰 원판·네온 필터 제거 ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy {
+  background: none;
+  transform: translate(-50%, -100%);
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-image {
+  width: 160px;
+  height: 160px;
+  max-width: none;
+  object-fit: contain;
+  border-radius: 0;
+  background: none;
+  filter: none;
+}
+
+/* ── 아군 뒷모습: 좌하 대형(노드 크기로 제어 — 이중 scale 제거) ──
+   이미지는 노드 바닥에 정렬한다 — 몬스터 배틀러(145×140)가 220px 노드 상단에 붙어
+   발밑 그림자에서 80px(논리) 떠 보였다(감독 지적, 2026-08-03 스크린샷). */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor {
+  align-items: flex-end;
+  display: flex;
+  justify-content: center;
+  transform: translate(-50%, -100%);
+  width: 220px;
+  height: 220px;
+  overflow: visible;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor-image,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor-sprite {
+  transform: scaleX(-1);
+  width: 205px;
+  height: 215px;
+  max-width: none;
+  object-fit: contain;
+}
+
+/* 적 정보 박스 폭은 20층(20-pokemon-reference-restyle.css)이 최종 소유한다 — 같은 선택자의 width 가
+   14/18/19/20 에 다섯 번 재선언돼 있었다(2026-09-14 정리). */
+
+/* ── 커맨드 패널: 상태줄 / 메뉴(스크롤) / 힌트 3단. 행 겹침 제거 ──
+   flex-wrap/justify 도 명시한다 — 에디터 스타일(editor/core.part-2.css:48)이 같은
+   클래스에 wrap + flex-end 를 걸어, 에디터 전투 테스트에서 4항목 타깃 메뉴가 다음
+   열로 랩되어 오른쪽으로 잘려 나갔다(적대 리뷰 4차: 프롬프트 좌하단, 메뉴 우측 클리핑). */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-panel {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  gap: 4px;
+  overflow: hidden;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: none;
+  grid-auto-rows: minmax(46px, auto);
+  align-content: start;
+}
+/* 기술/아이템 서브메뉴는 2열이다 — 본가 기술 메뉴가 2×2 격자다. 1열이던 시절에는 152px
+   밴드에 헤더 + 3행이 안 들어가 셋째 행(「검격」)이 글자 중간에서 잘리고 그 위에 스크롤
+   큐가 겹쳐 떴다(실측 A-02-submenu). 2열이면 기술 4개가 2행에 들어가 잘림이 사라진다. */
+   행 높이는 여기서 정하지 않는다 — 19-adversarial-review-3.css:70 이 같은 선택자에
+   `grid-auto-rows: minmax(34px, auto)` 를 뒤에서 선언해 이긴다. 여기 32px 를 적으면 지금은
+   죽은 선언이고, 파일 순서가 바뀌는 날 34→32px 로 조용히 뒤집힌다. 열 수만 바꾼다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu:has(.battle-submenu-header) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px 8px;
+}
+/* 헤더(「스킬」)는 격자 위에 한 줄로 걸친다 — 안 그러면 첫 칸을 차지해 기술이 밀린다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-submenu-header {
+  font-size: 13px;
+  grid-column: 1 / -1;
+  padding: 2px 4px 0;
+}
+/* 이름이 길면 줄바꿈 대신 말줄임 — 행 높이 32px 를 지켜야 잘림이 다시 생기지 않는다.
+   「뒤로」는 제외한다: 19-adversarial-review-3.css:92 가 그 버튼에만 `min-height: 42px`
+   (터치 타깃)을 주는데, 여기서 `min-height: 0` 을 걸면 파일 순서가 바뀌는 순간 그 42px 가
+   조용히 죽는다. 실제로 통합 시 계산 스타일 덤프가 42px→0px 뒤집힘을 잡았다(2026-09-17). */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu:has(.battle-submenu-header) .battle-command:not([data-testid="battle-target-cancel"]) {
+  align-items: center;
+  height: 32px;
+  min-height: 0;
+  overflow: hidden;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu:has(.battle-submenu-header) .battle-command-text strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-flow-status {
+  flex: 0 0 auto;
+  color: var(--pkmn-muted);
+  text-shadow: none;
+  padding: 0 4px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-key-prompts {
+  flex: 0 0 auto;
+  /* 픽셀 폰트 12px 는 디더링으로 뭉개져 읽기 어려웠다(적대 리뷰 잔여 항목) —
+     조작 힌트는 장식이 아니라 안내문이므로 UI 폰트로 또렷하게 그린다. */
+  font-family: var(--font-ui, system-ui, sans-serif);
+  letter-spacing: 0.2px;
+  color: var(--pkmn-muted);
+  text-shadow: none;
+  text-align: center;
+  border-top: 2px solid #d8d5c6;
+  padding-top: 3px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-key-prompts kbd {
+  font-family: inherit;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-next-prompt {
+  font-family: var(--font-ui, system-ui, sans-serif);
+  letter-spacing: 0.2px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-prompt {
+  flex: 0 0 auto;
+  font-size: 14px;
+  padding: 0 4px 2px;
+}
+
+/* ── 타깃 화살표: 선택된 적 위에서 튀는 빨간 ▼ (기존 display:none 뒤집기) ──
+   구형 68×58px 코너 브래킷 대신 더 구체적인 pokemon 선택자와 후순위 소스 순서로
+   작은 삼각형을 적용한다. 흰 코너 브래킷 가상 요소도 아래에서 제거한다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy .battle-target-brackets {
+  display: block;
+  position: absolute;
+  inset: auto;
+  left: 50%;
+  /* 노드 밖(-44px)에 두면 씬 상단 클리핑에 잘리고, 노드 상단(2px)은 우상단
+     자동/속도 컨트롤 바(z 상위) 뒤에 숨는다(4차 리뷰 줌 판정). 30px 는 정수리에
+     '겹쳐' 스프라이트 무늬(프리올레라 뿔)에 묻혔다(감독 지적) — 정수리 위 12px 로. */
+  top: 12px;
+  width: 0;
+  height: 0;
+  border: 16px solid transparent;
+  border-top: 24px solid #e43b44;
+  border-bottom: 0;
+  transform: translateX(-50%);
+  /* 흰 외곽선(사방 drop-shadow) — 어떤 스프라이트/배경색 위에서도 분리돼 보인다 */
+  filter: drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff)
+    drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff)
+    drop-shadow(0 3px 2px rgba(0, 0, 0, 0.35));
+  animation: battle-target-arrow 0.45s ease-in-out infinite alternate;
+  z-index: 6;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy .battle-target-brackets::before,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy .battle-target-brackets::after {
+  content: none;
+}
+@keyframes battle-target-arrow {
+  from { margin-top: 0; }
+  to { margin-top: 9px; }
+}
+
+/* 선택된 적 스프라이트 자체를 깜빡인다 — HGSS 대상 선택 문법. 화살표만으로는
+   무늬 많은 스프라이트에서 시선을 못 끈다(감독 지적: "타겟팅 박스가 잘 안 보임"). */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy.battle-target-selected .battle-enemy-image {
+  animation: battle-target-blink 0.6s steps(1, end) infinite;
+}
+@keyframes battle-target-blink {
+  0% { filter: brightness(1.7) saturate(0.55); }
+  50% { filter: none; }
+}
+
+/* ── 데미지 팝업/이펙트는 정보 패널(z 8)보다 위에 ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-effects-layer {
+  z-index: 9;
+}
+
+/* 연출(비트)이 재생되는 동안 커맨드 패널을 숨긴다 — 이전 액션의 메시지가 아직
+   표시 중인데 다음 라운드 메뉴가 이미 떠 있던 페이싱 결함(적대 리뷰 §11). */
+.battle-scene[data-battle-sequence-busy="true"] .battle-command-host {
+  visibility: hidden;
+}
+
+/* ── 결과 패널: 포켓몬 스킨 재스타일(남색 저대비 → 베이지 고대비, 적대 리뷰 §13/§16) ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-panel {
+  background: var(--pkmn-panel-bg);
+  border: 4px solid var(--pkmn-panel-border);
+  border-image: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+  color: var(--pkmn-text);
+  min-width: 380px;
+  padding: 12px 22px 14px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-title {
+  color: var(--pkmn-text);
+  text-shadow: none;
+  font-weight: 800;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-panel[data-battle-result="defeat"] .battle-result-title {
+  color: var(--pkmn-accent);
+  text-shadow: none;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-reward-label {
+  /* 보상 행 배경은 남색 캡슐 — muted 회색(#70747a)은 그 위에서 저대비였다(4차 리뷰) */
+  color: #dfe7f6;
+  text-shadow: none;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-reward-value {
+  color: #a06514;
+  text-shadow: none;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-rewards {
+  color: var(--pkmn-muted);
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-confirm {
+  background: #ffffff;
+  border: 3px solid #b9b7a6;
+  border-radius: 10px;
+  color: var(--pkmn-text);
+  font-family: inherit;
+  font-size: 16px;
+  padding: 4px 26px;
+  margin-top: 8px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-confirm:focus-visible{
+  border-color: var(--pkmn-accent);
+  background: #fff6f0;
+  outline: none;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-next-prompt {
+  color: var(--pkmn-muted);
+  text-shadow: none;
+  font-size: 12px;
+}
+/* 결과 화면 암전 완화 — 전장이 야간처럼 꺼지던 문제 */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-director-step="result"]::after {
+  background: rgba(0, 0, 0, 0.1);
+}
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-director-step="result"] .battle-backdrop::before {
+  background: rgba(9, 35, 98, 0.12);
+}
+
+/* ═══════════════ ④ 레퍼런스 정합(HGSS) · 2026-09-17 수정 (구 20층) ═══════════════ */
+/* =========================================================================
+   포켓몬 스킨 레퍼런스 정합(HGSS풍) — 감독 레퍼런스(2026-08-03) 반영.
+   TOC 마지막에 두어 14/16/17/18/19 의 개별 규칙을 캐스케이드로 이긴다.
+   ① 하단 밴드 축소·통합(크림+빨간 프레임) ② 커맨드 컴팩트 텍스트 리스트
+   ③ HUD 를 사선 다크 바로 재스킨(넘버링 클리핑도 해소) ④ 발밑 플랫폼
+   ⑤ 다수 적 깊이 배치(z 는 --battle-depth, battleFieldDom 이 스탬프)
+   ========================================================================= */
+
+/* ── ① 하단 밴드: 216px → 160px → 140px ──
+   160px 밴드에서 메시지 창은 1~2줄 문장에 150px 를 써 아래 100px 가 빈 크림 판으로 남았다
+   (실측). 포켓몬 문법의 텍스트 박스는 2줄 높이다. 커맨드는 3행×32px + 상태줄 + 힌트로
+   152px 안에 든다(3행×32 + 행간 4 + 상태줄 14 + 힌트 18 + 패딩·테두리 16 = 148).
+   140px 로는 3행째 「도주」가 잘렸다(실측 2026-09-17 1차 시도). 남는 8px 는 필드가 가져간다. */
+.battle-scene[data-battle-ui-style="pokemon"] {
+  --battle-hud-height: 152px;
+}
+
+/* 메시지: 세로 가운데 정렬이면 한 줄 문장이 크림 판 한복판에 떠 위아래가 텅 빈다.
+   본가 텍스트 박스는 왼쪽 위에서 시작한다. 14층의 `align-content: center` 를 되돌린다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-message-window {
+  align-content: start;
+}
+
+/* 메시지 창: 남색 → 크림 + 빨간 프레임(레퍼런스 문법) */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-message-window {
+  background: var(--pkmn-panel-bg);
+  border: 4px solid #cf3b43;
+  border-radius: 10px;
+  color: var(--pkmn-text);
+  margin: 5px 2px 5px 5px;
+  padding: 8px 16px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-message-line {
+  color: var(--pkmn-text);
+}
+
+/* 커맨드 창: 같은 프레임 문법으로 밴드가 한 몸으로 읽히게 */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-panel {
+  border: 4px solid #cf3b43;
+  border-radius: 10px;
+  margin: 5px 5px 5px 2px;
+  padding: 4px 8px;
+}
+
+/* 연출 중에는 메시지 창이 밴드 전폭을 쓴다 — 우측 빈 구멍 방지(레퍼런스 문법).
+   커맨드 DOM 은 연출 중에도 패널에 남아 있어 :has 로는 못 가른다 — busy 속성이 기준.
+   주의: 메시지가 2행 양 칸을 차지하면 커맨드 호스트가 암시적 3행으로 밀려나
+   1fr 필드 행을 훔친다(실측 312→137px) — 호스트를 같은 칸에 명시 고정해 겹친다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-sequence-busy="true"] .battle-message-window {
+  grid-area: 2 / 1 / 3 / -1;
+  margin-right: 5px;
+}
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-sequence-busy="true"] .battle-command-host {
+  grid-area: 2 / 2 / 3 / 3;
+}
+
+/* ── ② 커맨드: 거대 알약 → 컴팩트 텍스트 리스트(▸ 커서) ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command {
+  /* flex 여야 ▸ 커서(::before, 16층)가 라벨과 같은 줄에 선다. grid/블록이면 인라인블록 ::before 뒤의
+     블록 텍스트가 다음 줄로 밀려 선택된 명령이 반쯤 잘리고 서브메뉴 행이 2배로 부풀었다(2026-09-14 실측). */
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  box-shadow: none;
+  display: flex;
+  justify-content: flex-start;
+  min-height: 30px;
+  padding: 2px 10px;
+  text-align: left;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command .battle-command-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+/* 선택 표시: 10% 알파 분홍은 비활성 행(회색 글자)과 육안 구분이 안 됐다 — 선택된 「공격」이
+   비활성 「아이템」과 같은 회색 판으로 읽혔다(실측 B-genre-01). 흰 판 + 빨간 내부 테두리로
+   올린다. 배경이 아니라 box-shadow inset 이라 행 높이(32px 고정)를 건드리지 않는다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command:focus-visible,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command[data-battle-command-cursor="true"],
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-menu .battle-command.battle-target-selected {
+  background: #fff;
+  border: 0;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 3px var(--pkmn-accent);
+  transform: none;
+}
+
+/* 비활성 행은 선택 표시와 반대 방향으로 — 판 없이 글자만 흐리게. 커서는 여전히 설 수 있다
+   (aria-disabled 경로, openwiki/runtime-battle.md 2026-09-15 절). */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command[data-battle-command-inert] {
+  background: transparent;
+  box-shadow: none;
+  opacity: 0.45;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command[data-battle-command-inert][data-battle-command-cursor="true"] {
+  background: transparent;
+  box-shadow: inset 0 0 0 3px rgba(228, 59, 68, 0.45);
+  opacity: 0.6;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-text strong {
+  font-size: 19px;
+  /* 19px 글자의 잉크는 약 26px — 상속 line-height 1.2(22.8px)면 strong 자신의 overflow:hidden 이
+     「공격/방어」 아랫부분을 깎았다(감사 clipped 0.09~0.48). */
+  line-height: 1.4;
+}
+/* 루트 메뉴 행: 상속된 46px 행 규칙이 메뉴 박스(≈94px)를 넘치게 했다 — 명시 고정 */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-panel .battle-command-menu:not(.battle-target-menu):not(:has(.battle-submenu-header)) {
+  align-content: start;
+  gap: 2px;
+  grid-template-rows: repeat(3, 34px);
+  height: auto;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu {
+  gap: 2px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-flow-status {
+  font-size: 12px;
+  line-height: 1.1;
+  margin: 0 0 2px;
+  opacity: 0.75;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-key-prompts {
+  font-size: 12px;
+  line-height: 1.1;
+  margin: 2px 0 0;
+  padding: 2px 0 0;
+  opacity: 0.8;
+}
+@media (max-width: 480px) {
+  .battle-scene[data-battle-ui-style="pokemon"] .battle-key-prompts {
+    display: none;
+  }
+}
+/* 루트 6커맨드(2×3)는 고정 낮은 행 — 어떤 상속 높이에도 3행이 152px 밴드에 들어간다.
+   기술/아이템 서브메뉴(:has 헤더)와 대상 메뉴는 제외(행 구성이 다르다). */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu:not(.battle-target-menu):not(:has(.battle-submenu-header)) .battle-command {
+  align-items: center;
+  height: 32px;
+  min-height: 0;
+  overflow: hidden;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu:not(.battle-target-menu):not(:has(.battle-submenu-header)) .battle-command-text {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  min-height: 0;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu:not(.battle-target-menu):not(:has(.battle-submenu-header)) .battle-command-text strong {
+  line-height: 1.4;
+}
+
+/* 대상 메뉴: 1열 컴팩트 — 이름과 HP 를 한 줄에, 행 수가 늘면 스크롤 */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-menu {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: none;
+  grid-auto-rows: auto;
+  overflow-y: auto;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-menu .battle-command {
+  height: auto;
+  min-height: 26px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-menu .battle-command-text small {
+  display: inline;
+  margin-left: 10px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-menu .battle-command-text strong,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-menu .battle-command-text small {
+  line-height: 1.4;
+  overflow: visible;
+}
+
+/* 루트 메뉴는 3행 고정 그리드라 스크롤이 생길 수 없다 — 그런데 행 높이 합(100px)이 메뉴
+   높이와 1px 차로 맞물려 `attachScrollCue` 가 넘침으로 오판했고, 큐(▾)가 그리드 흐름 안
+   `justify-self: center` 자리에 끼어 「도주」와 「포획」 사이에 파란 삼각형으로 떴다
+   (실측 B-genre 6커맨드). 서브메뉴·대상 메뉴의 큐는 실제로 필요하므로 건드리지 않는다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu:not(.battle-target-menu):not(:has(.battle-submenu-header)) .battle-command-scroll-cue {
+  display: none;
+}
+
+/* 대상 선택은 행 수가 유동적 — 낮아진 밴드에서 잘리지 않게 스크롤 허용 */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-phase="targetSelect"] .battle-command-panel {
+  overflow-y: auto;
+}
+
+/* ── ③-a 적 HUD: 크림 박스 → 배틀러당 사선 다크 바 ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-panel {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  top: 6px;
+  left: 6px;
+  width: min(48%, 296px);
+}
+/* 이름 칸을 넓혀 동명 넘버링("초원 슬라임 1")이 잘리지 않게 — 바를 88px 로 양보 */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row {
+  grid-template-columns: minmax(0, 1fr) 22px 88px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row {
+  background: linear-gradient(180deg, #31363f 0%, #22252b 100%);
+  clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+  margin-bottom: 5px;
+  min-height: 0;
+  padding: 4px 24px 7px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-name {
+  color: #f4f6f8;
+  font-size: 17px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-level {
+  color: #ced3da;
+}
+
+/* ── ③-b 아군 HUD: 크림 박스 → 사선 다크 바(반대 방향 슬랜트) ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  bottom: calc(var(--battle-hud-height) + 12px);
+  padding: 0;
+  right: 6px;
+  width: min(56%, 352px);
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-status {
+  background: linear-gradient(180deg, #31363f 0%, #22252b 100%);
+  border: 0;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 100%, 14px 100%);
+  padding: 6px 26px 9px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-name,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-hp,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-state,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-atb-label {
+  color: #f4f6f8;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-mp {
+  color: #b9c2cd;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-actor-level {
+  color: #ced3da;
+}
+
+/* 3인 이상 액터 파티: 두 줄 행(이름/HP 텍스트 + 바 ≈ 76px)이 4개면 460px 로 우측 무대를 통째로 덮어
+   적 스프라이트가 바 뒤에 숨는다(2026-09-14 실측, 4인 + 슬라임 2). 이름·수치를 한 줄로 접고 바를
+   얇게 해 행당 ≈ 40px — 4행이 적의 발밑(y≈100 논리) 아래에 머문다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party:has(> .battle-actor-status:nth-child(3)) {
+  width: min(48%, 300px);
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-status {
+  align-items: center;
+  column-gap: 8px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-bottom: 3px;
+  padding: 2px 22px 5px;
+  row-gap: 0;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-name {
+  font-size: 14px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-level {
+  font-size: 12px;
+  margin-left: 6px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-vitals {
+  gap: 8px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-hp,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-mp {
+  font-size: 13px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-stat-bar {
+  grid-column: 1 / -1;
+  height: 8px;
+  margin-top: 1px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-stat-bar-hp {
+  height: 10px;
+}
+
+/* ── ④ 발밑 플랫폼: 옅은 그림자 → 어두운 무대 단(양측 동일 문법) ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy::before {
+  background: radial-gradient(ellipse at center, rgba(26, 34, 26, 0.5) 0%, rgba(26, 34, 26, 0.28) 46%, transparent 70%);
+  bottom: -16px;
+  height: 54px;
+  width: 205px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor::before {
+  background: radial-gradient(ellipse at center, rgba(26, 34, 26, 0.5) 0%, rgba(26, 34, 26, 0.28) 46%, transparent 70%);
+  bottom: -14px;
+  content: "";
+  height: 62px;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  width: 250px;
+  z-index: -1;
+}
+
+/* ── ⑤ 다수 적 깊이: 가까운(화면 아래) 적이 앞 — battleFieldDom 이 --battle-depth 스탬프 ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-group .battle-enemy {
+  z-index: var(--battle-depth, 1);
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-group .battle-enemy.battle-motion-lunge {
+  z-index: 6;
+}
+/* 선택된 적은 그룹 안에서 맨 앞(화살표가 앞줄 적 스프라이트에 가리지 않게) */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-group .battle-enemy.battle-target-selected {
+  z-index: 9;
+}
+/* 뒷줄 적을 고르면 타깃 화살표가 좌상단 HUD 바(z 8) 뒤에 숨어 꼭짓점만 보였다
+   (감독 지적, 실측 t02). z 로는 못 푼다 — .battle-field 자체가 z 1 스태킹 컨텍스트라
+   필드 안 어떤 z 도 필드 밖 형제인 패널을 못 이기고, 필드를 8 위로 올리면 이번엔
+   패널이 불투명 배경 뒤로 사라진다. 대신 대상 선택 동안 패널을 감광한다.
+   2026-09-17: 0.15 는 감광이 아니라 소거였다 — 공격할 적을 고르는 바로 그 순간에 그 적의
+   이름·레벨·HP 가 화면에서 사라졌다(실측 A-cosmetic-03). 화살표가 패널 뒤로 가는 것보다
+   대상 정보를 잃는 쪽이 나쁘다. 0.85 로 되돌리고, 겹침은 패널을 살짝 물러나게 해 푼다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-phase="targetSelect"] .battle-enemy-list-panel {
+  opacity: 0.85;
+  transition: opacity 0.12s ease-out;
+}
+
+/* ── ⑥ 하단 밴드 정렬: 두 창의 바닥을 맞춘다 ──
+   메시지 창은 그리드 자식이라 margin 5/5 가 높이에서 빠져 150px 였는데, 커맨드 패널은
+   호스트가 늘려 밴드 전체(160px)를 먹어 바닥이 10px 어긋나고 씬 바닥(615)을 1px 넘쳤다
+   (실측 messageWindow 456–606 / commandPanel 456–616). 여백을 호스트로 올리고 패널은
+   호스트를 꽉 채우게 해 두 창이 같은 상자에서 시작·종료하게 만든다. */
+   `display: grid` 는 주지 않는다 — 호스트를 그리드 컨테이너로 만들면 패널이 내용 크기로
+   줄어 메시지 창과 사이에 85px 검은 틈이 생긴다(실측 2026-09-17 1차 시도). */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-host {
+  box-sizing: border-box;
+  min-height: 0;
+  padding: 5px 5px 5px 2px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-panel {
+  box-sizing: border-box;
+  height: 100%;
+  margin: 0;
+  min-height: 0;
+  width: 100%;
+}
+
+/* ── ⑦ 이펙트 문법: 화면 폭력 제거 ──
+   실측된 적용 클래스는 screen-shake · hit-stop · field-punch · flash-hit · knockback 으로
+   전부 액션 JRPG 육즙이다. 포켓몬은 화면을 흔들지 않는다 — 타격은 대상 스프라이트의
+   점멸과 HP 바 감소로만 말한다. 스킨 스코프 선택자가 (0,2,0)+ 이라 06/17 층의 단일 클래스
+   규칙을 특정도로 이긴다(우선순위 플래그 불필요). 공격자 전진(lunge)과 대상 점멸은 남긴다 —
+   그 둘은 포켓몬에도 있는 문법이다. */
+.battle-scene[data-battle-ui-style="pokemon"].battle-screen-shake,
+.battle-scene[data-battle-ui-style="pokemon"].battle-field-punch,
+.battle-scene[data-battle-ui-style="pokemon"].battle-hit-stop,
+.battle-scene[data-battle-ui-style="pokemon"].battle-flash-hit {
+  animation: none;
+}
+.battle-scene[data-battle-ui-style="pokemon"].battle-flash-hit .battle-field {
+  animation: none;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy.battle-motion-knockback,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-actor.battle-motion-knockback {
+  animation: none;
+}
+
+/* ── ⑧ 데미지 숫자 팝업 제거 ──
+   본가에 데미지 숫자가 없다. 필드에 뜨던 주황색 「-67」은 RPG Maker 문법이고, 같은 정보를
+   메시지 창이 이미 문장으로 말한다("슬라임에게 67 피해!"). 빗나감·회복 팝업은 남긴다 —
+   그 둘은 수치가 아니라 사건의 종류를 알리는 표시라 메시지만으로는 놓치기 쉽다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-damage-popup:not(.battle-damage-popup-miss):not(.battle-damage-popup-heal) {
+  display: none;
+}
+
+/* ── ⑨ 결과 카드: 크림 패널 위의 남색 캡슐 제거 ──
+   18층은 보상 행의 **글자색**만 포켓몬용으로 바꿨고(`--pkmn-*`), 행의 배경은 한 번도 덮지
+   않았다 — 09-keyboard-result-panel.css:162 의 남색 그라디언트 + 금색 테두리(클래식/글라스
+   문법)가 그대로 살아 크림 패널 한복판에 남색 캡슐 두 개가 박혔다(실측 A-06-result).
+   제목도 픽셀 서체 허용목록 밖이라 혼자 시스템 고딕이었다. 카드 전체를 스킨으로 모은다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-title,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-reward-label,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-reward-value,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-confirm {
+  font-family: var(--runtime-pixel-font);
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-reward-card {
+  background: #fffdf2;
+  border: 3px solid #cbc7b2;
+  border-radius: 8px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-reward-label {
+  color: var(--pkmn-text);
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-reward-value {
+  color: #a8601a;
+}
+/* 경험치 게이지 트랙도 같은 크림 계열로 — 남색 트랙 위 초록 조각이 떠 보였다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-reward-card .battle-stat-bar {
+  background: #e6e2cf;
+  border: 2px solid #cbc7b2;
+}

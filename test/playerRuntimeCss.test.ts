@@ -62,13 +62,12 @@ const RUNTIME_IMPORTS = [
   "./battle/11-compact-hud-row.css",
   "./battle/12-compact-party-target.css",
   "./battle/13-compact-victory-box.css",
-  "./battle/14-pokemon-skin-layout.css",
   "./battle/15-juice-capture-fx.css",
-  "./battle/16-pokemon-battlers-hud.css",
   "./battle/17-sprint-a-polish.css",
-  "./battle/18-pokemon-layout-redesign.css",
   "./battle/19-adversarial-review-3.css",
-  "./battle/20-pokemon-reference-restyle.css",
+  // 2026-09-17: 구 14/16/18/20 층(포켓몬 전용)을 20-pokemon-skin.css 하나로 합쳤다.
+  // 19층보다 뒤, 21층보다 앞이라는 자리는 그대로다 — 계산 스타일 덤프로 중립 확인.
+  "./battle/20-pokemon-skin.css",
   "./battle/21-gen1-hud-type-badge.css",
   "./battle-skins/_pokemon.css",
   "./battle-skins/_rm2000.css",
