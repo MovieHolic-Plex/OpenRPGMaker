@@ -2,6 +2,7 @@ import {
   createPlayerStatusMenuSnapshot,
   isStatusMenuGroupEntryId,
   statusMenuCommandGroupLabel,
+  statusMenuCommandSummary,
   statusMenuRailIdForCommand,
   type StatusMenuCommandId,
   type StatusMenuGroupEntryId,
@@ -144,16 +145,26 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       class: "status-menu-sidebar",
       dataset: { testid: "status-menu-sidebar" },
       children: [
-        renderCommandRail({ project: options.project, session: options.session, snapshot, selectedCommand, actions: options.actions }),
+        renderCommandRail({
+          project: options.project,
+          session: options.session,
+          snapshot,
+          selectedCommand,
+          actions: options.actions,
+          summaries: skin.landing === "hub" ? { slots: options.slots } : undefined,
+        }),
       ],
     }),
-    ...(landingOnly ? [renderPartyOverview(options.project, snapshot)] : [detailPanel]),
+    ...(landingOnly
+      ? [skin.landing === "hub" ? renderPartyStrip(options.project, snapshot) : renderPartyOverview(options.project, snapshot)]
+      : [detailPanel]),
     ...(showParty ? [renderPartyPanel(options.project, snapshot)] : []),
     renderFooter(
       mode,
       options.message ?? (mode === "function"
         ? selectedEntryDescription(detail, options.selectedDetailActionIndex) ?? interactiveHint(detail)
-        : undefined)
+        : undefined),
+      skin.railColumns
     )
   );
   panel.append(statusMenuDebug(selectedCommand, mode));
@@ -166,6 +177,8 @@ type CommandRailRenderOptions = {
   readonly snapshot: PlayerStatusMenuSnapshot;
   readonly selectedCommand: StatusMenuRailId;
   readonly actions: PlayerStatusMenuActions;
+  /** 허브 타일: 명령마다 한 줄 요약(몇 종·몇 명·하위 명령)을 라벨 아래에 단다. */
+  readonly summaries?: { readonly slots: PlayerStatusMenuOptions["slots"] };
 };
 
 function renderCommandRail(options: CommandRailRenderOptions): HTMLElement {
@@ -218,6 +231,13 @@ function renderCommandRail(options: CommandRailRenderOptions): HTMLElement {
           },
         }),
         el("span", { class: "status-menu-command-label", text: label }),
+        ...(options.summaries
+          ? [el("span", {
+              class: "status-menu-command-summary",
+              text: statusMenuCommandSummary(command.id, options.project, options.session, options.summaries.slots),
+              dataset: { testid: `status-menu-command-summary-${command.id}` },
+            })]
+          : []),
         ...(command.opensGroup
           ? [el("span", { class: "status-menu-command-legacy-suffix", text: " ▸", attrs: { "aria-hidden": "true" } })]
           : []),
@@ -448,6 +468,31 @@ function renderOverviewVital(label: string, value: string, ratio: number, varian
   });
 }
 
+/** 허브 첫 화면의 파티 스트립 — 타일 격자 아래 4칸(얼굴 24px·이름·HP/MP 트랙·HP 수치). */
+function renderPartyStrip(project: PlayerStatusMenuOptions["project"], snapshot: PlayerStatusMenuSnapshot): HTMLElement {
+  return el("section", {
+    class: "status-menu-party-strip",
+    attrs: { "aria-label": "파티" },
+    dataset: { testid: "status-menu-party-strip" },
+    children: snapshot.partyRows.map((row, index) => el("div", {
+      class: `status-menu-strip-card ${row.hpLevel}`,
+      dataset: { testid: `status-menu-strip-card-${index}` },
+      children: [
+        renderPartyFace(project, row, index, 24, `status-menu-strip-face-${index}`),
+        el("div", {
+          class: "status-menu-strip-body",
+          children: [
+            el("span", { class: "status-menu-actor-name", text: row.name }),
+            renderOverviewTrack(row.hpRatio, `hp ${row.hpLevel}`, `status-menu-strip-hp-${index}`),
+            renderOverviewTrack(row.mpRatio, "mp", `status-menu-strip-mp-${index}`),
+            el("span", { class: "status-menu-strip-value", text: row.hpValueLabel }),
+          ],
+        }),
+      ],
+    })),
+  });
+}
+
 function renderOverviewTrack(ratio: number, variant: string, testId: string): HTMLElement {
   const percent = `${Math.round(ratio * 1000) / 10}%`;
   return el("div", {
@@ -554,7 +599,8 @@ function interactiveHint(detail: StatusMenuDetail): string | undefined {
 
 function renderFooter(
   mode: "main" | "function",
-  message: string | undefined
+  message: string | undefined,
+  railColumns: number
 ): HTMLElement {
   const footer = el("footer", { class: "status-menu-footer" });
   footer.append(el("div", {
@@ -565,14 +611,16 @@ function renderFooter(
   }));
   footer.append(el("span", {
     class: "status-menu-controls",
-    text: statusMenuControls(mode),
+    text: statusMenuControls(mode, railColumns),
     dataset: { testid: "status-menu-controls" },
   }));
   return footer;
 }
 
-export function statusMenuControls(mode: "main" | "function"): string {
-  return mode === "main" ? "↑↓ 메뉴 이동   → / Enter 선택   Esc 게임으로" : "↑↓ 항목 이동   Enter 결정   ← 메뉴   Esc 뒤로";
+export function statusMenuControls(mode: "main" | "function", railColumns = 1): string {
+  if (mode === "function") return "↑↓ 항목 이동   Enter 결정   ← 메뉴   Esc 뒤로";
+  // 격자 레일(허브 타일)은 → 가 선택이 아니라 이동이다.
+  return railColumns > 1 ? "↑↓←→ 이동   Enter 선택   Esc 게임으로" : "↑↓ 메뉴 이동   → / Enter 선택   Esc 게임으로";
 }
 
 function statusMenuDebug(selectedCommand: StatusMenuRailId, mode: "function" | "main"): HTMLElement {

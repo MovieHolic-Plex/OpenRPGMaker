@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   listStatusMenuGroupCommandIds,
   listStatusMenuRailIds,
+  statusMenuCommandSummary,
   statusMenuRailIdForCommand,
 } from "@/player/playerStatusMenuModel";
 import { createBlankProject } from "@/project/defaults";
@@ -54,5 +55,17 @@ describe("flat status menu rail (painted skins)", () => {
     expect(statusMenuRailIdForCommand("status", project, session)).toBe("party-menu");
     expect(statusMenuRailIdForCommand("status")).toBe("party-menu");
     expect(listStatusMenuGroupCommandIds("system-menu", project, session)).toEqual(["save", "load", "wait", "to-title"]);
+  });
+});
+
+describe("hub command summaries", () => {
+  it("허브 타일의 한 줄 요약 — 아이템 종수·파티 상태·시스템 하위 명령", () => {
+    const project = createBlankProject();
+    const session = startSession(project);
+    expect(statusMenuCommandSummary("items", project, session, [])).toMatch(/종$/);
+    expect(statusMenuCommandSummary("party-menu", project, session, [])).toContain("명");
+    expect(statusMenuCommandSummary("system-menu", project, session, [])).toContain("저장");
+    expect(statusMenuCommandSummary("save", project, session, [{ kind: "empty", slot: 1 }, { kind: "empty", slot: 2 }, { kind: "empty", slot: 3 }])).toBe("0/3칸");
+    expect(statusMenuCommandSummary("to-title", project, session, [])).toBe("");
   });
 });

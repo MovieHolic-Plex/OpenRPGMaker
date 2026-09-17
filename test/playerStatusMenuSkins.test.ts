@@ -128,6 +128,32 @@ describe("status menu skins", () => {
     }
   });
 
+  it("hub 는 main 모드에 명령 요약과 파티 스트립을 그린다", () => {
+    const restore = installFakeDom();
+    try {
+      const menu = render("hub");
+      expect(menu.getAttribute("data-menu-skin-landing")).toBe("hub");
+      expect(menu.getAttribute("data-menu-skin-rail")).toBe("collapsed");
+      expect(findByTestId(menu, "status-menu-command-summary-items")).not.toBeNull();
+      expect(findByTestId(menu, "status-menu-party-strip")).not.toBeNull();
+      expect(findByTestId(menu, "status-menu-strip-card-0")).not.toBeNull();
+      expect(findByTestId(menu, "status-menu-detail")).toBeNull();
+      expect(findByTestId(menu, "status-menu-party-overview")).toBeNull();
+      for (const id of ["items", "skills", "equipment", "party-menu", "record-menu", "system-menu"]) {
+        expect(findByTestId(menu, `status-menu-command-${id}`), id).not.toBeNull();
+      }
+      // 작업대·파티 퍼스트에는 요약이 없다.
+      expect(findByTestId(render(undefined), "status-menu-command-summary-items")).toBeNull();
+      expect(findByTestId(render("party-first"), "status-menu-command-summary-items")).toBeNull();
+      // 격자에서는 → 가 선택이 아니라 이동이므로 조작 안내도 달라진다.
+      expect(findByTestId(menu, "status-menu-controls")?.textContent).toContain("←→");
+      expect(findByTestId(menu, "status-menu-controls")?.textContent).not.toContain("→ / Enter");
+      expect(findByTestId(render(undefined), "status-menu-controls")?.textContent).toContain("→ / Enter 선택");
+    } finally {
+      restore();
+    }
+  });
+
   it("party-first-warm 은 톤만 warm 이고 나머지는 party-first 와 같다", () => {
     const restore = installFakeDom();
     try {
@@ -154,7 +180,64 @@ function memoryStorage(): Storage {
   } as Storage;
 }
 
+type ControllerHarness = { controller: ReturnType<typeof createPlayerStatusMenuController>; layout: HTMLElement };
+
+function mountController(skin: MenuUiStyle): ControllerHarness {
+  const project = createBlankProject();
+  project.system.menuUiStyle = skin;
+  store.replaceProject(project);
+  const session = startSession(project);
+  const layout = document.createElement("div");
+  document.body.append(layout);
+  const scene = {
+    session,
+    getSession: () => session,
+    refreshRuntimeSurfaces: () => undefined,
+    syncRuntimeState: () => undefined,
+  } as unknown as PlayScene;
+  const controller = createPlayerStatusMenuController({
+    layout,
+    getActiveScene: () => scene,
+    getPlayStage: () => layout,
+    getPlayStartedAt: () => 0,
+    closeMenu: () => undefined,
+    closeMenuWithJuice: () => undefined,
+    renderTitle: () => undefined,
+    emitMenuJuice: () => undefined,
+    menuCloseJuiceMs: 0,
+    loadSlot: () => undefined,
+  });
+  return { controller, layout };
+}
+
 describe("status menu skins — controller", () => {
+  it("hub: main 모드에서 → 는 진입이 아니라 격자 이동이고, Enter 가 들어간다", () => {
+    const restore = installFakeDom();
+    const previousWindow = Object.getOwnPropertyDescriptor(globalThis, "window");
+    Object.defineProperty(globalThis, "window", { configurable: true, value: { localStorage: memoryStorage() } });
+    try {
+      const { controller, layout } = mountController("hub");
+      controller.toggleMenu();
+      expect(controller.handleKey("ArrowRight")).toBe(true);
+      let menu = findByTestId(layout, "main-menu")!;
+      expect(menu.getAttribute("data-status-menu-screen")).toBe("main");
+      expect(findByTestId(menu, "status-menu-command-skills")?.className).toContain("selected");
+      expect(controller.handleKey("ArrowDown")).toBe(true);
+      menu = findByTestId(layout, "main-menu")!;
+      // 3열 격자: skills(1) 아래는 record-menu(4).
+      expect(findByTestId(menu, "status-menu-command-record-menu")?.className).toContain("selected");
+      expect(controller.handleKey("Enter")).toBe(true);
+      menu = findByTestId(layout, "main-menu")!;
+      expect(menu.getAttribute("data-status-menu-screen")).toBe("function");
+      expect(findByTestId(menu, "status-menu-detail")).not.toBeNull();
+      expect(findByTestId(menu, "status-menu-party-strip")).toBeNull();
+    } finally {
+      if (previousWindow) Object.defineProperty(globalThis, "window", previousWindow);
+      else delete (globalThis as { window?: unknown }).window;
+      restore();
+    }
+  });
+
   it("party-first: 레일에서 → 를 누르면 작업 패널이 실제로 그려지고, ← 로 돌아오면 파티 개요가 다시 그려진다", () => {
     const restore = installFakeDom();
     const previousWindow = Object.getOwnPropertyDescriptor(globalThis, "window");

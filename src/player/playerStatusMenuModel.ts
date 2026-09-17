@@ -7,6 +7,8 @@ import { resolveTerms } from "@/project/terms";
 import type { Project } from "@/project/types";
 import { hasLifeLedgerData } from "@/player/lifeLedger";
 import { menuSkinFor } from "@/player/menuSkins/registry";
+import { buildQuestLog } from "@/player/questLog";
+import type { SaveSlotReadResult } from "@/player/saveSlots";
 import type { MenuSkinRailStyle } from "@/player/menuSkins/types";
 
 export const STATUS_MENU_COMMAND_IDS = [
@@ -348,4 +350,48 @@ function formatElapsedTime(elapsedMs: number): string {
 
 function assertNever(value: never): never {
   throw new Error(`Unhandled status menu command: ${String(value)}`);
+}
+
+/**
+ * 허브 타일의 한 줄 요약 — 타일을 열지 않아도 "몇 종·몇 명·무엇이 들었는지" 가 읽히게 한다.
+ * 빈 문자열은 요약 없음(타일이 라벨만 보인다).
+ */
+export function statusMenuCommandSummary(
+  id: StatusMenuRailId,
+  project: Project,
+  session: PlaySession,
+  slots: readonly SaveSlotReadResult[]
+): string {
+  const party = session.partyActorIds.length;
+  switch (id) {
+    case "items":
+      return `${Object.values(session.inventory).filter((count) => (count ?? 0) > 0).length}종`;
+    case "skills":
+    case "equipment":
+    case "status":
+    case "row":
+    case "formation":
+      return `${party}명`;
+    case "monsters":
+      return `${session.monsterParty.length}마리`;
+    case "quests":
+      return `${buildQuestLog(project, session).length}건`;
+    case "save":
+    case "load":
+      return `${slots.filter((slot) => slot.kind === "present").length}/${Math.max(slots.length, 1)}칸`;
+    case "wait":
+    case "to-title":
+    case "relationships":
+    case "life-ledger":
+      return "";
+    case "party-menu": {
+      const crit = createPlayerStatusMenuSnapshot(project, session).partyRows.filter((row) => row.hpLevel === "crit").length;
+      return crit > 0 ? `위험 ${crit} · ${party}명` : `${party}명 양호`;
+    }
+    case "record-menu":
+    case "system-menu":
+      return listStatusMenuGroupCommandIds(id, project, session)
+        .map((commandId) => statusMenuCommandLabel(commandId, true))
+        .join(" · ");
+  }
 }
