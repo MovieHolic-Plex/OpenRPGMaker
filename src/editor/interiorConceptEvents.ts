@@ -10,6 +10,7 @@
  *
  * 한 물건에 칩이 여럿이면 transfer > sleep > loot > event 순으로 하나만 단다.
  * 앵커는 물건 최하단 행 중앙 — 플레이어가 남쪽에서 마주 보거나(가구) 올라서서(계단) 조사한다.
+ * 예외: 가로로 넓은 계단(transfer, 하단 행 2칸 이상)은 밟는 칸마다 전이를 따로 단다.
  */
 import type { ConceptPlacement } from "@/editor/interiorConceptCompose";
 import type { InteriorObjectDef } from "@/editor/interiorObjectCatalog";
@@ -119,20 +120,45 @@ export function buildConceptEvents(
     const bottomRow = Math.max(...placement.cells.map((cell) => cell.y));
     const rowCells = placement.cells.filter((cell) => cell.y === bottomRow);
     const preferred = placement.objectId === "stairs_down" ? rowCells[0] : placement.anchor;
-    const anchor = [preferred, ...rowCells, ...(options.reachableCells ? placement.cells : [])].map(cell => {
-      if (!cell) return undefined;
-      const upperWall = [74, 75, 76, 77].includes(map.lowerTiles[cell.y * map.width + cell.x] ?? -1);
-      const stoveProp = options.reachableCells && placement.objectId === "cauldron" && map.lowerTiles[cell.y * map.width + cell.x] === 21;
-      return { x: cell.x, y: cell.y + (stoveProp || (placement.chips.includes("wall") && upperWall) ? 1 : 0) };
-    }).find(cell => cell && !occupied.has(`${cell.x},${cell.y}`)
-      && (!options.reachableCells || [[0,0],[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy]) => {
-        const x=cell.x+dx!, y=cell.y+dy!;
-        return x>=0 && y>=0 && x<map.width && y<map.height && options.reachableCells!.has(y*map.width+x);
-      })));
-    if (!anchor) {
+    const findAnchor = (): { readonly x: number; readonly y: number } | undefined =>
+      [preferred, ...rowCells, ...(options.reachableCells ? placement.cells : [])].map(cell => {
+        if (!cell) return undefined;
+        const upperWall = [74, 75, 76, 77].includes(map.lowerTiles[cell.y * map.width + cell.x] ?? -1);
+        const stoveProp = options.reachableCells && placement.objectId === "cauldron" && map.lowerTiles[cell.y * map.width + cell.x] === 21;
+        return { x: cell.x, y: cell.y + (stoveProp || (placement.chips.includes("wall") && upperWall) ? 1 : 0) };
+      }).find(cell => cell && !occupied.has(`${cell.x},${cell.y}`)
+        && (!options.reachableCells || [[0,0],[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy]) => {
+          const x=cell.x+dx!, y=cell.y+dy!;
+          return x>=0 && y>=0 && x<map.width && y<map.height && options.reachableCells!.has(y*map.width+x);
+        })));
+    const isPassableNeighbor = (x: number, y: number): boolean =>
+      !options.reachableCells || [[0,0],[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy]) => {
+        const nx=x+dx!, ny=y+dy!;
+        return nx>=0 && ny>=0 && nx<map.width && ny<map.height && options.reachableCells!.has(ny*map.width+nx);
+      });
+    // 가로로 넓은 계단(transfer)은 밟는 칸마다 전이를 단다 — 한 칸에만 달면 옆 칸에서
+    // 올라가도 아무 일도 일어나지 않는다. 다른 behavior(가구 조사 등)는 단일 앵커를 유지한다.
+    const anchors: Array<{ readonly x: number; readonly y: number }> = [];
+    if (behavior === "transfer" && rowCells.length > 1) {
+      const sorted = [...rowCells].sort((a, b) => a.x - b.x || a.y - b.y);
+      const preferredCell = preferred;
+      const preferredIndex = preferredCell ? sorted.findIndex((cell) => cell.x === preferredCell.x && cell.y === preferredCell.y) : -1;
+      const ordered = preferredIndex > 0 ? [sorted[preferredIndex]!, ...sorted.slice(0, preferredIndex), ...sorted.slice(preferredIndex + 1)] : sorted;
+      for (const cell of ordered) {
+        if (occupied.has(`${cell.x},${cell.y}`) || !isPassableNeighbor(cell.x, cell.y)) continue;
+        anchors.push({ x: cell.x, y: cell.y });
+      }
+    } else {
+      const single = findAnchor();
+      if (single) anchors.push(single);
+    }
+    if (anchors.length === 0) {
       warnings.push(`concept: ${placement.label} 자리에 이미 이벤트가 있어 칩을 달지 못했다`);
       continue;
     }
+    const target = options.transferTarget ?? { mapId: map.id, x: options.door.x, y: options.door.y };
+    const linked = Boolean(options.transferTarget);
+    for (const [index, anchor] of anchors.entries()) {
     ordinal += 1;
     let id = `ev_concept_${map.id}_${placement.objectId === "stairs_down" ? "stairs_down_" : ""}${placement.thingId}_${ordinal}`;
     while (usedIds.has(id)) id = `ev_concept_${map.id}_${placement.thingId}_${++ordinal}`;
@@ -148,8 +174,6 @@ export function buildConceptEvents(
     };
     switch (behavior) {
       case "transfer": {
-        const target = options.transferTarget ?? { mapId: map.id, x: options.door.x, y: options.door.y };
-        const linked = Boolean(options.transferTarget);
         base.pages = [
           page(`${id}_p`, placement.label, [
             { kind: "text", body: linked ? flavorFor(placement, facility) : `${flavorFor(placement, facility)} 아직 이어진 곳이 없어 정문으로 돌아간다.` },
@@ -157,7 +181,7 @@ export function buildConceptEvents(
           ]),
         ];
         connections.push({ thingId: placement.thingId, label: placement.label, roomId: placement.roomId, x: anchor.x, y: anchor.y, linked });
-        if (!linked) warnings.push(`concept: ${placement.label} 의 맵 연결 대상이 없다 — create_transfer_pair 로 이어라 (${anchor.x},${anchor.y})`);
+        if (!linked && index === 0) warnings.push(`concept: ${placement.label} 의 맵 연결 대상이 없다 — create_transfer_pair 로 이어라 (${anchor.x},${anchor.y})`);
         break;
       }
       case "sleep": {
@@ -195,6 +219,7 @@ export function buildConceptEvents(
       }
     }
     events.push(base);
+    }
   }
   return { events, connections, warnings };
 }
