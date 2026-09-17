@@ -20,10 +20,9 @@ function fixture() {
   return project;
 }
 
-function plan(project: ReturnType<typeof fixture>, args: Record<string, unknown>, checkId?: string) {
-  return { goal: "Check the reward", acceptance: [{ id: "preserve", title: "Map", criteria: [
-    { kind: "preserve", target: { mapId: project.startMapId } },
-  ] }], layers: [{ title: "QA", items: [{ id: "reward-check", title: "Reward", instruction: "Check reward", successTools: [tool],
+// 2026-09-17: 수용 원장이 사라져 plan 의 acceptance 배열은 무시된다. 검증 계약은 항목의 verificationChecks 만 담는다.
+function plan(_project: ReturnType<typeof fixture>, args: Record<string, unknown>, checkId?: string) {
+  return { goal: "Check the reward", layers: [{ title: "QA", items: [{ id: "reward-check", title: "Reward", instruction: "Check reward", successTools: [tool],
     verificationChecks: [{ tool, args, ...(checkId ? { checkId } : {}) }],
   }] }] };
 }
@@ -208,7 +207,6 @@ describe("normal AssistantSession walkthrough declaration and terminal boundarie
       { name: tool, args: { scenario: valid.scenario }, status: "passed" },
     ]);
     expect(result.workPlan?.layers[0]?.items[0]?.status).toBe("done");
-    expect(session.getAcceptanceSnapshot()?.status).toBe("verified");
     expect(session.getProposedProject()).toEqual(originalProject);
   });
 });

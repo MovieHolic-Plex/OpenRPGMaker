@@ -172,7 +172,7 @@ describe("normal session ownership through skip, replan and continuation", () =>
     const mapId = project.startMapId;
     const args = { mapId, from: { x: 10, y: 12 }, targets: [{ x: 5, y: 8 }] };
     const events: SessionEvent[] = [];
-    const plan = (verificationChecks?: unknown[]) => ({ goal: "Retained route", acceptance: [{ id: "preserve", title: "Map", criteria: [{ kind: "preserve", target: { mapId } }] }],
+    const plan = (verificationChecks?: unknown[]) => ({ goal: "Retained route",
       layers: [{ title: "QA", items: [{ id: "same-id", title: "Route", instruction: "Check", successTools: [reach], mapTargets: [mapId], verificationChecks }] }] });
     let round = 0;
     let stage = 0;
@@ -207,7 +207,8 @@ describe("normal session ownership through skip, replan and continuation", () =>
         return { message: { role: "assistant", content: "Checks recorded." }, finishReason: "stop" };
       },
     });
-    const snapshots = () => ({ plan: session.getWorkPlan(), acceptance: session.getAcceptanceSnapshot(), verification: session.getVerificationSnapshot() });
+    // 2026-09-17 수용 원장 해체: acceptance 스냅샷은 항상 null — 검증 원장(verification)만 상태를 갖는다.
+    const snapshots = () => ({ plan: session.getWorkPlan(), verification: session.getVerificationSnapshot() });
     let beforeSkip: ReturnType<typeof snapshots> | undefined;
     const first = await session.sendUserMessage("Inspect the retained route.", event => {
       events.push(event);
@@ -221,21 +222,18 @@ describe("normal session ownership through skip, replan and continuation", () =>
     expect(original.status).toBe("pending-specification");
     expect(first.workPlan?.layers[0]?.items[0]?.status).not.toBe("skipped");
     expect(events.filter(e => e.type === "tool_call" && e.name === "skip_work_item").map(e => e.type === "tool_call" && e.result.ok)).toEqual([false]);
-    expect(session.getAcceptanceSnapshot()?.status).toBe("blocked");
     stage = 2;
     await session.sendUserMessage("Continue.", event => events.push(event));
     const specified = session.getVerificationSnapshot().requirements.find(r => r.checkId === original.checkId)!;
     expect(specified).toMatchObject({ ownerId: original.ownerId, status: "unverified", args });
-    expect(session.getAcceptanceSnapshot()?.status).toBe("blocked");
     stage = 4;
     await session.sendUserMessage("Continue.", event => events.push(event));
-    expect(session.getAcceptanceSnapshot()?.status).toBe("verified");
     expect(session.getVerificationSnapshot().requirements).toHaveLength(1);
+    expect(session.getVerificationSnapshot().requirements[0]?.status).toBe("passed");
     const externallyEdited = session.getProposedProject();
     externallyEdited.session.gold = 99;
     expect(session.syncBaselineFromStoreIfClean(externallyEdited)).toBe(true);
     expect(session.getVerificationSnapshot().requirements[0]?.status).toBe("stale");
-    expect(session.getAcceptanceSnapshot()?.status).toBe("blocked");
     expect(events.filter(e => e.type === "tool_call" && e.name === "complete_work_item").map(e => e.type === "tool_call" && e.result.ok)).toEqual([false, true]);
     stage = 6;
     await session.sendUserMessage("Continue.", event => events.push(event));
@@ -243,7 +241,6 @@ describe("normal session ownership through skip, replan and continuation", () =>
     expect(retained).toHaveLength(2);
     expect(retained.find(r => r.checkId === original.checkId)).toMatchObject({ ownerId: original.ownerId, status: "stale", args });
     expect(retained.find(r => r.checkId !== original.checkId)?.ownerId).not.toBe(original.ownerId);
-    expect(session.getAcceptanceSnapshot()?.status).toBe("blocked");
   });
 
   it("normal session correction executes the registered original tool; unknown IDs and execution errors cannot clear a finding", async () => {
@@ -258,7 +255,7 @@ describe("normal session ownership through skip, replan and continuation", () =>
       declareIntent: fixedDeclarer({ mode: "modify", needsPlan: false }),
       chat: async () => {
         round++;
-        if (round === 1) return response([{ name: "set_work_plan", args: { goal: "Journey check", acceptance: [{ id: "preserve", title: "Map", criteria: [{ kind: "preserve", target: { mapId: f.village.id } }] }],
+        if (round === 1) return response([{ name: "set_work_plan", args: { goal: "Journey check",
           layers: [{ title: "QA", items: [{ title: "Inspect", instruction: "Inspect", successTools: ["get_project_summary"] }] }] } }, { name: scene, args: { ...f.wire180 } }], round);
         const id = session.getVerificationSnapshot().findings[0]?.checkId;
         if (round === 2) return response([{ name: "correct_verification", args: { checkId: "unknown", args: f.wire181 } },
@@ -269,7 +266,6 @@ describe("normal session ownership through skip, replan and continuation", () =>
         }
         if (round === 4) {
           expect(session.getVerificationSnapshot().findings).toHaveLength(1);
-          expect(session.getAcceptanceSnapshot()?.status).toBe("blocked");
           return response([{ name: "correct_verification", args: { checkId: id, args: f.wire181 } }, { name: "get_project_summary", args: {} }], round);
         }
         return { message: { role: "assistant", content: "Checks recorded." }, finishReason: "stop" };
@@ -279,7 +275,6 @@ describe("normal session ownership through skip, replan and continuation", () =>
     expect(events.filter(e => e.type === "tool_call" && e.name === "correct_verification").map(e => e.type === "tool_call" && e.result.ok)).toEqual([false, false, false, true]);
     expect(session.getVerificationSnapshot().findings).toEqual([]);
     expect(session.getVerificationSnapshot().attempts.map(a => a.status)).toEqual(["negative", "unsuccessful", "passed"]);
-    expect(session.getAcceptanceSnapshot()?.status).toBe("verified");
   });
 });
 

@@ -86,13 +86,32 @@
 
 ![파괴 확인 모달](./2026-09-17-assistant-gate-teardown-assets/after-fresh-destruction-confirm.png)
 
+## 2차 해체 — 수용 원장(acceptance ledger)
+
+1차 결과의 최대 런 첫 턴 526 초를 뜯어보니 절반이 `review_acceptance` 41회(38회 실패)·`repair_acceptance` 6회(전부 실패)였다. 실패 사유는 전부 `image-review-unavailable`: 타일셋 그래프트 렌더가 안 돼(`tileset-graft-rendering-unavailable … graft atlas bake pending`) `imageReviewed` 기준을 영영 만족할 수 없는데, 모델은 8분간 같은 도구를 두드렸다. `complete_work_item` 은 `targetChange` 기준이 「Draft is not yet applied」라며 거부했다 — 초안이니 당연히 아직 적용 전이다. 원장이 스스로 만족 불가능한 계약을 세우고 그걸 근거로 완료를 막는 구조였다.
+
+원장을 만들지 않는다(`adoptAcceptance` 가 기록만 남기고 반환). 그래서 acceptance 도구는 노출되지 않고, `acceptanceOpen()` 은 false, 자동 계속·`complete_work_item`·최종 문구 어디에도 개입하지 않는다. 플래너 프롬프트에서 수용 계약 작성 지침(약 2,800자)을 뺐다.
+
+| 같은 프롬프트 · 빈 맵 | 1차 해체 후 | 2차(원장 제거) 후 |
+|---|---|---|
+| 최대 48 첫 턴 | 526 s, 예산 소진 → 적용 | **349 s, 모델이 스스로 종료(final) → 적용** |
+| 최대 48 도구 호출 | 약 90회(acceptance 47회) | 64회(acceptance 0회) |
+| 균형 16 첫 턴 | 219 s, 예산 소진 → 적용 | **126 s, final → 적용** |
+| 결과 | 54×28 · 집 8 · 실내 9~10 | 54×28 · 집 8 · 실내 9~10 · 이벤트 26 |
+
+두 런 모두 예산 소진이 아니라 모델이 「끝났다」고 말하고 결정적 검사가 승인했다.
+
+![2차 해체 후 최대 런 최종 맵](./2026-09-17-assistant-gate-teardown-assets/after2-max-final.png)
+
+균형 런에서 `author_village` 는 4회 중 3회 실패했다(`housePlans[7].templateId='rect-tall' 배치 실패`, `조밀한 마을에는 houseObjectIds가 필요`) — 빌더 자체의 인자 계약 문제로, 4번째 호출에서 성공했다. 이건 게이트가 아니라 빌더 쪽 후속이다.
+
 ## 남은 문제 (후속)
 
-- **수용 원장.** 최대 런 첫 턴 526 초 중 절반 이상이 `review_acceptance` 41회(38회 실패)·`repair_acceptance` 6회(전부 실패)였다. 다음 해체 대상.
-- **기존 콘텐츠 위 「마을 만들어줘」.** 모델이 철거를 택한다. `remove_map` 은 초안에서 확인 없이 지나갔고 `clear_map` 만 모달에 걸렸다. 「기존 맵에 있는 것을 지우지 않고 추가한다」를 기본 해석으로 두거나, 삭제 계열 전부를 같은 확인에 태워야 한다.
+- ~~수용 원장~~ — 2차 해체로 제거(위 절).
+- **`author_village` 인자 계약.** `templateId` 배치 실패·`houseObjectIds` 요구로 3회 재시도. 빌더가 실패 대신 대체 템플릿으로 진행하게 해야 한다.
+- **기존 콘텐츠 위 「마을 만들어줘」.** 모델이 철거를 택한다. `remove_map` 은 초안에서 확인 없이 지나갔고 `clear_map` 만 모달에 걸렸다. → PR #905(같은 날 main 병합)가 `mapLossConfirmRequest` 로 맵·이벤트 소실을 자동 적용에서 막았다. 남은 것은 「기존 맵에 있는 것을 지우지 않고 추가한다」를 기본 해석으로 두는 일.
 - **의도 분류.** 빈 맵 요청이 `modify` 로 분류되고 `imageReviewed` 영역이 리사이즈 뒤에도 20×15 다.
 - **죽은 모듈 정리.** `independentReview.ts`, `volumeContract.ts`, `buildSpec.ts` 의 경계·확장 헬퍼는 세션에서 더 이상 불리지 않는다. 테스트와 함께 지운다.
-- **실행 시간.** 적용은 되지만 최대 런 첫 턴 526 초는 여전히 길다. 원인은 위 수용 원장 공회전.
 
 ## 테스트
 

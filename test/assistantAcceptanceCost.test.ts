@@ -1,3 +1,4 @@
+// 2026-09-17: 세션 수용 원장 해체 — 플랜 requirements 의 toolVerdict 기준에서 파생되던 검증 요구(late-adoption freshness) 테스트는 삭제. 순수 원장 모듈 비용 테스트만 남긴다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantAcceptanceLedger } from "@/ai/assistantAcceptanceLedger";
 import * as evaluation from "@/ai/assistantAcceptanceEvaluation";
@@ -5,7 +6,7 @@ import { parseAcceptance } from "@/ai/assistantAcceptance";
 import { ToolVerificationEvidence } from "@/ai/toolVerificationEvidence";
 import { createBlankProject } from "@/project/defaults";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
-import { fixture, plan, skip, target } from "./requiredOutcomeFixture";
+import { fixture } from "./requiredOutcomeFixture";
 
 beforeEach(resetIntentDeclarationCache);
 afterEach(() => { vi.restoreAllMocks(); resetIntentDeclarationCache(); });
@@ -46,22 +47,5 @@ describe("bounded canonical project comparisons", () => {
     expect(fingerprints).not.toHaveBeenCalled();
     expect(clones).not.toHaveBeenCalled();
     expect(f.session.getAcceptanceSnapshot()).toBeNull();
-  });
-
-  it.each([false, true])("preserves late-adoption freshness when content changed=%s", async changed => {
-    // Given a real verification result before any canonical requirement is declared.
-    const f = fixture();
-    const args = { mapId: target.mapId, from: { x: 0, y: 0 }, targets: [{ x: 1, y: 0 }] };
-    await f.run([[{ name: "check_reachability", args }]]);
-    const project = structuredClone(f.session.baselineProject);
-    if (changed) project.meta.title = "Changed after verification";
-    // When a detached applied refresh precedes late adoption, with no new verification call.
-    f.session.rebaseProject(project);
-    await f.run([[plan([{ id: "route", title: "Route", criteria: [{ kind: "toolVerdict", tool: "check_reachability", args }] }]), skip]]);
-    // Neither equality nor a rebase can grant pre-declaration proof authority.
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
-    expect(f.session.getVerificationSnapshot().requirements[0]?.status).toBe("unverified");
-    await f.run([[{ name: "check_reachability", args }]], { goalAction: "resume" }, "Continue route verification");
-    expect(f.session.getAcceptanceSnapshot()?.status, JSON.stringify({ acceptance: f.session.getAcceptanceSnapshot(), verification: f.session.getVerificationSnapshot() })).toBe("verified");
   });
 });
