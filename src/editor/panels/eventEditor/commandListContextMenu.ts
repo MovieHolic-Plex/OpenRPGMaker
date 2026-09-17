@@ -3,7 +3,7 @@ import type { Command } from "@/project/types";
 import { openNewEventCommandDialog } from "./commandEditDialog";
 import { newM2Command } from "@/editor/eventCommandFactory";
 import { copyEventCommandsToClipboard, hasEventCommandClipboard, readEventCommandsClipboard } from "./commandClipboard";
-import { isCommandSelected, selectAllAuthoredCommands, selectedCommandPaths, selectedCommandRoots } from "./commandInspector";
+import { insertionPathAfter, isCommandSelected, selectAllAuthoredCommands, selectedCommandPaths, selectedCommandRoots } from "./commandInspector";
 import { resolveCommandAtPath } from "@/editor/eventCommandPaths";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { openEventCommandPicker } from "./commandPicker";
@@ -168,14 +168,14 @@ export function handleCommandShortcut(
 function contextMenuNodes(request: CommandShortcutRequest, close: () => void): HTMLElement[] {
   const items: ContextMenuItem[] = [
     {
-      label: "삽입...",
+      label: "아래에 삽입...",
       shortcut: "Enter",
       icon: "insert",
       testId: "event-command-menu-insert",
       run: () => openInsertPicker(request, close),
     },
     {
-      label: "주석 삽입",
+      label: "아래에 주석 삽입",
       shortcut: "Ctrl+/",
       icon: "insert",
       testId: "event-command-menu-insert-comment",
@@ -256,11 +256,23 @@ function cutCommand(request: CommandShortcutRequest): void {
   deleteCommands(request);
 }
 
+/**
+ * 붙여넣기·「명령 넣기」의 자리 = 이 행 **바로 아래, 같은 깊이**. 여러 행을 골랐으면 마지막 뿌리 선택 아래.
+ * 「+ 명령」(content.openCommandPickerForActions)과 같은 규칙이다 — 예전엔 여기만 행 앞에 넣어서
+ * 두 삽입 규칙이 서로 달랐다(2026-09-17 적대적 리뷰 P0-3).
+ */
+function insertionPath(request: CommandShortcutRequest): number[] {
+  const roots = isCommandSelected(request.path) ? selectedCommandRoots(selectedCommandPaths()) : [];
+  const anchor = roots.length > 0 ? roots[roots.length - 1]! : request.path;
+  return insertionPathAfter(anchor);
+}
+
 function pasteCommand(request: CommandShortcutRequest): void {
   const commands = readEventCommandsClipboard();
   if (commands.length === 0) return;
-  if (request.actions.insertCommands) request.actions.insertCommands(request.path, commands);
-  else [...commands].reverse().forEach(command => request.actions.insertCommand(request.path, command));
+  const at = insertionPath(request);
+  if (request.actions.insertCommands) request.actions.insertCommands(at, commands);
+  else [...commands].reverse().forEach(command => request.actions.insertCommand(at, command));
 }
 
 function requestPaths(request: CommandShortcutRequest): number[][] {
@@ -283,19 +295,21 @@ function deleteCommands(request: CommandShortcutRequest): void {
 
 function insertCommentCommand(request: CommandShortcutRequest): void {
   const command = newM2Command("m2-088-comment");
+  const at = insertionPath(request);
   openNewEventCommandDialog(command, (edited) => {
-    request.actions.insertCommand(request.path, edited);
+    request.actions.insertCommand(at, edited);
   });
 }
 
 function openInsertPicker(request: CommandShortcutRequest, closeMenu: () => void): void {
   closeMenu();
+  const at = insertionPath(request);
   openEventCommandPicker({
-    title: "명령 넣기",
+    title: "명령 넣기 — 이 행 바로 아래에",
     context: request.pickerContext,
     onSelect: (command) => {
       openNewEventCommandDialog(command, (editedCommand) => {
-        request.actions.insertCommand(request.path, editedCommand);
+        request.actions.insertCommand(at, editedCommand);
       });
     },
   });
