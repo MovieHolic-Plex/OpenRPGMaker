@@ -1,14 +1,15 @@
 import { createTiboInteriorTileset, extendTiboInteriorDefaults, TIBO_INTERIOR_ID, TIBO_INTERIOR_TEXTURE } from "./tiboInterior";
+import { composeCombinedTownRetroWorldTileset } from "./combinedTownRetroWorld";
 import type { AssetSet, GameMap, PassFlag, ResourceKind, ResourceProfile, SpriteDef, TilesetDef } from "../types";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { CC0_AUDIO_ASSETS } from "@/assets/cc0AudioAssets";
-import { BUNDLED_EASYRPG_CHARSET_ASSETS, BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledEasyRpgTilesetId } from "@/assets/bundled";
+import { BUNDLED_EASYRPG_CHARSET_ASSETS, BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledChipsetSheetHeight, bundledEasyRpgTilesetId } from "@/assets/bundled";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { AUTHORABLE_FACESET_FACE_ASSETS, GENERATED_FACESET_FACE_IDS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
-import { applyCombinedTownHarness, applyEasyRpgThemeMetadataPacks, ensureTilesetHarnesses } from "@/project/tilesetHarness";
-import { bundledAssetRef, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_TILE_COUNT, DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, DEFAULT_TILESET_NAME, DEFAULT_TILESET_TEXTURE_KEY, DEFAULT_TILES_PER_ROW, LEGACY_RM_TILESET_ID, LEGACY_RM_TILESET_TEXTURE_KEY } from "./constants";
+import { applyCombinedTownHarness, applyEasyRpgThemeMetadataPacks, ensureTilesetHarnesses, RETRO_WORLD_TEXTURE_KEY } from "@/project/tilesetHarness";
+import { bundledAssetRef, COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_TILE_COUNT, DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, DEFAULT_TILESET_NAME, DEFAULT_TILESET_TEXTURE_KEY, DEFAULT_TILES_PER_ROW, LEGACY_RM_TILESET_ID, LEGACY_RM_TILESET_TEXTURE_KEY } from "./constants";
 import { isSolidChipsetTile, isUpperChipsetTile, terrainTagForChipsetTile } from "./chipsetMapping";
 
 const DUNGEON_TILESET_ID = "easyrpg_chipset_dungeon";
@@ -180,6 +181,28 @@ function legacyRmTilesetReplacementId(map: Pick<GameMap, "id" | "name">): string
 
 function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
   if (asset.textureKey === TIBO_INTERIOR_TEXTURE) return createTiboInteriorTileset();
+  if (asset.textureKey === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return createCombinedTownRetroWorldTileset();
+  return bundledStandardChipsetTileset(asset);
+}
+
+/**
+ * 「합본 마을 + 레트로 월드맵」 — 두 원본 정의(하네스·시맨틱 적용 후)를 이어 붙인다.
+ * 위 반쪽은 defaultTileset() 과 칸별로 같고, 아래 반쪽은 레트로 월드맵 정의를 +480 으로 옮긴 것이다.
+ */
+export function createCombinedTownRetroWorldTileset(): TilesetDef {
+  const retroWorldAsset = BUNDLED_EASYRPG_CHIPSET_ASSETS.find((asset) => asset.textureKey === RETRO_WORLD_TEXTURE_KEY);
+  if (!retroWorldAsset) throw new Error(`번들 칩셋 목록에 ${RETRO_WORLD_TEXTURE_KEY} 가 없습니다.`);
+  const town = defaultTileset();
+  const retroWorld = bundledStandardChipsetTileset(retroWorldAsset);
+  // 원본 둘을 **로드 후 상태**로 맞춘 뒤 잇는다. 생성 직후의 레트로 월드맵은 전부 하위 레이어인데,
+  // 프로젝트를 열 때 하네스가 투명 칩을 상위로 올린다(applyCustomChipsetMinimalHarness). 그 규칙은
+  // 480 미만 번호에만 걸리므로 혼합 칩셋의 아래 반쪽은 여기서 미리 같은 상태를 받아야 단독
+  // 레트로 월드맵과 칸별로 같아진다.
+  ensureTilesetHarnesses({ tilesets: { [town.id]: town, [retroWorld.id]: retroWorld } });
+  return composeCombinedTownRetroWorldTileset(town, retroWorld);
+}
+
+function bundledStandardChipsetTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
   const tileset = makeBundledTileset(bundledEasyRpgTilesetId(asset.textureKey), asset.name, asset.textureKey);
   tileset.tileMeta = Array.from({ length: tileset.count }, () => ({
     label: "",
@@ -219,7 +242,8 @@ export function defaultResourceProfiles(): ResourceProfile[] {
       tileWidth: tileWidthForEasyRpgKind("chipset"),
       tileHeight: tileHeightForEasyRpgKind("chipset"),
       imageWidth: 480,
-      imageHeight: 256,
+      // 확장 시트(Tibo 1056·합본 마을+레트로 월드맵 512)는 256 이 아니다 — 칸 수에서 유도한다.
+      imageHeight: bundledChipsetSheetHeight(asset.textureKey),
       assetId: asset.textureKey,
     })),
     ...BUNDLED_EASYRPG_CHARSET_ASSETS.map((asset) => ({

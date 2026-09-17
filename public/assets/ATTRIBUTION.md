@@ -48,6 +48,13 @@
   from `vendor/easyrpg-rtp/ChipSet/Exterior.png`. Its `IHDR`, `PLTE`, and `IDAT` chunks are
   byte-identical to the vendor file; the only difference is an inserted `tRNS` chunk making
   palette index 0 transparent. The pixels are JasonPerry's CC0 replacement art, not Enterbrain's.
+- Derived sheet (2026-09-18): `easyrpg-chipset-combined-town-retro-world-transparent.png` (480×512) is
+  produced by `scripts/gen-combined-town-retro-world-chipset.mjs`. Rows 0–255 are
+  `easyrpg-chipset-combined-town-transparent.png` copied byte-for-byte; rows 256–511 are
+  `easyrpg-chipset-retro-world-transparent.png` with its palette-index-0 colour (224,103,191) keyed to
+  alpha 0 (that file ships with no alpha at all). No pixels are authored here. The retro_World half
+  carries the mixed CC-BY/CC0/WTFPL attribution listed above, which is why the in-app name says
+  "혼합 출처".
 
 ## Scarloxy — Monster Taming Game Essentials (MyPixelWorld Special Packs #01)
 
