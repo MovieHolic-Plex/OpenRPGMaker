@@ -36,6 +36,8 @@ export const stairQaScenario = {
         { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 15000 },
         { kind: "pressUntil", key: "Enter", testid: "dialogue-box", state: "absent", maxPresses: 6 },
         { kind: "waitForPosition", mapId: "map_stair1_qa", x: 6, y: 6, timeoutMs: 15000 },
+        // 전이 페이드인(500ms)이 끝난 뒤 찍어야 도착 샷이 어둡지 않다 — 좌표는 페이드 전에 커밋된다.
+        { kind: "hold", dir: null, ms: 900 },
       ],
       expect: { mapId: "map_stair1_qa" },
       shot: true,
