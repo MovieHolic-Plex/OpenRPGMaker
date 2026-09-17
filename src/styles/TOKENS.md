@@ -132,6 +132,45 @@ for(const m of s.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) console.log(`| \`${m[1]
 | `runtime` | `src/styles/runtime/` + `dialogue.css` | `runtime/index.css` | 기존대로 | 플레이어 런타임. 내용 불변 |
 | `overrides` | `src/styles/overrides.css` | 자체 | `index.css` | 표면 경계를 넘어야 하는 예외. 항목마다 이유 주석과 만기일 |
 
+### 서브레이어 함정 — `@layer x { }` 를 "중복이니 정리" 하지 마라
+
+`@import "x.css" layer(components)` 로 들어온 파일이 **내부에서 다시** `@layer components { }`
+로 감싸면, 실효 레이어는 `components` 가 아니라 `components.components` **서브레이어**가 된다.
+그리고 CSS Cascade 5 §6.4.4 에 따라 **서브레이어는 부모 직속 규칙에게 진다.**
+
+```
+@import "a.css" layer(runtime);      a.css 안이 평범하면 → [runtime]        직속
+@import "b.css" layer(runtime);      b.css 안이 @layer runtime { } 면 → [runtime.runtime] 서브
+                                     같은 선택자·같은 속성이면 a.css 가 이긴다
+```
+
+읽는 사람 눈에는 "이미 `layer(runtime)` 인데 한 번 더 적은 멱등 선언"으로 보인다. 아니다.
+**래퍼를 지우면 그 파일이 직속으로 승격해서 승자가 뒤집힌다.**
+
+현재 이 모양인 시트 **10개**(2026-09-17 실측, 4개 번들 전수):
+
+| 파일 | 실효 레이어 |
+|---|---|
+| `components/app-modal.css` | `components.components` |
+| `components/empty-state.css` | `components.components` |
+| `components/grid-4.css` | `components.components` |
+| `shell/editor-welcome.css` | `shell.shell` |
+| `map/world-panel.css` | `map.editor` |
+| `database/from-editor-world-panel.css` | `database.editor` |
+| `runtime/minimap.css` | `runtime.runtime` |
+| `runtime/pictures.css` | `runtime.runtime` |
+| `runtime/touchpad.css` | `runtime.runtime` |
+| `runtime/transitions.css` | `runtime.runtime` |
+
+**오늘 이 10개 때문에 뒤집히는 승자는 0건이다** — 잠복 함정이지 현행 버그가 아니다.
+그러나 `runtime/pictures.css` 는 실제로 이 메커니즘에 의존한다: 래퍼를 지우면
+`tabs-b-status-menu-main.css` 를 이겨 버려 이미지 픽처에 흰 상자 + 파란 테두리가 돌아온다.
+그래서 그 파일 헤더에 «지우지 말 것» 경고가 붙어 있다.
+
+**게이트가 지켜 준다.** `scripts/check-css-winners.mjs` 가 실효 레이어 경로까지 계산하므로
+래퍼를 지우면 즉시 잡힌다(실측: pictures.css 래퍼 제거 → 승자 54건 변경, 레이어가
+`[runtime.runtime]` 으로 찍혀 원인이 바로 보인다).
+
 레이어 순서 선언은 `index.css` 첫 줄 하나뿐이다:
 
 ```css
