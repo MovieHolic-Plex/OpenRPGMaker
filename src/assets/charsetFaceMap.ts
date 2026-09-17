@@ -58,7 +58,7 @@ const CHARSET_TO_FACESET: Readonly<Record<string, string>> = {
  * (2026-07-27). 0~7 은 CharSet/People1 과 같은 인물이고, 8~15 는 차셋에 대응이 없는
  * **추가 얼굴**이다 — 짝 없는 시트의 NPC 에게 줄 얼굴이 여기 있다.
  */
-const FACESET_PEOPLE1_FACES: readonly {
+export const FACESET_PEOPLE1_FACES: readonly {
   /** 낱장 얼굴 리소스 id(과거 People1 시트의 칸 번호에서 옮겨 왔다). */
   readonly resourceId: string;
   readonly label: string;
@@ -82,6 +82,13 @@ const FACESET_PEOPLE1_FACES: readonly {
   { resourceId: faceIdForSheetCell("easyrpg-faceset-people1", 14), label: "붉은 머리 여성", gender: "female", age: "youth" },
   { resourceId: faceIdForSheetCell("easyrpg-faceset-people1", 15), label: "초록 머리 소녀", gender: "female", age: "child" },
 ];
+
+/** Reviewed human-sheet correspondence, without the index/age fallback used by NPC tools. */
+export function reviewedCharsetFace(textureKey: string, characterIndex: number): { resourceId: string; approximate: boolean } | null {
+  const sheet = INDEX_ALIGNED_FACESET[textureKey];
+  if (!sheet || sheet === "easyrpg-faceset-monster" || !Number.isInteger(characterIndex) || characterIndex < 0 || characterIndex > 7) return null;
+  return { resourceId: faceIdForSheetCell(sheet, characterIndex), approximate: textureKey === "tex_easyrpg_charset_people1" && [4, 5].includes(characterIndex) };
+}
 
 /** textureKey(charset) + characterIndex → FaceGraphic. 없으면 null. */
 export function faceGraphicForCharset(
