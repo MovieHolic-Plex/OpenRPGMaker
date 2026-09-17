@@ -129,6 +129,20 @@ describe("place_storage_chest", () => {
     expect(page.commands).toEqual([{ kind: "openChest", chestId: data.chestId }]);
     expect(data.chestId).toBe(`storage_${data.eventId}`);
   });
+  it("보물상자와 다른 그래픽을 쓴다 (보관함 식별)", () => {
+    const { project, mapId } = projectWithMap();
+    const itemId = project.database.items[0]?.id ?? "item_potion";
+    const chest = getTool("place_chest")!.run(project, { mapId, x: 3, y: 3, contents: { itemId } });
+    const storage = getTool("place_storage_chest")!.run(project, { mapId, x: 5, y: 5, name: "창고" });
+    const chestEvent = project.maps[mapId].events.find((entry) => entry.id === (chest.data as { eventId: string }).eventId)!;
+    const storageEvent = project.maps[mapId].events.find((entry) => entry.id === (storage.data as { eventId: string }).eventId)!;
+    const chestGraphic = chestEvent.pages![0].graphic;
+    const storageGraphic = storageEvent.pages![0].graphic;
+    expect(storageGraphic.sprite).toEqual({ type: "bundled", id: "tex_easyrpg_charset_object2" });
+    expect(chestGraphic.sprite).toEqual({ type: "bundled", id: "tex_easyrpg_charset_object1" });
+    expect(storageGraphic.pattern).not.toBe(chestGraphic.pattern);
+    expect(decodeCharsetFrameIndex(storageGraphic.pattern as number).characterIndex).toBe(7);
+  });
 
   it("chestId를 지정하면 그대로 쓴다", () => {
     const { project, mapId } = projectWithMap();
