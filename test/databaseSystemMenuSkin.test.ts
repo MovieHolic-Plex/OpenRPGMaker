@@ -16,7 +16,7 @@ function renderSystem(): FakeElement {
   return host;
 }
 
-describe("system tab menu skin select", () => {
+describe("system tab menu skin cards", () => {
   let cleanup: (() => void) | undefined;
 
   beforeEach(() => {
@@ -33,24 +33,20 @@ describe("system tab menu skin select", () => {
     const host = renderSystem();
     const select = findByTestId(host, "db-field-system-menu-ui-style");
     expect(select).not.toBeNull();
-    const options = select!.children.filter((child) => child.tagName === "OPTION");
-    expect(options.map((option) => option.getAttribute("value"))).toEqual(listMenuSkinIds());
-    expect(options.map((option) => option.textContent)).toEqual(listMenuSkinIds().map((id) => MENU_SKINS[id].label));
-    expect(select!.value).toBe("workbench");
-    expect(findByTestId(host, "db-system-menu-skin-description")?.textContent).toBe(MENU_SKINS.workbench.description);
-    expect(findByTestId(host, "db-system-menu-skin-preview")?.getAttribute("src")).toBe("/assets/ui/menu-skins/workbench.png");
+    const cards = select!.children;
+    expect(cards.map((card) => card.dataset.testid)).toEqual(listMenuSkinIds().map((id) => `db-system-menu-skin-${id}`));
+    expect(cards.map((card) => card.getAttribute("aria-label"))).toEqual(listMenuSkinIds().map((id) => MENU_SKINS[id].label));
+    expect(findByTestId(host, "db-system-menu-skin-workbench")?.getAttribute("aria-pressed")).toBe("true");
   });
 
-  it("선택을 바꾸면 store 에 반영되고 설명·미리보기가 따라온다, 기본으로 돌리면 키를 지운다", () => {
+  it("선택을 바꾸면 store 에 반영되고 선택 표시와 설명이 따라온다, 기본으로 돌리면 키를 지운다", () => {
     const host = renderSystem();
-    const select = findByTestId(host, "db-field-system-menu-ui-style")!;
-    select.value = "hub";
-    select.dispatchEvent(new Event("change"));
+    findByTestId(host, "db-system-menu-skin-hub")!.click();
     expect(store.getCurrent().system.menuUiStyle).toBe("hub");
-    expect(findByTestId(host, "db-system-menu-skin-preview")?.getAttribute("src")).toBe("/assets/ui/menu-skins/hub.png");
-    expect(findByTestId(host, "db-system-menu-skin-description")?.textContent).toBe(MENU_SKINS.hub.description);
-    select.value = "workbench";
-    select.dispatchEvent(new Event("change"));
+    expect(findByTestId(host, "db-system-menu-skin-hub")?.getAttribute("aria-pressed")).toBe("true");
+    expect(findByTestId(host, "db-system-menu-skin-workbench")?.getAttribute("aria-pressed")).toBe("false");
+    expect(findByTestId(host, "db-system-menu-skin-description")?.textContent).toContain(MENU_SKINS.hub.label);
+    findByTestId(host, "db-system-menu-skin-workbench")!.click();
     expect(store.getCurrent().system.menuUiStyle).toBeUndefined();
   });
 
@@ -59,7 +55,7 @@ describe("system tab menu skin select", () => {
       draft.system.menuUiStyle = "sheet";
     });
     const host = renderSystem();
-    expect(findByTestId(host, "db-field-system-menu-ui-style")?.value).toBe("sheet");
+    expect(findByTestId(host, "db-system-menu-skin-sheet")?.getAttribute("aria-pressed")).toBe("true");
     expect(findByTestId(host, "db-system-studio-card-menu")?.textContent).toContain(MENU_SKINS.sheet.label);
   });
 });
