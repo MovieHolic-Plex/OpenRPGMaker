@@ -3,7 +3,6 @@
 // 상태는 teamActivity 버스(실행 중 보드 상태)와 teamSpecStore(명세)에서 온다. 이 파일은 그리기와 편집 폼만.
 
 import { deckIcon } from "./aiDeckIcons";
-import { createTeamBudget } from "./aiTeamBudget";
 import { el } from "@/util/dom";
 import { subscribeTeamActivity } from "@/ai/piAgent/teamActivity";
 import type { TeamBoardAgent, TeamBoardState } from "@/ai/piAgent/teamBoardState";
@@ -172,8 +171,6 @@ export function createTeamPanel(initialEnabled = false, options: { readonly alwa
       chip.append(box, el("span", { text: DOMAIN_LABEL[domain] ?? domain }));
       domains.append(chip);
     }
-    const budget = createTeamBudget(maxTurns => { draft = { ...(draft ?? current), maxTurns }; });
-    budget.update(current.maxTurns);
     const back = el("button", { class: "ai-team-btn is-quiet", text: "← 팀원 목록", attrs: { type: "button" } });
     back.addEventListener("click", cancelEdit);
     const advanced = el("details", { class: "ai-team-settings-advanced", dataset: { testid: "ai-team-advanced" }, children: [

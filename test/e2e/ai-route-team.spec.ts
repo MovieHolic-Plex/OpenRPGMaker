@@ -104,9 +104,9 @@ test("팀은 경로가 아니라 Pi 의 토글이고, 그 비트가 실행 모�
 
   // 2) 기본은 Pi 경로 — 팀 토글이 보이고 기본은 꺼짐.
   const team = page.getByTestId("ai-composer-team");
-  const teamInput = page.getByTestId("ai-composer-team-input");
+  const teamMode = page.getByTestId("ai-team-menu").getByRole("button", { name: "팀으로", exact: true });
   await expect(team).toBeVisible();
-  await expect(teamInput).not.toBeChecked();
+  await expect(team).toHaveAttribute("data-team", "false");
 
   // 3) 세션 경로에는 «몇 명이 도는가» 축이 없다 — 토글이 숨는다.
   await route.selectOption("session");
@@ -119,10 +119,10 @@ test("팀은 경로가 아니라 Pi 의 토글이고, 그 비트가 실행 모�
   // 깨어나며 줄이 움직이면 pointerdown 과 mouseup 의 대상이 갈라지고, 브라우저는 그 클릭을 공통 조상에게
   // 보낸다(2026-09-11 실측 — 클릭 대상이 INPUT 이 아니라 DIV 로 갔다). 두 번째 클릭은 깨어 있는 패널에
   // 닿는다. 이건 이 스펙의 편의가 아니라 패널의 기존 idle 전환 동작이다.
-  await team.hover();
-  await teamInput.click();
-  if (!(await teamInput.isChecked())) await teamInput.click();
-  await expect(teamInput).toBeChecked();
+  await team.click();
+  await teamMode.click();
+  await expect(teamMode).toHaveAttribute("aria-pressed", "true");
+  await page.keyboard.press("Escape");
   const configAfterToggle = await readConfig(page);
   log.configAfterToggle = configAfterToggle;
   expect(configAfterToggle.piTeam).toBe(true);
@@ -165,7 +165,7 @@ test("팀은 경로가 아니라 Pi 의 토글이고, 그 비트가 실행 모�
   await expect(settingsTeam).toBeHidden();
 
   // 8) 설정에서 끈 것이 컴포저에 즉시 반영된다(두 표면이 같은 비트를 쓴다).
-  await expect(teamInput).not.toBeChecked();
+  await expect(team).toHaveAttribute("data-team", "false");
 
   // 9) 팀이 꺼진 평문 → mode=single + 현재 맵 범위.
   await page.getByTestId("ai-input").fill("길 하나");
