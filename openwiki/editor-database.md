@@ -1811,3 +1811,11 @@ TURN/BATTLE MENU` 칩. 전투 애니메이션 타이밍 표 헤더 `사운드...
 - 회귀 명세: `characterFaceCandidates.test.ts`, `databaseCharacterGraphics.test.ts`. 세션 규칙에 따라 테스트/게이트는 실행하지 않았다. 실제 편집기 표면 캡처: `output/evidence/character-face/`.
 
 - 실제 편집기에서 후보 선택 → 명시적 적용(`mapped`, 지정 얼굴 ID) → undo(`null`)를 확인했다. 1440×1000 / 1024×768 캡처에서 가로 넘침은 없었다(1024: clientWidth/scrollWidth 768/768). 목록의 숨은 이미지 로드 프로브가 공용 썸네일 CSS에 의해 시트 전체로 노출되던 문제도 프로브를 DOM 밖에 두어 수정했다. 원격 연결 데이터 수정은 없으며 UI 관찰은 저장하지 않는 세션에서 수행했다.
+
+## 얼굴 대응표 실물 대조와 추천 제외 (2026-09-18 후속)
+
+- PR #918의 기존 대응표 신뢰는 잘못이었다. 캐릭터 시트는 8명, 얼굴 시트는 16명이다. `charsetFaceMap.ts`는 시트+offset을 사용한다: Actor1→얼굴 Actor1 0–7, Actor2→얼굴 Actor1 8–15, Actor3→얼굴 Actor2 0–7, Actor4→얼굴 Actor2 8–15. 에디터 조회와 NPC 저작 헬퍼는 동일한 원본 칸 대응을 사용하며, resource ID alias도 canonical charset으로 해석한다. 이는 원본 그림 위치 대응이며 속성/동일 인물 판정과는 다르다.
+- `characterGraphics.ts`는 `scripts/shared-face-expression-sources.json`의 기존 baseSheet/baseCell/name을 재사용하여 원본 낱장 얼굴에도 독립된 설명을 제공한다. 걷기 캐릭터 속성을 얼굴에 복사하지 않는다. 예: Actor3 무도가(남성)와 대응 얼굴 청록 머리 여성의 설명 충돌이 드러난다. `흰 머리띠`는 백발 속성으로 오독하지 않는다.
+- `rankCharacterFaces` 결과는 paired/similar/none/conflict. 속성 충돌은 대응표 가산점보다 우선하며 충돌 시 +100을 주지 않는다. 나이가 비어 있으면 어린이 얼굴은 추천에서 제외한다. 성별·종류만 같은 후보나 이름 토큰 겹침만 있는 후보는 추천하지 않는다. 머리/의상/역할 일치 또는 명시적 나이+성별 일치는 **유사 특징**일 뿐이다.
+- 기본 UI는 paired/similar만 표시하고 나머지는 검색 또는 전체 얼굴 보기에서 경고와 함께 수동 선택 가능하다. 중절모 신사는 소년 얼굴 대신 근거 부족 빈 상태를 표시한다. 원본 대응/유사 특징/근거 부족/추천 제외를 구별한다. 기존 연결이나 이벤트를 자동 교체하지 않는다.
+- 증거: `output/evidence/character-face-correction/actor2-before-after.png`, `editor-actor2.png`, `editor-no-match.png`, `editor-conflict.png`, `observations.json`. 비교 PNG는 실제 엔진 크롭과 원본 에셋 및 변경 전후 함수 출력으로 만든 브라우저 캡처다. AI 생성 이미지가 아니다. 테스트 명세는 갱신했으며 세션 규칙에 따라 테스트/게이트는 실행하지 않았다.
