@@ -303,14 +303,14 @@ describe("stable target retry budgets through AssistantSession", () => {
     rounds.push([badNpc(0)], [badNpc(1)], [badNpc(2)], [correctedNpc(1), readMap,
       call("repair_acceptance", { itemId: "acceptance-contract", criteria }),
     ]);
-    // Final writer response + independent review require two rounds. A one-round
-    // budget can test failure bounds, but cannot admit even a corrected draft.
+    // The corrected batch and the terminal writer response need two rounds; the
+    // deterministic check itself consumes none. A one-round budget can test failure bounds only.
     session.updateConfig({ ...CONFIG, maxToolCalls: 2 });
     // P2 requires the host's explicit resume action, not arbitrary new prose.
     const second = await session.sendUserMessage("같은 주민 명령을 다시 고쳐줘", collect, undefined, { autonomous: true, goalAction: "resume" });
     expect(second.workPlan?.layers[0].items[0].status).toBe("done");
     expect(state.batches).toBe(9); // Eight tool batches plus the terminal writer response.
-    expect(state.reviews).toBe(1);
+    expect(state.reviews).toBe(0); // 2026-09-17: 결정적 검사 — 검수 모델은 호출되지 않는다.
     expect(second.stoppedReason).toBe("final");
     expect(second.recap?.process.filter(step => step.kind === "continue")).toHaveLength(2);
     expect(events.find((event) => event.name === "repair_acceptance")?.result).toMatchObject({ ok: true, data: { acceptance: { status: "verifying", items: [{ evidence: [{ passed: false }] }] } } });

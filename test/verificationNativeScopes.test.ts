@@ -204,8 +204,9 @@ describe("native verification scopes through the real session and terminal accep
     expect(f.session.getAcceptanceSnapshot()?.items.some(item => item.id === "candidate-only")).toBe(false);
     expect(f.session.getWorkPlan()?.goal).toBe(before.plan?.goal);
     await f.send([changed]);
-    expect(f.session.getVerificationSnapshot().requirements).toEqual([original]);
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
+    // 2026-09-17 toolVerificationEvidence.compatible(): run_lint 는 같은 맵(또는 맵 미지정)이면 인자가 달라도 호환 —
+    // 통과가 요구를 채운다. 채택된 정확한 인자(args:{}) 자체는 바뀌지 않는다.
+    expect(f.session.getVerificationSnapshot().requirements).toEqual([{ ...original, status: "passed" }]);
     await f.send([call, complete]);
     expect(f.session.getVerificationSnapshot().requirements).toEqual([{ ...original, status: "passed" }]);
     expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");

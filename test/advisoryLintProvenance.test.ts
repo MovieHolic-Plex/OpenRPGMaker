@@ -87,9 +87,12 @@ async function titleRun(kind: "unchanged" | "adopted" | "introduced" | "differen
   expect(network.mock.calls.every(([input]) => String(input) === "/__oprn/edit-activity")).toBe(true);
   expect(baselineCapture).toHaveBeenCalledTimes(1);
   expect(session.getProposedProject().meta.title).toBe("TITLE_APPLIED");
-  expect(store.getCurrent().meta.title).toBe(kind === "unchanged" ? "TITLE_APPLIED" : project.meta.title);
-  expect(result.review?.status).toBe(kind === "unchanged" ? "approved" : "changes_requested");
-  expect(result.appliedCalls ?? []).toHaveLength(kind === "unchanged" ? 1 : 0);
+  // 2026-09-17 결정적 검사: 검수 기준선에 이미 있던 lint 결함(unchanged·adopted·explicit·unknown)은 초안의 책임이 아니라 적용을 막지 않는다.
+  // 턴 도중 rebase 로 새로 들어온 결함(introduced·different-identity)만 초안의 새 결함으로 잡혀 막는다.
+  const inherited = ["unchanged", "adopted", "explicit", "unknown"].includes(kind);
+  expect(store.getCurrent().meta.title).toBe(inherited ? "TITLE_APPLIED" : project.meta.title);
+  expect(result.review?.status).toBe(inherited ? "approved" : "changes_requested");
+  expect(result.appliedCalls ?? []).toHaveLength(inherited ? 1 : 0);
   expect(session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("done");
   const lintCalls = events.filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call" && event.name === "run_lint");
   expect(lintCalls).toHaveLength(kind === "explicit" ? 2 : 1);
@@ -125,16 +128,21 @@ describe("pre-write provenance of automatic lint findings", () => {
     expect(f.baselineCapture).toHaveBeenCalledTimes(1);
   });
 
-  it.each(["adopted", "introduced", "different-identity", "explicit", "unknown"] as const)("keeps %s lint defects terminally blocking", async kind => {
+  it.each(["introduced", "different-identity"] as const)("keeps %s lint defects terminally blocking", async kind => {
     const f = await titleRun(kind);
     if (kind === "different-identity") { expect(f.after).toHaveLength(f.before.length); expect(f.after).not.toEqual(f.before); }
     if (kind === "introduced") { expect(f.before).toEqual([]); expect(f.after).toHaveLength(2); }
-    if (kind === "adopted" || kind === "explicit") expect(f.after).toEqual(f.before);
     expect(f.result.runOutcome?.execution).toBe("blocked");
     expect(f.result.stoppedReason).toBe("error");
-    expect(f.result.completionAssessment?.blockingVerification?.length).toBeGreaterThan(0);
     expect(f.requests).toBeLessThanOrEqual(8);
-    if (kind === "adopted") expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
+  });
+
+  it.each(["adopted", "explicit", "unknown"] as const)("applies the title change when %s lint defects pre-date the draft in the review baseline", async kind => {
+    const f = await titleRun(kind);
+    expect(f.after).toEqual(f.before);
+    // 적용은 됐다. 턴 자체는 남아 있는 수용 원장·명시 검증 계속 규칙 때문에 아직 error 로 끝날 수 있다 — 그 규칙은 다음 해체 대상.
+    expect(f.result.review?.status).toBe("approved");
+    expect(f.result.runOutcome).toMatchObject({ delivery: "applied" });
     if (kind === "unknown") expect(f.session.getAuditEntries().some(entry => entry.kind === "status" && entry.text.includes("BASELINE_UNAVAILABLE"))).toBe(true);
   });
 

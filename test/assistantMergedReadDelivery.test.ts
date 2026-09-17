@@ -70,7 +70,9 @@ it.each(["failed", "cancelled"])("does not grant monster or native read credit a
 
   session.updateConfig({ ...config, maxToolCalls: 1 });
   const continued = await session.sendUserMessage("Continue the same edit");
-  expect(continued.stoppedReason, continued.error).toBe("max-tool-calls");
+  // 2026-09-17: 도구 호출 예산이 바닥나도 결정적 검사(lint error 0)를 통과한 초안은 final 로 승인된다.
+  expect(continued.stoppedReason, continued.error).toBe("final");
+  expect(continued.assistantText).toContain("예산이 소진되어 여기까지의 초안을 적용합니다(결정적 검사 통과");
   expect(round).toBe(3);
   expect(session.getProposedProject().database.items.find(entry => entry.id === item.id)?.price).toBe(654);
   expect(session.getProposedProject().database.enemies.find(entry => entry.id === "delivery_enemy")?.monsterResourceId).toBe(goblinId);

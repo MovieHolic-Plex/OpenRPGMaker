@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type AssistantSessionOptions } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
-import type { ReviewInput } from "@/ai/independentReview";
 import { createBlankProject } from "@/project/defaults";
 import { fixedDeclarer } from "./intentFixture";
 import { independentReviewPayload, approvedReviewResponse } from "./independentReviewFixture";
@@ -16,12 +15,14 @@ const final: ChatResult = { message: { role: "assistant", content: "WRITER_SENTI
 afterEach(() => vi.restoreAllMocks());
 
 describe("non-history integration contracts", () => {
-  it.each(["complete", "partial", "review-image-undelivered"] as const)("independent review retains native preserved-wall accounting: %s", async mode => {
+  // 2026-09-17 독립 검수 해체: 검수 봉투의 requiredProblems(밑그림 미이행 벽 행)·이미지 전달 확인을 검증하던
+  // partial / review-image-undelivered 모드는 삭제했다 — 그 봉투 자체가 더 이상 만들어지지 않는다.
+  it("independent review retains native preserved-wall accounting: complete", async () => {
     const { project } = preservedPaintContext();
-    const reviews: ReviewInput[] = [];
+    let reviews = 0;
     const rounds = [
       call("set_build_spec", PRESERVED_PAINT_SPEC), call("paint_tiles", FLOOR_PAINT_ARGS),
-      call("paint_tiles", mode === "partial" ? { ...WALL_PAINT_ARGS, cells: WALL_PAINT_ARGS.cells.slice(0, 12) } : WALL_PAINT_ARGS),
+      call("paint_tiles", WALL_PAINT_ARGS),
       call("repair_acceptance", { itemId: "acceptance-contract", criteria: [
         { kind: "mapDimensions", target: { mapId: "map_basement" }, width: 12, height: 10 },
       ] }),
@@ -33,28 +34,19 @@ describe("non-history integration contracts", () => {
       declareIntent: fixedDeclarer({ mode: "modify", targetMapId: "map_basement" }),
       renderImages: async () => [{ label: "Native basement render fixture", dataUrl: "data:image/png;base64,AA==" }],
       chat: async (_config, request) => {
-        const payload = independentReviewPayload(request);
-        if (payload) {
-          reviews.push(payload);
-          return { ...approvedReviewResponse(request)!, imageDelivery: mode === "review-image-undelivered" ? [] : ack(request) };
-        }
+        if (independentReviewPayload(request)) { reviews += 1; return { ...approvedReviewResponse(request)!, imageDelivery: ack(request) }; }
         return { ...(rounds[writer++] ?? final), imageDelivery: ack(request) };
       },
     });
     const result = await session.sendUserMessage("Paint the floor and maintain both wall rows");
-    expect(reviews.length).toBeGreaterThan(0);
+    // 검수 모델은 호출되지 않는다 — 승인은 결정적 검사(변경 맵 lint error 0)로 난다.
+    expect(reviews).toBe(0);
     const paints = result.proposedCalls.filter(entry => entry.name === "paint_tiles");
     expect(paints.map(entry => entry.result.diff?.tilesChanged)).toEqual([80, 0]);
     expect(project.maps.map_basement.lowerTiles).not.toEqual(session.getProposedProject().maps.map_basement.lowerTiles);
-    if (mode === "partial") {
-      expect(reviews[0]?.requiredProblems.some(problem => problem.includes("basement_wall_bottom_306"))).toBe(true);
-      expect(result.review?.status).toBe("changes_requested");
-      expect(session.isDraftReviewApproved()).toBe(false);
-    } else {
-      expect(reviews[0]?.requiredProblems.filter(problem => problem.includes("basement_wall_"))).toEqual([]);
-      expect(result.review?.status).toBe(mode === "complete" ? "approved" : "error");
-      expect(session.isDraftReviewApproved()).toBe(mode === "complete");
-    }
+    expect(result.review?.status).toBe("approved");
+    expect(result.review?.summary).toContain("lint error 0건");
+    expect(session.isDraftReviewApproved()).toBe(true);
     expect(result.appliedCalls ?? []).toEqual([]);
     expect(result.runOutcome?.delivery).not.toBe("persisted");
   });

@@ -5,7 +5,7 @@ import { createBlankProject } from "@/project/defaults";
 import { fixedDeclarer } from "./intentFixture";
 import { unboundCriterionCheck, verificationEvent, verificationJourney } from "./fixtures/verificationOwnership";
 import { offlineChatResponse } from "./fixtures/offlineChatResponse";
-import { approvedReviewResponse, imageDeliveryForRequest } from "./independentReviewFixture";
+import { imageDeliveryForRequest } from "./independentReviewFixture";
 import { getTool } from "@/editor/tools";
 import type { SceneStep } from "@/testing/sceneTestRunner";
 
@@ -28,9 +28,7 @@ function rig(maxToolCalls = 4, project = createBlankProject()) {
     declareIntent: fixedDeclarer({ mode: "modify", needsPlan: false, source: "continuation" }),
     renderImages: async () => [{ label: "Current map", dataUrl: "data:image/png;base64,AA==" }],
     chat: async (_config, request): Promise<ChatResult> => {
-      const review = approvedReviewResponse(request);
-      if (review) return { ...review, message: { ...review.message,
-        content: String(review.message.content).replace("Fixture review", "FINAL_SENTINEL") } };
+      // 2026-09-17: 검수 모델은 호출되지 않는다. 제안이 있는 final 의 assistantText 는 결정적 검사 요약이다.
       if (!request.tools?.length) return { message: { role: "assistant", content: JSON.stringify({ action: "resume" }) }, finishReason: "stop" };
       modelRequests++;
       const calls = batches.shift() ?? [];
@@ -64,6 +62,7 @@ function rig(maxToolCalls = 4, project = createBlankProject()) {
 }
 
 const probe = (args: Record<string, unknown>): Call => ({ name: "run_scene_test", args });
+const DETERMINISTIC_PASS = "결정적 검사 통과";
 const skip: Call = { name: "skip_work_item", args: { itemId: "verify" } };
 
 describe("PR687 adjudicated verification scheduling through normal dispatch", () => {
@@ -83,7 +82,8 @@ describe("PR687 adjudicated verification scheduling through normal dispatch", ()
     expect(f.snapshot().verification.findings).toHaveLength(kind === "negative" ? 1 : 0);
     expect(f.snapshot().verification.requirements).toHaveLength(kind === "adopted" ? 1 : 0);
     if (kind === "adopted") expect(f.snapshot().verification.requirements[0]?.status).toBe("stale");
-    expect(result.assistantText === "FINAL_SENTINEL").toBe(kind === "unadopted");
+    // 모델의 마지막 말이 본문이고 결정적 검사 결과는 뒤에 한 줄로 붙는다.
+    expect(result.assistantText.includes(DETERMINISTIC_PASS)).toBe(kind === "unadopted");
     expect(f.requests()).toBeLessThanOrEqual(5);
   });
 
@@ -206,7 +206,7 @@ describe("PR687 adjudicated verification scheduling through normal dispatch", ()
     expect(f.snapshot().verification.requirements).toEqual([]);
     expect(f.snapshot().verification.findings).toEqual([]);
     expect(f.requests()).toBe(2);
-    expect(result.assistantText).toBe("FINAL_SENTINEL");
+    expect(result.assistantText).toBe(`FINAL_SENTINEL\n\n${DETERMINISTIC_PASS} — 변경 맵 0개, lint error 0건.`);
   });
   it.each(["pending-specification", "unverified", "stale", "passed"])("rejects skip atomically with %s proof and retains completion", async status => {
     const f = rig();

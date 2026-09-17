@@ -1,3 +1,5 @@
+// 2026-09-17: "uses bounded repair to correct the real NPC" 삭제 — 검수 모델이 NPC 보상 미완성을 changes_requested 로
+// 되돌리는 수리 루프를 검증했으나, 결정적 검사(lint error 0)에서 기능 수용은 승인 조건이 아니다.
 import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
@@ -111,6 +113,8 @@ describe("NPC reward request lifetime in AssistantSession", () => {
     expect(result.stoppedReason).toBe("error");
   });
 
+  // 2026-09-17 결정적 검사: 기능 수용(NPC 보상)은 승인 조건이 아니다. lint error 0 이면 초안은 승인되고,
+  // 보상 미완성은 verifyNpcRewardsPlayable 과 최종 문구("… 아직 미완성입니다")로만 드러난다.
   it.each([
     { variant: "text", pass: false, noContract: false },
     { variant: "once", pass: true, noContract: false },
@@ -122,11 +126,17 @@ describe("NPC reward request lifetime in AssistantSession", () => {
     const result = await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent);
     expect(tools(h.events, "upsert_event")[0]?.result.ok).toBe(true);
     expect(verifyNpcRewardsPlayable(h.session.getProposedProject(), noContract ? undefined : REQUIRED).ok).toBe(pass);
-    expect(result.stoppedReason).toBe(pass ? "final" : "error");
-    expect(result.review?.status).toBe(pass ? "approved" : "changes_requested");
-    expect(h.session.isDraftReviewApproved()).toBe(pass);
-    expect(h.events.filter((event) => event.type === "assistant_message").some((event) => event.content.includes(COMPLETE))).toBe(false);
-    expect(h.reviews.length).toBe(pass ? 1 : 2);
+    expect(result.stoppedReason, result.error).toBe("final");
+    expect(result.review?.status).toBe("approved");
+    expect(result.review?.summary).toBe("결정적 검사 통과 — 변경 맵 1개, lint error 0건.");
+    expect(h.session.isDraftReviewApproved()).toBe(true);
+    // 보상이 완성됐으면 모델의 완료 문장이 그대로 사용자에게 간다(옛 LLM 검수는 자기 요약으로 갈아치웠다).
+    // 미완성이면 npcRewardFinalText 가 완료 주장을 "아직 미완성입니다" 문구로 바꾼다.
+    expect(h.events.filter((event) => event.type === "assistant_message").some((event) => event.content.includes(COMPLETE))).toBe(pass);
+    // 미완성 보상은 승인을 막지 않고 최종 문구로만 드러난다.
+    if (!pass) expect(result.assistantText).toMatch(/아직 미완성입니다/);
+    // 검수 모델은 더 이상 호출되지 않는다.
+    expect(h.reviews).toHaveLength(0);
     if (pass && !noContract) await applyAndVerify(h);
     expect(h.requests.length).toBeLessThanOrEqual(7);
   });
@@ -136,19 +146,6 @@ describe("NPC reward request lifetime in AssistantSession", () => {
     const result = await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent);
     expect(result.assistantText).not.toContain(COMPLETE);
     expect(h.requests.length).toBeLessThanOrEqual(5);
-  });
-
-  it("uses bounded repair to correct the real NPC rather than weaken the request", async () => {
-    const mapId = createBlankProject().startMapId;
-    const h = harness([writeNpc(mapId, "text"), final(), writeNpc(mapId, "once"), final()]);
-    const result = await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent);
-    expect(tools(h.events, "upsert_event")).toHaveLength(2);
-    expect(result.stoppedReason, result.error).toBe("final");
-    expect(result.review?.status).toBe("approved");
-    expect(h.events.filter((event) => event.type === "result_review").map((event) => event.review.status)).toEqual(["changes_requested", "approved"]);
-    expect(result.assistantText).not.toBe(COMPLETE);
-    expect(verifyNpcRewardsPlayable(h.session.getProposedProject(), REQUIRED).ok).toBe(true);
-    await applyAndVerify(h);
   });
 
   it("allows an earlier DB item but refuses final explicit completion and skip with missing rewards", async () => {

@@ -215,7 +215,8 @@ describe("의도 선언이 세션 라우팅을 정한다", () => {
     expect(session.getWorkPlan()).toBeNull();
   }, 30000);
 
-  it("플래너가 volume 을 선언한 계획만 막대를 세우고, 막대 미달로 끝내면 재주입한다", async () => {
+  // 2026-09-17 볼륨 계약 해제: 플래너 선언은 audit 에 `volume-contract:disabled` 로 기록만 남고 막대·미달 재주입은 없다.
+  it("플래너가 volume 을 선언한 계획은 기록만 남기고 막대를 세우지 않는다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     installHermetic(project);
@@ -238,11 +239,12 @@ describe("의도 선언이 세션 라우팅을 정한다", () => {
       ]),
       declareIntent: fixedDeclarer({ needsPlan: true, tools: ["set_title_screen"] }),
     });
-    await session.sendUserMessage("마을 만들어줘", () => {});
+    const result = await session.sendUserMessage("마을 만들어줘", () => {});
     const audit = statuses(session);
-    expect(audit.some((text) => text.startsWith("volume-contract:armed maps+1")), audit.join("\n")).toBe(true);
-    // 계획은 끝났지만 채워진 맵 +0 → 막대 미달 → 코드가 재주입한다(사용자 「계속」이 아니다).
-    expect(audit.some((text) => text.startsWith("volume-contract:continue")), audit.filter((t) => !t.startsWith("tools:")).join("\n")).toBe(true);
+    expect(audit.some((text) => text.startsWith("volume-contract:disabled")), audit.join("\n")).toBe(true);
+    // 채워진 맵 +0 이어도 막대가 없으니 미달 재주입도 없다 — 계획이 끝나면 턴은 그대로 끝난다.
+    expect(audit.some((text) => text.startsWith("volume-contract:armed") || text.startsWith("volume-contract:continue")), audit.join("\n")).toBe(false);
+    expect(result.stoppedReason).toBe("final");
   }, 30000);
 
   it("volume 없는 계획은 막대가 없다", async () => {

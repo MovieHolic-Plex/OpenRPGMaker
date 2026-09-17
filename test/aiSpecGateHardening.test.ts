@@ -121,7 +121,7 @@ describe("기존 내용 보호는 밑그림 안에서도 — 기준선(사용자
     await session.sendUserMessage("계속해", collect(events));
     const fill = events.find((event) => event.name === "fill_region");
     expect(fill?.ok).toBe(false);
-    expect(fill?.summary).toContain("스펙 게이트");
+    expect(fill?.summary).toContain("기존 구조물 보호");
     expect(fill?.issues).toContain("confirmDestroy");
     expect(countLower(session.getProposedProject().maps.m1, TILE.WATER)).toBe(16);
   });
@@ -197,7 +197,7 @@ describe("게이트 밖이던 타일 쓰기 툴도 기존 구조물 보호를 �
     const events: Ev[] = [];
     await session.sendUserMessage("정리해줘", collect(events));
     expect(events.map((event) => event.ok)).toEqual([false, true]);
-    expect(events[0].summary).toContain("스펙 게이트");
+    expect(events[0].summary).toContain("기존 구조물 보호");
     expect(events[0].issues).toContain("confirmDestroy");
     expect(countLower(session.getProposedProject().maps.m1, TILE.WALL)).toBe(16);
   });
@@ -215,7 +215,7 @@ describe("게이트 밖이던 타일 쓰기 툴도 기존 구조물 보호를 �
     const events: Ev[] = [];
     await session.sendUserMessage("벽 세워줘", collect(events));
     expect(events.map((event) => event.ok)).toEqual([true, false]);
-    expect(events[1].summary).toContain("스펙 게이트");
+    expect(events[1].summary).toContain("기존 구조물 보호");
   });
 
   it("paint_tiles mode=fill 은 맵 전체를 영향 영역으로 본다", async () => {
@@ -311,12 +311,10 @@ describe("암묵 스펙 — 선택 영역", () => {
     expect(implicitSpecFromContext("[컨텍스트] 현재 맵: 게이트 (m1)")).toBeNull();
   });
 
-  it("선택 영역 암묵 스펙은 그 턴에만 유효하고 다음 턴으로 승격되지 않는다", async () => {
-    // break: expandSpecWithRegions 가 암묵 스펙을 activeSpec 으로 승격하면 다음 턴의 쓰기가 밑그림 없이 통과한다.
+  it("선택 영역 암묵 스펙은 그 턴에만 유효하고 다음 턴의 activeSpec 으로 승격되지 않는다", async () => {
+    // 밑그림 없음은 더 이상 차단 사유가 아니므로 두 번째 턴의 쓰기도 실행된다. 검증하는 것은
+    // 승격이 일어나지 않는다는 사실 하나 — activeSpec 이 두 턴 뒤에도 null 이다.
     const project = mkProject();
-    // Two turns, one writer script each. A turn that paints tiles without rendered coverage
-    // gets an unmet required check back from the independent review and is asked to repair,
-    // so a single positional script would let turn 1's repair round consume turn 2's steps.
     const turns = [
       [toolCallMsg("paint_tiles", { mapId: "m1", layer: "lower", mode: "rect", tile: TILE.SAND, from: { x: 10, y: 10 }, to: { x: 12, y: 12 } }, "c1"),
         finalMsg("깔았습니다")],
@@ -325,12 +323,7 @@ describe("암묵 스펙 — 선택 영역", () => {
     ];
     let turn = 0;
     let step = 0;
-    const chat = async (_config: unknown, request: import("@/ai/llmClient").ChatRequest): Promise<ChatResult> => {
-      const review = independentReviewPayload(request);
-      if (review) {
-        return { message: { role: "assistant", content: JSON.stringify({ revision: review.revision,
-          verdict: "approved", summary: "스크립트 검수 승인", findings: [] }) }, finishReason: "stop" } as ChatResult;
-      }
+    const chat = async (): Promise<ChatResult> => {
       const steps = turns[turn]!;
       return step < steps.length ? steps[step++]! : finalMsg("끝");
     };
@@ -343,8 +336,8 @@ describe("암묵 스펙 — 선택 영역", () => {
     step = 0;
     const second: Ev[] = [];
     await session.sendUserMessage("(15,15)에도 모래 깔아줘", collect(second));
-    expect(second[0]?.ok).toBe(false);
-    expect(second[0]?.summary).toContain("밑그림");
+    expect(second[0]?.ok).toBe(true);
+    expect(session.getActiveSpec()).toBeNull();
   });
 
   it("사용자가 지목한 선택 영역 안의 기존 구조물은 그 턴의 쓰기가 고칠 수 있고, 선택 밖은 여전히 보호된다", async () => {
@@ -361,7 +354,7 @@ describe("암묵 스펙 — 선택 영역", () => {
     const events: Ev[] = [];
     await session.sendUserMessage("이 방 가구 배치 좀 고쳐줘\n[컨텍스트] 현재 맵: 게이트 (m1) · 사용자 선택 영역: (2,2) 10×10", collect(events));
     expect(events.map((event) => event.ok)).toEqual([true, false]);
-    expect(events[1].summary).toContain("스펙 게이트");
+    expect(events[1].summary).toContain("기존 구조물 보호");
   });
 
   it("opts.scope 로 넘어온 선택 영역도 암묵 스펙이다", async () => {

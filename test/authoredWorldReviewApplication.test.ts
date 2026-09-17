@@ -10,6 +10,7 @@ import type { Project } from "@/project/types";
 import * as history from "@/editor/mapEditHistory";
 import { applyRegionProjectWithHistory } from "@/editor/regionTask/runRegionTask";
 import { independentReviewPayload, imageDeliveryForRequest } from "./independentReviewFixture";
+import { getTool } from "@/editor/tools";
 import { fixedDeclarer } from "./intentFixture";
 import type { ChatResult } from "@/ai/llmClient";
 
@@ -73,23 +74,14 @@ function writerRound(mapId: string, state: ScriptState) {
   return { message: { role: "assistant", content: "Finished" }, finishReason: "stop" };
 }
 
-function approval(revision: number): ChatResult {
-  return { message: { role: "assistant", content: JSON.stringify({ revision,
-    verdict: "approved", summary: "NPC inspected", findings: [] }) }, finishReason: "stop" };
-}
-
-function makeSession(project: Project, mapId: string, state: ScriptState,
-  onReview?: (revision: number) => unknown) {
+function makeSession(project: Project, mapId: string, state: ScriptState) {
   return new AssistantSession(project, {
     config: { ...defaultAiConfig(), agentMode: "chat", maxToolCalls: 30 },
     declareIntent: fixedDeclarer({ mode: "modify", tools: ["author_npc_cast"] }),
     renderImages: async () => [{ label: "Current map", dataUrl: "data:image/png;base64,AA==" }],
     chat: async (_config, request) => {
-      const review = independentReviewPayload(request);
-      if (review) {
-        const response = onReview ? await onReview(review.revision) as ChatResult : approval(review.revision);
-        return { ...response, imageDelivery: imageDeliveryForRequest(request) };
-      }
+      // 2026-09-17: 검수 모델은 호출되지 않는다(결정적 검사). 들어오면 테스트가 깨지도록 던진다.
+      if (independentReviewPayload(request)) throw new Error("unexpected independent-review request");
       return { ...writerRound(mapId, state) as ChatResult, imageDelivery: imageDeliveryForRequest(request) };
     },
   });
@@ -144,30 +136,30 @@ it("npc cast review apply undo preserves existing manual/locked wiki plus the ne
 }, 90000);
 
 it("a newer manual wiki document during the held review is preserved, never lost", async () => {
+  // 2026-09-17: 검수 모델 호출이 없어 응답을 붙잡아 둘 수 없다. 결정적 검사의 유일한 외부 경계인
+  // run_lint 실행 중에 수동 위키 편집을 끼워 넣는다 — 검사 도중에 들어온 문서도 적용에서 보존돼야 한다.
   const project = createBlankProject();
   project.world = seedWorld();
   store.replace(project);
   history.resetMapEditHistory();
   const mapId = project.startMapId;
-  const entered = Promise.withResolvers<number>();
-  const release = Promise.withResolvers<ChatResult>();
-  const session = makeSession(project, mapId, freshState(), (revision) => {
-    entered.resolve(revision);
-    return release.promise;
+  const session = makeSession(project, mapId, freshState());
+  const lint = getTool("run_lint")!;
+  const realLint = lint.run.bind(lint);
+  let interleaved = 0;
+  vi.spyOn(lint, "run").mockImplementation((...args) => {
+    if (interleaved++ === 0) {
+      // Intervening manual wiki edit on another surface while the deterministic check runs.
+      store.update((draft) => {
+        draft.world!.entities.push(manualWikiDoc("w_held_note", "Note written during review"));
+      }, { scope: "project", origin: "human", label: "Manual wiki note" });
+      session.refreshAcceptance(store.getCurrent());
+    }
+    return realLint(...args);
   });
-  const turn = session.sendUserMessage("Cast Rina", () => {}, undefined, { autonomous: true });
-  const deadline = AbortSignal.timeout(90000);
-  const expired = new Promise<never>((_resolve, reject) => deadline.addEventListener("abort",
-    () => reject(new Error("Held review deadline")), { once: true }));
-  const revision = await Promise.race([entered.promise, expired]);
-  // Intervening manual wiki edit on another surface while approval is held.
-  store.update((draft) => {
-    draft.world!.entities.push(manualWikiDoc("w_held_note", "Note written during review"));
-  }, { scope: "project", origin: "human", label: "Manual wiki note" });
-  session.refreshAcceptance(store.getCurrent());
-  release.resolve(approval(revision));
-  const result = await Promise.race([turn, expired]);
+  const result = await session.sendUserMessage("Cast Rina", () => {}, undefined, { autonomous: true });
 
+  expect(interleaved).toBeGreaterThan(0);
   expect(result.review?.status, result.error).toBe("approved");
   const ids = store.getCurrent().world!.entities.map(entity => entity.id);
   expect(ids).toEqual(expect.arrayContaining(["w_original", "w_manual", "w_locked", "w_held_note"]));

@@ -1,8 +1,8 @@
-// 스펙 게이트 계약(2026-07-05, '모호도' 대체): 공간 쓰기 툴은 set_build_spec으로 제출되어
-// 코드가 결정적으로 검증(경계/겹침)한 밑그림(명세)의 할당 영역 안에서만 실행된다(구간 격리).
-// - 자기 신고 수치([모호도 N%]) 개념은 완전히 제거된다.
-// - 사용자가 맵에서 선택한 영역([컨텍스트] footer)은 암묵적 명세다.
-// - 명세 검증 3회 실패 시 그 계획은 폐기하고 새 배치를 스스로 설계하게 유도한다.
+// 밑그림 스펙 게이트 — 2026-09-17 해체 이후 계약.
+// - set_build_spec 은 선택 사항이다. 밑그림이 없어도 공간 쓰기 툴은 실행된다.
+// - 남은 것은 기존 구조물 보호 하나: 기준선 맵의 구조물·물·절벽은 confirmDestroy / overExisting 선언 없이 덮지 않는다.
+// - 검증기(validateBuildSpec)와 영역 추출(affectedRegions)은 그대로 결정적이다.
+// - 3회 거부·자동 확장·plannedMap 불일치·밑그림 없음 차단은 더 이상 없다(PR #892 후속 코멘트 실측).
 import { describe, expect, it } from "vitest";
 import { AssistantSession, METADATA_ONLY_TOOLS } from "@/ai/assistantSession";
 import {
@@ -258,7 +258,7 @@ describe("implicitSpecFromContext — 사용자 선택 영역은 암묵적 명�
 });
 
 describe("세션 스펙 게이트", () => {
-  it("canonical planned target requires matching BuildSpec dimensions before runner entry", async () => {
+  it("plannedMap 불일치는 더 이상 게이트가 아니다 — 빌더가 자기 인자를 검증한다", async () => {
     // Given: a valid synthetic BuildSpec followed by a mismatched canonical new-map target.
     const chat = scriptedChat([
       toolCallMsg("set_build_spec", {
@@ -284,14 +284,14 @@ describe("세션 스펙 게이트", () => {
       if (event.type === "tool_call") events.push({ name: event.name, ok: event.result.ok, summary: event.result.summary });
     });
 
-    // Then: it is blocked by the spec gate before schema/domain execution and no map is created.
+    // Then: the session gate does not intervene; whatever happens is the builder's own verdict.
     const village = events.find((event) => event.name === "author_village");
-    expect(village?.ok).toBe(false);
-    expect(village?.summary).toContain("planned");
-    expect(session.getProposedProject().maps.planned_village).toBeUndefined();
+    expect(village).toBeDefined();
+    expect(village?.summary).not.toContain("스펙 게이트");
+    expect(village?.summary).not.toContain("plannedMap 불일치");
   });
 
-  it("스펙 없이 공간 툴 호출 → 차단(set_build_spec 안내), 비공간 쓰기(create_map)는 그대로 실행", async () => {
+  it("스펙 없이 공간 툴 호출 → 그대로 실행된다(밑그림 없음은 차단 사유가 아니다)", async () => {
     expect(SPATIAL_BUILD_TOOLS.has("build_house")).toBe(true);
     expect(SPATIAL_BUILD_TOOLS.has("create_map")).toBe(false);
     const chat = scriptedChat([
@@ -305,12 +305,11 @@ describe("세션 스펙 게이트", () => {
       if (e.type === "tool_call") events.push({ name: e.name, ok: e.result.ok, summary: e.result.summary });
     });
     expect(events.find((e) => e.name === "create_map")!.ok).toBe(true);
-    const blocked = events.find((e) => e.name === "build_house")!;
-    expect(blocked.ok).toBe(false);
-    expect(blocked.summary).toContain("스펙");
+    const house = events.find((e) => e.name === "build_house")!;
+    expect(house.ok).toBe(true);
+    expect(house.summary).not.toContain("스펙 게이트");
     const gateMsg = session.getMessages().find((m) => m.role === "tool" && typeof m.content === "string" && m.content.includes("spec-gate"));
-    expect(gateMsg).toBeDefined();
-    expect(gateMsg!.content).toContain("set_build_spec");
+    expect(gateMsg).toBeUndefined();
   });
 
   it("기존 이벤트를 같은 좌표에서 갱신할 때는 새 공간 스펙을 요구하지 않는다", async () => {
@@ -377,7 +376,7 @@ describe("세션 스펙 게이트", () => {
     expect(session.getActiveSpec()?.assets.length).toBe(2);
   });
 
-  it("할당 영역 밖 빈 영역 빌드는 차단하지 않고 명세 자동 확장 warning으로 통과한다", async () => {
+  it("할당 영역 밖 빈 영역 빌드는 차단하지 않고 경고 없이 통과한다", async () => {
     const chat = scriptedChat([
       toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
       toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ id: "집A", kind: "house", x: 2, y: 2, w: 6, h: 6 }] }, "c2"),
@@ -391,10 +390,11 @@ describe("세션 스펙 게이트", () => {
     });
     const paint = events.find((e) => e.name === "paint_tiles")!;
     expect(paint.ok).toBe(true);
-    expect(session.getActiveSpec()?.assets.some((asset) => asset.id.startsWith("auto:") && asset.x === 15 && asset.y === 15)).toBe(true);
+    // 자동 확장은 없다 — 밑그림은 있는 그대로, 쓰기는 경계와 무관하게 실행된다.
+    expect(session.getActiveSpec()?.assets.some((asset) => asset.id.startsWith("auto:"))).toBe(false);
   });
 
-  it("할당 영역 동쪽 +1칸 초과는 명세 자동 확장 warning으로 통과", async () => {
+  it("할당 영역 동쪽 +1칸 초과는 경고 없이 통과", async () => {
     const chat = scriptedChat([
       toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
       toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ id: "집A", kind: "house", x: 2, y: 2, w: 6, h: 6 }] }, "c2"),
@@ -415,15 +415,10 @@ describe("세션 스펙 게이트", () => {
     });
     const paint = events.find((e) => e.name === "paint_tiles")!;
     expect(paint.ok).toBe(true);
-    expect(paint.issues).toContainEqual(expect.objectContaining({
-      severity: "warning",
-      code: "spec-gate-auto-expand",
-      message: expect.stringContaining("명세를 자동 확장했습니다"),
-    }));
-    expect(paint.warnings?.some((warning) => warning.includes("명세를 자동 확장했습니다"))).toBe(true);
+    expect(paint.issues?.some((issue) => issue.code === "spec-gate-auto-expand")).toBeFalsy();
   });
 
-  it("할당 영역 동쪽 +2칸 초과도 명세 자동 확장 warning으로 통과", async () => {
+  it("할당 영역 동쪽 +2칸 초과도 경고 없이 통과", async () => {
     const chat = scriptedChat([
       toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
       toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ id: "길", kind: "road", x: 2, y: 2, w: 6, h: 6 }] }, "c2"),
@@ -443,14 +438,10 @@ describe("세션 스펙 게이트", () => {
     });
     const paint = events.find((e) => e.name === "paint_tiles")!;
     expect(paint.ok).toBe(true);
-    expect(paint.issues).toContainEqual(expect.objectContaining({
-      severity: "warning",
-      code: "spec-gate-auto-expand",
-      message: expect.stringContaining("명세를 자동 확장했습니다"),
-    }));
+    expect(paint.issues?.some((issue) => issue.code === "spec-gate-auto-expand")).toBeFalsy();
   });
 
-  it("할당 영역 동쪽 +3칸 초과도 빈 영역이면 자동 확장으로 통과", async () => {
+  it("할당 영역 동쪽 +3칸 초과도 빈 영역이면 경고 없이 통과", async () => {
     const chat = scriptedChat([
       toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
       toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ id: "길", kind: "road", x: 2, y: 2, w: 6, h: 6 }] }, "c2"),
@@ -471,10 +462,10 @@ describe("세션 스펙 게이트", () => {
     });
     const paint = events.find((e) => e.name === "paint_tiles")!;
     expect(paint.ok).toBe(true);
-    expect(paint.issues?.some((issue) => issue.message.includes("명세를 자동 확장했습니다"))).toBe(true);
+    expect(paint.issues?.some((issue) => issue.message.includes("명세를 자동 확장했습니다"))).toBeFalsy();
   });
 
-  it("clear_region도 빈 영역 초과는 자동 확장 warning으로 통과한다", async () => {
+  it("clear_region도 빈 영역 초과는 경고 없이 통과한다", async () => {
     const chat = scriptedChat([
       toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
       toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ id: "청소", kind: "clear", x: 5, y: 5, w: 3, h: 3 }] }, "c2"),
@@ -495,7 +486,7 @@ describe("세션 스펙 게이트", () => {
     });
     const clear = events.find((e) => e.name === "clear_region")!;
     expect(clear.ok).toBe(true);
-    expect(clear.issues?.some((issue) => issue.message.includes("명세를 자동 확장했습니다"))).toBe(true);
+    expect(clear.issues?.some((issue) => issue.message.includes("명세를 자동 확장했습니다"))).toBeFalsy();
   });
 
   it("확정된 스펙은 턴 간 유지된다 — 다음 턴 '계속해'에서 재제출 없이 빌드", async () => {
@@ -536,7 +527,7 @@ describe("세션 스펙 게이트", () => {
     expect(events).toEqual([true]);
   });
 
-  it("사용자 선택 영역 암묵 스펙도 경계 밖 빈 영역은 자동 확장 warning으로 통과한다", async () => {
+  it("사용자 선택 영역 암묵 스펙도 경계 밖 빈 영역은 경고 없이 통과한다", async () => {
     const project = projectWithMap();
     const chat = scriptedChat([
       toolCallMsg("paint_tiles", { mapId: "m1", from: { x: 7, y: 4 }, to: { x: 9, y: 4 }, mode: "rect", layer: "lower", tile: 240 }, "c1"),
@@ -553,10 +544,7 @@ describe("세션 스펙 게이트", () => {
       }
     });
     expect(events[0]?.ok).toBe(true);
-    expect(events[0]?.issues).toContainEqual(expect.objectContaining({
-      code: "spec-gate-auto-expand",
-      message: expect.stringContaining("명세를 자동 확장했습니다"),
-    }));
+    expect(events[0]?.issues?.some((issue) => issue.code === "spec-gate-auto-expand")).toBeFalsy();
   });
 
   it("16×16 맵에서 스펙과 동일한 3개 wings author_house는 bounding rect 오차단 없이 통과한다", async () => {
@@ -586,7 +574,7 @@ describe("세션 스펙 게이트", () => {
     expect(house.summary).not.toContain("할당 영역 밖");
   });
 
-  it("자동 확장 대상에 기존 구조물이 있으면 계속 차단한다", async () => {
+  it("밑그림 밖이라도 기존 구조물 위 쓰기는 차단된다 — 남은 유일한 게이트", async () => {
     const project = (() => {
       const ctx = { project: createBlankProject() };
       expect(runTool(ctx, "create_map", { id: "m1", name: "t", width: 20, height: 20 }).ok).toBe(true);
@@ -606,10 +594,10 @@ describe("세션 스펙 게이트", () => {
     const paint = events.find((event) => event.name === "paint_tiles")!;
     expect(paint.ok).toBe(false);
     expect(paint.summary).toContain("기존 구조물");
-    expect(paint.issues?.join(" ")).toContain("자동 보정하지 않습니다");
+    expect(paint.issues?.join(" ")).toContain("선언 없이 덮지 않습니다");
   });
 
-  it("스펙 검증 3회 실패 → 폐기 안내, 공간 툴은 계속 차단", async () => {
+  it("스펙 검증 3회 실패 → 폐기 안내는 남지만 공간 툴은 실행된다(밑그림은 선택 사항)", async () => {
     const bad = { mapId: "m1", assets: [{ id: "a", kind: "house", x: 18, y: 18, w: 9, h: 9 }] };
     const chat = scriptedChat([
       toolCallMsg("create_map", SPEC_TOOL_ARGS, "c1"),
@@ -628,7 +616,7 @@ describe("세션 스펙 게이트", () => {
     const specTries = events.filter((e) => e.name === "set_build_spec");
     expect(specTries.every((e) => !e.ok)).toBe(true);
     expect(specTries[specTries.length - 1].summary).toContain("폐기");
-    expect(events.find((e) => e.name === "paint_tiles")!.ok).toBe(false);
+    expect(events.find((e) => e.name === "paint_tiles")!.ok).toBe(true);
   });
 
   it("비공간 쓰기(타일 메타데이터)는 스펙 없이 실행된다", async () => {
