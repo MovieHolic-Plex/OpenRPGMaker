@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
+import { readFileSync } from "node:fs";
+import { availableParallelism } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
@@ -48,20 +50,152 @@ function canonicalizeRootArgs(args, defaultRoot) {
  * 그래서 8GB 를 기본으로 깔아 둔다(근본 수정은 그 파일을 세 파일로 가른 것 — 각 피크 3.13/2.06/2.88GB).
  * 사용자가 이미 `--max-old-space-size` 를 줬으면 그 값을 존중한다. 더 키우려면 `OPRN_VITEST_HEAP_MB`.
  */
-const DEFAULT_HEAP_MB = process.env.OPRN_VITEST_HEAP_MB ?? "8192";
-function withHeapOption(nodeOptions) {
+const FALLBACK_HEAP_MB = 8192;
+
+/**
+ * 자기 cgroup(v2) 조상 사슬을 훑어 실효 상한을 구한다.
+ *
+ * 상한은 프로세스가 직접 든 cgroup 이 아니라 **조상 슬라이스**에 걸려 있는 게 보통이다.
+ * 예) CI 러너는 `…/ci.slice/gh-runner-rpg-zzu.service` 에 있고 memory.max 는 `ci.slice` 에 있다.
+ * 그래서 루트까지 올라가며 최솟값을 취한다. cgroup v2 가 아니거나 상한이 없으면 null.
+ */
+function cgroupLimit(fileName, parse) {
+  try {
+    const own = readFileSync("/proc/self/cgroup", "utf8").trim().split("\n").at(-1)?.split(":").at(2);
+    if (!own) return null;
+    let dir = join("/sys/fs/cgroup", own);
+    let best = null;
+    for (let depth = 0; depth < 32; depth += 1) {
+      try {
+        const parsed = parse(readFileSync(join(dir, fileName), "utf8").trim());
+        if (parsed != null) best = best == null ? parsed : Math.min(best, parsed);
+      } catch { /* 이 층엔 해당 파일이 없다 — 계속 올라간다 */ }
+      const parent = dirname(dir);
+      if (parent === dir || !parent.startsWith("/sys/fs/cgroup")) break;
+      dir = parent;
+    }
+    return best;
+  } catch {
+    return null;
+  }
+}
+
+/** vitest 가 실제로 띄울 워커 수. CLI 가 지정했으면 그 값, 아니면 Node 가 보는 병렬도. */
+function plannedWorkers(args) {
+  for (let index = 0; index < args.length; index += 1) {
+    const value = args[index].startsWith("--maxWorkers=")
+      ? args[index].slice("--maxWorkers=".length)
+      : args[index] === "--maxWorkers" ? args[index + 1] : null;
+    const parsed = Number.parseInt(value ?? "", 10);
+    if (Number.isFinite(parsed) && parsed > 0) return parsed;
+  }
+  // Node 24 는 cgroup cpu.max 를 존중한다(확인: CPUQuota=200% → availableParallelism()=2).
+  return Math.max(1, availableParallelism());
+}
+
+/**
+ * vitest 워커의 힙 상한.
+ *
+ * 이 저장소의 스위트는 파일 단위로 워커가 갈리고(pool=forks), 케이스가 많은 파일일수록 한 워커의 힙이
+ * 자란다. 실측(2026-09-11): `test/verificationPlanAtomicity.test.ts` 가 108케이스에서 피크 4.34GB —
+ * Node 기본 상한(이 박스에서 4,288MB)을 넘겨 워커가 `Ineffective mark-compacts near heap limit` 으로
+ * 죽고, 그 워커가 맡은 파일은 결과를 못 내놨다. 그래서 8GB 를 기본으로 깔아 뒀다
+ * (근본 수정은 그 파일을 세 파일로 가른 것 — 각 피크 3.13/2.06/2.88GB).
+ *
+ * **그런데 그 기본값은 메모리가 무제한일 때만 옳다.** cgroup 으로 묶인 CI 슬라이스(8코어/24GB)에서
+ * 8워커 × 8GB = 64GB 천장은 그대로 OOM 이다 — 이 박스는 상한이 없던 시절 유저 슬라이스가
+ * peak 91GB 를 찍고 oom_kill 이 323회 났고, 전체 실행이 78분쯤 출력 없이 사라졌다.
+ * 그래서 상한이 걸려 있으면 거기에 맞춰 나눈다: 워커들이 합쳐서 메모리의 75%를 넘지 않게.
+ *
+ * 우선순위: 사용자가 준 `--max-old-space-size` > `OPRN_VITEST_HEAP_MB` > cgroup 유도값 > 8192.
+ */
+/**
+ * 워커 하나가 반드시 가져야 하는 힙.
+ *
+ * 실측(2026-09-11) 최악 파일 피크는 4.34GB 였고, 세 파일로 가른 뒤에도 3.13/2.06/2.88GB 다.
+ * 즉 워커 힙 상한이 3.13GB 아래면 그 파일은 `Ineffective mark-compacts` 로 죽는다.
+ * **그러므로 메모리 예산을 워커 수로 그냥 나누면 안 된다** — 나눗셈이 이 바닥 아래로 내려가면
+ * 워커 수를 줄이는 게 맞다. CPU 가 8코어라도 메모리가 5워커어치면 묶이는 쪽은 메모리다.
+ */
+const MIN_WORKER_HEAP_MB = 3584;
+
+/**
+ * 힙 상한은 «동시에 전원이 최대치» 를 가정한 값이라 실제 사용량보다 훨씬 크다.
+ *
+ * 실측(2026-09-17, ci.slice 8코어/24GB, 전체 스위트 2,338파일 완주):
+ *   워커 5개 × 힙 3,686MB = **이론 천장 18.4GB** 였는데 슬라이스 **실측 피크는 9.00GB(49%)**.
+ * 무거운 파일이 동시에 여러 워커에 걸리는 일이 드물기 때문이다. 이론 천장으로 워커를 깎으면
+ * CPU 가 논다 — 그 실행은 8코어를 줬는데 CPU 를 5.2코어어치만 썼다.
+ *
+ * 그래서 이론 천장이 예산의 2배까지는 허용한다. 넘치면 cgroup 이 받아낸다 —
+ * 상한이 걸린 뒤로 OOM 은 전역이 아니라 이 슬라이스 안에서 나고, memory.events 로 관측된다
+ * (`scripts/ci-resource-report.mjs`). 관측 가능한 초과는 노는 코어보다 낫다.
+ */
+const OVERCOMMIT_FACTOR = 2;
+
+/**
+ * cgroup 메모리 상한에서 (워커 수, 워커당 힙)을 함께 결정한다.
+ *
+ * 상한이 없으면(로컬 개발) null — 아무것도 바꾸지 않는다. 기존 동작 그대로 힙 8GB, 워커는 호출자 결정.
+ *
+ * 이 박스는 상한이 없던 시절 유저 슬라이스가 peak 91GB / 98GB 를 찍고 oom_kill 이 323회 났으며,
+ * 전체 vitest 실행이 78분쯤 출력 없이 사라졌다. 그 재발 방지가 이 함수의 존재 이유다.
+ */
+function cgroupBudget(args) {
+  const memoryMax = cgroupLimit("memory.max", (raw) => (raw === "max" ? null : Number(raw)));
+  if (memoryMax == null || !Number.isFinite(memoryMax)) return null;
+
+  const usableMb = Math.floor((memoryMax * 0.75) / 1024 / 1024);
+  const memoryWorkers = Math.max(1, Math.floor((usableMb * OVERCOMMIT_FACTOR) / MIN_WORKER_HEAP_MB));
+  const workers = Math.max(1, Math.min(plannedWorkers(args), memoryWorkers));
+  // 힙은 최악 파일(피크 3.13GB)을 담을 수 있어야 한다 — 이 아래로 내리면 그 파일이
+  // `Ineffective mark-compacts near heap limit` 으로 죽고 결과를 못 내놓는다.
+  const heapMb = Math.min(FALLBACK_HEAP_MB, Math.max(MIN_WORKER_HEAP_MB, Math.floor(usableMb / workers)));
+  return { workers, heapMb, usableMb };
+}
+
+function heapMbFor(budget) {
+  const override = Number.parseInt(process.env.OPRN_VITEST_HEAP_MB ?? "", 10);
+  if (Number.isFinite(override) && override > 0) return override;
+  return budget?.heapMb ?? FALLBACK_HEAP_MB;
+}
+
+function withHeapOption(nodeOptions, budget) {
   const current = nodeOptions ?? "";
   if (/--max-old-space-size/.test(current)) return current;
-  return `${current} --max-old-space-size=${DEFAULT_HEAP_MB}`.trim();
+  return `${current} --max-old-space-size=${heapMbFor(budget)}`.trim();
+}
+
+/** cgroup 이 허용하는 것보다 많은 워커를 요청했으면 낮춰 준다. 상한이 없으면 손대지 않는다. */
+function withWorkerCap(args, budget) {
+  if (!budget || budget.workers >= plannedWorkers(args)) return args;
+  // maxWorkers 와 minWorkers 를 **둘 다** 걷어낸다. vitest 의 CLI 파서는 같은 옵션이 두 번
+  // 오면 `Expected a single value for option "--minWorkers <workers>", received [1, 1]` 로 죽는다
+  // (실측: max 만 걷어내고 min 을 덧붙였다가 게이트가 리포트도 못 내고 exit 1).
+  const stripped = [];
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index];
+    if (arg.startsWith("--maxWorkers=") || arg.startsWith("--minWorkers=")) continue;
+    if (arg === "--maxWorkers" || arg === "--minWorkers") { index += 1; continue; }
+    stripped.push(arg);
+  }
+  console.error(
+    `[run-vitest] cgroup 예산 ${Math.floor(budget.usableMb / 1024)}GiB → 워커 ${budget.workers}개 ` +
+    `× 힙 ${budget.heapMb}MB 로 낮춘다 (워커당 최소 ${MIN_WORKER_HEAP_MB}MB 보장).`,
+  );
+  return [...stripped, `--maxWorkers=${budget.workers}`, "--minWorkers=1"];
 }
 
 const packagePath = fileURLToPath(import.meta.resolve("vitest/package.json"));
 const vitestCli = canonicalizeWindowsDrive(join(dirname(packagePath), "vitest.mjs"));
 const root = canonicalizeWindowsDrive(process.cwd());
-const args = canonicalizeRootArgs(process.argv.slice(2), root);
+const requestedArgs = canonicalizeRootArgs(process.argv.slice(2), root);
+// cgroup 상한이 있으면(= CI 슬라이스) 워커 수와 힙을 예산에 맞춘다. 없으면 그대로 간다.
+const budget = cgroupBudget(requestedArgs);
+const args = withWorkerCap(requestedArgs, budget);
 const result = spawnSync(process.execPath, [vitestCli, ...args], {
   cwd: root,
-  env: { ...process.env, NODE_OPTIONS: withHeapOption(process.env.NODE_OPTIONS) },
+  env: { ...process.env, NODE_OPTIONS: withHeapOption(process.env.NODE_OPTIONS, budget) },
   stdio: "inherit",
 });
 
