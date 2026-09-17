@@ -202,6 +202,22 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     } catch { return 1; }
   })();
 
+  /* 포켓몬 스킨은 1:1 대치 문법이다 — 상대가 하나뿐인데 「슬라임 / 뒤로」 목록을 띄우고 확인키를
+     한 번 더 받는 것이 이 스킨에서 가장 눈에 띄던 군더더기였다(감독 지적, 실측 A-03-target).
+     본가는 기술을 고르는 순간 실행된다. 스킨 스코프로만 켠다 — rm2000/rm2003 은 명령 확정 뒤
+     「뒤로」로 물러나는 경로가 계약이라(openwiki/runtime-battle.md) 건드리면 안 된다.
+     후보가 둘 이상이면 포켓몬에서도 목록이 뜬다(다수 적 트룹). */
+  const autoConfirmSingleTarget = (() => {
+    try {
+      const skinId = resolveSkinId(
+        (options.project as unknown as { system?: { battleUiStyle?: string } }).system?.battleUiStyle,
+      ) as BattleSkinId;
+      return skinId === "pokemon";
+    } catch {
+      return false;
+    }
+  })();
+
   // Runtime-only growth fields are optional on the authored ProjectSession fallback.
   const rawSessionState = options.sessionState ?? startStateOf(options.project);
   const sessionState = rawSessionState as BattleSessionState;
@@ -1443,6 +1459,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (!resolution.requiresSelection) {
       const targetId = targetIdFor(resolution.targets[0] ?? user);
       performActorCommand(concreteTargetCommand(command, targetId, resolution.side));
+      return;
+    }
+    // 포켓몬: 후보가 하나면 목록을 건너뛰고 바로 실행. `requiresSelection` 은 후보 수와 무관하게
+    // 단일 대상 스코프에서 항상 true 인 순수 판정이라(battleTargetResolver) 거기서 고치면 모든
+    // 스킨이 함께 바뀐다 — 분기를 여기 둔다. targets 는 이 경로에서 비어 있으므로 candidates 를 쓴다.
+    const onlyCandidate = resolution.candidates.length === 1 ? resolution.candidates[0] : undefined;
+    if (autoConfirmSingleTarget && onlyCandidate) {
+      performActorCommand(concreteTargetCommand(command, targetIdFor(onlyCandidate), resolution.side));
       return;
     }
     const targetIds = resolution.candidates.map(targetIdFor);
