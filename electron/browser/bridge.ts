@@ -14,6 +14,8 @@ declare global {
 
 const tabId = Array.from(crypto.getRandomValues(new Uint8Array(16)), x => x.toString(16).padStart(2, '0')).join('');
 
+const selectedProject = new URL(location.href).searchParams.get('hostProject') ?? '';
+
 const BASE64_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 function bytesToBase64(bytes: Uint8Array): string {
@@ -51,7 +53,7 @@ async function call(channel: string, payload: unknown): Promise<unknown> {
   if (!config) throw new Error("oprn 브리지 설정이 없습니다 — 로컬 서버가 주입한 페이지가 아닙니다");
   const response = await fetch(config.endpoint, {
     method: "POST",
-    headers: { "content-type": "application/json", "x-oprn-bridge-token": config.token, "x-oprn-session": tabId },
+    headers: { "content-type": "application/json", "x-oprn-bridge-token": config.token, "x-oprn-session": tabId, "x-oprn-project": selectedProject },
     body: JSON.stringify({ channel, payload }),
   });
   if (!response.ok) throw new Error(`${channel}: ${response.status} ${await response.text()}`);
@@ -72,7 +74,7 @@ async function readAsset(payload: unknown): Promise<Uint8Array> {
 (window as unknown as { oprn?: unknown }).oprn = {
   closeIsHostDriven: false,
   team: { status: invoke(OPRN_CHANNELS.teamStatus), lock: invoke(OPRN_CHANNELS.teamLock) },
-  assetBaseUrl: () => "/__oprn/asset/",
+  assetBaseUrl: () => `/__oprn/asset/${selectedProject ? encodeURIComponent(selectedProject) + "/" : ""}`,
   project: {
     status: invoke(OPRN_CHANNELS.projectStatus),
     probe: invoke(OPRN_CHANNELS.projectProbe),
@@ -111,7 +113,15 @@ async function readAsset(payload: unknown): Promise<Uint8Array> {
     recentProjects: async () => [],
     openFolder: async () => null,
     openRecent: async () => null,
-    createProject: async () => null,
+    createProject: async (input: unknown) => {
+      const created = await call(OPRN_CHANNELS.startCreateProject, input) as { projectDir: string; projectId: string };
+      const url = new URL(location.href);
+      url.search = '';
+      url.hash = '';
+      url.searchParams.set('hostProject', created.projectDir);
+      history.replaceState(null, '', url);
+      return created;
+    },
     importFile: async () => null,
   },
   companionOrigin: null,
