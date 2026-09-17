@@ -1,5 +1,25 @@
 # Editor AI Panel & Tools
 
+## 검토 대기 액션은 작업 과정 밖에 둔다 (2026-09-18)
+
+`aiPiAgentCommand`가 `검토 대기`로 끝나도 시공/검수는 이미 종료한 상태다.
+`aiInlineWorkCard`의 접힌 details 안에만 적용 버튼이 있으면 사용자는 종료되지
+않은 실행으로 오해한다. `aiPendingReview.ts`의 안내와 적용·변경 내용 보기·버리기
+버튼은 `PiCommandSurface.appendReviewPrompt`를 통해 대화 로그에 직접 붙인다.
+실행 기록은 계속 접어 둘 수 있다. 적용/버리기는 기존 보드·팀 액션과 같은
+클로저를 사용하며, 적용 중 중복 호출을 막고 적용 실패 시 액션을 유지한다.
+
+수동 적용 후 영수증은 원래 요청의 카드에 붙이고 `적용 완료`로 갱신한다.
+새 `작업 중` 카드를 만들지 않는다. 버리면 같은 카드에 `버림`을 표시한다.
+적용된 결과의 `hasPendingDraft`는 false다. 다음 요청은 이전의 별도 안내를 제거한다.
+
+브라우저 증거: `scripts/qa/visible-team-review.mjs` →
+`output/evidence/visible-team-review/`. 실제 편집기에서 팀 응답을 결정적으로 재생하여
+접힌 과정 밖 버튼, 1024px 가시성, 적용 전/후 정본, 버리기, stale 적용 실패 후
+재시도·버리기 노출을 확인한다. 맵 이름 변경을 쓰는 최소 QA 픽스처이며
+라이브 모델의 집 생성 품질이나 원격 저장을 검증하는 스크립트는 아니다.
+
+
 ## 팀 분업 유즈케이스와 맵 밖 작업 배정 (2026-09-18)
 
 `src/ai/piAgent/teamWorkflows.ts`의 7가지 레시피를 팀장 시스템 프롬프트에

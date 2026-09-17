@@ -1753,3 +1753,10 @@ body:has([data-testid='resource-modal']) .ai-chat-panel .ai-deck {
 .ai-chat-suggestions > button { align-self: flex-start; border: 0; background: transparent; padding-left: 0; }
 .ai-chat-suggestions details { font-size: 11px; color: var(--text-3); }
 .ai-chat-suggestions summary { cursor: pointer; }
+
+.ai-pending-review { flex: 0 0 auto; border: 1px solid var(--border-subtle); border-radius: var(--radius-m); background: var(--bg-raised); padding: 12px; font-size: 12px; }
+.ai-pending-review p { margin: 0 0 10px; line-height: 1.5; }
+.ai-pending-review-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ai-pending-review-actions button { font: 500 12px var(--font-ui); color: var(--accent); border: 1px solid var(--border-subtle); background: var(--bg-raised); border-radius: var(--radius-s); padding: 7px 10px; cursor: pointer; }
+.ai-pending-review-actions button:first-child { background: var(--accent); color: white; border-color: var(--accent); }
+.ai-pending-review-actions button:disabled { opacity: .55; cursor: wait; }
