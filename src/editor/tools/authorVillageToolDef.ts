@@ -1,7 +1,7 @@
 import { parseAuthorVillageRequest } from "@/editor/construction/parseVillageRequest";
 import type { AuthorVillageRequest } from "@/editor/construction/contracts";
 import { TILE, DEFAULT_TILESET_ID } from "@/project/defaults/constants";
-import { isCombinedTownTileset } from "@/project/tilesetHarness/combinedTown";
+import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness/combinedTown";
 import { estimateVillageSize } from "@/ai/constructionDeclaration";
 import type { GameMap, Project } from "@/project/types";
 import { createDraft } from "./changeset";
@@ -153,6 +153,16 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
         countPolicy: { type: "string", enum: ["exact", "best-effort"], description: "exact=정확히 houseCount, best-effort=85% 하한(4채 이하는 exact와 같음)." },
         groundTheme: { type: "string", enum: ["grass", "snow"], description: "Whole-settlement ground preset. theme remains descriptive." },
         settlementLayout: { type: "string", enum: ["plaza-ring", "street-grid", "clusters"] },
+        morphology: {
+          type: "string",
+          enum: ["street", "green", "round", "cluster"],
+          description: "취락 형태 유형. street=가로촌(큰길 하나·집 줄·뒷골목), green=광장촌(렌즈형 녹지와 연못을 두 호가 감싼다), round=환촌(원형 녹지·링 길·남쪽 입구), cluster=괴촌(관심도 성장 시뮬레이션). 지정하면 뼈대 길 → 길에 면한 필지 → 집 → 밭·과수원 → 거리 기울기 나무 순서로 짓고 settlementLayout 은 무시한다. 마을을 '잘 깔아 달라'는 요청엔 이 값을 고르는 것이 기본이다.",
+        },
+        relief: {
+          type: "string",
+          enum: ["none", "hills"],
+          description: "고저차. hills=언덕·단구·2단 둔덕(45° 대각 변, 남쪽 절벽 면). 「합본 마을+레트로 월드맵」 혼합 칩셋 맵에서만 그려지고 morphology 와 함께 쓴다. 집·밭은 언덕 띠를 피하고 큰길이 띠를 지나 비탈이 된다.",
+        },
         npcCount: { type: "integer", minimum: 0, maximum: 512, description: "Requested village NPC population. 하한 90%(최소 2명 관용)로 판정 — 1~2명 어긋남은 실패가 아니다." },
         residents: {
           type: "array",
@@ -264,7 +274,7 @@ function assertTargetTilesetUsable(draft: Project, request: AuthorVillageRequest
   const map = draft.maps[request.target.mapId];
   if (!map) return; // map-not-found는 기존 순서대로 뒤에서 처리한다.
   const tileset = draft.tilesets?.[map.tilesetId];
-  if (!tileset || !isCombinedTownTileset(tileset)) {
+  if (!tileset || !isCombinedTownCompatibleTileset(tileset)) {
     throw new ToolError(
       `author_village는 combined_town 칩셋(${DEFAULT_TILESET_ID}) 전용이다 — 이 맵의 타일셋: ${map.tilesetId}. ` +
         "다른 타일 그림판에서는 문/울타리/돌마당 타일 id가 전부 다른 그림이 된다.",

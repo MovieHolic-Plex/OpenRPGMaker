@@ -182,6 +182,7 @@ const createMap: ToolDefinition = {
       // border 는 여기 없다 — 위 주석 참조. run() 은 인자를 계속 받는다(런타임 호환).
       seed: { type: "integer", description: "명시 BGM 선택 시드(생략 시 맵 id에서 유도, 이미 쓴 곡 회피)" },
       bgmResourceId: { type: "string", description: "맵 BGM 리소스 id. 있으면 자동 선택을 건너뛴다." },
+      tilesetId: { type: "string", description: "타일셋 id(생략 시 기본 합본 마을). 프로젝트에 있는 타일셋만." },
       bgm: {
         type: "object",
         description: "명시적 BGM 설정. 있으면 자동 선택을 건너뛴다.",
@@ -203,12 +204,14 @@ const createMap: ToolDefinition = {
     assertMapIdAvailable(draft, id);
     const name = args.name as string;
     const size = width * height;
+    const tilesetId = typeof args.tilesetId === "string" && args.tilesetId.trim().length > 0 ? args.tilesetId.trim() : DEFAULT_TILESET_ID;
+    if (!draft.tilesets[tilesetId]) throw new ToolError(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { code: "tileset-not-found" });
     const map: GameMap = {
       id,
       name,
       width,
       height,
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId,
       tileSize: DEFAULT_TILE_SIZE,
       lowerTiles: new Array<number>(size).fill(TILE.GRASS),
       upperTiles: new Array<number>(size).fill(TILE.EMPTY),
