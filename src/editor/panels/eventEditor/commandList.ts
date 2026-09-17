@@ -439,6 +439,11 @@ function appendCommandChildren(
         host.append(renderBrokenCommandRow(child, childPath, actions));
       }
     });
+    // 분기에 명령이 있어도 넣을 자리를 남긴다. 예전엔 명령 하나가 들어가면 「여기에 명령 추가」
+    // 슬롯이 사라져 두 번째 명령을 넣을 곳이 없었다(2026-09-17 적대적 리뷰 P0-3).
+    if (branch.commands.length > 0) {
+      host.append(renderBranchAddLine(depth + 1, branch.tone, branchPath, actions, options.openCommandPicker));
+    }
   }
   // 「선택 끝」「분기 끝」 마커 행은 두지 않는다 — 들여쓰기와 분기 머리 행이 이미 구조를 말하고,
   // 끝 행은 정보 없이 세로 공간만 썼다(2026-09-03 제안서 §6·§8).
@@ -464,6 +469,30 @@ function renderEmptyBranchLine(
     attrs: { type: "button", title: "이 분기에 명령을 하나 넣어줍니다" },
     dataset: {
       testid: `event-command-branch-empty-${containerPath.join("-")}`,
+      cmdDepth: String(depth),
+      containerPath: JSON.stringify(containerPath),
+    },
+    on: { click: () => openCommandPicker?.(containerPath) },
+  });
+  line.style.setProperty("--cmd-depth", String(depth));
+  ensureListDropHandlers(line, actions);
+  return line;
+}
+
+/** 명령이 있는 분기의 끝 줄 — 「+ 이 분기에 명령 추가」. 빈 분기 줄과 같은 컨테이너 규칙(끝에 추가). */
+function renderBranchAddLine(
+  depth: number,
+  kind: "fork" | "choices" | "shop",
+  containerPath: readonly number[],
+  actions: CommandListActions,
+  openCommandPicker: CommandListRenderOptions["openCommandPicker"],
+): HTMLElement {
+  const line = el("button", {
+    class: `cmd-line-marker cmd-marker-${kind} cmd-branch-empty cmd-branch-add`,
+    text: "+ 이 분기에 명령 추가",
+    attrs: { type: "button", title: "이 분기의 마지막에 명령을 하나 넣어줍니다" },
+    dataset: {
+      testid: `event-command-branch-add-${containerPath.join("-")}`,
       cmdDepth: String(depth),
       containerPath: JSON.stringify(containerPath),
     },

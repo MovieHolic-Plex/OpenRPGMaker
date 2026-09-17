@@ -50,7 +50,6 @@ describe("스펙 없는 검증 successTools", () => {
     const mapId = project.startMapId;
     const plan = {
       goal: "시작 맵 통행 점검",
-      acceptance: [{ id: "preserve", title: "보존", criteria: [{ kind: "preserve", target: { mapId } }] }],
       layers: [{
         title: "QA",
         items: [{
@@ -88,6 +87,6 @@ describe("스펙 없는 검증 successTools", () => {
     // 툴을 성공시킨 것으로 완료 조건이 충족된다.
     expect(results.find((entry) => entry.name === "check_reachability")?.ok).toBe(true);
     expect(results.find((entry) => entry.name === "complete_work_item")?.ok).toBe(true);
-    expect(session.getAcceptanceSnapshot()?.status).toBe("verified");
+    expect(session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("done");
   });
 });

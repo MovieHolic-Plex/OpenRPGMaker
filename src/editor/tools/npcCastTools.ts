@@ -111,13 +111,17 @@ function stringField(value: unknown, label: string): string {
   throw new ToolError(`${label} 문자열이 필요합니다.`, { code: "invalid-args" });
 }
 
-function applyResidentToEvent(draft: Project, mapId: string, event: GameEvent, resident: CastSheet["residents"][number], warnings: string[]): number {
+function applyResidentToEvent(draft: Project, _mapId: string, event: GameEvent, resident: CastSheet["residents"][number], warnings: string[]): number {
   const pages = event.pages ?? [];
   const previousName = pages[0]?.name?.trim() ?? "";
   let filled = 0;
   for (const written of resident.pages) {
     const index = pages.findIndex((page) => page.id === written.pageId);
-    if (index < 0) throw new ToolError(`${resident.eventId} 에 페이지 ${written.pageId} 가 없습니다.`, { code: "page-not-found", mapId });
+    if (index < 0) {
+      // 2026-09-18: 페이지 하나가 어긋났다고 캐스트 전체(주민 18명)를 반려하지 않는다. 그 페이지만 건너뛴다.
+      warnings.push(`${resident.eventId} 에 페이지 ${written.pageId} 가 없어 그 대사는 건너뜁니다.`);
+      continue;
+    }
     pages[index] = pageWithDialogue(pages[index]!, resident.name, written.lines, warnings);
     filled += 1;
   }

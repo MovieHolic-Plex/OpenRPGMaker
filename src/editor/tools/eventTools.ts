@@ -660,9 +660,28 @@ const placeNpc: ToolDefinition = {
     const requestedY = args.y as number;
     const name = args.name as string;
     const actionGuide = args.guide === "action-controls";
-    if (!actionGuide && args.pages === undefined) {
-      const repair = placeNpc.invalidArgsRepair?.(args);
-      throw new ToolError(`일반 NPC에는 pages가 필요합니다.${repair ? `\nrepair: ${JSON.stringify(repair)}` : ""}`, { code: "invalid-args" });
+    // 2026-09-18 거부 대신 기본값. pages 없는 NPC 를 invalid-args 로 막던 규칙이 한 런에서 4번 나왔다 —
+    // 모델은 dialogue.text 를 보내거나 아무 말도 안 붙였고, 그때마다 배치가 통째로 무효였다.
+    // dialogue.text 가 있으면 그걸 첫 페이지로 옮기고, 없으면 인사 한 줄을 기본으로 깐다. 경고로 알린다.
+    // 단, dialogue 가 애매한 모양(null·빈 문자열·choices/when 같은 추가 키)이면 추측하지 않고 예전처럼 repair 힌트와 함께 거부한다.
+    let pagesArg = args.pages as SimplePage[] | undefined;
+    let pagesDefaulted: string | null = null;
+    if (!actionGuide && pagesArg === undefined) {
+      const dialogue = args.dialogue;
+      const plainText = typeof dialogue === "string" ? dialogue.trim()
+        : typeof dialogue === "object" && dialogue !== null && !Array.isArray(dialogue)
+          && Object.keys(dialogue).every((key) => key === "text") && typeof (dialogue as { text?: unknown }).text === "string"
+          ? (dialogue as { text: string }).text.trim() : null;
+      if (dialogue === undefined) {
+        pagesArg = [{ lines: [`${name}입니다. 안녕하세요.`] }];
+        pagesDefaulted = "pages 생략 → 인사 한 줄 기본 적용";
+      } else if (plainText) {
+        pagesArg = [{ lines: [plainText] }];
+        pagesDefaulted = "dialogue.text → pages[0].lines 로 옮김";
+      } else {
+        const repair = placeNpc.invalidArgsRepair?.(args);
+        throw new ToolError(`일반 NPC에는 pages가 필요합니다.${repair ? `\nrepair: ${JSON.stringify(repair)}` : ""}`, { code: "invalid-args" });
+      }
     }
     const explicitId = typeof args.id === "string" && args.id.trim()
       ? args.id.trim()
@@ -682,11 +701,13 @@ const placeNpc: ToolDefinition = {
     const { x, y } = landing;
     // graphic 생략 시 투명 고스트가 되지 않도록 주민 기본 캐릭터를 쓴다(함정/컷신은 별도 툴).
     // 일반 query + 시드 샘플 + 맵 내 중복 회피로 동일 타일 그림판 몰림을 줄인다.
+    const normalizationWarnings: string[] = [];
     const graphicSpec = (args.graphic as GraphicSpec | undefined) ?? { query: "villager" };
     const graphic = resolveGraphic(graphicSpec, {
       avoidKeys: usedCharsetGraphicKeysOnMap(map),
       seed: `${map.id}:${name}:${x},${y}`,
       overrides: draft.charsetLabels,
+      onFallback: (message) => normalizationWarnings.push(message),
     });
     // 근접 유사 NPC: 상점 역할이면 id가 달라도 기존 이벤트로 합친다(상점 주인+상인 thrash).
     // 일반 NPC는 id 생략일 때만 병합 — 명시 id 2개는 의도적 복수 배치.
@@ -695,13 +716,13 @@ const placeNpc: ToolDefinition = {
     const mergeSimilar = Boolean(similar) && (similar?.id === explicitId || shopRole || !explicitId);
     const id = mergeSimilar ? similar!.id : (explicitId ?? genId("ev_npc"));
     const reused = mergeSimilar;
-    const normalizationWarnings: string[] = [];
     if (args.graphic === undefined) normalizationWarnings.push("graphic 생략 → query:\"villager\" 기본 적용");
+    if (pagesDefaulted) normalizationWarnings.push(pagesDefaulted);
     if (reused) normalizationWarnings.push(`근접 유사 NPC 재사용 → id:${id} (새 이벤트 대신 갱신)`);
     // 명시 movement 우선, 생략 시 이름 아키타입 추론(guide 예외는 제자리).
     const movement = actionGuide ? PASSIVE : resolveNpcMovement(name, args.movement, normalizationWarnings);
     const faceArg = resolvePlaceNpcFaceArg(args.face, graphic);
-    const pages = compileSimplePages(id, name, actionGuide ? [{ text: ACTION_CONTROLS_GUIDE }] : args.pages as SimplePage[], graphic, {
+    const pages = compileSimplePages(id, name, actionGuide ? [{ text: ACTION_CONTROLS_GUIDE }] : pagesArg as SimplePage[], graphic, {
       movement,
       warnings: normalizationWarnings,
       face: faceArg,

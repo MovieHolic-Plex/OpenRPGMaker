@@ -8,6 +8,7 @@ import type { EventPage, GameEvent, GameMap, NpcScheduleEntry, Project } from "@
 import { updateAutonomousNPCs } from "@/player/playSceneAutonomous";
 import { registerAutonomousMover } from "@/player/playSceneSchedulers";
 import { updateNpcSchedules } from "@/player/npcSchedules";
+import { npcMoveDurationMs } from "@/player/playScenePageMoveRoutes";
 import { applySaveSnapshot, createSaveSnapshot } from "@/player/saveSlots";
 import { initialRuntimeEventPositions } from "@/project/runtimeEventState"
 import { runSceneTest } from "@/testing/sceneTestRunner";
@@ -51,6 +52,23 @@ describe("NPC schedule runtime", () => {
 
     expect(scene.session.eventLocations.npc).toEqual({ mapId: map.id, x: 3, y: 1, direction: "up" });
     expect(scene.session.npcActivities?.npc).toBe("work");
+  });
+
+  it("inherits page speed for schedule movers and keeps the schedule step interval", () => {
+    const { project, map } = createScheduleProject([
+      { when: { hourRange: [6, 18] }, at: { mapId: "map_schedule_runtime", x: 3, y: 1 }, activity: "work" },
+    ]);
+    const npcEvent = map.events[0];
+    if (!npcEvent?.pages?.[0]) throw new Error("missing schedule npc page");
+    npcEvent.pages[0].movement = { type: "fixed", speed: 8, frequency: 2 };
+    const scene = scheduleScene(project, map);
+
+    updateNpcSchedules(scene);
+
+    const mover = scene.autonomousNPCs.get("npc");
+    expect(mover?.speedRank).toBe(8);
+    expect(mover?.moveDurationMs).toBe(npcMoveDurationMs(8));
+    expect(mover?.moveIntervalMs).toBe(80);
   });
 
   it("relocates offscreen cross-map NPCs immediately", () => {

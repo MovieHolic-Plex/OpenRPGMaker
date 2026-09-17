@@ -281,7 +281,11 @@ function validatePage(
   }
 
   const invisible = graphic.transparent === true || !graphic.sprite?.id;
-  if (invisible && page.priority === "same" && (page.overlapForbidden ?? true)) {
+  // 아직 아무것도 안 만든 페이지(그림·명령·조건 없음, 투명을 고른 것도 아님)는 경고하지 않는다 —
+  // 새 이벤트가 열리는 순간 빨간 「경고 1」로 시작하는 것은 기본값이 스스로 만든 소음이었다
+  // (2026-09-17 적대적 리뷰 P2-14). 그림 없이 명령이나 조건을 넣기 시작하면 그때 경고한다.
+  const untouched = graphic.transparent !== true && !graphic.sprite?.id && (page.commands ?? []).length === 0 && conditions.length === 0;
+  if (invisible && !untouched && page.priority === "same" && (page.overlapForbidden ?? true)) {
     issues.push({
       severity: "warning",
       code: "page.invisible-collision",

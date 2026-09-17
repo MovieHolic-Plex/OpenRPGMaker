@@ -365,3 +365,14 @@
   font-weight: 500;
   padding-left: calc(8px + var(--cmd-depth, 0) * var(--blk-indent));
 }
+
+/* 명령이 있는 분기 끝의 「+ 이 분기에 명령 추가」 — 빈 분기 줄과 같은 자리 규칙, 더 낮은 톤. */
+.event-editor-modal-window .event-editor .cmd-list .cmd-line-marker.cmd-branch-add {
+  color: var(--text-3);
+  font-size: 11.5px;
+  min-height: 22px;
+}
+.event-editor-modal-window .event-editor .cmd-list .cmd-line-marker.cmd-branch-add:hover,
+.event-editor-modal-window .event-editor .cmd-list .cmd-line-marker.cmd-branch-add:focus-visible {
+  color: var(--accent);
+}

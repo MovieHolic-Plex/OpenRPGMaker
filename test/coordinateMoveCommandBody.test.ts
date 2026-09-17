@@ -175,10 +175,14 @@ describe("좌표로 이동 — 저작 폼", () => {
     });
   });
 
-  it("속도는 1–6 으로 묶이고 대기는 체크박스가 소유한다", () => {
+  it("속도는 1–8 로 묶이고 대기는 체크박스가 소유한다", () => {
     const { root, latest } = harness({ target: "player", x: 2, y: 2, speed: 4, wait: true });
     setInput(root, "coordinate-move-speed-input", "99");
-    expect(latest()?.fields.speed).toBe(6);
+    expect(latest()?.fields.speed).toBe(8);
+    setInput(root, "coordinate-move-speed-input", "-3");
+    expect(latest()?.fields.speed).toBe(1);
+    expect(q(root, "coordinate-move-speed-input")?.getAttribute("max")).toBe("8");
+    expect(root.textContent).toContain("속도(1–8)");
     const wait = q<HTMLInputElement>(root, "coordinate-move-wait-checkbox")!;
     wait.checked = false;
     wait.dispatchEvent(new Event("change"));

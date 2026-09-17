@@ -296,25 +296,21 @@ describe("stable target retry budgets through AssistantSession", () => {
     expect(commit).not.toHaveBeenCalled();
     expectResponses(session);
 
-    expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ id: "acceptance-contract", evidence: [] }] });
-    // Repair the missing spatial contract in the successful correction batch.
-    // Target only this NPC's cell, so unrelated writes cannot satisfy the promise.
-    const criteria = [{ kind: "targetChange", target: { mapId: "m1" }, region: { x: 2, y: 2, w: 1, h: 1 } }];
-    rounds.push([badNpc(0)], [badNpc(1)], [badNpc(2)], [correctedNpc(1), readMap,
-      call("repair_acceptance", { itemId: "acceptance-contract", criteria }),
-    ]);
-    // The corrected batch and the terminal writer response need two rounds; the
-    // deterministic check itself consumes none. A one-round budget can test failure bounds only.
-    session.updateConfig({ ...CONFIG, maxToolCalls: 2 });
+    // 2026-09-17 수용 원장 제거 — 자동 생성되던 acceptance-contract 항목과 repair_acceptance 는 더 이상 없다.
+    // 재개 뒤의 성공 조건은 작업 항목의 successTools(get_map_region) 와 결정적 검사만이다.
+    rounds.push([badNpc(0)], [badNpc(1)], [badNpc(2)], [correctedNpc(1), readMap]);
+    // Without the acceptance ledger the corrected batch completes the plan, so the correction must not
+    // land exactly on the round cap: a budget-exhausted approved draft is left for the panel, whereas the
+    // terminal writer response goes through the final path that auto-applies the milestone. Three rounds
+    // fit [bad, bad, bad] → continue → [corrected, terminal]; the deterministic check itself consumes none.
+    session.updateConfig({ ...CONFIG, maxToolCalls: 3 });
     // P2 requires the host's explicit resume action, not arbitrary new prose.
     const second = await session.sendUserMessage("같은 주민 명령을 다시 고쳐줘", collect, undefined, { autonomous: true, goalAction: "resume" });
     expect(second.workPlan?.layers[0].items[0].status).toBe("done");
     expect(state.batches).toBe(9); // Eight tool batches plus the terminal writer response.
     expect(state.reviews).toBe(0); // 2026-09-17: 결정적 검사 — 검수 모델은 호출되지 않는다.
     expect(second.stoppedReason).toBe("final");
-    expect(second.recap?.process.filter(step => step.kind === "continue")).toHaveLength(2);
-    expect(events.find((event) => event.name === "repair_acceptance")?.result).toMatchObject({ ok: true, data: { acceptance: { status: "verifying", items: [{ evidence: [{ passed: false }] }] } } });
-    expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "verified", items: [{ id: "acceptance-contract", evidence: [{ expected: JSON.stringify(criteria[0]), passed: true }] }] });
+    expect(second.recap?.process.filter(step => step.kind === "continue")).toHaveLength(1);
     expect(second.proposedCalls).toEqual([]);
     // Resume retains previously pending independent writes; none were applied in
     // the blocked first run, so they must be reviewed and delivered once rather than erased.

@@ -1,0 +1,144 @@
+/* event 표면 — narrow.css. 좁은 화면(1024·768)에서 이벤트 편집기가 무너지지 않게 하는 규칙만 둔다.
+   index.css 의 **마지막** import 다 — 같은 특이도면 여기가 이긴다(2026-09-17 적대적 리뷰 P0-5).
+
+   실측(1024×700 / 768×1024, 2026-09-18):
+   - 모달 창(.event-editor-modal-window)은 display:grid 인데 열 트랙이 없어 암묵 열이 자식들의
+     max-content(헤더 메타 + 액션 = 1033px)로 커졌다. 창은 704px 인데 헤더·페이지바·푸터가 1033px
+     → 768 에서 「저장하고 닫기」가 화면 밖. 열을 minmax(0, 1fr) 로 못 박으면 자식이 창 폭을 따른다.
+   - 헤더 .meta 는 min-width:0 이지만 overflow 가 visible 이라 줄어들지 않았다. */
+
+.event-editor-modal-window {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.event-editor-modal-window > .event-editor-modal-header,
+.event-editor-modal-window > .event-editor-pagebar,
+.event-editor-modal-window > .event-editor-modal-body,
+.event-editor-modal-window > .event-editor-modal-footer {
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* 헤더: 이름 상자는 줄어들되 읽히는 폭은 지키고, 메타(맵·좌표·ID)는 말줄임, 액션은 안 줄인다. */
+.event-editor-modal-header > .meta {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 페이지 탭 줄: 탭이 많으면 가로 스크롤, 관리 버튼 묶음은 줄바꿈 대신 아이콘만 남긴다(≤1100). */
+.event-editor-pagebar > .evt-page-segments {
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+@media (max-width: 1100px) {
+  .event-editor-modal-header {
+    column-gap: 8px;
+  }
+
+  .event-editor-modal-header > .event-name {
+    flex: 1 1 160px;
+    min-width: 120px;
+  }
+
+  /* 이벤트 ID 칩은 좁은 화면에서 접는다 — 복사가 필요하면 왼쪽 인스펙터에 같은 칩이 있다. */
+  .event-editor-modal-header .meta > .event-id-readout,
+  .event-editor-modal-header .meta > .event-id-readout + .dot-sep,
+  .event-editor-modal-header .meta > .dot-sep:has(+ .event-id-readout) {
+    display: none;
+  }
+
+  .event-editor-pagebar > .event-page-actions-row {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+}
+
+/* 푸터: 한 줄에 안 들어가면 줄바꿈하되 「저장하고 닫기」는 항상 오른쪽 끝에 남는다. */
+.event-editor-modal-footer {
+  flex-wrap: wrap;
+  min-width: 0;
+  row-gap: 6px;
+}
+
+.event-editor-modal-footer > .event-editor-footer-actions {
+  flex: 1 1 auto;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+/* 워크벤치 ≤1100: 빈 인스펙터 자리를 예약하지 않는다(1024 에서 960px 중 324px 가 빈 판이었다).
+   명령을 고르면 인스펙터는 오른콽 **덮개**로 뜬다 — 명령 열을 3열로 쥐어짜지 않는다.
+   특이도 메모: 예약 트랙은 command-list-3.css 가 `.event-editor .event-editor-workbench:has(…)`(0,5,0)
+   으로 세우므로, 같은 :has 를 되풀이하고 .event-editor-modal-window 를 앞에 붙여(0,6,0) 이긴다. */
+@media (max-width: 1100px) {
+  .event-editor-modal-window {
+    --balanced-settings-width: 232px;
+    --balanced-inspector-width: 320px;
+  }
+
+  .event-editor-modal-window .event-editor .event-editor-workbench,
+  .event-editor-modal-window .event-editor .event-editor-workbench:has(.event-contents-fieldset > .cmd-list:not([hidden]), .event-storyboard-host > .event-storyboard:not([hidden])) {
+    --event-inspector-reserved-track: 0px;
+    grid-template-columns: var(--balanced-settings-width) minmax(0, 1fr);
+    position: relative;
+  }
+
+  .event-editor-modal-window .event-editor .event-editor-workbench:not(.has-command-inspector):has(.event-contents-fieldset > .cmd-list:not([hidden]), .event-storyboard-host > .event-storyboard:not([hidden]))::after {
+    display: none;
+  }
+
+  .event-editor-modal-window .event-editor .event-editor-workbench.has-command-inspector {
+    grid-template-columns: var(--balanced-settings-width) minmax(0, 1fr);
+  }
+
+  .event-editor-modal-window .event-editor .event-editor-workbench.has-command-inspector > .event-editor-inspector-column {
+    background: var(--bg-raised);
+    border-left: 1px solid var(--border-default);
+    bottom: 0;
+    box-shadow: -12px 0 28px rgba(15, 23, 42, 0.16);
+    /* 절대 배치된 그리드 아이템의 포함 블록은 자기 그리드 영역이다 — 전체 영역을 잡아 오른쪽 끝에 붙인다. */
+    grid-column: 1 / -1;
+    grid-row: 1;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: min(var(--balanced-inspector-width), 62%);
+    z-index: 4;
+  }
+}
+
+/* ≤900 (768 세로): 설정 열을 더 좁게, 인스펙터 덮개는 유지. */
+@media (max-width: 900px) {
+  .event-editor-modal-window {
+    --balanced-settings-width: 196px;
+    --balanced-inspector-width: 320px;
+  }
+}
+
+/* 스토리 카드: 두 개의 낡은 규칙이 겹쳐 좁거나 낮은 화면에서 카드가 120px 짜리 3줄 더미가 됐다.
+   - command-list-2.css `@media (max-height: 800px)` 가 제목·요약을 2열에 세로로 쌓고(grid-column: 2),
+   - `@media (max-width: 1100px)` 의 `flex-basis: 158px` 가 세로 flex 트랙에서 **높이** 기준이 됐다.
+   둘 다 옛 트랙 설계의 유물이다. 카드는 어느 폭·높이에서도 한 줄(번호·배지·종류·요약·액션)이다. */
+@media (max-height: 800px), (max-width: 1100px) {
+  .event-editor .event-storyboard-card {
+    align-content: start;
+    flex-basis: auto;
+    grid-template-columns: 28px auto 52px minmax(0, 1fr) auto;
+    height: auto;
+    overflow: visible;
+    row-gap: 0;
+  }
+
+  .event-editor .event-storyboard-card-thumb {
+    grid-row: auto;
+  }
+
+  .event-editor .event-storyboard-card-title,
+  .event-editor .event-storyboard-card-detail {
+    grid-column: auto;
+  }
+}

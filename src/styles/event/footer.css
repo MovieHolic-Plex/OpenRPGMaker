@@ -443,6 +443,16 @@ footer {
   overflow-wrap: anywhere;
 }
 
+/* 항목 = 원인(진하게) → 기대 상태 → 다음 할 일. 코드·ID 는 title 과 dataset 에만(2026-09-18). */
+.event-editor-modal-header .event-draft-validation-cause {
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+.event-editor-modal-header .event-draft-validation-hint {
+  color: var(--text-2);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .event-editor-modal-header .event-draft-validation-bell,
   .event-editor-modal-header .event-draft-validation[open] > .event-draft-validation-popover {

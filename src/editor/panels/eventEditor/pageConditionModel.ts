@@ -79,18 +79,16 @@ export function withoutNthCondition(
 export function defaultSimpleCondition(kind: SimpleConditionKind): EventPageCondition | null {
   const project = store.getCurrent();
   switch (kind) {
-    case "item": {
-      const itemId = project.database.items[0]?.id;
-      return itemId ? { kind: "item", itemId, present: true } : null;
-    }
-    case "actor": {
-      const actorId = project.database.actors[0]?.id;
-      return actorId ? { kind: "actor", actorId, present: true } : null;
-    }
-    case "variable": {
-      const variableId = project.variables[0]?.id ?? "";
-      return { kind: "variable", variableId, op: ">=", value: 0 };
-    }
+    // 참조가 있는 조건(아이템·주인공·변수·스위치)은 **비운 채** 세운다 — 행의 「선택하세요」 오류와
+    // 초안 검증(reference.*.missing)이 빈 참조를 잡는다. 예전엔 목록의 첫 레코드에 조용히 묶었는데,
+    // 「스위치」 칩 한 번에 0001 「Q1 약초 의뢰 수락」 이 걸려 촌장이 다른 퀘스트의 진행을 따라
+    // 켜졌다(2026-09-17 적대적 리뷰 P0-2). 첫 레코드는 사용자의 선택이 아니다.
+    case "item":
+      return { kind: "item", itemId: "", present: true };
+    case "actor":
+      return { kind: "actor", actorId: "", present: true };
+    case "variable":
+      return { kind: "variable", variableId: "", op: ">=", value: 0 };
     case "timePhase":
       return { kind: "timePhase", phase: "day" };
     case "season":
@@ -116,12 +114,9 @@ export function toggleSwitchCondition(
   const condition = switchConditionAt(context.page, context.slot);
   if (enabled) {
     if (condition !== undefined) next.push({ ...condition });
-    else {
-      // slot마다 다른 기본 스위치를 고른다(둘 다 sw[0]이면 동일 조건 중복).
-      const switches = store.getCurrent().switches;
-      const switchId = switches[context.slot]?.id ?? switches[0]?.id ?? "";
-      if (switchId) next.push({ kind: "switch", switchId, value: true });
-    }
+    // 스위치는 비운 채 세운다(defaultSimpleCondition 의 주석 참조). 칩을 누른 쪽(pageConditions)이
+    // 곧바로 피커를 열어 고르게 한다.
+    else next.push({ kind: "switch", switchId: "", value: true });
   }
   updateEventPage(context.mapId, context.eventId, context.page.id, { conditions: next });
 }
@@ -197,7 +192,8 @@ export function groupChildren(condition: GroupCondition): readonly EventPageCond
 }
 
 function fallbackLeafCondition(): EventPageCondition {
-  return { kind: "switch", switchId: store.getCurrent().switches[0]?.id ?? "", value: true };
+  // 비운 스위치 — 첫 스위치에 묶지 않는다(defaultSimpleCondition 주석).
+  return { kind: "switch", switchId: "", value: true };
 }
 
 /**

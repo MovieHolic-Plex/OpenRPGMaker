@@ -17,9 +17,10 @@ function preparedProject(): { readonly ctx: { project: Project }; readonly mapId
 const FOREST = { x: 65, y: 5, w: 30, h: 30 };
 
 describe("place_props zero placement", () => {
-  it("fails with an actionable message when the region leaves no room", () => {
+  it("fails with an actionable message when the region and its expansion ring leave no room", () => {
     const { ctx, mapId } = preparedProject();
-    expect(runTool(ctx, "fill_region", { mapId, rect: FOREST, material: "키큰 풀" }).ok).toBe(true);
+    // 2026-09-18 부터 0배치는 영역을 2칸씩 최대 3번 넓혀 재시도한다 — 넓힌 뒤에도 자리가 없어야 실패가 남는다.
+    expect(runTool(ctx, "fill_region", { mapId, rect: { x: 55, y: 0, w: 45, h: 45 }, material: "키큰 풀" }).ok).toBe(true);
 
     const before = structuredClone(ctx.project);
     const result = runTool(ctx, "place_props", {
@@ -62,5 +63,14 @@ describe("place_props zero placement", () => {
     expect(result.ok, `${result.summary} ${JSON.stringify(result.issues ?? [])}`).toBe(true);
     const data = result.data as { readonly placed: number };
     expect(data.placed).toBeGreaterThan(0);
+  });
+
+  it("expands the area when the requested region is full but its surroundings are not", () => {
+    const { ctx, mapId } = preparedProject();
+    expect(runTool(ctx, "fill_region", { mapId, rect: FOREST, material: "키큰 풀" }).ok).toBe(true);
+    const result = runTool(ctx, "place_props", { mapId, area: FOREST, material: "침엽수", count: 12, packing: "dense", minGap: 0, seed: 5 });
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.summary).toContain("넓힘");
+    expect((result.diff?.warnings ?? []).some((w) => w.includes("넓혀 배치"))).toBe(true);
   });
 });
