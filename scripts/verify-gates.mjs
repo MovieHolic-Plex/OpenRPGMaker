@@ -61,7 +61,17 @@ function run(command, commandArgs) {
   });
   // spawnSync 의 status 가 진짜 종료 코드다. 파이프를 거치면 마지막 명령의 코드로 뒤바뀐다
   // (`tsc | tail` 이 exit 0 으로 보였던 원인).
-  return { code: result.status ?? -1, out: `${result.stdout ?? ""}${result.stderr ?? ""}` };
+  //
+  // status 가 null 이면 **정상 종료가 아니다** — 시그널로 죽었거나(result.signal) 스폰 자체가
+  // 실패했다(ENOBUFS 등: result.error). 예전에는 둘 다 -1 로 뭉개서, 2026-09-17 에 전체 게이트가
+  // 31분 51초 만에 `exit=-1` 로 죽었을 때 **원인을 특정할 수 없었다**(cgroup oom_kill 은 0이었다).
+  // 다음에 같은 일이 나면 최소한 무엇이 죽였는지는 남도록 시그널과 에러를 함께 돌려준다.
+  return {
+    code: result.status ?? -1,
+    signal: result.signal ?? null,
+    error: result.error ? `${result.error.code ?? result.error.name}: ${result.error.message}` : null,
+    out: `${result.stdout ?? ""}${result.stderr ?? ""}`,
+  };
 }
 
 /**
@@ -131,7 +141,7 @@ function testsGate() {
   // A runner/bootstrap failure must not be allowed to reuse evidence from an older run.
   // Remove the fixed evidence file first; only this invocation may recreate it.
   rmSync(reportPath, { force: true });
-  const { code } = run("node", [
+  const { code, signal, error } = run("node", [
     "scripts/run-vitest.mjs",
     "run",
     "--configLoader",
@@ -150,7 +160,15 @@ function testsGate() {
   ]);
 
   if (!existsSync(reportPath)) {
-    throw new Error(`vitest JSON 리포트가 생성되지 않았다: ${reportPath} (exit=${code})`);
+    // 여기서 죽는 경우가 진짜 곤란한 경우다 — 리포트가 없으니 무엇이 실패했는지도 모른다.
+    // 그래서 시그널·스폰 에러를 함께 찍는다(2026-09-17 에 exit=-1 만 남고 원인 불명이었다).
+    const why = [`exit=${code}`, signal ? `signal=${signal}` : null, error ? `error=${error}` : null]
+      .filter(Boolean).join(" ");
+    throw new Error(
+      `vitest JSON 리포트가 생성되지 않았다: ${reportPath} (${why})\n` +
+      "  signal 이 찍혔으면 vitest 가 외부에서 죽은 것이다 — cgroup 예산(ci.slice 의 MemoryMax)과\n" +
+      "  `node scripts/ci-resource-report.mjs report` 의 oom_kill 수를 먼저 확인하라.",
+    );
   }
   const parsed = JSON.parse(readFileSync(reportPath, "utf8"));
   const results = parsed.testResults ?? [];

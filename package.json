@@ -24,6 +24,7 @@
     "gates:css:save": "node scripts/check-css-budget.mjs --save-baseline",
     "gates:css:live": "node scripts/check-css-live-classes.mjs",
     "audit:db-css-ownership": "node scripts/audit-db-css-ownership.mjs",
+    "gates:barrel": "node scripts/check-barrel-imports.mjs",
     "gates:surface": "node scripts/check-surface-gates.mjs",
     "gates:surface:audit": "node scripts/audit-gate-mutations.mjs",
     "check:player-tokens": "node scripts/check-player-bundle-tokens.mjs",

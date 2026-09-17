@@ -1,0 +1,49 @@
+name: ci-fast
+
+# 푸시·PR 마다 도는 **가벼운** 레인. 여기에 전체 vitest 를 넣지 않는다.
+#
+# 무엇을 넣었나: 2026-08-04 마지막 CI 실행에서 **실제로 초록이었던 것들**만 넣었다
+# (editor-player-parity ✅, build ✅). 빨간 잡(unit-tests / e2e / ax-gates)은 여기 없다 —
+# 빨간불을 푸시마다 띄우면 아무도 안 보게 되고, 그래서 이 저장소의 Actions 가 꺼졌다.
+# 전체 스위트는 ci-full.yml(야간+수동)이 기준선 대비 회귀만 잡는다.
+#
+# 왜 `npm run test:changed` 가 아닌가: 이 래퍼는 import 그래프를 타고 번져서 소요가
+# 예측 불가다 — 실측으로 변경 6건이면 454파일 254초지만, 코어 모듈을 스치면 1,247파일로
+# 번져 30분을 넘긴다. 푸시 레인의 게이트로 쓸 수 없다. 로컬 반복용 도구로 남긴다.
+#
+# 러너는 self-hosted(ci.slice, 8코어/24GB)다. 이 저장소가 private 이라 안전하다 —
+# **공개로 전환하면 러너부터 제거해야 한다**(포크 PR 이 이 박스에서 임의 코드를 돌린다).
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ci-fast-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fast:
+    runs-on: [self-hosted, oprn-box]
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: npm ci
+
+      - name: 타입체크 (src 만)
+        run: npm run typecheck:app
+
+      # typecheck:app 은 src 만 본다. test/ · scripts/ · evals/ 의 import 계약은 아무도 안 보는데
+      # (`npx tsc --noEmit` 전체는 이 저장소에서 4GB 힙으로 OOM 이라 게이트로 못 쓴다),
+      # 실제로 #882/#883 이 머지되면서 e2e 스펙 2개가 배럴에서 빠진 심볼을 다시 가져왔다.
+      - name: 배럴 수출 계약
+        run: npm run gates:barrel
+
+      # 에디터↔플레이어 데이터 왕복 계약. 9파일이라 바운드가 확실하다.
+      - name: parity 스위트
+        run: npm run test:parity
+
+      # 앱 번들만. 전체 npm run build(플레이어·standalone·아카이브까지)는 ci-full 몫이다.
+      - name: 앱 빌드
+        run: npm run build:app
