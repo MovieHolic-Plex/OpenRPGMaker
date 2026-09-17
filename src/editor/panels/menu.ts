@@ -130,7 +130,16 @@ export function renderTopbar(topbar: HTMLElement): void {
     renderMenu("project", projectLabel, menuCommands("project", topbar), { chevron: true, className: "studio-project-button", title: `프로젝트 — ${projectLabel}` }),
     renderSaveButton(),
     renderTopbarSaveStatus(topbar),
-    ...renderToolCluster(topbar),
+    // 초보는 「도구 ▾」 메뉴가 집, 그 외는 인라인 아이콘 5개가 집이다(표준/전문가 통합).
+    ...(chrome.paletteRail
+      ? [renderMenu("tools", "도구", menuCommands("tools", topbar), { chevron: true })]
+      : [
+          toolButton({ testId: "toolbar-database", icon: "database", label: headerLabel("databaseShort"), title: headerLabel("database"), onClick: () => openDatabaseModal() }),
+          toolButton({ testId: "toolbar-resource-manager", icon: "image", label: headerLabel("resources"), title: headerLabel("resourceLibrary"), onClick: () => openResourceModal() }),
+          toolButton({ testId: "toolbar-world", icon: "globe", title: headerLabel("world"), onClick: () => openWorldPanel() }),
+          toolButton({ testId: "toolbar-sound-test", icon: "music", title: headerLabel("audio"), onClick: () => openAudioTestDialog() }),
+          toolButton({ testId: "toolbar-search", icon: "docSearch", title: headerLabel("mapEventSearch"), onClick: () => openMapEventSearchModal() }),
+        ]),
   );
   menuBar.append(lead);
 
@@ -229,31 +238,6 @@ export function autosaveStatusText(state: AutoSaveState): string {
   }
 }
 
-/**
- * 자료집·소재 버튼 + 도구 자리. 초보는 버튼을 두지 않는다(도구 메뉴가 담는다). 전문가는
- * 세계관·음악·찾기를 인라인 아이콘으로, 표준은 「도구 ▾」 메뉴로 낸다 — 같은 모드에 두 표면을
- * 함께 두지 않는다.
- */
-function renderToolCluster(topbar: HTMLElement): readonly HTMLElement[] {
-  const chrome = getEditorChrome();
-  const nodes: HTMLElement[] = [];
-  if (!chrome.paletteRail) {
-    nodes.push(
-      toolButton({ testId: "toolbar-database", icon: "database", label: headerLabel("databaseShort"), title: headerLabel("database"), onClick: () => openDatabaseModal() }),
-      toolButton({ testId: "toolbar-resource-manager", icon: "image", label: headerLabel("resources"), title: headerLabel("resourceLibrary"), onClick: () => openResourceModal() }),
-    );
-  }
-  if (chrome.toolStrip) {
-    nodes.push(
-      toolButton({ testId: "toolbar-world", icon: "globe", title: headerLabel("world"), onClick: () => openWorldPanel() }),
-      toolButton({ testId: "toolbar-sound-test", icon: "music", title: headerLabel("audio"), onClick: () => openAudioTestDialog() }),
-      toolButton({ testId: "toolbar-search", icon: "docSearch", title: headerLabel("mapEventSearch"), onClick: () => openMapEventSearchModal() }),
-    );
-  } else {
-    nodes.push(renderMenu("tools", "도구", menuCommands("tools", topbar), { chevron: true }));
-  }
-  return nodes;
-}
 
 type ToolButtonSpec = {
   readonly testId: string;

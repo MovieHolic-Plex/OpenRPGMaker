@@ -359,41 +359,42 @@ function syncLeftDock(): void {
 }
 
 /**
- * 좌측 도크 패널 렌더. 맵 패널은 아직 `chrome.mapTree` 밀도 게이트를 따른다 —
- * 도크 구성(사용자 선택)과 밀도 게이팅(모드 파생)을 합치는 일은 CSS 게이트 38곳을
- * 같이 고쳐야 하므로 다음 라운드다.
+ * 좌측 도크 패널 렌더. 맵 도크 표시는 도크 구성(사용자 선택) 단일 원천이다 —
+ * 예전 `chrome.mapTree` 밀도 게이트는 표준/전문가 통합으로 걷었다.
+ * 초보는 `resolveLeftDockPanels`에서 타일만 남기므로 여기서 걸러진다.
  */
 function renderLeftDockPanels(): void {
   if (!leftDock) return;
-  const mapTreeAllowed = getEditorChrome().mapTree;
-  const ids = [...leftDock.hosts.keys()].filter((id) => id !== "maps" || mapTreeAllowed);
+  const allowed = new Set(leftDockPanels());
+  const ids = [...leftDock.hosts.keys()].filter((id) => allowed.has(id));
   renderDockPanels(leftDock, ids);
-  if (!mapTreeAllowed && leftMapRoot) clearChildren(leftMapRoot);
   scheduleMapTreeFit();
 }
 
 export function applyEditorUiModeLayout(): void {
-  const chrome = getEditorChrome();
+  const inDock = new Set(leftDockPanels());
   applyEditorUiModeClasses(getEditorUiMode());
 
   if (leftMapRoot) {
-    leftMapRoot.hidden = !chrome.mapTree;
-    if (chrome.mapTree) leftMapRoot.classList.remove("is-ui-hidden");
+    const show = inDock.has("maps");
+    leftMapRoot.hidden = !show;
+    if (show) leftMapRoot.classList.remove("is-ui-hidden");
     else leftMapRoot.classList.add("is-ui-hidden");
   }
   if (mapTreeResizer) {
-    mapTreeResizer.hidden = !chrome.mapTree;
-    if (chrome.mapTree) mapTreeResizer.classList.remove("is-ui-hidden");
+    const show = inDock.has("maps");
+    mapTreeResizer.hidden = !show;
+    if (show) mapTreeResizer.classList.remove("is-ui-hidden");
     else mapTreeResizer.classList.add("is-ui-hidden");
   }
-  // 좌측 도크는 비어 있을 수 있다(「자료 밸런싱」 프리셋) — 팔레트 호스트 존재를 전제하지 않는다.
+  // 모드 전환(초보 레일 ↔ 표준 컬럼)은 폭·툴바를 다시 잰다.
+  // 이 호출을 빼면 인라인 width/--editor-left-safe 가 이전 모드에 남는다.
   if (canvasToolbarRoot) {
     renderLeftDockPanels();
     renderCanvasToolbar(canvasToolbarRoot);
   }
   applyLayout();
   scheduleFitCanvas();
-
 }
 
 export function teardownEditor(): void {
