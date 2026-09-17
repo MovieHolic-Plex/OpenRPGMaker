@@ -649,7 +649,7 @@ export function menuSkinPreviewUrl(id: MenuSkinId): string {
 }
 
 /**
- * 「게임 메뉴 디자인」 — ESC(X) 메뉴 스킨. 레지스트리 순서대로 5종을 내놓고, 기본(workbench)은 저장에서 지운다
+ * 「게임 메뉴 디자인」 — ESC(X) 메뉴 스킨. 레지스트리 순서대로 디자인을 내놓고, 기본(workbench)은 저장에서 지운다
  * (normalizeSystemRecords 와 같은 계약). 설명·미리보기는 다시 그리지 않고 제자리에서 바꾼다.
  */
 function menuSkinFieldset(project: Project): HTMLElement {

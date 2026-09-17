@@ -139,9 +139,8 @@
 .oprn-status-menu .status-menu-detail-side { grid-template-rows: auto minmax(0, 1fr); }
 .oprn-status-menu .status-menu-detail-side > .status-menu-detail-showcase .status-menu-showcase-frame { height: 24px; width: 24px; }
 /* 옆 열(133px)에 쇼케이스 전체(설명·사실 5줄·스탯 증감 4줄)와 파티 4행이 같이 들어가지 않는다.
-   설명과 표는 하단 메시지 줄이 같은 내용을 이미 말하므로(효과·대상·스탯 증감) 옆 열에서는 접고, 아이콘·이름·수량만 남긴다. */
-.oprn-status-menu .status-menu-detail-side > .status-menu-detail-showcase .status-menu-showcase-description,
-.oprn-status-menu .status-menu-detail-side > .status-menu-detail-showcase .status-menu-stat-delta { display: none; }
+   효과·스탯 표가 있는 화면은 렌더러가 파티 미니를 생략한다. 일반 설명만 푸터로 옮긴다. */
+.oprn-status-menu .status-menu-detail-side > .status-menu-detail-showcase .status-menu-showcase-description { display: none; }
 .oprn-status-menu .status-menu-detail-side > .status-menu-side-party { min-height: 0; order: 1; overflow: hidden; }
 .oprn-status-menu .status-menu-side-party {
   align-content: start;
@@ -363,3 +362,141 @@
 }
 .oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-message { display: none; }
 .oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-controls { padding-top: 3px; }
+
+/* Classic: separate blue windows, crisp double borders and a restrained cursor. */
+.oprn-status-menu.main-menu[data-menu-skin="classic"] {
+  --status-edge-ivory: rgba(247, 249, 255, 1);
+  --status-edge-muted: rgba(194, 211, 250, 1);
+  --status-edge-amber: rgba(255, 224, 143, 1);
+  --status-edge-amber-soft: rgba(156, 189, 255, 0.22);
+  --status-edge-border: rgba(197, 216, 255, 0.75);
+}
+.oprn-status-menu.main-menu[data-menu-skin="classic"]::before {
+  background: linear-gradient(145deg, rgba(27, 51, 131, 0.98), rgba(9, 20, 65, 0.98));
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 2px rgba(6, 15, 49, 1), inset 0 0 0 3px rgba(144, 175, 235, 0.45), 0 3px 10px rgba(0, 0, 0, 0.5);
+}
+.oprn-status-menu[data-menu-skin="classic"] .status-menu-primary-dock {
+  background: rgba(4, 16, 62, 0.5);
+  border: 1px solid var(--status-edge-border);
+  border-radius: 2px;
+  box-sizing: border-box;
+  padding: 2px;
+  width: 66px;
+}
+.oprn-status-menu[data-menu-skin="classic"] .status-menu-overview-row {
+  background: linear-gradient(90deg, rgba(47, 73, 147, 0.7), rgba(13, 31, 88, 0.7));
+  border-color: rgba(162, 190, 245, 0.4);
+  border-radius: 1px;
+}
+.oprn-status-menu[data-menu-skin="classic"] .status-menu-command-rail::after { display: none; }
+.oprn-status-menu[data-menu-skin="classic"] .status-menu-command.selected {
+  border-color: var(--status-edge-amber);
+  border-radius: 1px;
+}
+
+/* Journal: ink on warm paper, a ruled party page and right-hand bookmarks.
+   Task pages keep the shared keyboard/detail geometry and use the same ink palette. */
+.oprn-status-menu.main-menu[data-menu-skin="journal"] {
+  --status-edge-ivory: rgba(55, 43, 31, 1);
+  --status-edge-muted: rgba(105, 84, 62, 1);
+  --status-edge-amber: rgba(140, 67, 43, 1);
+  --status-edge-amber-soft: rgba(149, 83, 49, 0.13);
+  --status-edge-border: rgba(126, 91, 52, 0.32);
+  --runtime-glass-card: rgba(148, 110, 63, 0.07);
+}
+.oprn-status-menu.main-menu[data-menu-skin="journal"]::before {
+  background: linear-gradient(90deg, rgba(227, 211, 176, 1), rgba(251, 243, 220, 1) 8%, rgba(244, 232, 202, 1));
+  border-color: rgba(120, 80, 44, 0.8);
+  border-radius: 2px 7px 7px 2px;
+  box-shadow: inset 3px 0 0 rgba(103, 67, 39, 0.6), 2px 2px 0 rgba(211, 190, 148, 1), 4px 4px 0 rgba(90, 60, 37, 0.8);
+}
+.oprn-status-menu[data-menu-skin="journal"] .status-menu-overview-row {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--status-edge-border);
+  border-radius: 0;
+}
+.oprn-status-menu[data-menu-skin="journal"] .status-menu-overview-track { background: rgba(99, 77, 48, 0.15); }
+.oprn-status-menu[data-menu-skin="journal"] .status-menu-detail-row,
+.oprn-status-menu[data-menu-skin="journal"] .status-menu-detail-action { color: var(--status-edge-ivory); }
+.oprn-status-menu[data-menu-skin="journal"] .status-menu-stat-delta-row.up .status-menu-stat-delta-value { color: rgba(37, 112, 73, 1); }
+.oprn-status-menu[data-menu-skin="journal"] .status-menu-stat-delta-row.down .status-menu-stat-delta-value,
+.oprn-status-menu[data-menu-skin="journal"] .status-menu-detail-action.destructive { color: rgba(164, 49, 39, 1); }
+.oprn-status-menu[data-menu-skin="journal"][data-status-menu-screen="main"] .status-menu-party-overview { left: 19px; right: 92px; }
+.oprn-status-menu[data-menu-skin="journal"][data-status-menu-screen="main"] .status-menu-primary-dock {
+  border-left: 1px solid var(--status-edge-border);
+  border-right: 0;
+  left: auto;
+  padding: 0 0 0 6px;
+  right: 15px;
+  width: 65px;
+}
+.oprn-status-menu[data-menu-skin="journal"] .status-menu-command-rail::after { display: none; }
+.oprn-status-menu[data-menu-skin="journal"] .status-menu-command.selected {
+  background: rgba(126, 58, 39, 0.93);
+  border-radius: 1px;
+  color: rgba(255, 245, 221, 1);
+}
+
+/* Ribbon: four vertical party cards above a single horizontal command bar. */
+.oprn-status-menu.main-menu[data-menu-skin="ribbon"] {
+  --status-edge-amber: rgba(110, 220, 205, 1);
+  --status-edge-amber-soft: rgba(60, 173, 156, 0.2);
+  --status-edge-border: rgba(118, 203, 190, 0.3);
+}
+.oprn-status-menu.main-menu[data-menu-skin="ribbon"]::before {
+  background: linear-gradient(160deg, rgba(17, 42, 48, 0.95), rgba(9, 19, 29, 0.97));
+}
+.oprn-status-menu[data-menu-skin="ribbon"][data-status-menu-screen="main"] .status-menu-party-overview {
+  bottom: auto;
+  gap: 5px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr);
+  height: 112px;
+  left: 17px;
+  right: 17px;
+}
+.oprn-status-menu[data-menu-skin="ribbon"][data-status-menu-screen="main"] .status-menu-overview-row {
+  align-content: center;
+  background: linear-gradient(180deg, rgba(111, 194, 181, 0.12), rgba(14, 35, 43, 0.4));
+  border-color: var(--status-edge-border);
+  gap: 7px;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  padding: 6px;
+}
+.oprn-status-menu[data-menu-skin="ribbon"][data-status-menu-screen="main"] .status-menu-overview-info { width: 100%; }
+.oprn-status-menu[data-menu-skin="ribbon"][data-status-menu-screen="main"] .status-menu-overview-head { align-items: center; flex-direction: column; gap: 1px; }
+.oprn-status-menu[data-menu-skin="ribbon"][data-status-menu-screen="main"] .status-menu-actor-name { max-width: 100%; }
+.oprn-status-menu[data-menu-skin="ribbon"][data-status-menu-screen="main"] .status-menu-actor-subline { font-size: 5px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.oprn-status-menu[data-menu-skin="ribbon"][data-status-menu-screen="main"] .status-menu-overview-chip { margin-left: 0; }
+.oprn-status-menu[data-menu-skin="ribbon"][data-status-menu-screen="main"] .status-menu-overview-vital { gap: 2px; grid-template-columns: 8px minmax(0, 1fr) max-content; }
+.oprn-status-menu[data-menu-skin="ribbon"][data-status-menu-screen="main"] .status-menu-overview-value { font-size: 5px; }
+.oprn-status-menu[data-menu-skin="ribbon"][data-status-menu-screen="main"] .status-menu-command-rail {
+  border-right: 0;
+  bottom: auto;
+  display: grid;
+  gap: 3px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  height: 36px;
+  left: 17px;
+  padding: 0;
+  right: 17px;
+  top: 158px;
+  width: auto;
+}
+.oprn-status-menu[data-menu-skin="ribbon"][data-status-menu-screen="main"] .status-menu-command-rail::after { display: none; }
+.oprn-status-menu[data-menu-skin="ribbon"][data-status-menu-screen="main"] .status-menu-command {
+  background: rgba(94, 179, 164, 0.07);
+  border: 1px solid var(--status-edge-border);
+  flex-direction: column;
+  font-size: 6.5px;
+  gap: 4px;
+  justify-content: center;
+  padding: 3px 1px;
+}
+.oprn-status-menu[data-menu-skin="ribbon"][data-status-menu-screen="main"] .status-menu-command.selected {
+  background: var(--status-edge-amber-soft);
+  border-color: var(--status-edge-amber);
+}
