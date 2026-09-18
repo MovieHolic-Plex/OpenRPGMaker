@@ -1,5 +1,12 @@
 # Editor Event Authoring
 
+## 등장 조건은 조건 그룹을 기본으로 펼친다 (2026-09-19)
+
+페이지에 `conditions`가 하나라도 있으면 이벤트 편집기 설정 레일의 첫 활성 그룹은
+「언제 보이나요」(`when`)다. 조건이 없는 페이지는 기존처럼 「모습과 대화」에서 시작한다.
+사용자가 다른 그룹을 선택한 뒤에는 `activeEventRailGroup` 상태를 존중한다. 조건을
+작성했는데도 조건 편집면이 접힌 채 시작해 등장 조건이 안 보이던 UX 회귀를 막는 계약이다.
+
 ## 명령 중심 배치와 AI 작성 모달 (2026-09-18)
 
 - `content.ts`의 `event-editor-command-focused`는 왼쪽 페이지 설정, 중앙 명령,
@@ -688,15 +695,15 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 
 ## 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
 
-같은 17종 `Condition` 유니온(`src/project/types/events.ts:32-55`, 정본 목록
+같은 19종 `Condition` 유니온(`src/project/types/events.ts:59-89`, 정본 목록
 - `relationshipAtLeast` 는 `friendshipAtLeast` 와 같은 소셜 키 규칙을 쓰지만 수치가 아니라 순서 있는 열거(`single | dating | engaged | married`)를 비교한다. 저작 표면 세 곳(간단 행/칩, 고급 목록, fork 조건 폼)에 모두 등록돼 있고, 상태를 바꾸는 명령은 `setRelationship` 뿐이다. 조건만 넣고 명령을 두지 않으면 항상 거짓이다. 연결된 인물이 없으면 `friendshipAtLeast` 와 동일하게 닫힌 채로 거짓이며 검증기가 `condition.relationship.no-character-id` 로 경고한다.
-`src/project/commandKindRegistry.ts:103-120`)을 **세 곳**이 각자 평가한다:
+`src/project/commandKindRegistry.ts:105-124`)을 **세 곳**이 각자 평가한다:
 
 | 평가기 | 위치 | 쓰는 곳 |
 |---|---|---|
-| `evalPageCondition` | `src/project/io/pageResolution.ts:31` | 이벤트 페이지 출현 판정 |
-| `evalCondition` | `src/project/session.ts:735` | 맵 조건 분기(`interpreter/commandCatalog.ts` fork) |
-| `evaluateCondition` | `src/battle/battleEvents.ts` (내부 함수) | 전투 분기 + 트룹 페이지 |
+| `evalPageCondition` | `src/project/io/pageResolution.ts:45` | 이벤트 페이지 출현 판정 |
+| `evalCondition` | `src/project/session.ts:828` | 맵 조건 분기(`interpreter/commandCatalog.ts` fork) |
+| `evaluateCondition` | `src/battle/battleEvents.ts:926` (내부 함수) | 전투 분기 + 트룹 페이지 |
 
 **활동 조건은 프로젝트의 실제 일정에서 후보를 받는다 (2026-08-29).** `activity` 는 자유 문자열이고
 매칭은 완전 일치다. 저작자가 유효한 값을 추측해야 했던 문제를 `collectNpcActivitySuggestions`
@@ -715,10 +722,11 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 **저작은 되는데 절대 참이 될 수 없는** 상태였다. 지금은 전투도 소유 이벤트의 활동을 보고,
 `resolveSocialKey` 를 **재사용**한다(두 번째 해석 규칙을 만들지 않는다).
 
-**정본 계약은 `test/conditionEvaluatorParity.test.ts` 다.** 17종 × (만족/불만족) 을 세 평가기에
+**정본 계약은 `test/conditionEvaluatorParity.test.ts` 다.** 19종 × (만족/불만족) 을 세 평가기에
 동일 입력으로 먹여 판정 일치를 단언하고, `Object.keys(CASES)` 를 `CONDITION_KINDS` 와 순서까지
 비교하므로 **종류를 빠뜨리면 실패한다**. 허용 예외 목록(`ALLOWLISTED_DIVERGENCES`)은 현재 **비어 있다** —
-지우거나 채우기 전에 왜 갈라져야 하는지 근거를 남겨라.
+지우거나 채우기 전에 왜 갈라져야 하는지 근거를 남겨라. `battleResult` 의 표면별 시간 의미 차이(맵=방금 끝난 전투,
+전투 중=직전 전투)는 상태-패리티가 아니라 별도 계약으로, fork 폼 힌트가 설명한다.
 
 ### 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
 
@@ -730,6 +738,8 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 RM2K3/EasyRPG 와는 다르다(그쪽은 타이머가 **작동 중**이어야 한다). `PlaySession.timers` 에 running
 비트가 없고 `timer stop` 이 값을 지우지 않으므로, RM 정합은 스키마 변경이다. **"고치지" 말고**
 저작 시점 경고(`condition.timer.always-true`)로 보이게 두라.
+**음수는 폼에서 못 적는다** — 타이머 입력이 `min="0"` 이라 거짓으로 만드는 유일한 방법이 UI에 없다.
+대신 fork 폼이 `event-fork-timer-warning` 인라인 경고를 직접 보여준다(2026-09-18).
 
 ### 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
 
@@ -754,6 +764,12 @@ DB 에서 지워진 유령 참조는 `<id> (없음)` 라벨로 **계속 보인�
 때만 판정한다. 종전에는 빈 세션으로 평가해서 16종 중 **7종**(timer/timePhase/season/npcActivity/
 friendshipAtLeast/battleResult/run)을 틀리게 확신했고, 특히 거의 모든 타이머 조건이 「충족」으로
 보였다. 계약: `test/conditionEvalPreview.test.ts`.
+
+**뱃지와 시뮬레이션은 같은 맵 입력으로 평가한다 (2026-09-18).** `insideLocation` 은 뱃지가
+무조건 「판정 불가」였는데 시뮬레이션은 map context 없이 `else` 단정이던 갈라짐을 고치면서,
+둘 다 편집 중 맵(`editorState.currentMapId`)의 로케이션 기하로 평가한다. 맵을 모르면
+둘 다 판정 불가다. fork 시뮬레이션의 taken 값도 3상태(`then|else|unknown`)이며 unknown이면
+양쪽 분기를 전부 skipped 로 둔다. 계약: `test/previewSimulation.test.ts`.
 
 ### 조건 문구에 내부 토큰을 넣지 마라
 

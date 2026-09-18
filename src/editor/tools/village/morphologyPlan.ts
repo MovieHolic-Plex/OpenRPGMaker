@@ -561,8 +561,12 @@ function planStreetVillage(ctx: PlanCtx): { commons: Rect; plaza: Plaza } {
     const connectors = dedupeNumbers([area.x + 2, ...(alleys.length > 0 ? alleys : [area.x + Math.floor(area.w / 2)]), area.x + area.w - 3]);
     for (const x of connectors) connectVertical(ctx, x, mainExt.get(x)?.bottom, laneExt.get(x)?.top);
   }
+  // 결정적 배치가 모자랄 때만 길에 붙여 채운다 — 이미 채운 경우는 한 칸도 안 바뀐다.
+  const grown = ctx.houses.length < ctx.args.maxHouses
+    ? growHousesOnRoads(ctx, { x: commons.x + Math.floor(commons.w / 2), y: commons.y + Math.floor(commons.h / 2) })
+    : 0;
   const plaza: Plaza = { rect: commons, centerX: commons.x + Math.floor(commons.w / 2), centerRow: commons.y + Math.floor(commons.h / 2) };
-  ctx.notes.push(`가로촌 가로축 midY=${midY}`);
+  ctx.notes.push(`가로촌 가로축 midY=${midY}${grown ? ` 보충 시도 ${grown}` : ""}`);
   return { commons, plaza };
 }
 
@@ -601,8 +605,9 @@ function planGreenVillage(ctx: PlanCtx): { commons: Rect; plaza: Plaza; pond?: R
   const width = clampInt(ctx.args.roadWidth, 2, 3) as 2 | 3;
   const cx = area.x + Math.floor(area.w / 2) + jitter(rng, 2);
   const cy = area.y + Math.floor(area.h * 0.5) + jitter(rng, 2);
-  const halfLength = clampInt(area.w * 0.36, 11, 26);
-  const halfWidth = clampInt(area.h * 0.14, 5, 9);
+  // 하한 11×5(=렌즈 23×11)는 32×24 맵을 가로로 다 먹었다 — 맵에 맞춰 함께 줄인다.
+  const halfLength = clampInt(area.w * 0.36, Math.min(11, Math.floor(area.w / 4)), 26);
+  const halfWidth = clampInt(area.h * 0.14, Math.min(5, Math.floor(area.h / 6)), 9);
   const westTip: Point = { x: cx - halfLength, y: cy };
   const eastTip: Point = { x: cx + halfLength, y: cy };
   const northArc = smoothCurveCells([
@@ -671,6 +676,9 @@ function planGreenVillage(ctx: PlanCtx): { commons: Rect; plaza: Plaza; pond?: R
     ceilingAt: (x) => southBottom.get(x)?.bottom, back: [0, 0], alleyEvery: 3,
   });
   for (const x of dedupeNumbers([westTip.x + 2, ...alleys, eastTip.x - 2])) connectVertical(ctx, x, southBottom.get(x)?.bottom, laneTop.get(x)?.top);
+  // 결정적 배치가 모자랄 때만 길에 붙여 채운다 — 이미 채운 경우는 한 칸도 안 바뀐다.
+  const grown = ctx.houses.length < ctx.args.maxHouses ? growHousesOnRoads(ctx, { x: cx, y: cy }) : 0;
+  if (grown) ctx.notes.push(`광장촌 보충 시도 ${grown}`);
   const plaza: Plaza = { rect: commons, centerX: cx + Math.floor(halfLength * 0.3), centerRow: cy };
   ctx.notes.push(`광장촌 렌즈 ${commons.w}×${commons.h}`);
   return { commons, plaza, ...(pond ? { pond } : {}) };
@@ -678,100 +686,18 @@ function planGreenVillage(ctx: PlanCtx): { commons: Rect; plaza: Plaza; pond?: R
 
 // ───────────────────────── 유형 ③ 환촌 ─────────────────────────
 
-function planRoundVillage(ctx: PlanCtx): { commons: Rect; plaza: Plaza; pond?: Rect } {
-  const { area, rng } = ctx;
-  const width = clampInt(ctx.args.roadWidth, 2, 3) as 2 | 3;
-  const radius = clampInt(Math.min(area.w, area.h) * 0.17, 7, 12);
-  const cx = area.x + Math.floor(area.w / 2) + jitter(rng, 2);
-  const cy = area.y + Math.floor(area.h * 0.44) + jitter(rng, 2);
-  const ringPoints: Point[] = [];
-  const steps = 28;
-  for (let i = 0; i <= steps; i += 1) {
-    const angle = (i / steps) * Math.PI * 2;
-    ringPoints.push({ x: cx + Math.round(Math.sin(angle) * radius), y: cy - Math.round(Math.cos(angle) * radius) });
-  }
-  const ringCenter = dedupe(smoothCurveCells(ringPoints));
-  // 링 길을 먼저 깔고, 그 안의 빈 칸을 녹지로 예약한다(반대 순서면 곡선 반올림으로 안쪽에 떨어진 링 칸이
-  // 녹지에 걸려 빠지고 길이 대각선으로 끊긴다 — 2026-09-17 성분 2 의 원인).
-  const ringCells = addRoad(ctx, ringCenter, 2, "ring");
-  for (let y = cy - radius; y <= cy + radius; y += 1) {
-    for (let x = cx - radius; x <= cx + radius; x += 1) {
-      if (Math.hypot(x - cx, y - cy) < radius - 0.5 && ctx.grid.get(x, y) === OCC.free) ctx.grid.set(x, y, OCC.commons);
-    }
-  }
-  const commons: Rect = { x: cx - radius, y: cy - radius, w: radius * 2 + 1, h: radius * 2 + 1 };
-  // 입구 — 남쪽 한 곳(방어 취락). 세드로 40% 북쪽 뒷문.
-  const entrance = smoothCurveCells([{ x: cx, y: cy + radius }, { x: cx + jitter(rng, 3), y: cy + radius + Math.floor((area.y + area.h - 1 - cy - radius) / 2) }, { x: cx + jitter(rng, 4), y: area.y + area.h - 1 }]);
-  addRoad(ctx, entrance, width, "main");
-  ctx.exits.push({ id: "south-exit", x: entrance[entrance.length - 1]!.x, y: entrance[entrance.length - 1]!.y });
-  let backLaneCells: Point[] = [];
-  if (rng() < 0.4) {
-    const back = smoothCurveCells([{ x: cx, y: cy - radius }, { x: cx + jitter(rng, 3), y: Math.floor((area.y + cy - radius) / 2) }, { x: cx + jitter(rng, 4), y: area.y }]);
-    backLaneCells = addRoad(ctx, back, 1, "lane");
-    ctx.exits.push({ id: "north-exit", x: back[back.length - 1]!.x, y: back[back.length - 1]!.y });
-  }
-  // 연못(링 안 서쪽) + 큰나무.
-  const pond: Rect | undefined = radius >= 9 ? { x: cx - Math.floor(radius * 0.55) - 2, y: cy - 1, w: 5, h: 4 } : undefined;
-  if (pond) ctx.grid.setRect(pond, OCC.pond);
-  ctx.bigTrees.push({ x: cx + 1, y: cy - Math.floor(radius * 0.5) });
-  // 집 — 북쪽 호 위 줄, 동·서 옆 기둥. 남쪽은 입구.
-  const ringExt = columnExtents(ringCells);
-  const ringRows = rowExtents(ringCells);
-  // 북쪽 호는 굽어서 넓은 집이 뜬다 — 폭 6 이하로 촘촘히.
-  planRowAbove(ctx, (x) => ringExt.get(x)?.top, cx - radius + 1, cx + radius - 1, { back: [2, 3], alleyEvery: 9, maxW: 6 });
-  planColumnBeside(ctx, (y) => ringRows.get(y)?.left, cy - Math.floor(radius * 0.75), cy + Math.floor(radius * 0.8), "west");
-  planColumnBeside(ctx, (y) => ringRows.get(y)?.right, cy - Math.floor(radius * 0.75), cy + Math.floor(radius * 0.8), "east");
-  // 북쪽 뒷길이 있으면 그 양옆에도.
-  if (backLaneCells.length > 0) {
-    const laneRows = rowExtents(backLaneCells);
-    planColumnBeside(ctx, (y) => laneRows.get(y)?.left, area.y + 2, cy - radius - 3, "west", { back: [1, 2] });
-    planColumnBeside(ctx, (y) => laneRows.get(y)?.right, area.y + 2, cy - radius - 3, "east", { back: [1, 2] });
-  }
-  // 입구 길 양옆에도 한두 채.
-  const entranceCells = thickenCells(entrance, width);
-  const entranceRows = rowExtents(entranceCells);
-  planColumnBeside(ctx, (y) => entranceRows.get(y)?.left, cy + radius + 3, area.y + area.h - 4, "west");
-  planColumnBeside(ctx, (y) => entranceRows.get(y)?.right, cy + radius + 3, area.y + area.h - 4, "east");
-  const plaza: Plaza = { rect: commons, centerX: cx + 2, centerRow: cy + 1 };
-  ctx.notes.push(`환촌 r=${radius}`);
-  return { commons, plaza, ...(pond ? { pond } : {}) };
-}
-
-// ───────────────────────── 유형 ④ 괴촌(성장 시뮬레이션) ─────────────────────────
-
-function planClusterVillage(ctx: PlanCtx): { commons: Rect; plaza: Plaza } {
+/**
+ * 길에 앵커해 관심도 순으로 집을 채운다(Emilien 2012 식 성장). 괴촌의 뼈대이자, 다른 형태 유형이
+ * 결정적 배치 한 번으로 목표 채수를 못 채웠을 때의 보충이다.
+ *
+ * 왜 보충이 필요한가(2026-09-18 실측): 환촌은 링 둘레와 진입로 옆에 한 번만 놓고 끝나서 큰 맵에서도
+ * 목표에 1~2채 모자랐다 — 64×56 에 8채 요청하면 7~8채, 80×72 에 12채 요청하면 10~11채.
+ * 시공기는 그 부족을 `village-count-shortfall` 로 거절하므로 요청 자체가 실패했다.
+ *
+ * 돌려주는 값은 시도 횟수(노트용). 채운 채수는 `ctx.houses.length` 로 본다.
+ */
+function growHousesOnRoads(ctx: PlanCtx, center: Point): number {
   const { area, rng, grid } = ctx;
-  const width = clampInt(ctx.args.roadWidth, 2, 3) as 2 | 3;
-  const center: Point = { x: area.x + Math.floor(area.w / 2) + jitter(rng, Math.floor(area.w * 0.08)), y: area.y + Math.floor(area.h / 2) + jitter(rng, Math.floor(area.h * 0.08)) };
-  // 출구 2~3변 — 시드로 고른다. 출구 → 중심으로 굽은 길.
-  const sides = (["north", "south", "west", "east"] as const).slice();
-  for (let i = sides.length - 1; i > 0; i -= 1) { const j = Math.floor(rng() * (i + 1)); [sides[i], sides[j]] = [sides[j]!, sides[i]!]; }
-  const exitCount = rng() < 0.5 ? 2 : 3;
-  const chosen = sides.slice(0, exitCount);
-  chosen.forEach((side, index) => {
-    const edge: Point = side === "north" ? { x: center.x + jitter(rng, Math.floor(area.w * 0.2)), y: area.y }
-      : side === "south" ? { x: center.x + jitter(rng, Math.floor(area.w * 0.2)), y: area.y + area.h - 1 }
-        : side === "west" ? { x: area.x, y: center.y + jitter(rng, Math.floor(area.h * 0.2)) }
-          : { x: area.x + area.w - 1, y: center.y + jitter(rng, Math.floor(area.h * 0.2)) };
-    const mid: Point = { x: Math.floor((edge.x + center.x) / 2) + jitter(rng, 4), y: Math.floor((edge.y + center.y) / 2) + jitter(rng, 4) };
-    addRoad(ctx, smoothCurveCells([edge, mid, center]), index < 2 ? width : 1, index < 2 ? "main" : "lane");
-    ctx.exits.push({ id: `${side}-exit`, x: edge.x, y: edge.y });
-  });
-  // 출구가 없는 변으로는 막다른 골목(Sackgasse)을 하나씩 — 괴촌의 뼈대는 별 모양이다.
-  for (const side of sides.slice(exitCount)) {
-    const reach = side === "north" || side === "south" ? Math.floor(area.h * 0.3) : Math.floor(area.w * 0.3);
-    const end: Point = side === "north" ? { x: center.x + jitter(rng, 6), y: center.y - reach }
-      : side === "south" ? { x: center.x + jitter(rng, 6), y: center.y + reach }
-        : side === "west" ? { x: center.x - reach, y: center.y + jitter(rng, 6) }
-          : { x: center.x + reach, y: center.y + jitter(rng, 6) };
-    const mid: Point = { x: Math.floor((center.x + end.x) / 2) + jitter(rng, 3), y: Math.floor((center.y + end.y) / 2) + jitter(rng, 3) };
-    addRoad(ctx, smoothCurveCells([center, mid, end]), 1, "lane");
-  }
-  // 공동 녹지 — 중심 근처 빈 6×5.
-  const commons = findFreeRect(ctx, center, 6, 5, 10) ?? { x: center.x + 2, y: center.y + 2, w: 6, h: 5 };
-  grid.setRect(commons, OCC.commons);
-  ctx.bigTrees.push({ x: commons.x + 1, y: commons.y + 1 });
-
   // 성장(Emilien 2012 식 관심도): 후보는 반드시 기존 길 칸에 앵커한다 — 길 위(문이 길을 봄) 75%,
   // 길 아래(용마루가 길에 붙고 문 앞에서 옆으로 돌아 길에 붙는 뒷골목형) 25%. 관심도 = 사교성(이웃 수) ×
   // 중심 편향 × 흔들림. 세 채마다 새 골목을 바깥으로 뻗어 다음 성장을 부르고, 세 번 연속 실패해도 뻗는다.
@@ -832,6 +758,109 @@ function planClusterVillage(ctx: PlanCtx): { commons: Rect; plaza: Plaza } {
     failures = 0;
     if (ctx.houses.length % 3 === 0) growLane(ctx, center, 1);
   }
+  return attempts;
+}
+
+function planRoundVillage(ctx: PlanCtx): { commons: Rect; plaza: Plaza; pond?: Rect } {
+  const { area, rng } = ctx;
+  const width = clampInt(ctx.args.roadWidth, 2, 3) as 2 | 3;
+  // 하한 7(=지름 15)은 26줄짜리 맵을 통째로 먹어 집 자리가 안 남았다(2026-09-18 실측: 3채 요청에 2채).
+  // 좁은 변의 1/4 로 함께 줄인다 — 작은 환촌이 되지, 링만 있고 집이 없는 맵이 되지는 않는다.
+  const shortSide = Math.min(area.w, area.h);
+  const radius = clampInt(shortSide * 0.17, Math.min(7, Math.floor(shortSide / 4)), 12);
+  const cx = area.x + Math.floor(area.w / 2) + jitter(rng, 2);
+  const cy = area.y + Math.floor(area.h * 0.44) + jitter(rng, 2);
+  const ringPoints: Point[] = [];
+  const steps = 28;
+  for (let i = 0; i <= steps; i += 1) {
+    const angle = (i / steps) * Math.PI * 2;
+    ringPoints.push({ x: cx + Math.round(Math.sin(angle) * radius), y: cy - Math.round(Math.cos(angle) * radius) });
+  }
+  const ringCenter = dedupe(smoothCurveCells(ringPoints));
+  // 링 길을 먼저 깔고, 그 안의 빈 칸을 녹지로 예약한다(반대 순서면 곡선 반올림으로 안쪽에 떨어진 링 칸이
+  // 녹지에 걸려 빠지고 길이 대각선으로 끊긴다 — 2026-09-17 성분 2 의 원인).
+  const ringCells = addRoad(ctx, ringCenter, 2, "ring");
+  for (let y = cy - radius; y <= cy + radius; y += 1) {
+    for (let x = cx - radius; x <= cx + radius; x += 1) {
+      if (Math.hypot(x - cx, y - cy) < radius - 0.5 && ctx.grid.get(x, y) === OCC.free) ctx.grid.set(x, y, OCC.commons);
+    }
+  }
+  const commons: Rect = { x: cx - radius, y: cy - radius, w: radius * 2 + 1, h: radius * 2 + 1 };
+  // 입구 — 남쪽 한 곳(방어 취락). 세드로 40% 북쪽 뒷문.
+  const entrance = smoothCurveCells([{ x: cx, y: cy + radius }, { x: cx + jitter(rng, 3), y: cy + radius + Math.floor((area.y + area.h - 1 - cy - radius) / 2) }, { x: cx + jitter(rng, 4), y: area.y + area.h - 1 }]);
+  addRoad(ctx, entrance, width, "main");
+  ctx.exits.push({ id: "south-exit", x: entrance[entrance.length - 1]!.x, y: entrance[entrance.length - 1]!.y });
+  let backLaneCells: Point[] = [];
+  if (rng() < 0.4) {
+    const back = smoothCurveCells([{ x: cx, y: cy - radius }, { x: cx + jitter(rng, 3), y: Math.floor((area.y + cy - radius) / 2) }, { x: cx + jitter(rng, 4), y: area.y }]);
+    backLaneCells = addRoad(ctx, back, 1, "lane");
+    ctx.exits.push({ id: "north-exit", x: back[back.length - 1]!.x, y: back[back.length - 1]!.y });
+  }
+  // 연못(링 안 서쪽) + 큰나무.
+  const pond: Rect | undefined = radius >= 9 ? { x: cx - Math.floor(radius * 0.55) - 2, y: cy - 1, w: 5, h: 4 } : undefined;
+  if (pond) ctx.grid.setRect(pond, OCC.pond);
+  ctx.bigTrees.push({ x: cx + 1, y: cy - Math.floor(radius * 0.5) });
+  // 집 — 북쪽 호 위 줄, 동·서 옆 기둥. 남쪽은 입구.
+  const ringExt = columnExtents(ringCells);
+  const ringRows = rowExtents(ringCells);
+  // 북쪽 호는 굽어서 넓은 집이 뜬다 — 폭 6 이하로 촘촘히.
+  planRowAbove(ctx, (x) => ringExt.get(x)?.top, cx - radius + 1, cx + radius - 1, { back: [2, 3], alleyEvery: 9, maxW: 6 });
+  planColumnBeside(ctx, (y) => ringRows.get(y)?.left, cy - Math.floor(radius * 0.75), cy + Math.floor(radius * 0.8), "west");
+  planColumnBeside(ctx, (y) => ringRows.get(y)?.right, cy - Math.floor(radius * 0.75), cy + Math.floor(radius * 0.8), "east");
+  // 북쪽 뒷길이 있으면 그 양옆에도.
+  if (backLaneCells.length > 0) {
+    const laneRows = rowExtents(backLaneCells);
+    planColumnBeside(ctx, (y) => laneRows.get(y)?.left, area.y + 2, cy - radius - 3, "west", { back: [1, 2] });
+    planColumnBeside(ctx, (y) => laneRows.get(y)?.right, area.y + 2, cy - radius - 3, "east", { back: [1, 2] });
+  }
+  // 입구 길 양옆에도 한두 채.
+  const entranceCells = thickenCells(entrance, width);
+  const entranceRows = rowExtents(entranceCells);
+  planColumnBeside(ctx, (y) => entranceRows.get(y)?.left, cy + radius + 3, area.y + area.h - 4, "west");
+  planColumnBeside(ctx, (y) => entranceRows.get(y)?.right, cy + radius + 3, area.y + area.h - 4, "east");
+  // 링 둘레·진입로 옆 배치만으로는 큰 맵에서도 목표에 1~2채 모자랐다 — 모자란 만큼만 길에 붙여 채운다.
+  const grown = ctx.houses.length < ctx.args.maxHouses ? growHousesOnRoads(ctx, { x: cx, y: cy }) : 0;
+  const plaza: Plaza = { rect: commons, centerX: cx + 2, centerRow: cy + 1 };
+  ctx.notes.push(`환촌 r=${radius}${grown ? ` 보충 시도 ${grown}` : ""}`);
+  return { commons, plaza, ...(pond ? { pond } : {}) };
+}
+
+// ───────────────────────── 유형 ④ 괴촌(성장 시뮬레이션) ─────────────────────────
+
+function planClusterVillage(ctx: PlanCtx): { commons: Rect; plaza: Plaza } {
+  const { area, rng, grid } = ctx;
+  const width = clampInt(ctx.args.roadWidth, 2, 3) as 2 | 3;
+  const center: Point = { x: area.x + Math.floor(area.w / 2) + jitter(rng, Math.floor(area.w * 0.08)), y: area.y + Math.floor(area.h / 2) + jitter(rng, Math.floor(area.h * 0.08)) };
+  // 출구 2~3변 — 시드로 고른다. 출구 → 중심으로 굽은 길.
+  const sides = (["north", "south", "west", "east"] as const).slice();
+  for (let i = sides.length - 1; i > 0; i -= 1) { const j = Math.floor(rng() * (i + 1)); [sides[i], sides[j]] = [sides[j]!, sides[i]!]; }
+  const exitCount = rng() < 0.5 ? 2 : 3;
+  const chosen = sides.slice(0, exitCount);
+  chosen.forEach((side, index) => {
+    const edge: Point = side === "north" ? { x: center.x + jitter(rng, Math.floor(area.w * 0.2)), y: area.y }
+      : side === "south" ? { x: center.x + jitter(rng, Math.floor(area.w * 0.2)), y: area.y + area.h - 1 }
+        : side === "west" ? { x: area.x, y: center.y + jitter(rng, Math.floor(area.h * 0.2)) }
+          : { x: area.x + area.w - 1, y: center.y + jitter(rng, Math.floor(area.h * 0.2)) };
+    const mid: Point = { x: Math.floor((edge.x + center.x) / 2) + jitter(rng, 4), y: Math.floor((edge.y + center.y) / 2) + jitter(rng, 4) };
+    addRoad(ctx, smoothCurveCells([edge, mid, center]), index < 2 ? width : 1, index < 2 ? "main" : "lane");
+    ctx.exits.push({ id: `${side}-exit`, x: edge.x, y: edge.y });
+  });
+  // 출구가 없는 변으로는 막다른 골목(Sackgasse)을 하나씩 — 괴촌의 뼈대는 별 모양이다.
+  for (const side of sides.slice(exitCount)) {
+    const reach = side === "north" || side === "south" ? Math.floor(area.h * 0.3) : Math.floor(area.w * 0.3);
+    const end: Point = side === "north" ? { x: center.x + jitter(rng, 6), y: center.y - reach }
+      : side === "south" ? { x: center.x + jitter(rng, 6), y: center.y + reach }
+        : side === "west" ? { x: center.x - reach, y: center.y + jitter(rng, 6) }
+          : { x: center.x + reach, y: center.y + jitter(rng, 6) };
+    const mid: Point = { x: Math.floor((center.x + end.x) / 2) + jitter(rng, 3), y: Math.floor((center.y + end.y) / 2) + jitter(rng, 3) };
+    addRoad(ctx, smoothCurveCells([center, mid, end]), 1, "lane");
+  }
+  // 공동 녹지 — 중심 근처 빈 6×5.
+  const commons = findFreeRect(ctx, center, 6, 5, 10) ?? { x: center.x + 2, y: center.y + 2, w: 6, h: 5 };
+  grid.setRect(commons, OCC.commons);
+  ctx.bigTrees.push({ x: commons.x + 1, y: commons.y + 1 });
+
+  const attempts = growHousesOnRoads(ctx, center);
   const plaza: Plaza = { rect: commons, centerX: commons.x + Math.floor(commons.w / 2), centerRow: commons.y + Math.floor(commons.h / 2) };
   ctx.notes.push(`괴촌 출구 ${chosen.join(",")} 시도 ${attempts}`);
   return { commons, plaza };

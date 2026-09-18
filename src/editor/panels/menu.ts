@@ -886,7 +886,7 @@ async function newProject(): Promise<void> {
     }
   }
   // 데스크톱은 열린 폴더, 웹은 hostProject 주소를 부팅 attach가 다시 연다.
-  window.location.reload();
+  if (window.oprn?.start) window.location.reload();
 }
 
 async function newSkyStairProject(): Promise<void> {
@@ -972,9 +972,15 @@ async function reloadProjectFromDb(_topbar: HTMLElement): Promise<void> {
 
 async function doLoad(): Promise<void> {
   const { openProjectFolder } = await import("@/editor/projectFolderActions");
-  const opened = await openProjectFolder();
+  let opened: boolean;
+  try {
+    opened = await openProjectFolder();
+  } catch (error) {
+    toast(error instanceof Error ? error.message : "폴더를 열지 못했습니다.", "error");
+    return;
+  }
   if (!opened) {
-    toast("폴더 열기는 데스크톱 앱에서만 됩니다.", "error");
+    toast("프로젝트 서버에 연결되지 않았습니다. 내부 IP의 프로젝트 호스트 주소로 다시 접속하세요.", "error");
     return;
   }
   window.location.reload();

@@ -151,6 +151,7 @@ export type StepResult =
       allowSell?: boolean;
       quantityMode?: "single" | "select";
       shopType?: ShopType;
+      shopUiPreset?: "classic" | "tabs" | "grid" | "compare" | "split" | "cart" | "stock" | "story" | "baram";
       messageType?: ShopMessageType;
       /** 상인 소지금(플레이어 물품 매입 예산). 생략 시 기본 100G. */
       merchantGold?: number;

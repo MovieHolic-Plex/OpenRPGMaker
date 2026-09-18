@@ -10,11 +10,8 @@ const source = frozen as unknown as {
 };
 const entries = [
   ["bluewave-ship", "map_bluewave_ship", "푸른물결호 · 갑판", "왼쪽 뱃머리의 중앙에 선수 장식을 놓고 갑판·선미 난간을 이어 붙인다."],
-  ["bluewave-cabin", "map_bluewave_cabin", "푸른물결호 · 선내", "출입 계단과 중앙 통로를 비우고 선장실의 문을 벽 중앙에 둔다."],
   ["giant-ship", "map_bluewave_giant", "해왕호 · 대형선 갑판", "가로로 긴 선체에 높은 갑판 두 구획을 배치한다."],
-  ["giant-cabin", "map_giant_cabin", "해왕호 · 선내", "대형선에 연결된 별도 선내 지도다."],
   ["wide-ship", "map_bluewave_vertical", "북극성호 · 광폭 대형선 갑판", "배의 방향은 가로로 유지하며 선체의 위아래 폭을 넓힌다."],
-  ["wide-cabin", "map_vertical_cabin", "북극성호 · 선내", "광폭 대형선에 연결된 별도 선내 지도다."],
   ["bluewave-harbor", "map_bluewave_harbor", "푸른물결항 · 돌부두와 배", "건물 없이 돌부두·화물 부두·정박한 배로 구성한다. 승선 다리는 높은 갑판 중앙에 연결한다."],
 ] as const;
 

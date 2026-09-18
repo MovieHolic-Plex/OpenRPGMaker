@@ -85,4 +85,20 @@ describe("conditionEvalPreview", () => {
     );
     expect(findByTestId(winter, "event-condition-eval-badge")?.textContent).toBe("불충족");
   });
+
+  it("evaluates insideLocation against the passed map — unknown without one", () => {
+    const project = store.getCurrent();
+    const mapId = project.startMapId;
+    const map = project.maps[mapId];
+    if (!map) throw new Error("missing start map");
+    const { x, y } = project.startPos;
+    map.locations = [{ id: "loc_badge", name: "배지 구역", x: x - 1, y: y - 1, w: 4, h: 4 }];
+    const condition = { kind: "insideLocation", locationId: "loc_badge", inside: true } as const;
+    // 맵을 넘기면 실제 판정(시작점이 구역 안이므로 충족) — 시뮬레이션과 같은 입력.
+    const decided = renderWithFakeDom(() => renderConditionEvalPreview(condition, mapId));
+    expect(findByTestId(decided, "event-condition-eval-badge")?.textContent).toBe("충족");
+    // 맵 없이 호출하면 판정 불가 — 참/거짓을 지어내지 않는다.
+    const unknown = renderWithFakeDom(() => renderConditionEvalPreview(condition));
+    expect(findByTestId(unknown, "event-condition-eval-undetermined")).toBeTruthy();
+  });
 });

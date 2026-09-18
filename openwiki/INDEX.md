@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **70쪽 / 2901KB / 약 820,922 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **70쪽 / 2905KB / 약 822,012 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -18,7 +18,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-ai-panel.md` | 469KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2660 | ~134,462 |
 | `openwiki/editor-ai-tools.md` | 204KB | 85KB ⚠상한 초과 — 절을 더 쪼개라 | 1592 | ~57,337 |
 | `openwiki/editor-database.md` | 321KB | 61KB ⚠상한 초과 — 절을 더 쪼개라 | 1874 | ~93,139 |
-| `openwiki/editor-event-authoring.md` | 145KB | 77KB ⚠상한 초과 — 절을 더 쪼개라 | 786 | ~41,929 |
+| `openwiki/editor-event-authoring.md` | 145KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 795 | ~41,934 |
 | `openwiki/editor-event-commands.md` | 61KB | 32KB | 242 | ~16,671 |
 | `openwiki/editor-interior-room-harness.md` | 92KB | 6KB | 445 | ~26,769 |
 | `openwiki/editor-pre-edit-routing.md` | 118KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 664 | ~33,864 |
@@ -82,6 +82,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/se-catalog.md` | 8 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `labels.json`, `placed.json`, `test/audioDescriptionCommandSurfaces.test.ts` |
 | `openwiki/spatial-authoring-controller.md` | 1 | `storeMutationInstrumentation.test.ts` |
 | `openwiki/spatial-geography-compiler.md` | 1 | `.omo/ulw-execute/tile-to-world/execution-policy.md` |
+| `openwiki/spatial-catalog-ui.md` | 4 | `output/evidence/interior-removal-executed/host-proof.json`, `spatialPlaceClassification.ts`, `spatialPlaceLibrary.css`, `spatialPlaceLibraryControls.ts` |
 | `openwiki/spatial-geography-ui.md` | 2 | `lake-persistence.json`, `lake-regions-desktop.png` |
 | `openwiki/testing.md` | 32 | `../dialogue.css`, `.omo/gates-vitest-report.json`, `X.quarantine.test.ts`, `X.test.ts`, `aiChatObservability.test.ts`, `aiChatPanelTransportError.test.ts`, `aiSelectionChipScope.test.ts`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/actionRpgAuthoringAcceptance.test.ts`, `test/aiEventPlacementSurfaceGate.test.ts`, `test/autosaveStatus.test.ts`, `test/databaseKoreanRtpDefaults.test.ts`, `test/dialoguePreviewPresentationCss.test.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/interiorConceptAssemblies.test.ts`, `test/loadNewRemoteProject.test.ts`, `test/regionTaskRun.test.ts`, `test/storePersistenceProof.test.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
@@ -486,7 +487,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1860` 캐릭터·얼굴은 프로젝트 밖 공용 자료 (2026-09-18 저장 범위 수정)
   - `L1871` 공용 기본 매핑 재저작 (2026-09-18)
 
-### `openwiki/editor-event-authoring.md` — 145KB · 786줄 · ~41,929 토큰 · 통째읽기 잘림 · 깨진 줄 16
+### `openwiki/editor-event-authoring.md` — 145KB · 795줄 · ~41,934 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
 - `L3` 명령 중심 배치와 AI 작성 모달 (2026-09-18)
 - `L31` 구역(로케이션) 조건분기 (OPRN-OUT-020, 2026-09-10)
@@ -519,13 +520,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L644` 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
 - `L654` 「움직임과 속도」 부피 정리 (2026-08-29)
 - `L689` 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
-  - `L723` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
-  - `L734` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
-  - `L742` 참조를 비워도 조건을 삭제하지 않는다
-  - `L749` 조건 미리보기는 모르면 모른다고 말한다
-  - `L758` 조건 문구에 내부 토큰을 넣지 마라
-- `L773` 공포 게임 제작 기능 (2026-09-05)
-  - `L778` NPC 발견·추격 저작 (2026-09-06)
+  - `L724` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
+  - `L737` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
+  - `L745` 참조를 비워도 조건을 삭제하지 않는다
+  - `L752` 조건 미리보기는 모르면 모른다고 말한다
+  - `L767` 조건 문구에 내부 토큰을 넣지 마라
+- `L782` 공포 게임 제작 기능 (2026-09-05)
+  - `L787` NPC 발견·추격 저작 (2026-09-06)
 
 ### `openwiki/editor-event-command-fixes.md` — 24KB · 98줄 · ~6,208 토큰 · 깨진 줄 11
 
@@ -1057,13 +1058,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L179` Exact connection cleanup
 - `L248` Verification and remaining integration
 
-### `openwiki/spatial-catalog-ui.md` — 5KB · 73줄 · ~1,226 토큰
+### `openwiki/spatial-catalog-ui.md` — 9KB · 97줄 · ~2,311 토큰
 
 - `L3` Concept and selection contract (2026-09-12)
 - `L26` Building exterior selection
 - `L43` Facility levels
 - `L53` Verification
 - `L70` Shared objects (2026-09-17)
+- `L75` 2026-09-18 — rejected interior catalog reset and style-first mockup
+- `L90` 2026-09-18 — production place classification browser
 
 ### `openwiki/spatial-geography-compiler.md` — 9KB · 158줄 · ~2,420 토큰
 

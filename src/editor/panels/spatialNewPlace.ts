@@ -7,7 +7,7 @@ import { freshSpatialId, upsertSpaceDesign } from "./spatialSpaceDraft";
 import { blankPlaceDesign, upsertPlaceDesign } from "./spatialPlaceDraft";
 
 export type NewPlaceKind = "interior" | "outdoor" | "building";
-export type NewPlaceOptions = { name: string; kind: NewPlaceKind; width: number; height: number; tilesetId: string };
+export type NewPlaceOptions = { name: string; kind: NewPlaceKind; width: number; height: number; tilesetId: string; tags?: string[] };
 export const NEW_PLACE_MIN = 4;
 export const NEW_PLACE_MAX = 128;
 export const INTERIOR_PLACE_ATLAS = "easyrpg_chipset_interior";
@@ -32,7 +32,7 @@ export function createNewPlace(project: Project, options: NewPlaceOptions): { pr
   const id = freshSpatialId(project, "space");
   const space: SpaceDesign = {
     id, name: options.kind === "building" ? `${name} 1층` : name,
-    revision: 1, tags: [], provenance: { origin: "user" },
+    revision: 1, tags: options.tags ?? [], provenance: { origin: "user" },
     tilesetId: options.tilesetId, shape: "rect", width: options.width, height: options.height,
     objectSlots: [], ports: [{ id: spatialId(`${id}-entry`), name: "입구", x: Math.floor(options.width / 2), y: options.height - 1 }],
     ...(options.kind === "outdoor" ? { environment: "outdoor", floor: "ground", wall: "none", floorAreas: [{ kind: "rect", material: "ground", x: 0, y: 0, width: options.width, height: options.height }] }
@@ -42,7 +42,7 @@ export function createNewPlace(project: Project, options: NewPlaceOptions): { pr
   let next = upsertSpaceDesign(project, space);
   let source: SpatialDesignReference = { kind: "space", id };
   if (options.kind === "building") {
-    const building = { ...blankPlaceDesign(next), name, kind: "facility" as const,
+    const building = { ...blankPlaceDesign(next), name, tags: options.tags ?? [], kind: "facility" as const,
       children: [{ id: freshSpatialId(next, "slot"), source: { kind: "space" as const, id }, x: 0, y: 0, level: 1 }] };
     next = upsertPlaceDesign(next, building);
     source = { kind: "place", id: building.id };

@@ -1,3 +1,4 @@
+import { classificationTags, PLACE_CATEGORIES, PLACE_ENVIRONMENTS, placeLibraryFilters, tilesetStyle } from './spatialPlaceClassification';
 import { addNewPlaceRoom } from "./spatialPlaceRooms";
 import type { PlaceDraftTarget } from "./spatialPlaceDraft";
 import { FACILITY_FLOOR_MAX } from "@/project/spatial/facilityLevels";
@@ -20,6 +21,11 @@ export function openNewPlaceDialog(rerender: () => void, room?: { parent: PlaceD
     el("option", { text: "실외 — 마당·광장", attrs: { value: "outdoor" } }),
     ...(!room ? [el("option", { text: "건물 — 여러 방·층 구성", attrs: { value: "building" } })] : []),
   ] });
+  const category = el('input', { value: placeLibraryFilters.category || '건물·시설', attrs: { list: 'new-place-category-options', required: '', maxlength: '40', 'aria-label': '장소 유형' } });
+  const categoryOptions = el('datalist', { attrs: { id: 'new-place-category-options' }, children: PLACE_CATEGORIES.map(value => el('option', { attrs: { value } })) });
+  const environment = el('select', { attrs: { 'aria-label': '공간 형태' }, children: PLACE_ENVIRONMENTS.map(value => el('option', { text: value, attrs: { value } })) });
+  environment.value = placeLibraryFilters.environment || '건물 내부';
+  const purposes = el('input', { value: placeLibraryFilters.purpose, attrs: { placeholder: '예: 여관, 숙박, 식당', maxlength: '200', 'aria-label': '용도와 태그' } });
   const size = (label: string, value: number) => el("input", { value: String(value), attrs: { type: "number", min: String(NEW_PLACE_MIN), max: String(NEW_PLACE_MAX), step: "1", required: "", "aria-label": label } });
   const width = size("가로 칸 수", 10), height = size("세로 칸 수", 8);
   const level = el("input", { value: String(room?.level ?? 1), attrs: { type: "number", min: "0", max: String(FACILITY_FLOOR_MAX), step: "1", "aria-label": "추가할 층" } });
@@ -38,16 +44,17 @@ export function openNewPlaceDialog(rerender: () => void, room?: { parent: PlaceD
       : "바닥을 만든 뒤 오브젝트를 배치하세요. 실내는 벽도 함께 만듭니다.";
   };
   kind.addEventListener("change", () => { if (room) level.value = kind.value === "outdoor" ? "0" : String(Math.max(1, room.level)); refreshOptions(); });
+  if (!room && environment.value !== '건물 내부') kind.value = 'outdoor';
   refreshOptions();
   if (room) { name.value = room.floor ? `${room.level}층` : "새 방"; hint.textContent = "새 방을 만든 뒤 아래 출입 연결에서 문·계단을 연결하세요."; }
-  const form = el("form", { class: "spatial-new-place-form", children: [field("이름", name), field("형태", kind), ...(room ? [field("층", level)] : []), field("가로", width), field("세로", height), field("타일셋", atlas), hint, error, submit] });
+  const form = el("form", { class: "spatial-new-place-form", children: [field("이름", name), field("장소 유형", category), categoryOptions, field("공간 형태", environment), field("용도 · 태그", purposes), field("방·층 구성", kind), ...(room ? [field("층", level)] : []), field("가로", width), field("세로", height), field("타일셋", atlas), hint, error, submit] });
   form.addEventListener("submit", event => {
     event.preventDefault();
     if (!form.reportValidity()) return;
     if (projectKey !== spatialProjectKey()) { error.textContent = "프로젝트가 바뀌었습니다. 창을 닫고 다시 열어 주세요."; return; }
     if (room) {
       try {
-        const issue = addNewPlaceRoom(room.parent, { name: name.value, kind: kind.value as NewPlaceKind, width: Number(width.value), height: Number(height.value), tilesetId: atlas.value }, Number(level.value));
+        const issue = addNewPlaceRoom(room.parent, { name: name.value, kind: kind.value as NewPlaceKind, width: Number(width.value), height: Number(height.value), tilesetId: atlas.value, tags: classificationTags({ style: tilesetStyle(atlas.value, visibleAuthoringProject().tilesets[atlas.value]?.name), category: category.value.trim(), environment: environment.value, purposes: purposes.value.split(/[，,]/).map(v => v.trim()).filter(Boolean) }) }, Number(level.value));
         if (issue) { error.textContent = issue; return; }
         close(); rerender();
       } catch (cause) { error.textContent = cause instanceof Error ? cause.message : String(cause); }
@@ -56,7 +63,7 @@ export function openNewPlaceDialog(rerender: () => void, room?: { parent: PlaceD
     let source: SpatialDesignReference | undefined;
     try {
       const result = editAuthoringDraft(project => {
-        const created = createNewPlace(project, { name: name.value, kind: kind.value as NewPlaceKind, width: Number(width.value), height: Number(height.value), tilesetId: atlas.value });
+        const created = createNewPlace(project, { name: name.value, kind: kind.value as NewPlaceKind, width: Number(width.value), height: Number(height.value), tilesetId: atlas.value, tags: classificationTags({ style: tilesetStyle(atlas.value, visibleAuthoringProject().tilesets[atlas.value]?.name), category: category.value.trim(), environment: environment.value, purposes: purposes.value.split(/[，,]/).map(v => v.trim()).filter(Boolean) }) });
         source = created.source;
         return created.project;
       });

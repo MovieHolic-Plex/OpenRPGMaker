@@ -61,15 +61,15 @@ describe("page item possession condition", () => {
     restoreDom?.();
   });
 
-  it("체크만 켜도 기본 아이템 보유 조건을 심는다", () => {
+  it("체크만 켜도 기본 아이템 보유 조건을 비운 채 심는다", () => {
     const { mapId, eventId, page } = ensureEventWithPage();
-    const firstItemId = store.getCurrent().database.items[0]?.id;
-    expect(firstItemId).toBeTruthy();
 
     toggleSimpleCondition({ mapId, eventId, page }, "item", true);
 
+    // 참조는 비운 채 세운다 — 첫 레코드는 사용자의 선택이 아니다(P0-2).
+    // 빈 참조는 행의 「선택하세요」 오류와 초안 검증이 잡는다.
     const nextPage = store.getCurrent().maps[mapId]?.events.find((entry) => entry.id === eventId)?.pages?.[0];
-    expect(nextPage?.conditions).toEqual([{ kind: "item", itemId: firstItemId, present: true }]);
+    expect(nextPage?.conditions).toEqual([{ kind: "item", itemId: "", present: true }]);
   });
 
   it("아이템 보유 체크를 끄면 조건을 제거한다", () => {
@@ -84,10 +84,9 @@ describe("page item possession condition", () => {
     expect(nextPage?.conditions ?? []).toEqual([]);
   });
 
-  it("defaultSimpleCondition(item)은 첫 아이템 + present:true 이다", () => {
+  it("defaultSimpleCondition(item)은 빈 참조 + present:true 이다", () => {
     const seeded = defaultSimpleCondition("item");
-    const firstItemId = store.getCurrent().database.items[0]?.id;
-    expect(seeded).toEqual({ kind: "item", itemId: firstItemId, present: true });
+    expect(seeded).toEqual({ kind: "item", itemId: "", present: true });
   });
 
   it("존재하지 않는 itemId도 셀렉트에 표시된다", () => {

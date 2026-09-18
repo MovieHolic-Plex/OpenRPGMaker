@@ -46,7 +46,8 @@ export type OprnBridgeLifecycle = {
   readonly onSaveRequest: (callback: () => void) => void;
 };
 export type OprnBridgeStart = {
-  readonly openFolder: () => Promise<{ readonly projectDir: string; readonly isNew: boolean; readonly projectId: string | null } | null>;
+  readonly recentProjects: () => Promise<readonly { readonly projectDir: string; readonly title: string }[]>;
+  readonly openFolder: (payload?: { readonly projectDir?: string }) => Promise<{ readonly projectDir: string; readonly isNew: boolean; readonly projectId: string | null } | null>;
   /** 새 폴더 프로젝트를 만든다. `seed` 를 주면 그 직렬화 문서를 새 폴더에 심는다(장르 프리셋 등). */
   readonly createProject: (input: { readonly title?: string; readonly seed?: string }) => Promise<{ readonly projectDir: string; readonly projectId: string } | null>;
 };

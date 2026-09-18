@@ -1,0 +1,3077 @@
+{
+  "case": "compare",
+  "startedAt": "2026-09-18T15:20:26.135Z",
+  "actions": [
+    {
+      "label": "Enter: shipping new-game boot",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": null,
+        "merchantGold": null,
+        "selected": null,
+        "cap": null,
+        "unitPrice": null,
+        "displayedPrice": null,
+        "displayedOwned": null,
+        "quantity": null,
+        "quantityMax": null,
+        "total": null,
+        "rows": 0,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": null,
+        "balance": null,
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "e: actual field action opens authored shop",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": null,
+        "selected": null,
+        "cap": null,
+        "unitPrice": null,
+        "displayedPrice": null,
+        "displayedOwned": null,
+        "quantity": null,
+        "quantityMax": null,
+        "total": null,
+        "rows": 0,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-scene",
+        "balance": null,
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "compare-1024x768: CDP main-world selection",
+      "completed": true,
+      "executionContexts": [
+        {
+          "id": 4,
+          "origin": "http://127.0.0.1:35767",
+          "name": "__playwright_utility_world_page@45815e633bfa9c6e4d87f39ac0ebfc31",
+          "uniqueId": "3365205631427692938.7969539301911115011",
+          "auxData": {
+            "isDefault": false,
+            "type": "isolated",
+            "frameId": "943D65D5F354F306BCBD69977A7C9C79"
+          }
+        },
+        {
+          "id": 3,
+          "origin": "http://127.0.0.1:35767",
+          "name": "",
+          "uniqueId": "-1859140286708372678.4192288467337634225",
+          "auxData": {
+            "isDefault": true,
+            "type": "default",
+            "frameId": "943D65D5F354F306BCBD69977A7C9C79"
+          }
+        }
+      ]
+    },
+    {
+      "label": "compare-1024x768: read-only live session acquired (CDP queryObjects)",
+      "completed": true,
+      "initial": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "partyActorIds": [
+          "a1",
+          "a2",
+          "a3",
+          "a4",
+          "a5",
+          "a6"
+        ],
+        "actorLevels": {
+          "a1": 1,
+          "a2": 2,
+          "a3": 3,
+          "a4": 4,
+          "a5": 5,
+          "a6": 6
+        },
+        "actorExperience": {
+          "a1": 0,
+          "a2": 0,
+          "a3": 0,
+          "a4": 0,
+          "a5": 0,
+          "a6": 0
+        },
+        "classOverrides": {},
+        "growthProgress": null,
+        "promotionLineage": null,
+        "actorParamBonuses": {},
+        "shopTradeCounts": null,
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18
+      }
+    },
+    {
+      "label": "Enter: focus shop-buy-candidate",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-buy-candidate",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "Tab: ring to shop-detail-open",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-tab-buy",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "Tab: ring to shop-detail-open",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-category-all",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "Tab: ring to shop-detail-open",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-detail-open",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "Enter: open complete comparison",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-actor-a1",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "Tab: ring to shop-detail-scroll",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-slot-weapon",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "Tab: ring to shop-detail-scroll",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-detail-scroll",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "End: End",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-detail-scroll",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "Tab: ring to shop-actor-a1",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-detail-close",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "Tab: ring to shop-actor-a1",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-actor-a1",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "ArrowDown: focus shop-actor-a2",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-actor-a2",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "ArrowDown: focus shop-actor-a3",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-actor-a3",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "ArrowDown: focus shop-actor-a4",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-actor-a4",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "ArrowDown: focus shop-actor-a5",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-actor-a5",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "ArrowDown: focus shop-actor-a6",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-actor-a6",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "Tab: focus shop-slot-weapon",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-slot-weapon",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "ArrowDown: focus shop-slot-shield",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-slot-shield",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "Escape: focus shop-detail-open",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-detail-open",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "Shift+Tab: ring to shop-buy-candidate",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-category-all",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "Shift+Tab: ring to shop-buy-candidate",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-tab-buy",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "Shift+Tab: ring to shop-buy-candidate",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-buy-candidate",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "ArrowDown: focus shop-buy-old",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-old",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-buy-old",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "Tab: ring to shop-detail-open",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-old",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-tab-buy",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "Tab: ring to shop-detail-open",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-old",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-category-all",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "Tab: ring to shop-detail-open",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-old",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-detail-open",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "Enter: open complete comparison",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-old",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-actor-a6",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    },
+    {
+      "label": "ArrowDown: focus shop-actor-a1",
+      "completed": true,
+      "state": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-old",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-actor-a1",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": []
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "id": "00-comparison-stock",
+      "screenshot": "00-comparison-stock.png",
+      "expected": {},
+      "observed": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-buy-candidate",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": [],
+        "detail": {
+          "actor": null,
+          "slot": null,
+          "same": null,
+          "reason": null,
+          "actors": [],
+          "stats": {
+            "attack": null,
+            "defense": null,
+            "mind": null,
+            "agility": null
+          },
+          "effects": {
+            "gained": [],
+            "lost": [],
+            "changed": []
+          },
+          "displaced": [],
+          "focus": "shop-buy-candidate",
+          "scrollTop": null
+        }
+      }
+    },
+    {
+      "id": "01-downgrade-a1",
+      "screenshot": "01-downgrade-a1.png",
+      "expected": {
+        "kind": "ready",
+        "actor": "a1",
+        "stats": {
+          "attack": [
+            30,
+            25,
+            -5
+          ],
+          "defense": [
+            18,
+            10,
+            -8
+          ],
+          "mind": [
+            8,
+            8,
+            0
+          ],
+          "agility": [
+            8,
+            6,
+            -2
+          ]
+        },
+        "actors": [
+          "shop-actor-a1",
+          "shop-actor-a2",
+          "shop-actor-a3",
+          "shop-actor-a4",
+          "shop-actor-a5",
+          "shop-actor-a6"
+        ],
+        "displaced": [
+          {
+            "id": "old",
+            "count": 1
+          }
+        ]
+      },
+      "observed": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-actor-a1",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": [],
+        "detail": {
+          "kind": "ready",
+          "actor": "a1",
+          "slot": "weapon",
+          "same": "false",
+          "reason": null,
+          "actors": [
+            "shop-actor-a1",
+            "shop-actor-a2",
+            "shop-actor-a3",
+            "shop-actor-a4",
+            "shop-actor-a5",
+            "shop-actor-a6"
+          ],
+          "stats": {
+            "attack": [
+              30,
+              25,
+              -5
+            ],
+            "defense": [
+              18,
+              10,
+              -8
+            ],
+            "mind": [
+              8,
+              8,
+              0
+            ],
+            "agility": [
+              8,
+              6,
+              -2
+            ]
+          },
+          "effects": {
+            "gained": [
+              {
+                "effectKey": "attackAll",
+                "text": "전체 공격"
+              }
+            ],
+            "lost": [
+              {
+                "effectKey": "doubleAttack",
+                "text": "연속 공격"
+              },
+              {
+                "effectKey": "elementalDefenseIds",
+                "effectId": "fire",
+                "effectName": "불꽃",
+                "text": "속성 방어 · 불꽃"
+              }
+            ],
+            "changed": [
+              {
+                "effectKey": "accuracy",
+                "current": "90",
+                "next": "80",
+                "text": "명중률 · 90 → 80 (-10)"
+              },
+              {
+                "effectKey": "criticalRate",
+                "current": "10",
+                "next": "5",
+                "text": "치명타율 · 10 → 5 (-5)"
+              }
+            ]
+          },
+          "displaced": [
+            {
+              "id": "old",
+              "count": 1
+            }
+          ],
+          "focus": "shop-actor-a1",
+          "scrollTop": 0
+        }
+      }
+    },
+    {
+      "id": "02-downgrade-effects",
+      "screenshot": "02-downgrade-effects.png",
+      "expected": {},
+      "observed": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-detail-scroll",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": [],
+        "detail": {
+          "kind": "ready",
+          "actor": "a1",
+          "slot": "weapon",
+          "same": "false",
+          "reason": null,
+          "actors": [
+            "shop-actor-a1",
+            "shop-actor-a2",
+            "shop-actor-a3",
+            "shop-actor-a4",
+            "shop-actor-a5",
+            "shop-actor-a6"
+          ],
+          "stats": {
+            "attack": [
+              30,
+              25,
+              -5
+            ],
+            "defense": [
+              18,
+              10,
+              -8
+            ],
+            "mind": [
+              8,
+              8,
+              0
+            ],
+            "agility": [
+              8,
+              6,
+              -2
+            ]
+          },
+          "effects": {
+            "gained": [
+              {
+                "effectKey": "attackAll",
+                "text": "전체 공격"
+              }
+            ],
+            "lost": [
+              {
+                "effectKey": "doubleAttack",
+                "text": "연속 공격"
+              },
+              {
+                "effectKey": "elementalDefenseIds",
+                "effectId": "fire",
+                "effectName": "불꽃",
+                "text": "속성 방어 · 불꽃"
+              }
+            ],
+            "changed": [
+              {
+                "effectKey": "accuracy",
+                "current": "90",
+                "next": "80",
+                "text": "명중률 · 90 → 80 (-10)"
+              },
+              {
+                "effectKey": "criticalRate",
+                "current": "10",
+                "next": "5",
+                "text": "치명타율 · 10 → 5 (-5)"
+              }
+            ]
+          },
+          "displaced": [
+            {
+              "id": "old",
+              "count": 1
+            }
+          ],
+          "focus": "shop-detail-scroll",
+          "scrollTop": 245
+        }
+      }
+    },
+    {
+      "id": "03-actor-a2",
+      "screenshot": "03-actor-a2.png",
+      "expected": {
+        "actor": "a2",
+        "reason": null,
+        "kind": "ready",
+        "stats": {
+          "attack": [
+            30,
+            25,
+            -5
+          ],
+          "defense": [
+            18,
+            10,
+            -8
+          ],
+          "mind": [
+            8,
+            8,
+            0
+          ],
+          "agility": [
+            8,
+            6,
+            -2
+          ]
+        }
+      },
+      "observed": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-actor-a2",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": [],
+        "detail": {
+          "kind": "ready",
+          "actor": "a2",
+          "slot": "weapon",
+          "same": "false",
+          "reason": null,
+          "actors": [
+            "shop-actor-a1",
+            "shop-actor-a2",
+            "shop-actor-a3",
+            "shop-actor-a4",
+            "shop-actor-a5",
+            "shop-actor-a6"
+          ],
+          "stats": {
+            "attack": [
+              30,
+              25,
+              -5
+            ],
+            "defense": [
+              18,
+              10,
+              -8
+            ],
+            "mind": [
+              8,
+              8,
+              0
+            ],
+            "agility": [
+              8,
+              6,
+              -2
+            ]
+          },
+          "effects": {
+            "gained": [
+              {
+                "effectKey": "attackAll",
+                "text": "전체 공격"
+              }
+            ],
+            "lost": [
+              {
+                "effectKey": "doubleAttack",
+                "text": "연속 공격"
+              },
+              {
+                "effectKey": "elementalDefenseIds",
+                "effectId": "fire",
+                "effectName": "불꽃",
+                "text": "속성 방어 · 불꽃"
+              }
+            ],
+            "changed": [
+              {
+                "effectKey": "accuracy",
+                "current": "90",
+                "next": "80",
+                "text": "명중률 · 90 → 80 (-10)"
+              },
+              {
+                "effectKey": "criticalRate",
+                "current": "10",
+                "next": "5",
+                "text": "치명타율 · 10 → 5 (-5)"
+              }
+            ]
+          },
+          "displaced": [
+            {
+              "id": "old",
+              "count": 1
+            }
+          ],
+          "focus": "shop-actor-a2",
+          "scrollTop": 0
+        }
+      }
+    },
+    {
+      "id": "03-actor-a3",
+      "screenshot": "03-actor-a3.png",
+      "expected": {
+        "actor": "a3",
+        "reason": "cursedEquipment",
+        "kind": "blocked",
+        "stats": {
+          "attack": [
+            30,
+            null,
+            null
+          ],
+          "defense": [
+            18,
+            null,
+            null
+          ],
+          "mind": [
+            8,
+            null,
+            null
+          ],
+          "agility": [
+            8,
+            null,
+            null
+          ]
+        }
+      },
+      "observed": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-actor-a3",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": [],
+        "detail": {
+          "kind": "blocked",
+          "actor": "a3",
+          "slot": "weapon",
+          "same": null,
+          "reason": "cursedEquipment",
+          "actors": [
+            "shop-actor-a1",
+            "shop-actor-a2",
+            "shop-actor-a3",
+            "shop-actor-a4",
+            "shop-actor-a5",
+            "shop-actor-a6"
+          ],
+          "stats": {
+            "attack": [
+              30,
+              null,
+              null
+            ],
+            "defense": [
+              18,
+              null,
+              null
+            ],
+            "mind": [
+              8,
+              null,
+              null
+            ],
+            "agility": [
+              8,
+              null,
+              null
+            ]
+          },
+          "effects": {
+            "gained": [],
+            "lost": [],
+            "changed": []
+          },
+          "displaced": [],
+          "focus": "shop-actor-a3",
+          "scrollTop": 0
+        }
+      }
+    },
+    {
+      "id": "03-actor-a4",
+      "screenshot": "03-actor-a4.png",
+      "expected": {
+        "actor": "a4",
+        "reason": null,
+        "kind": "ready",
+        "stats": {
+          "attack": [
+            30,
+            25,
+            -5
+          ],
+          "defense": [
+            18,
+            10,
+            -8
+          ],
+          "mind": [
+            8,
+            8,
+            0
+          ],
+          "agility": [
+            8,
+            6,
+            -2
+          ]
+        }
+      },
+      "observed": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-actor-a4",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": [],
+        "detail": {
+          "kind": "ready",
+          "actor": "a4",
+          "slot": "weapon",
+          "same": "false",
+          "reason": null,
+          "actors": [
+            "shop-actor-a1",
+            "shop-actor-a2",
+            "shop-actor-a3",
+            "shop-actor-a4",
+            "shop-actor-a5",
+            "shop-actor-a6"
+          ],
+          "stats": {
+            "attack": [
+              30,
+              25,
+              -5
+            ],
+            "defense": [
+              18,
+              10,
+              -8
+            ],
+            "mind": [
+              8,
+              8,
+              0
+            ],
+            "agility": [
+              8,
+              6,
+              -2
+            ]
+          },
+          "effects": {
+            "gained": [
+              {
+                "effectKey": "attackAll",
+                "text": "전체 공격"
+              }
+            ],
+            "lost": [
+              {
+                "effectKey": "doubleAttack",
+                "text": "연속 공격"
+              },
+              {
+                "effectKey": "elementalDefenseIds",
+                "effectId": "fire",
+                "effectName": "불꽃",
+                "text": "속성 방어 · 불꽃"
+              }
+            ],
+            "changed": [
+              {
+                "effectKey": "accuracy",
+                "current": "90",
+                "next": "80",
+                "text": "명중률 · 90 → 80 (-10)"
+              },
+              {
+                "effectKey": "criticalRate",
+                "current": "10",
+                "next": "5",
+                "text": "치명타율 · 10 → 5 (-5)"
+              }
+            ]
+          },
+          "displaced": [
+            {
+              "id": "old",
+              "count": 1
+            }
+          ],
+          "focus": "shop-actor-a4",
+          "scrollTop": 0
+        }
+      }
+    },
+    {
+      "id": "03-actor-a5",
+      "screenshot": "03-actor-a5.png",
+      "expected": {
+        "actor": "a5",
+        "reason": "fixedEquipment",
+        "kind": "blocked",
+        "stats": {
+          "attack": [
+            30,
+            null,
+            null
+          ],
+          "defense": [
+            18,
+            null,
+            null
+          ],
+          "mind": [
+            8,
+            null,
+            null
+          ],
+          "agility": [
+            8,
+            null,
+            null
+          ]
+        }
+      },
+      "observed": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-actor-a5",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": [],
+        "detail": {
+          "kind": "blocked",
+          "actor": "a5",
+          "slot": "weapon",
+          "same": null,
+          "reason": "fixedEquipment",
+          "actors": [
+            "shop-actor-a1",
+            "shop-actor-a2",
+            "shop-actor-a3",
+            "shop-actor-a4",
+            "shop-actor-a5",
+            "shop-actor-a6"
+          ],
+          "stats": {
+            "attack": [
+              30,
+              null,
+              null
+            ],
+            "defense": [
+              18,
+              null,
+              null
+            ],
+            "mind": [
+              8,
+              null,
+              null
+            ],
+            "agility": [
+              8,
+              null,
+              null
+            ]
+          },
+          "effects": {
+            "gained": [],
+            "lost": [],
+            "changed": []
+          },
+          "displaced": [],
+          "focus": "shop-actor-a5",
+          "scrollTop": 0
+        }
+      }
+    },
+    {
+      "id": "03-actor-a6",
+      "screenshot": "03-actor-a6.png",
+      "expected": {
+        "actor": "a6",
+        "reason": null,
+        "kind": "ready",
+        "stats": {
+          "attack": [
+            30,
+            25,
+            -5
+          ],
+          "defense": [
+            18,
+            10,
+            -8
+          ],
+          "mind": [
+            8,
+            8,
+            0
+          ],
+          "agility": [
+            8,
+            6,
+            -2
+          ]
+        }
+      },
+      "observed": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-actor-a6",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": [],
+        "detail": {
+          "kind": "ready",
+          "actor": "a6",
+          "slot": "weapon",
+          "same": "false",
+          "reason": null,
+          "actors": [
+            "shop-actor-a1",
+            "shop-actor-a2",
+            "shop-actor-a3",
+            "shop-actor-a4",
+            "shop-actor-a5",
+            "shop-actor-a6"
+          ],
+          "stats": {
+            "attack": [
+              30,
+              25,
+              -5
+            ],
+            "defense": [
+              18,
+              10,
+              -8
+            ],
+            "mind": [
+              8,
+              8,
+              0
+            ],
+            "agility": [
+              8,
+              6,
+              -2
+            ]
+          },
+          "effects": {
+            "gained": [
+              {
+                "effectKey": "attackAll",
+                "text": "전체 공격"
+              }
+            ],
+            "lost": [
+              {
+                "effectKey": "doubleAttack",
+                "text": "연속 공격"
+              },
+              {
+                "effectKey": "elementalDefenseIds",
+                "effectId": "fire",
+                "effectName": "불꽃",
+                "text": "속성 방어 · 불꽃"
+              }
+            ],
+            "changed": [
+              {
+                "effectKey": "accuracy",
+                "current": "90",
+                "next": "80",
+                "text": "명중률 · 90 → 80 (-10)"
+              },
+              {
+                "effectKey": "criticalRate",
+                "current": "10",
+                "next": "5",
+                "text": "치명타율 · 10 → 5 (-5)"
+              }
+            ]
+          },
+          "displaced": [
+            {
+              "id": "old",
+              "count": 1
+            }
+          ],
+          "focus": "shop-actor-a6",
+          "scrollTop": 0
+        }
+      }
+    },
+    {
+      "id": "04-sixth-offhand",
+      "screenshot": "04-sixth-offhand.png",
+      "expected": {
+        "actor": "a6",
+        "slot": "shield",
+        "kind": "ready",
+        "displaced": [],
+        "stats": {
+          "attack": [
+            30,
+            35,
+            5
+          ],
+          "defense": [
+            18,
+            18,
+            0
+          ],
+          "mind": [
+            8,
+            8,
+            0
+          ],
+          "agility": [
+            8,
+            8,
+            0
+          ]
+        }
+      },
+      "observed": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-candidate",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-slot-shield",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": [],
+        "detail": {
+          "kind": "ready",
+          "actor": "a6",
+          "slot": "shield",
+          "same": "false",
+          "reason": null,
+          "actors": [
+            "shop-actor-a1",
+            "shop-actor-a2",
+            "shop-actor-a3",
+            "shop-actor-a4",
+            "shop-actor-a5",
+            "shop-actor-a6"
+          ],
+          "stats": {
+            "attack": [
+              30,
+              35,
+              5
+            ],
+            "defense": [
+              18,
+              18,
+              0
+            ],
+            "mind": [
+              8,
+              8,
+              0
+            ],
+            "agility": [
+              8,
+              8,
+              0
+            ]
+          },
+          "effects": {
+            "gained": [
+              {
+                "effectKey": "attackAll",
+                "text": "전체 공격"
+              }
+            ],
+            "lost": [],
+            "changed": [
+              {
+                "effectKey": "accuracy",
+                "current": "90",
+                "next": "72",
+                "text": "명중률 · 90 → 72 (-18)"
+              },
+              {
+                "effectKey": "criticalRate",
+                "current": "10",
+                "next": "15",
+                "text": "치명타율 · 10 → 15 (+5)"
+              }
+            ]
+          },
+          "displaced": [],
+          "focus": "shop-slot-shield",
+          "scrollTop": 0
+        }
+      }
+    },
+    {
+      "id": "05-same-item",
+      "screenshot": "05-same-item.png",
+      "expected": {
+        "kind": "ready",
+        "same": "true",
+        "displaced": [],
+        "stats": {
+          "attack": [
+            30,
+            30,
+            0
+          ],
+          "defense": [
+            18,
+            18,
+            0
+          ],
+          "mind": [
+            8,
+            8,
+            0
+          ],
+          "agility": [
+            8,
+            8,
+            0
+          ]
+        }
+      },
+      "observed": {
+        "gold": 200,
+        "inventory": {
+          "candidate": 1,
+          "old": 1,
+          "potion": 1
+        },
+        "owned": 0,
+        "playerGold": 200,
+        "merchantGold": 200,
+        "selected": "shop-buy-old",
+        "cap": 5,
+        "unitPrice": 40,
+        "displayedPrice": 40,
+        "displayedOwned": 1,
+        "quantity": "1",
+        "quantityMax": "5",
+        "total": 40,
+        "rows": 6,
+        "actorEquipment": {
+          "a1": {
+            "weapon": "old"
+          },
+          "a2": {
+            "weapon": "old"
+          },
+          "a3": {
+            "weapon": "curse"
+          },
+          "a4": {
+            "weapon": "old"
+          },
+          "a5": {
+            "weapon": "old"
+          },
+          "a6": {
+            "weapon": "old"
+          }
+        },
+        "tradeCounts": {},
+        "focus": "shop-actor-a1",
+        "balance": "160",
+        "shortage": null,
+        "x": 14,
+        "y": 18,
+        "warnings": [],
+        "detail": {
+          "kind": "ready",
+          "actor": "a1",
+          "slot": "weapon",
+          "same": "true",
+          "reason": null,
+          "actors": [
+            "shop-actor-a1",
+            "shop-actor-a2",
+            "shop-actor-a3",
+            "shop-actor-a4",
+            "shop-actor-a5",
+            "shop-actor-a6"
+          ],
+          "stats": {
+            "attack": null,
+            "defense": null,
+            "mind": null,
+            "agility": null
+          },
+          "effects": {
+            "gained": [],
+            "lost": [],
+            "changed": []
+          },
+          "displaced": [],
+          "focus": "shop-actor-a1",
+          "scrollTop": 0
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "networkFailures": [],
+  "cleanup": [
+    {
+      "resource": "/home/main/z-project/rpg-zzu/.vite-cache/shop-decision-player-SSAF52",
+      "registeredAt": "2026-09-18T15:20:26.136Z",
+      "closed": true,
+      "closedAt": "2026-09-18T15:20:45.872Z"
+    },
+    {
+      "resource": "http://127.0.0.1:35767",
+      "registeredAt": "2026-09-18T15:20:34.240Z",
+      "closed": true,
+      "closedAt": "2026-09-18T15:20:45.862Z"
+    },
+    {
+      "resource": "chromium",
+      "registeredAt": "2026-09-18T15:20:34.357Z",
+      "closed": true,
+      "closedAt": "2026-09-18T15:20:45.860Z"
+    },
+    {
+      "resource": "compare-1024x768:context",
+      "registeredAt": "2026-09-18T15:20:34.429Z",
+      "closed": true,
+      "closedAt": "2026-09-18T15:20:45.814Z"
+    },
+    {
+      "resource": "compare-1024x768:page",
+      "registeredAt": "2026-09-18T15:20:34.479Z",
+      "closed": true,
+      "closedAt": "2026-09-18T15:20:45.806Z"
+    },
+    {
+      "resource": "compare-1024x768:cdp",
+      "registeredAt": "2026-09-18T15:20:36.634Z",
+      "closed": true,
+      "closedAt": "2026-09-18T15:20:45.783Z"
+    },
+    {
+      "resource": "compare-1024x768:heap-read-handle",
+      "registeredAt": "2026-09-18T15:20:37.768Z",
+      "closed": true,
+      "closedAt": "2026-09-18T15:20:45.761Z"
+    }
+  ],
+  "provenance": {
+    "nativeSurface": "built player.html with export store shim; never editor",
+    "sessionInspection": "read-only CDP queryObjects on actual shipping PlayScene; no session writes",
+    "expectedValues": "fixed independent numeric oracles; authorable nonnegative equipment bonuses",
+    "parentVerified": [
+      "typecheck:app EXIT0",
+      "focused economy 66 tests",
+      "preview 49 tests",
+      "input 97 tests",
+      "npm run build EXIT0 (app/export/standalone)"
+    ],
+    "parentIncomplete": [
+      "npm run gates timed out at 1800s; parent terminated its owned process tree"
+    ],
+    "parentPending": [
+      "separate CSS/surface gates"
+    ]
+  },
+  "build": {
+    "config": "vite.player.config.ts",
+    "entry": "player.html",
+    "completed": true,
+    "sceneModule": "PlayScene-B_oEA_37.js",
+    "sha256": "e93163f1e4929ced9a38481af83ffeeb0bbad8dc7d1329b7fb5b3e500dfae15b"
+  },
+  "fixtures": [
+    {
+      "id": "compare-1024x768",
+      "file": "compare-1024x768-fixture.json",
+      "command": {
+        "kind": "shop",
+        "itemIds": [
+          "candidate",
+          "old",
+          "twohand",
+          "restricted",
+          "charm",
+          "potion"
+        ],
+        "allowSell": true,
+        "shopType": "normal",
+        "shopUiPreset": "compare",
+        "quantityMode": "select",
+        "merchantGold": 200,
+        "messageType": "welcome",
+        "branchOnTransaction": false,
+        "transactionBranch": [],
+        "branchOnFailedTransaction": false,
+        "failedTransactionBranch": []
+      },
+      "gold": 200,
+      "source": "test/fixtures/projects/item-runtime-qa-v3.json",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "actors": [
+        {
+          "id": "a1",
+          "classId": "class_hero",
+          "level": 1,
+          "equipment": {
+            "weapon": "old"
+          }
+        },
+        {
+          "id": "a2",
+          "classId": "class_hero",
+          "level": 2,
+          "equipment": {
+            "weapon": "old"
+          }
+        },
+        {
+          "id": "a3",
+          "classId": "class_hero",
+          "level": 3,
+          "equipment": {
+            "weapon": "curse"
+          }
+        },
+        {
+          "id": "a4",
+          "classId": "class_hero",
+          "level": 4,
+          "equipment": {
+            "weapon": "old"
+          }
+        },
+        {
+          "id": "a5",
+          "classId": "class_hero",
+          "level": 5,
+          "equipment": {
+            "weapon": "old"
+          }
+        },
+        {
+          "id": "a6",
+          "classId": "class_hero",
+          "level": 6,
+          "equipment": {
+            "weapon": "old"
+          }
+        }
+      ],
+      "authoredGrowth": null
+    }
+  ],
+  "passed": false,
+  "failure": "AssertionError [ERR_ASSERTION]: 05-same-item: stats\n+ actual - expected\n\n  {\n+   agility: null,\n+   attack: null,\n+   defense: null,\n+   mind: null\n-   agility: [\n-     8,\n-     8,\n-     0\n-   ],\n-   attack: [\n-     30,\n-     30,\n-     0\n-   ],\n-   defense: [\n-     18,\n-     18,\n-     0\n-   ],\n-   mind: [\n-     8,\n-     8,\n-     0\n-   ]\n  }\n\n    at capture (file:///home/main/z-project/rpg-zzu/scripts/qa/runtime/shop-decision-report.mjs:308:63)\n    at async compare (file:///home/main/z-project/rpg-zzu/scripts/qa/runtime/shop-decision-report.mjs:383:3)\n    at async file:///home/main/z-project/rpg-zzu/scripts/qa/runtime/shop-decision-report.mjs:610:39",
+  "failureArtifact": "initial-failure-2026-09-18T15-20-45-480Z"
+}

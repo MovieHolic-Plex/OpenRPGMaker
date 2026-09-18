@@ -61,6 +61,28 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
+// 실측(2026-09-17 조수 로그 100건): Pi 18턴 중 6턴이 머리말과 적용 결과가 어긋났다. 「실패」인데
+// 적용된 반쯤 적용 상태와 「성공」인데 검토 대기인 상태는 다음에 할 일이 정반대인데(되돌리기 ↔ 검토),
+// 머리말만 보고는 구분이 안 됐다. 어긋날 때만 괄호로 사실을 덧붙인다.
+it("머리말은 적용 결과와 어긋날 때 그 사실을 함께 말한다", () => {
+  const headline = (over: Partial<AiActivityLogRecord["result"]>): string => {
+    const text = formatAiActivityLogText([{ ...RECORD, result: { ...RECORD.result, ...over } }], { at: new Date() });
+    return text.split("\n").find((line) => line.startsWith("[1] ")) ?? "";
+  };
+
+  expect(headline({ ok: true, applied: true })).toContain("· 성공");
+  expect(headline({ ok: true, applied: true })).not.toContain("성공(");
+  // 검토 대기 — 붙지 않았는데 「성공」만 보이면 사용자가 끝난 줄 안다.
+  expect(headline({ ok: true, applied: false })).toContain("· 성공(적용 안 됨)");
+  // 반쯤 적용 — 「실패」만 보이면 되돌릴 것이 남은 줄 모른다.
+  expect(headline({ ok: false, applied: true })).toContain("· 실패(부분 적용)");
+  expect(headline({ ok: false, applied: false })).toContain("· 실패");
+  expect(headline({ ok: false, applied: false })).not.toContain("실패(");
+  // 적용 여부를 모르는 기록(화면 조작 등)은 예전 그대로 한 낱말이다.
+  expect(headline({ ok: true, applied: undefined })).toContain("· 성공");
+  expect(headline({ ok: true, applied: undefined })).not.toContain("성공(");
+});
+
 it("한 턴을 사람이 읽는 텍스트로 옮긴다 — 지시·결과·도구·대화 기록·잘림이 모두 남는다", () => {
   const text = formatAiActivityLogText([RECORD], { at: new Date("2026-09-09T02:00:00.000Z") });
 

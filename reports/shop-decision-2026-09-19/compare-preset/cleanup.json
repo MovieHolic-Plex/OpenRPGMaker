@@ -1,0 +1,44 @@
+[
+  {
+    "resource": "/home/main/z-project/rpg-zzu/.vite-cache/shop-decision-player-SSAF52",
+    "registeredAt": "2026-09-18T15:20:26.136Z",
+    "closed": true,
+    "closedAt": "2026-09-18T15:20:45.872Z"
+  },
+  {
+    "resource": "http://127.0.0.1:35767",
+    "registeredAt": "2026-09-18T15:20:34.240Z",
+    "closed": true,
+    "closedAt": "2026-09-18T15:20:45.862Z"
+  },
+  {
+    "resource": "chromium",
+    "registeredAt": "2026-09-18T15:20:34.357Z",
+    "closed": true,
+    "closedAt": "2026-09-18T15:20:45.860Z"
+  },
+  {
+    "resource": "compare-1024x768:context",
+    "registeredAt": "2026-09-18T15:20:34.429Z",
+    "closed": true,
+    "closedAt": "2026-09-18T15:20:45.814Z"
+  },
+  {
+    "resource": "compare-1024x768:page",
+    "registeredAt": "2026-09-18T15:20:34.479Z",
+    "closed": true,
+    "closedAt": "2026-09-18T15:20:45.806Z"
+  },
+  {
+    "resource": "compare-1024x768:cdp",
+    "registeredAt": "2026-09-18T15:20:36.634Z",
+    "closed": true,
+    "closedAt": "2026-09-18T15:20:45.783Z"
+  },
+  {
+    "resource": "compare-1024x768:heap-read-handle",
+    "registeredAt": "2026-09-18T15:20:37.768Z",
+    "closed": true,
+    "closedAt": "2026-09-18T15:20:45.761Z"
+  }
+]
