@@ -2,6 +2,7 @@ import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { CharacterFace, CharacterGraphicsDocument } from "./characterGraphics";
 import type { EventPageGraphic, FaceGraphic } from "./types";
+import { defaultSharedCharacterGraphics, parseSharedCharacterGraphicsDocument, SHARED_CHARACTER_GRAPHICS_ENDPOINT } from "./sharedCharacterGraphicsSchema";
 
 // Synchronous tool compilation consumes the last accepted host catalog. Headless callers
 // start with the same reviewed catalog the host serves on a fresh installation.
