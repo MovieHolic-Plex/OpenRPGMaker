@@ -409,11 +409,17 @@ for (const failure of report.browser?.failures ?? []) regressions.push(`browser 
 const flakeRetries = [];
 let budgetSkipped = 0;
 if (baseline && regressions.length > 0 && !flag("--no-flake-retry")) {
-  // 예산 20분은 **로컬 반복용** 기본값이다. CI 에서는 모자란다 — 실측(2026-09-18, ci-full.slice
-  // 6코어): 단독 재판정 한 건이 18~35초(평균 28초)라 후보 84건이면 39분이 필요한데,
-  // 20분은 43건까지밖에 못 본다. 못 본 나머지는 «판정 불가 → 회귀» 로 남으므로
-  // 리포트 전체가 노이즈가 된다(그 실행에서 실제로 그렇게 됐다).
-  // 그래서 ci-full.yml 이 --flake-budget-min 을 넉넉히 넘긴다. 기본값은 로컬용으로 둔다.
+  // 예산 20분은 **로컬 반복용** 기본값이다. CI 에서는 모자란다.
+  //
+  // 건당 비용 실측(2026-09-18) — 두 값이 크게 다르니 주의하라:
+  //   한산한 박스에서 작은 파일 3개  18~35초
+  //   CI 에서 전체 스위트 뒤에 이어서 **약 186초** (90분에 29건 판정)
+  // 후자가 현실이다. 전체 실행 직후라 캐시가 밀려 있고 파일마다 모듈 그래프를 새로 평가한다.
+  // 즉 **후보가 수십 건이면 예산으로는 절대 못 따라간다** — 후보 137건이면 7시간이다.
+  //
+  // 그러므로 이 예산은 «기준선이 최신일 때 남는 소수의 후보» 를 거르는 용도다.
+  // 기준선이 낡으면 후보가 100건대가 되고, 그때는 예산을 늘리는 게 아니라 **기준선을 갱신**해야 한다
+  // (2026-09-17: 기준선이 5일 낡아 후보 84건 → 전부 미판정 → 리포트 전체가 노이즈였다).
   const deadline = Date.now() + (Number(value("--flake-budget-min", "20")) || 20) * 60_000;
   const kept = [];
   for (const entry of regressions) {
@@ -489,11 +495,14 @@ if (!asJson && flakeRetries.length > 0) {
 // 더 필요한지를 찍어서, 다음 사람이 "이 빨간불이 진짜인가"를 숫자로 판단하게 한다.
 // 이 줄이 없던 탓에 2026-09-17 실행은 회귀 84건이 전부 미판정이라는 걸 로그를 뒤져야 알았다.
 if (!asJson && budgetSkipped > 0) {
-  const needMin = Math.ceil((budgetSkipped * 28) / 60);
+  const needMin = Math.ceil((budgetSkipped * 186) / 60);
   console.log(
     `⚠ 재판정 예산이 끊겨 ${budgetSkipped}건을 판정하지 못했다 — 회귀로 남겼지만 근거는 없다.\n` +
-    `   단독 재판정은 건당 18~35초(실측 평균 28초)다. 남은 ${budgetSkipped}건을 보려면 약 ${needMin}분이 더 필요하다.\n` +
-    `   --flake-budget-min=<분> 으로 늘려라 (ci-full.yml 이 이미 넘긴다).\n`,
+    `   CI 실측 건당 약 186초. 남은 ${budgetSkipped}건을 다 보려면 약 ${needMin}분이 더 필요하다.\n` +
+    (budgetSkipped > 30
+      ? "   이 규모면 예산을 늘릴 게 아니라 **기준선이 낡은 것**이다 —\n" +
+        "   `node scripts/verify-gates.mjs --save-baseline` 은 사람이 내리는 결정이다(래칫 보호).\n"
+      : "   --flake-budget-min=<분> 으로 늘려라 (ci-full.yml 이 이미 넘긴다).\n"),
   );
 }
 
