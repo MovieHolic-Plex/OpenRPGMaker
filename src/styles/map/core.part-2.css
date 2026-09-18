@@ -347,6 +347,14 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 
 /* cream ground + hero image soft veil so JPG edges sit on warm cream */
 
+/* 빈 호스트는 공간을 차지하지 않는다 — :empty면 레이아웃에서 제거. */
+.persistence-banner-host:empty {
+  display: none;
+}
+/* 텍스트 노드만 남아 :empty가 불일치해도 배너 요소가 없으면 숨김. */
+.persistence-banner-host:not(:has(.persistence-mode-banner)) {
+  display: none;
+}
 /* 저장 스킵/로컬 저장 모드 배너 — 도그푸딩 결함 ⑩. */
 .persistence-mode-banner {
   font-size: 12px;
