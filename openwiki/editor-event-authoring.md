@@ -756,6 +756,12 @@ DB 에서 지워진 유령 참조는 `<id> (없음)` 라벨로 **계속 보인�
 friendshipAtLeast/battleResult/run)을 틀리게 확신했고, 특히 거의 모든 타이머 조건이 「충족」으로
 보였다. 계약: `test/conditionEvalPreview.test.ts`.
 
+**뱃지와 시뮬레이션은 같은 맵 입력으로 평가한다 (2026-09-18).** `insideLocation` 은 뱃지가
+무조건 「판정 불가」였는데 시뮬레이션은 map context 없이 `else` 단정이던 갈라짐을 고치면서,
+둘 다 편집 중 맵(`editorState.currentMapId`)의 로케이션 기하로 평가한다. 맵을 모르면
+둘 다 판정 불가다. fork 시뮬레이션의 taken 값도 3상태(`then|else|unknown`)이며 unknown이면
+양쪽 분기를 전부 skipped 로 둔다. 계약: `test/previewSimulation.test.ts`.
+
 ### 조건 문구에 내부 토큰을 넣지 마라
 
 `ON`/`OFF`, `AND()`/`OR()`/`NOT`, 생 비교 연산자, `timer1`/`timer2`, `run`,
