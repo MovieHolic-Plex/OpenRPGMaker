@@ -407,7 +407,13 @@ for (const failure of report.browser?.failures ?? []) regressions.push(`browser 
 // 프로세스 오류로 파일이 영원히 회귀가 되던 문제(같은 날 실측)를 막는다.
 // 예산(기본 20분)을 넘긴 후보는 판정하지 않고 회귀로 남긴다. `--no-flake-retry` 로 끈다.
 const flakeRetries = [];
+let budgetSkipped = 0;
 if (baseline && regressions.length > 0 && !flag("--no-flake-retry")) {
+  // 예산 20분은 **로컬 반복용** 기본값이다. CI 에서는 모자란다 — 실측(2026-09-18, ci-full.slice
+  // 6코어): 단독 재판정 한 건이 18~35초(평균 28초)라 후보 84건이면 39분이 필요한데,
+  // 20분은 43건까지밖에 못 본다. 못 본 나머지는 «판정 불가 → 회귀» 로 남으므로
+  // 리포트 전체가 노이즈가 된다(그 실행에서 실제로 그렇게 됐다).
+  // 그래서 ci-full.yml 이 --flake-budget-min 을 넉넉히 넘긴다. 기본값은 로컬용으로 둔다.
   const deadline = Date.now() + (Number(value("--flake-budget-min", "20")) || 20) * 60_000;
   const kept = [];
   for (const entry of regressions) {
@@ -417,6 +423,7 @@ if (baseline && regressions.length > 0 && !flag("--no-flake-retry")) {
       continue;
     }
     if (Date.now() > deadline) {
+      budgetSkipped += 1;
       kept.push(`${entry} [재판정 예산 초과]`);
       continue;
     }
@@ -453,10 +460,41 @@ report.flakeRetries = flakeRetries;
 report.baseline = baseline ? baselinePath : null;
 report.regressions = regressions;
 
+// 판정 결과를 **파일로도** 남긴다. 여태 이건 stdout 에만 있었고, CI 로그는 만료된다 —
+// 2026-09-17 야간 실행의 회귀 목록을 다시 보려 했을 때 이미 사라진 뒤였다
+// (`.omo/gates-vitest-report.json` 은 vitest 원시 출력이라 판정이 안 들어 있다).
+// `out` 필드는 게이트 스크립트들의 콘솔 출력이라 수백 줄씩 되므로 여기선 뺀다.
+{
+  const verdictPath = resolve(process.cwd(), ".omo/gates-report.json");
+  const slim = { ...report };
+  for (const key of ["typecheck", "tests", "css", "surface", "browser"]) {
+    if (slim[key] && typeof slim[key] === "object") slim[key] = { ...slim[key], out: undefined };
+  }
+  try {
+    mkdirSync(dirname(verdictPath), { recursive: true });
+    writeFileSync(verdictPath, `${JSON.stringify(slim, null, 2)}\n`, "utf8");
+  } catch (error) {
+    // 판정 자체를 막을 이유는 없다 — 기록에 실패했다는 사실만 남긴다.
+    console.error(`[verify-gates] 판정 리포트를 쓰지 못했다: ${verdictPath} (${error.message})`);
+  }
+}
+
 if (!asJson && flakeRetries.length > 0) {
   console.log(`부하 플레이크 ${flakeRetries.length}건 — 단독 재실행에서 통과했으므로 회귀에서 제외:`);
   for (const file of flakeRetries) console.log(`   ${file}`);
   console.log("");
+}
+
+// 예산이 모자라 판정을 못 한 건은 **회귀로 남지만 근거가 없다**. 몇 건인지와 얼마가
+// 더 필요한지를 찍어서, 다음 사람이 "이 빨간불이 진짜인가"를 숫자로 판단하게 한다.
+// 이 줄이 없던 탓에 2026-09-17 실행은 회귀 84건이 전부 미판정이라는 걸 로그를 뒤져야 알았다.
+if (!asJson && budgetSkipped > 0) {
+  const needMin = Math.ceil((budgetSkipped * 28) / 60);
+  console.log(
+    `⚠ 재판정 예산이 끊겨 ${budgetSkipped}건을 판정하지 못했다 — 회귀로 남겼지만 근거는 없다.\n` +
+    `   단독 재판정은 건당 18~35초(실측 평균 28초)다. 남은 ${budgetSkipped}건을 보려면 약 ${needMin}분이 더 필요하다.\n` +
+    `   --flake-budget-min=<분> 으로 늘려라 (ci-full.yml 이 이미 넘긴다).\n`,
+  );
 }
 
 if (asJson) {

@@ -65,9 +65,14 @@ jobs:
 
       # verify-gates 가 typecheck / tests / css / surface 를 모두 돌고 기준선과 대조한다.
       # 회귀가 없으면 exit 0, 있으면 exit 1.
+      # --flake-budget-min: 「새로 실패」 후보를 파일마다 단독(maxWorkers=1)으로 재판정하는
+      #   시간 예산이다. 기본 20분은 로컬 반복용이라 CI 에선 모자란다 — 실측(2026-09-18):
+      #   단독 재판정 한 건이 18~35초(평균 28초)고, 2026-09-17 야간 실행의 후보는 84건이었다.
+      #   20분이면 43건에서 끊기고 나머지는 근거 없이 「회귀」로 남아 리포트가 통째로 노이즈가 된다.
+      #   90분이면 후보 190건까지 본다. 잡 상한이 240분이고 게이트 본체가 75분이므로 여유가 있다.
       - name: 전체 게이트 (기준선 대비 회귀만 실패)
         id: gates
-        run: node scripts/verify-gates.mjs
+        run: node scripts/verify-gates.mjs --flake-budget-min=90
 
       # 게이트가 실패해도 자원 리포트는 반드시 남긴다 — 조용히 죽는 경우가 바로 이걸로 진단된다.
       - name: 자원 리포트
@@ -86,7 +91,9 @@ jobs:
           set -euo pipefail
           dest="$HOME/ci/reports/$(date -u +%Y%m%d-%H%M%S)-run${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           mkdir -p "$dest"
-          for f in .omo/gates-vitest-report.json .omo/gates-baseline.json; do
+          # gates-report.json 이 **판정**이다(회귀 목록·플레이크 제외분). vitest-report 는
+          # 원시 출력이고, baseline 은 무엇과 비교했는지다. 셋이 있어야 나중에 재구성된다.
+          for f in .omo/gates-report.json .omo/gates-vitest-report.json .omo/gates-baseline.json; do
             [ -f "$f" ] && cp "$f" "$dest/" || echo "없음: $f"
           done
           git rev-parse HEAD > "$dest/commit.txt"
