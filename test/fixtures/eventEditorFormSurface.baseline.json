@@ -810,7 +810,7 @@
   "labels": [
    "(선택)",
    "상태켜짐꺼짐",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)"
+   "조건이 맞지 않을 때 처리 (그 외 분기)"
   ],
   "tags": {
    "button": 1,
@@ -849,10 +849,10 @@
    "event-condition-eval-summary": "sw# 켜짐",
    "event-condition-hint": "선택한 스위치가 켜짐/꺼짐인 경우 참 분기로 들어갑니다.",
    "event-condition-switch-error": "대상 스위치를 선택하세요.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 18,
   "controlCount": 5
