@@ -111,7 +111,22 @@ async function readAsset(payload: unknown): Promise<Uint8Array> {
   },
   start: {
     recentProjects: async () => [],
-    openFolder: async () => null,
+    openFolder: async () => {
+      const projects = await call(OPRN_CHANNELS.startRecentProjects) as Array<{ projectDir: string; title: string }>;
+      if (!projects.length) throw new Error('이 서버에 열 수 있는 프로젝트 폴더가 없습니다. 먼저 새 프로젝트를 만드세요.');
+      const answer = window.prompt(`열 프로젝트를 선택하세요:\n${projects.map((project, index) => `${index + 1}. ${project.title} (${project.projectDir})`).join('\n')}\n\n번호 또는 프로젝트 ID`);
+      if (!answer) return null;
+      const index = Number(answer) - 1;
+      const selected = Number.isInteger(index) && projects[index] ? projects[index] : projects.find((project) => project.projectDir === answer);
+      if (!selected) throw new Error('올바른 프로젝트를 선택하지 않았습니다.');
+      const opened = await call(OPRN_CHANNELS.startOpenFolder, { projectDir: selected.projectDir }) as { projectDir: string; projectId: string; isNew: boolean };
+      const url = new URL(location.href);
+      url.search = '';
+      url.hash = '';
+      url.searchParams.set('hostProject', opened.projectDir);
+      history.replaceState(null, '', url);
+      return opened;
+    },
     openRecent: async () => null,
     createProject: async (input: unknown) => {
       const created = await call(OPRN_CHANNELS.startCreateProject, input) as { projectDir: string; projectId: string };
