@@ -36,6 +36,7 @@ const STAGE_MAX_EDGE = 512;
 const CACHE_LIMIT = 120;
 
 const renderedCache = new Map<string, HTMLCanvasElement>();
+const mapContentHashes = new WeakMap<GameMap, number>();
 let active = 0;
 const waiting: (() => void)[] = [];
 
@@ -74,6 +75,15 @@ export function createMapThumbnail(mapId: MapId, options: MapThumbnailOptions = 
 
 /** 캐시 키에 목표 크기가 들어가야 한다 — 안 넣으면 40×30 스테이지가 큰 미리보기로 확대된다. */
 function thumbnailKey(mapId: MapId, map: GameMap, width: number, height: number): string {
+  let hash = mapContentHashes.get(map);
+  if (hash === undefined) {
+    hash = hashMapContent(map);
+    mapContentHashes.set(map, hash);
+  }
+  return `${mapId}:${map.tilesetId}:${width}x${height}:${(hash >>> 0).toString(36)}`;
+}
+
+function hashMapContent(map: GameMap): number {
   let hash = 2166136261;
   const mix = (value: number): void => {
     hash ^= value + 0x9e3779b9;
@@ -84,7 +94,7 @@ function thumbnailKey(mapId: MapId, map: GameMap, width: number, height: number)
   mix(map.tileSize);
   for (const tile of map.lowerTiles) mix(tile);
   for (const tile of map.upperTiles) mix(tile);
-  return `${mapId}:${map.tilesetId}:${width}x${height}:${(hash >>> 0).toString(36)}`;
+  return hash;
 }
 
 async function paintFromMap(
