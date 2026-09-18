@@ -4,7 +4,7 @@ import type { PlaySessionLike } from "@/project/sessionRuntimeTypes";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
 import type { Condition } from "@/project/types";
-import { createPreviewSimState, previewSessionFromSimState } from "./previewSimulation";
+import { createPreviewSimState, previewSessionFromSimState, resolvePreviewLocations } from "./previewSimulation";
 
 import { relationshipStateName } from "@/project/relationshipState";
 import { insideLocationSentence } from "@/editor/mapLocationLabels";
@@ -14,10 +14,10 @@ type PreviewVerdict = boolean | undefined;
  * Live condition evaluation against the editor's play-start simulation.
  * Conditions that require state produced only during play stay explicitly undetermined.
  */
-export function renderConditionEvalPreview(condition: Condition | undefined): HTMLElement {
+export function renderConditionEvalPreview(condition: Condition | undefined, mapId?: string): HTMLElement {
   const session = previewSessionFromSimState(createPreviewSimState());
   const hostId = editorState.get().selectedEventId;
-  const verdict = evaluatePreviewCondition(session, condition, hostId ?? undefined);
+  const verdict = evaluatePreviewCondition(session, condition, hostId ?? undefined, mapId);
   const summary = describeCondition(condition);
   const determined = verdict !== undefined;
   const badgeText = determined ? (verdict ? "충족" : "불충족") : "판정 불가";
@@ -65,14 +65,15 @@ export function renderConditionEvalPreview(condition: Condition | undefined): HT
 function evaluatePreviewCondition(
   session: PlaySessionLike,
   condition: Condition | undefined,
-  hostEventId: string | undefined
+  hostEventId: string | undefined,
+  mapId?: string
 ): PreviewVerdict {
   if (!condition) return true;
   switch (condition.kind) {
     case "all": {
       let hasUndetermined = false;
       for (const child of condition.conditions) {
-        const childVerdict = evaluatePreviewCondition(session, child, hostEventId);
+        const childVerdict = evaluatePreviewCondition(session, child, hostEventId, mapId);
         if (childVerdict === false) return false;
         if (childVerdict === undefined) hasUndetermined = true;
       }
@@ -81,14 +82,14 @@ function evaluatePreviewCondition(
     case "any": {
       let hasUndetermined = false;
       for (const child of condition.conditions) {
-        const childVerdict = evaluatePreviewCondition(session, child, hostEventId);
+        const childVerdict = evaluatePreviewCondition(session, child, hostEventId, mapId);
         if (childVerdict === true) return true;
         if (childVerdict === undefined) hasUndetermined = true;
       }
       return hasUndetermined ? undefined : false;
     }
     case "not": {
-      const childVerdict = evaluatePreviewCondition(session, condition.condition, hostEventId);
+      const childVerdict = evaluatePreviewCondition(session, condition.condition, hostEventId, mapId);
       return childVerdict === undefined ? undefined : !childVerdict;
     }
     case "selfSwitch":
@@ -104,9 +105,13 @@ function evaluatePreviewCondition(
     case "npcActivity":
       if (!hostEventId || !Object.hasOwn(session.npcActivities ?? {}, hostEventId)) return undefined;
       break;
-    case "insideLocation":
-      // 미리보기 세션에는 주인공 좌표가 없다 — 참/거짓을 지어내는 대신 "판정 불가"로 남긴다.
-      return undefined;
+    case "insideLocation": {
+      // 편집 중인 맵의 로케이션 기하가 있으면 실제 판정한다 — 시뮬레이션과 같은 입력.
+      // 맵을 모르면 참/거짓을 지어내지 않고 판정 불가로 남긴다.
+      const locations = resolvePreviewLocations(mapId);
+      if (!locations) return undefined;
+      break;
+    }
     case "friendshipAtLeast": {
       const npcKey = condition.npcKey?.trim();
       if (!npcKey || !Object.hasOwn(session.friendship ?? {}, npcKey)) return undefined;
@@ -124,7 +129,8 @@ function evaluatePreviewCondition(
       if (session.roguelikeRun === undefined) return undefined;
       break;
   }
-  return evalCondition(session, condition, hostEventId);
+  const locations = resolvePreviewLocations(mapId);
+  return evalCondition(session, condition, hostEventId, locations ? { map: { locations } } : undefined);
 }
 
 function describeCondition(condition: Condition | undefined): string {
