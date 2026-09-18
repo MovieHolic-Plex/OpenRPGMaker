@@ -1,0 +1,125 @@
+{
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "exists": {
+    "shop-scene": true,
+    "shop-buy-candidate": true,
+    "shop-tab-buy": true,
+    "shop-tab-sell": true,
+    "shop-category-all": true,
+    "shop-detail-open": true,
+    "shop-quantity-input": true,
+    "shop-confirm": true,
+    "shop-item-cancel": true,
+    "shop-balance-after": true
+  },
+  "boxes": {
+    "shop-scene": {
+      "left": 44,
+      "top": 36,
+      "right": 980,
+      "bottom": 732,
+      "width": 936,
+      "height": 696
+    },
+    "shop-buy-candidate": {
+      "left": 89,
+      "top": 224.78125,
+      "right": 598.328125,
+      "bottom": 290.78125,
+      "width": 509.328125,
+      "height": 66
+    },
+    "shop-tab-buy": {
+      "left": 654.4375,
+      "top": 88.296875,
+      "right": 710.4375,
+      "bottom": 121.890625,
+      "width": 56,
+      "height": 33.59375
+    },
+    "shop-tab-sell": {
+      "left": 714.4375,
+      "top": 88.296875,
+      "right": 770.4375,
+      "bottom": 121.890625,
+      "width": 56,
+      "height": 33.59375
+    },
+    "shop-category-all": {
+      "left": 85,
+      "top": 166.1875,
+      "right": 139.875,
+      "bottom": 199.78125,
+      "width": 54.875,
+      "height": 33.59375
+    },
+    "shop-detail-open": {
+      "left": 688.671875,
+      "top": 634.609375,
+      "right": 803,
+      "bottom": 668.203125,
+      "width": 114.328125,
+      "height": 33.59375
+    },
+    "shop-quantity-input": {
+      "left": 446.90625,
+      "top": 635.40625,
+      "right": 494.90625,
+      "bottom": 667.40625,
+      "width": 48,
+      "height": 32
+    },
+    "shop-confirm": {
+      "left": 811,
+      "top": 634.609375,
+      "right": 867,
+      "bottom": 668.203125,
+      "width": 56,
+      "height": 33.59375
+    },
+    "shop-item-cancel": {
+      "left": 875,
+      "top": 634.609375,
+      "right": 931,
+      "bottom": 668.203125,
+      "width": 56,
+      "height": 33.59375
+    },
+    "shop-balance-after": {
+      "left": 582.96875,
+      "top": 642.703125,
+      "right": 676.671875,
+      "bottom": 660.09375,
+      "width": 93.703125,
+      "height": 17.390625
+    }
+  },
+  "focus": "shop-buy-candidate",
+  "focusBox": {
+    "left": 89,
+    "top": 224.78125,
+    "right": 598.328125,
+    "bottom": 290.78125,
+    "width": 509.328125,
+    "height": 66
+  },
+  "footer": {
+    "left": 69,
+    "top": 621.609375,
+    "right": 955,
+    "bottom": 707,
+    "width": 886,
+    "height": 85.390625
+  },
+  "scroll": {
+    "top": 0,
+    "height": 696,
+    "total": 696,
+    "width": 936,
+    "totalWidth": 936
+  },
+  "failures": []
+}

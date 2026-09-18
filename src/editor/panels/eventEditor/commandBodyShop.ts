@@ -3,7 +3,7 @@ import { SHOP_TRANSACTION_BRANCH_INDEX, SHOP_FAILED_TRANSACTION_BRANCH_INDEX } f
 import { store } from "@/project/store";
 import { SHOP_MESSAGE_LABELS, SHOP_MESSAGE_TYPES, shopGreetingText, shopListHeaderText, shopBuyPromptText } from "@/project/shopMessages";
 import { resolveTerms } from "@/project/terms";
-import type { ShopMessageType, ShopType } from "@/project/types";
+import type { ShopMessageType, ShopType, ShopUiPreset } from "@/project/types";
 import { el } from "@/util/dom";
 import { commandKindSelect, selectedOptionValue } from "./dom";
 import { COMMAND_KIND_OPTIONS } from "./options";
@@ -18,6 +18,17 @@ const SHOP_TYPE_OPTIONS: readonly { value: ShopType; label: string; hint: string
   { value: "sellOnly", label: "판매만 가능", hint: "플레이어가 상점에 물건을 팝니다" },
 ];
 const SHOP_MESSAGE_OPTIONS = SHOP_MESSAGE_TYPES.map((value) => ({ value, label: SHOP_MESSAGE_LABELS[value] }));
+const SHOP_UI_PRESET_OPTIONS: readonly { value: ShopUiPreset; label: string; hint: string }[] = [
+  { value: "classic", label: "단순 목록 상점", hint: "상품명·가격·소지금 중심의 전통 상점" },
+  { value: "tabs", label: "카테고리·일일 재고", hint: "카테고리와 오늘의 판매 목록을 함께 보여줍니다" },
+  { value: "grid", label: "진열 카드 상점", hint: "상품 카드와 상세 설명을 중심으로 보여줍니다" },
+  { value: "compare", label: "장비 비교 상점", hint: "현재 장비와 구매 후 능력치를 나란히 비교합니다" },
+  { value: "split", label: "구매·개조·판매·교환", hint: "거래 서비스를 독립 메뉴로 나눕니다" },
+  { value: "cart", label: "양측 인벤토리 거래", hint: "플레이어와 상인의 물품을 동시에 비교합니다" },
+  { value: "stock", label: "재고·흥정 상점", hint: "한정 재고·가격·할인·상인 예산을 강조합니다" },
+  { value: "story", label: "대화 중심 상점", hint: "상인 대화와 추천 상품을 먼저 보여줍니다" },
+  { value: "baram", label: "바람의 나라식 간결 메뉴", hint: "작은 메뉴창과 짧은 문구로 빠르게 거래합니다" },
+];
 // Dialog actions survive a staged branch edit; weak ownership releases view state when the dialog closes.
 const views = new WeakMap<CommandListActions, Map<string, ShopEditorView>>();
 let panelSequence = 0;
@@ -76,7 +87,7 @@ export function shopBody(context: CommandEditContext, command: ShopCommand): HTM
       if (state.tab === "rules") {
         const budget = shopMerchantGoldField(editContext, c);
         budget.dataset.testid = "shop-merchant-budget"; budget.hidden = c.shopType === "buyOnly";
-        settings.append(shopTypeGroup(editContext, c), shopQuantityModeGroup(editContext, c), budget,
+        settings.append(shopTypeGroup(editContext, c), shopUiPresetGroup(editContext, c), shopQuantityModeGroup(editContext, c), budget,
           shopEconomyCard(editContext, c), shopAdvancedCard(editContext, c));
       } else if (state.tab === "messages") {
         settings.append(shopMessageSelect(editContext, c));
@@ -280,6 +291,29 @@ function shopTypeGroup(context: CommandEditContext, command: ShopCommand): HTMLE
       select,
     ],
   });
+}
+
+function shopUiPresetGroup(context: CommandEditContext, command: ShopCommand): HTMLElement {
+  const current = command.shopUiPreset ?? "classic";
+  const select = document.createElement("select");
+  select.className = "commerce-command-input shop-ui-preset-select";
+  select.dataset.testid = "shop-ui-preset-select";
+  select.setAttribute("aria-label", "상점 UI 프리셋");
+  for (const option of SHOP_UI_PRESET_OPTIONS) {
+    const opt = document.createElement("option");
+    opt.value = option.value; opt.textContent = option.label; opt.title = option.hint;
+    if (option.value === current) opt.selected = true;
+    select.append(opt);
+  }
+  select.title = SHOP_UI_PRESET_OPTIONS.find((option) => option.value === current)?.hint ?? "상점 UI 프리셋";
+  select.addEventListener("change", () => {
+    const preset = (select.value as ShopUiPreset) || "classic";
+    select.title = SHOP_UI_PRESET_OPTIONS.find((option) => option.value === preset)?.hint ?? "상점 UI 프리셋";
+    context.actions.replaceCommand(context.path, { ...latestShop(context, command), shopUiPreset: preset });
+  });
+  return el("div", { class: "commerce-command-field shop-ui-preset-field", children: [
+    el("label", { class: "commerce-command-title", text: "상점 UI" }), select,
+  ] });
 }
 
 function shopBranchOption(context: CommandEditContext, command: ShopCommand): HTMLElement {
