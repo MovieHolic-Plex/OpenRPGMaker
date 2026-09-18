@@ -1,10 +1,11 @@
 import { createHash, randomUUID } from "node:crypto";
-import { mkdir, readFile, realpath, rm } from "node:fs/promises";
+import { mkdir, readFile, realpath, rm, writeFile, rename } from "node:fs/promises";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { extname, normalize, resolve, sep, basename } from "node:path";
 import { createStoreHandlers } from "../main/dispatch";
 import { createProjectSessionRegistry, type SessionRegistry } from "../main/sessions";
 import { OPRN_CHANNELS } from "../shared/channels";
+import { isCompanionPath } from "../../scripts/lib/ohMyPiHttp.mjs";
 import { createCompanionMiddleware } from "../../scripts/lib/companion/middleware.mjs";
 import { createActivityMirrorMiddleware } from "../../scripts/lib/activityMirrorMiddleware.mjs";
 import { sharedCharacterGraphicsMiddleware } from "../../scripts/lib/sharedCharacterGraphics";
@@ -50,6 +51,8 @@ export type LocalProjectServerOptions = {
   /** Non-loopback hosting requires the exact externally visible origin (TLS at a reverse proxy is supported). */
   readonly host?: string;
   readonly publicOrigin?: string;
+  /** Explicit host-owner access to the host AI credentials. Other members remain denied. */
+  readonly enableOwnerAi?: boolean;
 };
 
 export type LocalProjectServer = {
@@ -90,7 +93,6 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
   if (shared && !options.publicOrigin) throw new Error('공유 호스트에는 --public-origin 이 필요합니다');
   let publicOrigin = options.publicOrigin ? new URL(options.publicOrigin).origin : null;
   if (publicOrigin && !/^https?:/.test(publicOrigin)) throw new Error('HTTP(S) origin required');
-  const logins = new Map<string, { memberId: string; expiresAt: number }>();
   const clients = new Map<string, number>();
   const root = resolve(options.distDir);
   const projectDir = resolve(options.projectDir);
@@ -100,7 +102,19 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
   const handlers = createStoreHandlers(sessions);
   const team = sessions.require(SESSION_KEY).team;
   const cookieName = `oprn_session_${createHash('sha256').update(sessions.require(SESSION_KEY).projectDir).digest('hex').slice(0, 24)}`;
-  const ownerAccessCode = shared ? team.ownerToken() : null;
+  let ownerAccessCode: string | null = null;
+  if (shared) {
+    const accessPath = resolve(projectDir, '.oprn-host-access');
+    let existing: string | undefined;
+    try { existing = (await readFile(accessPath, 'utf8')).trim(); }
+    catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error; }
+    ownerAccessCode = team.ownerToken(existing);
+    if (ownerAccessCode !== existing) {
+      const pending = `${accessPath}.${randomUUID()}.tmp`;
+      await writeFile(pending, ownerAccessCode + '\n', { mode: 0o600, flag: 'wx' });
+      await rename(pending, accessPath);
+    }
+  }
   // 동반 서비스도 실행별 토큰을 요구한다(설계 7.4) — 루프백·페이지 출처 모두 같은 머신의 다른
   // 프로세스에 열려 있다. 렌더러는 브리지 설정에서 토큰을 받아 fetch 헤더로 실어 보낸다.
   const companionToken = randomUUID();
@@ -225,18 +239,16 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       response.setHeader('x-content-type-options', 'nosniff');
       response.setHeader('referrer-policy', 'same-origin');
       const cookie = (request.headers.cookie ?? '').split(';').map(value => value.trim()).find(value => value.startsWith(cookieName + '='))?.slice(cookieName.length + 1);
-      const login = cookie ? logins.get(cookie) : undefined;
-      const signedIn = login && login.expiresAt > Date.now() ? team.member(login.memberId) : null;
+      const signedIn = cookie ? team.sessionMember(cookie) : null;
       if (url.pathname === '/__oprn/login' && request.method === 'POST') {
         const member = team.authenticate(new URLSearchParams(await readRequestBody(request, 4096)).get('token') ?? '');
         if (!member) { response.writeHead(401, { 'content-type': 'text/html; charset=utf-8' }).end(entryLoginPage.replace('id="login-error" hidden', 'id="login-error"')); return; }
-        if (logins.size >= 256) { sendJson(response, 429, { error: '접속 세션이 너무 많습니다' }); return; }
-        const id = randomUUID();
-        logins.set(id, { memberId: member.id, expiresAt: Date.now() + 12 * 60 * 60 * 1000 });
+        const id = team.createSession(member.id, Date.now() + 12 * 60 * 60 * 1000);
+        if (!id) { sendJson(response, 429, { error: '접속 세션이 너무 많습니다' }); return; }
         response.writeHead(303, { location: returnUrl, 'set-cookie': `${cookieName}=${id}; HttpOnly; SameSite=Strict; Path=/; Max-Age=43200${publicOrigin?.startsWith('https:') ? '; Secure' : ''}`, 'cache-control': 'no-store' }).end(); return;
       }
       if (url.pathname === '/__oprn/logout' && request.method === 'POST') {
-        if (cookie) logins.delete(cookie);
+        if (cookie) team.deleteSession(cookie);
         response.writeHead(303, { location: '/', 'set-cookie': `${cookieName}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0` }).end(); return;
       }
       if (shared && !signedIn) {
@@ -259,7 +271,15 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
         let passedThrough = false;
         activityMirror(request, response, () => { passedThrough = true; });
         if (!passedThrough) return;
-        passedThrough = false;
+      }
+      if (isCompanionPath(request.url ?? '')) {
+        if (shared) {
+          if (signedIn?.role !== 'owner') { sendJson(response, 403, { error: '호스트 AI는 팀 소유자만 사용할 수 있습니다.' }); return; }
+          if (!options.enableOwnerAi) { sendJson(response, 503, { error: '호스트 AI 연결이 꺼져 있습니다. OPRN_HOST_OWNER_AI=1로 활성화하세요.' }); return; }
+          // Authenticated owner + same-origin validation replaces the browser token here.
+          request.headers['x-oprn-companion-token'] = companionToken;
+        }
+        let passedThrough = false;
         await companion(request, response, () => { passedThrough = true; });
         if (!passedThrough) return;
       }
@@ -324,7 +344,6 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
   let serverUrl = '';
   const cleanup = setInterval(() => {
     for (const [key, touched] of clients) if (Date.now() - touched > 5 * 60_000) { sessions.close(key); clients.delete(key); }
-    for (const [id, session] of logins) if (session.expiresAt <= Date.now()) logins.delete(id);
   }, 60_000);
   cleanup.unref();
   await new Promise<void>((resolvePromise, reject) => {

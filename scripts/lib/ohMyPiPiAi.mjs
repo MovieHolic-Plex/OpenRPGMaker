@@ -2,6 +2,9 @@
 // Bun 워커는 모델 호출(completion) 하나만 맡는다 — 그래서 Bun 이 없는 머신도
 // 로그인까지는 끝마칠 수 있고, 워커는 실제로 모델을 부를 때에서야 처음 뜨운다.
 
+import { existsSync } from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import {
@@ -39,12 +42,14 @@ function startWorker() {
   if (workerPortPromise) return workerPortPromise;
   let promise;
   promise = new Promise((resolve, reject) => {
-    const script = fileURLToPath(new URL("../oh-my-pi-worker.ts", import.meta.url));
+    const script = process.env.OPRN_OH_MY_PI_WORKER_SCRIPT || fileURLToPath(new URL("../oh-my-pi-worker.ts", import.meta.url));
+    const localBun = join(homedir(), ".bun", "bin", "bun");
+    const bun = process.env.OPRN_BUN_PATH || (existsSync(localBun) ? localBun : "bun");
     // Tests point this at a script that crashes on startup to pin the failure contract.
     const command = process.env.OPRN_OH_MY_PI_WORKER_COMMAND;
     const child = command
       ? spawn(command, [], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env }, shell: true })
-      : spawn("bun", [script], {
+      : spawn(bun, [script], {
         stdio: ["ignore", "pipe", "pipe"],
         env: { ...process.env },
       });
