@@ -14,6 +14,7 @@ import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { DEFAULT_FARMLAND_AUTOTILE_GROUP, DEFAULT_TALL_GRASS_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import type { AutotileGroup } from "@/project/types";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
+import { forestCoverageTarget } from "../forestDensity";
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap, Project } from "@/project/types";
 import { mulberry32, type Rng } from "@/util/rng";
@@ -23,6 +24,7 @@ import {
   coordKey,
   DOOR_BOTTOM_TILE,
   DOOR_TOP_TILE,
+  FENCE_BACK_ROWS,
   FENCE_BOTTOM_LEFT,
   FENCE_BOTTOM_RIGHT,
   FENCE_END_LEFT,
@@ -51,6 +53,7 @@ import {
   type MorphologyPlan,
   type VillageMorphology,
 } from "./morphologyPlan";
+import { paintFlowerField, paintMarketDeck, placeMarketDeckProps } from "./plaza";
 import { paintRoadStrip } from "./roads";
 import {
   canStampTree,
@@ -61,6 +64,16 @@ import {
   type TreeKit,
   type TreeStamp,
 } from "./treeKit";
+
+/**
+ * 마을 바깥 나무 경사. 예전 값(문턱 3 · 0 + d×0.07 · 상한 0.5)은 44×26 에서 후보를 184칸으로
+ * 좁히고 그중 28칸만 심어, 자유 칸 519칸(맵의 45%)을 맨 잔디로 남겼다(2026-09-18 실측).
+ * 문턱 3 은 그대로 둔다 — 2 로 내리면 길 옆 한 칸짜리 틈을 나무 두 그루가 막아 문 도달성 QA 가
+ * 깨진다(64×56 green 8채에서 reachable false 재현). 대신 기저 확률을 올려 후보를 촘촘히 심는다.
+ */
+const TREE_MIN_DISTANCE = 3;
+const TREE_BASE_CHANCE = 0.18;
+const TREE_STEP = 0.12;
 
 /** 산울타리 덤불(합본 마을 289) — 혼합 칩셋 위 반쪽에도 같은 번호로 있다. */
 const BUSH_TILE = 289;
@@ -223,6 +236,10 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
       inMap(x, y) && pointInRect({ x, y }, area) && !sealed.has(y * W + x)
       && !args.blocked.has(y * W + x) && !(args.cliffBlocked?.has(y * W + x) ?? false)
       && lowerAt(x, y) === TILE.GRASS && upperAt(x, y) === TILE.EMPTY && !ROAD_TILES.has(lowerAt(x, y));
+    // 마을 공터 — 계획은 자리만 예약하고(OCC.commons) 아무것도 칠하지 않아, 어떤 형태 유형이든
+    // 마을 한가운데가 주변 잔디와 구별되지 않았다(2026-09-18 실측: 8×5 공터 40칸 중 채워진 칸 3).
+    // layoutPlan 은 그 자리를 role:"plaza" 로 적고 있었으므로 계획과 그림이 어긋나 있었다.
+    paintCommons(map, plan.commons, intent, mulberry32((seed ^ 0x6d2b79f5) >>> 0));
     let fenceTiles = 0;
     for (const [index, house] of houses.entries()) fenceTiles += paintParcelFence(map, area, slots[index]!, house, sealed);
     let fieldCells = 0;
@@ -251,6 +268,38 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
   };
 
   return { plan, houses, slots, plaza: plan.plaza, exits: plan.exits, finish };
+}
+
+// ───────────────────────── 마을 공터 ─────────────────────────
+
+/**
+ * 공터를 주변 잔디와 구별되게 칠한다. 형태 유형은 계획 단계에서 자리만 잡아 두므로(OCC.commons)
+ * 여기서 `plazaStyle` 대로 바닥을 깐다 — market 은 장터 데크와 가판, garden 은 꽃밭, empty 는
+ * 손대지 않는다(풀 공터가 곧 의도다). 울타리·나무보다 먼저 불러야 나무가 데크 위에 서지 않는다.
+ */
+function paintCommons(map: GameMap, commons: Rect, intent: VillageIntent, rng: Rng): void {
+  // 둘레 한 칸은 접근로로 비운다 — 공터 가장자리까지 깔면 공터에 면한 집의 문 앞 옆길이 사라진다.
+  const inner: Rect = { x: commons.x + 1, y: commons.y + 1, w: commons.w - 2, h: commons.h - 2 };
+  if (inner.w < 3 || inner.h < 3) return;
+  if (intent.plazaStyle === "garden") { paintFlowerField(map, inner, rng); return; }
+  if (intent.plazaStyle !== "market") return;
+  // 장터 데크는 바닥을 통째로 갈아엎으므로 공터를 가로지르는 길을 먼저 떠 두었다가 되돌린다.
+  // (2026-09-18 실측: green 8채가 doors 5/8 · reachable false 로 QA 를 못 넘었다.)
+  const saved = new Map<number, number>();
+  for (let y = inner.y; y < inner.y + inner.h; y += 1) {
+    for (let x = inner.x; x < inner.x + inner.w; x += 1) {
+      if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+      const index = y * map.width + x;
+      const lower = map.lowerTiles[index] ?? TILE.EMPTY;
+      if (ROAD_TILES.has(lower)) saved.set(index, lower);
+    }
+  }
+  paintMarketDeck(map, inner);
+  for (const [index, tile] of saved) {
+    map.lowerTiles[index] = tile;
+    map.upperTiles[index] = TILE.EMPTY;
+  }
+  placeMarketDeckProps(map, inner);
 }
 
 // ───────────────────────── 연못 ─────────────────────────
@@ -335,6 +384,16 @@ function spurToRoad(
 // ───────────────────────── 필지 울타리 ─────────────────────────
 
 /**
+ * 필지 울타리 뒷줄이 앉을 행. 필지는 길에 면하려고 집보다 훨씬 깊게 잡히는데(2026-09-18 실측:
+ * 5줄짜리 집에 11줄 필지, 지붕 위 5줄) 그 깊이를 그대로 두르면 빈 뒷마당이 울타리에 갇혀
+ * 「집보다 큰 울타리」로 읽힌다. 용마루 위 `FENCE_BACK_ROWS` 줄까지만 두른다.
+ * 앞줄·좌우 변은 필지 폭을 그대로 쓴다 — 마당은 앞(남쪽)에 있기 때문이다.
+ */
+export function parcelFenceTop(parcelY: number, bboxY: number): number {
+  return Math.max(parcelY, bboxY - FENCE_BACK_ROWS);
+}
+
+/**
  * 필지 둘레 울타리(정본 문법): 뒷줄 378/379/380, 세로 변 408, 앞줄 438/379/410 + 문 게이트(409/439 마감).
  * 뒷줄은 용마루 행(bbox.y-1) 위에 있을 때만 친다 — 지붕 위 울타리 금지. 길·소품·봉인 칸은 건너뛴다.
  */
@@ -354,6 +413,7 @@ function paintParcelFence(map: GameMap, area: Rect, slot: HouseSlot, house: Buil
     map.upperTiles[index] = tile;
     placed += 1;
   };
+  const fenceTop = parcelFenceTop(parcel.y, bbox.y);
   const gateL = house.doorAt.x - FENCE_GATE_HALF_WIDTH;
   const gateR = house.doorAt.x + FENCE_GATE_HALF_WIDTH;
   // 앞줄(문 앞 행) — 게이트 양옆 끝 조각, 바깥 끝 모서리.
@@ -363,13 +423,13 @@ function paintParcelFence(map: GameMap, area: Rect, slot: HouseSlot, house: Buil
     setFence(x, lastY, tile);
   }
   // 뒷줄 — 용마루 행보다 위일 때만.
-  if (parcel.y < bbox.y - 1) {
+  if (fenceTop < bbox.y) {
     for (let x = parcel.x; x <= lastX; x += 1) {
-      setFence(x, parcel.y, x === parcel.x ? FENCE_TOP_LEFT : x === lastX ? FENCE_TOP_RIGHT : FENCE_TOP_RAIL);
+      setFence(x, fenceTop, x === parcel.x ? FENCE_TOP_LEFT : x === lastX ? FENCE_TOP_RIGHT : FENCE_TOP_RAIL);
     }
   }
   // 세로 변.
-  for (let y = parcel.y + 1; y < lastY; y += 1) {
+  for (let y = fenceTop + 1; y < lastY; y += 1) {
     setFence(parcel.x, y, FENCE_SIDE_RAIL);
     setFence(lastX, y, FENCE_SIDE_RAIL);
   }
@@ -447,7 +507,13 @@ function paintTreeGradient(
   kit: TreeKit,
 ): number {
   if (intent.edgeTrees === "none") return 0;
-  const scale = intent.edgeTrees === "dense" ? 1.6 : 1;
+  // `author_village` 는 edgeTrees 를 인자로 받지 않는다 — 모델이 쥔 숲 손잡이는 forestDensity 뿐인데
+  // 2026-09-18 까지 그 값이 여기 닿지 않아, 어떤 밀도를 넣어도 마을 바깥이 늘 같은 성긴 덤불밭이었다.
+  // normal(0.4) 을 1.0 으로 두고 선언 커버리지 비로 그루 수와 확률을 함께 민다.
+  const density = intent.forestDensity
+    ? forestCoverageTarget(intent.forestDensity) / forestCoverageTarget("normal")
+    : 1;
+  const scale = (intent.edgeTrees === "dense" ? 1.6 : 1) * density;
   const W = map.width;
   const dist = new Uint16Array(W * map.height).fill(0xffff);
   const queue: number[] = [];
@@ -475,11 +541,13 @@ function paintTreeGradient(
   for (let y = area.y; y < area.y + area.h - 1; y += 1) {
     for (let x = area.x; x < area.x + area.w; x += 1) {
       const index = y * W + x;
-      if ((dist[index] ?? 0) >= 3) candidates.push(index);
+      if ((dist[index] ?? 0) >= TREE_MIN_DISTANCE) candidates.push(index);
     }
   }
   for (let i = candidates.length - 1; i > 0; i -= 1) { const j = Math.floor(rng() * (i + 1)); [candidates[i], candidates[j]] = [candidates[j]!, candidates[i]!]; }
-  const cap = Math.floor(area.w * area.h * 0.14);
+  // 기준선 0.14/0.5 는 마을 바깥을 늘 「덤불 몇 그루 뿌린 잔디밭」으로 남겼다(2026-09-18 실측:
+  // 44×26 가장자리 띠 채움 26%). 기준을 0.22/0.7 로 올리고 밀도 비가 그 위에 곱해진다.
+  const cap = Math.floor(area.w * area.h * 0.22 * density);
   let placed = 0;
   const taken = new Set<number>();
   const open = (x: number, y: number): boolean => free(x, y) && !taken.has(y * W + x);
@@ -494,7 +562,7 @@ function paintTreeGradient(
     if (placed >= cap) break;
     const x = index % W, y = Math.floor(index / W);
     const d = dist[index]!;
-    const p = Math.min(0.5, (d - 2) * 0.07) * scale;
+    const p = Math.min(0.75 * density, (TREE_BASE_CHANCE + (d - TREE_MIN_DISTANCE) * TREE_STEP) * scale);
     if (rng() > p) continue;
     if (taken.has(index) || taken.has(index + W)) continue;
     if (!free(x, y) || !free(x, y + 1)) continue;
