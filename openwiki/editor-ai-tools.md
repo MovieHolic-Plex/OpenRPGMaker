@@ -1589,3 +1589,21 @@ Tests: `test/npcMovementInference.test.ts` (8건).
 `npc-movement` 시나리오 하네스 실행과 probe 직접 실행은 같은 `verify-shots/runtime-qa/npc-movement/`를
 쓰면 서로 덮어쓴다(실측). probe는 `QA_OUT_DIR=verify-shots/runtime-qa/npc-movement-probe`로 분리 실행한다.
 하네스 쪽은 플레이어 고정 + NPC 배치 차이 샷 2장, probe 쪽은 스프라이트 좌표 직접 판정(results.json) + before/after PNG.
+
+## Full RPG first-turn foundation (2026-09-19)
+
+A request such as “중세 게임 RPG를 만들어줘” is a cross-domain authoring request.
+The intent declaration now opens the world, database, system, map and event domains
+even when the model's short `tools` list omits one of them. The adventure preflight
+catalog includes `read_project_wiki`, `set_world_canon`, `upsert_character_profile`,
+`upsert_actor`, `list_resources`, `upsert_equipment`, and `set_project_settings`.
+The expected order is world canon → named character profiles → protagonist actor
+appearance/loadout → database → maps/events → playable verification. `upsert_actor`
+must set real `faceResourceId`, `characterResourceId`/`characterIndex`, battle graphic,
+and `initialEquipment`; creating a weapon record alone does not equip it.
+
+`set_world_canon` stores the concise world backbone (premise, era, tone, technology
+ceiling, absences, and power/gods/death/money laws) as a partial merge in
+`Project.worldCanon`. Full adventure declarations may opt into `world`, `characters`,
+and `appearance`; the completion report then calls out missing lore, profiles, or
+starting-party appearance instead of silently accepting map-only output.

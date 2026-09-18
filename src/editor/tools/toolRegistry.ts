@@ -68,6 +68,7 @@ import { RESOURCE_TOOLS } from "./resourceTools";
 import { MONSTER_RESOURCE_TOOLS } from "./monsterResourceTools";
 import { withMonsterAppearanceEnvelope } from "./monsterAppearanceTools";
 import { WORLD_STRUCTURE_TOOLS } from "./worldStructureTools";
+import { WORLD_CANON_TOOLS } from "./worldCanonTools";
 import { SPATIAL_TOOLS } from "./spatialTools";
 
 export { PLACEMENT_TOOLS };
@@ -157,6 +158,7 @@ function withDomain(tools: readonly ToolDefinition[], domain: ToolDomain): reado
 export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   FIND_TOOLS,
   ...PROJECT_WIKI_TOOLS,
+  ...WORLD_CANON_TOOLS,
   ...PROJECT_TOOLS,
   ...withDomain(VOCABULARY_TOOLS_V3, "tile"),
   AUTHOR_HOUSE_TOOL,

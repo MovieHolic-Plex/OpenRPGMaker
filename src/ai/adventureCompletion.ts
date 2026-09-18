@@ -3,6 +3,7 @@ import { canMove, tileAt, tilePassability } from "@/project/collision";
 import { roleCapabilities } from "@/project/tileRoles";
 import { startStateOf } from "@/project/session";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
+import { worldCanonHasContent } from "@/project/world/canon";
 
 /** Declared by the intent model, never inferred from incidental NPC/building words. */
 export interface AdventureRequirements {
@@ -10,12 +11,20 @@ export interface AdventureRequirements {
   dungeon: boolean;
   party: boolean;
   battle: boolean;
+  /** Full-project authoring lanes. Optional for recovered/legacy declarations. */
+  world?: boolean;
+  characters?: boolean;
+  appearance?: boolean;
 }
 
 /** Tools promised by the declared contract must be callable before the first write. */
 export function adventureToolNames(required: AdventureRequirements | undefined): string[] {
   if (!required) return [];
-  return ["get_project_summary", "get_database_records", "find_events", "list_resources", "show_map_region", "upsert_event", "upsert_item", "upsert_equipment",
+  // A full RPG starts with its authored identity, not only maps and encounters.
+  // Keep these in the preflight set so the first writer round can actually create
+  // the protagonist's appearance/loadout and record the world/character canon.
+  return ["get_project_summary", "get_database_records", "read_project_wiki", "find_events", "list_resources", "show_map_region", "upsert_event", "upsert_actor", "upsert_character_profile", "set_world_canon", "upsert_item", "upsert_equipment",
+    ...(required.world || required.village || required.dungeon ? ["plan_world", "build_world"] : []),
     ...(required.village ? ["author_house"] : []),
     ...(required.dungeon ? ["list_dungeon_room_themes", "run_dungeon_room_pipeline", "create_transfer_pair", "place_chest"] : []),
     ...(required.party ? ["set_project_settings"] : []),
@@ -23,7 +32,8 @@ export function adventureToolNames(required: AdventureRequirements | undefined):
   ];
 }
 
-export const ADVENTURE_AUTHORING_GUIDE = `요청한 모험의 완료 조건은 실제 플레이 연결이다. 먼저 기존 맵·DB를 조회한다.
+export const ADVENTURE_AUTHORING_GUIDE = `요청한 모험의 완료 조건은 실제 플레이 연결이다. 먼저 기존 프로젝트 위키·세계관·인물·맵·DB를 조회한다.
+첫 쓰기 순서는 세계관(set_world_canon 또는 read_project_wiki로 확인한 설정) → 핵심 인물(upsert_character_profile) → 주인공 액터(upsert_actor: faceResourceId, characterResourceId/characterIndex, battleCharacterResourceId, initialEquipment) → 나머지 DB·맵·이벤트다. 리소스 ID는 list_resources로 실제 목록을 조회해 고르고, 장비는 upsert_equipment로 만든 뒤 주인공 initialEquipment.weapon에 연결한다. 외형·인물·장비를 생략한 채 맵만 먼저 만드는 것은 완성된 RPG가 아니다.
 마을은 author_village/author_house 등으로 건물과 길을 실제 시공한다. 잔디+흙길+사람은 마을 완성이 아니다.
 던전 탐험을 요청했다면 list_dungeon_room_themes 조회 후 run_dungeon_room_pipeline({mapId,name,theme:"stone",hazard:true})로 별도 동굴을 먼저 시공한다. 잔디 맵에 주택 벽 한 줄을 두는 것은 동굴이 아니다. 기존 맵의 무단 교체는 금지한다. 생성 결과의 통행 칸을 조회한 뒤 보물·적을 배치하고 create_transfer_pair로 왕복 연결하고 입구의 동굴/문/계단 외형을 조회해 사용한다. 사람 그림을 관문으로 쓰지 않는다.
 기본 전투 적은 조회한 트룹을 set_encounter_table 또는 battleProcessing으로 도달 가능한 탐험 맵에 연결한다.
@@ -78,6 +88,19 @@ export function adventureCompletionProblems(project: Project, required: Adventur
   const start = project.maps[project.startMapId];
   if (!start) return ["시작 맵이 없습니다."];
   const problems: string[] = [];
+  if (required.world && !worldCanonHasContent(project.worldCanon) && !(project.world?.entities?.length)) {
+    problems.push("세계관 정본이 없습니다. set_world_canon으로 시대·전제·톤·세계 법칙을 먼저 기록하세요.");
+  }
+  const hasCharacterDocuments = Object.keys(project.characters ?? {}).length > 0
+    || (project.world?.entities ?? []).some(entity => entity.type === "character");
+  if (required.characters && !hasCharacterDocuments) {
+    problems.push("핵심 인물 설정이 없습니다. upsert_character_profile로 주인공·동료·핵심 NPC의 인물 프로필을 기록하세요.");
+  }
+  if (required.appearance) {
+    const startActorIds = startStateOf(project).partyActorIds;
+    const missingAppearance = project.database.actors.filter(actor => startActorIds.includes(actor.id) && (!actor.faceResourceId || !actor.characterResourceId));
+    if (missingAppearance.length > 0) problems.push(`시작 파티 외형이 비어 있습니다: ${missingAppearance.map(actor => actor.name).join(", ")}. list_resources 후 upsert_actor로 얼굴·캐릭터 칩을 지정하세요.`);
+  }
   if (required.village) {
     const tileset = project.tilesets[start.tilesetId];
     const structural = new Set((tileset?.tileGroups ?? []).filter(g => roleCapabilities(tileset, g.role).structure).flatMap(g => g.tileIds));
