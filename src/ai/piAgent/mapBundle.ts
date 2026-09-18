@@ -80,6 +80,12 @@ export function mapBundleIds(project: Project, mapId: string): string[] {
 }
 
 function pruneSubtrees(node: MapTreeNode, roots: ReadonlySet<string>): MapTreeNode {
+  // 묶음 루트의 부분 트리는 통째로 비운다. 자식으로 만나는 묶음 루트는 아래 filter 가 걷어내지만,
+  // **트리 루트 자신이 묶음 루트일 때**(빈 프로젝트의 시작 맵이 그렇다 — blankProject 의
+  // `mapTree.mapId = startMapId`) filter 는 자기 자신을 걷어내지 못한다. 그래서 루트 밑에 새로
+  // 달린 실내 맵 노드가 감사에 남아 base 와 달라 보였고, 실제로는 병합된 변경을 팀 보드가
+  // 「범위 밖 변경 버림 (시공): mapTree」 로 보고했다(실측: 2026-09-17 조수 로그 [33][37][59][61]).
+  if (roots.has(node.mapId)) return { ...node, children: [] };
   return {
     ...node,
     children: (node.children ?? []).filter((child) => !roots.has(child.mapId)).map((child) => pruneSubtrees(child, roots)),
@@ -222,6 +228,23 @@ function carryCreatedEntries(merged: Project, started: Project, result: Project)
   merged.database = createdDatabaseEntries(started.database, result.database, merged.database);
 }
 
+/**
+ * 이 키가 병합본에 반영되지 **않았는가** — 「버렸다」고 말해도 되는 유일한 조건.
+ *
+ * 감사(`mapBundleSpill`)는 병합 **전** 에 «묶음 밖에서 달라진 키» 를 센다. 그 목록을 그대로
+ * 보고하면 «달라졌지만 결국 잘 옮겨진» 변경까지 버렸다고 말하게 된다 — 실측(2026-09-17 조수
+ * 로그 [33][37][59][61]): 시작 맵에 실내 맵을 새로 단 턴이 「범위 밖 변경 버림 (시공): mapTree」
+ * 를 띄웠지만 실내 맵도 트리 노드도 병합본에 멀쩡히 들어 있었다.
+ */
+function droppedFromMerge(merged: Project, result: Project, key: string): boolean {
+  if (key.startsWith("maps.")) {
+    const id = key.slice("maps.".length);
+    return JSON.stringify(merged.maps?.[id]) !== JSON.stringify(result.maps?.[id]);
+  }
+  const read = (project: Project): unknown => (project as unknown as Record<string, unknown>)[key];
+  return JSON.stringify(read(merged)) !== JSON.stringify(read(result));
+}
+
 /** base 에 각 결과의 맵 묶음만 얹는다. 같은 맵을 두 결과가 주장하면 뒤의 것이 이긴다. */
 export function mergeMapBundles(base: Project, results: readonly MapBundleResult[]): MergeMapBundlesResult {
   const merged = clone(base);
@@ -232,14 +255,6 @@ export function mergeMapBundles(base: Project, results: readonly MapBundleResult
     const started = result.base ?? base;
     const rawKeys = mapBundleSpill(started, result.project, result.mapIds);
     carryCreatedEntries(merged, started, result.project);
-    // 정의를 함께 옮긴 키는 «버린 것» 이 아니다. 결과와 값이 같아진 키를 덜어내고,
-    // 여전히 다른 키(= 이 결과의 편집이 반영되지 않은 키)만 spill 로 남긴다.
-    const keys = rawKeys.filter((key) => {
-      if (key.startsWith("maps.") || key === "mapTree") return true;
-      const read = (project: Project): unknown => (project as unknown as Record<string, unknown>)[key];
-      return JSON.stringify(read(merged)) !== JSON.stringify(read(result.project));
-    });
-    if (keys.length > 0) spills.push({ mapIds: result.mapIds, keys });
     const bundle = new Set<string>();
     for (const id of result.mapIds) {
       for (const bid of mapBundleIds(result.project, id)) bundle.add(bid);
@@ -255,6 +270,11 @@ export function mergeMapBundles(base: Project, results: readonly MapBundleResult
     if (merged.mapTree) {
       for (const id of result.mapIds) replaceOrAttachSubtree(merged.mapTree, result.project.mapTree, id);
     }
+    // 보고는 병합이 끝난 **뒤** 에 한다. 이 결과까지 얹은 병합본과 대조해, 끝내 반영되지 않은
+    // 키만 남긴다 — 그래야 「버렸다」가 사실이 된다. 앞으로 `carryCreatedEntries` 가 무엇을 더
+    // 옮기더라도 보고가 저절로 따라온다(예외 목록을 손볼 필요가 없다).
+    const keys = rawKeys.filter((key) => droppedFromMerge(merged, result.project, key));
+    if (keys.length > 0) spills.push({ mapIds: result.mapIds, keys });
   }
   return { project: merged, spills, conflicts: [...conflicts].sort() };
 }

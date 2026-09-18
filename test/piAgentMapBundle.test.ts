@@ -70,6 +70,42 @@ describe("piAgent mapBundle", () => {
     expect(mapBundleSpill(base, a, ["map_east", "map_west"])).toEqual(["startMapId"]);
   });
 
+  // 실측(2026-09-17 조수 로그 [33][37][59][61]): 「집 2개만들어」 처럼 **시작 맵** 하나만 범위로
+  // 받은 빌더가 집 실내 맵을 새로 달면, 옮기기는 제대로 되는데 팀 보드에는 「범위 밖 변경 버림
+  // (시공): mapTree」 가 떴다. 시작 맵은 mapTree 의 **루트**라서(blankProject: mapTree.mapId =
+  // startMapId) 감사용 pruneSubtrees 가 루트 자신은 잘라내지 못하고, 루트 밑에 새로 달린 실내
+  // 노드가 그대로 남아 base 와 달라 보인 것이다. 버려진 것이 없는데 버렸다고 말하는 거짓 보고다.
+  it("시작 맵(트리 루트)에 실내 맵을 새로 달아도 spill 로 보고하지 않는다", () => {
+    const base = createBlankProject();
+    const rootId = base.mapTree.mapId;
+    const a = clone(base);
+    for (const [id, name] of [["map_house_a_inner", "엘런의 집"], ["map_house_b_inner", "바르톨의 집"]] as const) {
+      a.maps[id] = { ...clone(a.maps[rootId]!), id, name };
+      a.mapTree.children.push({ mapId: id, children: [] });
+    }
+
+    const merged = mergeMapBundles(base, [{ mapIds: [rootId], project: a }]);
+
+    expect(merged.spills).toEqual([]);
+    expect(merged.project.maps.map_house_a_inner?.name).toBe("엘런의 집");
+    expect(merged.project.maps.map_house_b_inner?.name).toBe("바르톨의 집");
+    expect(mapBundleIds(merged.project, rootId)).toEqual(expect.arrayContaining(["map_house_a_inner", "map_house_b_inner"]));
+    expect(commitChangeset(merged.project, base).ok).toBe(true);
+  });
+
+  // 경계 고정: 부분 트리를 비우는 것은 **묶음 루트 아래**에만 적용된다. 묶음 밖 맵을 트리에서
+  // 떼는 것은 여전히 범위 밖 편집이라 버리고 보고해야 한다 — 아니면 감사가 트리 전체에 눈을 감는다.
+  it("묶음 밖 맵을 트리에서 뗀 것은 옮기지 않고 spill 로 보고한다", () => {
+    const base = seed();
+    const a = clone(base);
+    a.mapTree.children = a.mapTree.children.filter((node) => node.mapId !== "map_west");
+
+    const merged = mergeMapBundles(base, [{ mapIds: ["map_east"], project: a }]);
+
+    expect(merged.spills).toEqual([{ mapIds: ["map_east"], keys: ["mapTree"] }]);
+    expect(merged.project.mapTree.children.some((node) => node.mapId === "map_west")).toBe(true);
+  });
+
   it("같은 맵을 두 결과가 주장하면 뒤의 것이 이기고 conflicts 로 보고한다", () => {
     const base = seed();
     const a = clone(base); a.maps.map_east!.name = "A";
@@ -139,6 +175,65 @@ describe("piAgent mapBundle", () => {
 
     expect(merged.project.switches.find((entry) => entry.id === seeded.id)!.name).toBe(seeded.name);
     expect(merged.spills).toEqual([{ mapIds: ["map_east"], keys: ["switches"] }]);
+  });
+
+  // 불변식. 이 한 줄이 있었으면 mapTree 거짓 보고는 애초에 못 나왔다 — 「버렸다」고 말한 키는
+  // 병합본에 반영되어 있으면 안 된다. 시나리오를 늘릴 때마다 여기에 태운다.
+  it("보고한 spill 키는 병합본에 반영되어 있지 않다", () => {
+    const read = (project: Project, key: string): string => {
+      if (key.startsWith("maps.")) return JSON.stringify(project.maps?.[key.slice("maps.".length)]);
+      return JSON.stringify((project as unknown as Record<string, unknown>)[key]);
+    };
+    const base = seed();
+    const rootId = base.mapTree.mapId;
+
+    const 실내추가 = clone(base);
+    실내추가.maps.map_root_inner = { ...clone(실내추가.maps[rootId]!), id: "map_root_inner", name: "루트 실내" };
+    실내추가.mapTree.children.push({ mapId: "map_root_inner", children: [] });
+
+    const 남의맵 = clone(base);
+    남의맵.maps.map_west!.name = "남의 맵";
+    (남의맵 as { startMapId?: string }).startMapId = "map_west";
+
+    const 트리뗌 = clone(base);
+    트리뗌.mapTree.children = 트리뗌.mapTree.children.filter((node) => node.mapId !== "map_west");
+
+    for (const [이름, mapIds, project] of [
+      ["루트에 실내 추가", [rootId], 실내추가],
+      ["남의 맵 편집", ["map_east"], 남의맵],
+      ["묶음 밖 트리 뗌", ["map_east"], 트리뗌],
+    ] as const) {
+      const merged = mergeMapBundles(base, [{ mapIds, project }]);
+      for (const spill of merged.spills) {
+        for (const key of spill.keys) {
+          expect(read(merged.project, key), `${이름}: ${key} 는 병합본에 없어야 보고가 참이다`)
+            .not.toBe(read(project, key));
+        }
+      }
+    }
+  });
+
+  // 비동기 배정에서 A 가 먼저 병합되면 병합본은 B 의 사본보다 앞서 나간다. 그 차이를 B 의
+  // 「버림」으로 보고하면 팀 보드에 없는 경고가 뜬다 — 보고 기준은 각자의 출발 사본이다.
+  it("여러 결과가 각자 실내 맵을 달아도 서로를 spill 로 보고하지 않는다", () => {
+    const base = seed();
+    const snapshot = clone(base);
+    const mk = (mapId: string, innerId: string, name: string): Project => {
+      const next = clone(snapshot);
+      next.maps[innerId] = { ...clone(next.maps[mapId]!), id: innerId, name };
+      next.mapTree.children.find((node) => node.mapId === mapId)!.children.push({ mapId: innerId, children: [] });
+      return next;
+    };
+
+    const merged = mergeMapBundles(base, [
+      { mapIds: ["map_east"], project: mk("map_east", "map_east_inner", "동쪽 실내"), base: snapshot },
+      { mapIds: ["map_west"], project: mk("map_west", "map_west_inner", "서쪽 실내"), base: snapshot },
+    ]);
+
+    expect(merged.spills).toEqual([]);
+    expect(merged.project.maps.map_east_inner?.name).toBe("동쪽 실내");
+    expect(merged.project.maps.map_west_inner?.name).toBe("서쪽 실내");
+    expect(commitChangeset(merged.project, base).ok).toBe(true);
   });
 
   it("NDJSON 디코더는 조각 경계와 깨진 줄을 견딘다", () => {
