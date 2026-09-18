@@ -980,7 +980,7 @@ async function doLoad(): Promise<void> {
     return;
   }
   if (!opened) {
-    toast("이 브라우저에서는 폴더 선택을 지원하지 않습니다. 최신 Chrome 또는 Edge를 사용하세요.", "error");
+    toast("프로젝트 서버에 연결되지 않았습니다. 내부 IP의 프로젝트 호스트 주소로 다시 접속하세요.", "error");
     return;
   }
   window.location.reload();
