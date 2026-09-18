@@ -310,6 +310,8 @@ before Apply is enabled. The shared generation controller owns stale-target and
 project-switch checks. World/lore coupling, expression variants and automatic
 cutscene insertion are not part of v1.
 
+Shared-catalog read line (2026-09-19): charset/face slots show one read-only line from the shared catalog (`sharedCharsetRow`/`sharedFaceRow` in `src/project/sharedCharacterFaceResolver.ts`) — label · status · quality · attributes. Bust has no shared concept and is excluded; uploaded/generated pictures state "no shared classification". No value sync, no writes, no schema change.
+
 Tests: `characterAppearanceEditor`, `characterAppearanceLifecycle`,
 `databaseTabIcons` and `databaseSidebarNav`. The supported viewport matrix is
 1024x768, 1280x800 and 1440x900; list and detail have independent bounded scrolls.
