@@ -88,6 +88,11 @@ export const MAX_ROAD_WIDTH = 3;
 export const FENCE_LOT_MARGIN = 1;
 /** 문 앞 남쪽 울타리 게이트 반폭(총 3칸: door.x±1). 길·NPC 동선 확보. */
 export const FENCE_GATE_HALF_WIDTH = 1;
+/**
+ * 형태 유형 필지에서 용마루 위로 울타리가 올라가는 최대 줄 수. 필지는 길에 면하려고 집보다
+ * 깊게 잡히므로(5줄 집 ↔ 11줄 필지) 깊이를 그대로 두르면 지붕 위 빈 마당이 울타리에 갇힌다.
+ */
+export const FENCE_BACK_ROWS = 2;
 // 울타리 둘레 세트 정본(2026-07-16 사용자 교정): 378/380=위 모서리, 438/410=아래 모서리,
 // 379=가로대, 408=세로 변, 409=왼쪽 끝 가로대, 439=오른쪽 끝 가로대.
 export const FENCE_TOP_LEFT = 378;

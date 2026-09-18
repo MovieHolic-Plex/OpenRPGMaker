@@ -1871,7 +1871,10 @@ function setVillageHarnessLayoutPlan(
         ...plaza.rect,
         tags: [
           "commons",
-          "road-loop",
+          // 광장 둘레 링 길은 `paintPlazaAndAvenue` 가 깐다. 형태 유형 경로는 그 시공기를 통째로
+          // 건너뛰므로(위 `if (!morph)`) 링이 없다 — 그런데도 태그를 달아 두어, 계획을 읽는 쪽이
+          // 있지도 않은 순환로를 믿게 만들었다(2026-09-18).
+          ...(morphology ? [] : ["road-loop"]),
           ...(settlementLayout === "street-grid" ? ["street-grid"] : []),
           ...(morphology ? [`morphology:${morphology}`] : []),
           ...(relief ? ["relief:hills"] : []),
