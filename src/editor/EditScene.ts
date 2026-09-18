@@ -604,7 +604,8 @@ export class EditScene extends PhaserRuntime.Scene {
     const view = this.cameras?.main?.worldView;
     if (!view || view.width <= 0 || view.height <= 0) return;
     const mapId = this.mapId();
-    const map = mapId ? store.getCurrent().maps[mapId] : undefined;
+    if (!mapId) return;
+    const map = store.getCurrent().maps[mapId];
     if (map && shouldLazilyRenderEditMap(map) && this.tileLayer && this.overlayLayer && this.gridGraphics) {
       const nextWindowKey = editSceneTileWindowKey(this, map);
       if (nextWindowKey !== this.lastMaterializedTileWindowKey) {
