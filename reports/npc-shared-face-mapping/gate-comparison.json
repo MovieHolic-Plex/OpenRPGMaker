@@ -1,0 +1,578 @@
+{
+  "baseCommit": "89d517fbf",
+  "expanded": {
+    "numTotalTests": 10331,
+    "numPassedTests": 8835,
+    "numFailedTests": 1485,
+    "numPendingTests": 11
+  },
+  "expandedFiles": 960,
+  "baselineComparison": {
+    "files": 91,
+    "passed": 762,
+    "failed": 279,
+    "unmatched": [
+      {
+        "file": "spatialSourceBuildUi.test.ts",
+        "test": "source build chrome on the real Database controller issues a detached space Build at seed 19 whose Apply is one undo/redo",
+        "new": "SpatialOperationError: missing: occ_ffa69317-a1f6-41a5-9fb7-dd52bcfad501",
+        "old": "SpatialOperationError: missing: occ_7c0fa6f5-0000-465f-ba00-e9f5013375cd"
+      }
+    ],
+    "unmatchedAfterNormalizingGeneratedIds": [],
+    "filesCompared": [
+      {
+        "file": "actionCombatProbeBoot.test.ts",
+        "failuresBefore": 3,
+        "failuresAfter": 3,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "advisoryLintProvenance.test.ts",
+        "failuresBefore": 7,
+        "failuresAfter": 7,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "agentToolFollowups.test.ts",
+        "failuresBefore": 2,
+        "failuresAfter": 2,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "aiActivityLiveRow.test.ts",
+        "failuresBefore": 3,
+        "failuresAfter": 3,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "aiActivityNarration.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "aiAuthoredBaselineSurfaces.test.ts",
+        "failuresBefore": 3,
+        "failuresAfter": 3,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "aiAutonomousRunSurface.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "aiChatPanelComposerMode.test.ts",
+        "failuresBefore": 2,
+        "failuresAfter": 2,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "aiClusterAssist.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "aiCommandSchemaContract.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "aiComposerEffort.test.ts",
+        "failuresBefore": 3,
+        "failuresAfter": 3,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "aiContinueUserAction.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "aiDeckMove.test.ts",
+        "failuresBefore": 9,
+        "failuresAfter": 9,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "aiEndingCompletionRegression.test.ts",
+        "failuresBefore": 13,
+        "failuresAfter": 13,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "aiPanelAutoExpand.test.ts",
+        "failuresBefore": 3,
+        "failuresAfter": 3,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "aiPanelChrome.test.ts",
+        "failuresBefore": 8,
+        "failuresAfter": 8,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "aiPanelGlassResize.test.ts",
+        "failuresBefore": 11,
+        "failuresAfter": 11,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "aiPiChangeReceipt.test.ts",
+        "failuresBefore": 2,
+        "failuresAfter": 2,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "aiStudioOpacityPersistence.test.ts",
+        "failuresBefore": 5,
+        "failuresAfter": 5,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "applyChangesetToStore.test.ts",
+        "failuresBefore": 2,
+        "failuresAfter": 2,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "assistantSessionContextSurface.test.ts",
+        "failuresBefore": 10,
+        "failuresAfter": 10,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "audioDescriptionEditor.test.ts",
+        "failuresBefore": 13,
+        "failuresAfter": 13,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "commandRegistry.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "communitySaveBoot.test.ts",
+        "failuresBefore": 3,
+        "failuresAfter": 3,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "customEquipmentSlots.test.ts",
+        "failuresBefore": 7,
+        "failuresAfter": 7,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "databaseAllTabsRenderWalk.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "databaseSystemModern.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "databaseSystemSections.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "editorHeaderTerminology.test.ts",
+        "failuresBefore": 3,
+        "failuresAfter": 3,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "editorLayoutPersist.test.ts",
+        "failuresBefore": 2,
+        "failuresAfter": 2,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "emberQuestToolReplay.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "evals.test.ts",
+        "failuresBefore": 3,
+        "failuresAfter": 3,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "eventCommandInteractionContract.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "eventCommandRemediation/U28.test.ts",
+        "failuresBefore": 6,
+        "failuresAfter": 6,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "eventEditorCommitProbe.baseline.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "eventEditorFormSurface.baseline.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "eventEditorInteractionSurface.baseline.test.ts",
+        "failuresBefore": 2,
+        "failuresAfter": 2,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "eventEditorLayoutHierarchy.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "eventEditorM2Surface.baseline.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "eventEditorPortalSurface.baseline.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "eventEditorShellSurface.baseline.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "eventPageConditionGroups.test.ts",
+        "failuresBefore": 3,
+        "failuresAfter": 3,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "eventPagePreviewTransport.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "eventPageRequiredFields.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "exportAssetResolution.test.ts",
+        "failuresBefore": 3,
+        "failuresAfter": 3,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "exportSaveAdoption.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "generateMap.test.ts",
+        "failuresBefore": 7,
+        "failuresAfter": 7,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "horrorExperienceQa.test.ts",
+        "failuresBefore": 2,
+        "failuresAfter": 2,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "horrorMysteryPrototype.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "independentReviewEvidenceScale.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "interiorConceptRoutes.test.ts",
+        "failuresBefore": 2,
+        "failuresAfter": 2,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "interiorPipelineMapReplacement.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "leftDockPanels.test.ts",
+        "failuresBefore": 2,
+        "failuresAfter": 2,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "lifePlayerSaveFailures.test.ts",
+        "failuresBefore": 3,
+        "failuresAfter": 3,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "mapDeletionIntegrity.test.ts",
+        "failuresBefore": 4,
+        "failuresAfter": 4,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "moveRouteEventTargetPicker.test.ts",
+        "failuresBefore": 2,
+        "failuresAfter": 2,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "newProjectPresetHandoff.test.ts",
+        "failuresBefore": 2,
+        "failuresAfter": 2,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "openingEditTools.test.ts",
+        "failuresBefore": 2,
+        "failuresAfter": 2,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "p2EditorAuthoring.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "pageItemCondition.test.ts",
+        "failuresBefore": 2,
+        "failuresAfter": 2,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "placeConceptTool.test.ts",
+        "failuresBefore": 3,
+        "failuresAfter": 3,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "playerRunControls.test.ts",
+        "failuresBefore": 4,
+        "failuresAfter": 4,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "projectResetTool.test.ts",
+        "failuresBefore": 2,
+        "failuresAfter": 2,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "questCompiler.test.ts",
+        "failuresBefore": 2,
+        "failuresAfter": 2,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "quickAuthoringSurface.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "regionTaskWideReview.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "roguelikeRooms.test.ts",
+        "failuresBefore": 2,
+        "failuresAfter": 2,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "sidebarFocusModes.test.ts",
+        "failuresBefore": 3,
+        "failuresAfter": 3,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "sidebarFocusR1.test.ts",
+        "failuresBefore": 3,
+        "failuresAfter": 3,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "spatialAssetBrowsers.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "spatialCompositionWorkspace.test.ts",
+        "failuresBefore": 2,
+        "failuresAfter": 2,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "spatialGeographyActions.test.ts",
+        "failuresBefore": 5,
+        "failuresAfter": 5,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "spatialIntegratedAuthoring.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "spatialNewPlace.test.ts",
+        "failuresBefore": 4,
+        "failuresAfter": 4,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "spatialObjectActions.test.ts",
+        "failuresBefore": 2,
+        "failuresAfter": 2,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "spatialPlaceActions.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "spatialPlacePreview.test.ts",
+        "failuresBefore": 9,
+        "failuresAfter": 9,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "spatialSettlementRegion.test.ts",
+        "failuresBefore": 5,
+        "failuresAfter": 5,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "spatialSourceBuildUi.test.ts",
+        "failuresBefore": 5,
+        "failuresAfter": 5,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "spatialSourceBuildUiBoundary.test.ts",
+        "failuresBefore": 3,
+        "failuresAfter": 3,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "spatialSpaceActions.test.ts",
+        "failuresBefore": 3,
+        "failuresAfter": 3,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "spatialSpaceMemberUi.test.ts",
+        "failuresBefore": 5,
+        "failuresAfter": 5,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "storyArcQualityTools.test.ts",
+        "failuresBefore": 3,
+        "failuresAfter": 3,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "studioBarActions.test.ts",
+        "failuresBefore": 6,
+        "failuresAfter": 6,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "tileToolbarMapModeClickWiring.test.ts",
+        "failuresBefore": 2,
+        "failuresAfter": 2,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "toolSchemaProviderCompat.test.ts",
+        "failuresBefore": 2,
+        "failuresAfter": 2,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "userFacingToolNames.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "uxcEditorShell.test.ts",
+        "failuresBefore": 1,
+        "failuresAfter": 1,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "villageAuthoringData.test.ts",
+        "failuresBefore": 5,
+        "failuresAfter": 5,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "walkEncounterModal.test.ts",
+        "failuresBefore": 3,
+        "failuresAfter": 3,
+        "newFailureSignatures": []
+      },
+      {
+        "file": "webExport.test.ts",
+        "failuresBefore": 6,
+        "failuresAfter": 6,
+        "newFailureSignatures": []
+      }
+    ]
+  },
+  "mainCiBaseline": "https://github.com/MovieHolic-Plex/rpg-zzu/actions/runs/35294339431",
+  "knownSparseTileFailures": {
+    "contextBuilder": 911,
+    "projectValidation": 368
+  },
+  "aggregateStatus": "Stopped after completed expanded unit results, during surface stage; automatic baseline flake retries and aggregate browser stage not completed."
+}

@@ -1,0 +1,7 @@
+
+> oprn@0.4.0 gates
+> node scripts/verify-gates.mjs --only typecheck --no-flake-retry
+
+typecheck:app  exit=0  errors=0  files=0
+
+기준선 대비 회귀 없음 (/home/main/.codex/worktrees/bf11/rpg-zzu/.omo/gates-baseline.json)

@@ -1,3 +1,4 @@
+import { refreshSharedCharacterGraphics } from "@/project/sharedCharacterFaceResolver";
 import { configForRole } from "./modelRoles";
 import { configForLegacySupervisor } from "./ultrabrainConfig";
 import { genId as newCheckpointRunId } from "@/util/id";
@@ -1850,6 +1851,11 @@ export class AssistantSession {
     // 획득 실패는 런을 막지 않는다: 이 가드는 편의일 뿐 실행 조건이 아니다.
     const releaseFreezeGuard = await this.freezeGuard().catch(() => () => {});
     try {
+      // Refresh before any tool can author NPC dialogue; never silently use stale host mappings.
+      if (typeof window !== "undefined" && typeof location !== "undefined") {
+        await refreshSharedCharacterGraphics(signal);
+        operation.assertCurrent();
+      }
       await this.beginCheckpoint(entryInstruction, text, turnOptions);
       operation.assertCurrent();
       if (this.recoveryOperation === operation && (this.workPlan ? isWorkPlanComplete(this.workPlan)
@@ -3828,6 +3834,10 @@ export class AssistantSession {
           await operation.wait(this.proveAppliedRevision(publish, signal));
         }
         return await this.finishAssessedRunRecap(this.withTurnLedger({ assistantText: "", proposedCalls: this.finalizeProposals(this.turnProposals), stoppedReason: "final" }), startedAt, usageBefore, auditFrom, onEvent);
+      }
+      if (typeof window !== "undefined" && typeof location !== "undefined") {
+        await refreshSharedCharacterGraphics(signal);
+        operation.assertCurrent();
       }
       this.runExecution = "response-final";
       this.pushAudit({ kind: "status", text: "오류 후 재시도(retryLastTurn)" });
