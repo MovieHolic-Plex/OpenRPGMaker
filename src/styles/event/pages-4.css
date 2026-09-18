@@ -820,6 +820,60 @@
   padding: 1px 5px;
 }
 
+/* 등장 조건은 레일에 요약만 남기고, 클릭하면 전용 모달에서 편집한다. */
+.event-condition-modal-backdrop {
+  align-items: center;
+  background: rgb(39 36 28 / 42%);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 24px;
+  position: fixed;
+  z-index: 1000;
+}
+.event-condition-modal {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 22px 60px rgb(44 37 24 / 28%);
+  max-height: min(760px, calc(100vh - 48px));
+  max-width: 1040px;
+  overflow: auto;
+  width: min(1040px, 100%);
+}
+.event-condition-modal-header,
+.event-condition-modal-footer { align-items: center; display: flex; justify-content: space-between; padding: 16px 20px; }
+.event-condition-modal-header { border-bottom: 1px solid var(--border-subtle); }
+.event-condition-modal-header h2 { font-size: 18px; margin: 0; }
+.event-condition-modal-header p { color: var(--text-2); font-size: 12px; margin: 5px 0 0; }
+.event-condition-modal-close { background: transparent; border: 0; color: var(--text-2); cursor: pointer; font-size: 24px; line-height: 1; }
+.event-condition-modal-layout { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(260px, .75fr); min-height: 0; }
+.event-condition-modal-body { padding: 22px 28px 26px; }
+.event-condition-modal-help { background: var(--bg-inset); border-left: 1px solid var(--border-subtle); padding: 24px 22px; }
+.event-condition-modal-help h3 { font-size: 14px; margin: 0 0 10px; }
+.event-condition-modal-help h3:not(:first-child) { border-top: 1px solid var(--border-subtle); margin-top: 22px; padding-top: 18px; }
+.event-condition-modal-help p { color: var(--text-2); font-size: 12px; line-height: 1.7; margin: 0; }
+.event-condition-modal-help-card { background: var(--bg-raised); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 12px; }
+.event-condition-modal-body .event-editor-settings-accordion-body { background: transparent; border: 0; display: block; inset: auto; max-height: none; overflow: visible; padding: 0; position: static; }
+.event-condition-modal-body [data-testid="event-classic-conditions"] { border: 0; margin: 0; padding: 0; }
+.event-condition-modal-body [data-testid="event-classic-conditions"] > summary { background: var(--bg-inset); border: 1px solid var(--border-subtle); border-radius: 9px; cursor: default; font-size: 14px; padding: 12px 14px; }
+.event-condition-modal-body [data-testid="event-classic-conditions"] > summary::marker { color: var(--accent); }
+.event-condition-modal-body .event-collapsible-body { padding: 16px 0 0; }
+.event-condition-modal-body .event-conditions-body { gap: 16px; }
+.event-condition-modal-body .event-conditions-sentence { font-size: 14px; line-height: 1.7; padding: 13px 15px; }
+.event-condition-modal-body .event-conditions-grid { gap: 10px 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.event-condition-modal-body .event-condition-row { background: var(--bg-raised); border: 1px solid var(--border-subtle); border-radius: 8px; min-height: 44px; padding: 8px 10px; }
+.event-condition-modal-body .event-condition-label { font-size: 13px; }
+.event-condition-modal-body .event-advanced-conditions { margin-top: 14px; padding-top: 12px; }
+.event-condition-modal-body .event-condition-add { margin-top: 12px; }
+.event-condition-modal-body [data-testid="event-page-trigger-priority-stack"] { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--border-subtle); }
+.event-condition-modal-footer { border-top: 1px solid var(--border-subtle); gap: 8px; justify-content: flex-end; }
+.event-condition-modal-footer .primary { background: var(--accent); color: white; }
+@media (max-width: 800px) {
+  .event-condition-modal-layout { display: block; }
+  .event-condition-modal-help { border-left: 0; border-top: 1px solid var(--border-subtle); }
+}
+
 /* 숫자 칸도 같은 이유로 눌린다. 타이머 «0» 자리표시자가 반만 그려져 «(» 처럼 보였다. */
 .event-editor .event-conditions-grid input[type="number"],
 .event-editor .event-conditions-grid input[type="text"] {

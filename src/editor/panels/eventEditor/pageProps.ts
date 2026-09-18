@@ -61,6 +61,7 @@ import {
 
 import { relationshipStateName } from "@/project/relationshipState";
 import { commitAfterPointerGesture } from "./commitAfterPointerGesture";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { appearanceBindingControl } from "../appearanceBindingControl";
 import { getCharacterAppearance } from "@/project/characterAppearances";
 import { insideLocationSentence, mapLocationLabel } from "@/editor/mapLocationLabels";
@@ -1121,8 +1122,75 @@ function railGroup(spec: EventRailGroupSpec, body: HTMLElement, openKey: string)
     dataset: { testid: `evt-rail-group-${spec.slug}`, railGroup: spec.slug },
     children: [header, body],
   });
-  header.addEventListener("click", () => selectRailGroup(group, spec.slug, openKey));
+  header.addEventListener("click", () => {
+    if (spec.slug === "when") {
+      openConditionsModal(body);
+      return;
+    }
+    selectRailGroup(group, spec.slug, openKey);
+  });
   return group;
+}
+
+function openConditionsModal(body: HTMLElement): void {
+  if (document.querySelector("[data-testid='event-condition-modal']")) return;
+  const conditions = body.querySelector<HTMLDetailsElement>("[data-testid='event-classic-conditions']");
+  if (conditions) conditions.open = true;
+  const backdrop = el("div", {
+    class: "event-condition-modal-backdrop",
+    dataset: { testid: "event-condition-modal" },
+  });
+  const dialog = el("section", {
+    class: "event-condition-modal",
+    attrs: { role: "dialog", "aria-modal": "true", "aria-labelledby": "event-condition-modal-title" },
+  });
+  const close = () => {
+    unregisterModal(backdrop);
+    backdrop.remove();
+  };
+  const closeButton = el("button", {
+    class: "event-condition-modal-close",
+    text: "×",
+    attrs: { type: "button", "aria-label": "조건 설정 닫기" },
+    on: { click: close },
+  });
+  dialog.append(
+    el("header", {
+      class: "event-condition-modal-header",
+      children: [
+        el("div", { children: [el("h2", { text: "등장 조건 설정", attrs: { id: "event-condition-modal-title" } }), el("p", { text: "이 페이지가 게임에 나타나는 조건을 설정합니다." })] }),
+        closeButton,
+      ],
+    }),
+    el("div", {
+      class: "event-condition-modal-layout",
+      children: [
+        el("div", { class: "event-condition-modal-body", children: [body] }),
+        el("aside", {
+          class: "event-condition-modal-help",
+          children: [
+            el("h3", { text: "판정 미리보기" }),
+            el("p", { class: "event-condition-modal-help-card", text: "게임은 이 조건들을 매 순간 확인합니다. 조건을 모두 만족할 때 이 페이지가 등장합니다." }),
+            el("h3", { text: "조건은 어떻게 작동하나요?" }),
+            el("p", { text: "조건을 여러 개 추가하면 기본적으로 모두 만족해야 합니다. 현재 페이지의 등장 규칙을 오른쪽에서 확인하세요." }),
+            el("h3", { text: "예시" }),
+            el("p", { class: "event-condition-modal-help-card", text: "낮 시간대이고 마을 광장 안에 있으며 퀘스트 스위치가 켜졌을 때 NPC가 나타납니다." }),
+          ],
+        }),
+      ],
+    }),
+    el("footer", {
+      class: "event-condition-modal-footer",
+      children: [
+        el("button", { class: "btn", text: "닫기", attrs: { type: "button" }, on: { click: close } }),
+        el("button", { class: "btn primary", text: "조건 저장", attrs: { type: "button" }, on: { click: close } }),
+      ],
+    }),
+  );
+  backdrop.append(dialog);
+  document.body.append(backdrop);
+  registerModal(backdrop, close);
+  closeButton.focus();
 }
 
 /** 형제 그룹을 모두 닫고 이 그룹만 연다. 다시 그리지 않으므로 포커스·스크롤이 유지된다. */
@@ -1176,14 +1244,17 @@ function wrapPageSettingsAsAccordion(
   openKey: string,
 ): HTMLElement {
   const look = Array.from(source.querySelectorAll<HTMLElement>(".presence, [data-testid='event-classic-graphic']"));
-  const when = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-conditions'], [data-testid='event-page-trigger-priority-stack']"));
+  // 등장 조건만 모달로 옮긴다. 시작 방식·우선순위·통행은 다른 설정 그룹의 책임이다.
+  const when = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-conditions']"));
   const move = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-movement-section']"));
   // 우선순위는 겹침과 한 판정식이라 memory 그룹이 함께 claim 한다(예전에는 when 그룹이었다).
   // 「크기와 통행」도 같은 그룹이다 — 미분류로 남기면 "기타" 그룹이 생겨 레일이 4칸 계약을
   // 깬다(eventRailGroupComposition.test.ts 가 그 계약을 고정한다).
   const memory = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-page-priority-overlap-stack'], [data-testid='event-classic-overlap'], [data-testid='event-classic-footprint'], [data-testid='event-page-fact-overlap']"));
-  // 레일은 한 번에 한 그룹만 연다 — 저장된 활성 slug 가 없으면 「모습과 대화」로 시작한다.
-  const activeSlug = activeRailGroupSlug(openKey, "look-talk");
+  // 레일은 한 번에 한 그룹만 연다. 조건이 작성된 페이지는 처음 열었을 때
+  // 「언제 보이나요」를 먼저 보여 줘야 등장 조건을 숨기지 않는다. 사용자가
+  // 다른 그룹을 고른 뒤에는 저장된 활성 slug 를 그대로 존중한다.
+  const activeSlug = activeRailGroupSlug(openKey, conditions.length > 0 ? "when" : "look-talk");
   const groups = [
     { slug: "look-talk", title: "모습과 대화", summary: page.graphic.sprite ? "그래픽 있음" : "그래픽 없음", authored: Boolean(page.graphic.sprite), nodes: look },
     { slug: "when", title: "언제 보이나요", summary: conditions.length === 0 ? "조건 없음" : `조건 ${conditions.length}개`, authored: conditions.length > 0, nodes: when },
