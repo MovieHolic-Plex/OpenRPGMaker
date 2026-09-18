@@ -31,12 +31,14 @@ export interface PreviewSimState {
   equippedToolItemId?: PlaySession["equippedToolItemId"];
 }
 
+export type ForkVerdict = "then" | "else" | "unknown";
+
 export interface SimulatedStep {
   readonly command: Command;
   readonly depth: number;
   readonly branchLabel?: string;
   readonly simState: PreviewSimState;
-  readonly forkTaken?: "then" | "else";
+  readonly forkTaken?: "then" | "else" | "unknown";
   readonly skipped?: boolean;
   /**
    * 이 단계가 가리키는 명령의 편집 경로(`[명령칸, 분기칸, 명령칸, …]`) — 목록·스토리와
@@ -152,12 +154,13 @@ export function previewSessionFromSimState(state: PreviewSimState): PlaySessionL
 
 export function simulatePageCommands(
   commands: readonly Command[],
-  hostEventId?: string
+  hostEventId?: string,
+  mapId?: string
 ): SimulationResult {
   const initialState = createPreviewSimState();
   const steps: SimulatedStep[] = [];
   const state = cloneState(initialState);
-  walkWithSimulation(commands, 0, state, steps, hostEventId, undefined, []);
+  walkWithSimulation(commands, 0, state, steps, hostEventId, undefined, [], mapId);
   return { steps, finalState: state };
 }
 
@@ -171,6 +174,7 @@ function walkWithSimulation(
   hostEventId: string | undefined,
   branchLabel: string | undefined,
   pathPrefix: readonly number[],
+  mapId?: string,
   skipped = false
 ): WalkResult {
   for (let index = 0; index < commands.length; index += 1) {
@@ -179,16 +183,24 @@ function walkWithSimulation(
     const stateBefore = cloneState(state);
 
     if (command.kind === "fork" && !skipped) {
-      const taken = evalForkCondition(command.condition, state, hostEventId);
+      const taken = evalForkCondition(command.condition, state, hostEventId, mapId);
       steps.push({ command, depth, branchLabel, simState: stateBefore, forkTaken: taken, skipped, path });
-      // 참/거짓 양쪽에 **같은** state 를 넘긴다 — 실제로 실행되는 쪽은 상태를 바꿔야 하고,
-      // 실행되지 않는 쪽은 skipped 라 applyCommandToState 를 타지 않으므로 오염되지 않는다.
+      // 판정 불가(unknown)면 양쪽 다 skipped — 어느 쪽도 「실행된다」고 단정하지 않는다.
+      // 판정 가능해도 분기는 각자 복제된 상태를 받는다 — 먼저 걷는 분기의 쓰기가
+      // 뒤 분기 스텝의 before 스냅샷을 오염시키던 구형 공유-state 검사를 고쳤다.
       for (const branch of eventCommandBranches(command)) {
-        const branchSkipped = branch.kind === "forkElse" ? taken !== "else" : taken !== "then";
+        const branchSkipped = taken === "unknown"
+          ? true
+          : branch.kind === "forkElse" ? taken !== "else" : taken !== "then";
         walkWithSimulation(
-          branch.commands, depth + 1, state, steps, hostEventId, branch.label,
-          [...path, branch.branchIndex], branchSkipped,
+          branch.commands, depth + 1, cloneState(state), steps, hostEventId, branch.label,
+          [...path, branch.branchIndex], mapId, branchSkipped,
         );
+      }
+      if (taken !== "unknown") {
+        const takenBranch = eventCommandBranches(command).find((branch) =>
+          branch.kind === "forkElse" ? taken === "else" : taken === "then");
+        if (takenBranch) applyCommandsToState(takenBranch.commands, state, hostEventId, mapId);
       }
       continue;
     }
@@ -212,7 +224,7 @@ function walkWithSimulation(
       for (const branch of branches) {
         walkWithSimulation(
           branch.commands, depth + 1, sharesState ? state : cloneState(state), steps, hostEventId,
-          branch.label, [...path, branch.branchIndex], skipped,
+          branch.label, [...path, branch.branchIndex], mapId, skipped,
         );
       }
       continue;
@@ -229,10 +241,59 @@ function walkWithSimulation(
 function evalForkCondition(
   condition: Condition,
   state: PreviewSimState,
-  hostEventId: string | undefined
-): "then" | "else" {
-  const result = evalCondition(previewSessionFromSimState(state), condition, hostEventId);
+  hostEventId: string | undefined,
+  mapId?: string
+): ForkVerdict {
+  // insideLocation 은 맵 기하가 없으면 판정 불가 — map context 없이 evalCondition 에
+  // 맡기면 「로케이션 없음 = 거짓」으로 else-taken 을 단정해 뱃지(판정 불가)와 어긋났다.
+  if (conditionNeedsMap(condition) && !resolvePreviewLocations(mapId)) return "unknown";
+  const session = previewSessionFromSimState(state);
+  const context = resolvePreviewLocations(mapId) ? { map: { locations: resolvePreviewLocations(mapId)! } } : undefined;
+  const result = evalCondition(session, condition, hostEventId, context);
   return result ? "then" : "else";
+}
+
+function conditionNeedsMap(condition: Condition): boolean {
+  switch (condition.kind) {
+    case "insideLocation":
+      return true;
+    case "all":
+    case "any":
+      return condition.conditions.some(conditionNeedsMap);
+    case "not":
+      return conditionNeedsMap(condition.condition);
+    default:
+      return false;
+  }
+}
+
+function resolvePreviewLocations(mapId?: string): readonly { readonly id: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number }[] | undefined {
+  const project = store.getCurrent();
+  const map = mapId ? project.maps[mapId] : project.maps[project.startMapId];
+  return map?.locations;
+}
+
+/** taken 분기의 명령들을 순서대로 상태에 적용한다(중첩 fork 포함). */
+function applyCommandsToState(
+  commands: readonly Command[],
+  state: PreviewSimState,
+  hostEventId: string | undefined,
+  mapId?: string
+): void {
+  for (const command of commands) {
+    if (command.kind === "fork") {
+      const taken = evalForkCondition(command.condition, state, hostEventId, mapId);
+      if (taken === "unknown") continue;
+      const takenBranch = eventCommandBranches(command).find((branch) =>
+        branch.kind === "forkElse" ? taken === "else" : taken === "then");
+      if (takenBranch) applyCommandsToState(takenBranch.commands, state, hostEventId, mapId);
+      continue;
+    }
+    if (command.kind === "breakLoop" || command.kind === "gotoLabel" || command.kind === "label") continue;
+    const branches = eventCommandBranches(command);
+    if (branches.length > 0) continue;
+    applyCommandToState(command, state, hostEventId);
+  }
 }
 
 function applyCommandToState(command: Command, state: PreviewSimState, hostEventId: string | undefined): void {

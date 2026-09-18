@@ -178,4 +178,45 @@ describe("previewSimulation", () => {
     const result = simulatePageCommands(commands);
     expect(getSimSwitch(result.finalState, switchId)).toBe(false);
   });
+
+  it("marks insideLocation fork unknown without a map — never a fabricated else", () => {
+    const commands: Command[] = [
+      {
+        kind: "fork",
+        condition: { kind: "insideLocation", locationId: "loc_missing", inside: true },
+        then: [{ kind: "text", body: "안" }],
+        else: [{ kind: "text", body: "밖" }],
+      },
+    ];
+    // 맵을 넘기지 않으면 로케이션 기하가 없어 판정 불가다.
+    const result = simulatePageCommands(commands, "ev_test");
+    const forkStep = result.steps.find((s) => s.command.kind === "fork");
+    expect(forkStep!.forkTaken).toBe("unknown");
+    // 양쪽 다 skipped — 어느 쪽도 「실행된다」고 단정하지 않는다.
+    const thenStep = result.steps.find((s) => s.branchLabel === "조건이 맞을 때");
+    const elseStep = result.steps.find((s) => s.branchLabel === "조건이 맞지 않을 때");
+    expect(thenStep!.skipped).toBe(true);
+    expect(elseStep!.skipped).toBe(true);
+  });
+
+  it("does not leak taken-branch writes into sibling branch snapshots", () => {
+    const project = store.getCurrent();
+    const switchId = project.switches[0]?.id ?? "sw_test";
+    const varId = project.variables[0]?.id ?? "var_test";
+    const commands: Command[] = [
+      {
+        kind: "fork",
+        condition: { kind: "switch", switchId, value: true },
+        then: [{ kind: "setVariable", variableId: varId, op: "=", value: 7 }],
+        else: [{ kind: "text", body: "거짓" }],
+      },
+    ];
+    // 조건 거짓 → else taken. else 스텝의 before 스냅샷에 then 쓰기(7)가 스며들면 안 된다.
+    const result = simulatePageCommands(commands, "ev_test");
+    const forkStep = result.steps.find((s) => s.command.kind === "fork");
+    expect(forkStep!.forkTaken).toBe("else");
+    const elseStep = result.steps.find((s) => s.branchLabel === "조건이 맞지 않을 때");
+    expect(getSimVariable(elseStep!.simState, varId)).toBe(0);
+    expect(getSimVariable(result.finalState, varId)).toBe(0);
+  });
 });

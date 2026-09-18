@@ -59,7 +59,7 @@ export type CommandPreviewContext = {
   readonly face?: ActiveFace;
   readonly simState?: PreviewSimState;
   readonly hostEventId?: string;
-  readonly forkTaken?: "then" | "else";
+  readonly forkTaken?: "then" | "else" | "unknown";
   readonly skipped?: boolean;
   /**
    * 「말투·연출」 진입 연출을 프리뷰에서 한 번 재생한다. 호출부가 **연출이 바뀐 순간에만**
