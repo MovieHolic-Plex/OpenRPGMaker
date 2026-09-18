@@ -1,3 +1,6 @@
+import { editorState } from "@/editor/editorState";
+import { makeLeftLayerSwitcher } from "./leftLayerSwitcher";
+import { captureFocus, restoreFocus } from "./sidebarFocus";
 import { getMode, toggleMode } from "@/app/mode";
 import { PRODUCT_TAGLINE } from "@/brand";
 import { showConfirm } from "@/editor/ui/modal";
@@ -68,10 +71,8 @@ import { renderCommitHistoryButton, renderIdentityTopbarControl } from "@/editor
 // 삭제한 것: 게임 메뉴(두 항목이 모두 오른쪽 버튼의 복제), 전문가 클래식 툴바 행, 툴바 접기,
 // 작업 칩(레이어 전환·자료집 버튼·▶ 테스트의 복제). 맵 메뉴는 2026-08-26 에 같은 이유로 사라졌다.
 //
-// 모드 차이: 전문가(`chrome.toolStrip`)는 세계관·음악·찾기를 「도구 ▾」 대신 아이콘 버튼으로
-// 인라인한다(1클릭). 초보(`chrome.paletteRail`)는 자료집·소재 버튼을 두지 않고 도구 메뉴가
-// 그 둘을 담는다 — 아이콘 레일이 이미 큰 도구 버튼을 차지하고 있고, 초보용 e2e·도움말이
-// 「도구 메뉴에서 자료집」 경로를 정본으로 삼기 때문이다.
+// 초보는 자료집을 도구 메뉴에 둔다. 소재와 레이어 전환은 모든 편집 모드에서
+// 같은 헤더 위치에 표시한다. 표준·전문가는 세계관·음악·찾기도 인라인한다.
 
 type MenuId = "project" | "tools" | "help";
 
@@ -97,6 +98,7 @@ let disposeSaveStatus: (() => void) | null = null;
 // 저장 버튼의 자동 저장 점을 그리는 함수. 구독은 renderTopbarSaveStatus 의 하나만 살아 있어야 하므로
 // (test/saveStatusVisibility: 재렌더마다 이전 구독을 끊고 살아 있는 구독은 항상 1개) 점은 그 구독에 얹는다.
 let paintSaveDot: ((state: AutoSaveState) => void) | null = null;
+let disposeLayerSwitcher: (() => void) | null = null;
 let disposeStudioButton: (() => void) | null = null;
 let disposeFullscreenButton: (() => void) | null = null;
 let lastLoggedAutoSaveKind: AutoSaveState["kind"] | null = null;
@@ -105,11 +107,14 @@ let lastLoggedAutoSaveKind: AutoSaveState["kind"] | null = null;
 let saveFailureEpisode = false;
 
 export function renderTopbar(topbar: HTMLElement): void {
+  const focusSnapshot = captureFocus(topbar);
   for (const dispose of disposeToolbarOverflows) dispose();
   disposeToolbarOverflows = [];
   disposeSaveStatus?.();
   disposeSaveStatus = null;
   paintSaveDot = null;
+  disposeLayerSwitcher?.();
+  disposeLayerSwitcher = null;
   disposeStudioButton?.();
   disposeStudioButton = null;
   disposeFullscreenButton?.();
@@ -142,6 +147,27 @@ export function renderTopbar(topbar: HTMLElement): void {
           toolButton({ testId: "toolbar-search", icon: "docSearch", title: headerLabel("mapEventSearch"), onClick: () => openMapEventSearchModal() }),
         ]),
   );
+  if (mode === "edit") {
+    let resources = lead.querySelector<HTMLElement>('[data-testid="toolbar-resource-manager"]');
+    if (!resources) {
+      resources = toolButton({ testId: "toolbar-resource-manager", icon: "image", label: headerLabel("resources"), title: headerLabel("resourceLibrary"), onClick: () => openResourceModal() });
+      lead.append(resources);
+    }
+    const layers = makeLeftLayerSwitcher(editorState.get().layer);
+    layers.classList.add("header-layer-switcher");
+    disposeLayerSwitcher = editorState.subscribe(({ layer }) => {
+      const keepFocus = layers.contains(document.activeElement);
+      for (const button of layers.querySelectorAll<HTMLButtonElement>("button")) {
+        const active = button.dataset.sidebarLayer === layer;
+        button.classList.toggle("is-active", active);
+        if (active) button.setAttribute("aria-current", "true");
+        else button.removeAttribute("aria-current");
+        if (!keepFocus) button.tabIndex = active ? 0 : -1;
+      }
+    });
+    const resourceIndex = Array.from(lead.children).indexOf(resources);
+    lead.insertBefore(layers, lead.children[resourceIndex + 1] ?? null);
+  }
   menuBar.append(lead);
 
   // 가운데 — 명령 팔레트.
@@ -178,6 +204,7 @@ export function renderTopbar(topbar: HTMLElement): void {
   menuBar.append(trailing);
 
   topbar.append(menuBar);
+  restoreFocus(topbar, focusSnapshot);
   installDelayedTooltips(topbar);
   // 플레이 모드(편집기 안에서 게임이 도는 상태)에서만 「편집으로 돌아가기」 줄을 하나 더 둔다.
   // 편집 모드의 클래식 툴바 행은 2026-09-03 에 걷었다 — 15개 중 14개가 메뉴 항목의 복제였다.
@@ -679,14 +706,13 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
         item("실행형 HTML 내보내기...", "menu-project-export-standalone", () => void doExportStandaloneHtml()),
       ];
     case "tools": {
-      // 작업 창(모달)만 담는다. 되돌리기/다시 실행과 레이어 3종은 사이드바가 소유하므로 없다.
-      // 자료집·소재는 표준·전문가에서 톱바 버튼이 집이라 초보에서만 이 메뉴가 담는다.
+      // 작업 창(모달)만 담는다. 레이어 전환은 헤더의 소재 옆에 있다.
+      // 초보의 자료집만 이 메뉴에 둔다. 소재는 모든 편집 모드에서 헤더 버튼이 소유한다.
       // AI 설정은 오른쪽 ⚙ 버튼이 집이다.
       const chrome = getEditorChrome();
       const beginnerOnly: MenuCommand[] = chrome.paletteRail
         ? [
             item(`${headerLabel("database")}...`, "menu-tools-database", () => openDatabaseModal(), "database"),
-            item(`${headerLabel("resourceLibrary")}...`, "menu-tools-resources", () => openResourceModal(), "image"),
             { kind: "separator" },
           ]
         : [];
