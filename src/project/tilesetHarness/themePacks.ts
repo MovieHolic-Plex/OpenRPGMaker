@@ -7,6 +7,7 @@ import {
   DARK_WALL_AUTOTILE_GROUP_ID,
 } from "@/project/defaults/darkWallAutotile";
 import { createInteriorTerrainAutotileGroups } from "@/project/defaults/interiorTerrainAutotiles";
+import { seedInteriorCeilingAutotile } from "@/project/defaults/interiorCeilingAutotile";
 import { createDungeonTerrainAutotileGroups } from "@/project/defaults/dungeonTerrainAutotiles";
 import type { CombinedTownTileSemanticEntry } from "@/project/defaults/tileSemanticsCombinedTown";
 import { INTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsInterior";
@@ -348,10 +349,11 @@ export function applyEasyRpgThemeMetadataPacks(tileset: TilesetDef): boolean {
     // 그룹 밖 타일 시드 + 옛 팩 개정의 잔존 라벨 청소(그룹 순회는 group.tileIds만 돌기 때문).
     changed = seedInteriorUngroupedTileMeta(tileset) || changed;
     // Option B (2026-07-15): house walls are whole-tile grammar (no wall-frame store autotile).
-    // Only dark wall 366 is seeded as terrain autotile (store-only body; render quarters separate).
+    // Dark wall 366 stores its body; ceiling 430 keeps variants. Both render native quarters.
     // Strip legacy wall-frame group if present so dark quarter gate is not tied to house group.
     changed = removeLegacyInteriorWallFrameAutotileGroup(tileset) || changed;
     changed = seedInteriorDarkWallAutotileGroup(tileset) || changed;
+    changed = seedInteriorCeilingAutotile(tileset) || changed;
     // 지형/카펫 RM2k3 블록 6종(산울타리·흙무더기·흙땅·데크·자갈·청록 카펫) — vision 감사(2026-07-12)로 확정.
     for (const group of createInteriorTerrainAutotileGroups()) {
       changed = upsertAutotileGroupKeepingCurrent(tileset, group) || changed;

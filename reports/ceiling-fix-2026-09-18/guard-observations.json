@@ -1,0 +1,9 @@
+{
+  "serializedGroupRenders": true,
+  "registrationIdempotent": true,
+  "editedGrammarSkipped": true,
+  "graftedSourceSkipped": true,
+  "customGroupPreserved": true,
+  "lockedMetadataPreserved": true,
+  "foreignTextureSkipped": true
+}
