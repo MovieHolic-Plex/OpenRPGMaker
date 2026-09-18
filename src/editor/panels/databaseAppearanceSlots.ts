@@ -1,6 +1,7 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { appearanceGenerationController } from "@/editor/characterAppearanceGeneration";
 import { resolveAppearancePortrait } from "@/project/characterAppearances";
+import { sharedCharsetRow, sharedFaceRow } from "@/project/sharedCharacterFaceResolver";
 import { store } from "@/project/store";
 import type { CharacterAppearanceRecord } from "@/project/types";
 import { el } from "@/util/dom";
@@ -12,6 +13,25 @@ import { updateAppearance } from "./databaseAppearanceView";
 
 type Slot = "charset" | "face" | "bust";
 const labels = { charset: "걷기 캐릭터", face: "얼굴", bust: "흉상" } as const;
+const SHARED_STATUS_LABELS = { pending: "미검토", mapped: "얼굴 지정", "no-face": "얼굴 없음 확정" } as const;
+const SHARED_QUALITY_LABELS = { unspecified: "미지정", exact: "정확", approximate: "근사" } as const;
+
+/** Read-only shared-catalog line. Bust has no shared concept; missing rows are stated, never synced. */
+function sharedSlotLine(record: CharacterAppearanceRecord, slot: Slot): HTMLElement | null {
+  if (slot === "bust") return null;
+  const resourceId = record[slot]?.resourceId;
+  if (!resourceId) return el("p", { class: "appearance-help", text: "공용 분류 · 아직 그림이 없습니다.", dataset: { testid: `appearance-shared-${slot}` } });
+  if (slot === "charset") {
+    const row = sharedCharsetRow(resourceId, record.charset?.characterIndex ?? 0);
+    if (!row) return el("p", { class: "appearance-help", text: "공용 분류 없음 · 업로드 그림은 시스템 › 캐릭터·얼굴 대상이 아닙니다.", dataset: { testid: "appearance-shared-charset" } });
+    const attrs = Object.values(row.attributes ?? {}).filter((value): value is string => typeof value === "string" && value.length > 0).join(" · ");
+    return el("p", { class: "appearance-help", text: `공용 분류 · ${row.label} · ${SHARED_STATUS_LABELS[row.status]} · ${SHARED_QUALITY_LABELS[row.quality]}${attrs ? ` · ${attrs}` : ""}`, dataset: { testid: "appearance-shared-charset" } });
+  }
+  const face = sharedFaceRow(resourceId);
+  if (!face) return el("p", { class: "appearance-help", text: "공용 분류 없음 · 업로드 또는 생성 그림입니다.", dataset: { testid: "appearance-shared-face" } });
+  const attrs = Object.values(face.attributes ?? {}).filter((value): value is string => typeof value === "string" && value.length > 0).join(" · ");
+  return el("p", { class: "appearance-help", text: `공용 분류 · ${face.label}${attrs ? ` · ${attrs}` : ""}`, dataset: { testid: "appearance-shared-face" } });
+}
 const subscriptions = new Map<Slot, () => void>();
 
 export function disposeAppearanceSlots(): void {
@@ -47,8 +67,11 @@ export function appearanceSlotCard(record: CharacterAppearanceRecord, slot: Slot
   ]);
   const children: HTMLElement[] = [preview, el("p", { class: "appearance-help", text: slot === "charset"
     ? `수동 선택 전용 · 슬롯 ${(record.charset?.characterIndex ?? 0) + 1}`
-    : slot === "bust" ? "선택 사항 · 없으면 대사에서 얼굴을 사용합니다." : "선택 사항 · 얼굴 한 장을 연결합니다." }), actions,
-    el("p", { class: "appearance-help", text: "업로드 후 ‘그림 선택’에서 새 리소스를 연결하세요." })];
+    : slot === "bust" ? "선택 사항 · 없으면 대사에서 얼굴을 사용합니다." : "선택 사항 · 얼굴 한 장을 연결합니다." })];
+  const sharedLine = sharedSlotLine(record, slot);
+  if (sharedLine) children.push(sharedLine);
+  children.push(actions);
+  children.push(el("p", { class: "appearance-help", text: "업로드 후 ‘그림 선택’에서 새 리소스를 연결하세요." }));
   if (slot !== "charset") {
     const candidateHost = el("div", { class: "appearance-candidate", attrs: { "aria-live": "polite" }, dataset: { testid: `appearance-candidate-${slot}` } });
     const renderCandidate = (): void => {

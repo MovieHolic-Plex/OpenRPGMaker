@@ -130,7 +130,26 @@ describe("character appearance editor", () => {
     expect(records?.[0]?.face).toEqual(appearance.face);
     expect(records?.[1]?.face).toBeUndefined();
   });
+  it("shows the shared catalog classification read-only beside linked slots", async () => {
+    const { host } = await catalog([appearance]);
+    const charsetLine = findByTestId(host, "appearance-shared-charset");
+    if (!charsetLine) throw new TypeError("Missing shared charset line");
+    expect(charsetLine.textContent).toContain("금발 붉은 갑옷 기사");
+    expect(charsetLine.textContent).toContain("얼굴 지정");
+    const faceLine = findByTestId(host, "appearance-shared-face");
+    if (!faceLine) throw new TypeError("Missing shared face line");
+    expect(faceLine.textContent).toContain("공용 분류 없음");
+  });
 
+  it("states missing shared rows on an empty record without writing project data", async () => {
+    const { store, host } = await catalog();
+    control(host, "appearance-add").click();
+    const before = store.getCurrent();
+    expect(findByTestId(host, "appearance-shared-charset")?.textContent).toContain("아직 그림이 없습니다");
+    expect(findByTestId(host, "appearance-shared-face")?.textContent).toContain("아직 그림이 없습니다");
+    expect(findByTestId(host, "appearance-shared-bust")).toBeNull();
+    expect(store.getCurrent()).toBe(before);
+  });
   it("deletes an unused record and allows undo", async () => {
     const { store, host } = await catalog([appearance]);
     control(host, "appearance-delete").click();
