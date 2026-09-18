@@ -9,6 +9,7 @@ import { DIRT_ROAD_TILE, SAND_TILE } from "./chipsetMapping";
 import { DEFAULT_TILESET_TEXTURE_KEY } from "./constants";
 import { dungeonTerrainQuarterKits } from "./dungeonTerrainQuarter";
 import { interiorWallFrameQuarterComposition } from "./interiorWallFrameQuarter";
+import { interiorCeilingQuarterKit } from "./interiorCeilingAutotile";
 import { worldTerrainQuarterKit } from "./worldTerrainAutotiles";
 import { isWorldTileset } from "./worldCoastMapping";
 import { isLakeAutotileTile, lakeAutotileQuarterSources } from "./lakeAutotile";
@@ -219,6 +220,11 @@ export function chipsetQuarterComposition(
     if (isLakeAutotileTile(tile, tileset)) return { sources: lakeAutotileQuarterSources(map, x, y, tileset) };
     const kit = worldTerrainQuarterKit(tileset, tile);
     const sources = kit && terrainQuarterSourcesForKit(map, kit, x, y);
+    return sources ? { sources } : null;
+  }
+  const ceilingKit = typeof tile === "number" ? interiorCeilingQuarterKit(tileset, tile) : null;
+  if (ceilingKit) {
+    const sources = terrainQuarterSourcesForKit(map, ceilingKit, x, y);
     return sources ? { sources } : null;
   }
   const dungeonKit = typeof tile === "number"
