@@ -15,7 +15,7 @@ import { modelForRole } from "@/ai/modelRoles";
 //
 // 이 파일은 패널의 나머지와 최소 접점(말풍선·상태 표시·로그 붙이기)만 공유한다 — 기존 세션 루프는 건드리지 않는다.
 
-import { reviewMapHarmony } from "@/ai/ultrabrainReview";
+import { reviewMapHarmony, unresolvedReviewSignature } from "@/ai/ultrabrainReview";
 import { runPiAgentViaCompanion } from "@/ai/piAgent/client";
 import { deriveRunOutcome } from "@/ai/runOutcome";
 import type { RunOutcome, RunOutcomeFacts } from "@/ai/runOutcome";
@@ -552,6 +552,7 @@ export async function runPiCommand(
       // AUTO owns bounded repair; unresolved changes never masquerade as reviewed success.
       for (let attempt = 0; applyMode === "auto" && !harmonyApproved && attempt < 2; attempt++) {
         surface.signal?.throwIfAborted();
+        const before = unresolvedReviewSignature(reviews);
         const repairBase = publication.count ? publication.project : merged.project;
         surface.setStatus(`AI가 검수 문제를 수정하고 있어요 (${attempt + 1}/2).`);
         const repaired = await runPiAgentViaCompanion({
@@ -560,10 +561,27 @@ export async function runPiCommand(
           task: `사용자 요청: ${command.task}\n기존 요청 범위를 유지하며 다음 검수 문제만 수정하세요.\n${reviews.filter(r => !r.harmonious).map(r => `${r.mapId}: ${r.summary} ${r.findings.join("; ")}`).join("\n")}`,
           applyMode: "auto", maxTurns: options.maxTurns, thinkingLevel: deep.thinkingLevel,
         }, { signal: surface.signal, onEvent: wrap(command.mapIds, 0), onCheckpoint: c => publication.publish(c) });
+        const preRepair = merged.project;
         merged = { ...merged, project: repaired.project };
         adoptSpatialToolProof(merged.project, repaired.spatialProof, publication.count ? publication.project : base);
-        reviews = await reviewMapHarmony(base, merged.project, command.task, config, { signal: surface.signal });
+        // 재검수는 «떨어진 맵 + 수리가 실제로 그림을 바꾼 맵» 만 본다. 예전엔 바뀐 맵 전부를
+        // 매 라운드 다시 그려, 마을 한 채 요청(외경+실내 3장)이 검수만 24회 호출로 불었다.
+        const recheck = new Set<string>([
+          ...reviews.filter(review => !review.harmonious).map(review => review.mapId),
+          ...changedProjectKeys(preRepair, merged.project)
+            .filter(key => key.startsWith("maps."))
+            .map(key => key.slice("maps.".length)),
+        ]);
+        const fresh = await reviewMapHarmony(base, merged.project, command.task, config, { signal: surface.signal, mapIds: recheck });
+        reviews = [...reviews.filter(review => !recheck.has(review.mapId)), ...fresh];
         harmonyApproved = reviews.every(review => review.harmonious);
+        // 수리가 지적을 한 글자도 못 바꿨으면 다음 라운드도 못 바꾼다 — 같은 값을 내려고
+        // 파이 에이전트를 한 번 더 돌리지 않는다(실측: 실내 맵을 「마을이 아니다」로 떨어뜨린
+        // 판정이 두 라운드 내내 동일했고 턴이 끝나지 않았다).
+        if (!harmonyApproved && unresolvedReviewSignature(reviews) === before) {
+          surface.appendProcess?.("검수 지적이 수리 뒤에도 그대로라 반복을 멈췄어요 — 아래 지적은 그대로 남습니다.");
+          break;
+        }
       }
       changed = summarizeChanges(base, merged.project);
       changedKeys = changedProjectKeys(base, merged.project);

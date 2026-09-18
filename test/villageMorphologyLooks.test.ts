@@ -85,21 +85,10 @@ describe("형태 유형 마을 외관", () => {
     expect(parcelFenceTop(23, 23)).toBe(23);
   });
 
-  it("실제 시공에서도 지붕 위 2줄을 넘는 울타리 칸이 줄어든다", () => {
-    const map = build({ morphology: "street" });
-    const houses = (map.layoutPlan?.regions ?? []).filter((region) => region.role === "house");
-    let over = 0;
-    for (let y = 0; y < map.height; y += 1) {
-      for (let x = 0; x < map.width; x += 1) {
-        if (!FENCE_TILES.has(map.upperTiles[y * map.width + x] ?? -1)) continue;
-        const below = houses.filter((h) => x >= h.x - 2 && x < h.x + h.w + 2 && h.y > y);
-        if (below.length === 0) continue;
-        if (Math.min(...below.map((h) => h.y)) - y > 2) over += 1;
-      }
-    }
-    // 이웃 집 울타리가 같은 열에 겹쳐 0이 되지는 않는다. 예전 실측 128칸 → 지금 79칸.
-    expect(over, `지붕 위 2줄 초과 울타리 ${over}칸`).toBeLessThan(100);
-  });
+  // 지도 수준 단언은 두지 않는다. 울타리는 상위 레이어에 타일 번호로만 남아서 «이 집의 뒷줄»과
+  // «이웃 집의 앞줄»을 구별할 수 없고(집 열 안 가장 가까운 울타리 행도 뒷줄이 안 칠해진 집에서는
+  // 8줄 위 이웃 것이 잡힌다), 결국 임계를 맞출 때까지 만지는 테스트가 된다. 계약은 위의 순수 함수가
+  // 고정하고, 실제 그림은 PR 의 시공 스크린샷이 증거다.
 
   it("forestDensity 가 마을 바깥 나무 양을 실제로 움직인다", () => {
     const counts = (["sparse", "normal", "dense"] as const).map((forestDensity) => {
