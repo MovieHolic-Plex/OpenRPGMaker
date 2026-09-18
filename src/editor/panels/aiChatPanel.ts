@@ -480,9 +480,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let pendingReviewPrompt: HTMLElement | null = null;
   const ensureWorkCard = (): AiWorkCard => {
     if (workCard) return workCard;
-    workCard = createInlineWorkCard({ title: workCardTitle || "작업 중", onStop: () => abortActiveTurn() });
-    log.append(workCard.root);
-    return workCard;
+    // 도는 턴이 있을 때만 이 카드를 「진행 중」으로 붙잡는다. 턴이 끝난 뒤 늦게 도착한 알림이
+    // 만든 카드는 `finishWorkCard` 가 다시 오지 않아 영영 「작업 중」으로 남는다.
+    const ownerless = !turnBusy;
+    const card = createInlineWorkCard({ title: workCardTitle || "작업 중", onStop: () => abortActiveTurn(), ownerless });
+    log.append(card.root);
+    // 주인 없는 카드는 슬롯을 차지하지 않는다 — 다음 턴이 이 카드를 물려받으면 「작업 결과」인 채로
+    // 진행을 그리게 되어 같은 거짓말이 반대 방향으로 난다.
+    if (!ownerless) workCard = card;
+    return card;
   };
   const finishWorkCard = (result: { readonly ok: boolean; readonly message?: string }): void => {
     const card = workCard;
