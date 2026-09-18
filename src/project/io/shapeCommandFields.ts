@@ -372,6 +372,12 @@ function validateCommandShape(label: string, value: unknown): void {
         const st = requireString(`${label}.shopType`, command.shopType);
         if (st !== "normal" && st !== "buyOnly" && st !== "sellOnly") throw new ProjectFormatError(`${label}.shopType가 잘못되었습니다.`);
       }
+      if (command.shopUiPreset !== undefined) {
+        const preset = requireString(`${label}.shopUiPreset`, command.shopUiPreset);
+        if (!["classic", "tabs", "grid", "compare", "split", "cart", "stock", "story", "baram"].includes(preset)) {
+          throw new ProjectFormatError(`${label}.shopUiPreset가 잘못되었습니다.`);
+        }
+      }
       if (command.messageType !== undefined) {
         const mt = requireString(`${label}.messageType`, command.messageType);
         if (!SHOP_MESSAGE_TYPES.some(messageType => messageType === mt)) throw new ProjectFormatError(`${label}.messageType가 잘못되었습니다.`);

@@ -1,0 +1,88 @@
+{
+  "id": "07-sold-last-copy",
+  "screenshot": "07-sold-last-copy.png",
+  "expected": {
+    "gold": 60,
+    "playerGold": 60,
+    "merchantGold": 240,
+    "inventory": {},
+    "owned": 0,
+    "rows": 0,
+    "selected": null,
+    "tradeCounts": {
+      "equip_sword": {
+        "bought": 2,
+        "sold": 2
+      }
+    }
+  },
+  "observed": {
+    "gold": 60,
+    "inventory": {},
+    "owned": 0,
+    "playerGold": 60,
+    "merchantGold": 240,
+    "selected": null,
+    "cap": null,
+    "unitPrice": null,
+    "displayedPrice": null,
+    "displayedOwned": null,
+    "quantity": "1",
+    "quantityMax": "99",
+    "total": 0,
+    "rows": 0,
+    "actorEquipment": {
+      "actor_hero": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_guardian": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_mage": {
+        "weapon": "equip_mage_staff",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_scout": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_cleric": {
+        "weapon": "equip_mage_staff",
+        "shield": "equip_oak_shield",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_ranger": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      }
+    },
+    "tradeCounts": {
+      "equip_sword": {
+        "sold": 2,
+        "bought": 2
+      }
+    },
+    "focus": "shop-tab-sell",
+    "balance": null,
+    "shortage": null,
+    "x": 14,
+    "y": 18,
+    "warnings": []
+  }
+}
