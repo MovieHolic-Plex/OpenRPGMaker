@@ -1,3 +1,5 @@
+import { renderPlaceLibraryControls } from './spatialPlaceLibraryControls';
+import { classifyPlaceCard, matchesPlaceClassification } from './spatialPlaceClassification';
 import { canUseCompositionWorkspace } from "./spatialCompositionAccess";
 import { renderSpatialCompositionWorkspace } from "./spatialCompositionWorkspace";
 import { renderSpatialSpaceWorkspace } from "@/editor/panels/spatialSpaceWorkspace";
@@ -60,8 +62,9 @@ export function renderSpatialAuthoringShell(
     else selectSpatialDesign((tab !== "objects" && tab !== "tiles" ? cards.find(card => card.kind === session.tab && card.canonicalSource) : undefined)?.id ?? first.id);
     session = spatialSession();
   }
-  const selected = visibleSpatialSelection(session);
+  let selected = visibleSpatialSelection(session);
   const placesGallery = tab === "places" && session.mode === "design";
+  if (placesGallery && selected && !matchesPlaceClassification(selected)) selected = cards.find(matchesPlaceClassification);
   // 지난 화면의 오류 배너·삭제 확인이 새 선택에 따라오면 안 된다.
   syncSpatialFeedbackSelection(`${session.tab}:${session.mode}:${session.source}:${selected?.id ?? ""}`);
 
@@ -120,7 +123,7 @@ export function renderSpatialAuthoringShell(
   // 기본 카탈로그 카드의 localId 는 라이브러리 설계 id 와 겹치므로 canonical 만 쓰임을 갖는다.
   const designIdOf = (card: GalleryCard): string | undefined => card.canonicalSource?.id;
   const galleryCards = placesGallery
-    ? cards.filter((card) => matchesUsageFilter(designUsage(project, designIdOf(card)), usageChromeState.filter))
+    ? cards.filter((card) => matchesPlaceClassification(card) && matchesUsageFilter(designUsage(project, designIdOf(card)), usageChromeState.filter))
     : cards;
   const aiPlacedCount = placesGallery
     ? cards.filter((card) => designUsage(project, designIdOf(card)).ai > 0).length
@@ -135,6 +138,8 @@ export function renderSpatialAuthoringShell(
   const renderCell = (card: GalleryCard): HTMLElement => {
     const isSelected = card.id === selected?.id;
     const button = renderSpatialGalleryCard(card, isSelected, onSelect);
+    const classification = classifyPlaceCard(card);
+    button.append(el('div', { class: 'place-classification-badges', children: [classification.category, classification.environment, ...classification.purposes].map(text => el('span', { text })) }));
     if (!isSelected || !card.canonicalSource) return el("div", { class: "spatial-card-cell", children: [button] });
     const usage = designUsage(project, designIdOf(card));
     const build = card.kind === "places" ? spatialPlacesChrome(visiblePlaceSelection(card), refresh).build
@@ -185,7 +190,7 @@ export function renderSpatialAuthoringShell(
               dataset: { testid: "spatial-gallery-empty" },
               children: [
                 el("p", { class: "spatial-gallery-empty-title", text: "조건에 맞는 설계가 없습니다" }),
-                el("p", { class: "spatial-gallery-empty-body", text: "쓰임 필터를 「전체」로 되돌려 보세요." }),
+                el("p", { class: "spatial-gallery-empty-body", text: "그림체·유형·공간 형태·용도 또는 쓰임 필터를 바꿔 보세요." }),
               ],
             });
           }
@@ -223,7 +228,7 @@ export function renderSpatialAuthoringShell(
     // 셀은 정확히 두 행(chrome / 본문)이다. 목적 스트립을 셀의 세 번째 자식으로 넣으면
     // 본문이 암시 행으로 밀려 잘린다 — 둘을 한 래퍼로 묶어 둘째 행에 넣는다.
     children: [chrome, placesGallery
-      ? el("div", { class: "spatial-shell-main", children: [purposeStrip(), el("div", { class: "spatial-body", children: [gallery, stage] })] })
+      ? el("div", { class: "spatial-shell-main", children: [renderPlaceLibraryControls(cards, refresh), el("div", { class: "spatial-body", children: [gallery, stage] })] })
       : el("div", { class: "spatial-body", children: [gallery, stage] })],
   });
   shell.addEventListener("keydown", (event) => handleShellKey(event, selected, refresh));
@@ -270,34 +275,6 @@ function installSpatialEscapeLayer(): void {
     event.stopPropagation();
     latestShellRefresh?.();
   }, true);
-}
-
-/** 목적 스트립은 갤러리 칼럼(~400px)이 아니라 셀 폭 전체를 쓴다 — 칼럼 안에선 세 줄로 접힐다. */
-function purposeStrip(): HTMLElement {
-  return el("div", {
-    class: "spatial-purpose",
-    dataset: { testid: "spatial-purpose" },
-    children: [
-      el("strong", { class: "spatial-purpose-lead", text: "여기서 만든 장소가 정본입니다. AI는 여기서 골라 쓸 뿐입니다." }),
-      el("span", { class: "spatial-purpose-steps", children: [
-        purposeStep(1, "사람이 설계를 만든다", true), purposeArrow(),
-        purposeStep(2, "맵에 놓는다"), purposeArrow(),
-        purposeStep(3, "AI도 여기서 골라 쓴다"),
-      ] }),
-      el("span", { class: "spatial-purpose-tail", text: "AI가 놓은 것도 여기서 찾아 고칠 수 있습니다" }),
-    ],
-  });
-}
-
-function purposeStep(step: number, label: string, active = false): HTMLElement {
-  return el("span", { class: `spatial-purpose-step${active ? " is-active" : ""}`, children: [
-    el("span", { class: "spatial-purpose-step-no", text: String(step) }),
-    el("span", { text: label }),
-  ] });
-}
-
-function purposeArrow(): HTMLElement {
-  return el("span", { class: "spatial-purpose-arrow", text: "→", attrs: { "aria-hidden": "true" } });
 }
 
 function renderUsagePopover(card: GalleryCard, usage: ReturnType<typeof designUsage>): HTMLElement {

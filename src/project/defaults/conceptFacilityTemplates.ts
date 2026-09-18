@@ -8,8 +8,7 @@
 // 물건은 슬롯 구성(interiorConceptCompose)이 앉힌다 — 북벽 가구·벽걸이·키 큰 가구·바닥·구석·러그.
 // 한 방의 북쪽 행은 정문/입구 통로 열을 빼고 s 4 · m 6 · l 8 칸이다. 초안은 그 안에서 짠다.
 import type { ConceptBundleRecord } from "@/project/types/conceptBundle";
-import { cloneConceptBundle, SCRATCH_INN_BUNDLE } from "./scratchInnBundle";
-import { EXPANDED_CONCEPT_FACILITIES } from "./conceptFacilityExpansion";
+import { cloneConceptBundle } from "./scratchInnBundle";
 
 export const SCRATCH_HOUSE_BUNDLE: ConceptBundleRecord = {
   id: "house",
@@ -215,18 +214,8 @@ export const SCRATCH_GUILD_BUNDLE: ConceptBundleRecord = {
 };
 
 /** 실내 칩셋에 시드되는 초안 순서. 여관이 첫째다(옛 시드·e2e 와 같은 자리). */
-export const CONCEPT_FACILITY_TEMPLATES: readonly ConceptBundleRecord[] = [
-  SCRATCH_INN_BUNDLE,
-  SCRATCH_HOUSE_BUNDLE,
-  SCRATCH_SHOP_BUNDLE,
-  SCRATCH_TAVERN_BUNDLE,
-  SCRATCH_LIBRARY_BUNDLE,
-  SCRATCH_SMITHY_BUNDLE,
-  SCRATCH_CHURCH_BUNDLE,
-  SCRATCH_WAREHOUSE_BUNDLE,
-  SCRATCH_GUILD_BUNDLE,
-  ...EXPANDED_CONCEPT_FACILITIES,
-];
+// Retired by the shared interior reset: do not seed rejected facility layouts.
+export const CONCEPT_FACILITY_TEMPLATES: readonly ConceptBundleRecord[] = [];
 
 export function conceptFacilityTemplateById(id: string): ConceptBundleRecord | undefined {
   return CONCEPT_FACILITY_TEMPLATES.find((bundle) => bundle.id === id);
