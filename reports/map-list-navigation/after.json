@@ -1,0 +1,30 @@
+{
+  "results": [
+    {
+      "map": "로버트의 집 내부",
+      "totalMs": 123.90000009536743,
+      "handlerMs": 58.90000009536743
+    },
+    {
+      "map": "빈 맵",
+      "totalMs": 166.89999985694885,
+      "handlerMs": 77.09999990463257
+    },
+    {
+      "map": "엘레나의 집 내부",
+      "totalMs": 117.59999990463257,
+      "handlerMs": 42.09999990463257
+    },
+    {
+      "map": "빈 맵",
+      "totalMs": 197.39999985694885,
+      "handlerMs": 82.59999990463257
+    }
+  ],
+  "errors": [],
+  "invariants": {
+    "pendingAssistantCancelled": true,
+    "selectionMirrorCurrent": true,
+    "contentMirrorCurrent": true
+  }
+}

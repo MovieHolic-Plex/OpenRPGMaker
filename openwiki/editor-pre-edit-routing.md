@@ -4,6 +4,26 @@
 
 Read this before editing editor-facing behavior. Identifies which workflow owns a request and lists agent cautions.
 
+## 맵 목록 클릭은 즉시 선택한다 (2026-09-18 후속)
+
+물 타일 시계 공유만으로 실제 목록 클릭 지연은 해결되지 않았다. 실제 13맵 프로젝트
+복사본의 목록 클릭 프로파일에서 `ruleAuditViolationCount → projectLint → checkRoundtrip`
+전체 직렬화·정규화와 숨은 `project-export-json` 전체 복사가 전환마다 반복됐다.
+
+- `mapList.applyTreeSelection`은 `clearMapDissolveVeil` 후 동기로 선택한다. 목록 클릭에
+  조수의 cover → paint wait → reveal을 다시 붙이지 않는다. 기존 조수의 예약된 swap도
+  취소해야 클릭한 맵을 나중에 덮어쓰지 않는다. 조수 이동 연출은 별도로 유지된다.
+- `ruleAuditPanel`의 검사 결과는 프로젝트 참조와 `store.getVersionToken()`의
+  lineage/generation으로 캐시한다. 맵 선택·줌은 재검사를 하지 않고, 편집·undo·교체는
+  새 버전에서 검사한다. 진단 자체의 규칙은 바꾸지 않는다.
+- `ProjectExportMirror`는 동일 내용 버전의 draft 제거 JSON을 재사용한다.
+  editor/history는 계속 최신 상태로 갱신하고, 편집기 종료 시 캐시와 타이머를 버린다.
+- 맵 잠금 상태의 패널 갱신은 기존 microtask 큐를 공유해 선택 갱신과 합친다.
+
+실제 맵 목록 DOM 클릭 → 전환 완료 관측: 0.85~1.03초 → 0.12~0.20초(격리 복사본,
+Chromium/SwiftShader). 운영 서버 자체의 응답 시간과는 구분한다.
+측정·회귀 범위: `reports/2026-09-18-map-list-navigation.md`.
+
 ## 맵 전환과 물 타일 애니메이션 공유 (2026-09-18)
 
 `chipsetTileRender`의 애니메이션 타일·호수 쿼터는 `sharedTileAnimation`을 통해
