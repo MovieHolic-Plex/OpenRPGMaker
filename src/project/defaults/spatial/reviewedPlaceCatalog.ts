@@ -58,3 +58,8 @@ export function copyReviewedPlace(project: Project, id: string, namespace: strin
   }
   visit(id); return { project: p, id: key(id) };
 }
+
+/** Lightweight metadata for library classification; does not rasterize maps. */
+export function reviewedPlaceClassificationSource(id: string) {
+ const place = catalog.places[id]; return place ? { tags: place.tags, tilesetId: place.exterior?.tilesetId } : undefined;
+}
