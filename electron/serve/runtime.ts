@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
-import { mkdir, readFile, realpath, rm, writeFile, rename } from "node:fs/promises";
+import { mkdir, readFile, realpath, rm, writeFile, rename, readdir } from "node:fs/promises";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { extname, normalize, resolve, sep, basename } from "node:path";
 import { createStoreHandlers } from "../main/dispatch";
@@ -139,6 +139,10 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
     if (!payload || typeof payload !== "object") throw new Error("invalid request");
     const body = payload as { readonly channel?: unknown; readonly payload?: unknown };
     const channel = typeof body.channel === "string" ? body.channel : "";
+    if (channel === OPRN_CHANNELS.startRecentProjects) {
+      const entries = await readdir(projectsRoot, { withFileTypes: true }).catch(() => []);
+      return entries.filter((entry) => entry.isDirectory() && /^[0-9a-f-]{36}$/.test(entry.name)).map((entry) => ({ projectDir: entry.name, title: entry.name }));
+    }
     if (channel === OPRN_CHANNELS.startCreateProject) {
       if (sessions.member(key).role !== 'owner') throw new Error('새 프로젝트는 팀 소유자만 만들 수 있습니다.');
       const input = body.payload as { title?: unknown; seed?: unknown } | null;
@@ -171,6 +175,12 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
     if (channel === OPRN_CHANNELS.startOpenFolder) {
       if (sessions.member(key).role !== 'owner') throw new Error('프로젝트 열기는 팀 소유자만 할 수 있습니다.');
       const input = body.payload as { bytes?: unknown } | null;
+      if (typeof (input as { projectDir?: unknown } | null)?.projectDir === 'string') {
+        const id = (input as { projectDir: string }).projectDir;
+        const dir = await projectPath(id);
+        const opened = await sessions.open(`open:${id}`, dir, team);
+        return { projectDir: id, isNew: false, projectId: opened.store.projectId };
+      }
       if (typeof input?.bytes !== 'string') throw new Error('project.sqlite 파일이 필요합니다.');
       const id = randomUUID();
       await mkdir(projectsRoot, { recursive: true });

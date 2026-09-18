@@ -22,27 +22,12 @@ export async function openProjectFolder(): Promise<boolean> {
   if (!bridge) {
     if (!("showDirectoryPicker" in window)) return false;
     const directory = await (window as Window & { showDirectoryPicker: () => Promise<FileSystemDirectoryHandle> }).showDirectoryPicker();
-    let hasSqlite = false;
-    try {
-      await directory.getFileHandle("project.sqlite");
-      hasSqlite = true;
-    } catch {
-      hasSqlite = false;
-    }
-    if (hasSqlite) {
-      throw new Error("이 미리보기에는 저장 브리지가 없습니다. SQLite 프로젝트는 웹 호스트(예: mdc-server:9888)에서 여세요.");
-    }
-    try {
-      const file = await (await directory.getFileHandle("project.json")).getFile();
-      const project = JSON.parse(await file.text()) as Project;
-      if (!project || typeof project !== "object" || !project.meta) throw new Error("선택한 폴더에 올바른 project.json이 없습니다.");
-      const { store } = await import("@/project/store");
-      store.replaceProject(project);
-      return true;
-    } catch (error) {
-      if (error instanceof Error && error.message.includes("올바른 project.json")) throw error;
-      throw new Error("선택한 폴더에서 project.sqlite 또는 project.json을 찾지 못했습니다.");
-    }
+    const file = await (await directory.getFileHandle("project.json")).getFile();
+    const project = JSON.parse(await file.text()) as Project;
+    if (!project || typeof project !== "object" || !project.meta) throw new Error("선택한 폴더에 올바른 project.json이 없습니다.");
+    const { store } = await import("@/project/store");
+    store.replaceProject(project);
+    return true;
   }
   const opened = await bridge.openFolder();
   return opened !== null;
