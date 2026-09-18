@@ -79,16 +79,16 @@ body.editor-ui-beginner .canvas-toolbar.is-basic-chrome .zoom-button,
 /* shell/editor-ui-modes.css:460-463 */
 .left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.custom-palette {
   container-type: inline-size;
-  overflow-x: auto !important;
+  overflow-x: hidden !important;
 }
 
 /* shell/editor-ui-modes.css:465-472 */
 .left-panel-stack[data-testid="left-palette-root"] .chipset-grid.custom-palette-grid {
-  --chipset-cell: max(var(--custom-min-cell), min(32px, calc((100cqi - 4px) / var(--custom-cols))));
+  --chipset-cell: min(56px, calc((100cqi - 16px) / 6));
   grid-auto-rows: var(--chipset-cell);
-  grid-template-columns: repeat(var(--custom-cols), var(--chipset-cell)) !important;
-  max-width: none !important;
-  min-width: calc(var(--custom-cols) * var(--custom-min-cell) + 4px) !important;
+  grid-template-columns: repeat(6, var(--chipset-cell)) !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
   width: max-content !important;
 }
 

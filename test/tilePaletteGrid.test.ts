@@ -173,7 +173,7 @@ describe("custom atlas palette", () => {
     expect(buildCustomPaletteModel(tileset)).toEqual(Array.from({ length: 32 }, (_, index) => index));
   });
 
-  it("renders the exact source column count instead of reflowing the atlas", () => {
+  it("keeps source geometry as metadata while reflowing the view to six columns", () => {
     const restore = installFakeDom();
     try {
       const tileset = makeCustomTileset([]);
@@ -183,7 +183,8 @@ describe("custom atlas palette", () => {
       expect(root.dataset.paletteKind).toBe("custom");
       expect(root.dataset.sourceColumns).toBe("30");
       expect(root.dataset.sourceRows).toBe("16");
-      expect(root.getAttribute("style")).toContain("--custom-cols:30");
+      expect(root.dataset.displayColumns).toBe(String(GRID_PALETTE_COLUMNS));
+      expect(root.getAttribute("style")).toContain(`--custom-cols:${GRID_PALETTE_COLUMNS}`);
       expect(root.getAttribute("style")).toContain(`--custom-min-cell:${CUSTOM_PALETTE_MIN_CELL_SIZE}px`);
       expect(root.querySelectorAll("button")).toHaveLength(480);
     } finally {

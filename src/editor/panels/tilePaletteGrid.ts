@@ -9,7 +9,6 @@ import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 import {
   displayOrderStampFactory,
   installPaletteStampGesture,
-  sourceCoordinateStampFactory,
 } from "@/editor/panels/tilePaletteCustomGesture";
 
 // RM2003식 단일 타일 팔레트 — 그룹/시트 보기 분리 없이 가로 6칸 고정 리플로우.
@@ -236,7 +235,8 @@ export function makeGridPalette(input: MakeGridPaletteWithStampArgs): HTMLElemen
     },
   });
   // 6열 리플로우 팔레트라 필터는 **숨김**이 맞다 — 위치가 정보가 아니고, 결과가
-  // 위로 몰려 스크롤 없이 보인다. (커스텀 아틀라스는 반대 — makeCustomPalette 주석 참고)
+  // 위로 몰려 스크롤 없이 보인다. 커스텀 아틀라스도 같은 세로 리플로우를 쓰되
+  // 원본 타일 ID와 전체 셀은 유지한다.
   let shown = 0;
   for (const entry of model.autotiles) {
     if (!passesFilter(args, entry.representativeTile)) continue;
@@ -274,15 +274,22 @@ export function makeGridPalette(input: MakeGridPaletteWithStampArgs): HTMLElemen
 }
 
 export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
-  const columns = Math.max(1, args.tileset.tilesPerRow);
+  const sourceColumns = Math.max(1, args.tileset.tilesPerRow);
+  const sourceRows = Math.max(1, Math.ceil(args.tileset.count / sourceColumns));
+  // Keep authored tile ids intact while reflowing the editor view to the
+  // established six-column rail geometry. The atlas itself may be 30 columns wide.
+  const columns = GRID_PALETTE_COLUMNS;
   const rows = Math.max(1, Math.ceil(args.tileset.count / columns));
+  const displayTiles = buildCustomPaletteModel(args.tileset);
   const sheet = el("div", {
     class: "chipset-sheet tile-palette custom-palette",
     dataset: {
       testid: "tile-palette",
       paletteKind: "custom",
-      sourceColumns: String(columns),
-      sourceRows: String(rows),
+      sourceColumns: String(sourceColumns),
+      sourceRows: String(sourceRows),
+      displayColumns: String(columns),
+      displayRows: String(rows),
     },
     attrs: { style: `--custom-cols:${columns};--custom-rows:${rows};--custom-min-cell:${CUSTOM_PALETTE_MIN_CELL_SIZE}px` },
   });
@@ -291,9 +298,9 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
     dataset: { testid: "custom-palette-grid" },
     attrs: { style: `grid-template-columns:repeat(${columns}, var(--chipset-cell))` },
   });
-  // 커스텀 아틀라스는 **칸의 위치가 정보**다(원본 시트의 행·열을 그대로 유지).
-  // 숨기면 아틀라스 모양이 깨져 감독이 "어디쯤 타일"인지 못 찾으므로 흐리게만 한다.
-  for (const tileId of buildCustomPaletteModel(args.tileset)) {
+  // Custom cells remain complete and source-id ordered; only their editor view
+  // is reflowed so the palette scrolls vertically instead of horizontally.
+  for (const tileId of displayTiles) {
     const cell = makePaletteCell(args, tileId);
     if (!passesFilter(args, tileId)) cell.classList.add("is-filtered-out");
     grid.append(cell);
@@ -303,7 +310,7 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
     installPaletteStampGesture(
       sheet,
       grid,
-      sourceCoordinateStampFactory(args.tileset),
+      displayOrderStampFactory({ displayTiles, displayTilesPerRow: columns, tileset: args.tileset }),
       args.onSelectTile,
       args.onCreatePaletteStamp,
     );
