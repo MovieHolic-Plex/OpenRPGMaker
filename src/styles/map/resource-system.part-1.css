@@ -30,7 +30,9 @@ body.editor-ui-expert .editor-layout .canvas-area {
 }
 
 .editor-canvas-scroll-shell {
-  /* 크롬 높이: 상태바 / 툴바 예약. Figma 셸은 figma-editor에서 덮어씀. */
+  /* 크롬 높이: 상태바 / 툴바 예약. Figma 셸은 figma-editor에서 덮어씀.
+     beginner(absolute)는 아래 :has 규칙에서 위·아래를 못 박는다. */
+  bottom: 0;
   height: auto;
   left: 0;
   /* DOM 스크롤 대신 카메라 팬 — 스크롤바 거터로 영역이 줄어들지 않게 */
@@ -48,6 +50,18 @@ body.editor-ui-expert .editor-canvas-scroll-shell {
   position: relative;
   right: auto;
   top: auto;
+}
+/* beginner(absolute) 셸은 위·아래를 둘 다 못 박아야 늘어난다.
+   bottom:0만 주면 height:auto라 높이는 그대로고 top이 아래로 밀려
+   상단 갭이 생긴다(2026-09-19 실측 top:143). top은 배너 실측 42px —
+   툴바 오프셋과 같은 값(uxc 미러 :23-33). 배너가 없으면 0. */
+body.editor-ui-beginner .canvas-area:has(.persistence-mode-banner) .editor-canvas-scroll-shell {
+  bottom: 0;
+  top: 42px;
+}
+body.editor-ui-beginner .canvas-area:not(:has(.persistence-mode-banner)) .editor-canvas-scroll-shell {
+  bottom: 0;
+  top: 0;
 }
 
 .editor-canvas-scroll-shell::-webkit-scrollbar {
