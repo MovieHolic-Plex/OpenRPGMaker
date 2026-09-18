@@ -93,6 +93,19 @@ try {
     console.log("timer:", JSON.stringify(timer));
     if (!timer.warning) failures.push("timer warning not visible");
   }
+
+  // 구역 조건으로 전환 → 뱃지 판정 확인(편집 중 맵 기준 충족/판정 불가)
+  if (await modeSelect.count()) {
+    await modeSelect.first().selectOption("insideLocation");
+    await page.waitForTimeout(800);
+    await page.screenshot({ path: `${evidenceDir}/05-inside-location.png` });
+    const loc = await page.evaluate(() => ({
+      badge: document.querySelector("[data-testid='event-condition-eval-badge']")?.textContent ?? null,
+      summary: document.querySelector("[data-testid='event-condition-eval-summary']")?.textContent ?? null,
+    }));
+    console.log("insideLocation:", JSON.stringify(loc));
+    if (!loc.badge) failures.push("insideLocation badge not visible");
+  }
 } catch (e) {
   failures.push(String(e).slice(0, 300));
   console.log("ERROR:", failures[failures.length - 1]);
