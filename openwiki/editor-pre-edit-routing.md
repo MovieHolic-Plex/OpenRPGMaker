@@ -24,6 +24,13 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
 Chromium/SwiftShader). 운영 서버 자체의 응답 시간과는 구분한다.
 측정·회귀 범위: `reports/2026-09-18-map-list-navigation.md`.
 
+맵 목록의 추가 비용도 프로젝트 단위로 캐시한다. `collectMapLinkStats`는 같은 프로젝트
+객체에 대해 transfer 명령과 map connection을 한 번만 인덱싱하고, store가 새 프로젝트
+객체를 만들면 `WeakMap` identity로 자동 무효화한다. 썸네일의 타일 배열 해시도 맵 객체
+identity별로 재사용한다. 따라서 목록을 다시 그릴 때 맵 수가 많거나 큰 맵이 섞여 있어도
+연결 통계와 타일 배열 전수 순회가 행마다 반복되지 않는다. 맵 데이터 객체를 직접 mutate하는
+새 경로를 추가하면 이 캐시 계약을 깨므로, 편집은 store의 `updateMap`/`update`를 통과시킨다.
+
 ## 맵 전환과 물 타일 애니메이션 공유 (2026-09-18)
 
 `chipsetTileRender`의 애니메이션 타일·호수 쿼터는 `sharedTileAnimation`을 통해
