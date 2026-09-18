@@ -11,10 +11,11 @@ import { selectEditorMap } from "@/editor/mapSelection";
 import { openMapCreateDialog } from "@/editor/panels/mapCreateDialog";
 import { isMapTreeFolder } from "@/project/mapTree";
 import { makeTileBrushControls } from "@/editor/panels/tilePaletteStampStatus";
-import { dismissLocationDrawModeForLayer, dismissLocationDrawModeForTool, isLocationDrawMode } from "@/editor/locationDrawMode";
+import { dismissLocationDrawModeForTool, isLocationDrawMode } from "@/editor/locationDrawMode";
 import { selectMapModeTool, selectTileTool, selectPaletteStamp } from "@/editor/panels/tileToolbarActions";
 import { uiLabel } from "@/editor/uiCopy";
 import { getEditorChrome, subscribeEditorUiMode } from "@/editor/editorUiMode";
+import { renderEventEditor } from "./eventEditor";
 import { openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { canEditMap } from "@/editor/mapEditLocks";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
@@ -54,25 +55,7 @@ const BASIC_TOOLS: readonly BasicTool[] = [
   { id: "eyedropper", label: "집기", hint: "맵에 놓인 타일을 집습니다", icon: "eyedropper", hotkey: "I" },
 ] as const;
 
-type BasicLayerRow = {
-  readonly id: Layer;
-  readonly label: string;
-  readonly hint: string;
-  readonly hotkey: string;
-  readonly icon: SvgIconName;
-};
-
-/** Rail order: 바닥 → 장식 → 이벤트 (직접 선택, 플라이아웃 없음).
- * 레이어마다 다른 글리프를 쓴다(layerGround/layerOverlay/layerEvent).
- * 기본 모드는 결과 중심 용어를 쓴다 — 초보에게 '하위/상위 레이어'는 개념 장벽이다. */
-const BASIC_LAYERS: readonly BasicLayerRow[] = [
-  { id: "lower", label: "바닥", hint: "잔디·길 등 지면을 칠하는 레이어", hotkey: "F5", icon: "layerGround" },
-  // "장식"은 타일 **분류** 이름과 겹친다(팔레트 필터 칩 · tileMeta role) → 덧그림.
-  { id: "upper", label: "덧그림", hint: "나무·가구 등 바닥 위에 얹는 레이어", hotkey: "F6", icon: "layerOverlay" },
-  { id: "event", label: "이벤트", hint: "NPC·문·보물상자 등 상호작용 레이어", hotkey: "F7", icon: "layerEvent" },
-] as const;
-
-const RAIL_GROUP_LABELS = { tools: "그리기 도구", layers: "레이어", panels: "타일·맵 패널" } as const;
+const RAIL_GROUP_LABELS = { tools: "그리기 도구", panels: "타일·맵 패널" } as const;
 const EVENT_LAYER_TILE_REASON = "이벤트 레이어에서는 타일을 선택하지 않습니다";
 
 // 재렌더에도 살아남는 모듈 상태. tilePalette의 activeWorkTab 패턴과 동일.
@@ -145,7 +128,6 @@ export function renderBasicLeftRail(container: HTMLElement): void {
   });
   shell.append(makeToolsColumn(state.tool));
   shell.append(el("div", { class: "basic-rail-sep", attrs: { "aria-hidden": "true" } }));
-  shell.append(makeLayerSwitcher(state.layer));
   shell.append(makeTileBrushControls(state, () => renderBasicLeftRail(container)));
   shell.append(el("div", { class: "basic-rail-sep", attrs: { "aria-hidden": "true" } }));
   shell.append(makePanelToggles(state.selectedTile, state.layer, tileset));
@@ -153,7 +135,7 @@ export function renderBasicLeftRail(container: HTMLElement): void {
     shell.append(makePendingEventCta(state.pendingEventCoordinate));
   }
   if (state.layer === "event") {
-    shell.append(el("div", { class: "basic-rail-hint", text: "이벤트 레이어 — 타일 대신 이벤트를 배치합니다.", dataset: { testid: "basic-event-layer-hint" } }));
+    renderEventEditor(shell);
   } else if (!tileset) {
     shell.append(el("div", { class: "empty-hint", text: uiLabel("tilesetMissing") }));
   } else {
@@ -163,7 +145,7 @@ export function renderBasicLeftRail(container: HTMLElement): void {
   if (flyoutState.open === "maps") shell.append(makeMapFlyout());
   container.append(shell);
   restoreFocus(container, focusSnapshot);
-  // 도구·레이어·패널 그룹을 각각 한 개의 탭 스톱으로 만들고 화살표 이동을 준다 — 표준 모드
+  // 도구·패널 그룹을 각각 한 개의 탭 스톱으로 만들고 화살표 이동을 준다 — 표준 모드
   // 도구막대와 같은 헬퍼다(이전엔 레일 버튼 11개가 전부 별도 탭 스톱이었다).
   applyRovingTabindex(container);
   const sheet = container.querySelector<HTMLElement>('[data-testid="basic-tile-grid"]');
@@ -224,48 +206,6 @@ function makeToolsColumn(activeTool: Tool): HTMLElement {
         children: [
           makeSvgIcon(tool.icon),
           el("span", { class: "basic-rail-label", text: tool.label }),
-        ],
-      }),
-    );
-  }
-  return list;
-}
-
-function applyLayerSelection(layer: Layer): void {
-  dismissLocationDrawModeForLayer(layer);
-  if (layer === "event") {
-    editorState.set({ layer: "event", tool: "event" });
-    return;
-  }
-  const tool = editorState.get().tool === "event" ? "paint" : editorState.get().tool;
-  editorState.set({ layer, tool });
-}
-
-function makeLayerSwitcher(activeLayer: Layer): HTMLElement {
-  const list = el("div", {
-    class: "basic-rail-icons basic-rail-layer-switcher",
-    dataset: { testid: "basic-layer-list", roving: "true" },
-    attrs: { role: "group", "aria-label": RAIL_GROUP_LABELS.layers },
-  });
-  for (const layer of BASIC_LAYERS) {
-    const active = activeLayer === layer.id;
-    list.append(
-      el("button", {
-        class: "basic-rail-btn" + (active ? " is-active" : ""),
-        attrs: {
-          type: "button",
-          title: `${layer.label} (${layer.hotkey}) — ${layer.hint}`,
-          "aria-label": layer.label,
-          ...(active ? { "aria-current": "true" } : {}),
-        },
-        dataset: {
-          testid: layer.id === "lower" ? "layer-lower" : layer.id === "upper" ? "layer-upper" : "layer-event",
-          basicLayer: layer.id,
-        },
-        on: { click: () => applyLayerSelection(layer.id) },
-        children: [
-          makeSvgIcon(layer.icon),
-          el("span", { class: "basic-rail-label", text: layer.label }),
         ],
       }),
     );

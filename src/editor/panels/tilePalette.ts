@@ -8,7 +8,6 @@ import { makeTileToolbar } from "@/editor/panels/tileToolbar";
 import { makePaintShapeSelect } from "@/editor/panels/tileToolOptions";
 import { makeSidebarMapHeader } from "@/editor/panels/sidebarMapHeader";
 import { makeSidebarSurface } from "@/editor/panels/sidebarSurface";
-import { makeLeftLayerSwitcher } from "@/editor/panels/leftLayerSwitcher";
 import { isDefaultTilesetTexture, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { openTilePropsDialog } from "@/editor/panels/tilePropsDialog";
 import { openMapPropertiesDialog } from "@/editor/panels/mapPropertiesDialog";
@@ -84,10 +83,7 @@ export function renderTilePalette(container: HTMLElement): void {
   const state = editorState.get();
 
   if (state.layer === "event") {
-    // 바닥/덧그림과 같은 셸·그리드 안에 그린다 — 바깥에 나란히 붙이면
-    // .palette-work-pane.is-paint 의 maphead/layers 한 줄 배치가 안 닿아
-    // 맵 헤더가 전폭으로 벌어지고(실측 y9/w267) 탭이 다음 줄로 밀렸다.
-    // 내용만 시트→이벤트 목록으로 바뀌고 자리(map→layer→toolbar)는 그대로다.
+    // 레이어 전환은 캔버스가 소유한다. 여기서는 공통 셸 안의 내용을 이벤트 목록으로 바꾼다.
     const project = store.getCurrent();
     const mapId = state.currentMapId ?? project.startMapId;
     const map = project.maps[mapId];
@@ -101,7 +97,6 @@ export function renderTilePalette(container: HTMLElement): void {
       dataset: { testid: "palette-work-pane-event" },
     });
     if (map) root.append(makeSidebarMapHeader(map, renderPalettePreservingViewport));
-    root.append(makeLeftLayerSwitcher(state.layer));
     if (map && tileset) {
       root.append(makeTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
     }
@@ -249,7 +244,6 @@ function makePaletteSurface(input: {
 
   const model = { map, rerender: renderPalettePreservingViewport, state, tileset };
   root.append(makeSidebarMapHeader(map, renderPalettePreservingViewport));
-  root.append(makeLeftLayerSwitcher(state.layer));
   root.append(makeTileToolbar(model));
   const assist = makeBrushAssistSection(map.id, state, tileset);
   const options = el('div', { class: 'sidebar-paint-options' });

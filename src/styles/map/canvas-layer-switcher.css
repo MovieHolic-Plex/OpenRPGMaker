@@ -1,0 +1,65 @@
+/* 맵 편집 대상은 팔레트와 독립적으로 캔버스 위에서 항상 선택한다. */
+.editor-layout .canvas-area > .canvas-toolbar.is-icon-toolbar,
+body.editor-ui-beginner .editor-layout .canvas-area > .canvas-toolbar.is-basic-chrome.is-docked-chrome {
+  left: 8px;
+  right: 8px;
+  max-width: none;
+  flex-wrap: nowrap;
+  gap: 3px;
+}
+
+.canvas-toolbar-spacer {
+  flex: 1 1 auto;
+  min-width: 4px;
+}
+
+.canvas-toolbar > .left-layer-switcher {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  background: var(--bg-inset);
+}
+
+.canvas-toolbar .left-layer-btn {
+  min-height: 30px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: var(--radius-s);
+  background: transparent;
+  color: var(--text-2);
+  font: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.canvas-toolbar .left-layer-btn:hover {
+  background: var(--bg-hover);
+}
+
+.canvas-toolbar .left-layer-btn.is-active {
+  background: var(--accent-muted);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+@media (max-width: 1100px) {
+  .canvas-toolbar .left-layer-btn {
+    padding-inline: 6px;
+  }
+
+  .canvas-toolbar.is-icon-toolbar > .btn,
+  .canvas-toolbar.is-icon-toolbar .canvas-ai-action,
+  .canvas-toolbar.is-icon-toolbar .canvas-toolbar-expand {
+    width: 30px;
+    min-width: 30px;
+  }
+
+  .canvas-toolbar.is-icon-toolbar .zoom-stepper-current,
+  .canvas-toolbar.is-icon-toolbar .zoom-stepper-btn {
+    min-width: 30px;
+    padding-inline: 4px;
+  }
+}
