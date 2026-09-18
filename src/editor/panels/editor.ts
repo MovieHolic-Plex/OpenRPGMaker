@@ -1033,13 +1033,17 @@ const projectExportMirror = new ProjectExportMirror();
 // 우클릭 드래그 2초에 열 번 넘게 돌았다. 후행 엣지로 바꿔 버스트가 끝난 뒤 한 번만 돈다.
 function updateProjectExport(): void {
   if (projectExportTimer) clearTimeout(projectExportTimer);
+  // The first export is a full JSON stringify of the loaded project. Let the canvas and map
+  // shell get a paint opportunity before doing that hidden automation work; later edits keep the
+  // shorter debounce so observers still see changes promptly.
+  const delay = projectExportNode?.textContent ? 150 : 500;
   projectExportTimer = setTimeout(() => {
     projectExportTimer = null;
     if (!projectExportNode) return;
     projectExportNode.textContent = projectExportMirror.serialize(
       store.getCurrent(), store.getVersionToken(), editorState.get(), getMapEditHistoryState(),
     );
-  }, 150);
+  }, delay);
 }
 
 function bindLeftResizer(): void {
