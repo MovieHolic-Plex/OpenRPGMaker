@@ -179,6 +179,31 @@ function createdByKey<T>(
     : { ...target, ...Object.fromEntries(added.map(([key, value]) => [key, clone(value)])) };
 }
 
+/**
+ * 묶음이 **덧댄 타일 이식**만 기존 타일셋에 옮긴다.
+ *
+ * 타일셋은 `createdByKey` 가 «새 타일셋» 만 옮기므로, 집·여관 시공이 기존 타일셋에 미는 이식
+ * (`village/builder.ts` 의 `ensureInnSignGraft` 가 그렇다 — combined_town 에 없는 여관 간판을
+ * 슬롯 443 에 이식한다)은 통째로 버려졌다. 실측: 이식 1건이 병합본에서 0건이 되는데 **커밋
+ * 게이트는 통과**한다 — 맵은 443 을 깔았지만 이식이 없어 엉뚱한 타일이 그려진 채 저장된다.
+ *
+ * 옮기는 것은 «없던 targetTile 을 덧댄 것» 뿐이다. 이식 교체·삭제와 타일셋의 다른 필드는 여전히
+ * 범위 밖 편집이라 버리고 보고한다 — 저작 범위 규칙(`authorVillageScope.allowedTargetTilesetChange`)
+ * 이 허용하는 것과 같은 모양이다.
+ */
+function carryCreatedGrafts(merged: Project, started: Project, result: Project): void {
+  for (const [id, resultTileset] of Object.entries(result.tilesets)) {
+    const target = merged.tilesets[id];
+    const startedTileset = started.tilesets[id];
+    // 새 타일셋은 createdByKey 가 통째로 옮긴다. 여기는 «양쪽에 있는» 타일셋만 본다.
+    if (!target || !startedTileset) continue;
+    const known = new Set([...(startedTileset.tileGrafts ?? []), ...(target.tileGrafts ?? [])].map((graft) => graft.targetTile));
+    const added = (resultTileset.tileGrafts ?? []).filter((graft) => !known.has(graft.targetTile));
+    if (added.length === 0) continue;
+    merged.tilesets[id] = { ...target, tileGrafts: [...(target.tileGrafts ?? []), ...clone(added)] };
+  }
+}
+
 /** database 의 컬렉션은 전부 id 가진 레코드 배열이다 — 종류를 나열하지 않고 그대로 훑는다. */
 function createdDatabaseEntries(
   started: Project["database"],
@@ -214,6 +239,7 @@ function carryCreatedEntries(merged: Project, started: Project, result: Project)
     merged.endings = createdById(started.endings ?? [], result.endings ?? [], merged.endings ?? []) as Project["endings"];
   }
   merged.tilesets = createdByKey(started.tilesets, result.tilesets, merged.tilesets);
+  carryCreatedGrafts(merged, started, result);
   merged.assets = {
     sprites: createdByKey(started.assets.sprites, result.assets.sprites, merged.assets.sprites),
     uploaded: createdByKey(started.assets.uploaded, result.assets.uploaded, merged.assets.uploaded),

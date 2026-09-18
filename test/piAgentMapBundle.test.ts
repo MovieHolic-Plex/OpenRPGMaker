@@ -177,6 +177,45 @@ describe("piAgent mapBundle", () => {
     expect(merged.spills).toEqual([{ mapIds: ["map_east"], keys: ["switches"] }]);
   });
 
+  // 실측(2026-09-18): 집·여관 시공은 기존 타일셋에 이식을 민다(`village/builder.ts` 의
+  // `ensureInnSignGraft` — combined_town 에 없는 여관 간판을 슬롯 443 에 이식). `createdByKey` 는
+  // «새 타일셋» 만 옮기므로 그 이식이 통째로 버려졌는데 **커밋 게이트는 통과**했다. 맵은 443 을
+  // 깔았지만 이식이 없어 엉뚱한 타일이 그려진 채 저장된다.
+  it("묶음이 기존 타일셋에 덧댄 이식은 함께 옮긴다", () => {
+    const base = seed();
+    const tilesetId = base.maps.map_east!.tilesetId;
+    const graft = { targetTile: 443, sourceChipset: "tex_easyrpg_chipset_retro_house", sourceTile: 443 };
+    const a = clone(base);
+    const tileset = a.tilesets[tilesetId]!;
+    tileset.tileGrafts = [...(tileset.tileGrafts ?? []), graft];
+
+    const merged = mergeMapBundles(base, [{ mapIds: ["map_east"], project: a }]);
+
+    expect(merged.project.tilesets[tilesetId]?.tileGrafts).toContainEqual(graft);
+    expect(merged.spills).toEqual([]);
+    expect(commitChangeset(merged.project, base).ok).toBe(true);
+  });
+
+  // 경계 고정: 옮기는 것은 «덧댄 것» 뿐이다. 기존 이식을 갈아치우거나 타일셋의 다른 데이터를
+  // 고치는 것은 범위 밖 편집이라 버리고 보고해야 한다 — 저작 범위 규칙과 같은 모양이다
+  // (`authorVillageScope.allowedTargetTilesetChange`).
+  it("기존 이식 교체와 타일셋의 다른 변경은 옮기지 않고 spill 로 보고한다", () => {
+    const base = seed();
+    const tilesetId = base.maps.map_east!.tilesetId;
+    base.tilesets[tilesetId]!.tileGrafts = [{ targetTile: 443, sourceChipset: "tex_a", sourceTile: 443 }];
+
+    const 교체 = clone(base);
+    교체.tilesets[tilesetId]!.tileGrafts = [{ targetTile: 443, sourceChipset: "tex_다른것", sourceTile: 7 }];
+    const 이름변경 = clone(base);
+    이름변경.tilesets[tilesetId]!.name = "남의 타일셋";
+
+    for (const project of [교체, 이름변경]) {
+      const merged = mergeMapBundles(base, [{ mapIds: ["map_east"], project }]);
+      expect(merged.spills).toEqual([{ mapIds: ["map_east"], keys: ["tilesets"] }]);
+      expect(merged.project.tilesets[tilesetId]).toEqual(base.tilesets[tilesetId]);
+    }
+  });
+
   // 불변식. 이 한 줄이 있었으면 mapTree 거짓 보고는 애초에 못 나왔다 — 「버렸다」고 말한 키는
   // 병합본에 반영되어 있으면 안 된다. 시나리오를 늘릴 때마다 여기에 태운다.
   it("보고한 spill 키는 병합본에 반영되어 있지 않다", () => {
