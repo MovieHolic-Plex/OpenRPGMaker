@@ -18,6 +18,7 @@ import { DUNGEON_TEXTURE_KEY, INTERIOR_TEXTURE_KEY } from "@/project/tilesetHarn
 import { isWorldTileset, isWorldAnimatedTile } from "@/project/defaults/worldCoastMapping";
 import { isCombinedTownHalfTile, isCombinedTownRetroWorldTileset } from "@/project/defaults/combinedTownRetroWorld";
 import { store } from "@/project/store";
+import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import type { TilesetDef } from "@/project/types";
 import type Phaser from "phaser";
 import { animationKeyForTile, animationStripForTile } from "@/project/defaults/chipsetAnimation";
@@ -27,9 +28,10 @@ const DEFAULT_TILESET_IMAGE_URL = `/${ASSET_TILESET}`;
 
 /** Graft-free atlas URL (uploaded bytes or bundled path). Editor and evidence share this base. */
 export function tilesetBaseImageUrl(tileset: TilesetDef): string {
+  const uploaded = tileset.image.type === "uploaded" ? store.getCurrent().assets.uploaded[tileset.image.id] : undefined;
   return withInlineAsset(
     tileset.image.type === "uploaded"
-      ? store.getCurrent().assets.uploaded[tileset.image.id]?.dataUrl ?? DEFAULT_TILESET_IMAGE_URL
+      ? (uploaded ? uploadedAssetUrl(uploaded) : "") || DEFAULT_TILESET_IMAGE_URL
       : bundledTilesetImageUrl(tileset.image.id) ?? DEFAULT_TILESET_IMAGE_URL,
   );
 }
@@ -121,7 +123,8 @@ function previewSizeCss(previewSize: number | string): string {
 /** 타일셋에 붙이기 전 후보 그래픽의 URL — 그래픽 고르기 미리보기가 쓴다. */
 export function tilesetImageSourceUrl(image: TilesetDef["image"]): string {
   if (image.type === "uploaded") {
-    return withInlineAsset(store.getCurrent().assets.uploaded[image.id]?.dataUrl ?? DEFAULT_TILESET_IMAGE_URL);
+    const asset = store.getCurrent().assets.uploaded[image.id];
+    return withInlineAsset(asset ? uploadedAssetUrl(asset) || DEFAULT_TILESET_IMAGE_URL : DEFAULT_TILESET_IMAGE_URL);
   }
   return withInlineAsset(bundledTilesetImageUrl(image.id) ?? DEFAULT_TILESET_IMAGE_URL);
 }
