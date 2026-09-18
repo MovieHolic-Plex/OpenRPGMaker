@@ -14,6 +14,7 @@ export function openTeamDirectory(projectDir: string) {
   db.exec(`CREATE TABLE IF NOT EXISTS workspace_team (id TEXT PRIMARY KEY, name TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS workspace_members (id TEXT PRIMARY KEY, label TEXT NOT NULL,
       role TEXT NOT NULL CHECK(role IN ('owner','editor','viewer')), token_hash TEXT UNIQUE, revoked INTEGER NOT NULL DEFAULT 0);
+    CREATE TABLE IF NOT EXISTS workspace_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS workspace_sessions (token_hash TEXT PRIMARY KEY, member_id TEXT NOT NULL, expires_at INTEGER NOT NULL);`);
   db.transaction(() => {
     if (!db.prepare('SELECT id FROM workspace_team LIMIT 1').get([])) {
@@ -28,6 +29,12 @@ export function openTeamDirectory(projectDir: string) {
   const ownerId = String(db.prepare("SELECT id FROM workspace_members WHERE role='owner' AND revoked=0 LIMIT 1").get([])!.id);
   return {
     member,
+    accessCodeRequired(): boolean {
+      return db.prepare("SELECT value FROM workspace_settings WHERE key='access_code_required'").get([])?.value === 'true';
+    },
+    setAccessCodeRequired(required: boolean): void {
+      db.prepare("INSERT OR REPLACE INTO workspace_settings VALUES ('access_code_required', ?)").run([String(required)]);
+    },
     owner: () => member(ownerId)!,
     info() {
       const row = db.prepare('SELECT id,name FROM workspace_team LIMIT 1').get([])!;

@@ -7,6 +7,14 @@ import { serialize } from '@/project/io';
 import { startLocalProjectServer, type LocalProjectServer } from '../../electron/serve/runtime';
 import { OPRN_CHANNELS as C } from '../../electron/shared/channels';
 
+
+async function enableAccessCode(host: LocalProjectServer) {
+  const response = await fetch(host.url + '/__oprn/bridge', { method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-oprn-bridge-token': host.token },
+    body: JSON.stringify({ channel: 'oprn:host.access', payload: { required: true } }) });
+  expect(response.status).toBe(200);
+}
+
 let host: LocalProjectServer | undefined;
 let root: string | undefined;
 afterEach(async () => { await host?.close(); if (root) await rm(root, { recursive: true, force: true }); });
@@ -16,6 +24,7 @@ it('creates separate durable projects, preserves the original and shares team pe
   await writeFile(join(root, 'index.html'), '<html><head></head></html>');
   const options = { projectDir: join(root, 'project'), distDir: root, browserBridgeSource: '', publicOrigin: 'http://127.0.0.1:0' };
   host = await startLocalProjectServer(options);
+  await enableAccessCode(host);
   const login = async (token: string, project = '') => {
     const response = await fetch(host!.url + '/__oprn/login?hostProject=' + project, {
       method: 'POST', redirect: 'manual', body: new URLSearchParams({ token }),
