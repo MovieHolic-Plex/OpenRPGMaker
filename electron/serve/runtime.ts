@@ -103,7 +103,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
   const team = sessions.require(SESSION_KEY).team;
   const cookieName = `oprn_session_${createHash('sha256').update(sessions.require(SESSION_KEY).projectDir).digest('hex').slice(0, 24)}`;
   let ownerAccessCode: string | null = null;
-  if (shared) {
+  {
     const accessPath = resolve(projectDir, '.oprn-host-access');
     let existing: string | undefined;
     try { existing = (await readFile(accessPath, 'utf8')).trim(); }
@@ -184,6 +184,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
     }
 
     const result = await handler(key, body.payload);
+    if (channel === OPRN_CHANNELS.teamStatus) return { ...(result as object), accessCodeRequired: team.accessCodeRequired() };
     if (channel === OPRN_CHANNELS.assetsRead && result instanceof Uint8Array) {
       return Buffer.from(result).toString("base64");
     }
@@ -239,7 +240,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       response.setHeader('x-content-type-options', 'nosniff');
       response.setHeader('referrer-policy', 'same-origin');
       const cookie = (request.headers.cookie ?? '').split(';').map(value => value.trim()).find(value => value.startsWith(cookieName + '='))?.slice(cookieName.length + 1);
-      const signedIn = cookie ? team.sessionMember(cookie) : null;
+      const signedIn = team.accessCodeRequired() ? (cookie ? team.sessionMember(cookie) : null) : team.owner();
       if (url.pathname === '/__oprn/login' && request.method === 'POST') {
         const member = team.authenticate(new URLSearchParams(await readRequestBody(request, 4096)).get('token') ?? '');
         if (!member) { response.writeHead(401, { 'content-type': 'text/html; charset=utf-8' }).end(entryLoginPage.replace('id="login-error" hidden', 'id="login-error"')); return; }
@@ -251,7 +252,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
         if (cookie) team.deleteSession(cookie);
         response.writeHead(303, { location: '/', 'set-cookie': `${cookieName}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0` }).end(); return;
       }
-      if (shared && !signedIn) {
+      if (!signedIn) {
         if (request.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) {
           response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' }).end(entryLoginPage);
         } else sendJson(response, 401, { error: '팀 접속 코드로 로그인하세요' });
@@ -261,7 +262,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
         response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' }).end(inject(teamPage.replaceAll('href="/"', `href="${returnUrl}"`))); return;
       }
       if (url.pathname === SHARED_CHARACTER_GRAPHICS_ENDPOINT) {
-        if (shared && request.method !== 'GET' && signedIn?.role !== 'owner') {
+        if (request.method !== 'GET' && signedIn?.role !== 'owner') {
           sendJson(response, 403, { error: '호스트 공용 자료는 팀 소유자만 수정할 수 있습니다.' }); return;
         }
         sharedCharacterGraphicsMiddleware(request, response, () => {});
@@ -273,9 +274,9 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
         if (!passedThrough) return;
       }
       if (isCompanionPath(request.url ?? '')) {
-        if (shared) {
+        if (shared || team.accessCodeRequired()) {
           if (signedIn?.role !== 'owner') { sendJson(response, 403, { error: '호스트 AI는 팀 소유자만 사용할 수 있습니다.' }); return; }
-          if (!options.enableOwnerAi) { sendJson(response, 503, { error: '호스트 AI 연결이 꺼져 있습니다. OPRN_HOST_OWNER_AI=1로 활성화하세요.' }); return; }
+          if (shared && !options.enableOwnerAi) { sendJson(response, 503, { error: '호스트 AI 연결이 꺼져 있습니다. OPRN_HOST_OWNER_AI=1로 활성화하세요.' }); return; }
           // Authenticated owner + same-origin validation replaces the browser token here.
           request.headers['x-oprn-companion-token'] = companionToken;
         }
@@ -301,7 +302,20 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
           }
           clients.set(key, Date.now());
           sessions.setMember(key, (signedIn ?? team.owner()).id);
-          sendJson(response, 200, await dispatchBridge(JSON.parse(await readRequestBody(request)), key));
+          const body = JSON.parse(await readRequestBody(request));
+          if (body?.channel === 'oprn:host.access') {
+            if (sessions.member(key).role !== 'owner') { sendJson(response, 403, { error: '접속 설정은 소유자만 변경할 수 있습니다.' }); return; }
+            const required = body.payload?.required;
+            if (typeof required !== 'boolean') throw new Error('invalid access setting');
+            // Establish the current owner's login before enabling the gate.
+            if (required) {
+              const id = team.createSession(team.owner().id, Date.now() + 12 * 60 * 60 * 1000);
+              if (!id) throw new Error('접속 세션이 너무 많습니다');
+              response.setHeader('set-cookie', `${cookieName}=${id}; HttpOnly; SameSite=Strict; Path=/; Max-Age=43200${publicOrigin?.startsWith('https:') ? '; Secure' : ''}`);
+            }
+            team.setAccessCodeRequired(required);
+            sendJson(response, 200, { accessCodeRequired: required, ownerAccessCode: required ? ownerAccessCode : null });
+          } else sendJson(response, 200, await dispatchBridge(body, key));
         } catch (error) {
           sendJson(response, 400, { error: error instanceof Error ? error.message : String(error) });
         }

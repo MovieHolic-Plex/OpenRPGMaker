@@ -132,9 +132,9 @@ async function hostCurrentTeam(): Promise<void> {
         browserBridgeSource, sessions, host: '0.0.0.0', publicOrigin: `http://${ip}:0` });
       teamHosts.set(session.projectDir, host);
     }
-    clipboard.writeText(host.ownerAccessCode!);
+    clipboard.writeText(session.team.accessCodeRequired() ? host.ownerAccessCode! : host.url);
     await dialog.showMessageBox(window, { message: '팀 호스트가 실행 중입니다.',
-      detail: `${host.url}\n소유자 접속 코드를 클립보드에 복사했습니다. 브라우저에서 로그인한 뒤 팀 관리에서 동료의 접속 코드를 만드세요. 같은 네트워크에서 접속할 수 있으며, 앱을 종료하면 호스트도 종료됩니다.` });
+      detail: `${host.url}\n${session.team.accessCodeRequired() ? '소유자 접속 코드를 클립보드에 복사했습니다.' : '접속 주소를 클립보드에 복사했습니다. 코드 없이 바로 사용할 수 있습니다.'} 접속 코드는 팀 관리의 접속 설정에서 켜거나 끌 수 있습니다. 같은 네트워크에서 접속할 수 있으며, 앱을 종료하면 호스트도 종료됩니다.` });
     await shell.openExternal(host.url);
   } catch (error) { await dialog.showMessageBox(window, { type: 'error', message: '팀 호스트를 시작하지 못했습니다.', detail: error instanceof Error ? error.message : String(error) }); }
   finally { hosting.delete(session.projectDir); }
