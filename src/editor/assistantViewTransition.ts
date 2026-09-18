@@ -32,17 +32,8 @@ export type AssistantViewTransitionPlan =
   | { readonly kind: "cut" }
   | { readonly kind: "dissolve"; readonly coverMs: number; readonly revealMs: number };
 
-/**
- * 옛 화면이 종이색으로 잠기는 시간. 짧게 — 여기는 «정보가 사라지는» 구간이다.
- *
- * 왜 130 → 80 인가(2026-09-16): 목록에서 맵을 고르는 전환은 사용자가 **가장 자주** 보는
- * 전환인데, 감독이 「전환 속도가 너무 느리다」 고 했다. 실측(swiftshader, 40×30 맵)에서 클릭 →
- * 새 화면이 다 드러나기까지 847ms 였고, 그 구성은 덮기 130 + 베일 유지 428 + 걷기 200 +
- * 클릭·재구축 오버헤드 89 였다. 유지 구간은 새 맵이 실제로 그려지기를 기다리는 **필수**
- * 시간이라(줄이면 빈 종이색 캔버스가 드러난다 — 아래 `afterNextPaint`) 줄일 수 있는 것은
- * 페이드뿐이다. 80ms 는 60fps 에서 다섯 프레임이라 하드컷을 여전히 가리면서
- * 「기다렸다」 느낌을 주지 않는다.
- */
+/** Assistant navigation keeps a short visual transition. Direct map-list clicks
+ * bypass this plan and cancel any pending assistant transition. */
 export const ASSISTANT_DISSOLVE_COVER_MS = 80;
 /** 새 화면이 종이색에서 떠오르는 시간. 덮기보다 길게 — 여기가 «읽기 시작하는» 구간이다. */
 export const ASSISTANT_DISSOLVE_REVEAL_MS = 120;

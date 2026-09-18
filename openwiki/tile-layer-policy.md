@@ -181,3 +181,8 @@ DB 타일셋 편집기(`src/editor/panels/tilesetMetadataEditor.ts`), 테스트�
 `lower`, 지형 0으로 채워 세 배열을 2550칸에 맞춘다(2026-09-18 운영 웹 생성 실패 수정).
 숲 조립 그룹 9개의 누락된 필수 `placementRules`는 빈 문자열로 명시한다. 규칙이 없는 상태를
 유지하면서 문서 저장 검증을 통과시킨다. 길이 검사 뒤 이 필수 필드 검사도 적용된다.
+
+숲 기본 정의의 label/description 누락과 마지막 빈 26칸 설정 누락으로 타일 탭에서
+`undefined.trim()` 예외가 재현됐다. 번들 정의의 모든 필드를 채우고
+`tilesetMetadataControls`에서 기존 부분 메타데이터를 읽을 때 빈 문자열로 보완한다.
+브라우저에서 자료집 → 타일 → 숲마을 선택을 재현, 수정 후 2550칸 표시와 pageerror 0건 확인.

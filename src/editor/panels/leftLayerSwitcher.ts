@@ -1,17 +1,9 @@
-// editor/panels/leftLayerSwitcher.ts
-// 좌측 사이드바 레이어 전환 (standard / expert).
-//
-// 왜 사이드바인가 — 실측(2026-08-26 메뉴 감사, .omo/evidence/menu-ia/): 초보 레일에는
-// 바닥/덧그림/이벤트 버튼이 있었지만 standard(기본 모드)와 expert 사이드바에는 아예 없었다.
-// 그 두 모드에서 레이어를 바꾸는 길은 상단 「도구」 메뉴이거나 전문가 클래식 툴바뿐이었다.
-// 레이어 전환은 맵을 그리는 동안 도구 선택 다음으로 잦은 조작이다 — 매번 상단 메뉴를 열게
-// 만드는 것은 빈도와 거리(距離)가 뒤집힌 배치였다. 그래서 레이어는 사이드바가 소유하고,
-// 상단 메뉴/툴바에서는 제거했다(중복 제거 계약: test/editorMenuSidebarIa.test.ts).
-//
-// 레이어 이름은 uiCopy 단일 원천을 쓴다 — 여기서 문자열을 새로 적으면 화면마다 달라진다.
+// 모든 편집 모드의 앱 헤더 레이어 전환. 이름은 uiCopy 단일 원천을 쓴다.
 
 import { editorState, type Layer } from "@/editor/editorState";
 import { uiLabel, type UiCopyKey } from "@/editor/uiCopy";
+import { dismissLocationDrawModeForLayer } from "@/editor/locationDrawMode";
+import { applyRovingTabindex } from "./sidebarFocus";
 import { el } from "@/util/dom";
 
 type LayerRow = {
@@ -28,12 +20,8 @@ const LAYER_ROWS: readonly LayerRow[] = [
   { id: "event", copyKey: "layerEvent", testId: "layer-event", hint: "NPC·문·보물상자 등 상호작용", hotkey: "F7" },
 ] as const;
 
-/**
- * 레이어 전환의 도구 동반 규칙은 초보 레일(basicLeftRail.applyLayerSelection)과 같다:
- * 이벤트 레이어는 이벤트 도구를 함께 켜고, 타일 레이어로 돌아올 때 이벤트 도구는 칠하기로 되돌린다.
- * 두 표면이 다르게 동작하면 모드를 바꿀 때마다 손에 익은 규칙이 깨진다.
- */
 export function selectSidebarLayer(layer: Layer): void {
+  dismissLocationDrawModeForLayer(layer);
   if (layer === "event") {
     editorState.set({ layer: "event", tool: "event" });
     return;
@@ -46,7 +34,7 @@ export function makeLeftLayerSwitcher(activeLayer: Layer): HTMLElement {
   const row = el("div", {
     class: "left-layer-switcher",
     attrs: { role: "group", "aria-label": "레이어" },
-    dataset: { testid: "left-layer-switcher" },
+    dataset: { testid: "left-layer-switcher", roving: "true" },
   });
   for (const layer of LAYER_ROWS) {
     const label = uiLabel(layer.copyKey);
@@ -62,13 +50,17 @@ export function makeLeftLayerSwitcher(activeLayer: Layer): HTMLElement {
         },
         dataset: { testid: layer.testId, sidebarLayer: layer.id },
         // 글리프는 달지 않는다 — 세 단추가 전부 같은 layers 아이콘이라 구분력 없이 폭만 먹었다.
-        // 세그먼트 컨트롤은 라벨만으로 읽힌다(맵 이름과 한 줄을 나누는 컴팩트 배치).
+        // 세그먼트 컨트롤은 라벨만으로 읽힌다.
         children: [
           el("span", { class: "left-layer-btn-label", text: label }),
         ],
-        on: { click: () => selectSidebarLayer(layer.id) },
+        on: { click: () => {
+          selectSidebarLayer(layer.id);
+          window.dispatchEvent(new Event("oprn:ai-sidebar-tools"));
+        } },
       }),
     );
   }
+  applyRovingTabindex(row);
   return row;
 }

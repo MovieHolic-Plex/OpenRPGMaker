@@ -25,3 +25,4 @@
 @import "./dialogs/help-modal.css" layer(shell);
 @import "./dialogs/ai-settings-modal.css" layer(shell);
 @import "./dialogs/local-diagnostics.css" layer(shell);
+@import "./header-layer-switcher.css" layer(shell);

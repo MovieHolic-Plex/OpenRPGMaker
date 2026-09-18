@@ -126,11 +126,27 @@ function installPaletteRootObserver(root: HTMLElement): void {
   paletteRootObserver.observe(root, { childList: true });
 }
 
+let cachedRuleIssues: {
+  readonly project: ReturnType<typeof store.getCurrent>;
+  readonly lineage: number;
+  readonly generation: number;
+  readonly issues: readonly RuleAuditIssue[];
+} | null = null;
+
 function clusterRuleIssues(): readonly RuleAuditIssue[] {
+  const project = store.getCurrent();
+  const { lineage, generation } = store.getVersionToken();
+  // Map selection, zoom and toolbar remounts do not change project validation.
+  // Include the store revision so edits/undo/reloads cannot retain stale badges.
+  if (cachedRuleIssues?.project === project
+    && cachedRuleIssues.lineage === lineage && cachedRuleIssues.generation === generation) {
+    return cachedRuleIssues.issues;
+  }
   const issues: RuleAuditIssue[] = [];
-  for (const issue of projectLint(store.getCurrent())) {
+  for (const issue of projectLint(project)) {
     if (issue.code.startsWith("cluster-rule")) issues.push(toRuleAuditIssue(issue));
   }
+  cachedRuleIssues = { project, lineage, generation, issues };
   return issues;
 }
 

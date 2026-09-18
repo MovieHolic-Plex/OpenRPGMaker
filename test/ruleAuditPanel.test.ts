@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MAP_EDIT_HISTORY_EVENT } from "@/editor/mapEditHistory";
-import { installRuleAuditPanelAutoMount, renderRuleAuditPanel } from "@/editor/panels/ruleAuditPanel";
+import { installRuleAuditPanelAutoMount, renderRuleAuditPanel, ruleAuditViolationCount } from "@/editor/panels/ruleAuditPanel";
+import { projectLint } from "@/project/lint/projectLint";
+import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { installFakeDom } from "./fakeDom";
@@ -56,6 +58,20 @@ afterEach(() => {
 });
 
 describe("규칙 감사 패널", () => {
+  it("reuses project diagnostics for navigation and refreshes them after edits", () => {
+    lintMock.issues = [{ code: "cluster-rule-count", message: "위반", severity: "info" }];
+    expect(ruleAuditViolationCount()).toBe(1);
+    const calls = vi.mocked(projectLint).mock.calls.length;
+    editorState.set({ currentMapId: "other-map" });
+    expect(ruleAuditViolationCount()).toBe(1);
+    renderRuleAuditPanel();
+    expect(vi.mocked(projectLint).mock.calls.length).toBe(calls);
+    lintMock.issues = [];
+    store.update(project => { project.meta.title = "changed"; });
+    expect(ruleAuditViolationCount()).toBe(0);
+    expect(vi.mocked(projectLint).mock.calls.length).toBe(calls + 1);
+  });
+
   it("cluster-rule issue를 강도별 문구와 색상 클래스로 렌더한다", () => {
     lintMock.issues = [
       { code: "cluster-rule-adjacency", mapId: "map_1", message: "지붕 아래에는 벽", severity: "error", x: 3, y: 4 },

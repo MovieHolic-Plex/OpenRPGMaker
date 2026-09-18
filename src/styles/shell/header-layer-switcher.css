@@ -1,0 +1,67 @@
+/* 소재 옆의 맵 편집 모드: 일반 헤더 아이콘과 구분되는 강조 버튼 묶음. */
+.studio-bar .header-layer-switcher {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 2px;
+  margin-inline: 6px;
+  padding: 3px;
+  border: 1px solid var(--accent);
+  border-radius: 9px;
+  background: var(--accent-muted);
+}
+
+.studio-bar .header-layer-switcher .left-layer-btn {
+  min-height: 28px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--accent);
+  font: 600 12px/1.2 var(--font-ui);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.studio-bar .header-layer-switcher .left-layer-btn:hover {
+  background: var(--bg-hover);
+}
+
+.studio-bar .header-layer-switcher .left-layer-btn.is-active {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.studio-bar .header-layer-switcher .left-layer-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 1400px) {
+  .studio-bar .studio-command-center {
+    flex: 0 0 32px;
+    justify-content: center;
+    min-width: 32px;
+    padding: 0;
+    width: 32px;
+  }
+
+  .studio-command-center .workspace-command-chip-label,
+  .studio-command-center .workspace-command-chip-key {
+    display: none;
+  }
+}
+
+@media (max-width: 1119px) {
+  .studio-bar .header-layer-switcher {
+    margin-inline: 2px;
+  }
+
+  .studio-bar .header-layer-switcher .left-layer-btn {
+    padding-inline: 6px;
+  }
+
+  .studio-bar .studio-project-button .oprn-menu-item-label {
+    max-width: 90px;
+  }
+}

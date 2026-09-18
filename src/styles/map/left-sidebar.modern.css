@@ -1181,19 +1181,14 @@
 }
 
 /* ── 9. 컴팩트 타일 중심 배치 ────────────────────────────────────────────────
-   실측(2026-10): 표준 모드 시트 위에 고정 크롬 194px(맵 헤더 32 + 레이어 30 + 도구 32 +
-   붓 옵션 66 + 필터 34)이 쌓여 시트가 좌패널의 60% 를 겨우 넘었다. 「어디에 그리는가」
-   문맥(맵 이름 · 레이어)은 한 줄로 합치고, 나머지 줄은 크롬을 한 단계 낮춘다.
-   DOM 순서(헤더→레이어→도구)는 editorMenuSidebarIa.test.ts 계약이라 그대로 두고
-   grid 배치만 바꾼다. 시트 행만 minmax(0,1fr) 이라 남는 세로는 전부 시트가 가져간다.
-   이벤트 레이어도 같은 셸·그리드에 들어간다(renderTilePalette 이벤트 분기) —
-   바깥에 붙이면 이 배치가 안 닿아 맵 헤더가 전폭으로 벌어지고 탭이 다음 줄로 밀렸다. */
+   레이어 선택은 캔버스 상단으로 이동했다. 맵 헤더는 팔레트 전폭을 쓰고,
+   그 아래 도구·옵션·필터·시트를 배치한다. 이벤트도 같은 셸을 사용한다. */
 .editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint,
 .editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-event {
   display: grid;
   gap: 4px 6px;
   grid-template-areas:
-    "maphead layers"
+    "maphead maphead"
     "toolbar toolbar"
     "sheet sheet"
     "utils utils";
@@ -1205,7 +1200,7 @@
    이벤트 페인은 같은 격자를 쓰되 빈 행이 0 높이라 자리가 남지 않는다. */
 .editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint {
   grid-template-areas:
-    "maphead layers"
+    "maphead maphead"
     "toolbar toolbar"
     "options options"
     "filter filter"

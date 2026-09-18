@@ -55,7 +55,7 @@ import { resolveLeftDockPanels } from "@/editor/workspace/leftDockPanels";
 import { isMapPanelCollapsed, subscribeMapPanel } from "@/editor/workspace/mapPanelSection";
 import type { PanelId } from "@/editor/workspace/panelRegistry";
 import { getWorkspaceLayout, subscribeWorkspace } from "@/editor/workspace/workspaceStore";
-import { projectWithoutEventDrafts } from "@/project/eventDrafts";
+import { ProjectExportMirror } from "@/editor/projectExportMirror";
 import { isSaveSkippedLocation } from "@/project/devProjectPersistence";
 import { store, type ProjectChangeDescriptor } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
@@ -269,7 +269,7 @@ export function renderEditor(main: HTMLElement): void {
   unsubMapBackgroundPreview = subscribeMapBackgroundPreview(() => {
     if (canvasToolbarRoot) renderCanvasToolbar(canvasToolbarRoot);
   });
-  unsubMapLocks = subscribeMapEditLocks(() => refreshPanels());
+  unsubMapLocks = subscribeMapEditLocks(() => scheduleFullPanelRefresh());
   unsubUiMode = subscribeEditorUiMode(() => {
     syncLeftDock();
     applyEditorUiModeLayout();
@@ -459,6 +459,9 @@ export function teardownEditor(): void {
   authoringJourneyOpen = false;
   authoringJourneyReferenceIssues = null;
   projectExportNode = null;
+  if (projectExportTimer) clearTimeout(projectExportTimer);
+  projectExportTimer = null;
+  projectExportMirror.clear();
   document.body.classList.remove("ai-chat-dock-float", "editor-ui-beginner", "editor-ui-standard", "editor-ui-expert");
 }
 
@@ -1019,10 +1022,11 @@ function isRandomBattleTestRequest(value: unknown): value is { readonly kind: "r
   if (typeof value !== "object" || value === null) return false;
   return "kind" in value && value.kind === "random-battle";
 }
-// 프로젝트 전체 clone+stringify라 비싸다 — 페인트 드래그처럼 연속 변경 시 셀마다 실행하면
-// 그 자체가 렉의 주범이 된다(대량 편집 렉 보고의 1순위 원인). trailing 디바운스로 합친다.
+// 콘텐츠 변경의 clone+stringify는 trailing 디바운스로 합친다. UI 상태만 바뀌면
+// ProjectExportMirror가 내용 버전별 JSON을 재사용하고 editor/history만 다시 직렬화한다.
 // 소비자는 E2E/내보내기 도구(숨은 <pre>)뿐이라 150ms 지연은 관측 불가.
 let projectExportTimer: ReturnType<typeof setTimeout> | null = null;
+const projectExportMirror = new ProjectExportMirror();
 
 // 숨은 `project-export-json` 미러는 프로젝트 전체를 JSON.stringify 한다. 선행 잠금
 // (`if (timer) return`)이면 버스트 중 150ms 마다 타이머가 재무장되어 반복 직렬화됐다 —
@@ -1032,11 +1036,9 @@ function updateProjectExport(): void {
   projectExportTimer = setTimeout(() => {
     projectExportTimer = null;
     if (!projectExportNode) return;
-    projectExportNode.textContent = JSON.stringify({
-      project: projectWithoutEventDrafts(store.getCurrent()),
-      editor: editorState.get(),
-      history: getMapEditHistoryState(),
-    });
+    projectExportNode.textContent = projectExportMirror.serialize(
+      store.getCurrent(), store.getVersionToken(), editorState.get(), getMapEditHistoryState(),
+    );
   }, 150);
 }
 

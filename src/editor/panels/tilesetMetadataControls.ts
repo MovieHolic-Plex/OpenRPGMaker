@@ -27,11 +27,15 @@ export function ensureTileMeta(tileset: TilesetDef, tile: number): TileAiMetadat
     tileset.tileMeta.push({ label: "", description: "" });
   }
   tileset.tileMeta[tile] ??= { label: "", description: "" };
-  return tileset.tileMeta[tile];
+  const meta = tileset.tileMeta[tile];
+  meta.label ??= "";
+  meta.description ??= "";
+  return meta;
 }
 
 export function metadataForTile(tileset: TilesetDef, tile: number): TileAiMetadata {
-  return tileset.tileMeta?.[tile] ?? { label: "", description: "" };
+  const meta = tileset.tileMeta?.[tile];
+  return { ...meta, label: meta?.label ?? "", description: meta?.description ?? "" };
 }
 
 export function hasAiMetadata(tileset: TilesetDef, tile: number): boolean {
