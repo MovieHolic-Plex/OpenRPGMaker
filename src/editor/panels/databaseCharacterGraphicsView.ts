@@ -1,3 +1,4 @@
+import { acceptSharedCharacterGraphics } from "@/project/sharedCharacterFaceResolver";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { applyCharsetFrameCrop } from "@/assets/charsetFrameCrop";
 import { FACE_EXPRESSION_SETS } from "@/assets/faceExpressionSets";
@@ -101,7 +102,9 @@ export function renderCharacterGraphicsTab(container: HTMLElement, _rerender?: (
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || "공용 자료를 저장하지 못했습니다.");
     if (typeof result.revision !== "string") throw new Error("공용 자료 저장 응답이 올바르지 않습니다.");
-    return { document: validateSharedCharacterGraphics(result.document), revision: result.revision };
+    const document = validateSharedCharacterGraphics(result.document);
+    acceptSharedCharacterGraphics(document);
+    return { document, revision: result.revision };
   };
   const load = (): void => {
     if (state.loading || state.saving) return;

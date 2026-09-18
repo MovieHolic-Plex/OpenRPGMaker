@@ -1,0 +1,45 @@
+
+> oprn@0.4.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/npcSharedFaceMapping.test.ts test/aiGraphicAutofill.test.ts test/stardewAuthoringTools.test.ts test/characterFaceCandidates.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/.codex/worktrees/bf11/rpg-zzu
+
+ ✓ test/characterFaceCandidates.test.ts (7 tests) 973ms
+   ✓ character face evidence > uses written semantic age and gender without saving or borrowing paired-face traits  402ms
+ ✓ test/npcSharedFaceMapping.test.ts (14 tests) 5447ms
+   ✓ place_npc shared face mapping > writes the authored mapping into real event commands and survives JSON reload  556ms
+   ✓ place_npc shared face mapping > does not reintroduce a heuristic portrait for no-face  505ms
+   ✓ place_npc shared face mapping > does not reintroduce a heuristic portrait for pending  420ms
+   ✓ place_npc shared face mapping > keeps explicit face overrides  471ms
+   ✓ place_npc shared face mapping > resolves each page graphic, not just the top-level sprite  431ms
+   ✓ place_npc shared face mapping > uses a newly fetched server mapping without opening the database tab  424ms
+   ✓ make_villager shared face mapping > writes the authored mapping into real event commands and survives JSON reload  394ms
+   ✓ make_villager shared face mapping > does not reintroduce a heuristic portrait for no-face  368ms
+   ✓ make_villager shared face mapping > does not reintroduce a heuristic portrait for pending  450ms
+   ✓ make_villager shared face mapping > keeps explicit face overrides  456ms
+   ✓ make_villager shared face mapping > resolves each page graphic, not just the top-level sprite  469ms
+   ✓ make_villager shared face mapping > uses a newly fetched server mapping without opening the database tab  478ms
+ ✓ test/aiGraphicAutofill.test.ts (15 tests) 7305ms
+   ✓ upsert_enemy 외형 자동 부여 > monsterResourceId 를 생략하면 이름에 맞는 리소스를 붙이고 경고한다  537ms
+   ✓ upsert_enemy 외형 자동 부여 > unknown names fail without persisting arbitrary or missing art  338ms
+   ✓ upsert_enemy 외형 자동 부여 > 같은 적을 다시 저장하면 이미 붙은 외형을 유지한다  795ms
+   ✓ upsert_enemy 외형 자동 부여 > 명시한 외형을 자동 부여가 덮지 않는다  423ms
+   ✓ define_monster_species 외형 자동 부여 > graphic.monsterResourceId 를 생략하면 이름으로 붙인다  400ms
+   ✓ make_action_enemy 외형 자동 부여 > 생성 적과 그 적의 사냥터 필드 스폰이 모두 보이는 외형을 가진다  681ms
+   ✓ 몬스터 이벤트 기본 외형 > place_battle_blocker 는 graphic 생략 시 monster charset 과 경고를 붙인다  407ms
+   ✓ 몬스터 이벤트 기본 외형 > make_chase_scene 는 graphic 생략 시 monster charset 과 경고를 붙인다  496ms
+   ✓ upsert_event NPC 외형 자동 부여 > 대화가 있는 action 이벤트는 투명하게 저장되지 않는다  393ms
+   ✓ upsert_event NPC 외형 자동 부여 > 두 페이지 NPC는 비어 있는 뒷 페이지에 앞 페이지 외형을 그대로 재사용한다  378ms
+   ✓ upsert_event NPC 외형 자동 부여 > priority below 인 action 대화 마커는 주민 그래픽을 세우지 않는다  446ms
+   ✓ upsert_event NPC 외형 자동 부여 > 투명을 명시한 이벤트와 컷신용 auto 이벤트는 그대로 둔다  733ms
+   ✓ add_companion actor 합류 이벤트 외형 > actorId 의 charset 을 말 걸기 페이지에 표시한다  420ms
+   ✓ add_companion actor 합류 이벤트 외형 > upsert_actor 로 만든 charset 없는 액터는 주민 charset 으로 폴백한다  810ms
+ ✓ test/stardewAuthoringTools.test.ts (18 tests) 3055ms
+   ✓ P5 make_villager friendship wizard > writes characterId, optional talkFriendship, and unlock pages  541ms
+   ✓ P5 make_villager friendship wizard > 같은 characterId 재요청은 새 id를 받아도 기존 주민을 재사용하고 대사를 보존한다  793ms
+
+ Test Files  4 passed (4)
+      Tests  54 passed (54)
+   Start at  09:48:40
+   Duration  26.70s (transform 11.58s, setup 0ms, collect 29.17s, tests 16.78s, environment 1ms, prepare 448ms)

@@ -2,7 +2,7 @@
 // place_npc 등이 받는 고수준 입력(SimplePage/graphic.query)을 EventPage/graphic으로 컴파일한다.
 // graphic.query 해석은 charsetQuery의 별칭/자유 질의 매처에 위임한다.
 
-import { faceGraphicFromEventGraphic, faceGraphicForCharset } from "@/assets/charsetFaceMap";
+import { sharedFaceFromEventGraphic, sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import { EASYRPG_RTP_ASSETS, charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { npcGraphicExampleLabels, pickNpcGraphic, type NpcGraphicPickOptions } from "@/assets/charsetQuery";
 import { searchResources } from "@/assets/resourceSearch";
@@ -55,7 +55,7 @@ type EventCompileOptions = {
   readonly path?: string;
   /** 대화 시 표시할 페이스. 생략 시 graphic charset에서 자동 매핑. */
   readonly face?: FaceGraphic | null;
-  /** false면 changeFace를 넣지 않음(기본 true: NPC 대사는 페이스 필수). */
+  /** false면 changeFace를 넣지 않음. 기본 true도 매핑된 얼굴만 삽입한다. */
   readonly injectFace?: boolean;
 };
 
@@ -483,12 +483,12 @@ export function compileSimplePage(
   const hasText = lines.length > 0
     || (page.choices && page.choices.length > 0)
     || (page.commands && page.commands.length > 0);
-  // NPC 대화에 페이스 타일 그림판 필수 — graphic charset → faceset 자동 매핑 (명시 face 우선)
+  // 명시 face 우선. 자동 얼굴은 공용 검토 자료만 사용하며 얼굴 없는 상태도 보존한다.
   const injectFace = options.injectFace !== false;
   if (injectFace && hasText) {
-    const face = options.face
-      ?? faceFromSimplePage(page)
-      ?? faceGraphicFromEventGraphic(graphic);
+    const face = options.face !== undefined ? options.face
+      : page.face !== undefined ? faceFromSimplePage(page)
+      : sharedFaceFromEventGraphic(graphic);
     if (face) {
       commands.push({
         kind: "changeFace",
@@ -498,7 +498,7 @@ export function compileSimplePage(
       });
     } else {
       options.warnings?.push(
-        `NPC '${name}' 페이스 매핑 실패 — charset graphic에 대응 faceset이 없다. graphic을 people1/2·actor1/2로 지정하라.`,
+        `NPC '${name}' 공용 얼굴 매핑 없음(미검토·얼굴 없음 포함) — 얼굴을 자동 추정하지 않습니다.`,
       );
     }
   }
@@ -561,7 +561,7 @@ function faceFromSimplePage(page: SimplePage): FaceGraphic | null {
     };
   }
   if (typeof rec.textureKey === "string") {
-    return faceGraphicForCharset(
+    return sharedFaceForCharset(
       rec.textureKey,
       typeof rec.characterIndex === "number" ? rec.characterIndex : 0,
     );

@@ -1,3 +1,14 @@
+## NPC 공용 얼굴 매핑 연결 (2026-09-18)
+
+`place_npc` / `make_villager`와 `eventCompile`은 `sharedCharacterFaceResolver`의 공용 자료를 사용한다.
+브라우저 조수는 턴 시작 시 `/__oprn/shared-character-graphics`를 no-store로 다시 읽고,
+실패하면 오래된 매핑으로 저작하지 않고 턴 오류로 처리한다. DB 탭의 읽기·저장 성공도 같은 캐시를 갱신한다.
+헤드리스 동기 도구의 초기 자료는 서버 초기값과 같은 `defaultSharedCharacterGraphics()`다.
+자동 얼굴은 각 페이지의 실제 charset/frame으로 찾는다. `mapped`만 changeFace를 생성하고,
+`pending` / `no-face` / 없는 항목은 시트 번호나 나이로 추정하지 않는다.
+명시한 최상위 face > 페이지 face > 공용 매핑 순서를 유지한다. 명시 textureKey도 공용 매핑으로 해석한다.
+기존 저장 이벤트를 소급 변경하지 않는다. 회귀 계약: `test/npcSharedFaceMapping.test.ts`.
+
 # Editor AI Tools & Vocabulary
 
 ## 이식 타일 최초 검수 준비 대기 (2026-09-18)
