@@ -2,9 +2,9 @@
  * 실내 맵 → PNG. 에디터 캔버스와 같은 규칙으로 그린다.
  *
  * `chipsetQuarterComposition` shares the editor's chipset-scoped rendering rules:
- * Interior dark-wall 366 uses 8px quarters; 430-series ceilings are already shaped
- * at storage time and render as whole tiles. Reusing Combined Town quarter recipes
- * for those numeric IDs samples the wrong Interior art (including tabletops).
+ * Interior dark-wall 366 and the registered 430-series ceiling use their own 8px
+ * quarter sources. The native ceiling group keeps stored variants for compatibility.
+ * Reusing other chipset recipes would sample unrelated Interior art.
  *
  * `scripts/demo-assistant-interior-build.mts` 의 렌더 루프와 같은 방식이며, 알파 합성과
  * 이벤트 표식 오버레이만 더했다. 순수 Node(pngjs) — 브라우저·Phaser 불필요.
@@ -33,7 +33,7 @@ export type CellDrawPlan =
       readonly sources: readonly { readonly tile: number; readonly offsetX: 0 | 8; readonly offsetY: 0 | 8 }[];
     };
 
-type QuarterTileset = Pick<TilesetDef, "autotileGroups" | "image">;
+type QuarterTileset = Pick<TilesetDef, "autotileGroups" | "image" | "tileGrafts">;
 
 /** 하위 레이어 한 칸의 그리기 계획. 쿼터 합성 대상이면 quarters, 아니면 raw. */
 export function lowerCellDrawPlan(map: GameMap, tileset: QuarterTileset, x: number, y: number): CellDrawPlan {

@@ -30,7 +30,7 @@ import {
   DARK_WALL_AUTOTILE_GROUP_ID,
   DARK_WALL_TILE,
 } from "@/project/defaults/darkWallAutotile";
-import { DEFAULT_DARKNESS_DEEP_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
+import { seedInteriorCeilingAutotile } from "@/project/defaults/interiorCeilingAutotile";
 import { VR, type InteriorRoomTheme, type InteriorSemanticTileRole } from "@/project/defaults/interiorVocabulary";
 export { interiorVocabTiles, VR, type InteriorRoomTheme, type InteriorSemanticTileRole } from "@/project/defaults/interiorVocabulary";
 import type { ConceptOverlay } from "@/editor/conceptBundleResolve";
@@ -559,23 +559,8 @@ export function ensureInteriorRoomHarness(project: Project): boolean {
     changed = true;
   }
 
-  // 천장 정본 v2: 검정+회암 테두리 천장 오토타일(앵커 369·body 430) — 집 셸의 정본 천장.
-  const ceiling = {
-    ...DEFAULT_DARKNESS_DEEP_AUTOTILE_GROUP,
-    id: `${INTERIOR_ROOM_HARNESS_PREFIX}ceiling`,
-    name: "천장(회암 테두리)",
-  };
-  const groups = ts.autotileGroups ?? [];
-  const ceilingIdx = groups.findIndex((g) => g.id === ceiling.id);
-  if (ceilingIdx < 0) {
-    ts.autotileGroups = [...groups, ceiling];
-    changed = true;
-  } else if (JSON.stringify(groups[ceilingIdx]!.variantMap) !== JSON.stringify(ceiling.variantMap)) {
-    const next = [...groups];
-    next[ceilingIdx] = ceiling;
-    ts.autotileGroups = next;
-    changed = true;
-  }
+  // Normal tileset loading and room generation share the same ceiling registration.
+  changed = seedInteriorCeilingAutotile(ts) || changed;
 
   const desired = interiorRoomTileGroups();
   const byId = new Map((ts.tileGroups ?? []).map((g) => [g.id, g]));

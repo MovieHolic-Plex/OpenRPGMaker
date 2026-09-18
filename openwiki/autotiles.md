@@ -166,3 +166,11 @@ uses JSON cloning for export-collector compatibility. Bundled frames and graphic
 picker geometry use `bundledChipsetFrameCount`. Existing user edits are retained
 when appending defaults. Recovery does not claim byte identity for the deleted
 native PNGs. Tests: `tiboRecovery.test.ts`; runtime `tibo-recovery.scenario.mjs`.
+
+## 실내 천장 기본 등록과 쿼터 합성 (2026-09-18)
+
+- `interiorCeilingAutotile.ts`가 369 앵커·430 몸통 천장의 기본 등록과 렌더 킷을 소유한다. 일반 `applyEasyRpgThemeMetadataPacks`와 `ensureInteriorRoomHarness`가 같은 등록 함수를 사용한다. 방 생성기를 먼저 실행할 필요가 없다.
+- 저장은 기존 11종 변형/8방 마스크를 유지한다. `chipsetQuarterComposition`이 실내 원본 텍스처와 천장 그룹의 문법을 확인한 뒤 8×8 조각을 합성한다. 한 칸 가로·세로 띠는 양쪽 변을, 오목 코너는 해당 방향 조각만 표시한다. 단독 369의 원본 그림은 유지한다.
+- 타 칩셋·이식된 소스·수정된 그룹 문법에는 고정 천장 쿼터를 적용하지 않는다. 기본 등록은 기존 ID/겹치는 사용자 그룹·사용자 메타/잠금·이식을 덮어쓰지 않는다.
+- 편집기·런타임·캔버스 미리보기·보고서 PNG는 공통 쿼터 진입점을 사용한다. `renderInteriorMapPng`도 천장을 무조건 통짜 픽셀로 기대해서는 안 된다.
+- 진단과 수정 전 증거: `reports/ceiling-audit-2026-09-18/`. 수정 후 브라우저 증거: `reports/ceiling-fix-2026-09-18/`. 회귀 계약: `test/interiorCeilingAutotile.test.ts`, `test/placeConceptRender.test.ts`. 이 세션에서는 vitest/전체 게이트를 실행하지 않았다.

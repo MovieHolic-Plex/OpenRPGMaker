@@ -1,5 +1,5 @@
 // 보고서 렌더러가 에디터와 같은 규칙으로 그리는지 잠근다.
-// Interior 430-series ceilings are stored variants; only dark-wall 366 uses interior quarters.
+// Native ceiling and dark-wall groups both use chipset-scoped quarter art.
 import fs from "node:fs";
 import { PNG } from "pngjs";
 import { describe, expect, it } from "vitest";
@@ -39,7 +39,7 @@ function buildDefaultInn(): { map: GameMap; context: ToolContext } {
 }
 
 describe("place_concept 보고서 렌더러", () => {
-  it("저장 성형된 천장 가장자리와 나무 바닥은 원시 실내 시트 픽셀을 보존한다", () => {
+  it("천장 가장자리는 방향별 실내 쿼터를, 나무 바닥은 원시 픽셀을 보존한다", () => {
     const { map, context } = buildDefaultInn();
     const tileset = context.project.tilesets[INTERIOR_ROOM_TILESET_ID]!;
     const png = renderInteriorMapPng(map, tileset, { scale: 1, background });
@@ -67,9 +67,24 @@ describe("place_concept 보고서 렌더러", () => {
         });
         if (!border) continue;
         ceilingBorderCells += 1;
-        expect(plan).toEqual({ kind: "raw", tile });
         if (map.upperTiles[y * map.width + x]! < 0) {
-          expectCellPixels(png, x, y, () => tile);
+          const connected = (dx: number, dy: number) => {
+            const nx = x + dx, ny = y + dy;
+            return nx >= 0 && ny >= 0 && nx < map.width && ny < map.height
+              && isCeilingTile(map.lowerTiles[ny * map.width + nx]!);
+          };
+          const isolated = tile === 369 && !connected(0, -1) && !connected(0, 1)
+            && !connected(-1, 0) && !connected(1, 0);
+          expectCellPixels(png, x, y, (px, py) => {
+            if (isolated) return 369;
+            const right = px >= 8, bottom = py >= 8;
+            const dx = right ? 1 : -1, dy = bottom ? 1 : -1;
+            const horizontal = connected(dx, 0), vertical = connected(0, dy);
+            if (!horizontal && !vertical) return bottom ? (right ? 461 : 459) : (right ? 401 : 399);
+            if (!vertical) return bottom ? 460 : 400;
+            if (!horizontal) return right ? 431 : 429;
+            return connected(dx, dy) ? 430 : 371;
+          });
           renderedCeilings += 1;
         }
       }
