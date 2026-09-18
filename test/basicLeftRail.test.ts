@@ -1,3 +1,4 @@
+import { selectSidebarLayer } from "@/editor/panels/leftLayerSwitcher";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderBasicLeftRail, resetBasicLeftRailForTests } from "@/editor/panels/basicLeftRail";
 import { editorState } from "@/editor/editorState";
@@ -39,7 +40,7 @@ describe("basic icon rail", () => {
     }
   });
 
-  it("hover 없이 모든 도구와 레이어의 한글 라벨을 DOM에 렌더한다", () => {
+  it("hover 없이 모든 도구의 한글 라벨을 DOM에 렌더한다", () => {
     const expectedLabels = [
       ["tool-select", "선택"],
       ["tool-paint", "칠하기"],
@@ -47,9 +48,6 @@ describe("basic icon rail", () => {
       ["tool-fill", "채우기"],
       ["tool-event", "장면"],
       ["tool-eyedropper", "집기"],
-      ["layer-lower", "바닥"],
-      ["layer-upper", "덧그림"],
-      ["layer-event", "이벤트"],
       ["basic-rail-toggle-tiles", "타일"],
       ["basic-rail-toggle-maps", "맵"],
     ] as const;
@@ -82,25 +80,21 @@ describe("basic icon rail", () => {
     expect(findByTestId(container as unknown as FakeElement, "basic-tile-grid")).toBeTruthy();
   });
 
-  it("레이어 스위치는 아이콘 위에 바닥/장식/이벤트 한글을 보여 준다", () => {
-    const list = findByTestId(container as unknown as FakeElement, "basic-layer-list");
-    expect(list?.textContent).toContain("바닥");
-    expect(list?.textContent).toContain("덧그림");
-    expect(list?.textContent).toContain("이벤트");
-    expect(list?.querySelector("svg")).toBeTruthy();
-    expect(list?.querySelector(".basic-rail-badge")).toBeNull();
+  it("레이어 전환을 팔레트에 중복 렌더하지 않는다", () => {
+    for (const id of ["layer-lower", "layer-upper", "layer-event"]) {
+      expect(findByTestId(container as unknown as FakeElement, id)).toBeNull();
+    }
   });
 
-  it("레일에서 하위/상위/이벤트 레이어를 바로 고른다", () => {
-    expect(findByTestId(container as unknown as FakeElement, "basic-layer-list")).toBeTruthy();
-    click("layer-upper");
+  it("캔버스 레이어 전환에 맞춰 레일 내용을 바꾼다", () => {
+    selectSidebarLayer("upper");
     expect(editorState.get().layer).toBe("upper");
     renderBasicLeftRail(container);
-    click("layer-event");
+    selectSidebarLayer("event");
     expect(editorState.get().layer).toBe("event");
     expect(editorState.get().tool).toBe("event");
     renderBasicLeftRail(container);
-    click("layer-lower");
+    selectSidebarLayer("lower");
     expect(editorState.get().layer).toBe("lower");
     expect(editorState.get().tool).toBe("paint");
   });
@@ -117,30 +111,13 @@ describe("basic icon rail", () => {
     expect(findByTestId(container as unknown as FakeElement, "basic-tile-grid")).toBeNull();
   });
 
-  it("도구·레이어의 단일 선택을 aria-current 로 노출한다 (aria-pressed 아님)", () => {
+  it("도구의 단일 선택을 aria-current 로 노출한다 (aria-pressed 아님)", () => {
     const paint = findByTestId(container as unknown as FakeElement, "tool-paint");
     const select = findByTestId(container as unknown as FakeElement, "tool-select");
     expect(paint?.getAttribute("aria-current")).toBe("true");
     expect(select?.getAttribute("aria-current")).toBeNull();
     expect(paint?.getAttribute("aria-pressed")).toBeNull();
     expect(select?.getAttribute("aria-pressed")).toBeNull();
-
-    const lower = findByTestId(container as unknown as FakeElement, "layer-lower");
-    const upper = findByTestId(container as unknown as FakeElement, "layer-upper");
-    expect(lower?.getAttribute("aria-current")).toBe("true");
-    expect(upper?.getAttribute("aria-current")).toBeNull();
-    expect(lower?.getAttribute("aria-pressed")).toBeNull();
-  });
-
-  it("세 레이어 버튼이 서로 다른 글리프를 그린다", () => {
-    const signatures = ["layer-lower", "layer-upper", "layer-event"].map((id) => {
-      const svg = findByTestId(container as unknown as FakeElement, id)?.querySelector("svg");
-      expect(svg, id).toBeTruthy();
-      return (svg as FakeElement).children
-        .map((child) => `${child.tagName}:${JSON.stringify(child.attrs)}`)
-        .join("|");
-    });
-    expect(new Set(signatures).size).toBe(3);
   });
 
   it("플라이아웃을 닫으면 포커스가 그것을 연 토글로 돌아온다", () => {
@@ -221,7 +198,7 @@ describe("basic icon rail", () => {
   });
 
   it("소비처 없는 data-rail-label 잔해를 더 쓰지 않는다", () => {
-    for (const id of ["tool-paint", "layer-lower", "basic-rail-toggle-tiles", "basic-rail-toggle-maps"]) {
+    for (const id of ["tool-paint", "basic-rail-toggle-tiles", "basic-rail-toggle-maps"]) {
       expect(findByTestId(container as unknown as FakeElement, id)?.dataset.railLabel, id).toBeUndefined();
     }
   });
