@@ -267,7 +267,7 @@ function conditionNeedsMap(condition: Condition): boolean {
   }
 }
 
-function resolvePreviewLocations(mapId?: string): readonly { readonly id: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number }[] | undefined {
+export function resolvePreviewLocations(mapId?: string): readonly { readonly id: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number }[] | undefined {
   const project = store.getCurrent();
   const map = mapId ? project.maps[mapId] : project.maps[project.startMapId];
   return map?.locations;
