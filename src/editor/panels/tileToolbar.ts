@@ -8,7 +8,7 @@ import { isTileToolbarItemActive, selectMapModeTool, selectTileTool } from "@/ed
 import type { TileToolId } from "@/editor/panels/tileToolbarActions";
 import { getEditorChrome } from "@/editor/editorUiMode";
 import { makeTileToolsMenu } from "@/editor/panels/tileToolOptions";
-import { makeInspectionControls, type TileToolbarModel } from "@/editor/panels/tileToolbarMenus";
+import { makeInspectionControls, RULE_AUDIT_UPDATED_EVENT, type TileToolbarModel } from "@/editor/panels/tileToolbarMenus";
 import { store } from "@/project/store";
 
 export {
@@ -153,6 +153,7 @@ function installToolbarBadgeRefresh(rerender: () => void): void {
   toolbarBadgeRefreshInstalled = true;
   if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
     window.addEventListener(MAP_EDIT_HISTORY_EVENT, () => latestToolbarRerender?.());
+    window.addEventListener(RULE_AUDIT_UPDATED_EVENT, () => latestToolbarRerender?.());
   }
   // 편집 1회마다 도구막대를 통째로 다시 그리면 규칙 감사 배지가 projectLint 를 전체로 다시
   // 돌린다(실측 141ms~1,206ms/칸). 페인트 드래그는 칸마다 store emit 을 내므로 트레일링

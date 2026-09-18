@@ -24,6 +24,23 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
 Chromium/SwiftShader). 운영 서버 자체의 응답 시간과는 구분한다.
 측정·회귀 범위: `reports/2026-09-18-map-list-navigation.md`.
 
+맵 목록의 추가 비용도 프로젝트 단위로 캐시한다. `collectMapLinkStats`는 같은 프로젝트
+객체에 대해 transfer 명령과 map connection을 한 번만 인덱싱하고, store가 새 프로젝트
+객체를 만들면 `WeakMap` identity로 자동 무효화한다. 썸네일의 타일 배열 해시도 맵 객체
+identity별로 재사용한다. 따라서 목록을 다시 그릴 때 맵 수가 많거나 큰 맵이 섞여 있어도
+연결 통계와 타일 배열 전수 순회가 행마다 반복되지 않는다. 맵 데이터 객체를 직접 mutate하는
+새 경로를 추가하면 이 캐시 계약을 깨므로, 편집은 store의 `updateMap`/`update`를 통과시킨다.
+
+툴바의 규칙 감사 배지는 차가운 캐시에서 동기 `projectLint`를 실행하지 않는다. 첫 화면은
+배지를 비워 두고 한 프레임 뒤 계산한 결과로 갱신하며, 감사 패널을 직접 열거나 캐시가 있으면
+기존 동기 진단 계약을 사용한다. 그래서 대형 프로젝트의 로드와 첫 캔버스 페인트가 전체
+직렬화 왕복 검사에 막히지 않는다.
+
+100×100처럼 큰 맵은 `EditScene`이 처음부터 전체 타일 GameObject를 만들지 않는다. 현재 카메라
+주변 창(여유 2칸)만 먼저 materialize하고, 카메라가 다른 타일 창으로 이동할 때 새 창을 추가한다.
+기존 화면 밖 컬링은 이미 만들어진 객체를 숨기는 후처리라 초기 진입 렉을 줄이지 못했기 때문에,
+대형 맵 경로에서는 생성 자체를 지연한다. 캡처 모드와 작은 맵은 전체 렌더 계약을 유지한다.
+
 ## 맵 전환과 물 타일 애니메이션 공유 (2026-09-18)
 
 `chipsetTileRender`의 애니메이션 타일·호수 쿼터는 `sharedTileAnimation`을 통해
