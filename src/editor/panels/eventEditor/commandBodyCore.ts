@@ -950,7 +950,7 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
           }),
         ],
       }),
-      renderConditionEvalPreview(cmd.condition),
+      renderConditionEvalPreview(cmd.condition, editorState.get().currentMapId ?? undefined),
       ...(timerWarning ? [timerWarning] : []),
     ],
   });
