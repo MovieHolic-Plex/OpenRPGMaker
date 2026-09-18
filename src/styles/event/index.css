@@ -31,3 +31,5 @@
 @import "./previews/command-preview-3.css" layer(event);
 @import "./previews/command-preview-4.css" layer(event);
 @import "./narrow.css" layer(event);
+
+@import "./command-workbench.css" layer(event);

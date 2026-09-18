@@ -27,7 +27,7 @@ import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
 import { renderEditorIcon, type EditorIconName } from "./editorIcons";
 import { toast } from "@/util/toast";
-import { eventAiStagedCommands, hasEventAiStagedDraft, renderEventAiAssist } from "./aiAssist";
+import { renderEventAiAssist } from "./aiAssist";
 import { auxCompositeKey, syncAuxHosts } from "./auxOpenController";
 import { renderEventPageFlow, renderEventPagePreview } from "./eventScriptModernViews";
 import { renderEventScheduleEditor } from "./eventScheduleEditor";
@@ -121,7 +121,7 @@ export function renderEventEditorStable(container: HTMLElement, mapId: MapId, ev
 }
 
 export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, eventId: string): void {
-  const section = el("div", { class: "panel-section event-editor", dataset: { testid: "event-editor-content" } });
+  const section = el("div", { class: "panel-section event-editor event-editor-command-focused", dataset: { testid: "event-editor-content" } });
   const map = store.getCurrent().maps[mapId];
   if (!map) {
     section.append(el("div", { class: "empty-hint", text: "맵을 찾을 수 없습니다." }));
@@ -162,6 +162,8 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   const validation = validateEventDraftBody(store.getCurrent(), mapId, evForRender);
   const activePageIssues = eventDraftIssuesForPage(validation, activePage.id);
   const selectionKey = `${mapId}:${ev.id}:${activePage.id}`;
+  // Detached render must not run the previous surface's DOM-moving selection listener.
+  setCommandSelectionListener(undefined);
   beginCommandSelectionScope(selectionKey);
   const commandHistory = pageCommandHistory(mapId, ev.id, activePage.id);
   const actions = commandHistory.wrapActions(pageCommandActions(mapId, ev.id, activePage.id));
@@ -182,11 +184,9 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     class: "event-editor-inspector-column",
     dataset: { testid: "event-editor-inspector" },
   });
-  setCommandInspectorHost(inspectorColumn);
+  const commandEditHost = el("div", { class: "event-command-inline-edit", dataset: { testid: "event-command-inline-edit" } });
+  setCommandInspectorHost(inspectorColumn, commandEditHost, () => renderEventPagePreview({ mapId, eventId, page: activePage }));
   resetCommandInspectorView();
-  // 자리표시자 머리글은 명령 렌더보다 **먼저** 붙인다. 나중에 붙이면 선택이 복원된
-  // 인스펙터 본문 **아래로** 「선택한 명령」 머리글이 밀려 들어간다.
-  inspectorColumn.append(columnLabel("inspector", "선택한 명령", "명령을 고르면 여기에서 고칩니다"));
 
   // 보기 방식·검색어는 이 이벤트를 편집하는 동안 살아 있어야 한다. 스토어가 바뀌면
   // modal.ts 가 본문을 통째로 다시 그리는데, 그때 localStorage 만 읽으면 미리보기가
@@ -210,22 +210,16 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     }
   });
   const storyboardHost = el("div", { class: "event-storyboard-host", dataset: { testid: "event-storyboard-host" } });
-  // AI 초안은 목록을 덮는 오버레이도, 도크 안의 별도 카드도 아니다 — **목록이 있던 자리에**
-  // 같은 카드 모양으로 그린다. 그래서 cmdList 바로 앞에 살고, 초안이 있는 동안만 목록과 자리를 바꾼다.
+  // AI 초안은 별도 모달에만 그린다. 적용 전에는 저작 명령 목록을 유지한다.
   const stagedHost = el("div", {
     class: "cmd-staged-host",
     dataset: { testid: "ai-event-staged-host" },
-  });
-  const previewHost = el("div", {
-    class: "event-page-preview-host",
-    dataset: { testid: "event-page-preview-host" },
   });
   const flowHost = el("div", {
     class: "event-page-flow-host",
     dataset: { testid: "event-page-flow-host" },
   });
-  let currentMode: StoryboardMode = storyboardMode;
-  let revealAuthoredCommand = false;
+  let currentMode: StoryboardMode = storyboardMode === "preview" ? "list" : storyboardMode;
   // 스토리 보기의 선택도 목록과 **같은** 인스펙터를 채운다. 예전에는 카드 한 번 클릭이
   // 곧바로 편집 모달을 열어서, 기본 보기인 스토리에서는 오른쪽 「선택한 명령」 칼럼이
   // 영원히 비어 있고 툴바의 이동/복사가 대상을 찾지 못했다.
@@ -280,49 +274,31 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     });
   let storyboardEl = makeStoryboard();
   const changeMode = (next: StoryboardMode): void => {
-    revealAuthoredCommand = false;
     currentMode = next;
     setStoryboardMode(next);
     applyViewMode();
   };
-  let viewToggle = renderViewToggle(currentMode, changeMode);
+  let viewToggle = renderViewToggle(currentMode, changeMode, ["list", "storyboard", "flow"]);
   const commandCount = el("span", {
     class: "event-editor-column-count",
     dataset: { testid: "event-editor-command-count" },
   });
   const refreshCommandCount = (): void => {
-    const stagedCommands = eventAiStagedCommands(mapId, eventId, activePage.id);
-    const count = totalCommandCount(stagedCommands ?? activePage.commands);
-    const staged = stagedCommands !== null;
+    const count = totalCommandCount(activePage.commands);
     commandCount.textContent = `${count}개`;
-    commandCount.title = staged
-      ? `AI 초안 적용 시 작성한 명령 ${count}개 (분기 안 명령 포함)`
-      : `작성한 명령 ${count}개 (분기 안 명령 포함)`;
-    commandCount.setAttribute(
-      "aria-label",
-      staged ? `AI 초안 적용 시 작성한 명령 ${count}개, 분기 안 명령 포함` : `작성한 명령 ${count}개, 분기 안 명령 포함`,
-    );
+    commandCount.setAttribute("aria-label", `작성한 명령 ${count}개, 분기 안 명령 포함`);
   };
   refreshCommandCount();
   // 툴바가 아직 없는 시점에도 applyViewMode 가 안전하게 호출되도록 기본값은 빈 함수다.
   let syncToolbarState: () => void = () => {};
   function applyViewMode(): void {
-    // 적용 대기 중인 AI 초안은 **보기 방식보다 우선한다**. 렌더 순서와 무관하게 같은 답이
-    // 나와야 하므로 DOM 이 아니라 aiAssist 의 모듈 상태를 읽는다. 기본 보기(스토리)에서
-    // 초안 자리가 `hidden` 이면 「위 목록에 표시했어요」라고 말하면서 아무것도 보이지 않는다.
-    // flow 보기(main 이 추가)도 같은 규칙을 따른다 — 초안이 있으면 초안이 자리를 쓴다.
-    const isStaged = !revealAuthoredCommand && hasEventAiStagedDraft(mapId, eventId, activePage.id);
-    const isPreview = currentMode === "preview" && !isStaged;
-    const isStoryboard = currentMode === "storyboard" && !isStaged;
-    const isFlow = currentMode === "flow" && !isStaged;
-    // 초안을 켜고 끄면 명령 수가 달라지므로 보기 전환마다 배지를 다시 센다.
+    const isStoryboard = currentMode === "storyboard";
+    const isFlow = currentMode === "flow";
     refreshCommandCount();
-    cmdList.hidden = isStoryboard || isPreview || isFlow || isStaged;
-    stagedHost.hidden = !isStaged;
+    cmdList.hidden = isStoryboard || isFlow;
     storyboardEl.hidden = !isStoryboard;
-    previewHost.hidden = !isPreview;
     flowHost.hidden = !isFlow;
-    const nextToggle = renderViewToggle(currentMode, changeMode);
+    const nextToggle = renderViewToggle(currentMode, changeMode, ["list", "storyboard", "flow"]);
     const restoreTabFocus = viewToggle.contains(document.activeElement);
     viewToggle.replaceWith(nextToggle);
     viewToggle = nextToggle;
@@ -337,11 +313,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       if (restored) selectStoryboardCommand([...restored], true);
     } else {
       storyboardEl.replaceChildren();
-    }
-    if (isPreview) {
-      previewHost.replaceChildren(renderEventPagePreview({ mapId, eventId, page: activePage }));
-    } else {
-      previewHost.replaceChildren();
     }
     // 플로우는 미리보기가 마지막으로 보던 단계를 짚는다. 미리보기에서 넘어온 직후에
     // 다시 그려야 그 단계가 반영되므로 보기 전환마다 새로 만든다.
@@ -419,12 +390,20 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   // 툴바가 생긴 다음에야 검색·이동 버튼 상태를 맞출 수 있다. 첫 적용은 여기서 한 번.
   syncToolbarState = commandToolbar.sync;
   // 선택이 바뀌면(목록·스토리 어느 쪽이든) 편집 버튼 상태를 즉시 다시 계산한다.
-  setCommandSelectionListener(() => syncToolbarState());
+  setCommandSelectionListener(() => {
+    syncToolbarState();
+    if (commandEditHost.hidden) return;
+    const path = selectedCommandPath();
+    const surface = currentMode === "storyboard" ? storyboardEl : currentMode === "flow" ? flowHost : cmdList;
+    const row = Array.from(surface.querySelectorAll<HTMLElement>("[data-cmd-path]"))
+      .find(node => node.dataset.cmdPath === JSON.stringify(path));
+    if (row && row.nextElementSibling !== commandEditHost) row.after(commandEditHost);
+  });
   applyViewMode();
   commandsColumn.append(
     columnLabel(
       "commands",
-      "이 페이지가 하는 일",
+      "명령",
       "위에서 아래로 차례대로 실행됩니다",
       commandCount,
     ),
@@ -435,13 +414,12 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       children: [
         commandToolbar.element,
         storyboardHost,
-        previewHost,
-        stagedHost,
         flowHost,
         cmdList,
+        commandEditHost,
       ],
     }),
-    // AI 작성기는 목록을 덮는 오버레이가 아니라 칼럼 맨 아래 도크다 — 삽입 위치가 계속 보인다.
+    // 열기 버튼은 툴바에 있고, 작성기와 초안은 별도 모달에서 표시한다.
     aiAssist,
   );
 
@@ -468,7 +446,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     navigate: path => {
       const command = resolveCommandAtPath(activePage.commands, path);
       if (!command) return false;
-      revealAuthoredCommand = true;
       currentMode = "list";
       setStoryboardMode("list");
       setCommandQuery("");
@@ -802,14 +779,14 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
 function renderCommandAuxGroup(aiDock?: HTMLDetailsElement): HTMLElement {
   // AI 도크는 팝오버 밖에 살므로 도구 메뉴를 열지 않고 자기만 토글한다.
   // aria-expanded 는 도크의 toggle 이 단일 진상이다 — Escape 나 재렌더 로 닫혀도 어긋나지 않는다.
-  const aiButton = aiDock ? toolbarButton("spark", "AI 명령", "event-command-quick-ai") : null;
+  const aiButton = aiDock ? toolbarButton("spark", "AI로 명령 만들기", "event-command-quick-ai") : null;
   if (aiDock && aiButton) {
     const syncAiExpanded = (): void => aiButton.setAttribute("aria-expanded", String(aiDock.open));
     syncAiExpanded();
     aiDock.addEventListener("toggle", syncAiExpanded);
     aiButton.addEventListener("click", () => {
       aiDock.open = !aiDock.open;
-      if (aiDock.open) aiDock.scrollIntoView({ block: "nearest" });
+
     });
   }
   return el("div", {

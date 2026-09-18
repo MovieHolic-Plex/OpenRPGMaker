@@ -35,6 +35,8 @@ const BODY_OWNED_PREVIEW_SELECTOR = [
 ].join(",");
 
 let host: HTMLElement | undefined;
+let editHost: HTMLElement | undefined;
+let emptyPreview: (() => HTMLElement) | undefined;
 let selectedPath: number[] | undefined;
 let selectedPaths: number[][] = [];
 let selectionScope: string | HTMLElement | undefined;
@@ -95,8 +97,10 @@ export function notifyCommandSelectionChanged(): void {
 }
 
 /** content.ts 가 인스펙터 컬럼을 만들 때 호출한다. */
-export function setCommandInspectorHost(next: HTMLElement | undefined): void {
+export function setCommandInspectorHost(next: HTMLElement | undefined, editor?: HTMLElement, empty?: () => HTMLElement): void {
   host = next;
+  editHost = editor;
+  emptyPreview = empty;
 }
 
 /**
@@ -214,7 +218,10 @@ export function showCommandInspector(target: InspectorTarget): void {
     dataset: { testid: "event-inspector-body" },
     children: [renderBody()],
   });
-  const bodyOwnsPreview = formBody.querySelector(BODY_OWNED_PREVIEW_SELECTOR) !== null;
+  const ownedPreview = editHost
+    ? formBody.querySelector(".event-command-text-preview-card, .page3-preview-stage")
+    : null;
+  const bodyOwnsPreview = !editHost && formBody.querySelector(BODY_OWNED_PREVIEW_SELECTOR) !== null;
 
   // 프리뷰가 없으면 `↻ 미리보기 새로고침` 은 빈 약속이다(적대적 QA 3라운드 D5).
   // 편집 모달과 같은 renderCommandPreview 를 인스펙터에도 붙여, 같은 스테이지·재생 컨트롤을 준다.
@@ -227,7 +234,8 @@ export function showCommandInspector(target: InspectorTarget): void {
       renderCommandPreview(target.command, target.previewFace ? { face: target.previewFace } : undefined)
     );
   };
-  if (!bodyOwnsPreview) drawPreview();
+  if (ownedPreview) previewHost.append(ownedPreview);
+  else if (!bodyOwnsPreview) drawPreview();
 
   const previewActions = el("div", {
     class: "event-inspector-preview-actions",
@@ -258,14 +266,23 @@ export function showCommandInspector(target: InspectorTarget): void {
     ],
   });
 
-  host.replaceChildren(head, ...(bodyOwnsPreview ? [] : [previewHost]), previewActions, formBody);
+  if (editHost) {
+    editHost.hidden = false;
+    editHost.replaceChildren(head, formBody);
+    host.replaceChildren(el("h3", { class: "event-preview-heading", text: "미리보기" }), previewHost, ...(ownedPreview ? [] : [previewActions]));
+  } else {
+    host.replaceChildren(head, ...(bodyOwnsPreview ? [] : [previewHost]), previewActions, formBody);
+  }
   selectionListener?.();
 }
 
 function hideInspector(target: HTMLElement): void {
   delete target.dataset.commandPath;
+  editHost?.replaceChildren();
+  if (editHost) editHost.hidden = true;
   target.replaceChildren();
-  target.hidden = true;
+  target.hidden = !emptyPreview;
+  if (emptyPreview) target.append(el("h3", { class: "event-preview-heading", text: "미리보기" }), emptyPreview());
   target.closest(".event-editor-workbench")?.classList.remove("has-command-inspector");
 }
 

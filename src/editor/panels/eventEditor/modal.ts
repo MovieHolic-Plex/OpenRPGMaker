@@ -305,7 +305,23 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     requestClose();
   });
   let stableRendered = false;
+  let refreshing = false;
+  let refreshPending = false;
+  // Removing a focused inline field can dispatch change and synchronously emit again.
+  // Finish attaching this surface before another render claims the shared inspector/AI hosts.
   const refresh = () => {
+    if (refreshing) { refreshPending = true; return; }
+    refreshing = true;
+    try { renderSurface(); }
+    finally {
+      refreshing = false;
+      if (refreshPending) {
+        refreshPending = false;
+        queueMicrotask(refresh);
+      }
+    }
+  };
+  const renderSurface = () => {
     if (closed || minimized) return;
     const scrollSnapshots = captureEventEditorScroll(dynamicBody);
     const interactionSnapshot = captureEventEditorInteraction(dynamicBody);

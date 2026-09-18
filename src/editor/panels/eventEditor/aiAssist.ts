@@ -1,12 +1,7 @@
 // editor/panels/eventEditor/aiAssist.ts
-// 이벤트 에디터 「AI 명령」 작성기. 「이 페이지가 하는 일」 칼럼 **맨 아래에 붙는 인플로우 도크**다.
-// 자연어 입력 → runEventCommandAssist(순수 로직) → **목록 자리에 겹쳐 보이는 초안**
-// (commandDiff + stagedDiffView) → [이대로 하기] 시 목록 전체를 한 번에 교체.
+// 이벤트 에디터 AI 명령 작성 모달. 자연어 요청 → 초안 검토·수정 → 한 번에 적용.
+// 초안은 모달 안에만 표시하고, 적용 전에는 중앙의 저작 명령을 유지한다.
 // LLM 설정은 loadAiConfig 재사용.
-//
-// 왜 도크인가(실측): 예전에는 도구 팝오버 안의 칩이 `position:absolute` 카드로 열려
-// **자기가 명령을 넣을 목록을 덮었다**(1440 폭에서 목록 면적의 46%, 1024 폭에서는 전폭).
-// 삽입 위치를 못 보면서 삽입 위치를 고르라고 하는 구조였다.
 //
 // 왜 「삽입」이 아니라 「고치기」인가 —
 // 예전 계약은 "새 명령 배열을 받아 선택 뒤에 끼워 넣기" 하나였다. 그래서 (1) 고치기·지우기·
@@ -30,6 +25,8 @@ import { modalStackDepthForTest, modalStackEntryCountForTest, registerModal, unr
 import { store } from "@/project/store";
 import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
+import { openEventCommandEditDialog } from "./commandEditDialog";
+import { attachEventAiModal } from "./eventAiModal";
 import { renderEditorIcon } from "./editorIcons";
 import { auxCompositeKey } from "./auxOpenController";
 import { commandSummaryParts } from "./commandSummary";
@@ -48,9 +45,9 @@ export interface EventAiAssistOptions {
   readonly page: EventPage;
   // 현재 선택 커맨드 조회용 커맨드 리스트 루트(.cmd-item.selected 탐색).
   readonly cmdList: HTMLElement;
-  // 초안을 목록 자리에 그릴 컨테이너(content.ts 가 cmdList 바로 앞에 둔다).
+  // 모달 안에서 초안을 검토·수정할 컨테이너.
   readonly stagedHost: HTMLElement;
-  // 초안 유무에 따라 목록/초안 중 무엇을 보일지 다시 계산하게 한다(content.ts 의 applyViewMode).
+  // 초안 갱신 뒤 저작 표면의 상태를 동기화한다.
   readonly refreshListVisibility: () => void;
   // 목록 전체를 되돌리기 한 칸으로 교체(commandToolbarHistory.replaceAll).
   readonly replaceAll: (commands: readonly Command[]) => void;
@@ -81,6 +78,7 @@ const panelStates = new Map<string, PanelState>();
 let panelStatesProjectKey = "";
 let currentDockRoot: HTMLDetailsElement | null = null;
 let registeredDockRoot: HTMLDetailsElement | null = null;
+let currentModalTeardown: (() => void) | null = null;
 let currentSelectionTeardown: (() => void) | null = null;
 let panelInstanceId = 0;
 // 생성이 끝나는 시점의 **살아 있는** 도크. 스토어 갱신 한 번이면 에디터 본문을 통째로 다시
@@ -96,6 +94,8 @@ let liveDock: {
 /** 이벤트 에디터가 닫히면 분리된 DOM 클로저를 더는 완료 대상으로 보지 않는다. */
 export function clearEventAiLiveDock(): void {
   liveDock = null;
+  currentModalTeardown?.();
+  currentModalTeardown = null;
 }
 
 const TARGET_NAME_MAX = 18;
@@ -260,6 +260,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
   };
   refreshTarget();
   bindCurrentDockRoot(root, cmdList, refreshTarget);
+  currentModalTeardown = attachEventAiModal(root);
 
   input.addEventListener("input", () => {
     state.draft = input.value;
@@ -277,7 +278,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
   const resultMeta = el("span", { class: "ai-event-result-meta", dataset: { testid: "ai-event-result-meta" } });
   const resultTitle = el("h4", {
     class: "ai-event-result-title",
-    text: "위 목록이 초안이에요",
+    text: "명령 초안",
     attrs: { id: resultTitleId },
     dataset: { testid: "ai-event-result-title" },
   });
@@ -287,6 +288,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     dataset: { testid: "ai-event-result" },
     children: [
       el("div", { class: "ai-event-result-header", children: [resultTitle, resultMeta] }),
+      stagedHost,
       el("div", { class: "ai-event-preview-actions", children: [applyBtn, cancelBtn] }),
     ],
   });
@@ -295,16 +297,40 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     stagedHost.replaceChildren();
     const staged = state.staged;
     if (!staged) {
-      resultSection.hidden = true;
-      resultMeta.textContent = "";
+      resultSection.hidden = false;
+      resultTitle.textContent = "명령 초안";
+      resultMeta.textContent = "적용 전까지 기존 명령은 유지됩니다.";
+      stagedHost.append(el("p", { class: "empty-hint", text: "초안을 만들면 여기에서 명령을 검토하고 수정할 수 있습니다." }));
+      applyBtn.disabled = true;
+      cancelBtn.disabled = true;
       refreshChip();
       refreshListVisibility();
       return;
     }
     resultSection.hidden = false;
+    cancelBtn.disabled = false;
     stagedHost.append(renderStagedDiff({
       rows: staged.rows,
       excluded: staged.excluded,
+      onEdit: (row) => {
+        const initial = applyCommandDiff([row], staged.excluded)[0];
+        if (!initial) return;
+        openEventCommandEditDialog({
+          title: "AI 초안 명령 수정", initial, lockKind: true,
+          onApply: edited => {
+            if (state.staged !== staged) return;
+            const rebase = (rows: readonly CommandDiffRow[]): CommandDiffRow[] => rows.map(child => ({
+              ...child, id: `${row.id}/edited/${child.id}`, depth: row.depth + child.depth,
+              branches: child.branches.map(branch => ({ ...branch, rows: rebase(branch.rows) })),
+            }));
+            const replacement = rebase(diffCommandLists(row.before ? [row.before] : [], [edited]));
+            const replace = (rows: readonly CommandDiffRow[]): CommandDiffRow[] => rows.flatMap(child =>
+              child.id === row.id ? replacement : [{ ...child, branches: child.branches.map(branch => ({ ...branch, rows: replace(branch.rows) })) }]);
+            state.staged = { ...staged, rows: replace(staged.rows) };
+            renderStaged();
+          },
+        });
+      },
       onToggle: (id) => {
         if (staged.excluded.has(id)) staged.excluded.delete(id);
         else staged.excluded.add(id);
@@ -315,7 +341,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     const changing = hasCommandDiffChanges(staged.rows, staged.excluded);
     // 요약 숫자는 칩이 이미 말한다. 여기서는 「지금 무엇을 할 수 있는가」만 — 세 곳이 같은 숫자를
     // 되풀이하던 것을 걷어냈다.
-    resultTitle.textContent = staged.scope === "page" ? "위 목록이 초안이에요" : "위 목록 끝에 초안을 붙였어요";
+    resultTitle.textContent = staged.scope === "page" ? "수정 후 명령 목록" : "추가할 명령 미리보기";
     resultMeta.textContent = changing
       ? `${stagedDiffSummary(staged.rows, staged.excluded)} · 빼고 싶은 줄은 「빼기」로 제외할 수 있어요`
       : "적용할 것을 모두 뺐어요";
@@ -413,7 +439,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       const fixedNote = result.attempts > 1 ? ` (스스로 ${result.attempts - 1}번 고쳤습니다)` : "";
       // 숫자는 칩과 결과 줄이 말한다 — 상태줄은 다음 행동만.
       state.status = hasCommandDiffChanges(rows)
-        ? `초안을 만들었어요. 위 목록에서 확인하고 「이대로 하기」를 누르세요.${fixedNote}`
+        ? `초안을 만들었어요. 이 창에서 확인하고 「이대로 하기」를 누르세요.${fixedNote}`
         : `바뀌는 것이 없었어요. 요청을 더 구체적으로 적어 보세요.${fixedNote}`;
       state.statusKind = "";
       const settled = liveDock && liveDock.key === key ? liveDock : null;
@@ -462,6 +488,8 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     const summary = stagedDiffSummary(staged.rows, staged.excluded);
     // 적용 전에 초안을 비워, 스토어 갱신으로 재생성될 패널이 목록을 다시 보이게 한다.
     state.staged = null;
+    state.open = false;
+    root.open = false;
     state.applied = true;
     state.status = `${summary} 반영했어요. 되돌리려면 툴바의 ↶ 되돌리기 한 번.`;
     state.statusKind = "";
@@ -505,7 +533,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
   root.addEventListener("toggle", () => {
     // A queued toggle from a detached pre-rerender root must never replace the
     // registration belonging to the current dock instance.
-    if (currentDockRoot !== root) {
+    if (!root.isConnected) {
       unregisterModal(root);
       return;
     }
@@ -516,7 +544,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       input.focus();
     }
   });
-  syncDockModalRegistration(root);
+  queueMicrotask(() => syncDockModalRegistration(root));
 
   root.append(
     el("summary", {
@@ -530,7 +558,12 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     }),
     el("div", {
       class: "ai-event-assist-body",
+      attrs: { role: "dialog", "aria-modal": "true", "aria-label": "AI로 명령 만들기" },
       children: [
+        el("div", { class: "ai-event-modal-header", children: [
+          el("h2", { text: "AI로 명령 만들기" }),
+          el("button", { class: "btn", text: "닫기", attrs: { type: "button", "aria-label": "AI 명령 작성 닫기" }, on: { click: () => { root.open = false; } } }),
+        ] }),
         el("div", {
           class: "ai-event-compose",
           children: [
@@ -594,6 +627,8 @@ function bindCurrentDockRoot(
   refreshTarget: () => void,
 ): void {
   if (currentDockRoot !== root) {
+    currentModalTeardown?.();
+    currentModalTeardown = null;
     currentSelectionTeardown?.();
     currentSelectionTeardown = null;
     if (registeredDockRoot) unregisterModal(registeredDockRoot);
@@ -608,7 +643,9 @@ function bindCurrentDockRoot(
 }
 
 function syncDockModalRegistration(root: HTMLDetailsElement): void {
-  if (currentDockRoot !== root) return;
+  if (!root.isConnected) return;
+  // A nested store refresh can finish before its outer render. Only attached DOM owns Escape.
+  currentDockRoot = root;
   if (!root.open) {
     unregisterModal(root);
     if (registeredDockRoot === root) registeredDockRoot = null;

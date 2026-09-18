@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **70쪽 / 2896KB / 약 819,237 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **70쪽 / 2899KB / 약 820,214 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -18,10 +18,10 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-ai-panel.md` | 469KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2660 | ~134,462 |
 | `openwiki/editor-ai-tools.md` | 203KB | 85KB ⚠상한 초과 — 절을 더 쪼개라 | 1581 | ~57,042 |
 | `openwiki/editor-database.md` | 321KB | 61KB ⚠상한 초과 — 절을 더 쪼개라 | 1874 | ~93,139 |
-| `openwiki/editor-event-authoring.md` | 142KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 758 | ~40,840 |
+| `openwiki/editor-event-authoring.md` | 144KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 785 | ~41,630 |
 | `openwiki/editor-event-commands.md` | 61KB | 32KB | 242 | ~16,671 |
 | `openwiki/editor-interior-room-harness.md` | 92KB | 6KB | 445 | ~26,769 |
-| `openwiki/editor-pre-edit-routing.md` | 117KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 664 | ~33,806 |
+| `openwiki/editor-pre-edit-routing.md` | 118KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 664 | ~33,864 |
 | `openwiki/editor-workflows-misc.md` | 66KB | 30KB | 472 | ~18,148 |
 | `openwiki/runtime-battle.md` | 150KB | 31KB | 678 | ~43,069 |
 | `openwiki/runtime-project-schema.md` | 150KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 1043 | ~40,943 |
@@ -37,7 +37,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-ai-panel.md` | 25 | 2099, 2100, 2101, 2102, 2103, 2104, 2118, 2128 |
 | `openwiki/editor-ai-tools.md` | 6 | 1197, 1198, 1202, 1204, 1206, 1394 |
 | `openwiki/editor-database.md` | 7 | 778, 782, 783, 784, 793, 819, 822 |
-| `openwiki/editor-event-authoring.md` | 16 | 324, 325, 328, 333, 334, 335, 336, 337 |
+| `openwiki/editor-event-authoring.md` | 16 | 351, 352, 355, 360, 361, 362, 363, 364 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 109, 122, 123, 125, 128, 129 |
 | `openwiki/editor-observability.md` | 1 | 310 |
@@ -484,45 +484,46 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1860` 캐릭터·얼굴은 프로젝트 밖 공용 자료 (2026-09-18 저장 범위 수정)
   - `L1871` 공용 기본 매핑 재저작 (2026-09-18)
 
-### `openwiki/editor-event-authoring.md` — 142KB · 758줄 · ~40,840 토큰 · 통째읽기 잘림 · 깨진 줄 16
+### `openwiki/editor-event-authoring.md` — 144KB · 785줄 · ~41,630 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
-- `L3` 구역(로케이션) 조건분기 (OPRN-OUT-020, 2026-09-10)
-- `L25` 구역 드나듦 트리거 (2026-09-10)
-- `L52` Native battle confirmation admission (2026-09-08)
-- `L71` Character graphic no-match recovery (OUT-007, 2026-09-08)
-- `L94` Page preview state follows the current script (2026-09-08)
-- `L115` Event editor window controls (2026-09-06)
-- `L162` 이벤트 편집기 가독성 — 읽는 글자와 꾸미는 글자 (2026-09-03 후속)
-- `L175` 이벤트 편집기 문법 고정 — P0 (2026-09-03)
-- `L189` 2026-09-17 적대적 리뷰 P0 다섯 가지 수정 (2026-09-18)
-- `L202` NPC 일정 구조화 편집 (2026-08-24)
-- `L214` AI 가 이벤트 페이지를 이해하지 못했다 (2026-08-30 실측 · 수정)
-  - `L236` 우선순위는 1페이지가 아니다 (바꾸지 않았다)
-  - `L244` 랜덤 대사는 페이지가 아니다
-  - `L251` 새 린트가 출하 콘텐츠에서 실제로 잡은 것 (skyStair autoEvent)
-  - `L261` 조건만 걸고 켜지 않으면 그것도 죽은 페이지다 (가려짐의 거울상)
-- `L278` 복잡한 NPC 는 조회 후 상태별 다중 페이지로 저작한다 (2026-09-01)
-- `L308` Roguelike run authoring (2026-08-24)
-- `L315` Event Authoring
-- `L537` Condition / Loop / Variable command trust fixes (2026-08-07)
-- `L547` Event draft trust loop (2026-07-30)
-- `L555` 회상 오프닝 저작 — beat 컴파일러다 (2026-09-03)
-- `L564` Guided story arc facade
-- `L568` 지도·화면 효과 탭 초보자 UX (2026-08-27)
-- `L577` 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
-- `L585` Companion roster in the command picker (2026-08-27)
-- `L591` Presentation and system M2 command bodies
-- `L598` 좌측 설정 레일 그룹 소속 (2026-08-27)
-- `L616` 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
-- `L626` 「움직임과 속도」 부피 정리 (2026-08-29)
-- `L661` 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
-  - `L695` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
-  - `L706` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
-  - `L714` 참조를 비워도 조건을 삭제하지 않는다
-  - `L721` 조건 미리보기는 모르면 모른다고 말한다
-  - `L730` 조건 문구에 내부 토큰을 넣지 마라
-- `L745` 공포 게임 제작 기능 (2026-09-05)
-  - `L750` NPC 발견·추격 저작 (2026-09-06)
+- `L3` 명령 중심 배치와 AI 작성 모달 (2026-09-18)
+- `L30` 구역(로케이션) 조건분기 (OPRN-OUT-020, 2026-09-10)
+- `L52` 구역 드나듦 트리거 (2026-09-10)
+- `L79` Native battle confirmation admission (2026-09-08)
+- `L98` Character graphic no-match recovery (OUT-007, 2026-09-08)
+- `L121` Page preview state follows the current script (2026-09-08)
+- `L142` Event editor window controls (2026-09-06)
+- `L189` 이벤트 편집기 가독성 — 읽는 글자와 꾸미는 글자 (2026-09-03 후속)
+- `L202` 이벤트 편집기 문법 고정 — P0 (2026-09-03)
+- `L216` 2026-09-17 적대적 리뷰 P0 다섯 가지 수정 (2026-09-18)
+- `L229` NPC 일정 구조화 편집 (2026-08-24)
+- `L241` AI 가 이벤트 페이지를 이해하지 못했다 (2026-08-30 실측 · 수정)
+  - `L263` 우선순위는 1페이지가 아니다 (바꾸지 않았다)
+  - `L271` 랜덤 대사는 페이지가 아니다
+  - `L278` 새 린트가 출하 콘텐츠에서 실제로 잡은 것 (skyStair autoEvent)
+  - `L288` 조건만 걸고 켜지 않으면 그것도 죽은 페이지다 (가려짐의 거울상)
+- `L305` 복잡한 NPC 는 조회 후 상태별 다중 페이지로 저작한다 (2026-09-01)
+- `L335` Roguelike run authoring (2026-08-24)
+- `L342` Event Authoring
+- `L564` Condition / Loop / Variable command trust fixes (2026-08-07)
+- `L574` Event draft trust loop (2026-07-30)
+- `L582` 회상 오프닝 저작 — beat 컴파일러다 (2026-09-03)
+- `L591` Guided story arc facade
+- `L595` 지도·화면 효과 탭 초보자 UX (2026-08-27)
+- `L604` 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
+- `L612` Companion roster in the command picker (2026-08-27)
+- `L618` Presentation and system M2 command bodies
+- `L625` 좌측 설정 레일 그룹 소속 (2026-08-27)
+- `L643` 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
+- `L653` 「움직임과 속도」 부피 정리 (2026-08-29)
+- `L688` 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
+  - `L722` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
+  - `L733` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
+  - `L741` 참조를 비워도 조건을 삭제하지 않는다
+  - `L748` 조건 미리보기는 모르면 모른다고 말한다
+  - `L757` 조건 문구에 내부 토큰을 넣지 마라
+- `L772` 공포 게임 제작 기능 (2026-09-05)
+  - `L777` NPC 발견·추격 저작 (2026-09-06)
 
 ### `openwiki/editor-event-command-fixes.md` — 24KB · 98줄 · ~6,208 토큰 · 깨진 줄 11
 
@@ -618,7 +619,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L453` AI 툴·액션 이유 (2026-09-02)
 - `L463` 검증
 
-### `openwiki/editor-pre-edit-routing.md` — 117KB · 664줄 · ~33,806 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 118KB · 664줄 · ~33,864 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L7` 맵 목록 클릭은 즉시 선택한다 (2026-09-18 후속)
 - `L27` 맵 전환과 물 타일 애니메이션 공유 (2026-09-18)
@@ -1254,7 +1255,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1859` 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
 - `L1869` 실내 조립·형상 검증 (2026-09-05)
 
-### `openwiki/tile-layer-policy.md` — 14KB · 184줄 · ~4,195 토큰
+### `openwiki/tile-layer-policy.md` — 14KB · 189줄 · ~4,324 토큰
 
 - `L11` 다섯 부류
 - `L24` 받침(backing) 메타

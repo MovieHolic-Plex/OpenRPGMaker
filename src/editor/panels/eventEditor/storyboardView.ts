@@ -32,7 +32,7 @@ export function loadStoryboardMode(): StoryboardMode {
     const raw = localStorage.getItem(MODE_KEY);
     if (raw === "list" || raw === "storyboard") return raw;
   } catch { /* ignore */ }
-  return "storyboard";
+  return "list";
 }
 
 /** 미리보기·플로우는 저작 뷰가 아니라 확인 뷰라서 다음 열기까지 남기지 않는다. */
@@ -547,11 +547,11 @@ function branchesOf(cmd: Command): StoryboardBranch[] {
 
 export function renderViewToggle(
   current: StoryboardMode,
-  onChange: (next: StoryboardMode) => void
+  onChange: (next: StoryboardMode) => void,
+  modes: readonly StoryboardMode[] = ["list", "storyboard", "preview", "flow"],
 ): HTMLElement {
   // 플로우는 예전에 도구 팝오버 안 280px 오버레이였다 — 미리보기 위에 겹쳐 뜨면서
   // 「자동 재생」과 단계 카운터를 덮었다. 이제 네 번째 보기 방식이라 겹치지 않는다.
-  const modes: readonly StoryboardMode[] = ["list", "storyboard", "preview", "flow"];
   const labels: Record<StoryboardMode, string> = { list: "목록", storyboard: "스토리", preview: "미리보기", flow: "플로우" };
   const hints: Record<StoryboardMode, string> = {
     list: "명령을 한 줄씩 보고 고칩니다",
