@@ -1,0 +1,134 @@
+
+> oprn@0.4.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/npcSharedFaceMapping.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/.codex/worktrees/bf11/rpg-zzu
+
+ ❯ test/npcSharedFaceMapping.test.ts (14 tests | 10 failed) 5069ms
+   × place_npc shared face mapping > writes the authored mapping into real event commands and survives JSON reload 503ms
+     → expected { kind: 'changeFace', …(3) } to match object { kind: 'changeFace', …(1) }
+(2 matching properties omitted from actual)
+   × place_npc shared face mapping > does not reintroduce a heuristic portrait for no-face 425ms
+     → expected true to be false // Object.is equality
+   × place_npc shared face mapping > does not reintroduce a heuristic portrait for pending 452ms
+     → expected true to be false // Object.is equality
+   ✓ place_npc shared face mapping > keeps explicit face overrides  384ms
+   × place_npc shared face mapping > resolves each page graphic, not just the top-level sprite 367ms
+     → expected true to be false // Object.is equality
+   × place_npc shared face mapping > uses a newly fetched server mapping without opening the database tab 389ms
+     → expected { kind: 'changeFace', …(3) } to match object { kind: 'changeFace', …(1) }
+(2 matching properties omitted from actual)
+   × make_villager shared face mapping > writes the authored mapping into real event commands and survives JSON reload 375ms
+     → expected { kind: 'changeFace', …(3) } to match object { kind: 'changeFace', …(1) }
+(2 matching properties omitted from actual)
+   × make_villager shared face mapping > does not reintroduce a heuristic portrait for no-face 402ms
+     → expected true to be false // Object.is equality
+   × make_villager shared face mapping > does not reintroduce a heuristic portrait for pending 466ms
+     → expected true to be false // Object.is equality
+   ✓ make_villager shared face mapping > keeps explicit face overrides  394ms
+   × make_villager shared face mapping > resolves each page graphic, not just the top-level sprite 473ms
+     → expected true to be false // Object.is equality
+   × make_villager shared face mapping > uses a newly fetched server mapping without opening the database tab 421ms
+     → expected { kind: 'changeFace', …(3) } to match object { kind: 'changeFace', …(1) }
+(2 matching properties omitted from actual)
+   ✓ does not guess absent rows or invalid slots 3ms
+   ✓ rejects unavailable or invalid host data without replacing the last accepted catalog 11ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/npcSharedFaceMapping.test.ts > place_npc shared face mapping > writes the authored mapping into real event commands and survives JSON reload
+ FAIL  test/npcSharedFaceMapping.test.ts > make_villager shared face mapping > writes the authored mapping into real event commands and survives JSON reload
+AssertionError: expected { kind: 'changeFace', …(3) } to match object { kind: 'changeFace', …(1) }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "kind": "changeFace",
+-   "resourceId": "easyrpg-faceset-actor1-09",
++   "resourceId": "easyrpg-faceset-people1-00",
+  }
+
+ ❯ test/npcSharedFaceMapping.test.ts:35:34
+     33|     acceptSharedCharacterGraphics(catalog());
+     34|     const pages = JSON.parse(JSON.stringify(npc(tool)));
+     35|     expect(pages[0].commands[0]).toMatchObject({ kind: "changeFace", r…
+       |                                  ^
+     36|     expect(pages[0].commands.some((command: { kind: string }) => comma…
+     37|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  test/npcSharedFaceMapping.test.ts > place_npc shared face mapping > does not reintroduce a heuristic portrait for no-face
+ FAIL  test/npcSharedFaceMapping.test.ts > place_npc shared face mapping > does not reintroduce a heuristic portrait for pending
+ FAIL  test/npcSharedFaceMapping.test.ts > make_villager shared face mapping > does not reintroduce a heuristic portrait for no-face
+ FAIL  test/npcSharedFaceMapping.test.ts > make_villager shared face mapping > does not reintroduce a heuristic portrait for pending
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ test/npcSharedFaceMapping.test.ts:40:83
+     38|   it.each(["no-face", "pending"] as const)("does not reintroduce a heu…
+     39|     acceptSharedCharacterGraphics(catalog(status));
+     40|     expect(npc(tool)[0]!.commands.some(command => command.kind === "ch…
+       |                                                                                   ^
+     41|   });
+     42|   it("keeps explicit face overrides", () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  test/npcSharedFaceMapping.test.ts > place_npc shared face mapping > resolves each page graphic, not just the top-level sprite
+ FAIL  test/npcSharedFaceMapping.test.ts > make_villager shared face mapping > resolves each page graphic, not just the top-level sprite
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ test/npcSharedFaceMapping.test.ts:52:79
+     50|       graphic: { textureKey: "tex_easyrpg_charset_actor2", characterIn…
+     51|     }] });
+     52|     expect(pages[0]!.commands.some(command => command.kind === "change…
+       |                                                                               ^
+     53|     expect(pages[1]!.commands[0]).toMatchObject({ kind: "changeFace", …
+     54|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  test/npcSharedFaceMapping.test.ts > place_npc shared face mapping > uses a newly fetched server mapping without opening the database tab
+ FAIL  test/npcSharedFaceMapping.test.ts > make_villager shared face mapping > uses a newly fetched server mapping without opening the database tab
+AssertionError: expected { kind: 'changeFace', …(3) } to match object { kind: 'changeFace', …(1) }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "kind": "changeFace",
+-   "resourceId": "easyrpg-faceset-actor1-09",
++   "resourceId": "easyrpg-faceset-people1-00",
+  }
+
+ ❯ test/npcSharedFaceMapping.test.ts:60:39
+     58|     await refreshSharedCharacterGraphics();
+     59|     expect(fetcher).toHaveBeenCalledWith(SHARED_CHARACTER_GRAPHICS_END…
+     60|     expect(npc(tool)[0]!.commands[0]).toMatchObject({ kind: "changeFac…
+       |                                       ^
+     61|   });
+     62| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  10 failed | 4 passed (14)
+   Start at  09:47:55
+   Duration  19.57s (transform 9.65s, setup 0ms, collect 13.89s, tests 5.07s, environment 0ms, prepare 111ms)

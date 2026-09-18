@@ -17,13 +17,13 @@ import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/projectLint";
 import { genId } from "@/util/id";
 import { chestOpenCommands, chestOpenedGraphic, lootGrantCommands } from "@/editor/lootFeedback";
-import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
+import type { Command, Condition, Dir, EventPage, EventPageCondition, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
   compileCutscene,
   CutsceneValidationError,
   type CutsceneBeat,
 } from "@/editor/cutscene";
-import { faceGraphicForCharset, faceGraphicFromEventGraphic } from "@/assets/charsetFaceMap";
+import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import { searchResources } from "@/assets/resourceSearch";
 import {
   charsetGraphic,
@@ -105,7 +105,6 @@ const DIALOGUE_COMMAND_KINDS: ReadonlySet<string> = new Set(["text", "choices"])
 /** place_npc/make_villager face 인자 → FaceGraphic. 실제 배치된 charset 기준으로 맞춘다. */
 function resolvePlaceNpcFaceArg(
   faceArg: unknown,
-  resolvedGraphic: EventPageGraphic,
 ): FaceGraphic | null | undefined {
   if (faceArg && typeof faceArg === "object" && !Array.isArray(faceArg)) {
     const rec = faceArg as Record<string, unknown>;
@@ -117,14 +116,14 @@ function resolvePlaceNpcFaceArg(
       };
     }
     if (typeof rec.textureKey === "string") {
-      return faceGraphicForCharset(
+      return sharedFaceForCharset(
         rec.textureKey,
         typeof rec.characterIndex === "number" ? rec.characterIndex : 0,
       );
     }
   }
-  // 다양화 픽 이후 실제 graphic → faceset (query 기본값 people1#0 고정 금지)
-  return faceGraphicFromEventGraphic(resolvedGraphic) ?? undefined;
+  // Let the compiler resolve each page’s actual graphic against the shared catalog.
+  return undefined;
 }
 const LOW_LEVEL_TOOL_DESCRIPTION_PREFIX = "먼저 위 고수준 툴이 목적에 맞는지 확인하라(트랩=place_trap, 퍼즐=compile_puzzle, 컷신=script_cutscene 등). 이 툴은 커스텀 로직 전용.";
 const UPSERT_EVENT_NPC_HINT = "NPC 배치가 목적이면 place_npc {mapId,x,y,name,pages}를 사용하세요.";
@@ -721,7 +720,7 @@ const placeNpc: ToolDefinition = {
     if (reused) normalizationWarnings.push(`근접 유사 NPC 재사용 → id:${id} (새 이벤트 대신 갱신)`);
     // 명시 movement 우선, 생략 시 이름 아키타입 추론(guide 예외는 제자리).
     const movement = actionGuide ? PASSIVE : resolveNpcMovement(name, args.movement, normalizationWarnings);
-    const faceArg = resolvePlaceNpcFaceArg(args.face, graphic);
+    const faceArg = resolvePlaceNpcFaceArg(args.face);
     const pages = compileSimplePages(id, name, actionGuide ? [{ text: ACTION_CONTROLS_GUIDE }] : pagesArg as SimplePage[], graphic, {
       movement,
       warnings: normalizationWarnings,
@@ -967,7 +966,7 @@ const makeVillager: ToolDefinition = {
       {
         movement: villagerMovement,
         warnings,
-        face: resolvePlaceNpcFaceArg(args.face, graphic),
+        face: resolvePlaceNpcFaceArg(args.face),
       },
     );
     const giftPrefs = parseGiftPrefs(draft, args.giftPrefs, "giftPrefs");

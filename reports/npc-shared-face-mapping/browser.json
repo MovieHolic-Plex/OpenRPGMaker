@@ -1,0 +1,56 @@
+{
+  "revision": "fe817576bfa80de0b6e8bbbcd08f32f349d7e1cc1ed12bfb0e43cc64e7a09d94",
+  "mappingCount": 168,
+  "checks": [
+    {
+      "tool": "place_npc",
+      "sprite": "tex_easyrpg_charset_actor1#0",
+      "status": "mapped",
+      "expected": "easyrpg-faceset-actor1-00",
+      "actual": "easyrpg-faceset-actor1-00",
+      "image": {
+        "width": 48,
+        "height": 48
+      },
+      "passed": true
+    },
+    {
+      "tool": "place_npc",
+      "sprite": "tex_easyrpg_charset_people4#2",
+      "status": "no-face",
+      "expected": null,
+      "actual": null,
+      "image": null,
+      "passed": true
+    },
+    {
+      "tool": "make_villager",
+      "sprite": "tex_easyrpg_charset_actor1#0",
+      "status": "mapped",
+      "expected": "easyrpg-faceset-actor1-00",
+      "actual": "easyrpg-faceset-actor1-00",
+      "image": {
+        "width": 48,
+        "height": 48
+      },
+      "passed": true
+    },
+    {
+      "tool": "make_villager",
+      "sprite": "tex_easyrpg_charset_people4#2",
+      "status": "no-face",
+      "expected": null,
+      "actual": null,
+      "image": null,
+      "passed": true
+    }
+  ],
+  "session": {
+    "actual": "easyrpg-faceset-actor1-00",
+    "expected": "easyrpg-faceset-actor1-00",
+    "passed": true,
+    "stoppedReason": "final",
+    "model": "scripted tool call; no live LLM"
+  },
+  "persistence": "none: in-memory contract fixtures only"
+}
