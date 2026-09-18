@@ -199,6 +199,30 @@ describe("previewSimulation", () => {
     expect(elseStep!.skipped).toBe(true);
   });
 
+  it("evaluates insideLocation against the given map — no start-map fallback", () => {
+    const project = store.getCurrent();
+    const mapId = project.startMapId;
+    const map = project.maps[mapId];
+    if (!map) throw new Error("missing start map");
+    // 구역을 주인공 시작점 위에 놓는다 — 시작 세션 좌표가 그 안에 들어간다.
+    const { x, y } = project.startPos;
+    map.locations = [{ id: "loc_ev", name: "증거 구역", x: x - 1, y: y - 1, w: 4, h: 4 }];
+    const commands: Command[] = [
+      {
+        kind: "fork",
+        condition: { kind: "insideLocation", locationId: "loc_ev", inside: true },
+        then: [{ kind: "text", body: "안" }],
+        else: [{ kind: "text", body: "밖" }],
+      },
+    ];
+    // 맵을 넘기면 실제 기하로 판정한다(폴백이 아니라 명시된 맵).
+    const decided = simulatePageCommands(commands, "ev_test", mapId);
+    expect(decided.steps.find((s) => s.command.kind === "fork")!.forkTaken).toBe("then");
+    // 다른 맵 ID 를 넘기면 기하가 없어 판정 불가다 — 시작 맵으로 폴백하지 않는다.
+    const fallback = simulatePageCommands(commands, "ev_test", "map_no_such");
+    expect(fallback.steps.find((s) => s.command.kind === "fork")!.forkTaken).toBe("unknown");
+  });
+
   it("does not leak taken-branch writes into sibling branch snapshots", () => {
     const project = store.getCurrent();
     const switchId = project.switches[0]?.id ?? "sw_test";
