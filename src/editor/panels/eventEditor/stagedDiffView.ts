@@ -26,6 +26,7 @@ export type StagedDiffViewOptions = {
   /** 되돌린(적용하지 않을) 행 id. 호출자가 소유하고 이 뷰는 읽기만 한다. */
   readonly excluded: ReadonlySet<string>;
   readonly onToggle: (id: string) => void;
+  readonly onEdit?: (row: CommandDiffRow) => void;
 };
 
 const STATUS_MARK: Readonly<Record<CommandDiffStatus, string>> = {
@@ -187,6 +188,13 @@ function renderRow(row: CommandDiffRow, commandNumber: number | null, options: S
     head.append(command ? summaryOf(command) : el("span", { class: "cmd-kind" }));
   }
 
+  if (options.onEdit && commandNumber !== null) {
+    head.append(el("button", {
+      class: "cmd-staged-edit", text: "수정", attrs: { type: "button" },
+      dataset: { testid: `ai-event-staged-edit-${row.id}` },
+      on: { click: () => options.onEdit?.(row) },
+    }));
+  }
   if (row.status !== "keep") {
     head.append(renderToggle(row, reverted, options));
   }

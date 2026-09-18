@@ -1,5 +1,32 @@
 # Editor Event Authoring
 
+## 명령 중심 배치와 AI 작성 모달 (2026-09-18)
+
+- `content.ts`의 `event-editor-command-focused`는 왼쪽 페이지 설정, 중앙 명령,
+  오른쪽 상시 미리보기로 배치한다. `styles/event/command-workbench.css`가 마지막
+  event-layer import로 열 배치를 소유한다. 기존 인스펙터의 `grid-column: 2`와
+  좁은 화면 absolute 덮개 규칙을 되살리면 명령이 리사이저 트랙에 들어가거나 가려진다.
+- 첫 방문은 목록 보기다. 중앙 보기 전환은 목록·스토리·플로우이며, 미리보기는
+  목록을 대체하지 않는다. 선택 전에는 기존 페이지 순차 미리보기를 오른쪽에 표시한다.
+  선택 후 `commandInspector.ts`는 수정 폼을 선택 행 바로 아래로 보내고 미리보기는
+  오른쪽에 유지한다. 대사 폼의 LIVE 노드는 복제하지 않고 옮겨 입력 리스너를 보존한다.
+- AI 버튼은 `aiAssist.ts`의 작성 모달을 연다. `eventAiModal.ts`는 배경 입력 차단,
+  Tab 순환, 닫기 후 포커스 복원을 맡고 Escape는 기존 modalStack을 사용한다.
+  초안은 모달 안의 `stagedHost`에만 표시한다. 중앙 목록과 명령 수는 적용 전까지
+  저작 데이터를 기준으로 유지한다. 각 초안 행의 수정은 기존 명령 편집 다이얼로그를
+  사용하며 프로젝트에 즉시 쓰지 않는다. 최종 적용은 기존 replaceAll 한 번으로
+  처리하므로 한 번의 되돌리기 계약을 유지한다.
+- `modal.ts`는 포커스된 인라인 입력을 교체할 때 발생하는 동기 change/store 재진입을
+  직렬화한다. 이전 표면의 selection listener는 렌더 시작 시 해제한다. 이 둘이 없으면
+  중첩 렌더가 공유 인스펙터·AI 호스트를 분리된 DOM으로 바꾸어 입력 후 선택이 사라지거나
+  AI 모달에서 Escape가 부모 편집기를 닫는다. AI 모달 스택 등록은 부착된 DOM만 소유한다.
+- 1600px 화면 실측: 설정 240px / 리사이저 6px / 명령 약 789px / 미리보기 약 403px.
+  1024px에서는 200 / 6 / 492 / 260px이며 800px 이하에서는 세로로 배치한다.
+  명령 영역은 목록과 펼친 수정 폼이 같은 스크롤 영역을 사용한다.
+- 브라우저 캡처: `output/evidence/event-command-layout/`의 기본 화면, 선택 명령,
+  AI 모달, 1024px 화면. 기존 샘플의 임시 세션으로 UI만 확인했으며 원격 콘텐츠
+  저장 작업은 아니다. 전체 gates/vitest/typecheck 및 실제 LLM 생성은 실행하지 않았다.
+
 ## 구역(로케이션) 조건분기 (OPRN-OUT-020, 2026-09-10)
 
 `Condition` 에 `{ kind: "insideLocation", locationId, inside }` 가 있다. 「조건 종류」 선택기의
