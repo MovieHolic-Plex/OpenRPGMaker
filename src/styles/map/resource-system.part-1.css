@@ -7,6 +7,17 @@
   min-width: 0;
   position: relative;
 }
+/* 2026-09-18: dense(standard/expert, 플로팅 툴바)만 flex column.
+   고정 top 예약(48px/배너 시 74px)이 배너 실측(42px)과 어긋나 상단 빈 띠를
+   만들던 결함 수정. 셸이 배너 뒤에 normal flow로 바로 붙는다.
+   beginner(도크 툴바)는 absolute 예약을 유지 — 플로팅과 도크를 한 규칙으로
+   묶으면 도크 바가 캔버스와 겹친다. */
+body.editor-ui-standard .editor-layout .canvas-area,
+body.editor-ui-expert .editor-layout .canvas-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
 
 .editor-layout .canvas-area .phaser-container {
   /* 스크롤 셸을 꽉 채운다. 고정 1024×768은 작은 중앙 영역 + 가로스크롤을 만든다. */
@@ -26,6 +37,17 @@
   position: absolute;
   right: 0;
   width: auto;
+}
+body.editor-ui-standard .editor-canvas-scroll-shell,
+body.editor-ui-expert .editor-canvas-scroll-shell {
+  /* dense만 normal flow + flex:1 — 남은 높이를 다 쓴다. */
+  bottom: auto;
+  flex: 1;
+  left: auto;
+  min-height: 0;
+  position: relative;
+  right: auto;
+  top: auto;
 }
 
 .editor-canvas-scroll-shell::-webkit-scrollbar {
