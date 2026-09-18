@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { defaultAiConfig, loadAiConfig, saveAiConfig } from "@/ai/llmClient";
-import { configForUltrabrain } from "@/ai/ultrabrainConfig";
+import { configForUltrabrain, ULTRABRAIN_REVIEW_MAX_TOKENS } from "@/ai/ultrabrainConfig";
 import { mapScopeNote, parseHarmonyReview, reviewMapHarmony, unresolvedReviewSignature, unusableReviewReason } from "@/ai/ultrabrainReview";
 import { appendToTree } from "@/project/mapTree";
 
@@ -110,6 +110,36 @@ describe("Ultrabrain whole-map review", () => {
     // 통과한 맵이 늘어나도 «안 풀린 지적» 은 그대로 — 수리가 진전을 냈는지만 본다.
     expect(unresolvedReviewSignature([bad])).toBe(unresolvedReviewSignature([bad, ok]));
     expect(unresolvedReviewSignature([ok])).toBe("");
+  });
+
+  // 2026-09-18 실측: `high` 추론 한 번이 출력 예산 4096 을 다 써 JSON 을 못 뱉었고(`finish=length`),
+  // 재시도가 같은 예산이라 같은 자리에서 또 끊겨 마을 턴 전체가 「끝까지 검수하지 못했어요」로 끝났다.
+  it("예산이 모자라 끊긴 응답은 예산을 넓혀 다시 묻는다", async () => {
+    const before = createBlankProject(), after = structuredClone(before);
+    const map = Object.values(after.maps)[0]!;
+    map.lowerTiles[0] = (map.lowerTiles[0] ?? 0) + 1;
+    const ok = { finishReason: "stop", message: { content: JSON.stringify({ harmonious: true, summary: "어울립니다.", findings: [] }) }, imageDelivery: [{ messageIndex: 1, partIndex: 1 }] };
+    // Vision 은 한 번에 성공, Ultrabrain 은 첫 호출이 length 로 끊긴다.
+    mocks.chat.mockResolvedValueOnce(ok)
+      .mockResolvedValueOnce({ finishReason: "length", message: { content: "" }, imageDelivery: [{ messageIndex: 1, partIndex: 1 }] })
+      .mockResolvedValue(ok);
+    await reviewMapHarmony(before, after, "…", defaultAiConfig());
+    const budgets = mocks.chat.mock.calls.map(([config]) => (config as { maxTokens: number }).maxTokens);
+    expect(budgets[1], "첫 검수 예산은 상수 그대로").toBe(ULTRABRAIN_REVIEW_MAX_TOKENS);
+    expect(budgets[2], "끊긴 뒤 재시도는 예산을 넓힌다").toBeGreaterThan(budgets[1]!);
+  });
+
+  it("끊김이 아닌 실패는 같은 예산으로 다시 묻는다 — 일시 오류이기 때문", async () => {
+    const before = createBlankProject(), after = structuredClone(before);
+    const map = Object.values(after.maps)[0]!;
+    map.lowerTiles[0] = (map.lowerTiles[0] ?? 0) + 1;
+    const ok = { finishReason: "stop", message: { content: JSON.stringify({ harmonious: true, summary: "어울립니다.", findings: [] }) }, imageDelivery: [{ messageIndex: 1, partIndex: 1 }] };
+    mocks.chat.mockResolvedValueOnce(ok)
+      .mockResolvedValueOnce({ finishReason: "stop", message: { content: "" }, imageDelivery: [{ messageIndex: 1, partIndex: 1 }] })
+      .mockResolvedValue(ok);
+    await reviewMapHarmony(before, after, "…", defaultAiConfig());
+    const budgets = mocks.chat.mock.calls.map(([config]) => (config as { maxTokens: number }).maxTokens);
+    expect(budgets[2]).toBe(budgets[1]);
   });
 
   it("refuses missing image delivery, truncated output, inconsistent verdicts, and cancellation", async () => {

@@ -1,5 +1,5 @@
 import { configForRole } from "./modelRoles";
-import { chatCompletion, type AiConfig, type ChatMessage, type ChatRequest, type ChatResult } from "./llmClient";
+import { chatCompletion, GEMINI_MAX_OUTPUT_TOKENS, type AiConfig, type ChatMessage, type ChatRequest, type ChatResult } from "./llmClient";
 import { configForUltrabrain } from "./ultrabrainConfig";
 import { requiresVisualReview, mapVisualEvidenceUnavailable } from "./mapVisualEvidence";
 import { renderHarmonyMapImages } from "./ultrabrainImage";
@@ -51,16 +51,23 @@ export async function requestUsableReviewCompletion(
   config: AiConfig, request: ChatRequest, label: string,
 ): Promise<UsableReviewCompletion> {
   let last = "응답 없음";
+  let attemptConfig = config;
   for (let attempt = 1; attempt <= HARMONY_REVIEW_ATTEMPTS; attempt += 1) {
     request.signal?.throwIfAborted();
     try {
-      const result = await chatCompletion(config, { ...request, disableTransientRetry: true });
+      const result = await chatCompletion(attemptConfig, { ...request, disableTransientRetry: true });
       const reason = unusableReviewReason(result);
       if (!reason) return result as UsableReviewCompletion;
       last = reason;
     } catch (cause) {
       if (request.signal?.aborted) throw cause;
       last = cause instanceof Error ? cause.message : String(cause);
+    }
+    // 예산이 모자라 끊긴 응답은 **같은 예산으로 다시 물으면 같은 자리에서 또 끊긴다**. 추론이
+    // 출력 예산을 먹는 모델이라(실측: `high` 추론 한 번이 4096 을 다 썼다) 재시도는 예산을 넓혀서
+    // 묻는다. 다른 실패(빈 본문·이미지 미전달)는 일시적이라 그대로 다시 묻는다.
+    if (last.startsWith("finish=length")) {
+      attemptConfig = { ...attemptConfig, maxTokens: Math.min(GEMINI_MAX_OUTPUT_TOKENS, attemptConfig.maxTokens * 2) };
     }
     if (attempt < HARMONY_REVIEW_ATTEMPTS) await sleep(HARMONY_REVIEW_RETRY_BACKOFF_MS);
   }
