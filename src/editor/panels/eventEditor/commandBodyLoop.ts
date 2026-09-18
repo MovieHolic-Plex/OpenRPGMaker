@@ -77,9 +77,9 @@ export function loopBody(context: CommandEditContext, cmd: LoopCommand): HTMLEle
 function walkHasBreak(commands: readonly Command[]): boolean {
   for (const c of commands) {
     if (c.kind === "breakLoop") return true;
-    if (c.kind === "loop" && walkHasBreak(c.body)) return true;
-    // 분기 안 탈출도 탈출이다 — fork 1레벨만 보던 구형 검사는 choices/shop/battle 분기
-    // 안의 breakLoop 를 못 찾아 거짓 「무한 반복」 경고를 냈다.
+    // eventCommandBranches 가 loop body 를 포함한 전 분기를 열거하므로 종류별 분기는 두지 않는다.
+    // (fork 1레벨만 보던 구형 검사는 choices/shop/battle 분기 안 breakLoop 를 못 찾아
+    // 거짓 「무한 반복」 경고를 냈다.)
     for (const branch of eventCommandBranches(c)) {
       if (walkHasBreak(branch.commands)) return true;
     }
