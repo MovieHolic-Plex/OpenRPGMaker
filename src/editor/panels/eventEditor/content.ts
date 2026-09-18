@@ -162,7 +162,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   const validation = validateEventDraftBody(store.getCurrent(), mapId, evForRender);
   const activePageIssues = eventDraftIssuesForPage(validation, activePage.id);
   const selectionKey = `${mapId}:${ev.id}:${activePage.id}`;
-  // Detached render must not run the previous surface's DOM-moving selection listener.
+  // Detached render must not notify the previous surface's selection listener.
   setCommandSelectionListener(undefined);
   beginCommandSelectionScope(selectionKey);
   const commandHistory = pageCommandHistory(mapId, ev.id, activePage.id);
@@ -184,8 +184,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     class: "event-editor-inspector-column",
     dataset: { testid: "event-editor-inspector" },
   });
-  const commandEditHost = el("div", { class: "event-command-inline-edit", dataset: { testid: "event-command-inline-edit" } });
-  setCommandInspectorHost(inspectorColumn, commandEditHost, () => renderEventPagePreview({ mapId, eventId, page: activePage }));
+  setCommandInspectorHost(inspectorColumn, () => renderEventPagePreview({ mapId, eventId, page: activePage }));
   resetCommandInspectorView();
 
   // 보기 방식·검색어는 이 이벤트를 편집하는 동안 살아 있어야 한다. 스토어가 바뀌면
@@ -390,15 +389,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   // 툴바가 생긴 다음에야 검색·이동 버튼 상태를 맞출 수 있다. 첫 적용은 여기서 한 번.
   syncToolbarState = commandToolbar.sync;
   // 선택이 바뀌면(목록·스토리 어느 쪽이든) 편집 버튼 상태를 즉시 다시 계산한다.
-  setCommandSelectionListener(() => {
-    syncToolbarState();
-    if (commandEditHost.hidden) return;
-    const path = selectedCommandPath();
-    const surface = currentMode === "storyboard" ? storyboardEl : currentMode === "flow" ? flowHost : cmdList;
-    const row = Array.from(surface.querySelectorAll<HTMLElement>("[data-cmd-path]"))
-      .find(node => node.dataset.cmdPath === JSON.stringify(path));
-    if (row && row.nextElementSibling !== commandEditHost) row.after(commandEditHost);
-  });
+  setCommandSelectionListener(() => syncToolbarState());
   applyViewMode();
   commandsColumn.append(
     columnLabel(
@@ -416,7 +407,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         storyboardHost,
         flowHost,
         cmdList,
-        commandEditHost,
       ],
     }),
     // 열기 버튼은 툴바에 있고, 작성기와 초안은 별도 모달에서 표시한다.

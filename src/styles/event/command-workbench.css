@@ -28,8 +28,6 @@
   padding: 12px;
 }
 .event-editor-command-focused .event-preview-heading { margin: 0 0 12px; font-size: 16px; font-weight: 600; }
-.event-editor-command-focused .event-command-inline-edit { border-top: 1px solid var(--border-default); padding: 12px 0; }
-.event-editor-command-focused .event-command-inline-edit[hidden] { display: none; }
 .event-editor-command-focused .event-contents-fieldset { overflow: auto; }
 .event-editor-command-focused .event-inspector-body { padding: 12px 0; }
 .event-editor-command-focused .event-editor-inspector-column .event-page-preview { min-height: 0; }
@@ -99,11 +97,10 @@
 .event-editor-command-focused .ai-event-result { display: flex; flex-direction: column; gap: 12px; }
 .event-editor-command-focused .ai-event-result-header { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .event-editor-command-focused .ai-event-preview-actions { margin-top: auto; justify-content: flex-end; }
-/* One scroller keeps the command list visible above the expanded edit form. */
+/* Keep command rows in one scroll surface. */
 .event-editor-command-focused .event-contents-fieldset { display: block; height: auto; overflow: auto; }
 .event-editor-command-focused .event-contents-fieldset > .event-editor-command-toolbar { position: sticky; top: 0; z-index: 3; height: auto; min-height: 44px; flex-wrap: wrap; }
 .event-editor-command-focused .event-contents-fieldset > .cmd-list,
 .event-editor-command-focused .event-contents-fieldset > .event-storyboard-host { height: auto; max-height: none; overflow: visible; }
-.event-editor-command-focused .event-command-inline-edit { margin-top: 16px; }
 .event-editor-command-focused .event-editor-inspector-column .event-command-text-preview-card { margin: 0; padding: 10px; }
 
