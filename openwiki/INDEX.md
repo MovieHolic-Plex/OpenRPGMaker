@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **70쪽 / 2890KB / 약 817,454 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **70쪽 / 2891KB / 약 817,840 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -1151,7 +1151,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L110` Files to inspect before editing
 - `L122` Related pages
 
-### `openwiki/team-project-host.md` — 13KB · 165줄 · ~4,019 토큰
+### `openwiki/team-project-host.md` — 14KB · 178줄 · ~4,405 토큰
 
 - `L3` 소유와 실행 위치
 - `L20` 실행
@@ -1163,6 +1163,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L121` 웹 새 프로젝트 생성 (2026-09-18)
 - `L138` 운영 systemd가 Vite preview에 고정된 경우 (2026-09-18)
 - `L158` 맵 편집 권한 가져오기 (2026-09-18)
+- `L166` 운영 AI와 로그인 유지 (2026-09-18)
 
 ### `openwiki/testing.md` — 201KB · 1872줄 · ~55,637 토큰 · 통째읽기 잘림
 
