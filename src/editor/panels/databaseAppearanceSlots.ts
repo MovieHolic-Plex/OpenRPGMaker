@@ -70,8 +70,8 @@ export function appearanceSlotCard(record: CharacterAppearanceRecord, slot: Slot
     : slot === "bust" ? "선택 사항 · 없으면 대사에서 얼굴을 사용합니다." : "선택 사항 · 얼굴 한 장을 연결합니다." })];
   const sharedLine = sharedSlotLine(record, slot);
   if (sharedLine) children.push(sharedLine);
-  children.push(actions,
-    el("p", { class: "appearance-help", text: "업로드 후 ‘그림 선택’에서 새 리소스를 연결하세요." })];
+  children.push(actions);
+  children.push(el("p", { class: "appearance-help", text: "업로드 후 ‘그림 선택’에서 새 리소스를 연결하세요." }));
   if (slot !== "charset") {
     const candidateHost = el("div", { class: "appearance-candidate", attrs: { "aria-live": "polite" }, dataset: { testid: `appearance-candidate-${slot}` } });
     const renderCandidate = (): void => {
