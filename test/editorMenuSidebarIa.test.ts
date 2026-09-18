@@ -1,4 +1,3 @@
-import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
 // 좌측 사이드바 ↔ 상단 메뉴 정보구조(IA) 계약.
 //
 // 실측 배경(2026-08-26 감사, .omo/evidence/menu-ia/):
@@ -131,9 +130,6 @@ afterEach(() => {
 
 /** 사이드바가 소유하는 액션 — 상단 영역 어디에도 나타나면 안 된다. */
 const SIDEBAR_OWNED_IDS = [
-  "layer-lower",
-  "layer-upper",
-  "layer-event",
   "menu-tools-layer-lower",
   "menu-tools-layer-upper",
   "menu-tools-layer-event",
@@ -234,17 +230,17 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
     });
   }
 
-  it("beginner: 자료집·소재는 도구 메뉴가 담고 톱바 버튼은 없다", () => {
+  it("beginner: 자료집은 도구 메뉴에, 소재는 레이어 전환 옆 헤더에 둔다", () => {
     // Break: 초보 레일 옆에 자료집 버튼이 또 생기거나, 초보의 유일한 자료집 경로(도구 메뉴)가 사라진다.
     resetEditorUiModeForTests("beginner");
     const topbar = document.createElement("div");
     renderTopbar(topbar);
 
     expect(findByTestId(fake(topbar), "toolbar-database")).toBeNull();
-    expect(findByTestId(fake(topbar), "toolbar-resource-manager")).toBeNull();
+    expect(findByTestId(fake(topbar), "toolbar-resource-manager")).not.toBeNull();
     const toolsIds = commandIds(openMenu(topbar, "menu-tools"));
     expect(toolsIds).toContain("menu-tools-database");
-    expect(toolsIds).toContain("menu-tools-resources");
+    expect(toolsIds).not.toContain("menu-tools-resources");
   });
 
   it("프로젝트 메뉴는 예제 프로젝트를 하위 메뉴로 접고 내보내기 두 종류를 함께 둔다", () => {
@@ -308,23 +304,26 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
   });
 
   for (const mode of ["standard", "expert"] as const) {
-    it(`${mode}: 레이어는 캔버스 위에, 맵과 도구는 팔레트에 둔다`, () => {
-      // 팔레트를 접어도 캔버스에서 레이어를 전환할 수 있어야 한다.
+    it(`${mode}: 레이어는 앱 헤더에, 맵과 도구는 팔레트에 둔다`, () => {
+      // 팔레트를 접어도 소재 옆 헤더에서 레이어를 전환할 수 있어야 한다.
       resetEditorUiModeForTests(mode);
       const container = document.createElement("div");
       document.body.append(container);
       renderTilePalette(container);
 
       expect(findByTestId(fake(container), "left-layer-switcher")).toBeNull();
-      const canvasToolbar = document.createElement("div");
-      document.body.append(canvasToolbar);
-      renderCanvasToolbar(canvasToolbar);
-      const switcher = findByTestId(fake(canvasToolbar), "left-layer-switcher");
-      expect(switcher, `${mode} 캔버스 레이어 전환`).not.toBeNull();
+      const header = document.createElement("div");
+      document.body.append(header);
+      renderTopbar(header);
+      const switcher = findByTestId(fake(header), "left-layer-switcher");
+      expect(switcher, `${mode} 헤더 레이어 전환`).not.toBeNull();
       for (const id of ["layer-lower", "layer-upper", "layer-event"]) {
         expect(findByTestId(switcher as unknown as FakeElement, id), `${mode}/${id}`).not.toBeNull();
       }
 
+      const lead = findByTestId(fake(header), "studio-bar-lead");
+      const headerOrder = (lead?.children ?? []).map(child => child.dataset.testid);
+      expect(headerOrder.indexOf("left-layer-switcher")).toBe(headerOrder.indexOf("toolbar-resource-manager") + 1);
       const pane = findByTestId(fake(container), "palette-work-pane-paint");
       const order = (pane?.children ?? []).map((child) => child.dataset.testid ?? "");
       const toolsAt = order.indexOf("oprn-tile-toolbar");
