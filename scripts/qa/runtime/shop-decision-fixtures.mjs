@@ -68,6 +68,7 @@ export async function shopFixture(kind = 'economy', overrides = {}) {
     if (kind === 'sellOnly') project.session.inventory = {};
   }
   const command = { kind: 'shop', itemIds, allowSell: true, shopType: 'normal',
+    shopUiPreset: process.env.SHOP_UI_PRESET ?? (kind === 'compare' ? 'compare' : kind === 'navigation' ? 'tabs' : 'classic'),
     quantityMode: 'select', merchantGold: 200, messageType: 'welcome', branchOnTransaction: false,
     transactionBranch: [], branchOnFailedTransaction: false, failedTransactionBranch: [],
     ...(kind === 'buyOnly' ? { shopType: 'buyOnly', quantityMode: 'single' } : {}),

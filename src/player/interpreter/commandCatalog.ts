@@ -643,6 +643,7 @@ export function executeCommand(
         allowSell: command.allowSell,
         quantityMode: command.quantityMode,
         shopType: command.shopType,
+        shopUiPreset: command.shopUiPreset,
         messageType: command.messageType,
         merchantGold: command.merchantGold,
         branchOnTransaction: command.branchOnTransaction,
