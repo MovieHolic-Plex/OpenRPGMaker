@@ -1,4 +1,5 @@
 /** @vitest-environment happy-dom */
+import { selectSidebarLayer } from "@/editor/panels/leftLayerSwitcher";
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { editorState } from '@/editor/editorState';
 import { chromeForMode, resetEditorUiModeForTests, setEditorUiMode, subscribeEditorUiMode } from '@/editor/editorUiMode';
@@ -61,12 +62,12 @@ describe('focused standard and expert sidebar', () => {
   });
   it('uses the event layer as the single event entry with no tile controls on its surface', () => {
     expect(find('tool-event')).toBeNull();
-    find('layer-event')?.click();
+    selectSidebarLayer('event');
     expect(editorState.get()).toMatchObject({ layer: 'event', tool: 'event' });
     expect(find('tile-brush-controls')).toBeNull();
     expect(find('tile-search-input')).toBeNull();
     expect(find('tool-paint')).toBeNull();
-    expect(find('layer-lower')).not.toBeNull();
+    expect(find('layer-lower')).toBeNull();
   });
   it('returns focus from map search Escape without changing the selected map', () => {
     const mapId = editorState.get().currentMapId;
@@ -114,7 +115,7 @@ describe('focused standard and expert sidebar', () => {
    */
   it('reports the count of cells it actually draws, on both layers', () => {
     for (const layer of ['lower', 'upper'] as const) {
-      find(`layer-${layer}`)?.click();
+      selectSidebarLayer(layer);
       for (const category of ['terrain', 'water', 'house', 'fence', 'decor'] as const) {
         const select = find('tile-category-select');
         if (!(select instanceof HTMLSelectElement)) throw new Error('missing category selector');
@@ -130,7 +131,7 @@ describe('focused standard and expert sidebar', () => {
   });
 
   it('explains why a bottom-layer-only category is empty on the upper layer', () => {
-    find('layer-upper')?.click();
+    selectSidebarLayer('upper');
     const select = find('tile-category-select');
     if (!(select instanceof HTMLSelectElement)) throw new Error('missing category selector');
     select.value = 'terrain';

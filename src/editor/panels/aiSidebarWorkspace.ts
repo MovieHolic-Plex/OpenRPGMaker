@@ -1,3 +1,4 @@
+import { editorState } from "@/editor/editorState";
 import { el } from "@/util/dom";
 import { deckIcon } from "./aiDeckIcons";
 import { installDelayedTooltips } from "@/editor/delayedTooltipRollout";
@@ -13,7 +14,9 @@ export function createAiSidebarWorkspace(tools: HTMLElement, host: HTMLElement, 
   const maps = createMapSidebarSection();
   tools.classList.add("ai-chat-sidebar-tools");
   const aiButton = el("button", { children: [deckIcon("spark"), el("span", { class: "ai-chat-sidebar-tab-label", text: "AI" })], attrs: { type: "button", "aria-pressed": "true" }, dataset: { testid: "sidebar-ai" }, on: { click: () => show("ai") } });
-  const toolsButton = el("button", { children: [deckIcon("grid"), el("span", { class: "ai-chat-sidebar-tab-label", text: "타일" })], attrs: { type: "button", "aria-pressed": "false" }, dataset: { testid: "sidebar-tools" }, on: { click: () => show("tools") } });
+  const toolsLabel = el("span", { class: "ai-chat-sidebar-tab-label", text: editorState.get().layer === "event" ? "이벤트" : "타일" });
+  const unsubscribeLayer = editorState.subscribe(() => { toolsLabel.textContent = editorState.get().layer === "event" ? "이벤트" : "타일"; });
+  const toolsButton = el("button", { children: [deckIcon("grid"), toolsLabel], attrs: { type: "button", "aria-pressed": "false" }, dataset: { testid: "sidebar-tools" }, on: { click: () => show("tools") } });
   const mapsButton = el("button", { children: [deckIcon("map"), el("span", { class: "ai-chat-sidebar-tab-label", text: "맵" })], attrs: { type: "button", "aria-pressed": "false" }, dataset: { testid: "sidebar-maps" }, on: { click: () => show("maps") } });
   const toggle = el("button", { class: "ai-chat-sidebar-collapse", attrs: { type: "button", "aria-controls": "ai-sidebar-content" }, dataset: { testid: "sidebar-collapse" }, on: { click: () => setCollapsed(!collapsed) } });
   const content = el("div", { class: "ai-chat-sidebar-content", attrs: { id: "ai-sidebar-content" }, children: [tools, maps.root, host] });
@@ -48,6 +51,7 @@ export function createAiSidebarWorkspace(tools: HTMLElement, host: HTMLElement, 
   tools.hidden = true; host.hidden = false; root.dataset.pane = "ai";
   sync(); installDelayedTooltips(root);
   return { root, isCollapsed: () => collapsed, dispose: () => {
+    unsubscribeLayer();
     maps.dispose();
     window.removeEventListener("oprn:ai-sidebar-show", showAi);
     window.removeEventListener("oprn:ai-sidebar-tools", showTools);

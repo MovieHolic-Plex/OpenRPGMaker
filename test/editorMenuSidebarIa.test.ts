@@ -1,3 +1,4 @@
+import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
 // 좌측 사이드바 ↔ 상단 메뉴 정보구조(IA) 계약.
 //
 // 실측 배경(2026-08-26 감사, .omo/evidence/menu-ia/):
@@ -7,7 +8,7 @@
 //    그 안의 4개 항목은 전부 도구 메뉴와 중복이었다. 항목 두 개는 라벨이 똑같이 "자료"였다.
 //  · 음악·찾기는 전문가 클래식 툴바에만 있어서 초보/표준에서는 도달 경로가 없었다.
 //  · standard/expert 사이드바에는 레이어 전환이 아예 없었다(초보 레일에만 있었다).
-//    레이어 전환은 맵 작업 중 가장 잦은 조작이라 사이드바가 가져야 한다.
+//    2026-09-18 레이어 전환은 팔레트와 독립적인 캔버스 상단으로 옮겼다.
 //
 // 계약: 액션은 집이 하나다. 사이드바 = 매초 쓰는 캔버스 작업, 상단 = 세션/프로젝트 작업.
 // Ctrl+K 팔레트는 전체 검색이므로 이 계약의 예외다.
@@ -307,15 +308,19 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
   });
 
   for (const mode of ["standard", "expert"] as const) {
-    it(`${mode}: 현재 맵 다음에 공통 레이어와 도구를 둔다`, () => {
-      // Break: 레이어 전환이 다시 사이드바에서 빠져 도구 메뉴로만 남는다.
+    it(`${mode}: 레이어는 캔버스 위에, 맵과 도구는 팔레트에 둔다`, () => {
+      // 팔레트를 접어도 캔버스에서 레이어를 전환할 수 있어야 한다.
       resetEditorUiModeForTests(mode);
       const container = document.createElement("div");
       document.body.append(container);
       renderTilePalette(container);
 
-      const switcher = findByTestId(fake(container), "left-layer-switcher");
-      expect(switcher, `${mode} 사이드바 레이어 전환`).not.toBeNull();
+      expect(findByTestId(fake(container), "left-layer-switcher")).toBeNull();
+      const canvasToolbar = document.createElement("div");
+      document.body.append(canvasToolbar);
+      renderCanvasToolbar(canvasToolbar);
+      const switcher = findByTestId(fake(canvasToolbar), "left-layer-switcher");
+      expect(switcher, `${mode} 캔버스 레이어 전환`).not.toBeNull();
       for (const id of ["layer-lower", "layer-upper", "layer-event"]) {
         expect(findByTestId(switcher as unknown as FakeElement, id), `${mode}/${id}`).not.toBeNull();
       }
@@ -326,14 +331,13 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
       const layersAt = order.indexOf("left-layer-switcher");
       expect(toolsAt, "도구 줄이 팔레트 최상단 그룹이어야 한다").toBeGreaterThanOrEqual(0);
       expect(order.indexOf('sidebar-map-header')).toBe(0);
-      expect(layersAt).toBe(1);
-      expect(toolsAt).toBe(layersAt + 1);
+      expect(layersAt).toBe(-1);
+      expect(toolsAt).toBe(1);
     });
   }
   for (const mode of ["standard", "expert"] as const) {
-    it(`${mode}: 이벤트 레이어도 같은 셸·그리드에서 맵·탭 한 줄을 유지한다`, () => {
-      // Break: 이벤트 분기가 셸 밖에 붙으면 maphead/layers 한 줄 배치가 안 닿아
-      // 맵 헤더가 전폭으로 벌어지고 탭이 다음 줄로 밀린다(2026-09 실측).
+    it(`${mode}: 이벤트 팔레트는 레이어 탭 없이 맵·도구·목록을 표시한다`, () => {
+      // 이벤트 분기도 같은 팔레트 셸에서 목록을 렌더한다.
       resetEditorUiModeForTests(mode);
       editorState.set({ layer: "event", tool: "event" });
       const container = document.createElement("div");
@@ -346,9 +350,9 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
       expect(pane, `${mode} 이벤트 페인`).not.toBeNull();
       const order = (pane?.children ?? []).map((child) => child.dataset.testid ?? "");
       expect(order.indexOf("sidebar-map-header")).toBe(0);
-      expect(order.indexOf("left-layer-switcher")).toBe(1);
-      expect(order.indexOf("oprn-tile-toolbar")).toBe(2);
-      expect(order.indexOf("palette-event-pane")).toBe(3);
+      expect(order.indexOf("left-layer-switcher")).toBe(-1);
+      expect(order.indexOf("oprn-tile-toolbar")).toBe(1);
+      expect(order.indexOf("palette-event-pane")).toBe(2);
     });
   }
 });

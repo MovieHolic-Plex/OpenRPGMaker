@@ -1,4 +1,5 @@
 /** @vitest-environment happy-dom */
+import { selectSidebarLayer } from "@/editor/panels/leftLayerSwitcher";
 import { clearTimeout as clearDeadline, setTimeout as deadline } from "node:timers";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
@@ -120,10 +121,10 @@ describe("mode-specific sidebar painting workflow", () => {
   });
 
   it("restores the persistent picker after leaving the event layer", () => {
-    control("layer-event").click();
+    selectSidebarLayer("event");
     expect(editorState.get()).toMatchObject({ layer: "event", tool: "event" });
     expect(find("basic-tile-grid")).toBeNull();
-    control("layer-lower").click();
+    selectSidebarLayer("lower");
     expect(editorState.get()).toMatchObject({ layer: "lower", tool: "paint" });
     expect(find("basic-tile-grid")).not.toBeNull();
   });

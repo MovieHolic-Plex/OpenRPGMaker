@@ -97,8 +97,8 @@ describe("Sidebar Keyboard Navigation & Focus Survival Integration", () => {
       expect(document.activeElement).toBe(newFillBtn);
     });
 
-    it("keeps one tab stop per tool/layer/panel/brush group and navigates brush sizes", () => {
-      const groupIds = ["basic-tool-list", "basic-layer-list", "basic-panel-toggles", "tile-brush-controls"] as const;
+    it("keeps one tab stop per tool/panel/brush group and navigates brush sizes", () => {
+      const groupIds = ["basic-tool-list", "basic-panel-toggles", "tile-brush-controls"] as const;
       for (const id of groupIds) {
         const group = findByTestId(container as unknown as FakeElement, id);
         expect(group, id).not.toBeNull();
@@ -108,7 +108,7 @@ describe("Sidebar Keyboard Navigation & Focus Survival Integration", () => {
       const railStops = (container as unknown as FakeElement)
         .querySelectorAll("button")
         .filter((b) => b.getAttribute("tabindex") === "0");
-      expect(railStops.length).toBe(5);
+      expect(railStops.length).toBe(4);
       const grid = findByTestId(container as unknown as FakeElement, "basic-tile-grid");
       expect(grid?.querySelectorAll("button").filter(b => b.getAttribute("tabindex") === "0")).toHaveLength(1);
 
@@ -128,13 +128,10 @@ describe("Sidebar Keyboard Navigation & Focus Survival Integration", () => {
       expect(document.activeElement).toBe(findByTestId(container as unknown as FakeElement, "brush-size-2"));
     });
 
-    it("도구 그룹은 role=toolbar, 레이어·패널 그룹은 라벨 있는 group 이다", () => {
+    it("도구 그룹은 role=toolbar, 패널 그룹은 라벨 있는 group 이다", () => {
       const tools = findByTestId(container as unknown as FakeElement, "basic-tool-list");
       expect(tools?.getAttribute("role")).toBe("toolbar");
       expect(tools?.getAttribute("aria-label")).toBeTruthy();
-      const layers = findByTestId(container as unknown as FakeElement, "basic-layer-list");
-      expect(layers?.getAttribute("role")).toBe("group");
-      expect(layers?.getAttribute("aria-label")).toBeTruthy();
       const toggles = findByTestId(container as unknown as FakeElement, "basic-panel-toggles");
       expect(toggles?.getAttribute("role")).toBe("group");
       expect(toggles?.getAttribute("aria-label")).toBeTruthy();

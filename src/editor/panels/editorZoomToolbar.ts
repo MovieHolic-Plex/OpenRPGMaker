@@ -1,3 +1,5 @@
+import { makeLeftLayerSwitcher } from "./leftLayerSwitcher";
+import { captureFocus, restoreFocus } from "./sidebarFocus";
 import { makeSvgIcon } from "./tileToolbarIcons";
 import { installDelayedTooltips } from "@/editor/delayedTooltipRollout";
 import { EDITOR_ZOOM_LEVELS, editorState, type EditorZoom } from "@/editor/editorState";
@@ -35,6 +37,7 @@ export function stepEditorZoom(delta: number, levels: readonly EditorZoom[], cur
 }
 
 export function renderCanvasToolbar(container: HTMLElement): void {
+  const focusSnapshot = captureFocus(container);
   clearChildren(container);
   const chrome = getEditorChrome();
   const currentZoom = editorState.get().zoom;
@@ -52,6 +55,9 @@ export function renderCanvasToolbar(container: HTMLElement): void {
     container.classList.remove("is-docked-chrome");
     container.classList.toggle("is-expanded", readCanvasToolbarExpanded());
   }
+
+  container.append(makeLeftLayerSwitcher(editorState.get().layer));
+  container.append(el("div", { class: "canvas-toolbar-spacer", attrs: { "aria-hidden": "true" } }));
 
   const levels = visibleZoomLevels(chrome.canvasChromeDense, currentZoom);
   const zoomGroup = el("div", {
@@ -145,6 +151,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
   // Basic: zoom only (always expanded). Expert: ⋯ expand + build palette + map screenshot.
   if (!chrome.canvasChromeDense) {
     container.append(zoomGroup);
+    restoreFocus(container, focusSnapshot);
     installDelayedTooltips(container);
     return;
   }
@@ -180,6 +187,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
       },
     });
   container.append(zoomGroup, aiWorkbench, expandButton, saveAction);
+  restoreFocus(container, focusSnapshot);
   installDelayedTooltips(container);
 }
 
