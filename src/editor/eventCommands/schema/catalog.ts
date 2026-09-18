@@ -107,8 +107,9 @@ defineCommand({
     condition: f.custom("조건", "condition"),
   },
   branches: (c) => {
-    const specs: BranchSpec[] = [{ key: "then", label: "조건 만족", tone: "ok" }];
-    if (Array.isArray(c.else)) specs.push({ key: "else", label: "그 외", tone: "neutral" });
+    // 라벨은 eventCommandBranches 가 정본 — 여기서 다시 쓰지 말 것(2026-08-30 재발 방지).
+    const specs: BranchSpec[] = [{ key: "then", label: "조건이 맞을 때", tone: "ok" }];
+    if (Array.isArray(c.else)) specs.push({ key: "else", label: "조건이 맞지 않을 때", tone: "neutral" });
     return specs;
   },
   summary: () => "조건 분기",
