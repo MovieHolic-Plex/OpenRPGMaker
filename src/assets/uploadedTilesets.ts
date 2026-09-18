@@ -1,5 +1,6 @@
 import type Phaser from "phaser";
 import { withInlineAsset } from "./inlineAssetStore";
+import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import type { Project, TilesetDef, TilesetAnimationStrip } from "@/project/types";
 
 /** Uploaded atlases cannot share the bundled exterior texture or its 480 fixed frames. */
@@ -25,11 +26,12 @@ export function loadUploadedTilesets(
   for (const tileset of Object.values(project?.tilesets ?? {})) {
     if (tileset.image.type !== "uploaded") continue;
     const asset = project?.assets.uploaded[tileset.image.id];
-    if (!asset?.dataUrl) continue;
+    const imageUrl = asset ? uploadedAssetUrl(asset) : "";
+    if (!imageUrl) continue;
     const key = uploadedTilesetTextureKey(tileset);
     if (queued.has(key)) continue;
     queued.add(key);
-    scene.load.image(key, withInlineAsset(asset.dataUrl));
+    scene.load.image(key, withInlineAsset(imageUrl));
   }
 }
 
