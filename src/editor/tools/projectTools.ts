@@ -151,4 +151,35 @@ const setProjectSettings: ToolDefinition = {
   },
 };
 
-export const PROJECT_TOOLS: readonly ToolDefinition[] = [resetProject, setProjectSettings];
+const setParty: ToolDefinition = {
+  name: "set_party",
+  description: "파티 구성만 바꾼다. scope=start는 새 게임 시작 파티와 세션 파티를 함께 설정하고, scope=session은 현재 세션 파티만 설정한다. actorIds는 실제 actors id 목록이며 빈 배열도 허용한다.",
+  mode: "write",
+  domains: ["database", "system"],
+  parameters: {
+    type: "object",
+    properties: {
+      scope: { type: "string", enum: ["start", "session"], description: "start=새 게임 정본 + 현재 세션, session=현재 세션만" },
+      actorIds: { type: "array", items: { type: "string" }, description: "파티 순서대로 나열한 실제 actor id" },
+    },
+    required: ["scope", "actorIds"],
+    additionalProperties: false,
+  },
+  run(draft, args): ToolExecResult {
+    const scope = args.scope === "start" || args.scope === "session" ? args.scope : undefined;
+    if (!scope || !Array.isArray(args.actorIds)) throw new ToolError("scope(start/session)와 actorIds 배열이 필요합니다.", { code: "invalid-args" });
+    const actorIds = args.actorIds.map(String);
+    const duplicates = actorIds.filter((id, index) => actorIds.indexOf(id) !== index);
+    if (duplicates.length > 0) throw new ToolError(`파티에 같은 actor id를 중복으로 넣을 수 없습니다: ${[...new Set(duplicates)].join(", ")}`, { code: "duplicate-actor" });
+    const missing = actorIds.filter((id) => !draft.database.actors.some((actor) => actor.id === id));
+    if (missing.length > 0) throw new ToolError(`파티 actor id를 찾을 수 없습니다: ${missing.join(", ")}`, { code: "actor-not-found" });
+    draft.session.partyActorIds = [...actorIds];
+    if (scope === "start") draft.system.startActorIds = [...actorIds];
+    return {
+      summary: `${scope === "start" ? "시작 파티" : "현재 세션 파티"} 설정 — ${actorIds.length}명`,
+      data: { scope, actorIds },
+    };
+  },
+};
+
+export const PROJECT_TOOLS: readonly ToolDefinition[] = [resetProject, setProjectSettings, setParty];

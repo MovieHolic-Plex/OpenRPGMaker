@@ -23,21 +23,21 @@ export function adventureToolNames(required: AdventureRequirements | undefined):
   // A full RPG starts with its authored identity, not only maps and encounters.
   // Keep these in the preflight set so the first writer round can actually create
   // the protagonist's appearance/loadout and record the world/character canon.
-  return ["get_project_summary", "get_database_records", "read_project_wiki", "find_events", "list_resources", "show_map_region", "upsert_event", "upsert_actor", "upsert_character_profile", "set_world_canon", "upsert_item", "upsert_equipment",
+  return ["get_project_summary", "get_database_records", "read_project_wiki", "find_events", "list_resources", "show_map_region", "upsert_event", "upsert_actor", "upsert_character_profile", "set_world_canon", "upsert_item", "upsert_equipment", "set_session_start",
     ...(required.world || required.village || required.dungeon ? ["plan_world", "build_world"] : []),
     ...(required.village ? ["author_house"] : []),
     ...(required.dungeon ? ["list_dungeon_room_themes", "run_dungeon_room_pipeline", "create_transfer_pair", "place_chest"] : []),
-    ...(required.party ? ["set_project_settings"] : []),
+    ...(required.party ? ["set_party"] : []),
     ...(required.battle ? ["upsert_enemy", "upsert_troop", "set_encounter_table"] : []),
   ];
 }
 
 export const ADVENTURE_AUTHORING_GUIDE = `요청한 모험의 완료 조건은 실제 플레이 연결이다. 먼저 기존 프로젝트 위키·세계관·인물·맵·DB를 조회한다.
-첫 쓰기 순서는 세계관(set_world_canon 또는 read_project_wiki로 확인한 설정) → 핵심 인물(upsert_character_profile) → 주인공 액터(upsert_actor: faceResourceId, characterResourceId/characterIndex, battleCharacterResourceId, initialEquipment) → 나머지 DB·맵·이벤트다. 리소스 ID는 list_resources로 실제 목록을 조회해 고르고, 장비는 upsert_equipment로 만든 뒤 주인공 initialEquipment.weapon에 연결한다. 외형·인물·장비를 생략한 채 맵만 먼저 만드는 것은 완성된 RPG가 아니다.
+첫 쓰기 순서는 세계관(set_world_canon 또는 read_project_wiki로 확인한 설정) → 핵심 인물(upsert_character_profile) → 주인공 액터(upsert_actor: appearanceId, faceResourceId, characterResourceId/characterIndex, battleCharacterResourceId, initialEquipment) → set_party로 시작 파티 → set_session_start로 시작 소지금·아이템 → 나머지 DB·맵·이벤트다. 리소스 ID는 list_resources로 실제 목록을 조회해 고르고, 장비는 upsert_equipment로 만든 뒤 주인공 initialEquipment.weapon에 연결한다. 외형·인물·장비를 생략한 채 맵만 먼저 만드는 것은 완성된 RPG가 아니다.
 마을은 author_village/author_house 등으로 건물과 길을 실제 시공한다. 잔디+흙길+사람은 마을 완성이 아니다.
 던전 탐험을 요청했다면 list_dungeon_room_themes 조회 후 run_dungeon_room_pipeline({mapId,name,theme:"stone",hazard:true})로 별도 동굴을 먼저 시공한다. 잔디 맵에 주택 벽 한 줄을 두는 것은 동굴이 아니다. 기존 맵의 무단 교체는 금지한다. 생성 결과의 통행 칸을 조회한 뒤 보물·적을 배치하고 create_transfer_pair로 왕복 연결하고 입구의 동굴/문/계단 외형을 조회해 사용한다. 사람 그림을 관문으로 쓰지 않는다.
 기본 전투 적은 조회한 트룹을 set_encounter_table 또는 battleProcessing으로 도달 가능한 탐험 맵에 연결한다.
-파티 모험은 조회한 actors를 set_project_settings({startActorIds})로 시작 파티에 넣거나 changeParty 합류 이벤트를 만든다. add_companion의 시각 추종과 전투 파티는 다르다.
+파티 모험은 조회한 actors를 set_party({scope:"start",actorIds})로 시작 파티에 넣거나 changeParty 합류 이벤트를 만든다. add_companion의 시각 추종과 전투 파티는 다르다.
 아이템과 장비 모두 조회한 iconResourceId를 지정한다. 착용 무기는 upsert_equipment로 만들며 items의 legacy type:weapon은 쓰지 않는다.
 재시도는 find_events로 기존 ID를 읽고 upsert_event로 갱신한다. place_npc를 되풀이해 동명이인을 늘리지 않는다.
 건물을 먼저 시공하고 NPC·상자는 나중에 배치한다. 기존 이벤트 위 시공 후에는 find_events로 겹침을 확인하고 upsert_event로 통행 가능한 자리로 옮긴다.
@@ -98,8 +98,16 @@ export function adventureCompletionProblems(project: Project, required: Adventur
   }
   if (required.appearance) {
     const startActorIds = startStateOf(project).partyActorIds;
-    const missingAppearance = project.database.actors.filter(actor => startActorIds.includes(actor.id) && (!actor.faceResourceId || !actor.characterResourceId));
-    if (missingAppearance.length > 0) problems.push(`시작 파티 외형이 비어 있습니다: ${missingAppearance.map(actor => actor.name).join(", ")}. list_resources 후 upsert_actor로 얼굴·캐릭터 칩을 지정하세요.`);
+    const missingAppearance = project.database.actors.filter(actor => {
+      if (!startActorIds.includes(actor.id)) return false;
+      const shared = actor.appearanceId
+        ? project.database.characterAppearances?.find(appearance => appearance.id === actor.appearanceId)
+        : undefined;
+      const hasFace = Boolean(actor.faceResourceId || shared?.face?.resourceId);
+      const hasCharacter = Boolean(actor.characterResourceId || shared?.charset?.resourceId);
+      return !hasFace || !hasCharacter;
+    });
+    if (missingAppearance.length > 0) problems.push(`시작 파티 외형이 비어 있습니다: ${missingAppearance.map(actor => actor.name).join(", ")}. list_resources 후 upsert_actor로 외형 ID 또는 얼굴·캐릭터 칩을 지정하세요.`);
   }
   if (required.village) {
     const tileset = project.tilesets[start.tilesetId];

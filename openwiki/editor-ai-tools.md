@@ -1607,3 +1607,33 @@ ceiling, absences, and power/gods/death/money laws) as a partial merge in
 `Project.worldCanon`. Full adventure declarations may opt into `world`, `characters`,
 and `appearance`; the completion report then calls out missing lore, profiles, or
 starting-party appearance instead of silently accepting map-only output.
+
+## Party, actor appearance, and event-linked inventory tools (2026-09-19)
+
+`set_party({scope:"start",actorIds})` is the narrow party facade. It validates every
+actor id, rejects duplicates, writes both the authoritative `system.startActorIds`
+and the current session party, and permits an explicit empty list. `scope:"session"`
+only changes `session.partyActorIds`; it does not rewrite a future New Game. The
+older `set_project_settings({startActorIds})` and `set_session_start({partyActorIds})`
+remain compatible routes for combined settings/test setup. Runtime join/leave still
+uses an event `changeParty` command; `add_companion` is only a visual follower.
+
+`upsert_actor` now exposes the actor's shared `appearanceId` and charset
+`characterIndex` (0–7) in addition to face, charset, and battle resource ids. A
+shared appearance id must exist in the character appearance catalog or the write is
+rejected; normalization preserves the selected slot. `delete_character_profile`
+removes only `Project.characters[characterId]` and never deletes the actor or event.
+
+`adventureCompletionProblems` treats a referenced shared appearance's face and
+charset as satisfying the start-party appearance contract; a direct face/charset
+pair is not required when the shared record supplies both.
+
+Items and event effects already have typed routes. `set_session_start` seeds the
+new-game gold/inventory state, while `upsert_item` and
+`upsert_equipment` author the records; `upsert_event` commands use canonical
+`changeItem`/`changeGold`/`changeParty`/`setSwitch`/`choices` branches; `place_chest`
+and `place_storage_chest` package one-time loot and inventory changes; `make_villager`
+and `set_shop_stock` author shop interactions; `define_quest`/`verify_quest` connect
+items, switches, maps, and rewards. New RPG authoring must read the real item,
+actor, and event ids before writing references, then verify the interaction with a
+walkthrough rather than treating a successful tool call as runtime proof.
