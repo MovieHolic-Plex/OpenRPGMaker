@@ -21,6 +21,9 @@ const PARITY_LOCATION_ID = "loc_parity";
 
 // Empty by design: all three surfaces receive the same full state and host event,
 // so there is no input limitation that justifies a condition-kind divergence.
+// battleResult 는 여기서 «같은 스냅샷 입력 → 같은 판정» 만 고정한다. 실전 시간 의미는
+// 표면마다 다르다(맵 fork = 방금 끝난 전투, 전투 중 fork/페이지 = 전투 개시 시점의 직전
+// 전투) — 상태-패리티와 시간-패리티를 혼동하지 말 것. fork 폼 힌트가 시간 의미를 설명한다.
 const ALLOWLISTED_DIVERGENCES = {} satisfies Partial<Record<ConditionKind, string>>;
 
 type StateMutation = (state: PlaySession) => void;

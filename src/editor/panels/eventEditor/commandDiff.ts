@@ -60,7 +60,7 @@ function branchSlots(command: Command): readonly BranchSlot[] {
     }
     case "fork": {
       const slots: BranchSlot[] = [{ key: "forkThen", label: "조건이 맞을 때", commands: command.then }];
-      if (command.else) slots.push({ key: "forkElse", label: "그 외", commands: command.else });
+      if (command.else) slots.push({ key: "forkElse", label: "조건이 맞지 않을 때", commands: command.else });
       return slots;
     }
     case "loop":

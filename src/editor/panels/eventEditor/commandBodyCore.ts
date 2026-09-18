@@ -23,7 +23,7 @@ import {
   TIMER_ID_OPTIONS,
   type SelectOption,
 } from "./options";
-import type { Command, MessageWindowFormat, MessageWindowPosition, SwitchValue } from "@/project/types";
+import type { Command, Condition, MessageWindowFormat, MessageWindowPosition, SwitchValue } from "@/project/types";
 import { factionName, resolveFactionTable } from "@/project/factions";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { store } from "@/project/store";
@@ -881,7 +881,7 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
       }),
       conditionForm(cmd.condition, (condition) => {
         context.actions.replaceCommand(context.path, { ...latestFork(), condition });
-      }),
+      }, context.path),
     ],
   });
 
@@ -918,6 +918,7 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
     });
   });
 
+  const timerWarning = renderForkTimerWarning(cmd.condition);
   const optionsSection = el("section", {
     class: "event-fork-section event-fork-options-section",
     children: [
@@ -925,12 +926,12 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
         class: "event-fork-else-check",
         children: [
           elseCheck,
-          el("span", { text: "조건이 만족되지 않을 때 처리 (그 외 분기)" }),
+          el("span", { text: "조건이 맞지 않을 때 처리 (그 외 분기)" }),
         ],
       }),
       el("p", {
         class: "event-fork-section-hint",
-        text: "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
+        text: "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
         dataset: { testid: "event-fork-body-hint" },
       }),
       el("div", {
@@ -939,22 +940,45 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
         children: [
           el("div", {
             class: "event-fork-branch-summary-card then",
-            text: `참일 때 · ${cmd.then.length}개 명령`,
+            text: `조건이 맞을 때 · ${cmd.then.length}개 명령`,
             dataset: { testid: "event-fork-summary-then" },
           }),
           el("div", {
             class: `event-fork-branch-summary-card else${cmd.else ? "" : " absent"}`,
-            text: cmd.else ? `그 외 · ${cmd.else.length}개 명령` : "그 외 · 분기 없음",
+            text: cmd.else ? `조건이 맞지 않을 때 · ${cmd.else.length}개 명령` : "그 외 · 분기 없음",
             dataset: { testid: "event-fork-summary-else" },
           }),
         ],
       }),
       renderConditionEvalPreview(cmd.condition),
+      ...(timerWarning ? [timerWarning] : []),
     ],
   });
 
   wrap.append(conditionSection, optionsSection);
   return wrap;
+}
+/**
+ * 타이머 조건의 항상-참 함정 인라인 경고. 런타임은 미기동 타이머를 0초로 읽어
+ * `seconds >= 0` 조건이 설정 전부터 참이 된다(의도된 계약). 검증기는 warning을
+ * 내지만 폼에서 안 보이므로, 조건을 고르는 자리에서 직접 말한다.
+ */
+function renderForkTimerWarning(condition: Condition): HTMLElement | null {
+  const timers: { readonly timerId: string; readonly seconds: number }[] = [];
+  const collect = (entry: Condition): void => {
+    if (entry.kind === "timer") timers.push(entry);
+    else if (entry.kind === "all" || entry.kind === "any") entry.conditions.forEach(collect);
+    else if (entry.kind === "not") collect(entry.condition);
+  };
+  collect(condition);
+  const risky = timers.filter((entry) => entry.seconds >= 0);
+  if (risky.length === 0) return null;
+  const names = [...new Set(risky.map((entry) => entry.timerId === "timer2" ? "타이머 2" : "타이머 1"))].join("·");
+  return el("p", {
+    class: "event-fork-timer-warning",
+    text: `${names} · 0초 이하 조건은 타이머가 꺼져 있어도 참입니다. 타이머를 켜는 명령 뒤에 두거나 임계값을 올리세요.`,
+    dataset: { testid: "event-fork-timer-warning" },
+  });
 }
 
 function setSwitchBody(context: CommandEditContext, cmd: Extract<Command, { kind: "setSwitch" }>): HTMLElement {

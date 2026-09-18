@@ -21,6 +21,7 @@ import { collectNpcActivitySuggestions } from "@/editor/panels/eventEditor/optio
 import { advancedConditionEntries, pageConditionField } from "@/editor/panels/eventEditor/pageConditionLayout";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { lookupLocation } from "@/editor/mapLocationLabels";
+import { findLocationById } from "@/project/mapNamedLocations";
 import type {
   Command,
   Condition,
@@ -157,7 +158,7 @@ export function validateEventDraftBody(
       field: { testId: "event-editor-coords" },
     });
   }
-  if (event.condition) validateCondition(event.condition, firstPageId, refs, issues);
+  if (event.condition) validateCondition(event.condition, firstPageId, refs, issues, undefined, mapId);
 
   for (const page of pages) {
     validatePage(working, mapId, event, page, refs, issues);
@@ -218,6 +219,7 @@ function referenceSets(project: Project, mapId: MapId, host: GameEvent) {
     // 사회 기능은 이름표가 아니라 이 이벤트의 신원을 참조한다 — 같은 사전에 싣어 재긍 없이 나른다.
     hostHasCharacterId: hasCharacterId(host),
     hasTimeSystem: resolveTimeSystem(project) !== undefined,
+    project,
   };
 }
 
@@ -242,7 +244,7 @@ function validatePage(
   conditions.forEach((condition, index) => {
     const advancedIndex = advanced.findIndex((entry) => entry.index === index);
     const switchSlot = conditions.slice(0, index).filter((entry) => entry.kind === "switch").length;
-    validatePageCondition(condition, page.id, refs, issues, advancedIndex < 0 ? undefined : String(advancedIndex), switchSlot);
+    validatePageCondition(condition, page.id, refs, issues, mapId, advancedIndex < 0 ? undefined : String(advancedIndex), switchSlot);
   });
   if (page.movement) validateMovement(project, page, refs, issues);
 
@@ -258,7 +260,7 @@ function validatePage(
         pageId: page.id,
         field: { testId: "event-page-trigger-location" },
       });
-    } else if (!lookupLocation(trigger.locationId)) {
+    } else if (!lookupLocation(trigger.locationId, { project, mapId })) {
       issues.push({
         severity: "error",
         code: "page.trigger.location-missing",
@@ -417,20 +419,21 @@ function validatePageCondition(
   pageId: string,
   refs: ReferenceSets,
   issues: EventDraftIssue[],
+  mapId: MapId,
   advancedSuffix?: string,
   switchSlot = 0,
 ): void {
   if ((condition.kind === "all" || condition.kind === "any") && condition.conditions.length > 0) {
     condition.conditions.forEach((child, index) =>
-      validatePageCondition(child, pageId, refs, issues, `${advancedSuffix}-${index}`));
+      validatePageCondition(child, pageId, refs, issues, mapId, `${advancedSuffix}-${index}`));
     return;
   }
   if (condition.kind === "not") {
-    validatePageCondition(condition.condition, pageId, refs, issues, `${advancedSuffix}-0`);
+    validatePageCondition(condition.condition, pageId, refs, issues, mapId, `${advancedSuffix}-0`);
     return;
   }
   const found: EventDraftIssue[] = [];
-  validateCondition(condition, pageId, refs, found);
+  validateCondition(condition, pageId, refs, found, undefined, mapId);
   const field = pageConditionField(condition, advancedSuffix, switchSlot);
   issues.push(...found.map((issue) => field ? { ...issue, field } : issue));
 }
@@ -441,6 +444,7 @@ function validateCondition(
   refs: ReferenceSets,
   issues: EventDraftIssue[],
   commandPath?: readonly number[],
+  mapId?: MapId,
 ): void {
   switch (condition.kind) {
     case "switch":
@@ -467,10 +471,10 @@ function validateCondition(
           field: { testId: `event-condition-${condition.kind}-empty` },
         });
       }
-      condition.conditions.forEach((child) => validateCondition(child, pageId, refs, issues, commandPath));
+      condition.conditions.forEach((child) => validateCondition(child, pageId, refs, issues, commandPath, mapId));
       return;
     case "not":
-      validateCondition(condition.condition, pageId, refs, issues, commandPath);
+      validateCondition(condition.condition, pageId, refs, issues, commandPath, mapId);
       return;
     case "selfSwitch":
       return;
@@ -619,11 +623,19 @@ function validateCondition(
           ...(commandPath ? { commandPath: [...commandPath] } : {}),
           field: { testId: "event-condition-inside-location" },
         });
-      } else if (!lookupLocation(condition.locationId)) {
+      } else {
+        // 런타임은 세션의 현재 맵만 본다 — 다른 맵의 로케이션은 항상 거짓이다.
+        // 검증이 전 맵 순회로 통과시키면 「통과했는데 실행 안 됨」이 되므로 스코프를 나눈다.
+        const ownMap = mapId ? refs.project.maps[mapId] : undefined;
+        const ownHit = ownMap ? findLocationById(ownMap, condition.locationId) : undefined;
+        if (ownHit) return;
+        const elsewhere = lookupLocation(condition.locationId, { project: refs.project, ...(mapId ? { mapId } : {}) });
         issues.push({
-          severity: "error",
-          code: "condition.insideLocation.missing",
-          message: `로케이션 '${condition.locationId}' 이 삭제됐습니다. 로케이션 레이어에서 다시 지정하거나 조건을 지워 주세요.`,
+          severity: elsewhere ? "warning" : "error",
+          code: elsewhere ? "condition.insideLocation.other-map" : "condition.insideLocation.missing",
+          message: elsewhere
+            ? `로케이션 '${condition.locationId}' 은(는) 다른 맵에 있습니다. 런타임은 현재 맵만 보므로 이 조건은 항상 거짓입니다.`
+            : `로케이션 '${condition.locationId}' 이 삭제됐습니다. 로케이션 레이어에서 다시 지정하거나 조건을 지워 주세요.`,
           pageId,
           ...(commandPath ? { commandPath: [...commandPath] } : {}),
           field: { testId: "event-condition-inside-location" },
@@ -638,19 +650,19 @@ function validateCondition(
 /** Preserve repeated condition positions independently of the owning command path. */
 function validateForkCondition(
   condition: Condition, pageId: string, refs: ReferenceSets, issues: EventDraftIssue[],
-  commandPath: readonly number[], conditionPath: readonly number[] = [],
+  commandPath: readonly number[], conditionPath: readonly number[] = [], mapId?: MapId,
 ): void {
   if ((condition.kind === "all" || condition.kind === "any") && condition.conditions.length) {
     condition.conditions.forEach((child, index) =>
-      validateForkCondition(child, pageId, refs, issues, commandPath, [...conditionPath, index]));
+      validateForkCondition(child, pageId, refs, issues, commandPath, [...conditionPath, index], mapId));
     return;
   }
   if (condition.kind === "not") {
-    validateForkCondition(condition.condition, pageId, refs, issues, commandPath, [...conditionPath, 0]);
+    validateForkCondition(condition.condition, pageId, refs, issues, commandPath, [...conditionPath, 0], mapId);
     return;
   }
   const found: EventDraftIssue[] = [];
-  validateCondition(condition, pageId, refs, found, commandPath);
+  validateCondition(condition, pageId, refs, found, commandPath, mapId);
   const anchors: Readonly<Record<string, string>> = {
     switch: "event-condition-switch-target", variable: "event-condition-variable-target",
     actor: "event-condition-actor-select", item: "event-condition-item-select",
@@ -909,7 +921,7 @@ function validateCommand(
 
   switch (command.kind) {
     case "changeFace": require("reference.resource.missing", "얼굴 리소스", command.resourceId, refs.resources, true); return;
-    case "fork": validateForkCondition(command.condition, pageId, refs, issues, path); return;
+    case "fork": validateForkCondition(command.condition, pageId, refs, issues, path, [], mapId); return;
     case "wait": require("reference.variable.missing", "대기 변수", command.variableId, refs.variables, true); return;
     case "inputWait": require("reference.variable.missing", "입력 대기 변수", command.variableId, refs.variables, true); return;
     case "inputNumber": require("reference.variable.missing", "숫자 입력 변수", command.variableId, refs.variables); return;

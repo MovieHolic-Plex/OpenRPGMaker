@@ -44,7 +44,7 @@ export function renderEventPagePreview(options: EventScriptModernViewsOptions): 
     dataset: { testid: "event-page-preview" },
   });
   const hostEventId = eventId;
-  const steps = simulatePageCommands(page.commands, hostEventId).steps;
+  const steps = simulatePageCommands(page.commands, hostEventId, mapId).steps;
   panel.append(el("div", {
     class: "event-script-preview-disclaimer",
     text: "실제 게임 실행이 아닌 스크립트 미리보기입니다. 반복은 한 번만 펼치고, 선택지는 모든 분기를 나열하며, 라벨/라벨 이동은 실제 점프를 수행하지 않습니다.",
@@ -204,7 +204,7 @@ export function renderEventPageFlow(options: EventPageFlowOptions): HTMLElement 
     return panel;
   }
 
-  const steps = simulatePageCommands(page.commands, eventId).steps;
+  const steps = simulatePageCommands(page.commands, eventId, mapId).steps;
   const branchCount = countFlowBranches(page.commands);
   // 미리보기를 한 번도 열지 않았으면 짚을 단계가 없다 — 그럴 때는 아무것도 강조하지 않는다.
   const storedStep = stepByPage.get(key);
