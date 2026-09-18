@@ -244,12 +244,13 @@ function evalForkCondition(
   hostEventId: string | undefined,
   mapId?: string
 ): ForkVerdict {
-  // insideLocation 은 맵 기하가 없으면 판정 불가 — map context 없이 evalCondition 에
+  // insideLocation 은 명시된 맵의 기하가 없으면 판정 불가 — map context 없이 evalCondition 에
   // 맡기면 「로케이션 없음 = 거짓」으로 else-taken 을 단정해 뱃지(판정 불가)와 어긋났다.
-  if (conditionNeedsMap(condition) && !resolvePreviewLocations(mapId)) return "unknown";
+  // 시작 맵으로 폴백하지 않는다: 편집 중인 맵이 아닌 기하로 판정하는 것은 지어낸 답이다.
+  const locations = resolvePreviewLocations(mapId);
+  if (conditionNeedsMap(condition) && !locations) return "unknown";
   const session = previewSessionFromSimState(state);
-  const context = resolvePreviewLocations(mapId) ? { map: { locations: resolvePreviewLocations(mapId)! } } : undefined;
-  const result = evalCondition(session, condition, hostEventId, context);
+  const result = evalCondition(session, condition, hostEventId, locations ? { map: { locations } } : undefined);
   return result ? "then" : "else";
 }
 
@@ -267,10 +268,13 @@ function conditionNeedsMap(condition: Condition): boolean {
   }
 }
 
+/**
+ * 미리보기 판정용 로케이션 기하. 명시된 맵만 본다 — 시작 맵 폴백은 없다.
+ * 호출부가 맵을 모르면 undefined 를 돌려 판정 불가(unknown)로 이끈다.
+ */
 export function resolvePreviewLocations(mapId?: string): readonly { readonly id: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number }[] | undefined {
-  const project = store.getCurrent();
-  const map = mapId ? project.maps[mapId] : project.maps[project.startMapId];
-  return map?.locations;
+  if (!mapId) return undefined;
+  return store.getCurrent().maps[mapId]?.locations;
 }
 
 /** taken 분기의 명령들을 순서대로 상태에 적용한다(중첩 fork 포함). */

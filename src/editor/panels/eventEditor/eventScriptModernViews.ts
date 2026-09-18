@@ -175,8 +175,8 @@ export function renderEventPagePreview(options: EventScriptModernViewsOptions): 
   return panel;
 }
 
-export function flattenScript(commands: readonly Command[]): readonly SimulatedStep[] {
-  return simulatePageCommands(commands).steps;
+export function flattenScript(commands: readonly Command[], hostEventId?: string, mapId?: string): readonly SimulatedStep[] {
+  return simulatePageCommands(commands, hostEventId, mapId).steps;
 }
 
 /* ---------------------------------------------------------------- 플로우 */
