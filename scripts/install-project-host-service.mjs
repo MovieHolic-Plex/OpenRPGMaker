@@ -12,10 +12,12 @@ const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
 const options = new Map();
 let initialize = false;
+let enableOwnerAi = false;
 for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--enable-owner-ai') { enableOwnerAi = true; continue; }
   if (args[i] === '--init-new') { initialize = true; continue; }
   if (!['--project-dir', '--public-origin'].includes(args[i]) || !args[i + 1]) {
-    throw new Error('Usage: node scripts/install-project-host-service.mjs --project-dir <folder> --public-origin <http(s)://host:port> [--init-new]');
+    throw new Error('Usage: node scripts/install-project-host-service.mjs --project-dir <folder> --public-origin <http(s)://host:port> [--init-new] [--enable-owner-ai]');
   }
   options.set(args[i], args[++i]);
 }
@@ -48,7 +50,7 @@ const dropInDir = join(serviceRoot, 'rpg-zzu.service.d');
 await mkdir(dropInDir, { recursive: true });
 const dropIn = join(dropInDir, '50-project-host.conf');
 if (existsSync(dropIn)) await copyFile(dropIn, dropIn + '.' + Date.now() + '.bak');
-const config = `[Service]\nWorkingDirectory=${repo.replaceAll('%', '%%')}\nExecStart=\nExecStart=${[process.execPath, join(repo, 'scripts/start-preview.mjs'), '--project-dir', projectDir, '--host', '0.0.0.0', '--port', '9888', '--public-origin', origin.origin].map(quote).join(' ')}\n`;
+const config = `[Service]\nEnvironment=OPRN_HOST_OWNER_AI=${enableOwnerAi ? "1" : "0"}\nWorkingDirectory=${repo.replaceAll('%', '%%')}\nExecStart=\nExecStart=${[process.execPath, join(repo, 'scripts/start-preview.mjs'), '--project-dir', projectDir, '--host', '0.0.0.0', '--port', '9888', '--public-origin', origin.origin].map(quote).join(' ')}\n`;
 await writeFile(dropIn + '.tmp', config, { mode: 0o600 });
 await rename(dropIn + '.tmp', dropIn);
 execFileSync('systemctl', ['--user', 'daemon-reload'], { stdio: 'inherit' });

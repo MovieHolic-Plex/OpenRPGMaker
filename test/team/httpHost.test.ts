@@ -30,7 +30,7 @@ it('requires membership for HTML, assets and RPC; revocation invalidates an exis
   const viewer = await login(invitation.token);
   expect((await rpc(viewer, 'oprn:team.status')).status).toBe(200);
   expect((await rpc(viewer, 'oprn:team.invite', { label: 'escalation', role: 'editor' })).ok).toBe(false);
-  expect((await fetch(base + '/auth/status', { headers: { cookie: viewer, 'x-oprn-companion-token': server.companionToken } })).status).toBe(404);
+  expect((await fetch(base + '/auth/status', { headers: { cookie: viewer, 'x-oprn-companion-token': server.companionToken } })).status).toBe(403);
   await rpc(owner, 'oprn:team.revoke', { memberId: invitation.member.id });
   expect((await rpc(viewer, 'oprn:team.status')).status).toBe(401);
   expect((await fetch(base, { headers: { cookie: owner, origin: 'https://other.example' } })).status).toBe(403);
@@ -58,4 +58,23 @@ it('scopes login and logout cookies to the hosted project', async () => {
     await fetch(other.url + '/__oprn/logout', { method: 'POST', redirect: 'manual', headers: { cookie } });
     expect((await fetch(server.url + '/__oprn/team', { headers: { cookie } })).status).toBe(200);
   } finally { await other.close(); }
+});
+
+it('keeps the owner access code and login across restart, while logout revokes the session', async () => {
+  root = await mkdtemp(join(tmpdir(), 'oprn-persistent-login-'));
+  await writeFile(join(root, 'index.html'), '<html><head></head></html>');
+  const options = { projectDir: join(root, 'project'), distDir: root, browserBridgeSource: '', publicOrigin: 'http://127.0.0.1:0' };
+  server = await startLocalProjectServer(options);
+  const code = server.ownerAccessCode!;
+  const login = await fetch(server.url + '/__oprn/login', { method: 'POST', redirect: 'manual', body: new URLSearchParams({ token: code }) });
+  const cookie = login.headers.get('set-cookie')!.split(';')[0]!;
+  await server.close();
+  server = await startLocalProjectServer(options);
+  expect(server.ownerAccessCode).toBe(code);
+  const page = await fetch(server.url, { headers: { cookie } });
+  expect(await page.text()).toContain('window.__OPRN_BRIDGE__');
+  const disabledAi = await fetch(server.url + '/v1/agent/run', { method: 'POST', headers: { cookie, 'content-type': 'application/json' }, body: '{}' });
+  expect(disabledAi.status).toBe(503);
+  await fetch(server.url + '/__oprn/logout', { method: 'POST', redirect: 'manual', headers: { cookie } });
+  expect((await fetch(server.url + '/__oprn/bridge', { method: 'POST', headers: { cookie } })).status).toBe(401);
 });

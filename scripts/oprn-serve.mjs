@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // 브라우저 탭에서 로컬 폴더 정본(project.sqlite)을 여는 로컬 서버.
 // 렌더러는 일렉트론과 **같은** 저장소 어댑터를 쓰고, 전송로만 IPC 대신 HTTP 다.
-import { existsSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { withTsModule } from "./ontology-ts-loader.mjs";
@@ -48,6 +48,8 @@ if (!existsSync(options.bridgePath)) throw new Error(`브라우저 브리지가 
 
 const browserBridgeSource = readFileSync(options.bridgePath, "utf8");
 
+process.env.OPRN_OH_MY_PI_WORKER_SCRIPT ??= resolve(REPO_ROOT, "scripts/oh-my-pi-worker.ts");
+
 await withTsModule(RUNTIME_ENTRY, "oprn-serve-runtime.mjs", async (runtime) => {
   const server = await runtime.startLocalProjectServer({
     projectDir: options.projectDir,
@@ -56,12 +58,10 @@ await withTsModule(RUNTIME_ENTRY, "oprn-serve-runtime.mjs", async (runtime) => {
     port: options.port,
     host: options.host,
     publicOrigin: options.publicOrigin,
+    enableOwnerAi: process.env.OPRN_HOST_OWNER_AI === "1",
   });
   if (server.ownerAccessCode) {
     const accessPath = resolve(options.projectDir, '.oprn-host-access');
-    const pendingAccessPath = accessPath + '.' + process.pid + '.tmp';
-    writeFileSync(pendingAccessPath, server.ownerAccessCode + '\n', { mode: 0o600, flag: 'wx' });
-    renameSync(pendingAccessPath, accessPath);
     process.stdout.write(`팀 소유자 접속 코드 파일: ${accessPath} (외부 공유·백업에 포함하지 마세요)\n`);
   }
   process.stdout.write(`OPRN 로컬 편집기: ${server.url}\n`);
