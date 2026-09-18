@@ -1,5 +1,5 @@
 import { addMapFolder, duplicateMap, moveMapInTree, moveMapsInTree, renameMap, setStartMap } from "@/editor/actions";
-import { withAssistantViewTransition } from "@/editor/assistantViewSwitch";
+import { clearMapDissolveVeil } from "@/editor/mapDissolveVeil";
 import { confirmAndDeleteMap, confirmAndDeleteMapRecursive, confirmAndDeleteMaps, confirmAndDissolveFolder } from "@/editor/mapDeleteConfirm";
 import { editorState } from "@/editor/editorState";
 import { addParentChildTransfers, bestTestStartCell } from "@/editor/mapParentLink";
@@ -1279,12 +1279,12 @@ function applyTreeSelection(mapId: MapId, event: Event, isFolder: boolean): void
     focusMapRow(mapId);
     return;
   }
-  // 하이라이트와 포커스는 베일 **밖**(목록 패널)에 있다. 캔버스와 같은 순간에 바뀌어야 한쪽만 먼저 덜컹이지 않는다.
-  withAssistantViewTransition(mapId, () => {
-    selectEditorMap(mapId);
-    rerenderMapList();
-    focusMapRow(mapId);
-  });
+  // Direct navigation must not wait for the assistant's cover/paint/reveal sequence.
+  // Cancel a pending assistant swap too, or it can overwrite this newer selection.
+  clearMapDissolveVeil();
+  selectEditorMap(mapId);
+  rerenderMapList();
+  focusMapRow(mapId);
 }
 
 function playMapFromTree(mapId: MapId): Promise<void> {

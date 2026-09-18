@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { clearMapDissolveVeil } from "@/editor/mapDissolveVeil";
 import { editorState } from "@/editor/editorState";
 import { renderMapList, resetMapListUiStateForTests } from "@/editor/panels/mapList";
 import { isMapPanelCollapsed, resetMapPanelSectionForTests } from "@/editor/workspace/mapPanelSection";
@@ -7,6 +8,8 @@ import { store } from "@/project/store";
 import { toast } from "@/util/toast";
 import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
+vi.mock("@/editor/mapDissolveVeil", () => ({ clearMapDissolveVeil: vi.fn() }));
+
 vi.mock("@/util/toast", () => ({ toast: vi.fn() }));
 
 describe("map tree panel", () => {
@@ -14,6 +17,7 @@ describe("map tree panel", () => {
 
   beforeEach(() => {
     restoreDom = installFakeDom();
+    vi.mocked(clearMapDissolveVeil).mockClear();
     resetMapListUiStateForTests();
     resetMapPanelSectionForTests();
     const project = createBlankProject();
@@ -160,6 +164,7 @@ describe("map tree panel", () => {
     const row = findByTestId(panel, `map-tree-node-${secondId}`);
     if (!row) throw new Error("Expected second map row");
     row.dispatchEvent(new Event("click", { bubbles: true }));
+    expect(clearMapDissolveVeil).toHaveBeenCalledTimes(1);
     expect(editorState.get().currentMapId).toBe(secondId);
   });
 

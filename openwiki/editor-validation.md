@@ -1,5 +1,13 @@
 # Editor Validation Expectations
 
+## 규칙 감사 배지는 UI 선택만으로 재검사하지 않는다 (2026-09-18)
+
+`ruleAuditPanel.clusterRuleIssues`는 store의 프로젝트 참조·lineage·mutation generation이
+같으면 기존 `cluster-rule` 결과를 재사용한다. 목록 클릭·줌·툴바 재마운트마다 전체
+`projectLint`의 직렬화 왕복을 반복하던 지연을 막는다. 편집·되돌리기·프로젝트 교체 시
+내용 버전이 달라져 자동 재검사한다. `projectLint` 자체와 명시적 검사 호출은 변경하지 않았다.
+`test/ruleAuditPanel.test.ts`에 선택 시 재사용/편집 시 무효화 계약이 있다(세션에서 미실행).
+
 ## Event validation location and UNSENT handoff (issue 693, 2026-09-08)
 
 - The existing aggregate validator enriches issues with cause, expected value, correction

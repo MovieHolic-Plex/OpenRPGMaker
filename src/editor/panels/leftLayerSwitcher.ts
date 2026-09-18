@@ -1,4 +1,4 @@
-// 모든 편집 모드의 캔버스 상단 레이어 전환. 이름은 uiCopy 단일 원천을 쓴다.
+// 모든 편집 모드의 앱 헤더 레이어 전환. 이름은 uiCopy 단일 원천을 쓴다.
 
 import { editorState, type Layer } from "@/editor/editorState";
 import { uiLabel, type UiCopyKey } from "@/editor/uiCopy";
