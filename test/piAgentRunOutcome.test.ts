@@ -7,6 +7,8 @@ const h = vi.hoisted(() => ({
   planError: false,
   harmony: true,
   verdicts: [] as boolean[],
+  /** 검수 호출마다 돌려줄 지적. 비우면 매번 같은 ["density"] — 수리가 아무것도 못 바꾼 경우다. */
+  findings: [] as string[][],
   reviewCalls: 0,
   applyCalls: 0,
   harmonyError: false,
@@ -30,12 +32,18 @@ const h = vi.hoisted(() => ({
 }));
 
 vi.mock("@/editor/panels/aiPendingReview", () => ({ createPendingReviewPrompt: () => ({ root: { remove() {} }, setBusy() {} }) }));
-vi.mock("@/ai/ultrabrainReview", () => ({ reviewMapHarmony: async () => {
-  h.reviewCalls += 1;
-  if (h.harmonyError) throw new Error("image unavailable");
-  const harmonious = h.verdicts.shift() ?? h.harmony;
-  return [{ mapId: "map_a", harmonious, summary: "review", findings: harmonious ? [] : ["density"] }];
-} }));
+// `unresolvedReviewSignature` 는 순수 함수라 진짜를 쓴다 — 수리 진전 판정을 목으로 흉내 내면
+// 「지적이 그대로면 멈춘다」 계약이 테스트 안에서만 참이 된다.
+vi.mock("@/ai/ultrabrainReview", async importOriginal => ({
+  ...await importOriginal<typeof import("@/ai/ultrabrainReview")>(),
+  reviewMapHarmony: async () => {
+    h.reviewCalls += 1;
+    if (h.harmonyError) throw new Error("image unavailable");
+    const harmonious = h.verdicts.shift() ?? h.harmony;
+    const findings = h.findings.shift() ?? ["density"];
+    return [{ mapId: "map_a", harmonious, summary: "review", findings: harmonious ? [] : findings }];
+  },
+}));
 vi.mock("@/ai/piAgent/client", () => ({
   runPiAgentViaCompanion: async (request: Record<string, unknown>, options?: { onEvent?: (event: unknown) => void }) => {
     h.requests.push(request);
@@ -115,7 +123,7 @@ const harness = () => {
 };
 
 beforeEach(() => {
-  h.planError = false; h.verdicts.length = 0;
+  h.planError = false; h.verdicts.length = 0; h.findings.length = 0;
   h.reviewCalls = 0; h.applyCalls = 0; h.outcomes.length = 0;
   h.requests.length = 0; h.results.length = 0; h.bubbles.length = 0; h.process.length = 0;
   h.assistantTexts.length = 0; h.boardStates.length = 0; h.reviewActions.length = 0;
@@ -430,12 +438,26 @@ describe("five application modes", () => {
     expect(h.reviewActions.every(action => action === null)).toBe(true);
   });
   it("AUTO stops after two repairs instead of silently applying an unresolved draft", async () => {
+    // 지적이 라운드마다 달라지면 상한(2회)까지 간다 — 수리가 무언가를 바꾸고 있다는 뜻이다.
     h.piApply = "auto"; h.harmony = false;
+    h.findings.push(["density"], ["palette"], ["proportion"]);
     h.results.push({ project: projectWith("first") }, { project: projectWith("second") }, { project: projectWith("third") });
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface(), { routineEdit: true });
     expect(h.reviewCalls).toBe(3); expect(h.applyCalls).toBe(0);
     expect(h.boardStates.at(-1)?.phase).toBe("실패");
     expect(h.reviewActions.every(action => action === null)).toBe(true);
+  });
+  // 2026-09-18: 마을 턴에 딸려 만들어진 실내 맵이 「마을이 아니다」로 떨어졌고, 고칠 수 없는
+  // 지적이라 수리 두 바퀴 내내 글자 하나 안 바뀌며 파이 에이전트를 한 번 더 태웠다.
+  it("수리가 지적을 하나도 못 바꾸면 다음 바퀴를 돌지 않는다 — 판정은 그대로 실패", async () => {
+    h.piApply = "auto"; h.harmony = false;
+    h.results.push({ project: projectWith("first") }, { project: projectWith("second") }, { project: projectWith("third") });
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface(), { routineEdit: true });
+    expect(h.reviewCalls, "첫 검수 + 수리 한 번의 재검수").toBe(2);
+    expect(h.requests.filter(request => String(request.task).includes("검수 문제만 수정")), "수리 실행은 한 번뿐").toHaveLength(1);
+    expect(h.applyCalls, "안 풀린 초안을 조용히 적용하지 않는다").toBe(0);
+    expect(h.boardStates.at(-1)?.phase).toBe("실패");
+    expect(h.process.join("\n")).toContain("수리 뒤에도 그대로라 반복을 멈췄어요");
   });
   it("read-only refuses returned mutations even under YOLO", async () => {
     h.piApply = "yolo"; h.results.push({ project: projectWith("forbidden") });
