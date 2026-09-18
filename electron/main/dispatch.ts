@@ -101,9 +101,15 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
     },
 
     [OPRN_CHANNELS.projectLoad]: (key) => {
-      const snapshot = store(key).loadSnapshot();
-      if (!snapshot) return null;
-      return { serialized: store(key).exportSerialized(), sha256: snapshot.sha256, revision: snapshot.revision };
+      const target = store(key);
+      const serialized = target.exportSerialized();
+      if (!serialized) return null;
+      // The renderer is the consumer that must validate/deserialize this document. Calling
+      // loadSnapshot here first parsed and repaired the same multi-megabyte JSON a second time
+      // before exporting the untouched wire string, which was especially visible over the HTTP
+      // host bridge. Metadata is available without touching the document body.
+      const info = target.info();
+      return { serialized, sha256: info.sha256 ?? "", revision: info.revision };
     },
 
     [OPRN_CHANNELS.projectSave]: async (key, payload) => {
