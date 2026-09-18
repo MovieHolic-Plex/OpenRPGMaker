@@ -111,7 +111,31 @@ async function readAsset(payload: unknown): Promise<Uint8Array> {
   },
   start: {
     recentProjects: async () => [],
-    openFolder: async () => null,
+    openFolder: async () => {
+      // Browsers cannot expose a local path to the host process, but the File
+      // System Access API can safely let the user choose a local project
+      // folder. Upload its SQLite store to the web host instead of claiming
+      // that folder opening is desktop-only.
+      if (!('showDirectoryPicker' in window)) return null;
+      const directory = await (window as Window & {
+        showDirectoryPicker: () => Promise<FileSystemDirectoryHandle>;
+      }).showDirectoryPicker();
+      let file: File;
+      try {
+        const handle = await directory.getFileHandle('project.sqlite');
+        file = await handle.getFile();
+      } catch {
+        throw new Error('선택한 폴더에서 project.sqlite를 찾지 못했습니다. 프로젝트 폴더를 선택하세요.');
+      }
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const opened = await call(OPRN_CHANNELS.startOpenFolder, { bytes: bytesToBase64(bytes) }) as { projectDir: string; projectId: string; isNew: boolean };
+      const url = new URL(location.href);
+      url.search = '';
+      url.hash = '';
+      url.searchParams.set('hostProject', opened.projectDir);
+      history.replaceState(null, '', url);
+      return opened;
+    },
     openRecent: async () => null,
     createProject: async (input: unknown) => {
       const created = await call(OPRN_CHANNELS.startCreateProject, input) as { projectDir: string; projectId: string };
