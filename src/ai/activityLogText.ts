@@ -111,9 +111,17 @@ function channelLabel(channel: string): string {
   return CHANNEL_LABEL[channel] ?? channel;
 }
 
+/**
+ * 성공/실패 한 낱말은 «적용됐는가» 를 말하지 않는다. 실측(2026-09-17 조수 로그 100건): Pi 18턴 중
+ * 6턴이 라벨과 적용 결과가 어긋났다 — 「실패」인데 적용된 반쯤 적용 2건([20][33]), 「성공」인데
+ * 적용 안 된 검토 대기 4건. 그 둘은 다음에 할 일이 정반대인데(하나는 되돌리기, 하나는 검토)
+ * 라벨만 보고는 구분할 수 없었다. 어긋날 때만 괄호로 실제 결과를 덧붙인다.
+ */
 function resultHeadline(record: AiActivityLogRecord): string {
-  if (record.result.pending) return "진행 중";
-  return record.result.ok ? "성공" : "실패";
+  const result = record.result;
+  if (result.pending) return "진행 중";
+  if (result.ok) return result.applied === false ? "성공(적용 안 됨)" : "성공";
+  return result.applied === true ? "실패(부분 적용)" : "실패";
 }
 
 function resultDetail(record: AiActivityLogRecord): string[] {
