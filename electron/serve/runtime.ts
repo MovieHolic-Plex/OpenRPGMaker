@@ -168,6 +168,24 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
         sessions.close(temporaryKey);
       }
     }
+    if (channel === OPRN_CHANNELS.startOpenFolder) {
+      if (sessions.member(key).role !== 'owner') throw new Error('프로젝트 열기는 팀 소유자만 할 수 있습니다.');
+      const input = body.payload as { bytes?: unknown } | null;
+      if (typeof input?.bytes !== 'string') throw new Error('project.sqlite 파일이 필요합니다.');
+      const id = randomUUID();
+      await mkdir(projectsRoot, { recursive: true });
+      const dir = resolve(projectsRoot, id);
+      await mkdir(dir);
+      try {
+        await writeFile(resolve(dir, 'project.sqlite'), Buffer.from(input.bytes, 'base64'), { flag: 'wx' });
+        const opened = await sessions.open(`open:${id}`, dir, team);
+        return { projectDir: id, isNew: false, projectId: opened.store.projectId };
+      } catch (error) {
+        sessions.close(`open:${id}`);
+        await rm(dir, { recursive: true, force: true });
+        throw error;
+      }
+    }
     const handler = Object.hasOwn(handlers, channel) ? handlers[channel] : undefined;
     if (!handler) throw new Error(`${channel}: 알 수 없는 채널입니다`);
 
