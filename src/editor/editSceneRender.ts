@@ -48,6 +48,43 @@ export interface EditSceneRenderContext {
 
 export type EditSceneTileIndex = Map<string, Phaser.GameObjects.GameObject[]>;
 
+/**
+ * Large maps should not pay the cost of creating every tile before the first frame.
+ * The existing culling pass can hide objects, but it cannot undo their construction.
+ * Keep the threshold below the common 128×128 render-contract fixture so the existing
+ * small/editor capture behavior remains unchanged while 100×100 hosted maps use the lazy path.
+ */
+export const LAZY_EDIT_MAP_CELL_THRESHOLD = 8_192;
+
+type EditSceneTileWindow = {
+  readonly minX: number;
+  readonly minY: number;
+  readonly maxX: number;
+  readonly maxY: number;
+};
+
+export function shouldLazilyRenderEditMap(map: GameMap): boolean {
+  return map.width * map.height > LAZY_EDIT_MAP_CELL_THRESHOLD;
+}
+
+function cameraTileWindow(scene: Phaser.Scene, map: GameMap): EditSceneTileWindow {
+  const view = scene.cameras?.main?.worldView;
+  if (!view || view.width <= 0 || view.height <= 0) {
+    return { minX: 0, minY: 0, maxX: map.width - 1, maxY: map.height - 1 };
+  }
+  const margin = 2;
+  const minX = Math.max(0, Math.floor(view.x / TILE_SIZE) - margin);
+  const minY = Math.max(0, Math.floor(view.y / TILE_SIZE) - margin);
+  const maxX = Math.min(map.width - 1, Math.floor((view.x + view.width) / TILE_SIZE) + margin);
+  const maxY = Math.min(map.height - 1, Math.floor((view.y + view.height) / TILE_SIZE) + margin);
+  return { minX, minY, maxX, maxY };
+}
+
+export function editSceneTileWindowKey(scene: Phaser.Scene, map: GameMap): string {
+  const window = cameraTileWindow(scene, map);
+  return `${window.minX},${window.minY},${window.maxX},${window.maxY}`;
+}
+
 export type EditSceneRenderStats = {
   readonly tileObjectsUpdated: number;
 };
@@ -118,18 +155,47 @@ function renderTiles(context: EditSceneRenderContext, map: GameMap, mapOnlyCaptu
   const tileset = store.getCurrent().tilesets[map.tilesetId];
   if (!tileset) return 0;
   const activeLayer = mapOnlyCapture ? "event" : editorState.get().layer;
+  const window = mapOnlyCapture || !context.tileIndex || !shouldLazilyRenderEditMap(map)
+    ? { minX: 0, minY: 0, maxX: map.width - 1, maxY: map.height - 1 }
+    : cameraTileWindow(context.scene, map);
   let tileObjectsUpdated = 0;
-  for (let y = 0; y < map.height; y++) {
-    for (let x = 0; x < map.width; x++) {
+  for (let y = window.minY; y <= window.maxY; y++) {
+    for (let x = window.minX; x <= window.maxX; x++) {
       tileObjectsUpdated += renderTileCellLayer(context, map, activeLayer, "lower", x, y).length;
     }
   }
-  for (let y = 0; y < map.height; y++) {
-    for (let x = 0; x < map.width; x++) {
+  for (let y = window.minY; y <= window.maxY; y++) {
+    for (let x = window.minX; x <= window.maxX; x++) {
       tileObjectsUpdated += renderTileCellLayer(context, map, activeLayer, "upper", x, y).length;
     }
   }
   return tileObjectsUpdated;
+}
+
+/** Materialize the newly visible cells of a large map after the camera moves. */
+export function renderVisibleEditSceneTiles(
+  context: EditSceneRenderContext & { readonly tileIndex: EditSceneTileIndex },
+): EditSceneRenderStats {
+  const map = store.getCurrent().maps[context.mapId];
+  if (!map || !shouldLazilyRenderEditMap(map)) return { tileObjectsUpdated: 0 };
+  const window = cameraTileWindow(context.scene, map);
+  let tileObjectsUpdated = 0;
+  for (let y = window.minY; y <= window.maxY; y++) {
+    for (let x = window.minX; x <= window.maxX; x++) {
+      const lowerKey = tileIndexKey("lower", x, y);
+      if (!context.tileIndex.has(lowerKey)) {
+        tileObjectsUpdated += renderTileCellLayer(context, map, editorState.get().layer, "lower", x, y).length;
+      }
+      const upperKey = tileIndexKey("upper", x, y);
+      if (!context.tileIndex.has(upperKey)) {
+        tileObjectsUpdated += renderTileCellLayer(context, map, editorState.get().layer, "upper", x, y).length;
+      }
+    }
+  }
+  if (tileObjectsUpdated > 0 && "sort" in context.tileLayer && typeof context.tileLayer.sort === "function") {
+    context.tileLayer.sort("depth");
+  }
+  return { tileObjectsUpdated };
 }
 
 function renderTileCellLayer(

@@ -1,3 +1,7 @@
+- **호스트 프로젝트 초기 연결:** `electron/main/sessions.ts`의 세션 오픈은 인라인 `dataUrl`이
+  실제로 들어 있는 문서에서만 미디어 분리용 전체 역직렬화를 수행한다. 일반적인 파일 참조
+  프로젝트는 `project.load()`가 곧 읽을 5~6MiB 문서를 미디어 검사 때문에 한 번 더 복원하지
+  않는다. 미디어 분리 계약 자체는 유지하되, 이 경로에 새 전체 프로젝트 스캔을 추가하지 않는다.
 - **좌표 목적지 이동의 실패 계약 (OPRN-OUT-013, 2026-09-10):** `playPathfindMove` 는
   이제 `Promise<MovementResult>` 를 돌려준다(도착 + 실패 6종, 정수 코드가 계약이다).
   변수 좌표는 `session.variables[id]` **원시 조회**로 읽어야 한다 — `getVariable` 의 `?? 0`
