@@ -3,6 +3,9 @@ import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 
+/** Emitted when the deferred toolbar badge calculation finishes. */
+export const RULE_AUDIT_UPDATED_EVENT = "oprn:rule-audit-updated";
+
 type RuleAuditStrength = "hard" | "medium" | "soft";
 
 interface RuleAuditIssue {
@@ -85,6 +88,32 @@ export function renderRuleAuditPanel(): HTMLElement {
 
 export function ruleAuditViolationCount(): number {
   return groupedClusterIssues(clusterRuleIssues()).reduce((total, group) => total + group.count, 0);
+}
+
+let deferredAuditQueued = false;
+
+/**
+ * Toolbar construction happens before the first editor frame. A synchronous projectLint there
+ * serializes and walks the whole hosted project just to paint a badge. Return a known cache value
+ * when available and calculate a cold badge after the browser gets a paint opportunity instead.
+ * Opening the audit panel still uses the synchronous contract above, so diagnostics are never lost.
+ */
+export function ruleAuditViolationCountCached(): number {
+  const project = store.getCurrent();
+  const { lineage, generation } = store.getVersionToken();
+  if (cachedRuleIssues?.project === project
+    && cachedRuleIssues.lineage === lineage && cachedRuleIssues.generation === generation) {
+    return groupedClusterIssues(cachedRuleIssues.issues).reduce((total, group) => total + group.count, 0);
+  }
+  if (!deferredAuditQueued && typeof window !== "undefined") {
+    deferredAuditQueued = true;
+    window.setTimeout(() => {
+      deferredAuditQueued = false;
+      clusterRuleIssues();
+      window.dispatchEvent(new Event(RULE_AUDIT_UPDATED_EVENT));
+    }, 250);
+  }
+  return 0;
 }
 
 export function installRuleAuditPanelAutoMount(): void {

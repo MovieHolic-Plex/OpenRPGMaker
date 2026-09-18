@@ -7,24 +7,55 @@ export type MapLinkStats = {
   readonly playLinkCount: number;
 };
 
+type LinkIndex = {
+  readonly outgoingTransfers: ReadonlyMap<MapId, number>;
+  readonly incomingTransfers: ReadonlyMap<MapId, number>;
+  readonly connections: ReadonlyMap<MapId, number>;
+};
+
+// 맵 목록은 한 번의 렌더에서 같은 프로젝트의 모든 맵에 대해 이 함수를 호출한다.
+// 예전에는 호출마다 모든 맵의 이벤트와 모든 transfer 명령을 다시 순회해
+// O(맵 수 × 전체 이벤트 수)가 됐다. store는 편집 시 새 Project 객체를 만들므로
+// 프로젝트 객체 identity를 캐시 키로 쓰면 편집 후 자동으로 무효화된다.
+const indexCache = new WeakMap<Project, LinkIndex>();
+
 export function collectMapLinkStats(project: Project, mapId: MapId): MapLinkStats {
-  let outgoingTransfers = 0;
-  let incomingTransfers = 0;
+  const index = linkIndexFor(project);
+  return {
+    outgoingTransfers: index.outgoingTransfers.get(mapId) ?? 0,
+    incomingTransfers: index.incomingTransfers.get(mapId) ?? 0,
+    connections: index.connections.get(mapId) ?? 0,
+    playLinkCount:
+      (index.outgoingTransfers.get(mapId) ?? 0)
+      + (index.incomingTransfers.get(mapId) ?? 0)
+      + (index.connections.get(mapId) ?? 0),
+  };
+}
+
+function linkIndexFor(project: Project): LinkIndex {
+  const cached = indexCache.get(project);
+  if (cached) return cached;
+
+  const outgoingTransfers = new Map<MapId, number>();
+  const incomingTransfers = new Map<MapId, number>();
+  const connections = new Map<MapId, number>();
   for (const map of Object.values(project.maps)) {
     for (const command of mapTransferCommands(map.events)) {
-      if (map.id === mapId && command.mapId !== mapId) outgoingTransfers += 1;
-      if (map.id !== mapId && command.mapId === mapId) incomingTransfers += 1;
+      if (command.mapId === map.id) continue;
+      outgoingTransfers.set(map.id, (outgoingTransfers.get(map.id) ?? 0) + 1);
+      incomingTransfers.set(command.mapId, (incomingTransfers.get(command.mapId) ?? 0) + 1);
     }
   }
-  const connections = (project.mapConnections ?? []).filter(
-    (connection) => connection.from.mapId === mapId || connection.to.mapId === mapId,
-  ).length;
-  return {
-    outgoingTransfers,
-    incomingTransfers,
-    connections,
-    playLinkCount: outgoingTransfers + incomingTransfers + connections,
-  };
+  for (const connection of project.mapConnections ?? []) {
+    connections.set(connection.from.mapId, (connections.get(connection.from.mapId) ?? 0) + 1);
+    if (connection.to.mapId !== connection.from.mapId) {
+      connections.set(connection.to.mapId, (connections.get(connection.to.mapId) ?? 0) + 1);
+    }
+  }
+
+  const index: LinkIndex = { outgoingTransfers, incomingTransfers, connections };
+  indexCache.set(project, index);
+  return index;
 }
 
 function mapTransferCommands(events: readonly GameEvent[]): Extract<Command, { kind: "transfer" }>[] {

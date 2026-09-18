@@ -485,8 +485,8 @@ function categoryVisibleTileSet(tileset: TilesetDef, category: TileCategoryId): 
  *
  * · 기본 리플로우 팔레트: 안 맞는 칸을 아예 안 그린다. 그래서 그리는 수는
  *   gridPaletteVisibleCount(오토타일 대표 축약 · 변형 숨김 · 레이어 가시성 반영)다.
- * · 커스텀 아틀라스: 칸의 위치가 정보라 **하나도 숨기지 않고** 안 맞는 것만 흐리게 한다
- *   (makeCustomPalette 주석). 그래서 화면에 있는 칸은 언제나 전량이고, 셀 수 있는 것은
+ * · 커스텀 아틀라스: 화면은 6열로 세로 리플로우하지만 원본 셀을 **하나도 숨기지 않고**
+ *   안 맞는 것만 흐리게 한다. 그래서 화면에 있는 칸은 언제나 전량이고, 셀 수 있는 것은
  *   "맞는 칸"의 수다. 이 둘을 한 함수로 뭉치면 커스텀 아틀라스에서 0이라고 말하게 된다.
  */
 function paletteMatchCount(

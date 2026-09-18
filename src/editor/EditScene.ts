@@ -64,7 +64,16 @@ import {
 } from "@/editor/eventMarkerTooltipPlacement";
 import { renderHoverTilePreview, shouldShowPaintHoverPreview } from "@/editor/editSceneHoverPreview";
 import { planEditSceneRenderForStoreChange } from "@/editor/editSceneRenderPlan";
-import { renderEditScene, renderEditSceneTileCells, applyCameraView, type EditSceneRenderStats, type EditSceneTileIndex } from "@/editor/editSceneRender";
+import {
+  editSceneTileWindowKey,
+  renderEditScene,
+  renderEditSceneTileCells,
+  renderVisibleEditSceneTiles,
+  applyCameraView,
+  shouldLazilyRenderEditMap,
+  type EditSceneRenderStats,
+  type EditSceneTileIndex,
+} from "@/editor/editSceneRender";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { resetCullableTiles, syncTileCulling } from "@/player/playSceneTileCulling";
 import {
@@ -225,6 +234,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private eventLayerClickFeedback: EventLayerClickFeedback | null = null;
   private lastPointerTile: { x: number; y: number } | null = null;
   private lastRenderedMapId: MapId | null = null;
+  private lastMaterializedTileWindowKey = "";
   private lastRenderStateKey = "";
   private lastCameraViewKey = "";
   private lastAppliedZoom = 0;
@@ -593,6 +603,24 @@ export class EditScene extends PhaserRuntime.Scene {
   private syncTileCullingFrame(): void {
     const view = this.cameras?.main?.worldView;
     if (!view || view.width <= 0 || view.height <= 0) return;
+    const mapId = this.mapId();
+    if (!mapId) return;
+    const map = store.getCurrent().maps[mapId];
+    if (map && shouldLazilyRenderEditMap(map) && this.tileLayer && this.overlayLayer && this.gridGraphics) {
+      const nextWindowKey = editSceneTileWindowKey(this, map);
+      if (nextWindowKey !== this.lastMaterializedTileWindowKey) {
+        renderVisibleEditSceneTiles({
+          scene: this,
+          tileLayer: this.tileLayer,
+          overlayLayer: this.overlayLayer,
+          gridGraphics: this.gridGraphics,
+          mapId,
+          tileIndex: this.tileIndex,
+          backgroundPreview: mapBackgroundPreviewEnabled(),
+        });
+        this.lastMaterializedTileWindowKey = nextWindowKey;
+      }
+    }
     syncTileCulling(this, view);
   }
 
@@ -1670,6 +1698,7 @@ export class EditScene extends PhaserRuntime.Scene {
       this.clearEventLayerClickFeedback();
       this.lastPaintKey = "";
       this.dragOperationHandler?.clear();
+      this.lastMaterializedTileWindowKey = "";
     }
     this.lastRenderedMapId = mid;
     this.lastRenderStateKey = this.renderStateKey(mid);
@@ -1694,6 +1723,10 @@ export class EditScene extends PhaserRuntime.Scene {
       resetCamera,
       preserveCameraLookAt: resetCamera && !mapChanged,
     });
+    const renderedMap = store.getCurrent().maps[mid];
+    this.lastMaterializedTileWindowKey = renderedMap && shouldLazilyRenderEditMap(renderedMap)
+      ? editSceneTileWindowKey(this, renderedMap)
+      : "";
     this.renderEventLayerClickFeedback();
     // 배경 미리보기는 타일 렌더와 별개다 — 토글·맵·그림이 바뀔 때만 스프라이트를 다시 만든다.
     this.renderMapBackgroundPreview();

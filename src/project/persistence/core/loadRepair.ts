@@ -12,15 +12,18 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 export function deserializeStoredProjectJson(value: unknown): Project {
-  const originalJson = JSON.stringify(value);
   try {
-    const repaired: unknown = JSON.parse(originalJson);
+    // The stored value already came from JSON.parse in the local host. Re-encoding and
+    // parsing it just to obtain a mutable copy adds a full project-sized stringify/parse
+    // pair before validation. structuredClone preserves the same copy-before-repair
+    // contract without paying that serialization cost.
+    const repaired: unknown = structuredClone(value);
     repairStoredProjectJson(repaired);
     return deserialize(JSON.stringify(repaired));
   } catch {
     // 세 차례의 검토에서 장식용 로드 복구가 정상 프로젝트를 불러오지 못하게 만들었다.
     // 복구본 전체를 검증한 뒤 실패하면 손대지 않은 원본 행을 여는 것을 구조적으로 보장한다.
-    return deserialize(originalJson);
+    return deserialize(JSON.stringify(value));
   }
 }
 

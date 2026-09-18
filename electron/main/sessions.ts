@@ -20,6 +20,13 @@ export type ProjectSession = {
  * 여는 순간 쓰는 행동은 창을 여는 이 경로에만 둔다. 실패해도 여는 것을 막지 않는다.
  */
 async function separateInlineMediaOnOpen(store: LocalProjectStore): Promise<void> {
+  // Normal hosted projects already store uploaded media as file refs. Avoid deserializing the
+  // entire project just to discover that there is no inline data URL to migrate. This check is
+  // intentionally lexical: a false positive only does the old repair work, while the common
+  // 5–6 MiB project load avoids a second full deserialize before the renderer asks for the same
+  // snapshot through project.load().
+  const serialized = store.exportSerialized();
+  if (!serialized || !serialized.includes('"dataUrl"')) return;
   const snapshot = store.loadSnapshot();
   if (!snapshot) return;
   try {
