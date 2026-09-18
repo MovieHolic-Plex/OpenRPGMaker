@@ -125,9 +125,10 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
   const token = randomUUID();
 
   const projectsRoot = resolve(sessions.require(SESSION_KEY).projectDir, '.oprn-projects');
+  const isProjectId = (id: string): boolean => /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/.test(id);
   const projectPath = async (id: string): Promise<string> => {
     if (!id) return projectDir;
-    if (!/^[0-9a-f-]{36}$/.test(id)) throw new Error('invalid project id');
+    if (!isProjectId(id)) throw new Error('invalid project id');
     const path = resolve(projectsRoot, id);
     if (await realpath(projectsRoot) !== projectsRoot || await realpath(path) !== path || !sessions.directoryExists(path)) {
       throw new Error('unknown project');
@@ -141,7 +142,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
     const channel = typeof body.channel === "string" ? body.channel : "";
     if (channel === OPRN_CHANNELS.startRecentProjects) {
       const entries = await readdir(projectsRoot, { withFileTypes: true }).catch(() => []);
-      return entries.filter((entry) => entry.isDirectory() && /^[0-9a-f-]{36}$/.test(entry.name)).map((entry) => ({ projectDir: entry.name, title: entry.name }));
+      return entries.filter((entry) => entry.isDirectory() && isProjectId(entry.name)).map((entry) => ({ projectDir: entry.name, title: entry.name }));
     }
     if (channel === OPRN_CHANNELS.startCreateProject) {
       if (sessions.member(key).role !== 'owner') throw new Error('새 프로젝트는 팀 소유자만 만들 수 있습니다.');
