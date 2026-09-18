@@ -731,6 +731,8 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 RM2K3/EasyRPG 와는 다르다(그쪽은 타이머가 **작동 중**이어야 한다). `PlaySession.timers` 에 running
 비트가 없고 `timer stop` 이 값을 지우지 않으므로, RM 정합은 스키마 변경이다. **"고치지" 말고**
 저작 시점 경고(`condition.timer.always-true`)로 보이게 두라.
+**음수는 폼에서 못 적는다** — 타이머 입력이 `min="0"` 이라 거짓으로 만드는 유일한 방법이 UI에 없다.
+대신 fork 폼이 `event-fork-timer-warning` 인라인 경고를 직접 보여준다(2026-09-18).
 
 ### 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
 
