@@ -1,0 +1,94 @@
+/* ── 4. 타일 도크: 검색 · 분류 칩 ─────────────────────────────────────────── */
+
+.editor-layout .left-panel-stack .palette-filter-bar {
+  gap: 6px;
+  margin: 0 0 6px;
+}
+
+.editor-layout .left-panel-stack .tile-search-input {
+  background: var(--bg-inset);
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  box-shadow: none;
+  color: var(--text-1);
+  font: 500 12px/1.2 var(--font-ui);
+  padding: 0 10px;
+  transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.editor-layout .left-panel-stack .tile-search-input::placeholder {
+  color: var(--text-placeholder);
+}
+
+.editor-layout .left-panel-stack .tile-search-input:hover {
+  border-color: var(--border-default);
+}
+
+.editor-layout .left-panel-stack .tile-search-input:focus-visible {
+  background: var(--bg-raised);
+  border-color: var(--accent);
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+.editor-layout .left-panel-stack .tile-number-toggle {
+  background: var(--control-bg);
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  font: 700 12px/1 var(--font-ui);
+  height: 26px;
+  min-width: 26px;
+  padding: 0;
+  width: 26px;
+}
+
+.editor-layout .left-panel-stack .tile-number-toggle:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.editor-layout .left-panel-stack .tile-number-toggle.active {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+/* 분류 칩은 잘리지 않는다 — 옛 규칙은 한 줄 가로 스크롤에 스크롤바를 숨겨 마지막 칩(장식)이
+   있는지 보이지 않았다. 300px 에서는 한 줄에 다 들어가고, 더 좁으면 둘째 줄로 내려간다. */
+.editor-layout .left-panel-stack .palette-filter-bar .tile-category-tabs {
+  flex-wrap: wrap;
+  gap: 3px;
+  overflow: visible;
+  padding: 0;
+}
+
+.editor-layout .left-panel-stack .palette-filter-bar .tile-category-tab {
+  background: var(--control-bg);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  color: var(--text-2);
+  font: 600 11px/1 var(--font-ui);
+  height: 24px;
+  padding: 0 6px;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.editor-layout .left-panel-stack .palette-filter-bar .tile-category-tab:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.editor-layout .left-panel-stack .palette-filter-bar .tile-category-tab.active,
+.editor-layout .left-panel-stack .palette-filter-bar .tile-category-tab[aria-selected="true"] {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.editor-layout .left-panel-stack .palette-filter-status {
+  color: var(--text-2);
+  font: 600 11px/1.2 var(--font-ui);
+  padding: 0 2px;
+}

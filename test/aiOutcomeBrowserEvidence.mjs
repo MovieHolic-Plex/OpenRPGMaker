@@ -11,7 +11,11 @@ const out = resolve(process.env.EVIDENCE_DIR);
 const sourcePaths = ['DESIGN.md', 'src/editor/panels/aiChatPanel.ts', 'src/editor/panels/aiChatRenderers.ts',
   'src/editor/panels/aiStickyChecklist.ts', 'src/editor/panels/aiTurnRunner.ts', 'src/editor/panels/aiRunSurface.ts',
   'src/styles/database/assistant-sticky-checklist.css',
-  'src/styles/database/tabs-b-assistant-panel/19-assistant-cards.css', 'test/aiOutcomePresentation.test.ts',
+  'src/styles/database/tabs-b-assistant-panel/19-assistant-cards.css',
+  'src/styles/database/tabs-b-assistant-panel/assistant-cards.part-2.css',
+  'src/styles/database/tabs-b-assistant-panel/assistant-cards.part-3.css',
+  'src/styles/database/tabs-b-assistant-panel/assistant-cards.part-4.css',
+  'src/styles/database/tabs-b-assistant-panel/assistant-cards.part-5.css', 'test/aiOutcomePresentation.test.ts',
   'test/aiAutonomousRunSurface.test.ts', 'test/aiContinueUserAction.test.ts', 'test/aiOutcomeBrowserEvidence.mjs'];
 const sourceHashes = async () => Object.fromEntries(await Promise.all(sourcePaths.map(async path =>
   [path, createHash('sha256').update(await readFile(path)).digest('hex')])));

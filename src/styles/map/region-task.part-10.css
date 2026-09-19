@@ -1,0 +1,72 @@
+/* ── 캔버스 검토 모드: 창이 본문을 내려놓는다 ──────────────────────────────
+   실측(2026-09-11): 검토 단계의 중앙 모달이 960×768 로 캔버스(992×751)를 거의 다 덮어
+   캔버스 도형이 자기가 만든 창에 가려 클릭조차 되지 않았다. 기하 판단과 결정이 캔버스로
+   갔으므로 창에는 서사(경로·요약·변경 목록·결정·로그)만 남고, 자리도 위로 비켜선다. */
+.region-task-modal.is-canvas-review {
+  gap: var(--space-2);
+  max-width: min(560px, calc(100vw - 32px));
+  padding: var(--space-3);
+}
+
+/* 창 높이 상한 — 캔버스가 검토를 맡았으니 창은 맵을 덮지 않을 만큼만 크면 된다.
+   실측(2026-09-11): 40vh(=320px) 로 잡았더니 막는 이슈가 펼쳐진 검토에서 「고급」 줄이
+   스크롤 밖으로 밀렸다. 결정 문장 + 이슈 목록까지는 스크롤 없이 보여야 한다. */
+.region-task-backdrop:not(.region-task-backdrop-popover) .region-task-modal.is-canvas-review {
+  align-self: flex-start;
+  max-height: 55vh;
+  max-height: 55dvh;
+}
+
+/* 캔버스가 대신하는 것들 — 썸네일 두 장, 청크 체크리스트, 창 안 액션, 키 안내. */
+.region-task-modal.is-canvas-review .region-task-compare,
+.region-task-modal.is-canvas-review .region-task-partial-host,
+.region-task-modal.is-canvas-review .region-task-compare-actions,
+.region-task-modal.is-canvas-review .region-task-kbd-hints {
+  display: none;
+}
+
+/* 대상이 화면 위쪽이면 창은 아래로 비킨다 — 중앙 모달에는 팝오버의 avoid 협상이 없다. */
+.region-task-backdrop:not(.region-task-backdrop-popover) .region-task-modal.is-canvas-review.is-below {
+  align-self: flex-end;
+}
+
+/* 캔버스 검토 중에는 스크림을 걷는다 — 창을 비켜 세워도 inset:0 backdrop 이 캔버스 전체의
+   포인터를 먹어 청크를 누를 수 없었다(실측 2026-09-11: elementFromPoint → .region-task-backdrop).
+   팝오버 변형(.region-task-backdrop-popover)이 이미 같은 이유로 이렇게 하고 있다.
+   캔버스를 판단 대상으로 쓰는 동안 대상을 어둡게 덮을 이유도 없다. */
+.region-task-backdrop.is-canvas-review {
+  background: transparent;
+  pointer-events: none;
+}
+
+.region-task-backdrop.is-canvas-review > .region-task-modal {
+  pointer-events: auto;
+}
+
+/* 「조절…」은 검토 단계에서만 나타난다 — 진입 화면은 입력 1 + 칩 3 + 버튼 1 이 전부다. */
+.region-task-modal:not([data-stage="review"]) .region-task-adjust { display: none; }
+.region-task-adjust-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+}
+
+/* 반대 경로로 다시 — 경로를 코드가 골랐으니 오라우팅의 복구가 한 클릭이어야 한다. */
+.region-task-reroute {
+  background: transparent;
+  border: 1px solid var(--editor-line);
+  border-radius: var(--radius-s);
+  color: var(--editor-text-muted);
+  cursor: pointer;
+  font: 600 11px/1.6 var(--font-ui, system-ui, sans-serif);
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+.region-task-reroute:hover,
+.region-task-reroute:focus-visible {
+  border-color: var(--accent-border);
+  color: var(--accent);
+  outline: none;
+}
+.region-task-reroute:disabled { cursor: default; opacity: 0.6; }

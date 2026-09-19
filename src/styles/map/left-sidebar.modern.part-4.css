@@ -1,0 +1,146 @@
+/* ── 3. 타일 도크: 도구막대 · 레이어 ──────────────────────────────────────── */
+
+/* 상자 없는 도구 줄. 고른 도구만 인디고 틴트로 뜬다 — 채운 파란 사각형은 사이드바에서
+   가장 시끄러운 요소였고, 그 옆의 빨간 배지와 경쟁했다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  gap: 2px;
+  margin: 0 0 4px;
+  min-height: 26px;
+  padding: 0;
+}
+
+/* 도구 11개(그리기 7 + 맵 모드 4)는 300px 패널 한 줄에 들어가지 않는다. 옛 답은 가로 스크롤
+   (스크롤바를 숨겨 잘린 도구는 있는지도 몰랐다). 이제 줄바꿈한다 — 좁으면 맵 모드 4개가
+   둘째 줄로 내려오고, 패널을 넓히면 한 줄로 합쳐진다. ⋯ 트리거는 형제라 첫 줄 오른쪽에 남는다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar {
+  align-items: flex-start;
+  /* 세로 flex 열에서 줄어들지 않게 한다. 옛 규칙의 명시적 min-height:30px 가 flex 항목의
+     자동 최소 높이(내용 크기)를 대체해, 시트가 공간을 요구하면 도구막대가 30px 로 눌리고
+     줄바꿈한 둘째 줄이 레이어 전환 위로 겹쳐 그려졌다(실측 computed height 30px, 내용 58px). */
+  flex: 0 0 auto;
+  height: auto;
+}
+
+/* 시트 이외의 모든 줄은 내용 높이를 지킨다 — 남는 세로는 시트 하나만 가져간다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .selected-tile-status,
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .left-layer-switcher,
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .palette-filter-bar,
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .palette-inline-section,
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .structure-kit-shelf {
+  flex: 0 0 auto;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar-scroll {
+  flex-wrap: wrap;
+  gap: 2px;
+  overflow: visible;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-toolbar-menu {
+  align-self: flex-start;
+}
+
+/* 맵 모드 그룹은 오른쪽으로 붙인다 — 한 줄이면 그리기(왼쪽)·모드(오른쪽)로 갈리고,
+   줄바꿈하면 둘째 줄 오른쪽 끝에 정렬돼 왼쫽에 매달린 고아처럼 보이지 않는다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar-modes {
+  margin-left: auto;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool {
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  height: 28px;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  width: 28px;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool:hover:not(:disabled) {
+  background: var(--control-bg-hover);
+  border-color: transparent;
+  color: var(--text-1);
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool.active {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool.active:hover:not(:disabled) {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+  color: var(--accent-hover);
+  filter: none;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar-separator {
+  background: var(--border-default);
+  margin: 6px 3px;
+}
+
+/* 규칙 감사 개수 배지 — 알림이 아니라 상태다. 빨간 채움 대신 옅은 톤으로 낮춘다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .toolbar-badge {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  color: var(--text-2);
+  font: 700 9px/1 var(--font-ui);
+  height: 14px;
+  min-width: 14px;
+  padding: 0 3px;
+  right: -4px;
+  top: -4px;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .toolbar-badge.danger {
+  background: var(--danger-muted);
+  border-color: transparent;
+  color: var(--danger);
+}
+
+/* 레이어 전환 — 세그먼트 컨트롤. 트랙 하나 위에 고른 것만 흰 카드로 떠 있다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .left-layer-switcher {
+  background: var(--control-bg);
+  border-radius: var(--radius-m);
+  gap: 2px;
+  margin: 0 0 6px;
+  padding: 2px;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .left-layer-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--text-2);
+  font: 600 11px/1 var(--font-ui);
+  gap: 5px;
+  min-height: 22px;
+  padding: 0 7px;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .left-layer-btn:hover {
+  background: var(--control-bg-hover);
+  border-color: transparent;
+  color: var(--text-1);
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .left-layer-btn.is-active {
+  background: var(--bg-raised);
+  border-color: var(--border-subtle);
+  color: var(--text-1);
+  font-weight: 700;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .left-layer-btn:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}

@@ -1,0 +1,96 @@
+@media (max-width: 1180px) {
+  .database-modal-body .oprn-record-actors .actor-build-preview-grid {
+    grid-template-columns: minmax(240px, 1.2fr) minmax(180px, 1fr);
+  }
+
+  .database-modal-body .oprn-record-actors .actor-build-stat-card {
+    grid-row: span 2;
+  }
+}
+
+@media (max-width: 900px) {
+  .database-modal-body .oprn-record-actors .actor-build-preview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-build-stat-card {
+    grid-row: auto;
+  }
+}
+
+@media (max-width: 1100px) {
+  .database-modal-body .oprn-record-actors .actor-build-preview-heading {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-build-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-workspace.oprn-record-actors {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 248px minmax(0, 1fr);
+  height: 100%;
+  max-width: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-actors .oprn-record-list-pane {
+  box-sizing: border-box;
+  grid-template-rows: auto auto 0 minmax(0, 1fr) auto auto;
+  max-height: none;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-actors .db-list {
+  align-self: stretch;
+  min-height: 0;
+  overflow: auto;
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-actors :is(
+  .oprn-record-detail-pane,
+  .actor-detail-form,
+  .actor-classic-sheet,
+  .actor-build-preview,
+  .actor-build-preview-result,
+  .actor-build-preview-grid
+) {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-actors .actor-build-preview {
+  margin-inline: 0;
+  padding: 14px;
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-actors :is(
+  .actor-build-preview-grid,
+  .actor-editor-grid,
+  .actor-right-stack
+) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-actors .actor-editor-grid {
+  grid-template-areas: none;
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-actors :is(
+  .actor-left-stack,
+  .actor-center-stack,
+  .actor-right-stack
+) {
+  grid-area: auto;
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-actors .actor-build-stat-card {
+  grid-row: auto;
+}

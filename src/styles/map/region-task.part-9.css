@@ -1,0 +1,184 @@
+/* ── 캔버스 위 청크 도형 레이어 ─────────────────────────────────────────────
+   검토를 판단 대상 위에서 한다. 스펙: docs/superpowers/specs/2026-09-10-region-task-uiux-redesign-design.md §4
+   레이어 자체는 포인터를 받지 않는다 — 청크는 사각형이 아니라서 경계 상자에 이벤트를 걸면
+   구멍 난 자리의 클릭이 엉뚱한 청크로 간다. **셀만** 받는다. */
+.region-chunk-layer {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 6;
+}
+
+.region-chunk {
+  position: absolute;
+  pointer-events: none;
+}
+
+.region-chunk-cell {
+  position: absolute;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.region-chunk-edge {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* 포함: 인디고 채움 + 실선 외곽. 「이건 적용된다」 */
+.region-chunk.is-included > .region-chunk-cell { background: rgba(74, 87, 214, 0.16); }
+.region-chunk.is-included > .region-chunk-edge { background: var(--accent); }
+
+/* 제외: 채움 없음(원본 타일이 그대로 보인다) + 붉은 파선 외곽. 고스트가 이미 걷혀 있으므로
+   여기서 "버릴 칸"을 그려 보일 필요가 없다 — 화면이 곧 적용 결과다. */
+.region-chunk.is-excluded > .region-chunk-cell { background: rgba(198, 64, 61, 0.06); }
+.region-chunk.is-excluded > .region-chunk-edge {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--danger) 0 4px,
+    transparent 4px 8px
+  );
+}
+
+/* 하나를 지목하는 동안 나머지는 물러난다 — 팝오버 썸네일의 is-isolating 과 같은 어휘. */
+.region-chunk-layer.is-isolating > .region-chunk:not(.is-focus) { opacity: 0.45; }
+
+.region-chunk.is-focus > .region-chunk-edge { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.85); }
+.region-chunk.is-focus > .region-chunk-cell { background: rgba(74, 87, 214, 0.3); }
+
+.region-chunk:focus-visible { outline: none; }
+.region-chunk:focus-visible > .region-chunk-edge { box-shadow: var(--focus-ring); }
+
+/* 비활성 레이어 — 존재만 알린다. 클릭도 포커스도 활성 레이어의 것이다(스펙 §4.3). */
+.region-chunk.is-dim {
+  opacity: 0.18;
+}
+
+.region-chunk.is-dim > .region-chunk-cell {
+  cursor: default;
+  pointer-events: none;
+}
+
+/* 라벨은 도형 위쪽에 붙인다. 도형이 화면 상단에 닿아도 잘리지 않게 음수 top 대신 translate. */
+.region-chunk-label {
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+  color: var(--on-accent);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  left: 0;
+  line-height: var(--line-height-tight);
+  padding: 2px 7px;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transform: translateY(-115%);
+  white-space: nowrap;
+}
+
+.region-chunk.is-excluded > .region-chunk-label { background: var(--danger); }
+.region-chunk.is-dim > .region-chunk-label { display: none; }
+
+/* 지목하지 않은 청크의 라벨은 감춘다 — 청크가 여섯 개면 라벨 여섯 개가 서로를 덮는다. */
+.region-chunk-layer.is-isolating > .region-chunk:not(.is-focus) > .region-chunk-label { display: none; }
+
+/* 히트 영역 — 그림과 분리한다. 1칸 청크는 1x 줌에서 16×16px 이라(실측 2026-09-11: 22개 중
+   18개) 타일 크기 그대로 두면 누를 수 없다. 보이지 않고 넓기만 하다. */
+.region-chunk-hit {
+  background: transparent;
+  cursor: pointer;
+  /* 부모 `.region-chunk` 가 pointer-events:none 이므로 여기서 명시적으로 되살린다.
+     빼먹었을 때는 히트 테스트가 히트 영역을 아예 못 보고 그 아래 Phaser 캔버스로
+     떨어졌다(실측 2026-09-11: elementFromPoint → CANVAS). */
+  pointer-events: auto;
+  position: absolute;
+}
+
+.region-chunk.is-dim > .region-chunk-hit {
+  cursor: default;
+  pointer-events: none;
+}
+
+/* 청크 셀은 그림만 담당 — 포인터는 히트 영역이 받는다. */
+.region-chunk-cell { pointer-events: none; }
+
+/* 라벨은 기본으로 감춘다. 실측: 12×10 영역에서 청크 22개 → 라벨 22개가 서로를 덮고
+   같은 이름이 중복됐다("Tree(1칸) · 우상단" 두 개). 지목된 것만 보인다. */
+.region-chunk-label { display: none; }
+.region-chunk.is-focus > .region-chunk-label { display: block; }
+
+/* ── 캔버스 하단 검토 액션 바 ───────────────────────────────────────────────
+   결정을 판단 대상과 같은 화면에 둔다. 창 안 「적용/다시 만들기/버리기」는
+   is-canvas-review 에서 내려간다. */
+.region-review-bar {
+  align-items: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-pop);
+  display: flex;
+  gap: var(--space-2);
+  /* 좌표는 JS(positionBar)가 대상 영역 기준으로 넣는다 — 고정 하단 중앙은 플로팅 AI 패널에
+     가렸다(실측 2026-09-11). 초기값은 첫 배치 전 한 프레임용. */
+  left: 12px;
+  padding: var(--space-2);
+  position: absolute;
+  top: 12px;
+  white-space: nowrap;
+  z-index: 7;
+}
+
+.region-review-route {
+  color: var(--text-3);
+  font-size: var(--font-size-xs);
+  max-width: 220px;
+  overflow: hidden;
+  padding: 0 var(--space-1);
+  text-overflow: ellipsis;
+}
+
+.region-review-layers { display: flex; gap: var(--space-1); }
+
+.region-review-layer {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: var(--font-size-xs);
+  padding: 4px 9px;
+}
+
+.region-review-layer.is-active {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+  font-weight: var(--font-weight-bold);
+}
+
+.region-review-actions { display: flex; gap: var(--space-1); }
+
+.region-review-action {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  color: var(--text-1);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  padding: 5px 12px;
+}
+
+.region-review-action.is-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+  font-weight: var(--font-weight-bold);
+}
+
+.region-review-action.is-ghost { border-color: transparent; color: var(--text-3); }
+
+.region-review-action[disabled] {
+  color: var(--text-disabled);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
