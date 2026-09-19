@@ -576,10 +576,6 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-workbench .tileset-db-edit-area.autotile-compose {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto minmax(240px, 1fr) auto;
-  }
 }
 
 @media (max-width: 900px) {

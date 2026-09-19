@@ -52,6 +52,7 @@
 @import "./troops.part-2.css" layer(database);
 @import "./modern/tilesets.css" layer(database);
 @import "./tilesets.css" layer(database);
+@import "./tilesets-autotile.css" layer(database);
 @import "./tileset-ai-workspace.css" layer(database);
 @import "./tilesets-terrain.css" layer(database);
 @import "./desktop.css" layer(database);
@@ -101,6 +102,8 @@
 @import "./modern/utility-records.css" layer(database);
 @import "./modern/weather-animals.css" layer(database);
 @import "./studio-v2.css" layer(database);
+@import "./desktop-record-shell/16-view-toggle-final.css" layer(database);
+@import "./desktop-record-shell/17-database-footer-final.css" layer(database);
 @import "./spatial-shell.css" layer(database);
 @import "./spatial-spaces.css" layer(database);
 @import "./spatial-places.css" layer(database);
@@ -119,6 +122,8 @@
 @import "./modern/factions.css" layer(database);
 @import "./modern/village.css" layer(database);
 @import "./growth-tree.css" layer(database);
+@import "./quick-battle-modal.css" layer(database);
+@import "./region-reference.css" layer(database);
 
 @import "./asset-browser.css" layer(database);
 @import "./spatial-new-place.css" layer(database);

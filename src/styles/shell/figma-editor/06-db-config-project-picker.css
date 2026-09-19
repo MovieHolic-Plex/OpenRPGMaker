@@ -258,8 +258,7 @@
     }
   }
 
-  .map-context-menu-item,
-  .oprn-menu-command {
+  .map-context-menu-item {
     border-radius: 6px;
     color: var(--editor-text);
     column-gap: 14px;
@@ -267,4 +266,3 @@
     min-height: 39px;
     padding: 7px 12px;
   }
-
