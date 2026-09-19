@@ -16,7 +16,6 @@ import { commandPanel, enemyListPanel, syncEnemyListPanel, type BattleCommandSub
 import {
   applyBattleDirectorState,
   battleMessageWindow,
-  battleEventDirectorState,
   battleResultPanel,
   battleResultRewardRowCount,
   chargingDirectorState,
@@ -305,7 +304,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       return playCaptureCinematic(field, targetId, success);
     },
     onDirectorState(state) {
-      directorState = battleEventDirectorState(options.runtime.snapshot(), state);
+      directorState = state;
     },
     onSyncView() {
       syncView();
@@ -451,7 +450,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   function onKeydown(event: KeyboardEvent): void {
     if (destroyed || options.runtime.snapshot().eventChoice || options.runtime.snapshot().eventPause || event.isComposing) return;
-    if (event.repeat && (isBattleConfirmKey(event) || isBattleCancelKey(event))) { event.preventDefault(); return; }
+    if (shiftHeld && event.key !== "Shift") shiftCombined = true;
+    if (event.repeat && (isBattleConfirmKey(event) || isBattleCancelKey(event) || isAutoBattleKey(event.key) || event.key === "Shift")) { event.preventDefault(); return; }
     // 첫 사용자 입력에서 오디오 컨텍스트를 깨운다(autoplay 정책).
     unlockBattleSfx();
     const snapshot = options.runtime.snapshot();
@@ -496,7 +496,6 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       }
       return;
     }
-    if (shiftHeld) shiftCombined = true;
     if (isBattleCancelKey(event)) {
       event.preventDefault();
       handleCancel(snapshot);
@@ -855,7 +854,6 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       directorState = resultDirectorState(snapshot, directorState);
     } else if (!sequenceBusy) {
       directorState = nextDirectorState(snapshot, directorState);
-      directorState = battleEventDirectorState(snapshot, directorState);
     }
     const fieldPresentation = {
       ledger: presentation,

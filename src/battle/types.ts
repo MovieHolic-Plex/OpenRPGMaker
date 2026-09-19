@@ -439,6 +439,8 @@ export interface BattleEventStateSnapshot {
   /** 이 전투가 timer 커맨드로 실제 쓴 키만. 이게 없으면 write-back 이 전투 중 맵 이
    *  줄여 둔 타이머를 진입 시점 값으로 되돌려 만료를 취소한다(실측: 세션 1초 / 런타임 0초). */
   readonly timerWrites?: Readonly<Record<string, number>>;
+  /** Final set/start/stop activity for explicitly written timers only. */
+  readonly timerActivityWrites?: Readonly<Record<string, boolean>>;
   // 전투 중 changeEquipment 가 갱신한 장비 스냅샷 — 세션 actorEquipment 로 되돌려 쓴다.
   readonly actorEquipment?: Readonly<Record<string, ActorInitialEquipment>>;
   // 전투 중 promoteActor 가 갱신한 직업 오버라이드 — 세션 classOverrides 로 되돌려 쓴다

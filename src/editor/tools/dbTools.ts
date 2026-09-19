@@ -882,6 +882,10 @@ const upsertTroop: ToolDefinition = {
       );
     }
     const merged = mergeRecord(draft.database.troops, args.troop, "troop", troopRecordSchema, { id: "troop_slime", name: "슬라임 무리", enemyIds: ["enemy_slime"] }, ["name", "enemyIds"]);
+    const patch = args.troop as Partial<TroopRecord>;
+    // An explicit legacy roster replaces the roster. Do not let inherited members
+    // silently override it; unrelated patches still preserve authored placements.
+    if (patch.enemyIds !== undefined && patch.members === undefined) delete merged.members;
     const record = normalizeTroopRecord(merged as Partial<TroopRecord> & Pick<TroopRecord, "id" | "name">);
     const memberCount = record.members?.length ?? record.enemyIds.length;
     if (memberCount === 0) throw new ToolError("트룹에는 최소 1마리의 적(enemyIds/members)이 필요합니다.", { code: "troop-empty" });

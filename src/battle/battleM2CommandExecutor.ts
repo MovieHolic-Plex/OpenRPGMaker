@@ -29,6 +29,10 @@ export type M2BattleCommandExecution = {
 export function executeM2BattleCommand(command: M2Command, options: M2BattleCommandExecutorOptions): M2BattleCommandExecution {
   const parsed = parseM2BattleCommand(command);
   if (!parsed) return { handled: false, forceEscape: false };
+  if ((parsed.kind === "changeEnemyHp" || parsed.kind === "changeEnemyMp" || parsed.kind === "changeEnemyState")
+    && resolveEnemyTargets(options.enemies, parsed.target).length === 0) {
+    return { handled: false, forceEscape: false };
+  }
   switch (parsed.kind) {
     case "changeEnemyHp":
       for (const enemy of resolveEnemyTargets(options.enemies, parsed.target)) {
@@ -95,8 +99,7 @@ function resolveEnemyTargets(enemies: readonly MutableBattler[], target: string)
   if (target === "all") return enemies;
   const exact = enemies.find((enemy) => enemy.id === target || enemy.recordId === target);
   if (exact) return [exact];
-  const firstAlive = enemies.find((enemy) => enemy.hp > 0);
-  return firstAlive ? [firstAlive] : [];
+  return [];
 }
 
 function resolveActorTarget(
