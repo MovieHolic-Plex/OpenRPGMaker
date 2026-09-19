@@ -519,6 +519,10 @@ function recordList(
     // 로 선언돼 있어서 `db-list db-ws-list-empty` 만으로는 정렬이 적용되지 않는다.
     return el("div", {
       class: "db-list db-ws-list db-ws-list-empty",
+      // role=status 는 아래 도달 불가였던 블록에만 있었다 — 살아 있는 경로로 옮긴다.
+      // 목록이 0행이 된 이유는 보조기술에도 알려야 한다.
+      attrs: { role: "status" },
+      dataset: { testid: "db-list-empty" },
       children: [
         filtered
           ? emptyState({
@@ -548,29 +552,6 @@ function recordList(
             compact: true,
             testid: "db-record-list-empty",
           }),
-      ],
-    });
-  }
-
-  // 결과가 없으면 빈 흰 박스를 남기지 않는다 — 주인공 탭(액터 스튜디오)만 안내 문구가 있고
-  // 직업·스킬·아이템·장비는 테두리만 있는 빈 영역이라 "검색이 걸린 것"인지 "데이터가 없는 것"인지
-  // 구별할 수 없었다(실측). 공용 셸에서 한 번만 처리한다.
-  if (visible.length === 0) {
-    const label = COLLECTION_LABELS[collection];
-    const reason = searchQuery
-      ? `검색 조건에 맞는 ${label}이 없습니다.`
-      : categoryFilter !== "all"
-        ? `이 분류에 해당하는 ${label}이 없습니다.`
-        : `${label} 레코드가 없습니다. 아래 '+ 추가'로 만들 수 있습니다.`;
-    return el("div", {
-      class: "db-list db-list-empty",
-      attrs: { role: "status" },
-      dataset: { testid: "db-list-empty" },
-      children: [
-        el("span", { class: "db-list-empty-title", text: reason }),
-        ...(searchQuery || categoryFilter !== "all"
-          ? [el("span", { class: "db-list-empty-hint", text: "검색어나 분류를 비우면 전체가 보입니다." })]
-          : []),
       ],
     });
   }

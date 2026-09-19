@@ -31,9 +31,11 @@ const STAT_COLLECTIONS: readonly { readonly collection: DatabaseCollection; read
   { collection: "actors", label: "주인공" },
   { collection: "classes", label: "직업" },
   { collection: "skills", label: "스킬" },
-  { collection: "items", label: "아이템" },
+  // 라벨은 도착 탭의 레일 라벨과 같은 말을 쓴다 — 칩과 탭 이름이 갈리면 "눌렀더니
+  // 다른 데로 갔다"로 읽힌다(database.ts 의 tabs 표가 정본).
+  { collection: "items", label: "아이템·장비" },
   { collection: "equipment", label: "장비" },
-  { collection: "enemies", label: "몬스터" },
+  { collection: "enemies", label: "전투 몬스터" },
   { collection: "troops", label: "적 그룹" },
   { collection: "states", label: "상태" },
   { collection: "battleAnimations", label: "전투 애니메이션" },
@@ -91,7 +93,7 @@ export function renderOverviewTab(host: HTMLElement, _rerender: () => void): voi
                     children: [
                       overviewIconChip("세계", "tilesets"),
                       overviewIconChip("이야기", "commonEvents"),
-                      overviewIconChip("등장인물", "characters"),
+                      overviewIconChip("주민 관계", "characters"),
                       overviewIconChip("시스템", "system"),
                       overviewIconChip("시작 지점", "overview"),
                     ],

@@ -568,9 +568,11 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-row-delete:hover,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-row-delete.confirming {
-  background: rgba(220, 38, 38, 0.1);
-  border-color: var(--db-studio-danger, var(--db-studio-danger));
-  color: var(--db-studio-danger, var(--db-studio-danger));
+  /* 배경만 Tailwind red-600 틴트라 한 요소 안에서 빨강이 두 계열로 갈렸다
+     (테두리·글자는 스튜디오 danger #B91C1C). 토큰 하나에서 파생시킨다. */
+  background: color-mix(in srgb, var(--db-studio-danger) 10%, transparent);
+  border-color: var(--db-studio-danger);
+  color: var(--db-studio-danger);
   opacity: 1;
 }
 
@@ -674,13 +676,13 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-notice-warn {
-  background: rgba(180, 83, 9, 0.08);
-  border-color: rgba(180, 83, 9, 0.24);
+  background: color-mix(in srgb, var(--db-studio-warning) 8%, transparent);
+  border-color: color-mix(in srgb, var(--db-studio-warning) 24%, transparent);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-notice-bad {
-  background: rgba(220, 38, 38, 0.08);
-  border-color: rgba(220, 38, 38, 0.24);
+  background: color-mix(in srgb, var(--db-studio-danger) 8%, transparent);
+  border-color: color-mix(in srgb, var(--db-studio-danger) 24%, transparent);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-notice-text {

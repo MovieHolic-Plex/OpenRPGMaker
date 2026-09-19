@@ -110,32 +110,6 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   6. 검색 결과 없음 — 주인공 탭에만 문구가 있었고 나머지 4탭은 빈 흰 박스였다.
-   렌더러가 `.db-list-empty` 를 심으므로 여기서 보이게만 다듬는다.
-   ───────────────────────────────────────────────────────────────────────── */
-.database-modal-body .oprn-record-list-pane .db-list-empty {
-  align-content: center;
-  color: var(--text-2);
-  display: grid;
-  font: 400 12px/18px var(--font-ui);
-  gap: 4px;
-  justify-items: center;
-  min-height: 120px;
-  padding: 16px 12px;
-  text-align: center;
-}
-
-.database-modal-body .db-list-empty-title {
-  color: var(--text-1);
-  font-weight: 600;
-}
-
-.database-modal-body .db-list-empty-hint {
-  color: var(--text-2);
-  font-size: 11px;
-}
-
-/* ─────────────────────────────────────────────────────────────────────────
    6-b. 알림 위치 — 데이터베이스 모달이 열려 있을 때
    `.toast-stack` 은 `bottom: var(--space-4)` 로 **뷰포트 최하단**에 붙는다. 실측(1600×1000):
    토스트가 y=956 에 뜨는데 모달 하단은 y=950 이라 **모달 밖 6px 아래**, 사용자가 누른
