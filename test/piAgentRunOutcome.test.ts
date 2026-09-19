@@ -135,6 +135,17 @@ beforeEach(() => {
 });
 
 describe("Pi 경로 실행 결과 4축", () => {
+  it("passes initial schema candidates into the companion request", async () => {
+    const { surface } = harness();
+    const initialToolNames = ["find_tools", "get_project_summary", "set_party"];
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "파티를 바꿔줘" }, surface(), {
+      routineEdit: true, initialToolNames,
+    });
+    expect(h.requests).toHaveLength(1);
+    expect(h.requests[0]?.initialToolNames).toEqual(initialToolNames);
+    expect(h.requests[0]?.toolNames).toBeUndefined();
+  });
+
   it("적용 성공: response-final · 목표 미평가 · 적용됨 — 마지막 호출이 유효 outcomes", async () => {
     h.results.push({ project: projectWith("바뀜"), toolErrors: 0 });
     const { outcomeCalls, surface } = harness();

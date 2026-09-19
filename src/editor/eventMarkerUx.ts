@@ -293,7 +293,12 @@ export function shouldOfferEventLayerSwitch(input: {
   readonly clickCount: number;
   readonly hasEvent: boolean;
 }): boolean {
-  return input.activeLayer !== "event" && input.clickCount >= 2 && input.hasEvent;
+  void input;
+  // 2026-09-19: 바닥/상위 레이어에서 이벤트 칸을 누르면 타일 작업이 가로채였다.
+  // pointerdown 과 페인트가 pointerClickCount 를 같은 칸에서 두 번 불러 한 번의
+  // 클릭이 더블클릭으로 둔갑했고, 더블클릭 전환(D13)은 타일을 칠하는 중에도
+  // 이벤트 편집기를 열었다. 이벤트 선택·편집은 이벤트 레이어에서만 한다.
+  return false;
 }
 
 /** 더블클릭은 편집 의도가 명확하므로 확인 모달 없이 바로 전환하고, 무슨 일이 있었는지 토스트로 알린다. */

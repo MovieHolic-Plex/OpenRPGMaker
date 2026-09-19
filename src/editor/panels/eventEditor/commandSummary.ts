@@ -529,7 +529,7 @@ function weatherLabel(kind: Extract<Command, { kind: "setWeather" }>["weather"])
 }
 
 function tileLayerSummary(layer: "lower" | "upper"): string {
-  return layer === "upper" ? "덧그림" : "바닥";
+  return layer === "upper" ? "상위" : "바닥";
 }
 
 function tileValueCaption(tile: number): string {
@@ -965,7 +965,7 @@ function page3M2SummaryParts(
     }
     case "Change Tile": {
       const mapId = str("mapId");
-      const layer = str("layer") === "upper" ? "덧그림" : "바닥";
+      const layer = str("layer") === "upper" ? "상위" : "바닥";
       const tileNo = Number(str("tile") || str("value") || "0");
       return commandLine(
         labelOf("지형 변경"),

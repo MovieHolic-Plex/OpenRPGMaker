@@ -33,7 +33,8 @@ async function addActor(page: Page): Promise<string> {
 
 // BUG (Critical, see report): at the default desktop viewport (>=901px), the actor sheet's
 // center column (능력치 곡선 / parameter curves + 경험치 곡선 / exp curve) and the inspector
-// jump-nav are both `display:none` via src/styles/database/actors.css:616-618 and :782-784.
+// jump-nav are both `display:none` via src/styles/database/actors.part-3.css (center-stack
+// and inspector-tab rules).
 // There is no UI path to reach them at that width. We drop just under the 901px breakpoint
 // here so this spec can actually exercise those dialogs (they work correctly once visible —
 // this is a pure CSS regression, not a functional break in the dialog logic).
@@ -66,7 +67,7 @@ test.describe("QA — actors tab", () => {
     console.log("ACTOR PANELS:", panelIds.join(", "));
 
     // BUG: at >=901px (default desktop viewport) the inspector jump-nav is CSS-hidden
-    // (src/styles/database/actors.css:782-784, inside the `@media (min-width: 901px)` block,
+    // (src/styles/database/actors.part-3.css, inside the `@media (min-width: 901px)` block,
     // a duplicate `.actor-inspector-tabs` selector sets display:none and wins the cascade
     // over the base display:flex rule at line 366). Documented in the report; not exercised
     // as a working interaction here since it is not actually clickable at this viewport.

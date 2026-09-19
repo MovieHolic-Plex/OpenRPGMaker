@@ -234,3 +234,8 @@ it("full-adventure contracts come from declared intent and cannot affect questio
   expect(parseIntentDeclaration(JSON.stringify({ mode: "question", adventure }), FACTS).intent?.adventure).toBeUndefined();
   expect(parseIntentDeclaration('{"mode":"modify"}', { ...FACTS, userText: "마을 NPC 추가" }).intent?.adventure).toBeUndefined();
 });
+
+it("preserves the foundation lanes for a full RPG kickoff", () => {
+  const adventure = { village: true, dungeon: true, party: true, battle: true, world: true, characters: true, appearance: true };
+  expect(parseIntentDeclaration(JSON.stringify({ mode: "create", adventure }), FACTS).intent?.adventure).toEqual(adventure);
+});

@@ -153,7 +153,7 @@ afterEach(() => {
 });
 
 describe("우클릭 영역 드래그 중 좌측 독 재구축", () => {
-  it("40 프레임 · 8 단계 드래그가 재구축 1회로 접힌다 (예전: 40회)", async () => {
+  it("선택만 바뀌는 드래그는 좌측 독을 다시 짓지 않는다 (예전: 접혀도 1회)", async () => {
     const { renderEditor } = await import("@/editor/panels/editor");
     const { selectTileRegion } = await import("@/editor/mapClipboard");
     const main = document.createElement("main");
@@ -176,9 +176,8 @@ describe("우클릭 영역 드래그 중 좌측 독 재구축", () => {
     expect(paletteRenders, "드래그 중 재구축").toBe(0);
 
     await flush();
-    // 40 프레임 · 8개의 서로 다른 사각형이 **재구축 1회**가 된다.
-    // 고치기 전: 값 비교가 없어 40회 통지, 코얼레싱이 없어 40회 재구축.
-    expect(paletteRenders, "드래그 종료 후 재구축").toBe(1);
+    // 선택·붙여넣기 고스트는 캔버스 오버레이만 바꾼다. 좌측 독은 손대지 않는다.
+    expect(paletteRenders, "드래그 종료 후 재구축").toBe(0);
   }, 120_000);
 
   it("같은 사각형만 다시 넣으면 재구축이 아예 일어나지 않는다", async () => {

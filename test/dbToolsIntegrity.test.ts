@@ -56,6 +56,50 @@ describe("DB write tools", () => {
     expect(ctx.project.database.actors.find((actor) => actor.id === "actor_new")?.maxLevel).toBe(99);
   });
 
+  it("upsert_actor can select a shared appearance and charset slot", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    ctx.project.database.characterAppearances = [{
+      id: "appearance_may",
+      name: "메이 외형",
+      description: "",
+      charset: { resourceId: "easyrpg-charset-actor2", characterIndex: 3 },
+      face: { resourceId: "easyrpg-faceset-actor2-00" },
+    }];
+    const actor = runTool(ctx, "upsert_actor", {
+      actor: {
+        id: ctx.project.database.actors[0]!.id,
+        appearanceId: "appearance_may",
+        characterIndex: 3,
+      },
+    }, { dryRun: false });
+    expect(actor.ok, JSON.stringify(actor.issues)).toBe(true);
+    expect(ctx.project.database.actors[0]).toMatchObject({ appearanceId: "appearance_may", characterIndex: 3 });
+
+    const rejected = runTool(ctx, "upsert_actor", {
+      actor: { id: ctx.project.database.actors[0]!.id, appearanceId: "missing" },
+    }, { dryRun: false });
+    expect(rejected.ok).toBe(false);
+    expect(rejected.issues?.[0]?.code).toBe("appearance-not-found");
+  });
+
+  it("set_party separates authoritative start party from current session party", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    const ids = ctx.project.database.actors.slice(0, 2).map((actor) => actor.id);
+    const start = runTool(ctx, "set_party", { scope: "start", actorIds: ids }, { dryRun: false });
+    expect(start.ok, JSON.stringify(start.issues)).toBe(true);
+    expect(ctx.project.system.startActorIds).toEqual(ids);
+    expect(ctx.project.session.partyActorIds).toEqual(ids);
+
+    const session = runTool(ctx, "set_party", { scope: "session", actorIds: [ids[0]] }, { dryRun: false });
+    expect(session.ok, JSON.stringify(session.issues)).toBe(true);
+    expect(ctx.project.system.startActorIds).toEqual(ids);
+    expect(ctx.project.session.partyActorIds).toEqual([ids[0]]);
+
+    const duplicate = runTool(ctx, "set_party", { scope: "session", actorIds: [ids[0], ids[0]] }, { dryRun: false });
+    expect(duplicate.ok).toBe(false);
+    expect(duplicate.issues?.[0]?.code).toBe("duplicate-actor");
+  });
+
   it("monsterResourceId는 DB 툴 실행 시점에 검색어를 리소스로 해석하거나 invalid-args로 거부한다", () => {
     const ctx: ToolContext = { project: createBlankProject() };
     const enemy = runTool(ctx, "upsert_enemy", {

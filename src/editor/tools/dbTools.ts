@@ -528,6 +528,7 @@ const cropRecordSchema = objectSchema({
 
 const actorRecordSchema = objectSchema({
   id: stringSchema(),
+  appearanceId: stringSchema("공유 캐릭터 외형 레코드 id"),
   name: stringSchema(),
   nickname: stringSchema(),
   classId: stringSchema(),
@@ -535,6 +536,7 @@ const actorRecordSchema = objectSchema({
   maxLevel: integerSchema(),
   faceResourceId: stringSchema(),
   characterResourceId: stringSchema(),
+  characterIndex: { type: "integer", minimum: 0, maximum: 7, description: "캐릭터셋 안의 칸(0~7). 0은 기본값" },
   characterTransparent: booleanSchema(),
   battleCharacterResourceId: stringSchema(),
   critical: objectSchema({ enabled: booleanSchema(), chanceDenominator: integerSchema() }),
@@ -1115,6 +1117,11 @@ const upsertActor: ToolDefinition = {
   parameters: parametersForRecord("actor", actorRecordSchema, { id: "actor_hero", name: "주인공", classId: "class_hero", maxLevel: 99 }),
   run(draft, args): ToolExecResult {
     const merged = mergeRecord(draft.database.actors, args.actor, "actor", actorRecordSchema, { id: "actor_hero", name: "주인공", classId: "class_hero" }, ["name", "classId"]);
+    const actorPatch = args.actor as Record<string, unknown>;
+    if (typeof actorPatch.appearanceId === "string"
+      && !draft.database.characterAppearances?.some((appearance) => appearance.id === actorPatch.appearanceId)) {
+      throw new ToolError(`공유 캐릭터 외형을 찾을 수 없습니다: ${actorPatch.appearanceId}`, { code: "appearance-not-found" });
+    }
     const record = normalizeActorRecord(merged as Parameters<typeof normalizeActorRecord>[0]);
     const warnings: string[] = [];
     dropUnknownElementRates(draft, record, "actor", warnings);

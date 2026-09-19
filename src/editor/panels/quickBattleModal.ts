@@ -32,57 +32,15 @@ export function openQuickBattleModal(troopId: string): void {
   if (!troop) return;
 
   const overlay = el("div", { class: "quick-battle-modal-overlay", dataset: { testid: "quick-battle-modal" } });
-  overlay.style.cssText = `
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.85);
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--runtime-pixel-font, sans-serif);
-  `;
 
   const modalHeader = el("div", { class: "quick-battle-modal-header" });
-  modalHeader.style.cssText = `
-    width: 640px;
-    background: #4A57D6;
-    border: 2px solid #E7E0D0;
-    border-bottom: 0;
-    color: #fff;
-    padding: 6px 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 12px;
-    box-sizing: border-box;
-  `;
 
   const title = el("span", { text: `⚔️ 퀵 전투 시뮬레이션: [${troop.name}]` });
-  const closeBtn = el("button", { text: "✕ 닫기 (ESC)", dataset: { testid: "quick-battle-close-btn" } });
-  closeBtn.style.cssText = `
-    background: #C6403D;
-    border: 1px solid #fff;
-    color: #fff;
-    font-size: 10px;
-    padding: 2px 8px;
-    cursor: pointer;
-    border-radius: 2px;
-  `;
+  const closeBtn = el("button", { class: "quick-battle-modal-close", text: "✕ 닫기 (ESC)", dataset: { testid: "quick-battle-close-btn" } });
 
   modalHeader.append(title, closeBtn);
 
   const stageHost = el("div", { class: "quick-battle-stage-host" });
-  stageHost.style.cssText = `
-    width: 640px;
-    height: 480px;
-    position: relative;
-    background: #000;
-    border: 2px solid #E7E0D0;
-    box-sizing: border-box;
-    overflow: hidden;
-  `;
 
   overlay.append(modalHeader, stageHost);
   document.body.append(overlay);

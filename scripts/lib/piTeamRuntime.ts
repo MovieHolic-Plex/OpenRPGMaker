@@ -199,7 +199,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       try {
         const done = await runAgent(
           {
-            ...request, ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
+            ...request, initialToolNames: undefined, ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
             systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), teamCommunicationPrompt(agentId)], maxTurns: member.maxTurns,
             ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
             ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
@@ -261,7 +261,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     const promise = (async (): Promise<AgentOutcome> => {
       try {
         const done = await runAgent({
-          ...request, ...request.roleModels?.deep, mode: "single", project: snapshot,
+          ...request, initialToolNames: undefined, ...request.roleModels?.deep, mode: "single", project: snapshot,
           mapIds: mode === "project" ? [] : request.mapIds, task, readOnly: mode === "read", maxTurns: member.maxTurns,
           ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
           ...(member.toolDomains.length ? { toolDomains: member.toolDomains } : {}),
@@ -341,7 +341,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     try {
       done = await runAgent(
         {
-          ...request, ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
+          ...request, initialToolNames: undefined, ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
           systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), teamCommunicationPrompt(agentId)], maxTurns: member.maxTurns,
           ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
           ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
@@ -454,7 +454,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let orchDone: PiAgentDoneEvent;
   try {
     orchDone = await runAgent(
-      { ...request, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: [...orch.systemPrompt(base, request.mapIds, request.task, team, request.currentMapId), teamCommunicationPrompt(orchestratorId)], maxTurns: team.workBudget ?? orch.maxTurns },
+      { ...request, initialToolNames: undefined, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: [...orch.systemPrompt(base, request.mapIds, request.task, team, request.currentMapId), teamCommunicationPrompt(orchestratorId)], maxTurns: team.workBudget ?? orch.maxTurns },
       { ...child(orchestratorId), toolNames: orch.toolNames, extraTools: orchestratorTools },
     );
   } finally { mailbox.close(orchestratorId); }

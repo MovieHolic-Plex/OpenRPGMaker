@@ -54,7 +54,6 @@ body:has(.database-modal-backdrop) .right-panel {
   color: var(--text-2);
 }
 .ai-assistant-status[data-status-tone="running"] {
-  animation: ai-status-pulse 1.1s ease-in-out infinite;
   background: var(--warning-muted);
   border-color: color-mix(in srgb, var(--warning) 55%, transparent);
   color: var(--warning);
@@ -73,15 +72,6 @@ body:has(.database-modal-backdrop) .right-panel {
   background: var(--success-muted);
   border-color: color-mix(in srgb, var(--success) 55%, transparent);
   color: var(--success);
-}
-@keyframes ai-status-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.72;
-  }
 }
 .ai-assistant-body {
   display: grid;
@@ -176,4 +166,3 @@ body:has(.database-modal-backdrop) .right-panel {
 .ai-preview-approve:not(:disabled):hover {
   background: var(--accent-hover);
 }
-

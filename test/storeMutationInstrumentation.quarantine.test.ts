@@ -1,14 +1,14 @@
 // store mutation 초크포인트 구조 가드.
 //
 // `src/project/store.ts` 의 관측은 "모든 상태 변경이 `markLocalMutation` 을 지난다" 는
-// 성질 하나에 전부 얹혀 있다. 그 성질이 성립하는 동안은 275개 mutation 호출부가
+// 성질 하나에 전부 얹혀 있다. 그 성질이 성립하는 동안은 모든 mutation 호출부가
 // 외부 파일 수정 없이 계측된다 — 반대로 새 메서드 하나가 `this.current` 를 직접 갈아치우고
 // 초크포인트를 건너뛰면, 그 경로의 편집은 **조용히** 기록에서 사라진다.
 // 조용한 유실은 관측 도구에서 가장 나쁜 실패 양식이라(있다고 믿고 안 보게 된다)
 // 이 파일이 성질 자체를 고정한다.
 //
 // 두 층으로 본다:
-//   1. 행위 — 5개 mutation 메서드를 실제로 불러 기록이 남는지.
+//   1. 행위 — 6개 mutation 메서드를 실제로 불러 기록이 남는지.
 //   2. 구조 — `this.current = ` 대입 지점의 소속 메서드가 알려진 명단 안에 있는지.
 //      새 메서드가 늘면 여기서 걸리고, 그때 "초크포인트로 보낼 것이냐" 를 판단하게 된다.
 
@@ -62,6 +62,7 @@ describe("구조: 상태 변경 지점이 초크포인트 밖으로 새지 않�
       "restoreEventDraftFromVault", // origin "system"
       "update", // 244개 호출부의 진입점
       "updateMap", // 타일/이벤트 스코프
+      "updateMapTiles", // 대형 맵 타일 페인트 전용 경로
       // — 로드/부팅: 사용자 편집이 아니라서 행위 로그 대상이 아니다 —
       "constructor", // 부팅 시 빈 프로젝트
       "adoptProject", // 수신한 프로젝트 채택(+금고 복원)
@@ -94,7 +95,7 @@ describe("구조: 상태 변경 지점이 초크포인트 밖으로 새지 않�
   });
 });
 
-describe("행위: 5개 mutation 메서드가 전부 기록을 남긴다", () => {
+describe("행위: 6개 mutation 메서드가 전부 기록을 남긴다", () => {
   it("update", () => {
     store.update((project) => {
       project.meta.title = "제목";
@@ -110,6 +111,17 @@ describe("행위: 5개 mutation 메서드가 전부 기록을 남긴다", () => 
     const entry = getEditActivityEntries()[0]!;
     expect(entry.scope).toBe("map");
     expect(entry.mapId).toBe(mapId);
+  });
+
+  it("updateMapTiles", () => {
+    const mapId = store.getCurrent().startMapId;
+    store.updateMapTiles(mapId, (map) => {
+      map.lowerTiles[0] = 7;
+    }, { label: "빠른 타일 편집", cells: [{ x: 0, y: 0, layer: "lower" }] });
+    const entry = getEditActivityEntries()[0]!;
+    expect(entry.scope).toBe("map");
+    expect(entry.mapId).toBe(mapId);
+    expect(entry.label).toBe("빠른 타일 편집");
   });
 
   it("replace", () => {

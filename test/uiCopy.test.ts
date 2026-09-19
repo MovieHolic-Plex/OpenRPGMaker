@@ -14,7 +14,7 @@ describe("uiCopy", () => {
     expect(uiLabel("tilesetMissing", "plain")).toBe("그림이 없습니다");
     expect(uiLabel("tilesetMissing", "plain")).not.toBe("타일셋이 없습니다");
     expect(uiLabel("layerLower", "plain")).toBe("바닥");
-    expect(uiLabel("layerUpper", "plain")).toBe("덧그림");
+    expect(uiLabel("layerUpper", "plain")).toBe("상위");
     expect(uiLabel("layerEvent", "plain")).toBe("이벤트");
   });
 
@@ -34,13 +34,13 @@ describe("uiCopy", () => {
   it("레이어 이름에 RM 유래 직역이 없다", () => {
     for (const style of ["plain", "technical"] as const) {
       expect(uiLabel("layerLower", style)).not.toBe("하위");
-      expect(uiLabel("layerUpper", style)).not.toBe("상위");
+      expect(uiLabel("layerUpper", style)).not.toBe("덧그림");
     }
   });
 
   // "장식"은 타일 **분류** 이름(팔레트 필터 칩 · tileMeta role "decoration")과 겹친다.
   // 레이어에 같은 말을 쓰면 한 화면에서 두 뜻이 부딪힌다.
-  it("덧그림 레이어 이름이 타일 분류명 '장식'과 겹치지 않는다", () => {
+  it("상위 레이어 이름이 타일 분류명 '장식'과 겹치지 않는다", () => {
     expect(uiLabel("layerUpper", "plain")).not.toBe("장식");
   });
 

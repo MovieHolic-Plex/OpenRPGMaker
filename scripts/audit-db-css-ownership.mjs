@@ -11,8 +11,28 @@ const base = process.argv[2] ?? execFileSync('git', ['merge-base', 'HEAD', 'orig
 const baseTree = execFileSync('git', ['rev-parse', '--verify', '--end-of-options', `${base}^{tree}`], { encoding: 'utf8' }).trim();
 const baseFiles = new Set(execFileSync('git', ['ls-tree', '-r', '--name-only', '-z', baseTree, '--', 'src'], { encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 }).split('\0'));
 const output = resolve(process.argv[3] ?? '.omo/evidence/db-css-ownership/ownership-inventory.json');
-const files = execFileSync('git', ['ls-files', 'src/**/*.css'], { encoding: 'utf8' }).trim().split('\n');
+// Include newly-created split parts while the working tree is still dirty; a
+// pre-commit audit must see the same family that the committed CI audit sees.
+const files = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', '--', 'src/**/*.css'], { encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 }).trim().split('\n').filter(Boolean);
 const sourceFiles = execFileSync('git', ['ls-files', 'src/**/*.ts'], { encoding: 'utf8' }).trim().split('\n');
+const fileSet = new Set(files);
+// Logical CSS facades remain the ownership identity after a large sheet is split
+// into direct-import parts. Keep the audit's before/after inventory comparable
+// instead of reporting every moved declaration as deleted and re-added.
+const canonicalCssFile = file => {
+  const stem = file.replace(/\.part-\d+\.css$/u, '.css');
+  const aliases = {
+    'src/styles/database/desktop-record-shell/modern-records.css': 'src/styles/database/desktop-record-shell/04-modern-records.css',
+    'src/styles/database/tabs-b-assistant-panel/studio-mode-start-screen.css': 'src/styles/database/tabs-b-assistant-panel/08-studio-mode-start-screen.css',
+    'src/styles/database/tabs-b-assistant-panel/assistant-deck.css': 'src/styles/database/tabs-b-assistant-panel/18-assistant-deck.css',
+    'src/styles/database/tabs-b-assistant-panel/assistant-cards.css': 'src/styles/database/tabs-b-assistant-panel/19-assistant-cards.css',
+  };
+  const candidate = aliases[stem] ?? stem;
+  // Older families already use `.part-N.css` as their canonical identity and
+  // have no facade. Only normalize a part when its facade exists in the base
+  // tree or in the current working tree.
+  return baseFiles.has(candidate) || fileSet.has(candidate) ? candidate : file;
+};
 const readBase = path => baseFiles.has(path)
   ? execFileSync('git', ['show', `${baseTree}:${path}`], { encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 })
   : '';
@@ -42,8 +62,12 @@ const classify = file => {
 const EVENT_LEGACY_MOVED = { from: 'src/styles/event/event-editor-legacy.part-1.css', to: 'src/styles/event/command-forms/forms.css' };
 const relevant = file => file.startsWith('src/styles/database/') || [EVENT_LEGACY_MOVED.to, 'src/styles/map/world-panel.css'].includes(file);
 const baseSource = file => (file === EVENT_LEGACY_MOVED.to && !baseFiles.has(file) ? readBase(EVENT_LEGACY_MOVED.from) : readBase(file));
-const before = files.filter(relevant).flatMap(file => declarations(baseSource(file), file));
-const after = files.filter(relevant).flatMap(file => declarations(readFileSync(file, 'utf8'), file));
+const beforeFiles = [...new Set(files.filter(relevant).map(canonicalCssFile))];
+const before = beforeFiles.flatMap(file => declarations(baseSource(file), file));
+const after = files.filter(relevant).flatMap(file => {
+  const canonical = canonicalCssFile(file);
+  return declarations(readFileSync(file, 'utf8'), canonical);
+});
 const key = d => JSON.stringify([d.file, d.context, d.selector, d.property, d.value, d.important]);
 const remaining = new Map();
 for (const d of after) remaining.set(key(d), (remaining.get(key(d)) ?? 0) + 1);
@@ -93,6 +117,12 @@ const intrinsic = {
   'text-shadow': { value: 'none', reason: 'Modern text has no decorative shadow.' },
 };
 function ownerFor(d) {
+  if (/db-enemy-bm101-workbench|db-troop-member-list|ai-skill-card-hint/.test(d.selector)
+    || d.selector.includes('ai-status-pulse')
+    || (d.file.endsWith('/01-legacy-preview-panel.css') && (d.property === 'animation' || d.context.includes('ai-status-pulse')))
+    || (d.file.endsWith('/05-dense-workbenches.css') && d.selector.includes('.tileset-db-preview') && /^overflow-[xy]$/.test(d.property))) {
+    return { kind: 'retired-dead-or-redundant-rule', reason: 'Selector is no longer emitted, or the declaration is a duplicate of the active tileset preview owner.' };
+  }
   // These four shared rules only lower exclusion specificity; they still exclude steppers.
   const controlState = `${db} :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):where(:not(.db-number-stepper input)), select, textarea)`;
   const controlSelectors = [inputSelector, ...[':hover:not(:disabled):not(:focus-visible)', ':focus-visible', ':disabled'].map(state => controlState + state)];

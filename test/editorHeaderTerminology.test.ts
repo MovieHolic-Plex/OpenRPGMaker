@@ -140,7 +140,7 @@ function namesOf(topbar: HTMLElement, testIds: readonly string[]): Set<string> {
   return names;
 }
 
-/** 폐기 문자열. 레이어 의미의 "하위"/"상위" 와 `자료` 단독형은 패턴으로 잡는다. */
+/** 폐기 문자열. 레이어 의미의 "하위"/"덧그림" 과 `자료` 단독형은 패턴으로 잡는다. */
 const RETIRED_PATTERNS: readonly { readonly pattern: RegExp; readonly why: string }[] = [
   { pattern: /자료 보관함/u, why: "보관함 정본은 소재/리소스 보관함이다" },
   { pattern: /자료(?!집)/u, why: "databaseShort 의 `자료` 단독형은 폐기됐다" },
@@ -149,7 +149,7 @@ const RETIRED_PATTERNS: readonly { readonly pattern: RegExp; readonly why: strin
   { pattern: /맵\/이벤트/u, why: "구분자는 가운뎃점 하나다" },
   { pattern: /검색/u, why: "이 표면의 이름은 찾기다" },
   { pattern: /하위/u, why: "레이어 이름은 바닥이다" },
-  { pattern: /상위/u, why: "레이어 이름은 덧그림이다" },
+  { pattern: /덧그림/u, why: "레이어 이름은 상위다" },
 ];
 
 type HeaderMode = "standard" | "expert";

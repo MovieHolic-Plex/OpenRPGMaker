@@ -5077,7 +5077,7 @@
    "event-command-edit-summary": "div"
   },
   "texts": {
-   "change-tile-m2-intent": "타일 변경맵 한 칸의 바닥이나 덧그림을 바꿉니다.",
+   "change-tile-m2-intent": "타일 변경맵 한 칸의 바닥이나 상위 타일을 바꿉니다.",
    "change-tile-m2-preview": "타일 변경 · (맵 미선택) (#, #) → ## / lower지정 좌표의 맵 타일을 교체합니다.",
    "event-command-edit-summary": "기타 명령"
   },

@@ -34,8 +34,39 @@ const listeners = new Set<Listener>();
 let requestId = 0;
 let renewTimer: ReturnType<typeof setInterval> | undefined;
 function publish(next: MapEditLockStatus): void {
+  const previous = status;
   status = next;
+  if (sameVisibleStatus(previous, next)) return;
   for (const listener of listeners) listener(status);
+}
+
+/** Expiry timestamps change on renewal, but the editor surface does not. */
+function sameVisibleStatus(left: MapEditLockStatus, right: MapEditLockStatus): boolean {
+  if (left.kind !== right.kind) return false;
+  switch (left.kind) {
+    case "idle":
+      return true;
+    case "checking":
+      return right.kind === "checking"
+        && left.mapId === right.mapId
+        && left.mapName === right.mapName;
+    case "held":
+      return right.kind === "held"
+        && left.mapId === right.mapId
+        && left.mapName === right.mapName;
+    case "locked":
+      return right.kind === "locked"
+        && left.mapId === right.mapId
+        && left.mapName === right.mapName
+        && left.ownerLabel === right.ownerLabel
+        && left.canTakeover === right.canTakeover;
+    case "unavailable":
+      return right.kind === "unavailable"
+        && left.mapId === right.mapId
+        && left.mapName === right.mapName
+        && left.reason === right.reason
+        && left.message === right.message;
+  }
 }
 
 export function subscribeMapEditLocks(listener: Listener): () => void {

@@ -6,7 +6,7 @@ import {
   type AssistantTemperature,
 } from "@/editor/assistantTemperature";
 import { collectProjectReferenceIssues } from "@/project/io/references";
-import { editorState } from "@/editor/editorState";
+import { editorState, editorStateChangedOnlyCanvasOverlay } from "@/editor/editorState";
 import { registerAiBootIntentTarget, clearPendingAiBootIntent } from "@/editor/aiBootIntent";
 import { dismissCoachMarks } from "@/editor/coachMarks";
 import { installSelectionChipHint } from "@/editor/selectionChipHint";
@@ -131,6 +131,7 @@ let authoringJourneyReferenceIssues: readonly string[] | null = null;
 let projectExportNode: HTMLElement | null = null;
 let unsubStore: (() => void) | null = null;
 let unsubEditor: (() => void) | null = null;
+let lastEditorPanelState = editorState.get();
 let unsubMapLocks: (() => void) | null = null;
 let mapTreeHeight = initialLayout.mapTreeHeight;
 let mapTreeAuto = initialLayout.mapTreeAuto;
@@ -264,7 +265,13 @@ export function renderEditor(main: HTMLElement): void {
   });
 
   unsubStore = store.subscribe((_project, change) => refreshPanels(change));
-  unsubEditor = editorState.subscribe(() => scheduleFullPanelRefresh());
+  lastEditorPanelState = editorState.get();
+  unsubEditor = editorState.subscribe((state) => {
+    const previous = lastEditorPanelState;
+    lastEditorPanelState = state;
+    if (editorStateChangedOnlyCanvasOverlay(previous, state)) return;
+    scheduleFullPanelRefresh();
+  });
   // 미리보기 토글도 눌린 상태(aria-pressed/색)를 그대로 보여야 한다 — 툴바만 다시 그린다.
   unsubMapBackgroundPreview = subscribeMapBackgroundPreview(() => {
     if (canvasToolbarRoot) renderCanvasToolbar(canvasToolbarRoot);
@@ -835,7 +842,10 @@ function refreshPanels(change?: ProjectChangeDescriptor): void {
   if (change?.scope === "map" && change.cells?.length) {
     renderCanvasToolbar(canvasToolbarRoot);
     renderMapEditLockBanner(mapLockBannerRoot);
-    updateProjectExport();
+    // Tile painting can emit once per pointer sample. The hidden export is an
+    // automation oracle, not a live UI surface; give a stroke time to settle
+    // so a large project is serialized once after the burst.
+    updateProjectExport(500);
     return;
   }
   if (change?.scope === "database" || change?.scope === "system") {
@@ -1024,19 +1034,19 @@ function isRandomBattleTestRequest(value: unknown): value is { readonly kind: "r
 }
 // 콘텐츠 변경의 clone+stringify는 trailing 디바운스로 합친다. UI 상태만 바뀌면
 // ProjectExportMirror가 내용 버전별 JSON을 재사용하고 editor/history만 다시 직렬화한다.
-// 소비자는 E2E/내보내기 도구(숨은 <pre>)뿐이라 150ms 지연은 관측 불가.
+// 맵 타일 버스트는 500ms, 그 밖의 콘텐츠는 150ms로 숨은 <pre> 관측 비용을 묶는다.
 let projectExportTimer: ReturnType<typeof setTimeout> | null = null;
 const projectExportMirror = new ProjectExportMirror();
 
 // 숨은 `project-export-json` 미러는 프로젝트 전체를 JSON.stringify 한다. 선행 잠금
 // (`if (timer) return`)이면 버스트 중 150ms 마다 타이머가 재무장되어 반복 직렬화됐다 —
 // 우클릭 드래그 2초에 열 번 넘게 돌았다. 후행 엣지로 바꿔 버스트가 끝난 뒤 한 번만 돈다.
-function updateProjectExport(): void {
+function updateProjectExport(delayOverride?: number): void {
   if (projectExportTimer) clearTimeout(projectExportTimer);
   // The first export is a full JSON stringify of the loaded project. Let the canvas and map
-  // shell get a paint opportunity before doing that hidden automation work; later edits keep the
-  // shorter debounce so observers still see changes promptly.
-  const delay = projectExportNode?.textContent ? 150 : 500;
+  // shell get a paint opportunity before doing that hidden automation work; ordinary edits keep
+  // the shorter debounce while tile bursts pass an explicit longer delay.
+  const delay = delayOverride ?? (projectExportNode?.textContent ? 150 : 500);
   projectExportTimer = setTimeout(() => {
     projectExportTimer = null;
     if (!projectExportNode) return;

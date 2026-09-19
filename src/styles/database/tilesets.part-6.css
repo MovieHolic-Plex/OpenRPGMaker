@@ -1,0 +1,83 @@
+/* 배치 면 드롭다운 — 통행 프리셋 줄과 같은 자리를 쓰지만 select 라 button 규칙이 안 먹는다. */
+.tileset-knowledge-preset-row select {
+  flex: 1 1 96px;
+  min-height: 30px;
+  min-width: 0;
+  font: inherit;
+}
+
+/* 자리 종류는 이름이 길다("벽에서 떨어진 바닥"). 세 칸을 한 줄에 두면 실측에서 끝 글자가
+   잘려 "벽에 붙은 바다" 가 됐다 — 첫 칸만 한 줄을 다 쓰게 하고 방향·강도를 아래 줄로 내린다. */
+.tileset-knowledge-preset-row select:first-child {
+  flex-basis: 100%;
+}
+
+.tileset-knowledge-direction-grid {
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tileset-knowledge-direction-grid button {
+  border: 1px solid var(--border-default);
+  min-height: 32px;
+}
+
+.tileset-knowledge-direction-grid button.open {
+  background: var(--surface-selected);
+  color: var(--text-1);
+}
+
+.tileset-knowledge-direction-grid button.blocked {
+  background: var(--surface-recessed);
+  color: var(--status-error);
+}
+
+.tileset-knowledge-layer-grid {
+  display: grid;
+  gap: 2px;
+  grid-template-columns: repeat(var(--knowledge-cols), minmax(26px, 1fr));
+  max-height: 190px;
+  overflow: auto;
+}
+
+.tileset-knowledge-layer-grid button {
+  font: 600 10px/1.25 var(--font-mono);
+  min-height: 34px;
+  padding: 2px;
+  white-space: pre-line;
+}
+
+.tileset-knowledge-layer-grid button.upper {
+  background: var(--surface-selected);
+  border-color: var(--accent-primary);
+  color: var(--text-1);
+}
+
+.tileset-knowledge-layer-grid button.lower {
+  background: var(--surface-workbench);
+  border-color: var(--border-default);
+  color: var(--text-2);
+}
+
+.tileset-knowledge-status {
+  border: 1px solid var(--border-default);
+  font-size: 11px;
+  line-height: 1.4;
+  padding: var(--space-2);
+}
+
+.tileset-knowledge-status.error {
+  border-color: var(--status-error);
+  color: var(--status-error);
+}
+
+.tileset-knowledge-status.ready {
+  border-color: var(--status-success);
+  color: var(--status-success);
+}
+
+.tileset-db-group-row.active {
+  background: var(--surface-selected);
+  border-color: var(--accent-primary);
+}

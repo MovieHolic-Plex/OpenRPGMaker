@@ -2,12 +2,16 @@ import { readFileSync } from 'node:fs';
 import postcss from 'postcss';
 import { expect, it } from 'vitest';
 import { designatedDeclarations, selectorIdentity } from '../scripts/lib/db-css-owner-proof.mjs';
+import { readCssFamily } from './cssFamily';
 
 const db = '.database-modal-backdrop .database-modal-window .database-modal-body';
 type Declaration = { file: string; selector: string; context: string; property: string; value: string };
 function declarations(file: string): Declaration[] {
   const result: Declaration[] = [];
-  postcss.parse(readFileSync(file, 'utf8')).walkDecls(decl => {
+  const css = file === 'src/styles/database/studio-v2.css'
+    ? readCssFamily('src/styles/database/index.css', file)
+    : readFileSync(file, 'utf8');
+  postcss.parse(css).walkDecls(decl => {
     if (decl.parent?.type !== 'rule') return;
     const context: string[] = [];
     for (let parent = decl.parent.parent; parent; parent = parent.parent) {

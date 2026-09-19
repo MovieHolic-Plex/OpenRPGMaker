@@ -93,7 +93,12 @@ export function runSurfaceChecks({ stylesRoot, srcRoot, registry, entries }) {
   const order = flattenAll(entries);
   const decls = indexDeclarations(order, stylesRoot);
   const entryRel = new Set(entries.map((e) => path.relative(stylesRoot, e)));
-  for (const s of Object.values(registry.surfaces)) entryRel.add(s.entry.replace(/^src\/styles\/?/, "").replace(/^styles\/?/, ""));
+  for (const s of Object.values(registry.surfaces)) {
+    entryRel.add(s.entry.replace(/^src\/styles\/?/, "").replace(/^styles\/?/, ""));
+    for (const extra of s.additionalEntries ?? []) {
+      entryRel.add(extra.replace(/^src\/styles\/?/, "").replace(/^styles\/?/, ""));
+    }
+  }
 
   // 토큰 정의 수집 (R4)
   const defsBySurface = new Map(); // surface|null -> Set(name)
@@ -209,7 +214,8 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const args = process.argv.slice(2);
   const registry = JSON.parse(fs.readFileSync("scripts/css-surfaces.json", "utf8"));
   const stylesRoot = path.resolve("src/styles");
-  const entries = [path.resolve("src/styles/index.css"), ...Object.values(registry.surfaces).map((s) => path.resolve(s.entry))]
+  const registeredEntries = Object.values(registry.surfaces).flatMap((s) => [s.entry, ...(s.additionalEntries ?? [])]);
+  const entries = [path.resolve("src/styles/index.css"), ...registeredEntries.map((entry) => path.resolve(entry))]
     .filter((p, i, a) => fs.existsSync(p) && a.indexOf(p) === i);
   const { violations, counts } = runSurfaceChecks({ stylesRoot, srcRoot: path.resolve("src"), registry, entries });
   const fingerprinted = violations.filter((v) => FINGERPRINT_RULES.has(v.rule));

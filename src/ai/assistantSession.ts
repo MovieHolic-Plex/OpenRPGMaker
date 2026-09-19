@@ -29,12 +29,12 @@ import { ToolReadEvidence } from "./toolReadEvidence";
 import { ToolVerificationEvidence, parseVerificationChecks, verificationInitialState, type VerificationRequirement, type ApproachPreview } from "./toolVerificationEvidence";
 import { isVerifyNpcRewardInput, npcRewardTargetSnapshot, VERIFY_NPC_REWARD_TOOL, type NpcRewardWitness } from "./npcRewardWitness";
 import { APPEARANCE_GENERATION_TOOL } from "@/editor/tools/characterAppearanceTools";
-import { OPENING_IMAGE_TOOL } from "@/editor/tools/cinematicTools";
+import { GAME_OVER_IMAGE_TOOL, OPENING_IMAGE_TOOL } from "@/editor/tools/cinematicTools";
+import { IMAGE_ASSET_TOOL } from "@/editor/tools/imageAssetTools";
 import type { AppearanceGenerationHandoff } from "@/editor/characterAppearanceGeneration";
 import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
 import { validateArgs } from "@/editor/tools/jsonSchema";
 import { viewportVillageBounds } from "@/editor/tools/authorVillageSupport";
-import { toOpenAiTools } from "@/editor/tools";
 import type { ToolContext, ToolResult } from "@/editor/tools";
 import {
   harnessToolReason,
@@ -96,6 +96,7 @@ import {
   type TurnSelectionSnapshot,
 } from "./conversationTurnContext";
 import { buildPreferenceMemorySection } from "./preferenceMemory";
+import { buildSessionRegistryTools } from "./sessionToolExposure";
 import { resolveWorkingContextTokens } from "./messageBudget";
 import {
   buildCompactedMessages,
@@ -724,6 +725,8 @@ export class AssistantSession {
   /** place_props 등 산포 중복 호출 억제 — 같은 인자로 이미 성공한 쓰기는 재실행하지 않는다. */
   private turnWriteDedupe = new Map<string, ToolResult>();
   private turnEscalatedToolNames: string[] = [];
+  /** Discovery miss or neutral routing opts the next request into the complete catalog. */
+  private turnFullCatalogFallback = false;
   /** 이번 턴에 실행을 시작한 툴 수 — tool_started 이벤트의 1-based 서수 원천. */
   private turnToolStartedCount = 0;
   private eventBaseProposalKeys = new Map<string, string>();
@@ -2044,6 +2047,7 @@ export class AssistantSession {
     }
     this.turnScope = options.scope ?? null;
     this.turnComposerMode = options.composerMode ?? "do";
+    this.turnFullCatalogFallback = false;
     this.planAuthoredThisTurn = false;
     this.lastTurnPlanOnly = false;
     this.turnIsDriverContinue = options.driverContinue === true;
@@ -2104,6 +2108,10 @@ export class AssistantSession {
     // 질문 모드는 사용자가 직접 고른 사실이라 선언의 create/modify 를 덮어쓴다 — 안 그러면 플래너·쓰기 기대가 문장 판정으로 돈다.
     const intent = this.applyComposerModeToIntent(await operation.wait(this.declareTurnIntent(instruction, onEvent, signal)));
     this.turnIntent = intent;
+    // A failed routing declaration has no safe domain hint. Preserve the old
+    // reliability behavior for that turn; normal LLM declarations use the
+    // control plane and can discover missing schemas incrementally.
+    this.turnFullCatalogFallback = intent.source === "fallback";
     if (intent.mode === "question") this.turnComposerMode = "ask";
     const question = this.turnComposerMode === "ask";
     const userAction = !this.turnIsDriverContinue && !question;
@@ -4776,10 +4784,18 @@ export class AssistantSession {
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "token-budget" };
       }
       let result: ChatResult;
-      // Full native schemas are the working catalog, not a domain-ranked shortlist.
-      // Session-only tools retain their lifecycle gates; ask mode removes every write.
+      // Start with a small control plane plus intent/plan/discovery candidates.
+      // A discovery miss or neutral routing flips turnFullCatalogFallback and
+      // restores the complete native catalog on the next round.
       const tools = [
-        ...toOpenAiTools(),
+        ...buildSessionRegistryTools({
+          requestText: this.currentTurnInstruction,
+          intent: this.turnIntent,
+          discoveredToolNames: this.turnEscalatedToolNames,
+          requiredReadTools: this.readEvidence.requiredReadTools(),
+          workPlan: this.workPlan,
+          fullCatalogFallback: this.turnFullCatalogFallback,
+        }),
         GET_ORIGINAL_CONTEXT_TOOL,
         CORRECT_VERIFICATION_TOOL,
         ...(this.npcRewardRequirements ? [VERIFY_NPC_REWARD_TOOL] : []),
@@ -5043,7 +5059,7 @@ export class AssistantSession {
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
       }
 
-      const startsWriteThisRound = toolCalls.some((call) => getTool(call.function.name)?.mode === "write");
+      const startsWriteThisRound = toolCalls.some((call) => isWriteToolName(call.function.name));
       // 이번 라운드에 렌더된 비전 이미지(있으면 툴 메시지 뒤에 user 메시지로 주입).
       const roundImages: RenderedToolImage[] = [];
       const acceptanceImages: AcceptanceImageReceipt[] = [];
@@ -5068,7 +5084,7 @@ export class AssistantSession {
         if (typeof args.theme === "string" && args.theme.trim()) turnTheme = args.theme.trim();
         this.emitToolStarted(onEvent, name, args);
         await operation.wait(this.yieldForUi(signal));
-        if (tool?.mode === "write" || name === APPEARANCE_GENERATION_TOOL || name === OPENING_IMAGE_TOOL) writeToolAttempts += 1;
+        if (tool?.mode === "write" || name === APPEARANCE_GENERATION_TOOL || name === OPENING_IMAGE_TOOL || name === GAME_OVER_IMAGE_TOOL || name === IMAGE_ASSET_TOOL) writeToolAttempts += 1;
         // 프로토콜 보장: 이 호출에 대한 role:"tool" 응답을 반드시 남긴다. 응답 없이 라운드를 벗어나면
         // 세션의 영구 대화에 짝 없는 tool_calls 가 남아 **그 뒤 모든 턴**이 공급자 400 으로 죽는다
         // (실측 2026-08-30). 예외는 삼키지 않고 응답을 붙인 뒤 그대로 다시 던진다.
@@ -5149,6 +5165,43 @@ export class AssistantSession {
                   ...applied,
                   summary: `오프닝 그림 ${still.resourceId} 를 만들어 등록했습니다. image 장면의 resourceId 로 쓰세요.`,
                   data: { status: "generated", resourceId: still.resourceId, name: still.name },
+                }
+                : applied;
+            }
+          } else if (name === GAME_OVER_IMAGE_TOOL) {
+            const { generateGameOverStill } = await operation.wait(import("@/editor/openingImageGeneration"));
+            const still = await operation.wait(generateGameOverStill(args, { signal }));
+            if (!still.ok) {
+              toolResult = { ok: false, summary: still.summary, issues: [{ severity: "error", code: still.code, message: still.summary }] };
+            } else {
+              const applied = runTool(this.ctx, "upsert_resource", {
+                resource: { id: still.resourceId, name: still.name, kind: "backdrop", dataUrl: still.dataUrl },
+              }, { dryRun: false });
+              toolResult = applied.ok
+                ? {
+                  ...applied,
+                  summary: `게임오버 그림 ${still.resourceId} 를 만들어 등록했습니다. set_game_over의 backgroundResourceId로 연결하세요.`,
+                  data: { status: "generated", resourceId: still.resourceId, name: still.name },
+                }
+                : applied;
+            }
+          } else if (name === IMAGE_ASSET_TOOL) {
+            const { generateImageAsset } = await operation.wait(import("@/editor/imageAssetGeneration"));
+            const asset = await operation.wait(generateImageAsset(args, { signal }));
+            if (!asset.ok) {
+              toolResult = { ok: false, summary: asset.summary, issues: [{ severity: "error", code: asset.code, message: asset.summary }] };
+            } else {
+              const applied = runTool(this.ctx, "upsert_resource", {
+                resource: {
+                  id: asset.resourceId, name: asset.name, kind: asset.kind, dataUrl: asset.dataUrl,
+                  ...(asset.kind === "monster" ? { monsterMetadata: { name: asset.name, tags: asset.tags, description: asset.prompt } } : {}),
+                },
+              }, { dryRun: false });
+              toolResult = applied.ok
+                ? {
+                  ...applied,
+                  summary: `${asset.kind} 그림 ${asset.resourceId} 를 만들어 등록했습니다. ${asset.kind === "monster" ? "get_monster_resource로 상세를 조회한 뒤 enemy.monsterResourceId와 appearanceTags에 연결하세요." : "관련 DB/시스템 레코드에 resourceId를 연결하세요."}`,
+                  data: { status: "generated", kind: asset.kind, resourceId: asset.resourceId, name: asset.name, tags: asset.tags },
                 }
                 : applied;
             }
@@ -5277,6 +5330,13 @@ export class AssistantSession {
             this.turnEscalatedToolNames = next.slice(-MAX_ESCALATED_TOOLS_PER_TURN);
             if (discovered.length > 0) {
               this.pushAudit({ kind: "status", text: `tools:escalated ${discovered.join(",")}` });
+            } else if (name === "find_tools" && toolResult.ok) {
+              // A successful search with no matches is the only safe signal
+              // that routing did not find the requested capability. Retry the
+              // next model round with every active schema instead of claiming
+              // the editor cannot do the work.
+              this.turnFullCatalogFallback = true;
+              this.pushAudit({ kind: "status", text: "tools:fallback full-catalog (discovery-empty)" });
             }
           }
           if (toolResult.ok && tool) recordAssistantToolDomainUse(tool.domains);

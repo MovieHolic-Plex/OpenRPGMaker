@@ -1,0 +1,69 @@
+/* ── 툴바 / 빈 상태 ───────────────────────────────────────────────────── */
+.event-editor .event-schedule-toolbar {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  padding: 10px 12px;
+}
+
+.event-editor .event-schedule-help {
+  color: var(--text-2);
+  font: 400 11px/1.45 var(--font-ui);
+  min-width: 0;
+}
+
+.event-editor .event-schedule-toolbar [data-testid="event-schedule-add"] {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* 일정이 하나도 없으면 툴바가 그 자체로 빈 상태 카드가 된다. */
+.event-editor .event-schedule-editor:has(.event-schedule-rows:empty) .event-schedule-toolbar {
+  border: 1px dashed var(--border-default);
+  border-radius: 8px;
+  flex-direction: column;
+  gap: 9px;
+  margin: 10px 12px 12px;
+  padding: 14px 12px;
+  text-align: center;
+}
+
+.event-editor .event-schedule-rows:empty {
+  display: none;
+}
+
+/* ── 행 카드 ──────────────────────────────────────────────────────────── */
+.event-editor .event-schedule-rows {
+  counter-reset: event-schedule-row;
+  display: grid;
+  gap: 10px;
+  padding: 0 12px 12px;
+}
+
+.event-editor .event-schedule-row {
+  align-items: start;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  counter-increment: event-schedule-row;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  padding: 32px 12px 12px;
+  position: relative;
+}
+
+.event-editor .event-schedule-row::before {
+  background: var(--accent-muted);
+  border-radius: var(--radius-pill);
+  color: var(--accent);
+  content: "일정 " counter(event-schedule-row);
+  font: 700 10px/1 var(--font-ui);
+  left: 12px;
+  letter-spacing: .03em;
+  padding: 5px 9px;
+  position: absolute;
+  top: 9px;
+}

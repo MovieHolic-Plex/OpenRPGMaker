@@ -204,8 +204,7 @@
 }
 
 .event-editor-modal-stable,
-.event-editor-modal-body .event-editor-stable,
-.event-editor-id-row {
+.event-editor-modal-body .event-editor-stable {
   display: none;
 }
 

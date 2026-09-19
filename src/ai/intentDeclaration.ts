@@ -147,7 +147,7 @@ Fields:
 - "resetsContext": 사용자가 이전 작업과 무관한 새 작업·처음부터·프로젝트 초기화를 명시하면 true.
 - "tools": 입력 툴 목록에서 이 요청에 쓸 가능성이 높은 이름만, 최대 8개. 모르면 [].
 - "readBeforeWrite": 사용자가 '기존 데이터를 먼저 읽고 이어 작업', '조회 후 실제 ID만 참조'를 명시하면 {"project":true,"collections":["items","enemies","troops"],"references":true}. project 는 프로젝트/기존 맵·이벤트 선행 조회, collections 는 작업에 필요한 DB 컬렉션 이름(실제 조회가 모두 성공하기 전 첫 쓰기 금지), references 는 참조 ID 조회 증거를 뜻한다. 필요한 컬렉션만 선택한다. 그런 조건이 없으면 생략한다. 이것은 작성 요청의 절차 계약이며 별도 허락 질문이 아니다.
-- "adventure": 시작 마을·던전 탐험·파티 모험을 구성하라는 전체 모험 저작 요청이면 {"village":true,"dungeon":true,"party":true,"battle":true}. 각 항목은 요청한 것만 true. 단순 NPC 추가/질문/DB 시드만/입구 표지판만 요청은 생략한다. 모험 JRPG 장르 프리셋 + 파티·던전 탐험 + 시작 마을·기본 전투 적은 네 항목 모두 true다.
+- "adventure": 시작 마을·던전 탐험·파티 모험을 구성하라는 전체 모험 저작 요청이면 {"village":true,"dungeon":true,"party":true,"battle":true,"world":true,"characters":true,"appearance":true}. 각 항목은 요청한 것만 true. 단순 NPC 추가/질문/DB 시드만/입구 표지판만 요청은 생략한다. 모험 JRPG 장르 프리셋 또는 "중세 게임 RPG를 만들어줘"처럼 프로젝트 전체를 처음 만드는 요청은 세계관·핵심 인물·주인공 외형/장비를 먼저 저작해야 하므로 world/characters/appearance를 true로 선언한다. 모험 JRPG 장르 프리셋 + 파티·던전 탐험 + 시작 마을·기본 전투 적은 네 항목과 새 세 항목 모두 true다.
 - "actionCombat": 실제 필드 액션 전투(공격 적중·처치·피격·회피·스태미나·원거리 적·보상)의 작동을 요구하면 {"targets":[{"mapId":"기존 실제 ID"} 또는 {"newMapName":"새로 만들 정확한 맵 이름"}]}로 필수 검증 대상을 선언한다. 턴제 전투, 장르 질문, 액션을 제외한 요청은 생략한다. 단어가 아니라 요청한 행동으로 판단한다. 이 선언은 계획 교체나 acceptance 수리로 지울 수 없는 완료 조건이다.
 - "statefulNpcs": 사용자가 상태에 따라 달라지는 NPC 행동/대사를 명시했을 때만 true. 보통의 한 페이지 안내 NPC, 인사, 상점이라는 이유로 true를 만들지 않는다.
 - "construction": 마을·집·시설을 짓거나 넓히라는 요청에서 **문장에 실제로 나온 수량만** 옮긴다. {"scale":"small|medium|large|vast","houseCount":20,"npcCount":8,"targetName":"강호 장터 마을"}. 크기어 대응: 아기자기한·작은=small, 보통=medium, 큰·넓은=large, 아주 큰·광활한=vast. 없는 값은 넣지 않는다(추측 금지). width/height는 쓰지 않는다 — 크기 환산은 코드가 한다. 「더 크게」「넓혀줘」「집 더 지어줘」처럼 있는 마을을 키우라는 요청도 mode=modify 로 두고 여기에 규모를 적는다. 공간 시공이 아니면 생략한다.
@@ -334,7 +334,15 @@ export function parseIntentDeclaration(raw: string, facts: IntentFacts): IntentP
       } } : {}),
       ...("npcRewards" in parsed && (mode === "create" || mode === "modify")
         ? { npcRewards: parseNpcRewardRequirements(parsed.npcRewards) } : {}),
-      ...(isRecord(parsed.adventure) && (mode === "create" || mode === "modify") ? { adventure: { village: parsed.adventure.village === true, dungeon: parsed.adventure.dungeon === true, party: parsed.adventure.party === true, battle: parsed.adventure.battle === true } } : {}),
+      ...(isRecord(parsed.adventure) && (mode === "create" || mode === "modify") ? { adventure: {
+        village: parsed.adventure.village === true,
+        dungeon: parsed.adventure.dungeon === true,
+        party: parsed.adventure.party === true,
+        battle: parsed.adventure.battle === true,
+        ...(parsed.adventure.world === true ? { world: true } : {}),
+        ...(parsed.adventure.characters === true ? { characters: true } : {}),
+        ...(parsed.adventure.appearance === true ? { appearance: true } : {}),
+      } } : {}),
       ...(actionCombat ? { actionCombat } : {}),
       ...(authoring && parsed.functionalAcceptance !== undefined ? { functionalAcceptance: parseFunctionalRequirements(parsed.functionalAcceptance) } : {}),
       ...(authoring && parsed.functionalRefinements !== undefined ? { functionalRefinements: parseFunctionalRefinements(parsed.functionalRefinements) } : {}),
@@ -417,6 +425,18 @@ export function intentToolDomains(
     domains.add("tile");
     domains.add("map");
     domains.add("event");
+  }
+  // A full adventure is a cross-domain authoring request. Do not make the
+  // first round depend on the model remembering to name every lane in `tools`;
+  // the declaration itself opens the world/lore, character database, map and
+  // event surfaces needed to build a coherent starting slice.
+  if (intent.adventure) {
+    domains.add("world");
+    domains.add("database");
+    domains.add("system");
+    domains.add("map");
+    domains.add("event");
+    if (intent.adventure.battle) domains.add("battle");
   }
   return domains;
 }

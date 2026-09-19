@@ -85,7 +85,9 @@ export function databaseReferenceMessage(collection: DatabaseCollection, id: str
       if (equipment.length) return namedReferenceMessage("장비", equipment, "이 직업을 사용 중입니다.");
       const items = project.database.items.filter((record) => record.usableClassIds.includes(id) || record.equipmentProfile.equippableClassIds.includes(id));
       if (items.length) return namedReferenceMessage("아이템/장비 효과", items, "이 직업을 사용 중입니다.");
-      return null;
+      // promoteActor.toClassId 는 로드 검증기가 하드 assert 한다(commandReferenceValidation:264-266).
+      // 여기서 빠지면 battleAnimations 와 같은 "경고 없는 삭제 → 로드 불가" 경로가 된다.
+      return commandLocationMessage(project, "classes", id, "직업");
     }
     case "equipment": {
       const actors = project.database.actors.filter((record) => Object.values(record.initialEquipment).includes(id));
@@ -103,7 +105,10 @@ export function databaseReferenceMessage(collection: DatabaseCollection, id: str
       if (skills.length) return namedReferenceMessage("스킬", skills, "이 전투 애니메이션을 사용 중입니다.");
       const items = project.database.items.filter((record) => record.animationId === id);
       if (items.length) return namedReferenceMessage("아이템", items, "이 전투 애니메이션을 사용 중입니다.");
-      return null;
+      // 이벤트 명령(showAnimation)이 남은 유일한 참조일 수 있다. 여기서 놓치면 삭제가
+      // 경고 없이 통과하고, 다음 로드에서 commandReferenceValidation 의 showAnimation
+      // assert 가 프로젝트 전체를 열지 못하게 만든다(2026-09-19 리뷰 P0-6).
+      return commandLocationMessage(project, "battleAnimations", id, "전투 애니메이션");
     }
     case "troops":
       if (project.system.initialTroopId === id) return "시스템 기본 전투가 이 적 그룹을 사용 중입니다.";
@@ -173,7 +178,15 @@ export function databaseReferenceMessage(collection: DatabaseCollection, id: str
       if (items.length) return namedReferenceMessage("아이템", items, "이 상태를 사용 중입니다.");
       const equipment = project.database.equipment.filter((record) => record.stateInflictIds.includes(id) || record.stateDefenseIds.includes(id));
       if (equipment.length) return namedReferenceMessage("장비", equipment, "이 상태를 사용 중입니다.");
-      return null;
+      // stateRates 는 실제 등급 데이터다(types/database.ts:53,106,430). 여기서 안 보면
+      // 삭제된 상태 id 가 actors/classes/enemies 의 키로 저장본에 영구 잔류한다.
+      const rateActors = project.database.actors.filter((record) => record.stateRates?.[id] !== undefined);
+      if (rateActors.length) return namedReferenceMessage("주인공", rateActors, "이 상태의 등급을 지정하고 있습니다.");
+      const rateClasses = project.database.classes.filter((record) => record.stateRates?.[id] !== undefined);
+      if (rateClasses.length) return namedReferenceMessage("직업", rateClasses, "이 상태의 등급을 지정하고 있습니다.");
+      const rateEnemies = project.database.enemies.filter((record) => record.stateRates?.[id] !== undefined);
+      if (rateEnemies.length) return namedReferenceMessage("몬스터", rateEnemies, "이 상태의 등급을 지정하고 있습니다.");
+      return commandLocationMessage(project, "states", id, "상태");
     }
   }
 }

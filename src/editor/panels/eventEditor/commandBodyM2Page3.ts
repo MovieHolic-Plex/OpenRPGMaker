@@ -1702,7 +1702,7 @@ function changeTileM2Body(context: CommandEditContext, cmd: M2Command): HTMLElem
   layerInput.addEventListener("input", commit);
   renderPreview();
   wrap.append(
-    intentCard("타일 변경", "맵 한 칸의 바닥이나 덧그림을 바꿉니다.", "change-tile-m2-intent"),
+    intentCard("타일 변경", "맵 한 칸의 바닥이나 상위 타일을 바꿉니다.", "change-tile-m2-intent"),
     layout(
       [...coords.fields, fieldBlock("레이어", layerInput), fieldBlock("바꿀 그림", tileIdInput)],
       preview

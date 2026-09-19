@@ -29,7 +29,7 @@ export function makeBasicTilePalette(options: {
   const section = el("div", { class: "basic-rail-section", dataset: { testid: "basic-tiles-section" } });
   section.append(el("div", {
     class: "basic-selected-tile",
-    text: `${layer === "lower" ? "바닥" : "덧그림"} · ${basicTileLabel(tileset, selectedTile)}`,
+    text: `${layer === "lower" ? "바닥" : "상위"} · ${basicTileLabel(tileset, selectedTile)}`,
     dataset: { testid: "selected-tile-status" },
   }));
   section.append(el("input", {

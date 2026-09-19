@@ -3,8 +3,8 @@
 // headless benchmark script records evidence and exits non-zero on local budget
 // failures so budget changes stay explicit.
 export const PERF_BUDGETS = {
-  // 2026-07-06 W4-1: map-only paint benchmark now uses store.updateMap,
-  // cloning one GameMap with structural sharing instead of cloning the whole project.
+  // The benchmark still exercises store.updateMap for the general map-edit budget;
+  // the editor's tile hot path uses store.updateMapTiles and copies only dense tiles.
   editDataPipelineP95Ms: 16,
   undoSnapshotBytes: 100 * 1024 * 1024,
   // 실측 180ms — 3s는 과잉 여유라 500ms로 하향(50맵×128×128 기준).

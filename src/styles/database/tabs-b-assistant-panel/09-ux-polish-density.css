@@ -215,11 +215,11 @@
 
 /* Premium empty-state & start-grid polish (UX overhaul) */
 .ai-start-grid {
-  gap: 10px !important;
+  gap: 10px;
 }
 .ai-start-card {
-  border-radius: 14px !important;
-  padding: 14px !important;
+  border-radius: 14px;
+  padding: 14px;
   transition: transform 0.14s, box-shadow 0.14s, border-color 0.14s;
 }
 .ai-start-card:hover {
@@ -234,11 +234,11 @@
 
 /* Reasoning & tool log readability */
 .ai-reasoning-body {
-  max-height: 420px !important;
+  max-height: 420px;
   line-height: 1.55;
 }
 .ai-tool-activity-line {
-  font-size: 12px !important;
+  font-size: 12px;
   line-height: 1.5;
   border-left: 2px solid transparent;
   padding-left: 8px;
@@ -253,32 +253,32 @@
 
 /* Turn group toggle — larger hit area */
 .ai-turn-group-toggle {
-  padding: 8px 10px !important;
-  font-size: 12px !important;
+  padding: 8px 10px;
+  font-size: 12px;
 }
 
 /* Quick replies — premium pills */
-.ai-quick-replies { gap: 8px !important; }
+.ai-quick-replies { gap: 8px; }
 .ai-quick-replies.ai-choice-block {
-  padding: 10px !important;
-  gap: 8px !important;
-  border-radius: 12px !important;
+  padding: 10px;
+  gap: 8px;
+  border-radius: 12px;
 }
 .ai-quick-reply-chip {
-  padding: 6px 14px !important;
-  font-size: 12px !important;
-  border-width: 1.5px !important;
-  border-radius: 999px !important;
+  padding: 6px 14px;
+  font-size: 12px;
+  border-width: 1.5px;
+  border-radius: 999px;
   transition: background 0.14s, border-color 0.14s, transform 0.1s;
 }
 .ai-quick-reply-chip:hover { transform: translateY(-1px); }
 
 /* Tiles — larger thumbs */
-.ai-tile-thumb { width: 56px !important; height: 56px !important; border-radius: 8px !important; }
-.ai-chat-tiles { gap: 8px !important; }
+.ai-tile-thumb { width: 56px; height: 56px; border-radius: 8px; }
+.ai-chat-tiles { gap: 8px; }
 
 /* Assistant status — always visible with pulse */
-.ai-assistant-status { opacity: 1 !important; }
+.ai-assistant-status { opacity: 1; }
 .ai-assistant-status[data-status-tone="running"]::before,
 .ai-assistant-status[data-status-tone="thinking"]::before {
   content: "●";
@@ -287,7 +287,3 @@
   animation: ai-status-pulse 1s ease-in-out infinite;
 }
 @keyframes ai-status-pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
-
-/* Skill hint: never hide completely — show on hover/focus parent */
-.ai-skill-card-hint { opacity: 1 !important; }
-
