@@ -38,6 +38,10 @@ import { buildSvgIcon, type SvgNodeSpec } from "@/editor/panels/tileToolbarIcons
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
+import { pendingHistoryLabels, undoMapEdit } from "@/editor/mapEditHistory";
+import { openHelpModal } from "@/editor/panels/helpModal";
+import { getEditorChrome } from "@/editor/editorUiMode";
+import { uiLabel } from "@/editor/uiCopy";
 
 // 창 컨트롤 아이콘 — 예전에는 "⇥ □ x" 텍스트 글리프였다. 글꼴에 따라 굵기·베이스라인이
 // 제각각이고 x 는 소문자 엑스라 닫기 버튼으로 읽히지 않았다. 규격은 레일 아이콘과 같다
@@ -208,7 +212,9 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   const header = el("header", {
     class: "database-modal-header",
     children: [
-      el("div", { class: "database-modal-heading", children: [el("h2", { text: "데이터베이스" }), crumb] }),
+      // 창 제목이 jargonStyle 을 우회하면 초보 모드에서 명령 팔레트·도움말은 「자료집」,
+      // 정작 열린 창은 「데이터베이스」가 된다. 라벨 정본(uiCopy)을 쓴다.
+      el("div", { class: "database-modal-heading", children: [el("h2", { text: databaseSurfaceLabel() }), crumb] }),
       aiToggleButton,
       windowControls,
     ],
@@ -220,7 +226,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     children: [
       el("section", {
         class: "database-modal-window",
-        attrs: { role: "dialog", "aria-modal": "true", "aria-label": "데이터베이스" },
+        attrs: { role: "dialog", "aria-modal": "true", "aria-label": databaseSurfaceLabel() },
         children: [header, aiBar.element, body],
       }),
     ],
@@ -234,7 +240,10 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     // (편집기를 닫은 다음에는 평소대로 되돌릴 수 있다.)
     if (isStructureKitEditorOpen()) return;
     // undo/redo 후에도 부분 갱신 경로를 타서 스크롤/선택/검색 상태를 보존한다.
-    if (handleHistoryHotkey(event)) refreshDatabasePanel(body);
+    if (handleHistoryHotkey(event)) {
+      refreshDatabasePanel(body);
+      syncUndoButton();
+    }
   };
   // ── 열린 모달의 실시간 갱신(M7): AI(채팅 패널)나 외부 경로가 store 를 바꾸면
   // 열린 모달을 부분 갱신한다(undo 경로와 같은 refreshDatabasePanel — 스크롤/선택/검색 보존).
@@ -314,8 +323,22 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   const unsubscribeStore = store.subscribe((_project, change) => {
     // A project switch ends this modal's snapshot/draft ownership. Never allow
     // its Save or Discard actions to write the previous project into the new one.
-    if (change.projectSwitch) { close(); return; }
+    // 닫기는 유지하되 **말없이 사라지지는 않는다** — 편집 중이던 사용자에게 모달이 이유
+    // 없이 증발한 것처럼 보였다. dirty 프롬프트를 띄울 수는 없다(그 사이 다른 프로젝트가
+    // 이미 current 다 — 저장도 되돌리기도 잘못된 프로젝트에 쓰게 된다).
+    if (change.projectSwitch) {
+      const hadUnsaved = dirtySession.isDirty();
+      close();
+      toast(
+        hadUnsaved
+          ? "프로젝트가 바뀌어 데이터베이스를 닫았습니다. 저장하지 않은 편집은 이전 프로젝트에 남아 있습니다."
+          : "프로젝트가 바뀌어 데이터베이스를 닫았습니다.",
+        hadUnsaved ? "error" : "ok"
+      );
+      return;
+    }
     if (change.scope !== "database" && change.scope !== "project") return;
+    syncUndoButton();
     if (isEditingInsideModalBody() || withinInteractionGrace()) {
       pendingRefresh = true;
       scheduleGraceFlush();
@@ -382,6 +405,11 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
       case EDITOR_MODAL_DIRTY_DECISION.Discard:
         codexSession.discard();
         dirtySession.discard();
+        // 복구한 상태를 **즉시** 원격에 밀어 넣는다. 진행 중이던 flush 는 제출 시점의
+        // 프로젝트를 고정 전송하므로, 가만두면 방금 버린 내용이 원격에 먼저 확정되고
+        // 복구본의 반영은 4초 자동저장에 달린다 — 그 전에 탭을 닫으면 「버린」 내용이
+        // 원격 정본으로 남는다. 실패는 autosave 재시도/상태 칩이 이어받는다.
+        void store.flush().catch(() => undefined);
         close();
         return;
       case EDITOR_MODAL_DIRTY_DECISION.KeepEditing:
@@ -425,6 +453,13 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   // hasOpenModalLayer() 로 스스로 물러나고, 실제 Esc 는 스택의 최상층 라우팅이 가져간다.
   const handleModalKeyDown = (event: KeyboardEvent): void => {
     if (dockMode) return;
+    // 스택이 어떤 이유로든 이 층을 놓쳤을 때를 위한 대비책. 전체 화면 복원이 먼저다.
+    if (event.key === "Escape" && !event.defaultPrevented && !hasOpenModalLayer()) {
+      if (exitMaximizedDatabaseModal(maximizeButton)) {
+        event.preventDefault();
+        return;
+      }
+    }
     controller.handleKeyDown(event);
   };
   document.addEventListener("keydown", handleModalKeyDown);
@@ -463,6 +498,31 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     class: "database-modal-dirty-prompt-region",
     dataset: { testid: "database-dirty-prompt-region" },
   });
+  // 레코드 편집 되돌리기(Ctrl+Z). 닫기 프롬프트의 「열 때 상태로 복구」와는 **범위가 다른**
+  // 연산이라 낱말도 분리한다 — 이건 한 단계, 저건 세션 전체다.
+  const undoButton = el("button", {
+    class: "database-footer-button tertiary",
+    text: "되돌리기",
+    attrs: { type: "button", title: "마지막 편집을 한 단계 되돌립니다 (Ctrl+Z)" },
+    dataset: { testid: "database-footer-undo" },
+    on: {
+      click: () => {
+        if (!undoMapEdit()) {
+          toast("되돌릴 편집이 없습니다.", "error");
+          return;
+        }
+        refreshDatabasePanel(body);
+        syncUndoButton();
+      },
+    },
+  }) as HTMLButtonElement;
+  const syncUndoButton = (): void => {
+    const label = pendingHistoryLabels().undo;
+    undoButton.disabled = !label;
+    undoButton.setAttribute("aria-disabled", String(!label));
+    undoButton.title = label ? `되돌리기: ${label} (Ctrl+Z)` : "되돌릴 편집이 없습니다";
+  };
+  syncUndoButton();
   const footer = el("footer", {
     class: "database-modal-footer",
     children: [
@@ -487,11 +547,16 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
           },
         },
       }),
+      // Ctrl+Z 는 예전부터 동작했지만 모달 어디에도 노출이 없어 아무도 몰랐다.
+      // 같은 DB 안 전투 명령 스튜디오가 이미 가시 되돌리기를 갖고 있다 — 그 규약을 셸로 올린다.
+      undoButton,
       el("button", {
         class: "database-footer-button tertiary",
         text: "도움말",
         attrs: { type: "button" },
-        on: { click: () => toast("데이터베이스에서 레코드와 시스템 설정을 조정합니다.", "ok") },
+        dataset: { testid: "database-footer-help" },
+        // 예전에는 동어반복 토스트가 전부였다. 실제 DB 도움말 문서가 이미 있다.
+        on: { click: () => openHelpModal("database") },
       }),
     ],
   });
@@ -544,6 +609,8 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     // modalStack 은 닫기가 거절돼도(계속 편집) 자기 엔트리를 먼저 지운다 — 되살려 둔다.
     unregisterModal(backdrop);
     registerModal(backdrop, requestModalEscape);
+    // 전체 화면은 전면 fixed 라 "Esc 한 번 = DB 통째로 닫힘"이 된다. 첫 Esc 는 복원만.
+    if (exitMaximizedDatabaseModal(maximizeButton)) return;
     controller.requestClose("escape");
   };
   const syncModalLayer = (docked: boolean): void => {
@@ -591,6 +658,14 @@ function installDatabaseFocusTrap(backdropEl: HTMLElement, windowEl: HTMLElement
   };
   backdropEl.addEventListener("keydown", trap);
   return () => backdropEl.removeEventListener("keydown", trap);
+}
+
+/**
+ * 이 표면의 이름. 「자료집」(초보)/「데이터베이스」(전문) 두 이름이 있고 정본은 uiCopy 다.
+ * 문자열을 새로 적으면 같은 창이 화면마다 다른 이름으로 불린다 — 실제로 갈라져 있었다.
+ */
+function databaseSurfaceLabel(): string {
+  return uiLabel("database", getEditorChrome().jargonStyle);
 }
 
 const DB_DOCK_MODE_KEY = "oprn:db-dock-mode";
@@ -650,7 +725,8 @@ function renderDirtyPrompt(
       el("strong", { text: "이 세션에서 바뀐 내용이 있습니다. 어떻게 할까요?" }),
       el("span", { text: closeAttemptMessage(attempt) }),
       dirtyPromptButton("저장하고 닫기", "database-dirty-save", EDITOR_MODAL_DIRTY_DECISION.Save, onDecision, "primary"),
-      dirtyPromptButton("열 때 상태로 되돌리고 닫기", "database-dirty-discard", EDITOR_MODAL_DIRTY_DECISION.Discard, onDecision),
+      // 「되돌리기」는 Ctrl+Z 한 단계의 이름으로 쓴다 — 세션 전체 복구는 「복구」로 분리.
+      dirtyPromptButton("열 때 상태로 복구하고 닫기", "database-dirty-discard", EDITOR_MODAL_DIRTY_DECISION.Discard, onDecision),
       dirtyPromptButton("계속 편집", "database-dirty-keep-editing", EDITOR_MODAL_DIRTY_DECISION.KeepEditing, onDecision),
     ],
   });
@@ -673,16 +749,19 @@ function dirtyPromptButton(
 }
 
 function closeAttemptMessage(attempt: EditorModalCloseAttempt): string {
-  const restoreNote = "되돌리기는 이 모달을 연 시점의 DB 상태로 복구합니다.";
+  // 「되돌리기」는 Ctrl+Z(한 단계)의 이름이다 — 용어집 정본도 shell.undo=되돌리기다.
+  // 세션 전체 복구를 같은 낱말로 부르면 범위가 다른 두 연산이 한 이름을 나눠 쓴다.
+  // 여기서는 「열 때 상태로 복구」로 분리한다(버튼 라벨과도 같은 말).
+  const restoreNote = "「열 때 상태로 복구」는 이 모달을 연 시점의 DB 상태로 되돌립니다(맵 편집은 그대로 둡니다).";
   switch (attempt) {
     case "cancel":
-      return `닫기 전에 저장하거나 되돌릴지 선택하세요. ${restoreNote}`;
+      return `닫기 전에 저장할지 복구할지 선택하세요. ${restoreNote}`;
     case "escape":
-      return `Escape로 닫기 전에 저장하거나 되돌릴지 선택하세요. ${restoreNote}`;
+      return `Escape로 닫기 전에 저장할지 복구할지 선택하세요. ${restoreNote}`;
     case "backdrop":
-      return `바깥 영역을 눌러 닫기 전에 저장하거나 되돌릴지 선택하세요. ${restoreNote}`;
+      return `바깥 영역을 눌러 닫기 전에 저장할지 복구할지 선택하세요. ${restoreNote}`;
     case "x":
-      return `닫기 버튼을 누르기 전에 저장하거나 되돌릴지 선택하세요. ${restoreNote}`;
+      return `닫기 버튼을 누르기 전에 저장할지 복구할지 선택하세요. ${restoreNote}`;
   }
 }
 
@@ -713,6 +792,16 @@ function toggleMaximizedDatabaseModal(button: HTMLButtonElement): void {
     windowEl.style.maxHeight = "";
   }
   button.replaceChildren(windowIcon(isMaximized ? "restore" : "maximize"));
-  button.title = isMaximized ? "창 크기로 복원" : "전체 화면";
+  button.title = isMaximized ? "창 크기로 복원 (Esc)" : "전체 화면";
   button.setAttribute("aria-label", isMaximized ? "데이터베이스 창 크기로 복원" : "데이터베이스 전체 화면");
+  // 토글 버튼이면서 눌림 상태 신호가 없었다 — 이벤트 에디터의 전체화면 버튼과 규약을 맞춘다.
+  button.setAttribute("aria-pressed", String(isMaximized));
+}
+
+/** 전체 화면이면 Esc 의 첫 타는 복원이다(닫기는 그다음). 이벤트 에디터와 같은 규약. */
+function exitMaximizedDatabaseModal(button: HTMLButtonElement): boolean {
+  const windowEl = button.closest(".database-modal-window");
+  if (!(windowEl instanceof HTMLElement) || !windowEl.classList.contains("maximized")) return false;
+  toggleMaximizedDatabaseModal(button);
+  return true;
 }

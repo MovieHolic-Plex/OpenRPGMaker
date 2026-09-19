@@ -454,13 +454,23 @@ function identityPanel(actor: ActorRecord, refreshBuildPreview: () => void): HTM
   ]);
 }
 
+/**
+ * 합성 patch(`{ ...이전값, 바뀐필드 }`)의 베이스는 **항상 store 에서 다시 읽는다.**
+ * 렌더 클로저가 잡은 actor 는 편집 중 재렌더 보류(400ms grace) 창에서 낡을 수 있고,
+ * 그 사이 AI 적용·undo 가 store 를 갈아치우면 낡은 베이스가 그 변경을 조용히 되돌린다.
+ * 같은 규약이 actorRecordBattlePanels.ts 의 currentActor 에도 있다.
+ */
+function currentActorCritical(actorId: string, fallback: ActorRecord["critical"]): ActorRecord["critical"] {
+  return store.getCurrent().database.actors.find((record) => record.id === actorId)?.critical ?? fallback;
+}
+
 function criticalPanel(actor: ActorRecord): HTMLElement {
   return actorPanel("크리티컬 공격", "actor-critical", [
     checkboxControl("크리티컬 사용", "db-field-actor-critical-enabled", actor.critical.enabled, (enabled) =>
-      updateDatabaseRecord("actors", actor.id, { critical: { ...actor.critical, enabled } })
+      updateDatabaseRecord("actors", actor.id, { critical: { ...currentActorCritical(actor.id, actor.critical), enabled } })
     ),
     numberControl("발생 확률 (1/N)", "db-field-actor-critical-rate", actor.critical.chanceDenominator, (chanceDenominator) =>
-      updateDatabaseRecord("actors", actor.id, { critical: { ...actor.critical, chanceDenominator } })
+      updateDatabaseRecord("actors", actor.id, { critical: { ...currentActorCritical(actor.id, actor.critical), chanceDenominator } })
     ),
     el("p", { class: "actor-field-help", text: "예: N이 30이면 공격할 때 평균 30번 중 1번 발생합니다." }),
   ]);

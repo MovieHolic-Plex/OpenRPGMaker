@@ -267,7 +267,11 @@ const GUIDE_SECTIONS: readonly GuideSection[] = [
   },
 ];
 
-export function openHelpModal(): void {
+/**
+ * @param sectionId 열자마자 이동할 목차 항목(GUIDE_SECTIONS 의 id). 생략하면 맨 위.
+ *   호출부가 이미 문맥을 아는 경우(예: DB 모달의 [도움말])에 그 자리로 바로 보낸다.
+ */
+export function openHelpModal(sectionId?: string): void {
   document.querySelector("[data-testid='help-modal']")?.remove();
 
   const closeButton = el("button", {
@@ -387,6 +391,12 @@ export function openHelpModal(): void {
   // Escape 는 공용 모달 스택이 라우팅한다. 자체 document 리스너로 잡으면 도크 모드에서
   // 데이터베이스를 켠 채 이 창을 열었을 때 데이터베이스까지 함께 닫혔다.
   registerModal(backdrop, close);
+  // 호출부가 지정한 섹션으로 바로 이동한다. 스크롤은 부착 뒤여야 먹는다.
+  const requested = sectionId ? sectionNodes.get(sectionId) : undefined;
+  if (requested && sectionId) {
+    requested.scrollIntoView({ block: "start" });
+    setActiveNav(sectionId);
+  }
   closeAction.focus();
 }
 

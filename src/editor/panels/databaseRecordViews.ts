@@ -146,7 +146,11 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
     });
     listEl = studio.scrollRegion;
     listPane = studio.pane;
-    listEl.scrollTop = listScrollTopForCollection(collection);
+    // 부착 전 요소에 scrollTop 을 대입하면 브라우저가 무시한다(스크롤 범위가 0이라).
+    // 여기서 바로 쓰면 아래 host.append 보다 먼저라 주인공 탭 스크롤 복원이 매번 no-op 였다.
+    // 가상 목록 경로와 같은 규약으로 프레임 뒤에 복원한다.
+    const restoredStudioScrollTop = listScrollTopForCollection(collection);
+    if (restoredStudioScrollTop > 0) scheduleFrame(() => { listEl.scrollTop = restoredStudioScrollTop; });
     listEl.addEventListener("scroll", () => setListScrollTopForCollection(collection, listEl.scrollTop));
     detailPane.classList.add("db-studio-inspector-pane");
   } else {
@@ -228,7 +232,9 @@ function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElem
       dataset: { testid: "db-add-record" },
       on: {
         click: () => {
-          setSelectedRecordId(collection, addDatabaseRecord(collection));
+          // reveal 없이 두면 새 레코드가 목록 끝에 붙기만 해서 스크롤 밖에 남고,
+          // 카테고리 칩이 켜져 있으면 아예 안 보인다.
+          setSelectedRecordId(collection, addDatabaseRecord(collection), { reveal: true });
           rerender();
         },
       },
@@ -241,7 +247,7 @@ function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElem
         click: () => {
           const selected = selectedRecordIdForSession(collection);
           if (!selected) return;
-          setSelectedRecordId(collection, duplicateDatabaseRecord(collection, selected));
+          setSelectedRecordId(collection, duplicateDatabaseRecord(collection, selected), { reveal: true });
           rerender();
         },
       },
@@ -375,6 +381,19 @@ export function deleteButton(collection: DatabaseCollection, rerender: () => voi
         const selected = selectedRecordIdForSession(collection);
         if (!selected) return;
 
+        // 선택은 필터와 무관하게 전체 목록에서 유지되므로, 칩·검색으로 가려진 레코드가
+        // 선택된 채로 남을 수 있다. 그 상태의 2단계 확인은 **화면에 없는 레코드**를 겨냥한다
+        // — 파괴 동작으로는 허용할 수 없다. 먼저 보이게 만들고 사용자에게 알린다.
+        const records = store.getCurrent().database[collection];
+        const isVisible = visibleRecordRows(collection, records).some((row) => row.record.id === selected);
+        if (!isVisible) {
+          disarmDelete(collection);
+          setSelectedRecordId(collection, selected, { reveal: true });
+          toast("선택한 레코드가 필터에 가려져 있었습니다. 목록에 표시했으니 확인하고 다시 누르세요.", "error");
+          rerender();
+          return;
+        }
+
         // 참조 가드 실패는 어차피 삭제할 수 없는 시도이므로 기존처럼 즉시(1클릭) 에러를 알린다
         // — 확인 단계를 강제하지 않는다.
         const blockedMessage = databaseReferenceMessage(collection, selected);
@@ -407,7 +426,10 @@ export function deleteButton(collection: DatabaseCollection, rerender: () => voi
           return;
         }
         toast("삭제했습니다 — Ctrl+Z로 되돌릴 수 있습니다.", "ok");
-        setSelectedRecordId(collection, store.getCurrent().database[collection][0]?.id);
+        // 삭제 후 선택은 첫 레코드로 점프하는데, 스크롤은 기존 위치가 복원된다. reveal 이
+        // 없으면 활성 행이 시야 밖에 있고, 다음 [삭제] 2단계 확인의 대상이 화면에 없는
+        // 레코드가 된다 — 파괴 동작으로는 위험한 조합이다.
+        setSelectedRecordId(collection, store.getCurrent().database[collection][0]?.id, { reveal: true });
         rerender();
       },
     },
@@ -560,7 +582,12 @@ function recordList(
   const reveal = revealIndex >= 0;
   const virtualList = createVirtualList<VisibleRow>({
     items: visible,
-    measureRows: collection === "enemies",
+    // 행 높이를 실측한다. 예전에는 enemies 한 컬렉션만 켜 두고 나머지 8개는 기본값
+    // DEFAULT_ROW_HEIGHT=24 로 돌았는데 실제 행은 36px+gap 이라, 임계값(80) 을 넘는 큰
+    // 컬렉션에서 스크롤 지도가 어긋났다(스크롤바 점프·행 순간이동).
+    // 리스트 모드의 행은 .db-list-row 로 높이가 균일해 measureRows 의 CSS 계약을 만족한다.
+    // 갤러리 카드는 이름 줄바꿈으로 높이가 달라질 수 있어 기존 고정 피치를 유지한다.
+    measureRows: !isGallery,
     className: isGallery ? "db-list db-gallery" : "db-list",
     rowHeight: isGallery ? GALLERY_ROW_HEIGHT : undefined,
     columns: isGallery ? (container) => galleryColumnsFor(container) : undefined,
