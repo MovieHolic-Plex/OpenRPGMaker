@@ -47,16 +47,22 @@ function sameVisibleStatus(left: MapEditLockStatus, right: MapEditLockStatus): b
     case "idle":
       return true;
     case "checking":
-      return left.mapId === right.mapId && left.mapName === right.mapName;
+      return right.kind === "checking"
+        && left.mapId === right.mapId
+        && left.mapName === right.mapName;
     case "held":
-      return left.mapId === right.mapId && left.mapName === right.mapName;
+      return right.kind === "held"
+        && left.mapId === right.mapId
+        && left.mapName === right.mapName;
     case "locked":
-      return left.mapId === right.mapId
+      return right.kind === "locked"
+        && left.mapId === right.mapId
         && left.mapName === right.mapName
         && left.ownerLabel === right.ownerLabel
         && left.canTakeover === right.canTakeover;
     case "unavailable":
-      return left.mapId === right.mapId
+      return right.kind === "unavailable"
+        && left.mapId === right.mapId
         && left.mapName === right.mapName
         && left.reason === right.reason
         && left.message === right.message;
