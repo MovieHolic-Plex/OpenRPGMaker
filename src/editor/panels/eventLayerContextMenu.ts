@@ -176,58 +176,58 @@ function deleteEventAt(target: EventLayerContextMenuTarget): void {
 }
 
 function createTransferEvent(target: EventLayerContextMenuTarget): void {
-  const eventId = openNewEventEditorModal(target.mapId, target.x, target.y);
-  if (!eventId) return;
-  const command: Command = {
-    kind: "transfer",
-    mapId: target.mapId,
-    x: target.x,
-    y: target.y,
-    direction: "retain",
-    fade: "black",
-  };
-  store.update((project) => {
-    const event = project.maps[target.mapId]?.events.find((item) => item.id === eventId);
-    const page = event?.pages?.[event.pages.length - 1];
-    if (!event || !page) return;
-    event.trigger = { kind: "playerTouch" };
-    page.name = "장소 이동";
-    page.trigger = { kind: "playerTouch" };
-    page.commands = [command];
-  });
-  // Open the transfer player picker dialog immediately so the user can choose
-  // the destination map/position right away.
-  openTransferPlayerDialog({
-    command,
-    onApply: (updated) => {
-      store.update((project) => {
-        const event = project.maps[target.mapId]?.events.find((item) => item.id === eventId);
-        const page = event?.pages?.[event.pages.length - 1];
-        if (!event || !page) return;
-        page.commands = [updated];
-      });
-    },
+  openNewEventEditorModal(target.mapId, target.x, target.y, (eventId) => {
+    const command: Command = {
+      kind: "transfer",
+      mapId: target.mapId,
+      x: target.x,
+      y: target.y,
+      direction: "retain",
+      fade: "black",
+    };
+    store.update((project) => {
+      const event = project.maps[target.mapId]?.events.find((item) => item.id === eventId);
+      const page = event?.pages?.[event.pages.length - 1];
+      if (!event || !page) return;
+      event.trigger = { kind: "playerTouch" };
+      page.name = "장소 이동";
+      page.trigger = { kind: "playerTouch" };
+      page.commands = [command];
+    });
+    // Open the transfer player picker dialog immediately so the user can choose
+    // the destination map/position right away.
+    openTransferPlayerDialog({
+      command,
+      onApply: (updated) => {
+        store.update((project) => {
+          const event = project.maps[target.mapId]?.events.find((item) => item.id === eventId);
+          const page = event?.pages?.[event.pages.length - 1];
+          if (!event || !page) return;
+          page.commands = [updated];
+        });
+      },
+    });
   });
 }
 
 function createVehicleLocationEvent(target: EventLayerContextMenuTarget): void {
-  const eventId = openNewEventEditorModal(target.mapId, target.x, target.y);
-  if (!eventId) return;
-  store.update((project) => {
-    const event = project.maps[target.mapId]?.events.find((item) => item.id === eventId);
-    const page = event?.pages?.[event.pages.length - 1];
-    if (!event || !page) return;
-    page.name = "탈것 시작 위치";
-    page.commands = [{
-      kind: "m2Command",
-      commandId: "m2-039-set-vehicle-location",
-      fields: {
-        target: "boat",
-        mapId: target.mapId,
-        x: target.x,
-        y: target.y,
-      },
-    }];
+  openNewEventEditorModal(target.mapId, target.x, target.y, (eventId) => {
+    store.update((project) => {
+      const event = project.maps[target.mapId]?.events.find((item) => item.id === eventId);
+      const page = event?.pages?.[event.pages.length - 1];
+      if (!event || !page) return;
+      page.name = "탈것 시작 위치";
+      page.commands = [{
+        kind: "m2Command",
+        commandId: "m2-039-set-vehicle-location",
+        fields: {
+          target: "boat",
+          mapId: target.mapId,
+          x: target.x,
+          y: target.y,
+        },
+      }];
+    });
   });
 }
 

@@ -61,6 +61,8 @@ type StagedDraft = {
   readonly rows: readonly CommandDiffRow[];
   readonly excluded: Set<string>;
   readonly scope: AssistScope;
+  /** Exact command list used to compute the diff; apply must rebase if it changed. */
+  readonly baseCommands: readonly Command[];
 };
 
 // 재렌더를 살아남는 패널 상태(이벤트+페이지 단위).
@@ -435,7 +437,12 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
         ? result.commands
         : withAppended(liveBefore, selection, result.commands);
       const rows = diffCommandLists(liveBefore, after);
-      state.staged = { rows, excluded: new Set<string>(), scope: result.scope };
+      state.staged = {
+        rows,
+        excluded: new Set<string>(),
+        scope: result.scope,
+        baseCommands: structuredClone(liveBefore),
+      };
       const fixedNote = result.attempts > 1 ? ` (스스로 ${result.attempts - 1}번 고쳤습니다)` : "";
       // 숫자는 칩과 결과 줄이 말한다 — 상태줄은 다음 행동만.
       state.status = hasCommandDiffChanges(rows)
@@ -484,6 +491,15 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
   applyBtn.addEventListener("click", () => {
     const staged = state.staged;
     if (!staged || !hasCommandDiffChanges(staged.rows, staged.excluded)) return;
+    const livePage = store.getCurrent().maps[mapId]?.events
+      .find((entry) => entry.id === eventId)
+      ?.pages?.find((entry) => entry.id === page.id);
+    if (!livePage || JSON.stringify(livePage.commands) !== JSON.stringify(staged.baseCommands)) {
+      state.staged = null;
+      setStatus("초안을 만든 뒤 명령 목록이 바뀌었어요. 현재 목록으로 다시 만들어 주세요.", "error");
+      renderStaged();
+      return;
+    }
     const commands = applyCommandDiff(staged.rows, staged.excluded);
     const summary = stagedDiffSummary(staged.rows, staged.excluded);
     // 적용 전에 초안을 비워, 스토어 갱신으로 재생성될 패널이 목록을 다시 보이게 한다.

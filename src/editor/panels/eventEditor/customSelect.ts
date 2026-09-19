@@ -62,6 +62,7 @@ export function installEventEditorCustomSelects(root: HTMLElement): EventEditorC
     current.unregisterLayer?.();
     current.owner.trigger.setAttribute("aria-expanded", "false");
     current.owner.trigger.removeAttribute("aria-controls");
+    current.owner.trigger.removeAttribute("aria-activedescendant");
     current.popover.remove();
     if (restoreFocus && current.owner.trigger.isConnected) current.owner.trigger.focus({ preventScroll: true });
   };
@@ -104,6 +105,7 @@ export function installEventEditorCustomSelects(root: HTMLElement): EventEditorC
     });
     const target = menu.options[resolved]?.button;
     if (!target) return;
+    menu.owner.trigger.setAttribute("aria-activedescendant", target.id);
     try {
       target.scrollIntoView({ block: "nearest" });
     } catch {
@@ -175,6 +177,7 @@ export function installEventEditorCustomSelects(root: HTMLElement): EventEditorC
       button.type = "button";
       button.className = "event-custom-select-option";
       button.setAttribute("role", "option");
+      button.id = `event-custom-select-option-${nextSelectId()}`;
       button.setAttribute("aria-selected", String(option.index === select.selectedIndex));
       button.disabled = option.disabled || (inGroup && (parent as HTMLOptGroupElement).disabled);
       button.dataset.optionIndex = String(option.index);
@@ -256,10 +259,12 @@ export function installEventEditorCustomSelects(root: HTMLElement): EventEditorC
     list.setAttribute("aria-label", accessibleSelectName(instance.select));
     const options = buildMenuOptions(instance.select, list);
 
+    let searchInput: HTMLInputElement | null = null;
     if (options.length >= SEARCH_THRESHOLD) {
       const searchWrap = document.createElement("div");
       searchWrap.className = "event-custom-select-search-wrap";
       const search = document.createElement("input");
+      searchInput = search;
       search.className = "event-custom-select-search";
       search.type = "search";
       search.placeholder = "옵션 검색…";
@@ -309,6 +314,7 @@ export function installEventEditorCustomSelects(root: HTMLElement): EventEditorC
       entry.button.classList.toggle("is-active", index === openMenu?.activeIndex);
     });
     positionMenu();
+    if (searchInput) queueMicrotask(() => searchInput?.focus({ preventScroll: true }));
     const active = options[openMenu.activeIndex]?.button;
     try {
       active?.scrollIntoView({ block: "nearest" });
@@ -409,6 +415,7 @@ export function installEventEditorCustomSelects(root: HTMLElement): EventEditorC
       const text = selected?.label || selected?.textContent || select.getAttribute("placeholder") || "선택";
       valueLabel.textContent = text;
       trigger.title = text;
+      trigger.setAttribute("aria-label", `${accessibleSelectName(select)}: ${text}`);
       trigger.disabled = select.disabled || select.options.length === 0;
       wrapper.classList.toggle("is-disabled", trigger.disabled);
       wrapper.classList.toggle("is-placeholder", !selected);

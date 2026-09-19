@@ -1075,16 +1075,28 @@ function doImport(): void {
   input.addEventListener("change", () => {
     const file = input.files?.[0];
     if (!file) return;
-    if (isProjectPackageFile(file)) {
-      void replaceProjectFromPackage(file);
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => replaceProjectFromJson(String(reader.result));
-    reader.onerror = () => toast("파일 읽기 실패", "error");
-    reader.readAsText(file);
+    void confirmAndImport(file);
   });
   input.click();
+}
+
+async function confirmAndImport(file: File): Promise<void> {
+  const confirmed = await showConfirm({
+    title: "프로젝트 가져오기",
+    message: "현재 프로젝트를 가져온 파일로 교체합니다. 저장하지 않은 변경과 이벤트 초안은 사라집니다.",
+    confirmLabel: "가져오기",
+    cancelLabel: "취소",
+    danger: true,
+  });
+  if (!confirmed) return;
+  if (isProjectPackageFile(file)) {
+    void replaceProjectFromPackage(file);
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => replaceProjectFromJson(String(reader.result));
+  reader.onerror = () => toast("파일 읽기 실패", "error");
+  reader.readAsText(file);
 }
 
 function isProjectPackageFile(file: File): boolean {

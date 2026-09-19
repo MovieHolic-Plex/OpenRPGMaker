@@ -5,6 +5,7 @@ import { ProjectFormatError } from "./errors";
 import { commandKinds, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { validateLightSource } from "./shapeLightingFields";
 import { isSeason, isTimePhase } from "@/project/gameTime";
+import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 
 import { isRelationshipState } from "@/project/relationshipState";
 export function validateCommandArray(label: string, value: unknown): void {
@@ -440,8 +441,49 @@ function validateCommandShape(label: string, value: unknown): void {
       if (Number.isInteger(maxLength) && maxLength >= 1 && maxLength <= 12) return;
       throw new ProjectFormatError(`${label}.maxLength가 잘못되었습니다.`);
     }
+    case "m2Command":
+      validateM2CommandShape(label, command);
+      return;
     default:
       return;
+  }
+}
+
+function validateM2CommandShape(label: string, command: Record<string, unknown>): void {
+  const commandId = requireString(`${label}.commandId`, command.commandId);
+  const catalog = m2CommandById(commandId);
+  if (!catalog) throw new ProjectFormatError(`${label}.commandId를 카탈로그에서 찾을 수 없습니다: ${commandId}`);
+  const fields = requireRecord(`${label}.fields`, command.fields);
+  for (const [key, value] of Object.entries(fields)) {
+    if (typeof value !== "string" && typeof value !== "number" && typeof value !== "boolean") {
+      throw new ProjectFormatError(`${label}.fields.${key}는 문자열·숫자·불리언이어야 합니다.`);
+    }
+    if (typeof value === "number" && !Number.isFinite(value)) {
+      throw new ProjectFormatError(`${label}.fields.${key}가 유한한 숫자가 아닙니다.`);
+    }
+  }
+  for (const spec of catalog.fields) {
+    const value = fields[spec.key];
+    if (value === undefined) continue;
+    switch (spec.type) {
+      case "number":
+        if (typeof value === "string" && value.trim() !== "" && Number.isFinite(Number(value))) break;
+        requireNumber(`${label}.fields.${spec.key}`, value);
+        break;
+      case "boolean":
+        if (typeof value !== "boolean" && value !== "true" && value !== "false") {
+          throw new ProjectFormatError(`${label}.fields.${spec.key}가 불리언이 아닙니다.`);
+        }
+        break;
+      case "text":
+      case "textarea":
+      case "select":
+        requireString(`${label}.fields.${spec.key}`, value);
+        break;
+    }
+    if (spec.options && typeof value === "string" && !spec.options.some((option) => option.value === value)) {
+      throw new ProjectFormatError(`${label}.fields.${spec.key} 값이 카탈로그 옵션에 없습니다: ${value}`);
+    }
   }
 }
 

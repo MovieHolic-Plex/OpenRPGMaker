@@ -379,7 +379,15 @@ export function renderClassicPageTabStrip(
       text: "+",
       attrs: { type: "button", title: "새 페이지 추가", "aria-label": "새 페이지 추가" },
       dataset: { testid: "evt-page-add" },
-      on: { click: () => addEventPage(mapId, ev.id) },
+      on: {
+        click: () => {
+          const pageId = addEventPage(mapId, ev.id);
+          if (pageId) {
+            toast("조건 없는 새 페이지를 기존 승자보다 낮은 우선순위로 추가했어요.", "info");
+            queueMicrotask(() => focusRenderedPageTab(pageId));
+          }
+        },
+      },
     })
   );
 
@@ -451,6 +459,11 @@ function focusRenderedPageTab(pageId: string): void {
   for (const tab of document.querySelectorAll<HTMLElement>(".evt-page-segment[data-page-id]")) {
     if (tab.dataset.pageId !== pageId) continue;
     tab.focus({ preventScroll: true });
+    try {
+      tab.scrollIntoView({ block: "nearest", inline: "nearest" });
+    } catch {
+      // Test DOMs may not implement scrollIntoView.
+    }
     return;
   }
 }

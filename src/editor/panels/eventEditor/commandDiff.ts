@@ -182,7 +182,7 @@ function stableStringify(value: unknown): string {
   return `{${entries.map(([key, item]) => `${JSON.stringify(key)}:${stableStringify(item)}`).join(",")}}`;
 }
 
-function ownFieldSignature(command: Command): string {
+export function commandOwnFieldSignature(command: Command): string {
   const clone: Record<string, unknown> = { ...(command as unknown as Record<string, unknown>) };
   for (const field of BRANCH_FIELDS_BY_KIND[command.kind] ?? []) delete clone[field];
   // choices 는 options 안에 텍스트(자기 필드)와 branch(자식)가 섞여 있다.
@@ -247,7 +247,7 @@ function diffLists(
   idPrefix: string,
   depth: number,
 ): CommandDiffRow[] {
-  const ops = alignBySignature(before.map(ownFieldSignature), after.map(ownFieldSignature));
+  const ops = alignBySignature(before.map(commandOwnFieldSignature), after.map(commandOwnFieldSignature));
   const rows: CommandDiffRow[] = [];
   const nextId = (): string => `${idPrefix}${rows.length}`;
 

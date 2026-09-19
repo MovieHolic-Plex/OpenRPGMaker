@@ -417,7 +417,8 @@
 .event-editor-modal-header .event-draft-validation-issue:focus-visible {
   background: color-mix(in srgb, var(--ev-issue-tone) 8%, transparent);
   border-color: color-mix(in srgb, var(--ev-issue-tone) 30%, transparent);
-  outline: none;
+  outline: 2px solid var(--ev-issue-tone);
+  outline-offset: 2px;
 }
 
 .event-editor-modal-header .event-draft-validation-severity {

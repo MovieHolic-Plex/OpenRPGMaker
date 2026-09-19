@@ -476,7 +476,7 @@ function page3FieldsFor(title: string): readonly M2CommandFieldSpec[] | undefine
       return [
         { key: "color", label: "색상", type: "select", defaultValue: "neutral", options: SCREEN_COLOR_OPTIONS },
         { key: "value", label: "색(R,G,B 또는 hex)", type: "text", defaultValue: "" },
-        { key: "duration", label: "시간(초/ms)", type: "number", defaultValue: 0 },
+        { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 0 },
       ];
     case "Flash Screen":
       return [

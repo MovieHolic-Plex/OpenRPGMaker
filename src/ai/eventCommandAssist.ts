@@ -16,6 +16,7 @@
 // 상태로 최종 목록을 받으면 모델이 못 본 명령을 지워버린다.
 
 import { newCommand } from "@/editor/eventCommandFactory";
+import { commandOwnFieldSignature } from "@/editor/panels/eventEditor/commandDiff";
 import { commandBranches } from "@/editor/tools/commandTraversal";
 import { isPassableLanding } from "@/project/collision";
 import { resolvePictureSource } from "@/player/pictures/pictureResources";
@@ -399,6 +400,9 @@ export function parseAndValidate(
      * 맵이 필수다. 생략하면 시작 맵으로 본다(구 호출자 호환).
      */
     readonly mapId?: string;
+    /** Existing commands are supplied for append scope so duplicate output is rejected. */
+    readonly scope?: AssistScope;
+    readonly existingCommands?: readonly Command[];
   } = {},
 ): AssistParseResult {
   const jsonText = extractJsonArrayText(text);
@@ -423,6 +427,14 @@ export function parseAndValidate(
     return { ok: false, errors: [cause instanceof Error ? cause.message : String(cause)] };
   }
   const commands = parsed as Command[];
+
+  if (options.scope === "append" && options.existingCommands) {
+    const existing = new Set(options.existingCommands.map(commandOwnFieldSignature));
+    const duplicate = commands.find((command) => existing.has(commandOwnFieldSignature(command)));
+    if (duplicate) {
+      return { ok: false, errors: [`append 결과에 기존 명령과 같은 커맨드(${duplicate.kind})가 포함되어 있습니다. 새 커맨드만 출력하세요.`] };
+    }
+  }
 
   // 2) AI 저작 표면 검증 — 프롬프트에서 숨긴 명령을 모델이 임의로 반환해도 받아들이지 않는다.
   try {
@@ -713,7 +725,12 @@ export async function runEventCommandAssist(options: {
     // assistant 응답은 항상 문자열 content다(멀티모달 파트는 비전 주입 user 메시지 전용).
     const content = typeof result.message.content === "string" ? result.message.content : "";
     // mapId 는 이동 경로 대상 대조에 쓰인다 — 편집 중인 맵이 아니면 판정이 틀린다.
-    const parsed = parseAndValidate(context.project, content, { allowEmpty, mapId: context.mapId });
+    const parsed = parseAndValidate(context.project, content, {
+      allowEmpty,
+      mapId: context.mapId,
+      scope,
+      existingCommands: context.page?.commands,
+    });
     if (parsed.ok) return { commands: parsed.commands, scope, attempts: attempt };
 
     lastErrors = parsed.errors;

@@ -125,7 +125,17 @@ export function addEventPage(mapId: MapId, eventId: string): string {
       nextAvailablePageNumber(event.pages)
     );
     page.conditions = [];
-    event.pages.push(page);
+    const selectedPageId = editorState.get().selectedEventPageId;
+    const selectedIndex = selectedPageId
+      ? event.pages.findIndex((candidate) => candidate.id === selectedPageId)
+      : -1;
+    // A page appended at the end wins runtime resolution immediately. Insert
+    // before the active page (or before the current winner when there is no
+    // selection) so creating a blank page cannot silently change gameplay.
+    const insertionIndex = selectedIndex >= 0
+      ? selectedIndex
+      : Math.max(0, event.pages.length - 1);
+    event.pages.splice(insertionIndex, 0, page);
     pageId = page.id;
   }, pageChange(mapId, eventId, `페이지 추가 (${position}번째)`));
   if (pageId) editorState.set({ selectedEventPageId: pageId });
@@ -334,7 +344,7 @@ export function addEventPageCommandAt(
   command: Command
 ): void {
   store.update((project) => {
-    const list = resolvePageCommandList(project.maps[mapId]?.events, eventId, pageId, containerPath);
+    const list = resolvePageCommandList(project.maps[mapId]?.events, eventId, pageId, containerPath, true);
     list?.push(structuredClone(command));
   }, pageChange(
     mapId,
@@ -374,7 +384,7 @@ export function replaceEventPageCommandAt(
   store.update((project) => {
     const lastIdx = path[path.length - 1];
     const list = resolvePageCommandList(project.maps[mapId]?.events, eventId, pageId, path.slice(0, -1));
-    if (!list || lastIdx === undefined) return;
+    if (!list || lastIdx === undefined || lastIdx < 0 || lastIdx >= list.length) return;
     list[lastIdx] = structuredClone(command);
   }, pageChange(
     mapId,
@@ -394,7 +404,7 @@ export function deleteEventPageCommandAt(
   store.update((project) => {
     const lastIdx = path[path.length - 1];
     const list = resolvePageCommandList(project.maps[mapId]?.events, eventId, pageId, path.slice(0, -1));
-    if (!list || lastIdx === undefined) return;
+    if (!list || lastIdx === undefined || lastIdx < 0 || lastIdx >= list.length) return;
     list.splice(lastIdx, 1);
   }, pageChange(
     mapId,
@@ -414,7 +424,7 @@ export function moveEventPageCommandAt(
   store.update((project) => {
     const lastIdx = path[path.length - 1];
     const list = resolvePageCommandList(project.maps[mapId]?.events, eventId, pageId, path.slice(0, -1));
-    if (!list || lastIdx === undefined) return;
+    if (!list || lastIdx === undefined || lastIdx < 0 || lastIdx >= list.length) return;
     const newIdx = lastIdx + dir;
     if (newIdx < 0 || newIdx >= list.length) return;
     const moving = list[lastIdx];
@@ -506,10 +516,16 @@ export function triggerFromKind(kind: SimpleTriggerKind): Trigger {
   return { kind };
 }
 
-function resolvePageCommandList(events: GameEvent[] | undefined, eventId: string, pageId: string, containerPath: readonly number[]): Command[] | null {
+function resolvePageCommandList(
+  events: GameEvent[] | undefined,
+  eventId: string,
+  pageId: string,
+  containerPath: readonly number[],
+  createBranches = false,
+): Command[] | null {
   const page = events?.find((event) => event.id === eventId)?.pages?.find((item) => item.id === pageId);
   if (!page) return null;
-  return resolveCommandListAtPath(page.commands, containerPath, { missingBranches: "create" });
+  return resolveCommandListAtPath(page.commands, containerPath, { missingBranches: createBranches ? "create" : "read" });
 }
 
 // ── 편집 행위 라벨 ────────────────────────────────────────────────

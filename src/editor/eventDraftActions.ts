@@ -51,7 +51,15 @@ export function createEventDraft(
 
 export function beginExistingEventDraft(mapId: MapId, eventId: string): boolean {
   const event = store.getCurrent().maps[mapId]?.events.find((item) => item.id === eventId);
-  if (!event || event.draft?.kind === "new") return false;
+  if (!event) return false;
+  if (event.draft?.kind === "new") {
+    // A newly created event already owns a draft. Reopening its modal must
+    // restore that draft instead of treating the event as an unavailable zombie.
+    rememberEventDraftVaultEntry(mapId, event);
+    selectEventPage(mapId, eventId, editorState.get().selectedEventPageId);
+    persistEventDraftVaultNow();
+    return true;
+  }
   if (event.draft?.kind === "edit") {
     rememberEventDraftVaultEntry(mapId, event);
     selectEventPage(mapId, eventId, editorState.get().selectedEventPageId);
