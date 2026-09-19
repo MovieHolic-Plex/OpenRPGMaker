@@ -52,6 +52,8 @@ export interface EventAssistContext {
   readonly project: Project;
   readonly mapId: string;
   readonly requestText?: string;
+  /** Explicit append requests retain existing commands in validation context. */
+  readonly scope?: AssistScope;
   readonly event?: GameEvent;
   readonly page?: EventPage;
   // 현재 커맨드 리스트에서 선택된 경로. 선택 **여부**만 쓴다 — 경로 배열 자체는
@@ -238,7 +240,7 @@ function existingCommandsSection(page: EventPage | undefined, scope: AssistScope
     // 취급해 최종 목록에서 빠뜨린다.
     return [
       "## 현재 페이지의 기존 커맨드",
-      `총 ${page.commands.length}개가 이미 있다. 너무 길어서 본문을 싣지 못했다.`,
+      `총 ${page.commands.length}개가 이미 있다. 이번 요청은 추가 전용이라 기존 본문을 싣지 않는다.`,
       "기존 명령은 손대지 말고, 뒤에 붙일 새 명령만 만들어라.",
     ].join("\n");
   }
@@ -278,7 +280,7 @@ function outputContractSection(scope: AssistScope): string {
 
 export function buildEventAssistPrompt(context: EventAssistContext): string {
   const { project, mapId, event, page, selection, selectionLabel } = context;
-  const scope = resolveAssistScope(page);
+  const scope = context.scope ?? resolveAssistScope(page);
   const mapName = project.maps[mapId]?.name ?? mapId;
   const kinds = aiCommandKinds(project);
   const sections: string[] = [];
@@ -686,6 +688,7 @@ function validateSupplementalReferences(commands: readonly Command[], context: R
 
 export async function runEventCommandAssist(options: {
   readonly config: AiConfig;
+  readonly chat?: typeof chatCompletion;
   readonly prompt: string;
   readonly context: EventAssistContext;
   readonly onDelta?: (delta: string) => void;
@@ -695,7 +698,7 @@ export async function runEventCommandAssist(options: {
 }): Promise<AssistRunResult> {
   const { prompt, context, onDelta, signal } = options;
   const config = resolveSurfaceAiConfig("event-command", options.config);
-  const scope = resolveAssistScope(context.page);
+  const scope = context.scope ?? resolveAssistScope(context.page);
   const allowEmpty = scope === "page" && (context.page?.commands.length ?? 0) > 0;
   const messages: ChatMessage[] = [
     {
@@ -716,7 +719,7 @@ export async function runEventCommandAssist(options: {
 
   let lastErrors: string[] = [];
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
-    const result = await chatCompletion(config, {
+    const result = await (options.chat ?? chatCompletion)(config, {
       messages,
       stream: Boolean(onDelta),
       onToken: onDelta,

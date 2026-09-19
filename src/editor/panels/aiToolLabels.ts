@@ -68,6 +68,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   script_cutscene: people("연출 쓰기", "book"),
   script_cutscene_preset: people("연출 프리셋", "book"),
   upsert_event: people("이벤트 쓰기", "flag"),
+  event_command_assist: people("이벤트 명령 만들기", "flag"),
   move_event: people("이벤트 옮기기", "flag"),
   remove_event: people("이벤트 삭제", "flag"),
   duplicate_event: people("이벤트 복제", "flag"),

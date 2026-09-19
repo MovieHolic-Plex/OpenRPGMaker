@@ -9,6 +9,8 @@
 
 import { TOOL_REGISTRY } from "@/editor/tools/toolRegistry";
 import { runTool } from "@/editor/tools";
+import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
+import { runToolAsync } from "@/editor/tools/asyncToolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
 
 export interface PiToolTextContent {
@@ -151,9 +153,11 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
     label: tool.name,
     description: tool.description,
     parameters: tool.parameters,
-    async execute(_toolCallId, params) {
+    async execute(_toolCallId, params, signal) {
       const args = params && typeof params === "object" ? (params as Record<string, unknown>) : {};
-      const result = runTool(ctx, tool.name, args);
+      const result = tool.name === EVENT_COMMAND_ASSIST_TOOL
+        ? await runToolAsync(ctx, tool.name, args, { signal })
+        : runTool(ctx, tool.name, args);
       options.onCall?.({ name: tool.name, args, result });
       if (!result.ok) throw new Error(formatPiToolFailure(result, maxIssues));
       return { content: [{ type: "text", text: formatPiToolSuccess(result, maxDataChars) }], details: result };

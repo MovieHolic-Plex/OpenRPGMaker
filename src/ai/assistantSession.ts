@@ -1,3 +1,4 @@
+import { eventScopeAllowsTool, eventScopeRefusal, type EventCommandScope } from "./eventCommandScope";
 import { refreshSharedCharacterGraphics } from "@/project/sharedCharacterFaceResolver";
 import { configForRole } from "./modelRoles";
 import { configForLegacySupervisor } from "./ultrabrainConfig";
@@ -32,6 +33,8 @@ import { APPEARANCE_GENERATION_TOOL } from "@/editor/tools/characterAppearanceTo
 import { GAME_OVER_IMAGE_TOOL, OPENING_IMAGE_TOOL } from "@/editor/tools/cinematicTools";
 import { IMAGE_ASSET_TOOL } from "@/editor/tools/imageAssetTools";
 import type { AppearanceGenerationHandoff } from "@/editor/characterAppearanceGeneration";
+import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
+import { runToolAsync } from "@/editor/tools/asyncToolRunner";
 import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
 import { validateArgs } from "@/editor/tools/jsonSchema";
 import { viewportVillageBounds } from "@/editor/tools/authorVillageSupport";
@@ -811,6 +814,7 @@ export class AssistantSession {
     return operation;
   }
   private storeBacked = false;
+  private eventCommandScope: EventCommandScope | undefined;
   private runReceipt: ProjectPersistenceReceipt | null = null;
   private wikiDelivery: {
     owner: { current: TurnResult | null };
@@ -1755,6 +1759,7 @@ export class AssistantSession {
     if (!operation) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted",
       runOutcome: deriveRunOutcome({ execution: "cancelled", acceptance: null, hasPendingDraft: false, hasApplied: false, persistence: "none" }) };
     signal = operation.signal;
+    this.eventCommandScope = opts?.eventCommandScope ? structuredClone(opts.eventCommandScope) : undefined;
     this.recoveryOperation = opts?.driverContinue && this.recoveredCheckpoint ? operation : null;
     if (this.recoveryOperation !== operation) { this.recoveredCheckpoint = null; this.recoveryBudget = null; }
     const subscriber = onEvent;
@@ -1819,7 +1824,7 @@ export class AssistantSession {
       this.readEvidence.begin(undefined);
       this.rebuildSystemPrompt();
     }
-    this.milestoneAutoApply = opts?.autonomous === true;
+    this.milestoneAutoApply = opts?.autonomous === true && !this.eventCommandScope;
     if (this.milestoneApplyFailed && !this.staleProposal) {
       // 실패한 proposed draft를 다음 턴으로 가져가면 같은 커밋 오류가 반복된다. 저장소는 실패
       // 당시 바뀌지 않았으므로 canonical store에서 세션 draft를 다시 시작한다.
@@ -1889,7 +1894,7 @@ export class AssistantSession {
       }
       operation.assertCurrent();
       const first = await operation.wait(this.executeUserTurn(text, onEvent, signal, turnOptions, reviewedDraftAtEntry));
-      const last = opts?.autonomous === true && !this.lastTurnPlanOnly && this.turnComposerMode !== "ask"
+      const last = opts?.autonomous === true && !this.eventCommandScope && !this.lastTurnPlanOnly && this.turnComposerMode !== "ask"
         ? await operation.wait(this.runAutonomousDriver(first, onEvent, signal, turnOptions)) : first;
       if (signal?.aborted) this.runExecution = "cancelled";
       return await this.finishAssessedRunRecap(last, startedAt, usageBefore, auditFrom, subscriber);
@@ -2052,7 +2057,7 @@ export class AssistantSession {
     this.lastTurnPlanOnly = false;
     this.turnIsDriverContinue = options.driverContinue === true;
     this.skipPlannerRoundOnly = false;
-    if (this.prepareProjectWiki && !this.turnIsDriverContinue) {
+    if (this.prepareProjectWiki && !this.turnIsDriverContinue && !this.eventCommandScope) {
       const owner = this.runResult;
       try {
         const world = await operation.wait(this.prepareProjectWiki({
@@ -4348,6 +4353,7 @@ export class AssistantSession {
     onEvent: (event: SessionEvent) => void,
     proposedByKey: Map<string, ProposedCall>
   ): number {
+    if (this.eventCommandScope) return 0;
     const assets = [...this.specsByMap.values()]
       .filter(({ turnIndex }) => turnIndex === this.currentTurnIndex)
       .flatMap(({ spec }) => spec.assets.filter(asset => asset.kind === "npc").map(asset => ({ mapId: spec.mapId, asset })));
@@ -4425,7 +4431,7 @@ export class AssistantSession {
   ): Promise<"none" | "applied" | "rekick"> {
     const operation = this.runOperation;
     operation.assertCurrent();
-    if (signal?.aborted) return "none";
+    if (signal?.aborted || this.eventCommandScope) return "none";
     const pending = collectPendingNpcs(this.ctx.project, this.baselineProject);
     if (pending.length === 0) return "none";
     let outcome: "none" | "applied" | "rekick" = "none";
@@ -4794,7 +4800,7 @@ export class AssistantSession {
           discoveredToolNames: this.turnEscalatedToolNames,
           requiredReadTools: this.readEvidence.requiredReadTools(),
           workPlan: this.workPlan,
-          fullCatalogFallback: this.turnFullCatalogFallback,
+          fullCatalogFallback: this.eventCommandScope ? true : this.turnFullCatalogFallback,
         }),
         GET_ORIGINAL_CONTEXT_TOOL,
         CORRECT_VERIFICATION_TOOL,
@@ -4803,6 +4809,7 @@ export class AssistantSession {
         ...(planToolsOn ? WORK_PLAN_TOOLS : []),
         ...(this.acceptance ? ACCEPTANCE_TOOLS : []),
       ]
+        .filter((tool) => !this.eventCommandScope || eventScopeAllowsTool(tool.function.name))
         .filter((tool) => this.turnComposerMode !== "ask" || !isWriteToolName(tool.function.name))
         .map((tool) => tool.function.name === "verify_npc_reward" ? tool : injectToolReasonIntoOpenAiTool(tool));
       const toolsChars = JSON.stringify(tools).length;
@@ -5121,6 +5128,8 @@ export class AssistantSession {
           } else if (parsedCall.parseError !== null) {
             toolResult = invalidJsonArgsResult(name, call.function.arguments ?? "", parsedCall.parseError);
             this.pushAudit({ kind: "status", text: `tool-args:invalid-json ${name} — ${parsedCall.parseError}` });
+          } else if (this.eventCommandScope && eventScopeRefusal(this.eventCommandScope, name, args)) {
+            toolResult = eventScopeRefusal(this.eventCommandScope, name, args)!;
           } else if (this.turnComposerMode === "ask" && isWriteToolName(name)) {
             // 노출 목록은 감사용이고 실행은 이름으로 한다 — 모델이 외워 둔 쓰기 툴을 불러도 여기서 막는다.
             toolResult = composerAskRefusal(name);
@@ -5253,7 +5262,12 @@ export class AssistantSession {
                 : { warnings: [] };
               if (isSpecGatePass(gate)) {
                 const before = this.ctx.project;
-                toolResult = runTool(this.ctx, name, args, { dryRun: false });
+                toolResult = name === EVENT_COMMAND_ASSIST_TOOL
+                  ? await operation.wait(runToolAsync(this.ctx, name, args, {
+                    dryRun: false, signal: operation.signal, config: this.config, chat: this.chat,
+                    projectScopeKey: this.contextOptions.projectScopeKey, eventCommandScope: this.eventCommandScope,
+                  }))
+                  : runTool(this.ctx, name, args, { dryRun: false });
                 if (toolResult.ok) {
                   gate.commitExpansion?.();
                   this.pruneRemovedMapSpecs(before, this.ctx.project, name === "reset_project");
