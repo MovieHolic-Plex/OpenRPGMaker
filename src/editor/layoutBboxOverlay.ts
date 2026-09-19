@@ -1,5 +1,5 @@
 import { TILE_SIZE } from "@/assets/bundled";
-import { editorState } from "@/editor/editorState";
+import { editorState, editorStateChangedOnlyCanvasOverlay } from "@/editor/editorState";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 
@@ -75,7 +75,13 @@ function roleShort(role: string): string {
 
 export function installLayoutBboxOverlay(): () => void {
   renderBboxes();
-  const offEditor = editorState.subscribe(() => renderBboxes());
+  let lastEditorState = editorState.get();
+  const offEditor = editorState.subscribe((state) => {
+    const previous = lastEditorState;
+    lastEditorState = state;
+    if (editorStateChangedOnlyCanvasOverlay(previous, state)) return;
+    renderBboxes();
+  });
   const offStore = store.subscribe(() => renderBboxes());
   unsub = () => {
     offEditor();

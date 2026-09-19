@@ -44,7 +44,7 @@ import {
   mapBackgroundPreviewEnabled,
   subscribeMapBackgroundPreview,
 } from "@/editor/mapBackgroundPreviewState";
-import { editorState, EDITOR_ZOOM_LEVELS } from "@/editor/editorState";
+import { editorState, EDITOR_ZOOM_LEVELS, type TileClipboard } from "@/editor/editorState";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import {
   renderEventLayerClickFeedback,
@@ -73,6 +73,7 @@ import {
   shouldLazilyRenderEditMap,
   type EditSceneRenderStats,
   type EditSceneTileIndex,
+  syncSelectionOverlay,
 } from "@/editor/editSceneRender";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { resetCullableTiles, syncTileCulling } from "@/player/playSceneTileCulling";
@@ -114,7 +115,7 @@ import { repositionMapLocationLayer } from "@/editor/mapLocationLayer";
 import { repositionRegionChunkOverlay } from "@/editor/regionTask/regionChunkOverlayView";
 import { notifyRightDragRegionSelected } from "@/editor/selectionChipHint";
 import { computeMapViewport } from "@/ai/mapViewportContext";
-import { renderSelectionActionChips } from "@/editor/selectionActionChips";
+import { renderSelectionActionChips, shouldShowSelectionActionChips } from "@/editor/selectionActionChips";
 import {
   anchoredBuildPalettePosition,
   anchoredSelectionChipsPosition,
@@ -205,6 +206,7 @@ export function regionTaskBadgeText(phase: "running" | "pending"): string | null
 export class EditScene extends PhaserRuntime.Scene {
   private tileLayer: Phaser.GameObjects.Container | null = null;
   private hoverPreviewLayer: Phaser.GameObjects.Container | null = null;
+  private selectionLayer: Phaser.GameObjects.Container | null = null;
   private overlayLayer: Phaser.GameObjects.Container | null = null;
   private agentBlueprintLayer: Phaser.GameObjects.Container | null = null;
   private agentGhostPreviewLayer: Phaser.GameObjects.Container | null = null;
@@ -307,6 +309,9 @@ export class EditScene extends PhaserRuntime.Scene {
   private overlayGeometryReadAtMs = 0;
   /** 마지막 우클릭 드래그가 끝난 화면 좌표 — 칩 바를 놓은 자리에 띄우기 위한 anchor. */
   private lastRightDragScreen: { readonly x: number; readonly y: number } | null = null;
+  /** 붙여넣기 고스트를 마지막으로 조립한 클립보드·원점. 같은 클립보드면 칸만 옮긴다. */
+  private pasteGhostClipboard: TileClipboard | null = null;
+  private pasteGhostAt: { x: number; y: number } | null = null;
   /** 맵 캔버스에서 우클릭이 시작되면 true. 버튼을 놓는 순간 contextmenu 가 문서 타겟으로 뜨는 경우 대비. */
   private suppressBrowserContextMenuUntil = 0;
   private buildPalettePopup: HTMLElement | null = null;
@@ -387,6 +392,8 @@ export class EditScene extends PhaserRuntime.Scene {
     this.tileLayer = this.add.container(0, 0);
     this.hoverPreviewLayer = this.add.container(0, 0);
     this.hoverPreviewLayer.setDepth(8);
+    this.selectionLayer = this.add.container(0, 0);
+    this.selectionLayer.setDepth(8.5);
     this.overlayLayer = this.add.container(0, 0);
     this.overlayLayer.setDepth(9);
     const gridGraphics = this.add.graphics();
@@ -1138,7 +1145,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.lastPointerTile = { x, y };
     this.updateEventMarkerTooltip(x, y);
     if (!this.shouldRenderPaintHover()) {
-      this.hoverPreviewLayer?.removeAll(true);
+      this.clearHoverPreviewLayer();
       return;
     }
     this.renderHoverPreview(x, y);
@@ -1147,12 +1154,12 @@ export class EditScene extends PhaserRuntime.Scene {
   private clearHoverPreview(): void {
     this.lastPointerTile = null;
     this.clearEventMarkerTooltip();
-    this.hoverPreviewLayer?.removeAll(true);
+    this.clearHoverPreviewLayer();
   }
 
   /** 페인트 스트로크 중 raw 호버만 제거 (포인터 좌표·툴팁 상태 유지). */
   private suppressPaintHoverPreview(): void {
-    this.hoverPreviewLayer?.removeAll(true);
+    this.clearHoverPreviewLayer();
   }
 
   // ── 붙여넣기 미리보기 고스트 ──
@@ -1160,16 +1167,38 @@ export class EditScene extends PhaserRuntime.Scene {
   private renderPastePreviewGhost(): void {
     const layer = this.hoverPreviewLayer;
     if (!layer) return;
-    layer.removeAll(true);
     const preview = editorState.get().pastePreview;
     const clipboard = editorState.get().clipboard;
-    if (!preview || !clipboard) return;
+    if (!preview || !clipboard) {
+      this.clearPastePreviewGhost();
+      return;
+    }
     const mapId = this.mapId();
     if (!mapId) return;
     const map = store.getCurrent().maps[mapId];
     if (!map) return;
     const tileset = store.getCurrent().tilesets[map.tilesetId];
     if (!tileset) return;
+    if (
+      this.pasteGhostClipboard === clipboard
+      && this.pasteGhostAt
+      && layer.list.length > 0
+    ) {
+      const dx = (preview.x - this.pasteGhostAt.x) * TILE_SIZE;
+      const dy = (preview.y - this.pasteGhostAt.y) * TILE_SIZE;
+      if (dx !== 0 || dy !== 0) {
+        for (const child of layer.list) {
+          const positioned = child as Phaser.GameObjects.GameObject & { x: number; y: number };
+          positioned.x += dx;
+          positioned.y += dy;
+        }
+        this.pasteGhostAt = { x: preview.x, y: preview.y };
+      }
+      return;
+    }
+    this.clearHoverPreviewLayer();
+    this.pasteGhostClipboard = clipboard;
+    this.pasteGhostAt = { x: preview.x, y: preview.y };
     for (let cy = 0; cy < clipboard.height; cy++) {
       for (let cx = 0; cx < clipboard.width; cx++) {
         const x = preview.x + cx;
@@ -1211,10 +1240,24 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private clearPastePreviewGhost(): void {
+    this.clearHoverPreviewLayer();
+  }
+
+  private clearHoverPreviewLayer(): void {
     this.hoverPreviewLayer?.removeAll(true);
+    this.pasteGhostClipboard = null;
+    this.pasteGhostAt = null;
+  }
+
+  private syncSelectionOverlay(): void {
+    const layer = this.selectionLayer;
+    const mapId = this.mapId();
+    if (!layer || !mapId) return;
+    syncSelectionOverlay(this, layer, mapId);
   }
 
   private shouldRenderPaintHover(): boolean {
+    if (editorState.get().pastePreview) return false;
     return shouldShowPaintHoverPreview({
       isPainting: this.isPainting,
       dragActive: this.getDragOperationHandler().active(),
@@ -1226,7 +1269,7 @@ export class EditScene extends PhaserRuntime.Scene {
     const mapId = this.mapId();
     if (!layer || !mapId) return;
     if (!this.shouldRenderPaintHover()) {
-      layer.removeAll(true);
+      this.clearHoverPreviewLayer();
       return;
     }
     renderHoverTilePreview({ centerX, centerY, layer, mapId, scene: this });
@@ -1738,6 +1781,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.renderAgentBlueprint();
     this.publishMapViewport();
     if (!mapChanged && this.lastPointerTile && this.shouldRenderPaintHover()) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
+    this.syncSelectionOverlay();
     this.renderBuildPaletteOverlay();
   }
 
@@ -1821,6 +1865,7 @@ export class EditScene extends PhaserRuntime.Scene {
       tileIndex: this.tileIndex,
     }, cells);
     if (this.lastPointerTile && this.shouldRenderPaintHover()) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
+    this.syncSelectionOverlay();
     this.renderBuildPaletteOverlay();
     return stats;
   }
@@ -1843,6 +1888,7 @@ export class EditScene extends PhaserRuntime.Scene {
       } else {
         this.clearPastePreviewGhost();
       }
+      this.syncSelectionOverlay();
       this.renderBuildPaletteOverlay();
       return;
     }
@@ -1862,10 +1908,6 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private renderStateKey(mapId: MapId): string {
     const state = editorState.get();
-    const selection = state.selection;
-    const selectionKey = selection
-      ? `${selection.mapId}:${selection.x}:${selection.y}:${selection.width}:${selection.height}`
-      : "none";
     return [
       mapId,
       state.tool,
@@ -1878,7 +1920,8 @@ export class EditScene extends PhaserRuntime.Scene {
       // 미리보기 토글은 빈 칸 체커의 알파를 바꾼다 — 상태 키에 없으면 증분 렌더가 그 사실을 놓친다.
       mapBackgroundPreviewEnabled() ? "bg-preview" : "bg-hidden",
       state.selectedEventId ?? "none",
-      selectionKey,
+      // selection / pastePreview 는 여기 넣지 마라. 우클릭 드래그·Ctrl+V 고스트가
+      // 타일 전체를 다시 만들게 된다. 전용 오버레이가 따로 따라간다.
     ].join("|");
   }
 
@@ -2354,11 +2397,16 @@ export class EditScene extends PhaserRuntime.Scene {
       this.renderRegionTaskBadge();
       return;
     }
-    if (!selection || selection.mapId !== mapId) {
+    if (!shouldShowSelectionActionChips({
+      selection,
+      pastePreview: editorState.get().pastePreview,
+      mapId,
+    })) {
       this.clearBuildPaletteOverlay();
       this.renderRegionTaskBadge();
       return;
     }
+    if (!selection) return;
     const host = this.game.canvas.parentElement;
     if (!host) {
       this.clearBuildPaletteOverlay();
