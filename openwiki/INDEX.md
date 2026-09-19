@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **70쪽 / 2929KB / 약 829,069 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **70쪽 / 2932KB / 약 829,835 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -23,7 +23,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-interior-room-harness.md` | 92KB | 6KB | 445 | ~26,769 |
 | `openwiki/editor-pre-edit-routing.md` | 123KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 715 | ~35,632 |
 | `openwiki/editor-workflows-misc.md` | 67KB | 30KB | 472 | ~18,206 |
-| `openwiki/runtime-battle.md` | 152KB | 31KB | 703 | ~43,762 |
+| `openwiki/runtime-battle.md` | 155KB | 31KB | 729 | ~44,528 |
 | `openwiki/runtime-project-schema.md` | 150KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 1043 | ~40,943 |
 | `openwiki/runtime-sessions.md` | 93KB | 46KB | 372 | ~24,488 |
 | `openwiki/testing.md` | 202KB | 48KB | 1880 | ~55,830 |
@@ -889,36 +889,37 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 152KB · 703줄 · ~43,762 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 155KB · 729줄 · ~44,528 토큰 · 통째읽기 잘림
 
-- `L3` 전투 적대적 리뷰의 무결성 수정 (2026-09-20)
-- `L28` 공격 효과음 지연 — 샘플 SE 디코드 캐시 (2026-09-15)
-- `L50` 전투 UI/UX·모션 적대적 리뷰 5축 후속 (2026-09-14)
-- `L121` 회복 자원·인트로 배너·타이머 write-back 계약 (2026-09-15)
-- `L166` Native event battle admission (2026-09-08)
-- `L212` Supported action authoring (2026-09-07)
-- `L224` 적별 전투 표시 크기 (2026-09-06)
-- `L234` Capture-only victory (2026-09-08)
-- `L245` Event friendship and live level changes (2026-09-06)
-- `L264` Sequential battle event completion (2026-09-08)
-- `L299` Battle-event continuation and cancellation (2026-09-06)
-- `L342` 전투 명령 custom CSS (2026-09-05)
-- `L346` 빈 페이지와 실행 빈도 계약 (2026-09-05)
-  - `L363` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
-- `L381` 지원 전투 시스템은 둘뿐이다 (2026-08-28)
-- `L394` Roguelike run boundary (2026-08-24)
-- `L399` Battle rules & runtime
-  - `L414` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
-  - `L439` 커맨드/대상 메뉴 기하와 글자 가시성 계약
-  - `L455` 스킨 CSS 캐스케이드와 저작 가능 스킨
-  - `L459` Gen 1(포켓몬식) 규칙 모델
-  - `L467` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
-  - `L486` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
-- `L524` Starter hero battle sheets (2026-08-29)
-- `L545` Per-actor back battlers (2026-08-29)
-- `L563` Battle input and visibility P0 contract (2026-07-30)
-- `L574` 배틀러 idle 애니메이션 (2026-08-30)
-- `L700` 필드 아이템 상태 부여 복구 (2026-09-05)
+- `L3` 전투 리뷰 후속: 상태 안내와 무대 채움 (2026-09-20)
+- `L29` 전투 적대적 리뷰의 무결성 수정 (2026-09-20)
+- `L54` 공격 효과음 지연 — 샘플 SE 디코드 캐시 (2026-09-15)
+- `L76` 전투 UI/UX·모션 적대적 리뷰 5축 후속 (2026-09-14)
+- `L147` 회복 자원·인트로 배너·타이머 write-back 계약 (2026-09-15)
+- `L192` Native event battle admission (2026-09-08)
+- `L238` Supported action authoring (2026-09-07)
+- `L250` 적별 전투 표시 크기 (2026-09-06)
+- `L260` Capture-only victory (2026-09-08)
+- `L271` Event friendship and live level changes (2026-09-06)
+- `L290` Sequential battle event completion (2026-09-08)
+- `L325` Battle-event continuation and cancellation (2026-09-06)
+- `L368` 전투 명령 custom CSS (2026-09-05)
+- `L372` 빈 페이지와 실행 빈도 계약 (2026-09-05)
+  - `L389` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
+- `L407` 지원 전투 시스템은 둘뿐이다 (2026-08-28)
+- `L420` Roguelike run boundary (2026-08-24)
+- `L425` Battle rules & runtime
+  - `L440` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
+  - `L465` 커맨드/대상 메뉴 기하와 글자 가시성 계약
+  - `L481` 스킨 CSS 캐스케이드와 저작 가능 스킨
+  - `L485` Gen 1(포켓몬식) 규칙 모델
+  - `L493` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
+  - `L512` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
+- `L550` Starter hero battle sheets (2026-08-29)
+- `L571` Per-actor back battlers (2026-08-29)
+- `L589` Battle input and visibility P0 contract (2026-07-30)
+- `L600` 배틀러 idle 애니메이션 (2026-08-30)
+- `L726` 필드 아이템 상태 부여 복구 (2026-09-05)
 
 ### `openwiki/runtime-m2-flow-controls.md` — 30KB · 185줄 · ~8,377 토큰
 

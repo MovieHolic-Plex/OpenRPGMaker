@@ -32,7 +32,7 @@ import { emitBattleJuice as emitContextBattleJuice, flashBattleField, playBattle
 import { ensureBattleFlashFilter } from "@/player/battleFlashFilter";
 import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom";
 import { hitIntensity } from "@/player/battleHitIntensity";
-import { directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
+import { AUTO_BATTLE_KEY_LABEL, SPEED_KEY_LABEL, directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
 import { unlockBattleSfx } from "@/player/battleSfx";
 import {
   createBattleSequencer,
@@ -96,6 +96,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   // DOM만 지우면 setInterval/window keydown/ResizeObserver가 중복으로 남는다(결함 1a).
   activeBattleControllers.get(options.host)?.destroy();
   activeBattleControllers.delete(options.host);
+  options.host.querySelector("[data-testid='battle-stage']")?.remove();
   options.host.querySelector("[data-testid='battle-scene']")?.remove();
   const root = document.createElement("section");
   root.className = "battle-scene";
@@ -118,8 +119,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     root.style.setProperty(key, value as string);
   }
   applyBattleSystemGraphic(root);
-  options.host.append(root);
-  // 논리 해상도(320×240) 스케일링 — 스킨이 그 해상도 기준으로 저작돼 있다.
+  const stage = document.createElement("div");
+  stage.className = "battle-stage";
+  stage.dataset.testid = "battle-stage";
+  stage.append(root);
+  options.host.append(stage);
+  // Fit the 640×480 UI inside an opaque, host-sized battle surface.
   const stageScale = bindBattleStageScale(options.host, root);
   // 전투가 소유한 지연 콜백의 스코프를 연다 — teardown 이 남은 것을 한 번에 끊는다.
   openBattleTimerScope();
@@ -164,10 +169,15 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   // 연출 중 확인/취소로 켜지는 1회성 빨리감기. 시퀀스가 끝나면 배속이 원래대로 돌아온다.
   let skipping = false;
 
-  // 우상단 자동/배속 버튼 바는 제거했다(감독 지적 3) — 게임 화면 위에 뜬 에디터풍
-  // 크롬이었고 런타임은 키보드 전용이다. 자동전투(A)·배속(Shift) 토글은 키로만 받고,
-  // 상태는 루트 data 속성으로 노출한다(스킨/테스트가 읽을 수 있게).
-  root.append(field, animationLayer, messageWindow, enemyPanel, commandHost, partyPanel, resultHost);
+  // Keyboard controls stay keyboard-only. This is a status line, not a button bar.
+  const playbackStatus = document.createElement("div");
+  playbackStatus.className = "battle-playback-status";
+  playbackStatus.dataset.testid = "battle-playback-status";
+  playbackStatus.setAttribute("role", "status");
+  playbackStatus.setAttribute("aria-live", "polite");
+  playbackStatus.setAttribute("aria-atomic", "true");
+  root.append(field, animationLayer, messageWindow, enemyPanel, commandHost, partyPanel, resultHost, playbackStatus);
+  syncPlaybackStatus();
   // 씬이 붙으면 포커스를 씬 안으로 가져온다 — 없으면 인트로·명령 국면 내내 activeElement 가
   // BODY 라 보조기술 컨텍스트가 필드에 남고 씬 스코프 포커스 링이 절대 보이지 않는다.
   queueMicrotask(() => {
@@ -193,7 +203,13 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   function setSpeed(spd: number): void {
     speedMultiplier = spd;
     if (!skipping) sequencer.speedMultiplier = spd;
-    root.dataset.battleSpeed = spd.toFixed(1);
+    root.dataset.battleSpeed = (skipping ? SKIP_SPEED : spd).toFixed(1);
+    syncPlaybackStatus();
+  }
+
+  function syncPlaybackStatus(): void {
+    const text = `${AUTO_BATTLE_KEY_LABEL} 자동 ${autoBattle ? "켜짐" : "꺼짐"} · ${SPEED_KEY_LABEL} ${speedMultiplier}×${skipping ? " · 넘기는 중" : ""}`;
+    if (playbackStatus.textContent !== text) playbackStatus.textContent = text;
   }
 
   /** 이 시퀀스 한 번만 빨리감기. onSequenceBusy(false) 에서 원래 배속으로 되돌린다. */
@@ -205,6 +221,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // 대사·모션은 5배속인데 이펙트만 원속도로 남아 다음 행동 위에 겹쳤다.
     root.dataset.battleSpeed = SKIP_SPEED.toFixed(1);
     root.dataset.battleSkipping = "true";
+    syncPlaybackStatus();
   }
 
   function endSkip(): void {
@@ -213,6 +230,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     sequencer.speedMultiplier = speedMultiplier;
     root.dataset.battleSpeed = speedMultiplier.toFixed(1);
     root.dataset.battleSkipping = "false";
+    syncPlaybackStatus();
   }
 
   const panelOptions: {
@@ -873,6 +891,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // The event surface takes over only after preceding action beats have drained.
     // Transparent text must not reveal the director's previous lines underneath.
     messageWindow.style.visibility = eventSurfaceOpen ? "hidden" : "";
+    playbackStatus.hidden = eventSurfaceOpen || showingResult;
+    syncPlaybackStatus();
     syncEnemyListPanel(enemyPanel, snapshot.enemies, presentation);
     rebuildCommandPanelIfNeeded(snapshot);
     syncResultHost(snapshot, showingResult);
@@ -1203,7 +1223,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       sequencer.cancel();
       activeAnimation?.destroy();
       stageScale.cleanup();
-      root.remove();
+      stage.remove();
       if (activeBattleControllers.get(options.host) === controller) activeBattleControllers.delete(options.host);
       options.onDestroy?.();
     },

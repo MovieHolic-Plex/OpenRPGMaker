@@ -1,5 +1,31 @@
 # Runtime Battle Behavior
 
+## 전투 리뷰 후속: 상태 안내와 무대 채움 (2026-09-20)
+
+- `battleDom`은 우상단에 `F 자동 꺼짐/켜짐 · Shift 1×/1.8×/3×` 상태를 표시한다.
+  연출 빨리감기는 `넘기는 중`으로 구분한다. 버튼 바를 복원하지 않으며, 문구가 바뀔 때만
+  `role=status` 내용을 갱신한다. 이벤트 대화/결과 표면에서는 숨긴다.
+  스킵 중 Shift로 선택 배속을 바꿔도 효과 data 배속은 5.0을 유지하고 종료 때 선택값으로 복원한다.
+- 게이지 충전 안내는 `BattleSnapshot.nextReadyBattlerId`를 읽는다. 런타임이 실제 tick과 같은
+  `nextReadyBattler`에 양측 생존 배틀러·상태 민첩·스킨 가속을 넣어 계산한다.
+  아군 raw gauge 정렬로 다음 차례를 추측하지 않는다. 예측이 없는 구버전 snapshot은 일반 문구를 쓴다.
+- 상태 부여/해제/지속 피해/회복/행동 불가 메시지는 `targetId`로 대상 이름을 붙인다.
+  동명 적은 기존 `disambiguatedBattlerName` 계약을 따른다.
+- `calculateBattleStageScale`은 `min(hostWidth / 640, hostHeight / 480)`의 최대 contain 배율이다.
+  0.5 단위 양자화·최소 0.5 제한을 없앴다. host는 조상 transform 이전의 논리 치수로 잰다.
+  640×360에서 0.5→0.75(씬 480×360), 426×240에서는 0.5(320×240)다.
+  4:3 UI 비율은 유지하며 남는 공간은 host 전체를 덮는 불투명 `.battle-stage`가 가린다.
+  mount/destroy는 이 wrapper까지 소유한다. 필드 HUD 숨김 선택자는 `battle-scene`의 직계 여부에 의존하지 않는다.
+- 100% 초과 적 이미지 fit은 저작 발 앵커 위/좌우 공간에 맞춰 축소한다. 큰 적 전원을 같은
+  하단선으로 밀지 않는다. 경계 밖 앵커만 안전 영역으로 보정하고 실제 y로 depth를 다시 계산한다.
+  이웃 이미지 충돌 회피는 별도 과제다. glass 메시지에는 긴 이름이 두 줄로 흘러갈 수 있다.
+- `shapeCommandFields`의 중복 `m2Command` case를 제거했다. 공통 shape 경로는 main에 추가된
+  카탈로그/필드 타입/선택값 검증을 호출한다. 얕은 객체 검사로 그 검증을 가리면 안 된다.
+
+출하 `player.html`의 세 스킨 브라우저 관측 및 이미지:
+`docs/reviews/2026-09-20-battle-review-feedback.md`. 회귀 테스트 코드는 추가/갱신했으나
+세션 규칙에 따라 vitest/gates/typecheck는 실행하지 않았다.
+
 ## 전투 적대적 리뷰의 무결성 수정 (2026-09-20)
 
 - `resolveOutcome`은 일반/Gen1 승리보다 파티 전멸을 먼저 판정한다. 마지막 적 처치와
@@ -13,7 +39,7 @@
 - 이벤트 `eventLogs`는 진단 자료다. 디렉터 메시지로 투영하지 않는다. 저작 대사는 기존
   `eventPause`/DialogueUI가 표시하고, 대화가 끝나면 현재 명령/행동 안내로 돌아간다.
 - F와 Shift 반복 keydown은 토글하지 않는다. Shift 조합 여부는 AUTO/연출 스킵의 조기 반환
-  전에 기록한다. AUTO 상태 표시의 부재와 화면 배율 정책은 이번 수정에 포함하지 않았다.
+  전에 기록한다. AUTO 상태 표시와 화면 배율은 위 후속 계약에서 다룬다.
 - 전투 이벤트 타이머는 `timerWrites`와 `timerActivityWrites`에 남은 초와 최종 활성 상태를
   기록한다. 복귀하는 결과의 커밋에서 `applyBattleTimerWrites`가 실제 `runtimeTimers`에
   반영한다. 미수정 타이머의 진행은 보존하고 취소/비복귀 패배에는 적용하지 않는다.
@@ -114,8 +140,8 @@
 - **터치 입력 차단은 이미 걸려 있었다.** `src/player/player.ts:184` 의 `installPlayPointerBlocker(layout)` 가
   플레이 표면 전체(전투 씬 포함)에서 pointer·touch 이벤트를 막는다. 예외는 `touch-controls` 와 `host-fullscreen`
   소유 표면뿐. 별도 작업이 필요 없어 보류 목록에서 뺀다.
-- 아직 남은 것: 375×667/640×360 의 정수 배율 정책(320×240 우표 — 감독이 "또렷한 정수 픽셀" 과 "뷰포트 채우기"
-  중 하나를 골라야 하는 플레이 표면 정책이라 별도 과제), 포켓몬 뒷모습 슬롯(아트 에셋 대기).
+- 당시 남겨 둔 전투 배율 정책은 2026-09-20 후속에서 최대 contain으로 변경했다(위 절).
+  포켓몬 뒷모습 슬롯은 별도 아트 과제다.
   증거 스크립트는 리뷰 당시 `verify-shots/adv-review-{1..5}/` 와 `verify-shots/after/` 에 남겼다(커밋하지 않음).
 
 ## 회복 자원·인트로 배너·타이머 write-back 계약 (2026-09-15)
@@ -223,11 +249,11 @@ the tool use the existing config normalizer. None of this adds a combat engine.
 
 ## 적별 전투 표시 크기 (2026-09-06)
 
-`battleFieldDom.enemyButton`은 해당 적의 `battleScalePercent ?? 100`을 100으로 나눈 값을 노드의 `--battle-enemy-scale`에 넣는다. RM 정면/측면은 `_rm2000.css`의 glass 공용 이미지 크기(다수 160×180, 단독 200×240), 몬스터 대치는 `_battlers.css`의 Pokemon 이미지 크기(148×148)에 곱한다. 부모 이동/피격 `transform`, 이미지 숨쉬기 `scale`, 사망/포획 애니메이션은 변경하지 않는다. 이름·HP 글자 크기와 맵 외형은 배율 대상이 아니다. 기본 100% 이하의 치수·진형은 그대로 둔다. 100% 초과는 `battleEnemyFit.ts`가 필드 논리 크기에서 좌우 16px·상단 32px·하단 24px를 뺀 영역에 이미지를 균일 축소하고 발 앵커를 보정한다. 저장된 요청 백분율은 그대로이고 `--battle-enemy-fit`만 표현용으로 추가한다. 세 스킨의 `--battle-enemy-base-width/height`가 기본 치수의 단일 원천이다. 이미지 width/height에만 요청 배율×fit을 곱하며 이름·HP는 축소하지 않는다. 이웃 배틀러와의 겹침 방지는 별도 진형 작업이다.
+`battleFieldDom.enemyButton`은 해당 적의 `battleScalePercent ?? 100`을 100으로 나눈 값을 노드의 `--battle-enemy-scale`에 넣는다. RM 정면/측면은 `_rm2000.css`의 glass 공용 이미지 크기(다수 160×180, 단독 200×240), 몬스터 대치는 `_battlers.css`의 Pokemon 이미지 크기(148×148)에 곱한다. 부모 이동/피격 `transform`, 이미지 숨쉬기 `scale`, 사망/포획 애니메이션은 변경하지 않는다. 이름·HP 글자 크기와 맵 외형은 배율 대상이 아니다. 기본 100% 이하의 치수·진형은 그대로 둔다. 100% 초과는 `battleEnemyFit.ts`가 필드 논리 크기에서 좌우 16px·상단 32px·하단 24px를 뺀 영역에서 저작 발 앵커 위/좌우 공간에 이미지를 균일 축소한다. 경계 밖 발 앵커만 보정한다(2026-09-20). 저장된 요청 백분율은 그대로이고 `--battle-enemy-fit`만 표현용으로 추가한다. 세 스킨의 `--battle-enemy-base-width/height`가 기본 치수의 단일 원천이다. 이미지 width/height에만 요청 배율×fit을 곱하며 이름·HP는 축소하지 않는다. 이웃 배틀러와의 겹침 방지는 별도 진형 작업이다.
 
 단독 골렘 175% 회귀: 640×360 필드에서 200×240×1.75=350×420 이미지를 발 y≈290에 고정하면 top≈−130이라 머리가 잘렸다. 현재는 253.33×304, top32/bottom336으로 맞춘다. 100%는 200×240과 원래 발 위치를 보존한다. 기존 `syncBattleField`의 mounted render 경로가 매번 저작 진형과 CSS 기본 치수로 다시 계산하므로 fit이 누적되거나 HP 공개로 위치가 바뀌지 않는다. 화면 리사이즈는 기존 `bindBattleStageScale`이 고정 논리 무대 전체를 확대하므로 새 observer/타이머가 없다. controller의 기존 cleanup 그대로이며, 분리된 필드는 레이아웃이 생긴 다음 sync까지 계산하지 않는다.
 
-`test/battleEnemyFit.test.ts`는 실제 `mountBattleScene`/runtime 경로에 측정된 논리 레이아웃만 주입해 175% clipping RED, 세 스킨 100% 보존·300% containment, 125% 정확 배율, hit/HP 안정성, 필드 폭 변경 후 재계산, destroy 후 타이머 정리를 검증한다.
+`test/battleEnemyFit.test.ts`는 실제 `mountBattleScene`/runtime 경로에 측정된 논리 레이아웃만 주입해 175% clipping RED, 세 스킨 100% 보존·300% containment, 125% 발 앵커 유지, 다수 적 진형 보존, hit/HP 안정성, 필드 폭 변경 후 재계산, destroy 후 타이머 정리를 검증한다.
 
 회귀는 `test/enemyBattleScale.test.ts`: 실제 정규화된 프로젝트→전투 엔진→DOM, Gen1의 선두 적 단독 표시, hit/idle 동기화 후 크기 유지, 출하 CSS 치수 선언을 검사한다. happy-dom은 calc 곱셈/`:where` 특정도를 정확히 계산하지 못하므로 CSS는 PostCSS로 선언을 검사하고, 실제 캐스케이드·사각형·동작 검증은 별도 `player.html` 런타임 QA에서 한다.
 
@@ -415,7 +441,7 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 
 - Battle presentation for the one authorable classic skin (`rm2000`, renamed from `rm2003` on 2026-09-03) is a **front-view field with a modern glass HUD**: enemies stand on the field, party battlers are not drawn (`partyFacing: "hidden"`, `showAllySprites: false`), the command card sits bottom-left (16px command icons on the root menu, pill cursor), the party card sits bottom-right (name + level badge + HP/MP gauges and tabular numbers in `--runtime-ui-font`, no pixel font; 1–2 actors get 48px two-line rows, 3+ actors 24px rows), cards are glass surfaces from the shared `--runtime-glass-*` tokens framed by `box-shadow` rings (the project windowskin is opted out with `--battle-window-skin-width: 0`), and the message banner is a top glass strip for intro/acting/impact only (hidden on command and result). Round 2 (same day): the single UI accent is amber (`--battle-accent: #f2c063` — cursor, active actor, ATB, confirm, critical popups); a turn chip on the command card names the acting actor (`battleCommandDom` stamps `data-actor-name`, the skin draws it with `attr()`), the strict-flow progress (`.battle-flow-status`) is a right-hand glass chip instead of a grid row; the HUD band shows the blurred battle backdrop through `.battle-scene::before` (`--battle-backdrop-url` mirrored onto the root by `syncSceneBackdropVar`); the skin's bottom fade lives on `.battle-field::before` so the shared hit/critical/victory/defeat flashes on `::after` (15-juice-capture-fx.css) are no longer suppressed; and actor damage in party-hidden skins anchors to the party card row (`showPartyRowDamage`: popup over the HP number + `is-hit` shake/tint for 480ms) instead of floating at the field origin. Enemy sprites are drawn opaque — no radial scrim, no `--battle-sprite-filter` brightness stack, and no `battle-target-pulse` (that animation toggled sprite filters on the selected target and read as transparency). Targeting is the corner reticle only. Window chrome comes from the project windowskin (`_windowskin.css`). Keep `src/player/battleJuice.ts` as the only juice/SFX helper for battle DOM. **전투 오디오는 자료집 → 시스템 → 시작 설정의 「전투 오디오」에서 고른다.** `system.battleBgmResourceId`(전투 BGM) · `battleVictoryMeResourceId`(승리 팡파레 ME) · `battleDefeatSeResourceId` · `battleEscapeSeResourceId`. 슬롯이 비면 런타임 폴백(스타터 전투곡 / 합성 팡파레 / RTP 붕괴·도주음). 승패가 나는 순간 `beginBattleResultAudio` 가 전투 BGM 을 끊고 저작 큐를 재생한다. 씬을 닫을 때 `exitBattleAudio` 는 필드곡을 되돌리거나 — 필드곡이 없으면 — 엔진의 전투곡을 실제로 멈춘다. 대상 선택에서는 메시지 창이 조준을 말하므로 하단 `.battle-target-prompt` 는 이 스킨에서 접는다. 표준 커맨드 라벨은 `battleCommandKindLabel` 이 프로젝트 용어를 쓴다. There is no in-field troop-title element (`.battle-title` was removed) — the intro banner `introDirectorState` announces the troop in the message window. Enemy troop coords that sit too far center (`x>150`) are recentered into a left-side formation in `enemyBattlers`. Front-facing skins must prefer each actor's authored `battleCharacterResourceId`; generic skin warrior/mage art is fallback-only, never actor identity. `BattleBattlerSnapshot` carries the authored battle resource plus the live session `faceResourceId` (a standalone 48×48 face graphic id — there is no face index any more), the rm2000 party card shows the face as a small rounded portrait when the actor has one (20px in compact rows, 40px in two-line rows). Damage feedback is scoped to the single impact beat: approach/recover beats explicitly clear it so one timeline hit creates one popup.
 - Battle encounter transition lives in `src/player/battleTransition.ts` and is wired by `playSceneBattle.playBattle`: white double-flash → black blinds close (battle DOM mounts underneath) → blinds open into the intro (backdrop zoom-out, enemies slide in from the left, per `--enemy-index` stagger in `_rm2000.css`). Battle end fades to black, tears down, fades back to the field. Keyboard: Z/Enter confirm, **X/C/Escape are all cancel** one level at a time (target select → its originating skill/item submenu, submenu → command root), and arrows wrap while skipping native-disabled rows. `battleDom.ts` owns one cursor model shared by root/submenu/target controls and keeps pointer, focus, cursor, and selected target synchronized across rerenders. A focused native button's Enter is left to the browser click path; the root/window handlers must not dispatch it a second time. The window fallback identifies root-originated events from `KeyboardEvent.composedPath()` (with a containment fallback), because target navigation may rerender and detach `event.target` before the same event finishes bubbling. The play-shell key handler in `player.ts` treats `battle-scene` as a modal overlay, so ESC/X during battle never opens the field status menu (RM2003 has no field menu in battle). The touch virtual pad is hidden while a battle scene is mounted (`.play-stage:has([data-testid="battle-scene"]) .touch-pad` in touchpad.css) so the d-pad cannot cover command buttons; battle commands are tapped directly. Message/result surfaces are live regions, AUTO/speed expose pressed state, and reduced-motion clamps sequencer delays to `min(ms, 250ms)` (reading time is kept) while CSS disables decorative movement and keeps damage popups static and visible.
-- 배틀 씬 루트(`.battle-scene`)의 **불투명 배경은 맵을 가리는 유일한 수단**이다. 루트는 `background: #000` 이고 그 뒤에는 필드 Phaser 캔버스가 계속 살아 있으므로, 루트의 `background-color` 를 알파 색으로 애니메이션하거나 루트를 `translate` 하면 그대로 맵이 보인다(실측: `battle-flash-hit` 이 루트 알파를 0.055까지 내려 필드-HUD 4px 거터와 HUD 패널 사이로 마을 타일이 드러났다. 셰이크는 루트를 ±5.9px 밀어 같은 틈을 만들었다). 따라서 히트/크리티컬 플래시 색은 `15-juice-capture-fx.css` 의 `.battle-field::after` 자식 오버레이가 그리고, `battle-screen-shake` 는 `.battle-scene.battle-screen-shake .battle-field` 로 **필드 자식만** 흔든다(`04-anim-damage-layers.css` + `06-damage-flash-targeting.css` 의 `battle-field-shake`). 클래스 이름(`battle-flash-hit|critical|victory|defeat`, `battle-screen-shake`)은 `battleJuice.ts` / `battleAnimationDom.ts` 계약이라 그대로 유지한다. 회귀 잠금: `test/runtime/battle-flash-map.spec.ts`.
+- 배틀 씬 루트(`.battle-scene`)의 **불투명 배경은 씬 안에서 맵을 가린다**. 2026-09-20부터 host 전체는 추가 `.battle-stage`가 덮어 비율 차이로 생긴 여백도 가린다. 루트는 `background: #000` 이고 그 뒤에는 필드 Phaser 캔버스가 계속 살아 있으므로, 루트의 `background-color` 를 알파 색으로 애니메이션하거나 루트를 `translate` 하면 그대로 맵이 보인다(실측: `battle-flash-hit` 이 루트 알파를 0.055까지 내려 필드-HUD 4px 거터와 HUD 패널 사이로 마을 타일이 드러났다. 셰이크는 루트를 ±5.9px 밀어 같은 틈을 만들었다). 따라서 히트/크리티컬 플래시 색은 `15-juice-capture-fx.css` 의 `.battle-field::after` 자식 오버레이가 그리고, `battle-screen-shake` 는 `.battle-scene.battle-screen-shake .battle-field` 로 **필드 자식만** 흔든다(`04-anim-damage-layers.css` + `06-damage-flash-targeting.css` 의 `battle-field-shake`). 클래스 이름(`battle-flash-hit|critical|victory|defeat`, `battle-screen-shake`)은 `battleJuice.ts` / `battleAnimationDom.ts` 계약이라 그대로 유지한다. 회귀 잠금: `test/runtime/battle-flash-map.spec.ts`.
 - Target authority is centralized in `src/battle/battleTargetResolver.ts`. The authored `SkillRecord.scope` (`self | ally | allAllies | enemy | allEnemies`) is preserved for actor and enemy casters; effect kind must not rewrite it. `self`/all-target scopes resolve immediately, while singular ally/enemy scopes require selection from living battlers on the resolved side. `BattleRuntime.selectTarget` / `setSelectedTarget` and `BattleTargetSelectionSnapshot.targetIds` / `selectedTargetId` are the generic API. `targetEnemyId` and enemy-only methods remain compatibility aliases; ally commands add `targetActorId` and actor target aliases without breaking old callers.
 - Battle skill legality is shared through `src/battle/battleSkillUse.ts`: MP cost is `max(0, trunc(flat) + floor(maxMp * percentMax / 100))`, and missing, unlearned, or unaffordable skills are invalid. Direct runtime calls are no-ops for invalid skills; they must never silently become a basic attack. The skill menu uses the same check and exposes native `disabled` plus a reason in title/ARIA.
 - `BattleSnapshot.timeline` is the canonical ordered, append-only presentation fact stream. It records actions, damage/healing, misses, captures, switches, state upkeep/add/remove, and incapacitated skips with monotonic sequence values; legacy `actionLog` remains for compatibility. Strict `roundLogs[].timeline` is the exact round slice, including setup upkeep before the first command and a terminal setup slice when outcome resolution ends the battle before command collection. A forced replacement continues that same strict round rather than resetting its timeline boundary. `battleSequencer.ts` starts its consumed cursor at sequence zero and plays every unconsumed pre/post snapshot fact exactly once, including immediate self/all-target commands, multi-hit attacks, and enemy advances. When an action produces a terminal result, its final timeline line remains for `BATTLE_RESULT_HOLD_MS` before the result panel replaces it.

@@ -343,6 +343,7 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     syncEnemyNode(node, enemy, snapshot, presentation);
     const position = fitBattleEnemy(field, node, positions[index]);
     positionBattleNode(node, position.x, position.y);
+    node.style.setProperty("--battle-depth", String(1 + Math.round(position.y / 16)));
   }
 }
 

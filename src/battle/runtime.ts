@@ -1486,11 +1486,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function snapshot(): BattleSnapshot {
     const enemiesInBattle = visibleEnemies();
+    const nextReady = battleFlow === "gauge" && phase === "charging" && !result
+      ? nextReadyBattler(activeActors(), enemiesInBattle, Infinity, skinHasteMultiplier,
+        (battler) => agilityMultiplierForStates(options.project, battler))
+      : undefined;
     const forcedActor = forcedSwitchActor();
     // Action poses while lastActionResult is live (cleared when the next command phase begins).
     const showActionPose = Boolean(lastActionResult);
     const poseContext = { lastActionResult, showActionPose };
     return {
+      nextReadyBattlerId: nextReady?.battler.id,
       phase,
       eventChoice,
       eventPause,
