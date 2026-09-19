@@ -1,4 +1,6 @@
 import { hasEquipmentSlot } from "@/project/equipmentSlots";
+import { mergeRecordPatch } from "./mergeRecordPatch";
+import { projectDatabaseReferenceMessage } from "@/editor/databaseRecordReferences";
 // editor/tools/dbTools.ts
 // DB 쓰기 툴: upsert_item / upsert_enemy / upsert_troop / upsert_actor / upsert_skill
 //            / upsert_equipment / upsert_class / define_promotion / upsert_state / upsert_common_event
@@ -147,6 +149,11 @@ function duplicateFromCollection(draft: Project, collection: DatabaseRecordColle
 }
 
 function deleteFromCollection(draft: Project, collection: DatabaseRecordCollection, id: string): { id: string; name: string } {
+  if (collection === "actors" || collection === "classes" || collection === "skills" || collection === "items"
+    || collection === "equipment" || collection === "enemies" || collection === "troops" || collection === "states" || collection === "battleAnimations") {
+    const reference = projectDatabaseReferenceMessage(draft, collection, id);
+    if (reference) throw new ToolError(reference, { code: "database-record-in-use" });
+  }
   switch (collection) {
     case "actors": return deleteRecord(draft.database.actors, id);
     case "classes": return deleteRecord(draft.database.classes, id);
@@ -691,7 +698,7 @@ function mergeRecord<T extends { id: string; name: string }>(
       }
     }
   }
-  return { ...(existing ?? {}), ...(patch as Partial<T> & Pick<T, "id" | "name">) };
+  return mergeRecordPatch(existing, patch as Record<string, unknown>) as Partial<T> & Pick<T, "id" | "name">;
 }
 
 const upsertItem: ToolDefinition = {

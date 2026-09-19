@@ -1,3 +1,11 @@
+## 감사 후속: 참조를 보존하는 삭제 경로 (2026-09-20)
+
+- 기본 DB 9종의 삭제 검사는 `databaseRecordReferences.ts`의 `projectDatabaseReferenceMessage(project, collection, id)`가 소유한다. `databaseReferences.ts`는 현재 store를 전달하는 UI 어댑터다. AI 삭제는 자기 draft를 전달한다. store를 AI 도구에 import하지 않는다.
+- 작물 씨앗/수확물, 몬스터 종족의 레벨 스킬, 맵 인카운터/필드 스폰, 직업 간 승급/장비 권한을 검사한다. 아이템은 기존 `collectProjectItemReferenceIds`를 보조 판정으로 재사용한다.
+- 명령 스캐너는 상점 실패 및 전투 결과 3분기까지 검사한다. 생활 목적지 switchId도 삭제/미사용 판정의 참조다.
+- 제작법 삭제와 ID 변경은 `databaseCraftReferences.ts`를 공유한다. 명령·생활 스킬·번들·박물관 보상을 모두 본다.
+- 수정·검증 범위와 미해결 목록: `docs/reviews/2026-09-20-data-integrity-fixes.md`. 회귀 테스트 추가, 이 세션에서는 테스트/게이트 미실행.
+
 ## 장소 편집 1차 UX 수리 — 이름·툴바·속성·카드 (2026-09-15)
 
 장소 탭의 네 가지 결함을 고쳤다. 실측 근거와 함께 남긴다.

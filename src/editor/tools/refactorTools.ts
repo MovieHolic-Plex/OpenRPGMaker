@@ -4,6 +4,8 @@
 
 import type { Command, Condition, GameEvent, Project } from "@/project/types";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { collectProjectItemReferenceIds } from "@/project/io/references";
+import { projectDatabaseReferenceMessage, projectSwitchVariableReferenceMessage } from "@/editor/databaseRecordReferences";
 
 // --- 공통 순회 ---
 
@@ -25,6 +27,18 @@ function walkCommands(commands: readonly Command[], visit: (command: Command) =>
       if (command.else) walkCommands(command.else, visit);
     } else if (command.kind === "loop") {
       walkCommands(command.body, visit);
+    } else if (command.kind === "shop") {
+      walkCommands(command.transactionBranch ?? [], visit);
+      walkCommands(command.failedTransactionBranch ?? [], visit);
+    } else if (command.kind === "battleProcessing") {
+      walkCommands(command.victoryBranch ?? [], visit);
+      walkCommands(command.defeatBranch ?? [], visit);
+      walkCommands(command.escapeBranch ?? [], visit);
+    } else if (command.kind === "promoteActor" || command.kind === "evolveMonster") {
+      walkCommands(command.successBranch ?? [], visit);
+      walkCommands(command.failureBranch ?? [], visit);
+    } else if (command.kind === "inn") {
+      walkCommands(command.notEnoughBranch ?? [], visit);
     }
   }
 }
@@ -96,6 +110,13 @@ function addCommandRefs(command: Command, refs: ReferenceSets): void {
     case "battleProcessing":
       refs.troops.add(command.troopId);
       break;
+    case "spawnFieldEnemy":
+      refs.troops.add(command.spawn.troopId);
+      break;
+    case "craftRecipe":
+    case "applyItemUpgrade":
+      if (command.resultVariableId) refs.variables.add(command.resultVariableId);
+      break;
     case "shop":
       for (const itemId of command.itemIds) refs.items.add(itemId);
       for (const entry of command.stock ?? []) refs.items.add(entry.itemId);
@@ -107,7 +128,7 @@ function addCommandRefs(command: Command, refs: ReferenceSets): void {
 
 // 프로젝트 전역에서 참조되는 스위치/변수/아이템/트룹 id를 수집한다.
 export function collectReferences(project: Project): ReferenceSets {
-  const refs: ReferenceSets = { switches: new Set(), variables: new Set(), items: new Set(), troops: new Set(), enemies: new Set() };
+  const refs: ReferenceSets = { switches: new Set(), variables: new Set(), items: new Set(collectProjectItemReferenceIds(project)), troops: new Set(), enemies: new Set() };
   for (const map of Object.values(project.maps)) {
     for (const troopId of map.troopIds ?? []) refs.troops.add(troopId);
     for (const entry of map.encounterTable ?? []) {
@@ -403,8 +424,8 @@ export interface PruneReport {
 // 보수적: 상호참조(트룹→적, 드랍→아이템, 상점→아이템, 세션 인벤토리, 퀘스트 메타)를 모두 역참조한 뒤 판정.
 export function findUnused(project: Project): PruneReport {
   const refs = collectReferences(project);
-  const switches = project.switches.filter((def) => def.name !== "" && !refs.switches.has(def.id)).map((def) => def.id);
-  const variables = project.variables.filter((def) => def.name !== "" && !refs.variables.has(def.id)).map((def) => def.id);
+  const switches = project.switches.filter((def) => def.name !== "" && !refs.switches.has(def.id) && !projectSwitchVariableReferenceMessage(project, "switch", def.id)).map((def) => def.id);
+  const variables = project.variables.filter((def) => def.name !== "" && !refs.variables.has(def.id) && !projectSwitchVariableReferenceMessage(project, "variable", def.id)).map((def) => def.id);
   const items = project.database.items.filter((item) => !refs.items.has(item.id)).map((item) => item.id);
   const troops = project.database.troops.filter((troop) => !refs.troops.has(troop.id)).map((troop) => troop.id);
   // 적은 남는 트룹(제거 대상이 아닌)이 참조하면 유지. 제거될 트룹만 참조하는 적은 함께 미사용으로 본다.
@@ -415,7 +436,9 @@ export function findUnused(project: Project): PruneReport {
     for (const enemyId of troop.enemyIds) enemiesStillUsed.add(enemyId);
     for (const member of troop.members ?? []) enemiesStillUsed.add(member.enemyId);
   }
-  const enemies = project.database.enemies.filter((enemy) => !enemiesStillUsed.has(enemy.id)).map((enemy) => enemy.id);
+  const remainingProject = { ...project, database: { ...project.database, troops: project.database.troops.filter((troop) => !removedTroops.has(troop.id)) } };
+  const enemies = project.database.enemies.filter((enemy) => !enemiesStillUsed.has(enemy.id)
+    && !projectDatabaseReferenceMessage(remainingProject, "enemies", enemy.id)).map((enemy) => enemy.id);
   return { switches, variables, items, troops, enemies };
 }
 

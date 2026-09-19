@@ -1,3 +1,4 @@
+import { craftRecipeReferenceMessage } from "@/editor/databaseCraftReferences";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { commandsReferenceLocations } from "@/editor/databaseCommandReferences";
 import { field as wsField, matchesNameOrId } from "@/editor/panels/databaseControls";
@@ -1090,17 +1091,9 @@ function deleteRecord(section: RecordSection, rerender: () => void): void {
     }
   }
   if (section === "recipes") {
-    const recipeId = (selected as CraftRecipe).id;
-    const referrer = (store.getCurrent().database.lifeSkills ?? []).find((skill) =>
-      skill.levelUpRewards.some((reward) => reward.recipeId === recipeId)
-    );
-    if (referrer) {
-      toast(`생활 기술 '${referrer.name}'의 레벨 보상이 이 제작법을 사용 중입니다.`);
-      return;
-    }
-    const bundle = (store.getCurrent().system.bundles ?? []).find((entry) => entry.reward?.recipeIds?.includes(recipeId));
-    if (bundle) {
-      toast(`꾸러미 '${bundle.name ?? bundle.id}'의 보상이 이 제작법을 사용 중입니다.`);
+    const reference = craftRecipeReferenceMessage(store.getCurrent(), (selected as CraftRecipe).id);
+    if (reference) {
+      toast(reference);
       return;
     }
   }
@@ -1175,10 +1168,8 @@ function idRenameReferenceMessage(project: Project, section: Exclude<RecordSecti
     if (locations.length > 0) return `이벤트 명령 ${locations.length}곳에서 이 ID를 사용 중입니다.`;
   }
   if (section === "recipes") {
-    const skill = (project.database.lifeSkills ?? []).find((entry) => entry.levelUpRewards.some((reward) => reward.recipeId === id));
-    if (skill) return `생활 기술 '${skill.name}'의 레벨 보상에서 이 ID를 사용 중입니다.`;
-    const bundle = (project.system.bundles ?? []).find((entry) => entry.reward?.recipeIds?.includes(id));
-    if (bundle) return `꾸러미 '${bundle.name ?? bundle.id}'의 보상에서 이 ID를 사용 중입니다.`;
+    const reference = craftRecipeReferenceMessage(project, id);
+    if (reference) return reference;
   }
   if (section === "worldUnlocks") {
     const bundle = (project.system.bundles ?? []).find((entry) => entry.reward?.worldUnlockIds?.includes(id));
