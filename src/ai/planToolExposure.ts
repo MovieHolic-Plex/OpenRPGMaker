@@ -1,6 +1,6 @@
 // ai/planToolExposure.ts
-// Helpers for explicitly scoped consumers and plan validation. AssistantSession now
-// exposes every active schema from the first request, independent of plan contents.
+// Helpers for explicitly scoped consumers, plan validation and the hybrid
+// AssistantSession candidate set. Plan-required schemas bypass discovery ranking.
 import { activeTools, getTool, toOpenAiTools, type ToolDefinition } from "@/editor/tools";
 import type { OpenAiToolSchema } from "./llmClient";
 import type { WorkPlan } from "./workPlan";
