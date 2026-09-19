@@ -255,9 +255,11 @@ describe("team model roles", () => {
     const calls: PiAgentRequest[] = [];
     const keys = { "google-antigravity": "brain-test-key", "openai-codex": "deep-test-key" };
     await runPiTeam({ ...request(project), provider: "google-antigravity", model: "gemini-3.8-flash", thinkingLevel: "high",
+      initialToolNames: ["find_tools", "set_party"],
       roleModels: { deep: { provider: "openai-codex", model: "deep-model", thinkingLevel: "medium" } },
     }, { apiKey: "brain-only-token", providerApiKeys: keys, runAgent: async (req, opts) => {
       calls.push(req);
+      expect(req.initialToolNames).toBeUndefined(); // Assigned roles must not inherit the parent shortlist.
       expect(opts.providerApiKeys).toEqual(keys);
       expect(opts.apiKey).toBe(req.provider === "google-antigravity" ? "brain-only-token" : undefined);
       const tools = opts.extraTools ?? [];

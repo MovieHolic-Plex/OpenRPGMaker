@@ -5,9 +5,11 @@ import { createBlankProject } from "@/project/defaults";
 
 describe("piAgent toolAdapter", () => {
   it("살아 있는 레지스트리 툴을 전부 Pi 툴 모양으로 감싼다", () => {
-    const live = TOOL_REGISTRY.filter((tool) => !tool.deprecated);
+    const live = TOOL_REGISTRY.filter((tool) => !tool.deprecated && tool.supersededBy === undefined);
     const tools = createPiToolset({ project: createBlankProject() });
-    expect(tools.map((tool) => tool.name).sort()).toEqual(live.map((tool) => tool.name).sort());
+    expect(tools.map((tool) => tool.name).sort()).toEqual([...new Set(live.map((tool) => tool.name))].sort());
+    expect(tools.length).toBe(new Set(tools.map(tool => tool.name)).size);
+    expect(selectPiToolDefinitions(undefined, { toolNames: [] })).toEqual([]);
     for (const tool of tools) {
       expect(tool.label).toBe(tool.name);
       expect(typeof tool.description).toBe("string");

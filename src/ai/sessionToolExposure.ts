@@ -1,5 +1,6 @@
 // ai/sessionToolExposure.ts
 //
+// Shared by the Pi chat entry point and the legacy AssistantSession.
 // The editor assistant keeps a small control plane in the first request and
 // expands it with tools named by intent, the active plan, read contracts and
 // discovery results. The complete catalog remains an explicit fallback for
@@ -24,6 +25,7 @@ export const DISCOVERY_CONTROL_TOOL_NAMES: readonly string[] = [
   "find_layout_regions",
   "get_database_records",
   "list_resources",
+  "focus_editor_view",
 ];
 
 export interface SessionToolExposureInput {

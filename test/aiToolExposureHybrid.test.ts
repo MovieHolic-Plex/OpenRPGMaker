@@ -50,6 +50,9 @@ describe("hybrid assistant tool exposure", () => {
     expect([...exposed]).toEqual(expect.arrayContaining(["find_tools", "get_project_summary", "get_database_records", "set_world_canon", "upsert_character_profile", "upsert_actor", "set_party", "set_session_start"]));
     expect(tools.length).toBeLessThan(activeTools().length);
     expect(tools.length).toBeLessThan(80);
+    const selectedChars = JSON.stringify(tools.map(tool => tool.function)).length;
+    const fullChars = JSON.stringify(activeTools().map(({ name, description, parameters }) => ({ name, description, parameters }))).length;
+    expect(selectedChars).toBeLessThan(fullChars * 0.4);
   });
 
   it("restores the complete registry only when fallback is requested", () => {

@@ -45,6 +45,8 @@ export interface PiAgentRequest {
   readonly thinkingLevel?: PiAgentThinkingLevel;
   /** 노출할 툴 도메인. 비우면 살아 있는 레지스트리 전부. */
   readonly toolDomains?: readonly string[];
+  /** Initial schema candidates only; discovery may expand them. Not a permission boundary. */
+  readonly initialToolNames?: readonly string[];
   /** 팀 모드의 팀원 명세. 비우면 기본 팀. */
   readonly team?: PiTeamSpec;
   /** 읽기 전용 실행: 쓰기 툴을 주지 않고 조회·보고만 한다(자율성 「읽기 전용」·계획 턴). */

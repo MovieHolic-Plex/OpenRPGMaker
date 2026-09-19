@@ -86,7 +86,7 @@ export function buildToolCapabilityIndex(tools: readonly ToolDefinition[] = acti
   }
 
   const lines: string[] = [
-    `${TOOL_CAPABILITY_INDEX_HEADING}(활성 ${live.length}개 · 라운드 스키마는 tools)`,
+    `${TOOL_CAPABILITY_INDEX_HEADING}(활성 ${seenNames.size}개 · 라운드 스키마는 tools)`,
     "활성 도구 이름은 전체 색인에 있다. 없는 스키마는 find_tools(query)로 찾는다. 질문 모드에서는 조회만 호출할 수 있다.",
   ];
   for (const { label } of AREA_ORDER) {

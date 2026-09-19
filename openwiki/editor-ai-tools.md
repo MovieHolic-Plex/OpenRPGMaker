@@ -716,36 +716,42 @@ paging or a complete current native result enables the subsequent writer respons
 
 ## Hybrid native tool exposure (2026-09-19)
 
-`AssistantSession` starts a normal writer request with a small control plane: core
-map/project/database reads, `find_tools`, the intent declaration's named tools, the RPG
-foundation tools promised by its `adventure` contract, explicit plan/read-contract tools,
-and up to six deterministic natural-language matches. A successful `find_tools` result is
-remembered and its native schemas are added on the next round. A successful empty search or
-an intent fallback restores every active native schema on the following round, so routing
-cannot turn a real editor capability into a false "unsupported" answer. Ask mode still
-removes registry and session write schemas and rejects attempted writes at execution.
+The default editor chat uses **Pi**, not `AssistantSession`. The first hybrid change
+(`eb5c5bea5`) affected only the legacy session; its passing tests did not prove normal chat.
+The production chain is `aiChatPanel.plainPiTurn → runPiCommand → PiAgentRequest →
+runPiAgent`. The panel now uses the shared `sessionToolExposure` candidate builder and
+passes `initialToolNames` through every normal send, queued send, kickoff and bridge path.
+It includes core/control tools, the intent's named tools, adventure foundation tools, and
+natural-language matches. `AssistantSession` additionally supplies its plan/read contracts.
+A failed intent declaration sends the full catalog. Read-only/plan requests retain the
+full read catalog; explicit `/pi` and team members retain their existing role/domain seeds.
 
-`toolRegistry.toOpenAiTools` still honors an explicit domain filter for scoped callers and
-retains every eligible definition in registry order. Deprecated tools remain hidden.
-WorkPlan and acceptance tools retain their existing lifecycle gates. Schema validation,
-read-evidence gates, detached drafts, cancellation and usage accounting stay in the existing
-execution pipeline. The complete catalog remains an explicit reliability fallback rather than
-the default payload.
+`initialToolNames` is a schema-exposure hint, **not** a permission list. The worker's
+`options.toolNames` and `readOnly` remain hard boundaries. A successful `find_tools` result
+adds allowed native schemas to the same live array before the next Agent request. A successful
+empty search restores the entire permitted catalog. Direct calls to unexposed registered
+tools are still rescued within those boundaries. The old 16-tool promotion cap is removed:
+search success must not silently omit the seventeenth schema. Registry names are deduplicated,
+superseded definitions stay hidden, and an explicitly empty role allowlist allows nothing.
+Team children clear the parent's shortlist and choose their own role/domain catalog.
 
-The capability index remains names-only navigation. `find_tools` is the activation bridge
-when the first request did not carry a needed schema; callers that do not use
-`AssistantSession` may continue to expose the complete catalog directly. The supported
-subscription adapters have no local function-count clipping: Antigravity uses Cloud Code
-Assist `functionDeclarations`; Codex uses a zstd Responses request with `input` entries of
-type `additional_tools`. Do not impose old Chat Completions/Vertex limits on these transports.
-Lead evidence accepted 198 native definitions on Antigravity with HTTP 200; Codex live
-acceptance remains unverified without connected credentials. An upstream rejection is
-surfaced unchanged; the hybrid fallback is for routing misses, not provider validation errors.
+The Pi prompt carries the compact capability index when discovery is available, filtered by
+its read/role boundary. Candidate selection does not bypass argument validation, detached
+project drafts, publication, approval, cancellation or scope checks. Full-catalog fallback is
+for routing misses; provider validation errors are not silently retried with another catalog.
 
-Regression seams: `aiToolExposureHybrid`, `toolExposureQuota`, `toolDomainScoping`,
-`aiToolCapabilityIndex`, `aiComposerModeSession`, and `ohMyPiFullCatalog.bun.test.ts`.
-The hybrid session fixture checks a reduced first catalog, discovery promotion, empty-search
-full-catalog recovery, ask-mode write filtering, and the complete fallback schema set.
+Evidence: `.omo/evidence/ai-tool-exposure/README.md`. The fixed RPG intent fixture sends
+34 initial registry schemas versus 236 unique active definitions; JSON schema characters
+fall from 337,554 to 72,620 (78.5%). These are character counts, not billed tokens, and the
+intent is a fixed test input. Browser screenshots use a scripted model with the actual
+editor → HTTP request → Pi Agent → registry execution chain. They do not prove live-model
+intent or authoring quality. Live OAuth providers were disconnected during this verification.
+
+Regression seams: `aiChatPanelComposerMode`, `piAgentRunOutcome`, `piAgentToolAdapter`,
+`piAgentTeamRuntime`, `piAgentToolEscalation.bun.test.ts`, `piApplyModes.bun.test.ts`,
+`aiToolExposureHybrid`, and `aiToolCapabilityIndex`. Reproducible browser QA:
+`bun scripts/qa/ai-tool-exposure-worker.mts`, then
+`BASE=http://127.0.0.1:<worktree-port> node scripts/qa/ai-tool-exposure-browser.mjs`.
 
 ## Review approval lifetime (R3, 2026-09-06)
 
@@ -1153,7 +1159,7 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 
 - **Authored-data capability parity (2026-08-26):** remaining Database/resource/map mutations that the editor already persisted but the assistant could not name now have typed facades: `upsert_life_skill`, `upsert_life_system` (daily weather + farm animal species), `upsert_battle_animation`, `upsert_resource` / `delete_resource`, `register_structure_kit`, and `shift_map`. `get_database_records` accepts `include:"full"` and lists `lifeSkills` / `farmAnimalSpecies` / `crops`. Intent keywords `생활`/`레시피`/`가축`/`날씨` activate `database`; `포획`/`몬스터 시스템` activate `system`; `사냥터` activates `map`. Pins keep the new write tools inside the 40-tool cap. `delete_resource` is destructive. Isolated event-command assist and tileset vision remain specialized generators; authored mutations they need now exist on the shared registry. Contract: `test/aiEditorCapabilityParity.test.ts`.
 
-- **Pi-path tool escalation (2026-09-13):** the Pi runtime now mounts tools mid-run instead of front-loading the whole registry. `runPiAgent` keeps `state.tools` as a live array (the core loop rebuilds each turn's request from it, so in-place `push` is next turn's declaration — `setTools` array replacement never reaches a running context). Two escalation paths share one resolver, `resolvePiToolShape` (`src/ai/piAgent/toolAdapter.ts`), which honors the run's hard boundaries (`readOnly` → read-mode only; `toolNames` → the role's list): (1) a successful `find_tools` result's `data.matches[].name` are harvested and pushed — declared from the next turn; (2) `resolveFallbackTool` rescues a direct call to an unexposed-but-registered name and also declares it. Declaration growth is capped at `MAX_ESCALATED_TOOLS = 16` per run (the cap bounds prompt size only — a rescued tool still executes undeclared). `antigravityToolEnumPayload` re-walks the live tool list per request so late-escalated integer-enum tools still get the numeric-enum wire workaround, while capture-time validation still fails fast on a malformed initial set. Read-only escalation is impossible: a readOnly run's `find_tools` may *find* write tools but the resolver refuses to make their shapes. Contracts: `test/piAgentToolEscalation.bun.test.ts` (real Agent loop with a scripted `streamFn` — harvest declares next turn, fallback rescues, readOnly boundary holds on both paths), `test/piAgentToolAdapter.test.ts` (resolver/harvest units), `test/aiChatPanelComposerMode.test.ts` (intent→`toolDomains` seeding).
+- **Pi-path tool escalation (2026-09-13):** the Pi runtime now mounts tools mid-run instead of front-loading the whole registry. `runPiAgent` keeps `state.tools` as a live array (the core loop rebuilds each turn's request from it, so in-place `push` is next turn's declaration — `setTools` array replacement never reaches a running context). Two escalation paths share one resolver, `resolvePiToolShape` (`src/ai/piAgent/toolAdapter.ts`), which honors the run's hard boundaries (`readOnly` → read-mode only; `toolNames` → the role's list): (1) a successful `find_tools` result's `data.matches[].name` are harvested and pushed — declared from the next turn; (2) `resolveFallbackTool` rescues a direct call to an unexposed-but-registered name and also declares it. The original 16-tool declaration cap was removed on 2026-09-19; see Hybrid native tool exposure for initial candidates and empty-search recovery. `antigravityToolEnumPayload` re-walks the live tool list per request so late-escalated integer-enum tools still get the numeric-enum wire workaround, while capture-time validation still fails fast on a malformed initial set. Read-only escalation is impossible: a readOnly run's `find_tools` may *find* write tools but the resolver refuses to make their shapes. Contracts: `test/piAgentToolEscalation.bun.test.ts` (real Agent loop with a scripted `streamFn` — harvest declares next turn, fallback rescues, readOnly boundary holds on both paths), `test/piAgentToolAdapter.test.ts` (resolver/harvest units), `test/aiChatPanelComposerMode.test.ts` (intent→`toolDomains` seeding).
 
 - **Editor-wide tool discovery and authored-data facades (2026-08-25; hybrid exposure updated 2026-09-19):** the normal `AssistantSession` request starts with a small control plane plus intent/plan/read-contract and natural-language candidates. `find_tools` searches the complete active registry by name/description/domain and returns up to six strict schemas; the session remembers discovered names for the current user turn and recomputes schemas on every LLM round. A successful empty search or neutral intent fallback restores the full native catalog on the next round. Discovery never bypasses registry mode, schema validation, approval classification, or deprecated-tool filtering. Canonical editor-wide mutations include `duplicate_map`, `manage_map_tree`, expanded `set_map_properties`, `duplicate_database_record`, destructive `delete_database_record`, `upsert_database_utility` for elements/terrains/battle commands, and `set_project_settings` for project identity, terms, resolution, system resources, initial party, and battle defaults. Keep broad editor concepts behind typed facades rather than adding one tool per form control. Contracts: `test/aiToolExposureHybrid.test.ts` and the existing editor reach/safety suites.
 

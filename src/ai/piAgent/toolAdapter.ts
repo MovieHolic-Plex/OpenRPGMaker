@@ -58,14 +58,15 @@ export function selectPiToolDefinitions(
   options: { readonly readOnly?: boolean; readonly toolNames?: readonly string[] } = {},
 ) {
   const wanted = domains && domains.length > 0 ? new Set(domains) : null;
-  const names = options.toolNames && options.toolNames.length > 0 ? new Set(options.toolNames) : null;
+  const names = options.toolNames ? new Set(options.toolNames) : null;
+  const seen = new Set<string>();
   return TOOL_REGISTRY.filter((tool) => {
-    if (tool.deprecated) return false;
+    if (tool.deprecated || tool.supersededBy !== undefined || seen.has(tool.name)) return false;
     if (options.readOnly && tool.mode !== "read") return false;
     if (names && !names.has(tool.name)) return false;
-    if (!wanted) return true;
-    if (!tool.domains || tool.domains.length === 0) return true;
-    return tool.domains.some((domain) => wanted.has(domain));
+    if (wanted && tool.domains?.length && !tool.domains.some(domain => wanted.has(domain))) return false;
+    seen.add(tool.name);
+    return true;
   });
 }
 
