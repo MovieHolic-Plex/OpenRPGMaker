@@ -555,11 +555,6 @@
     background: var(--bg-raised);
   }
 
-  .oprn-record-actors .db-list-row.active {
-    background: var(--accent-muted);
-    color: var(--text-1);
-  }
-
   .oprn-record-actors .db-list-number {
     font-variant-numeric: tabular-nums;
     min-width: 48px;

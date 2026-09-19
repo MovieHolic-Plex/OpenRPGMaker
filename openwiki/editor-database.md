@@ -993,7 +993,7 @@ Phase 1은 탐색·선택·표현 변경뿐이다. 방 마이그레이션과 마
   고치고 `grid-template-rows` 를 놔두면 갤러리+스테이지가 32% 높이 행에 눌려
   작업대가 ~0px 로 붕괴한다(1024×768 실측 스테이지 178px). 셸 스코프
   `[data-testid="spatial-shell-tiles"]` 선택자가 `!important` 없이도 이긴다 —
-  `spatial-collections.css` 는 `tilesets.css` 보다 늦게 로드되고 특이도가 높다.
+  `spatial-collections.css` 는 `tilesets-autotile.css` 를 포함한 타일셋 시트보다 늦게 로드되고 특이도가 높다.
 - **시트는 항상 왼쪽 넓은 열.** 비페인트 모드(ai/group)는 DOM 순서가
   `[사이드바, 시트]` 인데 무차별 `grid-column:1` 핀이 시트를 좁은 사이드바 열에
   가뒀다. `passage-paint`(3행 그리드)와 `autotile-compose`(tilesets.css 자체 배치)

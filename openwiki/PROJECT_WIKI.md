@@ -73,6 +73,9 @@ OPRN Studio is a browser-based top-down tile JRPG maker/editor. It combines:
 - `src/project` owns canonical project data, defaults, migrations, validation, persistence, and remote/local storage boundaries.
 - `src/assets` owns bundled/generated asset resolution, slicing, transparency, and preview helpers.
 - `src/styles` owns visual presentation. Avoid moving behavior into CSS-only workarounds.
+- Editor CSS is organized by the named cascade layers in `src/styles/index.css`. Dynamic
+  panel sheets must join their owning layer; `src/editor/panels/spatialPlaceLibrary.css`
+  is loaded by the database panel and therefore wraps its rules in `@layer database`.
 - `test` and `test/e2e` are part of the contract. Update or add focused tests for changed behavior.
 
 ## How an AI should use this wiki

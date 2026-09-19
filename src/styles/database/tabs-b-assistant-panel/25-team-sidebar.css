@@ -21,7 +21,7 @@
 .ai-team-avatar-list > .ai-team-member[data-state="대기"] .ai-team-member-badge { background: var(--text-3); }
 .ai-team-avatar-list > .ai-team-member[data-state="실패"] .ai-team-member-badge { background: var(--danger); }
 .ai-team-avatar-list > .ai-team-member[data-state="검토 대기"] .ai-team-member-badge { background: var(--warning); }
-.ai-team-member-name { font-size: 12px; line-height: 1.4; max-width: 100%; overflow-wrap: anywhere; }
+.ai-team-sidebar .ai-team-member-name { font-size: 12px; line-height: 1.4; max-width: 100%; overflow-wrap: anywhere; }
 .ai-team-member-state { color: var(--text-3); font-size: 11px; line-height: 1.3; }
 .ai-team-sidebar-empty { padding: 16px 8px; margin: 0; text-align: center; font-size: 11px; color: var(--text-3); white-space: pre-line; }
 .ai-team-settings-button { display: flex; align-items: center; flex-direction: column; gap: 6px; padding: 14px 4px; border: 0; border-top: 1px solid var(--border-subtle); background: transparent; color: var(--text-2); margin-top: auto; }
