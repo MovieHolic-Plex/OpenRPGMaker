@@ -72,6 +72,19 @@ describe("oh-my-pi auth store", () => {
     assert.equal(store.publicStatus("openai-codex").connected, true);
   });
 
+  it("OMP에서 가져온 캐시는 명시적 연결 해제 없이 지울 수 있다", () => {
+    store.setOAuth("google-antigravity", {
+      access: "omp-access",
+      refresh: "omp-refresh",
+      expires: Date.now() + 60_000,
+      projectId: "omp-project",
+    }, { source: "omp" });
+    assert.equal(store.get("google-antigravity").source, "omp");
+    assert.equal(store.clear("google-antigravity"), true);
+    assert.equal(store.has("google-antigravity"), false);
+    assert.equal(store.adoptionDeclined("google-antigravity"), false);
+  });
+
   it("시크릿을 JSON 그대로 보관하되 브라우저용 상태에는 넣지 않는다", () => {
     store.setApiKey("openai", "sk-secret");
     const publicStatus = store.publicStatus("openai");
