@@ -539,6 +539,22 @@ function graphicChildren(record: MonsterSpeciesRecord, rerender: () => void): HT
       },
       rerender,
     })),
+    relaxHiddenIdInput(resourcePickerControl({
+      label: "전투 뒷모습",
+      resourceId: record.graphic.backResourceId,
+      kind: "monster",
+      testid: "db-monster-species-back-resource",
+      queueKey: `monster-species-back-resource:${record.id}`,
+      allowClear: true,
+      dialogTitle: "종족 전투 뒷모습",
+      onChange: (result) => {
+        const current = currentSpecies(record.id, record);
+        updateSpecies(record.id, {
+          graphic: { ...current.graphic, backResourceId: emptyToUndefined(result.resourceId) },
+        });
+      },
+      rerender,
+    })),
     numberField("그래픽 Hue", "db-monster-species-hue", record.graphic.graphicHue, (value) => {
       const current = currentSpecies(record.id, record);
       updateSpecies(record.id, { graphic: { ...current.graphic, graphicHue: value } });

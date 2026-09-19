@@ -27,7 +27,7 @@ export function commandPromptState(snapshot: BattleSnapshot, openingLine?: strin
   return {
     step: "command",
     lines: [
-      openingLine ?? (actor ? `${withJosa(actor.name, "은/는")} 무엇을 할까?` : "게이지가 차는 중입니다."),
+      openingLine ?? (actor ? `${withJosa(actor.name, "은/는")}${store.getCurrent().system.battleUiStyle === "pokemon" ? "\n" : " "}무엇을 할까?` : "게이지가 차는 중입니다."),
     ],
     activeActorRecordId: actor?.recordId,
   };

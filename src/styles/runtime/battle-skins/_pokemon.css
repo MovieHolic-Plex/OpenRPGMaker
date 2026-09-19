@@ -24,7 +24,7 @@
 }
 
 .battle-scene[data-battle-skin="pokemon"] .battle-message-line {
-  white-space: normal;
+  white-space: pre-line;
   /* keep-all: 한국어 단어 중간("나 타났다!")이 아니라 어절 경계에서만 줄바꿈. */
   word-break: keep-all;
   overflow-wrap: break-word;
