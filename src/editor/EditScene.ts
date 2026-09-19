@@ -916,6 +916,11 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!map) return;
     if (tile.x < 0 || tile.y < 0 || tile.x >= map.width || tile.y >= map.height) return;
     this.rightRegionGesture = { mapId, start: tile, screen, moved: false };
+    // The action-chip DOM depends on the final selection. Rebuilding it for
+    // every pointermove forces layout and creates a dozen buttons repeatedly
+    // while the user is still dragging. Keep the lightweight Phaser outline
+    // and size badge live, then build the chips once on pointerup.
+    this.clearBuildPaletteOverlay();
     // mouseup 시 contextmenu 가 문서 타겟으로 뜨는 브라우저 대비.
     this.suppressBrowserContextMenuUntil = Date.now() + 1500;
     this.isPainting = false;
@@ -2370,6 +2375,11 @@ export class EditScene extends PhaserRuntime.Scene {
     // 가리키고 있어야 한다. 그래서 아래 가드들보다 먼저, 항상 갱신한다.
     // (이 함수는 redraw·pan·창 토글 모두에서 불리므로 배지 추적점으로 충분하다.)
     this.renderRegionSizeBadge();
+    if (this.rightRegionGesture) {
+      this.clearBuildPaletteOverlay();
+      this.renderRegionTaskBadge();
+      return;
+    }
     // 영역 작업 창이 열려 있으면 칩/팔레트 오버레이를 띄우지 않는다 — 창과 칩 바가 같은
     // 자리에 겹쳐 화면이 어수선해진다. 창을 닫으면 다시 나타난다.
     if (isRegionTaskModalOpen()) {
