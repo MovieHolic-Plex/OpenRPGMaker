@@ -38,11 +38,12 @@ describe("database modal footer — honest auto-save UI", () => {
     expect(status?.textContent).not.toContain("OK");
   });
 
-  it("only offers 닫기/지금 저장/도움말 in the footer — no duplicate 취소 button", () => {
+  // 되돌리기(Ctrl+Z)는 예전부터 동작했지만 모달 어디에도 노출이 없었다 — 푸터로 올렸다.
+  it("only offers 닫기/지금 저장/되돌리기/도움말 in the footer — no duplicate 취소 button", () => {
     openDatabaseModal("actors");
 
     const labels = footerButtons().map((button) => button.textContent);
-    expect(labels).toEqual(["닫기", "지금 저장", "도움말"]);
+    expect(labels).toEqual(["닫기", "지금 저장", "되돌리기", "도움말"]);
     expect(document.querySelector("[data-testid='database-footer-cancel']")).toBeNull();
 
     const applyButton = document.querySelector<HTMLElement>(`[data-testid='${DATABASE_FOOTER_ACTION_TEST_IDS.apply}']`);
@@ -59,7 +60,8 @@ describe("database modal footer — honest auto-save UI", () => {
     const prompt = document.querySelector<HTMLElement>("[data-testid='database-dirty-prompt']");
     expect(prompt?.textContent).toContain("이 세션에서 바뀐 내용이 있습니다");
 
+    // 「되돌리기」는 Ctrl+Z 한 단계의 이름이고, 세션 전체 복구는 「복구」로 분리했다.
     const discardButton = document.querySelector<HTMLElement>("[data-testid='database-dirty-discard']");
-    expect(discardButton?.textContent).toBe("열 때 상태로 되돌리고 닫기");
+    expect(discardButton?.textContent).toBe("열 때 상태로 복구하고 닫기");
   });
 });
