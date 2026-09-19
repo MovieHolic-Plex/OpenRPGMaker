@@ -671,6 +671,7 @@ function validateMonsterSpeciesRecords(
       if (evolution.requires.itemId && !itemIds.has(evolution.requires.itemId)) issues.push(`monsterSpecies ${species.id}: evolution itemId does not exist: ${evolution.requires.itemId}`);
     }
     capture(issues, () => validateOptionalResource(`monsterSpecies ${species.id}: graphic.monsterResourceId`, species.graphic.monsterResourceId, resourceIds));
+    capture(issues, () => validateOptionalResource(`monsterSpecies ${species.id}: graphic.backResourceId`, species.graphic.backResourceId, resourceIds));
   }
 }
 

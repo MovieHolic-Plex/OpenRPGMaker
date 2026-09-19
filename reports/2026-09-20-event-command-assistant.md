@@ -19,7 +19,10 @@
 ## 검증
 
 집중 검증: `npm test -- test/eventCommandAssist.test.ts test/eventCommandAssistTool.test.ts test/eventCommandScopedSession.test.ts test/toolsExtended.test.ts --maxWorkers=2 --minWorkers=1`
-— 4파일 79개 통과(선택 위치 삽입 테스트 추가 전).
+— 최초 4파일 79개 통과. 선택 위치 삽입 회귀 추가 후 전체 실행에서 아래 핵심 7파일 96개가 통과했다.
+
+`aiAssistantBridge` 5, `aiToolLabels` 5, `eventCommandAssist` 56,
+`eventCommandAssistTool` 9, `eventCommandScopedSession` 2, `piAgentToolAdapter` 6, `toolsExtended` 13.
 
 브라우저: `E2E_RETRIES=0 npx playwright test test/e2e/event-ai-shared-assistant.spec.ts`
 — 1개 통과, 최종 실행 52.5초. 포트 9838의 이 워크트리 서버를 재시작한 뒤 캡처했다.
@@ -38,7 +41,24 @@
 | 취소 | 생성 응답 대기 중 중단 후 적용 버튼 비활성·원본 유지 |
 | 중복 제안 방지 | 편집기 검토 시 공용 브리지 pending proposal이 null임을 확인 |
 
-전체 게이트 결과는 실행 종료 후 아래에 기록한다.
+전체 게이트(`npm run gates`, 코드 커밋 `9143492b4`)는 **exit 1**이다.
+앱 타입 검사 0 오류, 브라우저 게이트 통과. 전체 Vitest는 22,550개 중
+21,943개 통과, 590개 실패(나머지는 skip/todo)였다. CSS·일부 편집기 표면 게이트도 실패했다.
+전체 게이트가 초록이라고 보고하지 않는다.
+
+저장된 9월 18일 기준선과 달라진 실패 후보 **23파일**을 변경 전 커밋 `4074f31ff`의
+격리 워크트리에서 다시 실행했다. 모두 같은 실패 케이스/수집 오류를 재현했고,
+후보 파일에서 새 실패 케이스는 0개였다. CSS와 편집기 표면 게이트의 실패 검사 목록도 변경 전과 동일하다.
+게이트가 flaky로 분류한 CSS 테스트 2파일은 assertion 0개의 수집 오류이므로 통과로 세지 않는다.
+
+[전체 게이트 요약](evidence/2026-09-20-event-command-assistant/gates-summary.json)과
+[변경 전/후 실패 대조](evidence/2026-09-20-event-command-assistant/baseline-comparison.json)에
+실행 커밋, 종료 코드, 파일별 결과와 실패 케이스 이름을 보존했다.
+
+구현 및 화면 증거는 [PR #1021](https://github.com/MovieHolic-Plex/rpg-zzu/pull/1021)로 `fa64f5526`에 머지됐다. 이 후속 기록은 전체 검증 결과와 변경 전 대조 근거를 보완한다.
+
+머지된 `fa64f5526`에서도 `npm run typecheck:app` exit 0과 핵심 7파일 **96개 통과**를 다시 확인했다.
+[머지 후 검증 영수증](evidence/2026-09-20-event-command-assistant/merged-validation.json).
 
 ## 브라우저 증거
 

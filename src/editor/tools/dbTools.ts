@@ -497,6 +497,7 @@ const troopRecordSchema = objectSchema({
 
 const monsterSpeciesGraphicSchema = objectSchema({
   monsterResourceId: stringSchema(),
+  backResourceId: stringSchema("후면 전투용 몬스터 리소스. 생략하면 정면 그림을 사용합니다."),
   graphicHue: integerSchema(),
   transparent: booleanSchema(),
   flying: booleanSchema(),

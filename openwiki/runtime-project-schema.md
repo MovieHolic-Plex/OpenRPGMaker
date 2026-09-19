@@ -1,3 +1,7 @@
+## 종족 전투 뒷모습 리소스 (2026-09-20)
+
+`MonsterSpeciesGraphic.backResourceId?: string`은 선택적 후면 전투 이미지 참조다. 기존 문서에는 없어도 되며 normalize는 공백 값을 정리한다. IO 참조 검증은 정면과 같은 monster 리소스 계약을 적용하고, 웹 export의 재귀 문자열 수집으로 이미지도 패키징한다. DB 도구 스키마와 종족 그래픽 편집기에 같은 필드를 노출한다. 방향이 back인 파티에서만 선택하며 미지정 시 정면 fallback을 유지한다. 버전 수동 증가는 없다. save/load/export 계약 테스트는 `test/monsterBackSprite.test.ts`에 추가했지만 세션 규칙에 따라 실행하지 않았다.
+
 ## 웹 프로젝트 생성과 선택 (2026-09-18)
 
 브라우저 호스트는 기본 폴더의 `.oprn-projects/<uuid>`에 프로젝트별 SQLite를 만든다.

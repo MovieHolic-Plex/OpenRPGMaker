@@ -215,6 +215,7 @@ type SpriteDebugScene = Phaser.Scene & {
   };
   readonly moving?: boolean;
   readonly eventSprites?: Map<string, Phaser.GameObjects.Sprite>;
+  readonly followerSprites?: Map<string, Phaser.GameObjects.Sprite>;
   readonly characterShadows?: Map<string, ShadowDebugTarget>;
   /** 체공 상태기(PlayerHopState | null). 반올림된 liftPx 와 달리 착지 커밋의 유일한 진실이다. */
   readonly playerHop?: unknown;
@@ -671,6 +672,12 @@ function characterSpritesDebug(scene: Phaser.Scene): CharacterSpriteDebug | null
       displayHeight: shadow.displayHeight,
     };
   }
+  // 팔로워 스프라이트. syncFollowerSprites 가 슬롯 보간을 하므로 프레임마다 화면 x/y 가
+  // 타일 사이값이 되어야 한다(스냅이면 버그다) — probe 가 이 값으로 판정한다.
+  const followers: Record<string, { readonly x: number; readonly y: number; readonly frame: string | number; readonly depth: number }> = {};
+  for (const [key, sprite] of scene.followerSprites?.entries() ?? []) {
+    followers[key] = { x: sprite.x, y: sprite.y, frame: sprite.frame.name, depth: sprite.depth };
+  }
   return {
     player: {
       x: player.x,
@@ -682,6 +689,7 @@ function characterSpritesDebug(scene: Phaser.Scene): CharacterSpriteDebug | null
       scaleX: player.scaleX,
       scaleY: player.scaleY,
     },
+    followers,
     shadows,
     events,
   };
