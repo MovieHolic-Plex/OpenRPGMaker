@@ -29,10 +29,8 @@ export type UiCopyKey =
 // 직역이다. **레이어 이름은 두 스타일을 하나로 통일**한다(감독 지시: 초보 용어를 전 모드
 // 표준으로). 밀도 축(jargonStyle)은 남기되, 레이어처럼 "전문가라고 다르게 부를 이유가
 // 없는" 항목은 같은 말을 쓴다.
-//
-// 상위 레이어를 왜 "장식"이 아니라 "덧그림"인가 — `장식`은 이미 **타일 분류** 이름이다
-// (팔레트 필터 칩, tileMeta role "decoration", 타일 의미 태그). 레이어에도 쓰면 같은
-// 화면에서 두 뜻이 겹친다. "덧그림"은 그 레이어가 실제로 하는 일(캐릭터 위에 덧그린다)이다.
+// 2026-09-19: 맵 레이어 세 이름은 바닥 / 상위 / 이벤트. 예전 화면 이름 「덧그림」은 폐기.
+// 「장식」은 타일 분류 이름(팔레트 필터 · tileMeta role "decoration")이라 레이어에 쓰지 않는다.
 const UI_COPY: Record<UiCopyKey, Record<UiCopyStyle, string>> = {
   database: { plain: "자료집", technical: "데이터베이스" },
   // `databaseShort.plain` 은 2026-08-30 까지 `"자료"` 였다. 축약형인데 정본(`자료집`)의 축약으로
@@ -41,7 +39,7 @@ const UI_COPY: Record<UiCopyKey, Record<UiCopyStyle, string>> = {
   databaseShort: { plain: "자료집", technical: "DB" },
   tilesetMissing: { plain: "그림이 없습니다", technical: "타일 그림판이 없습니다" },
   layerLower: { plain: "바닥", technical: "바닥" },
-  layerUpper: { plain: "덧그림", technical: "덧그림" },
+  layerUpper: { plain: "상위", technical: "상위" },
   layerEvent: { plain: "이벤트", technical: "이벤트" },
   onlineSave: { plain: "온라인 저장", technical: "온라인 저장" },
   // `resources.plain` 은 2026-08-26 까지 `"자료"` 였다 — `databaseShort.plain` 과 글자까지 같아서
@@ -76,6 +74,10 @@ const UI_COPY: Record<UiCopyKey, Record<UiCopyStyle, string>> = {
 
 export function uiLabel(key: UiCopyKey, style: UiCopyStyle = "plain"): string {
   return UI_COPY[key][style];
+}
+
+export function layerUiLabel(layer: "lower" | "upper" | "event", style: UiCopyStyle = "plain"): string {
+  return uiLabel(layer === "event" ? "layerEvent" : layer === "upper" ? "layerUpper" : "layerLower", style);
 }
 
 /**

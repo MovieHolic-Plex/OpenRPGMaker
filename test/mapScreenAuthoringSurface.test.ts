@@ -172,7 +172,7 @@ describe("map and screen previews react to fields", () => {
       expect(chip?.style.backgroundPosition ?? "").toMatch(/^-\d+(\.\d+)?px -\d+(\.\d+)?px$/);
       expect(findByTestId(root, "ecp-tile-chip-strip")?.childNodes.length).toBeGreaterThanOrEqual(4);
       expect(findByTestId(root, "ecp-tile-chipsel-title")?.textContent).toContain("그림 12");
-      expect(root.textContent).toContain("덧그림");
+      expect(root.textContent).toContain("상위");
       // 번호 스와치 폴백이 아니다.
       expect(root.querySelectorAll(".ecp-tile-swatch")).toHaveLength(0);
       expect(root.querySelectorAll(".ecp-summary-card")).toHaveLength(0);

@@ -176,7 +176,7 @@ describe("AI 패널 크롬", () => {
 
     editorState.set({ layer: "upper", tool: "fill" });
 
-    expect(readAgentBrief().line).toBe("빈 맵 20×15 · 덧그림 · 채우기");
+    expect(readAgentBrief().line).toBe("빈 맵 20×15 · 상위 · 채우기");
   });
 
   it("첫 방문(저장값 없음)은 펼친 채 부팅한다", () => {

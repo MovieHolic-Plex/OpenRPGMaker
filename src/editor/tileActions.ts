@@ -746,7 +746,7 @@ function planExactPlacement(
     if (existing !== TILE.EMPTY && existing >= 0 && existing !== tile) {
       return {
         ok: false,
-        reason: `(${x},${y})의 덧그림에 다른 오브젝트(${existing})가 있습니다 — 먼저 지우고 배치하세요`,
+        reason: `(${x},${y})의 상위에 다른 오브젝트(${existing})가 있습니다 — 먼저 지우고 배치하세요`,
         recoverable: false,
       };
     }

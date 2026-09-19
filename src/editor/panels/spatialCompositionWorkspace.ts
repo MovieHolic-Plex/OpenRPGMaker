@@ -179,7 +179,7 @@ export function renderSpatialCompositionWorkspace(session: SpatialAuthoringSessi
   });
   const tools = el("div", { class: "spatial-mixed-tools", children: [
     ...([['select','선택'],['paint','붓'],['erase','지우개'],['restore','원래대로']] as const).map(([tool,label]) => button(label, () => { state.tool = tool; rerender(); }, `composition-tool-${tool}`, state.tool === tool)),
-    ...([['lower','바닥'],['upper','덧그림']] as const).map(([layer,label]) => button(label, () => { state.layer = layer; rerender(); }, `composition-layer-${layer}`, state.layer === layer)),
+    ...([['lower','바닥'],['upper','상위']] as const).map(([layer,label]) => button(label, () => { state.layer = layer; rerender(); }, `composition-layer-${layer}`, state.layer === layer)),
     button('편집 취소', () => { const previous = state.undo.pop(); if (previous) { state.error = editComposition(source, () => previous); rerender(); } }, 'composition-undo'),
     button('맞춤', () => { state.zoom = Math.min(1, (camera.clientWidth - 48) / (composition.width * PX), (camera.clientHeight - 48) / (composition.height * PX)); rerender(); }, 'composition-fit'),
     ...[0.5,1,2].map(zoom => button(`${zoom * 100}%`, () => { state.zoom = zoom; rerender(); }, undefined, state.zoom === zoom)),

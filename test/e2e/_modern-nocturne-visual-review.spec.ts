@@ -60,10 +60,11 @@ test("plays the live Modern Exteriors investigation through its ending", async (
   await page.screenshot({ path: `${OUT}/01-editor-city.png`, fullPage: true });
 
   // 팔로워 프리셋 바 회귀 가드 (2026-08-10): 몬스터 칩 실수 클릭 사고 후속.
-  // (1) 하단 레이어에서 이벤트 마커 더블클릭 → D13 자동 전환 + 에디터 오픈.
+  // (1) 이벤트 레이어에서 마커 더블클릭 → 에디터 오픈. 바닥/상위 레이어는 이벤트를 열지 않는다.
   // (2) 바는 <details> 기본 접힘, 몬스터 칩 없음, 안내 문구가 실제 동작만 서술.
   // 클릭 좌표는 엔진 후킹으로 얻는다 — zoom 과 scrollX/Y 의 대응은 Phaser 3.60+ 에서
   // origin 을 지나므로 스펙이 카메라 수학을 재구현하지 않는다 (실측 2026-08-11).
+  await page.getByTestId("layer-event").click();
   const witnessPos = await page.evaluate(() => {
     const worldToClient = (window as unknown as {
       __oprnEditWorldToClient?: (worldX: number, worldY: number) => { x: number; y: number };

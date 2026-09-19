@@ -186,7 +186,7 @@ try {
       await shot(`B-${trunk}-rejection-toast`);
       const rejected = await mapTiles();
       assert.equal(at(rejected, 'lower', target.x, target.y), at(before, 'lower', target.x, target.y), 'rejected paint leaves the cell alone');
-      assert.ok(message.includes('237') || message.includes('덧그림'), `rejection names the blocking object: ${message}`);
+      assert.ok(message.includes('237') || message.includes('상위'), `rejection names the blocking object: ${message}`);
       assert.ok(message.includes(`(${target.x},${target.y - 1})`), `rejection names the blocked companion coordinate: ${message}`);
       assert.ok(message.includes(String(trunk)) && message.includes('규칙:'), `rejection quotes the vertical rule: ${message}`);
       const actionLabel = (await action.textContent())?.trim();

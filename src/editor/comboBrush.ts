@@ -66,7 +66,7 @@ export function comboBrushOrigin(stamp: PaletteStamp): ComboBrushOrigin {
   return stamp.kitId ? "structure-kit" : "palette-drag";
 }
 
-/** 붓의 레이어 구성 — 「바닥」·「덧그림」·「바닥+덧그림」. 레이어 라우팅을 눈으로 확인하는 자리. */
+/** 붓의 레이어 구성 — 「바닥」·「상위」·「바닥+상위」. 레이어 라우팅을 눈으로 확인하는 자리. */
 export function comboBrushLayerSummary(stamp: PaletteStamp): "lower" | "upper" | "mixed" {
   let lower = false;
   let upper = false;
@@ -83,7 +83,7 @@ export function comboBrushLayerSummary(stamp: PaletteStamp): "lower" | "upper" |
  * 반복 붓(브러시 크기)은 이 함수를 타지 않고 "크기 N × N" 으로 표기된다.
  */
 export function comboBrushBadge(stamp: PaletteStamp): string {
-  const layer = { lower: "바닥", mixed: "바닥+덧그림", upper: "덧그림" }[comboBrushLayerSummary(stamp)];
+  const layer = { lower: "바닥", mixed: "바닥+상위", upper: "상위" }[comboBrushLayerSummary(stamp)];
   return `조합 붓 ${stamp.width}×${stamp.height} · ${stamp.cells.length}칸 · ${layer}`;
 }
 
