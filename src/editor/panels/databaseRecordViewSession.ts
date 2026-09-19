@@ -103,7 +103,11 @@ export function setSelectedRecordId(collection: DatabaseCollection, id: string |
     if (collection === "items" || collection === "equipment") state.catalog.collection = collection;
     state.selectedIds[collection] = id;
     if (options?.reveal) {
+      // reveal 의 계약은 "이 레코드를 반드시 보이게 한다"다. 검색어만 지우면 카테고리 칩이
+      // 켜져 있을 때 여전히 목록에서 탈락한다 — 새 아이템 기본 type 이 normalGoods 라
+      // '무기'/'약' 칩이 켜진 아이템 탭에서 [+ 추가]가 만든 레코드가 그대로 사라졌다.
       setSearchQueryForCollection(collection, "");
+      setCategoryFilterForCollection(collection, "all");
       state.revealIds[collection] = id;
     }
     return;

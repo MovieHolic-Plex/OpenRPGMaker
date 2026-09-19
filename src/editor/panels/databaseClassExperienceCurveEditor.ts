@@ -2,6 +2,7 @@ import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { totalExpForLevel } from "@/project/actorModel";
 import type { ActorExperienceCurve } from "@/project/types";
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
 import { CURVE_PREVIEW_SAMPLES } from "@/editor/panels/databaseCurvePreview";
 
 /**
@@ -70,14 +71,26 @@ function openExperienceCurveDialog(options: ExperienceCurvePanelOptions): void {
     renderExp();
   };
   const readDraftFromInputs = (): void => {
+    // 빈 칸·NaN 을 min(0)으로 조용히 확정하면 사용자가 "지우는 중"이던 칸이 0 으로 굳는다.
+    // 유효하지 않은 칸은 직전 draft 값을 유지하고, 한 번만 이유를 알린다.
+    let sawInvalid = false;
+    const read = (input: HTMLInputElement, fallback: number): number => {
+      const raw = dialogInputNumber(input);
+      if (!Number.isFinite(raw)) {
+        sawInvalid = true;
+        return fallback;
+      }
+      return clampDialogInteger(raw, 0, 999999);
+    };
     draft = {
-      base: clampDialogInteger(dialogInputNumber(baseInput), 0, 999999),
-      extra: clampDialogInteger(dialogInputNumber(extraInput), 0, 999999),
-      acceleration: clampDialogInteger(dialogInputNumber(accelerationInput), 0, 999999),
+      base: read(baseInput, draft.base),
+      extra: read(extraInput, draft.extra),
+      acceleration: read(accelerationInput, draft.acceleration),
     };
     baseInput.value = String(draft.base);
     extraInput.value = String(draft.extra);
     accelerationInput.value = String(draft.acceleration);
+    if (sawInvalid) toast("숫자가 아닌 칸은 직전 값으로 되돌렸습니다.", "error");
   };
   const renderExp = (): void => {
     const totals = Array.from({ length: 99 }, (_, index) => totalExpForLevel(draft, index + 1));
