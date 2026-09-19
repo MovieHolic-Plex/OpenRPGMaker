@@ -50,10 +50,12 @@ export function renderPageLivingMovement(mapId: MapId, eventId: string, page: Ev
           ...page.movement,
           type: "living",
           living: {
+            ...page.movement.living,
             destinations: [{
+              ...destination,
               ...target,
               direction: targetDirection.value as Dir,
-            }],
+            }, ...(page.movement.living?.destinations.slice(1) ?? [])],
             repeat: repeat.checked,
           },
         },

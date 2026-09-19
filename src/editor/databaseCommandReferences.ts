@@ -1,5 +1,5 @@
 import type { DatabaseCollection } from "@/editor/databaseActions";
-import { eventDisplayName } from "@/editor/eventMarkerUx";
+import { eventDisplayName } from "@/project/eventDisplayName";
 import type { BattleEventCondition, Command, Condition, GiftPrefs, MoveCommand, Project } from "@/project/types";
 
 type CommandReferenceCollection = DatabaseCollection | "monsterSpecies" | "lifeSkills" | "craftRecipes" | "itemUpgrades";
@@ -96,6 +96,7 @@ export function switchVariableReferenceLocations(
         commandListReferencesSwitchVariable(event.commands, kind, id) ||
         (event.pages ?? []).some(
           (page) =>
+            (kind === "switch" && page.movement.living?.destinations.some((destination) => destination.switchId === id)) ||
             page.conditions.some((condition) => conditionReferencesSwitchVariable(condition, kind, id)) ||
             commandListReferencesSwitchVariable(page.commands, kind, id)
         );
@@ -128,6 +129,7 @@ export function switchVariableReferencedInProject(project: Project, kind: "switc
           commandListReferencesSwitchVariable(event.commands, kind, id) ||
           (event.pages ?? []).some(
             (page) =>
+              (kind === "switch" && page.movement.living?.destinations.some((destination) => destination.switchId === id)) ||
               page.conditions.some((condition) => conditionReferencesSwitchVariable(condition, kind, id)) ||
               commandListReferencesSwitchVariable(page.commands, kind, id)
           )
@@ -159,7 +161,8 @@ function commandReferences(command: Command, collection: CommandReferenceCollect
       return (
         collection === "items" &&
           (command.itemIds.includes(id) || (command.stock ?? []).some((entry) => entry.itemId === id))
-      ) || commandListReferences(command.transactionBranch ?? [], collection, id);
+      ) || commandListReferences(command.transactionBranch ?? [], collection, id)
+        || commandListReferences(command.failedTransactionBranch ?? [], collection, id);
     case "inn":
       return commandListReferences(command.notEnoughBranch ?? [], collection, id);
     case "promoteActor":
@@ -177,7 +180,12 @@ function commandReferences(command: Command, collection: CommandReferenceCollect
       return (collection === "actors" && Boolean(command.actorId) && command.actorId === id)
         || (collection === "skills" && command.skillId === id);
     case "battleProcessing":
-      return collection === "troops" && command.troopId === id;
+      return (collection === "troops" && command.troopId === id)
+        || commandListReferences(command.victoryBranch ?? [], collection, id)
+        || commandListReferences(command.defeatBranch ?? [], collection, id)
+        || commandListReferences(command.escapeBranch ?? [], collection, id);
+    case "spawnFieldEnemy":
+      return collection === "troops" && command.spawn.troopId === id;
     case "changeExp":
       return collection === "actors" && Boolean(command.actorId) && command.actorId === id;
     case "changeLevel":
@@ -314,6 +322,7 @@ function commandReferencesSwitchVariable(command: Command, kind: "switch" | "var
     case "evolveMonster":
       return commandListReferencesSwitchVariable(command.successBranch ?? [], kind, id) || commandListReferencesSwitchVariable(command.failureBranch ?? [], kind, id);
     case "inputWait":
+    case "wait":
     case "inputNumber":
       return kind === "variable" && command.variableId === id;
     case "setSwitch":
