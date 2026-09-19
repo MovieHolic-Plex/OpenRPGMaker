@@ -4,6 +4,28 @@ import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 
 describe("DB write tools", () => {
+  it("replaces inherited members on an enemyIds-only troop patch and preserves unrelated fields", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    const troop = ctx.project.database.troops[0];
+    const enemyId = ctx.project.database.enemies[0].id;
+    const originalPages = structuredClone(troop.battleEventPages);
+    troop.members = [{ enemyId, x: 120, y: 96, hidden: true }];
+    troop.autoAlign = false;
+    const renamed = runTool(ctx, "upsert_troop", { troop: { id: troop.id, name: "Patched" } }, { dryRun: false });
+    expect(renamed.ok, JSON.stringify(renamed.issues)).toBe(true);
+    expect(ctx.project.database.troops.find((entry) => entry.id === troop.id)!.members).toEqual(troop.members);
+    const result = runTool(ctx, "upsert_troop", {
+      troop: { id: troop.id, enemyIds: [enemyId, enemyId] },
+    }, { dryRun: false });
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    const after = ctx.project.database.troops.find((entry) => entry.id === troop.id)!;
+    expect(after.enemyIds).toEqual([enemyId, enemyId]);
+    expect(after.members?.map((member) => member.enemyId)).toEqual(after.enemyIds);
+    expect(after.battleEventPages).toEqual(originalPages);
+    expect(after.autoAlign).toBe(false);
+    expect(result.data).toEqual(after);
+  });
+
   it("upsert_item 부분 수정은 기존 필드를 보존하고 최종 레코드 전체를 반환한다", () => {
     const ctx: ToolContext = { project: createSampleAdventureProject() };
     const before = structuredClone(ctx.project.database.items.find((item) => item.id === "item_potion"));

@@ -1,4 +1,5 @@
 import type { PlaySceneContext, RuntimeTimer } from "@/player/playSceneTypes";
+import type { BattleEventStateSnapshot } from "@/battle/types";
 
 const DEFAULT_TIMER_ID = "timer1";
 
@@ -43,6 +44,19 @@ export function runtimeTimerActivity(timers: ReadonlyMap<string, RuntimeTimer>):
     active[id] = timer.active;
   }
   return active;
+}
+
+/** Apply only authored writes; untouched field timers keep their live countdown. */
+export function applyBattleTimerWrites(
+  scene: Pick<PlaySceneContext, "session" | "runtimeTimers">,
+  state: BattleEventStateSnapshot,
+): void {
+  for (const [id, seconds] of Object.entries(state.timerWrites ?? {})) {
+    const remaining = normalizeSeconds(seconds);
+    const active = state.timerActivityWrites?.[id] ?? scene.runtimeTimers.get(id)?.active ?? false;
+    scene.session.timers[id] = remaining;
+    scene.runtimeTimers.set(id, { remaining, active: active && remaining > 0 });
+  }
 }
 
 function startSeconds(scene: PlaySceneContext, step: TimerStep, id: string): number {

@@ -234,7 +234,8 @@ export function applyActorLevelUp(session: PlaySession, project: Project, actorI
   // maxHp/maxMp 증가분만큼 최대치와 현재치를 함께 올린다(RM2K3: 증가분 가산).
   const vitals = session.actorVitals[actorId];
   if (vitals) {
-    vitals.hp += result.maxHpGain;
+    // Growing maximum HP must not revive a fallen participant.
+    if (vitals.hp > 0) vitals.hp += result.maxHpGain;
     vitals.mp += result.maxMpGain;
     session.actorVitals[actorId] = {
       maxHp: vitals.maxHp + result.maxHpGain,
