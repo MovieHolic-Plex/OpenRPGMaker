@@ -294,6 +294,20 @@ function defaultCollapsedGroups(): Set<string> {
   return new Set(TAB_GROUPS.filter((group) => group.slug !== openSlug).map((group) => group.slug));
 }
 
+/**
+ * 활성 탭 저장. setItem 은 던질 수 있다(프라이빗 모드·할당량) — 같은 파일의
+ * persistCollapsedGroups 는 이미 try/catch 로 막아 두었는데 여기만 무방비라
+ * 저장 실패가 **탭 전환 자체를 중단**시켰다.
+ */
+function persistActiveTab(): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(DATABASE_ACTIVE_TAB_KEY, activeTab);
+  } catch {
+    // 저장 실패해도 이번 세션의 활성 탭은 메모리에 남는다.
+  }
+}
+
 function persistCollapsedGroups(): void {
   try {
     window.localStorage.setItem(DATABASE_COLLAPSED_GROUPS_KEY, JSON.stringify([...collapsedGroupSlugs()]));
@@ -377,6 +391,7 @@ const DATABASE_ACTIVE_TAB_KEY = "oprn:database.activeTab";
 const DATABASE_COLLAPSED_GROUPS_KEY = "oprn:database.collapsedTabGroups";
 
 let activeTab: DatabaseTab = readStoredActiveTab();
+let databaseHeaderResizeObserver: ResizeObserver | null = null;
 let spatialDatabaseHost: HTMLElement | null = null;
 
 type DatabaseTabRenderCache = {
@@ -398,7 +413,7 @@ onSpatialTabReveal((tab) => {
   const requested = DATABASE_TAB_BY_SHELL[tab];
   if (activeTab === requested) return;
   activeTab = requested;
-  if (typeof window !== "undefined") window.localStorage.setItem(DATABASE_ACTIVE_TAB_KEY, activeTab);
+  persistActiveTab();
   for (const listener of activeTabListeners) listener(activeTab);
   const host = spatialDatabaseHost;
   if (!host?.isConnected) return;
@@ -440,7 +455,7 @@ export function setDatabaseActiveTab(tab: DatabaseTab): void {
   const shellTab = SHELL_TAB_BY_SPATIAL[activeTab];
   if (legacyOrigin) rememberLegacySpatialRoute(legacyOrigin);
   else if (shellTab) setSpatialTab(shellTab);
-  if (typeof window !== "undefined") window.localStorage.setItem(DATABASE_ACTIVE_TAB_KEY, activeTab);
+  persistActiveTab();
   for (const listener of activeTabListeners) listener(activeTab);
 }
 
@@ -542,8 +557,12 @@ export function renderDatabasePanel(container: HTMLElement): void {
   container.append(header, body);
   revealActiveTab(header);
   if (typeof ResizeObserver !== "undefined") {
+    // 헤더가 교체되면(탭 레일 재구성) 이전 옵저버는 할 일이 없다. GC 로 수거될 "가능성"에
+    // 기대지 않고 명시적으로 끊는다 — 패널을 여러 번 다시 그리면 그만큼 쌓였다.
+    databaseHeaderResizeObserver?.disconnect();
     const observer = new ResizeObserver(() => revealActiveTab(header));
     observer.observe(header);
+    databaseHeaderResizeObserver = observer;
   }
 }
 
@@ -829,14 +848,12 @@ function appendTabButton(
       // 나중에 append 하므로 둘을 섞으면 라벨이 아이콘 앞으로 온다. <path> 는 텍스트
       // 노드를 안 가지므로 button.textContent 는 라벨 그대로 남는다(G006 라벨 계약).
       children: [makeDatabaseTabIcon(tab.id), tab.label],
-      // 카운트 배지는 CSS `content: attr(data-count)` 로 그려서 보조기술이 못 읽는다.
-      // aria-label 이 접근명을 독점하므로 숫자를 여기에 합쳐 준다 — 같은 화면의 필터 칩이
-      // 이미 쓰는 `${label} ${count}개` 규약과 맞춘다.
-      attrs: {
-        type: "button",
-        title: tab.label,
-        "aria-label": count !== null && count > 0 ? `${tab.label} ${count}개` : tab.label,
-      },
+      // 카운트 배지(CSS `content: attr(data-count)`)는 보조기술이 못 읽는다. 다만 이 버튼은
+      // `aria-label === title === 라벨` 을 계약으로 쓰고 있어(databaseTabIcons·databaseSidebarNav
+      // 가 단언, e2e getByLabel 도 의존) 숫자를 둘 중 어디에도 끼워 넣을 수 없다.
+      // 배지를 읽히게 하려면 시각적 숨김 span 을 버튼 안에 넣어야 하는데, 그건 다시
+      // `button.textContent === 라벨`(G006) 계약과 부딪힌다 — 세 계약을 함께 손보는 별도 작업.
+      attrs: { type: "button", title: tab.label, "aria-label": tab.label },
       dataset: {
         testid: tab.testid,
         tab: tab.id,
@@ -1231,7 +1248,12 @@ function renderMapContextNav(tab: DatabaseTab, container: HTMLElement): HTMLElem
   // Legacy mode routes are facets of the same tileset workspace, not extra rails.
   const context = tab === "tilesetAutotile" || tab === "tilesetUnlabeled" ? "spatialTiles" : tab;
   for (const [child, owner] of Object.entries(MAP_PARENT_TAB)) {
-    if (owner === context && child !== "spatialSpaces" && child !== "tilesetAutotile" && child !== "tilesetUnlabeled") {
+    // tilesetAutotile·tilesetUnlabeled 는 같은 타일셋 작업대의 facet 이라 별도 링크를 안 건다.
+    // spatialSpaces(「장소 편집」)는 사정이 다르다 — 레일 그룹에서도 빠져 있어서 여기까지
+    // 막으면 **자유 텍스트 검색이 유일한 진입로**가 된다. 정보구조가 스스로 spatialPlaces 를
+    // 부모로 선언해 놓고(MAP_PARENT_TAB) 그 부모에서 오는 링크만 막던 자기모순이었다.
+    // 형제 facet 인 terrain 은 이미 링크가 살아 있다.
+    if (owner === context && child !== "tilesetAutotile" && child !== "tilesetUnlabeled") {
       addLink(child as DatabaseTab);
     }
   }

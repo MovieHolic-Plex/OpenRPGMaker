@@ -188,7 +188,12 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
       // 실제 프로젝트 키인지 확인한다 — 없는 탭으로 전환하면 본문이 빈 화면이 된다.
       navigate: (collection, recordId) => {
         const database = store.getCurrent().database as unknown as Record<string, unknown>;
-        if (!(collection in database)) return;
+        // 유효하지 않으면 조용히 무시하지 않는다 — 버튼을 눌렀는데 아무 일도 안 일어나면
+        // 사용자는 UI 가 멈춘 줄 안다. 같은 실패의 다른 경로는 이미 토스트로 말한다.
+        if (!(collection in database)) {
+          toast(`'${collection}' 은(는) 열 수 있는 탭이 아닙니다. 변경 내용은 그대로 있습니다.`, "error");
+          return;
+        }
         const target = collection as DatabaseCollection;
         setSelectedRecordId(target, recordId, { reveal: true });
         switchDatabaseActiveTab(target as DatabaseTab, body);

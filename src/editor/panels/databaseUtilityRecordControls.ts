@@ -1,8 +1,4 @@
-﻿import {
-  databaseWorkbenchStatusText,
-  type DatabaseWorkbenchSummary,
-} from "@/editor/panels/databaseWorkbench";
-import { store } from "@/project/store";
+﻿import { store } from "@/project/store";
 import type {
   ClassBattleCommandKind,
   DatabaseElementKind,
@@ -33,7 +29,8 @@ export function selectedUtilityRecordIndex(tab: UtilityTabId): number {
 
 export function selectUtilityRecord(tab: UtilityTabId, index: number): void {
   selectedUtilityRecords[tab] = index;
-  updateUtilityStatus(tab, index);
+  // 예전에는 여기서 `db-workbench-status` 에 선택 요약을 썼다. 그 표면은 모던화(T5~T15)로
+  // 제거됐고 e2e 가 count 0 을 단언한다 — 소비자만 남아 매번 조용히 빠져나가던 죽은 경로였다.
 }
 
 export function utilityTextRow(options: UtilityRowBase<string>): HTMLElement {
@@ -121,22 +118,3 @@ export function isBattleCommandKind(value: string): value is ClassBattleCommandK
   return value === "attack" || value === "skill" || value === "skillSubset" || value === "defend" || value === "guard" || value === "item" || value === "escape" || value === "switch" || value === "event";
 }
 
-function updateUtilityStatus(tab: UtilityTabId, index: number): void {
-  const status = document.querySelector<HTMLElement>("[data-testid='db-workbench-status']");
-  if (!status) return;
-  status.textContent = databaseWorkbenchStatusText(utilitySummary(tab, index));
-}
-
-function utilitySummary(tab: UtilityTabId, index: number): DatabaseWorkbenchSummary {
-  const database = store.getCurrent().database;
-  if (tab === "elements") {
-    const record = database.elements?.[index] ?? database.elements?.[0];
-    return { recordId: record?.id, recordName: record?.name, selectedIndex: record ? index + 1 : undefined, tabId: "elements", tabLabel: "속성", totalCount: database.elements?.length };
-  }
-  if (tab === "terrain") {
-    const record = database.terrains?.[index] ?? database.terrains?.[0];
-    return { recordId: record?.id, recordName: record?.name, selectedIndex: record ? index + 1 : undefined, tabId: "terrain", tabLabel: "지형 효과", totalCount: database.terrains?.length };
-  }
-  const record = database.battleCommands?.[index] ?? database.battleCommands?.[0];
-  return { recordId: record?.id, recordName: record?.name, selectedIndex: record ? index + 1 : undefined, tabId: "battleCommands", tabLabel: "전투 명령", totalCount: database.battleCommands?.length };
-}
