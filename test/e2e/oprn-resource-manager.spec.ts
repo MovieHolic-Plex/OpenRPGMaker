@@ -29,6 +29,22 @@ test("resource manager uses Korean classic three-pane RM2K3 layout", async ({ pa
   await page.screenshot({ path: testInfo.outputPath("resource-manager-classic-layout.png"), fullPage: true });
 });
 
+test("resource URL importer keeps its own centered modal shell", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
+  await page.goto("/?freshProject=1");
+  await page.getByTestId("toolbar-resource-manager").click();
+  await expect(page.getByTestId("resource-modal")).toBeVisible();
+
+  await page.locator(".rm-url-btn").click();
+  const urlModal = page.locator(".rm-url-backdrop");
+  await expect(urlModal).toHaveCSS("position", "fixed");
+  await expect(urlModal).toHaveCSS("inset", "0px");
+  await expect(urlModal.locator(".rm-url-modal-window")).toHaveCSS("display", "flex");
+  await expect(urlModal.locator(".database-modal-header")).toHaveCSS("display", "flex");
+  await expect(urlModal.getByRole("heading", { name: "웹 URL로 리소스 가져오기" })).toBeVisible();
+  await expect(urlModal.locator(".rm-url-input")).toBeFocused();
+});
+
 test("resource manager faceset category hides the generated hero face series", async ({ page }, testInfo) => {
   // generated-actor-hero-XX-face-NN 낱장 32장은 저장본 호환 등록만 남기고 저작 목록에서 내렸다.
   // 얼굴 그래픽 카테고리에는 EasyRPG 낱장 80장만 보여야 한다.

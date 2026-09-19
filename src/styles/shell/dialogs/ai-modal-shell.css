@@ -1,0 +1,372 @@
+/*
+ * AI dialogs reuse the database modal class names, but the database stylesheet
+ * is intentionally lazy-loaded when the database surface is opened. These
+ * rules keep the editor-owned AI dialogs usable when they are the first modal
+ * opened in a fresh editor session. Database-layer rules take over after that
+ * stylesheet arrives.
+ */
+
+:is(
+  .ai-settings-modal-backdrop,
+  .ai-history-modal-backdrop,
+  .ai-instructions-modal-backdrop
+) {
+  align-items: center;
+  background: var(--bg-scrim, rgba(15, 23, 42, 0.18));
+  display: grid;
+  inset: 0;
+  justify-content: center;
+  padding: var(--space-3, 12px);
+  place-items: center;
+  position: fixed;
+  z-index: var(--z-modal-overlay, 900);
+}
+
+:is(
+  .ai-settings-window,
+  .ai-history-window,
+  .ai-instructions-window
+) {
+  box-sizing: border-box;
+  background: var(--bg-raised, #fff);
+  border: 1px solid var(--border-default, rgba(15, 23, 42, 0.14));
+  box-shadow: var(--shadow-modal, 0 18px 48px rgba(15, 23, 42, 0.18));
+  color: var(--text-1, #0f172a);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 24px);
+  max-width: calc(100vw - 24px);
+  min-height: 0;
+  overflow: hidden;
+}
+
+:is(
+  .ai-settings-window,
+  .ai-history-window,
+  .ai-instructions-window
+) .database-modal-header {
+  align-items: center;
+  background: var(--bg-raised, #fff);
+  border-bottom: 1px solid var(--border-default, rgba(15, 23, 42, 0.14));
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--space-3, 12px);
+  justify-content: space-between;
+  min-height: 48px;
+  padding: var(--space-2, 8px) var(--space-4, 16px);
+}
+
+:is(
+  .ai-settings-window,
+  .ai-history-window,
+  .ai-instructions-window
+) .database-modal-header h2 {
+  color: var(--text-1, #0f172a);
+  font: 700 16px/1.3 var(--font-ui, system-ui, sans-serif);
+  margin: 0;
+  min-width: 0;
+}
+
+:is(
+  .ai-settings-window,
+  .ai-history-window,
+  .ai-instructions-window
+) .database-modal-close {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s, 6px);
+  color: var(--text-2, #475569);
+  cursor: pointer;
+  display: grid;
+  flex: 0 0 auto;
+  height: 32px;
+  justify-content: center;
+  width: 32px;
+}
+
+:is(
+  .ai-settings-window,
+  .ai-history-window,
+  .ai-instructions-window
+) .database-modal-close:hover {
+  background: var(--bg-hover, rgba(15, 23, 42, 0.06));
+  border-color: var(--border-default, rgba(15, 23, 42, 0.14));
+  color: var(--text-1, #0f172a);
+}
+
+.ai-history-window {
+  height: auto;
+  max-height: min(86vh, 680px);
+  width: min(92vw, 560px);
+}
+
+.ai-settings-window {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: min(780px, calc(100vh - 24px));
+  max-height: min(780px, calc(100vh - 24px));
+  width: min(760px, calc(100vw - 24px));
+}
+
+.ai-instructions-window {
+  height: auto;
+  max-height: min(86vh, 620px);
+  width: min(92vw, 560px);
+}
+
+/* Tool browser and harness are editor-owned dialogs too. Their DOM keeps the
+ * database modal class names for shared focus/close behavior, so give their
+ * backdrop a static owner as well; otherwise the first open is block flow at
+ * the end of the document until the database bundle happens to load. */
+:is(
+  .database-modal-backdrop:has(.tool-browser-window),
+  .database-modal-backdrop:has(.harness-window)
+) {
+  align-items: center;
+  background: var(--bg-scrim, rgba(15, 23, 42, 0.18));
+  display: grid;
+  inset: 0;
+  justify-content: center;
+  padding: var(--space-3, 12px);
+  place-items: center;
+  position: fixed;
+  z-index: var(--z-modal-overlay, 900);
+}
+
+:is(.tool-browser-window, .harness-window) {
+  background: var(--bg-raised, #fff);
+  border: 1px solid var(--border-default, rgba(15, 23, 42, 0.14));
+  box-sizing: border-box;
+  box-shadow: var(--shadow-modal, 0 18px 48px rgba(15, 23, 42, 0.18));
+  color: var(--text-1, #0f172a);
+  max-height: calc(100vh - 24px);
+  overflow: hidden;
+}
+
+:is(.tool-browser-window, .harness-window) .database-modal-header {
+  align-items: center;
+  background: var(--bg-raised, #fff);
+  border-bottom: 1px solid var(--border-default, rgba(15, 23, 42, 0.14));
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--space-2, 8px);
+  justify-content: space-between;
+  min-height: 48px;
+  padding: var(--space-2, 8px) var(--space-4, 16px);
+}
+
+:is(.tool-browser-window, .harness-window) .database-modal-header h2 {
+  color: var(--text-1, #0f172a);
+  font: 700 16px/1.3 var(--font-ui, system-ui, sans-serif);
+  margin: 0;
+  min-width: 0;
+}
+
+:is(.tool-browser-window, .harness-window) .database-modal-close {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s, 6px);
+  color: var(--text-2, #475569);
+  cursor: pointer;
+  display: grid;
+  flex: 0 0 auto;
+  height: 32px;
+  justify-content: center;
+  width: 32px;
+}
+
+:is(.tool-browser-window, .harness-window) .database-modal-close:hover {
+  background: var(--bg-hover, rgba(15, 23, 42, 0.06));
+  border-color: var(--border-default, rgba(15, 23, 42, 0.14));
+}
+
+/* First-open history/instructions body contracts. Rich row/card styles remain
+ * in the database layer, but these owners prevent a block-flow form from
+ * escaping the centered window before that layer is loaded. */
+.ai-history-body {
+  align-content: start;
+  display: grid;
+  flex: 1 1 auto;
+  gap: var(--space-2, 8px);
+  min-height: 0;
+  overflow: hidden;
+  padding: var(--space-3, 12px);
+}
+
+.ai-history-filters,
+.ai-history-map-select,
+.ai-history-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1, 4px);
+}
+
+.ai-history-search {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font: inherit;
+  min-width: 0;
+  padding: 5px 8px;
+  width: 100%;
+}
+
+.ai-history-list {
+  align-content: start;
+  display: grid;
+  gap: var(--space-1, 4px);
+  max-height: min(42vh, 360px);
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.ai-instructions-body {
+  align-content: start;
+  display: grid;
+  flex: 1 1 auto;
+  gap: var(--space-2, 8px);
+  min-height: 0;
+  overflow: auto;
+  padding: var(--space-3, 12px);
+}
+
+.ai-instructions-note {
+  color: var(--text-3);
+  font-size: 11px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.ai-instructions-input {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font: inherit;
+  line-height: 1.55;
+  min-height: 180px;
+  padding: 8px 10px;
+  resize: vertical;
+  width: 100%;
+}
+
+.ai-instructions-footer {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2, 8px);
+  justify-content: flex-end;
+}
+
+.ai-instructions-counter {
+  color: var(--text-3);
+  flex: 1 1 auto;
+  font-size: 11px;
+}
+
+/* AI tool browser and harness share the database modal shell but can be
+ * opened directly from the editor's assistant. */
+.tool-browser-window,
+.harness-window {
+  display: flex;
+  flex-direction: column;
+  height: min(84vh, 780px);
+  max-width: min(92vw, 920px);
+  width: 92vw;
+}
+
+.tool-browser-header,
+.harness-header {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2, 8px);
+}
+
+.tool-browser-header h2,
+.harness-header h2 {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.tool-browser-search {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  flex: 1 1 auto;
+  font: inherit;
+  min-width: 0;
+  padding: 4px 8px;
+}
+
+.tool-browser-body,
+.harness-body {
+  align-content: start;
+  background: var(--bg-raised, #fff);
+  display: grid;
+  flex: 1 1 auto;
+  gap: var(--space-2, 8px);
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: var(--space-3, 12px) var(--space-4, 16px);
+}
+
+.tool-browser-hint,
+.harness-hint {
+  color: var(--text-3);
+  font-size: 11px;
+  flex: 0 0 auto;
+  margin: var(--space-1, 4px) var(--space-4, 16px);
+}
+
+.tool-browser-category-title {
+  color: var(--text-1);
+  font-size: 12px;
+  margin: 0 0 var(--space-1, 4px);
+}
+
+.tool-browser-row {
+  border-bottom: 1px solid var(--border-subtle);
+  display: grid;
+  gap: 2px;
+  padding: var(--space-1, 4px) 0;
+}
+
+.tool-browser-row-head {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2, 8px);
+}
+
+.tool-browser-name {
+  color: var(--accent);
+  font-size: 12px;
+}
+
+.tool-browser-badge {
+  background: var(--control-bg);
+  border-radius: 999px;
+  color: var(--text-2);
+  font-size: 10px;
+  padding: 1px 8px;
+}
+
+.tool-browser-badge.is-write {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.tool-browser-badge.is-danger {
+  background: var(--danger-muted);
+  color: var(--danger);
+}
+
+.tool-browser-desc {
+  color: var(--text-2);
+  font-size: 11px;
+  margin: 0;
+}
