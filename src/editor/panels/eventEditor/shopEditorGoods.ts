@@ -1,5 +1,7 @@
 import { GENERAL_STORE_PRESET_ITEM_IDS } from "@/editor/eventCommands/quickAuthoringDefaults";
 import { store } from "@/project/store";
+import { startSession } from "@/project/session";
+import { stockEntryPrice } from "@/project/shopStock";
 import type { ItemRecord } from "@/project/types/database";
 import { el } from "@/util/dom";
 import { imageIconOf, recordIconElement } from "./recordPicker";
@@ -48,6 +50,7 @@ export function createShopGoods(context: CommandEditContext, command: ShopComman
 
   const renderRows = () => {
     const c = current();
+    const season = editorShopSeason();
     const top = view.scrollTop;
     count.textContent = `${c.itemIds.length}개`;
     if (!c.itemIds.includes(view.selectedId ?? "")) view.selectedId = c.itemIds[0] ?? null;
@@ -56,6 +59,7 @@ export function createShopGoods(context: CommandEditContext, command: ShopComman
       const item = byId.get(id);
       const stock = c.stock?.find((entry) => entry.itemId === id);
       const selected = view.selectedId === id;
+      const effectivePrice = stock ? stockEntryPrice(stock, season) ?? item?.price : item?.price;
       const button = el("button", {
         class: `shop-editor-goods-row${selected ? " is-selected" : ""}`,
         attrs: { type: "button", "aria-pressed": String(selected) },
@@ -66,8 +70,8 @@ export function createShopGoods(context: CommandEditContext, command: ShopComman
             el("span", { children: [el("strong", { text: item?.name ?? "찾을 수 없는 상품" }), el("small", { text: item ? SHOP_ITEM_TYPES[item.type] : "자료집에서 삭제된 상품" })] }),
           ] }),
           el("span", { class: "shop-editor-goods-price", children: [
-            el("span", { text: item ? shopPriceLabel(stock?.priceOverride ?? item.price) : "—" }),
-            ...(stock?.priceBySeason ? [el("small", { text: "계절별 가격 있음" })] : stock?.priceOverride !== undefined ? [el("small", { text: "직접 지정" })] : []),
+            el("span", { text: item && effectivePrice !== undefined ? shopPriceLabel(effectivePrice) : "—" }),
+            ...(stock?.priceBySeason && season && stock.priceBySeason[season] !== undefined ? [el("small", { text: `${SHOP_SEASON_LABELS[season]} 가격` })] : stock?.priceBySeason ? [el("small", { text: "계절별 가격 있음" })] : stock?.priceOverride !== undefined ? [el("small", { text: "직접 지정" })] : []),
           ] }),
           el("span", { class: "shop-editor-goods-season", text: stock?.seasons?.length ? stock.seasons.map((season) => SHOP_SEASON_LABELS[season]).join(" · ") : "사계절" }),
         ],
@@ -124,6 +128,12 @@ export function createShopGoods(context: CommandEditContext, command: ShopComman
   layout.append(main, el("aside", { class: "shop-editor-inspector", children: [detail, preview] }));
   renderRows(); renderDetail();
   return layout;
+}
+
+function editorShopSeason(): ShopSeason | undefined {
+  const project = store.getCurrent();
+  if (!project.system.timeSystem?.enabled) return undefined;
+  return startSession(project).gameTime?.season;
 }
 
 function goodsIcon(item: ItemRecord): HTMLElement {

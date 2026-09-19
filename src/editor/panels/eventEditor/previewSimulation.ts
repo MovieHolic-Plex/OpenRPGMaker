@@ -248,10 +248,37 @@ function evalForkCondition(
   // 맡기면 「로케이션 없음 = 거짓」으로 else-taken 을 단정해 뱃지(판정 불가)와 어긋났다.
   // 시작 맵으로 폴백하지 않는다: 편집 중인 맵이 아닌 기하로 판정하는 것은 지어낸 답이다.
   const locations = resolvePreviewLocations(mapId);
-  if (conditionNeedsMap(condition) && !locations) return "unknown";
+  if ((conditionNeedsMap(condition) && !locations) || conditionNeedsUnsimulatedState(condition)) return "unknown";
   const session = previewSessionFromSimState(state);
   const result = evalCondition(session, condition, hostEventId, locations ? { map: { locations } } : undefined);
   return result ? "then" : "else";
+}
+
+/**
+ * The preview can replay authored switches/variables, but it does not own a
+ * clock, battle result, NPC scheduler, or roguelike run. Returning unknown for
+ * those leaves both branches visibly possible instead of presenting a stale
+ * editor session as a definitive runtime decision.
+ */
+function conditionNeedsUnsimulatedState(condition: Condition): boolean {
+  switch (condition.kind) {
+    case "timer":
+    case "timePhase":
+    case "season":
+    case "npcActivity":
+    case "friendshipAtLeast":
+    case "relationshipAtLeast":
+    case "battleResult":
+    case "run":
+      return true;
+    case "all":
+    case "any":
+      return condition.conditions.some(conditionNeedsUnsimulatedState);
+    case "not":
+      return conditionNeedsUnsimulatedState(condition.condition);
+    default:
+      return false;
+  }
 }
 
 function conditionNeedsMap(condition: Condition): boolean {

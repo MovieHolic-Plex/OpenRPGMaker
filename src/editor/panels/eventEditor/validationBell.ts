@@ -42,6 +42,7 @@ export function renderEventValidationBell(): HTMLDetailsElement {
   // DESIGN.md §5 의 계약도 `오류 N · 경고 N · 안내 N` 이다.
   const tally = el("span", {
     class: "event-draft-validation-tally",
+    attrs: { role: "status", "aria-live": "polite", "aria-atomic": "true" },
     dataset: { testid: "event-draft-validation-tally" },
   });
   const summary = el("summary", {
@@ -51,6 +52,7 @@ export function renderEventValidationBell(): HTMLDetailsElement {
       el("span", { class: "event-draft-validation-bell", html: BELL_ICON }),
       el("span", {
         class: "event-draft-validation-count",
+        attrs: { role: "status", "aria-live": "polite", "aria-atomic": "true" },
         dataset: { testid: "event-draft-validation-count" },
       }),
       tally,

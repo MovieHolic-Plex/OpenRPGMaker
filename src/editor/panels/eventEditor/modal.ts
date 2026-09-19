@@ -46,6 +46,7 @@ import { attachWindowDrag } from "./modalDrag";
 import { attachWindowFullscreen } from "./modalFullscreen";
 import { attachWindowResize, renderModalResizeHandle } from "./modalResize";
 import { toast } from "@/util/toast";
+import { openEventEditorHelp } from "./eventEditorHelp";
 
 const EVENT_EDITOR_MODAL_TEST_ID = "event-editor-modal";
 const EVENT_EDITOR_CLOSE_EVENT = "oprn:event-editor-close";
@@ -69,13 +70,19 @@ export function openEventEditorModal(mapId: MapId, eventId: string): void {
   });
 }
 
-export function openNewEventEditorModal(mapId: MapId, x: number, y: number): string {
+export function openNewEventEditorModal(
+  mapId: MapId,
+  x: number,
+  y: number,
+  onOpened?: (eventId: string) => void,
+): string {
   let created = "";
   guardedCloseExistingEventEditorModal(() => {
     const eventId = createEventDraft(mapId, x, y);
     if (!eventId) return;
     created = eventId;
     openDraftEventEditorModal({ mapId, eventId });
+    onOpened?.(eventId);
   });
   return created;
 }
@@ -686,7 +693,7 @@ function renderModalFooter(
           }, false, "ghost"),
           el("span", {
             class: "event-editor-remote-status",
-            attrs: { style: "display: none;" },
+            attrs: { role: "status", "aria-live": "polite", "aria-atomic": "true" },
             dataset: { testid: "event-editor-remote-status" },
           }),
         ],
@@ -698,8 +705,10 @@ function renderModalFooter(
           // 갈라져 넓은 화면에서 2,000px 넘게 떨어졌다 — 상태 표시가 사실상 안 읽혔다.
           el("span", {
             class: "issue event-editor-draft-status",
+            attrs: { role: "status", "aria-live": "polite", "aria-atomic": "true" },
             dataset: { testid: "event-editor-draft-status" },
           }),
+          footerButton("도움말", "event-editor-help", () => openEventEditorHelp(), false, "ghost"),
           footerButton("취소", "event-editor-cancel", () => requestClose(), false, "ghost"),
           footerButton("적용", "event-editor-apply", () => {
             if (!commitValidatedEventDraft(request, "적용")) return;
@@ -753,13 +762,20 @@ function refreshModalFooterStatus(footer: HTMLElement, request: OpenEventEditorR
   cancel.setAttribute("aria-label", cancelDeletesNewEvent ? "취소: 새 이벤트 삭제" : footerButtonAccessibleName("취소"));
 
   const changed = eventDraftHasUserChanges(project, request.mapId, request.eventId);
-  if (changed) {
+  const conflict = event?.draft?.conflict;
+  if (conflict) {
+    local.textContent = conflict.kind === "remote-delete"
+      ? "외부에서 삭제됨 · 내 초안 유지"
+      : "외부 변경 있음 · 내 초안 유지";
+    local.title = "다른 저장본과 충돌했습니다. 이 초안을 검토한 뒤 적용하세요.";
+    local.dataset.state = "conflict";
+  } else if (changed) {
     local.textContent = "변경 있음";
     local.title = "프로젝트에 반영하고 편집 유지";
     local.dataset.state = "working";
   } else if (event?.draft?.kind === "new") {
-    local.textContent = "새 이벤트 · 취소 시 삭제 · 자동 저장";
-    local.title = "편집 없이 닫으면 새 이벤트를 만들지 않습니다.";
+    local.textContent = "새 이벤트 · 취소 시 삭제 · 임시 보관";
+    local.title = "적용 전 본문은 로컬 복구본으로 임시 보관됩니다.";
     local.dataset.state = "new-pristine";
   } else if (footer.dataset.applied === "true") {
     local.textContent = "적용됨";
@@ -921,14 +937,19 @@ function installFocusTrap(backdropEl: HTMLElement, windowEl: HTMLElement): () =>
     if (focusable.length === 0) return;
     const first = focusable[0]!;
     const last = focusable[focusable.length - 1]!;
+    if (!windowEl.contains(document.activeElement)) {
+      event.preventDefault();
+      (event.shiftKey ? last : first).focus({ preventScroll: true });
+      return;
+    }
     if (event.shiftKey) {
       if (document.activeElement === first) { event.preventDefault(); last.focus(); }
     } else {
       if (document.activeElement === last) { event.preventDefault(); first.focus(); }
     }
   };
-  backdropEl.addEventListener("keydown", trap);
-  return () => backdropEl.removeEventListener("keydown", trap);
+  document.addEventListener("keydown", trap, true);
+  return () => document.removeEventListener("keydown", trap, true);
 }
 function focusFirstDialogControl(root: HTMLElement): void {
   const first = root.querySelector<HTMLElement>(

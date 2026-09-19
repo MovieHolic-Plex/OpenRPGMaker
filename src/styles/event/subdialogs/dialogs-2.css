@@ -549,8 +549,8 @@
 
 .event-subdialog-backdrop[data-testid="event-page-move-route-dialog"] .event-subdialog-window {
   grid-template-rows: auto minmax(0, 1fr);
-  height: min(860px, calc(100vh - 36px));
-  min-height: 660px;
+  height: min(860px, calc(100dvh - 36px));
+  min-height: min(660px, calc(100dvh - 36px));
   width: min(1440px, calc(100vw - 36px));
 }
 

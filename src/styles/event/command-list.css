@@ -245,7 +245,8 @@
 .event-page-move-route-utility:focus-visible,
 .event-page-move-route-footer-button:focus-visible,
 .event-page-move-route-list-row:focus-visible {
-  outline: 1px dotted var(--border-strong);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .event-contents-fieldset .cmd-list {
@@ -415,8 +416,6 @@
 /* 상점 분기 마커. */
 /* 선택 행에서도 프리픽스/토큰/마커의 고유색을 그대로 유지한다
    (--accent-muted 반투명 배경 위에서 충분히 읽히므로 색 반전이 필요 없다). */
-.event-contents-fieldset .cmd-drag-handle,
-.event-contents-fieldset .cmd-actions,
 .event-contents-fieldset .cmd-inline-editor {
   display: none;
 }
@@ -452,7 +451,7 @@
 .event-record-picker-row:focus-visible,
 .event-command-picker-command:focus-visible,
 .event-command-picker-tab:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--accent, var(--accent-border)) 34%, transparent);
+  outline: 2px solid var(--accent, var(--accent-border));
   outline-offset: 2px;
 }
 
@@ -546,7 +545,8 @@
 .event-page-number-tabs .btn:focus-visible,
 .event-editor-modal-footer .btn:focus-visible {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--event-modern-accent) 24%, transparent);
-  outline: none;
+  outline: 2px solid var(--event-modern-accent);
+  outline-offset: 2px;
 }
 
 .event-page-number-tabs .btn.active {
@@ -650,7 +650,8 @@
 
 .event-editor-command-tool:focus-visible {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--event-modern-accent) 22%, transparent);
-  outline: none;
+  outline: 2px solid var(--event-modern-accent);
+  outline-offset: 2px;
 }
 
 .event-editor-command-tool.primary {
@@ -926,8 +927,6 @@
   font-weight: 700;
 }
 
-.event-contents-fieldset .cmd-drag-handle,
-.event-contents-fieldset .cmd-actions,
 .event-contents-fieldset .terminal-command-editor {
   display: none;
 }

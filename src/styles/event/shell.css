@@ -873,20 +873,6 @@ body.event-editor-modal-open .coach-mark-card {
      레일 폭을 찾는 사람에게 228/268 중 어느 쪽인지 헷갈리게 만들었다. */
   --balanced-inspector-width: 340px;
 
-  --bg-base: #F7F8F8;
-  --bg-raised: #FFFFFF;
-  --bg-inset: #EEF1F4;
-  --text-1: #0F172A;
-  --text-2: #475569;
-  --text-3: #64748B;
-  --accent: #4A57D6;
-  --accent-muted: rgba(74, 87, 214, 0.12);
-  --on-accent: #FFFFFF;
-  --danger: #C6403D;
-  --warning: #8A5E00;
-  --border: rgba(15, 23, 42, 0.10);
-  --border-strong: rgba(15, 23, 42, 0.16);
-
   background: var(--bg-base);
   border: 0;
   border-radius: 0;

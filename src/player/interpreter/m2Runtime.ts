@@ -1,4 +1,5 @@
 import type { M2CommandCatalogEntry } from "@/project/eventCommands/m2Catalog";
+import { tintDurationMs } from "@/project/eventCommands/tintDuration";
 import { showPictureState } from "@/project/session";
 import { ACTOR_PARAMETER_KEYS } from "@/project/actorModel";
 import { changeActorClass } from "@/project/sessionClass";
@@ -73,12 +74,9 @@ function executeByTitle(
     // color 필드(색 이름)를 우선 사용하고, value(r,g,b / hex)가 있으면 그것을 사용.
     const explicit = fieldString(fields, "value", "");
     runtime.screen.tint = explicit || fieldString(fields, "color", "neutral");
-    // duration(초 또는 ms) 필드가 있으면 점진 전환 시간으로 기록. 초로 판단되면 ms 로 변환.
-    if (hasField(fields, "duration")) {
-      runtime.screen.tintDurationMs = toDurationMs(fieldNumber(fields, "duration", 0));
-    } else {
-      runtime.screen.tintDurationMs = 0;
-    }
+    // New commands use durationMs. Keep the old duration field readable for
+    // imported projects, where small values were authored in seconds.
+    runtime.screen.tintDurationMs = tintDurationMs(fields);
     return;
   }
   if (title === "Flash Screen") {
@@ -315,8 +313,7 @@ function hasField(fields: M2CommandFields, key: string): boolean {
   return Object.prototype.hasOwnProperty.call(fields, key) && fields[key] !== undefined;
 }
 
-// duration 값을 ms 로 정규화. RM2K3 는 duration 을 프레임(60fps)/초로 쓰기도 하나,
-// 여기서는 값이 작으면(<=60) 초로 보고 ms 로 환산, 그 외(>60)는 이미 ms 로 간주.
+// Legacy picture commands used the duration field as seconds for small values.
 function toDurationMs(value: number): number {
   if (!Number.isFinite(value) || value <= 0) return 0;
   return value <= 60 ? Math.round(value * 1000) : Math.round(value);

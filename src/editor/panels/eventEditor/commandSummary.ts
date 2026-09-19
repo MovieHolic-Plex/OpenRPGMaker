@@ -10,6 +10,7 @@ import {
 import { formatWeightedBranchSummary } from "./weightedBranchTable";
 import { BGM_CATALOG } from "@/assets/bgmCatalog";
 import { m2CommandById, type M2CommandFieldSpec } from "@/project/eventCommands/m2Catalog";
+import { tintDurationMs } from "@/project/eventCommands/tintDuration";
 import { coordinateAxisSpec, coordinateFailurePolicy } from "@/project/eventCommands/coordinateDestination";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
@@ -842,11 +843,11 @@ function page3M2SummaryParts(
       return commandLine(labelOf("화면 표시"), valuePart(str("value") || str("transition") || "페이드 인"));
     case "Tint Screen": {
       const color = str("value") || str("color") || "기본";
-      const duration = str("duration") || str("durationMs");
+      const duration = tintDurationMs(cmd.fields);
       return commandLine(
         labelOf("화면 색조 변경"),
         valuePart(color),
-        ...(duration ? [plainPart(" · "), valuePart(`${duration}${str("durationMs") ? "ms" : ""}`)] : [])
+        plainPart(" · "), valuePart(duration > 0 ? `${duration}ms` : "즉시 전환")
       );
     }
     case "Flash Screen": {
@@ -1047,9 +1048,7 @@ function choicesSummaryParts(cmd: Extract<Command, { kind: "choices" }>): readon
       parts.push(choiceOptionPart(`${index + 1}.${label}`));
     });
   }
-  if (cmd.cancelBehavior) {
-    parts.push(plainPart("  "), choiceCancelPart(choiceCancelSummary(cmd)));
-  }
+  parts.push(plainPart("  "), choiceCancelPart(choiceCancelSummary(cmd)));
   return parts;
 }
 
@@ -1063,8 +1062,7 @@ function choiceCancelPart(text: string): CommandSummaryPart {
 
 /** 취소 동작 요약. choiceN 이면 해당 옵션 본문을 보여 "잠시 후" 같은 선택지와 구분한다. */
 function choiceCancelSummary(cmd: Extract<Command, { kind: "choices" }>): string {
-  const behavior = cmd.cancelBehavior;
-  if (!behavior) return "";
+  const behavior = cmd.cancelBehavior ?? "disallow";
   if (behavior === "disallow") return "취소 없음";
   if (behavior === "branch") return "취소→따로 처리";
   const index = Number.parseInt(behavior.slice("choice".length), 10);

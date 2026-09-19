@@ -460,9 +460,12 @@ export function moveMapsInTree(mapIds: readonly MapId[], newParentId: MapId | ""
 // ── Database: Switches/Variables/Common Events CRUD ──
 export function addSwitch(name: string): string {
   recordProjectSnapshot();
+  const reusableId = store.getCurrent().switches.find((record) =>
+    record.name.trim().length === 0 && !switchVariableReferenceMessage("switch", record.id)
+  )?.id;
   let id = "";
   store.update((p) => {
-    const empty = p.switches.find((record) => record.name.trim().length === 0);
+    const empty = reusableId ? p.switches.find((record) => record.id === reusableId) : undefined;
     if (empty) {
       empty.name = name || "새 스위치";
       id = empty.id;
@@ -492,9 +495,12 @@ export function deleteSwitch(id: string): DeleteResult {
 
 export function addVariable(name: string): string {
   recordProjectSnapshot();
+  const reusableId = store.getCurrent().variables.find((record) =>
+    record.name.trim().length === 0 && !switchVariableReferenceMessage("variable", record.id)
+  )?.id;
   let id = "";
   store.update((p) => {
-    const empty = p.variables.find((record) => record.name.trim().length === 0);
+    const empty = reusableId ? p.variables.find((record) => record.id === reusableId) : undefined;
     if (empty) {
       empty.name = name || "새 변수";
       id = empty.id;
