@@ -470,6 +470,8 @@ export interface EnemyStats {
 
 export interface MonsterSpeciesGraphic {
   monsterResourceId?: string;
+  /** Optional true rear-view battle sprite; front graphic remains the fallback. */
+  backResourceId?: string;
   /** Optional overworld CharSet texture key (e.g. tex_easyrpg_charset_monster1). */
   fieldCharsetId?: string;
   /** Optional full overworld graphic override; wins over fieldCharsetId when present. */
