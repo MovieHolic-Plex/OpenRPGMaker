@@ -30,7 +30,9 @@ export function resolveBattleBackdrop(input: {
   if (troopBg) return troopBg;
   const terrainBg = normalizeBattleFieldBackgroundId(terrainBattleBackgroundAt(input.project, input.location));
   if (terrainBg) return terrainBg;
-  return DEFAULT_BATTLE_FIELD_BACKGROUND_ID;
+  return input.project.system.battleUiStyle === "pokemon"
+    ? "battle-skin-pokemon-backdrop"
+    : DEFAULT_BATTLE_FIELD_BACKGROUND_ID;
 }
 
 /** Look up tileset terrain tag at a map tile and map it to database.terrains battle background. */

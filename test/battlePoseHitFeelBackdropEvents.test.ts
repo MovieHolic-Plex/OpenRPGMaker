@@ -139,6 +139,19 @@ describe("battle backdrop resolution", () => {
     expect(resolveBattleBackdrop({ project, troopId: troop.id })).toBe(DEFAULT_BATTLE_FIELD_BACKGROUND_ID);
   });
 
+  it("uses the monster skin fallback without overriding authored battle backgrounds", () => {
+    const project = createBlankProject();
+    project.system.battleUiStyle = "pokemon";
+    const troop = project.database.troops[0]!;
+    delete troop.previewBackgroundResourceId;
+    expect(resolveBattleBackdrop({ project, troopId: troop.id })).toBe("battle-skin-pokemon-backdrop");
+    troop.previewBackgroundResourceId = "generated-battle-reference-forest";
+    expect(resolveBattleBackdrop({ project, troopId: troop.id })).toBe("generated-battle-reference-forest");
+    project.system.battleUiStyle = "rm2000";
+    delete troop.previewBackgroundResourceId;
+    expect(resolveBattleBackdrop({ project, troopId: troop.id })).toBe(DEFAULT_BATTLE_FIELD_BACKGROUND_ID);
+  });
+
   it("rewrites night-sky troop previews to forest via runtime create", () => {
     const project = createBlankProject();
     const troop = project.database.troops[0];

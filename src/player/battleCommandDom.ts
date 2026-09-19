@@ -1,3 +1,4 @@
+import { battleTypeBadges } from "@/player/battleTypeBadges";
 import type {
   ActorCommand,
   BattleBattlerSnapshot,
@@ -178,9 +179,11 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
 
   const project = store.getCurrent();
   if (isPokemonMonsterActor(project, actor) && !snapshot.forcedSwitchActorId) {
+    menu.classList.add("battle-pokemon-root");
     menu.append(...pokemonRootCommands(snapshot, options, targetMode));
     return menu;
   }
+  menu.classList.add("battle-standard-root");
   const overrideCommandIds = actor?.recordId
     ? snapshot.eventState.actorBattleCommands?.[actor.recordId]
     : undefined;
@@ -211,22 +214,22 @@ function pokemonRootCommands(
   const items = battleItems(snapshot);
   const balls = captureItems(snapshot);
   return [
-    commandButton("Fight", "actor-command-fight", "fire", "", () => {
+    commandButton("싸운다", "actor-command-fight", "fire", "", () => {
       if (targetMode) return;
       options.setSubmenu({ kind: "pokemonFight" });
       options.render();
     }, targetMode),
-    commandButton("PKMN", "actor-command-pkmn", "switch", switches.length > 0 ? `${switches.length}명` : "없음", () => {
-      if (targetMode || switches.length === 0) return;
-      options.setSubmenu({ kind: "switch" });
-      options.render();
-    }, targetMode || switches.length === 0),
-    commandButton("Item", "actor-command-item", "bag", items.length + balls.length > 0 ? `${items.length + balls.length}종` : "없음", () => {
+    commandButton("가방", "actor-command-item", "bag", items.length + balls.length > 0 ? `${items.length + balls.length}종` : "없음", () => {
       if (targetMode || items.length + balls.length === 0) return;
       options.setSubmenu({ kind: "item" });
       options.render();
     }, targetMode || items.length + balls.length === 0),
-    commandButton("Run", "actor-command-run", "boot", "", () => {
+    commandButton("몬스터", "actor-command-pkmn", "switch", switches.length > 0 ? `${switches.length}명` : "없음", () => {
+      if (targetMode || switches.length === 0) return;
+      options.setSubmenu({ kind: "switch" });
+      options.render();
+    }, targetMode || switches.length === 0),
+    commandButton("도망간다", "actor-command-run", "boot", "", () => {
       if (!targetMode) options.runActorCommand({ kind: "escape" });
     }, targetMode || !snapshot.canEscape),
   ];
@@ -388,6 +391,8 @@ function enemyListRow(
   bar.style.setProperty("--battle-stat", `${pct}%`);
   bar.dataset.hpState = hpBarState(pct);
   row.append(hp, bar);
+  const types = battleTypeBadges(enemy);
+  if (types) row.append(types);
   if (enemy.defeated) row.classList.add("defeated");
   return row;
 }
@@ -403,7 +408,8 @@ function syncEnemyListName(
   if (!enemy.level) return;
   const level = document.createElement("span");
   level.className = "battle-enemy-list-level";
-  level.textContent = `Lv.${enemy.level}`;
+  level.textContent = store.getCurrent().system.battleUiStyle === "pokemon"
+    ? `레벨${enemy.level}` : `Lv.${enemy.level}`;
   name.append(level);
 }
 
@@ -501,7 +507,7 @@ function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
 function pokemonFightSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions): HTMLElement[] {
   const header = document.createElement("div");
   header.className = "battle-submenu-header";
-  header.textContent = "Fight";
+  header.textContent = "싸운다";
   const nodes: HTMLElement[] = [header];
   const actor = activeActor(snapshot);
   const project = store.getCurrent();
@@ -509,7 +515,7 @@ function pokemonFightSubmenu(snapshot: BattleSnapshot, options: BattleCommandPan
   const hasUsableMove = actor !== undefined
     && moves.some((skillId) => battleSkillUseFailure(project, actor, skillId) === undefined);
   if (!hasUsableMove) {
-    nodes.push(commandButton("Struggle", "actor-command-struggle", "fire", "PP --", () => {
+    nodes.push(commandButton("발버둥", "actor-command-struggle", "fire", "횟수 --", () => {
       options.beginTargetCommand({ kind: "attack" });
     }));
     return nodes;
@@ -520,11 +526,11 @@ function pokemonFightSubmenu(snapshot: BattleSnapshot, options: BattleCommandPan
     const pp = skill?.maxPp === undefined
       ? undefined
       : Math.max(0, Math.min(skill.maxPp, Math.trunc(actor?.skillPp?.[skillId] ?? skill.maxPp)));
-    const ppFailure = pp === 0 ? "PP가 없습니다." : undefined;
+    const ppFailure = pp === 0 ? "남은 횟수가 없습니다." : undefined;
     const reason = ppFailure ?? (useFailure && actor
       ? battleSkillUseFailureLabel(useFailure, skill, actor)
       : useFailure ? "사용자가 없습니다." : undefined);
-    const detail = skill?.maxPp === undefined ? "" : `PP ${pp}/${skill.maxPp}`;
+    const detail = skill?.maxPp === undefined ? "" : `횟수 ${pp}/${skill.maxPp}`;
     const button = commandButton(skill?.name ?? skillId, `actor-skill-${skillId}`, "fire", detail, () => {
       options.beginTargetCommand({ kind: "skill", skillId });
     }, Boolean(reason), reason);
@@ -647,7 +653,7 @@ function switchSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOpti
   header.textContent = snapshot.forcedSwitchActorId ? "교체 필요" : "교체";
   const nodes: HTMLElement[] = [header];
   for (const actor of switchCandidates(snapshot)) {
-    nodes.push(commandButton(actor.name, `actor-switch-${actor.recordId}`, "switch", `${terms.hp} ${actor.hp}/${actor.maxHp}`, () => {
+    nodes.push(commandButton(actor.name, `actor-switch-${actor.recordId}`, "switch", `${store.getCurrent().system.battleUiStyle === "pokemon" ? "체력" : terms.hp} ${actor.hp}/${actor.maxHp}`, () => {
       options.runActorCommand({ kind: "switch", targetActorId: actor.recordId });
     }));
   }
