@@ -222,7 +222,7 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   "battle-skin-goldensun-backdrop": "/assets/generated/battle-skins/goldensun-backdrop.png",
   "battle-skin-demo-battler": "/assets/generated/battle-skins/demo-battler-alpha.png",
   // Per-skin battler sprites (chroma-keyed #00FF00 -> alpha) — themed enemy + party (front/back).
-  "bskin-enemy-pokemon": "/assets/generated/battle-skins/sprites/reference-cocoon-front.png",
+  "bskin-enemy-pokemon": "/assets/scarloxy/scarloxy-monster-larvea.png",
   "generated-enemy-reference-cocoon": "/assets/generated/battle-skins/sprites/reference-cocoon-front.png",
   "generated-enemy-reference-seed-back": "/assets/generated/battle-skins/sprites/reference-seed-back.png",
   "bskin-enemy-rm2003": "/assets/generated/battle-skins/sprites/enemy-rm2003.png",
@@ -238,7 +238,7 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   "bskin-party-warrior-back": "/assets/generated/battle-skins/sprites/party-warrior-back.png",
   "bskin-party-mage-front": "/assets/generated/battle-skins/sprites/party-mage-front.png",
   "bskin-party-mage-back": "/assets/generated/battle-skins/sprites/party-mage-back.png",
-  "bskin-ally-creature-back": "/assets/generated/battle-skins/sprites/reference-seed-back.png",
+  "bskin-ally-creature-back": "/assets/scarloxy/scarloxy-monster-mossling.png",
   // 액터별 뒷모습 배틀러(2026-08-29). 위의 `bskin-ally-creature-back` 은 **파티 전원이 돌려 쓰는
   // 한 장**이라 어느 액터를 넣어도 같은 보라색 생물이 뒤통수를 보였다. 액터마다 하나씩 나눈다.
   //

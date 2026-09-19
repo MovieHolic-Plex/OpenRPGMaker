@@ -1459,3 +1459,12 @@
   height: 110px;
   top: 20px;
 }
+/* Editor monsters without a separate rear asset retain their actual artwork.
+   Enlarging a front sprite to simulate a rear view clipped both the head and
+   feet behind the command window. Preserve its authored orientation instead. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-monster-image:not(.battle-monster-authored-back) {
+  width: 125px;
+  height: 110px;
+  top: 14px;
+  transform: none;
+}

@@ -12,15 +12,7 @@ map.tilesetId = originalMap.tilesetId;
 for (const troop of project.database.troops) { troop.previewBackgroundResourceId = undefined; troop.autoAlign = true; }
 for (const terrain of project.database.terrains ?? []) terrain.battleBackgroundResourceId = undefined;
 const species = project.database.monsterSpecies!;
-const seed = species.find(s => s.id === "species_scarloxy_mossling")!;
-seed.name = "이상해씨";
-seed.types = ["grass", "poison"];
-seed.graphic.backResourceId = "generated-enemy-reference-seed-back";
-const cocoon = project.database.enemies.find(e => e.id === "enemy_pkmn_larvea")!;
-cocoon.name = "단데기";
-cocoon.level = 7;
-cocoon.monsterResourceId = "generated-enemy-reference-cocoon";
-species.find(s => s.id === cocoon.speciesId)!.types = ["bug"];
+// Preserve the editor's authored names, types and monster graphics.
 
 (map.events[0] as unknown as { commands: unknown[] }).commands = [
   {kind:'giveMonster', speciesId:species.find(s => s.id === "species_scarloxy_mossling")!.id, level:11},
