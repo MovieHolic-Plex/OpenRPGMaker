@@ -87,8 +87,6 @@ export const LEGACY_TILE_KNOWLEDGE_SUPERSEDED: ReadonlyMap<string, string> = new
 // 레지스트리에 정의가 없으므로 superseded 매핑도 두지 않는다. 옛 이름 호출은 unknown-tool 로 거부된다.
 export const CONSTRUCTION_WRITE_SUPERSEDED: ReadonlyMap<string, string> = new Map([
   ["build_house", "author_house"],
-  ["build_house_kit", "author_house"],
-  ["build_house_lots", "author_house"],
   ["plan_village", "author_village"],
   ["materialize_village_spec", "author_village"],
   ["revise_village_plan", "author_village"],

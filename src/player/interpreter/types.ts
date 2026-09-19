@@ -196,7 +196,11 @@ export interface Frame {
   // 루프 본문 프레임인 경우, 이 프레임이 끝나면 부모 루프 명령으로 돌아가
   // body를 다시 실행한다. breakLoop 는 이 프레임을 제거하고 루프를 탈출한다.
   // undefined 이면 일반 프레임(끝나면 부모 pc += 1).
-  loopOwner?: { commands: Command[]; pc: number };
+  //
+  // `iterations` 는 **이 루프의** 완료 반복 수다. 반복마다 프레임을 새로 push 하므로
+  // loopOwner 에 실어 넘긴다. 인터프리터 전역 카운터로 두면 안쪽 루프가 진입할 때마다
+  // 바깥 루프의 수를 지워서 바깥 루프의 가드가 영원히 울리지 않는다.
+  loopOwner?: { commands: Command[]; pc: number; iterations: number };
 }
 
 export interface InterpreterState {
@@ -215,8 +219,7 @@ export interface InterpreterState {
   // 현재 실행 중인 이벤트 id. 셀프 스위치 조작/평가 기준.
   currentEventId?: string;
   onFactionStanceChanged?: () => void;
-  // 루프 무한 반복 가드. 루프 본문이 한 번 완료될 때마다 증가.
-  loopIterations?: number;
+  // 루프 무한 반복 가드의 상한. 실제 카운트는 루프 프레임마다 따로 센다(Frame.loopOwner.iterations).
   maxLoopIterations: number;
   instructionsExecuted: number;
   maxInstructions: number;
