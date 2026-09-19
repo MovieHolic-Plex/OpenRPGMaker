@@ -1002,13 +1002,13 @@ export function playMovieBody(
   });
   const wait = segmentedSelect({
     options: BOOL_SEGMENTS,
-    value: cmd.wait === true ? "true" : "false",
+    value: cmd.wait !== false ? "true" : "false",
     testid: "play-movie-wait-select",
     ariaLabel: "완료 대기",
   });
   const skippable = segmentedSelect({
     options: BOOL_SEGMENTS,
-    value: cmd.skippable === true ? "true" : "false",
+    value: cmd.skippable !== false ? "true" : "false",
     testid: "play-movie-skippable-select",
     ariaLabel: "스킵 허용",
   });
@@ -1070,8 +1070,8 @@ export function playMovieBody(
     context.actions.replaceCommand(context.path, {
       kind: "playMovie",
       resourceId: resource.select.value,
-      ...(wait.select.value === "true" ? { wait: true } : {}),
-      ...(skippable.select.value === "true" ? { skippable: true } : {}),
+      wait: wait.select.value === "true",
+      skippable: skippable.select.value === "true",
     });
     renderPreview();
   };
