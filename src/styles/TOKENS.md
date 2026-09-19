@@ -127,7 +127,7 @@ for(const m of s.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) console.log(`| \`${m[1]
 | `shell` | `src/styles/shell/` | `shell/index.css` | `index.css` | 톱바·메뉴·좌측 레일·밀도 모드·웰컴·컨텍스트 메뉴 |
 | `map` | `src/styles/map/` ← `editor/` 의 맵 관련 시트 이동 | `map/index.css` | `index.css` | 맵 패널·팔레트·캔버스 툴바·region-task·world-panel·map-props·인라인 어시스트 등 맵 편집 표면 |
 | `event` | `src/styles/event/` ← `editor/event-editor*` 전부 + storyboard + 서브다이얼로그 | `event/index.css` | `src/editor/panels/eventEditor/modal.ts` | 이벤트 에디터 모달과 그 안의 모든 것 |
-| `database` | `src/styles/database/` | `database/index.css` | `src/editor/panels/databaseModal.ts` | DB 모달 30탭·조수 패널·스튜디오 |
+| `database` | `src/styles/database/` | `editor-startup-ai.css` (정적 조수 묶음) + `database/index.css` (지연 DB 접미) | `index.css` + `src/editor/panels/databaseModal.ts` | 첫 페인트 조수 패널·컴포저·팀 사이드바와 DB 모달 30탭·스튜디오 |
 | `resources` | `src/styles/resources/` | `resources/index.css` | `index.css` | 리소스 매니저 |
 | `runtime` | `src/styles/runtime/` + `dialogue.css` | `runtime/index.css` | 기존대로 | 플레이어 런타임. 내용 불변 |
 | `overrides` | `src/styles/overrides.css` | 자체 | `index.css` | 표면 경계를 넘어야 하는 예외. 항목마다 이유 주석과 만기일 |

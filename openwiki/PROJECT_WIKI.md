@@ -86,11 +86,14 @@ OPRN Studio is a browser-based top-down tile JRPG maker/editor. It combines:
   `resource-manager.part-6.css` owns the same fixed backdrop and header contract. Do not
   make either surface depend on opening the database modal first.
 - The AI sidebar and editor-owned AI dialogs mount before the database CSS chunk. Their
-  first-paint geometry is owned by `src/styles/shell/dialogs/ai-chat-critical.css` and
-  `ai-modal-shell.css`; `database/editor-owned-ai-modal-shell.css` reapplies the body
-  scroll contract after the database layer arrives. The database sheets may enrich the
-  visual treatment later, but they must not be required for a centered backdrop, bounded
-  window, or scrollable body.
+  first-paint geometry and visual family are loaded by
+  `src/styles/database/editor-startup-ai.css` in the static `database` layer, while
+  `ai-modal-shell.css` owns the generic editor-owned dialog shell. The manifest is the
+  single bootstrap owner for the AI panel, composer, deck, cards, and team sidebar;
+  those imports are removed from the lazy database suffix to avoid a second copy.
+  `database/editor-owned-ai-modal-shell.css` still reapplies the modal body scroll
+  contract after the database layer arrives. DB record sheets remain lazy, but no AI
+  surface may depend on opening the database modal before it is styled.
 - `test` and `test/e2e` are part of the contract. Update or add focused tests for changed behavior.
 
 ## How an AI should use this wiki

@@ -25,6 +25,7 @@
 @import "./components/index.css";
 @import "./shell/index.css";
 @import "./map/index.css";
+@import "./database/editor-startup-ai.css" layer(database);
 @import "./resources/index.css";
 @import "./runtime/index.css";
 @import "./overrides.css";

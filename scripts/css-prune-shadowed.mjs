@@ -153,14 +153,25 @@ function main(argv) {
   const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
   const root = path.join(repo, "src/styles");
   let entry;
+  let entryPaths;
   if (all) entry = path.join(root, "index.css");
   else {
     const registry = JSON.parse(fs.readFileSync(path.join(repo, "scripts/css-surfaces.json"), "utf8"));
     const spec = registry.surfaces[surface];
     if (!spec) { console.error(`unknown surface: ${surface}\n${USAGE}`); process.exit(1); }
     entry = path.join(repo, spec.entry);
+    entryPaths = [entry, ...(spec.additionalEntries ?? []).map((extra) => path.join(repo, extra))];
   }
-  let decls = indexDeclarations(flattenImports(entry), root);
+  const orders = (entryPaths ?? [entry]).map((entryPath, index) => {
+    const order = flattenImports(entryPath);
+    // Additional bootstrap entries are imported from the global index with
+    // layer(database), but flattening the entry directly has no parent layer.
+    // Carry the registered surface into that standalone traversal so
+    // --surface database still analyzes the static assistant declarations.
+    if (!surface || index === 0) return order;
+    return order.map((item) => ({ ...item, layer: item.layer ?? surface }));
+  });
+  let decls = orders.flatMap((order) => indexDeclarations(order, root));
   if (surface) decls = decls.filter((d) => d.layer === surface);
   const pairs = findShadowedPairs(decls);
 
