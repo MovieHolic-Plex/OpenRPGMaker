@@ -1095,7 +1095,8 @@
   border: 0;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-field {
-  background: repeating-linear-gradient(0deg, #ffffff30 0 2px, transparent 2px 10px),
+  /* Reference stripes repeat every 12 rows of its 567px-tall frame. */
+  background: repeating-linear-gradient(to bottom, transparent 0 5.926px, #e0f8e0e6 5.926px 8.466px, transparent 8.466px 10.159px),
     linear-gradient(#b6d9ef 0%, #e8f1f0 14%, #e8f1f0 19%, #d8f0d8 24%, #d8f0d8 100%);
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-backdrop[data-backdrop-resource-id="battle-skin-pokemon-backdrop"] {
@@ -1186,13 +1187,13 @@
   opacity: 1;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-pokemon-root [data-testid="actor-command-item"] {
-  --button-top: #e7a22b; --button-bottom: #90692e; --button-edge: #b67c23;
+  --button-top: #e09829; --button-bottom: #886839; --button-edge: #b67c23;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-pokemon-root [data-testid="actor-command-pkmn"] {
   --button-top: #75be3d; --button-bottom: #4c7736; --button-edge: #528e2d;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-pokemon-root [data-testid="actor-command-run"] {
-  --button-top: #309acf; --button-bottom: #386481; --button-edge: #247dac;
+  --button-top: #2790c9; --button-bottom: #425870; --button-edge: #247dac;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-pokemon-root .battle-command[data-battle-command-cursor="true"],
 .battle-scene[data-battle-ui-style="pokemon"] .battle-pokemon-root .battle-command:focus-visible {
@@ -1367,7 +1368,7 @@
 
 .battle-scene[data-battle-ui-style="pokemon"] .battle-message-line { white-space: pre-line; }
 .battle-scene[data-battle-ui-style="pokemon"] :is(.battle-enemy-list-name, .battle-actor-name, .battle-command-text strong) { font-weight: 400; }
-.battle-scene[data-battle-ui-style="pokemon"] .battle-pokemon-root [data-testid="actor-command-fight"][data-battle-command-cursor="true"] { background: #f29b9f; }
+.battle-scene[data-battle-ui-style="pokemon"] .battle-pokemon-root [data-testid="actor-command-fight"][data-battle-command-cursor="true"] { background: #f8a8b1; filter: none; }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-field { border: 0; box-shadow: none; }
 .battle-scene[data-battle-ui-style="pokemon"]:not(.battle-flash-hit):not(.battle-flash-critical):not(.battle-flash-victory):not(.battle-flash-defeat) .battle-field::after { background: none; }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-monster-image { position: relative; top: 120px; filter: none; }
