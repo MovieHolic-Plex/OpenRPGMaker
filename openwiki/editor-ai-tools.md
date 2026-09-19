@@ -1,5 +1,46 @@
 ## 전투 저작 입력 수정 (2026-09-20)
 
+## 이벤트 명령 AI 공용 도구 (2026-09-20)
+
+`event_command_assist({mapId,eventId,pageId,prompt,mode?})`는 기존 이벤트의 한 페이지
+명령을 자연어로 수정하는 `event` 도메인의 쓰기 도구다. `get_event`로 실제 페이지 ID를
+먼저 조회한다. 새 이벤트 생성·다른 페이지·페이지 조건/그래픽 변경은 하지 않는다.
+
+- `eventCommandAssistTool.ts`가 스키마와 대상 조회를 소유한다. `asyncToolRunner.ts`가
+  `runEventCommandAssist`로 생성한 후 `runToolDefinition`의 공용 draft/lint/commit 경계를 탄다.
+  AssistantSession과 Pi toolAdapter가 이 비동기 경로를 호출한다. 동기 `runTool` 직접 호출은
+  `async-tool-required`로 거부하며, 생성됐다고 보고하지 않는다.
+- 이벤트 편집기 생성기의 리소스·참조·착지·세계관 검증 및 최대 3회 생성/수정을 재사용한다.
+  세션에서는 기존 chat 함수·설정·프로젝트 성향 키를 전달한다. 조수의 도구 결과/감사/제안 흐름을
+  그대로 통과하며, 생성기가 store를 직접 수정하지 않는다.
+- 기본 `mode: edit`는 최종 명령 목록 전체를 교체한다. 명령 JSON이 기존 생성기의 12,000자
+  상한을 넘으면 생성 전에 거부한다. `mode: append`를 명시하면 기존 목록 끝에 추가한다. 이벤트 편집기의 선택 경로가 있으면 선택 명령 바로 뒤에 추가한다.
+  모호한 수정 요청을 자동으로 추가 요청으로 바꾸지 않는다.
+- 생성 전 프로젝트 사본을 사용하고, 완료 시 프로젝트 identity와 내용을 재확인한다.
+  취소 또는 프로젝트 변경 시 적용하지 않는다. `dryRun`은 ctx.project도 갱신하지 않는다.
+- `test/eventCommandAssistTool.test.ts`: 페이지/기존 데이터 보존, dryRun, 누락 대상,
+  긴 페이지, 명시 추가, 취소/오래된 결과, 실제 공용 생성기의 검증 재시도 계약.
+  실행 결과와 브라우저 근거는 `reports/2026-09-20-event-command-assistant.md`에 기록한다.
+
+이벤트 편집기의 생성 버튼도 `sendAiAssistantMessage` → `aiChatPanel.sendText` →
+`aiTurnRunner` → `AssistantSession.sendUserMessage` 공용 경로를 사용한다.
+호스트가 전달하는 `eventCommandScope`는 맵·이벤트·페이지와 선택 경로/라벨, edit/append 모드를
+고정한다. 도구 노출과 실행 양쪽에서 `get_event`, `get_database_records`, `run_lint`,
+`event_command_assist`만 허용하고, 다른 대상과 모드 변경은 거부한다. 이 턴에서는
+자율 적용·위키 저작·NPC 자동 보완이 금지된다.
+
+공용 브리지는 바쁜 턴이나 대기 제안이 있으면 이벤트 요청을 거부한다. 생성 결과는
+`deferApply`로 공용 검토를 거친 뒤 before/after 스냅샷을 이벤트 모달에 넘기고 공용 제안을
+해제한다(채팅에 두 번째 적용 권한을 남기지 않는다). 모달은 해당 페이지 외 변경 여부와
+생성 전 명령 목록을 재확인하고 기존 diff/줄 제외/직접 수정/replaceAll 한 번 적용을 유지한다.
+진행 표시는 공용 상태를 읽으며 중단 및 편집기 닫기는 공용 턴을 취소한다.
+
+검증: `test/eventCommandScopedSession.test.ts`는 실제 공용 세션의 도구 루프·범위 위반 거부·
+검토를 검증한다. `test/e2e/event-ai-shared-assistant.spec.ts`는 LLM 응답만 고정하고 실제
+브리지·세션·도구·모달에서 검토 전 미변경, 다른 페이지 보존, 적용과 한 번 되돌리기를 확인한다.
+
+## 전투 저작 입력 수정 (2026-09-20)
+
 `upsert_troop`의 기존 id에 `enemyIds`만 전달하면 로스터 교체다. 기존 `members`를
 상속해 입력을 무시하지 않고 새 members를 합성한다. 이름 등 다른 필드만 바꾸면 기존
 수동 배치·숨김·페이지를 보존한다. `members`를 명시하면 기존처럼 그것을 정본으로 삼는다.

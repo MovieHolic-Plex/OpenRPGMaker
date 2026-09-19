@@ -1,3 +1,4 @@
+import type { EventCommandScope } from "../eventCommandScope";
 // ai/session/types.ts
 // 어시스턴트 세션의 공개 타입. 세션이 바깥(패널·브리지·영역 작업·테스트)과 주고받는
 // 사건·결과·감사 항목·생성 옵션만 담는다. 값이나 동작은 두지 않는다.
@@ -160,6 +161,7 @@ export interface SessionTurnScope {
 }
 
 export interface SessionTurnOptions {
+  readonly eventCommandScope?: EventCommandScope;
   /** Explicit host user action, never inferred from model source/reset claims. */
   readonly goalAction?: "resume" | "new-goal";
   readonly autonomous?: boolean;

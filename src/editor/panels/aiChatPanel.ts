@@ -1,3 +1,4 @@
+import { onlyEventPageCommandsChanged } from "@/ai/eventCommandScope";
 import { createProjectSuggestions } from "./aiProjectSuggestions";
 import { focusEditorRegion } from "@/editor/editorReferenceNavigation";
 import { installDelayedTooltips } from "@/editor/delayedTooltipRollout";
@@ -1746,7 +1747,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const sendText = async (
     text: string,
     displayAs?: string,
-    opts?: { readonly replay?: boolean; readonly onSettled?: () => void; readonly deferApply?: boolean },
+    opts?: { readonly replay?: boolean; readonly onSettled?: () => void; readonly deferApply?: boolean; readonly eventCommandScope?: AiBridgeSendOptions["eventCommandScope"] },
   ): Promise<void> => {
     const trimmed = text.trim();
     if (!trimmed) return;
@@ -1794,10 +1795,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       .filter((part) => part.length > 0)
       .join("\n\n");
     planningReuse.reset();
-    const composerMode = derivedComposerMode();
+    const composerMode = opts?.eventCommandScope ? "do" : derivedComposerMode();
     await executeTurn(session, trimmed, (onEvent, signal) =>
       // instruction: 사용자 발화 원문 — 의도 선언·툴 이름 언급·능력 승격은 이것만 본다.
-      session.sendUserMessage(payload, onEvent, signal, { autonomous, instruction: trimmed, scope: turnScope, composerMode }),
+      session.sendUserMessage(payload, onEvent, signal, { autonomous, instruction: trimmed, scope: turnScope, composerMode,
+        ...(opts?.eventCommandScope ? { eventCommandScope: opts.eventCommandScope, goalAction: "new-goal" as const } : {}) }),
       { autonomous: autonomous && !planPreview, composerMode, onSettled: opts?.onSettled, ...(opts?.deferApply === true ? { deferApply: true } : {}) }
     );
   };
@@ -3443,6 +3445,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           harness: null,
         };
       }
+      if (sendOptions?.eventCommandScope && (turnBusy || proposalApi.pendingProposalMessage !== null)) {
+        return { ok: false, error: "조수의 진행 중인 작업이나 검토 중인 초안을 먼저 마무리하세요.", status: entryStatus, audit: [], harness: null };
+      }
       const idle = await waitUntilIdle(120_000);
       if (!idle || disposed || requestedConversation !== conversationId) {
         return {
@@ -3453,7 +3458,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
       try {
         let result: AiBridgeTurnResult | undefined;
-        await sendText(trimmed, undefined, { ...(sendOptions?.deferApply === true ? { deferApply: true } : {}), onSettled: () => {
+        await sendText(trimmed, undefined, { ...(sendOptions?.deferApply === true || sendOptions?.eventCommandScope ? { deferApply: true } : {}),
+          ...(sendOptions?.eventCommandScope ? { eventCommandScope: sendOptions.eventCommandScope } : {}), onSettled: () => {
           const audit = collectAudit();
           result = {
             ok: true,
@@ -3469,6 +3475,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           };
         } });
         if (!result) throw new Error("AI turn ownership retired before publication");
+        if (sendOptions?.eventCommandScope) {
+          const pending = result.pendingProposal;
+          // The event editor owns line exclusions and its existing single-step undo.
+          // Transfer the reviewed snapshot; never leave a second Apply button in chat.
+          deferredProposal = null;
+          proposalApi.pendingProposalMessage = null;
+          controller.session?.rebaseProject(store.getCurrent());
+          if (pending && !onlyEventPageCommandsChanged(pending.before, pending.after, sendOptions.eventCommandScope)) {
+            return { ...result, ok: false, error: "지정한 페이지 밖의 변경이 있어 초안을 거부했습니다.", pendingProposal: null };
+          }
+          setStatus(pending ? "이벤트 편집기에서 검토 대기" : "대기");
+        }
         return result;
       } catch (cause) {
         return {
