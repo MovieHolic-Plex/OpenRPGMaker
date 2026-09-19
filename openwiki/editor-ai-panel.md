@@ -1,5 +1,19 @@
 # Editor AI Panel & Tools
 
+## 첫 페인트 스타일 소유권 (2026-09-19)
+
+에디터 부트 때 `aiSidebarWorkspace`가 왼쪽 AI 표면과 오른쪽 팀 사이드바를 먼저
+마운트한다. 따라서 이 표면의 스타일은 데이터베이스 모달을 열 때 지연 로드하면 안 된다.
+`src/styles/database/editor-startup-ai.css`가 기존 기능별 시트
+(`assistant-*`, `tabs-b-assistant-panel/01–12`, `18–25` 및 각 `part-*`)를 원래 순서대로
+`database` 레이어에 정적으로 가져온다. `src/styles/database/index.css`에는 이 묶음을
+다시 가져오지 않는다. DB 레코드·모달 전용 시트는 계속 지연 로드한다.
+
+첫 화면을 바꿀 때는 이 정적 매니페스트의 기하와 시각 규칙을 함께 확인하고,
+데이터베이스 모달을 먼저 열지 않은 새로고침에서도
+`.ai-chat-panel`, `.ai-composer`, `[data-testid="ai-team-sidebar"]`의 버튼·입력 컨트롤이
+기본 브라우저 모양으로 보이지 않는지 캡처한다.
+
 ## 채팅 입력창 작업 설정 묶음 (2026-09-18)
 
 `aiComposer.ts`는 입력창의 팀·적용 모드·자율성 선택기를 `작업 설정` 팝오버에 묶는다.

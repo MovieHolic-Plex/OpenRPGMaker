@@ -302,6 +302,9 @@
     "database": {
       "dir": "src/styles/database",
       "entry": "src/styles/database/index.css",
+      "additionalEntries": [
+        "src/styles/database/editor-startup-ai.css"
+      ],
       "prefixes": [
         "actor-",
         "ai-abort-",
