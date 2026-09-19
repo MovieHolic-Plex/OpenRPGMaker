@@ -40,6 +40,8 @@ import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { pendingHistoryLabels, undoMapEdit } from "@/editor/mapEditHistory";
 import { openHelpModal } from "@/editor/panels/helpModal";
+import { getEditorChrome } from "@/editor/editorUiMode";
+import { uiLabel } from "@/editor/uiCopy";
 
 // 창 컨트롤 아이콘 — 예전에는 "⇥ □ x" 텍스트 글리프였다. 글꼴에 따라 굵기·베이스라인이
 // 제각각이고 x 는 소문자 엑스라 닫기 버튼으로 읽히지 않았다. 규격은 레일 아이콘과 같다
@@ -210,7 +212,9 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   const header = el("header", {
     class: "database-modal-header",
     children: [
-      el("div", { class: "database-modal-heading", children: [el("h2", { text: "데이터베이스" }), crumb] }),
+      // 창 제목이 jargonStyle 을 우회하면 초보 모드에서 명령 팔레트·도움말은 「자료집」,
+      // 정작 열린 창은 「데이터베이스」가 된다. 라벨 정본(uiCopy)을 쓴다.
+      el("div", { class: "database-modal-heading", children: [el("h2", { text: databaseSurfaceLabel() }), crumb] }),
       aiToggleButton,
       windowControls,
     ],
@@ -222,7 +226,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     children: [
       el("section", {
         class: "database-modal-window",
-        attrs: { role: "dialog", "aria-modal": "true", "aria-label": "데이터베이스" },
+        attrs: { role: "dialog", "aria-modal": "true", "aria-label": databaseSurfaceLabel() },
         children: [header, aiBar.element, body],
       }),
     ],
@@ -449,6 +453,13 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   // hasOpenModalLayer() 로 스스로 물러나고, 실제 Esc 는 스택의 최상층 라우팅이 가져간다.
   const handleModalKeyDown = (event: KeyboardEvent): void => {
     if (dockMode) return;
+    // 스택이 어떤 이유로든 이 층을 놓쳤을 때를 위한 대비책. 전체 화면 복원이 먼저다.
+    if (event.key === "Escape" && !event.defaultPrevented && !hasOpenModalLayer()) {
+      if (exitMaximizedDatabaseModal(maximizeButton)) {
+        event.preventDefault();
+        return;
+      }
+    }
     controller.handleKeyDown(event);
   };
   document.addEventListener("keydown", handleModalKeyDown);
@@ -598,6 +609,8 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     // modalStack 은 닫기가 거절돼도(계속 편집) 자기 엔트리를 먼저 지운다 — 되살려 둔다.
     unregisterModal(backdrop);
     registerModal(backdrop, requestModalEscape);
+    // 전체 화면은 전면 fixed 라 "Esc 한 번 = DB 통째로 닫힘"이 된다. 첫 Esc 는 복원만.
+    if (exitMaximizedDatabaseModal(maximizeButton)) return;
     controller.requestClose("escape");
   };
   const syncModalLayer = (docked: boolean): void => {
@@ -645,6 +658,14 @@ function installDatabaseFocusTrap(backdropEl: HTMLElement, windowEl: HTMLElement
   };
   backdropEl.addEventListener("keydown", trap);
   return () => backdropEl.removeEventListener("keydown", trap);
+}
+
+/**
+ * 이 표면의 이름. 「자료집」(초보)/「데이터베이스」(전문) 두 이름이 있고 정본은 uiCopy 다.
+ * 문자열을 새로 적으면 같은 창이 화면마다 다른 이름으로 불린다 — 실제로 갈라져 있었다.
+ */
+function databaseSurfaceLabel(): string {
+  return uiLabel("database", getEditorChrome().jargonStyle);
 }
 
 const DB_DOCK_MODE_KEY = "oprn:db-dock-mode";
@@ -771,6 +792,16 @@ function toggleMaximizedDatabaseModal(button: HTMLButtonElement): void {
     windowEl.style.maxHeight = "";
   }
   button.replaceChildren(windowIcon(isMaximized ? "restore" : "maximize"));
-  button.title = isMaximized ? "창 크기로 복원" : "전체 화면";
+  button.title = isMaximized ? "창 크기로 복원 (Esc)" : "전체 화면";
   button.setAttribute("aria-label", isMaximized ? "데이터베이스 창 크기로 복원" : "데이터베이스 전체 화면");
+  // 토글 버튼이면서 눌림 상태 신호가 없었다 — 이벤트 에디터의 전체화면 버튼과 규약을 맞춘다.
+  button.setAttribute("aria-pressed", String(isMaximized));
+}
+
+/** 전체 화면이면 Esc 의 첫 타는 복원이다(닫기는 그다음). 이벤트 에디터와 같은 규약. */
+function exitMaximizedDatabaseModal(button: HTMLButtonElement): boolean {
+  const windowEl = button.closest(".database-modal-window");
+  if (!(windowEl instanceof HTMLElement) || !windowEl.classList.contains("maximized")) return false;
+  toggleMaximizedDatabaseModal(button);
+  return true;
 }
