@@ -1,3 +1,16 @@
+/* Resource manager can open before databaseModal.ts has lazy-loaded the
+   database surface. Keep its shared modal shell self-contained so the first
+   open is centered instead of falling back to a static block in document flow. */
+.database-modal-backdrop:has(.resource-modal-window) {
+  background: rgba(24, 22, 18, 0.18);
+  display: grid;
+  inset: 0;
+  padding: var(--space-3);
+  place-items: center;
+  position: fixed;
+  z-index: 900;
+}
+
 .resource-modal-window {
   --rm-resource-window-max: 1180px;
   --rm-resource-viewport-gutter: 32px;
@@ -20,16 +33,24 @@
   border-radius: var(--radius-l);
   box-shadow: var(--shadow-modal);
   color: var(--text-1);
+  display: flex;
+  flex-direction: column;
   outline: none;
   overflow: hidden;
+  height: min(820px, calc(100vh - 24px));
   max-width: min(var(--rm-resource-window-max), calc(100vw - var(--rm-resource-viewport-gutter)));
+  position: relative;
   width: min(var(--rm-resource-window-max), calc(100vw - var(--rm-resource-viewport-gutter)));
 }
 
 .resource-modal-window .database-modal-header {
+  align-items: center;
   background: var(--bg-raised);
   border-bottom: 1px solid var(--border-subtle);
   color: var(--text-1);
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: space-between;
   min-height: 36px;
   padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
 }
@@ -38,6 +59,7 @@
   color: var(--text-1);
   font: 600 13px/20px var(--font-ui);
   letter-spacing: 0.01em;
+  margin: 0;
   text-shadow: none;
 }
 
@@ -80,6 +102,9 @@
 }
 
 .resource-modal-window .database-modal-body {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
   max-height: none;
   overflow: hidden;
   padding: var(--rm-resource-body-pad) var(--rm-resource-body-pad) 0;
@@ -87,12 +112,14 @@
 
 .rm-classic-shell {
   display: grid;
+  flex: 1 1 auto;
   gap: 12px;
   grid-template-columns: 200px 1fr 270px;
   height: min(600px, calc(100vh - 120px));
   min-height: 400px;
   min-width: 0;
   position: relative;
+  width: 100%;
 }
 .rm-category-list,
 .rm-entry-list,
