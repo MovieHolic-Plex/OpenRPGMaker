@@ -1,5 +1,5 @@
 import type { Layer } from "@/editor/editorState";
-import { isDefaultTilesetTexture, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
+import { isDefaultTilesetTexture, tilesetCssImageValue, tilesetImageUrl, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { CHIPSET_TILE_GROUPS, tileAiLabelForIndex, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { tileVisibleOnLayer } from "@/editor/tileLayerClassification";
@@ -19,6 +19,10 @@ import {
 
 export const GRID_PALETTE_COLUMNS = 6;
 export const CUSTOM_PALETTE_MIN_CELL_SIZE = 16;
+/** Large uploaded atlases should not block the first editor paint with thousands of buttons. */
+const DEFERRED_CUSTOM_PALETTE_THRESHOLD = 512;
+const INITIAL_CUSTOM_PALETTE_CELLS = 96;
+const DEFERRED_CUSTOM_PALETTE_BATCH = 128;
 
 
 export type GridAutotileEntry = {
@@ -298,13 +302,32 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
     dataset: { testid: "custom-palette-grid" },
     attrs: { style: `grid-template-columns:repeat(${columns}, var(--chipset-cell))` },
   });
+  const backgroundImageUrl = tilesetImageUrl(args.tileset);
+  grid.style.setProperty("--custom-palette-image", tilesetCssImageValue(backgroundImageUrl));
   // Custom cells remain complete and source-id ordered; only their editor view
   // is reflowed so the palette scrolls vertically instead of horizontally.
-  for (const tileId of displayTiles) {
-    const cell = makePaletteCell(args, tileId);
-    if (!passesFilter(args, tileId)) cell.classList.add("is-filtered-out");
-    grid.append(cell);
-  }
+  // Large uploaded atlases routinely contain 2,000+ cells. Keep the first
+  // viewport synchronous, then append the rest in short batches so button
+  // creation cannot block the first canvas frame.
+  const initialCount = displayTiles.length > DEFERRED_CUSTOM_PALETTE_THRESHOLD
+    ? Math.min(INITIAL_CUSTOM_PALETTE_CELLS, displayTiles.length)
+    : displayTiles.length;
+  const appendCells = (from: number, to: number): void => {
+    const fragment = document.createDocumentFragment();
+    for (let index = from; index < to; index += 1) {
+      const tileId = displayTiles[index];
+      if (tileId === undefined) continue;
+      const cell = makePaletteCell(args, tileId, undefined, {
+        backgroundImageUrl,
+        backgroundImageVar: "--custom-palette-image",
+      });
+      if (!passesFilter(args, tileId)) cell.classList.add("is-filtered-out");
+      if (from > 0) cell.tabIndex = -1;
+      fragment.append(cell);
+    }
+    grid.append(fragment);
+  };
+  appendCells(0, initialCount);
   installGridRoving(grid, columns);
   if (args.onCreatePaletteStamp) {
     installPaletteStampGesture(
@@ -316,6 +339,19 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
     );
   }
   sheet.append(grid);
+  if (initialCount < displayTiles.length) {
+    let nextIndex = initialCount;
+    const appendBatch = (): void => {
+      if (!sheet.isConnected) return;
+      const end = Math.min(displayTiles.length, nextIndex + DEFERRED_CUSTOM_PALETTE_BATCH);
+      appendCells(nextIndex, end);
+      nextIndex = end;
+      if (nextIndex < displayTiles.length) window.setTimeout(appendBatch, 0);
+    };
+    if (typeof window === "undefined") appendCells(nextIndex, displayTiles.length);
+    else if (typeof window.requestAnimationFrame === "function") window.requestAnimationFrame(() => window.setTimeout(appendBatch, 0));
+    else window.setTimeout(appendBatch, 0);
+  }
   return sheet;
 }
 
@@ -409,7 +445,7 @@ function makePaletteCell(
   args: MakeGridPaletteArgs,
   tileId: number,
   title = gridTileTitle(args.tileset, tileId),
-  decorations: { readonly badge?: string; readonly className?: string } = {}
+  decorations: { readonly badge?: string; readonly className?: string; readonly backgroundImageUrl?: string; readonly backgroundImageVar?: string } = {}
 ): HTMLButtonElement {
   const cell = el("button", {
     class: "chipset-tile" + (args.selectedTile === tileId ? " active" : "") + (decorations.className ?? ""),
@@ -418,7 +454,13 @@ function makePaletteCell(
       type: "button",
       "aria-label": title,
       "aria-pressed": String(args.selectedTile === tileId),
-      style: tilesetTileBackgroundStyle(args.tileset, tileId, "var(--chipset-cell)"),
+      style: tilesetTileBackgroundStyle(
+        args.tileset,
+        tileId,
+        "var(--chipset-cell)",
+        decorations.backgroundImageUrl,
+        decorations.backgroundImageVar,
+      ),
     },
     dataset: { testid: `chipset-tile-${tileId}`, tileIndex: String(tileId) },
     on: {

@@ -100,6 +100,7 @@
         "cluster-ai-",
         "local-diagnostics-",
         "project-picker-",
+        "project-folder-picker-",
         "db-config-project-"
       ],
       "roots": [
@@ -139,6 +140,7 @@
         "agent-",
         "runtime-overlay-",
         "runtime-debug-",
+        "layout-bbox-",
         "resource-"
       ],
       "roots": [
@@ -324,6 +326,8 @@
         "animation-",
         "asset-browser-",
         "battle-studio-",
+        "quick-battle-",
+        "region-reference-",
         "chat-dock-",
         "curve-",
         "database-",

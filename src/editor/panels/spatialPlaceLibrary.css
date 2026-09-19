@@ -1,5 +1,80 @@
-.place-library-controls{padding:16px 20px;border-bottom:1px solid var(--border-color,#39434b);background:var(--db-studio-canvas,#f7f8f8);color:var(--db-studio-text-1,#24313c)}
-.place-library-heading{display:flex;justify-content:space-between;align-items:center;gap:16px}.place-library-heading strong{font-size:20px}.place-library-heading p{margin:4px 0 12px;opacity:.7;font-size:12px}.place-library-filters{display:flex;flex-wrap:wrap;gap:8px}.place-library-filters select,.place-library-filters input{background:var(--db-studio-inset,#fff);color:inherit;border:1px solid var(--db-studio-border-subtle,#d7dfe5);border-radius:6px;padding:8px 10px;min-width:120px}.place-library-filters input{flex:1}.place-library-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.place-library-tabs button{background:transparent;color:inherit;border:0;border-bottom:2px solid transparent;padding:8px 12px;cursor:pointer}.place-library-tabs button.is-active{color:#235c44;border-bottom-color:#549d77;background:#e6f2ea}.place-library-controls small{opacity:.7;font-size:11px}.place-classification-badges{display:flex;flex-wrap:wrap;gap:4px;padding:4px 8px}.place-classification-badges span{font-size:11px;padding:3px 6px;background:#e4eee8;color:#2d5842;border-radius:4px}.spatial-shell-main:has(.place-library-controls){display:flex;flex-direction:column;min-height:0}.spatial-shell-main:has(.place-library-controls)>.spatial-body{flex:1;min-height:0}
+/* Dynamic place-library controls are loaded by the database panel. Keep them
+   in the database cascade instead of leaving an unlayered island that can
+   override every named editor surface. */
+@layer database {
+  .place-library-controls {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color, var(--border-default));
+    background: var(--db-studio-canvas, var(--bg-canvas));
+    color: var(--db-studio-text-1, var(--text-1));
+  }
 
-.database-modal-body [data-testid="spatial-shell-places"] .spatial-body{grid-template-columns:minmax(360px,60%) minmax(260px,1fr)}
-@media(max-width:1000px){.database-modal-body [data-testid="spatial-shell-places"] .spatial-body{grid-template-columns:minmax(260px,1fr) minmax(220px,1fr)}}
+  .place-library-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .place-library-heading strong { font-size: 20px; }
+  .place-library-heading p { margin: 4px 0 12px; opacity: 0.7; font-size: 12px; }
+  .place-library-filters { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .place-library-filters select,
+  .place-library-filters input {
+    background: var(--db-studio-inset, var(--bg-raised));
+    color: inherit;
+    border: 1px solid var(--db-studio-border-subtle, var(--border-subtle));
+    border-radius: var(--radius-s);
+    padding: 8px 10px;
+    min-width: 120px;
+  }
+
+  .place-library-filters input { flex: 1; }
+  .place-library-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .place-library-tabs button {
+    background: transparent;
+    color: inherit;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+
+  .place-library-tabs button.is-active {
+    color: var(--success);
+    border-bottom-color: var(--success);
+    background: var(--success-muted);
+  }
+
+  .place-library-controls small { opacity: 0.7; font-size: 11px; }
+  .place-classification-badges { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px 8px; }
+  .place-classification-badges span {
+    font-size: 11px;
+    padding: 3px 6px;
+    background: var(--success-muted);
+    color: var(--success);
+    border-radius: var(--radius-s);
+  }
+
+  .spatial-shell-main:has(.place-library-controls) {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .spatial-shell-main:has(.place-library-controls) > .spatial-body {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .database-modal-body [data-testid="spatial-shell-places"] .spatial-body {
+    grid-template-columns: minmax(360px, 60%) minmax(260px, 1fr);
+  }
+
+  @media (max-width: 1000px) {
+    .database-modal-body [data-testid="spatial-shell-places"] .spatial-body {
+      grid-template-columns: minmax(260px, 1fr) minmax(220px, 1fr);
+    }
+  }
+}

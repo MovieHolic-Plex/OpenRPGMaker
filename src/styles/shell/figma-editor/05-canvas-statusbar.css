@@ -4,8 +4,9 @@
     width: 100% !important;
   }
 
-  .map-context-menu,
-  .oprn-menu-popup {
+  /* The studio bar owns `.oprn-menu-popup`. Keep this block for the map
+     context surface only so the two menus do not fight over width/padding. */
+  .map-context-menu {
     background: var(--editor-popover-bg);
     border: 1px solid var(--editor-line-strong);
     border-radius: var(--radius-m);
@@ -17,11 +18,6 @@
     min-width: 322px;
     overflow: auto;
     padding: 12px;
-  }
-
-  .oprn-menu-command {
-    max-width: 100%;
-    min-width: 0;
   }
 
 

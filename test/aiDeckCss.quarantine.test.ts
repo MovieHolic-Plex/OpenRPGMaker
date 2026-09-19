@@ -4,6 +4,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { readCssFamily } from "./cssFamily";
 
 const ROOT = process.cwd();
 const DIR = "src/styles/database/tabs-b-assistant-panel";
@@ -50,7 +51,7 @@ describe("조수 데크 CSS 계약", () => {
   it("새 파일은 hex 리터럴 0 · !important 0 이다(토큰만 쓴다)", () => {
     // Break: 색을 hex 로 박거나 캐스케이드를 !important 로 이긴다 — CSS 예산 게이트가 잡기 전에 여기서 잡는다.
     for (const path of [DECK, CARDS]) {
-      const css = rulesOnly(read(path));
+      const css = rulesOnly(readCssFamily("src/styles/database/index.css", path));
       expect(css.match(/#[0-9a-fA-F]{3,8}\b/gu) ?? [], `${path} hex`).toEqual([]);
       expect(css.match(/!\s*important/gu) ?? [], `${path} important`).toEqual([]);
     }
@@ -58,7 +59,7 @@ describe("조수 데크 CSS 계약", () => {
 
   it("데크 표면·레일·상태·알약 규칙이 있다", () => {
     // Break: 선택자 이름이 바뀌어 TS 가 붙이는 클래스와 어긋난다.
-    const css = rulesOnly(read(DECK));
+    const css = rulesOnly(readCssFamily("src/styles/database/index.css", DECK));
     for (const selector of [
       ".ai-deck",
       ".ai-deck-rail",
@@ -81,7 +82,7 @@ describe("조수 데크 CSS 계약", () => {
 
   it("데크 입력칸은 유리 위에서도 보인다 — inset 필드 + 입력칸 직접 포커스 링", () => {
     // Break: 데크 오버라이드가 입력 배경·테두리를 transparent/0 으로 지우면 "어디에 치는지" 안 보인다(2026-09-04).
-    const css = rulesOnly(read(DECK));
+    const css = rulesOnly(readCssFamily("src/styles/database/index.css", DECK));
     const blockOf = (selector: string): string => {
       const start = css.indexOf(selector);
       expect(start, selector).toBeGreaterThanOrEqual(0);
@@ -104,7 +105,7 @@ describe("조수 데크 CSS 계약", () => {
 
   it("영수증 카드는 지금/적용 후 쌍과 되돌리기 버튼 규칙을 갖고 넓은 뷰어 z 계산식을 지킨다", () => {
     // Break: 카드 규칙 이관에서 뷰어의 z-index 식이 빠지거나 하드코딩된다(editorZLayerOrder 와 짝).
-    const css = rulesOnly(read(CARDS));
+    const css = rulesOnly(readCssFamily("src/styles/database/index.css", CARDS));
     expect(css).toContain(".ai-change-pair");
     expect(css).toContain(".ai-change-undo");
     expect(css).toContain(".ai-change-wide");

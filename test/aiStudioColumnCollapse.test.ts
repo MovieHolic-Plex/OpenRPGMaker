@@ -1,12 +1,15 @@
 // @vitest-environment happy-dom
-import { readFileSync } from "node:fs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createStudioShell, type StudioShell } from "@/editor/panels/aiStudioShell";
+import { readCssFamily } from "./cssFamily";
 
 // Tool execution is unrelated to column layout; keep shell controls and CSS real.
 vi.mock("@/editor/tools/toolRegistry", () => ({ activeTools: () => [] }));
 
-const css = readFileSync("src/styles/database/tabs-b-assistant-panel/08-studio-mode-start-screen.css", "utf8");
+const css = readCssFamily(
+  "src/styles/database/index.css",
+  "src/styles/database/tabs-b-assistant-panel/08-studio-mode-start-screen.css",
+);
 const layoutKey = "oprn:ai-studio-layout";
 let shell: StudioShell;
 let style: HTMLStyleElement;
@@ -135,4 +138,3 @@ describe("studio column collapse layout", () => {
     expect(JSON.parse(localStorage.getItem(layoutKey) ?? "null")).toEqual(saved);
   });
 });
-

@@ -1,0 +1,105 @@
+/* ── 9. 컴팩트 타일 중심 배치 ────────────────────────────────────────────────
+   레이어 선택은 캔버스 상단으로 이동했다. 맵 헤더는 팔레트 전폭을 쓰고,
+   그 아래 도구·옵션·필터·시트를 배치한다. 이벤트도 같은 셸을 사용한다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint,
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-event {
+  display: grid;
+  gap: 4px 6px;
+  grid-template-areas:
+    "maphead maphead"
+    "toolbar toolbar"
+    "sheet sheet"
+    "utils utils";
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+}
+
+/* paint 전용 행(옵션·필터·선택칩)은 paint 페인에서만 열린다.
+   이벤트 페인은 같은 격자를 쓰되 빈 행이 0 높이라 자리가 남지 않는다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint {
+  grid-template-areas:
+    "maphead maphead"
+    "toolbar toolbar"
+    "options options"
+    "filter filter"
+    "sheet sheet"
+    "status status"
+    "utils utils";
+  grid-template-rows: auto auto auto auto minmax(0, 1fr) auto auto;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .sidebar-map-header,
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-event > .sidebar-map-header {
+  grid-area: maphead;
+  margin: 0;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .left-layer-switcher,
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-event > .left-layer-switcher {
+  align-self: center;
+  grid-area: layers;
+  margin: 0;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .oprn-tile-toolbar,
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-event > .oprn-tile-toolbar {
+  grid-area: toolbar;
+  margin: 0;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .sidebar-paint-options {
+  grid-area: options;
+  margin: 0;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .palette-filter-bar {
+  grid-area: filter;
+  margin: 0;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .chipset-sheet {
+  grid-area: sheet;
+}
+
+/* 이벤트 목록이 시트 자리를 차지한다 — 남는 세로는 목록이 가져간다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-event > [data-testid="palette-event-pane"] {
+  display: flex;
+  flex-direction: column;
+  grid-area: sheet;
+  margin: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .selected-tile-status {
+  grid-area: status;
+  margin: 0;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .sidebar-utilities,
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-event > .sidebar-utilities {
+  grid-area: utils;
+}
+
+/* 구 셸 필드 규격(03-layout-left-palette.css: 34px 입력 · 화살표 여백 34px)이 이 면의
+   24~26px 리듬과 어긋나 옵션·필터 줄이 34px 로 부풀었다. 여기서는 24px 컨트롤이다. */
+.editor-layout .left-panel-stack .sidebar-paint-options select,
+.editor-layout .left-panel-stack .palette-filter-bar select {
+  background-position: calc(100% - 13px) 9px, calc(100% - 8px) 9px;
+  font-size: 11px;
+  height: 24px;
+  padding: 0 18px 0 6px;
+}
+
+/* 「이웃 연결」「구조 보조」 행의 72px 라벨 칸(.tile-brush-row grid)은 네 글자 라벨에
+   과하다 — 인라인으로 바꿔 옵션 줄이 한 줄에 들어가게 한다. */
+.editor-layout .left-panel-stack .sidebar-paint-options .tile-brush-row {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+}
+
+.editor-layout .left-panel-stack .sidebar-paint-options .tile-brush-chip {
+  min-height: 22px;
+  padding: 1px 8px;
+}

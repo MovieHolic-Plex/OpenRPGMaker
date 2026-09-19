@@ -1,6 +1,6 @@
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { selectEditorMap } from "@/editor/mapSelection";
-import { openDatabaseModal } from "@/editor/panels/databaseModal";
+import { openDatabaseModalLazy } from "@/editor/panels/databaseModalLazy";
 import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import {
@@ -185,7 +185,7 @@ export function jumpToWorldRefTarget(ref: WorldRef, project: Project = store.get
         return false;
       }
       setSelectedRecordId("actors", ref.id);
-      openDatabaseModal("actors");
+      openDatabaseModalLazy("actors");
       return true;
     case "item":
       if (!project.database.items.some((record) => record.id === ref.id)) {
@@ -193,7 +193,7 @@ export function jumpToWorldRefTarget(ref: WorldRef, project: Project = store.get
         return false;
       }
       setSelectedRecordId("items", ref.id);
-      openDatabaseModal("items");
+      openDatabaseModalLazy("items");
       return true;
     case "skill":
       if (!project.database.skills.some((record) => record.id === ref.id)) {
@@ -201,7 +201,7 @@ export function jumpToWorldRefTarget(ref: WorldRef, project: Project = store.get
         return false;
       }
       setSelectedRecordId("skills", ref.id);
-      openDatabaseModal("skills");
+      openDatabaseModalLazy("skills");
       return true;
     case "event": {
       const match = findEvent(project, ref.id);

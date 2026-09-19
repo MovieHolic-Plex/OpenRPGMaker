@@ -1,5 +1,6 @@
-// Disk auth for oh-my-pi providers. Tokens/keys stay on the machine, never in the browser.
-// Path: $OPRN_OH_MY_PI_AUTH_PATH or ~/.oprn/oh-my-pi-auth.json
+// Companion cache for oh-my-pi providers. Tokens/keys stay on the machine, never in the browser.
+// Path: $OPRN_OH_MY_PI_AUTH_PATH or ~/.oprn/oh-my-pi-auth.json. The normal source of
+// an existing OMP login is ~/.omp/agent/agent.db; this file caches the adopted row.
 //
 // 2026-09 제품명 스윕 전에는 ~/.oprn/oh-my-pi-auth.json 이었다. 로그인한 사용자를 다시
 // 로그인시키지 않으려고, 새 파일이 없고 옛 파일이 있으면 **첫 읽기에서 한 번 복사**한다.
@@ -122,7 +123,7 @@ export function createOhMyPiAuthStore(filePath = defaultOhMyPiAuthPath(), option
     adoptionDeclined(provider) {
       return Boolean(load().declined[provider]);
     },
-    setOAuth(provider, creds) {
+    setOAuth(provider, creds, options = {}) {
       const doc = load();
       delete doc.declined[provider];
       doc.providers[provider] = {
@@ -138,8 +139,17 @@ export function createOhMyPiAuthStore(filePath = defaultOhMyPiAuthPath(), option
         orgId: creds.orgId,
         orgName: creds.orgName,
         authorizedAt: creds.authorizedAt,
+        ...(typeof options.source === "string" && options.source ? { source: options.source } : {}),
       };
       save(doc);
+    },
+    /** Delete a credential without recording an explicit user disconnect. */
+    clear(provider) {
+      const doc = load();
+      const existed = Boolean(doc.providers[provider]);
+      delete doc.providers[provider];
+      save(doc);
+      return existed;
     },
     isExpired(provider) {
       const row = this.get(provider);

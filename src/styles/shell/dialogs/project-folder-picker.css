@@ -1,0 +1,102 @@
+/* Hosted project picker. Static presentation lives here; projectFolderActions
+   supplies only the per-card hue through custom properties. */
+.project-folder-picker-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(8, 11, 18, 0.76);
+  backdrop-filter: blur(14px);
+  font-family: var(--font-ui);
+  color: rgb(245 247 251);
+}
+
+.project-folder-picker-modal {
+  width: min(940px, 100%);
+  max-height: min(780px, calc(100vh - 48px));
+  overflow: auto;
+  border: 1px solid rgb(68 83 110);
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgb(27 36 51), rgb(21 26 36) 70%);
+  box-shadow: 0 34px 110px rgba(0, 0, 0, 0.7333), inset 0 1px rgba(255, 255, 255, 0.0627);
+}
+
+.project-folder-picker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  padding: 28px 30px 22px;
+  border-bottom: 1px solid rgb(48 59 80);
+}
+
+.project-folder-picker-heading { display: flex; align-items: center; gap: 10px; }
+.project-folder-picker-heading-mark {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: rgb(109 152 255);
+  color: rgb(8 19 41);
+  font-weight: 900;
+}
+.project-folder-picker-heading h1 { margin: 0; font-size: 24px; letter-spacing: -0.04em; }
+.project-folder-picker-description { margin: 10px 0 0; color: rgb(170 183 202); font-size: 13px; }
+.project-folder-picker-close {
+  border: 1px solid rgb(58 70 92);
+  border-radius: 11px;
+  background: rgb(34 43 59);
+  color: rgb(198 208 224);
+  font-size: 20px;
+  width: 38px;
+  height: 38px;
+  cursor: pointer;
+}
+.project-folder-picker-body { padding: 20px 30px 28px; }
+.project-folder-picker-toolbar { display: flex; gap: 10px; align-items: center; }
+.project-folder-picker-search {
+  flex: 1;
+  min-width: 0;
+  padding: 13px 15px;
+  border: 1px solid rgb(70 85 111);
+  border-radius: 12px;
+  background: rgb(16 22 32);
+  color: rgb(255 255 255);
+  font-size: 14px;
+  box-sizing: border-box;
+  outline: none;
+}
+.project-folder-picker-count { color: rgb(158 172 193); font-size: 12px; white-space: nowrap; }
+.project-folder-picker-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+.project-folder-picker-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid rgb(52 66 90);
+  border-radius: 16px;
+  background: linear-gradient(100deg, rgb(32 42 58), rgb(26 34 48));
+  padding: 12px 14px;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.project-folder-picker-card-mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 92px;
+  height: 68px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, hsl(var(--project-card-hue) 62% 42%), hsl(var(--project-card-hue-alt) 58% 24%));
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.2000), 0 5px 14px rgba(0, 0, 0, 0.2667);
+  font-size: 26px;
+  font-weight: 850;
+  color: rgba(255, 255, 255, 0.8000);
+}
+.project-folder-picker-card-content { min-width: 0; flex: 1; }
+.project-folder-picker-card-title-row { display: flex; align-items: center; gap: 9px; }
+.project-folder-picker-card-title { font-weight: 750; font-size: 16px; letter-spacing: -0.02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.project-folder-picker-card-status { color: rgb(119 221 169); background: rgb(26 73 57); border-radius: 999px; padding: 4px 8px; font-size: 11px; white-space: nowrap; }
+.project-folder-picker-card-path { margin-top: 8px; color: rgb(140 154 176); font: 12px var(--font-mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.project-folder-picker-card-meta { display: flex; gap: 16px; color: rgb(158 171 192); font-size: 12px; margin-top: 9px; }
+.project-folder-picker-open { flex: none; border: 0; border-radius: 10px; padding: 11px 15px; background: rgb(120 160 255); color: rgb(9 19 41); font-weight: 800; cursor: pointer; }

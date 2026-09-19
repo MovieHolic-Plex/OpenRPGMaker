@@ -1,0 +1,80 @@
+/* ── 이 모달이 열려 있는 동안: 지시 입력구는 하나만 살아 있다 ──────────────────
+   실측(2026-08-30 감사): 모달 뒤에 AI 조수 패널의 "한 문장으로 지시" 입력창과 예시 칩이
+   절반 가려진 채 남아 있어, 같은 작업의 입구가 두 개 겹쳐 보였다. 어느 쪽이 유효한지 알 수
+   없다. 모달이 결정 표면을 갖는 동안 조수 쪽 입력 경로는 물러난다(포인터·포커스 차단). */
+body.region-task-modal-open .ai-command-bar,
+body.region-task-modal-open .ai-authoring-examples {
+  filter: saturate(0.6);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* ── 추천 명령 목록 (Tier 2: Icon + Label structured rows/cards) ── */
+.region-task-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+}
+.region-task-suggest-chip {
+  align-items: center;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  color: var(--editor-text);
+  cursor: pointer;
+  display: inline-flex;
+  font: 500 12px/1.2 var(--font-ui, system-ui, sans-serif);
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+  white-space: nowrap;
+}
+.region-task-suggest-chip svg {
+  color: var(--accent);
+  flex-shrink: 0;
+  height: 14px;
+  vertical-align: middle;
+  width: 14px;
+}
+.region-task-suggest-chip:hover,
+.region-task-suggest-chip:focus-visible {
+  background: var(--bg-raised);
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow-pop);
+  color: var(--editor-text);
+  outline: none;
+}
+
+/* ── 변경 목록 — 타일·이벤트·영역 밖 변경을 한 자리에 ── */
+.region-task-change-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+.region-task-change-list.hidden { display: none; }
+.region-task-change-row {
+  align-items: center;
+  display: flex;
+  font-size: 13px;
+  gap: var(--space-2);
+  line-height: 1.5;
+}
+.region-task-change-icon {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+}
+.region-task-change-icon svg {
+  flex-shrink: 0;
+  height: 14px;
+  vertical-align: middle;
+  width: 14px;
+}
+.region-task-change-text { min-width: 0; overflow-wrap: anywhere; }
+/* 영역 밖 변경 — clipToRegion 이 되돌리지 않고 통과시키는 것들. 눈에 걸려야 한다. */
+.region-task-change-row.is-outside .region-task-change-text {
+  color: var(--warning);
+}

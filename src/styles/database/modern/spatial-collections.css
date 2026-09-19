@@ -408,8 +408,8 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-gallery {
-  padding: 6px !important;
-  border-right: 1px solid var(--db-studio-border-subtle) !important;
+  padding: 6px;
+  border-right: 1px solid var(--db-studio-border-subtle);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card .spatial-card-badge:not(.is-count) {
@@ -417,59 +417,59 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-gallery-grid {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 4px !important;
-  padding: 2px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 2px;
 }
 
 /* height:auto 도 필요하다 — <1200px 쿼리의 .spatial-card{height:100%} 가 남아 있으면
    세로 목록의 카드마다 목록 전체 높이를 물어 첫 카드만 보인다. */
 .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card {
-  display: flex !important;
-  align-items: center !important;
-  min-height: 36px !important;
+  display: flex;
+  align-items: center;
+  min-height: 36px;
   height: auto;
-  padding: 6px 10px !important;
-  border-radius: 6px !important;
-  grid-template-rows: none !important;
+  padding: 6px 10px;
+  border-radius: 6px;
+  grid-template-rows: none;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-caption {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  width: 100% !important;
-  min-height: 0 !important;
-  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 0;
+  padding: 0;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-name {
-  font: 600 13px/1.3 inherit !important;
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
+  font: 600 13px/1.3 inherit;
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-badges {
-  display: inline-flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  gap: 4px !important;
-  flex: 0 0 auto !important;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-stage {
-  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-tiles-canvas {
-  padding: 8px !important;
-  height: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
+  padding: 8px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .oprn-tileset-editor {

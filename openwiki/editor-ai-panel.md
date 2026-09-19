@@ -302,12 +302,14 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
   본다(컨텍스트 footer·도구 지시 제외), 실패·지연은 폴백 `mode:"other"` 이라 작성 요청이 읽기 전용으로
   새지 않는다(6초 타임아웃, 캐시 TTL 90초). 승격 시 시스템 줄로 사용자에게 알린다. 명시 `/pi` 는 이
   분류를 거치지 않는다 — `runPiTurn` 진입 전에 `plainPiTurn` 에서만 부른다.
-- **쓰기 발화는 의도가 연 도메인만 초기 노출로 탄다 (2026-09-13):** 승격되지 않은 쓰기·생성 턴은
-  `intentToolDomains(선언, getTool)` 결과에 `"core"` 를 더해 `request.toolDomains` 로 보낸다 —
-  초기 스키마가 전량(219)이 아니라 core+의도 도메인+범용(find_tools·focus_editor_view)이다.
-  빠진 툴은 런타임의 에스컬레이션(find_tools 수확→선언 승격, `resolveFallbackTool` 미노출 구제)이
-  실행 중 얹으므로 오판은 절벽이 아니라 검색 한 번으로 끝난다. 선언이 빈 손(도메인 0)이면 좁힐
-  근거가 없어 전량 노출로 떨어지고, 읽기 전용 턴은 좁히지 않는다(조회는 넓어야 답한다).
+- **초기 노출은 의도 기반 툴 이름 목록이다 (2026-09-19):** `plainPiTurn`이 공유 후보 조립기의
+  core/조회/선언/adventure/자연어 후보를 `initialToolNames`로 보내고, `runPiCommand`가
+  동반 서비스 요청에 보존한다. 큐·프로젝트 시작·브리지 입력도 같은 경로다. 워커는 검색 결과를
+  다음 라운드에 추가하고 빈 검색이면 허용된 전체 카탈로그로 복귀한다. 읽기 전용과 역할별
+  `toolNames`는 이 확장으로 넘을 수 없다. 이전의 도메인 단위 노출은 팀 역할·명시 호출에
+  남아 있다. 실패한 의도 선언은 전체 후보로 시작한다. 상세·검증 근거는 `editor-ai-tools.md`
+  「Hybrid native tool exposure」를 따른다. `AssistantSession`만 수정하고 일반 채팅을
+  검증했다고 보고하지 마라 — 기본 채팅은 그 세션을 실행하지 않는다.
 - 변경-0 종료의 보드 phase 는 **「완료」**(`markTeamBoardDone`)다 — 「적용됨」은 `applyProposedProject` 가
   실제 커밋한 실행에만 쓴다(2026-09-12 실측: 질문 턴이 「적용됨」 배지 + 실패 톤 캡션으로 끝났다).
   답이 남은 턴은 본문 말풍선을 시스템 줄(「프로젝트는 바뀌지 않았습니다」) **앞에** 붙인다. 보드 행의
@@ -2471,25 +2473,25 @@ e2e `ai-ui-audit-fixes` F10.
 
 이 항목은 **관찰된 사고의 원인**이라는 뜻이지, 검증 미완료 초안을 적용해도 된다는 뜻이 아니다.
 미적용 초안의 검수는 `evaluateForReview`(초안 자체 평가)와 독립 검수 게이트가 그대로 판정한다.
-## 동반 서비스 자격: CLI 토큰 채택과 env 의 한계 (2026-09-16)
+## 동반 서비스 자격: OMP 로그인 재사용과 명시적 해제 (2026-09-19)
 
-편집기의 챗은 동반 서비스가 `~/.oprn/oh-my-pi-auth.json` 의 자격으로 나간다. 이 저장소가
-`~/.codex/auth.json`(Codex CLI 로그인)을 **한 번 옮기는** 경로가 `scripts/lib/aiAuthRuntime.ts` 의
-`adoptCodexCliCredentials` 인데, 조건이 좁다:
+편집기의 챗은 사용자가 `omp`에 이미 로그인한 경우 **다시 OAuth를 요구하지 않는다.** OMP의
+정본은 `~/.omp/agent/agent.db`(환경에 따라 `PI_CODING_AGENT_DIR`/프로필 경로)이고, Node
+companion은 `bun:sqlite`를 직접 로드하지 않으므로 `scripts/lib/omp-auth-probe.mjs`를 짧게
+호출해 기존 OAuth 행을 읽는다. 유효한 행은 `~/.oprn/oh-my-pi-auth.json`에 `source: "omp"`로
+캐시한 뒤 기존 Node 갱신·wire 포맷 경계를 그대로 사용한다. Bun을 찾을 수 없거나 OMP DB가
+없으면 기존 companion 로그인/`~/.codex/auth.json` 채택 경로로 폴백한다.
 
-- `store.has("openai-codex")` 가 참이면 채택하지 않는다 — 저장소에 이미 항목이 있으면(설령 refresh 가
-  죽었어도) CLI 의 새 토큰으로 갈아타지 않는다.
-- `declined` 로 사용자가 연결을 끊었으면 되살리지 않는다(해제가 눈속임이 되지 않게).
+- 기본 auth 경로(`OPRN_OH_MY_PI_AUTH_PATH` 미지정)에서만 OMP 재사용을 시도한다. 테스트·격리
+  경로는 `OPRN_OH_MY_PI_AUTH_PATH` 또는 `OPRN_DISABLE_OMP_AUTH_REUSE=1`로 전역 자격을 읽지 않는다.
+- 사용자가 에디터에서 연결 해제를 누르면 `declined`가 기록되어 OMP 자격을 자동으로 되살리지 않는다.
+- OMP에서 로그아웃해 가져온 행이 사라지면 `source: "omp"` 캐시도 제거한다. 이는 명시적인
+  에디터 연결 해제와 달리 다음 OMP 로그인에서 다시 채택될 수 있다.
+- 인증 상태·전송 모두 비밀을 브라우저에 보내지 않는다. 상태 조회는 공개 필드만 돌려준다.
 
-그리고 `OH_MY_PI_PROVIDERS` 의 `envVars`(예: `OPENAI_CODEX_OAUTH_TOKEN`)는
-`publicProviderStatus()` 의 `env` 플래그만 바꾼다 —  전송에 쓰이는 자격을 바꾸지 않는다.
-그래서 실측(2026-09-16): Codex 는 `401 refresh_token_reused`, Antigravity 는
-`400 Cloud Code Assist` 로 둘 다 죽어 있었고, env 로는 우회되지 않았다. 복구는 사용자의 재로그인
-(또는 저장소 항목을 지워 CLI 채택 경로를 타게 하는 것)이며, **에이전트가 임의로 자격 저장소를
-고쳐서는 안 된다** — 사용자 소유 비밀이고 `declined` 의미를 깨뜨릴 수 있다.
-
-이 상태에서 실제 모델 QA 는 돌지 않는다. `scripts/qa/db-ai-review-live.mjs` 는 그 사실을
-`process.exitCode = 1` 과 상태줄로 정직하게 보고한다(이번에 고침).
+회귀: `test/ohMyPiAuthReuse.node.test.mjs`는 임시 OMP `agent.db`를 만들어 재로그인 없이 상태가
+연결되고 Antigravity wire 자격이 만들어지는지 증명한다. 기존 `ohMyPiAuthStore`·OAuth 흐름
+테스트는 별도 companion 저장소 경계도 계속 검증한다.
 ## 에이전트 레인 — 묶음별 병렬 실행과 레인별 적용 (2026-09-15)
 
 설계: `docs/superpowers/specs/2026-09-15-studio-agent-lanes-design.md` · 목업·QA 캡처: `output/evidence/studio-agent-lanes/`

@@ -1,0 +1,233 @@
+/* ── 조수 ─────────────────────────────────────────────────────────────────── */
+.ai-studio-chat {
+  display: grid;
+  grid-column: 5;
+  grid-row: 1 / 3;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  width: var(--studio-chat-w);
+}
+
+.ai-studio-chat-head {
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.ai-studio-chat-head .ai-studio-icon-btn {
+  margin-left: auto;
+}
+
+.ai-studio-status-dot {
+  background: var(--text-disabled);
+  border-radius: 999px;
+  flex: 0 0 8px;
+  height: 8px;
+  transition: background var(--transition-med);
+  width: 8px;
+}
+
+.ai-studio-chat.is-busy .ai-studio-status-dot {
+  animation: ai-studio-pulse 1.4s ease-in-out infinite;
+  background: var(--accent);
+}
+
+@keyframes ai-studio-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-studio-chat.is-busy .ai-studio-status-dot {
+    animation: none;
+  }
+}
+
+.ai-studio-who {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.ai-studio-who-title {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.ai-studio-who-line {
+  color: var(--text-2);
+  font-size: 12px;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-studio-chat-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* 브리핑 — 로그가 빌 때만. 자식이 생기면 셸이 hidden 을 건다. */
+/* 자기 내용만큼 서되(grow 0) 로그가 비어 있는 동안은 전부 보인다. 뷰포트가 더 짧으면
+   줄어들며 안에서 스크롤한다(shrink 1 + min-height 0). 실측 1280×720: 60% 상한을 걸었을 때
+   세 번째 제안이 반쯤 잘리고 아래는 빈 백지였다. */
+.ai-studio-briefing {
+  border-bottom: 1px solid var(--border-subtle);
+  display: grid;
+  flex: 0 1 auto;
+  gap: 6px;
+  min-height: 0;
+  overflow: auto;
+  padding: 14px 14px 12px;
+}
+
+.ai-studio-briefing[hidden] {
+  display: none;
+}
+
+.ai-studio-briefing-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.ai-studio-briefing-meta {
+  color: var(--text-2);
+  font-size: 12px;
+  margin: 0;
+}
+
+.ai-studio-briefing-deficit {
+  color: var(--warning);
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.ai-studio-suggest-list {
+  display: grid;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.ai-studio-suggest {
+  background: var(--bg-inset);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--text-1);
+  cursor: pointer;
+  display: grid;
+  font: inherit;
+  gap: 2px;
+  padding: 8px 10px;
+  text-align: left;
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.ai-studio-suggest:hover {
+  background: var(--bg-raised);
+  border-color: var(--accent-border);
+  transform: translateY(-1px);
+}
+
+.ai-studio-suggest:active {
+  transform: scale(0.99);
+}
+
+.ai-studio-suggest:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 1px;
+}
+
+.ai-studio-suggest b {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ai-studio-suggest span {
+  color: var(--text-2);
+  display: -webkit-box;
+  font-size: 12px;
+  line-height: 1.4;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.ai-studio-chat-log,
+.ai-studio-chat-log .ai-history-log-mount {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.ai-studio-chat-log .ai-chat-log {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  max-height: none;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px;
+  width: 100%;
+}
+
+.ai-studio-chat-log .ai-chat-log::before {
+  content: "";
+  flex: 1 1 auto;
+}
+
+.ai-studio-composer {
+  border-top: 1px solid var(--border-subtle);
+  padding: 10px;
+}
+
+.ai-chat-panel.chat-dock-float.is-studio .ai-command-bar {
+  bottom: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-content: stretch;
+  left: auto;
+  max-width: none;
+  padding: 0;
+  pointer-events: auto;
+  position: relative;
+  right: auto;
+  width: auto;
+  z-index: 1;
+}
+
+/* 컴포저 크롬(투명 입력·원형 보내기)은 18-assistant-deck.css 가
+   :is(.ai-deck, .ai-studio-composer) 로 같이 소유한다. 여기는 열 폭만. */
+.ai-chat-panel.chat-dock-float.is-studio .ai-composer {
+  max-width: none;
+  width: 100%;
+}
+
+/* 실측(400px 열, 2026-09-03): 「맥락」 칩이 잘려 「맥」 만 보였다. 원인은 키 힌트
+   (Enter 전송 · Shift+Enter 줄바꿈)가 visibility 로만 숨어 156px 를 계속 차지하는 것 —
+   캡슐에서는 바 높이 불변식 때문이지만 스튜디오 입력줄은 격자 칸의 평범한 흐름이라
+   자리를 비워도 잃는 것이 없다. 줄바꿈 허용은 답이 아니었다(360px 열에서 4줄로 늘어나
+   브리핑을 덮었다). */
+.ai-chat-panel.chat-dock-float.is-studio .ai-composer-hint {
+  display: none;
+}
+
+/* 포커스 팝오버의 감독 프롬프트 3개는 브리핑이 이미 같은 문장을 보이고 있다 — 스튜디오에서는
+   팝오버에 안내 한 줄 + 예제 칩(ai-next-steps)만 남긴다. */
+.ai-chat-panel.chat-dock-float.is-studio .ai-composer-suggest .ai-composer-chips {
+  display: none;
+}
