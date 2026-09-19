@@ -400,7 +400,7 @@ export function createBattleSequencer(
     const directorBase = (firstDirector && entryOffset === firstDirectorIndex)
       ? firstDirector
       : actionEntryDirectorState(entry, snapshot)
-        ?? (resultEntry ? enemyActionDirectorState(resultEntry, snapshot) : timelineDirectorState(entry));
+        ?? (resultEntry ? enemyActionDirectorState(resultEntry, snapshot) : timelineDirectorState(entry, snapshot));
     const feedback = feedbackFromTimeline(entry);
     const visual = entry.kind === "damage" || entry.kind === "healing" || entry.kind === "miss"
       || entry.kind === "action" || entry.kind === "capture" || entry.kind === "stateUpkeep" || entry.kind === "stateRecovery";
@@ -505,7 +505,7 @@ export function createBattleSequencer(
     return record?.name ?? stateId;
   }
 
-  function timelineDirectorState(entry: BattleTimelineEntrySnapshot): BattleDirectorState {
+  function timelineDirectorState(entry: BattleTimelineEntrySnapshot, snapshot: BattleSnapshot): BattleDirectorState {
     // 문장 스타일은 #253 판(조사 붙은 이름 + 완결 문장). stateRecovery 는 main 에만 있던
     // 갈래라 같은 어투로 옮겨 남긴다 — 빼면 상태 회복이 «행동을 실행했다» 로 뭉개진다.
     const detail = entry.kind === "stateAdded" ? `${withJosa(stateLabel(entry.stateId), "이/가")} 걸렸다!`
@@ -516,7 +516,11 @@ export function createBattleSequencer(
       : entry.kind === "switch" ? "전열을 교체했다."
       : entry.kind === "capture" ? (entry.success ? "포획에 성공했다!" : "포획에 실패했다.")
       : "행동을 실행했다.";
-    return { step: "acting", lines: [detail], targetId: entry.targetId };
+    const peers = snapshot.enemies.some((enemy) => enemy.id === entry.targetId) ? snapshot.enemies : snapshot.actors;
+    const target = peers.find((battler) => battler.id === entry.targetId);
+    const isState = ["stateAdded", "stateRemoved", "stateUpkeep", "stateRecovery", "incapacitated"].includes(entry.kind);
+    const line = isState && target ? `${disambiguatedBattlerName(target, peers)}: ${detail}` : detail;
+    return { step: "acting", lines: [line], targetId: entry.targetId };
   }
 
   function resolveEnemyTurns(previous: BattleDirectorState): void {

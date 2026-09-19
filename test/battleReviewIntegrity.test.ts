@@ -72,6 +72,13 @@ describe("battle review integrity boundaries", () => {
     expect(() => validateLowLevelCommandArray("commands", [{ kind: "loop", body: [command] }])).toThrow(/fields/);
   });
 
+  it("uses catalog validation instead of a shadowing shallow M2 case", () => {
+    expect(() => validateCommandArray("commands", [{ ...hpCommand("all"), commandId: "missing-command" }]))
+      .toThrow(/commandId/);
+    const command = { ...hpCommand("all"), fields: { target: { nested: true } } } as unknown as M2;
+    expect(() => validateCommandArray("commands", [command])).toThrow(/fields.target/);
+  });
+
   it("reports dangling hidden members through admission before constructing battlers", () => {
     const project = deserialize(JSON.stringify(fixture));
     const troop = project.database.troops.find((record) => record.id === "troop_slime")!;

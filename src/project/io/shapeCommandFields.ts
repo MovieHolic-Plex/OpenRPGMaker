@@ -19,12 +19,6 @@ function validateCommandShape(label: string, value: unknown): void {
   const kind = requireString(`${label}.kind`, command.kind);
   if (!commandKinds.has(kind)) throw new ProjectFormatError(`command ${label}: 알 수 없는 kind: ${kind}`);
   switch (kind) {
-    case "m2Command":
-      if (!requireString(`${label}.commandId`, command.commandId).trim()) {
-        throw new ProjectFormatError(`${label}.commandId is blank`);
-      }
-      requireRecord(`${label}.fields`, command.fields);
-      return;
     case "choices":
       for (const [index, option] of requireArray(`${label}.options`, command.options).entries()) {
         const record = requireRecord(`${label}.options[${index}]`, option);

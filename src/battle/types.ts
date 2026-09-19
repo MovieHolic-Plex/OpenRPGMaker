@@ -451,6 +451,8 @@ export interface BattleEventStateSnapshot {
 }
 
 export interface BattleSnapshot {
+  /** Gauge prediction from the same scheduler/rates as tick, using battler instance id. */
+  readonly nextReadyBattlerId?: string;
   readonly eventPause?: BattleEventPauseSnapshot;
   readonly eventChoice?: BattleEventChoiceSnapshot;
   readonly phase: BattlePhase;
