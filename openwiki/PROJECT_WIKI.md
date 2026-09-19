@@ -82,8 +82,15 @@ OPRN Studio is a browser-based top-down tile JRPG maker/editor. It combines:
   sheet use `test/cssFamily.ts` so they see the same import family as the app.
 - The resource manager is a lazy editor surface that can open before the database CSS
   chunk. `src/styles/resources/resource-manager.css` therefore owns its fixed backdrop,
-  centered window, header, and flex body shell; do not make it depend on opening the
-  database modal first.
+  centered window, header, and flex body shell; the nested URL importer in
+  `resource-manager.part-6.css` owns the same fixed backdrop and header contract. Do not
+  make either surface depend on opening the database modal first.
+- The AI sidebar and editor-owned AI dialogs mount before the database CSS chunk. Their
+  first-paint geometry is owned by `src/styles/shell/dialogs/ai-chat-critical.css` and
+  `ai-modal-shell.css`; `database/editor-owned-ai-modal-shell.css` reapplies the body
+  scroll contract after the database layer arrives. The database sheets may enrich the
+  visual treatment later, but they must not be required for a centered backdrop, bounded
+  window, or scrollable body.
 - `test` and `test/e2e` are part of the contract. Update or add focused tests for changed behavior.
 
 ## How an AI should use this wiki

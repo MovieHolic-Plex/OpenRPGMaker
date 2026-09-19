@@ -158,3 +158,4 @@
 @import "./spatial-new-place.css" layer(database);
 
 @import "./spatial-composition.css" layer(database);
+@import "./editor-owned-ai-modal-shell.css" layer(database);
