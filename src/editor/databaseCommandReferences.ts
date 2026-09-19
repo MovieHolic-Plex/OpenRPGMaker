@@ -197,6 +197,18 @@ function commandReferences(command: Command, collection: CommandReferenceCollect
       return collection === "craftRecipes" && command.recipeId === id;
     case "applyItemUpgrade":
       return collection === "itemUpgrades" && command.upgradeId === id;
+    // ── 아래 넷은 로드 검증기(commandReferenceValidation)가 이미 하드 참조로 다루는데
+    //    삭제 가드에는 빠져 있었다. 커버리지가 어긋나면 "경고 없이 삭제 → 다음 로드에서
+    //    프로젝트가 안 열림"이 된다(2026-09-19 리뷰 P0-6). 검증기에 케이스를 더할 때
+    //    여기에도 같이 더할 것. ──
+    case "showAnimation":
+      return collection === "battleAnimations" && command.animationId === id;
+    case "enterHeroName":
+      return collection === "actors" && command.actorId === id;
+    case "addFollower":
+      return collection === "actors" && Boolean(command.actorId) && command.actorId === id;
+    case "equipTool":
+      return collection === "items" && Boolean(command.itemId) && command.itemId === id;
     default:
       return false;
   }
