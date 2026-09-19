@@ -73,6 +73,52 @@ export function projectWithoutEventDrafts(project: Project): Project {
 }
 
 /**
+ * 직렬화 전용 투영 — 같은 이벤트 규약(새 초안 제외, 편집 초안은 원본)을 적용하되
+ * 프로젝트를 복제하지 않는다. 반환 객체는 원본과 타일 배열까지 구조를 공유하므로
+ * **읽기/직렬화 외의 용도로 쓰면 안 된다.** 변형이 필요하면 projectWithoutEventDrafts 를 쓸 것.
+ */
+function projectViewWithoutEventDrafts(project: Project): Project {
+  let maps: Record<string, GameMap> | null = null;
+  for (const [mapId, map] of Object.entries(project.maps)) {
+    if (!map.events.some((event) => event.draft !== undefined)) continue;
+    maps ??= { ...project.maps };
+    maps[mapId] = { ...map, events: committedEventsView(map.events) };
+  }
+  return maps ? { ...project, maps } : project;
+}
+
+/** committedEvents 의 복제 없는 쌍둥이. 같은 순서·같은 키로 같은 JSON 을 낸다. */
+function committedEventsView(events: readonly GameEvent[]): GameEvent[] {
+  const committed: GameEvent[] = [];
+  for (const event of events) {
+    if (event.draft?.kind === "new") continue;
+    if (event.draft?.kind === "edit") {
+      if (event.draft.original) committed.push(event.draft.original);
+      continue;
+    }
+    if (event.draft === undefined) {
+      committed.push(event);
+      continue;
+    }
+    const { draft: _dropped, ...withoutDraft } = event;
+    committed.push(withoutDraft as GameEvent);
+  }
+  return committed;
+}
+
+/**
+ * `JSON.stringify(projectWithoutEventDrafts(project))` 와 **바이트 단위로 같은 문자열**을
+ * 프로젝트 전체 복제 없이 만든다.
+ *
+ * 왜 따로 두는가: 이 투영을 쓰는 호출자 대부분은 결과를 변형하므로 깊은 복제가 필요하다.
+ * 그러나 내보내기 미러는 곧바로 stringify 만 한다 — 거기서 복제는 순수 낭비였고,
+ * 120x100 맵 드래그 측정에서 그 경로 비용의 62%(874/1404ms)를 차지했다.
+ */
+export function projectJsonWithoutEventDrafts(project: Project): string {
+  return JSON.stringify(projectViewWithoutEventDrafts(project));
+}
+
+/**
  * Re-apply in-memory event editor drafts onto a canonical saved project.
  * Canonical persistence omits new drafts and keeps edit originals; this restores
  * the local working body plus draft metadata so the session and Cancel survive
