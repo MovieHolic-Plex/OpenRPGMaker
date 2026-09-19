@@ -2448,6 +2448,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function resolveOutcome(): void {
     if (result) return;
+    // Recoil and event effects can wipe out both sides in the same resolution.
+    // Defeat must win before either the Gen1 or the ordinary victory path pays rewards.
+    if (actors.every((actor) => actor.hp <= 0)) {
+      result = "defeat";
+      phase = "resolved";
+      clearEndOfBattleStates();
+      return;
+    }
     if (options.project.system.battleModel === "gen1") {
       const current = enemies.find((enemy) => enemy.id === activeGen1EnemyId);
       if (!current || current.hp <= 0 || current.hidden) {
@@ -2470,11 +2478,6 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       clearEndOfBattleStates();
       accumulateRewards();
       return;
-    }
-    if (actors.every((actor) => actor.hp <= 0)) {
-      result = "defeat";
-      phase = "resolved";
-      clearEndOfBattleStates();
     }
   }
 

@@ -74,7 +74,8 @@ const COMMAND_LEAF_SCHEMA: JsonSchema = {
     delta: { type: "integer", description: "changeFriendship 변화량" },
     speaker: { type: "string" },
     body: { type: "string", description: "text 대사 본문" },
-    commandId: { type: "string", description: "m2Command id, 예: m2-211-weighted-branch" },
+    commandId: { type: "string", description: "m2Command id, 예: m2-098-change-enemy-hp" },
+    fields: { type: "object", additionalProperties: true, description: 'm2Command 필수 필드 객체. 예: {target:"all",operation:"remove",value:10}' },
   },
   required: ["kind"],
   // variant 전용 필드는 커맨드 shape 검증기가 본다.

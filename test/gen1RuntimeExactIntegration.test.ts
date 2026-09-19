@@ -243,6 +243,22 @@ describe("Gen1 exact engines are wired into the battle runtime", () => {
     expect(snapshot.actors[0]!.hp).toBeLessThanOrEqual(beforeHp - recoil.amount!);
   });
 
+  it("resolves a final Struggle recoil double knockout as defeat without rewards", () => {
+    const { runtime } = exactBattle({
+      partyMonster: monster({ currentHp: 1, skillPp: { skill_scarloxy_quick: 0 } }),
+      rng: sequence([BYTE_255, BYTE_255, 0]),
+      configure(project) {
+        project.database.enemies.find((enemy) => enemy.id === "enemy_pkmn_larvea")!.stats.maxHp = 1;
+      },
+    });
+    runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+    const snapshot = runtime.snapshot();
+    expect(snapshot.actors.every((actor) => actor.hp === 0)).toBe(true);
+    expect(snapshot.enemies.every((enemy) => enemy.hp === 0)).toBe(true);
+    expect(snapshot.result).toBe("defeat");
+    expect(snapshot.rewards).toMatchObject({ exp: 0, gold: 0, items: [] });
+  });
+
   it("rejects a direct Struggle command while the actor still has a usable move", () => {
     const { runtime } = exactBattle();
     const before = runtime.snapshot();

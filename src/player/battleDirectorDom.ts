@@ -234,16 +234,8 @@ export function resultDirectorState(snapshot: BattleSnapshot, previous: BattleDi
   };
 }
 
-export function battleEventDirectorState(snapshot: BattleSnapshot, previous: BattleDirectorState): BattleDirectorState {
-  if (previous.step === "result" || snapshot.eventChoice || snapshot.eventPause) return previous;
-  const log = [...snapshot.eventLogs].reverse().find((entry) => entry.kind === "message");
-  if (!log?.detail) return previous;
-  return {
-    ...previous,
-    step: "acting",
-    lines: [log.detail],
-  };
-}
+// Event logs are diagnostics, not narration. Authored text is presented by the
+// sequential eventPause/dialogue host and must not linger over command prompts.
 
 export function battleMessageWindow(state: BattleDirectorState): HTMLElement {
   const windowNode = document.createElement("div");

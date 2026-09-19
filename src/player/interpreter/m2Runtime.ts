@@ -356,7 +356,13 @@ function mutateActorState(
   fields: M2CommandFields,
   context: { readonly project?: Project } = {}
 ): void {
-  const actorId = fieldString(fields, "target", "party");
+  const target = fieldString(fields, "target", "party");
+  // The rich m2-092 form stores a selector plus actorId; older generic forms
+  // store the actor ID directly. Both must address the same concrete actor.
+  const actorId = title === "Change Battle Commands" && target === "actor"
+    ? fieldString(fields, "actorId", "").trim()
+    : target;
+  if (title === "Change Battle Commands" && target === "actor" && !actorId) return;
   runtime.actors[actorId] ??= {};
   const actor = runtime.actors[actorId];
   if (title === "Change Actor Name") {

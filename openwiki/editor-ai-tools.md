@@ -1,3 +1,14 @@
+## 전투 저작 입력 수정 (2026-09-20)
+
+`upsert_troop`의 기존 id에 `enemyIds`만 전달하면 로스터 교체다. 기존 `members`를
+상속해 입력을 무시하지 않고 새 members를 합성한다. 이름 등 다른 필드만 바꾸면 기존
+수동 배치·숨김·페이지를 보존한다. `members`를 명시하면 기존처럼 그것을 정본으로 삼는다.
+
+M2 명령의 `commandId`와 객체 `fields`는 공통 command shape 검증에서 필수다.
+중첩 분기에도 적용되며 저수준 툴은 기존 `invalid-args` 오류로 반환한다.
+`COMMAND_SCHEMA`의 예시는 실제 전투 명령 `m2-098-change-enemy-hp`와 fields를 사용한다.
+회귀 코드는 `dbToolsIntegrity`와 `battleReviewIntegrity`에 추가했으며 이번 세션에서는 미실행.
+
 ## NPC 공용 얼굴 매핑 연결 (2026-09-18)
 
 `place_npc` / `make_villager`와 `eventCompile`은 `sharedCharacterFaceResolver`의 공용 자료를 사용한다.

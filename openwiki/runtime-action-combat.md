@@ -28,7 +28,7 @@ If either condition is falsy, field-spawn contact routes to standard turn-based 
 
 The shipped action maps are:
 - `map_mine_1f` in the farming demo project (`createFarmingDemoProject` in `src/project/defaults/defaultProject.ts`), spawning `troop_bat_swarm` and `troop_golem_guard`.
-- `map_action_demo` in `createActionCombatDemoProject` (`src/project/defaults/actionCombatDemoProject.ts`, persisted under project id `rpg-zzu-action-demo`).
+- `map_mine_1f` (`ACTION_DEMO_MAP_ID`) in `createActionCombatDemoProject` (`src/project/defaults/actionCombatDemoProject.ts`, persisted under project id `rpg-zzu-action-demo`).
 
 ## Architecture and pure rule modules
 
