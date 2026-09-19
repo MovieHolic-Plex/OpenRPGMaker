@@ -82,7 +82,7 @@ describe("T4 — toOpenAiTools 모드 스코핑", () => {
 
     // Then: canonical writes are public first-class tools, legacy writes are hidden but executable,
     // and read diagnostics remain public. Independent interior tools are unaffected.
-    expect(allTools().slice(0, 8).map((tool) => tool.name)).toEqual(expect.arrayContaining(["author_house", "author_village"]));
+    expect(allTools().map((tool) => tool.name)).toEqual(expect.arrayContaining(["author_house", "author_village"]));
     expect(getTool("author_house")?.domains).toEqual(["tile"]);
     expect(getTool("author_village")?.domains).toEqual(["tile", "map"]);
     for (const name of ["author_house", "author_village"]) {

@@ -365,7 +365,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L618` House-site tree clearance before ownership (2026-09-07)
 - `L629` Flower-yard material in house lots (2026-09-07)
 - `L642` Pre-write original grounding (2026-09-06)
-- `L717` Full native tool exposure (2026-09-06)
+- `L717` Hybrid native tool exposure (2026-09-19)
 - `L744` Review approval lifetime (R3, 2026-09-06)
 - `L762` Audio description tools and event candidates
   - `L782` Search pages and full detail
