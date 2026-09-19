@@ -40,21 +40,23 @@ export async function openProjectFolder(): Promise<boolean> {
 function chooseHostedProject(projects: readonly { projectDir: string; title: string }[]): Promise<string | null> {
   return new Promise((resolve) => {
     const backdrop = document.createElement("div");
-    backdrop.style.cssText = "position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:24px;background:#080b12cc;font-family:system-ui,sans-serif;color:#f5f7fb";
+    backdrop.style.cssText = "position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:24px;background:rgba(8,11,18,.76);backdrop-filter:blur(14px);font-family:Inter,Pretendard,system-ui,sans-serif;color:#f5f7fb";
     const modal = document.createElement("section");
-    modal.style.cssText = "width:min(900px,100%);max-height:min(760px,calc(100vh - 48px));overflow:auto;border:1px solid #3c4a63;border-radius:22px;background:#171c26;box-shadow:0 30px 90px #0009";
-    modal.innerHTML = `<header style="display:flex;justify-content:space-between;align-items:start;padding:24px 28px 18px;border-bottom:1px solid #2b3446"><div><h1 style="margin:0;font-size:23px">프로젝트 열기</h1><p style="margin:7px 0 0;color:#aab5c8;font-size:13px">이 서버에서 작업할 프로젝트를 선택하세요.</p></div><button data-close style="border:0;border-radius:10px;background:#252d3c;color:#b9c4d8;font-size:20px;width:36px;height:36px">×</button></header>`;
-    const body = document.createElement("div"); body.style.cssText = "padding:20px 28px 28px";
-    const search = document.createElement("input"); search.placeholder = "프로젝트 이름 또는 폴더 경로 검색"; search.style.cssText = "width:100%;padding:12px 14px;border:1px solid #3b4960;border-radius:11px;background:#10151e;color:#fff;font-size:14px;box-sizing:border-box";
-    const grid = document.createElement("div"); grid.style.cssText = "display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:18px";
+    modal.style.cssText = "width:min(940px,100%);max-height:min(780px,calc(100vh - 48px));overflow:auto;border:1px solid #44536e;border-radius:24px;background:linear-gradient(145deg,#1b2433,#151a24 70%);box-shadow:0 34px 110px #000b,inset 0 1px #ffffff10";
+    modal.innerHTML = `<header style="display:flex;justify-content:space-between;align-items:start;padding:28px 30px 22px;border-bottom:1px solid #303b50"><div><div style="display:flex;align-items:center;gap:10px"><span style="display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:#6d98ff;color:#081329;font-weight:900">✦</span><h1 style="margin:0;font-size:24px;letter-spacing:-.04em">프로젝트 열기</h1></div><p style="margin:10px 0 0;color:#aab7ca;font-size:13px">이 서버에서 작업할 프로젝트를 선택하세요.</p></div><button data-close aria-label="닫기" style="border:1px solid #3a465c;border-radius:11px;background:#222b3b;color:#c6d0e0;font-size:20px;width:38px;height:38px;cursor:pointer">×</button></header>`;
+    const body = document.createElement("div"); body.style.cssText = "padding:20px 30px 28px";
+    const toolbar = document.createElement("div"); toolbar.style.cssText = "display:flex;gap:10px;align-items:center";
+    const search = document.createElement("input"); search.placeholder = "프로젝트 이름 또는 폴더 경로 검색"; search.setAttribute("aria-label", "프로젝트 검색"); search.style.cssText = "flex:1;min-width:0;padding:13px 15px;border:1px solid #46556f;border-radius:12px;background:#101620;color:#fff;font-size:14px;box-sizing:border-box;outline:none";
+    const count = document.createElement("span"); count.style.cssText = "color:#9eacc1;font-size:12px;white-space:nowrap";
+    const grid = document.createElement("div"); grid.style.cssText = "display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:20px";
     const close = (value: string | null) => { backdrop.remove(); resolve(value); };
-    const render = () => { grid.replaceChildren(...projects.filter((p) => `${p.title} ${p.projectDir}`.toLowerCase().includes(search.value.toLowerCase())).map((project) => {
-      const card = document.createElement("article"); card.style.cssText = "border:1px solid #334057;border-radius:15px;background:#1d2431;padding:17px";
-      card.innerHTML = `<div style="font-weight:700;font-size:16px">${escapeHtml(project.title)}</div><div style="margin-top:7px;color:#8695ac;font:12px ui-monospace,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(project.projectDir)}</div><button style="width:100%;margin-top:18px;border:0;border-radius:10px;padding:10px;background:#6d98ff;color:#091329;font-weight:750;cursor:pointer">이 프로젝트 열기</button>`;
+    const render = () => { const visible = projects.filter((p) => `${p.title} ${p.projectDir}`.toLowerCase().includes(search.value.toLowerCase())); count.textContent = `${visible.length}개`; grid.replaceChildren(...visible.map((project) => {
+      const card = document.createElement("article"); card.style.cssText = "border:1px solid #34425a;border-radius:16px;background:linear-gradient(145deg,#202a3a,#1a2230);padding:18px;transition:transform .15s,border-color .15s;";
+      card.innerHTML = `<div style="display:flex;align-items:start;justify-content:space-between;gap:10px"><div style="min-width:0"><div style="font-weight:750;font-size:16px;letter-spacing:-.02em">${escapeHtml(project.title)}</div><div style="margin-top:8px;color:#8c9ab0;font:12px ui-monospace,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(project.projectDir)}</div></div><span style="color:#77dda9;background:#1a4939;border-radius:999px;padding:4px 8px;font-size:11px;white-space:nowrap">사용 가능</span></div><div style="display:flex;gap:16px;color:#9eabc0;font-size:12px;margin:20px 0 14px"><span>서버 프로젝트</span><span>SQLite 정본</span></div><button style="width:100%;border:0;border-radius:10px;padding:11px;background:#78a0ff;color:#091329;font-weight:800;cursor:pointer">이 프로젝트 열기 <span style="float:right">→</span></button>`;
       card.querySelector("button")?.addEventListener("click", () => close(project.projectDir)); return card;
     }) as Element[]); };
     search.addEventListener("input", render); modal.querySelector("[data-close]")?.addEventListener("click", () => close(null)); backdrop.addEventListener("click", (event) => { if (event.target === backdrop) close(null); });
-    body.append(search, grid); modal.append(body); backdrop.append(modal); document.body.append(backdrop); search.focus(); render();
+    toolbar.append(search, count); body.append(toolbar, grid); modal.append(body); backdrop.append(modal); document.body.append(backdrop); search.focus(); render();
   });
 }
 
