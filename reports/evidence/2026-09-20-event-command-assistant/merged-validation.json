@@ -1,0 +1,50 @@
+{
+  "commit": "fa64f5526685c4098e377a131eed84be4a0d9dec",
+  "typecheck": {
+    "command": "npm run typecheck:app",
+    "exitCode": 0
+  },
+  "coreTests": {
+    "command": "npm test -- test/aiAssistantBridge.test.ts test/aiToolLabels.test.ts test/eventCommandAssist.test.ts test/eventCommandAssistTool.test.ts test/eventCommandScopedSession.test.ts test/piAgentToolAdapter.test.ts test/toolsExtended.test.ts --maxWorkers=2 --minWorkers=1",
+    "exitCode": 0,
+    "passed": 96,
+    "failed": 0,
+    "files": [
+      {
+        "file": "test/aiAssistantBridge.test.ts",
+        "status": "passed",
+        "tests": 5
+      },
+      {
+        "file": "test/aiToolLabels.test.ts",
+        "status": "passed",
+        "tests": 5
+      },
+      {
+        "file": "test/eventCommandAssist.test.ts",
+        "status": "passed",
+        "tests": 56
+      },
+      {
+        "file": "test/eventCommandAssistTool.test.ts",
+        "status": "passed",
+        "tests": 9
+      },
+      {
+        "file": "test/eventCommandScopedSession.test.ts",
+        "status": "passed",
+        "tests": 2
+      },
+      {
+        "file": "test/piAgentToolAdapter.test.ts",
+        "status": "passed",
+        "tests": 6
+      },
+      {
+        "file": "test/toolsExtended.test.ts",
+        "status": "passed",
+        "tests": 13
+      }
+    ]
+  }
+}

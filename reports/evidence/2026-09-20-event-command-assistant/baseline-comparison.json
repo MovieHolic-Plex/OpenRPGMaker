@@ -1,0 +1,342 @@
+{
+  "baseCommit": "4074f31ff",
+  "changeCommit": "9143492b4",
+  "baselineCommand": "node scripts/run-vitest.mjs run --configLoader bundle <23 candidate files> --maxWorkers=2 --minWorkers=1 --reporter=json --outputFile=/tmp/event-assist-baseline.json",
+  "baselineExitCode": 1,
+  "files": [
+    {
+      "file": "test/aiDeckResizeTransitionCss.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [],
+      "afterFailedCases": [],
+      "newFailedCases": [],
+      "beforeCollectionError": "CSS family is not imported: src/styles/database/tabs-b-assistant-panel/18-assistant-deck.css",
+      "afterCollectionError": "CSS family is not imported: src/styles/database/tabs-b-assistant-panel/18-assistant-deck.css"
+    },
+    {
+      "file": "test/aiStudioColumnCollapse.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [],
+      "afterFailedCases": [],
+      "newFailedCases": [],
+      "beforeCollectionError": "CSS family is not imported: src/styles/database/tabs-b-assistant-panel/08-studio-mode-start-screen.css",
+      "afterCollectionError": "CSS family is not imported: src/styles/database/tabs-b-assistant-panel/08-studio-mode-start-screen.css"
+    },
+    {
+      "file": "test/authoringTasks.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [
+        "저작 작업 명령 데이터는 자료집 모달을 열고 좌측 도크는 건드리지 않는다"
+      ],
+      "afterFailedCases": [
+        "저작 작업 명령 데이터는 자료집 모달을 열고 좌측 도크는 건드리지 않는다"
+      ],
+      "newFailedCases": [],
+      "beforeCollectionError": "",
+      "afterCollectionError": ""
+    },
+    {
+      "file": "test/basicTilePalette.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [
+        "beginner palette source and activation preserves custom atlas cells and authored labels instead of combined-town names"
+      ],
+      "afterFailedCases": [
+        "beginner palette source and activation preserves custom atlas cells and authored labels instead of combined-town names"
+      ],
+      "newFailedCases": [],
+      "beforeCollectionError": "",
+      "afterCollectionError": ""
+    },
+    {
+      "file": "test/characterAppearanceAssistant.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [
+        "appearance assistant handoff advertises generation for portrait intent: Generate a face portrait for this character appearance"
+      ],
+      "afterFailedCases": [
+        "appearance assistant handoff advertises generation for portrait intent: Generate a face portrait for this character appearance"
+      ],
+      "newFailedCases": [],
+      "beforeCollectionError": "",
+      "afterCollectionError": ""
+    },
+    {
+      "file": "test/cutsceneCompiler.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [
+        "compileCutscene 대표 beat들을 이벤트 command 배열로 컴파일한다"
+      ],
+      "afterFailedCases": [
+        "compileCutscene 대표 beat들을 이벤트 command 배열로 컴파일한다"
+      ],
+      "newFailedCases": [],
+      "beforeCollectionError": "",
+      "afterCollectionError": ""
+    },
+    {
+      "file": "test/editorZLayerOrder.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [
+        "편집기 z 층 순서 그 계산식이 여전히 app-modal 기준이다 — 하드코딩으로 바뀌면 위 단정이 거짓이 된다"
+      ],
+      "afterFailedCases": [
+        "편집기 z 층 순서 그 계산식이 여전히 app-modal 기준이다 — 하드코딩으로 바뀌면 위 단정이 거짓이 된다"
+      ],
+      "newFailedCases": [],
+      "beforeCollectionError": "",
+      "afterCollectionError": ""
+    },
+    {
+      "file": "test/eventActions.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [
+        "shared command resolver consumers creates missing shop transaction branches through the shared resolver for page edits",
+        "shared command resolver consumers event pages create shop transaction branches the same way staging does"
+      ],
+      "afterFailedCases": [
+        "shared command resolver consumers creates missing shop transaction branches through the shared resolver for page edits",
+        "shared command resolver consumers event pages create shop transaction branches the same way staging does"
+      ],
+      "newFailedCases": [],
+      "beforeCollectionError": "",
+      "afterCollectionError": ""
+    },
+    {
+      "file": "test/eventCommandReorder.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [
+        "event command drag reorder clamps target index to valid range",
+        "event command drag reorder is a no-op when source equals destination",
+        "event command drag reorder moves a command earlier without disturbing siblings",
+        "event command drag reorder moves a command to an arbitrary index in one store update",
+        "event command drag reorder step move (dir) still works for the up/down buttons"
+      ],
+      "afterFailedCases": [
+        "event command drag reorder clamps target index to valid range",
+        "event command drag reorder is a no-op when source equals destination",
+        "event command drag reorder moves a command earlier without disturbing siblings",
+        "event command drag reorder moves a command to an arbitrary index in one store update",
+        "event command drag reorder step move (dir) still works for the up/down buttons"
+      ],
+      "newFailedCases": [],
+      "beforeCollectionError": "",
+      "afterCollectionError": ""
+    },
+    {
+      "file": "test/eventEditorFormSurface.baseline.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [
+        "이벤트에디터 폼 표면 스냅샷 기준선과 일치한다"
+      ],
+      "afterFailedCases": [
+        "이벤트에디터 폼 표면 스냅샷 기준선과 일치한다"
+      ],
+      "newFailedCases": [],
+      "beforeCollectionError": "",
+      "afterCollectionError": ""
+    },
+    {
+      "file": "test/eventEditorInteractionSurface.baseline.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [
+        "이벤트에디터 상호작용 후 폼 표면 스냅샷 기준선과 일치한다",
+        "이벤트에디터 상호작용 후 폼 표면 스냅샷 반응하던 컨트롤이 no-change 로 퇴화하지 않는다"
+      ],
+      "afterFailedCases": [
+        "이벤트에디터 상호작용 후 폼 표면 스냅샷 기준선과 일치한다",
+        "이벤트에디터 상호작용 후 폼 표면 스냅샷 반응하던 컨트롤이 no-change 로 퇴화하지 않는다"
+      ],
+      "newFailedCases": [],
+      "beforeCollectionError": "",
+      "afterCollectionError": ""
+    },
+    {
+      "file": "test/eventEditorSettingsLayout.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [
+        "event editor settings column layout orders six numbered settings groups; characterId lives in the NPC rail group"
+      ],
+      "afterFailedCases": [
+        "event editor settings column layout orders six numbered settings groups; characterId lives in the NPC rail group"
+      ],
+      "newFailedCases": [],
+      "beforeCollectionError": "",
+      "afterCollectionError": ""
+    },
+    {
+      "file": "test/eventPageActivityLabels.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [
+        "페이지 편집 라벨 추가·순서 이동·복사·삭제를 행위 이름과 페이지 이름으로 남긴다"
+      ],
+      "afterFailedCases": [
+        "페이지 편집 라벨 추가·순서 이동·복사·삭제를 행위 이름과 페이지 이름으로 남긴다"
+      ],
+      "newFailedCases": [],
+      "beforeCollectionError": "",
+      "afterCollectionError": ""
+    },
+    {
+      "file": "test/eventPagePassageGroup.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [
+        "겹침과 통행 그룹 기타 그룹이 생기지 않고 레일 순서는 그대로다"
+      ],
+      "afterFailedCases": [
+        "겹침과 통행 그룹 기타 그룹이 생기지 않고 레일 순서는 그대로다"
+      ],
+      "newFailedCases": [],
+      "beforeCollectionError": "",
+      "afterCollectionError": ""
+    },
+    {
+      "file": "test/eventPages.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [
+        "event pages moves a page to an arbitrary index and no-ops when already there",
+        "event pages resolves the highest-number matching page by switch condition",
+        "event pages selects the page now at the deleted index when deleting a middle page"
+      ],
+      "afterFailedCases": [
+        "event pages moves a page to an arbitrary index and no-ops when already there",
+        "event pages resolves the highest-number matching page by switch condition",
+        "event pages selects the page now at the deleted index when deleting a middle page"
+      ],
+      "newFailedCases": [],
+      "beforeCollectionError": "",
+      "afterCollectionError": ""
+    },
+    {
+      "file": "test/eventRailGroupComposition.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [
+        "이벤트 편집기 좌측 레일 그룹 소속 미분류 자식이 없어 기타 그룹이 만들어지지 않는다"
+      ],
+      "afterFailedCases": [
+        "이벤트 편집기 좌측 레일 그룹 소속 미분류 자식이 없어 기타 그룹이 만들어지지 않는다"
+      ],
+      "newFailedCases": [],
+      "beforeCollectionError": "",
+      "afterCollectionError": ""
+    },
+    {
+      "file": "test/page3CommandBodies.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [
+        "page3 command body UX (맵·연출) M2 page3 form-to-runtime contracts commits tint fields and applies them to runtime screen state"
+      ],
+      "afterFailedCases": [
+        "page3 command body UX (맵·연출) M2 page3 form-to-runtime contracts commits tint fields and applies them to runtime screen state"
+      ],
+      "newFailedCases": [],
+      "beforeCollectionError": "",
+      "afterCollectionError": ""
+    },
+    {
+      "file": "test/sharedTileAnimation.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [
+        "shared editor tile animations shares a clock, synchronizes newly added tiles, and releases it after the last tile"
+      ],
+      "afterFailedCases": [
+        "shared editor tile animations shares a clock, synchronizes newly added tiles, and releases it after the last tile"
+      ],
+      "newFailedCases": [],
+      "beforeCollectionError": "",
+      "afterCollectionError": ""
+    },
+    {
+      "file": "test/sidebarBrushUi.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [
+        "sidebar brush and source gestures C8a resolves a mounted beginner atlas drag once, with source geometry and cell layers",
+        "sidebar brush and source gestures C8a resolves a mounted standard atlas drag once, with source geometry and cell layers"
+      ],
+      "afterFailedCases": [
+        "sidebar brush and source gestures C8a resolves a mounted beginner atlas drag once, with source geometry and cell layers",
+        "sidebar brush and source gestures C8a resolves a mounted standard atlas drag once, with source geometry and cell layers"
+      ],
+      "newFailedCases": [],
+      "beforeCollectionError": "",
+      "afterCollectionError": ""
+    },
+    {
+      "file": "test/tilePaletteGrid.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [
+        "custom atlas palette keeps source geometry as metadata while reflowing the view to six columns",
+        "팔레트 필터 (visibleTiles) 커스텀 아틀라스는 숨기지 않고 흐리게 한다 — 칸의 위치가 원본 시트 좌표다"
+      ],
+      "afterFailedCases": [
+        "custom atlas palette keeps source geometry as metadata while reflowing the view to six columns",
+        "팔레트 필터 (visibleTiles) 커스텀 아틀라스는 숨기지 않고 흐리게 한다 — 칸의 위치가 원본 시트 좌표다"
+      ],
+      "newFailedCases": [],
+      "beforeCollectionError": "",
+      "afterCollectionError": ""
+    },
+    {
+      "file": "test/tileToolbarAria.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [
+        "표준/전문가 사이드바 접근성 규칙 위반 배지가 있으면 오버플로 토글 접근명에 그 의미와 개수를 넣는다"
+      ],
+      "afterFailedCases": [
+        "표준/전문가 사이드바 접근성 규칙 위반 배지가 있으면 오버플로 토글 접근명에 그 의미와 개수를 넣는다"
+      ],
+      "newFailedCases": [],
+      "beforeCollectionError": "",
+      "afterCollectionError": ""
+    },
+    {
+      "file": "test/tilesetPaletteT1a.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [
+        "tileset palette AX tools T1a contextBuilder includes tile vocabulary digest with approved group ids by role even without presets"
+      ],
+      "afterFailedCases": [
+        "tileset palette AX tools T1a contextBuilder includes tile vocabulary digest with approved group ids by role even without presets"
+      ],
+      "newFailedCases": [],
+      "beforeCollectionError": "",
+      "afterCollectionError": ""
+    },
+    {
+      "file": "test/toolRegistry.test.ts",
+      "beforeStatus": "failed",
+      "afterStatus": "failed",
+      "beforeFailedCases": [
+        "toolRegistry 모든 툴이 유효한 OpenAI 함수 스키마를 산출한다"
+      ],
+      "afterFailedCases": [
+        "toolRegistry 모든 툴이 유효한 OpenAI 함수 스키마를 산출한다"
+      ],
+      "newFailedCases": [],
+      "beforeCollectionError": "",
+      "afterCollectionError": ""
+    }
+  ]
+}
