@@ -5,6 +5,97 @@
 
 <!-- releases -->
 
+## 0.6.0 — 2026-09-19
+
+### 기능
+
+- add generic image asset generation tools (`246a396`)
+- expose game over and audio authoring tools (`de1e679`)
+- add focused party and character authoring tools (`7fcdf5b`)
+- make RPG kickoff author world and character foundation (`b1f8559`)
+- switch project picker to vertical thumbnails (`669920e`)
+- polish hosted project picker (`31fc211`)
+- **database** — 외형 슬롯에 공용 캐릭터·얼굴 분류를 읽기 전용으로 표시 (`00f6180`)
+- add hosted project picker UI (`054381c`)
+- enable web project folder opening (`ceab4c2`)
+- redesign event condition modal (`28b837e`)
+- **player** — 상점 UI 프리셋과 비교·재고 화면을 넣는다 (`df6460d`)
+- classify place library by art style and spatial purpose (`73a01a9`)
+
+### 수정
+
+- **database** — 그룹 컨트롤 캡션 클릭이 첫 라디오·칩을 발화하던 것 수정 (`58a051c`)
+- **database** — 모달 셸의 Escape 소유권·포커스 트랩·푸터 정직성 (`8fab3d5`)
+- **database** — 저장본·편집을 잃던 두 경로를 막는다 (`bf897ea`)
+- **interpreter** — 루프 반복 가드를 루프마다 따로 센다 (`bda03d2`)
+- **ci** — parity 스위트 워커를 2개로 고정해 6GiB 슬라이스 OOM 방지 (`b4bbed0`)
+- **editor** — 큰 맵 지연 깔기에서 mapId가 없을 때는 타일을 만들지 않는다 (`c9c533a`)
+- defer large map tile materialization (`490d51e`)
+- reduce project and map loading overhead (`fe47e3e`)
+- load referenced tileset assets on hosted projects (`ebfd644`)
+- stretch beginner tile rail (`00a5c6f`)
+- fill custom tile palette columns (`454e723`)
+- **database** — 공용 카탈로그 값 import 복원 (`558d611`)
+- **database** — 외형 슬롯 읽기줄 편집에서 남은 배열 꼬리 제거 (`a9ba743`)
+- **editor** — pin beginner canvas shell to fill column (`81ea2de`)
+- **editor** — collapse empty persistence banner host (`e746445`)
+- allow hosted project ids in folder picker (`bc1b807`)
+- explain missing project host connection (`6e21b70`)
+- **test** — approachCorrection 의 vi.fn 클로저가 세션을 붙잡는 걸 끊는다 (#981) (`fa4e113`)
+- **editor** — sqlite 폴더는 웹 호스트에서만 열고, 미리보기는 project.json만 받는다 (`c0ff12b`)
+- **event-fork** — unify preview card labels and refresh evidence (`91aaf75`)
+- **event-fork** — no start-map fallback in preview verdicts (`1305320`)
+- **baseline** — heal pre-existing red gates outside fork scope (`c68f07e`)
+- **event-fork** — pass current map into condition eval badge (`05a7b9d`)
+- **event-fork** — unify branch labels, 3-state preview, scoped validation (`c82c45f`)
+- **gates** — 재판정 예산을 CI 규모에 맞추고 판정 결과를 파일로 남긴다 (`61a1d07`)
+- **ai** — 검수가 예산 부족으로 끊기면 예산을 넓혀 다시 묻는다 (`30b340d`)
+- **ai,village** — 검수 루프가 못 고칠 지적으로 헛돌지 않게, 환촌·광장촌이 목표 채수를 채우게 (`c781480`)
+- **village** — 형태 유형 마을이 «마을처럼» 보이게 — 공터·울타리·바깥 숲 (`a1e192d`)
+- **ai** — never show a running work card that no turn will finish (#973) (`db496f8`)
+- **assets** — give the last nine forest harmony groups placement rules (#972) (`094287c`)
+- **ai** — carry tile grafts the bundle added to an existing tileset (`8729918`)
+- **ai** — report only changes the merge actually dropped (`a993f4e`)
+- **editor** — remove canvas top gap and banner toolbar overlap (`ed9765d`)
+- keep event command single-click selection without inline editing (`888b606`)
+- apply shared face mappings when the assistant creates NPCs (`001af9c`)
+- restore original grass terrain pixels in bundled forest chipset (`a5f188d`)
+
+### 성능
+
+- **database** — 썸네일 크로마키를 요소 가드에서 URL 캐시로 (`46e502b`)
+- reduce hosted editor cold-load stalls (`f43cfc5`)
+- defer cold editor diagnostics (`cfa6c0a`)
+- avoid duplicate hosted project and thumbnail work (`d92553b`)
+- **editor** — 내보내기 미러가 프로젝트를 복제하지 않게 한다 (`6812577`)
+
+### 정리
+
+- **loop** — drop redundant body check in walkHasBreak (`d99e360`)
+
+### 문서
+
+- **review** — DB UI/UX 적대적 리뷰와 2차 재검증 기록 (`1e95dd3`)
+- **database** — 외형 슬롯 공용 분류 읽기줄을 위키에 기록 (`5368d67`)
+- add project folder picker mockup (`fd33ebd`)
+- **event-fork** — record timer negative-input gap (`568395e`)
+- **event-fork** — badge and simulation share map input (`35f5484`)
+- **wiki** — regenerate INDEX after event-authoring edits (`75d50bb`)
+
+### 테스트
+
+- **surface** — refresh fork entries for unified branch labels (`d34dd5a`)
+
+### 잡무
+
+- **gates** — 기준선을 갱신한다 (2026-09-12 → 09-18) — 허용 174→147 (#986) (`b7805db`)
+- **gates** — 기준선을 갱신한다 (2026-09-12 → 09-18) — 허용 174→147 (`9b6e68a`)
+
+### 기타
+
+- **editor** — lock canvas gap screenshots across modes (`c8cce02`)
+- filter workaround proof for chromium composite strip (untracked follow-up) (`45d3233`)
+
 ## 0.5.0 — 2026-09-18
 
 ### 기능
