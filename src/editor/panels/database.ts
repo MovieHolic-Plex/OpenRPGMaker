@@ -347,6 +347,15 @@ function openOnlyGroup(slug: string): void {
   for (const group of TAB_GROUPS) if (group.slug !== slug) collapsed.add(group.slug);
 }
 
+/** 그룹 헤더의 펼침/접힘 — 클릭과 키보드(Enter/Space)가 같은 경로를 쓴다. */
+function toggleGroupCollapse(slug: string, header: HTMLElement): void {
+  const collapsed = collapsedGroupSlugs();
+  if (collapsed.has(slug)) openOnlyGroup(slug);
+  else collapsed.add(slug);
+  persistCollapsedGroups();
+  applyGroupCollapse(header);
+}
+
 function expandGroupFor(header: HTMLElement, id: DatabaseTab): void {
   const slug = groupForTab(id)?.slug;
   if (!slug) return;
@@ -484,7 +493,16 @@ export function renderDatabasePanel(container: HTMLElement): void {
         //  1) 눈에 보이는 부제(.db-tab-group-peek) — hover 없이 읽힌다.
         //  2) 툴팁 — 마우스로도 닿는다.
         //  3) 탭 수 배지 — 안에 몇 개가 접혀 있는지 센다.
-        attrs: { title: `${group.label} 그룹 펼치기/접기 — ${groupTabLabels(group)}` },
+        // div+onclick 이라 키보드로는 그룹을 펼칠 수 없었고, role 없는 요소의
+        // aria-expanded 는 효력이 없었다. 접힘 상태가 localStorage 에 남으므로 키보드
+        // 사용자는 이전 세션에 접어 둔 그룹의 탭에 **영구히** 도달하지 못했다.
+        // <button> 으로 바꾸면 기본 스타일이 달라 레일 모양이 흔들린다 — role/tabindex 로
+        // 같은 의미만 부여하고 Enter/Space 를 직접 받는다.
+        attrs: {
+          title: `${group.label} 그룹 펼치기/접기 — ${groupTabLabels(group)}`,
+          role: "button",
+          tabindex: "0",
+        },
         dataset: {
           testid: `db-tab-group-${group.slug}`,
           groupSlug: group.slug,
@@ -500,12 +518,13 @@ export function renderDatabasePanel(container: HTMLElement): void {
           el("span", { class: "db-tab-group-peek", attrs: { hidden: "" } }),
         ],
         on: {
-          click: () => {
-            const collapsed = collapsedGroupSlugs();
-            if (collapsed.has(group.slug)) openOnlyGroup(group.slug);
-            else collapsed.add(group.slug);
-            persistCollapsedGroups();
-            applyGroupCollapse(header);
+          click: () => toggleGroupCollapse(group.slug, header),
+          keydown: (event: Event) => {
+            if (!("key" in event)) return;
+            const key = (event as KeyboardEvent).key;
+            if (key !== "Enter" && key !== " " && key !== "Spacebar") return;
+            event.preventDefault(); // Space 가 레일을 스크롤하지 않게.
+            toggleGroupCollapse(group.slug, header);
           },
         },
       }));
@@ -810,7 +829,14 @@ function appendTabButton(
       // 나중에 append 하므로 둘을 섞으면 라벨이 아이콘 앞으로 온다. <path> 는 텍스트
       // 노드를 안 가지므로 button.textContent 는 라벨 그대로 남는다(G006 라벨 계약).
       children: [makeDatabaseTabIcon(tab.id), tab.label],
-      attrs: { type: "button", title: tab.label, "aria-label": tab.label },
+      // 카운트 배지는 CSS `content: attr(data-count)` 로 그려서 보조기술이 못 읽는다.
+      // aria-label 이 접근명을 독점하므로 숫자를 여기에 합쳐 준다 — 같은 화면의 필터 칩이
+      // 이미 쓰는 `${label} ${count}개` 규약과 맞춘다.
+      attrs: {
+        type: "button",
+        title: tab.label,
+        "aria-label": count !== null && count > 0 ? `${tab.label} ${count}개` : tab.label,
+      },
       dataset: {
         testid: tab.testid,
         tab: tab.id,
@@ -844,8 +870,12 @@ function updateTabButtons(header: HTMLElement): void {
   const activeTestId = tabFor(primaryTab(activeTab)).testid;
   for (const button of Array.from(header.querySelectorAll(".db-tab"))) {
     if (!(button instanceof HTMLElement)) continue;
-    if (button.dataset.testid === activeTestId) button.classList.add("active");
-    else button.classList.remove("active");
+    const isActive = button.dataset.testid === activeTestId;
+    button.classList.toggle("active", isActive);
+    // `.active` 클래스만으로는 보조기술이 어느 탭에 있는지 알 수 없었다(레일 전체에
+    // aria-current/selected/pressed 가 0건이었다). 맵 패널이 쓰는 aria-current 규약을 맞춘다.
+    if (isActive) button.setAttribute("aria-current", "page");
+    else button.removeAttribute("aria-current");
   }
   revealActiveTab(header);
 }

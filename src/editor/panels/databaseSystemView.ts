@@ -902,7 +902,7 @@ function optInSystemFields(project: Project, rerender: SystemRefresh): readonly 
   // 몬스터 돌봄 number fields
   if (system.monsterCare) {
     care.push(
-      numberField("돌봄 걸음/tick", "db-field-system-monster-care-steps", () => store.getCurrent().system.monsterCare?.stepsPerTick ?? 50, (value) => {
+      numberField("돌봄 1회당 걸음 수", "db-field-system-monster-care-steps", () => store.getCurrent().system.monsterCare?.stepsPerTick ?? 50, (value) => {
         updateSystem((draft) => {
           draft.system.monsterCare = normalizeMonsterCare({ ...draft.system.monsterCare, stepsPerTick: value });
         }, "system:monster-care:stepsPerTick");
