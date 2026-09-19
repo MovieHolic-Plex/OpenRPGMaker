@@ -1688,7 +1688,7 @@ SVG(`database-modal-icon`, `tileToolbarIcons` 규격). 푸터 상태는 전폭 �
 세그먼트.
 
 **폼 문법.** `.db-field` = 라벨(좌, `minmax(min(96px, 38%), max-content)`) | 값(우). 라벨은 **말줄임 금지**
-— 어절로 줄바꿈. `modern/enemies.css:144` · `actors.css:971` 의 ellipsis 를 소스에서 걷었다. 좁은 수치
+— 어절로 줄바꿈. `modern/enemies.css` 의 레코드 라벨 · `actors.part-3.css` 의 그래픽 패널 라벨은 ellipsis 를 소스에서 걷었다. 좁은 수치
 격자(`.db-enemy-stat-grid` · `.db-enemy-reward-grid` · `.db-item-grid` · `.db-state-runtime-panel`)만 라벨
 위. 입력 크롬 한 종류(32px · 8px · `--db-studio-border-default` · 포커스 액센트 링). `select` 는 chevron
 밴드 때문에 `padding` 단축을 쓰지 않는다(`databaseSelectChevronGuard`). 스테퍼는 `28px | 1fr | 28px`

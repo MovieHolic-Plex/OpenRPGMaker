@@ -1,0 +1,55 @@
+/* ── A: 부분 적용 청크 트리 ── */
+.region-task-chunk-tree {
+  border: 1px solid var(--editor-line);
+  border-radius: var(--radius-s);
+  font-size: 0.85em;
+  margin: var(--space-1) 0;
+  max-height: 180px;
+  overflow-y: auto;
+  padding: var(--space-1) var(--space-2);
+}
+.region-task-chunk-tree.hidden { display: none; }
+.region-task-chunk-layer-title {
+  color: var(--editor-text-muted);
+  font-size: 0.85em;
+  margin-bottom: var(--space-1);
+}
+.region-task-chunk-layer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: var(--space-1);
+}
+.region-task-chunk-layer-name {
+  color: var(--editor-text-muted);
+  font-size: 0.8em;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.region-task-chunk-label {
+  align-items: center;
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  display: flex;
+  font-size: 0.9em;
+  gap: var(--space-1);
+  padding: 1px var(--space-1);
+}
+.region-task-chunk-label:hover { background: var(--bg-hover); }
+.region-task-chunk-label:focus-within { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.region-task-chunk-cb {
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+/* ── F: 영역 통계 칩 ── */
+.region-task-stats-chip {
+  background: var(--accent-muted);
+  border: 1px solid var(--editor-line);
+  border-radius: var(--radius-s);
+  color: var(--editor-text-muted);
+  font-size: 0.8em;
+  padding: 1px var(--space-2);
+}
+.region-task-stats-chip.hidden { display: none; }

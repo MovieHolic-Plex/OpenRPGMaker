@@ -15,6 +15,7 @@ import { databaseTabGroupLabel, databaseTabLabel, setDatabaseActiveTab } from "@
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { installFakeDom } from "./fakeDom";
+import { readCssFamily } from "./cssFamily";
 
 const root = resolve(__dirname, "..");
 const read = (rel: string): string => readFileSync(resolve(root, rel), "utf8");
@@ -115,7 +116,7 @@ describe("데이터베이스 모달 헤더 — 현재 위치 브레드크럼", (
 });
 
 describe("studio-v2.css — 통합 시트의 불변식", () => {
-  const css = read("src/styles/database/studio-v2.css");
+  const css = readCssFamily("src/styles/database/index.css", "src/styles/database/studio-v2.css");
   const body = stripComments(css);
 
   it("database 진입 시트에서 modern/* 뒤에 읽힌다(다른 표면은 레이어 순서가 가른다)", () => {
