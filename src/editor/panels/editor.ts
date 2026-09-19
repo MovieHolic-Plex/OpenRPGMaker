@@ -6,7 +6,7 @@ import {
   type AssistantTemperature,
 } from "@/editor/assistantTemperature";
 import { collectProjectReferenceIssues } from "@/project/io/references";
-import { editorState } from "@/editor/editorState";
+import { editorState, editorStateChangedOnlyCanvasOverlay } from "@/editor/editorState";
 import { registerAiBootIntentTarget, clearPendingAiBootIntent } from "@/editor/aiBootIntent";
 import { dismissCoachMarks } from "@/editor/coachMarks";
 import { installSelectionChipHint } from "@/editor/selectionChipHint";
@@ -131,6 +131,7 @@ let authoringJourneyReferenceIssues: readonly string[] | null = null;
 let projectExportNode: HTMLElement | null = null;
 let unsubStore: (() => void) | null = null;
 let unsubEditor: (() => void) | null = null;
+let lastEditorPanelState = editorState.get();
 let unsubMapLocks: (() => void) | null = null;
 let mapTreeHeight = initialLayout.mapTreeHeight;
 let mapTreeAuto = initialLayout.mapTreeAuto;
@@ -264,7 +265,13 @@ export function renderEditor(main: HTMLElement): void {
   });
 
   unsubStore = store.subscribe((_project, change) => refreshPanels(change));
-  unsubEditor = editorState.subscribe(() => scheduleFullPanelRefresh());
+  lastEditorPanelState = editorState.get();
+  unsubEditor = editorState.subscribe((state) => {
+    const previous = lastEditorPanelState;
+    lastEditorPanelState = state;
+    if (editorStateChangedOnlyCanvasOverlay(previous, state)) return;
+    scheduleFullPanelRefresh();
+  });
   // 미리보기 토글도 눌린 상태(aria-pressed/색)를 그대로 보여야 한다 — 툴바만 다시 그린다.
   unsubMapBackgroundPreview = subscribeMapBackgroundPreview(() => {
     if (canvasToolbarRoot) renderCanvasToolbar(canvasToolbarRoot);

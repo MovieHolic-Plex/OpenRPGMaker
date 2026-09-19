@@ -82,6 +82,12 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
   (`applyCameraView(preserveLookAt=true)` + 내비 기하 + 배경 레이아웃 + 뷰포트 게시)가
   처리하고, 화면 밖 타일 컬링은 다음 `update()` 가 `worldView` 변화를 보고 스스로 다시 계산한다.
   실측(48×48 / 96×96):  1단계가 723~862ms / 11.4~17.5초 → 41~100ms / 67~110ms.
+- **`renderStateKey` 에 `selection` / `pastePreview` 도 넣지 마라 (2026-09-19).** 우클릭
+  영역 드래그와 Ctrl+V 고스트는 pointermove 마다 그 두 필드만 바꾼다. 키에 넣으면 칸이
+  커질 때마다 맵 타일 전체를 다시 만들고, 좌측 독·로케이션 DOM 까지 따라 재구축된다.
+  선택 사각형은 `syncSelectionOverlay` 전용 레이어, 붙여넣기 고스트는 hover 레이어에서
+  클립보드가 같으면 자식 좌표만 옮긴다. `editorStateChangedOnlyCanvasOverlay` 가 그
+  통지를 패널 재구축에서 걸러 낸다.
 - 비용이 의심되면 먼저 재라: `test/e2e/_large-map-perf.spec.ts` (진단 스펙, 맵 크기별
   줌·페인트·정지 프레임). 수치와 원인은 `reports/2026-09-16-editor-zoom-rebuild-perf.md`.
 - 남은 비용(미해결): 페인트 증분 렌더의 `tileLayer.sort("depth")` 가 자식 전체를 매 스토어
