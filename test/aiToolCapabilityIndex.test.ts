@@ -14,10 +14,11 @@ const CALIBRATED_MIN_BUDGET = 6000;
 // 실측: 파사드 37개를 들이기 전 3,170자 → 들인 후 3,843자(활성 툴 185개)
 // → canonical spatial 여섯 도구 시대 4,701자(활성 툴 220개). 상한은 그 위로 여유를 둔다.
 // → 오프닝 시네마틱 네 툴(get/set/remove_opening·list_opening_media)을 들인 뒤 4,811자(활성 툴 226개).
+// → 게임오버·오디오 탐색 파사드를 등록한 뒤 5,043자(활성 툴 238개).
 // 이 상한이 프롬프트 예산을 잡아먹지는 않는다 — buildSystemPrompt 가 색인 길이만큼 예산을 늘려
 // 기존 섹션 자리를 지키기 때문이다(아래 "does not push ... over its budget" 케이스가 그것을 고정한다).
 // 상한을 올릴 때는 이 주석의 실측 자수를 함께 갱신한다 — 조용한 상향은 금지다.
-const INDEX_CHAR_CEILING = 4900;
+const INDEX_CHAR_CEILING = 5100;
 
 function liveToolNames(): readonly string[] {
   return activeTools().filter((tool) => tool.supersededBy === undefined).map((tool) => tool.name);

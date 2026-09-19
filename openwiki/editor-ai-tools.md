@@ -1628,6 +1628,22 @@ removes only `Project.characters[characterId]` and never deletes the actor or ev
 charset as satisfying the start-party appearance contract; a direct face/charset
 pair is not required when the shared record supplies both.
 
+## Opening, game-over, and audio discovery tools (2026-09-19)
+
+The opening route is live through `get_opening`, `set_opening`, `edit_opening`,
+`list_opening_media`, and `generate_opening_image`. `recommend_bgm` and
+`get_audio_resource` are registered system tools, so the assistant can search
+music by scene or mood and then inspect the full description before assigning a
+`musicResourceId`. The audio tool family was previously implemented but missing
+from the central registry; registration is required for model tool calls.
+
+Game-over now has an AI route as well: `get_game_over` reads `system.gameOver`,
+`set_game_over` writes its title/message/button labels and background resource,
+and `generate_game_over_image` creates a clean 16:9 backdrop. Generation returns
+a resource id; the assistant must connect it with `set_game_over` so the image is
+actually used. Background validation shares the cinematic `still` catalog and
+accepts existing game-over, backdrop, title, picture, and uploaded resources.
+
 Items and event effects already have typed routes. `set_session_start` seeds the
 new-game gold/inventory state, while `upsert_item` and
 `upsert_equipment` author the records; `upsert_event` commands use canonical

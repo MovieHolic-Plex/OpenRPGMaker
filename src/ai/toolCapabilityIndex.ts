@@ -37,6 +37,9 @@ export const TASK_RECIPES = [
   { id: "opening-cinematic", read: ["get_opening", "list_opening_media"], write: ["set_opening", "edit_opening", "generate_opening_image"],
     verify: ["get_opening", "run_lint"],
     policy: "The game-start opening is system.opening, not an event cutscene - New Game plays it before map boot. Read it with get_opening first; set_opening replaces the whole scene list while edit_opening changes one scene, its order or the sequence settings. Pick media ids only from list_opening_media (kind image/movie/sound/music); for full-screen stills prefer group 배경화 or 타이틀 아트 over icons, and generate_opening_image when nothing fits. musicResourceId loops under the whole sequence. If it never plays, enabled is off." },
+  { id: "game-over-screen", read: ["get_game_over", "list_opening_media", "recommend_bgm"], write: ["set_game_over", "generate_game_over_image"],
+    verify: ["get_game_over", "run_lint"],
+    policy: "Game Over is system.gameOver. Read it before editing, generate a clean full-screen backdrop when needed, then connect its resourceId with set_game_over. Use recommend_bgm for mood-matched music and keep text/buttons out of generated art." },
 ] as const;
 
 // 에디터 작업 영역 순서(사람이 읽는 순서 = 안정 정렬 키). 도메인이 없거나 미지의 값이면 CATCH_ALL.
