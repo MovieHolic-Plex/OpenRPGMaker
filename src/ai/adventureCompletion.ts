@@ -23,7 +23,7 @@ export function adventureToolNames(required: AdventureRequirements | undefined):
   // A full RPG starts with its authored identity, not only maps and encounters.
   // Keep these in the preflight set so the first writer round can actually create
   // the protagonist's appearance/loadout and record the world/character canon.
-  return ["get_project_summary", "get_database_records", "read_project_wiki", "find_events", "list_resources", "recommend_bgm", "show_map_region", "upsert_event", "upsert_actor", "upsert_character_profile", "set_world_canon", "upsert_item", "upsert_equipment", "set_session_start",
+  return ["get_project_summary", "get_database_records", "read_project_wiki", "find_events", "list_resources", "generate_image_asset", "recommend_bgm", "show_map_region", "upsert_event", "upsert_actor", "upsert_character_profile", "set_world_canon", "upsert_item", "upsert_equipment", "set_session_start",
     ...(required.world || required.village || required.dungeon ? ["plan_world", "build_world"] : []),
     ...(required.village ? ["author_house"] : []),
     ...(required.dungeon ? ["list_dungeon_room_themes", "run_dungeon_room_pipeline", "create_transfer_pair", "place_chest"] : []),

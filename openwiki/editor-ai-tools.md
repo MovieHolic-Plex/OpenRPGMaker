@@ -1653,3 +1653,15 @@ and `set_shop_stock` author shop interactions; `define_quest`/`verify_quest` con
 items, switches, maps, and rewards. New RPG authoring must read the real item,
 actor, and event ids before writing references, then verify the interaction with a
 walkthrough rather than treating a successful tool call as runtime proof.
+
+## 범용 이미지 에셋 생성 (2026-09-19)
+
+`generate_image_asset`는 특정 화면에 묶이지 않은 이미지 저작 경로다. `kind`는
+`picture`(아이템·소품 아이콘), `title`(타이틀 아트), `backdrop`(맵·전투 배경),
+`monster`(몬스터 스프라이트) 중 하나이며, 이미지 안의 글자·로고·UI·워터마크는
+금지한다. `monster`에는 구체적 외형 `tags`가 필요하며 이름·태그·설명도 몬스터
+메타데이터로 함께 저장한다. 생성 결과는 자동으로 `upsert_resource`에 등록되고 반환된 `resourceId`를
+`upsert_item.iconResourceId`, `upsert_enemy.monsterResourceId`,
+`set_title_screen`, `set_game_over` 또는 해당 이벤트 그래픽 필드에 연결한다.
+오프닝과 게임오버의 전용 생성 툴은 각각의 화면 설정과 연결 검증을 유지하고,
+일반 에셋 생성은 여러 데이터베이스 레코드에서 재사용할 수 있는 리소스를 만든다.

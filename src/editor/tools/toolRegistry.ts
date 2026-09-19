@@ -48,6 +48,7 @@ import { INTERIOR_ROOM_SESSION_TOOLS } from "./interiorRoomSession";
 import { DUNGEON_ROOM_SESSION_TOOLS } from "./dungeonRoomSession";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { CINEMATIC_TOOLS } from "./cinematicTools";
+import { IMAGE_ASSET_TOOLS } from "./imageAssetTools";
 import { AUDIO_DESCRIPTION_TOOLS } from "./audioDescriptionTools";
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { VIEW_FOCUS_TOOLS } from "./viewFocusTools";
@@ -210,6 +211,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(TIME_TOOLS, "system"),
   ...withDomain(MONSTER_SYSTEM_TOOLS, "system"),
   ...withDomain(CINEMATIC_TOOLS, "system"),
+  ...withDomain(IMAGE_ASSET_TOOLS, "system"),
   ...withDomain(AUDIO_DESCRIPTION_TOOLS, "system"),
   ...withDomain(EXPORT_TOOLS, "system"),
   ...withDomain(PLAY_TOOLS, "system"),
