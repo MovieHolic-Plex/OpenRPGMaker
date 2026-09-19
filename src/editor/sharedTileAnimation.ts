@@ -30,7 +30,15 @@ export function createSharedAnimatedTile(
     group = { driver, images };
     groups.set(animation, group);
     driver.on("animationupdate", () => {
-      for (const image of images) image.setTexture(driver.texture.key, driver.frame.name);
+      for (const image of images) {
+        // Large-map culling hides the tile's parent container. Phaser leaves a
+        // child image's own `visible` flag unchanged, so checking only that
+        // flag would still update every off-screen water quarter. Walking the
+        // short parent chain keeps animation work proportional to what can be
+        // seen while preserving the frame for the next reveal.
+        if (!isVisibleInScene(image)) continue;
+        image.setTexture(driver.texture.key, driver.frame.name);
+      }
     });
     driver.play(animation);
   }
@@ -45,4 +53,14 @@ export function createSharedAnimatedTile(
     }
   });
   return image;
+}
+
+function isVisibleInScene(image: Phaser.GameObjects.Image): boolean {
+  if (!image.active || !image.visible) return false;
+  let parent = image.parentContainer;
+  while (parent) {
+    if (!parent.active || !parent.visible) return false;
+    parent = parent.parentContainer;
+  }
+  return true;
 }
