@@ -29,7 +29,8 @@ import { ToolReadEvidence } from "./toolReadEvidence";
 import { ToolVerificationEvidence, parseVerificationChecks, verificationInitialState, type VerificationRequirement, type ApproachPreview } from "./toolVerificationEvidence";
 import { isVerifyNpcRewardInput, npcRewardTargetSnapshot, VERIFY_NPC_REWARD_TOOL, type NpcRewardWitness } from "./npcRewardWitness";
 import { APPEARANCE_GENERATION_TOOL } from "@/editor/tools/characterAppearanceTools";
-import { OPENING_IMAGE_TOOL } from "@/editor/tools/cinematicTools";
+import { GAME_OVER_IMAGE_TOOL, OPENING_IMAGE_TOOL } from "@/editor/tools/cinematicTools";
+import { IMAGE_ASSET_TOOL } from "@/editor/tools/imageAssetTools";
 import type { AppearanceGenerationHandoff } from "@/editor/characterAppearanceGeneration";
 import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
 import { validateArgs } from "@/editor/tools/jsonSchema";
@@ -5043,7 +5044,7 @@ export class AssistantSession {
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
       }
 
-      const startsWriteThisRound = toolCalls.some((call) => getTool(call.function.name)?.mode === "write");
+      const startsWriteThisRound = toolCalls.some((call) => isWriteToolName(call.function.name));
       // 이번 라운드에 렌더된 비전 이미지(있으면 툴 메시지 뒤에 user 메시지로 주입).
       const roundImages: RenderedToolImage[] = [];
       const acceptanceImages: AcceptanceImageReceipt[] = [];
@@ -5068,7 +5069,7 @@ export class AssistantSession {
         if (typeof args.theme === "string" && args.theme.trim()) turnTheme = args.theme.trim();
         this.emitToolStarted(onEvent, name, args);
         await operation.wait(this.yieldForUi(signal));
-        if (tool?.mode === "write" || name === APPEARANCE_GENERATION_TOOL || name === OPENING_IMAGE_TOOL) writeToolAttempts += 1;
+        if (tool?.mode === "write" || name === APPEARANCE_GENERATION_TOOL || name === OPENING_IMAGE_TOOL || name === GAME_OVER_IMAGE_TOOL || name === IMAGE_ASSET_TOOL) writeToolAttempts += 1;
         // 프로토콜 보장: 이 호출에 대한 role:"tool" 응답을 반드시 남긴다. 응답 없이 라운드를 벗어나면
         // 세션의 영구 대화에 짝 없는 tool_calls 가 남아 **그 뒤 모든 턴**이 공급자 400 으로 죽는다
         // (실측 2026-08-30). 예외는 삼키지 않고 응답을 붙인 뒤 그대로 다시 던진다.
@@ -5149,6 +5150,43 @@ export class AssistantSession {
                   ...applied,
                   summary: `오프닝 그림 ${still.resourceId} 를 만들어 등록했습니다. image 장면의 resourceId 로 쓰세요.`,
                   data: { status: "generated", resourceId: still.resourceId, name: still.name },
+                }
+                : applied;
+            }
+          } else if (name === GAME_OVER_IMAGE_TOOL) {
+            const { generateGameOverStill } = await operation.wait(import("@/editor/openingImageGeneration"));
+            const still = await operation.wait(generateGameOverStill(args, { signal }));
+            if (!still.ok) {
+              toolResult = { ok: false, summary: still.summary, issues: [{ severity: "error", code: still.code, message: still.summary }] };
+            } else {
+              const applied = runTool(this.ctx, "upsert_resource", {
+                resource: { id: still.resourceId, name: still.name, kind: "backdrop", dataUrl: still.dataUrl },
+              }, { dryRun: false });
+              toolResult = applied.ok
+                ? {
+                  ...applied,
+                  summary: `게임오버 그림 ${still.resourceId} 를 만들어 등록했습니다. set_game_over의 backgroundResourceId로 연결하세요.`,
+                  data: { status: "generated", resourceId: still.resourceId, name: still.name },
+                }
+                : applied;
+            }
+          } else if (name === IMAGE_ASSET_TOOL) {
+            const { generateImageAsset } = await operation.wait(import("@/editor/imageAssetGeneration"));
+            const asset = await operation.wait(generateImageAsset(args, { signal }));
+            if (!asset.ok) {
+              toolResult = { ok: false, summary: asset.summary, issues: [{ severity: "error", code: asset.code, message: asset.summary }] };
+            } else {
+              const applied = runTool(this.ctx, "upsert_resource", {
+                resource: {
+                  id: asset.resourceId, name: asset.name, kind: asset.kind, dataUrl: asset.dataUrl,
+                  ...(asset.kind === "monster" ? { monsterMetadata: { name: asset.name, tags: asset.tags, description: asset.prompt } } : {}),
+                },
+              }, { dryRun: false });
+              toolResult = applied.ok
+                ? {
+                  ...applied,
+                  summary: `${asset.kind} 그림 ${asset.resourceId} 를 만들어 등록했습니다. ${asset.kind === "monster" ? "get_monster_resource로 상세를 조회한 뒤 enemy.monsterResourceId와 appearanceTags에 연결하세요." : "관련 DB/시스템 레코드에 resourceId를 연결하세요."}`,
+                  data: { status: "generated", kind: asset.kind, resourceId: asset.resourceId, name: asset.name, tags: asset.tags },
                 }
                 : applied;
             }

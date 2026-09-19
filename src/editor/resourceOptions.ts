@@ -119,6 +119,9 @@ export function listDatabaseResourceOptions(
       for (const asset of EASYRPG_BACKDROP_ASSETS) add(asset.id, asset.name);
       for (const asset of SCARLOXY_BACKDROP_ASSETS) add(asset.id, asset.name);
       for (const asset of EASYRPG_TITLE_ASSETS) add(asset.id, asset.name);
+      for (const profile of project.resourceProfiles) {
+        if (profile.kind === "gameOver" && profile.assetId) add(profile.assetId, profile.name || profile.assetId);
+      }
       break;
     case "battle":
       for (const asset of EASYRPG_BATTLE_ASSETS) add(asset.id, asset.name);
@@ -222,7 +225,7 @@ export function uploadedMatchesKind(
 ): boolean {
   if (!uploadedKind) return matchesGeneratedKind(kind, undefined, id);
   if (kind === "still") {
-    return uploadedKind === "picture" || uploadedKind === "backdrop" || uploadedKind === "title";
+    return uploadedKind === "picture" || uploadedKind === "backdrop" || uploadedKind === "title" || uploadedKind === "gameOver";
   }
   if (kind === "movie") return uploadedKind === "movie";
   if (kind === "picture") return uploadedKind === "picture";

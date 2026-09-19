@@ -262,5 +262,37 @@ describe("opening cinematic AI tools", () => {
     const read = getTool("get_opening");
     expect(read?.mode).toBe("read");
     expect(getTool("list_opening_media")?.mode).toBe("read");
+    expect(getTool("recommend_bgm")?.mode).toBe("read");
+    expect(getTool("get_audio_resource")?.mode).toBe("read");
+    expect(getTool("set_game_over")?.domains).toEqual(["system"]);
+  });
+
+  it("authors and reads a game-over background without touching the opening", () => {
+    const ctx = context();
+    const result = runTool(ctx, "set_game_over", {
+      title: "패배",
+      message: "어둠이 성을 삼켰다.",
+      retryLabel: "다시 도전",
+      backgroundResourceId: "easyrpg-backdrop-cosmos1",
+    });
+    expect(result.ok, failure(result)).toBe(true);
+    expect(ctx.project.system.opening).toBeUndefined();
+    expect(ctx.project.system.gameOver).toMatchObject({
+      title: "패배",
+      message: "어둠이 성을 삼켰다.",
+      retryLabel: "다시 도전",
+      backgroundResourceId: "easyrpg-backdrop-cosmos1",
+    });
+    const read = runTool(ctx, "get_game_over", {});
+    expect(read.ok, failure(read)).toBe(true);
+    expect(read.data).toMatchObject({ gameOver: { backgroundResourceId: "easyrpg-backdrop-cosmos1" } });
+  });
+
+  it("prepares a game-over image generation handoff", () => {
+    const ctx = context();
+    const result = runTool(ctx, "generate_game_over_image", { prompt: "비가 내리는 폐허의 왕좌" });
+    expect(result.ok, failure(result)).toBe(true);
+    expect((result.data as { status?: string } | undefined)?.status).toBe("ui-required");
+    expect(getTool("generate_game_over_image")?.name).toBe("generate_game_over_image");
   });
 });

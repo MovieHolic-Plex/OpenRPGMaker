@@ -1589,3 +1589,79 @@ Tests: `test/npcMovementInference.test.ts` (8건).
 `npc-movement` 시나리오 하네스 실행과 probe 직접 실행은 같은 `verify-shots/runtime-qa/npc-movement/`를
 쓰면 서로 덮어쓴다(실측). probe는 `QA_OUT_DIR=verify-shots/runtime-qa/npc-movement-probe`로 분리 실행한다.
 하네스 쪽은 플레이어 고정 + NPC 배치 차이 샷 2장, probe 쪽은 스프라이트 좌표 직접 판정(results.json) + before/after PNG.
+
+## Full RPG first-turn foundation (2026-09-19)
+
+A request such as “중세 게임 RPG를 만들어줘” is a cross-domain authoring request.
+The intent declaration now opens the world, database, system, map and event domains
+even when the model's short `tools` list omits one of them. The adventure preflight
+catalog includes `read_project_wiki`, `set_world_canon`, `upsert_character_profile`,
+`upsert_actor`, `list_resources`, `upsert_equipment`, and `set_project_settings`.
+The expected order is world canon → named character profiles → protagonist actor
+appearance/loadout → database → maps/events → playable verification. `upsert_actor`
+must set real `faceResourceId`, `characterResourceId`/`characterIndex`, battle graphic,
+and `initialEquipment`; creating a weapon record alone does not equip it.
+
+`set_world_canon` stores the concise world backbone (premise, era, tone, technology
+ceiling, absences, and power/gods/death/money laws) as a partial merge in
+`Project.worldCanon`. Full adventure declarations may opt into `world`, `characters`,
+and `appearance`; the completion report then calls out missing lore, profiles, or
+starting-party appearance instead of silently accepting map-only output.
+
+## Party, actor appearance, and event-linked inventory tools (2026-09-19)
+
+`set_party({scope:"start",actorIds})` is the narrow party facade. It validates every
+actor id, rejects duplicates, writes both the authoritative `system.startActorIds`
+and the current session party, and permits an explicit empty list. `scope:"session"`
+only changes `session.partyActorIds`; it does not rewrite a future New Game. The
+older `set_project_settings({startActorIds})` and `set_session_start({partyActorIds})`
+remain compatible routes for combined settings/test setup. Runtime join/leave still
+uses an event `changeParty` command; `add_companion` is only a visual follower.
+
+`upsert_actor` now exposes the actor's shared `appearanceId` and charset
+`characterIndex` (0–7) in addition to face, charset, and battle resource ids. A
+shared appearance id must exist in the character appearance catalog or the write is
+rejected; normalization preserves the selected slot. `delete_character_profile`
+removes only `Project.characters[characterId]` and never deletes the actor or event.
+
+`adventureCompletionProblems` treats a referenced shared appearance's face and
+charset as satisfying the start-party appearance contract; a direct face/charset
+pair is not required when the shared record supplies both.
+
+## Opening, game-over, and audio discovery tools (2026-09-19)
+
+The opening route is live through `get_opening`, `set_opening`, `edit_opening`,
+`list_opening_media`, and `generate_opening_image`. `recommend_bgm` and
+`get_audio_resource` are registered system tools, so the assistant can search
+music by scene or mood and then inspect the full description before assigning a
+`musicResourceId`. The audio tool family was previously implemented but missing
+from the central registry; registration is required for model tool calls.
+
+Game-over now has an AI route as well: `get_game_over` reads `system.gameOver`,
+`set_game_over` writes its title/message/button labels and background resource,
+and `generate_game_over_image` creates a clean 16:9 backdrop. Generation returns
+a resource id; the assistant must connect it with `set_game_over` so the image is
+actually used. Background validation shares the cinematic `still` catalog and
+accepts existing game-over, backdrop, title, picture, and uploaded resources.
+
+Items and event effects already have typed routes. `set_session_start` seeds the
+new-game gold/inventory state, while `upsert_item` and
+`upsert_equipment` author the records; `upsert_event` commands use canonical
+`changeItem`/`changeGold`/`changeParty`/`setSwitch`/`choices` branches; `place_chest`
+and `place_storage_chest` package one-time loot and inventory changes; `make_villager`
+and `set_shop_stock` author shop interactions; `define_quest`/`verify_quest` connect
+items, switches, maps, and rewards. New RPG authoring must read the real item,
+actor, and event ids before writing references, then verify the interaction with a
+walkthrough rather than treating a successful tool call as runtime proof.
+
+## 범용 이미지 에셋 생성 (2026-09-19)
+
+`generate_image_asset`는 특정 화면에 묶이지 않은 이미지 저작 경로다. `kind`는
+`picture`(아이템·소품 아이콘), `title`(타이틀 아트), `backdrop`(맵·전투 배경),
+`monster`(몬스터 스프라이트) 중 하나이며, 이미지 안의 글자·로고·UI·워터마크는
+금지한다. `monster`에는 구체적 외형 `tags`가 필요하며 이름·태그·설명도 몬스터
+메타데이터로 함께 저장한다. 생성 결과는 자동으로 `upsert_resource`에 등록되고 반환된 `resourceId`를
+`upsert_item.iconResourceId`, `upsert_enemy.monsterResourceId`,
+`set_title_screen`, `set_game_over` 또는 해당 이벤트 그래픽 필드에 연결한다.
+오프닝과 게임오버의 전용 생성 툴은 각각의 화면 설정과 연결 검증을 유지하고,
+일반 에셋 생성은 여러 데이터베이스 레코드에서 재사용할 수 있는 리소스를 만든다.

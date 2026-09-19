@@ -48,6 +48,8 @@ import { INTERIOR_ROOM_SESSION_TOOLS } from "./interiorRoomSession";
 import { DUNGEON_ROOM_SESSION_TOOLS } from "./dungeonRoomSession";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { CINEMATIC_TOOLS } from "./cinematicTools";
+import { IMAGE_ASSET_TOOLS } from "./imageAssetTools";
+import { AUDIO_DESCRIPTION_TOOLS } from "./audioDescriptionTools";
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { VIEW_FOCUS_TOOLS } from "./viewFocusTools";
 import { CHARACTER_APPEARANCE_TOOLS } from "./characterAppearanceTools";
@@ -68,6 +70,7 @@ import { RESOURCE_TOOLS } from "./resourceTools";
 import { MONSTER_RESOURCE_TOOLS } from "./monsterResourceTools";
 import { withMonsterAppearanceEnvelope } from "./monsterAppearanceTools";
 import { WORLD_STRUCTURE_TOOLS } from "./worldStructureTools";
+import { WORLD_CANON_TOOLS } from "./worldCanonTools";
 import { SPATIAL_TOOLS } from "./spatialTools";
 
 export { PLACEMENT_TOOLS };
@@ -157,6 +160,7 @@ function withDomain(tools: readonly ToolDefinition[], domain: ToolDomain): reado
 export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   FIND_TOOLS,
   ...PROJECT_WIKI_TOOLS,
+  ...WORLD_CANON_TOOLS,
   ...PROJECT_TOOLS,
   ...withDomain(VOCABULARY_TOOLS_V3, "tile"),
   AUTHOR_HOUSE_TOOL,
@@ -207,6 +211,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(TIME_TOOLS, "system"),
   ...withDomain(MONSTER_SYSTEM_TOOLS, "system"),
   ...withDomain(CINEMATIC_TOOLS, "system"),
+  ...withDomain(IMAGE_ASSET_TOOLS, "system"),
+  ...withDomain(AUDIO_DESCRIPTION_TOOLS, "system"),
   ...withDomain(EXPORT_TOOLS, "system"),
   ...withDomain(PLAY_TOOLS, "system"),
   ...withDomain(QUERY_TOOLS, "map"),

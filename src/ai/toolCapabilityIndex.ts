@@ -11,6 +11,9 @@ const RULE_HEADING = "### 색인 사용 규칙(반드시 준수)";
 
 /** Concrete read -> write -> verify recipes; names are checked against active tools. */
 export const TASK_RECIPES = [
+  { id: "rpg-foundation", read: ["get_project_summary", "read_project_wiki", "get_database_records", "list_resources"],
+    write: ["set_world_canon", "upsert_character_profile", "upsert_actor", "upsert_equipment", "set_party", "set_session_start"], verify: ["read_project_wiki", "get_database_records", "run_lint"],
+    policy: "For a new RPG, establish world canon and named character profiles before map/event decoration. Query real face/charset/battle/icon resources, then update the actor's appearanceId, faceResourceId, characterResourceId/characterIndex, battleCharacterResourceId and initialEquipment; use set_party for the start party and set_session_start for starting gold/items. Creating an equipment record without equipping it does not change the protagonist." },
   { id: "npc-event", read: ["get_map_region", "find_events", "get_event", "get_database_records", "list_npc_graphics"],
     write: ["place_npc", "upsert_event"], verify: ["get_event", "explain_event", "run_lint", "play_walkthrough"],
     policy: "Merge into complete original pages/commands; preserve stable event/page IDs and unrelated branches. Use place_npc for NPC placement, upsert_event for custom logic. Exercise state and choice branches, not merely tool success." },
@@ -34,6 +37,12 @@ export const TASK_RECIPES = [
   { id: "opening-cinematic", read: ["get_opening", "list_opening_media"], write: ["set_opening", "edit_opening", "generate_opening_image"],
     verify: ["get_opening", "run_lint"],
     policy: "The game-start opening is system.opening, not an event cutscene - New Game plays it before map boot. Read it with get_opening first; set_opening replaces the whole scene list while edit_opening changes one scene, its order or the sequence settings. Pick media ids only from list_opening_media (kind image/movie/sound/music); for full-screen stills prefer group 배경화 or 타이틀 아트 over icons, and generate_opening_image when nothing fits. musicResourceId loops under the whole sequence. If it never plays, enabled is off." },
+  { id: "game-over-screen", read: ["get_game_over", "list_opening_media", "recommend_bgm"], write: ["set_game_over", "generate_game_over_image"],
+    verify: ["get_game_over", "run_lint"],
+    policy: "Game Over is system.gameOver. Read it before editing, generate a clean full-screen backdrop when needed, then connect its resourceId with set_game_over. Use recommend_bgm for mood-matched music and keep text/buttons out of generated art." },
+  { id: "image-assets", read: ["list_resources", "get_monster_resource"], write: ["generate_image_asset", "upsert_item", "upsert_enemy", "set_title_screen", "set_game_over"],
+    verify: ["get_database_records", "run_lint"],
+    policy: "Use generate_image_asset for picture item/prop icons, title art, map or battle backdrops, and monster sprites. Register the returned resourceId, then connect it through upsert_item.iconResourceId, upsert_enemy.monsterResourceId, set_title_screen, set_game_over, or the relevant event graphic field. Keep generated images free of text, logos, UI and watermarks." },
 ] as const;
 
 // 에디터 작업 영역 순서(사람이 읽는 순서 = 안정 정렬 키). 도메인이 없거나 미지의 값이면 CATCH_ALL.
