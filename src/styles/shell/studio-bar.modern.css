@@ -247,7 +247,42 @@
 }
 
 .studio-bar .topbar-save-status {
+  box-sizing: border-box;
+  flex: 0 1 200px;
+  max-width: 200px;
+  min-width: 0;
   margin-left: 2px;
+  overflow: visible;
+}
+
+.studio-bar .topbar-save-status .db-connection-status-group {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1 1 auto;
+  max-width: 100%;
+  min-width: 0;
+  overflow: visible;
+}
+
+.studio-bar .topbar-save-status .db-connection-status {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.studio-bar .topbar-save-status .db-autosave-retry-button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.studio-bar .topbar-ai-studio-icon {
+  display: none;
+}
+
+.studio-bar .topbar-ai-studio-label {
+  display: inline;
 }
 
 /* ── 5. 명령 팔레트(가운데) ───────────────────────────────────────────────────────────── */
@@ -263,6 +298,33 @@
   max-width: 100%;
   min-width: 0;
   padding: 0 8px 0 10px;
+}
+
+/* 저장 상태 폭은 1500px 이하에서 먼저 줄인다. */
+@media (max-width: 1500px) {
+  .studio-bar .topbar-save-status {
+    flex-basis: 165px;
+    max-width: 165px;
+  }
+}
+
+/* 1599px까지 명령 칩은 아이콘으로 유지한다. 1501px 경계에서 키캡만 남기면
+   표준 모드에서 키캡이 버튼 밖으로 흘러 실행 묶음과 겹친다. 1600px부터
+   아이콘·라벨·키캡을 함께 보여 줄 수 있는 폭이 생긴다. */
+@media (max-width: 1599px) {
+  .studio-bar .studio-command-center {
+    flex: 0 0 32px;
+    justify-content: center;
+    min-width: 32px;
+    padding-left: 0;
+    padding-right: 0;
+    width: 32px;
+  }
+
+  .studio-command-center .workspace-command-chip-label,
+  .studio-command-center .workspace-command-chip-key {
+    display: none;
+  }
 }
 
 .studio-bar .studio-command-center:hover,
@@ -636,7 +698,77 @@ body.editor-ui-expert .studio-bar .editor-topbar-trailing {
   gap: 4px;
 }
 
-/* ── 12. 좁은 뷰포트(1024~1279) — 폭은 줄이고 클릭 경로는 남긴다 ───────────────────────── */
+/* ── 12. 좁은 뷰포트(1024~1439) — 폭은 줄이고 클릭 경로는 남긴다 ───────────────────────── */
+@media (max-width: 1439px) {
+  /* 명령 아이콘의 32px을 먼저 확보하고, 왼쪽 저장 상태가 남은 폭 안에서 줄어든다. */
+  .oprn-menu-bar.studio-bar {
+    column-gap: 4px;
+    grid-template-columns: minmax(0, 1fr) 32px minmax(0, max-content);
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .studio-bar-center {
+    display: flex;
+    width: 32px;
+  }
+
+  .studio-bar-lead {
+    /* justify-self:start의 내용 폭이 그리드를 넘으면 찾기를 명령 아이콘이 덮는다.
+       컨트롤을 자르지 않고 flex 항목(저장 상태)을 실제 그리드 폭 안에서 줄인다. */
+    width: 100%;
+  }
+
+  .studio-run-group .topbar-test-play-label {
+    display: none;
+  }
+
+  .studio-run-group .topbar-test-play {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+    width: 32px;
+  }
+
+  .studio-bar .topbar-ai-studio {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+    width: 32px;
+  }
+
+  .studio-bar .topbar-ai-studio-label {
+    display: none;
+  }
+
+  .studio-bar .topbar-ai-studio-icon {
+    display: inline-flex;
+    font-size: 15px;
+    line-height: 1;
+  }
+
+  .studio-bar .workspace-panels-label {
+    display: none;
+  }
+
+  .studio-bar .workspace-panels-button {
+    gap: 0;
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+    width: 32px;
+  }
+
+  .studio-bar .workspace-panels-button .oprn-menu-item-chevron {
+    display: none;
+  }
+
+  body.editor-ui-expert .studio-bar .workspace-panels-button {
+    padding: 0;
+  }
+
+}
+
 @media (max-width: 1279px) {
   .studio-bar .editor-product-brand-text {
     display: none;
@@ -650,18 +782,6 @@ body.editor-ui-expert .studio-bar .editor-topbar-trailing {
     max-width: 140px;
   }
 
-  .studio-bar .studio-command-center {
-    flex: 0 0 32px;
-    justify-content: center;
-    min-width: 32px;
-    padding: 0;
-    width: 32px;
-  }
-
-  .studio-command-center .workspace-command-chip-label,
-  .studio-command-center .workspace-command-chip-key {
-    display: none;
-  }
 }
 
 @media (max-width: 1119px) {
@@ -671,12 +791,18 @@ body.editor-ui-expert .studio-bar .editor-topbar-trailing {
   }
 
   .studio-tool-button {
+    flex: 0 0 32px;
     justify-content: center;
     padding: 0;
     width: 32px;
   }
 
   .studio-bar .workspace-panels-button {
-    padding: 0 6px;
+    padding: 0;
+  }
+
+  .studio-bar .topbar-save-status {
+    flex-basis: 145px;
+    max-width: 145px;
   }
 }

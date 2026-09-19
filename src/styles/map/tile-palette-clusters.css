@@ -22,14 +22,18 @@
 .db-connection-status-group {
   align-items: center;
   display: inline-flex;
-  flex: 0 0 auto;
+  flex: 0 1 auto;
   gap: 4px;
   margin-left: auto;
-  max-width: min(330px, 42vw);
+  max-width: min(330px, 42vw, 100%);
+  min-width: 0;
 }
 
 .db-connection-status-group .editor-statusbar-cell.db-connection-status {
+  flex: 1 1 auto;
   margin-left: 0;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .db-connection-label,
@@ -74,7 +78,9 @@
   border-radius: 3px;
   color: var(--on-accent);
   cursor: pointer;
+  flex: 0 0 auto;
   font-size: 10px;
   line-height: 16px;
   padding: 0 6px;
+  white-space: nowrap;
 }
