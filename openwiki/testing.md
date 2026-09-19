@@ -48,6 +48,14 @@
 `.omo/gates-vitest-report.json` 에서 **오래 걸린 파일 상위**를 뽑아 `/usr/bin/time -v` 로 단독 실행해
 피크 RSS 를 재는 쪽이 빠르다(이번에도 그렇게 찾았다).
 
+## parity 스위트 CI OOM (2026-09-19)
+
+`ci-fast` parity 단계가 4코어/6GiB 슬라이스에서 `Killed` exit 137 로 죽었다(PR #989, `35406626024`).
+`cgroupBudget` 은 워커 3개 × 힙 3584MB 를 허용하는데, 이론 천장(10.5GB)은 usable(4.5GB)의 2배를 넘는다 —
+`OVERCOMMIT_FACTOR=2` 의 허용 한계(9GB)를 초과한다. `mapEventSceneParity` 같은 무거운 파일이 한 워커에
+몰리면 힙 바닥(3584MB)을 넘겨 cgroup 이 프로세스를 죽인다. 대응: `test:parity` 에 `--maxWorkers=2
+--minWorkers=1` 고정 (`test:quarantine`·게이트 browser 스테이지와 같은 패턴). 로컬(상한 없음)에는 영향 없다.
+
 ## 게이트 반복은 `--changed` 로 좁힌다 (2026-09-13)
 
 **워크트리·세션 에이전트는 `npm run gates` / vitest 를 스스로 돌리지 말라.** 게이트는 감독자가 돌린다.
