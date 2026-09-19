@@ -17,7 +17,15 @@ export async function initializeTeamAccess(): Promise<void> {
 export function startTeamSession(): void {
   const bridge = window.oprn?.team;
   if (!bridge) return;
-  let seen = -1, running = false;
+  // `initializeTeamAccess()` already fetched the revision immediately before the
+  // project boot. Starting at -1 makes the first poll call refreshFromHost(),
+  // which downloads and deserializes the same multi-megabyte project a second
+  // time before the editor has even painted its first frame.
+  //
+  // Keep the earlier revision as the baseline so a write that lands during boot
+  // is still detected: the next status response will differ and trigger the
+  // normal clean-editor refresh path.
+  let seen = latest?.revision ?? -1, running = false;
   const bar = document.createElement('aside');
   bar.setAttribute('aria-label', '팀 연결 상태');
   Object.assign(bar.style, { position: 'fixed', bottom: '14px', left: 'min(340px, 24vw)', maxWidth: 'calc(100vw - 360px)', zIndex: '90', display: 'flex', alignItems: 'center', gap: '10px', background: '#fffdf8', color: '#625b4e', border: '1px solid #ddd4c4', borderRadius: '10px', boxShadow: '0 3px 12px #3027190d', padding: '9px 12px', fontSize: '11px' });

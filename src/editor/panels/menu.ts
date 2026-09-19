@@ -20,7 +20,7 @@ import {
   requestAiStudioToggle,
 } from "@/editor/aiStudioMode";
 import { openHelpModal } from "@/editor/panels/helpModal";
-import { openDatabaseModal } from "@/editor/panels/databaseModal";
+import { openDatabaseModalLazy } from "@/editor/panels/databaseModalLazy";
 import { renderDbConnectionStatus } from "@/editor/panels/dbConnectionStatus";
 import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
@@ -140,7 +140,7 @@ export function renderTopbar(topbar: HTMLElement): void {
     ...(chrome.paletteRail
       ? [renderMenu("tools", "도구", menuCommands("tools", topbar), { chevron: true })]
       : [
-          toolButton({ testId: "toolbar-database", icon: "database", label: headerLabel("databaseShort"), title: headerLabel("database"), onClick: () => openDatabaseModal() }),
+          toolButton({ testId: "toolbar-database", icon: "database", label: headerLabel("databaseShort"), title: headerLabel("database"), onClick: () => openDatabaseModalLazy() }),
           toolButton({ testId: "toolbar-resource-manager", icon: "image", label: headerLabel("resources"), title: headerLabel("resourceLibrary"), onClick: () => openResourceModal() }),
           toolButton({ testId: "toolbar-world", icon: "globe", title: headerLabel("world"), onClick: () => openWorldPanel() }),
           toolButton({ testId: "toolbar-sound-test", icon: "music", title: headerLabel("audio"), onClick: () => openAudioTestDialog() }),
@@ -712,7 +712,7 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
       const chrome = getEditorChrome();
       const beginnerOnly: MenuCommand[] = chrome.paletteRail
         ? [
-            item(`${headerLabel("database")}...`, "menu-tools-database", () => openDatabaseModal(), "database"),
+            item(`${headerLabel("database")}...`, "menu-tools-database", () => openDatabaseModalLazy(), "database"),
             { kind: "separator" },
           ]
         : [];

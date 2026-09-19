@@ -4,6 +4,11 @@
   않는다. `electron/main/dispatch.ts`의 `project.load`도 저장된 wire 문자열을 그대로 보내고
   revision/sha는 메타데이터 조회로 채운다 — 메인 프로세스에서 같은 문서를 먼저 복원하지 않는다.
   미디어 분리 계약 자체는 유지하되, 이 경로에 새 전체 프로젝트 스캔을 추가하지 않는다.
+- **호스트 정적 자원·브리지 전송:** `electron/serve/runtime.ts`는 해시가 붙은 `assets/` 파일에
+  immutable 캐시를 주고, 1KiB 이상 JSON/JavaScript/CSS/SVG와 프로젝트 브리지 응답은
+  `electron/serve/httpBody.ts`의 gzip 경로를 탄다. 브라우저가 매번 다시 받아야 하는 HTML과
+  세션별 브리지 의미는 no-store로 유지한다. 프로젝트 JSON을 다시 직렬화하거나 캐시 헤더를
+  무효화하는 코드를 호스트 경로에 추가하지 않는다.
 - **좌표 목적지 이동의 실패 계약 (OPRN-OUT-013, 2026-09-10):** `playPathfindMove` 는
   이제 `Promise<MovementResult>` 를 돌려준다(도착 + 실패 6종, 정수 코드가 계약이다).
   변수 좌표는 `session.variables[id]` **원시 조회**로 읽어야 한다 — `getVariable` 의 `?? 0`
