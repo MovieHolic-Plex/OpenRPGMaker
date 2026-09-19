@@ -9,7 +9,7 @@ test("probe: dblclick witness opens event editor", async ({ page }) => {
   await seedProjectFromSupabaseCanonical(page, createModernNocturneProject(), "/?e2eVitals=1");
   await expect(page.getByText("해오름구 · 자정", { exact: true }).first()).toBeVisible();
   await page.waitForFunction(() => typeof (window as unknown as { __oprnEditCamera?: unknown }).__oprnEditCamera === "function", undefined, { timeout: 20_000 });
-  await page.getByTestId("layer-lower").click();
+  await page.getByTestId("layer-event").click();
   await page.waitForTimeout(500);
 
   const diag = await page.evaluate(() => {

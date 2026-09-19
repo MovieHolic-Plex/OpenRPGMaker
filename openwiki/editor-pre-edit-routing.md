@@ -594,10 +594,15 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
 | 맵·이벤트 찾기 | `mapEventSearch` / `mapEventSearchShort` | 맵·이벤트 찾기 / 찾기 | 동일 |
 | 테스트 실행 | `testPlay` / `testPlayShort` | 테스트 실행 / 테스트 | 동일 |
 | 랜덤 전투 테스트 | `battleTest` / `battleTestShort` | 랜덤 전투 테스트 / 전투 | 동일 |
-| 레이어 | `layerLower` / `layerUpper` / `layerEvent` | 바닥 / 덧그림 / 이벤트 | 동일 |
+| 레이어 | `layerLower` / `layerUpper` / `layerEvent` | 바닥 / 상위 / 이벤트 | 동일 |
+
+**2026-09-19 레이어 이름:** 세 단추는 **바닥 / 상위 / 이벤트**. 예전 화면 이름 「덧그림」은 폐기.
+바닥·상위 레이어에서는 이벤트 마커를 눌러도 선택·편집기가 열리지 않는다 — 타일 작업 중
+같은 칸의 클릭이 이벤트로 가로채이던 결함(pointerdown 과 페인트가 clickCount 를 두 번 세던
+경로 포함). 이벤트 편집은 이벤트 레이어에서만 한다.
 
 **코드에 남으면 안 되는 폐기 문자열:** `자료 보관함`, `시연 실행`(및 `전체 프로젝트 시연 실행`,
-`현재 프로젝트 시연 실행`), `음악/효과음`, `맵/이벤트 찾기`, 레이어 의미의 `하위`/`상위`,
+`현재 프로젝트 시연 실행`), `음악/효과음`, `맵/이벤트 찾기`, 레이어 의미의 `하위`/`덧그림`,
 `databaseShort` 의 `자료` 단독형, 이 검색 표면 명칭으로서의 `검색`.
 계약 테스트 `test/editorHeaderTerminology.test.ts` 가 expert 모드 `renderTopbar` 를 실제로 렌더해
 톱바 DOM 전체의 텍스트·title·aria-label(도구·게임 팝업 포함)에서 이들을 잡는다.

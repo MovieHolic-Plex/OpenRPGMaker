@@ -54,9 +54,7 @@ import { retainEventLayerClickFeedback } from "@/editor/transientEditorChrome";
 import { EVENT_EDITOR_CLOSED_WINDOW_EVENT } from "@/editor/eventEditorLifecycleEvents";
 import {
   buildEventMarkerTooltipModel,
-  eventLayerSwitchNotice,
   renderEventMarkerTooltipElement,
-  shouldOfferEventLayerSwitch,
 } from "@/editor/eventMarkerUx";
 import {
   computeEventMarkerTooltipPlacement,
@@ -755,7 +753,6 @@ export class EditScene extends PhaserRuntime.Scene {
         this.startPan(ptr);
         return;
       }
-      if (this.tryOfferEventLayerSwitchFromPointer(ptr)) return;
       this.clearPendingEventCoordinateForPointerContext(ptr);
       if (this.beginDragOperation(ptr)) return;
       // 페인트 시작 전 호버(raw 팔레트 타일)를 지운다 — 성형된 결과와 겹쳐 깜빡이는 UX 방지.
@@ -1559,29 +1556,12 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private offerEventLayerSwitchAt(mapId: MapId, x: number, y: number, layer: string, clickCount: number): boolean {
-    const map = store.getCurrent().maps[mapId];
-    const existing = map ? findEventCoveringPoint(editorWorkingEvents(map.events), x, y) : undefined;
-    if (!shouldOfferEventLayerSwitch({ activeLayer: layer as "lower" | "upper" | "event", clickCount, hasEvent: Boolean(existing) })) {
-      return false;
-    }
-    if (!existing) return false;
-    // 더블클릭은 "이걸 편집하고 싶다"가 명확하다(D13) — 확인 모달 없이 즉시 전환하고 편집기를 연다.
-    this.isPainting = false;
-    this.lastPaintKey = "";
-    editorState.set({ layer: "event", tool: "event", selectedEventId: existing.id, selectedEventPageId: null });
-    toast(eventLayerSwitchNotice(existing), "info");
-    openEventEditorModal(mapId, existing.id);
-    return true;
-  }
-
-  private tryOfferEventLayerSwitchFromPointer(ptr: Phaser.Input.Pointer): boolean {
-    const mapId = this.mapId();
-    if (!mapId) return false;
-    const layer = editorState.get().layer;
-    if (layer === "event") return false;
-    if (!canEditMap(mapId)) return false;
-    const { x, y } = this.pointerToTile(ptr);
-    return this.offerEventLayerSwitchAt(mapId, x, y, layer, this.pointerClickCount(ptr));
+    void mapId;
+    void x;
+    void y;
+    void layer;
+    void clickCount;
+    return false;
   }
 
   private openExistingEventAt(mapId: MapId, x: number, y: number): boolean {

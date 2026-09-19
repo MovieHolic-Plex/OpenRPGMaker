@@ -6919,7 +6919,7 @@
  },
  "changeTile": {
   "reactions": {
-   "change-tile-layer-select": "검증텍스트 변경 1개 [change-tile-preview: \"(맵 선택) · 바닥 (#, #) → 기본 바닥맵 위 그 칸의 타일을 바\"→\"(맵 선택) · 덧그림 (#, #) → 기본 바닥맵 위 그 칸의 타일을 \"]",
+   "change-tile-layer-select": "검증텍스트 변경 1개 [change-tile-preview: \"(맵 선택) · 바닥 (#, #) → 기본 바닥맵 위 그 칸의 타일을 바\"→\"(맵 선택) · 상위 (#, #) → 기본 바닥맵 위 그 칸의 타일을 \"]",
    "change-tile-map-select": "검증텍스트 변경 1개 [change-tile-preview: \"(맵 선택) · 바닥 (#, #) → 기본 바닥맵 위 그 칸의 타일을 바\"→\"빈 맵 · 바닥 (#, #) → 기본 바닥맵 위 그 칸의 타일을 바로 바\"]",
    "change-tile-tile-input": "검증텍스트 변경 1개 [change-tile-preview: \"(맵 선택) · 바닥 (#, #) → 기본 바닥맵 위 그 칸의 타일을 바\"→\"(맵 선택) · 바닥 (#, #) → 그림 #맵 위 그 칸의 타일을 바로\"] | 클래스 소실 1개 [is-active]",
    "change-tile-x-input": "no-change",
@@ -7009,7 +7009,7 @@
     "+",
     "−",
     "기본 바닥",
-    "덧그림",
+    "상위",
     "바닥",
     "비우기",
     "빈 바닥"
@@ -7044,7 +7044,7 @@
     "event-command-edit-summary": "div"
    },
    "texts": {
-    "change-tile-intent": "지형 변경맵 한 칸의 바닥이나 덧그림을 바꿉니다. 비우기를 누르면 그 칸을 지웁니다.",
+    "change-tile-intent": "지형 변경맵 한 칸의 바닥이나 상위 타일을 바꿉니다. 비우기를 누르면 그 칸을 지웁니다.",
     "change-tile-map-preview": "",
     "change-tile-preview": "(맵 선택) · 바닥 (#, #) → 기본 바닥맵 위 그 칸의 타일을 바로 바꿉니다.",
     "event-command-edit-summary": "지형 변경"

@@ -291,7 +291,7 @@ export function seasonLabel(season: string): string {
 
 export const LAYER_OPTIONS = [
   { value: "lower", label: "바닥" },
-  { value: "upper", label: "덧그림" },
+  { value: "upper", label: "상위" },
 ] as const satisfies readonly SelectOption<Extract<Command, { kind: "changeTile" }>["layer"]>[];
 
 export function optionValue<T extends string>(

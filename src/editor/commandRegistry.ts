@@ -98,7 +98,7 @@ export function listEditorCommands(): readonly EditorCommand[] {
     })),
     // keywords 에 구 용어(하위/상위)를 남긴다 — 예전 용어로 검색하는 사용자를 위해.
     { id: "layer-lower", label: "레이어: 바닥", category: "레이어", keywords: ["lower", "타일", "바닥", "하위"], hotkey: "F5", run: () => applyLayer("lower") },
-    { id: "layer-upper", label: "레이어: 덧그림", category: "레이어", keywords: ["upper", "오브젝트", "덧그림", "장식", "상위"], hotkey: "F6", run: () => applyLayer("upper") },
+    { id: "layer-upper", label: "레이어: 상위", category: "레이어", keywords: ["upper", "오브젝트", "덧그림", "장식", "상위"], hotkey: "F6", run: () => applyLayer("upper") },
     { id: "layer-event", label: "레이어: 이벤트", category: "레이어", keywords: ["event", "이벤트"], hotkey: "F7", run: () => applyLayer("event") },
     // 도크 프리셋 명령(「화면: 프리셋 — 맵 중심/이벤트 중심/데이터 중심」)은 2026-09-03 에 걷었다.
     // 톱바 작업 칩과 함께 사라진 개념이고, 패널 표시는 아래 「패널 — 열기/닫기」 명령이 이미 다룬다.
