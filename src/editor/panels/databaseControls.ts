@@ -287,7 +287,8 @@ export function segmentedControl(
     });
     group.append(el("label", { class: "db-segmented-pill", children: [input, el("span", { text: option.name })] }));
   }
-  return field(label, group);
+  // field() 로 감싸면 캡션 클릭이 첫 라디오를 체크한다 — labelledGroupField() 참고.
+  return labelledGroupField(label, group);
 }
 
 /**
@@ -349,7 +350,9 @@ export function avatarChipRow(
     });
     row.append(chip);
   }
-  return field(label, row);
+  // 칩은 button 이라 field() 로 감싸면 캡션 클릭이 첫 칩을 토글한다 — labelledGroupField() 참고.
+  row.setAttribute("role", "group");
+  return labelledGroupField(label, row);
 }
 
 function faceChipAvatar(actor: AvatarChipActor): HTMLElement {
@@ -384,9 +387,36 @@ function numericField(label: string, control: HTMLElement, input: HTMLInputEleme
 export function field(label: string, control: HTMLElement): HTMLElement {
   // 라벨 칸은 `text-overflow: ellipsis` 라 좁아지면 글자가 잘린다("이동 간격(ms)" 가
   // "이동 간격(..." 로 실측됐다). 잘려도 전체 문구에 닿을 수 있게 title 을 항상 건다.
+  //
+  // 주의: 이 래퍼는 **컨트롤이 하나일 때만** 쓴다. 감싸는 label 은 "안쪽 첫 labelable
+  // 자손"을 캡션 클릭만으로 발화시키므로(button 도 labelable), 컨트롤이 여럿인 그룹에
+  // 쓰면 첫 라디오·첫 칩이 조용히 눌린다. 그룹은 labelledGroupField() 를 쓸 것.
   return el("label", {
     class: "db-field",
     children: [el("span", { text: label, attrs: { title: label } }), control],
+  });
+}
+
+let groupFieldSequence = 0;
+
+/**
+ * 컨트롤이 여럿인 그룹(라디오 그룹·칩 행)용 필드. field() 와 **격자 모양은 같지만**
+ * 캡션을 label 로 감싸지 않는다.
+ *
+ * 왜: 감싸는 `<label>` 은 `for` 가 없으면 "안쪽 첫 labelable 자손"을 라벨 대상으로 잡고,
+ * 캡션 글자 클릭이 그 대상에 synthetic click 을 보낸다. button 도 labelable 이라
+ * 라디오 그룹은 첫 라디오가 체크되고, 칩 행은 첫 칩의 onToggle 이 발화해 **데이터가
+ * 조용히 바뀐다**(2026-09-19 크로미움 실측: 세그먼티드는 현재 선택이 첫 옵션이 아닐 때,
+ * 칩은 조건 없이 매번). numericField 가 같은 이유로 이미 회피하고 있던 규약을 그룹으로 넓힌다.
+ *
+ * 접근명은 캡션 id 를 그룹에 `aria-labelledby` 로 물려 유지한다.
+ */
+function labelledGroupField(label: string, group: HTMLElement): HTMLElement {
+  const captionId = `db-group-field-${++groupFieldSequence}`;
+  group.setAttribute("aria-labelledby", captionId);
+  return el("div", {
+    class: "db-field",
+    children: [el("span", { text: label, attrs: { id: captionId, title: label } }), group],
   });
 }
 

@@ -3,6 +3,7 @@ import { dismissCoachMarks } from "@/editor/coachMarks";
 import { disposeAppearanceSlots } from "@/editor/panels/databaseAppearanceSlots";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { handleHistoryHotkey } from "@/editor/hotkeys";
+import { hasOpenModalLayer, isTopModal, registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import {
   databaseTabGroupLabel,
   databaseTabLabel,
@@ -18,7 +19,7 @@ import {
 import { createDatabaseAiBar, type DatabaseAiRecordRef } from "@/editor/panels/databaseAiBar";
 import { createDatabaseModalDirtySession } from "@/editor/panels/databaseModalDirtySession";
 import { worldCodexSessionFor } from "./worldCodexSession";
-import { applyDatabaseChanges } from "@/editor/panels/databaseModalPersistence";
+import { applyDatabaseChanges, writeDatabaseFooterError, writeDatabaseFooterPending } from "@/editor/panels/databaseModalPersistence";
 import { startModalDrag, stopModalDrag } from "@/editor/panels/databaseModalWindowDrag";
 import { resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
 import { stopSkillAnimationStagesIn } from "@/editor/panels/databaseSkillAnimationStage";
@@ -26,7 +27,7 @@ import { disposeDatabaseCinematicsIn } from "@/editor/panels/databaseCinematicVi
 import { inventoryCatalogSession, selectedRecordIdForSession, setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { invalidateFarmSpatialConfirmationContext } from "@/editor/panels/databaseFarmSpatialView";
 import { isStructureKitEditorOpen } from "@/editor/panels/structureKitEditorDialog";
-import { DATABASE_APPLY_BUTTON_HINT, DATABASE_FOOTER_ACTION_TEST_IDS, databaseFooterStatusText } from "@/editor/panels/databaseWorkbench";
+import { DATABASE_APPLY_BUTTON_HINT, DATABASE_FOOTER_ACTION_TEST_IDS, databaseFooterStatus } from "@/editor/panels/databaseWorkbench";
 import {
   createEditorModalDirtyCloseController,
   EDITOR_MODAL_DIRTY_DECISION,
@@ -146,6 +147,8 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   const dirtySession = createDatabaseModalDirtySession();
   // 사이드 도킹(M8): 모달⇄우측 도크 토글 상태. localStorage 에 저장돼 다음 오픈 시 복원된다.
   let dockMode = false;
+  // 창 모드에서만 설치되는 Tab 트랩의 해제자. 도크 모드·닫기에서 반드시 호출한다.
+  let disposeFocusTrap: () => void = () => {};
 
   const body = el("div", { class: "database-modal-body" });
   const codexSession = worldCodexSessionFor(body);
@@ -329,33 +332,42 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     // End pending housing confirmation ownership with the modal session itself.
     invalidateFarmSpatialConfirmationContext();
     unsubscribeCodex();
+    unsubscribeAutoSave();
     unsubscribeStore(); // 구독 해제 — 리스너 누수 금지(1파 M11 교훈).
     unsubscribeActiveTab();
     aiBar.dispose();
     stopSkillAnimationStagesIn(backdrop);
     disposeDatabaseCinematicsIn(backdrop);
     backdrop.remove();
-    document.removeEventListener("keydown", controller.handleKeyDown);
+    unregisterModal(backdrop);
+    disposeFocusTrap();
+    document.removeEventListener("keydown", handleModalKeyDown);
     document.removeEventListener("keydown", handleHistoryKeyDown);
     stopModalDrag();
     activeModal = null;
     const returnTarget = opener?.isConnected ? opener : openerTestId
       ? Array.from(document.querySelectorAll<HTMLElement>("[data-testid]")).find(node => node.dataset.testid === openerTestId)
       : undefined;
-    if (returnTarget?.isConnected) returnTarget.focus();
+    // 내 위(또는 아래)에 아직 모달 층이 살아 있으면 포커스를 그쪽에서 빼앗지 않는다
+    // — 이벤트 에디터(eventEditor/modal.ts)가 쓰는 것과 같은 가드.
+    if (returnTarget?.isConnected && !hasOpenModalLayer()) returnTarget.focus();
     for (const callback of onClose) callback();
     onClose.clear();
   };
   const hideDirtyPrompt = (): void => dirtyPrompt.replaceChildren();
   const saveAndMarkClean = async (): Promise<boolean> => {
+    // 플래그는 commit()/refresh 가 codex 구독을 통해 플래그를 도로 내린 **뒤에** 세운다.
+    // 이 흐름이 쓰는 문구는 autosave 구독의 재도색보다 우선한다(아래 paintFooterStatus 참고).
     if (!codexSession.commit()) {
-      footerStatus.textContent = codexSession.state.editError || "설정집 카드 내용을 확인하세요.";
       switchDatabaseActiveTab("worldCodex", body);
       refreshDatabasePanel(body);
+      manualStatusShown = true;
+      writeDatabaseFooterError(footerStatus, codexSession.state.editError || "설정집 카드 내용을 확인하세요.");
       return false;
     }
     refreshDatabasePanel(body);
-    footerStatus.textContent = "변경 내용을 저장하는 중입니다.";
+    manualStatusShown = true;
+    writeDatabaseFooterPending(footerStatus, "변경 내용을 저장하는 중입니다.");
     const saved = await applyDatabaseChanges(footerStatus);
     if (saved) dirtySession.markClean();
     return saved;
@@ -407,22 +419,46 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     if (dockMode) return;
     controller.handleBackdropMouseDown(event, backdrop);
   });
-  document.addEventListener("keydown", controller.handleKeyDown);
+  // 도크는 모달이 아니다 — Esc 는 맵(화면 밀기·선택 해제)의 몫이고, 도크 패널은 X 로 닫는다.
+  // 예전에는 이 리스너에 도크 가드가 없어서 포커스가 맵에 있어도 Esc 한 번에 도크가 통째로
+  // 닫혔다(2026-09-19 리뷰 P0-3a). 창 모드에서는 modalStack 에 등록돼 있으므로 이 핸들러가
+  // hasOpenModalLayer() 로 스스로 물러나고, 실제 Esc 는 스택의 최상층 라우팅이 가져간다.
+  const handleModalKeyDown = (event: KeyboardEvent): void => {
+    if (dockMode) return;
+    controller.handleKeyDown(event);
+  };
+  document.addEventListener("keydown", handleModalKeyDown);
   document.addEventListener("keydown", handleHistoryKeyDown);
   const footerStatus = el("div", {
     class: "database-footer-status",
     attrs: { "aria-live": "polite" },
     dataset: { testid: "db-footer-status" },
-    text: databaseFooterStatusText(),
   });
-  let codexDraftPending = codexSession.isDirty();
+  // 설정집 카드 초안이 우선, 그다음이 store 의 autosave 상태. 둘 다 여기 한 곳에서만 칠한다
+  // — 예전처럼 두 구독자가 textContent 를 각자 덮으면 비동기 저장 결과가 지워진다.
+  //
+  // "지금 저장"이 쓴 결과 문구("적용하고 온라인에 저장했습니다" 등)는 붙잡아 둔다. flush 는
+  // 끝나면서 autosave 상태도 함께 움직이므로, 가만두면 방금 띄운 결과가 곧바로
+  // "자동 저장됨"으로 지워진다(원래 코드가 codexDraftPending 가드로 지키던 계약).
+  let manualStatusShown = false;
+  const paintFooterStatus = (): void => {
+    // 실패는 언제나 이긴다 — 이 결함(P0-4)의 본체가 "실패를 성공으로 말하던 것"이다.
+    if (manualStatusShown && store.getAutoSaveState().kind !== "error") return;
+    manualStatusShown = false;
+    const status = codexSession.isDirty()
+      ? ({ text: "설정집 카드 저장 전", kind: "pending" } as const)
+      : databaseFooterStatus(store.getAutoSaveState());
+    footerStatus.textContent = status.text;
+    footerStatus.dataset.statusKind = status.kind;
+  };
+  paintFooterStatus();
+  // 설정집 초안이 움직이면 사용자가 이미 다음 작업으로 넘어간 것 — 붙잡아 둔 문구를 놓는다.
   const unsubscribeCodex = codexSession.subscribe(() => {
-    const pending = codexSession.isDirty();
-    if (pending) footerStatus.textContent = "설정집 카드 저장 전";
-    else if (codexDraftPending) footerStatus.textContent = databaseFooterStatusText();
-    // A queued tab refresh must not replace the result of an async save.
-    codexDraftPending = pending;
+    manualStatusShown = false;
+    paintFooterStatus();
   });
+  // 모달이 열려 있는 동안 톱바 저장 칩은 가려진다 — 실패를 여기서 말하지 않으면 아무도 말하지 않는다.
+  const unsubscribeAutoSave = store.subscribeAutoSave(paintFooterStatus);
   const dirtyPrompt = el("div", {
     class: "database-modal-dirty-prompt-region",
     dataset: { testid: "database-dirty-prompt-region" },
@@ -498,13 +534,63 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     const label = next ? "창 모드로 복원" : "사이드 도크로 전환";
     dockToggleButton.setAttribute("title", label);
     dockToggleButton.setAttribute("aria-label", label);
+    syncModalLayer(next);
   };
+
+  // modalStack 은 Escape 소유권의 정본이다. 창 모드일 때만 등록한다 — 도크는 스스로
+  // `role="complementary"` 로 "모달 아님"을 선언하므로 층에 끼면 맵의 Esc·단축키를 빼앗는다.
+  const requestModalEscape = (): void => {
+    if (modalClosed) return;
+    // modalStack 은 닫기가 거절돼도(계속 편집) 자기 엔트리를 먼저 지운다 — 되살려 둔다.
+    unregisterModal(backdrop);
+    registerModal(backdrop, requestModalEscape);
+    controller.requestClose("escape");
+  };
+  const syncModalLayer = (docked: boolean): void => {
+    disposeFocusTrap();
+    disposeFocusTrap = () => {};
+    unregisterModal(backdrop);
+    if (docked) return;
+    registerModal(backdrop, requestModalEscape);
+    // `aria-modal="true"` 를 선언해 놓고 Tab 경계가 없어서 포커스가 탑바·맵 툴바로 새던
+    // 것을 막는다(2026-09-19 리뷰 P0-2). 중첩 대화상자가 위에 뜨면 isTopModal 로 양보한다.
+    if (windowEl instanceof HTMLElement) disposeFocusTrap = installDatabaseFocusTrap(backdrop, windowEl);
+  };
+
   dockToggleButton.addEventListener("click", () => applyDockMode(!dockMode));
   document.body.append(backdrop);
   renderDatabasePanel(body);
+  // 창 모드로 시작한다 — 아래 도크 복원이 있으면 syncModalLayer 가 다시 정리한다.
+  syncModalLayer(false);
   // 지난 세션의 도크 상태 복원 — 렌더 후 적용해도 클래스/aria 만 바꾸므로 안전하다.
   if (readStoredDockMode()) applyDockMode(true);
   closeButton.focus();
+}
+
+/**
+ * 창 모드 Tab 트랩. 이벤트 에디터(`eventEditor/modal.ts` 의 installFocusTrap)와 같은 규약 —
+ * 최상층일 때만 경계를 잡고, 보이지 않는 컨트롤은 후보에서 뺀다.
+ */
+function installDatabaseFocusTrap(backdropEl: HTMLElement, windowEl: HTMLElement): () => void {
+  const trap = (event: KeyboardEvent): void => {
+    if (event.key !== "Tab" || event.defaultPrevented || !isTopModal(backdropEl)) return;
+    const focusable = Array.from(
+      windowEl.querySelectorAll<HTMLElement>(
+        "button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex='-1'])"
+      )
+    ).filter((node) => node.offsetParent !== null || node === document.activeElement);
+    if (focusable.length === 0) return;
+    const first = focusable[0]!;
+    const last = focusable[focusable.length - 1]!;
+    if (event.shiftKey) {
+      if (document.activeElement === first) { event.preventDefault(); last.focus(); }
+    } else if (document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+  backdropEl.addEventListener("keydown", trap);
+  return () => backdropEl.removeEventListener("keydown", trap);
 }
 
 const DB_DOCK_MODE_KEY = "oprn:db-dock-mode";

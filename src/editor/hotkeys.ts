@@ -71,7 +71,10 @@ export function shouldIgnoreEditorShortcut(event: KeyboardEvent): boolean {
   // 데이터베이스/리소스/이벤트 명령 모달이 열려 있으면 document 기준으로 가드.
   if (typeof document !== "undefined") {
     if (document.querySelector(WALK_ENCOUNTER_DIALOG_SELECTOR)) return true;
-    if (document.querySelector("[data-testid='database-modal']")) return true;
+    // 도크 모드는 가드하지 않는다 — 도크의 존재 이유가 "맵을 그대로 조작"이라
+    // 존재만 보면 도크를 켜 둔 내내 맵 도구·레이어 단축키가 전면 침묵했다
+    // (2026-09-19 리뷰 P0-3c). 창 모드는 여전히 가드한다.
+    if (document.querySelector("[data-testid='database-modal']:not(.is-docked)")) return true;
     if (document.querySelector("[data-testid='resource-modal']")) return true;
     if (document.querySelector("[data-testid='world-panel-modal']")) return true;
     if (document.querySelector("[data-testid='event-command-catalog-modal']")) return true;
@@ -148,7 +151,9 @@ export function historyHotkeyOwnedByPanel(): boolean {
   // 일반 가드보다 **먼저** 처리하므로(체크박스 포커스가 되돌리기를 삼키던 결함 대응),
   // 여기서 소유권을 넘기지 않으면 맵 삭제 확인 도중 Ctrl+Z 가 뒤에서 프로젝트를 되돌린다.
   if (hasOpenModalLayer()) return true;
-  if (document.querySelector("[data-testid='database-modal']")) return true;
+  // 도크는 제외 — 위 일반 가드와 같은 이유다. 창 모드 DB 모달은 자체 Ctrl+Z/Y 를 두므로
+  // 여기서 소유권을 넘겨야 하고, 그 경로는 이제 modalStack 등록으로도 함께 막힌다.
+  if (document.querySelector("[data-testid='database-modal']:not(.is-docked)")) return true;
   if (document.querySelector("[data-testid='resource-modal']")) return true;
   return Boolean(document.querySelector("[data-testid='event-editor-modal']:not([hidden])"));
 }

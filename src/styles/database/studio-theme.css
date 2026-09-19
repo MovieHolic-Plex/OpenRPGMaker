@@ -291,11 +291,16 @@
   z-index: 3;
 }
 
-/* autosave sentence — never clipped */
+/* autosave sentence — 색은 상태 kind 가 정한다(성공색 하드코딩 금지).
+   예전에는 success 를 !important 로 못박아 "적용 실패"·충돌 메시지까지 초록 필에 떴다
+   (2026-09-19 리뷰 P0-5). !important 는 유지하되(다른 시트의 구세대 크롬 규칙이 다시
+   비집고 들어오지 않게) 값만 변수로 빼서 data-status-kind 가 운전하게 한다. */
 .database-modal-backdrop .database-modal-window .database-footer-status {
-  background: var(--db-studio-success-muted) !important;
+  --db-footer-status-bg: var(--db-studio-success-muted);
+  --db-footer-status-fg: var(--db-studio-success);
+  background: var(--db-footer-status-bg) !important;
   border-color: transparent !important;
-  color: var(--db-studio-success) !important;
+  color: var(--db-footer-status-fg) !important;
   /* v2: 전폭 띠가 아니라 내용 폭 필. 폭은 studio-v2.css 가 inline-flex + flex: 0 1 auto 로 준다. */
   max-width: 60% !important;
   overflow: hidden !important;
@@ -303,6 +308,22 @@
   white-space: nowrap !important;
   word-break: keep-all;
   line-height: 1.3 !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-footer-status[data-status-kind="pending"] {
+  --db-footer-status-bg: var(--db-studio-warning-muted, rgba(180, 83, 9, 0.10));
+  --db-footer-status-fg: var(--db-studio-warning);
+}
+
+/* 실패 문구는 잘리면 쓸모가 없다 — 충돌 맵 이름 목록이 ellipsis 로 사라지던 경로.
+   오류일 때만 줄바꿈을 허용하고 폭 제한을 푼다. */
+.database-modal-backdrop .database-modal-window .database-footer-status[data-status-kind="error"] {
+  --db-footer-status-bg: var(--db-studio-danger-muted, rgba(185, 28, 28, 0.10));
+  --db-footer-status-fg: var(--db-studio-danger);
+  max-width: 100% !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
 }
 
 /* Primary = 지금 저장 (apply), ghost = 닫기 (ok) — wins regardless of .primary class */
