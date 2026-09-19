@@ -24,6 +24,17 @@ import { openWalkEncounterForSelection } from "@/editor/panels/walkEncounterModa
 /** 이 칸 수를 넘는 「지우기」는 두 번 눌러야 실행된다. 3×4 이하는 즉시 실행(기존 동작). */
 export const CLEAR_CONFIRM_CELLS = 12;
 
+/** 우클릭/선택 드래그로 잡은 영역의 칩 바만 띄운다. Ctrl+V 고스트·확정 뒤에는 숨긴다. */
+export function shouldShowSelectionActionChips(state: {
+  readonly selection: TileSelection | null;
+  readonly pastePreview: { readonly x: number; readonly y: number } | null;
+  readonly mapId: string | null;
+}): boolean {
+  if (state.pastePreview) return false;
+  if (!state.selection || !state.mapId) return false;
+  return state.selection.mapId === state.mapId;
+}
+
 export interface SelectionChipPreset {
   readonly id: string;
   readonly label: string;

@@ -338,7 +338,6 @@ function renderTopbarStudioButton(): HTMLElement {
   };
   const button = el("button", {
     class: "topbar-ai-studio",
-    text: "스튜디오",
     attrs: {
       type: "button",
       "aria-label": "AI 스튜디오",
@@ -346,6 +345,10 @@ function renderTopbarStudioButton(): HTMLElement {
       title: "AI 스튜디오 — 장면 모니터와 조수",
     },
     dataset: { testid: "topbar-ai-studio" },
+    children: [
+      el("span", { class: "topbar-ai-studio-icon", attrs: { "aria-hidden": "true" }, text: "✦" }),
+      el("span", { class: "topbar-ai-studio-label", text: "스튜디오" }),
+    ],
     on: { click: () => requestAiStudioToggle() },
   }) as HTMLButtonElement;
   paint(button, readStudioMode());

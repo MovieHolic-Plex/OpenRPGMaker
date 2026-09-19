@@ -55,7 +55,7 @@ export const CURATED_COMBO_BRUSHES: readonly ComboBrushCatalogEntry[] = [
     height: 2,
     id: "combo_tree_full",
     name: "나무 한 그루",
-    note: "수관(덧그림)과 밑동(바닥)이 한 짝 — 따로 찍으면 밑동 없는 나무가 남습니다.",
+    note: "수관(상위)과 밑동(바닥)이 한 짝 — 따로 찍으면 밑동 없는 나무가 남습니다.",
     sourceGroups: ["treeObjects"],
     width: 1,
   },

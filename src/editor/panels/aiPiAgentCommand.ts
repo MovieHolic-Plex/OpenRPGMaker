@@ -136,10 +136,12 @@ export interface PiRunOptions {
   /** Legacy caller hint. Role-specific reasoning takes precedence in Pi execution. */
   readonly thinkingLevel?: PiAgentThinkingLevel;
   /**
-   * 의도 선언이 연 툴 도메인 — 초기 노출을 core+이 도메인들로 좁힌다(빠진 툴은 find_tools·
-   * 폴백 에스컬레이션이 실행 중 얹는다). 비우면 레지스트리 전량 노출.
+   * Legacy/domain-scoped callers may seed domains. Normal chat sends initialToolNames.
+   * Both are exposure hints; discovery may expand them.
    */
   readonly toolDomains?: readonly string[];
+  /** Intent-selected initial schemas. Runtime discovery can expand this list. */
+  readonly initialToolNames?: readonly string[];
   /**
    * 의도 선언이 확정한 것을 본문에 전하는 노트(`buildPiIntentNote`). 계획 턴·실행 턴·팀장이 같은 문자열을
    * 읽는다. 로그·보드에는 싣지 않는다 — 거기는 사용자 문장(`command.task`)이다.
@@ -387,6 +389,7 @@ export async function runPiCommand(
         ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),
         thinkingLevel: options.planOnly || team ? brain.reasoningEffort : deep.thinkingLevel,
         ...(options.toolDomains && options.toolDomains.length > 0 ? { toolDomains: options.toolDomains } : {}),
+        ...(options.initialToolNames ? { initialToolNames: options.initialToolNames } : {}),
         ...(teamSpec ? { team: teamSpec } : {}),
       },
       { signal: surface.signal, onEvent: wrap(mapIds, index),

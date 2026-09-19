@@ -546,15 +546,6 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
   font: 500 12px/1.3 var(--font-ui, system-ui, sans-serif);
 }
 
-.basic-rail-hint {
-  background: color-mix(in srgb, var(--control-bg, var(--mix-base)) 85%, #000);
-  border: 1px dashed var(--editor-line, var(--border-subtle));
-  border-radius: 10px;
-  color: var(--editor-text-muted, var(--text-2));
-  font: 500 12px/1.4 var(--font-ui, system-ui, sans-serif);
-  padding: 10px 12px;
-}
-
 /* Basic rail layout is fully specified in the icon-rail block above. */
 
 /* ── 실제 저작 작업 · 패널 도킹 · 레이아웃 · 밀도 · ⌘K ─────────────────────── */

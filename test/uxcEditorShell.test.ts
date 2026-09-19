@@ -98,9 +98,9 @@ afterEach(() => {
 });
 
 describe("UXC D13 이벤트 마커 편집 동선", () => {
-  it("비이벤트 레이어 더블클릭에서만 이벤트 레이어 전환을 제안한다", () => {
-    expect(shouldOfferEventLayerSwitch({ activeLayer: "lower", clickCount: 2, hasEvent: true })).toBe(true);
-    expect(shouldOfferEventLayerSwitch({ activeLayer: "upper", clickCount: 3, hasEvent: true })).toBe(true);
+  it("타일 레이어에서는 이벤트 클릭을 가로채지 않는다", () => {
+    expect(shouldOfferEventLayerSwitch({ activeLayer: "lower", clickCount: 2, hasEvent: true })).toBe(false);
+    expect(shouldOfferEventLayerSwitch({ activeLayer: "upper", clickCount: 3, hasEvent: true })).toBe(false);
     expect(shouldOfferEventLayerSwitch({ activeLayer: "event", clickCount: 2, hasEvent: true })).toBe(false);
     expect(shouldOfferEventLayerSwitch({ activeLayer: "lower", clickCount: 1, hasEvent: true })).toBe(false);
     expect(shouldOfferEventLayerSwitch({ activeLayer: "lower", clickCount: 2, hasEvent: false })).toBe(false);

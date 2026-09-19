@@ -37,21 +37,6 @@
   outline-offset: 2px;
 }
 
-@media (max-width: 1400px) {
-  .studio-bar .studio-command-center {
-    flex: 0 0 32px;
-    justify-content: center;
-    min-width: 32px;
-    padding: 0;
-    width: 32px;
-  }
-
-  .studio-command-center .workspace-command-chip-label,
-  .studio-command-center .workspace-command-chip-key {
-    display: none;
-  }
-}
-
 @media (max-width: 1119px) {
   .studio-bar .header-layer-switcher {
     margin-inline: 2px;

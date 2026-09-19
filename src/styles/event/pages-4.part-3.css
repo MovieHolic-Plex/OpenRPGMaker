@@ -1,0 +1,28 @@
+/* ── 관계 설정 카드 ───────────────────────────────────────────────────── */
+.event-editor .event-editor-settings-accordion-body .event-character-social-extras {
+  margin: 0;
+}
+
+/* 카드 제목이 바로 위 연결 줄과 같은 이름을 반복한다 — 굵기를 낮춰 위계를 만든다. */
+.event-editor .event-character-social-heading > strong {
+  font: 650 12.5px/1.25 var(--font-ui);
+}
+
+/* 「고급 설정」은 details 로 저작됐지만 설정 컬럼이 div 로 바꿔 심는다(content.ts).
+   그래서 `[open]` 을 보는 화살표는 항상 «접힘» 을 가리키면서 본문은 열려 있었다.
+   div 인 경우에만 화살표를 지우고 소제목으로 읽히게 한다. */
+.event-editor div.event-character-social-advanced > summary {
+  color: var(--text-2);
+  cursor: default;
+  font: 700 10.5px/1.2 var(--font-ui);
+  letter-spacing: .04em;
+}
+
+.event-editor div.event-character-social-advanced > summary::after {
+  content: none;
+}
+
+/* 화살표가 빠지면 space-between 이 키 칩을 오른쪽 끝까지 밀어낸다. */
+.event-editor div.event-character-social-advanced > summary {
+  justify-content: flex-start;
+}

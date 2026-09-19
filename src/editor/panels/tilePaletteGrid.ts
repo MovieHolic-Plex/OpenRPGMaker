@@ -1,5 +1,5 @@
 import type { Layer } from "@/editor/editorState";
-import { isDefaultTilesetTexture, tilesetImageUrl, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
+import { isDefaultTilesetTexture, tilesetCssImageValue, tilesetImageUrl, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { CHIPSET_TILE_GROUPS, tileAiLabelForIndex, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { tileVisibleOnLayer } from "@/editor/tileLayerClassification";
@@ -303,6 +303,7 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
     attrs: { style: `grid-template-columns:repeat(${columns}, var(--chipset-cell))` },
   });
   const backgroundImageUrl = tilesetImageUrl(args.tileset);
+  grid.style.setProperty("--custom-palette-image", tilesetCssImageValue(backgroundImageUrl));
   // Custom cells remain complete and source-id ordered; only their editor view
   // is reflowed so the palette scrolls vertically instead of horizontally.
   // Large uploaded atlases routinely contain 2,000+ cells. Keep the first
@@ -316,7 +317,10 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
     for (let index = from; index < to; index += 1) {
       const tileId = displayTiles[index];
       if (tileId === undefined) continue;
-      const cell = makePaletteCell(args, tileId, undefined, { backgroundImageUrl });
+      const cell = makePaletteCell(args, tileId, undefined, {
+        backgroundImageUrl,
+        backgroundImageVar: "--custom-palette-image",
+      });
       if (!passesFilter(args, tileId)) cell.classList.add("is-filtered-out");
       if (from > 0) cell.tabIndex = -1;
       fragment.append(cell);
@@ -441,7 +445,7 @@ function makePaletteCell(
   args: MakeGridPaletteArgs,
   tileId: number,
   title = gridTileTitle(args.tileset, tileId),
-  decorations: { readonly badge?: string; readonly className?: string; readonly backgroundImageUrl?: string } = {}
+  decorations: { readonly badge?: string; readonly className?: string; readonly backgroundImageUrl?: string; readonly backgroundImageVar?: string } = {}
 ): HTMLButtonElement {
   const cell = el("button", {
     class: "chipset-tile" + (args.selectedTile === tileId ? " active" : "") + (decorations.className ?? ""),
@@ -450,7 +454,13 @@ function makePaletteCell(
       type: "button",
       "aria-label": title,
       "aria-pressed": String(args.selectedTile === tileId),
-      style: tilesetTileBackgroundStyle(args.tileset, tileId, "var(--chipset-cell)", decorations.backgroundImageUrl),
+      style: tilesetTileBackgroundStyle(
+        args.tileset,
+        tileId,
+        "var(--chipset-cell)",
+        decorations.backgroundImageUrl,
+        decorations.backgroundImageVar,
+      ),
     },
     dataset: { testid: `chipset-tile-${tileId}`, tileIndex: String(tileId) },
     on: {

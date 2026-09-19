@@ -1,0 +1,103 @@
+@media (prefers-reduced-motion: reduce) {
+  .tileset-ai-review-status.working::after {
+    animation: none;
+    width: 100%;
+  }
+}
+
+.tileset-knowledge-selection,
+.tileset-knowledge-section {
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-subtle);
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-2);
+}
+
+.tileset-knowledge-selection span {
+  color: var(--text-1);
+  font: 600 12px/1.35 var(--font-mono);
+}
+
+.tileset-knowledge-selection small,
+.tileset-knowledge-section small {
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.tileset-knowledge-template-grid {
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tileset-knowledge-template-grid button {
+  align-content: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  color: var(--text-1);
+  display: grid;
+  gap: 2px;
+  min-height: 48px;
+  padding: var(--space-1) var(--space-2);
+  text-align: left;
+}
+
+.tileset-knowledge-template-grid button small {
+  word-break: keep-all;
+}
+
+.tileset-knowledge-template-grid button.active,
+.tileset-knowledge-template-grid button[aria-pressed="true"] {
+  background: var(--surface-selected);
+  border-color: var(--accent-primary);
+  box-shadow: inset 3px 0 0 var(--accent-primary);
+}
+
+.tileset-knowledge-template-grid button:focus-visible,
+.tileset-knowledge-direction-grid button:focus-visible,
+.tileset-knowledge-layer-grid button:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 1px;
+}
+
+.tileset-knowledge-field {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.tileset-knowledge-field > span {
+  color: var(--text-1);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.tileset-knowledge-field input,
+.tileset-knowledge-field textarea {
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-default);
+  box-sizing: border-box;
+  color: var(--text-1);
+  font: inherit;
+  min-height: 30px;
+  padding: var(--space-1) var(--space-2);
+  width: 100%;
+}
+
+.tileset-knowledge-field textarea {
+  min-height: 56px;
+  resize: vertical;
+}
+
+.tileset-knowledge-preset-row,
+.tileset-knowledge-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.tileset-knowledge-preset-row button {
+  flex: 1 1 72px;
+  min-height: 30px;
+}

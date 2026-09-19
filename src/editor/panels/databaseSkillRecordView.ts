@@ -108,7 +108,7 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
       }),
       sectionCard({
         title: "위력과 소모",
-        hint: "저장 시 클램프되는 범위와 동일합니다",
+        hint: "저장할 때 이 범위를 벗어난 값은 범위 안으로 맞춰집니다",
         testid: "db-skill-card-cost",
         children: [
           ...(powerNode ? [powerNode] : []),
@@ -483,7 +483,15 @@ function stateEffectFields(record: SkillRecord, rerender: () => void): HTMLEleme
   const add = el("button", {
     class: "db-ws-btn db-ws-btn-ghost db-skill-state-effect-add",
     text: "+ 상태 추가",
-    attrs: { type: "button", ...disabledAttr(store.getCurrent().database.states.length === 0) },
+    attrs: {
+      type: "button",
+      ...disabledAttr(store.getCurrent().database.states.length === 0),
+      // 잠금에는 이유를 같이 준다(databaseControls 의 disabledReason 규약). 이유 없는
+      // 무음 비활성은 "왜 안 눌리지"로 끝난다 — 적 탭이 이미 같은 안내를 쓰고 있다.
+      ...(store.getCurrent().database.states.length === 0
+        ? { title: "[상태] 탭에서 상태를 먼저 만드세요." }
+        : {}),
+    },
     dataset: { testid: "db-skill-state-effect-add" },
     on: {
       click: () => {

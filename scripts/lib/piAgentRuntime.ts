@@ -14,11 +14,13 @@ import { Agent, type StreamFn } from "@oh-my-pi/pi-agent-core";
 import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
 import {
   createPiToolset,
+  selectPiToolDefinitions,
   harvestFindToolsNames,
   resolvePiToolShape,
   type PiToolCallRecord,
   type PiToolShape,
 } from "../../src/ai/piAgent/toolAdapter.ts";
+import { buildToolCapabilityIndex } from "../../src/ai/toolCapabilityIndex.ts";
 import { exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.ts";
 import { createDeltaRelay } from "../../src/ai/piAgent/deltaRelay.ts";
 import { applyMapDeltas, diffMapsForDelta } from "../../src/ai/piAgent/mapDelta.ts";
@@ -47,8 +49,6 @@ export interface RunPiAgentOptions {
 
 const DEFAULT_MAX_TURNS = 200;
 const DEFAULT_TIMEOUT_MS = PI_AGENT_DEFAULT_TIMEOUT_MS;
-/** 한 실행에 에스컬레이션으로 얹을 수 있는 툴 상한 — 세션 경로의 16개 계약과 같다(발견은 무제한이 아니다). */
-const MAX_ESCALATED_TOOLS = 16;
 
 /** 읽기 전용 실행에 덧붙이는 한 줄. 강제는 툴 목록이 하고(쓰기 툴 미제공), 이 문장은 이유를 말한다. */
 const READ_ONLY_INSTRUCTION =
@@ -74,7 +74,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 배열 교체(setTools)는 진행 중 루프에 닿지 않는다(컨텍스트가 같은 배열을 잡고 있어서다).
   const tools: PiToolShape[] = [];
   const exposed = new Set<string>();
-  let escalatedCount = 0;
+  const allowedDefinitions = selectPiToolDefinitions(undefined, {
+    readOnly: request.readOnly || options.readOnlyTools, toolNames: options.toolNames,
+  });
   const shapeFor = (name: string): PiToolShape | undefined => {
     const shape = resolvePiToolShape(ctx, name, {
       readOnly: request.readOnly || options.readOnlyTools,
@@ -83,12 +85,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     });
     return shape ? wrapTool(shape) : undefined;
   };
-  // 선언 승격 — find_tools 수확과 폴백 구제가 공유. 상한은 프롬프트가 커지는 것만 묶는다.
+  // Every discovered allowed schema must be declared; a silent quota breaks reachability.
   const declare = (shape: PiToolShape): void => {
-    if (escalatedCount >= MAX_ESCALATED_TOOLS) return;
+    if (exposed.has(shape.name)) return;
     tools.push(shape);
     exposed.add(shape.name);
-    escalatedCount += 1;
   };
   const recordCall = (record: PiToolCallRecord): void => {
     const queue = pendingSummaries.get(record.name) ?? [];
@@ -96,7 +97,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     pendingSummaries.set(record.name, queue);
     // find_tools 수확 — 발견된 이름을 다음 턴 요청부터 실제로 선언한다(세션의 에스컬레이션 이식).
     if (record.name === "find_tools") {
-      for (const name of harvestFindToolsNames(record.result)) {
+      const found = harvestFindToolsNames(record.result);
+      const matches = (record.result.data as { matches?: unknown } | undefined)?.matches;
+      // A successful empty search restores the complete permitted catalog. Domains and
+      // initialToolNames are routing hints; readOnly and role toolNames remain hard limits.
+      const names = record.result.ok && Array.isArray(matches) && matches.length === 0
+        ? allowedDefinitions.map(tool => tool.name) : found;
+      for (const name of names) {
         if (exposed.has(name)) continue;
         const shape = shapeFor(name);
         if (shape) declare(shape);
@@ -139,9 +146,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     },
   });
   const registryTools = createPiToolset(ctx, {
-    domains: request.toolDomains,
+    domains: request.initialToolNames ? undefined : request.toolDomains,
     readOnly: request.readOnly || options.readOnlyTools,
-    toolNames: options.toolNames,
+    toolNames: request.initialToolNames
+      ? allowedDefinitions.filter(tool => request.initialToolNames!.includes(tool.name)).map(tool => tool.name)
+      : options.toolNames,
     onCall: recordCall,
   });
   tools.push(...registryTools.map(wrapTool), ...(options.extraTools ?? []));
@@ -165,6 +174,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const systemPrompt = request.systemPrompt
     ? [...request.systemPrompt]
     : buildPiAgentSystemPrompt(base, request.mapIds, request.scopeStrict !== false);
+  if (allowedDefinitions.some(tool => tool.name === "find_tools")) {
+    systemPrompt.push(buildToolCapabilityIndex(allowedDefinitions));
+  }
   // 읽기 전용은 툴 목록으로 강제된다(options.readOnlyTools). 이 한 줄은 모델이 "왜 답만 하는지" 알게 한다 —
   // 이유를 모르면 쓰기를 시도하며 턴을 태운다.
   if (request.readOnly) systemPrompt.push(READ_ONLY_INSTRUCTION);

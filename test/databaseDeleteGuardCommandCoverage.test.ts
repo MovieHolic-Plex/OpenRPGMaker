@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { addDatabaseRecord, databaseReferenceMessage } from "@/editor/databaseActions";
+import { addDatabaseRecord } from "@/editor/databaseActions";
+import { databaseReferenceMessage } from "@/editor/databaseReferences";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { createDatabaseModalDirtySession } from "@/editor/panels/databaseModalDirtySession";
 import { createBlankProject } from "@/project/defaults";

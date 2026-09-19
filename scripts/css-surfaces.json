@@ -100,6 +100,7 @@
         "cluster-ai-",
         "local-diagnostics-",
         "project-picker-",
+        "project-folder-picker-",
         "db-config-project-"
       ],
       "roots": [
@@ -139,6 +140,7 @@
         "agent-",
         "runtime-overlay-",
         "runtime-debug-",
+        "layout-bbox-",
         "resource-"
       ],
       "roots": [
@@ -300,6 +302,9 @@
     "database": {
       "dir": "src/styles/database",
       "entry": "src/styles/database/index.css",
+      "additionalEntries": [
+        "src/styles/database/editor-startup-ai.css"
+      ],
       "prefixes": [
         "actor-",
         "ai-abort-",
@@ -324,6 +329,8 @@
         "animation-",
         "asset-browser-",
         "battle-studio-",
+        "quick-battle-",
+        "region-reference-",
         "chat-dock-",
         "curve-",
         "database-",

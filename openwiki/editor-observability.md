@@ -73,7 +73,7 @@
 
 ## 계측 초크포인트는 `store.markLocalMutation` 하나다
 
-`ProjectStore` 에서 상태를 바꾸는 메서드는 5개고, 전부 `markLocalMutation` 을 지난다.
+`ProjectStore` 에서 상태를 바꾸는 메서드는 6개고, 전부 `markLocalMutation` 을 지난다.
 그 메서드들의 호출자는 **전부 클래스 안에** 있으므로 우회 경로가 없다 —
 `mutationGeneration` 을 올리는 자리가 곧 계측 자리다.
 
@@ -81,6 +81,7 @@
 |---|---|---|
 | `update(mutator, change)` | `{ scope: "project" }` | 압도적 다수. 호출부 244곳 |
 | `updateMap(mapId, mapMutator, change)` | `{ scope: "map", mapId }` | `cells` 로 셀 수가 넘어온다 |
+| `updateMapTiles(mapId, mapMutator, change)` | `{ scope: "map", mapId }` | 대형 맵의 페인트·지우개·채우기 전용. 타일 배열만 얕게 복제한다 |
 | `replace(project, { change })` | `{ scope: "project" }` | undo·AI 적용·원격 병합이 공유 |
 | `replaceProject(project, change)` | `label: "프로젝트 교체"` | 드래프트 금고를 버린다 |
 | `clearAll()` | `label: "전체 초기화"` | |
@@ -89,7 +90,7 @@
 이 성질 덕분에 **mutation 호출부 전량이 외부 파일 수정 없이 계측된다.**
 
 ```bash
-grep -rnoE "store\.(update|updateMap|replace|replaceProject|clearAll|restoreEventDraftFromVault)\(" src/ | wc -l
+grep -rnoE "store\.(update|updateMap|updateMapTiles|replace|replaceProject|clearAll|restoreEventDraftFromVault)\(" src/ | wc -l
 # 2026-08-29 재측정 277 (store.ts 주석은 275 — 이 브랜치 작업 중 호출부가 늘었다).
 # 정확한 수는 브랜치마다 흔들린다. 계약은 "전량이 한 지점을 지난다" 쪽이다.
 ```
@@ -462,7 +463,7 @@ npx vitest run test/storeUndoSnapshotInventory.test.ts
 
 ## 검증
 
-- 계측·라벨·병합 회귀: `npm test -- test/editActivityRecording.test.ts` (초크포인트 5메서드, 라벨 없는 집계, NPC 편집 세션 재현, 연속 병합, `EventDiff` 라벨).
+- 계측·라벨·병합 회귀: `npm test -- test/editActivityRecording.test.ts` (초크포인트 6메서드, 라벨 없는 집계, NPC 편집 세션 재현, 연속 병합, `EventDiff` 라벨).
 - 미러 엔드포인트 계약: `npm test -- test/editActivityEndpoint.test.ts` (상수와 미들웨어 경로가 어긋나면 404 로 조용히 죽는다).
 - 커밋 첨부 계약: `npm test -- test/commitEditActivityAttachment.test.ts` (patch_json 에 실리는지, 커서가 반복을 막는지, 상한이 숫자로 남는지, 리더 CLI 가 같은 키를 읽는지).
 - 위키 변경만 했으면 `npm run openwiki:verify`.

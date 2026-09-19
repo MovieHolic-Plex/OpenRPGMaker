@@ -35,7 +35,6 @@ import type { AppearanceGenerationHandoff } from "@/editor/characterAppearanceGe
 import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
 import { validateArgs } from "@/editor/tools/jsonSchema";
 import { viewportVillageBounds } from "@/editor/tools/authorVillageSupport";
-import { toOpenAiTools } from "@/editor/tools";
 import type { ToolContext, ToolResult } from "@/editor/tools";
 import {
   harnessToolReason,
@@ -97,6 +96,7 @@ import {
   type TurnSelectionSnapshot,
 } from "./conversationTurnContext";
 import { buildPreferenceMemorySection } from "./preferenceMemory";
+import { buildSessionRegistryTools } from "./sessionToolExposure";
 import { resolveWorkingContextTokens } from "./messageBudget";
 import {
   buildCompactedMessages,
@@ -725,6 +725,8 @@ export class AssistantSession {
   /** place_props 등 산포 중복 호출 억제 — 같은 인자로 이미 성공한 쓰기는 재실행하지 않는다. */
   private turnWriteDedupe = new Map<string, ToolResult>();
   private turnEscalatedToolNames: string[] = [];
+  /** Discovery miss or neutral routing opts the next request into the complete catalog. */
+  private turnFullCatalogFallback = false;
   /** 이번 턴에 실행을 시작한 툴 수 — tool_started 이벤트의 1-based 서수 원천. */
   private turnToolStartedCount = 0;
   private eventBaseProposalKeys = new Map<string, string>();
@@ -2045,6 +2047,7 @@ export class AssistantSession {
     }
     this.turnScope = options.scope ?? null;
     this.turnComposerMode = options.composerMode ?? "do";
+    this.turnFullCatalogFallback = false;
     this.planAuthoredThisTurn = false;
     this.lastTurnPlanOnly = false;
     this.turnIsDriverContinue = options.driverContinue === true;
@@ -2105,6 +2108,10 @@ export class AssistantSession {
     // 질문 모드는 사용자가 직접 고른 사실이라 선언의 create/modify 를 덮어쓴다 — 안 그러면 플래너·쓰기 기대가 문장 판정으로 돈다.
     const intent = this.applyComposerModeToIntent(await operation.wait(this.declareTurnIntent(instruction, onEvent, signal)));
     this.turnIntent = intent;
+    // A failed routing declaration has no safe domain hint. Preserve the old
+    // reliability behavior for that turn; normal LLM declarations use the
+    // control plane and can discover missing schemas incrementally.
+    this.turnFullCatalogFallback = intent.source === "fallback";
     if (intent.mode === "question") this.turnComposerMode = "ask";
     const question = this.turnComposerMode === "ask";
     const userAction = !this.turnIsDriverContinue && !question;
@@ -4777,10 +4784,18 @@ export class AssistantSession {
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "token-budget" };
       }
       let result: ChatResult;
-      // Full native schemas are the working catalog, not a domain-ranked shortlist.
-      // Session-only tools retain their lifecycle gates; ask mode removes every write.
+      // Start with a small control plane plus intent/plan/discovery candidates.
+      // A discovery miss or neutral routing flips turnFullCatalogFallback and
+      // restores the complete native catalog on the next round.
       const tools = [
-        ...toOpenAiTools(),
+        ...buildSessionRegistryTools({
+          requestText: this.currentTurnInstruction,
+          intent: this.turnIntent,
+          discoveredToolNames: this.turnEscalatedToolNames,
+          requiredReadTools: this.readEvidence.requiredReadTools(),
+          workPlan: this.workPlan,
+          fullCatalogFallback: this.turnFullCatalogFallback,
+        }),
         GET_ORIGINAL_CONTEXT_TOOL,
         CORRECT_VERIFICATION_TOOL,
         ...(this.npcRewardRequirements ? [VERIFY_NPC_REWARD_TOOL] : []),
@@ -5315,6 +5330,13 @@ export class AssistantSession {
             this.turnEscalatedToolNames = next.slice(-MAX_ESCALATED_TOOLS_PER_TURN);
             if (discovered.length > 0) {
               this.pushAudit({ kind: "status", text: `tools:escalated ${discovered.join(",")}` });
+            } else if (name === "find_tools" && toolResult.ok) {
+              // A successful search with no matches is the only safe signal
+              // that routing did not find the requested capability. Retry the
+              // next model round with every active schema instead of claiming
+              // the editor cannot do the work.
+              this.turnFullCatalogFallback = true;
+              this.pushAudit({ kind: "status", text: "tools:fallback full-catalog (discovery-empty)" });
             }
           }
           if (toolResult.ok && tool) recordAssistantToolDomainUse(tool.domains);

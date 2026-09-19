@@ -416,7 +416,7 @@ test("검색·분류 필터가 본 팔레트를 직접 걸러낸다 (별개 그�
   await expect(page.getByTestId("palette-filter-bar")).toBeVisible();
   await expect(page.getByTestId("layer-selector")).toContainText("3단 레이어");
   await expect(page.getByTestId("layer-lower")).toContainText("바닥");
-  await expect(page.getByTestId("layer-upper")).toContainText("덧그림");
+  await expect(page.getByTestId("layer-upper")).toContainText("상위");
   await expect(page.getByTestId("layer-event")).toContainText("이벤트");
 
   // 그리기 툴바가 팔레트와 같은 면에 있다 — 고른 타일을 탭 전환 없이 칠할 수 있다.

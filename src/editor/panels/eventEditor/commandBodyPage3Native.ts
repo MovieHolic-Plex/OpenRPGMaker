@@ -69,7 +69,7 @@ const WEATHER_SEGMENTS = [
 
 const LAYER_SEGMENTS = [
   { value: "lower", key: "lower", label: "바닥" },
-  { value: "upper", key: "upper", label: "덧그림" },
+  { value: "upper", key: "upper", label: "상위" },
 ] as const satisfies readonly SegmentOption<"lower" | "upper">[];
 
 const LIGHTING_PRESETS = [
@@ -1429,7 +1429,7 @@ export function changeTileBody(
   const renderPreview = () => {
     const mapId = mapSel.value;
     const mapName = mapId ? project.maps[mapId]?.name || mapId : "(맵 선택)";
-    const layerLabel = layer.select.value === "upper" ? "덧그림" : "바닥";
+    const layerLabel = layer.select.value === "upper" ? "상위" : "바닥";
     const tx = parseInt(x.value, 10) || 0;
     const ty = parseInt(y.value, 10) || 0;
     const parsedTile = parseInt(tile.value, 10);
@@ -1495,7 +1495,7 @@ export function changeTileBody(
   wrap.append(
     intentCard(
       "지형 변경",
-      "맵 한 칸의 바닥이나 덧그림을 바꿉니다. 비우기를 누르면 그 칸을 지웁니다.",
+      "맵 한 칸의 바닥이나 상위 타일을 바꿉니다. 비우기를 누르면 그 칸을 지웁니다.",
       "change-tile-intent"
     ),
     el("div", {

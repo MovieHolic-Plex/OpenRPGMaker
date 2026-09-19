@@ -1,0 +1,118 @@
+/* ── 4. 보고서 모드(.ai-change-wide.is-report) — 변경 지점마다 before/after 한 쌍 ────
+   DOM(aiChangePreview.ts): head + (brief?) + .ai-change-report-sites > section.ai-change-report-site.
+   지점 목록은 computeChangeSites — AI 가 여러 곳을 고치면 사진도 여러 쌍이어야 한다. */
+.ai-change-wide.is-report {
+  grid-template-rows: auto auto minmax(0, 1fr);
+}
+
+.ai-change-wide.is-report:not(:has(.ai-change-report-brief)) {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.ai-change-report-brief {
+  background: var(--bg-raised);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-modal);
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+}
+
+.ai-change-report-text {
+  color: var(--text-1);
+  font-size: calc(14px * var(--ai-font-scale, 1));
+  line-height: 1.6;
+  margin: 0;
+}
+
+.ai-change-report-findings {
+  display: grid;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ai-change-report-findings li {
+  color: var(--text-2);
+  font-size: calc(12.5px * var(--ai-font-scale, 1));
+  line-height: 1.55;
+  padding-left: 20px;
+  position: relative;
+}
+
+.ai-change-report-findings li::before {
+  color: var(--warning);
+  content: "⚠";
+  left: 0;
+  position: absolute;
+}
+
+.ai-change-report-sites {
+  align-content: start;
+  background: var(--bg-raised);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-modal);
+  display: grid;
+  gap: var(--space-4);
+  min-height: 0;
+  overflow: auto;
+  padding: var(--space-4);
+}
+
+.ai-change-report-site {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.ai-change-report-site + .ai-change-report-site {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: var(--space-4);
+}
+
+.ai-change-report-site-head {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.ai-change-report-site-index {
+  align-items: center;
+  background: var(--accent-muted);
+  border-radius: 999px;
+  color: var(--accent-active);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  font-weight: 700;
+  height: 22px;
+  justify-content: center;
+  min-width: 22px;
+}
+
+.ai-change-report-site-map {
+  color: var(--text-1);
+  font-size: calc(14px * var(--ai-font-scale, 1));
+  font-weight: 700;
+}
+
+.ai-change-report-site-place {
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: calc(12px * var(--ai-font-scale, 1));
+}
+
+.ai-change-report-site-stats {
+  color: var(--text-2);
+  font-size: calc(12.5px * var(--ai-font-scale, 1));
+  margin-left: auto;
+}
+
+/* 지점 쌍의 스냅숏은 카드(220px 상한)보다 크게 — 보고서는 사진이 본문이다. */
+.ai-change-report-pair .ai-change-shot-canvas canvas,
+.ai-change-report-pair .ai-change-shot-canvas img {
+  max-height: 44vh;
+  max-width: 100%;
+  width: 100%;
+}

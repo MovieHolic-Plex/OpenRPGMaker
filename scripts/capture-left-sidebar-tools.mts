@@ -101,7 +101,7 @@ async function run(): Promise<void> {
         await captureTool(page, mode, testid, label);
       }
       // 레이어
-      for (const [testid, label] of [["layer-lower", "바닥"], ["layer-upper", "덧그림"], ["layer-event", "이벤트"]] as const) {
+      for (const [testid, label] of [["layer-lower", "바닥"], ["layer-upper", "상위"], ["layer-event", "이벤트"]] as const) {
         const btn = page.getByTestId(testid).first();
         if (await btn.isVisible().catch(() => false)) {
           await btn.click();
@@ -167,7 +167,7 @@ async function run(): Promise<void> {
       // 레이어 스위처
       const layers = page.getByTestId("left-layer-switcher");
       if (await layers.isVisible().catch(() => false)) {
-        await snap(page, `${mode}-layer-switcher`, mode, "사이드바 레이어 전환 (바닥/덧그림/이벤트)", "layer", '[data-testid="left-layer-switcher"]');
+        await snap(page, `${mode}-layer-switcher`, mode, "사이드바 레이어 전환 (바닥/상위/이벤트)", "layer", '[data-testid="left-layer-switcher"]');
       }
       // 이벤트 레이어 좌패널
       const ev = page.getByTestId("layer-event");
