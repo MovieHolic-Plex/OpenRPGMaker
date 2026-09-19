@@ -80,6 +80,10 @@ OPRN Studio is a browser-based top-down tile JRPG maker/editor. It combines:
   facade keeps its first chunk and the owning surface `index.css` imports later `.part-N.css`
   chunks directly in the same layer and order. CSS contract tests that inspect a whole
   sheet use `test/cssFamily.ts` so they see the same import family as the app.
+- The resource manager is a lazy editor surface that can open before the database CSS
+  chunk. `src/styles/resources/resource-manager.css` therefore owns its fixed backdrop,
+  centered window, header, and flex body shell; do not make it depend on opening the
+  database modal first.
 - `test` and `test/e2e` are part of the contract. Update or add focused tests for changed behavior.
 
 ## How an AI should use this wiki

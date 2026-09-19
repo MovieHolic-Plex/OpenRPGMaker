@@ -8,6 +8,12 @@ test("resource manager uses Korean classic three-pane RM2K3 layout", async ({ pa
   await page.getByTestId("toolbar-resource-manager").click();
   await expect(page.getByTestId("resource-modal")).toBeVisible();
 
+  // The resource surface can be the first modal opened; it must provide its
+  // own fixed/grid shell instead of relying on the database lazy chunk.
+  const resourceModal = page.getByTestId("resource-modal");
+  await expect(resourceModal).toHaveCSS("position", "fixed");
+  await expect(resourceModal).toHaveCSS("display", "grid");
+  await expect(resourceModal.locator(".resource-modal-window")).toHaveCSS("display", "flex");
   await expect(page.locator(".database-modal-header h2")).toHaveText("리소스 관리자");
   const categories = page.getByTestId("resource-category-list");
   await expect(categories).toBeVisible();
