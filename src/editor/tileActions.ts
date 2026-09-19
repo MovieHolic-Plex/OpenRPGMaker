@@ -175,7 +175,7 @@ export function paintTilesBulk(
   const repairTrees = !options.preservePattern && !exactPlacement
     && !lowerTerrainOnly && editsNeedTreePairRepair(edits);
 
-  store.updateMap(mapId, (m) => {
+  store.updateMapTiles(mapId, (m) => {
     const lowerPoints: RoadPoint[] = [];
     let lowerPrevious: number | undefined;
     let lowerNext: number | undefined;
@@ -296,7 +296,7 @@ export function eraseTilesBulk(
   }));
   const shapeAutotile = lowerEditsNeedAutotileShape(currentMap, tileset, eraseEdits, autoConnect);
 
-  store.updateMap(mapId, (m) => {
+  store.updateMapTiles(mapId, (m) => {
     const lowerPoints: RoadPoint[] = [];
     let lowerPrevious: number | undefined;
     let lowerNext: number | undefined;
@@ -534,7 +534,7 @@ export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, n
       autoConnect
       || editTriggersAnyAutotile(tileset, prevAtStart, newTile)
     );
-  store.updateMap(mapId, (m) => {
+  store.updateMapTiles(mapId, (m) => {
     if (!inMap(m, x, y)) return;
     const targetLayer = effectiveLayer(tileset, layer, newTile);
     const targetArr = targetLayer === "lower" ? m.lowerTiles : m.upperTiles;
