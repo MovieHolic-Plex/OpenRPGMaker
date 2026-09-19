@@ -142,7 +142,7 @@ const upsertLifeSystem: ToolDefinition = {
   run(draft: Project, args): ToolExecResult {
     const changed: string[] = [];
     if (args.dailyWeather && typeof args.dailyWeather === "object" && !Array.isArray(args.dailyWeather)) {
-      draft.system.dailyWeather = normalizeDailyWeatherConfig(mergeRecordPatch(draft.system.dailyWeather, args.dailyWeather as Record<string, unknown>) as DailyWeatherConfig);
+      draft.system.dailyWeather = normalizeDailyWeatherConfig(mergeRecordPatch(draft.system.dailyWeather, args.dailyWeather as Record<string, unknown>) as unknown as DailyWeatherConfig);
       changed.push("날씨");
     }
     if (args.farmAnimalSpecies) {

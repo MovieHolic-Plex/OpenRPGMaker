@@ -90,14 +90,14 @@ export function syncFollowerSprites(
       ? { x: lerp(motion.from.x, motion.to.x, progress), y: lerp(motion.from.y, motion.to.y, progress) }
       : position;
     const texture = resolveEventSpriteTexture(project, spriteRef.id, position.follower.graphic.pattern);
-    const direction = position.direction ?? position.follower.graphic.direction;
-    const charsetFrame = texture && isFollowerCharsetTexture(texture.texture)
+    const direction = position.direction ?? position.follower.graphic.direction ?? "down";
+    const charsetFrame = texture && isFollowerCharsetTexture(texture.texture) && typeof texture.frame === "number"
       ? texture.frame
       : undefined;
-    const frame = charsetFrame !== undefined ? charsetIdleFrameIndex(charsetFrame, direction) : texture?.frame ?? 0;
+    const frame = charsetFrame !== undefined ? charsetIdleFrameIndex(charsetFrame, direction) : numericFollowerFrame(texture?.frame);
     followerRenderState.set(key, {
       texture: texture?.texture ?? DEFAULT_EASYRPG_CHARSET_ID,
-      baseFrame: texture?.frame ?? 0,
+      baseFrame: numericFollowerFrame(texture?.frame),
       isCharset: charsetFrame !== undefined,
       direction,
       slot: { x: position.x, y: position.y },
@@ -177,4 +177,8 @@ function followerSpriteKey(follower: { readonly id?: string; readonly name: stri
   // Prefer stable id; fall back to name for saves from before this patch.
   if (follower.id) return `follower:${follower.id}`;
   return `follower:${follower.name}`;
+}
+
+function numericFollowerFrame(frame: string | number | undefined): number {
+  return typeof frame === "number" && Number.isFinite(frame) ? frame : 0;
 }

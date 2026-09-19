@@ -162,6 +162,12 @@ type CharacterSpriteDebug = {
     readonly displayWidth: number;
     readonly displayHeight: number;
   }>;
+  readonly followers: Record<string, {
+    readonly x: number;
+    readonly y: number;
+    readonly frame: string | number;
+    readonly depth: number;
+  }>;
   readonly events: Record<string, {
     readonly alpha: number;
     readonly frame: string | number;
