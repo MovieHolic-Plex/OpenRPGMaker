@@ -1,6 +1,6 @@
 import { editorState } from "@/editor/editorState";
 import { selectSidebarLayer } from "@/editor/panels/leftLayerSwitcher";
-import { openDatabaseModal } from "@/editor/panels/databaseModal";
+import { openDatabaseModalLazy } from "@/editor/panels/databaseModalLazy";
 import { uiLabel } from "@/editor/uiCopy";
 
 export type AuthoringTaskId = "map" | "event" | "data" | "test";
@@ -47,7 +47,7 @@ export function runAuthoringTask(id: AuthoringTaskId): void {
     return;
   }
   if (id === "data") {
-    openDatabaseModal();
+    openDatabaseModalLazy();
     return;
   }
   if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("oprn:test-play-window"));
