@@ -105,17 +105,22 @@ export function tilesetAnimationKeyForTile(tileset: TilesetDef, tile: number): s
     ?? (supportsChipsetTileAnimation(tileset, tile) ? animationKeyForTile(tile) : null);
 }
 
+export function tilesetCssImageValue(imageUrl: string): string {
+  return cssUrl(imageUrl);
+}
+
 export function tilesetTileBackgroundStyle(
   tileset: TilesetDef,
   tile: number,
   previewSize: number | string,
   imageUrl = tilesetImageUrl(tileset),
+  imageVariable?: string,
 ): string {
   const column = tile % tileset.tilesPerRow;
   const row = Math.floor(tile / tileset.tilesPerRow);
   const cellSize = previewSizeCss(previewSize);
   return [
-    `background-image:${cssUrl(imageUrl)}`,
+    imageVariable ? `background-image:var(${imageVariable})` : `background-image:${cssUrl(imageUrl)}`,
     `background-size:calc(${tileset.tilesPerRow} * ${cellSize}) auto`,
     `background-position:calc(${-column} * ${cellSize}) calc(${-row} * ${cellSize})`,
   ].join(";");
