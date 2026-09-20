@@ -139,3 +139,10 @@ function positiveModulo(value: number, modulo: number): number {
 function round(value: number): number {
   return Math.round(value * 1000) / 1000;
 }
+
+/** Map overrides never write the session's global weather or transition. */
+export function resolveMapWeather(global: WeatherParams, climate?: import("@/project/mapClimate").MapClimate): WeatherParams {
+  if (climate?.mode === "indoor") return NO_WEATHER;
+  if (climate?.mode === "fixed") return normalizeWeatherParams({ kind: climate.weather, intensity: climate.intensity });
+  return global;
+}

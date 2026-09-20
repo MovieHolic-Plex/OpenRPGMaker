@@ -219,6 +219,14 @@ export interface SkillRecord {
   successRate: number;
   variance: number;
   hitRate: number;
+  /** Optional authored base damage. Arithmetic only; invalid formulas use the legacy formula. */
+  damageFormula?: string;
+  criticalRate?: number;
+  criticalMultiplier?: number;
+  /** Number of subsequent full battle rounds during which this skill is unavailable. */
+  cooldownTurns?: number;
+  /** Ordered damage/healing multipliers, one per hit. Omitted means one hit. */
+  hitSequence?: number[];
   effect: SkillEffect;
   // 속성 ID. DatabaseElementRecord.id 와 매칭. 없으면 비속성(상성 배율 1.0).
   elementId?: string;
@@ -260,7 +268,13 @@ export interface ActionWeaponProfile {
 }
 
 export interface ActionSkillProfile {
-  kind: "projectile";
+  kind: "projectile" | "melee" | "dash" | "trap";
+  /** Milliseconds between casts (default 350). */
+  cooldownMs?: number;
+  /** Trap lifetime, milliseconds (default 5000, maximum 30000). */
+  durationMs?: number;
+  /** Bounded field enemy effect, independent of turn-based state records. */
+  fieldStatus?: { kind: "poison" | "slow"; durationMs: number };
   damage: number;
   range: number;
   speedTilesPerSec?: number;
@@ -540,6 +554,8 @@ export interface EnemyRewards {
   gold: number;
   dropItemId?: ItemId;
   dropRatePercent: number;
+  /** When present, replaces the legacy single drop (including an explicitly empty list). */
+  drops?: { itemId: ItemId; ratePercent: number; quantity: number; condition: EnemyActionCondition }[];
 }
 
 export interface EnemyCritical {
@@ -551,7 +567,11 @@ export interface EnemyOptions {
   normalAttacksMiss: boolean;
 }
 
-export type EnemyActionCondition = { kind: "always" } | { kind: "turn"; start: number; interval: number };
+export type EnemyActionCondition = { kind: "always" } | { kind: "turn"; start: number; interval: number }
+  | { kind: "hp" | "mp"; minPercent: number; maxPercent: number }
+  | { kind: "status"; stateId: string; present: boolean }
+  | { kind: "allies"; min: number; max: number }
+  | { kind: "switch"; switchId: string; value: boolean };
 
 export interface EnemyActionSwitchEffect {
   enabled: boolean;

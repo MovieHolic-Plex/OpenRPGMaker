@@ -7,12 +7,15 @@ const base = process.env.BASE ?? 'http://127.0.0.1:9836';
 const out = resolve('output/evidence/ai-activity-levels');
 mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ headless: true });
-const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, serviceWorkers: 'block' });
 page.setDefaultTimeout(20000);
+page.setDefaultNavigationTimeout(60000);
+page.on('dialog', dialog => dialog.accept());
 const errors = [], checks = [];
-const check = (label, ok) => { checks.push({ label, ok }); if (!ok) throw new Error(label); };
+const check = (label, ok) => { checks.push({ label, ok }); console.log(`${ok ? 'PASS' : 'FAIL'} ${label}`); if (!ok) throw new Error(label); };
 const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 page.on('pageerror', e => errors.push(e.message));
+page.on('requestfailed', req => console.log(`REQUEST FAILED ${req.url()} ${req.failure()?.errorText}`));
 let owner;
 try {
   await page.addInitScript(() => {
@@ -54,9 +57,11 @@ try {
   const guest = page.getByTestId('login-guest');
   await page.getByTestId('ai-input').or(guest).first().waitFor({ timeout: 120000 });
   if (await guest.isVisible()) await guest.click();
-  const level = page.locator('.ai-activity-toolbar [data-testid="ai-activity-level"]');
+  const level = page.locator('.ai-activity-toolbar [data-testid="ai-activity-level"], .ai-assistant-wide-head [data-testid="ai-activity-level"]');
   await level.waitFor({ timeout: 120000 });
-  check('Default is brief and available before first turn', await level.inputValue() === 'brief');
+  check('Default is brief and available before first turn', await level.getAttribute('data-level') === 'brief');
+  check('All four levels are visible buttons', await level.getByRole('button').count() === 4 && await level.locator('select').count() === 0);
+  check('Expand action has a visible text label', (await page.getByTestId('ai-wide-open').innerText()).includes('크게 보기'));
   await page.getByTestId('ai-input').fill('/pi team 마을 이름을 바꿔줘');
   await page.getByTestId('ai-send').click();
   await page.getByTestId('ai-pending-review-apply').waitFor({ timeout: 60000 });
@@ -64,10 +69,10 @@ try {
   await view.waitFor();
   check('Brief shows at most four retained steps', await view.locator('.ai-activity-entry').count() <= 4);
   await page.screenshot({ path: resolve(out, '01-brief.png') });
-  await level.selectOption('detail');
+  await level.locator('[data-activity-level="detail"]').click();
   check('Detailed work entries are visible', await view.locator('.ai-activity-entry').count() === 50);
   await page.screenshot({ path: resolve(out, '02-detail.png') });
-  await level.selectOption('trace');
+  await level.locator('[data-activity-level="trace"]').click();
   await view.getByLabel('실행 기록 종류').selectOption('error');
   check('Recovered tool error remains searchable', (await view.innerText()).includes('나무와 충돌'));
   await view.getByLabel('실행 기록 종류').selectOption('all');
@@ -83,18 +88,18 @@ try {
   await view.getByLabel('실행 기록 검색').fill('');
   const download = page.waitForEvent('download'); await view.getByText('기록 내려받기', { exact: true }).click();
   await (await download).saveAs(resolve(out, 'execution.json'));
-  await level.selectOption('none');
+  await level.locator('[data-activity-level="none"]').click();
   check('Omit hides work but preserves review decision', !(await view.isVisible()) && await page.getByTestId('ai-pending-review-apply').isVisible());
   await page.screenshot({ path: resolve(out, '04-omit-review.png') });
-  await level.selectOption('brief');
+  await level.locator('[data-activity-level="brief"]').click();
   await page.getByTestId('ai-team-member').first().click();
-  check('Team detail shares brief preference', await page.getByTestId('ai-member-detail').getByTestId('ai-activity-level').inputValue() === 'brief');
-  await page.getByTestId('ai-member-detail').getByTestId('ai-activity-level').selectOption('trace');
-  check('Team selection updates main preference', await level.inputValue() === 'trace');
+  check('Team detail shares brief preference', await page.getByTestId('ai-member-detail').getByTestId('ai-activity-level').getAttribute('data-level') === 'brief');
+  await page.getByTestId('ai-member-detail').getByTestId('ai-activity-level').locator('[data-activity-level="trace"]').click();
+  check('Team selection updates main preference', await level.getAttribute('data-level') === 'trace');
   check('Member trace is visible', await page.getByTestId('ai-member-detail').getByTestId('ai-activity-view').isVisible());
   await page.getByTestId('ai-member-close').click();
   await page.setViewportSize({ width: 1024, height: 768 });
-  await level.selectOption('brief');
+  await level.locator('[data-activity-level="brief"]').click();
   await page.getByTestId('ai-pending-review').scrollIntoViewIfNeeded();
   check('Review decision visible at 1024px', await page.getByTestId('ai-pending-review-apply').isVisible());
   await page.screenshot({ path: resolve(out, '05-compact.png') });
@@ -104,11 +109,24 @@ try {
   const wide = page.getByTestId('ai-assistant-wide');
   check('Large window contains the same conversation and team', await wide.getByTestId('ai-input').inputValue() === '다음 작업 초안' && await wide.getByTestId('ai-team-sidebar').isVisible());
   check('Large window opens a member detail beside the conversation', await wide.getByTestId('ai-member-detail').isVisible());
-  await level.selectOption('trace');
+  check('Large window has one visible level control', await wide.locator('[data-testid="ai-activity-level"]:visible').count() === 1);
+  check('Team roster exposes the assigned task', await wide.locator('.ai-team-member-task').first().isVisible());
+  await page.screenshot({ path: resolve(out, '08-workspace-brief.png') });
+  const divider = page.getByTestId('ai-wide-divider');
+  const initialWidth = (await wide.getByTestId('ai-panel').boundingBox()).width;
+  const handle = await divider.boundingBox();
+  await page.mouse.move(handle.x + handle.width / 2, handle.y + 200);
+  await page.mouse.down(); await page.mouse.move(handle.x - 80, handle.y + 200, { steps: 6 }); await page.mouse.up();
+  check('Conversation and team resize by dragging the boundary', (await wide.getByTestId('ai-panel').boundingBox()).width < initialWidth - 50);
+  await divider.focus(); await page.keyboard.press('Home');
+  check('Keyboard restores the default split', Math.abs((await wide.getByTestId('ai-panel').boundingBox()).width - initialWidth) < 2);
+  await level.locator('[data-activity-level="trace"]').click();
   await view.getByLabel('실행 기록 검색').fill('road-2');
   const entry = view.locator('.ai-activity-entry').first();
   if (!(await entry.evaluate(node => node.open))) await entry.locator('summary').click();
   check('Expanded trace exposes structured results in the large window', (await entry.innerText()).includes('changedCells'));
+  check('Trace exposes aligned log columns', await view.locator('.ai-activity-log-columns').isVisible());
+  await wide.getByTestId('ai-member-detail').getByLabel('실행 기록 검색').fill('paint_road');
   await page.screenshot({ path: resolve(out, '06-wide.png') });
   const bounds = await page.evaluate(() => {
     const dialog = document.querySelector('[data-testid=ai-assistant-wide]').getBoundingClientRect();
@@ -138,19 +156,20 @@ try {
   check('Execution persists separately from display cap', owner.entries > 220);
   await page.getByTestId('ai-pending-review-discard').click();
   await page.waitForFunction(() => document.querySelector('[data-testid=ai-team-board]')?.getAttribute('data-phase') === '버림');
-  await level.selectOption('trace');
+  await level.locator('[data-activity-level="trace"]').click();
   await page.evaluate(async()=>{await (await import('/src/ai/activityTraceArchive.ts')).flushActivityArchive();});
   // Vite may serve timestamped module instances; observe the persisted receipt
   // instead of assuming a dynamic import shares the UI's pending write queue.
   await page.waitForFunction(async id => (await (await import('/src/ai/activityTraceArchive.ts')).readActivityArchive(id)).some(t => t.phase === '버림'), owner.id);
   writeFileSync(resolve(out, 'before-reload.json'), JSON.stringify(await page.evaluate(async id => (await import('/src/ai/activityTraceArchive.ts')).readActivityArchive(id), owner.id), null, 2));
   await page.reload({ waitUntil: 'domcontentloaded' });
+  console.log('RELOAD DOM', page.url());
   await level.waitFor({ timeout: 120000 });
-  check('Display preference survives reload', await level.inputValue() === 'trace');
+  check('Display preference survives reload', await level.getAttribute('data-level') === 'trace');
   const restored = await page.evaluate(async id => (await import('/src/ai/activityTraceArchive.ts')).readActivityArchive(id), owner.id);
   writeFileSync(resolve(out, 'restored.json'), JSON.stringify(restored, null, 2));
   check('Archive survives reload with tool arguments and final phase', restored.some(t=>t.phase==='버림' && t.entries.some(e=>e.kind==='tool' && e.input.callId==='read-0')));
-  await level.selectOption('brief');
+  await level.locator('[data-activity-level="brief"]').click();
   await page.evaluate(async () => {
     const { createInlineWorkCard } = await import('/src/editor/panels/aiInlineWorkCard.ts');
     const card = createInlineWorkCard({ title: '영역 작업 표시 확인', onStop: () => { card.finish({ ok: false, message: '중단' }); } });
@@ -163,11 +182,11 @@ try {
   const region = page.locator('[data-qa-activity="region"]');
   await region.scrollIntoViewIfNeeded();
   check('Region surface shows current read operation by default', (await region.innerText()).includes('영역 읽기 · 실행 중'));
-  await level.selectOption('none');
+  await level.locator('[data-activity-level="none"]').click();
   check('Stop remains available in omit mode', await region.getByRole('button', { name: '중지', exact: true }).isVisible());
   await region.getByRole('button', { name: '중지', exact: true }).click();
   check('Interrupted operation retains visible outcome', (await region.innerText()).includes('중단'));
-  await level.selectOption('trace');
+  await level.locator('[data-activity-level="trace"]').click();
   await region.locator('.ai-activity-entry').filter({ hasText: 'get_map_region' }).first().locator('summary').click();
   check('Interrupted call exposes original input', (await region.innerText()).includes('region-read'));
   const lane = await page.evaluate(async () => {

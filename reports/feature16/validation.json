@@ -1,0 +1,49 @@
+{
+  "baseCommit": "74b49013047d28bce74873fbf3db46293ceb7ee8",
+  "combinedBeforeFixtureCorrection": {
+    "total": 377,
+    "passed": 375,
+    "failed": [
+      "gauge director prediction follows the runtime scheduler announces a faster enemy even when both gauges are zero",
+      "feature16 combat hardening: production runtime and presentation marks exact Gen1 MP damage with the MP timeline resource"
+    ]
+  },
+  "hardeningRerun": {
+    "total": 10,
+    "passed": 10,
+    "failed": []
+  },
+  "baselineMatchingFailures": [
+    "gauge director prediction follows the runtime scheduler announces a faster enemy even when both gauges are zero"
+  ],
+  "baselineFullRawSuite": {
+    "total": 22599,
+    "passed": 21968,
+    "failed": 614,
+    "pending": 17,
+    "wrapperCompleted": false
+  },
+  "newFeatureTests": {
+    "files": 19,
+    "total": 185,
+    "passed": 185,
+    "includesCorrectedFileRerun": true
+  },
+  "existingRegression": {
+    "files": 18,
+    "total": 192,
+    "passed": 191,
+    "baselineFailures": 1
+  },
+  "appTypecheckExitCode": 0,
+  "browser": {
+    "aiPlaywright": true,
+    "combatPlaywright": true,
+    "worldEditor": true,
+    "battleEditor": true,
+    "playerSteps": 9,
+    "battleSteps": 11,
+    "worldActionProfiles": 4,
+    "battleStartupTimeoutRetried": true
+  }
+}

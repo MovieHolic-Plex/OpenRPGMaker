@@ -18,6 +18,8 @@ import {
 } from "./audioQueue";
 import { isLoopingChannel, volumeGroupForChannel, type AudioVolumeGroup } from "./audioResources";
 
+import { WeatherAudio } from "./weatherAudio";
+
 const DEFAULT_FADE_MS = 600;
 const FADE_TICK_MS = 40;
 // HTMLMediaElement.playbackRate 는 이론상 제한이 없지만 브라우저가 실제로 소리를 내는 범위는
@@ -73,6 +75,7 @@ function nowMs(): number {
 }
 
 export class AudioEngine {
+  readonly weather = new WeatherAudio();
   private queue: AudioQueueState = createAudioQueueState();
   private readonly loopTracks: Map<AudioChannel, ManagedTrack> = new Map();
   private readonly oneShots: Set<ManagedTrack> = new Set();
@@ -134,6 +137,7 @@ export class AudioEngine {
 
   // 잠금 해제 + 대기 큐 방출.
   unlock(): void {
+    this.weather.unlock();
     if (this.audioContext?.state === "suspended") {
       void this.audioContext.resume().catch((error: unknown) => console.warn("[audio] AudioContext resume failed", error));
     }
@@ -155,6 +159,7 @@ export class AudioEngine {
 
   setVolume(group: AudioVolumeGroup, volume: number): void {
     this.volumes[group] = clampVolume(volume);
+    if (group === "se") this.weather.setVolume(this.volumes.se);
     // 재생 중인 트랙에 즉시 반영 — 정지 후 재생을 요구하지 않는다.
     for (const track of [...this.loopTracks.values(), ...this.oneShots, ...this.fadingTracks]) {
       if (volumeGroupForChannel(track.channel) === group) this.updateTrackVolume(track);
@@ -245,6 +250,7 @@ export class AudioEngine {
 
   // 세이브 로드/씬 종료: 모든 오디오 정지.
   stopAll(fade = false): void {
+    this.weather.stop();
     this.queue = clearPending(this.queue);
     for (const track of this.loopTracks.values()) {
       if (fade) {

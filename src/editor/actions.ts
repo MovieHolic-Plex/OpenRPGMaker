@@ -1,3 +1,4 @@
+import { normalizeMapClimate, type MapClimate } from "@/project/mapClimate";
 // editor/actions.ts
 // 에디터에서 Project를 갱신하는 모든 액션. store.update(mutator) 경유.
 // v2: 3레이어(lower/upper/event) + tileset.passability 기반.
@@ -395,6 +396,17 @@ export function setMapMinimap(mapId: MapId, patch: Partial<MapMinimapSetting> | 
   }, { scope: "map", mapId });
 }
 
+export function setMapClimate(mapId: MapId, climate: MapClimate | undefined): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((project) => {
+    const map = project.maps[mapId];
+    if (!map) return;
+    const normalized = normalizeMapClimate(climate);
+    if (normalized) map.climate = normalized;
+    else delete map.climate;
+  }, { scope: "map", mapId });
+}
+
 export function setMapCloudShadows(mapId: MapId, patch: Partial<MapCloudShadowSetting> | null): void {
   if (!allowMapMutation(mapId)) return;
   store.update((p) => {
@@ -407,12 +419,13 @@ export function setMapCloudShadows(mapId: MapId, patch: Partial<MapCloudShadowSe
     const current = map.cloudShadows;
     const next: MapCloudShadowSetting = {
       enabled: patch.enabled ?? current?.enabled ?? false,
+      ...(patch.amount !== undefined ? { amount: patch.amount } : current?.amount !== undefined ? { amount: current.amount } : {}),
       ...(patch.opacity !== undefined ? { opacity: patch.opacity } : current?.opacity !== undefined ? { opacity: current.opacity } : {}),
       ...(patch.speed !== undefined ? { speed: patch.speed } : current?.speed !== undefined ? { speed: current.speed } : {}),
       ...(patch.angleDeg !== undefined ? { angleDeg: patch.angleDeg } : current?.angleDeg !== undefined ? { angleDeg: current.angleDeg } : {}),
       ...(patch.scale !== undefined ? { scale: patch.scale } : current?.scale !== undefined ? { scale: current.scale } : {}),
     };
-    const hasExtra = next.opacity !== undefined || next.speed !== undefined || next.angleDeg !== undefined || next.scale !== undefined;
+    const hasExtra = next.amount !== undefined || next.opacity !== undefined || next.speed !== undefined || next.angleDeg !== undefined || next.scale !== undefined;
     if (!next.enabled && !hasExtra) {
       delete map.cloudShadows;
     } else {

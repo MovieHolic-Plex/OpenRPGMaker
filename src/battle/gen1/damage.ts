@@ -30,6 +30,10 @@ export interface Gen1MoveInput {
   readonly damageClass: Gen1DamageClass;
   readonly baseSpeed: number;
   readonly criticalRate: Gen1CriticalRate;
+  readonly criticalChancePercent?: number;
+  readonly criticalMultiplier?: number;
+  /** Authored base replaces defense formula only; type, status admission and accuracy remain Gen1. */
+  readonly baseDamageOverride?: number;
   readonly focusEnergy?: boolean;
   readonly offense: Gen1DamageStatPair;
   readonly defense: Gen1DamageStatPair;
@@ -156,7 +160,9 @@ export function scaledGen1Accuracy(baseAccuracyByte: number, accuracyStage = 0, 
 export function resolveGen1DamagingMove(input: Gen1MoveInput, nextByte: Gen1NextByte): Gen1MoveResolution {
   const rejectedDamageBytes: number[] = [];
   const critByte = nextByte();
-  const critical = isGen1CriticalHit(
+  const critical = input.criticalChancePercent !== undefined
+    ? critByte / 256 * 100 < input.criticalChancePercent
+    : isGen1CriticalHit(
     input.baseSpeed,
     input.criticalRate,
     input.focusEnergy === true,
@@ -172,7 +178,7 @@ export function resolveGen1DamagingMove(input: Gen1MoveInput, nextByte: Gen1Next
     power: input.power,
     attack,
     defense: selectedDefense,
-    critical,
+    critical: critical && input.criticalMultiplier === undefined,
   });
   const scaledAccuracy = scaledGen1Accuracy(
     input.baseAccuracyByte,
@@ -191,7 +197,10 @@ export function resolveGen1DamagingMove(input: Gen1MoveInput, nextByte: Gen1Next
     };
   }
 
-  let damage = applyGen1StabAndType(base.damage, input.stab, input.typeFactors);
+  const formulaBase = input.baseDamageOverride ?? base.damage;
+  const authoredBase = critical && (input.criticalMultiplier !== undefined || input.baseDamageOverride !== undefined)
+    ? Math.round(formulaBase * (input.criticalMultiplier ?? 2)) : formulaBase;
+  let damage = applyGen1StabAndType(authoredBase, input.stab, input.typeFactors);
   let damageByte: number | undefined;
   if (damage > 1) {
     do {

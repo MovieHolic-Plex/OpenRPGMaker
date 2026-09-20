@@ -25,6 +25,7 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
   const latest = el("button", { text: "최신으로", attrs: { type: "button" }, on: { click: () => { list.lastElementChild?.scrollIntoView({ block: "nearest" }); } } });
   const search = el("input", { attrs: { type: "search", placeholder: "도구·결과·입력 검색", "aria-label": "실행 기록 검색" } }) as HTMLInputElement;
   const list = el("div", { class: "ai-activity-entries" });
+  const columns = el("div", { class: "ai-activity-log-columns", attrs: { "aria-hidden": "true" }, children: ["시간", "담당", "작업", "상태", "소요"].map(text => el("span", { text })) });
   const notice = el("p", { class: "ai-activity-meta", attrs: { role: "status" } });
   const more = el("button", { text: "이전 기록 50건 더 보기", attrs: { type: "button" }, on: { click: () => { shown += 50; render(); } } });
   const exportButton = el("button", { text: "기록 내려받기", attrs: { type: "button" }, on: { click: () => {
@@ -35,7 +36,7 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
     anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   } } });
   const controls = el("div", { class: "ai-activity-filters", children: [search, filter, actorFilter, latest, exportButton] });
-  root.append(meta, controls, more, list, notice);
+  root.append(meta, controls, more, columns, list, notice);
   function render(): void {
     const level = getActivityLevel();
     root.dataset.level = level;
@@ -51,8 +52,9 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
       actorFilter.value = selectedActor;
     }
     actorFilter.hidden = Boolean(actor) || actors.length < 2;
-    meta.hidden = level !== "trace"; controls.hidden = level !== "trace";
-    meta.textContent = `${current.id} · ${new Date(current.startedAt).toLocaleString()} · ${current.phase}`;
+    meta.hidden = level !== "trace"; controls.hidden = level !== "trace"; columns.hidden = level !== "trace";
+    root.dataset.member = String(Boolean(actor));
+    meta.textContent = `실행 기록 · ${current.entries.length}건 · ${current.phase}`;
     const candidates = current.entries.filter(e => !actor || e.actor === actor).map(entry => options.historical && entry.status === "running"
       ? { ...entry, status: "info" as const, summary: `${entry.summary} · 종료 응답 미수집` } : entry);
     let rows = level === "trace" ? candidates : candidates.filter(e => ["tool", "agent_spawn", "agent_done", "review", "status", "error"].includes(e.kind));
@@ -91,6 +93,17 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
         if (level === "brief") next = el("div", { children: [heading, el("small", { text: detail })] });
         else {
           const summary = el("summary", { children: [heading, el("small", { text: `${clock(entry.at - current.startedAt)} · ${detail}` })] });
+          if (level === "trace") {
+            summary.classList.add("ai-activity-log-row");
+            const status = { running: "진행 중", ok: "완료", error: "실패", info: "기록" }[entry.status];
+            summary.replaceChildren(
+              el("time", { class: "ai-activity-log-time", text: clock(entry.at - current.startedAt) }),
+              el("span", { class: "ai-activity-log-actor", text: actorLabel(current, entry.actor) }),
+              el("span", { class: "ai-activity-log-task", children: [el("strong", { text: label(entry) }), el("small", { text: entry.kind === "tool" ? `${entry.name} · ${entry.summary}` : entry.name })] }),
+              el("span", { class: "ai-activity-log-status", text: status }),
+              el("span", { class: "ai-activity-log-duration", text: entry.durationMs === undefined ? "—" : `${(entry.durationMs / 1000).toFixed(2)}초` }),
+            );
+          }
           const body = el("div", { class: "ai-activity-payload" });
           const fillPayload = () => {
             if (body.childElementCount) return;
@@ -100,6 +113,7 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
             } else {
               for (const [caption, value] of [["입력", entry.input], ["결과 / 상태", entry.output]] as const) if (value !== undefined) body.append(el("strong", { text: caption }), el("pre", { text: JSON.stringify(value, null, 2) }));
               if (!body.childElementCount) body.append(el("p", { text: "추가 데이터 없음" }));
+              body.append(el("p", { class: "ai-activity-receipt-meta", text: `${detail} · ${new Date(entry.at).toLocaleString()} · ${entry.name}\n실행 ID ${current.id}` }));
             }
           };
           const details = el("details", { children: [summary, body] }) as HTMLDetailsElement;

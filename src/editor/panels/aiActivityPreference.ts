@@ -21,10 +21,18 @@ export function bindActivityLevel(root: HTMLElement, update: (level: ActivityLev
   update(getActivityLevel());
 }
 export function createActivityLevelControl(): HTMLElement {
-  const select = el("select", { attrs: { "aria-label": "작업 표시 수준" }, dataset: { testid: "ai-activity-level" } }) as HTMLSelectElement;
-  for (const [value, label] of Object.entries(ACTIVITY_LEVELS)) select.append(el("option", { attrs: { value }, text: label + (value === "brief" ? " (기본)" : "") }));
-  select.addEventListener("change", () => setActivityLevel(select.value as ActivityLevel));
-  const root = el("label", { class: "ai-activity-setting", children: [el("span", { text: "작업 표시" }), select] });
-  bindActivityLevel(root, level => { select.value = level; });
+  const buttons = Object.entries(ACTIVITY_LEVELS).map(([value, label]) => el("button", {
+    text: label,
+    attrs: { type: "button", "aria-pressed": "false", ...(value === "brief" ? { "aria-label": `${label} (기본)` } : {}) },
+    dataset: { activityLevel: value },
+    on: { click: () => setActivityLevel(value as ActivityLevel) },
+  }));
+  const group = el("div", { class: "ai-activity-level-buttons", attrs: { role: "group", "aria-label": "작업 표시 수준" }, dataset: { testid: "ai-activity-level" }, children: buttons });
+  const heading = el("div", { class: "ai-activity-setting-heading", children: [el("span", { text: "작업 표시" })] });
+  const root = el("div", { class: "ai-activity-setting", children: [heading, group] });
+  bindActivityLevel(root, level => {
+    group.dataset.level = level;
+    for (const button of buttons) button.setAttribute("aria-pressed", String(button.dataset.activityLevel === level));
+  });
   return root;
 }

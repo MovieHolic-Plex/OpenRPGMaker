@@ -99,12 +99,17 @@ export function normalizeActionWeaponProfile(profile: Partial<ActionWeaponProfil
 
 export function normalizeActionSkillProfile(profile: Partial<ActionSkillProfile> | undefined): ActionSkillProfile | undefined {
   if (!profile || typeof profile !== "object") return undefined;
-  if (profile.kind !== "projectile") return undefined;
+  if (profile.kind !== "projectile" && profile.kind !== "melee" && profile.kind !== "dash" && profile.kind !== "trap") return undefined;
   const out: ActionSkillProfile = {
-    kind: "projectile",
+    kind: profile.kind,
     damage: clampInt(profile.damage, 1, 9999, 1),
     range: clampInt(profile.range, 1, 20, 8),
   };
+  if (profile.cooldownMs !== undefined) out.cooldownMs = clampInt(profile.cooldownMs, 50, 30000, 350);
+  if (profile.durationMs !== undefined) out.durationMs = clampInt(profile.durationMs, 100, 30000, 5000);
+  if (profile.fieldStatus?.kind === "poison" || profile.fieldStatus?.kind === "slow") {
+    out.fieldStatus = { kind: profile.fieldStatus.kind, durationMs: clampInt(profile.fieldStatus.durationMs, 100, 30000, 3000) };
+  }
   if (profile.speedTilesPerSec !== undefined) out.speedTilesPerSec = clampInt(profile.speedTilesPerSec, 1, 30, DEFAULT_PROJECTILE_SPEED_TILES_PER_SEC);
   if (profile.itemCost && typeof profile.itemCost.itemId === "string" && profile.itemCost.itemId.length > 0) {
     out.itemCost = { itemId: profile.itemCost.itemId, amount: clampInt(profile.itemCost.amount, 1, 99, 1) };

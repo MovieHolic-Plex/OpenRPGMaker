@@ -1885,3 +1885,33 @@ player preview. The editor probe accepts skin IDs as arguments and an optional
 ### 공용 기본 매핑 재저작 (2026-09-18)
 
 사용자의 재매핑 지시로 `src/assets/sharedCharacterGraphics.json`을 원본 그림에서 새로 저작했다. 168칸 중 94칸 연결(정확 68·근사 26), 74칸 얼굴 없음, 원본 얼굴 메타데이터 80개다. 공용 저장 파일이 없는 호스트는 이 자료로 시작하며, 이미 저장된 호스트 파일은 우선하여 사용자 편집을 보존한다. 각 근사 대응의 차이는 `note`에 남긴다. `Actor3 #5`를 여성 얼굴에 순번으로 연결하지 않으며, 검은 고양이·Scarloxy 전용 그림·물건·빈 칸에 억지 얼굴을 주지 않는다. 시트·얼굴 대조 PNG, 호스트 저장 후 재읽기, Supabase 전용 행 `oprn-shared-character-graphics`의 저장(201) 후 재조회 근거는 `.omo/evidence/shared-character-faces/README.md`에 보존한다. Supabase는 재저작 자료의 원격 보관본이고 편집기의 공용 저장 정본은 호스트 파일이다.
+
+## Feature16 climate and action forms (2026-09-21)
+
+Map settings (palette tileset-name chip) → 기후 authors inherit/fixed/indoor mode,
+fixed weather and intensity via `setMapClimate` (map permission + scoped store
+mutation). Selectors: `map-props-tab-climate`, `map-climate-mode`,
+`map-climate-weather`, `map-climate-intensity`.
+Database → 파티 → 스킬 → 액션 스킬 uses the separate
+`databaseActionSkillForm.ts`. `db-field-skill-action-enabled` remains compatible;
+new selectors end in `kind`, `cooldown`, `duration`, `status`, `status-duration`.
+Kinds are projectile/melee/dash/trap. Each callback edits the latest stored profile
+so changing one field cannot restore an older value from another control.
+
+Parent-owned real editor capture (already running editor server):
+`FEATURE16_EDITOR_URL=http://127.0.0.1:<port> node scripts/capture-feature16-world-editor.mjs`.
+It opens real map/database dialogs, operates visible controls, reads the actual
+serializer's result, and writes screenshots/receipt under
+`verify-shots/feature16-world-editor`. No synthetic component mounts or DB writes.
+These scripts and tests were authored without running servers, tests or typecheck
+in the implementation agent's session; centralized validation is still required.
+## Combat authoring studio (feature16, 2026-09-21)
+
+Skills → **전투 규칙 · 피해 수식** (`feature16-combat-studio`) adds a bounded arithmetic formula, editable preview power/attacker ATK/defender DEF, ordered hit multipliers, per-skill critical chance/multiplier and cooldown. Existing effect-card hit rate remains authoritative. Preview displays base damage before model modifiers; other preview variables default to 20, level to 1. Invalid input displays **저장하지 않음**, marks the field invalid and never calls `updateDatabaseRecord`; last valid data remains saved. Blank formula restores model defaults; critical chance -1 restores battler defaults. All persisted edits use existing database mutation labels/history.
+
+Enemies → **보상** adds conditional drop rows (`feature16-drops`); first add preserves a legacy single drop as the first row. Each row has item/quantity/rate and always/turn/HP/MP/status/allies/switch condition controls. Explicit “기존 단일 드롭 사용” removes the array and restores legacy fields. The existing attack-pattern dialog uses the same condition editor, including session switch equality. Unknown/dangling item references are not silently created.
+
+Browser proof: `npx playwright test test/e2e/feature16-combat.spec.ts --project=chromium --workers=1`. Parent owns server and execution. This spec opens the **real editor** at `?freshProject=1`, uses visible database controls, verifies invalid edits do not alter exported data, switches tabs and rechecks persistence. Screenshots are emitted to Playwright's per-test output folder as `feature16-combat-{skills,invalid-formula,drops,enemy-condition}.png`. No remote content mutation; no screenshot claimed until the supervisor runs it.
+## Troop intent and weakness authoring (2026-09-21)
+
+The troop placement preview contains `databaseTroopIntentPanel`: hypothetical turn/MP/target/row, eligible action candidates with shared damage predictions, and actual element multipliers. Existing actions and elementRates are edited through `updateDatabaseRecord`; no new enemy schema. It does not claim exact AI choice or add predictions to the runtime HUD. Details, limitations and real-editor capture: `openwiki/feature16-battle-ui.md`.

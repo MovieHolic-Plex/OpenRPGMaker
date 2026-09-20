@@ -20,10 +20,31 @@
   padding: 3px;
 }
 
-.editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-grid.custom-palette-grid {
-  gap: 2px;
-  padding: 3px;
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.custom-palette {
+  border-radius: 0;
 }
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-grid.custom-palette-grid {
+  gap: 0;
+  padding: 0;
+}
+
+/* 원본 칩의 경계까지 붙여 그려 여러 칸짜리 나무·지형이 한 그림으로 이어진다.
+   선택 표시는 칸 안쪽에만 그려 이웃 칩을 가리거나 칸 크기를 바꾸지 않는다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .custom-palette-grid .chipset-tile {
+  border: 0;
+  border-radius: 0;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .custom-palette-grid .chipset-tile:hover:not(:disabled),
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .custom-palette-grid .chipset-tile:focus-visible:not(:disabled) {
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .custom-palette-grid .chipset-tile.active {
+  box-shadow: inset 0 0 0 1px var(--accent), inset 0 0 0 2px var(--bg-raised);
+}
+
 
 .editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-tile {
   border: 1px solid transparent;

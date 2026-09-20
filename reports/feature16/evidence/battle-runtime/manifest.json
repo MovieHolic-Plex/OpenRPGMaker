@@ -1,0 +1,477 @@
+{
+  "scenarioId": "feature16-battle-ui",
+  "projectPath": "verify-shots/runtime-qa/_fixtures/feature16-battle-ui.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "field",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        },
+        {
+          "kind": "waitForRuntime"
+        },
+        {
+          "kind": "seed",
+          "seed": 1
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "formation",
+      "note": "Real player menu: party → formation; active/reserve positions.",
+      "shot": "03-formation.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Escape",
+          "times": 1
+        },
+        {
+          "kind": "waitForVisible",
+          "testid": "main-menu"
+        },
+        {
+          "kind": "key",
+          "key": "ArrowDown",
+          "times": 3
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "times": 1
+        },
+        {
+          "kind": "key",
+          "key": "ArrowDown",
+          "times": 2
+        },
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        },
+        {
+          "kind": "waitForVisible",
+          "testid": "status-menu-formation-actor-actor_hero"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "back-row",
+      "shot": "04-back-row.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        },
+        {
+          "kind": "key",
+          "key": "ArrowDown",
+          "times": 4
+        },
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "active-selection",
+      "note": "Move reserve scout to first position using the visible formation list.",
+      "shot": "05-active-selection.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Escape",
+          "times": 1
+        },
+        {
+          "kind": "key",
+          "key": "ArrowDown",
+          "times": 3
+        },
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        },
+        {
+          "kind": "key",
+          "key": "ArrowUp",
+          "times": 3
+        },
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "id": "field-again",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Escape",
+          "times": 1
+        },
+        {
+          "kind": "key",
+          "key": "Escape",
+          "times": 1
+        },
+        {
+          "kind": "key",
+          "key": "Escape",
+          "times": 1
+        },
+        {
+          "kind": "key",
+          "key": "Escape",
+          "times": 1
+        },
+        {
+          "kind": "waitFor",
+          "testid": "main-menu",
+          "state": "absent"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "id": "real-battle",
+      "note": "Actual action event launches battle; no report data injected.",
+      "shot": "07-real-battle.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_moonwell_forest",
+        "x": 14,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_moonwell_forest",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "map_moonwell_forest",
+          "x": 14,
+          "y": 3
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_moonwell_forest",
+          "x": 14,
+          "y": 3
+        },
+        {
+          "kind": "face",
+          "dir": "up"
+        },
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "waitForVisible",
+          "testid": "battle-scene"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "actor-command-attack",
+          "state": "present",
+          "timeoutMs": 20000
+        }
+      ],
+      "battlers": {
+        "skin": "rm2000",
+        "directorStep": "command",
+        "field": {
+          "top": 24,
+          "bottom": 564,
+          "left": 32,
+          "right": 992,
+          "width": 960,
+          "height": 540
+        },
+        "enemyGroup": {
+          "top": 96,
+          "bottom": 564,
+          "left": 32,
+          "right": 992,
+          "width": 960,
+          "height": 468
+        },
+        "enemies": [
+          {
+            "id": "enemy-1",
+            "node": {
+              "top": 99,
+              "bottom": 459,
+              "left": 410,
+              "right": 710,
+              "width": 300,
+              "height": 360
+            },
+            "image": {
+              "top": 102,
+              "bottom": 459,
+              "left": 409,
+              "right": 711,
+              "width": 302,
+              "height": 357
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          }
+        ],
+        "allies": []
+      }
+    },
+    {
+      "index": 7,
+      "id": "battle-complete",
+      "shot": "08-battle-complete.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_moonwell_forest",
+        "x": 14,
+        "y": 3,
+        "gold": 4,
+        "battleResult": "victory",
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_moonwell_forest",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "pressUntil",
+          "key": "z",
+          "testid": "battle-scene",
+          "state": "absent",
+          "maxPresses": 160,
+          "timeoutMs": 300
+        },
+        {
+          "kind": "waitFor",
+          "testid": "battle-transition-overlay",
+          "state": "absent"
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "id": "report-list",
+      "shot": "09-report-list.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_moonwell_forest",
+        "x": 14,
+        "y": 3,
+        "gold": 4,
+        "battleResult": "victory",
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_moonwell_forest",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Escape",
+          "times": 1
+        },
+        {
+          "kind": "waitForVisible",
+          "testid": "main-menu"
+        },
+        {
+          "kind": "key",
+          "key": "ArrowDown",
+          "times": 1
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "times": 1
+        },
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        },
+        {
+          "kind": "waitForVisible",
+          "testid": "status-menu-battle-report-0"
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "id": "report-detail",
+      "shot": "10-report-detail.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_moonwell_forest",
+        "x": 14,
+        "y": 3,
+        "gold": 4,
+        "battleResult": "victory",
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_moonwell_forest",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        },
+        {
+          "kind": "waitForVisible",
+          "testid": "status-menu-battle-report-summary"
+        },
+        {
+          "kind": "key",
+          "key": "ArrowDown",
+          "times": 2
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "id": "report-back",
+      "shot": "11-report-back.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_moonwell_forest",
+        "x": 14,
+        "y": 3,
+        "gold": 4,
+        "battleResult": "victory",
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_moonwell_forest",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Escape",
+          "times": 1
+        }
+      ]
+    }
+  ]
+}

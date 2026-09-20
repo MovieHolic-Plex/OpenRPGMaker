@@ -1,0 +1,313 @@
+{
+  "scenarioId": "feature16-player",
+  "projectPath": "verify-shots/runtime-qa/_fixtures/feature16-player.json",
+  "seed": 1,
+  "viewport": {
+    "width": 960,
+    "height": 720
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "field",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 100,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        },
+        {
+          "kind": "waitForRuntime"
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "id": "filtered-inventory",
+      "note": "Real keyboard: Esc → items → last controls → usable types. Equipment is hidden, never removed.",
+      "shot": "02-filtered-inventory.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 100,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Escape",
+          "times": 1
+        },
+        {
+          "kind": "waitForVisible",
+          "testid": "main-menu"
+        },
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        },
+        {
+          "kind": "key",
+          "key": "ArrowUp",
+          "times": 2
+        },
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "sorted-inventory",
+      "shot": "03-sorted-inventory.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 100,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "ArrowDown",
+          "times": 1
+        },
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "equipment-filter",
+      "shot": "04-equipment-filter.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 100,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "ArrowUp",
+          "times": 1
+        },
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "restore-inventory",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 100,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 2
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "id": "settings",
+      "note": "Esc system group opens device options using visible semantic buttons.",
+      "shot": "06-settings.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 100,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "ArrowLeft",
+          "times": 1
+        },
+        {
+          "kind": "key",
+          "key": "ArrowUp",
+          "times": 1
+        },
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        },
+        {
+          "kind": "key",
+          "key": "ArrowDown",
+          "times": 3
+        },
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        },
+        {
+          "kind": "waitForVisible",
+          "testid": "player-option-bgm-down"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "id": "settings-changed",
+      "shot": "07-settings-changed.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 100,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        },
+        {
+          "kind": "key",
+          "key": "ArrowDown",
+          "times": 4
+        },
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "id": "shop-entry",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 100,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_lantern_village",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Escape",
+          "times": 3
+        },
+        {
+          "kind": "waitFor",
+          "testid": "main-menu",
+          "state": "absent"
+        },
+        {
+          "kind": "face",
+          "dir": "right"
+        },
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "waitForVisible",
+          "testid": "shop-mode-buy"
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "id": "shop",
+      "note": "Split shop shows real buy/sell tabs; upgrade/exchange placeholders are removed.",
+      "shot": "09-shop.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 100,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_lantern_village",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        },
+        {
+          "kind": "waitForVisible",
+          "testid": "shop-buy-item_potion"
+        }
+      ]
+    }
+  ]
+}

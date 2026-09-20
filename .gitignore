@@ -288,3 +288,5 @@ dist-packages/
 # Local team-host access codes (never commit or include in project backups).
 .oprn-host-access
 .oprn-host-access.*.tmp
+
+/test/fixtures/feature16-world/generated.json

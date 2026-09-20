@@ -1,3 +1,8 @@
+import { formationDamage } from "@/battle/battleFormation";
+import { evaluateDamageFormula, formulaBattlerContext } from "@/battle/damageFormula";
+import { predictSkillDamageFor } from "@/battle/battlePredict";
+import { combatConditionMet } from "@/battle/combatConditions";
+import { advanceBattleSkillCooldowns, startBattleSkillCooldown } from "@/battle/battleSkillUse";
 import { effectiveActorClassId } from '@/project/sessionClass';
 import { battleTroopError } from '@/project/battleAdmission';
 import { activeItemEffects, itemAllowsBattle } from "@/project/itemUsage";
@@ -248,6 +253,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         equipment: Object.fromEntries(actorEquipment),
         skillIds: sessionState.actorSkillIds ?? options.party?.skillIds,
         skillPp: options.party?.skillPp,
+        rows: options.party?.rows,
         classOverrides: sessionState.classOverrides ?? options.party?.classOverrides,
         growthProgress: sessionState.growthProgress ?? options.party?.growthProgress,
         promotionLineage: sessionState.promotionLineage ?? options.party?.promotionLineage,
@@ -327,6 +333,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   // 트룹 이벤트의 turn/everyRound 조건과 적 행동 패턴(turn)이 모델마다 다른 케이던스로
   // 발화했다(적대 리뷰: 적 3체 기준 gauge 의 "3턴"은 사실상 1라운드였다).
   let turn = 0;
+  // The cycle containing the current action, before a gauge completion increments turn.
+  let rewardTurn = 1;
   // 현재 gauge 사이클에서 이미 행동 슬롯을 소비한 배틀러 id(행동 불가 스킵 포함).
   const gaugeCycleActed = new Set<string>();
   let currentActorCommandKind: ActorCommand["kind"] | undefined;
@@ -640,6 +648,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       readonly elementId?: string;
       readonly hitRate?: number;
       readonly criticalRate?: "normal" | "high";
+      readonly criticalChancePercent?: number;
+      readonly criticalMultiplier?: number;
+      readonly hitMultiplier?: number;
+      readonly damageFormula?: string;
+      readonly affects?: "hp" | "mp";
     },
   ): { readonly hit: boolean; readonly amount: number; readonly critical: boolean } {
     const magical = usesMagicalDefense(options.project, move.elementId);
@@ -651,12 +664,18 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       battlerTypes(options.project, user),
       battlerTypes(options.project, target),
     );
+    const formula = move.damageFormula ? evaluateDamageFormula(move.damageFormula, formulaBattlerContext(
+      { ...user, attackPower: Math.round(user.attackPower * attackMultiplierForStates(options.project, user)), mind: Math.round(user.mind * attackMultiplierForStates(options.project, user)) },
+      { ...target, defense: target.defense * defenseMultiplierForStates(options.project, target), mind: target.mind * defenseMultiplierForStates(options.project, target) }, move.power)) : undefined;
     const resolved = resolveGen1DamagingMove({
       level: user.level ?? 1,
       power: move.power,
       damageClass: magical ? "special" : "physical",
       baseSpeed: gen1BaseSpeed(user),
       criticalRate: move.criticalRate ?? "normal",
+      criticalChancePercent: move.criticalChancePercent,
+      criticalMultiplier: move.criticalMultiplier,
+      baseDamageOverride: formula?.ok ? formula.value : undefined,
       offense: {
         unmodified: unmodifiedOffense,
         modified: magical
@@ -675,9 +694,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       baseAccuracyByte: accuracyByteFromPercent(move.hitRate ?? 100),
     }, nextGen1Byte);
     if (!resolved.hit) return { hit: false, amount: 0, critical: resolved.critical };
-    const beforeHp = target.hp;
-    target.hp = Math.max(0, target.hp - resolved.damage);
-    return { hit: true, amount: beforeHp - target.hp, critical: resolved.critical };
+    const resource = move.affects ?? "hp";
+    const before = target[resource];
+    target[resource] = Math.max(0, before - formationDamage(Math.round(resolved.damage * (move.hitMultiplier ?? 1)), user.row, target.row, magical ? "mind" : "attack", "damage"));
+    return { hit: true, amount: before - target[resource], critical: resolved.critical };
   }
 
   function recordIncapacitated(battler: MutableBattler): void {
@@ -691,6 +711,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
    * 사망한 배틀러는 대기 목록에서 빠지므로 쓰러진 적이 사이클 완료를 막지 않는다.
    */
   function markGaugeActionCycle(battler: MutableBattler): number {
+    rewardTurn = turn + 1;
     gaugeCycleActed.add(battler.id);
     const pending = [...activeActors(), ...visibleEnemies()].some(
       (candidate) => candidate.hp > 0 && !gaugeCycleActed.has(candidate.id)
@@ -698,6 +719,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (pending) return turn + 1;
     gaugeCycleActed.clear();
     turn += 1;
+    advanceBattleSkillCooldowns([...actors, ...enemies]);
     return turn;
   }
 
@@ -717,6 +739,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (ready.kind === "actor") {
       // 턴 시작 상태 처리(지속 피해/자연 회복). 행동 불가(수면 등)면 명령 없이 턴을 넘긴다.
       if (!gen1) {
+        rewardTurn = turn + 1;
         applyUpkeep(ready.battler);
         resolveOutcome();
         if (result) return;
@@ -810,9 +833,17 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return targetScopeForCommand(options.project, command);
   }
 
+  function commandRevives(command: TargetedActorCommand): boolean {
+    if (command.kind === "item") return options.project.database.items.find(item => item.id === command.itemId)?.onlyEffectiveOnDeadActors === true;
+    if (command.kind !== "skill") return false;
+    const skill = lookupSkill(command.skillId);
+    return skill?.effect.kind === "healing" && (skill.stateEffects ?? []).some(effect => effect.operation === "remove" && effect.stateId === "state_death");
+  }
+
   function resolvedCommandTargets(user: MutableBattler, command: TargetedActorCommand & { readonly targetEnemyId?: string; readonly targetActorId?: string }) {
     const resolution = resolveBattleTargets({
       scope: commandScope(user, command),
+      includeDefeatedAllies: commandRevives(command),
       user,
       actors: activeActors(),
       enemies: visibleEnemies(),
@@ -1176,6 +1207,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function startStrictRound(): void {
+    rewardTurn = turn + 1;
     if (result) return;
     if (strictRoundCount >= STRICT_MAX_ROUNDS) {
       recordTimeline({ kind: "stalemate", reason: "strictCap", side: "actor" });
@@ -1287,10 +1319,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           continue;
         }
         phase = "roundResolve";
+        rewardTurn = queue.round;
         const action = queue.actions[queue.index++];
         const beforeResult = lastActionResult;
         if (action.side === "actor") {
           if (action.actor.hp <= 0) continue;
+          if (action.command.kind === "skill" && battleSkillUseFailure(options.project, action.actor, action.command.skillId)) continue;
           activeActorId = action.actor.recordId;
           applyActorCommandEffect(action.actor, action.command);
         } else {
@@ -1326,6 +1360,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function completeStrictRound(round: number): void {
+    advanceBattleSkillCooldowns([...actors, ...enemies]);
     for (const actor of actors) actor.defending = false;
     for (const battler of [...actors, ...enemies]) battler.gauge = 0;
     activeActorId = undefined;
@@ -1451,6 +1486,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (!user) return;
     const resolution = resolveBattleTargets({
       scope: commandScope(user, command),
+      includeDefeatedAllies: commandRevives(command),
       user,
       actors: activeActors(),
       enemies: visibleEnemies(),
@@ -1533,6 +1569,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function performEnemyTurn(enemy: MutableBattler): void {
+    rewardTurn = turn + 1;
     // 턴 시작 상태 처리(지속 피해/자연 회복).
     if (!gen1) {
       applyUpkeep(enemy);
@@ -1568,7 +1605,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const skillId = action?.skillId;
     if (skillId) {
       const skill = lookupSkill(skillId);
-      if (!skill || (!gen1 && battleSkillUseFailure(options.project, enemy, skillId, { requireLearned: false }))) return;
+      if (!skill || (enemy.skillCooldowns?.[skillId] ?? 0) > 0 || (!gen1 && battleSkillUseFailure(options.project, enemy, skillId, { requireLearned: false }))) return;
       if (!prepareGen1CombatAction(enemy)) return;
       const requestedTargetId = refreshedEnemyTargetId(enemy, action.targetIds?.[0]);
       const resolution = resolveBattleTargets({
@@ -1585,6 +1622,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       // Red/Blue non-link opponents do not decrement PP. Player-controlled
       // battlers still use the normal finite-PP path above.
       if (!gen1) consumeBattleSkillResource(options.project, enemy, skillId);
+      else startBattleSkillCooldown(enemy, skill);
       for (const target of targets) applySkill(enemy, target, skillId, "enemySkill");
       applyEnemyActionSwitchEffects(action);
       applyGen1Residual(enemy);
@@ -1870,7 +1908,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function chooseEnemyAction(enemy: MutableBattler): EnemyActionChoice | undefined {
     const actionTurn = turn + 1;
     const plans = (enemy.enemyActions ?? [])
-      .filter((action) => enemyActionConditionMet(action.condition, actionTurn))
+      .filter((action) => combatConditionMet(action.condition, enemy, actionTurn, visibleEnemies().filter(ally => ally.id !== enemy.id && ally.hp > 0).length, battleEventState.switches))
       .filter((action) => !action.skillId || !battleSkillUseFailure(options.project, enemy, action.skillId, { requireLearned: false }))
       .flatMap((action) => {
         if (!action.skillId) {
@@ -1905,6 +1943,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (plans.length === 0) {
       if (gen1) {
         const learnedPlans = enemy.skillIds.flatMap((skillId) => {
+          if ((enemy.skillCooldowns?.[skillId] ?? 0) > 0) return [];
+          const authoredConditions = (enemy.enemyActions ?? []).filter(action => action.skillId === skillId && action.condition.kind !== "always" && action.condition.kind !== "turn");
+          if (authoredConditions.length && !authoredConditions.some(action => combatConditionMet(action.condition, enemy, actionTurn, visibleEnemies().filter(ally => ally.id !== enemy.id && ally.hp > 0).length, battleEventState.switches))) return [];
           const skill = lookupSkill(skillId);
           if (!skill) return [];
           const resolution = resolveBattleTargets({
@@ -1970,7 +2011,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function enemySkillUtility(user: MutableBattler, target: MutableBattler, skill: NonNullable<ReturnType<typeof lookupSkill>>): number {
     if (skill.effect.kind === "damage") {
-      return enemyDamageUtility(user, target, skill.power, skill.effect.statistic, skill.elementId);
+      if (!skill.damageFormula && !skill.hitSequence && skill.criticalRate === undefined && skill.criticalMultiplier === undefined && !skill.cooldownTurns) {
+        return enemyDamageUtility(user, target, skill.power, skill.effect.statistic, skill.elementId);
+      }
+      const expected = predictSkillDamageFor(options.project, battlerSnapshot(user), skill, battlerSnapshot(target)).amount;
+      return expected + (expected >= target.hp ? 1000 : 0) + (1 - target.hp / Math.max(1, target.maxHp)) * 20;
     }
     if (skill.effect.kind === "healing") {
       const missing = skill.effect.affects === "mp" ? target.maxMp - target.mp : target.maxHp - target.hp;
@@ -1994,11 +2039,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return ties[Math.min(ties.length - 1, Math.floor(rng() * ties.length))]?.value;
   }
 
-  function enemyActionConditionMet(condition: { readonly kind: "always" } | { readonly kind: "turn"; readonly start: number; readonly interval: number }, actionTurn: number): boolean {
-    if (condition.kind === "always") return true;
-    if (actionTurn < condition.start) return false;
-    return (actionTurn - condition.start) % condition.interval === 0;
-  }
+
 
   function applyEnemyActionSwitchEffects(action: { readonly switchOnAfterAction: { readonly enabled: boolean; readonly switchId?: string }; readonly switchOffAfterAction: { readonly enabled: boolean; readonly switchId?: string } }): void {
     if (action.switchOnAfterAction.enabled && action.switchOnAfterAction.switchId) {
@@ -2009,15 +2050,24 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
   }
 
-  function applySkill(
+  function applySkill(user: MutableBattler, target: MutableBattler, skillId: SkillId, commandKind: BattleTimelineEntrySnapshot["commandKind"] = "skill"): void {
+    const skill = lookupSkill(skillId);
+    for (const multiplier of skill?.hitSequence ?? [1]) {
+      if (user.hp <= 0 || (target.hp <= 0 && skill?.effect.kind === "damage")) break;
+      applySkillHit(user, target, skillId, commandKind, multiplier);
+    }
+  }
+
+  function applySkillHit(
     user: MutableBattler,
     target: MutableBattler,
     skillId: SkillId,
     commandKind: BattleTimelineEntrySnapshot["commandKind"] = "skill",
+    hitMultiplier = 1,
   ): void {
     const skill = lookupSkill(skillId);
     if (gen1) {
-      applyGen1Skill(user, target, skill, commandKind);
+      applyGen1Skill(user, target, skill, commandKind, hitMultiplier);
       return;
     }
     // 기본 "공격" 스킬(skill_attack)은 통상공격을 표현하는 스킬이다. 그 위력은 고정 10 이 아니라
@@ -2026,7 +2076,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // 이 한 줄이 없으면 적 220종 전부(authored action 이 모두 skill_attack 경유, 폴백 0종)의 피해가
     // `10 + floor(공/2) − floor(방/2)` 로 계산된다. 주인공 방어 72 → −36 이라
     // 공격 33 짜리 적이 정확히 0 을 때리고, 기본 트룹 3종 전부 피해 0 · 승률 1.0 이 된다(실측).
-    const power = skillId === DEFAULT_SKILL_ID
+    const power = skillId === DEFAULT_SKILL_ID && !skill?.damageFormula
       ? user.attackPower
       : skill?.power ?? FALLBACK_SKILL_POWER;
     const effect = skill?.effect;
@@ -2045,8 +2095,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       // RM2K3 스킬 성공률: hitRate(명중률)와 successRate(성공률)를 합성한 단일 판정.
       // 두 값 모두 100 이 기본이라 기존 데이터의 기대 명중률은 변하지 않는다.
       hitRate: combinedSkillHitRate(skill),
+      damageFormula: skill?.damageFormula,
+      hitMultiplier,
+      criticalMultiplier: skill?.criticalMultiplier,
       variance: skill?.variance,
-      criticalRate: criticalRateFor(user),
+      criticalRate: skill?.criticalRate ?? criticalRateFor(user),
       elementMultiplier: elementMultiplierFor(skill?.elementId, user, target),
       attackerStatMultiplier: attackMultiplierForStates(options.project, user),
       targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
@@ -2065,7 +2118,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       { userRecordId: user.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, skillName: skill?.name },
       timelineKind,
       commandKind,
-      effectKind === "healing" ? affects : undefined,
+      effectKind === "healing" || effectKind === "damage" ? affects : undefined,
     );
     if (skill?.animationId) {
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
@@ -2092,6 +2145,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     target: MutableBattler,
     skill: ReturnType<typeof lookupSkill>,
     commandKind: BattleTimelineEntrySnapshot["commandKind"],
+    hitMultiplier = 1,
   ): void {
     const effect = skill?.effect;
     const effectKind = effect?.kind ?? "damage";
@@ -2110,6 +2164,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           elementId: skill?.elementId,
           hitRate: skill?.hitRate,
           criticalRate: skill?.gen1CriticalRate,
+          criticalChancePercent: skill?.criticalRate,
+          criticalMultiplier: skill?.criticalMultiplier,
+          hitMultiplier,
+          damageFormula: skill?.damageFormula,
+          affects,
         })
       : !accuracyHit
         ? { hit: false, amount: 0, critical: false }
@@ -2120,6 +2179,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
             affects,
             hitRate: 100,
             variance: skill?.variance,
+            hitMultiplier,
+            damageFormula: skill?.damageFormula,
             rng,
           });
     const timelineKind: BattleTimelineEntrySnapshot["kind"] = !applied.hit
@@ -2136,7 +2197,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       amount: applied.amount,
       critical: applied.critical,
       skillName: skill?.name,
-    }, timelineKind, commandKind, effectKind === "healing" ? affects : undefined);
+    }, timelineKind, commandKind, effectKind === "healing" || effectKind === "damage" ? affects : undefined);
     if (skill?.animationId) {
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
       attachAnimationToLatestTimeline(lastAnimation);
@@ -2468,8 +2529,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         if (gen1EnemyOrderIds.length > 0) {
           result = "victory";
           phase = "resolved";
-          clearEndOfBattleStates();
           accumulateRewards();
+          clearEndOfBattleStates();
           return;
         }
       }
@@ -2480,8 +2541,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if ((enemiesInBattle.length > 0 || capturedMonsters.length > 0) && enemiesInBattle.every((enemy) => enemy.hp <= 0)) {
       result = "victory";
       phase = "resolved";
-      clearEndOfBattleStates();
       accumulateRewards();
+      clearEndOfBattleStates();
       return;
     }
   }
@@ -2499,7 +2560,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function accumulateRewards(): void {
-    const collected = collectBattleRewards(options.project, enemies, rng);
+    const collected = collectBattleRewards(options.project, enemies, rng, Math.max(1, rewardTurn), battleEventState.switches);
     rewards.exp = collected.exp;
     rewards.gold = collected.gold;
     rewards.enemyLevel = collected.enemyLevel;

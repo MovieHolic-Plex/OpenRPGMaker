@@ -1,3 +1,4 @@
+import { inspectPromptPayload } from "../../src/ai/authoring/promptInspection.ts";
 import { activityPayload } from "../../src/ai/activityTrace.ts";
 import { finishSpatialToolAcceptance, authorMergedSpatialProposal } from "../../src/editor/tools/spatialToolState.ts";
 import { mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
@@ -288,9 +289,18 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     },
     ...(apiKey ? { getApiKey: () => apiKey as never } : {}),
     ...(options.streamFn ? { streamFn: options.streamFn } : {}),
-    ...(request.provider === "google-antigravity"
-      ? { onPayload: antigravityToolEnumPayload(String((model as { id?: string }).id ?? ""), tools) as never }
-      : {}),
+    onPayload: ((payload: unknown) => {
+      const outgoing = request.provider === "google-antigravity"
+        ? antigravityToolEnumPayload(String((model as { id?: string }).id ?? ""), tools)(payload)
+        : payload;
+      // Observe the actual provider payload after normalization, not a rebuilt prompt.
+      try {
+        emit({ type: "prompt_inspection", snapshot: inspectPromptPayload(outgoing,
+          "Pi provider payload · 전송 시도", String((model as { id?: string }).id ?? ""),
+          [apiKey ?? "", ...Object.values(options.providerApiKeys ?? {}).filter((key): key is string => Boolean(key))]) });
+      } catch { /* inspection must never change provider behavior */ }
+      return outgoing;
+    }) as never,
     // 미노출 툴 호출 구제 — 축소 노출(core+도메인) 아래서 모델이 find_tools 없이 곧바로 이름을
     // 쳐도, 레지스트리에 있고 실행 경계(readOnly·toolNames) 안이면 실제로 실행된다.
     // 경계 밖 이름은 undefined → 평범한 "tool not found" 결과가 모델의 자가수정을 돌린다.

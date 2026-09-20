@@ -1,3 +1,4 @@
+import { actionFieldSlow } from "./actionFieldSlow";
 import { isDetectionEmoting } from "./npcDetectionEncounter";
 import { pursuitTarget } from "./horrorRuntime";
 import { pursuitPass } from "./pursuitNavigation";
@@ -24,9 +25,10 @@ import { moveRuntimeEventPosition,
 runtimeEventView,
 runtimeEventViewById, } from "@/project/runtimeEventState"
 
-export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: number): void {
+export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, frameDeltaMs: number): void {
   const project = store.getCurrent();
   for (const [eventId, mover] of scene.autonomousNPCs) {
+    const deltaMs = frameDeltaMs * (actionFieldSlow.get(mover) ?? 1);
     if (isDetectionEmoting(scene, eventId)) continue;
     if (scene.running && scene.session.messageWindowSettings?.allowEventMovementDuringWait !== true
       && !scene.commandMoveRouteEventIds?.has(eventId)) continue;

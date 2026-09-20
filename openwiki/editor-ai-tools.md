@@ -1816,3 +1816,14 @@ walkthrough rather than treating a successful tool call as runtime proof.
 `set_title_screen`, `set_game_over` 또는 해당 이벤트 그래픽 필드에 연결한다.
 오프닝과 게임오버의 전용 생성 툴은 각각의 화면 설정과 연결 검증을 유지하고,
 일반 에셋 생성은 여러 데이터베이스 레코드에서 재사용할 수 있는 리소스를 만든다.
+
+## Feature16 combat and climate authoring tools (2026-09-21)
+
+`upsert_skill` exposes formulas, crit, hit sequences, turn cooldowns and action profiles.
+`upsert_enemy` exposes expanded conditions and conditional drops. New nested inputs
+are validated before normalization: invalid formulas/condition kinds/array overflow
+are rejected atomically. Partial action updates preserve omitted values; top-level
+`clearActionSkill`, `clearActionFieldStatus`, `clearActionItemCost` explicitly clear.
+`set_map_properties` accepts climate or clearClimate. Drop item and condition state/
+switch references participate in load validation, deletion guards and switch rename.
+Tests: `feature16AiToolIntegration.test.ts`; schemas: `combatAuthoringSchemas.ts`.

@@ -106,6 +106,21 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
   예외도 `check()` 가 이슈 문자열로 남긴다. 새 검증기를 추가할 때도 이 계약을 깨지 마라
   (비정규 프로젝트에서 예외가 새면 에디터 부팅이 통째로 죽는다. 실측 2026-09-16).
 
+### 커스텀 칩 팔레트의 빈틈 없는 표시 (2026-09-21)
+
+왼쪽 커스텀 팔레트는 원본 행·열을 보존하면서 `gap/padding/border/radius = 0`으로
+붙여 그린다. 16px 칩 30열은 480px이며, 이전의 2px 간격·3px 패딩을 합친 544px가 아니다.
+선택·hover·키보드 focus는 안쪽 윤곽선으로 표시한다. 칸 좌표/크기를 바꾸는 border나
+둥근 모서리를 다시 넣으면 나뭇잎·나무의 연결부가 잘린다. 최소 폭과 컨테이너 폭 계산에도
+별도 여백을 더하지 않는다. 표준 6열 팔레트는 기존 표시를 사용한다.
+소유: `styles/map/left-sidebar.modern.part-6.css`, `styles/map/from-shell-editor-ui-modes.css`.
+실제 브라우저의 선택·방향키·사각 드래그와 전후 캡처: `scripts/qa/capture-custom-palette-density.mjs`.
+커스텀 팔레트는 `tilesPerRow` 열을 유지하며, 표준 팔레트의 6열 리플로우를 적용하지 않는다.
+초보 레일은 동일 칩셋·이미지·검색 조건에서 팔레트 DOM을 재사용한다. 선택 시 2,000개 이상의
+셀을 다시 만들면 지연 생성 중인 뒷부분이 사라지거나 키보드/드래그 상태가 끊긴다.
+DOM 미리보기는 이식 PNG의 공유 Blob URL을 쓰고 증거·내보내기는 data URL을 유지한다.
+같은 맵에서 도구·선택만 바뀌면 프로젝트 전체 참조 감사와 JSON 내보내기를 다시 하지 않는다.
+
 ## Exterior door backing
 
 AI house and village authoring places lower-layer tile 359 at `(x, y-1)` and
