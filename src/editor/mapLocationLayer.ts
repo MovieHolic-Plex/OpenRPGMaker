@@ -8,7 +8,7 @@
 
 import { TILE_SIZE } from "@/assets/bundled";
 import { claimCanvasPointer, eventIdAtPoint, openEventFromCanvas, type CanvasPointerPoint } from "@/editor/canvasPointerBridge";
-import { editorState } from "@/editor/editorState";
+import { editorState, editorStateChangedOnlyCanvasOverlay } from "@/editor/editorState";
 import {
   locationClickCount,
   resolveLocationOverlapPointer,
@@ -920,7 +920,13 @@ export function installMapLocationLayer(): () => void {
   overlay?.addEventListener("wheel", onWheel, { passive: false });
   window.addEventListener("keydown", onKeyDown);
   const offLayer = subscribeLocationLayer(() => render());
-  const offEditor = editorState.subscribe(() => render());
+  let lastEditorState = editorState.get();
+  const offEditor = editorState.subscribe((state) => {
+    const previous = lastEditorState;
+    lastEditorState = state;
+    if (editorStateChangedOnlyCanvasOverlay(previous, state)) return;
+    render();
+  });
   const offStore = store.subscribe(() => render());
   teardown = () => {
     offLayer();

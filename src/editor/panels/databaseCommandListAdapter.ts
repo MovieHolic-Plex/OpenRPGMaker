@@ -120,8 +120,13 @@ export function renderDatabaseCommandListEditor(host: HTMLElement, adapter: Data
 function renderEmptyCommandLine(actions: CommandListActions, pickerContext?: M2RuntimeContext): HTMLElement {
   const openPicker = () => {
     if (document.querySelector('[data-testid="event-command-picker"]')) return;
+    const pickerTitle = pickerContext === "troop"
+      ? "전투 이벤트 명령"
+      : pickerContext === "map"
+        ? "맵 이벤트 명령"
+        : "공통 이벤트 명령";
     openEventCommandPicker({
-      title: "공통 이벤트 명령",
+      title: pickerTitle,
       context: pickerContext,
       // 편집 창은 피커를 대체한다. 피커를 먼저 닫아 모달 스택을 한 겹으로 유지한다.
       onSelect: (command) => {
@@ -134,7 +139,7 @@ function renderEmptyCommandLine(actions: CommandListActions, pickerContext?: M2R
   return el("button", {
     class: "cmd-empty-line",
     text: "◆",
-    attrs: { type: "button", title: "더블클릭해서 공통 이벤트 명령을 추가" },
+    attrs: { type: "button", title: `더블클릭해서 ${pickerContext === "troop" ? "전투" : pickerContext === "map" ? "맵" : "공통"} 이벤트 명령을 추가` },
     dataset: { testid: "event-command-empty-line" },
     on: {
       dblclick: openPicker,

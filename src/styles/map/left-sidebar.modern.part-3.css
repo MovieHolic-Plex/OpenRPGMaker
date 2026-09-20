@@ -1,0 +1,90 @@
+/* ── 2. 타일 도크: 선택 칩 ────────────────────────────────────────────────── */
+
+.editor-layout .left-panel-stack .selected-tile-status {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  gap: 8px;
+  margin: 0 0 6px;
+  min-height: 30px;
+  padding: 2px 6px 2px 5px;
+}
+
+.editor-layout .left-panel-stack .selected-tile-status .selected-tile-thumb {
+  background-color: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: 5px;
+  height: 24px;
+  width: 24px;
+}
+
+/* 두 글자 조각은 버튼이다 — 타일 이름은 시트 스크롤, 타일셋 이름은 맵 설정(타일 그림판).
+   버튼 기본 크롬을 지우고 글자만 남긴 뒤, 눌린다는 신호는 hover 색과 점선 밑줄로 낸다. */
+.editor-layout .left-panel-stack .selected-tile-status .selected-tile-label,
+.editor-layout .left-panel-stack .selected-tile-status .selected-tile-tileset {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 0;
+  padding: var(--space-1);
+  min-height: var(--space-5);
+  text-align: left;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.editor-layout .left-panel-stack .selected-tile-status .selected-tile-label {
+  color: var(--text-1);
+  font: 700 12px/1.2 var(--font-ui);
+}
+
+.editor-layout .left-panel-stack .selected-tile-status .selected-tile-label:hover {
+  background: var(--control-bg-hover);
+}
+
+.editor-layout .left-panel-stack .selected-tile-status .selected-tile-tileset {
+  color: var(--text-2);
+  font: 500 11px/1.2 var(--font-ui);
+  margin-left: auto;
+  max-width: 40%;
+  text-align: right;
+  text-decoration: underline dotted;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 2px;
+}
+
+.editor-layout .left-panel-stack .selected-tile-status .selected-tile-tileset:hover {
+  background: var(--control-bg-hover);
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
+.editor-layout .left-panel-stack .selected-tile-status .selected-tile-label:focus-visible,
+.editor-layout .left-panel-stack .selected-tile-status .selected-tile-tileset:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
+.editor-layout .left-panel-stack .selected-tile-props-button {
+  align-items: center;
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  display: inline-flex;
+  font-size: 13px;
+  height: 24px;
+  justify-content: center;
+  padding: 0;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  width: 24px;
+}
+
+.editor-layout .left-panel-stack .selected-tile-props-button:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.editor-layout .left-panel-stack .selected-tile-props-button:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}

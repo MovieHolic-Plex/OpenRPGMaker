@@ -87,7 +87,7 @@ describe("아군 배틀러 스프라이트 선택", () => {
 
     const image = allyImage(field);
     expect(image?.getAttribute("src")).toBe(
-      "/assets/generated/battle-skins/sprites/ally-creature-back.png",
+      "/assets/scarloxy/scarloxy-monster-mossling.png",
     );
     const node = field.querySelector<HTMLElement>(".battle-actor-group .battle-actor");
     expect(node?.dataset.actorBackBattler).toBeUndefined();
@@ -102,7 +102,7 @@ describe("아군 배틀러 스프라이트 선택", () => {
 
     const image = allyImage(field);
     expect(image?.getAttribute("src")).toBe(
-      "/assets/generated/battle-skins/sprites/ally-creature-back.png",
+      "/assets/scarloxy/scarloxy-monster-mossling.png",
     );
     const node = field.querySelector<HTMLElement>(".battle-actor-group .battle-actor");
     expect(node?.dataset.actorBackBattler).toBeUndefined();

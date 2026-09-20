@@ -161,6 +161,8 @@ SHA-256 검증·손상 복구·잠금 복구·관리자 제작 명령은 `openwi
 | 세이브 슬롯·이어하기 | `src/player/saveSlots.ts`, `src/player/saveSlotValidation.ts` |
 | 런타임 세션 상태(스위치·변수·진행) | `src/project/session.ts` |
 | 플레이 화면 부팅·모드 전환 | `src/app/mode.ts`, `src/player/player.ts`, `src/player/createPlayGame.ts`, `src/main.ts` |
+| 전투 상태이상 추가·해제·턴 경과 | `openwiki/state-system.md`, `src/battle/battleStates.ts`, `src/project/types/database.ts` |
+| 실시간 액션 전투·필드 스폰 | `openwiki/runtime-action-combat.md`, `src/player/playSceneActionCombat.ts`, `src/player/playSceneFieldSpawns.ts` |
 | 전투 규칙·턴·보상 | `src/battle/runtime.ts`, `src/battle/types.ts` |
 | 전투 화면 DOM·스킨 | `src/player/battleFieldDom.ts`, `src/styles/runtime/battle/`, `src/styles/runtime/battle-skins/` |
 | 대화창·문장 표시 | `src/player/dialogue.ts`, `src/player/dialoguePresentation.ts`, `src/player/dialoguePagination.ts` |

@@ -109,7 +109,7 @@ describe("DB upsert 확장 툴", () => {
     expect(message).toContain("common_event.ce_bad.commands[1].kind");
     expect(message).toContain("기대 형식 string");
     expect(message).toContain("커맨드 kind는 문자열");
-    expect(message).toContain("event_command_assist(있으면)나 고수준 툴");
+    expect(message).toContain("event_command_assist나 고수준 툴");
     expect(message).toContain("올바른 1커맨드 예시 JSON: {\"commands\":[{\"kind\":\"text\",\"body\":\"안녕하세요\"}]}");
   });
 });

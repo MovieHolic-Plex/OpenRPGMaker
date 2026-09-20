@@ -28,6 +28,7 @@ export interface AiWorkCardFinish {
 }
 
 export interface AiWorkCard {
+  recordActivity?(event: import("@/ai/piAgent/protocol").PiAgentEvent): void;
   readonly root: HTMLElement;
   /** 진행 중 도구 행이 머무는 자리(카드 접힘 상태에서도 보인다). */
   readonly live: HTMLElement;

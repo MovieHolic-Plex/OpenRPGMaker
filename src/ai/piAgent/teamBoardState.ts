@@ -1,3 +1,4 @@
+import { createActivityTrace, recordActivityEvent, type ActivityTrace } from "../activityTrace";
 // 팀 보드 상태. 이벤트 스트림 → 보드가 그릴 상태를 만드는 순수 리듀서.
 // 단일 `/pi` 실행도 같은 보드로 그린다: 패널이 평평한 이벤트를 agent_event 로 감싸 넣는다.
 
@@ -61,6 +62,7 @@ export interface TeamBoardAgent {
 export type TeamBoardPhase = "준비" | "실행 중" | "적용 중" | "검토 대기" | "적용됨" | "완료" | "버림" | "중단" | "실패";
 
 export interface TeamBoardState {
+  readonly trace?: ActivityTrace;
   readonly mode: "single" | "team";
   readonly task: string;
   readonly phase: TeamBoardPhase;
@@ -75,8 +77,8 @@ export interface TeamBoardState {
 
 const ROLE_LABELS: Record<PiTeamRoleId, string> = { orchestrator: "팀장", builder: "시공", reviewer: "검수" };
 
-export function createTeamBoardState(mode: "single" | "team", task: string): TeamBoardState {
-  return { mode, task, phase: "준비", agents: [], report: null, error: null, applied: null, changedKeys: [], reviewChips: [] };
+export function createTeamBoardState(mode: "single" | "team", task: string, projectId = ""): TeamBoardState {
+  return { trace: createActivityTrace(task, projectId), mode, task, phase: "준비", agents: [], report: null, error: null, applied: null, changedKeys: [], reviewChips: [] };
 }
 
 function agentRow(agentId: string, role: PiTeamRoleId, mapId: string | null, mapName: string | null, task: string, memberId: string | null = null, label?: string, fixOf: string | null = null): TeamBoardAgent {
@@ -179,6 +181,9 @@ function applyAgentEvent(agent: TeamBoardAgent, event: PiAgentEvent): TeamBoardA
 }
 
 export function reduceTeamBoard(state: TeamBoardState, event: PiAgentEvent): TeamBoardState {
+  // The command bridge records heartbeats without invalidating the agent board.
+  if (event.type === "heartbeat") return state;
+  if (state.trace) state = { ...state, trace: recordActivityEvent(state.trace, event) };
   switch (event.type) {
     case "team_start":
       return { ...state, phase: "실행 중", task: event.task || state.task };

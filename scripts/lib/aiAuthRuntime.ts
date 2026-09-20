@@ -3,13 +3,16 @@
 // 불변식 1: 순수 Node 에서 돈다. 와이어 구현은 src/ai/oauth/* 의 fetch 전용 모듈이고,
 //           Bun 은 완성(completion) 전송에만 필요하다. 인증 경로가 Bun 을 요구하면
 //           Bun 없는 머신에서 /auth/* 전체가 HTTP 500 이 된다.
-// 불변식 2: 비밀은 디스크 저장소(~/.oprn/oh-my-pi-auth.json)에만 있고 브라우저로 나가지 않는다.
+// 불변식 2: 비밀은 로컬 OMP/companion 저장소에만 있고 브라우저로 나가지 않는다.
 //
-// 비밀은 항상 디스크 저장소(~/.oprn/oh-my-pi-auth.json)에만 있고 브라우저로 나가지 않는다.
+// 기본 로그인 원본은 OMP의 ~/.omp/agent/agent.db 이며, companion 캐시는
+// ~/.oprn/oh-my-pi-auth.json 이다. 둘 다 로컬에만 있고 브라우저로 나가지 않는다.
 
-import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   ANTIGRAVITY_PROVIDER_ID,
   CODEX_PROVIDER_ID,
@@ -44,6 +47,15 @@ const store = createOhMyPiAuthStore(defaultOhMyPiAuthPath());
 
 /** Antigravity 는 projectId 없이는 요청이 불가능하므로 상태 판정에 그것까지 본다. */
 const PROJECT_SCOPED_PROVIDERS = new Set<string>([ANTIGRAVITY_PROVIDER_ID]);
+const OMP_PROBE_TTL_MS = 2_000;
+const OMP_AUTH_PROBE_SCRIPT = fileURLToPath(new URL("./omp-auth-probe.mjs", import.meta.url));
+
+type OmpProbeResult = {
+  available: boolean;
+  credentials?: PortedOAuthCredentials;
+};
+
+const ompProbeCache = new Map<string, { checkedAt: number; result: OmpProbeResult }>();
 
 function testStub(): boolean {
   return process.env.OPRN_OH_MY_PI_TEST_STUB === "1";
@@ -79,6 +91,123 @@ function credentialsOf(provider: string): PortedOAuthCredentials | undefined {
     orgName: row.orgName,
     authorizedAt: row.authorizedAt,
   };
+}
+
+function shouldProbeOmpAuth(): boolean {
+  // Tests and explicitly isolated auth paths must never read a user's global
+  // OMP database. Production's default store is opt-in to the shared login.
+  return !testStub()
+    && !process.env.OPRN_OH_MY_PI_AUTH_PATH
+    && process.env.OPRN_DISABLE_OMP_AUTH_REUSE !== "1";
+}
+
+function ompCommand(): string {
+  const configured = process.env.OPRN_BUN_PATH?.trim();
+  if (configured) return configured;
+  const local = join(homedir(), ".bun", "bin", "bun");
+  return existsSync(local) ? local : "bun";
+}
+
+/**
+ * Read OMP's own AuthStorage through a tiny Bun boundary. The editor's Node
+ * auth owner must not import bun:sqlite, but it can safely receive the JSON
+ * result over a private child-process pipe. No probe error is surfaced as an
+ * auth failure: the editor's own store remains a valid fallback.
+ */
+function probeOmpAuth(provider: string): OmpProbeResult {
+  if (!shouldProbeOmpAuth()) return { available: false };
+  const now = Date.now();
+  const cached = ompProbeCache.get(provider);
+  if (cached && now - cached.checkedAt < OMP_PROBE_TTL_MS) return cached.result;
+
+  let result: OmpProbeResult = { available: false };
+  try {
+    const output = execFileSync(ompCommand(), [OMP_AUTH_PROBE_SCRIPT, provider], {
+      cwd: process.cwd(),
+      env: { ...process.env },
+      encoding: "utf8",
+      timeout: 3_000,
+      maxBuffer: 256 * 1024,
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+    const line = String(output).trim().split(/\r?\n/u).filter(Boolean).pop();
+    const parsed = line ? JSON.parse(line) as { available?: unknown; credentials?: unknown } : undefined;
+    const raw = parsed?.credentials;
+    if (parsed?.available === true && raw && typeof raw === "object" && !Array.isArray(raw)) {
+      const candidate = raw as Record<string, unknown>;
+      const access = typeof candidate.access === "string" ? candidate.access : "";
+      const refresh = typeof candidate.refresh === "string" ? candidate.refresh : "";
+      const expires = Number(candidate.expires) || 0;
+      if (access && refresh && expires > 0) {
+        result = {
+          available: true,
+          credentials: {
+            access,
+            refresh,
+            expires,
+            projectId: typeof candidate.projectId === "string" ? candidate.projectId : undefined,
+            email: typeof candidate.email === "string" ? candidate.email : undefined,
+            accountId: typeof candidate.accountId === "string" ? candidate.accountId : undefined,
+            apiEndpoint: typeof candidate.apiEndpoint === "string" ? candidate.apiEndpoint : undefined,
+            enterpriseUrl: typeof candidate.enterpriseUrl === "string" ? candidate.enterpriseUrl : undefined,
+            orgId: typeof candidate.orgId === "string" ? candidate.orgId : undefined,
+            orgName: typeof candidate.orgName === "string" ? candidate.orgName : undefined,
+            authorizedAt: Number(candidate.authorizedAt) || undefined,
+          },
+        };
+      } else {
+        result = { available: true };
+      }
+    } else if (parsed?.available === true) {
+      result = { available: true };
+    }
+  } catch {
+    // Bun is optional for the status/login surface. Keep the custom store
+    // authoritative when the OMP probe cannot run.
+  }
+  ompProbeCache.set(provider, { checkedAt: now, result });
+  return result;
+}
+
+function isUsableCredentials(provider: string, credentials: PortedOAuthCredentials | undefined): boolean {
+  return Boolean(
+    credentials?.access
+      && credentials.refresh
+      && credentials.expires > Date.now()
+      && (!PROJECT_SCOPED_PROVIDERS.has(provider) || credentials.projectId),
+  );
+}
+
+function shouldReplaceImportedCredentials(provider: string, current: PortedOAuthCredentials | undefined, external: PortedOAuthCredentials): boolean {
+  if (!current) return true;
+  if (!isUsableCredentials(provider, current)) return true;
+  // OMP normally refreshes by extending the expiry. Do not overwrite a fresh
+  // local refresh with an older SQLite snapshot.
+  return external.expires > current.expires;
+}
+
+/** Adopt OMP's existing login into the companion cache without opening OAuth. */
+function adoptOmpCliCredentials(provider: string): boolean {
+  if (!shouldProbeOmpAuth() || store.adoptionDeclined(provider)) return false;
+  const currentRow = store.get(provider);
+  const current = credentialsOf(provider);
+  const probe = probeOmpAuth(provider);
+
+  if (!probe.available) return false;
+  if (!probe.credentials) {
+    // If this row came from OMP and OMP no longer has it (logout), do not keep
+    // presenting a stale editor connection. A manual editor disconnect uses
+    // store.remove(), which records declined and remains authoritative.
+    if (currentRow?.source === "omp") store.clear(provider);
+    return false;
+  }
+  if (!current || currentRow?.source === "omp" || !isUsableCredentials(provider, current)) {
+    if (shouldReplaceImportedCredentials(provider, current, probe.credentials)) {
+      store.setOAuth(provider, probe.credentials, { source: "omp" });
+      return true;
+    }
+  }
+  return false;
 }
 
 /**
@@ -119,6 +248,7 @@ export function publicProviderStatus(provider: string) {
   requireKnown(provider);
   const envVars = getOhMyPiProvider(provider)?.envVars ?? [];
   const envHit = envVars.some((name) => Boolean(process.env[name]?.trim()));
+  adoptOmpCliCredentials(provider);
   if (!store.has(provider)) adoptCodexCliCredentials(provider);
   const disk = store.publicStatus(provider);
   const row = store.get(provider);
@@ -237,6 +367,7 @@ export async function startProviderLogin(provider: string, _body: { apiKey?: str
 
 export async function refreshProvider(provider: string) {
   const id = requireKnown(provider);
+  adoptOmpCliCredentials(id);
   const credentials = credentialsOf(id);
   if (!credentials) return publicProviderStatus(id);
   if (testStub()) {
@@ -250,7 +381,9 @@ export async function refreshProvider(provider: string) {
         projectId: credentials.projectId ?? "",
       });
   // 저장본 위에 병합한다: 갱신 응답은 orgId/projectId 같은 로그인 시점 메타데이터를 담지 않는다.
-  store.setOAuth(id, { ...credentials, ...refreshed });
+  store.setOAuth(id, { ...credentials, ...refreshed }, {
+    ...(store.get(id)?.source === "omp" ? { source: "omp" } : {}),
+  });
   return { ...publicProviderStatus(id), refreshed: true };
 }
 
@@ -279,6 +412,7 @@ export async function resolveRequestApiKey(provider: string): Promise<string | u
     const value = process.env[name]?.trim();
     if (value) return value;
   }
+  adoptOmpCliCredentials(id);
   let credentials = credentialsOf(id);
   if (!credentials) {
     adoptCodexCliCredentials(id);
@@ -286,7 +420,16 @@ export async function resolveRequestApiKey(provider: string): Promise<string | u
   }
   if (!credentials) return undefined;
   if (Date.now() >= credentials.expires) {
-    await refreshProvider(id);
+    try {
+      await refreshProvider(id);
+    } catch (error) {
+      // 갱신실패의 흔한 원인은 refresh_token 재사용이다 — codex CLI 같은 다른 도구가 먼저 갱신하면 우리 저장본의 refresh 토큰은 이미 소모된 뒤다.
+      // 그럴 때 CLI 로그인은 더 신선할 수 있으므로 채용을 시도하고, 그것도 쓸 수 없으면 원래 오류를 올린다.
+      // 이 경로가 없으면 한 번 낙은 저장본 행이 검색·완성을 영구히 막는다(2026-09-21 실측).
+      if (!adoptCodexCliCredentials(id)) throw error;
+      const adopted = credentialsOf(id);
+      if (!adopted || !isUsableCredentials(id, adopted)) throw error;
+    }
     credentials = credentialsOf(id);
     if (!credentials) return undefined;
   }

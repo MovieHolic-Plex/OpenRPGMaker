@@ -2,16 +2,25 @@ type Size = { readonly width: number; readonly height: number };
 type Point = { readonly x: number; readonly y: number };
 
 /** Field-local logical pixels. Fixed gutters keep HUD disclosure from moving a battler. */
-function fitEnemyImage(field: Size, image: Size, anchor: Point): Point & { readonly fit: number } {
+export function fitEnemyImage(field: Size, image: Size, anchor: Point): Point & { readonly fit: number } {
   const left = 16;
   const right = field.width - 16;
   const top = 32;
   const bottom = field.height - 24;
-  const fit = Math.min(1, (right - left) / image.width, (bottom - top) / image.height);
+  // Shrink around the authored feet rather than pushing every large sprite to
+  // the same bottom/centre. Formation spacing and row depth must survive fitting.
+  const minimumFit = Math.min(1, 32 / Math.max(image.width, image.height),
+    (right - left) / image.width, (bottom - top) / image.height);
+  const x = Math.max(left + image.width * minimumFit / 2,
+    Math.min(right - image.width * minimumFit / 2, anchor.x));
+  const y = Math.max(top + image.height * minimumFit, Math.min(bottom, anchor.y));
+  const fit = Math.max(0, Math.min(1,
+    2 * Math.min(x - left, right - x) / image.width,
+    (y - top) / image.height));
   return {
     fit,
-    x: Math.max(left + image.width * fit / 2, Math.min(right - image.width * fit / 2, anchor.x)),
-    y: Math.max(top + image.height * fit, Math.min(bottom, anchor.y)),
+    x,
+    y,
   };
 }
 

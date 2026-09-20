@@ -1,4 +1,8 @@
+import { finalizeSkillCombatPatch, validateEnemyCombatPatch, validateSkillCombatPatch } from "./combatAuthoringValidation";
+import { actionSkillClearProperties, authoredSkillProperties, combatConditionSchema, conditionalDropsSchema } from "./combatAuthoringSchemas";
 import { hasEquipmentSlot } from "@/project/equipmentSlots";
+import { mergeRecordPatch } from "./mergeRecordPatch";
+import { projectDatabaseReferenceMessage } from "@/editor/databaseRecordReferences";
 // editor/tools/dbTools.ts
 // DB 쓰기 툴: upsert_item / upsert_enemy / upsert_troop / upsert_actor / upsert_skill
 //            / upsert_equipment / upsert_class / define_promotion / upsert_state / upsert_common_event
@@ -147,6 +151,11 @@ function duplicateFromCollection(draft: Project, collection: DatabaseRecordColle
 }
 
 function deleteFromCollection(draft: Project, collection: DatabaseRecordCollection, id: string): { id: string; name: string } {
+  if (collection === "actors" || collection === "classes" || collection === "skills" || collection === "items"
+    || collection === "equipment" || collection === "enemies" || collection === "troops" || collection === "states" || collection === "battleAnimations") {
+    const reference = projectDatabaseReferenceMessage(draft, collection, id);
+    if (reference) throw new ToolError(reference, { code: "database-record-in-use" });
+  }
   switch (collection) {
     case "actors": return deleteRecord(draft.database.actors, id);
     case "classes": return deleteRecord(draft.database.classes, id);
@@ -397,12 +406,12 @@ const captureProfileSchema = objectSchema({
   ballClass: { type: "string", enum: ["poke", "great", "ultra", "master"] },
 });
 const enemyStatsSchema = objectSchema({ maxHp: integerSchema(), maxMp: integerSchema(), attack: integerSchema(), defense: integerSchema(), mind: integerSchema(), agility: integerSchema() });
-const enemyRewardsSchema = objectSchema({ exp: integerSchema(), gold: integerSchema(), dropItemId: stringSchema(), dropRatePercent: integerSchema() });
+const enemyRewardsSchema = objectSchema({ exp: integerSchema(), gold: integerSchema(), dropItemId: stringSchema(), dropRatePercent: integerSchema(), drops: conditionalDropsSchema });
 const enemyActionSwitchSchema = objectSchema({ enabled: booleanSchema(), switchId: stringSchema() });
 const enemyActionSchema = objectSchema({
   skillId: stringSchema(),
   priority: integerSchema(),
-  condition: objectSchema({ kind: stringSchema(), start: integerSchema(), interval: integerSchema() }),
+  condition: combatConditionSchema,
   switchOnAfterAction: enemyActionSwitchSchema,
   switchOffAfterAction: enemyActionSwitchSchema,
 });
@@ -490,6 +499,7 @@ const troopRecordSchema = objectSchema({
 
 const monsterSpeciesGraphicSchema = objectSchema({
   monsterResourceId: stringSchema(),
+  backResourceId: stringSchema("후면 전투용 몬스터 리소스. 생략하면 정면 그림을 사용합니다."),
   graphicHue: integerSchema(),
   transparent: booleanSchema(),
   flying: booleanSchema(),
@@ -552,6 +562,7 @@ const actorRecordSchema = objectSchema({
 }) as RecordSchema;
 
 const skillRecordSchema = objectSchema({
+  ...authoredSkillProperties,
   id: stringSchema(),
   name: stringSchema(),
   scope: { type: "string", enum: ["self", "ally", "allAllies", "enemy", "allEnemies"] },
@@ -645,10 +656,10 @@ const stateRecordSchema = objectSchema({
   runtimeEffects: stateRuntimeEffectsSchema,
 }) as RecordSchema;
 
-function parametersForRecord(key: string, schema: RecordSchema, example: Record<string, unknown>): JsonSchema {
+function parametersForRecord(key: string, schema: RecordSchema, example: Record<string, unknown>, extraProperties: Record<string, JsonSchema> = {}): JsonSchema {
   return {
     type: "object",
-    properties: { [key]: { ...schema, description: `${key} 부분 레코드. 기존 id 수정은 id와 바꿀 필드만 보내면 됩니다.` } },
+    properties: { [key]: { ...schema, description: `${key} 부분 레코드. 기존 id 수정은 id와 바꿀 필드만 보내면 됩니다.` }, ...extraProperties },
     required: [key],
     additionalProperties: false,
     description: `허용 예시: ${JSON.stringify({ [key]: example })}`,
@@ -691,7 +702,7 @@ function mergeRecord<T extends { id: string; name: string }>(
       }
     }
   }
-  return { ...(existing ?? {}), ...(patch as Partial<T> & Pick<T, "id" | "name">) };
+  return mergeRecordPatch(existing, patch as Record<string, unknown>) as Partial<T> & Pick<T, "id" | "name">;
 }
 
 const upsertItem: ToolDefinition = {
@@ -849,6 +860,7 @@ const upsertEnemy: ToolDefinition = {
   mode: "write",
   parameters: parametersForRecord("enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임", stats: { maxHp: 40, attack: 12 }, rewards: { exp: 3, gold: 2 } }),
   run(draft, args): ToolExecResult {
+    validateEnemyCombatPatch(args.enemy);
     const merged = mergeRecord(draft.database.enemies, args.enemy, "enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임" });
     rejectUnknownEnemyReferences(draft, args.enemy);
     const record = normalizeEnemyRecord(merged as Partial<EnemyRecord> & Pick<EnemyRecord, "id" | "name">);
@@ -882,6 +894,10 @@ const upsertTroop: ToolDefinition = {
       );
     }
     const merged = mergeRecord(draft.database.troops, args.troop, "troop", troopRecordSchema, { id: "troop_slime", name: "슬라임 무리", enemyIds: ["enemy_slime"] }, ["name", "enemyIds"]);
+    const patch = args.troop as Partial<TroopRecord>;
+    // An explicit legacy roster replaces the roster. Do not let inherited members
+    // silently override it; unrelated patches still preserve authored placements.
+    if (patch.enemyIds !== undefined && patch.members === undefined) delete merged.members;
     const record = normalizeTroopRecord(merged as Partial<TroopRecord> & Pick<TroopRecord, "id" | "name">);
     const memberCount = record.members?.length ?? record.enemyIds.length;
     if (memberCount === 0) throw new ToolError("트룹에는 최소 1마리의 적(enemyIds/members)이 필요합니다.", { code: "troop-empty" });
@@ -1138,9 +1154,11 @@ const upsertSkill: ToolDefinition = {
   name: "upsert_skill",
   description: "스킬 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
   mode: "write",
-  parameters: parametersForRecord("skill", skillRecordSchema, { id: "skill_fire", name: "화염", power: 35, elementId: "fire" }),
+  parameters: parametersForRecord("skill", skillRecordSchema, { id: "skill_fire", name: "화염", power: 35, elementId: "fire" }, actionSkillClearProperties),
   run(draft, args): ToolExecResult {
+    validateSkillCombatPatch(args.skill);
     const merged = mergeRecord(draft.database.skills, args.skill, "skill", skillRecordSchema, { id: "skill_fire", name: "화염" });
+    finalizeSkillCombatPatch(merged as unknown as Record<string, unknown>, args.skill, args);
     const record = normalizeSkillRecord(merged as Partial<SkillRecord> & Pick<SkillRecord, "id" | "name">);
     const outcome = upsertById(draft.database.skills, record);
     return { summary: `스킬 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };

@@ -2,7 +2,7 @@ import { setStartMap, setStartPos } from "@/editor/actions";
 import { editorState } from "@/editor/editorState";
 import { deleteEditorEvent } from "@/editor/eventDeletion";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
-import { openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
+import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { openTransferPlayerDialog } from "@/editor/panels/eventEditor/transferPlayerDialog";
 import { openTestPlayModal } from "@/editor/panels/testPlayModal";
 import {
@@ -49,6 +49,21 @@ export function eventLayerContextMenuItems(target: EventLayerContextMenuTarget):
       label: "이벤트 생성...",
       shortcut: "Enter",
       testId: "event-layer-create-event",
+    },
+    // 이벤트를 손으로 조립하는 대신 문장으로 만든다/고친다. 편집기를 열되 AI 명령 도크를
+    // **펼친 채로** 열어 주므로 사용자는 곧바로 "무엇을 하는 이벤트인지"를 적고 초안을
+    // 검토하면 된다. 자동 실행은 하지 않는다 — 의도와 다른 초안에 호출을 쓰지 않기 위해서다
+    // (도크의 예시 칩도 같은 이유로 입력만 채운다).
+    {
+      // 라벨은 메뉴를 세울 때의 점유를 따르지만, **실행 시점에 다시 읽는다**. 메뉴가 떠 있는
+      // 동안 배경 갱신(다른 세션·자동 배치)이 그 칸에 이벤트를 놓으면, 세울 때의 `existing`
+      // 은 낡아서 새 이벤트를 만들어 버린다 — 이벤트가 둘로 늘고 사용자는 고치려던 것을
+      // 놓친다. 클릭 시점의 진실로 분기한다.
+      action: () => openEventAiAuthoring(target),
+      icon: "spark",
+      id: "event-ai-author",
+      label: existing ? "이 이벤트를 AI 로 고치기..." : "AI 로 이벤트 만들기...",
+      testId: "event-layer-event-ai-author",
     },
     {
       action: () => cutEventAt(target),
@@ -140,6 +155,22 @@ function testEventAt(target: EventLayerContextMenuTarget): void {
   }));
 }
 
+/**
+ * 우클릭 자리에 이벤트가 있으면 그 이벤트를 AI 로 고치고, 없으면 새로 만든다.
+ * 둘 다 편집기의 AI 명령 도크를 펼친 채로 연다 — 사용자가 문장을 적는 것으로 시작한다.
+ *
+ * 점유는 **호출 시점에** 다시 읽는다(메뉴를 세운 시점이 아니라). 그 사이 배경 갱신이 그 칸을
+ * 채웠다면, 낡은 판정은 이벤트를 하나 더 만들고 사용자가 고치려던 이벤트를 놓치게 한다.
+ */
+function openEventAiAuthoring(target: EventLayerContextMenuTarget): void {
+  const current = eventAtTarget(target);
+  if (current) {
+    openEventEditorModal(target.mapId, current.id, { aiDock: true });
+    return;
+  }
+  openNewEventEditorModal(target.mapId, target.x, target.y, undefined, { aiDock: true });
+}
+
 export function clearEventLayerClipboard(): void {
   eventClipboard = null;
 }
@@ -176,58 +207,58 @@ function deleteEventAt(target: EventLayerContextMenuTarget): void {
 }
 
 function createTransferEvent(target: EventLayerContextMenuTarget): void {
-  const eventId = openNewEventEditorModal(target.mapId, target.x, target.y);
-  if (!eventId) return;
-  const command: Command = {
-    kind: "transfer",
-    mapId: target.mapId,
-    x: target.x,
-    y: target.y,
-    direction: "retain",
-    fade: "black",
-  };
-  store.update((project) => {
-    const event = project.maps[target.mapId]?.events.find((item) => item.id === eventId);
-    const page = event?.pages?.[event.pages.length - 1];
-    if (!event || !page) return;
-    event.trigger = { kind: "playerTouch" };
-    page.name = "장소 이동";
-    page.trigger = { kind: "playerTouch" };
-    page.commands = [command];
-  });
-  // Open the transfer player picker dialog immediately so the user can choose
-  // the destination map/position right away.
-  openTransferPlayerDialog({
-    command,
-    onApply: (updated) => {
-      store.update((project) => {
-        const event = project.maps[target.mapId]?.events.find((item) => item.id === eventId);
-        const page = event?.pages?.[event.pages.length - 1];
-        if (!event || !page) return;
-        page.commands = [updated];
-      });
-    },
+  openNewEventEditorModal(target.mapId, target.x, target.y, (eventId) => {
+    const command: Command = {
+      kind: "transfer",
+      mapId: target.mapId,
+      x: target.x,
+      y: target.y,
+      direction: "retain",
+      fade: "black",
+    };
+    store.update((project) => {
+      const event = project.maps[target.mapId]?.events.find((item) => item.id === eventId);
+      const page = event?.pages?.[event.pages.length - 1];
+      if (!event || !page) return;
+      event.trigger = { kind: "playerTouch" };
+      page.name = "장소 이동";
+      page.trigger = { kind: "playerTouch" };
+      page.commands = [command];
+    });
+    // Open the transfer player picker dialog immediately so the user can choose
+    // the destination map/position right away.
+    openTransferPlayerDialog({
+      command,
+      onApply: (updated) => {
+        store.update((project) => {
+          const event = project.maps[target.mapId]?.events.find((item) => item.id === eventId);
+          const page = event?.pages?.[event.pages.length - 1];
+          if (!event || !page) return;
+          page.commands = [updated];
+        });
+      },
+    });
   });
 }
 
 function createVehicleLocationEvent(target: EventLayerContextMenuTarget): void {
-  const eventId = openNewEventEditorModal(target.mapId, target.x, target.y);
-  if (!eventId) return;
-  store.update((project) => {
-    const event = project.maps[target.mapId]?.events.find((item) => item.id === eventId);
-    const page = event?.pages?.[event.pages.length - 1];
-    if (!event || !page) return;
-    page.name = "탈것 시작 위치";
-    page.commands = [{
-      kind: "m2Command",
-      commandId: "m2-039-set-vehicle-location",
-      fields: {
-        target: "boat",
-        mapId: target.mapId,
-        x: target.x,
-        y: target.y,
-      },
-    }];
+  openNewEventEditorModal(target.mapId, target.x, target.y, (eventId) => {
+    store.update((project) => {
+      const event = project.maps[target.mapId]?.events.find((item) => item.id === eventId);
+      const page = event?.pages?.[event.pages.length - 1];
+      if (!event || !page) return;
+      page.name = "탈것 시작 위치";
+      page.commands = [{
+        kind: "m2Command",
+        commandId: "m2-039-set-vehicle-location",
+        fields: {
+          target: "boat",
+          mapId: target.mapId,
+          x: target.x,
+          y: target.y,
+        },
+      }];
+    });
   });
 }
 

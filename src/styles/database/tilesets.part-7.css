@@ -1,0 +1,43 @@
+@media (max-width: 900px) {
+  .database-modal-body .db-ws-tilesets:has(.knowledge-mode) .db-ws-list-pane {
+    max-height: 168px;
+    min-height: 168px;
+  }
+
+  .database-modal-body .oprn-tileset-main:has(.knowledge-mode) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .database-modal-body .oprn-tileset-main:has(.knowledge-mode) .oprn-tileset-terrain-pane {
+    display: none;
+  }
+
+  .database-modal-body .oprn-tileset-main .tileset-db-edit-area.knowledge-mode {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(300px, 0.9fr) minmax(260px, 1fr);
+    overflow-y: auto;
+  }
+
+  .database-modal-body:has(.tileset-db-workspace) .db-tabs {
+    box-shadow: inset -12px 0 10px -12px var(--text-2);
+    overflow-x: auto;
+    padding-bottom: var(--space-1);
+    scrollbar-width: thin;
+  }
+
+  .tileset-knowledge-template-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .tileset-knowledge-template-grid button {
+    min-height: 42px;
+  }
+
+  .tileset-knowledge-selection small {
+    display: none;
+  }
+
+  .tileset-ai-review-card-actions button {
+    min-height: 40px;
+  }
+}

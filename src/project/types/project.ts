@@ -39,6 +39,8 @@ import type {
 import type { Season, TimePhase } from "../gameTime";
 
 export interface GameMap {
+  /** Unset inherits global weather; indoor suppresses presentation only. */
+  climate?: import("../mapClimate").MapClimate;
   id: MapId;
   name: string;
   width: number;
@@ -132,6 +134,8 @@ export interface GameMap {
    * 순수 함수가 맡는다(같은 시간 입력은 언제나 같은 그림자).
    */
   cloudShadows?: MapCloudShadowSetting;
+  /** Optional map-wide decorative layers; independent of gameplay weather. */
+  atmosphereEffects?: import("../atmosphere").AtmosphereEffect[];
   /**
    * 맵에 찍힌 구조물 킷 배치 기록. "여기에 이 집이 있다"를 남겨 다시 고르고·고치고·지울 수 있게 한다.
    * 기록 범위는 구조물 킷 스탬프만 — 사람이 팔레트로 찍은 것.
@@ -206,9 +210,11 @@ export interface MapBgmSetting {
 export interface MapCloudShadowSetting {
   /** 이 맵에서 구름 그림자를 그리는가. 기본 false. */
   enabled: boolean;
+  /** 구름량(0~6). 0=없음, 3=보통(기본), 6=많음. 크기·진하기와 독립. */
+  amount?: number;
   /** 그림자 진하기(0.05~0.6). 기본 0.26. */
   opacity?: number;
-  /** 흐르는 속도 — 월드 px/초(0~160). 기본 26. 0이면 제자리에 머문다. */
+  /** 흐르는 속도 — 월드 px/초(0~160). 기본 8. 0이면 제자리에 머문다. */
   speed?: number;
   /** 흐르는 방향(도). 0=오른쪽, 90=아래. 기본 28. */
   angleDeg?: number;
@@ -616,6 +622,8 @@ export interface StoryFlagDef {
 }
 
 export interface Project {
+  /** Prompt library and dialogue review preferences, saved with this project. */
+  aiAuthoring?: import("../aiAuthoring").AiAuthoring;
   /** Optional spatial authoring authority, separate from lore, worldGraph and runtime saves. */
   spatialAuthoring?: import("../spatial/types").SpatialAuthoringDocument;
   /** Independent skill graphs; promotion edges remain ClassRecord.promotions. */

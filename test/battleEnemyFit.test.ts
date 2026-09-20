@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createBattleRuntime } from "@/battle/runtime";
 import { mountBattleScene, type BattleDomController } from "@/player/battleDom";
+import { fitEnemyImage } from "@/player/battleEnemyFit";
 import { syncBattleField } from "@/player/battleFieldDom";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -80,7 +81,8 @@ describe("mounted enemy battlefield containment", () => {
     // Then: uniform image-only fit, safe top/bottom, unchanged requested scale.
     expect(box.top).toBeGreaterThanOrEqual(32 - 0.001);
     expect(box.bottom).toBeLessThanOrEqual(336);
-    expect(box.height).toBeCloseTo(304);
+    expect(box.bottom).toBeCloseTo(289.8);
+    expect(box.height).toBeCloseTo(257.8);
     expect(box.width / box.height).toBeCloseTo(200 / 240);
     expect(node.style.getPropertyValue("--battle-enemy-scale")).toBe("1.75");
     expect(store.getCurrent().database.enemies.find((entry) => entry.id === "enemy_stone_golem")?.battleScalePercent).toBe(175);
@@ -105,14 +107,14 @@ describe("mounted enemy battlefield containment", () => {
     expect(box.bottom).toBeCloseTo(bottom);
   });
 
-  it("keeps the exact requested multiplier when only the ground anchor needs adjustment", () => {
+  it("preserves the ground anchor by fitting the requested multiplier", () => {
     const { node } = mount(125);
     const box = geometry(node);
-    expect(box.fit).toBe(1);
-    expect(box.width).toBe(250);
-    expect(box.height).toBe(300);
+    expect(box.fit).toBeCloseTo(257.8 / 300);
+    expect(box.width / box.height).toBeCloseTo(200 / 240);
+    expect(box.height).toBeCloseTo(257.8);
     expect(box.top).toBeCloseTo(32);
-    expect(box.bottom).toBeCloseTo(332);
+    expect(box.bottom).toBeCloseTo(289.8);
   });
 
   it.each(["rm2000", "rm2003", "pokemon"] as const)("fits 300 percent in %s and remains stable through hit/HUD synchronization", (skin) => {
@@ -137,12 +139,13 @@ describe("mounted enemy battlefield containment", () => {
     fieldWidth = 240;
     syncBattleField(field, runtime.snapshot());
     const narrow = geometry(node);
-    expect(narrow.width).toBeCloseTo(208);
+    expect(narrow.x).toBeCloseTo(81);
+    expect(narrow.width).toBeCloseTo(130);
     expect(narrow.left).toBeGreaterThanOrEqual(16 - 0.001);
     expect(narrow.right).toBeLessThanOrEqual(224.001);
     fieldWidth = 640;
     syncBattleField(field, runtime.snapshot());
-    expect(geometry(node).height).toBeCloseTo(304);
+    expect(geometry(node).height).toBeCloseTo(257.8);
   });
 
   it("does not keep a new layout timer alive after the battle controller is destroyed", () => {
@@ -150,5 +153,25 @@ describe("mounted enemy battlefield containment", () => {
     controller?.destroy();
     expect(document.querySelector(".battle-scene")).toBeNull();
     expect(vi.getTimerCount()).toBe(0);
+  });
+});
+
+
+describe("oversized enemy formation anchors", () => {
+  it("preserves staggered authored feet when fitting multiple large enemies", () => {
+    const points = [{ x: 160, y: 220 }, { x: 320, y: 290 }, { x: 480, y: 240 }];
+    const results = points.map((point) => fitEnemyImage({ width: 640, height: 360 }, { width: 600, height: 720 }, point));
+    expect(results.map(({ x, y }) => ({ x, y }))).toEqual(points);
+    for (const point of results) {
+      expect(point.fit).toBeGreaterThan(0);
+      expect(point.y - 720 * point.fit).toBeGreaterThanOrEqual(32 - 0.001);
+    }
+  });
+
+  it("keeps out-of-bounds authored anchors visible inside the field", () => {
+    const result = fitEnemyImage({ width: 640, height: 360 }, { width: 600, height: 720 }, { x: 0, y: 0 });
+    expect(result.fit).toBeGreaterThan(0);
+    expect(result.x - 600 * result.fit / 2).toBeGreaterThanOrEqual(16 - 0.001);
+    expect(result.y - 720 * result.fit).toBeGreaterThanOrEqual(32 - 0.001);
   });
 });

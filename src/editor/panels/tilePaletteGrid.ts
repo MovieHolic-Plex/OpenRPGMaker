@@ -1,5 +1,5 @@
 import type { Layer } from "@/editor/editorState";
-import { isDefaultTilesetTexture, tilesetImageUrl, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
+import { isDefaultTilesetTexture, tilesetCssImageValue, tilesetImageUrl, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { CHIPSET_TILE_GROUPS, tileAiLabelForIndex, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { tileVisibleOnLayer } from "@/editor/tileLayerClassification";
@@ -281,12 +281,9 @@ export function makeGridPalette(input: MakeGridPaletteWithStampArgs): HTMLElemen
 export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
   const sourceColumns = Math.max(1, args.tileset.tilesPerRow);
   const sourceRows = Math.max(1, Math.ceil(args.tileset.count / sourceColumns));
-  // Keep authored tile ids intact while reflowing the editor view to the
-  // established six-column rail geometry. The atlas itself may be 30 columns wide.
-  // Castle's 32px artwork spans 2×2 engine cells. Preserve neighbours so a drag
-  // can pick a complete tile or building instead of unrelated six-column rows.
+  // Preserve source adjacency for every atlas; Castle2 also uses 16px source-layout styling.
   const sourceLayout = args.tileset.image.type === "bundled" && args.tileset.image.id === CASTLE_TILESET_TEXTURE_KEY;
-  const columns = sourceLayout ? sourceColumns : GRID_PALETTE_COLUMNS;
+  const columns = sourceColumns;
   const rows = Math.max(1, Math.ceil(args.tileset.count / columns));
   const displayTiles = buildCustomPaletteModel(args.tileset);
   const sheet = el("div", {
@@ -307,8 +304,8 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
     attrs: { style: `grid-template-columns:repeat(${columns}, var(--chipset-cell))` },
   });
   const backgroundImageUrl = tilesetImageUrl(args.tileset);
-  // Custom cells remain complete and source-id ordered; most atlases reflow
-  // vertically, while sourceLayout preserves the artwork's two-dimensional layout.
+  grid.style.setProperty("--custom-palette-image", tilesetCssImageValue(backgroundImageUrl));
+  // Custom cells keep source coordinates, including empty cells between objects.
   // Large uploaded atlases routinely contain 2,000+ cells. Keep the first
   // viewport synchronous, then append the rest in short batches so button
   // creation cannot block the first canvas frame.
@@ -320,7 +317,10 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
     for (let index = from; index < to; index += 1) {
       const tileId = displayTiles[index];
       if (tileId === undefined) continue;
-      const cell = makePaletteCell(args, tileId, undefined, { backgroundImageUrl });
+      const cell = makePaletteCell(args, tileId, undefined, {
+        backgroundImageUrl,
+        backgroundImageVar: "--custom-palette-image",
+      });
       if (!passesFilter(args, tileId)) cell.classList.add("is-filtered-out");
       if (from > 0) cell.tabIndex = -1;
       fragment.append(cell);
@@ -445,7 +445,7 @@ function makePaletteCell(
   args: MakeGridPaletteArgs,
   tileId: number,
   title = gridTileTitle(args.tileset, tileId),
-  decorations: { readonly badge?: string; readonly className?: string; readonly backgroundImageUrl?: string } = {}
+  decorations: { readonly badge?: string; readonly className?: string; readonly backgroundImageUrl?: string; readonly backgroundImageVar?: string } = {}
 ): HTMLButtonElement {
   const cell = el("button", {
     class: "chipset-tile" + (args.selectedTile === tileId ? " active" : "") + (decorations.className ?? ""),
@@ -454,7 +454,13 @@ function makePaletteCell(
       type: "button",
       "aria-label": title,
       "aria-pressed": String(args.selectedTile === tileId),
-      style: tilesetTileBackgroundStyle(args.tileset, tileId, "var(--chipset-cell)", decorations.backgroundImageUrl),
+      style: tilesetTileBackgroundStyle(
+        args.tileset,
+        tileId,
+        "var(--chipset-cell)",
+        decorations.backgroundImageUrl,
+        decorations.backgroundImageVar,
+      ),
     },
     dataset: { testid: `chipset-tile-${tileId}`, tileIndex: String(tileId) },
     on: {

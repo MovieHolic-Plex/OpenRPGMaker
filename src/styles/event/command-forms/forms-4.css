@@ -299,7 +299,8 @@
 
 .event-custom-select-option:focus-visible {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent) inset;
-  outline: none;
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
 }
 
 .event-custom-select-option.is-selected {
@@ -658,7 +659,6 @@
 .cream-command-form,
 .rich-command-form,
 .m2-command-body,
-.input-number-command-body,
 .event-command-record-form,
 .move-route-editor,
 .play-audio-command-body,

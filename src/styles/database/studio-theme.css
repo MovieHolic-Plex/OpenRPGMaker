@@ -326,19 +326,6 @@
   white-space: normal !important;
 }
 
-/* Primary = 지금 저장 (apply), ghost = 닫기 (ok) — wins regardless of .primary class */
-.database-modal-backdrop .database-modal-window .database-footer-button[data-testid="database-footer-apply"] {
-  background: var(--db-studio-accent) !important;
-  border-color: var(--db-studio-accent) !important;
-  color: #FFFFFF !important;
-  font-weight: 600 !important;
-}
-
-.database-modal-backdrop .database-modal-window .database-footer-button[data-testid="database-footer-apply"]:hover {
-  background: var(--db-studio-accent-hover) !important;
-  border-color: var(--db-studio-accent-hover) !important;
-}
-
 .database-modal-backdrop .database-modal-window .database-footer-button[data-testid="database-footer-ok"] {
   background: transparent !important;
   border-color: var(--db-studio-border-default) !important;
@@ -389,7 +376,7 @@
 }
 .database-modal-backdrop .database-modal-window .db-item-spec-strip .db-field,
 .database-modal-backdrop .database-modal-window .db-item-spec-strip label {
-  margin: 0 !important;
+  margin: 0;
 }
 .database-modal-backdrop .database-modal-window .db-list-number {
   flex: 0 0 auto;
@@ -475,20 +462,6 @@
 }
 
 /* Enemy workspace: 3 flexible columns so the attack table is not clipped */
-.database-modal-backdrop .database-modal-window .oprn-detail-enemies > .db-enemy-bm101-workbench {
-  grid-template-areas:
-    "name graphic actions"
-    "stats species actions"
-    "rewards options actions"
-    "critical options actions"
-    "state element actions"
-    "combat combat combat" !important;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(260px, 1.05fr) !important;
-  grid-template-rows: auto auto auto auto minmax(140px, 1fr) auto !important;
-  height: auto !important;
-  min-width: 0 !important;
-  overflow: auto !important;
-}
 
 /* Troops list was pinned to a 31px row under empty search space */
 .database-modal-backdrop .database-modal-window .oprn-record-troops .oprn-record-list-pane {
@@ -572,6 +545,3 @@
 }
 
 /* Troop layout is owned by modern/troops.css, including container breakpoints. */
-.database-modal-backdrop .database-modal-window .db-troop-member-list {
-  grid-template-rows: auto auto auto !important;
-}

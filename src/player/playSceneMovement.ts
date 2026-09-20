@@ -32,6 +32,7 @@ import type { EventAnimationType, Trigger } from "@/project/types";
 import { nextSessionRandom } from "@/project/session";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 import { recordFollowerPlayerStep } from "@/project/followers";
+import { updateFollowerSpriteMotion } from "@/player/playSceneFollowers";
 import { applyWalkCareTicks } from "@/project/monsterCare";
 import { applyGen1FieldPoisonStep } from "@/project/monsterCollection";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
@@ -96,6 +97,9 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
     return;
   }
   updateDetectionEncounters(scene, deltaMs);
+  // 팔로워 스프라이트 보간은 논리 틱과 무관하게 매 렌더 프레임 이어진다 —
+  // 고주사율(틱 0) 프레임에서도 걸음이 끊기지 않는다.
+  updateFollowerSpriteMotion(scene, deltaMs);
   const world = { project: store.getCurrent(), map: scene.map, session: scene.session, positions: scene.eventPositions };
   if (!scene.running && advancePursuitDoors(world, deltaMs)) refreshRuntimeEntities(scene);
   scene.player.setVisible?.(!isPlayerHiding(world));

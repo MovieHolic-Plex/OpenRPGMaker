@@ -94,7 +94,8 @@ function main(argv) {
   const registry = JSON.parse(fs.readFileSync(path.join(repo, "scripts/css-surfaces.json"), "utf8"));
   if (!registry.surfaces[surface]) { console.error(`unknown surface: ${surface}\n${USAGE}`); process.exit(1); }
   const stylesRoot = path.join(repo, "src/styles");
-  const entries = [path.join(stylesRoot, "index.css"), ...Object.values(registry.surfaces).map((s) => path.join(repo, s.entry))]
+  const registeredEntries = Object.values(registry.surfaces).flatMap((s) => [s.entry, ...(s.additionalEntries ?? [])]);
+  const entries = [path.join(stylesRoot, "index.css"), ...registeredEntries.map((entry) => path.join(repo, entry))]
     .filter((p, i, a) => fs.existsSync(p) && a.indexOf(p) === i);
   const { violations } = runSurfaceChecks({ stylesRoot, srcRoot: path.join(repo, "src"), registry, entries });
 

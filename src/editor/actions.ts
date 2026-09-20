@@ -1,3 +1,5 @@
+import { normalizeAtmosphereEffects } from "@/project/atmosphere";
+import { normalizeMapClimate, type MapClimate } from "@/project/mapClimate";
 // editor/actions.ts
 // 에디터에서 Project를 갱신하는 모든 액션. store.update(mutator) 경유.
 // v2: 3레이어(lower/upper/event) + tileset.passability 기반.
@@ -395,6 +397,28 @@ export function setMapMinimap(mapId: MapId, patch: Partial<MapMinimapSetting> | 
   }, { scope: "map", mapId });
 }
 
+export function setMapClimate(mapId: MapId, climate: MapClimate | undefined): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((project) => {
+    const map = project.maps[mapId];
+    if (!map) return;
+    const normalized = normalizeMapClimate(climate);
+    if (normalized) map.climate = normalized;
+    else delete map.climate;
+  }, { scope: "map", mapId });
+}
+
+export function setMapAtmosphereEffects(mapId: MapId, effects: unknown): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    const normalized = normalizeAtmosphereEffects(effects);
+    if (normalized.length) map.atmosphereEffects = normalized;
+    else delete map.atmosphereEffects;
+  }, { scope: "map", mapId });
+}
+
 export function setMapCloudShadows(mapId: MapId, patch: Partial<MapCloudShadowSetting> | null): void {
   if (!allowMapMutation(mapId)) return;
   store.update((p) => {
@@ -407,12 +431,13 @@ export function setMapCloudShadows(mapId: MapId, patch: Partial<MapCloudShadowSe
     const current = map.cloudShadows;
     const next: MapCloudShadowSetting = {
       enabled: patch.enabled ?? current?.enabled ?? false,
+      ...(patch.amount !== undefined ? { amount: patch.amount } : current?.amount !== undefined ? { amount: current.amount } : {}),
       ...(patch.opacity !== undefined ? { opacity: patch.opacity } : current?.opacity !== undefined ? { opacity: current.opacity } : {}),
       ...(patch.speed !== undefined ? { speed: patch.speed } : current?.speed !== undefined ? { speed: current.speed } : {}),
       ...(patch.angleDeg !== undefined ? { angleDeg: patch.angleDeg } : current?.angleDeg !== undefined ? { angleDeg: current.angleDeg } : {}),
       ...(patch.scale !== undefined ? { scale: patch.scale } : current?.scale !== undefined ? { scale: current.scale } : {}),
     };
-    const hasExtra = next.opacity !== undefined || next.speed !== undefined || next.angleDeg !== undefined || next.scale !== undefined;
+    const hasExtra = next.amount !== undefined || next.opacity !== undefined || next.speed !== undefined || next.angleDeg !== undefined || next.scale !== undefined;
     if (!next.enabled && !hasExtra) {
       delete map.cloudShadows;
     } else {
@@ -460,9 +485,12 @@ export function moveMapsInTree(mapIds: readonly MapId[], newParentId: MapId | ""
 // ── Database: Switches/Variables/Common Events CRUD ──
 export function addSwitch(name: string): string {
   recordProjectSnapshot();
+  const reusableId = store.getCurrent().switches.find((record) =>
+    record.name.trim().length === 0 && !switchVariableReferenceMessage("switch", record.id)
+  )?.id;
   let id = "";
   store.update((p) => {
-    const empty = p.switches.find((record) => record.name.trim().length === 0);
+    const empty = reusableId ? p.switches.find((record) => record.id === reusableId) : undefined;
     if (empty) {
       empty.name = name || "새 스위치";
       id = empty.id;
@@ -492,9 +520,12 @@ export function deleteSwitch(id: string): DeleteResult {
 
 export function addVariable(name: string): string {
   recordProjectSnapshot();
+  const reusableId = store.getCurrent().variables.find((record) =>
+    record.name.trim().length === 0 && !switchVariableReferenceMessage("variable", record.id)
+  )?.id;
   let id = "";
   store.update((p) => {
-    const empty = p.variables.find((record) => record.name.trim().length === 0);
+    const empty = reusableId ? p.variables.find((record) => record.id === reusableId) : undefined;
     if (empty) {
       empty.name = name || "새 변수";
       id = empty.id;

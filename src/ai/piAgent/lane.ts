@@ -1,3 +1,5 @@
+import { activityPhase, createActivityTrace, recordActivityEvent, type ActivityTrace } from "../activityTrace";
+import type { PiAgentEvent } from "./protocol";
 // 에이전트 레인 — 한 에이전트가 한 묶음을 맡아 **독립적으로** 도는 실행 단위.
 //
 // 왜 명령 하나로 묶지 않는가(2026-09-15 실측): 지금은 명령 하나 = 병합 하나 = 검토 카드 하나이고,
@@ -58,6 +60,7 @@ export interface LaneResult {
 }
 
 export interface LaneState {
+  readonly trace?: ActivityTrace;
   readonly spec: LaneSpec;
   readonly status: LaneStatus;
   readonly progress: LaneProgress;
@@ -73,7 +76,8 @@ export interface LaneState {
 }
 
 export type LaneEvent =
-  | { readonly type: "start"; readonly base: Project; readonly at: number; /** 후속 지시면 갈아 끼울 지시문. */ readonly instruction?: string }
+  | { readonly type: "activity"; readonly event: PiAgentEvent }
+  | { readonly type: "start"; readonly base: Project; readonly projectId?: string; readonly at: number; /** 후속 지시면 갈아 끼울 지시문. */ readonly instruction?: string }
   | { readonly type: "turn"; readonly line: string }
   /** 델타(생각·본문 조각) — 단계 목록이 아니라 마지막 줄만 움직인다. */
   | { readonly type: "line"; readonly line: string }
@@ -114,12 +118,18 @@ export function laneBundleIds(project: Project, spec: LaneSpec): string[] {
 }
 
 export function reduceLane(state: LaneState, event: LaneEvent): LaneState {
+  if (state.trace && ["done", "error", "stopped", "applied", "discarded"].includes(event.type)) {
+    const phase = ({ done: "검토 대기", error: "실패", stopped: "중단", applied: "적용됨", discarded: "버림" } as Record<string, string>)[event.type]!;
+    state = { ...state, trace: activityPhase(state.trace, phase) };
+  }
   switch (event.type) {
+    case "activity": return state.trace ? { ...state, trace: recordActivityEvent(state.trace, event.event) } : state;
     case "start":
       return {
         ...state,
         spec: event.instruction === undefined ? state.spec : { ...state.spec, instruction: event.instruction },
         status: "running",
+        trace: activityPhase(createActivityTrace(event.instruction ?? state.spec.instruction, event.projectId, event.at), "실행 중", event.at),
         base: event.base,
         bundleIds: laneBundleIds(event.base, state.spec),
         progress: { turns: 0, toolCalls: 0, toolErrors: 0, lastLine: "" },

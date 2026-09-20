@@ -52,7 +52,7 @@ the other way with `terminologyByKorean` / `terminologyByEnglish`.
 | `map.startMap` | 시작 맵 | start map | property | both |  |
 | `map.startPosition` | 시작 위치 | start position | property | both |  |
 | `map.layerGround` | 바닥 | ground layer | noun | editor | Drawn under the character. Stored id stays `lower`; 하위 / "lower layer" was retired as a literal 下層 rendering. · retired 한국어: 하위, 하위 레이어 · never in English: lower layer |
-| `map.layerOverlay` | 덧그림 | overlay layer | noun | editor | Drawn over the character. Stored id stays `upper`; 장식 is refused here because it is a tile role (tile.decoration). · retired 한국어: 상위, 상위 레이어 · refused 한국어: 장식 · never in English: upper layer, decoration layer |
+| `map.layerOverlay` | 상위 | upper layer | noun | editor | Drawn over the character. Stored id stays `upper`. 덧그림 was the 2026-08 screen name; 장식 is refused because it is a tile role (tile.decoration). · retired 한국어: 덧그림, 덧그림 레이어 · refused 한국어: 장식 · never in English: decoration layer |
 | `map.layerEvent` | 이벤트 | event layer | noun | editor | The Korean label is the bare word 이벤트; English must keep "layer" so it cannot be read as event.event. |
 | `map.toolPaint` | 칠하기 | paint | action | editor | Tool labels name the action, not the instrument — that rule is why 펜 and 브러시 were dropped. · retired 한국어: 펜, 브러시, 브러시(연필) · never in English: pen, brush, pencil |
 | `map.toolErase` | 지우기 | erase | action | editor |  |
@@ -233,7 +233,6 @@ use the owner's term instead.
 - **tile palette** — refused by `tile.tileset`; owned by `tile.tilePalette`
 - **toggle** — refused by `event.switch`; owned by no entry
 - **troop** — refused by `battle.party`; owned by `db.troop`
-- **upper layer** — refused by `map.layerOverlay`; owned by no entry
 - **world** — refused by `shell.world`; owned by no entry
 - **world map** — refused by `shell.world`; owned by no entry
 

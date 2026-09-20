@@ -39,6 +39,7 @@ export type BattleEventRuntimeState = {
   // 전투가 실제로 쓴 타이머만 모은다. 진행(tick)은 맵 씬(playSceneTimers) 소관이라
   // 진입 시점 사본 전체를 되돌려 쓰면 전투 중 만료된 타이머가 진입 값으로 되살아난다.
   timerWrites?: Record<string, number>;
+  timerActivityWrites?: Record<string, boolean>;
   // 세션 장비 스냅샷 사본(actorId → 장비). changeEquipment 가 여기 기록하고
   // 전투 종료 시 applyBattleRewardsToSession 이 세션 actorEquipment 로 write-back.
   actorEquipment?: Record<string, ActorInitialEquipment>;
@@ -321,6 +322,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       flags: { ...(options.state.flags ?? {}) },
       timers: { ...(options.state.timers ?? {}) },
       timerWrites: { ...(options.state.timerWrites ?? {}) },
+      timerActivityWrites: { ...(options.state.timerActivityWrites ?? {}) },
       actorEquipment: Object.fromEntries(
         Object.entries(options.state.actorEquipment ?? {}).map(([actorId, equipment]) => [actorId, { ...equipment }])
       ),
@@ -782,14 +784,16 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         return false;
       case "timer": {
         // 맵 timer 커맨드 스키마와 동일: set → seconds 로 설정, start → seconds 지정 시 설정.
-        // 배틀 이벤트 상태는 남은 초만 가진다 — 진행(tick)/정지는 맵 씬(playSceneTimers) 소관이라
-        // stop 은 남은 초를 유지한 채 기록만 남기고, write-back 시 세션 timers 로 병합된다.
+        // Tick ownership stays with the map scene. Record the final activity as
+        // well as the seconds so start/stop survives the returning commit.
         const timerId = command.timerId ?? "timer1";
         options.state.timers ??= {};
         if (command.action === "set") options.state.timers[timerId] = command.seconds ?? 0;
         if (command.action === "start" && command.seconds !== undefined) options.state.timers[timerId] = command.seconds;
         options.state.timerWrites ??= {};
-        options.state.timerWrites[timerId] = options.state.timers[timerId];
+        options.state.timerWrites[timerId] = options.state.timers[timerId] ?? 0;
+        options.state.timerActivityWrites ??= {};
+        options.state.timerActivityWrites[timerId] = command.action === "start";
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `timer ${command.action} ${timerId}${command.seconds !== undefined ? ` ${command.seconds}s` : ""}` });
         return false;
       }

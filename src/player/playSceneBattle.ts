@@ -1,3 +1,4 @@
+import { appendBattleReport } from "@/project/battleReports";
 import type { BattleResult, BattleRuntime } from "@/battle/runtime";
 import { BattleAdmissionError } from "@/project/battleAdmission";
 import { createBattleRuntime } from "@/battle/runtime";
@@ -11,6 +12,7 @@ import { createSkinBattleTransition, type BattleTransition } from "@/player/batt
 import { resolveSkinId, getBattleSkin } from "@/battle/skins/registry";
 import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
 import { maybeAutosave } from "@/player/autosave";
+import { applyBattleTimerWrites } from "@/player/playSceneTimers";
 import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { store } from "@/project/store";
@@ -44,7 +46,7 @@ export function showBattleScene(scene: PlaySceneContext, troopId: string): void 
 
 type BattleHostScene = Pick<PlaySceneContext, "session" | "tileY" | "battleAbortController">
   & Parameters<typeof dialogueHost>[0]
-  & Partial<Pick<PlaySceneContext, "events">>
+  & Partial<Pick<PlaySceneContext, "events" | "runtimeTimers">>
   & { readonly map: Pick<PlaySceneContext["map"], "height"> };
 
 export async function playBattle(
@@ -94,6 +96,7 @@ export async function playBattle(
         classOverrides: scene.session.classOverrides,
         growthProgress: scene.session.growthProgress,
         promotionLineage: scene.session.promotionLineage,
+        rows: scene.session.actorRows,
         stateIds: scene.session.actorStateIds,
         partyActorIds: scene.session.partyActorIds,
         monsterParty: monsterPartyMode ? partyMonsters : undefined,
@@ -266,6 +269,10 @@ export async function playBattle(
                 }
                 applyBattleRewardsToSession(session,
                   { result, canLose: snapshot.canLose, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode }, project);
+                if (!terminalDefeat && scene.runtimeTimers) {
+                  applyBattleTimerWrites({ session, runtimeTimers: scene.runtimeTimers }, snapshot.eventState);
+                }
+                appendBattleReport(session, project, snapshot, result);
                 if (result === "victory") maybeAutosave(project, session, "battleVictory");
                 settled = true;
                 cleanup();

@@ -10,6 +10,7 @@ import {
 } from "@/project/factionsFromWorld";
 import { normalizeProjectFactions } from "@/project/factions";
 import { lintWorld, normalizeProjectWorld, normalizeWorld } from "@/project/world";
+import { isWikiActivityRecord } from "@/project/world/activity";
 import {
   WORLD_ENTITY_TYPES,
   WORLD_REF_KINDS,
@@ -387,7 +388,7 @@ export function highestSeverity(issues: readonly LintIssue[]): LintSeverity | nu
 
 export function visibleEntities(entities: readonly WorldEntity[], tab: WorldTabKey, search: string): readonly WorldEntity[] {
   const query = normalizeSearch(search);
-  return entities.filter((entity) => entityInTab(entity, tab) && (!query || entityMatchesSearch(entity, query)));
+  return entities.filter((entity) => !isWikiActivityRecord(entity) && entityInTab(entity, tab) && (!query || entityMatchesSearch(entity, query)));
 }
 
 export function currentWorld(project: Project): ProjectWorld {

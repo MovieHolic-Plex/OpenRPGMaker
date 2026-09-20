@@ -1,0 +1,69 @@
+{
+  "checks": [
+    {
+      "label": "Creation request automatically opens assistant and team",
+      "ok": true
+    },
+    {
+      "label": "No agent run before confirmation",
+      "ok": true
+    },
+    {
+      "label": "Three real image choices",
+      "ok": true
+    },
+    {
+      "label": "Start disabled until selection",
+      "ok": true
+    },
+    {
+      "label": "Independent character change updates preview",
+      "ok": true
+    },
+    {
+      "label": "Choice remains local and does not mutate project",
+      "ok": true
+    },
+    {
+      "label": "Character selection does not execute",
+      "ok": true
+    },
+    {
+      "label": "One confirmed request preserves original and chosen resources",
+      "ok": true
+    },
+    {
+      "label": "Cancellation restores original request without running",
+      "ok": true
+    },
+    {
+      "label": "Ordinary question bypasses graphical choice",
+      "ok": true
+    },
+    {
+      "label": "Closing large layout preserves pending choice without execution",
+      "ok": true
+    },
+    {
+      "label": "Narrow viewport has no horizontal overflow",
+      "ok": true
+    },
+    {
+      "label": "New conversation cancels pending creation and removes references",
+      "ok": true
+    },
+    {
+      "label": "Creation intent excludes explanation, negation and small edits",
+      "ok": true
+    },
+    {
+      "label": "No browser errors",
+      "ok": true
+    }
+  ],
+  "errors": [],
+  "requests": [
+    "작은 마을 하나 만들어줘\n\n[사용자가 확인한 그래픽 조합]\n칩셋: easyrpg_chipset_combined_town (합본 마을 · EasyRPG (CC0)). 집 키트: bright-plaster (따뜻한 지붕 · 밝은 벽). 캐릭터 리소스: easyrpg-charset-actor1, 캐릭터 인덱스: 0, 1.\n이 리소스와 키트를 제작 기준으로 사용하라. 필요하면 제공된 도구로 리소스를 조회하라. 샘플은 집 하나의 그래픽 비교용이며 마을 전체 배치나 규모는 원래 요청을 따른다. 다른 칩셋으로 바꾸거나 기존 맵의 칩셋을 일괄 교체하지 마라. 선택한 조합을 사용할 수 없다면 대체 실행하지 말고 이유를 보고하라.",
+    "[계획 턴] 이번 실행에서는 프로젝트를 바꾸지 않는다. 쓰기 도구가 제공되지 않는다. 요청을 실행 순서가 있는 항목 목록으로만 보고하라. 각 항목은 «무엇을 · 어디에 · 왜» 를 담고, 마지막에 예상 위험을 한 줄로 적어라. 마을 만드는 방법을 설명해줘"
+  ]
+}

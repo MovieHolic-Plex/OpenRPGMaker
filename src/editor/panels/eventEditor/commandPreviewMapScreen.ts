@@ -116,7 +116,7 @@ export function changeTileChipStage(cmd: Extract<Command, { kind: "changeTile" }
             }),
             el("span", {
               class: "ecp-tile-chipsel-place",
-              text: `${map?.name || cmd.mapId || "(맵)"} · ${cmd.layer === "upper" ? "덧그림" : "바닥"} (${cmd.x}, ${cmd.y})`,
+              text: `${map?.name || cmd.mapId || "(맵)"} · ${cmd.layer === "upper" ? "상위" : "바닥"} (${cmd.x}, ${cmd.y})`,
             }),
           ],
         }),

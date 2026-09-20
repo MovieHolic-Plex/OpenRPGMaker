@@ -126,26 +126,6 @@
     overflow: hidden;
   }
 
-  .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel {
-    background: var(--bg-raised);
-    border-color: var(--db-modern-line, var(--border-subtle));
-    padding: 10px;
-  }
-
-  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-graphic {
-    gap: 6px;
-    overflow: hidden;
-  }
-
-  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-graphic .actor-check {
-    min-height: 22px;
-  }
-
-  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-state,
-  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-element {
-    overflow: auto;
-  }
-
   .database-modal-body .db-enemy-rate-row {
     min-height: 28px;
   }
@@ -280,25 +260,8 @@
     overflow: auto;
   }
 
-  .database-modal-body .oprn-detail-enemies > .db-enemy-bm101-workbench {
-    grid-template-rows: 64px 128px 96px 96px minmax(78px, 1fr);
-  }
-
-  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-rewards,
-  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-critical {
-    overflow: visible;
-  }
-
-  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-graphic {
-    grid-template-rows: auto minmax(96px, 1fr) 24px 24px;
-  }
-
   .database-modal-body .db-enemy-graphic-stage {
     min-height: 96px;
-  }
-
-  .database-modal-body .db-enemy-bm101-workbench > .db-enemy-panel-element {
-    padding-bottom: 22px;
   }
 
   /* 칩셋 전체(예: 480칸 16행): 부모 높이에 맞추고 프리뷰 박스 안에서만 스크롤.
@@ -316,8 +279,6 @@
     height: 100%;
     max-height: 100%;
     min-height: 0;
-    overflow-x: auto !important;
-    overflow-y: auto !important;
   }
 
   .database-modal-body:has(:is(.db-parity-form, .db-common-events-workspace)) .db-body {
@@ -852,30 +813,6 @@
     padding: 10px;
   }
 
-  .database-modal-body .oprn-record-enemies .db-enemy-bm101-workbench {
-    background: var(--bg-raised);
-    border: 0;
-    gap: 10px;
-    grid-template-rows: 76px 148px 96px 96px minmax(160px, 1fr);
-    padding: 0;
-  }
-
-  .database-modal-body .oprn-record-enemies .db-enemy-bm101-workbench > .db-enemy-panel-name,
-  .database-modal-body .oprn-record-enemies .db-enemy-bm101-workbench > .db-enemy-panel-rewards {
-    overflow: visible;
-  }
-
-  .database-modal-body .oprn-record-enemies .db-enemy-bm101-workbench .actor-check {
-    height: 26px;
-    min-height: 26px;
-  }
-
-  .database-modal-body .oprn-record-enemies .db-enemy-bm101-workbench > .db-enemy-panel-state,
-  .database-modal-body .oprn-record-enemies .db-enemy-bm101-workbench > .db-enemy-panel-element {
-    overflow: auto;
-    padding-bottom: 14px;
-  }
-
   .database-modal-body .oprn-record-enemies .db-enemy-rate-row {
     border-bottom: 1px solid var(--border-subtle);
     min-height: 32px;
@@ -920,19 +857,6 @@
     min-height: 0;
     overflow: auto;
     padding-bottom: 4px;
-  }
-
-  .database-modal-body .oprn-record-troops .db-troop-member-list {
-    grid-template-rows: auto minmax(72px, 1fr) 94px;
-    min-height: 0;
-    overflow: hidden;
-  }
-
-  .database-modal-body .oprn-record-troops .db-troop-member-list .db-troop-member-position-panel {
-    box-sizing: border-box;
-    max-height: 94px;
-    overflow: auto;
-    padding: 10px;
   }
 
   .database-modal-body .oprn-record-troops .db-troop-member-rows,

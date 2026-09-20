@@ -24,8 +24,8 @@
      적          방패형 번호 배지 논리 6×9, 그 아래 **호박색 HP 바**(폭 49·높이 3)
                  그리고 더 넓은 **보라색 행동 게이지**(폭 61·높이 3). 적 이름·HP 숫자는 없다.
 
-   battle.css 의 "Compact HUD layer" 가 `.battle-party` 등을 !important 로 강제하므로
-   여기서도 !important 를 쓴다. `[data-battle-ui-style]` 은 건드리지 않는다(rm2000 이 쓴다). */
+   공용 battle/ 리프와 이 스킨은 runtime 레이어에 순서대로 로드된다.
+   이 파일의 기존 !important 선언은 레거시 스킨 호환 규칙이다. `[data-battle-ui-style]` 은 건드리지 않는다(rm2000 이 쓴다). */
 
 .battle-scene[data-battle-skin="vxace"] {
   --battle-window-bg: rgba(18, 24, 30, 0.74);
@@ -40,7 +40,7 @@
   --vxace-frame-dark: rgba(18, 22, 28, 0.9);
   --vxace-muted: #cfd8e8;
   /* 참조 화면의 글자는 픽셀 폰트가 아니라 안티에일리어싱된 고딕체다(확대 대조로 확인).
-     이 스킨은 UI 토큰(var(--font-ui))을 빌려 battle.css 가 쓰는 토큰을 부드러운 산세리프로 바꾼다 —
+     이 스킨은 UI 토큰(var(--font-ui))을 빌려 공용 battle/ 리프 가 쓰는 토큰을 부드러운 산세리프로 바꾼다 —
      기본값 Galmuri 는 다른 11종 스킨에서 그대로 쓰인다. */
   --runtime-pixel-font: var(--font-ui);
   /* 셀 폭 = (640 − 셀 간격 4px × 3) / 4 = 157px. 얼굴 배경 크롭 계산에도 쓴다. */
@@ -63,7 +63,7 @@
   z-index: 1 !important;
 }
 
-/* 참조는 밝은 필드가 그대로 보인다 — battle.css 의 어두운 비네트를 걷어낸다. */
+/* 참조는 밝은 필드가 그대로 보인다 — 공용 battle/ 리프 의 어두운 비네트를 걷어낸다. */
 .battle-scene[data-battle-skin="vxace"] .battle-field::after {
   background: linear-gradient(180deg, rgba(0, 0, 0, 0) 62%, rgba(0, 0, 0, 0.18) 100%);
 }
@@ -79,7 +79,7 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  /* battle.css 의 scale(1.35)를 되돌린다 — 배지/게이지가 흐려지지 않게. */
+  /* 공용 battle/ 리프 의 scale(1.35)를 되돌린다 — 배지/게이지가 흐려지지 않게. */
   transform: translate(-50%, -100%) scale(1) !important;
 }
 
@@ -648,7 +648,7 @@
 }
 
 /* --- 결과 창 ----------------------------------------------------------- */
-/* battle.css 의 4행 그리드 + 5개 자식 구성 때문에 DOM 순서(crest→title→cards→확인)가
+/* 공용 battle/ 리프 의 4행 그리드 + 5개 자식 구성 때문에 DOM 순서(crest→title→cards→확인)가
    화면에서 뒤집혀 "확인" 이 "승리" 위에 찍혔다(실측). flex 열로 바꿔 DOM 순서를 그대로 쓴다. */
 .battle-scene[data-battle-skin="vxace"] .battle-result-panel {
   align-items: center !important;

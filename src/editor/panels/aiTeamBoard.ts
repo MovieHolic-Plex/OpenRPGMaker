@@ -1,3 +1,5 @@
+import { bindActivityLevel, getActivityLevel } from "./aiActivityPreference";
+import { createActivityView } from "./aiActivityView";
 // 팀 보드 — `/pi` 실행을 대화 로그 안에 카드로 그린다. 팀장·시공·검수 에이전트가 행 하나씩,
 // 행마다 상태·턴·툴콜·마지막 한 줄. 상태는 teamBoardState 리듀서가 만들고 이 파일은 그리기만 한다.
 // 스타일: tabs-b-assistant-panel/20-team-board.css (tokens.css 변수만, !important 0).
@@ -96,7 +98,7 @@ function renderAgent(agent: TeamBoardAgent, startedAt: number, hideTask: boolean
   return row;
 }
 
-export function createTeamBoard(initial: TeamBoardState): TeamBoardHandle {
+export function createTeamBoard(initial: TeamBoardState, options: { externalReview?: boolean } = {}): TeamBoardHandle {
   const startedAt = Date.now();
   const compact = initial.mode === "single";
   const root = el("section", {
@@ -121,6 +123,11 @@ export function createTeamBoard(initial: TeamBoardState): TeamBoardHandle {
     details.append(summary, totals, list);
     root.append(details, foot);
   } else root.append(head, list, foot);
+
+  const activity = createActivityView();
+  root.prepend(activity.root);
+  root.dataset.activityBoard = "true";
+  details.hidden = true; head.hidden = true; list.hidden = true;
 
   let review: TeamBoardReview | null = null;
   const reviewBlock = (state: TeamBoardState): HTMLElement => {
@@ -153,6 +160,7 @@ export function createTeamBoard(initial: TeamBoardState): TeamBoardHandle {
       : `${elapsed}초`;
   };
   const update = (state: TeamBoardState): void => {
+    activity.update(state.trace);
     root.dataset.phase = state.phase;
     root.className = `ai-team-board${compact ? " is-compact" : ""} is-${PHASE_TONE[state.phase]}`;
     phase.textContent = state.phase;
@@ -166,8 +174,10 @@ export function createTeamBoard(initial: TeamBoardState): TeamBoardHandle {
     const footParts: HTMLElement[] = [];
     if (state.report) footParts.push(el("p", { class: "ai-team-report", text: state.report, dataset: { testid: "ai-team-report" } }));
     if (state.error) footParts.push(el("p", { class: "ai-team-error", text: state.error }));
-    if (state.phase === "검토 대기" && review) footParts.push(reviewBlock(state));
+    if (state.phase === "검토 대기" && review && !options.externalReview) footParts.push(reviewBlock(state));
     if (state.applied && !compact) footParts.push(el("p", { class: "ai-team-applied", text: state.applied, dataset: { testid: "ai-team-applied" } }));
+    const level = getActivityLevel();
+    for (const part of footParts) if (part.classList.contains("ai-team-report") || part.classList.contains("ai-team-applied")) part.hidden = level === "none" || level === "brief";
     if (footParts.length > 0) { foot.replaceChildren(...footParts); foot.removeAttribute("hidden"); }
     else { foot.replaceChildren(); foot.setAttribute("hidden", ""); }
   };
@@ -182,6 +192,7 @@ export function createTeamBoard(initial: TeamBoardState): TeamBoardHandle {
   const stopTicker = (): void => { if (ticker !== null) { clearInterval(ticker); ticker = null; } };
   const updateAndTick = (state: TeamBoardState): void => { lastState = state; update(state); syncTicker(); };
   updateAndTick(initial);
+  bindActivityLevel(root, () => update(lastState));
   return {
     root,
     update: updateAndTick,

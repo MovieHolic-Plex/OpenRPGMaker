@@ -1,8 +1,16 @@
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import type { DatabaseTab } from "@/editor/panels/database";
-import type { DatabaseWorkbenchSummary } from "@/editor/panels/databaseWorkbench";
 import { selectedUtilityRecordIndex } from "@/editor/panels/databaseUtilityRecordControls";
 import { store } from "@/project/store";
+
+export type DatabaseWorkbenchSummary = {
+  readonly recordId?: string;
+  readonly recordName?: string;
+  readonly selectedIndex?: number;
+  readonly tabId: string;
+  readonly tabLabel: string;
+  readonly totalCount?: number;
+};
 
 export function activeTabSummary(tab: { readonly id: DatabaseTab; readonly label: string }, body: HTMLElement): DatabaseWorkbenchSummary {
   const utilitySummary = utilityDatabaseSummary(tab);

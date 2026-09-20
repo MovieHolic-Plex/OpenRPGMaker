@@ -1,3 +1,5 @@
+import type { ActivityVisual } from "../activityVisual";
+import type { PiVillageCompletion } from "./villageCompletion";
 import type { PiApplyMode } from "./applyMode";
 import type { SpecialistModels } from "../modelRoles";
 import type { SpatialToolProof } from "@/editor/tools/spatialToolState";
@@ -45,6 +47,8 @@ export interface PiAgentRequest {
   readonly thinkingLevel?: PiAgentThinkingLevel;
   /** 노출할 툴 도메인. 비우면 살아 있는 레지스트리 전부. */
   readonly toolDomains?: readonly string[];
+  /** Initial schema candidates only; discovery may expand them. Not a permission boundary. */
+  readonly initialToolNames?: readonly string[];
   /** 팀 모드의 팀원 명세. 비우면 기본 팀. */
   readonly team?: PiTeamSpec;
   /** 읽기 전용 실행: 쓰기 툴을 주지 않고 조회·보고만 한다(자율성 「읽기 전용」·계획 턴). */
@@ -92,7 +96,10 @@ export interface PiProjectCheckpoint {
   readonly toolName: string;
   readonly spatialProof?: SpatialToolProof | null;
 }
-export type PiAgentEvent =
+export type PiAgentEvent = PiAgentEventPayload & { readonly at?: number };
+type PiAgentEventPayload =
+  | { readonly type: "prompt_inspection"; readonly snapshot: import("../authoring/promptInspection").PromptInspection }
+  | { readonly type: "execution_status"; readonly name: string; readonly summary: string; readonly ok?: boolean; readonly data?: unknown }
   | ({ readonly type: "checkpoint"; readonly checkpointId: string } & PiProjectCheckpoint)
   | { readonly type: "start"; readonly provider: string; readonly model: string; readonly toolCount: number }
   // ── 팀 이벤트. 하위 에이전트의 진행은 agent_event 로 감싸서 흘린다(보드가 행 단위로 그린다). ──
@@ -109,7 +116,7 @@ export type PiAgentEvent =
   | { readonly type: "delta"; readonly kind: "thinking" | "text"; readonly text: string }
   | { readonly type: "assistant"; readonly text: string }
   | { readonly type: "tool_start"; readonly id: string; readonly name: string; readonly args: unknown }
-  | { readonly type: "tool_end"; readonly id: string; readonly name: string; readonly ok: boolean; readonly summary: string }
+  | { readonly type: "tool_end"; readonly id: string; readonly name: string; readonly ok: boolean; readonly summary: string; readonly result?: unknown; readonly durationMs?: number; readonly visuals?: readonly ActivityVisual[] }
   /**
    * 툴이 맵에 한 일. 바뀐 칸만 싣는다 — 캔버스 시공 표시(고스트)가 턴 내내 먹는 재료다.
    * 결과 프로젝트는 맨 끝 `done` 에만 실리므로, 이게 없으면 턴이 끝날 때까지 캔버스가 조용하다.
@@ -121,7 +128,7 @@ export type PiAgentEvent =
    * 쓰기 실행의 정본 증거. 프루프가 객체 정체성에 살아 이 경계를 넘지 못하므로 다이제스트로
    * 실어 보낸다 — 브라우저의 수용 게이트가 이걸로 «도구가 만든 제안»임을 확인한다.
    */
-  | { readonly type: "done"; readonly project: Project; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spatialProof?: SpatialToolProof | null };
+  | { readonly type: "done"; readonly villageCompletion?: PiVillageCompletion; readonly project: Project; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spatialProof?: SpatialToolProof | null };
 
 export type PiAgentDoneEvent = Extract<PiAgentEvent, { type: "done" }>;
 

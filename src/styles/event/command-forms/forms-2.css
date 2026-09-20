@@ -563,8 +563,7 @@
 }
 
 /* 숫자 입력 편집 폼 — 자체 세로 스택 (auto-fit 그리드 제외 대상). */
-.event-command-edit-body .input-number-command-body,
-.input-number-command-body {
+.event-command-edit-body .input-number-command-body {
   align-content: start;
   display: flex;
   flex-direction: column;
@@ -573,8 +572,7 @@
   width: 100%;
 }
 
-.event-command-edit-body .input-number-command-body .input-number-field,
-.input-number-command-body .input-number-field {
+.event-command-edit-body .input-number-command-body .input-number-field {
   align-items: start;
   display: grid;
   gap: 8px 12px;
@@ -582,8 +580,7 @@
   min-width: 0;
 }
 
-.event-command-edit-body .input-number-command-body .input-number-field-label,
-.input-number-command-body .input-number-field-label {
+.event-command-edit-body .input-number-command-body .input-number-field-label {
   color: var(--text-2, #5C5348);
   font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   padding-top: 7px;

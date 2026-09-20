@@ -111,7 +111,6 @@ export function renderEditScene(context: EditSceneRenderContext): EditSceneRende
   if (state.showGrid) renderGrid(context.gridGraphics, map, state.layer);
   renderStartPosition(context);
   renderEventMarkers(context, map, state.layer);
-  renderSelection(context);
   return { tileObjectsUpdated };
 }
 
@@ -363,27 +362,61 @@ function renderStartPosition(context: EditSceneRenderContext): void {
   context.overlayLayer.add(s);
 }
 
-function renderSelection(context: EditSceneRenderContext): void {
-  const selection = editorState.get().selection;
-  if (!selection || selection.mapId !== context.mapId) return;
+type SelectionRect = Phaser.GameObjects.Rectangle & {
+  setPosition(x: number, y: number): SelectionRect;
+  setSize(width: number, height: number): SelectionRect;
+};
+
+function isSelectionRect(value: unknown): value is SelectionRect {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Partial<SelectionRect>;
+  return typeof candidate.setPosition === "function"
+    && typeof candidate.setSize === "function"
+    && typeof candidate.setOrigin === "function"
+    && typeof candidate.setStrokeStyle === "function";
+}
+
+/**
+ * 선택 사각형은 타일 레이어와 수명이 다르다. 우클릭 드래그 중 선택만 바뀌는데
+ * 맵 타일을 전부 다시 만들면 Phaser 3.90 의 O(N²) 재부모화가 그대로 살아난다.
+ * 전용 컨테이너에서 두 사각형만 옮기거나 다시 그린다.
+ */
+export function syncSelectionOverlay(
+  scene: Phaser.Scene,
+  layer: Phaser.GameObjects.Container,
+  mapId: MapId,
+): void {
+  const state = editorState.get();
+  const selection = state.selection;
+  if (!selection || selection.mapId !== mapId || state.pastePreview) {
+    layer.removeAll(true);
+    return;
+  }
   const x = selection.x * TILE_SIZE;
   const y = selection.y * TILE_SIZE;
   const w = selection.width * TILE_SIZE;
   const h = selection.height * TILE_SIZE;
+  const existing = layer.list ?? [];
+  if (existing.length === 2 && isSelectionRect(existing[0]) && isSelectionRect(existing[1])) {
+    existing[0].setPosition(x, y).setSize(w, h);
+    existing[1].setPosition(x, y).setSize(w, h);
+    return;
+  }
+  layer.removeAll(true);
 
   // 이중 테두리: 어두운 바깥 + 밝은 청록 안쪽. 단색 청록 하나였을 때는 물·하늘 타일 위에서
   // 경계가 배경에 묻혀 어디까지 골랐는지 보이지 않았다. 어느 지형 위에서도 한쪽은 대비를 낸다.
   // 마칭앤츠 애니메이션은 쓰지 않는다 — 이 편집기는 매 프레임 작업으로 렉을 겪은 이력이 있고,
   // 정적 이중선으로 목적(경계 판독)은 달성된다.
-  const outline = context.scene.add.rectangle(x, y, w, h, 0x3bc9db, 0.12);
+  const outline = scene.add.rectangle(x, y, w, h, 0x3bc9db, 0.12);
   outline.setOrigin(0, 0);
   outline.setStrokeStyle(4, 0x10333a, 0.75);
-  context.overlayLayer.add(outline);
+  layer.add(outline);
 
-  const inner = context.scene.add.rectangle(x, y, w, h, 0x000000, 0);
+  const inner = scene.add.rectangle(x, y, w, h, 0x000000, 0);
   inner.setOrigin(0, 0);
   inner.setStrokeStyle(2, 0x7fe7f5, 1);
-  context.overlayLayer.add(inner);
+  layer.add(inner);
 }
 
 export function applyCameraView(scene: Phaser.Scene, map: GameMap, preserveLookAt: boolean): void {

@@ -1,0 +1,121 @@
+/* URL Import Modal */
+.rm-url-backdrop {
+  inset: 0;
+  z-index: 100050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3, 12px);
+  position: fixed;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+}
+
+.rm-url-modal-window {
+  max-width: 480px;
+  width: 90vw;
+  height: auto;
+  max-height: none;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-modal);
+  overflow: visible;
+  animation: rmModalPop 0.18s ease-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.rm-url-modal-window .database-modal-header {
+  align-items: center;
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--space-2, 8px);
+  justify-content: space-between;
+  min-height: 48px;
+  padding: var(--space-2, 8px) var(--space-4, 16px);
+}
+
+.rm-url-modal-window .database-modal-header h2 {
+  color: var(--text-1);
+  font: 700 16px/1.3 var(--font-ui, system-ui, sans-serif);
+  margin: 0;
+  min-width: 0;
+}
+
+.rm-url-modal-window .database-modal-close {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s, 6px);
+  color: var(--text-2);
+  cursor: pointer;
+  display: grid;
+  flex: 0 0 auto;
+  height: 32px;
+  justify-content: center;
+  width: 32px;
+}
+
+.rm-url-modal-window .database-modal-close:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-default);
+}
+
+@keyframes rmModalPop {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.rm-url-modal-body {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.rm-url-desc {
+  color: var(--text-2);
+  font: 400 13px/1.5 var(--font-ui);
+  word-break: keep-all;
+}
+
+.rm-url-input {
+  width: 100%;
+  font: 400 13px/1.4 var(--font-ui);
+  padding: 8px 12px;
+  border-radius: var(--radius-s);
+  border: 1px solid var(--border-default);
+  background: var(--control-bg);
+  box-sizing: border-box;
+}
+
+.rm-url-input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--focus-ring);
+}
+
+.rm-url-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.rm-url-btn {
+  font-weight: 600;
+  color: var(--accent);
+  border-color: var(--border-default);
+}
+
+.rm-url-btn:hover {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}

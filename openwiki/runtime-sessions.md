@@ -263,6 +263,7 @@ Session state, save slots, farming, friendship, calendar, lighting, weather, fie
 - `PlaySession.erasedEventIds` is runtime-only Erase Event state. It filters page resolution, sprites, triggers, and collision while the current map session is active, is included in save snapshots, is preserved when applying a saved session, and is cleared on normal map load/re-entry so authored `Project` event data remains unchanged.
 - Runtime actor overrides live on `PlaySession`, not on project database records. `actorCharacterResourceIds` stores Change Actor Graphic charset overrides for the lead/player sprite path, `actorNicknames` and `actorFaceResourceIds` store Change Actor Nickname/Faceset overrides (a face override is one standalone face resource id; `actorFaceIndices` is removed, and a legacy save slot still holding it is mapped through `faceIdForSheetCell` on load), `actorBattleCommands` stores battle-menu overrides, `actorParamBonuses` stores Change Parameters permanent deltas by actor/parameter, and `actorStateIds` stores Change State field states. These fields are included in save slots and are passed into battle actor construction together with `actorLevels`, `actorVitals`, `actorNames`, and `partyActorIds`.
 - Party-style field followers live on `PlaySession.followers` plus `followerTrail`. `addFollower` accepts an `actorId` or explicit page graphic (`kind: "actor"`), `removeFollower` removes actor followers by name or all actors (monster train entries are preserved), and PlayScene renders followers outside the event list so they never block movement or become action/touch investigation targets. `monsterParty` is the SSOT for overworld monster train followers: `syncMonsterPartyFollowers` rebuilds `kind: "monster"` entries after give/move and save load, with trail order actors first then party order. Species may author optional `graphic.fieldCharsetId` / `fieldGraphic` (default `tex_easyrpg_charset_monster1`). Transfer/retry/load paths place followers near the player, while normal player movement records previous player tiles so followers inherit the trail in RM2003 party order. Save slots preserve both the follower list and trail.
+- **팔로워 스프라이트는 슬롯(논리 좌표)과 화면 좌표가 분리돼 있다 (2026-09-20).** 슬롯은 궤적 재생이라 플레이어 걸음 완료 시점에만 바뀌지만, 화면 좌표는 `updatePlayScene` 이 매 렌더 프레임 부르는 `updateFollowerSpriteMotion` 이 직전 슬롯 → 이번 슬롯 사이를 걷기 주기와 같은 시간으로 이어 그린다(걷기 프레임 0→1→2→1, 멈추면 idle 프레임). 이 분리가 없으면 팔로워가 칸에서 칸으로 스냅 이동한다 — "뒤에서 쫓아오는 몬스터" 가 유일하게 뚝뚝 끊기는 원인이었다. 슬롯 갱신(`syncFollowerSprites`)은 여전히 걸음 완료·맵 로드·refresh 지점에서만 불린다. 증거: `npm run qa:runtime -- --scenario follower-chase` + `scripts/qa/runtime/follower-frames.probe.mjs`(QA_OUT_DIR 로 프레임 샷 분리, 걷는 동안 스프라이트 x 가 타일 사이값이어야 한다). 픽스처는 8MB 라 커밋하지 않고 `build-follower-qa-fixture.mts` 로 생성한다.
 - 동료(액터 팔로워) 전역 규칙은 `system.companions: CompanionConfig` 에 산다 — `gap`(동료 사이 간격, 칸)·`maxCompanions`(동시 추종 상한)·`overflow`(`reject` 기본 / `replaceOldest`). 생략하면 기존 동작(간격 1칸·무제한)이 그대로 유지되고 세이브 마이그레이션도 필요 없다. 추종은 경로탐색이 아니라 `followerTrail` 재생이므로 간격은 인덱스 매핑으로 표현된다: index 번째 동료는 `trail[(index + 1) * gap - 1]` 을 읽는다(`followerPositions(session, config)`). 궤적 버퍼가 `MAX_FOLLOWER_TRAIL_POINTS`(64)칸이라 `gap * maxCompanions` 가 64를 넘으면 뒷사람이 플레이어 칸에 겹치므로 `configure_companion_rules` 가 저작 시점에 거부한다. `resetFollowerTrailNearPlayer(session, map, config)` 는 `gap` 만큼 길게 궤적을 깔아 맵 진입 직후 겹침을 막는다. 인원 상한은 **액터 동료만** 센다 — 몬스터 열차는 `monsterParty` 가 SSOT 이고 `syncMonsterPartyFollowers` 가 상한과 충돌하면 안 된다. `addFollowerToSession` 은 상한 초과 시 `reject` 면 `null` 을 돌려주고 `replaceOldest` 면 가장 먼저 붙은 액터 동료를 밀어낸다.
 - 동료 대형은 `system.companions.formation` 이다. `"line"`(기본)은 궤적 승계, `"beside"` 는 플레이어 사방 인접 칸에 붙어 다닌다 — 인접 칸이 4개뿐이므로 앞 4명만 옆에 서고 나머지는 일렬로 떨어지며(`lineIndex = index - slots.length`), `gap` 은 무시된다. `beside` 슬롯은 `FollowerWorld({project, map})` 를 받은 호출부에서 `inBounds` + `isPassable` 로 걸러진다 — 일렬은 플레이어가 밟은 칸만 쓰므로 필요 없지만, 옆에 세우는 순간 강·벽 위에 동료가 서는 게 가능해진다. `clearOnTransfer: true` 면 맵 이동 시 액터 동료를 해제한다(런타임 `transferTo` 와 `sceneTestRunner` 의 transfer 스텝이 같은 게이트를 쓴다).
 - `adjacentFollowerCandidates` 는 **인접 4칸만** 돌려준다. 이전에는 마지막 원소로 플레이어 칸 자체를 폴백으로 넣고 있었고, 그 때문에 `beside` 5번째 동료가 플레이어 위에 겹쳐 안 보였다(궤적 초기화도 5칸마다 플레이어 칸을 깔았다). 겹침 폴백이 필요한 자리는 `resetFollowerTrailNearPlayer` 의 out-of-bounds 분기뿐이다.
@@ -272,7 +273,8 @@ Session state, save slots, farming, friendship, calendar, lighting, weather, fie
 - Play mode draws lighting through `src/player/playSceneLighting.ts` using one reusable `CanvasTexture` mask image above the scene. The mask recomposes only when the lighting signature changes and cuts simple radial light holes from the ambient darkness; wall/line-of-sight occlusion is intentionally out of scope for the Phase 6a lighting layer.
 - Day/night phase tint is owned by `src/player/playSceneTime.ts` and layered below the Phase 6a darkness mask rather than being added into lighting ambient. Time advances on a fixed timestep from `minutesPerRealSecond`, pauses during menu, battle, and cutscene lock, and can force `sleepUntilMorning` at `dayEndHour` when `forceSleep` is enabled.
 - Runtime weather is stored in the existing `PlaySession.m2Runtime.screen.weather` string and normalized by `src/player/weather/weatherModel.ts`. Native `setWeather` supports `none`, `rain`, `storm`, `snow`, and `fog` with optional intensity/transition; save slots preserve the current weather string, and map transfer keeps it until another command / tool or authored map default changes it.
-- Play mode draws Phaser weather in `src/player/playSceneWeather.ts` below the Phase 6a darkness mask. `storm` reuses rain particles plus deterministic fixed-step flash opacity, while `fog` is a scrolling translucent overlay under darkness so lighting can still dominate the final composite.
+- Play mode draws Phaser weather in `src/player/playSceneWeather.ts` below the Phase 6a darkness mask. As of 2026-09-21, fog uses three seamless, independently drifting noise layers from `weather/fogTexture.ts` (256² texture generated once per texture manager, linear filtering, no asset dependency/per-frame texture upload). Opacity scales continuously to zero; no rounded-rectangle bands or opaque base veil remain. Screen-space weather compensates camera zoom, while cloud shadows remain world-anchored. Rain/storm and snow use deterministic index-hashed positions, varied depth/speed/size/opacity; storm retains the existing flash timing. Layer objects are scene-owned and references clear on shutdown. Weather commands and saved state are unchanged.
+- Visual QA: `WEATHER_QA_KIND=fog npm run qa:runtime -- --scenario weather-quality` (also cloud/rain/snow/storm); optional `WEATHER_QA_ZOOM=0.5`. The scenario uses an existing test map with a transient weather-only event, captures two motion frames, then clears non-cloud weather. This is a rendering fixture, not authored game content. See `verify-shots/runtime-qa/weather-after/SUMMARY.md` and the comparison evidence in `.omo/evidence/weather-quality/`.
 - Map-target battle animations are transient runtime effects from `showAnimation` and are intentionally not serialized. `src/player/playSceneMapAnimations.ts` reuses battle animation records/resources on a map overlay above events and below darkness; event targets capture the start tile/pixel position and do not track a moving event after playback begins.
 
 ## Editorial title screen (2026-08-26)
@@ -369,3 +371,39 @@ both vital lines to their own row, not only to the whole stage. Proof:
 `OPRN_MENU_QA_OUT=verify-shots/runtime-qa/menu-eras node scripts/qa/runtime/menu-design.probe.mjs retro-2000 retro-2003 classic-xp classic-vx`.
 Read that directory's `SUMMARY.md` first. Previews are actual player captures at
 `public/assets/ui/menu-skins/<id>.png`. Details: `docs/reviews/2026-09-18-menu-eras.md`.
+
+## Player options, inventory views and honest shop services (feature16, 2026-09-21)
+
+- ESC → 시스템 → 설정 opens `src/player/playerOptionsDetail.ts` through the existing keyboard-owned
+  detail controller in every menu skin. Semantic buttons use `player-option-*` test IDs.
+  BGM/SE ±10%, dialogue slow/normal/fast, and **ESC menu motion only** are device preferences;
+  this is not a global flash-reduction promise. OS reduced-motion still takes precedence.
+- `src/player/playerPreferences.ts` uses `oprn:player-preferences:v1`, independent of project namespaces,
+  sessions and save slots. Invalid values default/clamp; failed Storage writes retain the
+  in-memory setting and report that persistence failed. Audio singleton creation reads these
+  values; options immediately call `AudioEngine.setVolume` for both groups. Menu cue volume
+  also follows SE. Dialogue applies the speed multiplier to default and authored `\s[n]`
+  delays, preserving explicit pauses and manual page advance.
+- Inventory view state belongs to each menu controller, never `session.inventory`. At the
+  end of the item list, `inventory-filter` cycles all / field-usable types / equipment / other;
+  `inventory-sort` cycles authored / Korean name / descending quantity. From the first action,
+  Up twice reaches filtering. Actor eligibility is still decided by actual item-use logic.
+  Unknown positive stacks remain visible in all/other. Controls survive empty results;
+  the controller clamps the cursor and retains the activated control across list rebuilds.
+  All twelve skins share these buttons, item targeting and keyboard ownership.
+- The split shop no longer duplicates buy/sell navigation with fake upgrade/exchange actions.
+  Existing real `shop-tab-buy` / `shop-tab-sell` handle supported modes; buy-only and sell-only
+  shops cannot show the other service. No crafting, cart, transaction or save schema was added.
+- Parent-owned validation: `npm test -- test/feature16Player*.test.ts` and
+  `npm run qa:runtime -- --scenario feature16-player`. The scenario interacts with the real
+  `player.html` shell using keys, captures settings/filtered inventory/split shop, and derives
+  a detached test fixture via `test/fixtures/feature16Player.mjs`. No DB content writes.
+  Read `verify-shots/runtime-qa/feature16-player/SUMMARY.md` first. Tests and browser captures
+  are prepared here, not executed by the feature worktree agent.
+## Persistent battle reports and formation (2026-09-21)
+
+Existing `actorRows` and `partyActorIds` save/load paths remain authoritative. Optional `battleReports` is normalized at create/parse/restore and defaults empty for old saves (20 reports, 120 real timeline lines each). Esc → 기록 → 전투 기록 reads completed outcomes; Esc → 파티 → 진형 edits active order and front/back. Contracts and parent-owned verification: `openwiki/feature16-battle-ui.md`.
+
+Feature16 integration removed fabricated comparison numbers and cart/checkout claims,
+stock urgency text and the redundant split heading. Story-mode shortcuts honor
+buyOnly/sellOnly; real item comparison and purchase/sale handlers remain authoritative.

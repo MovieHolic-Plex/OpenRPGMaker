@@ -505,7 +505,7 @@ function paletteMatchCount(
  * 원인인지 말해 주지 않았다. 레이어를 아는 이 함수가 원인을 짚는다.
  */
 function makePaletteEmptyHint(tileLayer: Exclude<Layer, "event">): string | undefined {
-  const layerLabel = tileLayer === "upper" ? "덧그림" : "바닥";
+  const layerLabel = tileLayer === "upper" ? "상위" : "바닥";
   // 「지형」·「물」은 하위 레이어 전용 판정이다(tileMatchesCategory). 그 레이어가 아니면
   // 분류 자체가 0칸을 낳으므로, 검색어를 지우는 것으로는 풀리지 않는다는 걸 말해 준다.
   if (tileLayer === "upper" && (activeTileCategory === "terrain" || activeTileCategory === "water")) {

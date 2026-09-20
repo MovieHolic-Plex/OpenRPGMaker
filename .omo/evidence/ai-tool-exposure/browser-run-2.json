@@ -1,0 +1,144 @@
+{
+  "scriptedModel": true,
+  "task": "프로젝트 이름을 바꿔줘\n\n[의도] 있는 것을 고치는 요청이다. 대상은 지금 열린 맵의 기존 산출물이다. get_map_region/find_layout_regions 로 현재 상태를 먼저 보고 그 자리에서 고친다. create_map·duplicate_map·start_interior_room_session·author_village(kind:\"new\") 로 새것을 만들지 말 것. 기존 실내 맵은 furnish_interior_space.",
+  "initialToolNames": [
+    "find_tools",
+    "read_project_wiki",
+    "tile_query",
+    "create_map",
+    "resize_map",
+    "get_project_summary",
+    "list_resources",
+    "get_database_records",
+    "focus_editor_view",
+    "get_map_region",
+    "find_events",
+    "get_event",
+    "find_layout_regions"
+  ],
+  "rounds": [
+    {
+      "names": [
+        "find_tools",
+        "read_project_wiki",
+        "tile_query",
+        "create_map",
+        "resize_map",
+        "get_project_summary",
+        "get_map_region",
+        "find_events",
+        "get_event",
+        "list_resources",
+        "get_database_records",
+        "find_layout_regions",
+        "focus_editor_view",
+        "consult_writer"
+      ],
+      "schemaChars": 7847
+    },
+    {
+      "names": [
+        "find_tools",
+        "read_project_wiki",
+        "tile_query",
+        "create_map",
+        "resize_map",
+        "get_project_summary",
+        "get_map_region",
+        "find_events",
+        "get_event",
+        "list_resources",
+        "get_database_records",
+        "find_layout_regions",
+        "focus_editor_view",
+        "consult_writer",
+        "set_project_settings",
+        "reset_project",
+        "author_house",
+        "list_spatial_designs",
+        "get_spatial_design",
+        "upsert_spatial_design"
+      ],
+      "schemaChars": 44710
+    },
+    {
+      "names": [
+        "find_tools",
+        "read_project_wiki",
+        "tile_query",
+        "create_map",
+        "resize_map",
+        "get_project_summary",
+        "get_map_region",
+        "find_events",
+        "get_event",
+        "list_resources",
+        "get_database_records",
+        "find_layout_regions",
+        "focus_editor_view",
+        "consult_writer",
+        "set_project_settings",
+        "reset_project",
+        "author_house",
+        "list_spatial_designs",
+        "get_spatial_design",
+        "upsert_spatial_design"
+      ],
+      "schemaChars": 44710
+    }
+  ],
+  "stats": {
+    "ms": 363,
+    "turns": 3,
+    "toolCalls": 2,
+    "toolErrors": 0,
+    "usage": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "cost": {}
+    }
+  },
+  "changedKeys": [
+    "meta",
+    "system"
+  ],
+  "party": [
+    "actor_hero"
+  ],
+  "title": "검증된 프로젝트",
+  "events": [
+    {
+      "type": "tool_start",
+      "id": "t1",
+      "name": "find_tools",
+      "args": {
+        "query": "set_project_settings"
+      }
+    },
+    {
+      "type": "tool_end",
+      "id": "t1",
+      "name": "find_tools",
+      "ok": true,
+      "summary": "편집기 툴 6개 발견: set_project_settings, reset_project, author_house, list_spatial_designs, get_spatial_design, upsert_spatial_design"
+    },
+    {
+      "type": "tool_start",
+      "id": "t2",
+      "name": "set_project_settings",
+      "args": {
+        "title": "검증된 프로젝트"
+      }
+    },
+    {
+      "type": "tool_end",
+      "id": "t2",
+      "name": "set_project_settings",
+      "ok": true,
+      "summary": "프로젝트 설정 변경 — 제목"
+    }
+  ]
+}

@@ -44,7 +44,7 @@ import {
   mapBackgroundPreviewEnabled,
   subscribeMapBackgroundPreview,
 } from "@/editor/mapBackgroundPreviewState";
-import { editorState, EDITOR_ZOOM_LEVELS } from "@/editor/editorState";
+import { editorState, EDITOR_ZOOM_LEVELS, type TileClipboard } from "@/editor/editorState";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import {
   renderEventLayerClickFeedback,
@@ -54,9 +54,8 @@ import { retainEventLayerClickFeedback } from "@/editor/transientEditorChrome";
 import { EVENT_EDITOR_CLOSED_WINDOW_EVENT } from "@/editor/eventEditorLifecycleEvents";
 import {
   buildEventMarkerTooltipModel,
-  eventLayerSwitchNotice,
+  collectCallTargetWarnings,
   renderEventMarkerTooltipElement,
-  shouldOfferEventLayerSwitch,
 } from "@/editor/eventMarkerUx";
 import {
   computeEventMarkerTooltipPlacement,
@@ -73,6 +72,7 @@ import {
   shouldLazilyRenderEditMap,
   type EditSceneRenderStats,
   type EditSceneTileIndex,
+  syncSelectionOverlay,
 } from "@/editor/editSceneRender";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { resetCullableTiles, syncTileCulling } from "@/player/playSceneTileCulling";
@@ -114,7 +114,7 @@ import { repositionMapLocationLayer } from "@/editor/mapLocationLayer";
 import { repositionRegionChunkOverlay } from "@/editor/regionTask/regionChunkOverlayView";
 import { notifyRightDragRegionSelected } from "@/editor/selectionChipHint";
 import { computeMapViewport } from "@/ai/mapViewportContext";
-import { renderSelectionActionChips } from "@/editor/selectionActionChips";
+import { renderSelectionActionChips, shouldShowSelectionActionChips } from "@/editor/selectionActionChips";
 import {
   anchoredBuildPalettePosition,
   anchoredSelectionChipsPosition,
@@ -205,6 +205,7 @@ export function regionTaskBadgeText(phase: "running" | "pending"): string | null
 export class EditScene extends PhaserRuntime.Scene {
   private tileLayer: Phaser.GameObjects.Container | null = null;
   private hoverPreviewLayer: Phaser.GameObjects.Container | null = null;
+  private selectionLayer: Phaser.GameObjects.Container | null = null;
   private overlayLayer: Phaser.GameObjects.Container | null = null;
   private agentBlueprintLayer: Phaser.GameObjects.Container | null = null;
   private agentGhostPreviewLayer: Phaser.GameObjects.Container | null = null;
@@ -307,6 +308,9 @@ export class EditScene extends PhaserRuntime.Scene {
   private overlayGeometryReadAtMs = 0;
   /** 마지막 우클릭 드래그가 끝난 화면 좌표 — 칩 바를 놓은 자리에 띄우기 위한 anchor. */
   private lastRightDragScreen: { readonly x: number; readonly y: number } | null = null;
+  /** 붙여넣기 고스트를 마지막으로 조립한 클립보드·원점. 같은 클립보드면 칸만 옮긴다. */
+  private pasteGhostClipboard: TileClipboard | null = null;
+  private pasteGhostAt: { x: number; y: number } | null = null;
   /** 맵 캔버스에서 우클릭이 시작되면 true. 버튼을 놓는 순간 contextmenu 가 문서 타겟으로 뜨는 경우 대비. */
   private suppressBrowserContextMenuUntil = 0;
   private buildPalettePopup: HTMLElement | null = null;
@@ -387,6 +391,8 @@ export class EditScene extends PhaserRuntime.Scene {
     this.tileLayer = this.add.container(0, 0);
     this.hoverPreviewLayer = this.add.container(0, 0);
     this.hoverPreviewLayer.setDepth(8);
+    this.selectionLayer = this.add.container(0, 0);
+    this.selectionLayer.setDepth(8.5);
     this.overlayLayer = this.add.container(0, 0);
     this.overlayLayer.setDepth(9);
     const gridGraphics = this.add.graphics();
@@ -755,7 +761,6 @@ export class EditScene extends PhaserRuntime.Scene {
         this.startPan(ptr);
         return;
       }
-      if (this.tryOfferEventLayerSwitchFromPointer(ptr)) return;
       this.clearPendingEventCoordinateForPointerContext(ptr);
       if (this.beginDragOperation(ptr)) return;
       // 페인트 시작 전 호버(raw 팔레트 타일)를 지운다 — 성형된 결과와 겹쳐 깜빡이는 UX 방지.
@@ -912,6 +917,11 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!map) return;
     if (tile.x < 0 || tile.y < 0 || tile.x >= map.width || tile.y >= map.height) return;
     this.rightRegionGesture = { mapId, start: tile, screen, moved: false };
+    // The action-chip DOM depends on the final selection. Rebuilding it for
+    // every pointermove forces layout and creates a dozen buttons repeatedly
+    // while the user is still dragging. Keep the lightweight Phaser outline
+    // and size badge live, then build the chips once on pointerup.
+    this.clearBuildPaletteOverlay();
     // mouseup 시 contextmenu 가 문서 타겟으로 뜨는 브라우저 대비.
     this.suppressBrowserContextMenuUntil = Date.now() + 1500;
     this.isPainting = false;
@@ -1138,7 +1148,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.lastPointerTile = { x, y };
     this.updateEventMarkerTooltip(x, y);
     if (!this.shouldRenderPaintHover()) {
-      this.hoverPreviewLayer?.removeAll(true);
+      this.clearHoverPreviewLayer();
       return;
     }
     this.renderHoverPreview(x, y);
@@ -1147,12 +1157,12 @@ export class EditScene extends PhaserRuntime.Scene {
   private clearHoverPreview(): void {
     this.lastPointerTile = null;
     this.clearEventMarkerTooltip();
-    this.hoverPreviewLayer?.removeAll(true);
+    this.clearHoverPreviewLayer();
   }
 
   /** 페인트 스트로크 중 raw 호버만 제거 (포인터 좌표·툴팁 상태 유지). */
   private suppressPaintHoverPreview(): void {
-    this.hoverPreviewLayer?.removeAll(true);
+    this.clearHoverPreviewLayer();
   }
 
   // ── 붙여넣기 미리보기 고스트 ──
@@ -1160,16 +1170,38 @@ export class EditScene extends PhaserRuntime.Scene {
   private renderPastePreviewGhost(): void {
     const layer = this.hoverPreviewLayer;
     if (!layer) return;
-    layer.removeAll(true);
     const preview = editorState.get().pastePreview;
     const clipboard = editorState.get().clipboard;
-    if (!preview || !clipboard) return;
+    if (!preview || !clipboard) {
+      this.clearPastePreviewGhost();
+      return;
+    }
     const mapId = this.mapId();
     if (!mapId) return;
     const map = store.getCurrent().maps[mapId];
     if (!map) return;
     const tileset = store.getCurrent().tilesets[map.tilesetId];
     if (!tileset) return;
+    if (
+      this.pasteGhostClipboard === clipboard
+      && this.pasteGhostAt
+      && layer.list.length > 0
+    ) {
+      const dx = (preview.x - this.pasteGhostAt.x) * TILE_SIZE;
+      const dy = (preview.y - this.pasteGhostAt.y) * TILE_SIZE;
+      if (dx !== 0 || dy !== 0) {
+        for (const child of layer.list) {
+          const positioned = child as Phaser.GameObjects.GameObject & { x: number; y: number };
+          positioned.x += dx;
+          positioned.y += dy;
+        }
+        this.pasteGhostAt = { x: preview.x, y: preview.y };
+      }
+      return;
+    }
+    this.clearHoverPreviewLayer();
+    this.pasteGhostClipboard = clipboard;
+    this.pasteGhostAt = { x: preview.x, y: preview.y };
     for (let cy = 0; cy < clipboard.height; cy++) {
       for (let cx = 0; cx < clipboard.width; cx++) {
         const x = preview.x + cx;
@@ -1211,10 +1243,24 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private clearPastePreviewGhost(): void {
+    this.clearHoverPreviewLayer();
+  }
+
+  private clearHoverPreviewLayer(): void {
     this.hoverPreviewLayer?.removeAll(true);
+    this.pasteGhostClipboard = null;
+    this.pasteGhostAt = null;
+  }
+
+  private syncSelectionOverlay(): void {
+    const layer = this.selectionLayer;
+    const mapId = this.mapId();
+    if (!layer || !mapId) return;
+    syncSelectionOverlay(this, layer, mapId);
   }
 
   private shouldRenderPaintHover(): boolean {
+    if (editorState.get().pastePreview) return false;
     return shouldShowPaintHoverPreview({
       isPainting: this.isPainting,
       dragActive: this.getDragOperationHandler().active(),
@@ -1226,7 +1272,7 @@ export class EditScene extends PhaserRuntime.Scene {
     const mapId = this.mapId();
     if (!layer || !mapId) return;
     if (!this.shouldRenderPaintHover()) {
-      layer.removeAll(true);
+      this.clearHoverPreviewLayer();
       return;
     }
     renderHoverTilePreview({ centerX, centerY, layer, mapId, scene: this });
@@ -1559,29 +1605,12 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private offerEventLayerSwitchAt(mapId: MapId, x: number, y: number, layer: string, clickCount: number): boolean {
-    const map = store.getCurrent().maps[mapId];
-    const existing = map ? findEventCoveringPoint(editorWorkingEvents(map.events), x, y) : undefined;
-    if (!shouldOfferEventLayerSwitch({ activeLayer: layer as "lower" | "upper" | "event", clickCount, hasEvent: Boolean(existing) })) {
-      return false;
-    }
-    if (!existing) return false;
-    // 더블클릭은 "이걸 편집하고 싶다"가 명확하다(D13) — 확인 모달 없이 즉시 전환하고 편집기를 연다.
-    this.isPainting = false;
-    this.lastPaintKey = "";
-    editorState.set({ layer: "event", tool: "event", selectedEventId: existing.id, selectedEventPageId: null });
-    toast(eventLayerSwitchNotice(existing), "info");
-    openEventEditorModal(mapId, existing.id);
-    return true;
-  }
-
-  private tryOfferEventLayerSwitchFromPointer(ptr: Phaser.Input.Pointer): boolean {
-    const mapId = this.mapId();
-    if (!mapId) return false;
-    const layer = editorState.get().layer;
-    if (layer === "event") return false;
-    if (!canEditMap(mapId)) return false;
-    const { x, y } = this.pointerToTile(ptr);
-    return this.offerEventLayerSwitchAt(mapId, x, y, layer, this.pointerClickCount(ptr));
+    void mapId;
+    void x;
+    void y;
+    void layer;
+    void clickCount;
+    return false;
   }
 
   private openExistingEventAt(mapId: MapId, x: number, y: number): boolean {
@@ -1738,6 +1767,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.renderAgentBlueprint();
     this.publishMapViewport();
     if (!mapChanged && this.lastPointerTile && this.shouldRenderPaintHover()) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
+    this.syncSelectionOverlay();
     this.renderBuildPaletteOverlay();
   }
 
@@ -1821,6 +1851,7 @@ export class EditScene extends PhaserRuntime.Scene {
       tileIndex: this.tileIndex,
     }, cells);
     if (this.lastPointerTile && this.shouldRenderPaintHover()) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
+    this.syncSelectionOverlay();
     this.renderBuildPaletteOverlay();
     return stats;
   }
@@ -1843,6 +1874,7 @@ export class EditScene extends PhaserRuntime.Scene {
       } else {
         this.clearPastePreviewGhost();
       }
+      this.syncSelectionOverlay();
       this.renderBuildPaletteOverlay();
       return;
     }
@@ -1862,10 +1894,6 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private renderStateKey(mapId: MapId): string {
     const state = editorState.get();
-    const selection = state.selection;
-    const selectionKey = selection
-      ? `${selection.mapId}:${selection.x}:${selection.y}:${selection.width}:${selection.height}`
-      : "none";
     return [
       mapId,
       state.tool,
@@ -1878,7 +1906,8 @@ export class EditScene extends PhaserRuntime.Scene {
       // 미리보기 토글은 빈 칸 체커의 알파를 바꾼다 — 상태 키에 없으면 증분 렌더가 그 사실을 놓친다.
       mapBackgroundPreviewEnabled() ? "bg-preview" : "bg-hidden",
       state.selectedEventId ?? "none",
-      selectionKey,
+      // selection / pastePreview 는 여기 넣지 마라. 우클릭 드래그·Ctrl+V 고스트가
+      // 타일 전체를 다시 만들게 된다. 전용 오버레이가 따로 따라간다.
     ].join("|");
   }
 
@@ -1952,7 +1981,7 @@ export class EditScene extends PhaserRuntime.Scene {
       return;
     }
 
-    const model = buildEventMarkerTooltipModel(existing);
+    const model = buildEventMarkerTooltipModel(existing, collectCallTargetWarnings(store.getCurrent(), existing));
 
     const host = canvas.parentElement;
     if (!host || typeof document === "undefined") return;
@@ -2347,6 +2376,11 @@ export class EditScene extends PhaserRuntime.Scene {
     // 가리키고 있어야 한다. 그래서 아래 가드들보다 먼저, 항상 갱신한다.
     // (이 함수는 redraw·pan·창 토글 모두에서 불리므로 배지 추적점으로 충분하다.)
     this.renderRegionSizeBadge();
+    if (this.rightRegionGesture) {
+      this.clearBuildPaletteOverlay();
+      this.renderRegionTaskBadge();
+      return;
+    }
     // 영역 작업 창이 열려 있으면 칩/팔레트 오버레이를 띄우지 않는다 — 창과 칩 바가 같은
     // 자리에 겹쳐 화면이 어수선해진다. 창을 닫으면 다시 나타난다.
     if (isRegionTaskModalOpen()) {
@@ -2354,11 +2388,16 @@ export class EditScene extends PhaserRuntime.Scene {
       this.renderRegionTaskBadge();
       return;
     }
-    if (!selection || selection.mapId !== mapId) {
+    if (!shouldShowSelectionActionChips({
+      selection,
+      pastePreview: editorState.get().pastePreview,
+      mapId,
+    })) {
       this.clearBuildPaletteOverlay();
       this.renderRegionTaskBadge();
       return;
     }
+    if (!selection) return;
     const host = this.game.canvas.parentElement;
     if (!host) {
       this.clearBuildPaletteOverlay();

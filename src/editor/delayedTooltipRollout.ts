@@ -36,7 +36,7 @@ export const DELAYED_TOOLTIP_ROLLOUT: readonly DelayedTooltipTarget[] = [
   { label: "중단", name: "실행 중인 조수 작업 중단", testid: "ai-abort" },
   { label: "모두", name: "레이어 필터: 모든 타일", testid: "tileset-layer-filter-all" },
   { label: "바닥", name: "레이어 필터: 바닥(하위) 타일만", testid: "tileset-layer-filter-lower" },
-  { label: "덧그림", name: "레이어 필터: 덧그림(상위) 타일만", testid: "tileset-layer-filter-upper" },
+  { label: "상위", name: "레이어 필터: 상위 타일만", testid: "tileset-layer-filter-upper" },
   { label: "자동", name: "레이어 자동 판정에 맡기기", testid: "tileset-layer-auto" },
   { label: "하위 고정", name: "이 타일의 홈 레이어를 하위로 확정", testid: "tileset-layer-lower" },
   { label: "상위 고정", name: "이 타일의 홈 레이어를 상위로 확정", testid: "tileset-layer-upper" },

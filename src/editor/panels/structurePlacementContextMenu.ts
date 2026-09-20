@@ -201,5 +201,5 @@ async function openKitEditor(mapId: MapId, placement: StructurePlacement): Promi
   // 내장 파라메트릭 킷은 프로젝트 데이터가 아니라 편집기가 없다 — 앨범(데이터베이스 구조물 탭)을 연다.
   const { openDatabaseModal } = await import("@/editor/panels/databaseModal");
   openDatabaseModal("structureKits");
-  toast("내장 킷은 직접 편집할 수 없습니다 — 구조물 탭에서 복제해 쓰세요.", "info");
+  toast("내장 킷은 직접 편집할 수 없습니다 — [부품 보관함] 탭에서 복제해 쓰세요.", "info");
 }

@@ -23,6 +23,15 @@ const world = (label: string, icon: DeckIconName): ToolLabelEntry => ({ label, i
 const system = (label: string, icon: DeckIconName = "gear"): ToolLabelEntry => ({ label, icon, group: "system" });
 
 export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
+  upsert_item: build("아이템 수정", "box"),
+  upsert_equipment: build("장비 수정", "box"),
+  upsert_enemy: people("몬스터 수정", "user"),
+  upsert_actor: people("캐릭터 수정", "user"),
+  upsert_skill: build("스킬 수정", "spark"),
+  list_monster_resources: inspect("몬스터 소재 찾기"),
+  get_monster_resource: inspect("몬스터 소재 확인"),
+  list_resources: inspect("소재 찾기"),
+  list_npc_graphics: inspect("NPC 모습 찾기"),
   // ── 짓기 ──
   author_house: build("집 짓기", "house"),
   build_house: build("집 세우기", "house"),
@@ -68,12 +77,16 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   script_cutscene: people("연출 쓰기", "book"),
   script_cutscene_preset: people("연출 프리셋", "book"),
   upsert_event: people("이벤트 쓰기", "flag"),
+  event_command_assist: people("이벤트 명령 만들기", "flag"),
   move_event: people("이벤트 옮기기", "flag"),
   remove_event: people("이벤트 삭제", "flag"),
   duplicate_event: people("이벤트 복제", "flag"),
   link_maps: people("맵 연결", "link"),
   create_transfer_pair: people("맵 연결", "link"),
   // ── 보기·검사 ──
+  // 웹 검색은 프로젝트 조회가 아니라 바깥 검색이다 — inspect(도구 그룹·돋보기 아이콘)으로 둔다.
+  // 사전에 없으면 영문 원문이 그대로 보인다(2026-09-21 실측).
+  web_search: inspect("웹 검색"),
   get_project_summary: inspect("프로젝트 읽기"),
   get_map_region: inspect("영역 읽기", "grid"),
   show_map_region: inspect("영역 보기", "eye"),

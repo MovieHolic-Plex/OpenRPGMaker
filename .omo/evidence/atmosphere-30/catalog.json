@@ -1,0 +1,1023 @@
+[
+  {
+    "id": "enchanted-forest",
+    "label": "정령의 숲",
+    "genre": "마법",
+    "description": "반딧불·정령빛·햇살 / 풀벌레와 정령 공명",
+    "effects": [
+      {
+        "kind": "fireflies",
+        "amount": 0.65,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "insects",
+        "volume": 0.3
+      },
+      {
+        "kind": "spirits",
+        "amount": 0.4,
+        "speed": 0.5,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "whisper",
+        "volume": 0.28
+      },
+      {
+        "kind": "sunrays",
+        "amount": 0.45,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "none",
+        "volume": 0.35
+      }
+    ]
+  },
+  {
+    "id": "ancient-ruins",
+    "label": "고대 마법 유적",
+    "genre": "마법",
+    "description": "떠도는 문양·먼지·금빛 / 느린 마력 종소리",
+    "effects": [
+      {
+        "kind": "runes",
+        "amount": 0.45,
+        "speed": 0.5,
+        "size": 1.2,
+        "opacity": 0.7,
+        "sound": "chimes",
+        "volume": 0.35
+      },
+      {
+        "kind": "dust",
+        "amount": 0.6,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "none",
+        "volume": 0.35
+      },
+      {
+        "kind": "sunrays",
+        "amount": 0.35,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "none",
+        "volume": 0.35,
+        "tint": "#efcb81"
+      }
+    ]
+  },
+  {
+    "id": "arcane-library",
+    "label": "비전 도서관",
+    "genre": "마법",
+    "description": "보라색 마력·작은 문양 / 종소리와 공명",
+    "effects": [
+      {
+        "kind": "magic",
+        "amount": 0.7,
+        "speed": 0.35,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "chimes",
+        "volume": 0.35,
+        "tint": "#d59aff"
+      },
+      {
+        "kind": "runes",
+        "amount": 0.25,
+        "speed": 1,
+        "size": 0.7,
+        "opacity": 0.7,
+        "sound": "whisper",
+        "volume": 0.22,
+        "tint": "#dcadfa"
+      }
+    ]
+  },
+  {
+    "id": "frost-sanctum",
+    "label": "빙결 성소",
+    "genre": "마법",
+    "description": "서리 결정·찬 운무 / 바람과 맑은 종소리",
+    "effects": [
+      {
+        "kind": "frost",
+        "amount": 0.75,
+        "speed": 1,
+        "size": 1.4,
+        "opacity": 0.7,
+        "sound": "breeze",
+        "volume": 0.3
+      },
+      {
+        "kind": "steam",
+        "amount": 0.35,
+        "speed": 0.25,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "chimes",
+        "volume": 0.25,
+        "tint": "#a1cce6"
+      }
+    ]
+  },
+  {
+    "id": "astral-gate",
+    "label": "별빛 차원문",
+    "genre": "마법",
+    "description": "큰 문양·푸른 정령·별빛 / 겹쳐 울리는 공명",
+    "effects": [
+      {
+        "kind": "runes",
+        "amount": 0.6,
+        "speed": 0.8,
+        "size": 1.8,
+        "opacity": 0.7,
+        "sound": "chimes",
+        "volume": 0.3,
+        "tint": "#85c8ff"
+      },
+      {
+        "kind": "spirits",
+        "amount": 0.6,
+        "speed": 1.4,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "whisper",
+        "volume": 0.32
+      },
+      {
+        "kind": "magic",
+        "amount": 0.35,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "chimes",
+        "volume": 0.18,
+        "tint": "#b5ddff"
+      }
+    ]
+  },
+  {
+    "id": "cursed-land",
+    "label": "저주받은 땅",
+    "genre": "악마",
+    "description": "독안개·검은 잔영·재 / 낮은 울림과 불길한 공명",
+    "effects": [
+      {
+        "kind": "poison",
+        "amount": 0.65,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "rumble",
+        "volume": 0.4,
+        "tint": "#9270b1"
+      },
+      {
+        "kind": "shades",
+        "amount": 0.4,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "whisper",
+        "volume": 0.25
+      },
+      {
+        "kind": "ash",
+        "amount": 0.4,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "breeze",
+        "volume": 0.15
+      }
+    ]
+  },
+  {
+    "id": "volcanic-forge",
+    "label": "지옥의 용암 지대",
+    "genre": "악마",
+    "description": "불씨·재·붉은 연무 / 불꽃과 저음",
+    "effects": [
+      {
+        "kind": "embers",
+        "amount": 0.9,
+        "speed": 1.5,
+        "size": 1.3,
+        "opacity": 0.7,
+        "sound": "fire",
+        "volume": 0.5
+      },
+      {
+        "kind": "ash",
+        "amount": 0.6,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "breeze",
+        "volume": 0.15
+      },
+      {
+        "kind": "smog",
+        "amount": 0.25,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "rumble",
+        "volume": 0.25,
+        "tint": "#a65338"
+      }
+    ]
+  },
+  {
+    "id": "abyss-rift",
+    "label": "심연의 균열",
+    "genre": "악마",
+    "description": "큰 그림자 잔영·보라 스파크 / 공명과 불안정한 전기음",
+    "effects": [
+      {
+        "kind": "shades",
+        "amount": 0.8,
+        "speed": 0.6,
+        "size": 2,
+        "opacity": 0.7,
+        "sound": "whisper",
+        "volume": 0.45,
+        "tint": "#57366f"
+      },
+      {
+        "kind": "sparks",
+        "amount": 0.55,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "electric",
+        "volume": 0.25,
+        "tint": "#c177ff"
+      },
+      {
+        "kind": "poison",
+        "amount": 0.3,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "rumble",
+        "volume": 0.3,
+        "tint": "#584066"
+      }
+    ]
+  },
+  {
+    "id": "blood-moon",
+    "label": "혈월의 의식",
+    "genre": "악마",
+    "description": "핏빛 문양·붉은 꽃잎·잔영 / 낮은 의식의 울림",
+    "effects": [
+      {
+        "kind": "runes",
+        "amount": 0.5,
+        "speed": 0.4,
+        "size": 1.7,
+        "opacity": 0.7,
+        "sound": "rumble",
+        "volume": 0.4,
+        "tint": "#ff586c"
+      },
+      {
+        "kind": "petals",
+        "amount": 0.6,
+        "speed": 0.55,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "breeze",
+        "volume": 0.2,
+        "tint": "#c94458"
+      },
+      {
+        "kind": "shades",
+        "amount": 0.3,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "whisper",
+        "volume": 0.25,
+        "tint": "#763943"
+      }
+    ]
+  },
+  {
+    "id": "blight-marsh",
+    "label": "마독의 늪",
+    "genre": "악마",
+    "description": "녹색 독무·떠오르는 기포·괴광 / 기포와 독무 저음",
+    "effects": [
+      {
+        "kind": "poison",
+        "amount": 0.85,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "rumble",
+        "volume": 0.4,
+        "tint": "#86ac37"
+      },
+      {
+        "kind": "underwater",
+        "amount": 0.3,
+        "speed": 0.4,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "bubbles",
+        "volume": 0.3,
+        "tint": "#a8d75a"
+      },
+      {
+        "kind": "fireflies",
+        "amount": 0.45,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "whisper",
+        "volume": 0.25,
+        "tint": "#cbef42"
+      }
+    ]
+  },
+  {
+    "id": "bamboo-grove",
+    "label": "바람 부는 죽림",
+    "genre": "무협",
+    "description": "초록 잎·가는 햇살 / 잎사귀 바람",
+    "effects": [
+      {
+        "kind": "leaves",
+        "amount": 0.65,
+        "speed": 0.8,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "rustle",
+        "volume": 0.45,
+        "tint": "#8bac53"
+      },
+      {
+        "kind": "sunrays",
+        "amount": 0.45,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.5,
+        "sound": "none",
+        "volume": 0.35
+      }
+    ]
+  },
+  {
+    "id": "mountain-mist",
+    "label": "산중 운무",
+    "genre": "무협",
+    "description": "흰 운무·옅은 꽃잎 / 느린 산바람",
+    "effects": [
+      {
+        "kind": "steam",
+        "amount": 0.55,
+        "speed": 0.25,
+        "size": 1,
+        "opacity": 0.6,
+        "sound": "breeze",
+        "volume": 0.35
+      },
+      {
+        "kind": "petals",
+        "amount": 0.3,
+        "speed": 0.4,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "breeze",
+        "volume": 0.15
+      }
+    ]
+  },
+  {
+    "id": "plum-courtyard",
+    "label": "매화 검원",
+    "genre": "무협",
+    "description": "붉고 흰 매화 꽃잎·먼지 / 꽃잎을 실은 바람",
+    "effects": [
+      {
+        "kind": "petals",
+        "amount": 0.9,
+        "speed": 0.6,
+        "size": 1.5,
+        "opacity": 0.7,
+        "sound": "breeze",
+        "volume": 0.4,
+        "tint": "#f79faf"
+      },
+      {
+        "kind": "dust",
+        "amount": 0.25,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "none",
+        "volume": 0.35
+      },
+      {
+        "kind": "sunrays",
+        "amount": 0.35,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "none",
+        "volume": 0.35,
+        "tint": "#ffdcc3"
+      }
+    ]
+  },
+  {
+    "id": "sword-grave",
+    "label": "고검의 무덤",
+    "genre": "무협",
+    "description": "회색 잔영·재·차가운 운무 / 황량한 바람과 쇠울림 같은 공명",
+    "effects": [
+      {
+        "kind": "ash",
+        "amount": 0.65,
+        "speed": 0.5,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "breeze",
+        "volume": 0.4
+      },
+      {
+        "kind": "shades",
+        "amount": 0.35,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "chimes",
+        "volume": 0.2,
+        "tint": "#728190"
+      },
+      {
+        "kind": "steam",
+        "amount": 0.3,
+        "speed": 0.15,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "none",
+        "volume": 0.35,
+        "tint": "#9aabb5"
+      }
+    ]
+  },
+  {
+    "id": "immortal-peak",
+    "label": "신선의 봉우리",
+    "genre": "무협",
+    "description": "금빛 문양·느린 운무·영기 / 맑은 종소리와 산바람",
+    "effects": [
+      {
+        "kind": "runes",
+        "amount": 0.3,
+        "speed": 1,
+        "size": 1.1,
+        "opacity": 0.7,
+        "sound": "chimes",
+        "volume": 0.3,
+        "tint": "#f4d187"
+      },
+      {
+        "kind": "steam",
+        "amount": 0.35,
+        "speed": 0.2,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "breeze",
+        "volume": 0.3
+      },
+      {
+        "kind": "spirits",
+        "amount": 0.25,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "whisper",
+        "volume": 0.2,
+        "tint": "#ffe7a3"
+      }
+    ]
+  },
+  {
+    "id": "city-smog",
+    "label": "스모그 낀 도시",
+    "genre": "현대",
+    "description": "회색 스모그·부유 먼지 / 낮은 도시 배경음",
+    "effects": [
+      {
+        "kind": "smog",
+        "amount": 0.6,
+        "speed": 0.5,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "rumble",
+        "volume": 0.4
+      },
+      {
+        "kind": "dust",
+        "amount": 0.55,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "none",
+        "volume": 0.35
+      }
+    ]
+  },
+  {
+    "id": "power-station",
+    "label": "손상된 전기 시설",
+    "genre": "현대",
+    "description": "스파크·증기·누수 / 전기 잡음과 물방울",
+    "effects": [
+      {
+        "kind": "sparks",
+        "amount": 0.65,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "electric",
+        "volume": 0.4
+      },
+      {
+        "kind": "steam",
+        "amount": 0.25,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.4,
+        "sound": "steam",
+        "volume": 0.15
+      },
+      {
+        "kind": "leaks",
+        "amount": 0.4,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "drips",
+        "volume": 0.3
+      }
+    ]
+  },
+  {
+    "id": "subway-tunnel",
+    "label": "폐지하철 터널",
+    "genre": "현대",
+    "description": "누수·탁한 먼지·옅은 연무 / 물방울과 터널 저음",
+    "effects": [
+      {
+        "kind": "leaks",
+        "amount": 0.75,
+        "speed": 0.7,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "drips",
+        "volume": 0.4
+      },
+      {
+        "kind": "dust",
+        "amount": 0.55,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "rumble",
+        "volume": 0.25,
+        "tint": "#9ba2aa"
+      },
+      {
+        "kind": "smog",
+        "amount": 0.2,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "none",
+        "volume": 0.35
+      }
+    ]
+  },
+  {
+    "id": "neon-alley",
+    "label": "네온 골목",
+    "genre": "현대",
+    "description": "분홍 증기·청록 물방울·간헐적 스파크 / 증기와 전기음",
+    "effects": [
+      {
+        "kind": "steam",
+        "amount": 0.4,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "steam",
+        "volume": 0.25,
+        "tint": "#bd75ab"
+      },
+      {
+        "kind": "leaks",
+        "amount": 0.6,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "drips",
+        "volume": 0.3,
+        "tint": "#77dcdf"
+      },
+      {
+        "kind": "sparks",
+        "amount": 0.2,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "electric",
+        "volume": 0.25,
+        "tint": "#f4a5db"
+      }
+    ]
+  },
+  {
+    "id": "cryo-laboratory",
+    "label": "극저온 연구실",
+    "genre": "현대",
+    "description": "청백색 증기·서리·전기 불꽃 / 냉각음과 전기 잡음",
+    "effects": [
+      {
+        "kind": "steam",
+        "amount": 0.6,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "steam",
+        "volume": 0.35,
+        "tint": "#b7e2ec"
+      },
+      {
+        "kind": "frost",
+        "amount": 0.5,
+        "speed": 0.4,
+        "size": 0.8,
+        "opacity": 0.7,
+        "sound": "none",
+        "volume": 0.35
+      },
+      {
+        "kind": "sparks",
+        "amount": 0.2,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "electric",
+        "volume": 0.2
+      }
+    ]
+  },
+  {
+    "id": "boiler-room",
+    "label": "증기 기계실",
+    "genre": "근대",
+    "description": "진한 증기·누수 / 압력 증기와 물방울",
+    "effects": [
+      {
+        "kind": "steam",
+        "amount": 0.75,
+        "speed": 1.3,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "steam",
+        "volume": 0.45
+      },
+      {
+        "kind": "leaks",
+        "amount": 0.5,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "drips",
+        "volume": 0.3
+      }
+    ]
+  },
+  {
+    "id": "steam-station",
+    "label": "증기기관 정거장",
+    "genre": "근대",
+    "description": "빠른 흰 증기·검댕·불씨 / 증기 분출과 불꽃",
+    "effects": [
+      {
+        "kind": "steam",
+        "amount": 0.65,
+        "speed": 1.8,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "steam",
+        "volume": 0.5
+      },
+      {
+        "kind": "ash",
+        "amount": 0.65,
+        "speed": 1.5,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "breeze",
+        "volume": 0.2,
+        "tint": "#777477"
+      },
+      {
+        "kind": "embers",
+        "amount": 0.25,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "fire",
+        "volume": 0.3
+      }
+    ]
+  },
+  {
+    "id": "factory-chimneys",
+    "label": "매연의 공장 지대",
+    "genre": "근대",
+    "description": "황갈색 매연·검은 재·먼지 / 공장 저음과 바람",
+    "effects": [
+      {
+        "kind": "smog",
+        "amount": 0.8,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "rumble",
+        "volume": 0.45,
+        "tint": "#a59473"
+      },
+      {
+        "kind": "ash",
+        "amount": 0.8,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "breeze",
+        "volume": 0.2,
+        "tint": "#666364"
+      },
+      {
+        "kind": "dust",
+        "amount": 0.4,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "none",
+        "volume": 0.35
+      }
+    ]
+  },
+  {
+    "id": "gaslamp-street",
+    "label": "가스등 안개 거리",
+    "genre": "근대",
+    "description": "호박빛 빛줄기·낮은 안개·먼지 / 가스 새는 소리와 바람",
+    "effects": [
+      {
+        "kind": "sunrays",
+        "amount": 0.8,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.95,
+        "sound": "none",
+        "volume": 0.35,
+        "tint": "#ffd087"
+      },
+      {
+        "kind": "steam",
+        "amount": 0.4,
+        "speed": 0.2,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "steam",
+        "volume": 0.22,
+        "tint": "#c7b99b"
+      },
+      {
+        "kind": "dust",
+        "amount": 0.45,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "breeze",
+        "volume": 0.2
+      }
+    ]
+  },
+  {
+    "id": "iron-foundry",
+    "label": "제철소",
+    "genre": "근대",
+    "description": "많은 불씨·주황 스파크·뜨거운 연기 / 화로와 거친 잡음",
+    "effects": [
+      {
+        "kind": "embers",
+        "amount": 0.95,
+        "speed": 1.8,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "fire",
+        "volume": 0.5
+      },
+      {
+        "kind": "sparks",
+        "amount": 0.6,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "fire",
+        "volume": 0.45,
+        "tint": "#ffc27a"
+      },
+      {
+        "kind": "smog",
+        "amount": 0.4,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "rumble",
+        "volume": 0.2,
+        "tint": "#a17c63"
+      }
+    ]
+  },
+  {
+    "id": "sunken-temple",
+    "label": "수중 신전",
+    "genre": "자연·수중",
+    "description": "기포·물빛·청록 문양 / 기포와 희미한 종소리",
+    "effects": [
+      {
+        "kind": "underwater",
+        "amount": 0.7,
+        "speed": 0.7,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "bubbles",
+        "volume": 0.4
+      },
+      {
+        "kind": "runes",
+        "amount": 0.3,
+        "speed": 0.35,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "chimes",
+        "volume": 0.2,
+        "tint": "#88e8ed"
+      }
+    ]
+  },
+  {
+    "id": "spring-grove",
+    "label": "봄꽃 숲",
+    "genre": "자연·수중",
+    "description": "꽃잎·반딧불·따스한 햇살 / 산들바람과 풀벌레",
+    "effects": [
+      {
+        "kind": "petals",
+        "amount": 0.7,
+        "speed": 1,
+        "size": 1.3,
+        "opacity": 0.7,
+        "sound": "breeze",
+        "volume": 0.3
+      },
+      {
+        "kind": "fireflies",
+        "amount": 0.35,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "insects",
+        "volume": 0.25
+      },
+      {
+        "kind": "sunrays",
+        "amount": 0.5,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "none",
+        "volume": 0.35
+      }
+    ]
+  },
+  {
+    "id": "autumn-road",
+    "label": "늦가을 산길",
+    "genre": "자연·수중",
+    "description": "커다란 낙엽·황금 먼지 / 낙엽 스치는 바람",
+    "effects": [
+      {
+        "kind": "leaves",
+        "amount": 0.9,
+        "speed": 0.75,
+        "size": 1.5,
+        "opacity": 0.7,
+        "sound": "rustle",
+        "volume": 0.45
+      },
+      {
+        "kind": "dust",
+        "amount": 0.55,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "none",
+        "volume": 0.35,
+        "tint": "#deb778"
+      },
+      {
+        "kind": "sunrays",
+        "amount": 0.35,
+        "speed": 1,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "none",
+        "volume": 0.35,
+        "tint": "#edc386"
+      }
+    ]
+  },
+  {
+    "id": "desert-wind",
+    "label": "사막의 모래폭풍",
+    "genre": "자연·수중",
+    "description": "빠른 모래·누런 먼지·짙은 모래 안개 / 거센 바람",
+    "effects": [
+      {
+        "kind": "sand",
+        "amount": 0.95,
+        "speed": 1.65,
+        "size": 1,
+        "opacity": 0.9,
+        "sound": "breeze",
+        "volume": 0.6
+      },
+      {
+        "kind": "dust",
+        "amount": 0.65,
+        "speed": 2,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "none",
+        "volume": 0.35,
+        "tint": "#dcb879"
+      }
+    ]
+  },
+  {
+    "id": "deep-sea",
+    "label": "심해의 발광 생물",
+    "genre": "자연·수중",
+    "description": "느린 기포·푸른 발광 입자·심해 부유물 / 수중 저음과 기포",
+    "effects": [
+      {
+        "kind": "underwater",
+        "amount": 0.85,
+        "speed": 0.4,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "bubbles",
+        "volume": 0.45,
+        "tint": "#528eaa"
+      },
+      {
+        "kind": "spirits",
+        "amount": 0.6,
+        "speed": 0.35,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "rumble",
+        "volume": 0.3,
+        "tint": "#72d8f0"
+      },
+      {
+        "kind": "dust",
+        "amount": 0.5,
+        "speed": 0.3,
+        "size": 1,
+        "opacity": 0.7,
+        "sound": "none",
+        "volume": 0.35,
+        "tint": "#a0ccd9"
+      }
+    ]
+  }
+]

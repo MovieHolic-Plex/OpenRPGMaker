@@ -9,14 +9,14 @@
   --battle-accent: #f04030;
   --oprn-battle-window-light: #f8f8f8;
   --oprn-battle-text: #282828;
-  /* 씬 배경은 18층(#14181f)이 소유한다 — 여기서 하늘색을 주면 밴드 경계·창 사이 틈으로 새어 나온다. */
+  /* 씬 배경은 20층(#14181f)이 소유한다 — 여기서 하늘색을 주면 밴드 경계·창 사이 틈으로 새어 나온다. */
 }
 
 /* 포켓몬 문법: 내 몬스터 뒷모습(선두 1)은 JS placement가 좌하단에 세운다. 적 위치도 JS(우상). */
 
-/* 파티 박스의 위치·크롬은 battle/20-pokemon-reference-restyle.css(사선 다크 바)가 소유한다.
+/* 파티 박스의 위치·크롬은 battle/20-pokemon-skin.css(사선 다크 바)가 소유한다.
    예전에 여기 있던 `!important` 13개짜리 크림 박스가 20층을 되살려 4인 파티에서 적 스프라이트를
-   통째로 가렸다(2026-09-14 실측). 스킨 파일은 팔레트만 갖는다. */
+   통째로 가렸다(2026-09-14 실측). 스킨 파일은 팔레트와 메시지 타이포를 갖는다. */
 
 /* QA r1(readability): 메시지 창 한 줄 말줄임 → 줄바꿈 허용. */
 .battle-scene[data-battle-skin="pokemon"] .battle-message-window {
@@ -24,7 +24,7 @@
 }
 
 .battle-scene[data-battle-skin="pokemon"] .battle-message-line {
-  white-space: normal;
+  white-space: pre-line;
   /* keep-all: 한국어 단어 중간("나 타났다!")이 아니라 어절 경계에서만 줄바꿈. */
   word-break: keep-all;
   overflow-wrap: break-word;

@@ -45,6 +45,25 @@
   `windowskin-rm2003.png` — the file is our own generated 9-slice, not third-party art.
 - Notes: 96x96 RGBA 9-slice window skin with 24px corners for runtime game windows.
 
+## OGA greggman — Backgrounds for 2D Platformers
+
+- Files:
+  - `oga/greggman-backgrounds/meadow.png` (upstream `background0.png`, resized to 1280x720)
+  - `oga/greggman-backgrounds/city-night.png` (upstream `background1-720.png`, copied as-is)
+  - `oga/greggman-backgrounds/haunted-forest.png` (upstream `background3-720.png`, copied as-is)
+  - `oga/greggman-backgrounds/dusk-mountains.png` (upstream `rock_4.png`, resized to 1280x720)
+  - `oga/greggman-backgrounds/snow-mountains.png` (upstream `snow_5.png`, resized to 1280x720)
+- Author: greggman (https://opengameart.org/users/greggman)
+  Collaborator credit: RenZeyu (https://opengameart.org/users/renzeyu)
+- Source: https://opengameart.org/content/backgrounds-for-2d-platformers
+- License: **Creative Commons Attribution 3.0 Unported (CC-BY 3.0)**,
+  https://creativecommons.org/licenses/by/3.0/ — attribution required, commercial use
+  allowed. Do not remove this section while any of these files or derived resource ids
+  (`oga-backdrop-*`) remain in the project.
+- Notes: bundled 2026-09-21 as map panorama / battle backdrop candidates. Registered in
+  `src/assets/ogaBackdropAssets.ts`. The two 1080p sources were downscaled to match the
+  upstream 720p attachments; no other pixels were edited.
+
 ## EasyRPG RTP bundled map and object assets
 
 - Files:
@@ -282,3 +301,29 @@ their hashes, cropping/assembly recipe and full author/license links are in
 `castle-surroundings/sources/`, `manifest.json` and `CREDITS.txt`.
 No screenshot pixels are used. Tree crown/trunk/root modules were assembled;
 other props were cropped and repacked without scaling or recolouring.
+
+
+## Reviewed forest-village props (2026-09-21)
+
+`generated/forest-harmony/village-unfake-v1/*.png` contains eleven reviewed
+Tibo-generated village props, subsequently processed with the MIT-licensed
+[unfake.js](https://github.com/jenissimo/unfake.js) tool, version 1.3.0,
+commit `b2bee10c1c3b211a2532baca9088857b19480dca`. The tool source/WASM is not
+redistributed here. Processing methods and review scope are recorded alongside
+the PNGs. This is asset provenance, not a claim that processing changes the
+rights of any source image. The rejected clay oven is excluded.
+
+The gubisup, small-forest-village and forest-cliff-village region atlases preserve
+the existing mixed-source terrain/building attribution and the reviewed custom
+forest materials; they are portable authored map snapshots, not new original
+claims for those inherited tiles.
+
+## Authored forest place library (2026-09-21)
+
+The 13 portable map documents listed in `scripts/asset-gen/forest-place-library.json`
+preserve the existing project maps and tileset pixels, including their original
+EasyRPG/combined-town/retro-world and reference-derived forest material provenance.
+The corresponding `public/assets/region-references/*-atlas.png` files are copies
+of those uploaded atlases. This registration does not create new original artwork
+or change the attribution or licence status documented above. Preview PNGs are
+captures of the saved maps in the actual editor.

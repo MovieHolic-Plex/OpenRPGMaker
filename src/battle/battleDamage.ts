@@ -1,3 +1,5 @@
+import { formationDamage } from "@/battle/battleFormation";
+import { evaluateDamageFormula, formulaBattlerContext } from "@/battle/damageFormula";
 import type { MutableBattler } from "@/battle/battleBattlers";
 import { computeGen1BaseDamage as computeExactGen1BaseDamage } from "@/battle/gen1/damage";
 import type { Project } from "@/project/types";
@@ -84,6 +86,9 @@ export const DEFAULT_SKILL_CRIT_MULT = 1.35;
 export const MIN_DAMAGE_RATIO = 0.125;
 
 export interface SkillLikeEffect {
+  readonly damageFormula?: string;
+  readonly hitMultiplier?: number;
+  readonly formulaBase?: number;
   readonly power: number;
   readonly statistic: "attack" | "mind";
   readonly effect: "damage" | "healing" | "support" | "switch";
@@ -118,6 +123,12 @@ export interface SkillLikeEffect {
 export type SkillApplyResult = { hit: boolean; amount: number; critical: boolean };
 
 export function applySkillLike(user: MutableBattler, target: MutableBattler, spec: SkillLikeEffect): SkillApplyResult {
+  if (spec.damageFormula) {
+    const formula = evaluateDamageFormula(spec.damageFormula, formulaBattlerContext(
+      { ...user, attackPower: Math.round(user.attackPower * (spec.attackerStatMultiplier ?? 1)), mind: Math.round(user.mind * (spec.attackerStatMultiplier ?? 1)) },
+      { ...target, defense: target.defense * (spec.targetDefenseMultiplier ?? 1), mind: target.mind * (spec.targetDefenseMultiplier ?? 1) }, spec.power));
+    if (formula.ok) spec = { ...spec, formulaBase: formula.value };
+  }
   const baseStat = spec.statistic === "mind" ? user.mind : user.attackPower;
   const stat = Math.round(baseStat * (spec.attackerStatMultiplier ?? 1));
   if (spec.effect === "healing") {
@@ -138,10 +149,12 @@ export function applySkillLike(user: MutableBattler, target: MutableBattler, spe
   }
   const magnitude = computeMagnitude(spec.power, target, "damage", stat, spec);
   if (magnitude.amount < 0) {
-    target.hp = Math.min(target.maxHp, target.hp + Math.abs(magnitude.amount));
+    if (spec.affects === "mp") target.mp = Math.min(target.maxMp, target.mp + Math.abs(magnitude.amount));
+    else target.hp = Math.min(target.maxHp, target.hp + Math.abs(magnitude.amount));
     return { hit: true, amount: magnitude.amount, critical: false };
   }
-  const dealt = applyDamage(target, magnitude.amount);
+  const amount = formationDamage(magnitude.amount, user.row, target.row, spec.statistic, spec.effect);
+  const dealt = spec.affects === "mp" ? (target.mp = Math.max(0, target.mp - amount), amount) : applyDamage(target, amount);
   return { hit: true, amount: dealt, critical: magnitude.critical };
 }
 
@@ -157,19 +170,20 @@ function computeMagnitude(
   sourceStat: number,
   spec: SkillLikeEffect
 ): { amount: number; critical: boolean } {
-  let magnitude = power + Math.floor(sourceStat / 2);
+  let magnitude = spec.formulaBase ?? (power + Math.floor(sourceStat / 2));
+  if (spec.formulaBase === 0) return { amount: 0, critical: false };
   if (mode === "heal") {
-    return { amount: applyVariance(magnitude, spec), critical: false };
+    return { amount: Math.round(applyVariance(magnitude, spec) * (spec.hitMultiplier ?? 1)), critical: false };
   }
   // Gen1 모델: 레벨 기반 코어 공식으로 갈아탄다. 회복은 원작에 대응물이 없어 rm2k3 식을 공유한다.
-  if (spec.gen1AttackerLevel !== undefined) {
+  if (spec.gen1AttackerLevel !== undefined && spec.formulaBase === undefined) {
     return computeGen1Magnitude(power, target, sourceStat, spec, spec.gen1AttackerLevel);
   }
   // 속성 상성 배율(기본 1.0)
   const elementMultiplier = spec.elementMultiplier ?? 1;
   magnitude = Math.round(magnitude * elementMultiplier);
   if (elementMultiplier === 0) return { amount: 0, critical: false };
-  if (elementMultiplier < 0) return { amount: magnitude, critical: false };
+  if (elementMultiplier < 0) return { amount: Math.round(magnitude * (spec.hitMultiplier ?? 1)), critical: false };
   // 분산(±variance%)
   magnitude = applyVariance(magnitude, spec);
   // 크리티컬(확률×배율) — 기본 4% / ×1.5. 스킬이 명시하면 그 값 사용.
@@ -186,7 +200,9 @@ function computeMagnitude(
   // gen1 모델 또는 명시 플래그에서 감쇠식을 쓰면 탱커 체감이 회복된다.
   // 방어 적용 전 위력 — 하한(MIN_DAMAGE_RATIO) 계산의 기준이다.
   const preDefense = magnitude;
-  if ((spec as SkillLikeEffect & { useDiminishingDefense?: boolean }).useDiminishingDefense) {
+  if (spec.formulaBase !== undefined) {
+    // Authored formula already defines defense.
+  } else if ((spec as SkillLikeEffect & { useDiminishingDefense?: boolean }).useDiminishingDefense) {
     const reduction = effectiveDefense / (effectiveDefense + 80);
     magnitude = Math.round(magnitude * (1 - reduction));
   } else {
@@ -198,7 +214,7 @@ function computeMagnitude(
   // 방어 자세는 하한 뒤에 적용한다 — 웅크리면 하한선 아래로도 내려갈 수 있어야
   // "방어했다"가 실제 이득으로 읽힌다.
   if (target.defending) magnitude = Math.floor(magnitude / 2);
-  return { amount: magnitude <= 0 ? 0 : Math.max(1, magnitude), critical };
+  return { amount: Math.round((magnitude <= 0 ? 0 : Math.max(1, magnitude)) * (spec.hitMultiplier ?? 1)), critical };
 }
 
 // Gen1 적용 순서: 크리티컬 판정 → 코어 공식(레벨 2배) → 상성/STAB → 랜덤 217~255/255 → 방어 자세.
@@ -224,7 +240,7 @@ function computeGen1Magnitude(
     critical,
   });
   // 흡수(음수 배율)는 rm2k3 와 같은 계약으로 음수 amount 를 돌려준다 — applySkillLike 가 회복시킨다.
-  if (elementMultiplier < 0) return { amount: Math.round(base * elementMultiplier), critical: false };
+  if (elementMultiplier < 0) return { amount: Math.round(base * elementMultiplier * (spec.hitMultiplier ?? 1)), critical: false };
   let magnitude = Math.floor(base * elementMultiplier);
   // 랜덤 계수는 원작대로 데미지가 1 이하일 때 건너뛴다(1 이 0 으로 뭉개지는 것을 막는다).
   if (magnitude > 1) {
@@ -232,7 +248,7 @@ function computeGen1Magnitude(
     magnitude = Math.floor((magnitude * Math.min(GEN1_RANDOM_MAX, roll)) / GEN1_RANDOM_MAX);
   }
   if (target.defending) magnitude = Math.floor(magnitude / 2);
-  return { amount: magnitude <= 0 ? 0 : Math.max(1, magnitude), critical };
+  return { amount: Math.round((magnitude <= 0 ? 0 : Math.max(1, magnitude)) * (spec.hitMultiplier ?? 1)), critical };
 }
 
 function applyVariance(magnitude: number, spec: SkillLikeEffect): number {

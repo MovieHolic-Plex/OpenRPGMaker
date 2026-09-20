@@ -1,3 +1,4 @@
+import { normalizeFieldHud } from "./fieldHud";
 import { assertPromotionExtensions } from '@/project/growth/requirements';
 import {
   ACTOR_LEVEL_MAX,
@@ -166,6 +167,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   const playerFootprint = normalizeCharacterFootprint(system.playerFootprint);
   return {
     startActorIds: cleanIds(system.startActorIds),
+    ...(system.fieldHud !== undefined ? { fieldHud: normalizeFieldHud(system.fieldHud) } : {}),
     ...(system.playerFootprint !== undefined ? { playerFootprint } : {}),
     ...(system.playerPassRows !== undefined
       ? { playerPassRows: normalizePassRows(system.playerPassRows, playerFootprint.height) }
@@ -517,6 +519,11 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     successRate: clampInteger(record.successRate ?? 100, 0, 100),
     variance: clampInteger(record.variance ?? 0, 0, 100),
     hitRate: clampInteger(record.hitRate ?? 100, 0, 100),
+    ...(typeof record.damageFormula === "string" && record.damageFormula.trim() && record.damageFormula.length <= 512 ? { damageFormula: record.damageFormula.trim() } : {}),
+    ...(Number.isFinite(record.criticalRate) ? { criticalRate: clampInteger(record.criticalRate!, 0, 100) } : {}),
+    ...(Number.isFinite(record.criticalMultiplier) ? { criticalMultiplier: Math.max(1, Math.min(10, record.criticalMultiplier!)) } : {}),
+    ...(Number.isFinite(record.cooldownTurns) ? { cooldownTurns: clampInteger(record.cooldownTurns!, 0, 99) } : {}),
+    ...(Array.isArray(record.hitSequence) && record.hitSequence.length ? { hitSequence: record.hitSequence.slice(0, 16).map(value => Number.isFinite(value) ? Math.max(0, Math.min(10, value)) : 1) } : {}),
     effect: normalizeSkillEffect(record.effect),
     elementId: typeof record.elementId === "string" ? record.elementId : undefined,
     stateEffects: normalizeStateEffects(record.stateEffects),

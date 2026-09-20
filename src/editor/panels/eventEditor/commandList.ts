@@ -154,7 +154,9 @@ function renderCommandItem(
   const handle = el("span", {
     class: "cmd-drag-handle",
     dataset: { testid: "event-command-drag-handle" },
-    attrs: { role: "button", tabindex: "0", title: "드래그로 순서 변경", "aria-label": `명령 ${path.join(".")} 순서 변경 핸들` },
+    // This is a pointer drag affordance only. It has no keyboard operation, so
+    // do not expose a dead focus target to keyboard or screen-reader users.
+    attrs: { title: "드래그로 순서 변경" },
     children: [renderEditorIcon("drag")],
   });
   // 핸들에서 누르면 항목을 드래그 가능하게 만든다.

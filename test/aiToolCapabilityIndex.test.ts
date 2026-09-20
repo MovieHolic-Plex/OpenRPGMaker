@@ -22,7 +22,7 @@ const CALIBRATED_MIN_BUDGET = 6000;
 const INDEX_CHAR_CEILING = 5100;
 
 function liveToolNames(): readonly string[] {
-  return activeTools().filter((tool) => tool.supersededBy === undefined).map((tool) => tool.name);
+  return [...new Set(activeTools().filter((tool) => tool.deprecated !== true && tool.supersededBy === undefined).map((tool) => tool.name))];
 }
 
 describe("tool capability index", () => {
@@ -42,7 +42,7 @@ describe("tool capability index", () => {
     const body = buildToolCapabilityIndex(readTools).split("### 색인 사용 규칙")[0] ?? "";
     const listed = body.split("\n").filter((line) => line.startsWith("- "))
       .flatMap((line) => (line.split(": ")[1] ?? "").split(", "));
-    expect(listed.sort()).toEqual(readTools.map((tool) => tool.name).sort());
+    expect(listed.sort()).toEqual([...new Set(readTools.map((tool) => tool.name))].sort());
   });
 
   it("never advertises a deprecated (superseded) tool", () => {

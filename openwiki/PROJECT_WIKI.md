@@ -74,7 +74,32 @@ OPRN Studio is a browser-based top-down tile JRPG maker/editor. It combines:
 - `src/project` owns canonical project data, defaults, migrations, validation, persistence, and remote/local storage boundaries.
 - `src/assets` owns bundled/generated asset resolution, slicing, transparency, and preview helpers.
 - `src/styles` owns visual presentation. Avoid moving behavior into CSS-only workarounds.
+- Editor CSS is organized by the named cascade layers in `src/styles/index.css`. Dynamic
+  panel sheets must join their owning layer; `src/editor/panels/spatialPlaceLibrary.css`
+  is loaded by the database panel and therefore wraps its rules in `@layer database`.
+- Large editor sheets are split at top-level rule or section boundaries. The original
+  facade keeps its first chunk and the owning surface `index.css` imports later `.part-N.css`
+  chunks directly in the same layer and order. CSS contract tests that inspect a whole
+  sheet use `test/cssFamily.ts` so they see the same import family as the app.
+- The resource manager is a lazy editor surface that can open before the database CSS
+  chunk. `src/styles/resources/resource-manager.css` therefore owns its fixed backdrop,
+  centered window, header, and flex body shell; the nested URL importer in
+  `resource-manager.part-6.css` owns the same fixed backdrop and header contract. Do not
+  make either surface depend on opening the database modal first.
+- The AI sidebar and editor-owned AI dialogs mount before the database CSS chunk. Their
+  first-paint geometry and visual family are loaded by
+  `src/styles/database/editor-startup-ai.css` in the static `database` layer, while
+  `ai-modal-shell.css` owns the generic editor-owned dialog shell. The manifest is the
+  single bootstrap owner for the AI panel, composer, deck, cards, and team sidebar;
+  those imports are removed from the lazy database suffix to avoid a second copy.
+  `database/editor-owned-ai-modal-shell.css` still reapplies the modal body scroll
+  contract after the database layer arrives. DB record sheets remain lazy, but no AI
+  surface may depend on opening the database modal before it is styled.
 - `test` and `test/e2e` are part of the contract. Update or add focused tests for changed behavior.
+
+## Authored tile placement references
+
+숲·마을 타일 저작 전에 [tiledata/forest-villages](../tiledata/forest-villages/README.md)의 사용자 검수 규칙·승인본·실패 사례를 읽는다. 새 마을 사례와 전체 스크린샷도 이 디렉토리에 저장한다.
 
 ## How an AI should use this wiki
 

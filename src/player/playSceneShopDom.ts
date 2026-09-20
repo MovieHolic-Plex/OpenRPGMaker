@@ -144,20 +144,12 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
     const modes = shopMenuActions(request.step).filter((action): action is ShopMode => action !== "cancel");
     if (modes.length > 1) topbar.append(shopModeTabs(modes, request.mode, request.terms, request.onMode));
   }
-  if (preset === "tabs") {
+  if (preset === "tabs" && request.onCategory) {
     topbar.append(el("nav", { class: "runtime-shop-preset-tabs-nav", attrs: { "aria-label": "상품 카테고리" }, children: [
       el("button", { class: request.category === "all" ? "is-active" : "", text: "전체", attrs: { type: "button" }, on: { click: () => request.onCategory?.("all") } }),
       el("button", { class: request.category === "equipment" ? "is-active" : "", text: "장비", attrs: { type: "button" }, on: { click: () => request.onCategory?.("equipment") } }),
       el("button", { class: request.category === "material" ? "is-active" : "", text: "재료", attrs: { type: "button" }, on: { click: () => request.onCategory?.("material") } }),
       el("button", { class: request.category === "consumable" ? "is-active" : "", text: "소모품", attrs: { type: "button" }, on: { click: () => request.onCategory?.("consumable") } }),
-    ] }));
-  }
-  if (preset === "split") {
-    topbar.append(el("nav", { class: "runtime-shop-service-nav", attrs: { "aria-label": "상점 서비스" }, children: [
-      el("button", { class: request.mode === "buy" ? "is-active" : "", text: "구매", attrs: { type: "button" }, on: { click: () => request.onMode?.("buy") } }),
-      el("button", { text: "개조", attrs: { type: "button" }, on: { click: () => request.setStatus("개조할 장비를 선택하세요.") } }),
-      el("button", { class: request.mode === "sell" ? "is-active" : "", text: "판매", attrs: { type: "button" }, on: { click: () => request.onMode?.("sell") } }),
-      el("button", { text: "교환", attrs: { type: "button" }, on: { click: () => request.setStatus("교환 가능한 상품이 없습니다.") } }),
     ] }));
   }
   topbar.append(
@@ -170,8 +162,8 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
     el("strong", { text: "상인" }), el("span", { text: "오늘은 특별 추천 상품이 들어왔습니다." }),
   ] }));
   if (preset === "story") shell.append(el("nav", { class: "runtime-shop-story-actions", attrs: { "aria-label": "상인 행동" }, children: [
-    el("button", { text: "사기", attrs: { type: "button" }, on: { click: () => request.onMode?.("buy") } }),
-    el("button", { text: "팔기", attrs: { type: "button" }, on: { click: () => request.onMode?.("sell") } }),
+    ...(request.onMode ? shopMenuActions(request.step).filter((action): action is ShopMode => action !== "cancel").map(mode =>
+      el("button", { text: mode === "buy" ? "사기" : "팔기", attrs: { type: "button" }, on: { click: () => request.onMode?.(mode) } })) : []),
     el("button", { text: "말 걸기", attrs: { type: "button" }, on: { click: () => request.setStatus("상인: 다음 마을에 가기 전에 필요한 걸 챙겨요.") } }),
     el("button", { text: "나가기", attrs: { type: "button" }, on: { click: () => request.showMenu() } }),
   ] }));
@@ -189,30 +181,14 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
   if (preset === "grid") listPanel.prepend(el("header", { class: "runtime-shop-grid-heading", children: [
     el("strong", { text: "오늘의 진열" }), el("span", { text: `${goods.length}개 상품` }),
   ] }));
-  if (preset === "stock") listPanel.prepend(el("div", { class: "runtime-shop-stock-banner", children: [
-    el("strong", { text: "한정 재고" }), el("span", { text: "오늘만 · 품절 전에 구매하세요" }),
-  ] }));
-  if (preset === "cart") listPanel.prepend(el("div", { class: "runtime-shop-cart-instruction", children: [
-    el("strong", { text: "상품을 선택해 담기" }), el("span", { text: "수량은 결제 전에 한 번에 조정합니다" }),
-  ] }));
   body.append(listPanel);
 
   const side = el("div", { class: "runtime-shop-side" });
   if (preset === "compare") side.append(el("header", { class: "runtime-shop-compare-heading", children: [
     el("strong", { text: "장비 비교" }), el("span", { text: "현재 장비와 구매 후 변화" }),
   ] }));
-  if (preset === "compare") side.append(el("div", { class: "runtime-shop-stat-compare", children: [
-    el("div", { children: [el("span", { text: "현재 공격력" }), el("b", { text: "24" })] }),
-    el("div", { children: [el("span", { text: "구매 후 공격력" }), el("b", { text: "31  +7" })] }),
-  ] }));
   side.append(shopWindow("runtime-shop-detail-panel", [detailCard(request.scene, request.step, first)]));
   side.append(shopWindow("runtime-shop-party-panel", [partyPreview(request.scene)]));
-  if (preset === "cart") side.append(el("aside", { class: "runtime-shop-cart-panel", children: [
-    el("strong", { text: "장바구니" }), el("span", { text: "선택한 상품이 없습니다" }), el("b", { text: "합계 0 골드" }),
-  ] }));
-  if (preset === "split") body.prepend(el("header", { class: "runtime-shop-split-heading", children: [
-    el("strong", { text: request.mode === "sell" ? "판매 창고" : "구매 진열" }), el("span", { text: "거래 방향을 선택하세요" }),
-  ] }));
   body.append(side);
   shell.append(body);
 

@@ -385,7 +385,7 @@ function compileTintBeat(beat: CutsceneTintBeat, state: CompileState, forceNonBl
     m2Command("Tint Screen", {
       color: beat.color ?? "neutral",
       value: beat.value ?? "",
-      duration: durationMs(beat.durationMs, 0),
+      durationMs: durationMs(beat.durationMs, 0),
     }),
   ];
   if (!forceNonBlocking && beat.wait === true && durationMs(beat.durationMs, 0) > 0) {
@@ -427,7 +427,7 @@ function cleanupCommands(state: CompileState): Command[] {
     commands.push(m2Command("Camera Control", { ...state.camera.fields, durationMs: 0, wait: true }));
   }
   if (state.tint) {
-    commands.push(m2Command("Tint Screen", { color: state.tint.color ?? "neutral", value: state.tint.value ?? "", duration: 0 }));
+    commands.push(m2Command("Tint Screen", { color: state.tint.color ?? "neutral", value: state.tint.value ?? "", durationMs: 0 }));
   }
   for (const picture of state.pictures.values()) {
     if (picture.erased) {

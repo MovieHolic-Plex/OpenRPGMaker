@@ -1,3 +1,4 @@
+import { ACTION_STAMINA_MAX } from "@/player/actionCombatTypes";
 import type Phaser from "phaser";
 import { clearAllSceneEmotes, syncSceneEmotes } from "@/player/playSceneEmotes";
 import { getLoadedPhaser } from "@/app/phaserRuntime";
@@ -165,7 +166,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   lightingTransitionWaiters: Array<() => void> = [];
   weatherClockMs = 0;
   weatherFixedAccumulatorMs = 0;
-  cloudShadowSprites?: Phaser.GameObjects.Image[];
+  cloudShadowSprites?: Phaser.GameObjects.TileSprite[];
   cloudShadowClockMs = 0;
   weatherDisplayed: WeatherParams = { kind: "none", intensity: 0 };
   weatherTargetSignature = "none:0";
@@ -396,7 +397,12 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       this.handSlotHost = host;
       this.handSlotChip = mountHandSlotChip(host);
     }
-    this.handSlotChip?.update(store.getCurrent(), this.session);
+    this.handSlotChip?.update(store.getCurrent(), this.session, {
+      stamina: this.actionCombatState?.config.staminaEnabled ? this.actionCombatState.stamina : undefined,
+      staminaMax: ACTION_STAMINA_MAX,
+      playerX: this.player ? (this.player.x - this.cameras.main.scrollX) * this.cameras.main.zoom : undefined,
+      playerY: this.player ? (this.player.y - this.cameras.main.scrollY) * this.cameras.main.zoom : undefined,
+    });
   }
 
   getMapId(): MapId {

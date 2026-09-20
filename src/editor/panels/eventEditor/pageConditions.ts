@@ -17,7 +17,6 @@ import {
   toggleSelfSwitchCondition,
   toggleTimerCondition,
   withoutFirstCondition,
-  withoutNthCondition,
 } from "./pageConditionModel";
 import type { EventPage, MapId } from "@/project/types";
 
@@ -313,12 +312,19 @@ function switchConditionInputs(params: SwitchConditionParams, markActive: () => 
   const error = referenceError(`${params.testPrefix}-error`, "대상 스위치를 선택하세요.", () => Boolean(currentSwitchId.trim()));
   const apply = () => {
     // 참조가 비어도 조건을 지우지 않는다. 지우면 저작한 방향(꺼짐)까지 조용히 사라진다.
-    const next = withoutNthCondition(params.page.conditions, "switch", params.slot);
-    next.push({
-      kind: "switch",
+    const replacement = {
+      kind: "switch" as const,
       switchId: currentSwitchId,
       value: selectedOptionValue(value, SWITCH_VALUE_OPTIONS, "on") === "on",
+    };
+    let slot = 0;
+    let replaced = false;
+    const next = params.page.conditions.map((entry) => {
+      if (entry.kind !== "switch" || slot++ !== params.slot) return entry;
+      replaced = true;
+      return replacement;
     });
+    if (!replaced) next.push(replacement);
     error.sync();
     markActive();
     updateEventPage(params.mapId, params.eventId, params.page.id, { conditions: next });

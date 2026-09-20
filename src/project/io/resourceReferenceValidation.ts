@@ -18,6 +18,7 @@ import { FARMING_RESOURCE_IDS } from "@/assets/farmingSprites";
 import { GENERATED_EFFECT_RESOURCE_IDS } from "@/assets/generatedEffectSheets";
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { SCARLOXY_RESOURCE_IDS } from "@/assets/scarloxyPack";
+import { OGA_BACKDROP_ASSETS } from "@/assets/ogaBackdropAssets";
 import { seCatalogResourceIds } from "@/assets/seCatalogRuntime";
 import { assert } from "./guards";
 
@@ -47,6 +48,8 @@ export function collectResourceIds(project: Project): Set<string> {
   // 지정한 프로젝트가 오디오만 무음이 되는 게 아니라 역직렬화 자체에 실패한다.
   for (const id of seCatalogResourceIds()) ids.add(id);
   for (const id of SCARLOXY_RESOURCE_IDS) ids.add(id);
+  // OGA(CC-BY 3.0) 배경 그림 5장. 빠지면 이 배경을 지정한 프로젝트가 역직렬화에서 던진다.
+  for (const asset of OGA_BACKDROP_ASSETS) ids.add(asset.id);
   for (const id of FARMING_RESOURCE_IDS) ids.add(id);
   // 절차 생성 전투 이펙트 시트. 기본 DB 가 이 id 를 참조하므로 빠지면 기본 프로젝트조차 역직렬화에서 던진다.
   for (const id of GENERATED_EFFECT_RESOURCE_IDS) ids.add(id);
@@ -86,6 +89,7 @@ export function validateSystemResources(system: SystemRecords, resourceIds: Read
   validateOptionalResource("system.titleResourceId", system.titleResourceId, resourceIds);
   validateOptionalResource("system.systemResourceId", system.systemResourceId, resourceIds);
   validateOptionalResource("system.battleSystemResourceId", system.battleSystemResourceId, resourceIds);
+  for (const widget of system.fieldHud?.widgets ?? []) validateOptionalResource(`system.fieldHud.${widget.id}.resourceId`, widget.resourceId, resourceIds);
   validateOptionalResource("system.battleBgmResourceId", system.battleBgmResourceId, resourceIds);
   validateOptionalResource("system.defaultBgmResourceId", system.defaultBgmResourceId, resourceIds);
   validateOptionalResource("system.battleVictoryMeResourceId", system.battleVictoryMeResourceId, resourceIds);

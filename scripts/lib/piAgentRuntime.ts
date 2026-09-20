@@ -1,3 +1,7 @@
+import type { ActivityVisual } from "../../src/ai/activityVisual";
+import { authoredVillageMapId, inspectPiVillageCompletion, piVillageRepairPrompt } from "../../src/ai/piAgent/villageCompletion.ts";
+import { inspectPromptPayload } from "../../src/ai/authoring/promptInspection.ts";
+import { activityPayload } from "../../src/ai/activityTrace.ts";
 import { finishSpatialToolAcceptance, authorMergedSpatialProposal } from "../../src/editor/tools/spatialToolState.ts";
 import { mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
 import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
@@ -14,17 +18,22 @@ import { Agent, type StreamFn } from "@oh-my-pi/pi-agent-core";
 import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
 import {
   createPiToolset,
+  selectPiToolDefinitions,
   harvestFindToolsNames,
   resolvePiToolShape,
   type PiToolCallRecord,
   type PiToolShape,
 } from "../../src/ai/piAgent/toolAdapter.ts";
+import { buildToolCapabilityIndex } from "../../src/ai/toolCapabilityIndex.ts";
 import { exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.ts";
 import { createDeltaRelay } from "../../src/ai/piAgent/deltaRelay.ts";
 import { applyMapDeltas, diffMapsForDelta } from "../../src/ai/piAgent/mapDelta.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
 import { changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
+import { searchWebWithCodex } from "./codexWebSearchRuntime.ts";
+import { WEB_SEARCH_TOOL } from "../../src/editor/tools/webSearchTool.ts";
+import { CODEX_PROVIDER_ID } from "../../src/ai/oauth/credentials.ts";
 import type { GameMap, Project } from "../../src/project/types.ts";
 
 export interface RunPiAgentOptions {
@@ -37,6 +46,11 @@ export interface RunPiAgentOptions {
   readonly timeoutMs?: number;
   /** 역할별 툴 범위. 레지스트리 선택에 더해 팀 런타임의 커스텀 툴(assign_map_agent 등)을 붙인다. */
   readonly readOnlyTools?: boolean;
+  /**
+   * 웹 검색 전용 Codex access 토큰. 조수 제공자가 Antigravity 여도 검색은 Codex 백엔드가 하므로
+   * 제공자 키와 **별개로** 해결해 넘긴다(없으면 툴이 "Codex 로그인 필요" 로 정직하게 실패한다).
+   */
+  readonly codexApiKey?: string;
   readonly toolNames?: readonly string[];
   readonly extraTools?: readonly PiToolShape[];
   /** 모델 스트림 대체 — 테스트가 네트워크 없이 진짜 Agent 루프를 돌릴 때 쓰는 시임. */
@@ -47,12 +61,82 @@ export interface RunPiAgentOptions {
 
 const DEFAULT_MAX_TURNS = 200;
 const DEFAULT_TIMEOUT_MS = PI_AGENT_DEFAULT_TIMEOUT_MS;
-/** 한 실행에 에스컬레이션으로 얹을 수 있는 툴 상한 — 세션 경로의 16개 계약과 같다(발견은 무제한이 아니다). */
-const MAX_ESCALATED_TOOLS = 16;
 
 /** 읽기 전용 실행에 덧붙이는 한 줄. 강제는 툴 목록이 하고(쓰기 툴 미제공), 이 문장은 이유를 말한다. */
 const READ_ONLY_INSTRUCTION =
   "이번 실행은 읽기 전용이다. 쓰기 도구가 제공되지 않는다. 조회한 사실과 근거만 보고하고, 고칠 거리는 문장으로만 제안한다.";
+
+/**
+ * 레지스트리의 `web_search` 를 실제 네트워크 실행으로 갈아 끼우는 실행 셰이프.
+ *
+ * 왜 오버라이드인가: 레지스트리 툴은 **순수 함수**여야 한다(types.ts 머리말 — 브라우저 전역 접근 금지).
+ * 그래서 레지스트리 쪽 `run` 은 `status:"ui-required"` 핸드오프만 만들고, 진짜 검색은 자격을 아는
+ * 서버 경계가 한다 — `generate_image_asset` 이 `imageAssetGeneration` 을 거치는 것과 같은 분업이다.
+ * 여기는 Bun 워커라 Codex 자격과 fetch 가 있고, 자격은 절대 브라우저로 나가지 않는다.
+ */
+function createWebSearchTool(options: {
+  readonly codexApiKey?: string;
+  readonly onCall?: (record: PiToolCallRecord) => void;
+}): PiToolShape {
+  return {
+    name: WEB_SEARCH_TOOL,
+    label: "웹 검색",
+    description: [
+      "인터넷을 검색해 최신 사실과 출처 URL을 가져온다.",
+      "학습 시점 이후의 정보(최신 버전·릴리스·요금·뉴스·현행 표준)나 실존 작품의 구체 사실이 필요할 때 쓴다.",
+      "프로젝트 안의 사실(맵·이벤트·DB·위키)은 이 툴이 아니라 프로젝트 조회 툴로 읽는다.",
+      "검색은 프로젝트를 바꾸지 않는다. 답을 사용자에게 전할 때는 근거 URL을 함께 밝힌다.",
+    ].join(" "),
+    parameters: {
+      type: "object",
+      additionalProperties: false,
+      required: ["query"],
+      properties: {
+        query: {
+          type: "string",
+          minLength: 2,
+          maxLength: 400,
+          description: "찾을 내용을 한 문장이나 검색어로.",
+        },
+      },
+    },
+    async execute(toolCallId, params, signal) {
+      const args = params && typeof params === "object" ? (params as Record<string, unknown>) : {};
+      const outcome = await searchWebWithCodex(args.query, { apiKey: options.codexApiKey }, signal);
+      if (!outcome.ok) {
+        options.onCall?.({
+          toolCallId, name: WEB_SEARCH_TOOL, args,
+          result: { ok: false, summary: outcome.answer, issues: [{ severity: "error", code: outcome.code ?? "web-search-failed", message: outcome.answer }] },
+        });
+        // 어댑터와 같은 규약 — 실패는 throw 로 나가고 본문에 issues 가 실린다.
+        throw new Error(JSON.stringify({
+          ok: false,
+          summary: outcome.answer,
+          issues: [{ severity: "error", code: outcome.code ?? "web-search-failed", message: outcome.answer }],
+        }));
+      }
+      const summary = `웹 검색 결과 ${outcome.sources.length}개 출처`;
+      options.onCall?.({
+        toolCallId, name: WEB_SEARCH_TOOL, args,
+        result: { ok: true, summary, data: { queries: outcome.queries, sources: outcome.sources } },
+      });
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            ok: true,
+            summary,
+            answer: outcome.answer,
+            queries: outcome.queries,
+            sources: outcome.sources,
+            hint: "답을 사용자에게 전할 때 근거 URL을 함께 밝히고, 검색 결과를 프로젝트 사실처럼 단정하지 마라.",
+          }),
+        }],
+        details: { queries: outcome.queries, sources: outcome.sources },
+      };
+    },
+  };
+}
 
 /** Shared exact model resolution for Pi and completion requests. */
 export const resolvePiModel = resolveOhMyPiModel;
@@ -63,19 +147,29 @@ function trimText(value: unknown, max: number): string {
 }
 
 export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOptions = {}): Promise<PiAgentDoneEvent> {
-  const emit = (event: PiAgentEvent) => options.onEvent?.(event);
+  const emit = (event: PiAgentEvent) => options.onEvent?.({ ...event, at: event.at ?? Date.now() });
   const base = request.project;
   const ctx = { project: structuredClone(base) as Project };
   const model = resolvePiModel(request.provider, request.model);
-  // 툴 요약은 어댑터(onCall)가 알고, 호출 id 는 코어 이벤트가 안다. 이름별 FIFO 로 둘을 맞춘다.
-  const pendingSummaries = new Map<string, { ok: boolean; summary: string }[]>();
+  // 어댑터와 코어 이벤트의 호출 id로 결과를 연결한다. 같은 이름의 병렬 호출도 섞지 않는다.
+  const pendingSummaries = new Map<string, { ok: boolean; summary: string; result: unknown; visuals?: readonly ActivityVisual[] }>();
+  const toolStartedAt = new Map<string, number>();
   // `tools` 는 Agent.initialState 에 참조로 들어가 state.tools === context.tools 가 된다.
   // 코어 루프가 매 턴 이 배열에서 요청을 만들므로, in-place push 가 곧 다음 턴의 선언이다 —
   // 배열 교체(setTools)는 진행 중 루프에 닿지 않는다(컨텍스트가 같은 배열을 잡고 있어서다).
   const tools: PiToolShape[] = [];
   const exposed = new Set<string>();
-  let escalatedCount = 0;
+  const villageMapIds = new Set<string>();
+  const allowedDefinitions = selectPiToolDefinitions(undefined, {
+    readOnly: request.readOnly || options.readOnlyTools, toolNames: options.toolNames,
+  });
   const shapeFor = (name: string): PiToolShape | undefined => {
+    // 웹 검색은 레지스트리 셰이프가 순수 핸드오프라 네트워크가 없다 — 발견 경로도 실제 실행으로 보낸다.
+    if (name === WEB_SEARCH_TOOL) {
+      return allowedDefinitions.some(tool => tool.name === WEB_SEARCH_TOOL)
+        ? wrapTool(createWebSearchTool({ codexApiKey: options.codexApiKey, onCall: recordCall }))
+        : undefined;
+    }
     const shape = resolvePiToolShape(ctx, name, {
       readOnly: request.readOnly || options.readOnlyTools,
       toolNames: options.toolNames,
@@ -83,20 +177,25 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     });
     return shape ? wrapTool(shape) : undefined;
   };
-  // 선언 승격 — find_tools 수확과 폴백 구제가 공유. 상한은 프롬프트가 커지는 것만 묶는다.
+  // Every discovered allowed schema must be declared; a silent quota breaks reachability.
   const declare = (shape: PiToolShape): void => {
-    if (escalatedCount >= MAX_ESCALATED_TOOLS) return;
+    if (exposed.has(shape.name)) return;
     tools.push(shape);
     exposed.add(shape.name);
-    escalatedCount += 1;
   };
   const recordCall = (record: PiToolCallRecord): void => {
-    const queue = pendingSummaries.get(record.name) ?? [];
-    queue.push({ ok: record.result.ok, summary: trimText(record.result.summary, 400) });
-    pendingSummaries.set(record.name, queue);
+    if (record.toolCallId) pendingSummaries.set(record.toolCallId, { ok: record.result.ok, summary: trimText(record.result.summary, 400), result: activityPayload(record.result), visuals: record.visuals });
+    const villageMapId = authoredVillageMapId(record);
+    if (villageMapId) villageMapIds.add(villageMapId);
     // find_tools 수확 — 발견된 이름을 다음 턴 요청부터 실제로 선언한다(세션의 에스컬레이션 이식).
     if (record.name === "find_tools") {
-      for (const name of harvestFindToolsNames(record.result)) {
+      const found = harvestFindToolsNames(record.result);
+      const matches = (record.result.data as { matches?: unknown } | undefined)?.matches;
+      // A successful empty search restores the complete permitted catalog. Domains and
+      // initialToolNames are routing hints; readOnly and role toolNames remain hard limits.
+      const names = record.result.ok && Array.isArray(matches) && matches.length === 0
+        ? allowedDefinitions.map(tool => tool.name) : found;
+      for (const name of names) {
         if (exposed.has(name)) continue;
         const shape = shapeFor(name);
         if (shape) declare(shape);
@@ -139,12 +238,23 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     },
   });
   const registryTools = createPiToolset(ctx, {
-    domains: request.toolDomains,
+    domains: request.initialToolNames ? undefined : request.toolDomains,
     readOnly: request.readOnly || options.readOnlyTools,
-    toolNames: options.toolNames,
+    toolNames: request.initialToolNames
+      ? allowedDefinitions.filter(tool => request.initialToolNames!.includes(tool.name)).map(tool => tool.name)
+      : options.toolNames,
     onCall: recordCall,
   });
-  tools.push(...registryTools.map(wrapTool), ...(options.extraTools ?? []));
+  // 레지스트리 쪽 web_search 는 순수 핸드오프라 네트워크가 없다 — 아래 실제 실행 셰이프가 대신한다.
+  // 둘을 함께 선언하면 같은 이름이 두 번 나가고 어느 쪽이 도는지가 순서에 달린다.
+  tools.push(
+    ...registryTools.filter(tool => tool.name !== WEB_SEARCH_TOOL).map(wrapTool),
+    ...(options.extraTools ?? []),
+  );
+  if (allowedDefinitions.some(tool => tool.name === WEB_SEARCH_TOOL)) {
+    // Codex 자격이 없어도 선언한다 — 툴이 실패 이유를 말하는 편이 "없는 툴" 보다 정직하다.
+    declare(wrapTool(createWebSearchTool({ codexApiKey: options.codexApiKey, onCall: recordCall })));
+  }
   if (incremental && request.applyMode === "step") tools.push(wrapTool({
     name: "finish_stage", label: "단계 적용",
     description: "지형·건물/길·NPC/이벤트 등 의미 있는 한 단계를 마친 뒤 호출한다. 사용자 승인 전에는 다음 단계로 진행하지 않는다.",
@@ -165,6 +275,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const systemPrompt = request.systemPrompt
     ? [...request.systemPrompt]
     : buildPiAgentSystemPrompt(base, request.mapIds, request.scopeStrict !== false);
+  if (allowedDefinitions.some(tool => tool.name === "find_tools")) {
+    systemPrompt.push(buildToolCapabilityIndex(allowedDefinitions));
+  }
   // 읽기 전용은 툴 목록으로 강제된다(options.readOnlyTools). 이 한 줄은 모델이 "왜 답만 하는지" 알게 한다 —
   // 이유를 모르면 쓰기를 시도하며 턴을 태운다.
   if (request.readOnly) systemPrompt.push(READ_ONLY_INSTRUCTION);
@@ -181,9 +294,18 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     },
     ...(apiKey ? { getApiKey: () => apiKey as never } : {}),
     ...(options.streamFn ? { streamFn: options.streamFn } : {}),
-    ...(request.provider === "google-antigravity"
-      ? { onPayload: antigravityToolEnumPayload(String((model as { id?: string }).id ?? ""), tools) as never }
-      : {}),
+    onPayload: ((payload: unknown) => {
+      const outgoing = request.provider === "google-antigravity"
+        ? antigravityToolEnumPayload(String((model as { id?: string }).id ?? ""), tools)(payload)
+        : payload;
+      // Observe the actual provider payload after normalization, not a rebuilt prompt.
+      try {
+        emit({ type: "prompt_inspection", snapshot: inspectPromptPayload(outgoing,
+          "Pi provider payload · 전송 시도", String((model as { id?: string }).id ?? ""),
+          [apiKey ?? "", ...Object.values(options.providerApiKeys ?? {}).filter((key): key is string => Boolean(key))]) });
+      } catch { /* inspection must never change provider behavior */ }
+      return outgoing;
+    }) as never,
     // 미노출 툴 호출 구제 — 축소 노출(core+도메인) 아래서 모델이 find_tools 없이 곧바로 이름을
     // 쳐도, 레지스트리에 있고 실행 경계(readOnly·toolNames) 안이면 실제로 실행된다.
     // 경계 밖 이름은 undefined → 평범한 "tool not found" 결과가 모델의 자가수정을 돌린다.
@@ -239,15 +361,23 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     }
     if (event.type === "tool_execution_start") {
       toolCalls += 1;
+      toolStartedAt.set(String(event.toolCallId ?? ""), Date.now());
       emit({ type: "tool_start", id: String(event.toolCallId ?? ""), name: String(event.toolName ?? ""), args: event.args });
       return;
     }
     if (event.type === "tool_execution_end") {
       if (event.isError) toolErrors += 1;
       const name = String(event.toolName ?? "");
-      const record = pendingSummaries.get(name)?.shift();
+      const callId = String(event.toolCallId ?? "");
+      const record = pendingSummaries.get(callId);
+      pendingSummaries.delete(callId);
+      const toolAt = toolStartedAt.get(callId);
+      toolStartedAt.delete(callId);
       emit({
         type: "tool_end",
+        result: record?.result ?? activityPayload(event.result),
+        visuals: record?.visuals,
+        ...(toolAt === undefined ? {} : { durationMs: Date.now() - toolAt }),
         id: String(event.toolCallId ?? ""),
         name,
         ok: record ? record.ok : !event.isError,
@@ -290,6 +420,16 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   });
   try {
     await agent.prompt(request.task);
+    // The original turn/time/role limits remain in force across these bounded repair rounds.
+    for (let attempt = 0; !fatal && !rejected && villageMapIds.size && attempt < 2; attempt++) {
+      const completion = inspectPiVillageCompletion(ctx.project, base, villageMapIds);
+      if (!completion.issues.length || turns >= maxTurns || options.signal?.aborted) break;
+      for (const name of ["author_npc_cast", "find_events", "get_event", "evaluate_village_look", "find_tools"]) {
+        const shape = shapeFor(name);
+        if (shape) declare(shape);
+      }
+      await agent.prompt(piVillageRepairPrompt(ctx.project, base, completion));
+    }
   } finally {
     unsubscribeTeamMessages?.();
     clearTimeout(timer);
@@ -302,7 +442,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   if (!fatal && !rejected) await checkpoint("마지막 단계", "finish_stage");
   emitMapDelta();
   if (fatal && toolCalls === 0) throw Object.assign(new Error(fatal), { status: 502 });
+  const villageCompletion = villageMapIds.size ? inspectPiVillageCompletion(ctx.project, base, villageMapIds) : undefined;
+  if (villageCompletion?.issues.length) emit({ type: "error", message: `마을 미완료: ${villageCompletion.issues.join("\n")}` });
   const done: PiAgentDoneEvent = {
+    ...(villageCompletion ? { villageCompletion } : {}),
     type: "done",
     project: ctx.project,
     stats: { ms: Date.now() - started, turns, toolCalls, toolErrors, ...(usage ? { usage } : {}) },
