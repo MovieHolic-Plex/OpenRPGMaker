@@ -33,9 +33,20 @@
 이벤트 편집기의 생성 버튼도 `sendAiAssistantMessage` → `aiChatPanel.sendText` →
 `aiTurnRunner` → `AssistantSession.sendUserMessage` 공용 경로를 사용한다.
 호스트가 전달하는 `eventCommandScope`는 맵·이벤트·페이지와 선택 경로/라벨, edit/append 모드를
-고정한다. 도구 노출과 실행 양쪽에서 `get_event`, `get_database_records`, `run_lint`,
-`event_command_assist`만 허용하고, 다른 대상과 모드 변경은 거부한다. 이 턴에서는
-자율 적용·위키 저작·NPC 자동 보완이 금지된다.
+고정한다. **이 스코프가 봉인하는 것은 쓰기다** — `onlyEventPageCommandsChanged` 가 지정 페이지
+밖의 변경을 거부하므로 읽기는 넓혀도 계약이 약해지지 않는다. 쓰기는 `event_command_assist`
+하나뿐이고 다른 대상과 모드 변경은 거부한다. 이 턴에서는 자율 적용·위키 저작·NPC 자동 보완이
+금지된다.
+
+**읽기 툴은 2026-09-20 에 넓혔다.** 종전 허용은 `get_event`·`get_database_records`·`run_lint`
+뿐이라 **맵을 조회할 방법이 없었다.** 조수 세션은 `eventScopeAllowsTool` 로 툴 목록을 거르므로
+여기 없으면 노출조차 안 되고, 그래서 모델은 프롬프트에 실린 맵 한 줄
+(`이름 (가로 W × 세로 H, 밟을 수 있는 칸 예: x,y)`)만 보고 대사를 지어야 했다 — "이 마을
+광장에서"·"여관 안에서" 같은 지시를 받아도 그 자리가 어떤지 볼 수 없었다. 지금은
+`get_map_region`(시맨틱 문자 그리드 + 물 바운딩 박스)·`get_project_summary`·`find_events`·
+`find_layout_regions`·`list_resources` 가 읽기로 허용된다(모두 `mode: "read"`). 프롬프트를
+키우지 않고 모델이 필요한 만큼 파고든다. 계약: `test/eventCommandScopedSession.test.ts`
+("맵을 읽는 툴이 허용된다" + "쓰기 툴은 여전히 봉인된다").
 
 공용 브리지는 바쁜 턴이나 대기 제안이 있으면 이벤트 요청을 거부한다. 생성 결과는
 `deferApply`로 공용 검토를 거친 뒤 before/after 스냅샷을 이벤트 모달에 넘기고 공용 제안을

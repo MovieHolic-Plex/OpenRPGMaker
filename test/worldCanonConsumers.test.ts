@@ -35,10 +35,22 @@ describe("worldCanon → assistant context", () => {
     expect(prompt).not.toContain("## 세계관 다이제스트");
   });
 
-  it("caps the body excerpt so a novel cannot eat the window", () => {
-    const section = worldCanonPromptSection({ body: "가".repeat(5000) });
-    expect(section).not.toBeNull();
-    expect((section ?? "").length).toBeLessThan(1400);
+  // 2026-09-20 사용자 요청: 세계관이 틀리면 안 되므로 본문 상한을 600 → 20,000자로 올렸다.
+  // 이 절은 예산 슬라이싱 밖의 고정분이라, 상한이 없으면 본문 하나가 실제 대화 기록을 밀어낸다.
+  // 그래서 "무제한"이 아니라 "실사용에서 잘릴 일이 거의 없는 선"으로 잡는다.
+  it("긴 본문은 20,000자까지 싣고, 그 위는 잘라 고지한다", () => {
+    // 상한 안쪽은 전문이 그대로 실린다(잘림 표시가 없어야 한다).
+    const inside = worldCanonPromptSection({ body: "가".repeat(19_000) });
+    expect(inside).not.toBeNull();
+    expect(inside).toContain("가".repeat(19_000));
+    expect(inside).not.toContain("이 세계 본문");
+
+    // 상한을 넘으면 잘리고, 얼마나 남았는지 고지한다.
+    const beyond = worldCanonPromptSection({ body: "가".repeat(25_000) });
+    expect(beyond).not.toBeNull();
+    expect(beyond).toContain("…(이 세계 본문 5000자 더 있음");
+    // 잘림 고지까지 포함해도 상한 + 고지문 수준이어야 한다(폭주 방지).
+    expect((beyond ?? "").length).toBeLessThan(20_400);
   });
   it("treats a status-only shell as empty so it never emits a phantom block", () => {
     expect(worldCanonPromptSection({ status: "canon" })).toBeNull();

@@ -659,7 +659,7 @@ Party record tabs use the final section of `studio-v2.css`: actors, classes, ski
 
 - **세계 개요 v2:** 본문이 AI 미터+hero stat+이름/전제+뼈대+법칙 2열+본문 순서다. 뼈대(톤·시대·기술 천장·없는 것)와 법칙은 속성 사이드바가 아니라 본문 카드에 둔다 — 272px 사이드바에선 법칙 2열이 1열 덫에 걸린다. 본문 타이핑은 미터·힌트·stat 값을 다시 렌더 없이 갱신한다. testid: `db-world-canon-ai-meter`, `db-world-canon-hero-stats`, `db-world-canon-hero-stat-body`(값 span), `db-world-canon-frame`, `db-world-canon-laws`. CSS: `world-canon-meter`, `world-canon-law-grid`(799px 이하 1열), 카드 헤드 래핑.
 - **이름 카드·미터:** 이름 카드는 `이름과 한 줄` 제목을 단다(카드 순서의 랜드마크). 미터 텍스트는 `role=status`, 막대는 `role=progressbar`(0/600/현재값, 타이핑마다 `aria-valuenow` 갱신).
-- **잘림 신호:** 본문이 600자를 넘으면 hero stat이 warn 톤으로 `뒤 N자 잘림`을 표시한다(값은 `600 / 600자` 고정). 증거 `verify-shots/world-lore-v2/trunc/`.
+- **잘림 신호:** 본문이 발췌 상한을 넘으면 hero stat이 warn 톤으로 `뒤 N자 잘림`을 표시한다. 값은 하드코딩이 아니라 **조수가 실제로 보내는 상한과 같은 상수**(`WORLD_CANON_BODY_EXCERPT_CHARS`)를 읽는다 — 문구가 어긋나면 사용자가 잘못된 길이에 맞춰 세계관을 쓴다. 2026-09-20 에 600 → 20,000자로 올렸다(사용자 요청: "세계관이 틀리면 안 된다"). 증거 `verify-shots/world-lore-v2/trunc/`.
 - **폴리시 (2026-09-18):** Studio v2 문법 안에서만 — 새 토큰 없음. 미터 바 8px+accent-soft 표면, 법칙 카드 canvas 표면, 선택 카드 좌측 accent 레일, 위키 헤더 hairline+12px 리듬, 톤 칩 on 700. 카드 헤드 래핑은 같은 `database` 레이어라 파일 순서가 아니라 특이성으로 이긴다(풀 체인 0-5-0). 증거 `verify-shots/world-lore-v2/polish2/`(넘침 0, 에러는 자동저장 기준선 17과 동일).
 - **폴리시 2 (2026-09-18):** `database` 레이어라 `map(editor)` 레이어 동급 규칙을 특이성과 무관하게 이긴다. lint 경고·에러 블록 탈포화(루트 muted + Studio strong/danger), 칩·카드 호버 피드백, 포커스 링. 증거 `verify-shots/world-lore-v2/p2/`.
 - **구 레이아웃 기록 (2026-09-06):** `worldCanon`의 표시 이름은 「세계 개요」이며 stable tab/field testid는 유지한다.
@@ -675,7 +675,7 @@ Party record tabs use the final section of `studio-v2.css`: actors, classes, ski
 - `이 세계` 는 싱글톤 `project.worldCanon` 이다. 이름·한 줄 전제·톤 칩·시대·기술 천장·없는 것 태그·힘/신/죽음/돈 법칙·마크다운 본문. 비어 있으면 키를 저장하지 않는다 (`normalizeWorldCanon` / `compactWorldCanon`). 스키마는 `src/project/world/canon.ts`.
 - 텍스트는 `recordCoalescedSnapshot`, 칩·태그·법칙 토글은 `recordProjectSnapshot`. UI 는 `databaseWorldCanonView.ts`, 계약 `test/worldCanon.test.ts` + `test/databaseWorldCanonView.test.ts`.
 - `설정집` 은 세계관 카드 위키를 `workspaceShell` 셸에 심은 것이다 (`world-panel-embedded` + `db-world-codex-workspace`). 본문은 레이아웃 루트 하나만 자식으로 둬 `.db-body` 자체 스크롤을 만들지 않는다 — 계약 `test/databaseWorldCodexStructure.test.ts`. 톱바 세계관 버튼은 이 그룹의 `이 세계` 탭으로 점프한다.
-- **소바자 세 곳 (2026-09-03).** (1) 조수: `src/ai/worldCanonContext.ts` 의 `worldCanonPromptSection` 이 `## 이 세계(세계관 고정)` 블록을 감독 지침과 같은 **예산 밖 고정분**으로 넣는다 — 이름·전제·톤·없는 것(절대 금지)·법칙 + 본문 600자. 엔티티 다이제스트 배제(`worldAiExclusion`)는 그대로다. (2) 개요 탭 `db-overview-canon` 카드가 이름·전제를 보이고 이 세계 탭으로 점프한다. (3) 환영 장르 포스터(`applyWelcomeGenrePresetToOpenProject`)가 세계관이 뱄 때만 톤·전제 초안을 심는다. 계약 `test/worldCanonConsumers.test.ts`.
+- **소바자 세 곳 (2026-09-03).** (1) 조수: `src/ai/worldCanonContext.ts` 의 `worldCanonPromptSection` 이 `## 이 세계(세계관 고정)` 블록을 감독 지침과 같은 **예산 밖 고정분**으로 넣는다 — 이름·전제·톤·없는 것(절대 금지)·법칙 + 본문 발췌(2026-09-20 부터 20,000자 상한, `WORLD_CANON_BODY_EXCERPT_CHARS`). 엔티티 다이제스트 배제(`worldAiExclusion`)는 그대로다. (2) 개요 탭 `db-overview-canon` 카드가 이름·전제를 보이고 이 세계 탭으로 점프한다. (3) 환영 장르 포스터(`applyWelcomeGenrePresetToOpenProject`)가 세계관이 뱄 때만 톤·전제 초안을 심는다. 계약 `test/worldCanonConsumers.test.ts`.
 
 ### 세계관 입력 보존·설정집 저장 계약 (2026-09-05)
 
