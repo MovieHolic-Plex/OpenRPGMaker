@@ -333,6 +333,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   // 트룹 이벤트의 turn/everyRound 조건과 적 행동 패턴(turn)이 모델마다 다른 케이던스로
   // 발화했다(적대 리뷰: 적 3체 기준 gauge 의 "3턴"은 사실상 1라운드였다).
   let turn = 0;
+  // The cycle containing the current action, before a gauge completion increments turn.
+  let rewardTurn = 1;
   // 현재 gauge 사이클에서 이미 행동 슬롯을 소비한 배틀러 id(행동 불가 스킵 포함).
   const gaugeCycleActed = new Set<string>();
   let currentActorCommandKind: ActorCommand["kind"] | undefined;
@@ -709,6 +711,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
    * 사망한 배틀러는 대기 목록에서 빠지므로 쓰러진 적이 사이클 완료를 막지 않는다.
    */
   function markGaugeActionCycle(battler: MutableBattler): number {
+    rewardTurn = turn + 1;
     gaugeCycleActed.add(battler.id);
     const pending = [...activeActors(), ...visibleEnemies()].some(
       (candidate) => candidate.hp > 0 && !gaugeCycleActed.has(candidate.id)
@@ -736,6 +739,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (ready.kind === "actor") {
       // 턴 시작 상태 처리(지속 피해/자연 회복). 행동 불가(수면 등)면 명령 없이 턴을 넘긴다.
       if (!gen1) {
+        rewardTurn = turn + 1;
         applyUpkeep(ready.battler);
         resolveOutcome();
         if (result) return;
@@ -1203,6 +1207,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function startStrictRound(): void {
+    rewardTurn = turn + 1;
     if (result) return;
     if (strictRoundCount >= STRICT_MAX_ROUNDS) {
       recordTimeline({ kind: "stalemate", reason: "strictCap", side: "actor" });
@@ -1314,10 +1319,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           continue;
         }
         phase = "roundResolve";
+        rewardTurn = queue.round;
         const action = queue.actions[queue.index++];
         const beforeResult = lastActionResult;
         if (action.side === "actor") {
           if (action.actor.hp <= 0) continue;
+          if (action.command.kind === "skill" && battleSkillUseFailure(options.project, action.actor, action.command.skillId)) continue;
           activeActorId = action.actor.recordId;
           applyActorCommandEffect(action.actor, action.command);
         } else {
@@ -1562,6 +1569,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function performEnemyTurn(enemy: MutableBattler): void {
+    rewardTurn = turn + 1;
     // 턴 시작 상태 처리(지속 피해/자연 회복).
     if (!gen1) {
       applyUpkeep(enemy);
@@ -2189,7 +2197,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       amount: applied.amount,
       critical: applied.critical,
       skillName: skill?.name,
-    }, timelineKind, commandKind, effectKind === "healing" ? affects : undefined);
+    }, timelineKind, commandKind, effectKind === "healing" || effectKind === "damage" ? affects : undefined);
     if (skill?.animationId) {
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
       attachAnimationToLatestTimeline(lastAnimation);
@@ -2521,8 +2529,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         if (gen1EnemyOrderIds.length > 0) {
           result = "victory";
           phase = "resolved";
-          clearEndOfBattleStates();
           accumulateRewards();
+          clearEndOfBattleStates();
           return;
         }
       }
@@ -2533,8 +2541,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if ((enemiesInBattle.length > 0 || capturedMonsters.length > 0) && enemiesInBattle.every((enemy) => enemy.hp <= 0)) {
       result = "victory";
       phase = "resolved";
-      clearEndOfBattleStates();
       accumulateRewards();
+      clearEndOfBattleStates();
       return;
     }
   }
@@ -2552,7 +2560,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function accumulateRewards(): void {
-    const collected = collectBattleRewards(options.project, enemies, rng, Math.max(1, turn + 1), battleEventState.switches);
+    const collected = collectBattleRewards(options.project, enemies, rng, Math.max(1, rewardTurn), battleEventState.switches);
     rewards.exp = collected.exp;
     rewards.gold = collected.gold;
     rewards.enemyLevel = collected.enemyLevel;

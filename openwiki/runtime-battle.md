@@ -752,3 +752,11 @@ Existing focused regression candidates: `test/battleRuntimeSuccessRate.test.ts`,
 ## Battle reports and physical formation (2026-09-21)
 
 Completed runtime timelines persist into bounded session reports accessible from Esc → 기록 → 전투 기록. Existing actor rows feed physical-only outgoing/incoming multipliers, with front/legacy unchanged and raw stats preserved. Troop authoring predictions stay in the editor. Exact ownership hooks, UI paths and parent verification: `openwiki/feature16-battle-ui.md`.
+
+## Combat correctness hardening (2026-09-21)
+
+- Strict queued skill actions (including troop-event extra actions) recheck `battleSkillUseFailure` immediately before execution. A newly cooling, silenced or unaffordable queued cast is discarded without MP/PP consumption or another cooldown start. Decrement remains once per completed strict round or gauge action cycle.
+- Victory rewards evaluate against the pre-cleanup enemy states. Only afterward are battle-end states removed. `rewardTurn` tracks the actual strict round/gauge cycle containing the action or upkeep; gauge cycle completion must not add another turn when evaluating conditional drops.
+- Skill prediction clones vitals, state counters and MP/PP/cooldown maps, consumes one cast cost on the clone, and recomputes every hit against evolving state/vitals. Self targets share the cloned caster. Gen1 enemy unlimited PP is preserved. Ordinary-hit previews apply **guaranteed** state transitions between hits (including RM hit recovery, Gen1 immunity/major-status exclusivity and fire defrost); probabilistic procs remain excluded, just like variance, misses and criticals. No runtime RNG or snapshot data is mutated.
+- HP versus MP is retained for both damage and healing in Gen1/RM timeline → sequencer feedback → popup/director text. The HP presentation ledger ignores **all** MP feedback, so MP damage cannot animate HP loss/death. MP gauges continue using authoritative snapshots, as before.
+- Parent-only command: `npm test -- test/feature16CombatHardening.test.ts`. Coverage: actual strict extra-cast rejection; gauge cooldown cycles; strict/gauge state/turn drops; cost-aware evolving formula and ordinary-formula predictions; sequencer-to-ledger MP damage; exact Gen1 MP timeline. Implementation agent did not run tests, typecheck, server or browser.

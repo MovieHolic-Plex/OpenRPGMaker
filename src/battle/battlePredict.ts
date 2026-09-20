@@ -1,8 +1,10 @@
+import { advancePredictedHitStates } from "@/battle/battlePredictStates";
+import { consumeBattleSkillResource } from "@/battle/battleSkillUse";
 import { DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { formationDamage } from "@/battle/battleFormation";
 import { evaluateDamageFormula, formulaBattlerContext } from "@/battle/damageFormula";
 import { applySkillLike } from "@/battle/battleDamage";
-import type { MutableBattler } from "@/battle/battleBattlers";
+import { battlerSnapshot, type MutableBattler } from "@/battle/battleBattlers";
 // 전투 화면 표시용 순수 계산 헬퍼.
 // runtime.ts 의 데미지 공식/속성 판정과 동일한 규칙을 따르되, 랜덤 요소를 배제한
 // "기댓값"을 반환한다. 거짓 데이터(하드코딩)를 대체하기 위한 진짜 계산 소스.
@@ -286,19 +288,25 @@ export function predictSkillDamageFor(project: Project, user: BattleBattlerSnaps
   const normal = predictSkillDamage(project, { ...user, row: undefined }, { power: skill.power, statistic, effect: skill.effect.kind, elementId: skill.elementId }, { ...target, row: undefined });
   const mutable = (snapshot: BattleBattlerSnapshot): MutableBattler => {
     const stats = battlerStats(project, snapshot);
-    return { ...snapshot, ...stats, hidden: false, chargeRate: 0, attackPower: stats.attack, stateIds: [...snapshot.stateIds], stateTurns: { ...snapshot.stateTurns }, skillIds: [...snapshot.skillIds] } as MutableBattler;
+    return { ...snapshot, ...stats, hidden: false, chargeRate: 0, attackPower: stats.attack, stateIds: [...snapshot.stateIds], stateTurns: { ...snapshot.stateTurns }, skillPp: { ...snapshot.skillPp }, skillCooldowns: { ...snapshot.skillCooldowns }, skillIds: [...snapshot.skillIds] } as MutableBattler;
   };
   const source = mutable(user);
-  const destination = mutable(target);
+  const destination = user.id === target.id ? source : mutable(target);
+  // Prediction owns clones; never consume snapshot resources or enemy Gen1 unlimited PP.
+  if (!(usesGen1Damage(project) && project.database.enemies.some(enemy => enemy.id === user.recordId))) {
+    consumeBattleSkillResource(project, source, skill.id);
+  }
   let amount = 0;
   for (const multiplier of skill.hitSequence ?? [1]) {
     if (destination.hp <= 0 && skill.effect.kind === "damage") break;
     const formula = skill.damageFormula ? evaluateDamageFormula(skill.damageFormula, formulaBattlerContext(
-      { ...source, attackPower: Math.round(source.attackPower * attackMultiplierForStates(project, user)), mind: Math.round(source.mind * attackMultiplierForStates(project, user)) },
-      { ...destination, defense: destination.defense * defenseMultiplierForStates(project, target), mind: destination.mind * defenseMultiplierForStates(project, target) }, skill.power)) : undefined;
-    let hit = normal.amount;
-    if (formula?.ok) {
-      if (usesGen1Damage(project) && skill.effect.kind === "damage") {
+      { ...source, attackPower: Math.round(source.attackPower * attackMultiplierForStates(project, source)), mind: Math.round(source.mind * attackMultiplierForStates(project, source)) },
+      { ...destination, defense: destination.defense * defenseMultiplierForStates(project, destination), mind: destination.mind * defenseMultiplierForStates(project, destination) }, skill.power)) : undefined;
+    let hit = predictSkillDamage(project, { ...battlerSnapshot(source), row: undefined },
+      { power: skill.power, statistic, effect: skill.effect.kind, elementId: skill.elementId },
+      { ...battlerSnapshot(destination), row: undefined }).amount;
+    if (!usesGen1Damage(project) || formula?.ok) {
+      if (usesGen1Damage(project) && skill.effect.kind === "damage" && formula?.ok) {
         const modifiers = gen1TypeModifiersForTypes(project, skill.elementId, battlerTypes(project, user), battlerTypes(project, target));
         hit = applyGen1StabAndType(formula.value, modifiers.stab, modifiers.typeFactors);
         if (hit > 1) hit = Math.floor(hit * GEN1_RANDOM_MEDIAN / GEN1_RANDOM_MAX);
@@ -307,8 +315,8 @@ export function predictSkillDamageFor(project: Project, user: BattleBattlerSnaps
           power: skill.power, statistic, effect: skill.effect.kind, damageFormula: skill.damageFormula,
           variance: 0, criticalRate: 0, hitRate: 100, rng: () => 0.5,
           affects: skill.effect.kind === "damage" || skill.effect.kind === "healing" ? skill.effect.affects : "hp",
-          attackerStatMultiplier: attackMultiplierForStates(project, user),
-          targetDefenseMultiplier: defenseMultiplierForStates(project, target),
+          attackerStatMultiplier: attackMultiplierForStates(project, source),
+          targetDefenseMultiplier: defenseMultiplierForStates(project, destination),
           elementMultiplier: elementMultiplierFor(project, skill.elementId, target.recordId, target)
             * typeChartMultiplierForTypes(project, skill.elementId, battlerTypes(project, user), battlerTypes(project, target)),
         });
@@ -325,6 +333,9 @@ export function predictSkillDamageFor(project: Project, user: BattleBattlerSnaps
       if (skill.effect.affects === "mp") destination.mp = Math.min(destination.maxMp, destination.mp + hit);
       else destination.hp = Math.min(destination.maxHp, destination.hp + hit);
     }
+    // Ordinary-hit preview follows guaranteed state transitions only. Probabilistic
+    // procs are not sampled; this keeps previews stable and never consumes battle RNG.
+    advancePredictedHitStates(project, destination, skill, hit);
   }
   return { ...normal, amount, hitChance: skill.hitRate * skill.successRate / 100,
     criticalChance: skill.criticalRate, cooldownRemaining: user.skillCooldowns?.[skill.id] ?? 0 };
