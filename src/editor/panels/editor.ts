@@ -225,6 +225,11 @@ export function renderEditor(main: HTMLElement): void {
   });
   const teamSidebar = aiPanel.querySelector<HTMLElement>(".ai-team-sidebar");
   if (teamSidebar) layout.append(teamSidebar);
+  // 조수 느낌표 버튼은 **캔버스 영역 안**에 놓는다. 오른쪽 아래는 팀 레일(84px)이 이미 쓰고
+  // 있는데, absolute 로 canvas-area 안에 두면 레일이 시작하는 곳에서 자동으로 끝나
+  // 겹침 계산이 필요 없다(실측 1440×1000: 레일 왼쪽 1357px, 버튼 오른쪽 1341px).
+  const suggestionPeek = aiPanel.querySelector<HTMLElement>(".ai-suggestion-peek");
+  if (suggestionPeek) canvasArea.append(suggestionPeek);
   main.append(layout, projectExportNodeElement());
 
   leftRoot = left;

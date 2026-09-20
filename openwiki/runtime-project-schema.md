@@ -1044,3 +1044,12 @@ deserialize preserves the field and authored spatial library. Generated maps fre
 object revisions, graphics and placements in `villageDesignSource.resolvedSettings.spaceDecorations`;
 this is authored provenance, not runtime state. The shipping player consumes the generated map through
 its existing raster/collision path. See `small-village-generation.md` for the attachment contract.
+
+## 구름량 optional 필드 (2026-09-21)
+
+`GameMap.cloudShadows.amount?: number`는 0~6단계이며 생략한 기존 데이터는 3으로 렌더한다.
+`normalizeCloudShadowParams`에서 반올림·clamp하고 비정상 값은 기본 3으로 복구한다.
+기존 맵 직렬화가 필드를 보존하므로 문서 버전 상승이나 원격 데이터 마이그레이션은 없다.
+`setMapCloudShadows`와 AI `set_map_properties`가 저작 경로이며 구름량은 진하기/크기와 독립이다.
+로컬 편집기 UI 0/1/6 설정 및 `serialize`→`deserialize` 왕복, 옛 데이터 기본값은
+`scripts/qa/cloud-amount-editor.mjs`로 브라우저에서 확인했다. 실제 게임 콘텐츠는 변경하지 않았다.

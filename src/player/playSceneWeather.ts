@@ -1,4 +1,6 @@
+import { getAudioEngine } from "@/player/audio";
 import type Phaser from "phaser";
+import { ensureFogTexture } from "@/player/weather/fogTexture";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
 import type { StepResult } from "@/player/interpreter";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
@@ -19,7 +21,7 @@ import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
 const WEATHER_DEPTH = 800_000;
 const WEATHER_FIXED_STEP_MS = 16;
-const MAX_PARTICLES = 96;
+const MAX_PARTICLES = 180;
 
 export type WeatherRenderPlan = {
   readonly active: boolean;
@@ -54,6 +56,13 @@ export function installWeatherLayer(scene: PlaySceneContext): void {
   layer.add(graphics);
   scene.weatherLayer = layer;
   scene.weatherGraphics = graphics;
+  scene.weatherMistLayers = undefined;
+  scene.events.once("shutdown", () => {
+    getAudioEngine().weather.stop();
+    scene.weatherLayer = undefined;
+    scene.weatherGraphics = undefined;
+    scene.weatherMistLayers = undefined;
+  });
   scene.weatherClockMs = 0;
   scene.weatherFixedAccumulatorMs = 0;
   scene.weatherDisplayed = parseWeather(scene.session.m2Runtime?.screen.weather);
@@ -104,7 +113,10 @@ export function syncWeatherLayer(scene: PlaySceneContext): void {
     scene.weatherDisplayed = target;
     scene.weatherTargetSignature = targetSignature;
   }
-  renderWeather(scene, scene.weatherDisplayed ?? target);
+  const displayed = scene.weatherDisplayed ?? target;
+  const audio = getAudioEngine();
+  audio.weather.update(displayed, scene.weatherClockMs ?? 0, audio.isUnlocked());
+  renderWeather(scene, displayed);
 }
 
 export function weatherKindFromSession(session: PlaySessionLike): WeatherParams["kind"] {
@@ -130,11 +142,16 @@ function renderWeather(scene: PlaySceneContext, params: WeatherParams): void {
   const plan = weatherRenderPlan(params, scene.weatherClockMs ?? 0);
   graphics.clear();
   layer.setVisible(plan.active);
+  for (const mist of scene.weatherMistLayers ?? []) mist.setVisible(plan.active && plan.kind === "fog");
   if (!plan.active) return;
   const width = scene.cameras.main.width || PLAY_RESOLUTION.width;
   const height = scene.cameras.main.height || PLAY_RESOLUTION.height;
+  // Cancel camera zoom for this screen-space effect, including zoom-out edges.
+  const zoom = scene.cameras.main.zoom || 1;
+  layer.setPosition(width / 2 * (1 - 1 / zoom), height / 2 * (1 - 1 / zoom));
+  layer.setScale(1 / zoom);
   if (plan.kind === "fog") {
-    renderFog(graphics, params, width, height, scene.weatherClockMs ?? 0);
+    renderFog(scene, params, width, height, scene.weatherClockMs ?? 0);
     return;
   }
   renderPrecipitation(graphics, params, width, height, scene.weatherClockMs ?? 0);
@@ -152,39 +169,68 @@ function renderPrecipitation(
   timeMs: number
 ): void {
   const count = weatherParticleCount(params, MAX_PARTICLES);
-  const rainLike = params.kind === "rain" || params.kind === "storm";
-  const speed = rainLike ? 0.46 : 0.14;
-  const color = rainLike ? 0xaed0ff : 0xffffff;
-  const alpha = rainLike ? 0.78 : 0.86;
-  graphics.lineStyle(rainLike ? 2 : 1, color, alpha);
-  graphics.fillStyle(color, alpha);
+  const rain = params.kind === "rain" || params.kind === "storm";
+  const storm = params.kind === "storm";
+  const seconds = timeMs / 1000;
+  // Index hashing breaks the diagonal grid of the old equally spaced particles.
+  const sample = (index: number, salt: number) => {
+    let value = Math.imul(index + salt, 1597334677);
+    value = Math.imul(value ^ (value >>> 16), 2246822519);
+    return ((value ^ (value >>> 13)) >>> 0) / 4294967296;
+  };
   for (let index = 0; index < count; index += 1) {
-    const x = positiveModulo(index * 37 + Math.floor(timeMs * 0.03), width + 32) - 16;
-    const y = positiveModulo(index * 53 + Math.floor(timeMs * speed), height + 48) - 24;
-    if (rainLike) {
-      graphics.lineBetween(x, y, x + 4, y + 14);
+    const depth = sample(index, 11);
+    const phase = sample(index, 71) * Math.PI * 2;
+    const speed = rain ? 160 + depth * 230 : 10 + depth * 26;
+    const wind = rain ? (storm ? 95 : 35) : 8;
+    const sway = rain ? 0 : Math.sin(seconds * (0.5 + depth) + phase) * (5 + depth * 12);
+    const x = positiveModulo(sample(index, 31) * (width + 48) + seconds * wind * (0.4 + depth) + sway, width + 48) - 24;
+    const y = positiveModulo(sample(index, 53) * (height + 48) + seconds * speed, height + 48) - 24;
+    const alpha = (0.15 + depth * 0.48) * Math.min(1, params.intensity * 4);
+    if (rain) {
+      const length = 4 + depth * (storm ? 17 : 11);
+      const slant = length * wind / speed;
+      // Soft trailing streak with a brighter, short leading edge.
+      graphics.lineStyle(0.45 + depth * 0.7, 0xbad0de, alpha * 0.45);
+      graphics.lineBetween(x, y, x + slant, y + length);
+      graphics.lineStyle(0.4 + depth * 0.65, 0xddeaf1, alpha);
+      graphics.lineBetween(x + slant * 0.65, y + length * 0.65, x + slant, y + length);
     } else {
-      graphics.fillCircle(x + Math.sin((timeMs + index * 91) / 500) * 6, y, 2.4);
+      const radius = 0.45 + depth * 1.3;
+      if (depth > 0.65) {
+        graphics.fillStyle(0xe1edf6, alpha * 0.12);
+        graphics.fillCircle(x, y, radius * 1.9);
+      }
+      graphics.fillStyle(0xf1f7fc, alpha);
+      graphics.fillCircle(x, y, radius);
     }
   }
 }
 
 function renderFog(
-  graphics: Phaser.GameObjects.Graphics,
+  scene: PlaySceneContext,
   params: WeatherParams,
   width: number,
   height: number,
   timeMs: number
 ): void {
-  const opacity = fogOpacity(params);
-  graphics.fillStyle(0xcfd5dd, opacity);
-  graphics.fillRect(0, 0, width, height);
-  const offset = positiveModulo(Math.floor(timeMs * 0.018), width);
-  graphics.fillStyle(0xf0f3f7, Math.min(0.28, opacity * 0.55));
-  for (let band = -1; band < 4; band += 1) {
-    const x = band * 120 - offset;
-    graphics.fillRoundedRect(x, height * 0.18 + band * 18, width * 0.75, 32, 16);
+  if (!scene.weatherMistLayers) {
+    const key = ensureFogTexture(scene.textures);
+    scene.weatherMistLayers = [0, 1, 2].map(() => {
+      const mist = scene.add.tileSprite(0, 0, width, height, key).setOrigin(0).setScrollFactor(0);
+      scene.weatherLayer!.add(mist);
+      return mist;
+    });
   }
+  scene.weatherMistLayers.forEach((mist, index) => {
+    mist.setVisible(true);
+    if (mist.width !== width || mist.height !== height) mist.setSize(width, height);
+    // Broad distant haze + cross-drifting finer wisps. All layers are seamless and independently phased.
+    mist.setTileScale([2.8, 1.65, 0.95][index]!, [1.9, 1.05, 0.7][index]!);
+    mist.tilePositionX = timeMs * [0.003, -0.006, 0.01][index]! + index * 83;
+    mist.tilePositionY = timeMs * [0.001, 0.002, -0.0015][index]! + index * 57;
+    mist.setAlpha(params.intensity * [0.95, 0.8, 0.5][index]!);
+  });
 }
 
 function weatherSignature(params: WeatherParams): string {
