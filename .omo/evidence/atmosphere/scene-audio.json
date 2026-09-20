@@ -1,9 +1,9 @@
 [
   {
     "id": "enchanted-forest",
-    "audible": 0.0010268101436162673,
+    "audible": 0.0022317105000727857,
     "muted": 0,
-    "restored": 0.0013530550170520682,
+    "restored": 0.002795305133001425,
     "stopped": {
       "map": "qa_silent",
       "state": "closed"
@@ -12,9 +12,9 @@
   },
   {
     "id": "sunken-temple",
-    "audible": 0.007080266533906177,
+    "audible": 0.010699986177386699,
     "muted": 0,
-    "restored": 0.00969737747121467,
+    "restored": 0.010025043333902072,
     "stopped": {
       "map": "qa_silent",
       "state": "closed"
@@ -23,9 +23,9 @@
   },
   {
     "id": "bamboo-grove",
-    "audible": 0.0073621052461749,
+    "audible": 0.009877328901021297,
     "muted": 0,
-    "restored": 0.014798451876050646,
+    "restored": 0.021988611354160584,
     "stopped": {
       "map": "qa_silent",
       "state": "closed"
@@ -34,9 +34,9 @@
   },
   {
     "id": "power-station",
-    "audible": 0.001343902706425345,
+    "audible": 0.005857717544650676,
     "muted": 0,
-    "restored": 0.002238181139576391,
+    "restored": 0.004937957254736446,
     "stopped": {
       "map": "qa_silent",
       "state": "closed"
