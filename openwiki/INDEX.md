@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **71쪽 / 3009KB / 약 852,282 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **71쪽 / 3019KB / 약 855,022 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,8 +15,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 488KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2845 | ~140,162 |
-| `openwiki/editor-ai-tools.md` | 223KB | 84KB ⚠상한 초과 — 절을 더 쪼개라 | 1830 | ~62,898 |
+| `openwiki/editor-ai-panel.md` | 490KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2868 | ~140,830 |
+| `openwiki/editor-ai-tools.md` | 225KB | 84KB ⚠상한 초과 — 절을 더 쪼개라 | 1850 | ~63,394 |
 | `openwiki/editor-database.md` | 326KB | 61KB ⚠상한 초과 — 절을 더 쪼개라 | 1918 | ~94,737 |
 | `openwiki/editor-event-authoring.md` | 151KB | 77KB ⚠상한 초과 — 절을 더 쪼개라 | 827 | ~43,889 |
 | `openwiki/editor-event-commands.md` | 61KB | 32KB | 242 | ~16,671 |
@@ -24,7 +24,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-pre-edit-routing.md` | 127KB | 69KB ⚠상한 초과 — 절을 더 쪼개라 | 731 | ~36,870 |
 | `openwiki/editor-workflows-misc.md` | 67KB | 30KB | 472 | ~18,206 |
 | `openwiki/runtime-battle.md` | 163KB | 31KB | 763 | ~46,614 |
-| `openwiki/runtime-project-schema.md` | 155KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 1093 | ~42,290 |
+| `openwiki/runtime-project-schema.md` | 156KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 1113 | ~42,681 |
 | `openwiki/runtime-sessions.md` | 98KB | 48KB | 410 | ~25,818 |
 | `openwiki/testing.md` | 203KB | 48KB | 1900 | ~56,212 |
 
@@ -268,7 +268,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L55` 설치 지점
 - `L61` 테스트
 
-### `openwiki/editor-ai-panel.md` — 488KB · 2845줄 · ~140,162 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 490KB · 2868줄 · ~140,830 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L2` 조수와 팀 크게 보기 (2026-09-21)
 - `L27` 작업 표시 네 단계와 별도 실행 기록 (2026-09-21)
@@ -347,8 +347,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2742` 왼쪽 팀 운영 메뉴 (2026-09-18)
 - `L2764` 다섯 적용 모드와 실제 맵 증분 반영 (2026-09-18)
 - `L2803` Feature16 — 프롬프트 라이브러리·대사 검토·실제 요청 검사기 (2026-09-21)
+- `L2845` Pi 마을 완료 검사와 적용 분리 (2026-09-21)
 
-### `openwiki/editor-ai-tools.md` — 223KB · 1830줄 · ~62,898 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 225KB · 1850줄 · ~63,394 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
   - `L1` 검색 중 사용자에게 보이는 것 (2026-09-21 실측)
 - `L16` 참조 작품 비유 → 자율 웹 검색 (2026-09-21)
@@ -412,6 +413,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1782` Opening, game-over, and audio discovery tools (2026-09-19)
 - `L1808` 범용 이미지 에셋 생성 (2026-09-19)
 - `L1820` Feature16 combat and climate authoring tools (2026-09-21)
+- `L1830` 마을 시공 후 완료 계약 (2026-09-21)
 
 ### `openwiki/editor-database.md` — 326KB · 1918줄 · ~94,737 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
@@ -960,7 +962,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L752` Battle reports and physical formation (2026-09-21)
 - `L756` Combat correctness hardening (2026-09-21)
 
-### `openwiki/runtime-m2-flow-controls.md` — 33KB · 225줄 · ~9,412 토큰
+### `openwiki/runtime-m2-flow-controls.md` — 38KB · 285줄 · ~10,597 토큰
 
 - `L5` Map-effect repair boundary (2026-09-06)
 - `L12` Sound Layer audio controls (2026-09-06)
@@ -972,6 +974,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L131` 이동 중 경로 재지정 — 2026-09-05 브라우저 적대적 QA
   - `L138` 맵 위를 흐르는 구름 그림자 (2026-09-14)
   - `L212` Weather sound (2026-09-21)
+  - `L226` Map-wide atmosphere presets (2026-09-21)
+  - `L247` Genre ambience presets and sound pairing (2026-09-21)
+  - `L271` Thirty audiovisual presets — evidence (2026-09-21)
 
 ### `openwiki/runtime-pre-edit-routing.md` — 44KB · 304줄 · ~12,908 토큰
 
@@ -983,7 +988,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L233` Saved uploaded tilesets in the actual player (2026-09-14)
 - `L254` 맵 배경(패럴랙스) 렌더 (2026-09-14)
 
-### `openwiki/runtime-project-schema.md` — 155KB · 1093줄 · ~42,290 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 156KB · 1113줄 · ~42,681 토큰 · 통째읽기 잘림
 
 - `L1` 종족 전투 뒷모습 리소스 (2026-09-20)
 - `L5` 웹 프로젝트 생성과 선택 (2026-09-18)
@@ -1038,6 +1043,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1065` Optional authored combat rules (feature16, 2026-09-21)
 - `L1068` AI 저작 보조 설정의 프로젝트 지속성 (Feature16, 2026-09-21)
 - `L1081` 구름량 optional 필드 (2026-09-21)
+  - `L1093` Map atmosphere layers (2026-09-21)
 
 ### `openwiki/runtime-sessions.md` — 98KB · 410줄 · ~25,818 토큰 · 통째읽기 잘림
 

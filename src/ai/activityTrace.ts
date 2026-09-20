@@ -133,5 +133,6 @@ export function recordActivityEvent(trace: ActivityTrace, event: PiAgentEvent, a
     case "checkpoint": return put(trace, { ...base, summary: activityText(event.label), output: activityPayload({ checkpointId: event.checkpointId, toolName: event.toolName }) });
     case "map_delta": return put(trace, { ...base, summary: `맵 ${event.maps.length}개 변경 신호`, output: activityPayload(event.maps) });
     case "team_start": return put(trace, { ...base, summary: "팀 작업 시작", output: activityPayload(event) });
+    case "prompt_inspection": return put(trace, { ...base, summary: "프롬프트 점검", output: activityPayload(event.snapshot) });
   }
 }

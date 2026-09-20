@@ -1827,3 +1827,23 @@ are rejected atomically. Partial action updates preserve omitted values; top-lev
 `set_map_properties` accepts climate or clearClimate. Drop item and condition state/
 switch references participate in load validation, deletion guards and switch rename.
 Tests: `feature16AiToolIntegration.test.ts`; schemas: `combatAuthoringSchemas.ts`.
+## 마을 시공 후 완료 계약 (2026-09-21)
+
+`author_village`의 `houseCount`는 무조건 required가 아니다. 기본 설계서가 있으면
+`resolveVillageDesignInput`이 파싱 전에 채운다. 고정 숲 없음 설계서에는
+`forestDensity`를 넣지 않는다. Pi 노트와 도구 설명이 이 조건을 공유한다.
+
+`residents[].lines` 생략 시 대사는 빈 상태이며, Pi 종료 검사가 보충 요청을 보낸다.
+옛 `AssistantSession.authorPendingNpcCast`가 Pi에서도 자동 실행된다고 설명하지 않는다.
+문 스프라이트도 visible이므로 `collectPendingNpcs` 결과 전체를 Pi 보충 대상으로 쓰면
+문에 대사가 붙는다. Pi는 이번에 생성한 `ev_village_*` 주민만 대상으로 삼는다.
+
+`evaluate_village_look`의 호출 성공과 `data.ok`는 별개다. Pi는 최종 프로젝트에서
+직접 재평가해 미통과를 `done.villageCompletion.issues`로 전달한다. 룩 평가에는
+맵의 `villageDesignSource.preset`을 사용해 고정 주민 수, 숲 없음, 광장 설정을 존중한다.
+현재 프로젝트의 기본 설계서를 나중에 바꿔도 이미 지은 맵의 평가 기준이 바뀌지 않는다.
+
+공개 평가 안내는 `find_tools`로 실제 수정 도구를 찾도록 한다. `plant_tree_clusters`,
+`revise_village_plan`, `run_village_pipeline`은 내부 호환용이며 Pi에서 노출·복구되지 않는다.
+재시공이 필요해도 사용자 범위와 DB 설계서를 유지한 `author_village`를 사용한다.
+평가를 통과하려고 고정 설정을 바꾸거나 전체 맵 재시공을 임의로 허가하지 않는다.

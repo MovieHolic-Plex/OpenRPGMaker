@@ -22,6 +22,7 @@ export function recommendedHudFont(theme: FieldHudConfig["theme"]): "pixel" | "r
 export function recommendedHudMenu(theme: FieldHudConfig["theme"]): keyof typeof HUD_MENUS {
   return theme === "collector" ? "field-list" : theme === "classic" ? "classic" : theme === "horror" || theme === "chase" ? "workbench" : "project";
 }
+export const HUD_PANELS = { none: "없음", paper: "종이", dark: "어두운 판" } as const;
 export const HUD_WIDGET_LIMIT = 24;
 export interface HudWidget {
   id: string;
@@ -32,7 +33,7 @@ export interface HudWidget {
   anchor: keyof typeof HUD_ANCHORS;
   x: number; y: number; width: number; height: number;
   color: string;
-  panel: "none" | "paper" | "dark";
+  panel: keyof typeof HUD_PANELS;
   condition: keyof typeof HUD_CONDITIONS;
   showValue: boolean;
   enabled: boolean; hideEmpty: boolean; autoAvoid: boolean;
@@ -61,7 +62,7 @@ export function normalizeHudWidget(value: unknown, index = 0): HudWidget {
     shape: choice(raw.shape, HUD_SHAPES, "bar"), anchor: choice(raw.anchor, HUD_ANCHORS, "top-left"),
     x: number(raw.x, 10, 0, 1920), y: number(raw.y, 10, 0, 1080), width: number(raw.width, 90, 20, 640), height: number(raw.height, 30, 14, 480),
     color: typeof raw.color === "string" && /^#[\da-f]{6}$/i.test(raw.color) ? raw.color : "#e5c878",
-    panel: choice(raw.panel, { none: 1, paper: 1, dark: 1 }, "none"),
+    panel: choice(raw.panel, HUD_PANELS, "none"),
     condition: choice(raw.condition, HUD_CONDITIONS, "always"),
     showValue: raw.showValue !== false, enabled: raw.enabled !== false, hideEmpty: raw.hideEmpty !== false, autoAvoid: raw.autoAvoid === true,
     max: number(raw.max, 100, 1, 999999999), slots: number(raw.slots, 8, 1, 10),
