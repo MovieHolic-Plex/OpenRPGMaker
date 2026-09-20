@@ -1133,6 +1133,7 @@ export interface SystemRecords {
   battleUiStyle?: BattleUiStyle;
   /** ESC(X) 게임 메뉴 디자인. 생략 = workbench(작업대, 지금 화면). */
   menuUiStyle?: MenuUiStyle;
+  fieldHud?: import("../fieldHud").FieldHudConfig;
   /** Project-wide, scoped battle menu CSS; absent preserves the selected skin. */
   battleCommandCss?: string;
   battleParty?: BattleParty;

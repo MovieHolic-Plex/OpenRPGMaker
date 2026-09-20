@@ -984,7 +984,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
       "시공 후 룩+구조 게이트. 결정론 휴리스틱으로 테마/밀도/광장/나무/도달을 평가하고 " +
       "실패 시 fixes·feedbackForLlm을 반환한다(맵 변경 없음). " +
       "멀티모달 LLM은 show_map_region 이미지와 함께 같은 fixes 스키마로 보완 가능. " +
-      "실패 시 revise_village_plan 또는 run_village_pipeline 재시도.",
+      "실패하면 fixes의 관찰 결과를 읽고 find_tools로 현재 제공되는 수정 도구를 찾는다. 전체 재시공은 사용자 범위와 DB 설계서를 유지한 author_village로만 한다. data.ok=false이면 평가 미통과이며 호출 성공과 다르다.",
     mode: "read",
     parameters: {
       type: "object",

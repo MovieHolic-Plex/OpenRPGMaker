@@ -1,3 +1,4 @@
+import { FIELD_HUD_THEMES, normalizeFieldHud } from "@/project/fieldHud";
 import { MENU_SKINS, resolveMenuSkinId } from "@/player/menuSkins/registry";
 import { listTitleMenuOptions } from "@/player/titleScreen";
 import { resolveFontSelection, FONT_ROLE_LABELS, FONT_ROLES, fontOptionsForRole } from "@/project/fontRegistry";
@@ -9,7 +10,7 @@ import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsa
 import type { Project, StoryFlagKind, TitleScreenSettings } from "@/project/types";
 import { el } from "@/util/dom";
 
-type SystemStudioTarget = "party" | "display" | "menu" | "font" | "resources" | "startup" | "optin" | "time" | "typechart" | "title";
+type SystemStudioTarget = "party" | "display" | "hud" | "menu" | "font" | "resources" | "startup" | "optin" | "time" | "typechart" | "title";
 
 type StudioCard = {
   readonly id: string;
@@ -189,6 +190,14 @@ function primaryCardGrid(project: Project): HTMLElement {
       status: `${resolution.width}×${resolution.height}`,
       statusKind: "neutral",
       target: "display",
+    },
+    {
+      id: "hud",
+      title: "인게임 HUD",
+      description: "체력 · 시계 · 손 슬롯 표시와 디자인",
+      status: FIELD_HUD_THEMES[normalizeFieldHud(project.system.fieldHud).theme],
+      statusKind: "neutral",
+      target: "hud",
     },
     {
       id: "menu",

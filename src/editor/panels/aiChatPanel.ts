@@ -2073,6 +2073,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       const noteTargetMapId = declared.intent.targetMapId ?? currentMapId;
       const noteTargetMap = noteTargetMapId ? project.maps[noteTargetMapId] : undefined;
       intentNote = buildPiIntentNote({
+        project,
         intent: declared.intent,
         targetMap: noteTargetMap
           ? { id: noteTargetMap.id, width: noteTargetMap.width, height: noteTargetMap.height, lived: isLivedMap(noteTargetMap) }

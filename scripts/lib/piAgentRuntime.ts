@@ -1,4 +1,5 @@
 import type { ActivityVisual } from "../../src/ai/activityVisual";
+import { authoredVillageMapId, inspectPiVillageCompletion, piVillageRepairPrompt } from "../../src/ai/piAgent/villageCompletion.ts";
 import { inspectPromptPayload } from "../../src/ai/authoring/promptInspection.ts";
 import { activityPayload } from "../../src/ai/activityTrace.ts";
 import { finishSpatialToolAcceptance, authorMergedSpatialProposal } from "../../src/editor/tools/spatialToolState.ts";
@@ -158,6 +159,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 배열 교체(setTools)는 진행 중 루프에 닿지 않는다(컨텍스트가 같은 배열을 잡고 있어서다).
   const tools: PiToolShape[] = [];
   const exposed = new Set<string>();
+  const villageMapIds = new Set<string>();
   const allowedDefinitions = selectPiToolDefinitions(undefined, {
     readOnly: request.readOnly || options.readOnlyTools, toolNames: options.toolNames,
   });
@@ -183,6 +185,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   };
   const recordCall = (record: PiToolCallRecord): void => {
     if (record.toolCallId) pendingSummaries.set(record.toolCallId, { ok: record.result.ok, summary: trimText(record.result.summary, 400), result: activityPayload(record.result), visuals: record.visuals });
+    const villageMapId = authoredVillageMapId(record);
+    if (villageMapId) villageMapIds.add(villageMapId);
     // find_tools 수확 — 발견된 이름을 다음 턴 요청부터 실제로 선언한다(세션의 에스컬레이션 이식).
     if (record.name === "find_tools") {
       const found = harvestFindToolsNames(record.result);
@@ -416,6 +420,16 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   });
   try {
     await agent.prompt(request.task);
+    // The original turn/time/role limits remain in force across these bounded repair rounds.
+    for (let attempt = 0; !fatal && !rejected && villageMapIds.size && attempt < 2; attempt++) {
+      const completion = inspectPiVillageCompletion(ctx.project, base, villageMapIds);
+      if (!completion.issues.length || turns >= maxTurns || options.signal?.aborted) break;
+      for (const name of ["author_npc_cast", "find_events", "get_event", "evaluate_village_look", "find_tools"]) {
+        const shape = shapeFor(name);
+        if (shape) declare(shape);
+      }
+      await agent.prompt(piVillageRepairPrompt(ctx.project, base, completion));
+    }
   } finally {
     unsubscribeTeamMessages?.();
     clearTimeout(timer);
@@ -428,7 +442,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   if (!fatal && !rejected) await checkpoint("마지막 단계", "finish_stage");
   emitMapDelta();
   if (fatal && toolCalls === 0) throw Object.assign(new Error(fatal), { status: 502 });
+  const villageCompletion = villageMapIds.size ? inspectPiVillageCompletion(ctx.project, base, villageMapIds) : undefined;
+  if (villageCompletion?.issues.length) emit({ type: "error", message: `마을 미완료: ${villageCompletion.issues.join("\n")}` });
   const done: PiAgentDoneEvent = {
+    ...(villageCompletion ? { villageCompletion } : {}),
     type: "done",
     project: ctx.project,
     stats: { ms: Date.now() - started, turns, toolCalls, toolErrors, ...(usage ? { usage } : {}) },

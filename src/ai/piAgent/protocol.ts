@@ -1,4 +1,5 @@
 import type { ActivityVisual } from "../activityVisual";
+import type { PiVillageCompletion } from "./villageCompletion";
 import type { PiApplyMode } from "./applyMode";
 import type { SpecialistModels } from "../modelRoles";
 import type { SpatialToolProof } from "@/editor/tools/spatialToolState";
@@ -127,7 +128,7 @@ type PiAgentEventPayload =
    * 쓰기 실행의 정본 증거. 프루프가 객체 정체성에 살아 이 경계를 넘지 못하므로 다이제스트로
    * 실어 보낸다 — 브라우저의 수용 게이트가 이걸로 «도구가 만든 제안»임을 확인한다.
    */
-  | { readonly type: "done"; readonly project: Project; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spatialProof?: SpatialToolProof | null };
+  | { readonly type: "done"; readonly villageCompletion?: PiVillageCompletion; readonly project: Project; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spatialProof?: SpatialToolProof | null };
 
 export type PiAgentDoneEvent = Extract<PiAgentEvent, { type: "done" }>;
 
