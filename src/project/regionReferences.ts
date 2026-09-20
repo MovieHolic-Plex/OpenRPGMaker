@@ -1,17 +1,15 @@
+import { FOREST_PLACE_REFERENCES, forestPlaceSnapshot } from "./forestPlaceReferences";
 import { SHIP_PLACE_REFERENCES, shipPlaceSnapshot } from "./shipPlaceReferences";
 import emeraldSnapshot from "./regionReferences/emerald-basin.json";
 import hillForestSnapshot from "./regionReferences/hill-forest-village.json";
 import snapshot from "./regionReferences/walled-settlement.json";
 import lakeSnapshot from "./regionReferences/lake-village.json";
 import castleSnapshot from "./regionReferences/castle-town.json";
-import cliffVillageSnapshot from "./regionReferences/forest-cliff-village.json";
-import gubisupSnapshot from "./regionReferences/gubisup.json";
-import smallForestVillageSnapshot from "./regionReferences/small-forest-village.json";
 import { REFERENCE_HOUSE_FORM_DEFS } from "./defaults/referenceHouseFormCatalog";
 
 /** Fixed authored examples, independent of procedural RegionDesign and the active project. */
 export const REGION_REFERENCES = [{
-  id: "walled-settlement-43x45", name: "성벽으로 둘러싸인 정주지", kind: "completed-map" as const,
+  id: "walled-settlement-43x45", name: "성벽으로 둘러싸인 정주지", kind: "completed-map" as const, regionKind: "settlement" as const,
   revision: 1, width: 43, height: 45, tilesetId: snapshot.tileset.id,
   preview: "/assets/region-references/walled-settlement.png",
   sourceProjectId: "rpg-zzu-reference-houses-20260913-6890",
@@ -27,7 +25,7 @@ export const REGION_REFERENCES = [{
   ],
   limitations: "완성 맵 참고 사례. 생성 프리셋이나 배치 명령이 아니다. 실내·우물 상호작용은 포함하지 않는다.",
 }, {
-  id: "castle-town-100x100", name: "왕궁이 있는 이중 성벽 도시", kind: "completed-map" as const,
+  id: "castle-town-100x100", name: "왕궁이 있는 이중 성벽 도시", kind: "completed-map" as const, regionKind: "settlement" as const,
   revision: 1, width: 100, height: 100, tilesetId: castleSnapshot.tileset.id,
   preview: "/assets/region-references/castle-town.png",
   sourceProjectId: "rpg-zzu-castle-town-100-20260913-6890",
@@ -44,7 +42,7 @@ export const REGION_REFERENCES = [{
   ],
   limitations: "외관 배치 참고 사례. 궁전 3개 층의 실내 맵과 상호작용은 포함하지 않는다. 사용자 최종 수정 이후의 플레이 검증은 별도다.",
 }, {
-  id: "lake-village-60x60", name: "숲과 선착장이 있는 호수마을", kind: "completed-map" as const,
+  id: "lake-village-60x60", name: "숲과 선착장이 있는 호수마을", kind: "completed-map" as const, regionKind: "settlement" as const,
   revision: 1, width: 60, height: 60, tilesetId: lakeSnapshot.tileset.id,
   preview: "/assets/region-references/lake-village.png",
   sourceProjectId: "rpg-zzu-lake-village-60-20260913-6890", sourceMapId: lakeSnapshot.map.id,
@@ -54,58 +52,6 @@ export const REGION_REFERENCES = [{
     "울타리 마당·텃밭·우물 쉼터를 배치하고 소품은 작업과 생활 공간별로 모은다.",
     "키 큰 풀은 숲과 물가에 불규칙하게 모으며 마른 나무는 드물게 둔다. 선착장 양끝에 사다리가 있다."],
   limitations: "외관 참고 사례. 실내·낚시·수영·NPC 상호작용은 포함하지 않는다.",
-}, {
-  id: "gubisup-80x72", name: "굽이숲", kind: "completed-map" as const,
-  regionKind: "terrain" as const,
-  revision: 1, width: 80, height: 72, tilesetId: gubisupSnapshot.tileset.id,
-  preview: "/assets/region-references/gubisup.png",
-  tilesetPreview: "/assets/region-references/gubisup-atlas.png",
-  projectDownload: "/assets/region-references/gubisup.oprn.json",
-  sourceProjectId: "oprn-hill-forest-harmony-20260918-a4e1", sourceMapId: gubisupSnapshot.map.id,
-  snapshotProjectId: "oprn-region-gubisup-v1",
-  rules: [
-    "80×72칸, 한 칸 16×16픽셀. 맵의 65%를 연속된 수관이 둘러싸고 여섯 빈터와 두 순환길을 잇는다.",
-    "짙은 수관 내부는 나뭇잎 질감을 생략한 면이다. 외곽 3×3과 안쪽 모서리 4칸에서 파생된 상위 오토타일로 가장자리를 잇는다.",
-    "남향 수관 아래에는 줄기·뿌리를 연속 배치한다. 줄기 첫 행은 수관 가장자리와 같은 행이며 좌우 끝마감을 보존한다.",
-    "북쪽 샘, 숲속 오두막, 독립 활엽수 9그루와 짙은 풀을 배치한다. 팻말과 생활 소품은 오두막 근처에 모은다.",
-    "남쪽 입구와 북쪽 출구를 맵 끝까지 연결한다. 걸을 수 있는 모든 칸과 여섯 빈터가 연결되어 있다.",
-    "사용자 검수 완료 배치와 전용 칩셋을 함께 보존한 공용 지역이다. 새 프로젝트와 기존 프로젝트 모두에서 볼 수 있다.",
-  ],
-  limitations: "공용 완성 지역. 맵 파일에는 타일·통행·레이어·오토타일과 칩셋 이미지가 포함된다. 오두막 실내와 다른 맵으로의 이동 이벤트는 포함하지 않는다.",
-}, {
-  id: "small-forest-village-80x72", name: "굽이숲 작은마을", kind: "completed-map" as const,
-  regionKind: "settlement" as const,
-  revision: 1, width: 80, height: 72, tilesetId: smallForestVillageSnapshot.tileset.id,
-  preview: "/assets/region-references/small-forest-village.png",
-  tilesetPreview: "/assets/region-references/small-forest-village-atlas.png",
-  projectDownload: "/assets/region-references/small-forest-village.oprn.json",
-  sourceProjectId: "oprn-hill-forest-harmony-20260918-a4e1", sourceMapId: smallForestVillageSnapshot.map.id,
-  snapshotProjectId: "oprn-region-small-forest-village-v1",
-  rules: [
-    "80×72칸, 한 칸 16×16픽셀. 연속 수관이 맵의 65%를 둘러싸고 빈터마다 다섯 집을 나누어 놓는다.",
-    "나뭇잎은 상위 오토타일이다. 남향 가장자리와 같은 행부터 줄기를 깔고 끝마감·뿌리를 온전히 보존한다.",
-    "서쪽 집은 높이 2칸, 동쪽 집은 높이 1칸의 둥근 언덕 위에 있다. 두 칸 폭 계단으로 길을 연결한다.",
-    "북동쪽 샘과 독립 나무, 집 주변 텃밭·꽃·생활 소품을 함께 보존한다. 다섯 집 앞과 남북 출입구를 걸어서 오갈 수 있다.",
-    "중앙 횡단 절벽을 추가하기 전, 사용자가 저장을 요청한 마을과 전용 칩셋을 보존한 공용 지역이다.",
-  ],
-  limitations: "공용 완성 지역. 내려받는 맵 파일에 칩셋 이미지·통행·레이어·오토타일이 포함된다. 집의 실내와 맵 이동 이벤트는 포함하지 않는다.",
-}, {
-  id: "forest-cliff-village-80x72", name: "굽이숲 절벽마을", kind: "completed-map" as const,
-  regionKind: "settlement" as const,
-  revision: 1, width: 80, height: 72, tilesetId: cliffVillageSnapshot.tileset.id,
-  preview: "/assets/region-references/forest-cliff-village.png",
-  tilesetPreview: "/assets/region-references/forest-cliff-village-atlas.png",
-  projectDownload: "/assets/region-references/forest-cliff-village.oprn.json",
-  sourceProjectId: "oprn-hill-forest-harmony-20260918-a4e1", sourceMapId: cliffVillageSnapshot.map.id,
-  snapshotProjectId: "oprn-region-forest-cliff-village-v1",
-  rules: [
-    "80×72칸, 한 칸 16×16픽셀. 숲 사이 다섯 집과 4~5칸 높이의 굽은 횡단 절벽을 배치한다.",
-    "큰길 외에 북쪽 샘으로 돌아가는 숲길과 남서쪽 두 집 사이 지름길이 있다. 오솔길은 1~2칸 폭으로 잇는다.",
-    "상위 나뭇잎 오토타일과 남향 경계의 온전한 줄기·뿌리를 함께 보존한다. 짙은 내부는 생략된 수관이다.",
-    "길 가장자리에 짧은 풀 군락·돌·꽃과 검수한 생활 소품을 모으고, 문 앞과 계단은 비운다.",
-    "Tibo 소품 11종의 unfake 보정 결과를 포함한다. 사용자가 제외한 가마는 포함하지 않는다.",
-  ],
-  limitations: "공용 외관 배치 사례. 칩셋·통행·레이어·오토타일을 포함한다. 집 실내, NPC 상호작용과 외부 맵 이동 이벤트는 포함하지 않는다.",
 }] as const;
 
 const LAKE_PLACE_REFERENCES = [
@@ -121,7 +67,7 @@ const LAKE_PLACE_REFERENCES = [
 
 
 /** Shipped place examples remain visible even in a new, empty project. */
-export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFERENCES, {
+export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFERENCES, ...FOREST_PLACE_REFERENCES, {
   id: "emerald-basin-80x64", name: "비취 대계곡", kind: "completed-place" as const,
   placeKind: "natural" as const, revision: 1, x: 0, y: 0, width: 80, height: 64,
   tilesetId: emeraldSnapshot.tileset.id,
@@ -167,7 +113,7 @@ export function readRegionReference(id: string, row = 0, rows = 8) {
     throw new Error("row must be within the map; rows must be 1..16");
   }
   const place = LAKE_PLACE_REFERENCES.find(p => p.id === id);
-  const source = shipPlaceSnapshot(id) ?? (reference.id === "forest-cliff-village-80x72" ? cliffVillageSnapshot : reference.id === "small-forest-village-80x72" ? smallForestVillageSnapshot : reference.id === "gubisup-80x72" ? gubisupSnapshot : reference.id === "emerald-basin-80x64" ? emeraldSnapshot : reference.id === "hill-forest-village-64x64" ? hillForestSnapshot : reference.id === "castle-town-100x100" ? castleSnapshot : reference.id === "walled-settlement-43x45" ? snapshot : lakeSnapshot);
+  const source = forestPlaceSnapshot(id) ?? shipPlaceSnapshot(id) ?? (reference.id === "emerald-basin-80x64" ? emeraldSnapshot : reference.id === "hill-forest-village-64x64" ? hillForestSnapshot : reference.id === "castle-town-100x100" ? castleSnapshot : reference.id === "walled-settlement-43x45" ? snapshot : lakeSnapshot);
   const crop = (tiles: number[]) => Array.from({length: reference.height}, (_, y) => tiles.slice((y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0), (y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0) + reference.width)).flat();
   const selected = place ? { ...source, map: { ...source.map, width: place.width, height: place.height, lowerTiles: crop(source.map.lowerTiles), upperTiles: crop(source.map.upperTiles), events: [] } } : source;
   const endRow = Math.min(reference.height, row + rows), { map, tileset } = selected;
@@ -195,7 +141,7 @@ function referenceHouseFormNote(referenceId: string): string {
 }
 
 export function regionReferenceContext(): string {
-  return "## 지역 — 완성 맵 참고 사례\n" + [...REGION_REFERENCES, ...PLACE_REFERENCES].map(r =>
+  return "## 지역·장소 — 완성 맵 참고 사례\n" + [...REGION_REFERENCES, ...PLACE_REFERENCES].map(r =>
     `- ${r.name} (${r.id}, ${r.width}×${r.height}): ${r.rules.join(" ")}\n실제 배치: read_region_reference({id:'${r.id}',row:0,rows:8}), nextRow로 이어 읽기. 읽기 전용 참고 자료이며 생성 계약이 아니다.${referenceHouseFormNote(r.id)}`
   ).join("\n");
 }

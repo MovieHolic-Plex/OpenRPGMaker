@@ -1,0 +1,124 @@
+{
+  "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+  "captures": [
+    {
+      "id": "forest-cabin-40x30",
+      "bounds": {
+        "x": 893,
+        "y": 808,
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "id": "forest-star-64x56",
+      "bounds": {
+        "x": 701,
+        "y": 600,
+        "width": 1024,
+        "height": 896
+      }
+    },
+    {
+      "id": "gubisup-80x72",
+      "bounds": {
+        "x": 573,
+        "y": 472,
+        "width": 1280,
+        "height": 1152
+      }
+    },
+    {
+      "id": "small-forest-village-80x72",
+      "bounds": {
+        "x": 573,
+        "y": 472,
+        "width": 1280,
+        "height": 1152
+      }
+    },
+    {
+      "id": "forest-cliff-village-80x72",
+      "bounds": {
+        "x": 573,
+        "y": 472,
+        "width": 1280,
+        "height": 1152
+      }
+    },
+    {
+      "id": "high-cliff-village-80x88",
+      "bounds": {
+        "x": 573,
+        "y": 344,
+        "width": 1280,
+        "height": 1408
+      }
+    },
+    {
+      "id": "cliff-forest-bridge-80x72",
+      "bounds": {
+        "x": 573,
+        "y": 472,
+        "width": 1280,
+        "height": 1152
+      }
+    },
+    {
+      "id": "peaceful-forest-100x100",
+      "bounds": {
+        "x": 413,
+        "y": 248,
+        "width": 1600,
+        "height": 1600
+      }
+    },
+    {
+      "id": "great-falls-100x100",
+      "bounds": {
+        "x": 413,
+        "y": 248,
+        "width": 1600,
+        "height": 1600
+      }
+    },
+    {
+      "id": "rebuilt-forest-village-64x64",
+      "bounds": {
+        "x": 701,
+        "y": 536,
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "harmony-hill-village-64x64",
+      "bounds": {
+        "x": 701,
+        "y": 536,
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "id": "hill-forest-cave-20x16",
+      "bounds": {
+        "x": 1053,
+        "y": 920,
+        "width": 320,
+        "height": 256
+      }
+    },
+    {
+      "id": "rebuilt-forest-cave-20x16",
+      "bounds": {
+        "x": 1053,
+        "y": 920,
+        "width": 320,
+        "height": 256
+      }
+    }
+  ],
+  "contentUnchanged": true,
+  "errors": []
+}

@@ -1,0 +1,112 @@
+{
+  "origin": "http://127.0.0.1:9825",
+  "placeCount": 13,
+  "sourceContentUnchanged": true,
+  "results": [
+    {
+      "id": "forest-cabin-40x30",
+      "defaultPlace": true,
+      "preview": true,
+      "downloadExact": true,
+      "aiRowsExact": true,
+      "linkedMapCount": 1
+    },
+    {
+      "id": "forest-star-64x56",
+      "defaultPlace": true,
+      "preview": true,
+      "downloadExact": true,
+      "aiRowsExact": true,
+      "linkedMapCount": 1
+    },
+    {
+      "id": "gubisup-80x72",
+      "defaultPlace": true,
+      "preview": true,
+      "downloadExact": true,
+      "aiRowsExact": true,
+      "linkedMapCount": 1
+    },
+    {
+      "id": "small-forest-village-80x72",
+      "defaultPlace": true,
+      "preview": true,
+      "downloadExact": true,
+      "aiRowsExact": true,
+      "linkedMapCount": 1
+    },
+    {
+      "id": "forest-cliff-village-80x72",
+      "defaultPlace": true,
+      "preview": true,
+      "downloadExact": true,
+      "aiRowsExact": true,
+      "linkedMapCount": 1
+    },
+    {
+      "id": "high-cliff-village-80x88",
+      "defaultPlace": true,
+      "preview": true,
+      "downloadExact": true,
+      "aiRowsExact": true,
+      "linkedMapCount": 1
+    },
+    {
+      "id": "cliff-forest-bridge-80x72",
+      "defaultPlace": true,
+      "preview": true,
+      "downloadExact": true,
+      "aiRowsExact": true,
+      "linkedMapCount": 1
+    },
+    {
+      "id": "peaceful-forest-100x100",
+      "defaultPlace": true,
+      "preview": true,
+      "downloadExact": true,
+      "aiRowsExact": true,
+      "linkedMapCount": 1
+    },
+    {
+      "id": "great-falls-100x100",
+      "defaultPlace": true,
+      "preview": true,
+      "downloadExact": true,
+      "aiRowsExact": true,
+      "linkedMapCount": 1
+    },
+    {
+      "id": "rebuilt-forest-village-64x64",
+      "defaultPlace": true,
+      "preview": true,
+      "downloadExact": true,
+      "aiRowsExact": true,
+      "linkedMapCount": 2
+    },
+    {
+      "id": "harmony-hill-village-64x64",
+      "defaultPlace": true,
+      "preview": true,
+      "downloadExact": true,
+      "aiRowsExact": true,
+      "linkedMapCount": 2
+    },
+    {
+      "id": "hill-forest-cave-20x16",
+      "defaultPlace": true,
+      "preview": true,
+      "downloadExact": true,
+      "aiRowsExact": true,
+      "linkedMapCount": 2
+    },
+    {
+      "id": "rebuilt-forest-cave-20x16",
+      "defaultPlace": true,
+      "preview": true,
+      "downloadExact": true,
+      "aiRowsExact": true,
+      "linkedMapCount": 2
+    }
+  ],
+  "errors": []
+}

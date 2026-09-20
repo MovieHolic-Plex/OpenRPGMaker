@@ -282,3 +282,13 @@ The gubisup, small-forest-village and forest-cliff-village region atlases preser
 the existing mixed-source terrain/building attribution and the reviewed custom
 forest materials; they are portable authored map snapshots, not new original
 claims for those inherited tiles.
+
+## Authored forest place library (2026-09-21)
+
+The 13 portable map documents listed in `scripts/asset-gen/forest-place-library.json`
+preserve the existing project maps and tileset pixels, including their original
+EasyRPG/combined-town/retro-world and reference-derived forest material provenance.
+The corresponding `public/assets/region-references/*-atlas.png` files are copies
+of those uploaded atlases. This registration does not create new original artwork
+or change the attribution or licence status documented above. Preview PNGs are
+captures of the saved maps in the actual editor.
