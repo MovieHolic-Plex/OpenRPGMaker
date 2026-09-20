@@ -1120,3 +1120,14 @@ may coexist with audible atmosphere. Existing ten preset IDs remain valid catalo
 `FieldHud`는 HandSlotChip과 수명을 공유한다. `fieldHudData`는 세션만 읽고 `fieldHudRender`는 DOM만 그린다. 액션 스태미나와 플레이어 화면 좌표는 PlayScene의 실제 상태를 전달한다. 조건은 항상/최댓값 미만/25% 이하/양수/액션 맵/스위치/값 변경 후 3초다. 자동 회피 요소는 플레이어가 접근하면 위·아래를 바꾸고 고정 패널과의 겹침을 피한다. 사용자 배치는 뷰포트 경계에 제한한다.
 
 프리셋은 실제 게임에 없는 데이터를 꾸며내지 않는다. 식량 슬롯은 아이템 수량이며 음식 효과/지속 시간 모델을 만들지 않는다. 데이터가 없으면 요소를 숨긴다. 새 HUD가 소유하는 HP/스태미나의 옛 표시만 억제하고 나머지 액션 조작 안내를 유지한다. 메뉴·대화·전투·컷신에서는 HUD가 숨겨진다. 런타임 입력은 기존 숫자키/대괄호 계약이며 드래그/방향키 편집은 DB 미리보기에만 존재한다.
+
+### HUD 장르·서체 확장 (2026-09-21)
+
+`FieldHudConfig.font?: auto|pixel|round|clean`, `menuStyle?: project|field-list|sheet|classic|journal|workbench`를 추가했다.
+`HudWidget.showValue`는 생략 시 true, 게이지 `shape: petals`는 `ceil(clamp(value/max)*5)`개의
+꽃잎을 그린다. 0에서는 꽃잎이 없고 줄기는 회색이다. IO는 새 enum/boolean도 검사한다.
+collector/classic/horror/chase/hearts 프리셋을 추가했다. 기존 미설정 문서는 그대로 minimal이다.
+메뉴 스킨 조회는 명시적인 HUD menuStyle(project 제외)을 먼저 읽고 나머지는 기존 menuUiStyle을
+사용한다. `field-list`는 독립 메뉴 스킨으로도 저장 가능하고, 단일 열 키보드 이동을 사용한다.
+빈 HUD에서도 구성 정규화를 매 프레임 반복하지 않도록 최초 초기화 여부를 별도로 추적한다.
+추격형은 상시 액션 HUD와 미니맵도 억제한다. 대화·메뉴·전투 UI는 기존대로 작동한다.

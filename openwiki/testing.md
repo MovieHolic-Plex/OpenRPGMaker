@@ -1903,3 +1903,11 @@ under `test/fixtures` derives existing engine test data without remote persisten
 `node scripts/qa/runtime/field-hud.probe.mjs`는 기존 스모크 프로젝트의 QA 사본으로 전용 player.html 하네스를 실행한다. 생활·생존·파티·미니멀·액션·기존 6구성의 필드/저체력/메뉴, 실제 가드 스태미나, 아이템 수량, 변수→게이지 갱신/조건 숨김, 화면 하단 접근 시 도구 모음 이동과 고정 패널 비중첩, 320×240, serialize→deserialize 보존과 잘못된 설정 거부를 확인한다. 저체력 훅은 `query: { e2eVitals: '1' }`다. 출력은 `verify-shots/runtime-qa/field-hud-composer/<theme>/SUMMARY.md`와 `checks.json`.
 
 `HUD_EDITOR_URL=http://127.0.0.1:<worktree-port> node scripts/qa/field-hud-editor.probe.mjs`는 실제 DB에서 요소 추가/복제/삭제, 변수 연결, 드래그/키보드 이동, 미리보기 비영속성, 설정 왕복을 확인한다. `freshProject`는 UI 전용 임시 세션이며 게임 콘텐츠를 저작/원격 저장하는 증거가 아니다. 코드 변경 중인 HMR 서버에서는 `/src/project/store.ts?t=...`와 직접 import의 서로 다른 singleton이 섞일 수 있으므로 최종 증거는 서버를 재시작한 뒤 수집한다. 전체 gates/vitest와 구분되는 요청된 브라우저 QA다.
+
+### 장르 HUD 시각 확인 (2026-09-21)
+
+`scripts/qa/runtime/field-hud.probe.mjs`는 `HUD_QA_PROFILES=collector,classic,horror,chase,hearts`
+및 `HUD_QA_OUT`을 지원한다. 메뉴는 폰트/유한 애니메이션 완료 후 다시 촬영한다.
+수집형은 실제 방향키/Enter/Escape 메뉴 왕복, 호러형은 생명 5/3/1/0꽃잎을 확인한다.
+`scripts/qa/field-hud-editor.probe.mjs`는 글꼴·메뉴·수치 표시를 실제 DB 컨트롤로
+저장하고 serialize/deserialize 및 섹션 왕복을 확인한다. 운영 콘텐츠 작성은 하지 않는다.

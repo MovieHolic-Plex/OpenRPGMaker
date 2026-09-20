@@ -12,6 +12,10 @@ import type { Project } from "@/project/types";
 import type { MenuSkin, MenuSkinId } from "@/player/menuSkins/types";
 
 export const MENU_SKINS: Record<MenuSkinId, MenuSkin> = {
+  "field-list": {
+    id: "field-list", label: "여행 · 세로 명령창", description: "지도를 남겨두고 오른쪽 밝은 창에서 명령을 고릅니다. 방향키 위·아래로 이동합니다.",
+    landing: "sheet", tone: "glass", railIcons: "glyph", railStyle: "flat", railColumns: 1, sideParty: false,
+  },
   workbench: {
     id: "workbench",
     label: "작업대 · 아이템 첫 화면",
@@ -104,5 +108,6 @@ export function resolveMenuSkinId(value: string | undefined): MenuSkinId {
 }
 
 export function menuSkinFor(project: Project): MenuSkin {
-  return MENU_SKINS[resolveMenuSkinId(project.system.menuUiStyle)];
+  const hudMenu = project.system.fieldHud?.menuStyle;
+  return MENU_SKINS[resolveMenuSkinId(hudMenu && hudMenu !== "project" ? hudMenu : project.system.menuUiStyle)];
 }

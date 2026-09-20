@@ -23,10 +23,28 @@ export function drawHudWidget(node: HTMLElement, widget: HudWidget, reading: Hud
   const ratio = Math.max(0, Math.min(1, reading.value / reading.max));
   node.style.setProperty("--hud-ratio", String(ratio));
   node.dataset.low = String(ratio <= .25);
+  node.dataset.empty = String(ratio === 0);
+  node.dataset.showValue = String(widget.showValue);
   node.setAttribute("aria-label", `${widget.label || widget.kind} ${reading.text ?? `${value} / ${max}`}`);
+  for (const attr of ["role", "aria-valuemin", "aria-valuemax", "aria-valuenow"]) node.removeAttribute(attr);
+  if (widget.kind === "gauge") {
+    node.setAttribute("role", "meter"); node.setAttribute("aria-valuemin", "0");
+    node.setAttribute("aria-valuemax", String(max)); node.setAttribute("aria-valuenow", String(Math.max(0, Math.min(max, value))));
+  }
   if (widget.label && widget.kind !== "image") node.append(hudNode("hud-label", widget.label));
   if (widget.kind === "gauge") {
-    if (widget.shape === "hearts") {
+    if (widget.shape === "petals") {
+      const flower = hudNode("hud-flower");
+      flower.append(hudNode("hud-flower-stem"), hudNode("hud-flower-leaf"));
+      for (let i = 0; i < 5; i++) {
+        const petal = hudNode("hud-petal");
+        petal.style.setProperty("--petal-angle", `${i * 72}deg`);
+        petal.dataset.alive = String(i < Math.ceil(ratio * 5));
+        flower.append(petal);
+      }
+      flower.append(hudNode("hud-flower-center"));
+      node.append(flower);
+    } else if (widget.shape === "hearts") {
       const hearts = hudNode("hud-hearts");
       for (let i = 0; i < 5; i++) {
         const heart = hudNode("hud-heart"), fill = hudNode("hud-heart-fill");

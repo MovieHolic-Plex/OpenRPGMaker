@@ -59,3 +59,42 @@
 .play-stage:has(> .dialogue-overlay:not(:empty)) > .field-hud { display:none; }
 .play-stage[data-field-hud]:not([data-field-hud="legacy"]):has(.hud-widget[data-kind="slots"]:not([hidden])) > .action-hud { --action-hud-hand-slot-band:38px; }
 .play-stage:is([data-field-hud="survival"],[data-field-hud="farm"],[data-field-hud="party"]) > .action-hud { left:auto; right:10px; bottom:10px; max-width:90px; font-size:6px; gap:2px; }
+
+/* Explicit, bundled Korean typography. Bitmap faces use their native 9/16px grids. */
+.field-hud { font-synthesis:none; font-variant-numeric:tabular-nums; }
+.field-hud[data-font="pixel"] { font-family:"Galmuri9",sans-serif; }
+.field-hud[data-font="round"] { font-family:"NeoDunggeunmo",monospace; }
+.field-hud:is([data-font="pixel"],[data-font="round"]) :is(.hud-label,.hud-value,.hud-date,.hud-party-name,.hud-party-value,.hud-effect) { font-size:9px; line-height:1; letter-spacing:0; }
+.field-hud:is([data-font="pixel"],[data-font="round"]) .hud-text { font-size:9px; line-height:1.3; }
+.field-hud[data-font="pixel"] .hud-time { font-size:18px; letter-spacing:0; }
+.field-hud[data-font="round"] .hud-time { font-size:16px; letter-spacing:0; }
+.hud-widget[data-show-value="false"] > .hud-value { display:none; }
+.field-hud[data-theme="collector"] .hud-widget[data-panel="paper"] { background:#faf9e9; border:2px solid #34494f; border-radius:1px; box-shadow:inset 0 0 0 1px #fff,0 2px 0 #243338; padding:5px 9px; color:#263c45; }
+.field-hud[data-theme="collector"] .hud-widget::before { content:""; width:3px; align-self:stretch; background:#b44949; flex-shrink:0; }
+.field-hud[data-theme="collector"] .hud-text { flex:1; text-align:left; }
+.field-hud[data-theme="hearts"] .hud-heart { width:14px; height:13px; background:#312f36d9; }
+.field-hud[data-theme="hearts"] .hud-hearts { gap:3px; }
+.field-hud[data-theme="hearts"] .hud-slot { border:2px solid #ecdca5; background:#263b39d9; box-shadow:0 1px 0 #142624; border-radius:5px; }
+.field-hud[data-theme="hearts"] .hud-slot-key { font-family:"Galmuri9",sans-serif; font-size:9px; left:2px; top:1px; }
+.field-hud[data-theme="hearts"] .hud-text { color:#ffe39a; }
+.field-hud[data-theme="farm"] .hud-widget[data-shape="vertical"] .hud-label { font-size:9px; }
+.field-hud[data-theme="farm"] .hud-widget[data-shape="vertical"] .hud-value { font-family:var(--runtime-ui-font); font-size:5px; }
+.field-hud[data-theme="farm"] .hud-widget[data-kind="slots"] .hud-label { display:none; }
+.field-hud[data-theme="farm"] .hud-slot-key { font-family:"Galmuri9",sans-serif; font-size:9px; }
+.field-hud[data-theme="farm"] .hud-slot-count { font-family:"Galmuri9",sans-serif; font-size:9px; }
+.field-hud[data-theme="farm"] .hud-date { font-size:9px; }
+.hud-widget[data-shape="petals"] { align-items:center; padding:0; overflow:visible; }
+.hud-flower { width:38px; height:48px; position:relative; filter:drop-shadow(0 1px 1px #140e1b); }
+.hud-flower-stem { position:absolute; width:2px; height:31px; left:18px; top:15px; background:#82a490; transform:rotate(8deg); }
+.hud-flower-leaf { position:absolute; width:10px; height:5px; left:19px; top:32px; border-radius:0 90% 0 90%; background:#627f74; transform:rotate(-35deg); }
+.hud-petal { position:absolute; left:13px; top:2px; width:12px; height:16px; border-radius:65% 65% 40% 40%; transform-origin:6px 16px; transform:rotate(var(--petal-angle)); background:linear-gradient(#eea1ad,var(--hud-accent) 65%,#702d4c); border:1px solid #ffb5c466; box-sizing:border-box; }
+.hud-petal[data-alive="false"] { visibility:hidden; }
+.hud-flower-center { position:absolute; left:16px; top:15px; width:6px; height:6px; border-radius:50%; background:#f8d49b; box-shadow:0 0 0 1px #733954; }
+.hud-widget[data-low="true"] .hud-petal { background:linear-gradient(#ae6380,#602d4e); }
+/* A deliberate no-HUD preset also suppresses the legacy field combat overlay. */
+.play-stage[data-field-hud="chase"] > .action-hud { display:none; }
+.field-hud[data-theme="horror"] .hud-flower { transform:scale(.8); transform-origin:center; }
+.hud-petal { border-radius:0; clip-path:polygon(25% 0,75% 0,100% 25%,100% 60%,70% 100%,30% 100%,0 60%,0 25%); background:linear-gradient(140deg,#d77988,var(--hud-accent) 45%,#762b48); }
+.hud-flower-center { background:#602139; box-shadow:0 0 0 1px #db8a94; }
+.hud-widget[data-empty="true"] .hud-flower { filter:grayscale(1) drop-shadow(0 1px 1px #140e1b); opacity:.6; }
+.play-stage[data-field-hud="chase"] > .minimap-root { display:none; }

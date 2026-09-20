@@ -1,6 +1,6 @@
 import type { Project } from "@/project/types";
 import type { PlaySession } from "@/project/session";
-import { normalizeFieldHud, resolvedHudWidgets, type HudWidget } from "@/project/fieldHud";
+import { normalizeFieldHud, resolvedHudWidgets, recommendedHudFont, type HudWidget } from "@/project/fieldHud";
 import { isActionCombatMap } from "@/project/actionCombat";
 import { resolvePlayResolution } from "@/project/playResolution";
 import { readHudWidget, type HudRuntimeContext } from "./fieldHudData";
@@ -12,13 +12,15 @@ export class FieldHud {
   readonly root = hudNode("field-hud");
   private readonly mounts = new Map<string, WidgetMount>();
   private configSource: unknown;
+  private initialized = false;
   private widgets: HudWidget[] = [];
   private config = normalizeFieldHud(undefined);
   constructor(private readonly host: HTMLElement) {
     this.root.dataset.testid = "field-hud"; host.append(this.root);
   }
   update(project: Project, session: PlaySession, context: HudRuntimeContext = {}): void {
-    if (this.configSource !== project.system.fieldHud || !this.mounts.size) {
+    if (this.configSource !== project.system.fieldHud || !this.initialized) {
+      this.initialized = true;
       this.configSource = project.system.fieldHud;
       this.config = normalizeFieldHud(project.system.fieldHud);
       this.widgets = resolvedHudWidgets(this.config);
@@ -36,6 +38,9 @@ export class FieldHud {
     this.host.dataset.fieldHud = config.theme;
     this.host.dataset.hudObjective = String(!modern || config.objective);
     this.root.dataset.theme = config.theme;
+    const font = config.font && config.font !== "auto" ? config.font : recommendedHudFont(config.theme);
+    this.host.dataset.hudFont = font;
+    this.root.dataset.font = font;
     this.root.hidden = !modern;
     if (!modern) { delete this.host.dataset.hudStamina; delete this.host.dataset.hudHp; return; }
     const size = resolvePlayResolution(project.system);
@@ -115,6 +120,6 @@ export class FieldHud {
   }
   destroy(): void {
     this.root.remove(); this.mounts.clear();
-    for (const key of ["fieldHud", "hudObjective", "hudStamina", "hudHp"]) delete this.host.dataset[key];
+    for (const key of ["fieldHud", "hudFont", "hudObjective", "hudStamina", "hudHp"]) delete this.host.dataset[key];
   }
 }

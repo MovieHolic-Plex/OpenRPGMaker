@@ -143,7 +143,7 @@ export type BattleUiStyle =
 
 /** ESC(X) 게임 메뉴 스킨 — @/player/menuSkins/registry 의 id union. 프로젝트 파일에 저장되므로
  *  id 를 함부로 바꾸지 않는다. 미설정·미지값은 resolveMenuSkinId 가 workbench 로 푼다. */
-export type MenuUiStyle = "workbench" | "party-first" | "party-first-warm" | "hub" | "sheet" | "classic" | "journal" | "ribbon" | "retro-2000" | "retro-2003" | "classic-xp" | "classic-vx";
+export type MenuUiStyle = "field-list" | "workbench" | "party-first" | "party-first-warm" | "hub" | "sheet" | "classic" | "journal" | "ribbon" | "retro-2000" | "retro-2003" | "classic-xp" | "classic-vx";
 
 /** 전투 아군측 배틀러 소스 — actors: 파티 액터가 직접 싸움(기본),
  *  monsters: 잡은 파티 몬스터가 필드에 나서 싸움(포켓몬식). */
