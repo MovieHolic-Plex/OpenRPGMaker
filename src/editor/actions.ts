@@ -419,12 +419,13 @@ export function setMapCloudShadows(mapId: MapId, patch: Partial<MapCloudShadowSe
     const current = map.cloudShadows;
     const next: MapCloudShadowSetting = {
       enabled: patch.enabled ?? current?.enabled ?? false,
+      ...(patch.amount !== undefined ? { amount: patch.amount } : current?.amount !== undefined ? { amount: current.amount } : {}),
       ...(patch.opacity !== undefined ? { opacity: patch.opacity } : current?.opacity !== undefined ? { opacity: current.opacity } : {}),
       ...(patch.speed !== undefined ? { speed: patch.speed } : current?.speed !== undefined ? { speed: current.speed } : {}),
       ...(patch.angleDeg !== undefined ? { angleDeg: patch.angleDeg } : current?.angleDeg !== undefined ? { angleDeg: current.angleDeg } : {}),
       ...(patch.scale !== undefined ? { scale: patch.scale } : current?.scale !== undefined ? { scale: current.scale } : {}),
     };
-    const hasExtra = next.opacity !== undefined || next.speed !== undefined || next.angleDeg !== undefined || next.scale !== undefined;
+    const hasExtra = next.amount !== undefined || next.opacity !== undefined || next.speed !== undefined || next.angleDeg !== undefined || next.scale !== undefined;
     if (!next.enabled && !hasExtra) {
       delete map.cloudShadows;
     } else {

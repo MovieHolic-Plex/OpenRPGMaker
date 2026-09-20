@@ -1078,3 +1078,15 @@ weather in the existing session path. Contracts: `test/feature16WorldSchema.test
 일시적 대사 색인·LLM 지적·프롬프트 관측 원문은 프로젝트에 저장하지 않는다.
 `test/feature16-ai.test.ts`는 실제 serialize/deserialize의 구형 부재, 저장·수정·삭제 왕복을
 검증하도록 작성했다. 테스트와 원격 저장은 작성 세션에서 실행하지 않았다.
+## 구름량 optional 필드 (2026-09-21)
+
+`GameMap.cloudShadows.amount?: number`는 0~6단계이며 생략한 기존 데이터는 3으로 렌더한다.
+`normalizeCloudShadowParams`에서 반올림·clamp하고 비정상 값은 기본 3으로 복구한다.
+기존 맵 직렬화가 필드를 보존하므로 문서 버전 상승이나 원격 데이터 마이그레이션은 없다.
+`setMapCloudShadows`와 AI `set_map_properties`가 저작 경로이며 구름량은 진하기/크기와 독립이다.
+로컬 편집기 UI 0/1/6 설정 및 `serialize`→`deserialize` 왕복, 옛 데이터 기본값은
+`scripts/qa/cloud-amount-editor.mjs`로 브라우저에서 확인했다. 실제 게임 콘텐츠는 변경하지 않았다.
+
+Feature16/main 통합: `syncWeatherLayer`에서 맵 기후를 먼저 해석한 같은 날씨를
+렌더러와 `audio.weather.update` 양쪽에 전달한다. 실내는 날씨 소리도 차단하며
+전역 날씨 상태는 유지한다.

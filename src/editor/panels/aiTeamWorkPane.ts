@@ -1,3 +1,4 @@
+import { createActivityView } from "./aiActivityView";
 // 작업 페인 — 실행 중인 `/pi` 의 팀원 열 + 선택 팀원의 과정 열. 조수 데크의 「작업」 탭과
 // 스튜디오 덱의 「작업」 탭이 같은 컴포넌트를 쓴다(스튜디오는 detail: 툴 인자·전체 문장까지).
 //
@@ -60,7 +61,8 @@ export function createTeamWorkPane(options: TeamWorkPaneOptions = {}): TeamWorkP
 
   const members = el("ul", { class: "ai-team-work-members", dataset: { testid: "ai-team-work-members" }, attrs: { "aria-label": "팀원" } });
   const transcript = createTeamTranscript({ detail });
-  const body = el("div", { class: "ai-team-work-body", children: [members, transcript.root] });
+  const activityView = createActivityView({ archive: false });
+  const body = el("div", { class: "ai-team-work-body", children: [members, activityView.root, transcript.root] });
   const empty = el("p", {
     class: "ai-team-work-empty",
     dataset: { testid: "ai-team-work-empty" },
@@ -164,6 +166,8 @@ export function createTeamWorkPane(options: TeamWorkPaneOptions = {}): TeamWorkP
     const selected = selectedAgent();
     renderMembers(activity, selected);
     if (selected) transcript.update(selected);
+    activityView.update(activity.trace, selected?.agentId);
+    transcript.root.hidden = Boolean(activity.trace);
     renderReview(activity);
     renderFoot(activity);
   };

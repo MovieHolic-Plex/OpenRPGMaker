@@ -18,6 +18,7 @@ import {
   CLOUD_SHADOW_OPACITY_RANGE,
   CLOUD_SHADOW_SCALE_RANGE,
   CLOUD_SHADOW_SPEED_RANGE,
+  CLOUD_SHADOW_AMOUNT_RANGE,
   normalizeCloudShadowParams,
 } from "@/player/cloudShadows";
 import type { EncounterTableEntry, FieldSpawnDef, MapBgmSetting } from "@/project/types";
@@ -924,6 +925,17 @@ function renderCloudShadowTab(host: HTMLElement, map: import("@/project/types").
   }));
 
   if (enabled) {
+    appendSliderRow(section, {
+      label: "구름량",
+      testid: "map-cloud-shadows-amount",
+      min: CLOUD_SHADOW_AMOUNT_RANGE.min,
+      max: CLOUD_SHADOW_AMOUNT_RANGE.max,
+      step: 1,
+      value: params.amount,
+      normalize: (value) => clampSlider(value, CLOUD_SHADOW_AMOUNT_RANGE.min, CLOUD_SHADOW_AMOUNT_RANGE.max),
+      describe: (value) => value === 0 ? "0 — 구름 없음" : `${value}단계 — 1은 적게, 3은 보통, 6은 많이. 크기와 진하기는 유지됩니다.`,
+      apply: (value) => setMapCloudShadows(map.id, { amount: value }),
+    });
     const opacityPercent = { min: Math.round(CLOUD_SHADOW_OPACITY_RANGE.min * 100), max: Math.round(CLOUD_SHADOW_OPACITY_RANGE.max * 100) };
     const scalePercent = { min: Math.round(CLOUD_SHADOW_SCALE_RANGE.min * 100), max: Math.round(CLOUD_SHADOW_SCALE_RANGE.max * 100) };
     appendSliderRow(section, {

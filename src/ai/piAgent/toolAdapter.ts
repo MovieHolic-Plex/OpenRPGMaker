@@ -32,6 +32,7 @@ export interface PiToolShape {
 }
 
 export interface PiToolCallRecord {
+  readonly toolCallId?: string;
   readonly name: string;
   readonly args: unknown;
   readonly result: ToolResult;
@@ -158,7 +159,7 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
       const result = tool.name === EVENT_COMMAND_ASSIST_TOOL
         ? await runToolAsync(ctx, tool.name, args, { signal })
         : runTool(ctx, tool.name, args);
-      options.onCall?.({ name: tool.name, args, result });
+      options.onCall?.({ toolCallId: _toolCallId, name: tool.name, args, result });
       if (!result.ok) throw new Error(formatPiToolFailure(result, maxIssues));
       return { content: [{ type: "text", text: formatPiToolSuccess(result, maxDataChars) }], details: result };
     },

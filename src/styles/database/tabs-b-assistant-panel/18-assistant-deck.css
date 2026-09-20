@@ -105,12 +105,9 @@
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-bubble { max-width: 100%; overflow-wrap: anywhere; font-size: 13px; line-height: 1.85; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-bubble.user { margin-left: 16px; background: var(--bg-inset); }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-chat-toolbar { display: none; }
-.ai-chat-sidebar-welcome { display: none; }
-.ai-chat-panel.is-left-sidebar[data-ai-conversation="empty"]:not(.is-studio) .ai-chat-sidebar-welcome { display: flex; flex-direction: column; gap: 12px; margin: auto 0; padding: 28px 24px; color: var(--text-2); font: 13px/1.8 var(--font-ui); }
-.ai-chat-sidebar-welcome > .ai-deck-icon { color: var(--accent); }
-.ai-chat-sidebar-welcome strong { color: var(--text-1); font-size: 15px; font-weight: 500; }
-.ai-chat-sidebar-welcome p { margin: 0; }
-.ai-chat-panel.is-left-sidebar[data-ai-conversation="empty"]:not(.is-studio) .ai-chat-main { display: none; }
+/* 「빈 대화 첫 화면」 전용 규칙은 2026-09-21 에 걷었다 — 진단 카드가 캔버스 오른쪽 아래
+   느낌표 팝오버로 옮겨 가면서 그 자리를 쓰는 표면이 하나도 없어졌다(.ai-suggestion-peek).
+   남겨 두면 「빈 대화에서만 보이는 무언가」가 있다고 잘못 읽힌다. */
 body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
 
 .ai-work-inline { flex: 0 0 auto; background: transparent; border: 1px solid var(--border-subtle); border-radius: var(--radius-m); padding: 10px 12px; font-size: 12px; }
@@ -125,11 +122,11 @@ body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
 .ai-work-inline summary { color: var(--text-2); cursor: pointer; }
 .ai-work-inline-steps { margin-top: 10px; }
 
-.ai-work-inline[data-state="done"]:has(details:not([open])) { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0 10px; }
-.ai-work-inline[data-state="done"]:has(details:not([open])) header { grid-column: 2; grid-row: 1; }
-.ai-work-inline[data-state="done"]:has(details:not([open])) header strong { display: none; }
-.ai-work-inline[data-state="done"]:has(details:not([open])) details { grid-column: 1; grid-row: 1; margin: 0; }
-.ai-work-inline[data-state="done"]:has(details:not([open])) .ai-work-inline-actions { grid-column: 1 / -1; }
+.ai-work-inline[data-state="done"]:not(.has-activity):has(details:not([open])) { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0 10px; }
+.ai-work-inline[data-state="done"]:not(.has-activity):has(details:not([open])) header { grid-column: 2; grid-row: 1; }
+.ai-work-inline[data-state="done"]:not(.has-activity):has(details:not([open])) header strong { display: none; }
+.ai-work-inline[data-state="done"]:not(.has-activity):has(details:not([open])) details { grid-column: 1; grid-row: 1; margin: 0; }
+.ai-work-inline[data-state="done"]:not(.has-activity):has(details:not([open])) .ai-work-inline-actions { grid-column: 1 / -1; }
 .ai-work-inline-actions:empty, .ai-work-inline-live:empty { display: none; }
 
 /* Sidebar header and overflow retain the original controls and keyboard behavior. */

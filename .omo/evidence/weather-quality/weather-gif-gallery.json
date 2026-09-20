@@ -1,0 +1,32 @@
+[
+  {
+    "name": "cloud-amount-6",
+    "duration_ms": 10000,
+    "frames": 125,
+    "errors": []
+  },
+  {
+    "name": "rain-motion-v2",
+    "duration_ms": 10000,
+    "frames": 125,
+    "errors": []
+  },
+  {
+    "name": "storm-motion-v2",
+    "duration_ms": 10000,
+    "frames": 125,
+    "errors": []
+  },
+  {
+    "name": "snow-motion-v2",
+    "duration_ms": 10000,
+    "frames": 125,
+    "errors": []
+  },
+  {
+    "name": "fog-motion-v2",
+    "duration_ms": 10000,
+    "frames": 125,
+    "errors": []
+  }
+]

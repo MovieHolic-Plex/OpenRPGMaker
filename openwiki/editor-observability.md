@@ -18,6 +18,15 @@
 | `scripts/list-edit-activity.mjs` | `npm run edit:log` (라이브 세션 — 디스크 미러 조회) |
 | `scripts/list-project-commits.mjs` | `npm run commit:log` (저장된 것 — DB 커밋 + 실린 행위 조회) |
 
+## 조수 실행 기록과 표시 수준 (2026-09-21)
+
+`src/ai/activityTrace.ts`의 실행 영수증은 편집 감사/opt-in 진단과 별도다. 기본 작업 표시가
+`간단히 보기`여도 도구 입력·결과·실패는 정해진 상한 안에서 보존한다. `매우 자세히 보기`는
+이 기록을 펼친다. 새 기록만 기기 IndexedDB에 보관하며 원격 업로드나 진단 수집을 시작하지 않는다.
+호출 ID 결합·인증 정보 가림·명시적 생략·보존 상한과 화면 경로는 `editor-ai-panel.md`의
+「작업 표시 네 단계와 별도 실행 기록」을 따른다. 적용 후 저장 표시는 자동저장 관찰만 하고
+추가 저장/재로드를 실행하지 않는다. 모델의 비공개 사고 본문은 수집하지 않는다.
+
 ## Opt-in local diagnostics (issue 693 OUT-009 / OUT-010)
 
 - The assistant export menu opens `localDiagnosticsDialog`, not raw audit JSON.

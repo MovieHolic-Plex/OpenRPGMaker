@@ -2,7 +2,7 @@
 // the docked palette. A small arbitrary sample hides most usable materials.
 import type { TilesetDef } from "@/project/types";
 import { isCustomTileset } from "@/project/tilesetKind";
-import { isDefaultTilesetTexture } from "@/editor/tilesetImage";
+import { isDefaultTilesetTexture, tilesetImageUrl } from "@/editor/tilesetImage";
 import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { makeCustomPalette, makeGridPalette, gridPaletteDisplayTile } from "@/editor/panels/tilePaletteGrid";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
@@ -15,7 +15,7 @@ export function basicTileLabel(tileset: TilesetDef, index: number): string {
   return tileset.tileMeta?.[index]?.label?.trim() || `타일 ${index}`;
 }
 
-export function makeBasicTilePalette(options: {
+type BasicTilePaletteOptions = {
   tileset: TilesetDef;
   selectedTile: number;
   layer: "lower" | "upper";
@@ -24,8 +24,46 @@ export function makeBasicTilePalette(options: {
   onSelect: (index: number) => void;
   onResetQuery?: () => void;
   onCreatePaletteStamp?: (stamp: PaletteStamp) => void;
-}): HTMLElement {
+};
+
+/** Owned by one rail, never shared between mounted palette surfaces. */
+export type BasicTilePaletteCache = {
+  current?: {
+    tileset: TilesetDef;
+    imageUrl: string;
+    query: string;
+    section: HTMLElement;
+    sheet: HTMLElement;
+    options: BasicTilePaletteOptions;
+  };
+};
+
+export function makeBasicTilePalette(options: BasicTilePaletteOptions, cache?: BasicTilePaletteCache): HTMLElement {
   const { tileset, selectedTile, layer, query } = options;
+  const imageUrl = tilesetImageUrl(tileset);
+  const previous = cache?.current;
+  // Custom atlases keep every source coordinate on either tile layer. Keep the
+  // section attached; detaching/reinserting 2,580 existing cells also forces layout.
+  if (isCustomTileset(tileset) && previous?.tileset === tileset
+    && previous.imageUrl === imageUrl && previous.query === query
+    && (!query.trim() || previous.options.selectedTile === selectedTile)) {
+    previous.options = options;
+    const status = previous.section.querySelector<HTMLElement>('[data-testid="selected-tile-status"]');
+    if (status) status.textContent = `${layer === "lower" ? "바닥" : "덧그림"} · ${basicTileLabel(tileset, selectedTile)}`;
+    const oldActive = previous.sheet.querySelector<HTMLElement>('.chipset-tile.active');
+    const nextActive = previous.sheet.querySelector<HTMLElement>(`[data-tile-index="${selectedTile}"]`);
+    if (oldActive !== nextActive) {
+      oldActive?.classList.remove('active');
+      oldActive?.setAttribute('aria-pressed', 'false');
+      nextActive?.classList.add('active');
+      nextActive?.setAttribute('aria-pressed', 'true');
+      if (nextActive) {
+        previous.sheet.querySelector<HTMLElement>('.chipset-tile[tabindex="0"]')?.setAttribute('tabindex', '-1');
+        nextActive.setAttribute('tabindex', '0');
+      }
+    }
+    return previous.section;
+  }
   const section = el("div", { class: "basic-rail-section", dataset: { testid: "basic-tiles-section" } });
   section.append(el("div", {
     class: "basic-selected-tile",
@@ -60,17 +98,21 @@ export function makeBasicTilePalette(options: {
     }));
     section.append(feedback);
   }
+  // New definitions, baked images and searches rebuild; retained callbacks read
+  // current options so "both" layer tiles never inherit a stale layer selection.
+  const handlers = { options };
   const args = {
-    tileset, selectedTile, layer, onSelectTile: options.onSelect,
-    onCreatePaletteStamp: options.onCreatePaletteStamp, visibleTiles,
+    tileset, selectedTile, layer, visibleTiles,
+    onSelectTile: (index: number) => handlers.options.onSelect(index),
+    onCreatePaletteStamp: options.onCreatePaletteStamp
+      ? (stamp: PaletteStamp) => handlers.options.onCreatePaletteStamp?.(stamp) : undefined,
   };
   const sheet = isCustomTileset(tileset) ? makeCustomPalette(args) : makeGridPalette(args);
   sheet.dataset.testid = "basic-tile-grid";
-  // Keep the established beginner automation entry points; rendering and roving
-  // focus still belong to the shared grid, including custom atlas coordinates.
   for (const cell of Array.from(sheet.querySelectorAll<HTMLElement>(".chipset-tile"))) {
     cell.dataset.testid = `basic-tile-${cell.dataset.tileIndex}`;
   }
+  if (cache) cache.current = Object.assign(handlers, { tileset, imageUrl, query, section, sheet });
   section.append(sheet);
   return section;
 }

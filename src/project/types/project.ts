@@ -208,9 +208,11 @@ export interface MapBgmSetting {
 export interface MapCloudShadowSetting {
   /** 이 맵에서 구름 그림자를 그리는가. 기본 false. */
   enabled: boolean;
+  /** 구름량(0~6). 0=없음, 3=보통(기본), 6=많음. 크기·진하기와 독립. */
+  amount?: number;
   /** 그림자 진하기(0.05~0.6). 기본 0.26. */
   opacity?: number;
-  /** 흐르는 속도 — 월드 px/초(0~160). 기본 26. 0이면 제자리에 머문다. */
+  /** 흐르는 속도 — 월드 px/초(0~160). 기본 8. 0이면 제자리에 머문다. */
   speed?: number;
   /** 흐르는 방향(도). 0=오른쪽, 90=아래. 기본 28. */
   angleDeg?: number;
