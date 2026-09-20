@@ -23,6 +23,15 @@ const world = (label: string, icon: DeckIconName): ToolLabelEntry => ({ label, i
 const system = (label: string, icon: DeckIconName = "gear"): ToolLabelEntry => ({ label, icon, group: "system" });
 
 export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
+  upsert_item: build("아이템 수정", "box"),
+  upsert_equipment: build("장비 수정", "box"),
+  upsert_enemy: people("몬스터 수정", "user"),
+  upsert_actor: people("캐릭터 수정", "user"),
+  upsert_skill: build("스킬 수정", "spark"),
+  list_monster_resources: inspect("몬스터 소재 찾기"),
+  get_monster_resource: inspect("몬스터 소재 확인"),
+  list_resources: inspect("소재 찾기"),
+  list_npc_graphics: inspect("NPC 모습 찾기"),
   // ── 짓기 ──
   author_house: build("집 짓기", "house"),
   build_house: build("집 세우기", "house"),

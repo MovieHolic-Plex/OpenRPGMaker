@@ -1,3 +1,4 @@
+import type { ActivityVisual } from "../../src/ai/activityVisual";
 import { authoredVillageMapId, inspectPiVillageCompletion, piVillageRepairPrompt } from "../../src/ai/piAgent/villageCompletion.ts";
 import { inspectPromptPayload } from "../../src/ai/authoring/promptInspection.ts";
 import { activityPayload } from "../../src/ai/activityTrace.ts";
@@ -151,7 +152,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const ctx = { project: structuredClone(base) as Project };
   const model = resolvePiModel(request.provider, request.model);
   // 어댑터와 코어 이벤트의 호출 id로 결과를 연결한다. 같은 이름의 병렬 호출도 섞지 않는다.
-  const pendingSummaries = new Map<string, { ok: boolean; summary: string; result: unknown }>();
+  const pendingSummaries = new Map<string, { ok: boolean; summary: string; result: unknown; visuals?: readonly ActivityVisual[] }>();
   const toolStartedAt = new Map<string, number>();
   // `tools` 는 Agent.initialState 에 참조로 들어가 state.tools === context.tools 가 된다.
   // 코어 루프가 매 턴 이 배열에서 요청을 만들므로, in-place push 가 곧 다음 턴의 선언이다 —
@@ -183,9 +184,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     exposed.add(shape.name);
   };
   const recordCall = (record: PiToolCallRecord): void => {
+    if (record.toolCallId) pendingSummaries.set(record.toolCallId, { ok: record.result.ok, summary: trimText(record.result.summary, 400), result: activityPayload(record.result), visuals: record.visuals });
     const villageMapId = authoredVillageMapId(record);
     if (villageMapId) villageMapIds.add(villageMapId);
-    if (record.toolCallId) pendingSummaries.set(record.toolCallId, { ok: record.result.ok, summary: trimText(record.result.summary, 400), result: activityPayload(record.result) });
     // find_tools 수확 — 발견된 이름을 다음 턴 요청부터 실제로 선언한다(세션의 에스컬레이션 이식).
     if (record.name === "find_tools") {
       const found = harvestFindToolsNames(record.result);
@@ -375,6 +376,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       emit({
         type: "tool_end",
         result: record?.result ?? activityPayload(event.result),
+        visuals: record?.visuals,
         ...(toolAt === undefined ? {} : { durationMs: Date.now() - toolAt }),
         id: String(event.toolCallId ?? ""),
         name,

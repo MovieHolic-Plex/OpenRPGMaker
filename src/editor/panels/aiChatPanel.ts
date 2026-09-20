@@ -1,3 +1,4 @@
+import type { ActivityVisual } from "@/ai/activityVisual";
 import { clearPromptInspection } from "@/ai/authoring/promptInspection";
 import { openAiAuthoringModal, closeAiAuthoringModal } from "./aiAuthoring/modal";
 import { createActivityToolbar } from "./aiActivityView";
@@ -692,8 +693,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     toolName: string,
     result: Parameters<typeof appendToolLine>[1],
     args?: Record<string, unknown>,
+    visuals?: readonly ActivityVisual[],
   ): void => {
-    ensureWorkCard().recordActivity?.({ type: "tool_end", id: toolName, name: toolName, ok: result.ok, summary: result.summary, result: { ...result, arguments: args } });
+    ensureWorkCard().recordActivity?.({ type: "tool_end", id: toolName, name: toolName, ok: result.ok, summary: result.summary, result: { ...result, arguments: args }, visuals });
     const matchedLiveActivity = runningActivity?.toolName === toolName;
     if (!matchedLiveActivity) bumpToolProgress();
     studioToolLines.unshift(formatToolActivityLine(toolName, result));
@@ -1848,7 +1850,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshRunningStatus: (record) => refreshRunningStatus(record),
     refreshAbortButton: () => refreshAbortButton(),
     startLiveActivity: (toolName, index, args) => startLiveActivity(toolName, index, args),
-    completeLiveActivity: (toolName, result, args) => completeLiveActivity(toolName, result, args),
+    completeLiveActivity: (toolName, result, args, visuals) => completeLiveActivity(toolName, result, args, visuals),
     expandForAiWork: () => expandForAiWork(),
     scheduleCollapseAfterAiWork: () => scheduleCollapseAfterAiWork(),
     notifyIfObscuredByTestPlay: () => notifyIfObscuredByTestPlay(),

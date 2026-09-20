@@ -1,3 +1,4 @@
+import { captureActivityVisuals, type ActivityVisual } from "./activityVisual";
 import { eventScopeAllowsTool, eventScopeRefusal, type EventCommandScope } from "./eventCommandScope";
 import { refreshSharedCharacterGraphics } from "@/project/sharedCharacterFaceResolver";
 import { configForRole } from "./modelRoles";
@@ -3331,9 +3332,18 @@ export class AssistantSession {
     this.publishAcceptance(onEvent);
   }
 
+  private readonly activityBefore = new Map<string, ActivityVisual[]>();
+  private activityVisuals(name: string, args: Record<string, unknown>, result: ToolResult): ActivityVisual[] {
+    const before = this.activityBefore.get(name) ?? [];
+    this.activityBefore.delete(name);
+    const phase = !result.ok ? "failed" : getTool(name)?.mode === "write" ? "draft" : "read";
+    return [...before, ...captureActivityVisuals(this.ctx.project, name, args, result, phase)];
+  }
+
   /** 툴 실행 직전 신호를 알린다(1-based 서수). 실행 로직은 건드리지 않는다. */
   private emitToolStarted(onEvent: (event: SessionEvent) => void, name: string, args: Record<string, unknown>): void {
     this.turnToolStartedCount += 1;
+    this.activityBefore.set(name, getTool(name)?.mode === "write" ? captureActivityVisuals(this.ctx.project, name, args, undefined, "before") : []);
     onEvent({ type: "tool_started", name, args, index: this.turnToolStartedCount });
   }
 
@@ -3411,7 +3421,7 @@ export class AssistantSession {
         ...(result.issues && result.issues.length > 0 ? { issues: result.issues.map((issue) => issue.message) } : {}),
       });
       results.push({ name: call.name, result });
-      onEvent({ type: "tool_call", name: call.name, args: call.args, result, reason });
+      onEvent({ type: "tool_call", name: call.name, args: call.args, result, reason, visuals: this.activityVisuals(call.name, call.args, result) });
     }
     const verdict = parseLayerVerdict(results);
     const layerId = layer.id ?? "";
@@ -4381,7 +4391,7 @@ export class AssistantSession {
         ...(result.issues && result.issues.length > 0 ? { issues: result.issues.map((issue) => issue.message) } : {}),
       });
       if (!result.ok || !result.diff) {
-        onEvent({ type: "tool_call", name: "place_npc", args, result, reason });
+        onEvent({ type: "tool_call", name: "place_npc", args, result, reason, visuals: this.activityVisuals("place_npc", args, result) });
         continue;
       }
       this.recordToolResult("place_npc", args, result);
@@ -4395,7 +4405,7 @@ export class AssistantSession {
         reason,
       });
       placed += 1;
-      onEvent({ type: "tool_call", name: "place_npc", args, result, reason });
+      onEvent({ type: "tool_call", name: "place_npc", args, result, reason, visuals: this.activityVisuals("place_npc", args, result) });
     }
     return placed;
   }
@@ -4465,7 +4475,7 @@ export class AssistantSession {
         ...(result.issues && result.issues.length > 0 ? { issues: result.issues.map((issue) => issue.message) } : {}),
       });
       if (!result.ok || !result.diff) {
-        onEvent({ type: "tool_call", name: "author_npc_cast", args, result, reason });
+        onEvent({ type: "tool_call", name: "author_npc_cast", args, result, reason, visuals: this.activityVisuals("author_npc_cast", args, result) });
         this.rekickPendingNpcDialogue(onEvent, mapId, residents.map((npc) => npc.eventId), [result.summary]);
         outcome = "rekick";
         continue;
@@ -4474,7 +4484,7 @@ export class AssistantSession {
       this.upsertProposal(proposedByKey, { name: "author_npc_cast", args, summary: result.summary, result, destructive: false, requiresApproval: false, reason });
       this.pushAudit({ kind: "status", text: `npc-cast:applied map=${mapId} residents=${sheet.sheet.residents.map((resident) => resident.name).join(",")}` });
       if (outcome === "none") outcome = "applied";
-      onEvent({ type: "tool_call", name: "author_npc_cast", args, result, reason });
+      onEvent({ type: "tool_call", name: "author_npc_cast", args, result, reason, visuals: this.activityVisuals("author_npc_cast", args, result) });
     }
     return outcome;
   }
@@ -5400,7 +5410,7 @@ export class AssistantSession {
           respond(toolResult);
           this.publishAcceptance(publishToolEvent);
           for (const event of toolEvents) onEvent(event);
-          onEvent({ type: "tool_call", name, args, result: toolResult, reason: recordedReason });
+          onEvent({ type: "tool_call", name, args, result: toolResult, reason: recordedReason, visuals: this.activityVisuals(name, args, toolResult) });
           if (completedItem) {
             await operation.wait(this.maybeAutoApplyMilestone(completedItem, onEvent));
             await operation.wait(this.sweepFinishedLayers(onEvent));
