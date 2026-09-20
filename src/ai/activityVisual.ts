@@ -71,6 +71,7 @@ function capture(project: Project, name: string, args: Record<string, any>, data
     const id = str(args.id || obj(args.record).id || obj(args[name.split("_").at(-1)!]).id || args[`${name.split("_").at(-1)}Id`] || obj(data.record).id || data.id);
     const found = id ? records.filter(r => r.id === id) : Array.isArray(data.records) ? data.records.slice(0, 6).map((r: any) => records.find(x => x.id === r.id)).filter(Boolean) : [];
     for (const record of found) {
+      if (!record) continue;
       const resource = record.faceResourceId || record.monsterResourceId || record.iconResourceId || record.imageResourceId;
       const fields = { ...obj(record.stats), ...obj(record.statBonuses), ...record };
       const stats = Object.entries(statLabels).filter(([key]) => ["number", "string"].includes(typeof fields[key])).slice(0, 6).map(([key, label]) => [label, String(fields[key]).slice(0, 80)] as [string, string]);
