@@ -1,3 +1,4 @@
+import { readyEditor } from './qa/feature16-editor-boot.mjs';
 // Real editor app only. Run against a parent-owned dev server; no remote project writes.
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
@@ -29,45 +30,11 @@ await page.addInitScript(() => {
   localStorage.setItem('oprn:ai-consent', 'accepted');
 });
 async function openDatabaseAfterBoot() {
-  const dismissIds = ['login-guest', 'standard-welcome-start', 'coach-mark-skip'];
-  const deadline = Date.now() + 90000;
-  let readySince;
-  while (Date.now() < deadline) {
-    let overlayVisible = false;
-    for (const id of dismissIds) {
-      const button = page.getByTestId(id);
-      if (!(await button.isVisible())) continue;
-      overlayVisible = true;
-      readySince = undefined;
-      try {
-        // Native clicks only; a later overlay may cover or replace this one mid-transition.
-        await button.click({ timeout: 1000 });
-      } catch (error) {
-        if (error.name !== 'TimeoutError') throw error;
-      }
-    }
-    if (!overlayVisible && await page.getByTestId('database-modal').isVisible()) {
-      readySince ??= Date.now();
-      // Recheck for welcome/coachmark layers that appear after canvas/database mounting.
-      if (Date.now() - readySince >= 1000) return;
-    } else {
-      readySince = undefined;
-      if (!overlayVisible && await page.getByTestId('edit-canvas').isVisible()) {
-        try {
-          await page.getByTestId('toolbar-database').click({ timeout: 1000 });
-        } catch (error) {
-          if (error.name !== 'TimeoutError') throw error;
-        }
-      }
-    }
-    await page.waitForTimeout(200);
-  }
-  const visible = [];
-  for (const id of [...dismissIds, 'edit-canvas', 'database-modal']) {
-    if (await page.getByTestId(id).isVisible()) visible.push(id);
-  }
-  throw new Error(`Editor boot/dismiss timed out after 90s; visible: ${visible.join(', ') || 'none'}`);
+  await readyEditor(page);
+  await page.getByTestId('toolbar-database').click();
+  await page.getByTestId('database-modal').waitFor({ state: 'visible' });
 }
+
 async function tab(slug) {
   const button = page.getByTestId(`db-tab-${slug}`);
   if (!(await button.isVisible())) {
@@ -114,4 +81,4 @@ try {
   await page.getByTestId(`feature16-intent-start-${index}`).scrollIntoViewIfNeeded();
   await page.screenshot({ path: `${out}/narrow.png`, fullPage: true });
   await writeFile(`${out}/SUMMARY.md`, `Blocked external POST requests: ${blockedExternalPosts}\n\n` + '# feature16 battle editor\n\nReal editor controls: action add, turn condition, row what-if, element edit, panel reopen.\n\nInspect intent.png, weakness.png, narrow.png for clipping and readability.\n');
-} finally { await browser.close(); }
+} catch (error) { await page.screenshot({ path: `${out}/failure.png` }); console.error((await page.locator('body').innerText()).slice(-2200)); throw error; } finally { await browser.close(); }

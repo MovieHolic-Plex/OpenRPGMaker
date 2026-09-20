@@ -69,6 +69,10 @@ export function actionSkillFields(record: SkillRecord, rerender: () => void): HT
     (value) => patchProfile((draft) => { draft.durationMs = value; }), { min: 100, max: 30000 }));
   if (profile?.fieldStatus) fields.push(numberField("상태 수명(ms)", "db-field-skill-action-status-duration", profile.fieldStatus.durationMs,
     (value) => patchProfile((draft) => { if (draft.fieldStatus) draft.fieldStatus.durationMs = value; }), { min: 100, max: 30000 }));
+  const labels: Record<string, string> = { on: "사용", off: "사용 안 함", projectile: "투사체", melee: "근접", dash: "돌진", trap: "설치 · 함정", none: "없음", poison: "독", slow: "둔화" };
+  for (const field of fields) for (const option of field.querySelectorAll("option")) {
+    if (labels[option.value]) option.textContent = labels[option.value]!;
+  }
   return fields;
 }
 

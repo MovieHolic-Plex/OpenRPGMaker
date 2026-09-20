@@ -402,3 +402,7 @@ Read that directory's `SUMMARY.md` first. Previews are actual player captures at
 ## Persistent battle reports and formation (2026-09-21)
 
 Existing `actorRows` and `partyActorIds` save/load paths remain authoritative. Optional `battleReports` is normalized at create/parse/restore and defaults empty for old saves (20 reports, 120 real timeline lines each). Esc → 기록 → 전투 기록 reads completed outcomes; Esc → 파티 → 진형 edits active order and front/back. Contracts and parent-owned verification: `openwiki/feature16-battle-ui.md`.
+
+Feature16 integration removed fabricated comparison numbers and cart/checkout claims,
+stock urgency text and the redundant split heading. Story-mode shortcuts honor
+buyOnly/sellOnly; real item comparison and purchase/sale handlers remain authoritative.

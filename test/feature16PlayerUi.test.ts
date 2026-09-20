@@ -79,3 +79,22 @@ describe('split shop exposes supported transactions only', () => {
     } else expect(tabs.length).toBe(0);
   });
 });
+
+
+describe('shop presets show real transaction data', () => {
+  it.each(['compare', 'cart', 'split', 'stock', 'story'] as const)('%s has no fabricated comparison or checkout surface', preset => {
+    const project = createBlankProject(), session = startSession(project);
+    vi.spyOn(store, 'getCurrent').mockReturnValue(project);
+    const onMode = vi.fn();
+    const panel = renderShopItems({ scene: { session, syncRuntimeState() {} } as unknown as PlaySceneContext,
+      step: { kind: 'shop', shopType: 'buyOnly', allowSell: false, shopUiPreset: preset, quantityMode: 'single' } as ShopStep,
+      items: [project.database.items[0]!], mode: 'buy', prompt: '', terms: resolveTerms(project),
+      merchantGold: 100, setStatus() {}, showMenu() {}, onItem() {}, onMode,
+    });
+    expect(panel.querySelector('.runtime-shop-stat-compare, .runtime-shop-cart-panel, .runtime-shop-cart-instruction, .runtime-shop-service-nav, .runtime-shop-split-heading')).toBeNull();
+    const actions = Array.from(panel.querySelectorAll<HTMLButtonElement>('.runtime-shop-story-actions button'));
+    expect(actions.some(button => button.textContent === '팔기')).toBe(false);
+    actions.find(button => button.textContent === '사기')?.click();
+    if (preset === 'story') expect(onMode).toHaveBeenCalledWith('buy');
+  });
+});

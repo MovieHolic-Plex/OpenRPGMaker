@@ -19,7 +19,7 @@ export default {
     { id: 'real-battle', note: 'Actual action event launches battle; no report data injected.',
       ops: [{ kind: 'teleport', mapId: 'map_moonwell_forest', x: 14, y: 3 }, { kind: 'waitForPosition', mapId: 'map_moonwell_forest', x: 14, y: 3 }, { kind: 'face', dir: 'up' }, { kind: 'action' }, present('battle-scene'), { kind: 'waitFor', testid: 'actor-command-attack', state: 'present', timeoutMs: 20000 }],
       expect: { testidPresent: ['battle-scene'] }, shot: true },
-    { id: 'battle-complete', ops: [{ kind: 'pressUntil', key: 'z', testid: 'battle-scene', state: 'absent', maxPresses: 160, timeoutMs: 120000 }],
+    { id: 'battle-complete', ops: [{ kind: 'pressUntil', key: 'z', testid: 'battle-scene', state: 'absent', maxPresses: 160, timeoutMs: 300 }, { kind: "waitFor", testid: "battle-transition-overlay", state: "absent" }],
       expect: { battleResult: 'victory', testidAbsent: ['battle-scene'] }, shot: true },
     // Last rail was party; move once to record. Group cursor starts at first command: battle reports.
     { id: 'report-list', ops: [key('Escape'), present('main-menu'), key('ArrowDown'), key('ArrowRight'), key('Enter'), present('status-menu-battle-report-0')],

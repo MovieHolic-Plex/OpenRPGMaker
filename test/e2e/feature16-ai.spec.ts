@@ -49,6 +49,8 @@ test('feature16: real editor library, dialogue review, source navigation and wir
   await page.getByTestId('feature16-slot-1').fill('광장');
   await expect(page.getByTestId('feature16-template-preview')).toHaveText('안내인이 광장에서 인사한다.');
   await page.getByTestId('feature16-modal').screenshot({ path: `${output}/01-library.png` });
+  await page.getByTestId('feature16-template-apply').scrollIntoViewIfNeeded();
+  await page.getByTestId('feature16-modal').screenshot({ path: `${output}/01b-template-preview.png` });
   await page.getByTestId('feature16-template-apply').click();
   await expect(page.getByTestId('ai-input')).toHaveValue('안내인이 광장에서 인사한다.');
   // Real project serializer/load path, no remote writes; UI must find the persisted template again.
@@ -85,6 +87,8 @@ test('feature16: real editor library, dialogue review, source navigation and wir
   await expect(page.getByTestId('feature16-review-status')).toContainText('LLM 문체 검토 완료', { timeout: 15000 });
   await expect(page.getByTestId('feature16-review-findings')).toContainText('LLM 문체 지적');
   await page.getByTestId('feature16-modal').screenshot({ path: `${output}/02-dialogue-review.png` });
+  await page.getByTestId('feature16-review-findings').scrollIntoViewIfNeeded();
+  await page.getByTestId('feature16-modal').screenshot({ path: `${output}/02b-review-finding.png` });
   reject = true;
   await page.getByTestId('feature16-review-llm').click();
   await expect(page.getByTestId('feature16-review-status')).toContainText('LLM 검토 실패', { timeout: 15000 });

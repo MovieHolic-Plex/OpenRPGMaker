@@ -1,4 +1,4 @@
-import { numberField as climateNumberField, selectField as climateSelectField } from "@/editor/panels/databaseControls";
+import { selectField as climateSelectField } from "@/editor/panels/databaseControls";
 import {
   resizeMap, renameMap, setMapEncounterRate, setMapEncounterTable, setMapFieldSpawns, setMapTileset,
   setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapMinimap,
@@ -1386,9 +1386,14 @@ function renderClimateTab(host: HTMLElement, map: import("@/project/types").Game
         const weather = value as "none" | "rain" | "snow" | "storm" | "fog";
         const current = store.getCurrent().maps[map.id]?.climate;
         setMapClimate(map.id, { ...(current?.mode === "fixed" ? current : climate), weather }); render();
-      }), climateNumberField("강도", "map-climate-intensity", climate.intensity, (intensity) => {
-        setMapClimate(map.id, { ...climate, intensity });
-      }, { min: 0, max: 1, step: 0.1 }));
+      }), el("label", { class: "map-encounter-cond-cell", children: [
+        el("span", { text: "강도 (0~1)" }),
+        el("input", { attrs: { type: "number", min: "0", max: "1", step: "0.1", "aria-label": "날씨 강도" },
+          value: String(climate.intensity), dataset: { testid: "map-climate-intensity" }, on: { change: (event: Event) => {
+            const intensity = Number((event.target as HTMLInputElement).value);
+            if (Number.isFinite(intensity)) setMapClimate(map.id, { ...climate, intensity: Math.max(0, Math.min(1, intensity)) });
+          } } }),
+      ] }));
   };
   render();
 }
