@@ -1,4 +1,5 @@
 import { destroyGame, getGame, startEditGame } from "@/app/mode";
+import { clearTileGraftImageCache } from "@/assets/tileGraftImageCache";
 import { scheduleEditorAssetWarmup } from "@/assets/editorAssetWarmup";
 import {
   DEFAULT_ASSISTANT_TEMPERATURE,
@@ -269,13 +270,16 @@ export function renderEditor(main: HTMLElement): void {
     scheduleFullPanelRefresh();
   });
 
-  unsubStore = store.subscribe((_project, change) => refreshPanels(change));
+  unsubStore = store.subscribe((_project, change) => {
+    if (change?.projectSwitch) clearTileGraftImageCache();
+    refreshPanels(change);
+  });
   lastEditorPanelState = editorState.get();
   unsubEditor = editorState.subscribe((state) => {
     const previous = lastEditorPanelState;
     lastEditorPanelState = state;
     if (editorStateChangedOnlyCanvasOverlay(previous, state)) return;
-    scheduleFullPanelRefresh();
+    scheduleFullPanelRefresh(state.currentMapId === previous.currentMapId);
   });
   // 미리보기 토글도 눌린 상태(aria-pressed/색)를 그대로 보여야 한다 — 툴바만 다시 그린다.
   unsubMapBackgroundPreview = subscribeMapBackgroundPreview(() => {
@@ -827,21 +831,25 @@ function verticalMargin(node: HTMLElement): number {
 // 지나간 칸마다 통지를 내므로, 한 틱 안의 여러 통지를 한 번으로 접는다. 최종 상태만
 // 반영하면 되므로 정합성 손실은 없다 — mapHistoryPanel 의 scheduleMapHistoryPanelMount 와 같은 모양.
 let fullPanelRefreshQueued = false;
-function scheduleFullPanelRefresh(): void {
+let fullPanelRefreshNeedsProject = false;
+function scheduleFullPanelRefresh(editorStateOnly = false): void {
+  fullPanelRefreshNeedsProject ||= !editorStateOnly;
   if (fullPanelRefreshQueued) return;
   fullPanelRefreshQueued = true;
   const run = (): void => {
     fullPanelRefreshQueued = false;
-    refreshPanels();
+    const stateOnly = !fullPanelRefreshNeedsProject;
+    fullPanelRefreshNeedsProject = false;
+    refreshPanels(undefined, stateOnly);
   };
   if (typeof queueMicrotask === "function") queueMicrotask(run);
   else setTimeout(run, 0);
 }
 
-function refreshPanels(change?: ProjectChangeDescriptor): void {
-  refreshAuthoringJourney(change);
+function refreshPanels(change?: ProjectChangeDescriptor, editorStateOnly = false): void {
+  if (!editorStateOnly) refreshAuthoringJourney(change);
   // 프로젝트 단위 변화(포크 커밋·재연결·복구)는 persistence 상태를 바꾼다 — 배너를 다시 그린다.
-  if (!change || change.scope === "project" || change.projectSwitch) paintPersistenceBanner();
+  if (!editorStateOnly && (!change || change.scope === "project" || change.projectSwitch)) paintPersistenceBanner();
   // 좌측 패널 호스트는 프리셋에 따라 없을 수 있다 — 캔버스 크롬만 있으면 갱신을 진행한다.
   if (!canvasToolbarRoot || !mapLockBannerRoot) return;
   if (change?.scope === "map" && change.cells?.length) {
@@ -861,7 +869,7 @@ function refreshPanels(change?: ProjectChangeDescriptor): void {
   renderLeftDockPanels();
   renderCanvasToolbar(canvasToolbarRoot);
   renderMapEditLockBanner(mapLockBannerRoot);
-  updateProjectExport();
+  if (!editorStateOnly) updateProjectExport();
   scheduleFitCanvas();
 }
 

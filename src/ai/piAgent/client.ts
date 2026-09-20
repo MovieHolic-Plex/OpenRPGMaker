@@ -46,6 +46,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   let checkpointError: unknown;
   const decoder = createPiAgentLineDecoder((event) => {
     if (event.type === "checkpoint") {
+      options.onEvent?.(event);
       checkpoints = checkpoints.then(async () => {
         let issue: string | undefined;
         let project: Project | void = undefined;
@@ -57,6 +58,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
           checkpointError = error;
           issue = error instanceof Error ? error.message : String(error);
         }
+        options.onEvent?.({ type: "execution_status", name: "checkpoint.apply", summary: issue ? "단계 적용 실패" : "단계 적용 완료", ok: issue === undefined, data: { checkpointId: event.checkpointId, issue } });
         const ack = await doFetch(companionAuthUrl("/v1/agent/checkpoint", request.provider), {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ checkpointId: event.checkpointId, ok: issue === undefined, issue, project }),

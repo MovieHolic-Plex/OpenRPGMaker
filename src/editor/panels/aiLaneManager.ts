@@ -1,3 +1,4 @@
+import { retainActivityTrace } from "@/ai/activityTraceArchive";
 // 에이전트 레인 매니저 — 레인마다 독립 실행·중단·검토·적용을 소유한다. 스토어와 네트워크를 만지는
 // 유일한 레이어이고, 상태 전이·묶음 충돌 판정은 순수 모듈(`@/ai/piAgent/lane`)이 갖는다.
 //
@@ -117,6 +118,7 @@ export function createLaneManager(options: LaneManagerOptions = {}): LaneManager
     if (!current) throw new Error(`lane ${id} 가 없습니다`);
     const next = reduceLane(current, event);
     states.set(id, next);
+    if (next.trace) retainActivityTrace(next.trace);
     emit();
     return next;
   };
@@ -147,7 +149,7 @@ export function createLaneManager(options: LaneManagerOptions = {}): LaneManager
     const base = structuredClone(store.getCurrent()) as Project;
     const controller = new AbortController();
     controllers.set(id, controller);
-    update(id, { type: "start", base, at: clock(), ...(options.instruction === undefined ? {} : { instruction: options.instruction }) });
+    update(id, { type: "start", base, projectId: store.getProjectIdentity().id, at: clock(), ...(options.instruction === undefined ? {} : { instruction: options.instruction }) });
     ghost?.start(id, base);
     update(id, { type: "step", step: { kind: "system", text: `출발 · ${lane.spec.agentLabel} · ${lane.spec.provider}/${lane.spec.model} · 음 ${lane.spec.mapIds.join(", ")}` } });
 
@@ -165,6 +167,7 @@ export function createLaneManager(options: LaneManagerOptions = {}): LaneManager
     };
     let answer = "";
     const onEvent = (event: PiAgentEvent): void => {
+      update(id, { type: "activity", event });
       ghost?.handleEvent(id, event);
       switch (event.type) {
         case "heartbeat":
