@@ -347,6 +347,11 @@ export async function runPiCommand(
     if (event.type === "done") { push({ type: "agent_event", agentId, event }); return; }
     push({ type: "agent_event", agentId, event });
     if (event.type === "turn") surface.setStatus(groups.length > 1 ? `작업 중… (${index + 1}/${groups.length})` : "작업 중…");
+    // 검색은 실제로 길다(실측 2026-09-21: 31초). 그동안 화면이 "작업 중…"만 보여 주면 멈춘 것처럼 보인다 —
+    // 무엇을 기다리는지 말해 주면 사용자가 기다릴 지 알 수 있다.
+    if (event.type === "tool_start" && event.name === "web_search") {
+      surface.setStatus("웹에서 참고 작품을 찾는 중… (십 초 정도 걸릴 수 있어요)");
+    }
   };
 
   let results: PiAgentDoneEvent[];
@@ -373,6 +378,10 @@ export async function runPiCommand(
         const event: PiAgentEvent = raw.type === "error" ? { ...raw, message: explainTurnCap(raw.message) } : raw;
         if (!isLiveApplyMode(applyMode)) ghost.handleEvent(event);
         push({ type: "agent_event", agentId: "ultrabrain-plan", event });
+        // 계획 턴이 참고 작품을 검색하는 자리다 — 사용자는 아직 화면에 "어떻게 바꿀지 정리하고 있어요"만 보고 있다.
+        if (event.type === "tool_start" && event.name === "web_search") {
+          surface.setStatus("웹에서 참고 작품을 찾는 중… (십 초 정도 걸릴 수 있어요)");
+        }
         if (event.type === "assistant") plan = event.text;
         if (event.type === "error") planError = event.message;
       } });
