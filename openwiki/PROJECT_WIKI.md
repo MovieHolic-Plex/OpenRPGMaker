@@ -96,6 +96,10 @@ OPRN Studio is a browser-based top-down tile JRPG maker/editor. It combines:
   surface may depend on opening the database modal before it is styled.
 - `test` and `test/e2e` are part of the contract. Update or add focused tests for changed behavior.
 
+## Authored tile placement references
+
+숲·마을 타일 저작 전에 [tiledata/forest-villages](../tiledata/forest-villages/README.md)의 사용자 검수 규칙·승인본·실패 사례를 읽는다. 새 마을 사례와 전체 스크린샷도 이 디렉토리에 저장한다.
+
 ## How an AI should use this wiki
 
 Use this checklist before editing:
