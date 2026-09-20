@@ -8,6 +8,7 @@ import {
 import { battleTroopError } from "@/project/battleAdmission";
 import { commandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
+import { callMapEventTargetStatus } from "@/editor/eventCallTargetStatus";
 import { LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { GOLD_MAX } from "@/project/economyValues";
@@ -223,6 +224,26 @@ function referenceSets(project: Project, mapId: MapId, host: GameEvent) {
   };
 }
 
+/**
+ * 이 이벤트(대상)의 페이지를 callMapEvent로 부르는 이벤트들을 찾는다.
+ * 유사 경고는 이벤트 여러 곳에 보여야 하므로 가장 정확한 곳은 여기(대상 페이지)이다.
+ */
+function findInertCallMapEventCallers(project: Project, mapId: MapId, target: GameEvent): readonly { readonly eventId: string }[] {
+  const callers: { readonly eventId: string }[] = [];
+  for (const candidate of project.maps[mapId]?.events ?? []) {
+    if (candidate.id === target.id) continue;
+    const commands = candidate.pages?.length
+      ? candidate.pages.flatMap((page) => page.commands ?? [])
+      : candidate.commands ?? [];
+    for (const visit of walkCommands(commands)) {
+      if (visit.command.kind === "callMapEvent" && visit.command.eventId === target.id) {
+        callers.push({ eventId: candidate.id });
+      }
+    }
+  }
+  return callers;
+}
+
 function validatePage(
   project: Project,
   mapId: MapId,
@@ -299,11 +320,17 @@ function validatePage(
 
   const commands = page.commands ?? [];
   if (commands.length === 0) {
+    // 이 페이지를 부르는 callMapEvent 가 있는지 찾는다. 있다면 info가 아니라 경고로 결정한다.
+    const callers = findInertCallMapEventCallers(project, mapId, event);
+    const severity = callers.length > 0 ? "warning" : "info";
     issues.push({
-      severity: "info",
-      code: "page.empty",
-      message: "실행 명령이 없습니다. 상태 표시용 빈 페이지라면 그대로 둘 수 있습니다.",
+      severity,
+      code: callers.length > 0 ? "callMapEvent.target-page-empty" : "page.empty",
+      message: callers.length > 0
+        ? "실행 명령이 없는 페이지입니다. 이 이벤트를 맵 위 이벤트 부르기로 부르는 " + callers.length + "개 이벤트가 있습니다 — 게임에서는 아무 것도 없는 것처럼 지나갑니다."
+        : "실행 명령이 없습니다. 상태 표시용 빈 페이지라면 그대로 둘 수 있습니다.",
       pageId: page.id,
+      ...(callers.length > 0 ? { hint: "문 본체에 열기(소리·전이)명령을 다시 입력하거나, 부르는 쪽의 명령을 제거하세요." } : {}),
     });
     return;
   }
@@ -947,7 +974,26 @@ function validateCommand(
       return;
     case "setEventGraphicPattern": require("reference.event.missing", "외형 변경 이벤트", command.eventId, refs.events, true); return;
     case "callCommonEvent": require("reference.common-event.missing", "다른 이벤트", command.commonEventId, refs.commonEvents); return;
-    case "callMapEvent": require("reference.event.missing", "맵 위 이벤트", command.eventId, refs.events); return;
+    case "callMapEvent": {
+      require("reference.event.missing", "맵 위 이벤트", command.eventId, refs.events);
+      if (command.eventId.trim() && refs.events.has(command.eventId)) {
+        const target = project.maps[mapId]?.events.find((entry) => entry.id === command.eventId);
+        const status = callMapEventTargetStatus(project, target);
+        if (status.problem) {
+          issues.push({
+            severity: "warning",
+            code: status.problem.kind === "transfer-target-missing"
+              ? "callMapEvent.transfer-target-missing"
+              : "callMapEvent.target-inert",
+            message: status.problem.message,
+            pageId,
+            commandPath: path,
+            field: { testId: "event-command-call-map-event-select" },
+          });
+        }
+      }
+      return;
+    }
     case "battleProcessing":
       if (command.troopSource === "variable") require("reference.variable.missing", "적 그룹 변수", command.troopVariableId, refs.variables);
       else {

@@ -113,6 +113,13 @@
   color: var(--accent);
 }
 
+/* 경고 줄 — 죽은 문 호출과 같은 조용한 무시를 끝내기 위해 마커 툴팁에서도 보여야 한다(2026-09-20). */
+.event-marker-tooltip-warning {
+  margin-top: 7px;
+  font: 600 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--status-warning, var(--warning, #B45309));
+}
+
 /* 말풍선 꼬리 — 카드가 붙은 쪽 모서리에서 이벤트 타일을 가리킨다. */
 .event-marker-tooltip[class*="tip-anchor-"]::before,
 .event-marker-tooltip[class*="tip-anchor-"]::after {
