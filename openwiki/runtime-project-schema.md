@@ -1090,3 +1090,23 @@ weather in the existing session path. Contracts: `test/feature16WorldSchema.test
 Feature16/main 통합: `syncWeatherLayer`에서 맵 기후를 먼저 해석한 같은 날씨를
 렌더러와 `audio.weather.update` 양쪽에 전달한다. 실내는 날씨 소리도 차단하며
 전역 날씨 상태는 유지한다.
+### Map atmosphere layers (2026-09-21)
+
+`GameMap.atmosphereEffects?: AtmosphereEffect[]` adds optional map-wide visual decoration.
+Kinds and bounded amount/speed/size/opacity settings live in `src/project/atmosphere.ts`.
+Editor map settings expose a separate 환경 효과 section and save via `setMapAtmosphereEffects`
+→ scoped `store.update` (map edit lock and mutation observation preserved). JSON save/load retains
+these plain settings; no schema version bump or changes to gameplay WeatherKind are needed.
+Old maps without this field have zero atmosphere layers. Rendering presets do not author new maps,
+change calendar/fishing weather, or download assets. Local runtime QA fixtures are not project content.
+
+Atmosphere layers additionally accept optional `sound`, `volume`, `tint` settings. The pure model
+normalizes missing sound by visual kind, volume to0.35, and only #RRGGBB colors. Genre presets are
+engine-owned configuration templates copied through the existing scoped map action, not new game
+content or separate remotely authored projects. UI preset application and per-layer sound edits
+are covered by browser save/reload receipts (`presets-editor.json`).
+
+The genre catalog now contains exactly30 unique audiovisual presets in six groups of five, using
+19 visual primitives (including runes/shades/frost). Group labels are shared between the catalog
+and map editor. Every preset retains at least one active sound layer; naturally silent particles
+may coexist with audible atmosphere. Existing ten preset IDs remain valid catalog entries.

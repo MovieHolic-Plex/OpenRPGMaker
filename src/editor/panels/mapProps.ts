@@ -1,3 +1,4 @@
+import { renderMapAtmosphere } from "./mapAtmosphere";
 import { selectField as climateSelectField } from "@/editor/panels/databaseControls";
 import {
   resizeMap, renameMap, setMapEncounterRate, setMapEncounterTable, setMapFieldSpawns, setMapTileset,
@@ -26,13 +27,14 @@ import { clearChildren, el } from "@/util/dom";
 import { showConfirm } from "@/editor/ui/modal";
 import { toast } from "@/util/toast";
 
-type MapPropsTab = "climate" | "general" | "background" | "clouds" | "bgm" | "battle" | "restrictions" | "encounter" | "spawns" | "minimap";
+type MapPropsTab = "atmosphere" | "climate" | "general" | "background" | "clouds" | "bgm" | "battle" | "restrictions" | "encounter" | "spawns" | "minimap";
 
 const TAB_LABELS: Record<MapPropsTab, string> = {
   climate: "기후",
   general: "기본 설정",
   background: "맵 배경",
   clouds: "구름 그림자",
+  atmosphere: "환경 효과",
   bgm: "배경 음악",
   battle: "전투 배경",
   restrictions: "행동 제한",
@@ -42,7 +44,7 @@ const TAB_LABELS: Record<MapPropsTab, string> = {
 };
 
 const SECTION_ORDER: readonly MapPropsTab[] = [
-  "general", "climate", "background", "clouds", "bgm", "battle", "restrictions", "encounter", "spawns", "minimap",
+  "general", "climate", "background", "clouds", "atmosphere", "bgm", "battle", "restrictions", "encounter", "spawns", "minimap",
 ];
 
 const SECTION_DESCRIPTIONS: Record<MapPropsTab, string> = {
@@ -50,6 +52,7 @@ const SECTION_DESCRIPTIONS: Record<MapPropsTab, string> = {
   general: "맵의 이름, 타일 그림판과 크기를 설정합니다.",
   background: "투명한 타일 뒤에 표시할 그림과 움직임을 설정합니다.",
   clouds: "맵 위를 흘러가는 구름 그림자를 설정합니다.",
+  atmosphere: "자연·판타지·도시·물속 효과를 겹쳐 적용합니다.",
   bgm: "이 맵에 들어왔을 때 재생할 음악을 고릅니다.",
   battle: "이 맵에서 전투가 시작되면 표시할 배경입니다.",
   restrictions: "체크한 행동을 이 맵에서 제한합니다.",
@@ -62,6 +65,7 @@ const SECTION_RENDERERS: Record<MapPropsTab, (host: HTMLElement, map: import("@/
   climate: renderClimateTab, general: renderGeneralTab, background: renderBackgroundTab, clouds: renderCloudShadowTab, bgm: renderBgmTab,
   battle: renderBattleTab, restrictions: renderRestrictionsTab, encounter: renderEncounterTab,
   spawns: renderSpawnsTab, minimap: renderMinimapTab,
+  atmosphere: (host, map) => renderMapAtmosphere(host, map, () => rerender(host)),
 };
 const lastChangedControl = new WeakMap<HTMLElement, string>();
 
