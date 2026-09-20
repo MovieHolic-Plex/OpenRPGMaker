@@ -1044,3 +1044,13 @@ deserialize preserves the field and authored spatial library. Generated maps fre
 object revisions, graphics and placements in `villageDesignSource.resolvedSettings.spaceDecorations`;
 this is authored provenance, not runtime state. The shipping player consumes the generated map through
 its existing raster/collision path. See `small-village-generation.md` for the attachment contract.
+
+## 필드 HUD 설정 (2026-09-21)
+
+`system.fieldHud?: FieldHudConfig`의 `widgets?: HudWidget[]`가 데이터 기반 HUD 구성이다. `widgets` 생략은 theme 프리셋을 계산하고 `[]`는 의도적으로 비운 HUD다. 기존 theme/vitals/clock/tools/objective/hideEmpty 필드도 읽는다. 미설정 문서는 저장 바이트에 필드를 추가하지 않고 런타임에서 minimal을 사용한다. DB에서 legacy를 선택하면 이전 HUD로 돌아간다. 스키마 버전 증가는 없다.
+
+`project/fieldHud.ts`는 프리셋과 정규화를 소유한다. 요소는 gauge/clock/slots/text/party/timers/image, 게이지 표현은 bar/vertical/hearts/ring/number다. source/actorId/variableId/maxVariableId/timerId/itemIds가 데이터 연결이고 resourceId는 기존 리소스 ID다. 문자열 표현식이나 사용자 CSS를 실행하지 않는다. IO의 `shapeFieldHud`가 24개 제한, 중복 ID, enum, 유한 정수/범위, hex 색을 검증하며 `references`가 저작된 배우·변수·스위치·아이템·이미지 참조를 검사한다.
+
+`FieldHud`는 HandSlotChip과 수명을 공유한다. `fieldHudData`는 세션만 읽고 `fieldHudRender`는 DOM만 그린다. 액션 스태미나와 플레이어 화면 좌표는 PlayScene의 실제 상태를 전달한다. 조건은 항상/최댓값 미만/25% 이하/양수/액션 맵/스위치/값 변경 후 3초다. 자동 회피 요소는 플레이어가 접근하면 위·아래를 바꾸고 고정 패널과의 겹침을 피한다. 사용자 배치는 뷰포트 경계에 제한한다.
+
+프리셋은 실제 게임에 없는 데이터를 꾸며내지 않는다. 식량 슬롯은 아이템 수량이며 음식 효과/지속 시간 모델을 만들지 않는다. 데이터가 없으면 요소를 숨긴다. 새 HUD가 소유하는 HP/스태미나의 옛 표시만 억제하고 나머지 액션 조작 안내를 유지한다. 메뉴·대화·전투·컷신에서는 HUD가 숨겨진다. 런타임 입력은 기존 숫자키/대괄호 계약이며 드래그/방향키 편집은 DB 미리보기에만 존재한다.

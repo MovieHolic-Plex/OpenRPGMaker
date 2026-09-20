@@ -1,3 +1,4 @@
+import { normalizeFieldHud } from "./fieldHud";
 import { assertPromotionExtensions } from '@/project/growth/requirements';
 import {
   ACTOR_LEVEL_MAX,
@@ -166,6 +167,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   const playerFootprint = normalizeCharacterFootprint(system.playerFootprint);
   return {
     startActorIds: cleanIds(system.startActorIds),
+    ...(system.fieldHud !== undefined ? { fieldHud: normalizeFieldHud(system.fieldHud) } : {}),
     ...(system.playerFootprint !== undefined ? { playerFootprint } : {}),
     ...(system.playerPassRows !== undefined
       ? { playerPassRows: normalizePassRows(system.playerPassRows, playerFootprint.height) }
