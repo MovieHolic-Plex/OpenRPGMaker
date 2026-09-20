@@ -1,3 +1,4 @@
+import { createActivityMedia } from "./aiActivityMedia";
 import { el } from "@/util/dom";
 import { activityText, type ActivityEntry, type ActivityTrace } from "@/ai/activityTrace";
 import { activityArchiveFailed, readActivityArchive, retainActivityTrace } from "@/ai/activityTraceArchive";
@@ -67,13 +68,15 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
       const counts = new Map<string, number>();
       for (const entry of rows) {
         const previous = grouped[grouped.length - 1];
-        if (previous && entry.kind === "tool" && entry.status === "ok" && previous.status === "ok" && previous.name === entry.name && previous.actor === entry.actor) {
+        if (previous && entry.kind === "tool" && entry.status === "ok" && previous.status === "ok" && previous.name === entry.name && previous.actor === entry.actor && previous.visuals?.at(-1)?.target === entry.visuals?.at(-1)?.target) {
           const count = (counts.get(previous.id) ?? 1) + 1;
           grouped[grouped.length - 1] = { ...entry, summary: `${count}건 확인·처리` }; counts.set(entry.id, count);
         } else grouped.push(entry);
       }
       const active = grouped.filter(e => e.status === "running");
-      rows = [...grouped.filter(e => e.status !== "running").slice(-Math.max(1, 4 - active.length)), ...active.slice(-3)];
+      const completed = grouped.filter(e => e.status !== "running");
+      const illustrated = completed.filter(e => e.visuals?.length).slice(-3);
+      rows = illustrated.length ? [...illustrated, ...completed.filter(e => !e.visuals?.length).slice(-1), ...active.slice(-3)].sort((a, b) => a.at - b.at) : [...completed.slice(-Math.max(1, 4 - active.length)), ...active.slice(-3)];
     } else if (level === "trace") rows = rows.filter(e => (!selectedActor || actor || e.actor === selectedActor) && (severity === "all" || (severity === "tool" ? e.kind === "tool" : e.status === "error")) && (!query || JSON.stringify(e).toLowerCase().includes(query)));
     const total = rows.length;
     if (level !== "brief") rows = rows.slice(-shown);
@@ -82,7 +85,7 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
     const keep = new Set<HTMLElement>();
     let previousRow: HTMLElement | null = null;
     for (const entry of rows) {
-      const signature = `${level}:${entry.status}:${entry.endedAt}:${entry.summary}:${entry.at}`;
+      const signature = `${level}:${entry.status}:${entry.endedAt}:${entry.summary}:${entry.at}:${entry.visuals?.map(v => v.id).join(",")}`;
       let row = existing.get(entry.id);
       if (!row || row.dataset.signature !== signature) {
         const mark = entry.status === "running" ? "◌" : entry.status === "ok" ? "✓" : entry.status === "error" ? "!" : "·";
@@ -105,8 +108,10 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
             );
           }
           const body = el("div", { class: "ai-activity-payload" });
+          let filled = false;
           const fillPayload = () => {
-            if (body.childElementCount) return;
+            if (filled) return;
+            filled = true;
             if (level === "detail") {
               const output = entry.output as { text?: string; task?: string; summary?: string } | undefined;
               body.append(el("p", { text: (output?.text ?? output?.task ?? output?.summary ?? entry.summary) || "결과 설명 없음" }));
@@ -121,6 +126,14 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
           if (details.open) fillPayload();
           details.addEventListener("toggle", () => { if (!details.isConnected) return; if (details.open) { opened.add(entry.id); fillPayload(); } else opened.delete(entry.id); });
           next = details;
+        }
+        if (entry.visuals?.length) {
+          const media = createActivityMedia(entry.visuals, entry.summary);
+          // Visuals stay visible in detail/trace; raw receipts remain separately expandable.
+          if (next instanceof HTMLDetailsElement) {
+            const wrapper = el("div", { children: [next, media] });
+            next = wrapper;
+          } else next.append(media);
         }
         next.className = `ai-activity-entry is-${entry.status}`;
         next.dataset.entryId = entry.id; next.dataset.signature = signature;

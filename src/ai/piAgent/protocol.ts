@@ -1,3 +1,4 @@
+import type { ActivityVisual } from "../activityVisual";
 import type { PiApplyMode } from "./applyMode";
 import type { SpecialistModels } from "../modelRoles";
 import type { SpatialToolProof } from "@/editor/tools/spatialToolState";
@@ -114,7 +115,7 @@ type PiAgentEventPayload =
   | { readonly type: "delta"; readonly kind: "thinking" | "text"; readonly text: string }
   | { readonly type: "assistant"; readonly text: string }
   | { readonly type: "tool_start"; readonly id: string; readonly name: string; readonly args: unknown }
-  | { readonly type: "tool_end"; readonly id: string; readonly name: string; readonly ok: boolean; readonly summary: string; readonly result?: unknown; readonly durationMs?: number }
+  | { readonly type: "tool_end"; readonly id: string; readonly name: string; readonly ok: boolean; readonly summary: string; readonly result?: unknown; readonly durationMs?: number; readonly visuals?: readonly ActivityVisual[] }
   /**
    * 툴이 맵에 한 일. 바뀐 칸만 싣는다 — 캔버스 시공 표시(고스트)가 턴 내내 먹는 재료다.
    * 결과 프로젝트는 맨 끝 `done` 에만 실리므로, 이게 없으면 턴이 끝날 때까지 캔버스가 조용하다.

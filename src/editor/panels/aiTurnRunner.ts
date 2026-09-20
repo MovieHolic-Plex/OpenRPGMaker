@@ -353,7 +353,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
           scope: turnConversationScope,
           entries: [...auditHistoryAtTurnStart, ...session.getAuditEntries()],
         });
-        deps.surface.completeLiveActivity(event.name, event.result, event.args);
+        deps.surface.completeLiveActivity(event.name, event.result, event.args, event.visuals);
         ghostPreviewUpdater.handleToolCall(event);
         // 청사진 진행 — 이번 호출이 어느 칸을 짓고 있는지로 planned/building/done 을 옮긴다.
         // 쓰기 여부를 같이 넘긴다: 이 훅은 성공한 **모든** 툴콜에서 발화하므로 읽기 툴
