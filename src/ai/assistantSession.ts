@@ -3308,10 +3308,6 @@ export class AssistantSession {
     this.recordAppliedProject(applied);
     operation.assertCurrent();
 
-    if (applied.wikiWarning) {
-      this.pushAudit({ kind: "status", text: `게임 변경은 적용됐지만 위키 진행 기록은 갱신하지 못했습니다: ${applied.wikiWarning}` });
-      onEvent({ type: "status", text: `위키 진행 기록 갱신 실패: ${applied.wikiWarning}` });
-    }
     this.pushAudit({
       kind: "status",
       text: `agent_run:milestone-applied "${completed.title}" calls=${calls.length} commit=${applied.commit.commitId ?? "local-only"} persisted=${String(applied.commit.persisted)}`,
@@ -3538,14 +3534,10 @@ export class AssistantSession {
     this.approvedReviewIdentity = null;
     this.approvedAuthoredIdentity = null;
     this.reviewTurn = null;
-    const wiki = applied.wikiDelivery;
-    // The progress document is a later owned mutation, not the tool commit's revision.
-    this.lastAppliedProject = wiki?.project ? { project: wiki.project, commitId: null }
-      : applied.commitProject ? { project: applied.commitProject, commitId: applied.commit.commitId } : null;
-    this.runReceipt = wiki?.kind === "persisted"
-      && store.isPersistenceReceiptForProject(wiki.receipt, wiki.project) ? wiki.receipt : null;
-    if (wiki) this.wikiDelivery = { owner: this.runResult, project: wiki.project, receipt: this.runReceipt };
-    else if (this.wikiDelivery) {
+    this.lastAppliedProject = applied.commitProject
+      ? { project: applied.commitProject, commitId: applied.commit.commitId } : null;
+    this.runReceipt = null;
+    if (this.wikiDelivery) {
       this.wikiDelivery.project = undefined;
       this.wikiDelivery.receipt = null;
     }
@@ -3557,7 +3549,6 @@ export class AssistantSession {
         contentIdentity: this.identityOf(applied.applied), commitId: null, calls: [...this.turnAppliedMilestoneCalls] };
       this.checkpointPending = null;
     } else if (this.checkpointApplied) {
-      if (applied.wikiDelivery?.project) this.checkpointCurrentIdentity = this.identityOf(applied.wikiDelivery.project);
       this.checkpointApplied = { ...this.checkpointApplied, commitId: applied.commit.commitId };
     }
     this.captureCheckpoint(); // Before publish can synchronously cancel or replace this owner.

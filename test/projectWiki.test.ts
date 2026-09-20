@@ -36,28 +36,6 @@ describe("editor-owned wiki checkpoints", () => {
     expect(project.world?.entities.map((entity) => entity.wiki?.sources[0]?.id)).toEqual(sources.map((source) => source.id));
     expect(await coordinator.backfill()).toBe(0);
   });
-  it("records actual applied state without depending on model prose", async () => {
-    const project = createEmptyToolProject("Applied");
-    project.world = { entities: [{
-      id: "w_rule", type: "guideline", name: "Rule", summary: "Contact", origin: "ai",
-      wiki: { kind: "declaration", basis: "explicit", combatMode: "contact",
-        sources: [{ id: "u0", kind: "user", text: "Use contact battles", at: 1 }] },
-    }], relations: [] };
-    const coordinator = createProjectWikiCoordinator({
-      getProject: () => project, getIdentity: () => "project",
-      extract: async () => { throw new Error("applied evidence must not depend on invented model fields"); },
-      updateWorld: (world) => { project.world = world; },
-      flush: async () => ({ kind: "saved" }),
-    });
-
-    await coordinator.observe("Applied title edit", ["set_title_screen"]);
-
-    const observed = project.world?.entities.find((entity) => entity.wiki?.kind === "progress");
-    expect(observed?.wiki?.basis).toBe("observed");
-    const source = JSON.parse(observed?.wiki?.sources[0]?.text ?? "{}");
-    expect(source.appliedTools).toEqual(["set_title_screen"]);
-    expect(source.actionCombatEnabled).toBe(false);
-  });
   it("persists extracted user decisions before resolving the authoring barrier", async () => {
     const project = createEmptyToolProject("Wiki");
     const order: string[] = [];

@@ -205,31 +205,5 @@ export function createProjectWikiCoordinator(overrides: Partial<WikiCoordinatorD
       return apply(base, patch, [source], input.signal, input.onDelivery);
     },
     backfill,
-    async observe(summary: string, toolNames: readonly string[], signal?: AbortSignal,
-      onDelivery?: WikiTurnInput["onDelivery"]): Promise<Project["world"]> {
-      requireCurrent(signal);
-      const base = structuredClone(deps.getProject());
-      if (!base.world?.entities.some((entity) => entity.wiki)) return base.world;
-      const source: WikiSource = {
-        id: genId("wiki_applied"), kind: "application", at: Date.now(),
-        text: JSON.stringify({
-          summary, appliedTools: toolNames,
-          maps: Object.values(base.maps).map((map) => ({
-            id: map.id, name: map.name, eventCount: map.events.length,
-            fieldSpawns: map.fieldSpawns?.map((spawn) => ({ id: spawn.id, troopId: spawn.troopId, area: spawn.area })),
-            actionCombat: map.actionCombat === true, encounterRate: map.encounterRate ?? 0,
-          })),
-          actionCombatEnabled: base.system.actionCombat?.enabled === true,
-        }),
-      };
-      // Applied state is already machine evidence. Do not ask a model to
-      // reconstruct it or invent optional fields before recording the receipt.
-      const patch: ProjectWikiPatch = { upserts: [{
-        id: genId("w_applied"), type: "guideline", name: "적용된 작업",
-        summary, body: source.text,
-        wiki: { kind: "progress", basis: "observed", sourceIds: [source.id], topic: source.id },
-      }] };
-      return apply(base, patch, [source], signal, onDelivery);
-    },
   };
 }
