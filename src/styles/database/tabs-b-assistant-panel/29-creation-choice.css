@@ -1,0 +1,49 @@
+.ai-creation-choice { --choice-accent: #7660d4; width: 100%; color: var(--text-1); font: 13px/1.6 var(--font-ui); }
+.ai-creation-choice h2 { margin: 9px 0 6px; font-size: clamp(20px, 2vw, 28px); letter-spacing: -1px; line-height: 1.35; outline: none; }
+.ai-creation-steps, .ai-creation-eyebrow { color: var(--choice-accent, var(--accent)); font-size: 11px; font-weight: 650; letter-spacing: .7px; }
+.ai-creation-intro { margin: 0 0 24px; color: var(--text-3); }
+.ai-creation-body.is-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.ai-creation-option { overflow: hidden; border: 1px solid var(--border-default); border-radius: 13px; background: var(--bg-raised); }
+.ai-creation-choice button { cursor: pointer; border: 1px solid var(--border-default); border-radius: 8px; padding: 9px 12px; font: inherit; color: var(--text-1); background: var(--bg-raised); }
+.ai-creation-choice button:hover { border-color: var(--choice-accent); }
+.ai-creation-choice button:focus-visible, .ai-creation-choice select:focus-visible { outline: 2px solid var(--choice-accent); outline-offset: 3px; }
+.ai-creation-choice button:disabled { cursor: default; opacity: .4; }
+.ai-creation-choice .ai-creation-picture { display: block; width: 100%; padding: 0; border: 0; border-radius: 0; position: relative; background: #b1c47e; }
+.ai-creation-choice img, .ai-creation-reference img, .ai-creation-character canvas { image-rendering: pixelated; }
+.ai-creation-picture img { display: block; width: 100%; }
+.ai-creation-picture span { position: absolute; bottom: 8px; right: 8px; padding: 3px 7px; color: white; background: #263422bd; border-radius: 5px; font-size: 10px; }
+.ai-creation-caption { padding: 14px; }
+.ai-creation-caption small { color: var(--choice-accent); }
+.ai-creation-caption h3 { margin: 5px 0; font-size: 15px; letter-spacing: -.4px; }
+.ai-creation-caption p { font-size: 11px; color: var(--text-3); min-height: 36px; }
+.ai-creation-caption button { width: 100%; }
+.ai-creation-choice footer { display: flex; flex-wrap: wrap; gap: 8px; border-top: 1px solid var(--border-subtle); padding-top: 16px; }
+.ai-creation-choice footer button.is-primary { margin-left: auto; background: var(--choice-accent); border-color: var(--choice-accent); color: white; font-weight: 600; }
+.ai-creation-feedback { color: var(--text-3); font-size: 11px; margin: 18px 0; }
+.ai-creation-body.is-customize { display: grid; grid-template-columns: minmax(0, 1fr) 210px; gap: 22px; align-items: start; }
+.ai-creation-large { background: var(--bg-inset); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-default); }
+.ai-creation-large img { display: block; width: 100%; }
+.ai-creation-large p { padding: 6px 12px; font-size: 11px; color: var(--text-3); }
+.ai-creation-controls { display: grid; gap: 12px; font-size: 12px; }
+.ai-creation-controls label { display: grid; gap: 5px; color: var(--text-2); }
+.ai-creation-controls select { width: 100%; min-width: 0; padding: 9px 7px; border: 1px solid var(--border-default); border-radius: 7px; color: var(--text-1); background: var(--bg-raised); font: inherit; }
+.ai-creation-choice .ai-creation-character { display: flex; align-items: center; padding: 2px 8px; text-align: left; gap: 6px; }
+.ai-creation-character canvas { width: 74px; height: 40px; }
+.ai-creation-character[aria-pressed=true] { border-color: var(--choice-accent); background: color-mix(in srgb, var(--choice-accent) 9%, var(--bg-raised)); }
+.ai-creation-reference { margin: 24px 20px; padding: 18px; border: 1px solid var(--border-default); border-radius: 12px; background: var(--bg-raised); line-height: 1.7; }
+.ai-creation-reference h3 { font-size: 15px; }
+.ai-creation-reference p { color: var(--text-3); font-size: 12px; white-space: pre-line; }
+.ai-creation-reference img { display: block; width: 100%; border-radius: 8px; margin-top: 12px; }
+.ai-team-sidebar.has-creation-choice > :not(.ai-team-rail-tabs):not(.ai-creation-reference) { display: none !important; }
+.ai-team-sidebar.has-creation-choice::after { display: none !important; }
+.ai-chat-panel.has-creation-choice .ai-chat-log { display: flex !important; }
+@container (max-width: 600px) { .ai-creation-body.is-grid, .ai-creation-body.is-customize { grid-template-columns: 1fr; } }
+.ai-creation-choice { container-type: inline-size; }
+@media (max-width: 760px) { .ai-creation-body.is-grid, .ai-creation-body.is-customize { grid-template-columns: 1fr; } .ai-creation-choice footer button.is-primary { width: 100%; } }
+/* The choice supplies its own edit/confirm actions; reserve the workspace for images. */
+.ai-chat-panel.has-creation-choice .ai-command-bar { display: none !important; }
+.ai-assistant-wide .ai-chat-panel.has-creation-choice .ai-chat-log { padding: 18px 28px 28px !important; gap: 14px !important; }
+.ai-creation-large img { max-height: 400px; object-fit: contain; }
+.ai-creation-confirmed { display: flex; align-items: center; gap: 14px; margin: 0; padding: 12px; border-radius: 10px; background: var(--bg-inset); font-size: 12px; color: var(--text-3); }
+.ai-creation-confirmed img { width: 128px; border-radius: 6px; image-rendering: pixelated; }
+.ai-chat-panel.has-creation-choice .ai-conversation-outcome { display: none; }
