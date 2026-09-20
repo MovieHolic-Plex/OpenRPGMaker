@@ -1,0 +1,11 @@
+Castle tiles for RPGs
+Artwork by Zabin, Hyptosis, and Daniel Cook (Danc).
+Source: https://opengameart.org/content/castle-tiles-for-rpgs
+Download: https://opengameart.org/sites/default/files/Castle2_5.png
+License: Creative Commons Attribution 3.0 Unported (CC BY 3.0)
+https://creativecommons.org/licenses/by/3.0/
+
+The original PNG is redistributed unchanged as opengameart-castle-tiles.png.
+OPRN Studio uses 16px editing cells (32 columns) to preserve the original
+32px artwork at its native size. One original tile occupies 2 x 2 cells.
+Editor collision, layer defaults and labels are supplied by OPRN Studio.

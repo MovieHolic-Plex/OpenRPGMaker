@@ -1,16 +1,17 @@
+import { createCastleTileset } from "./castleTileset";
 import { createForestHarmonyTileset, FOREST_HARMONY_TEXTURE } from "./forestHarmony";
 import { createTiboInteriorTileset, extendTiboInteriorDefaults, TIBO_INTERIOR_ID, TIBO_INTERIOR_TEXTURE } from "./tiboInterior";
 import { composeCombinedTownRetroWorldTileset } from "./combinedTownRetroWorld";
 import type { AssetSet, GameMap, PassFlag, ResourceKind, ResourceProfile, SpriteDef, TilesetDef } from "../types";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { CC0_AUDIO_ASSETS } from "@/assets/cc0AudioAssets";
-import { BUNDLED_EASYRPG_CHARSET_ASSETS, BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledChipsetSheetHeight, bundledEasyRpgTilesetId } from "@/assets/bundled";
+import { BUNDLED_EASYRPG_CHARSET_ASSETS, BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledChipsetSheetHeight, bundledChipsetTileSize, bundledChipsetTilesPerRow, bundledEasyRpgTilesetId } from "@/assets/bundled";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { AUTHORABLE_FACESET_FACE_ASSETS, GENERATED_FACESET_FACE_IDS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import { applyCombinedTownHarness, applyEasyRpgThemeMetadataPacks, ensureTilesetHarnesses, RETRO_WORLD_TEXTURE_KEY } from "@/project/tilesetHarness";
-import { bundledAssetRef, COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_TILE_COUNT, DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, DEFAULT_TILESET_NAME, DEFAULT_TILESET_TEXTURE_KEY, DEFAULT_TILES_PER_ROW, LEGACY_RM_TILESET_ID, LEGACY_RM_TILESET_TEXTURE_KEY } from "./constants";
+import { bundledAssetRef, CASTLE_TILESET_TEXTURE_KEY, COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_TILE_COUNT, DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, DEFAULT_TILESET_NAME, DEFAULT_TILESET_TEXTURE_KEY, DEFAULT_TILES_PER_ROW, LEGACY_RM_TILESET_ID, LEGACY_RM_TILESET_TEXTURE_KEY } from "./constants";
 import { isSolidChipsetTile, isUpperChipsetTile, terrainTagForChipsetTile } from "./chipsetMapping";
 
 const DUNGEON_TILESET_ID = "easyrpg_chipset_dungeon";
@@ -181,6 +182,7 @@ function legacyRmTilesetReplacementId(map: Pick<GameMap, "id" | "name">): string
 }
 
 function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
+  if (asset.textureKey === CASTLE_TILESET_TEXTURE_KEY) return createCastleTileset();
   if (asset.textureKey === FOREST_HARMONY_TEXTURE) return createForestHarmonyTileset();
   if (asset.textureKey === TIBO_INTERIOR_TEXTURE) return createTiboInteriorTileset();
   if (asset.textureKey === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return createCombinedTownRetroWorldTileset();
@@ -241,9 +243,9 @@ export function defaultResourceProfiles(): ResourceProfile[] {
     ...BUNDLED_EASYRPG_CHIPSET_ASSETS.filter((asset) => asset.textureKey !== DEFAULT_TILESET_TEXTURE_KEY).map((asset) => ({
       kind: "chipset" as const,
       name: asset.name,
-      tileWidth: tileWidthForEasyRpgKind("chipset"),
-      tileHeight: tileHeightForEasyRpgKind("chipset"),
-      imageWidth: 480,
+      tileWidth: bundledChipsetTileSize(asset.textureKey),
+      tileHeight: bundledChipsetTileSize(asset.textureKey),
+      imageWidth: bundledChipsetTilesPerRow(asset.textureKey) * bundledChipsetTileSize(asset.textureKey),
       // 확장 시트(Tibo 1056·합본 마을+레트로 월드맵+숲 나무 608)는 256 이 아니다 — 칸 수에서 유도한다.
       imageHeight: bundledChipsetSheetHeight(asset.textureKey),
       assetId: asset.textureKey,
