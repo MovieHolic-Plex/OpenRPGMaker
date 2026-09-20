@@ -29,6 +29,12 @@ describe("OAuth wiki extraction adapter", () => {
   it("allows an actual no-new-fact model response", async () => {
     expect(await extractProjectWiki(input(), { chat: async () => response({ upserts: [] }), getConfig: () => config })).toEqual({ upserts: [] });
   });
+  it("rejects a model that tries to turn an application source into a new work-log card", async () => {
+    const requestInput = { ...input(), sources: [{ ...source, kind: "application" as const }] };
+    const progress = { upserts: [{ ...patch.upserts[0], wiki: { kind: "progress", basis: "observed", sourceIds: [source.id] } }] };
+    await expect(extractProjectWiki(requestInput, { chat: async () => response(progress), getConfig: () => config }))
+      .rejects.toThrow("Work history cannot be extracted into project knowledge");
+  });
   it.each(["network failure", "OAuth expired"])("propagates %s instead of successful empty fallback", async (message) => {
     await expect(extractProjectWiki(input(), { chat: async () => { throw new Error(message); }, getConfig: () => config })).rejects.toThrow(message);
   });

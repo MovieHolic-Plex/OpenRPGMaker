@@ -73,6 +73,13 @@
 
 ## 계측 초크포인트는 `store.markLocalMutation` 하나다
 
+2026-09-20: AI 적용 후 설정집에 `적용된 작업` 카드를 추가하던 경로를 제거했다.
+새 작업은 기존 mutation 감사 로그와 project commit 경로가 기록한다. 구형 자동 카드는
+원본 ID·시각·내용·관계를 보존하고 `작업 기록 → 행위 기록 → 이전 AI 작업 기록`에서
+읽기 전용으로 조회한다(`legacyWikiActivityPanel.ts`, 30건씩 더 보기).
+설정집/AI 입력에서는 제외하며 사용자 수동 메모는 유지한다. 기존 JSON을 삭제하거나
+현재 시각의 커밋으로 재발행하지 않는 호환 조회 방식이다. 상세 계약은 `project-wiki.md`.
+
 `ProjectStore` 에서 상태를 바꾸는 메서드는 6개고, 전부 `markLocalMutation` 을 지난다.
 그 메서드들의 호출자는 **전부 클래스 안에** 있으므로 우회 경로가 없다 —
 `mutationGeneration` 을 올리는 자리가 곧 계측 자리다.
