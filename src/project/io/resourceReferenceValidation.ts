@@ -86,6 +86,7 @@ export function validateSystemResources(system: SystemRecords, resourceIds: Read
   validateOptionalResource("system.titleResourceId", system.titleResourceId, resourceIds);
   validateOptionalResource("system.systemResourceId", system.systemResourceId, resourceIds);
   validateOptionalResource("system.battleSystemResourceId", system.battleSystemResourceId, resourceIds);
+  for (const widget of system.fieldHud?.widgets ?? []) validateOptionalResource(`system.fieldHud.${widget.id}.resourceId`, widget.resourceId, resourceIds);
   validateOptionalResource("system.battleBgmResourceId", system.battleBgmResourceId, resourceIds);
   validateOptionalResource("system.defaultBgmResourceId", system.defaultBgmResourceId, resourceIds);
   validateOptionalResource("system.battleVictoryMeResourceId", system.battleVictoryMeResourceId, resourceIds);

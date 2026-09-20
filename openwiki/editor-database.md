@@ -1915,3 +1915,13 @@ Browser proof: `npx playwright test test/e2e/feature16-combat.spec.ts --project=
 ## Troop intent and weakness authoring (2026-09-21)
 
 The troop placement preview contains `databaseTroopIntentPanel`: hypothetical turn/MP/target/row, eligible action candidates with shared damage predictions, and actual element multipliers. Existing actions and elementRates are edited through `updateDatabaseRecord`; no new enemy schema. It does not claim exact AI choice or add predictions to the runtime HUD. Details, limitations and real-editor capture: `openwiki/feature16-battle-ui.md`.
+
+## 인게임 HUD 구성 편집기 (2026-09-21)
+
+자료집 → 시스템 → 인게임 HUD(`databaseFieldHud.ts`)에서 생활·농장, 생존·탐험, 파티 RPG, 액션·모험, 고요한 탐험, 기존 HUD를 고른다. 프리셋 선택은 구성 전체를 교체하며 기존 시스템 편집 스냅샷으로 실행 취소할 수 있다. 구성 요소는 최대 24개, 추가·복제·삭제·순서 변경이 가능하다.
+
+- 왼쪽은 요소 목록, 가운데는 시작 맵의 `renderRegionSnapshot` 배경과 실제 `FieldHud`, 오른쪽은 선택 요소의 데이터/표현/앵커/여백/치수/색/패널/표시 조건이다. 이미지 요소는 기존 picture 리소스 선택기를 사용한다.
+- 드래그는 화면 배율을 논리 좌표로 환산하여 좌상단 앵커로 바꾸고 pointerup에 한 번 저장한다. 방향키 1px, Shift+방향키 8px 이동도 같은 편집 경로다. 단순 선택/취소/미리보기 전환은 프로젝트 이력을 만들지 않는다.
+- 체력/마력은 선두 또는 지정 배우, 생활 에너지/액션 스태미나/소지금/변수/타이머/아이템 보유량은 실제 데이터에 연결한다. 상태 요소는 배우 상태와 선택 타이머를 읽는다. 음식 효과를 새로 만들지 않으며 생존형의 음식 슬롯은 휴대 식량의 보유 수량이다.
+- 시작 상태·저체력·전투·화면 아래 접근·대화 상태 미리보기는 프로젝트와 별도의 세션이다. 지원 시스템이 꺼져 있으면 설명을 표시하며, 현재 조건에서 숨겨진 요소는 편집할 수 있도록 흐리게 보인다.
+- 편집은 `databaseSystemView.updateSystem`의 스냅샷/감사/저장 경로를 공유한다. 운영 게임 콘텐츠를 생성하거나 원격 DB를 직접 쓰는 기능이 아니다.
