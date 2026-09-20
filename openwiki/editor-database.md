@@ -1936,3 +1936,27 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 적용되고 메뉴 스킨은 자체 글꼴을 사용한다. 게이지의 `수치 함께 표시`를 끄면 하트/꽃만
 남길 수 있다. 꽃잎은 실제 연결 데이터 비율을 5단계로 읽으며 임의 그림 상태 교체는 아니다.
 별도 메뉴 편집기의 새 `여행 · 세로 명령창`도 같은 스킨 레지스트리를 사용한다.
+
+## 숲·마을·동굴 공통 기본 장소 13종 (2026-09-21)
+
+`forestPlaceReferences.ts`는 이 작업에서 만든 완성 맵 13개를 `PLACE_REFERENCES`에 등록한다.
+검은 숲의 오두막, 별 모양 숲, 굽이숲, 굽이숲 작은마을·절벽마을, 솔바람 고원마을·협곡,
+고요한 숲마을, 큰 폭포 아래 마을, 숲과 단구의 마을, 언덕 위 숲마을 조화 배치와 동굴 두 개다.
+반복·이음새·언덕 비교용 맵 6개는 공용 목록에서 제외한다.
+
+기존 지역 ID `gubisup-80x72`, `small-forest-village-80x72`, `forest-cliff-village-80x72`는
+그대로 유지하면서 장소 목록으로 옮긴다. AI 행 조회와 다운로드 경로는 바뀌지 않는다.
+`forestPlaceSnapshot`이 저장된 맵·타일셋을 조회하고 기본 장소 카드는 프로젝트와 무관하게 보인다.
+다운로드 문구는 장소/지역을 구분하고 파일명은 해당 사례의 이름을 쓴다.
+
+원본은 로컬 프로젝트 `oprn-hill-forest-harmony-20260918-a4e1`의 현재 저장본이다.
+기존 원격 원본에 과거 버전이 남은 맵도 있으므로 등록을 이유로 원본 프로젝트 전체를 덮어쓰지 않는다.
+공용 스냅샷은 `oprn-place-<slug>-v1`(기존 지역 3종은 `oprn-region-<slug>-v1`)에 저장하고
+재로드한 뒤 `regionReferences/<slug>.json` 및 `public/assets/region-references/<slug>*`로 출하한다.
+이미 발행한 스냅샷은 불변이다. 새 사용자 편집을 반영할 때는 새 개정 ID가 필요하다.
+
+`publish-forest-place-library.mjs`는 지도 이벤트의 이동 대상 맵을 재귀 수집해 다운로드에 함께 넣고,
+로컬 업로드 이미지의 내용 해시를 검증한 뒤 data URL로 포함한다. 동굴 출구가 빠진 문서를 만들지 않는다.
+미리보기는 실제 편집기의 `mapOnlyCapture=1` 화면에서 맵 영역을 찍는다.
+`capture-forest-place-previews.mjs`와 `capture-forest-place-library.mjs`가 이미지·목록·내려받기 증거를 남긴다.
+출하 증거: `.omo/evidence/forest-place-library/`.

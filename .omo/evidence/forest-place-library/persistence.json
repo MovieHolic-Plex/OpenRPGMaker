@@ -1,0 +1,136 @@
+{
+  "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+  "sourceMapsUnchanged": true,
+  "places": [
+    {
+      "id": "forest-cabin-40x30",
+      "mapId": "map_forest_cabin_autotile",
+      "snapshotProjectId": "oprn-place-forest-cabin-v1",
+      "saved": true,
+      "reloaded": true,
+      "exactMap": true,
+      "mapCount": 1,
+      "sha256": "5a61fa7fa1dfe442a136283901cd85abc0e82afa1e78305a41b8f62b51d81aa0"
+    },
+    {
+      "id": "forest-star-64x56",
+      "mapId": "map_forest_star",
+      "snapshotProjectId": "oprn-place-forest-star-v1",
+      "saved": true,
+      "reloaded": true,
+      "exactMap": true,
+      "mapCount": 1,
+      "sha256": "4cbcb9bf5f58d583246276b73450b2b99b5c17ebe615d8d17a58b42c4323f109"
+    },
+    {
+      "id": "gubisup-80x72",
+      "mapId": "map_forest_complex",
+      "snapshotProjectId": "oprn-region-gubisup-v1",
+      "saved": true,
+      "reloaded": true,
+      "exactMap": true,
+      "mapCount": 1,
+      "sha256": "764ebe35673b7c1e74babf3eae72ae9b4250d46ba35f9d3234975f76824a5ada"
+    },
+    {
+      "id": "small-forest-village-80x72",
+      "mapId": "map_forest_small_village",
+      "snapshotProjectId": "oprn-region-small-forest-village-v1",
+      "saved": true,
+      "reloaded": true,
+      "exactMap": true,
+      "mapCount": 1,
+      "sha256": "5b2f56232b9119808923951a77624e8607563a7717180a35051851444ac74916"
+    },
+    {
+      "id": "forest-cliff-village-80x72",
+      "mapId": "map_forest_cliff_village",
+      "snapshotProjectId": "oprn-region-forest-cliff-village-v1",
+      "saved": true,
+      "reloaded": true,
+      "exactMap": true,
+      "mapCount": 1,
+      "sha256": "172d6861ba48037d2af9f1b8fe2ead1d088b9092bc3de7a07b6be38790ba0556"
+    },
+    {
+      "id": "high-cliff-village-80x88",
+      "mapId": "map_high_cliff_village",
+      "snapshotProjectId": "oprn-place-high-cliff-village-v1",
+      "saved": true,
+      "reloaded": true,
+      "exactMap": true,
+      "mapCount": 1,
+      "sha256": "2f46f4805f7bcc97a90d1b69f157359798cf7d0aadc991865bcc04c74fdcf99c"
+    },
+    {
+      "id": "cliff-forest-bridge-80x72",
+      "mapId": "map_cliff_forest_bridge",
+      "snapshotProjectId": "oprn-place-cliff-forest-bridge-v1",
+      "saved": true,
+      "reloaded": true,
+      "exactMap": true,
+      "mapCount": 1,
+      "sha256": "17f42a6387086ea30d8034bd4236f2b0bd699fdde32f2d1fcf59bac447584e51"
+    },
+    {
+      "id": "peaceful-forest-100x100",
+      "mapId": "map_peaceful_forest_100",
+      "snapshotProjectId": "oprn-place-peaceful-forest-v1",
+      "saved": true,
+      "reloaded": true,
+      "exactMap": true,
+      "mapCount": 1,
+      "sha256": "4d6214835562c73bd30441fecebb930be4a19568ce573ddb2b609e5980d19efd"
+    },
+    {
+      "id": "great-falls-100x100",
+      "mapId": "map_forest_great_falls_100",
+      "snapshotProjectId": "oprn-place-great-falls-v1",
+      "saved": true,
+      "reloaded": true,
+      "exactMap": true,
+      "mapCount": 1,
+      "sha256": "2b18fee4d4b43442a0487b7bffe99eb8d50f9dfdf5717444283cfbf33da1bbde"
+    },
+    {
+      "id": "rebuilt-forest-village-64x64",
+      "mapId": "map_forest_village_rebuilt",
+      "snapshotProjectId": "oprn-place-rebuilt-forest-village-v1",
+      "saved": true,
+      "reloaded": true,
+      "exactMap": true,
+      "mapCount": 2,
+      "sha256": "210dec279a6b57abeef7e63bc1700d5a2e5f588dc82bf9d34d7eae18058133ec"
+    },
+    {
+      "id": "harmony-hill-village-64x64",
+      "mapId": "map_hill_forest_village_20260918",
+      "snapshotProjectId": "oprn-place-harmony-hill-village-v1",
+      "saved": true,
+      "reloaded": true,
+      "exactMap": true,
+      "mapCount": 2,
+      "sha256": "3b4b47d0e2d80ed6af58abfc49b3193eeac7f4e8aef1c9b3a34f06fab6393e07"
+    },
+    {
+      "id": "hill-forest-cave-20x16",
+      "mapId": "map_hill_forest_cave",
+      "snapshotProjectId": "oprn-place-hill-forest-cave-v1",
+      "saved": true,
+      "reloaded": true,
+      "exactMap": true,
+      "mapCount": 2,
+      "sha256": "55899a8c062d3e86fe44bf6e7fdbee60835911c1e10b32ed6082d3b82ad860ed"
+    },
+    {
+      "id": "rebuilt-forest-cave-20x16",
+      "mapId": "map_rebuilt_forest_cave",
+      "snapshotProjectId": "oprn-place-rebuilt-forest-cave-v1",
+      "saved": true,
+      "reloaded": true,
+      "exactMap": true,
+      "mapCount": 2,
+      "sha256": "fdd441885e2c450b4eae72007d64d200c89fab1059272b4c92f71b624efd4a79"
+    }
+  ]
+}
