@@ -1,0 +1,46 @@
+[
+  {
+    "id": "enchanted-forest",
+    "audible": 0.0010268101436162673,
+    "muted": 0,
+    "restored": 0.0013530550170520682,
+    "stopped": {
+      "map": "qa_silent",
+      "state": "closed"
+    },
+    "errors": []
+  },
+  {
+    "id": "sunken-temple",
+    "audible": 0.007080266533906177,
+    "muted": 0,
+    "restored": 0.00969737747121467,
+    "stopped": {
+      "map": "qa_silent",
+      "state": "closed"
+    },
+    "errors": []
+  },
+  {
+    "id": "bamboo-grove",
+    "audible": 0.0073621052461749,
+    "muted": 0,
+    "restored": 0.014798451876050646,
+    "stopped": {
+      "map": "qa_silent",
+      "state": "closed"
+    },
+    "errors": []
+  },
+  {
+    "id": "power-station",
+    "audible": 0.001343902706425345,
+    "muted": 0,
+    "restored": 0.002238181139576391,
+    "stopped": {
+      "map": "qa_silent",
+      "state": "closed"
+    },
+    "errors": []
+  }
+]

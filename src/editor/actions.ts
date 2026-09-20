@@ -1,3 +1,4 @@
+import { normalizeAtmosphereEffects } from "@/project/atmosphere";
 import { normalizeMapClimate, type MapClimate } from "@/project/mapClimate";
 // editor/actions.ts
 // 에디터에서 Project를 갱신하는 모든 액션. store.update(mutator) 경유.
@@ -404,6 +405,17 @@ export function setMapClimate(mapId: MapId, climate: MapClimate | undefined): vo
     const normalized = normalizeMapClimate(climate);
     if (normalized) map.climate = normalized;
     else delete map.climate;
+  }, { scope: "map", mapId });
+}
+
+export function setMapAtmosphereEffects(mapId: MapId, effects: unknown): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    const normalized = normalizeAtmosphereEffects(effects);
+    if (normalized.length) map.atmosphereEffects = normalized;
+    else delete map.atmosphereEffects;
   }, { scope: "map", mapId });
 }
 

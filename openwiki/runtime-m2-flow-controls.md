@@ -222,3 +222,63 @@ and close the dedicated context; restored weather recreates the bus on the next 
 Browser evidence: `WEATHER_QA_KIND=rain|storm node scripts/qa/runtime/weather-audio.capture.mjs`
 uses the shipping player and records its actual destination bus, checking signal RMS, SE mute/restore
 and context shutdown. Output: `.omo/evidence/weather-quality/{rain,storm}-audio.webm` and JSON.
+
+### Map-wide atmosphere presets (2026-09-21)
+
+Map settings → 환경 효과 authors `GameMap.atmosphereEffects`, independently from `setWeather`
+and daily weather/fishing conditions. No placement rectangle or emitter position is authored.
+`src/project/atmosphere.ts` owns 19 effect IDs and normalization: leaves, petals, dust, sand,
+fireflies, magic, spirits, poison, ash, embers, smog, steam, leaks, sparks, sunrays, underwater,
+runes, shades, frost.
+Multiple distinct presets can coexist with weather/cloud shadows; unknown IDs and duplicates are
+ignored. Missing fields default to amount0.6/speed1/size1/opacity0.7; values clamp to amount/opacity0–1,
+speed0–3, size0.3–3. Missing map field means no effect, preserving existing maps.
+`playSceneAtmosphere.ts` uses the weather clock, screen-space zoom compensation and a separate
+800010-depth container. Each layer integrates its own speed (zero freezes it). Procedural polygons,
+halos, bubble rings and light rays require no assets; tinted seamless mist textures are shared with
+fog. Map changes reset layer phase; shutdown lets Phaser destroy objects and drops the WeakMap state.
+Atmosphere sounds are managed by the separate AudioEngine.atmosphere bus; rain/storm retain their own bus. Dust and sunrays default to silence because they have no intrinsic sound.
+Browser capture: `scripts/qa/runtime/atmosphere-gallery.capture.mjs`; evidence composition:
+`scripts/qa/compose-atmosphere-gallery.py`. The existing map is reused as a minimal rendering fixture,
+not an authored underwater/fantasy game. All GIF pixels originate from `player.html` screenshots.
+Editor controls and all 19 serialize/deserialize roundtrips: `scripts/qa/atmosphere-editor.mjs`.
+
+
+### Genre ambience presets and sound pairing (2026-09-21)
+
+`ATMOSPHERE_SCENES` contains thirty editable audiovisual combinations: five each in magic, demonic,
+wuxia, modern, industrial-era, and nature/underwater. `ATMOSPHERE_GENRES` owns the editor grouping. Applying a preset replaces only map atmosphere layers; weather, cloud
+shadows and BGM are preserved. Settings are copied into the map, so later catalog changes never
+rewrite already authored parameters. The editor explains replacement and exposes per-layer tint,
+sound selection (including none), and volume in addition to amount/speed/size/opacity.
+
+`AtmosphereEffect.sound?`, `volume?`, `tint?` are optional. Normalization chooses kind-specific default
+sound and volume0.35, clamps volume0–1 and accepts only #RRGGBB tint. Dust and sunrays are intentionally
+silent. AtmosphereAudio generates quiet stereo procedural loops: breeze/rustle/insects/chimes/whisper/
+rumble/fire/steam/drips/electric/bubbles. Same sound types share one voice with maximum requested gain;
+different voices scale by square root of active voice count, keeping combined presets restrained.
+Gain follows amount × layer volume × SE mixer. Initial playback waits for shared input unlock;
+layer removal stops its source; silence, map exit, shutdown and engine stopAll close the context.
+It never occupies authored BGM/BGS/ambient channels or requires external media for game export.
+Procedural sound is ambience; sparks/drips are not individually synchronized to each visual particle.
+
+Browser proof: `atmosphere-editor.mjs` checks all thirty preset UI applications and JSON roundtrips,
+plus sound-off and volume edits. `runtime/atmosphere-audio.capture.mjs` records real destination audio
+for four representative presets and checks nonzero output, SE mute/restore, and silent-map transfer
+closing the context. Audio/evidence are under `.omo/evidence/atmosphere/`.
+
+
+### Thirty audiovisual presets — evidence (2026-09-21)
+
+`runtime/atmosphere-presets.capture.mjs` asserts 30 unique IDs, five per genre, then boots each
+normalized preset via the shipping `player.html` harness on the same existing QA map. Each preset
+captures 60 native screenshots at96ms/frame (5.76s) and records its real WebAudio destination separately.
+Audio analyser samples require a running context, nonzero RMS and no sampled peak clipping.
+`compose-atmosphere-presets.py` makes six five-preset GIF contact sheets plus thirty full-size GIFs
+and an HTML gallery with per-preset audio controls. GIFs contain no audio and the separately recorded
+ambience is not represented as sample-synchronized video. All outputs and per-preset receipts live
+in `.omo/evidence/atmosphere-30/`. No new game/map content or remote project is authored for capture.
+
+New effect primitives: runes (rotating six-point sigils), shades (drifting multi-stroke wisps),
+frost (rotating six-arm crystals), using the same amount/speed/size/tint/audio controls.
+Existing preset IDs are retained; saved maps hold copied layer settings, not catalog references.

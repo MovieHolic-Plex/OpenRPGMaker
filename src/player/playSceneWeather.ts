@@ -1,4 +1,5 @@
 import { resolveMapWeather } from "@/player/weather/weatherModel";
+import { syncAtmosphere } from "./playSceneAtmosphere";
 import { getAudioEngine } from "@/player/audio";
 import type Phaser from "phaser";
 import { ensureFogTexture } from "@/player/weather/fogTexture";
@@ -118,6 +119,7 @@ export function syncWeatherLayer(scene: PlaySceneContext): void {
   const audio = getAudioEngine();
   audio.weather.update(displayed, scene.weatherClockMs ?? 0, audio.isUnlocked());
   renderWeather(scene, displayed);
+  syncAtmosphere(scene);
 }
 
 export function weatherKindFromSession(session: PlaySessionLike): WeatherParams["kind"] {

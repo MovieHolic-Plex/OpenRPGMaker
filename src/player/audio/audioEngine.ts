@@ -1,3 +1,4 @@
+import { AtmosphereAudio } from "./atmosphereAudio";
 // player/audio/audioEngine.ts
 // 실제 재생 엔진(브라우저 전용). HTMLAudioElement 기반.
 // - BGM/BGS: 루프 재생, 트랙 교체 시 크로스페이드, 정지 시 페이드아웃.
@@ -76,6 +77,7 @@ function nowMs(): number {
 
 export class AudioEngine {
   readonly weather = new WeatherAudio();
+  readonly atmosphere = new AtmosphereAudio();
   private queue: AudioQueueState = createAudioQueueState();
   private readonly loopTracks: Map<AudioChannel, ManagedTrack> = new Map();
   private readonly oneShots: Set<ManagedTrack> = new Set();
@@ -138,6 +140,7 @@ export class AudioEngine {
   // 잠금 해제 + 대기 큐 방출.
   unlock(): void {
     this.weather.unlock();
+    this.atmosphere.unlock();
     if (this.audioContext?.state === "suspended") {
       void this.audioContext.resume().catch((error: unknown) => console.warn("[audio] AudioContext resume failed", error));
     }
@@ -159,7 +162,10 @@ export class AudioEngine {
 
   setVolume(group: AudioVolumeGroup, volume: number): void {
     this.volumes[group] = clampVolume(volume);
-    if (group === "se") this.weather.setVolume(this.volumes.se);
+    if (group === "se") {
+      this.weather.setVolume(this.volumes.se);
+      this.atmosphere.setVolume(this.volumes.se);
+    }
     // 재생 중인 트랙에 즉시 반영 — 정지 후 재생을 요구하지 않는다.
     for (const track of [...this.loopTracks.values(), ...this.oneShots, ...this.fadingTracks]) {
       if (volumeGroupForChannel(track.channel) === group) this.updateTrackVolume(track);
@@ -251,6 +257,7 @@ export class AudioEngine {
   // 세이브 로드/씬 종료: 모든 오디오 정지.
   stopAll(fade = false): void {
     this.weather.stop();
+    this.atmosphere.stop();
     this.queue = clearPending(this.queue);
     for (const track of this.loopTracks.values()) {
       if (fade) {

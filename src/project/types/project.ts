@@ -134,6 +134,8 @@ export interface GameMap {
    * 순수 함수가 맡는다(같은 시간 입력은 언제나 같은 그림자).
    */
   cloudShadows?: MapCloudShadowSetting;
+  /** Optional map-wide decorative layers; independent of gameplay weather. */
+  atmosphereEffects?: import("../atmosphere").AtmosphereEffect[];
   /**
    * 맵에 찍힌 구조물 킷 배치 기록. "여기에 이 집이 있다"를 남겨 다시 고르고·고치고·지울 수 있게 한다.
    * 기록 범위는 구조물 킷 스탬프만 — 사람이 팔레트로 찍은 것.
