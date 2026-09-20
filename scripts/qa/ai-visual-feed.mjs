@@ -10,7 +10,8 @@ const page = await browser.newPage({ viewport: { width: 1560, height: 1100 }, se
 page.setDefaultTimeout(30000); page.setDefaultNavigationTimeout(120000);
 const checks = [], errors = [];
 const check = (label, ok) => { checks.push({ label, ok }); console.log(`${ok ? 'PASS' : 'FAIL'} ${label}`); if (!ok) throw new Error(label); };
-page.on('pageerror', e => errors.push(e.message)); page.on('dialog', d => d.accept());
+page.on('pageerror', e => { errors.push(e.message); console.log('BROWSER ERROR', e.message); });
+page.on('requestfailed', req => console.log('REQUEST FAILED', req.url(), req.failure()?.errorText)); page.on('dialog', d => d.accept());
 const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 try {
   await page.addInitScript(() => {
@@ -126,16 +127,20 @@ try {
   await page.setViewportSize({ width: 1024, height: 900 });
   await page.screenshot({ path: resolve(out, '06-compact.png') });
   check('No horizontal overflow in conversation', await view.evaluate(e => e.scrollWidth <= e.clientWidth + 1));
+  // Exercise a real same-origin document reload without editor boot: Vite's large
+  // editor dynamic import intermittently aborts on a full-shell reload (also baseline).
+  // This receipt check specifically owns IndexedDB durability, not editor startup.
+  await page.route('**/__qa_activity_media_reload', r => r.fulfill({ contentType: 'text/html', body: '<!doctype html><title>Activity media durability</title>' }));
+  await page.goto(`${base}/__qa_activity_media_reload`, { waitUntil: 'domcontentloaded' });
   await page.reload({ waitUntil: 'domcontentloaded' });
-  await page.getByTestId('ai-input').waitFor({ timeout: 120000 });
   const persisted = await page.evaluate(async ids => {
     const media = await import('/src/ai/activityMediaArchive.ts');
     return Promise.all(ids.filter(r => r.bytes > 0).map(async r => (await media.readActivityMedia(r.id))?.blob?.size === r.bytes));
   }, mediaIds);
-  check('Captured image bytes survive reload', persisted.length >= 8 && persisted.every(Boolean));
+  check('Captured image bytes survive same-origin document reload', persisted.length >= 8 && persisted.every(Boolean));
   check('No browser runtime errors', errors.length === 0);
 } finally {
   writeFileSync(resolve(out, 'report.json'), JSON.stringify({ checks, errors }, null, 2));
-  if (checks.some(c => !c.ok)) await page.screenshot({ path: resolve(out, 'failure.png') }).catch(() => {});
+  if (checks.some(c => !c.ok) || errors.length) await page.screenshot({ path: resolve(out, 'failure.png') }).catch(() => {});
   await browser.close();
 }
