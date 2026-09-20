@@ -1,3 +1,4 @@
+import { getPlayerPreferences } from '@/player/playerPreferences';
 import type { RuntimeJuiceEvent } from "@/player/runtimeJuice";
 import { markStatusMenuClosing } from "@/player/playerStatusMenuControllerDom";
 
@@ -5,7 +6,7 @@ const running = new WeakMap<HTMLElement, Animation>();
 export const STATUS_MENU_MOTION = { open: 180, close: 120, page: 120, cursor: 80, feedback: 120, vitals: 220 } as const;
 
 function reducedMotion(): boolean {
-  return typeof window !== "undefined" && Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
+  return getPlayerPreferences().reduceMenuMotion || typeof window !== "undefined" && Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
 }
 
 function animate(node: HTMLElement, frames: Keyframe[], duration: number, fill: FillMode = "none"): Animation | undefined {

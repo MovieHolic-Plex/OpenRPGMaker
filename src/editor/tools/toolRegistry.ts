@@ -8,6 +8,7 @@ import { CLUSTER_RULE_TOOLS } from "./clusterRuleTools";
 import { DB_TOOLS } from "./dbTools";
 import { ENDING_TOOLS } from "./endingTools";
 import { COMPANION_TOOLS } from "./companionTools";
+import { EVENT_COMMAND_ASSIST_TOOLS } from "./eventCommandAssistTool";
 import { EVENT_TOOLS } from "./eventTools";
 import { NPC_CAST_TOOLS } from "./npcCastTools";
 import { EXPORT_TOOLS } from "./exportTools";
@@ -72,6 +73,7 @@ import { withMonsterAppearanceEnvelope } from "./monsterAppearanceTools";
 import { WORLD_STRUCTURE_TOOLS } from "./worldStructureTools";
 import { WORLD_CANON_TOOLS } from "./worldCanonTools";
 import { SPATIAL_TOOLS } from "./spatialTools";
+import { WEB_SEARCH_TOOLS } from "./webSearchTool";
 
 export { PLACEMENT_TOOLS };
 
@@ -181,6 +183,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(ACTION_TOOLS, "map"),
   ...withDomain(MAP_GEN_TOOLS, "map"),
   ...withDomain(EVENT_TOOLS, "event"),
+  ...withDomain(EVENT_COMMAND_ASSIST_TOOLS, "event"),
   ...withDomain(NPC_CAST_TOOLS, "event"),
   ...withDomain(COMPANION_TOOLS, "event"),
   ...withDomain(INVESTIGATION_TOOLS, "event"),
@@ -228,6 +231,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(CHARACTER_APPEARANCE_TOOLS, "database"),
   ...withDomain(PLACEMENT_TOOLS, "tile"),
   ...withDomain(RANGE_CLASSIFY_TOOLS, "tile"),
+  // 웹 검색은 UI 상태로 예측할 수 없다 — "최신 정보가 필요하다" 는 도메인이 아니라 요청의 성질이다.
+  ...WEB_SEARCH_TOOLS,
 ]);
 
 const TOOL_BY_NAME = new Map<string, ToolDefinition>(TOOL_REGISTRY.map((tool) => [tool.name, tool]));

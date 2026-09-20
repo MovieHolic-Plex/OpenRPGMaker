@@ -25,7 +25,8 @@ import { clearChildren, el } from "@/util/dom";
 import { renderEditorIcon } from "./editorIcons";
 import { renderEventIdReadout } from "./eventIdReadout";
 import { isTopModal, hasOpenModalLayer, registerModal, unregisterModal } from "@/editor/ui/modalStack";
-import { clearEventAiLiveDock } from "./aiAssist";
+import { clearEventAiLiveDock, focusEventAiDockInOpenEditor } from "./aiAssist";
+import { clearEventAiDockOpenRequest, requestEventAiDockOpen } from "./aiDockOpenRequest";
 import {
   openActiveEventCommandPicker,
   renderEventEditorDynamic,
@@ -56,17 +57,30 @@ const EVENT_EDITOR_RESTORE_EVENT = "oprn:event-editor-restore";
 type OpenEventEditorRequest = {
   readonly mapId: MapId;
   readonly eventId: string;
+  /** 열자마자 AI 명령 도크를 펼치고 입력창으로 초점을 준다(맵 우클릭 「AI 로 이벤트 …」). */
+  readonly aiDock?: boolean;
 };
 
-export function openEventEditorModal(mapId: MapId, eventId: string): void {
+export function openEventEditorModal(
+  mapId: MapId,
+  eventId: string,
+  options?: { readonly aiDock?: boolean; readonly pageId?: string },
+): void {
   if (isEventEditorModalOpenFor(mapId, eventId)) {
-    document.querySelector(`[data-testid='${EVENT_EDITOR_MODAL_TEST_ID}']`)
-      ?.dispatchEvent(new CustomEvent(EVENT_EDITOR_RESTORE_EVENT));
+    if (options?.pageId) editorState.set({ selectedEventPageId: options.pageId });
+    // 이미 그 이벤트를 편집 중이다 — 도크가 문서에 살아 있으므로 예약이 아니라 직접 펼친다.
+    // (예약은 "태어날 때" 소비되므로 여기서 남기면 다음 재렌더까지 떠돌다 샌다.)
+    const modal = document.querySelector(`[data-testid='${EVENT_EDITOR_MODAL_TEST_ID}']`);
+    // 복원을 **먼저** 한다. 최소화된 편집기의 도크는 hidden 부모 아래 살아 있어서, 복원 전에
+    // 펼치면 보이지 않는 곳에서 초점을 뺏고 사용자는 "눌렀는데 아무 일도 안 일어났다"를 본다.
+    modal?.dispatchEvent(new CustomEvent(EVENT_EDITOR_RESTORE_EVENT));
+    if (options?.aiDock) focusEventAiDockInOpenEditor();
     return;
   }
   guardedCloseExistingEventEditorModal(() => {
+    if (options?.pageId) editorState.set({ selectedEventPageId: options.pageId });
     if (!beginExistingEventDraft(mapId, eventId)) return;
-    openDraftEventEditorModal({ mapId, eventId });
+    openDraftEventEditorModal({ mapId, eventId, aiDock: options?.aiDock });
   });
 }
 
@@ -75,13 +89,14 @@ export function openNewEventEditorModal(
   x: number,
   y: number,
   onOpened?: (eventId: string) => void,
+  options?: { readonly aiDock?: boolean },
 ): string {
   let created = "";
   guardedCloseExistingEventEditorModal(() => {
     const eventId = createEventDraft(mapId, x, y);
     if (!eventId) return;
     created = eventId;
-    openDraftEventEditorModal({ mapId, eventId });
+    openDraftEventEditorModal({ mapId, eventId, aiDock: options?.aiDock });
     onOpened?.(eventId);
   });
   return created;
@@ -132,6 +147,9 @@ function confirmEventEditor(parent: HTMLElement, options: ConfirmOptions): Promi
 }
 
 function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
+  // 예약은 반드시 첫 렌더 **전에** 남긴다. 도크는 자기가 태어날 때 이 값을 한 번 소비한다.
+  // (렌더 뒤에 켜면 초안 생성의 store 갱신이 본문을 다시 그리면서 그 DOM 을 버린다.)
+  if (request.aiDock) requestEventAiDockOpen(request.mapId, request.eventId);
   // The switch guard restores the old draft's map. Only a successful open
   // takes ownership of the destination, keeping its newly selected event/page.
   selectEditorMap(request.mapId, { clearEventSelection: false });
@@ -417,6 +435,10 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     globalThis.clearInterval(checkpointTimer);
     clearCommandToolbarHistories(`${request.mapId}:${request.eventId}:`);
     clearEventAiLiveDock();
+    // 예약은 "태어날 때 한 번" 소비된다. 도크가 그려지기 전에 편집기가 닫혔다면(본문 렌더가
+    // 던졌거나 즉시 닫힘) 예약이 남아, 훗날 같은 이벤트를 열 때 도크가 저절로 펼쳐진다.
+    // 닫는 자리에서 이 이벤트의 예약을 확실히 버린다.
+    clearEventAiDockOpenRequest(request.mapId, request.eventId);
     unsubscribeStore();
     unsubscribeEditor();
     unsubscribeAutoSave();

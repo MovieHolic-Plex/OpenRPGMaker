@@ -1,9 +1,11 @@
+vi.mock("@/editor/panels/aiActivitySave", () => ({ observeActivitySave: vi.fn() }));
 // Pi 경로(2026-09-10 이후 기본)에도 실행 결과 4축(ai-run-outcome)이 산다 — 세션 경로만
 // 있던 불일치(2026-09-11 실측: 20턴 내내 1회도 미렌더)의 회귀.
 // 렌더는 패널이 소유하고, 여기선 surface.setRunOutcome 으로 흘린 facts 만 고정한다.
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const h = vi.hoisted(() => ({
+  villageIssues: [] as string[],
   planError: false,
   harmony: true,
   verdicts: [] as boolean[],
@@ -13,7 +15,7 @@ const h = vi.hoisted(() => ({
   applyCalls: 0,
   harmonyError: false,
   requests: [] as Record<string, unknown>[],
-  results: [] as { project: unknown; toolCalls?: number; toolErrors?: number }[],
+  results: [] as { project: unknown; toolCalls?: number; toolErrors?: number; villageCompletion?: { mapIds: string[]; issues: string[] } }[],
   errorEvents: [] as string[],
   assistantTexts: [] as string[],
   outcomes: [] as (Record<string, unknown> | null)[], // 호출 순서 보존
@@ -60,7 +62,7 @@ vi.mock("@/ai/piAgent/client", () => ({
     }
     for (const text of h.assistantTexts.splice(0)) options?.onEvent?.({ type: "assistant", text });
     const done = {
-      type: "done", project: next.project,
+      type: "done", project: next.project, villageCompletion: next.villageCompletion,
       stats: { ms: 1, turns: 1, toolCalls: next.toolCalls ?? 1, toolErrors: next.toolErrors ?? 0 },
       changedKeys: [],
     };
@@ -93,7 +95,7 @@ vi.mock("@/ai/piAgent/mapBundle", () => ({
 vi.mock("@/project/authoredProjectBaseline", () => ({ AuthoredProjectBaseline: class {} }));
 // subscribe 가 빠져 있어 mapEditHistory 의 모듈 초기화가 즉시 죽었다 — 파일 전체가 로드조차
 // 되지 않아 여기 담긴 12개 케이스가 통째로 침묵했다(main 기준으로도 빨간불).
-vi.mock("@/project/store", () => ({ store: { getCurrent: () => h.project, subscribe: () => () => {} } }));
+vi.mock("@/project/store", () => ({ store: { getCurrent: () => h.project, getProjectIdentity: () => ({ kind: "local-session", id: "outcome-fixture" }), subscribe: () => () => {} } }));
 // 실제 모달을 띄우지 않는다. 맵 소실 확인은 별도 케이스에서 반환값을 갈아 끼워 검사한다.
 vi.mock("@/editor/ui/modal", () => ({ showConfirm: async () => h.confirmAnswer }));
 vi.mock("@/ai/llmClient", () => ({ loadAiConfig: () => ({ providerId: "google-antigravity", model: "m", piApply: h.piApply }) }));
@@ -101,6 +103,10 @@ vi.mock("@/editor/tools/changeset", () => ({ summarizeChanges: () => ({}) }));
 vi.mock("@/editor/tools/applyChangesetToStore", () => ({
   captureProposalBase: () => ({}),
   applyProposedProject: async () => { h.applyCalls += 1; return { ok: true }; },
+}));
+
+vi.mock("@/ai/piAgent/villageCompletion", () => ({
+  inspectPiVillageCompletion: (_project: unknown, _base: unknown, ids: Iterable<string>) => ({ mapIds: [...ids], issues: h.villageIssues }),
 }));
 
 const { runPiCommand } = await import("@/editor/panels/aiPiAgentCommand");
@@ -123,6 +129,7 @@ const harness = () => {
 };
 
 beforeEach(() => {
+  h.villageIssues.length = 0;
   h.planError = false; h.verdicts.length = 0; h.findings.length = 0;
   h.reviewCalls = 0; h.applyCalls = 0; h.outcomes.length = 0;
   h.requests.length = 0; h.results.length = 0; h.bubbles.length = 0; h.process.length = 0;
@@ -135,6 +142,16 @@ beforeEach(() => {
 });
 
 describe("Pi 경로 실행 결과 4축", () => {
+  it.each(["default", "yolo"] as const)("%s: 마을 완료 검사 실패는 조화 검수 성공으로 지워지지 않는다", async mode => {
+    h.piApply = mode;
+    h.villageIssues.push("map_a: 대사 없는 페이지");
+    h.results.push({ project: projectWith("시공"), villageCompletion: { mapIds: ["map_a"], issues: h.villageIssues } });
+    const { outcomeCalls, surface } = harness();
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "마을을 지어라" }, surface());
+    expect(outcomeCalls.at(-1)).toMatchObject({ goal: "incomplete", delivery: mode === "yolo" ? "applied" : "draft" });
+    expect(h.applyCalls).toBe(mode === "yolo" ? 1 : 0);
+  });
+
   it("passes initial schema candidates into the companion request", async () => {
     const { surface } = harness();
     const initialToolNames = ["find_tools", "get_project_summary", "set_party"];

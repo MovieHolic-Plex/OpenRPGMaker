@@ -79,7 +79,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
   return {
     name: "author_village",
     description:
-      "마을 설계서가 있으면 presetId 또는 기본 설계서를 사용한다. 고정값은 생략하고 범위 안의 값만 요청한다. 충돌(village-design-conflict)은 DB 설계서를 바꾸기 전까지 재시공하지 말고 사용자에게 차이를 알린다. houseCount는 설계서가 없을 때 필수다. 시공 순서는 집 → 길 → 나무 → 호수·마당·맵 장식이다. 물·마당 자리는 계획에서 예약하고 실제 물은 마지막에 칠한다. Canonical village facade. Builds an exact or explicit best-effort house count on one locked existing/new target. 마을 숲은 forestDensity 를 반드시 넣는다(테마 문장만 쓰고 density 를 빼지 말 것). 사용자가 선택 영역을 준 턴은 target:{kind:\"existing\", mapId, bounds} 로 그 맵 그 사각형만 대상으로 하고 새 맵을 만들지 말 것. 「이 마을 정리」처럼 수량이 없어도 같다.",
+      "마을 설계서가 있으면 presetId 또는 기본 설계서를 사용한다. 고정값은 생략하고 범위 안의 값만 요청한다. 충돌(village-design-conflict)은 DB 설계서를 바꾸기 전까지 재시공하지 말고 사용자에게 차이를 알린다. houseCount는 설계서가 없을 때 필수다. 시공 순서는 집 → 길 → 나무 → 호수·마당·맵 장식이다. 물·마당 자리는 계획에서 예약하고 실제 물은 마지막에 칠한다. Canonical village facade. Builds an exact or explicit best-effort house count on one locked existing/new target. 설계서의 자연 설정이 고정이면 forestDensity는 생략한다(숲 없음에는 지정 금지). 자유 설정에서 숲 요청이 있으면 forestDensity를 넣는다. 사용자가 선택 영역을 준 턴은 target:{kind:\"existing\", mapId, bounds} 로 그 맵 그 사각형만 대상으로 하고 새 맵을 만들지 말 것. 「이 마을 정리」처럼 수량이 없어도 같다.",
     mode: "write",
     domains: ["tile", "map"],
     parameters: {
@@ -168,7 +168,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
           type: "array",
           description:
             "주민 이름·역할·대사 [{name, role?, lines?}] — 순서대로 소비된다(집 주인 → 광장). 테마에 맞는 이름, 서로를 언급하는 대사, 세계관 개체 언급을 넣어라. "
-            + "생략하면 주민은 대사 없이 놓이고 세션의 캐스트 라이터가 한 번에 써서 채운다(코드는 대사를 지어내지 않는다).",
+            + "생략하면 주민은 대사 없이 놓인다. residents[].lines를 직접 주거나 author_npc_cast로 보충해야 한다. Pi는 종료 전에 누락을 검사해 보충을 요청하며 남아 있으면 미완료로 보고한다(코드는 대사를 지어내지 않는다).",
           items: {
             type: "object",
             properties: {

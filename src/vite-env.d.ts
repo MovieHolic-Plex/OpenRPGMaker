@@ -6,6 +6,8 @@ declare module "*.css";
 interface ImportMetaEnv {
   readonly DEV: boolean;
   readonly PROD: boolean;
+  /** Vite public path. Always present; default `/`. */
+  readonly BASE_URL: string;
   // VITE_YUNWU_API_KEY / VITE_LLM_API_KEY / VITE_LLM_API_URL 은 선언을 걷었다.
   // 앞의 둘은 키를 클라이언트 번들에 인라인하던 통로이고, 마지막 것은 에디터의 인증
   // 모드를 정해 AI 를 반복적으로 죽인 통로다(llmClient.defaultAiConfig 주석 참고).

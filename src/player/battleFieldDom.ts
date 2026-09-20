@@ -1,3 +1,4 @@
+import { battleTypeBadges } from "@/player/battleTypeBadges";
 import type { BattleActionBeat } from "@/player/battleActionBeats";
 import { fitBattleEnemy } from "@/player/battleEnemyFit";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -515,7 +516,7 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
       : feedback.healing
         // MP 회복은 HP 팝업과 같은 초록 +N 으로 두면 어느 눈금이 움직였는지 알 수 없다.
         ? (feedback.resource === "mp" ? `MP +${feedback.amount}` : `+${feedback.amount}`)
-        : `-${feedback.amount}`;
+        : (feedback.resource === "mp" ? `MP -${feedback.amount}` : `-${feedback.amount}`);
   const anchor = findBattlerNode(field, feedback.targetId);
   if (anchor) {
     popup.style.setProperty("--battle-node-x", anchor.style.getPropertyValue("--battle-node-x"));
@@ -792,7 +793,11 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0, count = 4): HTMLElem
   node.setAttribute("aria-label", actor.name);
   // SC13/L5: 파티 몬스터가 필드에 나선 경우 종족 그래픽을 아군측(back) 스프라이트로
   // 렌더한다. 스킨 전용 파티 스프라이트보다 우선한다(몬스터는 종족 그래픽이 필수).
-  const monsterResource = actor.speciesId ? monsterSpeciesResourceId(actor.speciesId) : undefined;
+  const speciesGraphic = actor.speciesId
+    ? store.getCurrent().database.monsterSpecies?.find((species) => species.id === actor.speciesId)?.graphic
+    : undefined;
+  const backResource = place.partyFacing === "back" ? speciesGraphic?.backResourceId : undefined;
+  const monsterResource = backResource ?? speciesGraphic?.monsterResourceId;
   if (actor.speciesId) {
     node.dataset.monsterBattler = "true";
     if (monsterResource) {
@@ -800,6 +805,7 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0, count = 4): HTMLElem
       if (url) {
         const image = document.createElement("img");
         image.className = "battle-actor-image battle-monster-image battle-monster-back";
+        if (backResource) image.classList.add("battle-monster-authored-back");
         applyIdleAnimationToImage(image, monsterResource);
         image.alt = `${actor.name} 몬스터`;
         image.src = url;
@@ -995,7 +1001,7 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
     lv.className = "battle-actor-level";
     // 라벨/값을 나눠 담는다 — vxace 스킨이 참조처럼 "라벨 배지 + 큰 숫자" 로 그리려면
     // 두 조각의 서식이 달라야 한다. 합친 textContent 는 "Lv 1" 로 한 노드일 때와 같다.
-    lv.append(vitalLabel("Lv"), vitalValue(` ${actor.level}`));
+    lv.append(vitalLabel(activeSkin().id === "pokemon" ? "레벨" : "Lv"), vitalValue(` ${actor.level}`));
     name.append(lv);
   }
 
@@ -1011,6 +1017,8 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
   const face = actorFaceNode(actor);
   if (face) row.append(face);
   row.append(name, vitals, hpGauge, mpGauge);
+  const types = battleTypeBadges(actor);
+  if (types) row.append(types);
   const role = actorRoleNode(actor);
   if (role) row.append(role);
   if (battleFlow === "gauge") {
@@ -1237,9 +1245,6 @@ function isGeneratedBattleActor(resourceId: string): boolean {
   return resourceId.startsWith("generated-actor-") && resourceId.endsWith("-battle");
 }
 
-function monsterSpeciesResourceId(speciesId: string): string | undefined {
-  return store.getCurrent().database.monsterSpecies?.find((species) => species.id === speciesId)?.graphic.monsterResourceId;
-}
 
 /** 포획 구슬 시네마틱을 재생하고 총 소요 ms를 반환한다.
  *  투척(480ms) → 흡수(240ms) → 흔들림 3회(1,260ms) → 성공 반짝/실패 탈출(420ms). */

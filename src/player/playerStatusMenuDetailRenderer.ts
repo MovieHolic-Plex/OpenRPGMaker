@@ -180,7 +180,7 @@ function renderDetailEntry(options: {
           role: "menuitem",
           tabindex: selected ? "0" : "-1",
           "aria-current": selected ? "true" : "false",
-          "aria-label": [entry.label, entry.description].filter(Boolean).join(" — "),
+          "aria-label": [entry.label, entry.value, entry.description].filter(Boolean).join(" — "),
           ...(entry.disabled ? { disabled: "true", "aria-disabled": "true" } : {}),
           ...(entry.unavailableReason ? { "aria-disabled": "true" } : {}),
         },

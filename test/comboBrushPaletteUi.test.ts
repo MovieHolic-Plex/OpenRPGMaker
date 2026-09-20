@@ -131,8 +131,8 @@ describe("default reflowed palette creates a combo brush", () => {
   });
 });
 
-describe("custom atlas stamps follow the six-column display", () => {
-  it("reads the drag rectangle from the reflowed display order", () => {
+describe("custom atlas stamps preserve source coordinates", () => {
+  it("reads adjacent source rows as one rectangular stamp", () => {
     const tileset = customTileset();
     const created: PaletteStamp[] = [];
     const palette = makeCustomPalette({
@@ -144,16 +144,15 @@ describe("custom atlas stamps follow the six-column display", () => {
     });
     document.body.append(palette);
 
-    // 화면은 6열이므로 10 → 19 는 표시 순서에서 4×3 범위다.
+    // 원본 8열에서 10 → 19 는 2×2 범위다.
     dragBetween(palette, "chipset-tile-10", "chipset-tile-19");
 
     expect(created.length).toBe(1);
-    expect(created[0]!.width).toBe(4);
-    expect(created[0]!.height).toBe(3);
+    expect(created[0]!.width).toBe(2);
+    expect(created[0]!.height).toBe(2);
     expect(created[0]!.cells.map((cell) => cell.tile)).toEqual([
-      7, 8, 9, 10,
-      13, 14, 15, 16,
-      19, 20, 21, 22,
+      10, 11,
+      18, 19,
     ]);
   });
 });

@@ -1,3 +1,131 @@
+### 검색 중 사용자에게 보이는 것 (2026-09-21 실측)
+
+검색은 실제로 길다 — 실측 31.18초. 그동안 사용자에게 보이는 것은 세 겹이다.
+
+1. **작업 카드 상태 문구.** 검색이 시작되면 `웹에서 참고 작품을 찾는 중… (십 초 정도 걸릴 수 있어요)` 로 바뀐다.
+   이전에는 `작업 중…` 만 보여 멈춘 것처럼 읽혔다. 실행 턴과 계획 턴 두 경로에 모두 걸었다 —
+   「해리포터 같은 게임」 시나리오가 검색하는 자리가 바로 계획 턴이다.
+2. **작업 과정 타임라인.** 툴마다 `◌ 웹 검색 · 실행 중` → `✓ 웹 검색 · 완료 · 31.18초` 행이 남고,
+   행에는 `00:12 · 조수 · 31.18초` 처럼 트레이스 시작 기준 경과가 붙는다(`aiActivityView` 의 `clock`).
+   기본 표시 수준은 「간단히 보기」(brief)이고, 설정에서 생략·자세히·매우 자세히로 바꾼다.
+3. **중지 버튼.** 턴이 도는 동안 계속 보인다(`ai-run-stop`).
+
+`web_search` 라벨이 사전에 없으면 타임라인이 `web search` 라는 영문을 그대로 보여 준다(2026-09-21 실측:
+`label="web search" icon=wrench group=build`). 지금은 `웹 검색` · 돋보기 아이콘 · 조회 그룹이다.
+
+## 참조 작품 비유 → 자율 웹 검색 (2026-09-21)
+
+사용자가 실존 작품을 비유하면(「해리포터 같은 게임 만들고 싶다」) 조수가 **설계 전에 스스로 검색**하고
+그 사실로 계획을 세운다. 이전에는 `mode=other` 로 분류되며 참조가 조용히 사라져 검색 계기가 없었다.
+
+- **`referenceWork` 는 의도 선언의 사실이다.** `IntentDeclaration.referenceWork`(문자열|null)에 작품명이 남고,
+  `formatIntentNote` 가 `[참조 작품]` 계약을 붙인다 — 검색하라, 암기로 추정하지 마라, 고유명사는 그대로 쓰지 마라.
+- **authoring 게이트에 묶지 마라.** 파서가 `create|modify` 에만 실어 보내면 「만들고 싶다」(mode=other) 발화에서
+  조용히 사라진다(2026-09-21 실측: referenceWork=null, tools=[]). 지금은 모든 모드에서 보존한다.
+- 장르·스타일 설명(「중세 판타지 RPG」)은 작품명이 아니다 — 선언 프롬프트가 그 경계를 가르친다.
+- 시스템 프롬프트(`piAgent/systemPrompt.ts`)도 같은 규칙을 말한다: 지식밖의 사실은 (a) 최신 사실,
+  (b) 실존 작품 비유 두 갈래로 검색한다.
+
+### 죽은 Codex 자격이 검색·완성을 영구히 막던 문제
+
+편집기 저장본(`~/.oprn/oh-my-pi-auth.json`)의 Codex 자격이 만료되면 갱신을 시도하는데, `codex` CLI 같은
+다른 도구가 먼저 갱신했으면 `refresh_token_reused` 로 실패한다. 그때 CLI 로그인은 더 신선할 수 있는데도
+`resolveRequestApiKey` 가 저장본만 보고 던져서 **모든 검색·완성이 그 행에 묶여 죽었다**(2026-09-21 실측).
+지금은 갱신 실패 시 `adoptCodexCliCredentials` 로 CLI 자격 채용을 한 번 시도하고, 그것도 못 쓰면 원래
+오류를 올린다.
+
+### 검증
+
+`~/.bun/bin/bun run scripts/ai-reference-work-live-test.mts` — 의도 선언 → 참조 노트 → Pi 루프를
+편집기와 같은 경로로 통과시킨다. 판정은 실제 실행된 툴 호출과 출처 URL 이다.
+실측 2026-09-21: `referenceWork="해리포터"`, 실행 툴 `["web_search","get_project_summary","read_project_wiki"]`,
+출처 `harrypotter.com/features/everything-a-first-year-should-know-about-hogwarts` 외 2건, 판정 PASS.
+회귀: `test/intentDeclaration.test.ts` 의 「참조 작품 비유 — 검색을 부르는 계약」 6케이스.
+
+## 조수 웹 검색 도구 (2026-09-21)
+
+조수가 `web_search({query})` 로 인터넷을 검색한다. 레지스트리 등록은 `src/editor/tools/webSearchTool.ts`,
+업스트림 계약은 `scripts/lib/codexWebSearchRuntime.ts`, Pi 배선은 `scripts/lib/piAgentRuntime.ts` 다.
+
+- **검색 엔진은 Codex(ChatGPT) 백엔드다.** 조수 제공자가 Antigravity(Gemini, 공장 기본)여도 검색은
+  ChatGPT 구독 자격으로 나간다 — `tools:[{type:"web_search"}]` + `stream:true` 계약을 실측으로 고정했다
+  (`stream:false` 는 업스트림이 400 "Stream must be set to true" 로 거절한다. 비스트리밍은 존재하지 않는다).
+- **자격은 서버 경계에만 있다.** `resolveRequestApiKey("openai-codex")` 가 동반 서비스에서 해결해
+  워커로 넘기고(`codexApiKey`), 브라우저로는 나가지 않는다. Codex 미로그인이면 툴이 "Codex 로그인 필요"
+  로 정직하게 실패한다 — 검색 때문에 다른 턴이 죽지 않는다.
+- **레지스트리 `run` 은 순수 핸드오프다.** 툴 규약(`types.ts`)이 브라우저 전역 접근을 금지하므로
+  레지스트리 쪽은 `status:"ui-required"` 만 만들고, 실제 네트워크 실행은 Pi 런타임이 같은 이름으로
+  갈아 끼운다(`generate_image_asset` → `imageAssetGeneration` 과 같은 분업). 그래서 레지스트리 셰이프와
+  실행 셰이프가 **둘 다 선언되면 안 된다** — Pi 런타임이 레지스트리 셰이프를 이름으로 걸러낸다.
+- **노출은 도메인과 무관하다.** "최신 정보가 필요하다" 는 UI 상태로 예측할 수 없어서 `core` 도메인에
+  상시 노출된다. `find_tools` 발견 경로도 같은 실행 셰이프로 간다(`shapeFor`).
+- 팀 실행에서도 하위 에이전트가 검색을 쓴다(`piTeamRuntime.ts` 의 `child()` 가 `codexApiKey` 를 내려보낸다).
+  빠뜨리면 팀장만 최신 사실을 보고 팀원은 추정하게 된다.
+
+검증(2026-09-21, 실제 ChatGPT 구독 자격): 레지스트리 노출·인자 거절(빈 검색어·401자)·
+`codex-required` 실패 경로, Pi 루프에서 `web_search` 선언과 실제 검색 실행(PostgREST v16.3 답변 +
+GitHub 출처 6건), `find_tools` 발견 후 다음 턴 실행까지 실측했다.
+
+## 감사 후속: 부분 갱신과 미사용 삭제 (2026-09-20)
+
+- DB 공용 `mergeRecord`는 `mergeRecordPatch`로 중첩 객체의 생략된 필드를 보존한다. 전달한 배열은 교체하며, `kind` 변경은 이전 유니온 변형을 버린다. 빈 객체는 중첩 필드 전체 삭제가 아니다.
+- 생활 스킬/가축 종 갱신은 기존 보상/그래픽/수치를 보존한다. 제작법은 기존 ID에서 미전달 필드를 보존하고, 신규 레시피의 outputItemId는 실행 시 검증한다. 날씨 패치는 계절 규칙을 병합 후 기존 정규화 경로를 탄다.
+- 기본 DB 9종 삭제는 `projectDatabaseReferenceMessage(draft, ...)`, 제작법 삭제는 `craftRecipeReferenceMessage(draft, id)`를 거친다. 전역 UI store를 검사하면 다른 초안을 보호하게 되므로 반드시 draft를 전달한다.
+- `prune_unused`는 로더 아이템 참조 수집기를 사용한다. 상점/전투/승급/진화/여관 분기와 동적 필드 스폰도 수집하고, 삭제 대상 트룹을 제외한 프로젝트에 남는 적 조건 참조를 보존한다. 미사용 슬롯 이름 삭제 역시 공용 스위치/변수 가드에 걸리면 생략한다.
+- 자세한 범위와 남은 rename/repair 문제: `docs/reviews/2026-09-20-data-integrity-fixes.md`. 테스트 작성만 했으며 gates/vitest 미실행.
+
+## 전투 저작 입력 수정 (2026-09-20)
+
+## 이벤트 명령 AI 공용 도구 (2026-09-20)
+
+`event_command_assist({mapId,eventId,pageId,prompt,mode?})`는 기존 이벤트의 한 페이지
+명령을 자연어로 수정하는 `event` 도메인의 쓰기 도구다. `get_event`로 실제 페이지 ID를
+먼저 조회한다. 새 이벤트 생성·다른 페이지·페이지 조건/그래픽 변경은 하지 않는다.
+
+- `eventCommandAssistTool.ts`가 스키마와 대상 조회를 소유한다. `asyncToolRunner.ts`가
+  `runEventCommandAssist`로 생성한 후 `runToolDefinition`의 공용 draft/lint/commit 경계를 탄다.
+  AssistantSession과 Pi toolAdapter가 이 비동기 경로를 호출한다. 동기 `runTool` 직접 호출은
+  `async-tool-required`로 거부하며, 생성됐다고 보고하지 않는다.
+- 이벤트 편집기 생성기의 리소스·참조·착지·세계관 검증 및 최대 3회 생성/수정을 재사용한다.
+  세션에서는 기존 chat 함수·설정·프로젝트 성향 키를 전달한다. 조수의 도구 결과/감사/제안 흐름을
+  그대로 통과하며, 생성기가 store를 직접 수정하지 않는다.
+- 기본 `mode: edit`는 최종 명령 목록 전체를 교체한다. 명령 JSON이 기존 생성기의 12,000자
+  상한을 넘으면 생성 전에 거부한다. `mode: append`를 명시하면 기존 목록 끝에 추가한다. 이벤트 편집기의 선택 경로가 있으면 선택 명령 바로 뒤에 추가한다.
+  모호한 수정 요청을 자동으로 추가 요청으로 바꾸지 않는다.
+- 생성 전 프로젝트 사본을 사용하고, 완료 시 프로젝트 identity와 내용을 재확인한다.
+  취소 또는 프로젝트 변경 시 적용하지 않는다. `dryRun`은 ctx.project도 갱신하지 않는다.
+- `test/eventCommandAssistTool.test.ts`: 페이지/기존 데이터 보존, dryRun, 누락 대상,
+  긴 페이지, 명시 추가, 취소/오래된 결과, 실제 공용 생성기의 검증 재시도 계약.
+  실행 결과와 브라우저 근거는 `reports/2026-09-20-event-command-assistant.md`에 기록한다.
+
+이벤트 편집기의 생성 버튼도 `sendAiAssistantMessage` → `aiChatPanel.sendText` →
+`aiTurnRunner` → `AssistantSession.sendUserMessage` 공용 경로를 사용한다.
+호스트가 전달하는 `eventCommandScope`는 맵·이벤트·페이지와 선택 경로/라벨, edit/append 모드를
+고정한다. **이 스코프가 봉인하는 것은 쓰기다** — `onlyEventPageCommandsChanged` 가 지정 페이지
+밖의 변경을 거부하므로 읽기는 넓혀도 계약이 약해지지 않는다. 쓰기는 `event_command_assist`
+하나뿐이고 다른 대상과 모드 변경은 거부한다. 이 턴에서는 자율 적용·위키 저작·NPC 자동 보완이
+금지된다.
+
+**읽기 툴은 2026-09-20 에 넓혔다.** 종전 허용은 `get_event`·`get_database_records`·`run_lint`
+뿐이라 **맵을 조회할 방법이 없었다.** 조수 세션은 `eventScopeAllowsTool` 로 툴 목록을 거르므로
+여기 없으면 노출조차 안 되고, 그래서 모델은 프롬프트에 실린 맵 한 줄
+(`이름 (가로 W × 세로 H, 밟을 수 있는 칸 예: x,y)`)만 보고 대사를 지어야 했다 — "이 마을
+광장에서"·"여관 안에서" 같은 지시를 받아도 그 자리가 어떤지 볼 수 없었다. 지금은
+`get_map_region`(시맨틱 문자 그리드 + 물 바운딩 박스)·`get_project_summary`·`find_events`·
+`find_layout_regions`·`list_resources` 가 읽기로 허용된다(모두 `mode: "read"`). 프롬프트를
+키우지 않고 모델이 필요한 만큼 파고든다. 계약: `test/eventCommandScopedSession.test.ts`
+("맵을 읽는 툴이 허용된다" + "쓰기 툴은 여전히 봉인된다").
+
+공용 브리지는 바쁜 턴이나 대기 제안이 있으면 이벤트 요청을 거부한다. 생성 결과는
+`deferApply`로 공용 검토를 거친 뒤 before/after 스냅샷을 이벤트 모달에 넘기고 공용 제안을
+해제한다(채팅에 두 번째 적용 권한을 남기지 않는다). 모달은 해당 페이지 외 변경 여부와
+생성 전 명령 목록을 재확인하고 기존 diff/줄 제외/직접 수정/replaceAll 한 번 적용을 유지한다.
+진행 표시는 공용 상태를 읽으며 중단 및 편집기 닫기는 공용 턴을 취소한다.
+
+검증: `test/eventCommandScopedSession.test.ts`는 실제 공용 세션의 도구 루프·범위 위반 거부·
+검토를 검증한다. `test/e2e/event-ai-shared-assistant.spec.ts`는 LLM 응답만 고정하고 실제
+브리지·세션·도구·모달에서 검토 전 미변경, 다른 페이지 보존, 적용과 한 번 되돌리기를 확인한다.
+
 ## 전투 저작 입력 수정 (2026-09-20)
 
 `upsert_troop`의 기존 id에 `enemyIds`만 전달하면 로스터 교체다. 기존 `members`를
@@ -1690,3 +1818,34 @@ walkthrough rather than treating a successful tool call as runtime proof.
 `set_title_screen`, `set_game_over` 또는 해당 이벤트 그래픽 필드에 연결한다.
 오프닝과 게임오버의 전용 생성 툴은 각각의 화면 설정과 연결 검증을 유지하고,
 일반 에셋 생성은 여러 데이터베이스 레코드에서 재사용할 수 있는 리소스를 만든다.
+
+## Feature16 combat and climate authoring tools (2026-09-21)
+
+`upsert_skill` exposes formulas, crit, hit sequences, turn cooldowns and action profiles.
+`upsert_enemy` exposes expanded conditions and conditional drops. New nested inputs
+are validated before normalization: invalid formulas/condition kinds/array overflow
+are rejected atomically. Partial action updates preserve omitted values; top-level
+`clearActionSkill`, `clearActionFieldStatus`, `clearActionItemCost` explicitly clear.
+`set_map_properties` accepts climate or clearClimate. Drop item and condition state/
+switch references participate in load validation, deletion guards and switch rename.
+Tests: `feature16AiToolIntegration.test.ts`; schemas: `combatAuthoringSchemas.ts`.
+## 마을 시공 후 완료 계약 (2026-09-21)
+
+`author_village`의 `houseCount`는 무조건 required가 아니다. 기본 설계서가 있으면
+`resolveVillageDesignInput`이 파싱 전에 채운다. 고정 숲 없음 설계서에는
+`forestDensity`를 넣지 않는다. Pi 노트와 도구 설명이 이 조건을 공유한다.
+
+`residents[].lines` 생략 시 대사는 빈 상태이며, Pi 종료 검사가 보충 요청을 보낸다.
+옛 `AssistantSession.authorPendingNpcCast`가 Pi에서도 자동 실행된다고 설명하지 않는다.
+문 스프라이트도 visible이므로 `collectPendingNpcs` 결과 전체를 Pi 보충 대상으로 쓰면
+문에 대사가 붙는다. Pi는 이번에 생성한 `ev_village_*` 주민만 대상으로 삼는다.
+
+`evaluate_village_look`의 호출 성공과 `data.ok`는 별개다. Pi는 최종 프로젝트에서
+직접 재평가해 미통과를 `done.villageCompletion.issues`로 전달한다. 룩 평가에는
+맵의 `villageDesignSource.preset`을 사용해 고정 주민 수, 숲 없음, 광장 설정을 존중한다.
+현재 프로젝트의 기본 설계서를 나중에 바꿔도 이미 지은 맵의 평가 기준이 바뀌지 않는다.
+
+공개 평가 안내는 `find_tools`로 실제 수정 도구를 찾도록 한다. `plant_tree_clusters`,
+`revise_village_plan`, `run_village_pipeline`은 내부 호환용이며 Pi에서 노출·복구되지 않는다.
+재시공이 필요해도 사용자 범위와 DB 설계서를 유지한 `author_village`를 사용한다.
+평가를 통과하려고 고정 설정을 바꾸거나 전체 맵 재시공을 임의로 허가하지 않는다.

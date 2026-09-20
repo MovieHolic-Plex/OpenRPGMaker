@@ -108,19 +108,24 @@ describe("database world canon view", () => {
     const host = renderTab();
     const hint = findByTestId(host, "db-world-canon-body-card")?.querySelector(".db-ws-card-hint");
     expect(hint?.textContent).toContain("0자를 본다");
-    setInput(host, "db-world-canon-body", "가".repeat(700));
-    expect(hint?.textContent).toContain("뒤 100자는 발췌 밖");
+    // 상한(20,000) 안쪽은 잘리지 않는다 — 예전엔 600자 상한이라 700자에서 잘렸다.
+    setInput(host, "db-world-canon-body", "가".repeat(19_500));
+    expect(hint?.textContent).not.toContain("발췌 밖");
+    // 상한을 넘기면 몇 자가 남는지 고지한다.
+    setInput(host, "db-world-canon-body", "가".repeat(20_700));
+    expect(hint?.textContent).toContain("뒤 700자는 발췌 밖");
   });
 
   it("updates the hero meter and stat with the body without a rerender", () => {
     const host = renderTab();
-    setInput(host, "db-world-canon-body", "가".repeat(700));
+    setInput(host, "db-world-canon-body", "가".repeat(20_700));
     const meter = findByTestId(host, "db-world-canon-ai-meter");
-    expect(meter?.textContent).toContain("뒤 100자는 발췌 밖");
+    expect(meter?.textContent).toContain("뒤 700자는 발췌 밖");
     expect(meter?.getAttribute("role")).toBe("status");
     const stat = findByTestId(host, "db-world-canon-hero-stat-body");
-    expect(stat?.textContent).toContain("600 / 600자");
-    expect(stat?.textContent).toContain("뒤 100자 잘림");
+    // 표시가 실제 전달 상한과 같은 상수에서 온다 — 문구가 어긋나면 사용자가 잘못된 길이에 맞춰 쓴다.
+    expect(stat?.textContent).toContain("20000 / 20000자");
+    expect(stat?.textContent).toContain("뒤 700자 잘림");
     expect(stat?.className).toContain("db-ws-stat-warn");
     expect(findByTestId(host, "db-world-canon-hero-stats")).toBeTruthy();
     expect(findByTestId(host, "db-world-canon-identity")?.textContent).toContain("이름과 한 줄");

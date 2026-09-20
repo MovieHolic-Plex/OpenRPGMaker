@@ -30,7 +30,7 @@ export function resolveWikiCombatMode(project: Project, mapId?: string | null): 
 export function projectWikiContext(project: Project, options: { readonly query: string; readonly mapId?: string | null }): ProjectWikiContextResult {
   const terms = [...new Set(options.query.toLowerCase().match(/[\p{L}\p{N}_-]+/gu) ?? [])].slice(0, 32);
   const candidates = [...activeWikiEntities(project.world), ...(project.world?.entities.filter((entity) => !entity.wiki) ?? [])]
-    .filter((entity) => inScope(entity, options.mapId))
+    .filter((entity) => entity.wiki?.kind !== "progress" && inScope(entity, options.mapId))
     .map((entity) => {
       const text = `${entity.name} ${entity.summary} ${entity.tags?.join(" ") ?? ""} ${entity.body?.slice(0, 4000) ?? ""}`.toLowerCase();
       const relevance = terms.reduce((sum, term) => sum + Number(text.includes(term)), 0);

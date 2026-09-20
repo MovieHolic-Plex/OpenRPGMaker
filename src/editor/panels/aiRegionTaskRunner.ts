@@ -200,11 +200,11 @@ export function createAiRegionTaskRunner(deps: AiRegionTaskRunnerDeps): AiRegion
       }
       if (event.type === "tool_started") {
         setAgentGhostRunningTool(event.name, event.args);
-        deps.surface.startLiveActivity(event.name, event.index);
+        deps.surface.startLiveActivity(event.name, event.index, event.args);
         return;
       }
       if (event.type === "tool_call") {
-        deps.surface.completeLiveActivity(event.name, event.result, event.args);
+        deps.surface.completeLiveActivity(event.name, event.result, event.args, event.visuals);
         recordRegionAudit({
           kind: "tool",
           name: event.name,

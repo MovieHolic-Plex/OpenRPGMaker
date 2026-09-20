@@ -33,6 +33,8 @@ describe("event layer context menu", () => {
 
     expect(items.map((item) => item.label)).toEqual([
       "이벤트 생성...",
+      // 2026-09-20: 우클릭에서 곧바로 AI 로 이벤트를 만들거나 고치는 지름길.
+      "AI 로 이벤트 만들기...",
       "잘라내기",
       "복사",
       "붙여넣기",
@@ -46,6 +48,7 @@ describe("event layer context menu", () => {
     expect(items.find((item) => item.id === "test-here")?.testId).toBe("event-layer-test-here");
     expect(items.find((item) => item.id === "test-event")?.testId).toBe("event-layer-test-event");
     expect(items.find((item) => item.id === "create-event")?.testId).toBe("event-layer-create-event");
+    expect(items.find((item) => item.id === "event-ai-author")?.testId).toBe("event-layer-event-ai-author");
     expect(items.find((item) => item.id === "cut")?.disabled).toBe(true);
     expect(items.find((item) => item.id === "paste")?.disabled).toBe(true);
     // 빈 칸에는 테스트할 이벤트가 없다 — 항목은 보이되 눌리지 않는다(2026-09-03 톱바 「이벤트 테스트」 후계).

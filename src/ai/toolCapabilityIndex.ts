@@ -16,7 +16,7 @@ export const TASK_RECIPES = [
     write: ["set_world_canon", "upsert_character_profile", "upsert_actor", "upsert_equipment", "set_party", "set_session_start"], verify: ["read_project_wiki", "get_database_records", "run_lint"],
     policy: "For a new RPG, establish world canon and named character profiles before map/event decoration. Query real face/charset/battle/icon resources, then update the actor's appearanceId, faceResourceId, characterResourceId/characterIndex, battleCharacterResourceId and initialEquipment; use set_party for the start party and set_session_start for starting gold/items. Creating an equipment record without equipping it does not change the protagonist." },
   { id: "npc-event", read: ["get_map_region", "find_events", "get_event", "get_database_records", "list_npc_graphics"],
-    write: ["place_npc", "upsert_event"], verify: ["get_event", "explain_event", "run_lint", "play_walkthrough"],
+    write: ["place_npc", "event_command_assist", "upsert_event"], verify: ["get_event", "explain_event", "run_lint", "play_walkthrough"],
     policy: "Merge into complete original pages/commands; preserve stable event/page IDs and unrelated branches. Use place_npc for NPC placement, upsert_event for custom logic. Exercise state and choice branches, not merely tool success." },
   { id: "map", read: ["get_map_region", "tile_query", "find_layout_regions"],
     write: ["fill_region", "paint_road", "author_house"], verify: ["get_map_region", "check_reachability", "show_map_region", "run_lint"],

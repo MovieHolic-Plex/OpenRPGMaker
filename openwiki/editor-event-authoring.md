@@ -1,4 +1,19 @@
+## 감사 후속: 조건 순서와 생활 경로 보존 (2026-09-20)
+
+`pageConditions.ts`의 스위치 슬롯 편집은 기존 조건의 위치에서 교체한다. 첫 조건을 삭제 후 append하면 두 스위치 행이 서로 바뀌어 다음 편집 대상을 오인한다.
+`pageNpcLiving.ts`는 첫 목적지의 좌표/방향만 바꾸고 기존 switchId 및 뒤 목적지를 보존한다. 이 폼이 전체 생활 경로를 다시 정의하는 것은 아니다.
+실제 컴포넌트의 브라우저 관측값과 범위는 `docs/reviews/2026-09-20-data-integrity-fixes.md`에 있다.
+
 # Editor Event Authoring
+
+## 조수에서도 이벤트 명령 생성기 사용 (2026-09-20)
+
+「AI로 명령 만들기」 버튼은 공용 조수 브리지·세션·턴 실행기로 들어간다. 호스트가
+현재 이벤트·페이지·선택 명령을 전달하고, 실행 가능한 도구와 쓰기 대상을 해당 페이지로
+제한한다. `event_command_assist`가 기존 생성/검증을 맡으며 모달 안에서 명령 diff를
+검토하고 줄을 제외·수정한 뒤 기존 일괄 적용과 한 번 되돌리기를 사용한다.
+대상 페이지·추가 전용 모드·취소/오래된 결과 거부 계약은 `editor-ai-tools.md`의
+「이벤트 명령 AI 공용 도구」 절을 따른다.
 
 ## 적대적 리뷰 고위험 항목 보정 (2026-09-19)
 
@@ -239,6 +254,7 @@ P0 문법 고정 뒤에도 「가독성이 여전히 떨어진다」는 피드�
 - **삽입 자리 규칙은 하나다.** 「+ 명령」·Enter(피커)·붙여넣기(Ctrl+V)·우클릭 「아래에 삽입…」/「아래에 주석 삽입」 전부 **선택 행 바로 아래, 같은 깊이**(`commandInspector.defaultInsertionPath / insertionPathAfter`). 여러 행을 골랐으면 마지막 뿌리 선택 아래. 선택이 없으면 루트 끝. 피커 제목이 자리를 말한다(「명령 추가 — 선택한 대기 바로 아래에」). 컨테이너를 명시한 호출(빈 분기 슬롯·「+ 이 분기에 명령 추가」·페이지 끝 줄)만 그 컨테이너 끝에 넣는다. 분기에 명령이 있어도 끝에 `event-command-branch-add-<path>` / `event-storyboard-branch-add-<path>` 줄이 남는다. 스토리 카드는 `user-select: none`.
 - **닫으면 편집 중 상태가 걷힌다.** `closeHandler` 가 `selectedEventPageId` 를 null 로 하고 window 에 `oprn:event-editor-closed`(`eventEditorLifecycleEvents.ts`) 를 알린다. EditScene 은 그 신호로 「편집 위치 x,y」 배너를 지운다. 맵 마커는 편집기가 페이지를 보고 있는 동안만 그 페이지를 그리고, 아니면 **게임 시작 시 켜질 페이지**(`eventPageAtGameStart` = `resolveEventPage(event, project.session, map.locations)`, 없으면 1페이지)를 그린다.
 - **좁은 화면(`narrow.css`, index.css 마지막 import).** 모달 창 grid 의 열을 `minmax(0, 1fr)` 로 못 박았다 — 예전엔 암묵 열이 헤더 max-content(1033px)로 커져 768 에서 「저장하고 닫기」가 화면 밖이었다. ≤1100: 빈 인스펙터 트랙을 예약하지 않고(1024 에서 960px 중 324px 가 빈 판이었다), 명령을 고르면 인스펙터가 오른쪽 **덮개**(absolute, `grid-column: 1 / -1`)로 뜬다. 스토리 카드는 어느 폭·높이에서도 한 줄 — `@media (max-height: 800px)` 의 세로 쌓기와 `@media (max-width: 1100px)` 의 `flex-basis: 158px`(세로 flex 트랙에서 높이가 됐다)를 되돌렸다.
+- **설정 레일의 «레일 + 넓은 시트» 분리는 컨테이너 쿼리가 결정한다 (2026-09-20).** `pages-4.part-2.css` 의 마스터-디테일 블록은 예전에 `@media (min-width: 1441px)` 만 보고 열렸다 — 그 시절 설정 컬럼은 `clamp(660px, 30vw, 780px)` 였다. 명령 중심 배치(`command-workbench.css`, event 레이어 **마지막** import)가 설정 트랙을 240px 로 못 박은 뒤로는 **1680px 에서도 시트의 포함 블록이 205px 인데 `left: 208px`** 이 되어 본문 폭이 음수화되고 패딩 14px 만 남은 **30px 슬리버**가 됐다(실측). 조건 12행은 통째로 보이지 않았고 「모습과 대화」는 스프라이트 한 칸만 남았다. 이제 컨테이너를 `.event-page-props`(아코디언의 직계 부모 — 폭이 아코디언과 정확히 같다)에 걸고 `@container evt-settings-rail (min-width: 430px)` 로 연다: 196px 레일 + 12px 간격 + 218px(조건 2열 그리드 `minmax`) = 426px → 430px. **컨테이너는 자기 쿼리의 영향을 받지 않으므로 아코디언 자신에 걸면 안 된다** — 그렇게 하면 `display: contents`/`position: relative` 가 아코디언에 닿지 않고 본문만 absolute 가 되어 포함 블록이 워크벤치로 새어나간다(실측: 설정 열 517px 일 때 시트가 1230px 로 명령 열을 덮었다). 실측 확인: 1680/1920/2560 에서 시트 203px(세로 아코디언), 리사이저로 설정 열을 469px 이상 넓히면 레일 196 + 시트 261 로 분리, 포함 블록은 아코디언(`offsetParent = .event-editor-settings-accordion`).
 - **입력 change 는 포인터 제스처 뒤에 커밋한다**(`commitAfterPointerGesture.ts`, 이벤트 이름·페이지 이름 상자). 다른 버튼을 누르며 blur 된 change 가 본문을 동기 재렌더해 누르던 버튼이 pointerup 전에 교체됐다 — 「이름을 치고 + 를 눌렀는데 아무 일도 없다」의 원인.
 - P1·P2 에서 고친 것: 「크기와 통행」 입력 56px 보장 + 좁으면 미리보기를 아래로(컨테이너 쿼리) · 피커 트리거 라벨이 개명을 따라감(`recordsOf(kind)` 를 호출 시점에 읽음) · 3단계 서브다이얼로그 배경 반투명(불투명 밑판 제거) · 서브다이얼로그 첫 포커스는 본문의 첫 입력(`focusFirstControl`) · 검증 항목 클릭은 자기 열 안에서만 스크롤(`scrollIntoNearestScroller.ts`) · 커스텀 select 접근성 이름에서 select/button 글 제외(7,019자 → 「값」) · 아무것도 안 만든 빈 페이지엔 `page.invisible-collision` 경고를 내지 않음 · 검증 종 항목은 원인→기대→힌트만 보이고 코드·ID 는 title/dataset · 그래픽 피커 제목 「그래픽」.
 - **남긴 것**: 「움직임과 속도」 fieldset 7개(P1-13), 명령 피커 밀도·아이템 네이티브 select(P2-17), 스토리 뷰 삼중 라벨·자르기(P2-16), 첫 화면 입구 다섯 개(P2-15), 문구 잡음(P2-18). 표면 기준선 픽스처(`test/fixtures/eventEditor*Surface.baseline.json`)는 클래스 목록 변화로 갱신이 필요하다.

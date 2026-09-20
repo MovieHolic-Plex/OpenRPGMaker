@@ -1,3 +1,4 @@
+import { battleRow, type BattleRow } from "@/battle/battleFormation";
 import { effectivePromotionLineage, validActorClassOverride } from '@/project/growth/lineage';
 import { growthEffects } from "@/project/growth/runtime";
 import { resolveActorFaceResourceId } from "@/project/sessionActorCommands";
@@ -24,6 +25,7 @@ const CHARGE_FLOOR = 0.02;
 
 // 세션에서 온 액터별 오버라이드. 모두 선택적이며, 없으면 DB 기본값으로 폴백한다.
 export interface ActorBattlerOverrides {
+  readonly rows?: Readonly<Record<string, BattleRow>>;
   // 이름 오버라이드(enterHeroName 등). actorId → 이름.
   readonly names?: Readonly<Record<string, string>>;
   // 현재 faceset(Change Actor Faceset 포함). 전투 HUD가 DB 기본 얼굴로 되돌아가지 않게 한다.
@@ -48,6 +50,7 @@ export interface ActorBattlerOverrides {
 }
 
 export interface MutableBattler {
+  readonly row?: BattleRow;
   readonly id: string;
   readonly recordId: ActorId | EnemyId;
   // 전투 중 전직(promoteActor)이 클래스를 갱신할 수 있어 mutable.
@@ -73,6 +76,7 @@ export interface MutableBattler {
   skillIds: SkillId[];
   /** Remaining PP for authored monster moves. Missing means the legacy MP path. */
   skillPp?: Record<SkillId, number>;
+  skillCooldowns?: Record<SkillId, number>;
   readonly enemyActions?: readonly EnemyActionPattern[];
   readonly battleX?: number;
   readonly battleY?: number;
@@ -112,6 +116,7 @@ export function actorBattlers(
     });
     // 세션 현재 바이탈이 있으면 그 값을 이어받되(필드에서 이어지는 부상 상태 유지),
     // 이 전투 레벨 기준 최대치로 클램프. 없으면 완충 상태로 시작.
+    const row = battleRow(overrides?.rows?.[actorId]);
     const sessionVitals = overrides?.vitals?.[actorId];
     const hp = sessionVitals ? clampVital(sessionVitals.hp, derived.maxHp) : derived.maxHp;
     const mp = sessionVitals ? clampVital(sessionVitals.mp, derived.maxMp) : derived.maxMp;
@@ -127,6 +132,7 @@ export function actorBattlers(
       hp,
       maxMp: derived.maxMp,
       mp,
+      row,
       attackPower: derived.attack,
       defense: derived.defense,
       mind: derived.mind,
@@ -468,6 +474,7 @@ export function battlerSnapshot(
     id: battler.id,
     recordId: battler.recordId,
     name: battler.name,
+    row: battler.row,
     classId: battler.classId,
     level: battler.level,
     faceResourceId: battler.faceResourceId,
@@ -488,6 +495,7 @@ export function battlerSnapshot(
     stateIds: [...battler.stateIds],
     stateTurns: { ...battler.stateTurns },
     skillIds: [...battler.skillIds],
+    skillCooldowns: battler.skillCooldowns ? { ...battler.skillCooldowns } : undefined,
     skillPp: battler.skillPp ? { ...battler.skillPp } : undefined,
     equipmentEffects: battler.equipmentEffects,
     captured: battler.captured === true ? true : undefined,

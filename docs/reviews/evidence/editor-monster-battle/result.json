@@ -1,0 +1,179 @@
+{
+  "errors": [],
+  "root": {
+    "text": "모슬링은\n무엇을 할까?\n라르베아\n레벨3\n싸운다\n가방\n몬스터\n도망간다\n모슬링\n레벨 11\n 26/26\nF 자동 꺼짐 · Shift 1×",
+    "rects": [
+      {
+        "class": "battle-field",
+        "text": "",
+        "rect": {
+          "x": 32,
+          "y": 24,
+          "width": 959.9765625,
+          "height": 549,
+          "top": 24,
+          "right": 991.9765625,
+          "bottom": 573,
+          "left": 32
+        }
+      },
+      {
+        "class": "battle-enemy-image",
+        "text": "",
+        "rect": {
+          "x": 665.9163818359375,
+          "y": 212.94610595703125,
+          "width": 166.12030029296875,
+          "height": 163.31951904296875,
+          "top": 212.94610595703125,
+          "right": 832.0366821289062,
+          "bottom": 376.265625,
+          "left": 665.9163818359375
+        }
+      },
+      {
+        "class": "battle-message-window",
+        "text": "모슬링은\n무엇을 할까?",
+        "rect": {
+          "x": 38,
+          "y": 579,
+          "width": 458.390625,
+          "height": 160.5,
+          "top": 579,
+          "right": 496.390625,
+          "bottom": 739.5,
+          "left": 38
+        }
+      },
+      {
+        "class": "battle-enemy-list-panel",
+        "text": "라르베아\n레벨3",
+        "rect": {
+          "x": 32,
+          "y": 90,
+          "width": 453,
+          "height": 112.3359375,
+          "top": 90,
+          "right": 485,
+          "bottom": 202.3359375,
+          "left": 32
+        }
+      },
+      {
+        "class": "battle-command",
+        "text": "싸운다",
+        "rect": {
+          "x": 506.890625,
+          "y": 579,
+          "width": 237.28125,
+          "height": 78.75,
+          "top": 579,
+          "right": 744.171875,
+          "bottom": 657.75,
+          "left": 506.890625
+        }
+      },
+      {
+        "class": "battle-command",
+        "text": "가방",
+        "rect": {
+          "x": 747.171875,
+          "y": 579,
+          "width": 237.3046875,
+          "height": 78.75,
+          "top": 579,
+          "right": 984.4765625,
+          "bottom": 657.75,
+          "left": 747.171875
+        }
+      },
+      {
+        "class": "battle-command",
+        "text": "몬스터",
+        "rect": {
+          "x": 506.890625,
+          "y": 660.75,
+          "width": 237.28125,
+          "height": 78.75,
+          "top": 660.75,
+          "right": 744.171875,
+          "bottom": 739.5,
+          "left": 506.890625
+        }
+      },
+      {
+        "class": "battle-command",
+        "text": "도망간다",
+        "rect": {
+          "x": 747.171875,
+          "y": 660.75,
+          "width": 237.3046875,
+          "height": 78.75,
+          "top": 660.75,
+          "right": 984.4765625,
+          "bottom": 739.5,
+          "left": 747.171875
+        }
+      },
+      {
+        "class": "battle-party",
+        "text": "모슬링\n레벨 11\n 26/26",
+        "rect": {
+          "x": 538.9765625,
+          "y": 390,
+          "width": 453,
+          "height": 156,
+          "top": 390,
+          "right": 991.9765625,
+          "bottom": 546,
+          "left": 538.9765625
+        }
+      }
+    ]
+  },
+  "viewports": [
+    {
+      "width": 375,
+      "labels": [
+        {
+          "text": "싸운다",
+          "clipped": false
+        },
+        {
+          "text": "가방",
+          "clipped": false
+        },
+        {
+          "text": "몬스터",
+          "clipped": false
+        },
+        {
+          "text": "도망간다",
+          "clipped": false
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "labels": [
+        {
+          "text": "싸운다",
+          "clipped": false
+        },
+        {
+          "text": "가방",
+          "clipped": false
+        },
+        {
+          "text": "몬스터",
+          "clipped": false
+        },
+        {
+          "text": "도망간다",
+          "clipped": false
+        }
+      ]
+    }
+  ],
+  "attackChangedHp": true
+}

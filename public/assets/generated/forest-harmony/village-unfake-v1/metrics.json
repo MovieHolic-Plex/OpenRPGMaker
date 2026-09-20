@@ -1,0 +1,398 @@
+[
+  {
+    "id": "garden-arch",
+    "name": "덩굴 아치",
+    "size": [
+      32,
+      32
+    ],
+    "before": {
+      "colors": 23,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 439,
+      "bbox": [
+        1,
+        1,
+        30,
+        31
+      ],
+      "binaryAlpha": true
+    },
+    "after": {
+      "colors": 20,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 435,
+      "bbox": [
+        1,
+        1,
+        30,
+        31
+      ],
+      "binaryAlpha": true
+    }
+  },
+  {
+    "id": "hanging-lantern",
+    "name": "벽걸이 등불",
+    "size": [
+      16,
+      16
+    ],
+    "before": {
+      "colors": 20,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 70,
+      "bbox": [
+        3,
+        1,
+        12,
+        15
+      ],
+      "binaryAlpha": true
+    },
+    "after": {
+      "colors": 14,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 72,
+      "bbox": [
+        3,
+        1,
+        12,
+        15
+      ],
+      "binaryAlpha": true
+    }
+  },
+  {
+    "id": "fishing-basket",
+    "name": "낚시 바구니",
+    "size": [
+      16,
+      16
+    ],
+    "before": {
+      "colors": 23,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 148,
+      "bbox": [
+        1,
+        2,
+        15,
+        15
+      ],
+      "binaryAlpha": true
+    },
+    "after": {
+      "colors": 19,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 158,
+      "bbox": [
+        1,
+        2,
+        15,
+        15
+      ],
+      "binaryAlpha": true
+    }
+  },
+  {
+    "id": "stone-step",
+    "name": "징검돌",
+    "size": [
+      32,
+      16
+    ],
+    "before": {
+      "colors": 23,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 243,
+      "bbox": [
+        3,
+        1,
+        29,
+        15
+      ],
+      "binaryAlpha": true
+    },
+    "after": {
+      "colors": 12,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 243,
+      "bbox": [
+        3,
+        1,
+        29,
+        15
+      ],
+      "binaryAlpha": true
+    }
+  },
+  {
+    "id": "scarecrow",
+    "name": "허수아비",
+    "size": [
+      16,
+      32
+    ],
+    "before": {
+      "colors": 23,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 199,
+      "bbox": [
+        1,
+        2,
+        15,
+        31
+      ],
+      "binaryAlpha": true
+    },
+    "after": {
+      "colors": 21,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 195,
+      "bbox": [
+        1,
+        3,
+        15,
+        31
+      ],
+      "binaryAlpha": true
+    }
+  },
+  {
+    "id": "seed-sack",
+    "name": "씨앗 자루",
+    "size": [
+      32,
+      16
+    ],
+    "before": {
+      "colors": 23,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 124,
+      "bbox": [
+        9,
+        1,
+        22,
+        15
+      ],
+      "binaryAlpha": true
+    },
+    "after": {
+      "colors": 21,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 123,
+      "bbox": [
+        9,
+        1,
+        22,
+        15
+      ],
+      "binaryAlpha": true
+    }
+  },
+  {
+    "id": "stone-lantern",
+    "name": "돌등",
+    "size": [
+      16,
+      32
+    ],
+    "before": {
+      "colors": 23,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 276,
+      "bbox": [
+        1,
+        1,
+        14,
+        31
+      ],
+      "binaryAlpha": true
+    },
+    "after": {
+      "colors": 22,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 272,
+      "bbox": [
+        1,
+        2,
+        14,
+        31
+      ],
+      "binaryAlpha": true
+    }
+  },
+  {
+    "id": "birdhouse",
+    "name": "새집",
+    "size": [
+      16,
+      32
+    ],
+    "before": {
+      "colors": 21,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 200,
+      "bbox": [
+        1,
+        1,
+        14,
+        31
+      ],
+      "binaryAlpha": true
+    },
+    "after": {
+      "colors": 19,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 200,
+      "bbox": [
+        1,
+        1,
+        14,
+        31
+      ],
+      "binaryAlpha": true
+    }
+  },
+  {
+    "id": "herb-planter-v2",
+    "name": "약초 화분",
+    "size": [
+      32,
+      16
+    ],
+    "before": {
+      "colors": 23,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 272,
+      "bbox": [
+        1,
+        4,
+        31,
+        15
+      ],
+      "binaryAlpha": true
+    },
+    "after": {
+      "colors": 17,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 266,
+      "bbox": [
+        1,
+        4,
+        30,
+        15
+      ],
+      "binaryAlpha": true
+    }
+  },
+  {
+    "id": "fruit-basket",
+    "name": "과일 바구니",
+    "size": [
+      32,
+      16
+    ],
+    "before": {
+      "colors": 23,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 336,
+      "bbox": [
+        1,
+        2,
+        31,
+        15
+      ],
+      "binaryAlpha": true
+    },
+    "after": {
+      "colors": 22,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 309,
+      "bbox": [
+        1,
+        3,
+        31,
+        15
+      ],
+      "binaryAlpha": true
+    }
+  },
+  {
+    "id": "stone-well-low",
+    "name": "낮은 돌 우물",
+    "size": [
+      32,
+      32
+    ],
+    "before": {
+      "colors": 23,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 714,
+      "bbox": [
+        1,
+        3,
+        31,
+        31
+      ],
+      "binaryAlpha": true
+    },
+    "after": {
+      "colors": 18,
+      "components": 1,
+      "onePixelComponents": 0,
+      "internalHoles": 0,
+      "opaque": 696,
+      "bbox": [
+        1,
+        3,
+        31,
+        31
+      ],
+      "binaryAlpha": true
+    }
+  }
+]

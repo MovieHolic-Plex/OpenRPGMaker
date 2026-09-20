@@ -305,12 +305,13 @@ function renderWikiPane(
   if (state.editDraft) return renderEditPane(state, world, project, refresh);
   const entity = state.selectedId ? world.entities.find((entry) => entry.id === state.selectedId) : undefined;
   if (!entity) {
+    const hasDocuments = visibleEntities(world.entities, "overview", "").length > 0;
     return el("article", {
       class: "world-wiki-view empty",
       dataset: { testid: "world-wiki-view" },
       children: [
-        el("h3", { text: world.entities.length ? "읽고 쓸 문서를 선택하세요" : "세계의 첫 이야기를 남겨보세요" }),
-        el("p", { text: world.entities.length ? "목록에서 항목을 열거나 새 항목을 추가할 수 있습니다." : "인물, 장소, 사건을 하나씩 연결해 설정집을 만듭니다." }),
+        el("h3", { text: hasDocuments ? "읽고 쓸 문서를 선택하세요" : "세계의 첫 이야기를 남겨보세요" }),
+        el("p", { text: hasDocuments ? "목록에서 항목을 열거나 새 항목을 추가할 수 있습니다." : "인물, 장소, 사건을 하나씩 연결해 설정집을 만듭니다." }),
       ],
     });
   }

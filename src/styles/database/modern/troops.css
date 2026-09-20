@@ -35,7 +35,7 @@
   align-content: start;
   box-sizing: border-box;
   display: grid;
-  grid-template-areas: "top top" "preview events" "members events" "balance events";
+  grid-template-areas: "top top" "preview events" "members events" "balance events" "intent intent";
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   grid-template-rows: auto auto auto auto;
   height: auto;
@@ -851,7 +851,7 @@
 
 @container troop-detail (max-width: 760px) {
   .database-modal-backdrop .database-modal-window .database-modal-body .db-troops-classic-workbench {
-    grid-template-areas: "top" "preview" "members" "balance" "events";
+    grid-template-areas: "top" "preview" "members" "balance" "intent" "events";
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto;
   }
@@ -860,4 +860,19 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-collection-gate-warn.is-info {
   background: var(--db-studio-inset);
   color: var(--db-studio-text-2);
+}
+
+/* Combat authoring spans the inspector instead of growing the narrow preview. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-panel {
+  grid-area: intent; min-width: 0; display: grid; gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-panel > :is(h4, p, [data-testid="feature16-intent-content"]) {
+  grid-column: 1 / -1;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-panel [data-testid="feature16-intent-content"] {
+  display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-panel [data-testid="feature16-intent-content"] > :is(p, h4, button) {
+  grid-column: 1 / -1;
 }

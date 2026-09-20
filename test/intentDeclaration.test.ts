@@ -239,3 +239,52 @@ it("preserves the foundation lanes for a full RPG kickoff", () => {
   const adventure = { village: true, dungeon: true, party: true, battle: true, world: true, characters: true, appearance: true };
   expect(parseIntentDeclaration(JSON.stringify({ mode: "create", adventure }), FACTS).intent?.adventure).toEqual(adventure);
 });
+
+describe("참조 작품 비유 — 검색을 부르는 계약", () => {
+  const REFERENCE_FACTS: IntentFacts = {
+    ...FACTS,
+    userText: "해리포터 같은 게임 만들고 싶다. 마법학교 분위기로.",
+    toolNames: [...FACTS.toolNames, "web_search", "set_world_canon"],
+  };
+
+  function declare(payload: Record<string, unknown>) {
+    return parseIntentDeclaration(JSON.stringify(payload), REFERENCE_FACTS);
+  }
+
+  it("실존 작품을 지목하면 referenceWork 로 보존한다", () => {
+    const result = declare({ mode: "create", referenceWork: "해리포터", summary: "마법학교 게임" });
+    expect(result.intent?.referenceWork).toBe("해리포터");
+  });
+
+  it("mode=other 로 분류돼도 보존한다 — 「만들고 싶다」는 발화가 여기로 온다", () => {
+    // 실측 2026-09-21: authoring(create|modify) 게이트에 묶여 있으면 mode=other 에서 조용히 사라졌다.
+    const result = declare({ mode: "other", referenceWork: "해리포터", summary: "게임을 만들고 싶다" });
+    expect(result.intent?.mode).toBe("other");
+    expect(result.intent?.referenceWork).toBe("해리포터");
+  });
+
+  it("장르·스타일 설명은 작품명이 아니다", () => {
+    const result = declare({ mode: "create", summary: "중세 판타지 RPG" });
+    expect(result.intent?.referenceWork).toBeUndefined();
+  });
+
+  it("참조 작품이 있으면 노트가 검색을 지시한다", () => {
+    const intent = declaredIntent({ referenceWork: "해리포터", tools: ["web_search"] });
+    const note = formatIntentNote(intent);
+    expect(note).toContain("[참조 작품]");
+    expect(note).toContain("해리포터");
+    expect(note).toContain("web_search");
+    // 고유명사를 그대로 쓰지 말라는 경계도 함께 간다.
+    expect(note).toContain("고유명사");
+  });
+
+  it("참조 작품이 없으면 그 노트가 붙지 않는다", () => {
+    expect(formatIntentNote(declaredIntent({})) ?? "").not.toContain("[참조 작품]");
+  });
+
+  it("선언 프롬프트가 referenceWork 필드를 가르친다", () => {
+    expect(INTENT_SYSTEM_PROMPT).toContain('"referenceWork"');
+    expect(INTENT_SYSTEM_PROMPT).toContain("해리포터");
+  });
+});
+

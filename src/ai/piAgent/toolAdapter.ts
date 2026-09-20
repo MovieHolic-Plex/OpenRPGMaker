@@ -7,8 +7,11 @@
 // 이 파일은 @oh-my-pi 패키지를 import 하지 않는다. 그래서 vitest(Node)에서 검증되고,
 // 원본 Pi 코어로 갈아탈 때도 이 모양은 그대로 쓸 수 있다(어댑터가 곧 퇴로다).
 
+import { captureActivityVisuals, type ActivityVisual } from "@/ai/activityVisual";
 import { TOOL_REGISTRY } from "@/editor/tools/toolRegistry";
 import { runTool } from "@/editor/tools";
+import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
+import { runToolAsync } from "@/editor/tools/asyncToolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
 
 export interface PiToolTextContent {
@@ -30,6 +33,8 @@ export interface PiToolShape {
 }
 
 export interface PiToolCallRecord {
+  readonly toolCallId?: string;
+  readonly visuals?: readonly ActivityVisual[];
   readonly name: string;
   readonly args: unknown;
   readonly result: ToolResult;
@@ -151,10 +156,14 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
     label: tool.name,
     description: tool.description,
     parameters: tool.parameters,
-    async execute(_toolCallId, params) {
+    async execute(_toolCallId, params, signal) {
       const args = params && typeof params === "object" ? (params as Record<string, unknown>) : {};
-      const result = runTool(ctx, tool.name, args);
-      options.onCall?.({ name: tool.name, args, result });
+      const before = tool.mode === "write" ? captureActivityVisuals(ctx.project, tool.name, args, undefined, "before") : [];
+      const result = tool.name === EVENT_COMMAND_ASSIST_TOOL
+        ? await runToolAsync(ctx, tool.name, args, { signal })
+        : runTool(ctx, tool.name, args);
+      const after = captureActivityVisuals(ctx.project, tool.name, args, result, !result.ok ? "failed" : tool.mode === "write" ? "draft" : "read");
+      options.onCall?.({ toolCallId: _toolCallId, name: tool.name, args, result, visuals: [...before, ...after] });
       if (!result.ok) throw new Error(formatPiToolFailure(result, maxIssues));
       return { content: [{ type: "text", text: formatPiToolSuccess(result, maxDataChars) }], details: result };
     },

@@ -38,15 +38,44 @@
   display: none;
 }
 
-@media (min-width: 1441px) {
+/* 레일 + 넓은 시트 마스터-디테일은 **설정 컬럼이 그 둘을 담을 만큼 넓을 때만** 성립한다.
+   설정 컬럼 폭의 정본은 트랙을 소유한 시트들이다:
 
-  /* 시트가 세로로 꽉 차려면 조상 체인이 높이를 넘겨줘야 한다. */
+     - `command-workbench.css` (2026-09-18, event 레이어의 **마지막** import) 는
+       `.event-editor-command-focused` 워크벤치의 설정 트랙을 240px 로 못 박는다.
+       실측(1680×1000): 설정 컬럼 240px.
+     - 인스펙터가 열려 있으면 `inspector.css` 의 `--balanced-settings-width`(236px)가 이긴다.
+
+   예전 이 블록은 `min-width: 1441px` 만 보고 열렸다. 그 시절 설정 컬럼은
+   `clamp(660px, 30vw, 780px)` 였지만, 명령 중심 배치가 들어오면서 240px 로 줄었다.
+   그래서 1680px 에서도 시트의 포함 블록이 205px 인데 `left: 208px` 이 되어
+   **본문 폭이 음수화되고 패딩 14px 만 남은 30px 슬리버**가 됐다(실측).
+   조건 12행은 통째로 보이지 않았고, 「모습과 대화」는 스프라이트만 남았다.
+
+   두 면이 실제로 설 폭을 컨테이너 조건으로 직접 재도록 고친다 — 창 폭이 아니라
+   설정 컬럼이 196px 레일 + 12px 간격 + 시트 최소폭(약 218px)을 담을 수 있어야 한다.
+   430px 미만이면 세로 아코디언 폴백으로 내려간다(그 폴백 규칙은 이 블록 밖에 있다). */
+@media (min-width: 1441px) {
+  /* 컨테이너는 **아코디언의 부모**에 건다. 컨테이너 자신은 자기 쿼리의 영향을 받지 않으므로
+     아코디언에 걸면 아래 `@container` 블록이 아코디언 자신(display·position)에는 닿지 않고
+     본문만 absolute 가 되어, 본문의 포함 블록이 워크벤치로 새어나간다
+     (실측: 설정 열 517px 일 때 시트가 1230px 로 명령 열을 덮었다). */
   .event-editor .event-editor-settings-main > .event-page-props {
+    /* `event-page-props` 는 아코디언의 **직계 부모**이고 폭이 아코디언과 정확히 같다
+       (실측 205px = 205px). 그래서 임계값을 «레일 + 간격 + 시트 최소폭» 그대로 쓸 수 있다:
+       196px + 12px + 218px(조건 2열 그리드의 minmax) = 426px → 430px. */
+    container-name: evt-settings-rail;
+    container-type: inline-size;
     display: flex;
     flex-direction: column;
     flex: 1;
     min-height: 0;
   }
+}
+
+/* 두 면 배치 — 레일이 스스로 폭을 재고 결정한다. 창 폭(`min-width: 1441px`)만 보고 열면
+   설정 열이 240px 인 지금의 명령 중심 배치에서 시트가 30px 슬리버가 된다. */
+@container evt-settings-rail (min-width: 430px) {
 
   .event-editor .event-editor-settings-accordion {
     align-content: start;

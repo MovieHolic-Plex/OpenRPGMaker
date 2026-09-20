@@ -9,7 +9,14 @@ import {
 } from "@/editor/panels/databaseWorldCanonFields";
 import { detailPane, sectionCard, statStrip, workspaceShell } from "@/editor/panels/databaseWorkspace";
 import { worldDocumentProperties } from "./worldDocumentProperties";
-import { worldCanonPromptSection } from "@/ai/worldCanonContext";
+import { WORLD_CANON_BODY_EXCERPT_CHARS, worldCanonPromptSection } from "@/ai/worldCanonContext";
+
+/**
+ * 조수가 실제로 보는 본문 길이. 표시 문구가 이 값과 어긋나면 사용자가 "앞 600자만 본다"고
+ * 믿고 세계관을 그 길이에 맞춰 쓰는데, 실제로는 20,000자를 보내므로 손해다. 그래서 UI 는
+ * 하드코딩하지 않고 `worldCanonPromptSection` 과 **같은 상수**를 읽는다.
+ */
+const EXCERPT_MAX = WORLD_CANON_BODY_EXCERPT_CHARS;
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import {
@@ -30,9 +37,9 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
       role: "progressbar",
       "aria-label": "AI 전달 본문 분량",
       "aria-valuemin": "0",
-      "aria-valuemax": "600",
-      "aria-valuenow": String(Math.min(600, canon.body.trim().length)),
-      style: `width:${Math.min(100, Math.round((Math.min(600, canon.body.trim().length) / 600) * 100))}%`,
+      "aria-valuemax": String(EXCERPT_MAX),
+      "aria-valuenow": String(Math.min(EXCERPT_MAX, canon.body.trim().length)),
+      style: `width:${Math.min(100, Math.round((Math.min(EXCERPT_MAX, canon.body.trim().length) / EXCERPT_MAX) * 100))}%`,
     },
   });
   const meterText = el("span", {
@@ -44,9 +51,9 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
   const heroStats = statStrip([
     {
       label: "AI 전달 본문",
-      value: `${Math.min(600, canon.body.trim().length)} / 600자`,
-      hint: canon.body.trim().length > 600 ? `뒤 ${canon.body.trim().length - 600}자 잘림` : "앞부분만 읽는다",
-      tone: canon.body.trim().length > 600 ? "warn" : "neutral",
+      value: `${Math.min(EXCERPT_MAX, canon.body.trim().length)} / ${EXCERPT_MAX}자`,
+      hint: canon.body.trim().length > EXCERPT_MAX ? `뒤 ${canon.body.trim().length - EXCERPT_MAX}자 잘림` : "앞부분만 읽는다",
+      tone: canon.body.trim().length > EXCERPT_MAX ? "warn" : "neutral",
       testid: "db-world-canon-hero-stat-body",
     },
     { label: "톤", value: `${canon.tones.length}종`, hint: "8종 중" },
@@ -70,16 +77,16 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     const hint = bodyCard.querySelector(".db-ws-card-hint");
     if (hint) hint.textContent = excerptHint(filled);
     meterText.textContent = excerptHint(filled);
-    meterFill.setAttribute("style", `width:${Math.min(100, Math.round((Math.min(600, filled) / 600) * 100))}%`);
-    meterFill.setAttribute("aria-valuenow", String(Math.min(600, filled)));
+    meterFill.setAttribute("style", `width:${Math.min(100, Math.round((Math.min(EXCERPT_MAX, filled) / EXCERPT_MAX) * 100))}%`);
+    meterFill.setAttribute("aria-valuenow", String(Math.min(EXCERPT_MAX, filled)));
     const statTile = heroStats.querySelector("[data-testid='db-world-canon-hero-stat-body']");
     const statValue = statTile?.querySelector(".db-ws-stat-value");
-    if (statValue) statValue.textContent = `${Math.min(600, filled)} / 600자`;
+    if (statValue) statValue.textContent = `${Math.min(EXCERPT_MAX, filled)} / ${EXCERPT_MAX}자`;
     const statHint = statTile?.querySelector(".db-ws-stat-hint");
-    if (statHint) statHint.textContent = filled > 600 ? `뒤 ${filled - 600}자 잘림` : "앞부분만 읽는다";
+    if (statHint) statHint.textContent = filled > EXCERPT_MAX ? `뒤 ${filled - EXCERPT_MAX}자 잘림` : "앞부분만 읽는다";
     if (statTile) {
       statTile.classList.remove("db-ws-stat-neutral", "db-ws-stat-warn", "db-ws-stat-good", "db-ws-stat-bad");
-      statTile.classList.add(filled > 600 ? "db-ws-stat-warn" : "db-ws-stat-neutral");
+      statTile.classList.add(filled > EXCERPT_MAX ? "db-ws-stat-warn" : "db-ws-stat-neutral");
     }
   }
   hintLine();
@@ -145,7 +152,7 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
         dataset: { testid: "db-world-canon-hero" },
         children: [
           el("strong", { text: "세계 개요" }),
-          el("span", { class: "world-ai-scope-label", text: "AI 참고 · 핵심 설정 + 본문 앞 600자" }),
+          el("span", { class: "world-ai-scope-label", text: `AI 참고 · 핵심 설정 + 본문 앞 ${EXCERPT_MAX}자` }),
         ],
       }),
       detail: detailPane({
@@ -180,10 +187,10 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
 }
 
 export function excerptHint(filled: number): string {
-  const excerptLen = Math.min(600, filled);
-  return filled > 600
-    ? `역사·지형·문화·비밀 — 조수는 앞 600자를 본다 (뒤 ${filled - 600}자는 발췌 밖)`
-    : `역사·지형·문화·비밀 — 조수는 앞 600자 중 ${excerptLen}자를 본다`;
+  const excerptLen = Math.min(EXCERPT_MAX, filled);
+  return filled > EXCERPT_MAX
+    ? `역사·지형·문화·비밀 — 조수는 앞 ${EXCERPT_MAX}자를 본다 (뒤 ${filled - EXCERPT_MAX}자는 발췌 밖)`
+    : `역사·지형·문화·비밀 — 조수는 앞 ${EXCERPT_MAX}자 중 ${excerptLen}자를 본다`;
 }
 
 

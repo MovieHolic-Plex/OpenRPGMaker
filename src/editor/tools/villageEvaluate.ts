@@ -107,6 +107,10 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
     return emptyFail("맵을 찾을 수 없다", input.attempt ?? 1, input.maxAttempts ?? 2);
   }
   const plan = input.plan;
+  // Evaluate the design used for this map, not the project's possibly changed default.
+  const preset = map.villageDesignSource?.preset;
+  const design = preset?.design;
+  const forestDisabled = design?.policies.nature === "fixed" && design.nature.forest === "none";
   const attempt = input.attempt ?? 1;
   const maxAttempts = input.maxAttempts ?? 2;
   const issues: string[] = [];
@@ -138,7 +142,7 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
     // 문 앞 좌표 0개 = 집이 없거나 문 유실. 도달성 검증이 불가능한 상태는 통과가 아니라 실패다.
     structureOk = false;
     issues.push("문 앞 좌표가 0개 — 집이 없거나 문이 유실돼 도달성 검증이 불가능하다");
-    fixes.push({ layer: "build", action: "rebuild_settlement", hint: "build_village로 집을 재시공해 문 앞 좌표를 확보" });
+    fixes.push({ layer: "build", action: "rebuild_settlement", hint: "find_tools로 문 복구 도구를 찾는다. 재시공이 필요하면 기존 범위·설계서를 유지한 author_village를 사용한다" });
   }
 
   // 룩 휴리스틱
@@ -223,7 +227,7 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
       );
     }
     // ── 관찰 기반 — houseRegions(설계도) 가 아니라 houseCount(설계도 또는 문 쌍) 를 쓴다.
-    const npcTarget = houseCount + 2;
+    const npcTarget = design?.policies.residents === "fixed" ? (preset?.npcCount ?? 0) : houseCount + 2;
     if (metrics.scheduledNpcs < npcTarget) {
       naturalIssue(
         `시간표가 있는 주민이 부족하다 (${metrics.scheduledNpcs}/${npcTarget})`,
@@ -262,7 +266,7 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
         { layer: "build", action: "diversify_npc_activities", hint: "농사·수리·배송·목공·장터·순찰 활동을 분산" },
       );
     }
-    if (metrics.treeKinds < 2) {
+    if (!forestDisabled && metrics.treeKinds < 2) {
       naturalIssue(
         `수종이 ${metrics.treeKinds}종뿐이다`,
         { layer: "build", action: "mix_tree_species", hint: "침엽수와 2×2 활엽수 군락을 함께 심기" },
@@ -287,7 +291,7 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
         { layer: "build", action: "fragment_fences", hint: "완전 폐쇄형 사각 울타리를 짧은 마당 경계 조각으로 교체" },
       );
     }
-    if (metrics.interiorTreeCells < Math.min(24, houseCount * 3)) {
+    if (!forestDisabled && metrics.interiorTreeCells < Math.min(24, houseCount * 3)) {
       naturalIssue(
         `마을 내부 수목이 부족하다 (${metrics.interiorTreeCells}칸)`,
         { layer: "build", action: "scatter_inner_groves", hint: "테두리 띠 대신 내부 빈 공간에도 혼합 수목 군락을 산포" },
@@ -311,7 +315,7 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
     lookScore -= 0.1;
   }
 
-  const plazaWanted = plan?.plazaStyle ?? "market";
+  const plazaWanted = plan?.plazaStyle ?? (design?.policies.layout === "fixed" ? preset?.plazaStyle : undefined) ?? "market";
   if (plazaWanted === "market" || plazaWanted === "garden") {
     const minPlazaProps = plazaWanted === "market" ? 4 : 3;
     if (metrics.plazaPropCells < minPlazaProps && metrics.propCells < minPlazaProps + 4) {
@@ -335,7 +339,7 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
     }
   }
 
-  if (plan?.edgeTrees !== "none") {
+  if (!forestDisabled && plan?.edgeTrees !== "none") {
     const minTrees = plan?.edgeTrees === "dense" ? 24 : 12;
     if (metrics.treeCells < minTrees) {
       issues.push(`외곽 나무가 부족함 (${metrics.treeCells}<${minTrees})`);
@@ -412,11 +416,11 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
         lookScore -= 0.2;
         themeMatch = "weak";
       } else if (!okBig) {
-        issues.push(`필수 스펙 실패: 2×2 활엽수 군락 부족 (${metrics.tree2x2Clusters}<3) — plant_tree_clusters(broadleaf-2x2)`);
+        issues.push(`필수 스펙 실패: 2×2 활엽수 군락 부족 (${metrics.tree2x2Clusters}<3) — 나무 수정 도구를 find_tools로 조회`);
         fixes.push({
           layer: "build",
-          action: "plant_tree_clusters",
-          hint: 'plant_tree_clusters({ style: "broadleaf-2x2", count: 6 }) 또는 advance forest_big',
+          action: "find_tools",
+          hint: 'find_tools({ query: "나무 군락 배치" })로 현재 도구를 조회한다. 재시공은 사용자 범위와 설계서를 유지한 author_village만 사용한다.',
         });
         lookScore -= 0.15;
         themeMatch = "weak";

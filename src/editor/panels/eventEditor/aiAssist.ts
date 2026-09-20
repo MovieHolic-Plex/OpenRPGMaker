@@ -15,11 +15,13 @@
 // 모듈 레벨 캐시(이벤트+페이지 키)로 보존해 재렌더 후 복원한다.
 
 import { eventCommandGateNotice } from "@/ai/aiGateNotice";
-import { conversationScopeKey } from "@/ai/conversationStore";
-import { runEventCommandAssist, resolveAssistScope, type AssistScope } from "@/ai/eventCommandAssist";
+import { consumeEventAiDockOpen } from "./aiDockOpenRequest";
+import { sendAiAssistantMessage, getAiAssistantStatus, abortAiAssistantTurn } from "@/editor/aiAssistantBridge";
+import { onlyEventPageCommandsChanged } from "@/ai/eventCommandScope";
+import { resolveAssistScope, type AssistScope } from "@/ai/eventCommandAssist";
 import { showAiGateNotice } from "@/editor/ui/aiGateModal";
 import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
-import { resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
+import { resolveCommandAtPath } from "@/editor/eventCommandPaths";
 import { isAiConfigReady } from "@/editor/panels/aiChatPanelHelpers";
 import { modalStackDepthForTest, modalStackEntryCountForTest, registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { store } from "@/project/store";
@@ -83,11 +85,19 @@ let registeredDockRoot: HTMLDetailsElement | null = null;
 let currentModalTeardown: (() => void) | null = null;
 let currentSelectionTeardown: (() => void) | null = null;
 let panelInstanceId = 0;
+let activeRequest: { key: string; cancelled: boolean } | null = null;
+function stopEventRequest(): void {
+  if (!activeRequest) return;
+  activeRequest.cancelled = true;
+  abortAiAssistantTurn();
+}
 // 생성이 끝나는 시점의 **살아 있는** 도크. 스토어 갱신 한 번이면 에디터 본문을 통째로 다시
 // 그리므로, 요청을 보낸 렌더의 DOM 은 이미 문서에서 떨어져 나간 노드일 수 있다. 그때 자기 클로저의
 // stagedHost 에 그리면 화면엔 아무것도 안 나온다 — 목록은 초안이 있다고 숨고, 초안은 없는 상태.
 let liveDock: {
   key: string;
+  /** 이 도크를 펼치고 입력창으로 초점을 준다. 자기 페이지 키를 스스로 알고 있다. */
+  open: () => boolean;
   renderStaged: () => void;
   setStatus: (text: string, kind?: StatusKind) => void;
   setGenerating: (busy: boolean) => void;
@@ -95,11 +105,30 @@ let liveDock: {
 
 /** 이벤트 에디터가 닫히면 분리된 DOM 클로저를 더는 완료 대상으로 보지 않는다. */
 export function clearEventAiLiveDock(): void {
+  stopEventRequest();
   liveDock = null;
   currentModalTeardown?.();
   currentModalTeardown = null;
 }
 
+/**
+ * 이미 열려 있는 편집기의 AI 도크를 지금 펼치고 입력창으로 초점을 준다.
+ *
+ * 예약(`aiDockOpenRequest`)은 **아직 그려지지 않은** 도크용이라 여기서는 쓸 수 없다. 대신
+ * 살아 있는 도크가 자기 자신을 여는 클로저(`liveDock.open`)를 부른다 — 그 도크가 자기 페이지
+ * 키를 이미 알고 있으므로, 전역 `editorState.selectedEventPageId` 로 키를 **재구성하지 않는다**.
+ * 재구성하면 다른 이벤트의 페이지가 선택돼 있을 때(예: A 를 최소화한 채 B 를 복사한 뒤 A 로
+ * 돌아오는 경우) 엉뚱한 키를 만져 아무 일도 일어나지 않는다.
+ *
+ * 호출자는 편집기를 **먼저 복원**하고 나서 이 함수를 불러야 한다. 최소화된 편집기의 도크는
+ * `isConnected` 가 true 인 채 `hidden` 부모 아래에 있어서, 복원 전에 부르면 보이지 않는
+ * 곳에서 초점을 뺏는다.
+ */
+export function focusEventAiDockInOpenEditor(): boolean {
+  const dock = liveDock;
+  if (!dock) return false;
+  return dock.open();
+}
 const TARGET_NAME_MAX = 18;
 
 // 예시는 입력을 채우기만 한다 — 누른 즉시 LLM 을 호출하면 의도와 다른 초안에 돈을 쓴다.
@@ -179,6 +208,12 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
   const { mapId, eventId, page, cmdList, stagedHost, refreshListVisibility, replaceAll } = options;
   const { projectKey, key } = stateKeyOf(mapId, eventId, page.id);
   const state = stateOf(projectKey, key);
+  // 우클릭 「AI 로 이벤트 …」가 남긴 예약을 여기서 **한 번만** 소비한다. 소비하면 예약이 사라져
+  // 이후 재렌더는 기본값(닫힘)으로 돌아가고, 사용자가 접은 도크를 렌더가 도로 펼치지 않는다.
+  // `state.open` 을 세우는 이유: 이 값이 다음 렌더의 초기값이라, 예약을 지우면서 열어 두지
+  // 않으면 두 번째 렌더에서 곧바로 닫힌다.
+  const openedByRequest = consumeEventAiDockOpen(mapId, eventId);
+  if (openedByRequest) state.open = true;
   const scope = resolveAssistScope(page);
   const instanceId = ++panelInstanceId;
   const headingId = `event-ai-heading-${instanceId}`;
@@ -371,7 +406,13 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
   const refreshGenerateLabel = (): void => {
     generateLabel.textContent = state.staged ? "다시 만들기" : "초안 만들기";
   };
+  const stopBtn = button("중단", "ai-event-stop");
+  stopBtn.hidden = true;
+  stopBtn.style.display = "none";
+  stopBtn.addEventListener("click", stopEventRequest);
   const setGenerating = (busy: boolean): void => {
+    stopBtn.hidden = !busy;
+    stopBtn.style.display = busy ? "" : "none";
     generateBtn.disabled = busy;
     generateBtn.setAttribute("aria-busy", String(busy));
     generateSpinner.hidden = !busy;
@@ -396,28 +437,36 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       );
       return;
     }
+    if (activeRequest || getAiAssistantStatus().turnBusy) {
+      setStatus("조수의 진행 중인 작업을 먼저 마무리하세요.", "error");
+      return;
+    }
+    const request = { key, cancelled: false };
+    activeRequest = request;
+    const progress = setInterval(() => {
+      if (request.cancelled || liveDock?.key !== key) return;
+      const status = getAiAssistantStatus();
+      if (status.turnBusy) liveDock.setStatus(status.lastStatus || "조수가 명령을 만들고 있어요…", "busy");
+    }, 250);
     setGenerating(true);
     state.applied = false;
     setStatus("명령 초안을 만들고 있어요…", "busy");
     const beforeCommands = JSON.stringify(page.commands);
     try {
-      const project = store.getCurrent();
-      const event = project.maps[mapId]?.events.find((entry) => entry.id === eventId);
       const selection = selectedCommandPath(cmdList);
-      const result = await runEventCommandAssist({
-        config,
-        prompt,
-        context: {
-          project,
-          mapId,
-          event,
-          page,
-          selection,
-          selectionLabel: selectedCommandName(cmdList, page.commands) ?? undefined,
-        },
-        // 프로젝트 한정 성향 조회 키. 전역 성향은 이 값과 무관하게 항상 붙는다.
-        projectScopeKey: conversationScopeKey(store.getProjectIdentity(), project),
-      });
+      const target = { mapId, eventId, pageId: page.id, selection,
+        selectionLabel: selectedCommandName(cmdList, page.commands) ?? undefined,
+        mode: scope === "append" ? "append" as const : "edit" as const };
+      const message = `${prompt}\n\n[이벤트 편집기 컨텍스트]\n${JSON.stringify(target)}\n` +
+        "get_event로 확인한 뒤 event_command_assist로 이 페이지의 명령만 수정하세요. 다른 페이지나 설정은 수정할 수 없습니다.";
+      const response = await sendAiAssistantMessage(message, { deferApply: true, eventCommandScope: target });
+      if (request.cancelled) throw new Error("중단했습니다.");
+      if (!response.ok) throw new Error(response.error ?? "조수 실행에 실패했습니다.");
+      const proposal = response.pendingProposal;
+      if (!proposal) throw new Error(response.lastAssistantText || "조수가 검토할 명령 초안을 만들지 못했습니다.");
+      if (!onlyEventPageCommandsChanged(proposal.before, proposal.after, target)) throw new Error("지정한 페이지 밖의 변경이 있어 초안을 거부했습니다.");
+      const generatedPage = proposal.after.maps[mapId]?.events.find(entry => entry.id === eventId)?.pages?.find(entry => entry.id === page.id);
+      if (!generatedPage) throw new Error("초안에서 대상 페이지를 찾을 수 없습니다.");
       const livePage = store.getCurrent().maps[mapId]?.events
         .find((entry) => entry.id === eventId)
         ?.pages?.find((entry) => entry.id === page.id);
@@ -433,21 +482,18 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       const liveBefore = livePage.commands;
       // 모델 출력이 "page" 면 그게 곧 최종 목록이고, "append" 면 기존 목록에 끼워 최종 목록을 만든다.
       // 어느 쪽이든 아래 diff 는 같은 일을 한다 — 무엇이 달라지는지 목록 위에 그린다.
-      const after = result.scope === "page"
-        ? result.commands
-        : withAppended(liveBefore, selection, result.commands);
+      const after = generatedPage.commands;
       const rows = diffCommandLists(liveBefore, after);
       state.staged = {
         rows,
         excluded: new Set<string>(),
-        scope: result.scope,
+        scope,
         baseCommands: structuredClone(liveBefore),
       };
-      const fixedNote = result.attempts > 1 ? ` (스스로 ${result.attempts - 1}번 고쳤습니다)` : "";
       // 숫자는 칩과 결과 줄이 말한다 — 상태줄은 다음 행동만.
       state.status = hasCommandDiffChanges(rows)
-        ? `초안을 만들었어요. 이 창에서 확인하고 「이대로 하기」를 누르세요.${fixedNote}`
-        : `바뀌는 것이 없었어요. 요청을 더 구체적으로 적어 보세요.${fixedNote}`;
+        ? "초안을 만들었어요. 이 창에서 확인하고 「이대로 하기」를 누르세요."
+        : "바뀌는 것이 없었어요. 요청을 더 구체적으로 적어 보세요.";
       state.statusKind = "";
       const settled = liveDock && liveDock.key === key ? liveDock : null;
       // 페이지 전환·에디터 닫기 뒤에는 맞는 도크가 없다. 상태만 보존하고 분리된 DOM 은 그리지 않는다.
@@ -457,18 +503,21 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       // 검증기 원문(kind/필드 이름)은 원인 추적에 필요하니 버리지 않고, 사용자가 다음에
       // 무엇을 할지 아는 한 줄을 앞에 붙인다.
       const detail = cause instanceof Error ? cause.message : String(cause);
-      state.status = `명령을 만들지 못했어요. 문장을 조금 더 구체적으로 적고 다시 시도해 보세요. — ${detail}`;
+      state.status = request.cancelled ? "명령 만들기를 중단했어요."
+        : `명령을 만들지 못했어요. 문장을 조금 더 구체적으로 적고 다시 시도해 보세요. — ${detail}`;
       state.statusKind = "error";
       const activeDock = liveDock && liveDock.key === key ? liveDock : null;
       activeDock?.setStatus(state.status, "error");
       // 한 줄 상태 텍스트는 검증기 원문이 붙으면 끝이 잘린다. append scope 에서는 애초에
       // 지우기·고치기가 표현 불가라는 사실도 여기서만 말할 수 있다 — 모달로 올린다.
-      showAiGateNotice(eventCommandGateNotice({
+      if (!request.cancelled) showAiGateNotice(eventCommandGateNotice({
         message: detail,
         scope,
         commandCount: page.commands.length,
       }));
     } finally {
+      clearInterval(progress);
+      if (activeRequest === request) activeRequest = null;
       // 자기 클로저의 버튼과 **살아 있는 도크의 버튼**을 모두 푼다. 생성 중 스토어가 갱신되면
       // 이 클로저의 버튼은 문서에서 떨어져 나간 옛 도크 것이고, 새 도크는 `statusKind === "busy"`
       // 를 보고 자기 버튼을 잠갔다. 상태 쓰기는 재렌더를 부르지 않으므로 여기서 직접 풀지 않으면
@@ -554,6 +603,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       return;
     }
     state.open = root.open;
+    if (!root.open && activeRequest?.key === key) stopEventRequest();
     syncDockModalRegistration(root);
     if (root.open) {
       refreshTarget();
@@ -603,7 +653,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
                 examples,
               ],
             }),
-            el("div", { class: "ai-event-generate-row", children: [target, status, generateBtn] }),
+            el("div", { class: "ai-event-generate-row", children: [target, status, generateBtn, stopBtn] }),
           ],
         }),
         resultSection,
@@ -616,10 +666,33 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
   if (state.statusKind === "busy") setGenerating(true);
   liveDock = {
     key,
+    open: () => {
+      if (!root.isConnected) return false;
+      // `state.open` 을 함께 세운다. `details.open` 만 켜면 `toggle` 이벤트에 기대게 되는데
+      // 그 이벤트는 비동기로 큐에 걸린다 — 그 사이 재렌더가 아직 false 인 state.open 을 보고
+      // 닫힌 도크를 그리면 "눌렀는데 잠깐 열렸다 닫힌다"가 된다.
+      state.open = true;
+      root.open = true;
+      try {
+        input.focus();
+      } catch {
+        // headless DOM 에서 focus 미지원은 펼침 자체를 막지 않는다.
+      }
+      return true;
+    },
     renderStaged,
     setStatus,
     setGenerating,
   };
+  if (openedByRequest) {
+    // 이 함수가 돌려준 root 는 호출자(content.ts)가 곧 append 한다. 지금은 아직 문서 밖이라
+    // focus 가 먹지 않으므로, 연결된 다음 마이크로태스크에서 입력창으로 옮긴다 — 우클릭으로
+    // 들어온 사용자가 곧바로 문장을 칠 수 있어야 이 지름길이 지름길이다.
+    queueMicrotask(() => {
+      if (!root.isConnected) return;
+      input.focus();
+    });
+  }
   return root;
 }
 
@@ -706,24 +779,6 @@ function commandNameAtPath(commands: Command[], path: readonly number[]): string
     .trim();
   if (!name) return null;
   return name.length > TARGET_NAME_MAX ? `${name.slice(0, TARGET_NAME_MAX)}…` : name;
-}
-
-/**
- * "append" scope(너무 긴 페이지)에서 새 명령을 선택 위치 뒤에 끼운 최종 목록을 만든다.
- * 삽입도 결국 "최종 목록"으로 환산해 diff 를 태운다 — 표시·적용·되돌리기 경로가 하나로 유지된다.
- */
-function withAppended(
-  before: readonly Command[],
-  selection: readonly number[] | null,
-  added: readonly Command[],
-): Command[] {
-  const next = structuredClone(before as Command[]);
-  const fresh = added.map((command) => structuredClone(command));
-  if (!selection || selection.length === 0) return [...next, ...fresh];
-  const list = resolveCommandListAtPath(next, selection);
-  if (!list) return [...next, ...fresh];
-  list.splice(selection[selection.length - 1] + 1, 0, ...fresh);
-  return next;
 }
 
 function button(text: string, testid: string, variant?: "primary"): HTMLButtonElement {

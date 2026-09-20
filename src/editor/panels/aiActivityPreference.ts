@@ -1,0 +1,38 @@
+import { el } from "@/util/dom";
+export const ACTIVITY_LEVELS = { none: "생략", brief: "간단히 보기", detail: "자세히 보기", trace: "매우 자세히 보기" } as const;
+export type ActivityLevel = keyof typeof ACTIVITY_LEVELS;
+const KEY = "oprn:ai-activity-level";
+let fallback: ActivityLevel = "brief";
+let sessionOverride: ActivityLevel | undefined;
+export function getActivityLevel(): ActivityLevel {
+  if (sessionOverride) return sessionOverride;
+  try { const value = localStorage.getItem(KEY); return value && Object.hasOwn(ACTIVITY_LEVELS, value) ? value as ActivityLevel : "brief"; }
+  catch { return fallback; }
+}
+export function setActivityLevel(level: ActivityLevel): void {
+  fallback = level;
+  try { localStorage.setItem(KEY, level); sessionOverride = undefined; } catch { sessionOverride = level; }
+  // Only attached surfaces; no global listener retains removed request cards.
+  document.querySelectorAll<HTMLElement>("[data-ai-activity-surface]").forEach(node => node.dispatchEvent(new Event("ai-activity-level")));
+}
+export function bindActivityLevel(root: HTMLElement, update: (level: ActivityLevel) => void): void {
+  root.dataset.aiActivitySurface = "true";
+  root.addEventListener("ai-activity-level", () => update(getActivityLevel()));
+  update(getActivityLevel());
+}
+export function createActivityLevelControl(): HTMLElement {
+  const buttons = Object.entries(ACTIVITY_LEVELS).map(([value, label]) => el("button", {
+    text: label,
+    attrs: { type: "button", "aria-pressed": "false", ...(value === "brief" ? { "aria-label": `${label} (기본)` } : {}) },
+    dataset: { activityLevel: value },
+    on: { click: () => setActivityLevel(value as ActivityLevel) },
+  }));
+  const group = el("div", { class: "ai-activity-level-buttons", attrs: { role: "group", "aria-label": "작업 표시 수준" }, dataset: { testid: "ai-activity-level" }, children: buttons });
+  const heading = el("div", { class: "ai-activity-setting-heading", children: [el("span", { text: "작업 표시" })] });
+  const root = el("div", { class: "ai-activity-setting", children: [heading, group] });
+  bindActivityLevel(root, level => {
+    group.dataset.level = level;
+    for (const button of buttons) button.setAttribute("aria-pressed", String(button.dataset.activityLevel === level));
+  });
+  return root;
+}

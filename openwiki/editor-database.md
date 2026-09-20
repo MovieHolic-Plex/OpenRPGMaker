@@ -1,3 +1,15 @@
+## 몬스터 종족의 전투 뒷모습 (2026-09-20)
+
+종족 그래픽 영역의 `전투 뒷모습` 리소스 선택기는 `graphic.backResourceId`를 편집한다. monster 리소스를 선택하거나 지울 수 있으며 기존 `currentSpecies`/`updateSpecies` 경로를 사용한다. 별도 필드 그래픽이나 정면 그래픽을 덮어쓰지 않는다. QA 선택자는 `db-monster-species-back-resource`. 후면 전투 방향에서만 적용하며 없으면 기존 그래픽을 사용한다.
+
+## 감사 후속: 참조를 보존하는 삭제 경로 (2026-09-20)
+
+- 기본 DB 9종의 삭제 검사는 `databaseRecordReferences.ts`의 `projectDatabaseReferenceMessage(project, collection, id)`가 소유한다. `databaseReferences.ts`는 현재 store를 전달하는 UI 어댑터다. AI 삭제는 자기 draft를 전달한다. store를 AI 도구에 import하지 않는다.
+- 작물 씨앗/수확물, 몬스터 종족의 레벨 스킬, 맵 인카운터/필드 스폰, 직업 간 승급/장비 권한을 검사한다. 아이템은 기존 `collectProjectItemReferenceIds`를 보조 판정으로 재사용한다.
+- 명령 스캐너는 상점 실패 및 전투 결과 3분기까지 검사한다. 생활 목적지 switchId도 삭제/미사용 판정의 참조다.
+- 제작법 삭제와 ID 변경은 `databaseCraftReferences.ts`를 공유한다. 명령·생활 스킬·번들·박물관 보상을 모두 본다.
+- 수정·검증 범위와 미해결 목록: `docs/reviews/2026-09-20-data-integrity-fixes.md`. 회귀 테스트 추가, 이 세션에서는 테스트/게이트 미실행.
+
 ## 장소 편집 1차 UX 수리 — 이름·툴바·속성·카드 (2026-09-15)
 
 장소 탭의 네 가지 결함을 고쳤다. 실측 근거와 함께 남긴다.
@@ -647,7 +659,7 @@ Party record tabs use the final section of `studio-v2.css`: actors, classes, ski
 
 - **세계 개요 v2:** 본문이 AI 미터+hero stat+이름/전제+뼈대+법칙 2열+본문 순서다. 뼈대(톤·시대·기술 천장·없는 것)와 법칙은 속성 사이드바가 아니라 본문 카드에 둔다 — 272px 사이드바에선 법칙 2열이 1열 덫에 걸린다. 본문 타이핑은 미터·힌트·stat 값을 다시 렌더 없이 갱신한다. testid: `db-world-canon-ai-meter`, `db-world-canon-hero-stats`, `db-world-canon-hero-stat-body`(값 span), `db-world-canon-frame`, `db-world-canon-laws`. CSS: `world-canon-meter`, `world-canon-law-grid`(799px 이하 1열), 카드 헤드 래핑.
 - **이름 카드·미터:** 이름 카드는 `이름과 한 줄` 제목을 단다(카드 순서의 랜드마크). 미터 텍스트는 `role=status`, 막대는 `role=progressbar`(0/600/현재값, 타이핑마다 `aria-valuenow` 갱신).
-- **잘림 신호:** 본문이 600자를 넘으면 hero stat이 warn 톤으로 `뒤 N자 잘림`을 표시한다(값은 `600 / 600자` 고정). 증거 `verify-shots/world-lore-v2/trunc/`.
+- **잘림 신호:** 본문이 발췌 상한을 넘으면 hero stat이 warn 톤으로 `뒤 N자 잘림`을 표시한다. 값은 하드코딩이 아니라 **조수가 실제로 보내는 상한과 같은 상수**(`WORLD_CANON_BODY_EXCERPT_CHARS`)를 읽는다 — 문구가 어긋나면 사용자가 잘못된 길이에 맞춰 세계관을 쓴다. 2026-09-20 에 600 → 20,000자로 올렸다(사용자 요청: "세계관이 틀리면 안 된다"). 증거 `verify-shots/world-lore-v2/trunc/`.
 - **폴리시 (2026-09-18):** Studio v2 문법 안에서만 — 새 토큰 없음. 미터 바 8px+accent-soft 표면, 법칙 카드 canvas 표면, 선택 카드 좌측 accent 레일, 위키 헤더 hairline+12px 리듬, 톤 칩 on 700. 카드 헤드 래핑은 같은 `database` 레이어라 파일 순서가 아니라 특이성으로 이긴다(풀 체인 0-5-0). 증거 `verify-shots/world-lore-v2/polish2/`(넘침 0, 에러는 자동저장 기준선 17과 동일).
 - **폴리시 2 (2026-09-18):** `database` 레이어라 `map(editor)` 레이어 동급 규칙을 특이성과 무관하게 이긴다. lint 경고·에러 블록 탈포화(루트 muted + Studio strong/danger), 칩·카드 호버 피드백, 포커스 링. 증거 `verify-shots/world-lore-v2/p2/`.
 - **구 레이아웃 기록 (2026-09-06):** `worldCanon`의 표시 이름은 「세계 개요」이며 stable tab/field testid는 유지한다.
@@ -663,7 +675,7 @@ Party record tabs use the final section of `studio-v2.css`: actors, classes, ski
 - `이 세계` 는 싱글톤 `project.worldCanon` 이다. 이름·한 줄 전제·톤 칩·시대·기술 천장·없는 것 태그·힘/신/죽음/돈 법칙·마크다운 본문. 비어 있으면 키를 저장하지 않는다 (`normalizeWorldCanon` / `compactWorldCanon`). 스키마는 `src/project/world/canon.ts`.
 - 텍스트는 `recordCoalescedSnapshot`, 칩·태그·법칙 토글은 `recordProjectSnapshot`. UI 는 `databaseWorldCanonView.ts`, 계약 `test/worldCanon.test.ts` + `test/databaseWorldCanonView.test.ts`.
 - `설정집` 은 세계관 카드 위키를 `workspaceShell` 셸에 심은 것이다 (`world-panel-embedded` + `db-world-codex-workspace`). 본문은 레이아웃 루트 하나만 자식으로 둬 `.db-body` 자체 스크롤을 만들지 않는다 — 계약 `test/databaseWorldCodexStructure.test.ts`. 톱바 세계관 버튼은 이 그룹의 `이 세계` 탭으로 점프한다.
-- **소바자 세 곳 (2026-09-03).** (1) 조수: `src/ai/worldCanonContext.ts` 의 `worldCanonPromptSection` 이 `## 이 세계(세계관 고정)` 블록을 감독 지침과 같은 **예산 밖 고정분**으로 넣는다 — 이름·전제·톤·없는 것(절대 금지)·법칙 + 본문 600자. 엔티티 다이제스트 배제(`worldAiExclusion`)는 그대로다. (2) 개요 탭 `db-overview-canon` 카드가 이름·전제를 보이고 이 세계 탭으로 점프한다. (3) 환영 장르 포스터(`applyWelcomeGenrePresetToOpenProject`)가 세계관이 뱄 때만 톤·전제 초안을 심는다. 계약 `test/worldCanonConsumers.test.ts`.
+- **소바자 세 곳 (2026-09-03).** (1) 조수: `src/ai/worldCanonContext.ts` 의 `worldCanonPromptSection` 이 `## 이 세계(세계관 고정)` 블록을 감독 지침과 같은 **예산 밖 고정분**으로 넣는다 — 이름·전제·톤·없는 것(절대 금지)·법칙 + 본문 발췌(2026-09-20 부터 20,000자 상한, `WORLD_CANON_BODY_EXCERPT_CHARS`). 엔티티 다이제스트 배제(`worldAiExclusion`)는 그대로다. (2) 개요 탭 `db-overview-canon` 카드가 이름·전제를 보이고 이 세계 탭으로 점프한다. (3) 환영 장르 포스터(`applyWelcomeGenrePresetToOpenProject`)가 세계관이 뱄 때만 톤·전제 초안을 심는다. 계약 `test/worldCanonConsumers.test.ts`.
 
 ### 세계관 입력 보존·설정집 저장 계약 (2026-09-05)
 
@@ -1873,3 +1885,54 @@ player preview. The editor probe accepts skin IDs as arguments and an optional
 ### 공용 기본 매핑 재저작 (2026-09-18)
 
 사용자의 재매핑 지시로 `src/assets/sharedCharacterGraphics.json`을 원본 그림에서 새로 저작했다. 168칸 중 94칸 연결(정확 68·근사 26), 74칸 얼굴 없음, 원본 얼굴 메타데이터 80개다. 공용 저장 파일이 없는 호스트는 이 자료로 시작하며, 이미 저장된 호스트 파일은 우선하여 사용자 편집을 보존한다. 각 근사 대응의 차이는 `note`에 남긴다. `Actor3 #5`를 여성 얼굴에 순번으로 연결하지 않으며, 검은 고양이·Scarloxy 전용 그림·물건·빈 칸에 억지 얼굴을 주지 않는다. 시트·얼굴 대조 PNG, 호스트 저장 후 재읽기, Supabase 전용 행 `oprn-shared-character-graphics`의 저장(201) 후 재조회 근거는 `.omo/evidence/shared-character-faces/README.md`에 보존한다. Supabase는 재저작 자료의 원격 보관본이고 편집기의 공용 저장 정본은 호스트 파일이다.
+
+## Feature16 climate and action forms (2026-09-21)
+
+Map settings (palette tileset-name chip) → 기후 authors inherit/fixed/indoor mode,
+fixed weather and intensity via `setMapClimate` (map permission + scoped store
+mutation). Selectors: `map-props-tab-climate`, `map-climate-mode`,
+`map-climate-weather`, `map-climate-intensity`.
+Database → 파티 → 스킬 → 액션 스킬 uses the separate
+`databaseActionSkillForm.ts`. `db-field-skill-action-enabled` remains compatible;
+new selectors end in `kind`, `cooldown`, `duration`, `status`, `status-duration`.
+Kinds are projectile/melee/dash/trap. Each callback edits the latest stored profile
+so changing one field cannot restore an older value from another control.
+
+Parent-owned real editor capture (already running editor server):
+`FEATURE16_EDITOR_URL=http://127.0.0.1:<port> node scripts/capture-feature16-world-editor.mjs`.
+It opens real map/database dialogs, operates visible controls, reads the actual
+serializer's result, and writes screenshots/receipt under
+`verify-shots/feature16-world-editor`. No synthetic component mounts or DB writes.
+These scripts and tests were authored without running servers, tests or typecheck
+in the implementation agent's session; centralized validation is still required.
+## Combat authoring studio (feature16, 2026-09-21)
+
+Skills → **전투 규칙 · 피해 수식** (`feature16-combat-studio`) adds a bounded arithmetic formula, editable preview power/attacker ATK/defender DEF, ordered hit multipliers, per-skill critical chance/multiplier and cooldown. Existing effect-card hit rate remains authoritative. Preview displays base damage before model modifiers; other preview variables default to 20, level to 1. Invalid input displays **저장하지 않음**, marks the field invalid and never calls `updateDatabaseRecord`; last valid data remains saved. Blank formula restores model defaults; critical chance -1 restores battler defaults. All persisted edits use existing database mutation labels/history.
+
+Enemies → **보상** adds conditional drop rows (`feature16-drops`); first add preserves a legacy single drop as the first row. Each row has item/quantity/rate and always/turn/HP/MP/status/allies/switch condition controls. Explicit “기존 단일 드롭 사용” removes the array and restores legacy fields. The existing attack-pattern dialog uses the same condition editor, including session switch equality. Unknown/dangling item references are not silently created.
+
+Browser proof: `npx playwright test test/e2e/feature16-combat.spec.ts --project=chromium --workers=1`. Parent owns server and execution. This spec opens the **real editor** at `?freshProject=1`, uses visible database controls, verifies invalid edits do not alter exported data, switches tabs and rechecks persistence. Screenshots are emitted to Playwright's per-test output folder as `feature16-combat-{skills,invalid-formula,drops,enemy-condition}.png`. No remote content mutation; no screenshot claimed until the supervisor runs it.
+## Troop intent and weakness authoring (2026-09-21)
+
+The troop placement preview contains `databaseTroopIntentPanel`: hypothetical turn/MP/target/row, eligible action candidates with shared damage predictions, and actual element multipliers. Existing actions and elementRates are edited through `updateDatabaseRecord`; no new enemy schema. It does not claim exact AI choice or add predictions to the runtime HUD. Details, limitations and real-editor capture: `openwiki/feature16-battle-ui.md`.
+
+## 인게임 HUD 구성 편집기 (2026-09-21)
+
+자료집 → 시스템 → 인게임 HUD(`databaseFieldHud.ts`)에서 생활·농장, 생존·탐험, 파티 RPG, 액션·모험, 고요한 탐험, 기존 HUD를 고른다. 프리셋 선택은 구성 전체를 교체하며 기존 시스템 편집 스냅샷으로 실행 취소할 수 있다. 구성 요소는 최대 24개, 추가·복제·삭제·순서 변경이 가능하다.
+
+- 왼쪽은 요소 목록, 가운데는 시작 맵의 `renderRegionSnapshot` 배경과 실제 `FieldHud`, 오른쪽은 선택 요소의 데이터/표현/앵커/여백/치수/색/패널/표시 조건이다. 이미지 요소는 기존 picture 리소스 선택기를 사용한다.
+- 드래그는 화면 배율을 논리 좌표로 환산하여 좌상단 앵커로 바꾸고 pointerup에 한 번 저장한다. 방향키 1px, Shift+방향키 8px 이동도 같은 편집 경로다. 단순 선택/취소/미리보기 전환은 프로젝트 이력을 만들지 않는다.
+- 체력/마력은 선두 또는 지정 배우, 생활 에너지/액션 스태미나/소지금/변수/타이머/아이템 보유량은 실제 데이터에 연결한다. 상태 요소는 배우 상태와 선택 타이머를 읽는다. 음식 효과를 새로 만들지 않으며 생존형의 음식 슬롯은 휴대 식량의 보유 수량이다.
+- 시작 상태·저체력·전투·화면 아래 접근·대화 상태 미리보기는 프로젝트와 별도의 세션이다. 지원 시스템이 꺼져 있으면 설명을 표시하며, 현재 조건에서 숨겨진 요소는 편집할 수 있도록 흐리게 보인다.
+- 편집은 `databaseSystemView.updateSystem`의 스냅샷/감사/저장 경로를 공유한다. 운영 게임 콘텐츠를 생성하거나 원격 DB를 직접 쓰는 기능이 아니다.
+
+### 장르별 HUD와 글꼴 (2026-09-21 후속)
+
+프리셋은 수집·여행, 고전 JRPG, 상징·호러, 추격·HUD 없음, 하트·모험까지 포함한다.
+수집형은 필드의 지역명과 별도의 `field-list` 세로 명령 메뉴를 사용한다. 고전형/추격형의
+빈 요소 목록은 정상적인 구성이다. 프리셋을 고르면 권장 메뉴와 목표 표시 설정도 함께
+바뀐다. `함께 사용할 메뉴 → 기존 메뉴 설정`으로 시스템의 기존 `menuUiStyle`을 따른다.
+HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한다. 글꼴 선택은 HUD에만
+적용되고 메뉴 스킨은 자체 글꼴을 사용한다. 게이지의 `수치 함께 표시`를 끄면 하트/꽃만
+남길 수 있다. 꽃잎은 실제 연결 데이터 비율을 5단계로 읽으며 임의 그림 상태 교체는 아니다.
+별도 메뉴 편집기의 새 `여행 · 세로 명령창`도 같은 스킨 레지스트리를 사용한다.

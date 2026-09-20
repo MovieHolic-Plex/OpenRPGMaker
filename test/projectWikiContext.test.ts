@@ -8,7 +8,7 @@ function doc(id: string, overrides: Partial<WorldEntity> = {}): WorldEntity {
 }
 
 describe("bounded wiki retrieval", () => {
-  it("keeps explicit project decisions ahead of a long history of matching progress", () => {
+  it("keeps explicit project decisions and excludes matching work history", () => {
     const project = createBlankProject();
     project.world = { entities: [
       doc("w_core"),
@@ -22,7 +22,7 @@ describe("bounded wiki retrieval", () => {
     const result = projectWikiContext(project, { query: "monster placement" });
 
     expect(result.selectedIds[0]).toBe("w_core");
-    expect(result.selectedIds).toHaveLength(8);
+    expect(result.selectedIds).toEqual(["w_core"]);
   });
   it("selects relevant lore without combat keywords and excludes unrelated maps", () => {
     const project = createBlankProject();

@@ -26,6 +26,8 @@ import {
   TOOL_ACTION_PARAMS,
 } from "./lifeEconomyToolSchemas";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { craftRecipeReferenceMessage } from "@/editor/databaseCraftReferences";
+import { mergeRecordPatch } from "./mergeRecordPatch";
 
 const FARM_TOOLS: readonly FarmTool[] = ["hoe", "wateringCan", "axe", "pickaxe"];
 const TOOL_ACTIONS: readonly ToolWorldAction[] = ["till", "water", "chop", "mine", "fish", "harvest"];
@@ -125,8 +127,9 @@ const upsertCraftRecipe: ToolDefinition = {
   parameters: CRAFT_RECIPE_PARAMS,
   invalidArgsExample: { recipe: { id: "recipe_plank", name: "판자", ingredients: [{ itemId: "wood", count: 2 }], outputItemId: "plank", outputCount: 1 } },
   run(draft, args): ToolExecResult {
-    const record = asRecord(args.recipe, "recipe");
-    const id = requireId(record, "id", "recipe");
+    const patch = asRecord(args.recipe, "recipe");
+    const id = requireId(patch, "id", "recipe");
+    const record = mergeRecordPatch(draft.system.craftRecipes?.find((recipe) => recipe.id === id), patch);
     const recipe: CraftRecipe = {
       id,
       ...(optionalText(record, "name") !== undefined ? { name: optionalText(record, "name") } : {}),
@@ -150,6 +153,8 @@ const deleteCraftRecipe: ToolDefinition = {
   invalidArgsExample: { id: "recipe_plank" },
   run(draft, args): ToolExecResult {
     const id = requireId(args, "id", "delete_craft_recipe");
+    const reference = craftRecipeReferenceMessage(draft, id);
+    if (reference) throw new ToolError(reference, { code: "recipe-in-use" });
     const current = draft.system.craftRecipes ?? [];
     const next = current.filter((recipe) => recipe.id !== id);
     if (next.length === current.length) {

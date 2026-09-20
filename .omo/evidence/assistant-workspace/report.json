@@ -1,0 +1,154 @@
+{
+  "checks": [
+    {
+      "label": "Default is brief and available before first turn",
+      "ok": true
+    },
+    {
+      "label": "All four levels are visible buttons",
+      "ok": true
+    },
+    {
+      "label": "Expand action has a visible text label",
+      "ok": true
+    },
+    {
+      "label": "Brief shows at most four retained steps",
+      "ok": true
+    },
+    {
+      "label": "Detailed work entries are visible",
+      "ok": true
+    },
+    {
+      "label": "Recovered tool error remains searchable",
+      "ok": true
+    },
+    {
+      "label": "Trace retains a tool older than the 200-row team cap",
+      "ok": true
+    },
+    {
+      "label": "Full arguments exceed old 200-character summary",
+      "ok": true
+    },
+    {
+      "label": "Credentials are redacted before retention",
+      "ok": true
+    },
+    {
+      "label": "Tool result and retry reference are available",
+      "ok": true
+    },
+    {
+      "label": "Omit hides work but preserves review decision",
+      "ok": true
+    },
+    {
+      "label": "Team detail shares brief preference",
+      "ok": true
+    },
+    {
+      "label": "Team selection updates main preference",
+      "ok": true
+    },
+    {
+      "label": "Member trace is visible",
+      "ok": true
+    },
+    {
+      "label": "Review decision visible at 1024px",
+      "ok": true
+    },
+    {
+      "label": "Large window contains the same conversation and team",
+      "ok": true
+    },
+    {
+      "label": "Large window opens a member detail beside the conversation",
+      "ok": true
+    },
+    {
+      "label": "Large window has one visible level control",
+      "ok": true
+    },
+    {
+      "label": "Team roster exposes the assigned task",
+      "ok": true
+    },
+    {
+      "label": "Conversation and team resize by dragging the boundary",
+      "ok": true
+    },
+    {
+      "label": "Keyboard restores the default split",
+      "ok": true
+    },
+    {
+      "label": "Expanded trace exposes structured results in the large window",
+      "ok": true
+    },
+    {
+      "label": "Trace exposes aligned log columns",
+      "ok": true
+    },
+    {
+      "label": "Large conversation and team use separate nonoverlapping columns",
+      "ok": true
+    },
+    {
+      "label": "Large review and team remain accessible at 1024px",
+      "ok": true
+    },
+    {
+      "label": "Closing restores draft, single session and trace selection",
+      "ok": true
+    },
+    {
+      "label": "Escape restores the normal panel and trigger focus",
+      "ok": true
+    },
+    {
+      "label": "Execution persists separately from display cap",
+      "ok": true
+    },
+    {
+      "label": "Display preference survives reload",
+      "ok": true
+    },
+    {
+      "label": "Archive survives reload with tool arguments and final phase",
+      "ok": true
+    },
+    {
+      "label": "Region surface shows current read operation by default",
+      "ok": true
+    },
+    {
+      "label": "Stop remains available in omit mode",
+      "ok": true
+    },
+    {
+      "label": "Interrupted operation retains visible outcome",
+      "ok": true
+    },
+    {
+      "label": "Interrupted call exposes original input",
+      "ok": true
+    },
+    {
+      "label": "Follow-up lane retains tool failure and final failure separately",
+      "ok": true
+    },
+    {
+      "label": "No browser errors",
+      "ok": true
+    }
+  ],
+  "errors": [],
+  "owner": {
+    "id": "02da7267-4850-41fa-8cee-6d16630a68d3",
+    "count": 1,
+    "entries": 230
+  }
+}

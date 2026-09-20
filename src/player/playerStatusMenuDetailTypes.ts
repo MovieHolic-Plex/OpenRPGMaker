@@ -1,3 +1,4 @@
+import type { InventoryView } from '@/player/playerInventoryView';
 import type { GrowthMenuTab, GrowthMenuMutation } from "@/player/playerGrowthMenu";
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import type { PlaySession } from "@/project/session";
@@ -78,6 +79,9 @@ export type StatusMenuDetailOptions = {
   readonly selectedCommand: StatusMenuRailId;
   readonly slots: readonly SaveSlotReadResult[];
   readonly waitModeEnabled: boolean;
+  readonly inventoryView?: InventoryView;
+  readonly onInventoryViewChange?: (view: InventoryView) => void;
+  readonly onOptionsChanged?: (message?: string) => void;
   readonly targetItemId?: string;
   readonly skillActorId?: string;
   readonly selectedSkillId?: string;
@@ -85,6 +89,8 @@ export type StatusMenuDetailOptions = {
   readonly equipmentActorId?: string;
   readonly equipmentSlotId?: keyof ActorInitialEquipment;
   readonly formationActorId?: string;
+  readonly battleReportIndex?: number;
+  readonly onSelectBattleReport?: (index: number | undefined) => void;
   readonly monsterView?: "party" | "box";
   readonly confirmSaveSlot?: SaveSlotIndex;
   readonly confirmToTitle?: boolean;
