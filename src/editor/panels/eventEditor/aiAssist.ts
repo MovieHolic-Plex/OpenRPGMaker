@@ -15,6 +15,7 @@
 // 모듈 레벨 캐시(이벤트+페이지 키)로 보존해 재렌더 후 복원한다.
 
 import { eventCommandGateNotice } from "@/ai/aiGateNotice";
+import { consumeEventAiDockOpen } from "./aiDockOpenRequest";
 import { sendAiAssistantMessage, getAiAssistantStatus, abortAiAssistantTurn } from "@/editor/aiAssistantBridge";
 import { onlyEventPageCommandsChanged } from "@/ai/eventCommandScope";
 import { resolveAssistScope, type AssistScope } from "@/ai/eventCommandAssist";
@@ -95,6 +96,8 @@ function stopEventRequest(): void {
 // stagedHost 에 그리면 화면엔 아무것도 안 나온다 — 목록은 초안이 있다고 숨고, 초안은 없는 상태.
 let liveDock: {
   key: string;
+  /** 이 도크를 펼치고 입력창으로 초점을 준다. 자기 페이지 키를 스스로 알고 있다. */
+  open: () => boolean;
   renderStaged: () => void;
   setStatus: (text: string, kind?: StatusKind) => void;
   setGenerating: (busy: boolean) => void;
@@ -108,6 +111,24 @@ export function clearEventAiLiveDock(): void {
   currentModalTeardown = null;
 }
 
+/**
+ * 이미 열려 있는 편집기의 AI 도크를 지금 펼치고 입력창으로 초점을 준다.
+ *
+ * 예약(`aiDockOpenRequest`)은 **아직 그려지지 않은** 도크용이라 여기서는 쓸 수 없다. 대신
+ * 살아 있는 도크가 자기 자신을 여는 클로저(`liveDock.open`)를 부른다 — 그 도크가 자기 페이지
+ * 키를 이미 알고 있으므로, 전역 `editorState.selectedEventPageId` 로 키를 **재구성하지 않는다**.
+ * 재구성하면 다른 이벤트의 페이지가 선택돼 있을 때(예: A 를 최소화한 채 B 를 복사한 뒤 A 로
+ * 돌아오는 경우) 엉뚱한 키를 만져 아무 일도 일어나지 않는다.
+ *
+ * 호출자는 편집기를 **먼저 복원**하고 나서 이 함수를 불러야 한다. 최소화된 편집기의 도크는
+ * `isConnected` 가 true 인 채 `hidden` 부모 아래에 있어서, 복원 전에 부르면 보이지 않는
+ * 곳에서 초점을 뺏는다.
+ */
+export function focusEventAiDockInOpenEditor(): boolean {
+  const dock = liveDock;
+  if (!dock) return false;
+  return dock.open();
+}
 const TARGET_NAME_MAX = 18;
 
 // 예시는 입력을 채우기만 한다 — 누른 즉시 LLM 을 호출하면 의도와 다른 초안에 돈을 쓴다.
@@ -187,6 +208,12 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
   const { mapId, eventId, page, cmdList, stagedHost, refreshListVisibility, replaceAll } = options;
   const { projectKey, key } = stateKeyOf(mapId, eventId, page.id);
   const state = stateOf(projectKey, key);
+  // 우클릭 「AI 로 이벤트 …」가 남긴 예약을 여기서 **한 번만** 소비한다. 소비하면 예약이 사라져
+  // 이후 재렌더는 기본값(닫힘)으로 돌아가고, 사용자가 접은 도크를 렌더가 도로 펼치지 않는다.
+  // `state.open` 을 세우는 이유: 이 값이 다음 렌더의 초기값이라, 예약을 지우면서 열어 두지
+  // 않으면 두 번째 렌더에서 곧바로 닫힌다.
+  const openedByRequest = consumeEventAiDockOpen(mapId, eventId);
+  if (openedByRequest) state.open = true;
   const scope = resolveAssistScope(page);
   const instanceId = ++panelInstanceId;
   const headingId = `event-ai-heading-${instanceId}`;
@@ -639,10 +666,33 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
   if (state.statusKind === "busy") setGenerating(true);
   liveDock = {
     key,
+    open: () => {
+      if (!root.isConnected) return false;
+      // `state.open` 을 함께 세운다. `details.open` 만 켜면 `toggle` 이벤트에 기대게 되는데
+      // 그 이벤트는 비동기로 큐에 걸린다 — 그 사이 재렌더가 아직 false 인 state.open 을 보고
+      // 닫힌 도크를 그리면 "눌렀는데 잠깐 열렸다 닫힌다"가 된다.
+      state.open = true;
+      root.open = true;
+      try {
+        input.focus();
+      } catch {
+        // headless DOM 에서 focus 미지원은 펼침 자체를 막지 않는다.
+      }
+      return true;
+    },
     renderStaged,
     setStatus,
     setGenerating,
   };
+  if (openedByRequest) {
+    // 이 함수가 돌려준 root 는 호출자(content.ts)가 곧 append 한다. 지금은 아직 문서 밖이라
+    // focus 가 먹지 않으므로, 연결된 다음 마이크로태스크에서 입력창으로 옮긴다 — 우클릭으로
+    // 들어온 사용자가 곧바로 문장을 칠 수 있어야 이 지름길이 지름길이다.
+    queueMicrotask(() => {
+      if (!root.isConnected) return;
+      input.focus();
+    });
+  }
   return root;
 }
 

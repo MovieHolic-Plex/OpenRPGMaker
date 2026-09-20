@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults";
-import { eventScopeRefusal, onlyEventPageCommandsChanged } from "@/ai/eventCommandScope";
+import { eventScopeAllowsTool, eventScopeRefusal, onlyEventPageCommandsChanged } from "@/ai/eventCommandScope";
 import { fixedDeclarer } from "./intentFixture";
 
 const text = (content: string): ChatResult => ({ message: { role: "assistant", content }, finishReason: "stop" });
@@ -64,5 +64,25 @@ describe("event editor shared assistant scope", () => {
     expect(onlyEventPageCommandsChanged(project, after, scope)).toBe(false);
     expect(eventScopeRefusal(scope, "event_command_assist", { ...scope, mode: "append" })?.ok).toBe(false);
     expect(eventScopeRefusal(scope, "set_title_screen", {})?.ok).toBe(false);
+  });
+
+  // 2026-09-20: 종전 읽기 허용은 get_event·get_database_records·run_lint 뿐이라 **맵을 볼 방법이
+  // 없었다.** 그래서 모델은 프롬프트의 맵 한 줄(이름·크기·착지 칸)만 보고 대사를 지어야 했다.
+  // 쓰기 봉인은 onlyEventPageCommandsChanged 가 지키므로 읽기는 넓혀도 계약이 약해지지 않는다.
+  it("맵을 읽는 툴이 허용된다 — 프롬프트 밖의 실제 배치를 조회할 수 있어야 한다", () => {
+    const { scope } = fixture();
+    for (const name of ["get_map_region", "get_project_summary", "find_events", "find_layout_regions", "list_resources"]) {
+      expect(eventScopeAllowsTool(name), `${name} 이 읽기로 허용되어야 한다`).toBe(true);
+      // 맵·요약 조회는 대상 이벤트와 무관하게 허용된다(읽기는 스코프 대상 제한이 없다).
+      expect(eventScopeRefusal(scope, name, { mapId: "some-other-map" })).toBeNull();
+    }
+  });
+
+  it("쓰기 툴은 여전히 봉인된다 — 읽기를 넓혀도 계약은 그대로다", () => {
+    const { scope } = fixture();
+    for (const name of ["upsert_event", "set_title_screen", "fill_region", "paint_road", "author_house", "place_npc"]) {
+      expect(eventScopeAllowsTool(name), `${name} 은 허용되면 안 된다`).toBe(false);
+      expect(eventScopeRefusal(scope, name, {})?.ok).toBe(false);
+    }
   });
 });

@@ -768,7 +768,8 @@ function withProjectInstructions(assembled: string, instructions: string | undef
 }
 
 // 세계관 한 장도 감독 지침과 같은 예산 밖 고정분이다. 예전 엔티티 다이제스트(최대 700토큰, 코드카드 덤프)는
-// 배제했고(worldAiExclusion), 이것은 이름·전제·금지·법칙 + 본문 600자 상한의 한 장이다.
+// 배제했고(worldAiExclusion), 이것은 이름·전제·금지·법칙 + 본문 발췌 한 장이다
+// (상한은 worldCanonContext 의 WORLD_CANON_BODY_EXCERPT_CHARS — UI 표시도 같은 상수를 읽는다).
 function withWorldCanon(assembled: string, canon: Project["worldCanon"]): string {
   const section = worldCanonPromptSection(canon);
   return section ? `${assembled}\n\n${section}` : assembled;
