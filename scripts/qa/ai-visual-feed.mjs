@@ -61,7 +61,7 @@ try {
       const immutable = snapshots === JSON.stringify(records.map(r => r.visuals));
       return { after: proposed, events, records: records.map(r => ({ name: r.name, ok: r.result.ok, summary: r.result.summary, visuals: r.visuals?.map(v => ({ title: v.title, kind: v.kind, phase: v.phase, target: v.target, stats: v.stats })) })), immutable, mapId };
     }, req);
-    proof = { ...result, after: undefined };
+    proof = { records: result.records, immutable: result.immutable, mapId: result.mapId };
     const after = result.after;
     const stats = { ms: 8400, turns: 3, toolCalls: result.records.length, toolErrors: result.records.filter(r => !r.ok).length };
     const events = [
