@@ -17,6 +17,7 @@ export function createInlineWorkCard(input: { title: string; onStop: () => void;
   let trace = createActivityTrace(input.title, input.projectId);
   const activity = createActivityView();
   let hasBoard = false;
+  let hasExtraProcess = false;
   let writes = 0;
   let hasContent = false;
   const title = el("strong", { text: "작업 중", attrs: { title: input.title } });
@@ -33,7 +34,7 @@ export function createInlineWorkCard(input: { title: string; onStop: () => void;
     children: [el("header", { children: [title, status] }), activity.root, actions, details],
   });
   bindActivityLevel(root, level => {
-    details.hidden = level === "none" || level === "brief";
+    details.hidden = (hasBoard && !hasExtraProcess) || level === "none" || level === "brief";
     details.open = level === "detail" || level === "trace";
   });
   activity.update(trace);
@@ -57,12 +58,14 @@ export function createInlineWorkCard(input: { title: string; onStop: () => void;
     setTitle: (text) => { title.setAttribute("title", text); },
     setProgress: (done, total) => { status.textContent = total ? `작업 중 · ${done}/${total}` : "작업 중"; },
     noteReadOnly: () => {},
-    appendStep: (entry) => { writes += 1; steps.append(entry); },
+    appendStep: (entry) => { writes += 1; hasExtraProcess = true; steps.append(entry); root.dispatchEvent(new Event("ai-activity-level")); },
     attachElement: (element) => {
       hasContent = true;
-      if (element.dataset.activityBoard) { hasBoard = true; activity.root.remove(); root.insertBefore(element, actions); }
+      if (element.dataset.activityBoard) { hasBoard = true; summary.textContent = "추가 안내"; root.dispatchEvent(new Event("ai-activity-level")); activity.root.remove(); root.insertBefore(element, actions); }
       else {
+        hasExtraProcess = true;
         details.append(element);
+        root.dispatchEvent(new Event("ai-activity-level"));
         if (!hasBoard && element.textContent) { trace = activityNote(trace, "process.note", element.textContent); activity.update(trace); }
       }
     },

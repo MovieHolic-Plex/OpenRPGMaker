@@ -7,12 +7,15 @@ const base = process.env.BASE ?? 'http://127.0.0.1:9836';
 const out = resolve('output/evidence/ai-activity-levels');
 mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ headless: true });
-const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, serviceWorkers: 'block' });
 page.setDefaultTimeout(20000);
+page.setDefaultNavigationTimeout(60000);
+page.on('dialog', dialog => dialog.accept());
 const errors = [], checks = [];
-const check = (label, ok) => { checks.push({ label, ok }); if (!ok) throw new Error(label); };
+const check = (label, ok) => { checks.push({ label, ok }); console.log(`${ok ? 'PASS' : 'FAIL'} ${label}`); if (!ok) throw new Error(label); };
 const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 page.on('pageerror', e => errors.push(e.message));
+page.on('requestfailed', req => console.log(`REQUEST FAILED ${req.url()} ${req.failure()?.errorText}`));
 let owner;
 try {
   await page.addInitScript(() => {
@@ -54,7 +57,7 @@ try {
   const guest = page.getByTestId('login-guest');
   await page.getByTestId('ai-input').or(guest).first().waitFor({ timeout: 120000 });
   if (await guest.isVisible()) await guest.click();
-  const level = page.locator('.ai-activity-toolbar [data-testid="ai-activity-level"]');
+  const level = page.locator('.ai-activity-toolbar [data-testid="ai-activity-level"], .ai-assistant-wide-head [data-testid="ai-activity-level"]');
   await level.waitFor({ timeout: 120000 });
   check('Default is brief and available before first turn', await level.getAttribute('data-level') === 'brief');
   check('All four levels are visible buttons', await level.getByRole('button').count() === 4 && await level.locator('select').count() === 0);
@@ -106,11 +109,24 @@ try {
   const wide = page.getByTestId('ai-assistant-wide');
   check('Large window contains the same conversation and team', await wide.getByTestId('ai-input').inputValue() === '다음 작업 초안' && await wide.getByTestId('ai-team-sidebar').isVisible());
   check('Large window opens a member detail beside the conversation', await wide.getByTestId('ai-member-detail').isVisible());
+  check('Large window has one visible level control', await wide.locator('[data-testid="ai-activity-level"]:visible').count() === 1);
+  check('Team roster exposes the assigned task', await wide.locator('.ai-team-member-task').first().isVisible());
+  await page.screenshot({ path: resolve(out, '08-workspace-brief.png') });
+  const divider = page.getByTestId('ai-wide-divider');
+  const initialWidth = (await wide.getByTestId('ai-panel').boundingBox()).width;
+  const handle = await divider.boundingBox();
+  await page.mouse.move(handle.x + handle.width / 2, handle.y + 200);
+  await page.mouse.down(); await page.mouse.move(handle.x - 80, handle.y + 200, { steps: 6 }); await page.mouse.up();
+  check('Conversation and team resize by dragging the boundary', (await wide.getByTestId('ai-panel').boundingBox()).width < initialWidth - 50);
+  await divider.focus(); await page.keyboard.press('Home');
+  check('Keyboard restores the default split', Math.abs((await wide.getByTestId('ai-panel').boundingBox()).width - initialWidth) < 2);
   await level.locator('[data-activity-level="trace"]').click();
   await view.getByLabel('실행 기록 검색').fill('road-2');
   const entry = view.locator('.ai-activity-entry').first();
   if (!(await entry.evaluate(node => node.open))) await entry.locator('summary').click();
   check('Expanded trace exposes structured results in the large window', (await entry.innerText()).includes('changedCells'));
+  check('Trace exposes aligned log columns', await view.locator('.ai-activity-log-columns').isVisible());
+  await wide.getByTestId('ai-member-detail').getByLabel('실행 기록 검색').fill('paint_road');
   await page.screenshot({ path: resolve(out, '06-wide.png') });
   const bounds = await page.evaluate(() => {
     const dialog = document.querySelector('[data-testid=ai-assistant-wide]').getBoundingClientRect();
@@ -147,6 +163,7 @@ try {
   await page.waitForFunction(async id => (await (await import('/src/ai/activityTraceArchive.ts')).readActivityArchive(id)).some(t => t.phase === '버림'), owner.id);
   writeFileSync(resolve(out, 'before-reload.json'), JSON.stringify(await page.evaluate(async id => (await import('/src/ai/activityTraceArchive.ts')).readActivityArchive(id), owner.id), null, 2));
   await page.reload({ waitUntil: 'domcontentloaded' });
+  console.log('RELOAD DOM', page.url());
   await level.waitFor({ timeout: 120000 });
   check('Display preference survives reload', await level.getAttribute('data-level') === 'trace');
   const restored = await page.evaluate(async id => (await import('/src/ai/activityTraceArchive.ts')).readActivityArchive(id), owner.id);
