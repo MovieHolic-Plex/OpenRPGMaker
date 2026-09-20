@@ -135,16 +135,22 @@ describe('feature16 combat hardening: production runtime and presentation', () =
     } finally { spy.mockRestore(); }
   });
   it('marks exact Gen1 MP damage with the MP timeline resource', () => {
-    const { project } = setup({ hitRate: 100, damageFormula: '10', effect: { kind: 'damage', statistic: 'attack', affects: 'mp' } });
+    const { project, enemy } = setup({ hitRate: 100, damageFormula: '10', effect: { kind: 'damage', statistic: 'attack', affects: 'mp' } });
     project.system.battleModel = 'gen1';
+    enemy.stats.maxHp = 999; // Stay within Gen1's stat clamp during end-of-turn status processing.
+    // Keep enemy Struggle recoil out of this MP-only HP preservation assertion.
+    const idleSkill = normalizeSkillRecord({ id: 'hardening_enemy_idle', name: '대기', scope: 'self', power: 20, effect: { kind: 'healing', statistic: 'mind', affects: 'mp' }, mpCost: { flat: 0, percentMax: 0 } });
+    project.database.skills.push(idleSkill);
+    enemy.actions = [{ ...enemy.actions[0], skillId: idleSkill.id, condition: { kind: 'always' } }];
     // Exact Gen1 damage sampling needs a byte accepted by its rejection sampler.
     let byteIndex = 0;
     const bytes = [0, 255, 0];
     const runtime = createBattleRuntime({ project, troopId: 'troop_strict_training', canEscape: false, canLose: true, battleFlow: 'strict', rng: () => bytes[byteIndex++ % bytes.length] / 256,
       party: { levels: {}, experience: {}, partyActorIds: ['actor_warrior'] } });
+    const hpBefore = runtime.snapshot().enemies[0].hp;
     cast(runtime);
     expect(actorHits(runtime).length).toBeGreaterThan(0);
     expect(actorHits(runtime).every(hit => hit.resource === 'mp')).toBe(true);
-    expect(runtime.snapshot().enemies[0].hp).toBe(1000);
+    expect(runtime.snapshot().enemies[0].hp, JSON.stringify(runtime.snapshot().timeline)).toBe(hpBefore);
   });
 });

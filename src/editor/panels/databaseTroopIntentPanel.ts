@@ -15,9 +15,9 @@ export function troopIntentPanel(troop: TroopRecord, memberIndex: number): HTMLE
   let mpPercent = 100;
   let row: "front" | "back" = "front";
   const content = el("div", { dataset: { testid: "feature16-intent-content" } });
-  const root = el("section", { class: "db-ws-readout", dataset: { testid: "feature16-intent-panel" }, children: [
+  const root = el("section", { class: "db-ws-readout db-troop-intent-panel", dataset: { testid: "feature16-intent-panel" }, children: [
     el("h4", { text: "행동 후보 · 약점 저작" }),
-    el("p", { text: "가정한 전투 조건을 통과한 후보입니다. 실제 선택은 대상·효용·동률 난수에 따라 달라집니다. 수정은 이 적을 쓰는 모든 그룹에 적용됩니다. 피해는 명중·치명타·분산을 제외한 단일 타격 예상입니다." }),
+    el("p", { text: "가정한 전투 조건을 통과한 후보입니다. 실제 선택은 대상·효용·동률 난수에 따라 달라집니다. 수정은 이 적을 쓰는 모든 그룹에 적용됩니다. 피해는 명중·치명타·분산을 제외하고 타격 배율을 합산한 예상입니다." }),
     el("p", { dataset: { testid: "feature16-intent-context-note" }, text: "전투 중 상태를 관측한 결과가 아닙니다. 상태이상 없음 · 스위치는 프로젝트 시작값 · 생존 동료는 초기 배치 중 숨김과 자신을 제외한 수로 가정합니다." }),
   ] });
   const update = () => render();

@@ -1,24 +1,24 @@
 @layer database {
-  .ai-authoring-backdrop { position: fixed; inset: 0; z-index: 15000; background: #1119; display: flex; align-items: center; justify-content: center; padding: 20px; }
-  .ai-authoring-dialog { width: min(1080px, 96vw); max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #c9c2b5; border-radius: 14px; background: #faf8f3; color: #292d31; box-shadow: 0 18px 70px #0005; font: 14px/1.6 system-ui, sans-serif; }
-  .ai-authoring-dialog header { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-bottom: 1px solid #d9d4c8; }
+  .ai-authoring-backdrop { position: fixed; inset: 0; z-index: 15000; background: var(--bg-scrim); display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .ai-authoring-dialog { width: min(1080px, 96vw); max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--border-default); border-radius: 14px; background: var(--bg-overlay); color: var(--text-1); box-shadow: var(--shadow-modal); font: 14px/1.6 system-ui, sans-serif; }
+  .ai-authoring-dialog header { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-bottom: 1px solid var(--border-subtle); }
   .ai-authoring-dialog h2 { font-size: 19px; margin: 0; }
   .ai-authoring-dialog h3 { font-size: 16px; margin: 18px 0 8px; }
   .ai-authoring-tabs, .ai-authoring-actions, .ai-authoring-filters { display: flex; flex-wrap: wrap; gap: 8px; }
-  .ai-authoring-tabs { padding: 10px 20px; border-bottom: 1px solid #d9d4c8; }
-  .ai-authoring-dialog button { border: 1px solid #b6b4ac; border-radius: 6px; padding: 7px 12px; background: #fff; color: #292d31; cursor: pointer; text-align: left; }
-  .ai-authoring-dialog button[aria-pressed="true"] { background: #234d50; color: white; }
+  .ai-authoring-tabs { padding: 10px 20px; border-bottom: 1px solid var(--border-subtle); }
+  .ai-authoring-dialog button { border: 1px solid var(--border-default); border-radius: 6px; padding: 7px 12px; background: var(--bg-raised); color: var(--text-1); cursor: pointer; text-align: left; }
+  .ai-authoring-dialog button[aria-pressed="true"] { background: var(--accent); color: white; }
   .ai-authoring-dialog button:disabled { opacity: .5; cursor: default; }
-  .ai-authoring-dialog :focus-visible { outline: 3px solid #318789; outline-offset: 2px; }
+  .ai-authoring-dialog :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   .ai-authoring-body { min-height: 0; overflow: auto; padding: 16px 20px; }
   .ai-authoring-columns { display: grid; grid-template-columns: minmax(160px, 1fr) minmax(0, 3fr); gap: 20px; margin-top: 14px; }
   .ai-authoring-list { display: flex; flex-direction: column; gap: 8px; overflow-wrap: anywhere; }
   .ai-authoring-columns > .ai-authoring-list { max-height: 55vh; overflow: auto; }
   .ai-authoring-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; flex: 1; }
-  .ai-authoring-dialog input, .ai-authoring-dialog textarea, .ai-authoring-dialog select { width: 100%; box-sizing: border-box; min-width: 0; padding: 8px; border: 1px solid #b8b5aa; border-radius: 6px; color: #292d31; background: white; font: inherit; }
+  .ai-authoring-dialog input, .ai-authoring-dialog textarea, .ai-authoring-dialog select { width: 100%; box-sizing: border-box; min-width: 0; padding: 8px; border: 1px solid var(--border-default); border-radius: 6px; color: var(--text-1); background: var(--bg-raised); font: inherit; }
   .ai-authoring-dialog textarea { resize: vertical; min-height: 100px; }
-  .ai-authoring-preview { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 340px; overflow: auto; padding: 12px; background: #eeece5; border-radius: 6px; font: 13px/1.6 ui-monospace, monospace; }
-  .ai-authoring-card { padding: 12px; background: white; border: 1px solid #dbd7cc; border-radius: 8px; }
+  .ai-authoring-preview { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 340px; overflow: auto; padding: 12px; background: var(--bg-inset); border-radius: 6px; font: 13px/1.6 ui-monospace, monospace; }
+  .ai-authoring-card { padding: 12px; background: var(--bg-raised); border: 1px solid var(--border-default); border-radius: 8px; }
   .ai-authoring-card small, .ai-authoring-card strong { display: block; }
   .ai-authoring-card p, .ai-authoring-card blockquote { white-space: pre-wrap; margin: 6px 0; }
   .ai-authoring-dialog summary { padding: 10px 0; cursor: pointer; }

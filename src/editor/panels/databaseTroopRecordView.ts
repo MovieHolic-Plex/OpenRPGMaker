@@ -65,6 +65,7 @@ export function renderTroopRecordForm(form: HTMLElement, record: TroopRecord, re
         troopBattlePreview(record, selectedIndex, rerender),
         memberEditor(record, member, selectedIndex, selectedEnemy, rerender),
         balancePanel(record),
+        troopIntentPanel(record, selectedIndex),
         // 지형 패널은 두 겹으로 죽어 있었다 — troops.part-2.css 가 display:none 으로 감추고,
         // 체크박스는 전부 `input.disabled = true` 였다. 만들어서 스타일까지 먹인 뒤 버리는
         // 셈이라 아예 렌더하지 않는다(되살리려면 git 이력에 그대로 있다). 전투 배경은
@@ -504,7 +505,6 @@ function troopBattlePreview(record: TroopRecord, selectedIndex: number, rerender
     hint: previewHint(record, skinId),
     children: [
       stage,
-      troopIntentPanel(record, selectedIndex),
       el("div", { class: "db-troop-preview-caption", dataset: { testid: "db-troop-preview-caption" }, text: previewCaption(record) }),
       el("div", {
         class: "db-troop-preview-legend",

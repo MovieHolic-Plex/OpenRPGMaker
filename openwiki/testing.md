@@ -1889,3 +1889,11 @@ The dedicated player scenario uses real keyboard input through `player.html`, no
 synthetic component mount. Captures: filtered-inventory, sorted-inventory, equipment-filter,
 settings, settings-changed, shop. Read its SUMMARY.md before images. The small fixture builder
 under `test/fixtures` derives existing engine test data without remote persistence.
+
+## Feature16 통합 검증 (2026-09-21)
+
+16개 기능의 최종 사용 경로, 실제 편집기/전용 플레이어 화면 증거, 재현 명령과
+기준선 실패 구분은 `reports/feature16/README.md`를 참조한다. 감독 세션에서
+신규 185개 통과(Gen1 fixture 수정 후 해당 파일 재실행 포함), 기존 회귀 191/192
+통과(남은 1건 기준선 동일), 앱 타입 검사, 편집기 캡처 및 플레이어 9/11단계와
+4종 액션·날씨 검증을 수행했다. 전체 gates가 녹색이라는 뜻은 아니다.
