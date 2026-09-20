@@ -166,7 +166,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   lightingTransitionWaiters: Array<() => void> = [];
   weatherClockMs = 0;
   weatherFixedAccumulatorMs = 0;
-  cloudShadowSprites?: Phaser.GameObjects.Image[];
+  cloudShadowSprites?: Phaser.GameObjects.TileSprite[];
   cloudShadowClockMs = 0;
   weatherDisplayed: WeatherParams = { kind: "none", intensity: 0 };
   weatherTargetSignature = "none:0";

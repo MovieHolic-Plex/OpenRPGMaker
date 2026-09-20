@@ -1,3 +1,5 @@
+import { finalizeSkillCombatPatch, validateEnemyCombatPatch, validateSkillCombatPatch } from "./combatAuthoringValidation";
+import { actionSkillClearProperties, authoredSkillProperties, combatConditionSchema, conditionalDropsSchema } from "./combatAuthoringSchemas";
 import { hasEquipmentSlot } from "@/project/equipmentSlots";
 import { mergeRecordPatch } from "./mergeRecordPatch";
 import { projectDatabaseReferenceMessage } from "@/editor/databaseRecordReferences";
@@ -404,12 +406,12 @@ const captureProfileSchema = objectSchema({
   ballClass: { type: "string", enum: ["poke", "great", "ultra", "master"] },
 });
 const enemyStatsSchema = objectSchema({ maxHp: integerSchema(), maxMp: integerSchema(), attack: integerSchema(), defense: integerSchema(), mind: integerSchema(), agility: integerSchema() });
-const enemyRewardsSchema = objectSchema({ exp: integerSchema(), gold: integerSchema(), dropItemId: stringSchema(), dropRatePercent: integerSchema() });
+const enemyRewardsSchema = objectSchema({ exp: integerSchema(), gold: integerSchema(), dropItemId: stringSchema(), dropRatePercent: integerSchema(), drops: conditionalDropsSchema });
 const enemyActionSwitchSchema = objectSchema({ enabled: booleanSchema(), switchId: stringSchema() });
 const enemyActionSchema = objectSchema({
   skillId: stringSchema(),
   priority: integerSchema(),
-  condition: objectSchema({ kind: stringSchema(), start: integerSchema(), interval: integerSchema() }),
+  condition: combatConditionSchema,
   switchOnAfterAction: enemyActionSwitchSchema,
   switchOffAfterAction: enemyActionSwitchSchema,
 });
@@ -560,6 +562,7 @@ const actorRecordSchema = objectSchema({
 }) as RecordSchema;
 
 const skillRecordSchema = objectSchema({
+  ...authoredSkillProperties,
   id: stringSchema(),
   name: stringSchema(),
   scope: { type: "string", enum: ["self", "ally", "allAllies", "enemy", "allEnemies"] },
@@ -653,10 +656,10 @@ const stateRecordSchema = objectSchema({
   runtimeEffects: stateRuntimeEffectsSchema,
 }) as RecordSchema;
 
-function parametersForRecord(key: string, schema: RecordSchema, example: Record<string, unknown>): JsonSchema {
+function parametersForRecord(key: string, schema: RecordSchema, example: Record<string, unknown>, extraProperties: Record<string, JsonSchema> = {}): JsonSchema {
   return {
     type: "object",
-    properties: { [key]: { ...schema, description: `${key} 부분 레코드. 기존 id 수정은 id와 바꿀 필드만 보내면 됩니다.` } },
+    properties: { [key]: { ...schema, description: `${key} 부분 레코드. 기존 id 수정은 id와 바꿀 필드만 보내면 됩니다.` }, ...extraProperties },
     required: [key],
     additionalProperties: false,
     description: `허용 예시: ${JSON.stringify({ [key]: example })}`,
@@ -857,6 +860,7 @@ const upsertEnemy: ToolDefinition = {
   mode: "write",
   parameters: parametersForRecord("enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임", stats: { maxHp: 40, attack: 12 }, rewards: { exp: 3, gold: 2 } }),
   run(draft, args): ToolExecResult {
+    validateEnemyCombatPatch(args.enemy);
     const merged = mergeRecord(draft.database.enemies, args.enemy, "enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임" });
     rejectUnknownEnemyReferences(draft, args.enemy);
     const record = normalizeEnemyRecord(merged as Partial<EnemyRecord> & Pick<EnemyRecord, "id" | "name">);
@@ -1150,9 +1154,11 @@ const upsertSkill: ToolDefinition = {
   name: "upsert_skill",
   description: "스킬 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
   mode: "write",
-  parameters: parametersForRecord("skill", skillRecordSchema, { id: "skill_fire", name: "화염", power: 35, elementId: "fire" }),
+  parameters: parametersForRecord("skill", skillRecordSchema, { id: "skill_fire", name: "화염", power: 35, elementId: "fire" }, actionSkillClearProperties),
   run(draft, args): ToolExecResult {
+    validateSkillCombatPatch(args.skill);
     const merged = mergeRecord(draft.database.skills, args.skill, "skill", skillRecordSchema, { id: "skill_fire", name: "화염" });
+    finalizeSkillCombatPatch(merged as unknown as Record<string, unknown>, args.skill, args);
     const record = normalizeSkillRecord(merged as Partial<SkillRecord> & Pick<SkillRecord, "id" | "name">);
     const outcome = upsertById(draft.database.skills, record);
     return { summary: `스킬 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };

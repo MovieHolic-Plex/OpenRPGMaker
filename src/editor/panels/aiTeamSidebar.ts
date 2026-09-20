@@ -1,3 +1,5 @@
+import { createActivityView } from "./aiActivityView";
+import { bindActivityLevel, createActivityLevelControl } from "./aiActivityPreference";
 import { friendlyExecutionError } from "@/ai/piAgent/userFacingCopy";
 // Live team members have a separate right rail. Opening a member never replaces
 // the main conversation. Follow-ups use the existing scoped lane/apply lifecycle.
@@ -26,7 +28,7 @@ const laneLabel: Record<LaneState["status"], string> = {
 };
 const terminalPhases = new Set(["적용됨", "완료", "버림", "중단", "실패"]);
 
-export function createAiTeamSidebar(options: { settings: HTMLElement }): { root: HTMLElement; openSettings(): void; dispose(): void } {
+export function createAiTeamSidebar(options: { settings: HTMLElement }): { root: HTMLElement; openSettings(): void; openFirstMember(): void; dispose(): void } {
   const manager = laneSession();
   let activity: TeamBoardState | null = null;
   let selected: string | null = null;
@@ -39,11 +41,15 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
   const notices = new Map<string, string>();
   const transcript = createTeamTranscript({ detail: true });
 
+  const activityView = createActivityView({ archive: false });
   const processBody = el("div", { class: "ai-team-process-body" });
   const process = el("details", { class: "ai-team-process", dataset: { testid: "ai-member-process" }, children: [el("summary", { text: "작업 과정" }), processBody] });
   const resultText = el("p", { class: "ai-team-result", dataset: { testid: "ai-member-result" } });
-  const conversation = el("div", { children: [resultText, process] });
+  const activityControl = createActivityLevelControl();
+  const conversation = el("div", { children: [activityControl, resultText, activityView.root, process] });
+  let hasDetailedTrace = false;
   let processOwner: string | null = null;
+  bindActivityLevel(conversation, level => { process.hidden = hasDetailedTrace || level === "none" || level === "brief"; process.open = level === "detail" || level === "trace"; });
   const title = el("strong");
   const stateText = el("span", { class: "ai-team-member-subtitle" });
   const avatar = el("span", { class: "ai-team-member-avatar" });
@@ -143,14 +149,20 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     if (input.dataset.owner !== m.key) { input.dataset.owner = m.key; input.value = drafts.get(m.key) ?? ""; }
     tabs.querySelectorAll<HTMLElement>("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.memberTab === tab)));
     if (processOwner !== m.key) { process.open = false; processOwner = m.key; }
+    hasDetailedTrace = Boolean(m.agent ? activity?.trace : m.lane?.trace);
     if (tab === "chat") {
       if (!content.contains(conversation)) content.replaceChildren(conversation);
+      activityControl.dispatchEvent(new Event("ai-activity-level"));
       if (m.agent) {
         resultText.textContent = m.agent.summary || (m.state === "실행 중" ? "맡은 작업을 진행하고 있어요." : "아직 결과가 없어요.");
         if (!processBody.contains(transcript.root)) processBody.replaceChildren(transcript.root);
         transcript.update(m.agent);
+        activityView.update(activity?.trace, m.agent.agentId);
+        if (activity?.trace) process.hidden = true;
       } else if (m.lane) {
         const lane = m.lane;
+        activityView.update(lane.trace);
+        if (lane.trace) process.hidden = true;
         resultText.textContent = lane.status === "review" ? "결과가 준비됐어요. 변경 내용을 확인하고 적용해 주세요."
           : lane.status === "applied" ? "변경 내용을 적용했어요."
           : lane.status === "discarded" ? "변경안을 버렸어요."
@@ -192,7 +204,8 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
   function render(): void {
     if (disposed) return;
     const rows = members();
-    const signature = JSON.stringify(rows.map(m => [m.key, m.name, m.state, m.icon, view === "team" && selected === m.key]));
+    const taskText = (m: Member): string => m.agent?.lastLine || m.agent?.summary || m.agent?.task || m.lane?.progress.lastLine || m.lane?.spec.instruction || "요청을 기다리고 있어요";
+    const signature = JSON.stringify(rows.map(m => [m.key, m.name, m.state, m.icon, taskText(m), view === "team" && selected === m.key]));
     if (signature !== rosterSignature) {
       rosterSignature = signature;
       const focusKey = (document.activeElement as HTMLElement | null)?.closest<HTMLElement>(".ai-team-member")?.dataset.agentId;
@@ -201,7 +214,7 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
         return el("button", {
           class: "ai-team-member", attrs: { type: "button", "aria-pressed": String(view === "team" && selected === m.key), "aria-label": `${m.name} · ${m.state} · 대화 열기` },
           dataset: { testid: "ai-team-member", agentId: m.key, state: m.state },
-          children: [el("span", { class: "ai-team-member-avatar", children: [deckIcon(m.icon, { size: 22 }), el("span", { class: "ai-team-member-badge", text: mark, attrs: { "aria-hidden": "true" } })] }), el("span", { class: "ai-team-member-name", text: m.name }), el("span", { class: "ai-team-member-state", text: m.state })],
+          children: [el("span", { class: "ai-team-member-avatar", children: [deckIcon(m.icon, { size: 22 }), el("span", { class: "ai-team-member-badge", text: mark, attrs: { "aria-hidden": "true" } })] }), el("span", { class: "ai-team-member-name", text: m.name }), el("span", { class: "ai-team-member-state", text: m.state }), el("span", { class: "ai-team-member-task", text: taskText(m) })],
           on: { click: () => { selected = selected === m.key && view === "team" ? null : m.key; view = "team"; tab = "chat"; render(); } },
         });
       }));
@@ -269,5 +282,5 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     if (change?.projectSwitch) { selected = null; view = "team"; drafts.clear(); followUps.clear(); activity = null; render(); }
   });
   render();
-  return { root, openSettings: () => { view = "settings"; render(); options.settings.querySelector<HTMLElement>("button")?.focus(); }, dispose: () => { disposed = true; unsubscribeTeam(); unsubscribeLanes(); unsubscribeStore(); root.removeEventListener("keydown", onKey); root.remove(); } };
+  return { root, openFirstMember: () => { if (!selected && view === "team") { selected = members()[0]?.key ?? null; render(); } }, openSettings: () => { view = "settings"; render(); options.settings.querySelector<HTMLElement>("button")?.focus(); }, dispose: () => { disposed = true; unsubscribeTeam(); unsubscribeLanes(); unsubscribeStore(); root.removeEventListener("keydown", onKey); root.remove(); } };
 }

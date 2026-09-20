@@ -1045,6 +1045,72 @@ object revisions, graphics and placements in `villageDesignSource.resolvedSettin
 this is authored provenance, not runtime state. The shipping player consumes the generated map through
 its existing raster/collision path. See `small-village-generation.md` for the attachment contract.
 
+## Optional map climate (Feature16, 2026-09-21)
+
+`GameMap.climate` is optional: `{mode: "inherit" | "indoor"}` or
+`{mode: "fixed", weather: "none" | "rain" | "snow" | "storm" | "fog", intensity: number}`.
+`project/mapClimate.ts` normalizes modes, clamps intensity to 0..1 (default .5),
+and discards unknown mode values. `io/shape.ts` applies it after cloning on the
+canonical project load/merge path. Serialization preserves the authored object;
+unset legacy maps remain unset. This is additive with no version bump.
+
+`resolveMapWeather` applies fixed/indoor overrides only at `syncWeatherLayer`'s
+render boundary. Indoor suppresses precipitation, fog and lightning immediately;
+transitions still advance underneath and outdoor maps resume global weather.
+Neither map transfers nor fixed climates overwrite `session.m2Runtime.screen.weather`
+or the daily-weather calendar. Event weather commands continue to update global
+weather even indoors. Save/load stores authored climate in the project and global
+weather in the existing session path. Contracts: `test/feature16WorldSchema.test.ts`,
+`test/feature16WorldClimate.test.ts`.
+## Optional authored combat rules (feature16, 2026-09-21)
+
+`databaseRecordModel.normalizeSkillRecord` and `databaseEnemyTroopRecordModel.normalizeEnemyRecord` preserve formula/crit/cooldown/hit-sequence and conditional drops/AI conditions through normal project deserialize/serialize. Existing schema version is unchanged: omitted optional fields retain old behavior; an absent drop array differs from an explicitly empty array. Bounds and evaluation semantics are in `runtime-battle.md` → Authored combat rules. Editor `updateSkillRecord` whitelist includes all new fields. Roundtrip coverage lives in `test/feature16CombatSchema.test.ts`; project contents are only minimal test fixtures, not authored remote DB content.
+## AI 저작 보조 설정의 프로젝트 지속성 (Feature16, 2026-09-21)
+
+`Project.aiAuthoring?`는 `project/aiAuthoring.ts`의 `AiAuthoring`:
+`templates: {id,name,tags,body}[]`, `dialogueStyleRules: string`, `maxDialogueChars: number`다.
+런타임 전투/대사 실행 의미를 바꾸지 않는 에디터 설정이며 버전 축은 올리지 않는다.
+`io/shape.normalizeProjectV4`는 필드가 있는 문서에만 순수 정규화를 적용한다. 구형 문서의
+필드 부재는 그대로 두고 UI에서 기본값(빈 목록·빈 규칙·240자)을 제공한다.
+잘못된 항목/중복 id는 제외하고 태그를 정리하며 이름/본문/규칙과 글자 수 범위를 제한한다.
+표준 `serialize`의 루트 복사와 기존 프로젝트 저장 경로가 필드를 보존한다.
+라이브러리/규칙 편집은 undo 스냅샷 및 라벨이 있는 `store.update`로만 기록한다.
+일시적 대사 색인·LLM 지적·프롬프트 관측 원문은 프로젝트에 저장하지 않는다.
+`test/feature16-ai.test.ts`는 실제 serialize/deserialize의 구형 부재, 저장·수정·삭제 왕복을
+검증하도록 작성했다. 테스트와 원격 저장은 작성 세션에서 실행하지 않았다.
+## 구름량 optional 필드 (2026-09-21)
+
+`GameMap.cloudShadows.amount?: number`는 0~6단계이며 생략한 기존 데이터는 3으로 렌더한다.
+`normalizeCloudShadowParams`에서 반올림·clamp하고 비정상 값은 기본 3으로 복구한다.
+기존 맵 직렬화가 필드를 보존하므로 문서 버전 상승이나 원격 데이터 마이그레이션은 없다.
+`setMapCloudShadows`와 AI `set_map_properties`가 저작 경로이며 구름량은 진하기/크기와 독립이다.
+로컬 편집기 UI 0/1/6 설정 및 `serialize`→`deserialize` 왕복, 옛 데이터 기본값은
+`scripts/qa/cloud-amount-editor.mjs`로 브라우저에서 확인했다. 실제 게임 콘텐츠는 변경하지 않았다.
+
+Feature16/main 통합: `syncWeatherLayer`에서 맵 기후를 먼저 해석한 같은 날씨를
+렌더러와 `audio.weather.update` 양쪽에 전달한다. 실내는 날씨 소리도 차단하며
+전역 날씨 상태는 유지한다.
+### Map atmosphere layers (2026-09-21)
+
+`GameMap.atmosphereEffects?: AtmosphereEffect[]` adds optional map-wide visual decoration.
+Kinds and bounded amount/speed/size/opacity settings live in `src/project/atmosphere.ts`.
+Editor map settings expose a separate 환경 효과 section and save via `setMapAtmosphereEffects`
+→ scoped `store.update` (map edit lock and mutation observation preserved). JSON save/load retains
+these plain settings; no schema version bump or changes to gameplay WeatherKind are needed.
+Old maps without this field have zero atmosphere layers. Rendering presets do not author new maps,
+change calendar/fishing weather, or download assets. Local runtime QA fixtures are not project content.
+
+Atmosphere layers additionally accept optional `sound`, `volume`, `tint` settings. The pure model
+normalizes missing sound by visual kind, volume to0.35, and only #RRGGBB colors. Genre presets are
+engine-owned configuration templates copied through the existing scoped map action, not new game
+content or separate remotely authored projects. UI preset application and per-layer sound edits
+are covered by browser save/reload receipts (`presets-editor.json`).
+
+The genre catalog now contains exactly30 unique audiovisual presets in six groups of five, using
+19 visual primitives (including runes/shades/frost). Group labels are shared between the catalog
+and map editor. Every preset retains at least one active sound layer; naturally silent particles
+may coexist with audible atmosphere. Existing ten preset IDs remain valid catalog entries.
+
 ## 필드 HUD 설정 (2026-09-21)
 
 `system.fieldHud?: FieldHudConfig`의 `widgets?: HudWidget[]`가 데이터 기반 HUD 구성이다. `widgets` 생략은 theme 프리셋을 계산하고 `[]`는 의도적으로 비운 HUD다. 기존 theme/vitals/clock/tools/objective/hideEmpty 필드도 읽는다. 미설정 문서는 저장 바이트에 필드를 추가하지 않고 런타임에서 minimal을 사용한다. DB에서 legacy를 선택하면 이전 HUD로 돌아간다. 스키마 버전 증가는 없다.

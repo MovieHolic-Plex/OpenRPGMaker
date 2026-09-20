@@ -1,3 +1,71 @@
+### 검색 중 사용자에게 보이는 것 (2026-09-21 실측)
+
+검색은 실제로 길다 — 실측 31.18초. 그동안 사용자에게 보이는 것은 세 겹이다.
+
+1. **작업 카드 상태 문구.** 검색이 시작되면 `웹에서 참고 작품을 찾는 중… (십 초 정도 걸릴 수 있어요)` 로 바뀐다.
+   이전에는 `작업 중…` 만 보여 멈춘 것처럼 읽혔다. 실행 턴과 계획 턴 두 경로에 모두 걸었다 —
+   「해리포터 같은 게임」 시나리오가 검색하는 자리가 바로 계획 턴이다.
+2. **작업 과정 타임라인.** 툴마다 `◌ 웹 검색 · 실행 중` → `✓ 웹 검색 · 완료 · 31.18초` 행이 남고,
+   행에는 `00:12 · 조수 · 31.18초` 처럼 트레이스 시작 기준 경과가 붙는다(`aiActivityView` 의 `clock`).
+   기본 표시 수준은 「간단히 보기」(brief)이고, 설정에서 생략·자세히·매우 자세히로 바꾼다.
+3. **중지 버튼.** 턴이 도는 동안 계속 보인다(`ai-run-stop`).
+
+`web_search` 라벨이 사전에 없으면 타임라인이 `web search` 라는 영문을 그대로 보여 준다(2026-09-21 실측:
+`label="web search" icon=wrench group=build`). 지금은 `웹 검색` · 돋보기 아이콘 · 조회 그룹이다.
+
+## 참조 작품 비유 → 자율 웹 검색 (2026-09-21)
+
+사용자가 실존 작품을 비유하면(「해리포터 같은 게임 만들고 싶다」) 조수가 **설계 전에 스스로 검색**하고
+그 사실로 계획을 세운다. 이전에는 `mode=other` 로 분류되며 참조가 조용히 사라져 검색 계기가 없었다.
+
+- **`referenceWork` 는 의도 선언의 사실이다.** `IntentDeclaration.referenceWork`(문자열|null)에 작품명이 남고,
+  `formatIntentNote` 가 `[참조 작품]` 계약을 붙인다 — 검색하라, 암기로 추정하지 마라, 고유명사는 그대로 쓰지 마라.
+- **authoring 게이트에 묶지 마라.** 파서가 `create|modify` 에만 실어 보내면 「만들고 싶다」(mode=other) 발화에서
+  조용히 사라진다(2026-09-21 실측: referenceWork=null, tools=[]). 지금은 모든 모드에서 보존한다.
+- 장르·스타일 설명(「중세 판타지 RPG」)은 작품명이 아니다 — 선언 프롬프트가 그 경계를 가르친다.
+- 시스템 프롬프트(`piAgent/systemPrompt.ts`)도 같은 규칙을 말한다: 지식밖의 사실은 (a) 최신 사실,
+  (b) 실존 작품 비유 두 갈래로 검색한다.
+
+### 죽은 Codex 자격이 검색·완성을 영구히 막던 문제
+
+편집기 저장본(`~/.oprn/oh-my-pi-auth.json`)의 Codex 자격이 만료되면 갱신을 시도하는데, `codex` CLI 같은
+다른 도구가 먼저 갱신했으면 `refresh_token_reused` 로 실패한다. 그때 CLI 로그인은 더 신선할 수 있는데도
+`resolveRequestApiKey` 가 저장본만 보고 던져서 **모든 검색·완성이 그 행에 묶여 죽었다**(2026-09-21 실측).
+지금은 갱신 실패 시 `adoptCodexCliCredentials` 로 CLI 자격 채용을 한 번 시도하고, 그것도 못 쓰면 원래
+오류를 올린다.
+
+### 검증
+
+`~/.bun/bin/bun run scripts/ai-reference-work-live-test.mts` — 의도 선언 → 참조 노트 → Pi 루프를
+편집기와 같은 경로로 통과시킨다. 판정은 실제 실행된 툴 호출과 출처 URL 이다.
+실측 2026-09-21: `referenceWork="해리포터"`, 실행 툴 `["web_search","get_project_summary","read_project_wiki"]`,
+출처 `harrypotter.com/features/everything-a-first-year-should-know-about-hogwarts` 외 2건, 판정 PASS.
+회귀: `test/intentDeclaration.test.ts` 의 「참조 작품 비유 — 검색을 부르는 계약」 6케이스.
+
+## 조수 웹 검색 도구 (2026-09-21)
+
+조수가 `web_search({query})` 로 인터넷을 검색한다. 레지스트리 등록은 `src/editor/tools/webSearchTool.ts`,
+업스트림 계약은 `scripts/lib/codexWebSearchRuntime.ts`, Pi 배선은 `scripts/lib/piAgentRuntime.ts` 다.
+
+- **검색 엔진은 Codex(ChatGPT) 백엔드다.** 조수 제공자가 Antigravity(Gemini, 공장 기본)여도 검색은
+  ChatGPT 구독 자격으로 나간다 — `tools:[{type:"web_search"}]` + `stream:true` 계약을 실측으로 고정했다
+  (`stream:false` 는 업스트림이 400 "Stream must be set to true" 로 거절한다. 비스트리밍은 존재하지 않는다).
+- **자격은 서버 경계에만 있다.** `resolveRequestApiKey("openai-codex")` 가 동반 서비스에서 해결해
+  워커로 넘기고(`codexApiKey`), 브라우저로는 나가지 않는다. Codex 미로그인이면 툴이 "Codex 로그인 필요"
+  로 정직하게 실패한다 — 검색 때문에 다른 턴이 죽지 않는다.
+- **레지스트리 `run` 은 순수 핸드오프다.** 툴 규약(`types.ts`)이 브라우저 전역 접근을 금지하므로
+  레지스트리 쪽은 `status:"ui-required"` 만 만들고, 실제 네트워크 실행은 Pi 런타임이 같은 이름으로
+  갈아 끼운다(`generate_image_asset` → `imageAssetGeneration` 과 같은 분업). 그래서 레지스트리 셰이프와
+  실행 셰이프가 **둘 다 선언되면 안 된다** — Pi 런타임이 레지스트리 셰이프를 이름으로 걸러낸다.
+- **노출은 도메인과 무관하다.** "최신 정보가 필요하다" 는 UI 상태로 예측할 수 없어서 `core` 도메인에
+  상시 노출된다. `find_tools` 발견 경로도 같은 실행 셰이프로 간다(`shapeFor`).
+- 팀 실행에서도 하위 에이전트가 검색을 쓴다(`piTeamRuntime.ts` 의 `child()` 가 `codexApiKey` 를 내려보낸다).
+  빠뜨리면 팀장만 최신 사실을 보고 팀원은 추정하게 된다.
+
+검증(2026-09-21, 실제 ChatGPT 구독 자격): 레지스트리 노출·인자 거절(빈 검색어·401자)·
+`codex-required` 실패 경로, Pi 루프에서 `web_search` 선언과 실제 검색 실행(PostgREST v16.3 답변 +
+GitHub 출처 6건), `find_tools` 발견 후 다음 턴 실행까지 실측했다.
+
 ## 감사 후속: 부분 갱신과 미사용 삭제 (2026-09-20)
 
 - DB 공용 `mergeRecord`는 `mergeRecordPatch`로 중첩 객체의 생략된 필드를 보존한다. 전달한 배열은 교체하며, `kind` 변경은 이전 유니온 변형을 버린다. 빈 객체는 중첩 필드 전체 삭제가 아니다.
@@ -1748,3 +1816,14 @@ walkthrough rather than treating a successful tool call as runtime proof.
 `set_title_screen`, `set_game_over` 또는 해당 이벤트 그래픽 필드에 연결한다.
 오프닝과 게임오버의 전용 생성 툴은 각각의 화면 설정과 연결 검증을 유지하고,
 일반 에셋 생성은 여러 데이터베이스 레코드에서 재사용할 수 있는 리소스를 만든다.
+
+## Feature16 combat and climate authoring tools (2026-09-21)
+
+`upsert_skill` exposes formulas, crit, hit sequences, turn cooldowns and action profiles.
+`upsert_enemy` exposes expanded conditions and conditional drops. New nested inputs
+are validated before normalization: invalid formulas/condition kinds/array overflow
+are rejected atomically. Partial action updates preserve omitted values; top-level
+`clearActionSkill`, `clearActionFieldStatus`, `clearActionItemCost` explicitly clear.
+`set_map_properties` accepts climate or clearClimate. Drop item and condition state/
+switch references participate in load validation, deletion guards and switch rename.
+Tests: `feature16AiToolIntegration.test.ts`; schemas: `combatAuthoringSchemas.ts`.

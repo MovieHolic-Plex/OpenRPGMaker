@@ -50,7 +50,7 @@ export interface AiRunSurface {
   readonly endTurnProgress: () => void;
   readonly refreshRunningStatus: (record?: boolean) => void;
   readonly refreshAbortButton: () => void;
-  readonly startLiveActivity: (toolName: string, index: number) => void;
+  readonly startLiveActivity: (toolName: string, index: number, args?: Record<string, unknown>) => void;
   readonly completeLiveActivity: (toolName: string, result: ToolResult, args?: Record<string, unknown>) => void;
 
   // ── 접힘/펼침 · 알림 ─────────────────────────────────────

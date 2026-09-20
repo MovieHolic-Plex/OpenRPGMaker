@@ -280,9 +280,8 @@ export function makeGridPalette(input: MakeGridPaletteWithStampArgs): HTMLElemen
 export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
   const sourceColumns = Math.max(1, args.tileset.tilesPerRow);
   const sourceRows = Math.max(1, Math.ceil(args.tileset.count / sourceColumns));
-  // Keep authored tile ids intact while reflowing the editor view to the
-  // established six-column rail geometry. The atlas itself may be 30 columns wide.
-  const columns = GRID_PALETTE_COLUMNS;
+  // Adjacent atlas cells form trees and terrain; preserve source rows in the view.
+  const columns = sourceColumns;
   const rows = Math.max(1, Math.ceil(args.tileset.count / columns));
   const displayTiles = buildCustomPaletteModel(args.tileset);
   const sheet = el("div", {
@@ -304,8 +303,7 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
   });
   const backgroundImageUrl = tilesetImageUrl(args.tileset);
   grid.style.setProperty("--custom-palette-image", tilesetCssImageValue(backgroundImageUrl));
-  // Custom cells remain complete and source-id ordered; only their editor view
-  // is reflowed so the palette scrolls vertically instead of horizontally.
+  // Custom cells keep source coordinates, including empty cells between objects.
   // Large uploaded atlases routinely contain 2,000+ cells. Keep the first
   // viewport synchronous, then append the rest in short batches so button
   // creation cannot block the first canvas frame.

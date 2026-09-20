@@ -1,3 +1,4 @@
+import { getPlayerPreferences } from '@/player/playerPreferences';
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { store } from "@/project/store";
 import type { PlaySession } from "@/project/session";
@@ -113,7 +114,7 @@ function playRuntimeJuiceSound(soundResourceId: string): void {
   const url = resolveAssetResourceUrl(soundResourceId, { project: store.getCurrent() });
   if (!url) return;
   const audio = new Audio(url);
-  audio.volume = DEFAULT_VOLUME;
+  audio.volume = DEFAULT_VOLUME * getPlayerPreferences().se;
   void audio.play().catch((error: unknown) => {
     if (error instanceof DOMException) return;
     console.warn("[runtime-juice] sound playback failed", error);

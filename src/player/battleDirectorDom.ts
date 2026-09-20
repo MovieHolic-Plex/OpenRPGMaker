@@ -65,7 +65,7 @@ export function sendOutDirectorState(snapshot: BattleSnapshot): BattleDirectorSt
 }
 
 /** 행동 로그 엔트리 하나를 이름이 드러나는 메시지로 변환(다중 적 턴 개별 연출용). */
-export function enemyActionDirectorState(entry: BattleActionResultSnapshot, snapshot: BattleSnapshot): BattleDirectorState {
+export function enemyActionDirectorState(entry: BattleActionResultSnapshot, snapshot: BattleSnapshot, effect?: { readonly resource: "hp" | "mp"; readonly healing: boolean }): BattleDirectorState {
   const user = snapshot.enemies.find((enemy) => enemy.recordId === entry.userRecordId)
     ?? snapshot.actors.find((actor) => actor.recordId === entry.userRecordId);
   const target = snapshot.actors.find((actor) => actor.id === entry.targetId)
@@ -82,7 +82,9 @@ export function enemyActionDirectorState(entry: BattleActionResultSnapshot, snap
   const impact = !entry.hit
     ? "공격이 빗나갔다!"
     : entry.amount > 0
-      ? `${withJosa(targetName, "이(가)")} ${entry.amount} 피해를 입었다!${entry.critical ? " 급소다!" : ""}`
+      ? effect?.resource === "mp"
+        ? `${targetName}의 MP가 ${entry.amount} ${effect.healing ? "회복" : "감소"}했다!`
+        : `${withJosa(targetName, "이(가)")} ${entry.amount} 피해를 입었다!${entry.critical ? " 급소다!" : ""}`
       : "효과가 충분하지 않았다.";
   return {
     step: "acting",
@@ -141,8 +143,8 @@ export function actorCommandDirectorState(
   // 회복 여부와 자원은 타임라인 엔트리가 들고 있다. 부호나 HP 차이로 다시 추론하면
   // 양수 회복량이 "피해" 로, MP 회복이 HP 회복으로 둔갑한다(실측: 마력약 +30 팝업에
   // "주인공에게 30 피해!").
-  const effect = commandEntry?.kind === "healing"
-    ? { healing: true, resource: commandEntry.resource ?? "hp" as const }
+  const effect = commandEntry
+    ? { healing: commandEntry.kind === "healing" || (commandEntry.amount ?? 0) < 0, resource: commandEntry.resource ?? "hp" as const }
     : undefined;
   const lines = [
     commandLine(command, actor),
@@ -185,6 +187,7 @@ function impactLine(
       return `${withJosa(target?.name ?? "대상", "이(가)")} ${amountText} 회복했다!`;
     }
   }
+  if (effect?.resource === "mp" && !effect.healing && rolled > 0) return `${targetName}의 MP가 ${rolled} 감소했다!`;
   if (result && result.critical && rolled > 0) return `급소에 맞았다! ${targetName}에게 ${rolled} 피해!`;
   if (rolled > 0) return `${targetName}에게 ${rolled} 피해!`;
   if (impact < 0) return `${withJosa(target?.name ?? "대상", "이(가)")} ${Math.abs(impact)} 회복했다!`;

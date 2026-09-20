@@ -420,7 +420,16 @@ export async function resolveRequestApiKey(provider: string): Promise<string | u
   }
   if (!credentials) return undefined;
   if (Date.now() >= credentials.expires) {
-    await refreshProvider(id);
+    try {
+      await refreshProvider(id);
+    } catch (error) {
+      // 갱신실패의 흔한 원인은 refresh_token 재사용이다 — codex CLI 같은 다른 도구가 먼저 갱신하면 우리 저장본의 refresh 토큰은 이미 소모된 뒤다.
+      // 그럴 때 CLI 로그인은 더 신선할 수 있으므로 채용을 시도하고, 그것도 쓸 수 없으면 원래 오류를 올린다.
+      // 이 경로가 없으면 한 번 낙은 저장본 행이 검색·완성을 영구히 막는다(2026-09-21 실측).
+      if (!adoptCodexCliCredentials(id)) throw error;
+      const adopted = credentialsOf(id);
+      if (!adopted || !isUsableCredentials(id, adopted)) throw error;
+    }
     credentials = credentialsOf(id);
     if (!credentials) return undefined;
   }

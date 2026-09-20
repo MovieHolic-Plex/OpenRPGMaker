@@ -51,7 +51,7 @@ export interface DamageFeedback {
   readonly amount: number;
   readonly critical: boolean;
   readonly healing: boolean;
-  /** healing === true 일 때 어느 자원이 회복됐는가. 표시 계층이 HP 원장에 MP 회복을
+  /** 피해·회복이 어느 자원에 적용됐는가. 표시 계층이 HP 원장에 MP 회복을
    *  적용하지 않도록 하는 유일한 근거다. 기본은 "hp". */
   readonly resource?: "hp" | "mp";
   readonly miss?: boolean;
@@ -220,14 +220,14 @@ export function createBattleSequencer(
       // 않았다. 실측에서 기본 적 24종 중 12종이 정확히 0 을 주고 있었으니, 초반 전투의
       // 절반은 적이 때렸는지조차 알 수 없었다 — 버그로 보인다. 0 도 사건이므로 표시한다.
       if (entry.kind !== "damage") return undefined;
-      return { targetId: entry.targetId, amount: 0, critical: false, healing: false, blocked: true };
+      return { targetId: entry.targetId, amount: 0, critical: false, healing: false, blocked: true, resource: entry.resource ?? "hp" };
     }
     return {
       targetId: entry.targetId,
       amount,
       critical: Boolean(entry.critical),
       healing,
-      ...(healing ? { resource: entry.resource ?? "hp" as const } : {}),
+      resource: entry.resource ?? "hp",
     };
   }
 
@@ -400,7 +400,7 @@ export function createBattleSequencer(
     const directorBase = (firstDirector && entryOffset === firstDirectorIndex)
       ? firstDirector
       : actionEntryDirectorState(entry, snapshot)
-        ?? (resultEntry ? enemyActionDirectorState(resultEntry, snapshot) : timelineDirectorState(entry, snapshot));
+        ?? (resultEntry ? enemyActionDirectorState(resultEntry, snapshot, { resource: entry.resource ?? "hp", healing: entry.kind === "healing" || (entry.amount ?? 0) < 0 }) : timelineDirectorState(entry, snapshot));
     const feedback = feedbackFromTimeline(entry);
     const visual = entry.kind === "damage" || entry.kind === "healing" || entry.kind === "miss"
       || entry.kind === "action" || entry.kind === "capture" || entry.kind === "stateUpkeep" || entry.kind === "stateRecovery";

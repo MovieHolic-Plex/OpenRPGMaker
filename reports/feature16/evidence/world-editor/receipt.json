@@ -1,0 +1,18 @@
+{
+  "climates": [
+    {
+      "mode": "indoor"
+    }
+  ],
+  "profiles": [
+    {
+      "kind": "projectile",
+      "damage": 4,
+      "range": 3,
+      "fieldStatus": {
+        "kind": "slow",
+        "durationMs": 2000
+      }
+    }
+  ]
+}

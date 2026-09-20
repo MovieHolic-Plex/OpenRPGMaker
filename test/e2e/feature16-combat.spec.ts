@@ -1,0 +1,53 @@
+import { readyEditor } from '../../scripts/qa/feature16-editor-boot.mjs';
+import { expect, test } from '@playwright/test';
+import { DATABASE_TAB_SPECS, exportedProject, openDatabase, switchDatabaseTab } from './oprn-database-helpers';
+
+test.use({ viewport: { width: 1586, height: 992 } });
+test('feature16-combat real editor authoring and screenshot proof', async ({ page }, testInfo) => {
+  test.setTimeout(120_000);
+  await page.addInitScript(() => localStorage.setItem('oprn:editor-ui-mode', 'expert'));
+  // Disposable editor fixture; no remote project data is modified.
+  await page.goto('/?freshProject=1');
+  await readyEditor(page);
+  await openDatabase(page);
+  await switchDatabaseTab(page, DATABASE_TAB_SPECS.find(tab => tab.slug === 'skills')!);
+  const formula = page.getByTestId('feature16-damage-formula');
+  await formula.scrollIntoViewIfNeeded();
+  await formula.fill('power + a.atk * 2 - b.def');
+  await page.getByTestId('feature16-preview-power').fill('10');
+  await page.getByTestId('feature16-preview-attack').fill('30');
+  await page.getByTestId('feature16-preview-defense').fill('20');
+  await expect(page.getByTestId('feature16-formula-preview')).toContainText('50');
+  await page.getByTestId('feature16-hit-sequence').fill('1, 0.5, 2');
+  await page.getByTestId('feature16-critical-rate').fill('25');
+  await page.getByTestId('feature16-critical-multiplier').fill('2');
+  await page.getByTestId('feature16-cooldown').fill('2');
+  await page.getByTestId('feature16-combat-studio').screenshot({ path: testInfo.outputPath('feature16-combat-skills.png') });
+  const beforeInvalid = await exportedProject(page);
+  await formula.fill('globalThis.alert(1)');
+  await expect(page.getByTestId('feature16-formula-preview')).toContainText('저장하지 않음');
+  await expect(formula).toHaveAttribute('aria-invalid', 'true');
+  expect((await exportedProject(page)).database.skills).toEqual(beforeInvalid.database.skills);
+  await page.getByTestId('feature16-combat-studio').screenshot({ path: testInfo.outputPath('feature16-combat-invalid-formula.png') });
+  await formula.fill('power + a.atk * 2 - b.def');
+
+  await switchDatabaseTab(page, DATABASE_TAB_SPECS.find(tab => tab.slug === 'enemies')!);
+  await page.getByTestId('db-enemy-section-rewards-tab').click();
+  await page.getByTestId('feature16-drop-add').click();
+  const condition = page.locator('[data-testid^="feature16-drop-"][data-testid$="-condition-kind"]').last();
+  await condition.selectOption('switch');
+  const quantity = page.locator('[data-testid^="feature16-drop-"][data-testid$="-quantity"]').last();
+  await quantity.fill('2');
+  await page.getByTestId('feature16-drops').scrollIntoViewIfNeeded();
+  await page.getByTestId('feature16-drops').screenshot({ path: testInfo.outputPath('feature16-combat-drops.png') });
+  await page.getByTestId('db-enemy-action-row-0').dblclick();
+  await page.getByTestId('db-enemy-action-condition-type').selectOption('hp');
+  await page.getByTestId('feature16-enemy-condition-min').fill('0');
+  await page.getByTestId('feature16-enemy-condition-max').fill('35');
+  await page.getByTestId('db-enemy-action-dialog').screenshot({ path: testInfo.outputPath('feature16-combat-enemy-condition.png') });
+  await page.getByTestId('db-enemy-action-ok').click();
+  await expect(page.getByTestId('db-enemy-action-row-0')).toContainText('35%');
+  await switchDatabaseTab(page, DATABASE_TAB_SPECS.find(tab => tab.slug === 'skills')!);
+  await expect(page.getByTestId('feature16-damage-formula')).toHaveValue('power + a.atk * 2 - b.def');
+  await expect(page.getByTestId('feature16-hit-sequence')).toHaveValue('1, 0.5, 2');
+});

@@ -1,6 +1,6 @@
 // DOM 미리보기(팔레트/DB 타일셋 시트)용 graft 베이크 캐시.
 // tilesetImageUrl 은 동기 API(CSS background/img src)라서, 베이크는 비동기로 돌리고
-// 결과 dataURL 을 캐시한다 — 캐시 미스면 베이스 URL 을 임시 반환하고 베이크를 예약한다.
+// 결과 PNG와 DOM용 공유 Blob URL을 캐시한다 — 미스면 베이스 URL로 베이크를 예약한다.
 // 베이크 완료 시 "oprn:tileset-graft-image-baked" 윈도우 이벤트를 쏜다(다음 리렌더에서 반영).
 // 어시스턴트 증거 렌더는 동일 키의 완전 베이크를 제한 시간 동안 기다린다.
 // 시간 초과·합성 실패 시 unavailable; 원본 시트로 검수를 대체하지 않는다.
@@ -15,25 +15,35 @@ import {
 } from "@/assets/chipsetTransparency";
 import { activeTileGrafts, createGraftedTilesetCanvas } from "@/assets/tileGrafts";
 import type { TilesetDef } from "@/project/types";
+import { decodeDataUrlBytes } from "@/project/persistence/core/dataUrl";
 
 export const TILE_GRAFT_IMAGE_BAKED_EVENT = "oprn:tileset-graft-image-baked";
 
 type GraftBakeSnapshot = Pick<TilesetDef, "count" | "tileSize" | "tilesPerRow" | "tileGrafts">;
 
 const bakedUrlCache = new Map<string, string>();
+// Keep data URLs for evidence/export, but never copy their PNG payload into
+// thousands of DOM style attributes. One object URL belongs to each exact bake.
+const previewUrlCache = new Map<string, string>();
 const inFlightBakes = new Map<string, Promise<string | null>>();
+let cacheGeneration = 0;
 
-/** Test-only: drop baked URLs and in-flight work so readiness cases stay isolated. */
+/** Release project-local previews; stale async bakes must not repopulate them. */
 export function clearTileGraftImageCache(): void {
+  cacheGeneration++;
+  for (const url of previewUrlCache.values()) {
+    if (url.startsWith("blob:")) URL.revokeObjectURL(url);
+  }
+  previewUrlCache.clear();
   bakedUrlCache.clear();
   inFlightBakes.clear();
 }
 
-// 베이크 결과가 있으면 dataURL, 없으면 null(베이크 예약). baseUrl 은 graft 없는 원본 시트 URL.
+// DOM preview URL, or null while baking. Evidence APIs below retain PNG data URLs.
 export function graftedTilesetImageUrl(tileset: TilesetDef, baseUrl: string): string | null {
   if (activeTileGrafts(tileset).length === 0) return null;
   const cacheKey = graftImageCacheKey(tileset, baseUrl);
-  const cached = bakedUrlCache.get(cacheKey);
+  const cached = previewUrlCache.get(cacheKey);
   if (cached) return cached;
   void ensureGraftImageBake(cacheKey, snapshotGraftBake(tileset), baseUrl);
   return null;
@@ -124,10 +134,12 @@ function ensureGraftImageBake(
 ): Promise<string | null> {
   const existing = inFlightBakes.get(cacheKey);
   if (existing) return existing;
+  const generation = cacheGeneration;
   const pending = bakeGraftedTilesetImage(tileset, baseUrl)
     .then((dataUrl) => {
-      if (!dataUrl) return null;
+      if (!dataUrl || generation !== cacheGeneration) return null;
       bakedUrlCache.set(cacheKey, dataUrl);
+      previewUrlCache.set(cacheKey, createPreviewUrl(dataUrl));
       if (typeof window !== "undefined") {
         window.dispatchEvent(new CustomEvent(TILE_GRAFT_IMAGE_BAKED_EVENT, { detail: { cacheKey } }));
       }
@@ -138,10 +150,20 @@ function ensureGraftImageBake(
       return null;
     })
     .finally(() => {
-      inFlightBakes.delete(cacheKey);
+      if (inFlightBakes.get(cacheKey) === pending) inFlightBakes.delete(cacheKey);
     });
   inFlightBakes.set(cacheKey, pending);
   return pending;
+}
+
+function createPreviewUrl(dataUrl: string): string {
+  if (typeof URL === "undefined" || typeof URL.createObjectURL !== "function" || typeof Blob === "undefined") return dataUrl;
+  try {
+    const bytes = new Uint8Array(decodeDataUrlBytes(dataUrl));
+    return URL.createObjectURL(new Blob([bytes.buffer], { type: "image/png" }));
+  } catch {
+    return dataUrl;
+  }
 }
 
 async function bakeGraftedTilesetImage(

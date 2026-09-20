@@ -204,13 +204,14 @@ export interface PlaySceneContext extends Phaser.Scene {
   lightingTransitionWaiters: Array<() => void>;
   weatherLayer?: Phaser.GameObjects.Container;
   weatherGraphics?: Phaser.GameObjects.Graphics;
+  weatherMistLayers?: Phaser.GameObjects.TileSprite[];
   weatherClockMs: number;
   weatherFixedAccumulatorMs: number;
   weatherDisplayed: WeatherParams;
   weatherTargetSignature: string;
   weatherTransition: WeatherTransition | null;
-  /** 구름 그림자 스프라이트 풀. 매 프레임 cloudShadows.ts 가 계산한 덩어리 수만큼 쓴다. */
-  cloudShadowSprites?: Phaser.GameObjects.Image[];
+  /** 월드 좌표 구름 실루엣의 인접 위상을 보간하는 두 TileSprite. */
+  cloudShadowSprites?: Phaser.GameObjects.TileSprite[];
   cloudShadowClockMs: number;
   timeFixedAccumulatorMs: number;
   timeMinuteAccumulator: number;
