@@ -20,6 +20,23 @@
   `windowskin-rm2003.png` — the file is our own generated 9-slice, not third-party art.
 - Notes: 96x96 RGBA 9-slice window skin with 24px corners for runtime game windows.
 
+## OGA greggman — Backgrounds for 2D Platformers
+
+- Files:
+  - `oga/greggman-backgrounds/meadow.png` (upstream `background0.png`, resized to 1280x720)
+  - `oga/greggman-backgrounds/city-night.png` (upstream `background1-720.png`, copied as-is)
+  - `oga/greggman-backgrounds/haunted-forest.png` (upstream `background3-720.png`, copied as-is)
+  - `oga/greggman-backgrounds/dusk-mountains.png` (upstream `rock_4.png`, resized to 1280x720)
+  - `oga/greggman-backgrounds/snow-mountains.png` (upstream `snow_5.png`, resized to 1280x720)
+- Author: greggman (collaborator credit: RenZeyu)
+- Source: https://opengameart.org/content/backgrounds-for-2d-platformers
+- License: **Creative Commons Attribution 3.0 Unported (CC-BY 3.0)** — attribution required,
+  commercial use allowed. Do not remove this section while any of these files or derived
+  resource ids (`oga-backdrop-*`) remain in the project.
+- Notes: bundled 2026-09-21 as map panorama / battle backdrop candidates. Registered in
+  `src/assets/ogaBackdropAssets.ts`. The two 1080p sources were downscaled to match the
+  upstream 720p attachments; no other pixels were edited.
+
 ## EasyRPG RTP bundled map and object assets
 
 - Files:
