@@ -204,7 +204,8 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
   function render(): void {
     if (disposed) return;
     const rows = members();
-    const signature = JSON.stringify(rows.map(m => [m.key, m.name, m.state, m.icon, view === "team" && selected === m.key]));
+    const taskText = (m: Member): string => m.agent?.lastLine || m.agent?.summary || m.agent?.task || m.lane?.progress.lastLine || m.lane?.spec.instruction || "요청을 기다리고 있어요";
+    const signature = JSON.stringify(rows.map(m => [m.key, m.name, m.state, m.icon, taskText(m), view === "team" && selected === m.key]));
     if (signature !== rosterSignature) {
       rosterSignature = signature;
       const focusKey = (document.activeElement as HTMLElement | null)?.closest<HTMLElement>(".ai-team-member")?.dataset.agentId;
@@ -213,7 +214,7 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
         return el("button", {
           class: "ai-team-member", attrs: { type: "button", "aria-pressed": String(view === "team" && selected === m.key), "aria-label": `${m.name} · ${m.state} · 대화 열기` },
           dataset: { testid: "ai-team-member", agentId: m.key, state: m.state },
-          children: [el("span", { class: "ai-team-member-avatar", children: [deckIcon(m.icon, { size: 22 }), el("span", { class: "ai-team-member-badge", text: mark, attrs: { "aria-hidden": "true" } })] }), el("span", { class: "ai-team-member-name", text: m.name }), el("span", { class: "ai-team-member-state", text: m.state })],
+          children: [el("span", { class: "ai-team-member-avatar", children: [deckIcon(m.icon, { size: 22 }), el("span", { class: "ai-team-member-badge", text: mark, attrs: { "aria-hidden": "true" } })] }), el("span", { class: "ai-team-member-name", text: m.name }), el("span", { class: "ai-team-member-state", text: m.state }), el("span", { class: "ai-team-member-task", text: taskText(m) })],
           on: { click: () => { selected = selected === m.key && view === "team" ? null : m.key; view = "team"; tab = "chat"; render(); } },
         });
       }));
