@@ -125,11 +125,11 @@ body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
 .ai-work-inline summary { color: var(--text-2); cursor: pointer; }
 .ai-work-inline-steps { margin-top: 10px; }
 
-.ai-work-inline[data-state="done"]:has(details:not([open])) { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0 10px; }
-.ai-work-inline[data-state="done"]:has(details:not([open])) header { grid-column: 2; grid-row: 1; }
-.ai-work-inline[data-state="done"]:has(details:not([open])) header strong { display: none; }
-.ai-work-inline[data-state="done"]:has(details:not([open])) details { grid-column: 1; grid-row: 1; margin: 0; }
-.ai-work-inline[data-state="done"]:has(details:not([open])) .ai-work-inline-actions { grid-column: 1 / -1; }
+.ai-work-inline[data-state="done"]:not(.has-activity):has(details:not([open])) { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0 10px; }
+.ai-work-inline[data-state="done"]:not(.has-activity):has(details:not([open])) header { grid-column: 2; grid-row: 1; }
+.ai-work-inline[data-state="done"]:not(.has-activity):has(details:not([open])) header strong { display: none; }
+.ai-work-inline[data-state="done"]:not(.has-activity):has(details:not([open])) details { grid-column: 1; grid-row: 1; margin: 0; }
+.ai-work-inline[data-state="done"]:not(.has-activity):has(details:not([open])) .ai-work-inline-actions { grid-column: 1 / -1; }
 .ai-work-inline-actions:empty, .ai-work-inline-live:empty { display: none; }
 
 /* Sidebar header and overflow retain the original controls and keyboard behavior. */

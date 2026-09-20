@@ -1,3 +1,5 @@
+import { observeActivitySave } from "./aiActivitySave";
+import { activityNote, activityPhase, recordActivityEvent } from "@/ai/activityTrace";
 import { createPiPublication } from "./aiPiPublication";
 import { isLiveApplyMode, normalizePiApplyMode } from "@/ai/piAgent/applyMode";
 import { createPendingReviewPrompt } from "./aiPendingReview";
@@ -50,7 +52,7 @@ import { changedAreaLabels } from "@/project/changeAreas";
 import { computeChangeSites } from "@/project/changeSites";
 import { buildChangeLedger, type ChangeLedger } from "@/project/changeLedger";
 import { createTeamBoard } from "./aiTeamBoard";
-import { publishTeamActivity, setTeamReviewActions } from "@/ai/piAgent/teamActivity";
+import { currentTeamActivity, publishTeamActivity, setTeamReviewActions } from "@/ai/piAgent/teamActivity";
 import { loadTeamSpec } from "@/ai/piAgent/teamSpecStore";
 
 export const PI_COMMAND_PREFIX = "/pi";
@@ -276,11 +278,14 @@ export async function runPiCommand(
     );
   };
 
-  let boardState: TeamBoardState = createTeamBoardState(command.mode, command.task);
-  const board = createTeamBoard(boardState);
+  let boardState: TeamBoardState = createTeamBoardState(command.mode, command.task, store.getProjectIdentity().id);
+  const board = createTeamBoard(boardState, { externalReview: Boolean(surface.appendReviewPrompt) });
   setTeamReviewActions(null);
   surface.appendCard(board.root);
-  const sync = (): void => { board.update(boardState); publishTeamActivity(boardState); };
+  const sync = (): void => {
+    if (boardState.trace) boardState = { ...boardState, trace: activityPhase(boardState.trace, boardState.phase) };
+    board.update(boardState); publishTeamActivity(boardState);
+  };
   const push = (event: PiAgentEvent): void => {
     boardState = reduceTeamBoard(boardState, event);
     sync();
@@ -322,7 +327,10 @@ export async function runPiCommand(
   };
   const wrap = (mapIds: readonly string[], index: number) => (raw: PiAgentEvent): void => {
     // heartbeat 는 연결 생존 신호다 — 클라이언트 워치독이 이미 소뱄했고, 보드에는 그릴 것이 없다.
-    if (raw.type === "heartbeat") return;
+    if (raw.type === "heartbeat") {
+      if (boardState.trace) boardState = { ...boardState, trace: recordActivityEvent(boardState.trace, raw) };
+      return;
+    }
     // 오류 문구는 갈라지기 **전에** 한 번만 고친다(explainTurnCap 주석 참고).
     const event: PiAgentEvent = raw.type === "error" ? { ...raw, message: explainTurnCap(raw.message) } : raw;
     if (!isLiveApplyMode(applyMode)) ghost.handleEvent(event);
@@ -358,7 +366,10 @@ export async function runPiCommand(
         scopeStrict: command.scopedByUser === true,
         readOnly: true, maxTurns: options.maxTurns, thinkingLevel: brain.reasoningEffort,
       }, { signal: surface.signal, onEvent: raw => {
-        if (raw.type === "heartbeat") return;
+        if (raw.type === "heartbeat") {
+          if (boardState.trace) boardState = { ...boardState, trace: recordActivityEvent(boardState.trace, raw, "ultrabrain-plan") };
+          return;
+        }
         const event: PiAgentEvent = raw.type === "error" ? { ...raw, message: explainTurnCap(raw.message) } : raw;
         if (!isLiveApplyMode(applyMode)) ghost.handleEvent(event);
         push({ type: "agent_event", agentId: "ultrabrain-plan", event });
@@ -698,6 +709,12 @@ export async function runPiCommand(
       ? `적용했습니다 — 팀, 툴콜 ${toolCalls}회, 바뀐 맵·항목 ${changedCount}개${spillNotice}${errorDigest()}.`
       : `변경 내용을 적용했습니다${spillNotice}${errorDigest()}.`;
     boardState = markTeamBoardApplied(boardState, appliedText); sync();
+    observeActivitySave((name, summary, status, data) => {
+      if (boardState.trace) boardState = { ...boardState, trace: activityNote(boardState.trace, name, summary, status, data) };
+      board.update(boardState);
+      // Do not replace a newer run in the live team rail.
+      if (currentTeamActivity()?.trace?.id === boardState.trace?.id) publishTeamActivity(boardState);
+    });
     finishLog({ applied: true, changedCount, stoppedReason: "적용됨" });
     surface.setStatus(harmonyManualReview && applyMode !== "yolo" ? "반영됨 · 확인할 문제 있음" : "적용 완료");
     if (team || !surface.showChangeReceipt || !receiptMapId) surface.appendBubble("system", `변경 내용을 적용했어요.${spilledKeys.length ? " 선택한 범위를 벗어난 변경은 제외했어요." : ""}${streamErrors.length ? " 작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요." : ""}`);

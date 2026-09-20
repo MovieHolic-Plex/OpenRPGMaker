@@ -1,3 +1,4 @@
+vi.mock("@/editor/panels/aiActivitySave", () => ({ observeActivitySave: vi.fn() }));
 // Pi 경로(2026-09-10 이후 기본)에도 실행 결과 4축(ai-run-outcome)이 산다 — 세션 경로만
 // 있던 불일치(2026-09-11 실측: 20턴 내내 1회도 미렌더)의 회귀.
 // 렌더는 패널이 소유하고, 여기선 surface.setRunOutcome 으로 흘린 facts 만 고정한다.
@@ -93,7 +94,7 @@ vi.mock("@/ai/piAgent/mapBundle", () => ({
 vi.mock("@/project/authoredProjectBaseline", () => ({ AuthoredProjectBaseline: class {} }));
 // subscribe 가 빠져 있어 mapEditHistory 의 모듈 초기화가 즉시 죽었다 — 파일 전체가 로드조차
 // 되지 않아 여기 담긴 12개 케이스가 통째로 침묵했다(main 기준으로도 빨간불).
-vi.mock("@/project/store", () => ({ store: { getCurrent: () => h.project, subscribe: () => () => {} } }));
+vi.mock("@/project/store", () => ({ store: { getCurrent: () => h.project, getProjectIdentity: () => ({ kind: "local-session", id: "outcome-fixture" }), subscribe: () => () => {} } }));
 // 실제 모달을 띄우지 않는다. 맵 소실 확인은 별도 케이스에서 반환값을 갈아 끼워 검사한다.
 vi.mock("@/editor/ui/modal", () => ({ showConfirm: async () => h.confirmAnswer }));
 vi.mock("@/ai/llmClient", () => ({ loadAiConfig: () => ({ providerId: "google-antigravity", model: "m", piApply: h.piApply }) }));

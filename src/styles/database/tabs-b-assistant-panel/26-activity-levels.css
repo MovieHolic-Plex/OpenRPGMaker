@@ -1,0 +1,34 @@
+/* Loaded with the editor AI shell, never dependent on opening the database. */
+.ai-activity-toolbar { flex: 0 0 auto; padding: 8px 12px; border-bottom: 1px solid var(--border-subtle); background: var(--bg-raised); }
+.ai-activity-setting { display: flex; align-items: center; justify-content: space-between; gap: 8px; font: 12px/1.5 var(--font-ui); color: var(--text-2); padding: 4px 0; }
+.ai-activity-setting select { max-width: 70%; min-width: 0; font: inherit; padding: 5px 7px; border: 1px solid var(--border-default); border-radius: var(--radius-s); color: var(--text-1); background: var(--bg-inset); }
+.ai-activity-history { margin-top: 4px; color: var(--text-2); font: 12px/1.5 var(--font-ui); }
+.ai-activity-history summary { cursor: pointer; }
+.ai-activity-history-body { max-height: 55vh; overflow-y: auto; padding: 8px 0; }
+.ai-activity-history-body > button { display: block; text-align: left; width: 100%; margin: 6px 0; overflow-wrap: anywhere; }
+.ai-activity-view { min-width: 0; font: 12px/1.6 var(--font-ui); color: var(--text-1); }
+.ai-activity-view [hidden], .ai-activity-view[hidden], .ai-work-inline > [hidden], .ai-team-board > [hidden] { display: none; }
+.ai-activity-meta { color: var(--text-3); font-size: 11px; margin: 6px 0; overflow-wrap: anywhere; }
+.ai-activity-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 8px 0; }
+.ai-activity-filters input { width: 100%; min-width: 0; padding: 6px 8px; border: 1px solid var(--border-default); border-radius: var(--radius-s); background: var(--bg-inset); color: var(--text-1); font: inherit; }
+.ai-activity-filters select { max-width: 100%; min-width: 0; background: var(--bg-raised); color: var(--text-1); border: 1px solid var(--border-default); border-radius: var(--radius-s); padding: 5px; font: inherit; }
+.ai-activity-view button, .ai-activity-history-body > button { border: 1px solid var(--border-subtle); border-radius: var(--radius-s); background: var(--bg-raised); color: var(--text-2); padding: 5px 8px; font: inherit; cursor: pointer; }
+.ai-activity-entry { padding: 7px 0; border-bottom: 1px solid var(--border-subtle); overflow-wrap: anywhere; }
+.ai-activity-entry:last-child { border-bottom: 0; }
+.ai-activity-entry-title { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
+.ai-activity-entry-title > span:last-child { min-width: 0; }
+.ai-activity-mark { flex: 0 0 12px; color: var(--text-3); }
+.ai-activity-entry.is-ok .ai-activity-mark { color: var(--success); }
+.ai-activity-entry.is-error .ai-activity-mark { color: var(--danger); }
+.ai-activity-entry.is-running .ai-activity-entry-title { font-weight: 600; }
+.ai-activity-entry small { display: block; font-size: 11px; color: var(--text-3); padding-left: 19px; }
+.ai-activity-entry summary { cursor: pointer; }
+.ai-activity-view[data-level="trace"] .ai-activity-entry-title { font-family: monospace; font-size: 11px; }
+.ai-activity-payload { background: var(--bg-inset); padding: 9px; margin: 8px 0 2px; border-radius: var(--radius-s); }
+.ai-activity-payload strong { font-size: 11px; color: var(--text-2); }
+.ai-activity-payload pre { margin: 4px 0 12px; font: 11px/1.7 monospace; color: var(--text-1); white-space: pre-wrap; overflow-wrap: anywhere; }
+.ai-activity-payload pre:last-child { margin-bottom: 0; }
+.ai-activity-payload p { white-space: pre-wrap; margin: 0; }
+.ai-work-inline.has-activity > .ai-team-board { margin: 4px 0; padding: 0; border: 0; background: transparent; }
+.ai-work-inline.has-activity details.ai-activity-entry { margin-top: 0; }
+.ai-team-work-body > .ai-activity-view { min-height: 0; overflow-y: auto; padding: 12px; }
