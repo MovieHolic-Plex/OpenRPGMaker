@@ -11,13 +11,8 @@ import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
 import type { RuntimePerfCounters } from "@/player/runtimePerfCounters";
 import { subscribeActionCombatObservations } from "@/player/playSceneActionCombat";
 import {
-  CLOUD_SHADOW_BLOB_COUNT,
-  cloudShadowAnchors,
-  cloudShadowPeriod,
-  cloudShadowSeedForMap,
   normalizeCloudShadowParams,
 } from "@/player/cloudShadows";
-import { CLOUD_SHADOW_TEXTURE_KEY, cloudShadowView } from "@/player/playSceneCloudShadows";
 import { inBounds, isPassable } from "@/project/collision";
 import { store } from "@/project/store";
 import { PLAYER_COMBATANT_ID, type ActionEnemyState } from "@/player/actionCombatTypes";
@@ -200,15 +195,16 @@ type CloudShadowDebug = {
   readonly speed: number;
   readonly angleDeg: number;
   readonly scale: number;
+  readonly amount: number;
   readonly clockMs: number;
   readonly visibleCount: number;
   readonly depth: number | null;
   readonly textureReady: boolean;
-  /** 배치가 가진 구름 수(화면에 보이는 수와 다를 수 있다 — 일부는 화면 밖이다). */
+  /** 연속 구름 레이어 수. */
   readonly layoutCount: number;
   /** 격자 주기(월드 px). 위상을 접을 때 쓴다. */
   readonly period: number;
-  /** 배치 순서가 고정된 구름 위상 — 두 관측을 «같은 구름» 으로 이어 주는 유일한 이름. */
+  /** 레이어별 텍스처 UV 위상. 카메라 이동을 제외한 시간 진행을 비교한다. */
   readonly anchors: readonly { readonly x: number; readonly y: number }[];
   readonly blobs: readonly { readonly x: number; readonly y: number; readonly alpha: number; readonly visible: boolean }[];
 };
@@ -582,20 +578,20 @@ function cloudShadowsDebug(scene: Phaser.Scene): CloudShadowDebug {
   const context = scene as unknown as Partial<PlaySceneContext>;
   const params = normalizeCloudShadowParams(context.map?.cloudShadows);
   const sprites = context.cloudShadowSprites ?? [];
-  const view = context.cameras ? cloudShadowView(context as PlaySceneContext) : { x: 0, y: 0, width: 1, height: 1 };
   return {
     enabled: params.enabled,
     opacity: params.opacity,
     speed: params.speed,
     angleDeg: params.angleDeg,
     scale: params.scale,
+    amount: params.amount,
     clockMs: context.cloudShadowClockMs ?? 0,
     visibleCount: sprites.filter((sprite) => sprite.visible).length,
     depth: sprites[0]?.depth ?? null,
-    textureReady: scene.textures.exists(CLOUD_SHADOW_TEXTURE_KEY),
-    layoutCount: CLOUD_SHADOW_BLOB_COUNT,
-    period: cloudShadowPeriod(view, params.scale),
-    anchors: cloudShadowAnchors(params, context.cloudShadowClockMs ?? 0, cloudShadowPeriod(view, params.scale), cloudShadowSeedForMap(context.map?.id ?? "")),
+    textureReady: sprites.length > 0 && sprites.every((sprite) => scene.textures.exists(sprite.texture.key)),
+    layoutCount: sprites.length,
+    period: sprites[0] ? sprites[0].frame.width * sprites[0].tileScaleX : 0,
+    anchors: sprites.map((sprite) => ({ x: sprite.tilePositionX, y: sprite.tilePositionY })),
     blobs: sprites.map((sprite) => ({
       x: sprite.x,
       y: sprite.y,
