@@ -179,12 +179,22 @@ export async function createOhMyPiAdapters() {
           providerApiKeys[selected.provider] = await resolveRequestApiKey(selected.provider);
         }
       }
+      // 웹 검색은 조수 제공자와 무관하게 Codex 백엔드가 한다 — Antigravity 로 턴을 돌려도 검색은 ChatGPT 자격으로 나간다.
+      // 자격이 없으면 undefined 로 두고 툴이 이유를 말하게 한다(여기서 던지면 미로그인 사용자의 모든 턴이 검색 때문에 죽는다).
+      let codexApiKey;
+      if (!("openai-codex" in providerApiKeys)) {
+        try {
+          codexApiKey = await resolveRequestApiKey("openai-codex");
+        } catch {
+          codexApiKey = undefined;
+        }
+      }
       const port = await startWorker();
       // 브라우저가 끊으면(중단 버튼) 그 신호를 워커까지 넘긴다 — 안 그러면 에이전트는 끝까지 돈다.
       const response = await fetch(`http://127.0.0.1:${port}/agent/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ apiKey, providerApiKeys, request: { ...body, provider } }),
+        body: JSON.stringify({ apiKey, providerApiKeys, codexApiKey, request: { ...body, provider } }),
         ...(options.signal ? { signal: options.signal } : {}),
       });
       if (!response.ok) {

@@ -1,3 +1,27 @@
+## 조수 웹 검색 도구 (2026-09-21)
+
+조수가 `web_search({query})` 로 인터넷을 검색한다. 레지스트리 등록은 `src/editor/tools/webSearchTool.ts`,
+업스트림 계약은 `scripts/lib/codexWebSearchRuntime.ts`, Pi 배선은 `scripts/lib/piAgentRuntime.ts` 다.
+
+- **검색 엔진은 Codex(ChatGPT) 백엔드다.** 조수 제공자가 Antigravity(Gemini, 공장 기본)여도 검색은
+  ChatGPT 구독 자격으로 나간다 — `tools:[{type:"web_search"}]` + `stream:true` 계약을 실측으로 고정했다
+  (`stream:false` 는 업스트림이 400 "Stream must be set to true" 로 거절한다. 비스트리밍은 존재하지 않는다).
+- **자격은 서버 경계에만 있다.** `resolveRequestApiKey("openai-codex")` 가 동반 서비스에서 해결해
+  워커로 넘기고(`codexApiKey`), 브라우저로는 나가지 않는다. Codex 미로그인이면 툴이 "Codex 로그인 필요"
+  로 정직하게 실패한다 — 검색 때문에 다른 턴이 죽지 않는다.
+- **레지스트리 `run` 은 순수 핸드오프다.** 툴 규약(`types.ts`)이 브라우저 전역 접근을 금지하므로
+  레지스트리 쪽은 `status:"ui-required"` 만 만들고, 실제 네트워크 실행은 Pi 런타임이 같은 이름으로
+  갈아 끼운다(`generate_image_asset` → `imageAssetGeneration` 과 같은 분업). 그래서 레지스트리 셰이프와
+  실행 셰이프가 **둘 다 선언되면 안 된다** — Pi 런타임이 레지스트리 셰이프를 이름으로 걸러낸다.
+- **노출은 도메인과 무관하다.** "최신 정보가 필요하다" 는 UI 상태로 예측할 수 없어서 `core` 도메인에
+  상시 노출된다. `find_tools` 발견 경로도 같은 실행 셰이프로 간다(`shapeFor`).
+- 팀 실행에서도 하위 에이전트가 검색을 쓴다(`piTeamRuntime.ts` 의 `child()` 가 `codexApiKey` 를 내려보낸다).
+  빠뜨리면 팀장만 최신 사실을 보고 팀원은 추정하게 된다.
+
+검증(2026-09-21, 실제 ChatGPT 구독 자격): 레지스트리 노출·인자 거절(빈 검색어·401자)·
+`codex-required` 실패 경로, Pi 루프에서 `web_search` 선언과 실제 검색 실행(PostgREST v16.3 답변 +
+GitHub 출처 6건), `find_tools` 발견 후 다음 턴 실행까지 실측했다.
+
 ## 감사 후속: 부분 갱신과 미사용 삭제 (2026-09-20)
 
 - DB 공용 `mergeRecord`는 `mergeRecordPatch`로 중첩 객체의 생략된 필드를 보존한다. 전달한 배열은 교체하며, `kind` 변경은 이전 유니온 변형을 버린다. 빈 객체는 중첩 필드 전체 삭제가 아니다.
