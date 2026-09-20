@@ -43,6 +43,7 @@ export function validateProjectReferences(project: Project): void {
  */
 export function collectProjectItemReferenceIds(project: Project): ReadonlySet<string> {
   const ids = new Set<string>(Object.keys(project.session.inventory));
+  for (const widget of project.system.fieldHud?.widgets ?? []) for (const id of widget.itemIds ?? []) ids.add(id);
   for (const preset of project.testPresets ?? []) {
     for (const itemId of Object.keys(preset.inventory ?? {})) ids.add(itemId);
   }
@@ -166,6 +167,16 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   const endingIds = new Set((project.endings ?? []).map((record) => record.id));
   const mapIds = new Set(Object.keys(project.maps));
   const resourceIds = collectResourceIds(project);
+  check(() => {
+    for (const widget of project.system.fieldHud?.widgets ?? []) {
+      const path = `system.fieldHud.${widget.id}`;
+      if (widget.actorId) assert(actorIds.has(widget.actorId), `${path}: unknown actorId ${widget.actorId}`);
+      if (widget.variableId) assert(variableIds.has(widget.variableId), `${path}: unknown variableId ${widget.variableId}`);
+      if (widget.maxVariableId) assert(variableIds.has(widget.maxVariableId), `${path}: unknown maxVariableId ${widget.maxVariableId}`);
+      if (widget.switchId) assert(switchIds.has(widget.switchId), `${path}: unknown switchId ${widget.switchId}`);
+      for (const id of widget.itemIds ?? []) assert(itemIds.has(id), `${path}: unknown itemId ${id}`);
+    }
+  });
   const context: ReferenceContext = {
     appearanceIds: new Set(project.database.characterAppearances?.map((record) => record.id)),
     actorIds,
