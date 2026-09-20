@@ -1,3 +1,5 @@
+import { clearPromptInspection } from "@/ai/authoring/promptInspection";
+import { openAiAuthoringModal, closeAiAuthoringModal } from "./aiAuthoring/modal";
 import { createActivityToolbar } from "./aiActivityView";
 import { onlyEventPageCommandsChanged } from "@/ai/eventCommandScope";
 import { createProjectSuggestions } from "./aiProjectSuggestions";
@@ -1039,6 +1041,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     resumeTarget: ConversationRecord | null = null,
   ): boolean => {
     closeAiConversationHistoryModal();
+    closeAiAuthoringModal();
+    clearPromptInspection();
     clearRecovery();
     // 버릴 것이 있었는지를 보관 전에 재다 — 부팅 지연 로드도 프로젝트 전환으로 보이므로,
     // 할 이야기가 없는 전환은 조용하게 재스코프만 한다.
@@ -2655,6 +2659,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       historyButton.click();
     },
     openTools: () => toolsButton.click(),
+    openAuthoring: (tab: "library" | "dialogue" | "inspector") => openAiAuthoringModal(tab, {
+      composer: input.value,
+      apply: text => { input.value = input.value.trim() ? `${input.value}\n\n${text}` : text; input.dispatchEvent(new Event("input")); refreshSendEnabled(); input.focus(); },
+    }),
     openInstructions: () => {
       openAiInstructionsModal({
         // 진행 중인 세션의 시스템 프롬프트를 그 자리에서 갈아끼운다 — 저장했는데 다음 대화까지
@@ -3606,6 +3614,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   activeAiChatPanelCleanup = () => {
     if (disposed) return;
     disposed = true;
+    closeAiAuthoringModal();
+    clearPromptInspection();
     closeAiConversationHistoryModal();
     unregisterSettingsPanel();
     persistConversation();

@@ -37,10 +37,10 @@ export function createPresentationLedger(before: BattleSnapshot): BattlePresenta
     applyFeedback(feedback) {
       const vitals = byKey.get(feedback.targetId);
       if (!vitals || feedback.miss) return;
-      // MP 회복은 HP 원장에 반영하지 않는다. MP 표기는 원장이 아니라 최종 스냅샷에서 바로
+      // MP 피해·회복은 HP 원장에 반영하지 않는다. MP 표기는 원장이 아니라 최종 스냅샷에서 바로
       // 읽으므로, 여기서 amount 를 HP 에 더하면 회복 비트 동안 화면 HP 만 부풀었다가
       // 다음 동기화에서 조용히 되돌아간다(실측: 마력약 MP+30 → HP 250→280→250).
-      if (feedback.healing && feedback.resource === "mp") return;
+      if (feedback.resource === "mp") return;
       const delta = feedback.healing ? feedback.amount : -feedback.amount;
       vitals.hp = Math.max(0, Math.min(vitals.maxHp, vitals.hp + delta));
       if (vitals.hp <= 0) vitals.defeated = true;

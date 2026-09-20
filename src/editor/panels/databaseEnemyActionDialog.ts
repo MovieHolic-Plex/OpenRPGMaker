@@ -1,3 +1,4 @@
+import { combatConditionFields } from "@/editor/panels/databaseCombatConditionFields";
 import { applyEnemyActionBehaviourMode, enemyActionBehaviourMode, type EnemyActionBehaviourMode } from "@/editor/databaseEnemyActionMode";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { selectField } from "@/editor/panels/databaseControls";
@@ -6,7 +7,7 @@ import { currentEnemy, openDialog, panel, replaceAction } from "@/editor/panels/
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
-import type { EnemyActionCondition, EnemyActionPattern, EnemyActionSwitchEffect, EnemyRecord, SkillId } from "@/project/types";
+import type { EnemyActionPattern, EnemyActionSwitchEffect, EnemyRecord, SkillId } from "@/project/types";
 import { el } from "@/util/dom";
 
 let actionClipboard: EnemyActionPattern | undefined;
@@ -15,9 +16,8 @@ export function openActionDialog(record: EnemyRecord, index: number, action: Ene
   let nextAction: EnemyActionPattern = { ...action, condition: { ...action.condition } };
   let mode: EnemyActionBehaviourMode = enemyActionBehaviourMode(nextAction);
   const rating = numberInput("db-enemy-action-rating", 1, 100, nextAction.priority);
-  const conditionType = conditionSelect(nextAction.condition.kind);
-  const start = numberInput("db-enemy-action-turn-start", 1, 999, nextAction.condition.kind === "turn" ? nextAction.condition.start : 1);
-  const interval = numberInput("db-enemy-action-turn-interval", 1, 999, nextAction.condition.kind === "turn" ? nextAction.condition.interval : 1);
+  let authoredCondition = nextAction.condition;
+  const conditionFields = combatConditionFields(authoredCondition, "feature16-enemy-condition", condition => { authoredCondition = condition; });
   const skillHost = el("div", { class: "db-enemy-action-skill-host", dataset: { testid: "db-enemy-action-skill-host" } });
   const modeHost = el("div", { class: "db-enemy-behaviour-mode", dataset: { testid: "db-enemy-behaviour-mode" } });
 
@@ -49,14 +49,6 @@ export function openActionDialog(record: EnemyRecord, index: number, action: Ene
   modeHost.append(basicRadio, skillRadio, skillHost);
   syncMode();
 
-  const syncCondition = (): void => {
-    start.disabled = interval.disabled = conditionType.value !== "turn";
-    validateNumber(start);
-    validateNumber(interval);
-  };
-  conditionType.addEventListener("input", syncCondition);
-  conditionType.addEventListener("change", syncCondition);
-
   const switchOn = switchEffectField("db-enemy-action-switch-on", nextAction.switchOnAfterAction, (effect) => {
     nextAction = { ...nextAction, switchOnAfterAction: effect };
   });
@@ -64,9 +56,7 @@ export function openActionDialog(record: EnemyRecord, index: number, action: Ene
     nextAction = { ...nextAction, switchOffAfterAction: effect };
   });
   const syncAction = (): void => {
-    const condition: EnemyActionCondition = conditionType.value === "turn"
-      ? { kind: "turn", start: Number(start.value), interval: Number(interval.value) }
-      : { kind: "always" };
+    const condition = authoredCondition;
     nextAction = applyEnemyActionBehaviourMode(
       { ...nextAction, priority: Number(rating.value), condition },
       mode,
@@ -78,7 +68,7 @@ export function openActionDialog(record: EnemyRecord, index: number, action: Ene
     .find((node) => node.dataset.enemyId === record.id);
   const opener = workbench?.querySelector<HTMLElement>(`[data-testid="db-enemy-action-row-${index}"]`);
   openDialog("db-enemy-action-dialog", "공격 패턴", [
-    panel("조건", [conditionHeader(conditionType, rating), conditionDetail(start, interval)]),
+    panel("조건", [numberFieldNode("우선도", rating), conditionFields]),
     panel("행동 후 스위치 ON", [switchOn]),
     panel("행동 후 스위치 OFF", [switchOff]),
     panel("행동", [modeHost]),
@@ -90,12 +80,11 @@ export function openActionDialog(record: EnemyRecord, index: number, action: Ene
     } },
     { label: "Cancel", testid: "db-enemy-action-cancel" },
   ], opener);
-  syncCondition();
   // openDialog closes after its action callback; intercept invalid confirmation
   // before that shared click handler without changing other dialog contracts.
   const confirm = document.querySelector('[data-testid="db-enemy-action-ok"]') as HTMLButtonElement;
   confirm.addEventListener("click", (event) => {
-    const invalid = [rating, start, interval].filter((input) => !validateNumber(input));
+    const invalid = [rating].filter((input) => !validateNumber(input));
     const first = invalid[0];
     if (first) {
       event.preventDefault();
@@ -164,24 +153,6 @@ function behaviourRadio(mode: EnemyActionBehaviourMode, label: string, checked: 
     if (radio.checked) onSelect();
   });
   return el("label", { class: "actor-check db-enemy-behaviour-row", children: [radio, el("span", { text: label })] });
-}
-
-function conditionSelect(value: EnemyActionCondition["kind"]): HTMLSelectElement {
-  const select = el("select", { dataset: { testid: "db-enemy-action-condition-type" } }) as HTMLSelectElement;
-  select.append(el("option", { text: "항상", attrs: { value: "always" } }), el("option", { text: "턴", attrs: { value: "turn" } }));
-  select.value = value;
-  return select;
-}
-
-function conditionHeader(conditionType: HTMLSelectElement, rating: HTMLInputElement): HTMLElement {
-  return el("div", {
-    class: "db-enemy-action-condition-grid",
-    children: [el("label", { class: "db-field", children: [el("span", { text: "종류" }), conditionType] }), numberFieldNode("우선도", rating)],
-  });
-}
-
-function conditionDetail(start: HTMLInputElement, interval: HTMLInputElement): HTMLElement {
-  return el("div", { class: "db-enemy-condition-detail", children: [numberFieldNode("시작", start), numberFieldNode("간격", interval)] });
 }
 
 function switchEffectField(testid: string, effect: EnemyActionSwitchEffect, onChange: (effect: EnemyActionSwitchEffect) => void): HTMLElement {

@@ -179,6 +179,7 @@ export interface BattleSessionState {
 }
 
 export interface BattlePartyProgress {
+  readonly rows?: Readonly<Record<string, import("@/battle/battleFormation").BattleRow>>;
   readonly levels: Readonly<Record<string, number>>;
   readonly experience: Readonly<Record<string, number>>;
   // 세션 액터 이름 오버라이드(enterHeroName 등). actorId → 이름. 없으면 DB 이름 사용.
@@ -213,6 +214,7 @@ export interface BattlePartyProgress {
 export type { BattleBattlerPose } from "@/battle/battlePose";
 
 export interface BattleBattlerSnapshot {
+  readonly row?: import("@/battle/battleFormation").BattleRow;
   readonly id: string;
   readonly recordId: ActorId | EnemyId;
   /** Runtime-equivalent stats including equipment/param bonuses (predict parity). */
@@ -246,6 +248,7 @@ export interface BattleBattlerSnapshot {
   readonly skillIds: readonly SkillId[];
   /** Remaining PP by skill for immutable battle consumers. */
   readonly skillPp?: Readonly<Record<SkillId, number>>;
+  readonly skillCooldowns?: Readonly<Record<SkillId, number>>;
   readonly equipmentEffects?: EquipmentRuntimeEffects;
   readonly captured?: boolean;
 }

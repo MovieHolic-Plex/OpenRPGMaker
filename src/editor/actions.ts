@@ -1,3 +1,4 @@
+import { normalizeMapClimate, type MapClimate } from "@/project/mapClimate";
 // editor/actions.ts
 // 에디터에서 Project를 갱신하는 모든 액션. store.update(mutator) 경유.
 // v2: 3레이어(lower/upper/event) + tileset.passability 기반.
@@ -392,6 +393,17 @@ export function setMapMinimap(mapId: MapId, patch: Partial<MapMinimapSetting> | 
     } else {
       map.minimap = next;
     }
+  }, { scope: "map", mapId });
+}
+
+export function setMapClimate(mapId: MapId, climate: MapClimate | undefined): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((project) => {
+    const map = project.maps[mapId];
+    if (!map) return;
+    const normalized = normalizeMapClimate(climate);
+    if (normalized) map.climate = normalized;
+    else delete map.climate;
   }, { scope: "map", mapId });
 }
 

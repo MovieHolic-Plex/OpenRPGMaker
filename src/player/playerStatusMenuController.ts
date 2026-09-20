@@ -1,3 +1,4 @@
+import { DEFAULT_INVENTORY_VIEW, type InventoryView } from '@/player/playerInventoryView';
 import { LifeReconciliationError } from "@/project/lifeRecovery";
 import { investSkillNode, resetSkillTree } from "@/project/growth/runtime";
 import { promoteActor } from "@/project/sessionClass";
@@ -50,6 +51,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let selectedDetailActionIndex = 0;
   const detailCursors = new Map<string, number>();
   const detailScrolls = new Map<string, number>();
+  let inventoryView: InventoryView = { ...DEFAULT_INVENTORY_VIEW };
   let targetItemId: string | undefined;
   let skillActorId: string | undefined;
   let selectedSkillId: string | undefined;
@@ -57,6 +59,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let equipmentActorId: string | undefined;
   let equipmentSlotId: keyof ActorInitialEquipment | undefined;
   let formationActorId: string | undefined;
+  let battleReportIndex: number | undefined;
   let monsterView: "party" | "box" = "party";
   let lifeLedgerTab: LifeLedgerTabId | undefined;
   let confirmSaveSlot: SaveSlotIndex | undefined;
@@ -68,6 +71,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     openGroupId = undefined;
     mode = "main";
     selectedDetailActionIndex = 0;
+    inventoryView = { ...DEFAULT_INVENTORY_VIEW };
     detailCursors.clear();
     detailScrolls.clear();
     waitModeEnabled = true;
@@ -83,6 +87,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     equipmentActorId = undefined;
     equipmentSlotId = undefined;
     formationActorId = undefined;
+    battleReportIndex = undefined;
     monsterView = "party";
     lifeLedgerTab = undefined;
     confirmSaveSlot = undefined;
@@ -120,6 +125,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       elapsedMs: options.getPlayStartedAt() > 0 ? performance.now() - options.getPlayStartedAt() : 0,
       selectedCommand,
       mode,
+      inventoryView,
       targetItemId,
       skillActorId,
       selectedSkillId,
@@ -127,6 +133,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       equipmentActorId,
       equipmentSlotId,
       formationActorId,
+      battleReportIndex,
       monsterView,
       lifeLedgerTab,
       readLive: createLifePlacementLiveReader(
@@ -142,6 +149,16 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       waitModeEnabled,
       selectedDetailActionIndex,
       actions: {
+        onOptionsChanged: (message) => { renderMenu(message, "options"); },
+        onInventoryViewChange: (view) => {
+          const control = view.filter !== inventoryView.filter ? "inventory-filter" : "inventory-sort";
+          inventoryView = view;
+          renderMenu(undefined, "items");
+          rememberDetailCursorFromTestId(control);
+          syncRenderedDetailCursor();
+          const detail = currentMenu()?.querySelector<HTMLElement>(".status-menu-detail");
+          if (detail) updateStatusMenuDetailSelection(detail, selectedDetailActionIndex);
+        },
         onCommand: enterCommand,
         onOpenGroup: openGroup,
         onSaveSlot: saveSlot,
@@ -190,6 +207,10 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         onEquipItem: equipItem,
         onUnequipItem: unequipItem,
         onToggleRow: toggleActorRow,
+        onSelectBattleReport: (index) => {
+          battleReportIndex = index;
+          options.emitMenuJuice("menu-confirm", renderMenu(undefined, "battle-reports"));
+        },
         onSelectFormationActor: (actorId) => {
           rememberDetailCursorFromTestId(`status-menu-formation-actor-${actorId}`);
           formationActorId = actorId;
@@ -414,9 +435,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   function toggleActorRow(actorId: string): void {
     const scene = options.getActiveScene();
     if (!scene) return;
-    rememberDetailCursorFromTestId(`status-menu-row-${actorId}`);
+    rememberDetailCursorFromTestId(selectedCommand === "formation" ? "status-menu-formation-toggle-row" : `status-menu-row-${actorId}`);
     const result = toggleStatusMenuActorRow(scene, actorId);
-    emitMutationResult(result, renderMenu(result.message, "row"));
+    emitMutationResult(result, renderMenu(result.message, selectedCommand === "formation" ? "formation" : "row"));
   }
 
   function moveFormationActor(actorId: string, targetIndex: number): void {
@@ -519,10 +540,12 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "skills":
       case "equipment":
       case "monsters":
+      case "options":
       case "load":
       case "status":
       case "row":
       case "formation":
+      case "battle-reports":
       case "quests":
       case "relationships":
       case "life-ledger":
@@ -615,6 +638,10 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         return false;
       case "monsters":
         return false;
+      case "battle-reports":
+        if (battleReportIndex !== undefined) { battleReportIndex = undefined; return true; }
+        return false;
+      case "options":
       case "load":
       case "quests":
       case "relationships":
@@ -741,10 +768,13 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         if (!equipmentSlotId) return `equipment:${equipmentActorId}:slots`;
         return `equipment:${equipmentActorId}:${equipmentSlotId}:choices`;
       case "formation":
-        return formationActorId ? "formation:moving" : "formation:list";
+        return formationActorId ? `formation:${formationActorId}:moving` : "formation:list";
       case "monsters":
         return `monsters:${monsterView}`;
+      case "battle-reports":
+        return `battle-reports:${battleReportIndex ?? "list"}`;
       case "save":
+      case "options":
       case "load":
       case "quests":
       case "relationships":

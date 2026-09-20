@@ -1,3 +1,4 @@
+import { resolveMapWeather } from "@/player/weather/weatherModel";
 import { getAudioEngine } from "@/player/audio";
 import type Phaser from "phaser";
 import { ensureFogTexture } from "@/player/weather/fogTexture";
@@ -113,7 +114,7 @@ export function syncWeatherLayer(scene: PlaySceneContext): void {
     scene.weatherDisplayed = target;
     scene.weatherTargetSignature = targetSignature;
   }
-  const displayed = scene.weatherDisplayed ?? target;
+  const displayed = resolveMapWeather(scene.weatherDisplayed ?? target, scene.map.climate);
   const audio = getAudioEngine();
   audio.weather.update(displayed, scene.weatherClockMs ?? 0, audio.isUnlocked());
   renderWeather(scene, displayed);

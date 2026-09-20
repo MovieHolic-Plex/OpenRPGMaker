@@ -1,3 +1,5 @@
+import { normalizeMapClimate } from "../mapClimate";
+import { normalizeAiAuthoring } from "../aiAuthoring";
 import { assertGrowthShape } from "@/project/growth/validation";
 import { validateSpatialProject } from "../spatial/overviewPairs";
 import { validateSpatialAuthoring } from "../spatial/guards";
@@ -152,6 +154,7 @@ function normalizeProjectV4(data: JsonRecord): Project {
   requireRecord("flags", data.flags);
 
   const project = cloneJson<Project>(data);
+  if (data.aiAuthoring !== undefined) project.aiAuthoring = normalizeAiAuthoring(data.aiAuthoring);
   project.mapTree = mapTree;
   project.mapConnections ??= [];
   project.villageInfoDocuments ??= [];
@@ -161,6 +164,11 @@ function normalizeProjectV4(data: JsonRecord): Project {
   normalizeStoryFlags(project);
   normalizeProjectPlanningItems(project);
   normalizeProjectMapBackgrounds(project);
+  for (const map of Object.values(project.maps)) {
+    const climate = normalizeMapClimate(map.climate);
+    if (climate) map.climate = climate;
+    else delete map.climate;
+  }
   normalizeTilesetPalettePresets(project);
   if (data.world !== undefined) project.world = normalizeWorld(data.world);
   if (data.worldCanon !== undefined) {

@@ -1,3 +1,4 @@
+import { normalizeBattleReports, type BattleReport } from "@/project/battleReports";
 import { LifeReconciliationError, parseLifeState, preserveUnresolvedLifeSource, reconcileLifeState } from "@/project/lifeRecovery";
 import { isLocalSaveSourceKey, isSaveIdentity, publicationSaveKey, requireSaveIdentity, saveIdentity, saveIdentityBlocker, saveScopeBlocker, type SaveIdentity } from "./savePublication";
 import { legacyExportSaveNamespace } from "./exportSaveNamespacePrefix";
@@ -218,6 +219,7 @@ export type SaveSnapshot = {
     readonly systemAudioOverrides?: PlaySession["systemAudioOverrides"];
     readonly pictures: Record<string, PictureState>;
     readonly actorEquipment?: Record<string, ActorInitialEquipment>;
+    readonly battleReports?: BattleReport[];
     readonly actorRows?: Record<string, "front" | "back">;
     readonly actorNames?: Record<string, string>;
     readonly actorNicknames?: PlaySession["actorNicknames"];
@@ -444,6 +446,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       systemAudioOverrides: structuredClone(session.systemAudioOverrides),
       pictures: structuredClone(session.pictures),
       actorEquipment: structuredClone(session.actorEquipment),
+      battleReports: normalizeBattleReports(session.battleReports),
       actorRows: structuredClone(session.actorRows),
       actorNames: structuredClone(session.actorNames),
       actorNicknames: structuredClone(session.actorNicknames),
@@ -672,6 +675,7 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   session.systemAudioOverrides = structuredClone(snapshot.session.systemAudioOverrides);
   session.pictures = structuredClone(snapshot.session.pictures);
   if (snapshot.session.actorEquipment) session.actorEquipment = structuredClone(snapshot.session.actorEquipment);
+  session.battleReports = normalizeBattleReports(snapshot.session.battleReports);
   if (snapshot.session.actorRows) session.actorRows = structuredClone(snapshot.session.actorRows);
   if (snapshot.session.actorNames) session.actorNames = structuredClone(snapshot.session.actorNames);
   if (snapshot.session.actorNicknames) session.actorNicknames = structuredClone(snapshot.session.actorNicknames);
@@ -1097,6 +1101,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       systemAudioOverrides: session.systemAudioOverrides,
       pictures: parsePictures(session.pictures),
       actorEquipment: isActorEquipmentRecord(session.actorEquipment) ? session.actorEquipment : undefined,
+      battleReports: normalizeBattleReports(session.battleReports),
       actorRows: isActorRowsRecord(session.actorRows) ? session.actorRows : undefined,
       actorNames: isStringRecord(session.actorNames) ? session.actorNames : undefined,
       actorNicknames: isStringRecord(session.actorNicknames) ? session.actorNicknames : undefined,

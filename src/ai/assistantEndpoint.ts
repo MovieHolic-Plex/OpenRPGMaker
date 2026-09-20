@@ -37,6 +37,7 @@ import { configForLiteModel, isProxyAuth, loadAiConfig, type AiConfig } from "./
  * 따라 늘어나면 안 된다.
  */
 export type AiSurface =
+  | "dialogue-review"
   | "chat"
   | "region"
   | "cluster"
@@ -81,6 +82,7 @@ export const TILESET_ANALYSIS_MAX_TOKENS = 8192;
  */
 const SURFACE_POLICIES: Readonly<Record<AiSurface, SurfacePolicy>> = {
   "chat": { tier: "supervisor" },
+  "dialogue-review": { tier: "supervisor", maxTokens: 8192 },
   "region": { tier: "lite", maxToolCallsCeiling: REGION_SURFACE_MAX_TOOL_CALLS },
   "cluster": { tier: "lite" },
   "event-command": { tier: "lite" },

@@ -1,3 +1,4 @@
+import { getPlayerPreferences } from '@/player/playerPreferences';
 // player/audio/index.ts
 // 오디오 엔진 싱글턴 + playAudio/stopAudio 명령 연결 헬퍼.
 // 플레이어 런타임(playSceneInterpreter/playSceneSchedulers/PlayScene)에서 사용한다.
@@ -31,6 +32,9 @@ let engine: AudioEngine | null = null;
 export function getAudioEngine(options?: { readonly qaInstrumentation: boolean }): AudioEngine {
   if (engine === null) {
     engine = new AudioEngine(options);
+    const prefs = getPlayerPreferences();
+    engine.setVolume("bgm", prefs.bgm);
+    engine.setVolume("se", prefs.se);
     engine.installUnlockListeners();
   } else if (options !== undefined) {
     engine.setQaInstrumentation(options.qaInstrumentation);

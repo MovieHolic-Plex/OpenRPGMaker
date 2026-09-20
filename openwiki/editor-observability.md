@@ -483,3 +483,15 @@ npx vitest run test/storeUndoSnapshotInventory.test.ts
 - 미러 엔드포인트 계약: `npm test -- test/editActivityEndpoint.test.ts` (상수와 미들웨어 경로가 어긋나면 404 로 조용히 죽는다).
 - 커밋 첨부 계약: `npm test -- test/commitEditActivityAttachment.test.ts` (patch_json 에 실리는지, 커서가 반복을 막는지, 상한이 숫자로 남는지, 리더 CLI 가 같은 키를 읽는지).
 - 위키 변경만 했으면 `npm run openwiki:verify`.
+
+## Feature16 저작 보조 관측 경계 (2026-09-21)
+
+`panels/aiAuthoring/shared.saveSettings`는 프로젝트 undo 스냅샷을 남기고
+`store.update(..., {label, fields:['aiAuthoring']})`로 라이브러리/문체 규칙을 편집한다.
+「프로젝트에 반영」과 실제 저장 receipt는 구분한다. 대사 검토는 읽기 전용이며
+구조 검사와 LLM 검토의 출처를 지적마다 명시한다.
+프롬프트 검사기는 `ai/authoring/promptInspection.ts`의 메모리 한 건만 사용한다.
+LLM 전송 본문과 Pi provider payload에서 민감값을 가린 뒤 표시용 사본만 보관한다.
+Pi의 `prompt_inspection` 이벤트는 client에서 소비하고 일반 감사/대화 이벤트 전달에서
+제외한다. 기존 로컬 진단 수집 동의나 영구 AI 로그에 새 원문 저장 경로를 추가하지 않는다.
+상세 UI/수명/중앙 검증 명령은 `editor-ai-panel.md`의 Feature16 절을 따른다.

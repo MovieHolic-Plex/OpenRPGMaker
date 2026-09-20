@@ -1,3 +1,4 @@
+import { combatReferenceIssues } from "@/project/combatReferences";
 import { equipmentSlots, hasEquipmentSlot } from "@/project/equipmentSlots";
 import { characterAppearanceReferenceIssues } from "./characterAppearanceValidation";
 import { resolveAnimalHome } from "../animalHousing";
@@ -53,7 +54,10 @@ export function collectProjectItemReferenceIds(project: Project): ReadonlySet<st
   for (const actorClass of project.database.classes) {
     for (const promotion of actorClass.promotions ?? []) if (promotion.requires.itemId) ids.add(promotion.requires.itemId);
   }
-  for (const enemy of project.database.enemies) if (enemy.rewards.dropItemId) ids.add(enemy.rewards.dropItemId);
+  for (const enemy of project.database.enemies) {
+    if (enemy.rewards.dropItemId) ids.add(enemy.rewards.dropItemId);
+    for (const drop of enemy.rewards.drops ?? []) ids.add(drop.itemId);
+  }
   for (const species of project.database.monsterSpecies ?? []) {
     for (const evolution of species.evolutions ?? []) if (evolution.requires.itemId) ids.add(evolution.requires.itemId);
   }
@@ -145,7 +149,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   // 호출자(에디터 부팅의 refreshAuthoringJourney)를 죽이지 않는다. 정규화를 거치지 않은
   // 프로젝트(옛 JSON·e2e 시드)에서 검증기가 undefined 필드를 만나 던지면 화면이 통째로
   // 뜨지 않았다. 파일 아래쪽 검증기들은 이미 check() 를 쓰고 있었다 — 계약을 전부로 넓힌다.
-  check(() => issues.push(...growthIssues(project), ...characterAppearanceReferenceIssues(project)));
+  check(() => issues.push(...growthIssues(project), ...characterAppearanceReferenceIssues(project), ...combatReferenceIssues(project)));
   const switchIds = new Set(project.switches.map((record) => record.id));
   const variableIds = new Set(project.variables.map((record) => record.id));
   const actorIds = new Set(project.database.actors.map((record) => record.id));
