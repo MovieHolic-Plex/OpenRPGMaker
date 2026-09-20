@@ -1,3 +1,4 @@
+import { inspectPiVillageCompletion } from "@/ai/piAgent/villageCompletion";
 import { observeActivitySave } from "./aiActivitySave";
 import { activityNote, activityPhase, recordActivityEvent } from "@/ai/activityTrace";
 import { createPiPublication } from "./aiPiPublication";
@@ -232,10 +233,11 @@ export async function runPiCommand(
   let changedCount = 0;
   let applied = false;
   let harmonyManualReview = false;
+  let villageIncomplete = false;
   let unpublishedChanges = false;
-  /** 사실 팩 하나를 4축으로 투영한다 — 목표 축은 수용 검사의 소유라 여기선 늘 unassessed. */
+  /** 사실 팩 하나를 4축으로 투영한다 — 마을 검사 실패는 incomplete, 나머지 목표 충족은 별도 수용 검사의 소유다. */
   const publishOutcome = (facts: Omit<RunOutcomeFacts, "acceptance" | "visualDelivery">): void => {
-    surface.setRunOutcome?.(deriveRunOutcome({ ...facts, acceptance: null }));
+    surface.setRunOutcome?.(deriveRunOutcome({ ...facts, acceptance: villageIncomplete ? "blocked" : null }));
   };
   /** 종료 시점의 4축 하나를 게시한다. 종료 경로가 여러 개라서 하나로 모은다. */
   const publishFinalOutcome = (): void => {
@@ -472,6 +474,7 @@ export async function runPiCommand(
   // 에이전트가 둘 이상이면 결과가 여럿이라 병합이 여전히 유일한 합치는 길이다.
   const mergedFromBundles = !team && command.mapIds.length > 0
     && (command.scopedByUser === true || groups.length > 1);
+  const villageMapIds = new Set(results.flatMap(result => result.villageCompletion?.mapIds ?? []));
   let merged = mergedFromBundles
     ? mergeMapBundles(base, results.map((done, index) => ({ mapIds: groups[index]!, project: done.project })))
     : { project: results[0]!.project, spills: [], conflicts: [] as string[] };
@@ -585,6 +588,7 @@ export async function runPiCommand(
           applyMode: "auto", maxTurns: options.maxTurns, thinkingLevel: deep.thinkingLevel,
         }, { signal: surface.signal, onEvent: wrap(command.mapIds, 0), onCheckpoint: c => publication.publish(c) });
         const preRepair = merged.project;
+        for (const id of repaired.villageCompletion?.mapIds ?? []) villageMapIds.add(id);
         merged = { ...merged, project: repaired.project };
         adoptSpatialToolProof(merged.project, repaired.spatialProof, publication.count ? publication.project : base);
         // 재검수는 «떨어진 맵 + 수리가 실제로 그림을 바꾼 맵» 만 본다. 예전엔 바뀐 맵 전부를
@@ -635,7 +639,10 @@ export async function runPiCommand(
   // 「검수 통과」를 찍었고, 그 부분 결과가 그대로 적용돼 맵 12개가 사라졌다. 「tile_paint 로 길을
   // 그려줘」·「여기 좀 허전한데」도 실패한 채로 타일 220·181칸을 적용 후보로 내놨다.
   // 검수는 결과물만 보므로 시공의 실패를 알지 못한다 — 실패 사실은 여기서만 합칠 수 있다.
-  const builderFailed = stoppedByLimit;
+  const villageCompletion = inspectPiVillageCompletion(merged.project, base, villageMapIds);
+  villageIncomplete = villageCompletion.issues.length > 0;
+  if (villageIncomplete) surface.appendProcess?.(`마을 완료 검사 미통과\n${villageCompletion.issues.join("\n")}`);
+  const builderFailed = stoppedByLimit || villageIncomplete;
   if (builderFailed) {
     surface.appendBubble(
       "system",
@@ -725,14 +732,14 @@ export async function runPiCommand(
       if (currentTeamActivity()?.trace?.id === boardState.trace?.id) publishTeamActivity(boardState);
     });
     finishLog({ applied: true, changedCount, stoppedReason: "적용됨" });
-    surface.setStatus(harmonyManualReview && applyMode !== "yolo" ? "반영됨 · 확인할 문제 있음" : "적용 완료");
+    surface.setStatus((villageIncomplete || (harmonyManualReview && applyMode !== "yolo")) ? "반영됨 · 확인할 문제 있음" : "적용 완료");
     if (team || !surface.showChangeReceipt || !receiptMapId) surface.appendBubble("system", `변경 내용을 적용했어요.${spilledKeys.length ? " 선택한 범위를 벗어난 변경은 제외했어요." : ""}${streamErrors.length ? " 작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요." : ""}`);
     surface.showChangeReceipt?.({
       before: base,
       after: merged.project,
       mapId: receiptMapId,
       title: receiptTitle,
-      detail: `${harmonyManualReview && applyMode !== "yolo" ? "변경은 반영됐지만 검수 문제 또는 미완료 항목이 남아 있어요." : "변경 내용을 적용했어요."}${applyMode === "step" ? " 되돌리기는 마지막으로 적용한 단계부터 복구합니다." : ""}${spilledKeys.length ? " 선택한 범위를 벗어난 변경은 제외했어요." : ""}${streamErrors.length ? " 작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요." : ""}`,
+      detail: `${(villageIncomplete || (harmonyManualReview && applyMode !== "yolo")) ? "변경은 반영됐지만 검수 문제 또는 미완료 항목이 남아 있어요." : "변경 내용을 적용했어요."}${applyMode === "step" ? " 되돌리기는 마지막으로 적용한 단계부터 복구합니다." : ""}${spilledKeys.length ? " 선택한 범위를 벗어난 변경은 제외했어요." : ""}${streamErrors.length ? " 작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요." : ""}`,
       chips: receiptChips,
       ledger: receiptLedger,
       toolNames: [team ? "pi_team" : "pi_agent"],
