@@ -2937,8 +2937,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const teamSidebar = createAiTeamSidebar({ settings: teamPanel.root });
   // The editor mounts this sibling in the right rail; this panel owns its lifetime.
   panel.append(teamSidebar.root);
-  const wideButton = el("button", { class: "ai-composer-menu-btn", attrs: { type: "button", title: "조수와 팀 크게 보기", "aria-label": "조수와 팀 크게 보기", "aria-expanded": "false", "aria-haspopup": "dialog" }, dataset: { testid: "ai-wide-open" }, children: [deckIcon("expand")] }) as HTMLButtonElement;
-  rail.actions.prepend(wideButton);
+  const wideButton = el("button", { class: "ai-activity-expand", attrs: { type: "button", "aria-label": "조수와 팀 크게 보기", "aria-expanded": "false", "aria-haspopup": "dialog" }, dataset: { testid: "ai-wide-open" }, children: [deckIcon("expand"), el("span", { text: "크게 보기" })] }) as HTMLButtonElement;
+  deck.querySelector(".ai-activity-setting-heading")?.append(wideButton);
   const wideAssistant = createAssistantWide(panel, teamSidebar.root, wideButton, () => teamSidebar.openFirstMember());
   // 오버레이가 컴포저를 덮지 않도록 "바 + 열린 팝오버"의 최상단까지를 실측해 CSS 변수로 흘린다.
   // (bottom 76px 고정은 칩 행 + 여러 줄 입력으로 커진 바를 덮었다 — H01 실측.)

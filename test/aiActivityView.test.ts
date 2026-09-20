@@ -26,7 +26,7 @@ describe("AI activity display levels", () => {
     setActivityLevel("trace");
     expect(main.root.querySelectorAll(".ai-activity-entry")).toHaveLength(12);
     expect(member.root.dataset.level).toBe("trace");
-    expect(control.querySelector("select")?.value).toBe("trace");
+    expect(control.querySelector('[aria-pressed="true"]')?.getAttribute("data-activity-level")).toBe("trace");
     setActivityLevel("none");
     expect(main.root.hidden).toBe(true);
     setActivityLevel("detail");
