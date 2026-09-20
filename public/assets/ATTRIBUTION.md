@@ -247,3 +247,19 @@ forest edits made using god-tibo-imagen (vegetation, canopy, trunks and end caps
 Tile metadata and assemblies are in `src/assets/forestHarmonyTileset.json`.
 Tibo editing and bundling do not establish a new license or copyright clearance
 for reference-derived components. Existing component provenance still applies.
+
+
+## Reviewed forest-village props (2026-09-21)
+
+`generated/forest-harmony/village-unfake-v1/*.png` contains eleven reviewed
+Tibo-generated village props, subsequently processed with the MIT-licensed
+[unfake.js](https://github.com/jenissimo/unfake.js) tool, version 1.3.0,
+commit `b2bee10c1c3b211a2532baca9088857b19480dca`. The tool source/WASM is not
+redistributed here. Processing methods and review scope are recorded alongside
+the PNGs. This is asset provenance, not a claim that processing changes the
+rights of any source image. The rejected clay oven is excluded.
+
+The gubisup, small-forest-village and forest-cliff-village region atlases preserve
+the existing mixed-source terrain/building attribution and the reviewed custom
+forest materials; they are portable authored map snapshots, not new original
+claims for those inherited tiles.
