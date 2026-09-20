@@ -14,6 +14,9 @@ const RULES: Readonly<Record<string, readonly [string, string, string, string]>>
   "shop.items.empty": ["상점에 판매할 상품이 없습니다.", "한 개 이상의 판매 상품", "상품 추가에서 판매할 상품을 선택하세요.", "shop-add-goods"],
   "condition.run.flag-empty": ["기억 이름이 비어 있습니다.", "비어 있지 않은 기억 이름", "검사할 기억 이름을 입력하세요.", "event-condition-run-flag"],
   "runtime.unclassified": ["명령의 실행 지원을 확인할 수 없습니다.", "지원되는 이벤트 명령", "명령을 지원되는 종류로 교체하세요.", "event-inspector-body"],
+  "callMapEvent.target-inert": ["맵 위 이벤트 부르기가 아무 것도 하지 않는 것입니다.", "소리·전이 등 실행될 명령이 있는 대상 이벤트", "대상 문 본체에 열기 명령을 다시 입력하세요.", "event-command-call-map-event-select"],
+  "callMapEvent.transfer-target-missing": ["부를 대상 이벤트가 사라진 맵으로 이동하려 합니다.", "현재 프로젝트에 있는 맵으로 이동", "대상 이벤트의 맵 이동 목적지를 다시 선택하세요.", "event-command-call-map-event-select"],
+  "callMapEvent.target-page-empty": ["이 이벤트를 부르는 맵 위 이벤트 부르기가 있는데 실행 명령이 없습니다.", "소리·전이 등 실행될 명령", "문 본체에 열기 명령을 다시 입력하거나 부르는 명령을 제거하세요.", "event-page-tab-add"],
 };
 
 const REFERENCE_TYPES = new Set(["actor", "animation", "class", "common-event", "ending", "equipment", "event",

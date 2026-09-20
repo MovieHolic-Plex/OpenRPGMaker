@@ -2,6 +2,7 @@ import {
   buildEventListTooltipModel,
   renderEventListTooltipElement,
 } from "@/editor/eventMarkerUx";
+import { store } from "@/project/store";
 import type { GameEvent } from "@/project/types";
 
 let activeTooltip: HTMLElement | null = null;
@@ -38,7 +39,7 @@ export function hideEventListTooltip(): void {
 
 function showEventListTooltip(row: HTMLElement, event: GameEvent): void {
   if (typeof document === "undefined") return;
-  const model = buildEventListTooltipModel(event);
+  const model = buildEventListTooltipModel(store.getCurrent(), event);
 
   if (!activeTooltip || !activeTooltip.isConnected || activeRow !== row) {
     activeTooltip?.remove();

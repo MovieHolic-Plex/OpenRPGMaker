@@ -1,11 +1,13 @@
 ﻿import { commandSummary } from "@/editor/panels/eventEditor/commandSummary";
 import type { Layer } from "@/editor/editorState";
 import { eventDisplayName } from "@/project/eventDisplayName";
+import { callMapEventTargetStatus } from "@/editor/eventCallTargetStatus";
 import { store } from "@/project/store";
 import { relationshipStateName } from "@/project/relationshipState";
 import { locationTransitionSentence } from "@/editor/locationTriggerAuthoring";
 import type {
   Command,
+  Project,
   EventPage,
   EventPageCondition,
   GameEvent,
@@ -47,6 +49,8 @@ export type EventMarkerTooltipModel = {
   readonly commands: readonly string[];
   readonly moreCommandCount: number;
   readonly plainText: string;
+  /** 주변에 보이는 경고 — 죽은 문 호출이 모여 있다(2026-09-20 실측 결함). */
+  readonly warnings: readonly string[];
 };
 
 export type EventListTooltipPageModel = {
@@ -66,20 +70,58 @@ export type EventListTooltipModel = {
   readonly pages: readonly EventListTooltipPageModel[];
   readonly morePageCount: number;
   readonly plainText: string;
+  /** 주변에 보이는 경고 — 죽은 문 호출이 모여 있다(2026-09-20 실측 결함). */
+  readonly warnings: readonly string[];
 };
 
 // 정의는 @/project/eventDisplayName 으로 옮겼다(명령 요약과의 import 순환 방지). 기존 import 경로는 유지한다.
 export { eventDisplayName };
 
-/** 맵 위 이벤트 호버 요약. 이름·트리거·실행 명령 몇 줄을 plain text로 반환. */
+/**
+ * 죽은 callMapEvent 호출을 찾아 경고를 모은다.
+ *
+ * 두 방향을 본다:
+ *  - 이 이벤트가 다른 이벤트를 부르는 줄(callMapEvent)이 있고 그 대상이 죽어 있는 경우
+ *  - 다른 이벤트가 이 이벤트를 부르는데 이 이벤트(대상)의 페이지가 비어 있는 경우
+ */
+export function collectCallTargetWarnings(project: Project, event: GameEvent): readonly string[] {
+  const warnings: string[] = [];
+  const commands = event?.pages?.length
+    ? event.pages.flatMap((page) => page.commands ?? [])
+    : event?.commands ?? [];
+  const allEvents = Object.values(project?.maps ?? {}).flatMap((map) => map.events ?? []);
+  for (const command of commands) {
+    if (command.kind !== "callMapEvent" || !command.eventId) continue;
+    const target = allEvents.find((entry) => entry.id === command.eventId);
+    const status = callMapEventTargetStatus(project, target);
+    if (status.problem) warnings.push(status.problem.message);
+  }
+  for (const candidate of allEvents) {
+    if (candidate.id === event.id) continue;
+    const candidateCommands = candidate?.pages?.length
+      ? candidate.pages.flatMap((page) => page.commands ?? [])
+      : candidate?.commands ?? [];
+    const callsThis = candidateCommands.some((command) => command.kind === "callMapEvent" && command.eventId === event.id);
+    if (!callsThis) continue;
+    const status = callMapEventTargetStatus(project, event);
+    if (status.problem) {
+      warnings.push(status.problem.message);
+      break;
+    }
+  }
+  return warnings;
+}
+
 export function eventMarkerTooltip(
-  event: Pick<GameEvent, "id" | "pages" | "x" | "y" | "trigger" | "commands">,
+  event: GameEvent,
 ): string {
-  return buildEventMarkerTooltipModel(event).plainText;
+  const model = buildEventMarkerTooltipModel(event, collectCallTargetWarnings(store.getCurrent(), event));
+  return model.plainText;
 }
 
 export function buildEventMarkerTooltipModel(
   event: Pick<GameEvent, "id" | "pages" | "x" | "y" | "trigger" | "commands">,
+  warnings: readonly string[] = [],
 ): EventMarkerTooltipModel {
   const page = primaryEventPage(event);
   const title = eventDisplayName(event);
@@ -101,17 +143,30 @@ export function buildEventMarkerTooltipModel(
     ...(summaries.moreCount > 0 ? [`(+${summaries.moreCount}개 명령 더)`] : []),
   ];
 
+  lines.push(...warnings.map((warning) => "⚠ " + warning));
   return {
     title,
     meta,
     commands: summaries.lines,
     moreCommandCount: summaries.moreCount,
     plainText: lines.join("\n"),
+    warnings,
   };
 }
 
 /** 왼쪽 맵 이벤트 목록 호버 — 페이지/조건/명령까지 더 자세히. */
-export function buildEventListTooltipModel(event: GameEvent): EventListTooltipModel {
+/** 호출 호환: 첫 인자를 (project, event) 또는 (event)로 불러도 된다. */
+function isProject(value: Project | GameEvent): value is Project {
+  return (value as Project).maps !== undefined;
+}
+
+export function buildEventListTooltipModel(
+  projectOrEvent: Project | GameEvent,
+  maybeEvent?: GameEvent,
+): EventListTooltipModel {
+  const project = isProject(projectOrEvent) ? projectOrEvent : undefined;
+  const event = isProject(projectOrEvent) ? maybeEvent! : projectOrEvent;
+  const warnings = project ? collectCallTargetWarnings(project, event) : [];
   const title = eventDisplayName(event);
   const pages = event.pages ?? [];
   const characterId = event.characterId?.trim() || null;
@@ -157,6 +212,7 @@ export function buildEventListTooltipModel(event: GameEvent): EventListTooltipMo
   }
   if (morePageCount > 0) plainLines.push(`(+${morePageCount}페이지 더)`);
 
+  plainLines.push(...warnings.map((warning) => "⚠ " + warning));
   return {
     title,
     identity: event.id,
@@ -165,6 +221,7 @@ export function buildEventListTooltipModel(event: GameEvent): EventListTooltipMo
     pages: pageModels,
     morePageCount,
     plainText: plainLines.join("\n"),
+    warnings,
   };
 }
 
@@ -198,6 +255,14 @@ export function renderEventMarkerTooltipElement(model: EventMarkerTooltipModel):
     empty.className = "event-marker-tooltip-empty";
     empty.textContent = "실행 명령 없음";
     root.append(empty);
+  }
+
+  for (const warning of model.warnings) {
+    const warn = document.createElement("div");
+    warn.className = "event-marker-tooltip-warning";
+    warn.dataset.testid = "event-marker-tooltip-warning";
+    warn.textContent = warning;
+    root.append(warn);
   }
 
   if (model.moreCommandCount > 0) {
@@ -276,6 +341,14 @@ export function renderEventListTooltipElement(model: EventListTooltipModel): HTM
     }
 
     root.append(block);
+  }
+
+  for (const warning of model.warnings) {
+    const warn = document.createElement("div");
+    warn.className = "event-marker-tooltip-warning";
+    warn.dataset.testid = "event-marker-tooltip-warning";
+    warn.textContent = warning;
+    root.append(warn);
   }
 
   if (model.morePageCount > 0) {
