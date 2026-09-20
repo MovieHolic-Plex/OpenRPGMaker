@@ -179,7 +179,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       options.message ?? (mode === "function"
         ? selectedEntryDescription(detail, options.selectedDetailActionIndex) ?? interactiveHint(detail)
         : selectedCommand === "items" ? "목록 끝에서 분류·정렬 변경 (본문에서 ↑ 두 번)" : undefined),
-      skin.railColumns
+      skin.railColumns, skin.id === "field-list"
     )
   );
   panel.append(statusMenuDebug(selectedCommand, mode));
@@ -643,7 +643,7 @@ function interactiveHint(detail: StatusMenuDetail): string | undefined {
 function renderFooter(
   mode: "main" | "function",
   message: string | undefined,
-  railColumns: number
+  railColumns: number, compact = false
 ): HTMLElement {
   const footer = el("footer", { class: "status-menu-footer" });
   footer.append(el("div", {
@@ -654,13 +654,14 @@ function renderFooter(
   }));
   footer.append(el("span", {
     class: "status-menu-controls",
-    text: statusMenuControls(mode, railColumns),
+    text: statusMenuControls(mode, railColumns, compact),
     dataset: { testid: "status-menu-controls" },
   }));
   return footer;
 }
 
-export function statusMenuControls(mode: "main" | "function", railColumns = 1): string {
+export function statusMenuControls(mode: "main" | "function", railColumns = 1, compact = false): string {
+  if (compact && mode === "main") return "↑↓ 이동 · Enter 선택\nEsc 닫기";
   if (mode === "function") return "↑↓ 항목 이동   Enter 결정   ← 메뉴   Esc 뒤로";
   // 격자 레일(허브 타일)은 → 가 선택이 아니라 이동이다.
   return railColumns > 1 ? "↑↓←→ 이동   Enter 선택   Esc 게임으로" : "↑↓ 메뉴 이동   → / Enter 선택   Esc 게임으로";

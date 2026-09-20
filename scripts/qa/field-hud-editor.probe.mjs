@@ -30,6 +30,14 @@ try{
  await clock.focus();await page.keyboard.press('ArrowRight');assert.equal((await saved()).widgets.find(w=>w.id==='clock').x,moved.x+1);
  // Restore a readable preset for the final evidence; persistence is exercised through the actual controls.
  await page.getByTestId('db-hud-theme-survival').click();await page.getByTestId('hud-select-stamina').click();await page.getByTestId('hud-preview-action').click();
+ await page.getByTestId('db-hud-theme-horror').click();
+ await page.getByTestId('hud-font').selectOption('pixel');
+ await page.getByTestId('hud-menu-style').selectOption('field-list');
+ await page.getByTestId('hud-select-life').click();
+ await page.getByTestId('hud-field-showValue').check();
+ const authored=await saved();assert.equal(authored.font,'pixel');assert.equal(authored.menuStyle,'field-list');assert.equal(authored.widgets[0].showValue,true);
+ await page.getByTestId('hud-field-showValue').uncheck();
+ await page.getByTestId('hud-preview-low').click();
  await page.screenshot({path:`${out}/editor.png`});
  const config=await saved();await page.getByTestId('db-system-nav-menu').click();await page.getByTestId('db-system-nav-hud').click();assert.deepEqual(await saved(),config);
  assert.deepEqual(errors,[]);await writeFile(`${out}/editor-checks.json`,JSON.stringify({add:true,duplicate:true,remove:true,variableBinding:true,drag:true,keyboardMove:true,previewDoesNotPersist:true,serializeReload:true,errors},null,2));console.log('HUD editor authoring checks passed');

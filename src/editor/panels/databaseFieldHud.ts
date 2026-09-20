@@ -1,5 +1,5 @@
 import type { Project } from "@/project/types";
-import { FIELD_HUD_THEMES, HUD_KINDS, HUD_SOURCES, HUD_SHAPES, HUD_ANCHORS, HUD_CONDITIONS, HUD_WIDGET_LIMIT, hudPreset, normalizeFieldHud, normalizeHudWidget, resolvedHudWidgets, type FieldHudConfig, type HudWidget } from "@/project/fieldHud";
+import { FIELD_HUD_THEMES, HUD_KINDS, HUD_SOURCES, HUD_SHAPES, HUD_ANCHORS, HUD_CONDITIONS, HUD_WIDGET_LIMIT, HUD_FONTS, HUD_MENUS, HUD_DESCRIPTIONS, recommendedHudMenu, hudPreset, normalizeFieldHud, normalizeHudWidget, resolvedHudWidgets, type FieldHudConfig, type HudWidget } from "@/project/fieldHud";
 import { startSession } from "@/project/session";
 import { resolvePlayResolution } from "@/project/playResolution";
 import { FieldHud } from "@/player/fieldHud";
@@ -19,6 +19,7 @@ export function fieldHudEditor(project: Project, save: (config: FieldHudConfig) 
   let previewSession = startSession(project, 1);
   const root = node("section", "hud-studio"); root.dataset.testid = "db-field-hud";
   const presets = node("div", "hud-studio-presets");
+  const description = node("p", "hud-studio-hint");
   const status = node("p", "hud-studio-status"); status.setAttribute("role", "status");
   const layout = node("div", "hud-studio-layout");
   const left = node("section", "hud-studio-panel"), list = node("div", "hud-studio-list");
@@ -51,6 +52,7 @@ export function fieldHudEditor(project: Project, save: (config: FieldHudConfig) 
     save(config); status.textContent = message; renderList(); paint();
   }
   function paint() {
+    description.textContent = HUD_DESCRIPTIONS[config.theme];
     const previewProject = {
       ...project,
       ...(scenario === "action" ? { maps: { ...project.maps, [previewSession.currentMapId]: { ...project.maps[previewSession.currentMapId], actionCombat: true } } } : {}),
@@ -63,6 +65,8 @@ export function fieldHudEditor(project: Project, save: (config: FieldHudConfig) 
       element.dataset.selected = String(element.dataset.widgetId === selected); element.tabIndex = 0;
       element.setAttribute("aria-label", `${widgets.find(w => w.id === element.dataset.widgetId)?.label || "HUD 요소"} · 방향키로 이동`);
     }
+    const menuSelect = root.querySelector<HTMLSelectElement>('[data-testid="hud-menu-style"]');
+    if (menuSelect) menuSelect.value = config.menuStyle ?? "project";
     for (const element of presets.querySelectorAll<HTMLElement>("button")) element.setAttribute("aria-pressed", String(element.dataset.theme === config.theme));
   }
   function choose(id: string) { selected = id; renderList(); renderInspector(); paint(); }
@@ -91,7 +95,7 @@ export function fieldHudEditor(project: Project, save: (config: FieldHudConfig) 
     if (type === "number") { control.min = ["max", "slots"].includes(key) ? "1" : "0"; control.step = "1"; }
     control.addEventListener("change", () => { patch({ [key]: type === "number" ? Number(control.value) : control.value }); control.value = String(widgets.find(w => w.id === selected)?.[key] ?? ""); }); return field(label, control);
   }
-  function check(label: string, key: "enabled" | "hideEmpty" | "autoAvoid", widget: HudWidget): HTMLElement {
+  function check(label: string, key: "enabled" | "hideEmpty" | "autoAvoid" | "showValue", widget: HudWidget): HTMLElement {
     const wrapper = node("label", "hud-studio-check"), control = document.createElement("input"); control.type = "checkbox"; control.checked = widget[key]; control.dataset.testid = `hud-field-${key}`;
     control.addEventListener("change", () => patch({ [key]: control.checked })); wrapper.append(control, label); return wrapper;
   }
@@ -114,7 +118,7 @@ export function fieldHudEditor(project: Project, save: (config: FieldHudConfig) 
       }
       if (["variable", "timer", "inventory", "gold"].includes(widget.source)) inspector.append(input("최댓값", "max", widget, "number"));
     }
-    if (widget.kind === "gauge") inspector.append(select("표현", widget.shape, HUD_SHAPES, value => patch({ shape: value as HudWidget["shape"] }), "hud-field-shape"));
+    if (widget.kind === "gauge") inspector.append(check("수치 함께 표시", "showValue", widget), select("표현", widget.shape, HUD_SHAPES, value => patch({ shape: value as HudWidget["shape"] }), "hud-field-shape"));
     if (widget.kind === "slots" || widget.kind === "party") inspector.append(input("표시 칸 수", "slots", widget, "number"));
     if (widget.source === "inventory" && ["slots", "gauge", "text"].includes(widget.kind)) {
       const items = node("div", "hud-studio-inventory");
@@ -140,10 +144,12 @@ export function fieldHudEditor(project: Project, save: (config: FieldHudConfig) 
   }
   for (const [theme, label] of Object.entries(FIELD_HUD_THEMES)) {
     const control = button(label, () => {
-      config = { ...config, theme: theme as FieldHudConfig["theme"] }; widgets = hudPreset(config.theme); selected = widgets[0]?.id ?? "";
+      config = { ...config, theme: theme as FieldHudConfig["theme"], menuStyle: recommendedHudMenu(theme as FieldHudConfig["theme"]), objective: !["collector", "classic", "horror", "chase", "hearts", "minimal"].includes(theme) }; widgets = hudPreset(config.theme); selected = widgets[0]?.id ?? "";
       commit(`${label} 구성을 불러왔습니다. 이전 구성은 실행 취소로 복원할 수 있습니다.`); renderInspector();
     }, `db-hud-theme-${theme}`); control.dataset.theme = theme; presets.append(control);
   }
+  const appearance = node("div", "hud-studio-row");
+  appearance.append(select("HUD 글꼴", config.font ?? "auto", HUD_FONTS, value => { config = { ...config, font: value as FieldHudConfig["font"] }; commit(); }, "hud-font"), select("함께 사용할 메뉴", config.menuStyle ?? "project", HUD_MENUS, value => { config = { ...config, menuStyle: value as FieldHudConfig["menuStyle"] }; commit(); }, "hud-menu-style"));
   const addType = document.createElement("select"); addType.dataset.testid = "hud-add-kind";
   for (const [key,label] of Object.entries(HUD_KINDS)) { const option = document.createElement("option"); option.value = key; option.textContent = label; addType.append(option); }
   left.append(node("h3", "hud-studio-heading", "구성 요소"), list, field("추가할 요소", addType), button("+ 요소 추가", () => {
@@ -180,6 +186,6 @@ export function fieldHudEditor(project: Project, save: (config: FieldHudConfig) 
   });
   stage.addEventListener("keydown",event=>{ const delta:Record<string,[number,number]>={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}; const change=delta[event.key]; const target=(event.target as HTMLElement).closest<HTMLElement>(".hud-widget"); if(!change||!target)return;event.preventDefault();selected=target.dataset.widgetId!;const step=event.shiftKey?8:1;patch({anchor:"top-left",x:parseFloat(target.style.left)+change[0]*step,y:parseFloat(target.style.top)+change[1]*step},true);});
   const resize=new ResizeObserver(()=>{if(!root.isConnected){resize.disconnect();hud.destroy();return;}const width=viewport.clientWidth;if(!width)return;const scale=width/resolution.width;stage.style.transform=`scale(${scale})`;viewport.style.aspectRatio=`${resolution.width}/${resolution.height}`;});resize.observe(viewport);
-  layout.append(left,center,inspector);root.append(node("p","hud-studio-hint","프리셋으로 시작한 뒤 요소별 데이터·표현·위치·표시 조건을 편집하세요. 프리셋을 다시 누르면 구성이 교체됩니다."),presets,layout,status);
+  layout.append(left,center,inspector);root.append(node("p","hud-studio-hint","프리셋으로 시작한 뒤 요소별 데이터·표현·위치·표시 조건을 편집하세요. 프리셋을 다시 누르면 구성이 교체됩니다."),presets,description,appearance,layout,status);
   renderList();renderInspector();paint();return root;
 }
