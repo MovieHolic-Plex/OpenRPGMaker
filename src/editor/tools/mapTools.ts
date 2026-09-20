@@ -1611,6 +1611,7 @@ const cloudShadowSchema: JsonSchema = {
   type: "object",
   properties: {
     enabled: { type: "boolean" },
+    amount: { type: "integer", minimum: 0, maximum: 6, description: "구름량: 0 없음, 1 적음, 3 보통(기본), 6 많음" },
     opacity: { type: "number", minimum: 0.05, maximum: 0.6 },
     speed: { type: "number", minimum: 0, maximum: 160 },
     angleDeg: { type: "number", minimum: 0, maximum: 359 },
@@ -1727,6 +1728,7 @@ const setMapProperties: ToolDefinition = {
       const params = normalizeCloudShadowParams(shadows);
       map.cloudShadows = {
         enabled: shadows.enabled === true,
+        amount: params.amount,
         opacity: params.opacity,
         speed: params.speed,
         angleDeg: params.angleDeg,
