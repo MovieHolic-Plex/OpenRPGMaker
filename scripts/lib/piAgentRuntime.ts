@@ -29,6 +29,9 @@ import { applyMapDeltas, diffMapsForDelta } from "../../src/ai/piAgent/mapDelta.
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
 import { changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
+import { searchWebWithCodex } from "./codexWebSearchRuntime.ts";
+import { WEB_SEARCH_TOOL } from "../../src/editor/tools/webSearchTool.ts";
+import { CODEX_PROVIDER_ID } from "../../src/ai/oauth/credentials.ts";
 import type { GameMap, Project } from "../../src/project/types.ts";
 
 export interface RunPiAgentOptions {
@@ -41,6 +44,11 @@ export interface RunPiAgentOptions {
   readonly timeoutMs?: number;
   /** 역할별 툴 범위. 레지스트리 선택에 더해 팀 런타임의 커스텀 툴(assign_map_agent 등)을 붙인다. */
   readonly readOnlyTools?: boolean;
+  /**
+   * 웹 검색 전용 Codex access 토큰. 조수 제공자가 Antigravity 여도 검색은 Codex 백엔드가 하므로
+   * 제공자 키와 **별개로** 해결해 넘긴다(없으면 툴이 "Codex 로그인 필요" 로 정직하게 실패한다).
+   */
+  readonly codexApiKey?: string;
   readonly toolNames?: readonly string[];
   readonly extraTools?: readonly PiToolShape[];
   /** 모델 스트림 대체 — 테스트가 네트워크 없이 진짜 Agent 루프를 돌릴 때 쓰는 시임. */
@@ -55,6 +63,78 @@ const DEFAULT_TIMEOUT_MS = PI_AGENT_DEFAULT_TIMEOUT_MS;
 /** 읽기 전용 실행에 덧붙이는 한 줄. 강제는 툴 목록이 하고(쓰기 툴 미제공), 이 문장은 이유를 말한다. */
 const READ_ONLY_INSTRUCTION =
   "이번 실행은 읽기 전용이다. 쓰기 도구가 제공되지 않는다. 조회한 사실과 근거만 보고하고, 고칠 거리는 문장으로만 제안한다.";
+
+/**
+ * 레지스트리의 `web_search` 를 실제 네트워크 실행으로 갈아 끼우는 실행 셰이프.
+ *
+ * 왜 오버라이드인가: 레지스트리 툴은 **순수 함수**여야 한다(types.ts 머리말 — 브라우저 전역 접근 금지).
+ * 그래서 레지스트리 쪽 `run` 은 `status:"ui-required"` 핸드오프만 만들고, 진짜 검색은 자격을 아는
+ * 서버 경계가 한다 — `generate_image_asset` 이 `imageAssetGeneration` 을 거치는 것과 같은 분업이다.
+ * 여기는 Bun 워커라 Codex 자격과 fetch 가 있고, 자격은 절대 브라우저로 나가지 않는다.
+ */
+function createWebSearchTool(options: {
+  readonly codexApiKey?: string;
+  readonly onCall?: (record: PiToolCallRecord) => void;
+}): PiToolShape {
+  return {
+    name: WEB_SEARCH_TOOL,
+    label: "웹 검색",
+    description: [
+      "인터넷을 검색해 최신 사실과 출처 URL을 가져온다.",
+      "학습 시점 이후의 정보(최신 버전·릴리스·요금·뉴스·현행 표준)나 실존 작품의 구체 사실이 필요할 때 쓴다.",
+      "프로젝트 안의 사실(맵·이벤트·DB·위키)은 이 툴이 아니라 프로젝트 조회 툴로 읽는다.",
+      "검색은 프로젝트를 바꾸지 않는다. 답을 사용자에게 전할 때는 근거 URL을 함께 밝힌다.",
+    ].join(" "),
+    parameters: {
+      type: "object",
+      additionalProperties: false,
+      required: ["query"],
+      properties: {
+        query: {
+          type: "string",
+          minLength: 2,
+          maxLength: 400,
+          description: "찾을 내용을 한 문장이나 검색어로.",
+        },
+      },
+    },
+    async execute(toolCallId, params, signal) {
+      const args = params && typeof params === "object" ? (params as Record<string, unknown>) : {};
+      const outcome = await searchWebWithCodex(args.query, { apiKey: options.codexApiKey }, signal);
+      if (!outcome.ok) {
+        options.onCall?.({
+          toolCallId, name: WEB_SEARCH_TOOL, args,
+          result: { ok: false, summary: outcome.answer, issues: [{ severity: "error", code: outcome.code ?? "web-search-failed", message: outcome.answer }] },
+        });
+        // 어댑터와 같은 규약 — 실패는 throw 로 나가고 본문에 issues 가 실린다.
+        throw new Error(JSON.stringify({
+          ok: false,
+          summary: outcome.answer,
+          issues: [{ severity: "error", code: outcome.code ?? "web-search-failed", message: outcome.answer }],
+        }));
+      }
+      const summary = `웹 검색 결과 ${outcome.sources.length}개 출처`;
+      options.onCall?.({
+        toolCallId, name: WEB_SEARCH_TOOL, args,
+        result: { ok: true, summary, data: { queries: outcome.queries, sources: outcome.sources } },
+      });
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            ok: true,
+            summary,
+            answer: outcome.answer,
+            queries: outcome.queries,
+            sources: outcome.sources,
+            hint: "답을 사용자에게 전할 때 근거 URL을 함께 밝히고, 검색 결과를 프로젝트 사실처럼 단정하지 마라.",
+          }),
+        }],
+        details: { queries: outcome.queries, sources: outcome.sources },
+      };
+    },
+  };
+}
 
 /** Shared exact model resolution for Pi and completion requests. */
 export const resolvePiModel = resolveOhMyPiModel;
@@ -81,6 +161,12 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     readOnly: request.readOnly || options.readOnlyTools, toolNames: options.toolNames,
   });
   const shapeFor = (name: string): PiToolShape | undefined => {
+    // 웹 검색은 레지스트리 셰이프가 순수 핸드오프라 네트워크가 없다 — 발견 경로도 실제 실행으로 보낸다.
+    if (name === WEB_SEARCH_TOOL) {
+      return allowedDefinitions.some(tool => tool.name === WEB_SEARCH_TOOL)
+        ? wrapTool(createWebSearchTool({ codexApiKey: options.codexApiKey, onCall: recordCall }))
+        : undefined;
+    }
     const shape = resolvePiToolShape(ctx, name, {
       readOnly: request.readOnly || options.readOnlyTools,
       toolNames: options.toolNames,
@@ -154,7 +240,16 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       : options.toolNames,
     onCall: recordCall,
   });
-  tools.push(...registryTools.map(wrapTool), ...(options.extraTools ?? []));
+  // 레지스트리 쪽 web_search 는 순수 핸드오프라 네트워크가 없다 — 아래 실제 실행 셰이프가 대신한다.
+  // 둘을 함께 선언하면 같은 이름이 두 번 나가고 어느 쪽이 도는지가 순서에 달린다.
+  tools.push(
+    ...registryTools.filter(tool => tool.name !== WEB_SEARCH_TOOL).map(wrapTool),
+    ...(options.extraTools ?? []),
+  );
+  if (allowedDefinitions.some(tool => tool.name === WEB_SEARCH_TOOL)) {
+    // Codex 자격이 없어도 선언한다 — 툴이 실패 이유를 말하는 편이 "없는 툴" 보다 정직하다.
+    declare(wrapTool(createWebSearchTool({ codexApiKey: options.codexApiKey, onCall: recordCall })));
+  }
   if (incremental && request.applyMode === "step") tools.push(wrapTool({
     name: "finish_stage", label: "단계 적용",
     description: "지형·건물/길·NPC/이벤트 등 의미 있는 한 단계를 마친 뒤 호출한다. 사용자 승인 전에는 다음 단계로 진행하지 않는다.",

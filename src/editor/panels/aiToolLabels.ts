@@ -75,6 +75,9 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   link_maps: people("맵 연결", "link"),
   create_transfer_pair: people("맵 연결", "link"),
   // ── 보기·검사 ──
+  // 웹 검색은 프로젝트 조회가 아니라 바깥 검색이다 — inspect(도구 그룹·돋보기 아이콘)으로 둔다.
+  // 사전에 없으면 영문 원문이 그대로 보인다(2026-09-21 실측).
+  web_search: inspect("웹 검색"),
   get_project_summary: inspect("프로젝트 읽기"),
   get_map_region: inspect("영역 읽기", "grid"),
   show_map_region: inspect("영역 보기", "eye"),
