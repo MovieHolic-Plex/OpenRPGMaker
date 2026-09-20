@@ -152,14 +152,6 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
       el("button", { class: request.category === "consumable" ? "is-active" : "", text: "소모품", attrs: { type: "button" }, on: { click: () => request.onCategory?.("consumable") } }),
     ] }));
   }
-  if (preset === "split") {
-    topbar.append(el("nav", { class: "runtime-shop-service-nav", attrs: { "aria-label": "상점 서비스" }, children: [
-      el("button", { class: request.mode === "buy" ? "is-active" : "", text: "구매", attrs: { type: "button" }, on: { click: () => request.onMode?.("buy") } }),
-      el("button", { text: "개조", attrs: { type: "button" }, on: { click: () => request.setStatus("개조할 장비를 선택하세요.") } }),
-      el("button", { class: request.mode === "sell" ? "is-active" : "", text: "판매", attrs: { type: "button" }, on: { click: () => request.onMode?.("sell") } }),
-      el("button", { text: "교환", attrs: { type: "button" }, on: { click: () => request.setStatus("교환 가능한 상품이 없습니다.") } }),
-    ] }));
-  }
   topbar.append(
     shopWindow("runtime-shop-gold-panel", [
       goldPanel(request.scene, request.terms, request.merchantGold, request.mode),

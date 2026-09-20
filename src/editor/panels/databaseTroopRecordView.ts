@@ -1,3 +1,4 @@
+import { troopIntentPanel } from "@/editor/panels/databaseTroopIntentPanel";
 // 적 그룹(troops) 탭 상세 폼 — 2026-08 모던 개편.
 //
 // 이전 구조는 RM2003 창을 픽셀 단위로 흉내 낸 1048×554 고정 캔버스였다. 감사에서 잡힌
@@ -503,6 +504,7 @@ function troopBattlePreview(record: TroopRecord, selectedIndex: number, rerender
     hint: previewHint(record, skinId),
     children: [
       stage,
+      troopIntentPanel(record, selectedIndex),
       el("div", { class: "db-troop-preview-caption", dataset: { testid: "db-troop-preview-caption" }, text: previewCaption(record) }),
       el("div", {
         class: "db-troop-preview-legend",

@@ -1,3 +1,4 @@
+import { resolveMapWeather } from "@/player/weather/weatherModel";
 import type Phaser from "phaser";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
 import type { StepResult } from "@/player/interpreter";
@@ -104,7 +105,7 @@ export function syncWeatherLayer(scene: PlaySceneContext): void {
     scene.weatherDisplayed = target;
     scene.weatherTargetSignature = targetSignature;
   }
-  renderWeather(scene, scene.weatherDisplayed ?? target);
+  renderWeather(scene, resolveMapWeather(scene.weatherDisplayed ?? target, scene.map.climate));
 }
 
 export function weatherKindFromSession(session: PlaySessionLike): WeatherParams["kind"] {

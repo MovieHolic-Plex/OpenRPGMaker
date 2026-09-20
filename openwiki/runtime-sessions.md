@@ -370,3 +370,35 @@ both vital lines to their own row, not only to the whole stage. Proof:
 `OPRN_MENU_QA_OUT=verify-shots/runtime-qa/menu-eras node scripts/qa/runtime/menu-design.probe.mjs retro-2000 retro-2003 classic-xp classic-vx`.
 Read that directory's `SUMMARY.md` first. Previews are actual player captures at
 `public/assets/ui/menu-skins/<id>.png`. Details: `docs/reviews/2026-09-18-menu-eras.md`.
+
+## Player options, inventory views and honest shop services (feature16, 2026-09-21)
+
+- ESC → 시스템 → 설정 opens `src/player/playerOptionsDetail.ts` through the existing keyboard-owned
+  detail controller in every menu skin. Semantic buttons use `player-option-*` test IDs.
+  BGM/SE ±10%, dialogue slow/normal/fast, and **ESC menu motion only** are device preferences;
+  this is not a global flash-reduction promise. OS reduced-motion still takes precedence.
+- `src/player/playerPreferences.ts` uses `oprn:player-preferences:v1`, independent of project namespaces,
+  sessions and save slots. Invalid values default/clamp; failed Storage writes retain the
+  in-memory setting and report that persistence failed. Audio singleton creation reads these
+  values; options immediately call `AudioEngine.setVolume` for both groups. Menu cue volume
+  also follows SE. Dialogue applies the speed multiplier to default and authored `\s[n]`
+  delays, preserving explicit pauses and manual page advance.
+- Inventory view state belongs to each menu controller, never `session.inventory`. At the
+  end of the item list, `inventory-filter` cycles all / field-usable types / equipment / other;
+  `inventory-sort` cycles authored / Korean name / descending quantity. From the first action,
+  Up twice reaches filtering. Actor eligibility is still decided by actual item-use logic.
+  Unknown positive stacks remain visible in all/other. Controls survive empty results;
+  the controller clamps the cursor and retains the activated control across list rebuilds.
+  All twelve skins share these buttons, item targeting and keyboard ownership.
+- The split shop no longer duplicates buy/sell navigation with fake upgrade/exchange actions.
+  Existing real `shop-tab-buy` / `shop-tab-sell` handle supported modes; buy-only and sell-only
+  shops cannot show the other service. No crafting, cart, transaction or save schema was added.
+- Parent-owned validation: `npm test -- test/feature16Player*.test.ts` and
+  `npm run qa:runtime -- --scenario feature16-player`. The scenario interacts with the real
+  `player.html` shell using keys, captures settings/filtered inventory/split shop, and derives
+  a detached test fixture via `test/fixtures/feature16Player.mjs`. No DB content writes.
+  Read `verify-shots/runtime-qa/feature16-player/SUMMARY.md` first. Tests and browser captures
+  are prepared here, not executed by the feature worktree agent.
+## Persistent battle reports and formation (2026-09-21)
+
+Existing `actorRows` and `partyActorIds` save/load paths remain authoritative. Optional `battleReports` is normalized at create/parse/restore and defaults empty for old saves (20 reports, 120 real timeline lines each). Esc → 기록 → 전투 기록 reads completed outcomes; Esc → 파티 → 진형 edits active order and front/back. Contracts and parent-owned verification: `openwiki/feature16-battle-ui.md`.

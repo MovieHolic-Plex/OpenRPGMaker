@@ -2673,3 +2673,46 @@ Pi 활동 로그는 시작·종료 모두 `result.applyMode`에 실행 당시 �
 격리 blankProject와 대본 전송을 사용한다. 증거: `output/evidence/ai-apply-modes/`.
 
 맵 확장 회귀 재현: `node scripts/qa/ai-map-resize.mjs`는 로컬 전용 편집기에서 구형 설정 전환과 새 review 선택 보존을 확인하고, 실제 `resize_map` → `createPiPublication`으로 20×15 → 28×21 즉시 반영을 확인한다. 외부 LLM/원격 저장은 사용하지 않는다. Vite HMR 직후 직접 동적 import로 store를 읽는 QA는 timestamp가 붙은 앱 모듈과 별도 인스턴스를 만들 수 있으므로 서버를 새로 시작해서 실행한다.
+
+## Feature16 — 프롬프트 라이브러리·대사 검토·실제 요청 검사기 (2026-09-21)
+
+- 진입: AI 컴포저 「더보기」 → 「프롬프트 라이브러리」 / 「대사 목록·문체 검토」 /
+  「프롬프트 검사기」. 헤더의 공용 작업 메뉴에도 같은 세 항목이 있다.
+  `aiActionMenu` → `aiChatPanel.sharedMenuActions.openAuthoring` →
+  `panels/aiAuthoring/modal.ts`가 소유한다. 새 컨트롤은 `feature16-*` testid를 사용한다.
+- 라이브러리는 프로젝트 `aiAuthoring.templates`의 id/name/tags/body를 편집한다.
+  `{{변수 이름}}`은 중복 제거한 필수 슬롯이며 누락을 막고 값을 문자 그대로 치환한다.
+  이름·태그·본문 검색, 현재 컴포저로 생성, 저장/편집/2단계 삭제, 변수 미리보기 후
+  컴포저에 **덧붙이기**를 제공한다. 적용은 전송이 아니다. `store.update`와 프로젝트 undo,
+  기존 자동저장/내보내기 경로를 사용하며 UI의 반영 메시지는 원격 저장 성공 주장이 아니다.
+- `ai/authoring/dialogueInventory.ts`는 모든 맵 이벤트의 저장된 모든 페이지를 모은다.
+  페이지가 있으면 레거시 `event.commands` 사본은 제외한다. text, choices.prompt,
+  choices.options 및 `nestedCommandLists`가 아는 모든 중첩 분기를 읽는다.
+  공통 이벤트·임시 이벤트 초안은 범위 밖이며 화면에 명시한다. 화자/맵/텍스트 필터,
+  100개씩 더 보기, source id/map/event/page/command path를 보존한다.
+  원문 이동은 기존 `selectEditorMap`과 `openEventEditorModal({pageId})`로 실제 페이지를 연다.
+- 문체 규칙과 최대 글자 수는 `aiAuthoring.dialogueStyleRules/maxDialogueChars`로 저장한다.
+  구조 검사는 빈 문자열·공백·글자 수만 검사하고 **LLM 아님**으로 표시한다.
+  LLM 검토는 `assistantEndpoint`의 `dialogue-review` 표면 → 공용 `chatCompletion`이다.
+  저장한 규칙과 필터 범위의 원문만 보내며 쓰기 툴이 없다. 60,000자 초과는 사용자가
+  필터를 좁히도록 거부하고 몰래 잘라 보내지 않는다. 응답은 source id와 실제 원문의
+  비어 있지 않은 부분 인용이 모두 일치해야 한다. 인증/제공자/파싱/출력 잘림 오류는
+  성공 또는 0건 지적으로 바꾸지 않는다. 중단·닫기·프로젝트 교체는 요청을 취소하고,
+  검토 중 원문/규칙 변경은 결과를 폐기한다. 원문 변경 후 완료 지적도 지운다.
+- 검사기는 `llmClient.requestBody`의 실제 전송 직전 본문과 Pi worker
+  `onPayload`의 **provider 변환 이후 실제 payload**를 관측한다. Antigravity enum 보정
+  뒤 관측하며 관측 실패가 전송을 막지 않는다. `prompt_inspection` NDJSON 이벤트는 팀
+  중첩 이벤트도 처리하지만 일반 대화/감사 콜백에는 보내지 않는다. 가짜 시스템 프롬프트를
+  브라우저에서 재구성하지 않는다. 미갱신 구형 워커에서는 Pi 요청 관측을 받지 못한다.
+- 최종 관측 한 건만 메모리에 보관한다. 키/토큰/인증 필드/알려진 실제 자격 증명과
+  이미지 본문을 저장 전에 가린다. 각 JSON 절, 실제 도구 이름, 문자÷3 토큰 추정,
+  80,000자 표시 예산의 절별 생략량을 표시한다. 상위 맥락 압축량·이미지 토큰·제공자
+  내부 처리는 이 경계에서 알 수 없다고 명시한다. 관측은 **전송 시도**, 성공 증명이 아니다.
+  새 대화·프로젝트 전환·패널 폐기·새로고침·비우기는 삭제하며 epoch로 늦은 결과의 부활을 막는다.
+- 부모 세션 검증: `npm test -- test/feature16-ai.test.ts test/feature16-ai-review.test.ts test/feature16-ai-transport.test.ts`;
+  `npm run typecheck:app`;
+  `node scripts/capture-feature16-ai.mjs http://127.0.0.1:<부모-서버-포트>`.
+  캡처 스펙은 실제 편집기 `?blankProject=1`에서 보이는 메뉴/컨트롤을 클릭한다.
+  프로젝트 데이터와 LLM 응답만 테스트 내부 fixture이다. 캡처용 별도 Playwright 설정은
+  서버를 시작하지 않는다. `verify-shots/feature16-ai/01-library.png`부터 `04-source-page.png`까지 생성한다.
+  이 변경 작성 세션은 테스트/타입체크/서버/브라우저를 실행하지 않았다. 중앙 검증이 필요하다.

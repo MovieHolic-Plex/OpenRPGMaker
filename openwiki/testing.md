@@ -1877,3 +1877,15 @@ port belongs to another running checkout; do not kill that server.
 ## 실내 조립·형상 검증 (2026-09-05)
 
 `test/interiorConceptAssemblies.test.ts`가 19시설×3seed 시공, 상판 소품의 전체 셀, 벽시계 위치, 장소 shape 직렬화·검증, 메타/통행 사용자 오버라이드 보존을 검사한다. 관련 13파일·253테스트 및 앱 타입 게이트가 통과했다. 이번 전체 gates 실행은 최종 리포트를 남기기 전 exit 143으로 종료되어 전체 기준선 비교를 완료하지 못했다. 원인 미확정이며 전체 통과로 보고하지 않는다. 로컬 증거는 `output/evidence/concept-v2/validation.json` 및 `focused-tests.log`.
+
+## Feature16 player preferences / inventory / shop (2026-09-21)
+
+The parent serializes execution of `npm test -- test/feature16Player*.test.ts` and
+`npm run qa:runtime -- --scenario feature16-player`. The feature agent does not start
+servers, suites or typecheck. Unit contracts cover preference sanitation/storage failure,
+actual AudioEngine/dialogue wiring, inventory conservation/unknown IDs/empty projections,
+keyboard cursor retention across all twelve skins, and supported split-shop services.
+The dedicated player scenario uses real keyboard input through `player.html`, not a
+synthetic component mount. Captures: filtered-inventory, sorted-inventory, equipment-filter,
+settings, settings-changed, shop. Read its SUMMARY.md before images. The small fixture builder
+under `test/fixtures` derives existing engine test data without remote persistence.

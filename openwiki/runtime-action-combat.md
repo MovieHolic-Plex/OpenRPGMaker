@@ -297,3 +297,39 @@ resolve assets inside their own deployment directory.
 - `test/e2e/action-combat.spec.ts`: Full real-time attack, dodge, guard, and enemy response in browser player.
 - `test/e2e/action-survival.spec.ts`: Survival mechanics, stamina depletion, and persistent kills.
 - `test/e2e/_verify-action-demo.spec.ts`: End-to-end demo validation.
+
+## Feature16 field skill profiles (2026-09-21)
+
+`SkillRecord.actionSkill` now accepts `projectile | melee | dash | trap`. System/map
+activation and the three learned-skill slots remain unchanged; `rm2k3`/`gen1`
+selection is independent. `databaseActionSkillForm.ts` owns the action card UI.
+Normalization remains in `project/actionCombat.ts`: damage 1..9999, range 1..20,
+speed 1..30 tiles/s, cooldown 50..30000ms (runtime default 350), trap duration
+100..30000ms (default 5000). Optional `fieldStatus` has `kind: poison | slow` and
+100..30000ms duration. MP and optional ammunition are checked together before
+spending; blocked cooldown/capacity/busy dash attempts cost nothing.
+
+`playSceneActionSkills.ts` owns scene-local cooldown, dash route, at most 16 traps,
+and enemy status timers. `battle/action/skillEffects.ts` owns pure cost eligibility,
+wall ray/line tests, and bounded poison ticks. Melee uses the existing facing/body
+arc with wall occlusion; dash uses the existing player movement route with
+`stopOnBlocked`, normal terrain/placement/event/footprint collision and one hit per
+enemy per cast. Trap placement stops at the last passable tile of its facing ray
+(or the caster tile when immediately blocked); the first eligible enemy consumes
+it. Friendly targets do not consume traps. Projectile endpoint hits are evaluated
+before range expiry; player casts are capped at 128 live projectiles.
+
+Damage retains faction immunity, element multipliers, stagger/knockback, kill
+rewards and field-spawn death handling. Poison deals ceil(maxHP * .05) each active
+second; slow scales mover time and attack progression by .5. Reapplication refreshes
+rather than stacking a same-kind timer. Map reload, scene teardown and enemy removal
+clean up effects; they are transient and not written into saves. Dialogue and
+hitstop pause combat clocks. Existing `session.actorStateIds`, battle states, and
+`applyGen1FieldPoisonStep` (one tick every four completed steps) already support
+other state paths and remain separate.
+
+Parent-owned validation: `npm test -- test/feature16World*.test.ts`;
+`npm run qa:runtime -- --scenario feature16-world` boots the dedicated player;
+`node scripts/capture-feature16-world-player.mjs` adds keyboard door/cast proof for
+all four profiles. Derived JSON stays under `test/fixtures/feature16-world/` and is
+ignored. No project-service content writes are part of these checks.

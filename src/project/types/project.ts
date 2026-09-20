@@ -39,6 +39,8 @@ import type {
 import type { Season, TimePhase } from "../gameTime";
 
 export interface GameMap {
+  /** Unset inherits global weather; indoor suppresses presentation only. */
+  climate?: import("../mapClimate").MapClimate;
   id: MapId;
   name: string;
   width: number;
@@ -616,6 +618,8 @@ export interface StoryFlagDef {
 }
 
 export interface Project {
+  /** Prompt library and dialogue review preferences, saved with this project. */
+  aiAuthoring?: import("../aiAuthoring").AiAuthoring;
   /** Optional spatial authoring authority, separate from lore, worldGraph and runtime saves. */
   spatialAuthoring?: import("../spatial/types").SpatialAuthoringDocument;
   /** Independent skill graphs; promotion edges remain ClassRecord.promotions. */

@@ -1,3 +1,4 @@
+import { playerTextDelay } from '@/player/playerPreferences';
 // player/dialogue.ts
 // DOM dialogue and choices overlay used by the runtime interpreter.
 // It resolves text advancement and choice selection through promises.
@@ -282,9 +283,9 @@ export function createDialogueUI(
       let typing = true;
       let waitingForControl = false;
       let autoClosePage = request.autoAdvance === true;
-      // 프로파일 배율은 기본 지연에만 적용한다. \s[n] 로 명시한 속도는 저작자 의도라
-      // 그대로 이긴다(executeControl 의 "speed" 분기가 배율 없이 덮어쓴다).
-      let charDelayMs = dialogueScaledCharDelayMs(DEFAULT_DIALOGUE_CHAR_DELAY_MS, profile);
+      // 프로파일 배율은 기본 지연에만 적용한다. \s[n]은 프로파일을 덮어쓰지만
+      // 기기별 읽기 속도 배율은 기본 지연과 명시한 속도 양쪽에 적용한다.
+      let charDelayMs = playerTextDelay(dialogueScaledCharDelayMs(DEFAULT_DIALOGUE_CHAR_DELAY_MS, profile));
       let fastMode = false;
       let timer = 0;
       let goldWindow: HTMLElement | undefined;
@@ -317,7 +318,7 @@ export function createDialogueUI(
       ): number | "pause" => {
         switch (control.kind) {
           case "speed":
-            charDelayMs = dialogueSpeedDelayMs(control.value);
+            charDelayMs = playerTextDelay(dialogueSpeedDelayMs(control.value));
             return 0;
           case "gold":
             showGoldWindow();

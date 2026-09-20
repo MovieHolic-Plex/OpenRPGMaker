@@ -1,7 +1,8 @@
+import { numberField as climateNumberField, selectLiteral } from "@/editor/panels/databaseControls";
 import {
   resizeMap, renameMap, setMapEncounterRate, setMapEncounterTable, setMapFieldSpawns, setMapTileset,
   setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapMinimap,
-  setMapCloudShadows,
+  setMapCloudShadows, setMapClimate,
 } from "@/editor/actions";
 import { appendGroupedTilesetOptions } from "@/editor/tilesetSelectOptions";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -24,9 +25,10 @@ import { clearChildren, el } from "@/util/dom";
 import { showConfirm } from "@/editor/ui/modal";
 import { toast } from "@/util/toast";
 
-type MapPropsTab = "general" | "background" | "clouds" | "bgm" | "battle" | "restrictions" | "encounter" | "spawns" | "minimap";
+type MapPropsTab = "climate" | "general" | "background" | "clouds" | "bgm" | "battle" | "restrictions" | "encounter" | "spawns" | "minimap";
 
 const TAB_LABELS: Record<MapPropsTab, string> = {
+  climate: "기후",
   general: "기본 설정",
   background: "맵 배경",
   clouds: "구름 그림자",
@@ -39,10 +41,11 @@ const TAB_LABELS: Record<MapPropsTab, string> = {
 };
 
 const SECTION_ORDER: readonly MapPropsTab[] = [
-  "general", "background", "clouds", "bgm", "battle", "restrictions", "encounter", "spawns", "minimap",
+  "general", "climate", "background", "clouds", "bgm", "battle", "restrictions", "encounter", "spawns", "minimap",
 ];
 
 const SECTION_DESCRIPTIONS: Record<MapPropsTab, string> = {
+  climate: "전역 날씨를 따르거나 고정합니다. 실내에서는 날씨 효과가 보이지 않습니다.",
   general: "맵의 이름, 타일 그림판과 크기를 설정합니다.",
   background: "투명한 타일 뒤에 표시할 그림과 움직임을 설정합니다.",
   clouds: "맵 위를 흘러가는 구름 그림자를 설정합니다.",
@@ -55,7 +58,7 @@ const SECTION_DESCRIPTIONS: Record<MapPropsTab, string> = {
 };
 
 const SECTION_RENDERERS: Record<MapPropsTab, (host: HTMLElement, map: import("@/project/types").GameMap) => void> = {
-  general: renderGeneralTab, background: renderBackgroundTab, clouds: renderCloudShadowTab, bgm: renderBgmTab,
+  climate: renderClimateTab, general: renderGeneralTab, background: renderBackgroundTab, clouds: renderCloudShadowTab, bgm: renderBgmTab,
   battle: renderBattleTab, restrictions: renderRestrictionsTab, encounter: renderEncounterTab,
   spawns: renderSpawnsTab, minimap: renderMinimapTab,
 };
@@ -1364,4 +1367,24 @@ function jsonArrayField(
   stack.append(textarea, button);
   row.append(stack);
   return row;
+}
+
+function renderClimateTab(host: HTMLElement, map: import("@/project/types").GameMap): void {
+  const render = (): void => {
+    const climate = store.getCurrent().maps[map.id]?.climate;
+    host.replaceChildren(selectLiteral("기후 방식", "map-climate-mode", climate?.mode ?? "inherit",
+      ["inherit", "fixed", "indoor"], (mode) => {
+        setMapClimate(map.id, mode === "fixed" ? { mode, weather: "rain", intensity: 0.5 } : { mode });
+        render();
+      }));
+    if (climate?.mode !== "fixed") return;
+    host.append(selectLiteral("날씨", "map-climate-weather", climate.weather,
+      ["none", "rain", "snow", "storm", "fog"], (weather) => {
+        const current = store.getCurrent().maps[map.id]?.climate;
+        setMapClimate(map.id, { ...(current?.mode === "fixed" ? current : climate), weather }); render();
+      }), climateNumberField("강도", "map-climate-intensity", climate.intensity, (intensity) => {
+        setMapClimate(map.id, { ...climate, intensity });
+      }, { min: 0, max: 1, step: 0.1 }));
+  };
+  render();
 }

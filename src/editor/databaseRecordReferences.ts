@@ -1,3 +1,4 @@
+import { enemyCombatConditions } from "@/project/combatReferences";
 import { commandsReferenceLocations, switchVariableReferencedInProject, type DatabaseReferenceLocation } from "./databaseCommandReferences";
 import type { DatabaseCollection } from "./databaseActions";
 import { collectProjectItemReferenceIds } from "@/project/io/references";
@@ -173,12 +174,14 @@ export function projectDatabaseReferenceMessage(project: Project, collection: Da
         record.requiredItemIds?.includes(id) || record.reward?.itemRewards?.some((entry) => entry.itemId === id)
       );
       if (museumRewards.length) return namedReferenceMessage("박물관 보상", museumRewards.map((record) => ({ name: record.name ?? record.id })), "이 아이템을 조건이나 보상으로 사용 중입니다.");
-      const enemies = project.database.enemies.filter((record) => record.rewards.dropItemId === id);
+      const enemies = project.database.enemies.filter((record) => record.rewards.dropItemId === id || record.rewards.drops?.some(drop => drop.itemId === id));
       if (enemies.length) return namedReferenceMessage("몬스터", enemies, "이 아이템을 보상으로 사용 중입니다.");
       return commandLocationMessage(project, "items", id, "아이템")
         ?? (collectProjectItemReferenceIds(project).has(id) ? "프로젝트 데이터가 이 아이템을 사용 중입니다. 먼저 연결을 해제하세요." : null);
     }
     case "states": {
+      const conditionEnemies = project.database.enemies.filter(enemy => enemyCombatConditions(enemy).some(condition => condition.kind === "status" && condition.stateId === id));
+      if (conditionEnemies.length) return namedReferenceMessage("몬스터 조건", conditionEnemies, "이 상태를 행동/드롭 조건으로 사용 중입니다.");
       const skills = project.database.skills.filter((record) => record.stateEffects?.some((effect) => effect.stateId === id));
       if (skills.length) return namedReferenceMessage("스킬", skills, "이 상태를 사용 중입니다.");
       const items = project.database.items.filter(
@@ -205,6 +208,7 @@ export function projectDatabaseReferenceMessage(project: Project, collection: Da
 }
 
 export function projectSwitchVariableReferenceMessage(project: Project, kind: "switch" | "variable", id: string): string | null {
+  if (kind === "switch" && project.database.enemies.some(enemy => enemyCombatConditions(enemy).some(condition => condition.kind === "switch" && condition.switchId === id))) return "몬스터 행동/드롭 조건이 이 스위치를 사용 중입니다.";
   if (kind === "variable" && project.growth?.bonusVariableId === id) return "스킬 트리의 성장 포인트 보너스가 이 변수를 사용 중입니다.";
   if (kind === "switch" && (project.database.lifeSkills ?? []).some((skill) =>
     skill.levelUpRewards.some((reward) => reward.switchId === id)

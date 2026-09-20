@@ -95,6 +95,7 @@ export interface PiProjectCheckpoint {
   readonly spatialProof?: SpatialToolProof | null;
 }
 export type PiAgentEvent =
+  | { readonly type: "prompt_inspection"; readonly snapshot: import("../authoring/promptInspection").PromptInspection }
   | ({ readonly type: "checkpoint"; readonly checkpointId: string } & PiProjectCheckpoint)
   | { readonly type: "start"; readonly provider: string; readonly model: string; readonly toolCount: number }
   // ── 팀 이벤트. 하위 에이전트의 진행은 agent_event 로 감싸서 흘린다(보드가 행 단위로 그린다). ──

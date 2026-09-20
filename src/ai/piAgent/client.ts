@@ -1,3 +1,4 @@
+import { inspectionEpoch, publishPromptInspection } from "../authoring/promptInspection";
 import type { Project } from "@/project/types";
 // 브라우저 → 동반 서비스 `/v1/agent/run` 클라이언트. 요청 하나에 프로젝트 사본을 실어 보내고,
 // NDJSON 진행 이벤트를 받는다. checkpoint는 실제 적용/승인 뒤 ACK하며 done을 최종 결과로 돌려준다.
@@ -22,6 +23,7 @@ export class PiAgentClientError extends Error {
 }
 
 export async function runPiAgentViaCompanion(request: PiAgentRequest, options: RunPiAgentClientOptions = {}): Promise<PiAgentDoneEvent> {
+  const captureEpoch = inspectionEpoch();
   const doFetch = options.fetchImpl ?? fetch;
   const response = await doFetch(companionAuthUrl("/v1/agent/run", request.provider), {
     method: "POST",
@@ -44,7 +46,16 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   let lastError: string | null = null;
   let checkpoints = Promise.resolve();
   let checkpointError: unknown;
+  const receiveInspection = (event: PiAgentEvent): boolean => {
+    if (event.type === "prompt_inspection") {
+      if (!options.signal?.aborted) publishPromptInspection(event.snapshot, captureEpoch);
+      return true;
+    }
+    return event.type === "agent_event" && receiveInspection(event.event);
+  };
   const decoder = createPiAgentLineDecoder((event) => {
+    // Never persist request contents into conversation/audit event logs.
+    if (receiveInspection(event)) return;
     if (event.type === "checkpoint") {
       checkpoints = checkpoints.then(async () => {
         let issue: string | undefined;

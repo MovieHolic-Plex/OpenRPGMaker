@@ -705,7 +705,6 @@
 
 /* Final layout corrections for the authored presets. */
 .runtime-shop-overlay.runtime-shop-preset-split .runtime-shop-brand { flex:0 0 auto; min-width:12rem; }
-.runtime-shop-overlay.runtime-shop-preset-split .runtime-shop-service-nav { flex:1 1 auto; min-width:0; }
 .runtime-shop-overlay.runtime-shop-preset-story .runtime-shop-side { display:flex; flex-direction:column; }
 .runtime-shop-overlay.runtime-shop-preset-story .runtime-shop-detail-name { white-space:normal; overflow-wrap:anywhere; }
 
@@ -796,9 +795,6 @@
 .runtime-shop-preset-tabs-nav { display:flex; gap:4px; flex:1 0 100%; order:3; padding-top:var(--shop-space-2); }
 .runtime-shop-preset-tabs-nav button { border:0; border-bottom:2px solid transparent; background:transparent; color:var(--shop-ink-dim); padding:var(--shop-space-2) var(--shop-space-3); }
 .runtime-shop-preset-tabs-nav button.is-active { color:var(--shop-ink); border-color:var(--shop-accent); }
-.runtime-shop-service-nav { display:flex; gap:2px; flex:1 0 100%; order:3; padding-top:var(--shop-space-2); }
-.runtime-shop-service-nav button { min-width:5rem; border:1px solid var(--shop-line); background:var(--shop-card); color:var(--shop-ink-dim); padding:var(--shop-space-2) var(--shop-space-3); }
-.runtime-shop-service-nav button.is-active { background:var(--shop-accent); color:var(--shop-surface-flat); }
 .runtime-shop-grid-heading,.runtime-shop-stock-banner,.runtime-shop-split-heading,.runtime-shop-compare-heading { display:flex; justify-content:space-between; align-items:center; padding:var(--shop-space-3) var(--shop-space-4); border-bottom:1px solid var(--shop-line); }
 .runtime-shop-grid-heading span,.runtime-shop-stock-banner span,.runtime-shop-split-heading span,.runtime-shop-compare-heading span { color:var(--shop-ink-dim); font-size:var(--shop-text-small); }
 .runtime-shop-stock-banner { background:var(--shop-accent-soft); color:var(--shop-accent); }

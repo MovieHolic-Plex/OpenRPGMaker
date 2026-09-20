@@ -1,3 +1,8 @@
+import { canPayActionSkill } from "@/battle/action/skillEffects";
+import { actionFieldSlow } from "./actionFieldSlow";
+import { applyActionFieldStatus, canCastActionProfile, castActionFieldProfile, clearActionSkills, markActionCast, updateActionSkills } from "./playSceneActionSkills";
+import { normalizeActionSkillProfile } from "@/project/actionCombat";
+import type { ActionSkillProfile } from "@/project/types";
 import { actorOwnedSkillIds } from "@/project/growth/runtime";
 import { store } from "@/project/store";
 import { projectFontStack } from "@/project/fontRegistry";
@@ -181,6 +186,7 @@ function destroyActionCombatVisuals(scene: PlaySceneContext): void {
   const state = scene.actionCombatState;
   if (!state) return;
   for (const enemy of state.enemies.values()) cleanupEnemyVisuals(scene, enemy);
+  clearActionSkills(scene);
   for (const projectile of state.projectiles) projectile.object.destroy();
   state.projectiles.length = 0;
   state.hud?.destroy();
@@ -205,6 +211,8 @@ export function updateActionCombatForScene(scene: PlaySceneContext, deltaMs: num
   updatePlayerDodge(scene, state, deltaMs);
   updateEnemyModes(scene, state, deltaMs);
   updateProjectiles(scene, state, deltaMs);
+  updateActionSkills(scene, deltaMs, (id) => enemyFractionalTilePosition(scene, id),
+    (enemy, profile, elementId) => hitProfileEnemy(scene, state, enemy, profile, elementId));
   applyContactDamage(scene, state);
   redrawEnemyHpBars(scene, state);
   updateActionHudModel(scene, state);
@@ -248,6 +256,7 @@ export function syncActionEnemiesForScene(scene: PlaySceneContext): void {
   if (state.fieldSpawnRuntime !== scene.fieldSpawnState) {
     for (const enemy of state.enemies.values()) cleanupEnemyVisuals(scene, enemy);
     state.enemies.clear();
+    clearActionSkills(scene);
     for (const projectile of state.projectiles) projectile.object.destroy();
     state.projectiles.length = 0;
     state.fieldSpawnRuntime = scene.fieldSpawnState;
@@ -661,12 +670,22 @@ export function tryActionSkillCast(scene: PlaySceneContext): void {
   if (!skillId) return;
   const skill = project.database.skills.find((entry) => entry.id === skillId);
   if (!skill?.actionSkill) return;
+  const profile = normalizeActionSkillProfile(skill.actionSkill);
+  if (!profile || vitals.hp <= 0 || !canCastActionProfile(scene, profile)) return;
+  if (profile.kind === "projectile" && state.projectiles.length >= 128) return;
   const mpCost = battleSkillMpCost(skill, vitals.maxMp);
-  if (vitals.mp < mpCost) return;
-  const ammo = skill.actionSkill.itemCost;
-  if (ammo && (scene.session.inventory[ammo.itemId] ?? 0) < ammo.amount) return;
+  const ammo = profile.itemCost;
+  if (!canPayActionSkill(vitals.mp, mpCost, scene.session.inventory, ammo)) return;
   vitals.mp -= mpCost;
   if (ammo) commitItemRemoval(project, scene, ammo.itemId, ammo.amount);
+  markActionCast(scene, profile);
+  if (profile.kind !== "projectile") {
+    flashSwingArc(scene, scene.facing, profile.kind === "melee" ? profile.range : 1);
+    playActionSe(SE_SWING_RESOURCE_ID);
+    castActionFieldProfile(scene, profile, skill.elementId, (id) => enemyFractionalTilePosition(scene, id),
+      (enemy, effect, elementId) => hitProfileEnemy(scene, state, enemy, effect, elementId));
+    return;
+  }
   const dir = dirDelta(scene.facing);
   spawnProjectileFrom(scene, state, {
     faction: "player",
@@ -676,12 +695,25 @@ export function tryActionSkillCast(scene: PlaySceneContext): void {
     y: scene.tileY,
     dirX: dir.x,
     dirY: dir.y,
-    speedTilesPerSec: skill.actionSkill.speedTilesPerSec ?? DEFAULT_PROJECTILE_SPEED_TILES_PER_SEC,
-    damage: skill.actionSkill.damage,
+    fieldStatus: profile.fieldStatus,
+    speedTilesPerSec: profile.speedTilesPerSec ?? DEFAULT_PROJECTILE_SPEED_TILES_PER_SEC,
+    damage: profile.damage,
     elementId: skill.elementId,
-    maxRangeTiles: skill.actionSkill.range,
+    maxRangeTiles: profile.range,
     color: 0x66ccff,
   });
+}
+
+function hitProfileEnemy(scene: PlaySceneContext, state: ActionCombatSceneState, enemy: ActionEnemyState,
+  profile: ActionSkillProfile, elementId?: string): boolean {
+  if (enemy.hp <= 0 || enemy.dying || !isHittableByFaction(effectiveFactionStance(state.factions,
+    state.factionStanceOverrides, PLAYER_FACTION_ID, enemy.factionId))) return false;
+  const pos = enemyTilePosition(scene, enemy.eventId);
+  if (!pos) return false;
+  const multiplier = typeChartMultiplierForTypes(store.getCurrent(), elementId, [], monsterTypesForRecord(store.getCurrent(), enemy.enemyId));
+  hitActionEnemy(scene, state, enemy, Math.max(1, Math.round(profile.damage * multiplier)), pos.x, pos.y);
+  applyActionFieldStatus(scene, enemy, profile);
+  return true;
 }
 
 // 주인공이 배운 스킬 id 목록(레벌/클래스 오버라이드 반영).
@@ -1147,9 +1179,11 @@ function dirDelta(dir: Dir): { x: -1 | 0 | 1; y: -1 | 0 | 1 } {
   }
 }
 
-function updateEnemyModes(scene: PlaySceneContext, state: ActionCombatSceneState, deltaMs: number): void {
+function updateEnemyModes(scene: PlaySceneContext, state: ActionCombatSceneState, frameDeltaMs: number): void {
   const refs = combatantRefs(scene, state);
   for (const enemy of state.enemies.values()) {
+    const slowMover = scene.autonomousNPCs.get(enemy.eventId);
+    const deltaMs = frameDeltaMs * (slowMover ? actionFieldSlow.get(slowMover) ?? 1 : 1);
     enemy.attackCooldownMs = Math.max(0, enemy.attackCooldownMs - deltaMs);
     const pos = enemyTilePosition(scene, enemy.eventId);
     if (!pos) continue;
@@ -1398,6 +1432,7 @@ function stepDash(scene: PlaySceneContext, state: ActionCombatSceneState, enemy:
 }
 
 interface ProjectileSpawnSpec {
+  readonly fieldStatus?: ActionSkillProfile["fieldStatus"];
   readonly faction: "enemy" | "player";
   readonly ownerId: string;
   readonly ownerFactionId: string;
@@ -1439,6 +1474,7 @@ function spawnProjectileFrom(scene: PlaySceneContext, state: ActionCombatSceneSt
     speedTilesPerMs: spec.speedTilesPerSec / 1000,
     damage: spec.damage,
     elementId: spec.elementId,
+    fieldStatus: spec.fieldStatus,
     traveledTiles: 0,
     maxRangeTiles: spec.maxRangeTiles,
     object,
@@ -1459,14 +1495,15 @@ function updateProjectiles(scene: PlaySceneContext, state: ActionCombatSceneStat
     let consumed = false;
     let blocked = false;
     while (remaining > 0 && !consumed && !blocked) {
-      const step = Math.min(0.5, remaining);
+      const step = Math.min(0.5, remaining, p.maxRangeTiles - p.traveledTiles);
+      if (step <= 0) { blocked = true; break; }
       remaining -= step;
       p.x += p.dirX * step;
       p.y += p.dirY * step;
       p.traveledTiles += step;
       const tx = Math.round(p.x);
       const ty = Math.round(p.y);
-      blocked = p.traveledTiles >= p.maxRangeTiles || !inBounds(scene.map, tx, ty) || !isPassable(project, scene.map, tx, ty);
+      blocked = !inBounds(scene.map, tx, ty) || !isPassable(project, scene.map, tx, ty);
       if (blocked) break;
       // 유탄 명중: 발사자 진영에 우호(1 이상)가 아닌 전투원은 전부 맞는다.
       // 같은 진영은 대각선 기본값이 동맹(2)이라 자연하게 아군 오사에서 면제된다.
@@ -1480,7 +1517,7 @@ function updateProjectiles(scene: PlaySceneContext, state: ActionCombatSceneStat
         break;
       }
       for (const enemy of [...state.enemies.values()]) {
-        if (enemy.eventId === p.ownerId) continue;
+        if (enemy.eventId === p.ownerId || enemy.dying || enemy.hp <= 0) continue;
         const pos = enemyTilePosition(scene, enemy.eventId);
         // 투사체는 **몸 사각** 어디에 닿아도 명중이다 — 앵커 칸만 보면 3x3 적을 관통했다.
         // 진영 게이트는 main 의 판정을 그대로 통과시킨다(기하만 넓힌다).
@@ -1488,14 +1525,17 @@ function updateProjectiles(scene: PlaySceneContext, state: ActionCombatSceneStat
         if (!isHittableByFaction(effectiveFactionStance(state.factions, state.factionStanceOverrides, p.ownerFactionId, enemy.factionId))) continue;
         const multiplier = typeChartMultiplierForTypes(project, p.elementId, [], monsterTypesForRecord(project, enemy.enemyId));
         const damage = Math.max(1, Math.round(p.damage * multiplier));
-        if (p.ownerId === PLAYER_COMBATANT_ID) hitActionEnemy(scene, state, enemy, damage, tx, ty);
+        if (p.ownerId === PLAYER_COMBATANT_ID) {
+          hitActionEnemy(scene, state, enemy, damage, tx, ty);
+          applyActionFieldStatus(scene, enemy, { kind: "projectile", damage: p.damage, range: p.maxRangeTiles, fieldStatus: p.fieldStatus });
+        }
         else damageEnemyByNpc(scene, state, enemy, p.ownerId, damage);
         consumed = true;
         break;
       }
     }
     p.object.setPosition(characterSpriteX(p.x), characterSpriteY(p.y) - TILE_SIZE / 2);
-    if (consumed || blocked) {
+    if (consumed || blocked || p.traveledTiles >= p.maxRangeTiles) {
       p.object.destroy();
       state.projectiles.splice(i, 1);
     }

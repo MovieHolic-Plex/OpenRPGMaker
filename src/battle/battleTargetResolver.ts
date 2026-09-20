@@ -41,9 +41,10 @@ export function resolveBattleTargets<T extends BattleTarget>(options: {
   readonly actors: readonly T[];
   readonly enemies: readonly T[];
   readonly requestedTargetId?: string;
+  readonly includeDefeatedAllies?: boolean;
 }): BattleTargetResolution<T> {
   const userSide: BattleTargetSide = options.actors.some((entry) => sameBattler(entry, options.user)) ? "actor" : "enemy";
-  const allies = (userSide === "actor" ? options.actors : options.enemies).filter(isLiving);
+  const allies = (userSide === "actor" ? options.actors : options.enemies).filter(target => options.includeDefeatedAllies || isLiving(target));
   const opponents = (userSide === "actor" ? options.enemies : options.actors).filter(isLiving);
   const side: BattleTargetSide = options.scope === "self" || options.scope === "ally" || options.scope === "allAllies"
     ? userSide
