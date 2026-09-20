@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **72쪽 / 3059KB / 약 866,523 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **72쪽 / 3060KB / 약 866,725 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -233,7 +233,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L262` Shared AI analysis drafts (2026-09-08)
 - `L303` Traps
 
-### `openwiki/castle-map.md` — 19KB · 317줄 · ~4,874 토큰
+### `openwiki/castle-map.md` — 20KB · 330줄 · ~5,076 토큰
 
 - `L5` Goal
 - `L9` Modules (Combined Town)
@@ -252,6 +252,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L238` Grand river fortress city (2026-09-21)
 - `L290` Visual-style rejection and reference study (2026-09-21)
 - `L303` Reference revision and durable tile study (2026-09-21)
+- `L318` Density improvement 01 (2026-09-21)
 
 ### `openwiki/castle-reference-art-direction.md` — 1KB · 11줄 · ~192 토큰
 

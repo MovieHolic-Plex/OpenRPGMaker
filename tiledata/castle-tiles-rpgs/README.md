@@ -5,6 +5,8 @@
 
 **현재 수정본도 바닥·밀도 기준 미달이다.** 먼저 [적대적 재검토](ADVERSARIAL_REVIEW.md)와 `audit/` 비교 이미지를 본다.
 
+후속 개선: [밀도 개선 01](improvements/density-01/README.md). 과거 미달 판정은 해당 시점의 증거로 보존한다.
+
 ## 읽을 순서
 
 1. `reference/user-castle.png` 원본과 `reference/rejected-layout.png` 실패작을 나란히 본다.
