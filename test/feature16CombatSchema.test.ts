@@ -9,6 +9,8 @@ import fixture from './fixtures/projects/battle-v3.json';
 describe('feature16 combat authoring persistence', () => {
   it('roundtrips authored rules through the editor mutator and project wire load/save', () => {
     const project = deserialize(JSON.stringify(fixture));
+    project.switches.push({ id: 'bonus', name: '추가 보상' });
+    project.database.states.push({ ...project.database.states[0], id: 'poison', name: '독' });
     const id = project.database.skills[0].id;
     const patch = { damageFormula: 'power + a.atk * 2 - b.def', criticalRate: 0, criticalMultiplier: 2.5, cooldownTurns: 2, hitSequence: [1, 0.5, 2], hitRate: 74 };
     updateSkillRecord(project.database, id, patch);

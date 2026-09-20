@@ -1,4 +1,4 @@
-import { numberField as climateNumberField, selectLiteral } from "@/editor/panels/databaseControls";
+import { numberField as climateNumberField, selectField as climateSelectField } from "@/editor/panels/databaseControls";
 import {
   resizeMap, renameMap, setMapEncounterRate, setMapEncounterTable, setMapFieldSpawns, setMapTileset,
   setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapMinimap,
@@ -1370,16 +1370,20 @@ function jsonArrayField(
 }
 
 function renderClimateTab(host: HTMLElement, map: import("@/project/types").GameMap): void {
+  const panel = el("div");
+  host.append(panel);
   const render = (): void => {
     const climate = store.getCurrent().maps[map.id]?.climate;
-    host.replaceChildren(selectLiteral("기후 방식", "map-climate-mode", climate?.mode ?? "inherit",
-      ["inherit", "fixed", "indoor"], (mode) => {
+    panel.replaceChildren(climateSelectField("기후 방식", "map-climate-mode", climate?.mode ?? "inherit",
+      [{ id: "inherit", name: "전역 날씨 따르기" }, { id: "fixed", name: "이 맵의 날씨 고정" }, { id: "indoor", name: "실내 · 날씨 차단" }], (value) => {
+        const mode = value as "inherit" | "fixed" | "indoor";
         setMapClimate(map.id, mode === "fixed" ? { mode, weather: "rain", intensity: 0.5 } : { mode });
         render();
       }));
     if (climate?.mode !== "fixed") return;
-    host.append(selectLiteral("날씨", "map-climate-weather", climate.weather,
-      ["none", "rain", "snow", "storm", "fog"], (weather) => {
+    panel.append(climateSelectField("날씨", "map-climate-weather", climate.weather,
+      [{ id: "none", name: "맑음" }, { id: "rain", name: "비" }, { id: "snow", name: "눈" }, { id: "storm", name: "폭풍" }, { id: "fog", name: "안개" }], (value) => {
+        const weather = value as "none" | "rain" | "snow" | "storm" | "fog";
         const current = store.getCurrent().maps[map.id]?.climate;
         setMapClimate(map.id, { ...(current?.mode === "fixed" ? current : climate), weather }); render();
       }), climateNumberField("강도", "map-climate-intensity", climate.intensity, (intensity) => {

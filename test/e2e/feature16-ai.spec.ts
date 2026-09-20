@@ -1,3 +1,4 @@
+import { readyEditor } from '../../scripts/qa/feature16-editor-boot.mjs';
 import { test, expect, type Page } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 const output = 'verify-shots/feature16-ai';
@@ -17,6 +18,7 @@ test('feature16: real editor library, dialogue review, source navigation and wir
     await route.continue();
   });
   await page.goto('/?blankProject=1');
+  await readyEditor(page);
   await expect(page.getByTestId('edit-canvas')).toBeVisible({ timeout: 60000 });
   await page.evaluate(async () => {
     const { createBlankProject } = await import('/src/project/defaults.ts');

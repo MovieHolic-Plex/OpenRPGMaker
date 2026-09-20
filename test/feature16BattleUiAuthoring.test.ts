@@ -9,6 +9,7 @@ import fixture from "./fixtures/projects/battle-v3.json";
 
 function setup() {
   const project = deserialize(JSON.stringify(fixture));
+  project.switches.push({ id: "sw_keep", name: "행동 후 스위치" });
   const troop = project.database.troops.find(t => t.id === "troop_slime")!;
   const enemy = project.database.enemies.find(e => e.id === "enemy_slime")!;
   const skill = project.database.skills[0]!;

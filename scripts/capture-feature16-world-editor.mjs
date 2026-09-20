@@ -1,3 +1,4 @@
+import { readyEditor } from "./qa/feature16-editor-boot.mjs";
 // Existing parent-owned editor server only. All edits stay in an isolated fresh project.
 import { chromium, expect } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -20,11 +21,12 @@ try {
   await page.goto(`${base}/?freshProject=1`);
   const guest = page.getByTestId("login-guest");
   if (await guest.isVisible().catch(() => false)) await guest.click();
-  await page.getByTestId("edit-canvas").waitFor({ state: "visible", timeout: 120000 });
-  for (const id of ["standard-welcome-start", "editor-welcome-close", "editor-welcome-dismiss", "coachmark-done"]) {
+  await readyEditor(page);
+  for (const id of ["standard-welcome-start", "editor-welcome-close", "editor-welcome-dismiss", "coachmark-done", "coach-mark-skip"]) {
     const control = page.getByTestId(id);
     if (await control.isVisible().catch(() => false)) await control.click();
   }
+  await page.getByTestId("sidebar-tools").click();
   await page.getByTestId("palette-tileset-name").first().click();
   await page.getByTestId("map-props-tab-climate").click();
   await page.getByTestId("map-climate-mode").selectOption("fixed");
@@ -38,7 +40,13 @@ try {
   await page.keyboard.press("Escape");
   await page.getByTestId("toolbar-database").click();
   const skillTab = page.getByTestId("db-tab-skills");
-  if (!await skillTab.isVisible()) await page.getByTestId("db-tab-group-party").click();
+  if (!await skillTab.isVisible()) {
+    const groups = page.locator('[data-testid^="db-tab-group-"]');
+    for (let i = 0; i < await groups.count(); i++) {
+      await groups.nth(i).click();
+      if (await skillTab.isVisible()) break;
+    }
+  }
   await skillTab.click();
   const row = page.locator('[data-testid^="db-record-row-"], [data-testid^="db-record-card-"]').first();
   await row.click();
@@ -52,7 +60,10 @@ try {
     await page.getByTestId("db-field-skill-action-status-duration").fill("2000");
     await page.getByTestId("db-field-skill-action-status-duration").blur();
     if (kind === "trap") await expect(page.getByTestId("db-field-skill-action-duration")).toBeVisible();
-    await page.getByTestId("db-skill-card-action").screenshot({ path: `${out}/action-${kind}.png` });
+    await expect(page.getByTestId("db-field-skill-action-kind")).toHaveValue(kind);
+    await expect(page.getByTestId("db-field-skill-action-status-duration")).toHaveValue("2000");
+    await page.getByTestId("db-skill-card-action").scrollIntoViewIfNeeded();
+    await page.screenshot({ path: `${out}/action-${kind}.png` });
   }
   // Observe canonical store + real serializer after UI changes; no synthetic mounts.
   const receipt = await page.evaluate(async () => {

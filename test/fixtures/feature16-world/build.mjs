@@ -9,7 +9,7 @@ export function feature16WorldFixture(base, kind = "melee") {
   map.actionCombat = true; map.climate = { mode: "inherit" };
   const template = structuredClone(map.events[0].pages[0]);
   const event = (id, x, y, commands, trigger = "action") => ({ id, x, y, trigger: { kind: trigger }, commands: [],
-    pages: [{ ...structuredClone(template), id: `${id}_page`, name: id, movement: { type: "fixed" },
+    pages: [{ ...structuredClone(template), id: `${id}_page`, name: id, movement: { type: "fixed", speed: 3, frequency: 3 },
       conditions: [], trigger: { kind: trigger }, commands }] });
   const indoorId = "map_feature16_indoor";
   const boot = event("feature16_rain", 0, 0, [{ kind: "setWeather", weather: "rain", intensity: 0.8 },
@@ -29,7 +29,7 @@ export function feature16WorldFixture(base, kind = "melee") {
   enemy.actionProfile = { contactDamage: 0, knockbackResist: 1, aggroRange: 1, moveIntervalMs: 10000 };
   const troop = project.database.troops[0]; troop.enemyIds = [enemy.id];
   troop.members = [{ enemyId: enemy.id, x: 168, y: 112, hidden: false }];
-  map.fieldSpawns = [{ id: "feature16_target", troopId: troop.id, area: { x: 4, y: 3, width: 1, height: 1 },
+  map.fieldSpawns = [{ id: "feature16_target", troopId: troop.id, area: { x: 4, y: 3, w: 1, h: 1 },
     maxAlive: 1, respawnSec: 999, chase: false }];
   const skill = { ...structuredClone(project.database.skills[0]), id: "skill_feature16", name: `Feature16 ${kind}`, mpCost: { flat: 2, percentMax: 0 },
     actionSkill: { kind, damage: 25, range: 2, cooldownMs: 500, durationMs: 2500, speedTilesPerSec: 6,

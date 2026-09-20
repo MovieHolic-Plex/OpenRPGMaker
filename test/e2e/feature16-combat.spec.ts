@@ -1,3 +1,4 @@
+import { readyEditor } from '../../scripts/qa/feature16-editor-boot.mjs';
 import { expect, test } from '@playwright/test';
 import { DATABASE_TAB_SPECS, exportedProject, openDatabase, switchDatabaseTab } from './oprn-database-helpers';
 
@@ -7,6 +8,7 @@ test('feature16-combat real editor authoring and screenshot proof', async ({ pag
   await page.addInitScript(() => localStorage.setItem('oprn:editor-ui-mode', 'expert'));
   // Disposable editor fixture; no remote project data is modified.
   await page.goto('/?freshProject=1');
+  await readyEditor(page);
   await openDatabase(page);
   await switchDatabaseTab(page, DATABASE_TAB_SPECS.find(tab => tab.slug === 'skills')!);
   const formula = page.getByTestId('feature16-damage-formula');

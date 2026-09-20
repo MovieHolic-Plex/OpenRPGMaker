@@ -82,11 +82,12 @@ describe('feature16 conditions, drops, resources and prediction', () => {
   });
   it('keeps exact Gen1 accuracy/type semantics with authored critical and base overrides', () => {
     const move: Gen1MoveInput = { level: 20, power: 40, damageClass: 'physical', baseSpeed: 60, criticalRate: 'normal', offense: { unmodified: 40, modified: 40 }, defense: { unmodified: 30, modified: 30 }, burned: false, stab: false, typeFactors: [10], baseAccuracyByte: 255 };
-    const run = (input: Gen1MoveInput) => { const bytes = [0, 255, 0]; return resolveGen1DamagingMove(input, () => bytes.shift() ?? 255); };
+    const run = (input: Gen1MoveInput, accuracyByte = 0) => { const bytes = [0, 255, accuracyByte]; return resolveGen1DamagingMove(input, () => bytes.shift() ?? 255); };
     expect(run(move)).toEqual(run({ ...move, criticalChancePercent: undefined, criticalMultiplier: undefined, baseDamageOverride: undefined }));
     const overridden = { ...move, criticalChancePercent: 100, criticalMultiplier: 3, baseDamageOverride: 20 };
     expect(run(overridden)).toMatchObject({ hit: true, critical: true, damage: 60 });
-    expect(run({ ...overridden, baseAccuracyByte: 0 }).hit).toBe(false);
+    // Gen1 stat scaling retains its native minimum accuracy byte of 1.
+    expect(run({ ...overridden, baseAccuracyByte: 0 }, 1).hit).toBe(false);
     expect(run({ ...overridden, typeFactors: [0] })).toMatchObject({ hit: false, damage: 0, missReason: 'type' });
   });
 });

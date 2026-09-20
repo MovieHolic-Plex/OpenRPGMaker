@@ -1,3 +1,4 @@
+import { validateMapClimateInput } from "./combatAuthoringValidation";
 import { mapClimateSchema } from "./combatAuthoringSchemas";
 import { normalizeMapClimate } from "@/project/mapClimate";
 // editor/tools/mapTools.ts
@@ -1727,6 +1728,7 @@ const setMapProperties: ToolDefinition = {
       delete map.climate;
       changed.push("기후=전역 상속");
     } else if (args.climate !== undefined) {
+      validateMapClimateInput(args.climate);
       const climate = normalizeMapClimate(args.climate);
       if (!climate) throw new ToolError("climate.mode는 inherit, indoor, fixed 중 하나여야 합니다.", { code: "invalid-args" });
       map.climate = climate;

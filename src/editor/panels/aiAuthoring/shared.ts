@@ -19,6 +19,6 @@ export function saveSettings(label: string, edit: (draft: AiAuthoring) => void):
     const next = normalizeAiAuthoring(project.aiAuthoring);
     edit(next);
     project.aiAuthoring = normalizeAiAuthoring(next);
-  }, { label, fields: [{ path: 'aiAuthoring' }] });
+  }, { scope: 'project', label, fields: [{ path: 'aiAuthoring' }] });
 }
 export interface FeaturePane { root: HTMLElement; dispose: () => void }

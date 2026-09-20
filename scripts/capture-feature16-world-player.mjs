@@ -13,6 +13,9 @@ try {
   for (const kind of ["melee", "dash", "trap", "projectile"]) {
     await prepareFeature16WorldFixture(kind);
     const page = await browser.newPage();
+    page.setDefaultTimeout(30000);
+    page.on("pageerror", error => console.error("PAGEERROR", error.message));
+    console.log("starting", kind);
     const report = await runRuntimeQa(page, scenario, { serverUrl: server.url, outDir: `${out}/${kind}` });
     assert.equal(report.errors.length, 0, JSON.stringify(report.errors));
     assert.equal(report.beats.some((beat) => beat.failures.length), false, JSON.stringify(report.beats));
@@ -61,4 +64,10 @@ try {
   await mkdir(out, { recursive: true });
   await writeFile(`${out}/proof.json`, JSON.stringify(receipts, null, 2));
   await writeFile(`${out}/SUMMARY.md`, "# Feature16 world\n\nReal player keyboard proof passed for melee/dash/trap/projectile and indoor/outdoor weather.\n\n즉시 확인: */indoor.png, */cast.png\n");
+} catch (error) {
+  for (const context of browser?.contexts() ?? []) for (const page of context.pages()) {
+    console.error((await page.locator('body').innerText()).slice(0, 3000));
+    await page.screenshot({ path: '/tmp/feature16-world-runtime-failure.png' }).catch(() => {});
+  }
+  throw error;
 } finally { try { await browser?.close(); } finally { await server.close(); } }
