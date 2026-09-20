@@ -1,3 +1,4 @@
+import { activityPayload } from "../../src/ai/activityTrace.ts";
 import { finishSpatialToolAcceptance, authorMergedSpatialProposal } from "../../src/editor/tools/spatialToolState.ts";
 import { mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
 import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
@@ -63,12 +64,13 @@ function trimText(value: unknown, max: number): string {
 }
 
 export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOptions = {}): Promise<PiAgentDoneEvent> {
-  const emit = (event: PiAgentEvent) => options.onEvent?.(event);
+  const emit = (event: PiAgentEvent) => options.onEvent?.({ ...event, at: event.at ?? Date.now() });
   const base = request.project;
   const ctx = { project: structuredClone(base) as Project };
   const model = resolvePiModel(request.provider, request.model);
-  // 툴 요약은 어댑터(onCall)가 알고, 호출 id 는 코어 이벤트가 안다. 이름별 FIFO 로 둘을 맞춘다.
-  const pendingSummaries = new Map<string, { ok: boolean; summary: string }[]>();
+  // 어댑터와 코어 이벤트의 호출 id로 결과를 연결한다. 같은 이름의 병렬 호출도 섞지 않는다.
+  const pendingSummaries = new Map<string, { ok: boolean; summary: string; result: unknown }>();
+  const toolStartedAt = new Map<string, number>();
   // `tools` 는 Agent.initialState 에 참조로 들어가 state.tools === context.tools 가 된다.
   // 코어 루프가 매 턴 이 배열에서 요청을 만들므로, in-place push 가 곧 다음 턴의 선언이다 —
   // 배열 교체(setTools)는 진행 중 루프에 닿지 않는다(컨텍스트가 같은 배열을 잡고 있어서다).
@@ -92,9 +94,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     exposed.add(shape.name);
   };
   const recordCall = (record: PiToolCallRecord): void => {
-    const queue = pendingSummaries.get(record.name) ?? [];
-    queue.push({ ok: record.result.ok, summary: trimText(record.result.summary, 400) });
-    pendingSummaries.set(record.name, queue);
+    if (record.toolCallId) pendingSummaries.set(record.toolCallId, { ok: record.result.ok, summary: trimText(record.result.summary, 400), result: activityPayload(record.result) });
     // find_tools 수확 — 발견된 이름을 다음 턴 요청부터 실제로 선언한다(세션의 에스컬레이션 이식).
     if (record.name === "find_tools") {
       const found = harvestFindToolsNames(record.result);
@@ -251,15 +251,22 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     }
     if (event.type === "tool_execution_start") {
       toolCalls += 1;
+      toolStartedAt.set(String(event.toolCallId ?? ""), Date.now());
       emit({ type: "tool_start", id: String(event.toolCallId ?? ""), name: String(event.toolName ?? ""), args: event.args });
       return;
     }
     if (event.type === "tool_execution_end") {
       if (event.isError) toolErrors += 1;
       const name = String(event.toolName ?? "");
-      const record = pendingSummaries.get(name)?.shift();
+      const callId = String(event.toolCallId ?? "");
+      const record = pendingSummaries.get(callId);
+      pendingSummaries.delete(callId);
+      const toolAt = toolStartedAt.get(callId);
+      toolStartedAt.delete(callId);
       emit({
         type: "tool_end",
+        result: record?.result ?? activityPayload(event.result),
+        ...(toolAt === undefined ? {} : { durationMs: Date.now() - toolAt }),
         id: String(event.toolCallId ?? ""),
         name,
         ok: record ? record.ok : !event.isError,

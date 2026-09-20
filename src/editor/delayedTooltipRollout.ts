@@ -32,6 +32,7 @@ export const DELAYED_TOOLTIP_ROLLOUT: readonly DelayedTooltipTarget[] = [
   { label: "AI 설정", name: "AI 설정 열기", testid: "topbar-ai-settings" },
   { label: "전체화면", name: "전체화면 전환", testid: "window-fullscreen" },
   { label: "새 대화", name: "새 대화 시작", testid: "ai-new-chat" },
+  { label: "크게 보기", name: "조수와 팀 크게 보기", testid: "ai-wide-open" },
   { label: "명령 메뉴", name: "조수 명령 메뉴 열기", testid: "ai-command-menu-toggle" },
   { label: "중단", name: "실행 중인 조수 작업 중단", testid: "ai-abort" },
   { label: "모두", name: "레이어 필터: 모든 타일", testid: "tileset-layer-filter-all" },

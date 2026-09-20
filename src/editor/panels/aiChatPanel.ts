@@ -1,3 +1,4 @@
+import { createActivityToolbar } from "./aiActivityView";
 import { onlyEventPageCommandsChanged } from "@/ai/eventCommandScope";
 import { createProjectSuggestions } from "./aiProjectSuggestions";
 import { focusEditorRegion } from "@/editor/editorReferenceNavigation";
@@ -56,6 +57,7 @@ import { store } from "@/project/store";
 import { parsePiCommand, plainPiCommand, runPiCommand, type ParsedPiCommand, type PiChangeReceipt } from "./aiPiAgentCommand";
 import { createTeamPanel } from "./aiTeamPanel";
 import { createAiTeamSidebar } from "./aiTeamSidebar";
+import { createAssistantWide } from "./aiAssistantWide";
 import { createInlineWorkCard } from "./aiInlineWorkCard";
 import { buildSessionRegistryTools } from "@/ai/sessionToolExposure";
 import { currentTeamActivity, setTeamStopHandler } from "@/ai/piAgent/teamActivity";
@@ -484,7 +486,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 도는 턴이 있을 때만 이 카드를 「진행 중」으로 붙잡는다. 턴이 끝난 뒤 늦게 도착한 알림이
     // 만든 카드는 `finishWorkCard` 가 다시 오지 않아 영영 「작업 중」으로 남는다.
     const ownerless = !turnBusy;
-    const card = createInlineWorkCard({ title: workCardTitle || "작업 중", onStop: () => abortActiveTurn(), ownerless });
+    const card = createInlineWorkCard({ title: workCardTitle || "작업 중", onStop: () => abortActiveTurn(), ownerless, projectId: store.getProjectIdentity().id });
     log.append(card.root);
     // 주인 없는 카드는 슬롯을 차지하지 않는다 — 다음 턴이 이 카드를 물려받으면 「작업 결과」인 채로
     // 진행을 그리게 되어 같은 거짓말이 반대 방향으로 난다.
@@ -662,9 +664,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
   };
   const flushPendingActivitySwaps = (): void => flushPendingActivitySwapsThrough();
-  const startLiveActivity = (toolName: string, index: number): void => {
+  const startLiveActivity = (toolName: string, index: number, args?: Record<string, unknown>): void => {
     // 동기 도구가 연달아 오면 앞 행을 먼저 확정해 기록 순서를 지키고 마지막 행만 머문다.
     flushPendingActivitySwaps();
+    ensureWorkCard().recordActivity?.({ type: "tool_start", id: toolName, name: toolName, args: args ?? {} });
     runningActivity?.row.remove();
     if (runningProgress) runningProgress.toolCount = Math.max(runningProgress.toolCount, index);
     const line = el("span", { class: "ai-activity-live-line" });
@@ -687,6 +690,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     result: Parameters<typeof appendToolLine>[1],
     args?: Record<string, unknown>,
   ): void => {
+    ensureWorkCard().recordActivity?.({ type: "tool_end", id: toolName, name: toolName, ok: result.ok, summary: result.summary, result: { ...result, arguments: args } });
     const matchedLiveActivity = runningActivity?.toolName === toolName;
     if (!matchedLiveActivity) bumpToolProgress();
     studioToolLines.unshift(formatToolActivityLine(toolName, result));
@@ -1838,7 +1842,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     endTurnProgress: () => endTurnProgress(),
     refreshRunningStatus: (record) => refreshRunningStatus(record),
     refreshAbortButton: () => refreshAbortButton(),
-    startLiveActivity: (toolName, index) => startLiveActivity(toolName, index),
+    startLiveActivity: (toolName, index, args) => startLiveActivity(toolName, index, args),
     completeLiveActivity: (toolName, result, args) => completeLiveActivity(toolName, result, args),
     expandForAiWork: () => expandForAiWork(),
     scheduleCollapseAfterAiWork: () => scheduleCollapseAfterAiWork(),
@@ -2299,7 +2303,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       studioShell.refreshMonitor();
     }
   });
-  const unsubscribeContextStore = store.subscribe(() => {
+  const unsubscribeContextStore = store.subscribe((_project, change) => {
+    if (change?.projectSwitch) panelRoot?.querySelector(".ai-activity-toolbar")?.dispatchEvent(new Event("ai-project-switch"));
     // 항목 편집·은퇴·삭제가 저장소에서 오면 재사용 선택도 그 사실을 따른다(조용한 부활 금지).
     planningReuseControl?.refresh();
     refreshContextChips();
@@ -2911,7 +2916,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const deck = el("div", {
     class: "ai-deck",
     dataset: { testid: "ai-deck" },
-    children: [rail.root, body, outcomeSlot, commandBar],
+    children: [rail.root, createActivityToolbar(() => store.getProjectIdentity().id), body, outcomeSlot, commandBar],
   });
   deckRoot = deck;
 
@@ -2932,6 +2937,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const teamSidebar = createAiTeamSidebar({ settings: teamPanel.root });
   // The editor mounts this sibling in the right rail; this panel owns its lifetime.
   panel.append(teamSidebar.root);
+  const wideButton = el("button", { class: "ai-composer-menu-btn", attrs: { type: "button", title: "조수와 팀 크게 보기", "aria-label": "조수와 팀 크게 보기", "aria-expanded": "false", "aria-haspopup": "dialog" }, dataset: { testid: "ai-wide-open" }, children: [deckIcon("expand")] }) as HTMLButtonElement;
+  rail.actions.prepend(wideButton);
+  const wideAssistant = createAssistantWide(panel, teamSidebar.root, wideButton, () => teamSidebar.openFirstMember());
   // 오버레이가 컴포저를 덮지 않도록 "바 + 열린 팝오버"의 최상단까지를 실측해 CSS 변수로 흘린다.
   // (bottom 76px 고정은 칩 행 + 여러 줄 입력으로 커진 바를 덮었다 — H01 실측.)
   // 하단 여백(--ai-command-bar-inset)도 같은 실측에서 나온다 — 144px 하드코딩은 실제
@@ -3601,6 +3609,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     moveChrome.dispose();
     studioShell?.dispose();
     studioShell = null;
+    wideAssistant.dispose();
     teamSidebar.dispose();
     suggestions.dispose();
 
