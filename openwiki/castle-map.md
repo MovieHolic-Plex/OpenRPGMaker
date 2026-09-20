@@ -314,3 +314,16 @@ river and compact two-boat landing. Olive grass, simplified banks and sparse
 vegetation still differ from the reference; do not call it a visual match.
 Runtime evidence: `output/castle-reference-revision/runtime/SUMMARY.md`,
 19 beats /0 failures; hosted editor evidence in the neighboring `editor/` directory.
+
+## Density improvement 01 (2026-09-21)
+
+The follow-up adversarial review and paired crops are retained in
+`tiledata/castle-tiles-rpgs/audit/`. The next iteration lives under
+`tiledata/castle-tiles-rpgs/improvements/density-01/`, including source rectangles,
+provenance, before/after counting scope, actual editor capture and reload proof.
+`scripts/improve-castle-density.mts <project-export.json>` builds the revised
+forecourt material, bordered tree bed, grouped pots/crates and medium canopies.
+The adapted masonry floor is not claimed to be the reference's exact paving.
+SQLite revision10 and the remote copy reloaded equally; 19 dedicated-player
+beats passed. Grass, shoreline/path transitions and exterior scene remain
+visually below the reference and are explicitly recorded for the next iteration.
