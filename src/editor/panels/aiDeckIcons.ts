@@ -15,7 +15,7 @@ export const DECK_ICON_NAMES = [
   "plus", "clock", "more", "chevron-down", "chevron-right", "arrow-up", "stop", "check", "spark", "pin",
   "selection", "x", "undo", "expand", "list", "question", "gear", "export", "book", "compress", "wrench",
   "scroll", "eye", "house", "wall", "road", "door", "box", "user", "shop", "flag", "grid", "shield", "map",
-  "tree", "link", "search", "memory",
+  "tree", "link", "search", "memory", "alert",
 ] as const;
 
 export type DeckIconName = (typeof DECK_ICON_NAMES)[number];
@@ -39,6 +39,8 @@ const SHAPES: Readonly<Record<DeckIconName, readonly Shape[]>> = {
   stop: [rect(6, 6, 12, 12, 2)],
   check: [path("M5 12.5l4.5 4.5L19 7.5")],
   spark: [path("M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z")],
+  // 느낌표 — 「살펴볼 것이 있다」는 뜻. 물음표(question)와 헷갈리지 않게 삼각형 안에 세운다.
+  alert: [path("M12 3.5l9 16H3z"), path("M12 10v4"), circle(12, 17, 0.9)],
   pin: [path("M12 21s-6-5.3-6-11a6 6 0 1 1 12 0c0 5.7-6 11-6 11z"), circle(12, 10, 2.2)],
   selection: [path("M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2")],
   x: [path("M6 6l12 12M18 6L6 18")],
