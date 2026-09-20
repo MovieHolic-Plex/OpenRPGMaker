@@ -35,6 +35,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - Editor index: `openwiki/editor-workflows.md` (slim TOC linking to the above)
    - 연결 던전 생성 (방 그래프·복합 절벽·맥락 소품): `openwiki/connected-dungeon-generation.md`
    - Castle / keep map modules (`map_castle_keep` gold): `openwiki/castle-map.md`
+   - 성채 참고 이미지의 구도·색·지형·생활감 및 직전 제작물 반려 근거: `tiledata/castle-tiles-rpgs/README.md` (새 성채 저작 전에 읽기; 원본/반려/수정 이미지와 실측 좌표 포함)
    - Large river/market village generation (bbox → houses → roads): `openwiki/large-village-generation.md`
    - Terrain autotiles, template-block anchors, water/animation wiring: `openwiki/autotiles.md`
    - Runtime pre-edit routing & cautions (read first): `openwiki/runtime-pre-edit-routing.md`

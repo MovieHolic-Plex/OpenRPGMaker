@@ -93,6 +93,21 @@ body.editor-ui-beginner .canvas-toolbar.is-basic-chrome .zoom-button,
 }
 
 /* shell/editor-ui-modes.css:474-478 */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.custom-palette.source-layout {
+  overflow-x: auto !important;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .source-layout .chipset-grid.custom-palette-grid {
+  --chipset-cell: 16px;
+  grid-template-columns: repeat(var(--custom-cols), var(--chipset-cell)) !important;
+  max-width: none !important;
+  gap: 0;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .source-layout .chipset-tile {
+  border-radius: 0;
+}
+
 .left-panel-stack[data-testid="left-palette-root"] .chipset-grid.custom-palette-grid .chipset-tile {
   height: var(--chipset-cell);
   min-width: 0;

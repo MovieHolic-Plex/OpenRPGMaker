@@ -1,0 +1,26 @@
+Castle courtyard: harbor and nature atlas
+
+Castle2: Zabin, Hyptosis, Daniel Cook — CC-BY 3.0.
+https://opengameart.org/content/castle-tiles-for-rpgs
+https://creativecommons.org/licenses/by/3.0/
+The first 512x512 pixels are unchanged from opengameart-castle-tiles.png.
+
+Farming/fishing props and crops: Daniel Eddeland (Daneeklu).
+Used under CC-BY-SA 3.0 from the dual-licensed LPC submission.
+https://opengameart.org/content/farming-tilesets-magic-animations-and-ui-elements
+https://opengameart.org/sites/default/files/lpc-art/lpc_daneeklu.tar_.gz
+Original author readme: sources/DANIEL-EDDELAND-README.txt
+
+Trees, shrubs, rocks, vegetation, soil and stone statue: Hyptosis — CC-BY 3.0.
+https://opengameart.org/content/lots-of-free-2d-tiles-and-sprites-by-hyptosis
+Sources: hyptosis_tile-art-batch-1.png, hyptosis_tile-art-batch-3.png.
+
+Adaptation: measured rectangles packed into a 16px atlas; separated tree crown,
+trunk and roots assembled with overlap, omitting neighbouring atlas graphics.
+No scaling, recolouring, screenshot extraction or AI-generated art.
+See manifest.json and scripts/pack-castle-surroundings.py for exact provenance.
+The combined/adapted atlas is distributed under CC-BY-SA 3.0.
+https://creativecommons.org/licenses/by-sa/3.0/
+This asset notice does not change the software code's license.
+
+Reference revision: bare tree with round base, orange tree, small green tree, fine ground and cliff rectangles from Hyptosis batch 3. See supplement-parts.json for exact source pixel rectangles and hash. Packed without scaling or recolouring.

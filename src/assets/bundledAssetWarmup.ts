@@ -4,6 +4,7 @@
 
 import {
   ASSET_TILESET,
+  BUNDLED_REFERENCE_CHIPSET_ASSETS,
   BUNDLED_EASYRPG_CHARSET_ASSETS,
   BUNDLED_EASYRPG_CHIPSET_ASSETS,
   TEX_DIALOGUE_FRAME,
@@ -26,6 +27,10 @@ export function listBundledPlayAssetPaths(project?: Project): readonly string[] 
   const paths = new Set<string>([ASSET_TILESET, DIALOGUE_FRAME_PATH, EMOTE_ASSET_PATH]);
 
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
+    if (used && !used.has(asset.textureKey)) continue;
+    paths.add(asset.path);
+  }
+  for (const asset of BUNDLED_REFERENCE_CHIPSET_ASSETS) {
     if (used && !used.has(asset.textureKey)) continue;
     paths.add(asset.path);
   }
@@ -75,6 +80,9 @@ function projectReferencedTextureKeys(project: Project): Set<string> {
   collectStrings(project, strings);
   const keys = new Set<string>([ASSET_TILESET, TEX_DIALOGUE_FRAME]);
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
+    if (strings.has(asset.textureKey)) keys.add(asset.textureKey);
+  }
+  for (const asset of BUNDLED_REFERENCE_CHIPSET_ASSETS) {
     if (strings.has(asset.textureKey)) keys.add(asset.textureKey);
   }
   for (const asset of BUNDLED_EASYRPG_CHARSET_ASSETS) {

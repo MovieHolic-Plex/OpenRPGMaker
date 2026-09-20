@@ -1,5 +1,30 @@
 # Asset Attribution
 
+## Castle tiles for RPGs — OpenGameArt
+
+- File: `opengameart-castle-tiles.png` (512×512 RGBA, original pixels unchanged)
+- Authors: Zabin, Hyptosis, and Daniel Cook (Danc)
+- Source: https://opengameart.org/content/castle-tiles-for-rpgs
+- Download: https://opengameart.org/sites/default/files/Castle2_5.png
+- License: [Creative Commons Attribution 3.0 Unported](https://creativecommons.org/licenses/by/3.0/)
+- SHA-256: `b3222b8bed826043ae11a15c8983af5adbdc4a8bddd04f1171a0b070903991ad`
+- Notes: The original 32px artwork is split into 16px engine cells (32 columns,
+  1024 cells) without resampling. Layer/collision defaults and labels are editor
+  metadata. `opengameart-castle-tiles-CREDITS.txt` accompanies the artwork in game exports.
+
+## Castle reference composite
+
+- File: `opengameart-castle-reference-composite.png` (2240×2240 RGB)
+- Source: user-provided reference image of the OpenGameArt example composition.
+- 2026-09-21: removed Irukard's GPL bridge (parapets, deck, arch and piers) by
+  replacing 16px cells `(102,107,30,28)` with existing river-water cells.
+  Pixels outside that rectangle are unchanged. This is no longer an exact
+  screenshot comparison board.
+- Remaining art: Zabin, Hyptosis, Daniel Cook (CC BY 3.0), Daniel Eddeland and
+  Jetrel (CC BY-SA 3.0), as linked by the original composition. The adapted
+  composite is distributed under CC BY-SA 3.0; full credits accompany exports
+  in `opengameart-castle-reference-composite-CREDITS.txt`.
+
 ## Galmuri pixel fonts
 
 - Files:
@@ -247,3 +272,13 @@ forest edits made using god-tibo-imagen (vegetation, canopy, trunks and end caps
 Tile metadata and assemblies are in `src/assets/forestHarmonyTileset.json`.
 Tibo editing and bundling do not establish a new license or copyright clearance
 for reference-derived components. Existing component provenance still applies.
+# Castle courtyard harbor and nature extension (2026-09-20)
+
+`castle-surroundings/atlas.png` retains Castle2 in its first 512×512 pixels
+and appends selected source-art rectangles from Daniel Eddeland's LPC
+farming/fishing submission (CC-BY-SA 3.0) and Hyptosis batches 1 and 3
+(CC-BY 3.0). The combined/adapted atlas is CC-BY-SA 3.0. Original sources,
+their hashes, cropping/assembly recipe and full author/license links are in
+`castle-surroundings/sources/`, `manifest.json` and `CREDITS.txt`.
+No screenshot pixels are used. Tree crown/trunk/root modules were assembled;
+other props were cropped and repacked without scaling or recolouring.

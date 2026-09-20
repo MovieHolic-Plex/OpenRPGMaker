@@ -5,14 +5,10 @@
 //   (b) targetTile >= 원본 count → 행 단위 확장(count 를 tilesPerRow 배수로 확장, 아틀라스가 세로로 자람).
 // 렌더는 베이크(캔버스 합성): Phaser 텍스처는 ensureTilesetTexture(tilesetImage.ts /
 // (export 번들은 vite alias 없이 실제 tilesetImage.ts 를 그대로 사용), DOM 미리보기는 tileGraftImageCache.ts 가 이 모듈을 공유한다.
-import { RESOURCE_SLICING } from "@/assets/resourceSlicing";
+import { bundledChipsetTileSize, bundledChipsetTilesPerRow } from "./bundledChipsetGeometry";
 import type { TileGraft, TilesetDef } from "@/project/types";
 
 type GraftSource = HTMLImageElement | HTMLCanvasElement;
-
-// 소스 타일 그림판(번들 RM2K 계열)은 항상 표준 타일 그림판 격자(30열×16px)로 좌표를 계산한다.
-const SOURCE_CHIPSET_COLUMNS = RESOURCE_SLICING.chipset.columns;
-const SOURCE_CHIPSET_TILE_SIZE = RESOURCE_SLICING.chipset.cellWidth;
 
 // 유효한 graft 만 남기고 targetTile 중복은 마지막 항목이 이긴다(덮어쓰기 의미론).
 export function activeTileGrafts(tileset: Pick<TilesetDef, "tileGrafts">): TileGraft[] {
@@ -86,15 +82,16 @@ export function createGraftedTilesetCanvas(
       console.warn(`[tileGrafts] 소스 타일 그림판 이미지를 찾지 못해 이식을 건너뜁니다: ${graft.sourceChipset}#${graft.sourceTile}`);
       continue;
     }
-    const src = tileXY(graft.sourceTile, SOURCE_CHIPSET_COLUMNS, SOURCE_CHIPSET_TILE_SIZE);
+    const sourceTileSize = bundledChipsetTileSize(graft.sourceChipset);
+    const src = tileXY(graft.sourceTile, bundledChipsetTilesPerRow(graft.sourceChipset), sourceTileSize);
     const dst = tileXY(graft.targetTile, tileset.tilesPerRow, tileSize);
     context.clearRect(dst.x, dst.y, tileSize, tileSize);
     context.drawImage(
       source,
       src.x,
       src.y,
-      SOURCE_CHIPSET_TILE_SIZE,
-      SOURCE_CHIPSET_TILE_SIZE,
+      sourceTileSize,
+      sourceTileSize,
       dst.x,
       dst.y,
       tileSize,

@@ -4,6 +4,7 @@ import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { CHIPSET_TILE_GROUPS, tileAiLabelForIndex, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { tileVisibleOnLayer } from "@/editor/tileLayerClassification";
 import type { AutotileGroup, TilesetDef } from "@/project/types";
+import { CASTLE_TILESET_TEXTURE_KEY } from "@/project/defaults/constants";
 import { el } from "@/util/dom";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 import {
@@ -282,11 +283,14 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
   const sourceRows = Math.max(1, Math.ceil(args.tileset.count / sourceColumns));
   // Keep authored tile ids intact while reflowing the editor view to the
   // established six-column rail geometry. The atlas itself may be 30 columns wide.
-  const columns = GRID_PALETTE_COLUMNS;
+  // Castle's 32px artwork spans 2×2 engine cells. Preserve neighbours so a drag
+  // can pick a complete tile or building instead of unrelated six-column rows.
+  const sourceLayout = args.tileset.image.type === "bundled" && args.tileset.image.id === CASTLE_TILESET_TEXTURE_KEY;
+  const columns = sourceLayout ? sourceColumns : GRID_PALETTE_COLUMNS;
   const rows = Math.max(1, Math.ceil(args.tileset.count / columns));
   const displayTiles = buildCustomPaletteModel(args.tileset);
   const sheet = el("div", {
-    class: "chipset-sheet tile-palette custom-palette",
+    class: `chipset-sheet tile-palette custom-palette${sourceLayout ? " source-layout" : ""}`,
     dataset: {
       testid: "tile-palette",
       paletteKind: "custom",
@@ -303,8 +307,8 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
     attrs: { style: `grid-template-columns:repeat(${columns}, var(--chipset-cell))` },
   });
   const backgroundImageUrl = tilesetImageUrl(args.tileset);
-  // Custom cells remain complete and source-id ordered; only their editor view
-  // is reflowed so the palette scrolls vertically instead of horizontally.
+  // Custom cells remain complete and source-id ordered; most atlases reflow
+  // vertically, while sourceLayout preserves the artwork's two-dimensional layout.
   // Large uploaded atlases routinely contain 2,000+ cells. Keep the first
   // viewport synchronous, then append the rest in short batches so button
   // creation cannot block the first canvas frame.
