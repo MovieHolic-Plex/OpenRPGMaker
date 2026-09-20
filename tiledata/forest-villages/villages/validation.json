@@ -1,0 +1,2928 @@
+{
+  "editor": [
+    {
+      "mapId": "map_village_ten_spring_ring",
+      "width": 80,
+      "height": 72,
+      "houses": [
+        {
+          "id": "house_1",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_2",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_3",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_4",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_5",
+          "reachable": true,
+          "onPlateau": false
+        }
+      ],
+      "canopyCells": 3342,
+      "trunkRuns": 17,
+      "badAutotiles": 0,
+      "badTrunks": 0,
+      "passableCells": 1975,
+      "reachableCells": 1975,
+      "exitReachable": true,
+      "placements": [
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 22,
+          "y": 22,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 29,
+          "y": 21,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 22,
+          "y": 24,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 31,
+          "y": 14,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 20,
+          "y": 17,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 42,
+          "y": 21,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-life-new:herb-planter-v2",
+          "x": 50,
+          "y": 20,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:birdhouse",
+          "x": 42,
+          "y": 25,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 52,
+          "y": 14,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 40,
+          "y": 17,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 52,
+          "y": 37,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 59,
+          "y": 38,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 50,
+          "y": 41,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 61,
+          "y": 32,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 50,
+          "y": 34,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 34,
+          "y": 52,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-life-new:herb-planter-v2",
+          "x": 42,
+          "y": 51,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:birdhouse",
+          "x": 34,
+          "y": 56,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 44,
+          "y": 45,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 32,
+          "y": 49,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 13,
+          "y": 40,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 21,
+          "y": 40,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 12,
+          "y": 42,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 22,
+          "y": 34,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 11,
+          "y": 37,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-life-new:stone-well-low",
+          "x": 30,
+          "y": 26,
+          "zone": "공용 우물"
+        },
+        {
+          "id": "village-prop-extension:16:2",
+          "x": 21,
+          "y": 20,
+          "zone": "집 근처 게시판"
+        }
+      ],
+      "missed": [],
+      "grass": 92,
+      "smallProps": 25,
+      "routes": [
+        {
+          "a": [
+            26,
+            23
+          ],
+          "b": [
+            46,
+            24
+          ],
+          "width": 2,
+          "length": 22
+        },
+        {
+          "a": [
+            46,
+            24
+          ],
+          "b": [
+            55,
+            39
+          ],
+          "width": 2,
+          "length": 25
+        },
+        {
+          "a": [
+            55,
+            39
+          ],
+          "b": [
+            38,
+            54
+          ],
+          "width": 2,
+          "length": 33
+        },
+        {
+          "a": [
+            38,
+            54
+          ],
+          "b": [
+            16,
+            41
+          ],
+          "width": 2,
+          "length": 36
+        },
+        {
+          "a": [
+            16,
+            41
+          ],
+          "b": [
+            26,
+            23
+          ],
+          "width": 2,
+          "length": 29
+        },
+        {
+          "a": [
+            8,
+            71
+          ],
+          "b": [
+            16,
+            41
+          ],
+          "width": 2,
+          "length": 39
+        },
+        {
+          "a": [
+            68,
+            0
+          ],
+          "b": [
+            46,
+            24
+          ],
+          "width": 2,
+          "length": 47
+        }
+      ],
+      "saved": {
+        "kind": "saved",
+        "sha256": "c1da3151a24d4634623658877ff6ff1505d3ddbfa447f0913f719b2b1db05dc7"
+      }
+    },
+    {
+      "mapId": "map_village_ten_crescent_lake",
+      "width": 80,
+      "height": 72,
+      "houses": [
+        {
+          "id": "house_1",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_2",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_3",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_4",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_5",
+          "reachable": true,
+          "onPlateau": false
+        }
+      ],
+      "canopyCells": 2718,
+      "trunkRuns": 13,
+      "badAutotiles": 0,
+      "badTrunks": 0,
+      "passableCells": 2104,
+      "reachableCells": 2104,
+      "exitReachable": true,
+      "placements": [
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 14,
+          "y": 19,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 23,
+          "y": 19,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 16,
+          "y": 22,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 25,
+          "y": 11,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 14,
+          "y": 12,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 9,
+          "y": 37,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-life-new:herb-planter-v2",
+          "x": 19,
+          "y": 37,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:birdhouse",
+          "x": 9,
+          "y": 40,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 17,
+          "y": 29,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 7,
+          "y": 32,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 17,
+          "y": 54,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 26,
+          "y": 54,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 19,
+          "y": 57,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 28,
+          "y": 47,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 17,
+          "y": 49,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 39,
+          "y": 58,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-life-new:herb-planter-v2",
+          "x": 48,
+          "y": 57,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:birdhouse",
+          "x": 39,
+          "y": 60,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 50,
+          "y": 50,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 38,
+          "y": 53,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 57,
+          "y": 47,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 64,
+          "y": 47,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 57,
+          "y": 50,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 66,
+          "y": 41,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 55,
+          "y": 44,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-life-new:stone-well-low",
+          "x": 24,
+          "y": 23,
+          "zone": "공용 우물"
+        },
+        {
+          "id": "village-prop-extension:16:2",
+          "x": 14,
+          "y": 17,
+          "zone": "집 근처 게시판"
+        }
+      ],
+      "missed": [],
+      "grass": 106,
+      "smallProps": 28,
+      "routes": [
+        {
+          "a": [
+            20,
+            20
+          ],
+          "b": [
+            13,
+            39
+          ],
+          "width": 2,
+          "length": 27
+        },
+        {
+          "a": [
+            13,
+            39
+          ],
+          "b": [
+            22,
+            55
+          ],
+          "width": 2,
+          "length": 26
+        },
+        {
+          "a": [
+            22,
+            55
+          ],
+          "b": [
+            44,
+            58
+          ],
+          "width": 2,
+          "length": 26
+        },
+        {
+          "a": [
+            44,
+            58
+          ],
+          "b": [
+            60,
+            48
+          ],
+          "width": 2,
+          "length": 27
+        },
+        {
+          "a": [
+            40,
+            71
+          ],
+          "b": [
+            44,
+            58
+          ],
+          "width": 2,
+          "length": 18
+        },
+        {
+          "a": [
+            10,
+            0
+          ],
+          "b": [
+            20,
+            20
+          ],
+          "width": 2,
+          "length": 31
+        }
+      ],
+      "saved": {
+        "kind": "saved",
+        "sha256": "fa0b3dabdd86c802278975ff42fd6ecbac145e1ec819b4fb7ea2f3ba7e2b7567"
+      }
+    },
+    {
+      "mapId": "map_village_ten_fork_stream",
+      "width": 80,
+      "height": 72,
+      "houses": [
+        {
+          "id": "house_1",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_2",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_3",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_4",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_5",
+          "reachable": true,
+          "onPlateau": false
+        }
+      ],
+      "canopyCells": 1980,
+      "trunkRuns": 14,
+      "badAutotiles": 0,
+      "badTrunks": 0,
+      "passableCells": 2943,
+      "reachableCells": 2943,
+      "exitReachable": true,
+      "placements": [
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 11,
+          "y": 21,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 18,
+          "y": 20,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 11,
+          "y": 24,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 20,
+          "y": 13,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 9,
+          "y": 16,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 55,
+          "y": 16,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-life-new:herb-planter-v2",
+          "x": 63,
+          "y": 13,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:birdhouse",
+          "x": 55,
+          "y": 19,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 62,
+          "y": 8,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 53,
+          "y": 11,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 20,
+          "y": 46,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 30,
+          "y": 46,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 20,
+          "y": 49,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 29,
+          "y": 37,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 18,
+          "y": 42,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 56,
+          "y": 51,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-life-new:herb-planter-v2",
+          "x": 64,
+          "y": 54,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:birdhouse",
+          "x": 56,
+          "y": 57,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 65,
+          "y": 47,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 54,
+          "y": 49,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 9,
+          "y": 56,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 16,
+          "y": 55,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 9,
+          "y": 59,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 18,
+          "y": 50,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 7,
+          "y": 53,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-life-new:stone-well-low",
+          "x": 19,
+          "y": 25,
+          "zone": "공용 우물"
+        },
+        {
+          "id": "village-prop-extension:16:2",
+          "x": 10,
+          "y": 19,
+          "zone": "집 근처 게시판"
+        }
+      ],
+      "missed": [],
+      "grass": 151,
+      "smallProps": 45,
+      "routes": [
+        {
+          "a": [
+            15,
+            22
+          ],
+          "b": [
+            59,
+            18
+          ],
+          "width": 2,
+          "length": 65
+        },
+        {
+          "a": [
+            59,
+            18
+          ],
+          "b": [
+            23,
+            47
+          ],
+          "width": 2,
+          "length": 66
+        },
+        {
+          "a": [
+            23,
+            47
+          ],
+          "b": [
+            60,
+            55
+          ],
+          "width": 2,
+          "length": 76
+        },
+        {
+          "a": [
+            60,
+            55
+          ],
+          "b": [
+            12,
+            57
+          ],
+          "width": 2,
+          "length": 97
+        },
+        {
+          "a": [
+            20,
+            71
+          ],
+          "b": [
+            12,
+            57
+          ],
+          "width": 2,
+          "length": 23
+        },
+        {
+          "a": [
+            65,
+            0
+          ],
+          "b": [
+            59,
+            18
+          ],
+          "width": 2,
+          "length": 25
+        },
+        {
+          "a": [
+            32,
+            31
+          ],
+          "b": [
+            46,
+            31
+          ],
+          "width": 2,
+          "length": 15
+        }
+      ],
+      "saved": {
+        "kind": "saved",
+        "sha256": "0613183bc6eeee12f19685fe03365e71e9afec7e64573dff47203c96d7b5fdf3"
+      }
+    },
+    {
+      "mapId": "map_village_ten_twin_banks",
+      "width": 80,
+      "height": 72,
+      "houses": [
+        {
+          "id": "house_1",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_2",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_3",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_4",
+          "reachable": true,
+          "onPlateau": false
+        }
+      ],
+      "canopyCells": 2640,
+      "trunkRuns": 9,
+      "badAutotiles": 0,
+      "badTrunks": 0,
+      "passableCells": 2280,
+      "reachableCells": 2280,
+      "exitReachable": true,
+      "placements": [
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 11,
+          "y": 24,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 18,
+          "y": 24,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 11,
+          "y": 27,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 20,
+          "y": 16,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 9,
+          "y": 19,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 20,
+          "y": 42,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-life-new:herb-planter-v2",
+          "x": 28,
+          "y": 45,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:birdhouse",
+          "x": 19,
+          "y": 46,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 28,
+          "y": 36,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 18,
+          "y": 39,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 49,
+          "y": 22,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 56,
+          "y": 21,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 49,
+          "y": 26,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 58,
+          "y": 15,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 47,
+          "y": 18,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 56,
+          "y": 43,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-life-new:herb-planter-v2",
+          "x": 66,
+          "y": 43,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:birdhouse",
+          "x": 58,
+          "y": 46,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 68,
+          "y": 36,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 56,
+          "y": 37,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-life-new:stone-well-low",
+          "x": 19,
+          "y": 28,
+          "zone": "공용 우물"
+        },
+        {
+          "id": "village-prop-extension:16:2",
+          "x": 10,
+          "y": 22,
+          "zone": "집 근처 게시판"
+        }
+      ],
+      "missed": [],
+      "grass": 122,
+      "smallProps": 32,
+      "routes": [
+        {
+          "a": [
+            15,
+            25
+          ],
+          "b": [
+            24,
+            46
+          ],
+          "width": 2,
+          "length": 31
+        },
+        {
+          "a": [
+            24,
+            46
+          ],
+          "b": [
+            52,
+            23
+          ],
+          "width": 2,
+          "length": 52
+        },
+        {
+          "a": [
+            52,
+            23
+          ],
+          "b": [
+            62,
+            44
+          ],
+          "width": 2,
+          "length": 32
+        },
+        {
+          "a": [
+            0,
+            48
+          ],
+          "b": [
+            24,
+            46
+          ],
+          "width": 2,
+          "length": 27
+        },
+        {
+          "a": [
+            79,
+            23
+          ],
+          "b": [
+            52,
+            23
+          ],
+          "width": 2,
+          "length": 28
+        },
+        {
+          "a": [
+            34,
+            33
+          ],
+          "b": [
+            46,
+            33
+          ],
+          "width": 2,
+          "length": 13
+        }
+      ],
+      "saved": {
+        "kind": "saved",
+        "sha256": "95840b3a37689ebbe51a665d6fd606c4a00b9c249bd106db8fc7a88a43288840"
+      }
+    },
+    {
+      "mapId": "map_village_ten_terrace_gardens",
+      "width": 80,
+      "height": 72,
+      "houses": [
+        {
+          "id": "house_1",
+          "reachable": true,
+          "onPlateau": true
+        },
+        {
+          "id": "house_2",
+          "reachable": true,
+          "onPlateau": true
+        },
+        {
+          "id": "house_3",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_4",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_5",
+          "reachable": true,
+          "onPlateau": false
+        }
+      ],
+      "canopyCells": 2556,
+      "trunkRuns": 10,
+      "badAutotiles": 0,
+      "badTrunks": 0,
+      "passableCells": 2409,
+      "reachableCells": 2409,
+      "exitReachable": true,
+      "placements": [
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 14,
+          "y": 23,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 21,
+          "y": 23,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 14,
+          "y": 26,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 23,
+          "y": 15,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 12,
+          "y": 18,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 47,
+          "y": 33,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-life-new:herb-planter-v2",
+          "x": 55,
+          "y": 33,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:birdhouse",
+          "x": 47,
+          "y": 36,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 57,
+          "y": 25,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 45,
+          "y": 28,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 29,
+          "y": 53,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 35,
+          "y": 52,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 29,
+          "y": 57,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 38,
+          "y": 44,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 27,
+          "y": 50,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 9,
+          "y": 52,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-life-new:herb-planter-v2",
+          "x": 19,
+          "y": 52,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:birdhouse",
+          "x": 11,
+          "y": 55,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 21,
+          "y": 45,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 9,
+          "y": 47,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 56,
+          "y": 55,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 63,
+          "y": 57,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 56,
+          "y": 60,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 65,
+          "y": 51,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 54,
+          "y": 53,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-life-new:stone-well-low",
+          "x": 20,
+          "y": 27,
+          "zone": "공용 우물"
+        },
+        {
+          "id": "village-prop-extension:16:2",
+          "x": 13,
+          "y": 21,
+          "zone": "집 근처 게시판"
+        }
+      ],
+      "missed": [],
+      "grass": 135,
+      "smallProps": 38,
+      "routes": [
+        {
+          "a": [
+            18,
+            24
+          ],
+          "b": [
+            51,
+            35
+          ],
+          "width": 2,
+          "length": 85
+        },
+        {
+          "a": [
+            51,
+            35
+          ],
+          "b": [
+            32,
+            55
+          ],
+          "width": 2,
+          "length": 52
+        },
+        {
+          "a": [
+            32,
+            55
+          ],
+          "b": [
+            15,
+            53
+          ],
+          "width": 2,
+          "length": 20
+        },
+        {
+          "a": [
+            15,
+            53
+          ],
+          "b": [
+            59,
+            58
+          ],
+          "width": 2,
+          "length": 50
+        },
+        {
+          "a": [
+            38,
+            71
+          ],
+          "b": [
+            32,
+            55
+          ],
+          "width": 2,
+          "length": 23
+        },
+        {
+          "a": [
+            0,
+            39
+          ],
+          "b": [
+            15,
+            53
+          ],
+          "width": 2,
+          "length": 30
+        }
+      ],
+      "saved": {
+        "kind": "saved",
+        "sha256": "dc0be921d8b86f5c0e5d680c37c5d8c9e7a5b67c858f85789068d21fac4900aa"
+      }
+    },
+    {
+      "mapId": "map_village_ten_high_meadow",
+      "width": 80,
+      "height": 72,
+      "houses": [
+        {
+          "id": "house_1",
+          "reachable": true,
+          "onPlateau": true
+        },
+        {
+          "id": "house_2",
+          "reachable": true,
+          "onPlateau": true
+        },
+        {
+          "id": "house_3",
+          "reachable": true,
+          "onPlateau": true
+        },
+        {
+          "id": "house_4",
+          "reachable": true,
+          "onPlateau": true
+        }
+      ],
+      "canopyCells": 2094,
+      "trunkRuns": 10,
+      "badAutotiles": 0,
+      "badTrunks": 0,
+      "passableCells": 2411,
+      "reachableCells": 2411,
+      "exitReachable": true,
+      "placements": [
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 20,
+          "y": 24,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 27,
+          "y": 23,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 20,
+          "y": 27,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 29,
+          "y": 16,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 18,
+          "y": 19,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 34,
+          "y": 23,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-life-new:herb-planter-v2",
+          "x": 42,
+          "y": 23,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:birdhouse",
+          "x": 34,
+          "y": 27,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 44,
+          "y": 15,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 32,
+          "y": 18,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 48,
+          "y": 25,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 55,
+          "y": 27,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 48,
+          "y": 30,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 57,
+          "y": 20,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 46,
+          "y": 23,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 29,
+          "y": 37,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-life-new:herb-planter-v2",
+          "x": 37,
+          "y": 35,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:birdhouse",
+          "x": 29,
+          "y": 40,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 41,
+          "y": 30,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 27,
+          "y": 33,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-life-new:stone-well-low",
+          "x": 28,
+          "y": 28,
+          "zone": "공용 우물"
+        },
+        {
+          "id": "village-prop-extension:16:2",
+          "x": 19,
+          "y": 22,
+          "zone": "집 근처 게시판"
+        }
+      ],
+      "missed": [],
+      "grass": 117,
+      "smallProps": 34,
+      "routes": [
+        {
+          "a": [
+            24,
+            25
+          ],
+          "b": [
+            38,
+            25
+          ],
+          "width": 2,
+          "length": 15
+        },
+        {
+          "a": [
+            38,
+            25
+          ],
+          "b": [
+            51,
+            28
+          ],
+          "width": 2,
+          "length": 17
+        },
+        {
+          "a": [
+            51,
+            28
+          ],
+          "b": [
+            33,
+            38
+          ],
+          "width": 2,
+          "length": 31
+        },
+        {
+          "a": [
+            39,
+            71
+          ],
+          "b": [
+            33,
+            38
+          ],
+          "width": 2,
+          "length": 40
+        },
+        {
+          "a": [
+            6,
+            53
+          ],
+          "b": [
+            33,
+            38
+          ],
+          "width": 2,
+          "length": 55
+        },
+        {
+          "a": [
+            39,
+            56
+          ],
+          "b": [
+            39,
+            64
+          ],
+          "width": 2,
+          "length": 9
+        }
+      ],
+      "saved": {
+        "kind": "saved",
+        "sha256": "29fd85d87d8b12de4bafef45a058f55d303dcbc6213a8d11a7d2e3f1dc21c6a7"
+      }
+    },
+    {
+      "mapId": "map_village_ten_woodland_lane",
+      "width": 80,
+      "height": 72,
+      "houses": [
+        {
+          "id": "house_1",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_2",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_3",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_4",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_5",
+          "reachable": true,
+          "onPlateau": false
+        }
+      ],
+      "canopyCells": 3810,
+      "trunkRuns": 19,
+      "badAutotiles": 0,
+      "badTrunks": 0,
+      "passableCells": 1369,
+      "reachableCells": 1075,
+      "exitReachable": true,
+      "placements": [
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 9,
+          "y": 19,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 16,
+          "y": 17,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 9,
+          "y": 21,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 17,
+          "y": 9,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 6,
+          "y": 12,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 18,
+          "y": 30,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-life-new:herb-planter-v2",
+          "x": 28,
+          "y": 30,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:birdhouse",
+          "x": 20,
+          "y": 33,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 29,
+          "y": 22,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 18,
+          "y": 25,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 33,
+          "y": 39,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 40,
+          "y": 41,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 33,
+          "y": 44,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 41,
+          "y": 34,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 31,
+          "y": 37,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 46,
+          "y": 47,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-life-new:herb-planter-v2",
+          "x": 54,
+          "y": 49,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:birdhouse",
+          "x": 46,
+          "y": 52,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 55,
+          "y": 42,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 44,
+          "y": 45,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 58,
+          "y": 55,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 65,
+          "y": 57,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 58,
+          "y": 60,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 65,
+          "y": 51,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 56,
+          "y": 53,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-life-new:stone-well-low",
+          "x": 17,
+          "y": 21,
+          "zone": "공용 우물"
+        },
+        {
+          "id": "village-prop-extension:16:2",
+          "x": 6,
+          "y": 15,
+          "zone": "집 근처 게시판"
+        }
+      ],
+      "missed": [],
+      "grass": 80,
+      "smallProps": 22,
+      "routes": [
+        {
+          "a": [
+            13,
+            18
+          ],
+          "b": [
+            24,
+            32
+          ],
+          "width": 2,
+          "length": 26
+        },
+        {
+          "a": [
+            24,
+            32
+          ],
+          "b": [
+            36,
+            42
+          ],
+          "width": 2,
+          "length": 23
+        },
+        {
+          "a": [
+            36,
+            42
+          ],
+          "b": [
+            50,
+            50
+          ],
+          "width": 2,
+          "length": 23
+        },
+        {
+          "a": [
+            50,
+            50
+          ],
+          "b": [
+            61,
+            58
+          ],
+          "width": 2,
+          "length": 20
+        },
+        {
+          "a": [
+            8,
+            0
+          ],
+          "b": [
+            13,
+            18
+          ],
+          "width": 2,
+          "length": 24
+        },
+        {
+          "a": [
+            72,
+            71
+          ],
+          "b": [
+            61,
+            58
+          ],
+          "width": 2,
+          "length": 25
+        }
+      ],
+      "saved": {
+        "kind": "saved",
+        "sha256": "9caad048bae72dac2353a822ef202c5ab5547d44f511514e812a4944bea00c94"
+      }
+    },
+    {
+      "mapId": "map_village_ten_orchard_court",
+      "width": 80,
+      "height": 72,
+      "houses": [
+        {
+          "id": "house_1",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_2",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_3",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_4",
+          "reachable": true,
+          "onPlateau": false
+        }
+      ],
+      "canopyCells": 2940,
+      "trunkRuns": 13,
+      "badAutotiles": 0,
+      "badTrunks": 0,
+      "passableCells": 2384,
+      "reachableCells": 2384,
+      "exitReachable": true,
+      "placements": [
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 12,
+          "y": 21,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 19,
+          "y": 20,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 12,
+          "y": 24,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 21,
+          "y": 14,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 10,
+          "y": 16,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 47,
+          "y": 20,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-life-new:herb-planter-v2",
+          "x": 55,
+          "y": 21,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:birdhouse",
+          "x": 47,
+          "y": 25,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 55,
+          "y": 13,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 45,
+          "y": 16,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 13,
+          "y": 51,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 20,
+          "y": 53,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 13,
+          "y": 54,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 22,
+          "y": 44,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 11,
+          "y": 47,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 49,
+          "y": 49,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-life-new:herb-planter-v2",
+          "x": 57,
+          "y": 50,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:birdhouse",
+          "x": 49,
+          "y": 53,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 59,
+          "y": 43,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 47,
+          "y": 46,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-life-new:stone-well-low",
+          "x": 22,
+          "y": 25,
+          "zone": "공용 우물"
+        },
+        {
+          "id": "village-prop-extension:16:2",
+          "x": 11,
+          "y": 19,
+          "zone": "집 근처 게시판"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 27,
+          "y": 26,
+          "zone": "과수원"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 33,
+          "y": 26,
+          "zone": "과수원"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 39,
+          "y": 26,
+          "zone": "과수원"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 44,
+          "y": 26,
+          "zone": "과수원"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 27,
+          "y": 32,
+          "zone": "과수원"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 33,
+          "y": 32,
+          "zone": "과수원"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 39,
+          "y": 32,
+          "zone": "과수원"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 45,
+          "y": 32,
+          "zone": "과수원"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 27,
+          "y": 38,
+          "zone": "과수원"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 33,
+          "y": 38,
+          "zone": "과수원"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 39,
+          "y": 38,
+          "zone": "과수원"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 45,
+          "y": 38,
+          "zone": "과수원"
+        }
+      ],
+      "missed": [],
+      "grass": 111,
+      "smallProps": 31,
+      "routes": [
+        {
+          "a": [
+            16,
+            22
+          ],
+          "b": [
+            51,
+            23
+          ],
+          "width": 2,
+          "length": 37
+        },
+        {
+          "a": [
+            51,
+            23
+          ],
+          "b": [
+            16,
+            52
+          ],
+          "width": 2,
+          "length": 65
+        },
+        {
+          "a": [
+            16,
+            52
+          ],
+          "b": [
+            53,
+            51
+          ],
+          "width": 2,
+          "length": 39
+        },
+        {
+          "a": [
+            53,
+            51
+          ],
+          "b": [
+            16,
+            22
+          ],
+          "width": 2,
+          "length": 67
+        },
+        {
+          "a": [
+            4,
+            34
+          ],
+          "b": [
+            16,
+            22
+          ],
+          "width": 2,
+          "length": 25
+        },
+        {
+          "a": [
+            76,
+            35
+          ],
+          "b": [
+            51,
+            23
+          ],
+          "width": 2,
+          "length": 38
+        }
+      ],
+      "saved": {
+        "kind": "saved",
+        "sha256": "b2294a2efa511aeafa46bdf016b862a805986652b547937330479e3db2d7e35b"
+      }
+    },
+    {
+      "mapId": "map_village_ten_fishing_cove",
+      "width": 80,
+      "height": 72,
+      "houses": [
+        {
+          "id": "house_1",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_2",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_3",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_4",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_5",
+          "reachable": true,
+          "onPlateau": false
+        }
+      ],
+      "canopyCells": 2220,
+      "trunkRuns": 13,
+      "badAutotiles": 0,
+      "badTrunks": 0,
+      "passableCells": 2382,
+      "reachableCells": 2382,
+      "exitReachable": true,
+      "placements": [
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 10,
+          "y": 23,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 17,
+          "y": 20,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 10,
+          "y": 25,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 19,
+          "y": 13,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 9,
+          "y": 16,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 26,
+          "y": 18,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-life-new:herb-planter-v2",
+          "x": 34,
+          "y": 18,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:birdhouse",
+          "x": 26,
+          "y": 20,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 35,
+          "y": 10,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 24,
+          "y": 13,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 43,
+          "y": 20,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 50,
+          "y": 22,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 43,
+          "y": 25,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 51,
+          "y": 15,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 41,
+          "y": 18,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 12,
+          "y": 45,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-life-new:herb-planter-v2",
+          "x": 22,
+          "y": 45,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:birdhouse",
+          "x": 12,
+          "y": 48,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 22,
+          "y": 38,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 10,
+          "y": 41,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 31,
+          "y": 49,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 39,
+          "y": 49,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 31,
+          "y": 52,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 41,
+          "y": 43,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 30,
+          "y": 44,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-life-new:stone-well-low",
+          "x": 17,
+          "y": 25,
+          "zone": "공용 우물"
+        },
+        {
+          "id": "village-prop-extension:16:2",
+          "x": 10,
+          "y": 18,
+          "zone": "집 근처 게시판"
+        }
+      ],
+      "missed": [],
+      "grass": 111,
+      "smallProps": 29,
+      "routes": [
+        {
+          "a": [
+            14,
+            22
+          ],
+          "b": [
+            30,
+            20
+          ],
+          "width": 2,
+          "length": 19
+        },
+        {
+          "a": [
+            30,
+            20
+          ],
+          "b": [
+            46,
+            23
+          ],
+          "width": 2,
+          "length": 20
+        },
+        {
+          "a": [
+            46,
+            23
+          ],
+          "b": [
+            16,
+            46
+          ],
+          "width": 2,
+          "length": 54
+        },
+        {
+          "a": [
+            16,
+            46
+          ],
+          "b": [
+            35,
+            50
+          ],
+          "width": 2,
+          "length": 24
+        },
+        {
+          "a": [
+            35,
+            50
+          ],
+          "b": [
+            14,
+            22
+          ],
+          "width": 2,
+          "length": 50
+        },
+        {
+          "a": [
+            21,
+            71
+          ],
+          "b": [
+            35,
+            50
+          ],
+          "width": 2,
+          "length": 36
+        },
+        {
+          "a": [
+            7,
+            0
+          ],
+          "b": [
+            14,
+            22
+          ],
+          "width": 2,
+          "length": 30
+        },
+        {
+          "a": [
+            48,
+            40
+          ],
+          "b": [
+            60,
+            40
+          ],
+          "width": 2,
+          "length": 13
+        }
+      ],
+      "saved": {
+        "kind": "saved",
+        "sha256": "3d0077d838680ea4529aa3c787057db491bb3ef41ee1cabee8ddb8cb6ab179aa"
+      }
+    },
+    {
+      "mapId": "map_village_ten_five_groves",
+      "width": 80,
+      "height": 72,
+      "houses": [
+        {
+          "id": "house_1",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_2",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_3",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_4",
+          "reachable": true,
+          "onPlateau": false
+        },
+        {
+          "id": "house_5",
+          "reachable": true,
+          "onPlateau": false
+        }
+      ],
+      "canopyCells": 3576,
+      "trunkRuns": 19,
+      "badAutotiles": 0,
+      "badTrunks": 0,
+      "passableCells": 1657,
+      "reachableCells": 1655,
+      "exitReachable": true,
+      "placements": [
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 13,
+          "y": 16,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 20,
+          "y": 15,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 13,
+          "y": 18,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 21,
+          "y": 8,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 11,
+          "y": 11,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 46,
+          "y": 19,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-life-new:herb-planter-v2",
+          "x": 57,
+          "y": 18,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:birdhouse",
+          "x": 47,
+          "y": 21,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 55,
+          "y": 10,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 45,
+          "y": 13,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 55,
+          "y": 38,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 62,
+          "y": 39,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 55,
+          "y": 42,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 63,
+          "y": 32,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 54,
+          "y": 35,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 30,
+          "y": 56,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-life-new:herb-planter-v2",
+          "x": 38,
+          "y": 56,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:birdhouse",
+          "x": 30,
+          "y": 60,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 40,
+          "y": 50,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 28,
+          "y": 53,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-prop-extension:11:0",
+          "x": 6,
+          "y": 43,
+          "zone": "집 화단"
+        },
+        {
+          "id": "village-prop-extension:16:0",
+          "x": 14,
+          "y": 43,
+          "zone": "집 텃밭"
+        },
+        {
+          "id": "village-life-new:fruit-basket",
+          "x": 6,
+          "y": 46,
+          "zone": "생활 소품"
+        },
+        {
+          "id": "forest-trees:tree",
+          "x": 15,
+          "y": 38,
+          "zone": "독립 나무"
+        },
+        {
+          "id": "forest-trees:small-bush",
+          "x": 4,
+          "y": 40,
+          "zone": "길가 관목"
+        },
+        {
+          "id": "village-life-new:stone-well-low",
+          "x": 21,
+          "y": 19,
+          "zone": "공용 우물"
+        },
+        {
+          "id": "village-prop-extension:16:2",
+          "x": 12,
+          "y": 14,
+          "zone": "집 근처 게시판"
+        }
+      ],
+      "missed": [],
+      "grass": 76,
+      "smallProps": 17,
+      "routes": [
+        {
+          "a": [
+            17,
+            17
+          ],
+          "b": [
+            51,
+            20
+          ],
+          "width": 2,
+          "length": 38
+        },
+        {
+          "a": [
+            51,
+            20
+          ],
+          "b": [
+            58,
+            40
+          ],
+          "width": 2,
+          "length": 28
+        },
+        {
+          "a": [
+            58,
+            40
+          ],
+          "b": [
+            34,
+            58
+          ],
+          "width": 2,
+          "length": 43
+        },
+        {
+          "a": [
+            34,
+            58
+          ],
+          "b": [
+            9,
+            44
+          ],
+          "width": 2,
+          "length": 40
+        },
+        {
+          "a": [
+            9,
+            44
+          ],
+          "b": [
+            17,
+            17
+          ],
+          "width": 2,
+          "length": 36
+        },
+        {
+          "a": [
+            0,
+            56
+          ],
+          "b": [
+            9,
+            44
+          ],
+          "width": 2,
+          "length": 22
+        },
+        {
+          "a": [
+            74,
+            8
+          ],
+          "b": [
+            51,
+            20
+          ],
+          "width": 2,
+          "length": 36
+        }
+      ],
+      "saved": {
+        "kind": "saved",
+        "sha256": "ccfcb8698c12c50f4d707338cbd8cd8df491633cd981f9b2abe2080dc85cb9d9"
+      }
+    }
+  ],
+  "remote": {
+    "projectId": "oprn-hill-forest-harmony-20260918-a4e1",
+    "mapIds": [
+      "map_village_ten_spring_ring",
+      "map_village_ten_crescent_lake",
+      "map_village_ten_fork_stream",
+      "map_village_ten_twin_banks",
+      "map_village_ten_terrace_gardens",
+      "map_village_ten_high_meadow",
+      "map_village_ten_woodland_lane",
+      "map_village_ten_orchard_court",
+      "map_village_ten_fishing_cove",
+      "map_village_ten_five_groves"
+    ],
+    "saved": true,
+    "reloaded": true,
+    "otherMapsUnchanged": true,
+    "existingTilesetsUnchanged": true,
+    "sha256": "716c75f4e43f27175130dcdd83f73e37e1f1fe3b4d3dfa16f8a614804965ba4f"
+  },
+  "local": {
+    "reloaded": true,
+    "otherMapsUnchanged": true,
+    "errors": []
+  },
+  "stairs": {
+    "results": [
+      {
+        "mapId": "map_village_ten_terrace_gardens",
+        "stairs": 30,
+        "badStairs": 0,
+        "badRoadAutotiles": 0,
+        "allFrontsReachable": true,
+        "exitReachable": true
+      },
+      {
+        "mapId": "map_village_ten_high_meadow",
+        "stairs": 27,
+        "badStairs": 0,
+        "badRoadAutotiles": 0,
+        "allFrontsReachable": true,
+        "exitReachable": true
+      }
+    ],
+    "reloaded": true,
+    "otherMapsUnchanged": true
+  },
+  "stairsRemote": {
+    "projectId": "oprn-hill-forest-harmony-20260918-a4e1",
+    "saved": true,
+    "reloaded": true,
+    "sha256": "7d1cee8be5bc44558e6ae7f8b3fd3a68c4d61e836ca2329e4e2299e934da378c",
+    "mapIds": [
+      "map_village_ten_terrace_gardens",
+      "map_village_ten_high_meadow"
+    ]
+  }
+}

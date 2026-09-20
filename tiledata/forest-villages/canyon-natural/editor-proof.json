@@ -1,0 +1,313 @@
+{
+  "mapId": "map_cliff_forest_bridge",
+  "width": 80,
+  "height": 72,
+  "cliffHeight": 14,
+  "houses": [
+    {
+      "id": "north_home",
+      "reachable": true,
+      "onPlateau": true
+    },
+    {
+      "id": "east_home",
+      "reachable": true,
+      "onPlateau": true
+    }
+  ],
+  "canopyCells": 3086,
+  "trunkRuns": 15,
+  "badAutotiles": 0,
+  "badTrunks": 0,
+  "passableCells": 1459,
+  "reachableCells": 789,
+  "bridge": {
+    "width": 26,
+    "depth": 3,
+    "cells": 78,
+    "onlyCrossing": true,
+    "exitReachable": true,
+    "railLeaks": 0
+  },
+  "placements": [
+    {
+      "id": "village-prop-extension:11:0",
+      "x": 16,
+      "y": 19,
+      "zone": "숲길지기 정원"
+    },
+    {
+      "id": "village-life-new:birdhouse",
+      "x": 10,
+      "y": 16,
+      "zone": "숲길지기 정원"
+    },
+    {
+      "id": "village-prop-extension:16:0",
+      "x": 20,
+      "y": 20,
+      "zone": "작은 텃밭"
+    },
+    {
+      "id": "tibo-unfake:seed-sack",
+      "x": 22,
+      "y": 22,
+      "zone": "작은 텃밭"
+    },
+    {
+      "id": "village-life-new:herb-planter-v2",
+      "x": 12,
+      "y": 24,
+      "zone": "정원"
+    },
+    {
+      "id": "forest-trees:tree",
+      "x": 8,
+      "y": 24,
+      "zone": "서쪽 전망"
+    },
+    {
+      "id": "forest-trees:tree",
+      "x": 21,
+      "y": 28,
+      "zone": "서쪽 전망"
+    },
+    {
+      "id": "forest-trees:small-bush",
+      "x": 18,
+      "y": 25,
+      "zone": "서쪽 길가"
+    },
+    {
+      "id": "village-life-new:stone-well-low",
+      "x": 66,
+      "y": 22,
+      "zone": "쉼터 우물"
+    },
+    {
+      "id": "village-prop-extension:16:2",
+      "x": 65,
+      "y": 20,
+      "zone": "쉼터 게시판"
+    },
+    {
+      "id": "village-prop-extension:11:0",
+      "x": 59,
+      "y": 21,
+      "zone": "쉼터 화단"
+    },
+    {
+      "id": "village-prop-extension:26:3",
+      "x": 58,
+      "y": 31,
+      "zone": "동쪽 전망"
+    },
+    {
+      "id": "forest-trees:tree",
+      "x": 68,
+      "y": 27,
+      "zone": "동쪽 전망"
+    },
+    {
+      "id": "forest-trees:tree",
+      "x": 54,
+      "y": 21,
+      "zone": "동쪽 숲길"
+    },
+    {
+      "id": "forest-trees:small-bush",
+      "x": 64,
+      "y": 31,
+      "zone": "전망대"
+    },
+    {
+      "id": "tibo-unfake:stone-lantern",
+      "x": 26,
+      "y": 25,
+      "zone": "서쪽 다리 입구"
+    },
+    {
+      "id": "tibo-unfake:stone-lantern",
+      "x": 53,
+      "y": 26,
+      "zone": "동쪽 다리 입구"
+    },
+    {
+      "id": "forest-trees:tree",
+      "x": 38,
+      "y": 59,
+      "zone": "아래 숲 빈터"
+    },
+    {
+      "id": "forest-trees:small-bush",
+      "x": 42,
+      "y": 62,
+      "zone": "아래 숲 빈터"
+    },
+    {
+      "id": "forest-trees:tree",
+      "x": 48,
+      "y": 33,
+      "zone": "동쪽 절벽 아래"
+    },
+    {
+      "id": "forest-trees:small-bush",
+      "x": 29,
+      "y": 35,
+      "zone": "다리 아래"
+    }
+  ],
+  "missed": [
+    {
+      "id": "village-life-new:fruit-basket",
+      "x0": 64,
+      "y0": 24,
+      "zone": "쉼터"
+    },
+    {
+      "id": "forest-trees:tree",
+      "x0": 29,
+      "y0": 42,
+      "zone": "서쪽 절벽 아래"
+    }
+  ],
+  "grass": 57,
+  "smallProps": 23,
+  "routes": [
+    {
+      "a": [
+        0,
+        22
+      ],
+      "b": [
+        14,
+        22
+      ],
+      "width": 2,
+      "length": 15
+    },
+    {
+      "a": [
+        14,
+        22
+      ],
+      "b": [
+        20,
+        26
+      ],
+      "width": 2,
+      "length": 11
+    },
+    {
+      "a": [
+        20,
+        26
+      ],
+      "b": [
+        27,
+        29
+      ],
+      "width": 2,
+      "length": 11
+    },
+    {
+      "a": [
+        27,
+        29
+      ],
+      "b": [
+        52,
+        29
+      ],
+      "width": 2,
+      "length": 26
+    },
+    {
+      "a": [
+        52,
+        29
+      ],
+      "b": [
+        58,
+        29
+      ],
+      "width": 2,
+      "length": 7
+    },
+    {
+      "a": [
+        58,
+        29
+      ],
+      "b": [
+        62,
+        24
+      ],
+      "width": 2,
+      "length": 10
+    },
+    {
+      "a": [
+        62,
+        24
+      ],
+      "b": [
+        71,
+        25
+      ],
+      "width": 2,
+      "length": 11
+    },
+    {
+      "a": [
+        71,
+        25
+      ],
+      "b": [
+        79,
+        25
+      ],
+      "width": 2,
+      "length": 9
+    },
+    {
+      "a": [
+        14,
+        22
+      ],
+      "b": [
+        14,
+        21
+      ],
+      "width": 1,
+      "length": 2
+    },
+    {
+      "a": [
+        62,
+        24
+      ],
+      "b": [
+        62,
+        24
+      ],
+      "width": 1,
+      "length": 1
+    }
+  ],
+  "saved": {
+    "kind": "saved",
+    "sha256": "b68e428d19b8cb986da3ada23a5ddd62943710ec62cad0e7ff4efd70eb71d517",
+    "receipt": {
+      "revisionId": "e31c1677-22f6-4888-9ee8-7fa5690e17f8",
+      "projectId": "a6973c08-aabc-4c7f-9885-18e3e3e5e8e2",
+      "mutationGeneration": 7,
+      "contentIdentity": "1e18b0032d76dc649d12b242db121c1cd11155df3cf59f147663bcfc03857176",
+      "sha256": "b68e428d19b8cb986da3ada23a5ddd62943710ec62cad0e7ff4efd70eb71d517"
+    }
+  },
+  "reloaded": true,
+  "otherMapsUnchanged": true,
+  "bootErrors": [],
+  "errors": []
+}
