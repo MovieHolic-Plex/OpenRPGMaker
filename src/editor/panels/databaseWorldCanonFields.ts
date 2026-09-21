@@ -415,7 +415,10 @@ function openLawDialog(
     save,
   );
   backdrop.append(dialog);
-  document.body.append(backdrop);
+  // 대화상자는 DB 모달 안에 붙인다 — document.body 에 붙이면 --db-studio-* 토큰 스코프
+  // 밖으로 나가 배경·글자색이 무효값으로 떨어지고, 대비가 무너진 회색 덩어리로 보였다(2026-09-22 실측).
+  const modalRoot = document.querySelector(".database-modal-backdrop") ?? document.body;
+  modalRoot.append(backdrop);
   save.focus();
 }
 

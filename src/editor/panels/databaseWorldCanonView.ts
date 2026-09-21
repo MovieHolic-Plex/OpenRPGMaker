@@ -233,7 +233,7 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     class: "world-canon-spread-head",
     children: [
       el("div", { class: "world-canon-head-row", children: [
-        el("span", { class: "world-canon-kicker", text: "세계 안내서" }),
+        headTitle,
         el("button", {
           class: "world-canon-help",
           attrs: { type: "button", "aria-label": "세계 개요 설명", title: helpText },
@@ -241,7 +241,6 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
           text: "?",
         }),
       ] }),
-      headTitle,
       el("div", {
         class: "world-canon-meter",
         children: [

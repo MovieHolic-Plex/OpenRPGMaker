@@ -997,3 +997,101 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
+
+/* 세계 개요 헤드 v5 (2026-09-22) — 키커 제거, 제목+도움말 한 줄, 미터는 얇게. */
+.world-document-workspace .world-canon-spread-head {
+  padding: 14px 20px 12px;
+  gap: 0;
+}
+.world-document-workspace .world-canon-head-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.world-document-workspace .world-canon-head-title {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.world-document-workspace .world-canon-meter {
+  margin-bottom: 0;
+  gap: 4px;
+}
+.world-document-workspace .world-canon-meter-bar {
+  height: 4px;
+}
+.world-document-workspace .world-canon-meter-text {
+  font: 400 11px/1.4 var(--font-ui);
+  font-weight: 400;
+  color: var(--db-studio-text-3);
+}
+/* 법칙 대화상자 — DB 모달 안에 붙으므로 위치는 fixed 로 뷰포트 기준을 유지한다. */
+.db-world-canon-law-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal-top);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.28);
+}
+.db-world-canon-law-dialog {
+  width: min(400px, 100%);
+  max-height: min(80vh, 640px);
+  overflow: auto;
+  display: grid;
+  gap: 10px;
+  padding: 16px 18px;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 12px;
+  background: var(--db-studio-surface, #fff);
+  color: var(--db-studio-text-1, #0f172a);
+  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.24);
+}
+.db-world-canon-law-dialog-title {
+  margin: 0;
+  font: 700 14px/1.4 var(--font-ui);
+  color: var(--db-studio-text-1, #0f172a);
+}
+.db-world-canon-law-options { display: grid; gap: 6px; }
+.db-world-canon-law-option {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+  padding: 9px 12px;
+  border: 1.5px solid var(--db-studio-border-default);
+  border-radius: 9px;
+  background: var(--db-studio-surface, #fff);
+  color: var(--db-studio-text-1, #0f172a);
+  font: inherit;
+  cursor: pointer;
+}
+.db-world-canon-law-option:hover { border-color: var(--db-studio-accent-border); background: var(--db-studio-accent-soft); }
+.db-world-canon-law-option.is-selected { border-color: var(--db-studio-accent); background: var(--db-studio-accent-soft); }
+.db-world-canon-law-option:focus-visible { outline: var(--focus-outline); outline-offset: 2px; }
+.db-world-canon-law-option-title { font: 700 13px/1.4 var(--font-ui); color: var(--db-studio-text-1, #0f172a); }
+.db-world-canon-law-option-desc { font: 400 11.5px/1.5 var(--font-ui); color: var(--db-studio-text-2, #475569); }
+.db-world-canon-law-note-input {
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 10px;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 8px;
+  background: var(--db-studio-surface, #fff);
+  color: var(--db-studio-text-1, #0f172a);
+  font: 400 13px/1.55 var(--font-ui);
+  resize: vertical;
+}
+.db-world-canon-law-note-input:focus-visible { outline: var(--focus-outline); outline-offset: 1px; }
+.db-world-canon-law-tip {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--db-studio-inset, #f1f5f9);
+  color: var(--db-studio-text-2, #475569);
+  font: 400 11px/1.55 var(--font-ui);
+}
+.db-world-canon-law-tip strong { color: var(--db-studio-warning-strong, #b45309); }
+.db-world-canon-law-save { justify-self: end; min-width: 104px; }
+
