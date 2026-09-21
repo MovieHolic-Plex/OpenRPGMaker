@@ -219,7 +219,8 @@ function renderMapThumb(card: SpatialGalleryCard): HTMLElement {
 export function renderSpatialCardThumb(card: SpatialGalleryCard): HTMLElement {
   if (card.regionMapId) return regionMapPreview(card.regionMapId, true);
   if (card.regionReferenceId) return regionReferenceImage(card.regionReferenceId, true);
-  if (card.kind === "places") return renderPlaceCardThumb(card);
+  // 지역·세계 참고 사례(완성 맵)는 장소 카드와 같은 실물 썸네일 경로를 쓴다.
+  if (card.kind === "places" || card.regionReferenceId) return renderPlaceCardThumb(card);
   if (card.kind === "regions" || card.kind === "worlds") return renderGeographyCardThumb(card);
   if (card.mapId) return renderMapThumb(card);
   if (card.kind === "tiles") {

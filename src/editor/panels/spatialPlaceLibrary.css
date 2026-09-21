@@ -99,6 +99,22 @@
   .database-modal-body [data-testid="spatial-shell-places"] .spatial-body.is-library-only > .spatial-stage {
     display: none;
   }
+  /* 지역 탭도 같은 목록-우선 규약을 공유한다 — 셸 testid 만 다르고 규칙은 동일하다. */
+  .database-modal-body [data-testid="spatial-shell-regions"] .spatial-body {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 22%);
+  }
+  .database-modal-body [data-testid="spatial-shell-regions"] .spatial-body.is-library-only {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .database-modal-body [data-testid="spatial-shell-regions"] .spatial-kind-guidance {
+    display: none;
+  }
+  .database-modal-body [data-testid="spatial-shell-regions"] .spatial-body.is-library-only > .spatial-stage {
+    display: none;
+  }
+  .database-modal-body [data-testid="spatial-shell-regions"] .spatial-stage:not(.is-inspector-open) {
+    grid-template-columns: minmax(0, 1fr);
+  }
 
   .database-modal-body [data-testid="spatial-shell-places"] .spatial-stage:not(.is-inspector-open) {
     grid-template-columns: minmax(0, 1fr);

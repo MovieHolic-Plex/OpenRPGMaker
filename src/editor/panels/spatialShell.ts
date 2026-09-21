@@ -1,5 +1,7 @@
 import { renderPlaceLibraryControls } from './spatialPlaceLibraryControls';
+import { renderRegionLibraryControls } from './spatialRegionLibraryControls';
 import { classifyPlaceCard, matchesPlaceClassification, resetPlaceLibraryFilters } from './spatialPlaceClassification';
+import { classifyRegionCard, matchesRegionClassification } from './spatialRegionClassification';
 import { canUseCompositionWorkspace } from "./spatialCompositionAccess";
 import { renderSpatialCompositionWorkspace } from "./spatialCompositionWorkspace";
 import { renderSpatialSpaceWorkspace } from "@/editor/panels/spatialSpaceWorkspace";
@@ -64,10 +66,14 @@ export function renderSpatialAuthoringShell(
     session = spatialSession();
   }
   let selected = visibleSpatialSelection(session);
-  const placesGallery = tab === "places" && session.mode === "design";
-  if (placesGallery && selected && !matchesPlaceClassification(selected)) selected = cards.find(matchesPlaceClassification);
+  // 지역 탭도 장소 탭과 같은 '목록 우선' 갤러리로 운영한다 — 더미 기본 설계를 치운 뒤에는
+  // 참고 사례·내 설계 목록이 주인공이고 캔버스는 「속성」을 눌렀을 때 보조로 붙는다.
+  const placesGallery = (tab === "places" || tab === "regions") && session.mode === "design" && !session.legacyOrigin;
   // 지난 화면의 오류 배너·삭제 확인이 새 선택에 따라오면 안 된다.
   syncSpatialFeedbackSelection(`${session.tab}:${session.mode}:${session.source}:${selected?.id ?? ""}`);
+
+  const regionGallery = tab === "regions" && session.mode === "design" && !session.legacyOrigin;
+  if (regionGallery && selected && !matchesRegionClassification(selected)) selected = cards.find(matchesRegionClassification);
 
   const refresh = (): void => rerender();
 
@@ -76,7 +82,7 @@ export function renderSpatialAuthoringShell(
     if (card) {
       // 장소 갤러리: 첫 클릭은 선택만 한다(액션 줄이 뜬다). 같은 카드를 다시 누르면 편집기로
       // 들어간다. 선택만으로 편집기가 열리면 「맵에 놓기」를 누를 기회가 사라진다.
-      if (placesGallery && card.canonicalSource) {
+      if (placesGallery && card.canonicalSource && !regionGallery) {
         // 같은 카드를 다시 누르면 편집기로 들어간다. 갤러리가 보이는 동안에만 카드를 누를 수
         // 있으므로(listView=true), 「이미 이 카드가 선택돼 있다」가 곧 재클릭이다.
         const reopening = spatialSession().galleryCardId === card.id;
@@ -87,7 +93,7 @@ export function renderSpatialAuthoringShell(
         return;
       }
       selectSpatialGalleryEntry(card);
-      if (!placesGallery) patchSpatialSession({ listView: false });
+      if (!(placesGallery && card.canonicalSource)) patchSpatialSession({ listView: false });
       usageChromeState.openPopoverCardId = null;
     }
     if (tab === "tiles") {
@@ -134,6 +140,7 @@ export function renderSpatialAuthoringShell(
   const designIdOf = (card: GalleryCard): string | undefined => card.canonicalSource?.id;
   const galleryCards = placesGallery
     ? cards.filter((card) => matchesPlaceClassification(card) && matchesUsageFilter(designUsage(project, designIdOf(card)), usageChromeState.filter))
+    : regionGallery ? cards.filter(matchesRegionClassification)
     : cards;
   const aiPlacedCount = placesGallery
     ? cards.filter((card) => designUsage(project, designIdOf(card)).ai > 0).length
@@ -148,8 +155,10 @@ export function renderSpatialAuthoringShell(
   const renderCell = (card: GalleryCard): HTMLElement => {
     const isSelected = card.id === selected?.id;
     const button = renderSpatialGalleryCard(card, isSelected, onSelect);
-    const classification = classifyPlaceCard(card);
-    button.append(el('div', { class: 'place-classification-badges', children: [classification.category, classification.environment, ...classification.purposes].map(text => el('span', { text })) }));
+    const badges = regionGallery
+      ? (() => { const value = classifyRegionCard(card); return [value.category, value.style, value.origin]; })()
+      : (() => { const value = classifyPlaceCard(card); return [value.category, value.environment, ...value.purposes]; })();
+    button.append(el('div', { class: 'place-classification-badges', children: badges.map(text => el('span', { text })) }));
     if (!isSelected || !card.canonicalSource) return el("div", { class: "spatial-card-cell", children: [button] });
     const usage = designUsage(project, designIdOf(card));
     const build = card.kind === "places" ? spatialPlacesChrome(visiblePlaceSelection(card), refresh).build
@@ -241,7 +250,7 @@ export function renderSpatialAuthoringShell(
   // 장소 목록이 기본이다. 스테이지(미리보기·속성)는 「속성」을 눌렀을 때만 오른쪽에 붙는다.
   // 카드 선택만으로 열지 않는다 — 그러면 71장짜리 목록이 5열로 줄어든다(실측 98% → 65%).
   // 스테이지는 DOM 에 남겨 둔다(속성 토글이 죽은 버튼이 되지 않게) — CSS 로만 접는다.
-  const libraryOnly = placesGallery && !session.inspectorOpen;
+  const libraryOnly = (placesGallery || regionGallery) && !session.inspectorOpen;
 
   const shell = el("div", {
     class: "spatial-shell",
@@ -249,10 +258,10 @@ export function renderSpatialAuthoringShell(
     attrs: { tabindex: "0" },
     // 셀은 정확히 두 행(chrome / 본문)이다. 목적 스트립을 셀의 세 번째 자식으로 넣으면
     // 본문이 암시 행으로 밀려 잘린다 — 둘을 한 래퍼로 묶어 둘째 행에 넣는다.
-    children: [chrome, placesGallery
+    children: [chrome, placesGallery || regionGallery
       ? el("div", { class: "spatial-shell-main", children: [
         placesPurposeBand(),
-        renderPlaceLibraryControls(cards, refresh),
+        regionGallery ? renderRegionLibraryControls(cards, refresh) : renderPlaceLibraryControls(cards, refresh),
         el("div", { class: `spatial-body${libraryOnly ? " is-library-only" : ""}`, children: [gallery, stage] }),
       ] })
       : el("div", { class: "spatial-body", children: [gallery, stage] })],
@@ -266,7 +275,7 @@ export function renderSpatialAuthoringShell(
   // 다른 탭은 이 기억을 쓰지 않는다 — 탭을 오가며 남의 목록 위치가 복원되면 안 된다.
   const grid = shell.querySelector<HTMLElement>(".spatial-gallery-grid");
   if (grid) {
-    if (placesGallery) {
+    if (placesGallery || regionGallery) {
       grid.scrollTop = usageChromeState.galleryScrollTop;
       grid.addEventListener("scroll", () => { usageChromeState.galleryScrollTop = grid.scrollTop; }, { passive: true });
       if (usageChromeState.openPopoverCardId !== null) {
