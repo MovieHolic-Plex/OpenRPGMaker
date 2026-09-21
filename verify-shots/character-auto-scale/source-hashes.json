@@ -1,0 +1,16 @@
+{
+  "src/project/characterScale.ts": "ff11bcd17219967425e2786cb2abaefab9d1199c20e25606fa551fcce34007ee",
+  "src/project/types/events.ts": "60612dd41b79498039d5f71e0c07e5d5b89f0808b9541902627a98088df7dc15",
+  "src/project/io/shapeEventFields.ts": "00c5b9fb381a53462f36cd8b9cf03985cf18accb4af9a03946d038916b0c6f8b",
+  "src/player/playerCharacterScale.ts": "384d6a88ea3d05ebfe1114f84d2f2fc46a1f17971d54cafdbfbfa72109798938",
+  "src/player/PlayScene.ts": "9e69cc7c895c1ed39d0ae073ab5d4d96679be684ffe54eedc90f51000dce3bc7",
+  "src/player/eventSpriteResources.ts": "92976480630ba94837496401f4811602d37333942ef29f46e831e7e1cbda869c",
+  "src/player/playSceneMapRuntime.ts": "f7345dc99ea2a109cb4e29e08d92fafea0699fd36e6cf9291d5043ddb72faa10",
+  "src/player/playSceneFollowers.ts": "c6821a76523dd7441e19362abfa898b7fc497dd06b3751c9534c7aae75e46a8e",
+  "src/player/playSceneActionCombat.ts": "1a10627020a0cb4f08f73d559e517a0a2a05de1f6e4e1d6b1e5a7321f9bdacea",
+  "src/player/playSceneAutonomousRouteEffects.ts": "2cac64b9cbe6256e8178a5d18caba46025cabea88c9414d1d8a1533b5fbb3508",
+  "src/player/playSceneAutonomousCommands.ts": "bfa97f017f7d85ade71580bcefdc85a08a2412702b2406482205ee51143de878",
+  "src/editor/editSceneEventMarkers.ts": "3669a10d1640e2f8b88adea65a102d16e06db041162068e8b0d067e4547ac312",
+  "src/editor/panels/eventEditor/pageFootprint.ts": "ce99e804bae9c241975fec3c0442b5d4c56c6d0880d2df9c52e17f3c62f3e905",
+  "src/editor/panels/eventEditor/eventGraphicPreview.ts": "fe5017aea36df330eb011d7d40ebf222380a61e3a5248715808e6228e955728c"
+}

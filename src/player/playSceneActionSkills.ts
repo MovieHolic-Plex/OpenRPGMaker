@@ -1,3 +1,4 @@
+import { mapTileSize } from "@/project/tileGeometry";
 import { skillLineClear, skillRay, tickFieldStatus } from "@/battle/action/skillEffects";
 import { swingArcOverlapsBody } from "@/battle/action/hitbox";
 import { footprintBounds, pointRect, rectsOverlap } from "@/project/footprint";
@@ -89,7 +90,7 @@ export function castActionFieldProfile(scene: PlaySceneContext, profile: ActionS
   const direction = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[scene.facing]!;
   const cells = skillRay(scene.tileX, scene.tileY, direction[0]!, direction[1]!, profile.range, (x, y) => passable(scene, x, y));
   const cell = cells.at(-1) ?? { x: scene.tileX, y: scene.tileY };
-  const object = scene.add.circle(characterSpriteX(cell.x), characterSpriteY(cell.y) - 8, 7, 0xffcc55, 0.4);
+  const object = scene.add.circle(characterSpriteX(cell.x, mapTileSize(scene.map)), characterSpriteY(cell.y, mapTileSize(scene.map)) - mapTileSize(scene.map) / 2, 7, 0xffcc55, 0.4);
   object.setStrokeStyle(2, 0xffdd88); object.setDepth(100001);
   state.traps.push({ ...cell, profile, elementId, remainingMs: profile.durationMs ?? 5000, object });
 }

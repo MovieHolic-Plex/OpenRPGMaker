@@ -53,6 +53,7 @@ describe("AgentBlueprintRenderer", () => {
           const record = { fills: [] as number[][], strokes: [] as number[][] };
           graphicsCalls.push(record);
           return {
+            clear: vi.fn(), beginPath: vi.fn(), moveTo: vi.fn(), lineTo: vi.fn(), strokePath: vi.fn(),
             fillStyle: vi.fn((color: number, alpha: number) => record.fills.push([color, alpha])),
             fillRect: vi.fn(),
             lineStyle: vi.fn((width: number, color: number, alpha: number) => record.strokes.push([width, color, alpha])),

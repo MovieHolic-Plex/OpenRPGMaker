@@ -1,3 +1,4 @@
+import { referenceOwner } from "../tilesetReferences";
 import { normalizeMapClimate } from "../mapClimate";
 import { normalizeAiAuthoring } from "../aiAuthoring";
 import { assertGrowthShape } from "@/project/growth/validation";
@@ -58,6 +59,7 @@ export function validateProjectV2(data: JsonRecord): ProjectV2 {
   validateAssets(data.assets);
   const tilesets = requireRecord("tilesets", data.tilesets);
   for (const [id, tileset] of Object.entries(tilesets)) validateTileset(id, tileset);
+  for (const tileset of Object.values(tilesets)) referenceOwner({ tilesets } as unknown as Project, tileset as Project["tilesets"][string]);
   validateSwitches(data.switches);
   validateVariables(data.variables);
   validateStoryFlags(data.storyFlags, idSet(data.switches), idSet(data.variables));
@@ -109,6 +111,7 @@ function normalizeProjectV4(data: JsonRecord): Project {
   validateResourceProfiles(data.resourceProfiles);
   const tilesets = requireRecord("tilesets", data.tilesets);
   for (const [id, tileset] of Object.entries(tilesets)) validateTileset(id, tileset);
+  for (const tileset of Object.values(tilesets)) referenceOwner({ tilesets } as unknown as Project, tileset as Project["tilesets"][string]);
   validateSwitches(data.switches);
   validateVariables(data.variables);
   validateCommonEvents(data.commonEvents);

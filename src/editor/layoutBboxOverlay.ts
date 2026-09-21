@@ -1,4 +1,4 @@
-import { TILE_SIZE } from "@/assets/bundled";
+import { editorMapTileSize } from "@/editor/mapGeometry";
 import { editorState, editorStateChangedOnlyCanvasOverlay } from "@/editor/editorState";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
@@ -35,10 +35,10 @@ function renderBboxes(): void {
   for (const r of regions) {
     const color = roleColor(r.role);
     const box = el("div", { class: "layout-bbox-region" });
-    box.style.left = `${r.x * TILE_SIZE * zoom}px`;
-    box.style.top = `${r.y * TILE_SIZE * zoom}px`;
-    box.style.width = `${r.w * TILE_SIZE * zoom}px`;
-    box.style.height = `${r.h * TILE_SIZE * zoom}px`;
+    box.style.left = `${r.x * editorMapTileSize() * zoom}px`;
+    box.style.top = `${r.y * editorMapTileSize() * zoom}px`;
+    box.style.width = `${r.w * editorMapTileSize() * zoom}px`;
+    box.style.height = `${r.h * editorMapTileSize() * zoom}px`;
     box.style.setProperty("--layout-bbox-color", color);
     box.style.setProperty("--layout-bbox-fill", `${color}14`);
     const label = el("span", { class: "layout-bbox-label", text: `${roleShort(r.role)} ${r.label}` });

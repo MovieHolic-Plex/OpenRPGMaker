@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyAiMappingAnswerForTest } from "@/editor/panels/tilesetAiQuestionEditor";
+import { applyAiMappingAnswer as applyAiMappingAnswerForTest } from "@/editor/panels/tilesetAiMappingParser";
 import { analyzeTilesetSelection } from "@/editor/panels/tilesetAiMappingRules";
 import { buildSetupMappingAnswer } from "@/editor/panels/tilesetAiSetupMapping";
 import { defaultTileset } from "@/project/defaults/defaultAssets";

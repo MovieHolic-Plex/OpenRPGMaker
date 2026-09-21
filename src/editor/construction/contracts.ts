@@ -89,6 +89,7 @@ export type ExistingVillageTarget = {
 };
 
 export type NewVillageTarget = {
+  readonly tilesetId?: string;
   readonly kind: "new";
   readonly mapId: string;
   readonly name: string;
@@ -106,6 +107,8 @@ export type NewVillageTarget = {
 export type AuthorVillageTarget = ExistingVillageTarget | NewVillageTarget;
 
 export type VillageHousePlan = {
+  /** Only important/requested houses get a fence. manor defaults to true. */
+  readonly fence?: boolean;
   /** Saved building exterior object. Mutually exclusive with the legacy kit/template. */
   readonly objectId?: string;
   readonly kitId?: HouseKitId;

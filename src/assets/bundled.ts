@@ -53,6 +53,15 @@ export type BundledImageAsset = {
 export const TILE_SIZE = RESOURCE_SLICING.chipset.cellWidth;
 export const TILES_PER_ROW = RESOURCE_SLICING.chipset.columns;
 export const TILE_FRAME_COUNT = RESOURCE_SLICING.chipset.count;
+
+/**
+ * Slates 32×32px orthogonal tileset (Ivan Voirol, CC-BY 4.0) — 1792×704 = 56열×22행 = 1232칸.
+ * 상단 32px 제목 띠는 잘라낸 본문만 번들한다. 출처·라이선스는 `public/assets/ATTRIBUTION.md`.
+ */
+export const SLATES_32_TEXTURE_KEY = "tex_slates_32";
+export const SLATES_32_TILE_SIZE = 32;
+export const SLATES_32_TILES_PER_ROW = 56;
+export const SLATES_32_FRAME_COUNT = 56 * 22;
 const TILE_QUARTER_SIZE = TILE_SIZE / 2;
 const TILE_QUARTERS = [
   { name: "nw", dx: 0, dy: 0 },
@@ -87,6 +96,7 @@ const CORE_BUNDLED_IMAGE_ASSETS = [
 
 /** The reference composite is loaded only by projects that explicitly use its board tileset. */
 export const BUNDLED_REFERENCE_CHIPSET_ASSETS = [
+  { textureKey: "tex_forest_cliff_reference", path: "assets/region-references/forest-cliff-village-atlas.png", name: "굽이숲 절벽마을 · 숲 조립 참조" },
   { textureKey: CASTLE_REFERENCE_TILESET_TEXTURE_KEY, path: "assets/opengameart-castle-reference-composite.png", name: "성채 참고 이미지 · 큰 돌다리 제거" },
 ] as const satisfies readonly BundledImageAsset[];
 
@@ -108,6 +118,7 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   // 그림은 scripts/gen-combined-town-retro-world-chipset.mjs, 정의는 defaults/combinedTownRetroWorld.ts.
   { textureKey: COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, path: "assets/easyrpg-chipset-combined-town-retro-world-transparent.png", name: COMBINED_TOWN_RETRO_WORLD_NAME },
   { textureKey: "tex_modern_exteriors_nocturne", path: "assets/modern-exteriors/modern-city-atlas.png", name: "Modern Exteriors · 네온 녹턴" },
+  { textureKey: SLATES_32_TEXTURE_KEY, path: "assets/slates/slates-v2-32px.png", name: "Slates 32px · Ivan Voirol (CC-BY 4.0)" },
   ...SCARLOXY_CHIPSET_ASSETS,
 ] as const satisfies readonly BundledImageAsset[];
 
@@ -115,8 +126,10 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
 export function bundledChipsetFrameCount(key: string): number {
   if (key === CASTLE_TILESET_TEXTURE_KEY) return CASTLE_TILE_COUNT;
   if (key === CASTLE_REFERENCE_TILESET_TEXTURE_KEY) return CASTLE_REFERENCE_TILE_COUNT;
+  if (key === "tex_forest_cliff_reference") return 2640;
   if (key === "tex_forest_harmony") return forestHarmony.count;
   if (key === "tex_tibo_interior_expanded") return tiboRecovered.count;
+  if (key === SLATES_32_TEXTURE_KEY) return SLATES_32_FRAME_COUNT;
   if (key === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return COMBINED_TOWN_RETRO_WORLD_TILE_COUNT;
   return TILE_FRAME_COUNT;
 }
@@ -295,7 +308,7 @@ export function registerTilesetTextureFrames(
     tileSize,
     tilesPerRow,
   );
-  registerTileAnimationsForTexture(scene, textureKey);
+  if (tileSize === TILE_SIZE) registerTileAnimationsForTexture(scene, textureKey);
 }
 
 function registerTransparentChipsetTexture(scene: Phaser.Scene, asset: BundledImageAsset): void {
@@ -570,7 +583,7 @@ export function chipsetAnimationKey(textureKey: string, animationKey: string): s
 
 function registerTileAnimations(scene: Phaser.Scene, textureKeys: readonly string[]): void {
   for (const textureKey of textureKeys) {
-    if (!scene.textures.exists(textureKey)) continue;
+    if (!scene.textures.exists(textureKey) || bundledChipsetTileSize(textureKey) !== TILE_SIZE) continue;
     registerTileAnimationsForTexture(scene, textureKey);
   }
 }

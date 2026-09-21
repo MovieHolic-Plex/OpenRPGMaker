@@ -129,6 +129,7 @@ describe("렌더러 — 밝은 맵에서도 보이는 선, 원형 힌트", () =>
           const record = { strokes: [] as number[][], ellipses: 0, rects: 0 };
           graphicsCalls.push(record);
           return {
+            clear: vi.fn(), beginPath: vi.fn(), moveTo: vi.fn(), lineTo: vi.fn(), strokePath: vi.fn(),
             fillStyle: vi.fn(), fillRect: vi.fn(), fillEllipse: vi.fn(),
             lineStyle: vi.fn((width: number, color: number, alpha: number) => record.strokes.push([width, color, alpha])),
             strokeRect: vi.fn(() => { record.rects += 1; }),

@@ -1,9 +1,13 @@
 import data from './reviewedPlaces/catalog.json';
+import { RIVER_VILLAGE_PLACE, RIVER_VILLAGE_PLACE_TILESET } from './riverVillagePlace';
 import type { Project, GameMap, TilesetDef } from '@/project/types';
 import type { PlaceDesign, SpatialId } from '@/project/spatial/types';
 
 // Authored, reviewed rasters; no remote project lookup is needed to browse or copy.
-const catalog = data as unknown as { roots: string[]; places: Record<string, PlaceDesign>; tilesets: Record<string, TilesetDef>; assets: Project['assets']['uploaded'] };
+const existing = data as unknown as { roots: string[]; places: Record<string, PlaceDesign>; tilesets: Record<string, TilesetDef>; assets: Project['assets']['uploaded'] };
+const catalog = { ...existing, roots: [RIVER_VILLAGE_PLACE.id, ...existing.roots],
+  places: { ...existing.places, [RIVER_VILLAGE_PLACE.id]: RIVER_VILLAGE_PLACE },
+  tilesets: { ...existing.tilesets, [RIVER_VILLAGE_PLACE_TILESET.id]: RIVER_VILLAGE_PLACE_TILESET } };
 export const REVIEWED_PLACES = catalog.roots.map(id => ({ id, name: catalog.places[id]!.name, kind: catalog.places[id]!.kind }));
 export function reviewedPlaceMaps(id: string): { map: GameMap; tileset: TilesetDef; level: number }[] {
   const result: ReturnType<typeof reviewedPlaceMaps> = [];

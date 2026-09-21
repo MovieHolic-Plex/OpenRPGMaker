@@ -58,6 +58,10 @@ export function prepareWebExport(project: Project): PreparedWebExport {
   };
   delete exportProject.audioDescriptions;
   delete exportProject.monsterMetadata;
+  for (const tileset of Object.values(exportProject.tilesets)) {
+    delete tileset.referenceDocuments;
+    delete tileset.referenceSourceTilesetId;
+  }
   const projectJson = serialize(exportProject);
   deserialize(projectJson);
   const assets = collectWebExportAssets(exportProject);

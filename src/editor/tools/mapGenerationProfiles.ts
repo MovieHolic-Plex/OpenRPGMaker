@@ -1,3 +1,4 @@
+import { FOREST_HARMONY_ID } from "@/project/defaults/forestHarmony";
 import type { Project } from "@/project/types";
 import { bundledChipsetFrameCount } from "@/assets/bundled";
 import { DEFAULT_TILE_COUNT, DEFAULT_TILE_SIZE, DEFAULT_TILES_PER_ROW } from "@/project/defaults/constants";
@@ -34,6 +35,11 @@ const samePalette = (palette: MapGenerationPalette): MapGenerationProfile["palet
 });
 
 const PROFILES = [
+  {
+    tilesetId: FOREST_HARMONY_ID,
+    layout: "settlement",
+    palettes: samePalette({ base: 240, path: 360, obstacle: 289, accent: 288 }),
+  },
   {
     tilesetId: "easyrpg_chipset_dungeon",
     layout: "dungeon",

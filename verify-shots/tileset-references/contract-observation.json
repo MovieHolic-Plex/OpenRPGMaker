@@ -1,0 +1,13 @@
+{
+  "providers": {
+    "responses": "blocked before delivery; text without image blocked; complete delivery accepted; edits revoke",
+    "chat": "blocked before delivery; text without image blocked; complete delivery accepted; edits revoke",
+    "anthropic": "blocked before delivery; text without image blocked; complete delivery accepted; edits revoke",
+    "gemini": "blocked before delivery; text without image blocked; complete delivery accepted; edits revoke"
+  },
+  "truncatedTextRejected": true,
+  "legacyPreserved": true,
+  "danglingSourceRejected": true,
+  "runtimeExcludesReferences": true,
+  "authorRoundtrip": true
+}

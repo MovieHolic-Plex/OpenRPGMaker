@@ -12,6 +12,7 @@
 // 지형어(「강촌」→강)는 기존대로 DB 「세계 → 생성 규칙」(@/project/worldGenRules)이 소유한다.
 // 슬롯·여백 계수는 village 시공기 실측(16×16에 집 1채+길이 빡빡 — src/editor/tools/authorVillageSupport.ts)과 같다.
 
+import { isVillageMorphology, type VillageMorphology } from "@/editor/tools/village/morphologyTypes";
 import { isRecord } from "@/ai/session/unknownValue";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 
@@ -21,12 +22,17 @@ export type ConstructionScale = "small" | "medium" | "large" | "vast";
 const CONSTRUCTION_SCALES: readonly ConstructionScale[] = ["small", "medium", "large", "vast"];
 
 export interface ConstructionDeclaration {
+  readonly morphology?: VillageMorphology;
+  /** Only a user-authored theme; do not invent one for an unspecified village. */
+  readonly theme?: string;
   /** 크기어. houseCount가 같이 선언되면 수량이 이긴다 — 크기어는 수량이 없을 때의 기본일 뿐이다. */
   readonly scale?: ConstructionScale;
   /** 집 수. 플래너 항목 수량과 author_village의 houseCount로 흘러간다. */
   readonly houseCount?: number;
   /** 마을 주민(인구) 목표. 맵 크기 계산에는 안 들어간다 — 통행 가능 칸에 놓인다. */
   readonly npcCount?: number;
+  /** Explicitly silent residents opt out of authored dialogue. */
+  readonly residentDialogue?: boolean;
   /** 새로 만들 맵 이름(「큰 강호 장터 마을」) — 신축 표지. 기존 맵 수정이면 생략. */
   readonly targetName?: string;
 }
@@ -62,14 +68,17 @@ const MIN_SIZE = 20;
 /** 선언 JSON의 construction 필드. 모르는 값은 버린다 — 전체 선언을 실패로 만들지 않는다(관대한 경계). */
 export function parseConstructionDeclaration(raw: unknown): ConstructionDeclaration | undefined {
   if (!isRecord(raw)) return undefined;
-  const construction: { scale?: ConstructionScale; houseCount?: number; npcCount?: number; targetName?: string } = {};
+  const construction: { morphology?: VillageMorphology; theme?: string; scale?: ConstructionScale; houseCount?: number; npcCount?: number; residentDialogue?: boolean; targetName?: string } = {};
   if (typeof raw.scale === "string" && (CONSTRUCTION_SCALES as readonly string[]).includes(raw.scale)) {
     construction.scale = raw.scale as ConstructionScale;
   }
+  if (isVillageMorphology(raw.morphology)) construction.morphology = raw.morphology;
+  if (typeof raw.theme === "string" && raw.theme.trim()) construction.theme = raw.theme.trim().slice(0, 120);
   const houseCount = positiveInt(raw.houseCount);
   if (houseCount !== undefined) construction.houseCount = Math.min(houseCount, MAX_DECLARED_HOUSES);
-  const npcCount = positiveInt(raw.npcCount);
+  const npcCount = raw.npcCount === 0 ? 0 : positiveInt(raw.npcCount);
   if (npcCount !== undefined) construction.npcCount = npcCount;
+  if (typeof raw.residentDialogue === "boolean") construction.residentDialogue = raw.residentDialogue;
   if (typeof raw.targetName === "string" && raw.targetName.trim()) construction.targetName = raw.targetName.trim().slice(0, 60);
   return Object.keys(construction).length > 0 ? construction : undefined;
 }
@@ -85,11 +94,12 @@ export function estimateVillageSize(input: ConstructionDeclaration | null | unde
   const houseCount = Math.min(declared ?? (scale ? SCALE_DEFAULT_HOUSES[scale] : DEFAULT_HOUSES), MAX_DECLARED_HOUSES);
   const cols = Math.max(1, Math.ceil(Math.sqrt(houseCount * ASPECT)));
   const rows = Math.max(1, Math.ceil(houseCount / cols));
-  const width = cols * HOUSE_SLOT_W + COMMON_MARGIN_W;
-  const height = rows * HOUSE_SLOT_H + COMMON_MARGIN_H;
+  const river = input?.morphology === "river";
+  const width = cols * HOUSE_SLOT_W + COMMON_MARGIN_W + (river ? 24 : 0);
+  const height = rows * HOUSE_SLOT_H + COMMON_MARGIN_H + (river ? 16 : 0);
   return {
-    width: Math.min(MAX_TOOL_MAP_DIMENSION, Math.max(MIN_SIZE, width)),
-    height: Math.min(MAX_TOOL_MAP_DIMENSION, Math.max(MIN_SIZE, height)),
+    width: Math.min(MAX_TOOL_MAP_DIMENSION, Math.max(river ? 44 : MIN_SIZE, width)),
+    height: Math.min(MAX_TOOL_MAP_DIMENSION, Math.max(river ? 36 : MIN_SIZE, height)),
     houseCount,
     source: declared !== undefined ? "houseCount" : scale ? "scale" : "default",
   };

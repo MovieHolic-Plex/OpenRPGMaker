@@ -383,7 +383,8 @@ describe("edit scene event rendering", () => {
       );
 
       expect(result.gridLineStyles[0]).toMatchObject({ lineWidth: 1, color: 0xffffff, alpha: 0.08 });
-      expect(badge).toMatchObject({ alpha: 0.86 });
+      // 2026-09-21 레이어 분리 — 타일 레이어에서 배지는 절반 밝기(0.86 × 0.45)로 내려간다.
+      expect(badge).toMatchObject({ alpha: 0.387 });
       expect(badgeBack?.stroke).toMatchObject({ lineWidth: 1, color: 0xcbd5e1, alpha: 0.72 });
       expect(badgeText).toMatchObject({ origin: [0.5, 0.5] });
       expect(sprite).toBeUndefined();

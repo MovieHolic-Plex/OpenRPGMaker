@@ -1,3 +1,8 @@
+import { PiTilesetReferenceGate } from "../../src/ai/piAgent/tilesetReferenceGate.ts";
+import { TILESET_REFERENCE_READ_TOOLS } from "../../src/editor/tools/tilesetReferenceTools.ts";
+import { SET_BUILD_SPEC_TOOL } from "../../src/ai/session/sessionTools.ts";
+import { normalizeBuildSpec, validateBuildSpec, type BuildSpec } from "../../src/ai/buildSpec.ts";
+import { assertVillageContractArgs, validateVillageContract, villageDraftReceipt, type VillageDraftReceipt } from "../../src/ai/piAgent/villageContract.ts";
 import type { ActivityVisual } from "../../src/ai/activityVisual";
 import { authoredVillageMapId, inspectPiVillageCompletion, piVillageRepairPrompt } from "../../src/ai/piAgent/villageCompletion.ts";
 import { inspectPromptPayload } from "../../src/ai/authoring/promptInspection.ts";
@@ -81,6 +86,7 @@ function createWebSearchTool(options: {
   return {
     name: WEB_SEARCH_TOOL,
     label: "웹 검색",
+    concurrency: "shared",
     description: [
       "인터넷을 검색해 최신 사실과 출처 URL을 가져온다.",
       "학습 시점 이후의 정보(최신 버전·릴리스·요금·뉴스·현행 표준)나 실존 작품의 구체 사실이 필요할 때 쓴다.",
@@ -150,6 +156,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const emit = (event: PiAgentEvent) => options.onEvent?.({ ...event, at: event.at ?? Date.now() });
   const base = request.project;
   const ctx = { project: structuredClone(base) as Project };
+  const referenceGate = new PiTilesetReferenceGate();
   const model = resolvePiModel(request.provider, request.model);
   // 어댑터와 코어 이벤트의 호출 id로 결과를 연결한다. 같은 이름의 병렬 호출도 섞지 않는다.
   const pendingSummaries = new Map<string, { ok: boolean; summary: string; result: unknown; visuals?: readonly ActivityVisual[] }>();
@@ -160,6 +167,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const tools: PiToolShape[] = [];
   const exposed = new Set<string>();
   const villageMapIds = new Set<string>();
+  const contract = request.readOnly || options.readOnlyTools ? undefined : request.villageContract;
+  let receipt: VillageDraftReceipt | undefined;
   const allowedDefinitions = selectPiToolDefinitions(undefined, {
     readOnly: request.readOnly || options.readOnlyTools, toolNames: options.toolNames,
   });
@@ -174,6 +183,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       readOnly: request.readOnly || options.readOnlyTools,
       toolNames: options.toolNames,
       onCall: recordCall,
+      referenceGate,
     });
     return shape ? wrapTool(shape) : undefined;
   };
@@ -187,6 +197,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     if (record.toolCallId) pendingSummaries.set(record.toolCallId, { ok: record.result.ok, summary: trimText(record.result.summary, 400), result: activityPayload(record.result), visuals: record.visuals });
     const villageMapId = authoredVillageMapId(record);
     if (villageMapId) villageMapIds.add(villageMapId);
+    if (contract) receipt = villageDraftReceipt(record, ctx.project) ?? receipt;
     // find_tools 수확 — 발견된 이름을 다음 턴 요청부터 실제로 선언한다(세션의 에스컬레이션 이식).
     if (record.name === "find_tools") {
       const found = harvestFindToolsNames(record.result);
@@ -202,9 +213,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       }
     }
   };
-  const incremental = !!request.applyMode && request.applyMode !== "review" && !request.readOnly && !options.readOnlyTools && !!options.onCheckpoint;
+  const incremental = !contract && !!request.applyMode && request.applyMode !== "review" && !request.readOnly && !options.readOnlyTools && !!options.onCheckpoint;
   let accepted = structuredClone(base) as Project;
-  let executionQueue: Promise<unknown> = Promise.resolve();
   let rejected = false;
   const checkpoint = async (label: string, toolName: string, signal?: AbortSignal): Promise<void> => {
     if (!incremental || changedProjectKeys(accepted, ctx.project).length === 0) return;
@@ -224,16 +234,18 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       throw error;
     }
   };
-  const wrapTool = (tool: PiToolShape): PiToolShape => !incremental ? tool : ({ ...tool,
-    execute(id, params, signal) {
-      const result = executionQueue.then(async () => {
-        if (rejected) throw new Error("적용이 중단되었습니다.");
-        signal?.throwIfAborted();
-        const result = await tool.execute(id, params, signal);
-        if (request.applyMode !== "step") await checkpoint(tool.name, tool.name, signal);
-        return result;
-      });
-      executionQueue = result.catch(() => undefined);
+  const wrapTool = (tool: PiToolShape): PiToolShape => !incremental && !contract ? tool : ({ ...tool,
+    async execute(id, params, signal) {
+      // The core owns ordering: consecutive reads overlap; writes hold an exclusive
+      // barrier through publication. A second queue here would serialize reads too.
+      if (rejected) throw new Error("적용이 중단되었습니다.");
+      signal?.throwIfAborted();
+      if (contract && allowedDefinitions.some(def => def.name === tool.name && def.mode === "write")) {
+        if (tool.name === "author_village" && !receipt) assertVillageContractArgs(contract, params);
+        else if (tool.name !== "author_npc_cast" || !receipt) throw new Error("마을 계약: author_village로 시공하고 주민 대사만 보충하세요. 다른 쓰기는 별도 요청으로 진행합니다.");
+      }
+      const result = await tool.execute(id, params, signal);
+      if (tool.concurrency === "exclusive" && request.applyMode !== "step") await checkpoint(tool.name, tool.name, signal);
       return result;
     },
   });
@@ -241,9 +253,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     domains: request.initialToolNames ? undefined : request.toolDomains,
     readOnly: request.readOnly || options.readOnlyTools,
     toolNames: request.initialToolNames
-      ? allowedDefinitions.filter(tool => request.initialToolNames!.includes(tool.name)).map(tool => tool.name)
+      ? allowedDefinitions.filter(tool => request.initialToolNames!.includes(tool.name) || TILESET_REFERENCE_READ_TOOLS.some(name => name === tool.name)).map(tool => tool.name)
       : options.toolNames,
     onCall: recordCall,
+    referenceGate,
   });
   // 레지스트리 쪽 web_search 는 순수 핸드오프라 네트워크가 없다 — 아래 실제 실행 셰이프가 대신한다.
   // 둘을 함께 선언하면 같은 이름이 두 번 나가고 어느 쪽이 도는지가 순서에 달린다.
@@ -257,6 +270,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   }
   if (incremental && request.applyMode === "step") tools.push(wrapTool({
     name: "finish_stage", label: "단계 적용",
+    concurrency: "exclusive",
     description: "지형·건물/길·NPC/이벤트 등 의미 있는 한 단계를 마친 뒤 호출한다. 사용자 승인 전에는 다음 단계로 진행하지 않는다.",
     parameters: { type: "object", properties: { title: { type: "string" } }, required: ["title"] },
     async execute(_id, params, signal) {
@@ -264,8 +278,21 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       return { content: [{ type: "text", text: "단계가 적용되었습니다. 다음 단계로 진행하세요." }] };
     },
   }));
+  if (!request.readOnly && !options.readOnlyTools) tools.push({
+    name: "set_build_spec", label: "공간 밑그림",
+    description: "시공 전에 맵 위에 영역과 순서를 표시하는 밑그림을 제출한다. 타일을 변경하거나 시공을 승인하지 않는다. 실제 배치는 별도 쓰기 도구로 실행한다.",
+    parameters: SET_BUILD_SPEC_TOOL.function.parameters,
+    async execute(_id, params) {
+      const issues = validateBuildSpec(ctx.project, params);
+      const errors = issues.filter(issue => issue.severity === "error");
+      if (errors.length) throw new Error(errors.map(issue => issue.message).join("\n"));
+      const spec = normalizeBuildSpec(params as BuildSpec);
+      emit({ type: "execution_status", name: "set_build_spec", ok: true, summary: "밑그림을 맵에 표시했습니다.", data: spec });
+      return { content: [{ type: "text", text: "밑그림을 표시했습니다. 이제 실제 시공 도구를 실행하세요." }] };
+    },
+  });
   for (const tool of tools) exposed.add(tool.name);
-  const writer = request.roleModels?.writer;
+  const writer = contract ? undefined : request.roleModels?.writer;
   if (writer && !options.toolNames) {
     const writerTool = createWriterTool(writer, completeProvider,
       options.providerApiKeys?.[writer.provider] ?? (writer.provider === request.provider ? options.apiKey : undefined));
@@ -280,7 +307,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   }
   // 읽기 전용은 툴 목록으로 강제된다(options.readOnlyTools). 이 한 줄은 모델이 "왜 답만 하는지" 알게 한다 —
   // 이유를 모르면 쓰기를 시도하며 턴을 태운다.
+  if (contract) systemPrompt.push("[확정 마을 계약] 완료 검사는 코드가 자동 수행한다. evaluate_village_look는 요청을 모르는 미감 참고 도구이므로 이 작업에서는 호출하지 않는다. 시공과 대사가 성공하면 보고하고 종료한다. 별도 계획/미감 검수 없이 author_village → 주민 대사 → 완료 검사 순서로 진행한다. 다음 인자는 반드시 그대로 유지하고, 취향·테마·residents 대사는 사용자의 요청에 맞춰 추가한다. 처음부터 residents에 충분한 대사를 넣으면 추가 호출이 줄어든다. 구조 시공 성공 후에는 author_npc_cast로 누락 대사만 보충한다. " + JSON.stringify(contract.args) + (contract.residentDialogue === false ? " 사용자가 무언 주민을 요청했으므로 대사를 추가하지 않는다." : ""));
   if (request.readOnly) systemPrompt.push(READ_ONLY_INSTRUCTION);
+  if (!request.readOnly && !options.readOnlyTools) systemPrompt.push("집·마을처럼 여러 영역을 시공할 때는 먼저 set_build_spec으로 실제 좌표와 buildOrder를 제출하여 사용자가 맵에서 밑그림을 보게 하라. 밑그림은 타일 배치가 아니다. 제출 후 반드시 실제 시공 도구를 실행하라. 단순 한 영역 칠하기는 도구 좌표로 작업 영역을 표시하므로 생략할 수 있다.");
   if (incremental && request.applyMode === "step") systemPrompt.push("작업을 지형, 건물·길, NPC·이벤트 등 의미 있는 단계로 나누고 각 단계를 끝낼 때 반드시 finish_stage를 호출하라. 승인 결과를 받기 전 다음 단계의 쓰기 도구를 호출하지 마라. 도구 호출마다 승인받지 말고 작업 단위로 묶어라.");
   if (request.applyMode === "yolo") systemPrompt.push("YOLO: 별도 검수·승인 요청 없이 요청한 변경을 최대한 실행하라. 사용자 범위와 데이터 형식은 지켜라.");
   if (writer && tools.some(tool => tool.name === "consult_writer")) systemPrompt.push("You are Deep, responsible for careful implementation and validation. For story, lore, NPC dialogue or quest prose, consult_writer delegates authorship to Writer. Pass relevant context, then apply its output using project tools. Do not call Writer for mechanical work.");
@@ -298,6 +327,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       const outgoing = request.provider === "google-antigravity"
         ? antigravityToolEnumPayload(String((model as { id?: string }).id ?? ""), tools)(payload)
         : payload;
+      referenceGate.payload(outgoing);
       // Observe the actual provider payload after normalization, not a rebuilt prompt.
       try {
         emit({ type: "prompt_inspection", snapshot: inspectPromptPayload(outgoing,
@@ -373,15 +403,18 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       pendingSummaries.delete(callId);
       const toolAt = toolStartedAt.get(callId);
       toolStartedAt.delete(callId);
+      // A registry write can succeed but its publication can still be rejected.
+      // In that case the core's failure must override the earlier draft receipt.
+      const publicationFailed = event.isError && record?.ok;
       emit({
         type: "tool_end",
-        result: record?.result ?? activityPayload(event.result),
+        result: publicationFailed ? activityPayload(event.result) : record?.result ?? activityPayload(event.result),
         visuals: record?.visuals,
         ...(toolAt === undefined ? {} : { durationMs: Date.now() - toolAt }),
         id: String(event.toolCallId ?? ""),
         name,
-        ok: record ? record.ok : !event.isError,
-        summary: record?.summary ?? (event.isError ? "실행 실패(인자 검증 또는 예외)" : ""),
+        ok: !event.isError && (record?.ok ?? true),
+        summary: publicationFailed ? "변경 적용 실패 또는 실행 중단" : record?.summary ?? (event.isError ? "실행 실패(인자 검증 또는 예외)" : ""),
       });
       // 순서 계약: 무엇을 했나(tool_end) 다음에 무엇이 바뀌었나(map_delta). 브라우저 다리가
       // 실행 중 도구 이름을 먼저 세우고 그 아래 칸을 그린다.
@@ -391,6 +424,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     if (event.type === "message_end") {
       const message = event.message as { role?: string; content?: unknown[]; usage?: unknown; stopReason?: string; errorMessage?: string } | undefined;
       if (!message || message.role !== "assistant") return;
+      referenceGate.complete(message.stopReason !== "error" && message.stopReason !== "aborted" && !message.errorMessage && !options.signal?.aborted);
       const text = (message.content ?? [])
         .filter((part): part is { type: "text"; text: string } => !!part && typeof part === "object" && (part as { type?: string }).type === "text")
         .map((part) => part.text)
@@ -420,15 +454,20 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   });
   try {
     await agent.prompt(request.task);
-    // The original turn/time/role limits remain in force across these bounded repair rounds.
-    for (let attempt = 0; !fatal && !rejected && villageMapIds.size && attempt < 2; attempt++) {
-      const completion = inspectPiVillageCompletion(ctx.project, base, villageMapIds);
+    // One repair owner, one turn/time budget; unchanged failures stop immediately.
+    let previousIssues = "";
+    for (let attempt = 0; !fatal && !rejected && (contract || villageMapIds.size) && attempt < 2; attempt++) {
+      const completion = contract ? validateVillageContract(ctx.project, base, contract, receipt)
+        : inspectPiVillageCompletion(ctx.project, base, villageMapIds);
+      const signature = JSON.stringify(completion.issues);
+      if (signature === previousIssues) break;
+      previousIssues = signature;
       if (!completion.issues.length || turns >= maxTurns || options.signal?.aborted) break;
-      for (const name of ["author_npc_cast", "find_events", "get_event", "evaluate_village_look", "find_tools"]) {
+      for (const name of ["author_npc_cast", "find_events", "get_event", "find_tools"]) {
         const shape = shapeFor(name);
         if (shape) declare(shape);
       }
-      await agent.prompt(piVillageRepairPrompt(ctx.project, base, completion));
+      await agent.prompt(piVillageRepairPrompt(ctx.project, base, completion, receipt?.data.village.residentEventIds));
     }
   } finally {
     unsubscribeTeamMessages?.();
@@ -442,7 +481,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   if (!fatal && !rejected) await checkpoint("마지막 단계", "finish_stage");
   emitMapDelta();
   if (fatal && toolCalls === 0) throw Object.assign(new Error(fatal), { status: 502 });
-  const villageCompletion = villageMapIds.size ? inspectPiVillageCompletion(ctx.project, base, villageMapIds) : undefined;
+  const villageCompletion = contract ? validateVillageContract(ctx.project, base, contract, receipt)
+    : villageMapIds.size ? inspectPiVillageCompletion(ctx.project, base, villageMapIds) : undefined;
   if (villageCompletion?.issues.length) emit({ type: "error", message: `마을 미완료: ${villageCompletion.issues.join("\n")}` });
   const done: PiAgentDoneEvent = {
     ...(villageCompletion ? { villageCompletion } : {}),

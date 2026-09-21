@@ -3,11 +3,13 @@
 //
 // ⚠ 타일셋 스코프: village/ 디렉토리의 모든 원시 타일 id(문 116/146, 울타리 378~439,
 // 돌마당 411/412/413, 우물 382, 깃발 208/209 등)는 combined_town 칩셋
-// (easyrpg_chipset_combined_town, 30열×16행) 전용 좌표다. 다른 타일셋에서는 전부 깨진다 —
+// (easyrpg_chipset_combined_town, 30열×16행) 좌표다. 숲마을과 혼합 칩셋은 이 첫 480칸을 보존한다.
+// 다른 타일셋에서는 전부 깨진다 —
 // build_village가 시공 전에 타일셋을 검사해 거부한다(builder.ts).
 
 import { protectedHouseCells } from "../houseProtection";
-import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
+import { villageWaterPredicate } from "./waterTiles";
+import type { TilesetDef } from "@/project/types";
 import { TILE } from "@/project/defaults/constants";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import type { FootprintWing, HouseKitId } from "@/editor/houseKit";
@@ -125,7 +127,8 @@ export const ROAD_TILES = new Set<number>([
   ...DEFAULT_COBBLE_AUTOTILE_GROUP.memberTileIds,
 ]);
 /** External network membership, not a tile-value test: accepted houses/stamps own both layers. */
-export function environmentalRoadAt(map: GameMap): (x: number, y: number) => boolean {
+export function environmentalRoadAt(map: GameMap, tileset?: TilesetDef): (x: number, y: number) => boolean {
+  const isWater = villageWaterPredicate(map, tileset);
   const owned = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
   return (x, y) => {
     if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
@@ -133,7 +136,7 @@ export function environmentalRoadAt(map: GameMap): (x: number, y: number) => boo
     if (owned.has(index)) return false;
     const lower = map.lowerTiles[index] ?? TILE.EMPTY;
     // Planks connect roads over water, but a roof deck is not an environmental bridge.
-    return ROAD_TILES.has(lower) || (map.upperTiles[index] === 199 && isWaterChipsetTile(lower));
+    return ROAD_TILES.has(lower) || (map.upperTiles[index] === 199 && isWater(lower));
   };
 }
 
@@ -265,6 +268,7 @@ export interface BuiltHouse {
   readonly ownerName?: string;
   /** Explicit interior program (preferred over ownerName regex). */
   readonly program?: HouseInteriorProgram;
+  readonly fence?: boolean;
   /** Saved exterior geometry and its explicitly planned private access; no implied interior. */
   readonly objectExterior?: {
     readonly exteriorStories?: 1 | 2 | 3 | 4;

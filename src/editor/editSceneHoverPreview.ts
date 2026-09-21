@@ -1,5 +1,5 @@
+import { mapTileSize } from "@/project/tileGeometry";
 import type Phaser from "phaser";
-import { TILE_SIZE } from "@/assets/bundled";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { comboBrushPlacement } from "@/editor/comboBrush";
 import { editorState } from "@/editor/editorState";
@@ -21,12 +21,15 @@ type HoverPreviewSpec = {
   readonly layer: Phaser.GameObjects.Container;
   readonly mapId: MapId;
   readonly scene: Phaser.Scene;
+  /** 이 맵의 좌표 단위(px). 렌더와 같은 값을 써야 미리보기가 칸에 정확히 앉는다. */
+  readonly tileSize?: number;
 };
 
 export function renderHoverTilePreview(spec: HoverPreviewSpec): void {
   spec.layer.removeAll(true);
   const map = store.getCurrent().maps[spec.mapId];
   if (!map) return;
+  const tileSize = spec.tileSize ?? mapTileSize(map);
   const tileset = store.getCurrent().tilesets[map.tilesetId];
   if (!tileset) return;
   const state = editorState.get();
@@ -51,10 +54,10 @@ export function renderHoverTilePreview(spec: HoverPreviewSpec): void {
       }
       // 맵 밖 칸도 표시한다 — 붉은 슬롯이 계약대로 "이 칸은 잘린다"를 미리 말한다.
       const marker = spec.scene.add.rectangle(
-        x * TILE_SIZE,
-        y * TILE_SIZE,
-        TILE_SIZE,
-        TILE_SIZE,
+        x * tileSize,
+        y * tileSize,
+        tileSize,
+        tileSize,
         placed.inBounds ? 0x51cf66 : 0xff6b6b,
         placed.inBounds ? 0.12 : 0.22,
       );
@@ -74,7 +77,7 @@ export function renderHoverTilePreview(spec: HoverPreviewSpec): void {
       preview.setAlpha(0.62);
       spec.layer.add(preview);
     }
-    const marker = spec.scene.add.rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, erasing ? 0xff6b6b : 0x3bc9db, 0.18);
+    const marker = spec.scene.add.rectangle(x * tileSize, y * tileSize, tileSize, tileSize, erasing ? 0xff6b6b : 0x3bc9db, 0.18);
     marker.setOrigin(0, 0);
     marker.setStrokeStyle(1, 0xe7f5ff, 0.85);
     spec.layer.add(marker);

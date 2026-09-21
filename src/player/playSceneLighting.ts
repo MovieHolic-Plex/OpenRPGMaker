@@ -1,5 +1,5 @@
 import type Phaser from "phaser";
-import { TILE_SIZE } from "@/assets/bundled";
+import { mapTileSize } from "@/project/tileGeometry";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
 import { followerPositions } from "@/project/followers";
 import {
@@ -78,7 +78,7 @@ export function syncLightingLayer(scene: PlaySceneContext): void {
   const params = lightingGradientParams(lighting, {
     viewportWidth: camera.width || PLAY_RESOLUTION.width,
     viewportHeight: camera.height || PLAY_RESOLUTION.height,
-    tileSize: TILE_SIZE,
+    tileSize: mapTileSize(scene.map),
     cameraX: camera.worldView?.x ?? camera.scrollX,
     cameraY: camera.worldView?.y ?? camera.scrollY,
     zoom: camera.zoom,
@@ -147,10 +147,10 @@ function resolveLightAnchor(
   anchor: LightSourceAnchor,
   _source: LightSource
 ): LightTilePosition | undefined {
-  if (anchor === "player") return spriteToTilePosition(scene.player);
+  if (anchor === "player") return spriteToTilePosition(scene.player, mapTileSize(scene.map));
   if ("eventId" in anchor) {
     const eventSprite = scene.eventSprites.get(anchor.eventId);
-    if (eventSprite) return spriteToTilePosition(eventSprite);
+    if (eventSprite) return spriteToTilePosition(eventSprite, mapTileSize(scene.map));
     const project = store.getCurrent();
     const follower = followerPositions(scene.session, project.system.companions, { project, map: scene.map }).find((entry) =>
       entry.follower.eventId === anchor.eventId || entry.follower.name === anchor.eventId
@@ -167,11 +167,11 @@ function resolveLightAnchor(
   return { x: anchor.x, y: anchor.y };
 }
 
-function spriteToTilePosition(sprite: Phaser.GameObjects.Sprite): LightTilePosition {
+function spriteToTilePosition(sprite: Phaser.GameObjects.Sprite, tileSize: number): LightTilePosition {
   const centerX = sprite.x;
-  const centerY = sprite.y - TILE_SIZE / 2;
+  const centerY = sprite.y - tileSize / 2;
   return {
-    x: centerX / TILE_SIZE - 0.5,
-    y: centerY / TILE_SIZE - 0.5,
+    x: centerX / tileSize - 0.5,
+    y: centerY / tileSize - 0.5,
   };
 }

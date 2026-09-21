@@ -50,6 +50,15 @@ function loadWithRawPage(raw: Record<string, unknown>): Project {
 }
 
 describe("발자국 왕복", () => {
+  it.each(["auto", "manual"] as const)("%s 배율 모드를 저장하고 다시 읽는다", (scaleMode) => {
+    const project = projectWithPage({ graphic: { scale: 1, scaleMode } });
+    const graphic = deserialize(serialize(project)).maps[project.startMapId]!.events[0]!.pages![0]!.graphic;
+    expect(graphic).toMatchObject({ scale: 1, scaleMode });
+  });
+
+  it("잘못된 배율 모드를 거부한다", () => {
+    expect(() => loadWithRawPage({ graphic: { scaleMode: "stretch" } })).toThrow(ProjectFormatError);
+  });
   it("몸 크기·통행 행·배율이 그대로 복원된다", () => {
     const project = projectWithPage({
       footprint: { width: 3, height: 3 },

@@ -48,11 +48,11 @@ function nowMs(): number {
  * 마커를 이벤트의 몸 사각 크기·위치로 맞춘다. 좌표는 dataset 에 맵 픽셀로 남기고
  * `placeMarker` 가 카메라 기준으로 환산한다 — 카메라가 움직여도 크기는 다시 안 잰다.
  */
-function applyMarkerBodyRect(marker: HTMLElement, view: RuntimeEventView): void {
-  const width = (view.bodyRect.right - view.bodyRect.left + 1) * TILE_SIZE;
-  const height = (view.bodyRect.bottom - view.bodyRect.top + 1) * TILE_SIZE;
-  marker.dataset.mapX = `${view.bodyRect.left * TILE_SIZE}`;
-  marker.dataset.mapY = `${view.bodyRect.top * TILE_SIZE}`;
+function applyMarkerBodyRect(marker: HTMLElement, view: RuntimeEventView, tileSize: number): void {
+  const width = (view.bodyRect.right - view.bodyRect.left + 1) * tileSize;
+  const height = (view.bodyRect.bottom - view.bodyRect.top + 1) * tileSize;
+  marker.dataset.mapX = `${view.bodyRect.left * tileSize}`;
+  marker.dataset.mapY = `${view.bodyRect.top * tileSize}`;
   marker.dataset.mapW = `${width}`;
   marker.dataset.mapH = `${height}`;
   marker.style.width = `${width}px`;
@@ -291,7 +291,7 @@ export class RuntimeDomOverlay {
     this.onMarkerWrite?.(marker);
   }
 
-  upsertEventMarker(view: RuntimeEventView, onActivate?: (eventId: string) => void): void {
+  upsertEventMarker(view: RuntimeEventView, onActivate?: (eventId: string) => void, tileSize: number = TILE_SIZE): void {
     if (!this.qaInstrumentation) return;
     const host = this.host();
     if (!host) return;
@@ -307,12 +307,12 @@ export class RuntimeDomOverlay {
     marker.textContent = view.pageId ?? view.event.id;
     // 히트박스는 **몸 사각**이다. 앵커 한 칸으로 두면 3x3 골렘의 머리를 클릭해도 아무 일이
     // 없다 — 이 마커가 `pointer-events: auto` 실행 히트박스이기 때문이다.
-    applyMarkerBodyRect(marker, view);
+    applyMarkerBodyRect(marker, view, tileSize);
     marker.dataset.pageId = view.pageId ?? "";
     marker.dataset.priority = view.priority;
     marker.dataset.trigger = view.trigger.kind;
     this.placeMarker(marker);
-    this.syncSpriteMarker(host, view);
+    this.syncSpriteMarker(host, view, tileSize);
   }
 
   clearEventMarkers(): void {
@@ -326,7 +326,7 @@ export class RuntimeDomOverlay {
     this.spriteMarkers.clear();
   }
 
-  private syncSpriteMarker(host: HTMLElement, view: RuntimeEventView): void {
+  private syncSpriteMarker(host: HTMLElement, view: RuntimeEventView, tileSize: number): void {
     const existing = this.spriteMarkers.get(view.event.id);
     if (!view.sprite) {
       existing?.remove();
@@ -341,7 +341,7 @@ export class RuntimeDomOverlay {
       this.spriteMarkers.set(view.event.id, marker);
     }
     marker.textContent = view.pageId ?? view.event.id;
-    applyMarkerBodyRect(marker, view);
+    applyMarkerBodyRect(marker, view, tileSize);
     marker.dataset.pageId = view.pageId ?? "";
     marker.dataset.priority = view.priority;
     this.placeMarker(marker);

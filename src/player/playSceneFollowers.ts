@@ -1,9 +1,9 @@
+import { mapTileSize } from "@/project/tileGeometry";
 import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { characterSpriteX, characterSpriteY, placeCharacterSprite, updateCharacterDepth } from "@/player/characterDepth";
 import { eventSpriteScale, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
 import { followerPositions, type FollowerSlotMotion } from "@/project/followers";
-import { normalizeCharacterScale } from "@/project/footprint";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
   NPC_MOVE_DURATION_MS,
@@ -105,8 +105,8 @@ export function syncFollowerSprites(
     let sprite = scene.followerSprites.get(key);
     if (!sprite) {
       sprite = scene.add.sprite(
-        characterSpriteX(spriteTile.x),
-        characterSpriteY(spriteTile.y),
+        characterSpriteX(spriteTile.x, mapTileSize(scene.map)),
+        characterSpriteY(spriteTile.y, mapTileSize(scene.map)),
         texture?.texture ?? DEFAULT_EASYRPG_CHARSET_ID,
         frame
       );
@@ -114,12 +114,12 @@ export function syncFollowerSprites(
       scene.followerSprites.set(key, sprite);
     } else {
       sprite.setTexture(texture?.texture ?? DEFAULT_EASYRPG_CHARSET_ID, frame);
-      sprite.setPosition(characterSpriteX(spriteTile.x), characterSpriteY(spriteTile.y));
+      sprite.setPosition(characterSpriteX(spriteTile.x, mapTileSize(scene.map)), characterSpriteY(spriteTile.y, mapTileSize(scene.map)));
       updateCharacterDepth(sprite, "same");
     }
     // 동료도 배율을 따른다 — 큰 동료가 이벤트로 서 있을 때와 따라올 때 크기가 달라지면
-    // 같은 캐릭터로 보이지 않는다. 배율 없는 동료는 1(항등).
-    sprite.setScale(eventSpriteScale(texture, sprite, normalizeCharacterScale(position.follower.graphic.scale)));
+    // 같은 캐릭터로 보이지 않는다. 자동 배율은 현재 맵에서 다시 계산한다.
+    sprite.setScale(eventSpriteScale(texture, sprite, position.follower.graphic.scale, mapTileSize(scene.map), position.follower.graphic.scaleMode));
     sprite.setFrame(frame);
   }
   for (const key of [...scene.followerSprites.keys()]) {
@@ -141,8 +141,8 @@ export function updateFollowerSpriteMotion(scene: PlaySceneContext, deltaMs: num
     if (motion && now - motion.startedAt < motion.durationMs) {
       const progress = (now - motion.startedAt) / motion.durationMs;
       sprite.setPosition(
-        characterSpriteX(lerp(motion.from.x, motion.to.x, progress)),
-        characterSpriteY(lerp(motion.from.y, motion.to.y, progress))
+        characterSpriteX(lerp(motion.from.x, motion.to.x, progress), mapTileSize(scene.map)),
+        characterSpriteY(lerp(motion.from.y, motion.to.y, progress), mapTileSize(scene.map))
       );
       updateCharacterDepth(sprite, "same");
       if (state.isCharset) {
@@ -154,7 +154,7 @@ export function updateFollowerSpriteMotion(scene: PlaySceneContext, deltaMs: num
       // 걸음 완료 — 슬롯 중앙에 정착하고 정지 프레임으로.
       followerSlotMotion.delete(key);
       followerWalkElapsedMs.set(key, 0);
-      sprite.setPosition(characterSpriteX(state.slot.x), characterSpriteY(state.slot.y));
+      sprite.setPosition(characterSpriteX(state.slot.x, mapTileSize(scene.map)), characterSpriteY(state.slot.y, mapTileSize(scene.map)));
       updateCharacterDepth(sprite, "same");
       if (state.isCharset) sprite.setFrame(charsetIdleFrameIndex(state.baseFrame, state.direction));
     }

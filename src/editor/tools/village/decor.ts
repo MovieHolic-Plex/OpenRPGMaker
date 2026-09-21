@@ -1,3 +1,6 @@
+import { paintForestGroves } from "./forestGroves";
+import { forestCoverageTarget } from "../forestDensity";
+import { prepareVillageTreeKit, plantForestBand } from "./treeKit";
 // editor/tools/village/decor.ts
 // 마을 소품 레이어 — 마당 꾸밈, 길 옆 벤치, 우물, 깃발, 바위 노두, 활엽수 군락, place_props 위임.
 
@@ -295,6 +298,27 @@ export function placeVillageTrees(
   seed: number, intent: VillageIntent, warnings: string[], reserved: readonly Rect[] = [],
 ): number {
   const yards = houses.map(house => yardAreaForHouse(map, [house.bbox], house.doorAt, { depth: 3, pad: 1 }));
+  const kit = prepareVillageTreeKit(draft.tilesets[map.tilesetId]);
+  if (kit.id === "forest-harmony") {
+    if (intent.edgeTrees === "none") return 0;
+    const blocked = houseBlockedCells(houses, map);
+    for (const { x, y } of protectedHouseCells(map)) blocked.add(coordKey(x, y));
+    for (const event of map.events) blocked.add(coordKey(event.x, event.y));
+    if (draft.startMapId === map.id) blocked.add(coordKey(draft.startPos.x, draft.startPos.y));
+    const free = (x: number, y: number): boolean => inMapBounds(map, x, y)
+      && !blocked.has(coordKey(x, y)) && map.lowerTiles[y * map.width + x] === TILE.GRASS
+      && map.upperTiles[y * map.width + x] === TILE.EMPTY
+      && !map.lowerTileStacks?.[y * map.width + x]?.length && !map.upperTileStacks?.[y * map.width + x]?.length;
+    const exclusions = [...reserved, ...yards, plaza.rect];
+    const groveFree = (x: number, y: number): boolean => free(x, y)
+      && !exclusions.some(rect => x >= rect.x && y >= rect.y && x < rect.x + rect.w && y < rect.y + rect.h);
+    if (kit.grove) {
+      const density = intent.forestDensity ?? (intent.edgeTrees === "dense" ? "dense" : "normal");
+      const grove = paintForestGroves(map, area, kit.grove, groveFree, seed, forestCoverageTarget(density));
+      return Math.ceil(grove.cells.size / 12);
+    }
+    return plantForestBand(map, area, seed, kit, groveFree, Math.floor(area.w * area.h / 118) + 9).placed;
+  }
   return unreservedAreas([area], [...reserved, ...yards])
     .filter(part => part.w >= 4 && part.h >= 4)
     .reduce((total, part) => total + plantVillageTreeArea(draft, map, part, plaza, houses, seed, intent, warnings, part.w * part.h / (area.w * area.h)), 0);

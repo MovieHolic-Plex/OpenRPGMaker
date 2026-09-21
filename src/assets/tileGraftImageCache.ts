@@ -7,6 +7,7 @@
 import {
   ASSET_TILESET,
   BUNDLED_EASYRPG_CHIPSET_ASSETS,
+  BUNDLED_REFERENCE_CHIPSET_ASSETS,
   TEX_TILESET,
 } from "@/assets/bundled";
 import {
@@ -209,7 +210,7 @@ async function loadChipsetSourceImage(textureKey: string): Promise<HTMLImageElem
 
 function bundledChipsetPath(textureKey: string): string | null {
   if (textureKey === TEX_TILESET) return ASSET_TILESET;
-  return BUNDLED_EASYRPG_CHIPSET_ASSETS.find((asset) => asset.textureKey === textureKey)?.path ?? null;
+  return [...BUNDLED_EASYRPG_CHIPSET_ASSETS, ...BUNDLED_REFERENCE_CHIPSET_ASSETS].find((asset) => asset.textureKey === textureKey)?.path ?? null;
 }
 
 function loadImage(url: string): Promise<HTMLImageElement | null> {

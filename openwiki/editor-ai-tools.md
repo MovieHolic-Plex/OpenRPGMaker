@@ -1,4 +1,71 @@
+## 단독 조수의 병렬 도구 실행 (2026-09-21)
+
+기본 조수도 팀 없이 독립적인 조회·웹 검색·Writer 초안을 한 모델 응답의 여러 호출로
+묶는다. `piAgent/systemPrompt.ts`가 이 규칙과 결과·생성 ID 의존성의 다음 턴 대기를 지시한다.
+`toolAdapter.ts`는 레지스트리 `mode=read`를 Pi 코어 `concurrency=shared`, 쓰기를
+`exclusive`로 매핑한다. 최초 노출·find_tools 승격·미노출 직접 호출이 모두 같은 매핑을 쓴다.
+웹 검색과 Writer는 shared, `finish_stage`는 exclusive다. 팀 배정·메일함의 기존 실행 정책은 유지한다.
+
+`scripts/lib/piAgentRuntime.ts`의 전체 도구용 `executionQueue`는 제거했다. 이 큐 때문에
+DEFAULT/AUTO/YOLO/단계별 적용에서는 검색까지 직렬 실행됐다. 이제 코어가 연속된 읽기를
+함께 실행하고, 쓰기는 앞선 호출의 종료를 기다려 실행·checkpoint 적용까지 단독 점유한다.
+뒤의 조회/쓰기는 승인된 최신 프로젝트를 보며, 검토 후 적용에서도 쓰기는 순서를 지킨다.
+승인 거절이나 중단은 후속 쓰기를 막는다. 초안 작성 후 checkpoint가 실패하면 이전의
+성공 영수증보다 코어 실패를 우선하여 `tool_end.ok=false`로 보고한다.
+
+병렬화는 비동기 대기 시간을 겹치는 것이며 동기 타일 연산을 여러 CPU에서 돌리는 기능은 아니다.
+도구 결과가 필요한 후속 모델 판단은 다음 턴에 실행한다. 제공자별 다중 호출 제한은 변경하지 않는다.
+증거·명령·제약: `reports/2026-09-21-ai-tool-parallel.md`, `.omo/evidence/ai-tool-parallel/`.
+회귀: `test/piToolConcurrency.bun.test.ts`(실제 Pi 루프 + 제어된 모델/검색 전송),
+`piApplyModes.bun.test.ts`, `piAgentToolAdapter.test.ts`.
+실제 모델/실제 검색 재현: `bun scripts/qa/ai-tool-parallel-live.mts` (연결된 제공자 필요,
+읽기 도구만 허용하고 프로젝트 적용이 발생하면 실패한다).
+
 ### 검색 중 사용자에게 보이는 것 (2026-09-21 실측)
+## AI 새 야외·마을의 기본 칩셋 (2026-09-21)
+
+- `defaults/forestHarmony.ts::defaultOutdoorTilesetId`가 AI 새 야외의 기본값을 소유한다.
+  기본 제공 `forest_harmony`(숲마을 · 거리별 잔디)를 우선하며, 번들이 없는 축소된 옛 프로젝트만
+  합본 마을로 폴백한다. `DEFAULT_TILESET_ID`는 기존 데이터·번호 계약이므로 바꾸지 않는다.
+- `create_map`, `generate_map`의 village/forest, `author_village`와 내부 마을 생성,
+  `build_world`의 town/field가 같은 정책을 쓴다. 명시 칩셋은 우선한다.
+  `generate_map` cave는 고정 입구/POI 유무와 관계없이 던전 칩셋을 기본으로 한다.
+  기존 맵, 집에 연결되는 실내, 별도 공간/월드 컴파일러의 명시 재료 계약은 유지한다.
+- `author_village.target.tilesetId`는 **new 전용**이다. 스키마·파서·생성·변이 전 호환성 검사에
+  모두 전달한다. 기존 맵은 해당 맵 칩셋을 검사하며 자동 교체하지 않는다.
+- 숲마을은 합본 마을 0~479의 집·길 번호와 레트로 절벽 구간을 보존하므로 호환 판정에 포함한다.
+  `isCombinedTownTileset` 자체를 바꾸거나 합본 마을 하네스로 숲마을 저작 정의를 덮지 않는다.
+  숲마을 언덕도 morphology + relief 경로를 사용한다.
+- 나무는 `treeKitForTileset`이 숲마을 `tileGroups[].previewMap`의 완성 조립과 셀별 레이어를 읽는다.
+  일반/compact/형태 마을·과수원·지형 패스와 그래픽 비교 화면이 같은 킷을 쓴다.
+  옛 2×4 dark-tree와 직사각형 숲 벽 반복을 숲마을 킷에 넣지 않는다.
+  개별 나무·과수원은 이 조립을 유지하고, 넓은 숲 군락은 아래 연결 수관 문법을 쓴다.
+  길·물은 호환 번호의 기존 시공 알고리즘을 유지한다.
+- 회귀 계약: `test/aiOutdoorTilesetDefaults.test.ts`. 기존 합본 마을 팔레트/파사드 검사는
+  타일셋을 명시해 본래 검사 대상을 유지한다. 이번 세션에서는 vitest/gates/typecheck 미실행.
+  브라우저 관측: `reports/2026-09-21-ai-forest-default.md`.
+
+
+## 마을 군락 — 굽이숲 절벽마을 조립 (2026-09-21)
+
+- `village/forestGroves.ts`가 연속 수관 마스크를 2열×3행 격자로 만든다. 바깥 숲과 안쪽 공터의
+  경계를 완만한 파형으로 고르고, 실제 길·집·마당·수역·이벤트와 기존 스택을 보호한다.
+- 남쪽 노출 경계 **같은 행**에서 밑동을 시작한다. `forest-cabin`의 좌/우 끝마감과
+  2열 반복부 `[[1425,1350],[1429,1428],[1433,1432]]`를 사용하며 항상 3행 전체를 놓는다.
+  끝마감이 안 들어가는 돌출부는 수관 마스크에서 제거한다. 밑동·뿌리를 잘라 맞추지 않는다.
+- 시공 draft의 `prepareVillageTreeKit`만 `defaults/forestGrove.ts`로 어휘를 확장한다.
+  참조 칩셋의 47개 연결 조각은 기존 `tileGrafts` 경로로 현재 마지막 타일 뒤에 추가한다.
+  `forest_harmony_grove_47`은 독립 그룹이다. 옛 1617·수관 그룹·잠긴 메타데이터·기존 graft는
+  덮지 않으며, 사용자 확장 슬롯이 있어도 그 뒤에 추가한다. 조회/그래픽 미리보기는 변이하지 않는다.
+- 승인 원본은 `forest-cliff-village-atlas.png`; 새 그림 생성이나 참조 맵 수정은 없다.
+  Phaser preload·공통 graft bake·내보내기가 같은 번들 소스를 사용한다.
+  `authorVillageScope`는 이 결정론적 추가 결과만 허용하며 다른 칩셋 변경은 계속 거부한다.
+- 일반·compact·형태별 마을과 지형 숲 패스가 같은 페인터를 쓴다. 과수원/집 주변의 개별 나무는
+  완성 나무 스탬프를 유지한다. 합본 마을은 기존 산포 경로를 유지한다.
+- 숲 실측은 실제 타일셋 그룹으로 수관 칸을 센다. 기존 `tree2x2Clusters`에 가짜 나무 개수를
+  더하지 않으며, 필수 숲 검사는 3개 완성 활엽수 또는 36칸 연결 수관을 큰 군락으로 인정한다.
+- 관측: `reports/2026-09-21-forest-groves.md`; 계약: `test/forestGroves.test.ts`(미실행).
+
 
 검색은 실제로 길다 — 실측 31.18초. 그동안 사용자에게 보이는 것은 세 겹이다.
 
@@ -1831,21 +1898,28 @@ switch references participate in load validation, deletion guards and switch ren
 Tests: `feature16AiToolIntegration.test.ts`; schemas: `combatAuthoringSchemas.ts`.
 ## 마을 시공 후 완료 계약 (2026-09-21)
 
-`author_village`의 `houseCount`는 무조건 required가 아니다. 기본 설계서가 있으면
-`resolveVillageDesignInput`이 파싱 전에 채운다. 고정 숲 없음 설계서에는
-`forestDensity`를 넣지 않는다. Pi 노트와 도구 설명이 이 조건을 공유한다.
+`author_village`의 집 수는 기본 DB 설계서가 채울 수 있다. 고정 숲 없음 설계서에는
+`forestDensity`를 넣지 않는다. `resolveVillageContract`가 평문 단일 마을 요청의 수량과
+대상/bounds를 먼저 고정하고 facade와 같은 DB resolver를 쓴다.
 
-`residents[].lines` 생략 시 대사는 빈 상태이며, Pi 종료 검사가 보충 요청을 보낸다.
-옛 `AssistantSession.authorPendingNpcCast`가 Pi에서도 자동 실행된다고 설명하지 않는다.
-문 스프라이트도 visible이므로 `collectPendingNpcs` 결과 전체를 Pi 보충 대상으로 쓰면
-문에 대사가 붙는다. Pi는 이번에 생성한 `ev_village_*` 주민만 대상으로 삼는다.
+빌더 결과의 `village.residentEventIds`는 NPC 배치 전후 이벤트 ID 차이,
+`village.doorFronts`는 이번에 만든 집의 실제 문앞 좌표다. 계약 완료 검사는
+이 증거로 대사와 통행을 검사하며 ID 접두사나 전체 맵의 미감 점수에 의존하지 않는다.
+`residents[].lines`로 대사를 한 번에 넘기거나 같은 Agent가 `author_npc_cast`로 보충한다.
+무언 주민 요청과 주민 0명은 대사를 강제하지 않는다.
 
-`evaluate_village_look`의 호출 성공과 `data.ok`는 별개다. Pi는 최종 프로젝트에서
-직접 재평가해 미통과를 `done.villageCompletion.issues`로 전달한다. 룩 평가에는
-맵의 `villageDesignSource.preset`을 사용해 고정 주민 수, 숲 없음, 광장 설정을 존중한다.
-현재 프로젝트의 기본 설계서를 나중에 바꿔도 이미 지은 맵의 평가 기준이 바뀌지 않는다.
+`evaluate_village_look`는 미감 참고 도구로 남는다. 단일 마을 계약 경로에서는 그 점수를
+필수 완료 조건으로 쓰지 않는다. 옛 explicit/team 경로의 `inspectPiVillageCompletion`과
+혼동하지 않는다. 복합 작업까지 이 계약으로 전환한 것은 아니다.
 
 공개 평가 안내는 `find_tools`로 실제 수정 도구를 찾도록 한다. `plant_tree_clusters`,
 `revise_village_plan`, `run_village_pipeline`은 내부 호환용이며 Pi에서 노출·복구되지 않는다.
 재시공이 필요해도 사용자 범위와 DB 설계서를 유지한 `author_village`를 사용한다.
 평가를 통과하려고 고정 설정을 바꾸거나 전체 맵 재시공을 임의로 허가하지 않는다.
+
+
+## 타일 참고문서 선행 조회 (2026-09-21)
+
+[타일셋 참고문서](tileset-reference-documents.md): 프로젝트 소유의 용도별 MD·이미지, 파생 타일셋의 원본 공유, Pi/레거시 AI 전달 확인, 저장·내보내기 계약.
+빈 시작 맵 전체 시공에서 예전 좌표가 고립되면 `restoreExistingTargetStart`가 검증된 새
+시작점을 유지한다. 기존 콘텐츠 또는 bounds 요청은 이 예외가 아니다.

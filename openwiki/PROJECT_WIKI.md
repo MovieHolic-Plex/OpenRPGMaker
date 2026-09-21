@@ -35,6 +35,9 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - Editor index: `openwiki/editor-workflows.md` (slim TOC linking to the above)
    - 연결 던전 생성 (방 그래프·복합 절벽·맥락 소품): `openwiki/connected-dungeon-generation.md`
    - Castle / keep map modules (`map_castle_keep` gold): `openwiki/castle-map.md`
+   - **Slates 32px로 마을을 만들 때 먼저 읽을 그림 포함 조립 지침:** `openwiki/slates-agent-entry.md` → `openwiki/slates-dense-town.md` → `openwiki/slates-assembly-playbook.md` → 구조 학습·표본·구역 도감·저작 지침 (성곽·돌출층·깊은 지붕·46개 구역·검토 보류 항목).
+   - 촘촘한 50×50 성곽 마을의 최신 밀도 지침·실측 결과: `openwiki/slates-dense-town.md`, `docs/experiments/slates-astra-v3/RESULT.md`.
+   - Slates 문서 개정·단계별 감독자 검토의 실제 결과와 한계: `docs/experiments/slates-astra-v2/RESULT.md`.
    - 성채 참고 이미지의 구도·색·지형·생활감 및 직전 제작물 반려 근거: `tiledata/castle-tiles-rpgs/README.md` (새 성채 저작 전에 읽기; 원본/반려/수정 이미지와 실측 좌표 포함)
    - Large river/market village generation (bbox → houses → roads): `openwiki/large-village-generation.md`
    - Terrain autotiles, template-block anchors, water/animation wiring: `openwiki/autotiles.md`
@@ -98,6 +101,8 @@ OPRN Studio is a browser-based top-down tile JRPG maker/editor. It combines:
 - `test` and `test/e2e` are part of the contract. Update or add focused tests for changed behavior.
 
 ## Authored tile placement references
+
+현재 프로젝트의 **DB → 타일 → 참고문서 → 용도**가 우선이다. [타일셋 참고문서](tileset-reference-documents.md)의 MD·이미지 선행 읽기 계약을 따른다. 저장소 학습 자료는 연구 출처이며 프로젝트 정본을 대체하지 않는다.
 
 숲·마을 타일 저작 전에 [tiledata/forest-villages](../tiledata/forest-villages/README.md)의 사용자 검수 규칙·승인본·실패 사례를 읽는다. 새 마을 사례와 전체 스크린샷도 이 디렉토리에 저장한다.
 

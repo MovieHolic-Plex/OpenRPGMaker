@@ -1,3 +1,6 @@
+import { FOREST_GROVE_GROUP, ensureForestGroveTileset } from "@/project/defaults/forestGrove";
+import { paintForestGroves } from "./forestGroves";
+import { isForestHarmonyTileset } from "@/project/defaults/forestHarmony";
 // editor/tools/village/treeKit.ts
 // 마을 시공이 심는 나무의 어휘를 타일셋에 따라 고른다.
 //
@@ -13,13 +16,15 @@ import {
   tilesetHasForestTrees,
   type ForestTreeObject,
 } from "@/project/defaults/forestTreesExtension";
-import type { GameMap, TilesetDef } from "@/project/types";
+import type { AutotileGroup, GameMap, TilesetDef } from "@/project/types";
 import { mulberry32 } from "@/util/rng";
 import { OCC } from "./morphologyPlan";
 
 export interface TreeStampCell {
   readonly layer: "lower" | "upper";
   readonly tile: number;
+  /** Authored assemblies may own both layers of the same cell. */
+  readonly backing?: number;
 }
 
 export interface TreeStamp {
@@ -31,7 +36,8 @@ export interface TreeStamp {
 }
 
 export interface TreeKit {
-  readonly id: "combined-town" | "forest-trees";
+  readonly grove?: AutotileGroup;
+  readonly id: "combined-town" | "forest-trees" | "forest-harmony";
   /** 큰 나무 — 먼 거리·녹지 한가운데. */
   readonly big: TreeStamp;
   /** 중간 나무 — 녹지 앵커·뒷마당. */
@@ -40,7 +46,7 @@ export interface TreeKit {
   readonly small: TreeStamp;
   /** 덤불 — 마을 세포 바로 바깥. */
   readonly shrubs: readonly TreeStamp[];
-  /** 짙은 숲 덩이 — 마을에서 아주 먼 곳. 비어 있으면 큰 나무로 대신한다. */
+  /** 레거시 숲 스탬프. 숲마을은 grove의 연결 수관 문법을 사용한다. */
   readonly forest: readonly TreeStamp[];
 }
 
@@ -100,8 +106,37 @@ export function forestTreeKit(): TreeKit {
   return forestKit;
 }
 
-export function treeKitForTileset(tileset: Pick<TilesetDef, "image" | "count"> | undefined): TreeKit {
+/** Use the saved assembly, including its per-cell layers, rather than the old 2×4 dark-tree rectangle. */
+function forestHarmonyTreeKit(tileset: Pick<TilesetDef, "tileGroups" | "autotileGroups">): TreeKit {
+  const read = (id: string): TreeStamp => {
+    const group = tileset.tileGroups?.find(group => group.id === `forest-trees:${id}`);
+    if (!group?.previewMap) throw new Error(`숲마을 나무 조립 정보가 없습니다: ${id}`);
+    const preview = group.previewMap;
+    const members = new Set(group.tileIds);
+    const cells = preview.lowerTiles.map((tile, index): TreeStampCell | null => {
+      const upper = preview.upperTiles[index] ?? -1;
+      if (members.has(upper)) return up(upper);
+      return members.has(tile) ? low(tile) : null;
+    });
+    return { id: group.id, w: preview.width, h: preview.height, cells };
+  };
+  return {
+    id: "forest-harmony", grove: tileset.autotileGroups?.find(group => group.id === FOREST_GROVE_GROUP), big: read("big-oak"), medium: read("tree"), small: read("tree"),
+    shrubs: [read("round-bush"), read("small-bush")],
+    // The old rectangular forest walls and 2×4 dark-tree stamps are not approved forest assemblies.
+    forest: [],
+  };
+}
+
+export function treeKitForTileset(tileset: Pick<TilesetDef, "image" | "count" | "tileGroups" | "autotileGroups"> | undefined): TreeKit {
+  if (tileset && isForestHarmonyTileset(tileset)) return forestHarmonyTreeKit(tileset);
   return tilesetHasForestTrees(tileset) ? forestTreeKit() : COMBINED_TOWN_TREE_KIT;
+}
+
+/** Only authoring drafts may acquire the append-only grove vocabulary. */
+export function prepareVillageTreeKit(tileset: TilesetDef | undefined): TreeKit {
+  if (tileset) ensureForestGroveTileset(tileset);
+  return treeKitForTileset(tileset);
 }
 
 /** 스탬프의 모든 실제 칸이 free 이고 점유가 비어 있거나(녹지·밭 허용) 할 때만 찍을 수 있다. */
@@ -134,6 +169,7 @@ export function stampTree(map: GameMap, stamp: TreeStamp, x: number, y: number):
       const cell = stamp.cells[dy * stamp.w + dx];
       if (!cell) continue;
       const index = (y + dy) * W + x + dx;
+      if (cell.backing !== undefined) map.lowerTiles[index] = cell.backing;
       if (cell.layer === "upper") map.upperTiles[index] = cell.tile;
       else map.lowerTiles[index] = cell.tile;
       painted += 1;
@@ -163,7 +199,7 @@ export function treeStampCells(stamp: TreeStamp, x: number, y: number, W: number
 }
 
 export interface ForestBandReport {
-  /** 찍은 물체 수(숲 덩이 하나도 1). */
+  /** 찍은 물체 수. 연결 숲에서는 점유 면적 12칸당 1인 배치 예산 단위. */
   readonly placed: number;
   /** 그린 칸 수. */
   readonly cells: number;
@@ -181,7 +217,13 @@ export function plantForestBand(
   seed: number,
   kit: TreeKit,
   free: (x: number, y: number) => boolean,
+  placementLimit = Infinity,
 ): ForestBandReport {
+  if (kit.grove) {
+    const coverage = Number.isFinite(placementLimit) ? Math.min(0.8, placementLimit * 12 / (rect.w * rect.h)) : 0.8;
+    const grove = paintForestGroves(map, rect, kit.grove, free, seed, coverage);
+    return { placed: Math.ceil(grove.cells.size / 12), cells: grove.cells.size, chunks: grove.trunkRuns };
+  }
   const W = map.width;
   const rng = mulberry32(seed >>> 0);
   const taken = new Set<number>();
@@ -189,6 +231,7 @@ export function plantForestBand(
   const open = (x: number, y: number): boolean => inRect(x, y) && !taken.has(y * W + x) && free(x, y);
   let placed = 0, cells = 0, chunks = 0;
   const place = (stamp: TreeStamp, x: number, y: number): boolean => {
+    if (placed >= placementLimit) return false;
     for (let dy = 0; dy < stamp.h; dy += 1) {
       for (let dx = 0; dx < stamp.w; dx += 1) {
         if (stamp.cells[dy * stamp.w + dx] && !open(x + dx, y + dy)) return false;
@@ -223,6 +266,7 @@ export function plantForestBand(
   for (let y = rect.y; y < rect.y + rect.h; y += 1) for (let x = rect.x; x < rect.x + rect.w; x += 1) order.push(y * W + x);
   for (let i = order.length - 1; i > 0; i -= 1) { const j = Math.floor(rng() * (i + 1)); [order[i], order[j]] = [order[j]!, order[i]!]; }
   for (const index of order) {
+    if (placed >= placementLimit) break;
     const x = index % W, y = Math.floor(index / W);
     if (!open(x, y)) continue;
     const roll = rng();

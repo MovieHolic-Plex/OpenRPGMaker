@@ -1,3 +1,4 @@
+import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
 // 선언형 월드 그래프 툴: plan_world / link_maps / build_world / lint_world.
 
 import { passableLanding, upsertEventIntoMap } from "./eventTools";
@@ -222,7 +223,7 @@ const buildWorld: ToolDefinition = {
       }
       const width = dimensionFromHint(hint, "width");
       const height = dimensionFromHint(hint, "height");
-      const map = createRoleMap(node.mapId, node.label ?? hint?.concept ?? node.mapId, width, height, node.role);
+      const map = createRoleMap(draft, node.mapId, node.label ?? hint?.concept ?? node.mapId, width, height, node.role);
       draft.maps[map.id] = map;
       addMapToTree(draft, map.id);
       created[node.mapId] = map.id;
@@ -334,7 +335,7 @@ function normalizeGraphOrToolError(value: unknown): WorldGraph {
   }
 }
 
-function createRoleMap(id: string, name: string, width: number, height: number, role: WorldGraphRole): GameMap {
+function createRoleMap(project: Project, id: string, name: string, width: number, height: number, role: WorldGraphRole): GameMap {
   if (width < 3 || height < 3) throw new ToolError(`월드 맵 크기는 최소 3x3이어야 합니다: ${id}`, { code: "world-map-size", mapId: id });
   // build_world 는 노드 전체를 미리 검사하지만(assertPlanNodeSizes), 이 헬퍼로 들어오는 다른
   // 호출자가 생겨도 셀 배열 할당 전에 막히도록 여기서도 상한을 지킨다.
@@ -346,7 +347,7 @@ function createRoleMap(id: string, name: string, width: number, height: number, 
     name,
     width,
     height,
-    tilesetId: DEFAULT_TILESET_ID,
+    tilesetId: role === "town" || role === "field" ? defaultOutdoorTilesetId(project) : DEFAULT_TILESET_ID,
     tileSize: DEFAULT_TILE_SIZE,
     lowerTiles: new Array<number>(size).fill(lowerTile),
     upperTiles: new Array<number>(size).fill(TILE.EMPTY),

@@ -1,0 +1,44 @@
+{
+  "geometry": {
+    "key": "EditScene",
+    "frame": {
+      "width": 32,
+      "height": 32,
+      "cutX": 64
+    },
+    "zoom": 2,
+    "camera": {
+      "x": 68,
+      "y": 13
+    },
+    "click": {
+      "x": 562,
+      "y": 353
+    }
+  },
+  "paintedTile": 2,
+  "editorState": {
+    "currentMapId": "geometry32",
+    "tool": "paint",
+    "zoom": 2,
+    "layer": "lower",
+    "paintShape": "pen",
+    "selectedTile": 2,
+    "autoConnectMode": false,
+    "clusterAssistMode": true,
+    "activePaletteStamp": null,
+    "brushSize": 1,
+    "selectedEventId": null,
+    "selectedEventPageId": null,
+    "selection": null,
+    "pendingEventCoordinate": null,
+    "clipboard": null,
+    "pastePreview": null,
+    "showGrid": true,
+    "assistantTemperature": "quiet-gold",
+    "showLayoutBboxes": false,
+    "selectedAnimationFrameIndex": 0,
+    "selectedAnimationCellIndex": 0
+  },
+  "errors": []
+}

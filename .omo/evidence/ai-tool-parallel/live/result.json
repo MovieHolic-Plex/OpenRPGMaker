@@ -1,0 +1,104 @@
+{
+  "provider": "google-antigravity",
+  "liveModel": true,
+  "liveSearch": true,
+  "peakSearchConcurrency": 2,
+  "stats": {
+    "ms": 19596,
+    "turns": 2,
+    "toolCalls": 3,
+    "toolErrors": 0,
+    "usage": {
+      "input": 3863,
+      "output": 361,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 4224,
+      "cost": {
+        "input": 0.00289725,
+        "output": 0.0013537500000000001,
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "total": 0.0042510000000000004
+      }
+    }
+  },
+  "changedKeys": [],
+  "trace": [
+    {
+      "event": "start",
+      "atMs": 274,
+      "provider": "google-antigravity",
+      "model": "gemini-3.7-flash"
+    },
+    {
+      "event": "turn",
+      "atMs": 312,
+      "index": 1
+    },
+    {
+      "event": "search_http_start",
+      "atMs": 2168,
+      "query": "SQLite Write-Ahead Logging WAL documentation sqlite.org"
+    },
+    {
+      "event": "search_http_start",
+      "atMs": 2168,
+      "query": "IndexedDB transaction MDN Web Docs"
+    },
+    {
+      "event": "tool_start",
+      "atMs": 2169,
+      "name": "get_project_summary",
+      "id": "call_598487"
+    },
+    {
+      "event": "tool_start",
+      "atMs": 2169,
+      "name": "web_search",
+      "id": "call_598489"
+    },
+    {
+      "event": "tool_start",
+      "atMs": 2169,
+      "name": "web_search",
+      "id": "call_598491"
+    },
+    {
+      "event": "tool_end",
+      "atMs": 2169,
+      "name": "get_project_summary",
+      "id": "call_598487",
+      "ok": true
+    },
+    {
+      "event": "tool_end",
+      "atMs": 14654,
+      "name": "web_search",
+      "id": "call_598491",
+      "ok": true
+    },
+    {
+      "event": "search_http_end",
+      "atMs": 14734,
+      "query": "IndexedDB transaction MDN Web Docs"
+    },
+    {
+      "event": "tool_end",
+      "atMs": 16750,
+      "name": "web_search",
+      "id": "call_598489",
+      "ok": true
+    },
+    {
+      "event": "search_http_end",
+      "atMs": 16765,
+      "query": "SQLite Write-Ahead Logging WAL documentation sqlite.org"
+    },
+    {
+      "event": "turn",
+      "atMs": 16773,
+      "index": 2
+    }
+  ]
+}

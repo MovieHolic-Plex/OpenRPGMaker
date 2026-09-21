@@ -1,5 +1,5 @@
+import { mapTileSize } from "@/project/tileGeometry";
 import type Phaser from "phaser";
-import { TILE_SIZE } from "@/assets/bundled";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { playAudioCommand } from "@/player/audio";
 import {
@@ -142,7 +142,7 @@ function renderFrame(
 
 function renderFallbackFlash(scene: PlaySceneContext, container: Phaser.GameObjects.Container): void {
   if (!container.active || container.length > 0) return;
-  const flash = scene.add.circle(0, 0, TILE_SIZE * 0.8, 0xffffff, 0.85);
+  const flash = scene.add.circle(0, 0, mapTileSize(scene.map) * 0.8, 0xffffff, 0.85);
   container.add(flash);
   scene.tweens.add({
     targets: flash,
@@ -157,23 +157,23 @@ function resolveAnimationTargetPixel(
   target: ShowAnimationTarget,
   currentEventId: string | undefined
 ): { readonly x: number; readonly y: number } | undefined {
-  if (target === "player") return { x: scene.player.x, y: scene.player.y - TILE_SIZE / 2 };
+  if (target === "player") return { x: scene.player.x, y: scene.player.y - mapTileSize(scene.map) / 2 };
   if ("eventId" in target) {
     const eventId = target.eventId || currentEventId;
     if (!eventId) return undefined;
     const sprite = scene.eventSprites.get(eventId);
     // 이벤트가 이동 중이어도 시작 시점의 좌표만 캡처하고 이후 추적하지 않는다.
     // 스프라이트가 있으면 그 x 는 이미 발자국 중앙이다(playSceneMapRuntime·playSceneAutonomous).
-    if (sprite) return { x: sprite.x, y: sprite.y - TILE_SIZE / 2 };
+    if (sprite) return { x: sprite.x, y: sprite.y - mapTileSize(scene.map) / 2 };
     const resolver = sceneTileResolver(scene, currentEventId);
     const tile = resolveShowAnimationTargetTile(target, resolver);
     if (!tile) return undefined;
     // 그림 없는 이벤트(투명 트리거)도 **몸 중앙**에 터뜨린다 — 앵커를 쓰면 3x3 투명 영역의
     // 왼쪽에 치우친다. 발자국이 없으면 footprintSpriteX 가 곧 타일 중앙이라 항등이다.
     const footprint = resolver.eventPosition(eventId)?.footprint ?? UNIT_FOOTPRINT;
-    return { x: footprintSpriteX(tile.x, footprint), y: characterSpriteY(tile.y) - TILE_SIZE / 2 };
+    return { x: footprintSpriteX(tile.x, footprint, mapTileSize(scene.map)), y: characterSpriteY(tile.y, mapTileSize(scene.map)) - mapTileSize(scene.map) / 2 };
   }
-  return tileCenter(target.x, target.y);
+  return tileCenter(target.x, target.y, mapTileSize(scene.map));
 }
 
 function sceneTileResolver(scene: PlaySceneContext, currentEventId: string | undefined): ShowAnimationTileResolver {
@@ -186,8 +186,8 @@ function sceneTileResolver(scene: PlaySceneContext, currentEventId: string | und
   };
 }
 
-function tileCenter(x: number, y: number): { readonly x: number; readonly y: number } {
-  return { x: characterSpriteX(x), y: characterSpriteY(y) - TILE_SIZE / 2 };
+function tileCenter(x: number, y: number, tileSize: number): { readonly x: number; readonly y: number } {
+  return { x: characterSpriteX(x, tileSize), y: characterSpriteY(y, tileSize) - tileSize / 2 };
 }
 
 function waitForDuration(scene: PlaySceneContext, durationMs: number): Promise<void> {

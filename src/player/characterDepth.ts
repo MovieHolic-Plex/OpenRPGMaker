@@ -32,12 +32,12 @@ export type CharacterSprite = {
   setDepth(depth: number): void;
 };
 
-export function characterSpriteX(tileX: number): number {
-  return tileX * TILE_SIZE + TILE_SIZE / 2;
+export function characterSpriteX(tileX: number, tileSize: number = TILE_SIZE): number {
+  return tileX * tileSize + tileSize / 2;
 }
 
-export function characterSpriteY(tileY: number): number {
-  return tileY * TILE_SIZE + TILE_SIZE;
+export function characterSpriteY(tileY: number, tileSize: number = TILE_SIZE): number {
+  return tileY * tileSize + tileSize;
 }
 
 /**
@@ -54,8 +54,8 @@ export function characterSpriteY(tileY: number): number {
  * 그것들은 캐릭터 그림이 아니라 칸을 가리키는 표식이다. 같은 파일에 둘이 섞여 있으니
  * 일괄 치환은 오답이다.
  */
-export function footprintSpriteX(tileX: number, footprint: CharacterFootprint): number {
-  return (footprintBounds(tileX, 0, footprint).left + footprint.width / 2) * TILE_SIZE;
+export function footprintSpriteX(tileX: number, footprint: CharacterFootprint, tileSize: number = TILE_SIZE): number {
+  return (footprintBounds(tileX, 0, footprint).left + footprint.width / 2) * tileSize;
 }
 
 export function characterDepth(priority: EventPriority, worldY: number): number {
@@ -74,12 +74,12 @@ function isWalkableStairTile(tileset: TilesetDef, tile: number): boolean {
   const tags = tileset.tileMeta?.[tile]?.tags ?? [];
   return tags.some((tag) => /stair/i.test(tag) || tag.includes("계단") || tag.includes("사다리"));
 }
-export function mapUpperTileDepth(tileset: TilesetDef, tile: number, tileY: number): number {
+export function mapUpperTileDepth(tileset: TilesetDef, tile: number, tileY: number, tileSize: number = tileset.tileSize): number {
   const mark = passageMarkForTile(tileset, tile);
   const walkableStair = mark === "star" && isWalkableStairTile(tileset, tile);
   if (mark === "star" && !walkableStair) return MAP_UPPER_LAYER_DEPTH;
   if (mark === "o" || mark === "star") return MAP_LOWER_LAYER_DEPTH + tileY * 2 + 1;
-  return characterDepth("same", characterSpriteY(tileY));
+  return characterDepth("same", characterSpriteY(tileY, tileSize));
 }
 
 /** ★ 수관/꽃 등 — 고정 upper 컨테이너. 솔리드 가구·밟는 계단은 false(y-sort/하위). */

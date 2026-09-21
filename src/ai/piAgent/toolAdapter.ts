@@ -1,3 +1,5 @@
+import { PiTilesetReferenceGate } from "./tilesetReferenceGate";
+import { TILESET_REFERENCE_READ_TOOLS, TILESET_REFERENCE_WRITERS } from "@/editor/tools/tilesetReferenceTools";
 // 레지스트리 툴 → Pi AgentTool 모양 어댑터. 순수 함수라 브라우저/Bun/Node 어디서나 같다.
 //
 // 설계 원칙: 툴 코드는 한 줄도 바꾸지 않는다. Pi 가 요구하는 것은 `execute` 가 실패 시 throw
@@ -20,7 +22,7 @@ export interface PiToolTextContent {
 }
 
 export interface PiToolExecResult {
-  readonly content: PiToolTextContent[];
+  readonly content: (PiToolTextContent | { readonly type: "image"; readonly data: string; readonly mimeType: string })[];
   readonly details?: unknown;
 }
 
@@ -29,6 +31,8 @@ export interface PiToolShape {
   readonly label: string;
   readonly description: string;
   readonly parameters: unknown;
+  /** Pi core schedules shared calls together and treats exclusive calls as ordered barriers. */
+  readonly concurrency?: "shared" | "exclusive";
   execute(toolCallId: string, params: unknown, signal?: AbortSignal): Promise<PiToolExecResult>;
 }
 
@@ -41,6 +45,7 @@ export interface PiToolCallRecord {
 }
 
 export interface CreatePiToolsetOptions {
+  readonly referenceGate?: PiTilesetReferenceGate;
   /** 노출 도메인. 비우면 살아 있는 레지스트리 전부. 도메인 없는(범용) 툴은 항상 포함. */
   readonly domains?: readonly string[];
   /** 읽기 툴만(검수 역할). */
@@ -64,6 +69,7 @@ export function selectPiToolDefinitions(
 ) {
   const wanted = domains && domains.length > 0 ? new Set(domains) : null;
   const names = options.toolNames ? new Set(options.toolNames) : null;
+  if (names && [...names].some(name => TILESET_REFERENCE_WRITERS.has(name))) TILESET_REFERENCE_READ_TOOLS.forEach(name => names.add(name));
   const seen = new Set<string>();
   return TOOL_REGISTRY.filter((tool) => {
     if (tool.deprecated || tool.supersededBy !== undefined || seen.has(tool.name)) return false;
@@ -125,6 +131,7 @@ export function harvestFindToolsNames(result: ToolResult): string[] {
 }
 
 export interface ResolvePiToolOptions {
+  readonly referenceGate?: PiTilesetReferenceGate;
   /** 읽기 전용 실행 — 쓰기 툴은 절대 셰이프가 되지 않는다. */
   readonly readOnly?: boolean;
   /** 실행의 하드 경계(팀 역할 제한 등). 설정되면 이 목록 안 이름만 만든다. */
@@ -139,16 +146,18 @@ export interface ResolvePiToolOptions {
  * 호출자는 undefined 를 “이 실행에서는 못 쓰는 툴”로 흘려 모델의 자가수정 루프에 태운다.
  */
 export function resolvePiToolShape(ctx: ToolContext, name: string, options: ResolvePiToolOptions = {}): PiToolShape | undefined {
-  if (options.toolNames && !options.toolNames.includes(name)) return undefined;
+  if (options.toolNames && !options.toolNames.includes(name) && !(TILESET_REFERENCE_READ_TOOLS.some(n => n === name) && options.toolNames.some(n => TILESET_REFERENCE_WRITERS.has(n)))) return undefined;
   return createPiToolset(ctx, {
     toolNames: [name],
+    referenceGate: options.referenceGate,
     readOnly: options.readOnly,
     onCall: options.onCall,
     ...(options.maxDataChars === undefined ? {} : { maxDataChars: options.maxDataChars }),
-  })[0];
+  }).find(tool => tool.name === name);
 }
 
 export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOptions = {}): PiToolShape[] {
+  const referenceGate = options.referenceGate ?? new PiTilesetReferenceGate();
   const maxDataChars = options.maxDataChars ?? DEFAULT_MAX_DATA_CHARS;
   const maxIssues = options.maxIssues ?? DEFAULT_MAX_ISSUES;
   return selectPiToolDefinitions(options.domains, { readOnly: options.readOnly, toolNames: options.toolNames }).map((tool) => ({
@@ -156,16 +165,25 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
     label: tool.name,
     description: tool.description,
     parameters: tool.parameters,
+    concurrency: tool.mode === "read" ? "shared" as const : "exclusive" as const,
     async execute(_toolCallId, params, signal) {
       const args = params && typeof params === "object" ? (params as Record<string, unknown>) : {};
       const before = tool.mode === "write" ? captureActivityVisuals(ctx.project, tool.name, args, undefined, "before") : [];
-      const result = tool.name === EVENT_COMMAND_ASSIST_TOOL
+      const gate = tool.mode === "write" ? referenceGate.beforeWrite(ctx.project, tool.name, args) : null;
+      const result = gate ?? (tool.name === EVENT_COMMAND_ASSIST_TOOL
         ? await runToolAsync(ctx, tool.name, args, { signal })
-        : runTool(ctx, tool.name, args);
+        : runTool(ctx, tool.name, args));
       const after = captureActivityVisuals(ctx.project, tool.name, args, result, !result.ok ? "failed" : tool.mode === "write" ? "draft" : "read");
       options.onCall?.({ toolCallId: _toolCallId, name: tool.name, args, result, visuals: [...before, ...after] });
       if (!result.ok) throw new Error(formatPiToolFailure(result, maxIssues));
-      return { content: [{ type: "text", text: formatPiToolSuccess(result, maxDataChars) }], details: result };
+      const content: PiToolExecResult["content"] = [{ type: "text", text: formatPiToolSuccess(result, maxDataChars) }];
+      if (tool.name === "read_tileset_reference") {
+        for (const image of referenceGate.read(ctx.project, result)) {
+          const comma = image.dataUrl.indexOf(",");
+          content.push({ type: "image", mimeType: image.dataUrl.slice(5, image.dataUrl.indexOf(";")), data: image.dataUrl.slice(comma + 1) });
+        }
+      }
+      return { content, details: result };
     },
   }));
 }

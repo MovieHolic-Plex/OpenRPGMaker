@@ -1,0 +1,9 @@
+{
+  "archive": "reports/slates-learning-pack-v2.zip",
+  "entry": "openwiki/slates-assembly-playbook.md",
+  "files": 154,
+  "bytes": 19580221,
+  "sha256": "c6b3b91b24d0666616ec4f24b805042535e634de5be8294d4e012a6d58dd3930",
+  "knowledgeRevision": 2,
+  "note": "Frozen input knowledge before supervisor feedback; final experiment results are separate."
+}
