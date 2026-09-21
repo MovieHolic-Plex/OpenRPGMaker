@@ -52,7 +52,7 @@ package dependency is shipped. Official PostgREST 13.0.7 Linux x86-64 checksums:
 - A missing project returns 409/23503 through the real writer without advancing
   its tip. An ordinary project upsert still updates its existing row.
 
-The focused request test is `test/supabaseAuditAppend.test.ts`; its five cases
+The focused request test is `test/legacyDbAuditAppend.test.ts`; its five cases
 cover each audit table's preference, rejection at either write, and an ordinary
 conversation upsert control. The HTTP driver provides real adapter/application
 coverage rather than using that unit recorder as fake permission evidence.
@@ -68,5 +68,5 @@ referenced by `spatial-task37-receipt.json`.
 
 The two audit inserts remain separate requests; atomic pairing and retry dedup
 are not introduced by this fix. This proof covers local PostgREST/JWT/ACLs and
-the headless application audit entry point. It does not prove deployed Supabase
+the headless application audit entry point. It does not prove deployed LegacyDb
 credentials, gateway policy, migration rollout, browser UI, or Q7-Q9 races.

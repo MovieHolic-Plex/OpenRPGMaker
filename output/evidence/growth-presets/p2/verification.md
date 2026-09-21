@@ -6,7 +6,7 @@ Branch: `agent/growth-presets-p2`. Reviewed predecessor tip: `2d0f53208f4721aa70
 
 ## Outcome and commits
 
-**PASS: real editor interaction, actual Supabase save/reload, and shipped-player behavior.**
+**PASS: real editor interaction, actual LegacyDb save/reload, and shipped-player behavior.**
 No product code, defaults, schema, assets, dependencies, AI tools, genre integration,
 or unrelated maps/events/adventure were changed by this child. No push, PR, merge,
 full gates, or build was run. The lead owns those integration gates.
@@ -36,8 +36,8 @@ shared project as its write target. `rpg-zzu-house-template-gallery` and other
 projects were not written.
 
 Before the first save, the exact target returned HTTP **200 / []** through a raw
-presence check, and actual `loadProjectFromSupabase(config)` returned null.
-`saveProjectToSupabase(authored, config)` then returned **`kind: saved`**.
+presence check, and actual `loadProjectFromLegacyDb(config)` returned null.
+`saveProjectToLegacyDb(authored, config)` then returned **`kind: saved`**.
 The loader subsequently returned matching authored growth/classes/skills/actors,
 party/start-actor references and maps, with **zero project reference issues**.
 A final read-only verification after browser QA also exited 0.
@@ -107,7 +107,7 @@ collaboration status display; it does not replace or fabricate loaded data.
 
 `startPlayerQaServer` and `runRuntimeQa` boot **`player.html`**, through
 `exportProjectStoreShim`, never editor play. The harness supplies the exact
-`reloaded-project.json` obtained from Supabase, not an invented runtime fixture.
+`reloaded-project.json` obtained from LegacyDb, not an invented runtime fixture.
 The export store's authored growth/classes/skills remain unchanged after play.
 
 For each of the three demonstration actors, real keyboard menu actions prove:

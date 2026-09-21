@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import systemShellProject from "../fixtures/projects/system-shell-v3.json" with { type: "json" };
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 type RuntimeState = {
@@ -40,7 +40,7 @@ function isAudioState(value: unknown): value is AudioState {
 }
 
 async function seedProject(page: Page): Promise<void> {
-  await seedProjectFromSupabaseCanonical(page, systemShellProject);
+  await seedProjectForEditor(page, systemShellProject);
 }
 
 async function runtimeState(page: Page): Promise<RuntimeState> {

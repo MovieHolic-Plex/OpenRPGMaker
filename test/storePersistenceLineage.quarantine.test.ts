@@ -107,10 +107,10 @@ describe("accepted receipt content lineage", () => {
   beforeEach(() => {
     vi.resetModules();
     vi.useFakeTimers(); // Freeze unrelated autosave; event signals use bounded native deadlines.
-    vi.stubEnv("VITE_SUPABASE_USE_PROXY", "0");
-    vi.stubEnv("VITE_SUPABASE_URL", "http://p1-lineage.invalid");
-    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
-    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", projectId);
+    vi.stubEnv("VITE_LEGACY_DB_USE_PROXY", "0");
+    vi.stubEnv("VITE_LEGACY_DB_URL", "http://p1-lineage.invalid");
+    vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-anon-key");
+    vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", projectId);
     vi.stubEnv("VITE_EDIT_ACTIVITY_DISK_MIRROR", "0");
     vi.stubGlobal("window", {
       location: { hostname: "127.0.0.1", pathname: "/", search: "" },

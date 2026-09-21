@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { deserialize } from "@/project/io";
 import { performBattleAttack, performBattleSkill } from "./battleReferenceProject";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 test.beforeEach(async ({ page }) => {
@@ -24,7 +24,7 @@ async function seedProject(page: Page, mutate?: (project: BattleProject) => void
   const fixture = await readFile(new URL("../fixtures/projects/battle-v3.json", import.meta.url), "utf8");
   const project = deserialize(fixture);
   mutate?.(project);
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
 }
 
 async function runtimeState(page: Page): Promise<RuntimeState> {

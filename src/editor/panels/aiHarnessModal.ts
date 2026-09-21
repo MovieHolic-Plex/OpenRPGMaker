@@ -243,7 +243,7 @@ export function openHarnessModal(input: HarnessModalInput): HTMLElement {
       ]
     : [];
   const persistence = input.persistence;
-  // 워크트리 19/53 이 Supabase 미설정 + 디스크 미러 없음으로 아무것도 안 남기던 상태를 드러낸다.
+  // 워크트리 19/53 이 project storage 미설정 + 디스크 미러 없음으로 아무것도 안 남기던 상태를 드러낸다.
   const persistenceBadge = persistence && !persistence.remote && !persistence.diskMirror
     ? [badge("warn", "기록 로컬 전용 — 300건 링버퍼")]
     : [];

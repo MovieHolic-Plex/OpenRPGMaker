@@ -11,7 +11,7 @@
   실제 유료 모델 호출 또는 새 마을 생성은 하지 않았다.
 - Bun Pi 런타임 import, 변경 TS 17파일 문법 변환, git diff 공백 확인 성공.
   gates/vitest/전체 typecheck 미실행.
-- Supabase `rpg-zzu-slates32-38e6`: SHA `552f3909e08b3b83b29ddf87babc26c5ebc375e4f75b71ee1b276e17ad3a4db3`.
+- LegacyDb `rpg-zzu-slates32-38e6`: SHA `552f3909e08b3b83b29ddf87babc26c5ebc375e4f75b71ee1b276e17ad3a4db3`.
   원본과 타일셋 mirror 재로드 일치. 기존 13개 맵 보존. `persistence.json`.
 - 로컬 `output/slates32-project`: revision 11, project id `c8c53479-8d1a-42da-96ee-e493598ef498`.
   저장 후 SQLite export의 tilesets 전체가 원격 재로드와 동일함을 확인.

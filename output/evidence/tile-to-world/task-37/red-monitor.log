@@ -2,7 +2,7 @@ monitor_id=mon_0KSWTMHCHTKSVPG2
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":""}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-audit-append"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":""}
-{"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":" ❯ test/supabaseAuditAppend.test.ts (5 tests | 2 failed) 24ms"}
+{"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":" ❯ test/legacyDbAuditAppend.test.ts (5 tests | 2 failed) 24ms"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"   × uses append-only POST when writing project_commits 15ms"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"     → expected 'resolution=merge-duplicates,return=mi…' to be 'return=minimal' // Object.is equality"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"   × uses append-only POST when writing project_changes 1ms"}
@@ -13,14 +13,14 @@ monitor_id=mon_0KSWTMHCHTKSVPG2
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":""}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":""}
-{"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":" FAIL  test/supabaseAuditAppend.test.ts > uses append-only POST when writing project_commits"}
-{"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":" FAIL  test/supabaseAuditAppend.test.ts > uses append-only POST when writing project_changes"}
+{"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":" FAIL  test/legacyDbAuditAppend.test.ts > uses append-only POST when writing project_commits"}
+{"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":" FAIL  test/legacyDbAuditAppend.test.ts > uses append-only POST when writing project_changes"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"AssertionError: expected 'resolution=merge-duplicates,return=mi…' to be 'return=minimal' // Object.is equality"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":""}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"Expected: \u001b[32m\"return=minimal\"\u001b[39m"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"Received: \u001b[31m\"\u001b[7mresolution=merge-duplicates,\u001b[27mreturn=minimal\"\u001b[39m"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":""}
-{"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":" ❯ test/supabaseAuditAppend.test.ts:27:61"}
+{"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":" ❯ test/legacyDbAuditAppend.test.ts:27:61"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"     25|   const request = calls.find(call => call.url.endsWith(`/${table}`));"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"     26|   expect(request?.init?.method).toBe(\"POST\");"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"     27|   expect(new Headers(request?.init?.headers).get(\"Prefer\")).toBe(\"retu…"}
@@ -39,17 +39,17 @@ monitor_id=mon_0KSWTMHCHTKSVPG2
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/prerequisites/task37.Di0RwQ/postgrest: OK"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"Evidence: /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-audit-append/output/evidence/tile-to-world/task-37/run.kKcP3b"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"966 |     method: \"POST\","}
-{"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"967 |     headers: supabaseJsonHeaders(config, \"write\"),"}
+{"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"967 |     headers: legacyDbJsonHeaders(config, \"write\"),"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"968 |     body: JSON.stringify(rows),"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"969 |   });"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"970 |   if (!response.ok) {"}
-{"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"971 |     throw new SupabaseProjectSyncError(await response.text(), response.status);"}
+{"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"971 |     throw new LegacyDbProjectSyncError(await response.text(), response.status);"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"                    ^"}
-{"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"SupabaseProjectSyncError: {\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for table project_commits\"}"}
+{"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"LegacyDbProjectSyncError: {\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for table project_commits\"}"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":" status: 401,"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":""}
-{"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"      at insertRows (/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-audit-append/src/project/supabaseProjectSync.ts:971:15)"}
-{"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"      at recordProjectCommitToSupabase (/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-audit-append/src/project/supabaseProjectSync.ts:649:11)"}
+{"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"      at insertRows (/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-audit-append/src/project/legacyDbProjectSync.ts:971:15)"}
+{"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"      at recordProjectCommitToLegacyDb (/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-audit-append/src/project/legacyDbProjectSync.ts:649:11)"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"      at recordProjectCommit (/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-audit-append/src/project/projectCommitLog.ts:83:24)"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":"      at processTicksAndRejections (unknown:7:39)"}
 {"type":"line","id":"authoring-3907418","description":"task11 scoped validation","line":""}
@@ -59,7 +59,7 @@ monitor_id=mon_0KSWTMHCHTKSVPG2
 
  RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-audit-append
 
- ❯ test/supabaseAuditAppend.test.ts (5 tests | 2 failed) 24ms
+ ❯ test/legacyDbAuditAppend.test.ts (5 tests | 2 failed) 24ms
    × uses append-only POST when writing project_commits 15ms
      → expected 'resolution=merge-duplicates,return=mi…' to be 'return=minimal' // Object.is equality
    × uses append-only POST when writing project_changes 1ms
@@ -70,14 +70,14 @@ monitor_id=mon_0KSWTMHCHTKSVPG2
 
 ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
 
- FAIL  test/supabaseAuditAppend.test.ts > uses append-only POST when writing project_commits
- FAIL  test/supabaseAuditAppend.test.ts > uses append-only POST when writing project_changes
+ FAIL  test/legacyDbAuditAppend.test.ts > uses append-only POST when writing project_commits
+ FAIL  test/legacyDbAuditAppend.test.ts > uses append-only POST when writing project_changes
 AssertionError: expected 'resolution=merge-duplicates,return=mi…' to be 'return=minimal' // Object.is equality
 
 Expected: [32m"return=minimal"[39m
 Received: [31m"[7mresolution=merge-duplicates,[27mreturn=minimal"[39m
 
- ❯ test/supabaseAuditAppend.test.ts:27:61
+ ❯ test/legacyDbAuditAppend.test.ts:27:61
      25|   const request = calls.find(call => call.url.endsWith(`/${table}`));
      26|   expect(request?.init?.method).toBe("POST");
      27|   expect(new Headers(request?.init?.headers).get("Prefer")).toBe("retu…
@@ -96,17 +96,17 @@ Received: [31m"[7mresolution=merge-duplicates,[27mreturn=minimal"[39m
 /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/prerequisites/task37.Di0RwQ/postgrest: OK
 Evidence: /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-audit-append/output/evidence/tile-to-world/task-37/run.kKcP3b
 966 |     method: "POST",
-967 |     headers: supabaseJsonHeaders(config, "write"),
+967 |     headers: legacyDbJsonHeaders(config, "write"),
 968 |     body: JSON.stringify(rows),
 969 |   });
 970 |   if (!response.ok) {
-971 |     throw new SupabaseProjectSyncError(await response.text(), response.status);
+971 |     throw new LegacyDbProjectSyncError(await response.text(), response.status);
                     ^
-SupabaseProjectSyncError: {"code":"42501","details":null,"hint":null,"message":"permission denied for table project_commits"}
+LegacyDbProjectSyncError: {"code":"42501","details":null,"hint":null,"message":"permission denied for table project_commits"}
  status: 401,
 
-      at insertRows (/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-audit-append/src/project/supabaseProjectSync.ts:971:15)
-      at recordProjectCommitToSupabase (/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-audit-append/src/project/supabaseProjectSync.ts:649:11)
+      at insertRows (/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-audit-append/src/project/legacyDbProjectSync.ts:971:15)
+      at recordProjectCommitToLegacyDb (/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-audit-append/src/project/legacyDbProjectSync.ts:649:11)
       at recordProjectCommit (/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-audit-append/src/project/projectCommitLog.ts:83:24)
       at processTicksAndRejections (unknown:7:39)
 

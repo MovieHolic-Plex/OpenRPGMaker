@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 test.setTimeout(120_000);
 test.use({ serviceWorkers: "block" });
@@ -10,7 +10,7 @@ test("칠하기 탭은 타일 팔레트를 구조물 선반보다 먼저·넓게
     window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1440, height: 950 });
-  await seedProjectFromSupabaseCanonical(page, createSampleAdventureProject());
+  await seedProjectForEditor(page, createSampleAdventureProject());
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 20_000 });
 
   await page.getByTestId("layer-lower").first().click({ force: true });

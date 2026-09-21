@@ -8,7 +8,7 @@ matrix passed again on that integrated tree.
 The integrated CSS graph/live gates passed. Its CSS file-count gate reports
 268 files against a 267-file limit; `origin/main` also contains exactly 268 CSS
 files and this PR adds none. That upstream budget failure is not suppressed.
-No authored game content or Supabase rows were changed.
+No authored game content or LegacyDb rows were changed.
 
 ## Result
 

@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # Castle map harness (성채)
 
 Gold reference: remote project map `map_castle_keep` (“성채”), hand-authored layout observed 2026-07.
@@ -140,7 +142,7 @@ Code:
   rejects screenshot tilesets, invalid indices and unbacked transparent pixels.
 - `scripts/capture-courtyard-castle.mjs`: opens the exported/reloaded project in
   the real editor and captures the complete map at 1x. Browser injection is
-  only for viewing; the publication script owns real Supabase persistence.
+  only for viewing; the publication script owns real LegacyDb persistence.
 
 ### Measured Castle2 assembly rules
 
@@ -227,9 +229,9 @@ This folder is separate from the hosted workspace; it is not automatically
 selected in the currently open editor. Existing user projects were untouched.
 
 To also satisfy this repository's legacy remote-content requirement, the small
-project was saved/reloaded unchanged under Supabase ID
+project was saved/reloaded unchanged under LegacyDb ID
 `castle-tile-study-20260921`. SQLite is the working copy; this remote copy does
-not switch the application back to Supabase. Evidence: `save-proof.json` in
+not switch the application back to LegacyDb. Evidence: `save-proof.json` in
 `output/castle-study/`. No general test suite or typecheck was run.
 
 This is evidence for these measured parts and routes, not mastery of all atlas
@@ -273,7 +275,7 @@ Persistence and opening:
 - SQLite folder: `/home/main/.local/share/oprn/web-workspace/.oprn-projects/castle-fortress-city-20260921`
 - SQLite project ID: `b4706a77-9a38-4dcc-a89d-36244da53967`
 - Hosted editor: `http://mdc-server:9888/?hostProject=castle-fortress-city-20260921&map=grand-river-fortress`
-- Legacy-required Supabase copy: `castle-fortress-city-20260921`; save/reload
+- Legacy-required LegacyDb copy: `castle-fortress-city-20260921`; save/reload
   equality recorded in `output/grand-castle/save-proof.json`. Dock correction
   uses an expected-SHA-filtered update of this new row only.
 - Atlas is embedded as an uploaded asset. Credits accompany the SQLite folder
@@ -308,7 +310,7 @@ It includes the original, rejected and revised layouts, 16-region analysis,
 measured Castle2/harbor/new-part coordinates, assembly rules and remaining visual differences.
 `scripts/revise-reference-castle.mts` reads a pre-revision project export and
 replaces this map only, retaining `castle-study`. SQLite revision8 and the
-expected-SHA Supabase save both reloaded successfully; see tiledata persistence proof.
+expected-SHA LegacyDb save both reloaded successfully; see tiledata persistence proof.
 The current layout has a mid-lower keep, bare-tree rear courtyard, broad eastern
 river and compact two-boat landing. Olive grass, simplified banks and sparse
 vegetation still differ from the reference; do not call it a visual match.

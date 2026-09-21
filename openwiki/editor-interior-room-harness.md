@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # Interior Room Session Harness (villager-room-v1)
 
 The LLM-harnessed interior pipeline: start session, advance build per layer, evaluate, and self-repair loop.
@@ -8,7 +10,7 @@ The LLM-harnessed interior pipeline: start session, advance build per layer, eva
 - **천장과 연결 가능한 것은 정방향 벽**이다. 북쪽 일부 구간만 채우지 말고, 꺾인 외곽과 오목한 구간을 포함해 천장의 모든 남향 경계 아래에 벽면을 둔다. 벽은 상단·몸통·발치까지 이어져야 한다. 천장 하단의 윤곽이 바뀌면 직선 구간을 나누며 대각 벽으로 메우지 않는다.
 - 적암 대각 조각 `16/17 → 46/47 → 76/77`은 동굴 내부 지면의 단차에만 배치한다. 위쪽 지면과 아래쪽 지면을 확보하고 천장 어둠과 접하지 않는지 확인한다.
 - `dungeonRoomPipeline.ts`의 직선 천장 벽 계약은 유지한다. 과거 예제나 메타 설명의 “대각 절벽”이라는 이름만 보고 천장 연결까지 허용된 것으로 해석하지 않는다.
-- 적용 콘텐츠: Supabase `rpg-zzu-ashen-vault-20260913` / `map_ashen_vault`. 엔진의 높이 시스템을 추가한 것이 아니라 칩셋 그림의 조립 규칙이다.
+- 적용 콘텐츠: LegacyDb `rpg-zzu-ashen-vault-20260913` / `map_ashen_vault`. 엔진의 높이 시스템을 추가한 것이 아니라 칩셋 그림의 조립 규칙이다.
 - 추가 사용자 정정: 내부 단차는 **대각면 → 직선면 → 가로 계단 → 직선면 → 대각면**으로 연결할 수 있다. 계단을 벽 앞에 장식처럼 붙이지 말고 벽면을 실제로 끊어 위쪽·아래쪽 지면을 잇는다. 벽면은 통행 불가, 계단은 통행 가능이며 양방향 이동을 확인한다. 같은 문법으로 두 단을 쌓아 다층 지형을 표현할 수 있다.
 - **계단을 벽의 밑동으로 쓰지 않는다.** 이 맵에서 `106`을 직선 벽의 마지막 행에 반복한 것은 저작 버그였다. 계단 `105/106/107`은 명시적으로 뚫은 계단 통로에만 놓고, 벽 몸통과 구분한다. 이동 테스트 통과만으로 이 시각 오류를 발견할 수 없으므로 계단 타일의 전체 배치 위치가 의도한 통로와 일치하는지도 확인한다.
 - **대각선 4칸과 정방향 벽 3칸이 같은 높이**다(사용자 정정). 두 쪽을 모두 4칸으로 쌓으면 접합 높이가 어긋난다. 이 맵의 하향 대각 끝에 이어지는 직선 구간은 대각 상단의 지면 부분을 고려해 한 행 아래에서 시작하며 아래 경계를 유지한다. 연결 계단도 같은 3행 높이에 맞춘다. 대각 타일 배열과 천장 벽은 이 보정으로 바꾸지 않는다.
@@ -22,7 +24,7 @@ The LLM-harnessed interior pipeline: start session, advance build per layer, eva
 - 새 지선은 기존 선로와 접촉하면 합류를 끝낸다. 각 방 사이를 독립적으로 최단 경로 처리하면 같은 갱도에 나란한 중복 선로와 작은 고리가 생긴다.
 - `432/433/462/463` V자 조각을 긴 단차로 반복하고 `19/49` 벽면을 계단으로 취급했던 대형 광산은 사용자에게 잘못된 조립으로 지적받았다. 이동 가능 판정만으로 시각적 계단·절벽 조립을 입증하지 못한다.
 - `map_grand_labyrinth_mine` 보정은 원본 적암 절벽 실루엣의 대각 4행/직선 3행 계약을 사용하고, 바닥 부분은 갈색 지면으로 합성했다. 원본 계단 실루엣과 철로 방향별 조각도 전용 uploaded atlas에 포함한다. 엔진 변경이 아닌 프로젝트 저작 자산이다.
-- uploaded atlas에는 기존 던전 전용 쿼터 렌더 가드가 적용되지 않는다. 이 맵은 기존 쿼터 조합을 고정 타일로 베이크해 천장 모서리를 보존한다. 검증에는 전체 연결 검사 외에 확대 접합 이미지, 출하 플레이어 확인, Supabase 저장 후 재로드가 필요하다.
+- uploaded atlas에는 기존 던전 전용 쿼터 렌더 가드가 적용되지 않는다. 이 맵은 기존 쿼터 조합을 고정 타일로 베이크해 천장 모서리를 보존한다. 검증에는 전체 연결 검사 외에 확대 접합 이미지, 출하 플레이어 확인, LegacyDb 저장 후 재로드가 필요하다.
 
 ## 사용자 광산 참고 이미지와 확장판 (2026-09-13)
 
@@ -38,7 +40,7 @@ The LLM-harnessed interior pipeline: start session, advance build per layer, eva
 - 접합 좌표를 **립이 들어가는 행** `y`로 통일하면 하향 `y > prev`, 상향 `next < y`, 나머지 직선이다. 얼음 직선은 `[343,373,403]`, 대각은 `[286,316,346]` 또는 `[287,317,347]`; 용암 직선은 `[301,103,133,133]`, 대각은 `[16,46,46,76]` 또는 `[17,47,47,77]`이다. 이 좌표의 `y+1`이 직선 벽의 상단이며, 기존 설산 문서의 벽상단 crest 좌표와 혼동하지 않는다. 얼음 2행·용암 3행 계단은 실제 벽면만 끊는다.
 - 원본 아틀라스의 바닥 팔레트와 대조해 각 단면의 양 끝 픽셀에서 윗선·밑선을 측정했다. 계단을 제외한 얼음 173곳, 용암 181곳의 최대 차이는 모두 3px다. 다른 단면을 검출하지 않도록 각 열의 자체 높이 범위만 검사한다.
 - 대각 조각에는 바닥 그림도 포함된다. 웅덩이를 그 조각 바로 옆에 칠하지 않으며, 8방향으로 한 칸의 발치 바닥을 남겨 사선 옆 통로가 대각으로만 접촉해 끊기지 않게 한다. 장식은 개별 굴곡·골에 배치하고, 키 큰 결정·석순의 상단은 발치 벽을 가릴 수 있지만 최하단 조각은 실제 바닥에 놓는다.
-- 재현/증거: `output/build-element-contour-caves.mts`, `output/audit-element-cliff-seams.py`, `output/element-contour-qa.mjs`, `output/evidence/element-contour-caves/`. 출하 플레이어의 계단 15개 왕복과 두 맵의 연속 등반 경로를 검증한다. 저장 완료 판단은 동일 프로젝트의 Supabase 저장 후 맵·타일셋·장소 재로드 일치로 한다.
+- 재현/증거: `output/build-element-contour-caves.mts`, `output/audit-element-cliff-seams.py`, `output/element-contour-qa.mjs`, `output/evidence/element-contour-caves/`. 출하 플레이어의 계단 15개 왕복과 두 맵의 연속 등반 경로를 검증한다. 저장 완료 판단은 동일 프로젝트의 LegacyDb 저장 후 맵·타일셋·장소 재로드 일치로 한다.
 
 ## 얼음·용암 절벽 굴곡과 소품 보강 (2026-09-14)
 
@@ -78,7 +80,7 @@ The LLM-harnessed interior pipeline: start session, advance build per layer, eva
 - 최신 참고는 [Muller의 2026-06 방 그래프 개발 사례](https://tinkernotes.io/blog/generating-dungeons-room-graph/)다. [2025 PCG Benchmark](https://arxiv.org/abs/2503.21474)의 품질·다양성·제어 구분도 검토했다. 이는 특정 알고리즘이 미관을 보장한다는 근거가 아니다. [Boris의 WFC 설명](https://www.boristhebrave.com/2020/02/08/wave-function-collapse-tips-and-tricks/)은 2020년 기반 자료이며, 전역 구조 없이 로컬 타일 일치만으로 해결하지 말라는 참고다. 이번 저작은 전체 WFC 솔버 구현이 아니다.
 - 대각 절벽은 수정굴/광산의 큰 공동 안에서 합류시키며, 끝을 직선으로 연장해 주변 암반과 닿게 한다. 중간에 떠 있는 절벽 꼬리나 반복되는 전폭 능선을 만들지 않는다. 천장 아래는 계속 정방향 벽만 쓴다. 광산 운반선은 방향·직진 길이를 상태로 둔 경로 탐색으로 짧은 지그재그에 비용을 주고, native 코너와 분기를 접속 그래프로 고른다.
 - 소품은 자연 방의 가장자리 거리와 군락별 크기 차이를 사용한다. 묘비/명판은 실제 매장 구획으로, 수로 물자는 정비 착지점으로, 붕괴 소품은 파손된 방으로 한정한다. 연결성·소품 개수·방 이름은 미관 점수가 아니다. 전체 PNG와 실제 플레이어 보행을 별도로 검토한다.
-- v3 크기: 수로 56×50, 수정굴 56×50, 납골당 54×50, 광산 64×52. 기존 네 map/place id를 유지한다. 재현 스크립트 `output/build-four-context-dungeons-v3.mts`, `output/audit-four-context-dungeons-v3.py`, `output/four-context-dungeons-v3-qa.mjs`, `output/save-four-context-dungeons-v3.mts`. 원격 before와 preview/보고서/PNG/저장 후 재로드 receipt는 `output/evidence/four-context-dungeons-v3/`에 있다. 로컬 output은 gitignored 보조 자료이며 정본은 지정한 Supabase 프로젝트와 장소다.
+- v3 크기: 수로 56×50, 수정굴 56×50, 납골당 54×50, 광산 64×52. 기존 네 map/place id를 유지한다. 재현 스크립트 `output/build-four-context-dungeons-v3.mts`, `output/audit-four-context-dungeons-v3.py`, `output/four-context-dungeons-v3-qa.mjs`, `output/save-four-context-dungeons-v3.mts`. 원격 before와 preview/보고서/PNG/저장 후 재로드 receipt는 `output/evidence/four-context-dungeons-v3/`에 있다. 로컬 output은 gitignored 보조 자료이며 정본은 지정한 LegacyDb 프로젝트와 장소다.
 
 ## 설산 빙벽 조립 정정 (2026-09-13)
 
@@ -208,7 +210,7 @@ compatibility evidence, not whole-task17 provider/UI/publication acceptance.
 - `sleep`은 `front_desk` 한 곳에만 붙는다. 침대와 수납장은 조사만 한다. 기존 inn 명령의 유료 회복이며 개별 방 예약/열쇠/NPC 시스템이 추가된 것은 아니다.
 - `test/innConceptRebuild.test.ts`는 5개 seed의 방별 침대 수·단일 숙박 거래·경고 0·직렬화 재로드를 검사한다. `test/innExploration.test.ts`는 3층 양방향 전이·비대칭 객실·작은 다락·내려가는 계단 그림을 검사한다. 전체 시설의 조립 가구 검사는 각 room.mapId의 맵을 사용해야 한다.
 - 단독 공간만 있는 double-row 층은 불필요한 복도/복제 방을 만들지 않고 고유 크기를 유지한다. `convertEntranceToDescent`는 이벤트와 474 한 칸 계단을 연결한다. 중간층의 저작 transfer 물건은 위로, 생성된 entrance는 아래로 연결되므로 계단 보고서는 모든 이벤트의 명령을 읽어야 한다.
-- 제작: `vite-node --script scripts/build-explorable-inn.mts`(미리보기), `--save`(공식 `saveProjectToSupabase`+재로드). **기존 `rpg-zzu-inn-exploration-v4`를 읽고 수정**한다. 저장 직전 동시 변경을 검사하며 수정 전 JSON·층별 이미지를 보존한다. 실내 기본 메타를 갱신하고 계단·접수 탁자·연통 정의와 세 여관 맵을 반영한다. 다른 프로젝트 데이터는 유지한다. `rpg-zzu-house-template-gallery`는 다른 탭의 자동 저장이 여관을 지운 전력이 있어 다시 쓰지 않는다.
+- 제작: `vite-node --script scripts/build-explorable-inn.mts`(미리보기), `--save`(공식 `saveProjectToLegacyDb`+재로드). **기존 `rpg-zzu-inn-exploration-v4`를 읽고 수정**한다. 저장 직전 동시 변경을 검사하며 수정 전 JSON·층별 이미지를 보존한다. 실내 기본 메타를 갱신하고 계단·접수 탁자·연통 정의와 세 여관 맵을 반영한다. 다른 프로젝트 데이터는 유지한다. `rpg-zzu-house-template-gallery`는 다른 탭의 자동 저장이 여관을 지운 전력이 있어 다시 쓰지 않는다.
 - 플레이 검증: `node scripts/qa/inn-exploration.mjs --reloaded`. 편집기 셸 없이 player.html로 저장본을 열고, 충돌 판정을 따르는 이동 경로로 4객실 조사 및 1→2→3→2→1을 검증한다. 순간이동·고정 sleep 없이 runtime-state-json/대화 DOM 변경을 구독한다. 연속 방향 입력은 과부하 프레임에서 목표 칸을 지나칠 수 있으므로 한 칸 move route를 쓴다. Vite QA config는 runner로 읽고 캐시는 작업트리 output 안에 둔다. 이 호스트의 Chromium `ERR_NETWORK_CHANGED` 때문에 로컬 Vite 응답을 Node fetch로 그대로 전달한다.
 - 이미지 내장 보고서: `node scripts/report-inn-exploration.mjs` → `output/evidence/inn-exploration-v4/index.html`. 원격 재로드와 실제 플레이 증거가 있어야 생성된다. 이전 단층 보고서 `inn-rebuild-v3`는 비교 자료로 보존한다.
 
@@ -257,7 +259,7 @@ compatibility evidence, not whole-task17 provider/UI/publication acceptance.
 - Space-role harnessing: "interior" is the parent concept; placement decisions are per space. Each `rooms[]` entry carries a role theme (`bedroom|study|dining|kitchen|storage|tavern|corridor`); `corridor` is a walkway role ??no floor-occupying furniture, only wall d챕cor and tall displays (bust/armor), and its cells are exempt from quadrant-density judgement and fillers. `furnish_interior_space({ sessionId, roomId, theme?, seed? })` demolishes and re-furnishes one space (furniture, wall d챕cor row, rugs) with the role grammar, then re-runs map-wide walkability ??the per-space repair/retheme loop for the assistant.
 - Contextual prop anchoring: bedroom rugs anchor at the bed's foot (not under table sets), a nightstand (`VR.BOX`) lands beside the bed head via `placeBedsideProp`, and bedroom table sets are excluded from the bed zone (Chebyshev ??2) and rug cells. Kitchen cauldron/kettle anchor next to the stove.
 - Editor chatbot integration: the harness tools are registered in `toolRegistry.ts` under the `tile` domain and survive the 40-tool exposure quota in tile mode (regression-fixed in `test/toolExposureQuota.test.ts`); `scripts/check-tool-exposure.mts` probes the live exposure set. The former `build-interior` assistant skill that injected the full playbook (plan grammar: partition spacing, innerDoors, corridor role, wallMaterial/floorTile rules; plus the session → evaluate → `furnish_interior_space` self-repair loop) was removed with the assistant-skill feature (2026-08-27) — the tools and their descriptions are now the only prompt-side source. Session-built maps are auto-registered in `mapTree` so they appear in the editor map list.
-- End-to-end reference: `scripts/demo-assistant-interior-build.mts` drives the real tool handlers (requirement ??plan ??session ??per-space furnish ??evaluate ??deploy) against the live Supabase project; `scripts/build-room-practice-project.mts --reroll N` is the batch/script path that bypasses the LLM loop on purpose. The batch script gates `--save` behind per-map evaluation (seed-retry loop, up to 12 rerolls per plan).
+- End-to-end reference: `scripts/demo-assistant-interior-build.mts` drives the real tool handlers (requirement ??plan ??session ??per-space furnish ??evaluate ??deploy) against the live LegacyDb project; `scripts/build-room-practice-project.mts --reroll N` is the batch/script path that bypasses the LLM loop on purpose. The batch script gates `--save` behind per-map evaluation (seed-retry loop, up to 12 rerolls per plan).
 
 
 
@@ -349,7 +351,7 @@ compatibility evidence, not whole-task17 provider/UI/publication acceptance.
 - `SpatialInteriorLayout.rooms[]` optionally stores `shape` and `floor` per room; omitted values retain rectangular rooms and the space material. The existing wall grammar compiles the floor union, shared partitions and explicit doorways together. Shape `rect` on an envelope does not imply that its rooms fill that envelope.
 - Floor materials now include `jade` (13), `gravel` (42), and `dark-stone` (43), alongside wood/plank/stone/mat. These are material selections, not new pixel art or runtime passage overrides.
 - `HOUSE_SHELL_FACE_TILES` includes cream, stone-brick and gold-brick face cells. Both fixed wall overlap and automatic wall furniture use it; the former cream-only check rejected cabinets after wall retint.
-- `scripts/lib/diverseInteriorCatalog.mts` rebuilds the existing interior library with preserved IDs, restores program-specific furniture assemblies, and leaves user tile metadata intact. Publish uses `edit_spatial_occurrence(operation:refresh)` for the three saved house roots and validates Supabase reload; rendering evidence belongs in `output/evidence/interior-redesign`.
+- `scripts/lib/diverseInteriorCatalog.mts` rebuilds the existing interior library with preserved IDs, restores program-specific furniture assemblies, and leaves user tile metadata intact. Publish uses `edit_spatial_occurrence(operation:refresh)` for the three saved house roots and validates LegacyDb reload; rendering evidence belongs in `output/evidence/interior-redesign`.
 - Contract tests: `test/spatialInteriorLayout.test.ts` checks connected irregular floors, per-room materials and save/load, alongside existing spatial schema and object-placement contracts.
 
 ## 생활 구역 조합으로 실내 저작 (2026-09-14)
@@ -365,7 +367,7 @@ compatibility evidence, not whole-task17 provider/UI/publication acceptance.
 
 - `scripts/lib/specialInteriorCatalog.mts` stores two complete places, `special-interior:place:inn` and `special-interior:place:shop`, and three floor spaces. The inn combines reception/shared meals/kitchen/storage on 1F with a three-bed dormitory and a private room on 2F. The shop combines checkout, merchandise/food displays, a book shelf, stock and packing. Existing reviewed inn/shop yards supply exterior entry; exact ports connect the doors/stairs.
 - Uniform household curtains are removed from ten of the twelve `interior-life` floors. Only the top-floor bedroom and reviewed inn suite retain them; the new inn uses one curtain in the private room. `registerInteriorLifeCatalog` honors the same allowlist so rerunning the preceding authoring script does not restore twelve curtains.
-- `scripts/publish-special-interiors.mts [--apply]` uses registered spatial get/preview/apply/refresh tools, idempotent registration, official Supabase authority, concurrent-change checks and reload comparison. It preserves existing tile metadata and unrelated maps. Existing household examples are refreshed to remove their frozen curtains. This content establishes layout and navigation; it does not add merchant NPCs, shop transactions or lodging dialogue.
+- `scripts/publish-special-interiors.mts [--apply]` uses registered spatial get/preview/apply/refresh tools, idempotent registration, official LegacyDb authority, concurrent-change checks and reload comparison. It preserves existing tile metadata and unrelated maps. Existing household examples are refreshed to remove their frozen curtains. This content establishes layout and navigation; it does not add merchant NPCs, shop transactions or lodging dialogue.
 - `scripts/qa/interior-catalog-routes.mts <project> special` derives actual walking routes for both facilities. `qa:runtime -- --project <project> --scenario special-interiors --browser firefox` runs the inn; `QA_SPECIAL_FACILITY=shop` runs the shop in a fresh player session. `scripts/qa/special-interiors-editor.mjs` compares the saved maps, captures real editor screenshots and exports native map renders into `output/evidence/special-interiors/`.
 
 ## 연결 던전의 에디터 통합 (2026-09-14)

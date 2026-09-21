@@ -115,6 +115,6 @@ invisible as protected cells. Exact placement now uses the non-caching
 
 ## Blockers
 
-None. Content/Supabase persistence is not applicable: this is editor-engine + UI code with
+None. Content/LegacyDb persistence is not applicable: this is editor-engine + UI code with
 local-only QA fixtures (`?freshProject=1`, remote persistence asserted disabled), no authored
 map/event content.

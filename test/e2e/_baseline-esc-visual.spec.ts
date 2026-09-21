@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 import { openTestPlayWindow } from "./oprnPlayerStatusMenuHelpers";
 
@@ -35,7 +35,7 @@ test("baseline: esc menu typography + graphics + hud portrait", async ({ page })
   page.on("response", (r) => { if (r.status() >= 400) failedRequests.push(`HTTP${r.status()} ${r.url()}`); });
 
   await page.setViewportSize({ width: 1280, height: 900 });
-  await seedProjectFromSupabaseCanonical(page, project(), "/?e2eVitals=1");
+  await seedProjectForEditor(page, project(), "/?e2eVitals=1");
   await openTestPlayWindow(page);
   await startNewGameFromTitle(page);
   await expect(page.getByTestId("play-stage")).toBeVisible({ timeout: 15000 });

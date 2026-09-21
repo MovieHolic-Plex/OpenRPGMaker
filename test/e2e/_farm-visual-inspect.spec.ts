@@ -14,7 +14,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
 import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { startNewGameFromTitle, tapKey } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 test.setTimeout(240_000);
 test.use({ serviceWorkers: "block" });
@@ -127,7 +127,7 @@ test("농사 한 사이클을 화면으로 검수한다 — 갈기·심기·물�
     window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
-  await seedProjectFromSupabaseCanonical(page, projectWithGrowthLever());
+  await seedProjectForEditor(page, projectWithGrowthLever());
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 30_000 });
   await page.getByTestId("mode-play").click({ force: true });
   await expect(page.getByTestId("test-play-window")).toBeVisible({ timeout: 30_000 });

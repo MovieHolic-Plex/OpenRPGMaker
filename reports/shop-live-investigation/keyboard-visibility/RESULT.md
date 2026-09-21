@@ -8,7 +8,7 @@ This establishes tested conditions, not the original user's root cause. Intentio
 
 ## Provenance and one gameplay setup
 
-- Canonical Supabase project: `oprn-e98456e1d8`, **용사의 여정**. Fresh read through main's `src/project/supabaseProjectSync.ts#loadProjectFromSupabase`; `provenance.json` records the existing merchant and database records. The loaded snapshot is byte-identical to the authoritative positive control: SHA-256 `2684a77c47d1ea75eb5ba9b4f17e09ff556550b08f42f0db81f67e616976ab3b`.
+- Canonical LegacyDb project: `oprn-e98456e1d8`, **용사의 여정**. Fresh read through main's `src/project/legacyDbProjectSync.ts#loadProjectFromLegacyDb`; `provenance.json` records the existing merchant and database records. The loaded snapshot is byte-identical to the authoritative positive control: SHA-256 `2684a77c47d1ea75eb5ba9b4f17e09ff556550b08f42f0db81f67e616976ab3b`.
 - One isolated Firefox  runtime at `http://127.0.0.1:9841/export-player/player.html`. Unchanged public assets were routed at the exported player's relative asset base. Loaded `player.js`, `PlayScene-BAKbtaZw.js`, and `player-BhSXHFWt.css` hashes exactly match prior shipping-bundle evidence; current hashes are in `browser-session.json`.
 - Escape -> Equipment -> hero -> Weapon -> Unequip -> Enter. `00-normal-unequip-preview.png` captures the normal menu. `before-unequip.json` / `after-unequip.json` show inventory `{}` -> `{equip_sword:1}`; no synthetic inventory or stock was inserted.
 - Exit menu normally. Authorized QA movement only: teleport to `map_weapon_shop` (5,10), face up; native keyboard Z activates authored merchant `ev_villager_35c9ba59-6f59-47a3-b0fb-bcf9b6de5c25` at (5,9). ArrowDown -> Sell -> Enter selects actual `shop-sell-equip_sword`, `aria-current=true`.

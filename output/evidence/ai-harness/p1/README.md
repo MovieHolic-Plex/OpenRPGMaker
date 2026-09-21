@@ -76,7 +76,7 @@ node scripts/qa/ai-harness-remote-proof.mjs --create-isolated-project --scenario
 ```
 
 The [editor action record](editor/actions.json) captures HEAD `23bc6838`, real
-headed Firefox composer interaction, session/tools/apply/store and live Supabase.
+headed Firefox composer interaction, session/tools/apply/store and live LegacyDb.
 LLM responses are scripted. Target:
 `qa-ai-surface-573bdbb5-c9ac-4ebe-a319-d9a588659949`; receipt
 `27e9f6dc-5193-4351-a8ba-984ee3e36166`, generation 2. A real remote PATCH keeps

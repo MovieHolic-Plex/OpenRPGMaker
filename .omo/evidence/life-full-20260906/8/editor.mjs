@@ -18,7 +18,7 @@ try {
   page.on("pageerror", (error) => receipt.errors.push(error.message));
   page.on("console", (message) => receipt.console.push({ type: message.type(), text: message.text() }));
   page.on("requestfailed", (request) => receipt.requestFailures.push({ url: request.url(), error: request.failure() }));
-  await page.route("**/supabase/**", (route) => {
+  await page.route("**/legacyDb/**", (route) => {
     if (!["GET", "HEAD", "OPTIONS"].includes(route.request().method())) receipt.remoteWrites.push(route.request().method());
     return route.abort("blockedbyclient");
   });

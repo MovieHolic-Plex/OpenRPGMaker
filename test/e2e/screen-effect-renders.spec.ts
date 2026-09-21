@@ -15,7 +15,7 @@ import { createBlankProject } from "@/project/defaults";
 import type { Command, GameEvent, Project } from "@/project/types";
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import { SCREEN_EFFECT_OPTIONS } from "@/project/eventCommands/m2ModernCatalog";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 const DIR = "output/evidence/screen-effect-renders";
@@ -123,7 +123,7 @@ async function changedRatio(before: Buffer, after: Buffer): Promise<number> {
 }
 
 async function openProbeRuntime(page: Page): Promise<Locator> {
-  await seedProjectFromSupabaseCanonical(page, probeProject());
+  await seedProjectForEditor(page, probeProject());
   const skip = page.getByRole("button", { name: "건너뛰기" });
   if (await skip.count()) await skip.click();
   await expect(page.getByTestId("topbar-test-play")).toBeVisible({ timeout: 30_000 });

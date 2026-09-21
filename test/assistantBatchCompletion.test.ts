@@ -29,9 +29,9 @@ afterEach(() => {
 function harness(rounds: Call[][]) {
   const context = { project: createBlankProject() };
   expect(runTool(context, "create_map", { id: "map_other", name: "Other", width: 20, height: 15 }).ok).toBe(true);
-  vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
-  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-key");
-  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "test-batch");
+  vi.stubEnv("VITE_LEGACY_DB_URL", "http://dbserver:8100");
+  vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-key");
+  vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "test-batch");
   vi.stubGlobal("fetch", (async () => new Response(null, { status: 201 })) satisfies typeof fetch);
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   store.replace(context.project);

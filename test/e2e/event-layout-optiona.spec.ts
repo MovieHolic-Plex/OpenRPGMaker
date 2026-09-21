@@ -1,7 +1,7 @@
 import { mkdir } from "node:fs/promises";
 import { expect, test, type Page } from "@playwright/test";
 import { createBlankProject } from "@/project/defaults";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import type { Command } from "@/project/types";
 
 // Vite 가 절대 URL 로 서빙하는 모달 모듈 — TS 는 절대 경로를 모르므로 동적 import 의 형식만 잡아준다.
@@ -85,7 +85,7 @@ function commandProject(): { readonly project: ReturnType<typeof createBlankProj
 
 async function seedCommandProject(page: Page): Promise<{ readonly mapId: string; readonly eventId: string }> {
   const { project, eventId } = commandProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   return { mapId: project.startMapId!, eventId };
 }
 

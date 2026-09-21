@@ -13,7 +13,7 @@ Branch: `agent/ai-harness-p1-20260906`.
 The phase-required QA-only commits were inspected and integrated in order:
 
 - `aa14052f` -> `37a95dec`: repaired Firefox cold-CSS boot and existing abort expectations.
-- `057b5427` -> `7982c0a4`: independent real Supabase harness.
+- `057b5427` -> `7982c0a4`: independent real LegacyDb harness.
 - `86f58bb7` -> `476d7a7c`: independent remote RED/GREEN and cleanup evidence.
 - `8a59f1e7`: new `scripts/qa/ai-harness-contracts.mjs` (proof-failure only) and
   `scripts/qa/ai-harness-vite.config.mjs` (test-only in-memory regression mutation).
@@ -51,7 +51,7 @@ the corrected-port acceptance run.
 ```sh
 QA_PORT=41583 EVIDENCE_DIR=output/evidence/ai-harness/p1/editor xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario proof-failure
 node scripts/qa/ai-harness-remote-proof.mjs --create-isolated-project --scenario all --report output/evidence/ai-harness/p1/combined-remote.json
-npm test -- test/aiRunEndProof.test.ts test/storePersistenceProof.test.ts test/storePersistence.test.ts test/supabaseProjectSync.test.ts test/aiComposerModeSession.test.ts test/aiMilestoneTurnAccounting.test.ts test/aiAssistantTurnCleanup.test.ts
+npm test -- test/aiRunEndProof.test.ts test/storePersistenceProof.test.ts test/storePersistence.test.ts test/legacyDbProjectSync.test.ts test/aiComposerModeSession.test.ts test/aiMilestoneTurnAccounting.test.ts test/aiAssistantTurnCleanup.test.ts
 npm run typecheck:app
 npm run build
 ```
@@ -86,7 +86,7 @@ listener, private optimizer cache, cold real CSS transform, headed Firefox,
 new disposable profile, real composer click and busy/idle DOM subscription.
 Only `/v1/chat/completions` responses are scripted. Session execution, real
 `set_title_screen`, advisory `run_lint`, milestone apply, store flush, normalized
-Supabase read and editor rendering are not mocked or replaced.
+LegacyDb read and editor rendering are not mocked or replaced.
 
 Before any content QA, the script validates env origin, anon/publishable role,
 and configured project-id availability without printing secrets, then proves

@@ -5,7 +5,7 @@ import { PNG } from "pngjs";
 const out = "output/evidence/inn-exploration-v4";
 const build = JSON.parse(fs.readFileSync(`${out}/build.json`, "utf8"));
 const project = JSON.parse(fs.readFileSync(`${out}/reloaded-project.json`, "utf8"));
-const proof = JSON.parse(fs.readFileSync(`${out}/supabase-proof.json`, "utf8"));
+const proof = JSON.parse(fs.readFileSync(`${out}/legacy-db-proof.json`, "utf8"));
 const runtime = JSON.parse(fs.readFileSync(`${out}/runtime-proof.json`, "utf8"));
 const validation = JSON.parse(fs.readFileSync(`${out}/validation.json`, "utf8"));
 assert.ok(proof.saved && proof.appReload && runtime.passed);
@@ -94,7 +94,7 @@ dialog{max-width:96vw;max-height:96vh;border:0;background:var(--paper);padding:1
 <tr><th scope="row">타일 정정</th><td>474: 독립 계단 한 개 · 176: 하단 입구 표식 · 408/409/410: 오분류 제외 · 209/239: 난로 연통의 상·하단. 접수용 탁자는 325/326/327을 사용합니다.</td></tr>
 <tr><th scope="row">통행과 동작</th><td>전체 ${build.access.reduce((sum,item)=>sum+item.events,0)}개 이벤트 접근 가능. 실제 플레이 ${visitCount}개 상호작용, 계단 왕복 4회, 순간이동 0회, 페이지 오류 0개.</td></tr>
 <tr><th scope="row">원격 재로드</th><td>원본 프로젝트 JSON과 앱 로더에서 세 층 및 꾸러미 일치 확인.<br><span class="code">${escape(proof.verifiedAt)}</span></td></tr>
-</tbody></table><p class="footnote">이번 시공은 공간·가구·조사 이야기·숙박·층간 이동에 집중했습니다. 객실 예약·열쇠·시간표 NPC 시스템과 외부 발코니는 포함하지 않습니다. 큰 객실의 창가 알코브는 실내 공간입니다.</p><p><a href="reloaded-project.json" download>저장본 QA 프로젝트 JSON</a> · <a href="runtime-proof.json">플레이 검증 기록</a> · <a href="supabase-proof.json">원격 저장 기록</a></p></section>
+</tbody></table><p class="footnote">이번 시공은 공간·가구·조사 이야기·숙박·층간 이동에 집중했습니다. 객실 예약·열쇠·시간표 NPC 시스템과 외부 발코니는 포함하지 않습니다. 큰 객실의 창가 알코브는 실내 공간입니다.</p><p><a href="reloaded-project.json" download>저장본 QA 프로젝트 JSON</a> · <a href="runtime-proof.json">플레이 검증 기록</a> · <a href="legacy-db-proof.json">원격 저장 기록</a></p></section>
 <footer>OPRN · 여행자의 등불 여관 · 시공 seed 7<br>전체 시공도·객실 확대·게임 화면을 포함한 이미지 내장 HTML. 파일 하나만 옮겨도 그림을 볼 수 있습니다.</footer></main>
 <dialog id="zoom" aria-label="시공 이미지 확대"><button type="button" id="close">닫기 · Esc</button><img id="zoom-image" alt=""><p class="zoom-caption" id="zoom-caption"></p></dialog>
 <script>const dialog=document.querySelector('#zoom');let opener;document.querySelectorAll('.image-link').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();opener=link;const source=link.querySelector('img');document.querySelector('#zoom-image').src=source.src;document.querySelector('#zoom-image').alt=source.alt;document.querySelector('#zoom-caption').textContent=source.alt;dialog.showModal()}));document.querySelector('#close').addEventListener('click',()=>dialog.close());dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()});dialog.addEventListener('close',()=>opener?.focus());</script></body></html>`;

@@ -5,7 +5,7 @@ import { expect, test } from "@playwright/test";
 import { writeFileSync } from "node:fs";
 import { createSkyStairProject, SKY_MAP } from "@/editor/content/skyStairGame";
 import { startNewGameFromTitle } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 test.setTimeout(180_000);
 test.use({ serviceWorkers: "block" });
@@ -21,7 +21,7 @@ test("대사창 실측", async ({ page }) => {
     window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 30_000 });
   await page.getByTestId("mode-play").click({ force: true });
   await expect(page.getByTestId("test-play-window")).toBeVisible({ timeout: 30_000 });

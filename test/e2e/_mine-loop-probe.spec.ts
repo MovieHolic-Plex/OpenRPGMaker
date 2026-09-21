@@ -13,7 +13,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
 import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { startNewGameFromTitle, tapKey } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 test.setTimeout(240_000);
 test.use({ serviceWorkers: "block" });
@@ -91,7 +91,7 @@ test("광산에 들어가 보이는 돌을 곡괭이로 캐고 밖으로 나온�
     window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
-  await seedProjectFromSupabaseCanonical(page, createFarmingDemoProject());
+  await seedProjectForEditor(page, createFarmingDemoProject());
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 30_000 });
   await page.getByTestId("mode-play").click({ force: true });
   await expect(page.getByTestId("test-play-window")).toBeVisible({ timeout: 30_000 });

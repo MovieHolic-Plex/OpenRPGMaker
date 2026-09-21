@@ -14,7 +14,7 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["test/**/*.test.ts"],
-    // lakeVillageRebuildFinal은 .env.local + 라이브 Supabase 업서트가 필요한 저작 스크립트다.
+    // lakeVillageRebuildFinal은 .env.local + 라이브 LegacyDb 업서트가 필요한 저작 스크립트다.
     // 기본 스위트에서 돌리면 CI는 무조건 실패하고 로컬은 원격 공유 프로젝트를 덮어쓴다.
     // 의도적으로 돌릴 때: node scripts/run-vitest.mjs run --config vitest.live.config.ts
     // *.bun.test.ts 는 bun:test 을 import 하므로 vitest 가 수집하면 무조건 실패한다.

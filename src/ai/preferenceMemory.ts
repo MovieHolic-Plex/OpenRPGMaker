@@ -10,7 +10,7 @@
 // - project : "이 게임은 호러다" 처럼 그 프로젝트에서만 참인 사실. conversationScopeKey() 를 키로 쓴다.
 //
 // localStorage 가 정본이다(conversationStore 와 같은 관례). 원격 미러는 anon 키로 접근 가능한 테이블이
-// 없어서 v1 범위 밖 — supabaseRlsCoverage 계약이 신규 마이그레이션의 anon GRANT 를 막는다.
+// 없어서 v1 범위 밖 — 현재는 프로필을 이 브라우저의 로컬 저장소에서 관리한다.
 //
 // 구성: 순수 계산(정규화·축출·블록 조립) + localStorage 게이트(load/save). 브라우저 비의존 —
 // localStorage 가 없으면 로드는 빈 목록, 저장은 조용히 no-op(Node/테스트에서 동일 동작).

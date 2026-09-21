@@ -2,15 +2,15 @@ import assert from "node:assert/strict";
 import { mock } from "bun:test";
 
 const root = process.argv[2] ?? process.cwd();
-process.env.VITE_SUPABASE_URL = "http://dbserver:8100";
-process.env.VITE_SUPABASE_ANON_KEY = "test-anon-key";
-process.env.VITE_SUPABASE_PROJECT_ID = "audio-description-persistence";
-process.env.VITE_SUPABASE_USE_PROXY = "0";
+process.env.VITE_LEGACY_DB_URL = "http://dbserver:8100";
+process.env.VITE_LEGACY_DB_ANON_KEY = "test-anon-key";
+process.env.VITE_LEGACY_DB_PROJECT_ID = "audio-description-persistence";
+process.env.VITE_LEGACY_DB_USE_PROXY = "0";
 globalThis.fetch = (() => { throw new Error("Unexpected network"); }) as typeof fetch;
-mock.module(`${root}/src/assets/supabaseResourceCache.ts`, () => ({ cacheSupabaseRootResources: async () => ({ skipped: [] }) }));
+mock.module(`${root}/src/assets/legacyDbResourceCache.ts`, () => ({ cacheLegacyDbRootResources: async () => ({ skipped: [] }) }));
 const { audioDescriptionProject, createAudioDescriptionTransport, AUDIO_PERSISTENCE_CONFIG } =
   await import(`${root}/test/helpers/audioDescriptionPersistenceTransport.ts`);
-const { loadProjectFromSupabase } = await import(`${root}/src/project/supabaseProjectSync.ts`);
+const { loadProjectFromLegacyDb } = await import(`${root}/src/project/legacyDbProjectSync.ts`);
 const { store } = await import(`${root}/src/project/store.ts`);
 const base = audioDescriptionProject(undefined);
 base.meta.title = "PROJECT_A";
@@ -34,7 +34,7 @@ try {
 } finally { held.release(); }
 await pending;
 await commits;
-const loaded = await loadProjectFromSupabase(AUDIO_PERSISTENCE_CONFIG);
+const loaded = await loadProjectFromLegacyDb(AUDIO_PERSISTENCE_CONFIG);
 console.log(JSON.stringify({
   root, acceptedTitles: transport.accepted.map(project => project.meta.title),
   currentTitle: store.getCurrent().meta.title, remoteTitle: loaded?.meta.title,

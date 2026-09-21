@@ -1,5 +1,5 @@
 /**
- * 공용 첫 방문 데모 — 실제 Supabase 행 + 진짜 부트 경로 검증.
+ * 공용 첫 방문 데모 — 실제 LegacyDb 행 + 진짜 부트 경로 검증.
  *
  * Playwright 는 navigator.webdriver=true 라 isAutomationBootContext() 가 첫 방문
  * 게이트를 닫는다. 사람 방문을 재현하려고 webdriver 를 init script 로 끈다

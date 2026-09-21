@@ -43,7 +43,7 @@
 |---|---|
 | 역할 이름 검사 | Expected `[]`; 양쪽 default reporter Received는 아래 두 항목으로 정확히 같다. 실패 블록 전체도 같다. |
 | autosave | 기준선 추가 실행과 최종 원본 모두 `TypeError: Cannot read properties of null (reading 'getItem')`; `databaseRecordViewSession.ts:159:35`에서 발생한다. |
-| store fresh project | 기준선 해당 assertion 단독 실행과 최종 원본 모두 `TypeError: Cannot read properties of undefined (reading 'ok')`; `supabaseProjectSync.ts:221:17`에서 발생한다. |
+| store fresh project | 기준선 해당 assertion 단독 실행과 최종 원본 모두 `TypeError: Cannot read properties of undefined (reading 'ok')`; `legacyDbProjectSync.ts:221:17`에서 발생한다. |
 | AI 중단 | 기준선 원본 default reporter와 최종 focused 모두 `Error: Test timed out in 15000ms.`; 실패 블록 전체가 같다. |
 | modeTransitions | 기준선 단독과 최종 focused 모두 `TypeError: Cannot set properties of undefined (setting 'testid')`; `mode.ts:308:17 → :124:7 → test/modeTransitions.test.ts:162:11` 및 실패 블록 전체가 같다. |
 | DB view 클릭/지속성 | 기준선 원본은 15초 timeout, 최종 focused는 통과. 원본 최종 placeholder의 구체 원인은 미확정으로 남긴다. |

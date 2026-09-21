@@ -1,6 +1,6 @@
 import {chromium} from 'playwright';
 import fs from 'node:fs';
-import {loadSupabaseEnvironment} from '../../../scripts/lib/supabase-database-ops.mjs';
+import {loadLegacyDbEnvironment} from '../../../scripts/lib/legacyDb-database-ops.mjs';
 const root=new URL('./',import.meta.url).pathname;
 const out=root+(process.env.JRPG_RUN??'final')+'/';fs.mkdirSync(out,{recursive:true});
 const browser=await chromium.connectOverCDP('http://127.0.0.1:19862');
@@ -14,8 +14,8 @@ await page.route('http://127.0.0.1:19861/**', async route => {
   await route.fulfill({status:response.status,headers,body:Buffer.from(await response.arrayBuffer())});
  } catch { await route.abort(); }
 });
-const env=loadSupabaseEnvironment();
-await page.route(`${env.VITE_SUPABASE_URL}/**`,async route=>{
+const env=loadLegacyDbEnvironment();
+await page.route(`${env.VITE_LEGACY_DB_URL}/**`,async route=>{
  const req=route.request();
  const headers={...req.headers()};delete headers.host;delete headers['content-length'];
  try {
@@ -27,7 +27,7 @@ await page.route(`${env.VITE_SUPABASE_URL}/**`,async route=>{
 
 
 const before=await page.evaluate(async()=>{const store=window.__jrpgQaStore;if(!store||store.getProjectIdentity().id!=='oprn-399e312698'||!store.isRemotePersistenceEnabled())throw Error('Wrong project or persistence disabled');return{identity:store.getProjectIdentity(),flush:await store.flush(),project:store.getCurrent()};});
-const response=await fetch(env.VITE_SUPABASE_URL+'/rest/v1/projects?project_id=eq.oprn-399e312698&select=project_id,current_json,updated_at',{headers:{apikey:env.VITE_SUPABASE_ANON_KEY,Authorization:'Bearer '+env.VITE_SUPABASE_ANON_KEY,'Accept-Profile':'rpg_zzu'}});
+const response=await fetch(env.VITE_LEGACY_DB_URL+'/rest/v1/projects?project_id=eq.oprn-399e312698&select=project_id,current_json,updated_at',{headers:{apikey:env.VITE_LEGACY_DB_ANON_KEY,Authorization:'Bearer '+env.VITE_LEGACY_DB_ANON_KEY,'Accept-Profile':'rpg_zzu'}});
 if(!response.ok)throw Error('remote reload '+response.status);const rows=await response.json();if(rows.length!==1)throw Error('Missing remote row');
 const proof=await page.evaluate(async({before,remote})=>{
  const {deserialize,serialize}=await import('/src/project/io.ts');

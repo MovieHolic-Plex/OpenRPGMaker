@@ -16,7 +16,7 @@ The planned future implementation is correctly marked HEAVY.
   current RPG source, test contracts and actual execution.
 - Lead independently executed E01 (installed OMO pure functions) and E02
   (actual RPG run-end proof body with isolated store outcomes).
-- No live Supabase outage, duplicate remote write, crash durability, performance
+- No live LegacyDb outage, duplicate remote write, crash durability, performance
   benefit or image-understanding claim is inferred from those probes.
 - The strongest counterexamples changed the recommendation: no duplicate
   verification ledger, no claimed OMO machine evidence engine, no blanket lint

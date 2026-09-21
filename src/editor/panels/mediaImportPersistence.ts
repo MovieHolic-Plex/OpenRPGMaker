@@ -18,7 +18,7 @@ export async function persistMediaImport(asset: MediaImportAsset): Promise<boole
   const status = store.getDbPersistenceStatus();
   if (status.kind === "disabled" && (status.reason === "dev-showcase" || status.reason === "shared-demo")) {
     // Web Storage cannot promise the audio/video file limits. Ask before creating
-    // a dedicated Supabase copy, even for small files; never silently pick the
+    // a dedicated project storage copy, even for small files; never silently pick the
     // deployment's shared project. Cancel/failure leaves source recovery intact.
     const sharedDemo = status.reason === "shared-demo";
     const accepted = await showConfirm({

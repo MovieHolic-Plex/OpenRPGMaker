@@ -1,6 +1,6 @@
 # 석교 성곽 마을과 공간 라이브러리
 
-정본 프로젝트: `rpg-zzu-castle-canal-reference-20260913-6890` (Supabase).
+정본 프로젝트: `rpg-zzu-castle-canal-reference-20260913-6890` (LegacyDb).
 `remote-receipt.json`은 커밋 직전 원격 재로드 결과다.
 
 ![전체 마을](overview.png)

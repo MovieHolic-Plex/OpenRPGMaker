@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # Project wiki
 
 The project wiki extends the existing `project.world` documents. It is not a
@@ -150,7 +152,7 @@ and commit-log failure without extra documents, snapshots or wiki flushes.
 Browser component QA: `node scripts/qa/wiki-work-history.mjs` (set
 `WIKI_QA_ORIGIN` to the worktree server); screenshot and report under
 `output/evidence/wiki-work-history/`. It uses production panels/store/styles and
-test fixtures without remote writes. At `759975b8c`, the existing Supabase-specific
+test fixtures without remote writes. At `759975b8c`, the existing LegacyDb-specific
 assertions in `applyChangesetToStore.test.ts` fail unchanged on baseline because
 the default repository now selects memory/local storage; compare regressions
 against that baseline rather than treating those two assertions as new failures.
@@ -178,7 +180,7 @@ and original-context initialization, real acceptance authority rejection,
 detached title authoring, no late writes, fatal non-exempt errors, and timely
 application with truthful local-save delivery. No live project is exercised.
 
-Live evidence uses a separate Supabase QA project and the user's existing OAuth
+Live evidence uses a separate LegacyDb QA project and the user's existing OAuth
 provider. A successful model reply is not evidence of wiki persistence; require
 store flush followed by loading the same remote project. Runtime combat proof
 uses the exported player (`player.html`), never the editor play shell.

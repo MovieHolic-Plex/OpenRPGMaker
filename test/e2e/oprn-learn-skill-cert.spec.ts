@@ -3,7 +3,7 @@ import { mkdir } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import type { ActorRecord, Command, EventPage, Project, SkillRecord } from "@/project/types";
 import { debugState, dismissDialogue, openEventEditor, runtimeState, screenshotEvidence, writeEvidenceJson, writeEvidenceText, type DebugState } from "./eventEditorCertEvidence";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-cert/loop9-learn-skill";
@@ -16,7 +16,7 @@ test("loop9 certifies learnSkill runtime state status menu and save persistence"
   const project = learnSkillProject();
   const actor = firstActor(project);
   const skill = requiredSkill(project, "skill_fire");
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await writeJson("000-scenario.json", {
     scope: ["learnSkill editor authoring", "roundtrip persistence", "runtime learned skill state", "status menu visible skill", "save slot persistence"],
     actorId: actor.id,

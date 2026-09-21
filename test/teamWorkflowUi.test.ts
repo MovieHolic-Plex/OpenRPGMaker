@@ -102,7 +102,7 @@ beforeEach(() => {
   installStorage();
   installWindow();
   // 커밋 목록은 포트가 정본이다. 예전에는 sync 모듈을 목킹했는데, 그 목은 기본 어댑터가
-  // Supabase 일 때만 살아 있었다 — 기본값이 바뀌면 조용히 빈 목록을 검증하게 된다.
+  // LegacyDb 일 때만 살아 있었다 — 기본값이 바뀌면 조용히 빈 목록을 검증하게 된다.
   session = installMemoryProjectSession();
   vi.spyOn(session.repository.commits, "list").mockResolvedValue([...COMMIT_ROWS]);
   store.replace(createBlankProject());
@@ -186,7 +186,7 @@ describe("team workflow UI", () => {
     expect(findByTestId(fakeElement(topbar), "topbar-identity-label")?.textContent).toBe("새 사용자");
   });
 
-  it("loads commit history rows through the read-only Supabase commit API", async () => {
+  it("loads commit history rows through the read-only LegacyDb commit API", async () => {
     const button = renderCommitHistoryButton();
     document.body.append(button);
 

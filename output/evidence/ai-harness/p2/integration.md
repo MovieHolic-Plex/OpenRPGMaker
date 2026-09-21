@@ -136,7 +136,7 @@ Both exit **0**. Tests: **657 passed, 20 files, zero failures/skips, 549.35s**. 
 QA_PORT=37025 EVIDENCE_DIR=output/evidence/ai-harness/p2/integration-entry-surface xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario outcome-matrix
 ```
 
-Overall exit **1 solely for the ten missing UI outcome hooks**, with **138/138 non-UI checks passing** on a fresh editor/bridge/session/store/Supabase execution. [integration-entry-binding.log](integration-entry-binding.log) verifies all 16 source/harness hashes against this corrected source and inventories cleanup. This matrix preserves the prior ten real cases; the new pre-intent-failure cases are covered through the actual session API and signal-aware injected intent boundary, not claimed as new browser cases.
+Overall exit **1 solely for the ten missing UI outcome hooks**, with **138/138 non-UI checks passing** on a fresh editor/bridge/session/store/LegacyDb execution. [integration-entry-binding.log](integration-entry-binding.log) verifies all 16 source/harness hashes against this corrected source and inventories cleanup. This matrix preserves the prior ten real cases; the new pre-intent-failure cases are covered through the actual session API and signal-aware injected intent boundary, not claimed as new browser cases.
 
 Run-owned project `qa-ai-surface-e1712cec-2d35-476a-bae4-5ee0de9761bc` and its child rows/observed commits were deleted with absence proof. Browser, server, cache, page listeners/timers and port were released, `activeRoutes:0`, no reused listener. Configured key-value scan passed. All earlier REDs, intermediate results, prior test/build records and UI-lane limitations remain preserved; Ask-to-Do click wiring and full gates/exact-head approval are still downstream responsibilities.
 
@@ -178,7 +178,7 @@ The new ordinary/milestone contract compares independently specified expected ax
 QA_PORT=37025 EVIDENCE_DIR=output/evidence/ai-harness/p2/integration-policy-surface xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario outcome-matrix
 ```
 
-Overall **exit 1 only for the ten absent UI outcome hooks**; all **138 backend/behavior checks pass**, with the original assertions unchanged. [integration-policy-binding.log](integration-policy-binding.log) verifies all 16 actual source/harness hashes against this corrected source and the cleanup receipt. Raw logs, actions, exit and screenshots are in [integration-policy-surface](integration-policy-surface/). This is a fresh editor/bridge/store/Supabase execution, not a reused earlier probe. It validates the original ten matrix cases; the new canonical apply-policy and continuation cases are actual-adapter integration tests, not claimed as additional browser cases.
+Overall **exit 1 only for the ten absent UI outcome hooks**; all **138 backend/behavior checks pass**, with the original assertions unchanged. [integration-policy-binding.log](integration-policy-binding.log) verifies all 16 actual source/harness hashes against this corrected source and the cleanup receipt. Raw logs, actions, exit and screenshots are in [integration-policy-surface](integration-policy-surface/). This is a fresh editor/bridge/store/LegacyDb execution, not a reused earlier probe. It validates the original ten matrix cases; the new canonical apply-policy and continuation cases are actual-adapter integration tests, not claimed as additional browser cases.
 
 Run-owned project `qa-ai-surface-86b3383b-439b-49c7-b044-d2365806b6aa` was deleted with child-table/commit absence proof. Browser, server, cache, listeners/timers and port were released; `activeRoutes:0`, no reused listener, configured key-value scan passed. The UI-lane Ask-to-Do user-click boundary and its deliberately RED resumed terminal assertions remain as documented in the runner handoff; this policy correction does not bypass them.
 
@@ -214,7 +214,7 @@ New tests use actual sessions, native tools, canonical parsing and actual store/
 
 ## Actual editor/API execution
 
-Both unchanged full matrix executions used the registered real browser bridge, native session/tool/apply/store paths and real Supabase. Only LLM transport and the explicitly labeled commit-log transport fault were scripted. The first run preceded the later owner/driver hardening; the second binds the exact final source.
+Both unchanged full matrix executions used the registered real browser bridge, native session/tool/apply/store paths and real LegacyDb. Only LLM transport and the explicitly labeled commit-log transport fault were scripted. The first run preceded the later owner/driver hardening; the second binds the exact final source.
 
 ```sh
 QA_PORT=37025 EVIDENCE_DIR=output/evidence/ai-harness/p2/integration-api-probe xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario outcome-matrix

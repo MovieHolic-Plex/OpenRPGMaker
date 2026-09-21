@@ -89,7 +89,7 @@ const FORBIDDEN_PATTERNS: readonly { readonly label: string; readonly re: RegExp
 /**
  * scripts/·test/ 는 출하물이 아니지만 같은 이름이 남으면 스윕이 끝나지 않는다.
  * src 규칙 중 데이터 식별자와 겹칠 수 없는 형태만 고른다 — `rpg-zzu-<slug>` 는
- * Supabase 프로젝트 행 id 이고 `rpg_zzu` 는 Postgres 스키마 이름이라 잡지 않는다.
+ * LegacyDb 프로젝트 행 id 이고 `rpg_zzu` 는 Postgres 스키마 이름이라 잡지 않는다.
  */
 const TOOLING_FORBIDDEN_PATTERNS: readonly { readonly label: string; readonly re: RegExp }[] = [
   { label: "구 window 전역 __RPG_ZZU_", re: /__RPG_ZZU_/ },
@@ -132,8 +132,8 @@ const TOOLING_SCANNED_EXTENSIONS = new Set([".ts", ".tsx", ".mts", ".mjs", ".cjs
 /**
  * `rpg-zzu-` (하이픈)은 **데이터 식별자**여서 위 패턴에 넣지 않았다. 남아 있는 것과 이유 —
  *
- * · `DEFAULT_SUPABASE_PROJECT_ID = "rpg-zzu-house-template-gallery"` 와
- *   `iceDiagonalTerrain` 의 `projectId` — **원격 Supabase 레코드를 가리킨다.** 바꾸면
+ * · `DEFAULT_LEGACY_DB_PROJECT_ID = "rpg-zzu-house-template-gallery"` 와
+ *   `iceDiagonalTerrain` 의 `projectId` — **원격 LegacyDb 레코드를 가리킨다.** 바꾸면
  *   그 프로젝트를 못 찾는다. 서버 쪽 마이그레이션과 함께 다뤄야 한다.
  * · 타이틀 리소스 id 구 이름(`rpg-zzu-title-*`) — generatedAssetResourceResolver 에
  *   **읽기 별칭으로만** 남아 있다. 새로 쓰는 곳은 모두 `oprn-title-*` 를 쓴다.
@@ -186,7 +186,7 @@ const LABEL_LIKE_FORBIDDEN: readonly { readonly label: string; readonly re: RegE
   //
   // 키에 따옴표가 붙는 **JSON 형태**도 잡는다(`"name": "…"`). 이게 필요한 이유 —
   // `fixtures/dew-village-demo.json` 이 생성 당시의 표시명을 저장된 리소스 이름으로
-  // 223건 들고 있었다. 같은 날 defaultResourceProfiles() 산출값으로 교정하고 Supabase
+  // 223건 들고 있었다. 같은 날 defaultResourceProfiles() 산출값으로 교정하고 LegacyDb
   // 데모 행(rpg-zzu-dew-village)에도 재장해 양쪽을 맞췄다.
   { label: "표시명·라벨에 RTP", re: /(?:name|label|text|title|aria-label)"?\s*:\s*"[^"]*\bRTP\b/ },
 ];

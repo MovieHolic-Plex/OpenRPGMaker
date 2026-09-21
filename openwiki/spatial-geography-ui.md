@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # Region and world visual authoring
 
 Task16 owns the geography canvases. It does not replace the compiler
@@ -162,7 +164,7 @@ not a procedural `RegionDesign`, occurrence, or village generation preset.
   geography rendering. Reference selection exposes no activation, mutation, or
   build actions; ordinary region design actions remain available on other cards.
 - The source map remains in project `rpg-zzu-reference-houses-20260913-6890`.
-  Its fixed reference copy was saved and reloaded from Supabase project
+  Its fixed reference copy was saved and reloaded from LegacyDb project
   `rpg-zzu-region-reference-walled-settlement-v1`; map and tileset metadata were
   compared with the bundled snapshot. The catalog is bundled so later AI sessions
   in other projects can find the example without access to the authoring session.
@@ -178,7 +180,7 @@ example currently contains no interior connections or interactive well event.
 
 `castle-town-100x100` adds the user-finalized 100×100 castle city alongside
 the original settlement. The source is `rpg-zzu-castle-town-100-20260913-6890`;
-its frozen Supabase copy is `rpg-zzu-region-reference-castle-town-v1`.
+its frozen LegacyDb copy is `rpg-zzu-region-reference-castle-town-v1`.
 `src/project/regionReferences/castle-town.json` and
 `public/assets/region-references/castle-town.png` are derived from that reloaded
 copy, including the user's road, entrance, garden and roof edits. AI paginated
@@ -191,7 +193,7 @@ from before the user's last edits is not a validation of this frozen revision.
 ### Lake village and extracted places (2026-09-13)
 
 `lake-village-60x60` is the accepted mixed-tree lake village, frozen from
-`rpg-zzu-lake-village-60-20260913-6890` into Supabase project
+`rpg-zzu-lake-village-60-20260913-6890` into LegacyDb project
 `rpg-zzu-region-reference-lake-village-v1`. Its reloaded map and tileset are
 bundled as `regionReferences/lake-village.json`; preview is captured from the
 frozen project. Source content is left untouched.
@@ -260,7 +262,7 @@ snapshot has 2,796 canopy cells; dark canopy interiors are intentional. All
 
 Source project: `oprn-hill-forest-harmony-20260918-a4e1`.
 Frozen project: `oprn-region-forest-cliff-village-v1`.
-Local editor flush/reload and Supabase compare-and-swap/reload receipts are in
+Local editor flush/reload and LegacyDb compare-and-swap/reload receipts are in
 `.omo/evidence/forest-village-trails`. No unrelated map or asset was changed by
 the trail pass. The shipped region atlas contains the 11 reviewed unfake props;
 PNG outputs, metrics and the Astra review are in

@@ -2269,7 +2269,7 @@
       "status": "passed",
       "assertionResults": [
         {
-          "fullName": "Project store flush sha256 evidence 전체 저장 경로: saveProjectToSupabase 의 sha256 이 flush 결과(saved.sha256)로 흘러든다",
+          "fullName": "Project store flush sha256 evidence 전체 저장 경로: saveProjectToLegacyDb 의 sha256 이 flush 결과(saved.sha256)로 흘러든다",
           "status": "passed",
           "duration": 11642.393429,
           "failureMessages": []

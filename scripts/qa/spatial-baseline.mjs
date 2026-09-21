@@ -50,7 +50,7 @@ try {
   page.on('pageerror', error => report.pageErrors.push(error.message));
   page.on('requestfailed', request => report.requestFailures.push({ path: new URL(request.url()).pathname, error: request.failure()?.errorText }));
   page.on('request', request => {
-    if (!['GET', 'HEAD', 'OPTIONS'].includes(request.method()) && /\/supabase\/|\/rest\/v1\//.test(request.url())) {
+    if (!['GET', 'HEAD', 'OPTIONS'].includes(request.method()) && /\/legacyDb\/|\/rest\/v1\//.test(request.url())) {
       report.remoteWrites.push({ method: request.method(), path: new URL(request.url()).pathname });
     }
   });

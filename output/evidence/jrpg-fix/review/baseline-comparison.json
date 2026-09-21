@@ -5559,7 +5559,7 @@
         "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at <checkout>/test/storePersistence.test.ts:64:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
       ],
       "final_messages": [
-        "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromSupabase (<checkout>/src/project/supabaseProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (<checkout>/src/project/supabaseProjectSync.ts:151:20)\n    at ProjectStore.load (<checkout>/src/project/store.ts:258:27)\n    at <checkout>/test/storePersistence.test.ts:91:21\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromLegacyDb (<checkout>/src/project/legacyDbProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (<checkout>/src/project/legacyDbProjectSync.ts:151:20)\n    at ProjectStore.load (<checkout>/src/project/store.ts:258:27)\n    at <checkout>/test/storePersistence.test.ts:91:21\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
       ],
       "baseline_duration_ms": 15003.392328000002,
       "final_duration_ms": 10320.823016,
@@ -5574,7 +5574,7 @@
     },
     {
       "file": "test/storePersistence.test.ts",
-      "fullName": "Project store remote persistence does not auto-save local dev showcase projects to Supabase",
+      "fullName": "Project store remote persistence does not auto-save local dev showcase projects to LegacyDb",
       "occurrence": 1,
       "baseline_first_lines": [
         "TypeError: Cannot read properties of undefined (reading 'ok')"
@@ -5593,17 +5593,17 @@
         "TypeError: Cannot read properties of undefined (reading 'ok')"
       ],
       "baseline_messages": [
-        "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromSupabase (<checkout>/src/project/supabaseProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (<checkout>/src/project/supabaseProjectSync.ts:151:20)\n    at ProjectStore.load (<checkout>/src/project/store.ts:258:27)\n    at <checkout>/test/storePersistence.test.ts:55:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromLegacyDb (<checkout>/src/project/legacyDbProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (<checkout>/src/project/legacyDbProjectSync.ts:151:20)\n    at ProjectStore.load (<checkout>/src/project/store.ts:258:27)\n    at <checkout>/test/storePersistence.test.ts:55:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
       ],
       "final_messages": [
-        "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromSupabase (<checkout>/src/project/supabaseProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (<checkout>/src/project/supabaseProjectSync.ts:151:20)\n    at ProjectStore.load (<checkout>/src/project/store.ts:258:27)\n    at <checkout>/test/storePersistence.test.ts:55:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromLegacyDb (<checkout>/src/project/legacyDbProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (<checkout>/src/project/legacyDbProjectSync.ts:151:20)\n    at ProjectStore.load (<checkout>/src/project/store.ts:258:27)\n    at <checkout>/test/storePersistence.test.ts:55:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
       ],
       "baseline_duration_ms": 5514.806553,
       "final_duration_ms": 2325.1356240000005,
       "baseline_default_reporter": [
         {
           "diagnostic": "TypeError: Cannot read properties of undefined (reading 'ok')",
-          "block": "TypeError: Cannot read properties of undefined (reading 'ok')\n ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:221:17\n    219|     headers: supabaseJsonHeaders(config, \"read\"),\n    220|   });\n    221|   if (!response.ok) {\n       |                 ^\n    222|     throw new SupabaseProjectSyncError(await response.text(), response…\n    223|   }\n ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:151:20\n ❯ ProjectStore.load src/project/store.ts:258:27\n ❯ test/storePersistence.test.ts:55:5"
+          "block": "TypeError: Cannot read properties of undefined (reading 'ok')\n ❯ loadProjectSnapshotFromLegacyDb src/project/legacyDbProjectSync.ts:221:17\n    219|     headers: legacyDbJsonHeaders(config, \"read\"),\n    220|   });\n    221|   if (!response.ok) {\n       |                 ^\n    222|     throw new LegacyDbProjectSyncError(await response.text(), response…\n    223|   }\n ❯ loadProjectFromLegacyDb src/project/legacyDbProjectSync.ts:151:20\n ❯ ProjectStore.load src/project/store.ts:258:27\n ❯ test/storePersistence.test.ts:55:5"
         }
       ],
       "final_surface_default_reporter": null,
@@ -5648,7 +5648,7 @@
     },
     {
       "file": "test/storePersistence.test.ts",
-      "fullName": "Project store remote persistence does not write to Supabase before the canonical project has loaded",
+      "fullName": "Project store remote persistence does not write to LegacyDb before the canonical project has loaded",
       "occurrence": 1,
       "baseline_first_lines": [
         "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times"
@@ -5688,33 +5688,33 @@
       "fullName": "Project store remote persistence reports why DB persistence is unavailable for local dev showcase projects",
       "occurrence": 1,
       "baseline_first_lines": [
-        "SupabaseProjectSyncError: {"
+        "LegacyDbProjectSyncError: {"
       ],
       "final_first_lines": [
-        "SupabaseProjectSyncError: {"
+        "LegacyDbProjectSyncError: {"
       ],
       "first_lines_equal": true,
       "diagnostic_equal": true,
       "full_messages_equal": true,
       "placeholder": false,
       "baseline_diagnostic": [
-        "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}"
+        "LegacyDbProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}"
       ],
       "final_diagnostic": [
-        "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}"
+        "LegacyDbProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}"
       ],
       "baseline_messages": [
-        "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}\n    at loadProjectSnapshotFromSupabase (<checkout>/src/project/supabaseProjectSync.ts:222:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (<checkout>/src/project/supabaseProjectSync.ts:151:20)\n    at ProjectStore.load (<checkout>/src/project/store.ts:258:27)\n    at <checkout>/test/storePersistence.test.ts:151:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        "LegacyDbProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}\n    at loadProjectSnapshotFromLegacyDb (<checkout>/src/project/legacyDbProjectSync.ts:222:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (<checkout>/src/project/legacyDbProjectSync.ts:151:20)\n    at ProjectStore.load (<checkout>/src/project/store.ts:258:27)\n    at <checkout>/test/storePersistence.test.ts:151:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
       ],
       "final_messages": [
-        "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}\n    at loadProjectSnapshotFromSupabase (<checkout>/src/project/supabaseProjectSync.ts:222:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (<checkout>/src/project/supabaseProjectSync.ts:151:20)\n    at ProjectStore.load (<checkout>/src/project/store.ts:258:27)\n    at <checkout>/test/storePersistence.test.ts:151:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        "LegacyDbProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}\n    at loadProjectSnapshotFromLegacyDb (<checkout>/src/project/legacyDbProjectSync.ts:222:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (<checkout>/src/project/legacyDbProjectSync.ts:151:20)\n    at ProjectStore.load (<checkout>/src/project/store.ts:258:27)\n    at <checkout>/test/storePersistence.test.ts:151:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
       ],
       "baseline_duration_ms": 10811.909314999997,
       "final_duration_ms": 4026.689236000002,
       "baseline_default_reporter": [
         {
-          "diagnostic": "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}",
-          "block": "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}\n ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:222:11\n    220|   });\n    221|   if (!response.ok) {\n    222|     throw new SupabaseProjectSyncError(await response.text(), response…\n       |           ^\n    223|   }\n    224|   const rows = await parseProjectRows(response);\n ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:151:20\n ❯ ProjectStore.load src/project/store.ts:258:27\n ❯ test/storePersistence.test.ts:151:5"
+          "diagnostic": "LegacyDbProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}",
+          "block": "LegacyDbProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}\n ❯ loadProjectSnapshotFromLegacyDb src/project/legacyDbProjectSync.ts:222:11\n    220|   });\n    221|   if (!response.ok) {\n    222|     throw new LegacyDbProjectSyncError(await response.text(), response…\n       |           ^\n    223|   }\n    224|   const rows = await parseProjectRows(response);\n ❯ loadProjectFromLegacyDb src/project/legacyDbProjectSync.ts:151:20\n ❯ ProjectStore.load src/project/store.ts:258:27\n ❯ test/storePersistence.test.ts:151:5"
         }
       ],
       "final_surface_default_reporter": null,
@@ -5722,7 +5722,7 @@
     },
     {
       "file": "test/storePersistence.test.ts",
-      "fullName": "Project store remote persistence saves and reloads local edits for dev showcase projects without Supabase",
+      "fullName": "Project store remote persistence saves and reloads local edits for dev showcase projects without LegacyDb",
       "occurrence": 1,
       "baseline_first_lines": [
         "TypeError: Cannot read properties of undefined (reading 'ok')"
@@ -5741,17 +5741,17 @@
         "TypeError: Cannot read properties of undefined (reading 'ok')"
       ],
       "baseline_messages": [
-        "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromSupabase (<checkout>/src/project/supabaseProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (<checkout>/src/project/supabaseProjectSync.ts:151:20)\n    at ProjectStore.load (<checkout>/src/project/store.ts:258:27)\n    at <checkout>/test/storePersistence.test.ts:119:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromLegacyDb (<checkout>/src/project/legacyDbProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (<checkout>/src/project/legacyDbProjectSync.ts:151:20)\n    at ProjectStore.load (<checkout>/src/project/store.ts:258:27)\n    at <checkout>/test/storePersistence.test.ts:119:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
       ],
       "final_messages": [
-        "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromSupabase (<checkout>/src/project/supabaseProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (<checkout>/src/project/supabaseProjectSync.ts:151:20)\n    at ProjectStore.load (<checkout>/src/project/store.ts:258:27)\n    at <checkout>/test/storePersistence.test.ts:119:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromLegacyDb (<checkout>/src/project/legacyDbProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (<checkout>/src/project/legacyDbProjectSync.ts:151:20)\n    at ProjectStore.load (<checkout>/src/project/store.ts:258:27)\n    at <checkout>/test/storePersistence.test.ts:119:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
       ],
       "baseline_duration_ms": 7664.094218000002,
       "final_duration_ms": 3274.800725000001,
       "baseline_default_reporter": [
         {
           "diagnostic": "TypeError: Cannot read properties of undefined (reading 'ok')",
-          "block": "TypeError: Cannot read properties of undefined (reading 'ok')\n ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:221:17\n    219|     headers: supabaseJsonHeaders(config, \"read\"),\n    220|   });\n    221|   if (!response.ok) {\n       |                 ^\n    222|     throw new SupabaseProjectSyncError(await response.text(), response…\n    223|   }\n ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:151:20\n ❯ ProjectStore.load src/project/store.ts:258:27\n ❯ test/storePersistence.test.ts:119:5"
+          "block": "TypeError: Cannot read properties of undefined (reading 'ok')\n ❯ loadProjectSnapshotFromLegacyDb src/project/legacyDbProjectSync.ts:221:17\n    219|     headers: legacyDbJsonHeaders(config, \"read\"),\n    220|   });\n    221|   if (!response.ok) {\n       |                 ^\n    222|     throw new LegacyDbProjectSyncError(await response.text(), response…\n    223|   }\n ❯ loadProjectFromLegacyDb src/project/legacyDbProjectSync.ts:151:20\n ❯ ProjectStore.load src/project/store.ts:258:27\n ❯ test/storePersistence.test.ts:119:5"
         }
       ],
       "final_surface_default_reporter": null,

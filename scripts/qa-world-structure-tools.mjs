@@ -49,7 +49,7 @@ try {
   });
   await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
   await page.screenshot({ path: `${out}/editor.png` });
-  // Atlas captures use the very same project that was reloaded from Supabase.
+  // Atlas captures use the very same project that was reloaded from LegacyDb.
   const atlas = await page.evaluate(async project => {
     const { drawMapTileLayers, loadTilesetImage } = await import("/src/editor/mapTileDraw.ts");
     const images = [];

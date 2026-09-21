@@ -6,7 +6,7 @@ import { createBlankProject } from "@/project/defaults";
 import { reseedSessionRng } from "@/project/session";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes";
 import { waitForActorCommand } from "./battleReferenceProject";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 import { expect } from "@playwright/test";
 
@@ -33,7 +33,7 @@ test("probe rm2000 command rail + actor node", async ({ page }) => {
   troop.enemyIds = ["enemy_slime"];
   troop.members = [];
   reseedSessionRng(project.session as unknown as PlaySessionLike, 42_001);
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
 
   await page.getByTestId("mode-play").click();
   await startNewGameFromTitle(page);

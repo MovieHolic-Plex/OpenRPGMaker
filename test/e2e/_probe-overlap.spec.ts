@@ -1,13 +1,13 @@
 import { expect, test } from "@playwright/test";
 import { createBlankProject } from "@/project/defaults";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 import { openTestPlayWindow } from "./oprnPlayerStatusMenuHelpers";
 test("probe: what overlaps the footer", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   const p = createBlankProject();
   p.session = { ...p.session, partyActorIds: p.database.actors.slice(0,4).map(a=>a.id) };
-  await seedProjectFromSupabaseCanonical(page, p as never, "/?e2eVitals=1");
+  await seedProjectForEditor(page, p as never, "/?e2eVitals=1");
   await openTestPlayWindow(page);
   await startNewGameFromTitle(page);
   await expect(page.getByTestId("play-stage")).toBeVisible({ timeout: 15000 });

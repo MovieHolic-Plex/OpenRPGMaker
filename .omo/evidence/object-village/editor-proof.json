@@ -2,7 +2,7 @@
   "projectId": "rpg-zzu-house-template-gallery",
   "mapId": "map_lakeside_market_village_20260912",
   "currentMapId": "map_lakeside_market_village_20260912",
-  "source": "real editor URL and Supabase boot load",
+  "source": "real editor URL and LegacyDb boot load",
   "remotePersistenceEnabled": true,
   "housesInLibrary": 30,
   "maps": 15,

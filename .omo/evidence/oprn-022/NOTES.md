@@ -1,7 +1,7 @@
 # OPRN-OUT-022 — Combo Brush: acceptance evidence
 
 Branch `agent/oprn022`, worktree `/home/main/z-project/rpg-zzu-oprn022`, dev port 9855.
-All browser evidence uses `?freshProject=1` with remote persistence disabled — no Supabase
+All browser evidence uses `?freshProject=1` with remote persistence disabled — no LegacyDb
 project row was written (pure editor/engine change, the narrow exception in `AGENTS.md`).
 
 ## Gate commands (exact output)

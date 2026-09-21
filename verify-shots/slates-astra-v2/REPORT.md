@@ -74,7 +74,7 @@ IDs: map `slates_astra_v2_walled_50`, tileset `slates_astra_v2_32`, asset `slate
 | 구조 | partial | 공방 reject 교정, 집/상점 고정 구조 유지. 상점 결 전환·여관 북쪽 끝·얇은 성벽·얕은 아치의 한계 |
 | 구성 | partial | 균일한 띠 폐기, 성격/형태가 다른 구역과 독립 시장 광장. 밀도 28.46%로 제안 미달 |
 | 통행 | partial (로컬 통과) | 47개 목표 연결, 남문 봉쇄 시 외부 누출 0. 실제 엔진 QA 전 |
-| 저장 | partial (감독자 대기) | 작성자는 DB/.env 미접근. Supabase 저장·재로드 성공 주장을 하지 않음 |
+| 저장 | partial (감독자 대기) | 작성자는 DB/.env 미접근. LegacyDb 저장·재로드 성공 주장을 하지 않음 |
 
 ## 입력/쓰기/실행 범위
 
@@ -84,6 +84,6 @@ IDs: map `slates_astra_v2_walled_50`, tileset `slates_astra_v2_32`, asset `slate
 
 수정 범위: `scripts/content/build-slates-astra-v2.mjs`와 `verify-shots/slates-astra-v2/`뿐. 재생성 명령: `node scripts/content/build-slates-astra-v2.mjs`. 전체 산출 파일 목록/해시는 artifacts.json에 있다. 문서의 보류 경고를 해결했다고 덮어쓰지 않았으며, 허용 쓰기 범위 밖의 OpenWiki는 수정하지 않았다.
 
-Supabase 프로젝트 `rpg-zzu-slates32-38e6` 연결·최신 SHA 확인 및 최종 병합·저장·재로드는 감독자 담당이다. 이 산출물은 감독자가 저장할 수 있는 새 독립 번들이며 기존 프로젝트를 수정하지 않았다.
+LegacyDb 프로젝트 `rpg-zzu-slates32-38e6` 연결·최신 SHA 확인 및 최종 병합·저장·재로드는 감독자 담당이다. 이 산출물은 감독자가 저장할 수 있는 새 독립 번들이며 기존 프로젝트를 수정하지 않았다.
 
 타일: Ivan Voirol, CC BY 4.0. 변경: 원본 사각형 선택·분할·순서 조립, 지도 전용 레이어·충돌 저작.

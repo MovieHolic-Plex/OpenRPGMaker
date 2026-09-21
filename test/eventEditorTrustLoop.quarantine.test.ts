@@ -60,9 +60,9 @@ function keyEvent(key: string, options: { ctrlKey?: boolean; metaKey?: boolean; 
 }
 
 beforeEach(() => {
-  vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
-  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
-  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "event-editor-trust-loop");
+  vi.stubEnv("VITE_LEGACY_DB_URL", "http://dbserver:8100");
+  vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-anon-key");
+  vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "event-editor-trust-loop");
   _resetEventDraftVaultForTest();
   document.body.replaceChildren();
   originalStorage = Object.getOwnPropertyDescriptor(globalThis, "localStorage");

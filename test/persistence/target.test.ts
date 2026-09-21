@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { isLocalTarget, isRemoteTarget, projectTargetKey, sameProjectTarget, type LocalProjectTarget, type RemoteProjectTarget } from "@/project/persistence/target";
 
-const remote: RemoteProjectTarget = { url: "https://x.supabase.co", projectId: "p1", anonKey: "k" };
+const remote: RemoteProjectTarget = { url: "https://x.legacyDb.co", projectId: "p1", anonKey: "k" };
 const localA: LocalProjectTarget = { kind: "local", projectDir: "/proj/a", projectId: "a-uuid" };
 const localB: LocalProjectTarget = { kind: "local", projectDir: "/proj/b", projectId: "b-uuid" };
 
@@ -15,7 +15,7 @@ describe("project target union", () => {
 
   it("키는 자격증명 없이 대상을 구분한다", () => {
     expect(projectTargetKey(localA)).toBe("local:/proj/a:a-uuid");
-    expect(projectTargetKey(remote)).toBe("remote:https://x.supabase.co:p1");
+    expect(projectTargetKey(remote)).toBe("remote:https://x.legacyDb.co:p1");
     expect(projectTargetKey(localA)).not.toContain("k");
   });
 

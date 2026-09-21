@@ -8,7 +8,7 @@
 - 근사 대응은 각 행 `note`에 피부·머리·장식·작화 차이를 기록. 검은 고양이에게 개/갈색 고양이 얼굴을 지정하지 않고, 중절모 신사에게 어린이 얼굴을 지정하지 않는다. Actor3 #5 무도가에게 기존 인덱스의 여성 얼굴을 그대로 주지 않는다.
 - PNG는 실제 `applyCharsetFrameCrop`과 원본 낱장 PNG를 사용하는 브라우저 캡처다. AI 이미지 생성이나 자동 유사도 매칭 결과가 아니다.
 - 호스트 저장: `/home/main/.local/share/oprn/character-graphics.json`, 저장 후 재읽기 성공(`host-reload.json`). 이 자료는 프로젝트 폴더·빌드 결과와 독립적이다.
-- Supabase 보관: `rpg_zzu.projects.project_id = oprn-shared-character-graphics`. 새 전용 프로젝트 행을 생성(HTTP 201)하고 재조회하여 168/94/74 및 68/26을 확인했다(`supabase-reload.json`). 편집기의 운영 저장소는 호스트 공용 파일이며 Supabase 행은 이 저작 결과의 원격 보관본이다.
+- LegacyDb 보관: `rpg_zzu.projects.project_id = oprn-shared-character-graphics`. 새 전용 프로젝트 행을 생성(HTTP 201)하고 재조회하여 168/94/74 및 68/26을 확인했다(`legacy-db-reload.json`). 편집기의 운영 저장소는 호스트 공용 파일이며 LegacyDb 행은 이 저작 결과의 원격 보관본이다.
 - 코드 확인: `build:app`, `build:electron` 완료. vitest/게이트는 세션 명시 요청이 없어 실행하지 않았다. 격리된 별도 카탈로그를 사용한 Firefox에서 프로젝트 간 유지, 게임 문서 불변, 충돌 실패 표시·복구 JSON을 관찰했다.
 
 연결된 인물: [Actor](mapped-actor.png), [People](mapped-people.png), [동물](mapped-animal.png), [몬스터](mapped-monster.png).

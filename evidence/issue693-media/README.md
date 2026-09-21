@@ -7,7 +7,7 @@ Chromium (verified with the installed Chrome channel) exposes the complete body.
 The harness therefore keeps native POST/DELETE inspection and adds an optional
 same-origin GET relay (`MEDIA_QA_GET_RELAY=1`) for this workstation's Chromium
 Vite boot cancellations. The relay forwards the actual running server's status,
-headers and bytes, including auth/profile request headers for real Supabase reads.
+headers and bytes, including auth/profile request headers for real LegacyDb reads.
 No fetch instrumentation, authorization metadata binding, correlation token,
 project-payload rewrite, synthetic play response or extra CORS permission ships.
 
@@ -49,7 +49,7 @@ Omit `MEDIA_QA_CHANNEL` to use Playwright's bundled Chromium when installed.
 The media lane did not run the permitted remote command. Production logic is untouched.
 
 Scope: existing showcase persistence and resource-manager audio/video import.
-The patch keeps Supabase as the canonical project/media root and reuses the
+The patch keeps LegacyDb as the canonical project/media root and reuses the
 existing save/reload-verified transaction. No shared remote content was changed.
 
 ## Focused verification

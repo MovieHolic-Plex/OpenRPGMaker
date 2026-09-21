@@ -1,7 +1,7 @@
 # Independent review and applied corrections
 
 Three existing GPT-6 Astra xhigh subagents worked in isolated worktrees; only the root
-agent authors Supabase content. The final gates are run by the root directly.
+agent authors LegacyDb content. The final gates are run by the root directly.
 
 - House review A found that a shuffled round-robin catalog repeated tall houses too
   often. Root changed automatic selection to unique-first, then favor small footprints

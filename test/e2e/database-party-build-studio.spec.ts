@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { createBlankProject } from "@/project/defaults";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 function partyBuildFixture() {
   const project = createBlankProject();
@@ -42,7 +42,7 @@ test("Party Studio follows exact non-first records and keeps broken references i
   const { project, actor, klass, skill, equipment } = partyBuildFixture();
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
-  await seedProjectFromSupabaseCanonical(page, project, "/?freshProject=1");
+  await seedProjectForEditor(page, project, "/?freshProject=1");
   await openActorBuild(page, actor.id);
 
   const modal = page.getByTestId("database-modal");
@@ -86,7 +86,7 @@ test("Party Studio folds to one/two columns without overlap or horizontal overfl
   const { project, actor } = partyBuildFixture();
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
-  await seedProjectFromSupabaseCanonical(page, project, "/?freshProject=1");
+  await seedProjectForEditor(page, project, "/?freshProject=1");
   await openActorBuild(page, actor.id);
   await page.getByTestId("database-dock-toggle").click();
   await expect(page.locator(".database-modal-backdrop.is-docked")).toBeVisible();

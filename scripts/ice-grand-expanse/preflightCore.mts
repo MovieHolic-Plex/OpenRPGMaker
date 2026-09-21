@@ -31,7 +31,7 @@ export type SourceManifestInput = {
   readonly gitHeadOrNull: string | null;
   readonly runId: string;
   readonly startedAt: string;
-  readonly supabaseOriginSha256: string;
+  readonly legacyDbOriginSha256: string;
   readonly targetProjectId: string;
   readonly trackedDiffSha256: string;
   readonly untrackedInventorySha256: string;
@@ -60,11 +60,11 @@ export function parsePreflightArgs(argv: readonly string[]): PreflightArgs {
   return { out: normalized, projectId };
 }
 
-export function normalizeSupabaseOrigin(value: string): string {
+export function normalizeLegacyDbOrigin(value: string): string {
   try {
     return new URL(value).origin.toLowerCase();
   } catch (error) {
-    if (error instanceof TypeError) throw new PreflightError("CONFIG_MISSING", "Supabase URL is invalid");
+    if (error instanceof TypeError) throw new PreflightError("CONFIG_MISSING", "LegacyDb URL is invalid");
     throw error;
   }
 }

@@ -76,8 +76,8 @@ with a 900-second bounded acquisition and distinct exit 75 for lock failure.
 | Six native preservation controls | [Summary](repairs/integration/raw/native-summary.json): proof-failure 60205, required-skip 59937, outcome-matrix 51175, retained-draft-ask 44779, wiki-delivery 60327, new-goal-draft 60295, each exit 0. Embedded-assertion scenarios aren't zero executed checks merely because `contractChecks` is empty. |
 
 Unit/Node/compiler/build commands explicitly set proxy 0 and clear
-`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_SUPABASE_PROJECT_ID`,
-`SUPABASE_ANON_KEY` and `SUPABASE_UPSTREAM_URL`. This isolates independent history
+`VITE_LEGACY_DB_URL`, `VITE_LEGACY_DB_ANON_KEY`, `VITE_LEGACY_DB_PROJECT_ID`,
+`LEGACY_DB_ANON_KEY` and `LEGACY_DB_UPSTREAM_URL`. This isolates independent history
 transport, not just store persistence. Native packets use fresh owned fixtures.
 [Cleanup](repairs/integration/raw/cleanup.json) and the
 [independent absence read](repairs/integration/raw/remote-absence.json) cover eight
@@ -141,7 +141,7 @@ and [publication boundaries](../../../../openwiki/editor-observability.md#p3-own
 These are historical pre-review integration commands, not runs on the repaired
 source or runs performed by either docs node.
 Run from `/home/main/z-project/rpg-zzu-ai-harness-p3-20260907` with Firefox/Xvfb and
-Supabase access for fresh owned fixtures. Recorded ports are historical; a new run
+LegacyDb access for fresh owned fixtures. Recorded ports are historical; a new run
 needs a newly checked free strict port, owned cache child and fresh output directory.
 Don't run the multi-control human race alongside test/build/browser jobs.
 
@@ -187,7 +187,7 @@ unchanged. `VITE_CACHE_DIR` alone isn't Vitest cache isolation.
 
 ```sh
 export TMPDIR=/dev/shm/rpg-zzu-ai-harness-p3-01a07564
-VITE_SUPABASE_USE_PROXY=0 VITE_SUPABASE_URL= VITE_SUPABASE_ANON_KEY= \
+VITE_LEGACY_DB_USE_PROXY=0 VITE_LEGACY_DB_URL= VITE_LEGACY_DB_ANON_KEY= \
 node scripts/run-vitest.mjs run \
   test/aiStaleProposal.test.ts test/aiGateCommitRejection.test.ts \
   test/projectResetTool.test.ts test/audioDescriptionToolStore.test.ts \
@@ -213,7 +213,7 @@ node scripts/run-vitest.mjs run \
   test/aiPanelAutoExpand.test.ts test/aiPanelExpandShrink.test.ts \
   test/aiComposerEffortPanel.test.ts test/clusterAiModal.test.ts \
   test/clusterAiModalHouseProtection.test.ts test/clusterAiModalImageFirst.test.ts \
-  test/clusterAiModalRangeClassify.test.ts test/supabaseProjectSync.test.ts \
+  test/clusterAiModalRangeClassify.test.ts test/legacyDbProjectSync.test.ts \
   --config output/evidence/ai-harness/p3/integration/vitest.config.mjs \
   --configLoader runner --maxWorkers=4 --minWorkers=4 \
   --reporter=verbose --reporter=json \

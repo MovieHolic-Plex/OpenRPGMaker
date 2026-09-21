@@ -63,7 +63,7 @@ A	.omo/evidence/issue-693/final-verification.md
 A	.omo/evidence/issue-693/gate-repairs/README.md
 A	.omo/evidence/issue-693/gate-repairs/disposition.json
 A	.omo/evidence/issue-693/gate-repairs/numeric-native.json
-A	.omo/evidence/issue-693/media-supabase-proof.json
+A	.omo/evidence/issue-693/media-legacy-db-proof.json
 A	.omo/evidence/issue-693/upstream-integration.md
 A	.omo/functional-integration/HANDOFF.md
 A	.omo/functional-integration/combined-red.json
@@ -428,7 +428,7 @@ M	src/project/runtimeEventState.ts
 M	src/project/sessionActorCommands.ts
 A	src/project/storageQuota.ts
 U	src/project/store.ts
-U	src/project/supabaseProjectSync.ts
+U	src/project/legacyDbProjectSync.ts
 M	src/project/types/database.ts
 M	src/project/types/events.ts
 M	src/project/world/index.ts

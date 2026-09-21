@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # Editor Observability — 계측 초크포인트 · 편집 감사 로그 · 오류 트랩
 
 편집기의 mutation 경로를 건드리기 전에, 그리고 "방금 뭘 했더니 이렇게 됐다" 를 사후에 재구성해야 할 때 읽는다.
@@ -481,7 +483,7 @@ npx vitest run test/storeUndoSnapshotInventory.test.ts
 - 하네스(검증·밑그림 NPC): 코드가 이유를 붙인다.
 - 프론트 클릭: `사용자 클릭: <label>` (`recordAiUiEvent`).
 - 편집 행위: `EditActivityEntry.reason` — AI 적용은 툴 reason, 사람 편집은 라벨에서 만든다.
-- 저장: 같은 값이 localStorage + Supabase `payload_json` / `entries_json` / 커밋 첨부 슬라이스에 실립니다. 중간 업서트는 `aiTurnRunner` 의 매 `tool_call`.
+- 저장: 같은 값이 localStorage + LegacyDb `payload_json` / `entries_json` / 커밋 첨부 슬라이스에 실립니다. 중간 업서트는 `aiTurnRunner` 의 매 `tool_call`.
 
 ## 검증
 

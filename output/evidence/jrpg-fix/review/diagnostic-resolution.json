@@ -438,7 +438,7 @@
       ],
       "baseline_default_reporter": {
         "diagnostic": "TypeError: Cannot read properties of undefined (reading 'ok')",
-        "block": "TypeError: Cannot read properties of undefined (reading 'ok')\n ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:221:17\n    219|     headers: supabaseJsonHeaders(config, \"read\"),\n    220|   });\n    221|   if (!response.ok) {\n       |                 ^\n    222|     throw new SupabaseProjectSyncError(await response.text(), response…\n    223|   }\n ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:151:20\n ❯ ProjectStore.load src/project/store.ts:258:27\n ❯ test/storePersistence.test.ts:91:21"
+        "block": "TypeError: Cannot read properties of undefined (reading 'ok')\n ❯ loadProjectSnapshotFromLegacyDb src/project/legacyDbProjectSync.ts:221:17\n    219|     headers: legacyDbJsonHeaders(config, \"read\"),\n    220|   });\n    221|   if (!response.ok) {\n       |                 ^\n    222|     throw new LegacyDbProjectSyncError(await response.text(), response…\n    223|   }\n ❯ loadProjectFromLegacyDb src/project/legacyDbProjectSync.ts:151:20\n ❯ ProjectStore.load src/project/store.ts:258:27\n ❯ test/storePersistence.test.ts:91:21"
       },
       "final_default_reporter": null,
       "same_failure_message_diagnostic": true,

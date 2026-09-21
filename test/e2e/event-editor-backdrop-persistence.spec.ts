@@ -2,7 +2,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { mockupProject } from "./mockupProbeSeeds";
 import { openEventEditor } from "./eventEditorCertEvidence";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-backdrop-persistence";
 
@@ -78,7 +78,7 @@ test("all event-editor button families keep visible background context", async (
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1500, height: 1000 });
   const { project, eventId } = mockupProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await openEventEditor(page, eventId);
 
   const modal = page.getByTestId("event-editor-modal");

@@ -37,5 +37,3 @@ jobs:
       - name: mac:launch and setup:local contracts (no secrets or live database)
         run: npm run test:mac-onboarding
       - run: npm run typecheck:app
-      - name: Existing configuration and same-origin proxy contracts
-        run: npm test -- test/supabaseProjectConfig.test.ts test/supabaseProxyPath.test.ts test/vitePreviewProxy.test.ts

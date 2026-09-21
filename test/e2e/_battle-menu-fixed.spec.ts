@@ -144,7 +144,7 @@ test.describe("turn-based battle command panel is fixed-size and scrollable", ()
     await mkdir(OUT, { recursive: true });
     await page.setViewportSize({ width: 1360, height: 768 });
     await page.emulateMedia({ reducedMotion: "reduce" });
-    // seedProjectFromSupabaseCanonical 은 edit-canvas 를 15초 안에 요구한다. 차가운 dev 서버는
+    // seedProjectForEditor 은 edit-canvas 를 15초 안에 요구한다. 차가운 dev 서버는
     // 모듈 변환에 그보다 오래 걸려 시드가 타이밍 운에 걸린다. 먼저 한 번 띄워 변환을 데운다.
     // 부하가 높은 머신에서는 첫 부팅이 통째로 실패하기도 해서(실측: 3회 중 2회) 재시도로 감싼다.
     let booted = false;

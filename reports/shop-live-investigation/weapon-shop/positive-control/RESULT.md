@@ -2,7 +2,7 @@
 
 PASS: actual canonical equipment displays its comparison in the existing shop.
 
-- Project `oprn-e98456e1d8`, `용사의 여정`; same unmodified Supabase-loaded snapshot as the preceding consumable-stock reproduction. A fresh isolated Firefox context was used because the earlier owned context had already been closed.
+- Project `oprn-e98456e1d8`, `용사의 여정`; same unmodified LegacyDb-loaded snapshot as the preceding consumable-stock reproduction. A fresh isolated Firefox context was used because the earlier owned context had already been closed.
 - Shipping URL: http://127.0.0.1:9841/export-player/player.html
 - Open runtime menu with Escape -> keyboard select Equipment -> hero -> Weapon -> Unequip -> Enter. No inventory/debug grant and no project save.
 - Unequip preview shows attack **53 -> 45 (-8)** (`03-weapon-unequip-choice.png`).

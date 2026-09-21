@@ -2,8 +2,8 @@ import { expect, type Page, type TestInfo } from "@playwright/test";
 import { bootEditor, historySettled } from "./aiMapHistoryHarness";
 
 // Run against a fixture-only Vite server (no .env.local/live credentials needed):
-// VITE_SUPABASE_URL=https://history.invalid VITE_SUPABASE_ANON_KEY=fixture-only \
-// VITE_SUPABASE_PROJECT_ID=history-startup-fixture VITE_SUPABASE_USE_PROXY=false \
+// VITE_LEGACY_DB_URL=https://history.invalid VITE_LEGACY_DB_ANON_KEY=fixture-only \
+// VITE_LEGACY_DB_PROJECT_ID=history-startup-fixture VITE_LEGACY_DB_USE_PROXY=false \
 // DEV_SERVER_PORT=<isolated-port> E2E_RETRIES=0 npx playwright test test/e2e/ai-map-history.spec.ts --grep 'startup catalog'
 // Controls, panel ownership, archive queries and Chromium IndexedDB are production code.
 // Only transport and delivery of one already-completed native read transaction are gated.

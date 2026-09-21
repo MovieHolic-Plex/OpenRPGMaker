@@ -66,7 +66,7 @@ All matrix shots: DPR 1, chromium headless, full-viewport PNG, hard navigation +
 | task-11-coach.png | coach card | — | Beginner `rpg-zzu:coachmarks-basic-v1` cleared | after | 2026-08-19 |
 | task-11-entry-cohesion.png | 3-up cohesion | — | welcome/recovery/editor | after | 2026-08-19 |
 | task-11-pre-recovery-dbrequired.png | recovery before | — | `/` | before | 2026-08-19 |
-| task-11-pre-recovery-loadfailure.png | recovery before | — | seeded supabase config + rest 401 | before | 2026-08-19 |
+| task-11-pre-recovery-loadfailure.png | recovery before | — | seeded legacyDb config + rest 401 | before | 2026-08-19 |
 | task-11-recipe.txt | recovery recipes | — | both variants | after | 2026-08-19 |
 | task-11-recovery-dbrequired.png | recovery after | — | `/` | after | 2026-08-19 |
 | task-11-recovery-loadfailure.png | recovery after | — | seeded config | after | 2026-08-19 |

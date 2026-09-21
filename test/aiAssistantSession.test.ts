@@ -14,23 +14,23 @@ import { getTool } from "@/editor/tools";
 import * as applyStore from "@/editor/tools/applyChangesetToStore";
 
 const MILESTONE_TEST_ENV = {
-  VITE_SUPABASE_ANON_KEY: "test-anon-key",
-  VITE_SUPABASE_PROJECT_ID: "rpg-zzu-test-project",
-  VITE_SUPABASE_URL: "http://dbserver:8100",
+  VITE_LEGACY_DB_ANON_KEY: "test-anon-key",
+  VITE_LEGACY_DB_PROJECT_ID: "rpg-zzu-test-project",
+  VITE_LEGACY_DB_URL: "http://dbserver:8100",
 } as const;
 
-function stubSupabaseEnv(): void {
-  vi.stubEnv("VITE_SUPABASE_ANON_KEY", MILESTONE_TEST_ENV.VITE_SUPABASE_ANON_KEY);
-  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", MILESTONE_TEST_ENV.VITE_SUPABASE_PROJECT_ID);
-  vi.stubEnv("VITE_SUPABASE_URL", MILESTONE_TEST_ENV.VITE_SUPABASE_URL);
+function stubLegacyDbEnv(): void {
+  vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", MILESTONE_TEST_ENV.VITE_LEGACY_DB_ANON_KEY);
+  vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", MILESTONE_TEST_ENV.VITE_LEGACY_DB_PROJECT_ID);
+  vi.stubEnv("VITE_LEGACY_DB_URL", MILESTONE_TEST_ENV.VITE_LEGACY_DB_URL);
 }
 
 /**
- * 마일스톤 자동 적용이 실제 Supabase를 건드리지 않도록 헤르메틱 환경을 설치한다.
+ * 마일스톤 자동 적용이 실제 LegacyDb를 건드리지 않도록 헤르메틱 환경을 설치한다.
  * 자율 런 테스트는 독립 검수 후 배치 자동 적용 경로를 타므로 필수다.
  */
 function installMilestoneHermeticEnv(project: Project): void {
-  stubSupabaseEnv();
+  stubLegacyDbEnv();
   vi.stubGlobal("fetch", (async () => new Response(null, { status: 201 })) satisfies typeof fetch);
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   store.replace(project);
@@ -132,7 +132,7 @@ describe("자율 실행 드라이버", () => {
       if (index >= steps.length) exhausted();
       return steps[index++]!;
     };
-    // 검수된 자율 배치만 적용되며 실제 Supabase 대신 세션·store를 같은 fixture로 초기화한다.
+    // 검수된 자율 배치만 적용되며 실제 LegacyDb 대신 세션·store를 같은 fixture로 초기화한다.
     const project = createBlankProject();
     installMilestoneHermeticEnv(project);
     const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: ORCH_AUTO, chat });
@@ -558,7 +558,7 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
   it("(a) 자율 런의 마일스톤은 독립 검수 후 한 배치로 적용된다 — undo 스냅샷 1개 + 커밋 row 1개", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const commitCalls: string[] = [];
-    stubSupabaseEnv();
+    stubLegacyDbEnv();
     vi.stubGlobal("fetch", (async (input) => {
       const url = String(input);
       commitCalls.push(url);
@@ -1168,7 +1168,7 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     installMilestoneHermeticEnv(project);
-    const receipt = { revisionId: "accepted-revision", projectId: MILESTONE_TEST_ENV.VITE_SUPABASE_PROJECT_ID,
+    const receipt = { revisionId: "accepted-revision", projectId: MILESTONE_TEST_ENV.VITE_LEGACY_DB_PROJECT_ID,
       mutationGeneration: 3, contentIdentity: "normalized-content", sha256: "sha-abc123" };
     const flushSpy = vi.spyOn(store, "flush").mockResolvedValue({ kind: "saved", receipt });
     const reloadSpy = vi.spyOn(store, "reloadFromRemote");

@@ -125,7 +125,7 @@ export function addDatabaseRecord(collection: DatabaseCollection): string {
 }
 
 /**
- * Existing Supabase projects intentionally do not receive defaults during load. This explicit action is the
+ * Existing project storage projects intentionally do not receive defaults during load. This explicit action is the
  * non-destructive upgrade path: missing generated records are added, the three legacy aliases are upgraded when
  * they still point at old art, and only the known starter actor/class/skill/item ids receive curated bindings.
  */

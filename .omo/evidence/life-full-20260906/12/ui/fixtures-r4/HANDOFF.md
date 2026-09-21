@@ -7,7 +7,7 @@ The existing 14 code/test and 3 wiki changes remain intact and uncommitted.
 
 ## Immutable fresh inputs
 
-| Input | New owned Supabase project ID | Serialized remote reload |
+| Input | New owned LegacyDb project ID | Serialized remote reload |
 |---|---|---|
 | Decoration arena | `rpg-zzu-life-full-p4-t12-arena-st-01a07ba6` | `arena.reloaded.json` |
 | Stationary last exit | `rpg-zzu-life-full-p4-t12-last-exit-st-01a07ba6` | `lastExit.reloaded.json` |
@@ -113,7 +113,7 @@ refuses an existing remote ID; never reauthor these inputs after native setup.
 | Execution | Exit | Evidence |
 |---|---:|---|
 | DB connection and both IDs absent, BEFORE authoring | 0 | connection.* / connection-proof.json |
-| Public saveProjectToSupabase + loadProjectFromSupabase | 0 | author.* / *.save-receipt.json / *.reload-receipt.json |
+| Public saveProjectToLegacyDb + loadProjectFromLegacyDb | 0 | author.* / *.save-receipt.json / *.reload-receipt.json |
 | Initial model probe | 1 | probe.stderr / fixture.initial-probe.mts |
 | Corrected model probe | 0 | probe-final.* |
 | Initial configured owned-file diagnostics | 1 | diagnostics.stdout |

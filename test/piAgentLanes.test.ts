@@ -59,9 +59,9 @@ function fakeRunner(edit: (project: Project) => void, events: PiAgentEvent[] = [
 }
 
 function armStore(project: Project): void {
-  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "");
-  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "");
-  vi.stubEnv("VITE_SUPABASE_URL", "");
+  vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "");
+  vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "");
+  vi.stubEnv("VITE_LEGACY_DB_URL", "");
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   store.replaceProject(project);
   resetMapEditHistory();

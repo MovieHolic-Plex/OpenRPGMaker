@@ -201,7 +201,7 @@
     "completedAt": "2026-09-08T18:08:12.304Z"
   },
   "savedWireCanonicalSha256": "eea8c28d1e2af25f26867170e0c6ff83c8be0a694203b2e3c1cfd05c440a189f",
-  "persistencePath": "saveProjectToSupabase -> projects upsert -> maps/tilesets mirrors",
+  "persistencePath": "saveProjectToLegacyDb -> projects upsert -> maps/tilesets mirrors",
   "passed": true,
   "finishedAt": "2026-09-08T18:08:12.432Z",
   "exitCode": 0

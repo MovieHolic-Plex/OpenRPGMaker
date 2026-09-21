@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { openEventEditor } from "./eventEditorCertEvidence";
 import { findShadowedPages, findUnwrittenSelfSwitchGates } from "@/project/eventPageShadow";
 import { projectLint } from "@/project/lint/projectLint";
@@ -65,7 +65,7 @@ for (const label of ["before", "after-gated"] as const) {
     });
 
     await page.setViewportSize({ width: 1600, height: 1000 });
-    await seedProjectFromSupabaseCanonical(page, project);
+    await seedProjectForEditor(page, project);
     await waitForCanvasReady(page);
     await page.screenshot({ path: `${SHOT_DIR}/${label}-01-editor-map.png` });
 

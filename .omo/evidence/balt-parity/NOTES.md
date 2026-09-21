@@ -189,11 +189,11 @@ stack with `git stash store` (labelled with the reason). Remaining baselines wer
 
 ## 7. Blockers
 
-None. No authored map/event content and no Supabase persistence is involved — this is editor-engine
+None. No authored map/event content and no LegacyDb persistence is involved — this is editor-engine
 code with local-only QA fixtures. One note for whoever runs the QA script: the dev server reads the
-main repo's `.env.local` through the node_modules junction, whose Supabase host makes
+main repo's `.env.local` through the node_modules junction, whose LegacyDb host makes
 `store.load()` take the remote branch and leave `remotePersistenceEnabled === true`. Blanking the
-three `VITE_SUPABASE_*` values in the worktree's own (gitignored) `.env.local` for the run makes it
+three `VITE_LEGACY_DB_*` values in the worktree's own (gitignored) `.env.local` for the run makes it
 deterministic; I restored the file afterwards. Also: an HMR update to
 `clusterRulePlacement.ts`/`clusterRuleValidators.ts` leaves the *next* page load unable to enter the
 dev session, so restart the dev server between source edits and QA runs.

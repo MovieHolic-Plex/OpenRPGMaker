@@ -33,8 +33,8 @@ Both runs used the same command inside the shared asynchronous authoring monitor
 
 ```sh
 flock /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock \
-  timeout 120s env VITE_SUPABASE_URL= VITE_SUPABASE_ANON_KEY= \
-  VITE_SUPABASE_PROJECT_ID= SUPABASE_UPSTREAM_URL= SUPABASE_ANON_KEY= \
+  timeout 120s env VITE_LEGACY_DB_URL= VITE_LEGACY_DB_ANON_KEY= \
+  VITE_LEGACY_DB_PROJECT_ID= LEGACY_DB_UPSTREAM_URL= LEGACY_DB_ANON_KEY= \
   npm test -- test/spatialLegacyPathIdentity.test.ts \
   --maxWorkers=1 --no-file-parallelism --silent=false
 ```

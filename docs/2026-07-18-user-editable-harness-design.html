@@ -359,7 +359,7 @@ docs/2026-07-18-castle-grammar.html(캔버스 역공학 실증) · 오토타일 
 <li><b>불변식 강제:</b> 킷 편집기는 member=variantMap급 위반을 만들 수 없는 입력만 노출(행 단위 편집, preserveLower가 스키마 기본값 true). 린트 통과가 저장 게이트.</li>
 <li><b>영향 미리보기:</b> 킷/규칙 변경 시 "이 킷을 쓴 기존 맵 N개" 목록 + 대표 1곳 전/후 렌더. 소급 재시공은 하지 않는다 — 맵은 데이터, 킷은 다음 시공부터.</li>
 <li><b>버전과 출처:</b> 킷 레코드에 <code>version</code>·<code>learnedFrom</code>·수정 이력. 캔버스 재학습은 새 버전 제안으로(덮어쓰기 아님).</li>
-<li><b>멀티 에디터:</b> 킷/규칙도 프로젝트 저장 경로에 실림 — 기존 Supabase 충돌 병합 규약을 그대로 탄다. AI 어시스턴트의 킷 수정은 반드시 소프트 컨펌 경유(직접 쓰기 금지 — propose_tile_vocabulary를 LLM 비노출로 강등했던 것과 같은 원칙).</li>
+<li><b>멀티 에디터:</b> 킷/규칙도 프로젝트 저장 경로에 실림 — 기존 LegacyDb 충돌 병합 규약을 그대로 탄다. AI 어시스턴트의 킷 수정은 반드시 소프트 컨펌 경유(직접 쓰기 금지 — propose_tile_vocabulary를 LLM 비노출로 강등했던 것과 같은 원칙).</li>
 </ol>
 </section>
 
