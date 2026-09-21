@@ -1,3 +1,4 @@
+import { appendBattleReport } from "@/project/battleReports";
 import type { BattleResult, BattleRuntime } from "@/battle/runtime";
 import { BattleAdmissionError } from "@/project/battleAdmission";
 import { createBattleRuntime } from "@/battle/runtime";
@@ -95,6 +96,7 @@ export async function playBattle(
         classOverrides: scene.session.classOverrides,
         growthProgress: scene.session.growthProgress,
         promotionLineage: scene.session.promotionLineage,
+        rows: scene.session.actorRows,
         stateIds: scene.session.actorStateIds,
         partyActorIds: scene.session.partyActorIds,
         monsterParty: monsterPartyMode ? partyMonsters : undefined,
@@ -270,6 +272,7 @@ export async function playBattle(
                 if (!terminalDefeat && scene.runtimeTimers) {
                   applyBattleTimerWrites({ session, runtimeTimers: scene.runtimeTimers }, snapshot.eventState);
                 }
+                appendBattleReport(session, project, snapshot, result);
                 if (result === "victory") maybeAutosave(project, session, "battleVictory");
                 settled = true;
                 cleanup();

@@ -17,6 +17,7 @@ import {
   type IntentNoteTargetMap,
   type IntentSelectionFact,
 } from "@/ai/intentDeclaration";
+import type { Project } from "@/project/types";
 import type { PiAgentThinkingLevel } from "./protocol";
 
 export { DEFAULT_PI_APPLY, type PiApplyMode } from "./applyMode";
@@ -67,6 +68,7 @@ export interface PiIntentNoteTargetMap extends IntentNoteTargetMap {
 /** 선언 → Pi 본문 노트 재료. 전부 코드가 아는 값이다. */
 export interface PiIntentNoteInput {
   readonly intent: IntentDeclaration;
+  readonly project?: Pick<Project, "defaultVillagePresetId" | "villagePresets">;
   /** 선언이 가리킨 맵, 없으면 지금 열린 맵. 시공 규모 노트가 «키워라/충분하다» 를 이 크기로 판단한다. */
   readonly targetMap: PiIntentNoteTargetMap | null;
   /** 사용자의 선택 사각형. 있으면 «그 안에서» 경계와 author_village target 을 못박는다. */
@@ -86,7 +88,10 @@ export interface PiIntentNoteInput {
  * 첫 문장에 밝혀라» 가 정직한 지시다.
  */
 export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
-  const intentNote = formatIntentNote(input.intent, { clarifyBypassed: true, targetMap: input.targetMap });
+  const preset = defaultVillageDesign(input);
+  // Generic scale advice must not override a saved design or resize before its validation.
+  const noteIntent = preset ? { ...input.intent, construction: undefined } : input.intent;
+  const intentNote = formatIntentNote(noteIntent, { clarifyBypassed: true, targetMap: input.targetMap });
   const villageNote = formatPiVillageNote(input);
   const scopeNote = input.selection
     ? formatScopeNote({ mapId: input.selection.mapId, region: input.selection }, input.intent)
@@ -112,15 +117,23 @@ export function composePiTask(task: string, intentNote: string | null | undefine
  * 16턴을 다 쓰고 집 2채로 끝났다. 도구 계층은 이미 다 준비돼 있다 — 빈 기존 맵은 bounds 없이 전체 시공되고
  * 집 수에 필요한 크기로 스스로 넓힌다(authorVillageToolDef). 여기서는 그 사실을 모델에게 말로 전할 뿐이다.
  *
- * 새 맵(kind:"new")을 권하지 않는다: 평문 채팅의 범위는 지금 맵 하나(mapIds:[currentMapId])라서 최상위에
- * 새로 달린 맵은 mergeMapBundles 가 범위 밖으로 버린다(authorVillageSupport 는 새 마을 맵을 루트의 자식으로
- * 단다). 그러니 «내용이 있는 맵» 에서는 빈 땅 bounds 아니면 사용자에게 돌려보내는 것이 정직하다.
+ * 평문 채팅은 현재 맵을 기본 대상으로 삼지만 scopeStrict=false여서 필요하면 새 맵을 만들 수 있다.
+ * DB 기본 설계서가 있으면 일반 규모 기본값보다 설계서 계약을 우선한다.
  */
+function defaultVillageDesign(input: PiIntentNoteInput) {
+  if (!input.intent.tools.includes("author_village")) return undefined;
+  const preset = input.project?.villagePresets?.find(p => p.id === input.project?.defaultVillagePresetId);
+  return preset?.design ? preset : undefined;
+}
+
 function formatPiVillageNote(input: PiIntentNoteInput): string | null {
   const { intent, targetMap, selection } = input;
   if (intent.source !== "llm" || intent.mode === "question" || !intent.tools.includes("author_village")) return null;
-  const size = estimateVillageSize(intent.construction);
+  const preset = defaultVillageDesign(input);
   const declaredCount = intent.construction?.houseCount;
+  const size = estimateVillageSize(preset
+    ? { houseCount: declaredCount ?? preset.houseCount ?? preset.design!.houseCount.min }
+    : intent.construction);
   const lines = [
     "[마을 시공] 선언이 author_village 를 골랐다. 집 한 채가 아니라 마을이므로 author_house 를 채마다 부르지 말고 "
       + "author_village 한 호출로 짓는다 — 집·길·나무·호수·광장·마당을 설계서 순서(집 → 길 → 나무 → 호수·마당)로 코드가 시공한다. "
@@ -143,9 +156,17 @@ function formatPiVillageNote(input: PiIntentNoteInput): string | null {
         + "fullMap:true 는 기존 내용을 지우므로 사용자가 «전부 다시» 라고 했을 때만. 빈 땅도 없고 그런 지시도 없으면 새 맵(target:{kind:\"new\"})을 만들어 거기에 짓고 무엇을 했는지 보고한다.",
     );
   } else {
-    lines.push(`대상 맵이 없다 → target:{kind:"new", width:${size.width}, height:${size.height}}.`);
+    lines.push(preset
+      ? '대상 맵이 없다 → target:{kind:"new", mapId, name}. width/height는 생략해 선택 설계서와 건물 크기로 계산하게 한다.'
+      : `대상 맵이 없다 → target:{kind:"new", mapId, name, width:${size.width}, height:${size.height}}.`);
   }
-  lines.push(
+  if (preset) {
+    lines.push(`기본 마을 설계서 ${JSON.stringify(preset.id)}를 사용한다. 고정값은 생략해 도구가 설계서에서 채우게 한다. `
+      + (declaredCount === undefined ? "houseCount는 생략한다(12채 등 코드 기본값을 넣지 않는다). " : `사용자가 명시한 houseCount:${declaredCount}를 유지하고 설계서와 충돌하면 차이를 보고한다. `)
+      + (intent.construction?.npcCount === undefined ? "" : `사용자가 명시한 npcCount:${intent.construction.npcCount}도 유지한다. `)
+      + "forestDensity는 고정 자연 설정이면 생략한다. 특히 숲 없음이면 지정하지 않는다. 자유 설정에서만 요청을 반영한다. "
+      + "countPolicy:\"best-effort\". village-design-conflict는 설계서를 몰래 바꾸거나 우회하지 말고 보고한다. 끝나면 evaluate_village_look으로 확인한다.");
+  } else lines.push(
     `houseCount:${size.houseCount}${declaredCount === undefined ? "(수량 선언이 없어 코드 기본값)" : ""}, countPolicy:"best-effort", forestDensity 는 반드시 넣는다. `
       + "끝나면 evaluate_village_look 한 번으로 확인하고 보고한다.",
   );

@@ -1,0 +1,72 @@
+{
+  "reviewer": "gpt-6-astra",
+  "inspection": "All 11 sprites viewed individually on review-1/2/3 and retry comparison sheets",
+  "results": {
+    "garden-arch": {
+      "status": "PASS",
+      "scope": "processing-regression-review",
+      "method": "dominant24"
+    },
+    "hanging-lantern": {
+      "status": "PASS",
+      "scope": "processing-regression-review",
+      "method": "dominant24"
+    },
+    "fishing-basket": {
+      "status": "PASS",
+      "scope": "processing-regression-review",
+      "method": "dominant24"
+    },
+    "stone-step": {
+      "status": "PASS",
+      "scope": "processing-regression-review",
+      "method": "dominant24"
+    },
+    "scarecrow": {
+      "status": "PASS",
+      "scope": "processing-regression-review",
+      "method": "nearest24"
+    },
+    "seed-sack": {
+      "status": "PASS",
+      "scope": "processing-regression-review",
+      "method": "dominant24"
+    },
+    "stone-lantern": {
+      "status": "PASS",
+      "scope": "processing-regression-review",
+      "method": "dominant24"
+    },
+    "birdhouse": {
+      "status": "PASS",
+      "scope": "processing-regression-review",
+      "method": "native20"
+    },
+    "herb-planter-v2": {
+      "status": "PASS",
+      "scope": "processing-regression-review",
+      "method": "dominant24"
+    },
+    "fruit-basket": {
+      "status": "PASS",
+      "scope": "processing-regression-review",
+      "method": "nearest24"
+    },
+    "stone-well-low": {
+      "status": "PASS",
+      "scope": "processing-regression-review",
+      "method": "dominant24"
+    }
+  },
+  "rejectedCandidate": "clay-oven",
+  "initialHolds": [
+    "scarecrow",
+    "birdhouse",
+    "fruit-basket"
+  ],
+  "notes": {
+    "birdhouse": "Existing native source; alpha geometry identical, RGB change 7 pixels; only palette cleanup.",
+    "scarecrow": "Nearest24 recovers face/shirt distinction.",
+    "fruit-basket": "Nearest24 recovers separate fruit boundaries."
+  }
+}

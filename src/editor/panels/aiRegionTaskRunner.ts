@@ -204,7 +204,7 @@ export function createAiRegionTaskRunner(deps: AiRegionTaskRunnerDeps): AiRegion
         return;
       }
       if (event.type === "tool_call") {
-        deps.surface.completeLiveActivity(event.name, event.result, event.args);
+        deps.surface.completeLiveActivity(event.name, event.result, event.args, event.visuals);
         recordRegionAudit({
           kind: "tool",
           name: event.name,

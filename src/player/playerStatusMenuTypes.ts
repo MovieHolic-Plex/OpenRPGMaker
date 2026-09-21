@@ -1,3 +1,4 @@
+import type { InventoryView } from '@/player/playerInventoryView';
 import type { GrowthMenuTab, GrowthMenuMutation } from "@/player/playerGrowthMenu";
 import type { PlaySession } from "@/project/session";
 import type { ActorInitialEquipment, Project } from "@/project/types";
@@ -6,6 +7,8 @@ import type { StatusMenuCommandId, StatusMenuGroupEntryId, StatusMenuRailId } fr
 import type { LifeLedgerTabId } from "@/player/lifeLedger";
 
 export type PlayerStatusMenuActions = {
+  readonly onInventoryViewChange?: (view: InventoryView) => void;
+  readonly onOptionsChanged?: (message?: string) => void;
   readonly onCommand: (commandId: StatusMenuCommandId) => void;
   /** 접힌 그룹(기록/시스템)을 작업 영역에 펼친다. */
   readonly onOpenGroup: (entryId: StatusMenuGroupEntryId) => void;
@@ -21,6 +24,7 @@ export type PlayerStatusMenuActions = {
   readonly onSelectEquipmentSlot: (actorId: string, slotId: keyof ActorInitialEquipment) => void;
   readonly onEquipItem: (actorId: string, slotId: keyof ActorInitialEquipment, equipmentId: string) => void;
   readonly onUnequipItem: (actorId: string, slotId: keyof ActorInitialEquipment) => void;
+  readonly onSelectBattleReport?: (index: number | undefined) => void;
   readonly onToggleRow: (actorId: string) => void;
   readonly onSelectFormationActor: (actorId: string) => void;
   readonly onMoveFormationActor: (actorId: string, targetIndex: number) => void;
@@ -43,6 +47,7 @@ export type PlayerStatusMenuOptions = {
   readonly selectedCommand?: StatusMenuRailId;
   readonly mode?: "main" | "function";
   readonly selectedDetailActionIndex?: number;
+  readonly inventoryView?: InventoryView;
   readonly targetItemId?: string;
   readonly skillActorId?: string;
   readonly selectedSkillId?: string;
@@ -50,6 +55,7 @@ export type PlayerStatusMenuOptions = {
   readonly equipmentActorId?: string;
   readonly equipmentSlotId?: keyof ActorInitialEquipment;
   readonly formationActorId?: string;
+  readonly battleReportIndex?: number;
   readonly monsterView?: "party" | "box";
   readonly lifeLedgerTab?: LifeLedgerTabId;
   readonly readLive?: import("@/project/spatialOccupancy").SpatialLiveContextReader;

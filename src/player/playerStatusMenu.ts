@@ -72,6 +72,9 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     selectedCommand,
     slots: options.slots,
     waitModeEnabled,
+    inventoryView: options.inventoryView,
+    onInventoryViewChange: options.actions.onInventoryViewChange,
+    onOptionsChanged: options.actions.onOptionsChanged,
     targetItemId: options.targetItemId,
     skillActorId: options.skillActorId,
     selectedSkillId: options.selectedSkillId,
@@ -81,6 +84,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     equipmentActorId: options.equipmentActorId,
     equipmentSlotId: options.equipmentSlotId,
     formationActorId: options.formationActorId,
+    battleReportIndex: options.battleReportIndex,
+    onSelectBattleReport: options.actions.onSelectBattleReport,
     monsterView: options.monsterView,
     lifeLedgerTab: options.lifeLedgerTab,
     confirmSaveSlot: options.confirmSaveSlot,
@@ -119,14 +124,14 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   // 사이드 파티(스킨 옵션)는 작업 패널에서만 — 트레이·확인 카드·대상 선택은 파티 정보를 따로 갖거나 필요 없다.
   // Effects, equipment comparisons and tabbed pages need the full detail layout.
   // Never hide decision-making information to make room for a second party view.
-  const needsFullDetail = Boolean(detail.tabs?.length) || detail.entries.some((entry) => entry.statDelta || entry.facts?.length);
+  const needsFullDetail = selectedCommand === "options" || selectedCommand === "items" || Boolean(detail.tabs?.length) || detail.entries.some((entry) => entry.statDelta || entry.facts?.length);
   const sideParty = skin.sideParty && !needsFullDetail && mode === "function" && presentation === "work-panel" && !options.targetItemId
     ? renderSidePartyMini(options.project, snapshot)
     : undefined;
   const detailPanel = renderStatusMenuDetailPanel(options.project, detail, {
     selectedActionIndex: options.selectedDetailActionIndex,
     // 쇼케이스는 작업 패널에서만 — 트레이·확인 카드는 명령 버튼 목록이라 그릴 그림이 없다.
-    showcase: !options.targetItemId && presentation === "work-panel",
+    showcase: selectedCommand !== "options" && !options.targetItemId && presentation === "work-panel",
     side: sideParty,
   });
   detailPanel.dataset.statusMenuPresentation = presentation;
@@ -173,8 +178,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       mode,
       options.message ?? (mode === "function"
         ? selectedEntryDescription(detail, options.selectedDetailActionIndex) ?? interactiveHint(detail)
-        : undefined),
-      skin.railColumns
+        : selectedCommand === "items" ? "목록 끝에서 분류·정렬 변경 (본문에서 ↑ 두 번)" : undefined),
+      skin.railColumns, skin.id === "field-list"
     )
   );
   panel.append(statusMenuDebug(selectedCommand, mode));
@@ -268,11 +273,13 @@ function statusMenuCommandIcon(commandId: StatusMenuRailId): string {
     case "equipment": return "◈";
     case "party-menu": return "●●";
     case "record-menu": return "▤";
+    case "options":
     case "system-menu": return "⚙";
     case "status": return "○";
     case "row": return "↔";
     case "formation": return "◆";
     case "monsters": return "♢";
+    case "battle-reports": return "▤";
     case "quests": return "✓";
     case "relationships": return "∞";
     case "life-ledger": return "▦";
@@ -293,11 +300,13 @@ function statusMenuCommandIconName(commandId: StatusMenuRailId): string {
     case "equipment": return "sword";
     case "party-menu": return "cross";
     case "record-menu": return "map";
+    case "options":
     case "system-menu": return "gear";
     case "status": return "cross";
     case "row": return "next";
     case "formation": return "shield";
     case "monsters": return "shard";
+    case "battle-reports": return "book-magic";
     case "quests": return "map";
     case "relationships": return "world";
     case "life-ledger": return "book-magic";
@@ -322,6 +331,7 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     case "to-title":
       actions.onToTitle();
       return;
+    case "options":
     case "items":
     case "skills":
     case "equipment":
@@ -331,6 +341,7 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     case "status":
     case "row":
     case "formation":
+    case "battle-reports":
     case "quests":
     case "relationships":
     case "life-ledger":
@@ -632,7 +643,7 @@ function interactiveHint(detail: StatusMenuDetail): string | undefined {
 function renderFooter(
   mode: "main" | "function",
   message: string | undefined,
-  railColumns: number
+  railColumns: number, compact = false
 ): HTMLElement {
   const footer = el("footer", { class: "status-menu-footer" });
   footer.append(el("div", {
@@ -643,13 +654,14 @@ function renderFooter(
   }));
   footer.append(el("span", {
     class: "status-menu-controls",
-    text: statusMenuControls(mode, railColumns),
+    text: statusMenuControls(mode, railColumns, compact),
     dataset: { testid: "status-menu-controls" },
   }));
   return footer;
 }
 
-export function statusMenuControls(mode: "main" | "function", railColumns = 1): string {
+export function statusMenuControls(mode: "main" | "function", railColumns = 1, compact = false): string {
+  if (compact && mode === "main") return "↑↓ 이동 · Enter 선택\nEsc 닫기";
   if (mode === "function") return "↑↓ 항목 이동   Enter 결정   ← 메뉴   Esc 뒤로";
   // 격자 레일(허브 타일)은 → 가 선택이 아니라 이동이다.
   return railColumns > 1 ? "↑↓←→ 이동   Enter 선택   Esc 게임으로" : "↑↓ 메뉴 이동   → / Enter 선택   Esc 게임으로";

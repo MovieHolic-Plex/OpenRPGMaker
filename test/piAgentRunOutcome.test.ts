@@ -5,6 +5,7 @@ vi.mock("@/editor/panels/aiActivitySave", () => ({ observeActivitySave: vi.fn() 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const h = vi.hoisted(() => ({
+  villageIssues: [] as string[],
   planError: false,
   harmony: true,
   verdicts: [] as boolean[],
@@ -14,7 +15,7 @@ const h = vi.hoisted(() => ({
   applyCalls: 0,
   harmonyError: false,
   requests: [] as Record<string, unknown>[],
-  results: [] as { project: unknown; toolCalls?: number; toolErrors?: number }[],
+  results: [] as { project: unknown; toolCalls?: number; toolErrors?: number; villageCompletion?: { mapIds: string[]; issues: string[] } }[],
   errorEvents: [] as string[],
   assistantTexts: [] as string[],
   outcomes: [] as (Record<string, unknown> | null)[], // 호출 순서 보존
@@ -61,7 +62,7 @@ vi.mock("@/ai/piAgent/client", () => ({
     }
     for (const text of h.assistantTexts.splice(0)) options?.onEvent?.({ type: "assistant", text });
     const done = {
-      type: "done", project: next.project,
+      type: "done", project: next.project, villageCompletion: next.villageCompletion,
       stats: { ms: 1, turns: 1, toolCalls: next.toolCalls ?? 1, toolErrors: next.toolErrors ?? 0 },
       changedKeys: [],
     };
@@ -104,6 +105,10 @@ vi.mock("@/editor/tools/applyChangesetToStore", () => ({
   applyProposedProject: async () => { h.applyCalls += 1; return { ok: true }; },
 }));
 
+vi.mock("@/ai/piAgent/villageCompletion", () => ({
+  inspectPiVillageCompletion: (_project: unknown, _base: unknown, ids: Iterable<string>) => ({ mapIds: [...ids], issues: h.villageIssues }),
+}));
+
 const { runPiCommand } = await import("@/editor/panels/aiPiAgentCommand");
 
 // GameMap 계약대로 타일·이벤트 배열을 채운다 — reviewInput 이 실제 computeChangeSites 를 탄다.
@@ -124,6 +129,7 @@ const harness = () => {
 };
 
 beforeEach(() => {
+  h.villageIssues.length = 0;
   h.planError = false; h.verdicts.length = 0; h.findings.length = 0;
   h.reviewCalls = 0; h.applyCalls = 0; h.outcomes.length = 0;
   h.requests.length = 0; h.results.length = 0; h.bubbles.length = 0; h.process.length = 0;
@@ -136,6 +142,16 @@ beforeEach(() => {
 });
 
 describe("Pi 경로 실행 결과 4축", () => {
+  it.each(["default", "yolo"] as const)("%s: 마을 완료 검사 실패는 조화 검수 성공으로 지워지지 않는다", async mode => {
+    h.piApply = mode;
+    h.villageIssues.push("map_a: 대사 없는 페이지");
+    h.results.push({ project: projectWith("시공"), villageCompletion: { mapIds: ["map_a"], issues: h.villageIssues } });
+    const { outcomeCalls, surface } = harness();
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "마을을 지어라" }, surface());
+    expect(outcomeCalls.at(-1)).toMatchObject({ goal: "incomplete", delivery: mode === "yolo" ? "applied" : "draft" });
+    expect(h.applyCalls).toBe(mode === "yolo" ? 1 : 0);
+  });
+
   it("passes initial schema candidates into the companion request", async () => {
     const { surface } = harness();
     const initialToolNames = ["find_tools", "get_project_summary", "set_party"];

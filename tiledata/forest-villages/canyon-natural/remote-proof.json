@@ -1,0 +1,21 @@
+{
+  "projectId": "oprn-hill-forest-harmony-20260918-a4e1",
+  "mapId": "map_cliff_forest_bridge",
+  "tilesetId": "forest_high_cliff_river",
+  "saved": true,
+  "reloaded": true,
+  "otherMapsUnchanged": true,
+  "existingTilesetsUnchanged": true,
+  "atlasUnchanged": true,
+  "sha256": "61b84d5b96f52897c73b9392c0287f5ed2242d836eb34f86b2bc9ed9e3c471fb",
+  "houseCount": 2,
+  "bridge": {
+    "width": 26,
+    "depth": 3,
+    "cells": 78,
+    "onlyCrossing": true,
+    "exitReachable": true,
+    "railLeaks": 0
+  },
+  "cliffHeight": 14
+}

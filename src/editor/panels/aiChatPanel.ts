@@ -1,3 +1,6 @@
+import type { ActivityVisual } from "@/ai/activityVisual";
+import { clearPromptInspection } from "@/ai/authoring/promptInspection";
+import { openAiAuthoringModal, closeAiAuthoringModal } from "./aiAuthoring/modal";
 import { createActivityToolbar } from "./aiActivityView";
 import { onlyEventPageCommandsChanged } from "@/ai/eventCommandScope";
 import { createProjectSuggestions } from "./aiProjectSuggestions";
@@ -58,6 +61,7 @@ import { store } from "@/project/store";
 import { parsePiCommand, plainPiCommand, runPiCommand, type ParsedPiCommand, type PiChangeReceipt } from "./aiPiAgentCommand";
 import { createTeamPanel } from "./aiTeamPanel";
 import { createAiTeamSidebar } from "./aiTeamSidebar";
+import { createCreationChoice, creationSubject } from "./aiCreationChoice";
 import { createAssistantWide } from "./aiAssistantWide";
 import { createInlineWorkCard } from "./aiInlineWorkCard";
 import { buildSessionRegistryTools } from "@/ai/sessionToolExposure";
@@ -448,6 +452,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 변경 0건 알림 전용 호스트 — 쓰기가 있는 턴은 승인 없이 바로 적용되므로 결정 카드·핀·모달이 없다.
   const proposalNoticeHost = el("div", { class: "ai-proposal-notice-host" });
   let turnBusy = false;
+  let cancelCreationChoice: (() => void) | null = null;
   const idleWaiters = new Set<() => void>();
   // 전송 버튼은 "보낼 것이 있고 한가할 때"만 준버된 상태로 보이며, 이전엔 turnBusy 만 보서
   // 보낼 게 없을 때도 흔함 없이 활성이었고, 눌러도 send() 가 `if (!text) return` 으로
@@ -690,8 +695,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     toolName: string,
     result: Parameters<typeof appendToolLine>[1],
     args?: Record<string, unknown>,
+    visuals?: readonly ActivityVisual[],
   ): void => {
-    ensureWorkCard().recordActivity?.({ type: "tool_end", id: toolName, name: toolName, ok: result.ok, summary: result.summary, result: { ...result, arguments: args } });
+    ensureWorkCard().recordActivity?.({ type: "tool_end", id: toolName, name: toolName, ok: result.ok, summary: result.summary, result: { ...result, arguments: args }, visuals });
     const matchedLiveActivity = runningActivity?.toolName === toolName;
     if (!matchedLiveActivity) bumpToolProgress();
     studioToolLines.unshift(formatToolActivityLine(toolName, result));
@@ -974,6 +980,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
 
   const retireConversationTurn = (): void => {
+    cancelCreationChoice?.();
     activeAbortController?.abort();
     controller.session?.retireRun();
     retireMaintenance();
@@ -1039,6 +1046,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     resumeTarget: ConversationRecord | null = null,
   ): boolean => {
     closeAiConversationHistoryModal();
+    closeAiAuthoringModal();
+    clearPromptInspection();
     clearRecovery();
     // 버릴 것이 있었는지를 보관 전에 재다 — 부팅 지연 로드도 프로젝트 전환으로 보이므로,
     // 할 이야기가 없는 전환은 조용하게 재스코프만 한다.
@@ -1710,7 +1719,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const droppedQueue = pendingSends.length;
     pendingSends.length = 0;
     refreshQueueIndicator();
-    if (regionOwner) activeAbortController.abort();
+    if (regionOwner || cancelCreationChoice) activeAbortController.abort();
     else turnRunner.abortTurn();
     if (!abortNoticeShown) {
       appendBubble("system", "사용자가 중단했습니다.");
@@ -1844,7 +1853,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshRunningStatus: (record) => refreshRunningStatus(record),
     refreshAbortButton: () => refreshAbortButton(),
     startLiveActivity: (toolName, index, args) => startLiveActivity(toolName, index, args),
-    completeLiveActivity: (toolName, result, args) => completeLiveActivity(toolName, result, args),
+    completeLiveActivity: (toolName, result, args, visuals) => completeLiveActivity(toolName, result, args, visuals),
     expandForAiWork: () => expandForAiWork(),
     scheduleCollapseAfterAiWork: () => scheduleCollapseAfterAiWork(),
     notifyIfObscuredByTestPlay: () => notifyIfObscuredByTestPlay(),
@@ -1980,6 +1989,65 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     workCardTitle = (displayText || command.task).replace(/\s+/gu, " ").trim().slice(0, 48);
     if (displayText) appendBubble("user", displayText);
     if (opts?.questionPromoted) appendBubble("system", "프로젝트를 바꾸지 않고 확인해서 답할게요.");
+    // An exact existing resource is already a graphic decision by the user.
+    const graphicSpecified = Object.values(store.getCurrent().tilesets).some(tileset =>
+      command.task.includes(tileset.id) || (tileset.name.length > 3 && command.task.includes(tileset.name)));
+    const subject = !plan?.readOnly && !plan?.planOnly && !graphicSpecified ? creationSubject(command.task) : null;
+    if (subject) {
+      wideAssistant.open();
+      const choice = createCreationChoice(store.getCurrent(), subject);
+      if (choice) {
+        const owner = conversationId;
+        const projectKey = currentProjectContextKey;
+        const mapId = editorState.get().currentMapId;
+        const choiceAbort = new AbortController();
+        activeAbortController = choiceAbort;
+        const cancel = () => choice.cancel();
+        cancelCreationChoice = cancel;
+        choiceAbort.signal.addEventListener("abort", cancel, { once: true });
+        runSurface.turnBusy = true;
+        refreshSendEnabled();
+        setStatus("그래픽 선택 대기");
+        refreshAbortButton();
+        log.append(choice.root);
+        teamSidebar.root.append(choice.reference);
+        teamSidebar.root.classList.add("has-creation-choice");
+        panel.classList.add("has-creation-choice");
+        choice.root.scrollIntoView({ block: "start" });
+        choice.root.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
+        const chosen = await choice.result;
+        choiceAbort.signal.removeEventListener("abort", cancel);
+        // An old choice must never clear a newer conversation's pending state.
+        if (cancelCreationChoice !== cancel) return;
+        cancelCreationChoice = null;
+        teamSidebar.root.classList.remove("has-creation-choice");
+        panel.classList.remove("has-creation-choice");
+        if (activeAbortController === choiceAbort) activeAbortController = null;
+        if (disposed || owner !== conversationId || projectKey !== currentProjectContextKey) return;
+        if (!chosen || mapId !== editorState.get().currentMapId) {
+          runSurface.turnBusy = false;
+          refreshAbortButton();
+          setStatus("대기");
+          if (!input.value.trim()) { input.value = displayText || command.task; syncInputHeight(); refreshSendEnabled(); }
+          appendBubble("system", "제작을 시작하지 않았어요. 요청을 수정해서 다시 보내세요.");
+          return;
+        }
+        command = { ...command, task: `${command.task}\n\n${chosen.instruction}` };
+        appendBubble("system", `선택한 그래픽: ${chosen.label}`);
+        log.append(el("figure", { class: "ai-creation-confirmed", children: [
+          el("img", { attrs: { src: chosen.image, alt: chosen.label } }),
+          el("figcaption", { text: "선택한 제작 기준 · 집 한 채의 그래픽 예시" }),
+        ] }));
+      } else {
+        runSurface.turnBusy = false;
+        refreshSendEnabled();
+        setStatus("대기");
+        appendBubble("system", "이 프로젝트에는 집 미리보기를 지원하는 칩셋이 없어 제작을 시작하지 않았어요. 사용할 칩셋을 지정해 주세요.");
+        if (!input.value.trim()) { input.value = displayText || command.task; syncInputHeight(); refreshSendEnabled(); }
+        return;
+      }
+    }
+
     // 기존 턴과 같은 중단 버튼을 쓴다 — 컨트롤러를 활성 자리에 앉히고 실행 중 표시(turnBusy)를 켠다.
     piRunController = new AbortController();
     activeAbortController = piRunController;
@@ -2067,6 +2135,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       const noteTargetMapId = declared.intent.targetMapId ?? currentMapId;
       const noteTargetMap = noteTargetMapId ? project.maps[noteTargetMapId] : undefined;
       intentNote = buildPiIntentNote({
+        project,
         intent: declared.intent,
         targetMap: noteTargetMap
           ? { id: noteTargetMap.id, width: noteTargetMap.width, height: noteTargetMap.height, lived: isLivedMap(noteTargetMap) }
@@ -2115,6 +2184,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
       return;
     }
+    if (creationSubject(text) && !resolvePiRunPlan(currentAutonomy()).readOnly) wideAssistant.open();
     input.value = "";
     syncInputHeight();
     refreshSendEnabled();
@@ -2655,6 +2725,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       historyButton.click();
     },
     openTools: () => toolsButton.click(),
+    openAuthoring: (tab: "library" | "dialogue" | "inspector") => openAiAuthoringModal(tab, {
+      composer: input.value,
+      apply: text => { input.value = input.value.trim() ? `${input.value}\n\n${text}` : text; input.dispatchEvent(new Event("input")); refreshSendEnabled(); input.focus(); },
+    }),
     openInstructions: () => {
       openAiInstructionsModal({
         // 진행 중인 세션의 시스템 프롬프트를 그 자리에서 갈아끼운다 — 저장했는데 다음 대화까지
@@ -3606,6 +3680,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   activeAiChatPanelCleanup = () => {
     if (disposed) return;
     disposed = true;
+    cancelCreationChoice?.();
+    closeAiAuthoringModal();
+    clearPromptInspection();
     closeAiConversationHistoryModal();
     unregisterSettingsPanel();
     persistConversation();

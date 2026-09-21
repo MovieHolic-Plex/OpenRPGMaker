@@ -61,3 +61,5 @@
 @import "./minimap.css" layer(runtime);
 @import "./from-database-system-studio.css" layer(runtime);
 @import "./from-database-modern-utility-records.css" layer(runtime);
+
+@import "./fieldHud.css" layer(runtime);

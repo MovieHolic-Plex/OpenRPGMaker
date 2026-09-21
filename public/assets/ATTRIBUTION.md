@@ -1,5 +1,30 @@
 # Asset Attribution
 
+## Castle tiles for RPGs — OpenGameArt
+
+- File: `opengameart-castle-tiles.png` (512×512 RGBA, original pixels unchanged)
+- Authors: Zabin, Hyptosis, and Daniel Cook (Danc)
+- Source: https://opengameart.org/content/castle-tiles-for-rpgs
+- Download: https://opengameart.org/sites/default/files/Castle2_5.png
+- License: [Creative Commons Attribution 3.0 Unported](https://creativecommons.org/licenses/by/3.0/)
+- SHA-256: `b3222b8bed826043ae11a15c8983af5adbdc4a8bddd04f1171a0b070903991ad`
+- Notes: The original 32px artwork is split into 16px engine cells (32 columns,
+  1024 cells) without resampling. Layer/collision defaults and labels are editor
+  metadata. `opengameart-castle-tiles-CREDITS.txt` accompanies the artwork in game exports.
+
+## Castle reference composite
+
+- File: `opengameart-castle-reference-composite.png` (2240×2240 RGB)
+- Source: user-provided reference image of the OpenGameArt example composition.
+- 2026-09-21: removed Irukard's GPL bridge (parapets, deck, arch and piers) by
+  replacing 16px cells `(102,107,30,28)` with existing river-water cells.
+  Pixels outside that rectangle are unchanged. This is no longer an exact
+  screenshot comparison board.
+- Remaining art: Zabin, Hyptosis, Daniel Cook (CC BY 3.0), Daniel Eddeland and
+  Jetrel (CC BY-SA 3.0), as linked by the original composition. The adapted
+  composite is distributed under CC BY-SA 3.0; full credits accompany exports
+  in `opengameart-castle-reference-composite-CREDITS.txt`.
+
 ## Galmuri pixel fonts
 
 - Files:
@@ -19,6 +44,25 @@
 - License: original generated project asset (this project). Renamed 2026-08-21 from
   `windowskin-rm2003.png` — the file is our own generated 9-slice, not third-party art.
 - Notes: 96x96 RGBA 9-slice window skin with 24px corners for runtime game windows.
+
+## OGA greggman — Backgrounds for 2D Platformers
+
+- Files:
+  - `oga/greggman-backgrounds/meadow.png` (upstream `background0.png`, resized to 1280x720)
+  - `oga/greggman-backgrounds/city-night.png` (upstream `background1-720.png`, copied as-is)
+  - `oga/greggman-backgrounds/haunted-forest.png` (upstream `background3-720.png`, copied as-is)
+  - `oga/greggman-backgrounds/dusk-mountains.png` (upstream `rock_4.png`, resized to 1280x720)
+  - `oga/greggman-backgrounds/snow-mountains.png` (upstream `snow_5.png`, resized to 1280x720)
+- Author: greggman (https://opengameart.org/users/greggman)
+  Collaborator credit: RenZeyu (https://opengameart.org/users/renzeyu)
+- Source: https://opengameart.org/content/backgrounds-for-2d-platformers
+- License: **Creative Commons Attribution 3.0 Unported (CC-BY 3.0)**,
+  https://creativecommons.org/licenses/by/3.0/ — attribution required, commercial use
+  allowed. Do not remove this section while any of these files or derived resource ids
+  (`oga-backdrop-*`) remain in the project.
+- Notes: bundled 2026-09-21 as map panorama / battle backdrop candidates. Registered in
+  `src/assets/ogaBackdropAssets.ts`. The two 1080p sources were downscaled to match the
+  upstream 720p attachments; no other pixels were edited.
 
 ## EasyRPG RTP bundled map and object assets
 
@@ -288,3 +332,39 @@ for reference-derived components. Existing component provenance still applies.
   boards. Reference previews are used only on the comparison side, not as atlas pixels.
   Provenance: `slates-mastery-catalog.json` and `slates-mastery-fine-recipes.json`.
   `reports/slates-mastery/index.html` embeds these attributed study images.
+# Castle courtyard harbor and nature extension (2026-09-20)
+
+`castle-surroundings/atlas.png` retains Castle2 in its first 512×512 pixels
+and appends selected source-art rectangles from Daniel Eddeland's LPC
+farming/fishing submission (CC-BY-SA 3.0) and Hyptosis batches 1 and 3
+(CC-BY 3.0). The combined/adapted atlas is CC-BY-SA 3.0. Original sources,
+their hashes, cropping/assembly recipe and full author/license links are in
+`castle-surroundings/sources/`, `manifest.json` and `CREDITS.txt`.
+No screenshot pixels are used. Tree crown/trunk/root modules were assembled;
+other props were cropped and repacked without scaling or recolouring.
+
+
+## Reviewed forest-village props (2026-09-21)
+
+`generated/forest-harmony/village-unfake-v1/*.png` contains eleven reviewed
+Tibo-generated village props, subsequently processed with the MIT-licensed
+[unfake.js](https://github.com/jenissimo/unfake.js) tool, version 1.3.0,
+commit `b2bee10c1c3b211a2532baca9088857b19480dca`. The tool source/WASM is not
+redistributed here. Processing methods and review scope are recorded alongside
+the PNGs. This is asset provenance, not a claim that processing changes the
+rights of any source image. The rejected clay oven is excluded.
+
+The gubisup, small-forest-village and forest-cliff-village region atlases preserve
+the existing mixed-source terrain/building attribution and the reviewed custom
+forest materials; they are portable authored map snapshots, not new original
+claims for those inherited tiles.
+
+## Authored forest place library (2026-09-21)
+
+The 13 portable map documents listed in `scripts/asset-gen/forest-place-library.json`
+preserve the existing project maps and tileset pixels, including their original
+EasyRPG/combined-town/retro-world and reference-derived forest material provenance.
+The corresponding `public/assets/region-references/*-atlas.png` files are copies
+of those uploaded atlases. This registration does not create new original artwork
+or change the attribution or licence status documented above. Preview PNGs are
+captures of the saved maps in the actual editor.

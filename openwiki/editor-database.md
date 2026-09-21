@@ -1885,3 +1885,78 @@ player preview. The editor probe accepts skin IDs as arguments and an optional
 ### 공용 기본 매핑 재저작 (2026-09-18)
 
 사용자의 재매핑 지시로 `src/assets/sharedCharacterGraphics.json`을 원본 그림에서 새로 저작했다. 168칸 중 94칸 연결(정확 68·근사 26), 74칸 얼굴 없음, 원본 얼굴 메타데이터 80개다. 공용 저장 파일이 없는 호스트는 이 자료로 시작하며, 이미 저장된 호스트 파일은 우선하여 사용자 편집을 보존한다. 각 근사 대응의 차이는 `note`에 남긴다. `Actor3 #5`를 여성 얼굴에 순번으로 연결하지 않으며, 검은 고양이·Scarloxy 전용 그림·물건·빈 칸에 억지 얼굴을 주지 않는다. 시트·얼굴 대조 PNG, 호스트 저장 후 재읽기, Supabase 전용 행 `oprn-shared-character-graphics`의 저장(201) 후 재조회 근거는 `.omo/evidence/shared-character-faces/README.md`에 보존한다. Supabase는 재저작 자료의 원격 보관본이고 편집기의 공용 저장 정본은 호스트 파일이다.
+
+## Feature16 climate and action forms (2026-09-21)
+
+Map settings (palette tileset-name chip) → 기후 authors inherit/fixed/indoor mode,
+fixed weather and intensity via `setMapClimate` (map permission + scoped store
+mutation). Selectors: `map-props-tab-climate`, `map-climate-mode`,
+`map-climate-weather`, `map-climate-intensity`.
+Database → 파티 → 스킬 → 액션 스킬 uses the separate
+`databaseActionSkillForm.ts`. `db-field-skill-action-enabled` remains compatible;
+new selectors end in `kind`, `cooldown`, `duration`, `status`, `status-duration`.
+Kinds are projectile/melee/dash/trap. Each callback edits the latest stored profile
+so changing one field cannot restore an older value from another control.
+
+Parent-owned real editor capture (already running editor server):
+`FEATURE16_EDITOR_URL=http://127.0.0.1:<port> node scripts/capture-feature16-world-editor.mjs`.
+It opens real map/database dialogs, operates visible controls, reads the actual
+serializer's result, and writes screenshots/receipt under
+`verify-shots/feature16-world-editor`. No synthetic component mounts or DB writes.
+These scripts and tests were authored without running servers, tests or typecheck
+in the implementation agent's session; centralized validation is still required.
+## Combat authoring studio (feature16, 2026-09-21)
+
+Skills → **전투 규칙 · 피해 수식** (`feature16-combat-studio`) adds a bounded arithmetic formula, editable preview power/attacker ATK/defender DEF, ordered hit multipliers, per-skill critical chance/multiplier and cooldown. Existing effect-card hit rate remains authoritative. Preview displays base damage before model modifiers; other preview variables default to 20, level to 1. Invalid input displays **저장하지 않음**, marks the field invalid and never calls `updateDatabaseRecord`; last valid data remains saved. Blank formula restores model defaults; critical chance -1 restores battler defaults. All persisted edits use existing database mutation labels/history.
+
+Enemies → **보상** adds conditional drop rows (`feature16-drops`); first add preserves a legacy single drop as the first row. Each row has item/quantity/rate and always/turn/HP/MP/status/allies/switch condition controls. Explicit “기존 단일 드롭 사용” removes the array and restores legacy fields. The existing attack-pattern dialog uses the same condition editor, including session switch equality. Unknown/dangling item references are not silently created.
+
+Browser proof: `npx playwright test test/e2e/feature16-combat.spec.ts --project=chromium --workers=1`. Parent owns server and execution. This spec opens the **real editor** at `?freshProject=1`, uses visible database controls, verifies invalid edits do not alter exported data, switches tabs and rechecks persistence. Screenshots are emitted to Playwright's per-test output folder as `feature16-combat-{skills,invalid-formula,drops,enemy-condition}.png`. No remote content mutation; no screenshot claimed until the supervisor runs it.
+## Troop intent and weakness authoring (2026-09-21)
+
+The troop placement preview contains `databaseTroopIntentPanel`: hypothetical turn/MP/target/row, eligible action candidates with shared damage predictions, and actual element multipliers. Existing actions and elementRates are edited through `updateDatabaseRecord`; no new enemy schema. It does not claim exact AI choice or add predictions to the runtime HUD. Details, limitations and real-editor capture: `openwiki/feature16-battle-ui.md`.
+
+## 인게임 HUD 구성 편집기 (2026-09-21)
+
+자료집 → 시스템 → 인게임 HUD(`databaseFieldHud.ts`)에서 생활·농장, 생존·탐험, 파티 RPG, 액션·모험, 고요한 탐험, 기존 HUD를 고른다. 프리셋 선택은 구성 전체를 교체하며 기존 시스템 편집 스냅샷으로 실행 취소할 수 있다. 구성 요소는 최대 24개, 추가·복제·삭제·순서 변경이 가능하다.
+
+- 왼쪽은 요소 목록, 가운데는 시작 맵의 `renderRegionSnapshot` 배경과 실제 `FieldHud`, 오른쪽은 선택 요소의 데이터/표현/앵커/여백/치수/색/패널/표시 조건이다. 이미지 요소는 기존 picture 리소스 선택기를 사용한다.
+- 드래그는 화면 배율을 논리 좌표로 환산하여 좌상단 앵커로 바꾸고 pointerup에 한 번 저장한다. 방향키 1px, Shift+방향키 8px 이동도 같은 편집 경로다. 단순 선택/취소/미리보기 전환은 프로젝트 이력을 만들지 않는다.
+- 체력/마력은 선두 또는 지정 배우, 생활 에너지/액션 스태미나/소지금/변수/타이머/아이템 보유량은 실제 데이터에 연결한다. 상태 요소는 배우 상태와 선택 타이머를 읽는다. 음식 효과를 새로 만들지 않으며 생존형의 음식 슬롯은 휴대 식량의 보유 수량이다.
+- 시작 상태·저체력·전투·화면 아래 접근·대화 상태 미리보기는 프로젝트와 별도의 세션이다. 지원 시스템이 꺼져 있으면 설명을 표시하며, 현재 조건에서 숨겨진 요소는 편집할 수 있도록 흐리게 보인다.
+- 편집은 `databaseSystemView.updateSystem`의 스냅샷/감사/저장 경로를 공유한다. 운영 게임 콘텐츠를 생성하거나 원격 DB를 직접 쓰는 기능이 아니다.
+
+### 장르별 HUD와 글꼴 (2026-09-21 후속)
+
+프리셋은 수집·여행, 고전 JRPG, 상징·호러, 추격·HUD 없음, 하트·모험까지 포함한다.
+수집형은 필드의 지역명과 별도의 `field-list` 세로 명령 메뉴를 사용한다. 고전형/추격형의
+빈 요소 목록은 정상적인 구성이다. 프리셋을 고르면 권장 메뉴와 목표 표시 설정도 함께
+바뀐다. `함께 사용할 메뉴 → 기존 메뉴 설정`으로 시스템의 기존 `menuUiStyle`을 따른다.
+HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한다. 글꼴 선택은 HUD에만
+적용되고 메뉴 스킨은 자체 글꼴을 사용한다. 게이지의 `수치 함께 표시`를 끄면 하트/꽃만
+남길 수 있다. 꽃잎은 실제 연결 데이터 비율을 5단계로 읽으며 임의 그림 상태 교체는 아니다.
+별도 메뉴 편집기의 새 `여행 · 세로 명령창`도 같은 스킨 레지스트리를 사용한다.
+
+## 숲·마을·동굴 공통 기본 장소 13종 (2026-09-21)
+
+`forestPlaceReferences.ts`는 이 작업에서 만든 완성 맵 13개를 `PLACE_REFERENCES`에 등록한다.
+검은 숲의 오두막, 별 모양 숲, 굽이숲, 굽이숲 작은마을·절벽마을, 솔바람 고원마을·협곡,
+고요한 숲마을, 큰 폭포 아래 마을, 숲과 단구의 마을, 언덕 위 숲마을 조화 배치와 동굴 두 개다.
+반복·이음새·언덕 비교용 맵 6개는 공용 목록에서 제외한다.
+
+기존 지역 ID `gubisup-80x72`, `small-forest-village-80x72`, `forest-cliff-village-80x72`는
+그대로 유지하면서 장소 목록으로 옮긴다. AI 행 조회와 다운로드 경로는 바뀌지 않는다.
+`forestPlaceSnapshot`이 저장된 맵·타일셋을 조회하고 기본 장소 카드는 프로젝트와 무관하게 보인다.
+다운로드 문구는 장소/지역을 구분하고 파일명은 해당 사례의 이름을 쓴다.
+
+원본은 로컬 프로젝트 `oprn-hill-forest-harmony-20260918-a4e1`의 현재 저장본이다.
+기존 원격 원본에 과거 버전이 남은 맵도 있으므로 등록을 이유로 원본 프로젝트 전체를 덮어쓰지 않는다.
+공용 스냅샷은 `oprn-place-<slug>-v1`(기존 지역 3종은 `oprn-region-<slug>-v1`)에 저장하고
+재로드한 뒤 `regionReferences/<slug>.json` 및 `public/assets/region-references/<slug>*`로 출하한다.
+이미 발행한 스냅샷은 불변이다. 새 사용자 편집을 반영할 때는 새 개정 ID가 필요하다.
+
+`publish-forest-place-library.mjs`는 지도 이벤트의 이동 대상 맵을 재귀 수집해 다운로드에 함께 넣고,
+로컬 업로드 이미지의 내용 해시를 검증한 뒤 data URL로 포함한다. 동굴 출구가 빠진 문서를 만들지 않는다.
+미리보기는 실제 편집기의 `mapOnlyCapture=1` 화면에서 맵 영역을 찍는다.
+`capture-forest-place-previews.mjs`와 `capture-forest-place-library.mjs`가 이미지·목록·내려받기 증거를 남긴다.
+출하 증거: `.omo/evidence/forest-place-library/`.

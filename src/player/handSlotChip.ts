@@ -1,8 +1,9 @@
+import { FieldHud, type HudRuntimeContext } from "./fieldHud";
+import { normalizeFieldHud } from "@/project/fieldHud";
 // player/handSlotChip.ts
 // 손 슬롯 상시 HUD 칩. ActionHud 선례(작은 클래스 + mountX(host) 팩토리)를 따른다.
 //
-// 아이콘은 쓰지 않는다: 런타임에 ItemRecord→아이콘 헬퍼가 없고(상태 메뉴도 아이템을
-// 텍스트로만 그린다) 없는 아트를 발명하는 대신 이름+개수 텍스트로 정직하게 표시한다.
+// 새 디자인은 FieldHud가 소유하고 legacy 선택만 기존 칩을 그린다.
 import type { Project } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 import { handSlotCurrent, handSlotIndex } from "@/player/handSlot";
@@ -13,9 +14,11 @@ const EMPTY_HAND_LABEL = "빈 손";
 export class HandSlotChip {
   private readonly root: HTMLElement;
   private readonly label: HTMLElement;
+  private readonly fieldHud: FieldHud;
   private lastText = "";
 
   constructor(host: HTMLElement) {
+    this.fieldHud = new FieldHud(host);
     this.root = document.createElement("div");
     this.root.className = "hand-slot";
     this.root.dataset.testid = "hand-slot";
@@ -30,10 +33,12 @@ export class HandSlotChip {
     this.render(EMPTY_HAND_LABEL, 0);
   }
 
-  update(project: Project, session: PlaySession): void {
+  update(project: Project, session: PlaySession, context: HudRuntimeContext = {}): void {
+    this.fieldHud.update(project, session, context);
+    const config = normalizeFieldHud(project.system.fieldHud);
     const map = project.maps[session.currentMapId];
     const actionMap = isActionCombatMap(project, map);
-    this.root.hidden = actionMap && !map?.farmableArea?.length;
+    this.root.hidden = config.theme !== "legacy" || (actionMap && !map?.farmableArea?.length);
     this.root.setAttribute("aria-label", actionMap ? "농사 도구" : "손에 든 아이템");
     const entry = handSlotCurrent(project, session);
     const hand = entry ? `${entry.name} ×${entry.count}` : EMPTY_HAND_LABEL;
@@ -42,6 +47,7 @@ export class HandSlotChip {
   }
 
   destroy(): void {
+    this.fieldHud.destroy();
     this.root.remove();
   }
 

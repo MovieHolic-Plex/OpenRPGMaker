@@ -19,6 +19,11 @@ import {
 } from "@/assets/chipsetTransparency";
 import { CHIPSET_ANIMATION_FPS, CHIPSET_ANIMATION_STRIPS } from "@/project/defaults/chipsetAnimation";
 import {
+  CASTLE_TILE_COUNT,
+  CASTLE_TILESET_NAME,
+  CASTLE_TILESET_TEXTURE_KEY,
+  CASTLE_REFERENCE_TILE_COUNT,
+  CASTLE_REFERENCE_TILESET_TEXTURE_KEY,
   COMBINED_TOWN_RETRO_WORLD_NAME,
   COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY,
   COMBINED_TOWN_RETRO_WORLD_TILE_COUNT,
@@ -32,6 +37,8 @@ import { SCARLOXY_CHIPSET_ASSETS } from "@/assets/scarloxyPack";
 import { EMOTE_ASSET_PATH, EMOTE_FRAME_SIZE, EMOTE_KINDS, EMOTE_TEXTURE_KEY } from "@/project/emotes";
 import { PLACEABLE_OVERLAY_TEXTURE_KEYS } from "@/player/placeableOverlayGraphics";
 import type { Project } from "@/project/types";
+import { bundledChipsetTileSize, bundledChipsetTilesPerRow } from "./bundledChipsetGeometry";
+export { bundledChipsetTileSize, bundledChipsetTilesPerRow } from "./bundledChipsetGeometry";
 export { isColorKeyedChipsetTextureKey } from "@/assets/chipsetTransparency";
 
 export const TEX_TILESET = "tex_tiles_default";
@@ -87,9 +94,15 @@ const CORE_BUNDLED_IMAGE_ASSETS = [
   { textureKey: TEX_DIALOGUE_FRAME, path: ASSET_DIALOGUE_FRAME, name: "기본 대사창 테두리" },
 ] as const satisfies readonly BundledImageAsset[];
 
+/** The reference composite is loaded only by projects that explicitly use its board tileset. */
+export const BUNDLED_REFERENCE_CHIPSET_ASSETS = [
+  { textureKey: CASTLE_REFERENCE_TILESET_TEXTURE_KEY, path: "assets/opengameart-castle-reference-composite.png", name: "성채 참고 이미지 · 큰 돌다리 제거" },
+] as const satisfies readonly BundledImageAsset[];
+
 export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   {textureKey:"tex_forest_harmony",path:"assets/forest-harmony/chipset.png",name:"숲마을 · 거리별 잔디"},
   {textureKey:"tex_tibo_interior_expanded",path:"assets/tibo-interior/interior-expanded.png",name:"실내 확장 · Tibo"},
+  { textureKey: CASTLE_TILESET_TEXTURE_KEY, path: "assets/opengameart-castle-tiles.png", name: CASTLE_TILESET_NAME },
   { textureKey: "tex_easyrpg_chipset_dungeon", path: "assets/easyrpg-chipset-dungeon-transparent.png", name: "던전 · EasyRPG (CC0)" },
   { textureKey: "tex_easyrpg_chipset_interior", path: "assets/easyrpg-chipset-interior-transparent.png", name: "실내 · EasyRPG (CC0)" },
   { textureKey: "tex_easyrpg_chipset_ship", path: "assets/easyrpg-chipset-ship-transparent.png", name: "배 · EasyRPG (CC0)" },
@@ -108,28 +121,10 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   ...SCARLOXY_CHIPSET_ASSETS,
 ] as const satisfies readonly BundledImageAsset[];
 
-/**
- * 16px 규격이 아닌 번들 시트의 기하. 여기 없는 시트는 16px·30열이다.
- *
- * Slates 는 32px 격자(1792×704 = 56열×22행 = 1232칸)다. 이 값을 프레임 등록·타일셋 정의·
- * 자료 보관함 프로필이 **모두 같은 출처**에서 읽어야 팔레트와 캔버스가 같은 그림을 가리킨다.
- */
-export const BUNDLED_CHIPSET_GEOMETRY: Readonly<Record<string, { readonly tileSize: number; readonly tilesPerRow: number }>> = {
-  tex_slates_32: { tileSize: 32, tilesPerRow: 56 },
-};
-
-/** 이 번들 시트의 타일 한 변(px). 16px 규격이면 16. */
-export function bundledChipsetTileSize(key: string): number {
-  return BUNDLED_CHIPSET_GEOMETRY[key]?.tileSize ?? TILE_SIZE;
-}
-
-/** 이 번들 시트의 한 행 칸 수. 16px 규격이면 30. */
-export function bundledChipsetTilesPerRow(key: string): number {
-  return BUNDLED_CHIPSET_GEOMETRY[key]?.tilesPerRow ?? TILES_PER_ROW;
-}
-
 /** 번들 칩셋의 칸 수. 480칸 규격이 아닌 확장 시트(Tibo 실내 확장·합본 마을+레트로 월드맵)만 여기서 갈라진다. */
 export function bundledChipsetFrameCount(key: string): number {
+  if (key === CASTLE_TILESET_TEXTURE_KEY) return CASTLE_TILE_COUNT;
+  if (key === CASTLE_REFERENCE_TILESET_TEXTURE_KEY) return CASTLE_REFERENCE_TILE_COUNT;
   if (key === "tex_forest_harmony") return forestHarmony.count;
   if (key === "tex_tibo_interior_expanded") return tiboRecovered.count;
   if (key === SLATES_32_TEXTURE_KEY) return SLATES_32_FRAME_COUNT;
@@ -151,6 +146,7 @@ export const BUNDLED_EASYRPG_CHARSET_ASSETS =
 
 const EXTRA_BUNDLED_IMAGE_ASSETS = [
   ...BUNDLED_EASYRPG_CHIPSET_ASSETS,
+  ...BUNDLED_REFERENCE_CHIPSET_ASSETS,
   ...BUNDLED_EASYRPG_CHARSET_ASSETS,
 ] as const satisfies readonly BundledImageAsset[];
 
@@ -169,6 +165,10 @@ export function loadBundledAssets(scene: { readonly load: Pick<Phaser.Loader.Loa
   loadUploadedTilesets(scene, project);
   scene.load.image(TEX_TILESET, withInlineAsset(ASSET_TILESET));
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
+    if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
+    scene.load.image(chipsetLoadTextureKey(asset.textureKey), withInlineAsset(asset.path));
+  }
+  for (const asset of BUNDLED_REFERENCE_CHIPSET_ASSETS) {
     if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
     scene.load.image(chipsetLoadTextureKey(asset.textureKey), withInlineAsset(asset.path));
   }
@@ -228,14 +228,28 @@ export function registerBundledFrames(scene: Phaser.Scene, project?: Project): v
       console.error(`[assets] ${asset.textureKey} 가 로드되지 않았습니다. EasyRPG ChipSet 파일을 확인하세요.`);
       continue;
     }
-    registerTileFrames(scene, asset.textureKey, bundledChipsetFrameCount(asset.textureKey), {
-      tileSize: bundledChipsetTileSize(asset.textureKey),
-      tilesPerRow: bundledChipsetTilesPerRow(asset.textureKey),
-    });
+    registerTileFrames(
+      scene,
+      asset.textureKey,
+      bundledChipsetFrameCount(asset.textureKey),
+      bundledChipsetTileSize(asset.textureKey),
+      bundledChipsetTilesPerRow(asset.textureKey),
+    );
+  }
+  for (const asset of BUNDLED_REFERENCE_CHIPSET_ASSETS) {
+    if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
+    if (!scene.textures.exists(asset.textureKey)) {
+      console.error(`[assets] ${asset.textureKey} 가 로드되지 않았습니다. 참고 이미지 파일을 확인하세요.`);
+      continue;
+    }
+    registerTileFrames(scene, asset.textureKey, bundledChipsetFrameCount(asset.textureKey), bundledChipsetTileSize(asset.textureKey), bundledChipsetTilesPerRow(asset.textureKey));
   }
   registerTileAnimations(scene, [
     TEX_TILESET,
     ...BUNDLED_EASYRPG_CHIPSET_ASSETS
+      .filter((asset) => !usedTextures || usedTextures.has(asset.textureKey))
+      .map((asset) => asset.textureKey),
+    ...BUNDLED_REFERENCE_CHIPSET_ASSETS
       .filter((asset) => !usedTextures || usedTextures.has(asset.textureKey))
       .map((asset) => asset.textureKey),
   ]);
@@ -282,10 +296,17 @@ export function registerTilesetTextureFrames(
   scene: Phaser.Scene,
   textureKey: string,
   frameCount: number = TILE_FRAME_COUNT,
-  geometry: { readonly tileSize?: number; readonly tilesPerRow?: number } = {},
+  tileSize = bundledChipsetTileSize(textureKey),
+  tilesPerRow = bundledChipsetTilesPerRow(textureKey),
 ): void {
-  registerTileFrames(scene, textureKey, frameCount, geometry);
-  if ((geometry.tileSize ?? TILE_SIZE) === TILE_SIZE) registerTileAnimationsForTexture(scene, textureKey);
+  registerTileFrames(
+    scene,
+    textureKey,
+    frameCount,
+    tileSize,
+    tilesPerRow,
+  );
+  if (tileSize === TILE_SIZE) registerTileAnimationsForTexture(scene, textureKey);
 }
 
 function registerTransparentChipsetTexture(scene: Phaser.Scene, asset: BundledImageAsset): void {
@@ -433,6 +454,9 @@ function projectBundledTextureKeys(project: Project): Set<string> {
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
     if (strings.has(asset.textureKey)) keys.add(asset.textureKey);
   }
+  for (const asset of BUNDLED_REFERENCE_CHIPSET_ASSETS) {
+    if (strings.has(asset.textureKey)) keys.add(asset.textureKey);
+  }
   for (const asset of BUNDLED_EASYRPG_CHARSET_ASSETS) {
     if (strings.has(asset.id) || strings.has(asset.textureKey)) keys.add(asset.textureKey);
   }
@@ -519,19 +543,13 @@ function isExtraBundledLoadKey(fileKey: string): boolean {
   );
 }
 
-/**
- * 타일 프레임을 등록한다. `geometry` 를 주면 그 크기·행 폭으로 자른다 —
- * 16px 규격이 아닌 시트(예: 32px Slates)는 기본값(TILE_SIZE·TILES_PER_ROW)으로 자르면
- * 프레임 사각형이 어긋나 **엉뚱한 그림 조각**이 등록된다.
- */
 function registerTileFrames(
   scene: Phaser.Scene,
   textureKey: string,
   frameCount: number = TILE_FRAME_COUNT,
-  geometry: { readonly tileSize?: number; readonly tilesPerRow?: number } = {},
+  tileSize = bundledChipsetTileSize(textureKey),
+  tilesPerRow = bundledChipsetTilesPerRow(textureKey),
 ): void {
-  const tileSize = geometry.tileSize ?? TILE_SIZE;
-  const tilesPerRow = geometry.tilesPerRow ?? TILES_PER_ROW;
   const quarterSize = tileSize / 2;
   const quarters = [
     { name: "nw", dx: 0, dy: 0 },
@@ -544,8 +562,7 @@ function registerTileFrames(
   // 마지막 프레임까지 이미 있으면 완료 — 확장 타일셋(frameCount > 480)은 확장분만 이어서 등록한다.
   if (existing.includes("tile_0") && existing.includes("tile_0_nw") && existing.includes(`tile_${frameCount - 1}_se`)) return;
   for (let i = 0; i < frameCount; i++) {
-    const sx = i % tilesPerRow * tileSize;
-    const sy = Math.floor(i / tilesPerRow) * tileSize;
+    const { sx, sy } = tileSourceXY(i, tilesPerRow, tileSize);
     if (!existing.includes(`tile_${i}`)) {
       tex.add(`tile_${i}`, 0, sx, sy, tileSize, tileSize);
     }
@@ -570,6 +587,11 @@ function registerTileAnimations(scene: Phaser.Scene, textureKeys: readonly strin
 }
 
 function registerTileAnimationsForTexture(scene: Phaser.Scene, textureKey: string): void {
+  if (
+    textureKey === CASTLE_TILESET_TEXTURE_KEY ||
+    textureKey.startsWith(`${CASTLE_TILESET_TEXTURE_KEY}__`) ||
+    textureKey === CASTLE_REFERENCE_TILESET_TEXTURE_KEY
+  ) return;
   for (const strip of CHIPSET_ANIMATION_STRIPS) {
     const stripKey = chipsetAnimationKey(textureKey, strip.key);
     if (scene.anims.exists(stripKey)) continue;
@@ -593,11 +615,11 @@ function registerTileAnimationsForTexture(scene: Phaser.Scene, textureKey: strin
   }
 }
 
-export function tileSourceXY(index: number): { sx: number; sy: number } {
+export function tileSourceXY(index: number, tilesPerRow: number = TILES_PER_ROW, tileSize: number = TILE_SIZE): { sx: number; sy: number } {
   if (index < 0) return { sx: 0, sy: 0 };
-  const col = index % TILES_PER_ROW;
-  const row = Math.floor(index / TILES_PER_ROW);
-  return { sx: col * TILE_SIZE, sy: row * TILE_SIZE };
+  const col = index % tilesPerRow;
+  const row = Math.floor(index / tilesPerRow);
+  return { sx: col * tileSize, sy: row * tileSize };
 }
 
 export function spriteFrameIndex(dir: number, frm: number): number {

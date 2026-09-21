@@ -221,6 +221,10 @@ export function skillName(skillId: string): string {
 }
 
 export function conditionLabel(condition: EnemyActionCondition): string {
+  if (condition.kind === "switch") return `${condition.switchId} ${condition.value ? "ON" : "OFF"}`;
+  if (condition.kind === "hp" || condition.kind === "mp") return `${condition.kind.toUpperCase()} ${condition.minPercent}~${condition.maxPercent}%`;
+  if (condition.kind === "status") return `${condition.stateId} ${condition.present ? "있음" : "없음"}`;
+  if (condition.kind === "allies") return `생존 동료 ${condition.min}~${condition.max}`;
   if (condition.kind === "turn") return `${condition.start}+${condition.interval}턴`;
   return "항상";
 }

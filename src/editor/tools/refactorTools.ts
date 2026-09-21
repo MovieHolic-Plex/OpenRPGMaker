@@ -1,3 +1,4 @@
+import { enemyCombatConditions } from "@/project/combatReferences";
 // editor/tools/refactorTools.ts
 // 전역 리팩토링 툴(Phase 5): rename_switch / prune_unused.
 // find_switch_usage와 동일한 순회 규약으로 스위치/변수/아이템/트룹 참조를 전수 수집·치환한다.
@@ -167,6 +168,8 @@ export function collectReferences(project: Project): ReferenceSets {
       if (action.switchOffAfterAction.switchId) refs.switches.add(action.switchOffAfterAction.switchId);
     }
     if (enemy.rewards.dropItemId) refs.items.add(enemy.rewards.dropItemId);
+    for (const drop of enemy.rewards.drops ?? []) refs.items.add(drop.itemId);
+    for (const condition of enemyCombatConditions(enemy)) if (condition.kind === "switch") refs.switches.add(condition.switchId);
   }
   if (project.system.initialTroopId) refs.troops.add(project.system.initialTroopId);
   for (const itemId of Object.keys(project.session.inventory)) refs.items.add(itemId);
@@ -246,6 +249,10 @@ export function renameSwitchEverywhere(project: Project, oldId: string, newId: s
   }
   for (const enemy of project.database.enemies) {
     for (const action of enemy.actions) {
+      if (action.condition.kind === "switch" && action.condition.switchId === oldId) {
+        action.condition.switchId = newId;
+        count += 1;
+      }
       if (action.switchOnAfterAction.switchId === oldId) {
         action.switchOnAfterAction.switchId = newId;
         count += 1;
@@ -254,6 +261,12 @@ export function renameSwitchEverywhere(project: Project, oldId: string, newId: s
         action.switchOffAfterAction.switchId = newId;
         count += 1;
       }
+    }
+  }
+  for (const enemy of project.database.enemies) for (const drop of enemy.rewards.drops ?? []) {
+    if (drop.condition.kind === "switch" && drop.condition.switchId === oldId) {
+      drop.condition.switchId = newId;
+      count += 1;
     }
   }
   // 퀘스트 메타의 스위치는 key에서 파생되므로 별도 치환 불필요.

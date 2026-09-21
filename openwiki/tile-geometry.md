@@ -26,7 +26,8 @@
 `ensureUploadedTilesetTextures`가 프로젝트 변경 시 한 번 로드·등록하고 다시 그린다.
 칸마다 로드를 예약하거나 전역 로드 완료 이벤트를 발행하지 않는다.
 
-번들 기하는 `bundledChipsetTileSize`/`bundledChipsetTilesPerRow`에서 읽는다.
+번들 기하는 `src/assets/bundledChipsetGeometry.ts`의 `bundledChipsetTileSize`/`bundledChipsetTilesPerRow`에서 읽는다.
+Castle/참고 이미지의 기하와 Slates 기하를 같은 경로로 유지한다. 액션 스킬의 지면 표시도 맵 크기로 좌표를 계산한다.
 Slates는 32px·56열·1232칸이다. 기존 RPG2K 쿼터 오토타일은 그 포맷에서만 동작하며,
 Slates에 기존 물/길 타일 번호나 애니메이션을 적용하지 않는다.
 

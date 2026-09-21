@@ -1,0 +1,15 @@
+[
+  {"id":"forest-cabin-40x30","slug":"forest-cabin","mapId":"map_forest_cabin_autotile","name":"검은 숲의 오두막","kind":"settlement","note":"사용자가 다듬은 40×30 숲속 오두막. 검은 수관과 안쪽 모서리, 온전한 줄기·뿌리 배치를 보존한다."},
+  {"id":"forest-star-64x56","slug":"forest-star","mapId":"map_forest_star","name":"별 모양 숲","kind":"natural","note":"별 모양의 연속 수관과 오두막. 남향 잎 외곽과 같은 행부터 줄기·뿌리를 잇는다."},
+  {"id":"gubisup-80x72","slug":"gubisup","mapId":"map_forest_complex","name":"굽이숲","kind":"natural","existing":true,"note":"여섯 빈터와 두 순환길, 샘과 오두막, 숲길 소품을 갖춘 숲."},
+  {"id":"small-forest-village-80x72","slug":"small-forest-village","mapId":"map_forest_small_village","name":"굽이숲 작은마을","kind":"settlement","existing":true,"note":"연속 숲 안에 다섯 집과 두 언덕, 샘·텃밭·생활 소품을 배치한 작은 마을."},
+  {"id":"forest-cliff-village-80x72","slug":"forest-cliff-village","mapId":"map_forest_cliff_village","name":"굽이숲 절벽마을","kind":"settlement","existing":true,"note":"굽은 횡단 절벽과 다섯 마당. 큰길·오솔길·지름길과 검수한 소품 배치를 보존한다."},
+  {"id":"high-cliff-village-80x88","slug":"high-cliff-village","mapId":"map_high_cliff_village","name":"솔바람 고원마을","kind":"settlement","existing":true,"note":"높이 12칸의 절벽 위 다섯 집. 입구의 강과 3×9 나무판자 다리, 두 구간의 계단과 샘·텃밭."},
+  {"id":"cliff-forest-bridge-80x72","slug":"cliff-forest-bridge","mapId":"map_cliff_forest_bridge","name":"솔바람 협곡","kind":"natural","note":"높이 14칸의 두 절벽을 26×3 나무다리 하나로 잇고 아래에는 큰 연속 숲을 둔 배치. 양쪽에 작은 집이 있다."},
+  {"id":"peaceful-forest-100x100","slug":"peaceful-forest","mapId":"map_peaceful_forest_100","name":"고요한 숲마을","kind":"settlement","note":"100×100 넓은 숲마을. 둥근 언덕과 시냇물, 적은 집과 큰 숲으로 구성한 초기 배치."},
+  {"id":"great-falls-100x100","slug":"great-falls","mapId":"map_forest_great_falls_100","name":"큰 폭포 아래 마을","kind":"settlement","note":"100×100 숲속 마을. 중앙의 높은 절벽과 큰 폭포, 굽은 길과 집 배치를 보존한다."},
+  {"id":"rebuilt-forest-village-64x64","slug":"rebuilt-forest-village","mapId":"map_forest_village_rebuilt","name":"숲과 단구의 마을","kind":"settlement","note":"단구·집·동굴을 놓은 64×64 마을. 연결된 바위굴과 이동 이벤트를 내려받는 문서에 포함한다."},
+  {"id":"harmony-hill-village-64x64","slug":"harmony-hill-village","mapId":"map_hill_forest_village_20260918","name":"언덕 위 숲마을 · 조화 배치","kind":"settlement","note":"정돈된 중심부와 외곽 숲을 갖춘 마을. 주민 배치와 연결된 작은 동굴을 함께 보존한다."},
+  {"id":"hill-forest-cave-20x16","slug":"hill-forest-cave","mapId":"map_hill_forest_cave","name":"절벽 속 작은 동굴","kind":"natural","note":"언덕 위 숲마을과 연결된 20×16 동굴. 출구 이동이 끊기지 않도록 연결 마을도 내려받는 문서에 포함한다."},
+  {"id":"rebuilt-forest-cave-20x16","slug":"rebuilt-forest-cave","mapId":"map_rebuilt_forest_cave","name":"숲과 단구의 바위굴","kind":"natural","note":"숲과 단구의 마을에 연결된 20×16 바위굴. 마을로 나가는 기존 이동 이벤트를 보존한다."}
+]

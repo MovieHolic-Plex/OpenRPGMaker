@@ -1,3 +1,71 @@
+### 검색 중 사용자에게 보이는 것 (2026-09-21 실측)
+
+검색은 실제로 길다 — 실측 31.18초. 그동안 사용자에게 보이는 것은 세 겹이다.
+
+1. **작업 카드 상태 문구.** 검색이 시작되면 `웹에서 참고 작품을 찾는 중… (십 초 정도 걸릴 수 있어요)` 로 바뀐다.
+   이전에는 `작업 중…` 만 보여 멈춘 것처럼 읽혔다. 실행 턴과 계획 턴 두 경로에 모두 걸었다 —
+   「해리포터 같은 게임」 시나리오가 검색하는 자리가 바로 계획 턴이다.
+2. **작업 과정 타임라인.** 툴마다 `◌ 웹 검색 · 실행 중` → `✓ 웹 검색 · 완료 · 31.18초` 행이 남고,
+   행에는 `00:12 · 조수 · 31.18초` 처럼 트레이스 시작 기준 경과가 붙는다(`aiActivityView` 의 `clock`).
+   기본 표시 수준은 「간단히 보기」(brief)이고, 설정에서 생략·자세히·매우 자세히로 바꾼다.
+3. **중지 버튼.** 턴이 도는 동안 계속 보인다(`ai-run-stop`).
+
+`web_search` 라벨이 사전에 없으면 타임라인이 `web search` 라는 영문을 그대로 보여 준다(2026-09-21 실측:
+`label="web search" icon=wrench group=build`). 지금은 `웹 검색` · 돋보기 아이콘 · 조회 그룹이다.
+
+## 참조 작품 비유 → 자율 웹 검색 (2026-09-21)
+
+사용자가 실존 작품을 비유하면(「해리포터 같은 게임 만들고 싶다」) 조수가 **설계 전에 스스로 검색**하고
+그 사실로 계획을 세운다. 이전에는 `mode=other` 로 분류되며 참조가 조용히 사라져 검색 계기가 없었다.
+
+- **`referenceWork` 는 의도 선언의 사실이다.** `IntentDeclaration.referenceWork`(문자열|null)에 작품명이 남고,
+  `formatIntentNote` 가 `[참조 작품]` 계약을 붙인다 — 검색하라, 암기로 추정하지 마라, 고유명사는 그대로 쓰지 마라.
+- **authoring 게이트에 묶지 마라.** 파서가 `create|modify` 에만 실어 보내면 「만들고 싶다」(mode=other) 발화에서
+  조용히 사라진다(2026-09-21 실측: referenceWork=null, tools=[]). 지금은 모든 모드에서 보존한다.
+- 장르·스타일 설명(「중세 판타지 RPG」)은 작품명이 아니다 — 선언 프롬프트가 그 경계를 가르친다.
+- 시스템 프롬프트(`piAgent/systemPrompt.ts`)도 같은 규칙을 말한다: 지식밖의 사실은 (a) 최신 사실,
+  (b) 실존 작품 비유 두 갈래로 검색한다.
+
+### 죽은 Codex 자격이 검색·완성을 영구히 막던 문제
+
+편집기 저장본(`~/.oprn/oh-my-pi-auth.json`)의 Codex 자격이 만료되면 갱신을 시도하는데, `codex` CLI 같은
+다른 도구가 먼저 갱신했으면 `refresh_token_reused` 로 실패한다. 그때 CLI 로그인은 더 신선할 수 있는데도
+`resolveRequestApiKey` 가 저장본만 보고 던져서 **모든 검색·완성이 그 행에 묶여 죽었다**(2026-09-21 실측).
+지금은 갱신 실패 시 `adoptCodexCliCredentials` 로 CLI 자격 채용을 한 번 시도하고, 그것도 못 쓰면 원래
+오류를 올린다.
+
+### 검증
+
+`~/.bun/bin/bun run scripts/ai-reference-work-live-test.mts` — 의도 선언 → 참조 노트 → Pi 루프를
+편집기와 같은 경로로 통과시킨다. 판정은 실제 실행된 툴 호출과 출처 URL 이다.
+실측 2026-09-21: `referenceWork="해리포터"`, 실행 툴 `["web_search","get_project_summary","read_project_wiki"]`,
+출처 `harrypotter.com/features/everything-a-first-year-should-know-about-hogwarts` 외 2건, 판정 PASS.
+회귀: `test/intentDeclaration.test.ts` 의 「참조 작품 비유 — 검색을 부르는 계약」 6케이스.
+
+## 조수 웹 검색 도구 (2026-09-21)
+
+조수가 `web_search({query})` 로 인터넷을 검색한다. 레지스트리 등록은 `src/editor/tools/webSearchTool.ts`,
+업스트림 계약은 `scripts/lib/codexWebSearchRuntime.ts`, Pi 배선은 `scripts/lib/piAgentRuntime.ts` 다.
+
+- **검색 엔진은 Codex(ChatGPT) 백엔드다.** 조수 제공자가 Antigravity(Gemini, 공장 기본)여도 검색은
+  ChatGPT 구독 자격으로 나간다 — `tools:[{type:"web_search"}]` + `stream:true` 계약을 실측으로 고정했다
+  (`stream:false` 는 업스트림이 400 "Stream must be set to true" 로 거절한다. 비스트리밍은 존재하지 않는다).
+- **자격은 서버 경계에만 있다.** `resolveRequestApiKey("openai-codex")` 가 동반 서비스에서 해결해
+  워커로 넘기고(`codexApiKey`), 브라우저로는 나가지 않는다. Codex 미로그인이면 툴이 "Codex 로그인 필요"
+  로 정직하게 실패한다 — 검색 때문에 다른 턴이 죽지 않는다.
+- **레지스트리 `run` 은 순수 핸드오프다.** 툴 규약(`types.ts`)이 브라우저 전역 접근을 금지하므로
+  레지스트리 쪽은 `status:"ui-required"` 만 만들고, 실제 네트워크 실행은 Pi 런타임이 같은 이름으로
+  갈아 끼운다(`generate_image_asset` → `imageAssetGeneration` 과 같은 분업). 그래서 레지스트리 셰이프와
+  실행 셰이프가 **둘 다 선언되면 안 된다** — Pi 런타임이 레지스트리 셰이프를 이름으로 걸러낸다.
+- **노출은 도메인과 무관하다.** "최신 정보가 필요하다" 는 UI 상태로 예측할 수 없어서 `core` 도메인에
+  상시 노출된다. `find_tools` 발견 경로도 같은 실행 셰이프로 간다(`shapeFor`).
+- 팀 실행에서도 하위 에이전트가 검색을 쓴다(`piTeamRuntime.ts` 의 `child()` 가 `codexApiKey` 를 내려보낸다).
+  빠뜨리면 팀장만 최신 사실을 보고 팀원은 추정하게 된다.
+
+검증(2026-09-21, 실제 ChatGPT 구독 자격): 레지스트리 노출·인자 거절(빈 검색어·401자)·
+`codex-required` 실패 경로, Pi 루프에서 `web_search` 선언과 실제 검색 실행(PostgREST v16.3 답변 +
+GitHub 출처 6건), `find_tools` 발견 후 다음 턴 실행까지 실측했다.
+
 ## 감사 후속: 부분 갱신과 미사용 삭제 (2026-09-20)
 
 - DB 공용 `mergeRecord`는 `mergeRecordPatch`로 중첩 객체의 생략된 필드를 보존한다. 전달한 배열은 교체하며, `kind` 변경은 이전 유니온 변형을 버린다. 빈 객체는 중첩 필드 전체 삭제가 아니다.
@@ -1202,6 +1270,8 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 - **들어가서 걷는 집은 `author_house(interior:"linked-interior")` 한 번이 정답 (2026-09-04):** 외장만 짓고 `create_transfer_pair`/`start_interior_room_session` 으로 잇는 3단계는 가짜 출입구(같은 맵 teleport)와 점유된 문 칸에서 깨진다. `linked-interior` 는 실내맵+문/출구 양방향 전이를 원자적으로 만든다(`houseKitDomain` → `createHouseInteriorMap`). `interior` 생략도 이 모드가 기본. `space:"both"`·야외 집·영역 위 집은 이 경로, 외장 없는 독립 실내만 세션, 개념 시설은 `place_concept`. Tests: `test/intentDeclaration.test.ts`, `test/proposalCompleteness.test.ts`, `test/interiorRoomPipeline.test.ts`, `test/constructionContracts.test.ts`.
 - **다층 linked-interior 의 상층에는 정문 이벤트가 없다 (2026-09-13 실측 수정):** 실내 파이프라인은 맵마다 `ev_entrance_<id>` 를 두는데, 상층 플랜엔 `returnMapId/X/Y` 가 없어 이 이벤트가 **자기 맵의 남벽 칸**을 가리키는 미연결 전이가 됐다 — `transfer-impassable` 로 시공이 통째로 거부됐다. 작사 계단(`authoredDescent`)이 없는 상층에서는 `ev_entrance_` 를 지우고, 상층→하층 하강은 `placeStairTransfer` 의 `ev_exit_f*` 가 소유한다. **하강 착지는 계단 칸이 아니라 그 옆 바닥이다**(`stairFootCell`): 상승 계단 칸에 내리면 playerTouch 위에 선 상태가 된다. 날개별 `stories` 가 선언된 계단식 집의 실내 층수는 가장 높은 날개 층수를 따른다 — 높이 휴리스틱이 선언을 덮어쓰지 않는다(`houseInteriorStories`). 회귀: `test/houseKit.test.ts` 「계단식 2층 linked-interior…」「날개 선언 층수…」.
 - **집 문은 기본 개방 — 걸어 들어가면 열린다 (2026-09-05 갱신):** 실외 집 시공(`author_house`/`build_village`/`build_house_kit`)의 집 문은 문 스프라이트(벽 칸, below 장식) + 문 앞 통행 칸의 투명 발판(`<doorEventId>_step`, playerTouch+below) 두 이벤트다. 문 칸은 벽이라 밟히지 않으므로 playerTouch 발판은 문 앞에만 둔다 — 시작집 문(STARTER_HOUSE_DOOR_APPROACH)과 같은 배치. 발판은 `callMapEvent(doorEventId)`로 문 본체의 활성 페이지를 실행한다. 이전에는 발판이 `transfer`만 가져 문 본체의 열림 SE·프레임·대기를 전부 건너뛰었다. 본체 페이지를 복사하지 않아 이후 사용자가 바꾼 소리·조건·명령도 그대로 따른다. 기존 문을 고칠 때는 발판의 단일 transfer를 문 ID를 가리키는 callMapEvent로 바꾸고 문 그림·페이지·실내·출구는 보존한다. **귀환 착지가 발판과 같아도 즉시 재전이하지 않는다:** `transferTo`는 도착 후 auto만 실행하고 playerTouch는 걸음 완료 때 평가한다. 벽 위 문 그림의 통행 경고와 착지 발판 경고만으로 런타임 불량을 단정하지 말 것. Tests: `test/houseDoorOpen.test.ts`(실제 생성→호출→열림 순서·원본 편집 보존·귀환 시 접촉 미실행).
+
+- **죽은 callMapEvent 경고 — 조용한 무시 종결 (2026-09-20):** 웹 워크스페이스 프로젝트에서 AI 마을 시공으로 만든 집 문 본체 12개의 페이지 명령이 전부 비어 있고, 전이 대상 실내 맵도 사라진 상태가 발견됐다. 런타임은 이런 호출을 조용히 건너뛰므로 발판을 밟아도 아무 일 없이 지나갔다. 경고 노출은 네 곳: (1) 호출부 명령 행 — 대상 페이지가 비어 있으면 `callMapEvent.target-inert`, 대상의 transfer 목적 맵이 사라졌으면 `callMapEvent.transfer-target-missing` 경고(`validateEventDraft`). (2) 대상 이벤트 — 이 이벤트를 부르는 caller가 있는데 페이지 명령이 비어 있으면 `page.empty`가 `callMapEvent.target-page-empty` 경고로 격상(`validateEventDraft`). (3) 마커 툴팁과 좌측 이벤트 목록 호버 — 각 이벤트의 경고를 `⚠` 줄로 가져와 검사 없이도 보이게 한다(`collectCallTargetWarnings`). 판정 정본은 `src/editor/eventCallTargetStatus.ts`의 `callMapEventTargetStatus`. Tests: `test/callMapEventWarnings.test.ts`.
 - **출입구·타일은 벽에 바짝 붙인다 (2026-08-31):** 모델이 벽·맵 끝에서 1칸 안쪽에 좌표를 잡는 버릇이 있다. `create_transfer_pair` 는 `snapFlushToWall`(`src/editor/tools/wallFlush.ts`)로 그 1칸을 당긴다 — 맵 가장자리(x=0 / width-1)와 벽 바로 앞 통행 칸. playerTouch+below 는 벽 칸 위에서 발동하지 않으므로(`openwiki/runtime-sessions.md`) 벽 위 요청도 바로 앞 통행 칸으로 옮긴다. 문 자리 자체가 이벤트에 점유됐으면(여관 문 이벤트 등) 1칸 안쪽을 gate로 쓰지 않는다 — 스냅이 밀려난 자리를 radius=0에서 제외하고 옆 flush 칸을 먼저 찾으며, 착지가 점유된 후보도 버린다(2026-09-04). `fill_region` / `paint_tiles` rect 는 맵 **안 벽** 과의 1칸 틈만 메운다(맵 가장자리까지 늘리면 원형 호수가 남쪽으로 샌다). 프롬프트 정책 「벽 밀착」과 도구 description 이 같은 말을 한다. Tests: `test/wallFlush.test.ts`, `test/transferGateOccupied.test.ts`, `test/agentUxPolicyPrompt.test.ts`.
 
 - **구조물 스탬프는 사람 팔레트 전용 (2026-08-31):** 구조물 스탬프는 LLM 비노출이고 사람 팔레트에서만 쓴다. 프롬프트 수칙 11과 「구조물 스탬프는 사람 팔레트 전용」 절이 같은 금지를 말한다. 집=`author_house`, 마을=`author_village`, 벽=`build_wall`, 지형=`fill_region`, 소품=`place_props`. 사람 팔레트 선반·`applyPaletteStamp` 경로는 그대로다. Tests: `test/structureKitTools.test.ts` 「제거된 구조물 스탬프 호출은 미등록으로 거부된다」.
@@ -1748,3 +1818,34 @@ walkthrough rather than treating a successful tool call as runtime proof.
 `set_title_screen`, `set_game_over` 또는 해당 이벤트 그래픽 필드에 연결한다.
 오프닝과 게임오버의 전용 생성 툴은 각각의 화면 설정과 연결 검증을 유지하고,
 일반 에셋 생성은 여러 데이터베이스 레코드에서 재사용할 수 있는 리소스를 만든다.
+
+## Feature16 combat and climate authoring tools (2026-09-21)
+
+`upsert_skill` exposes formulas, crit, hit sequences, turn cooldowns and action profiles.
+`upsert_enemy` exposes expanded conditions and conditional drops. New nested inputs
+are validated before normalization: invalid formulas/condition kinds/array overflow
+are rejected atomically. Partial action updates preserve omitted values; top-level
+`clearActionSkill`, `clearActionFieldStatus`, `clearActionItemCost` explicitly clear.
+`set_map_properties` accepts climate or clearClimate. Drop item and condition state/
+switch references participate in load validation, deletion guards and switch rename.
+Tests: `feature16AiToolIntegration.test.ts`; schemas: `combatAuthoringSchemas.ts`.
+## 마을 시공 후 완료 계약 (2026-09-21)
+
+`author_village`의 `houseCount`는 무조건 required가 아니다. 기본 설계서가 있으면
+`resolveVillageDesignInput`이 파싱 전에 채운다. 고정 숲 없음 설계서에는
+`forestDensity`를 넣지 않는다. Pi 노트와 도구 설명이 이 조건을 공유한다.
+
+`residents[].lines` 생략 시 대사는 빈 상태이며, Pi 종료 검사가 보충 요청을 보낸다.
+옛 `AssistantSession.authorPendingNpcCast`가 Pi에서도 자동 실행된다고 설명하지 않는다.
+문 스프라이트도 visible이므로 `collectPendingNpcs` 결과 전체를 Pi 보충 대상으로 쓰면
+문에 대사가 붙는다. Pi는 이번에 생성한 `ev_village_*` 주민만 대상으로 삼는다.
+
+`evaluate_village_look`의 호출 성공과 `data.ok`는 별개다. Pi는 최종 프로젝트에서
+직접 재평가해 미통과를 `done.villageCompletion.issues`로 전달한다. 룩 평가에는
+맵의 `villageDesignSource.preset`을 사용해 고정 주민 수, 숲 없음, 광장 설정을 존중한다.
+현재 프로젝트의 기본 설계서를 나중에 바꿔도 이미 지은 맵의 평가 기준이 바뀌지 않는다.
+
+공개 평가 안내는 `find_tools`로 실제 수정 도구를 찾도록 한다. `plant_tree_clusters`,
+`revise_village_plan`, `run_village_pipeline`은 내부 호환용이며 Pi에서 노출·복구되지 않는다.
+재시공이 필요해도 사용자 범위와 DB 설계서를 유지한 `author_village`를 사용한다.
+평가를 통과하려고 고정 설정을 바꾸거나 전체 맵 재시공을 임의로 허가하지 않는다.

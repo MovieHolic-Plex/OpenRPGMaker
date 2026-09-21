@@ -1,6 +1,7 @@
 import {
   ASSET_TILESET,
   BUNDLED_EASYRPG_CHIPSET_ASSETS,
+  BUNDLED_REFERENCE_CHIPSET_ASSETS,
   registerTilesetTextureFrames,
   TEX_TILESET,
   TILE_FRAME_COUNT,
@@ -65,7 +66,7 @@ export function ensureTilesetTexture(scene: Phaser.Scene, tileset: TilesetDef): 
 
   // 확장 타일셋(count > 480)은 확장분 프레임까지 등록한다(기본 480 은 불변).
   if (tileset.image.type === "uploaded") registerUploadedTilesetFrames(scene, tileset, textureKey);
-  else registerTilesetTextureFrames(scene, textureKey, Math.max(TILE_FRAME_COUNT, tileset.count), { tileSize: tileset.tileSize, tilesPerRow: tileset.tilesPerRow });
+  else registerTilesetTextureFrames(scene, textureKey, Math.max(TILE_FRAME_COUNT, tileset.count), tileset.tileSize, tileset.tilesPerRow);
   return textureKey;
 }
 
@@ -141,7 +142,8 @@ export function tilesetImageSourceUrl(image: TilesetDef["image"]): string {
 
 function bundledTilesetImageUrl(textureKey: string): string | null {
   if (textureKey === TEX_TILESET) return DEFAULT_TILESET_IMAGE_URL;
-  const asset = BUNDLED_EASYRPG_CHIPSET_ASSETS.find((candidate) => candidate.textureKey === textureKey);
+  const asset = [...BUNDLED_EASYRPG_CHIPSET_ASSETS, ...BUNDLED_REFERENCE_CHIPSET_ASSETS]
+    .find((candidate) => candidate.textureKey === textureKey);
   return asset ? `/${asset.path}` : null;
 }
 

@@ -234,3 +234,39 @@ remote reload receipt: `lake-persistence.json` in the same directory.
 
 검증: `test/spatialRegionMapLinks.test.ts` (IO 보존·중복 배치·revision 불일치·부분 범위/삭제 맵),
 `test/spatialCatalog.test.ts`; 실제 저장 프로젝트 UI는 `scripts/qa/emerald-region-editor.mjs --saved`.
+
+
+## Shared forest regions and village trails (2026-09-21)
+
+Three fixed, project-independent region snapshots are registered in
+`src/project/regionReferences.ts`: `gubisup-80x72` (terrain),
+`small-forest-village-80x72` and `forest-cliff-village-80x72` (settlements).
+The original forest and small village remain frozen; the cliff village is a
+separate source map, not an overwrite of the earlier shared reference.
+
+The region inspector offers a portable `.oprn.json` download containing its
+map, tileset, binary-alpha atlas, autotile metadata and collision. Its filename
+uses the selected region name. Preview frames explicitly constrain images to
+the panel; do not reintroduce unstyled class names that let a native-size image
+overflow the inspector. Shared region cards respect `regionKind` in filtering.
+
+The cliff village has five houses, 4–5 tile high cliffs, a spring, and two narrow
+forest trails. Trails clear the canopy envelope, rebuild complete southern
+trunk end caps from the accepted 2-column/3-row grammar, then paint the native
+road autotile. Small roadside clusters avoid house fronts and stairs. The
+snapshot has 2,796 canopy cells; dark canopy interiors are intentional. All
+1,950 walkable cells and the five door approaches connect. Autotile checks use
+`connectTileIds` (roads also join stairs), not just `memberTileIds`.
+
+Source project: `oprn-hill-forest-harmony-20260918-a4e1`.
+Frozen project: `oprn-region-forest-cliff-village-v1`.
+Local editor flush/reload and Supabase compare-and-swap/reload receipts are in
+`.omo/evidence/forest-village-trails`. No unrelated map or asset was changed by
+the trail pass. The shipped region atlas contains the 11 reviewed unfake props;
+PNG outputs, metrics and the Astra review are in
+`public/assets/generated/forest-harmony/village-unfake-v1`. The rejected village
+clay oven is excluded. This does not ban unrelated indoor oven/cauldron assets.
+
+These are exterior layout references, not playable adventures: house interiors,
+NPC events, inter-map transfers, flowing water and waterfall animation are not
+implemented by these snapshots. Keep snapshot revisions immutable.

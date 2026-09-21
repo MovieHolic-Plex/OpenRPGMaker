@@ -1,3 +1,4 @@
+import { FOREST_PLACE_REFERENCES, forestPlaceSnapshot } from "./forestPlaceReferences";
 import { SHIP_PLACE_REFERENCES, shipPlaceSnapshot } from "./shipPlaceReferences";
 import emeraldSnapshot from "./regionReferences/emerald-basin.json";
 import hillForestSnapshot from "./regionReferences/hill-forest-village.json";
@@ -8,7 +9,7 @@ import { REFERENCE_HOUSE_FORM_DEFS } from "./defaults/referenceHouseFormCatalog"
 
 /** Fixed authored examples, independent of procedural RegionDesign and the active project. */
 export const REGION_REFERENCES = [{
-  id: "walled-settlement-43x45", name: "성벽으로 둘러싸인 정주지", kind: "completed-map" as const,
+  id: "walled-settlement-43x45", name: "성벽으로 둘러싸인 정주지", kind: "completed-map" as const, regionKind: "settlement" as const,
   revision: 1, width: 43, height: 45, tilesetId: snapshot.tileset.id,
   preview: "/assets/region-references/walled-settlement.png",
   sourceProjectId: "rpg-zzu-reference-houses-20260913-6890",
@@ -24,7 +25,7 @@ export const REGION_REFERENCES = [{
   ],
   limitations: "완성 맵 참고 사례. 생성 프리셋이나 배치 명령이 아니다. 실내·우물 상호작용은 포함하지 않는다.",
 }, {
-  id: "castle-town-100x100", name: "왕궁이 있는 이중 성벽 도시", kind: "completed-map" as const,
+  id: "castle-town-100x100", name: "왕궁이 있는 이중 성벽 도시", kind: "completed-map" as const, regionKind: "settlement" as const,
   revision: 1, width: 100, height: 100, tilesetId: castleSnapshot.tileset.id,
   preview: "/assets/region-references/castle-town.png",
   sourceProjectId: "rpg-zzu-castle-town-100-20260913-6890",
@@ -41,7 +42,7 @@ export const REGION_REFERENCES = [{
   ],
   limitations: "외관 배치 참고 사례. 궁전 3개 층의 실내 맵과 상호작용은 포함하지 않는다. 사용자 최종 수정 이후의 플레이 검증은 별도다.",
 }, {
-  id: "lake-village-60x60", name: "숲과 선착장이 있는 호수마을", kind: "completed-map" as const,
+  id: "lake-village-60x60", name: "숲과 선착장이 있는 호수마을", kind: "completed-map" as const, regionKind: "settlement" as const,
   revision: 1, width: 60, height: 60, tilesetId: lakeSnapshot.tileset.id,
   preview: "/assets/region-references/lake-village.png",
   sourceProjectId: "rpg-zzu-lake-village-60-20260913-6890", sourceMapId: lakeSnapshot.map.id,
@@ -66,7 +67,7 @@ const LAKE_PLACE_REFERENCES = [
 
 
 /** Shipped place examples remain visible even in a new, empty project. */
-export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFERENCES, {
+export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFERENCES, ...FOREST_PLACE_REFERENCES, {
   id: "emerald-basin-80x64", name: "비취 대계곡", kind: "completed-place" as const,
   placeKind: "natural" as const, revision: 1, x: 0, y: 0, width: 80, height: 64,
   tilesetId: emeraldSnapshot.tileset.id,
@@ -112,7 +113,7 @@ export function readRegionReference(id: string, row = 0, rows = 8) {
     throw new Error("row must be within the map; rows must be 1..16");
   }
   const place = LAKE_PLACE_REFERENCES.find(p => p.id === id);
-  const source = shipPlaceSnapshot(id) ?? (reference.id === "emerald-basin-80x64" ? emeraldSnapshot : reference.id === "hill-forest-village-64x64" ? hillForestSnapshot : reference.id === "castle-town-100x100" ? castleSnapshot : reference.id === "walled-settlement-43x45" ? snapshot : lakeSnapshot);
+  const source = forestPlaceSnapshot(id) ?? shipPlaceSnapshot(id) ?? (reference.id === "emerald-basin-80x64" ? emeraldSnapshot : reference.id === "hill-forest-village-64x64" ? hillForestSnapshot : reference.id === "castle-town-100x100" ? castleSnapshot : reference.id === "walled-settlement-43x45" ? snapshot : lakeSnapshot);
   const crop = (tiles: number[]) => Array.from({length: reference.height}, (_, y) => tiles.slice((y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0), (y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0) + reference.width)).flat();
   const selected = place ? { ...source, map: { ...source.map, width: place.width, height: place.height, lowerTiles: crop(source.map.lowerTiles), upperTiles: crop(source.map.upperTiles), events: [] } } : source;
   const endRow = Math.min(reference.height, row + rows), { map, tileset } = selected;
@@ -140,7 +141,7 @@ function referenceHouseFormNote(referenceId: string): string {
 }
 
 export function regionReferenceContext(): string {
-  return "## 지역 — 완성 맵 참고 사례\n" + [...REGION_REFERENCES, ...PLACE_REFERENCES].map(r =>
+  return "## 지역·장소 — 완성 맵 참고 사례\n" + [...REGION_REFERENCES, ...PLACE_REFERENCES].map(r =>
     `- ${r.name} (${r.id}, ${r.width}×${r.height}): ${r.rules.join(" ")}\n실제 배치: read_region_reference({id:'${r.id}',row:0,rows:8}), nextRow로 이어 읽기. 읽기 전용 참고 자료이며 생성 계약이 아니다.${referenceHouseFormNote(r.id)}`
   ).join("\n");
 }

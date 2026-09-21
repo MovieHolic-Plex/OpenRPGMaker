@@ -7,6 +7,7 @@ import { applyCharsetLabelOverrides, CHARSET_SEMANTICS } from "@/assets/charsetS
 import { charsetFrameIndex, EASYRPG_BACKDROP_ASSETS } from "@/assets/easyrpgRtp";
 import { listMonsterResources, type MonsterResourceProject } from "@/assets/monsterResourceCatalog";
 import { SCARLOXY_BACKDROP_ASSETS } from "@/assets/scarloxyPack";
+import { OGA_BACKDROP_ASSETS } from "@/assets/ogaBackdropAssets";
 import { moodTagsForAsset } from "@/assets/resourceMoodTags";
 import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
 import { DUNGEON_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsDungeon";
@@ -234,6 +235,11 @@ function candidatesForKind(kind: ResourceSearchKind, options: ResourceSearchOpti
           id: `backdrop:${asset.id}`,
           label: asset.name,
           tags: ["backdrop", "battle", "scarloxy", ...asset.tags, ...idWords(asset.id)],
+        })),
+        ...OGA_BACKDROP_ASSETS.map((asset) => ({
+          id: `backdrop:${asset.id}`,
+          label: asset.name,
+          tags: ["backdrop", "battle", "opengameart", ...asset.tags, ...idWords(asset.id)],
         })),
       ];
     case "bgm":

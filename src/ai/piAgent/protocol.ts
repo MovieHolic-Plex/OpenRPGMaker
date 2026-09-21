@@ -1,3 +1,5 @@
+import type { ActivityVisual } from "../activityVisual";
+import type { PiVillageCompletion } from "./villageCompletion";
 import type { PiApplyMode } from "./applyMode";
 import type { SpecialistModels } from "../modelRoles";
 import type { SpatialToolProof } from "@/editor/tools/spatialToolState";
@@ -96,6 +98,7 @@ export interface PiProjectCheckpoint {
 }
 export type PiAgentEvent = PiAgentEventPayload & { readonly at?: number };
 type PiAgentEventPayload =
+  | { readonly type: "prompt_inspection"; readonly snapshot: import("../authoring/promptInspection").PromptInspection }
   | { readonly type: "execution_status"; readonly name: string; readonly summary: string; readonly ok?: boolean; readonly data?: unknown }
   | ({ readonly type: "checkpoint"; readonly checkpointId: string } & PiProjectCheckpoint)
   | { readonly type: "start"; readonly provider: string; readonly model: string; readonly toolCount: number }
@@ -113,7 +116,7 @@ type PiAgentEventPayload =
   | { readonly type: "delta"; readonly kind: "thinking" | "text"; readonly text: string }
   | { readonly type: "assistant"; readonly text: string }
   | { readonly type: "tool_start"; readonly id: string; readonly name: string; readonly args: unknown }
-  | { readonly type: "tool_end"; readonly id: string; readonly name: string; readonly ok: boolean; readonly summary: string; readonly result?: unknown; readonly durationMs?: number }
+  | { readonly type: "tool_end"; readonly id: string; readonly name: string; readonly ok: boolean; readonly summary: string; readonly result?: unknown; readonly durationMs?: number; readonly visuals?: readonly ActivityVisual[] }
   /**
    * 툴이 맵에 한 일. 바뀐 칸만 싣는다 — 캔버스 시공 표시(고스트)가 턴 내내 먹는 재료다.
    * 결과 프로젝트는 맨 끝 `done` 에만 실리므로, 이게 없으면 턴이 끝날 때까지 캔버스가 조용하다.
@@ -125,7 +128,7 @@ type PiAgentEventPayload =
    * 쓰기 실행의 정본 증거. 프루프가 객체 정체성에 살아 이 경계를 넘지 못하므로 다이제스트로
    * 실어 보낸다 — 브라우저의 수용 게이트가 이걸로 «도구가 만든 제안»임을 확인한다.
    */
-  | { readonly type: "done"; readonly project: Project; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spatialProof?: SpatialToolProof | null };
+  | { readonly type: "done"; readonly villageCompletion?: PiVillageCompletion; readonly project: Project; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spatialProof?: SpatialToolProof | null };
 
 export type PiAgentDoneEvent = Extract<PiAgentEvent, { type: "done" }>;
 

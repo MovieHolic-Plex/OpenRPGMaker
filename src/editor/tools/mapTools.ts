@@ -1,3 +1,6 @@
+import { validateMapClimateInput } from "./combatAuthoringValidation";
+import { mapClimateSchema } from "./combatAuthoringSchemas";
+import { normalizeMapClimate } from "@/project/mapClimate";
 // editor/tools/mapTools.ts
 // 맵 생성/타일 페인팅/도로/구조물/시작위치 쓰기 툴.
 
@@ -1615,6 +1618,7 @@ const cloudShadowSchema: JsonSchema = {
   type: "object",
   properties: {
     enabled: { type: "boolean" },
+    amount: { type: "integer", minimum: 0, maximum: 6, description: "구름량: 0 없음, 1 적음, 3 보통(기본), 6 많음" },
     opacity: { type: "number", minimum: 0.05, maximum: 0.6 },
     speed: { type: "number", minimum: 0, maximum: 160 },
     angleDeg: { type: "number", minimum: 0, maximum: 359 },
@@ -1627,7 +1631,7 @@ const cloudShadowSchema: JsonSchema = {
 // 맵 속성 설정. 크기 변경은 resize_map, 트리 위치는 manage_map_tree로 분리.
 const setMapProperties: ToolDefinition = {
   name: "set_map_properties",
-  description: "맵 편집기의 전체 속성을 설정한다: 이름·타일셋·인카운트·BGM·배경·전투 배경·저장/이동/도주 제한·미니맵·구름 그림자.",
+  description: "맵 편집기의 전체 속성을 설정한다: 이름·타일셋·인카운트·BGM·배경·전투 배경·저장/이동/도주 제한·미니맵·구름 그림자·기후(실내 차단/고정/상속).",
   mode: "write",
   parameters: {
     type: "object",
@@ -1652,6 +1656,8 @@ const setMapProperties: ToolDefinition = {
       clearMinimap: { type: "boolean" },
       cloudShadows: cloudShadowSchema,
       clearCloudShadows: { type: "boolean" },
+      climate: mapClimateSchema,
+      clearClimate: { type: "boolean" },
     },
     required: ["mapId"],
   },
@@ -1723,6 +1729,16 @@ const setMapProperties: ToolDefinition = {
       map.minimap = structuredClone(args.minimap) as NonNullable<GameMap["minimap"]>;
       changed.push(`미니맵=${map.minimap.enabled ? "켬" : "끔"}`);
     }
+    if (args.clearClimate === true) {
+      delete map.climate;
+      changed.push("기후=전역 상속");
+    } else if (args.climate !== undefined) {
+      validateMapClimateInput(args.climate);
+      const climate = normalizeMapClimate(args.climate);
+      if (!climate) throw new ToolError("climate.mode는 inherit, indoor, fixed 중 하나여야 합니다.", { code: "invalid-args" });
+      map.climate = climate;
+      changed.push(`기후=${climate.mode}`);
+    }
     if (args.clearCloudShadows === true) {
       delete map.cloudShadows;
       changed.push("구름 그림자=끔");
@@ -1731,6 +1747,7 @@ const setMapProperties: ToolDefinition = {
       const params = normalizeCloudShadowParams(shadows);
       map.cloudShadows = {
         enabled: shadows.enabled === true,
+        amount: params.amount,
         opacity: params.opacity,
         speed: params.speed,
         angleDeg: params.angleDeg,

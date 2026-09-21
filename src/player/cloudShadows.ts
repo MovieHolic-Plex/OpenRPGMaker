@@ -13,6 +13,7 @@
 import type { MapCloudShadowSetting } from "@/project/types";
 
 export type CloudShadowParams = {
+  readonly amount: number;
   readonly enabled: boolean;
   /** 그림자 진하기 0.05~0.6. 개별 덩어리 알파의 상한이다. */
   readonly opacity: number;
@@ -59,6 +60,8 @@ export type CloudShadowLobe = {
   readonly radius: number;
 };
 
+export const CLOUD_SHADOW_AMOUNT_RANGE = { min: 0, max: 6 } as const;
+
 export const CLOUD_SHADOW_OPACITY_RANGE = { min: 0.05, max: 0.6 } as const;
 export const CLOUD_SHADOW_SPEED_RANGE = { min: 0, max: 160 } as const;
 export const CLOUD_SHADOW_SCALE_RANGE = { min: 0.5, max: 2.5 } as const;
@@ -91,8 +94,8 @@ export const CLOUD_SHADOW_SPEED_JITTER = { min: 0.88, max: 1.12 } as const;
 /** 느린 크기 호흡 — 폭과 한 바퀴 주기(ms). 구름은 흘러가면서 늘어나고 줄어든다. */
 export const CLOUD_SHADOW_BREATH = { amount: 0.09, periodMs: 21_000 } as const;
 
-/** 체크만 했을 때의 값. 진하기 0.34 는 «안 보이면 기능이 없는 줄 안다» 와 «너무 어둡다» 사이의 실측값이다. */
-export const CLOUD_SHADOW_DEFAULTS = { opacity: 0.34, speed: 26, angleDeg: 28, scale: 1 } as const;
+/** 기본 산들바람: 8px/초, 최대 26% 그늘. 명시적으로 저장된 설정은 그대로 존중한다. */
+export const CLOUD_SHADOW_DEFAULTS = { amount: 3, opacity: 0.26, speed: 8, angleDeg: 28, scale: 1 } as const;
 
 export const NO_CLOUD_SHADOWS: CloudShadowParams = { enabled: false, ...CLOUD_SHADOW_DEFAULTS };
 
@@ -109,6 +112,7 @@ export function normalizeCloudShadowParams(setting: MapCloudShadowSetting | unde
   if (!setting) return NO_CLOUD_SHADOWS;
   return {
     enabled: setting.enabled === true,
+    amount: Math.round(clampNumber(setting.amount, CLOUD_SHADOW_DEFAULTS.amount, 0, 6)),
     opacity: clampNumber(setting.opacity, CLOUD_SHADOW_DEFAULTS.opacity, CLOUD_SHADOW_OPACITY_RANGE.min, CLOUD_SHADOW_OPACITY_RANGE.max),
     speed: clampNumber(setting.speed, CLOUD_SHADOW_DEFAULTS.speed, CLOUD_SHADOW_SPEED_RANGE.min, CLOUD_SHADOW_SPEED_RANGE.max),
     angleDeg: normalizeAngle(setting.angleDeg),

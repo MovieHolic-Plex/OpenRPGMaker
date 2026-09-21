@@ -1,0 +1,240 @@
+{
+  "records": [
+    {
+      "name": "get_map_region",
+      "ok": true,
+      "summary": "시장 마을(map_99f02a0f-299f-458c-9388-9da0554cc464) 영역 (0,0)~(24,16) — 이벤트 1개, 물 0칸",
+      "visuals": [
+        {
+          "title": "시장 마을",
+          "kind": "map",
+          "phase": "read",
+          "target": "map:map_99f02a0f-299f-458c-9388-9da0554cc464:0,0"
+        }
+      ]
+    },
+    {
+      "name": "paint_road",
+      "ok": true,
+      "summary": "시장 마을에 dirt 도로 23칸 — 자연도 0 / 경로 23칸 — 통행 불가 9칸 우회",
+      "visuals": [
+        {
+          "title": "시장 마을",
+          "kind": "map",
+          "phase": "before",
+          "target": "map:map_99f02a0f-299f-458c-9388-9da0554cc464:2,11"
+        },
+        {
+          "title": "시장 마을",
+          "kind": "map",
+          "phase": "draft",
+          "target": "map:map_99f02a0f-299f-458c-9388-9da0554cc464:2,11"
+        }
+      ]
+    },
+    {
+      "name": "get_event",
+      "ok": true,
+      "summary": "이벤트 'event_market_shop_potion' (22,19) — 페이지 1개",
+      "visuals": [
+        {
+          "title": "포션 상인 루나",
+          "kind": "asset",
+          "phase": "read",
+          "target": "event:map_99f02a0f-299f-458c-9388-9da0554cc464:event_market_shop_potion"
+        },
+        {
+          "title": "시장 마을",
+          "kind": "map",
+          "phase": "read",
+          "target": "map:map_99f02a0f-299f-458c-9388-9da0554cc464:10,11"
+        }
+      ]
+    },
+    {
+      "name": "list_monster_resources",
+      "ok": true,
+      "summary": "몬스터 소재 4/11개",
+      "visuals": [
+        {
+          "title": "초록 슬라임",
+          "kind": "asset",
+          "phase": "read",
+          "target": "resource:generated-enemy-slime-01"
+        },
+        {
+          "title": "픽셀 초록 슬라임",
+          "kind": "asset",
+          "phase": "read",
+          "target": "resource:generated-troop-preview-slime"
+        },
+        {
+          "title": "왕관 쓴 초록 슬라임",
+          "kind": "asset",
+          "phase": "read",
+          "target": "resource:generated-enemy-king-slime-01"
+        },
+        {
+          "title": "푸른 슬라임",
+          "kind": "asset",
+          "phase": "read",
+          "target": "resource:generated-enemy-slime-blue"
+        }
+      ]
+    },
+    {
+      "name": "upsert_enemy",
+      "ok": false,
+      "summary": "'upsert_enemy' 실행 실패: enemy.hp는 허용되지 않는 필드입니다. 허용 필드: id, name, speciesId, monsterResourceId, battleScalePercent, graphicHue, transparent, flying, criticalHit, attackOptions, skillIds, level, stats, rewards, actions, state…",
+      "visuals": [
+        {
+          "title": "슬라임",
+          "kind": "asset",
+          "phase": "before",
+          "target": "record:enemies:enemy_slime",
+          "stats": [
+            [
+              "최대 HP",
+              "78"
+            ],
+            [
+              "공격",
+              "12"
+            ],
+            [
+              "방어",
+              "15"
+            ]
+          ]
+        },
+        {
+          "title": "슬라임",
+          "kind": "asset",
+          "phase": "failed",
+          "target": "record:enemies:enemy_slime",
+          "stats": [
+            [
+              "최대 HP",
+              "78"
+            ],
+            [
+              "공격",
+              "12"
+            ],
+            [
+              "방어",
+              "15"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "upsert_enemy",
+      "ok": true,
+      "summary": "적 '슬라임' 수정",
+      "visuals": [
+        {
+          "title": "슬라임",
+          "kind": "asset",
+          "phase": "before",
+          "target": "record:enemies:enemy_slime",
+          "stats": [
+            [
+              "최대 HP",
+              "78"
+            ],
+            [
+              "공격",
+              "12"
+            ],
+            [
+              "방어",
+              "15"
+            ]
+          ]
+        },
+        {
+          "title": "슬라임",
+          "kind": "asset",
+          "phase": "draft",
+          "target": "record:enemies:enemy_slime",
+          "stats": [
+            [
+              "최대 HP",
+              "98"
+            ],
+            [
+              "공격",
+              "12"
+            ],
+            [
+              "방어",
+              "15"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "upsert_item",
+      "ok": true,
+      "summary": "아이템 '회복약' 수정",
+      "visuals": [
+        {
+          "title": "회복약",
+          "kind": "asset",
+          "phase": "before",
+          "target": "record:items:item_potion",
+          "stats": [
+            [
+              "가격",
+              "50"
+            ]
+          ]
+        },
+        {
+          "title": "회복약",
+          "kind": "asset",
+          "phase": "draft",
+          "target": "record:items:item_potion",
+          "stats": [
+            [
+              "가격",
+              "80"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "get_database_records",
+      "ok": true,
+      "summary": "equipment 1건 / 1건",
+      "visuals": [
+        {
+          "title": "청동 검",
+          "kind": "asset",
+          "phase": "read",
+          "target": "record:equipment:equip_sword",
+          "stats": [
+            [
+              "가격",
+              "100"
+            ],
+            [
+              "공격",
+              "8"
+            ],
+            [
+              "방어",
+              "0"
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "immutable": true,
+  "mapId": "map_99f02a0f-299f-458c-9388-9da0554cc464"
+}

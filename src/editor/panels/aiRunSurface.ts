@@ -1,3 +1,4 @@
+import type { ActivityVisual } from "@/ai/activityVisual";
 // editor/panels/aiRunSurface.ts
 // 턴 실행이 공유하는 **실행 표면 계약**. 채팅 턴(aiTurnRunner)과 선택 영역 작업
 // (aiRegionTaskRunner)이 같은 표면을 쓴다 — 상태 줄, 진행 표시, 중단 버튼, 로그, 접힘/펼침.
@@ -51,7 +52,7 @@ export interface AiRunSurface {
   readonly refreshRunningStatus: (record?: boolean) => void;
   readonly refreshAbortButton: () => void;
   readonly startLiveActivity: (toolName: string, index: number, args?: Record<string, unknown>) => void;
-  readonly completeLiveActivity: (toolName: string, result: ToolResult, args?: Record<string, unknown>) => void;
+  readonly completeLiveActivity: (toolName: string, result: ToolResult, args?: Record<string, unknown>, visuals?: readonly ActivityVisual[]) => void;
 
   // ── 접힘/펼침 · 알림 ─────────────────────────────────────
   readonly expandForAiWork: () => void;

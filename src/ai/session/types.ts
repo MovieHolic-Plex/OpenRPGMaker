@@ -1,3 +1,4 @@
+import type { ActivityVisual } from "../activityVisual";
 import type { EventCommandScope } from "../eventCommandScope";
 // ai/session/types.ts
 // 어시스턴트 세션의 공개 타입. 세션이 바깥(패널·브리지·영역 작업·테스트)과 주고받는
@@ -40,7 +41,7 @@ export type SessionEvent =
   | { type: "reasoning_token"; delta: string }
   | { type: "assistant_message"; content: string }
   | { type: "assistant_stream_reset" }
-  | { type: "tool_call"; name: string; args: Record<string, unknown>; result: ToolResult; reason?: string }
+  | { type: "tool_call"; name: string; args: Record<string, unknown>; result: ToolResult; reason?: string; visuals?: readonly ActivityVisual[] }
   // 툴 실행 직전에 나가는 신호 이벤트 — 결과 도착 전에 "지금 무엇을 하는 중"을 그릴 수 있게 한다.
   // index는 이번 턴의 1-based 실행 서수.
   | { type: "tool_started"; name: string; index: number; args?: Record<string, unknown> }

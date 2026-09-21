@@ -1,0 +1,180 @@
+{
+  "scope": "revised map only; reference has no object segmentation",
+  "forecourt": {
+    "rectCells": [
+      28,
+      98,
+      58,
+      16
+    ],
+    "areaCells": 928,
+    "nonArchitectureProps": 23,
+    "props": [
+      {
+        "name": "lamp",
+        "x": 29,
+        "y": 107,
+        "w": 1,
+        "h": 6
+      },
+      {
+        "name": "lamp",
+        "x": 82,
+        "y": 107,
+        "w": 1,
+        "h": 6
+      },
+      {
+        "name": "bench",
+        "x": 30,
+        "y": 101,
+        "w": 4,
+        "h": 3
+      },
+      {
+        "name": "bench",
+        "x": 74,
+        "y": 102,
+        "w": 4,
+        "h": 3
+      },
+      {
+        "name": "sacks",
+        "x": 73,
+        "y": 110,
+        "w": 4,
+        "h": 4
+      },
+      {
+        "name": "stela",
+        "x": 40,
+        "y": 105,
+        "w": 2,
+        "h": 4
+      },
+      {
+        "name": "small-pot",
+        "x": 31,
+        "y": 99,
+        "w": 2,
+        "h": 2
+      },
+      {
+        "name": "small-pot",
+        "x": 35,
+        "y": 100,
+        "w": 2,
+        "h": 2
+      },
+      {
+        "name": "small-pot",
+        "x": 78,
+        "y": 100,
+        "w": 2,
+        "h": 2
+      },
+      {
+        "name": "small-pot",
+        "x": 80,
+        "y": 102,
+        "w": 2,
+        "h": 2
+      },
+      {
+        "name": "small-pot",
+        "x": 70,
+        "y": 109,
+        "w": 2,
+        "h": 2
+      },
+      {
+        "name": "small-pot",
+        "x": 77,
+        "y": 109,
+        "w": 2,
+        "h": 2
+      },
+      {
+        "name": "small-pot",
+        "x": 48,
+        "y": 99,
+        "w": 2,
+        "h": 2
+      },
+      {
+        "name": "small-pot",
+        "x": 60,
+        "y": 99,
+        "w": 2,
+        "h": 2
+      },
+      {
+        "name": "plant-pot",
+        "x": 29,
+        "y": 99,
+        "w": 2,
+        "h": 3
+      },
+      {
+        "name": "plant-pot",
+        "x": 77,
+        "y": 99,
+        "w": 2,
+        "h": 3
+      },
+      {
+        "name": "plant-pot",
+        "x": 38,
+        "y": 109,
+        "w": 2,
+        "h": 3
+      },
+      {
+        "name": "plant-pot",
+        "x": 65,
+        "y": 109,
+        "w": 2,
+        "h": 3
+      },
+      {
+        "name": "crate",
+        "x": 69,
+        "y": 109,
+        "w": 2,
+        "h": 2
+      },
+      {
+        "name": "crate",
+        "x": 71,
+        "y": 111,
+        "w": 2,
+        "h": 2
+      },
+      {
+        "name": "crate",
+        "x": 75,
+        "y": 111,
+        "w": 2,
+        "h": 2
+      },
+      {
+        "name": "crate",
+        "x": 80,
+        "y": 109,
+        "w": 2,
+        "h": 2
+      },
+      {
+        "name": "crate",
+        "x": 79,
+        "y": 111,
+        "w": 2,
+        "h": 2
+      }
+    ],
+    "boundingBoxCells": 136,
+    "boundingBoxFraction": 0.14655172413793102,
+    "limitation": "Bounding rectangles include transparent pixels; not visual coverage, not reference density ratio. Architecture and NPCs excluded."
+  },
+  "allPlacementRecords": 262
+}

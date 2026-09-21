@@ -7,6 +7,19 @@ export const DEFAULT_TILESET_ID = "easyrpg_chipset_combined_town";
 // 한다(test/easyrpgAssets.test.ts 가 두 값을 비교한다).
 export const DEFAULT_TILESET_NAME = "합본 마을 · EasyRPG (CC0)";
 export const DEFAULT_TILESET_TEXTURE_KEY = "tex_easyrpg_chipset_combined_town";
+/** Castle2.png 원본 512px를 축소하지 않고 엔진의 16px 셀(32열)로 나눈다. */
+export const CASTLE_TILESET_ID = "opengameart_castle";
+export const CASTLE_TILESET_NAME = "성채 · OpenGameArt (CC-BY 3.0)";
+export const CASTLE_TILESET_TEXTURE_KEY = "tex_opengameart_castle";
+/** 16px reference-board atlas generated from the user-provided castle composition. */
+export const CASTLE_REFERENCE_TILESET_ID = "opengameart_castle_reference";
+export const CASTLE_REFERENCE_TILESET_TEXTURE_KEY = "tex_opengameart_castle_reference";
+export const CASTLE_REFERENCE_TILE_SIZE = 16;
+export const CASTLE_REFERENCE_TILES_PER_ROW = 140;
+export const CASTLE_REFERENCE_TILE_COUNT = 140 * 140;
+export const CASTLE_TILE_SIZE = 16;
+export const CASTLE_TILES_PER_ROW = 32;
+export const CASTLE_TILE_COUNT = 1024;
 export const LEGACY_RM_TILESET_ID = "tiles_default";
 export const LEGACY_RM_TILESET_NAME = "RM 기본 샘플 타일 그림판";
 export const LEGACY_RM_TILESET_TEXTURE_KEY = "tex_tiles_default";

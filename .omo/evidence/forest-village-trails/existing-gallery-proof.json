@@ -1,0 +1,12 @@
+[
+  {
+    "case": "existing",
+    "sharedRegion": true,
+    "preview": true,
+    "downloadExact": true,
+    "downloadFilename": "굽이숲 절벽마을.oprn.json",
+    "rowLookupExact": true,
+    "mapUnchanged": true,
+    "errors": []
+  }
+]

@@ -12,6 +12,7 @@ import type { ResourceKind } from "@/project/types";
 import { requiredRuntimeAssetPaths } from "@/project/webExportRuntimeAssets";
 import type { Project } from "@/project/types";
 import type { WebExportAsset } from "@/project/webExportTypes";
+import { CASTLE_REFERENCE_TILESET_TEXTURE_KEY, CASTLE_TILESET_TEXTURE_KEY } from "./defaults/constants";
 
 const encoder = new TextEncoder();
 
@@ -51,6 +52,18 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
     if (!asset) continue;
     const zipPath = `assets/uploaded/${safeFileName(asset.id)}.${asset.ref ? asset.ref.extension : uploadedAssetExtension(asset.dataUrl ?? "")}`;
     assets.set(zipPath, { kind: "uploaded", asset, zipPath });
+  }
+  if (ids.has(CASTLE_TILESET_TEXTURE_KEY)) {
+    const path = "assets/opengameart-castle-tiles-CREDITS.txt";
+    assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
+  }
+  if (ids.has(CASTLE_REFERENCE_TILESET_TEXTURE_KEY)) {
+    const path = "assets/opengameart-castle-reference-composite-CREDITS.txt";
+    assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
+  }
+  if (ids.has('castle_courtyard_harbor_atlas')) {
+    const path = 'assets/castle-surroundings/CREDITS.txt';
+    assets.set(path, { kind: 'public', sourcePath: path, zipPath: path });
   }
   return [...assets.values()].sort((left, right) => left.zipPath.localeCompare(right.zipPath));
 }

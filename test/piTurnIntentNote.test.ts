@@ -4,6 +4,7 @@
 import { describe, expect, it } from "vitest";
 import { buildPiIntentNote, composePiTask } from "@/ai/piAgent/executionRoute";
 import { emptyIntentDeclaration, type IntentDeclaration } from "@/ai/intentDeclaration";
+import { asVillageDesign } from "@/project/villageDesign";
 
 const villageIntent: IntentDeclaration = {
   ...emptyIntentDeclaration(),
@@ -17,6 +18,30 @@ const villageIntent: IntentDeclaration = {
 };
 
 describe("Pi 턴 의도 노트", () => {
+  it("기본 설계서 4채·숲 없음에는 기본 12채·숲 밀도·선행 resize를 강요하지 않는다", () => {
+    const preset = asVillageDesign({ id: "four-houses", name: "네 집", houseCount: 4 });
+    const project = { defaultVillagePresetId: preset.id, villagePresets: [preset] };
+    const note = buildPiIntentNote({ project, intent: { ...villageIntent, mode: "modify" },
+      targetMap: { id: "map_a", width: 20, height: 20, lived: false }, selection: null });
+    expect(note).toContain('기본 마을 설계서 "four-houses"');
+    expect(note).toContain("houseCount는 생략");
+    expect(note).toContain("숲 없음이면 지정하지 않는다");
+    expect(note).not.toContain("houseCount:12");
+    expect(note).not.toContain("forestDensity 는 반드시");
+    expect(note).not.toContain("[시공 규모]");
+    expect(note).not.toContain("resize_map({");
+  });
+
+  it("사용자가 지정한 집 수는 설계서와 달라도 숨기지 않고 충돌로 보고하게 한다", () => {
+    const preset = asVillageDesign({ id: "four", name: "네 집", houseCount: 4 });
+    const note = buildPiIntentNote({ project: { defaultVillagePresetId: preset.id, villagePresets: [preset] },
+      intent: { ...villageIntent, construction: { houseCount: 7, npcCount: 3 } }, targetMap: null, selection: null });
+    expect(note).toContain("사용자가 명시한 houseCount:7");
+    expect(note).toContain("npcCount:3");
+    expect(note).toContain("village-design-conflict");
+    expect(note).toContain("width/height는 생략");
+  });
+
   it("야외 마을 시공 선언은 author_village 와 권장 크기를 본문에 싣는다", () => {
     const note = buildPiIntentNote({ intent: villageIntent, targetMap: { id: "map_a", width: 100, height: 100, lived: true }, selection: null });
     expect(note).not.toBeNull();

@@ -56,6 +56,7 @@ import { retainEventLayerClickFeedback } from "@/editor/transientEditorChrome";
 import { EVENT_EDITOR_CLOSED_WINDOW_EVENT } from "@/editor/eventEditorLifecycleEvents";
 import {
   buildEventMarkerTooltipModel,
+  collectCallTargetWarnings,
   renderEventMarkerTooltipElement,
 } from "@/editor/eventMarkerUx";
 import {
@@ -1993,7 +1994,7 @@ export class EditScene extends PhaserRuntime.Scene {
       return;
     }
 
-    const model = buildEventMarkerTooltipModel(existing);
+    const model = buildEventMarkerTooltipModel(existing, collectCallTargetWarnings(store.getCurrent(), existing));
 
     const host = canvas.parentElement;
     if (!host || typeof document === "undefined") return;

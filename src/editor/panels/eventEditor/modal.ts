@@ -64,9 +64,10 @@ type OpenEventEditorRequest = {
 export function openEventEditorModal(
   mapId: MapId,
   eventId: string,
-  options?: { readonly aiDock?: boolean },
+  options?: { readonly aiDock?: boolean; readonly pageId?: string },
 ): void {
   if (isEventEditorModalOpenFor(mapId, eventId)) {
+    if (options?.pageId) editorState.set({ selectedEventPageId: options.pageId });
     // 이미 그 이벤트를 편집 중이다 — 도크가 문서에 살아 있으므로 예약이 아니라 직접 펼친다.
     // (예약은 "태어날 때" 소비되므로 여기서 남기면 다음 재렌더까지 떠돌다 샌다.)
     const modal = document.querySelector(`[data-testid='${EVENT_EDITOR_MODAL_TEST_ID}']`);
@@ -77,6 +78,7 @@ export function openEventEditorModal(
     return;
   }
   guardedCloseExistingEventEditorModal(() => {
+    if (options?.pageId) editorState.set({ selectedEventPageId: options.pageId });
     if (!beginExistingEventDraft(mapId, eventId)) return;
     openDraftEventEditorModal({ mapId, eventId, aiDock: options?.aiDock });
   });

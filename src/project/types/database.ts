@@ -143,7 +143,7 @@ export type BattleUiStyle =
 
 /** ESC(X) 게임 메뉴 스킨 — @/player/menuSkins/registry 의 id union. 프로젝트 파일에 저장되므로
  *  id 를 함부로 바꾸지 않는다. 미설정·미지값은 resolveMenuSkinId 가 workbench 로 푼다. */
-export type MenuUiStyle = "workbench" | "party-first" | "party-first-warm" | "hub" | "sheet" | "classic" | "journal" | "ribbon" | "retro-2000" | "retro-2003" | "classic-xp" | "classic-vx";
+export type MenuUiStyle = "field-list" | "workbench" | "party-first" | "party-first-warm" | "hub" | "sheet" | "classic" | "journal" | "ribbon" | "retro-2000" | "retro-2003" | "classic-xp" | "classic-vx";
 
 /** 전투 아군측 배틀러 소스 — actors: 파티 액터가 직접 싸움(기본),
  *  monsters: 잡은 파티 몬스터가 필드에 나서 싸움(포켓몬식). */
@@ -219,6 +219,14 @@ export interface SkillRecord {
   successRate: number;
   variance: number;
   hitRate: number;
+  /** Optional authored base damage. Arithmetic only; invalid formulas use the legacy formula. */
+  damageFormula?: string;
+  criticalRate?: number;
+  criticalMultiplier?: number;
+  /** Number of subsequent full battle rounds during which this skill is unavailable. */
+  cooldownTurns?: number;
+  /** Ordered damage/healing multipliers, one per hit. Omitted means one hit. */
+  hitSequence?: number[];
   effect: SkillEffect;
   // 속성 ID. DatabaseElementRecord.id 와 매칭. 없으면 비속성(상성 배율 1.0).
   elementId?: string;
@@ -260,7 +268,13 @@ export interface ActionWeaponProfile {
 }
 
 export interface ActionSkillProfile {
-  kind: "projectile";
+  kind: "projectile" | "melee" | "dash" | "trap";
+  /** Milliseconds between casts (default 350). */
+  cooldownMs?: number;
+  /** Trap lifetime, milliseconds (default 5000, maximum 30000). */
+  durationMs?: number;
+  /** Bounded field enemy effect, independent of turn-based state records. */
+  fieldStatus?: { kind: "poison" | "slow"; durationMs: number };
   damage: number;
   range: number;
   speedTilesPerSec?: number;
@@ -540,6 +554,8 @@ export interface EnemyRewards {
   gold: number;
   dropItemId?: ItemId;
   dropRatePercent: number;
+  /** When present, replaces the legacy single drop (including an explicitly empty list). */
+  drops?: { itemId: ItemId; ratePercent: number; quantity: number; condition: EnemyActionCondition }[];
 }
 
 export interface EnemyCritical {
@@ -551,7 +567,11 @@ export interface EnemyOptions {
   normalAttacksMiss: boolean;
 }
 
-export type EnemyActionCondition = { kind: "always" } | { kind: "turn"; start: number; interval: number };
+export type EnemyActionCondition = { kind: "always" } | { kind: "turn"; start: number; interval: number }
+  | { kind: "hp" | "mp"; minPercent: number; maxPercent: number }
+  | { kind: "status"; stateId: string; present: boolean }
+  | { kind: "allies"; min: number; max: number }
+  | { kind: "switch"; switchId: string; value: boolean };
 
 export interface EnemyActionSwitchEffect {
   enabled: boolean;
@@ -1113,6 +1133,7 @@ export interface SystemRecords {
   battleUiStyle?: BattleUiStyle;
   /** ESC(X) 게임 메뉴 디자인. 생략 = workbench(작업대, 지금 화면). */
   menuUiStyle?: MenuUiStyle;
+  fieldHud?: import("../fieldHud").FieldHudConfig;
   /** Project-wide, scoped battle menu CSS; absent preserves the selected skin. */
   battleCommandCss?: string;
   battleParty?: BattleParty;

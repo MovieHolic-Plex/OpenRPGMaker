@@ -1,3 +1,5 @@
+import { retainActivityVisuals } from "./activityMediaArchive";
+import type { ActivityVisualRef } from "./activityVisual";
 import type { PiAgentEvent } from "./piAgent/protocol";
 
 /** Display-independent, bounded execution receipts. Never retains a project or private thinking. */
@@ -13,6 +15,7 @@ export interface ActivityEntry {
   readonly input?: unknown;
   readonly output?: unknown;
   readonly durationMs?: number;
+  readonly visuals?: readonly ActivityVisualRef[];
 }
 export interface ActivityTrace {
   readonly version: 1;
@@ -112,7 +115,7 @@ export function recordActivityEvent(trace: ActivityTrace, event: PiAgentEvent, a
   if (event.type === "tool_end") {
     const index = lastIndex(trace.entries, e => e.actor === actor && e.kind === "tool" && e.status === "running" && (e.input as { callId?: string })?.callId === event.id);
     const opened = trace.entries[index];
-    return put(trace, { ...(opened ?? base), kind: "tool", name: event.name, status: event.ok ? "ok" : "error", summary: activityText(event.summary), endedAt: at, durationMs: event.durationMs ?? (opened ? Math.max(0, at - opened.at) : undefined), output: activityPayload(event.result ?? { ok: event.ok, summary: event.summary, detail: "이 실행 경로에서는 결과 요약만 제공됨" }) }, index);
+    return put(trace, { ...(opened ?? base), kind: "tool", name: event.name, status: event.ok ? "ok" : "error", summary: activityText(event.summary), endedAt: at, durationMs: event.durationMs ?? (opened ? Math.max(0, at - opened.at) : undefined), visuals: event.visuals?.length ? retainActivityVisuals(`${trace.id}:${actor}:${event.id}:${trace.serial}`, event.visuals) : opened?.visuals, output: activityPayload(event.result ?? { ok: event.ok, summary: event.summary, detail: "이 실행 경로에서는 결과 요약만 제공됨" }) }, index);
   }
   if (event.type === "delta" || event.type === "heartbeat") {
     // No private thinking text and no per-token rows. Retain one connection/stream receipt per actor.
@@ -133,5 +136,6 @@ export function recordActivityEvent(trace: ActivityTrace, event: PiAgentEvent, a
     case "checkpoint": return put(trace, { ...base, summary: activityText(event.label), output: activityPayload({ checkpointId: event.checkpointId, toolName: event.toolName }) });
     case "map_delta": return put(trace, { ...base, summary: `맵 ${event.maps.length}개 변경 신호`, output: activityPayload(event.maps) });
     case "team_start": return put(trace, { ...base, summary: "팀 작업 시작", output: activityPayload(event) });
+    case "prompt_inspection": return put(trace, { ...base, summary: "프롬프트 점검", output: activityPayload(event.snapshot) });
   }
 }
