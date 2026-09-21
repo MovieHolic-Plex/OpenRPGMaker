@@ -276,6 +276,9 @@ function validateEventGraphic(label: string, value: unknown): void {
   if (graphic.pattern !== undefined) requireNumber(`${label}.pattern`, graphic.pattern);
   if (graphic.transparent !== undefined) requireBoolean(`${label}.transparent`, graphic.transparent);
   validateCharacterScale(`${label}.scale`, graphic.scale);
+  if (graphic.scaleMode !== undefined) {
+    assert(graphic.scaleMode === "auto" || graphic.scaleMode === "manual", `${label}.scaleMode must be auto or manual`);
+  }
 }
 
 /**
@@ -443,6 +446,9 @@ function validatePageShape(label: string, value: unknown): void {
   // 올리면 sprite.type 이 없는 기존 프로젝트를 새로 거부하게 되므로, 2차가 도입한 배율만
   // 검증한다 — 새 필드에만 새 계약을 건다.
   validateCharacterScale(`${label}.graphic.scale`, graphic.scale);
+  if (graphic.scaleMode !== undefined) {
+    assert(graphic.scaleMode === "auto" || graphic.scaleMode === "manual", `${label}.graphic.scaleMode must be auto or manual`);
+  }
   validateCharacterFootprintFields(label, page);
   validateTrigger(`${label}.trigger`, page.trigger);
   requireString(`${label}.priority`, page.priority);

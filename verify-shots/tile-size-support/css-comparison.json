@@ -1,0 +1,26 @@
+{
+  "headExit": 1,
+  "worktreeExit": 1,
+  "head": {
+    "hexLiterals": 1640,
+    "important": 611,
+    "undefinedVars": 42,
+    "globalRootFiles": 10,
+    "cssFileCount": 366
+  },
+  "worktree": {
+    "hexLiterals": 1640,
+    "important": 611,
+    "undefinedVars": 42,
+    "globalRootFiles": 10,
+    "cssFileCount": 367
+  },
+  "delta": {
+    "hexLiterals": 0,
+    "important": 0,
+    "undefinedVars": 0,
+    "globalRootFiles": 0,
+    "cssFileCount": 1
+  },
+  "newRegressions": []
+}

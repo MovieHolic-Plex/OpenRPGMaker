@@ -1,0 +1,22 @@
+{
+  "errors": [],
+  "manual": {
+    "sprite": {
+      "type": "bundled",
+      "id": "tex_easyrpg_charset_monster1"
+    },
+    "pattern": 1,
+    "scale": 1,
+    "scaleMode": "manual"
+  },
+  "auto": {
+    "sprite": {
+      "type": "bundled",
+      "id": "tex_easyrpg_charset_monster1"
+    },
+    "pattern": 1,
+    "scale": 1,
+    "scaleMode": "auto"
+  },
+  "status": "passed"
+}

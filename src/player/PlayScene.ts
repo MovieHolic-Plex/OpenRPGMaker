@@ -1,4 +1,5 @@
 import { mapTileSize } from "@/project/tileGeometry";
+import { syncPlayerCharacterScale } from "@/player/playerCharacterScale";
 import { ACTION_STAMINA_MAX } from "@/player/actionCombatTypes";
 import type Phaser from "phaser";
 import { clearAllSceneEmotes, syncSceneEmotes } from "@/player/playSceneEmotes";
@@ -274,6 +275,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       this.playerSprite.idleFrameFor("down")
     );
     placeCharacterSprite(this.player, "same");
+    syncPlayerCharacterScale(this);
     installWeatherLayer(this);
     installCloudShadowLayer(this);
     installTimeTintLayer(this);
@@ -446,6 +448,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       this.player.setFrame(this.playerSprite.idleFrameFor(this.facing));
     }
     refreshSceneRuntimeSurfaces(this);
+    syncPlayerCharacterScale(this);
     syncFollowerSprites(this);
     applyStoredCameraState(this);
     syncWeatherLayer(this);

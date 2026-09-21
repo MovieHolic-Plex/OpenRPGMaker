@@ -4,7 +4,6 @@ import { store } from "@/project/store";
 import { characterSpriteX, characterSpriteY, placeCharacterSprite, updateCharacterDepth } from "@/player/characterDepth";
 import { eventSpriteScale, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
 import { followerPositions, type FollowerSlotMotion } from "@/project/followers";
-import { normalizeCharacterScale } from "@/project/footprint";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
   NPC_MOVE_DURATION_MS,
@@ -119,8 +118,8 @@ export function syncFollowerSprites(
       updateCharacterDepth(sprite, "same");
     }
     // 동료도 배율을 따른다 — 큰 동료가 이벤트로 서 있을 때와 따라올 때 크기가 달라지면
-    // 같은 캐릭터로 보이지 않는다. 배율 없는 동료는 1(항등).
-    sprite.setScale(eventSpriteScale(texture, sprite, normalizeCharacterScale(position.follower.graphic.scale)));
+    // 같은 캐릭터로 보이지 않는다. 자동 배율은 현재 맵에서 다시 계산한다.
+    sprite.setScale(eventSpriteScale(texture, sprite, position.follower.graphic.scale, mapTileSize(scene.map), position.follower.graphic.scaleMode));
     sprite.setFrame(frame);
   }
   for (const key of [...scene.followerSprites.keys()]) {

@@ -1,0 +1,8 @@
+{
+  "src/editor/panels/resourceManager.ts": "2895cd1025e4a1a20b36da8c7c7e32c3a322f9ad6dda6352c85143147438c67e",
+  "src/styles/resources/index.css": "d10c2508c7acd9407e5fcc433938bd8fb5f6c6eff00981be3ebd55aa06683779",
+  "src/styles/resources/chipset-import.css": "8cd1ee3d89fc45614936b598b8bea676f79d9d23e2fed833f089be8861b1fa3d",
+  "test/tileGeometry.test.ts": "aa977166970066792b5624c02627234b223af405bee2d9aa77cfa88ea82dc4ae",
+  "test/uploadedTilesetRendering.test.ts": "e9f7a608da18b31727b4e39492138a1ec69ea116dfa595d9ee330b25d036b23c",
+  "scripts/qa/tile-size-support.mjs": "984e7d9a1647baf124d6d1cc7762f34c4a1b59ad435a808ca5b66cdbec6a90dc"
+}
