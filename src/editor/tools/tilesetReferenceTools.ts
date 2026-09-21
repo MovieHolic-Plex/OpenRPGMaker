@@ -3,6 +3,7 @@ import { ToolError, type ToolDefinition } from "./types";
 
 export const TILESET_REFERENCE_READ_TOOLS = ["list_tileset_references", "read_tileset_reference"] as const;
 export const TILESET_REFERENCE_WRITERS: ReadonlySet<string> = new Set([
+  "stamp_forest_recipe", "stamp_tile_recipe",
   "create_map", "duplicate_map", "resize_map", "shift_map", "set_map_properties", "copy_map_region", "mirror_region", "clear_map",
   "paint_tiles", "paint_road", "build_house", "build_village", "stamp_structure", "clear_region", "author_house", "author_village",
   "fill_region", "tile_erase", "place_props", "build_wall", "lay_path", "place_door", "place_window", "build_roof",
