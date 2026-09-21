@@ -30,6 +30,11 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
 Chromium/SwiftShader). 운영 서버 자체의 응답 시간과는 구분한다.
 측정·회귀 범위: `reports/2026-09-18-map-list-navigation.md`.
 
+AI 타일 도구도 같은 왕복을 호출마다 돌리지 않는다(2026-09-22). `runTool`의 커밋은
+`skipRoundtrip`으로 직렬화 왕복을 건너뛰고, 클러스터 규칙은 타일 버퍼가 바뀐 맵만
+검사한다. 초안을 스토어에 넣는 `applyProposedProject`는 왕복과 전체 클러스터 검사를
+그대로 한다. 고스트 미리보기는 이미 만든 칸의 스프라이트를 유지하고 새로 깔린 칸만 추가한다.
+
 맵 목록의 추가 비용도 프로젝트 단위로 캐시한다. `collectMapLinkStats`는 같은 프로젝트
 객체에 대해 transfer 명령과 map connection을 한 번만 인덱싱하고, store가 새 프로젝트
 객체를 만들면 `WeakMap` identity로 자동 무효화한다. 썸네일의 타일 배열 해시도 맵 객체
