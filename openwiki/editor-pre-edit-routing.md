@@ -30,6 +30,11 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
 Chromium/SwiftShader). 운영 서버 자체의 응답 시간과는 구분한다.
 측정·회귀 범위: `reports/2026-09-18-map-list-navigation.md`.
 
+AI 타일 도구도 같은 왕복을 호출마다 돌리지 않는다(2026-09-22). `runTool`의 커밋은
+`skipRoundtrip`으로 직렬화 왕복을 건너뛰고, 클러스터 규칙은 타일 버퍼가 바뀐 맵만
+검사한다. 초안을 스토어에 넣는 `applyProposedProject`는 왕복과 전체 클러스터 검사를
+그대로 한다. 고스트 미리보기는 이미 만든 칸의 스프라이트를 유지하고 새로 깔린 칸만 추가한다.
+
 맵 목록의 추가 비용도 프로젝트 단위로 캐시한다. `collectMapLinkStats`는 같은 프로젝트
 객체에 대해 transfer 명령과 map connection을 한 번만 인덱싱하고, store가 새 프로젝트
 객체를 만들면 `WeakMap` identity로 자동 무효화한다. 썸네일의 타일 배열 해시도 맵 객체
@@ -623,7 +628,7 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
 ## Agent cautions
 
 
-- **그림 워밍업 소유자 (2026-08-28):** 편집기 다이얼로그가 쓰는 그림 카탈로그 프리로드는 `src/assets/editorAssetWarmup.ts` 만 한다. `scheduleEditorAssetWarmup()` 은 `renderEditor` 끝에서 한 번 불리고 `requestIdleCallback` 로 미뤄지며(없으면 800ms 폴백), tier 순서는 `picker`(캐릭셋 21 + 낱장 얼굴 80 + 칩셋 13) → `library`(CC0 아이콘 234) 다. 이벤트 편집기 모달은 `warmEditorPickerAssets()` 로 `picker` tier 를 앞당긴다. 실제 요청은 공용 큐 `src/assets/imageWarmQueue.ts` 가 URL 단위 in-flight 공유 + 전체 동시 요청 상한 6(배경 호출 몫 4 / 요구 호출 몫 6)으로 낸다 — dev 서버가 HTTP/1.1 이라 상한 없이 수백 장을 걸면 사용자가 지금 보는 그림이 큐 뒤로 밀린다. 새 피커를 만들 때 `new Image()` 나 `<link rel=prefetch>` 를 손으로 뿌리지 말고 tier 목록에 경로를 추가하라. 몬스터/전투 스킨 아트(40MB+)와 업로드 `dataUrl` 은 의도적으로 제외다. `navigator.connection.saveData` 또는 2G 에서는 배경 워밍을 아예 걸지 않는다. 계약: `test/editorAssetWarmup.test.ts`.
+- **그림 워밍업 소유자 (2026-08-28):** 편집기 다이얼로그가 쓰는 그림 카탈로그 프리로드는 `src/assets/editorAssetWarmup.ts` 만 한다. `scheduleEditorAssetWarmup()` 은 `renderEditor` 끝에서 한 번 불리고 `requestIdleCallback` 로 미뤄지며(없으면 800ms 폴백), tier 순서는 `picker`(캐릭셋 21 + 낱장 얼굴 80 + 칩셋 13) → `library`(CC0 아이콘 234) 다. 이벤트 편집기 모달은 `warmEditorPickerAssets()` 로 `picker` tier 를 앞당긴다. 실제 요청은 공용 큐 `src/assets/imageWarmQueue.ts` 가 URL 단위 in-flight 공유 + 전체 동시 요청 상한 6(배경 호출 몫 4 / 요구 호출 몫 6)으로 낸다. 테스트 플레이 창이 열려 있는 동안은 `setImageWarmQueueSuspended(true)` 로 이 큐를 멈춘다. 색키 워밍이 플레이 프리로드의 HTTP 슬롯과 메인 스레드를 가져가지 않게 하고, 창을 닫으면 다시 흐른다. dev 서버가 HTTP/1.1 이라 상한 없이 수백 장을 걸면 사용자가 지금 보는 그림이 큐 뒤로 밀린다. 새 피커를 만들 때 `new Image()` 나 `<link rel=prefetch>` 를 손으로 뿌리지 말고 tier 목록에 경로를 추가하라. 몬스터/전투 스킨 아트(40MB+)와 업로드 `dataUrl` 은 의도적으로 제외다. `navigator.connection.saveData` 또는 2G 에서는 배경 워밍을 아예 걸지 않는다. 계약: `test/editorAssetWarmup.test.ts`.
 - Editor code should mutate authored project data, not live play-session state.
 - **raw `console.*` 를 새로 심지 말 것 (2026-08-29):** `createLogger(ns)` (`src/util/logger.ts`) 를 쓴다. raw 콘솔은 링버퍼에 남지 않아 사후 조사에서 존재하지 않는 것과 같다(감사 당시 `src/` 의 로그 103건이 전부 raw 콘솔이었다). 알려진 관측 공백 목록(되돌리기 스냅샷 없는 파일 21개, `resetMapEditHistory()` 프로덕션 호출 0건, AI 영역 작업의 라벨·origin 누락, `mapEditLocks` 거부 미기록 등)은 `openwiki/editor-observability.md` 하단 표에 있다 — 그 근처를 손대면 이어서 정리하라.
 - If an editor change affects saved JSON, update `openwiki/runtime-project-schema.md` guidance and verify migration/serialization paths.

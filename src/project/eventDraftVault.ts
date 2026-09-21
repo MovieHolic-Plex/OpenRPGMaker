@@ -1,4 +1,4 @@
-import { eventWithoutDraft } from "@/project/eventDrafts";
+import { eventWithoutDraft, rebaseOpenEditDraft } from "@/project/eventDrafts";
 import type { GameEvent, MapId, Project } from "@/project/types";
 import { projectRepository } from "@/project/persistence/repository";
 
@@ -105,13 +105,15 @@ export function applyEventDraftVault(project: Project): Project {
   const next = structuredClone(project);
   for (const entry of vault.values()) {
     const map = next.maps[entry.mapId];
-    if (!map) continue;
-    if (!entry.event.draft) continue;
+    if (!map || !entry.event.draft) continue;
     const index = map.events.findIndex((event) => event.id === entry.event.id);
     if (index >= 0) {
       // A live draft has already been reconciled by projectWithLiveDrafts. Do
       // not compare its working body with its original a second time here.
-      if (map.events[index]?.draft) continue;
+      if (map.events[index]?.draft) {
+        rememberEventDraftVaultEntry(entry.mapId, map.events[index]!);
+        continue;
+      }
       const incoming = map.events[index];
       const draft = entry.event.draft;
       const conflict = draft?.kind === "edit"
@@ -121,11 +123,12 @@ export function applyEventDraftVault(project: Project): Project {
             ? "remote-change"
             : undefined
         : undefined;
-      const restored = structuredClone(entry.event);
-      if (conflict && restored.draft) {
-        restored.draft = { ...restored.draft, conflict: { kind: conflict, detectedAt: Date.now() } };
+      const placed = rebaseOpenEditDraft(map.events, entry.event);
+      if (conflict && placed.draft) {
+        placed.draft = { ...placed.draft, conflict: { kind: conflict, detectedAt: Date.now() } };
       }
-      map.events[index] = restored;
+      map.events[index] = placed;
+      rememberEventDraftVaultEntry(entry.mapId, placed);
     } else {
       const restored = structuredClone(entry.event);
       if (restored.draft?.kind === "edit") {
@@ -179,7 +182,9 @@ function projectWithLiveDrafts(incoming: Project, live: Project): Project {
         preserved.draft = { ...preserved.draft, conflict: { kind: conflict, detectedAt: Date.now() } };
       }
       if (index >= 0) {
-        targetMap.events[index] = preserved;
+        const placed = rebaseOpenEditDraft(targetMap.events, preserved);
+        targetMap.events[index] = placed;
+        rememberEventDraftVaultEntry(mapId, placed);
       } else {
         targetMap.events.push(preserved);
       }

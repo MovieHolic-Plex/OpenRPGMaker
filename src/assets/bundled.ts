@@ -461,9 +461,25 @@ function uploadedSourceHeight(source: HTMLImageElement | HTMLCanvasElement): num
   return source instanceof HTMLImageElement ? source.naturalHeight || source.height : source.height;
 }
 
-function projectBundledTextureKeys(project: Project): Set<string> {
+/**
+ * 플레이 부팅이 실제로 읽는 문자열.
+ *
+ * `resourceProfiles` 는 고를 수 있는 목록이고, `tilesets` 는 `ensureBundledTilesets` 가
+ * 깔아 둔 칩셋 카탈로그다. 둘을 통째로 훑으면 시작 맵이 안 쓰는 칩셋·캐릭셋까지
+ * 프리로드·색키·프레임 등록을 탄다. 맵·이벤트·액터가 가리키는 타일셋 레코드만 다시 훑는다.
+ */
+export function collectPlayReferencedStrings(project: Project): Set<string> {
   const strings = new Set<string>();
-  collectProjectStrings(project, strings);
+  collectProjectStrings({ ...project, resourceProfiles: [], tilesets: {} }, strings);
+  for (const tileset of Object.values(project.tilesets)) {
+    if (!strings.has(tileset.id)) continue;
+    collectProjectStrings(tileset, strings);
+  }
+  return strings;
+}
+
+function projectBundledTextureKeys(project: Project): Set<string> {
+  const strings = collectPlayReferencedStrings(project);
   const keys = new Set<string>([TEX_TILESET, TEX_DIALOGUE_FRAME]);
   for (const id of strings) {
     if (isGeneratedMonsterSprite(id)) keys.add(id);
