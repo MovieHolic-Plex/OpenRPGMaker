@@ -201,8 +201,32 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
 
   if (showBriefing && elements) {
     const { applyWelcomeGenreSystemPresetPlan } = await import("@/editor/welcomeGenreSystemPresetAction");
+    // 브리핑이 "만들 수 있다" 고 약속하기 전에 실제로 가능한지 본다. 미설정 상태에서 보내면
+    // 채팅 패널이 "의도 읽는 중…" 에서 조용히 멈춘다(2026-09-22 실측 30초+, 실패 토스트 없음).
+    const [{ loadAiConfig }, { isAiConfigReady }, { getAiConnectionStatus }] = await Promise.all([
+      import("@/ai/llmClient"),
+      import("@/editor/panels/aiChatPanelHelpers"),
+      import("@/editor/panels/aiConnectionStatus"),
+    ]);
+    const aiReady = ((): boolean => {
+      try {
+        // config 모양만 보면 chatgpt 모드가 **언제나 true** 다(assistantEndpoint.ts 주석 참고).
+        // 실제 연결은 동반 서비스 캐시가 판정한다 — 그걸 함께 넘겨야 죽은 게이트가 되지 않는다.
+        const config = loadAiConfig();
+        return isAiConfigReady(config, getAiConnectionStatus(config));
+      } catch {
+        // 판정을 못 하면 막지 않는다 — 설정이 멀쩡한 사용자를 잘못 가로막는 게 더 나쁘다.
+        return true;
+      }
+    })();
     const result = await presentEditorWelcome(elements.root, {
       applySystemPreset: (plan) => applyWelcomeGenreSystemPresetPlan(plan),
+      canGenerate: () => aiReady,
+      openAiSettings: () => {
+        void import("@/editor/panels/aiSettingsModal")
+          .then(({ openAiSettingsModal }) => { openAiSettingsModal(); })
+          .catch(() => undefined);
+      },
     });
     if (result.dismiss) setEditorWelcomeDismissed(true);
     if (result.systemPresetPlan) {
