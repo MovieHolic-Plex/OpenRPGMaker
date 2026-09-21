@@ -187,7 +187,7 @@ type CameraView = {
   readonly zoom: number;
 };
 
-export function tileRectToScreenRect(rect: TileRect, camera: CameraView, tileSize = TILE_SIZE): TileRect {
+export function tileRectToScreenRect(rect: TileRect, camera: CameraView, tileSize: number = TILE_SIZE): TileRect {
   return {
     x: Math.round((rect.x * tileSize - camera.worldView.x) * camera.zoom),
     y: Math.round((rect.y * tileSize - camera.worldView.y) * camera.zoom),

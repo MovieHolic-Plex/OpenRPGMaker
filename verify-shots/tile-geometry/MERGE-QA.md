@@ -10,3 +10,5 @@
 - 최초 cold editor 로드는 준비 훅 대기 시간이 초과됐다. 새 브라우저 재실행에서 정상 로드·위 동작을 확인했다.
 - 전체 gates/vitest/typecheck는 세션 규칙에 따라 실행하지 않았다.
 - 기존 Slates v3 원격 저장·재로드/통행 근거는 `docs/experiments/slates-astra-v3/RESULT.md`.
+
+GitHub 자동 CI 첫 실행에서 `tileRectToScreenRect`의 기본값이 리터럴 타입 16으로 추론되어 호출부 3곳이 TS2345를 냈다. 매개변수를 `number`로 명시해 32px 맵 값을 받도록 수정했다. 런타임 식과 동작은 변경하지 않았다.
