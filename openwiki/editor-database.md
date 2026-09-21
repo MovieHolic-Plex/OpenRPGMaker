@@ -2028,3 +2028,14 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 - **대화상자 대비 붕괴 원인(실측):** `openLawDialog` 가 backdrop 을 `document.body` 에 붙였다. `--db-studio-*` 토큰은 `.database-modal-backdrop` 스코프에만 정의돼 있어, 모달 밖에서는 `var(--db-studio-surface)` 가 무효값으로 떨어지고 배경·글자색이 상속 회색으로 무너졌다(스크린샷 실측: 패널이 #a19f9c 회색 덩어리). 수정: `document.querySelector(".database-modal-backdrop") ?? document.body` 에 마운트하고, 대화상자 CSS 에 폴백 값(`var(--db-studio-surface, #fff)` 등)을 함께 적어 스코프가 어긋나도 읽히게 했다. backdrop 은 `position: fixed` + `--z-modal-top` 유지.
 - 검증: 세계관 계약 10파일 62케이스 통과, `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v4/` 재캡처(대화상자 흰 배경 + 본문 텍스트 확인), e2e 통과.
 
+
+### 세계 설정 = AI 문답 인터뷰 (2026-09-22 v6)
+
+- 사용자 피드백: "세계 설정을 저렇게 넣지 말고 AI 랑 질의응답하면서 할 수 있게 해." 폼 나열을 버리고 인터뷰 표면으로 교체했다.
+- **표면 계약:** `AiSurface` 에 `world-canon-interview` 추가(supervisor 티어, maxTokens 4096). 엔드포인트는 조수와 동일하고 정책 표(`SURFACE_POLICIES`)가 유일한 선언 지점이라는 불변식을 따른다.
+- **클라이언트** `src/ai/worldCanonInterview.ts`: 매 턴 모델이 `{recap, question, choices, patch, done}` JSON 하나를 돌려준다. `patch` 는 기존 WorldCanon 스키마 필드만 담고, `sanitizePatch` 가 스키마 밖 키·범위 초과 값을 버리고 `WORLD_CANON_BOUNDS` 로 클램프한다. 저장은 기존 `writeCanon` 경로 하나로 모아 undo 스냅숏·AI 투영이 그대로 붙는다.
+- **병합 규칙:** 톤·없는 것은 합집합(기존 값 유지), 본문은 이어 붙이기, 법칙은 필드 단위 갱신. `mergeInterviewPatch` 가 순수 함수라 단위 테스트로 고정된다.
+- **패널:** `buildInterviewPanel` — 대화 로그(말풍선) + 진행 칩 7개(이름/전제/톤/법칙/없는 것/시대/기술) + 선택지 버튼 + 입력줄(Enter 전송, Shift+Enter 줄바꿈) + `시작하기`. 대화 기록은 `WeakMap<HTMLElement, InterviewLine[]>` 로 탭 전환을 넘어 유지된다. 손으로 채우고 싶은 사람을 위해 `직접 입력하기` 접힌 details 안에 기존 폼(이름·톤·시대·기술·없는 것·법칙 카드)을 남겼다.
+- AI 미연결이면 대화에 `(연결 실패) …` 한 줄로 정직하게 표시하고 입력을 되살린다 — 폼이 아니라 대화라 오류도 대화의 한 줄이어야 한다.
+- 검증: `test/worldCanonInterview.test.ts` 7케이스(파싱·펜스 내성·클램프·병합·컨텍스트 주입·표면 렌더·저장 경로) + 세계관 계약 10파일 = **69케이스 통과**, `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v5/` 5장.
+
