@@ -22,8 +22,8 @@ export function ensureForestGroveTileset(tileset: TilesetDef): void {
     tileset.terrain[tile] = 0;
     tileset.priority[tile] = "upper";
     tileset.passability[tile] = { up: false, down: false, left: false, right: false };
-    tileset.tileMeta[tile] = { label: "굽이숲 수관", source: "user", passage: "solid",
-      userLocked: true, defaultLayer: "upper", layerBacking: "none" };
+    tileset.tileMeta[tile] = { label: "굽이숲 수관", description: "굽이숲 수관 이식 칸. 상위·통행 불가.",
+      source: "user", passage: "solid", userLocked: true, defaultLayer: "upper", layerBacking: "none" };
   }
   tileset.tileGrafts = [...(tileset.tileGrafts ?? []), ...canopy.sources.map((sourceTile, i) => ({
     sourceChipset: canopy.sourceChipset, sourceTile, targetTile: start + i,
