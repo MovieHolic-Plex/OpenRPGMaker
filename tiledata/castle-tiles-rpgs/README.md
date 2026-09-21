@@ -7,6 +7,8 @@
 
 후속 개선: [밀도 개선 01](improvements/density-01/README.md). 과거 미달 판정은 해당 시점의 증거로 보존한다.
 
+최신 개선: [외부 공간 개선 02](improvements/landscape-02/README.md).
+
 ## 읽을 순서
 
 1. `reference/user-castle.png` 원본과 `reference/rejected-layout.png` 실패작을 나란히 본다.
