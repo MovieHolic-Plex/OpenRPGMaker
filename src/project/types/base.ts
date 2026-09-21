@@ -461,6 +461,10 @@ export interface MaterialSlotOverride {
 }
 
 export interface TilesetDef {
+  /** 용도별 MD와 이미지. 미작성 레거시 프로젝트에는 필드를 만들지 않는다. */
+  referenceDocuments?: import("../tilesetReferences").TilesetReferenceCategory[];
+  /** 파생 아틀라스가 원본 칩셋의 문서를 공유할 때. 한 단계 참조만 허용. */
+  referenceSourceTilesetId?: string;
   id: TilesetId;
   name: string;
   image: AssetRef;

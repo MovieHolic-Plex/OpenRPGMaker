@@ -1,0 +1,37 @@
+{
+  "loaded": {
+    "liveTitle": "Slates · 물버들 마을과 조합 도감",
+    "liveTilesets": [
+      "slates_32",
+      "slates_astra_32",
+      "slates_study_32",
+      "slates_mastery_32",
+      "slates_village_32",
+      "slates_astra_v2_32",
+      "slates_astra_v3_32",
+      "slates_reference_32"
+    ],
+    "categories": 4,
+    "roundtrip": true
+  },
+  "widths": [
+    {
+      "width": 1440,
+      "client": 1193,
+      "scroll": 1193,
+      "reader": 779,
+      "bodyWidth": 1465
+    },
+    {
+      "width": 1024,
+      "client": 777,
+      "scroll": 777,
+      "reader": 437,
+      "bodyWidth": 1024
+    }
+  ],
+  "errors": [],
+  "title": [
+    "slates-dense-town.md"
+  ]
+}

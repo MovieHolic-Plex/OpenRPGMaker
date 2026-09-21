@@ -43,12 +43,11 @@ export function renderTilesetProperties(tileset: TilesetDef, rerender: () => voi
       }),
       el("p", { text: `${tileset.tileSize}×${tileset.tileSize}px · ${tileset.tilesPerRow}열 · ${tileset.count}타일` }),
       renderTransparentColorField(tileset, rerender),
-      renderSectionTabs(rerender),
     ],
   });
 }
 
-function renderSectionTabs(rerender: () => void): HTMLElement {
+export function renderSectionTabs(rerender: () => void): HTMLElement {
   const active = getTilesetSectionTab();
   return el("div", {
     class: "tileset-section-tabs",

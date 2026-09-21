@@ -1872,3 +1872,8 @@ Tests: `feature16AiToolIntegration.test.ts`; schemas: `combatAuthoringSchemas.ts
 `revise_village_plan`, `run_village_pipeline`은 내부 호환용이며 Pi에서 노출·복구되지 않는다.
 재시공이 필요해도 사용자 범위와 DB 설계서를 유지한 `author_village`를 사용한다.
 평가를 통과하려고 고정 설정을 바꾸거나 전체 맵 재시공을 임의로 허가하지 않는다.
+
+
+## 타일 참고문서 선행 조회 (2026-09-21)
+
+[타일셋 참고문서](tileset-reference-documents.md): 프로젝트 소유의 용도별 MD·이미지, 파생 타일셋의 원본 공유, Pi/레거시 AI 전달 확인, 저장·내보내기 계약.
