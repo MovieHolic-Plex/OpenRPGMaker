@@ -2,7 +2,7 @@
 // 툴은 Project를 직접 수정하지 않고 draft(구조적 복제)에 적용한다.
 // 여기서 draft 생성 / diff 요약 / 커밋 게이트(projectLint)를 순수 함수로 제공한다.
 
-import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
+import { transferDetachedDraftMemory } from "@/editor/detachedDraftMemory";
 import { assertSpatialToolChange } from "./spatialToolState";
 import { ToolError } from "./types";
 import { ProjectFormatError } from "@/project/io/errors";
@@ -14,8 +14,87 @@ import type { GameEvent, GameMap, Project } from "@/project/types";
 import type { ChangeSummary } from "./types";
 
 // 구조적 복제본(draft) 생성. Project JSON과 editor-only detached session memory를 함께 복제한다.
+// 타일 버퍼는 칸 단위 순회가 비싼 structuredClone 대신 배열 복사로 분리한다.
 export function createDraft(project: Project): Project {
-  return cloneDetachedDraft(project);
+  const maps: Record<string, GameMap> = {};
+  for (const [id, map] of Object.entries(project.maps)) maps[id] = mapWithoutTileBuffers(map);
+  const clone = structuredClone({ ...project, maps });
+  for (const [id, map] of Object.entries(clone.maps)) {
+    const source = project.maps[id];
+    if (source) copyTileBuffers(source, map);
+  }
+  transferDetachedDraftMemory(project, clone);
+  return clone;
+}
+
+function mapWithoutTileBuffers(map: GameMap): GameMap {
+  const {
+    lowerTiles: _lowerTiles,
+    upperTiles: _upperTiles,
+    lowerTileStacks: _lowerTileStacks,
+    upperTileStacks: _upperTileStacks,
+    ...rest
+  } = map;
+  return { ...rest, lowerTiles: [], upperTiles: [] };
+}
+
+function copyTileBuffers(source: GameMap, target: GameMap): void {
+  target.lowerTiles = source.lowerTiles.slice();
+  target.upperTiles = source.upperTiles.slice();
+  const lowerStacks = copyStacks(source.lowerTileStacks);
+  const upperStacks = copyStacks(source.upperTileStacks);
+  if (lowerStacks) target.lowerTileStacks = lowerStacks;
+  if (upperStacks) target.upperTileStacks = upperStacks;
+}
+
+function copyStacks(source: Record<number, number[]> | undefined): Record<number, number[]> | undefined {
+  if (!source) return undefined;
+  const copy: Record<number, number[]> = {};
+  for (const key of Object.keys(source)) {
+    const stack = source[Number(key)];
+    if (stack) copy[Number(key)] = stack.slice();
+  }
+  return copy;
+}
+
+/** 타일 버퍼가 달라진 맵만. 클러스터 재검사는 이 맵으로 한정한다. */
+export function tileChangedMapIds(before: Project, after: Project): readonly string[] {
+  const ids: string[] = [];
+  for (const [id, afterMap] of Object.entries(after.maps)) {
+    const beforeMap = before.maps[id];
+    if (!beforeMap || tileBuffersDiffer(beforeMap, afterMap)) ids.push(id);
+  }
+  return ids;
+}
+
+function tileBuffersDiffer(before: GameMap, after: GameMap): boolean {
+  if (before.width !== after.width || before.height !== after.height) return true;
+  if (!sameNumbers(before.lowerTiles, after.lowerTiles)) return true;
+  if (!sameNumbers(before.upperTiles, after.upperTiles)) return true;
+  return !sameStacks(before.lowerTileStacks, after.lowerTileStacks) || !sameStacks(before.upperTileStacks, after.upperTileStacks);
+}
+
+function sameNumbers(before: readonly number[], after: readonly number[]): boolean {
+  if (before.length !== after.length) return false;
+  for (let index = 0; index < before.length; index += 1) if (before[index] !== after[index]) return false;
+  return true;
+}
+
+function sameStacks(
+  before: Record<number, number[]> | undefined,
+  after: Record<number, number[]> | undefined,
+): boolean {
+  if (!before && !after) return true;
+  if (!before || !after) return false;
+  const beforeKeys = Object.keys(before);
+  if (beforeKeys.length !== Object.keys(after).length) return false;
+  for (const key of beforeKeys) {
+    const left = before[Number(key)];
+    const right = after[Number(key)];
+    if (!left || !right || left.length !== right.length) return false;
+    for (let tile = 0; tile < left.length; tile += 1) if (left[tile] !== right[tile]) return false;
+  }
+  return true;
 }
 
 function emptySummary(): ChangeSummary {
@@ -224,24 +303,35 @@ export interface CommitResult {
   blocking: LintIssue[];
 }
 
+export interface CommitOptions {
+  /** 도구 호출마다의 전체 직렬화 왕복을 건너뛴다. 적용 시점 커밋은 그대로 왕복한다. */
+  readonly skipRoundtrip?: boolean;
+  /** 있으면 클러스터 규칙은 이 맵만 검사한다. */
+  readonly clusterMapIds?: readonly string[];
+}
+
 // 커밋 게이트: draft에 projectLint를 돌려 차단 error가 있으면 반영 거부.
 // cluster-rule hard 위반은 배치 시점 강제 + lint 보고 대상이므로 커밋 차단에서는 제외한다.
 // warning/info와 비차단 error는 통과시키되 issues로 함께 반환한다(모델/사람이 참고).
-export function commitChangeset(draft: Project, baseline?: Project): CommitResult {
+export function commitChangeset(draft: Project, baseline?: Project, options: CommitOptions = {}): CommitResult {
   try { assertSpatialToolChange(draft, baseline); }
   catch (error) {
     if (!(error instanceof ToolError || error instanceof ProjectFormatError || error instanceof SpatialOperationError)) throw error;
     const issue: LintIssue = { severity: "error", code: error instanceof ToolError ? error.code : "spatial-invalid", message: error.message };
     return { ok: false, issues: [issue], blocking: [issue] };
   }
-  const issues = projectLint(draft);
+  const lintOptions = {
+    ...(options.skipRoundtrip ? { skipRoundtrip: true } : {}),
+    ...(options.clusterMapIds ? { clusterMapIds: options.clusterMapIds } : {}),
+  };
+  const issues = projectLint(draft, lintOptions);
   const isBlocking = (issue: LintIssue): boolean => issue.severity === "error" && !issue.code.startsWith("cluster-rule:");
   let blocking = issues.filter(isBlocking);
   if (baseline && blocking.length > 0) {
     // 이 변경이 만들지 않은 "기존" 오류는 커밋을 막지 않는다 — 시작 위치 통행 불가 같은
     // 선재 오류가 있는 프로젝트에서 무관한 편집(건축 팔레트/AI 툴)까지 전부 거부되던 버그의 수정.
     // 새로 생긴 오류만 차단해 추가 손상은 여전히 막는다.
-    const baselineAtoms = new Set(projectLint(baseline).filter(isBlocking).flatMap(issueAtoms));
+    const baselineAtoms = new Set(projectLint(baseline, lintOptions).filter(isBlocking).flatMap(issueAtoms));
     blocking = blocking.filter((issue) => issueAtoms(issue).some((atom) => !baselineAtoms.has(atom)));
   }
   return { ok: blocking.length === 0, issues, blocking };
