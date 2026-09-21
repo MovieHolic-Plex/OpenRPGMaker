@@ -4851,6 +4851,7 @@ export class AssistantSession {
         // Only exact originals and native/monster reads in a successful writer request count.
         this.originalContext!.observeDelivered(requestMessages, grounded.includedIds, this.readEvidence);
         this.readEvidence.observeDelivered(requestMessages);
+        this.readEvidence.tilesetReferences.observeImages(requestMessages, result.imageDelivery);
       } catch (cause) {
         operation.assertCurrent();
         if (isLlmAbortError(cause) || signal?.aborted) {
@@ -5416,6 +5417,10 @@ export class AssistantSession {
             await operation.wait(this.sweepFinishedLayers(onEvent));
           }
 
+          if (name === "read_tileset_reference" && toolResult.ok) {
+            roundImages.push(...this.readEvidence.tilesetReferences.imagesForRead(this.ctx.project, toolResult));
+          }
+
           // 비전(BUG C): '보여줘' 계열 툴이면 이미지를 렌더해 모아둔다. 렌더 실패는 무시(텍스트로 진행).
           if (this.renderImages && VISION_TOOLS.has(name) && toolResult.ok && toolResult.data !== undefined) {
             try {
@@ -5452,7 +5457,7 @@ export class AssistantSession {
         const parts: ContentPart[] = [
           {
             type: "text",
-            text: "방금 show_tiles/show_tile_grid로 조회한 이미지입니다. 타일의 의미·라벨·용도를 판단하거나 사용자에게 설명하기 전에 반드시 아래 이미지를 눈으로 확인하세요.",
+            text: "방금 조회한 이미지입니다. 타일셋 참고문서 이미지는 조립과 배치의 참고 자료입니다. 타일 작업 전에 MD와 아래 이미지를 함께 확인하세요.",
           },
         ];
         for (const image of roundImages) {

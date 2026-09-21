@@ -60,7 +60,7 @@ export const ONTOLOGY_CAPABILITIES = [
     typeSurfaces: ["src/project/types/base.ts"],
     uiSurfaces: [
       "src/editor/panels/tilesetMetadataEditor.ts",
-      "src/editor/panels/tilesetAiQuestionEditor.ts",
+      "src/editor/panels/tilesetReferencePanel.ts",
     ],
     runtimeSurfaces: ["src/project/tilesetPassage.ts", "src/project/aiPreviewGenerator.ts", "src/project/aiPreviewContracts.ts"],
     storageSurfaces: ["src/project/io/guards.ts", "src/project/io/shapeResourceFields.ts", "src/project/tileMetadataDb.ts"],

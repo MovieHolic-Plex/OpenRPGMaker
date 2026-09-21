@@ -1,4 +1,4 @@
-import { renderAiQuestionPanel } from "@/editor/panels/tilesetAiQuestionEditor";
+import { renderTilesetReferences } from "./tilesetReferencePanel";
 import {
   applyAutotileSheetPick,
   autotileHighlightTileIds,
@@ -73,6 +73,7 @@ import type { PassFlag, TileAiMetadata, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 
 let selectedTile = 0;
+let standaloneTab: "references" | "settings" | null = "references";
 let editMode: TilesetEditMode = "passage";
 /** 방향별 통행. 리렌더마다 접히면 연속으로 방향을 못 고친다. */
 let compassOpen = true;
@@ -110,6 +111,7 @@ function installAlphaScanRerender(host: HTMLElement, tilesetId: string, rerender
 }
 
 export function renderTilesetMetadataEditor(tileset: TilesetDef, rerender: () => void): HTMLElement {
+  if (standaloneTab === "references") return renderTilesetReferences(tileset, rerender);
   clampSelectedTile(tileset);
   const paintLayout = editMode === "passage" || editMode === "terrain";
   const autotileLayout = editMode === "autotile";
@@ -180,7 +182,6 @@ function renderEditSidebar(tileset: TilesetDef, rerender: () => void): HTMLEleme
       ...(toolbox ? [toolbox] : []),
       ...(tab === "knowledge" ? [renderUnlabeledQueuePanel(tileset, rerender)] : []),
       renderSelectedTilePanel(tileset, rerender),
-      ...(editMode === "ai" ? [renderAiQuestionPanel(tileset, rerender, selectFirstAppliedTile)] : []),
     ],
   });
 }
@@ -881,11 +882,13 @@ export function setTilesetMetadataEditMode(mode: TilesetEditMode, rerender: () =
 /** Legacy route shortcuts only. Call on navigation, not on local redraw. */
 export function applyTilesetFolderFacet(tab: string): void {
   if (tab === "tilesetAutotile") {
+    standaloneTab = null;
     editMode = "autotile";
     setUnlabeledOnlyFilter(false);
     return;
   }
   if (tab === "tilesetUnlabeled") {
+    standaloneTab = null;
     editMode = "ai";
     setUnlabeledOnlyFilter(true);
     return;
@@ -900,22 +903,20 @@ export function getTilesetMetadataEditMode(): TilesetEditMode {
 export { getTilesetPassagePaint, setTilesetPassagePaint } from "@/editor/panels/tilesetPassagePaint";
 
 export function getTilesetSectionTab(): TilesetSectionTab {
-  return tabForTilesetMode(editMode);
+  return standaloneTab ?? tabForTilesetMode(editMode);
 }
 
 export function setTilesetSectionTab(tab: TilesetSectionTab, rerender: () => void): void {
   if (getTilesetSectionTab() === tab) return;
-  editMode = TILESET_TAB_MODES[tab][0];
+  standaloneTab = tab === "references" || tab === "settings" ? tab : null;
+  if (!standaloneTab) editMode = TILESET_TAB_MODES[tab][0]!;
   rerender();
 }
 
 function setMode(mode: TilesetEditMode, rerender: () => void): void {
+  standaloneTab = null;
   editMode = mode;
   rerender();
-}
-
-function selectFirstAppliedTile(tiles: readonly number[]): void {
-  selectedTile = tiles[0] ?? selectedTile;
 }
 
 function clampSelectedTile(tileset: TilesetDef): void {
