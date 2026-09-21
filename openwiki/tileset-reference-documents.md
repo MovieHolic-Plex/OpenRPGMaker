@@ -136,3 +136,12 @@ SQLite 및 새로 연 에디터에서 다시 읽는다. 원본 29개 맵의 타�
 SQLite 저장/재로드: `register-forest-public-references.mjs` (대상 호스트가 중단된 폴더에서
 공식 local-store API 사용; 실행 중 DB 직접 수정 금지).
 신규/기존 SQLite 프로젝트의 실제 배포 UI 증거: `verify-shots/forest-public-references/`.
+
+### Castle2 공용 기본 제공 수정
+
+`src/assets/sharedCastleReferences.json`에 3용도 / 20 MD / 19 이미지를 공용 번들로 포함한다.
+`createCastleTileset()`이 새 프로젝트마다 독립 편집 가능한 사본을 넣는다.
+`ensureBundledTilesets()`도 문서 필드가 없는 기존 기본 Castle2에만 보충한다.
+작성한 문서(빈 배열 포함), 공유 포인터, 다른 이미지로 바꾼 타일셋은 보존한다.
+특정 성채 프로젝트나 공용 장소 다운로드를 가져와야 하는 조건은 없다.
+새 빈 프로젝트의 타일 → 성채 · OpenGameArt → AI 참고문서에서 확인한다.

@@ -1,3 +1,4 @@
+import { ensureSharedCastleReferences } from "./sharedCastleReferences";
 import { createSharedVillageObjectsTileset, ensureSharedVillageObjectReferences, SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "./sharedVillageObjects";
 import { createCastleTileset } from "./castleTileset";
 import { createForestHarmonyTileset, ensureForestHarmonyReferences, FOREST_HARMONY_ID, FOREST_HARMONY_TEXTURE } from "./forestHarmony";
@@ -89,6 +90,8 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
     const tileset = bundledEasyRpgTileset(asset);
     if (project.tilesets[tileset.id]) {
       if (tileset.id === FOREST_HARMONY_ID) changed = ensureForestHarmonyReferences(project.tilesets[tileset.id]) || changed;
+
+      changed = ensureSharedCastleReferences(project.tilesets[tileset.id]) || changed;
       if (tileset.id === SHARED_VILLAGE_OBJECT_ID) changed = ensureSharedVillageObjectReferences(project.tilesets[tileset.id]) || changed;
       if (tileset.id === TIBO_INTERIOR_ID) changed = extendTiboInteriorDefaults(project.tilesets[tileset.id]) || changed;
       continue;
