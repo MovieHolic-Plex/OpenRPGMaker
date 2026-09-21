@@ -824,3 +824,45 @@ friendshipAtLeast/battleResult/run)을 틀리게 확신했고, 특히 거의 모
 숨은 기본 정책을 추가하지 않는다. `normalizeEventPage`는 선택 sight를 보존한다.
 모든 입력은 기존 `updateEventPage` 드래프트/감사 경로를 사용한다. 발견 대기는 ms, 문 대기는 초다.
 필드·런타임·저장 계약과 테스트는 [horror-authoring.md](horror-authoring.md)의 NPC 발견 절을 따른다.
+
+## 명령 툴바는 한 줄이다 — wrap 금지와 폭 흡수 순서 (2026-09-21)
+
+사용자 화면에서 이벤트 편집기 명령 툴바가 두 줄로 접히고 그 위에 빈 밴드가 생겼다.
+`+ 명령`·검색은 첫 줄, 보기 전환(목록/스토리/플로우)과 `AI로 명령 만들기`는 둘째 줄로
+떨어졌다. 원인은 두 겹이다.
+
+1. **흡수 규칙이 죽어 있었다.** 검색 입력은 2026-08-29 에 「입력 + 지우기 + 일치 개수」
+   한 벌로 감싸이면서 `.event-editor-command-search-field` 래퍼가 생겼는데,
+   `command-list.css` 의 «남는 폭은 검색이 흡수한다» 규칙은 여전히
+   `.event-editor-command-toolbar > .event-editor-command-search`(직계 자식)를 본다.
+   래퍼가 끼는 순간 그 선택자는 아무것도 매칭하지 않고, 검색은 `min-width: 96px` 로
+   짜부라진 채 툴바의 남는 폭을 아무도 흡수하지 않았다.
+2. **`flex-wrap: wrap` 이 켜져 있었다.** `command-list.css` 와
+   `command-workbench.css` 가 각각 `flex-wrap: wrap` 을 선언한다.
+
+지금 계약은 **한 줄**이다. 넘침은 순서대로 흡수한다.
+
+- 검색 래퍼(`.event-editor-command-search-field`)가 `flex: 1 1 140px` /
+  `max-width: 320px` / `min-width: 96px` 로 먼저 줄어든다.
+- 그다음 아이콘 툴 버튼(`편집`·`도구`)과 되돌리기/다시 실행이 줄어든다.
+- 보기 전환 세그먼트(`.event-view-toggle`)는 `flex-shrink: 0` 이다 — 낱말이 곧 정보다.
+- `AI로 명령 만들기`(aux 그룹)는 `flex-shrink: 0` 이고 라벨을 항상 유지한다.
+  그 그룹의 유일한 표면이고, 별 글리프만으로는 무엇을 하는 버튼인지 알 수 없다.
+
+좁은 칼럼에서 낱말을 접는 규칙은 `.event-contents-fieldset` 의 컨테이너 쿼리
+`evt-command-column` 하나가 소유한다. **800px 미만이면 보조 도구(aux 제외)가 아이콘만
+남고, 800px 이상이면 낱말이 돌아온다.** 실측(2026-09-21, 인스펙터가 열린 4트랙):
+명령 칼럼은 1440 에서 718px, 1920·2560 에서 764px 이 상한이다. 764px 에 낱말 8개를
+세우면 검색이 102px 로 눌려 검색 구실을 못 하므로 임계값은 800px 이다. 사용자가
+리사이저로 설정 칼럼을 줄이면 낱말이 돌아온다.
+
+같은 변경에 딸린 수정 하나: 검색 지우기 버튼(`event-command-search-clear`)은
+`content.ts` 가 `hidden` 을 켜는데도 화면에 남아 있었다. `dialogs-5.css` 의
+`.event-editor-modal-window .event-editor .event-editor-command-search-clear`(0,3,0)가
+`display: inline-flex` 로 `hidden` 을 이기고 있었고, 그 시트가 `command-list-4.css` 보다
+나중이라 같은 특이도로는 못 이긴다. 창 접두를 붙인 `[hidden]` 규칙으로 잠근다.
+
+소유: `src/styles/event/command-list-4.css`(흡수·접힘·컨테이너 쿼리),
+`src/styles/event/command-list.css`(툴바 한 줄 선언),
+`src/styles/event/command-workbench.css`(툴바 한 줄 + 컨테이너 정의).
+전후 캡처와 실측은 이 세션의 `1440/1920/2560` 프로브(툴바 높이 44px, 자식 y 단일 행).
