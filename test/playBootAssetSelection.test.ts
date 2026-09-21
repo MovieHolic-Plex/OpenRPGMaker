@@ -33,4 +33,25 @@ describe("play boot asset selection", () => {
     expect(keys.has("tex_forest_harmony")).toBe(false);
     expect(keys.has(rawCharsetTextureKey("tex_easyrpg_charset_vehicles"))).toBe(false);
   });
+
+  it("does not preload field sprites for enemies that are only in the catalog", () => {
+    // Given the blank database, whose enemy and species rows name every starter monster.
+    const project = createBlankProject();
+    const keys = new Set<string>();
+
+    // When the play preloader queues images.
+    loadBundledAssets({
+      load: {
+        image(key: string) {
+          keys.add(key);
+        },
+        on() {
+          return undefined;
+        },
+      },
+    }, project);
+
+    // Then no generated field sprite is queued. The blank map has no field spawn.
+    expect([...keys].some((key) => key.startsWith("generated-enemy-"))).toBe(false);
+  });
 });

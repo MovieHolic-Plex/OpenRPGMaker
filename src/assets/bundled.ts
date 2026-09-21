@@ -461,27 +461,15 @@ function uploadedSourceHeight(source: HTMLImageElement | HTMLCanvasElement): num
   return source instanceof HTMLImageElement ? source.naturalHeight || source.height : source.height;
 }
 
-/**
- * 플레이 부팅이 실제로 읽는 문자열.
- *
- * `resourceProfiles` 는 고를 수 있는 목록이고, `tilesets` 는 `ensureBundledTilesets` 가
- * 깔아 둔 칩셋 카탈로그다. 둘을 통째로 훑으면 시작 맵이 안 쓰는 칩셋·캐릭셋까지
- * 프리로드·색키·프레임 등록을 탄다. 맵·이벤트·액터가 가리키는 타일셋 레코드만 다시 훑는다.
- */
-export function collectPlayReferencedStrings(project: Project): Set<string> {
-  const strings = new Set<string>();
-  collectProjectStrings({ ...project, resourceProfiles: [], tilesets: {} }, strings);
-  for (const tileset of Object.values(project.tilesets)) {
-    if (!strings.has(tileset.id)) continue;
-    collectProjectStrings(tileset, strings);
-  }
-  return strings;
-}
-
 function projectBundledTextureKeys(project: Project): Set<string> {
   const strings = collectPlayReferencedStrings(project);
   const keys = new Set<string>([TEX_TILESET, TEX_DIALOGUE_FRAME]);
   for (const id of strings) {
+    if (isGeneratedMonsterSprite(id)) keys.add(id);
+  }
+  // 필드 스폰의 그림은 적 레코드에만 있고, 맵 이벤트는 부팅 뒤에 만들어진다.
+  // 적 도감 전체의 monsterResourceId 는 여기서 다시 넣지 않는다.
+  for (const id of fieldSpawnMonsterResourceIds(project)) {
     if (isGeneratedMonsterSprite(id)) keys.add(id);
   }
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
@@ -531,19 +519,53 @@ function spatialGraphicResourceIds(project: Project): Set<string> {
 }
 
 function collectProjectStrings(value: unknown, out: Set<string>): void {
+  collectPlayStrings(value, out, "");
+}
+
+/**
+ * 플레이 부팅이 실제로 읽는 문자열.
+ * 리소스 프로필과, 어떤 맵도 가리키지 않는 타일셋 카탈로그는 제외한다.
+ */
+export function collectPlayReferencedStrings(project: Project): Set<string> {
+  const strings = new Set<string>();
+  collectProjectStrings({ ...project, resourceProfiles: [], tilesets: {} }, strings);
+  for (const tileset of Object.values(project.tilesets)) {
+    if (!strings.has(tileset.id)) continue;
+    collectProjectStrings(tileset, strings);
+  }
+  return strings;
+}
+
+function collectPlayStrings(value: unknown, out: Set<string>, key: string): void {
+  // 적·종족 도감의 필드 그림 id. 전투 초상은 전투 DOM 이 그때 받고,
+  // 맵에 깔린 스폰만 fieldSpawnMonsterResourceIds 가 다시 넣는다.
+  if (key === "monsterResourceId" || key === "uploaded") return;
   if (typeof value === "string") {
     out.add(value);
     return;
   }
   if (Array.isArray(value)) {
-    for (const item of value) collectProjectStrings(item, out);
+    for (const item of value) collectPlayStrings(item, out, key);
     return;
   }
   if (typeof value !== "object" || value === null) return;
-  for (const [key, child] of Object.entries(value)) {
-    if (key === "uploaded") continue;
-    collectProjectStrings(child, out);
+  for (const [childKey, child] of Object.entries(value)) {
+    collectPlayStrings(child, out, childKey);
   }
+}
+
+/** defaultFieldSpawnGraphic 과 같은 적 선택. 이벤트 생성 전에 그 그림만 미리 싣는다. */
+function fieldSpawnMonsterResourceIds(project: Project): readonly string[] {
+  const ids: string[] = [];
+  for (const map of Object.values(project.maps)) {
+    for (const spawn of map.fieldSpawns ?? []) {
+      const troop = project.database.troops.find((entry) => entry.id === spawn.troopId);
+      const firstEnemyId = troop?.members?.find((member) => member.hidden !== true)?.enemyId ?? troop?.enemyIds?.[0];
+      const resourceId = project.database.enemies.find((enemy) => enemy.id === firstEnemyId)?.monsterResourceId;
+      if (resourceId) ids.push(resourceId);
+    }
+  }
+  return ids;
 }
 
 function registerCharsetTextureFrames(texture: Phaser.Textures.Texture): void {
