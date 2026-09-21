@@ -1,3 +1,4 @@
+import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
 // 타일 지식 통합 조회 — 활성 LLM 툴 (core 노출).
 // 구 v2 지식 쓰기 래퍼(tile_metadata/group/…)는 제거. 쓰기는 propose_tile_vocabulary.
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
@@ -17,7 +18,7 @@ function resolveQueryTilesetId(draft: Project, args: Record<string, unknown>): s
   }
   const startMap = draft.maps[draft.startMapId];
   if (startMap?.tilesetId) return startMap.tilesetId;
-  return DEFAULT_TILESET_ID;
+  return defaultOutdoorTilesetId(draft);
 }
 
 

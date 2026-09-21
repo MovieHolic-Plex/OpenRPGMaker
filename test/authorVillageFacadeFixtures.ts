@@ -5,7 +5,7 @@ import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool, runToolDefinition } from "@/editor/tools/toolRunner";
 import type { ToolContext, ToolExecResult, ToolResult } from "@/editor/tools/types";
 import type { VillageBuildInspection } from "@/editor/tools/villageBuilder";
-import { TILE } from "@/project/defaults/constants";
+import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import type { Project } from "@/project/types";
 
 export const EXISTING_TARGET = { kind: "existing", mapId: "map_existing" } as const;
@@ -14,6 +14,7 @@ export function createExistingProject(size = 50): Project {
   const context: ToolContext = { project: createEmptyToolProject("author village") };
   const created = runTool(context, "create_map", {
     id: "map_existing",
+    tilesetId: DEFAULT_TILESET_ID,
     name: "Existing village",
     width: size,
     height: size,

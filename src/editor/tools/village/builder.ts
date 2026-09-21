@@ -1,3 +1,4 @@
+import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
 // editor/tools/village/builder.ts
 // 시공 오케스트레이션 — VILLAGE_TOOLS 조립, build_village 본문, intent 해석, 파이프라인 루프.
 // 3층: plan_village(계층 계획) → build_village(제약 시공) → critique_village(비평 루프).
@@ -5,7 +6,7 @@
 import { ALL_HOUSE_KIT_IDS, isHouseKitId, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
 import type { HouseInteriorProgram } from "@/editor/houseInteriors";
 import { setMapLayoutPlan } from "@/project/mapLayoutPlan";
-import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
 import { DEFAULT_SNOW_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import type { GameMap, Project } from "@/project/types";
@@ -197,7 +198,7 @@ export function buildVillageDomain(
   const tilesetForMap = draft.tilesets?.[map.tilesetId];
   if (!tilesetForMap || !isCombinedTownCompatibleTileset(tilesetForMap)) {
     throw new ToolError(
-      `build_village는 combined_town 칩셋(${DEFAULT_TILESET_ID}) 전용이다 — 이 맵의 타일셋: ${map.tilesetId}. ` +
+      `build_village는 숲마을·합본 마을 호환 칩셋 전용이다 — 이 맵의 타일셋: ${map.tilesetId}. ` +
         "다른 타일 그림판에서는 문/울타리/돌마당 타일 id가 전부 다른 그림이 된다.",
       { code: "village-tileset-mismatch", mapId },
     );
@@ -315,7 +316,7 @@ export function buildVillageDomain(
   const reliefNotes: string[] = [];
   if (intent.relief === "hills") {
     if (!tilesetHasCliffVocabulary(tilesetForMap)) {
-      warnings.push(`relief=hills 는 「합본 마을+레트로 월드맵」 혼합 칩셋에서만 그린다 — 이 맵의 타일셋(${map.tilesetId})엔 절벽 어휘가 없어 건너뛴다.`);
+      warnings.push(`relief=hills 는 숲마을 또는 「합본 마을+레트로 월드맵」 칩셋에서만 그린다 — 이 맵의 타일셋(${map.tilesetId})엔 절벽 어휘가 없어 건너뛴다.`);
     } else if (!morphology) {
       warnings.push("relief=hills 는 morphology(형태 유형) 경로에서만 깐다 — morphology 를 함께 지정하라.");
     } else {
@@ -1212,12 +1213,12 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
           type: "string",
           enum: [...RELIEF_STYLES],
           description:
-            "고저차(2026-09-18). hills=언덕·단구·2단 둔덕을 45° 대각 변과 남쪽 절벽 면으로 깐다. 「합본 마을+레트로 월드맵」 혼합 칩셋 맵에서만 "
+            "고저차(2026-09-18). hills=언덕·단구·2단 둔덕을 45° 대각 변과 남쪽 절벽 면으로 깐다. 숲마을 또는 「합본 마을+레트로 월드맵」 칩셋 맵에서만 "
             + "그려지고(다른 칩셋엔 절벽 타일이 없다) morphology 와 함께 써야 한다. 집·밭은 언덕 띠를 피하고 큰길은 띠를 지나 비탈이 된다.",
         },
         tilesetId: {
           type: "string",
-          description: "새 맵을 만들 때의 타일셋 id(생략 시 합본 마을). 언덕(relief)엔 easyrpg_chipset_combined_town_retro_world.",
+          description: "새 맵을 만들 때의 타일셋 id(생략 시 숲마을 · 거리별 잔디). 언덕(relief)엔 easyrpg_chipset_combined_town_retro_world.",
         },
         bounds: {
           type: "object",
@@ -1327,7 +1328,7 @@ function createVillageMap(draft: Project, args: Record<string, unknown>, seed: n
   const name = typeof args.name === "string" && args.name.trim().length > 0 ? args.name.trim() : "마을 50x50";
   const id = uniqueId(draft, "map_village", `${seed >>> 0}_${width}x${height}`);
   const size = width * height;
-  const tilesetId = typeof args.tilesetId === "string" && args.tilesetId.trim().length > 0 ? args.tilesetId.trim() : DEFAULT_TILESET_ID;
+  const tilesetId = typeof args.tilesetId === "string" && args.tilesetId.trim().length > 0 ? args.tilesetId.trim() : defaultOutdoorTilesetId(draft);
   if (!draft.tilesets[tilesetId]) throw new ToolError(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { code: "tileset-not-found" });
   const map: GameMap = {
     id,

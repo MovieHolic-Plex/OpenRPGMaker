@@ -1,3 +1,4 @@
+import { treeKitForTileset, plantForestBand } from "./treeKit";
 // editor/tools/village/decor.ts
 // 마을 소품 레이어 — 마당 꾸밈, 길 옆 벤치, 우물, 깃발, 바위 노두, 활엽수 군락, place_props 위임.
 
@@ -295,6 +296,26 @@ export function placeVillageTrees(
   seed: number, intent: VillageIntent, warnings: string[], reserved: readonly Rect[] = [],
 ): number {
   const yards = houses.map(house => yardAreaForHouse(map, [house.bbox], house.doorAt, { depth: 3, pad: 1 }));
+  const kit = treeKitForTileset(draft.tilesets[map.tilesetId]);
+  if (kit.id === "forest-harmony") {
+    if (intent.edgeTrees === "none") return 0;
+    const blocked = houseBlockedCells(houses, map);
+    for (const { x, y } of protectedHouseCells(map)) blocked.add(coordKey(x, y));
+    for (const event of map.events) blocked.add(coordKey(event.x, event.y));
+    if (draft.startMapId === map.id) blocked.add(coordKey(draft.startPos.x, draft.startPos.y));
+    const free = (x: number, y: number): boolean => inMapBounds(map, x, y)
+      && !blocked.has(coordKey(x, y)) && map.lowerTiles[y * map.width + x] === TILE.GRASS
+      && map.upperTiles[y * map.width + x] === TILE.EMPTY
+      && !map.lowerTileStacks?.[y * map.width + x]?.length && !map.upperTileStacks?.[y * map.width + x]?.length;
+    const density = intent.edgeTrees === "dense" ? intent.forestDensity ?? DEFAULT_FOREST_DENSITY : undefined;
+    const count = density
+      ? forestPlacementPlan({ area, footprintCells: kit.medium.w * kit.medium.h, density, share: INTERIOR_TREE_SHARE }).count
+      : Math.max(1, Math.floor(area.w * area.h / 118)) + 9;
+    const parts = unreservedAreas([area], [...reserved, ...yards, plaza.rect]);
+    const totalArea = parts.reduce((sum, part) => sum + part.w * part.h, 0);
+    return parts.reduce((total, part) => total + plantForestBand(map, part, seed, kit, free,
+      Math.min(count - total, Math.ceil(count * part.w * part.h / totalArea))).placed, 0);
+  }
   return unreservedAreas([area], [...reserved, ...yards])
     .filter(part => part.w >= 4 && part.h >= 4)
     .reduce((total, part) => total + plantVillageTreeArea(draft, map, part, plaza, houses, seed, intent, warnings, part.w * part.h / (area.w * area.h)), 0);

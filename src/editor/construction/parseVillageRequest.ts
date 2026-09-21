@@ -35,7 +35,7 @@ import {
 const REQUEST_KEYS = ["target", "houseCount", "housePlans", "houseObjectIds", "composition", "multiStoreyCount", "houseClustering", "countPolicy", "groundTheme", "settlementLayout", "morphology", "relief", "npcCount", "residents", "theme", "forestDensity", "seed", "interior", "presetId", "fullMap"] as const;
 const FOREST_DENSITIES = ["sparse", "normal", "dense", "impassable"] as const;
 const EXISTING_TARGET_KEYS = ["kind", "mapId", "bounds", "fullMap"] as const;
-const NEW_TARGET_KEYS = ["kind", "mapId", "name", "width", "height", "plannedMap"] as const;
+const NEW_TARGET_KEYS = ["kind", "mapId", "name", "width", "height", "plannedMap", "tilesetId"] as const;
 const HOUSE_PLAN_KEYS = ["objectId", "kitId", "yard", "ownerName", "templateId", "program"] as const;
 const RESIDENT_KEYS = ["name", "role", "lines"] as const;
 const MIN_HOUSES = 1;
@@ -187,6 +187,7 @@ function parseNewTarget(target: BoundaryRecord): AuthorVillageTarget {
     kind: "new",
     mapId,
     name: requiredString(target, "name", "authorVillage.target"),
+    ...(target["tilesetId"] === undefined ? {} : { tilesetId: requiredString(target, "tilesetId", "authorVillage.target") }),
     ...(width === undefined ? {} : { width }),
     ...(height === undefined ? {} : { height }),
     ...(plannedMap === undefined ? {} : { plannedMap }),

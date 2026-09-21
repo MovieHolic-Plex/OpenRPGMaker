@@ -3,7 +3,8 @@
 //
 // ⚠ 타일셋 스코프: village/ 디렉토리의 모든 원시 타일 id(문 116/146, 울타리 378~439,
 // 돌마당 411/412/413, 우물 382, 깃발 208/209 등)는 combined_town 칩셋
-// (easyrpg_chipset_combined_town, 30열×16행) 전용 좌표다. 다른 타일셋에서는 전부 깨진다 —
+// (easyrpg_chipset_combined_town, 30열×16행) 좌표다. 숲마을과 혼합 칩셋은 이 첫 480칸을 보존한다.
+// 다른 타일셋에서는 전부 깨진다 —
 // build_village가 시공 전에 타일셋을 검사해 거부한다(builder.ts).
 
 import { protectedHouseCells } from "../houseProtection";

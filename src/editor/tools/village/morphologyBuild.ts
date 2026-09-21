@@ -244,7 +244,7 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
     for (const [index, house] of houses.entries()) fenceTiles += paintParcelFence(map, area, slots[index]!, house, sealed);
     let fieldCells = 0;
     const fieldRng = mulberry32((seed ^ 0x2f6b1a4d) >>> 0);
-    for (const field of plan.fields) fieldCells += paintField(map, field.rect, field.kind, free, fieldRng, occ);
+    for (const field of plan.fields) fieldCells += paintField(map, field.rect, field.kind, free, fieldRng, occ, kit);
     let trees = 0;
     const plant = (stamp: TreeStamp, x: number, y: number): boolean => {
       if (!canStampTree(stamp, x, y, free, occ, W)) return false;
@@ -452,6 +452,7 @@ function paintField(
   free: (x: number, y: number) => boolean,
   rng: Rng,
   occ: Uint8Array,
+  kit: TreeKit,
 ): number {
   const W = map.width;
   const cells: Point[] = [];
@@ -466,10 +467,10 @@ function paintField(
     painted = cells.length;
   } else {
     // 과수원 — 2×2 활엽수(합본 마을 원자, 혼합 칩셋에도 같은 번호)를 3칸 간격 격자로, 열마다 반 칸 엇갈림.
-    const fruitTree = COMBINED_TOWN_TREE_KIT.big;
-    for (let y = rect.y; y + 1 < rect.y + rect.h; y += 3) {
+    const fruitTree = kit.id === "forest-harmony" ? kit.medium : COMBINED_TOWN_TREE_KIT.big;
+    for (let y = rect.y; y + fruitTree.h <= rect.y + rect.h; y += fruitTree.h + 1) {
       const offset = ((y - rect.y) / 3) % 2 === 1 ? 1 : 0;
-      for (let x = rect.x + offset; x + 1 < rect.x + rect.w; x += 3) {
+      for (let x = rect.x + offset; x + fruitTree.w <= rect.x + rect.w; x += fruitTree.w + 1) {
         if (!canStampTree(fruitTree, x, y, free, occ, W)) continue;
         painted += stampTree(map, fruitTree, x, y);
         markTreeStamp(occ, W, fruitTree, x, y);
