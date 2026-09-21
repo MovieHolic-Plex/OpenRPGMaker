@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # 타일셋 참고문서 — 프로젝트 데이터
 
 ## 사용자 경로와 정본
@@ -41,8 +43,8 @@
 
 `src/project/tilesetReferences.ts`: 용도/MD/이미지 타입과 한도·검증·문서 소유자 해석·내용 revision.
 `TilesetDef.referenceDocuments?`와 `referenceSourceTilesetId?`는 선택 필드다.
-미작성 레거시 문서에는 기본값을 심지 않는다. JSON/OPRN/SQLite/Supabase tileset JSON 왕복에서 유지한다.
-Supabase 별도 테이블 마이그레이션은 필요 없다. `src/project/webExport.ts`는 게임 실행에 필요 없는
+미작성 레거시 문서에는 기본값을 심지 않는다. JSON/OPRN/SQLite/LegacyDb tileset JSON 왕복에서 유지한다.
+LegacyDb 별도 테이블 마이그레이션은 필요 없다. `src/project/webExport.ts`는 게임 실행에 필요 없는
 참고문서와 공유 포인터만 내보내기 사본에서 제외한다. 편집 프로젝트 원본은 보존한다.
 
 용도 32개, 용도당 MD 64개·이미지 256개, MD 120,000자, 이미지 4MB 제한.
@@ -91,3 +93,73 @@ AGENTS의 동일 읽기 절차를 따르고, 프로젝트를 읽어 아래 expor
 `verify-shots/tileset-references/`: 실제 DB UI, 편집/업로드 관찰, 제공자 전달 형식별 차단/허용 관찰,
 저장 영수증. `scripts/qa/capture-tileset-references.mjs`는 브라우저에서 실제 모듈을 호출한다.
 유료 LLM 호출이나 새 마을 생성은 하지 않는다. gates/vitest/전체 typecheck는 실행하지 않았다.
+
+## Castle2 성채 학습 이관
+
+성채 프로젝트 `castle-fortress-city-20260921` 및 SQLite
+`b4706a77-9a38-4dcc-a89d-36244da53967`의 `opengameart_castle`에
+구도·조립·비교 개선 3용도, 20 MD / 19 이미지를 저장했다.
+`castle_courtyard_harbor`는 원본을 공유한다. 전체 성채와 3개 공용 장소의 독립
+저장본 및 칩셋 포함 다운로드에도 자료를 포함한다. 다른 기존 프로젝트를 일괄 수정하지 않는다.
+원본/반려/수정 비교, 16구역 분석, 부품 JSON, 개선1 석조 관리소 최종 선택과 돌다리
+사용 제외를 보존했다. `tiledata/castle-tiles-rpgs/ai-references/README.md`와
+`scripts/content/register-castle-references.mjs` 참조. 저장소 연구 기록만 읽는 것으로
+현재 프로젝트의 참고문서 선행 읽기를 대신하지 않는다.
+
+## 숲마을 공용 자료 (2026-09-21)
+
+`forest_high_cliff_river`의 `village` 용도에 배치/공용 저장 안내 2 MD와 선별 마을
+전체 사진 7개를 보관한다. `shared_forest_village_objects`의 `village-props` 용도는
+19개 소품의 16px·6열 조립/금지 목록 1 MD와 시트 이미지 1개다.
+프로젝트 `oprn-hill-forest-harmony-20260918-a4e1`은 **로컬 SQLite가 편집 정본**이며,
+`apply-shared-village-references.mjs`가 에디터 store.update/flush 경로로 문서만 추가하고
+SQLite 및 새로 연 에디터에서 다시 읽는다. 원본 29개 맵의 타일 배열은 변경하지 않는다.
+
+공용 장소 7개의 문서 포함 스냅샷은 `oprn-place-organic-*-v2`, 소품 원격 보존본은
+`oprn-shared-forest-village-objects-v2`다. 기존 v1 원격 스냅샷을 덮어쓰지 않는다.
+신규 프로젝트는 공용 소품 번들의 문서를 받으며, 기존 번들에 문서가 없을 때만
+`ensureSharedVillageObjectReferences`가 보충한다. 사용자 문서나 공유 포인터는 보존한다.
+`tiledata/tilesets/forest_high_cliff_river/shared-library/`는 저작 원문과 선정 기록,
+`src/assets/sharedVillageReferences.json`은 배포용 MD/이미지 묶음이다.
+
+## 공용 forest_harmony 참고문서 보충 (2026-09-22)
+
+`src/assets/forestHarmonyTileset.json.referenceDocuments`에 `forest-public-village`
+용도를 배포한다. **숲마을 · 거리별 잔디** 공용 타일 자체에 2 MD / 8 이미지가 들어가며,
+새 프로젝트의 `defaultTilesets()`만으로 사용할 수 있다. 파생 프로젝트용 문서만
+등록했던 누락을 보완한다. 공용 원본 시트와 확장판 예시를 명시적으로 구별한다.
+`ensureForestHarmonyReferences`는 같은 bundled 이미지의 기존 타일셋에 없는 용도만
+추가하고, 기존 동일 ID 문서·다른 사용자 용도·문서 공유 포인터·업로드 타일셋은 보존한다.
+
+저작 원문: `tiledata/tilesets/forest_harmony/references/VILLAGE.md`.
+준비: `scripts/content/prepare-forest-public-references.mjs`.
+SQLite 저장/재로드: `register-forest-public-references.mjs` (대상 호스트가 중단된 폴더에서
+공식 local-store API 사용; 실행 중 DB 직접 수정 금지).
+신규/기존 SQLite 프로젝트의 실제 배포 UI 증거: `verify-shots/forest-public-references/`.
+
+### Castle2 공용 기본 제공 수정
+
+`src/assets/sharedCastleReferences.json`에 3용도 / 20 MD / 19 이미지를 공용 번들로 포함한다.
+`createCastleTileset()`이 새 프로젝트마다 독립 편집 가능한 사본을 넣는다.
+`ensureBundledTilesets()`도 문서 필드가 없는 기존 기본 Castle2에만 보충한다.
+작성한 문서(빈 배열 포함), 공유 포인터, 다른 이미지로 바꾼 타일셋은 보존한다.
+특정 성채 프로젝트나 공용 장소 다운로드를 가져와야 하는 조건은 없다.
+새 빈 프로젝트의 타일 → 성채 · OpenGameArt → AI 참고문서에서 확인한다.
+
+## 실행형 부품·조립·검증 자료
+
+공용 성채 및 `forest_harmony`의 `tile-assembly-executable` 용도에 성채 14개,
+숲 마감/몸통 3개의 사전을 제공한다. `src/assets/tileAssemblyCatalog.json`은 원본 셀 좌표,
+마스크와 lower/upper 배열을 보관한다. `scripts/content/build-tile-assembly-catalog.mjs`로
+현재 실측 부품/공용 숲 previewMap에서 재생성한다.
+
+읽기 도구: `get_tile_assembly_part`, `preview_forest_strip`, `validate_tile_assembly`.
+실행 구현은 `src/project/tileAssemblyGuide.ts`. 남향 숲 띠는 높이6, 폭6*N+2(N>=2)만
+지원한다. 임의 다각형 숲이나 자동 이미지 인식이 아니다. 검증은 명시한 계획과 실제 맵을
+비교해 뿌리·줄기·반대쪽 마감·접근이 막힌 입구의 좌표를 반환한다. 출입구는 지정한 인접
+칸에서 엔진 canMove와 보수적 이벤트 점유로 확인하며 전체 경로/전송 이벤트는 별도다.
+
+입력·계획·출력 배열·완성 이미지·네 오류 사례는 `tiledata/castle-tiles-rpgs/executable/`.
+등록은 `scripts/content/publish-executable-tile-guides.mjs`(공용 출하 자료) 및
+`register-executable-tile-guides.mjs`(실행 중 SQLite 호스트의 CAS 저장 API)다.
+기존 사용자 문서는 보존하고 빠진 용도만 공용 칩셋에 보충한다.

@@ -1,4 +1,4 @@
-// Shipped player.html + exportProjectStoreShim, using the actual Supabase-reloaded project.
+// Shipped player.html + exportProjectStoreShim, using the actual LegacyDb-reloaded project.
 import assert from 'node:assert/strict';
 import { firefox, chromium } from 'playwright';
 import { readFile, writeFile } from 'node:fs/promises';

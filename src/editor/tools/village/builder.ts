@@ -1,4 +1,6 @@
-import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultOutdoorTilesetId, createForestHarmonyTileset, FOREST_HARMONY_ID } from "@/project/defaults/forestHarmony";
+import { assertRiverVillage } from "./riverValidation";
+import { riverBandDepth } from "@/project/worldGenRules";
 // editor/tools/village/builder.ts
 // 시공 오케스트레이션 — VILLAGE_TOOLS 조립, build_village 본문, intent 해석, 파이프라인 루프.
 // 3층: plan_village(계층 계획) → build_village(제약 시공) → critique_village(비평 루프).
@@ -35,6 +37,7 @@ import {
   type VillageLookReport,
 } from "../villageEvaluate";
 import {
+  applyTerrainPassFromMasks,
   buildTerrainConstraintMasks,
   runTerrainConstraintPass,
 } from "../villageTerrainPass";
@@ -135,7 +138,7 @@ export function buildVillageDomain(
   const doorEventEnabled = merged.doorEvent !== false;
   // 문 외형의 주인 — 이벤트를 만들면 Object1 문 스프라이트가 문이고, 문 타일은 깔지 않는다.
   const doorEventsPlanned = interiorEnabled && doorEventEnabled;
-  const fencesEnabled = merged.fences !== false;
+  let fencesEnabled = merged.fences === true;
   const decorEnabled = merged.decor !== false;
   const warnings: string[] = [];
   // 2026-09-18: compact 인데 저장된 집 오브젝트가 없으면 예전엔 거부였다. 이제 파라메트릭 집으로 짓고 알린다.
@@ -214,6 +217,10 @@ export function buildVillageDomain(
     ? { ...inferredRequirements, forestDensity: intent.forestDensity }
     : inferredRequirements);
   const baseArea = villageBuildArea(map, createArgs.bounds);
+  const blankRiverStart = createArgs.bounds === undefined && map.events.length === 0
+    && map.lowerTiles.every(tile => tile === TILE.GRASS) && map.upperTiles.every(tile => tile === TILE.EMPTY)
+    && !Object.values(map.lowerTileStacks ?? {}).some(stack => stack?.length)
+    && !Object.values(map.upperTileStacks ?? {}).some(stack => stack?.length);
   // Generic environmental writes cannot invalidate a spatial compiler's accepted raster digest.
   // The object-library adapter reads designs; it does not gain ownership of existing occurrences.
   if (objectCatalog && Object.values(draft.spatialAuthoring?.occurrences ?? {}).some(occurrence =>
@@ -225,8 +232,22 @@ export function buildVillageDomain(
   // 명시 bounds가 있으면 하한 16(모델이 화면·선택 크기를 그대로 넘긴다),
   // 맵 전체 시공이면 기존 하한 20을 유지한다 — 19×19 전체맵 거부 계약 그대로.
   assertBuildAreaSize(map, baseArea, createArgs.bounds !== undefined);
+  const morphology: VillageMorphology | undefined = intent.morphology && !objectCatalog && !compact ? intent.morphology : undefined;
+  if (intent.morphology && !morphology) warnings.push("morphology 는 저장 건물 마을·compact 구성에선 무시했다.");
+  if (morphology === "river" && preset?.design && (preset.design.policies.layout === "fixed"
+    || preset.design.policies.nature === "fixed")) {
+    throw new ToolError("고정 마을 설계서에 강변형을 덧씌울 수 없습니다. 설계서의 배치·자연 설정을 먼저 변경하세요.", { code: "village-design-conflict" });
+  }
+  if (intent.morphology === "river" && !morphology) {
+    throw new ToolError("강변형은 저장 건물·compact 구성을 아직 지원하지 않습니다.", { code: "village-river-conflict" });
+  }
+  if (morphology === "river" && (args.skipTerrain === true || merged.skipTerrain === true || intent.relief === "hills"
+    || requirements?.landmarks.some(kind => kind === "lake" || kind === "harbor"))) {
+    throw new ToolError("강변형은 연속 강을 직접 시공합니다. 지형 생략·언덕·호수·항구는 다른 형태를 선택하세요.", { code: "village-river-conflict" });
+  }
   // E 하이브리드: requirements → 제약 마스크 → buildable 영역 + 물/숲 셀 회피
-  const terrainRequirements = compact && requirements ? { ...requirements,
+  const terrainRequirements = morphology === "river" && requirements ? { ...requirements,
+    landmarks: requirements.landmarks.filter(landmark => landmark !== "river") } : compact && requirements ? { ...requirements,
     landmarks: requirements.landmarks.filter(landmark => landmark !== "lake" && landmark !== "forest") } : requirements;
   const terrainMasks = terrainRequirements && terrainRequirements.landmarks.length > 0
     ? buildTerrainConstraintMasks(map, terrainRequirements, baseArea, worldGenRules)
@@ -251,8 +272,7 @@ export function buildVillageDomain(
     perfMark = Date.now();
   };
   // 형태 유형 마을(2026-09-17) — 뼈대 길·필지 먼저. 오브젝트 마을·compact 에선 쓰지 않는다.
-  const morphology: VillageMorphology | undefined = intent.morphology && !objectCatalog && !compact ? intent.morphology : undefined;
-  if (intent.morphology && !morphology) warnings.push("morphology 는 저장 건물 마을·compact 구성에선 무시했다.");
+
   let plaza = villagePlaza(area, intent.plazaLayout, intent.settlementLayout, rng);
   if (objectCatalog && (compact || (area.w >= 90 && area.h >= 90))) {
     const width = compact ? Math.min(16, area.w - 12) : 20, height = compact ? Math.min(10, area.h - 12) : 14;
@@ -332,9 +352,16 @@ export function buildVillageDomain(
     // 나가야 하고, 시작 위치(맵 가운데) 한 칸이 막히면 큰길 가운데가 뚫려 길 성분이 갈라진다(2026-09-18 s3 재현).
     const morphBlocked = new Set<number>(houseBlockedIdx);
     const morphForest = new Set<number>();
+    if (morphology === "river") {
+      for (let i = 0; i < map.lowerTiles.length; i++) {
+        if (map.lowerTiles[i] !== TILE.GRASS || map.upperTiles[i] !== TILE.EMPTY
+          || map.lowerTileStacks?.[i]?.length || map.upperTileStacks?.[i]?.length) morphBlocked.add(i);
+      }
+      for (const event of map.events) morphBlocked.add(event.y * map.width + event.x);
+    }
     if (draft.startMapId === map.id) {
       const startIndex = draft.startPos.y * map.width + draft.startPos.x;
-      if (!reservedWaterCells.has(startIndex) && !(terrainBlockedCells(terrainMasks)?.has(startIndex) ?? false)) {
+      if ((morphology !== "river" || blankRiverStart) && !reservedWaterCells.has(startIndex) && !(terrainBlockedCells(terrainMasks)?.has(startIndex) ?? false)) {
         morphBlocked.delete(startIndex);
         morphForest.add(startIndex);
       }
@@ -346,6 +373,7 @@ export function buildVillageDomain(
     morph = buildMorphologyVillage({
       draft, map, area, seed, intent, morphology,
       maxHouses: housePlan.explicit ? housePlan.count : MAX_HOUSES,
+      ...(morphology === "river" ? { riverWidth: riverBandDepth(Math.min(area.w, area.h), worldGenRules.water) } : {}),
       blocked: morphBlocked, softBlocked: morphForest, ...(relief ? { cliffBlocked: relief.cliff } : {}),
       treeKit, windows, paintDoorTiles: !doorEventsPlanned, warnings,
     });
@@ -375,6 +403,9 @@ export function buildVillageDomain(
   }
   // Finish all house-owned writes before publishing metadata. No environmental stage gets a bypass.
   assignShopPrograms(houses, plaza, warnings);
+  for (const [index, house] of houses.entries()) houses[index] = { ...house,
+    fence: housePlan.fences[index] ?? (merged.fences === true || housePlan.programs[index] === "manor") };
+  fencesEnabled = houses.some(house => house.fence === true);
   const legacyHouses = houses.filter(house => !house.objectExterior);
   restoreHouseDoors(map, legacyHouses);
   clearHouseRidgeRowProps(map, legacyHouses);
@@ -402,7 +433,7 @@ export function buildVillageDomain(
     );
   }
   assertHouseProtection(existingHouses, draft, []);
-  setVillageHarnessLayoutPlan(map, area, plaza, houses, intent, seed, fencesEnabled, merged.settlementLayout, boulevard, morph?.exits, morphology, relief !== undefined);
+  setVillageHarnessLayoutPlan(map, area, plaza, houses, intent, seed, merged.settlementLayout, boulevard, morph?.exits, morphology, relief !== undefined);
   if (compact && map.layoutPlan) {
     map.layoutPlan.notes = "작은 회벽·석벽 주택의 조밀한 마을. 10×10 초과 큰집 최대 2채, 모든 집 15×15 이하. 집 → 길 → 군락 나무 → 비대칭 호수·243계열 풀밭·장터·마당.";
     map.layoutPlan.regions.find(region => region.role === "plaza")?.tags?.push("composition:compact");
@@ -479,8 +510,13 @@ export function buildVillageDomain(
     fences: fencesEnabled && !morph, decor: decorEnabled, landscape: boulevard !== null && !objectCatalog,
   };
   let decorPlaced = houseDecorPlaced;
-  if (!compact && !skipTerrain && requirements && requirements.landmarks.length > 0) {
-    const terrain = runTerrainConstraintPass(draft, map, requirements, warnings, baseArea, worldGenRules, "trees");
+  if (!compact && !skipTerrain && terrainRequirements && terrainRequirements.landmarks.length > 0) {
+    // The generic forest pass must reserve the river too; recomputing its old side-water mask
+    // would plant trees over the future central channel. Reserve the entire bank envelope.
+    const terrain = morph?.plan.river && terrainMasks
+      ? applyTerrainPassFromMasks(draft, map, { ...terrainMasks, waterRects: [...terrainMasks.waterRects, morph.plan.river.bounds] },
+        warnings, worldGenRules, terrainRequirements.forestDensity, "trees")
+      : runTerrainConstraintPass(draft, map, terrainRequirements, warnings, baseArea, worldGenRules, "trees");
     landmarkNotes.push(...terrain.notes);
     assertSealed();
   }
@@ -507,6 +543,11 @@ export function buildVillageDomain(
   } else if (skipTerrain) {
     landmarkNotes.push("skipTerrain: multi-turn forest/water layers");
   }
+  if (morph?.plan.river && blankRiverStart && draft.startMapId === map.id) {
+    draft.startPos = { x: plaza.centerX, y: plaza.centerRow };
+  }
+  morph?.finishWater();
+  assertSealed();
   const organicWaterCells = organicLake && !skipTerrain ? paintOrganicVillageLake(draft, map, organicLake) : 0;
   assertSealed();
   if (!deferDecoration) {
@@ -571,7 +612,9 @@ export function buildVillageDomain(
   }
 
   const requestedNpcCount = integerArg(merged, "npcCount", houses.length + 2);
+  const beforeResidents = new Set(map.events.map(event => event.id));
   placeVillageNpcs(draft, map, area, houses, plaza, overrides, seed, warnings, requestedNpcCount);
+  const residentEventIds = map.events.filter(event => !beforeResidents.has(event.id)).map(event => event.id);
   assertSealed();
   paintGroundThemeStrip(map, area, merged.groundTheme);
   assertSealed();
@@ -580,7 +623,8 @@ export function buildVillageDomain(
   ensureVillageStartPosition(draft, map, plaza);
   if (objectCatalog) assertVillagePublicAccess(draft, map, draft.startMapId === map.id ? draft.startPos : { x: plaza.centerX, y: plaza.centerRow });
 
-  const audit = auditVillage(map, houses, upperBefore, area);
+  if (morph?.plan.river) assertRiverVillage(draft, map, morph.plan.river, houses.map(house => house.front), { x: plaza.centerX, y: plaza.centerRow });
+  const audit = auditVillage(map, houses, upperBefore, area, draft.tilesets[map.tilesetId]);
   const objectAccess = inspectObjectHouseAccess(draft, map, houses);
   if (objectAccess.reachable !== objectAccess.doors || objectAccess.intact !== objectAccess.doors) {
     throw new ToolError(`건물 현관 접근 실패: ${objectAccess.reachable}/${objectAccess.doors}. 마당·길·소품 배치를 확인해 주세요.`, { code: "village-object-access", mapId });
@@ -593,13 +637,13 @@ export function buildVillageDomain(
   if (audit.roadInsideHouses > 0) warnings.push(`집 내부를 침범한 도로 ${audit.roadInsideHouses}칸`);
   if (audit.ridgeInvaded > 0) warnings.push(`지붕 용마루 행 침범 ${audit.ridgeInvaded}칸 (길/소품이 지붕을 찢음)`);
   if (audit.roadComponents !== 1) {
-    warnings.push(`길 연결 성분 미달: ${audit.roadComponents} — ${roadComponentNotes(map, area).join(", ")}`);
+    warnings.push(`길 연결 성분 미달: ${audit.roadComponents} — ${roadComponentNotes(map, area, draft.tilesets[map.tilesetId]).join(", ")}`);
   }
   if (audit.npcCount !== requestedNpcCount) warnings.push(`NPC 수 미달: ${audit.npcCount}/${requestedNpcCount}`);
   if (audit.npcsWithText !== audit.npcCount) warnings.push(`대사 없는 NPC: ${audit.npcCount - audit.npcsWithText}명`);
   if (interiorEnabled && houseInteriors.length !== houses.length) warnings.push(`내부 생성 미달: ${houseInteriors.length}/${houses.length}`);
-  if (!deferDecoration && fencesEnabled && audit.fencedHouses < houses.length) {
-    warnings.push(`울타리 미달: ${audit.fencedHouses}/${houses.length}`);
+  if (!deferDecoration && fencesEnabled && audit.fencedHouses < houses.filter(house => house.fence).length) {
+    warnings.push(`울타리 미달: ${audit.fencedHouses}/${houses.filter(house => house.fence).length}`);
   }
 
   const doorFronts = houses.flatMap(house => house.objectExterior?.approaches ?? [house.front]);
@@ -678,6 +722,7 @@ export function buildVillageDomain(
       ridgeInvaded: audit.ridgeInvaded,
       roadComponents: audit.roadComponents,
       npcCount: audit.npcCount,
+      residentEventIds,
       interiorCount: houseInteriors.length,
       doorEventCount: houseInteriors.length,
       ...(interiorVariety.interiors > 0 ? { interiorVariety } : {}),
@@ -730,6 +775,8 @@ export type VillageBuildInspection = {
   readonly interiorMapIds: readonly string[];
   readonly actualHouseCount: number;
   readonly npcCount: number;
+  readonly residentEventIds?: readonly string[];
+  readonly doorFronts?: readonly { readonly x: number; readonly y: number }[];
   readonly structuralQa: VillageStructuralQa;
   readonly savedExteriors?: {
     readonly objectIds: readonly string[];
@@ -812,6 +859,8 @@ export function inspectVillageBuild(
     interiorMapIds: [...interiorMapIds].sort(),
     actualHouseCount,
     npcCount,
+    doorFronts: houses.map(house => Reflect.get(house, "front")),
+    residentEventIds: Array.isArray(Reflect.get(data, "residentEventIds")) ? Reflect.get(data, "residentEventIds") : [],
     structuralQa,
     ...(Reflect.get(data, "houseSource") === "objects" ? { savedExteriors: {
       objectIds: houses.map(house => String(Reflect.get(house, "objectId"))),
@@ -1161,7 +1210,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
           description: "숲 밀도 enum. 모델이 넣는다. 생략하면 생성 규칙 저작 개수. 사용자 문장을 코드가 읽지 않는다.",
         },
         houseCount: { type: "integer", description: "집 수(4~32). houses/housePlans 없을 때 사용. 미지정 시 면적 비례 기본값." },
-        fences: { type: "boolean", description: "집 필지 울타리(기본 true). false면 울타리를 깔지 않는다." },
+        fences: { type: "boolean", description: "전체 집 울타리(기본 false). 중요한 집만 housePlans[].fence=true 또는 program=manor로 지정한다." },
         decor: {
           type: "boolean",
           description: "마당 소품·외곽 나무·광장 꾸밈(기본 true). false면 소품 산포 생략.",
@@ -1184,7 +1233,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
         plazaStyle: {
           type: "string",
           enum: ["market", "garden", "empty"],
-          description: "광장 소품(기본 market=벤치+꽃, garden=꽃 위주, empty=없음).",
+          description: "광장 소품(기본 empty=없음, garden=꽃 위주, market=시장 데크·좌판). 시장은 요청이나 프리셋에 있을 때 선택.",
         },
         skipTerrain: {
           type: "boolean",
@@ -1205,7 +1254,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
           type: "string",
           enum: [...VILLAGE_MORPHOLOGIES],
           description:
-            "취락 형태 유형(2026-09-17). street=가로촌(큰길 하나에 집 줄), green=광장촌(렌즈형 녹지·연못을 두 호가 감싼다), "
+            "취락 형태 유형. river=중앙 강·다리·양안 주거, street=가로촌(큰길 하나에 집 줄), green=광장촌(렌즈형 녹지·연못을 두 호가 감싼다), "
             + "round=환촌(원형 녹지·링 길·남쪽 입구), cluster=괴촌(관심도 성장 시뮬레이션). 지정하면 뼈대 길 → 길에 면한 필지 → "
             + "집 → 필지 뒤 밭·과수원 → 거리 기울기 나무 순서로 짓고 settlementLayout 은 무시한다. 생략하면 예전 광장 고리 문법.",
         },
@@ -1243,6 +1292,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
             properties: {
               kitId: { type: "string", enum: ["blue-stone", "bright-plaster", "amber-wood", "slate-wood"] },
               yard: { type: "array", items: { type: "string" }, description: "마당 꾸밈 태그" },
+              fence: { type: "boolean", description: "이 집만 울타리(기본 없음, 명시한 manor는 기본 있음)" },
             },
           },
         },
@@ -1309,6 +1359,7 @@ function coerceWindows(value: unknown): HouseKitWindowsOption | undefined {
 /** 언덕 띠가 들어오면 안 되는 마을 중심부 — 형태별로 뼈대(큰길·렌즈·링)가 놓이는 자리. */
 function reliefAvoidRect(area: Rect, morphology: VillageMorphology): Rect {
   switch (morphology) {
+    case "river": return area;
     case "street":
       // 큰길(가운데 높이 ±0.07h)과 양쪽 집 줄·뒷골목 — 폭 전체, 높이 26~74%.
       return { x: area.x, y: area.y + Math.floor(area.h * 0.26), w: area.w, h: Math.ceil(area.h * 0.48) };
@@ -1328,6 +1379,7 @@ function createVillageMap(draft: Project, args: Record<string, unknown>, seed: n
   const name = typeof args.name === "string" && args.name.trim().length > 0 ? args.name.trim() : "마을 50x50";
   const id = uniqueId(draft, "map_village", `${seed >>> 0}_${width}x${height}`);
   const size = width * height;
+  draft.tilesets[FOREST_HARMONY_ID] ??= createForestHarmonyTileset();
   const tilesetId = typeof args.tilesetId === "string" && args.tilesetId.trim().length > 0 ? args.tilesetId.trim() : defaultOutdoorTilesetId(draft);
   if (!draft.tilesets[tilesetId]) throw new ToolError(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { code: "tileset-not-found" });
   const map: GameMap = {
@@ -1399,6 +1451,7 @@ interface HousePlanCoerced {
   readonly templates: readonly (string | undefined)[];
   readonly owners: readonly (string | undefined)[];
   readonly programs: readonly (HouseInteriorProgram | undefined)[];
+  readonly fences: readonly (boolean | undefined)[];
 }
 
 const HOUSE_INTERIOR_PROGRAMS = ["dwelling", "shop", "inn", "workshop", "study", "manor"] as const;
@@ -1414,12 +1467,15 @@ function coerceHousePlan(housesArg: unknown, housePlansArg: unknown): HousePlanC
     const templates: (string | undefined)[] = [];
     const owners: (string | undefined)[] = [];
     const programs: (HouseInteriorProgram | undefined)[] = [];
+    const fences: (boolean | undefined)[] = [];
     for (let i = 0; i < housePlansArg.length; i += 1) {
       const entry = housePlansArg[i];
       if (typeof entry !== "object" || entry === null || Array.isArray(entry)) {
         throw new ToolError(`housePlans[${i}]는 객체여야 합니다.`, { code: "invalid-args" });
       }
       const record = entry as Record<string, unknown>;
+      if (record.fence !== undefined && typeof record.fence !== "boolean") throw new ToolError(`housePlans[${i}].fence는 boolean이어야 합니다.`, { code: "invalid-args" });
+      fences.push(record.fence as boolean | undefined);
       const kit = record.kitId;
       if (kit !== undefined && !isHouseKitId(kit)) {
         throw new ToolError(`housePlans[${i}].kitId는 ${ALL_HOUSE_KIT_IDS.join("|")}여야 합니다.`, { code: "invalid-args" });
@@ -1458,6 +1514,7 @@ function coerceHousePlan(housesArg: unknown, housePlansArg: unknown): HousePlanC
       templates: templates.slice(0, count),
       owners: owners.slice(0, count),
       programs: programs.slice(0, count),
+      fences: fences.slice(0, count),
     };
   }
   const count = typeof housesArg === "number" && Number.isInteger(housesArg)
@@ -1467,7 +1524,7 @@ function coerceHousePlan(housesArg: unknown, housePlansArg: unknown): HousePlanC
     throw new ToolError("houses는 정수이거나 housePlans 배열을 쓰세요.", { code: "invalid-args" });
   }
   // explicit=false면 빌더가 맵 면적 비례 기본값으로 대체한다(100×100에 8채 고정 방지).
-  return { count, explicit: housesArg !== undefined, yards: [], kits: [], templates: [], owners: [], programs: [] };
+  return { count, explicit: housesArg !== undefined, yards: [], kits: [], templates: [], owners: [], programs: [], fences: [] };
 }
 
 /**
@@ -1559,7 +1616,7 @@ function resolveVillageIntent(
   const pathStyle = args.pathStyle !== undefined ? coercePathStyle(args.pathStyle) : (inferred.pathStyle ?? DEFAULT_ROAD_STYLE);
   const kitMix = coerceEnum(args.kitMix, ["mixed", "blue-stone", "bright-plaster", "amber-wood", "slate-wood"] as const, inferred.kitMix ?? "mixed", "kitMix");
   const yardStyle = coerceEnum(args.yardStyle, ["mixed", "garden", "workshop", "market", "minimal"] as const, inferred.yardStyle ?? "mixed", "yardStyle");
-  const plazaStyle = coerceEnum(args.plazaStyle, ["market", "garden", "empty"] as const, inferred.plazaStyle ?? "market", "plazaStyle");
+  const plazaStyle = coerceEnum(args.plazaStyle, ["market", "garden", "empty"] as const, inferred.plazaStyle ?? "empty", "plazaStyle");
   const edgeTrees = coerceEnum(args.edgeTrees, ["conifer", "dense", "none"] as const, inferred.edgeTrees ?? "conifer", "edgeTrees");
   const plazaLayout = coerceEnum(args.plazaLayout, ["center", "north", "south", "west", "east"] as const, inferred.plazaLayout ?? "center", "plazaLayout");
   // 길 폭·자연도·배치 패턴: 명시 인자 → 프리셋 → seed 파생 (전부 1칸 직선 금지)
@@ -1830,7 +1887,6 @@ function setVillageHarnessLayoutPlan(
   houses: readonly BuiltHouse[],
   intent: VillageIntent,
   seed: number,
-  fencesEnabled: boolean,
   settlementLayout: unknown,
   boulevard: Boulevard | null,
   // 형태 유형 마을은 실제 출구가 계획에서 나온다 — 평가기 앵커를 그 좌표로 기록한다.
@@ -1906,7 +1962,7 @@ function setVillageHarnessLayoutPlan(
         ...(house.objectExterior ? { objectExterior: { objectId: house.objectExterior.objectId,
           revision: house.objectExterior.revision, doorApproaches: [...house.objectExterior.approaches],
           privateAccess: [...house.objectExterior.access] } } : {}),
-        hasFence: fencesEnabled,
+        hasFence: house.fence === true,
         };
       }),
     ],

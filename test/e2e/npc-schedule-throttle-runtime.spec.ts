@@ -9,7 +9,7 @@ import path from "node:path";
 import { expect, test } from "@playwright/test";
 import { createBlankMap, createBlankProject, TILE } from "@/project/defaults";
 import { startNewGameFromTitle } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const SIZE = 20;
 const EVIDENCE = path.resolve(".omo/evidence/runtime-perf");
@@ -61,7 +61,7 @@ test("시간표 주기를 묶어도 주민이 목표 칸까지 걸어간다", as
     timeSystem: { enabled: true, minutesPerRealSecond: 60, dayStartHour: 6, dayEndHour: 26 },
   };
 
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
   await page.getByTestId("mode-play").click({ force: true });
   await expect(page.getByTestId("test-play-window")).toBeVisible({ timeout: 20_000 });

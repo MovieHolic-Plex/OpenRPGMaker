@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { CHARSET_FRAME_HEIGHT, CHARSET_FRAME_WIDTH } from "@/assets/easyrpgRtp";
 import type { EventPageGraphic, Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { expandEventMovementSection } from "./eventEditorExpandHelpers";
 
 const PASSABLE = { up: true, down: true, left: true, right: true };
@@ -56,7 +56,7 @@ type MapTileInteraction = {
 };
 
 async function seedProject(page: Page, project: Project): Promise<void> {
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
 }
 
 async function debugState(page: Page): Promise<DebugState> {

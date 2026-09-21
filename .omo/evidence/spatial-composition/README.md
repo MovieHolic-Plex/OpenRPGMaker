@@ -1,6 +1,6 @@
 # Mixed spatial composition — 2026-09-13
 
-Editor/engine change only. All fixtures are isolated test data; no live Supabase project was authored or overwritten.
+Editor/engine change only. All fixtures are isolated test data; no live LegacyDb project was authored or overwritten.
 
 ## Behavior
 

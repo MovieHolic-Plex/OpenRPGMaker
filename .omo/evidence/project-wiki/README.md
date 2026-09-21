@@ -73,7 +73,7 @@ node scripts/qa-project-wiki-runtime.mjs --project output/evidence/project-wiki/
 ```
 
 The scripts relay real HTTP response bytes through Node on hosts where Chromium
-receives `ERR_NETWORK_CHANGED`. OAuth replies and Supabase writes are not mocked.
+receives `ERR_NETWORK_CHANGED`. OAuth replies and LegacyDb writes are not mocked.
 Use a new QA project ID, never a user's authored project.
 
 ## Review and limitations

@@ -3,7 +3,7 @@ import { mkdir } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import { dispatchChange, screenshotEvidence, writeEvidenceJson } from "./eventEditorCertEvidence";
 import { openSeededEventEditor, showCommandList } from "./eventStoryboardPicker";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 
 const EVIDENCE_DIR = "output/evidence/event-command-ui-preview";
@@ -39,7 +39,7 @@ const COMMAND_SUMMARIES = [
 test("Change Face command editor shows the selected face crop and command summary", async ({ page }) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1478, height: 926 });
-  await seedProjectFromSupabaseCanonical(page, REVIEW_PROJECT);
+  await seedProjectForEditor(page, REVIEW_PROJECT);
   const editor = await openReviewEventCommandList(page);
 
   const inspector = await openCommandInspector(editor, "changeFace");
@@ -68,7 +68,7 @@ test("Change Face command editor shows the selected face crop and command summar
 test("Representative non-face command editors expose readable summaries", async ({ page }) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1478, height: 1200 });
-  await seedProjectFromSupabaseCanonical(page, REVIEW_PROJECT);
+  await seedProjectForEditor(page, REVIEW_PROJECT);
   const editor = await openReviewEventCommandList(page);
 
   for (const { kind, summary } of COMMAND_SUMMARIES.slice(0, 4)) {

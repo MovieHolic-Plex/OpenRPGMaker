@@ -14,7 +14,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { PNG } from "pngjs"; // 선언은 test/pngjs.d.ts 에 좁게 두었다.
 import { createBlankProject } from "@/project/defaults";
 import { openCommandPicker, openMapEventEditor } from "./eventStoryboardPicker";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 test.describe.configure({ timeout: 180_000 });
 
@@ -137,7 +137,7 @@ function relativeLuminance(red: number, green: number, blue: number): number {
 
 async function openFaceCommandForm(page: Page): Promise<Locator> {
   await page.setViewportSize({ width: 1600, height: 1100 });
-  await seedProjectFromSupabaseCanonical(page, createBlankProject());
+  await seedProjectForEditor(page, createBlankProject());
   const skip = page.getByTestId("coach-mark-skip");
   if (await skip.isVisible().catch(() => false)) await skip.click();
   await openMapEventEditor(page);

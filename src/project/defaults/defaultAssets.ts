@@ -1,5 +1,7 @@
+import { ensureSharedCastleReferences } from "./sharedCastleReferences";
+import { createSharedVillageObjectsTileset, ensureSharedVillageObjectReferences, SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "./sharedVillageObjects";
 import { createCastleTileset } from "./castleTileset";
-import { createForestHarmonyTileset, FOREST_HARMONY_TEXTURE } from "./forestHarmony";
+import { createForestHarmonyTileset, ensureForestHarmonyReferences, FOREST_HARMONY_ID, FOREST_HARMONY_TEXTURE } from "./forestHarmony";
 import { createTiboInteriorTileset, extendTiboInteriorDefaults, TIBO_INTERIOR_ID, TIBO_INTERIOR_TEXTURE } from "./tiboInterior";
 import { createSlates32Tileset } from "./slates32";
 import { composeCombinedTownRetroWorldTileset } from "./combinedTownRetroWorld";
@@ -87,6 +89,10 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
     const tileset = bundledEasyRpgTileset(asset);
     if (project.tilesets[tileset.id]) {
+      if (tileset.id === FOREST_HARMONY_ID) changed = ensureForestHarmonyReferences(project.tilesets[tileset.id]) || changed;
+
+      changed = ensureSharedCastleReferences(project.tilesets[tileset.id]) || changed;
+      if (tileset.id === SHARED_VILLAGE_OBJECT_ID) changed = ensureSharedVillageObjectReferences(project.tilesets[tileset.id]) || changed;
       if (tileset.id === TIBO_INTERIOR_ID) changed = extendTiboInteriorDefaults(project.tilesets[tileset.id]) || changed;
       continue;
     }
@@ -184,6 +190,7 @@ function legacyRmTilesetReplacementId(map: Pick<GameMap, "id" | "name">): string
 
 function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
   if (asset.textureKey === CASTLE_TILESET_TEXTURE_KEY) return createCastleTileset();
+  if (asset.textureKey === SHARED_VILLAGE_OBJECT_TEXTURE) return createSharedVillageObjectsTileset();
   if (asset.textureKey === FOREST_HARMONY_TEXTURE) return createForestHarmonyTileset();
   if (asset.textureKey === TIBO_INTERIOR_TEXTURE) return createTiboInteriorTileset();
   if (asset.textureKey === SLATES_32_TEXTURE_KEY) return createSlates32Tileset();

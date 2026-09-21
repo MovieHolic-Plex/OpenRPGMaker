@@ -3,7 +3,8 @@
 
 import { checkReachability } from "@/project/lint/reachability";
 import { DEFAULT_COBBLE_AUTOTILE_GROUP, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
-import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
+import { villageWaterPredicate } from "./waterTiles";
+import type { TilesetDef } from "@/project/types";
 import { TILE } from "@/project/defaults/constants";
 import type { Command, GameEvent, GameMap, Project } from "@/project/types";
 import { ToolError, type ToolExecResult } from "../types";
@@ -78,8 +79,8 @@ export function critiqueVillageMap(project: Project, args: Record<string, unknow
   };
 }
 
-export function auditVillage(map: GameMap, houses: readonly BuiltHouse[], upperBefore: readonly number[], area: Rect): VillageAudit {
-  const isRoad = environmentalRoadAt(map);
+export function auditVillage(map: GameMap, houses: readonly BuiltHouse[], upperBefore: readonly number[], area: Rect, tileset?: TilesetDef): VillageAudit {
+  const isRoad = environmentalRoadAt(map, tileset);
   const doorsConnected = houses.filter(house => house.objectExterior
     ? isRoad(house.front.x, house.front.y) && house.objectExterior.access.every(p => ROAD_TILES.has(map.lowerTiles[p.y * map.width + p.x] ?? -1))
     : doorHasRoad(isRoad, house.doorAt)).length;
@@ -112,7 +113,7 @@ export function auditVillage(map: GameMap, houses: readonly BuiltHouse[], upperB
       if (upper !== TILE.EMPTY && !ridgeKeep.has(upper)) ridgeInvaded += 1;
     }
   }
-  const roadComponents = countRoadComponents(map, area);
+  const roadComponents = countRoadComponents(map, area, tileset);
   const fencedHouses = houses.filter((house) => houseHasFence(map, house)).length;
   const fenceTiles = countFenceTiles(map, area);
   const npcEvents = map.events.filter(isNpcEvent);
@@ -151,8 +152,8 @@ const DIRT_SURFACE = new Set<number>(DEFAULT_ROAD_AUTOTILE_GROUP.memberTileIds);
 const SAND_SURFACE = new Set<number>(DEFAULT_SAND_AUTOTILE_GROUP.memberTileIds);
 
 /** 성분>1 진단용 — 각 도로 성분의 대표 좌표와 크기. (노두/흙마당 필터 적용 후) */
-export function roadComponentNotes(map: GameMap, area: Rect): string[] {
-  return collectRoadComponents(map, area).map((cells) => {
+export function roadComponentNotes(map: GameMap, area: Rect, tileset?: TilesetDef): string[] {
+  return collectRoadComponents(map, area, tileset).map((cells) => {
     const tiles = new Set(cells.map((key) => {
       const point = pointFromKey(key);
       return map.lowerTiles[point.y * map.width + point.x] ?? TILE.EMPTY;
@@ -162,16 +163,17 @@ export function roadComponentNotes(map: GameMap, area: Rect): string[] {
   });
 }
 
-function countRoadComponents(map: GameMap, area: Rect): number {
-  return collectRoadComponents(map, area).length;
+function countRoadComponents(map: GameMap, area: Rect, tileset?: TilesetDef): number {
+  return collectRoadComponents(map, area, tileset).length;
 }
 
-function collectRoadComponents(map: GameMap, area: Rect): string[][] {
+function collectRoadComponents(map: GameMap, area: Rect, tileset?: TilesetDef): string[][] {
+  const isWater = villageWaterPredicate(map, tileset);
   const settlementAccess = new Set([
     ...(map.layoutPlan?.roadAnchors ?? []),
     ...(map.layoutPlan?.regions ?? []).flatMap(region => region.role === "house" && region.front ? [region.front] : []),
   ].map(p => coordKey(p.x, p.y)));
-  const isRoad = environmentalRoadAt(map);
+  const isRoad = environmentalRoadAt(map, tileset);
   const road = new Set<string>();
   for (let y = area.y; y < area.y + area.h; y += 1) {
     for (let x = area.x; x < area.x + area.w; x += 1) {
@@ -213,7 +215,7 @@ function collectRoadComponents(map: GameMap, area: Rect): string[][] {
         const nx = point.x + dx!;
         const ny = point.y + dy!;
         if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height) return false;
-        return isWaterChipsetTile(map.lowerTiles[ny * map.width + nx] ?? TILE.EMPTY);
+        return isWater(map.lowerTiles[ny * map.width + nx] ?? TILE.EMPTY);
       });
     });
     // 백사장/잔교: 모래 또는 "물 위 판자(잔교 199)" 셀로만 이뤄지고 물에 접한 성분 = 물가 도크.
@@ -221,7 +223,7 @@ function collectRoadComponents(map: GameMap, area: Rect): string[][] {
       const point = pointFromKey(key);
       const lower = map.lowerTiles[point.y * map.width + point.x] ?? TILE.EMPTY;
       const upper = map.upperTiles[point.y * map.width + point.x] ?? TILE.EMPTY;
-      return SAND_SURFACE.has(lower) || (upper === 199 && isWaterChipsetTile(lower));
+      return SAND_SURFACE.has(lower) || (upper === 199 && isWater(lower));
     };
     const isNatureOutcrop =
       (cells.length < 16 && (

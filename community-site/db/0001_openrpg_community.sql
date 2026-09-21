@@ -1,4 +1,4 @@
--- OpenRPGMaker Community site schema (dbserver Supabase, applied via supavisor 5433)
+-- Community site PostgreSQL schema; this separate application is outside the editor migration.
 -- Assets are editor UploadedAsset-shaped (dataUrl + meta) so the editor can import them directly.
 -- Games are stored as base64 of the editor .rpgzzu stored-zip package.
 

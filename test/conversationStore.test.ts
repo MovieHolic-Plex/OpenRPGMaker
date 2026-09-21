@@ -29,7 +29,7 @@ import {
   type ConversationRecord,
 } from "@/ai/conversationStore";
 
-// 원격 미러는 포트가 받는다. 예전에는 sync 모듈을 목킹했는데 그 목은 기본 어댑터가 Supabase 일 때만
+// 원격 미러는 포트가 받는다. 예전에는 sync 모듈을 목킹했는데 그 목은 기본 어댑터가 LegacyDb 일 때만
 // 살아 있었다 — 저장소를 심고 그 ai.recordConversation 을 본다.
 let session: MemoryProjectSession | null = null;
 let recordConversationSpy: MockInstance<MemoryRepository["ai"]["recordConversation"]> | null = null;
@@ -230,7 +230,7 @@ describe("conversationStore", () => {
     await failureReported;
 
     expect((await loadConversation("remote-failure"))?.id).toBe("remote-failure");
-    expect(console.error).toHaveBeenCalledWith("[ai-conversation] Supabase mirror failed:", failure);
+    expect(console.error).toHaveBeenCalledWith("[ai-conversation] LegacyDb mirror failed:", failure);
   });
 });
 

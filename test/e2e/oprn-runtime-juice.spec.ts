@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const EVIDENCE_DIR = ".omo/ulw-loop/rpg-zzu-menu-juice/evidence";
 const RED_LOG = `${EVIDENCE_DIR}/red-runtime-juice-log.json`;
@@ -30,7 +30,7 @@ test("title and status menu controls emit tactile motion and sound feedback", as
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await installAudioProbe(page);
   await page.setViewportSize({ width: 1280, height: 900 });
-  await seedProjectFromSupabaseCanonical(page, createBlankProject(), "/?e2eVitals=1");
+  await seedProjectForEditor(page, createBlankProject(), "/?e2eVitals=1");
   await openTestPlayWindow(page);
 
   await triggerAndExpectLiveJuiceClass(page, "title-screen", "juice-title-select", () => page.keyboard.press("ArrowDown"));
@@ -77,7 +77,7 @@ test("title and status menu controls emit tactile motion and sound feedback", as
 test("keyboard to-title command confirms on the live status menu before transitioning", async ({ page }) => {
   await installAudioProbe(page);
   await page.setViewportSize({ width: 1280, height: 900 });
-  await seedProjectFromSupabaseCanonical(page, createBlankProject(), "/?e2eVitals=1");
+  await seedProjectForEditor(page, createBlankProject(), "/?e2eVitals=1");
   await openTestPlayWindow(page);
 
   await triggerAndExpectLiveJuiceClass(page, "title-screen", "juice-title-confirm", () => page.keyboard.press("Enter"));

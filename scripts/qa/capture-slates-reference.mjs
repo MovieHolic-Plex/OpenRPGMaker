@@ -45,6 +45,6 @@ try{
   console.log('runtime captured',spec.id,JSON.stringify(observed.sprite));await p.close();
  }
  await writeFile(`${out}/observations.json`,JSON.stringify({observations,errors},null,2));
- await writeFile(`${out}/SUMMARY.md`,`# Slates reference maps\n\nSupabase project: rpg-zzu-slates32-38e6; captures use reloaded-project.json.\nThree editable 17×15 maps, 32px cells; original grove preserved.\nSource Slates atlases + source-rectangle recipes, no screenshot pixels in map artwork.\nRuntime captures use the dedicated player.html/export shim.\nPage errors: ${errors.length}.\n\n즉시 확인:\n${maps.map(s=>`- ${s.id}-map.png (editor map PNG export), ${s.id}-editor.png (editor), ${s.id}-runtime.png (player)`).join('\n')}\n\nSave/reload proof: persistence.json.\nFull test suites / typecheck were not run under session rules.\n`);
+ await writeFile(`${out}/SUMMARY.md`,`# Slates reference maps\n\nLegacyDb project: rpg-zzu-slates32-38e6; captures use reloaded-project.json.\nThree editable 17×15 maps, 32px cells; original grove preserved.\nSource Slates atlases + source-rectangle recipes, no screenshot pixels in map artwork.\nRuntime captures use the dedicated player.html/export shim.\nPage errors: ${errors.length}.\n\n즉시 확인:\n${maps.map(s=>`- ${s.id}-map.png (editor map PNG export), ${s.id}-editor.png (editor), ${s.id}-runtime.png (player)`).join('\n')}\n\nSave/reload proof: persistence.json.\nFull test suites / typecheck were not run under session rules.\n`);
  console.log(JSON.stringify({errors}));
 }finally{await browser.close();await server?.close();}

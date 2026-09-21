@@ -3263,7 +3263,7 @@
       "readMapping": "/dev/shm/st_01a079-existing/blobs/08c6c64872ec3e5a9da1791b122760fa0c91e8c4"
     },
     {
-      "path": "docs/reports/inn-inspection-v5/supabase-proof.json",
+      "path": "docs/reports/inn-inspection-v5/legacy-db-proof.json",
       "gitBlob": "b9e3643ae4467f9598c82d2d48dc00b4e881fb06",
       "size": 182,
       "readMapping": "/dev/shm/st_01a079-existing/blobs/b9e3643ae4467f9598c82d2d48dc00b4e881fb06"

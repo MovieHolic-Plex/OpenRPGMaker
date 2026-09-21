@@ -29,7 +29,7 @@ export function deserializeStoredProjectJson(value: unknown): Project {
 
 function repairStoredProjectJson(value: unknown): unknown {
   repairStoredLoadFoundation(value);
-  repairSupabaseItemCatalog(value);
+  repairStoredItemCatalog(value);
   return value;
 }
 
@@ -44,7 +44,7 @@ export function repairStoredLoadFoundation(value: unknown): void {
   ensureLoadRepairBattleAnimations(value);
 }
 
-function repairSupabaseItemCatalog(value: unknown): void {
+function repairStoredItemCatalog(value: unknown): void {
   if (!isRecord(value)) return;
   // 참조 수집기는 정규화된 Project를 단일 권위자로 삼는다. 카탈로그를 건드리기 전의
   // 유효한 행을 먼저 해석하므로, 이벤트·시스템·시작 인벤토리의 기존 참조를 잃지 않는다.
@@ -52,7 +52,7 @@ function repairSupabaseItemCatalog(value: unknown): void {
 
   // DB current_json은 저작 데이터베이스 레코드의 기준 원본이다.
   // 일반 기본값 보충은 계속 금지한다. 이 제한적 이전만 2026-08 아이템 시드를 고친다.
-  // 그대로 두면 손대지 않은 영문 껍데기가 Supabase를 불러올 때마다 살아남기 때문이다.
+  // 그대로 두면 손대지 않은 영문 껍데기가 project storage를 불러올 때마다 살아남기 때문이다.
   const requiredSkillIds = repairUntouchedDefaultItemCatalogStubs(value, referencedItemIds);
   appendMissingLoadRepairSkills(value, requiredSkillIds);
 }

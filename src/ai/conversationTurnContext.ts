@@ -120,7 +120,7 @@ function isSelectionSnapshot(value: unknown): value is TurnSelectionSnapshot {
   );
 }
 
-/** 저장된 기록(localStorage/Supabase jsonb)에서 다시 읽을 때의 형태 검증. */
+/** 저장된 기록(localStorage/project storage jsonb)에서 다시 읽을 때의 형태 검증. */
 export function isConversationTurnContext(value: unknown): value is ConversationTurnContext {
   if (!isObject(value)) return false;
   if (!(value.mapId === null || typeof value.mapId === "string")) return false;

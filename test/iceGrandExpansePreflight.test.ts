@@ -22,7 +22,7 @@ import {
   assertNoDirtyOverlap,
   buildSourceManifest,
   collectTreeLocations,
-  normalizeSupabaseOrigin,
+  normalizeLegacyDbOrigin,
   parsePreflightArgs,
   stableJson,
 } from "../scripts/preflight-ice-grand-expanse.mjs";
@@ -51,9 +51,9 @@ describe("ice grand expanse preflight", () => {
     expect(() => parsePreflightArgs(argv)).toThrowError(expect.objectContaining({ code }));
   });
 
-  it("normalizes Supabase identity to a secret-free origin", () => {
-    expect(normalizeSupabaseOrigin("HTTPS://Example.Supabase.Co/path/?token=secret#x")).toBe(
-      "https://example.supabase.co",
+  it("normalizes LegacyDb identity to a secret-free origin", () => {
+    expect(normalizeLegacyDbOrigin("HTTPS://Example.LegacyDb.Co/path/?token=secret#x")).toBe(
+      "https://example.legacyDb.co",
     );
   });
 
@@ -83,7 +83,7 @@ describe("ice grand expanse preflight", () => {
       gitHeadOrNull: "abc123",
       runId: "run-20260722",
       startedAt: "2026-07-22T00:00:00.000Z",
-      supabaseOriginSha256: "f".repeat(64),
+      legacyDbOriginSha256: "f".repeat(64),
       targetProjectId: "rpg-zzu-dungeon-theme-gallery",
       trackedDiffSha256: "a".repeat(64),
       untrackedInventorySha256: "b".repeat(64),
@@ -167,7 +167,7 @@ describe("ice grand expanse preflight", () => {
     }));
 
     try {
-      const baseline = await readProtectedBaseline({ anonKey: "test-key", origin: "https://example.supabase.co" }, target);
+      const baseline = await readProtectedBaseline({ anonKey: "test-key", origin: "https://example.legacyDb.co" }, target);
       expect(baseline.canonical.effectiveGameMapSha256).toBe(hashValue(canonical));
       expect(baseline.canonical.width).toBe(55);
     } finally {

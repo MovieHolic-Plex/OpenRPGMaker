@@ -100,8 +100,8 @@ describe("headless tool runner", () => {
     const forbidden = [
       /import\s+.*applyChangesetToStore/,
       /import\s+.*commitChangeset/,
-      /import\s+.*supabase/i,
-      /from\s+["'][^"']*supabase[^"']*["']/i,
+      /import\s+.*legacyDb/i,
+      /from\s+["'][^"']*legacyDb[^"']*["']/i,
     ];
 
     for (const target of targets) {

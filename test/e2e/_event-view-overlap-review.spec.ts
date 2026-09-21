@@ -4,7 +4,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
 import { openEditor, reviewProject } from "./eventViewReviewFixture";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 // EVIDENCE_TAG=before|after 로 같은 촬영을 두 번 돌려 좌우 비교를 만든다.
 const TAG = process.env.EVIDENCE_TAG ?? "after";
@@ -29,7 +29,7 @@ test("세 보기와 플로우를 와이드 뷰포트에서 캡처하고 표현 �
   await mkdir(OUT, { recursive: true });
   await page.setViewportSize(WIDE);
   const { project, eventId } = reviewProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   const editor = await openEditor(page, project.startMapId!, eventId);
 
   const shot = async (name: string) => {
@@ -184,7 +184,7 @@ test("좁은 폭에서 툴바와 세 보기가 어떻게 무너지는지", async
   await mkdir(OUT, { recursive: true });
   const { project, eventId } = reviewProject();
   await page.setViewportSize({ width: 1366, height: 900 });
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   const editor = await openEditor(page, project.startMapId!, eventId);
   await editor.getByTestId("event-view-toggle-storyboard").click();
   await page.waitForTimeout(250);

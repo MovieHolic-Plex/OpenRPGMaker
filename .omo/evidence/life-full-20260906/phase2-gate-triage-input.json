@@ -2656,9 +2656,9 @@
           "ancestorTitles": [
             "Project store remote persistence"
           ],
-          "fullName": "Project store remote persistence does not write to Supabase before the canonical project has loaded",
+          "fullName": "Project store remote persistence does not write to LegacyDb before the canonical project has loaded",
           "status": "failed",
-          "title": "does not write to Supabase before the canonical project has loaded",
+          "title": "does not write to LegacyDb before the canonical project has loaded",
           "duration": 15157.424351,
           "failureMessages": [
             "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/storePersistence.test.ts:11:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
@@ -2669,12 +2669,12 @@
           "ancestorTitles": [
             "Project store remote persistence"
           ],
-          "fullName": "Project store remote persistence does not auto-save local dev showcase projects to Supabase",
+          "fullName": "Project store remote persistence does not auto-save local dev showcase projects to LegacyDb",
           "status": "failed",
-          "title": "does not auto-save local dev showcase projects to Supabase",
+          "title": "does not auto-save local dev showcase projects to LegacyDb",
           "duration": 9350.108376,
           "failureMessages": [
-            "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromSupabase (/home/main/z-project/rpg-zzu-life-full-p2/src/project/supabaseProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (/home/main/z-project/rpg-zzu-life-full-p2/src/project/supabaseProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/z-project/rpg-zzu-life-full-p2/src/project/store.ts:258:27)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/storePersistence.test.ts:55:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+            "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromLegacyDb (/home/main/z-project/rpg-zzu-life-full-p2/src/project/legacyDbProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (/home/main/z-project/rpg-zzu-life-full-p2/src/project/legacyDbProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/z-project/rpg-zzu-life-full-p2/src/project/store.ts:258:27)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/storePersistence.test.ts:55:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
           ],
           "meta": {}
         },
@@ -2695,12 +2695,12 @@
           "ancestorTitles": [
             "Project store remote persistence"
           ],
-          "fullName": "Project store remote persistence saves and reloads local edits for dev showcase projects without Supabase",
+          "fullName": "Project store remote persistence saves and reloads local edits for dev showcase projects without LegacyDb",
           "status": "failed",
-          "title": "saves and reloads local edits for dev showcase projects without Supabase",
+          "title": "saves and reloads local edits for dev showcase projects without LegacyDb",
           "duration": 8745.626869,
           "failureMessages": [
-            "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromSupabase (/home/main/z-project/rpg-zzu-life-full-p2/src/project/supabaseProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (/home/main/z-project/rpg-zzu-life-full-p2/src/project/supabaseProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/z-project/rpg-zzu-life-full-p2/src/project/store.ts:258:27)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/storePersistence.test.ts:119:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+            "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromLegacyDb (/home/main/z-project/rpg-zzu-life-full-p2/src/project/legacyDbProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (/home/main/z-project/rpg-zzu-life-full-p2/src/project/legacyDbProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/z-project/rpg-zzu-life-full-p2/src/project/store.ts:258:27)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/storePersistence.test.ts:119:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
           ],
           "meta": {}
         },
@@ -2713,7 +2713,7 @@
           "title": "reports why DB persistence is unavailable for local dev showcase projects",
           "duration": 10610.26268,
           "failureMessages": [
-            "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}\n    at loadProjectSnapshotFromSupabase (/home/main/z-project/rpg-zzu-life-full-p2/src/project/supabaseProjectSync.ts:222:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (/home/main/z-project/rpg-zzu-life-full-p2/src/project/supabaseProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/z-project/rpg-zzu-life-full-p2/src/project/store.ts:258:27)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/storePersistence.test.ts:151:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+            "LegacyDbProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}\n    at loadProjectSnapshotFromLegacyDb (/home/main/z-project/rpg-zzu-life-full-p2/src/project/legacyDbProjectSync.ts:222:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (/home/main/z-project/rpg-zzu-life-full-p2/src/project/legacyDbProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/z-project/rpg-zzu-life-full-p2/src/project/store.ts:258:27)\n    at /home/main/z-project/rpg-zzu-life-full-p2/test/storePersistence.test.ts:151:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
           ],
           "meta": {}
         },

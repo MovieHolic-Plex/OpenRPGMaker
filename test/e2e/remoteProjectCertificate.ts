@@ -77,9 +77,9 @@ export function validateRemoteCertificateEnvironment(
   if (!dedicatedUrl) return failure("dedicated-url");
   const dedicatedKey = env.OPRN_E2E_REMOTE_ANON_KEY?.trim() ?? "";
   if (!JWT_SHAPE.test(dedicatedKey)) return failure("dedicated-key");
-  const ordinaryUrl = parseOrdinaryUrl(env.VITE_SUPABASE_URL);
+  const ordinaryUrl = parseOrdinaryUrl(env.VITE_LEGACY_DB_URL);
   if (ordinaryUrl !== dedicatedUrl) return failure("ordinary-url");
-  if (env.VITE_SUPABASE_ANON_KEY?.trim() !== dedicatedKey) return failure("ordinary-key");
+  if (env.VITE_LEGACY_DB_ANON_KEY?.trim() !== dedicatedKey) return failure("ordinary-key");
   return {
     ok: true,
     certificate: Object.freeze({
@@ -232,7 +232,7 @@ function parseCertificateUrl(raw: string | undefined, projectRef: string, allowT
     if (allowTestLocalhost && url.protocol === "http:" && (url.hostname === "127.0.0.1" || url.hostname === "localhost")) {
       return url.origin;
     }
-    if (url.protocol !== "https:" || url.port || url.hostname !== `${projectRef}.supabase.co`) return null;
+    if (url.protocol !== "https:" || url.port || url.hostname !== `${projectRef}.legacyDb.co`) return null;
     return url.origin;
   } catch {
     return null;

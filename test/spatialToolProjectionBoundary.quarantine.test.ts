@@ -32,9 +32,9 @@ function reloadError(project: Project): string | null {
 }
 
 beforeEach(() => {
-  vi.stubEnv("VITE_SUPABASE_URL", "");
-  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "");
-  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "");
+  vi.stubEnv("VITE_LEGACY_DB_URL", "");
+  vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "");
+  vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "");
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   const compiled = compileSpatialOccurrence(geographyFixture("region", 109), { occurrenceId: geographyRoot });
   expect(reloadError(compiled)).toBeNull();

@@ -1,6 +1,6 @@
 # 물버들 마을 · Slates 32px / 50×50
 
-Supabase `rpg-zzu-slates32-38e6`, map `slates_village_50`.
+LegacyDb `rpg-zzu-slates32-38e6`, map `slates_village_50`.
 Root CAS save, reload equality and maps/tilesets mirror equality: `persistence.json`.
 Local SQLite `output/slates32-project`, revision 6: `local-persistence.json`.
 Existing five maps and their tilesets are unchanged; village is the new start map.

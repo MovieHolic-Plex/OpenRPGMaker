@@ -18,8 +18,8 @@ src/editor/projectWikiCoordinator.ts
 src/editor/projectWikiCoordinator.ts
 src/project/store.ts
 src/project/store.ts
-src/project/supabaseProjectSync.ts
-src/project/supabaseProjectSync.ts
+src/project/legacyDbProjectSync.ts
+src/project/legacyDbProjectSync.ts
 test/advisoryLintProvenance.test.ts
 test/aiAssistantSession.test.ts
 test/aiAssistantSession.test.ts

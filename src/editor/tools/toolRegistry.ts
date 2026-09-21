@@ -1,3 +1,4 @@
+import { TILE_ASSEMBLY_GUIDE_TOOLS } from "./tileAssemblyGuideTools";
 import { TILESET_REFERENCE_TOOLS, withTilesetReferencePurpose } from "./tilesetReferenceTools";
 // editor/tools/toolRegistry.ts
 // 모든 툴(읽기+쓰기)의 단일 레지스트리. 툴 추가 = 각 *Tools.ts 배열에 한 줄 추가로 끝난다.
@@ -199,6 +200,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(GAME_SYSTEM_TOGGLE_TOOLS, "system"),
   ...withDomain(TILESET_ATLAS_TOOLS, "tile"),
   ...TILESET_REFERENCE_TOOLS,
+  ...TILE_ASSEMBLY_GUIDE_TOOLS,
   // 혼합 도메인 — 각 툴이 자기 domains 를 선언하고, 선언이 없으면 map 으로 떨어진다.
   ...withDomain(AUTHORING_MISC_TOOLS, "map"),
   ...withDomain(RESOURCE_TOOLS, "system"),

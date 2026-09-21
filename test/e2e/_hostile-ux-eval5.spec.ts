@@ -1,14 +1,14 @@
 /* 적대적 UX 평가 5차 — ESC가 컨텍스트 메뉴만 닫는지. CI 제외(_접두사). */
 import { expect, test } from "@playwright/test";
 import { createModernNocturneProject } from "@/project/defaults/modernNocturneGame";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 const TILE = 16;
 
 test("Q. ESC with context menu open", async ({ page }) => {
   test.setTimeout(240_000);
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "standard"));
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await seedProjectFromSupabaseCanonical(page, createModernNocturneProject(), "/?e2eVitals=1");
+  await seedProjectForEditor(page, createModernNocturneProject(), "/?e2eVitals=1");
   await page.waitForFunction(() => typeof (window as any).__oprnEditWorldToClient === "function", undefined, { timeout: 20_000 });
   await page.waitForTimeout(600);
   const skip = page.getByText("건너뛰기", { exact: true }).first();

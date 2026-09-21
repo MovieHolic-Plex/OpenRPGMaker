@@ -72,7 +72,7 @@ Top-level `Project` field roll-call: `version` (schema, written by IO only), `me
 
 - View/session state in `src/editor/editorState.ts` and panel-local module state: zoom, current map/layer selection, panel collapse, modal open state, palette scroll.
 - Assistant plumbing: `src/editor/assistantToolMode.ts`, temperature, chat log, proposal pins, `aiSettingsModal`/`aiAuthSettings` (API keys) — stored outside the `Project`.
-- Supabase connection settings (`src/project/supabaseProjectConfig.ts:102-150`) — env + localStorage, not the Project row.
+- LegacyDb connection settings (`src/project/legacyDbProjectConfig.ts:102-150`) — env + localStorage, not the Project row.
 - Runtime/`PlaySession` state: farm plot wetness, monster friendship, quest progress, save slots (`src/player/saveSlots.ts`).
 - Read-only inspectors: `tileMappingInspector`, `ruleAuditPanel`, `mapEventSearchModal`, `databaseOverviewView`, `canvasInspectionPanel`.
 - Undo history (`src/editor/mapEditHistory.ts`) and derived lint/quality reports.

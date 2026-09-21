@@ -318,7 +318,7 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
     lookScore -= 0.1;
   }
 
-  const plazaWanted = plan?.plazaStyle ?? (design?.policies.layout === "fixed" ? preset?.plazaStyle : undefined) ?? "market";
+  const plazaWanted = plan?.plazaStyle ?? (design?.policies.layout === "fixed" ? preset?.plazaStyle : undefined) ?? "empty";
   if (plazaWanted === "market" || plazaWanted === "garden") {
     const minPlazaProps = plazaWanted === "market" ? 4 : 3;
     if (metrics.plazaPropCells < minPlazaProps && metrics.propCells < minPlazaProps + 4) {
@@ -327,8 +327,8 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
         layer: "plan",
         action: "boost_plaza_decor",
         field: "plazaStyle",
-        to: "market",
-        hint: "plazaStyle=market, decor=true, seed+1 후 재시공",
+        to: plazaWanted,
+        hint: `plazaStyle=${plazaWanted}, decor=true, seed+1 후 재시공`,
       });
       fixes.push({
         layer: "build",
@@ -465,7 +465,7 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
   }
 
   const minimumFenceCells = Math.min(24, Math.max(8, metrics.houseRegions * 2));
-  if (plan?.fences !== false && metrics.fenceCells < minimumFenceCells) {
+  if (plan?.fences === true && metrics.fenceCells < minimumFenceCells) {
     issues.push(`울타리가 거의 없음 (${metrics.fenceCells})`);
     fixes.push({ layer: "plan", action: "enable_fences", field: "fences", to: true, hint: "fences=true 재시공" });
     lookScore -= 0.08;
@@ -534,7 +534,7 @@ export function planPatchFromLookReport(plan: VillagePlan, report: VillageLookRe
     mapName: plan.mapName,
     width: plan.width,
     height: plan.height,
-    houses: plan.houses.map((h) => ({ kitId: h.kitId, yard: [...h.yard], ownerName: h.ownerName, id: h.id })),
+    houses: plan.houses.map((h) => ({ kitId: h.kitId, yard: [...h.yard], ownerName: h.ownerName, id: h.id, ...(h.fence !== undefined ? { fence: h.fence } : {}) })),
     npcs: plan.npcs.map((n) => ({ name: n.name, lines: [...n.lines] })),
     id: `${plan.id}_r${report.attempt}`,
   };
@@ -547,8 +547,7 @@ export function planPatchFromLookReport(plan: VillagePlan, report: VillageLookRe
   if (!report.ok) {
     patch.decor = true;
     if (report.themeMatch === "weak") {
-      patch.plazaStyle = "market";
-      patch.yardStyle = plan.yardStyle === "minimal" ? "market" : plan.yardStyle;
+      // 낮은 외관 점수만으로 시장을 추가하거나 명시한 광장·마당 스타일을 바꾸지 않는다.
       patch.edgeTrees = "dense";
     }
   }

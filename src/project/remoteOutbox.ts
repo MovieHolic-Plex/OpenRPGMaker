@@ -4,7 +4,7 @@
 // 선언하고 있었다. 실측(2026-08-29)에서 역할이 완전히 뒤집혀 있었다 —
 //
 //   정본(localStorage) : 100개 링버퍼 → 12,735행 페이스에서 사실상 즉시 덮어씀
-//   미러(Supabase)     : 상한 없음 → 12,735행, 한 번도 안 죽음
+//   미러(project storage)     : 상한 없음 → 12,735행, 한 번도 안 죽음
 //   미러(디스크)       : 두 번 조용히 죽음(경로 리네임 404, 프로덕션 tree-shaking)
 //
 // 즉 가장 빨리 사라지는 게 정본이고 가장 오래 남는 게 미러였다. 링버퍼는 전송 성공/실패와
@@ -213,7 +213,7 @@ export function clearRemoteOutbox(): void {
 }
 
 /**
- * 종류별 전송기를 등록한다. outbox 가 supabaseProjectSync 를 직접 import 하면 순환이 되므로
+ * 종류별 전송기를 등록한다. outbox 가 projectRepository 를 직접 import 하면 순환이 되므로
  * 호출 측(activityLog / conversationStore)이 자기 전송기를 주입한다.
  */
 export function registerRemoteOutboxSender(kind: RemoteOutboxKind, sender: RemoteOutboxSender): void {

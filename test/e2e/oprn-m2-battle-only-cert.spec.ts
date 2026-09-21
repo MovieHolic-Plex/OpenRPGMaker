@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { readFile } from "node:fs/promises";
 import { deserialize } from "@/project/io";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { applyDatabaseChanges, exportedProject, openDatabase } from "./oprn-database-helpers";
 import { startNewGameFromTitle } from "./runtimeInput";
 
@@ -17,14 +17,14 @@ const EXTRA_ACTOR_ID = "actor_loop15_guest";
 test("Loop 15 certifies battle-only M2 editor authoring, persistence, and runtime", async ({ page }) => {
   await resetEvidence();
   await page.setViewportSize({ width: 1360, height: 840 });
-  await seedProjectFromSupabaseCanonical(page, await battleProject());
+  await seedProjectForEditor(page, await battleProject());
 
   await authorBattleOnlyCommands(page);
   await page.getByTestId("database-modal").screenshot({ path: artifact("001-editor-all-battle-only-authoring.png") });
   await writeJson("002-editor-export.json", await battlePageProof(page));
   const fullProject = await exportedRawProject(page);
 
-  await seedProjectFromSupabaseCanonical(page, fullProject);
+  await seedProjectForEditor(page, fullProject);
   await openDatabase(page);
   await page.getByTestId("db-tab-troops").click();
   await expect(page.getByTestId("db-field-troop-event-force-escape-summary")).toBeVisible();
@@ -64,7 +64,7 @@ async function authorBattleOnlyCommands(page: Page): Promise<void> {
 }
 
 async function runNonTerminalBattle(page: Page, project: unknown): Promise<void> {
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await startBattle(page);
   const beforeHp = hpFromText(await page.getByTestId("enemy-1").textContent());
   await page.screenshot({ path: artifact("005-runtime-before-nonterminal.png"), fullPage: true });
@@ -84,7 +84,7 @@ async function runNonTerminalBattle(page: Page, project: unknown): Promise<void>
 }
 
 async function runWithoutActionTimesBattle(page: Page, project: unknown): Promise<void> {
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await startBattle(page);
   await page.getByTestId("actor-command-defend").click();
   await expect(page.locator(`.battle-acting[data-record-id="${EXTRA_ACTOR_ID}"]`)).toHaveCount(2);
@@ -96,7 +96,7 @@ async function runWithoutActionTimesBattle(page: Page, project: unknown): Promis
 }
 
 async function runForceEscapeBattle(page: Page, project: unknown): Promise<void> {
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await startBattle(page);
   await page.screenshot({ path: artifact("008-runtime-before-force-escape.png"), fullPage: true });
   await page.getByTestId("actor-command-defend").click();

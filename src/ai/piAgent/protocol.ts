@@ -19,6 +19,7 @@ export type PiAgentThinkingLevel = "off" | "low" | "medium" | "high";
 export type PiAgentMode = "single" | "team";
 
 export interface PiAgentRequest {
+  readonly villageContract?: import("./villageContract").VillageContract;
   readonly applyMode?: PiApplyMode;
   /** 기본 single. team 이면 팀장 에이전트가 맵별 시공·검수 에이전트를 띄운다. */
   readonly mode?: PiAgentMode;

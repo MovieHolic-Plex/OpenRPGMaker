@@ -115,12 +115,12 @@ describe("잡히지 않은 예외", () => {
 
 describe("처리되지 않은 Promise 거부", () => {
   it("unhandledrejection 을 기록한다", () => {
-    rejectAt(new Error("Supabase flush 실패"));
+    rejectAt(new Error("LegacyDb flush 실패"));
 
     const entries = getTrappedErrors();
     expect(entries).toHaveLength(1);
     expect(entries[0]!.kind).toBe("rejection");
-    expect(entries[0]!.message).toContain("Supabase flush 실패");
+    expect(entries[0]!.message).toContain("LegacyDb flush 실패");
     expect(entries[0]!.stack).toBeDefined();
   });
 

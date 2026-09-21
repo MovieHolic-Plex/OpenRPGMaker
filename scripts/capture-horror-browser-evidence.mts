@@ -2,12 +2,12 @@
 //
 // Slice A: eliminate the human-maintained browser-evidence gap.
 //
-// Owns browser/Supabase/env/process orchestration ONLY. It:
+// Owns browser/LegacyDb/env/process orchestration ONLY. It:
 //   1. reserves (spawns) its OWN Vite dev server on the worktree port — never
 //      attaches to an unrelated server. `--strictPort` makes a port conflict an
 //      explicit failure instead of a silent attach.
 //   2. launches headless Chromium against the NORMAL editor URL with the real
-//      Supabase-backed project deep-linked (`?project=rpg-zzu-horror-mystery-prototype-v1`).
+//      LegacyDb-backed project deep-linked (`?project=rpg-zzu-horror-mystery-prototype-v1`).
 //   3. observes the REAL UI (title screen render + live play session) and writes the
 //      HorrorBrowserEvidence fields from those observations — not constants.
 //   4. derives/verifies the browser-loaded project identity from the product's E2E
@@ -319,7 +319,7 @@ export async function runCapture(opts: { expectedDigest?: string; expectedProjec
 
     // Content-digest binding: compute observed digest IN-BROWSER from actual project data.
     // The expected digest is the authoritative one: when the QA orchestrator passes the
-    // Supabase-reloaded project's digest we compare against it (cross-side binding); standalone
+    // LegacyDb-reloaded project's digest we compare against it (cross-side binding); standalone
     // capture falls back to the in-page Node-side digest of the same project (determinism proof).
     const observedDigest = await evaluateBrowserCanonicalDigest(
       snapshot.project as unknown,

@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 ## 단독 조수의 병렬 도구 실행 (2026-09-21)
 
 기본 조수도 팀 없이 독립적인 조회·웹 검색·Writer 초안을 한 모델 응답의 여러 호출로
@@ -48,9 +50,16 @@ DEFAULT/AUTO/YOLO/단계별 적용에서는 검색까지 직렬 실행됐다. �
 
 ## 마을 군락 — 굽이숲 절벽마을 조립 (2026-09-21)
 
-- `village/forestGroves.ts`가 연속 수관 마스크를 2열×3행 격자로 만든다. 바깥 숲과 안쪽 공터의
-  경계를 완만한 파형으로 고르고, 실제 길·집·마당·수역·이벤트와 기존 스택을 보호한다.
-- 남쪽 노출 경계 **같은 행**에서 밑동을 시작한다. `forest-cabin`의 좌/우 끝마감과
+- 마을 외곽은 `forestGroves.ts` → `forestContour.ts`로 이어지는 **1칸 단위** 경계다.
+  연속 함수로 만든 공터의 좌표를 fBm으로 휘고, 큰 굴곡과 작은 경계 변화를 별도로 합성한다.
+  실제 길·집·마당·수역·이벤트와 기존 스택을 보호하고 집 주변 여백도 둥글게 제외한다.
+  몸통은 `forestTrunkTiles.ts`의 **기존 굽이숲 3행 조립**만 사용한다. 경계를 굽히기 위해
+  `forest-trees:tree` 같은 개별 나무로 교체하면 안 된다(사용자 반려). 공통 끝마감·반복부를
+  온전히 놓고 수관이 가린다. 완성 몸통이 들어가지 않는 돌출부만 1행씩 후퇴시킨다.
+  연구의 적용 범위·출처는 `village-layout-research.md`, 복구 화면은
+  `reports/2026-09-21-restore-original-forest-trunks.md` 참조.
+- 명시된 숲 띠·compact 마스크는 기존 2열×3행 조립을 유지한다. 이 경로는 남쪽 노출 경계
+  **같은 행**에서 밑동을 시작한다. `forest-cabin`의 좌/우 끝마감과
   2열 반복부 `[[1425,1350],[1429,1428],[1433,1432]]`를 사용하며 항상 3행 전체를 놓는다.
   끝마감이 안 들어가는 돌출부는 수관 마스크에서 제거한다. 밑동·뿌리를 잘라 맞추지 않는다.
 - 시공 draft의 `prepareVillageTreeKit`만 `defaults/forestGrove.ts`로 어휘를 확장한다.
@@ -1108,7 +1117,7 @@ protects their intervening human edits. Current-base malicious house changes sti
 fail the independent house guard.
 
 Sources: [adapter and base](../src/editor/tools/applyChangesetToStore.ts),
-[store token](../src/project/store.ts), [key comparator](../src/project/supabaseProjectSync.ts),
+[store token](../src/project/store.ts), [key comparator](../src/project/legacyDbProjectSync.ts),
 [proposal host](../src/editor/panels/aiProposalCard.ts),
 [cluster approval](../src/editor/panels/clusterAiModal.ts).
 Controls: `test/aiMutationApplyAccounting.test.ts`, `test/aiStaleProposal.test.ts`,
@@ -1396,7 +1405,7 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 - **적대적 인자 스윕은 상시 게이트다.** `test/toolHostileArgs.test.ts` 가 전 쓰기 툴(100+)에 `empty`/`nulls`/`wrongTypes`/`deepHoles` 4종 인자를 먹이고, **거부는 허용하되 크래시·`후처리 실패`·`Cannot read properties` 는 금지**한다. 계약은 성공이 아니라 읽을 수 있는 실패다 — 모델이 고칠 수 없는 메시지는 그 자체로 버그다.
 
 - **Soft-confirm (목록 확인) replaces hard unapproved-vocabulary blocks for construction.** `resolveVocabForBuild` in `src/project/tileVocabulary.ts` returns `approved | soft | missing`. Existing groups/tiles soft-allow and paint the map with `data.vocabSoftConfirm`; only missing ids hard-fail. Soft construction proposals set `requiresApproval` and show **cropped** map before/after thumbs (change bbox) plus 상세 재료·배치를 확인할 수 있는 UI; accept (`그대로 적용`) runs `applyVocabSoftConfirmApprovals` so `origin:user` is marked only on explicit accept (autoApprove still blocked). Card-level material warnings skip the second `confirmRuleApproval` modal. `place_props` identical args are deduped once per turn (`writeDedupeKey`). Login modal z-index stays below the proposal modal; proposal open forces guest identity if needed. Region AI (`runRegionTask`) shows no chat proposal card, but its default apply gate is `"approval"` (`runRegionTask.ts:831`) — the change lands only through the `pendingRegionApply` review modal (approve/discard); it auto-applies only via the legacy `gate:"immediate"` path (:850). Region runs also cap the session at `REGION_TASK_MAX_TOOL_CALLS = 24` tool calls (`runRegionTask.ts:50,:222`), and still mark soft vocab on apply and seed harness groups.
-- AI activity/conversation persistence is not best-effort when Supabase is configured. Missing dedicated tables must surface `SupabaseMigrationRequiredError`; apply and verify schema with `npm run db:migrate` / `npm run db:verify-ai`. Historical `ai_analysis_runs` fallback rows remain readable, but new activity logs only write `ai_activity_logs`, and remote log diagnostics are always scoped to the configured project id.
+- AI activity/conversation persistence is not best-effort when LegacyDb is configured. Missing dedicated tables must surface `LegacyDbMigrationRequiredError`; apply and verify schema with `npm run db:migrate` / `npm run db:verify-ai`. Historical `ai_analysis_runs` fallback rows remain readable, but new activity logs only write `ai_activity_logs`, and remote log diagnostics are always scoped to the configured project id.
 - Tile v3 includes `fill_region` in `src/editor/tools/v3/constructionTools.ts` for water/floor/ground surface fills with autotile or animated-terrain groups (soft-confirm when not yet origin:user). Use `fill_region` for lakes, rivers, floors, and terrain areas; keep `place_props` for scattered objects such as trees, rocks, and flowers. `build_wall` requires a supported expandable pattern with defined parts; fixed fence props without that pattern use `place_props`, not `build_wall` or `fill_region`. `fill_region` and `tile_erase` skip only protected start/transfer-destination cells that would become impassable and return a warning for the skipped coordinates instead of rejecting the whole edit.
 - **Erase restoration ground (2026-09-07):** `tile_erase(kind:"all")` ranks only observed compatible lower ground, outside the rectangle first and inside second (row-major ties). Tileset role/group semantics, authored tile-role and layer overrides, metadata passage, and runtime passability must agree; floor/terrain/ground/path can qualify, not walls, roofs, props, water, upper homes, or blocked tiles. An explicit authored ground role can supersede inherited group vocabulary, but cannot bypass runtime layer/passage or completed-house protection. No candidate means `erase-ground-unresolved` before either layer changes, not a grass fallback or a fabricated atlas tile. Inspect the selected tileset and explicitly paint a valid ground surface before retrying. `layer:"upper"` needs no ground and reports `groundTile:null`; start/transfer support and transaction ownership guards still apply. `kind:"market"` retains its separate selective demolition contract. Regressions: `test/tileEraseGround.test.ts` (fresh 12x10 border, captured wall distribution, real crate placement on town222/240 and interior72, authored rules, atomic failure, ownership), plus `test/constructionToolsV3.test.ts` (upper-support passage protection and market behavior).
 - Live MCP bridge for external agents: `src/editor/aiAssistantBridge.ts` registers from `aiChatPanel` and long-polls `http://127.0.0.1:17831` (see `npm run mcp:assistant` / `scripts/oprn-assistant-mcp.mjs`). Same chat session as the UI; tools are `assistant_send` / `status` / `audit` / `harness` / `abort`. Dev auto-connects; `?aiBridge=0` disables. `agy mcp add oprn-assistant node scripts/oprn-assistant-mcp.mjs` registers the bridge in AGY. AGY 1.1.x uses newline-delimited stdio JSON-RPC while older repo clients use `Content-Length`; `scripts/lib/mcpStdioFraming.mjs` detects the first inbound frame and replies in the same format. Keep both paths covered by `test/mcpStdioFraming.node.test.mjs`; a mere `agy mcp list` is not a health check—verify `assistant_ping` and `assistant_status` against an open editor.
@@ -1437,7 +1446,7 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 - Region AI (`src/editor/regionTask/runRegionTask.ts`) may still seed build-palette harness groups; soft-confirm means existing tree/prop group ids work without prior origin:user. Prompt lists available group ids. `place_npc`/`make_villager` default graphic to villager when omitted. Each run builds a `RegionTaskLogExport` (audit + toolCalls + uiEvents + harness) on `result.log`, publishes `window.__rpgzzuRegionTaskLog` / `__rpgzzuLastRegionTaskLog()`, and the region modal header has a small **로그** button (`region-task-copy-log`) next to ?뚯쁺???묒뾽??that copies the JSON to the clipboard after a run.
 - AI tool argument normalization is centralized in `src/editor/tools/jsonSchema.ts` before schema validation. It accepts common coordinate shape drift by flattening `{rect|region|area|bounds|at|pos|point:{x,y,w,h}}` into flat `x/y/w/h` tools, wrapping flat `x/y[/w/h]` into the single coordinate object required by v3 tools, and mapping `width/height` aliases to `w/h` (and back) based only on the declared schema.
 - **Reachability coordinate boundary (2026-09-07):** `check_reachability` in `queryTools.ts` applies the existing `validateArgs(COORD_SCHEMA, point)` to `from` and every `targets[i]` before BFS. The shared runner validates only outer object/array types; missing, fractional, nonfinite, or structurally invalid coordinate fields must return `ok:false` / `invalid-args` with no reachability data, not `ok:true, reachable:false`. Existing schema normalization (including numeric strings and coordinate wrappers), extra point metadata, and empty target arrays remain supported. Valid queries still return real reachable/unreachable verdicts with adjacent-or-on semantics. `test/reachabilityArguments.test.ts` covers recorded wire114, nested object/array countercases, real `runTool` -> `ToolVerificationEvidence` retry history, and genuine negative evidence surviving another passing query. This is a local query-boundary fix, not recursive validation for other tools (including `run_lint` specs), verification ownership/canonicalization repair, or retroactive reclassification of an old session ledger.
-- W5 team workflow UI shows current editor identity in the topbar, can reopen the mock login modal, and reads recent `project_commits` through `listProjectCommitsFromSupabase`. The mock login only updates the local editor owner label and last-login-method localStorage marker; real Auth/RLS session handling belongs to the Phase 8 switchover.
+- W5 team workflow UI shows current editor identity in the topbar, can reopen the mock login modal, and reads recent `project_commits` through `listProjectCommitsFromLegacyDb`. The mock login only updates the local editor owner label and last-login-method localStorage marker; real Auth/RLS session handling belongs to the Phase 8 switchover.
 - For quick navigation, grep within `src/editor` first, then follow the feature-specific file groups above: map, event, database, resource, tile palette, save/import/export.
 
 
@@ -1898,19 +1907,19 @@ switch references participate in load validation, deletion guards and switch ren
 Tests: `feature16AiToolIntegration.test.ts`; schemas: `combatAuthoringSchemas.ts`.
 ## 마을 시공 후 완료 계약 (2026-09-21)
 
-`author_village`의 `houseCount`는 무조건 required가 아니다. 기본 설계서가 있으면
-`resolveVillageDesignInput`이 파싱 전에 채운다. 고정 숲 없음 설계서에는
-`forestDensity`를 넣지 않는다. Pi 노트와 도구 설명이 이 조건을 공유한다.
+`author_village`의 집 수는 기본 DB 설계서가 채울 수 있다. 고정 숲 없음 설계서에는
+`forestDensity`를 넣지 않는다. `resolveVillageContract`가 평문 단일 마을 요청의 수량과
+대상/bounds를 먼저 고정하고 facade와 같은 DB resolver를 쓴다.
 
-`residents[].lines` 생략 시 대사는 빈 상태이며, Pi 종료 검사가 보충 요청을 보낸다.
-옛 `AssistantSession.authorPendingNpcCast`가 Pi에서도 자동 실행된다고 설명하지 않는다.
-문 스프라이트도 visible이므로 `collectPendingNpcs` 결과 전체를 Pi 보충 대상으로 쓰면
-문에 대사가 붙는다. Pi는 이번에 생성한 `ev_village_*` 주민만 대상으로 삼는다.
+빌더 결과의 `village.residentEventIds`는 NPC 배치 전후 이벤트 ID 차이,
+`village.doorFronts`는 이번에 만든 집의 실제 문앞 좌표다. 계약 완료 검사는
+이 증거로 대사와 통행을 검사하며 ID 접두사나 전체 맵의 미감 점수에 의존하지 않는다.
+`residents[].lines`로 대사를 한 번에 넘기거나 같은 Agent가 `author_npc_cast`로 보충한다.
+무언 주민 요청과 주민 0명은 대사를 강제하지 않는다.
 
-`evaluate_village_look`의 호출 성공과 `data.ok`는 별개다. Pi는 최종 프로젝트에서
-직접 재평가해 미통과를 `done.villageCompletion.issues`로 전달한다. 룩 평가에는
-맵의 `villageDesignSource.preset`을 사용해 고정 주민 수, 숲 없음, 광장 설정을 존중한다.
-현재 프로젝트의 기본 설계서를 나중에 바꿔도 이미 지은 맵의 평가 기준이 바뀌지 않는다.
+`evaluate_village_look`는 미감 참고 도구로 남는다. 단일 마을 계약 경로에서는 그 점수를
+필수 완료 조건으로 쓰지 않는다. 옛 explicit/team 경로의 `inspectPiVillageCompletion`과
+혼동하지 않는다. 복합 작업까지 이 계약으로 전환한 것은 아니다.
 
 공개 평가 안내는 `find_tools`로 실제 수정 도구를 찾도록 한다. `plant_tree_clusters`,
 `revise_village_plan`, `run_village_pipeline`은 내부 호환용이며 Pi에서 노출·복구되지 않는다.
@@ -1921,3 +1930,5 @@ Tests: `feature16AiToolIntegration.test.ts`; schemas: `combatAuthoringSchemas.ts
 ## 타일 참고문서 선행 조회 (2026-09-21)
 
 [타일셋 참고문서](tileset-reference-documents.md): 프로젝트 소유의 용도별 MD·이미지, 파생 타일셋의 원본 공유, Pi/레거시 AI 전달 확인, 저장·내보내기 계약.
+빈 시작 맵 전체 시공에서 예전 좌표가 고립되면 `restoreExistingTargetStart`가 검증된 새
+시작점을 유지한다. 기존 콘텐츠 또는 bounds 요청은 이 예외가 아니다.

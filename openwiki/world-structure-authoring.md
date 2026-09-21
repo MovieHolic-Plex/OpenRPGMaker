@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # World 다리·다층 산 공통 저작 도구
 
 ## 정본과 진입점
@@ -90,7 +92,7 @@
 
 - `npm test -- test/worldStructureTools.test.ts test/toolSchemaProviderCompat.test.ts`
 - `bun scripts/verify-world-structure-tools.mts`
-  - 별도 Supabase `rpg-zzu-world-structure-tools-20260906`에 초원/흙/눈 검증 맵을 저장한다.
+  - 별도 LegacyDb `rpg-zzu-world-structure-tools-20260906`에 초원/흙/눈 검증 맵을 저장한다.
   - 3개 맵에서 도구 9회 실행 → 직렬화 정규화 → 저장 → 맵·타일셋 전체 재로드 일치.
   - 원격 행이 이미 있으면 로컬 receipt와 일치해야 한다.
   - `--recover-saved`는 저장 후 로컬 receipt 작성 전에 중단된 경우만 쓴다.

@@ -12,7 +12,7 @@ import { mkdir } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import type { Command, GameEvent, Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const AFTER_DIR = ".omo/evidence/screen-fx-3/after";
 const EVENT_ID = "ev_screen_fx_inspector";
@@ -61,7 +61,7 @@ function fxProject(): Project {
 }
 
 async function openCommandList(page: Page): Promise<void> {
-  await seedProjectFromSupabaseCanonical(page, fxProject());
+  await seedProjectForEditor(page, fxProject());
   const skip = page.getByRole("button", { name: "건너뛰기" });
   if (await skip.count()) await skip.click();
   await page.getByTestId("layer-event").click();

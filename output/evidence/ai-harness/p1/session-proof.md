@@ -134,7 +134,7 @@ Vitest processes were observed, but no external process was killed or changed.
 No baseline failure remains in this node's requested/focused commands. The
 persistence node's separately documented six legacy store-test failures are not
 reclassified or repaired here. Supervisor `npm run gates`, real editor browser
-acceptance and live Supabase proof remain outside this node's claimed results.
+acceptance and live LegacyDb proof remain outside this node's claimed results.
 
 ## Actual entry-point exercise, not live remote acceptance
 
@@ -147,7 +147,7 @@ entry points, not an invocation of a private proof method or a mocked verifier.
 
 `session-surface.json` records the exact machine evidence:
 
-- Fixture target: `p1-session-surface-fixture` (not a live Supabase row).
+- Fixture target: `p1-session-surface-fixture` (not a live LegacyDb row).
 - Initial accepted revision `68fecd74-2aa7-4265-af7b-cea32f2ab1d5`, generation 1,
   normalized identity
   `6a86e350348de1933b6596357cf607a59d7f5f072b4904380e577616979c3951`.

@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # 밤의 괴물 — 저택 탈출 공포 게임
 
 2026-09-05 사용자 요청으로 저작한 독립 프로젝트. 기존 공포 프로토타입의 제작 도구와 실내
@@ -36,16 +38,16 @@ npx tsx scripts/verify-night-monster-progression.mts
 
 ## 초기판 정본과 제작 경로 (역사 기록)
 
-- Supabase project id: `rpg-zzu-night-monster-20260905` / 제목: **밤의 괴물**.
+- LegacyDb project id: `rpg-zzu-night-monster-20260905` / 제목: **밤의 괴물**.
 - 편집기: `/?project=rpg-zzu-night-monster-20260905`.
 - 저작 정의: `src/project/examples/nightMonster.ts`.
 - 재제작·저장·재로드·진행 검증: `npx tsx scripts/build-night-monster.mts`.
   이 명령은 해당 원격 프로젝트를 재제작하므로 이후 사용자가 직접 편집한 데이터가 있으면
   먼저 그 변경을 보존해야 한다.
-- 제작 전 `.env.local`의 Supabase URL/key와 설정 project id 연결을 확인했다.
+- 제작 전 `.env.local`의 LegacyDb URL/key와 설정 project id 연결을 확인했다.
   저장 대상은 위의 독립 project id이며 환경 기본 프로젝트를 덮어쓰지 않는다.
 - 원격 저장 성공 뒤의 보조 JSON과 검증 보고서:
-  `output/evidence/night-monster/{project.json,supabase-verification.json}`.
+  `output/evidence/night-monster/{project.json,legacyDb-verification.json}`.
 - EasyRPG Interior/charset 및 번들 BGM·SE를 사용한다. 별도 미등록 외부 에셋이 없다.
 
 ## 초기판 게임 구성과 공략 (현재 개정본에는 적용하지 않음)
@@ -68,7 +70,7 @@ npx tsx scripts/verify-night-monster-progression.mts
 
 ## 초기판 검증과 발견한 함정
 
-- 저장 전과 Supabase 재로드 후에 다섯 시나리오를 실행한다: 다섯 방 연속 보행과 구출,
+- 저장 전과 LegacyDb 재로드 후에 다섯 시나리오를 실행한다: 다섯 방 연속 보행과 구출,
   열쇠/암호/문 통과, 추격 사망과 재시도, 구출 엔딩, 단독 탈출 엔딩.
 - 전체 보행은 `walk`로 실제 통행성과 전이를 거친다. 이 시뮬레이터의 보행은 벽시계 기반
   플레이 숙련도나 공포감을 재지는 않는다. 추격의 시간 진행은 별도의 `wait` 사망 검증이다.
@@ -82,12 +84,12 @@ npx tsx scripts/verify-night-monster-progression.mts
 - DB JSONB는 객체 키 순서를 바꾼다. 저장 검증 해시는 배열 순서를 유지하고 객체 키를
   정렬한다. 맵 타일, 전체 이벤트 명령, 조명, 음악, 안전지대와 시작점이 일치해야 한다.
 - 게임 화면 QA: `npm run qa:runtime -- --scenario night-monster`.
-  Supabase에서 다시 읽어 저장한 JSON을 `player.html` 출하 경로로 실행한다.
+  LegacyDb에서 다시 읽어 저장한 JSON을 `player.html` 출하 경로로 실행한다.
   `verify-shots/runtime-qa/night-monster/SUMMARY.md`를 먼저 읽고 표시된 PNG를 확인한다.
 
 ### 2026-09-05 실측
 
-Supabase 저장·재로드 후 위의 5개 진행 시나리오가 통과했다. 최종 브라우저 실행은
+LegacyDb 저장·재로드 후 위의 5개 진행 시나리오가 통과했다. 최종 브라우저 실행은
 `--out verify-shots/runtime-qa/night-monster-final`로 분리했고 11개 비트 전부 통과,
 런타임 오류 0건이었다. 움직이는 괴물의 포획, 포획 SE, 재시도, 압력판 사망 SE와
 단독 탈출 엔딩을 포함한다. 추적 가능한 요약·대표 화면은
@@ -114,6 +116,6 @@ Shift를 누른 채 오른쪽 (25,9)까지 달린 뒤 위로 달려 지하실 (1
 - 기존 QA의 teleport 뒤 논리 좌표 검사는 화면의 캐릭터 위치를 보증하지 않았다.
   검토 스크립트는 실제 한 칸 왕복 이동 뒤 스프라이트 발 위치까지 확인한다.
 
-현재 Supabase 저장본을 읽어 전용 `player.html`에서 검토했다. 원격 프로젝트는 수정하지 않았다.
+현재 LegacyDb 저장본을 읽어 전용 `player.html`에서 검토했다. 원격 프로젝트는 수정하지 않았다.
 재현 스크립트: `scripts/qa/runtime/night-monster-review.probe.mjs`.
 판정과 화면 근거: `.omo/evidence/night-monster-review/REPORT.md`.

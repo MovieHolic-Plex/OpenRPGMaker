@@ -1,5 +1,7 @@
 import { TILE } from "@/project/defaults/constants";
 import { LAKE_AUTOTILE_TILE } from "@/project/defaults/lakeAutotile";
+import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
+import { FOREST_HARMONY_TEXTURE } from "@/project/defaults/forestHarmony";
 import { footprintBounds, normalizeCharacterFootprint } from "@/project/footprint";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness";
 import type { GameMap, Project, Rect } from "@/project/types";
@@ -105,7 +107,7 @@ function smoothBank(bank: readonly number[]): number[] {
 export function paintOrganicVillageLake(project: Project, map: GameMap, plan: OrganicVillageLakePlan): number {
   const tileset = project.tilesets[map.tilesetId];
   if (!tileset || !isCombinedTownCompatibleTileset(tileset)) {
-    throw new ToolError("이 호수는 합본 마을 칩셋 전용입니다.", { code: "village-tileset-mismatch", mapId: map.id });
+    throw new ToolError("이 호수는 합본 마을·혼합·숲마을 칩셋에서 지원합니다.", { code: "village-tileset-mismatch", mapId: map.id });
   }
   validatePlan(map, plan);
   const houses = new Set(protectedHouseCells(map).map(key));
@@ -128,8 +130,19 @@ export function paintOrganicVillageLake(project: Project, map: GameMap, plan: Or
     if (reason) throw new ToolError(`호수 예약 칸(${p.x},${p.y})에 ${reason}이 있습니다. 예약과 배치를 다시 확인하세요.`,
       { code: "village-water-conflict", mapId: map.id, x: p.x, y: p.y });
   }
+  // Forest Harmony owns a baked 47-variant shoreline; raw town tile 0 is not
+  // a render-time water autotile on that chipset. Respect its saved definition.
+  const forest = tileset.image.type === "bundled" && tileset.image.id === FOREST_HARMONY_TEXTURE;
+  const water = forest ? tileset.autotileGroups?.find(group => group.id === "forest_harmony_lake_47") : undefined;
+  if (forest && (!water || !water.memberTileIds.length)) {
+    throw new ToolError("숲마을 칩셋에 자연 물가 조립 정의가 없습니다.", { code: "village-tileset-mismatch", mapId: map.id });
+  }
   // No clipping, clearing, global autotile repair or shared project mutation.
-  for (const p of plan.cells) map.lowerTiles[p.y * map.width + p.x] = LAKE_AUTOTILE_TILE.OUTER_CORNER;
+  for (const p of plan.cells) map.lowerTiles[p.y * map.width + p.x] = water?.memberTileIds[0] ?? LAKE_AUTOTILE_TILE.OUTER_CORNER;
+  if (water) {
+    const reserved = new Set(plan.cells.map(key));
+    shapeAutotileGroupAround(map, water, plan.cells, (x, y) => reserved.has(key({ x, y })));
+  }
   return plan.cells.length;
 }
 

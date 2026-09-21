@@ -1,22 +1,6 @@
 #!/usr/bin/env node
-// 원격 커밋 로그 조회 — Supabase `project_commits` + `project_changes.patch_json`.
-//
-// 사용법:
-//   node scripts/list-project-commits.mjs [limit] [--edits] [--origin <o>] [--map <id>] [--json]
-//     --edits   커밋마다 그 안의 편집 행위 기록을 펼친다 (기본은 건수만)
-//     --origin  human | ai | tool | system — 그 origin 의 편집이 있는 커밋만
-//     --map     그 맵을 건드린 편집이 있는 커밋만
-//     --json    표 대신 원본 JSON (에이전트·스크립트용)
-//
-// 왜 이 CLI 가 필요한가 (2026-08-29 관측성 감사):
-// `project_changes.patch_json` 은 첫 마이그레이션부터 쓰이고 있었지만 **읽는 코드가 0개**였다.
-// 쓰기만 하는 컬럼은 감사에 쓸 수 없다 — 사고가 났을 때 SQL 을 즉석에서 짜야 하고,
-// 그러면 아무도 안 본다. 편집 행위 기록을 그 컬럼에 실은 이상 읽는 경로가 같이 있어야 한다.
-//
-// 채널 분리: `npm run ai:log` 는 AI 턴(프롬프트·툴콜), `npm run edit:log` 는 라이브 세션의
-// 편집 행위(디스크 미러), 이 스크립트는 **저장된 것**. 앞의 둘은 새로고침·워크트리 교체에
-// 끊기지만 이건 DB 에 남는다.
-import { loadSupabaseEnvironment } from "./lib/supabase-database-ops.mjs";
+// Saved commit diagnostics: --project-dir <folder> [--limit n] [--edits] [--origin kind] [--map id] [--json].
+import { openProjectLogReader, projectDirArgument } from "./lib/project-log-reader.mjs";
 import { describeEdit, pad, stampOf } from "./lib/terminal-table.mjs";
 
 const args = process.argv.slice(2);
@@ -27,7 +11,7 @@ function flagValue(name) {
 }
 
 const consumed = new Set();
-for (const name of ["limit", "origin", "map"]) {
+for (const name of ["limit", "origin", "map", "project-dir"]) {
   const at = args.indexOf(`--${name}`);
   if (at >= 0) {
     consumed.add(at);
@@ -42,50 +26,15 @@ const mapId = flagValue("map");
 const withEdits = args.includes("--edits");
 const asJson = args.includes("--json");
 
-/** 프록시 모드에서는 VITE_SUPABASE_URL 이 상대 경로다 — 노드는 절대 URL 이 필요하다. */
-function remoteBaseUrl(env) {
-  for (const candidate of [env.SUPABASE_UPSTREAM_URL, env.SUPABASE_URL, env.VITE_SUPABASE_URL]) {
-    const url = (candidate || "").trim().replace(/\/$/, "");
-    if (/^https?:\/\//.test(url)) return url;
-  }
-  return "";
-}
-
-const env = loadSupabaseEnvironment();
-const base = remoteBaseUrl(env);
-const key = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_ANON_KEY || env.VITE_SUPABASE_ANON_KEY || "";
-const projectId = env.VITE_SUPABASE_PROJECT_ID || "";
-if (!base || !key || !projectId) {
-  console.log("Supabase 환경이 없다 — .env 의 VITE_SUPABASE_URL / ANON_KEY / VITE_SUPABASE_PROJECT_ID 를 확인하라.");
-  console.log("로컬 세션 편집만 보려면 `npm run edit:log`(디스크 미러) 를 쓴다.");
-  process.exit(0);
-}
-
-// project_changes 에는 project_id 가 없다(commit_id FK 로만 매달린다) — PostgREST 임베딩으로
-// 커밋 쪽에서 필터하고 변경 row 를 끌어온다.
-const query = new URLSearchParams({
-  project_id: `eq.${projectId}`,
-  select: "commit_id,summary,review_status,author_kind,author_label,agent_name,created_at,project_changes(patch_json)",
-  order: "created_at.desc",
-  limit: String(limit),
-});
-const url = `${base}/rest/v1/project_commits?${query.toString()}`;
-
-let rows;
+const db = openProjectLogReader(projectDirArgument(args));
+let rows; let projectId;
 try {
-  const response = await fetch(url, {
-    headers: { apikey: key, Authorization: `Bearer ${key}`, Accept: "application/json", "Accept-Profile": "rpg_zzu" },
-  });
-  if (!response.ok) {
-    console.log(`조회 실패: ${response.status} ${response.statusText}`);
-    console.log(await response.text());
-    process.exit(1);
-  }
-  rows = await response.json();
-} catch (error) {
-  console.log(`조회 실패: ${String(error)}`);
-  process.exit(1);
-}
+  projectId = db.prepare("SELECT value FROM meta WHERE key='project_id'").get()?.value;
+  rows = db.prepare(`SELECT * FROM commits ORDER BY created_at DESC LIMIT ?`).all(limit).map(row => ({
+    ...row, project_changes: db.prepare('SELECT patch_json FROM changes WHERE commit_id=?').all(row.commit_id)
+      .map(change => ({ patch_json: change.patch_json ? JSON.parse(change.patch_json) : null })),
+  }));
+} finally { db.close(); }
 
 function normalize(row) {
   const patch = row.project_changes?.[0]?.patch_json ?? {};

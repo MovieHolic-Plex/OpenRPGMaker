@@ -11,7 +11,7 @@ import { mkdir, rm, writeFile } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, GameEvent, Project } from "@/project/types";
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 /** 카탈로그에서 title 로 엔트리를 찾는다. m2Catalog 는 id/kind 조회만 export 한다. */
@@ -129,7 +129,7 @@ async function assertIsolatedEffectState(playWindow: Locator, probeCase: ProbeCa
 }
 
 async function openProbeRuntime(page: Page, probeCase: ProbeCase): Promise<Locator> {
-  await seedProjectFromSupabaseCanonical(page, probeProject());
+  await seedProjectForEditor(page, probeProject());
   const skip = page.getByRole("button", { name: "건너뛰기" });
   if (await skip.count()) await skip.click();
   await expect(page.getByTestId("topbar-test-play")).toBeVisible({ timeout: 30_000 });

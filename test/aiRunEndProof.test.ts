@@ -106,10 +106,10 @@ describe("AssistantSession accepted-revision proof", () => {
   beforeEach(() => {
     resetIntentDeclarationCache();
     vi.useFakeTimers(); // Disable unrelated autosave; no timer advancement synchronizes the test.
-    vi.stubEnv("VITE_SUPABASE_USE_PROXY", "0");
-    vi.stubEnv("VITE_SUPABASE_URL", "http://p1-session.invalid");
-    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
-    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", projectId);
+    vi.stubEnv("VITE_LEGACY_DB_USE_PROXY", "0");
+    vi.stubEnv("VITE_LEGACY_DB_URL", "http://p1-session.invalid");
+    vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-anon-key");
+    vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", projectId);
     vi.stubGlobal("window", {
       location: { hostname: "127.0.0.1", pathname: "/", search: "" },
       localStorage: { getItem: () => null, setItem: () => {}, removeItem: () => {} },

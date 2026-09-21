@@ -36,6 +36,8 @@ type StubSprite = {
   y: number;
   tilePositionX: number;
   tilePositionY: number;
+  tileScaleX: number;
+  tileScaleY: number;
   setTexture(key: string): void;
   setSize(width: number, height: number): void;
   setPosition(x: number, y: number): void;
@@ -62,6 +64,8 @@ function createSprite(key: string): StubSprite {
     y: 0,
     tilePositionX: 0,
     tilePositionY: 0,
+    tileScaleX: 1,
+    tileScaleY: 1,
     setTexture(next) {
       this.texture = { key: next };
     },
@@ -85,6 +89,10 @@ function createSprite(key: string): StubSprite {
     },
     setDepth(value) {
       this.depth = value;
+    },
+    setTileScale(x, y) {
+      this.tileScaleX = x;
+      this.tileScaleY = y === undefined ? x : y;
     },
     setTilePosition(x, y) {
       this.tilePositionX = x;

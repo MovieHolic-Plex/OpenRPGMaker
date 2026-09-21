@@ -2,7 +2,7 @@
  * 내장 AI 가 저작한 맵 3개 RPG(`rpg-zzu-three-map-rpg`)를 **화면에서** 확인하고
  * HTML 리포트용 스크린샷 증거를 모은다.
  *
- * 프로젝트는 `test/aiThreeMapRpg.live.test.ts` 가 Supabase 에 저장한 것을 그대로
+ * 프로젝트는 `test/aiThreeMapRpg.live.test.ts` 가 LegacyDb 에 저장한 것을 그대로
  * 읽어 주입한다(에디터 실제 로드 경로 = `__OPRN_E2E_PROJECT__`).
  *
  * 실행:
@@ -12,7 +12,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { expect, test, type Page } from "@playwright/test";
 import { startNewGameFromTitle } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const PROJECT_JSON = path.resolve("output/evidence/ai-three-map-rpg/project-after.json");
 const REPORT_JSON = path.resolve("output/evidence/ai-three-map-rpg/build-report.json");
@@ -57,7 +57,7 @@ test("AI 저작 3맵 RPG — 에디터/런타임 증거 스크린샷", async ({ 
     window.localStorage.setItem("oprn:editor-welcome-dismissed", "1");
   });
   await page.setViewportSize({ width: 1680, height: 1020 });
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
 
   // 1) 시작 맵이 실제로 그려진 에디터 화면
   await page.waitForTimeout(2500);

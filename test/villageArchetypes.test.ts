@@ -11,8 +11,8 @@ import { presetRecordFromArchetype } from "@/editor/panels/databaseVillageModel"
 /**
  * 원형은 `builder.ts` 의 `inferIntentFromTheme` 안에 정규식 6갈래로만 있었다 — 테마 문장에
  * 낱말이 들어가야만 닿을 수 있었고, 화면에는 이름조차 없었으며 `presetId` 로 지목할 수도
- * 없었다. 이 파일은 그 정규식 표를 카탈로그로 옮기면서 **판정이 한 글자도 안 바뀌었다**를
- * 못박는다. 정규식의 대안은 전부 리터럴이었으므로 `includes` 로 갈아타도 같은 결과여야 한다.
+ * 없었다. 이 파일은 그 정규식 표를 카탈로그로 옮긴 판정을 비교한다.
+ * 2026-09-21 의도적 변경: 물가 테마는 시장을 암시하지 않으며, 명시한 시장이 물가보다 우선한다.
  *
  * 테마 → 실제 시공값까지의 사슬은 `villageBuilder.test.ts` 의 「강가 어촌 장터 → sand」가 본다.
  */
@@ -35,7 +35,7 @@ function legacyMatch(theme: string): string | undefined {
 
 const THEMES: readonly string[] = [
   "", "   ", "성곽 도시", "석조 성문 마을", "CASTLE TOWN", "citadel",
-  "강가 어촌", "항구 장터", "장터 항구", "호수 마을", "해안 beach village", "River Bend",
+  "강가 어촌", "호수 마을", "해안 beach village", "River Bend",
   "장터", "시장 골목", "축제 마을", "Market Fair",
   "농촌", "밭 마을", "촌락", "목장", "FARM village", "rural hamlet",
   "광산 마을", "산골", "채석장", "Mountain Mine",
@@ -70,15 +70,15 @@ describe("마을 원형 카탈로그", () => {
   });
 });
 
-describe("마을 원형 판정 — 정규식 표와 한 글자도 다르지 않다", () => {
+describe("마을 원형 판정 — 일반 테마는 기존 표 유지, 명시적 시장은 물가보다 우선", () => {
   it.each(THEMES)("“%s”", (theme) => {
     expect(matchVillageArchetype(theme)?.id).toBe(legacyMatch(theme.trim().toLowerCase()));
   });
 
-  // 순서가 계약이다 — 「장터」가 「어촌」보다 아래라서 "항구 장터" 가 어촌으로 판정된다.
-  it("어촌 낱말이 장터 낱말보다 먼저 이긴다", () => {
-    expect(matchVillageArchetype("항구 장터")?.id).toBe("harbor-coast");
-    expect(matchVillageArchetype("장터 항구")?.id).toBe("harbor-coast");
+  // 물가 기본 시장을 제거해도 명시적으로 요청한 장터는 유지한다.
+  it("장터 낱말이 어촌 낱말보다 먼저 이긴다", () => {
+    expect(matchVillageArchetype("항구 장터")?.id).toBe("market-fair");
+    expect(matchVillageArchetype("장터 항구")?.id).toBe("market-fair");
   });
 
   it("빈 테마와 공백은 아무 원형도 고르지 않는다", () => {

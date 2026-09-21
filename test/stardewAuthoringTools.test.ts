@@ -222,7 +222,7 @@ describe("P6 upgrades and sell prices", () => {
 });
 
 describe("P7 smoke: farm + day advance tools", () => {
-  it("tills, plants, waters, sleeps growth path without Supabase", () => {
+  it("tills, plants, waters, sleeps growth path without LegacyDb", () => {
     const project = createFarmingDemoProject();
     project.system.timeSystem = resolveTimeSystem({
       enabled: true,

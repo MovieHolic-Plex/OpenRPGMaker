@@ -243,7 +243,7 @@ SHA-256 hashes are recorded. This lane didn't visually review those images. A sc
 editor doesn't establish history, cancellation, parameter or runtime coverage.
 
 Audit fixtures are native content-only fixtures with no remote writes. They
-aren't shipped content and aren't evidence of Supabase persistence. There were
+aren't shipped content and aren't evidence of LegacyDb persistence. There were
 no remote content writes from this report lane.
 
 ## History anchors

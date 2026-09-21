@@ -1097,7 +1097,7 @@
   },
   {
     "file": "storePersistence.test.ts",
-    "fullName": "Project store remote persistence does not write to Supabase before the canonical project has loaded",
+    "fullName": "Project store remote persistence does not write to LegacyDb before the canonical project has loaded",
     "status": "failed",
     "failureMessages": [
       "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times\n\nReceived: \n\n  1st spy call:\n\n    Array [\n      \"/__oprn/edit-activity\",\n      Object {\n        \"body\": \"{\"entries\":[{\"seq\":0,\"at\":\"2026-09-05T12:01:31.876Z\",\"scope\":\"project\",\"label\":null,\"origin\":\"human\",\"generation\":1,\"reason\":\"사람이 편집\"}]}\",\n        \"headers\": Object {\n          \"Content-Type\": \"application/json\",\n        },\n        \"method\": \"POST\",\n      },\n    ]\n\n\nNumber of calls: 1\n\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1335:10)\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file:///home/main/z-project/rpg-zzu/node_modules/chai/index.js:1686:25)\n    at /home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/test/storePersistence.test.ts:35:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
@@ -1105,10 +1105,10 @@
   },
   {
     "file": "storePersistence.test.ts",
-    "fullName": "Project store remote persistence does not auto-save local dev showcase projects to Supabase",
+    "fullName": "Project store remote persistence does not auto-save local dev showcase projects to LegacyDb",
     "status": "failed",
     "failureMessages": [
-      "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromSupabase (/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/src/project/supabaseProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/src/project/supabaseProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/src/project/store.ts:258:27)\n    at /home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/test/storePersistence.test.ts:55:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+      "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromLegacyDb (/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/src/project/legacyDbProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/src/project/legacyDbProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/src/project/store.ts:258:27)\n    at /home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/test/storePersistence.test.ts:55:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
     ]
   },
   {
@@ -1121,10 +1121,10 @@
   },
   {
     "file": "storePersistence.test.ts",
-    "fullName": "Project store remote persistence saves and reloads local edits for dev showcase projects without Supabase",
+    "fullName": "Project store remote persistence saves and reloads local edits for dev showcase projects without LegacyDb",
     "status": "failed",
     "failureMessages": [
-      "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromSupabase (/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/src/project/supabaseProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/src/project/supabaseProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/src/project/store.ts:258:27)\n    at /home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/test/storePersistence.test.ts:119:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+      "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromLegacyDb (/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/src/project/legacyDbProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/src/project/legacyDbProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/src/project/store.ts:258:27)\n    at /home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/test/storePersistence.test.ts:119:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
     ]
   },
   {
@@ -1132,7 +1132,7 @@
     "fullName": "Project store remote persistence reports why DB persistence is unavailable for local dev showcase projects",
     "status": "failed",
     "failureMessages": [
-      "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}\n    at loadProjectSnapshotFromSupabase (/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/src/project/supabaseProjectSync.ts:222:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/src/project/supabaseProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/src/project/store.ts:258:27)\n    at /home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/test/storePersistence.test.ts:151:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+      "LegacyDbProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}\n    at loadProjectSnapshotFromLegacyDb (/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/src/project/legacyDbProjectSync.ts:222:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/src/project/legacyDbProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/src/project/store.ts:258:27)\n    at /home/main/.herdr/worktrees/rpg-zzu/worktree-calm-cloud-6e89-jrpg-field-resource-ai-baseline-main194/test/storePersistence.test.ts:151:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
     ]
   },
   {

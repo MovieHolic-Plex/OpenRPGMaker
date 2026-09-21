@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { exportedProject, openDatabase } from "./oprn-database-helpers";
 
 /**
@@ -33,7 +33,7 @@ async function openVillageTab(page: Page): Promise<void> {
 
 test("접힌 「세계」 그룹이 안에 든 탭과 레코드 합계를 알려준다", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await seedProjectFromSupabaseCanonical(page, createEmptyToolProject("마을 저작"));
+  await seedProjectForEditor(page, createEmptyToolProject("마을 저작"));
   await openDatabase(page);
 
   const world = page.getByTestId("db-tab-group-world");
@@ -63,7 +63,7 @@ test("접힌 「세계」 그룹이 안에 든 탭과 레코드 합계를 알려
 
 test("마을 원형을 눌러 배치 프리셋을 만들고 값을 덮어쓴다", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1500, height: 940 });
-  await seedProjectFromSupabaseCanonical(page, createEmptyToolProject("마을 저작"));
+  await seedProjectForEditor(page, createEmptyToolProject("마을 저작"));
   await openVillageTab(page);
 
   await page.getByTestId("db-village-kind-preset").click();
@@ -120,7 +120,7 @@ test("마을 원형을 눌러 배치 프리셋을 만들고 값을 덮어쓴다"
 
 test("내장과 같은 ID 는 「덮음」으로 읽히고 후보 수를 늘리지 않는다", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1500, height: 940 });
-  await seedProjectFromSupabaseCanonical(page, createEmptyToolProject("마을 저작"));
+  await seedProjectForEditor(page, createEmptyToolProject("마을 저작"));
   await openVillageTab(page);
 
   await page.getByTestId("db-village-create").click();

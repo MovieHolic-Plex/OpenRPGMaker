@@ -1,10 +1,7 @@
 import type { AutotileGroup, GameMap, Rect } from "@/project/types";
+import { paintContouredForest } from "./forestContour";
+import { forestTrunkCandidates } from "./forestTrunkTiles";
 
-const LEFT = [[1422, 1423, 1424], [1426, 1427, 1428], [1430, 1431, 1432]];
-const RIGHT = [[1453, 1454, 1455], [1457, 1458, 1459], [1461, 1462, 1463]];
-const PAIR = [[1425, 1350], [1429, 1428], [1433, 1432]];
-const LEFT_CAP = LEFT.map((row, dy) => [...row, PAIR[dy]![0]!]);
-const RIGHT_CAP = RIGHT.map((row, dy) => [PAIR[dy]![1]!, ...row]);
 const NEIGHBORS = [[0,-1], [1,0], [0,1], [-1,0], [1,-1], [1,1], [-1,1], [-1,-1]];
 
 export interface ForestGroveReport {
@@ -18,7 +15,8 @@ export interface ForestGroveReport {
  * Invalid protrusions are removed from the mask before any map cell is changed. */
 export function paintForestGroves(map: GameMap, area: Rect, group: AutotileGroup,
   free: (x: number, y: number) => boolean, seed: number, coverage = 0.65,
-  desired?: (x: number, y: number) => boolean): ForestGroveReport {
+  desired?: (x: number, y: number) => boolean, naturalEdge = false): ForestGroveReport {
+  if (naturalEdge) return paintContouredForest(map, area, group, free, seed, coverage, desired);
   const W = map.width, H = map.height;
   const inside = (x: number, y: number): boolean => x >= Math.max(0, area.x) && y >= Math.max(0, area.y)
     && x < Math.min(W, area.x + area.w) && y < Math.min(H, area.y + area.h);
@@ -39,7 +37,8 @@ export function paintForestGroves(map: GameMap, area: Rect, group: AutotileGroup
       const edge = Math.min(x - area.x, area.x + area.w - x - 2, y - area.y, area.y + area.h - y - 5);
       const wave = Math.sin(x * 0.19 + phase) * 2.5 + Math.cos(y * 0.23 - phase) * 2
         + Math.sin(x * 0.11 + y * 0.17 + phase) * 2;
-      blocks.push({ x, y, score: wave - Math.min(edge, 12) * 0.6 });
+      const score = wave - Math.min(edge, 12) * 0.6;
+      blocks.push({ x, y, score });
     }
   }
   blocks.sort((a, b) => b.score - a.score || a.y - b.y || a.x - b.x);
@@ -60,11 +59,7 @@ export function paintForestGroves(map: GameMap, area: Rect, group: AutotileGroup
         const start = x;
         while (x + 1 < area.x + area.w && f(x + 1, y) && !f(x + 1, y + 1)) x++;
         const width = x - start + 1;
-        const span = Math.max(8, width);
-        const rows = LEFT.map((row, dy) => [...row,
-          ...Array.from({ length: span - 6 }, (_, i) => PAIR[dy]![i % 2]!), ...RIGHT[dy]!]);
-        const candidates = width <= 4 ? [{ x: start, rows: LEFT_CAP }, { x: start + width - 4, rows: RIGHT_CAP }]
-          : [{ x: start, rows }, { x: start + width - span, rows }];
+        const candidates = forestTrunkCandidates(start, width);
         let openLeft = start, openRight = start + width;
         while (openLeft > area.x && !f(openLeft - 1, y + 1)) openLeft--;
         while (openRight < area.x + area.w && !f(openRight, y + 1)) openRight++;

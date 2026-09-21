@@ -4,7 +4,7 @@
 //   - 시스템 노브: 회피 스태미나 비용 / 회피 무적창 / 홀드 가드 감소율·소모 / HUD(하트·스태미나·적 HP 바)
 //   - 적 저작: melee(박쥐) / projectile(해골 궁수) / dash(갱도 사냥개) 3종 공격
 //   - 액션 스킬 2개(슬롯 순환이 실제로 닿는다) + 탄약 소모 스킬 + 액션 무기 스윙 프로필
-// scripts/save-action-demo.mts 가 이 팩토리를 그대로 Supabase 에 저장/재로드한다.
+// scripts/save-action-demo.mts 가 이 팩토리를 그대로 project storage 에 저장/재로드한다.
 
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 
@@ -16,7 +16,7 @@ import { createFarmingDemoProject } from "./defaultProject";
 
 import type { Project, SystemActionCombat } from "../types";
 
-/** 액션 전투 데모가 저장되는 Supabase 프로젝트 id. */
+/** 액션 전투 데모가 저장되는 project storage 프로젝트 id. */
 export const ACTION_DEMO_PROJECT_ID = "rpg-zzu-action-demo";
 /** 액션 옵트인 맵 — 농장 데모의 폐광 1층. */
 export const ACTION_DEMO_MAP_ID = "map_mine_1f";

@@ -1,3 +1,43 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
+## 장소 탭 재설계 — 라이브러리 우선 배치 (2026-09-21)
+
+**문제: 목록이 아니라 나머지가 화면을 먹었다.** 데이터베이스 → 장소를 1600×1000 에서 재 보니
+편집기 셸 안에서 카드 그리드가 791×424 였다 — 화면의 21%. 71장이 3,382px 를 굴러가는데 보이는 건
+4줄(10장)이었다. 세로를 세 곳이 나눠 먹었다: 목적 띠 + 액션 줄이 각각 밴드로 178px, 오른쪽 320px
+속성 패널이 **선택이 없어도** 자리를 차지, 도구·필터가 두 줄로 94px.
+
+바꾼 것과 실측(1600×1000, `output/evidence/places-ux-redesign/impl/`):
+
+1. **목록이 기본.** `.spatial-body.is-library-only` 로 스테이지를 접는다(그리드 1332×527, 7열, 한 화면 14장).
+   스테이지는 DOM 에 남기고 CSS 로만 접는다 — 「속성」 토글이 여닫을 대상이 사라지면 죽은 버튼이 된다.
+   속성을 열면 5열(65%)로 줄고, 닫으면 7열로 돌아온다.
+2. **선택과 편집기 진입의 분리.** 예전 `onSelect` 는 `listView: card.id !== selected?.id` 였다 —
+   아무것도 안 고른 상태에서 카드를 누르면 선택과 동시에 편집기가 열려, 「맵에 놓기」 액션 줄을 볼
+   기회가 없었다. 세션에 `galleryCardId` 를 추가해 **첫 클릭은 선택만**, 같은 카드 재클릭이나
+   액션 줄의 「편집」이 편집기로 들어간다.
+3. **목적 띠 복원.** 3차 수리에서 들어온 `spatial-purpose` 는 타일 화면 개편(2026-09-21) 때 렌더
+   호출만 사라져 CSS(`.spatial-purpose*`)만 남아 있었다 — 화면에는 없었다(프로브 두 번 모두 null).
+   한 줄 띠로 되살리고, 같은 말을 하던 중복 안내문(`.spatial-kind-guidance`)은 장소 셸에서 숨긴다.
+4. **머리 3줄 → 2줄.** 장소 라이브러리 제목·부제·필터·분류 탭·소재 안내를 두 줄로 접고,
+   카드 썸네일 120→84px·캡션 여백을 줄였다. 이름은 두 줄 클램프 — 한 줄 말줄임은
+   「침묵의 묘역 · 무너진 납골당」 같은 이름을 구별 불가능하게 만들었다(40장 중 6장 잘림).
+5. **0건 탈출구.** 필터가 0건이면 「필터 초기화」 버튼을 띄운다(`spatial-filter-reset`).
+   종전에는 문구만 있어 사용자가 손으로 되돌려야 했다.
+6. **「속성」 토글이 1200px 위에서도 보인다.** 종전에는 컨테이너 쿼리로 `display:none` 이라 넓은
+   화면에서 속성을 닫을 수 없었는데, 이제 속성이 opt-in 이라 이 토글이 유일한 입구다.
+
+계약 테스트: `test/spatialPlacesLibraryLayout.test.ts`(첫 렌더는 갤러리 · library-only 클래스 ·
+첫 클릭 선택/재클릭 편집 · 액션 줄 편집 · 0건 초기화).
+
+검증: `typecheck:app` exit 0. `spatialPlacesLibraryLayout`·`spatialIntegratedAuthoring`·
+`spatialShellDrawer`·`spatialNavigation.routes`·`databaseAllTabsRenderWalk` 등 84건 중 81 통과.
+실패 3건(`spatialShellKeyboard`)과 4건(`databaseAllTabsRenderWalk`/`spatialNavigation.routes`)은
+**origin/main 원본 체크아웃에서 같은 이름·같은 메시지로 재현**되는 기존 실패다. CSS 게이트도
+`check-css-graph`(tileset-ai-workspace.css)·`check-dead-css-classes`(.db-ws-stat-neutral)·
+`check-css-surfaces` 위반 0건 신규 — 전부 원본에서 동일하게 재현. hex/undefinedVars 래칫 상향분은
+손대지 않은 파일(`runtime/shop.css` 등)에서 온 것이다.
+
 ## 몬스터 종족의 전투 뒷모습 (2026-09-20)
 
 > **2026-09-21 타일 화면 개편:** 타일 탭은 `tilesetSettingsPanel.ts`의 전용 라이브러리이며
@@ -415,7 +455,7 @@ Tests: `databaseCinematics.test.ts`, `cinematicMediaImport.test.ts`,
 `test/e2e/database-cinematics.spec.ts`. Real editor QA uses a fresh unique port,
 `?blankProject=1&aiBridge=0`, and local-only fixtures. Serialization/reload is
 tested through the real project codec and restored UI, not described as a
-remote Supabase save. The blank-project `session-not-persisted` warning remains
+remote LegacyDb save. The blank-project `session-not-persisted` warning remains
 an explicit fixture condition; other browser errors and remote write attempts
 are failures. Optional disk mirroring can be disabled for QA with
 `VITE_EDIT_ACTIVITY_DISK_MIRROR=0`, without disabling in-memory edit annotations.
@@ -764,7 +804,7 @@ Database tabs, record views, battle database records, utility records, reference
   호출자 주의: `normalizeCurrentProject` 는 동기 사전 점검 `hasPendingFacesetSheetRepair` 로 거를러 **자를 것이 있을 때만 await** 해야 한다. 로드 경로에 불필요한 자시합을 더하면 지속화 순서가 밀려 `storePersistence`·`storeFlushShaEvidence` 의 순서 계약이 진다(실머 8건). 계약: `test/facesetUploadedSheetMigration.test.ts`.
 
 - **기본 장비 런타임 축 계약 (2026-08-29):** `EquipmentRecord.accuracy`는 일반 공격 최종 명중률에 곱하는 0~100% 보정(기본 100), `criticalRate`는 액터 기본 치명타율에 더하는 0~100%p 보정(기본 0)이다. 일반 공격은 장비의 첫 `attackElementIds` 하나를 속성 배율에 적용하므로 기본 카탈로그는 무기당 공격 속성을 최대 하나만 저작한다. `stateInflictIds`/`stateInflictionChance`는 적중한 일반 공격, `elementalDefenseIds`는 일치 속성 피해 50% 감소, `stateDefenseIds`/`stateResistanceChance`는 `stateDefenseMode:"resist"`일 때 상태 저항 판정에 쓰인다. `twoHanded`는 양손 슬롯 점유, `effectFlags.doubleAttack`/`attackAll`은 일반 공격 횟수/대상을 바꾼다. 반면 장비용 MP 비용은 `EquipmentRecord`에 없고, `preemptive`·`ignoreDodge`·`preventCriticalHits`·`increasePhysicalDodge`·`halfMpCost`·`negateTerrainDamage` 플래그와 `stateDefenseMode:"inflict"`는 턴제 런타임 소비자가 없으므로 기본 장비에 저작하지 않는다. `test/equipmentCatalogRuntimeAxes.test.ts`가 실제 전투 런타임과 결정적 RNG로 명중·치명타·상태 부여·공격 속성·속성 방어·상태 저항을 검증하고, `test/defaultItemCatalogQuality.test.ts`가 기본 카탈로그의 허용 축만 검사한다.
-- 기본 아이템 카탈로그는 `public/assets/cc0/jetrel/icons` 아래의 대응 아이콘과 함께 JRPG 아이템 100종 이상을 제공한다. 기존 Jetrel CC0 아이콘은 유지하고, 맞지 않거나 빠진 아이콘은 가능한 경우 로컬 생성 스크립트로 만든 뒤 `src/assets/cc0IconAssets.ts`에 `generated` 라이선스로 등록한다. `defaultItemRecords()`를 비롯한 기본 데이터베이스 레코드는 `createBlankProject` → `saveProjectToSupabase` 경로로 **새** 프로젝트를 만들며, `ensureDefaultDatabaseIconResources()`는 `normalizeCurrentProject`에서 번들 아이콘 리소스를 연결한다. 불러올 때도 Supabase `current_json` 행이 기준 원본이다. 일반 기본값 보충은 금지하되, `repairSupabaseCurrentJson`은 2026-08 영문 아이템 껍데기 결함만 제한적으로 이전한다. ASCII 슬러그 이름과 `<slug> 기본 아이템입니다.` 설명이 모두 손대지 않은 모양일 때만 행을 교체하고, 이름이나 설명 중 하나라도 고친 부분 편집 행은 의도적으로 보존하며, 복구된 카탈로그에 필요한 승격 장비 9개와 아이템 효과 스킬 2개 및 그 스킬이 참조하는 번들 전투 애니메이션만 추가한다. 참조 없는 옛 장비 아이템 행은 제거하지만, 이벤트·시스템·시작 인벤토리가 참조하는 행은 한국어 비착용 안내 행으로 남겨 참조를 보존한다. 이 복구는 깨끗하게 열기만 해서는 저장 행에 즉시 기록되지 않으며, 이후 다른 편집을 저장할 때 함께 영구 반영된다.
+- 기본 아이템 카탈로그는 `public/assets/cc0/jetrel/icons` 아래의 대응 아이콘과 함께 JRPG 아이템 100종 이상을 제공한다. 기존 Jetrel CC0 아이콘은 유지하고, 맞지 않거나 빠진 아이콘은 가능한 경우 로컬 생성 스크립트로 만든 뒤 `src/assets/cc0IconAssets.ts`에 `generated` 라이선스로 등록한다. `defaultItemRecords()`를 비롯한 기본 데이터베이스 레코드는 `createBlankProject` → `saveProjectToLegacyDb` 경로로 **새** 프로젝트를 만들며, `ensureDefaultDatabaseIconResources()`는 `normalizeCurrentProject`에서 번들 아이콘 리소스를 연결한다. 불러올 때도 LegacyDb `current_json` 행이 기준 원본이다. 일반 기본값 보충은 금지하되, `repairLegacyDbCurrentJson`은 2026-08 영문 아이템 껍데기 결함만 제한적으로 이전한다. ASCII 슬러그 이름과 `<slug> 기본 아이템입니다.` 설명이 모두 손대지 않은 모양일 때만 행을 교체하고, 이름이나 설명 중 하나라도 고친 부분 편집 행은 의도적으로 보존하며, 복구된 카탈로그에 필요한 승격 장비 9개와 아이템 효과 스킬 2개 및 그 스킬이 참조하는 번들 전투 애니메이션만 추가한다. 참조 없는 옛 장비 아이템 행은 제거하지만, 이벤트·시스템·시작 인벤토리가 참조하는 행은 한국어 비착용 안내 행으로 남겨 참조를 보존한다. 이 복구는 깨끗하게 열기만 해서는 저장 행에 즉시 기록되지 않으며, 이후 다른 편집을 저장할 때 함께 영구 반영된다.
 - **로드 정규화 (2026-09-05 변경):** `ensureDefaultDatabaseIconResources()`는 기존 행의 이미지 연결만 보정하며 기본 ITEM/EQUIPMENT 레코드를 재주입하지 않는다. 삭제 보존 계약은 이 페이지 맨 위 참조.
 - **기본 카탈로그 계약:** 아이템과 장비 이름에는 한글이 들어가고, 모든 레코드는 서로 다른 구체적인 한국어 설명을 가진다. 사용 가능한 아이템의 `occasion`, `consumable`, 실행 가능한 회복·상태·스킬·기술서 효과는 서로 맞아야 한다. `occasion: "never"`는 소모하지 않는 재료, 수확물, 도구, 이벤트·퀘스트 물품과 농사 권위자가 소비하는 작물 씨앗에만 쓴다. 농기구에는 유효한 `farmTool`이 있어야 한다. 착용 장비는 `project.database.equipment`에만 두며, 장비 모양 행을 `database.items`에 남기지 않는다. 전투 아이템과 아이템 효과 스킬은 실제 전투 애니메이션 레코드를 참조해야 한다. 전투 대상 해석이 쓰러진 전투원을 제외하므로 부활 아이템은 필드 전용이다. `test/defaultItemCatalogQuality.test.ts`가 데이터와 애니메이션 참조 계약을 검사하고, `test/itemRuntimeUsability.test.ts`가 실제 메뉴·전투·농기구 권위자를 실행한다.
 - **기능 확장 기본 아이템(2026-08-29):** `defaultFeatureItemRecords.ts`가 기본 카탈로그에서 비어 있던 상태 추가, 아군 전체 대상, 몬스터 `careProfile`, 영구 성장 씨앗, `switchId`, 속성 아이템 스킬, 유한 `consumptionLimit` 경로를 출하 레코드로 연결한다. 출하 프로젝트에 연결되지 않은 작물 씨앗은 심기·수확을 약속하지 않도록 카탈로그에서 제외한다. 스위치 아이템은 필드 메뉴에서 아직 꺼진 전용 스위치만 켜고 성공 사용 1회를 공통 아이템 전환 권위자에 넘긴다. 유한 충전은 메뉴와 전투 모두 `transitionItemState(..., { kind: "successfulUse" })`가 계산하며, `allAllies` 전투 아이템은 대상 수와 관계없이 명령당 한 번만 전환한다. 집중 실행 계약은 `test/defaultFeatureItemRuntime.test.ts`다.
@@ -773,7 +813,7 @@ Database tabs, record views, battle database records, utility records, reference
 
 - **Battle effect sheets are generated procedurally, not prompted.** `src/assets/generatedEffectSheets.json` is the single catalog (slug, Korean name, frameCount, tags, scope/position, independent sound/flash/shake seeds); `scripts/gen-effect-sheets.mjs` (`npm run generate:effect-sheets`) renders each slug to `public/assets/generated/effects/effect-<slug>.png` as 96x96 cells with a purpose-specific 8, 10, or 12 frame length. The generated family uses a 75ms frame interval, so total playback remains 600–900ms; legacy/authored animations retain the 120ms default. Rendering runs through `scripts/lib/effectSheet/` (canvas primitives + per-slug painters + fixed-seed PRNG). `src/assets/generatedEffectSheets.ts` re-exports the catalog for the runtime: resource ids are `generated-battle-anim-<slug>`, resolved by `resolveGeneratedEffectAssetUrl` inside `resolveAssetResourceUrl`, registered in `collectResourceIds` (missing = default project fails deserialization), and listed by the `battle` kind of `databaseResourcePickerDialog`. `defaultBattleAnimationRecords()` maps every catalog entry to a record that plays every authored frame and merges same-frame sound/flash/shake into one timing; `anim_magic` / `anim_heal` / `anim_poison` point at `arcane-nova` / `heal-bloom` / `poison-mist` instead of reusing the melee `easyrpg-battle-blow` / `-arrow` art. Why procedural: frame-to-frame continuity is the whole effect, and image models re-imagine the silhouette per frame. Adding one: catalog entry → painter in `render.mjs` `PAINTERS` → run the generator → commit the PNG. `node scripts/gen-effect-sheets.mjs --check` fails on drift, and `test/generatedEffectSheets.test.ts` locks catalog/painter/PNG/record agreement byte-for-byte. `npm run generate:effect-showcase` builds the self-contained audiovisual catalog at `reports/generated-effect-showcase-2026-08-24.html` from those same catalog rows, PNG bytes, and bundled EasyRPG sounds.
 - The generated catalog currently contains **34 audiovisual sets**. The 12 genre-generic monster-battler additions live in `scripts/lib/effectSheet/paintersMonster.mjs`: tackle impact, claw rake, bite crunch, projectile shot, leaf volley, psychic wave, shadow pulse, holy beam, sleep dust, power aura, guard barrier, and capture seal. The next 12 reusable combat/utility additions live in `scripts/lib/effectSheet/paintersUtility.mjs`: critical burst, sonic wave, drain orbs, revive rise, cleanse sparkle, paralysis bind, blind veil, confusion spiral, silence lock, summon portal, smoke vanish, and meteor fall. They deliberately use generic geometric silhouettes rather than copied commercial-game move art. Physical/projectile effects use 8 frames, elemental/status/support effects use 10, and large ritual/seal/meteor effects use 12; every entry owns one bundled sound timed to its impact frame.
-- New projects bind the starter actors, classes, skills, and battle-usable items to purpose-specific generated effects through `generatedBattleEffectBindings.ts`; creating animation records alone is insufficient because runtime playback follows those authored references. Existing Supabase rows remain load-authoritative and receive no silent default backfill. Their explicit upgrade path is Database → Battle Animations → `이펙트 34종 적용` (`db-install-generated-effects`): `installGeneratedBattleEffectPack()` adds missing generated records, upgrades the three retained legacy aliases when they still use old art, and changes only known starter record ids. It preserves unrelated/custom records, records one undo snapshot, and becomes a disabled `적용됨` button when no changes remain.
+- New projects bind the starter actors, classes, skills, and battle-usable items to purpose-specific generated effects through `generatedBattleEffectBindings.ts`; creating animation records alone is insufficient because runtime playback follows those authored references. Existing LegacyDb rows remain load-authoritative and receive no silent default backfill. Their explicit upgrade path is Database → Battle Animations → `이펙트 34종 적용` (`db-install-generated-effects`): `installGeneratedBattleEffectPack()` adds missing generated records, upgrades the three retained legacy aliases when they still use old art, and changes only known starter record ids. It preserves unrelated/custom records, records one undo snapshot, and becomes a disabled `적용됨` button when no changes remain.
 - Database workflows live in `src/editor/databaseActions.ts`, `src/editor/databaseRecordMutators.ts`, `src/editor/databaseReferences.ts`, and `src/editor/databaseCopy.ts`.
 - **상태 변화 · 전투 연출 · 몬스터 돌봄 저작 (2026-09-05 복구):** `databaseItemRecordView.ts`의 현재 카드 계층에 누락 브랜치의 세 컨트롤을 통합했다. 효과 구역은 종류별 패널 → 상태 변화 → 전투 연출 → 연결 스킬, 사용 제한 구역 끝에는 몬스터 돌봄 카드가 온다. 기존 아이템 요약과 최신 `modern/equipment-items.css`는 유지한다.
   - `medicine`/`special`의 상태 변화 행은 상태·확률·부여/해제·삭제를 저작한다(`db-item-state-effect-row-<i>`, `db-field-item-state-effect-{state,chance,op}-<i>`, `db-item-state-effect-add`). 부여 확률은 0..100으로 제한한다. 기존 `healStateIds` 회복 체크박스도 유지한다. CSS는 `skill-item-visuals.css`의 상태 행 규칙을 아이템에도 공유한다.
@@ -1085,7 +1125,7 @@ Phase 1은 탐색·선택·표현 변경뿐이다. 방 마이그레이션과 마
 - **2026-09-05 — 모든 AI 실내 생성의 정본:** 독립 방 세션·집·마을 연결 실내도 꾸러미를 읽는다. 미등록 시설 조회는 현재 장소·물건을 `sources`로 반환해 조합 설계를 지원한다. 삭제한 빈 꾸러미는 시공하지 않는다. 경로·검증: `openwiki/editor-interior-room-harness.md`의 「모든 AI 실내의 개념 꾸러미 계약」.
 - 데이터: `tileset.scratchConceptBundles`. undefined 는 시드 전, 빈 배열은 사용자가 지운 상태.
 - 실내 칩셋만 **시설 초안 묶음 19종**을 시드한다(`CONCEPT_FACILITY_TEMPLATES`: 기존 여관·민가·상점·술집·서재·대장간·교회·창고·길드 + 진료소·병영·학교·관청·연금술 공방·빵집·농가·귀족 저택·사냥꾼 오두막·은행, 여관이 첫째). 마을 칩셋에는 얹지 않는다. 옛 프로젝트에 여관만 시드돼 있으면 그대로다 — 나머지는 시설 띠의 「초안 넣기」로 골라 넣는다(재시드 아님, 사용자 선택).
-- 기존 프로젝트에 일괄 추가: `npx tsx scripts/expand-concept-bundles.mts --project <id>`로 추가 예정 목록을 읽고 `--apply`로 저장한다. 기존 id/라벨은 보존하고 빈 배열은 거절한다. 프로젝트·타일셋 미러의 변경 시각을 비교해 충돌을 감지하며 저장 뒤 양쪽 원격 데이터와 앱 로드를 확인한다. 증거는 `output/evidence/concept-expansion/supabase-proof.json`.
+- 기존 프로젝트에 일괄 추가: `npx tsx scripts/expand-concept-bundles.mts --project <id>`로 추가 예정 목록을 읽고 `--apply`로 저장한다. 기존 id/라벨은 보존하고 빈 배열은 거절한다. 프로젝트·타일셋 미러의 변경 시각을 비교해 충돌을 감지하며 저장 뒤 양쪽 원격 데이터와 앱 로드를 확인한다. 증거는 `output/evidence/concept-expansion/legacy-db-proof.json`.
 - 물건의 그림은 같은 타일셋 가구 킷/`INTERIOR_OBJECT_CATALOG` id 를 가리킨다. 픽셀을 복제하지 않는다.
 - **2026-09-05 — 용도 검수 보정:** 병실·병영·농가·저택·오두막 침대는 `event`만 사용한다. 현재 `sleep`은 유료 `inn` 동작이므로 수면 가능이라는 일반 의미로 붙이지 않는다. 여관·술집 객실의 숙박은 유지한다. 여관·저택의 피아노는 선택 가구다. 학교는 `study_desk`(기존 사각 탁자+앞쪽 걸상, 1×2) 두 세트를 교실마다 두고 책장은 자료실에 둔다. 은행은 거래 창구·장부·목제 보관장을 사용하며 금고 그림이나 금융 동작이 있는 것으로 표현하지 않는다. 최종 맵의 책상/걸상 쌍을 세 가지 seed로 검증한다.
 - `expand-concept-bundles.mts --baseline <이전 꾸러미 배열.json>`은 저장된 꾸러미가 검토 전 버전과 **완전히 같은 경우에만** 수정 초안으로 갱신한다. 다른 편집이 있으면 보존한다. `--evidence <경로>`로 별도 저장·재로드 증거를 남길 수 있다.
@@ -1786,7 +1826,7 @@ TURN/BATTLE MENU` 칩. 전투 애니메이션 타이밍 표 헤더 `사운드...
 - Proof: `test/databaseAnimationFrameSelect.test.ts` binds the visible catalog name through cancel/confirm/clear (RED on the original configured-status string); `test/e2e/battle-animation-editor-ux.spec.ts` drives the real modal, controlled clock, picker and keyboard. Report/captures: `output/evidence/battle-animation-ux/p2-implementation.md`. The worker verified geometry, PNG integrity and changing stage pixels, not a visual verdict; independent visual approval belongs to the parent.
 ## 검토한 실내 기본값의 원격 반영 (2026-09-05)
 
-`scripts/expand-concept-bundles.mts --project <id> --baseline <old-bundles.json> --tileset-baseline <old-tileset.json> --evidence <dir> --apply`는 검토 전 값과 정확히 같은 꾸러미/메타/그룹만 교체하고 새 id를 추가한다. 사용자 메타·잠금·독립 통행/priority 변경은 보존한다. 기존 furniture kit도 baseline 일치 시에만 바뀐다. 구조물 빈 배열은 사용자 삭제로 보존한다. JSON 경계를 거쳐 undefined 필드를 제거한 뒤 비교하며 projects 해시 CAS와 tileset mirror 갱신 후 원격 및 앱 재로드를 확인한다. 두 테이블 쓰기는 트랜잭션이 아니므로 중간 mirror 충돌은 오류로 남고 완료로 보고하지 않는다. 이번 대상은 `rpg-zzu-house-template-gallery`, 증거는 `output/evidence/concept-v2/supabase-proof.json`.
+`scripts/expand-concept-bundles.mts --project <id> --baseline <old-bundles.json> --tileset-baseline <old-tileset.json> --evidence <dir> --apply`는 검토 전 값과 정확히 같은 꾸러미/메타/그룹만 교체하고 새 id를 추가한다. 사용자 메타·잠금·독립 통행/priority 변경은 보존한다. 기존 furniture kit도 baseline 일치 시에만 바뀐다. 구조물 빈 배열은 사용자 삭제로 보존한다. JSON 경계를 거쳐 undefined 필드를 제거한 뒤 비교하며 projects 해시 CAS와 tileset mirror 갱신 후 원격 및 앱 재로드를 확인한다. 두 테이블 쓰기는 트랜잭션이 아니므로 중간 mirror 충돌은 오류로 남고 완료로 보고하지 않는다. 이번 대상은 `rpg-zzu-house-template-gallery`, 증거는 `output/evidence/concept-v2/legacy-db-proof.json`.
 
 ## 특정 꾸러미의 명시적 교체 (2026-09-06)
 
@@ -1887,11 +1927,11 @@ player preview. The editor probe accepts skin IDs as arguments and an optional
 - 초기 읽기 실패는 빈 자료로 대체하지 않고 편집을 막는다. POST 수락 전에는 성공이라고 표시하지 않는다. 저장 중 편집 잠금, 충돌/오류 안내, 실패한 변경의 JSON 보관, 명시적 다시 불러오기를 제공한다. 이름·속성·메모는 입력 중 포커스를 유지하고 change(다른 칸으로 이동/Enter) 때 저장한다.
 - 기존 프로젝트의 선택적 메타데이터와 IO 계약은 계속 보존한다. 「이 프로젝트의 기존 매핑 가져오기」는 기본 자산의 명시적 슬롯/얼굴 속성을 JSON 초안에 옮긴다. 사용자가 확인하고 「JSON 적용」하면 공용 저장된다. 알 수 없는 ID와 프로젝트 업로드 얼굴은 공용 가져오기에서 제외된다. 기존 v1/v2 JSON 입력도 계속 지원한다.
 - 확인: 격리된 호스트 카탈로그를 사용한 Firefox 실측에서 임시 프로젝트 연결 → 다른 새 프로젝트 재조회(`mapped`), 게임 문서 불변, 저장 충돌 후 기존 연결 유지/JSON 보관을 확인했다. 1440×1000 / 1024×900 캡처와 `browser-proof.json`은 `output/evidence/shared-character-faces/`. 회귀 명세는 `databaseCharacterGraphics.test.ts`, `sharedCharacterGraphicsStore.test.ts`; 세션 규칙에 따라 vitest/게이트는 실행하지 않았다.
-- 복구 조사: Supabase 프로젝트 123개의 `current_json.resourceProfiles`에는 이 섹션의 `characterSlots` 저장본이 없었다. 이는 브라우저에만 남았던 편집이나 별도 JSON 백업의 부재까지 증명하지 않는다. 공용 저장 수정과 과거 수동 매핑 복구를 구별한다.
+- 복구 조사: LegacyDb 프로젝트 123개의 `current_json.resourceProfiles`에는 이 섹션의 `characterSlots` 저장본이 없었다. 이는 브라우저에만 남았던 편집이나 별도 JSON 백업의 부재까지 증명하지 않는다. 공용 저장 수정과 과거 수동 매핑 복구를 구별한다.
 
 ### 공용 기본 매핑 재저작 (2026-09-18)
 
-사용자의 재매핑 지시로 `src/assets/sharedCharacterGraphics.json`을 원본 그림에서 새로 저작했다. 168칸 중 94칸 연결(정확 68·근사 26), 74칸 얼굴 없음, 원본 얼굴 메타데이터 80개다. 공용 저장 파일이 없는 호스트는 이 자료로 시작하며, 이미 저장된 호스트 파일은 우선하여 사용자 편집을 보존한다. 각 근사 대응의 차이는 `note`에 남긴다. `Actor3 #5`를 여성 얼굴에 순번으로 연결하지 않으며, 검은 고양이·Scarloxy 전용 그림·물건·빈 칸에 억지 얼굴을 주지 않는다. 시트·얼굴 대조 PNG, 호스트 저장 후 재읽기, Supabase 전용 행 `oprn-shared-character-graphics`의 저장(201) 후 재조회 근거는 `.omo/evidence/shared-character-faces/README.md`에 보존한다. Supabase는 재저작 자료의 원격 보관본이고 편집기의 공용 저장 정본은 호스트 파일이다.
+사용자의 재매핑 지시로 `src/assets/sharedCharacterGraphics.json`을 원본 그림에서 새로 저작했다. 168칸 중 94칸 연결(정확 68·근사 26), 74칸 얼굴 없음, 원본 얼굴 메타데이터 80개다. 공용 저장 파일이 없는 호스트는 이 자료로 시작하며, 이미 저장된 호스트 파일은 우선하여 사용자 편집을 보존한다. 각 근사 대응의 차이는 `note`에 남긴다. `Actor3 #5`를 여성 얼굴에 순번으로 연결하지 않으며, 검은 고양이·Scarloxy 전용 그림·물건·빈 칸에 억지 얼굴을 주지 않는다. 시트·얼굴 대조 PNG, 호스트 저장 후 재읽기, LegacyDb 전용 행 `oprn-shared-character-graphics`의 저장(201) 후 재조회 근거는 `.omo/evidence/shared-character-faces/README.md`에 보존한다. LegacyDb는 재저작 자료의 원격 보관본이고 편집기의 공용 저장 정본은 호스트 파일이다.
 
 ## Feature16 climate and action forms (2026-09-21)
 
@@ -1972,3 +2012,13 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 ## 타일셋 참고문서 (2026-09-21)
 
 [타일셋 참고문서](tileset-reference-documents.md): 프로젝트 소유의 용도별 MD·이미지, 파생 타일셋의 원본 공유, Pi/레거시 AI 전달 확인, 저장·내보내기 계약.
+
+### 숲마을 공용 소품 및 장소 (2026-09-21)
+
+`sharedVillageObjects.json`의 19개 키트는 `shared_forest_village_objects` 번들이다.
+새 프로젝트와 기존 프로젝트의 `ensureBundledTilesets`가 공급하며,
+`sharedVillageObjectById`는 기존 공용 오브젝트 복사 경로를 사용한다.
+`curatedVillagePlaceReferences.ts`의 7개 곡선 마을은 기존 13개 공용 숲 장소에 추가한다.
+타일별 AI 참고문서·SQLite 저장·불변 원격 v2 보존본은
+`openwiki/tileset-reference-documents.md`와
+`tiledata/tilesets/forest_high_cliff_river/shared-library/`를 참조한다.

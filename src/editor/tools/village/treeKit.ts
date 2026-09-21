@@ -23,6 +23,8 @@ import { OCC } from "./morphologyPlan";
 export interface TreeStampCell {
   readonly layer: "lower" | "upper";
   readonly tile: number;
+  /** Authored assemblies may own both layers of the same cell. */
+  readonly backing?: number;
 }
 
 export interface TreeStamp {
@@ -167,6 +169,7 @@ export function stampTree(map: GameMap, stamp: TreeStamp, x: number, y: number):
       const cell = stamp.cells[dy * stamp.w + dx];
       if (!cell) continue;
       const index = (y + dy) * W + x + dx;
+      if (cell.backing !== undefined) map.lowerTiles[index] = cell.backing;
       if (cell.layer === "upper") map.upperTiles[index] = cell.tile;
       else map.lowerTiles[index] = cell.tile;
       painted += 1;

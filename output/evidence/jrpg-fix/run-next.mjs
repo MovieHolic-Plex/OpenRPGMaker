@@ -1,6 +1,6 @@
 import {chromium} from 'playwright';
 import fs from 'node:fs';
-import {loadSupabaseEnvironment} from '../../../scripts/lib/supabase-database-ops.mjs';
+import {loadLegacyDbEnvironment} from '../../../scripts/lib/legacyDb-database-ops.mjs';
 const root=new URL('./',import.meta.url).pathname;
 const out=root+(process.env.JRPG_RUN??'rerun2')+'/';fs.mkdirSync(out,{recursive:true});
 const browser=await chromium.connectOverCDP('http://127.0.0.1:19862');
@@ -14,8 +14,8 @@ await page.route('http://127.0.0.1:19861/**', async route => {
   await route.fulfill({status:response.status,headers,body:Buffer.from(await response.arrayBuffer())});
  } catch { await route.abort(); }
 });
-const env=loadSupabaseEnvironment();
-await page.route(`${env.VITE_SUPABASE_URL}/**`,async route=>{
+const env=loadLegacyDbEnvironment();
+await page.route(`${env.VITE_LEGACY_DB_URL}/**`,async route=>{
  const req=route.request();
  const headers={...req.headers()};delete headers.host;delete headers['content-length'];
  try {

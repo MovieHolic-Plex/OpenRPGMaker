@@ -4,7 +4,7 @@ import { createServer } from 'node:http';
 import { fileURLToPath } from 'node:url';
 import { resolve, extname } from 'node:path';
 
-// Test-only project and real player media proof; never writes authored Supabase content.
+// Test-only project and real player media proof; never writes authored LegacyDb content.
 const root = fileURLToPath(new URL('../../', import.meta.url)).replace(/\/$/, '');
 const mode = process.argv[2] ?? 'red';
 const production = mode.startsWith('production');

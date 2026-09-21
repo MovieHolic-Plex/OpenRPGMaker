@@ -69,7 +69,7 @@ Their working SHA-256 values at this source are:
 | `src/editor/panels/clusterAiModal.ts` | `963f22f09c6a222743838492d79aaf197bcde62e091c080814c85d524888f6a4` |
 | `src/editor/tools/applyChangesetToStore.ts` | `c8c78ec6c8c9c3b9d02b7638e1b757ec9e1b4d53cc5cb313175373d9de86f6e8` |
 | `src/project/store.ts` | `11aee18a0e04f6e5f28d6630cd18d4c596929a0a3c72ab61f244df7fa4521763` |
-| `src/project/supabaseProjectSync.ts` | `9fd14d6496c7bee89c221da2d17cbcbd31fbc9074151e37839733b2cfa6853a6` |
+| `src/project/legacyDbProjectSync.ts` | `9fd14d6496c7bee89c221da2d17cbcbd31fbc9074151e37839733b2cfa6853a6` |
 
 ## Instructions and producer evidence reviewed
 

@@ -39,7 +39,7 @@ preserved all maps and forest grafts.
 
 Evidence: `.omo/evidence/forest-groves/{village,hills,compact}.png` and `observations.json`.
 These are isolated in-memory code observations with REST writes disabled, not authored live
-project content or Supabase-save evidence. No existing user map was changed.
+project content or LegacyDb-save evidence. No existing user map was changed.
 
 `test/forestGroves.test.ts` records append-only/idempotence, complete roots, scoped writes,
 through-route protection, collision and serialization contracts. Per repository session rules,

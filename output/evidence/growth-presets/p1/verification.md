@@ -180,7 +180,7 @@ external report above, not inferred from this child's numerical checks.
   review; it was not owned/started by this QA task. Main's 9841 server is untouched.
 - HTTP fault routes and inline-asset test mappings are removed after their checks;
   browser context closure removes temporary local storage and fixture edits.
-  No Supabase write, new schema, demo content, dependency, push, merge, or PR.
+  No LegacyDb write, new schema, demo content, dependency, push, merge, or PR.
 - The PNG audit script and generated JSON/logs are local evidence. Only this
   verification report is force-added from the ignored evidence directory; no
   temporary PNG is committed.

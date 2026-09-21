@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 import { writeFile } from "node:fs/promises";
 import { deserialize } from "@/project/io";
 import { prepareReferenceBattleProject } from "./battleReferenceProject";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 const OUT = "evidence/battle-skin-vxace";
@@ -18,7 +18,7 @@ async function seedFieldBattle(page: import("@playwright/test").Page, tweak?: (p
   const troop = project.database.troops.find((record) => record.id === "troop_slime");
   if (troop) troop.previewBackgroundResourceId = "battle-skin-vxace-backdrop";
   tweak?.(project);
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
 }
 
 async function enterBattle(page: import("@playwright/test").Page): Promise<void> {

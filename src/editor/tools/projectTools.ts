@@ -66,7 +66,7 @@ const resetProject: ToolDefinition = {
 
 const setProjectSettings: ToolDefinition = {
   name: "set_project_settings",
-  description: "프로젝트 설정(project settings): 제목(title)·저자(author)·용어(terms)·화면 해상도·기본 음악/시스템 리소스·초기 파티·전투 기본값을 한 번에 설정한다.",
+  description: "프로젝트 설정(project settings): 제목(title)·저자(author)·용어(terms)·화면 해상도(playResolution)·기본 음악/시스템 리소스·초기 파티·전투 기본값을 한 번에 설정한다. 해상도는 픽셀 밀도이고 시야는 카메라 배율이 정한다 — 둘을 같이 맞춰야 한다.",
   mode: "write",
   domains: ["system", "database"],
   parameters: {
@@ -75,7 +75,19 @@ const setProjectSettings: ToolDefinition = {
       title: { type: "string" },
       author: { type: "string" },
       terms: { type: "object", properties: termSchema, additionalProperties: false },
-      playResolution: { type: "object", properties: { width: { type: "integer", minimum: 160, maximum: 1920 }, height: { type: "integer", minimum: 120, maximum: 1080 } }, required: ["width", "height"], additionalProperties: false },
+      playResolution: {
+        type: "object",
+        description:
+          "게임 논리 해상도(픽셀 밀도). 올려도 보이는 범위는 안 늘고 도트만 선명해진다 — "
+          + "범위는 카메라 배율(script_cutscene 의 camera.zoom, CAMERA_ZOOM_LIMITS 0.25~6)이 정한다. "
+          + "1920x1080 배경 아트를 1:1로 쓰려면 1440x1080 + zoom 4.5(시야 20x15 타일 = 320x240 과 동일, 배경 배율 1.0).",
+        properties: {
+          width: { type: "integer", minimum: 160, maximum: 1920 },
+          height: { type: "integer", minimum: 120, maximum: 1080 },
+        },
+        required: ["width", "height"],
+        additionalProperties: false,
+      },
       resources: {
         type: "object",
         properties: {

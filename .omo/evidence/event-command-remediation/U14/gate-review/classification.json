@@ -2672,7 +2672,7 @@
       "supervisorFailed": 6,
       "tests": [
         {
-          "name": "Project store remote persistence does not write to Supabase before the canonical project has loaded",
+          "name": "Project store remote persistence does not write to LegacyDb before the canonical project has loaded",
           "classification": "pre-existing; same failing assertion and diagnostic on actual base",
           "baseStatus": "failed",
           "currentBeforeStatus": "failed",
@@ -2688,7 +2688,7 @@
           ]
         },
         {
-          "name": "Project store remote persistence does not auto-save local dev showcase projects to Supabase",
+          "name": "Project store remote persistence does not auto-save local dev showcase projects to LegacyDb",
           "classification": "pre-existing; same failing assertion and diagnostic on actual base",
           "baseStatus": "failed",
           "currentBeforeStatus": "failed",
@@ -2720,7 +2720,7 @@
           ]
         },
         {
-          "name": "Project store remote persistence saves and reloads local edits for dev showcase projects without Supabase",
+          "name": "Project store remote persistence saves and reloads local edits for dev showcase projects without LegacyDb",
           "classification": "pre-existing; same failing assertion and diagnostic on actual base",
           "baseStatus": "failed",
           "currentBeforeStatus": "failed",
@@ -2742,13 +2742,13 @@
           "currentBeforeStatus": "failed",
           "finalStatus": "failed",
           "baseErrors": [
-            "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}"
+            "LegacyDbProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}"
           ],
           "finalErrors": [
-            "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}"
+            "LegacyDbProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}"
           ],
           "supervisorErrors": [
-            "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}"
+            "LegacyDbProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}"
           ]
         },
         {

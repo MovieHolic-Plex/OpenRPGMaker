@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { deserialize } from "@/project/io";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 import { confirmBattleTarget } from "./battleReferenceProject";
 
@@ -48,7 +48,7 @@ async function seedBattleProject(page: Page): Promise<void> {
   const slime = project.database.enemies.find((record) => record.id === "enemy_slime");
   if (!slime) throw new Error("missing enemy_slime fixture");
   slime.stats.maxHp = 999;
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
 }
 
 async function startBattle(page: Page): Promise<void> {

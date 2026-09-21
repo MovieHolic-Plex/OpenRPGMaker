@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # State System (상태)
 
 End-to-end map of the state/status-effect system: authored definition, runtime application, engine defaults, and editor surface. Read this when a user asks “상태가 뭔가요?” / “정의와 적용의 차이?” / “독·수면은 어떻게 동작하나요?”, or before editing state records, state ontology, or the state DB view.
@@ -6,7 +8,7 @@ End-to-end map of the state/status-effect system: authored definition, runtime a
 
 - **상태(State)** = 배틀 중 대상에게 적용되는 상태이상·강화 효과의 **정의**(레시피). 독·수면·공격상승 같은 것.
 - 두 레이어가 같은 이름을 공유하므로 헷갈리기 쉽다:
-  - **정의(`database.states`)** — “독이 뭔지, 턴당 얼마 깎이는지”를 프로젝트에 저작하는 데이터. 에디터 DB 탭 / `upsert_state` 도구로 편집. Supabase `current_json` 에 저장.
+  - **정의(`database.states`)** — “독이 뭔지, 턴당 얼마 깎이는지”를 프로젝트에 저작하는 데이터. 에디터 DB 탭 / `upsert_state` 도구로 편집. LegacyDb `current_json` 에 저장.
   - **적용(`PlaySession.actorStateIds`)** — “지금 A배우자가 독에 걸려 있다”는 실시간 기록. 배틀 중 Change State 명령으로 부여/해제, 세이브 슬롯에 영속.
 - 핵심 차이 한 줄: **정의는 “독이 어떤 효과인지”, 적용은 “누가 지금 독에 걸려있는지”.** 정의를 바꾸면 해당 상태가 걸린 모든 대상의 효과가 바뀐다.
 
@@ -14,7 +16,7 @@ End-to-end map of the state/status-effect system: authored definition, runtime a
 
 | Layer | Type | Location | Lifecycle |
 |---|---|---|---|
-| Authored definition | `StateRecord` | `ProjectDatabaseRecords.states[]` (`src/project/types/database.ts:562`) | Project data → Supabase `current_json` |
+| Authored definition | `StateRecord` | `ProjectDatabaseRecords.states[]` (`src/project/types/database.ts:562`) | Project data → LegacyDb `current_json` |
 | Engine default template | `StateOntology` | `STATE_ONTOLOGY` in `src/project/ontology/databaseStateOntology.ts` | Hardcoded; fallback when record fields are absent |
 | Runtime application | `PlaySession.actorStateIds` | `src/project` session model | Save slot; Change State command mutates |
 
@@ -75,7 +77,7 @@ The built-in `STATE_ONTOLOGY` covers the twelve default states:
 
 ## Default seed (new projects)
 
-`defaultStateRecords()` in `src/project/defaults/defaultDatabaseStarterRecords.ts` seeds the twelve records above into `createBlankProject` → `saveProjectToSupabase`. Per the DB-is-truth rule, `repairSupabaseCurrentJson` no longer backfills missing records from these defaults on load — a sparse DB row loads as-is. Defaults only seed **new** projects.
+`defaultStateRecords()` in `src/project/defaults/defaultDatabaseStarterRecords.ts` seeds the twelve records above into `createBlankProject` → `saveProjectToLegacyDb`. Per the DB-is-truth rule, `repairLegacyDbCurrentJson` no longer backfills missing records from these defaults on load — a sparse DB row loads as-is. Defaults only seed **new** projects.
 
 ## Editor surface
 
@@ -105,7 +107,7 @@ The built-in `STATE_ONTOLOGY` covers the twelve default states:
 3. **`hpReleaseTurn` (number) vs `hpTurn` (string)** — different schemas; `resolvedStateValues` maps. Editors writing raw record values must use the numeric form.
 4. 기본 상태 중 `state_defense_up`, 공격/민첩 변화, 마비, 맹독, 재생, 침묵은 명시적 `runtimeEffects`를 가진다. 독·수면·공격 상승·방어 하락은 검증된 온톨로지/id 폴백도 지원한다.
 5. **출하 기본 상태 무효과 금지** — 기본 DB의 모든 상태가 런타임에서 최소 하나의 효과를 갖는지 계약 테스트가 검사한다.
-6. **DB-is-truth** — editing `StateRecord` fields in a running project must round-trip through Supabase save; local JSON is cache-only.
+6. **DB-is-truth** — editing `StateRecord` fields in a running project must round-trip through LegacyDb save; local JSON is cache-only.
 
 ## Files to inspect before editing
 

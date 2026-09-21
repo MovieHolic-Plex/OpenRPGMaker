@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # CC0 BGM Catalog (281 tracks)
 
 The editor's **default BGM set**. Read this before touching audio defaults, the music resource
@@ -82,7 +84,7 @@ An already verified complete installation returns without gh/network. To use the
 audio, leave `VITE_BGM_CDN_BASE` unset: an explicit CDN still wins. Restart dev after env
 changes. Install before `npm run build` or web export so portable/static output contains the
 pack. Vite dev/preview can also discover and serve a later install without rebuilding (below).
-Offline audio does not imply offline Supabase/AI.
+Offline audio does not imply offline LegacyDb/AI.
 
 ## In-editor installation and live inventory (2026-09-09)
 

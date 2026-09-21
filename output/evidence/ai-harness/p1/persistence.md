@@ -8,7 +8,7 @@ Task `st_01a075ea`, 2026-09-06. Worktree
 
 Implemented an additive accepted-save receipt and a read-only persistence proof
 API. Production changes are limited to `src/project/store.ts` and the existing
-loader in `src/project/supabaseProjectSync.ts`. No schema, wire serialization,
+loader in `src/project/legacyDbProjectSync.ts`. No schema, wire serialization,
 session, apply/undo, ask/plan/resume, advisory, or later-phase implementation.
 The two existing asynchronous store-save tests now use explicit deferred save
 signals instead of 50 ms sleeps. No failing test was removed or skipped.
@@ -22,7 +22,7 @@ and detailed below, not counted as successes.
 
 This is the persistence node, not completion of P1. `assistantSession.ts` is
 unchanged and still needs the next node's integration and failing-first session
-assertions. Browser/editor and isolated live-Supabase acceptance remain with the
+assertions. Browser/editor and isolated live-LegacyDb acceptance remain with the
 phase surface owner. The baseline editor boot failure is not repaired here.
 The separate docs node owns settled OpenWiki updates per the phase contract.
 
@@ -88,7 +88,7 @@ returns no receipt rather than inventing proof. No new canonicalization exists:
 `projectWithoutEventDrafts` and `serializeForComparison` remain the authorities.
 
 `loadProjectForPersistenceProof(config, signal?)`
-(`supabaseProjectSync.ts:158-164`) reuses the existing normalized/hybrid loader
+(`legacyDbProjectSync.ts:158-164`) reuses the existing normalized/hybrid loader
 without commit-tip hydration. Its root GET selects the already-existing
 `project_id` column (`:625-631`) and the parser carries the observed id (`:732-747`).
 Root and map GETs both use the captured config and cancellation signal. No
@@ -106,11 +106,11 @@ terminal formatting and trailing newlines.
 | --- | --- | --- |
 | `persistence-red` | `npm test -- test/storePersistenceProof.test.ts` | 1; 12 failures, including one cold-import timeout |
 | `persistence-red-bounded` | `npm test -- test/storePersistenceProof.test.ts` | 1; after giving the cold-import test a 60 s bound, 12 failures before any production edit |
-| `persistence-green-initial` | `npm test -- test/storePersistenceProof.test.ts test/storePersistence.test.ts test/supabaseProjectSync.test.ts` | 1; 9 failures / 43 passes; investigated, not accepted as GREEN |
+| `persistence-green-initial` | `npm test -- test/storePersistenceProof.test.ts test/storePersistence.test.ts test/legacyDbProjectSync.test.ts` | 1; 9 failures / 43 passes; investigated, not accepted as GREEN |
 | `persistence-legacy-baseline` | `npm test -- test/storePersistence.test.ts --testTimeout 60000` | 1; six failures / five passes on unchanged production source |
-| `persistence-related` | `npm test -- test/storePersistenceProof.test.ts test/storePersistence.test.ts test/supabaseProjectSync.test.ts --testTimeout 60000` | 1; six identical baseline failures / 50 passes; both edited save-race tests pass |
-| `persistence-green` | `npm test -- test/storePersistenceProof.test.ts test/supabaseProjectSync.test.ts --testTimeout 60000` | 0; 45 passes |
-| `persistence-green-final` | `npm test -- test/storePersistenceProof.test.ts test/supabaseProjectSync.test.ts` | 0; 45 passes; cold store/event-module imports have explicit per-test 60 s bounds |
+| `persistence-related` | `npm test -- test/storePersistenceProof.test.ts test/storePersistence.test.ts test/legacyDbProjectSync.test.ts --testTimeout 60000` | 1; six identical baseline failures / 50 passes; both edited save-race tests pass |
+| `persistence-green` | `npm test -- test/storePersistenceProof.test.ts test/legacyDbProjectSync.test.ts --testTimeout 60000` | 0; 45 passes |
+| `persistence-green-final` | `npm test -- test/storePersistenceProof.test.ts test/legacyDbProjectSync.test.ts` | 0; 45 passes; cold store/event-module imports have explicit per-test 60 s bounds |
 | `persistence-typecheck` | `npm run typecheck:app` | 0 |
 | `persistence-build` | `npm run build` | 0; app, player and standalone build chain completed |
 | `persistence-surface` | `node output/evidence/ai-harness/p1/persistence-surface.mjs` | 0; actual API exercise and cleanup below |
@@ -183,7 +183,7 @@ by this node; the phase assigns them to the supervisor/surface owner.
 `persistence-surface.mjs` uses Vite SSR to import the actual shipped store/sync
 modules and configures an in-memory loaded fixture. Only HTTP is replaced.
 `envDir:false` avoids reading private checkout settings for this exercise. It is
-not a browser, not a session mock, and not a live-Supabase claim.
+not a browser, not a session mock, and not a live-LegacyDb claim.
 
 Final `persistence-surface.json` records:
 
@@ -251,18 +251,18 @@ code or the original RED artifacts. No P2/P4 work or history rewrite is included
   `store.ts:879-885` returns `lastPersistenceReceipt` when generation and fixed
   target are still current. No network save or new revision id is minted. The
   private target WeakMap therefore remains usable by the returned receipt.
-- Added direct parity with `loadProjectFromSupabase`: both loaders return the
+- Added direct parity with `loadProjectFromLegacyDb`: both loaders return the
   same normalized project including a nonempty `maps.map_json` overlay. A changed
   overlay must yield content mismatch even though `projects.current_json` still
   matches the accepted save. A separate maps GET 503 case must fail proof.
   `loadProjectForPersistenceProof` already calls the same
-  `loadProjectSnapshotFromSupabase` with overlay enabled by default; no convenient
+  `loadProjectSnapshotFromLegacyDb` with overlay enabled by default; no convenient
   projects-only loader or new normalization was introduced.
 
 Validation (one related-suite run):
 
 ```sh
-npm test -- test/storePersistenceProof.test.ts test/storePersistence.test.ts test/supabaseProjectSync.test.ts --testTimeout 60000
+npm test -- test/storePersistenceProof.test.ts test/storePersistence.test.ts test/legacyDbProjectSync.test.ts --testTimeout 60000
 npm run typecheck:app
 ```
 
@@ -310,8 +310,8 @@ still driven by subscribed promises, not those deadlines.
 Exact commands, each run once for this confirmation:
 
 ```sh
-npm test -- test/storePersistenceProof.test.ts test/storePersistence.test.ts test/supabaseProjectSync.test.ts --maxWorkers 1
-npm test -- test/storePersistenceProof.test.ts test/supabaseProjectSync.test.ts --maxWorkers 1
+npm test -- test/storePersistenceProof.test.ts test/storePersistence.test.ts test/legacyDbProjectSync.test.ts --maxWorkers 1
+npm test -- test/storePersistenceProof.test.ts test/legacyDbProjectSync.test.ts --maxWorkers 1
 npm run typecheck:app
 ```
 

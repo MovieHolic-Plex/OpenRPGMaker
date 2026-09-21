@@ -6,7 +6,7 @@
 - Source-level labels distinguish region classification from individual confirmation.
 - New map slates_study: 30×23, 32px; 7 structure kits; existing four maps preserved.
 - Study atlas: v2 plus 3 opaque water/board composites, 1235 tiles total.
-- Supabase project rpg-zzu-slates32-38e6: root, map and tileset mirrors saved/reloaded equal.
+- LegacyDb project rpg-zzu-slates32-38e6: root, map and tileset mirrors saved/reloaded equal.
 - Local output/slates32-project: revision 5, maps/tilesets/embedded atlases equal after export.
 
 즉시 확인:

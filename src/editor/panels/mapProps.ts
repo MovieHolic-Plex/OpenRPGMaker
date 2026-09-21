@@ -7,8 +7,10 @@ import {
 } from "@/editor/actions";
 import { appendGroupedTilesetOptions } from "@/editor/tilesetSelectOptions";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { MAP_BACKGROUND_SCROLL_LIMIT, normalizeMapBackgroundScroll } from "@/project/mapBackground";
+import { MAP_BACKGROUND_SCROLL_LIMIT, MAP_BACKGROUND_EXTRA_LAYER_LIMIT, normalizeMapBackgroundScroll } from "@/project/mapBackground";
+import { OGA_CRAFTPIX_BACKDROP_SETS, craftpixDefaultLayers } from "@/assets/ogaCraftpixBackgrounds";
 import { openDatabaseResourcePickerDialog, listDatabaseResourceOptions, type DatabaseResourcePickerKind } from "@/editor/panels/databaseResourcePickerDialog";
+import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
 import { editorState } from "@/editor/editorState";
 import { DEFAULT_ENEMY_FACTION_ID, factionName, resolveFactionTable } from "@/project/factions";
 import { SEASONS, TIME_PHASES, type Season, type TimePhase } from "@/project/gameTime";
@@ -317,6 +319,32 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
       rerender: () => rerender(host, "map-bg-image-set"),
     }));
 
+    // CraftPix 레이어 세트 — 미리보기 카드 피커로 고른다. 기존 배경이 있는 상태에서 적용하면 한 번 확인을 본다
+    // (세트 적용은 기존 저작을 통째로 바꾼다).
+    const applyLayerSet = (setId: string): void => {
+      const defaults = craftpixDefaultLayers(setId);
+      if (defaults.length === 0) return;
+      const current = store.getCurrent().maps[map.id]!.background!;
+      const next = {
+        ...current,
+        imageId: defaults[0]!.id,
+        layers: defaults.slice(1).map((entry) => ({ imageId: entry.id })),
+      };
+      setMapBackground(map.id, next);
+      rerender(host, "map-bg-layer-set");
+    };
+    const layerSetRow = el("div", { class: "map-props-size-row" });
+    const layerSetBtn = el("button", {
+      class: "btn", text: "레이어 세트 고르기", attrs: { type: "button" },
+      dataset: { testid: "map-bg-layer-set" },
+      on: { click: () => openLayerSetPicker({
+        hasCurrentBackground: Boolean(bg?.imageId || bg?.layers?.length),
+        onPick: (setId) => applyLayerSet(setId),
+      }) },
+    });
+    layerSetRow.append(layerSetBtn);
+    section.append(fieldRow("다층 배경", layerSetRow));
+
     // 캔버스는 배경을 그리지 않는다(빈 칸 체커가 의도된 신호라 덮지 않는다 — 편집기 라우팅 문서).
     // 그래서 고른 그림을 확인할 자리는 여기 하나뿐이다.
     const previewUrl = resolveAssetResourceUrl(bg.imageId, { project: store.getCurrent() });
@@ -356,6 +384,31 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
     syInput.addEventListener("change", () => updateScroll("scrollY", syInput));
     section.append(fieldRow("스크롤 속도", scrollLine));
 
+    // 추가 레이어 목록 표시 — 세트 선택이 교체의 정규 경로다.
+    const extraLayers = bg.layers ?? [];
+    if (extraLayers.length > 0) {
+      const layerList = el("div", { class: "map-bg-layer-list", dataset: { testid: "map-bg-layer-list" } });
+      for (const [index, layer] of extraLayers.entries()) {
+        layerList.append(el("div", {
+          class: "map-bg-layer-row",
+          text: "레이어 " + (index + 2) + ": " + layer.imageId,
+        }));
+      }
+      const removeBtn = el("button", {
+        class: "btn", text: "레이어 지우기", attrs: { type: "button" },
+        dataset: { testid: "map-bg-layers-clear" },
+        on: { click: () => {
+          const current = store.getCurrent().maps[map.id]!.background!;
+          const next = { ...current };
+          delete next.layers;
+          setMapBackground(map.id, next);
+          rerender(host, "map-bg-layers-clear");
+        } },
+      });
+      layerList.append(removeBtn);
+      section.append(fieldRow("추가 레이어 " + extraLayers.length + "/" + MAP_BACKGROUND_EXTRA_LAYER_LIMIT, layerList));
+    }
+
     // 반복은 기본값이라 «끈 것» 만 저장한다(normalize 와 같은 규칙 — 옛 JSON 바이트 유지).
     const loopRow = el("div", { class: "map-props-check-row" });
     const loopBox = (key: "loopX" | "loopY", label: string): HTMLElement => {
@@ -379,6 +432,53 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
   }
 
   host.append(section);
+}
+
+// 레이어 세트 피커 — 4세트를 합성본 썬네일 카드로 보여주고 클릭 한 번으로 적용한다.
+// 드롭다운은 "보고 고르는" 배경 저작에 맞지 않아(2026-09-21 사용자 피드백) 카드 피커로 바꾴다.
+function openLayerSetPicker(input: {
+  hasCurrentBackground: boolean;
+  onPick: (setId: string) => void;
+}): void {
+  const confirmPick = (setId: string): void => {
+    if (input.hasCurrentBackground) {
+      openDialog("map-bg-layer-set-confirm", "배경 교체", [
+        el("p", { class: "map-bg-layer-confirm-text", text: "레이어 세트를 적용하면 현재 맵 배경(그림·레이어)를 모두 교체합니다. 계속할까요?" }),
+      ], [
+        { label: "교체", testid: "map-bg-layer-set-confirm-ok", action: () => input.onPick(setId) },
+        { label: "취소", testid: "map-bg-layer-set-confirm-cancel" },
+      ]);
+      return;
+    }
+    input.onPick(setId);
+  };
+
+  const grid = el("div", { class: "map-bg-layer-set-grid", dataset: { testid: "map-bg-layer-set-grid" } });
+  for (const set of OGA_CRAFTPIX_BACKDROP_SETS) {
+    const thumb = resolveAssetResourceUrl(set.composite.id, { project: store.getCurrent() });
+    const card = el("button", {
+      class: "map-bg-layer-set-card",
+      attrs: { type: "button" },
+      dataset: { testid: `map-bg-layer-set-card-${set.id}` },
+      on: { click: () => confirmPick(set.id) },
+    });
+    if (thumb) {
+      card.append(el("img", {
+        class: "map-bg-layer-set-thumb",
+        attrs: { src: thumb, alt: set.name, loading: "lazy" },
+      }));
+    }
+    card.append(el("span", { class: "map-bg-layer-set-name", text: set.name }));
+    card.append(el("span", { class: "map-bg-layer-set-meta", text: `레이어 ${set.layers.length}장` }));
+    grid.append(card);
+  }
+
+  openDialog("map-bg-layer-set-dialog", "레이어 세트 선택", [
+    el("p", { class: "map-bg-layer-set-hint", text: "세트를 고르면 첫 장이 배경 그림이 되고 나머지 레이어가 위에 얻힍니다. 각 레이어는 맵 속성에서 스크롤 속도를 조절할 수 있습니다." }),
+    grid,
+  ], [
+    { label: "취소", testid: "map-bg-layer-set-dialog-cancel" },
+  ]);
 }
 
 // ── BGM 탭 (RM2003 BGM) ──
