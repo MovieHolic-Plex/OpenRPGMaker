@@ -4,6 +4,7 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { extname, normalize, resolve, sep, basename } from "node:path";
 import { createStoreHandlers } from "../main/dispatch";
 import { createProjectSessionRegistry, type SessionRegistry } from "../main/sessions";
+import { ASSET_RESPONSE_CSP, assetCacheControl, safeAssetContentType } from "../shared/assetMime";
 import { OPRN_CHANNELS } from "../shared/channels";
 import { isCompanionPath } from "../../scripts/lib/ohMyPiHttp.mjs";
 import { createCompanionMiddleware } from "../../scripts/lib/companion/middleware.mjs";
@@ -74,7 +75,7 @@ function readRequestBody(request: IncomingMessage, maxBytes = 64 * 1024 * 1024):
     request.on("data", (chunk: Buffer) => {
       if (exceeded) return;
       size += chunk.length;
-      if (size > maxBytes) { exceeded = true; chunks.length = 0; reject(new Error("request exceeds 64 MiB")); request.resume(); return; }
+      if (size > maxBytes) { exceeded = true; chunks.length = 0; reject(new Error(`request exceeds ${maxBytes} bytes`)); request.resume(); return; }
       chunks.push(chunk);
     });
     request.on("end", () => resolvePromise(Buffer.concat(chunks).toString("utf8")));
@@ -85,6 +86,34 @@ function readRequestBody(request: IncomingMessage, maxBytes = 64 * 1024 * 1024):
 function sendJson(response: ServerResponse, status: number, body: unknown): Promise<void> {
   const text = JSON.stringify(body);
   return sendHttpBody(response, status, text, { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" });
+}
+
+function pageCsp(nonce: string): string {
+  return [
+    "default-src 'self'",
+    `script-src 'self' 'nonce-${nonce}'`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob:",
+    "media-src 'self' data: blob:",
+    "font-src 'self' data:",
+    "connect-src 'self'",
+    "worker-src 'self' blob:",
+    "base-uri 'none'",
+    "object-src 'none'",
+    "frame-ancestors 'none'",
+  ].join("; ");
+}
+
+/** Inline host pages get one nonce. Injected script tags without it do not run. */
+function sendHtml(response: ServerResponse, html: string, status = 200): void {
+  const nonce = randomUUID().replaceAll("-", "");
+  const stamped = html.replaceAll("<script>", `<script nonce="${nonce}">`);
+  response.writeHead(status, {
+    "content-type": "text/html; charset=utf-8",
+    "cache-control": "no-store",
+    "content-security-policy": pageCsp(nonce),
+  });
+  response.end(stamped);
 }
 
 export async function startLocalProjectServer(options: LocalProjectServerOptions): Promise<LocalProjectServer> {
@@ -115,6 +144,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       await rename(pending, accessPath);
     }
   }
+  // 접속 코드는 팀 관리에서 켤 때만 요구한다. 0.0.0.0 바인드도 기동 때 켜지 않는다.
   // 동반 서비스도 실행별 토큰을 요구한다(설계 7.4) — 루프백·페이지 출처 모두 같은 머신의 다른
   // 프로세스에 열려 있다. 렌더러는 브리지 설정에서 토큰을 받아 fetch 헤더로 실어 보낸다.
   const companionToken = randomUUID();
@@ -252,9 +282,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       });
       return;
     }
-    const html = inject(bytes.toString("utf8"));
-    response.writeHead(200, { "content-type": contentType, "cache-control": "no-store" });
-    response.end(html);
+    sendHtml(response, inject(bytes.toString("utf8")));
   };
 
   const server = createServer((request, response) => {
@@ -275,7 +303,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       const signedIn = team.accessCodeRequired() ? (cookie ? team.sessionMember(cookie) : null) : team.owner();
       if (url.pathname === '/__oprn/login' && request.method === 'POST') {
         const member = team.authenticate(new URLSearchParams(await readRequestBody(request, 4096)).get('token') ?? '');
-        if (!member) { response.writeHead(401, { 'content-type': 'text/html; charset=utf-8' }).end(entryLoginPage.replace('id="login-error" hidden', 'id="login-error"')); return; }
+        if (!member) { sendHtml(response, entryLoginPage.replace('id="login-error" hidden', 'id="login-error"'), 401); return; }
         const id = team.createSession(member.id, Date.now() + 12 * 60 * 60 * 1000);
         if (!id) { await sendJson(response, 429, { error: '접속 세션이 너무 많습니다' }); return; }
         response.writeHead(303, { location: returnUrl, 'set-cookie': `${cookieName}=${id}; HttpOnly; SameSite=Strict; Path=/; Max-Age=43200${publicOrigin?.startsWith('https:') ? '; Secure' : ''}`, 'cache-control': 'no-store' }).end(); return;
@@ -286,12 +314,12 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       }
       if (!signedIn) {
         if (request.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) {
-          response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' }).end(entryLoginPage);
+          sendHtml(response, entryLoginPage);
         } else await sendJson(response, 401, { error: '팀 접속 코드로 로그인하세요' });
         return;
       }
       if (url.pathname === '/__oprn/team' && request.method === 'GET') {
-        response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' }).end(inject(teamPage.replaceAll('href="/"', `href="${returnUrl}"`))); return;
+        sendHtml(response, inject(teamPage.replaceAll('href="/"', `href="${returnUrl}"`))); return;
       }
       if (url.pathname === SHARED_CHARACTER_GRAPHICS_ENDPOINT) {
         if (request.method !== 'GET' && signedIn?.role !== 'owner') {
@@ -371,9 +399,13 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
             return;
           }
           const bytes = await assetSession.store.assetBytes(asset.sha256);
-          // SHA-256 asset paths are immutable. Revalidation on every palette
-          // preview made the same 800KiB atlas arrive twice during cold boot.
-          response.writeHead(200, { "content-type": asset.mime, "cache-control": "private, max-age=31536000, immutable", "content-security-policy": "sandbox" });
+          // SHA-256 paths of allowlisted types are immutable. Opaque MIME stays uncached.
+          response.writeHead(200, {
+            "content-type": safeAssetContentType(asset.mime),
+            "cache-control": assetCacheControl(asset.mime),
+            "content-security-policy": ASSET_RESPONSE_CSP,
+            "x-content-type-options": "nosniff",
+          });
           response.end(Buffer.from(bytes));
         } finally { sessions.close(assetKey); }
         return;

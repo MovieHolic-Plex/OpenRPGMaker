@@ -116,5 +116,57 @@ describe("event draft vault recovery", () => {
       speaker: undefined,
     });
     expect(merged.maps[mapId].events.find((event) => event.id === eventId)?.draft?.kind).toBe("edit");
+    expect(projectWithoutEventDrafts(merged).maps[mapId].events.find((event) => event.id === eventId)?.pages?.[0]?.commands).toEqual([]);
+  });
+
+  it("keeps the working edit but saves an incoming canonical body", () => {
+    const mapId = store.getCurrent().startMapId;
+    const eventId = createEventDraft(mapId, 3, 3);
+    saveEventDraft(mapId, eventId);
+    const pageId = store.getCurrent().maps[mapId].events.find((event) => event.id === eventId)?.pages?.[0]?.id;
+    if (!pageId) throw new Error("missing page");
+    beginExistingEventDraft(mapId, eventId);
+    setEventPageTextCommand(mapId, eventId, pageId, undefined, "still typing");
+
+    const live = store.getCurrent();
+    const incoming = projectWithoutEventDrafts(live);
+    const incomingEvent = incoming.maps[mapId].events.find((event) => event.id === eventId);
+    const page = incomingEvent?.pages?.[0];
+    if (!page) throw new Error("missing incoming page");
+    page.commands = [{ kind: "text", body: "from disk" }];
+
+    const merged = preserveEventDraftsOnProject(incoming, live);
+    const mergedEvent = merged.maps[mapId].events.find((event) => event.id === eventId);
+    expect(mergedEvent?.pages?.[0]?.commands[0]).toEqual({
+      kind: "text",
+      body: "still typing",
+      speaker: undefined,
+    });
+    expect(mergedEvent?.draft?.kind).toBe("edit");
+    expect(mergedEvent?.draft?.original?.pages?.[0]?.commands[0]).toEqual({
+      kind: "text",
+      body: "from disk",
+    });
+    expect(projectWithoutEventDrafts(merged).maps[mapId].events.find((event) => event.id === eventId)?.pages?.[0]?.commands[0]).toEqual({
+      kind: "text",
+      body: "from disk",
+    });
+  });
+
+  it("does not resurrect a committed event that the incoming project deleted", () => {
+    const mapId = store.getCurrent().startMapId;
+    const eventId = createEventDraft(mapId, 2, 2);
+    saveEventDraft(mapId, eventId);
+    beginExistingEventDraft(mapId, eventId);
+    const live = store.getCurrent();
+    const incoming = projectWithoutEventDrafts(live);
+    incoming.maps[mapId].events = incoming.maps[mapId].events.filter((event) => event.id !== eventId);
+
+    const merged = preserveEventDraftsOnProject(incoming, live);
+    const kept = merged.maps[mapId].events.find((event) => event.id === eventId);
+
+    expect(kept?.draft?.conflict?.kind).toBe("remote-delete");
+    expect(projectWithoutEventDrafts(merged).maps[mapId].events.some((event) => event.id === eventId)).toBe(false);
+    expect(getEventDraftVaultEntry(mapId, eventId)?.event.draft?.conflict?.kind).toBe("remote-delete");
   });
 });
