@@ -1,0 +1,1173 @@
+{
+  "name": "돌샘 굽이 마을",
+  "units": "tile coordinates unless field ends Px",
+  "interiorRect": [
+    3,
+    4,
+    44,
+    40
+  ],
+  "buildings": [
+    {
+      "name": "북서 순례 여관",
+      "module": "courtyard-inn",
+      "x": 4,
+      "y": 5,
+      "offsetPx": [
+        96,
+        128
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "북서 순례 여관 문 앞 1",
+          "x": 5,
+          "y": 11
+        },
+        {
+          "name": "북서 순례 여관 문 앞 2",
+          "x": 9,
+          "y": 10
+        }
+      ]
+    },
+    {
+      "name": "종지기 집",
+      "module": "house",
+      "x": 11,
+      "y": 4,
+      "offsetPx": [
+        320,
+        96
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "종지기 집 문 앞 1",
+          "x": 12,
+          "y": 10
+        }
+      ]
+    },
+    {
+      "name": "북쪽 제본 공방",
+      "module": "low-workshop",
+      "x": 15,
+      "y": 7,
+      "offsetPx": [
+        448,
+        192
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "북쪽 제본 공방 문 앞 1",
+          "x": 17,
+          "y": 11
+        }
+      ]
+    },
+    {
+      "name": "북문 약초·직물점",
+      "module": "joined-shops",
+      "x": 28,
+      "y": 4,
+      "offsetPx": [
+        864,
+        96
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "북문 약초·직물점 문 앞 1",
+          "x": 30,
+          "y": 9
+        },
+        {
+          "name": "북문 약초·직물점 문 앞 2",
+          "x": 33,
+          "y": 10
+        }
+      ]
+    },
+    {
+      "name": "기록관 집",
+      "module": "house",
+      "x": 36,
+      "y": 5,
+      "offsetPx": [
+        1120,
+        128
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "기록관 집 문 앞 1",
+          "x": 37,
+          "y": 11
+        }
+      ]
+    },
+    {
+      "name": "느티 마당 여관",
+      "module": "courtyard-inn",
+      "x": 40,
+      "y": 4,
+      "offsetPx": [
+        1248,
+        96
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "느티 마당 여관 문 앞 1",
+          "x": 41,
+          "y": 10
+        },
+        {
+          "name": "느티 마당 여관 문 앞 2",
+          "x": 45,
+          "y": 9
+        }
+      ]
+    },
+    {
+      "name": "서쪽 제과·양초점",
+      "module": "joined-shops",
+      "x": 4,
+      "y": 12,
+      "offsetPx": [
+        96,
+        352
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "서쪽 제과·양초점 문 앞 1",
+          "x": 6,
+          "y": 17
+        },
+        {
+          "name": "서쪽 제과·양초점 문 앞 2",
+          "x": 9,
+          "y": 18
+        }
+      ]
+    },
+    {
+      "name": "작은 샘 여관",
+      "module": "courtyard-inn",
+      "x": 12,
+      "y": 13,
+      "offsetPx": [
+        352,
+        384
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "작은 샘 여관 문 앞 1",
+          "x": 13,
+          "y": 19
+        },
+        {
+          "name": "작은 샘 여관 문 앞 2",
+          "x": 17,
+          "y": 18
+        }
+      ]
+    },
+    {
+      "name": "샘지기 집",
+      "module": "house",
+      "x": 19,
+      "y": 12,
+      "offsetPx": [
+        576,
+        352
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "샘지기 집 문 앞 1",
+          "x": 20,
+          "y": 18
+        }
+      ]
+    },
+    {
+      "name": "장인의 집",
+      "module": "house",
+      "x": 28,
+      "y": 13,
+      "offsetPx": [
+        864,
+        384
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "장인의 집 문 앞 1",
+          "x": 29,
+          "y": 19
+        }
+      ]
+    },
+    {
+      "name": "동쪽 도기 공방",
+      "module": "low-workshop",
+      "x": 32,
+      "y": 15,
+      "offsetPx": [
+        992,
+        448
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "동쪽 도기 공방 문 앞 1",
+          "x": 34,
+          "y": 19
+        }
+      ]
+    },
+    {
+      "name": "동쪽 유리·향신료점",
+      "module": "joined-shops",
+      "x": 38,
+      "y": 12,
+      "offsetPx": [
+        1184,
+        352
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "동쪽 유리·향신료점 문 앞 1",
+          "x": 40,
+          "y": 17
+        },
+        {
+          "name": "동쪽 유리·향신료점 문 앞 2",
+          "x": 43,
+          "y": 18
+        }
+      ]
+    },
+    {
+      "name": "서쪽 돌마당 여관",
+      "module": "courtyard-inn",
+      "x": 4,
+      "y": 21,
+      "offsetPx": [
+        96,
+        640
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "서쪽 돌마당 여관 문 앞 1",
+          "x": 5,
+          "y": 27
+        },
+        {
+          "name": "서쪽 돌마당 여관 문 앞 2",
+          "x": 9,
+          "y": 26
+        }
+      ]
+    },
+    {
+      "name": "광장 옆 금속 공방",
+      "module": "low-workshop",
+      "x": 11,
+      "y": 23,
+      "offsetPx": [
+        320,
+        704
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "광장 옆 금속 공방 문 앞 1",
+          "x": 13,
+          "y": 27
+        }
+      ]
+    },
+    {
+      "name": "광장지기 집",
+      "module": "house",
+      "x": 17,
+      "y": 20,
+      "offsetPx": [
+        512,
+        608
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "광장지기 집 문 앞 1",
+          "x": 18,
+          "y": 26
+        }
+      ]
+    },
+    {
+      "name": "화가의 집",
+      "module": "house",
+      "x": 29,
+      "y": 21,
+      "offsetPx": [
+        896,
+        640
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "화가의 집 문 앞 1",
+          "x": 30,
+          "y": 27
+        }
+      ]
+    },
+    {
+      "name": "푸른 창 여관",
+      "module": "courtyard-inn",
+      "x": 33,
+      "y": 20,
+      "offsetPx": [
+        1024,
+        608
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "푸른 창 여관 문 앞 1",
+          "x": 34,
+          "y": 26
+        },
+        {
+          "name": "푸른 창 여관 문 앞 2",
+          "x": 38,
+          "y": 25
+        }
+      ]
+    },
+    {
+      "name": "염색 공방",
+      "module": "low-workshop",
+      "x": 40,
+      "y": 23,
+      "offsetPx": [
+        1248,
+        704
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "염색 공방 문 앞 1",
+          "x": 42,
+          "y": 27
+        }
+      ]
+    },
+    {
+      "name": "남서 생필품·가죽점",
+      "module": "joined-shops",
+      "x": 4,
+      "y": 28,
+      "offsetPx": [
+        96,
+        864
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "남서 생필품·가죽점 문 앞 1",
+          "x": 6,
+          "y": 33
+        },
+        {
+          "name": "남서 생필품·가죽점 문 앞 2",
+          "x": 9,
+          "y": 34
+        }
+      ]
+    },
+    {
+      "name": "재단사 집",
+      "module": "house",
+      "x": 12,
+      "y": 29,
+      "offsetPx": [
+        352,
+        896
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "재단사 집 문 앞 1",
+          "x": 13,
+          "y": 35
+        }
+      ]
+    },
+    {
+      "name": "우편 마당 여관",
+      "module": "courtyard-inn",
+      "x": 16,
+      "y": 28,
+      "offsetPx": [
+        480,
+        864
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "우편 마당 여관 문 앞 1",
+          "x": 17,
+          "y": 34
+        },
+        {
+          "name": "우편 마당 여관 문 앞 2",
+          "x": 21,
+          "y": 33
+        }
+      ]
+    },
+    {
+      "name": "남쪽 목공방",
+      "module": "low-workshop",
+      "x": 28,
+      "y": 31,
+      "offsetPx": [
+        864,
+        960
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "남쪽 목공방 문 앞 1",
+          "x": 30,
+          "y": 35
+        }
+      ]
+    },
+    {
+      "name": "동남 식료·약방",
+      "module": "joined-shops",
+      "x": 34,
+      "y": 28,
+      "offsetPx": [
+        1056,
+        864
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "동남 식료·약방 문 앞 1",
+          "x": 36,
+          "y": 33
+        },
+        {
+          "name": "동남 식료·약방 문 앞 2",
+          "x": 39,
+          "y": 34
+        }
+      ]
+    },
+    {
+      "name": "상인의 집",
+      "module": "house",
+      "x": 42,
+      "y": 29,
+      "offsetPx": [
+        1312,
+        896
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "상인의 집 문 앞 1",
+          "x": 43,
+          "y": 35
+        }
+      ]
+    },
+    {
+      "name": "성문 수레 공방",
+      "module": "low-workshop",
+      "x": 4,
+      "y": 39,
+      "offsetPx": [
+        96,
+        1216
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "성문 수레 공방 문 앞 1",
+          "x": 6,
+          "y": 43
+        }
+      ]
+    },
+    {
+      "name": "남문 여행자 여관",
+      "module": "courtyard-inn",
+      "x": 10,
+      "y": 36,
+      "offsetPx": [
+        288,
+        1120
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "남문 여행자 여관 문 앞 1",
+          "x": 11,
+          "y": 42
+        },
+        {
+          "name": "남문 여행자 여관 문 앞 2",
+          "x": 15,
+          "y": 41
+        }
+      ]
+    },
+    {
+      "name": "성문 빵·도구점",
+      "module": "joined-shops",
+      "x": 17,
+      "y": 37,
+      "offsetPx": [
+        512,
+        1152
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "성문 빵·도구점 문 앞 1",
+          "x": 19,
+          "y": 42
+        },
+        {
+          "name": "성문 빵·도구점 문 앞 2",
+          "x": 22,
+          "y": 43
+        }
+      ]
+    },
+    {
+      "name": "버드나무 여관",
+      "module": "courtyard-inn",
+      "x": 28,
+      "y": 36,
+      "offsetPx": [
+        864,
+        1120
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "버드나무 여관 문 앞 1",
+          "x": 29,
+          "y": 42
+        },
+        {
+          "name": "버드나무 여관 문 앞 2",
+          "x": 33,
+          "y": 41
+        }
+      ]
+    },
+    {
+      "name": "문지기 집",
+      "module": "house",
+      "x": 35,
+      "y": 37,
+      "offsetPx": [
+        1088,
+        1152
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "문지기 집 문 앞 1",
+          "x": 36,
+          "y": 43
+        }
+      ]
+    },
+    {
+      "name": "남동 서점·꽃집",
+      "module": "joined-shops",
+      "x": 39,
+      "y": 36,
+      "offsetPx": [
+        1216,
+        1120
+      ],
+      "reason": "Fixed silhouette; no scaling. Front setbacks and side courtyards differ.",
+      "doorApproaches": [
+        {
+          "name": "남동 서점·꽃집 문 앞 1",
+          "x": 41,
+          "y": 41
+        },
+        {
+          "name": "남동 서점·꽃집 문 앞 2",
+          "x": 44,
+          "y": 42
+        }
+      ]
+    }
+  ],
+  "gardens": [
+    {
+      "name": "제본 뒷뜰",
+      "rect": [
+        15,
+        4,
+        5,
+        2
+      ]
+    },
+    {
+      "name": "도기 흙마당",
+      "rect": [
+        32,
+        12,
+        5,
+        2
+      ]
+    },
+    {
+      "name": "광장 텃마당",
+      "rect": [
+        11,
+        20,
+        5,
+        2
+      ]
+    },
+    {
+      "name": "염색 건조뜰",
+      "rect": [
+        40,
+        20,
+        5,
+        2
+      ]
+    },
+    {
+      "name": "목공 뒷뜰",
+      "rect": [
+        28,
+        28,
+        5,
+        2
+      ]
+    },
+    {
+      "name": "수레 풀마당",
+      "rect": [
+        4,
+        36,
+        5,
+        2
+      ]
+    }
+  ],
+  "props": [
+    {
+      "kind": "crate",
+      "x": 16,
+      "y": 5
+    },
+    {
+      "kind": "crate",
+      "x": 33,
+      "y": 13
+    },
+    {
+      "kind": "crate",
+      "x": 12,
+      "y": 21
+    },
+    {
+      "kind": "crate",
+      "x": 41,
+      "y": 21
+    },
+    {
+      "kind": "crate",
+      "x": 29,
+      "y": 29
+    },
+    {
+      "kind": "crate",
+      "x": 5,
+      "y": 37
+    },
+    {
+      "kind": "bench",
+      "x": 20,
+      "y": 25
+    },
+    {
+      "kind": "bench",
+      "x": 28,
+      "y": 25
+    }
+  ],
+  "roads": [
+    [
+      24,
+      27,
+      2,
+      23
+    ],
+    [
+      22,
+      4,
+      2,
+      22
+    ],
+    [
+      22,
+      25,
+      4,
+      3
+    ],
+    [
+      20,
+      24,
+      9,
+      4
+    ],
+    [
+      3,
+      11,
+      19,
+      1
+    ],
+    [
+      26,
+      11,
+      21,
+      1
+    ],
+    [
+      3,
+      19,
+      19,
+      1
+    ],
+    [
+      26,
+      19,
+      21,
+      1
+    ],
+    [
+      3,
+      27,
+      17,
+      1
+    ],
+    [
+      29,
+      27,
+      18,
+      1
+    ],
+    [
+      3,
+      35,
+      21,
+      1
+    ],
+    [
+      26,
+      35,
+      21,
+      1
+    ],
+    [
+      3,
+      43,
+      21,
+      1
+    ],
+    [
+      26,
+      43,
+      21,
+      1
+    ]
+  ],
+  "plaza": {
+    "rect": [
+      20,
+      24,
+      9,
+      4
+    ],
+    "reason": "South road bends west here before reaching the north quarter."
+  },
+  "gates": [
+    {
+      "name": "남문",
+      "module": "open-gate",
+      "offsetPx": [
+        640,
+        1344
+      ],
+      "passageCells": [
+        {
+          "x": 24,
+          "y": 44
+        },
+        {
+          "x": 25,
+          "y": 44
+        },
+        {
+          "x": 24,
+          "y": 45
+        },
+        {
+          "x": 25,
+          "y": 45
+        },
+        {
+          "x": 24,
+          "y": 46
+        },
+        {
+          "x": 25,
+          "y": 46
+        },
+        {
+          "x": 24,
+          "y": 47
+        },
+        {
+          "x": 25,
+          "y": 47
+        },
+        {
+          "x": 24,
+          "y": 48
+        },
+        {
+          "x": 25,
+          "y": 48
+        },
+        {
+          "x": 24,
+          "y": 49
+        },
+        {
+          "x": 25,
+          "y": 49
+        }
+      ],
+      "inside": {
+        "x": 24,
+        "y": 43
+      },
+      "outside": {
+        "x": 24,
+        "y": 49
+      },
+      "review": "partial: new shallow arch; not restoration of held portcullis"
+    }
+  ],
+  "wallSections": {
+    "horizontal": {
+      "rearOffset": 0,
+      "deckOffsets": [
+        16,
+        48
+      ],
+      "frontOffset": 48,
+      "faceOffsets": [
+        64,
+        96
+      ]
+    },
+    "corners": "native directional pieces, no rotations and no masking towers",
+    "review": "partial: western side surface remains thin"
+  },
+  "landmarks": [
+    {
+      "name": "북서 순례 여관 문 앞 1",
+      "x": 5,
+      "y": 11
+    },
+    {
+      "name": "북서 순례 여관 문 앞 2",
+      "x": 9,
+      "y": 10
+    },
+    {
+      "name": "종지기 집 문 앞 1",
+      "x": 12,
+      "y": 10
+    },
+    {
+      "name": "북쪽 제본 공방 문 앞 1",
+      "x": 17,
+      "y": 11
+    },
+    {
+      "name": "북문 약초·직물점 문 앞 1",
+      "x": 30,
+      "y": 9
+    },
+    {
+      "name": "북문 약초·직물점 문 앞 2",
+      "x": 33,
+      "y": 10
+    },
+    {
+      "name": "기록관 집 문 앞 1",
+      "x": 37,
+      "y": 11
+    },
+    {
+      "name": "느티 마당 여관 문 앞 1",
+      "x": 41,
+      "y": 10
+    },
+    {
+      "name": "느티 마당 여관 문 앞 2",
+      "x": 45,
+      "y": 9
+    },
+    {
+      "name": "서쪽 제과·양초점 문 앞 1",
+      "x": 6,
+      "y": 17
+    },
+    {
+      "name": "서쪽 제과·양초점 문 앞 2",
+      "x": 9,
+      "y": 18
+    },
+    {
+      "name": "작은 샘 여관 문 앞 1",
+      "x": 13,
+      "y": 19
+    },
+    {
+      "name": "작은 샘 여관 문 앞 2",
+      "x": 17,
+      "y": 18
+    },
+    {
+      "name": "샘지기 집 문 앞 1",
+      "x": 20,
+      "y": 18
+    },
+    {
+      "name": "장인의 집 문 앞 1",
+      "x": 29,
+      "y": 19
+    },
+    {
+      "name": "동쪽 도기 공방 문 앞 1",
+      "x": 34,
+      "y": 19
+    },
+    {
+      "name": "동쪽 유리·향신료점 문 앞 1",
+      "x": 40,
+      "y": 17
+    },
+    {
+      "name": "동쪽 유리·향신료점 문 앞 2",
+      "x": 43,
+      "y": 18
+    },
+    {
+      "name": "서쪽 돌마당 여관 문 앞 1",
+      "x": 5,
+      "y": 27
+    },
+    {
+      "name": "서쪽 돌마당 여관 문 앞 2",
+      "x": 9,
+      "y": 26
+    },
+    {
+      "name": "광장 옆 금속 공방 문 앞 1",
+      "x": 13,
+      "y": 27
+    },
+    {
+      "name": "광장지기 집 문 앞 1",
+      "x": 18,
+      "y": 26
+    },
+    {
+      "name": "화가의 집 문 앞 1",
+      "x": 30,
+      "y": 27
+    },
+    {
+      "name": "푸른 창 여관 문 앞 1",
+      "x": 34,
+      "y": 26
+    },
+    {
+      "name": "푸른 창 여관 문 앞 2",
+      "x": 38,
+      "y": 25
+    },
+    {
+      "name": "염색 공방 문 앞 1",
+      "x": 42,
+      "y": 27
+    },
+    {
+      "name": "남서 생필품·가죽점 문 앞 1",
+      "x": 6,
+      "y": 33
+    },
+    {
+      "name": "남서 생필품·가죽점 문 앞 2",
+      "x": 9,
+      "y": 34
+    },
+    {
+      "name": "재단사 집 문 앞 1",
+      "x": 13,
+      "y": 35
+    },
+    {
+      "name": "우편 마당 여관 문 앞 1",
+      "x": 17,
+      "y": 34
+    },
+    {
+      "name": "우편 마당 여관 문 앞 2",
+      "x": 21,
+      "y": 33
+    },
+    {
+      "name": "남쪽 목공방 문 앞 1",
+      "x": 30,
+      "y": 35
+    },
+    {
+      "name": "동남 식료·약방 문 앞 1",
+      "x": 36,
+      "y": 33
+    },
+    {
+      "name": "동남 식료·약방 문 앞 2",
+      "x": 39,
+      "y": 34
+    },
+    {
+      "name": "상인의 집 문 앞 1",
+      "x": 43,
+      "y": 35
+    },
+    {
+      "name": "성문 수레 공방 문 앞 1",
+      "x": 6,
+      "y": 43
+    },
+    {
+      "name": "남문 여행자 여관 문 앞 1",
+      "x": 11,
+      "y": 42
+    },
+    {
+      "name": "남문 여행자 여관 문 앞 2",
+      "x": 15,
+      "y": 41
+    },
+    {
+      "name": "성문 빵·도구점 문 앞 1",
+      "x": 19,
+      "y": 42
+    },
+    {
+      "name": "성문 빵·도구점 문 앞 2",
+      "x": 22,
+      "y": 43
+    },
+    {
+      "name": "버드나무 여관 문 앞 1",
+      "x": 29,
+      "y": 42
+    },
+    {
+      "name": "버드나무 여관 문 앞 2",
+      "x": 33,
+      "y": 41
+    },
+    {
+      "name": "문지기 집 문 앞 1",
+      "x": 36,
+      "y": 43
+    },
+    {
+      "name": "남동 서점·꽃집 문 앞 1",
+      "x": 41,
+      "y": 41
+    },
+    {
+      "name": "남동 서점·꽃집 문 앞 2",
+      "x": 44,
+      "y": 42
+    },
+    {
+      "name": "돌샘 광장 중심",
+      "x": 24,
+      "y": 26
+    },
+    {
+      "name": "광장 서쪽 접근",
+      "x": 21,
+      "y": 27
+    },
+    {
+      "name": "광장 북쪽 접근",
+      "x": 22,
+      "y": 23
+    },
+    {
+      "name": "북쪽 주거리 끝",
+      "x": 22,
+      "y": 4
+    },
+    {
+      "name": "남쪽 주거리",
+      "x": 24,
+      "y": 40
+    },
+    {
+      "name": "남문 안쪽",
+      "x": 24,
+      "y": 43
+    },
+    {
+      "name": "남문 통로",
+      "x": 24,
+      "y": 46
+    },
+    {
+      "name": "남문 바깥 착지",
+      "x": 24,
+      "y": 49
+    }
+  ],
+  "design": "Five staggered neighborhood bands. Low workshop rear courts, recessed inn doors and staggered shop fronts make pockets along a bent central street. All house dimensions fixed."
+}

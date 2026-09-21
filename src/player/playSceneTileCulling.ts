@@ -108,16 +108,16 @@ export interface CullViewport {
  * 파괴된 항목이 절반을 넘으면 배열을 compaction 한다 — 전체 재렌더(resetCullableTiles)
  * 가 자주 일어나지 않는 긴 페인트 세션에서 배열이 무한 자라는 것을 막는다.
  */
-export function syncTileCulling(host: object, viewport: CullViewport | undefined): void {
+export function syncTileCulling(host: object, viewport: CullViewport | undefined, tileSize: number = TILE_SIZE): void {
   const tiles = cullableTiles.get(host);
   if (!tiles || tiles.images.length === 0) return;
   if (!viewport || !Number.isFinite(viewport.width) || viewport.width <= 0) return;
   if (!Number.isFinite(viewport.height) || viewport.height <= 0) return;
   const next: TileWindow = {
-    minX: Math.floor(viewport.x / TILE_SIZE) - CULL_MARGIN_TILES,
-    minY: Math.floor(viewport.y / TILE_SIZE) - CULL_MARGIN_TILES,
-    maxX: Math.floor((viewport.x + viewport.width) / TILE_SIZE) + CULL_MARGIN_TILES,
-    maxY: Math.floor((viewport.y + viewport.height) / TILE_SIZE) + CULL_MARGIN_TILES,
+    minX: Math.floor(viewport.x / tileSize) - CULL_MARGIN_TILES,
+    minY: Math.floor(viewport.y / tileSize) - CULL_MARGIN_TILES,
+    maxX: Math.floor((viewport.x + viewport.width) / tileSize) + CULL_MARGIN_TILES,
+    maxY: Math.floor((viewport.y + viewport.height) / tileSize) + CULL_MARGIN_TILES,
   };
   const applied = appliedWindows.get(host);
   if (applied && sameWindow(applied, next)) return;

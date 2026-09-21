@@ -1,5 +1,5 @@
 import type Phaser from "phaser";
-import { TILE_SIZE } from "@/assets/bundled";
+import { editorMapTileSize } from "@/editor/mapGeometry";
 import { narrateAiActivity } from "@/editor/aiActivityNarration";
 import { placeAiActivityChip } from "@/editor/aiActivityChipPlacement";
 import type { AgentFocusBounds, AgentFocusCell, AgentFocusTarget } from "@/editor/agentFocus";
@@ -400,8 +400,8 @@ export class AgentGhostPreviewRenderer {
     // 이 순서에 의존한다(스탬프 팝·순차 공개). 미공개 셀은 visible=false 로 둔다.
     for (const step of this.schedule) {
       const cell = step.cell;
-      const px = cell.x * TILE_SIZE;
-      const py = cell.y * TILE_SIZE;
+      const px = cell.x * editorMapTileSize(this.mapId());
+      const py = cell.y * editorMapTileSize(this.mapId());
       const tilesetId = cell.tilesetId ?? defaultTilesetId;
       const tileset = tilesetId ? project.tilesets[tilesetId] : undefined;
 
@@ -596,7 +596,7 @@ export class AgentGhostPreviewRenderer {
 
   private cellRect(cell: AgentGhostCell): Phaser.GameObjects.Rectangle {
     const color = cell.layer === "event" ? 0x15aabf : cell.layer === "upper" ? 0x38d9a9 : AGENT_GHOST_FILL_COLOR;
-    const rect = this.scene.add.rectangle(cell.x * TILE_SIZE, cell.y * TILE_SIZE, TILE_SIZE, TILE_SIZE, color, 0.12);
+    const rect = this.scene.add.rectangle(cell.x * editorMapTileSize(this.mapId()), cell.y * editorMapTileSize(this.mapId()), editorMapTileSize(this.mapId()), editorMapTileSize(this.mapId()), color, 0.12);
     rect.setOrigin(0, 0);
     rect.setStrokeStyle(1, color, 0.52);
     return rect;
@@ -604,10 +604,10 @@ export class AgentGhostPreviewRenderer {
 
   private boundsGraphic(bounds: AgentGhostBounds): Phaser.GameObjects.Graphics {
     const graphics = this.scene.add.graphics();
-    const x = bounds.x * TILE_SIZE;
-    const y = bounds.y * TILE_SIZE;
-    const width = bounds.width * TILE_SIZE;
-    const height = bounds.height * TILE_SIZE;
+    const x = bounds.x * editorMapTileSize(this.mapId());
+    const y = bounds.y * editorMapTileSize(this.mapId());
+    const width = bounds.width * editorMapTileSize(this.mapId());
+    const height = bounds.height * editorMapTileSize(this.mapId());
     graphics.fillStyle(AGENT_GHOST_FILL_COLOR, 0.09);
     graphics.fillRect(x, y, width, height);
     graphics.lineStyle(2, AGENT_GHOST_STROKE_COLOR, 0.88);
@@ -621,10 +621,10 @@ export class AgentGhostPreviewRenderer {
 
   private screenRect(bounds: AgentGhostBounds): AgentGhostBounds {
     const camera = this.scene.cameras.main;
-    const x = Math.round((bounds.x * TILE_SIZE - camera.worldView.x) * camera.zoom);
-    const y = Math.round((bounds.y * TILE_SIZE - camera.worldView.y) * camera.zoom);
-    const width = Math.max(1, Math.round(bounds.width * TILE_SIZE * camera.zoom));
-    const height = Math.max(1, Math.round(bounds.height * TILE_SIZE * camera.zoom));
+    const x = Math.round((bounds.x * editorMapTileSize(this.mapId()) - camera.worldView.x) * camera.zoom);
+    const y = Math.round((bounds.y * editorMapTileSize(this.mapId()) - camera.worldView.y) * camera.zoom);
+    const width = Math.max(1, Math.round(bounds.width * editorMapTileSize(this.mapId()) * camera.zoom));
+    const height = Math.max(1, Math.round(bounds.height * editorMapTileSize(this.mapId()) * camera.zoom));
     return { x, y, width, height };
   }
 
@@ -675,7 +675,7 @@ export class AgentFocusRenderer {
 
   private cellRect(cell: AgentFocusCell): Phaser.GameObjects.Rectangle {
     const color = cell.layer === "event" ? 0xff922b : cell.layer === "upper" ? 0x74c0fc : 0xffd43b;
-    const rect = this.scene.add.rectangle(cell.x * TILE_SIZE, cell.y * TILE_SIZE, TILE_SIZE, TILE_SIZE, color, 0.2);
+    const rect = this.scene.add.rectangle(cell.x * editorMapTileSize(this.mapId()), cell.y * editorMapTileSize(this.mapId()), editorMapTileSize(this.mapId()), editorMapTileSize(this.mapId()), color, 0.2);
     rect.setOrigin(0, 0);
     rect.setStrokeStyle(1, color, 0.72);
     return rect;
@@ -683,10 +683,10 @@ export class AgentFocusRenderer {
 
   private boundsRect(bounds: AgentFocusBounds, strongFill: boolean): Phaser.GameObjects.Rectangle {
     const rect = this.scene.add.rectangle(
-      bounds.x * TILE_SIZE,
-      bounds.y * TILE_SIZE,
-      bounds.width * TILE_SIZE,
-      bounds.height * TILE_SIZE,
+      bounds.x * editorMapTileSize(this.mapId()),
+      bounds.y * editorMapTileSize(this.mapId()),
+      bounds.width * editorMapTileSize(this.mapId()),
+      bounds.height * editorMapTileSize(this.mapId()),
       0xffd43b,
       strongFill ? 0.16 : 0.08
     );
@@ -716,10 +716,10 @@ export class AgentFocusRenderer {
   private screenRect(bounds: AgentFocusBounds): AgentFocusBounds {
     const camera = this.scene.cameras.main;
     // Phaser 3.60+ 에서 scrollX 는 zoom!==1 일 때 뷰포트 좌상단이 아니다. worldView 를 써야 한다.
-    const x = Math.round((bounds.x * TILE_SIZE - camera.worldView.x) * camera.zoom);
-    const y = Math.round((bounds.y * TILE_SIZE - camera.worldView.y) * camera.zoom);
-    const width = Math.max(1, Math.round(bounds.width * TILE_SIZE * camera.zoom));
-    const height = Math.max(1, Math.round(bounds.height * TILE_SIZE * camera.zoom));
+    const x = Math.round((bounds.x * editorMapTileSize(this.mapId()) - camera.worldView.x) * camera.zoom);
+    const y = Math.round((bounds.y * editorMapTileSize(this.mapId()) - camera.worldView.y) * camera.zoom);
+    const width = Math.max(1, Math.round(bounds.width * editorMapTileSize(this.mapId()) * camera.zoom));
+    const height = Math.max(1, Math.round(bounds.height * editorMapTileSize(this.mapId()) * camera.zoom));
     return { x, y, width, height };
   }
 

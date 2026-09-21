@@ -1,0 +1,203 @@
+{
+  "note": "Tile knowledge inputs actually opened; generated own outputs subsequently reviewed. Node/Playwright are execution dependencies, not tile knowledge.",
+  "files": [
+    {
+      "path": "docs/experiments/slates-astra/README.md",
+      "sha256": "353a0b5e9613c0aec2e31d2ced06c84482baabf833069b1f9c37ee80218f2858",
+      "manifestMatch": null,
+      "scope": "read"
+    },
+    {
+      "path": "docs/experiments/slates-astra/input-manifest.json",
+      "sha256": "c6b17d3509b55f9e314131cc666c859de98c14d0267b057d8a1c9f3ac92ac4fb",
+      "manifestMatch": null,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/slates-agent-entry.md",
+      "sha256": "284251d85dbc7e084de1b79abc1417850a6fafe6050dacefd96dbdbde9bc0a2d",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/slates-structure-learning.md",
+      "sha256": "a6968eb03f52d2b852a9966305bca4a233db990bfb4922b3bcb81d6852de55b3",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/slates-structure-samples.md",
+      "sha256": "5f3286ebcb8969ee9612769b600474afb00e73fdba226ef544a7d092e2e53154",
+      "manifestMatch": true,
+      "scope": "text through line 440; selected comparison PNGs only"
+    },
+    {
+      "path": "openwiki/slates-atlas-review.md",
+      "sha256": "80d96e0c68776621fe62965073b0c89381ccc302fb5ef5e5d8c15a15905e93d0",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/slates-village-authoring.md",
+      "sha256": "8569d72ae116517d641be272972961dbf916b9b6483578c4a66383f1d356bfa8",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "public/assets/ATTRIBUTION.md",
+      "sha256": "02c141aa0805a8ce58c8c22289a7f27e756624b8f41ff0885f807029214294af",
+      "manifestMatch": true,
+      "scope": "Slates section only visually read"
+    },
+    {
+      "path": "public/assets/slates/slates-v2-32px.png",
+      "sha256": "4401dd2f5b76492f7fff431263da2fbb1fd87a036604c0a31bdad96a20f20243",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-roof.png",
+      "sha256": "777d49a78765dc3a82cb94ecdb588d08e846df9952c38ff546d2838103685602",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-battlement.png",
+      "sha256": "197a27c09b93be2d52900701164b0d16d3e6e3ab0f5ccddf6f4808b59c2c1584",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-towers.png",
+      "sha256": "c995c038135a4cb64e7d5296a4c7a242089f816b5217f87c8e7f7b7aa4702b50",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-timber.png",
+      "sha256": "b9b05aa2745626f0da89541cea37ba39ce34a5a1ef03a6cf435afc50f3c51923",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/projecting-house.png",
+      "sha256": "258697d38c483dfebaf37cfe881c8782082838ad528c5b759921edc878ecf83d",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/projecting-house-parts.png",
+      "sha256": "04d34106338c92f49aaf03a3c9896605546875dbc4368ba750df4247ece64a99",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/roof-deep.png",
+      "sha256": "1bee8af6ca32a6706ec20cd1fd54d24b1cee197913109bc6b51255dc973725ec",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/roof-deep-parts.png",
+      "sha256": "cb448490a36d60e4bd3ed2f5dbb604842cf85386b4938bcf2bccb3edecbb2ed3",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/wall-long.png",
+      "sha256": "20456242f558d8425e5fbf4761925abe4b014054d3c54250122fb00006159f93",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/wall-parts.png",
+      "sha256": "5acf0f12cb4f86cc84d413c03ad4d19da2d319bbee40a3eff3e21a8ec4ae34af",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/parapet-corner.png",
+      "sha256": "f659ea4b0e28d67ead73331de115312f4e9073c008b7117e930d5b39b4715ae3",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/parapet-corner-parts.png",
+      "sha256": "55da85a45c0ed858f9005326c3744447095c1a929448287d9ec11e5a6e6975a4",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-castle-face.png",
+      "sha256": "ba4ec6504a6d9bbede496b9b82755e0a463b455143d7682b01aff8a3ef42dee1",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-balcony.png",
+      "sha256": "57bc719bce5ce832cbaa263a46c45f4cd716a711d449e34f58ee4fe787f9a1fc",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-court-border.png",
+      "sha256": "595384942014bff6bb6507cbae001a3ec3adbd64b9cd8c2864f5baa63174ff84",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-paving.png",
+      "sha256": "d30b285aa2ceb48c80c8ba0e5fb68121e634b96df228298ad82c0f728237618d",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-small-props.png",
+      "sha256": "c791a6f33af2bd24c339fa178aeebcc70688f2f04f79bc6940a84a498606fb51",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-single-trees.png",
+      "sha256": "6563471a1061bf05deee692f9d642383522364ccd4ea99ee7ee8d0aa517e4f17",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-red-awning.png",
+      "sha256": "fc489d15037383cf14f2bf491dcc5d08b4353b486937fe2a56856ecfb0db9297",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-blue-awning.png",
+      "sha256": "2547a085b186f0adc8b53e6c19e95df3ae3c2f10fe44b924619adabbd1dd9e5c",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/gate.png",
+      "sha256": "5e9c2bdc9b30d45d9c172b530d9eaadce43921953c6b3412b64fe34eb84dd464",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/gate-parts.png",
+      "sha256": "9f6eb2a84cb015150ea94272acfc45f7f9b4d8decdb9d2619e931a44eb9fedad",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/joined-shops.png",
+      "sha256": "5d4338d34704d85d25c4e13eee10ff99e7fdfc9783ec3908bf6574e116c5411d",
+      "manifestMatch": true,
+      "scope": "read"
+    },
+    {
+      "path": "openwiki/images/slates/mastery/inn.png",
+      "sha256": "7a677d57e7af85859781de061957ba81549c21d276e557695d090b6174685327",
+      "manifestMatch": true,
+      "scope": "read"
+    }
+  ]
+}

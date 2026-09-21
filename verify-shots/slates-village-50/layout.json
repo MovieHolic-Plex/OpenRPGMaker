@@ -1,0 +1,359 @@
+{
+  "mapId": "slates_village_50",
+  "width": 50,
+  "height": 50,
+  "spawn": {
+    "x": 22,
+    "y": 24
+  },
+  "buildings": [
+    {
+      "name": "서쪽 목수의 집",
+      "x": 5,
+      "y": 6,
+      "w": 4,
+      "h": 5,
+      "wallRows": 2,
+      "style": 0,
+      "front": {
+        "x": 6,
+        "y": 11
+      }
+    },
+    {
+      "name": "북쪽 꽃집",
+      "x": 13,
+      "y": 4,
+      "w": 4,
+      "h": 6,
+      "wallRows": 3,
+      "style": 1,
+      "front": {
+        "x": 14,
+        "y": 10
+      }
+    },
+    {
+      "name": "광장 북쪽 주택",
+      "x": 21,
+      "y": 6,
+      "w": 4,
+      "h": 5,
+      "wallRows": 2,
+      "style": 1,
+      "front": {
+        "x": 22,
+        "y": 11
+      }
+    },
+    {
+      "name": "물버들 여관",
+      "x": 29,
+      "y": 3,
+      "w": 6,
+      "h": 7,
+      "wallRows": 3,
+      "style": 2,
+      "front": {
+        "x": 31,
+        "y": 10
+      }
+    },
+    {
+      "name": "동쪽 약초점",
+      "x": 40,
+      "y": 7,
+      "w": 4,
+      "h": 5,
+      "wallRows": 2,
+      "style": 1,
+      "front": {
+        "x": 41,
+        "y": 12
+      }
+    },
+    {
+      "name": "서쪽 주택",
+      "x": 4,
+      "y": 18,
+      "w": 4,
+      "h": 5,
+      "wallRows": 2,
+      "style": 0,
+      "front": {
+        "x": 5,
+        "y": 23
+      }
+    },
+    {
+      "name": "빵집",
+      "x": 11,
+      "y": 24,
+      "w": 4,
+      "h": 5,
+      "wallRows": 2,
+      "style": 1,
+      "front": {
+        "x": 12,
+        "y": 29
+      }
+    },
+    {
+      "name": "마을 회관",
+      "x": 30,
+      "y": 15,
+      "w": 6,
+      "h": 7,
+      "wallRows": 3,
+      "style": 3,
+      "front": {
+        "x": 32,
+        "y": 22
+      }
+    },
+    {
+      "name": "동쪽 작업장",
+      "x": 42,
+      "y": 21,
+      "w": 4,
+      "h": 5,
+      "wallRows": 2,
+      "style": 0,
+      "front": {
+        "x": 43,
+        "y": 26
+      }
+    },
+    {
+      "name": "강변 주택",
+      "x": 25,
+      "y": 27,
+      "w": 4,
+      "h": 5,
+      "wallRows": 2,
+      "style": 0,
+      "front": {
+        "x": 26,
+        "y": 32
+      }
+    },
+    {
+      "name": "물레방앗간",
+      "x": 34,
+      "y": 27,
+      "w": 4,
+      "h": 6,
+      "wallRows": 3,
+      "style": 1,
+      "front": {
+        "x": 35,
+        "y": 33
+      }
+    },
+    {
+      "name": "남쪽 농가",
+      "x": 5,
+      "y": 41,
+      "w": 4,
+      "h": 5,
+      "wallRows": 2,
+      "style": 0,
+      "front": {
+        "x": 6,
+        "y": 46
+      }
+    },
+    {
+      "name": "강남 농산물 상점",
+      "x": 41,
+      "y": 40,
+      "w": 4,
+      "h": 5,
+      "wallRows": 2,
+      "style": 2,
+      "front": {
+        "x": 42,
+        "y": 45
+      }
+    }
+  ],
+  "beds": [
+    {
+      "x": 18,
+      "y": 41,
+      "w": 4,
+      "h": 2
+    },
+    {
+      "x": 25,
+      "y": 41,
+      "w": 5,
+      "h": 2
+    },
+    {
+      "x": 31,
+      "y": 42,
+      "w": 3,
+      "h": 2
+    }
+  ],
+  "trees": 67,
+  "landmarks": [
+    {
+      "name": "서쪽 목수의 집",
+      "x": 6,
+      "y": 11,
+      "passable": true,
+      "reachable": true
+    },
+    {
+      "name": "북쪽 꽃집",
+      "x": 14,
+      "y": 10,
+      "passable": true,
+      "reachable": true
+    },
+    {
+      "name": "광장 북쪽 주택",
+      "x": 22,
+      "y": 11,
+      "passable": true,
+      "reachable": true
+    },
+    {
+      "name": "물버들 여관",
+      "x": 31,
+      "y": 10,
+      "passable": true,
+      "reachable": true
+    },
+    {
+      "name": "동쪽 약초점",
+      "x": 41,
+      "y": 12,
+      "passable": true,
+      "reachable": true
+    },
+    {
+      "name": "서쪽 주택",
+      "x": 5,
+      "y": 23,
+      "passable": true,
+      "reachable": true
+    },
+    {
+      "name": "빵집",
+      "x": 12,
+      "y": 29,
+      "passable": true,
+      "reachable": true
+    },
+    {
+      "name": "마을 회관",
+      "x": 32,
+      "y": 22,
+      "passable": true,
+      "reachable": true
+    },
+    {
+      "name": "동쪽 작업장",
+      "x": 43,
+      "y": 26,
+      "passable": true,
+      "reachable": true
+    },
+    {
+      "name": "강변 주택",
+      "x": 26,
+      "y": 32,
+      "passable": true,
+      "reachable": true
+    },
+    {
+      "name": "물레방앗간",
+      "x": 35,
+      "y": 33,
+      "passable": true,
+      "reachable": true
+    },
+    {
+      "name": "남쪽 농가",
+      "x": 6,
+      "y": 46,
+      "passable": true,
+      "reachable": true
+    },
+    {
+      "name": "강남 농산물 상점",
+      "x": 42,
+      "y": 45,
+      "passable": true,
+      "reachable": true
+    },
+    {
+      "name": "서쪽 다리 북안",
+      "x": 14,
+      "y": 33,
+      "passable": true,
+      "reachable": true
+    },
+    {
+      "name": "서쪽 다리 남안",
+      "x": 14,
+      "y": 39,
+      "passable": true,
+      "reachable": true
+    },
+    {
+      "name": "동쪽 다리 북안",
+      "x": 36,
+      "y": 33,
+      "passable": true,
+      "reachable": true
+    },
+    {
+      "name": "동쪽 다리 남안",
+      "x": 36,
+      "y": 39,
+      "passable": true,
+      "reachable": true
+    },
+    {
+      "name": "서쪽 출구",
+      "x": 0,
+      "y": 14,
+      "passable": true,
+      "reachable": true
+    },
+    {
+      "name": "동쪽 출구",
+      "x": 49,
+      "y": 43,
+      "passable": true,
+      "reachable": true
+    },
+    {
+      "name": "시장 앞",
+      "x": 21,
+      "y": 18,
+      "passable": true,
+      "reachable": true
+    },
+    {
+      "name": "우물 옆",
+      "x": 24,
+      "y": 23,
+      "passable": true,
+      "reachable": true
+    },
+    {
+      "name": "방앗간 물가",
+      "x": 37,
+      "y": 33,
+      "passable": true,
+      "reachable": true
+    }
+  ],
+  "reachableCells": 1839,
+  "derivedTiles": 88
+}

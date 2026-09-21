@@ -1,3 +1,4 @@
+import { openDialog } from "./databaseEnemyRecordSupport";
 import { el, clearChildren } from "@/util/dom";
 import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
 import { setMapTileset } from "@/editor/actions";
@@ -79,11 +80,11 @@ export function disposeResourceManager(container: HTMLElement): void {
 function makeTilesetFromUpload(asset: UploadedAsset): TilesetDef {
   const kind = resourceKindFromUpload(asset.kind);
   const spec = getResourceProfileSpec(kind ?? "chipset");
-  const tileSize = spec.tileWidth ?? asset.meta.tileSize ?? 16;
+  const tileSize = asset.meta.tileSize ?? spec.tileWidth ?? 16;
   const width = asset.meta.width ?? asset.meta.frameWidth ?? tileSize;
   const height = asset.meta.height ?? asset.meta.frameHeight ?? tileSize;
   const tilesPerRow = Math.max(1, Math.floor(width / tileSize));
-  const count = Math.max(1, tilesPerRow * Math.floor(height / (spec.tileHeight ?? tileSize)));
+  const count = Math.max(1, tilesPerRow * Math.floor(height / tileSize));
   const passability: PassFlag[] = [];
   const priority: ("lower" | "upper")[] = [];
   const terrain: number[] = [];
@@ -96,6 +97,7 @@ function makeTilesetFromUpload(asset: UploadedAsset): TilesetDef {
   return {
     id: genId("ts"),
     name: asset.name,
+    kind: "custom",
     image: { type: "uploaded", id: asset.id },
     tileSize,
     tilesPerRow,
@@ -234,12 +236,17 @@ function importImageResource(file: File, kind: ResourceKind, container: HTMLElem
           void importFacesetSheetAsFaces(dataUrl, file.name, facesetPlan, container);
           return;
         }
-        const result = validateResourceDimensions(kind, width, height);
+        const selectedTileSize = kind === "chipset" ? await chooseChipsetTileSize(width, height) : undefined;
+        if (selectedTileSize === null) return;
+        const result = selectedTileSize
+          ? { ok: true as const, tileCount: (width / selectedTileSize) * (height / selectedTileSize) }
+          : validateResourceDimensions(kind, width, height);
         if (!result.ok) {
           toast(formatImageImportDimensionError(result.message, width, height), "error");
           return;
         }
-        const spec = getResourceProfileSpec(kind);
+        const baseSpec = getResourceProfileSpec(kind);
+        const spec = selectedTileSize ? { ...baseSpec, tileWidth: selectedTileSize, tileHeight: selectedTileSize } : baseSpec;
         const id = genId(`${kind}_img`);
         const asset = await uploadedAssetForImport({
           repository: projectRepository(),
@@ -398,4 +405,23 @@ function uploadedTilesetIdForAsset(assetId: UploadedAsset["id"]): TilesetDef["id
 function currentMapId(): string {
   const project = store.getCurrent();
   return editorState.get().currentMapId ?? project.startMapId;
+}
+
+/** Both dimensions must contain whole tiles; never infer 16 vs 32 from sheet width. */
+function chooseChipsetTileSize(width: number, height: number): Promise<number | null> {
+  const sizes = [16, 32].filter(size => width >= size && height >= size && width % size === 0 && height % size === 0);
+  if (!sizes.length) {
+    toast("칩셋 이미지의 가로·세로는 16 또는 32의 배수여야 합니다.", "error");
+    return Promise.resolve(null);
+  }
+  return new Promise(resolve => {
+    let selected: number | null = null;
+    openDialog("chipset-import-size", "타일 크기 선택", [
+      el("p", { text: `${width}×${height}px 이미지에서 타일 한 칸의 크기를 선택하세요.` }),
+    ], sizes.map(size => ({
+      label: `${size}×${size}px (${width / size}열 × ${height / size}행)`,
+      testid: `chipset-import-${size}`,
+      action: () => { selected = size; },
+    })), undefined, () => resolve(selected));
+  });
 }

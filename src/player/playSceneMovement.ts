@@ -1,3 +1,4 @@
+import { mapTileSize } from "@/project/tileGeometry";
 import { updateDetectionEncounters } from "./npcDetectionEncounter";
 import { BattleAdmissionError } from "@/project/battleAdmission";
 import { advanceFurniturePush, beginFurniturePush, clearFurniturePush, furniturePushFrames } from './furniturePushAnimation';
@@ -217,8 +218,8 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
     applyGen1FieldPoisonStep(project, scene.session);
     applyTerrainStepDamage(scene);
     scene.moving = false;
-    scene.player.x = footprintSpriteX(scene.tileX, footprint);
-    scene.player.y = characterSpriteY(scene.tileY);
+    scene.player.x = footprintSpriteX(scene.tileX, footprint, mapTileSize(scene.map));
+    scene.player.y = characterSpriteY(scene.tileY, mapTileSize(scene.map));
     updateCharacterDepth(scene.player, "same");
     if (hopState) {
       scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
@@ -237,8 +238,8 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
   }
   const px = linear(scene.movingFrom.x, scene.movingTo.x, scene.moveProgress);
   const py = linear(scene.movingFrom.y, scene.movingTo.y, scene.moveProgress);
-  scene.player.x = footprintSpriteX(px, footprint);
-  scene.player.y = characterSpriteY(py);
+  scene.player.x = footprintSpriteX(px, footprint, mapTileSize(scene.map));
+  scene.player.y = characterSpriteY(py, mapTileSize(scene.map));
   updateCharacterDepth(scene.player, "same");
   if (hopState) {
     // 공중에서는 걸음을 젓지 않는다. 리프트는 setFrame 뒤에 얹어야 원점이 살아남는다.
@@ -275,8 +276,8 @@ function advancePlayerStationaryHopFrame(scene: PlaySceneContext): void {
   const totalFrames = framesForDuration(hopState.hop.durationMs);
   hopState.elapsedFrames = Math.min(totalFrames, hopState.elapsedFrames + 1);
   // 점프 중에도 가로 위치는 몸 중앙이다 — 폭 2 이상인 주인공이 착지에서 반 칸 튀지 않게 한다.
-  const groundX = footprintSpriteX(scene.tileX, resolvePlayerBody(store.getCurrent(), scene.session).footprint);
-  const groundY = characterSpriteY(scene.tileY);
+  const groundX = footprintSpriteX(scene.tileX, resolvePlayerBody(store.getCurrent(), scene.session).footprint, mapTileSize(scene.map));
+  const groundY = characterSpriteY(scene.tileY, mapTileSize(scene.map));
   scene.player.x = groundX;
   scene.player.y = groundY;
   updateCharacterDepth(scene.player, "same");

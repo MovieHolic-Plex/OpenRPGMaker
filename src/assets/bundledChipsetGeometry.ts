@@ -10,12 +10,14 @@ import {
 
 /** Source atlas geometry, shared by frame registration, previews and tile grafts. */
 export function bundledChipsetTileSize(key: string): number {
+  if (key === "tex_slates_32") return 32;
   if (key === CASTLE_TILESET_TEXTURE_KEY) return CASTLE_TILE_SIZE;
   if (key === CASTLE_REFERENCE_TILESET_TEXTURE_KEY) return CASTLE_REFERENCE_TILE_SIZE;
   return RESOURCE_SLICING.chipset.cellWidth;
 }
 
 export function bundledChipsetTilesPerRow(key: string): number {
+  if (key === "tex_slates_32") return 56;
   if (key === CASTLE_TILESET_TEXTURE_KEY) return CASTLE_TILES_PER_ROW;
   if (key === CASTLE_REFERENCE_TILESET_TEXTURE_KEY) return CASTLE_REFERENCE_TILES_PER_ROW;
   return RESOURCE_SLICING.chipset.columns;

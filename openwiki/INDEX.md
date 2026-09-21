@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **72쪽 / 3060KB / 약 866,860 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **81쪽 / 3161KB / 약 897,777 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -21,7 +21,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-event-authoring.md` | 151KB | 77KB ⚠상한 초과 — 절을 더 쪼개라 | 827 | ~43,889 |
 | `openwiki/editor-event-commands.md` | 61KB | 32KB | 242 | ~16,671 |
 | `openwiki/editor-interior-room-harness.md` | 92KB | 6KB | 445 | ~26,769 |
-| `openwiki/editor-pre-edit-routing.md` | 127KB | 69KB ⚠상한 초과 — 절을 더 쪼개라 | 731 | ~36,870 |
+| `openwiki/editor-pre-edit-routing.md` | 128KB | 69KB ⚠상한 초과 — 절을 더 쪼개라 | 735 | ~36,936 |
 | `openwiki/editor-workflows-misc.md` | 67KB | 30KB | 472 | ~18,206 |
 | `openwiki/runtime-battle.md` | 163KB | 31KB | 763 | ~46,614 |
 | `openwiki/runtime-project-schema.md` | 159KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 1134 | ~43,615 |
@@ -41,7 +41,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 109, 122, 123, 125, 128, 129 |
 | `openwiki/editor-observability.md` | 1 | 333 |
-| `openwiki/editor-pre-edit-routing.md` | 5 | 536, 545, 553, 557, 580 |
+| `openwiki/editor-pre-edit-routing.md` | 5 | 540, 549, 557, 561, 584 |
 | `openwiki/state-system.md` | 2 | 3, 84 |
 
 ## 없는 파일을 가리키는 참조
@@ -53,7 +53,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/PROJECT_WIKI.md` | 2 | `.part-N.css`, `src/styles/editor/core.part-1.css` |
 | `openwiki/ai-workflow.md` | 3 | `src/ai/plannerSkip.ts`, `test/tilesetAiClient.test.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/bgm-catalog.md` | 4 | `artifacts/bgm-release/bgm-release-v1.json`, `catalog.raw.json`, `output/evidence/agy-interface-smoke-transcript.json`, `output/evidence/audio-ai-final/ingestion-report.json` |
-| `openwiki/castle-map.md` | 1 | `save-proof.json` |
+| `openwiki/castle-map.md` | 6 | `output/castle-reference-revision/runtime/SUMMARY.md`, `output/castle-study/runtime/SUMMARY.md`, `output/grand-castle/composite-recipes.json`, `output/grand-castle/runtime/SUMMARY.md`, `output/grand-castle/save-proof.json`, `save-proof.json` |
 | `openwiki/connected-dungeon-generation.md` | 1 | `verify-shots/runtime-qa/connected-dungeon-editor/SUMMARY.md` |
 | `openwiki/delayed-tooltip.md` | 1 | `src/styles/editor/delayed-tooltip.css` |
 | `openwiki/editor-ai-panel.md` | 71 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `06-page-modern-forms.css`, `07-wide-compact.png`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiTeamDeck.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `assistantP2ReviewIntegration.test.ts`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `functionalCompositeClarification.test.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/acceptance-live/README.md`, `output/evidence/ai-activity-levels/06-wide.png`, `output/evidence/ai-team-budget/SUMMARY.json`, `output/evidence/ai-team-menu/SUMMARY.json`, `output/evidence/ai-team-sidebar/SUMMARY.md`, `output/evidence/assistant-clean-glass/phase-2/implementation.md`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `output/evidence/studio-drawer/qa/capture-report.json`, `output/evidence/ultrabrain/settings.png`, `plan-wire.json`, `regionIntentRouter.ts`, `review-input.png`, `roles-wire.json`, `scripts/qa/assistant-side-seam-hittest.mjs`, `specialists.png`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `src/styles/editor/ghost-phase-chip.css`, `test/agentBlueprintTurnEnd.test.ts`, `test/aiChatObservability.test.ts`, `test/aiChatPanelUxRepairs.test.ts`, `test/aiChatSessionScope.test.ts`, `test/aiComposerEffortPanel.test.ts`, `test/aiConversationRemoteHistory.test.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/aiNewGoalDraftRetirement.test.ts`, `test/aiNewGoalEarlyOwnership.test.ts`, `test/aiPanelContextSurfaces.test.ts`, `test/aiStickyChecklist.test.ts`, `test/aiToolCallSessionProtocol.test.ts`, `test/aiWorkItemStall.test.ts`, `test/assistantAcceptance.test.ts`, `test/assistantAcceptanceSession.test.ts`, `test/assistantImageTransport.test.ts`, `test/assistantSpatialObligations.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/editSceneCameraFocus.test.ts`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/regionTaskRun.test.ts`, `test/tilesetAiClient.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts`, `verify-shots/feature16-ai/01-library.png`, `writer-wire.json` |
@@ -76,12 +76,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/night-monster.md` | 1 | `verify-shots/runtime-qa/night-monster/SUMMARY.md` |
 | `openwiki/project-wiki.md` | 2 | `projectWikiSession.test.ts`, `projectWikiTimeout.test.ts` |
 | `openwiki/runtime-action-combat.md` | 1 | `export-player/player.html` |
-| `openwiki/runtime-battle.md` | 7 | `battle.css`, `hero-03-battle-idle.png`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `raw.png`, `reference.png`, `src/styles/runtime/battle/18-pokemon-layout-redesign.css`, `starter/hires/hero-0N-battle.png` |
+| `openwiki/runtime-battle.md` | 6 | `battle.css`, `hero-03-battle-idle.png`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `raw.png`, `src/styles/runtime/battle/18-pokemon-layout-redesign.css`, `starter/hires/hero-0N-battle.png` |
 | `openwiki/runtime-m2-flow-controls.md` | 3 | `test/runtimePictureStacking.test.ts`, `verify-shots/runtime-qa/cloud-shadows/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md` |
 | `openwiki/runtime-pre-edit-routing.md` | 4 | `editor/core.part-1.css`, `test/playerInputCss.test.ts`, `test/runtimeQaInstrumentationBoundary.test.ts`, `verify-shots/runtime-qa/emote/SUMMARY.md` |
 | `openwiki/runtime-project-schema.md` | 20 | `.json`, `.png`, `devMediaPromotion.test.ts`, `dist-electron/main.cjs`, `interiorLoadConsistency.test.ts`, `mediaImportDurability.test.ts`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `src/project/supabaseProjectSync.ts`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/io.test.ts`, `test/mapPlanningReuse.test.ts`, `test/sharedDemoStore.test.ts`, `test/supabaseCanonicalRoundtrip.live.test.ts`, `test/supabaseMapPatchRecovery.test.ts`, `test/supabaseProjectSync.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `transactionalRemoteSourceLineage.test.ts` |
 | `openwiki/runtime-sessions.md` | 4 | `output/evidence/stardew/stardew-supabase.json`, `verify-shots/runtime-qa/feature16-player/SUMMARY.md`, `verify-shots/runtime-qa/menu-design/SUMMARY.md`, `verify-shots/runtime-qa/weather-after/SUMMARY.md` |
 | `openwiki/se-catalog.md` | 8 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `labels.json`, `placed.json`, `test/audioDescriptionCommandSurfaces.test.ts` |
+| `openwiki/slates-assembly-playbook.md` | 1 | `ville_0.png` |
+| `openwiki/slates-study.md` | 1 | `source-row.json` |
 | `openwiki/spatial-authoring-controller.md` | 1 | `storeMutationInstrumentation.test.ts` |
 | `openwiki/spatial-catalog-ui.md` | 1 | `output/evidence/interior-removal-executed/host-proof.json` |
 | `openwiki/spatial-geography-compiler.md` | 1 | `.omo/ulw-execute/tile-to-world/execution-policy.md` |
@@ -95,18 +97,18 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 ## 페이지별 절 좌표
 
-### `openwiki/PROJECT_WIKI.md` — 12KB · 148줄 · ~3,183 토큰
+### `openwiki/PROJECT_WIKI.md` — 13KB · 151줄 · ~3,354 토큰
 
 - `L5` Purpose
 - `L16` Required pre-edit read order
-- `L59` Project identity
-- `L68` Main ownership boundaries
-- `L100` Authored tile placement references
-- `L104` How an AI should use this wiki
-- `L115` Supabase DB mandatory (see root `AGENTS.md`)
-- `L121` Desktop UI integration truth (2026-08-11)
-- `L129` Per-project wiki structure
-- `L145` Staleness rule
+- `L62` Project identity
+- `L71` Main ownership boundaries
+- `L103` Authored tile placement references
+- `L107` How an AI should use this wiki
+- `L118` Supabase DB mandatory (see root `AGENTS.md`)
+- `L124` Desktop UI integration truth (2026-08-11)
+- `L132` Per-project wiki structure
+- `L148` Staleness rule
 
 ### `openwiki/agent-tile-benchmark.md` — 11KB · 195줄 · ~3,365 토큰
 
@@ -680,34 +682,35 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L486` 검증
 - `L493` Feature16 저작 보조 관측 경계 (2026-09-21)
 
-### `openwiki/editor-pre-edit-routing.md` — 127KB · 731줄 · ~36,870 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 128KB · 735줄 · ~36,936 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
-- `L7` 맵 목록 클릭은 즉시 선택한다 (2026-09-18 후속)
-- `L55` 맵 전환과 물 타일 애니메이션 공유 (2026-09-18)
-- `L73` 편집기 재렌더 비용 — 줌은 카메라 경로다 (2026-09-16)
-  - `L109` 커스텀 칩 팔레트의 빈틈 없는 표시 (2026-09-21)
-- `L124` Exterior door backing
-- `L134` Tile brush reliability (2026-09-06)
-- `L172` Combo Brush (2026-09-10, OPRN-OUT-022)
-  - `L177` 용어 (코드와 UI 가 같은 말을 쓴다)
-  - `L189` 소유 경계
-  - `L201` 근거 규칙 — 번호 인접으로 추론하지 않는다
-  - `L212` 검토 책임
-  - `L224` 경계와 진단
-  - `L234` 회귀 이음줌
-- `L246` Pre-edit routing
-  - `L248` 명명 로케이션 레이어 (2026-09-10)
-  - `L330` 로케이션 역할과 겹침 클릭 (2026-09-12)
-  - `L368` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
-  - `L370` 로케이션 앵커 — 좌표 대신 이름으로 가리키기 (2026-09-12)
-  - `L423` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
-  - `L483` Automatic usage guides disabled (2026-09-06)
-  - `L493` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
-- `L599` Agent cautions
-- `L609` 헤더 용어 정본과 중복 감사 (2026-08-30)
-  - `L645` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
-  - `L677` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
-  - `L706` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
+- `L3` 맵별 16/32px 좌표
+- `L11` 맵 목록 클릭은 즉시 선택한다 (2026-09-18 후속)
+- `L59` 맵 전환과 물 타일 애니메이션 공유 (2026-09-18)
+- `L77` 편집기 재렌더 비용 — 줌은 카메라 경로다 (2026-09-16)
+  - `L113` 커스텀 칩 팔레트의 빈틈 없는 표시 (2026-09-21)
+- `L128` Exterior door backing
+- `L138` Tile brush reliability (2026-09-06)
+- `L176` Combo Brush (2026-09-10, OPRN-OUT-022)
+  - `L181` 용어 (코드와 UI 가 같은 말을 쓴다)
+  - `L193` 소유 경계
+  - `L205` 근거 규칙 — 번호 인접으로 추론하지 않는다
+  - `L216` 검토 책임
+  - `L228` 경계와 진단
+  - `L238` 회귀 이음줌
+- `L250` Pre-edit routing
+  - `L252` 명명 로케이션 레이어 (2026-09-10)
+  - `L334` 로케이션 역할과 겹침 클릭 (2026-09-12)
+  - `L372` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
+  - `L374` 로케이션 앵커 — 좌표 대신 이름으로 가리키기 (2026-09-12)
+  - `L427` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
+  - `L487` Automatic usage guides disabled (2026-09-06)
+  - `L497` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
+- `L603` Agent cautions
+- `L613` 헤더 용어 정본과 중복 감사 (2026-08-30)
+  - `L649` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
+  - `L681` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
+  - `L710` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
 
 ### `openwiki/editor-storage-chest.md` — 2KB · 17줄 · ~571 토큰
 
@@ -894,7 +897,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L131` Combat acceptance slice
 - `L143` Verification
 
-### `openwiki/quickstart.md` — 19KB · 197줄 · ~5,466 토큰
+### `openwiki/quickstart.md` — 19KB · 198줄 · ~5,544 토큰
 
 - `L6` 0. 여기서 에이전트가 실제로 헤매는 이유 (실측 2026-08-30)
 - `L17` 1. 환경 — 여기가 틀리면 이후 전부 헛수고
@@ -903,8 +906,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L89` 1b. 전체 BGM은 Release 팩으로 설치
 - `L105` 2. 검증 — 무엇이 진짜 게이트인가
 - `L132` 3. 어디를 고치나 — 기능 → 진입 파일
-- `L179` 4. 위키를 읽는 법
-- `L191` 5. 끝났다고 말할 수 있는 조건
+- `L180` 4. 위키를 읽는 법
+- `L192` 5. 끝났다고 말할 수 있는 조건
 
 ### `openwiki/release-and-version.md` — 9KB · 158줄 · ~2,734 토큰
 
@@ -1002,15 +1005,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L247` Genre ambience presets and sound pairing (2026-09-21)
   - `L271` Thirty audiovisual presets — evidence (2026-09-21)
 
-### `openwiki/runtime-pre-edit-routing.md` — 44KB · 304줄 · ~12,908 토큰
+### `openwiki/runtime-pre-edit-routing.md` — 45KB · 308줄 · ~12,974 토큰
 
-- `L193` ESC skill thumbnails (2026-09-06)
-- `L204` Recovered head emotes (2026-09-05)
-- `L210` 메뉴 입력·불러오기 배율 (2026-09-05)
-- `L218` 가구 밀기 애니메이션 (2026-09-05)
-- `L227` Recovered head emotes (2026-09-05)
-- `L233` Saved uploaded tilesets in the actual player (2026-09-14)
-- `L254` 맵 배경(패럴랙스) 렌더 (2026-09-14)
+- `L3` 맵별 16/32px 좌표
+- `L197` ESC skill thumbnails (2026-09-06)
+- `L208` Recovered head emotes (2026-09-05)
+- `L214` 메뉴 입력·불러오기 배율 (2026-09-05)
+- `L222` 가구 밀기 애니메이션 (2026-09-05)
+- `L231` Recovered head emotes (2026-09-05)
+- `L237` Saved uploaded tilesets in the actual player (2026-09-14)
+- `L258` 맵 배경(패럴랙스) 렌더 (2026-09-14)
 
 ### `openwiki/runtime-project-schema.md` — 159KB · 1134줄 · ~43,615 토큰 · 통째읽기 잘림
 
@@ -1115,6 +1119,154 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L198` How authors reach the sounds
 - `L215` Project sound descriptions
 - `L242` Traps
+
+### `openwiki/slates-agent-entry.md` — 3KB · 38줄 · ~991 토큰
+
+- `L5` 필수 읽기 순서
+- `L17` 파일과 의미
+- `L31` 새 맵의 완료 조건
+- `L35` 문서만 전달하는 독립 실험
+
+### `openwiki/slates-assembly-playbook.md` — 10KB · 106줄 · ~3,265 토큰
+
+- `L9` 1. 이번에 폐기하는 일반화
+- `L17` 2. 필수 입력과 정확한 합성 해독
+- `L40` 3. 조립 카드의 형식 — 그림과 좌표를 함께
+- `L57` 4. 접합별 올바른 상태와 반례
+- `L75` 5. 밀도와 골목 — 실측과 설계 제안을 구분
+- `L86` 6. 필수 단계 — 앞 단계의 결함을 마을로 복제하지 않는다
+- `L96` 7. 네 가지 판정을 분리
+
+### `openwiki/slates-atlas-review.md` — 20KB · 465줄 · ~5,777 토큰
+
+- `L5` 기본 잔디 (grass)
+- `L15` 모래 바닥 (sand)
+- `L25` 흙 바닥 (earth)
+- `L35` 석재 포장 (paving)
+- `L45` 무성한 잔디 (wild-grass)
+- `L55` 석축 띠 (stone-border)
+- `L65` 잔디 경계 / 빈 받침 (grass-edge)
+- `L75` 수련과 선인장 (lily)
+- `L85` 바위 세 변종 (rocks)
+- `L95` 검은 반투명 그림자 (shadow)
+- `L105` 포장 연결 조각 (paving-alt)
+- `L115` 꽃 장식 (flowers)
+- `L125` 침엽수 군락 (pine-cluster)
+- `L135` 활엽수 군락 (leaf-cluster)
+- `L145` 수관·묘목·그루터기 (tree-parts)
+- `L155` 독립 나무 / 덤불 (single-trees)
+- `L165` 잔디 절벽 (cliff)
+- `L175` 모래 물결 / 해안 (water)
+- `L185` 폭포와 낙수 (falls)
+- `L195` 수변 석축 (water-wall)
+- `L205` 도개교 / 사슬 (drawbridge)
+- `L215` 목재 다리 / 부두 (dock)
+- `L225` 방향 표지판 (signpost)
+- `L235` 계단 / 사면 (stairs)
+- `L245` 마른 우물 / 물 우물 (well)
+- `L255` 목조 골조 / 창 (timber)
+- `L265` 성탑 변형 (towers)
+- `L275` 화단 창 / 돌출층 (balcony)
+- `L285` 지붕 / 박공 (roof)
+- `L295` 횃불 / 작은 장식 (torch)
+- `L305` 성벽 면 / 아치 (castle-face)
+- `L315` 성벽 보행로 / 흉벽 (battlement)
+- `L325` 배 / 돛대 / 묘비 (ships)
+- `L335` 붉은 차양 (red-awning)
+- `L345` 마당 포장 테두리 (court-border)
+- `L355` 문자 간판 (shop-sign)
+- `L365` 성의 긴 창 (gothic-window)
+- `L375` 기둥 / 아케이드 (columns)
+- `L385` 철문 / 도르래 (gate)
+- `L395` 물레방아 (waterwheel)
+- `L405` 풍차 날개 (windmill)
+- `L415` 사다리 (ladders)
+- `L425` 푸른 차양 / 깃발 (blue-awning)
+- `L435` 그림 간판 (pictogram)
+- `L445` 상자·문·벤치·깃발 (small-props)
+- `L455` 물 / 난간 / 작은 파편 (water-top)
+
+### `openwiki/slates-dense-town.md` — 6KB · 50줄 · ~1,902 토큰
+
+- `L7` 실패를 반복하지 않는 기준
+- `L13` 이번 50×50 맵의 필수 완료 기준
+- `L24` 이미 배운 건물을 재사용하는 정확한 방법
+- `L41` 작업 순서와 제출
+
+### `openwiki/slates-structure-learning.md` — 11KB · 137줄 · ~3,376 토큰
+
+- `L7` 학습 자료와 범위
+- `L21` 1. 좌표와 조각의 단위
+- `L32` 2. 건물은 박공 삼각형 하나가 아니다
+- `L50` 3. 성벽·성문·탑의 단면
+- `L68` 4. 기단·계단·그림자는 높이를 설명한다
+- `L81` 5. 자연·수면·부두·소품의 경계
+- `L95` 6. 성곽 마을 배치에 적용할 순서
+- `L106` 7. 저장된 관찰 자료와 다음 작업의 계약
+- `L126` 숫자 비교를 재현할 때
+
+### `openwiki/slates-structure-samples.md` — 30KB · 473줄 · ~9,241 토큰
+
+- `L5` 성문과 쌍탑 (gate)
+- `L17` 직선 성벽의 단면 (wall)
+- `L29` 높이가 꺾이는 성벽 (wall-step)
+- `L41` 울타리와 묘역 (cemetery)
+- `L53` 둥근 탑과 긴 첨탑 (tower)
+- `L65` 높은 석조 건물의 전면 (church)
+- `L77` 돌출층과 박공이 있는 집 (projecting-house)
+- `L89` 연결 상점가와 지붕 접합 (joined-shops)
+- `L101` 기단으로 둘러싼 숲 정원 (raised-garden)
+- `L113` 우물과 골목의 결절 (well-court)
+- `L125` 시장 판매대와 성벽 안뜰 (market)
+- `L137` 앞동과 옆동이 연결된 여관 (inn)
+- `L149` 깊은 지붕과 지붕창의 접합 (roof-junction)
+- `L161` 절벽 사이의 긴 계단 (stairs)
+- `L173` 암벽과 동굴 입구 (cave)
+- `L185` 좁은 강과 낙수 (falls)
+- `L197` 가로 목교와 양쪽 강둑 (bridge)
+- `L209` 곡선 해안과 풀밭 접점 (shore)
+- `L221` 대각 부두와 가로 부두 연결 (pier-junction)
+- `L233` 큰 배의 선체와 돛대 (ship-large)
+- `L245` 작은 배와 부두 접안 (ship-small)
+- `L257` 계단으로 둘러싼 입체 중정 (terraced-court)
+- `L269` 수로 아치와 배수 격자 (water-arches)
+- `L281` 성벽 보행로의 모서리 (parapet-corner)
+- `L293` 깃발과 긴 창이 있는 성 전면 (castle-facade)
+- `L305` 긴 창과 깃발의 수직 조합 (gothic)
+- `L317` 앞마당과 긴 흉벽 (forecourt)
+- `L329` 석재 화단과 나무 (planter)
+- `L341` 성벽 중앙 두 칸 늘리기 (wall-long)
+- `L352` 지붕 깊이 한 칸 늘리기 (roof-deep)
+- `L363` 계단 디딤판 두 행 늘리기 (stairs-long)
+- `L374` 긴 창 중간 한 행 늘리기 (window-tall)
+- `L385` 물레방아 자세 1 (waterwheel-0)
+- `L396` 물레방아 자세 2 (waterwheel-1)
+- `L407` 물레방아 자세 3 (waterwheel-2)
+- `L418` 물레방아 자세 4 (waterwheel-3)
+- `L429` 풍차 날개 자세 1 (windmill-0)
+- `L440` 풍차 날개 자세 2 (windmill-1)
+- `L451` 풍차 날개 자세 3 (windmill-2)
+- `L462` 풍차 날개 자세 4 (windmill-3)
+
+### `openwiki/slates-study.md` — 5KB · 67줄 · ~1,427 토큰
+
+- `L5` 산출물과 근거
+- `L21` 확인한 조립 규칙
+- `L34` 받침과 AI 메타의 함정
+- `L45` 저장된 연구실
+- `L55` 재현 순서
+
+### `openwiki/slates-village-authoring.md` — 9KB · 142줄 · ~2,906 토큰
+
+- `L9` 1. 근거를 찾는 순서
+- `L20` 2. 땅·길·물
+- `L37` 3. 집 — 지붕과 벽을 분리
+- `L57` 4. 나무 — 한 그루의 범위를 지킨다
+- `L71` 5. 마을 소품 — 의미에 맞는 자리
+- `L82` 6. 레이어·저장·완료 조건
+- `L97` 7. 50×50 적용 사례
+  - `L110` 50×50에서 추가로 확인한 조립
+  - `L130` 다음 작업의 입력과 저장
 
 ### `openwiki/small-village-generation.md` — 13KB · 148줄 · ~4,117 토큰
 
@@ -1354,6 +1506,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1893` Feature16 통합 검증 (2026-09-21)
   - `L1901` 필드 HUD 브라우저 증거 (2026-09-21)
   - `L1907` 장르 HUD 시각 확인 (2026-09-21)
+
+### `openwiki/tile-geometry.md` — 5KB · 74줄 · ~1,651 토큰
+
+- `L3` 좌표 계약
+- `L21` 원본 아틀라스와 표시 크기의 구분
+- `L38` 브라우저 근거
+- `L51` Slates 참고 맵 3종
 
 ### `openwiki/tile-layer-policy.md` — 19KB · 247줄 · ~5,867 토큰
 

@@ -41,6 +41,7 @@ export function renderTilesetProperties(tileset: TilesetDef, rerender: () => voi
           }),
         ],
       }),
+      el("p", { text: `${tileset.tileSize}×${tileset.tileSize}px · ${tileset.tilesPerRow}열 · ${tileset.count}타일` }),
       renderTransparentColorField(tileset, rerender),
       renderSectionTabs(rerender),
     ],
@@ -146,7 +147,7 @@ function chipsetDisplayName(imageId: string): string {
 function openTilesetGraphicPicker(tileset: TilesetDef, rerender: () => void): void {
   const applyImage = (image: TilesetDef["image"]): void => {
     const sameId = tileset.image.type === image.type && tileset.image.id === image.id;
-    if (sameId && !needsChipsetGeometry(tileset)) {
+    if (sameId && (tileset.image.type === "uploaded" || !needsChipsetGeometry(tileset))) {
       closeTilesetGraphicPicker();
       return;
     }
@@ -155,7 +156,12 @@ function openTilesetGraphicPicker(tileset: TilesetDef, rerender: () => void): vo
       const target = project.tilesets[tileset.id];
       if (!target) return;
       if (!sameId) target.image = image;
-      if (isChipsetSource(image, project)) applyChipsetGeometry(target);
+      if (isChipsetSource(image, project)) {
+        applyChipsetGeometry(target);
+        for (const map of Object.values(project.maps)) {
+          if (map.tilesetId === target.id) map.tileSize = target.tileSize;
+        }
+      }
     });
     closeTilesetGraphicPicker();
     rerender();
@@ -204,20 +210,31 @@ function isChipsetSource(image: TilesetDef["image"], project: ReturnType<typeof 
   return kind === "chipset" || kind === "tileset";
 }
 
+function sourceGeometry(tileset: TilesetDef): { tileSize: number; tilesPerRow: number; count: number } {
+  if (tileset.image.type === "bundled") return {
+    tileSize: bundledChipsetTileSize(tileset.image.id),
+    tilesPerRow: bundledChipsetTilesPerRow(tileset.image.id),
+    count: bundledChipsetFrameCount(tileset.image.id),
+  };
+  const asset = store.getCurrent().assets.uploaded[tileset.image.id];
+  const tileSize = asset?.meta.tileSize ?? tileset.tileSize;
+  const tilesPerRow = asset?.meta.width ? Math.max(1, Math.floor(asset.meta.width / tileSize)) : tileset.tilesPerRow;
+  const count = asset?.meta.height ? tilesPerRow * Math.max(1, Math.floor(asset.meta.height / tileSize)) : tileset.count;
+  return { tileSize, tilesPerRow, count };
+}
+
 function applyChipsetGeometry(tileset: TilesetDef): void {
-  tileset.tilesPerRow = bundledChipsetTilesPerRow(tileset.image.id);
-  tileset.tileSize = bundledChipsetTileSize(tileset.image.id);
-  resizeTilesetSlotArrays(tileset, bundledChipsetFrameCount(tileset.image.id));
-  if (tileset.count > TILE_FRAME_COUNT) tileset.kind = "custom";
+  const geometry = sourceGeometry(tileset);
+  tileset.tilesPerRow = geometry.tilesPerRow;
+  tileset.tileSize = geometry.tileSize;
+  resizeTilesetSlotArrays(tileset, geometry.count);
+  if (tileset.count > TILE_FRAME_COUNT || tileset.tileSize !== 16) tileset.kind = "custom";
 }
 
 function needsChipsetGeometry(tileset: TilesetDef): boolean {
-  return (
-    tileset.tilesPerRow !== bundledChipsetTilesPerRow(tileset.image.id) ||
-    tileset.tileSize !== bundledChipsetTileSize(tileset.image.id) ||
-    tileset.count !== bundledChipsetFrameCount(tileset.image.id) ||
-    tileset.passability.length !== bundledChipsetFrameCount(tileset.image.id)
-  );
+  const geometry = sourceGeometry(tileset);
+  return tileset.tilesPerRow !== geometry.tilesPerRow || tileset.tileSize !== geometry.tileSize
+    || tileset.count !== geometry.count || tileset.passability.length !== geometry.count;
 }
 
 function resizeTilesetSlotArrays(tileset: TilesetDef, newCount: number): void {

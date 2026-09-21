@@ -1,5 +1,9 @@
 # Editor Pre-edit Routing & Cautions
 
+## 맵별 16/32px 좌표
+
+타일 크기 관련 수정은 [tile-geometry.md](tile-geometry.md)를 먼저 읽는다. 원본 아틀라스 슬라이싱과 맵 월드 좌표, 미리보기 표시 크기를 구분한다.
+
 > **Encoding note:** Some Korean descriptive text has EUC-KR→UTF-8 mojibake from the original source commit. English terms, file paths, and code references are intact. For accurate Korean, consult the referenced source files. Partial automated restoration applied; remaining garbled CJK is irreversibly corrupted.
 
 Read this before editing editor-facing behavior. Identifies which workflow owns a request and lists agent cautions.

@@ -1,0 +1,269 @@
+{
+  "image": "openwiki/images/slates/assembly-v2/reference-town.png",
+  "displayToNativeScale": 0.5,
+  "nativeSize": [
+    544,
+    480
+  ],
+  "method": "Manual approximate visual silhouette polygons and explicit cross-sections. Not object segmentation ground truth; clipped buildings and small wall overlap remain. Counts refer only to this view.",
+  "interiorCrop": [
+    0,
+    0,
+    544,
+    344
+  ],
+  "buildingSilhouettePolygons": [
+    [
+      [
+        0,
+        0
+      ],
+      [
+        38,
+        0
+      ],
+      [
+        38,
+        99
+      ],
+      [
+        0,
+        99
+      ]
+    ],
+    [
+      [
+        48,
+        48
+      ],
+      [
+        94,
+        0
+      ],
+      [
+        116,
+        0
+      ],
+      [
+        128,
+        40
+      ],
+      [
+        128,
+        98
+      ],
+      [
+        62,
+        98
+      ]
+    ],
+    [
+      [
+        153,
+        0
+      ],
+      [
+        224,
+        0
+      ],
+      [
+        225,
+        41
+      ],
+      [
+        233,
+        42
+      ],
+      [
+        233,
+        103
+      ],
+      [
+        153,
+        103
+      ]
+    ],
+    [
+      [
+        0,
+        93
+      ],
+      [
+        80,
+        93
+      ],
+      [
+        101,
+        64
+      ],
+      [
+        125,
+        99
+      ],
+      [
+        125,
+        160
+      ],
+      [
+        0,
+        160
+      ]
+    ],
+    [
+      [
+        0,
+        161
+      ],
+      [
+        92,
+        161
+      ],
+      [
+        95,
+        133
+      ],
+      [
+        120,
+        110
+      ],
+      [
+        192,
+        158
+      ],
+      [
+        200,
+        264
+      ],
+      [
+        0,
+        234
+      ]
+    ],
+    [
+      [
+        250,
+        179
+      ],
+      [
+        290,
+        121
+      ],
+      [
+        345,
+        178
+      ],
+      [
+        353,
+        210
+      ],
+      [
+        354,
+        294
+      ],
+      [
+        250,
+        294
+      ]
+    ],
+    [
+      [
+        412,
+        88
+      ],
+      [
+        438,
+        54
+      ],
+      [
+        454,
+        165
+      ],
+      [
+        473,
+        165
+      ],
+      [
+        473,
+        0
+      ],
+      [
+        544,
+        0
+      ],
+      [
+        544,
+        298
+      ],
+      [
+        418,
+        298
+      ]
+    ]
+  ],
+  "approxBuildingCoveragePercent": 48.7,
+  "transects": [
+    {
+      "name": "북쪽 두 필지 사이",
+      "line": [
+        136,
+        80,
+        153,
+        80
+      ],
+      "pixels": 17,
+      "tiles32": 0.53125
+    },
+    {
+      "name": "상점과 돌출집 사이",
+      "line": [
+        202,
+        230,
+        251,
+        230
+      ],
+      "pixels": 49,
+      "tiles32": 1.53125
+    },
+    {
+      "name": "상점 남쪽 돌아가는 골목",
+      "line": [
+        175,
+        267,
+        175,
+        282
+      ],
+      "pixels": 15,
+      "tiles32": 0.46875
+    },
+    {
+      "name": "교회 앞 가로 거리",
+      "line": [
+        460,
+        307,
+        460,
+        336
+      ],
+      "pixels": 29,
+      "tiles32": 0.90625
+    }
+  ],
+  "proposedNewMapTargets": {
+    "status": "design starting range, not measured truth or pass/fail quality score",
+    "buildingSilhouetteCoverageOfInterior": [
+      0.45,
+      0.6
+    ],
+    "mainStreetTiles": [
+      2,
+      3
+    ],
+    "sideLanePassableCells": [
+      1,
+      2
+    ],
+    "doorApproachMinCells": 1,
+    "distinctBuildingSilhouettesMin": 4,
+    "sameSilhouetteConsecutiveMax": 2
+  },
+  "collisionWarning": "A 0.5 tile visual gap is not a traversable 32px cell. Keep at least one whole passable cell along intended routes; half-cell art belongs at the edges."
+}

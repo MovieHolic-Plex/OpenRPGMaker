@@ -122,10 +122,10 @@ function drawTile(
   const row = Math.floor(tile / tileset.tilesPerRow);
   context.drawImage(
     image,
-    column * TILE_SIZE,
-    row * TILE_SIZE,
-    TILE_SIZE,
-    TILE_SIZE,
+    column * tileset.tileSize,
+    row * tileset.tileSize,
+    tileset.tileSize,
+    tileset.tileSize,
     destX,
     destY,
     cellPx,
