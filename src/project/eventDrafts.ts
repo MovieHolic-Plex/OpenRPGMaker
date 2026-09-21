@@ -73,6 +73,20 @@ export function projectWithoutEventDrafts(project: Project): Project {
 }
 
 /**
+ * A new draft has never been canonical, so a save round-trip must put it back.
+ * An edit draft whose id is missing from the incoming project was deleted.
+ * Putting that event back would undo the deletion on the next save.
+ */
+export function shouldRetainOpenEventDraft(
+  incomingEvents: readonly { readonly id: string }[] | undefined,
+  event: GameEvent,
+): boolean {
+  if (!event.draft) return false;
+  if (event.draft.kind === "new") return true;
+  return (incomingEvents ?? []).some((item) => item.id === event.id);
+}
+
+/**
  * Re-apply in-memory event editor drafts onto a canonical saved project.
  * Canonical persistence omits new drafts and keeps edit originals; this restores
  * the local working body plus draft metadata so the session and Cancel survive
@@ -84,7 +98,7 @@ export function projectWithPreservedEventDrafts(saved: Project, live: Project): 
     const targetMap = next.maps[mapId];
     if (!targetMap) continue;
     for (const liveEvent of liveMap.events) {
-      if (!liveEvent.draft) continue;
+      if (!shouldRetainOpenEventDraft(targetMap.events, liveEvent)) continue;
       const index = targetMap.events.findIndex((event) => event.id === liveEvent.id);
       if (index >= 0) {
         // Prefer live working body + draft meta over the stripped snapshot.

@@ -1,4 +1,4 @@
-// AI 활동 로그 — 채팅/영역 작업/타일셋 분석 등 AI가 할 때마다 로컬 링버퍼 + (가능하면) Supabase에 남긴다.
+// AI 활동 로그 — 채팅/영역 작업/타일셋 분석 등 AI가 할 때마다 로컬 링버퍼 + (가능하면) SQLite 프로젝트 폴더에 남긴다.
 // 대화 기록(conversationStore)과 분리: 턴 단위 진단 페이로드(툴 args·결과·uiEvents)를 유지한다.
 import type { AuditEntry } from "@/ai/assistantSession";
 import {
@@ -479,7 +479,7 @@ registerRemoteOutboxSender("ai-activity", async (payload) => {
 /**
  * AI 활동 1건 기록.
  * - 항상 로컬 localStorage 링버퍼에 저장 (표시용 캐시)
- * - Supabase 설정이 있으면 원격에 저장하고, 실패하면 outbox 에 남겨 나중에 재전송
+ * - 프로젝트 폴더가 열려 있으면 거기에 저장하고, 실패하면 outbox 에 남겨 나중에 재전송
  * - Vite 미러 엔드포인트로 디스크 기록 (output/ai-activity/) — 미들웨어가 있을 때만
  * - 같은 id 의 시작/중간/종료 기록은 직렬화한다. 빈 pending 시작 행이 풍부한 행을
  *   덮어쓰지 않는다(2026-09-02: 검토 턴이 tile_erase 를 남기고도 로그는 빈 pending 만).
@@ -624,8 +624,8 @@ function warnLocalOnlyOnce(): void {
   if (state.remote || state.diskMirror) return;
   localOnlyWarned = true;
   console.warn(
-    "[ai-activity] 원격(Supabase)도 디스크 미러도 없다 — AI 기록이 이 탭의 localStorage 링버퍼" +
-      `(${MAX_LOGS}건)에만 남고, 넘치면 사라진다. .env.local 의 Supabase 설정이나 dev/preview 서버를 확인할 것.`,
+    "[ai-activity] 프로젝트 폴더도 디스크 미러도 없다 — AI 기록이 이 탭의 localStorage 링버퍼" +
+      `(${MAX_LOGS}건)에만 남고, 넘치면 사라진다. SQLite 프로젝트 호스트나 dev 서버를 확인할 것.`,
   );
 }
 

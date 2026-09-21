@@ -119,8 +119,8 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
    절차·함정은 `openwiki/agent-worktrees.md` 참조. 다른 도구가 만든 워크트리(`.herdr/`, `.claude/worktrees/`)는
    `node_modules`·`.env.local` 이 없으므로 `npm run wt -- adopt <이름> --path <경로>` 로 먼저 보정한다(dev 포트는 `npm run dev:worktree` 가 스스로 고정 배정한다; `npm run dev` 는 워크트리에서 거절된다) —
    보정 없이 실행하면 전역 tsc 가 잡혀 **저장소 설정이 깨진 것처럼 보이는 가짜 오류**가 난다 (`openwiki/quickstart.md` 1절).
-2. **저작 콘텐츠(맵·이벤트·데모) 작업은 워크트리로 병렬화하지 않는다.** Supabase 프로젝트 행이
-   공유 싱글턴이라 git 이 충돌을 못 본다 — 직렬화하거나 project id 를 분리한다.
+2. **저작 콘텐츠(맵·이벤트·데모) 작업은 워크트리로 병렬화하지 않는다.** 팀 호스트의 SQLite
+   프로젝트 폴더는 공유 싱글턴이라 git 이 충돌을 못 본다 — 직렬화하거나 프로젝트 폴더를 분리한다.
 3. 검증은 **감독자가 직접** `npm run gates` 로 한다. 에이전트는 아래 hard rule 을 따른다.
    에이전트의 "테스트 통과했습니다"와 파이프를 거친 종료 코드는 근거로 쓰지 않는다 (실측: 백그라운드 실행기가 exit 0 을 보고했으나 실제로는
    typecheck exit 2 / vitest exit 1 이었다).
@@ -145,42 +145,45 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
 - 사용자가 **이번 메시지에서** 테스트/게이트를 하라고 적은 경우, 그 명령만.
 - dirty 는 `wip:` 커밋 또는 파일 사본. stash 아님.
 
-## Supabase DB is mandatory (hard rule)
+## SQLite project folder is mandatory (hard rule)
 
-**에이전트는 Supabase 프로젝트 DB 연결 없이 게임/맵/이벤트 콘텐츠 작업을 끝내지 않는다.**  
-“코드 fixture만 만들고 끝”, “임시 세션에서만 돌려보기”, “로컬 JSON export만” 은 **완료로 치지 않는다.**
+**에이전트는 SQLite 프로젝트 폴더 없이 게임/맵/이벤트 콘텐츠 작업을 끝내지 않는다.**
+Supabase 는 퇴역했다. URL, anon key, `current_json` 업서트, `saveProjectToSupabase` 를
+완료 조건으로 쓰지 마라. “코드 fixture만 만들고 끝”, “임시 세션에서만 돌려보기”,
+“로컬 JSON export만” 은 **완료로 치지 않는다.**
 
 ### 반드시 지킬 것
 
 1. **콘텐츠 작업(데모 게임, 마을, 맵, 이벤트, DB 레코드, 예제 어드벤처)을 시작하기 전에**
-   - Supabase URL / anon key / **project id** 가 설정·사용 가능한지 확인한다.
-   - 연결이 안 되면 **작업을 중단**하고 사용자에게 DB 연결(또는 env)을 요청한다. DB 없이 대체 구현으로 때우지 않는다.
+   - `OPRN_PROJECT_DIR`(또는 `--project-dir`) 아래 기존 `project.sqlite` 가 열리는지 확인한다.
+   - 폴더가 없으면 **작업을 중단**하고 사용자에게 프로젝트 폴더를 요청한다. 메모리 어댑터로 때우지 않는다.
 
-2. **작성·수정한 프로젝트 데이터는 Supabase에 저장(업서트)까지 완료해야 한다.**
-   - `saveProjectToSupabase` / store flush with **remote persistence enabled** / 팀이 쓰는 force-save 스크립트 등 **실제 원격 저장 경로**를 탄다.
-   - 저장 후 **재로드(또는 project id로 다시 load)** 로 존재함을 증명한다.
-   - 완료 보고에 **project id** 와 저장 성공 근거를 남긴다.
+2. **작성·수정한 프로젝트 데이터는 그 SQLite 폴더에 저장한 뒤 다시 읽어야 한다.**
+   - Electron 브리지 또는 `npm run serve:project` / `npm start` 의 호스트 저장을 탄다.
+   - 저장 후 같은 폴더를 다시 열어 존재함을 증명한다.
+   - 완료 보고에 **프로젝트 폴더** 와 저장 성공 근거를 남긴다.
 
 3. **금지 — 아래만 하고 끝내지 말 것**
-   - `?blankProject=1` / `?freshProject=1` / `dev-showcase` 임시 세션만 사용하고 원격 저장 스킵.
-   - 레포에 `*.json` fixture / `createSampleAdventureProject` 코드 시드만 추가·교체하고 **Supabase 미저장**.
-   - “로컬 메모리·export JSON이면 충분”이라고 판단해 DB 단계를 생략.
-   - remote 저장이 꺼진 상태에서 저장 버튼을 누르고 성공한 것처럼 보고.
+   - `?blankProject=1` / `?freshProject=1` / `dev-showcase` 임시 세션만 사용하고 폴더 저장을 건너뛴다.
+   - 레포에 `*.json` fixture / `createSampleAdventureProject` 코드 시드만 추가·교체하고 **SQLite 미저장**.
+   - “로컬 메모리·export JSON이면 충분”이라고 판단해 폴더 저장을 생략.
+   - `remotePersistenceEnabled` 가 꺼진 상태에서 저장 버튼을 누르고 성공한 것처럼 보고.
+   - Supabase 설정, 프록시, 마이그레이션을 다시 살린다.
 
 4. **왜 강제인가**
-   - `blankProject` / `freshProject` / 일부 `devProject` 쇼케이스는 의도적으로 `remotePersistenceEnabled = false` (`dev-showcase`) 이다. 이 경로에서는 저장이 Supabase로 가지 않는다.
-   - 사용자 작업물의 정본(source of truth)은 **Supabase 프로젝트 행**이다. 에이전트 산출물도 동일 기준이다.
+   - `blankProject` / `freshProject` / 일부 `devProject` 쇼케이스는 의도적으로 `remotePersistenceEnabled = false` (`dev-showcase`) 이다. 이 경로에서는 저장이 폴더로 가지 않는다.
+   - 브리지가 없으면 저장소는 메모리 어댑터다. 사용자 작업물의 정본은 **호스트 SQLite 폴더**다.
 
 5. **허용되는 예외 (좁게)**
-   - **순수 엔진/에디터 코드** 변경만 (UI, 인터프리터, 스키마 마이그레이션 등) 이고 맵·이벤트·데모 콘텐츠를 새로 저작하지 않는 경우 → DB 저장 의무 없음. 단 스키마 변경 시 migration·load/save 검증은 기존 규칙대로.
+   - **순수 엔진/에디터 코드** 변경만 (UI, 인터프리터, 스키마 마이그레이션 등) 이고 맵·이벤트·데모 콘텐츠를 새로 저작하지 않는 경우 → 폴더 저장 의무 없음.
    - **단위 테스트용 최소 fixture** (`test/fixtures/...` 계약 테스트) — 앱에 싣는 “예제 게임/데모”가 아닌 경우만.
-   - 사용자가 **명시적으로** “DB 없이 fixture만 / 코드만” 이라고 한 경우만 예외. 모호하면 DB 경로를 따른다.
+   - 사용자가 **명시적으로** “DB 없이 fixture만 / 코드만” 이라고 한 경우만 예외. 모호하면 SQLite 폴더 경로를 따른다.
 
 6. **데모·예제 게임 작업 시 권장 순서**
-   1. DB 연결 확인  
-   2. 원격 저장이 켜진 상태로 에디터/스크립트에서 저작  
-   3. Supabase 저장 + 재로드 검증  
-   4. (선택) 레포 fixture/코드 시드는 **원격 저장 성공 후** 보조 산출물로만 추가  
+   1. 프로젝트 폴더 확인
+   2. 저장이 켜진 호스트에서 저작
+   3. SQLite 저장 + 같은 폴더 재로드 검증
+   4. (선택) 레포 fixture/코드 시드는 **폴더 저장 성공 후** 보조 산출물로만 추가
 
 ## Agent rules
 
@@ -192,4 +195,4 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
 - **버전을 손으로 올리지 마라.** 릴리스는 `npm run release` 하나로 자르고, 매 머지에 끌려 올리는 것이 아니다.
   커밋 메시지가 릴리스 노트의 원본이다 — `feat:`/`fix:`/`refactor:` 규약을 지켜라. 네 버전 축(앱 · 문서 스키마 · 로컬 스토어 · 발행 게임)의
   구분과 절차는 `openwiki/release-and-version.md`.
-- For **authored game content**, validation is incomplete until **Supabase load after save** succeeds (see hard rule above).
+- For **authored game content**, validation is incomplete until **SQLite folder load after save** succeeds (see hard rule above). Supabase is retired.

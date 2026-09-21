@@ -1,3 +1,4 @@
+import { shouldRetainOpenEventDraft } from "@/project/eventDrafts";
 import type { GameEvent, MapId, Project } from "@/project/types";
 import { projectRepository } from "@/project/persistence/repository";
 
@@ -100,10 +101,14 @@ export function getEventDraftVaultEntry(mapId: MapId, eventId: string): EventDra
 export function applyEventDraftVault(project: Project): Project {
   if (vault.size === 0) return project;
   const next = structuredClone(project);
+  const dropped: Array<{ mapId: MapId; eventId: string }> = [];
   for (const entry of vault.values()) {
     const map = next.maps[entry.mapId];
-    if (!map) continue;
-    if (!entry.event.draft) continue;
+    if (!map || !entry.event.draft) continue;
+    if (!shouldRetainOpenEventDraft(map.events, entry.event)) {
+      dropped.push({ mapId: entry.mapId, eventId: entry.event.id });
+      continue;
+    }
     const index = map.events.findIndex((event) => event.id === entry.event.id);
     if (index >= 0) {
       map.events[index] = structuredClone(entry.event);
@@ -111,6 +116,7 @@ export function applyEventDraftVault(project: Project): Project {
       map.events.push(structuredClone(entry.event));
     }
   }
+  for (const entry of dropped) forgetEventDraftVaultEntry(entry.mapId, entry.eventId);
   return next;
 }
 
@@ -141,7 +147,7 @@ function projectWithLiveDrafts(incoming: Project, live: Project): Project {
     const targetMap = next.maps[mapId];
     if (!targetMap) continue;
     for (const liveEvent of liveMap.events) {
-      if (!liveEvent.draft) continue;
+      if (!shouldRetainOpenEventDraft(targetMap.events, liveEvent)) continue;
       const index = targetMap.events.findIndex((event) => event.id === liveEvent.id);
       if (index >= 0) {
         targetMap.events[index] = structuredClone(liveEvent);

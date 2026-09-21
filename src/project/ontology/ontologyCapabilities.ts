@@ -142,7 +142,7 @@ export const ONTOLOGY_CAPABILITIES = [
   {
     id: "ResourcePipeline",
     label: "Resource Pipeline",
-    purpose: "Supabase-root resource payloads, local cache/bootstrap files, resource profiles, picker UI, and Phaser loading.",
+    purpose: "SQLite asset payloads, bundled bootstrap files, resource profiles, picker UI, and Phaser loading.",
     entities: ["AssetRef", "UploadedAsset", "ResourceProfile"],
     typeSurfaces: ["src/project/types/base.ts"],
     uiSurfaces: ["src/editor/panels/resourceManager.ts", "src/editor/panels/resourceModal.ts", "src/editor/panels/eventEditor/npcGraphicPicker.ts"],
@@ -165,7 +165,7 @@ export const ONTOLOGY_CAPABILITIES = [
   {
     id: "ProjectPersistence",
     label: "Project Persistence",
-    purpose: "Serialization, package export, migration, shape guards, reference validation, and Supabase current_json sync.",
+    purpose: "Serialization, package export, migration, shape guards, reference validation, and SQLite project save.",
     entities: ["Project", "ProjectSession", "SaveSlot", "GameMap", "Command", "ResourceProfile"],
     typeSurfaces: ["src/project/types/project.ts", "src/project/types/events.ts", "src/project/types/base.ts"],
     uiSurfaces: ["src/editor/saveActions.ts", "src/editor/panels/menu.ts"],

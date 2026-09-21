@@ -4,6 +4,7 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { extname, normalize, resolve, sep, basename } from "node:path";
 import { createStoreHandlers } from "../main/dispatch";
 import { createProjectSessionRegistry, type SessionRegistry } from "../main/sessions";
+import { ASSET_RESPONSE_CSP, safeAssetContentType } from "../shared/assetMime";
 import { OPRN_CHANNELS } from "../shared/channels";
 import { isCompanionPath } from "../../scripts/lib/ohMyPiHttp.mjs";
 import { createCompanionMiddleware } from "../../scripts/lib/companion/middleware.mjs";
@@ -73,7 +74,7 @@ function readRequestBody(request: IncomingMessage, maxBytes = 64 * 1024 * 1024):
     request.on("data", (chunk: Buffer) => {
       if (exceeded) return;
       size += chunk.length;
-      if (size > maxBytes) { exceeded = true; chunks.length = 0; reject(new Error("request exceeds 64 MiB")); request.resume(); return; }
+      if (size > maxBytes) { exceeded = true; chunks.length = 0; reject(new Error(`request exceeds ${maxBytes} bytes`)); request.resume(); return; }
       chunks.push(chunk);
     });
     request.on("end", () => resolvePromise(Buffer.concat(chunks).toString("utf8")));
@@ -85,6 +86,34 @@ function sendJson(response: ServerResponse, status: number, body: unknown): void
   const text = JSON.stringify(body);
   response.writeHead(status, { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" });
   response.end(text);
+}
+
+function pageCsp(nonce: string): string {
+  return [
+    "default-src 'self'",
+    `script-src 'self' 'nonce-${nonce}'`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob:",
+    "media-src 'self' data: blob:",
+    "font-src 'self' data:",
+    "connect-src 'self'",
+    "worker-src 'self' blob:",
+    "base-uri 'none'",
+    "object-src 'none'",
+    "frame-ancestors 'none'",
+  ].join("; ");
+}
+
+/** Inline host pages get one nonce. Injected script tags without it do not run. */
+function sendHtml(response: ServerResponse, html: string): void {
+  const nonce = randomUUID().replaceAll("-", "");
+  const stamped = html.replaceAll("<script>", `<script nonce="${nonce}">`);
+  response.writeHead(200, {
+    "content-type": "text/html; charset=utf-8",
+    "cache-control": "no-store",
+    "content-security-policy": pageCsp(nonce),
+  });
+  response.end(stamped);
 }
 
 export async function startLocalProjectServer(options: LocalProjectServerOptions): Promise<LocalProjectServer> {
@@ -220,9 +249,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       response.end(bytes);
       return;
     }
-    const html = inject(bytes.toString("utf8"));
-    response.writeHead(200, { "content-type": contentType, "cache-control": "no-store" });
-    response.end(html);
+    sendHtml(response, inject(bytes.toString("utf8")));
   };
 
   const server = createServer((request, response) => {
@@ -254,12 +281,12 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       }
       if (!signedIn) {
         if (request.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) {
-          response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' }).end(entryLoginPage);
+          sendHtml(response, entryLoginPage);
         } else sendJson(response, 401, { error: '팀 접속 코드로 로그인하세요' });
         return;
       }
       if (url.pathname === '/__oprn/team' && request.method === 'GET') {
-        response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' }).end(inject(teamPage.replaceAll('href="/"', `href="${returnUrl}"`))); return;
+        sendHtml(response, inject(teamPage.replaceAll('href="/"', `href="${returnUrl}"`))); return;
       }
       if (url.pathname === SHARED_CHARACTER_GRAPHICS_ENDPOINT) {
         if (request.method !== 'GET' && signedIn?.role !== 'owner') {
@@ -339,7 +366,12 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
             return;
           }
           const bytes = await assetSession.store.assetBytes(asset.sha256);
-          response.writeHead(200, { "content-type": asset.mime, "cache-control": "private, no-cache", "content-security-policy": "sandbox" });
+          response.writeHead(200, {
+            "content-type": safeAssetContentType(asset.mime),
+            "cache-control": "private, no-cache",
+            "content-security-policy": ASSET_RESPONSE_CSP,
+            "x-content-type-options": "nosniff",
+          });
           response.end(Buffer.from(bytes));
         } finally { sessions.close(assetKey); }
         return;

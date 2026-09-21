@@ -56,17 +56,17 @@ describe("development ontology", () => {
     expect(entity?.typeFiles).toEqual(["src/project/types/base.ts"]);
   });
 
-  it("records Supabase as the resource root and local files as cache/bootstrap", () => {
+  it("records the SQLite folder as the resource root and bundled files as bootstrap", () => {
     const resourcePipeline = queryOntologyByCapability(DEVELOPMENT_ONTOLOGY, "ResourcePipeline");
     const projectPersistence = queryOntologyByCapability(DEVELOPMENT_ONTOLOGY, "ProjectPersistence");
     const uploadedAsset = queryOntologyByEntity(DEVELOPMENT_ONTOLOGY, "UploadedAsset");
 
-    expect(resourcePipeline?.purpose).toContain("Supabase-root");
-    expect(projectPersistence?.purpose).toContain("Supabase current_json");
+    expect(resourcePipeline?.purpose).toContain("SQLite asset");
+    expect(projectPersistence?.purpose).toContain("SQLite project save");
     expect(resourcePipeline?.contracts).toEqual(expect.arrayContaining(["supabase-resource-root"]));
     expect(projectPersistence?.contracts).toEqual(expect.arrayContaining(["supabase-resource-root"]));
-    expect(uploadedAsset?.description).toContain("Supabase current_json.assets.uploaded");
-    expect(generatedDevelopmentOntologyMarkdown(DEVELOPMENT_ONTOLOGY)).toContain("supabase-resource-root");
+    expect(uploadedAsset?.description).toContain("SQLite asset payload");
+    expect(generatedDevelopmentOntologyMarkdown(DEVELOPMENT_ONTOLOGY)).toContain("host SQLite asset store");
   });
 
   it("maps changed files back to affected capabilities", () => {

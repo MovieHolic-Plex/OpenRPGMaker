@@ -911,6 +911,14 @@ bytes after real remote reload and Test Play. The default is not remote proof.
 - Limits are centralized in `spatialPlacements.ts`: 256 definitions, 16 levels, 1,024 placements, footprint axes <=16 and area <=128, capacity <=9,999. Normalization is bounded, duplicate IDs are first-wins, costs aggregate duplicate item rows without exceeding `ITEM_QUANTITY_MAX`, and orientations are `down|left|right|up`.
 - `shapeDatabaseFields.ts` validates full definitions and `shape.ts` validates authored starts. Old projects with all four fields absent retain the same serialized shape.
 
+## 이벤트 초안은 삭제된 커밋 이벤트를 되살리지 않는다 (2026-09-22)
+
+`shouldRetainOpenEventDraft` 는 아직 저장되지 않은 `draft.kind === "new"` 만 들어오는
+프로젝트에 다시 붙인다. 이미 커밋된 이벤트가 들어온 문서에서 빠졌으면 edit 초안을
+메모리와 보관함에서 버린다. 다시 붙이면 다음 저장이 `draft.original` 을 정본에 써서
+삭제를 되돌린다. 같은 id 가 남아 있는 edit 초안은 편집 중 본문을 유지한다.
+계약: `test/eventDraftVault.test.ts`.
+
 ## 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
 
 `src/project/eventDraftVault.ts` 는 `scheduleEventDraftVaultPersist()` 로 250ms

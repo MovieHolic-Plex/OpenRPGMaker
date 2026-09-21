@@ -230,7 +230,7 @@ describe("conversationStore", () => {
     await failureReported;
 
     expect((await loadConversation("remote-failure"))?.id).toBe("remote-failure");
-    expect(console.error).toHaveBeenCalledWith("[ai-conversation] Supabase mirror failed:", failure);
+    expect(console.error).toHaveBeenCalledWith("[ai-conversation] project store mirror failed:", failure);
   });
 });
 

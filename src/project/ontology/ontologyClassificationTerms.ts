@@ -13,7 +13,7 @@ const KEYWORDS_BY_CAPABILITY: Record<string, readonly string[]> = {
   DatabaseRecords: ["데이터베이스", "레코드", "액터", "아이템", "스킬", "장비", "적", "상태", "MP", "database", "record"],
   BattleRuntime: ["전투", "보상", "경험치", "부대", "턴", "전투 이벤트", "battle", "reward", "troop"],
   ResourcePipeline: ["리소스", "에셋", "이미지", "사운드", "업로드", "선택기", "resource", "asset", "sound"],
-  ProjectPersistence: ["저장", "로드", "마이그레이션", "검증", "동기화", "Supabase", "포맷", "save", "migration", "sync"],
+  ProjectPersistence: ["저장", "로드", "마이그레이션", "검증", "동기화", "SQLite", "Supabase", "포맷", "save", "migration", "sync"],
 };
 
 export function weightedTermsForCapability(capability: OntologyCapability): readonly WeightedTerm[] {

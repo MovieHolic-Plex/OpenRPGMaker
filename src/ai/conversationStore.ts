@@ -306,7 +306,7 @@ registerRemoteOutboxSender("ai-conversation", async (payload) => {
   const result = await projectRepository().ai.recordConversation({ conversationId: payload.conversationId, title: snapshot.title,
     model: snapshot.model, entries: snapshot.entries, savedAt: payload.savedAt, destinationProjectId: destination,
     ...(scope === null ? {} : { projectContextKey: scope }) });
-  if (result.kind === "not-configured") throw new Error("supabase not configured");
+  if (result.kind === "not-configured") throw new Error("project store is not configured");
 });
 
 // ── 공개 API (모두 비동기, 던지지 않는다) ──────────────────────────────────────────────
@@ -344,7 +344,7 @@ export async function saveConversation(record: ConversationRecord): Promise<Conv
   };
   // Payload carries only the destination id, never credentials. Retry cannot adopt the current project.
   void projectRepository().ai.recordConversation(remoteInput, config).catch((error: unknown) => {
-    console.error("[ai-conversation] Supabase mirror failed:", error);
+    console.error("[ai-conversation] project store mirror failed:", error);
     enqueueRemoteWrite({ id: compacted.id, kind: "ai-conversation", payload: remoteInput, error });
   });
   return outcome;

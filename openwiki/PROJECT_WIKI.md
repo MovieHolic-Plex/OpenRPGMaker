@@ -86,10 +86,11 @@ Use this checklist before editing:
 - For UI work, verify through the browser surface and save screenshots or logs under `output/evidence` or `evidence`.
 - If the change reveals stale wiki guidance, update the wiki as part of the same work.
 
-## Supabase DB mandatory (see root `AGENTS.md`)
+## SQLite project folder mandatory (see root `AGENTS.md`)
 
-Root `AGENTS.md` hard rule: **do not finish map/event/demo/content work without Supabase save + reload proof.**  
-`blankProject` / `freshProject` / `dev-showcase` skip remote persistence — never treat those sessions as a complete deliverable.  
+Root `AGENTS.md` hard rule: **do not finish map/event/demo/content work without a SQLite folder save + reload proof.**
+Supabase is retired and is not a completion path.
+`blankProject` / `freshProject` / `dev-showcase` skip folder persistence — never treat those sessions as a complete deliverable.
 Engine-only code changes and narrow unit-test fixtures are the only default exceptions.
 
 ## Desktop UI integration truth (2026-08-11)

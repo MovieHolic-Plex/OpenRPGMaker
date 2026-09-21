@@ -50,7 +50,12 @@ npm run wt -- adopt <이름> --path <워크트리 절대경로>   # node_modules
 팀 초대·호스팅·백업·충돌 처리 절차는 `openwiki/team-project-host.md`.
 아래 과거 Mac launcher/Supabase 설정 설명을 새 팀 호스트의 필수 설정으로 적용하지 않는다.
 
-## 1a. Mac novice launcher / private setup (Phase 1, 2026-09-06)
+## 1a. Mac novice launcher / private setup (Phase 1, 2026-09-06) — Supabase 절은 퇴역
+
+이 절의 Supabase URL·anon key·프로젝트 id 절차는 **따라가지 마라.** 정본은 위의 SQLite 호스트다.
+런처 스크립트에 옛 확인 코드가 남아 있어도 콘텐츠 작업의 완료 조건으로 쓰지 않는다.
+
+## 1a-legacy. Mac novice launcher notes (do not treat as the store)
 
 This path is for a person's own downloaded checkout, **not** agent worktree adoption above.
 Do not copy a maintainer's `.env.local` or use a maintainer project. It requires manually
@@ -190,5 +195,5 @@ SHA-256 검증·손상 복구·잠금 복구·관리자 제작 명령은 `openwi
 
 - 코드 변경: `npm run typecheck:app` 초록 + 관련 테스트 통과 + `npm run gates` 가 **새 실패 0**.
 - UI 변경: 실제 표면 증거(스크린샷/Playwright). 편집기는 `test/e2e` + `scripts/capture-*`, 게임 화면은 `npm run qa:runtime`.
-- 콘텐츠 변경: Supabase 저장 후 **재로드 성공**과 project id 보고. 로컬 fixture·export JSON 은 완료가 아니다.
+- 콘텐츠 변경: SQLite 프로젝트 폴더 저장 후 **같은 폴더 재로드 성공**과 폴더 경로 보고. 로컬 fixture·export JSON 은 완료가 아니다. Supabase 는 퇴역했다.
 - 문서·위키에 영향을 주는 변경: 해당 `openwiki/*.md` 를 같은 변경에서 고친다.
