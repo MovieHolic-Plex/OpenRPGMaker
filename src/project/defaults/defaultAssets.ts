@@ -4,7 +4,7 @@ import { createCastleTileset } from "./castleTileset";
 import { createForestHarmonyTileset, ensureForestHarmonyReferences, FOREST_HARMONY_ID, FOREST_HARMONY_TEXTURE } from "./forestHarmony";
 import { createLpcWoodenFurniture16Tileset, createLpcWoodenFurnitureTileset, seedLpcWoodenFurniture16Kits, seedLpcWoodenFurnitureKits } from "./lpcWoodenFurniture";
 import { createTiboInteriorTileset, extendTiboInteriorDefaults, TIBO_INTERIOR_ID, TIBO_INTERIOR_TEXTURE } from "./tiboInterior";
-import { createSlates32Tileset } from "./slates32";
+import { createSlates32Tileset, SLATES_32_ID } from "./slates32";
 import { composeCombinedTownRetroWorldTileset } from "./combinedTownRetroWorld";
 import type { AssetSet, GameMap, PassFlag, ResourceKind, ResourceProfile, SpriteDef, TilesetDef } from "../types";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
@@ -15,7 +15,7 @@ import { AUTHORABLE_FACESET_FACE_ASSETS, GENERATED_FACESET_FACE_IDS, LEGACY_FACE
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import { applyCombinedTownHarness, applyEasyRpgThemeMetadataPacks, ensureTilesetHarnesses, RETRO_WORLD_TEXTURE_KEY } from "@/project/tilesetHarness";
-import { bundledAssetRef, CASTLE_TILESET_TEXTURE_KEY, COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_TILE_COUNT, DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, DEFAULT_TILESET_NAME, DEFAULT_TILESET_TEXTURE_KEY, DEFAULT_TILES_PER_ROW, LEGACY_RM_TILESET_ID, LEGACY_RM_TILESET_TEXTURE_KEY } from "./constants";
+import { bundledAssetRef, CASTLE_TILESET_ID, CASTLE_TILESET_TEXTURE_KEY, COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, COMBINED_TOWN_RETRO_WORLD_TILESET_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_TILE_COUNT, DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, DEFAULT_TILESET_NAME, DEFAULT_TILESET_TEXTURE_KEY, DEFAULT_TILES_PER_ROW, LEGACY_RM_TILESET_ID, LEGACY_RM_TILESET_TEXTURE_KEY } from "./constants";
 import { isSolidChipsetTile, isUpperChipsetTile, terrainTagForChipsetTile } from "./chipsetMapping";
 
 const DUNGEON_TILESET_ID = "easyrpg_chipset_dungeon";
@@ -88,18 +88,20 @@ export function defaultTilesets(): Record<string, TilesetDef> {
 export function ensureBundledTilesets(project: { tilesets: Record<string, TilesetDef> }): boolean {
   let changed = false;
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
-    const tileset = bundledEasyRpgTileset(asset);
-    if (project.tilesets[tileset.id]) {
-      if (tileset.id === FOREST_HARMONY_ID) changed = ensureForestHarmonyReferences(project.tilesets[tileset.id]) || changed;
-
-      changed = ensureSharedCastleReferences(project.tilesets[tileset.id]) || changed;
-      if (tileset.id === SHARED_VILLAGE_OBJECT_ID) changed = ensureSharedVillageObjectReferences(project.tilesets[tileset.id]) || changed;
-      if (tileset.id === TIBO_INTERIOR_ID) changed = extendTiboInteriorDefaults(project.tilesets[tileset.id]) || changed;
-      changed = seedLpcWoodenFurnitureKits(project.tilesets[tileset.id]) || changed;
-      changed = seedLpcWoodenFurniture16Kits(project.tilesets[tileset.id]) || changed;
+    // 존재 확인이 **먼저**다. 생성자를 먼저 부르면 타일셋이 이미 있는 흔한 경우에도
+    // 3~5MB 짜리 JSON 사본을 만들어 그대로 버린다 — 실측 2026-09-22: 프로젝트 로드마다
+    // 164ms 였고 그 대부분이 버려지는 사본이었다(수정 후 26ms).
+    const id = bundledTilesetIdForAsset(asset);
+    if (project.tilesets[id]) {
+      if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyReferences(project.tilesets[id]) || changed;
+      changed = ensureSharedCastleReferences(project.tilesets[id]) || changed;
+      if (id === SHARED_VILLAGE_OBJECT_ID) changed = ensureSharedVillageObjectReferences(project.tilesets[id]) || changed;
+      if (id === TIBO_INTERIOR_ID) changed = extendTiboInteriorDefaults(project.tilesets[id]) || changed;
+      changed = seedLpcWoodenFurnitureKits(project.tilesets[id]) || changed;
+      changed = seedLpcWoodenFurniture16Kits(project.tilesets[id]) || changed;
       continue;
     }
-    project.tilesets[tileset.id] = tileset;
+    project.tilesets[id] = bundledEasyRpgTileset(asset);
     changed = true;
   }
   changed = ensureTilesetHarnesses(project) || changed;
@@ -202,6 +204,30 @@ function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[nu
   if (asset.textureKey === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return createCombinedTownRetroWorldTileset();
   return bundledStandardChipsetTileset(asset);
 }
+
+/**
+ * 타일셋 id 만 계산한다 — 생성자를 부르지 않는다.
+ *
+ * 왜 별도 함수인가: 특수 생성자들은 3~5MB 짜리 JSON 을 통째로 복제한다
+ * (`createForestHarmonyTileset` 37ms, `createCastleTileset` 4ms — 실측 2026-09-22).
+ * `ensureBundledTilesets` 는 "이미 있으면 참고문서만 보강" 이 정상 경로인데, 생성자를 먼저
+ * 부르면 그 사본을 만들어 그대로 버린다. id 는 텍스처 키에서 바로 나오므로 복제가 필요 없다.
+ *
+ * 특수 타일셋의 id 는 각 모듈의 상수와 같아야 한다 — 다르면 존재 확인이 빗나가 타일셋이
+ * 중복 생성된다. 그 계약은 `test/bundledTilesetIdParity.test.ts` 가 생성자 결과와 대조한다.
+ */
+function bundledTilesetIdForAsset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): string {
+  if (asset.textureKey === CASTLE_TILESET_TEXTURE_KEY) return CASTLE_TILESET_ID;
+  if (asset.textureKey === SHARED_VILLAGE_OBJECT_TEXTURE) return SHARED_VILLAGE_OBJECT_ID;
+  if (asset.textureKey === FOREST_HARMONY_TEXTURE) return FOREST_HARMONY_ID;
+  if (asset.textureKey === TIBO_INTERIOR_TEXTURE) return TIBO_INTERIOR_ID;
+  if (asset.textureKey === SLATES_32_TEXTURE_KEY) return SLATES_32_ID;
+  if (asset.textureKey === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return COMBINED_TOWN_RETRO_WORLD_TILESET_ID;
+  return bundledEasyRpgTilesetId(asset.textureKey);
+}
+
+/** 계약 테스트 전용 — id 계산이 생성자 결과와 같은지 대조한다. */
+export const bundledTilesetIdForAssetForTest = bundledTilesetIdForAsset;
 
 /**
  * 「합본 마을 + 레트로 월드맵」 — 두 원본 정의(하네스·시맨틱 적용 후)를 이어 붙인다.
