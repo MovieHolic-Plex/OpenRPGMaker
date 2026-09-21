@@ -122,6 +122,21 @@ SQLite 및 새로 연 에디터에서 다시 읽는다. 원본 29개 맵의 타�
 `tiledata/tilesets/forest_high_cliff_river/shared-library/`는 저작 원문과 선정 기록,
 `src/assets/sharedVillageReferences.json`은 배포용 MD/이미지 묶음이다.
 
+## 공용 forest_harmony 참고문서 보충 (2026-09-22)
+
+`src/assets/forestHarmonyTileset.json.referenceDocuments`에 `forest-public-village`
+용도를 배포한다. **숲마을 · 거리별 잔디** 공용 타일 자체에 2 MD / 8 이미지가 들어가며,
+새 프로젝트의 `defaultTilesets()`만으로 사용할 수 있다. 파생 프로젝트용 문서만
+등록했던 누락을 보완한다. 공용 원본 시트와 확장판 예시를 명시적으로 구별한다.
+`ensureForestHarmonyReferences`는 같은 bundled 이미지의 기존 타일셋에 없는 용도만
+추가하고, 기존 동일 ID 문서·다른 사용자 용도·문서 공유 포인터·업로드 타일셋은 보존한다.
+
+저작 원문: `tiledata/tilesets/forest_harmony/references/VILLAGE.md`.
+준비: `scripts/content/prepare-forest-public-references.mjs`.
+SQLite 저장/재로드: `register-forest-public-references.mjs` (대상 호스트가 중단된 폴더에서
+공식 local-store API 사용; 실행 중 DB 직접 수정 금지).
+신규/기존 SQLite 프로젝트의 실제 배포 UI 증거: `verify-shots/forest-public-references/`.
+
 ### Castle2 공용 기본 제공 수정
 
 `src/assets/sharedCastleReferences.json`에 3용도 / 20 MD / 19 이미지를 공용 번들로 포함한다.

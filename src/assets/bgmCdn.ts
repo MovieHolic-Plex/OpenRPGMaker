@@ -25,10 +25,17 @@ export type BgmCdnEnv = {
   readonly VITE_BGM_CDN_BASE?: string;
 };
 
-/** import.meta.env 접근을 한 곳으로 모은다 — 플레이어 SDK 처럼 번들러 밖에서 쓰일 때를 대비한다. */
+/**
+ * import.meta.env 접근을 한 곳으로 모은다 — 플레이어 SDK 처럼 번들러 밖에서 쓰일 때를 대비한다.
+ *
+ * 키를 **하나만** 읽는다. `import.meta.env` 를 통째로 참조하면 Vite 가 env 객체 전체를 번들에
+ * 직렬화해 .env.local 의 비밀(VITE_LLM_API_KEY·Supabase anon 키)이 출하물에 박힌다
+ * (2026-09-22 실측: 패키징 AppImage 에 dev 머신 주소와 anon JWT 가 들어갔다). 정적 키 접근은
+ * 그 키만 인라인되므로 env 객체가 방출되지 않는다. 번들러 밖(env 부재)에서는 catch 가 받는다.
+ */
 function ambientEnv(): BgmCdnEnv {
   try {
-    return (import.meta.env ?? {}) as BgmCdnEnv;
+    return { VITE_BGM_CDN_BASE: import.meta.env.VITE_BGM_CDN_BASE };
   } catch {
     return {};
   }

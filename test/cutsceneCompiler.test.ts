@@ -237,3 +237,28 @@ describe("compileCutscene", () => {
     });
   });
 });
+
+/**
+ * 카메라 줌이 AI 스키마에 노출되는가(2026-09-22).
+ *
+ * 왜 이 테스트가 필요한가: CutsceneCameraBeat.zoom 은 **컴파일러에 이미 있었지만**
+ * CUTSCENE_BEAT_SCHEMA 에 없어서 모델이 그 필드의 존재를 알 수 없었다. 그래서
+ * "고해상도 배경을 1:1로 쓰는" 요청에 모델이 배율을 걸 방법이 없었다. 스키마 노출과
+ * 컴파일 결과를 함께 고정한다 — 둘 중 하나만 있으면 모델은 여전히 못 쓴다.
+ */
+describe("컷신 카메라 줌", () => {
+  it("zoom 이 m2-201 camera-control 필드로 전달된다", () => {
+    const commands = compileCutscene([
+      { kind: "camera", mode: "fixed", target: "player", zoom: 4.5, durationMs: 0 },
+    ]);
+    const camera = commands.find((c) => c.kind === "m2Command" && c.commandId === "m2-201-camera-control");
+    expect(camera).toBeDefined();
+    expect((camera as { fields: Record<string, unknown> }).fields.zoom).toBe(4.5);
+  });
+
+  it("zoom 을 생략하면 필드가 비어 런타임 기본(1)을 따른다", () => {
+    const commands = compileCutscene([{ kind: "camera", mode: "fixed", target: "player" }]);
+    const camera = commands.find((c) => c.kind === "m2Command" && c.commandId === "m2-201-camera-control");
+    expect((camera as { fields: Record<string, unknown> }).fields.zoom).toBeUndefined();
+  });
+});

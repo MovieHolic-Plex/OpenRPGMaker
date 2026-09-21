@@ -42,6 +42,9 @@ function startWorker() {
   if (workerPortPromise) return workerPortPromise;
   let promise;
   promise = new Promise((resolve, reject) => {
+    // 이 줄은 CJS 번들(Electron 메인)에서 빈 import.meta.url 을 본다 — startWorker() 안이라
+    // 모듈 로드 때는 평가되지 않는다. 로드 시점 평가는 앱을 죽이므로 aiAuthRuntime.ts 쪽을
+    // 지연 함수로 감쌌다(2026-09-22 실측: 패키징 AppImage 가 Invalid URL 로 시작 실패).
     const script = process.env.OPRN_OH_MY_PI_WORKER_SCRIPT || fileURLToPath(new URL("../oh-my-pi-worker.ts", import.meta.url));
     const localBun = join(homedir(), ".bun", "bin", "bun");
     const bun = process.env.OPRN_BUN_PATH || (existsSync(localBun) ? localBun : "bun");

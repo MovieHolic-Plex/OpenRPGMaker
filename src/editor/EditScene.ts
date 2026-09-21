@@ -41,7 +41,7 @@ import { mapTileSize } from "@/project/tileGeometry";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { MAP_BACKGROUND_LAYER_DEPTH } from "@/player/characterDepth";
 import { ensureSceneImageTexture } from "@/player/playSceneImageTexture";
-import { mapBackgroundLayout, mapBackgroundTextureKey } from "@/player/playSceneMapBackground";
+import { mapBackgroundFitScale, mapBackgroundLayout, mapBackgroundTextureKey } from "@/player/playSceneMapBackground";
 import {
   mapBackgroundPreviewEnabled,
   subscribeMapBackgroundPreview,
@@ -221,6 +221,8 @@ export class EditScene extends PhaserRuntime.Scene {
   /** 맵 배경 미리보기(토글이 켜져 있을 때만). 하층 타일 아래 depth 의 컨테이너다. */
   private mapBackgroundLayer: Phaser.GameObjects.Container | null = null;
   private mapBackgroundSprites: Phaser.GameObjects.TileSprite[] = [];
+  /** 미리보기 중인 레이어 스펙(배율 재계산용). */
+  private mapBackgroundPreviewSpecs: readonly { readonly fit: "native" | "cover" }[] = [];
   private unsubAgentFocus: (() => void) | null = null;
   private unsubCameraFocus: (() => void) | null = null;
   private unsubInlineApproval: (() => void) | null = null;
@@ -1809,46 +1811,77 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!container) return;
     const mapId = this.mapId();
     const background = mapId ? store.getCurrent().maps[mapId]?.background : undefined;
-    const imageId = mapBackgroundPreviewEnabled() ? (background?.imageId ?? "").trim() : "";
-    const url = imageId ? resolveAssetResourceUrl(imageId, { project: store.getCurrent() }) : null;
-    if (!imageId || !url) {
+    const enabled = mapBackgroundPreviewEnabled();
+    // 플레이와 같은 스택(첫 장 + layers, 앞이 아래)로 미리보기 — 저작 화면에서 보는 게임 상태와 렌더가 달라지 않게.
+    const specs = enabled && background
+      ? [background, ...(background.layers ?? [])].filter((entry) => (entry.imageId ?? "").trim() !== "")
+      : [];
+    if (specs.length === 0) {
       this.clearMapBackgroundPreview();
       return;
     }
-    const textureKey = mapBackgroundTextureKey(imageId);
+    const missing = specs.filter((spec) => !this.textures.exists(mapBackgroundTextureKey(spec.imageId)));
+    if (missing.some((spec) => !resolveAssetResourceUrl(spec.imageId, { project: store.getCurrent() }))) {
+      // 플레이는 경고를 남기고 건너뛴 — 미리보기도 같은 귟c칙으로 그림을 생략한다.
+      this.clearMapBackgroundPreview();
+      return;
+    }
     const apply = (): void => {
       if (this.mapId() !== mapId || !mapBackgroundPreviewEnabled()) return;
-      let sprite = this.mapBackgroundSprites[0];
-      if (!sprite) {
-        sprite = this.add.tileSprite(0, 0, 16, 16, textureKey);
-        sprite.setOrigin(0, 0);
-        sprite.setScrollFactor(0);
-        container.add(sprite);
-        this.mapBackgroundSprites = [sprite];
-      } else if (sprite.texture.key !== textureKey) {
-        sprite.setTexture(textureKey);
+      const ready = specs.filter((spec) => this.textures.exists(mapBackgroundTextureKey(spec.imageId)));
+      const previous = this.mapBackgroundSprites;
+      const sprites: Phaser.GameObjects.TileSprite[] = [];
+      for (const [index, spec] of ready.entries()) {
+        const textureKey = mapBackgroundTextureKey(spec.imageId);
+        let sprite = previous[index];
+        if (!sprite) {
+          sprite = this.add.tileSprite(0, 0, 16, 16, textureKey);
+          sprite.setOrigin(0, 0);
+          sprite.setScrollFactor(0);
+          container.add(sprite);
+        } else if (sprite.texture.key !== textureKey) {
+          sprite.setTexture(textureKey);
+        }
+        sprite.setDepth(MAP_BACKGROUND_LAYER_DEPTH + index);
+        // 플레이와 같은 배율 규칙(cover 면 뷰포트를 덮게 확대). 1:1 이면 1920x1080 아트가
+        // 좌상단 구석만 보여 «저작 화면과 게임 화면이 다른» 상태가 된다.
+        applyPreviewFit(this, sprite, spec.fit);
+        sprites.push(sprite);
       }
+      for (const leftover of previous.slice(ready.length)) leftover.setVisible(false);
+      this.mapBackgroundSprites = sprites;
+      this.mapBackgroundPreviewSpecs = ready.map((entry) => ({ fit: entry.fit ?? "native" }));
       this.layoutMapBackgroundPreview();
     };
-    if (this.textures.exists(textureKey)) {
+    if (missing.length === 0) {
       apply();
       return;
     }
-    void ensureSceneImageTexture(this, textureKey, url).then((key) => {
-      if (key) apply();
+    void Promise.all(
+      missing.map((spec) => {
+        const url = resolveAssetResourceUrl(spec.imageId, { project: store.getCurrent() });
+        return url ? ensureSceneImageTexture(this, mapBackgroundTextureKey(spec.imageId), url) : Promise.resolve(undefined);
+      }),
+    ).then(() => {
+      if (this.mapId() !== mapId || !mapBackgroundPreviewEnabled()) return;
+      apply();
     });
   }
 
-  /** 화면 고정 배치를 카메라에 맞춘다. 노드는 그대로, 크기·좌표만 다시 쓴다. */
-  private layoutMapBackgroundPreview(): void {
-    const sprite = this.mapBackgroundSprites[0];
-    if (!sprite || !sprite.visible) return;
-    const layout = mapBackgroundLayout(this.cameras.main);
-    if (sprite.width !== layout.width || sprite.height !== layout.height) sprite.setSize(layout.width, layout.height);
-    sprite.setPosition(layout.x, layout.y);
+    private layoutMapBackgroundPreview(): void {
+    const specs = this.mapBackgroundPreviewSpecs;
+    for (const [index, sprite] of this.mapBackgroundSprites.entries()) {
+      if (!sprite.visible) continue;
+      const spec = specs[index];
+      if (spec) applyPreviewFit(this, sprite, spec.fit);
+      const layout = mapBackgroundLayout(this.cameras.main);
+      if (sprite.width !== layout.width || sprite.height !== layout.height) sprite.setSize(layout.width, layout.height);
+      sprite.setPosition(layout.x, layout.y);
+    }
   }
 
   private clearMapBackgroundPreview(): void {
+    this.mapBackgroundPreviewSpecs = [];
     for (const sprite of this.mapBackgroundSprites) sprite.setVisible(false);
   }
 
@@ -2583,4 +2616,36 @@ function setTileToolStatus(testId: string, text: string): void {
   const node = document.querySelector(`[data-testid="${testId}"]`);
   if (!node) return;
   node.textContent = text;
+}
+
+/** 미리보기 스프라이트의 타일 배율. 플레이와 같은 규칙(cover = 뷰포트를 덮는 배율)이다. */
+function applyPreviewFit(
+  scene: {
+    readonly cameras: { readonly main: { readonly zoom: number; readonly width: number; readonly height: number } };
+    readonly textures: Phaser.Textures.TextureManager;
+  },
+  sprite: Phaser.GameObjects.TileSprite,
+  fit: "native" | "cover" | undefined,
+): void {
+  if (fit !== "cover") {
+    if (sprite.tileScaleX !== 1 || sprite.tileScaleY !== 1) sprite.setTileScale(1, 1);
+    return;
+  }
+  const camera = scene.cameras.main;
+  const zoom = Number.isFinite(camera.zoom) && camera.zoom > 0 ? camera.zoom : 1;
+  const source = scene.textures.get(sprite.texture.key).getSourceImage() as {
+    readonly width?: number;
+    readonly naturalWidth?: number;
+    readonly height?: number;
+    readonly naturalHeight?: number;
+  };
+  const scale = mapBackgroundFitScale(
+    "cover",
+    { width: camera.width / zoom, height: camera.height / zoom },
+    {
+      width: Math.max(1, Number(source.naturalWidth ?? source.width ?? 0)),
+      height: Math.max(1, Number(source.naturalHeight ?? source.height ?? 0)),
+    },
+  );
+  if (sprite.tileScaleX !== scale || sprite.tileScaleY !== scale) sprite.setTileScale(scale, scale);
 }

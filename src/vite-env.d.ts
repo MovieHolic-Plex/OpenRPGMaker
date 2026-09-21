@@ -18,6 +18,8 @@ interface ImportMetaEnv {
   /** 편집 행위 로그 디스크 미러. 미지정=첫 요청으로 판별, "0"=빌드에서 완전히 제거. */
   readonly VITE_EDIT_ACTIVITY_DISK_MIRROR?: string;
   readonly VITE_TOUCH_CONTROLS?: string;
+  /** CC0 BGM 카탈로그 CDN 베이스. 미설정이면 같은 오리진 로컬 경로로 떨어진다. */
+  readonly VITE_BGM_CDN_BASE?: string;
   // 플레이어 익스포트 빌드(vite.player.config.ts, envPrefix "OPENRPG_PLAYER_")용 오버라이드.
   readonly OPENRPG_PLAYER_TOUCH_CONTROLS?: string;
 }

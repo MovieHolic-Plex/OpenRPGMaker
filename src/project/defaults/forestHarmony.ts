@@ -19,3 +19,13 @@ export function defaultOutdoorTilesetId(project: Pick<Project, "tilesets">): str
 export function isForestHarmonyTileset(tileset: Pick<TilesetDef, "image"> | undefined): boolean {
   return tileset?.image.type === "bundled" && tileset.image.id === FOREST_HARMONY_TEXTURE;
 }
+
+/** Backfill shipped guidance without replacing user categories or shared ownership. */
+export function ensureForestHarmonyReferences(tileset: TilesetDef): boolean {
+  if (!isForestHarmonyTileset(tileset) || tileset.referenceSourceTilesetId) return false;
+  const missing = saved.referenceDocuments.filter(category =>
+    !(tileset.referenceDocuments ?? []).some(existing => existing.id === category.id));
+  if (!missing.length) return false;
+  tileset.referenceDocuments = [...(tileset.referenceDocuments ?? []), ...structuredClone(missing)];
+  return true;
+}
