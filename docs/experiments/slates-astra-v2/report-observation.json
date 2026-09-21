@@ -1,0 +1,31 @@
+{
+  "errors": [],
+  "observations": [
+    {
+      "view": "old",
+      "loaded": true
+    },
+    {
+      "view": "rejected",
+      "loaded": true
+    },
+    {
+      "view": "districts",
+      "loaded": true
+    },
+    {
+      "view": "new",
+      "loaded": true
+    },
+    {
+      "width": 1440,
+      "overflow": false,
+      "broken": []
+    },
+    {
+      "width": 390,
+      "overflow": false,
+      "broken": []
+    }
+  ]
+}

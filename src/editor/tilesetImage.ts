@@ -65,7 +65,7 @@ export function ensureTilesetTexture(scene: Phaser.Scene, tileset: TilesetDef): 
 
   // 확장 타일셋(count > 480)은 확장분 프레임까지 등록한다(기본 480 은 불변).
   if (tileset.image.type === "uploaded") registerUploadedTilesetFrames(scene, tileset, textureKey);
-  else registerTilesetTextureFrames(scene, textureKey, Math.max(TILE_FRAME_COUNT, tileset.count));
+  else registerTilesetTextureFrames(scene, textureKey, Math.max(TILE_FRAME_COUNT, tileset.count), { tileSize: tileset.tileSize, tilesPerRow: tileset.tilesPerRow });
   return textureKey;
 }
 

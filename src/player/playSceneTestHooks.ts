@@ -1,3 +1,4 @@
+import { mapTileSize } from "@/project/tileGeometry";
 import type Phaser from "phaser";
 import { buildLifeRuntimeSnapshot, type LifeRuntimeSnapshot, type RuntimeActionReceipt, type RuntimeDomOverlay } from "@/player/runtimeDom";
 import { describeSceneEmotes, type SceneEmoteDebug } from "@/player/playSceneEmotes";
@@ -480,7 +481,7 @@ async function runActionCombatSceneProof(
     scene.session.y = stage.y;
     scene.movingFrom = { ...stage };
     scene.movingTo = { ...stage };
-    scene.player.setPosition(stage.x * 16 + 8, stage.y * 16 + 16);
+    scene.player.setPosition((stage.x + 0.5) * mapTileSize(scene.map), (stage.y + 1) * mapTileSize(scene.map));
     state.playerIframesMs = 0;
     state.dodgeIframesMs = 0;
     state.hitstopMs = 0;
@@ -498,7 +499,7 @@ async function runActionCombatSceneProof(
   const arm = (enemy: ActionEnemyState, distance: number): void => {
     park(enemy);
     scene.eventPositions[enemy.eventId] = { x: stage.x + distance, y: stage.y, direction: "left" };
-    scene.eventSprites.get(enemy.eventId)?.setPosition((stage.x + distance) * 16 + 8, stage.y * 16 + 16);
+    scene.eventSprites.get(enemy.eventId)?.setPosition((stage.x + distance + 0.5) * mapTileSize(scene.map), (stage.y + 1) * mapTileSize(scene.map));
     enemy.mode = "windup";
     enemy.modeTimerMs = 0;
   };

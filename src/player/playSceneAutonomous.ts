@@ -1,3 +1,4 @@
+import { mapTileSize } from "@/project/tileGeometry";
 import { isDetectionEmoting } from "./npcDetectionEncounter";
 import { pursuitTarget } from "./horrorRuntime";
 import { pursuitPass } from "./pursuitNavigation";
@@ -102,8 +103,8 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: 
         durationMs: movement.hop?.durationMs,
       };
       if (sprite) {
-        const startX = footprintSpriteX(position.x, view.footprint);
-        const startY = characterSpriteY(position.y);
+        const startX = footprintSpriteX(position.x, view.footprint, mapTileSize(scene.map));
+        const startY = characterSpriteY(position.y, mapTileSize(scene.map));
         sprite.setPosition(startX, startY);
         updateCharacterDepth(sprite, view.priority);
         applySpriteAlpha(sprite, mover.opacity);
@@ -115,7 +116,7 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: 
           setNpcWalkFrame(sprite, baseFrame, frameDir, 0, view.animationType, mover.animationEnabled);
         }
       }
-      scene.runtimeDom.upsertEventMarker(runtimeEventView(view.event, scene.session, scene.eventPositions));
+      scene.runtimeDom.upsertEventMarker(runtimeEventView(view.event, scene.session, scene.eventPositions), undefined, mapTileSize(scene.map));
     } else {
       setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
       if (mover.stopOnBlocked) {
@@ -207,12 +208,12 @@ function updateChaseNpc(
   moveAutonomousRuntimePosition(scene, eventId, decision.x, decision.y, frameDir);
   mover.activeMove = { fromX: view.x, fromY: view.y, toX: decision.x, toY: decision.y, dir: frameDir, baseFrame, elapsedMs: 0 };
   if (sprite) {
-    sprite.setPosition(footprintSpriteX(view.x, view.footprint), characterSpriteY(view.y));
+    sprite.setPosition(footprintSpriteX(view.x, view.footprint, mapTileSize(scene.map)), characterSpriteY(view.y, mapTileSize(scene.map)));
     updateCharacterDepth(sprite, view.priority);
     applySpriteAlpha(sprite, mover.opacity);
     setNpcWalkFrame(sprite, baseFrame, frameDir, 0, view.animationType, mover.animationEnabled);
   }
-  scene.runtimeDom.upsertEventMarker(runtimeEventView(view.event, scene.session, scene.eventPositions));
+  scene.runtimeDom.upsertEventMarker(runtimeEventView(view.event, scene.session, scene.eventPositions), undefined, mapTileSize(scene.map));
 }
 
 function moveAutonomousRuntimePosition(
@@ -257,8 +258,8 @@ function updateActiveNpcMove(target: ActiveNpcMoveTarget, deltaMs: number): void
   // 보간과 착지 두 곳이 같은 값을 써야 하므로 함수 스코프에 둔다.
   const footprint = view?.footprint ?? UNIT_FOOTPRINT;
   if (sprite) {
-    const groundX = footprintSpriteX(lerp(move.fromX, move.toX, progress), footprint);
-    const groundY = characterSpriteY(lerp(move.fromY, move.toY, progress));
+    const groundX = footprintSpriteX(lerp(move.fromX, move.toX, progress), footprint, mapTileSize(scene.map));
+    const groundY = characterSpriteY(lerp(move.fromY, move.toY, progress), mapTileSize(scene.map));
     sprite.setPosition(groundX, groundY);
     updateCharacterDepth(sprite, priority);
     applySpriteAlpha(sprite, mover.opacity);
@@ -270,8 +271,8 @@ function updateActiveNpcMove(target: ActiveNpcMoveTarget, deltaMs: number): void
   }
   if (move.elapsedMs < durationMs) return;
   if (sprite) {
-    const landX = footprintSpriteX(move.toX, footprint);
-    const landY = characterSpriteY(move.toY);
+    const landX = footprintSpriteX(move.toX, footprint, mapTileSize(scene.map));
+    const landY = characterSpriteY(move.toY, mapTileSize(scene.map));
     sprite.setPosition(landX, landY);
     updateCharacterDepth(sprite, priority);
     applySpriteAlpha(sprite, mover.opacity);

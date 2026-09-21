@@ -1,0 +1,3043 @@
+{
+  "source": {
+    "version": "v2",
+    "path": "public/assets/slates/slates-v2-32px.png",
+    "width": 1792,
+    "height": 704,
+    "columns": 56,
+    "license": "CC BY 4.0",
+    "author": "Ivan Voirol",
+    "sourceUrl": "https://opengameart.org/content/slates-32x32px-orthogonal-tileset-by-ivan-voirol",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "modifications": "Bundled original title strip removed upstream; this experiment composites original 32px rectangles without rotation, scaling, recoloring or new raster art."
+  },
+  "originalTiles": {
+    "first": 0,
+    "count": 1232,
+    "sourceRectangle": "[id%56*32, floor(id/56)*32, 32, 32]"
+  },
+  "derivedTiles": [
+    {
+      "id": 1232,
+      "label": "뒤 흉벽",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            480,
+            192,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 351
+        },
+        {
+          "version": "v2",
+          "source": [
+            1312,
+            320,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 601
+        }
+      ]
+    },
+    {
+      "id": 1233,
+      "label": "폐쇄된 성벽 보행면",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            480,
+            192,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 351
+        },
+        {
+          "version": "v2",
+          "source": [
+            480,
+            192,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 351
+        }
+      ]
+    },
+    {
+      "id": 1234,
+      "label": "앞 흉벽",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            480,
+            192,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 351
+        },
+        {
+          "version": "v2",
+          "source": [
+            1312,
+            416,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 769
+        }
+      ]
+    },
+    {
+      "id": 1235,
+      "label": "성벽 전면",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            416,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 69
+        },
+        {
+          "version": "v2",
+          "source": [
+            1280,
+            96,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 208
+        }
+      ]
+    },
+    {
+      "id": 1236,
+      "label": "성벽 기단",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            32,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 57
+        },
+        {
+          "version": "v2",
+          "source": [
+            1280,
+            128,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 264
+        }
+      ]
+    },
+    {
+      "id": 1237,
+      "label": "성벽 전면",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            416,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 69
+        },
+        {
+          "version": "v2",
+          "source": [
+            1280,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 96
+        }
+      ]
+    },
+    {
+      "id": 1238,
+      "label": "서측 경계",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            480,
+            192,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 351
+        },
+        {
+          "version": "v2",
+          "source": [
+            1280,
+            352,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 656
+        }
+      ]
+    },
+    {
+      "id": 1239,
+      "label": "동측 경계",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            480,
+            192,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 351
+        },
+        {
+          "version": "v2",
+          "source": [
+            1376,
+            352,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 659
+        }
+      ]
+    },
+    {
+      "id": 1240,
+      "label": "원통 탑",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            32,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 57
+        },
+        {
+          "version": "v2",
+          "source": [
+            1056,
+            0,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 33
+        }
+      ]
+    },
+    {
+      "id": 1241,
+      "label": "원통 탑",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            32,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 57
+        },
+        {
+          "version": "v2",
+          "source": [
+            1056,
+            192,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 369
+        }
+      ]
+    },
+    {
+      "id": 1242,
+      "label": "원통 탑",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            32,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 57
+        },
+        {
+          "version": "v2",
+          "source": [
+            1056,
+            224,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 425
+        }
+      ]
+    },
+    {
+      "id": 1243,
+      "label": "원통 탑",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            32,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 57
+        },
+        {
+          "version": "v2",
+          "source": [
+            1056,
+            96,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 201
+        }
+      ]
+    },
+    {
+      "id": 1244,
+      "label": "원통 탑",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            32,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 57
+        },
+        {
+          "version": "v2",
+          "source": [
+            1120,
+            256,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 483
+        }
+      ]
+    },
+    {
+      "id": 1245,
+      "label": "뒤 지붕 시작",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            1216,
+            64,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 150
+        }
+      ]
+    },
+    {
+      "id": 1246,
+      "label": "뒤 지붕 시작",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            1248,
+            64,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 151
+        }
+      ]
+    },
+    {
+      "id": 1247,
+      "label": "뒤 지붕 시작",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            1152,
+            0,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 36
+        }
+      ]
+    },
+    {
+      "id": 1248,
+      "label": "뒤 지붕 시작",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            1248,
+            0,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 39
+        }
+      ]
+    },
+    {
+      "id": 1249,
+      "label": "앞 박공",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            1152,
+            96,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 204
+        }
+      ]
+    },
+    {
+      "id": 1250,
+      "label": "앞 박공",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            1184,
+            96,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 205
+        }
+      ]
+    },
+    {
+      "id": 1251,
+      "label": "박공 아래 골조",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            1152,
+            160,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 316
+        }
+      ]
+    },
+    {
+      "id": 1252,
+      "label": "박공 아래 골조",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            896,
+            352,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 644
+        }
+      ]
+    },
+    {
+      "id": 1253,
+      "label": "박공 아래 골조",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            992,
+            352,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 647
+        }
+      ]
+    },
+    {
+      "id": 1254,
+      "label": "박공 아래 골조",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            1248,
+            160,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 319
+        }
+      ]
+    },
+    {
+      "id": 1255,
+      "label": "상층 창",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            896,
+            384,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 700
+        }
+      ]
+    },
+    {
+      "id": 1256,
+      "label": "상층 창",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            960,
+            384,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 702
+        }
+      ]
+    },
+    {
+      "id": 1257,
+      "label": "상층 창",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            928,
+            384,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 701
+        }
+      ]
+    },
+    {
+      "id": 1258,
+      "label": "상층 창",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            992,
+            384,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 703
+        }
+      ]
+    },
+    {
+      "id": 1259,
+      "label": "1층 벽 받침",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            896,
+            320,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 588
+        }
+      ]
+    },
+    {
+      "id": 1260,
+      "label": "1층 벽 받침",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            928,
+            320,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 589
+        }
+      ]
+    },
+    {
+      "id": 1261,
+      "label": "1층 벽 받침",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            992,
+            320,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 591
+        }
+      ]
+    },
+    {
+      "id": 1262,
+      "label": "닫힌 문과 벽 받침",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            928,
+            320,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 589
+        },
+        {
+          "version": "v2",
+          "source": [
+            1664,
+            576,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 1060
+        }
+      ]
+    },
+    {
+      "id": 1263,
+      "label": "원본 소품 644",
+      "passable": false,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            896,
+            352,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 644
+        }
+      ]
+    },
+    {
+      "id": 1264,
+      "label": "원본 소품 645",
+      "passable": false,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            928,
+            352,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 645
+        }
+      ]
+    },
+    {
+      "id": 1265,
+      "label": "원본 소품 647",
+      "passable": false,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            992,
+            352,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 647
+        }
+      ]
+    },
+    {
+      "id": 1266,
+      "label": "기단 앞 낮은 문턱",
+      "passable": true,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            416,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 69
+        },
+        {
+          "version": "v2",
+          "source": [
+            1408,
+            384,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 716
+        }
+      ]
+    },
+    {
+      "id": 1267,
+      "label": "기단 앞 낮은 문턱",
+      "passable": true,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            416,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 69
+        },
+        {
+          "version": "v2",
+          "source": [
+            1440,
+            384,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 717
+        }
+      ]
+    },
+    {
+      "id": 1268,
+      "label": "기단 앞 낮은 문턱",
+      "passable": true,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            416,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 69
+        },
+        {
+          "version": "v2",
+          "source": [
+            1504,
+            384,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 719
+        }
+      ]
+    },
+    {
+      "id": 1269,
+      "label": "동쪽 그림자",
+      "passable": true,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            256,
+            352,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 624
+        }
+      ]
+    },
+    {
+      "id": 1270,
+      "label": "상층 창",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            1024,
+            352,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 648
+        }
+      ]
+    },
+    {
+      "id": 1271,
+      "label": "상층 창",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            1088,
+            352,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 650
+        }
+      ]
+    },
+    {
+      "id": 1272,
+      "label": "상층 창",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            1056,
+            352,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 649
+        }
+      ]
+    },
+    {
+      "id": 1273,
+      "label": "상층 창",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            1120,
+            352,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 651
+        }
+      ]
+    },
+    {
+      "id": 1274,
+      "label": "돌출층 아래 받침",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            1024,
+            480,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 872
+        }
+      ]
+    },
+    {
+      "id": 1275,
+      "label": "돌출층 아래 받침",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            1056,
+            480,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 873
+        }
+      ]
+    },
+    {
+      "id": 1276,
+      "label": "돌출층 아래 받침",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            1120,
+            480,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 875
+        }
+      ]
+    },
+    {
+      "id": 1277,
+      "label": "원본 소품 924",
+      "passable": false,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            896,
+            512,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 924
+        }
+      ]
+    },
+    {
+      "id": 1278,
+      "label": "원본 소품 925",
+      "passable": false,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            928,
+            512,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 925
+        }
+      ]
+    },
+    {
+      "id": 1279,
+      "label": "원본 소품 927",
+      "passable": false,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            992,
+            512,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 927
+        }
+      ]
+    },
+    {
+      "id": 1280,
+      "label": "앞 박공",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            896,
+            96,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 196
+        }
+      ]
+    },
+    {
+      "id": 1281,
+      "label": "앞 박공",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            992,
+            96,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 199
+        }
+      ]
+    },
+    {
+      "id": 1282,
+      "label": "박공 아래 골조",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            928,
+            224,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 421
+        }
+      ]
+    },
+    {
+      "id": 1283,
+      "label": "동쪽 그림자",
+      "passable": true,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            416,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 69
+        },
+        {
+          "version": "v2",
+          "source": [
+            256,
+            352,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 624
+        }
+      ]
+    },
+    {
+      "id": 1284,
+      "label": "옆동 처마",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            1152,
+            384,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 708
+        }
+      ]
+    },
+    {
+      "id": 1285,
+      "label": "옆동 낮은 지붕 시작",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            1184,
+            0,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 37
+        }
+      ]
+    },
+    {
+      "id": 1286,
+      "label": "옆동 처마",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            1184,
+            384,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 709
+        }
+      ]
+    },
+    {
+      "id": 1287,
+      "label": "옆동 처마",
+      "passable": false,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            1216,
+            384,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 710
+        }
+      ]
+    },
+    {
+      "id": 1288,
+      "label": "직사각 지형 경계",
+      "passable": true,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            416,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 69
+        },
+        {
+          "version": "v2",
+          "source": [
+            0,
+            0,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 0
+        }
+      ]
+    },
+    {
+      "id": 1289,
+      "label": "직사각 지형 경계",
+      "passable": true,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            416,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 69
+        },
+        {
+          "version": "v2",
+          "source": [
+            32,
+            0,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 1
+        }
+      ]
+    },
+    {
+      "id": 1290,
+      "label": "직사각 지형 경계",
+      "passable": true,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            32,
+            0,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 1
+        }
+      ]
+    },
+    {
+      "id": 1291,
+      "label": "직사각 지형 경계",
+      "passable": true,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            64,
+            0,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 2
+        }
+      ]
+    },
+    {
+      "id": 1292,
+      "label": "직사각 지형 경계",
+      "passable": true,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            416,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 69
+        },
+        {
+          "version": "v2",
+          "source": [
+            0,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 56
+        }
+      ]
+    },
+    {
+      "id": 1293,
+      "label": "직사각 지형 경계",
+      "passable": true,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            416,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 69
+        },
+        {
+          "version": "v2",
+          "source": [
+            32,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 57
+        }
+      ]
+    },
+    {
+      "id": 1294,
+      "label": "직사각 지형 경계",
+      "passable": true,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            32,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 57
+        }
+      ]
+    },
+    {
+      "id": 1295,
+      "label": "직사각 지형 경계",
+      "passable": true,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            64,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 58
+        }
+      ]
+    },
+    {
+      "id": 1296,
+      "label": "직사각 지형 경계",
+      "passable": true,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            416,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 69
+        },
+        {
+          "version": "v2",
+          "source": [
+            0,
+            64,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 112
+        }
+      ]
+    },
+    {
+      "id": 1297,
+      "label": "직사각 지형 경계",
+      "passable": true,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            416,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 69
+        },
+        {
+          "version": "v2",
+          "source": [
+            32,
+            64,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 113
+        }
+      ]
+    },
+    {
+      "id": 1298,
+      "label": "직사각 지형 경계",
+      "passable": true,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            32,
+            64,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 113
+        }
+      ]
+    },
+    {
+      "id": 1299,
+      "label": "직사각 지형 경계",
+      "passable": true,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            64,
+            64,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 114
+        }
+      ]
+    },
+    {
+      "id": 1300,
+      "label": "직사각 지형 경계",
+      "passable": true,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            416,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 69
+        },
+        {
+          "version": "v2",
+          "source": [
+            64,
+            0,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 2
+        }
+      ]
+    },
+    {
+      "id": 1301,
+      "label": "직사각 지형 경계",
+      "passable": true,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            416,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 69
+        },
+        {
+          "version": "v2",
+          "source": [
+            64,
+            64,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 114
+        }
+      ]
+    },
+    {
+      "id": 1302,
+      "label": "직사각 지형 경계",
+      "passable": true,
+      "layer": "lower",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            160,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 61
+        },
+        {
+          "version": "v2",
+          "source": [
+            0,
+            64,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 112
+        }
+      ]
+    },
+    {
+      "id": 1303,
+      "label": "원본 소품 1020",
+      "passable": true,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            384,
+            576,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 1020
+        }
+      ]
+    },
+    {
+      "id": 1304,
+      "label": "원본 소품 1021",
+      "passable": true,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            416,
+            576,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 1021
+        }
+      ]
+    },
+    {
+      "id": 1305,
+      "label": "원본 소품 1076",
+      "passable": true,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            384,
+            608,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 1076
+        }
+      ]
+    },
+    {
+      "id": 1306,
+      "label": "원본 소품 1077",
+      "passable": true,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            416,
+            608,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 1077
+        }
+      ]
+    },
+    {
+      "id": 1307,
+      "label": "원본 소품 1132",
+      "passable": false,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            384,
+            640,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 1132
+        }
+      ]
+    },
+    {
+      "id": 1308,
+      "label": "원본 소품 1133",
+      "passable": false,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            416,
+            640,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 1133
+        }
+      ]
+    },
+    {
+      "id": 1309,
+      "label": "원본 소품 1016",
+      "passable": true,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            256,
+            576,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 1016
+        }
+      ]
+    },
+    {
+      "id": 1310,
+      "label": "원본 소품 1017",
+      "passable": true,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            288,
+            576,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 1017
+        }
+      ]
+    },
+    {
+      "id": 1311,
+      "label": "원본 소품 1072",
+      "passable": true,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            256,
+            608,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 1072
+        }
+      ]
+    },
+    {
+      "id": 1312,
+      "label": "원본 소품 1073",
+      "passable": true,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            288,
+            608,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 1073
+        }
+      ]
+    },
+    {
+      "id": 1313,
+      "label": "원본 소품 1128",
+      "passable": false,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            256,
+            640,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 1128
+        }
+      ]
+    },
+    {
+      "id": 1314,
+      "label": "원본 소품 1129",
+      "passable": false,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            288,
+            640,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 1129
+        }
+      ]
+    },
+    {
+      "id": 1315,
+      "label": "원본 소품 630",
+      "passable": true,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            448,
+            352,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 630
+        }
+      ]
+    },
+    {
+      "id": 1316,
+      "label": "원본 소품 629",
+      "passable": true,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            416,
+            352,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 629
+        }
+      ]
+    },
+    {
+      "id": 1317,
+      "label": "원본 소품 631",
+      "passable": true,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            480,
+            352,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 631
+        }
+      ]
+    },
+    {
+      "id": 1318,
+      "label": "원본 소품 1118",
+      "passable": false,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            1728,
+            608,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 1118
+        }
+      ]
+    },
+    {
+      "id": 1319,
+      "label": "원본 소품 978",
+      "passable": false,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            832,
+            544,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 978
+        }
+      ]
+    },
+    {
+      "id": 1320,
+      "label": "원본 소품 380",
+      "passable": false,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            1408,
+            192,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 380
+        }
+      ]
+    },
+    {
+      "id": 1321,
+      "label": "원본 소품 381",
+      "passable": false,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            1440,
+            192,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 381
+        }
+      ]
+    },
+    {
+      "id": 1322,
+      "label": "원본 소품 109",
+      "passable": false,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            1696,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 109
+        }
+      ]
+    },
+    {
+      "id": 1323,
+      "label": "원본 소품 388",
+      "passable": false,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            1664,
+            192,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 388
+        }
+      ]
+    },
+    {
+      "id": 1324,
+      "label": "원본 소품 389",
+      "passable": false,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            1696,
+            192,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 389
+        }
+      ]
+    },
+    {
+      "id": 1325,
+      "label": "원본 소품 108",
+      "passable": false,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            1664,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 108
+        }
+      ]
+    },
+    {
+      "id": 1326,
+      "label": "원본 소품 110",
+      "passable": false,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            1728,
+            32,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 110
+        }
+      ]
+    },
+    {
+      "id": 1327,
+      "label": "원본 소품 1004",
+      "passable": false,
+      "layer": "upper",
+      "operations": [
+        {
+          "version": "v2",
+          "source": [
+            1664,
+            544,
+            32,
+            32
+          ],
+          "destination": [
+            0,
+            0
+          ],
+          "sourceTile": 1004
+        }
+      ]
+    }
+  ]
+}

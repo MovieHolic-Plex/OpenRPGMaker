@@ -6,7 +6,7 @@
 // 제스처 위임 계약: pan 도구 / 스페이스 팬 / 가운데 버튼 / 오른쪽 버튼 영역 제스처 / select 도구 맵 밖 팬 / 붙여넣기 미리보기 클릭은 캔버스·카메라에 위임한다.
 // 겹침은 허용이므로 클릭 판정은 «가장 구체적인(작은) 구역» 이 이긴다(순수 모듈 규칙).
 
-import { TILE_SIZE } from "@/assets/bundled";
+import { editorMapTileSize } from "@/editor/mapGeometry";
 import { claimCanvasPointer, eventIdAtPoint, openEventFromCanvas, type CanvasPointerPoint } from "@/editor/canvasPointerBridge";
 import { editorState, editorStateChangedOnlyCanvasOverlay } from "@/editor/editorState";
 import {
@@ -112,10 +112,10 @@ function tileToOverlayRect(rect: Rect): { left: number; top: number; width: numb
     };
   }
   return {
-    left: rect.x * TILE_SIZE * zoom,
-    top: rect.y * TILE_SIZE * zoom,
-    width: Math.max(1, rect.w * TILE_SIZE * zoom),
-    height: Math.max(1, rect.h * TILE_SIZE * zoom),
+    left: rect.x * editorMapTileSize() * zoom,
+    top: rect.y * editorMapTileSize() * zoom,
+    width: Math.max(1, rect.w * editorMapTileSize() * zoom),
+    height: Math.max(1, rect.h * editorMapTileSize() * zoom),
   };
 }
 

@@ -3,7 +3,7 @@
 
 import { isPassable } from "@/project/collision";
 import { normalizeCloudShadowParams } from "@/player/cloudShadows";
-import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { autotileGroupsForTileset, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
@@ -205,15 +205,19 @@ const createMap: ToolDefinition = {
     const name = args.name as string;
     const size = width * height;
     const tilesetId = typeof args.tilesetId === "string" && args.tilesetId.trim().length > 0 ? args.tilesetId.trim() : DEFAULT_TILESET_ID;
-    if (!draft.tilesets[tilesetId]) throw new ToolError(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { code: "tileset-not-found" });
+    const tileset = draft.tilesets[tilesetId];
+    if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { code: "tileset-not-found" });
     const map: GameMap = {
       id,
       name,
       width,
       height,
       tilesetId,
-      tileSize: DEFAULT_TILE_SIZE,
-      lowerTiles: new Array<number>(size).fill(TILE.GRASS),
+      // 맵의 좌표 단위는 **고른 타일셋**에서 온다. 16 을 박으면 32px 타일셋을 고른 순간
+      // 맵만 16 으로 남아 렌더·히트테스트가 반 칸씩 어긋난다(set_map_properties 는 이미
+      // 타일셋 크기를 따라가므로, 생성 경로만 규칙에서 빠져 있었다).
+      tileSize: tileset.tileSize,
+      lowerTiles: new Array<number>(size).fill(tilesetId === DEFAULT_TILESET_ID ? TILE.GRASS : TILE.EMPTY),
       upperTiles: new Array<number>(size).fill(TILE.EMPTY),
       events: [],
     };

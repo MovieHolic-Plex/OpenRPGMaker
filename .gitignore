@@ -288,3 +288,8 @@ dist-packages/
 # Local team-host access codes (never commit or include in project backups).
 .oprn-host-access
 .oprn-host-access.*.tmp
+
+# Slates full-project DB snapshots are local; authored bundles, recipes and receipts are tracked.
+/verify-shots/slates*/project.json
+/verify-shots/slates*/reloaded-project.json
+/verify-shots/slates*/runtime-project.json

@@ -1,0 +1,13 @@
+import {readFile,writeFile,mkdir} from 'node:fs/promises';
+const readJson=async p=>JSON.parse(await readFile(p,'utf8'));
+const project=await readJson('verify-shots/slates-study/reloaded-project.json');
+const files={studyAtlas:'public/assets/slates/slates-study-32px.png',v2:'public/assets/slates/slates-v2-32px.png',v1:'public/assets/slates/slates-v1-32px.png',derived:'public/assets/slates/slates-reference-32px.png',town:'verify-shots/slates-reference/slates_town-map.png',castle:'verify-shots/slates-reference/slates_castle-map.png',study:'verify-shots/slates-study/map.png',referenceCastle:'output/slates-reference/source/chateau.png'};
+const images=Object.fromEntries(await Promise.all(Object.entries(files).map(async([key,path])=>[key,'data:image/png;base64,'+(await readFile(path)).toString('base64')])));
+const studyProvenance=Array.from({length:3},(_,i)=>({index:1232+i,layer:'lower',passable:true,recipe:[243,23+56*i].map(id=>({source:0,x:id%56*32,y:Math.floor(id/56)*32,width:32,height:32,dx:0,dy:0}))}));
+const data={studyProvenance,book:await readJson('public/assets/slates/slates-study-catalog.json'),receipt:await readJson('verify-shots/slates-study/persistence.json'),provenance:await readJson('public/assets/slates/slates-reference-tile-provenance.json'),maps:project.maps,tilesets:project.tilesets,images};
+const html=(await readFile('reports/slates-study/report.template.html','utf8')).replace('__STUDY_DATA__',JSON.stringify(data).replace(/</g,'\\u003c'));
+await writeFile('reports/slates-study/index.html',html);
+const inline=(await readFile('reports/slates-study/layers.fragment.html','utf8')).replace('__SLATES_ATLAS__',images.v2);
+const vizDir='/home/main/.codex/visualizations/2026/09/20/01a0bfd0-4946-7e81-bf06-62a6e0791475';await mkdir(vizDir,{recursive:true});await writeFile(vizDir+'/slates-layers.html',inline);
+if(Buffer.byteLength(inline)>=1000000)throw Error('Inline visual exceeds 1 MB');
+console.log({htmlBytes:Buffer.byteLength(html),inlineBytes:Buffer.byteLength(inline),projectId:data.receipt.projectId});

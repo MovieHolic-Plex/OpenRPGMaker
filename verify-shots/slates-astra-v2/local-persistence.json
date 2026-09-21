@@ -1,0 +1,15 @@
+{
+  "projectId": "c8c53479-8d1a-42da-96ee-e493598ef498",
+  "revision": 9,
+  "mapCount": 12,
+  "contentReloadEqual": true,
+  "comparedFields": [
+    "maps",
+    "tilesets",
+    "mapTree",
+    "assets",
+    "startMapId",
+    "startPos"
+  ],
+  "savedContentExactlyAgentAuthored": true
+}

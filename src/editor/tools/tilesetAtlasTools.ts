@@ -264,6 +264,9 @@ const setTilesetProperties: ToolDefinition = {
     }
     if (args.tileSize !== undefined) {
       tileset.tileSize = requirePositiveInteger(args.tileSize, "tileSize");
+      for (const map of Object.values(draft.maps)) {
+        if (map.tilesetId === tileset.id) map.tileSize = tileset.tileSize;
+      }
       changes.push("tileSize");
     }
     if (args.tilesPerRow !== undefined) {

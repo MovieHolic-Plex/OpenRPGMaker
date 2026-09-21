@@ -1,0 +1,341 @@
+{
+  "observations": [
+    {
+      "mapId": "slates_harbor",
+      "state": {
+        "farmPlots": {},
+        "makerInstances": {},
+        "eventLocations": {},
+        "currentMapId": "slates_harbor",
+        "x": 11,
+        "y": 8,
+        "gold": 0,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "sw_gen2_sun_relay": false,
+          "sw_gen2_moon_relay": false,
+          "sw_gen2_bridge_relay": false,
+          "sw_gen2_seal_relay": false,
+          "sw_catalog_gate_open": false,
+          "sw_catalog_lighthouse_lit": false,
+          "sw_catalog_mine_lift": false,
+          "sw_catalog_fountain_flow": false,
+          "sw_catalog_archive_unlock": false,
+          "sw_catalog_beacon_lit": false,
+          "sw_catalog_aqueduct_route": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {},
+        "timers": {},
+        "inventory": {},
+        "monsterInstances": {},
+        "monsterParty": [],
+        "monsterBox": [],
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 748861758,
+          "streams": {
+            "encounter": {
+              "seed": 118115934,
+              "state": 118115934
+            },
+            "battle": {
+              "seed": 1848223195,
+              "state": 1848223195
+            },
+            "movement": {
+              "seed": 2119344908,
+              "state": 2119344908
+            },
+            "fishing": {
+              "seed": 3505968665,
+              "state": 3505968665
+            },
+            "misc": {
+              "seed": 736772373,
+              "state": 736772373
+            }
+          }
+        }
+      },
+      "sprite": {
+        "textureKey": "tex_easyrpg_charset_actor1",
+        "frame": 25,
+        "resourceId": "easyrpg-charset-actor1",
+        "kind": "charset",
+        "moving": false,
+        "x": 368,
+        "y": 288
+      }
+    },
+    {
+      "mapId": "slates_town",
+      "state": {
+        "farmPlots": {},
+        "makerInstances": {},
+        "eventLocations": {},
+        "currentMapId": "slates_town",
+        "x": 6,
+        "y": 8,
+        "gold": 0,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "sw_gen2_sun_relay": false,
+          "sw_gen2_moon_relay": false,
+          "sw_gen2_bridge_relay": false,
+          "sw_gen2_seal_relay": false,
+          "sw_catalog_gate_open": false,
+          "sw_catalog_lighthouse_lit": false,
+          "sw_catalog_mine_lift": false,
+          "sw_catalog_fountain_flow": false,
+          "sw_catalog_archive_unlock": false,
+          "sw_catalog_beacon_lit": false,
+          "sw_catalog_aqueduct_route": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {},
+        "timers": {},
+        "inventory": {},
+        "monsterInstances": {},
+        "monsterParty": [],
+        "monsterBox": [],
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 2616366318,
+          "streams": {
+            "encounter": {
+              "seed": 1521219398,
+              "state": 1521219398
+            },
+            "battle": {
+              "seed": 38367379,
+              "state": 38367379
+            },
+            "movement": {
+              "seed": 266169620,
+              "state": 266169620
+            },
+            "fishing": {
+              "seed": 3484337169,
+              "state": 3484337169
+            },
+            "misc": {
+              "seed": 1357739421,
+              "state": 1357739421
+            }
+          }
+        }
+      },
+      "sprite": {
+        "textureKey": "tex_easyrpg_charset_actor1",
+        "frame": 25,
+        "resourceId": "easyrpg-charset-actor1",
+        "kind": "charset",
+        "moving": false,
+        "x": 208,
+        "y": 288
+      }
+    },
+    {
+      "mapId": "slates_castle",
+      "state": {
+        "farmPlots": {},
+        "makerInstances": {},
+        "eventLocations": {},
+        "currentMapId": "slates_castle",
+        "x": 8,
+        "y": 12,
+        "gold": 0,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false,
+          "sw_gen2_sun_relay": false,
+          "sw_gen2_moon_relay": false,
+          "sw_gen2_bridge_relay": false,
+          "sw_gen2_seal_relay": false,
+          "sw_catalog_gate_open": false,
+          "sw_catalog_lighthouse_lit": false,
+          "sw_catalog_mine_lift": false,
+          "sw_catalog_fountain_flow": false,
+          "sw_catalog_archive_unlock": false,
+          "sw_catalog_beacon_lit": false,
+          "sw_catalog_aqueduct_route": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {},
+        "timers": {},
+        "inventory": {},
+        "monsterInstances": {},
+        "monsterParty": [],
+        "monsterBox": [],
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 349594305,
+          "streams": {
+            "encounter": {
+              "seed": 62751634,
+              "state": 62751634
+            },
+            "battle": {
+              "seed": 3105915807,
+              "state": 3105915807
+            },
+            "movement": {
+              "seed": 3297970384,
+              "state": 3297970384
+            },
+            "fishing": {
+              "seed": 2162534013,
+              "state": 2162534013
+            },
+            "misc": {
+              "seed": 721897569,
+              "state": 721897569
+            }
+          }
+        }
+      },
+      "sprite": {
+        "textureKey": "tex_easyrpg_charset_actor1",
+        "frame": 25,
+        "resourceId": "easyrpg-charset-actor1",
+        "kind": "charset",
+        "moving": false,
+        "x": 272,
+        "y": 416
+      }
+    }
+  ],
+  "errors": []
+}

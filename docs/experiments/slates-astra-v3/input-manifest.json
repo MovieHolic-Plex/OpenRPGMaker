@@ -1,0 +1,846 @@
+{
+  "allowedKnowledgeInputs": [
+    {
+      "path": "docs/experiments/slates-astra-v2/courtyard-inn-complete.png",
+      "sha256": "69d59935e171998a0903cbdf8892ea3326a11685100a9afd6dbd72dda0ccbaf3",
+      "bytes": 49840
+    },
+    {
+      "path": "docs/experiments/slates-astra-v2/house-complete.png",
+      "sha256": "6fc46406a722809fb0de0afc5b86c20f4548eb25310fe7a9f8b917a06a50da69",
+      "bytes": 33029
+    },
+    {
+      "path": "docs/experiments/slates-astra-v2/joined-shops-complete.png",
+      "sha256": "433a8730222404dc96aab09b227c88ccf1ba654da8aba48cdd9f094f1fcafe4b",
+      "bytes": 56984
+    },
+    {
+      "path": "docs/experiments/slates-astra-v2/low-workshop-complete.png",
+      "sha256": "4ba7b304733ad2dc214f262030b711fd2984eb2a7383401cdd391bff813b35dd",
+      "bytes": 25329
+    },
+    {
+      "path": "docs/experiments/slates-astra-v2/modules.json",
+      "sha256": "6ccc93d56159f88e2fe6118f35887b9518d7a525b736568bae3aef016269c5e5",
+      "bytes": 493222
+    },
+    {
+      "path": "docs/experiments/slates-astra-v2/open-gate-complete.png",
+      "sha256": "931ccb015bb3bc929282ed3d6c3146e01bb82f8ec3fde401e01b2bdcf9308475",
+      "bytes": 47210
+    },
+    {
+      "path": "docs/experiments/slates-astra-v2/wall-corner-complete.png",
+      "sha256": "22d7660ebd824aab08df8fa56ea15fab75a208bfb9736788ee4ef04bc6a89e3a",
+      "bytes": 33800
+    },
+    {
+      "path": "openwiki/images/slates/architecture.png",
+      "sha256": "8fc84e63f6c592f69551128438ad9b63519e17c285b2795e37db7f4b8ad7de51",
+      "bytes": 423325
+    },
+    {
+      "path": "openwiki/images/slates/assembly-lab.png",
+      "sha256": "065b00164419e3f4147c41d05390a3ce08d9c9e466a0d42f58470046e820b795",
+      "bytes": 392803
+    },
+    {
+      "path": "openwiki/images/slates/assembly-v2/first-attempt.png",
+      "sha256": "601d4b692d44a463bea6ac1767d7bcab4e60f40b3c0782c1b647b3be45711324",
+      "bytes": 1229321
+    },
+    {
+      "path": "openwiki/images/slates/assembly-v2/reference-town.png",
+      "sha256": "eeb670b8ea0219aa5e0b374f9855209393626cea5f871b16b2da9ccb2c8bbfc0",
+      "bytes": 106377
+    },
+    {
+      "path": "openwiki/images/slates/dense-v3/reference.png",
+      "sha256": "274861c8f9d46a52d78cef602cad68586d842f2801fd096bbd67546b7b6ba541",
+      "bytes": 232756
+    },
+    {
+      "path": "openwiki/images/slates/dense-v3/sparse-v2.png",
+      "sha256": "7d97f7fe96106f4b824411a0431b05090d7258c37901ea5a032b672f3f344fa3",
+      "bytes": 771787
+    },
+    {
+      "path": "openwiki/images/slates/mastery/bridge-parts.png",
+      "sha256": "ceb603fcb95e38babd2d0ca17b7259fb53775fcabda7bb82c7364d28704cb365",
+      "bytes": 69115
+    },
+    {
+      "path": "openwiki/images/slates/mastery/bridge.png",
+      "sha256": "ebda89e4f56c114b47f8355c2491b77ffbf570c371b8ae6edf623b86d5c84a32",
+      "bytes": 21436
+    },
+    {
+      "path": "openwiki/images/slates/mastery/castle-facade-parts.png",
+      "sha256": "356e7e451248293ca810439651e19f90df0330531698d424f05b48a4a26419cd",
+      "bytes": 85670
+    },
+    {
+      "path": "openwiki/images/slates/mastery/castle-facade.png",
+      "sha256": "e69acb16d388338acd547a48604a9f22e8565fc922c8c0c5e60476e42c40b4c2",
+      "bytes": 112226
+    },
+    {
+      "path": "openwiki/images/slates/mastery/cave-parts.png",
+      "sha256": "f515df256c8e6c06bfdc31152d85f1f1dcad0beb86a53b45b2b2df7f3ebdd942",
+      "bytes": 34507
+    },
+    {
+      "path": "openwiki/images/slates/mastery/cave.png",
+      "sha256": "6c6e7cd4142194af1771573d4a43eafb2b039f73735077017680b72c0a2b85ad",
+      "bytes": 28652
+    },
+    {
+      "path": "openwiki/images/slates/mastery/cemetery-parts.png",
+      "sha256": "2ce19dbd8a293ec2363a9beaba144c113304c0b309a5707a18b8d9786f76d7f1",
+      "bytes": 77823
+    },
+    {
+      "path": "openwiki/images/slates/mastery/cemetery.png",
+      "sha256": "59ad791a6b18ffc4d56580a96ac8aee5aee8ee2c6c90f08deb424f2d1d096a7e",
+      "bytes": 35706
+    },
+    {
+      "path": "openwiki/images/slates/mastery/church-parts.png",
+      "sha256": "5dd6b88ce3f7308b3d7d087565a540ed351e865a9a1f2806e31f0e406da01ddf",
+      "bytes": 45019
+    },
+    {
+      "path": "openwiki/images/slates/mastery/church.png",
+      "sha256": "6d68eade7b8b25e82478561f1a9a7185155dcef99b0d3a9f4c2e32eda755681c",
+      "bytes": 53544
+    },
+    {
+      "path": "openwiki/images/slates/mastery/falls-parts.png",
+      "sha256": "0e4c692c92e120e3ef0a8622b176330e0c1fac34eb8f5d6fc357a0c6b83d0b8c",
+      "bytes": 54166
+    },
+    {
+      "path": "openwiki/images/slates/mastery/falls.png",
+      "sha256": "6402f9ac6ce610c3ebf793a62f0b774036a8a578bc16beaf525a98bb50227d72",
+      "bytes": 29425
+    },
+    {
+      "path": "openwiki/images/slates/mastery/forecourt-parts.png",
+      "sha256": "22b11903529d613d87a7335aa2bebab3b621891961b1a76e411a09266c33d7c4",
+      "bytes": 129139
+    },
+    {
+      "path": "openwiki/images/slates/mastery/forecourt.png",
+      "sha256": "309a63276fada0b9ae05d97ab149e0adf7f5d065f0bfc4f93a19d33f39abdce2",
+      "bytes": 48469
+    },
+    {
+      "path": "openwiki/images/slates/mastery/gate-parts.png",
+      "sha256": "9f6eb2a84cb015150ea94272acfc45f7f9b4d8decdb9d2619e931a44eb9fedad",
+      "bytes": 106309
+    },
+    {
+      "path": "openwiki/images/slates/mastery/gate.png",
+      "sha256": "5e9c2bdc9b30d45d9c172b530d9eaadce43921953c6b3412b64fe34eb84dd464",
+      "bytes": 52148
+    },
+    {
+      "path": "openwiki/images/slates/mastery/gothic-parts.png",
+      "sha256": "5e8f82a047c505e55346f3848e4c04a304382cd3b86079c5ba6f82898a6621de",
+      "bytes": 21045
+    },
+    {
+      "path": "openwiki/images/slates/mastery/gothic.png",
+      "sha256": "9460e828dcbe2d3eeea45a5d3bfd30cefc5ede6850d538036a7195780abeee4a",
+      "bytes": 31739
+    },
+    {
+      "path": "openwiki/images/slates/mastery/inn-parts.png",
+      "sha256": "ea088302caab514169484f693404a901a3dc97fef105d41852ec35983fcdd333",
+      "bytes": 510278
+    },
+    {
+      "path": "openwiki/images/slates/mastery/inn.png",
+      "sha256": "7a677d57e7af85859781de061957ba81549c21d276e557695d090b6174685327",
+      "bytes": 121163
+    },
+    {
+      "path": "openwiki/images/slates/mastery/joined-shops-parts.png",
+      "sha256": "03f9694ac477d66e220f8235781a977b061ef588161cc146cdc6e4b253818e3c",
+      "bytes": 190366
+    },
+    {
+      "path": "openwiki/images/slates/mastery/joined-shops.png",
+      "sha256": "5d4338d34704d85d25c4e13eee10ff99e7fdfc9783ec3908bf6574e116c5411d",
+      "bytes": 96433
+    },
+    {
+      "path": "openwiki/images/slates/mastery/market-parts.png",
+      "sha256": "461857812caac5f7510f542533f7a22cd92a2ee5254f83fe7df04d91ffaf592e",
+      "bytes": 45796
+    },
+    {
+      "path": "openwiki/images/slates/mastery/market.png",
+      "sha256": "7b1bec18940c3e23de6c47ebf92320afb6fb5d8fecb2897f59811ac1b5622480",
+      "bytes": 25012
+    },
+    {
+      "path": "openwiki/images/slates/mastery/parapet-corner-parts.png",
+      "sha256": "55da85a45c0ed858f9005326c3744447095c1a929448287d9ec11e5a6e6975a4",
+      "bytes": 83596
+    },
+    {
+      "path": "openwiki/images/slates/mastery/parapet-corner.png",
+      "sha256": "f659ea4b0e28d67ead73331de115312f4e9073c008b7117e930d5b39b4715ae3",
+      "bytes": 36614
+    },
+    {
+      "path": "openwiki/images/slates/mastery/pier-junction-parts.png",
+      "sha256": "62488fe5838ffaa3f2b6ce8b203b0668cb7d87814eda66e6fea1e326b9939eb6",
+      "bytes": 78720
+    },
+    {
+      "path": "openwiki/images/slates/mastery/pier-junction.png",
+      "sha256": "216e5b2e65d250719e5d69ebd6dddb6405c266f3a02318216635442933fb25db",
+      "bytes": 29566
+    },
+    {
+      "path": "openwiki/images/slates/mastery/planter-parts.png",
+      "sha256": "ff6ddbb8988eb6757b42ae13dee794098eb4c97abbdb71c01fafc3075ab4acb4",
+      "bytes": 30352
+    },
+    {
+      "path": "openwiki/images/slates/mastery/planter.png",
+      "sha256": "b57ef76b63748b68af6e92c22e85234931e37e4c191af5eaab59fb64b03e49ae",
+      "bytes": 17484
+    },
+    {
+      "path": "openwiki/images/slates/mastery/projecting-house-parts.png",
+      "sha256": "04d34106338c92f49aaf03a3c9896605546875dbc4368ba750df4247ece64a99",
+      "bytes": 121375
+    },
+    {
+      "path": "openwiki/images/slates/mastery/projecting-house.png",
+      "sha256": "258697d38c483dfebaf37cfe881c8782082838ad528c5b759921edc878ecf83d",
+      "bytes": 59339
+    },
+    {
+      "path": "openwiki/images/slates/mastery/raised-garden-parts.png",
+      "sha256": "4a97c5f576e49cbec32d54d386ecf049ac4ea7a6ce090c49afecf2a19d19c8c6",
+      "bytes": 205840
+    },
+    {
+      "path": "openwiki/images/slates/mastery/raised-garden.png",
+      "sha256": "2c2a57ebd557bbd00c4d747a1bb76f315da98f2662874a8b2d8f1ad34f407c91",
+      "bytes": 70471
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-balcony.png",
+      "sha256": "57bc719bce5ce832cbaa263a46c45f4cd716a711d449e34f58ee4fe787f9a1fc",
+      "bytes": 50300
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-battlement.png",
+      "sha256": "197a27c09b93be2d52900701164b0d16d3e6e3ab0f5ccddf6f4808b59c2c1584",
+      "bytes": 29684
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-blue-awning.png",
+      "sha256": "2547a085b186f0adc8b53e6c19e95df3ae3c2f10fe44b924619adabbd1dd9e5c",
+      "bytes": 33730
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-castle-face.png",
+      "sha256": "ba4ec6504a6d9bbede496b9b82755e0a463b455143d7682b01aff8a3ef42dee1",
+      "bytes": 38687
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-cliff.png",
+      "sha256": "625b2d86b46052279c7147a0872fb6fedc99f61e2f83bb7d4d6103ec389e919b",
+      "bytes": 58325
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-columns.png",
+      "sha256": "d79f19084d81895c66ac500c477877ed310ec3bb87a29029637b9635695fc7f4",
+      "bytes": 18689
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-court-border.png",
+      "sha256": "595384942014bff6bb6507cbae001a3ec3adbd64b9cd8c2864f5baa63174ff84",
+      "bytes": 15028
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-dock.png",
+      "sha256": "83301c2dec16b90c67914e38954cb9ca1936218736e0a0ea9daa28caa5d6cb1d",
+      "bytes": 62792
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-drawbridge.png",
+      "sha256": "b59c30e46e6caa430cfdf7781dd8ba09871d90b9ac69527244116942e78f4999",
+      "bytes": 14051
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-earth.png",
+      "sha256": "181183c24fafa6a8bb01bbaa9b22a977282f463cdfd4bad8229550dad51bd33a",
+      "bytes": 25025
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-falls.png",
+      "sha256": "89536d786af8d0ac0209b6bed8dcc95c81bfd29b2a8ad48703046d8a6825eb72",
+      "bytes": 7350
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-flowers.png",
+      "sha256": "2e83d0ac6855b1039761db8323bff020c072138b6d3fd779f29040fce75863ec",
+      "bytes": 8668
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-gate.png",
+      "sha256": "e69c5e04094b2be93e310419cf2f6f34947c17a6dc56f0882ac5905fa511f4d0",
+      "bytes": 6811
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-gothic-window.png",
+      "sha256": "7f24ae4606d1155b097102a6e9a52a0e135884ea6fcb6a62b402d04d690d3806",
+      "bytes": 25622
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-grass-edge.png",
+      "sha256": "e15d998cd3e4b55824306a124eddc20e0fe6465e2f3d7da7aeb6a79c839f60fb",
+      "bytes": 62204
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-grass.png",
+      "sha256": "016f151bd690c3c76ee50a2b6ed92c6dfb4f1cd48cfe37636393664797039d37",
+      "bytes": 22744
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-ladders.png",
+      "sha256": "f587117957ba3e5c83030ca9aee0eac5d2a52ccd493b32b07fa324429aa4626d",
+      "bytes": 10642
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-leaf-cluster.png",
+      "sha256": "10efcfeb9a156e1703c0a1a8eae91d2780e9a7b629ba93ee60146c4279a89e81",
+      "bytes": 24098
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-lily.png",
+      "sha256": "d5a42b419ac6a1ba8750f7558498bead44e3b8f0070bda1bc2819e216794128c",
+      "bytes": 4332
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-paving-alt.png",
+      "sha256": "6a55d33ee9d32ea689c38f82e633fc792ac220bba92c16642bd1ba330bce473d",
+      "bytes": 11296
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-paving.png",
+      "sha256": "d30b285aa2ceb48c80c8ba0e5fb68121e634b96df228298ad82c0f728237618d",
+      "bytes": 10104
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-pictogram.png",
+      "sha256": "6dbc4185c0a65a5125f75eda3d466c913a8aad97f578c52d22a21fe5e4061aa5",
+      "bytes": 31058
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-pine-cluster.png",
+      "sha256": "249562d7a4ac2029fa90599f4f6e6fa832814479943b74e47e94b0ae8e21cb88",
+      "bytes": 19618
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-red-awning.png",
+      "sha256": "fc489d15037383cf14f2bf491dcc5d08b4353b486937fe2a56856ecfb0db9297",
+      "bytes": 26677
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-rocks.png",
+      "sha256": "86adb187034e17268b403ac3eeb1efdf6b5d2b5e006924478a55de52670d5d67",
+      "bytes": 10935
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-roof.png",
+      "sha256": "777d49a78765dc3a82cb94ecdb588d08e846df9952c38ff546d2838103685602",
+      "bytes": 101377
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-sand.png",
+      "sha256": "fbfedb992f320ffc7dc7d448611cd3422db1e5e895d72323fa8085271db7ea20",
+      "bytes": 21047
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-shadow.png",
+      "sha256": "0ef509f093234b1a272b9109644493d5d739f057740bc6ea110ca718bab7b3bc",
+      "bytes": 4356
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-ships.png",
+      "sha256": "91833a7176bdfe66d4dc1db66793e56916eaea1265c5d7150a4393d062e0a1ee",
+      "bytes": 27515
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-shop-sign.png",
+      "sha256": "e76a047085573b3ce66ed94df3b4f845f823054f9a586ef32901a4f17b9a6640",
+      "bytes": 7628
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-signpost.png",
+      "sha256": "b8fcc49177b58fbfbed9ab8909f5777336d756d21a31cb2bd920908237035d8f",
+      "bytes": 5194
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-single-trees.png",
+      "sha256": "6563471a1061bf05deee692f9d642383522364ccd4ea99ee7ee8d0aa517e4f17",
+      "bytes": 32512
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-small-props.png",
+      "sha256": "c791a6f33af2bd24c339fa178aeebcc70688f2f04f79bc6940a84a498606fb51",
+      "bytes": 12337
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-stairs.png",
+      "sha256": "9086f94b25b658603548ee8dbd7f15e828f25145c9041d3d3cfb234ff3e0a733",
+      "bytes": 111168
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-stone-border.png",
+      "sha256": "76f34374ec511d8573fd6bae24dd180db3960a8c2dd8c7d4641aec40a3a571cc",
+      "bytes": 23584
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-timber.png",
+      "sha256": "b9b05aa2745626f0da89541cea37ba39ce34a5a1ef03a6cf435afc50f3c51923",
+      "bytes": 103618
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-torch.png",
+      "sha256": "d82521291f57c8e70569a6a3bfebcb7492cde366e71ce7d52df80c9dabfab5c1",
+      "bytes": 5459
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-towers.png",
+      "sha256": "c995c038135a4cb64e7d5296a4c7a242089f816b5217f87c8e7f7b7aa4702b50",
+      "bytes": 64272
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-tree-parts.png",
+      "sha256": "18f4b2b000c49cc56cc52df4c98f28c1d28ab9cee7a152f2df3deaf8e718d667",
+      "bytes": 20759
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-water-top.png",
+      "sha256": "f240e56d8feefd96d06d72635ffc2c6644dad8535028bb5806c4a0d315d24443",
+      "bytes": 15316
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-water-wall.png",
+      "sha256": "d6ff76fc9a8da7b6b9825881115ae0ef8da1ff8f95fc796599a6d18ce0f2af3e",
+      "bytes": 22108
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-water.png",
+      "sha256": "9738b7e93b3491271ca81dae7d9b1708e294ff0763022b078a741c8bbf3b17c8",
+      "bytes": 72104
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-waterwheel.png",
+      "sha256": "940391c658a99f5efd9e8529600bd223e9e56682bb56ca8d0d2af52fc6c5ef2e",
+      "bytes": 37861
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-well.png",
+      "sha256": "57efb2fab46189e097db304af9eb154b754649ffc0e54cb1f75d7ea28f2fa49b",
+      "bytes": 6986
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-wild-grass.png",
+      "sha256": "668253500d8fa93a680203c1ab52d9ea012f2025b4ac4de9743c5aad9c295a0f",
+      "bytes": 33208
+    },
+    {
+      "path": "openwiki/images/slates/mastery/region-windmill.png",
+      "sha256": "bee2f18ecf6bd064ea82cfe0c9d81e34d92ca4cad4d7d053318f83733dfd4e52",
+      "bytes": 26111
+    },
+    {
+      "path": "openwiki/images/slates/mastery/roof-deep-parts.png",
+      "sha256": "cb448490a36d60e4bd3ed2f5dbb604842cf85386b4938bcf2bccb3edecbb2ed3",
+      "bytes": 74691
+    },
+    {
+      "path": "openwiki/images/slates/mastery/roof-deep.png",
+      "sha256": "1bee8af6ca32a6706ec20cd1fd54d24b1cee197913109bc6b51255dc973725ec",
+      "bytes": 29120
+    },
+    {
+      "path": "openwiki/images/slates/mastery/roof-junction-parts.png",
+      "sha256": "cb448490a36d60e4bd3ed2f5dbb604842cf85386b4938bcf2bccb3edecbb2ed3",
+      "bytes": 74691
+    },
+    {
+      "path": "openwiki/images/slates/mastery/roof-junction.png",
+      "sha256": "b2534a76035a244166eb84343baee41a32c6d5b371b09cc04e36448fe4a21bcf",
+      "bytes": 49640
+    },
+    {
+      "path": "openwiki/images/slates/mastery/ship-large-parts.png",
+      "sha256": "c6361b55edfe0925d8d5e98783f2332f2e91e0df760c97b1e3d85de71eb0c06d",
+      "bytes": 105490
+    },
+    {
+      "path": "openwiki/images/slates/mastery/ship-large.png",
+      "sha256": "6c1e9f3f8537514bf49c8904d2ea328a75e51f70861dd3eb707be3c4d239c1b4",
+      "bytes": 53731
+    },
+    {
+      "path": "openwiki/images/slates/mastery/ship-small-parts.png",
+      "sha256": "aaea0999b7c23dc937053df0420ae60a2b940b5c5e18aebcdb443d360bf74750",
+      "bytes": 92766
+    },
+    {
+      "path": "openwiki/images/slates/mastery/ship-small.png",
+      "sha256": "77177cfcf71e648d0fa6e2f1176665aef8925985eb75f336ed5e1bec774d6b18",
+      "bytes": 34137
+    },
+    {
+      "path": "openwiki/images/slates/mastery/shore-parts.png",
+      "sha256": "d90ff9762337a7383f3ed422f98693a61101ea58ae22a26eeb5e113971b48cce",
+      "bytes": 47838
+    },
+    {
+      "path": "openwiki/images/slates/mastery/shore.png",
+      "sha256": "3cb67fc0e45666cf8224fc36e74c3b72da27820ce91f1662a7581c264a0c5026",
+      "bytes": 52365
+    },
+    {
+      "path": "openwiki/images/slates/mastery/stairs-long-parts.png",
+      "sha256": "1422e2eff5be60c7ecec129b9877472b97facbe85fcaaa8a95d2a3ffaa060282",
+      "bytes": 96389
+    },
+    {
+      "path": "openwiki/images/slates/mastery/stairs-long.png",
+      "sha256": "36848e7348f94aaed0f5f20f6202f232837cc9e01b77b788f54d196106378ca1",
+      "bytes": 25932
+    },
+    {
+      "path": "openwiki/images/slates/mastery/stairs-parts.png",
+      "sha256": "1422e2eff5be60c7ecec129b9877472b97facbe85fcaaa8a95d2a3ffaa060282",
+      "bytes": 96389
+    },
+    {
+      "path": "openwiki/images/slates/mastery/stairs.png",
+      "sha256": "ff143bdaef13dca164fa4e6791746829d8cae118469bad74f0e94c5cbe0b561e",
+      "bytes": 46232
+    },
+    {
+      "path": "openwiki/images/slates/mastery/terraced-court-parts.png",
+      "sha256": "f450d73498fb6e269b5008ed50d3fab657d6bc69f0310161cc66bd650d1fe3fc",
+      "bytes": 123994
+    },
+    {
+      "path": "openwiki/images/slates/mastery/terraced-court.png",
+      "sha256": "5e840119b99088938a9eebef8790b9a09447d38c1782f91301412938d7540c40",
+      "bytes": 90986
+    },
+    {
+      "path": "openwiki/images/slates/mastery/tower-parts.png",
+      "sha256": "7db31bf6ae4d11f53c0e734c728ffb7df145ffdfddaab47c54636b6a1eeba869",
+      "bytes": 78393
+    },
+    {
+      "path": "openwiki/images/slates/mastery/tower.png",
+      "sha256": "af56310fcf5543ecf0ab04926272c4c4bb53d7e92649f4f6a1a081ad50bb82e6",
+      "bytes": 38050
+    },
+    {
+      "path": "openwiki/images/slates/mastery/wall-long-parts.png",
+      "sha256": "5acf0f12cb4f86cc84d413c03ad4d19da2d319bbee40a3eff3e21a8ec4ae34af",
+      "bytes": 34410
+    },
+    {
+      "path": "openwiki/images/slates/mastery/wall-long.png",
+      "sha256": "20456242f558d8425e5fbf4761925abe4b014054d3c54250122fb00006159f93",
+      "bytes": 15962
+    },
+    {
+      "path": "openwiki/images/slates/mastery/wall-parts.png",
+      "sha256": "5acf0f12cb4f86cc84d413c03ad4d19da2d319bbee40a3eff3e21a8ec4ae34af",
+      "bytes": 34410
+    },
+    {
+      "path": "openwiki/images/slates/mastery/wall-step-parts.png",
+      "sha256": "be2c211cec80b36e2cb7fc76ae18194bc028e00acbe9e8fea80a3883abf833f6",
+      "bytes": 103445
+    },
+    {
+      "path": "openwiki/images/slates/mastery/wall-step.png",
+      "sha256": "987c4f69ad48c154288e6ce31e81f862139ea5aede254fb2ce691fe75d737921",
+      "bytes": 36809
+    },
+    {
+      "path": "openwiki/images/slates/mastery/wall.png",
+      "sha256": "aaa8641ccbb4e93e69b681730b2ba57e49ac9995fc5f2ef769d92c66cf849724",
+      "bytes": 25548
+    },
+    {
+      "path": "openwiki/images/slates/mastery/water-arches-parts.png",
+      "sha256": "5cca4b0cd35534ca9ffbdcc4c414c4c3f54227bb6e79fd5fd6840019745968c9",
+      "bytes": 160217
+    },
+    {
+      "path": "openwiki/images/slates/mastery/water-arches.png",
+      "sha256": "2e83cd0d6f79918a46b0da3f7bb05a15359a0eef3f40a452a572b67976ce543f",
+      "bytes": 51256
+    },
+    {
+      "path": "openwiki/images/slates/mastery/waterwheel-0-parts.png",
+      "sha256": "148bb0ca60ad5ed2eab6e9c5a463a2ab75a38f694439e5e4a26fadb9db954cd2",
+      "bytes": 18771
+    },
+    {
+      "path": "openwiki/images/slates/mastery/waterwheel-0.png",
+      "sha256": "db02bb4188ca0730ac318160517f7da06afe74aa40fb4f79fd0372d10369100b",
+      "bytes": 15196
+    },
+    {
+      "path": "openwiki/images/slates/mastery/waterwheel-1-parts.png",
+      "sha256": "a1ed9191b3be630e2e15647645542dc1f6fcb0b1ef1dc2fb32f6c30228c48b98",
+      "bytes": 18229
+    },
+    {
+      "path": "openwiki/images/slates/mastery/waterwheel-1.png",
+      "sha256": "3a80f55d3ca75dfdf12fabdc43c87426a43920a9b296a81f58450381374139b0",
+      "bytes": 15183
+    },
+    {
+      "path": "openwiki/images/slates/mastery/waterwheel-2-parts.png",
+      "sha256": "e5aca33a7a41d23f87ee1f56b0fcb0fce72851eb0faac294e6ab36195894658a",
+      "bytes": 18718
+    },
+    {
+      "path": "openwiki/images/slates/mastery/waterwheel-2.png",
+      "sha256": "4dd4cd70d8c8491b21c869b5f998e14918a00b71e7baca2a09ab5ce76a6e304f",
+      "bytes": 15177
+    },
+    {
+      "path": "openwiki/images/slates/mastery/waterwheel-3-parts.png",
+      "sha256": "555179ec577f1b5b1d2e69a99e18d59f263717388ea8f162d01242fa017788df",
+      "bytes": 18803
+    },
+    {
+      "path": "openwiki/images/slates/mastery/waterwheel-3.png",
+      "sha256": "02ee30fa7a3078dcae03b37b50e83f9e961d535466ca41e84e477fbc27bc5222",
+      "bytes": 15133
+    },
+    {
+      "path": "openwiki/images/slates/mastery/well-court-parts.png",
+      "sha256": "4240265813e30c5e1a0f5f9f87b62a7ae9d75d6b3442e2e3c6807e2c72ccfe1f",
+      "bytes": 21119
+    },
+    {
+      "path": "openwiki/images/slates/mastery/well-court.png",
+      "sha256": "728d33c8399fe37cdcfcbfef2312a443628641050f20c7d8ce684e6b8324040e",
+      "bytes": 21480
+    },
+    {
+      "path": "openwiki/images/slates/mastery/windmill-0-parts.png",
+      "sha256": "5fd0c03792dd9529ab861b11c0788e8f5dc3fed0850ca34985ac27dffbe24a49",
+      "bytes": 15350
+    },
+    {
+      "path": "openwiki/images/slates/mastery/windmill-0.png",
+      "sha256": "2cc094140be9c3810f4c8963e0379b30d630f81f916b175c96fe47f510b9bb62",
+      "bytes": 12087
+    },
+    {
+      "path": "openwiki/images/slates/mastery/windmill-1-parts.png",
+      "sha256": "d1cee29e22090453dae6ee58d7299e590c0eb8cc663d1b4606176d1a0f026799",
+      "bytes": 15703
+    },
+    {
+      "path": "openwiki/images/slates/mastery/windmill-1.png",
+      "sha256": "7f45bfdd4027c7a292fb863a824935e2e4f7a0e0dfd5a7b357fe513b7e1ebc89",
+      "bytes": 11862
+    },
+    {
+      "path": "openwiki/images/slates/mastery/windmill-2-parts.png",
+      "sha256": "b8c87594949938108e0ec25eedd83852b11c898b3969119b13d44e9fc9dd2863",
+      "bytes": 16057
+    },
+    {
+      "path": "openwiki/images/slates/mastery/windmill-2.png",
+      "sha256": "a464f8b84375cafcac8becb53b1a45706f4df590e3e7f9168df8669b0cc44558",
+      "bytes": 11937
+    },
+    {
+      "path": "openwiki/images/slates/mastery/windmill-3-parts.png",
+      "sha256": "4e3d4ac980ff8a25af01e8197ac5581c599decea051b2c8ab39e194269131f78",
+      "bytes": 16165
+    },
+    {
+      "path": "openwiki/images/slates/mastery/windmill-3.png",
+      "sha256": "b5d087fe9268bbf7d5479415b60df970cf550b1232b77554f374ffa316c0f7e8",
+      "bytes": 12047
+    },
+    {
+      "path": "openwiki/images/slates/mastery/window-tall-parts.png",
+      "sha256": "5e8f82a047c505e55346f3848e4c04a304382cd3b86079c5ba6f82898a6621de",
+      "bytes": 21045
+    },
+    {
+      "path": "openwiki/images/slates/mastery/window-tall.png",
+      "sha256": "42edb313d9a9c315529c653bb8c3ef964a386cc92cc048a6b8578e495b37aca5",
+      "bytes": 19636
+    },
+    {
+      "path": "openwiki/images/slates/nature.png",
+      "sha256": "0254a05b7f4adff53942d29eeb1a28d0fa7c6b5bcbee20d73b598d047ec10704",
+      "bytes": 153204
+    },
+    {
+      "path": "openwiki/images/slates/props.png",
+      "sha256": "c630368e2aadd0cd68fb69e3578da895d5b04e4427aee9df76c82036441ca83f",
+      "bytes": 303749
+    },
+    {
+      "path": "openwiki/images/slates/terrain.png",
+      "sha256": "655ef648c8aedc189b1d428feed0e0b77321385c8189e42125ea65c908c47b7a",
+      "bytes": 410928
+    },
+    {
+      "path": "openwiki/images/slates/village-50.png",
+      "sha256": "94d259494716e1010a5a7a1a88373063f4963483b1a79b4469000cd0664e0168",
+      "bytes": 1523884
+    },
+    {
+      "path": "openwiki/slates-agent-entry.md",
+      "sha256": "461b30eef2c9e6b47231fe5e8904d3fcf88e7353e30f1e38c8341c35b0496393",
+      "bytes": 3286
+    },
+    {
+      "path": "openwiki/slates-assembly-playbook.md",
+      "sha256": "e69fa77f8ca89134f499cac5942decc3b6eedcba4f79e6dc7bf96757f1a447e4",
+      "bytes": 10672
+    },
+    {
+      "path": "openwiki/slates-atlas-review.md",
+      "sha256": "80d96e0c68776621fe62965073b0c89381ccc302fb5ef5e5d8c15a15905e93d0",
+      "bytes": 20353
+    },
+    {
+      "path": "openwiki/slates-dense-town.md",
+      "sha256": "2028cc1729a5232eae03dd91e4b578f9ae93c0886e7016064974f80c64832022",
+      "bytes": 6177
+    },
+    {
+      "path": "openwiki/slates-structure-learning.md",
+      "sha256": "1f487b606b593ba0f4815bde37d0902c6886e2d182d7cc036d52bbaa63fa09c2",
+      "bytes": 11049
+    },
+    {
+      "path": "openwiki/slates-structure-samples.md",
+      "sha256": "5f3286ebcb8969ee9612769b600474afb00e73fdba226ef544a7d092e2e53154",
+      "bytes": 30787
+    },
+    {
+      "path": "openwiki/slates-study.md",
+      "sha256": "a6fc082cf9b90f0108b5067d3ce58561df72e91465de28a65dda981b06bfa06a",
+      "bytes": 4784
+    },
+    {
+      "path": "openwiki/slates-village-authoring.md",
+      "sha256": "4437b6a0ff5f21f630ce8013d78916bcedaf3472b47d64c1fda3eb47b5369e2f",
+      "bytes": 9652
+    },
+    {
+      "path": "public/assets/ATTRIBUTION.md",
+      "sha256": "02c141aa0805a8ce58c8c22289a7f27e756624b8f41ff0885f807029214294af",
+      "bytes": 21150
+    },
+    {
+      "path": "public/assets/slates/slates-assembly-exercises.json",
+      "sha256": "5d563dcd1dcbd080714dd10763616bc87965e437e28903346c1979c70c686d9f",
+      "bytes": 976865
+    },
+    {
+      "path": "public/assets/slates/slates-mastery-32px.png",
+      "sha256": "0de1f4f980ef506a19223ce7f96a5aff6aa9be72027649cb119c3d791c14a786",
+      "bytes": 911559
+    },
+    {
+      "path": "public/assets/slates/slates-mastery-catalog.json",
+      "sha256": "687f16acc8f195e54f79ba1db69f3fb58b733042fd05102d444ce5370d2c0d0b",
+      "bytes": 2825344
+    },
+    {
+      "path": "public/assets/slates/slates-mastery-fine-recipes.json",
+      "sha256": "b2ed3e06825ffe1ad32bde803ee5566cd4a991c690f7894ebbb24de9b56beef4",
+      "bytes": 222408
+    },
+    {
+      "path": "public/assets/slates/slates-mastery-reference-recipes.json",
+      "sha256": "8736a838045d420cf95cfb44904541ae06579103f6ddbc3684552edc1ae5560c",
+      "bytes": 145467
+    },
+    {
+      "path": "public/assets/slates/slates-reference-32px.png",
+      "sha256": "65a31178fa06b1fe764dc1bc02fdd8a900c2db045d68e61d1cc2cadc3384914d",
+      "bytes": 961730
+    },
+    {
+      "path": "public/assets/slates/slates-reference-layout-measurements.json",
+      "sha256": "49bc8846e643ba6febe0f5ad4397111cec4596e7bad715690180de7efa96d17d",
+      "bytes": 3644
+    },
+    {
+      "path": "public/assets/slates/slates-reference-recipes.json",
+      "sha256": "ac65abc8ec8cce82adbf4edf2b2167760eb7c0e08c51756e6386f07c000f27e9",
+      "bytes": 143605
+    },
+    {
+      "path": "public/assets/slates/slates-reference-tile-provenance.json",
+      "sha256": "f559aabc142a4a1f308c43c4ee94e447dbde98bfb467dd594b6b1da7a414afe4",
+      "bytes": 267035
+    },
+    {
+      "path": "public/assets/slates/slates-study-32px.png",
+      "sha256": "e3a9121c97602732e15bfa8b7c31a0469eac51cd855ab0c5200bf6cd8b118765",
+      "bytes": 562061
+    },
+    {
+      "path": "public/assets/slates/slates-study-catalog.json",
+      "sha256": "72af4fc53dbaf57ff776a6a23655ff10e62c21d29a7730acf71e8e87a601e178",
+      "bytes": 554267
+    },
+    {
+      "path": "public/assets/slates/slates-v1-32px.png",
+      "sha256": "46334e1d515900abecfd339a95a3d890370751ce5dd79ec1fb6b36cf4c613ad1",
+      "bytes": 358561
+    },
+    {
+      "path": "public/assets/slates/slates-v2-32px.png",
+      "sha256": "4401dd2f5b76492f7fff431263da2fbb1fd87a036604c0a31bdad96a20f20243",
+      "bytes": 408631
+    },
+    {
+      "path": "public/assets/slates/slates-village-32px.png",
+      "sha256": "aa675ea43fa398b1fe4f02c1bbcc1959e050d46147c38dd690c14408a917bda6",
+      "bytes": 605097
+    },
+    {
+      "path": "public/assets/slates/slates-village-recipes.json",
+      "sha256": "399a4b043bdd4627b2f77752363e96e5482e48678894a57f4ff609dfa032b4e7",
+      "bytes": 12145
+    }
+  ],
+  "operationalInputs": [
+    "AGENTS.md",
+    "openwiki/quickstart.md",
+    "openwiki/INDEX.md",
+    "openwiki/PROJECT_WIKI.md"
+  ],
+  "note": "Shared filesystem; prompt-scoped input, not technical access isolation. v2 modules explicitly reused; full map/generator excluded."
+}

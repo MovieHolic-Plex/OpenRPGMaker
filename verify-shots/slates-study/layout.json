@@ -1,0 +1,19 @@
+{
+  "mapId": "slates_study",
+  "spawn": {
+    "x": 14,
+    "y": 12
+  },
+  "summary": {
+    "sourceSlots": 1232,
+    "empty": 0,
+    "nonempty": 1232,
+    "opaque": 494,
+    "partial": 738,
+    "individual": 16,
+    "groups": 14,
+    "regions": 46,
+    "compositeTiles": 726,
+    "kits": 7
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "projectDir": "output/slates32-project",
+  "projectId": "c8c53479-8d1a-42da-96ee-e493598ef498",
+  "revision": 6,
+  "mapCount": 6,
+  "mapsEqual": true,
+  "tilesetsEqual": true,
+  "mapTreeEqual": true,
+  "startMapIdEqual": true,
+  "startPosEqual": true,
+  "assetsEqual": true,
+  "preservedMaps": true,
+  "preservedTilesets": true
+}

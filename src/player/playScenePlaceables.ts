@@ -1,3 +1,4 @@
+import { mapTileSize } from "@/project/tileGeometry";
 /**
  * 세션 설치물(바위·나무 등) 오버레이 렌더.
  *
@@ -12,7 +13,6 @@
  * 나무(`kind: "tree"`)는 기본 합본 마을 칩셋의 `TILE.TREE`(290) — 실측 한 칸 작은 나무 그림 —
  * 을 쓴다. 바위/보석 캐릭셋 마커로 대체하지 않는다.
  */
-import { TILE_SIZE } from "@/assets/bundled";
 import { characterDepth, characterSpriteX, characterSpriteY } from "@/player/characterDepth";
 import { resolveEventSpriteTexture, resolveSpatialGraphicTexture } from "@/player/eventSpriteResources";
 import { resolvePlaceableOverlayGraphic } from "@/player/placeableOverlayGraphics";
@@ -37,7 +37,7 @@ type OverlayGameObject = {
 
 // 스텁 씬으로도 돌아가야 하므로 새 멤버는 전부 optional 이고, 없으면 조기 이탈한다.
 type PlaceableOverlayScene = {
-  readonly map: { readonly id: string; readonly width?: number; readonly height?: number };
+  readonly map: { readonly tileSize?: number; readonly id: string; readonly width?: number; readonly height?: number };
   readonly session: {
     readonly gameTime?: GameTime;
     readonly placeables?: Record<string, PlaceableObjectState>;
@@ -71,9 +71,9 @@ export function renderPlaceableOverlays(scene: PlaceableOverlayScene): void {
       typeof graphic.frame === "number"
         ? resolveEventSpriteTexture(project, graphic.texture, graphic.frame)
         : null;
-    const worldY = characterSpriteY(placeable.y);
+    const worldY = characterSpriteY(placeable.y, mapTileSize(scene.map));
     const sprite = scene.add.sprite(
-      characterSpriteX(placeable.x),
+      characterSpriteX(placeable.x, mapTileSize(scene.map)),
       worldY,
       resolved?.texture ?? graphic.texture,
       resolved?.frame ?? graphic.frame
@@ -131,15 +131,15 @@ function addSpatialSprite(scene: PlaceableOverlayScene, project: Project, spec: 
     || (scene.map.height !== undefined && placement.y + size.height > scene.map.height)) return;
   const resolved = resolveSpatialGraphicTexture(project, resourceId);
   const sprite = scene.add.sprite?.(
-    (placement.x + size.width / 2) * TILE_SIZE,
-    (placement.y + size.height) * TILE_SIZE,
+    (placement.x + size.width / 2) * mapTileSize(scene.map),
+    (placement.y + size.height) * mapTileSize(scene.map),
     resolved?.texture ?? resourceId,
     resolved?.frame,
   );
   if (!sprite) return;
   sprite.setOrigin?.(0.5, 1);
-  sprite.setDisplaySize?.(size.width * TILE_SIZE, size.height * TILE_SIZE);
-  sprite.setDepth?.(characterDepth("same", (placement.y + size.height) * TILE_SIZE));
+  sprite.setDisplaySize?.(size.width * mapTileSize(scene.map), size.height * mapTileSize(scene.map));
+  sprite.setDepth?.(characterDepth("same", (placement.y + size.height) * mapTileSize(scene.map)));
   scene.tileLayer.add(sprite);
 }
 

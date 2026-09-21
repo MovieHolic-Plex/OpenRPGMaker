@@ -46,6 +46,15 @@ export type BundledImageAsset = {
 export const TILE_SIZE = RESOURCE_SLICING.chipset.cellWidth;
 export const TILES_PER_ROW = RESOURCE_SLICING.chipset.columns;
 export const TILE_FRAME_COUNT = RESOURCE_SLICING.chipset.count;
+
+/**
+ * Slates 32×32px orthogonal tileset (Ivan Voirol, CC-BY 4.0) — 1792×704 = 56열×22행 = 1232칸.
+ * 상단 32px 제목 띠는 잘라낸 본문만 번들한다. 출처·라이선스는 `public/assets/ATTRIBUTION.md`.
+ */
+export const SLATES_32_TEXTURE_KEY = "tex_slates_32";
+export const SLATES_32_TILE_SIZE = 32;
+export const SLATES_32_TILES_PER_ROW = 56;
+export const SLATES_32_FRAME_COUNT = 56 * 22;
 const TILE_QUARTER_SIZE = TILE_SIZE / 2;
 const TILE_QUARTERS = [
   { name: "nw", dx: 0, dy: 0 },
@@ -95,20 +104,42 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   // 그림은 scripts/gen-combined-town-retro-world-chipset.mjs, 정의는 defaults/combinedTownRetroWorld.ts.
   { textureKey: COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, path: "assets/easyrpg-chipset-combined-town-retro-world-transparent.png", name: COMBINED_TOWN_RETRO_WORLD_NAME },
   { textureKey: "tex_modern_exteriors_nocturne", path: "assets/modern-exteriors/modern-city-atlas.png", name: "Modern Exteriors · 네온 녹턴" },
+  { textureKey: SLATES_32_TEXTURE_KEY, path: "assets/slates/slates-v2-32px.png", name: "Slates 32px · Ivan Voirol (CC-BY 4.0)" },
   ...SCARLOXY_CHIPSET_ASSETS,
 ] as const satisfies readonly BundledImageAsset[];
+
+/**
+ * 16px 규격이 아닌 번들 시트의 기하. 여기 없는 시트는 16px·30열이다.
+ *
+ * Slates 는 32px 격자(1792×704 = 56열×22행 = 1232칸)다. 이 값을 프레임 등록·타일셋 정의·
+ * 자료 보관함 프로필이 **모두 같은 출처**에서 읽어야 팔레트와 캔버스가 같은 그림을 가리킨다.
+ */
+export const BUNDLED_CHIPSET_GEOMETRY: Readonly<Record<string, { readonly tileSize: number; readonly tilesPerRow: number }>> = {
+  tex_slates_32: { tileSize: 32, tilesPerRow: 56 },
+};
+
+/** 이 번들 시트의 타일 한 변(px). 16px 규격이면 16. */
+export function bundledChipsetTileSize(key: string): number {
+  return BUNDLED_CHIPSET_GEOMETRY[key]?.tileSize ?? TILE_SIZE;
+}
+
+/** 이 번들 시트의 한 행 칸 수. 16px 규격이면 30. */
+export function bundledChipsetTilesPerRow(key: string): number {
+  return BUNDLED_CHIPSET_GEOMETRY[key]?.tilesPerRow ?? TILES_PER_ROW;
+}
 
 /** 번들 칩셋의 칸 수. 480칸 규격이 아닌 확장 시트(Tibo 실내 확장·합본 마을+레트로 월드맵)만 여기서 갈라진다. */
 export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_forest_harmony") return forestHarmony.count;
   if (key === "tex_tibo_interior_expanded") return tiboRecovered.count;
+  if (key === SLATES_32_TEXTURE_KEY) return SLATES_32_FRAME_COUNT;
   if (key === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return COMBINED_TOWN_RETRO_WORLD_TILE_COUNT;
   return TILE_FRAME_COUNT;
 }
 
 /** 번들 칩셋 시트의 세로 픽셀 — 자료 보관함 프로필(imageHeight)이 실제 파일과 맞게 한다. */
 export function bundledChipsetSheetHeight(key: string): number {
-  return Math.ceil(bundledChipsetFrameCount(key) / TILES_PER_ROW) * TILE_SIZE;
+  return Math.ceil(bundledChipsetFrameCount(key) / bundledChipsetTilesPerRow(key)) * bundledChipsetTileSize(key);
 }
 
 export function bundledEasyRpgTilesetId(textureKey: string): string {
@@ -197,7 +228,10 @@ export function registerBundledFrames(scene: Phaser.Scene, project?: Project): v
       console.error(`[assets] ${asset.textureKey} 가 로드되지 않았습니다. EasyRPG ChipSet 파일을 확인하세요.`);
       continue;
     }
-    registerTileFrames(scene, asset.textureKey, bundledChipsetFrameCount(asset.textureKey));
+    registerTileFrames(scene, asset.textureKey, bundledChipsetFrameCount(asset.textureKey), {
+      tileSize: bundledChipsetTileSize(asset.textureKey),
+      tilesPerRow: bundledChipsetTilesPerRow(asset.textureKey),
+    });
   }
   registerTileAnimations(scene, [
     TEX_TILESET,
@@ -247,10 +281,11 @@ function registerFarmingCropFrames(scene: Phaser.Scene, usedTextures: ReadonlySe
 export function registerTilesetTextureFrames(
   scene: Phaser.Scene,
   textureKey: string,
-  frameCount: number = TILE_FRAME_COUNT
+  frameCount: number = TILE_FRAME_COUNT,
+  geometry: { readonly tileSize?: number; readonly tilesPerRow?: number } = {},
 ): void {
-  registerTileFrames(scene, textureKey, frameCount);
-  registerTileAnimationsForTexture(scene, textureKey);
+  registerTileFrames(scene, textureKey, frameCount, geometry);
+  if ((geometry.tileSize ?? TILE_SIZE) === TILE_SIZE) registerTileAnimationsForTexture(scene, textureKey);
 }
 
 function registerTransparentChipsetTexture(scene: Phaser.Scene, asset: BundledImageAsset): void {
@@ -484,20 +519,40 @@ function isExtraBundledLoadKey(fileKey: string): boolean {
   );
 }
 
-function registerTileFrames(scene: Phaser.Scene, textureKey: string, frameCount: number = TILE_FRAME_COUNT): void {
+/**
+ * 타일 프레임을 등록한다. `geometry` 를 주면 그 크기·행 폭으로 자른다 —
+ * 16px 규격이 아닌 시트(예: 32px Slates)는 기본값(TILE_SIZE·TILES_PER_ROW)으로 자르면
+ * 프레임 사각형이 어긋나 **엉뚱한 그림 조각**이 등록된다.
+ */
+function registerTileFrames(
+  scene: Phaser.Scene,
+  textureKey: string,
+  frameCount: number = TILE_FRAME_COUNT,
+  geometry: { readonly tileSize?: number; readonly tilesPerRow?: number } = {},
+): void {
+  const tileSize = geometry.tileSize ?? TILE_SIZE;
+  const tilesPerRow = geometry.tilesPerRow ?? TILES_PER_ROW;
+  const quarterSize = tileSize / 2;
+  const quarters = [
+    { name: "nw", dx: 0, dy: 0 },
+    { name: "ne", dx: quarterSize, dy: 0 },
+    { name: "sw", dx: 0, dy: quarterSize },
+    { name: "se", dx: quarterSize, dy: quarterSize },
+  ] as const;
   const tex = scene.textures.get(textureKey);
   const existing = tex.getFrameNames();
   // 마지막 프레임까지 이미 있으면 완료 — 확장 타일셋(frameCount > 480)은 확장분만 이어서 등록한다.
   if (existing.includes("tile_0") && existing.includes("tile_0_nw") && existing.includes(`tile_${frameCount - 1}_se`)) return;
   for (let i = 0; i < frameCount; i++) {
-    const { sx, sy } = tileSourceXY(i);
+    const sx = i % tilesPerRow * tileSize;
+    const sy = Math.floor(i / tilesPerRow) * tileSize;
     if (!existing.includes(`tile_${i}`)) {
-      tex.add(`tile_${i}`, 0, sx, sy, TILE_SIZE, TILE_SIZE);
+      tex.add(`tile_${i}`, 0, sx, sy, tileSize, tileSize);
     }
-    for (const quarter of TILE_QUARTERS) {
+    for (const quarter of quarters) {
       const frameName = `tile_${i}_${quarter.name}`;
       if (!existing.includes(frameName)) {
-        tex.add(frameName, 0, sx + quarter.dx, sy + quarter.dy, TILE_QUARTER_SIZE, TILE_QUARTER_SIZE);
+        tex.add(frameName, 0, sx + quarter.dx, sy + quarter.dy, quarterSize, quarterSize);
       }
     }
   }
@@ -509,7 +564,7 @@ export function chipsetAnimationKey(textureKey: string, animationKey: string): s
 
 function registerTileAnimations(scene: Phaser.Scene, textureKeys: readonly string[]): void {
   for (const textureKey of textureKeys) {
-    if (!scene.textures.exists(textureKey)) continue;
+    if (!scene.textures.exists(textureKey) || bundledChipsetTileSize(textureKey) !== TILE_SIZE) continue;
     registerTileAnimationsForTexture(scene, textureKey);
   }
 }
