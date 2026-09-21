@@ -144,8 +144,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       await rename(pending, accessPath);
     }
   }
-  // 접속 코드는 팀 관리에서 켤 때만 요구한다. 0.0.0.0 바인드(사내 미리보기)도
-  // 기동 때 켜지 않는다. public-origin 은 Host/Origin 검증용이다.
+  // 접속 코드는 팀 관리에서 켤 때만 요구한다. 0.0.0.0 바인드도 기동 때 켜지 않는다.
   // 동반 서비스도 실행별 토큰을 요구한다(설계 7.4) — 루프백·페이지 출처 모두 같은 머신의 다른
   // 프로세스에 열려 있다. 렌더러는 브리지 설정에서 토큰을 받아 fetch 헤더로 실어 보낸다.
   const companionToken = randomUUID();

@@ -37,6 +37,7 @@ import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { resolveSurfaceAiConfig } from "./assistantEndpoint";
+import { animationCatalogSection, EVENT_BEAT_STAGING_BLOCK } from "./eventBeatStaging";
 import { eventAudioPromptSection } from "./eventAudioPrompt";
 import {
   EVENT_RESOURCE_SLOT_LABELS,
@@ -352,6 +353,8 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
 
   const canonSection = worldCanonPromptSection(project.worldCanon);
   if (canonSection) sections.push(canonSection);
+  sections.push(EVENT_BEAT_STAGING_BLOCK);
+  if (kinds.includes("showAnimation")) sections.push(animationCatalogSection(project));
   sections.push(existingCommandsSection(page, scope));
   sections.push(resourceSlotSection(project, kinds, context.requestText ?? ""));
   sections.push(outputContractSection(scope));
