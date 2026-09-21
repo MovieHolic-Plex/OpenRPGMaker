@@ -36,6 +36,7 @@ import { aiInstructionsSection } from "./projectInstructions";
 import { worldCanonPromptSection } from "./worldCanonContext";
 import { projectWikiContext } from "./projectWikiContext";
 import { AGENT_UX_POLICY_LINES } from "./promptPolicies";
+import { ASSISTANT_PRESENTATION_BLOCK } from "./eventBeatStaging";
 import { EVENT_PAGE_SEMANTICS_BLOCK } from "./eventPageSemantics";
 import { buildTaskRecipes, buildToolCapabilityIndex } from "./toolCapabilityIndex";
 import type { AiConfig, ChatMessage, OpenAiToolSchema } from "./llmClient";
@@ -775,7 +776,7 @@ function withWorldCanon(assembled: string, canon: Project["worldCanon"]): string
   return section ? `${assembled}\n\n${section}` : assembled;
 }
 
-// 예산 밖 고정 블록: 툴 능력 색인 + 이벤트 페이지 의미론 + 사람 성향.
+// 예산 밖 고정 블록: 툴 능력 색인 + 이벤트 페이지 의미론 + 충격 연출·게임오버 + 사람 성향.
 // 삽입 지점은 INTRO 가 잘리지 않았으면 INTRO 다음, INTRO 자체가 잘린 초소형 예산이라면 맨 앞.
 // 어느 경우도 세 블록 전부가 남는다 — 색인은 "어떤 기능이 존재하는가"(상세 지침보다 우선하는 정보),
 // 페이지 의미론은 잘리면 모델이 조용히 죽는 이벤트 페이지를 저작하고,
@@ -784,7 +785,7 @@ function withWorldCanon(assembled: string, canon: Project["worldCanon"]): string
 function withFixedBlocks(assembled: string, preferenceMemorySection?: string): string {
   const index = buildToolCapabilityIndex();
   const memory = preferenceMemorySection?.trim() ?? "";
-  const fixed = [index, buildTaskRecipes(), EVENT_PAGE_SEMANTICS_BLOCK, ...(memory ? [memory] : [])].join("\n\n");
+  const fixed = [index, buildTaskRecipes(), EVENT_PAGE_SEMANTICS_BLOCK, ASSISTANT_PRESENTATION_BLOCK, ...(memory ? [memory] : [])].join("\n\n");
   if (assembled.startsWith(INTRO)) {
     return `${INTRO}\n\n${fixed}${assembled.slice(INTRO.length)}`;
   }
