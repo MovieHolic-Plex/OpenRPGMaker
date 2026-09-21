@@ -12,22 +12,9 @@ import { inArea } from "./compileTerrain";
 import { SpatialCompileError } from "./compilerTypes";
 import { geographyBridges, geographyMountains, mountainSurface } from "./geographyStructures";
 
-/**
- * 지형에 적힌 픽셀 크기가 지금 아틀라스와 다르면 컴파일을 멈춘다.
- *
- * 왜 조용히 넘기면 안 되는가: 장소가 32px 아틀라스로 저작된 뒤 타일셋이 16px 판으로
- * 바뀌면, 칸 좌표는 그대로인데 픽셀 의미가 반으로 줄어 배치가 전부 어긋난다. 기록이
- * 없으면(구 데이터) 검사하지 않는다 — 없는 것을 어긋남으로 몰면 옛 장소가 전부 죽는다.
- */
-function assertTerrainTileSize(terrain: SpatialTerrain, atlasTileSize: number): void {
-  if (terrain.tileSize === undefined || terrain.tileSize === atlasTileSize) return;
-  throw new SpatialCompileError("atlas", `${terrain.tilesetId}: tileSize ${terrain.tileSize} vs atlas ${atlasTileSize}`);
-}
-
 /** Authored World terrain only: no random layout, repair carving, or shared passage writes. */
 export function geographyTerrain(project: Project, terrain: SpatialTerrain, identity: { readonly id: string; readonly name: string }): GameMap {
   const tileset = own(project.tilesets, terrain.tilesetId);
-  assertTerrainTileSize(terrain, tileset.tileSize);
   const profile = MAP_GENERATION_PROFILES.get(terrain.tilesetId);
   if (profile?.layout !== "world" || !isWorldTileset(tileset)) throw new SpatialCompileError("atlas", terrain.tilesetId);
   const materials = new Map<string, number>([["ground", profile.palettes.village.base], ["water", WORLD_SEA_TILE],
@@ -54,7 +41,6 @@ export function geographyTerrain(project: Project, terrain: SpatialTerrain, iden
 /** 정주지 지역의 바탕 — 지형을 칠하는 월드 래스터 대신 마을 시공기가 채울 combined_town 잔디 맵. */
 export function settlementTerrain(project: Project, terrain: SpatialTerrain, identity: { readonly id: string; readonly name: string }): GameMap {
   const tileset = own(project.tilesets, terrain.tilesetId);
-  assertTerrainTileSize(terrain, tileset.tileSize);
   if (terrain.tilesetId !== DEFAULT_TILESET_ID) throw new SpatialCompileError("atlas", `${identity.id}:${terrain.tilesetId}`);
   return { ...identity, tilesetId: terrain.tilesetId, tileSize: tileset.tileSize,
     width: terrain.width, height: terrain.height,

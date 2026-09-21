@@ -94,9 +94,6 @@ export function validateSystem(value: unknown): void {
   // 주인공 몸 크기는 이벤트 페이지와 **같은 경계**로 막는다(2차 §9). 한쪽만 검증하면
   // `playerFootprint: {width: -5}` 가 로드를 통과하고 런타임 정규화만이 마지막 방어선이 된다.
   validateFootprintPair("system.playerFootprint", system.playerFootprint, "system.playerPassRows", system.playerPassRows);
-  if (system.cameraZoom !== undefined) {
-    requireNumber("system.cameraZoom", system.cameraZoom);
-  }
   if (system.playResolution !== undefined) {
     const playResolution = requireRecord("system.playResolution", system.playResolution);
     requireNumber("system.playResolution.width", playResolution.width);

@@ -10,7 +10,7 @@
  * `screenEffectStage`(미니 모니터 + 재생)가 그린다 — 무대를 둠으로 나누지 않는다.
  */
 import { el } from "@/util/dom";
-import { CAMERA_ZOOM_LIMITS } from "@/project/cameraZoom";
+import { CAMERA_ZOOM_LIMITS } from "@/player/playSceneCamera";
 import { store } from "@/project/store";
 import { tilesetImageUrl } from "@/editor/tilesetImage";
 import type { Command, M2CommandValue } from "@/project/types";

@@ -53,7 +53,7 @@ import { storyFlagForTarget, storyFlagListLabel, storyFlagTargetKey } from "../s
 import { buildStoryFlagUsageIndex, declaredStoryFlagTargets, usageBucketFor } from "../storyFlagUsage";
 import type { Command, GameEvent, GameMap, LintSeverity, Project, Trigger } from "../types";
 import { lintWorldGraph } from "../worldGraph";
-import { validateClusterRules, validateClusterRulesForMaps, type ClusterRuleViolation } from "./clusterRuleValidators";
+import { validateClusterRules, type ClusterRuleViolation } from "./clusterRuleValidators";
 import { checkReachability, isAdjacentOrOn, type ReachabilitySpec } from "./reachability";
 import { activeTileGrafts } from "@/assets/tileGrafts";
 import { collectMapLocationReferenceIssues } from "../mapLocationReferences";
@@ -73,16 +73,12 @@ export interface LintIssue {
 
 export interface LintOptions {
   readonly reachability?: readonly ReachabilitySpec[];
-  /** 도구 핫패스. 적용·저장 커밋은 이 옵션 없이 왕복한다. */
-  readonly skipRoundtrip?: boolean;
-  /** 있으면 클러스터 규칙은 이 맵만 본다. 없으면 프로젝트 전체. */
-  readonly clusterMapIds?: readonly string[];
 }
 
 export function projectLint(project: Project, opts: LintOptions = {}): LintIssue[] {
   const issues: LintIssue[] = [];
   const analysis = createEventPlacementAnalysis(project);
-  if (!opts.skipRoundtrip) checkRoundtrip(project, issues);
+  checkRoundtrip(project, issues);
   checkReferences(project, issues);
   checkStartPosition(project, issues);
   checkTransfers(project, issues);
@@ -95,7 +91,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkRuntimeSupportCommands(project, issues);
   checkStoryFlags(project, issues);
   checkQuestGraphs(project, issues);
-  checkClusterRules(project, issues, opts.clusterMapIds);
+  checkClusterRules(project, issues);
   issues.push(...lintWorldGraph(project));
   issues.push(...lintHorrorAuthoring(project));
   checkCharacterIdSocial(project, issues);
@@ -644,9 +640,8 @@ function checkQuestGraphs(project: Project, issues: LintIssue[]): void {
   }
 }
 
-function checkClusterRules(project: Project, issues: LintIssue[], mapIds?: readonly string[]): void {
-  const violations = mapIds ? validateClusterRulesForMaps(project, mapIds) : validateClusterRules(project);
-  for (const violation of violations) {
+function checkClusterRules(project: Project, issues: LintIssue[]): void {
+  for (const violation of validateClusterRules(project)) {
     const message = clusterRuleMessage(violation);
     if (violation.coords.length === 0) {
       issues.push({ severity: violation.severity, code: violation.code, message });

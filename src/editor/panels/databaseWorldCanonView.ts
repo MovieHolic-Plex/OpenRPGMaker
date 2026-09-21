@@ -6,9 +6,8 @@ import {
   lawCard,
   toneRow,
   writeCanon,
-  WORLD_CANON_TONE_LABELS,
 } from "@/editor/panels/databaseWorldCanonFields";
-import { detailPane, inspectorTabs, sectionCard, statStrip, workspaceShell } from "@/editor/panels/databaseWorkspace";
+import { detailPane, sectionCard, statStrip, workspaceShell } from "@/editor/panels/databaseWorkspace";
 import { worldDocumentProperties } from "./worldDocumentProperties";
 import { WORLD_CANON_BODY_EXCERPT_CHARS, worldCanonPromptSection } from "@/ai/worldCanonContext";
 
@@ -29,7 +28,6 @@ import {
 import { el } from "@/util/dom";
 
 const propertiesOpen = new WeakMap<HTMLElement, boolean>();
-const activeSpreadTab = new WeakMap<HTMLElement, string>();
 
 function excerptHint(filled: number): string {
   const excerptLen = Math.min(EXCERPT_MAX, filled);
@@ -100,61 +98,8 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
   }
   hintLine();
   const aiPreview = el("pre", { class: "world-ai-preview", dataset: { testid: "world-canon-ai-preview" } });
-  // "조수 전달" 탭의 라이브 값들. 탭 패널은 지연 생성되므로 refs 가 없을 수 있다 — 있을 때만 갱신.
-  const aiRefs: { pre?: HTMLElement; tiles?: Map<string, { item: HTMLElement; value: HTMLElement }> } = {};
-  const aiTileDefs = [
-    {
-      key: "premise",
-      label: "한 줄 전제",
-      value: (c: ResolvedWorldCanon) => c.premise.trim() || "미작성",
-      tone: (c: ResolvedWorldCanon) => (c.premise.trim() ? "ok" : "missing"),
-    },
-    {
-      key: "tones",
-      label: "톤",
-      value: (c: ResolvedWorldCanon) => (c.tones.length ? c.tones.map((tone) => WORLD_CANON_TONE_LABELS[tone]).join(", ") : "미작성"),
-      tone: (c: ResolvedWorldCanon) => (c.tones.length ? "ok" : "missing"),
-    },
-    {
-      key: "absences",
-      label: "없는 것(절대 금지)",
-      value: (c: ResolvedWorldCanon) => (c.absences.length ? `${c.absences.length}개 — ${c.absences.join(", ")}` : "미지정"),
-      tone: (c: ResolvedWorldCanon) => (c.absences.length ? "ok" : "warn"),
-    },
-    {
-      key: "laws",
-      label: "법칙 확정",
-      value: (c: ResolvedWorldCanon) => {
-        const unset = WORLD_CANON_LAW_KINDS.filter((kind) => c.laws[kind].present === undefined).length;
-        return unset === 0 ? "4 / 4 확정" : `${4 - unset} / 4 확정 · 미정 ${unset}`;
-      },
-      tone: (c: ResolvedWorldCanon) => (WORLD_CANON_LAW_KINDS.every((kind) => c.laws[kind].present !== undefined) ? "ok" : "warn"),
-    },
-    {
-      key: "body",
-      label: "본문 발췌",
-      value: (c: ResolvedWorldCanon) => {
-        const filled = c.body.trim().length;
-        return filled > EXCERPT_MAX ? `앞 ${EXCERPT_MAX.toLocaleString()}자 / 뒤 ${(filled - EXCERPT_MAX).toLocaleString()}자 잘림` : `앞 ${filled.toLocaleString()}자 / ${EXCERPT_MAX.toLocaleString()}자`;
-      },
-      tone: (c: ResolvedWorldCanon) => (c.body.trim().length > EXCERPT_MAX ? "warn" : "ok"),
-    },
-  ];
-  const updateAiTiles = (): void => {
-    if (!aiRefs.tiles) return;
-    const next = resolveWorldCanon(store.getCurrent().worldCanon);
-    for (const def of aiTileDefs) {
-      const ref = aiRefs.tiles.get(def.key);
-      if (!ref) continue;
-      ref.value.textContent = def.value(next);
-      ref.item.dataset.tone = def.tone(next);
-    }
-  };
   const updateAiPreview = (): void => {
-    const section = worldCanonPromptSection(store.getCurrent().worldCanon) ?? "아직 AI에 전달할 설정이 없습니다.";
-    aiPreview.textContent = section;
-    if (aiRefs.pre) aiRefs.pre.textContent = section;
-    updateAiTiles();
+    aiPreview.textContent = worldCanonPromptSection(store.getCurrent().worldCanon) ?? "아직 AI에 전달할 설정이 없습니다.";
   };
   const aiDetails = el("details", {
     class: "world-ai-scope",
@@ -212,7 +157,6 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     }),
     aiDetails,
   ], propertiesOpen.get(host) ?? false, (open) => propertiesOpen.set(host, open));
-
   // 스프레드 헤드는 "보는 것 = 편집하는 것"의 핵심이라 이름/전제 타이핑에 즉시 따라붙는다.
   // 탭 리렌더를 기다리면 미러가 늦게 갱신돼 문서가 아니라 폼처럼 보인다.
   const headTitle = el("h3", { class: "world-canon-head-title", text: canon.name.trim() || "세계의 이름을 지어 보세요" });
@@ -230,66 +174,6 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     }
   };
   renderHeadMirror();
-  const spreadHead = el("div", {
-    class: "world-canon-spread-head",
-    children: [
-      el("span", { class: "world-canon-kicker", text: "세계 안내서 · 한 장" }),
-      headTitle,
-      headSub,
-      el("div", {
-        class: "world-canon-meter",
-        children: [
-          el("div", { class: "world-canon-meter-bar", children: [meterFill] }),
-          meterText,
-        ],
-      }),
-      heroStats,
-    ],
-  });
-
-  // ---- 탭 1: 문서 (기존 스프레드 전체) ----
-  const documentPanel = el("div", {
-    class: "world-canon-tab-body",
-    children: [identityCard(canon), frameCard, lawsCard, bodyCard],
-  });
-  // ---- 탭 2: 조수 전달 (AI 프롬프트 투영 + 전달 상태) ----
-  const buildAiPanel = (): HTMLElement => {
-    const wrap = el("div", { class: "world-canon-tab-body world-canon-ai-panel", dataset: { testid: "world-canon-ai-panel" } });
-    wrap.append(el("p", {
-      class: "world-canon-ai-lead",
-      text: "조수가 매 턴 읽는 고정 블록이다. 여기 보이는 것 = 조수가 아는 것의 전부다. 고치려면 문서 탭에서 해당 필드를 수정하면 된다.",
-    }));
-    const grid = el("div", { class: "world-canon-ai-grid" });
-    aiRefs.tiles = new Map();
-    for (const def of aiTileDefs) {
-      const value = el("span", { class: "world-canon-ai-grid-value" });
-      const item = el("div", {
-        class: "world-canon-ai-grid-item",
-        children: [el("span", { class: "world-canon-ai-grid-label", text: def.label }), value],
-      });
-      aiRefs.tiles.set(def.key, { item, value });
-      grid.append(item);
-    }
-    aiRefs.pre = el("pre", { class: "world-ai-preview world-canon-ai-pre", dataset: { testid: "world-canon-ai-panel-preview" } });
-    wrap.append(grid, sectionCard({
-      title: "조수 프롬프트 투영",
-      hint: "worldCanonPromptSection — 이름·전제·톤·없는 것·법칙 + 본문 발췌",
-      children: [aiRefs.pre],
-    }));
-    updateAiPreview();
-    return wrap;
-  };
-  const unsetCount = WORLD_CANON_LAW_KINDS.filter((kind) => canon.laws[kind].present === undefined).length;
-  const tabs = inspectorTabs({
-    sections: [
-      { id: "document", label: "문서", build: () => documentPanel },
-      { id: "ai", label: "조수 전달", ...(unsetCount > 0 ? { badge: `미정 ${unsetCount}` } : {}), build: buildAiPanel },
-    ],
-    activeId: activeSpreadTab.get(host),
-    onChange: (id) => activeSpreadTab.set(host, id),
-    testidPrefix: "db-ws-section",
-  });
-
   const workspace = workspaceShell({
       testid: "db-world-canon-workspace",
       header: el("header", {
@@ -306,7 +190,28 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
           children: [
             el("div", {
               class: "world-document-content",
-              children: [spreadHead, tabs],
+              children: [
+                el("div", {
+                  class: "world-canon-spread-head",
+                  children: [
+                    el("span", { class: "world-canon-kicker", text: "세계 안내서 · 한 장" }),
+                    headTitle,
+                    headSub,
+                    el("div", {
+                      class: "world-canon-meter",
+                      children: [
+                        el("div", { class: "world-canon-meter-bar", children: [meterFill] }),
+                        meterText,
+                      ],
+                    }),
+                    heroStats,
+                  ],
+                }),
+                identityCard(canon),
+                frameCard,
+                lawsCard,
+                bodyCard,
+              ],
             }),
             properties,
           ],

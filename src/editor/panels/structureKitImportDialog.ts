@@ -67,22 +67,6 @@ export function openStructureKitImportDialog(tilesetId: TilesetId, plan: ImportP
 
   const content: HTMLElement[] = [];
 
-  if (plan.tileSizeMismatch) {
-    content.push(
-      el("div", {
-        class: "structure-kit-import-warn",
-        dataset: { testid: "structure-kit-import-tilesize-mismatch" },
-        children: [
-          el("strong", { text: "타일 픽셀 크기가 다른 파일입니다" }),
-          el("p", {
-            text: `파일: ${plan.fileTileSize}px · 지금 앨범: ${plan.targetTileSize}px`
-              + " — 칸 수는 같아도 픽셀 크기가 달라 반쪽(또는 두 배) 크기로 찍힙니다.",
-          }),
-        ],
-      }),
-    );
-  }
-
   if (plan.tilesetMismatch) {
     const targetName = store.getCurrent().tilesets[tilesetId]?.name ?? tilesetId;
     content.push(

@@ -1,11 +1,3 @@
-- **플레이 프리로드는 카탈로그가 아니라 맵이 쓰는 그림만 싣는다 (2026-09-22):**
-  `loadBundledAssets` / `collectPlayReferencedStrings` 는 `resourceProfiles` 와, 어떤 맵·명령도
-  가리키지 않는 `tilesets` 레코드를 훑지 않는다. 빈 프로젝트도 `ensureBundledTilesets` 로 칩셋
-  카탈로그 전체가 들어 있고 프로필은 캐릭셋 텍스처 키를 전부 갖고 있어서, 통째로 보면 시작 맵과
-  무관한 시트의 다운로드·색키·타일 프레임 등록이 테스트 플레이 창을 붙잡는다. 맵 `tilesetId` 와
-  이벤트·액터·명령이 가리키는 타일셋만 다시 읽는다. 대사창·이모트·배치 오버레이 텍스처는 그대로
-  항상 싣는다. 내보내기 ZIP 은 다른 계약이다(`webExportAssets` 는 이미지 프로필을 계속 넣는다).
-  회귀: `test/playBootAssetSelection.test.ts`.
 - **호스트 프로젝트 초기 연결:** `electron/main/sessions.ts`의 세션 오픈은 인라인 `dataUrl`이
 
 ## 맵별 16/32/48px 좌표
@@ -309,9 +301,6 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
 - **레이어 상한이 3에서 8로 올랐다.** CraftPix 세트는 5~9장이라 3장 상한이면 소나무 숲(9장)이 4장으로 잘려 나무와 새가 빠졌다.
 - **고해상도 + 확대 = 도트 개선의 정석(2026-09-22).** 해상도는 픽셀 밀도이고 보이는 범위는 카메라 배율이 정한다. 캔버스 크기를 올리면 CSS 변환이 그만큼 줄어 화면에 보이는 픽셀 수가 같다(실측: 320x240은 matrix(4,0,0,4), 1280x960은 matrix(1,0,0,1), 둘 다 표시 1280x960). 해상도만 올리면 도트만 선명해지고 시야는 그대로다.
 - 배경 아트를 무손실(1:1)로 쓰는 해: 1920x1080 아트에 **1440x1080 + 배율 4.5**. 1440/(16x4.5)=20타일, 1080/72=15타일로 320x240과 동일 시야이고, 배경 배율 0.2222x4.5=1.0이다. 그래서 배율 상한을 4에서 6으로 올렸다(CAMERA_ZOOM_LIMITS, src/player/playSceneCamera.ts). 상한 4로는 시야가 22x17이 되어 클래식과 어깋난다. 증거: verify-shots/layer-set-picker/OPTIMAL-*.
-- **프로젝트 기본 카메라 배율 system.cameraZoom(2026-09-22).** 줌은 원래 연출 상태(session.camera.zoom, 이벤트 명령 m2-201)로만 존재했다. 그래서 고해상도 배경을 1:1로 쓰려면 맵마다 auto 이벤트를 심어 줌을 걸어야 했고 새 맵에서는 1로 돌아갔다. 이제 기본값은 프로젝트가 정하고(생략=1, 1은 저장 안 함) 연출 명령은 그 위에 일시적으로 덮어쓴다.
-- 적용 지점: applyStoredCameraState 가 세션 상태가 없을 때 resolveCameraZoom(store.system) 을 쓴다(예전에는 centerRuntimeCamera가 1로 리셋한 값이 그대로 남았다). 배율 범위의 정본은 src/project/cameraZoom.ts(CAMERA_ZOOM_LIMITS 0.25~6)이고 런타임이 그것을 import 한다 — 둘이 달라지면 「저장은 됐는데 플레이에서는 다른 배율」이 된다.
-- AI: set_project_settings.cameraZoom(0.25~6). 해상도와 함께 서야 시야가 유지된다 — 1440x1080 + 4.5 → 20x15타일(320x240과 동일). 증거: verify-shots/layer-set-picker/SYSTEMZOOM-*.
 - **아직 안 되는 것(알고 있어야 할 경계).**
   - 편집기 **캔버스**는 배경을 그리지 않는다. 빈 칸은 `editSceneRender.createEmptyTile` 의
     **불투명** 체커 사각형이고, 그 체커는 "여기 바닥이 없다" 를 보이게 하는 **의도된 신호**

@@ -7,7 +7,6 @@ import {
   eventMarkerTileScale,
   renderEditScene,
   renderEditSceneTileCells,
-  renderVisibleEditSceneTiles,
   renderEventLayerClickFeedback,
 } from "@/editor/editSceneRender";
 import { planEditSceneRenderForStoreChange } from "@/editor/editSceneRenderPlan";
@@ -540,47 +539,6 @@ describe("edit scene event rendering", () => {
 
     expect(plan.kind).toBe("full");
     expect(stats.tileObjectsUpdated).toBe(128 * 128);
-  });
-
-  it("drops tiles that leave a large map camera window and ignores offscreen paints", () => {
-    const project = createBlankProject();
-    const map = project.maps[project.startMapId];
-    map.width = 128;
-    map.height = 128;
-    map.lowerTiles = new Array<number>(128 * 128).fill(-1);
-    map.upperTiles = new Array<number>(128 * 128).fill(-1);
-    store.replace(project);
-    editorState.set({ currentMapId: map.id, layer: "lower", tool: "paint", showGrid: false });
-
-    const tileSize = map.tileSize;
-    const view = { x: 0, y: 0, width: tileSize * 20, height: tileSize * 15 };
-    const scene = mockScene();
-    Object.assign(scene, { cameras: { main: { worldView: view } } });
-    const tileObjects: MockObject[] = [];
-    const tileIndex: EditSceneTileIndex = new Map();
-    const context = {
-      scene,
-      tileLayer: mockContainer(tileObjects),
-      overlayLayer: mockContainer(),
-      gridGraphics: mockGridGraphics(),
-      mapId: map.id,
-      tileIndex,
-    };
-    const stats = renderEditScene(context);
-    expect(stats.tileObjectsUpdated).toBe(23 * 18);
-    expect(tileObjects).toHaveLength(23 * 18);
-    expect(tileObjects.some((object) => object.x >= 23 * tileSize)).toBe(false);
-
-    renderEditSceneTileCells(context, [{ x: 100, y: 100, layer: "lower" }]);
-    expect(tileObjects).toHaveLength(23 * 18);
-    expect(tileIndex.has("lower:100,100")).toBe(false);
-
-    view.x = tileSize * 4;
-    const shifted = renderVisibleEditSceneTiles(context);
-    expect(shifted.tileObjectsUpdated).toBeGreaterThan(0);
-    expect(tileObjects.some((object) => object.x === 0)).toBe(false);
-    expect(tileObjects.some((object) => object.x === 26 * tileSize)).toBe(true);
-    expect(tileObjects.length).toBeLessThan(23 * 18 + 200);
   });
 });
 

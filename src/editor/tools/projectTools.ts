@@ -1,5 +1,4 @@
 import { createBlankProject } from "@/project/defaults";
-import { CAMERA_ZOOM_LIMITS, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
 import { applyGenrePreset, type GenrePresetId } from "@/project/genrePresets";
 import { replaceProjectContents } from "./historyTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -76,15 +75,6 @@ const setProjectSettings: ToolDefinition = {
       title: { type: "string" },
       author: { type: "string" },
       terms: { type: "object", properties: termSchema, additionalProperties: false },
-      cameraZoom: {
-        type: "number",
-        minimum: CAMERA_ZOOM_LIMITS.min,
-        maximum: CAMERA_ZOOM_LIMITS.max,
-        description:
-          "프로젝트 기본 카메라 배율(0.25~6, 생략=1). 해상도는 픽셀 밀도이고 보이는 범위는 이 배율이 정한다."
-          + " 1920x1080 배경 아트를 1:1로 쓰려면 playResolution 1440x1080 + cameraZoom 4.5."
-          + " 이벤트 명령(m2-201)은 이 값을 일시적으로 덮어쓴다.",
-      },
       playResolution: {
         type: "object",
         description:
@@ -136,10 +126,6 @@ const setProjectSettings: ToolDefinition = {
       const patch = Object.fromEntries(Object.entries(args.terms).filter((entry): entry is [string, string] => typeof entry[1] === "string" && entry[1].trim().length > 0));
       draft.meta.terms = { ...draft.meta.terms, ...patch } as Terms;
       changed.push("용어");
-    }
-    if (typeof args.cameraZoom === "number") {
-      storeCameraZoom(draft.system, args.cameraZoom);
-      changed.push(`카메라 배율=${resolveCameraZoom(draft.system)}`);
     }
     if (args.playResolution && typeof args.playResolution === "object" && !Array.isArray(args.playResolution)) {
       const resolution = args.playResolution as { width: number; height: number };

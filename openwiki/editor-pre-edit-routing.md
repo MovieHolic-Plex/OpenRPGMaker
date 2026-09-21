@@ -30,11 +30,6 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
 Chromium/SwiftShader). 운영 서버 자체의 응답 시간과는 구분한다.
 측정·회귀 범위: `reports/2026-09-18-map-list-navigation.md`.
 
-AI 타일 도구도 같은 왕복을 호출마다 돌리지 않는다(2026-09-22). `runTool`의 커밋은
-`skipRoundtrip`으로 직렬화 왕복을 건너뛰고, 클러스터 규칙은 타일 버퍼가 바뀐 맵만
-검사한다. 초안을 스토어에 넣는 `applyProposedProject`는 왕복과 전체 클러스터 검사를
-그대로 한다. 고스트 미리보기는 이미 만든 칸의 스프라이트를 유지하고 새로 깔린 칸만 추가한다.
-
 맵 목록의 추가 비용도 프로젝트 단위로 캐시한다. `collectMapLinkStats`는 같은 프로젝트
 객체에 대해 transfer 명령과 map connection을 한 번만 인덱싱하고, store가 새 프로젝트
 객체를 만들면 `WeakMap` identity로 자동 무효화한다. 썸네일의 타일 배열 해시도 맵 객체
@@ -123,14 +118,9 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
 - **우클릭 영역 드래그 (2026-09-19):** 드래그 중에는 선택 사각형·크기 배지만 갱신하고,
   `selection-action-chips` DOM은 pointerup의 최종 영역에서 한 번만 만든다. 이전에는
   pointermove마다 버튼을 만들고 `getBoundingClientRect`로 레이아웃을 강제했다.
-- **lazy 창은 들어온 칸만 더하지 말고 나간 칸을 지운다 (2026-09-22).** `renderVisibleEditSceneTiles` 가
-  추가만 하면 팬할수록 컨테이너가 맵 전체로 다시 자란다. 화면 밖 페인트도 객체를 만들지 않는다.
-  맵 배열이 정본이고, 그 칸이 창에 들어올 때 만든다.
-- AI 패널의 class/style/높이 변화로 `overlayGeometryReadAtMs` 를 0으로 돌리지 마라.
-  스트리밍이 매 프레임 `getBoundingClientRect` 를 호출해 편집 입력이 멈춘다.
-  캔버스 크기만 즉시 무효화하고, 조수 카드 가림은 250ms TTL 로 다시 잰다.
-- 남은 비용: 페인트 증분 렌더의 `tileLayer.sort("depth")` 는 lazy 맵에서는 창 안 자식만 정렬한다.
-  창 밖 타일을 다시 컨테이너에 쌓지 마라.
+- 남은 비용: 페인트 증분 렌더의 `tileLayer.sort("depth")` 가 자식 전체를 매 스토어
+  변경마다 정렬한다. lower/upper 컨테이너 분리, `scene.make`+`addAt` 으로 재부모화 회피가
+  후보 수정이다.
 - `src/project/io/references.ts` 의 참조 검증은 **이슈 수집 계약**이다 — 검증기가 던진
   예외도 `check()` 가 이슈 문자열로 남긴다. 새 검증기를 추가할 때도 이 계약을 깨지 마라
   (비정규 프로젝트에서 예외가 새면 에디터 부팅이 통째로 죽는다. 실측 2026-09-16).
@@ -628,7 +618,7 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
 ## Agent cautions
 
 
-- **그림 워밍업 소유자 (2026-08-28):** 편집기 다이얼로그가 쓰는 그림 카탈로그 프리로드는 `src/assets/editorAssetWarmup.ts` 만 한다. `scheduleEditorAssetWarmup()` 은 `renderEditor` 끝에서 한 번 불리고 `requestIdleCallback` 로 미뤄지며(없으면 800ms 폴백), tier 순서는 `picker`(캐릭셋 21 + 낱장 얼굴 80 + 칩셋 13) → `library`(CC0 아이콘 234) 다. 이벤트 편집기 모달은 `warmEditorPickerAssets()` 로 `picker` tier 를 앞당긴다. 실제 요청은 공용 큐 `src/assets/imageWarmQueue.ts` 가 URL 단위 in-flight 공유 + 전체 동시 요청 상한 6(배경 호출 몫 4 / 요구 호출 몫 6)으로 낸다. 테스트 플레이 창이 열려 있는 동안은 `setImageWarmQueueSuspended(true)` 로 이 큐를 멈춘다. 색키 워밍이 플레이 프리로드의 HTTP 슬롯과 메인 스레드를 가져가지 않게 하고, 창을 닫으면 다시 흐른다. dev 서버가 HTTP/1.1 이라 상한 없이 수백 장을 걸면 사용자가 지금 보는 그림이 큐 뒤로 밀린다. 새 피커를 만들 때 `new Image()` 나 `<link rel=prefetch>` 를 손으로 뿌리지 말고 tier 목록에 경로를 추가하라. 몬스터/전투 스킨 아트(40MB+)와 업로드 `dataUrl` 은 의도적으로 제외다. `navigator.connection.saveData` 또는 2G 에서는 배경 워밍을 아예 걸지 않는다. 계약: `test/editorAssetWarmup.test.ts`.
+- **그림 워밍업 소유자 (2026-08-28):** 편집기 다이얼로그가 쓰는 그림 카탈로그 프리로드는 `src/assets/editorAssetWarmup.ts` 만 한다. `scheduleEditorAssetWarmup()` 은 `renderEditor` 끝에서 한 번 불리고 `requestIdleCallback` 로 미뤄지며(없으면 800ms 폴백), tier 순서는 `picker`(캐릭셋 21 + 낱장 얼굴 80 + 칩셋 13) → `library`(CC0 아이콘 234) 다. 이벤트 편집기 모달은 `warmEditorPickerAssets()` 로 `picker` tier 를 앞당긴다. 실제 요청은 공용 큐 `src/assets/imageWarmQueue.ts` 가 URL 단위 in-flight 공유 + 전체 동시 요청 상한 6(배경 호출 몫 4 / 요구 호출 몫 6)으로 낸다 — dev 서버가 HTTP/1.1 이라 상한 없이 수백 장을 걸면 사용자가 지금 보는 그림이 큐 뒤로 밀린다. 새 피커를 만들 때 `new Image()` 나 `<link rel=prefetch>` 를 손으로 뿌리지 말고 tier 목록에 경로를 추가하라. 몬스터/전투 스킨 아트(40MB+)와 업로드 `dataUrl` 은 의도적으로 제외다. `navigator.connection.saveData` 또는 2G 에서는 배경 워밍을 아예 걸지 않는다. 계약: `test/editorAssetWarmup.test.ts`.
 - Editor code should mutate authored project data, not live play-session state.
 - **raw `console.*` 를 새로 심지 말 것 (2026-08-29):** `createLogger(ns)` (`src/util/logger.ts`) 를 쓴다. raw 콘솔은 링버퍼에 남지 않아 사후 조사에서 존재하지 않는 것과 같다(감사 당시 `src/` 의 로그 103건이 전부 raw 콘솔이었다). 알려진 관측 공백 목록(되돌리기 스냅샷 없는 파일 21개, `resetMapEditHistory()` 프로덕션 호출 0건, AI 영역 작업의 라벨·origin 누락, `mapEditLocks` 거부 미기록 등)은 `openwiki/editor-observability.md` 하단 표에 있다 — 그 근처를 손대면 이어서 정리하라.
 - If an editor change affects saved JSON, update `openwiki/runtime-project-schema.md` guidance and verify migration/serialization paths.

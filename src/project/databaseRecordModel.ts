@@ -54,7 +54,6 @@ import {
 import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
 import { normalizePlayResolution } from "@/project/playResolution";
-import { normalizeCameraZoom } from "@/project/cameraZoom";
 import { normalizeWorldGenRulesForStorage } from "@/project/worldGenRules";
 import { normalizeCinematicSequence, normalizeGameOverSettings } from "@/project/cinematicSettings";
 
@@ -176,11 +175,6 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     ...(() => {
       const playResolution = normalizePlayResolution(system.playResolution);
       return playResolution ? { playResolution } : {};
-    })(),
-    // 프로젝트 기본 카메라 배율. 1(클래식)은 생략해 였 JSON 바이트를 지킨다.
-    ...(() => {
-      const cameraZoom = normalizeCameraZoom(system.cameraZoom);
-      return cameraZoom !== undefined ? { cameraZoom } : {};
     })(),
     ...(isGenrePackId(system.genre) ? { genre: system.genre } : {}),
     titleResourceId,

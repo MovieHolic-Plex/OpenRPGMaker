@@ -25,13 +25,6 @@ const pendingLoads: Array<{
   readonly resolve: () => void;
 }> = [];
 let activeLoadCount = 0;
-let warmQueueSuspended = false;
-
-/** 테스트 플레이 부팅 동안 편집기 색키 워밍이 HTTP 슬롯과 메인 스레드를 가져가지 않게 멈춘다. */
-export function setImageWarmQueueSuspended(suspended: boolean): void {
-  warmQueueSuspended = suspended;
-  if (!suspended) drainScheduledLoads();
-}
 
 export type WarmImageOptions = {
   readonly priority?: "low" | "auto";
@@ -100,7 +93,6 @@ export function runImageWarmTask(task: () => Promise<void>): Promise<void> {
 }
 
 function drainScheduledLoads(): void {
-  if (warmQueueSuspended) return;
   while (activeLoadCount < DEFAULT_CONCURRENCY) {
     const next = pendingLoads.shift();
     if (next === undefined) return;

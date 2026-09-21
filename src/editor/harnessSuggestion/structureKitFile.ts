@@ -36,12 +36,7 @@ export interface StructureKitFile {
   readonly format: typeof STRUCTURE_KIT_FILE_FORMAT;
   readonly version: number;
   readonly exportedAt?: string;
-  /**
-   * 내보낸 아틀라스의 신원. `tileSize` 는 **필수**다(2026-09-22) — 없으면 16px 판에서
-   * 내보낸 킷을 32px 판으로 가져와도 알 수 없고, 반쪽 크기로 찍힌다. 구 파일에는 없으므로
-   * 읽을 때는 optional 로 받고, 가져오기 쪽이 어긋남을 판정한다.
-   */
-  readonly tileset: { readonly id: string; readonly name: string; readonly tileSize?: number };
+  readonly tileset: { readonly id: string; readonly name: string };
   readonly kits: readonly SectionStructureKitDef[];
 }
 
@@ -62,7 +57,7 @@ export function serializeStructureKitFile(
     format: STRUCTURE_KIT_FILE_FORMAT,
     version: STRUCTURE_KIT_FILE_VERSION,
     exportedAt,
-    tileset: { id: tileset.id, name: tileset.name, tileSize: tileset.tileSize },
+    tileset: { id: tileset.id, name: tileset.name },
     kits: kits.map((kit) => ({ ...kit })),
   };
   return `${JSON.stringify(file, null, 2)}\n`;
@@ -113,8 +108,6 @@ export function parseStructureKitFile(text: string): {
       tileset: {
         id: tilesetRecord.id,
         name: typeof tilesetRecord.name === "string" ? tilesetRecord.name : tilesetRecord.id,
-        ...(Number.isSafeInteger(tilesetRecord.tileSize) && (tilesetRecord.tileSize as number) > 0
-          ? { tileSize: tilesetRecord.tileSize as number } : {}),
       },
       kits,
     },
@@ -359,16 +352,6 @@ export interface ImportPlan {
   readonly tilesetMismatch: boolean;
   readonly fileTilesetId: string;
   readonly fileTilesetName: string;
-  /**
-   * 파일의 아틀라스 픽셀 크기가 지금 앨범과 다르다(2026-09-22).
-   *
-   * 왜 따로 보는가: `tilesetMismatch` 는 타일 번호의 뜻을 보지만, 같은 그림의 16px 판과
-   * 32px 판은 **타일 번호가 같고 픽셀만 다르다**. 이걸 안 잡으면 반쪽 크기로 찍힌다.
-   * 파일에 기록이 없으면(구 파일) 판정하지 않는다 — false.
-   */
-  readonly tileSizeMismatch: boolean;
-  readonly fileTileSize?: number;
-  readonly targetTileSize: number;
   readonly candidates: readonly ImportCandidate[];
   readonly diagnostics: readonly KitDiagnostic[];
 }
@@ -407,9 +390,6 @@ export function planImport(
     tilesetMismatch: file.tileset.id !== targetTileset.id,
     fileTilesetId: file.tileset.id,
     fileTilesetName: file.tileset.name,
-    tileSizeMismatch: file.tileset.tileSize !== undefined && file.tileset.tileSize !== targetTileset.tileSize,
-    ...(file.tileset.tileSize === undefined ? {} : { fileTileSize: file.tileset.tileSize }),
-    targetTileSize: targetTileset.tileSize,
     candidates,
     diagnostics,
   };

@@ -71,7 +71,6 @@ import {
   PLAY_RESOLUTION_LIMITS,
   resolvePlayResolution,
 } from "@/project/playResolution";
-import { CAMERA_ZOOM_LIMITS, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
 import type { PlayResolution, SystemRecords } from "@/project/types";
 
 type SystemRefresh = (kind?: "values" | "effects") => void;
@@ -768,33 +767,6 @@ function playResolutionFieldset(project: Project, rerender: SystemRefresh): HTML
       ],
     }),
     playResolutionDiagnostics(project, resolution),
-    cameraZoomField(rerender),
-  ]);
-}
-
-
-/**
- * 프로젝트 기본 카메라 배율. 해상도 바로 아래에 둔다 — 둘이 함께 시야를 결정하기 때문에 한 화면에서 보여야 한다.
- * 해상도만 올리고 배율을 그대로 두면 보이는 범위가 늘어나 타일이 작아보이고, 반대로 배율만 올리면 도트만 커진다.
- */
-function cameraZoomField(rerender: SystemRefresh): HTMLElement {
-  return rm2k3Fieldset("기본 카메라 배율", [
-    el("p", {
-      class: "db-system-resolution-help",
-      text: "프로젝트 모든 맵에 적용되는 기본 배율입니다. 해상도를 올릴 때 함께 올려야 보이는 범위가 유지됩니다(1440x1080 이면 4.5). 이벤트 명령은 이 값을 일시적으로 덮어쓸 다.",
-      dataset: { testid: "db-system-camera-zoom-help" },
-    }),
-    numberField("배율", "db-field-system-camera-zoom", () => resolveCameraZoom(store.getCurrent().system), (next) => {
-      updateSystem((draft) => storeCameraZoom(draft.system, next), "system:camera-zoom");
-      rerender("values");
-    }, { min: CAMERA_ZOOM_LIMITS.min, max: CAMERA_ZOOM_LIMITS.max, step: 0.25 }),
-    el("div", {
-      class: "db-field db-field-readonly",
-      children: [
-        el("span", { text: "허용 범위" }),
-        el("code", { text: String(CAMERA_ZOOM_LIMITS.min) + "–" + String(CAMERA_ZOOM_LIMITS.max) + " (기본 1)" }),
-      ],
-    }),
   ]);
 }
 

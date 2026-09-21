@@ -129,19 +129,10 @@ export function renderEditSceneTileCells(
   const uniqueCells = uniqueRenderableTileCells(cells)
     .slice()
     .sort((a, b) => (a.layer === b.layer ? 0 : a.layer === "lower" ? -1 : 1));
-  const lazyWindow = shouldLazilyRenderEditMap(map) ? cameraTileWindow(context.scene, map) : null;
-  const limitToWindow = lazyWindow !== null && isPartialTileWindow(lazyWindow, map);
   let tileObjectsUpdated = 0;
   for (const cell of uniqueCells) {
     if (cell.x < 0 || cell.y < 0 || cell.x >= map.width || cell.y >= map.height) continue;
     const key = tileIndexKey(cell.layer, cell.x, cell.y);
-    if (limitToWindow && lazyWindow && isOutsideTileWindow(lazyWindow, cell.x, cell.y)) {
-      // 화면 밖은 맵 배열이 정본이다. 객체를 만들면 팬으로 이미 줄어든 창이 다시 맵 전체가 된다.
-      const previous = context.tileIndex.get(key) ?? [];
-      for (const object of previous) context.tileLayer.remove(object, true);
-      context.tileIndex.delete(key);
-      continue;
-    }
     const previous = context.tileIndex.get(key) ?? [];
     for (const object of previous) {
       context.tileLayer.remove(object, true);
@@ -190,12 +181,6 @@ export function renderVisibleEditSceneTiles(
   const map = store.getCurrent().maps[context.mapId];
   if (!map || !shouldLazilyRenderEditMap(map)) return { tileObjectsUpdated: 0 };
   const window = cameraTileWindow(context.scene, map);
-  for (const [key, objects] of context.tileIndex) {
-    const parsed = parseTileIndexKey(key);
-    if (!parsed || !isOutsideTileWindow(window, parsed.x, parsed.y)) continue;
-    for (const object of objects) context.tileLayer.remove(object, true);
-    context.tileIndex.delete(key);
-  }
   let tileObjectsUpdated = 0;
   for (let y = window.minY; y <= window.maxY; y++) {
     for (let x = window.minX; x <= window.maxX; x++) {
@@ -310,20 +295,6 @@ function uniqueRenderableTileCells(cells: readonly ProjectChangeCell[]): readonl
 
 function tileIndexKey(layer: "lower" | "upper", x: number, y: number): string {
   return `${layer}:${x},${y}`;
-}
-
-function parseTileIndexKey(key: string): { readonly x: number; readonly y: number } | null {
-  const match = /^(?:lower|upper):(-?\d+),(-?\d+)$/.exec(key);
-  if (!match) return null;
-  return { x: Number(match[1]), y: Number(match[2]) };
-}
-
-function isOutsideTileWindow(window: EditSceneTileWindow, x: number, y: number): boolean {
-  return x < window.minX || y < window.minY || x > window.maxX || y > window.maxY;
-}
-
-function isPartialTileWindow(window: EditSceneTileWindow, map: GameMap): boolean {
-  return window.minX > 0 || window.minY > 0 || window.maxX < map.width - 1 || window.maxY < map.height - 1;
 }
 
 function tintIfPossible(object: Phaser.GameObjects.GameObject, tint: number): void {

@@ -49,7 +49,7 @@ export function createLpcWoodenFurnitureTileset(): TilesetDef {
     terrain: Array.from({ length: count }, () => 0),
     tileMeta,
     tileGroups: [],
-    structureKits: lpcFurnitureKits(LPC_WOODEN_FURNITURE_TILE_SIZE),
+    structureKits: lpcFurnitureKits(),
   };
 }
 
@@ -60,15 +60,13 @@ export function createLpcWoodenFurnitureTileset(): TilesetDef {
  * 읽어 실내 가구로 분류한다. 그래야 실내 방 문법(테마·스냅·역할)이 이 킷을 후보로 쓰고,
  * 구조물 앨범에서 실내 오브젝트 갈래로 한 번만 나온다(중복 카드 방지).
  */
-function lpcFurnitureKits(tileSize: number = LPC_WOODEN_FURNITURE_TILE_SIZE): TilesetDef["structureKits"] {
+function lpcFurnitureKits(): TilesetDef["structureKits"] {
   return LPC_WOODEN_FURNITURE_OBJECTS.map((object) => ({
     id: object.id,
     kind: "section" as const,
     name: object.label,
     width: object.width,
     height: object.height,
-    // 어느 판(16px/32px)에서 구운 킷인지 새긴다 — 두 판이 같은 킷 id 를 쓰기 때문이다.
-    tileSize,
     rows: bakeCellsToRows(
       object.cells.map((cell) => ({ dx: cell.dx, dy: cell.dy, layer: "upper" as const, tile: cell.tile })),
       object.width,
@@ -99,7 +97,7 @@ function lpcFurnitureKits(tileSize: number = LPC_WOODEN_FURNITURE_TILE_SIZE): Ti
 export function seedLpcWoodenFurnitureKits(tileset: TilesetDef): boolean {
   if (tileset.image.type !== "bundled" || tileset.image.id !== LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY) return false;
   if ((tileset.structureKits ?? []).length > 0) return false;
-  tileset.structureKits = lpcFurnitureKits(LPC_WOODEN_FURNITURE_16_TILE_SIZE);
+  tileset.structureKits = lpcFurnitureKits();
   return true;
 }
 
@@ -126,11 +124,8 @@ export function createLpcWoodenFurniture16Tileset(): TilesetDef {
     terrain: Array.from({ length: count }, () => 0),
     tileMeta: Array.from({ length: count }, () => ({ label: "", description: "", source: "unknown" as const })),
     tileGroups: [],
-    // base 는 32px 판이라 킷의 tileSize 가 32 로 찍혀 있다 — 16px 판에서는 다시 새긴다.
-    structureKits: lpcFurnitureKits(LPC_WOODEN_FURNITURE_16_TILE_SIZE),
   };
 }
-
 /** 16px 판에도 같은 공용 오브젝트 킷을 심는다. */
 export function seedLpcWoodenFurniture16Kits(tileset: TilesetDef): boolean {
   if (tileset.image.type !== "bundled" || tileset.image.id !== LPC_WOODEN_FURNITURE_16_TEXTURE_KEY) return false;

@@ -7,7 +7,6 @@ import type { RuntimeCameraSessionState, RuntimeCameraTarget } from "@/project/s
 import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 import { store } from "@/project/store";
-import { CAMERA_ZOOM_LIMITS, resolveCameraZoom } from "@/project/cameraZoom";
 import { bumpPerfCounter } from "@/player/runtimePerfCounters";
 
 export type ScrollMapDirection = "down" | "left" | "right" | "up";
@@ -106,10 +105,6 @@ export type CameraControlStep = {
 export function applyStoredCameraState(scene: PlaySceneContext): void {
   const state = scene.session.camera;
   if (!state) {
-    // 연출 상태가 없을 때의 배율은 **프로젝트 기본값**이다. 예전에는
-    // centerRuntimeCamera 가 1 로 리셋한 값이 그대로 남았다 — 그래서 고해상도
-    // 배경을 쓰려면 맵마다 auto 이벤트로 줌을 걸어야 했고 새 맵에서는 1 로 돌아갔다.
-    applyCameraZoom(scene.cameras.main, resolveCameraZoom(store.getCurrent().system));
     followCameraTarget(scene, { kind: "player" });
     return;
   }
@@ -233,8 +228,16 @@ function resolveCameraTarget(
   return { x: scene.player.x + offsetX, y: scene.player.y + offsetY };
 }
 
-/** 카메라 배율 범위의 정본은 @/project/cameraZoom 에 있다 — 저작 정규화와 같은 값을 봐야
- * 「저장은 됐는데 플레이에서는 다른 배율」이 안 생긴다. */
+/**
+ * 카메라 배율 상한. 하한 0.25 는 그대로다(멀리 보기).
+ *
+ * 왜 4 에서 6 인가(2026-09-22): 상한 4 는 «고해상도 + 확대» 조합을 막았다. 1920x1080 배경
+ * 아트를 무손실(1:1)로 쓰려면 게임 해상도를 1440x1080 으로 두고 배율 4.5 가 필요하다
+ * (시야 20x15 타일 = 320x240 과 동일, 배경 배율 0.2222 x 4.5 = 1.0). 4 로는 시야가
+ * 22x17 타일이 되어 클래식 화면과 어긋난다.
+ */
+export const CAMERA_ZOOM_LIMITS = { min: 0.25, max: 6 } as const;
+
 function applyCameraZoom(camera: Phaser.Cameras.Scene2D.Camera, zoom: number | undefined): void {
   if (zoom === undefined || !Number.isFinite(zoom) || zoom <= 0) return;
   camera.setZoom(Math.min(CAMERA_ZOOM_LIMITS.max, Math.max(CAMERA_ZOOM_LIMITS.min, zoom)));

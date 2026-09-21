@@ -1,7 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { extname, normalize, resolve, sep } from "node:path";
 import { protocol } from "electron";
-import { ASSET_RESPONSE_CSP, assetCacheControl, safeAssetContentType } from "../shared/assetMime";
 import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME } from "../shared/channels";
 import { handleActivityMirror, isActivityMirrorPath } from "../../scripts/lib/activityMirror.mjs";
 import type { SessionRegistry } from "./sessions";
@@ -77,9 +76,6 @@ export function registerAppProtocol(rendererDir: string, activityLogBaseDir: () 
       }
     }
     const relative = url.pathname === "/" || url.pathname === "" ? "index.html" : url.pathname.replace(/^\//, "");
-    if (relative.split("/").some((part) => part.startsWith("."))) {
-      return new Response("forbidden", { status: 403 });
-    }
     const target = resolve(root, normalize(relative));
     if (target !== resolve(root, "index.html") && !target.startsWith(root + sep)) {
       return new Response("forbidden", { status: 403 });
@@ -99,12 +95,7 @@ export function registerAssetProtocol(sessions: SessionRegistry): void {
     if (!row) return new Response("unknown asset", { status: 404 });
     const bytes = await session.store.assetBytes(sha256);
     return new Response(bytes, {
-      headers: {
-        "content-type": safeAssetContentType(row.mime),
-        "cache-control": assetCacheControl(row.mime),
-        "content-security-policy": ASSET_RESPONSE_CSP,
-        "x-content-type-options": "nosniff",
-      },
+      headers: { "content-type": row.mime, "cache-control": "public, max-age=31536000, immutable" },
     });
   });
 }
