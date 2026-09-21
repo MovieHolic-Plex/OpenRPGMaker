@@ -1,4 +1,4 @@
-import { segmentedControl } from "@/editor/panels/databaseControls";
+import { field, segmentedControl } from "@/editor/panels/databaseControls";
 import {
   absenceEditor,
   bodyField,
@@ -162,11 +162,11 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     on: { toggle: updateAiPreview },
   });
   updateAiPreview();
-  const frameCard = sectionCard({
-    title: "뼈대",
-    hint: "톤 8종 · 시대 · 기술 천장 · 세계에 없는 것(부분일치)",
-    testid: "db-world-canon-frame",
+  const frameCard = el("section", {
+    class: "world-canon-fields",
+    dataset: { testid: "db-world-canon-frame" },
     children: [
+      el("h5", { class: "world-canon-group-title", text: "토" }),
       toneRow(canon.tones, rerender),
       el("div", {
         class: "world-canon-spread-era",
@@ -175,17 +175,20 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
           boundedCanonText("기술 수준", canon.techCeiling, (value) => writeCanon({ techCeiling: value }, "db-world-canon-tech"), "db-world-canon-tech", WORLD_CANON_BOUNDS.techCeiling),
         ],
       }),
+      el("h5", { class: "world-canon-group-title", text: "세계에 없는 것 (부분일치)" }),
       absenceEditor(canon.absences, rerender),
     ],
   });
-  const lawsCard = sectionCard({
-    title: "이 세계의 네 가지 질문",
-    hint: "힘·신·죽음·돈 — 비어 있으면 AI가 멋대로 채운다",
-    testid: "db-world-canon-laws",
-    children: [el("div", {
-      class: "world-canon-law-grid is-cards",
-      children: WORLD_CANON_LAW_KINDS.map((kind) => lawCard(kind, canon.laws[kind], rerender)),
-    })],
+  const lawsCard = el("section", {
+    class: "world-canon-fields",
+    dataset: { testid: "db-world-canon-laws" },
+    children: [
+      el("h5", { class: "world-canon-group-title", text: "법칙 (힘·신·죽음·돈 — 비어 있으면 조수가 멜다로 채운다)" }),
+      el("div", {
+        class: "world-canon-law-grid is-cards",
+        children: WORLD_CANON_LAW_KINDS.map((kind) => lawCard(kind, canon.laws[kind], rerender)),
+      }),
+    ],
   });
   const properties = worldDocumentProperties([
     sectionCard({
@@ -213,29 +216,32 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     aiDetails,
   ], propertiesOpen.get(host) ?? false, (open) => propertiesOpen.set(host, open));
 
-  // 스프레드 헤드는 "보는 것 = 편집하는 것"의 핵심이라 이름/전제 타이핑에 즉시 따라붙는다.
-  // 탭 리렌더를 기다리면 미러가 늦게 갱신돼 문서가 아니라 폼처럼 보인다.
-  const headTitle = el("h3", { class: "world-canon-head-title", text: canon.name.trim() || "세계의 이름을 지어 보세요" });
-  const headSub = el("p", { class: "world-canon-head-sub" });
-  const renderHeadMirror = (): void => {
-    const next = resolveWorldCanon(store.getCurrent().worldCanon);
-    headTitle.textContent = next.name.trim() || "세계의 이름을 지어 보세요";
-    if (next.premise.trim()) headSub.textContent = premiseQuote(next.premise);
-    else {
-      headSub.replaceChildren();
-      headSub.append(
-        el("strong", { text: "한 줄 전제" }),
-        document.createTextNode("를 먼저 적어 보세요 — 조수가 이 세계를 읽는 첫 줄이 됩니다."),
-      );
-    }
+  // 헤드는 짧게: 공개하는 제목 + 아이콘 설명 버튼으로 축약(2026-09-22 사용자 피드백).
+  // 긴 전제 문장과 "등대를 구해라" 안내는 각 장소의 tooltip으로 모바.
+  const headTitle = el("h3", { class: "world-canon-head-title", text: canon.name.trim() || "세계 개요" });
+  const headNameMirror = (): void => {
+    headTitle.textContent = resolveWorldCanon(store.getCurrent().worldCanon).name.trim() || "세계 개요";
   };
-  renderHeadMirror();
+  headNameMirror();
+  const helpText = [
+    "이 한 장은 조수가 매 턴 읽는 세계 설정이다.",
+    "본문 탭 — 역사·땅·문화를 쓰는 도화지.",
+    "세계 설정 탭 — 이름·전제·톤·법칙.",
+    "조수 전달 탭 — 조수가 실제로 읽는 문장.",
+  ].join("\n");
   const spreadHead = el("div", {
     class: "world-canon-spread-head",
     children: [
-      el("span", { class: "world-canon-kicker", text: "세계 안내서 · 한 장" }),
+      el("div", { class: "world-canon-head-row", children: [
+        el("span", { class: "world-canon-kicker", text: "세계 안내서" }),
+        el("button", {
+          class: "world-canon-help",
+          attrs: { type: "button", "aria-label": "세계 개요 설명", title: helpText },
+          dataset: { testid: "db-world-canon-help" },
+          text: "?",
+        }),
+      ] }),
       headTitle,
-      headSub,
       el("div", {
         class: "world-canon-meter",
         children: [
@@ -327,13 +333,8 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     });
   workspace.classList.add("world-document-workspace", "world-canon-workspace");
   workspace.addEventListener("input", updateAiPreview);
-  workspace.addEventListener("input", renderHeadMirror);
+  workspace.addEventListener("input", headNameMirror);
   host.append(workspace);
-}
-
-function premiseQuote(premise: string): string {
-  const text = premise.trim();
-  return text.startsWith("\"") || text.startsWith("“") || text.startsWith("'") ? text : `"${text}"`;
 }
 
 function identityCard(canon: ResolvedWorldCanon): HTMLElement {
@@ -363,13 +364,12 @@ function identityCard(canon: ResolvedWorldCanon): HTMLElement {
     dataset: { testid: "db-world-canon-premise" },
   });
   premise.addEventListener("input", () => writeCanon({ premise: premise.value }, "db-world-canon-premise"));
-  return sectionCard({
-    title: "이름과 한 줄",
-    hint: "AI가 항상 읽는 한 장의 첫 줄",
-    testid: "db-world-canon-identity",
+  return el("div", {
+    class: "world-canon-fields",
+    dataset: { testid: "db-world-canon-identity" },
     children: [
-      name,
-      premise,
+      field("이름", name),
+      field("한 줄 전제", premise),
     ],
   });
 }

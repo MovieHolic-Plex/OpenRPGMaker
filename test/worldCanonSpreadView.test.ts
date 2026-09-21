@@ -37,15 +37,14 @@ describe("world canon spread view", () => {
     const host = renderTab();
     const head = findByTestId(host, "db-world-canon-workspace")?.querySelector(".world-canon-spread-head");
     expect(head?.querySelector(".world-canon-head-title")?.textContent).toBe("비늘의 바다");
-    // 전제는 에피그래프처럼 따옴표로 감겨 읽힌다.
-    expect(head?.querySelector(".world-canon-head-sub")?.textContent).toContain("\"바다는 잊지 않는다\"");
   });
 
-  it("invites authoring instead of form labels when the world is empty", () => {
+  it("shows a neutral head title when the world is unnamed", () => {
     const host = renderTab();
     const head = findByTestId(host, "db-world-canon-workspace")?.querySelector(".world-canon-spread-head");
-    expect(head?.querySelector(".world-canon-head-title")?.textContent).toContain("세계의 이름");
-    expect(head?.querySelector(".world-canon-head-sub")?.textContent).toContain("한 줄 전제");
+    expect(head?.querySelector(".world-canon-head-title")?.textContent).toBe("세계 개요");
+    // 각 장소의 긴 안내는 아이콘 tooltip으로 축약된다.
+    expect(findByTestId(host, "db-world-canon-help")?.getAttribute("title")).toContain("조수");
   });
 
   it("shows law answers as question cards with conversational state", () => {
