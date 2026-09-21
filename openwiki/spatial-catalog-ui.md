@@ -94,3 +94,30 @@ Ship source archive `rpg-zzu-ship-20260913` was also CAS-saved/reloaded: three c
 New-place authoring records classification using existing persisted design tags: `그림체:`, `장소유형:`, `공간형태:`, `용도:`. Both standalone spaces and building containers retain the tags through the normal draft/save flow; no schema version change. User tags take precedence over compatibility inference for older designs. Metadata-less designs use underlying tileset, existing kind and conservative name hints, with unknowns exposed as 미분류. A new category is session-only until a design bearing that category is saved. Builtin catalogs remain shared; existing project-owned draft persistence is unchanged. Do not label project-owned drafts as globally published.
 
 Category and environment are not generator shape enums: a dungeon can be outdoor; an underground facility can use the indoor structural generator. Browser evidence in `output/evidence/place-classification/` uses a read-only bridge; no project rows were modified for this UI change. Packaged builds were run; tests/gates/typecheck were not requested or run.
+
+## 2026-09-21 — 강변 숲마을 기본 장소
+
+`reviewedPlaceCatalog.ts`는 `riverVillagePlace.ts`의 「강변 숲마을」
+(`place_river_forest_village`)을 공용 장소 맨 앞에 포함한다. 분류는 EasyRPG / 마을·도시 /
+실외 / 주거·마을 꾸밈 기준이다. 기존 공용 장소와 같은 미리보기·복사·컴파일 경로를 사용한다.
+`reviewedPlaces/riverVillage.json`은 Supabase `river-village-live-20260921-414a`의 승인된
+78×44 실외 타일을 보관한다. 이벤트 문은 복사 가능한 정적 문 타일로 표현한다.
+이 도안에는 NPC·실내·이동 이벤트가 없으며, 원본 프로젝트의 이벤트와 내부 맵은 보존한다.
+미리보기 PNG는 `public/assets/reviewed-places/place_river_forest_village.png`이다.
+
+`project/defaults/riverVillageStyle.ts`가 장소 이름·ID·기본 형태·칩셋·꾸밈 지침을 공유한다.
+`withVillageMorphologyDefault`와 `prepareVillageDefaultTileset`이 실제 생성 기본값에 사용하고,
+`villageDesignContext` 및 `author_village` 도구 설명이 같은 기준을 조수에 전달한다.
+예제 집 8채를 요청 수량으로 강제하지 않는다. 명시한 테마·설계서·기존 맵·선택 범위가 우선이다.
+중앙 강·양안 길과 주택·숲마을 나무 세트·기본 울타리 없음의 실제 시공은 마을 빌더가 담당한다.
+
+재현: `node scripts/qa/river-village-place.mjs` (워크트리 서버 9839).
+장소 복사 후 실제 `preview_spatial_build` → `apply_spatial_build` → 프로젝트 IO를 거쳐
+전용 원격 행 `river-village-place-20260921-414a`에 publication RPC로 저장·재조회한다.
+canonical spatial 프로젝트는 일반 projects upsert가 거부되므로 `publish_spatial_project`를
+사용하며 업데이트는 읽은 서버 SHA로 CAS한다. 기존 원본 프로젝트 행은 수정하지 않는다.
+
+등록 중 드러난 복사본 편집 문제도 수정했다. 자식 없는 직접 외형 장소는
+`defaultComposition`이 외형 section 킷의 실제 크기를 사용한다(종전 40×30 고정은
+78×44 마을을 잘랐다). 복합 캔버스는 하위 셀마다 `tileBackingTile`의 기존 받침 정책을
+함께 그려 나무 아래가 투명 격자로 보이지 않게 한다. 맵 타일·통행 데이터는 바꾸지 않는다.

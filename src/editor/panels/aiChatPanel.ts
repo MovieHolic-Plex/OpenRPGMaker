@@ -1,3 +1,4 @@
+import { resolveVillageContract } from "@/ai/piAgent/villageContract";
 import type { ActivityVisual } from "@/ai/activityVisual";
 import { clearPromptInspection } from "@/ai/authoring/promptInspection";
 import { openAiAuthoringModal, closeAiAuthoringModal } from "./aiAuthoring/modal";
@@ -2087,6 +2088,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }, plan ? {
         readOnly: plan.readOnly,
         routineEdit: plan.routineEdit,
+        villageContract: plan.villageContract,
         planOnly: plan.planOnly,
         maxTurns: plan.maxTurns,
         // 상한에 걸려 멈췄을 때 「무엇을 올리면 되는지」를 말하려면 단계 이름이 필요하다.
@@ -2121,7 +2123,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     let initialToolNames: readonly string[] | undefined;
     let intentNote: string | null = null;
     if (!plan.readOnly) {
-      piIntentDeclarer ??= createLlmIntentDeclarer({ timeoutMs: 6_000 });
+      piIntentDeclarer ??= createLlmIntentDeclarer({ timeoutMs: 30_000 });
       setStatus("의도 읽는 중…");
       const project = store.getCurrent();
       const currentMapId = editorState.get().currentMapId ?? null;
@@ -2133,6 +2135,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         selection,
         hasActivePlan: workPlanSurfaceState?.active === true,
       }));
+      if (declared.intent.source === "fallback") throw new Error(declared.error ?? "요청 범위를 확정하지 못했습니다. 다시 시도해 주세요.");
       // 선언이 확정한 것을 본문도 읽게 한다 — 세션 경로의 pushOrchestrationMessage(intentNote) 와 같은 자리.
       // Pi 이관(2026-09-11)에서 빠져 author_village·권장 크기·선택 사각형 지시가 모델에 닿지 않았다(2026-09-17 실측).
       const noteTargetMapId = declared.intent.targetMapId ?? currentMapId;
@@ -2150,6 +2153,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         && (declared.intent.mode === "create" || declared.intent.mode === "modify")
         && declared.intent.needsPlan === false
         && declared.intent.clarify === null };
+      plan = { ...plan, villageContract: resolveVillageContract(project, declared.intent, currentMapId, selection ?? null) };
       if (declared.intent.mode === "question") {
         plan = { ...plan, readOnly: true };
         questionPromoted = true;

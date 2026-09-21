@@ -1898,19 +1898,19 @@ switch references participate in load validation, deletion guards and switch ren
 Tests: `feature16AiToolIntegration.test.ts`; schemas: `combatAuthoringSchemas.ts`.
 ## 마을 시공 후 완료 계약 (2026-09-21)
 
-`author_village`의 `houseCount`는 무조건 required가 아니다. 기본 설계서가 있으면
-`resolveVillageDesignInput`이 파싱 전에 채운다. 고정 숲 없음 설계서에는
-`forestDensity`를 넣지 않는다. Pi 노트와 도구 설명이 이 조건을 공유한다.
+`author_village`의 집 수는 기본 DB 설계서가 채울 수 있다. 고정 숲 없음 설계서에는
+`forestDensity`를 넣지 않는다. `resolveVillageContract`가 평문 단일 마을 요청의 수량과
+대상/bounds를 먼저 고정하고 facade와 같은 DB resolver를 쓴다.
 
-`residents[].lines` 생략 시 대사는 빈 상태이며, Pi 종료 검사가 보충 요청을 보낸다.
-옛 `AssistantSession.authorPendingNpcCast`가 Pi에서도 자동 실행된다고 설명하지 않는다.
-문 스프라이트도 visible이므로 `collectPendingNpcs` 결과 전체를 Pi 보충 대상으로 쓰면
-문에 대사가 붙는다. Pi는 이번에 생성한 `ev_village_*` 주민만 대상으로 삼는다.
+빌더 결과의 `village.residentEventIds`는 NPC 배치 전후 이벤트 ID 차이,
+`village.doorFronts`는 이번에 만든 집의 실제 문앞 좌표다. 계약 완료 검사는
+이 증거로 대사와 통행을 검사하며 ID 접두사나 전체 맵의 미감 점수에 의존하지 않는다.
+`residents[].lines`로 대사를 한 번에 넘기거나 같은 Agent가 `author_npc_cast`로 보충한다.
+무언 주민 요청과 주민 0명은 대사를 강제하지 않는다.
 
-`evaluate_village_look`의 호출 성공과 `data.ok`는 별개다. Pi는 최종 프로젝트에서
-직접 재평가해 미통과를 `done.villageCompletion.issues`로 전달한다. 룩 평가에는
-맵의 `villageDesignSource.preset`을 사용해 고정 주민 수, 숲 없음, 광장 설정을 존중한다.
-현재 프로젝트의 기본 설계서를 나중에 바꿔도 이미 지은 맵의 평가 기준이 바뀌지 않는다.
+`evaluate_village_look`는 미감 참고 도구로 남는다. 단일 마을 계약 경로에서는 그 점수를
+필수 완료 조건으로 쓰지 않는다. 옛 explicit/team 경로의 `inspectPiVillageCompletion`과
+혼동하지 않는다. 복합 작업까지 이 계약으로 전환한 것은 아니다.
 
 공개 평가 안내는 `find_tools`로 실제 수정 도구를 찾도록 한다. `plant_tree_clusters`,
 `revise_village_plan`, `run_village_pipeline`은 내부 호환용이며 Pi에서 노출·복구되지 않는다.
@@ -1921,3 +1921,5 @@ Tests: `feature16AiToolIntegration.test.ts`; schemas: `combatAuthoringSchemas.ts
 ## 타일 참고문서 선행 조회 (2026-09-21)
 
 [타일셋 참고문서](tileset-reference-documents.md): 프로젝트 소유의 용도별 MD·이미지, 파생 타일셋의 원본 공유, Pi/레거시 AI 전달 확인, 저장·내보내기 계약.
+빈 시작 맵 전체 시공에서 예전 좌표가 고립되면 `restoreExistingTargetStart`가 검증된 새
+시작점을 유지한다. 기존 콘텐츠 또는 bounds 요청은 이 예외가 아니다.

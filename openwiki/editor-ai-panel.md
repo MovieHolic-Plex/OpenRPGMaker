@@ -2897,30 +2897,36 @@ Pi 활동 로그는 시작·종료 모두 `result.applyMode`에 실행 당시 �
   프로젝트 데이터와 LLM 응답만 테스트 내부 fixture이다. 캡처용 별도 Playwright 설정은
   서버를 시작하지 않는다. `verify-shots/feature16-ai/01-library.png`부터 `04-source-page.png`까지 생성한다.
   이 변경 작성 세션은 테스트/타입체크/서버/브라우저를 실행하지 않았다. 중앙 검증이 필요하다.
-## Pi 마을 완료 검사와 적용 분리 (2026-09-21)
+## Pi 단일 마을 요청 계약 (2026-09-21)
 
-- 평문 시공 노트는 `buildPiIntentNote({ project, ... })`로 기본 DB 설계서를 확인한다.
-  설계서가 있으면 생략한 집 수에 12채를 강요하지 않고, 고정 자연 설정에
-  `forestDensity`를 강요하지 않는다. 사용자 명시 수량은 유지해 충돌을 보고한다.
-- `runPiAgent`는 성공한 `author_village`의 외부 맵 ID를 모은다.
-  모델이 응답을 끝내면 `inspectPiVillageCompletion`으로 최신 맵의 룩 평가와
-  새 `ev_village_*` 주민 페이지를 검사한다. 기존 주민과 보이는 문 이벤트는 보충 대상이 아니다.
-  미달이면 `piVillageRepairPrompt`로 최대 두 번 보충·수정을 요청한다.
-  기존 턴·시간·읽기 전용·역할 도구 제한은 유지된다. 대사는 모델이 쓰고
-  `author_npc_cast` 같은 기존 도구가 적용하며 코드의 대체 인사말은 없다.
-- `done.villageCompletion`은 검사 맵 ID와 남은 문제를 전송한다. 팀은 최종 병합본을
-  다시 검사하고, 패널도 조화 검수/수정 뒤 최신 결과를 재검사한다.
-  미달은 조화 검수 성공으로 지워지지 않으며 목표 상태는 `incomplete`다.
-  이 검사를 통과했다고 전체 사용자 요청의 수용 검증까지 `verified`로 올리지는 않는다.
-- DEFAULT/AUTO/YOLO의 기존 실시간 반영은 유지한다. 미완료 판정이 이미 반영한
-  변경을 자동 롤백하지 않는다. review는 초안 승인, step은 단계별 승인·스냅샷이다.
-  YOLO도 미완료를 숨기지 않지만 별도 승인 단계는 추가하지 않는다.
-- 설명용 `reports/village-build-flow.html`의 이미지는 base64로 포함한 과거 참고 자료다.
-  같은 실행의 연속 캡처나 이번 수정의 라이브 LLM 성공 증거가 아니다.
-- 회귀 계약: `piTurnIntentNote`, `piVillageCompletion`(순수/Vitest 및 실제 Agent 루프/Bun),
-  `piAgentTeamRuntime`, `piAgentRunOutcome`. 이 변경 세션에서는 사용자 요청에
-  테스트·게이트 실행이 없어 실행하지 않았다. 구문 변환과 HTML 브라우저 확인은 별도다.
+평문 단일 마을 생성은 `plainPiTurn → resolveVillageContract → runPiAgent →
+validateVillageContract → applyProposedProject`로 처리한다. 의도 선언의 대상·선택 영역·집/주민
+수를 실행 전에 고정하고 DB 설계서는 기존 `resolveVillageDesignInput`으로 해석한다.
+주민 0명과 명시적인 무언 주민(`construction.residentDialogue:false`)도 보존한다.
+의도 해석은 30초 제한이며 fallback 선언으로 쓰기 실행을 시작하지 않는다.
 
+- 계약이 있는 요청은 팀 설정과 관계없이 단일 실행이다. 별도 산문 계획과 Vision/Ultrabrain
+  미감 재검수/새 실행의 보수 루프를 생략한다. 복합 모험·보상·기능 검증 요청 및 명시 `/pi`
+  호출은 이 단일 마을 계약으로 바꾸지 않으며 기존 경로를 유지한다.
+- 쓰기는 `author_village` 한 번의 성공 시공, 그 뒤 `author_npc_cast` 대사 보충으로 제한한다.
+  초안은 중간 checkpoint로 게시하지 않고 고스트로 보여 준다. 완료 후 DEFAULT/AUTO/YOLO는
+  기존 수용 게이트로 한 번에 반영하고 REVIEW/STEP은 완성 묶음을 승인 대상으로 둔다.
+  미완료는 YOLO도 자동 반영하지 않는다.
+- `residentEventIds`와 `doorFronts`는 시공기가 실제 생성한 대상의 증거다. 집/주민 수,
+  실제 입구에서 이번 집 문앞까지 타일 통행, 시공 후 지형/기존 이벤트 불변, 주민별 대사를 검사한다.
+  선택 영역 밖의 예전 주민이나 건물을 미감 점수로 재시공하지 않는다.
+- 보충은 같은 Agent의 턴/시간 예산 안에서 최대 2회이며 동일 문제 목록이면 즉시 끝낸다.
+  미감 점수는 이 계약의 완료 조건이 아니다. 시공 실패/누락은 도구 성공 기록이 없어도 미완료다.
+- 빈 시작 맵의 전체 시공 뒤 예전 중앙 좌표가 고립되면 빌더가 검증한 시작점을 유지한다.
+  기존 콘텐츠/부분 범위의 시작점은 보존한다. 실측: 4채 green 형태에서 (10,8)을 복원하면
+  4채 모두 접근 불가였고, 검증된 시작점 (23,16)은 4/4 도달했다.
+
+검증: Bun 계약/실행 루프 6건, 기존 facade/intent-note Vitest 50건 통과.
+실제 에디터 + Gemini 호출은 `author_village` 1회/2턴/9.294초/도구 오류 0으로
+4채·주민 3명·내부 4개를 생성했다. Supabase 전용 행
+`village-contract-live-20260921-414a`에 QA 스크립트로 업서트 후 전체 문서 재조회 일치를 확인했다.
+웹 QA 세션 자동 저장 성공으로 해석하면 안 된다. 실행/캡처 절차와 제한은
+`reports/2026-09-21-village-contract-live.md`.
 ## Pi 시공 연출과 공간 밑그림 복구 (2026-09-21)
 
 `DEFAULT`/`AUTO`/`YOLO`의 승인 정책과 시공 표시는 별개다. `aiPiAgentCommand`는 모든 모드에서
