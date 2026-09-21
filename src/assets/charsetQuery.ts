@@ -149,6 +149,7 @@ function textMatchScore(term: string, entry: CharsetSemanticEntry): number {
     if (tagLower === normalized) score += 45;
     else if (tagLower.includes(normalized)) score += 20;
   }
+  if (normalized.length >= 2 && entry.appearance?.toLowerCase().includes(normalized)) score += 12;
   return score;
 }
 

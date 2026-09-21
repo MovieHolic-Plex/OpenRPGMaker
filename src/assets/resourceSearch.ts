@@ -211,6 +211,7 @@ function candidatesForKind(kind: ResourceSearchKind, options: ResourceSearchOpti
         id: `charset:${entry.textureKey}:${entry.characterIndex}`,
         label: entry.label,
         tags: [...entry.tags, ...charsetDerivedTags(entry.textureKey)],
+        ...(entry.appearance ? { description: entry.appearance } : {}),
         nativeGraphic: {
           sprite: { type: "bundled", id: entry.textureKey },
           direction: "down",

@@ -1714,6 +1714,10 @@ author_village와 buildVillageDomain이 DB 설계서의 고정값·집 수 범�
 카탈로그 라벨은 바꾸지 않는다. `test/nativeGraphicDiscovery.test.ts`는 두 조회 → 네이티브 업서트 →
 직렬화/재로드 → 실제 `renderTiles`의 sprite 생성 인자를 독립 프레임 표와 대조한다(8슬롯·두 행·네 방향).
 
+2026-09-22: 라벨이 있는 차셋 칸마다 `src/assets/charsetAppearances.ts` 의 아래 방향 정지 프레임 문장이 붙는다.
+`list_npc_graphics` 는 `appearance`, `list_resources(kind:"charset")` 는 `description` 으로 그대로 돌려준다.
+문장에 있는 두 글자 이상 낱말은 라벨·태그보다 낮은 점수로 검색에도 걸린다. 라벨 문자열 자체는 바꾸지 않는다.
+
 ## 보물상자는 노출된 수면을 거부한다 (2026-09-05)
 
 `place_chest`는 요청 좌표와 자동 착지 결과를 모두 검사한다. 물 판정은 현재 타일셋의
