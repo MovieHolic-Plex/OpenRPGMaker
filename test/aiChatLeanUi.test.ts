@@ -125,7 +125,8 @@ describe("작업 계획 앞면 렌더", () => {
       expect(node.querySelector("[data-testid='ai-run-stop']")?.textContent).toBe("중지");
       expect(node.querySelector("[data-testid='ai-plan-book-open']")?.textContent).toBe("계획 보기");
       expect(node.querySelector("[data-testid='ai-run-details-toggle']")?.textContent).toContain("자세히");
-      expect(node.querySelector("[data-testid='ai-run-whisper']")?.textContent).not.toContain("예산");
+      // 2026-09-21 앞면 개편: 머리 pill(아이콘+상태) + 본문은 드롭다운. 예산 칩은 여전히 「자세히」에 둔다.
+      expect(node.querySelector("[data-testid='ai-plan-head']")?.textContent).not.toContain("예산");
       expect(node.dataset.active).toBe("true");
       expect(node.dataset.complete).toBe("false");
       expect(node.querySelector("[data-testid='ai-work-item-activity']")?.textContent).toBe("진행 중…");

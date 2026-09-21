@@ -1,6 +1,9 @@
 import { el } from "@/util/dom";
+import { deckIcon, type DeckIconName } from "./aiDeckIcons";
 export const ACTIVITY_LEVELS = { none: "생략", brief: "간단히 보기", detail: "자세히 보기", trace: "매우 자세히 보기" } as const;
 export type ActivityLevel = keyof typeof ACTIVITY_LEVELS;
+// 표시 수준 버튼은 텍스트 대신 아이콘(2026-09-21) — 툴바가 본문 지면을 먹지 않게.
+const LEVEL_ICONS: Readonly<Record<ActivityLevel, DeckIconName>> = { none: "x", brief: "list", detail: "eye", trace: "expand" };
 const KEY = "oprn:ai-activity-level";
 let fallback: ActivityLevel = "brief";
 let sessionOverride: ActivityLevel | undefined;
@@ -22,8 +25,8 @@ export function bindActivityLevel(root: HTMLElement, update: (level: ActivityLev
 }
 export function createActivityLevelControl(): HTMLElement {
   const buttons = Object.entries(ACTIVITY_LEVELS).map(([value, label]) => el("button", {
-    text: label,
-    attrs: { type: "button", "aria-pressed": "false", ...(value === "brief" ? { "aria-label": `${label} (기본)` } : {}) },
+    attrs: { type: "button", "aria-pressed": "false", title: value === "brief" ? `${label} (기본)` : label, "aria-label": value === "brief" ? `${label} (기본)` : label },
+    children: [deckIcon(LEVEL_ICONS[value as ActivityLevel], { size: 15 })],
     dataset: { activityLevel: value },
     on: { click: () => setActivityLevel(value as ActivityLevel) },
   }));
