@@ -327,3 +327,12 @@ The adapted masonry floor is not claimed to be the reference's exact paving.
 SQLite revision10 and the remote copy reloaded equally; 19 dedicated-player
 beats passed. Grass, shoreline/path transitions and exterior scene remain
 visually below the reference and are explicitly recorded for the next iteration.
+
+## Exterior scene improvement 02 (2026-09-21)
+
+`improve-castle-density.mts <export> --landscape` applies the exterior-scene
+review: timber lodge, connected fireside/rest/storage group, source grass/dirt
+strips and a scenic opposite-bank rest spot. Roof/wall overlap is essential
+because the measured roof rectangle includes transparent bottom cells.
+Evidence and remaining limitations: `tiledata/castle-tiles-rpgs/improvements/landscape-02/README.md`.
+SQLite revision14 and remote reload equality recorded; the old small map stays intact.
