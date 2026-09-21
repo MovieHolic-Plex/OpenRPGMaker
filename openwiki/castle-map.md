@@ -336,3 +336,10 @@ strips and a scenic opposite-bank rest spot. Roof/wall overlap is essential
 because the measured roof rectangle includes transparent bottom cells.
 Evidence and remaining limitations: `tiledata/castle-tiles-rpgs/improvements/landscape-02/README.md`.
 SQLite revision14 and remote reload equality recorded; the old small map stays intact.
+
+## Shared place: river fortress (2026-09-21)
+
+The user preferred density01's exterior. Restore cells (16,122,88,22) with pixel/metadata remapping, retaining landscape02 elsewhere.
+`CASTLE_PLACE_REFERENCES` registers the whole map as global place `river-fortress-160x144`;
+`castlePlaceSnapshot` routes AI row reads. It is visible in empty projects, with an embedded-atlas `.oprn.json` download.
+Independent remote snapshot: `oprn-place-river-fortress-v1`. Evidence: `tiledata/castle-tiles-rpgs/shared-place/`.
