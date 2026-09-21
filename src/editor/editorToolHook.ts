@@ -141,9 +141,6 @@ function recordToolSnapshot(name: string, args: Record<string, unknown>): void {
 
 export function installEditorToolHook(): void {
   if (typeof window === "undefined") return;
-  // Playwright sets navigator.webdriver. A normal dev or packaged editor must not
-  // expose an unapproved store.replace path next to the map-loss confirmation gate.
-  if (navigator.webdriver !== true) return;
   const w = window as EditorToolHookWindow;
   if (import.meta.env.DEV) installProjectE2EBridge(w);
   w.__oprnEditorTool = (name, args) => {

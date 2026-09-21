@@ -93,4 +93,3 @@ function projectReferencedTextureKeys(project: Project): Set<string> {
   }
   return keys;
 }
-

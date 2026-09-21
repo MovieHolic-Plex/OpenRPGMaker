@@ -12,7 +12,7 @@ import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { store } from "@/project/store";
 import type { GameEvent, MapId, Project } from "@/project/types";
 import { el } from "@/util/dom";
-import { setImageWarmQueueSuspended } from "@/assets/imageWarmQueue";
+import { warmBundledPlayAssets } from "@/assets/bundledAssetWarmup";
 import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
 import { validateEventDraft } from "@/editor/eventDraftValidator";
 import { prepareEnemyBattleTest } from "@/editor/enemyBattleTest";
@@ -110,8 +110,8 @@ export async function openTestPlayModal(
     const project = projectWithoutEventDrafts(store.getCurrent());
     const projectFingerprint = authoringProjectFingerprint(project);
     releaseEventTestSnapshot = store.beginReadOnlyProjectSnapshot(project);
-    // Phaser preload 가 같은 그림을 바로 읽는다. 여기서 미리 받으면 연결 6개를 워밍이
-    // 먼저 차지하고, dev 서버는 no-cache 라 같은 파일을 한 번 더 받는다.
+    // 타이틀/플레이 전에 canonical 번들 에셋을 브라우저 캐시에 데운다.
+    void warmBundledPlayAssets(project);
     // Give the browser a paint before heavy player bootstrap.
     await yieldToBrowser();
     renderPlayer(body, {
@@ -172,6 +172,7 @@ export async function openSelectedEventTestModal(mapId: MapId, eventId: string):
       toast(`경고 ${validation.warningCount}개가 있지만 현재 작업 초안을 테스트합니다.`, "info");
     }
     if (preparation.spawn.diagnostic) toast(preparation.spawn.diagnostic, "info");
+    void warmBundledPlayAssets(preparation.project);
     await yieldToBrowser();
     renderPlayer(body, {
       // Authoring surface, not the shipped export player — keep QA hooks/state mirrors.
@@ -323,7 +324,6 @@ export function closeTestPlayModal(): void {
   returnFocusAfterEnemyTest = null;
   // 창이 닫혔으니 편집기 게임을 다시 깨운다(열 때 잠재운 것과 짝).
   resumeEditorGame();
-  setImageWarmQueueSuspended(false);
 }
 
 // 런 조작 버튼은 전체 테스트 플레이 창에만 단다. 전투·이벤트 테스트 셸은 런 손잡이가 없어
@@ -333,9 +333,6 @@ function openTestPlayShell(
   shellOptions: { readonly runControls?: boolean; readonly nestedEnemyTest?: boolean } = {},
 ): HTMLElement {
   closeTestPlayModal();
-  // 편집기 색키 워밍이 이 창의 프리로드와 연결·메인 스레드를 나누지 않게 멈춘다.
-  // close 가 큐를 다시 켜므로, 그 다음에 건다.
-  setImageWarmQueueSuspended(true);
   // Claim the initiating click/key before persistence and bootstrap yield.
   getAudioEngine().unlock();
   if (shellOptions.nestedEnemyTest && document.activeElement instanceof HTMLElement) {

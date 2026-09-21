@@ -41,30 +41,18 @@ export function isAutotileGroup(group: TileGroupMetadata): boolean {
   return k === "autotile_3x3" || k === "animated_terrain";
 }
 
-/** 타일이 바뀐 맵만 맵 단위 규칙을 검사한다. 맵을 가로지르는 count 규칙은 전체 맵을 본다. */
-export function validateClusterRulesForMaps(project: Project, mapIds: readonly string[]): ClusterRuleViolation[] {
-  if (mapIds.length === 0) return [];
-  const wanted = new Set(mapIds);
-  const maps = Object.values(project.maps).filter((map) => wanted.has(map.id));
-  const violations = violationsOnMaps(project, maps);
-  const allMaps = Object.values(project.maps);
-  for (const tileset of Object.values(project.tilesets)) {
-    const mapsForTileset = allMaps.filter((map) => map.tilesetId === tileset.id);
-    if (mapsForTileset.length === 0) continue;
-    for (const group of tileset.tileGroups ?? []) {
+export function validateClusterRules(project: Project, mapId?: string): ClusterRuleViolation[] {
+  const violations: ClusterRuleViolation[] = [];
+  const maps = selectedMaps(project, mapId);
+  for (const map of maps) {
+    const tileset = project.tilesets[map.tilesetId];
+    for (const group of tileset?.tileGroups ?? []) {
       for (const rule of group.rules ?? []) {
-        if (rule.kind !== "count" || rule.params.perMap !== false) continue;
-        const violation = globalCountViolation(mapsForTileset, group, rule);
+        const violation = validateRuleOnMap(project, map, group, rule);
         if (violation) violations.push(violation);
       }
     }
   }
-  return violations;
-}
-
-export function validateClusterRules(project: Project, mapId?: string): ClusterRuleViolation[] {
-  const maps = selectedMaps(project, mapId);
-  const violations = violationsOnMaps(project, maps);
   for (const tileset of Object.values(project.tilesets)) {
     const mapsForTileset = maps.filter((map) => map.tilesetId === tileset.id);
     if (mapsForTileset.length === 0) continue;
@@ -83,20 +71,6 @@ function selectedMaps(project: Project, mapId: string | undefined): readonly Gam
   if (!mapId) return Object.values(project.maps);
   const map = project.maps[mapId];
   return map ? [map] : [];
-}
-
-function violationsOnMaps(project: Project, maps: readonly GameMap[]): ClusterRuleViolation[] {
-  const violations: ClusterRuleViolation[] = [];
-  for (const map of maps) {
-    const tileset = project.tilesets[map.tilesetId];
-    for (const group of tileset?.tileGroups ?? []) {
-      for (const rule of group.rules ?? []) {
-        const violation = validateRuleOnMap(project, map, group, rule);
-        if (violation) violations.push(violation);
-      }
-    }
-  }
-  return violations;
 }
 
 function validateRuleOnMap(
