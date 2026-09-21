@@ -64,6 +64,24 @@
   `src/assets/ogaBackdropAssets.ts`. The two 1080p sources were downscaled to match the
   upstream 720p attachments; no other pixels were edited.
 
+## OGA CraftPix — Horizontal 2D Backgrounds
+
+- Files:
+  - `oga/craftpix-horizontal/bg1/composite.png` — upstream `game_background_1/game_background_1.png`
+  - `oga/craftpix-horizontal/bg1/composite-parallax.png` — upstream `game_background_1/game_background_1_parallax.png`
+  - `oga/craftpix-horizontal/bg1/layers/*.png` (7) — upstream `game_background_1/layers/*.png`, copied as-is
+  - `oga/craftpix-horizontal/bg2/composite.png` + `layers/*.png` (8) — upstream `game_background_2/*`
+  - `oga/craftpix-horizontal/bg3/composite-1.png`, `composite-2.png` + `layers/*.png` (8) — upstream `game_background_3/*`
+  - `oga/craftpix-horizontal/bg4/composite.png` + `layers/*.png` (5) — upstream `game_background_4/*`
+- Author: CraftPix.net 2D Game Assets (https://opengameart.org/users/craftpixnet-2d-game-assets)
+- Source: https://opengameart.org/content/horizontal-2d-backgrounds
+- License: **OGA-BY 3.0** (https://opengameart.org/content/oga-by-30-faq), attribution
+  required, commercial use allowed. Do not remove this section while any of these files or
+  derived resource ids (`oga-craftpix-*`) remain in the project.
+- Notes: bundled 2026-09-21 as map panorama multi-layer / single-image candidates. All 35
+  PNGs were copied without pixel edits (only renamed: set folders bg1–bg4, layer composites
+  named `composite*.png`). Registered in `src/assets/ogaCraftpixBackgrounds.ts`.
+
 ## EasyRPG RTP bundled map and object assets
 
 - Files:

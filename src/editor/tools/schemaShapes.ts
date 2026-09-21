@@ -157,6 +157,16 @@ export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
     durationMs: { type: "integer" },
     label: { type: "string" },
     wait: { type: "boolean" },
+    // 카메라 배율. CutsceneCameraBeat.zoom 이 이미 받고 있었지만 스키마에 없어 모델이 쓸 수
+    // 없었다(실측 2026-09-22) — 고해상도 배경을 1:1로 쓰려면 이 값이 필요하다.
+    zoom: {
+      type: "number",
+      minimum: 0.25,
+      maximum: 6,
+      description: "camera 비트 전용. 배율(0.25~6, 기본 1). 고해상도 화면에서 클래식 시야(20x15 타일)를 유지하려면 해상도/타일크기의 비율을 쓴다 — 1440x1080 이면 4.5.",
+    },
+    offsetX: { type: "integer" },
+    offsetY: { type: "integer" },
   },
   required: ["kind"],
   additionalProperties: true,
