@@ -93,7 +93,7 @@ function objectCards(): SpatialGalleryCard[] {
         id,
         localId: kit.id,
         name: kit.name || kit.id,
-        source: tileset.id === "tibo_interior_expanded" && kit.id.startsWith("tibo-") ? "default" : "own",
+        source: (tileset.id === "tibo_interior_expanded" && kit.id.startsWith("tibo-")) || (tileset.id === "shared_forest_village_objects" && tileset.image.type === "bundled" && tileset.image.id === "tex_shared_forest_village_objects" && kit.id.startsWith("shared-village:")) ? "default" : "own",
         kind: "objects",
         usage: 0,
         tilesetId: tileset.id,

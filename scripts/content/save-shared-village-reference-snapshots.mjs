@@ -1,0 +1,11 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';import {isDeepStrictEqual as same} from 'node:util';import {createHash} from 'node:crypto';import {configFromEnv,loadCurrentJson} from '../supabase-resource-root/supabaseRest.mjs';
+const cfg=await configFromEnv();const headers={apikey:cfg.anonKey,Authorization:`Bearer ${cfg.anonKey}`};
+const es=JSON.parse(fs.readFileSync('tiledata/tilesets/forest_high_cliff_river/shared-library/places.json'));const records=es.map(e=>({id:`oprn-place-${e.slug}-v2`,p:JSON.parse(fs.readFileSync(`public/assets/region-references/${e.slug}-v2.oprn.json`))}));
+const objectProject=await loadCurrentJson({...cfg,projectId:'oprn-shared-forest-village-objects-v1'});const refs=JSON.parse(fs.readFileSync('src/assets/sharedVillageReferences.json'));objectProject.tilesets.shared_forest_village_objects.referenceDocuments=[refs.objects];records.push({id:'oprn-shared-forest-village-objects-v2',p:objectProject});
+const proof=[];
+for(const {id,p} of records){
+ const q=new URLSearchParams({project_id:`eq.${id}`,select:'current_json'});const res=await fetch(`${cfg.url}/rest/v1/projects?${q}`,{headers:{...headers,'Accept-Profile':'rpg_zzu'}});assert.ok(res.ok);const rows=await res.json();for(const row of rows)assert.ok(same(row.current_json,p),`Immutable snapshot conflict ${id}`);
+ if(!rows.length){const put=await fetch(`${cfg.url}/rest/v1/projects?on_conflict=project_id`,{method:'POST',headers:{...headers,'Content-Profile':'rpg_zzu','Content-Type':'application/json',Prefer:'resolution=ignore-duplicates'},body:JSON.stringify({project_id:id,title:p.meta.title,schema_version:p.version,current_json:p,current_sha256:createHash('sha256').update(JSON.stringify(p)).digest('hex'),map_count:Object.keys(p.maps).length,tileset_count:Object.keys(p.tilesets).length,terrain_template_count:0})});assert.ok(put.ok,`${id}: ${put.status}`);}
+ assert.ok(same(await loadCurrentJson({...cfg,projectId:id}),p));proof.push({projectId:id,saved:true,reloaded:true});console.log(id,'saved/reloaded');
+}
+fs.mkdirSync('output/shared-village-references',{recursive:true});fs.writeFileSync('output/shared-village-references/remote-snapshots.json',JSON.stringify(proof,null,2));

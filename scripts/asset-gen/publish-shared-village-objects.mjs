@@ -1,0 +1,10 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';import {isDeepStrictEqual as same} from 'node:util';import {createHash} from 'node:crypto';import {configFromEnv,loadCurrentJson} from '../supabase-resource-root/supabaseRest.mjs';
+const cfg=await configFromEnv(),id='oprn-shared-forest-village-objects-v1';
+const p=JSON.parse(fs.readFileSync('public/assets/region-references/organic-terrace-gardens.oprn.json'));
+const ts=JSON.parse(fs.readFileSync('src/assets/sharedVillageObjects.json'));
+p.meta.title='공용 숲마을 소품 19종';ts.image={type:'uploaded',id:'shared_forest_village_objects_v1'};
+p.tilesets[ts.id]=ts;p.assets.uploaded[ts.image.id]={id:ts.image.id,name:'숲마을 선별 소품',kind:'tileset',dataUrl:'data:image/png;base64,'+fs.readFileSync('public/assets/shared-village/objects.png').toString('base64')};
+const headers={apikey:cfg.anonKey,Authorization:`Bearer ${cfg.anonKey}`};
+const q=new URLSearchParams({project_id:`eq.${id}`,select:'current_json'});const check=await fetch(`${cfg.url}/rest/v1/projects?${q}`,{headers:{...headers,'Accept-Profile':'rpg_zzu'}});assert.ok(check.ok);const rows=await check.json();for(const row of rows)assert.ok(same(row.current_json,p),'Use new snapshot revision');
+if(!rows.length){const res=await fetch(`${cfg.url}/rest/v1/projects?on_conflict=project_id`,{method:'POST',headers:{...headers,'Content-Profile':'rpg_zzu','Content-Type':'application/json',Prefer:'resolution=ignore-duplicates'},body:JSON.stringify({project_id:id,title:p.meta.title,schema_version:p.version,current_json:p,current_sha256:createHash('sha256').update(JSON.stringify(p)).digest('hex'),map_count:Object.keys(p.maps).length,tileset_count:Object.keys(p.tilesets).length,terrain_template_count:0})});assert.ok(res.ok,`Save ${res.status}`);}
+assert.ok(same(await loadCurrentJson({...cfg,projectId:id}),p));fs.writeFileSync('output/evidence/shared-village-curation/object-persistence.json',JSON.stringify({projectId:id,objects:ts.structureKits.length,saved:true,reloaded:true},null,2));console.log(id,'saved/reloaded',ts.structureKits.length);
