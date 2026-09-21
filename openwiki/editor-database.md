@@ -1008,9 +1008,14 @@ Phase 1은 탐색·선택·표현 변경뿐이다. 방 마이그레이션과 마
 공유 셸을 쓴다. 적대적 리뷰(`output/evidence/spatial-ux-review/`) 후 아래 계약이 생겼다.
 
 - **기본 설계는 읽기 전용 카탈로그다.** draft 가 없는 카드도 스테이지·인스펙터가 실제
-  내용을 렌더한다 — 지역·세계는 `catalogRegionDesign`/`catalogWorldDesign`(`catalogSeed.ts`)
-  + 지형 래스터, 공간은 방 종류 요약(필수 역할·분위기), 장소는 카탈로그 번들 래스터.
+  내용을 렌더한다 — 세계는 `catalogWorldDesign`(`catalogSeed.ts`) + 지형 래스터,
+  공간은 방 종류 요약(필수 역할·분위기), 장소는 카탈로그 번들 래스터.
   인스펙터에 「읽기 전용」안내와 사실표를 둔다.
+  **지역은 예외(2026-09-22):** `REGION_CATALOG` 지형 어휘 더미 6종은 갤러리에 내지 않는다 —
+  실체(설계·맵·편집 표면)가 없어 실제 자료를 가렸다. 지역 탭 기본 카드는 완성 맵 참고 사례
+  (`REGION_REFERENCES`)뿐이고, 지역 탭은 장소 탭과 같은 목록-우선 레이아웃(목적 스트립 ·
+  지역 라이브러리 필터 · 배지 · 「속성」 전까지 스테이지 접음)을 쓴다. 계약은
+  [spatial-geography-ui.md](spatial-geography-ui.md) «Regions gallery contract».
 - **미리보기는 `hasAuthoringDraft()` 일 때만 enabled.** draft 없이 누르면 생기던
   `authoring-draft-missing` 노출을 막는다. 「추가」는 `spatialDocumentPresent` 없으면
   사람 말 안내를 띄운다 — `spatialAuthoring` 문서 없는(레거시·dev) 프로젝트는 읽기 전용이다.
