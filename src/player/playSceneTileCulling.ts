@@ -36,7 +36,7 @@ interface CullableTiles {
   readonly ys: number[];
 }
 
-interface TileWindow {
+export interface TileWindow {
   readonly minX: number;
   readonly minY: number;
   readonly maxX: number;
@@ -166,4 +166,25 @@ function sameWindow(left: TileWindow, right: TileWindow): boolean {
     left.maxX === right.maxX &&
     left.maxY === right.maxY
   );
+}
+
+/**
+ * 편집기가 실제로 만들 타일 창. 플레이 컬링과 같은 여유(2칸)라서
+ * 화면 가장자리 오토타일 이웃이 창 안에 남는다.
+ * 맵 밖으로 나가지 않는다. 뷰포트가 비면 null.
+ */
+export function editorTileWindowForViewport(
+  viewport: CullViewport,
+  mapWidth: number,
+  mapHeight: number,
+): TileWindow | null {
+  if (!Number.isFinite(viewport.width) || viewport.width <= 0) return null;
+  if (!Number.isFinite(viewport.height) || viewport.height <= 0) return null;
+  if (mapWidth <= 0 || mapHeight <= 0) return null;
+  const minX = Math.max(0, Math.floor(viewport.x / TILE_SIZE) - CULL_MARGIN_TILES);
+  const minY = Math.max(0, Math.floor(viewport.y / TILE_SIZE) - CULL_MARGIN_TILES);
+  const maxX = Math.min(mapWidth - 1, Math.floor((viewport.x + viewport.width) / TILE_SIZE) + CULL_MARGIN_TILES);
+  const maxY = Math.min(mapHeight - 1, Math.floor((viewport.y + viewport.height) / TILE_SIZE) + CULL_MARGIN_TILES);
+  if (maxX < minX || maxY < minY) return null;
+  return { minX, minY, maxX, maxY };
 }
