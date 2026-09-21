@@ -71,8 +71,8 @@ export interface VillageArchetype {
  * 그래서 여기를 정본으로 올린다 — 테마 추론(`matchVillageArchetype`)과 데이터베이스 「마을」탭의
  * 「원형에서 만들기」가 **같은 배열**을 읽는다. 한쪽만 고쳐서 갈라질 자리를 없앤다.
  *
- * 순서가 계약이다: 위에서부터 첫 일치를 쓴다. 「장터」가 「어촌」보다 아래인 이유는 "항구 장터"가
- * 어촌으로 판정돼야 하기 때문이다(광장이 남쪽으로 붙는다).
+ * 순서가 계약이다: 위에서부터 첫 일치를 쓴다. 「장터」는 「어촌」보다 앞에 둔다.
+ * 물가만으로 시장을 만들지 않되, "항구 장터"처럼 명시한 시장은 유지한다.
  *
  * 씨앗값 파생 항목(roadWidth·roadNaturalness·settlementLayout)과 houseCount·npcCount·groundTheme 은
  * 일부러 비운다. 매번 달라야 하는 다양성 장치라 원형이 굳히면 같은 마을만 나온다 — 프리셋에서
@@ -87,18 +87,18 @@ export const VILLAGE_ARCHETYPES: readonly VillageArchetype[] = [
     values: { pathStyle: "stone", yardStyle: "workshop", plazaStyle: "garden", edgeTrees: "conifer" },
   },
   {
-    id: "harbor-coast",
-    name: "어촌·항구",
-    keywords: ["어촌", "항구", "바다", "호수", "강가", "해안", "coast", "harbor", "lake", "river", "beach", "sand"],
-    note: "모래길과 노점 마당. 광장이 물가 쪽(남쪽)으로 붙는다.",
-    values: { pathStyle: "sand", yardStyle: "market", plazaStyle: "market", plazaLayout: "south", edgeTrees: "conifer" },
-  },
-  {
     id: "market-fair",
     name: "장터·시장",
     keywords: ["장터", "시장", "market", "fair", "축제"],
     note: "모래길과 노점 마당. 광장 위치는 배치가 정하게 둔다.",
     values: { pathStyle: "sand", yardStyle: "market", plazaStyle: "market", edgeTrees: "conifer" },
+  },
+  {
+    id: "harbor-coast",
+    name: "어촌·항구",
+    keywords: ["어촌", "항구", "바다", "호수", "강가", "해안", "coast", "harbor", "lake", "river", "beach", "sand"],
+    note: "모래길과 혼합 마당. 광장은 남쪽 빈터이며 물가만으로 시장을 추가하지 않는다.",
+    values: { pathStyle: "sand", yardStyle: "mixed", plazaStyle: "empty", plazaLayout: "south", edgeTrees: "conifer" },
   },
   {
     id: "farm-rural",
@@ -125,7 +125,7 @@ export const VILLAGE_ARCHETYPES: readonly VillageArchetype[] = [
 
 /**
  * 테마 문장에서 원형을 찾는다. 위에서부터 첫 일치 — `VILLAGE_ARCHETYPES` 의 순서가 곧 우선순위다.
- * 낱말이 전부 리터럴이라 정규식 없이 `includes` 로 판정하며, 예전 정규식 대안과 결과가 같다.
+ * 낱말이 전부 리터럴이라 정규식 없이 `includes` 로 판정한다. 시장과 물가가 겹치면 시장이 우선한다.
  */
 export function matchVillageArchetype(theme: string): VillageArchetype | undefined {
   const normalized = theme.trim().toLowerCase();

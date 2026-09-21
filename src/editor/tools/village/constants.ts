@@ -8,7 +8,8 @@
 // build_village가 시공 전에 타일셋을 검사해 거부한다(builder.ts).
 
 import { protectedHouseCells } from "../houseProtection";
-import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
+import { villageWaterPredicate } from "./waterTiles";
+import type { TilesetDef } from "@/project/types";
 import { TILE } from "@/project/defaults/constants";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import type { FootprintWing, HouseKitId } from "@/editor/houseKit";
@@ -126,7 +127,8 @@ export const ROAD_TILES = new Set<number>([
   ...DEFAULT_COBBLE_AUTOTILE_GROUP.memberTileIds,
 ]);
 /** External network membership, not a tile-value test: accepted houses/stamps own both layers. */
-export function environmentalRoadAt(map: GameMap): (x: number, y: number) => boolean {
+export function environmentalRoadAt(map: GameMap, tileset?: TilesetDef): (x: number, y: number) => boolean {
+  const isWater = villageWaterPredicate(map, tileset);
   const owned = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
   return (x, y) => {
     if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
@@ -134,7 +136,7 @@ export function environmentalRoadAt(map: GameMap): (x: number, y: number) => boo
     if (owned.has(index)) return false;
     const lower = map.lowerTiles[index] ?? TILE.EMPTY;
     // Planks connect roads over water, but a roof deck is not an environmental bridge.
-    return ROAD_TILES.has(lower) || (map.upperTiles[index] === 199 && isWaterChipsetTile(lower));
+    return ROAD_TILES.has(lower) || (map.upperTiles[index] === 199 && isWater(lower));
   };
 }
 
@@ -266,6 +268,7 @@ export interface BuiltHouse {
   readonly ownerName?: string;
   /** Explicit interior program (preferred over ownerName regex). */
   readonly program?: HouseInteriorProgram;
+  readonly fence?: boolean;
   /** Saved exterior geometry and its explicitly planned private access; no implied interior. */
   readonly objectExterior?: {
     readonly exteriorStories?: 1 | 2 | 3 | 4;
