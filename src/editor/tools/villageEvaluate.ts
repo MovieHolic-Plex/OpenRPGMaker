@@ -1,3 +1,5 @@
+import { FOREST_GROVE_GROUP } from "@/project/defaults/forestGrove";
+import type { TilesetDef } from "@/project/types";
 // 마을 구조+룩 평가 게이트.
 // - 구조: checkReachability 계열 지표(호출 측에서 합쳐도 됨)
 // - 룩: 결정론 휴리스틱(광장 소품 밀도, 길 재질, 나무 분포, 상위 점유율)
@@ -62,6 +64,7 @@ export interface VillageLookReport {
     readonly farmlandCells: number;
     /** 활엽수 2×2 군락 개수(강촌 숲 품질 게이트) */
     readonly tree2x2Clusters: number;
+    readonly forestCanopyCells?: number;
     readonly fenceCells: number;
     readonly propCells: number;
     readonly plazaPropCells: number;
@@ -116,7 +119,7 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
   const issues: string[] = [];
   const fixes: VillageFix[] = [];
 
-  const metrics = collectMetrics(map);
+  const metrics = collectMetrics(map, input.project.tilesets[map.tilesetId]);
   const doorFronts = input.doorFronts ?? inferDoorFronts(map);
   const start = input.project.startMapId === map.id
     ? input.project.startPos
@@ -398,11 +401,11 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
     if (req.landmarks.includes("forest")) {
       const minForest = 20;
       const okForest = metrics.treeCells >= minForest;
-      const okBig = metrics.tree2x2Clusters >= 3;
+      const okBig = metrics.tree2x2Clusters >= 3 || metrics.forestCanopyCells >= 36;
       requirementsMet.push({
         kind: "forest",
         ok: okForest && okBig,
-        detail: `나무 ${metrics.treeCells}칸 (필요≥${minForest}) · 2×2군락 ${metrics.tree2x2Clusters} (필요≥3)`,
+        detail: `나무 ${metrics.treeCells}칸 (필요≥${minForest}) · 2×2군락 ${metrics.tree2x2Clusters} / 연결 수관 ${metrics.forestCanopyCells}칸 (군락≥3 또는 수관≥36)`,
       });
       if (!okForest) {
         issues.push(`필수 스펙 실패: 숲/나무 군락 부족 (${metrics.treeCells}<${minForest}) — 쿼리「${req.query}」`);
@@ -609,7 +612,8 @@ export function countWaterCells(map: GameMap, area?: VillageCountArea): number {
 }
 
 /** 타일 실측 나무 카운트 — collectMetrics의 treeCells와 동일 판정. */
-export function countTreeCells(map: GameMap, area?: VillageCountArea): number {
+export function countTreeCells(map: GameMap, area?: VillageCountArea, tileset?: TilesetDef): number {
+  const grove = groveTiles(tileset);
   const [x0, y0, x1, y1] = countBounds(map, area);
   let count = 0;
   for (let y = y0; y < y1; y += 1) {
@@ -617,7 +621,7 @@ export function countTreeCells(map: GameMap, area?: VillageCountArea): number {
       const index = y * map.width + x;
       const lower = map.lowerTiles[index] ?? TILE.EMPTY;
       const upper = map.upperTiles[index] ?? TILE.EMPTY;
-      if (TREE_UPPER.has(upper) || TREE_LOWER.has(lower) || TREE_LOWER.has(upper) || isForestTreeCell(upper) || isForestTreeCell(lower)) count += 1;
+      if (grove.has(upper) || grove.has(lower) || TREE_UPPER.has(upper) || TREE_LOWER.has(lower) || TREE_LOWER.has(upper) || isForestTreeCell(upper) || isForestTreeCell(lower)) count += 1;
     }
   }
   return count;
@@ -649,7 +653,8 @@ export function countFarmlandCells(map: GameMap, area?: VillageCountArea): numbe
   return count;
 }
 
-function collectMetrics(map: GameMap) {
+function collectMetrics(map: GameMap, tileset?: TilesetDef) {
+  const grove = groveTiles(tileset);
   let upperOccupied = 0;
   let roadCells = 0;
   let sandCells = 0;
@@ -668,6 +673,8 @@ function collectMetrics(map: GameMap) {
   let hasBroadleaf = false;
   const propTileIds = new Set<number>();
   const tree2x2Clusters = countBroadleaf2x2(map);
+  const canopy = new Set(tileset?.autotileGroups?.find(group => group.id === FOREST_GROVE_GROUP)?.memberTileIds ?? []);
+  const forestCanopyCells = map.upperTiles.filter(tile => canopy.has(tile)).length;
   const forestSpecies = new Set<string>();
 
   const plazaX0 = Math.floor(map.width / 2) - 4;
@@ -701,7 +708,7 @@ function collectMetrics(map: GameMap) {
       } else if (STONE.has(lower)) {
         roadCells += 1;
       }
-      if (TREE_UPPER.has(upper) || TREE_LOWER.has(lower) || TREE_LOWER.has(upper) || isForestTreeCell(upper) || isForestTreeCell(lower)) {
+      if (grove.has(upper) || grove.has(lower) || TREE_UPPER.has(upper) || TREE_LOWER.has(lower) || TREE_LOWER.has(upper) || isForestTreeCell(upper) || isForestTreeCell(lower)) {
         treeCells += 1;
         const edgeDistance = Math.min(x, y, map.width - 1 - x, map.height - 1 - y);
         if (edgeDistance >= 5) interiorTreeCells += 1;
@@ -711,6 +718,7 @@ function collectMetrics(map: GameMap) {
       for (const tile of [lower, upper]) {
         const object = FOREST_TREE_CELLS.get(tile)?.object.id;
         if (object === "big-oak" || object === "tree") forestSpecies.add(object);
+        if (grove.has(tile)) forestSpecies.add("grove");
       }
       if (FENCE.has(upper)) fenceCells += 1;
       if (YARD_PROPS.has(upper)) {
@@ -747,6 +755,7 @@ function collectMetrics(map: GameMap) {
     treeCells,
     farmlandCells,
     tree2x2Clusters,
+    forestCanopyCells,
     fenceCells,
     propCells,
     plazaPropCells,
@@ -903,4 +912,11 @@ function emptyFail(message: string, attempt: number, maxAttempts: number): Villa
     maxAttempts,
     feedbackForLlm: message,
   };
+}
+
+/** Read generated canopy IDs from the actual tileset; users may have appended slots first. */
+function groveTiles(tileset?: TilesetDef): Set<number> {
+  const group = tileset?.autotileGroups?.find(group => group.id === FOREST_GROVE_GROUP);
+  return new Set(group ? [...group.memberTileIds, 1350, 1422, 1423, 1424, 1425, 1426, 1427,
+    1428, 1429, 1430, 1431, 1432, 1433, 1453, 1454, 1455, 1457, 1458, 1459, 1461, 1462, 1463] : []);
 }

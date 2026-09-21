@@ -1,4 +1,5 @@
-import { treeKitForTileset, stampTree, treeStampCells } from "./treeKit";
+import { paintForestGroves } from "./forestGroves";
+import { prepareVillageTreeKit, stampTree, treeStampCells } from "./treeKit";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { canMove, tilePassability } from "@/project/collision";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
@@ -19,6 +20,7 @@ type ExteriorRegion = MapLayoutRegion & {
   objectExterior?: { doorApproaches: Point[]; privateAccess: Point[] };
 };
 export interface CompactTreeCounts {
+  forestCanopyCells?: number;
   broadleafTrees: number; conifers: number; footprintCells: number; eligibleCells: number;
   edgeCells: number; innerCells: number; groves: number; overlapCells: number;
 }
@@ -40,10 +42,24 @@ export function plantCompactVillageTrees(project: Project, map: GameMap, area: R
     && map.lowerTiles[index] === TILE.GRASS && map.upperTiles[index] === TILE.EMPTY);
   const rng = mulberry32(seed ^ 0x76b421);
   const field = groveField(map, area, eligible, rng);
-  const kit = treeKitForTileset(tileset);
+  const kit = prepareVillageTreeKit(tileset);
   const planted = new Set<number>(), crowns = new Set<number>(), trunks = new Set<number>();
   const result: CompactTreeCounts = { broadleafTrees: 0, conifers: 0, footprintCells: 0,
     eligibleCells: eligible.length, edgeCells: 0, innerCells: 0, groves: 0, overlapCells: 0 };
+  if (kit.grove) {
+    const available = new Set(eligible);
+    const grove = paintForestGroves(map, area, kit.grove,
+      (x, y) => available.has(y * map.width + x), seed, 0.8,
+      (x, y) => field.has(y * map.width + x));
+    result.forestCanopyCells = grove.canopyCells;
+    result.footprintCells = grove.cells.size;
+    for (const index of grove.cells) {
+      if (edgeDistance(map, area, index) < 8) result.edgeCells++;
+      else result.innerCells++;
+    }
+    result.groves = components(map, grove.cells).length;
+    return result;
+  }
   const origins = shuffle([...field], rng);
   const stamp = (origin: number, width: 1 | 2): boolean => {
     const x = origin % map.width;
