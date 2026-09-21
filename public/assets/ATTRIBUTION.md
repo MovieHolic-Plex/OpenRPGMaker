@@ -327,3 +327,7 @@ The corresponding `public/assets/region-references/*-atlas.png` files are copies
 of those uploaded atlases. This registration does not create new original artwork
 or change the attribution or licence status documented above. Preview PNGs are
 captures of the saved maps in the actual editor.
+
+## Shared river fortress place
+
+`region-references/river-fortress-atlas.png` and its portable map preserve Castle2 and the Hyptosis/Daniel Eddeland supplemental provenance. See `castle-surroundings/CREDITS.txt`. Atlas composites and restored entrance cells do not change those licences. No reference-screenshot pixels or removed stone bridge are included.
