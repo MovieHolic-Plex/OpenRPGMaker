@@ -309,6 +309,7 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
 
   project.database.enemies.push(
     wildEnemy("enemy_pkmn_larvea", "라르베아", "larvea", 3, { maxHp: 40, maxMp: 2, attack: 6, defense: 8, mind: 4, agility: 5 }, { exp: 5, gold: 3 }, [DEFAULT_SKILL_ID, "skill_scarloxy_scratch"]),
+    wildEnemy("enemy_pkmn_sparchu", "스파르츄", "sparchu", 4, { maxHp: 42, maxMp: 6, attack: 8, defense: 5, mind: 7, agility: 10 }, { exp: 7, gold: 5 }, [DEFAULT_SKILL_ID, "skill_scarloxy_spark"]),
     wildEnemy("enemy_pkmn_plumette", "플루메트", "plumette", 4, { maxHp: 44, maxMp: 4, attack: 7, defense: 5, mind: 6, agility: 15 }, { exp: 6, gold: 4 }, [DEFAULT_SKILL_ID, "skill_scarloxy_leaf"]),
     wildEnemy("enemy_pkmn_finsta", "핀스타", "finsta", 4, { maxHp: 46, maxMp: 5, attack: 7, defense: 7, mind: 7, agility: 11 }, { exp: 6, gold: 4 }, [DEFAULT_SKILL_ID, "skill_scarloxy_splash"]),
     wildEnemy("enemy_pkmn_jacana", "자카나", "jacana", 5, { maxHp: 52, maxMp: 5, attack: 8, defense: 7, mind: 8, agility: 13 }, { exp: 8, gold: 6 }, [DEFAULT_SKILL_ID, "skill_scarloxy_splash"]),
@@ -316,6 +317,7 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
     wildEnemy("enemy_pkmn_mossling", "모슬링", "mossling", 3, { maxHp: 42, maxMp: 3, attack: 6, defense: 9, mind: 5, agility: 6 }, { exp: 5, gold: 3 }, [DEFAULT_SKILL_ID, "skill_scarloxy_leaf"]),
     wildEnemy("enemy_pkmn_emberkit", "엠버킷", "emberkit", 4, { maxHp: 44, maxMp: 5, attack: 8, defense: 6, mind: 7, agility: 13 }, { exp: 7, gold: 5 }, [DEFAULT_SKILL_ID, "skill_scarloxy_ember"]),
     wildEnemy("enemy_pkmn_puddlup", "퍼들업", "puddlup", 4, { maxHp: 46, maxMp: 5, attack: 7, defense: 8, mind: 9, agility: 10 }, { exp: 7, gold: 5 }, [DEFAULT_SKILL_ID, "skill_scarloxy_splash"]),
+    wildEnemy("enemy_pkmn_pouch", "파우치", "pouch", 5, { maxHp: 55, maxMp: 5, attack: 8, defense: 9, mind: 6, agility: 7 }, { exp: 8, gold: 6 }, [DEFAULT_SKILL_ID, "skill_scarloxy_scratch"]),
     wildEnemy("enemy_pkmn_rival_cindrill", "라이벌의 신드릴", "cindrill", 8, { maxHp: 90, maxMp: 8, attack: 12, defense: 10, mind: 9, agility: 12 }, { exp: 20, gold: 20 }, [DEFAULT_SKILL_ID, "skill_scarloxy_ember"]),
     wildEnemy("enemy_pkmn_atrox", "전설의 아트록스", "atrox", 15, { maxHp: 170, maxMp: 16, attack: 17, defense: 13, mind: 13, agility: 12 }, { exp: 50, gold: 60 }, [DEFAULT_SKILL_ID, "skill_scarloxy_ember", "skill_scarloxy_burst"])
   );
@@ -333,6 +335,12 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
     demoTroop("troop_pkmn_new_pair", "엠버킷과 퍼들업", "scarloxy-backdrop-forest", [
       { enemyId: "enemy_pkmn_emberkit", x: 120, y: 130 },
       { enemyId: "enemy_pkmn_puddlup", x: 190, y: 134 },
+    ]),
+    demoTroop("troop_pkmn_sparchu", "풀숲의 스파르츄", "scarloxy-backdrop-forest", [
+      { enemyId: "enemy_pkmn_sparchu", x: 160, y: 132 },
+    ]),
+    demoTroop("troop_pkmn_pouch", "물가의 파우치", "scarloxy-backdrop-sand", [
+      { enemyId: "enemy_pkmn_pouch", x: 160, y: 132 },
     ]),
     demoTroop("troop_pkmn_shore", "물가의 몬스터들", "scarloxy-backdrop-sand", [
       { enemyId: "enemy_pkmn_finsta", x: 136, y: 132 },
@@ -409,8 +417,33 @@ const SCARLOXY_GEN1_PRIMARY_SKILLS: Readonly<Record<string, string>> = {
   atrox: "skill_scarloxy_dragon",
 };
 
+// 레벨업 기술 테이블 — 1레벨 기본기(공격) + 주력기(3레벨)는 scarloxySpeciesRecords 가
+// 채우고, 여기엔 주력 뒤에 붙는 상위 습득만 둔다. 15타입 차트가 사장되지 않게
+// 종족 타입(SCARLOXY_GEN1_TYPES)에 맞는 기술로만 구성한다.
+const SCARLOXY_LEVELUP_MOVES: Readonly<Record<string, readonly { level: number; skillId: string }[]>> = {
+  sparchu: [{ level: 5, skillId: "skill_scarloxy_quick" }, { level: 9, skillId: "skill_scarloxy_spark" }, { level: 13, skillId: "skill_scarloxy_ember" }],
+  cindrill: [{ level: 7, skillId: "skill_scarloxy_punch" }, { level: 10, skillId: "skill_scarloxy_ember" }, { level: 14, skillId: "skill_scarloxy_burst" }],
+  charmadillo: [{ level: 12, skillId: "skill_pkmn_rock" }, { level: 16, skillId: "skill_scarloxy_burst" }],
+  finsta: [{ level: 5, skillId: "skill_scarloxy_ice" }, { level: 9, skillId: "skill_scarloxy_mud" }],
+  gulfin: [{ level: 7, skillId: "skill_scarloxy_mud" }, { level: 10, skillId: "skill_scarloxy_ice" }],
+  finiette: [{ level: 12, skillId: "skill_scarloxy_ice" }, { level: 16, skillId: "skill_scarloxy_mud" }],
+  larvea: [{ level: 5, skillId: "skill_scarloxy_venom" }, { level: 9, skillId: "skill_scarloxy_bug" }],
+  cleaf: [{ level: 7, skillId: "skill_scarloxy_bug" }, { level: 10, skillId: "skill_scarloxy_venom" }, { level: 14, skillId: "skill_scarloxy_leaf" }],
+  ivieron: [{ level: 12, skillId: "skill_scarloxy_leaf" }, { level: 16, skillId: "skill_scarloxy_venom" }],
+  plumette: [{ level: 5, skillId: "skill_scarloxy_wing" }, { level: 9, skillId: "skill_scarloxy_quick" }],
+  pluma: [{ level: 8, skillId: "skill_scarloxy_wing" }, { level: 12, skillId: "skill_scarloxy_quick" }],
+  mossling: [{ level: 5, skillId: "skill_scarloxy_leaf" }, { level: 8, skillId: "skill_scarloxy_bug" }],
+  emberkit: [{ level: 5, skillId: "skill_scarloxy_ember" }, { level: 8, skillId: "skill_scarloxy_burst" }],
+  puddlup: [{ level: 5, skillId: "skill_scarloxy_splash" }, { level: 8, skillId: "skill_scarloxy_mud" }],
+  jacana: [{ level: 5, skillId: "skill_scarloxy_wing" }, { level: 8, skillId: "skill_scarloxy_splash" }],
+  pouch: [{ level: 5, skillId: "skill_scarloxy_scratch" }, { level: 8, skillId: "skill_scarloxy_quick" }],
+  draem: [{ level: 5, skillId: "skill_scarloxy_shadow" }, { level: 9, skillId: "skill_scarloxy_mind" }],
+  friolera: [{ level: 5, skillId: "skill_scarloxy_ice" }, { level: 9, skillId: "skill_scarloxy_splash" }],
+  atrox: [{ level: 10, skillId: "skill_scarloxy_ember" }, { level: 14, skillId: "skill_scarloxy_burst" }, { level: 18, skillId: "skill_scarloxy_dragon" }],
+};
+
 const SPECIES_SEEDS: readonly SpeciesSeed[] = [
-  { key: "sparchu", name: "스파르츄", type: "fire", stats: { maxHp: 18, maxMp: 8, attack: 11, defense: 7, mind: 10, agility: 13 }, captureRate: 0.45, skillId: "skill_scarloxy_ember", extraSkills: [{ level: 5, skillId: "skill_scarloxy_quick" }], evolvesTo: { key: "cindrill", level: 7 } },
+  { key: "sparchu", name: "스파르츄", type: "fire", stats: { maxHp: 18, maxMp: 8, attack: 11, defense: 7, mind: 10, agility: 13 }, captureRate: 0.45, skillId: "skill_scarloxy_ember", evolvesTo: { key: "cindrill", level: 7 } },
   { key: "cindrill", name: "신드릴", type: "fire", stats: { maxHp: 30, maxMp: 10, attack: 15, defense: 11, mind: 12, agility: 14 }, captureRate: 0.25, skillId: "skill_scarloxy_ember", evolvesTo: { key: "charmadillo", level: 12 } },
   { key: "charmadillo", name: "차마딜로", type: "fire", stats: { maxHp: 46, maxMp: 12, attack: 20, defense: 18, mind: 13, agility: 12 }, captureRate: 0.12, skillId: "skill_scarloxy_burst" },
   { key: "finsta", name: "핀스타", type: "water", stats: { maxHp: 20, maxMp: 8, attack: 9, defense: 9, mind: 11, agility: 11 }, captureRate: 0.5, skillId: "skill_scarloxy_splash", evolvesTo: { key: "gulfin", level: 7 } },
@@ -452,7 +485,7 @@ function scarloxySpeciesRecords() {
         ...((SCARLOXY_GEN1_PRIMARY_SKILLS[seed.key] ?? seed.skillId)
           ? [{ level: 3, skillId: SCARLOXY_GEN1_PRIMARY_SKILLS[seed.key] ?? seed.skillId! }]
           : []),
-        ...(seed.extraSkills ?? []),
+        ...(SCARLOXY_LEVELUP_MOVES[seed.key] ?? []),
       ],
       evolutions: seed.evolvesTo
         ? [{ toSpeciesId: scarloxySpeciesId(seed.evolvesTo.key), requires: { level: seed.evolvesTo.level } }]
@@ -510,6 +543,18 @@ function townMap(): GameMap {
       "몬스터의 HP를 깎을수록 잘 잡혀. 잡은 몬스터는 메뉴의 '몬스터'에서 볼 수 있어.",
       "파티에 넣은 몬스터는 전투 경험치를 나눠 받아서 레벨이 오르고, 7레벨이 되면 진화한대!",
     ], [], charsetGraphic(PEOPLE1_CHARSET_ID, 1)),
+    talker("ev_pkmn_merchant", 18, 6, "상인", [
+      "포획 구슬이 떨어졌나? 여기 있어. 여행 필수품도 같이 둘게.",
+    ], [
+      {
+        kind: "shop",
+        itemIds: ["item_capture_orb", "item_potion", "item_hi_potion", "item_ether", "item_antidote", "item_wake_herb"],
+        allowSell: false,
+        quantityMode: "select",
+        shopType: "normal",
+        messageType: "welcome",
+      },
+    ], charsetGraphic(PEOPLE2_CHARSET_ID, 4)),
     transferEvent("ev_pkmn_to_route", 13, 17, ROUTE_MAP_ID, 15, 2, "초원 1번 길로"),
     ...createTownDoorEvents(TOWN_DOORS),
     ...createTownDoorSigns(TOWN_DOORS),
@@ -558,7 +603,7 @@ function routeMap(): GameMap {
   map.lowerTiles = new Array<number>(map.width * map.height).fill(G.GRASS);
   map.upperTiles = new Array<number>(map.width * map.height).fill(EMPTY);
   map.encounterRate = 5;
-  map.troopIds = ["troop_pkmn_grass_a", "troop_pkmn_grass_b", "troop_pkmn_new_grass", "troop_pkmn_new_pair", "troop_pkmn_shore", "troop_pkmn_dream"];
+  map.troopIds = ["troop_pkmn_grass_a", "troop_pkmn_grass_b", "troop_pkmn_new_grass", "troop_pkmn_new_pair", "troop_pkmn_shore", "troop_pkmn_dream", "troop_pkmn_sparchu", "troop_pkmn_pouch"];
 
   stampLower(map, 22, 16, G.POND);
   stampLower(map, 4, 18, G.SAND_PATCH);
