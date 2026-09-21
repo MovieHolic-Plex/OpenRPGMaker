@@ -1,5 +1,43 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 장소 탭 재설계 — 라이브러리 우선 배치 (2026-09-21)
+
+**문제: 목록이 아니라 나머지가 화면을 먹었다.** 데이터베이스 → 장소를 1600×1000 에서 재 보니
+편집기 셸 안에서 카드 그리드가 791×424 였다 — 화면의 21%. 71장이 3,382px 를 굴러가는데 보이는 건
+4줄(10장)이었다. 세로를 세 곳이 나눠 먹었다: 목적 띠 + 액션 줄이 각각 밴드로 178px, 오른쪽 320px
+속성 패널이 **선택이 없어도** 자리를 차지, 도구·필터가 두 줄로 94px.
+
+바꾼 것과 실측(1600×1000, `output/evidence/places-ux-redesign/impl/`):
+
+1. **목록이 기본.** `.spatial-body.is-library-only` 로 스테이지를 접는다(그리드 1332×527, 7열, 한 화면 14장).
+   스테이지는 DOM 에 남기고 CSS 로만 접는다 — 「속성」 토글이 여닫을 대상이 사라지면 죽은 버튼이 된다.
+   속성을 열면 5열(65%)로 줄고, 닫으면 7열로 돌아온다.
+2. **선택과 편집기 진입의 분리.** 예전 `onSelect` 는 `listView: card.id !== selected?.id` 였다 —
+   아무것도 안 고른 상태에서 카드를 누르면 선택과 동시에 편집기가 열려, 「맵에 놓기」 액션 줄을 볼
+   기회가 없었다. 세션에 `galleryCardId` 를 추가해 **첫 클릭은 선택만**, 같은 카드 재클릭이나
+   액션 줄의 「편집」이 편집기로 들어간다.
+3. **목적 띠 복원.** 3차 수리에서 들어온 `spatial-purpose` 는 타일 화면 개편(2026-09-21) 때 렌더
+   호출만 사라져 CSS(`.spatial-purpose*`)만 남아 있었다 — 화면에는 없었다(프로브 두 번 모두 null).
+   한 줄 띠로 되살리고, 같은 말을 하던 중복 안내문(`.spatial-kind-guidance`)은 장소 셸에서 숨긴다.
+4. **머리 3줄 → 2줄.** 장소 라이브러리 제목·부제·필터·분류 탭·소재 안내를 두 줄로 접고,
+   카드 썸네일 120→84px·캡션 여백을 줄였다. 이름은 두 줄 클램프 — 한 줄 말줄임은
+   「침묵의 묘역 · 무너진 납골당」 같은 이름을 구별 불가능하게 만들었다(40장 중 6장 잘림).
+5. **0건 탈출구.** 필터가 0건이면 「필터 초기화」 버튼을 띄운다(`spatial-filter-reset`).
+   종전에는 문구만 있어 사용자가 손으로 되돌려야 했다.
+6. **「속성」 토글이 1200px 위에서도 보인다.** 종전에는 컨테이너 쿼리로 `display:none` 이라 넓은
+   화면에서 속성을 닫을 수 없었는데, 이제 속성이 opt-in 이라 이 토글이 유일한 입구다.
+
+계약 테스트: `test/spatialPlacesLibraryLayout.test.ts`(첫 렌더는 갤러리 · library-only 클래스 ·
+첫 클릭 선택/재클릭 편집 · 액션 줄 편집 · 0건 초기화).
+
+검증: `typecheck:app` exit 0. `spatialPlacesLibraryLayout`·`spatialIntegratedAuthoring`·
+`spatialShellDrawer`·`spatialNavigation.routes`·`databaseAllTabsRenderWalk` 등 84건 중 81 통과.
+실패 3건(`spatialShellKeyboard`)과 4건(`databaseAllTabsRenderWalk`/`spatialNavigation.routes`)은
+**origin/main 원본 체크아웃에서 같은 이름·같은 메시지로 재현**되는 기존 실패다. CSS 게이트도
+`check-css-graph`(tileset-ai-workspace.css)·`check-dead-css-classes`(.db-ws-stat-neutral)·
+`check-css-surfaces` 위반 0건 신규 — 전부 원본에서 동일하게 재현. hex/undefinedVars 래칫 상향분은
+손대지 않은 파일(`runtime/shop.css` 등)에서 온 것이다.
+
 ## 몬스터 종족의 전투 뒷모습 (2026-09-20)
 
 > **2026-09-21 타일 화면 개편:** 타일 탭은 `tilesetSettingsPanel.ts`의 전용 라이브러리이며
