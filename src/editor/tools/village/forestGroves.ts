@@ -1,4 +1,6 @@
 import type { AutotileGroup, GameMap, Rect } from "@/project/types";
+import type { TreeStamp } from "./treeKit";
+import { paintContouredForest } from "./forestContour";
 
 const LEFT = [[1422, 1423, 1424], [1426, 1427, 1428], [1430, 1431, 1432]];
 const RIGHT = [[1453, 1454, 1455], [1457, 1458, 1459], [1461, 1462, 1463]];
@@ -18,7 +20,8 @@ export interface ForestGroveReport {
  * Invalid protrusions are removed from the mask before any map cell is changed. */
 export function paintForestGroves(map: GameMap, area: Rect, group: AutotileGroup,
   free: (x: number, y: number) => boolean, seed: number, coverage = 0.65,
-  desired?: (x: number, y: number) => boolean, naturalEdge = false): ForestGroveReport {
+  desired?: (x: number, y: number) => boolean, fringeTree?: TreeStamp): ForestGroveReport {
+  if (fringeTree) return paintContouredForest(map, area, group, free, seed, coverage, fringeTree, desired);
   const W = map.width, H = map.height;
   const inside = (x: number, y: number): boolean => x >= Math.max(0, area.x) && y >= Math.max(0, area.y)
     && x < Math.min(W, area.x + area.w) && y < Math.min(H, area.y + area.h);
@@ -37,18 +40,9 @@ export function paintForestGroves(map: GameMap, area: Rect, group: AutotileGroup
       }
       if (!available) continue;
       const edge = Math.min(x - area.x, area.x + area.w - x - 2, y - area.y, area.y + area.h - y - 5);
-      const wave = naturalEdge
-        ? Math.sin(x * 0.31 + phase) * 2.5 + Math.cos(y * 0.37 - phase) * 2.8
-          + Math.sin(x * 0.17 + y * 0.23 + phase) * 1.8
-        : Math.sin(x * 0.19 + phase) * 2.5 + Math.cos(y * 0.23 - phase) * 2
-          + Math.sin(x * 0.11 + y * 0.17 + phase) * 2;
-      // Shape the eligible silhouette before applying the coverage budget. Merely
-      // sorting fills every available block on busy maps and exposes rectangular
-      // parcel boundaries. This contour keeps bays even when the budget saturates.
-      // Explicit forest bands and compact masks keep their authored coverage.
-      const score = naturalEdge ? wave + 3.8 + Math.max(0, Math.min(1, coverage)) * 3 - edge * 0.85
-        : wave - Math.min(edge, 12) * 0.6;
-      if (naturalEdge && score < 0) continue;
+      const wave = Math.sin(x * 0.19 + phase) * 2.5 + Math.cos(y * 0.23 - phase) * 2
+        + Math.sin(x * 0.11 + y * 0.17 + phase) * 2;
+      const score = wave - Math.min(edge, 12) * 0.6;
       blocks.push({ x, y, score });
     }
   }

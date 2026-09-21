@@ -61,10 +61,8 @@
 
 ## 굽은 외곽 숲과 생활 소품 기본 꾸밈 (2026-09-21)
 
-- `forestGroves.ts`는 후보 순위뿐 아니라 수관을 놓을 수 있는 경계도 시드 기반 파형으로 정한다.
-  후보가 적어서 커버리지 예산보다 작아져도 전체 빈칸을 채우지 않아 숲의 굴곡이 남는다.
-  2×3 수관 격자·완전한 줄기 마감·범위/스택 보호는 그대로 적용한다.
-  `naturalEdge`는 마을 외곽 경로에서만 켠다. 별도로 지정한 숲 띠와 compact 마스크는 기존 채움 규칙을 유지한다.
+- 이전 파형 조정은 2×3 격자와 줄기 마감 때문에 굴곡이 사라졌다. 현재 마을 외곽은 아래
+  `forestContour.ts`의 1칸 단위 경로를 사용한다. 명시된 숲 띠와 compact는 기존 조립을 유지한다.
 - 강변형의 `morphologyBuild.finish`는 집·길을 만든 뒤 외곽 숲 → 밭·개별 나무 순서로 마무리한다.
   밭을 먼저 채우면 숲이 밭의 직사각형을 따라 잘린다. 집 주변 3칸과 앞마당 4칸은 숲에서 제외한다.
   다른 형태는 기존 밭 → 거리 기울기 나무 순서를 유지한다.
@@ -75,7 +73,29 @@
   `decor=false` 또는 `yardStyle=minimal`에는 추가 생활 소품을 넣지 않는다.
 - 숲마을의 `348`은 Flowers 라벨과 달리 마커 그림이므로 기본 마당 꽃에는 `288`을 쓴다.
 - 같은 집 8채·seed 17: 수관 906칸, 새 꾸밈 23묶음/90칸, 현관 8/8 도달, 시장·울타리 0.
-  저장·재조회 증거는 `reports/2026-09-21-natural-village-edges.md`.
+  이는 파형 조정 당시의 기록이며 저장·재조회 증거는 `reports/2026-09-21-natural-village-edges.md`.
+
+## 연속 경계장과 다중 스케일 제어 (2026-09-21 후속)
+
+`forestContour.ts`는 타원형 공터의 연속 implicit 함수를 기반으로, 서로 다른 fBm 채널로
+좌표를 휘는 domain warp와 큰/작은 경계 변화를 합성한다. 정확한 SDF라는 주장은 하지 않는다.
+이를 1칸마다 평가하고 작은 고립 조각만 제거한다. 2×3 블록 선택이나 줄기 실패에 따른 행 삭제는 없다.
+밀도는 면적 예산과 필드 문턱에 적용한다. 수치는 이 게임의 16px 타일에서 조정한 값이다.
+
+- **큰 형태와 작은 변화의 분리:** Grenier et al., *Real-time Terrain Enhancement with Controlled
+  Procedural Patterns* (2024), [원문](https://diglib.eg.org/items/43319e3d-ba25-4762-971b-ac838ec21fb8).
+  여러 크기의 제어 가능한 패턴을 결합한다는 설계 원리를 참고했다. 논문의 Phasor 침식 알고리즘을 구현한 것은 아니다.
+- **연속 함수로 형상을 구성:** Venu et al., *Procedural Multiscale Geometry Modeling using Implicit
+  Functions* (2025), [원문](https://arxiv.org/abs/2504.09553). implicit 함수에 여러 스케일의 변화를
+  합성하는 원리를 2D 숲 경계에 응용했다. 논문의 볼륨 재료 렌더러·sphere tracing 재현은 아니다.
+- **구현의 기반 기법:** [FastNoiseLite 공식 문서의 Domain Warp/Fractal](https://github.com/Auburn/FastNoiseLite/wiki/Documentation).
+  좌표를 다른 noise 채널로 이동시킨 뒤 필드를 평가한다. domain warp와 fBm 자체는 오래된 기법이며
+  2025년에 새로 발표된 이론으로 소개하지 않는다. 라이브러리 코드 복사/의존성 추가 없이 값 노이즈로 구현했다.
+
+남쪽 경계에는 칩셋의 완성 나무 조립을 먼저 배치하고 그 위에 연결 수관을 덮는다.
+한 나무의 모든 칸이 범위·스택·기존 내용물 검사를 통과해야 배치하며, 줄기가 안 들어가도
+숲의 곡선을 삭제하지 않는다. 기존 숲 띠·compact의 완전한 Tibo 끝마감 규칙은 별도 경로로 유지한다.
+현재 증거와 이전 화면 비교는 `reports/2026-09-21-forest-contour-research.md`.
 
 ## 연구에서 확인한 원칙과 한계
 
