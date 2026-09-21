@@ -12,7 +12,7 @@ shell with matching borders. Eight furniture placements remain; standalone
 partition objects are no longer placed.
 
 - `interior-4x.png`: native editor render, pixelated 4× enlargement.
-- `supabase-proof.json`: CAS save and exact project reload.
+- `legacy-db-proof.json`: CAS save and exact project reload.
 - `walkthroughs.json`: all 29 passable floor cells connected, only one doorway
   connects the two rooms, and the northern ceiling is continuous.
 - `focused-tests.json`: 47 tests passed, including serialization/recompilation,

@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # Region and world visual authoring
 
 Task16 owns the geography canvases. It does not replace the compiler
@@ -20,8 +22,29 @@ This worktree wires `renderSpatialRegionsCanvas` /
 imports `spatial-geography.css` from `src/styles/index.css`, and uses
 `openSpatialDestination` for child drill so `setSpatialTab` does not
 drop breadcrumbs. `bindSpatialAuthoringControllerFactory` stays the
-database.ts binding. Six selectable shipped region examples remain
-task18; they are not completed here.
+database.ts binding.
+
+## Regions gallery contract (2026-09-22)
+
+The regions tab no longer seeds the six terrain-vocabulary dummies from
+`REGION_CATALOG` (lake-country, deep-forest, harbor-coast, snow-frontier,
+high-pass, ancient-ruins) as read-only "default" cards. They had no live
+design, no linked map and no editable surface, so they only hid real
+content. Default region cards are now only the completed-map references
+from `REGION_REFERENCES` (읽기 전용 완성 맵 사례), followed by authored
+`library.regions` designs and village-preset settlement recipes.
+
+The tab shares the places-tab list-first layout. `spatialShell.ts` treats
+`regions` like `places` for the gallery: purpose strip, region library
+controls (`spatialRegionLibraryControls.ts` — style/origin/type/search
+filters over `spatialRegionClassification.ts`), classification badges,
+and a right stage that stays collapsed until 「속성」 is toggled. Region
+reference cards render real map thumbnails through the place-card thumb
+path (`spatialGallery.ts` routes `regionReferenceId` cards to
+`renderPlaceCardThumb`). Empty-state copy points at 「추가」, 마을 설계서
+and the default references. Editing an authored region still opens the
+geography canvas/inspector; `REGION_CATALOG` itself remains as the
+compiler/seed vocabulary for `buildSpatialCatalogLibrary` and tests.
 
 ## Settlement regions (2026-09-12)
 
@@ -162,7 +185,7 @@ not a procedural `RegionDesign`, occurrence, or village generation preset.
   geography rendering. Reference selection exposes no activation, mutation, or
   build actions; ordinary region design actions remain available on other cards.
 - The source map remains in project `rpg-zzu-reference-houses-20260913-6890`.
-  Its fixed reference copy was saved and reloaded from Supabase project
+  Its fixed reference copy was saved and reloaded from LegacyDb project
   `rpg-zzu-region-reference-walled-settlement-v1`; map and tileset metadata were
   compared with the bundled snapshot. The catalog is bundled so later AI sessions
   in other projects can find the example without access to the authoring session.
@@ -178,7 +201,7 @@ example currently contains no interior connections or interactive well event.
 
 `castle-town-100x100` adds the user-finalized 100×100 castle city alongside
 the original settlement. The source is `rpg-zzu-castle-town-100-20260913-6890`;
-its frozen Supabase copy is `rpg-zzu-region-reference-castle-town-v1`.
+its frozen LegacyDb copy is `rpg-zzu-region-reference-castle-town-v1`.
 `src/project/regionReferences/castle-town.json` and
 `public/assets/region-references/castle-town.png` are derived from that reloaded
 copy, including the user's road, entrance, garden and roof edits. AI paginated
@@ -191,7 +214,7 @@ from before the user's last edits is not a validation of this frozen revision.
 ### Lake village and extracted places (2026-09-13)
 
 `lake-village-60x60` is the accepted mixed-tree lake village, frozen from
-`rpg-zzu-lake-village-60-20260913-6890` into Supabase project
+`rpg-zzu-lake-village-60-20260913-6890` into LegacyDb project
 `rpg-zzu-region-reference-lake-village-v1`. Its reloaded map and tileset are
 bundled as `regionReferences/lake-village.json`; preview is captured from the
 frozen project. Source content is left untouched.
@@ -234,3 +257,57 @@ remote reload receipt: `lake-persistence.json` in the same directory.
 
 검증: `test/spatialRegionMapLinks.test.ts` (IO 보존·중복 배치·revision 불일치·부분 범위/삭제 맵),
 `test/spatialCatalog.test.ts`; 실제 저장 프로젝트 UI는 `scripts/qa/emerald-region-editor.mjs --saved`.
+
+
+## Shared forest regions and village trails (2026-09-21)
+
+Three fixed, project-independent region snapshots are registered in
+`src/project/regionReferences.ts`: `gubisup-80x72` (terrain),
+`small-forest-village-80x72` and `forest-cliff-village-80x72` (settlements).
+The original forest and small village remain frozen; the cliff village is a
+separate source map, not an overwrite of the earlier shared reference.
+
+The region inspector offers a portable `.oprn.json` download containing its
+map, tileset, binary-alpha atlas, autotile metadata and collision. Its filename
+uses the selected region name. Preview frames explicitly constrain images to
+the panel; do not reintroduce unstyled class names that let a native-size image
+overflow the inspector. Shared region cards respect `regionKind` in filtering.
+
+The cliff village has five houses, 4–5 tile high cliffs, a spring, and two narrow
+forest trails. Trails clear the canopy envelope, rebuild complete southern
+trunk end caps from the accepted 2-column/3-row grammar, then paint the native
+road autotile. Small roadside clusters avoid house fronts and stairs. The
+snapshot has 2,796 canopy cells; dark canopy interiors are intentional. All
+1,950 walkable cells and the five door approaches connect. Autotile checks use
+`connectTileIds` (roads also join stairs), not just `memberTileIds`.
+
+Source project: `oprn-hill-forest-harmony-20260918-a4e1`.
+Frozen project: `oprn-region-forest-cliff-village-v1`.
+Local editor flush/reload and LegacyDb compare-and-swap/reload receipts are in
+`.omo/evidence/forest-village-trails`. No unrelated map or asset was changed by
+the trail pass. The shipped region atlas contains the 11 reviewed unfake props;
+PNG outputs, metrics and the Astra review are in
+`public/assets/generated/forest-harmony/village-unfake-v1`. The rejected village
+clay oven is excluded. This does not ban unrelated indoor oven/cauldron assets.
+
+These are exterior layout references, not playable adventures: house interiors,
+NPC events, inter-map transfers, flowing water and waterfall animation are not
+implemented by these snapshots. Keep snapshot revisions immutable.
+
+## 승인된 강변 숲마을 공용 지역 (2026-09-21)
+
+`REGION_REFERENCES`의 `river-forest-village-78x44` / **강변 숲마을**은
+프로젝트와 무관한 「지역 → 기본 설계」 항목이다. 장소 카탈로그로 옮기지 않는다.
+기존 세 지역의 순서(특히 호수마을 부분 사례가 참조하는 2번 인덱스)를 유지하며 뒤에 추가한다.
+
+사용자가 승인한 `original-grove-trunks-20260921-76a3-1789965905810`을 재조회해
+`oprn-region-river-forest-village-v1`에 불변 스냅샷으로 저장했다. 타일을 재생성하거나
+수정하지 않는다. 원래 굽이숲 몸통·뿌리, 굽은 경계, 강·다리·집 8채·생활 소품을 보존한다.
+다운로드에는 외부 마을과 연결된 실내 9개, 출입·주민 이벤트, 칩셋과 graft를 모두 포함한다.
+지역 행 조회는 `regionReferences/river-forest-village.json`, 미리보기·다운로드·합성된
+칩셋 미리보기는 `public/assets/region-references/river-forest-village*`가 제공한다.
+
+과거 원격 발행 스크립트는 저장 전환에서 제거했다. 현재 참조 패키지는 보존하며, 새 로컬 프로젝트로 가져올 때는 `scripts/oprn-store.mjs import-json`을 사용한다 (기존 v1 덮어쓰기 금지).
+브라우저 관측: `scripts/qa/capture-shared-river-forest-region.mjs`.
+저장 재조회·실제 지역 카드·다운로드·전체 행 조회 근거:
+`reports/2026-09-21-shared-river-forest-region.md`.

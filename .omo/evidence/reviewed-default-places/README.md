@@ -1,6 +1,6 @@
 # Reviewed default places
 
-The prior registration only saved library records in Supabase project
+The prior registration only saved library records in LegacyDb project
 `rpg-zzu-ashen-vault-20260913`; it did not add project-independent default cards.
 The shipped catalog now contains 25 approved roots and 27 total place definitions,
 including both inn floors. Data was extracted from the saved/reloaded project;

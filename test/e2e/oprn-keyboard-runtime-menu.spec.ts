@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const EVIDENCE_DIR = ".omo/ulw-loop/npc-keyboard-natural";
 const TITLE_SCREENSHOT = ".omo/ulw-loop/npc-keyboard-natural/title-keyboard.png";
@@ -32,7 +32,7 @@ type KeyboardLogEntry = {
 test("test play title and status menus are keyboard-only", async ({ page }, testInfo) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1280, height: 900 });
-  await seedProjectFromSupabaseCanonical(page, createBlankProject(), "/?e2eVitals=1");
+  await seedProjectForEditor(page, createBlankProject(), "/?e2eVitals=1");
   await openTestPlayWindow(page);
 
   const titlePlacement = await titlePlacementState(page);

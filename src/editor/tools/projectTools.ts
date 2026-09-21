@@ -66,7 +66,7 @@ const resetProject: ToolDefinition = {
 
 const setProjectSettings: ToolDefinition = {
   name: "set_project_settings",
-  description: "프로젝트 설정(project settings): 제목(title)·저자(author)·용어(terms)·화면 해상도·기본 음악/시스템 리소스·초기 파티·전투 기본값을 한 번에 설정한다.",
+  description: "프로젝트 설정(project settings): 제목(title)·저자(author)·용어(terms)·화면 해상도(playResolution)·기본 음악/시스템 리소스·초기 파티·전투 기본값을 한 번에 설정한다. 해상도는 픽셀 밀도이고 시야는 카메라 배율이 정한다 — 둘을 같이 맞춰야 한다.",
   mode: "write",
   domains: ["system", "database"],
   parameters: {
@@ -75,7 +75,19 @@ const setProjectSettings: ToolDefinition = {
       title: { type: "string" },
       author: { type: "string" },
       terms: { type: "object", properties: termSchema, additionalProperties: false },
-      playResolution: { type: "object", properties: { width: { type: "integer", minimum: 160, maximum: 1920 }, height: { type: "integer", minimum: 120, maximum: 1080 } }, required: ["width", "height"], additionalProperties: false },
+      playResolution: {
+        type: "object",
+        description:
+          "게임 논리 해상도(픽셀 밀도). 올려도 보이는 범위는 안 늘고 도트만 선명해진다 — "
+          + "범위는 카메라 배율(script_cutscene 의 camera.zoom, CAMERA_ZOOM_LIMITS 0.25~6)이 정한다. "
+          + "1920x1080 배경 아트를 1:1로 쓰려면 1440x1080 + zoom 4.5(시야 20x15 타일 = 320x240 과 동일, 배경 배율 1.0).",
+        properties: {
+          width: { type: "integer", minimum: 160, maximum: 1920 },
+          height: { type: "integer", minimum: 120, maximum: 1080 },
+        },
+        required: ["width", "height"],
+        additionalProperties: false,
+      },
       resources: {
         type: "object",
         properties: {
@@ -151,4 +163,35 @@ const setProjectSettings: ToolDefinition = {
   },
 };
 
-export const PROJECT_TOOLS: readonly ToolDefinition[] = [resetProject, setProjectSettings];
+const setParty: ToolDefinition = {
+  name: "set_party",
+  description: "파티 구성만 바꾼다. scope=start는 새 게임 시작 파티와 세션 파티를 함께 설정하고, scope=session은 현재 세션 파티만 설정한다. actorIds는 실제 actors id 목록이며 빈 배열도 허용한다.",
+  mode: "write",
+  domains: ["database", "system"],
+  parameters: {
+    type: "object",
+    properties: {
+      scope: { type: "string", enum: ["start", "session"], description: "start=새 게임 정본 + 현재 세션, session=현재 세션만" },
+      actorIds: { type: "array", items: { type: "string" }, description: "파티 순서대로 나열한 실제 actor id" },
+    },
+    required: ["scope", "actorIds"],
+    additionalProperties: false,
+  },
+  run(draft, args): ToolExecResult {
+    const scope = args.scope === "start" || args.scope === "session" ? args.scope : undefined;
+    if (!scope || !Array.isArray(args.actorIds)) throw new ToolError("scope(start/session)와 actorIds 배열이 필요합니다.", { code: "invalid-args" });
+    const actorIds = args.actorIds.map(String);
+    const duplicates = actorIds.filter((id, index) => actorIds.indexOf(id) !== index);
+    if (duplicates.length > 0) throw new ToolError(`파티에 같은 actor id를 중복으로 넣을 수 없습니다: ${[...new Set(duplicates)].join(", ")}`, { code: "duplicate-actor" });
+    const missing = actorIds.filter((id) => !draft.database.actors.some((actor) => actor.id === id));
+    if (missing.length > 0) throw new ToolError(`파티 actor id를 찾을 수 없습니다: ${missing.join(", ")}`, { code: "actor-not-found" });
+    draft.session.partyActorIds = [...actorIds];
+    if (scope === "start") draft.system.startActorIds = [...actorIds];
+    return {
+      summary: `${scope === "start" ? "시작 파티" : "현재 세션 파티"} 설정 — ${actorIds.length}명`,
+      data: { scope, actorIds },
+    };
+  },
+};
+
+export const PROJECT_TOOLS: readonly ToolDefinition[] = [resetProject, setProjectSettings, setParty];

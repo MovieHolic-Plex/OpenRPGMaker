@@ -1,9 +1,9 @@
-// 임시 검증 스펙 — Supabase 에 저장한 rpg-zzu-action-demo 가 실제로 로드되고
+// 임시 검증 스펙 — LegacyDb 에 저장한 rpg-zzu-action-demo 가 실제로 로드되고
 // 테스트 플레이에서 필드 스폰이 나오는지 확인한다. 확인 후 삭제한다.
 import { expect, test } from "@playwright/test";
 import { startNewGameFromTitle } from "./runtimeInput";
 
-test("action demo loads from supabase and spawns field enemies", async ({ page }, testInfo) => {
+test("action demo loads from legacyDb and spawns field enemies", async ({ page }, testInfo) => {
   const consoleErrors: string[] = [];
   page.on("console", (msg) => {
     if (msg.type() === "error") consoleErrors.push(msg.text().slice(0, 200));

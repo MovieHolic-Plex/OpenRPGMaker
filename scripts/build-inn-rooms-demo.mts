@@ -1,6 +1,6 @@
 /**
  * 방 구조(bbox) 데모 — map_interior_inn_rooms_v1 을 빌드해 JSON 으로 저장.
- * 라이브 반영: npx tsx scripts/save-inn-map-to-supabase.mts --json output/docs/interior-room-v1/map_interior_inn_rooms_v1.json [--force]
+ * 라이브 반영: npx tsx scripts/save-inn-map-to-legacyDb.mts --json output/docs/interior-room-v1/map_interior_inn_rooms_v1.json [--force]
  */
 import fs from "node:fs";
 import path from "node:path";

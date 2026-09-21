@@ -70,7 +70,7 @@ export function describeHardClusterRejection(rejection: HardClusterRejection): s
   const cause = {
     "out-of-bounds": `${what}이 맵 밖 ${where}에 놓여야 합니다`,
     protected: `${what} 자리 ${where}가 보호셀입니다`,
-    "occupied-upper": `${what} 자리 ${where}의 덧그림에 다른 오브젝트가 있습니다`,
+    "occupied-upper": `${what} 자리 ${where}의 상위에 다른 오브젝트가 있습니다`,
     "plan-conflict": `${what}이 ${where}에서 다른 동반 타일과 충돌합니다`,
   }[rejection.kind];
   const rule = rejection.ruleMessage ? ` — 규칙: ${rejection.ruleMessage}` : "";

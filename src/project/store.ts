@@ -368,7 +368,7 @@ class ProjectStore {
   }
 
   /**
-   * 현재 저장 대상이 로컬 SQLite 폴더 정본인가.
+   * 현재 저장 대상이 로컬 폴더 정본인가(원격 project storage 행이 아님).
    *
    * 협업 락·원격 전용 표면이 판별에 쓴다 — `isRemotePersistenceEnabled()` 는 로컬 폴더에서도
    * true(폴더가 곧 저장소)라 "원격에 쓰는가"의 답이 아니다. 로컬 정본은 단일 작성자라
@@ -439,7 +439,7 @@ class ProjectStore {
   }
 
   // 테스트 전용: loaded 플래그와 원격 저장 활성화 상태를 직접 제어.
-  // store.load()가 호스트 저장소에 결합되어 있어 단위 테스트에서
+  // store.load()가 project storage 네트워크/인증에 결합되어 있어 단위 테스트에서
   // flush()/persistCurrent() 경로만 격리하려 검증할 때 사용한다.
   /** @internal */
   isRemotePersistenceEnabled(): boolean {
@@ -479,7 +479,7 @@ class ProjectStore {
 
   /**
    * Temporarily exposes an in-memory project to read-only runtime consumers.
-   * Store updates, autosave, export projections, and SQLite persistence keep
+   * Store updates, autosave, export projections, and project storage persistence keep
    * using the canonical `current` project. The returned release is idempotent.
    */
   beginReadOnlyProjectSnapshot(project: Project): () => void {
@@ -827,6 +827,43 @@ class ProjectStore {
     this.scheduleAutoSave();
   }
 
+  /**
+   * Fast path for tile painting. Tile edits only mutate the two dense tile
+   * arrays (and the legacy stack maps), so cloning the whole GameMap on every
+   * pointer sample needlessly copies events and every optional map setting.
+   * Keep the general updateMap contract for arbitrary map edits and use this
+   * path for the hot paint/erase/fill loop.
+   */
+  updateMapTiles(
+    mapId: MapId,
+    mapMutator: (draft: GameMap) => void,
+    change: { readonly cells?: readonly ProjectChangeCell[] } & ProjectChangeAnnotation = {},
+  ): void {
+    if (!canWriteTeamProject()) return;
+    const currentMap = this.current.maps[mapId];
+    if (!currentMap) return;
+    const draftMap: GameMap = {
+      ...currentMap,
+      lowerTiles: currentMap.lowerTiles.slice(),
+      upperTiles: currentMap.upperTiles.slice(),
+      ...(currentMap.lowerTileStacks ? { lowerTileStacks: cloneTileStacks(currentMap.lowerTileStacks) } : {}),
+      ...(currentMap.upperTileStacks ? { upperTileStacks: cloneTileStacks(currentMap.upperTileStacks) } : {}),
+    };
+    mapMutator(draftMap);
+    this.current = {
+      ...this.current,
+      maps: {
+        ...this.current.maps,
+        [mapId]: draftMap,
+      },
+    };
+    syncEventDraftVaultFromProject(this.current);
+    const descriptor: ProjectChangeDescriptor = { scope: "map", mapId, ...change };
+    this.markLocalMutation(descriptor);
+    this.emit(descriptor);
+    this.scheduleAutoSave();
+  }
+
   /** @internal */
   _getPersistedBaselineForTest(): Project | null {
     return this.persistedBaseline;
@@ -958,10 +995,10 @@ class ProjectStore {
   /**
    * Local edit counter — remote save responses must not clobber a newer generation.
    *
-   * **관측 초크포인트.** 상태를 바꾸는 5개 메서드(`update`/`updateMap`/`replace`/`clearAll`/
-   * `restoreEventDraftFromVault`)가 전부 여기를 지나므로, 275개 mutation 호출부 전량이
+   * **관측 초크포인트.** 상태를 바꾸는 6개 메서드(`update`/`updateMap`/`updateMapTiles`/
+   * `replace`/`clearAll`/`restoreEventDraftFromVault`)가 전부 여기를 지나므로, mutation 호출부 전량이
    * 외부 파일 수정 없이 계측된다. 호출자는 전부 이 클래스 안에 있다 — 이 성질을
-   * test/storeMutationInstrumentation.test.ts 가 고정한다.
+   * test/storeMutationInstrumentation.quarantine.test.ts 가 고정한다.
    */
   private markLocalMutation(change: ProjectChangeDescriptor, onApplied?: (project: Project) => void): void {
     this.mutationGeneration += 1;
@@ -1477,6 +1514,12 @@ class ProjectStore {
 }
 
 export const store = new ProjectStore();
+
+function cloneTileStacks(stacks: Record<number, number[]>): Record<number, number[]> {
+  const copy: Record<number, number[]> = {};
+  for (const [index, tiles] of Object.entries(stacks)) copy[Number(index)] = tiles.slice();
+  return copy;
+}
 
 function deepFreeze<T>(value: T): DeepReadonly<T> {
   if (value && typeof value === "object" && !Object.isFrozen(value)) {

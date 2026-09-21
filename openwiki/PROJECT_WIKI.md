@@ -35,6 +35,10 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - Editor index: `openwiki/editor-workflows.md` (slim TOC linking to the above)
    - 연결 던전 생성 (방 그래프·복합 절벽·맥락 소품): `openwiki/connected-dungeon-generation.md`
    - Castle / keep map modules (`map_castle_keep` gold): `openwiki/castle-map.md`
+   - **Slates 32px로 마을을 만들 때 먼저 읽을 그림 포함 조립 지침:** `openwiki/slates-agent-entry.md` → `openwiki/slates-dense-town.md` → `openwiki/slates-assembly-playbook.md` → 구조 학습·표본·구역 도감·저작 지침 (성곽·돌출층·깊은 지붕·46개 구역·검토 보류 항목).
+   - 촘촘한 50×50 성곽 마을의 최신 밀도 지침·실측 결과: `openwiki/slates-dense-town.md`, `docs/experiments/slates-astra-v3/RESULT.md`.
+   - Slates 문서 개정·단계별 감독자 검토의 실제 결과와 한계: `docs/experiments/slates-astra-v2/RESULT.md`.
+   - 성채 참고 이미지의 구도·색·지형·생활감 및 직전 제작물 반려 근거: `tiledata/castle-tiles-rpgs/README.md` (새 성채 저작 전에 읽기; 원본/반려/수정 이미지와 실측 좌표 포함)
    - Large river/market village generation (bbox → houses → roads): `openwiki/large-village-generation.md`
    - Terrain autotiles, template-block anchors, water/animation wiring: `openwiki/autotiles.md`
    - Runtime pre-edit routing & cautions (read first): `openwiki/runtime-pre-edit-routing.md`
@@ -52,7 +56,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - CC0 SE catalog (635 sounds, in-repo assets, provisional labels): `openwiki/se-catalog.md`
    - Test and evidence strategy: `openwiki/testing.md`
    - Screenshot-only agent UI discovery pilot: `openwiki/ui-discovery-pilot.md`
-   - Community site (Next.js asset/game sharing, Supabase tables `openrpg_*`): `openwiki/community-site.md`
+   - Community site (Next.js asset/game sharing, PostgreSQL tables `openrpg_*`): `openwiki/community-site.md`
 4. Inspect the actual source files named by the focused page before editing.
 
 ## Project identity
@@ -73,7 +77,34 @@ OPRN Studio is a browser-based top-down tile JRPG maker/editor. It combines:
 - `src/project` owns canonical project data, defaults, migrations, validation, persistence, and remote/local storage boundaries.
 - `src/assets` owns bundled/generated asset resolution, slicing, transparency, and preview helpers.
 - `src/styles` owns visual presentation. Avoid moving behavior into CSS-only workarounds.
+- Editor CSS is organized by the named cascade layers in `src/styles/index.css`. Dynamic
+  panel sheets must join their owning layer; `src/editor/panels/spatialPlaceLibrary.css`
+  is loaded by the database panel and therefore wraps its rules in `@layer database`.
+- Large editor sheets are split at top-level rule or section boundaries. The original
+  facade keeps its first chunk and the owning surface `index.css` imports later `.part-N.css`
+  chunks directly in the same layer and order. CSS contract tests that inspect a whole
+  sheet use `test/cssFamily.ts` so they see the same import family as the app.
+- The resource manager is a lazy editor surface that can open before the database CSS
+  chunk. `src/styles/resources/resource-manager.css` therefore owns its fixed backdrop,
+  centered window, header, and flex body shell; the nested URL importer in
+  `resource-manager.part-6.css` owns the same fixed backdrop and header contract. Do not
+  make either surface depend on opening the database modal first.
+- The AI sidebar and editor-owned AI dialogs mount before the database CSS chunk. Their
+  first-paint geometry and visual family are loaded by
+  `src/styles/database/editor-startup-ai.css` in the static `database` layer, while
+  `ai-modal-shell.css` owns the generic editor-owned dialog shell. The manifest is the
+  single bootstrap owner for the AI panel, composer, deck, cards, and team sidebar;
+  those imports are removed from the lazy database suffix to avoid a second copy.
+  `database/editor-owned-ai-modal-shell.css` still reapplies the modal body scroll
+  contract after the database layer arrives. DB record sheets remain lazy, but no AI
+  surface may depend on opening the database modal before it is styled.
 - `test` and `test/e2e` are part of the contract. Update or add focused tests for changed behavior.
+
+## Authored tile placement references
+
+현재 프로젝트의 **DB → 타일 → 참고문서 → 용도**가 우선이다. [타일셋 참고문서](tileset-reference-documents.md)의 MD·이미지 선행 읽기 계약을 따른다. 저장소 학습 자료는 연구 출처이며 프로젝트 정본을 대체하지 않는다.
+
+숲·마을 타일 저작 전에 [tiledata/forest-villages](../tiledata/forest-villages/README.md)의 사용자 검수 규칙·승인본·실패 사례를 읽는다. 새 마을 사례와 전체 스크린샷도 이 디렉토리에 저장한다.
 
 ## How an AI should use this wiki
 
@@ -86,12 +117,13 @@ Use this checklist before editing:
 - For UI work, verify through the browser surface and save screenshots or logs under `output/evidence` or `evidence`.
 - If the change reveals stale wiki guidance, update the wiki as part of the same work.
 
-## SQLite project folder mandatory (see root `AGENTS.md`)
+## 프로젝트 정본 저장 (see root `AGENTS.md`)
 
-Root `AGENTS.md` hard rule: **do not finish map/event/demo/content work without a SQLite folder save + reload proof.**
-Supabase is retired and is not a completion path.
-`blankProject` / `freshProject` / `dev-showcase` skip folder persistence — never treat those sessions as a complete deliverable.
-Engine-only code changes and narrow unit-test fixtures are the only default exceptions.
+콘텐츠 작업은 Electron/팀 호스트의 SQLite 프로젝트에 저장한 뒤 같은 대상을 재로드해야 완료다.
+브리지 없는 preview·메모리·dev-showcase는 정본 저장을 대신하지 않는다.
+과거 기록은 오프라인 아카이브에서 복구한다. 외부 DB 연결은 사용하지 않는다. 현재 경로는
+[team-project-host.md](team-project-host.md), 제거 현황은 [storage-retirement.md](storage-retirement.md)를 따른다.
+순수 엔진 코드와 단위 테스트용 최소 fixture는 콘텐츠 저장 의무의 예외다.
 
 ## Desktop UI integration truth (2026-08-11)
 

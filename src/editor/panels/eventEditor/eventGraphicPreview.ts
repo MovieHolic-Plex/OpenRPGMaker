@@ -7,6 +7,7 @@ import {
 } from "@/assets/easyrpgRtp";
 import { RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import { normalizeCharacterScale } from "@/project/footprint";
+import { characterRenderScale } from "@/project/characterScale";
 import type { AutonomousMovement, CharacterFootprint, EventPageGraphic } from "@/project/types";
 import { resolveEventAppearanceGraphic } from "@/project/characterAppearances";
 import { store } from "@/project/store";
@@ -119,17 +120,19 @@ export type FootprintPreviewLayout = {
 export function footprintPreviewLayout(input: {
   readonly footprint: CharacterFootprint;
   readonly scale?: number;
+  readonly tileSize?: number;
 }): FootprintPreviewLayout {
   const scale = normalizeCharacterScale(input.scale);
+  const tileSize = input.tileSize ?? TILE_PX;
   const { width, height } = input.footprint;
-  const bodyW = width * TILE_PX;
-  const bodyH = height * TILE_PX;
+  const bodyW = width * tileSize;
+  const bodyH = height * tileSize;
   const spriteW = CELL_PX * scale;
   const spriteH = CELL_PY * scale;
   // 발밑 규약: 앵커 칸은 몸 사각 하단 행이고, 짝수 폭에서는 중앙 왼쪽이다.
   const anchorColumn = Math.floor((width - 1) / 2);
   // 스프라이트 원점은 (0.5, 1) — 앵커 칸의 가로 중앙, 몸 사각 밑변에 발이 닿는다.
-  const anchorCenterX = anchorColumn * TILE_PX + TILE_PX / 2;
+  const anchorCenterX = anchorColumn * tileSize + tileSize / 2;
   const rawSpriteX = anchorCenterX - spriteW / 2;
   const rawSpriteY = bodyH - spriteH;
   // 둘 중 더 왼쪽/위로 삐져나온 쪽이 0 이 되도록 각자를 밀어 넣는다. `Math.max` 를 거치므로
@@ -165,8 +168,10 @@ export function renderFootprintPreview(input: {
   readonly graphic: EventPageGraphic;
   readonly footprint: CharacterFootprint;
   readonly passRows: number;
+  readonly tileSize?: number;
 }): HTMLElement {
-  const layout = footprintPreviewLayout({ footprint: input.footprint, scale: input.graphic.scale });
+  const scale = eventGraphicRenderScale(input.graphic, input.tileSize ?? TILE_PX);
+  const layout = footprintPreviewLayout({ footprint: input.footprint, scale, tileSize: input.tileSize });
   const { zoom } = layout;
   const host = document.createElement("div");
   host.className = "event-footprint-preview";
@@ -198,7 +203,7 @@ export function renderFootprintPreview(input: {
   const sprite = renderEventGraphicElement(
     input.graphic,
     "event-footprint-preview-sprite",
-    zoom * normalizeCharacterScale(input.graphic.scale),
+    zoom * scale,
     "fixed",
     "event-page-footprint-preview-sprite"
   );
@@ -207,6 +212,13 @@ export function renderFootprintPreview(input: {
 
   host.append(grid, sprite);
   return host;
+}
+
+export function eventGraphicRenderScale(graphic: EventPageGraphic, tileSize: number): number {
+  const resolved = resolveEventAppearanceGraphic(store.getCurrent(), graphic);
+  return resolved.sprite && findCharsetAsset(resolved.sprite.id)
+    ? characterRenderScale(CELL_PX, tileSize, resolved)
+    : normalizeCharacterScale(resolved.scale);
 }
 
 function clampRows(rows: number, height: number): number {

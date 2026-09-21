@@ -102,7 +102,7 @@
    ✓ store lifecycle callback ownership > a saving subscriber's replacement is not authorized by the old flush (own flush: true)  2455ms
    ✓ store lifecycle callback ownership > keeps same-lineage edits from a saving subscriber in the submitted snapshot  2605ms
  ✓ test/storeFlushShaEvidence.test.ts (2 tests) 2243ms
-   ✓ Project store flush sha256 evidence > 전체 저장 경로: saveProjectToSupabase 의 sha256 이 flush 결과(saved.sha256)로 흘러든다  1711ms
+   ✓ Project store flush sha256 evidence > 전체 저장 경로: saveProjectToLegacyDb 의 sha256 이 flush 결과(saved.sha256)로 흘러든다  1711ms
    ✓ Project store flush sha256 evidence > 변경 없음 fast path 는 saved(sha256 없음) — sha256 은 선택 필드 계약 그대로  530ms
 
  Test Files  9 passed (9)

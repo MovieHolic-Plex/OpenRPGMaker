@@ -1,0 +1,39 @@
+{
+  "during": {
+    "cells": 758,
+    "committed": false
+  },
+  "receipt": {
+    "mode": "default",
+    "ack": {
+      "ok": true
+    },
+    "tools": [
+      {
+        "ok": true
+      },
+      {
+        "ok": true
+      }
+    ],
+    "ghostCells": 0,
+    "blueprint": 0,
+    "committed": true
+  },
+  "errors": [],
+  "frames": [
+    "00-before",
+    "01-plan-start",
+    "02-plan-lines",
+    "03-plan-ready",
+    "04-ground-start",
+    "05-ground-motion",
+    "06-cursor-middle",
+    "07-building-motion",
+    "08-detail-settle",
+    "09-preview-ready",
+    "10-applied-stamp",
+    "11-complete",
+    "12-settled"
+  ]
+}

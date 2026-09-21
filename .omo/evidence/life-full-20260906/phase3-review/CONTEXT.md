@@ -4,7 +4,7 @@ Status: ready for scoped final review with explicit gate limitations. Completed 
 
 ## Goal and delivery
 
-Execute the approved life-systems-full-implementation plan: all 20 implementation tasks, 51 life features and F01-F13 audit findings, final F1-F4 verification, isolated Supabase save/reload, six reviewed phase PRs and a main rollup PR. Preserve Project4, read Save4 into Save5 with separate keys and raw-data preservation, explicit building-instance housing and proved-resource recovery. Do not read CLAUDE.md, edit WISH.md, overwrite the existing remote demo, add dependencies, suppress failures or merge remote PRs. This review covers Phase3 tasks6-10 and task33 only; later housing/economy/journey/remote work remains open.
+Execute the approved life-systems-full-implementation plan: all 20 implementation tasks, 51 life features and F01-F13 audit findings, final F1-F4 verification, isolated LegacyDb save/reload, six reviewed phase PRs and a main rollup PR. Preserve Project4, read Save4 into Save5 with separate keys and raw-data preservation, explicit building-instance housing and proved-resource recovery. Do not read CLAUDE.md, edit WISH.md, overwrite the existing remote demo, add dependencies, suppress failures or merge remote PRs. This review covers Phase3 tasks6-10 and task33 only; later housing/economy/journey/remote work remains open.
 
 Canonical plan: /home/main/.herdr/worktrees/rpg-zzu/wish-html/.omo/plans/life-systems-full-implementation.md.
 

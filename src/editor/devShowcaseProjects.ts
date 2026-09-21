@@ -45,7 +45,7 @@ const DEV_SNOW_MOUNTAIN_60_PARAM = "snowMountain60";
 /** 얼음 대평원 64×64 절벽·계단 캔버스 — `?devProject=1&icePlain64=1` 로 바로 열린다. */
 const DEV_ICE_PLAIN_64_PARAM = "icePlain64";
 const DEV_MODERN_NOCTURNE_PARAM = "modernNocturne";
-const SUPABASE_CANONICAL_PROJECT_PARAM = "supabaseRecovered";
+const CANONICAL_PROJECT_PARAM = "projectRecovered";
 
 export function createDevShowcaseProjectForLocation(): Project | null {
   if (typeof window === "undefined") return null;
@@ -53,7 +53,7 @@ export function createDevShowcaseProjectForLocation(): Project | null {
   const e2eProject = createE2eProjectForLocation();
   if (e2eProject) return e2eProject;
   const params = new URLSearchParams(window.location.search);
-  if (params.has(SUPABASE_CANONICAL_PROJECT_PARAM)) return null;
+  if (params.has(CANONICAL_PROJECT_PARAM)) return null;
   // 계약: blankProject=1 → 진짜 빈 프로젝트. freshProject=1 단독은 기존 e2e/드라이버
   // 32개 스펙이 예제 어드벤처를 기대하므로 레거시 의미를 유지한다.
   if (params.has(DEV_BLANK_PROJECT_PARAM)) return createBlankProject();

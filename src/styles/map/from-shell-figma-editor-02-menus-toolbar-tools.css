@@ -20,7 +20,7 @@
   .tool-grid .btn:focus-visible {
     background: var(--control-bg-hover);
     border-color: var(--editor-line-strong);
-    outline: none;
+    outline: var(--focus-outline);
   }
 
 /* shell/figma-editor/02-menus-toolbar-tools.css:87-99 */

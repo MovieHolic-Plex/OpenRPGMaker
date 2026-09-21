@@ -2,7 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { expect, test, type Page } from "@playwright/test";
 import { createBlankProject } from "@/project/defaults";
 import { screenshotEvidence } from "./eventEditorCertEvidence";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const EVIDENCE_DIR = ".omo/evidence/ui-ux-adversarial-fixes/task-5-event-layout";
 declare const process: { readonly env: { readonly OPRN_E2E_BASE_URL?: string } };
@@ -33,7 +33,7 @@ test("event editor keeps a non-overlapping desktop flow at every supported viewp
 
   for (const viewport of VIEWPORTS) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
-    await seedProjectFromSupabaseCanonical(page, createBlankProject(), `${APP_URL}/?freshProject=1&classicCapture=2`);
+    await seedProjectForEditor(page, createBlankProject(), `${APP_URL}/?freshProject=1&classicCapture=2`);
     await ensureEventEditorOpen(page);
     await page.getByTestId("event-view-toggle-list").click();
     await resetEventEditorScroll(page);
@@ -77,7 +77,7 @@ test("opening the event editor suppresses an active coachmark", async ({ page })
   await mkdir(EVIDENCE_DIR, { recursive: true });
   const browserIssues = installBrowserIssuePolicy(page);
   await page.addInitScript(() => localStorage.removeItem("oprn:coachmarks-basic-v1"));
-  await seedProjectFromSupabaseCanonical(page, createBlankProject(), `${APP_URL}/?freshProject=1&classicCapture=2`);
+  await seedProjectForEditor(page, createBlankProject(), `${APP_URL}/?freshProject=1&classicCapture=2`);
   const restoredEditor = page.getByTestId("event-editor-modal");
   if (await restoredEditor.count()) {
     await page.getByTestId("event-editor-cancel").click();

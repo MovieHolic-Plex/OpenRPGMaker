@@ -14,5 +14,5 @@ export const ONTOLOGY_CLASSIFICATION_EXAMPLES = [
   { task: "맵 레이어 타일 배치 도구", expectedCapabilityId: "MapEditing" },
   { task: "맵 트리 시작 위치 이동", expectedCapabilityId: "MapEditing" },
   { task: "저장 로드 마이그레이션 검증", expectedCapabilityId: "ProjectPersistence" },
-  { task: "SQLite 프로젝트 폴더 저장 포맷", expectedCapabilityId: "ProjectPersistence" },
+  { task: "SQLite 동기화 저장 포맷", expectedCapabilityId: "ProjectPersistence" },
 ] satisfies readonly OntologyClassificationExample[];

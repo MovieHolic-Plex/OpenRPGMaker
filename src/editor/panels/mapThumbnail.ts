@@ -36,6 +36,8 @@ const STAGE_MAX_EDGE = 512;
 const CACHE_LIMIT = 120;
 
 const renderedCache = new Map<string, HTMLCanvasElement>();
+const mapContentHashes = new WeakMap<GameMap, number>();
+const pendingKeys = new Set<string>();
 let active = 0;
 const waiting: (() => void)[] = [];
 
@@ -68,12 +70,29 @@ export function createMapThumbnail(mapId: MapId, options: MapThumbnailOptions = 
   }
 
   paintFallback(canvas, mapId);
-  void paintFromMap(project, map, key, width, height, testId);
+  if (!pendingKeys.has(key)) {
+    pendingKeys.add(key);
+    // Let the editor canvas paint once before thumbnail rasterization starts. Canvas previews are
+    // intentionally asynchronous, but a resolved Promise still runs before the browser gets a
+    // paint opportunity and can make opening a large map feel frozen.
+    const start = (): void => { void paintFromMap(project, map, key, width, height, testId); };
+    if (typeof window !== "undefined" && typeof window.setTimeout === "function") window.setTimeout(start, 0);
+    else start();
+  }
   return canvas;
 }
 
 /** 캐시 키에 목표 크기가 들어가야 한다 — 안 넣으면 40×30 스테이지가 큰 미리보기로 확대된다. */
 function thumbnailKey(mapId: MapId, map: GameMap, width: number, height: number): string {
+  let hash = mapContentHashes.get(map);
+  if (hash === undefined) {
+    hash = hashMapContent(map);
+    mapContentHashes.set(map, hash);
+  }
+  return `${mapId}:${map.tilesetId}:${width}x${height}:${(hash >>> 0).toString(36)}`;
+}
+
+function hashMapContent(map: GameMap): number {
   let hash = 2166136261;
   const mix = (value: number): void => {
     hash ^= value + 0x9e3779b9;
@@ -84,7 +103,7 @@ function thumbnailKey(mapId: MapId, map: GameMap, width: number, height: number)
   mix(map.tileSize);
   for (const tile of map.lowerTiles) mix(tile);
   for (const tile of map.upperTiles) mix(tile);
-  return `${mapId}:${map.tilesetId}:${width}x${height}:${(hash >>> 0).toString(36)}`;
+  return hash;
 }
 
 async function paintFromMap(
@@ -107,6 +126,7 @@ async function paintFromMap(
   } catch {
     // 대체 무늬가 이미 그려져 있다 — 목록 렌더가 썸네일 하나 때문에 멈추면 안 된다.
   } finally {
+    pendingKeys.delete(key);
     release();
   }
 }

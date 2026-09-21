@@ -37,11 +37,16 @@ test("edit mode restores existing chrome, removes the bottom bar, and exposes sc
 
   await page.getByTestId("topbar-ai-settings").click();
   await expect(page.getByTestId("ai-settings-modal")).toBeVisible();
+  await expect(page.getByTestId("ai-settings-modal")).toHaveCSS("position", "fixed");
+  await expect(page.getByTestId("ai-settings-modal")).toHaveCSS("display", "grid");
+  await expect(page.getByTestId("ai-settings-modal").locator(".database-modal-window")).toHaveCSS("display", "grid");
   await expect(page.getByTestId("ai-settings-advanced")).toHaveAttribute("open", "");
 
   const body = page.getByTestId("ai-settings-body");
-  await expect(body).toHaveCSS("overflow-y", "scroll");
-  const scroll = await body.evaluate((element) => {
+  await expect(body).toHaveCSS("overflow-y", "hidden");
+  const content = body.locator(".ai-settings-content");
+  await expect(content).toHaveCSS("overflow-y", "auto");
+  const scroll = await content.evaluate((element) => {
     element.scrollTop = element.scrollHeight;
     return {
       top: element.scrollTop,
@@ -53,4 +58,16 @@ test("edit mode restores existing chrome, removes the bottom bar, and exposes sc
   expect(scroll.top).toBeGreaterThan(0);
   // 수동 「지금 저장」은 없다 — 푸터는 자동 저장 상태만 보여 준다.
   await expect(page.getByTestId("ai-config-saved-hint")).toBeVisible();
+
+  // The assistant is mounted during editor bootstrap, before database.css is
+  // lazy-loaded. Its first paint still needs a real flex workspace instead of
+  // a block-flow panel below the canvas.
+  await page.getByTestId("ai-settings-modal").getByTestId("ai-settings-close").click();
+  const aiPanel = page.locator(".ai-chat-panel").first();
+  await expect(aiPanel).toHaveCSS("display", "flex");
+  await expect(aiPanel).toHaveCSS("position", "relative");
+  const aiPanelBox = await aiPanel.boundingBox();
+  expect(aiPanelBox).not.toBeNull();
+  expect(aiPanelBox?.width ?? 0).toBeGreaterThan(0);
+  expect(aiPanelBox?.height ?? 0).toBeGreaterThan(0);
 });

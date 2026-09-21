@@ -10,7 +10,7 @@ Reports below are claims to reproduce, not established defects.
 
 | ID | Scope | Acceptance evidence required | Status |
 | --- | --- | --- | --- |
-| OUT-001 | Accepted media persistence | Within-limit audio survives reload; Test Play launches; durable success and actionable quota failures; failed-write coverage | Real Supabase save/reload and independent Test Play passed |
+| OUT-001 | Accepted media persistence | Within-limit audio survives reload; Test Play launches; durable success and actionable quota failures; failed-write coverage | Real LegacyDb save/reload and independent Test Play passed |
 | OUT-002 | Audio inventory and playback | Visible entries resolve; missing media returns 404; pickers agree; autoplay versus load/decode errors; range and service-worker coverage | R2 repair integrated; final-tree recheck pending |
 | OUT-003 | Private DELTA persistence adaptation | Explicitly excluded from the upstream package | Excluded |
 | OUT-004 | Private DELTA implementation plan | Explicitly excluded from the upstream package | Excluded |
@@ -24,7 +24,7 @@ Reports below are claims to reproduce, not established defects.
 
 ## Boundaries
 
-- Preserve the canonical Supabase project-storage contract. Do not introduce a
+- Preserve the canonical LegacyDb project-storage contract. Do not introduce a
   local canonical project database or weaken its regression guard.
 - Do not capture actual private session data during investigation. Diagnostic
   features require an explicit user action and remain local and off by default.
@@ -158,7 +158,7 @@ Remote media acceptance:
 - Direct browser access to the external API failed even for GET, while Node and
   the existing same-origin proxy could read it. The failed target
   `oprn-c2c5a609da` was confirmed absent. No repeated saved copies were created.
-- A QA-only process enabled the existing Supabase proxy and supplied the existing
+- A QA-only process enabled the existing LegacyDb proxy and supplied the existing
   anon key only through process environment, without changing environment files.
   It saved one new project, `oprn-f51b995ac9`: project row, 16 maps, 13 tilesets.
 - The automated runner verified reloaded identity/bytes/hash, then timed out
@@ -167,7 +167,7 @@ Remote media acceptance:
   context, verified all 8,388,608 bytes against the original WAV SHA-256, clicked
   the actual Test Play button and observed engine ready in 6,022 ms with a visible
   320x240 canvas. This independent reload/play made zero additional remote writes.
-  See `media-supabase-proof.json` and
+  See `media-legacy-db-proof.json` and
   `/dev/shm/rpg-zzu-issue693-lead/media-existing-play.png`.
 
 Integrated follow-ups:

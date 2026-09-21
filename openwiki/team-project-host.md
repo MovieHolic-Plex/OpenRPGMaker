@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # 팀 프로젝트 호스트 (2026-09-18)
 
 ## 소유와 실행 위치
@@ -49,7 +51,7 @@ SQLite 전환 후 저장 대상이 없는 메모리 어댑터로 열렸다.
 
 - `OPRN_PROJECT_DIR` 또는 `npm start -- --project-dir /path/to/project`로 **기존**
   `project.sqlite` 폴더를 지정한다. 미설정/없는 폴더는 실행을 거절한다. 임의 프로젝트
-  선택·빈 프로젝트 생성·Supabase 자동 이관은 하지 않는다.
+  선택·빈 프로젝트 생성·LegacyDb 자동 이관은 하지 않는다.
 - 폴더와 public origin 설정 우선순위는 CLI > 프로세스 env > `.env.local` > `.env`.
   상대 폴더는 저장소 루트 기준이다. 기본 주소는 기존 `http://mdc-server:9888`이며
   `--host`, `--port`, `--public-origin`, `--dist`, `--bridge`도 전달한다.

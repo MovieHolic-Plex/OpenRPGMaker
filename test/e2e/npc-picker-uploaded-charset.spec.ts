@@ -1,7 +1,7 @@
 // 소재 관리자에서 업로드한 charset이 NPC 그래픽 피커에 나타나는지 검증
 import { expect, test, type Page } from "@playwright/test";
 import type { Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const PASSABLE = { up: true, down: true, left: true, right: true };
 
@@ -129,7 +129,7 @@ function projectWithUploadedCharset(): Project {
 
 test("uploaded charset appears in NPC graphic picker resource list", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await seedProjectFromSupabaseCanonical(page, projectWithUploadedCharset());
+  await seedProjectForEditor(page, projectWithUploadedCharset());
 
   // 이벤트 레이어 → 이벤트 더블클릭 → 그래픽 설정
   await page.getByTestId("layer-event").click();

@@ -13856,7 +13856,7 @@
       "declaredCombinedChange": false
     },
     {
-      "path": "scripts/apply-supabase-migrations.mjs",
+      "path": "scripts/apply-legacyDb-migrations.mjs",
       "expected": "f2ed6ba1d8fa21e6199abd5af7bb5a14ce56522510aef0067a87069c62530599",
       "actual": "f2ed6ba1d8fa21e6199abd5af7bb5a14ce56522510aef0067a87069c62530599",
       "equal": true,
@@ -14955,14 +14955,14 @@
       "declaredCombinedChange": false
     },
     {
-      "path": "scripts/check-supabase-content-gate.mjs",
+      "path": "scripts/check-legacy-db-content-gate.mjs",
       "expected": "3b1823b06fe080e8e1b9819ce53e41fb04f87533854785470b9e1441fa6047fb",
       "actual": "3b1823b06fe080e8e1b9819ce53e41fb04f87533854785470b9e1441fa6047fb",
       "equal": true,
       "declaredCombinedChange": false
     },
     {
-      "path": "scripts/check-supabase-schema.mjs",
+      "path": "scripts/check-legacyDb-schema.mjs",
       "expected": "e881e868cd4aec0f1559aebad71b59498fd31d0e72abb52e8951531a7eb7f6ee",
       "actual": "e881e868cd4aec0f1559aebad71b59498fd31d0e72abb52e8951531a7eb7f6ee",
       "equal": true,
@@ -16243,7 +16243,7 @@
       "declaredCombinedChange": false
     },
     {
-      "path": "scripts/lib/supabase-database-ops.mjs",
+      "path": "scripts/lib/legacyDb-database-ops.mjs",
       "expected": "c1d0f17dd072f212cd2365f6dda024a4631c3a545250399997b64d48b6dad858",
       "actual": "c1d0f17dd072f212cd2365f6dda024a4631c3a545250399997b64d48b6dad858",
       "equal": true,
@@ -17657,7 +17657,7 @@
       "declaredCombinedChange": false
     },
     {
-      "path": "scripts/save-inn-map-to-supabase.mts",
+      "path": "scripts/save-inn-map-to-legacyDb.mts",
       "expected": "d63217a453cdd179e28034f90d2039641d99b060c2864246f868dc999f86f620",
       "actual": "d63217a453cdd179e28034f90d2039641d99b060c2864246f868dc999f86f620",
       "equal": true,
@@ -17853,28 +17853,28 @@
       "declaredCombinedChange": false
     },
     {
-      "path": "scripts/supabase-resource-root.mjs",
+      "path": "scripts/legacyDb-resource-root.mjs",
       "expected": "1815657f07c1f46ad3175bb1bd96fd12ae648f0e21723e83018c3c0d02ca27d3",
       "actual": "1815657f07c1f46ad3175bb1bd96fd12ae648f0e21723e83018c3c0d02ca27d3",
       "equal": true,
       "declaredCombinedChange": false
     },
     {
-      "path": "scripts/supabase-resource-root/catalog.mjs",
+      "path": "scripts/legacy-db-resource-root/catalog.mjs",
       "expected": "b44c0576ff2281ba2229d551a06ce64628b8b3daaffed6e8c859356eb65786fd",
       "actual": "b44c0576ff2281ba2229d551a06ce64628b8b3daaffed6e8c859356eb65786fd",
       "equal": true,
       "declaredCombinedChange": false
     },
     {
-      "path": "scripts/supabase-resource-root/projectUploads.mjs",
+      "path": "scripts/legacyDb-resource-root/projectUploads.mjs",
       "expected": "c68aa0938b848e2786f2da0f099c657ab4defae0b55d21a2577e8c7fd202617e",
       "actual": "c68aa0938b848e2786f2da0f099c657ab4defae0b55d21a2577e8c7fd202617e",
       "equal": true,
       "declaredCombinedChange": false
     },
     {
-      "path": "scripts/supabase-resource-root/supabaseRest.mjs",
+      "path": "scripts/legacyDb-resource-root/legacyDbRest.mjs",
       "expected": "463d30a17c2f5485be6a320cf71af99a44fc101a74b405ec39e03a2814478d02",
       "actual": "463d30a17c2f5485be6a320cf71af99a44fc101a74b405ec39e03a2814478d02",
       "equal": true,
@@ -19043,7 +19043,7 @@
       "declaredCombinedChange": false
     },
     {
-      "path": "src/assets/supabaseResourceCache.ts",
+      "path": "src/assets/legacyDbResourceCache.ts",
       "expected": "c8be3353fe676200a1b3f6d004acbf5b345cb19e4f7628d5faefa1255dd2ded4",
       "actual": "c8be3353fe676200a1b3f6d004acbf5b345cb19e4f7628d5faefa1255dd2ded4",
       "equal": true,
@@ -28430,28 +28430,28 @@
       "declaredCombinedChange": false
     },
     {
-      "path": "src/project/supabaseProjectConfig.ts",
+      "path": "src/project/legacyDbProjectConfig.ts",
       "expected": "20b22edcb577796e6bf233dc830dac81db332cbc4b92b98df840a1831f37aea1",
       "actual": "20b22edcb577796e6bf233dc830dac81db332cbc4b92b98df840a1831f37aea1",
       "equal": true,
       "declaredCombinedChange": false
     },
     {
-      "path": "src/project/supabaseProjectSync.ts",
+      "path": "src/project/legacyDbProjectSync.ts",
       "expected": "7e6c4d4b954353ce4836183fe7d1488def2f417dc1134a760a74a224573f56f2",
       "actual": "7e6c4d4b954353ce4836183fe7d1488def2f417dc1134a760a74a224573f56f2",
       "equal": true,
       "declaredCombinedChange": false
     },
     {
-      "path": "src/project/supabaseProxyPath.ts",
+      "path": "src/project/legacyDbProxyPath.ts",
       "expected": "f90f06795454faba7b03daaf56d4ae4d041ed9f5f6bdd6f04033794d1df4044d",
       "actual": "f90f06795454faba7b03daaf56d4ae4d041ed9f5f6bdd6f04033794d1df4044d",
       "equal": true,
       "declaredCombinedChange": false
     },
     {
-      "path": "src/project/supabaseRecoveryLocation.ts",
+      "path": "src/project/projectRecoveryLocation.ts",
       "expected": "cc53c5a76a3f5f556f518131f8cb44b806b06df7a89b561114dca41e875518ac",
       "actual": "cc53c5a76a3f5f556f518131f8cb44b806b06df7a89b561114dca41e875518ac",
       "equal": true,
@@ -37831,21 +37831,21 @@
       "declaredCombinedChange": false
     },
     {
-      "path": "test/e2e/supabase-project-picker.spec.ts",
+      "path": "test/e2e/project-picker.spec.ts",
       "expected": "48a1508296b0641df96bb35b7bd2dd57f19fefd0f07f0ec51464171042d0f88a",
       "actual": "48a1508296b0641df96bb35b7bd2dd57f19fefd0f07f0ec51464171042d0f88a",
       "equal": true,
       "declaredCombinedChange": false
     },
     {
-      "path": "test/e2e/supabase-root-cache.spec.ts",
+      "path": "test/e2e/legacyDb-root-cache.spec.ts",
       "expected": "e32cda57ecb5732bf7e85b90f8d69a4f2aa12bfa1bc95c4c2d95821876bc556f",
       "actual": "e32cda57ecb5732bf7e85b90f8d69a4f2aa12bfa1bc95c4c2d95821876bc556f",
       "equal": true,
       "declaredCombinedChange": false
     },
     {
-      "path": "test/e2e/supabaseProjectSeed.ts",
+      "path": "test/e2e/projectSeed.ts",
       "expected": "4568ef6bcd024277348fe65686c5dd056b91e3013c2f3e1c3b03e4efd991c83b",
       "actual": "4568ef6bcd024277348fe65686c5dd056b91e3013c2f3e1c3b03e4efd991c83b",
       "equal": true,
@@ -43872,7 +43872,7 @@
       "declaredCombinedChange": false
     },
     {
-      "path": "test/stardewSupabaseRoundtrip.live.test.ts",
+      "path": "test/stardewLegacyDbRoundtrip.live.test.ts",
       "expected": "8e212bebb7e0f0b470177c632ba96d8d6e6cd8580c9456750cf6b169de71a9f2",
       "actual": "8e212bebb7e0f0b470177c632ba96d8d6e6cd8580c9456750cf6b169de71a9f2",
       "equal": true,
@@ -44061,63 +44061,63 @@
       "declaredCombinedChange": false
     },
     {
-      "path": "test/supabaseCanonicalRoundtrip.live.test.ts",
+      "path": "test/legacyDbCanonicalRoundtrip.live.test.ts",
       "expected": "20d07bc2122efffad678e7fa1876cfc1d9f40a4fbc3115ca6194d2594322ad2f",
       "actual": "20d07bc2122efffad678e7fa1876cfc1d9f40a4fbc3115ca6194d2594322ad2f",
       "equal": true,
       "declaredCombinedChange": false
     },
     {
-      "path": "test/supabaseDatabaseOps.node.test.mjs",
+      "path": "test/legacyDbDatabaseOps.node.test.mjs",
       "expected": "6d8ec12186097a524816e6ea165bc52993f43f65be11149fab6f94ac1510ac68",
       "actual": "6d8ec12186097a524816e6ea165bc52993f43f65be11149fab6f94ac1510ac68",
       "equal": true,
       "declaredCombinedChange": false
     },
     {
-      "path": "test/supabaseFixtureLoad.test.ts",
+      "path": "test/legacyDbFixtureLoad.test.ts",
       "expected": "ff101a2c1acaef0620820bdafadb241195634161400cdbe5bfb60aee9a4fc0bd",
       "actual": "ff101a2c1acaef0620820bdafadb241195634161400cdbe5bfb60aee9a4fc0bd",
       "equal": true,
       "declaredCombinedChange": false
     },
     {
-      "path": "test/supabaseProjectConfig.test.ts",
+      "path": "test/legacyDbProjectConfig.test.ts",
       "expected": "738ce3a10b7ed5f8052978de2ad3b8aad0af13e5fce9b17594459eaa7a9bd927",
       "actual": "738ce3a10b7ed5f8052978de2ad3b8aad0af13e5fce9b17594459eaa7a9bd927",
       "equal": true,
       "declaredCombinedChange": false
     },
     {
-      "path": "test/supabaseProjectSync.test.ts",
+      "path": "test/legacyDbProjectSync.test.ts",
       "expected": "63c547ed44858a87c707bf6d4b0a03c8f6610ea2c0d0bdbe19128dbec6299201",
       "actual": "63c547ed44858a87c707bf6d4b0a03c8f6610ea2c0d0bdbe19128dbec6299201",
       "equal": true,
       "declaredCombinedChange": false
     },
     {
-      "path": "test/supabaseProxyPath.test.ts",
+      "path": "test/legacyDbProxyPath.test.ts",
       "expected": "d8c02033cf48886b219b655238a2c415425d93f3b2fc93d036df203d8975bb1f",
       "actual": "d8c02033cf48886b219b655238a2c415425d93f3b2fc93d036df203d8975bb1f",
       "equal": true,
       "declaredCombinedChange": false
     },
     {
-      "path": "test/supabaseRecoveryLocation.test.ts",
+      "path": "test/projectRecoveryLocation.test.ts",
       "expected": "42894f06b2908df6d0cc144a0a56abbb9e14c1f24632abf76ac50a50a6a5e445",
       "actual": "42894f06b2908df6d0cc144a0a56abbb9e14c1f24632abf76ac50a50a6a5e445",
       "equal": true,
       "declaredCombinedChange": false
     },
     {
-      "path": "test/supabaseResourceCache.test.ts",
+      "path": "test/legacyDbResourceCache.test.ts",
       "expected": "ed0bbdce6ff18d936efcaeaac96b40ee783e28999387e330d4d77bc094d6970e",
       "actual": "ed0bbdce6ff18d936efcaeaac96b40ee783e28999387e330d4d77bc094d6970e",
       "equal": true,
       "declaredCombinedChange": false
     },
     {
-      "path": "test/supabaseRlsCoverage.node.test.mjs",
+      "path": "test/legacyDbRlsCoverage.node.test.mjs",
       "expected": "9c78d4bcc4dbb9134c7d9dad2bd90b821bb74e0fff37b8e8cbff2a355a5a9f78",
       "actual": "9c78d4bcc4dbb9134c7d9dad2bd90b821bb74e0fff37b8e8cbff2a355a5a9f78",
       "equal": true,

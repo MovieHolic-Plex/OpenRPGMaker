@@ -51,6 +51,7 @@ export const ALL_VILLAGE_BUILD_LAYERS: readonly VillageBuildLayerId[] = [
 ] as const;
 
 export interface VillageHousePlan {
+  readonly fence?: boolean;
   readonly id: string;
   readonly kitId: HouseKitId;
   readonly yard: readonly YardDecorKind[];
@@ -143,12 +144,12 @@ export function normalizeVillagePlan(
   const pathStyle = enumOr(input.pathStyle, ["sand", "dirt", "stone"] as const, inferred.pathStyle ?? "sand", "pathStyle", issues);
   const kitMix = enumOr(input.kitMix, ["mixed", ...MIXABLE_HOUSE_KIT_IDS] as const, inferred.kitMix ?? "mixed", "kitMix", issues);
   const yardStyle = enumOr(input.yardStyle, ["mixed", "garden", "workshop", "market", "minimal"] as const, inferred.yardStyle ?? "mixed", "yardStyle", issues);
-  const plazaStyle = enumOr(input.plazaStyle, ["market", "garden", "empty"] as const, inferred.plazaStyle ?? "market", "plazaStyle", issues);
+  const plazaStyle = enumOr(input.plazaStyle, ["market", "garden", "empty"] as const, inferred.plazaStyle ?? "empty", "plazaStyle", issues);
   const edgeTrees = enumOr(input.edgeTrees, ["conifer", "dense", "none"] as const, inferred.edgeTrees ?? "conifer", "edgeTrees", issues);
   const plazaLayout = enumOr(input.plazaLayout, ["center", "north", "south", "west", "east"] as const, inferred.plazaLayout ?? "center", "plazaLayout", issues);
 
   const seed = typeof input.seed === "number" && Number.isInteger(input.seed) ? input.seed : seedFallback;
-  const fences = input.fences !== false;
+  const fences = input.fences === true;
   const decor = input.decor !== false;
   const interior = input.interior !== false;
 
@@ -298,6 +299,7 @@ export function villagePlanToBuildArgs(plan: VillagePlan, extra: Record<string, 
     housePlans: plan.houses.map((house) => ({
       kitId: house.kitId,
       yard: [...house.yard],
+      ...(house.fence !== undefined ? { fence: house.fence } : {}),
     })),
     npcs: plan.npcs.map((npc) => ({
       name: npc.name,
@@ -545,7 +547,8 @@ function normalizeHouses(raw: unknown, kitMix: KitMix, issues: PlanIssue[]): Vil
     const yard = normalizeYard(rec.yard, i, issues);
     const ownerName = typeof rec.ownerName === "string" && rec.ownerName.trim() ? rec.ownerName.trim() : undefined;
     const id = typeof rec.id === "string" && rec.id.trim() ? rec.id.trim() : `house_${i + 1}`;
-    out.push({ id, kitId, yard, ...(ownerName ? { ownerName } : {}) });
+    if (rec.fence !== undefined && typeof rec.fence !== "boolean") issues.push({ severity: "error", message: `houses[${i}].fence는 boolean이어야 한다.` });
+    out.push({ id, kitId, yard, ...(ownerName ? { ownerName } : {}), ...(typeof rec.fence === "boolean" ? { fence: rec.fence } : {}) });
   }
   return out;
 }
@@ -618,11 +621,11 @@ function inferFromTheme(theme: string): Partial<Pick<VillagePlan, "pathStyle" | 
   if (/성곽|석조|돌길|성문|castle|citadel/.test(t)) {
     return { pathStyle: "stone", yardStyle: "workshop", plazaStyle: "garden", edgeTrees: "conifer" };
   }
-  if (/어촌|항구|바다|호수|강가|해안|coast|harbor|lake|river|beach/.test(t)) {
-    return { pathStyle: "sand", yardStyle: "market", plazaStyle: "market", plazaLayout: "south", edgeTrees: "conifer" };
-  }
   if (/장터|시장|market|fair|축제/.test(t)) {
     return { pathStyle: "sand", yardStyle: "market", plazaStyle: "market" };
+  }
+  if (/어촌|항구|바다|호수|강가|해안|coast|harbor|lake|river|beach/.test(t)) {
+    return { pathStyle: "sand", yardStyle: "mixed", plazaStyle: "empty", plazaLayout: "south", edgeTrees: "conifer" };
   }
   if (/농|밭|촌락|farm|rural|목장/.test(t)) {
     return { pathStyle: "dirt", yardStyle: "garden", plazaStyle: "garden", edgeTrees: "dense" };

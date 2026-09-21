@@ -10,7 +10,7 @@
 - 재사용: AssistantSession, WorkPlan, ToolVerificationEvidence, toolRunner,
   applyProposedProject, ProjectStore, IndexedDB, 기존 QA.
 - 만들지 않을 것: 두 번째 범용 하네스/검증 원장, 기본 다중 작성자,
-  범용 DAG, 임의 JavaScript 실행 도구, 서버 상주 에이전트, 새 Supabase 테이블.
+  범용 DAG, 임의 JavaScript 실행 도구, 서버 상주 에이전트, 새 LegacyDb 테이블.
 - 우선순위: **저장 증명의 거짓 성공 수정 → 목표 완료 의미 → 복구 →
   오래된 결과/초안 방지 → 사용자 표시와 실제 검증.**
 - 사용자는 2026-09-06 구현·커밋·PR·순차 병합을 승인했다. 아래 체크박스와
@@ -196,7 +196,7 @@ UI는 실제 경로를 탄다. 클릭 전 정확한 사건을 구독하고 bound
 사용자의 후속 실행 지시가 초기 단일-worktree 제안을 대체한다. **Phase마다
 새 전용 worktree를 만들고 mass-ulw로 구현·검증·PR을 진행한다.** 독립 작업과
 리뷰 수정은 worker별 별도 worktree에서 deep 병렬 작업으로 수행한다.
-같은 worktree에 두 작성자를 두지 않으며, 같은 Supabase 프로젝트 콘텐츠는
+같은 worktree에 두 작성자를 두지 않으며, 같은 LegacyDb 프로젝트 콘텐츠는
 병렬 작성하지 않는다.
 
 각 Phase의 PR은 **ultrabrain이 현재 통합 HEAD에 최종 승인한 뒤에만** 리드가
@@ -249,7 +249,7 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
 - [x] 2. 저장 증명과 실패 후 재시도를 실제 수락 버전에 연결한다
   - Recommended task executor category: deep
   - 선행: 1. 소유: `src/project/store.ts`, 필요한
-    `src/project/supabaseProjectSync.ts` 읽기 메타데이터 경계,
+    `src/project/legacyDbProjectSync.ts` 읽기 메타데이터 경계,
     `src/ai/assistantSession.ts:maybeRunEndProof`, 관련 tests.
   - 재사용: `persistCurrent`의 submitted/savedProject,
     `loadNewRemoteProjectTransactionally`의 정규화 비교, 기존 로더.
@@ -257,7 +257,7 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
     failed/cancelled/disabled, project mismatch, normalized-content mismatch에서
     verified=false; failed→same revision retry는 조회 횟수 2와 후속 성공.
     현재 메서드는 실패도 saved 감사로 승격하므로 그 이유로 RED여야 함.
-  - GREEN 명령: `npm test -- test/aiRunEndProof.test.ts test/storePersistence.test.ts test/supabaseProjectSync.test.ts`.
+  - GREEN 명령: `npm test -- test/aiRunEndProof.test.ts test/storePersistence.test.ts test/legacyDbProjectSync.test.ts`.
   - 경계: 검증 중 사용자 편집을 주입해 최신 로컬 콘텐츠가 유지되고 이전 proof가
     최신 버전에 붙지 않음을 검사. plan 없는 일반 적용도 같은 proof 경로 사용 가능.
   - 실표면: 10의 `--scenario proof-failure`와 실제 remote smoke가 이 증분을 검증.
@@ -450,7 +450,7 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
     검사: 부팅·기록 38건, 원장 복구 32건, 조정·저장 39건, 부정 인수 10건,
     정상 복구·재검증 19건, 인접 적용/취소/계속/기록 63건, `npm run build` exit0,
     앱 타입 게이트 exit0(`p4/typecheck-gate.json`).
-  - 실표면(실제 브라우저·실제 Supabase): `--scenario recovery`가 적용 직후 중단 →
+  - 실표면(실제 브라우저·실제 LegacyDb): `--scenario recovery`가 적용 직후 중단 →
     `page.reload()` → 실제 「계속」까지 통과했다. 모델 호출 14→14, 중복 생성·적용·
     undo 0, 원 요청과 적용 기록 보존, 새 run/상위 epoch, 최종 대화 저장 1회,
     중단 시점 IDB 행 불변. 부정 3종(필수 이미지 누락 거부, 내용 변경

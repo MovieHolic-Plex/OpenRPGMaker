@@ -1,3 +1,10 @@
+import { advancePredictedHitStates } from "@/battle/battlePredictStates";
+import { consumeBattleSkillResource } from "@/battle/battleSkillUse";
+import { DEFAULT_SKILL_ID } from "@/project/defaults/constants";
+import { formationDamage } from "@/battle/battleFormation";
+import { evaluateDamageFormula, formulaBattlerContext } from "@/battle/damageFormula";
+import { applySkillLike } from "@/battle/battleDamage";
+import { battlerSnapshot, type MutableBattler } from "@/battle/battleBattlers";
 // 전투 화면 표시용 순수 계산 헬퍼.
 // runtime.ts 의 데미지 공식/속성 판정과 동일한 규칙을 따르되, 랜덤 요소를 배제한
 // "기댓값"을 반환한다. 거짓 데이터(하드코딩)를 대체하기 위한 진짜 계산 소스.
@@ -22,6 +29,9 @@ import { attackMultiplierForStates, defenseMultiplierForStates } from "@/battle/
 export interface PredictedDamage {
   /** 분산/크리티컬/빗나감을 배제한 평균 기대 피해(또는 회복). 음수 = 흡수. */
   readonly amount: number;
+  readonly hitChance?: number;
+  readonly criticalChance?: number;
+  readonly cooldownRemaining?: number;
   /** 힐/서포트(자신에게 적용) 여부. 화면 표시 분기용. */
   readonly healing: boolean;
   /** 대상이 이 속성에 약점(A/B 등급)인지. */
@@ -206,7 +216,7 @@ export function predictSkillDamage(
     if (target.defending) amount = Math.floor(amount / 2);
     const typeProduct = modifiers.typeFactors.reduce((product, factor) => product * factor / 10, 1);
     return {
-      amount,
+      amount: formationDamage(amount, user.row, target.row, magical ? "mind" : "attack", "damage"),
       healing: false,
       weak: typeProduct > 1,
       resistant: typeProduct < 1,
@@ -252,7 +262,7 @@ export function predictSkillDamage(
   }
   const grade = spec.elementId ? elementGradeFor(project, spec.elementId, target.recordId) : undefined;
   return {
-    amount: magnitude,
+    amount: formationDamage(magnitude, user.row, target.row, spec.statistic, spec.effect),
     healing: false,
     weak: isWeakness(grade),
     resistant: isResistance(grade),
@@ -274,7 +284,62 @@ export function predictAttackDamage(project: Project, actor: BattleBattlerSnapsh
 // 스킬 예측 피해(공격 스킬만). healing/support 는 amount 를 그대로 반환.
 export function predictSkillDamageFor(project: Project, user: BattleBattlerSnapshot, skill: SkillRecord, target: BattleBattlerSnapshot): PredictedDamage {
   const statistic = skill.effect.kind === "damage" || skill.effect.kind === "healing" ? skill.effect.statistic : "attack";
-  return predictSkillDamage(project, user, { power: skill.power, statistic, effect: skill.effect.kind, elementId: skill.elementId }, target);
+  if (skill.id === DEFAULT_SKILL_ID && !skill.damageFormula && !usesGen1Damage(project)) skill = { ...skill, power: battlerStats(project, user).attack };
+  const normal = predictSkillDamage(project, { ...user, row: undefined }, { power: skill.power, statistic, effect: skill.effect.kind, elementId: skill.elementId }, { ...target, row: undefined });
+  const mutable = (snapshot: BattleBattlerSnapshot): MutableBattler => {
+    const stats = battlerStats(project, snapshot);
+    return { ...snapshot, ...stats, hidden: false, chargeRate: 0, attackPower: stats.attack, stateIds: [...snapshot.stateIds], stateTurns: { ...snapshot.stateTurns }, skillPp: { ...snapshot.skillPp }, skillCooldowns: { ...snapshot.skillCooldowns }, skillIds: [...snapshot.skillIds] } as MutableBattler;
+  };
+  const source = mutable(user);
+  const destination = user.id === target.id ? source : mutable(target);
+  // Prediction owns clones; never consume snapshot resources or enemy Gen1 unlimited PP.
+  if (!(usesGen1Damage(project) && project.database.enemies.some(enemy => enemy.id === user.recordId))) {
+    consumeBattleSkillResource(project, source, skill.id);
+  }
+  let amount = 0;
+  for (const multiplier of skill.hitSequence ?? [1]) {
+    if (destination.hp <= 0 && skill.effect.kind === "damage") break;
+    const formula = skill.damageFormula ? evaluateDamageFormula(skill.damageFormula, formulaBattlerContext(
+      { ...source, attackPower: Math.round(source.attackPower * attackMultiplierForStates(project, source)), mind: Math.round(source.mind * attackMultiplierForStates(project, source)) },
+      { ...destination, defense: destination.defense * defenseMultiplierForStates(project, destination), mind: destination.mind * defenseMultiplierForStates(project, destination) }, skill.power)) : undefined;
+    let hit = predictSkillDamage(project, { ...battlerSnapshot(source), row: undefined },
+      { power: skill.power, statistic, effect: skill.effect.kind, elementId: skill.elementId },
+      { ...battlerSnapshot(destination), row: undefined }).amount;
+    if (!usesGen1Damage(project) || formula?.ok) {
+      if (usesGen1Damage(project) && skill.effect.kind === "damage" && formula?.ok) {
+        const modifiers = gen1TypeModifiersForTypes(project, skill.elementId, battlerTypes(project, user), battlerTypes(project, target));
+        hit = applyGen1StabAndType(formula.value, modifiers.stab, modifiers.typeFactors);
+        if (hit > 1) hit = Math.floor(hit * GEN1_RANDOM_MEDIAN / GEN1_RANDOM_MAX);
+      } else {
+        const result = applySkillLike({ ...source, row: undefined }, { ...destination, row: undefined }, {
+          power: skill.power, statistic, effect: skill.effect.kind, damageFormula: skill.damageFormula,
+          variance: 0, criticalRate: 0, hitRate: 100, rng: () => 0.5,
+          affects: skill.effect.kind === "damage" || skill.effect.kind === "healing" ? skill.effect.affects : "hp",
+          attackerStatMultiplier: attackMultiplierForStates(project, source),
+          targetDefenseMultiplier: defenseMultiplierForStates(project, destination),
+          elementMultiplier: elementMultiplierFor(project, skill.elementId, target.recordId, target)
+            * typeChartMultiplierForTypes(project, skill.elementId, battlerTypes(project, user), battlerTypes(project, target)),
+        });
+        hit = result.amount;
+      }
+    }
+    hit = formationDamage(Math.round(hit * multiplier), user.row, target.row, usesGen1Damage(project) && skill.effect.kind === "damage" ? (usesMagicalDefense(project, skill.elementId) ? "mind" : "attack") : statistic, skill.effect.kind);
+    amount += hit;
+    if (skill.effect.kind === "damage") {
+      if (skill.effect.affects === "mp") destination.mp = Math.min(destination.maxMp, Math.max(0, destination.mp - hit));
+      else destination.hp = Math.min(destination.maxHp, Math.max(0, destination.hp - hit));
+    }
+    else if (skill.effect.kind === "healing") {
+      if (skill.effect.affects === "mp") destination.mp = Math.min(destination.maxMp, destination.mp + hit);
+      else destination.hp = Math.min(destination.maxHp, destination.hp + hit);
+    }
+    // Ordinary-hit preview follows guaranteed state transitions only. Probabilistic
+    // procs are not sampled; this keeps previews stable and never consumes battle RNG.
+    advancePredictedHitStates(project, destination, skill, hit);
+  }
+  return { ...normal, amount, hitChance: skill.hitRate * skill.successRate / 100,
+    criticalChance: skill.criticalRate, cooldownRemaining: user.skillCooldowns?.[skill.id] ?? 0 };
+
 }
 
 // 도주 성공 확률(0~1). runtime.performActorCommand 의 escape 로직과 동일.

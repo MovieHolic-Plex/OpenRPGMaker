@@ -1,0 +1,955 @@
+{
+  "sceneChecks": [
+    {
+      "preset": "enchanted-forest",
+      "effects": [
+        {
+          "kind": "fireflies",
+          "amount": 0.65,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "insects",
+          "volume": 0.3
+        },
+        {
+          "kind": "spirits",
+          "amount": 0.4,
+          "speed": 0.5,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "whisper",
+          "volume": 0.28
+        },
+        {
+          "kind": "sunrays",
+          "amount": 0.45,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35
+        }
+      ]
+    },
+    {
+      "preset": "ancient-ruins",
+      "effects": [
+        {
+          "kind": "runes",
+          "amount": 0.45,
+          "speed": 0.5,
+          "size": 1.2,
+          "opacity": 0.7,
+          "sound": "chimes",
+          "volume": 0.35
+        },
+        {
+          "kind": "dust",
+          "amount": 0.6,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35
+        },
+        {
+          "kind": "sunrays",
+          "amount": 0.35,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35,
+          "tint": "#efcb81"
+        }
+      ]
+    },
+    {
+      "preset": "arcane-library",
+      "effects": [
+        {
+          "kind": "magic",
+          "amount": 0.7,
+          "speed": 0.35,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "chimes",
+          "volume": 0.35,
+          "tint": "#d59aff"
+        },
+        {
+          "kind": "runes",
+          "amount": 0.25,
+          "speed": 1,
+          "size": 0.7,
+          "opacity": 0.7,
+          "sound": "whisper",
+          "volume": 0.22,
+          "tint": "#dcadfa"
+        }
+      ]
+    },
+    {
+      "preset": "frost-sanctum",
+      "effects": [
+        {
+          "kind": "frost",
+          "amount": 0.75,
+          "speed": 1,
+          "size": 1.4,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.3
+        },
+        {
+          "kind": "steam",
+          "amount": 0.35,
+          "speed": 0.25,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "chimes",
+          "volume": 0.25,
+          "tint": "#a1cce6"
+        }
+      ]
+    },
+    {
+      "preset": "astral-gate",
+      "effects": [
+        {
+          "kind": "runes",
+          "amount": 0.6,
+          "speed": 0.8,
+          "size": 1.8,
+          "opacity": 0.7,
+          "sound": "chimes",
+          "volume": 0.3,
+          "tint": "#85c8ff"
+        },
+        {
+          "kind": "spirits",
+          "amount": 0.6,
+          "speed": 1.4,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "whisper",
+          "volume": 0.32
+        },
+        {
+          "kind": "magic",
+          "amount": 0.35,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "chimes",
+          "volume": 0.18,
+          "tint": "#b5ddff"
+        }
+      ]
+    },
+    {
+      "preset": "cursed-land",
+      "effects": [
+        {
+          "kind": "poison",
+          "amount": 0.65,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "rumble",
+          "volume": 0.4,
+          "tint": "#9270b1"
+        },
+        {
+          "kind": "shades",
+          "amount": 0.4,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "whisper",
+          "volume": 0.25
+        },
+        {
+          "kind": "ash",
+          "amount": 0.4,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.15
+        }
+      ]
+    },
+    {
+      "preset": "volcanic-forge",
+      "effects": [
+        {
+          "kind": "embers",
+          "amount": 0.9,
+          "speed": 1.5,
+          "size": 1.3,
+          "opacity": 0.7,
+          "sound": "fire",
+          "volume": 0.5
+        },
+        {
+          "kind": "ash",
+          "amount": 0.6,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.15
+        },
+        {
+          "kind": "smog",
+          "amount": 0.25,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "rumble",
+          "volume": 0.25,
+          "tint": "#a65338"
+        }
+      ]
+    },
+    {
+      "preset": "abyss-rift",
+      "effects": [
+        {
+          "kind": "shades",
+          "amount": 0.8,
+          "speed": 0.6,
+          "size": 2,
+          "opacity": 0.7,
+          "sound": "whisper",
+          "volume": 0.45,
+          "tint": "#57366f"
+        },
+        {
+          "kind": "sparks",
+          "amount": 0.55,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "electric",
+          "volume": 0.25,
+          "tint": "#c177ff"
+        },
+        {
+          "kind": "poison",
+          "amount": 0.3,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "rumble",
+          "volume": 0.3,
+          "tint": "#584066"
+        }
+      ]
+    },
+    {
+      "preset": "blood-moon",
+      "effects": [
+        {
+          "kind": "runes",
+          "amount": 0.5,
+          "speed": 0.4,
+          "size": 1.7,
+          "opacity": 0.7,
+          "sound": "rumble",
+          "volume": 0.4,
+          "tint": "#ff586c"
+        },
+        {
+          "kind": "petals",
+          "amount": 0.6,
+          "speed": 0.55,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.2,
+          "tint": "#c94458"
+        },
+        {
+          "kind": "shades",
+          "amount": 0.3,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "whisper",
+          "volume": 0.25,
+          "tint": "#763943"
+        }
+      ]
+    },
+    {
+      "preset": "blight-marsh",
+      "effects": [
+        {
+          "kind": "poison",
+          "amount": 0.85,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "rumble",
+          "volume": 0.4,
+          "tint": "#86ac37"
+        },
+        {
+          "kind": "underwater",
+          "amount": 0.3,
+          "speed": 0.4,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "bubbles",
+          "volume": 0.3,
+          "tint": "#a8d75a"
+        },
+        {
+          "kind": "fireflies",
+          "amount": 0.45,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "whisper",
+          "volume": 0.25,
+          "tint": "#cbef42"
+        }
+      ]
+    },
+    {
+      "preset": "bamboo-grove",
+      "effects": [
+        {
+          "kind": "leaves",
+          "amount": 0.65,
+          "speed": 0.8,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "rustle",
+          "volume": 0.45,
+          "tint": "#8bac53"
+        },
+        {
+          "kind": "sunrays",
+          "amount": 0.45,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.5,
+          "sound": "none",
+          "volume": 0.35
+        }
+      ]
+    },
+    {
+      "preset": "mountain-mist",
+      "effects": [
+        {
+          "kind": "steam",
+          "amount": 0.55,
+          "speed": 0.25,
+          "size": 1,
+          "opacity": 0.6,
+          "sound": "breeze",
+          "volume": 0.35
+        },
+        {
+          "kind": "petals",
+          "amount": 0.3,
+          "speed": 0.4,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.15
+        }
+      ]
+    },
+    {
+      "preset": "plum-courtyard",
+      "effects": [
+        {
+          "kind": "petals",
+          "amount": 0.9,
+          "speed": 0.6,
+          "size": 1.5,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.4,
+          "tint": "#f79faf"
+        },
+        {
+          "kind": "dust",
+          "amount": 0.25,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35
+        },
+        {
+          "kind": "sunrays",
+          "amount": 0.35,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35,
+          "tint": "#ffdcc3"
+        }
+      ]
+    },
+    {
+      "preset": "sword-grave",
+      "effects": [
+        {
+          "kind": "ash",
+          "amount": 0.65,
+          "speed": 0.5,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.4
+        },
+        {
+          "kind": "shades",
+          "amount": 0.35,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "chimes",
+          "volume": 0.2,
+          "tint": "#728190"
+        },
+        {
+          "kind": "steam",
+          "amount": 0.3,
+          "speed": 0.15,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35,
+          "tint": "#9aabb5"
+        }
+      ]
+    },
+    {
+      "preset": "immortal-peak",
+      "effects": [
+        {
+          "kind": "runes",
+          "amount": 0.3,
+          "speed": 1,
+          "size": 1.1,
+          "opacity": 0.7,
+          "sound": "chimes",
+          "volume": 0.3,
+          "tint": "#f4d187"
+        },
+        {
+          "kind": "steam",
+          "amount": 0.35,
+          "speed": 0.2,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.3
+        },
+        {
+          "kind": "spirits",
+          "amount": 0.25,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "whisper",
+          "volume": 0.2,
+          "tint": "#ffe7a3"
+        }
+      ]
+    },
+    {
+      "preset": "city-smog",
+      "effects": [
+        {
+          "kind": "smog",
+          "amount": 0.6,
+          "speed": 0.5,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "rumble",
+          "volume": 0.4
+        },
+        {
+          "kind": "dust",
+          "amount": 0.55,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35
+        }
+      ]
+    },
+    {
+      "preset": "power-station",
+      "effects": [
+        {
+          "kind": "sparks",
+          "amount": 0.65,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "electric",
+          "volume": 0.4
+        },
+        {
+          "kind": "steam",
+          "amount": 0.25,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.4,
+          "sound": "steam",
+          "volume": 0.15
+        },
+        {
+          "kind": "leaks",
+          "amount": 0.4,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "drips",
+          "volume": 0.3
+        }
+      ]
+    },
+    {
+      "preset": "subway-tunnel",
+      "effects": [
+        {
+          "kind": "leaks",
+          "amount": 0.75,
+          "speed": 0.7,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "drips",
+          "volume": 0.4
+        },
+        {
+          "kind": "dust",
+          "amount": 0.55,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "rumble",
+          "volume": 0.25,
+          "tint": "#9ba2aa"
+        },
+        {
+          "kind": "smog",
+          "amount": 0.2,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35
+        }
+      ]
+    },
+    {
+      "preset": "neon-alley",
+      "effects": [
+        {
+          "kind": "steam",
+          "amount": 0.4,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "steam",
+          "volume": 0.25,
+          "tint": "#bd75ab"
+        },
+        {
+          "kind": "leaks",
+          "amount": 0.6,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "drips",
+          "volume": 0.3,
+          "tint": "#77dcdf"
+        },
+        {
+          "kind": "sparks",
+          "amount": 0.2,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "electric",
+          "volume": 0.25,
+          "tint": "#f4a5db"
+        }
+      ]
+    },
+    {
+      "preset": "cryo-laboratory",
+      "effects": [
+        {
+          "kind": "steam",
+          "amount": 0.6,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "steam",
+          "volume": 0.35,
+          "tint": "#b7e2ec"
+        },
+        {
+          "kind": "frost",
+          "amount": 0.5,
+          "speed": 0.4,
+          "size": 0.8,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35
+        },
+        {
+          "kind": "sparks",
+          "amount": 0.2,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "electric",
+          "volume": 0.2
+        }
+      ]
+    },
+    {
+      "preset": "boiler-room",
+      "effects": [
+        {
+          "kind": "steam",
+          "amount": 0.75,
+          "speed": 1.3,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "steam",
+          "volume": 0.45
+        },
+        {
+          "kind": "leaks",
+          "amount": 0.5,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "drips",
+          "volume": 0.3
+        }
+      ]
+    },
+    {
+      "preset": "steam-station",
+      "effects": [
+        {
+          "kind": "steam",
+          "amount": 0.65,
+          "speed": 1.8,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "steam",
+          "volume": 0.5
+        },
+        {
+          "kind": "ash",
+          "amount": 0.65,
+          "speed": 1.5,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.2,
+          "tint": "#777477"
+        },
+        {
+          "kind": "embers",
+          "amount": 0.25,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "fire",
+          "volume": 0.3
+        }
+      ]
+    },
+    {
+      "preset": "factory-chimneys",
+      "effects": [
+        {
+          "kind": "smog",
+          "amount": 0.8,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "rumble",
+          "volume": 0.45,
+          "tint": "#a59473"
+        },
+        {
+          "kind": "ash",
+          "amount": 0.8,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.2,
+          "tint": "#666364"
+        },
+        {
+          "kind": "dust",
+          "amount": 0.4,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35
+        }
+      ]
+    },
+    {
+      "preset": "gaslamp-street",
+      "effects": [
+        {
+          "kind": "sunrays",
+          "amount": 0.8,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.95,
+          "sound": "none",
+          "volume": 0.35,
+          "tint": "#ffd087"
+        },
+        {
+          "kind": "steam",
+          "amount": 0.4,
+          "speed": 0.2,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "steam",
+          "volume": 0.22,
+          "tint": "#c7b99b"
+        },
+        {
+          "kind": "dust",
+          "amount": 0.45,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.2
+        }
+      ]
+    },
+    {
+      "preset": "iron-foundry",
+      "effects": [
+        {
+          "kind": "embers",
+          "amount": 0.95,
+          "speed": 1.8,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "fire",
+          "volume": 0.5
+        },
+        {
+          "kind": "sparks",
+          "amount": 0.6,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "fire",
+          "volume": 0.45,
+          "tint": "#ffc27a"
+        },
+        {
+          "kind": "smog",
+          "amount": 0.4,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "rumble",
+          "volume": 0.2,
+          "tint": "#a17c63"
+        }
+      ]
+    },
+    {
+      "preset": "sunken-temple",
+      "effects": [
+        {
+          "kind": "underwater",
+          "amount": 0.7,
+          "speed": 0.7,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "bubbles",
+          "volume": 0.4
+        },
+        {
+          "kind": "runes",
+          "amount": 0.3,
+          "speed": 0.35,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "chimes",
+          "volume": 0.2,
+          "tint": "#88e8ed"
+        }
+      ]
+    },
+    {
+      "preset": "spring-grove",
+      "effects": [
+        {
+          "kind": "petals",
+          "amount": 0.7,
+          "speed": 1,
+          "size": 1.3,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.3
+        },
+        {
+          "kind": "fireflies",
+          "amount": 0.35,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "insects",
+          "volume": 0.25
+        },
+        {
+          "kind": "sunrays",
+          "amount": 0.5,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35
+        }
+      ]
+    },
+    {
+      "preset": "autumn-road",
+      "effects": [
+        {
+          "kind": "leaves",
+          "amount": 0.9,
+          "speed": 0.75,
+          "size": 1.5,
+          "opacity": 0.7,
+          "sound": "rustle",
+          "volume": 0.45
+        },
+        {
+          "kind": "dust",
+          "amount": 0.55,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35,
+          "tint": "#deb778"
+        },
+        {
+          "kind": "sunrays",
+          "amount": 0.35,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35,
+          "tint": "#edc386"
+        }
+      ]
+    },
+    {
+      "preset": "desert-wind",
+      "effects": [
+        {
+          "kind": "sand",
+          "amount": 0.95,
+          "speed": 1.65,
+          "size": 1,
+          "opacity": 0.9,
+          "sound": "breeze",
+          "volume": 0.6
+        },
+        {
+          "kind": "dust",
+          "amount": 0.65,
+          "speed": 2,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35,
+          "tint": "#dcb879"
+        }
+      ]
+    },
+    {
+      "preset": "deep-sea",
+      "effects": [
+        {
+          "kind": "underwater",
+          "amount": 0.85,
+          "speed": 0.4,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "bubbles",
+          "volume": 0.45,
+          "tint": "#528eaa"
+        },
+        {
+          "kind": "spirits",
+          "amount": 0.6,
+          "speed": 0.35,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "rumble",
+          "volume": 0.3,
+          "tint": "#72d8f0"
+        },
+        {
+          "kind": "dust",
+          "amount": 0.5,
+          "speed": 0.3,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35,
+          "tint": "#a0ccd9"
+        }
+      ]
+    }
+  ],
+  "custom": [
+    {
+      "kind": "steam",
+      "amount": 0.75,
+      "speed": 1.3,
+      "size": 1,
+      "opacity": 0.7,
+      "sound": "none",
+      "volume": 0.45
+    },
+    {
+      "kind": "leaks",
+      "amount": 0.5,
+      "speed": 1,
+      "size": 1,
+      "opacity": 0.7,
+      "sound": "drips",
+      "volume": 0.15
+    }
+  ]
+}

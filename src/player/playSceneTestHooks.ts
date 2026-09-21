@@ -1,3 +1,4 @@
+import { mapTileSize } from "@/project/tileGeometry";
 import type Phaser from "phaser";
 import { buildLifeRuntimeSnapshot, type LifeRuntimeSnapshot, type RuntimeActionReceipt, type RuntimeDomOverlay } from "@/player/runtimeDom";
 import { describeSceneEmotes, type SceneEmoteDebug } from "@/player/playSceneEmotes";
@@ -11,13 +12,8 @@ import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
 import type { RuntimePerfCounters } from "@/player/runtimePerfCounters";
 import { subscribeActionCombatObservations } from "@/player/playSceneActionCombat";
 import {
-  CLOUD_SHADOW_BLOB_COUNT,
-  cloudShadowAnchors,
-  cloudShadowPeriod,
-  cloudShadowSeedForMap,
   normalizeCloudShadowParams,
 } from "@/player/cloudShadows";
-import { CLOUD_SHADOW_TEXTURE_KEY, cloudShadowView } from "@/player/playSceneCloudShadows";
 import { inBounds, isPassable } from "@/project/collision";
 import { store } from "@/project/store";
 import { PLAYER_COMBATANT_ID, type ActionEnemyState } from "@/player/actionCombatTypes";
@@ -162,6 +158,12 @@ type CharacterSpriteDebug = {
     readonly displayWidth: number;
     readonly displayHeight: number;
   }>;
+  readonly followers: Record<string, {
+    readonly x: number;
+    readonly y: number;
+    readonly frame: string | number;
+    readonly depth: number;
+  }>;
   readonly events: Record<string, {
     readonly alpha: number;
     readonly frame: string | number;
@@ -194,15 +196,16 @@ type CloudShadowDebug = {
   readonly speed: number;
   readonly angleDeg: number;
   readonly scale: number;
+  readonly amount: number;
   readonly clockMs: number;
   readonly visibleCount: number;
   readonly depth: number | null;
   readonly textureReady: boolean;
-  /** 배치가 가진 구름 수(화면에 보이는 수와 다를 수 있다 — 일부는 화면 밖이다). */
+  /** 연속 구름 레이어 수. */
   readonly layoutCount: number;
   /** 격자 주기(월드 px). 위상을 접을 때 쓴다. */
   readonly period: number;
-  /** 배치 순서가 고정된 구름 위상 — 두 관측을 «같은 구름» 으로 이어 주는 유일한 이름. */
+  /** 레이어별 텍스처 UV 위상. 카메라 이동을 제외한 시간 진행을 비교한다. */
   readonly anchors: readonly { readonly x: number; readonly y: number }[];
   readonly blobs: readonly { readonly x: number; readonly y: number; readonly alpha: number; readonly visible: boolean }[];
 };
@@ -215,6 +218,7 @@ type SpriteDebugScene = Phaser.Scene & {
   };
   readonly moving?: boolean;
   readonly eventSprites?: Map<string, Phaser.GameObjects.Sprite>;
+  readonly followerSprites?: Map<string, Phaser.GameObjects.Sprite>;
   readonly characterShadows?: Map<string, ShadowDebugTarget>;
   /** 체공 상태기(PlayerHopState | null). 반올림된 liftPx 와 달리 착지 커밋의 유일한 진실이다. */
   readonly playerHop?: unknown;
@@ -473,7 +477,7 @@ async function runActionCombatSceneProof(
     scene.session.y = stage.y;
     scene.movingFrom = { ...stage };
     scene.movingTo = { ...stage };
-    scene.player.setPosition(stage.x * 16 + 8, stage.y * 16 + 16);
+    scene.player.setPosition((stage.x + 0.5) * mapTileSize(scene.map), (stage.y + 1) * mapTileSize(scene.map));
     state.playerIframesMs = 0;
     state.dodgeIframesMs = 0;
     state.hitstopMs = 0;
@@ -491,7 +495,7 @@ async function runActionCombatSceneProof(
   const arm = (enemy: ActionEnemyState, distance: number): void => {
     park(enemy);
     scene.eventPositions[enemy.eventId] = { x: stage.x + distance, y: stage.y, direction: "left" };
-    scene.eventSprites.get(enemy.eventId)?.setPosition((stage.x + distance) * 16 + 8, stage.y * 16 + 16);
+    scene.eventSprites.get(enemy.eventId)?.setPosition((stage.x + distance + 0.5) * mapTileSize(scene.map), (stage.y + 1) * mapTileSize(scene.map));
     enemy.mode = "windup";
     enemy.modeTimerMs = 0;
   };
@@ -575,20 +579,20 @@ function cloudShadowsDebug(scene: Phaser.Scene): CloudShadowDebug {
   const context = scene as unknown as Partial<PlaySceneContext>;
   const params = normalizeCloudShadowParams(context.map?.cloudShadows);
   const sprites = context.cloudShadowSprites ?? [];
-  const view = context.cameras ? cloudShadowView(context as PlaySceneContext) : { x: 0, y: 0, width: 1, height: 1 };
   return {
     enabled: params.enabled,
     opacity: params.opacity,
     speed: params.speed,
     angleDeg: params.angleDeg,
     scale: params.scale,
+    amount: params.amount,
     clockMs: context.cloudShadowClockMs ?? 0,
     visibleCount: sprites.filter((sprite) => sprite.visible).length,
     depth: sprites[0]?.depth ?? null,
-    textureReady: scene.textures.exists(CLOUD_SHADOW_TEXTURE_KEY),
-    layoutCount: CLOUD_SHADOW_BLOB_COUNT,
-    period: cloudShadowPeriod(view, params.scale),
-    anchors: cloudShadowAnchors(params, context.cloudShadowClockMs ?? 0, cloudShadowPeriod(view, params.scale), cloudShadowSeedForMap(context.map?.id ?? "")),
+    textureReady: sprites.length > 0 && sprites.every((sprite) => scene.textures.exists(sprite.texture.key)),
+    layoutCount: sprites.length,
+    period: sprites[0] ? sprites[0].frame.width * sprites[0].tileScaleX : 0,
+    anchors: sprites.map((sprite) => ({ x: sprite.tilePositionX, y: sprite.tilePositionY })),
     blobs: sprites.map((sprite) => ({
       x: sprite.x,
       y: sprite.y,
@@ -671,6 +675,12 @@ function characterSpritesDebug(scene: Phaser.Scene): CharacterSpriteDebug | null
       displayHeight: shadow.displayHeight,
     };
   }
+  // 팔로워 스프라이트. syncFollowerSprites 가 슬롯 보간을 하므로 프레임마다 화면 x/y 가
+  // 타일 사이값이 되어야 한다(스냅이면 버그다) — probe 가 이 값으로 판정한다.
+  const followers: Record<string, { readonly x: number; readonly y: number; readonly frame: string | number; readonly depth: number }> = {};
+  for (const [key, sprite] of scene.followerSprites?.entries() ?? []) {
+    followers[key] = { x: sprite.x, y: sprite.y, frame: sprite.frame.name, depth: sprite.depth };
+  }
   return {
     player: {
       x: player.x,
@@ -682,6 +692,7 @@ function characterSpritesDebug(scene: Phaser.Scene): CharacterSpriteDebug | null
       scaleX: player.scaleX,
       scaleY: player.scaleY,
     },
+    followers,
     shadows,
     events,
   };

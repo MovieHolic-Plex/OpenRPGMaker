@@ -1,11 +1,4 @@
 import {
-  extendAiSelectionDrag,
-  handleAiTileClick,
-  isAiTileSelected,
-  startAiSelectionDrag,
-  stopAiSelectionDrag,
-} from "@/editor/panels/tilesetAiQuestionEditor";
-import {
   extendGroupDrag,
   groupCellClass,
   groupCellText,
@@ -344,16 +337,14 @@ function renderTileCell(model: ChipsetPreviewModel, index: number): HTMLButtonEl
   const mark = passageMarkForTile(model.tileset, index);
   const home = tileLayerHome(model.tileset, index);
   const selected = index === model.selectedTile ? " selected" : "";
-  const aiSelected = model.mode === "ai" && isAiTileSelected(index) ? " ai-selected" : "";
   const unlabeledOn = model.unlabeledOnly ?? unlabeledOnlyFilter;
   const unlabeled = isUnlabeledTile(model.tileset, index);
   const dimmed = isLayerDimmed(home) || (unlabeledOn && !unlabeled) ? " layer-dimmed" : "";
   const unlabeledClass = unlabeled ? " unlabeled" : "";
   const autotileMember = model.mode === "autotile" && model.highlightTileIds?.has(index) ? " autotile-member" : "";
   const markClass = model.mode === "autotile" ? "" : ` mark-${mark}`;
-  const rerender = () => stableRerender(model.rerender);
   return el("button", {
-    class: `tileset-db-cell${markClass} layer-${home}${selected}${aiSelected}${dimmed}${unlabeledClass}${autotileMember}${model.mode === "group" ? groupCellClass(index) : ""}`,
+    class: `tileset-db-cell${markClass} layer-${home}${selected}${dimmed}${unlabeledClass}${autotileMember}${model.mode === "group" ? groupCellClass(index) : ""}`,
     text: cellText(model, index),
     attrs: {
       type: "button",
@@ -379,23 +370,12 @@ function renderTileCell(model: ChipsetPreviewModel, index: number): HTMLButtonEl
         // 우클릭(2)·중클릭(1)은 드래그/포커스 훔치기 금지 — 메뉴·팬만 담당.
         if (!(event instanceof MouseEvent) || event.button !== 0) return;
         event.preventDefault();
-        if (model.mode === "ai") startAiSelectionDrag(index, event, rerender);
       },
       pointerenter: () => {
         handlePointerEnter(model, index);
         if (model.mode === "autotile") paintAutotileHover(autotileHoverTileIds(model.tileset, index));
       },
-      mouseenter: () => {
-        if (model.mode === "ai") {
-          model.onSelectTile(index, { quiet: true });
-          extendAiSelectionDrag(index);
-        }
-      },
-      pointerup: () => {
-        stopGroupDrag();
-        stopAiSelectionDrag();
-      },
-      mouseup: stopAiSelectionDrag,
+      pointerup: stopGroupDrag,
     },
   });
 }
@@ -459,8 +439,7 @@ function handleTileClick(model: ChipsetPreviewModel, tile: number, event: Event)
     return;
   }
   if (model.mode === "ai") {
-    model.onSelectTile(tile, { quiet: true });
-    handleAiTileClick(tile, event, rerender);
+    model.onSelectTile(tile);
     return;
   }
   if (model.mode === "passage") {
@@ -498,7 +477,6 @@ function handlePointerDown(model: ChipsetPreviewModel, tile: number, event: Even
   if (event instanceof MouseEvent && event.button !== 0) return;
   event.preventDefault();
   if (model.mode === "group") startGroupDrag(tile, event, () => stableRerender(model.rerender));
-  if (model.mode === "ai") startAiSelectionDrag(tile, event, () => stableRerender(model.rerender));
   if (model.mode === "passage") startPassageDrag(model, tile);
 }
 
@@ -506,10 +484,6 @@ function handlePointerEnter(model: ChipsetPreviewModel, tile: number): void {
   if (model.mode === "group") {
     model.onSelectTile(tile, { quiet: true });
     extendGroupDrag(tile, () => stableRerender(model.rerender));
-  }
-  if (model.mode === "ai") {
-    model.onSelectTile(tile, { quiet: true });
-    extendAiSelectionDrag(tile);
   }
   if (model.mode === "passage") extendPassageDrag(tile);
 }

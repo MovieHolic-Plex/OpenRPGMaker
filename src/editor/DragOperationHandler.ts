@@ -1,5 +1,5 @@
 import type Phaser from "phaser";
-import { TILE_SIZE } from "@/assets/bundled";
+import { editorMapTileSize } from "@/editor/mapGeometry";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { editorState, type PaintShape } from "@/editor/editorState";
 import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
@@ -250,7 +250,7 @@ export class DragOperationHandler {
       const preview = createChipsetTileObject(this.scene, map, tileset, cell.x, cell.y, operation.tile);
       preview.setAlpha(0.62);
       layer.add(preview);
-      const marker = this.scene.add.rectangle(cell.x * TILE_SIZE, cell.y * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0x3bc9db, 0.18);
+      const marker = this.scene.add.rectangle(cell.x * editorMapTileSize(operation.mapId), cell.y * editorMapTileSize(operation.mapId), editorMapTileSize(operation.mapId), editorMapTileSize(operation.mapId), 0x3bc9db, 0.18);
       marker.setOrigin(0, 0);
       marker.setStrokeStyle(1, 0xe7f5ff, 0.85);
       layer.add(marker);

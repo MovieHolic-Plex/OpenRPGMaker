@@ -1,0 +1,35 @@
+[
+  {
+    "id": "forest-trees:round-bush",
+    "before": {
+      "description": "사용자 제공 숲 시트에서 옮긴 둥근 덤불(3×3 칸). 수관은 상위, 밑동은 하위+잔디 받침.",
+      "placementRules": "물체 전체를 한 덩이로 찍는다 — 수관 칸은 상위 레이어, 밑동·덤불 칸은 하위 레이어(통행 불가). 잔디 위에만 놓는다."
+    },
+    "after": {
+      "description": "사용자 제공 숲 시트에서 옮긴 둥근 덤불(3×3 칸). 이 덤불은 그림 조각 전부가 하위이며 상위 배열은 -1이다.",
+      "placementRules": "previewMap의 전체 하위 배열을 온전하게 배치한다. 상위 칸은 -1이며, 받침은 타일별 layerBacking 정책을 따른다."
+    }
+  },
+  {
+    "id": "forest-trees:dark-bush",
+    "before": {
+      "description": "사용자 제공 숲 시트에서 옮긴 짙은 덤불(3×3 칸). 수관은 상위, 밑동은 하위+잔디 받침.",
+      "placementRules": "물체 전체를 한 덩이로 찍는다 — 수관 칸은 상위 레이어, 밑동·덤불 칸은 하위 레이어(통행 불가). 잔디 위에만 놓는다."
+    },
+    "after": {
+      "description": "사용자 제공 숲 시트에서 옮긴 짙은 덤불(3×3 칸). 이 덤불은 그림 조각 전부가 하위이며 상위 배열은 -1이다.",
+      "placementRules": "previewMap의 전체 하위 배열을 온전하게 배치한다. 상위 칸은 -1이며, 받침은 타일별 layerBacking 정책을 따른다."
+    }
+  },
+  {
+    "id": "forest-trees:small-bush",
+    "before": {
+      "description": "사용자 제공 숲 시트에서 옮긴 작은 덤불(2×2 칸). 수관은 상위, 밑동은 하위+잔디 받침.",
+      "placementRules": "물체 전체를 한 덩이로 찍는다 — 수관 칸은 상위 레이어, 밑동·덤불 칸은 하위 레이어(통행 불가). 잔디 위에만 놓는다."
+    },
+    "after": {
+      "description": "사용자 제공 숲 시트에서 옮긴 작은 덤불(2×2 칸). 이 덤불은 그림 조각 전부가 하위이며 상위 배열은 -1이다.",
+      "placementRules": "previewMap의 전체 하위 배열을 온전하게 배치한다. 상위 칸은 -1이며, 받침은 타일별 layerBacking 정책을 따른다."
+    }
+  }
+]

@@ -12,12 +12,12 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
 import { openEditor, reviewProject } from "./eventViewReviewFixture";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const OUT = `output/evidence/event-view-overlap-review/${process.env.EVIDENCE_TAG ?? "after"}`;
 const CLICK = { timeout: 20_000 } as const;
 
-// 기본 캡(30초)은 이 스펙에 안 맞는다. 앱 부팅 + Supabase 시드만으로 부하 걸린 머신에서
+// 기본 캡(30초)은 이 스펙에 안 맞는다. 앱 부팅 + LegacyDb 시드만으로 부하 걸린 머신에서
 // 1분 넘게 쓰므로, 캡이 먼저 터져 «클릭이 죽었다»는 엉뚱한 결론이 나온다. 실제로 그렇게 한 번
 // 헛짚었다: 버튼 박스는 6프레임 내내 1픽셀도 안 움직이고 애니메이션도 없었다.
 test.setTimeout(240_000);
@@ -32,7 +32,7 @@ test("플로우가 미리보기의 현재 단계를 이어받고, 겹칠 자리�
   });
   await page.setViewportSize({ width: 2560, height: 1440 });
   const { project, eventId } = reviewProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   const editor = await openEditor(page, project.startMapId!, eventId);
 
   // ── 플로우 입구가 보기 세그먼트인지 (팝오버 시절 버튼은 사라졌는지)

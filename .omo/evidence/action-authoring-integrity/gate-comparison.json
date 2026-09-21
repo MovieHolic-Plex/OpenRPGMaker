@@ -72,7 +72,7 @@
     "test/storeEventDraftPreserve.test.ts",
     "test/storePersistenceLineage.test.ts",
     "test/studioBarActions.test.ts",
-    "test/supabaseProjectSync.test.ts",
+    "test/legacyDbProjectSync.test.ts",
     "test/tilesetAiWorkspaceModal.test.ts",
     "test/toolHostileArgs.test.ts",
     "test/toolsFarmSpatial.test.ts",

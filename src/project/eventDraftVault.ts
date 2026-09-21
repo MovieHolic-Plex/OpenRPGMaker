@@ -1,4 +1,4 @@
-import { rebaseOpenEditDraft, shouldRetainOpenEventDraft } from "@/project/eventDrafts";
+import { eventWithoutDraft, rebaseOpenEditDraft } from "@/project/eventDrafts";
 import type { GameEvent, MapId, Project } from "@/project/types";
 import { projectRepository } from "@/project/persistence/repository";
 
@@ -96,34 +96,47 @@ export function getEventDraftVaultEntry(mapId: MapId, eventId: string): EventDra
 
 /**
  * Re-apply every vaulted open draft onto a project snapshot that may have lost them
- * (autosave merge, undo/replace, AI accept, remote reload).
+ * (autosave merge, undo/replace, AI accept, remote reload). If the incoming
+ * snapshot changed or deleted an edit draft's original event, keep the local
+ * work and mark the draft so the editor can ask the author to resolve it.
  */
 export function applyEventDraftVault(project: Project): Project {
   if (vault.size === 0) return project;
   const next = structuredClone(project);
-  const dropped: Array<{ mapId: MapId; eventId: string }> = [];
   for (const entry of vault.values()) {
     const map = next.maps[entry.mapId];
     if (!map || !entry.event.draft) continue;
-    if (!shouldRetainOpenEventDraft(map.events, entry.event)) {
-      dropped.push({ mapId: entry.mapId, eventId: entry.event.id });
-      continue;
-    }
     const index = map.events.findIndex((event) => event.id === entry.event.id);
     if (index >= 0) {
+      // A live draft has already been reconciled by projectWithLiveDrafts. Do
+      // not compare its working body with its original a second time here.
       if (map.events[index]?.draft) {
-        // The live overlay already rebased this id. Do not put a stale vault original back.
         rememberEventDraftVaultEntry(entry.mapId, map.events[index]!);
         continue;
       }
+      const incoming = map.events[index];
+      const draft = entry.event.draft;
+      const conflict = draft?.kind === "edit"
+        ? !incoming
+          ? "remote-delete"
+          : draft.original && JSON.stringify(eventWithoutDraft(incoming)) !== JSON.stringify(draft.original)
+            ? "remote-change"
+            : undefined
+        : undefined;
       const placed = rebaseOpenEditDraft(map.events, entry.event);
+      if (conflict && placed.draft) {
+        placed.draft = { ...placed.draft, conflict: { kind: conflict, detectedAt: Date.now() } };
+      }
       map.events[index] = placed;
       rememberEventDraftVaultEntry(entry.mapId, placed);
     } else {
-      map.events.push(structuredClone(entry.event));
+      const restored = structuredClone(entry.event);
+      if (restored.draft?.kind === "edit") {
+        restored.draft = { ...restored.draft, conflict: { kind: "remote-delete", detectedAt: Date.now() } };
+      }
+      map.events.push(restored);
     }
   }
-  for (const entry of dropped) forgetEventDraftVaultEntry(entry.mapId, entry.eventId);
   return next;
 }
 
@@ -154,14 +167,26 @@ function projectWithLiveDrafts(incoming: Project, live: Project): Project {
     const targetMap = next.maps[mapId];
     if (!targetMap) continue;
     for (const liveEvent of liveMap.events) {
-      if (!shouldRetainOpenEventDraft(targetMap.events, liveEvent)) continue;
+      if (!liveEvent.draft) continue;
       const index = targetMap.events.findIndex((event) => event.id === liveEvent.id);
+      const incoming = index >= 0 ? targetMap.events[index] : undefined;
+      const conflict = liveEvent.draft.kind === "edit"
+        ? !incoming
+          ? "remote-delete"
+          : liveEvent.draft.original && JSON.stringify(eventWithoutDraft(incoming)) !== JSON.stringify(liveEvent.draft.original)
+            ? "remote-change"
+            : undefined
+        : undefined;
+      const preserved = structuredClone(liveEvent);
+      if (conflict && preserved.draft) {
+        preserved.draft = { ...preserved.draft, conflict: { kind: conflict, detectedAt: Date.now() } };
+      }
       if (index >= 0) {
-        const placed = rebaseOpenEditDraft(targetMap.events, liveEvent);
+        const placed = rebaseOpenEditDraft(targetMap.events, preserved);
         targetMap.events[index] = placed;
         rememberEventDraftVaultEntry(mapId, placed);
       } else {
-        targetMap.events.push(structuredClone(liveEvent));
+        targetMap.events.push(preserved);
       }
     }
   }

@@ -34,8 +34,8 @@ Auto-merging src/player/interpreter.ts
 Auto-merging src/player/interpreter/commandCatalog.ts
 Auto-merging src/project/store.ts
 CONFLICT (content): Merge conflict in src/project/store.ts
-Auto-merging src/project/supabaseProjectSync.ts
-CONFLICT (content): Merge conflict in src/project/supabaseProjectSync.ts
+Auto-merging src/project/legacyDbProjectSync.ts
+CONFLICT (content): Merge conflict in src/project/legacyDbProjectSync.ts
 Auto-merging test/aiAssistantSession.test.ts
 CONFLICT (content): Merge conflict in test/aiAssistantSession.test.ts
 Auto-merging test/aiCompletionAccounting.test.ts

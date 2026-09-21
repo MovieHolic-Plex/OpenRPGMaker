@@ -2,6 +2,8 @@
 // uploaded assets; list_resources is read-only. Tools stay typed and do not
 // touch the user filesystem — callers pass an existing dataUrl or metadata.
 import type { Project, ResourceKind, UploadedAsset } from "@/project/types";
+import { setMonsterMetadataOverride } from "@/project/monsterMetadata";
+import { ProjectFormatError } from "@/project/io/errors";
 import {
   faceCellSuffix,
   planFacesetSheetSplit,
@@ -116,6 +118,16 @@ const upsertResource: ToolDefinition = {
           mimeType: { type: "string" },
           dataUrl: { type: "string" },
           description: { type: "string", description: "music/sound 전용 설명. 생략하면 기존 설명 보존, 빈 문자열은 비우기." },
+          monsterMetadata: {
+            type: "object",
+            description: "monster 전용 이름·외형 태그·설명. 이미지와 함께 등록하며 생략한 필드는 보존한다.",
+            properties: {
+              name: { type: "string", minLength: 1, maxLength: 120 },
+              tags: { type: "array", items: { type: "string", maxLength: 64 } },
+              description: { type: "string", maxLength: 4000 },
+            },
+            additionalProperties: false,
+          },
         },
         required: ["id", "name", "kind"],
         additionalProperties: false,
@@ -134,6 +146,16 @@ const upsertResource: ToolDefinition = {
     const name = typeof record.name === "string" ? record.name.trim() : "";
     if (!id || !name) throw new ToolError("resource.id와 resource.name이 필요합니다.", { code: "invalid-args" });
     const kind = parseKind(record.kind);
+    let monsterMetadataUpdate: Project["monsterMetadata"];
+    if (Object.hasOwn(record, "monsterMetadata")) {
+      if (kind !== "monster") throw new ToolError("monsterMetadata는 monster 리소스에만 쓸 수 있습니다.", { code: "invalid-args" });
+      try {
+        monsterMetadataUpdate = setMonsterMetadataOverride(draft.monsterMetadata, id, record.monsterMetadata);
+      } catch (error) {
+        if (error instanceof ProjectFormatError) throw new ToolError(error.message, { code: "invalid-args" });
+        throw error;
+      }
+    }
     const descriptionUpdate = Object.hasOwn(record, "description")
       ? audioDescriptionsForTool(
         draft.audioDescriptions,
@@ -165,6 +187,7 @@ const upsertResource: ToolDefinition = {
       meta: existing?.meta ?? {},
     };
     draft.assets.uploaded[id] = asset;
+    if (monsterMetadataUpdate !== undefined) draft.monsterMetadata = monsterMetadataUpdate;
     if (descriptionUpdate !== undefined) draft.audioDescriptions = descriptionUpdate;
     return { summary: `리소스 ${name}`, data: { resource: { id: asset.id, name: asset.name, kind: asset.kind } } };
   },

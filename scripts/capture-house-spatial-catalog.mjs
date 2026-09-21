@@ -48,6 +48,6 @@ try {
     }
   }, project);
   await page.screenshot({ path: `${out}/connected-houses.png`, fullPage: true });
-  fs.writeFileSync(`${out}/render-proof.json`, JSON.stringify({ source: "Supabase reload", renderer: "editor/mapTileDraw", examples: 2, interiorMaps: 7 }, null, 2));
+  fs.writeFileSync(`${out}/render-proof.json`, JSON.stringify({ source: "LegacyDb reload", renderer: "editor/mapTileDraw", examples: 2, interiorMaps: 7 }, null, 2));
   console.log(`${out}/connected-houses.png`);
 } finally { await browser.close(); }

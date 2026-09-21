@@ -1,0 +1,17 @@
+import {readFile,writeFile} from 'node:fs/promises';
+import {isDeepStrictEqual} from 'node:util';
+const dir='verify-shots/slates-astra-v3';
+const p=JSON.parse(await readFile('output/slates-astra-v3/source/source-project.json','utf8'));
+const b=JSON.parse(await readFile(`${dir}/bundle.json`,'utf8'));
+if(p.maps[b.map.id]||p.tilesets[b.tileset.id]||p.assets.uploaded[b.asset.id])throw Error('New content ID already exists');
+if(b.map.lowerTiles.length!==2500||b.map.upperTiles.length!==2500||b.map.tileSize!==32)throw Error('Invalid map');
+for(const k of ['terrain','priority','passability','tileMeta'])if(b.tileset[k].length!==b.tileset.count)throw Error('Invalid tileset '+k);
+const before=structuredClone(p);
+p.maps[b.map.id]=b.map;p.tilesets[b.tileset.id]=b.tileset;p.assets.uploaded[b.asset.id]=b.asset;p.mapTree.children.push({mapId:b.map.id,children:[]});
+for(const key of ['maps','tilesets'])for(const[id,v]of Object.entries(before[key]))if(!isDeepStrictEqual(v,p[key][id]))throw Error('Existing content changed');
+if(!isDeepStrictEqual(before.startPos,p.startPos)||before.startMapId!==p.startMapId)throw Error('Existing start changed');
+await writeFile(`${dir}/project.json`,JSON.stringify(p));
+const preview=structuredClone(p);preview.startMapId=b.map.id;preview.startPos=b.spawn;
+await writeFile(`${dir}/runtime-project.json`,JSON.stringify(preview));
+await writeFile(`${dir}/integration.json`,JSON.stringify({mapId:b.map.id,existingMapsPreserved:Object.keys(before.maps),existingStartPreserved:true,placementModifiedBySupervisor:false},null,2));
+console.log({newMap:b.map.id,maps:Object.keys(p.maps).length,tilesetCount:b.tileset.count});

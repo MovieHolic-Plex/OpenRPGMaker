@@ -58,9 +58,9 @@ ALTER DEFAULT PRIVILEGES
 CREATE INDEX
 CREATE INDEX
 BEGIN
-psql:supabase/migrations/20260907000000_spatial_authoring_cas.sql:2: NOTICE:  schema "extensions" already exists, skipping
+psql:legacyDb/migrations/20260907000000_spatial_authoring_cas.sql:2: NOTICE:  schema "extensions" already exists, skipping
 CREATE SCHEMA
-psql:supabase/migrations/20260907000000_spatial_authoring_cas.sql:3: NOTICE:  extension "pgcrypto" already exists, skipping
+psql:legacyDb/migrations/20260907000000_spatial_authoring_cas.sql:3: NOTICE:  extension "pgcrypto" already exists, skipping
 CREATE EXTENSION
 CREATE ROLE
 GRANT

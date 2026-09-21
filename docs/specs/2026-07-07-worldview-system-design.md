@@ -22,7 +22,7 @@ body=markdown, origin:"user")`로 변환. contextBuilder:115의 주입 지점을
 villageInfoModal은 세계관 패널로 대체하고 진입점 리다이렉트. 변환 후에도 원본 필드는 1버전 동안 보존(롤백 가능).
 
 ## 데이터 모델
-저장 위치: `project.world` (project.json에 포함 → Supabase 동기화·버전관리 상속). 코드: `src/project/world/`.
+저장 위치: `project.world` (project.json에 포함 → LegacyDb 동기화·버전관리 상속). 코드: `src/project/world/`.
 
 ```ts
 type WorldEntityType = "character" | "place" | "faction" | "event" | "item" | "concept" | "guideline";

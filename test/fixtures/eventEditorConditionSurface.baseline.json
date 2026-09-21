@@ -122,7 +122,7 @@
   "labels": [
    "(이름 없음)",
    "상태켜짐꺼짐",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)"
+   "조건이 맞지 않을 때 처리 (그 외 분기)"
   ],
   "tags": {
    "button": 1,
@@ -161,10 +161,10 @@
    "event-condition-eval-summary": "sw_# 켜짐",
    "event-condition-hint": "선택한 스위치가 켜짐/꺼짐인 경우 참 분기로 들어갑니다.",
    "event-condition-switch-error": "대상 스위치를 선택하세요.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 18,
   "controlCount": 5
@@ -288,7 +288,7 @@
    "(이름 없음)",
    "비교 값",
    "비교같음이상이하초과미만다름",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)"
+   "조건이 맞지 않을 때 처리 (그 외 분기)"
   ],
   "tags": {
    "button": 1,
@@ -328,10 +328,10 @@
    "event-condition-eval-summary": "var_# # 이상",
    "event-condition-hint": "변수 값과 비교 값의 관계가 맞으면 참 분기로 들어갑니다.",
    "event-condition-variable-error": "대상 변수를 선택하세요.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 19,
   "controlCount": 6
@@ -428,7 +428,7 @@
    "B",
    "C",
    "D",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)",
+   "조건이 맞지 않을 때 처리 (그 외 분기)",
    "켜짐"
   ],
   "tags": {
@@ -470,10 +470,10 @@
    "event-condition-eval-badge": "판정 불가",
    "event-condition-eval-summary": "이 이벤트 기억 A 켜짐",
    "event-condition-hint": "이 이벤트만의 기억(A~D) 상태를 검사합니다.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 21,
   "controlCount": 7
@@ -571,7 +571,7 @@
    ]
   },
   "labels": [
-   "조건이 만족되지 않을 때 처리 (그 외 분기)",
+   "조건이 맞지 않을 때 처리 (그 외 분기)",
    "주인공(주인공 선택)주인공수호자마도사주인공전사 · Lv.1",
    "파티 상태파티에 있음파티에 없음"
   ],
@@ -612,10 +612,10 @@
    "event-condition-eval-badge": "충족",
    "event-condition-eval-summary": "주인공 파티에 있음",
    "event-condition-hint": "파티에 해당 주인공이 있는지 검사합니다.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 18,
   "controlCount": 4
@@ -714,7 +714,7 @@
   "labels": [
    "보유보유 중보유 안 함",
    "아이템(아이템 선택)회복약포획 구슬마력약회복약",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)"
+   "조건이 맞지 않을 때 처리 (그 외 분기)"
   ],
   "tags": {
    "div": 14,
@@ -753,10 +753,10 @@
    "event-condition-eval-summary": "회복약 보유 중",
    "event-condition-hint": "인벤토리 소지 여부를 검사합니다.",
    "event-condition-item-error": "아이템을 선택하세요.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 18,
   "controlCount": 4
@@ -845,7 +845,7 @@
   "labels": [
    "금액",
    "비교같음이상이하초과미만다름",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)"
+   "조건이 맞지 않을 때 처리 (그 외 분기)"
   ],
   "tags": {
    "div": 14,
@@ -880,10 +880,10 @@
    "event-condition-eval-badge": "불충족",
    "event-condition-eval-summary": "소지금 # 이상",
    "event-condition-hint": "현재 소지금을 비교합니다.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 16,
   "controlCount": 4
@@ -907,7 +907,8 @@
    "event-fork-condition-title",
    "event-fork-else-enabled",
    "event-fork-summary-else",
-   "event-fork-summary-then"
+   "event-fork-summary-then",
+   "event-fork-timer-warning"
   ],
   "classes": [
    "cream-command-form-head",
@@ -931,6 +932,7 @@
    "event-fork-section",
    "event-fork-section-hint",
    "event-fork-section-title",
+   "event-fork-timer-warning",
    "inline-field",
    "is-undetermined",
    "then"
@@ -969,14 +971,14 @@
    ]
   },
   "labels": [
-   "조건이 만족되지 않을 때 처리 (그 외 분기)"
+   "조건이 맞지 않을 때 처리 (그 외 분기)"
   ],
   "tags": {
    "div": 15,
    "input": 3,
    "label": 2,
    "option": 20,
-   "p": 2,
+   "p": 3,
    "section": 2,
    "select": 2,
    "span": 5
@@ -999,19 +1001,21 @@
    "event-fork-condition-title": "div",
    "event-fork-else-enabled": "input",
    "event-fork-summary-else": "div",
-   "event-fork-summary-then": "div"
+   "event-fork-summary-then": "div",
+   "event-fork-timer-warning": "p"
   },
   "texts": {
    "event-command-edit-summary": "조건 분기",
    "event-condition-eval-badge": "판정 불가",
    "event-condition-eval-summary": "타이머 # #초 이하",
    "event-condition-hint": "타이머 남은 시간이 지정 초 이하인지 검사합니다.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령",
+   "event-fork-timer-warning": "타이머 # · #초 이하 조건은 타이머가 꺼져 있어도 참입니다. 타이머를 켜는 명령 뒤에 두거나 임계값을 올리세요."
   },
-  "testidCount": 18,
+  "testidCount": 19,
   "controlCount": 5
  },
  "fork:timePhase": {
@@ -1093,7 +1097,7 @@
   },
   "labels": [
    "시간대아침낮저녁밤",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)"
+   "조건이 맞지 않을 때 처리 (그 외 분기)"
   ],
   "tags": {
    "div": 14,
@@ -1128,10 +1132,10 @@
    "event-condition-eval-badge": "판정 불가",
    "event-condition-eval-summary": "시간대 낮",
    "event-condition-hint": "현재 시간대(아침/낮/저녁/밤)를 검사합니다.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 16,
   "controlCount": 3
@@ -1215,7 +1219,7 @@
   },
   "labels": [
    "계절봄여름가을겨울",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)"
+   "조건이 맞지 않을 때 처리 (그 외 분기)"
   ],
   "tags": {
    "div": 14,
@@ -1250,10 +1254,10 @@
    "event-condition-eval-badge": "판정 불가",
    "event-condition-eval-summary": "계절 봄",
    "event-condition-hint": "현재 계절을 검사합니다.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 16,
   "controlCount": 3
@@ -1331,7 +1335,7 @@
    ]
   },
   "labels": [
-   "조건이 만족되지 않을 때 처리 (그 외 분기)",
+   "조건이 맞지 않을 때 처리 (그 외 분기)",
    "지금 하는 일"
   ],
   "tags": {
@@ -1369,10 +1373,10 @@
    "event-condition-eval-badge": "판정 불가",
    "event-condition-eval-summary": "활동 work일 때",
    "event-condition-hint": "지금 하는 일이 일치하는지 검사합니다.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 17,
   "controlCount": 3
@@ -1466,7 +1470,7 @@
   "labels": [
    "구역(삭제된 로케이션 loc_missing)",
    "맵에서 구역 그리기",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)",
+   "조건이 맞지 않을 때 처리 (그 외 분기)",
    "판정안에 있을 때밖에 있을 때"
   ],
   "tags": {
@@ -1507,10 +1511,10 @@
    "event-condition-eval-summary": "주인공이 (삭제된 로케이션 loc_missing) 안에 있음일 때",
    "event-condition-hint": "주인공이 이름 붙은 구역 안(또는 밖)에 있는지 검사합니다. 좌표를 적지 않으므로 구역을 옮기거나 넓히면 조건도 함께 따라옵니다.",
    "event-condition-inside-location-error": "로케이션 'loc_missing' 이 삭제됐습니다. 다른 구역을 고르거나 조건을 지워 주세요.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 19,
   "controlCount": 5
@@ -1591,7 +1595,7 @@
   },
   "labels": [
    "누구",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)",
+   "조건이 맞지 않을 때 처리 (그 외 분기)",
    "최소 호감도"
   ],
   "tags": {
@@ -1628,10 +1632,10 @@
    "event-condition-eval-badge": "판정 불가",
    "event-condition-eval-summary": "npc_condition_probe 호감도 # 이상",
    "event-condition-hint": "호감도가 지정 값 이상인지 검사합니다. 누구를 비우면 이 이벤트 기준입니다.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 17,
   "controlCount": 4
@@ -1717,7 +1721,7 @@
   },
   "labels": [
    "관계관계 없음연인약혼부부",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)"
+   "조건이 맞지 않을 때 처리 (그 외 분기)"
   ],
   "tags": {
    "div": 14,
@@ -1753,10 +1757,10 @@
    "event-condition-eval-badge": "판정 불가",
    "event-condition-eval-summary": "npc_condition_probe 관계 연인 이상",
    "event-condition-hint": "관계가 지정 단계 이상인지 검사합니다. 호감도 수치와 별개로 연인·약혼·부부를 가릅니다.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 17,
   "controlCount": 4
@@ -1840,7 +1844,7 @@
   },
   "labels": [
    "결과승리패배도망",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)"
+   "조건이 맞지 않을 때 처리 (그 외 분기)"
   ],
   "tags": {
    "div": 15,
@@ -1874,11 +1878,11 @@
    "event-command-edit-summary": "조건 분기",
    "event-condition-eval-badge": "판정 불가",
    "event-condition-eval-summary": "전투 결과 승리일 때",
-   "event-condition-hint": "직전 전투 결과에 따라 분기합니다. 필드 몬스터 처치 후 이벤트 소거에 씁니다.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-condition-hint": "직전 전투 결과에 따라 분기합니다. 맵에서는 방금 끝난 전투를 보지만, 전투 중(트룹 페이지)에서는 지금 싸우는 전투가 아니라 그 전 전투를 봅니다.",
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 16,
   "controlCount": 3
@@ -1969,7 +1973,7 @@
   },
   "labels": [
    "상태켜짐꺼짐",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)",
+   "조건이 맞지 않을 때 처리 (그 외 분기)",
    "조회탐험 중인지현재 층탐험 기억탐험 결과"
   ],
   "tags": {
@@ -2006,10 +2010,10 @@
    "event-condition-eval-badge": "판정 불가",
    "event-condition-eval-summary": "탐험이 진행 중일 때",
    "event-condition-hint": "지금 탐험 중인지, 몇 층인지, 기억과 결과를 검사합니다.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 17,
   "controlCount": 4
@@ -2173,7 +2177,7 @@
    "+ 하위 조건",
    "상태켜짐꺼짐",
    "제거",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)"
+   "조건이 맞지 않을 때 처리 (그 외 분기)"
   ],
   "tags": {
    "button": 3,
@@ -2218,10 +2222,10 @@
    "event-condition-hint": "선택한 스위치가 켜짐/꺼짐인 경우 참 분기로 들어갑니다.",
    "event-condition-hint~2": "하위 조건을 모두 맞아야 참입니다.",
    "event-condition-switch-error": "대상 스위치를 선택하세요.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 23,
   "controlCount": 8
@@ -2385,7 +2389,7 @@
    "+ 하위 조건",
    "상태켜짐꺼짐",
    "제거",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)"
+   "조건이 맞지 않을 때 처리 (그 외 분기)"
   ],
   "tags": {
    "button": 3,
@@ -2430,10 +2434,10 @@
    "event-condition-hint": "선택한 스위치가 켜짐/꺼짐인 경우 참 분기로 들어갑니다.",
    "event-condition-hint~2": "하위 조건 중 하나라도 맞으면 참입니다.",
    "event-condition-switch-error": "대상 스위치를 선택하세요.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 23,
   "controlCount": 8
@@ -2586,7 +2590,7 @@
   "labels": [
    "(이름 없음)",
    "상태켜짐꺼짐",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)"
+   "조건이 맞지 않을 때 처리 (그 외 분기)"
   ],
   "tags": {
    "button": 1,
@@ -2627,10 +2631,10 @@
    "event-condition-hint": "선택한 스위치가 켜짐/꺼짐인 경우 참 분기로 들어갑니다.",
    "event-condition-hint~2": "하위 조건이 아닐 때 참입니다.",
    "event-condition-switch-error": "대상 스위치를 선택하세요.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 19,
   "controlCount": 6
@@ -2860,7 +2864,7 @@
    "비교같음이상이하초과미만다름",
    "상태켜짐꺼짐",
    "제거",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)"
+   "조건이 맞지 않을 때 처리 (그 외 분기)"
   ],
   "tags": {
    "button": 5,
@@ -2914,10 +2918,10 @@
    "event-condition-hint~3": "하위 조건을 모두 맞아야 참입니다.",
    "event-condition-switch-error": "대상 스위치를 선택하세요.",
    "event-condition-variable-error": "대상 변수를 선택하세요.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 30,
   "controlCount": 14
@@ -3119,7 +3123,7 @@
    "비교같음이상이하초과미만다름",
    "상태켜짐꺼짐",
    "제거",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)"
+   "조건이 맞지 않을 때 처리 (그 외 분기)"
   ],
   "tags": {
    "button": 4,
@@ -3169,10 +3173,10 @@
    "event-condition-hint~2": "현재 소지금을 비교합니다.",
    "event-condition-hint~3": "하위 조건 중 하나라도 맞으면 참입니다.",
    "event-condition-switch-error": "대상 스위치를 선택하세요.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 27,
   "controlCount": 12
@@ -3472,7 +3476,7 @@
    "상태켜짐꺼짐",
    "아이템(아이템 선택)회복약포획 구슬마력약회복약",
    "제거",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)"
+   "조건이 맞지 않을 때 처리 (그 외 분기)"
   ],
   "tags": {
    "button": 8,
@@ -3536,10 +3540,10 @@
    "event-condition-item-error": "아이템을 선택하세요.",
    "event-condition-switch-error": "대상 스위치를 선택하세요.",
    "event-condition-variable-error": "대상 변수를 선택하세요.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 36,
   "controlCount": 21
@@ -3764,7 +3768,7 @@
    "비교같음이상이하초과미만다름",
    "상태켜짐꺼짐",
    "제거",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)"
+   "조건이 맞지 않을 때 처리 (그 외 분기)"
   ],
   "tags": {
    "button": 4,
@@ -3816,10 +3820,10 @@
    "event-condition-hint~3": "하위 조건을 모두 맞아야 참입니다.",
    "event-condition-hint~4": "하위 조건이 아닐 때 참입니다.",
    "event-condition-switch-error": "대상 스위치를 선택하세요.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 28,
   "controlCount": 13
@@ -3916,7 +3920,7 @@
   },
   "labels": [
    "비교같음이상이하초과미만다름",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)",
+   "조건이 맞지 않을 때 처리 (그 외 분기)",
    "조회탐험 중인지현재 층탐험 기억탐험 결과",
    "층"
   ],
@@ -3955,10 +3959,10 @@
    "event-condition-eval-badge": "판정 불가",
    "event-condition-eval-summary": "탐험 층 # 이상",
    "event-condition-hint": "지금 탐험 중인지, 몇 층인지, 기억과 결과를 검사합니다.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 18,
   "controlCount": 5
@@ -4051,7 +4055,7 @@
   },
   "labels": [
    "값켜짐꺼짐",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)",
+   "조건이 맞지 않을 때 처리 (그 외 분기)",
    "조회탐험 중인지현재 층탐험 기억탐험 결과",
    "플래그"
   ],
@@ -4090,10 +4094,10 @@
    "event-condition-eval-badge": "판정 불가",
    "event-condition-eval-summary": "탐험 기억 run_flag_probe 켜짐",
    "event-condition-hint": "지금 탐험 중인지, 몇 층인지, 기억과 결과를 검사합니다.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 18,
   "controlCount": 5
@@ -4185,7 +4189,7 @@
   },
   "labels": [
    "결과완료실패포기",
-   "조건이 만족되지 않을 때 처리 (그 외 분기)",
+   "조건이 맞지 않을 때 처리 (그 외 분기)",
    "조회탐험 중인지현재 층탐험 기억탐험 결과"
   ],
   "tags": {
@@ -4222,10 +4226,10 @@
    "event-condition-eval-badge": "판정 불가",
    "event-condition-eval-summary": "탐험 결과 완료일 때",
    "event-condition-hint": "지금 탐험 중인지, 몇 층인지, 기억과 결과를 검사합니다.",
-   "event-fork-body-hint": "참/그 외 안의 명령은 왼쪽 목록에서 고칩니다.",
-   "event-fork-branch-summary": "참일 때 · #개 명령그 외 · #개 명령",
-   "event-fork-summary-else": "그 외 · #개 명령",
-   "event-fork-summary-then": "참일 때 · #개 명령"
+   "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
+   "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
+   "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
   "testidCount": 17,
   "controlCount": 4

@@ -17,9 +17,9 @@ const BBOX_ONLY = { x: 2, y: 2, width: 6, height: 6 };
 const WHOLE_HOUSE = { x: 2, y: 1, width: 6, height: 7 };
 
 beforeEach(() => {
-  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "");
-  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "");
-  vi.stubEnv("VITE_SUPABASE_URL", "");
+  vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "");
+  vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "");
+  vi.stubEnv("VITE_LEGACY_DB_URL", "");
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   const project = createBlankProject();
   project.startPos = { x: 0, y: 0 };

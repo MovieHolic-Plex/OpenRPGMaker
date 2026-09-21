@@ -9,14 +9,14 @@ const TEXT_ARTIFACT_PATTERN = /\.(?:css|html|js|map)$/u;
 const FORBIDDEN_ARTIFACT_MARKERS = [
   {
     label: "remote-database-client",
-    pattern: /(?:supabaseProject(?:Config|Sync)|recordSupabase|loadProjectFromSupabase|saveProjectToSupabase)/iu,
+    pattern: /(?:legacyDbProject(?:Config|Sync)|recordLegacyDb|loadProjectFromLegacyDb|saveProjectToLegacyDb)/iu,
   },
   { label: "remote-activity-table", pattern: /ai_(?:activity_logs|analysis_runs)/iu },
   { label: "editor-ai-module", pattern: /(?:@\/|src\/)ai\/activityLog/iu },
   { label: "editor-module-path", pattern: /src\/editor\//iu },
   { label: "remote-provider", pattern: /(?:openrouter|llm-provider)/iu },
   { label: "remote-activity-endpoint", pattern: /__oprn\/ai-activity/iu },
-  { label: "editor-public-env", pattern: /VITE_(?:LLM|SUPABASE|YUNWU)/u },
+  { label: "editor-public-env", pattern: /VITE_(?:LLM|LEGACY_DB|YUNWU)/u },
   { label: "remote-api-endpoint", pattern: /api\.(?:anthropic|openai)\.com/iu },
 ] as const;
 
@@ -85,7 +85,7 @@ describe("player build output", () => {
       const html = await readFile(join(outputDir, "player.html"), "utf8");
       const report = await scanPlayerArtifacts(outputDir);
       const forbiddenModules = transformedModuleIds.filter((id) =>
-        /(?:\/src\/ai\/|supabaseProject(?:Config|Sync)|tileMetadataDb)/iu.test(id),
+        /(?:\/src\/ai\/|legacyDbProject(?:Config|Sync)|tileMetadataDb)/iu.test(id),
       );
 
       // Then

@@ -3,7 +3,7 @@
  * Why this spec exists: later CSS work on the rm2000 battle screen is verified
  * against these numbers, so every assertion here must be a **measurement of the
  * real battle screen**, never a selector or boot guard. The boot path is the same
- * one the shipping specs use (`seedProjectFromSupabaseCanonical` → editor
+ * one the shipping specs use (`seedProjectForEditor` → editor
  * `mode-play` → title Enter → `event-battle-start`), and every wait is on exact
  * DOM state (attribute / visibility / concrete predicate). There is no sleep,
  * no polling delay, and no timing luck in this file.
@@ -35,7 +35,7 @@ import { createBlankProject } from "@/project/defaults";
 import { reseedSessionRng } from "@/project/session";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes";
 import { waitForActorCommand } from "./battleReferenceProject";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/battle-rm2000-pixel";
@@ -121,7 +121,7 @@ async function seedDefaultSkinBattleProject(page: Page, options: SeedOptions = {
   }
 
   reseedSessionRng(project.session as unknown as PlaySessionLike, 42_001);
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
 }
 
 /** Real play route into the battle screen — identical beats to battle-skins-visual-qa. */

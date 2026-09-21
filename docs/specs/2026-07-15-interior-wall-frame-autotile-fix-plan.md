@@ -3,7 +3,7 @@
 - 작성 기준: 2026-07-15 케이스 PNG와 현재 워크트리의 코드
 - 대상 칩셋: `easyrpg_chipset_interior`
 - 선택안: **Option B — 주택은 크림 셸 문법 우선, 오토타일은 어두운 벽 `366` 전용**
-- 이 문서는 구현 계획이다. 코드·타일셋·Supabase 데이터는 이 단계에서 변경하지 않는다.
+- 이 문서는 구현 계획이다. 코드·타일셋·LegacyDb 데이터는 이 단계에서 변경하지 않는다.
 
 ## 0. 결론
 
@@ -19,7 +19,7 @@
 - 어두운 벽은 모든 벽 셀을 의미 타일 `366` 하나로 저장하고, 렌더 시에만 `368`, `396–398`, `426–428`, `456–458`의 쿼터를 샘플링한다.
 - 렌더 소스 ID는 아틀라스 좌표일 뿐이다. `memberTileIds`, `triggerTileIds`, 맵 저장 결과로 사용하지 않는다.
 - `233/258`은 실제로 핑크 플레이스홀더이고 `257`도 프레임 받침 아트가 아니므로 벽 계약에서 제거한다.
-- 기존 프로젝트의 임의 타일 배열을 전역 치환하지 않는다. 구 계약은 명시적인 레거시 읽기 경계에만 격리하고, 알려진 생성 맵은 재생성·Supabase 저장·재로드 후 구 그룹을 제거한다.
+- 기존 프로젝트의 임의 타일 배열을 전역 치환하지 않는다. 구 계약은 명시적인 레거시 읽기 경계에만 격리하고, 알려진 생성 맵은 재생성·LegacyDb 저장·재로드 후 구 그룹을 제거한다.
 
 ## 1. Vision findings — 코드보다 먼저 확인한 픽셀 사실
 
@@ -248,7 +248,7 @@
 2. 옛 저장 프로젝트에 그 그룹 ID가 이미 있으면 이를 **레거시 판별 표식**으로만 읽는다.
 3. 기존 `interiorWallFrameQuarterComposition`은 `legacyInteriorWallFrameQuarterComposition`으로 격리하고, 표식이 있는 미마이그레이션 프로젝트에서만 사용한다. 새 생성/편집 경로에서는 호출하지 않는다.
 4. 알려진 `villager-room-v1` 맵은 원래 plan으로 walls 레이어를 재생성한다. 어두운 벽 전용 맵은 구 dark-wall member를 `366`으로 축약한다.
-5. 변환 후 구 그룹을 제거하고 저장한다. 원격 콘텐츠라면 Supabase project id로 save 후 reload까지 확인한다.
+5. 변환 후 구 그룹을 제거하고 저장한다. 원격 콘텐츠라면 LegacyDb project id로 save 후 reload까지 확인한다.
 6. 출처를 판별할 수 없는 사용자 맵은 자동 치환하지 않고 map id와 좌표를 lint로 보고한다. 명시적 `house`/`dark` 모드를 선택해 변환할 때까지 레거시 읽기 경계를 유지한다.
 
 이 경계는 영구 writer가 아니다. 어떠한 새 페인트/생성 함수도 레거시 variant를 기록해서는 안 된다.
@@ -397,8 +397,8 @@
 2. dark로 명시된 맵은 구 dark member 셀을 `366`으로 축약하는 순수 변환을 제공한다.
 3. house로 명시된 `villager-room-v1` 맵은 타일 추측 변환 대신 원래 `InteriorRoomPlan`으로 walls를 재생성한다.
 4. 모드를 판별할 수 없는 맵은 자동 변경하지 않고 실패 보고한다.
-5. 실제 데모/프로젝트 맵을 바꾸는 실행 단계에서는 먼저 Supabase URL/anon key/project id를 확인한다.
-6. 원격 저장이 켜진 실제 프로젝트를 load → 변환/재생성 → `saveProjectToSupabase` 또는 팀의 force-save 경로 → 같은 project id로 reload한다.
+5. 실제 데모/프로젝트 맵을 바꾸는 실행 단계에서는 먼저 LegacyDb URL/anon key/project id를 확인한다.
+6. 원격 저장이 켜진 실제 프로젝트를 load → 변환/재생성 → `saveProjectToLegacyDb` 또는 팀의 force-save 경로 → 같은 project id로 reload한다.
 7. reload한 데이터에서 구 wall-frame group과 `233/258/257` 벽 사용이 없음을 확인한다.
 
 완료 기준:
@@ -524,11 +524,11 @@ npx playwright test test/e2e/interior-house-wall-grammar.spec.ts
 
 기존 `interior-dark-wall-autotile.spec.ts`의 저장 variant 숫자 기대는 “모두 `366` 저장 + 스크린샷 렌더 확인”으로 바꾼다. JSON grid만 확인하고 화면을 보지 않는 테스트로 끝내지 않는다.
 
-### 8.4 Persistence / Supabase
+### 8.4 Persistence / LegacyDb
 
 원격 데모나 실제 authored map을 갱신한 경우에만 필수다.
 
-- Supabase URL / anon key / project id 확인
+- LegacyDb URL / anon key / project id 확인
 - remote persistence enabled 확인
 - save 성공
 - 같은 project id reload 성공
@@ -556,4 +556,4 @@ npx playwright test test/e2e/interior-house-wall-grammar.spec.ts
 - 모든 지정 PNG와 추가 grid가 실제 구현 경로로 재생성되고 육안 QA를 통과한다.
 - focused Vitest, typecheck, build, 두 Playwright 시나리오가 통과한다.
 - OpenWiki와 HTML 카탈로그가 새 계약을 설명한다.
-- authored content를 변경했다면 Supabase project id 기준 save + reload 증거가 있다.
+- authored content를 변경했다면 LegacyDb project id 기준 save + reload 증거가 있다.

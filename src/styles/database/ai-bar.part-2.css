@@ -1,0 +1,398 @@
+/* ── ① AI 검토 오버레이 ─────────────────────────────────────────────────── */
+
+/* 오버레이는 창 **안**을 덮는다(문서 층 모달이 아니다). 위·아래 offset 은 패널이 열 때 헤더·발 단추
+   높이를 실측해 `--database-ai-top`/`--database-ai-bottom` 으로 넘긴다 — 도크·최대화·좁은 폭에서
+   둘 다 달라진다. 발 단추를 비워 두는 것은 장식이 아니다: 그 줄이 같은 z 층에서 위에 그려져
+   결정 단추를 가렸다(실측). */
+.database-modal-backdrop .database-modal-window {
+  position: relative;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-bar {
+  /* 내용만큼만 높은 패널 — stretch 면 적용·버리기 뒤의 짧은 상태에서 빈 흰 면이 창을 다 먹는다. */
+  align-items: flex-start;
+  background: color-mix(in srgb, var(--db-studio-text-1) 32%, transparent);
+  bottom: var(--database-ai-bottom, 0px);
+  display: flex;
+  justify-content: center;
+  left: 0;
+  padding: 16px;
+  position: absolute;
+  right: 0;
+  top: var(--database-ai-top, 0px);
+  z-index: 3;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-bar[hidden] {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-panel {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 12px;
+  box-shadow: var(--db-studio-shadow-pop);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 100%;
+  max-width: 880px;
+  padding: 12px 16px 14px;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-head {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-head-title {
+  color: var(--db-studio-text-1);
+  font: 700 14px/1.3 var(--font-ui);
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-head-spacer {
+  flex: 1 1 auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-composer {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-composer[hidden],
+.database-modal-backdrop .database-modal-window .database-ai-context-row[hidden] {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-mark {
+  align-items: center;
+  background: color-mix(in srgb, var(--db-studio-accent) 10%, transparent);
+  border-radius: 999px;
+  color: var(--db-studio-accent);
+  display: inline-flex;
+  flex: 0 0 32px;
+  height: 32px;
+  justify-content: center;
+  width: 32px;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-icon {
+  height: 16px;
+  width: 16px;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-input {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 8px;
+  box-shadow: none;
+  color: var(--db-studio-text-1);
+  flex: 1 1 auto;
+  font: 500 13.5px/1.35 var(--font-ui);
+  height: 36px;
+  min-width: 0;
+  outline: none;
+  padding: 0 12px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-input::placeholder {
+  color: var(--db-studio-text-3);
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-input:focus-visible {
+  border-color: var(--db-studio-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--db-studio-accent) 22%, transparent);
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-run,
+.database-modal-backdrop .database-modal-window .database-ai-close {
+  align-items: center;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font: 600 13px/1 var(--font-ui);
+  gap: 6px;
+  height: 36px;
+  justify-content: center;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-run {
+  background: var(--db-studio-accent);
+  border: 1px solid var(--db-studio-accent);
+  color: var(--db-studio-on-accent);
+  padding: 0 12px 0 14px;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-run:hover:not(:disabled) {
+  background: var(--db-studio-accent-hover);
+  border-color: var(--db-studio-accent-hover);
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-run:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-run .database-ai-icon {
+  height: 14px;
+  width: 14px;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-close {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--db-studio-text-2);
+  padding: 0;
+  width: 36px;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-close:hover {
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-1);
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-run:focus-visible,
+.database-modal-backdrop .database-modal-window .database-ai-close:focus-visible,
+.database-modal-backdrop .database-modal-window .database-ai-suggestion:focus-visible,
+.database-modal-backdrop .database-modal-window .database-ai-turn-action:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 2px;
+}
+
+/* 현재 위치 칩 + 제안 칩 한 줄. 좁으면 줄을 바꾼다. */
+.database-modal-backdrop .database-modal-window .database-ai-context-row {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-context {
+  align-items: center;
+  background: var(--db-studio-inset);
+  border-radius: 999px;
+  color: var(--db-studio-text-2);
+  display: inline-flex;
+  font: 500 12px/1 var(--font-ui);
+  gap: 6px;
+  height: 26px;
+  margin-right: 4px;
+  max-width: 40%;
+  padding: 0 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-context-label {
+  color: var(--db-studio-text-3);
+  flex: 0 0 auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-context-where {
+  color: var(--db-studio-text-1);
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-suggestion {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 999px;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  font: 500 12.5px/1 var(--font-ui);
+  height: 26px;
+  padding: 0 10px;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-suggestion:hover {
+  background: color-mix(in srgb, var(--db-studio-accent) 9%, transparent);
+  border-color: var(--db-studio-accent-border);
+  color: var(--db-studio-accent);
+}
+
+/* 턴 영역 — 요청 원문 · 상태줄 · 바꾼 것 · 카드 · 답변 · 행동. 카드 목록이 스크롤 축을 갖는다. */
+.database-modal-backdrop .database-modal-window .database-ai-turn {
+  background: var(--db-studio-canvas);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  overflow: hidden;
+  padding: 10px 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-turn[hidden] {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-turn-request {
+  border-left: 2px solid var(--db-studio-accent-border);
+  color: var(--db-studio-text-2);
+  font: 500 13px/1.45 var(--font-ui);
+  margin: 0;
+  overflow-wrap: anywhere;
+  padding: 1px 0 1px 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-turn-status {
+  align-items: center;
+  color: var(--db-studio-text-1);
+  display: flex;
+  font: 600 13px/1.4 var(--font-ui);
+  gap: 8px;
+  min-height: 20px;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-turn-status[data-phase="error"] {
+  color: var(--db-studio-danger);
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-turn-status[data-phase="done"] .database-ai-icon,
+.database-modal-backdrop .database-modal-window .database-ai-turn-status[data-phase="review"] .database-ai-icon {
+  color: var(--db-studio-success);
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-turn-status-icon {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 16px;
+  height: 16px;
+  justify-content: center;
+  width: 16px;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-turn-status-icon[hidden] {
+  display: none;
+}
+
+/* 바꾼 것 — 도구 요약 한 줄씩. 표식은 글리프가 아니라 6px 점. */
+.database-modal-backdrop .database-modal-window .database-ai-turn-tools {
+  display: grid;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-turn-tools[hidden] {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-turn-tools li {
+  color: var(--db-studio-text-1);
+  font: 500 13px/1.45 var(--font-ui);
+  overflow-wrap: anywhere;
+  padding-left: 14px;
+  position: relative;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-turn-tools li::before {
+  background: var(--db-studio-success);
+  border-radius: 50%;
+  content: "";
+  height: 6px;
+  left: 0;
+  position: absolute;
+  top: 7px;
+  width: 6px;
+}
+
+/* 답변은 결정 단추를 밀지도, 글자가 반줄로 잘리지도 않는다: 줄어드는 것은 카드 목록 쪽이고
+   (그쪽이 스크롤 축을 가졌다), 답변은 자기 상자 안에서 스크롤한다. */
+.database-modal-backdrop .database-modal-window .database-ai-turn-answer {
+  color: var(--db-studio-text-1);
+  flex: 0 0 auto;
+  font: 400 13.5px/1.55 var(--font-ui);
+  max-height: 84px;
+  overflow-y: auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-turn-answer[hidden] {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-turn-answer p {
+  margin: 0 0 6px;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-turn-answer p:last-child {
+  margin-bottom: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-turn-answer ul {
+  margin: 0 0 6px;
+  padding-left: 18px;
+}
+
+/* 행동 줄은 턴 상자의 마지막 행이다. 스크롤 축은 카드 목록이 가지므로 여기에 sticky 를 쓰면
+   안 된다 — `bottom: -10px` 로 가져가면 overflow:hidden 인 상자 밖으로 나가 결정 단추가 잘렸다(실측). */
+.database-modal-backdrop .database-modal-window .database-ai-turn-actions {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-turn-action {
+  align-items: center;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 8px;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  display: inline-flex;
+  font: 600 12.5px/1 var(--font-ui);
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-turn-action[hidden] {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-turn-action:hover {
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-1);
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-turn-action .database-ai-icon {
+  height: 14px;
+  width: 14px;
+}
+
+.database-modal-backdrop .database-modal-window [data-testid="database-ai-turn-undo"] {
+  border-color: var(--db-studio-accent-border);
+  color: var(--db-studio-accent);
+  max-width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-turn-action-label {
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -163,8 +163,10 @@ describe("event draft vault recovery", () => {
     incoming.maps[mapId].events = incoming.maps[mapId].events.filter((event) => event.id !== eventId);
 
     const merged = preserveEventDraftsOnProject(incoming, live);
+    const kept = merged.maps[mapId].events.find((event) => event.id === eventId);
 
-    expect(merged.maps[mapId].events.some((event) => event.id === eventId)).toBe(false);
-    expect(getEventDraftVaultEntry(mapId, eventId)).toBeNull();
+    expect(kept?.draft?.conflict?.kind).toBe("remote-delete");
+    expect(projectWithoutEventDrafts(merged).maps[mapId].events.some((event) => event.id === eventId)).toBe(false);
+    expect(getEventDraftVaultEntry(mapId, eventId)?.event.draft?.conflict?.kind).toBe("remote-delete");
   });
 });

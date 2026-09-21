@@ -336,8 +336,8 @@ try {
   rmSync(cache, { recursive: true, force: true }); results.cleanup.cacheRemoved = true; results.cleanup.portOwnershipAfter = ownership();
   results.cleanup.sourceHashesStable = JSON.stringify(hashes()) === JSON.stringify(results.sourceHashes);
   results.network = { forwardedTarget: target, externalRequestsForwarded: 0, webSocketsBlocked: true,
-    supabaseWriteAttempts: results.blockedRequests.filter(r => r.origin.includes('supabase') && !['GET', 'HEAD', 'OPTIONS'].includes(r.method)) };
-  if (!results.cleanup.sourceHashesStable || results.errors.length || results.network.supabaseWriteAttempts.length) results.status = 'runner-error';
+    legacyDbWriteAttempts: results.blockedRequests.filter(r => r.origin.includes('legacyDb') && !['GET', 'HEAD', 'OPTIONS'].includes(r.method)) };
+  if (!results.cleanup.sourceHashesStable || results.errors.length || results.network.legacyDbWriteAttempts.length) results.status = 'runner-error';
   results.finished = new Date().toISOString(); results.exitCode = results.status === 'passed' ? 0 : 1;
   save('actions.json', results); save('cleanup.json', results.cleanup); save('qa-server.log', serverLog); save('qa-script.exit', `${results.exitCode}\n`);
   console.log(JSON.stringify({ status: results.status, actions: results.actions.length, defects: results.defects.length, failure: results.failure, cleanup: results.cleanup }, null, 2));

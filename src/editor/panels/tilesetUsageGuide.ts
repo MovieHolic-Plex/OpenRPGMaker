@@ -1,8 +1,8 @@
 export type TilesetEditMode = "ai" | "autotile" | "group" | "passage" | "terrain";
 
-// 타일셋 섹션 3탭 — 기능 과다를 성격별로 분리한다(2026-07-05 재편).
-// rules: 지도 만들 때 쓰는 규칙(통행·지형·레이어). knowledge: AI 지식(단어장). compose: 구성(오토타일).
-export type TilesetSectionTab = "compose" | "knowledge" | "rules";
+// 참고문서를 먼저 보여 주고, 편집 규칙과 그래픽 설정을 분리한다.
+// rules: 지도 만들 때 쓰는 규칙(통행·지형·레이어). knowledge: AI 지식(단어장). compose: 구성(오토타일). references: 용도별 MD·이미지.
+export type TilesetSectionTab = "compose" | "knowledge" | "rules" | "references" | "settings";
 
 type ModeGuide = {
   readonly id: TilesetEditMode;
@@ -27,7 +27,7 @@ export const TILESET_EDIT_MODES: readonly ModeGuide[] = [
   },
   {
     id: "ai",
-    label: "AI 메타",
+    label: "설명",
   },
   {
     id: "group",
@@ -40,15 +40,19 @@ export const TILESET_EDIT_MODES: readonly ModeGuide[] = [
 ] as const;
 
 export const TILESET_SECTION_TABS: readonly TabGuide[] = [
-  { id: "rules", label: "통행·지형" },
+  { id: "references", label: "AI 참고문서" },
+  { id: "rules", label: "통행·레이어" },
   { id: "compose", label: "자동 연결" },
-  { id: "knowledge", label: "타일 설명" },
+  { id: "knowledge", label: "타일 정보" },
+  { id: "settings", label: "설정" },
 ] as const;
 
 export const TILESET_TAB_MODES: Record<TilesetSectionTab, readonly TilesetEditMode[]> = {
   rules: ["passage", "terrain"],
   knowledge: ["ai", "group"],
   compose: ["autotile"],
+  references: [],
+  settings: [],
 };
 
 export function tabForTilesetMode(mode: TilesetEditMode): TilesetSectionTab {

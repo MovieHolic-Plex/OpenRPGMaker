@@ -1,3 +1,4 @@
+import { mapTileSize } from "@/project/tileGeometry";
 import type Phaser from "phaser";
 import { TILE_SIZE } from "@/assets/bundled";
 import type { GameMap } from "@/project/types";
@@ -28,8 +29,8 @@ export function centerRuntimeCamera(
   map: GameMap,
   player: Phaser.GameObjects.Sprite
 ): void {
-  const mapWidth = Math.max(TILE_SIZE, map.width * TILE_SIZE);
-  const mapHeight = Math.max(TILE_SIZE, map.height * TILE_SIZE);
+  const mapWidth = Math.max(mapTileSize(map), map.width * mapTileSize(map));
+  const mapHeight = Math.max(mapTileSize(map), map.height * mapTileSize(map));
   const paddingX = Math.max(0, (camera.width - mapWidth) / 2);
   const paddingY = Math.max(0, (camera.height - mapHeight) / 2);
   camera.setZoom(1);
@@ -74,6 +75,7 @@ export function panRuntimeCamera(scene: PlaySceneContext, step: ScrollMapStep): 
     centerY: fromY,
     direction: step.direction,
     distanceTiles: step.distanceTiles,
+    tileSize: mapTileSize(scene.map),
   });
   camera.stopFollow();
   const sequence = async (): Promise<void> => {
@@ -214,7 +216,7 @@ function resolveCameraTarget(
 ): { readonly x: number; readonly y: number } {
   if (target.kind === "player") return { x: scene.player.x + offsetX, y: scene.player.y + offsetY };
   if (target.kind === "position") {
-    return { x: characterSpriteX(target.x) + offsetX, y: characterSpriteY(target.y) + offsetY };
+    return { x: characterSpriteX(target.x, mapTileSize(scene.map)) + offsetX, y: characterSpriteY(target.y, mapTileSize(scene.map)) + offsetY };
   }
   const sprite = scene.eventSprites.get(target.eventId);
   if (sprite) return { x: sprite.x + offsetX, y: sprite.y + offsetY };
@@ -222,13 +224,23 @@ function resolveCameraTarget(
     .find((event) => event.event.id === target.eventId);
   // 스프라이트가 없는 이벤트로 팬할 때도 **몸 중앙**을 겨눈다. 앵커를 쓰면 3x3 골렘이
   // 화면 한쪽으로 밀린 채 멈춘다.
-  if (view) return { x: footprintSpriteX(view.x, view.footprint) + offsetX, y: characterSpriteY(view.y) + offsetY };
+  if (view) return { x: footprintSpriteX(view.x, view.footprint, mapTileSize(scene.map)) + offsetX, y: characterSpriteY(view.y, mapTileSize(scene.map)) + offsetY };
   return { x: scene.player.x + offsetX, y: scene.player.y + offsetY };
 }
 
+/**
+ * 카메라 배율 상한. 하한 0.25 는 그대로다(멀리 보기).
+ *
+ * 왜 4 에서 6 인가(2026-09-22): 상한 4 는 «고해상도 + 확대» 조합을 막았다. 1920x1080 배경
+ * 아트를 무손실(1:1)로 쓰려면 게임 해상도를 1440x1080 으로 두고 배율 4.5 가 필요하다
+ * (시야 20x15 타일 = 320x240 과 동일, 배경 배율 0.2222 x 4.5 = 1.0). 4 로는 시야가
+ * 22x17 타일이 되어 클래식 화면과 어긋난다.
+ */
+export const CAMERA_ZOOM_LIMITS = { min: 0.25, max: 6 } as const;
+
 function applyCameraZoom(camera: Phaser.Cameras.Scene2D.Camera, zoom: number | undefined): void {
   if (zoom === undefined || !Number.isFinite(zoom) || zoom <= 0) return;
-  camera.setZoom(Math.min(4, Math.max(0.25, zoom)));
+  camera.setZoom(Math.min(CAMERA_ZOOM_LIMITS.max, Math.max(CAMERA_ZOOM_LIMITS.min, zoom)));
 }
 
 export function panCamera(camera: Phaser.Cameras.Scene2D.Camera, x: number, y: number, durationMs: number): Promise<void> {

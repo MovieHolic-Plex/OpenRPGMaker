@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import type { Command, EventPage, Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/quest-low-level-verification";
@@ -43,7 +43,7 @@ test("low-level editor parts can author and run a quest-like switch/variable flo
   });
 
   await page.setViewportSize({ width: 1478, height: 926 });
-  await seedProjectFromSupabaseCanonical(page, makeQuestProject());
+  await seedProjectForEditor(page, makeQuestProject());
   await screenshot(page, "01-seeded-editor-map.png");
 
   await openEventEditor(page, "quest-giver");

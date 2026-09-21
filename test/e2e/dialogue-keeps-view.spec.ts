@@ -26,7 +26,7 @@
 import { expect, test } from "@playwright/test";
 import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { startNewGameFromTitle } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 test.setTimeout(120_000);
 test.use({ serviceWorkers: "block" });
@@ -36,7 +36,7 @@ test("대화 중에도 게임 화면이 재생 창 안에 남아 있다", async 
     window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
-  await seedProjectFromSupabaseCanonical(page, createSampleAdventureProject());
+  await seedProjectForEditor(page, createSampleAdventureProject());
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
   await page.getByTestId("mode-play").click({ force: true });
   await expect(page.getByTestId("test-play-window")).toBeVisible({ timeout: 20_000 });

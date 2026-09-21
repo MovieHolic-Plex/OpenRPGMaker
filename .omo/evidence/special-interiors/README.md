@@ -1,6 +1,6 @@
 # Inn and general store interiors — 2026-09-14
 
-Two reusable places and three interior spaces were authored in `rpg-zzu-house-template-gallery` through the registered spatial tools and official Supabase save/reload path.
+Two reusable places and three interior spaces were authored in `rpg-zzu-house-template-gallery` through the registered spatial tools and official LegacyDb save/reload path.
 
 - Inn: 17×12 reception/common dining/kitchen/storage floor; 17×12 guest floor with three-bed dormitory, private room and stair corridor. Existing reviewed two-storey exterior/yard supplies the entrance.
 - Shop: compact 15×10 sales/checkout, stock and packing floor. Bookcase stands against the wall, goods and food are supported by display tables. Its existing canvas stays larger during refresh; the authored room bounds are smaller.
@@ -10,7 +10,7 @@ Two reusable places and three interior spaces were authored in `rpg-zzu-house-te
 
 ## Validation
 
-- Publisher asserts registration idempotence, exact unrelated-map/tile-metadata preservation, all passable floor cells connected, and zero hard cluster errors. Official save and fresh load match canonically (`supabase-proof.json`). Concurrent remote changes abort before save.
+- Publisher asserts registration idempotence, exact unrelated-map/tile-metadata preservation, all passable floor cells connected, and zero hard cluster errors. Official save and fresh load match canonically (`legacy-db-proof.json`). Concurrent remote changes abort before save.
 - 17 walking routes derived using actual `canMove` rules, covering both yards, each room and the inn staircase in both directions.
 - Firefox editor reads the remotely saved maps and compares them exactly before screenshots; zero browser errors (`editor-proof.json`). `overview.png` uses native renders exported from that same loaded editor; `shop-editor.png` is the actual editor screenshot.
 - `npm run gates -- --only typecheck`: exit 0, zero errors. No engine, unit-test or dependency code changed; the previous full-suite gate evidence remains under `.omo/evidence/interior-life/` rather than rerunning unchanged unit suites.

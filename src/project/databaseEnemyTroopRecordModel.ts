@@ -135,6 +135,10 @@ function normalizeRewards(rewards: Partial<EnemyRewards> | undefined): EnemyRewa
     gold: clampInteger(rewards?.gold ?? 0, 0, 999999),
     dropItemId: cleanOptionalId(rewards?.dropItemId),
     dropRatePercent: clampInteger(rewards?.dropRatePercent ?? 0, 0, 100),
+    ...(Array.isArray(rewards?.drops) ? { drops: rewards.drops.slice(0, 64).filter(drop => drop && cleanOptionalId(drop.itemId)).map(drop => ({
+      itemId: drop.itemId.trim(), ratePercent: clampInteger(drop.ratePercent ?? 100, 0, 100),
+      quantity: clampInteger(drop.quantity ?? 1, 1, 99), condition: normalizeActionCondition(drop.condition),
+    })) } : {}),
   };
 }
 
@@ -175,7 +179,17 @@ function defaultEnemyAction(skillId: string): Partial<EnemyActionPattern> {
   };
 }
 
-function normalizeActionCondition(condition: EnemyActionCondition | undefined): EnemyActionCondition {
+export function normalizeActionCondition(condition: EnemyActionCondition | undefined): EnemyActionCondition {
+  if (condition?.kind === "hp" || condition?.kind === "mp") {
+    const minPercent = clampInteger(condition.minPercent ?? 0, 0, 100);
+    return { kind: condition.kind, minPercent, maxPercent: Math.max(minPercent, clampInteger(condition.maxPercent ?? 100, 0, 100)) };
+  }
+  if (condition?.kind === "switch") return { kind: "switch", switchId: cleanOptionalId(condition.switchId) ?? "", value: condition.value !== false };
+  if (condition?.kind === "status") return { kind: "status", stateId: cleanOptionalId(condition.stateId) ?? "", present: condition.present !== false };
+  if (condition?.kind === "allies") {
+    const min = clampInteger(condition.min ?? 0, 0, 99);
+    return { kind: "allies", min, max: Math.max(min, clampInteger(condition.max ?? 99, 0, 99)) };
+  }
   if (condition?.kind === "turn") {
     return { kind: "turn", start: clampInteger(condition.start, 1, 999), interval: clampInteger(condition.interval, 1, 999) };
   }

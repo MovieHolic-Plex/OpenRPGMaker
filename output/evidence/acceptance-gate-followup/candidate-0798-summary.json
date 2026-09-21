@@ -125,7 +125,7 @@
       "test/standaloneCli.test.ts",
       "test/storePersistence.test.ts",
       "test/studioBarActions.test.ts",
-      "test/supabaseProjectSync.test.ts",
+      "test/legacyDbProjectSync.test.ts",
       "test/teamWorkflowUi.test.ts",
       "test/threeAxisRedTeam.test.ts",
       "test/tileFlowApprovalExpansion.test.ts",

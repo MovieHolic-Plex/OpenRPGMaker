@@ -15,6 +15,7 @@ import type {
 } from "@/project/types";
 import {
   DELETE_MAP_CONNECTION_SCHEMA,
+  DELETE_CHARACTER_PROFILE_SCHEMA,
   DELETE_RESOURCE_PROFILE_SCHEMA,
   DELETE_TEST_PRESET_SCHEMA,
   DELETE_VILLAGE_DOCUMENT_SCHEMA,
@@ -325,6 +326,25 @@ const upsertCharacterProfile: ToolDefinition = {
   },
 };
 
+const deleteCharacterProfile: ToolDefinition = {
+  name: "delete_character_profile",
+  description: "project.characters에서 인물 프로필을 삭제한다. 액터·이벤트 자체는 삭제하지 않으며, 참조가 필요한 인물은 먼저 다른 프로필로 교체한다.",
+  mode: "write",
+  domains: ["database"],
+  parameters: DELETE_CHARACTER_PROFILE_SCHEMA,
+  run(draft, args): ToolExecResult {
+    const characterId = requiredString(args.characterId, "characterId");
+    if (!draft.characters?.[characterId]) {
+      throw new ToolError(`인물 프로필을 찾을 수 없습니다: ${characterId} (유효한 id: ${validValues(Object.keys(draft.characters ?? {}))})`, { code: "record-not-found" });
+    }
+    const next = { ...draft.characters };
+    delete next[characterId];
+    if (Object.keys(next).length === 0) delete draft.characters;
+    else draft.characters = next;
+    return { summary: `인물 프로필 ${characterId} 삭제`, data: { characterId } };
+  },
+};
+
 function typedRecord<T extends boolean | number>(value: unknown, label: string, expected: "boolean" | "number"): Record<string, T> | undefined {
   if (value === undefined) return undefined;
   const record = recordArg(value, label);
@@ -487,6 +507,7 @@ export const AUTHORING_MISC_TOOLS: readonly ToolDefinition[] = [
   upsertResourceProfile,
   deleteResourceProfile,
   upsertCharacterProfile,
+  deleteCharacterProfile,
   upsertTestPreset,
   deleteTestPreset,
   manageFlagSlot,

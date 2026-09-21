@@ -77,7 +77,7 @@ test/regionTaskRun.test.ts
 test/runtimePictureStacking.test.ts
 test/storeDeferredLineage.test.ts
 test/storePersistenceLineage.test.ts
-test/supabaseMapPatchRecovery.test.ts
+test/legacyDbMapPatchRecovery.test.ts
 test/tileFlowApprovalExpansion.test.ts
 test/toolImageGraftReadiness.test.ts
 test/toolsFarmSpatial.test.ts

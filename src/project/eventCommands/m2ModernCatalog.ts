@@ -138,7 +138,7 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
         { key: "target", label: "누구에게", type: "select", defaultValue: "player", options: MODERN_TARGET_OPTIONS },
         { key: "x", label: "X", type: "number", defaultValue: 0 },
         { key: "y", label: "Y", type: "number", defaultValue: 0 },
-        { key: "zoom", label: "줌", type: "number", defaultValue: 1 },
+        { key: "zoom", label: "줌", type: "number", defaultValue: 1, min: 0.25, max: 6, step: 0.25 },
         { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 300 },
       ];
     case "Screen Effect":

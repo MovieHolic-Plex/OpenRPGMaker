@@ -1,0 +1,82 @@
+{
+  "id": "01-stock",
+  "screenshot": "01-stock.png",
+  "expected": {
+    "gold": 100,
+    "playerGold": 100,
+    "merchantGold": 200,
+    "owned": 0,
+    "cap": 2,
+    "quantityMax": "2",
+    "quantity": "1",
+    "unitPrice": 40,
+    "displayedPrice": 40,
+    "total": 40,
+    "balance": "60",
+    "shortage": null
+  },
+  "observed": {
+    "gold": 100,
+    "inventory": {},
+    "owned": 0,
+    "playerGold": 100,
+    "merchantGold": 200,
+    "selected": "shop-buy-equip_sword",
+    "cap": 2,
+    "unitPrice": 40,
+    "displayedPrice": 40,
+    "displayedOwned": 0,
+    "quantity": "1",
+    "quantityMax": "2",
+    "total": 40,
+    "rows": 1,
+    "actorEquipment": {
+      "actor_hero": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_guardian": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_mage": {
+        "weapon": "equip_mage_staff",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_scout": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_cleric": {
+        "weapon": "equip_mage_staff",
+        "shield": "equip_oak_shield",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_ranger": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      }
+    },
+    "tradeCounts": {},
+    "focus": "shop-buy-equip_sword",
+    "balance": "60",
+    "shortage": null,
+    "x": 14,
+    "y": 18,
+    "warnings": []
+  }
+}

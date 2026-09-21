@@ -24,11 +24,11 @@ try {
   console.log("EDITOR_READY");
 
   const load = async () => editor.evaluate(async () => {
-    const { supabaseProjectConfig } = await import("/src/project/supabaseProjectConfig.ts");
-    const { loadProjectFromSupabase } = await import("/src/project/supabaseProjectSync.ts");
+    const { legacyDbProjectConfig } = await import("/src/project/legacyDbProjectConfig.ts");
+    const { loadProjectFromLegacyDb } = await import("/src/project/legacyDbProjectSync.ts");
     const { serialize } = await import("/src/project/io.ts");
-    const config = supabaseProjectConfig();
-    const project = await loadProjectFromSupabase(config);
+    const config = legacyDbProjectConfig();
+    const project = await loadProjectFromLegacyDb(config);
     const headers = {
       apikey: config.anonKey,
       Authorization: `Bearer ${config.anonKey}`,

@@ -1,0 +1,88 @@
+{
+  "transport": "mocked LLM responses; real bridge/session/tools/editor",
+  "calls": [
+    {
+      "tools": [],
+      "kind": "routing"
+    },
+    {
+      "tools": [],
+      "kind": "routing"
+    },
+    {
+      "tools": [
+        "event_command_assist",
+        "get_event",
+        "get_database_records",
+        "run_lint"
+      ],
+      "kind": "shared-session"
+    },
+    {
+      "tools": [
+        "event_command_assist",
+        "get_event",
+        "get_database_records",
+        "run_lint"
+      ],
+      "kind": "shared-session"
+    },
+    {
+      "tools": [],
+      "kind": "event-command-generator"
+    },
+    {
+      "tools": [
+        "event_command_assist",
+        "get_event",
+        "get_database_records",
+        "run_lint"
+      ],
+      "kind": "shared-session"
+    },
+    {
+      "tools": [],
+      "kind": "routing"
+    },
+    {
+      "tools": [],
+      "kind": "routing"
+    },
+    {
+      "tools": [],
+      "kind": "routing"
+    },
+    {
+      "tools": [
+        "event_command_assist",
+        "get_event",
+        "get_database_records",
+        "run_lint"
+      ],
+      "kind": "shared-session"
+    },
+    {
+      "tools": [
+        "event_command_assist",
+        "get_event",
+        "get_database_records",
+        "run_lint"
+      ],
+      "kind": "shared-session"
+    },
+    {
+      "tools": [],
+      "kind": "event-command-generator"
+    }
+  ],
+  "assertions": [
+    "shared session tool exposure",
+    "generator reuse",
+    "review before mutation",
+    "other page preserved",
+    "no duplicate chat proposal",
+    "apply",
+    "one-step undo",
+    "cancel without mutation"
+  ]
+}

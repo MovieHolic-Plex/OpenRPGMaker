@@ -96,9 +96,9 @@ describe("completion accounting through real assistant sessions", () => {
 
   it.each(["preserve", "targetChange"] as const)("applies maintenance once; a declared %s acceptance is recorded but not enforced", async (kind) => {
     const { project } = preservedPaintContext();
-    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
-    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "rpg-zzu-test-project");
-    vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
+    vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-anon-key");
+    vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "rpg-zzu-test-project");
+    vi.stubEnv("VITE_LEGACY_DB_URL", "http://dbserver:8100");
     vi.stubGlobal("fetch", (async () => new Response(null, { status: 201 })) satisfies typeof fetch);
     store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
     store.replace(project);
@@ -145,9 +145,9 @@ describe("completion accounting through real assistant sessions", () => {
 
   it("accounts for both spatial milestones and applies each write once, only after the deterministic review", async () => {
     const project = projectWithMap();
-    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
-    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "rpg-zzu-test-project");
-    vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
+    vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-anon-key");
+    vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "rpg-zzu-test-project");
+    vi.stubEnv("VITE_LEGACY_DB_URL", "http://dbserver:8100");
     vi.stubGlobal("fetch", (async () => new Response(null, { status: 201 })) satisfies typeof fetch);
     store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
     store.replace(project);

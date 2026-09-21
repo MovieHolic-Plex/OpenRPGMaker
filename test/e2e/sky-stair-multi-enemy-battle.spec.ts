@@ -9,7 +9,7 @@ import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import { createSkyStairProject, SKY_MAP, SKY_TROOP } from "@/editor/content/skyStairGame";
 import { startNewGameFromTitle } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 test.setTimeout(180_000);
 test.use({ serviceWorkers: "block" });
@@ -51,7 +51,7 @@ async function openBattle(page: Page, troopId: string): Promise<void> {
     window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
-  await seedProjectFromSupabaseCanonical(page, projectWithBattleTrigger(troopId));
+  await seedProjectForEditor(page, projectWithBattleTrigger(troopId));
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 20_000 });
   await page.getByTestId("mode-play").click({ force: true });
   await expect(page.getByTestId("test-play-window")).toBeVisible({ timeout: 20_000 });

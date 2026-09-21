@@ -11,7 +11,7 @@ const ONE_COMMAND_EXAMPLE = `{"commands":[{"kind":"text","body":"안녕하세요
 const SINGLE_OBJECT_ARRAY_MARK = "__oprnSingleObjectArray";
 
 export const LOW_LEVEL_COMMAND_SHAPE_HINT =
-  `커맨드 kind는 문자열. 형식이 어려우면 event_command_assist(있으면)나 고수준 툴을 사용하라. 올바른 1커맨드 예시 JSON: ${ONE_COMMAND_EXAMPLE}`;
+  `커맨드 kind는 문자열. 형식이 어려우면 event_command_assist나 고수준 툴을 사용하라. 올바른 1커맨드 예시 JSON: ${ONE_COMMAND_EXAMPLE}`;
 
 function isRecord(value: unknown): value is RecordValue {
   return typeof value === "object" && value !== null && !Array.isArray(value);

@@ -27,7 +27,7 @@ export function commandPromptState(snapshot: BattleSnapshot, openingLine?: strin
   return {
     step: "command",
     lines: [
-      openingLine ?? (actor ? `${withJosa(actor.name, "은/는")} 무엇을 할까?` : "게이지가 차는 중입니다."),
+      openingLine ?? (actor ? `${withJosa(actor.name, "은/는")}${store.getCurrent().system.battleUiStyle === "pokemon" ? "\n" : " "}무엇을 할까?` : "게이지가 차는 중입니다."),
     ],
     activeActorRecordId: actor?.recordId,
   };
@@ -65,7 +65,7 @@ export function sendOutDirectorState(snapshot: BattleSnapshot): BattleDirectorSt
 }
 
 /** 행동 로그 엔트리 하나를 이름이 드러나는 메시지로 변환(다중 적 턴 개별 연출용). */
-export function enemyActionDirectorState(entry: BattleActionResultSnapshot, snapshot: BattleSnapshot): BattleDirectorState {
+export function enemyActionDirectorState(entry: BattleActionResultSnapshot, snapshot: BattleSnapshot, effect?: { readonly resource: "hp" | "mp"; readonly healing: boolean }): BattleDirectorState {
   const user = snapshot.enemies.find((enemy) => enemy.recordId === entry.userRecordId)
     ?? snapshot.actors.find((actor) => actor.recordId === entry.userRecordId);
   const target = snapshot.actors.find((actor) => actor.id === entry.targetId)
@@ -82,7 +82,9 @@ export function enemyActionDirectorState(entry: BattleActionResultSnapshot, snap
   const impact = !entry.hit
     ? "공격이 빗나갔다!"
     : entry.amount > 0
-      ? `${withJosa(targetName, "이(가)")} ${entry.amount} 피해를 입었다!${entry.critical ? " 급소다!" : ""}`
+      ? effect?.resource === "mp"
+        ? `${targetName}의 MP가 ${entry.amount} ${effect.healing ? "회복" : "감소"}했다!`
+        : `${withJosa(targetName, "이(가)")} ${entry.amount} 피해를 입었다!${entry.critical ? " 급소다!" : ""}`
       : "효과가 충분하지 않았다.";
   return {
     step: "acting",
@@ -93,14 +95,14 @@ export function enemyActionDirectorState(entry: BattleActionResultSnapshot, snap
 }
 
 export function chargingDirectorState(snapshot: BattleSnapshot): BattleDirectorState {
-  const readyActor = snapshot.actors
-    .filter((actor) => !actor.defeated)
-    .sort((left, right) => right.gauge - left.gauge)[0];
+  const peers = snapshot.actors.some((actor) => actor.id === snapshot.nextReadyBattlerId)
+    ? snapshot.actors : snapshot.enemies;
+  const ready = peers.find((battler) => battler.id === snapshot.nextReadyBattlerId);
   return {
     step: "acting",
     lines: [
       "행동 게이지가 차는 중입니다.",
-      readyActor ? `${readyActor.name}의 턴이 가까워지고 있다.` : "전황이 전개되고 있습니다.",
+      ready ? `${disambiguatedBattlerName(ready, peers)}의 턴이 가까워지고 있다.` : "전황이 전개되고 있습니다.",
     ],
     activeActorRecordId: undefined,
   };
@@ -141,8 +143,8 @@ export function actorCommandDirectorState(
   // 회복 여부와 자원은 타임라인 엔트리가 들고 있다. 부호나 HP 차이로 다시 추론하면
   // 양수 회복량이 "피해" 로, MP 회복이 HP 회복으로 둔갑한다(실측: 마력약 +30 팝업에
   // "주인공에게 30 피해!").
-  const effect = commandEntry?.kind === "healing"
-    ? { healing: true, resource: commandEntry.resource ?? "hp" as const }
+  const effect = commandEntry
+    ? { healing: commandEntry.kind === "healing" || (commandEntry.amount ?? 0) < 0, resource: commandEntry.resource ?? "hp" as const }
     : undefined;
   const lines = [
     commandLine(command, actor),
@@ -185,6 +187,7 @@ function impactLine(
       return `${withJosa(target?.name ?? "대상", "이(가)")} ${amountText} 회복했다!`;
     }
   }
+  if (effect?.resource === "mp" && !effect.healing && rolled > 0) return `${targetName}의 MP가 ${rolled} 감소했다!`;
   if (result && result.critical && rolled > 0) return `급소에 맞았다! ${targetName}에게 ${rolled} 피해!`;
   if (rolled > 0) return `${targetName}에게 ${rolled} 피해!`;
   if (impact < 0) return `${withJosa(target?.name ?? "대상", "이(가)")} ${Math.abs(impact)} 회복했다!`;
@@ -234,16 +237,8 @@ export function resultDirectorState(snapshot: BattleSnapshot, previous: BattleDi
   };
 }
 
-export function battleEventDirectorState(snapshot: BattleSnapshot, previous: BattleDirectorState): BattleDirectorState {
-  if (previous.step === "result" || snapshot.eventChoice || snapshot.eventPause) return previous;
-  const log = [...snapshot.eventLogs].reverse().find((entry) => entry.kind === "message");
-  if (!log?.detail) return previous;
-  return {
-    ...previous,
-    step: "acting",
-    lines: [log.detail],
-  };
-}
+// Event logs are diagnostics, not narration. Authored text is presented by the
+// sequential eventPause/dialogue host and must not linger over command prompts.
 
 export function battleMessageWindow(state: BattleDirectorState): HTMLElement {
   const windowNode = document.createElement("div");

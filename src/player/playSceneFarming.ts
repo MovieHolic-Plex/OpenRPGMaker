@@ -1,4 +1,4 @@
-import { TILE_SIZE } from "@/assets/bundled";
+import { mapTileSize } from "@/project/tileGeometry";
 import { tilesetTextureKey } from "@/editor/tilesetImage";
 import {
   autotileNeighborMask,
@@ -20,7 +20,7 @@ type OverlayGameObject = {
 
 // 스텁 씬으로도 돌아가야 하므로 새 멤버는 전부 optional 이고, 없으면 조기 이탈/폴백한다.
 type FarmOverlayScene = {
-  readonly map: { readonly id: string; readonly tilesetId?: string; readonly width?: number; readonly height?: number };
+  readonly map: { readonly tileSize?: number; readonly id: string; readonly tilesetId?: string; readonly width?: number; readonly height?: number };
   readonly session: { readonly farmPlots?: Record<string, Record<string, FarmPlotState>> };
   readonly tileLayer: { add(object: unknown): unknown };
   readonly resolveTilesetTexture?: (tileset: TilesetDef) => string;
@@ -145,7 +145,7 @@ function renderTilledSoil(
     addRect(scene, x, y, 0x7a4a25, dead ? 0.52 : 0.38, FARM_BASE_DEPTH);
     return;
   }
-  const image = scene.add.image(x * TILE_SIZE, y * TILE_SIZE, textureKey, farmTileFrameName(tile));
+  const image = scene.add.image(x * mapTileSize(scene.map), y * mapTileSize(scene.map), textureKey, farmTileFrameName(tile));
   image.setOrigin?.(0, 0);
   image.setDepth?.(FARM_BASE_DEPTH + y);
   if (dead) image.setAlpha?.(0.75);
@@ -166,7 +166,7 @@ function renderCropMarker(
   const index = cropGraphicIndexForStage(stages.length, crop?.stages.length ?? 0, stage);
   const graphic = index < 0 ? undefined : stages[index];
   if (graphic?.resourceId && typeof scene.add.sprite === "function") {
-    const sprite = scene.add.sprite(x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2, graphic.resourceId, graphic.frame);
+    const sprite = scene.add.sprite(x * mapTileSize(scene.map) + mapTileSize(scene.map) / 2, y * mapTileSize(scene.map) + mapTileSize(scene.map) / 2, graphic.resourceId, graphic.frame);
     sprite.setOrigin?.(0.5, 0.5);
     sprite.setDepth?.(FARM_CROP_DEPTH + y);
     if (dead) sprite.setAlpha?.(0.45);
@@ -178,7 +178,7 @@ function renderCropMarker(
 }
 
 function addRect(scene: FarmOverlayScene, x: number, y: number, color: number, alpha: number, depth: number): void {
-  const rect = scene.add.rectangle?.(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, color, alpha);
+  const rect = scene.add.rectangle?.(x * mapTileSize(scene.map), y * mapTileSize(scene.map), mapTileSize(scene.map), mapTileSize(scene.map), color, alpha);
   if (!rect) return;
   rect.setOrigin?.(0, 0);
   rect.setDepth?.(depth + y);

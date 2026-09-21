@@ -102,7 +102,7 @@
 | 질문 모드 쓰기 차단 | `assistantSession.ts`의 노출·실행 가드 | 강한 회귀 계약으로 유지 |
 | 새 계획/확인 턴 정지와 기존 계획 계속 | `assistantSession.ts:1663-1699` | 둘을 같은 읽기 전용 모드로 취급하지 않음 |
 | 압축·대화 보관·이전 기록 주입 | `contextCompaction.ts`, `conversationStore.ts`, `conversationReplay.ts` | “기억이 없다”가 아니라 실행 복원 공백만 보완 |
-| 프로젝트 변경·undo·원격 저장 | 기존 tools/store/supabase 경로 | 우회 저장·별도 저작 엔진 금지 |
+| 프로젝트 변경·undo·원격 저장 | 기존 tools/store/legacyDb 경로 | 우회 저장·별도 저작 엔진 금지 |
 
 RPG의 레이어 전체 검증에는 의도적으로 advisory인 부분이 있다. 기존 전역
 lint 오류 때문에 관계없는 작업까지 반복·중단되던 문제가 이유다. 이를 모두
@@ -119,7 +119,7 @@ reload 결과가 failed/cancelled여도 `agent_run_saved`와 완료 메시지를
 
 리드가 **읽어온 실제 메서드 본문**을 격리 실행해 세 분기를 확인했다.
 failed/cancelled 모두 saved 감사가 나왔고 두 번 호출해도 flush는 한 번이었다.
-이는 실제 Supabase 장애 재현은 아니지만 해당 분기 결함의 직접 실행 증거다.
+이는 실제 LegacyDb 장애 재현은 아니지만 해당 분기 결함의 직접 실행 증거다.
 [C02,E02]
 
 수정 원칙: 실제 적용 버전에 묶인 저장 영수증과 동일 대상의 읽기 결과를

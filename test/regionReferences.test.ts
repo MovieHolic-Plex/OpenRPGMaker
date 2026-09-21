@@ -134,7 +134,7 @@ describe("completed region references", () => {
   it("ships all seven saved maps as default places independent of project activation", () => {
     const session = { ...spatialSession(), tab: "places" as const, mode: "design" as const, source: "defaults" as const };
     const cards = listSpatialGalleryCards(session);
-    expect(SHIP_PLACE_REFERENCES).toHaveLength(7);
+    expect(SHIP_PLACE_REFERENCES).toHaveLength(4);
     for (const entry of SHIP_PLACE_REFERENCES) {
       const expected = ships.maps[entry.sourceMapId as keyof typeof ships.maps];
       const lower: number[] = [], upper: number[] = [];

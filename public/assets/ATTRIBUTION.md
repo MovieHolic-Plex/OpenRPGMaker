@@ -1,5 +1,68 @@
 # Asset Attribution
 
+## Castle tiles for RPGs — OpenGameArt
+
+- File: `opengameart-castle-tiles.png` (512×512 RGBA, original pixels unchanged)
+- Authors: Zabin, Hyptosis, and Daniel Cook (Danc)
+- Source: https://opengameart.org/content/castle-tiles-for-rpgs
+- Download: https://opengameart.org/sites/default/files/Castle2_5.png
+- License: [Creative Commons Attribution 3.0 Unported](https://creativecommons.org/licenses/by/3.0/)
+- SHA-256: `b3222b8bed826043ae11a15c8983af5adbdc4a8bddd04f1171a0b070903991ad`
+- Notes: The original 32px artwork is split into 16px engine cells (32 columns,
+  1024 cells) without resampling. Layer/collision defaults and labels are editor
+  metadata. `opengameart-castle-tiles-CREDITS.txt` accompanies the artwork in game exports.
+
+## Castle reference composite
+
+- File: `opengameart-castle-reference-composite.png` (2240×2240 RGB)
+- Source: user-provided reference image of the OpenGameArt example composition.
+- 2026-09-21: removed Irukard's GPL bridge (parapets, deck, arch and piers) by
+  replacing 16px cells `(102,107,30,28)` with existing river-water cells.
+  Pixels outside that rectangle are unchanged. This is no longer an exact
+  screenshot comparison board.
+- Remaining art: Zabin, Hyptosis, Daniel Cook (CC BY 3.0), Daniel Eddeland and
+  Jetrel (CC BY-SA 3.0), as linked by the original composition. The adapted
+  composite is distributed under CC BY-SA 3.0; full credits accompany exports
+  in `opengameart-castle-reference-composite-CREDITS.txt`.
+
+## [LPC] Wooden Furniture — OpenGameArt
+
+- File: `opengameart-lpc-wooden-furniture.png` (512×1024 RGBA, original pixels
+  unchanged)
+- Authors and required credit: bluecarrot16, Baŝto, Lanea Zimmerman (Sharm),
+  William Thompson, Tuomo Untinen (Reemax), Janna/Lilius/Jannax. The upstream
+  bundled `CREDITS-furniture.txt` is mirrored at
+  `opengameart-lpc-wooden-furniture-CREDITS.txt` and lists each component
+  license; "All information in this file must be included" applies.
+- Source: https://opengameart.org/content/lpc-wooden-furniture
+- Download: https://opengameart.org/sites/default/files/clean_furniture.png
+  (the transparent-background "clean furniture" variant; the opaque preview
+  variant is not bundled)
+- License: CC-BY-SA 3.0 / GPL 3.0 (per-component upstream licenses as listed in
+  the credits file)
+- SHA-256: `6e0a4e5129790d757415e83704f089af27accc9865ccc197cd43f8c3fe2a489d`
+- Notes: LPC standard 32×32px tiles, 16 columns × 32 rows (512 cells). The sheet
+  is registered at its native 32px cell size (custom atlas, no RM2K autotile or
+  water animation). Passability/layer defaults start fully passable and lower
+  layer for authoring. Games exporting this asset must ship
+  `opengameart-lpc-wooden-furniture-CREDITS.txt` alongside the PNG and retain
+  the author, source, and license notices.
+
+### 16px companion sheet (2026-09-22)
+
+- File: `opengameart-lpc-wooden-furniture-16px.png` (256×512 RGBA)
+- Derivation: the 32px sheet above, halved with unfake.js (unfake-core WASM) median
+  block downscale. Registered as `opengameart_lpc_wooden_furniture_16` /
+  `tex_opengameart_lpc_wooden_furniture_16` so the same furniture can be placed on
+  existing 16px maps (combined town / interior).
+- SHA-256: `6989a08a782a6002c2aed4337f393d674b405443b0cd4d2fc247e0d66856d7be`
+- Modification notice: this is a modified (downscaled) derivative. The original 32px
+  sheet is preserved unchanged and is not replaced by this file. Same authors, same
+  CC-BY-SA 3.0 / GPL 3.0 terms, and the same credits file apply.
+- Only the downscale step of unfake.js was used. Its morphological cleanup and
+  quantization steps removed 1px handles and shelf dividers on this sheet (it is
+  authored pixel art, not AI output, so there is no fake-pixel structure to undo).
+
 ## Galmuri pixel fonts
 
 - Files:
@@ -19,6 +82,43 @@
 - License: original generated project asset (this project). Renamed 2026-08-21 from
   `windowskin-rm2003.png` — the file is our own generated 9-slice, not third-party art.
 - Notes: 96x96 RGBA 9-slice window skin with 24px corners for runtime game windows.
+
+## OGA greggman — Backgrounds for 2D Platformers
+
+- Files:
+  - `oga/greggman-backgrounds/meadow.png` (upstream `background0.png`, resized to 1280x720)
+  - `oga/greggman-backgrounds/city-night.png` (upstream `background1-720.png`, copied as-is)
+  - `oga/greggman-backgrounds/haunted-forest.png` (upstream `background3-720.png`, copied as-is)
+  - `oga/greggman-backgrounds/dusk-mountains.png` (upstream `rock_4.png`, resized to 1280x720)
+  - `oga/greggman-backgrounds/snow-mountains.png` (upstream `snow_5.png`, resized to 1280x720)
+- Author: greggman (https://opengameart.org/users/greggman)
+  Collaborator credit: RenZeyu (https://opengameart.org/users/renzeyu)
+- Source: https://opengameart.org/content/backgrounds-for-2d-platformers
+- License: **Creative Commons Attribution 3.0 Unported (CC-BY 3.0)**,
+  https://creativecommons.org/licenses/by/3.0/ — attribution required, commercial use
+  allowed. Do not remove this section while any of these files or derived resource ids
+  (`oga-backdrop-*`) remain in the project.
+- Notes: bundled 2026-09-21 as map panorama / battle backdrop candidates. Registered in
+  `src/assets/ogaBackdropAssets.ts`. The two 1080p sources were downscaled to match the
+  upstream 720p attachments; no other pixels were edited.
+
+## OGA CraftPix — Horizontal 2D Backgrounds
+
+- Files:
+  - `oga/craftpix-horizontal/bg1/composite.png` — upstream `game_background_1/game_background_1.png`
+  - `oga/craftpix-horizontal/bg1/composite-parallax.png` — upstream `game_background_1/game_background_1_parallax.png`
+  - `oga/craftpix-horizontal/bg1/layers/*.png` (7) — upstream `game_background_1/layers/*.png`, copied as-is
+  - `oga/craftpix-horizontal/bg2/composite.png` + `layers/*.png` (8) — upstream `game_background_2/*`
+  - `oga/craftpix-horizontal/bg3/composite-1.png`, `composite-2.png` + `layers/*.png` (8) — upstream `game_background_3/*`
+  - `oga/craftpix-horizontal/bg4/composite.png` + `layers/*.png` (5) — upstream `game_background_4/*`
+- Author: CraftPix.net 2D Game Assets (https://opengameart.org/users/craftpixnet-2d-game-assets)
+- Source: https://opengameart.org/content/horizontal-2d-backgrounds
+- License: **OGA-BY 3.0** (https://opengameart.org/content/oga-by-30-faq), attribution
+  required, commercial use allowed. Do not remove this section while any of these files or
+  derived resource ids (`oga-craftpix-*`) remain in the project.
+- Notes: bundled 2026-09-21 as map panorama multi-layer / single-image candidates. All 35
+  PNGs were copied without pixel edits (only renamed: set folders bg1–bg4, layer composites
+  named `composite*.png`). Registered in `src/assets/ogaCraftpixBackgrounds.ts`.
 
 ## EasyRPG RTP bundled map and object assets
 
@@ -247,3 +347,84 @@ forest edits made using god-tibo-imagen (vegetation, canopy, trunks and end caps
 Tile metadata and assemblies are in `src/assets/forestHarmonyTileset.json`.
 Tibo editing and bundling do not establish a new license or copyright clearance
 for reference-derived components. Existing component provenance still applies.
+
+
+## Slates v.2 — 32×32 orthogonal tileset
+
+- Author and required credit: **Ivan Voirol**.
+- Source: https://opengameart.org/content/slates-32x32px-orthogonal-tileset-by-ivan-voirol
+- License: Creative Commons Attribution 4.0 International, https://creativecommons.org/licenses/by/4.0/
+- Bundled file: `slates/slates-v2-32px.png`.
+- Modification: removed the original top 32px title strip; artwork is otherwise unchanged.
+  Original 1792×736px; atlas 1792×704px, 56 columns × 22 rows of 32×32px tiles.
+- Games exporting this asset must retain the author, source, license and modification notice.
+- Reference-map additions: `slates/slates-v1-32px.png` uses the same author's original
+  1536×736 release, with its top 32px title strip removed (1536×704 output).
+- `slates/slates-reference-32px.png` combines v1/v2 source rectangles into editable
+  32px tiles for the harbor, town, and castle example layouts. The three example
+  layouts are based on Ivan Voirol's `NewVersion_0.png`, `ville_0.png`, and `chateau.png`
+  previews on the source page. Some small details differ from the previews.
+- Source rectangle recipes: `slates-reference-recipes.json`; generated tile provenance:
+  `slates-reference-tile-provenance.json`. Rebuild with
+  `scripts/content/build-slates-reference.mjs`. The reference screenshots are not
+  copied into the generated atlas. All derived artwork remains attributed to Ivan
+  Voirol under CC BY 4.0; preserve this notice when exporting the maps.
+- Study additions: `slates/slates-study-32px.png` retains the v2 atlas and appends three
+  32px composites (water tile 243 behind board tiles 23, 79 and 135). Generated by
+  `scripts/content/build-slates-study.mjs`. Same Ivan Voirol / CC BY 4.0 attribution.
+  `reports/slates-study/index.html` embeds the attributed source art, reconstructed
+  maps and the author's castle preview for visual comparison and explanation.
+- Village additions: `slates/slates-village-32px.png` retains the original v2 tiles
+  and appends 88 composites/placement variants. Sources and ordered rectangles are
+  recorded in `slates/slates-village-recipes.json`; no reference screenshot pixels
+  are used. The 50×50 village layout is authored for OPRN Studio. The atlas and
+  numbered images in `openwiki/images/slates/` remain credited to Ivan Voirol,
+  CC BY 4.0. Changes: original rectangles assembled, bridge board centers repeated,
+  original pixel colors retained. Keep the credit/license/modification notice.
+- Structure study: `slates/slates-mastery-32px.png` and the PNG plates in
+  `openwiki/images/slates/mastery/` use Ivan Voirol's v1/v2 source art under CC BY 4.0.
+  Changes: source rectangles composed into 32px cells; 16px structural and 8px detail
+  pieces, ordered alpha overlays, numbered source plates, and comparison/difference
+  boards. Reference previews are used only on the comparison side, not as atlas pixels.
+  Provenance: `slates-mastery-catalog.json` and `slates-mastery-fine-recipes.json`.
+  `reports/slates-mastery/index.html` embeds these attributed study images.
+# Castle courtyard harbor and nature extension (2026-09-20)
+
+`castle-surroundings/atlas.png` retains Castle2 in its first 512×512 pixels
+and appends selected source-art rectangles from Daniel Eddeland's LPC
+farming/fishing submission (CC-BY-SA 3.0) and Hyptosis batches 1 and 3
+(CC-BY 3.0). The combined/adapted atlas is CC-BY-SA 3.0. Original sources,
+their hashes, cropping/assembly recipe and full author/license links are in
+`castle-surroundings/sources/`, `manifest.json` and `CREDITS.txt`.
+No screenshot pixels are used. Tree crown/trunk/root modules were assembled;
+other props were cropped and repacked without scaling or recolouring.
+
+
+## Reviewed forest-village props (2026-09-21)
+
+`generated/forest-harmony/village-unfake-v1/*.png` contains eleven reviewed
+Tibo-generated village props, subsequently processed with the MIT-licensed
+[unfake.js](https://github.com/jenissimo/unfake.js) tool, version 1.3.0,
+commit `b2bee10c1c3b211a2532baca9088857b19480dca`. The tool source/WASM is not
+redistributed here. Processing methods and review scope are recorded alongside
+the PNGs. This is asset provenance, not a claim that processing changes the
+rights of any source image. The rejected clay oven is excluded.
+
+The gubisup, small-forest-village and forest-cliff-village region atlases preserve
+the existing mixed-source terrain/building attribution and the reviewed custom
+forest materials; they are portable authored map snapshots, not new original
+claims for those inherited tiles.
+
+## Authored forest place library (2026-09-21)
+
+The 13 portable map documents listed in `scripts/asset-gen/forest-place-library.json`
+preserve the existing project maps and tileset pixels, including their original
+EasyRPG/combined-town/retro-world and reference-derived forest material provenance.
+The corresponding `public/assets/region-references/*-atlas.png` files are copies
+of those uploaded atlases. This registration does not create new original artwork
+or change the attribution or licence status documented above. Preview PNGs are
+captures of the saved maps in the actual editor.
+
+## Shared river fortress place
+
+`region-references/river-fortress-atlas.png` and its portable map preserve Castle2 and the Hyptosis/Daniel Eddeland supplemental provenance. See `castle-surroundings/CREDITS.txt`. Atlas composites and restored entrance cells do not change those licences. No reference-screenshot pixels or removed stone bridge are included.

@@ -13,7 +13,7 @@ test/databaseVillageView.test.ts
 test/interiorLoadConsistency.test.ts
 test/moveRouteCatalogPersistence.test.ts
 test/pr687VerificationIntegration.test.ts
-test/supabaseMapPatchRecovery.test.ts
+test/legacyDbMapPatchRecovery.test.ts
 test/toolsFarmSpatial.test.ts
 test/verificationNativeScopes.test.ts
 test/verificationSelectionOwnership.test.ts

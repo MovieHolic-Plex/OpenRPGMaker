@@ -1,0 +1,96 @@
+{
+  "status": "frozen-author-handoff",
+  "projectId": "rpg-zzu-slates32-38e6",
+  "mapId": "slates_astra_v3_walled_50",
+  "runtimeStart": {
+    "x": 24,
+    "y": 49
+  },
+  "files": [
+    {
+      "path": "scripts/content/build-slates-astra-v3.mjs",
+      "bytes": 21778,
+      "sha256": "4924f66d8f01cad7323d7678af90066bbfc367684f73bd73730f148a2db03bf1"
+    },
+    {
+      "path": "verify-shots/slates-astra-v3/AUTHOR-REPORT.md",
+      "bytes": 4675,
+      "sha256": "f7355895bbc40ff6704117aa08b0b470fdad8350def452225a63a1250a77d42f"
+    },
+    {
+      "path": "verify-shots/slates-astra-v3/INPUTS.json",
+      "bytes": 3844,
+      "sha256": "1dc6b06d95425d44637182cdb5e40debcae20ce047127821b096e86bff58281c"
+    },
+    {
+      "path": "verify-shots/slates-astra-v3/atlas.png",
+      "bytes": 1172055,
+      "sha256": "791fe40e0835c7d51efe486420d017e28465ed68346ef6d934ada2ce57e25012"
+    },
+    {
+      "path": "verify-shots/slates-astra-v3/author-validation.json",
+      "bytes": 686,
+      "sha256": "bbe54faf458ca0ad75b9d7f75c12a8fe6dc8011be7cfc2f6107b61c3c142dd47"
+    },
+    {
+      "path": "verify-shots/slates-astra-v3/bundle.json",
+      "bytes": 1992068,
+      "sha256": "30ad30730b4a227181e3f32c2fba7c7d3f46e40420718ca2b2e37fd7ab225a42"
+    },
+    {
+      "path": "verify-shots/slates-astra-v3/contact-final.png",
+      "bytes": 48684,
+      "sha256": "51c497935f33d8fb020fca544d2b1310eeec32ca060a8461393e07104955c6ab"
+    },
+    {
+      "path": "verify-shots/slates-astra-v3/crop-1.png",
+      "bytes": 271274,
+      "sha256": "7a8125555b7561efe9155acb92448d23aea35e37da88aabed8aa504428213cc6"
+    },
+    {
+      "path": "verify-shots/slates-astra-v3/crop-2.png",
+      "bytes": 237151,
+      "sha256": "36a9c25c43eaa799651fc31b1e894d729984b7c69dc2a8d00bad5e29b5f6016e"
+    },
+    {
+      "path": "verify-shots/slates-astra-v3/crop-3.png",
+      "bytes": 266321,
+      "sha256": "aa105242a7b8a945212ad6ae08908e016eb7ac6ed35578a1fbbe42f3e6b4b0b6"
+    },
+    {
+      "path": "verify-shots/slates-astra-v3/density.png",
+      "bytes": 991959,
+      "sha256": "54d16dcff8da11a88508752ff6ee323664af04f09bb802aa92effc17ed60435d"
+    },
+    {
+      "path": "verify-shots/slates-astra-v3/east-door-garden.png",
+      "bytes": 13670,
+      "sha256": "3eee809691190746e4b751cefb62d865fd45dee04e3d834c87a8aa9a72a33c33"
+    },
+    {
+      "path": "verify-shots/slates-astra-v3/east-door-north.png",
+      "bytes": 13670,
+      "sha256": "3eee809691190746e4b751cefb62d865fd45dee04e3d834c87a8aa9a72a33c33"
+    },
+    {
+      "path": "verify-shots/slates-astra-v3/layout.json",
+      "bytes": 61876,
+      "sha256": "4db3bac1dbb7a1964a861dbd10f5f64601cb3bf4c90fec08bdda3c8ad52b94b4"
+    },
+    {
+      "path": "verify-shots/slates-astra-v3/map-operations.json",
+      "bytes": 4113226,
+      "sha256": "e6347c3f13a30d83b20ef584428f09090abc4e45aec25973220b200874981da3"
+    },
+    {
+      "path": "verify-shots/slates-astra-v3/map.png",
+      "bytes": 2183979,
+      "sha256": "0510db1a5f5135127f8827b237c4fd2d4ee46704cd0c698f3ceb9d6d481f5a0d"
+    },
+    {
+      "path": "verify-shots/slates-astra-v3/metrics.json",
+      "bytes": 26381,
+      "sha256": "b7a1242d1019d3a416f25dfe67a7e0a7882d4e20e3992a152731ea289d212f88"
+    }
+  ]
+}

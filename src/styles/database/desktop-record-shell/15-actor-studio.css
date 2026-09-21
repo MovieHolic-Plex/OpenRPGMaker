@@ -383,8 +383,8 @@
   }
 
   .database-modal-body .db-actor-studio-workspace .db-actor-studio-table .db-actor-table-row {
-    grid-template-columns: minmax(132px, 1.4fr) minmax(58px, 0.7fr) 32px 42px 40px;
-    min-width: calc(132px + 58px + 32px + 42px + 40px + 4 * 6px + 2 * 10px);
+    grid-template-columns: minmax(112px, 1.3fr) minmax(50px, 0.65fr) 28px 38px 40px;
+    min-width: 100%;
   }
 
   .database-modal-body .db-actor-studio-workspace .db-actor-studio-table .db-actor-table-header,

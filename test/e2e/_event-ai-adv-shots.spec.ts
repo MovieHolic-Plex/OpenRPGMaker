@@ -2,7 +2,7 @@ import { test, type Page } from "@playwright/test";
 import { mkdirSync } from "node:fs";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, EventPage, Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 /**
  * 「AI로 명령 만들기」 도크의 증거 스크린샷 수집기(진단 스펙 — 기본 스위트 제외).
@@ -73,7 +73,7 @@ test("도크 생성 흐름을 장면별로 남긴다", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
   const project = probeProject();
   await page.goto("/");
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await page.evaluate(async (mapId) => {
     const modalPath = "/src/editor/panels/eventEditor/modal.ts";
     const modalModule = (await import(modalPath)) as typeof import("@/editor/panels/eventEditor/modal");

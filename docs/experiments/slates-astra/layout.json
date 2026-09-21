@@ -1,0 +1,408 @@
+{
+  "name": "느티관문 — 우물길 성곽마을",
+  "width": 50,
+  "height": 50,
+  "zones": [
+    {
+      "name": "서쪽 공방·주거",
+      "rect": [
+        7,
+        7,
+        13,
+        32
+      ],
+      "reason": "두 줄의 작은 필지와 가로 골목, 문 앞 한 칸 확보"
+    },
+    {
+      "name": "우물 광장",
+      "rect": [
+        21,
+        18,
+        13,
+        5
+      ],
+      "reason": "남문에서 꺾인 주도로와 회관 접근의 결절"
+    },
+    {
+      "name": "동쪽 뜰·여관",
+      "rect": [
+        33,
+        7,
+        10,
+        32
+      ],
+      "reason": "정원과 여관 앞 빈 공간을 상점가보다 넓게 확보"
+    },
+    {
+      "name": "남문 장터",
+      "rect": [
+        20,
+        31,
+        12,
+        10
+      ],
+      "reason": "입성 직후 좌우 가판대와 넓은 대기 공간"
+    }
+  ],
+  "buildings": [
+    {
+      "name": "서문 수선공",
+      "x": 8,
+      "y": 7,
+      "width": 4,
+      "height": 8,
+      "roofDepth": 1,
+      "style": 2,
+      "door": {
+        "x": 10,
+        "y": 13
+      },
+      "approach": {
+        "x": 10,
+        "y": 15
+      },
+      "reason": "지붕 깊이와 박공 폭을 분리하고 문 아래 벽·기단·접근 칸을 연결"
+    },
+    {
+      "name": "청동 공방",
+      "x": 14,
+      "y": 7,
+      "width": 4,
+      "height": 10,
+      "roofDepth": 2,
+      "style": 1,
+      "door": {
+        "x": 16,
+        "y": 15
+      },
+      "approach": {
+        "x": 16,
+        "y": 17
+      },
+      "reason": "지붕 깊이와 박공 폭을 분리하고 문 아래 벽·기단·접근 칸을 연결"
+    },
+    {
+      "name": "마을 회관",
+      "x": 24,
+      "y": 7,
+      "width": 6,
+      "height": 11,
+      "roofDepth": 2,
+      "style": 0,
+      "door": {
+        "x": 27,
+        "y": 16
+      },
+      "approach": {
+        "x": 27,
+        "y": 18
+      },
+      "reason": "지붕 깊이와 박공 폭을 분리하고 문 아래 벽·기단·접근 칸을 연결"
+    },
+    {
+      "name": "북동 서고",
+      "x": 38,
+      "y": 7,
+      "width": 4,
+      "height": 8,
+      "roofDepth": 1,
+      "style": 2,
+      "door": {
+        "x": 40,
+        "y": 13
+      },
+      "approach": {
+        "x": 40,
+        "y": 15
+      },
+      "reason": "지붕 깊이와 박공 폭을 분리하고 문 아래 벽·기단·접근 칸을 연결"
+    },
+    {
+      "name": "바늘 상점",
+      "x": 8,
+      "y": 20,
+      "width": 4,
+      "height": 9,
+      "roofDepth": 1,
+      "style": 1,
+      "door": {
+        "x": 10,
+        "y": 27
+      },
+      "approach": {
+        "x": 10,
+        "y": 29
+      },
+      "reason": "지붕 깊이와 박공 폭을 분리하고 문 아래 벽·기단·접근 칸을 연결"
+    },
+    {
+      "name": "염색 상점",
+      "x": 14,
+      "y": 20,
+      "width": 4,
+      "height": 8,
+      "roofDepth": 1,
+      "style": 2,
+      "door": {
+        "x": 16,
+        "y": 26
+      },
+      "approach": {
+        "x": 16,
+        "y": 28
+      },
+      "reason": "지붕 깊이와 박공 폭을 분리하고 문 아래 벽·기단·접근 칸을 연결"
+    },
+    {
+      "name": "여관 본동",
+      "x": 34,
+      "y": 22,
+      "width": 6,
+      "height": 11,
+      "roofDepth": 2,
+      "style": 1,
+      "door": {
+        "x": 37,
+        "y": 31
+      },
+      "approach": {
+        "x": 37,
+        "y": 33
+      },
+      "reason": "지붕 깊이와 박공 폭을 분리하고 문 아래 벽·기단·접근 칸을 연결"
+    },
+    {
+      "name": "남서 주택",
+      "x": 8,
+      "y": 32,
+      "width": 4,
+      "height": 8,
+      "roofDepth": 1,
+      "style": 2,
+      "door": {
+        "x": 10,
+        "y": 38
+      },
+      "approach": {
+        "x": 10,
+        "y": 40
+      },
+      "reason": "지붕 깊이와 박공 폭을 분리하고 문 아래 벽·기단·접근 칸을 연결"
+    },
+    {
+      "name": "빵집",
+      "x": 14,
+      "y": 32,
+      "width": 4,
+      "height": 8,
+      "roofDepth": 1,
+      "style": 2,
+      "door": {
+        "x": 16,
+        "y": 38
+      },
+      "approach": {
+        "x": 16,
+        "y": 40
+      },
+      "reason": "지붕 깊이와 박공 폭을 분리하고 문 아래 벽·기단·접근 칸을 연결"
+    },
+    {
+      "name": "정원지기 집",
+      "x": 36,
+      "y": 34,
+      "width": 4,
+      "height": 7,
+      "roofDepth": 0,
+      "style": 2,
+      "door": {
+        "x": 38,
+        "y": 39
+      },
+      "approach": {
+        "x": 38,
+        "y": 41
+      },
+      "reason": "지붕 깊이와 박공 폭을 분리하고 문 아래 벽·기단·접근 칸을 연결"
+    },
+    {
+      "name": "광장 약초방",
+      "x": 24,
+      "y": 24,
+      "width": 4,
+      "height": 7,
+      "roofDepth": 0,
+      "style": 2,
+      "door": {
+        "x": 26,
+        "y": 29
+      },
+      "approach": {
+        "x": 26,
+        "y": 31
+      },
+      "reason": "지붕 깊이와 박공 폭을 분리하고 문 아래 벽·기단·접근 칸을 연결"
+    },
+    {
+      "name": "회관 기록실",
+      "x": 30,
+      "y": 12,
+      "width": 3,
+      "height": 5,
+      "door": {
+        "x": 31,
+        "y": 16
+      },
+      "approach": {
+        "x": 31,
+        "y": 17
+      },
+      "reason": "회관에 닿는 낮은 별동, 독립 지붕을 겹치지 않고 수평 접합"
+    }
+  ],
+  "gates": [
+    {
+      "name": "열린 쌍탑 남문",
+      "rect": [
+        24,
+        42,
+        4,
+        5
+      ],
+      "state": "always-open",
+      "reason": "hold 격자문 대신 원본 탑 사이 지상 통로. 위쪽 연결 아치와 다층 보행을 만들지 않음"
+    }
+  ],
+  "spawn": {
+    "x": 25,
+    "y": 48
+  },
+  "landmarks": [
+    {
+      "name": "열린 남문",
+      "x": 25,
+      "y": 44,
+      "reachable": true
+    },
+    {
+      "name": "남문 바깥",
+      "x": 25,
+      "y": 48,
+      "reachable": true
+    },
+    {
+      "name": "우물 광장",
+      "x": 27,
+      "y": 21,
+      "reachable": true
+    },
+    {
+      "name": "동쪽 정원 입구",
+      "x": 37,
+      "y": 19,
+      "reachable": true
+    },
+    {
+      "name": "서문 수선공 문 앞",
+      "x": 10,
+      "y": 15,
+      "reachable": true
+    },
+    {
+      "name": "청동 공방 문 앞",
+      "x": 16,
+      "y": 17,
+      "reachable": true
+    },
+    {
+      "name": "마을 회관 문 앞",
+      "x": 27,
+      "y": 18,
+      "reachable": true
+    },
+    {
+      "name": "북동 서고 문 앞",
+      "x": 40,
+      "y": 15,
+      "reachable": true
+    },
+    {
+      "name": "바늘 상점 문 앞",
+      "x": 10,
+      "y": 29,
+      "reachable": true
+    },
+    {
+      "name": "염색 상점 문 앞",
+      "x": 16,
+      "y": 28,
+      "reachable": true
+    },
+    {
+      "name": "여관 본동 문 앞",
+      "x": 37,
+      "y": 33,
+      "reachable": true
+    },
+    {
+      "name": "남서 주택 문 앞",
+      "x": 10,
+      "y": 40,
+      "reachable": true
+    },
+    {
+      "name": "빵집 문 앞",
+      "x": 16,
+      "y": 40,
+      "reachable": true
+    },
+    {
+      "name": "정원지기 집 문 앞",
+      "x": 38,
+      "y": 41,
+      "reachable": true
+    },
+    {
+      "name": "광장 약초방 문 앞",
+      "x": 26,
+      "y": 31,
+      "reachable": true
+    },
+    {
+      "name": "회관 기록실 문 앞",
+      "x": 31,
+      "y": 17,
+      "reachable": true
+    },
+    {
+      "name": "가판대 21,33",
+      "x": 21,
+      "y": 35,
+      "reachable": true
+    },
+    {
+      "name": "가판대 28,33",
+      "x": 28,
+      "y": 35,
+      "reachable": true
+    },
+    {
+      "name": "가판대 21,37",
+      "x": 21,
+      "y": 39,
+      "reachable": true
+    },
+    {
+      "name": "가판대 30,37",
+      "x": 30,
+      "y": 39,
+      "reachable": true
+    }
+  ],
+  "collision": {
+    "reachableCells": 1380,
+    "blockedCells": 1040,
+    "unreachableLandmarks": [],
+    "method": "원본 지면 및 파생 ID의 통행을 저작하며 lower/upper 차단 합집합의 4방향 flood fill. 실제 엔진 검증은 감독자 담당."
+  }
+}

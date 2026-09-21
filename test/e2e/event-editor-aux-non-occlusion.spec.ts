@@ -2,7 +2,7 @@ import { mkdir } from "node:fs/promises";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { createBlankProject } from "@/project/defaults";
 import { mockupProject } from "./mockupProbeSeeds";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 /** AC10: open aux chip must not fully cover the command list (cmd-list height stays usable). */
 const CMD_LIST_MIN_HEIGHT_PX = 48;
@@ -20,7 +20,7 @@ test.beforeEach(async ({ page }) => {
 test("event editor aux chip leaves command list geometry usable (AC10)", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   const project = createBlankProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
 
   const editor = await openEventEditor(page, project.startMapId);
   await editor.getByTestId("event-view-toggle-list").click();
@@ -42,7 +42,7 @@ test("event editor aux chip leaves command list geometry usable (AC10)", async (
 test("event editor preset and toolbar do not overlap the command list", async ({ page }) => {
   await page.setViewportSize({ width: 1920, height: 1180 });
   const project = createBlankProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
 
   const editor = await openEventEditor(page, project.startMapId);
   const cmdList = editor.locator(".event-contents-fieldset .cmd-list");
@@ -87,7 +87,7 @@ test("event editor preset and toolbar do not overlap the command list", async ({
 test("AI 명령 도크는 명령 목록을 덮지 않고 모달 안에 머밃다", async ({ page }) => {
   await page.setViewportSize({ width: 960, height: 900 });
   const { project, eventId } = mockupProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await page.evaluate(async ({ mapId, id }) => {
     const modalModule = await import("/src/editor/panels/eventEditor/modal.ts");
     modalModule.openEventEditorModal(mapId, id);

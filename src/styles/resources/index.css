@@ -1,4 +1,10 @@
 /* resources 표면 진입 시트 — 리프 시트를 @layer resources 에 넣는다. 규칙을 여기 쓰지 말 것. 순서는 2026-09-11 유효 순서 그대로(세대 접기 전). */
 @import "./resource-manager.css" layer(resources);
+@import "./resource-manager.part-2.css" layer(resources);
+@import "./resource-manager.part-3.css" layer(resources);
+@import "./resource-manager.part-4.css" layer(resources);
+@import "./resource-manager.part-5.css" layer(resources);
+@import "./resource-manager.part-6.css" layer(resources);
+@import "./chipset-import.css" layer(resources);
 
 @import "./expression-manager.css" layer(resources);

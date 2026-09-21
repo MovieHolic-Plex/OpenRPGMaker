@@ -1,8 +1,10 @@
+import { mapTileSize } from "@/project/tileGeometry";
+import { syncPlayerCharacterScale } from "@/player/playerCharacterScale";
 import { resetDetectionForMap } from "./npcDetectionEncounter";
 import { dialogueUi } from "./playSceneDom";
 import { evalCondition } from "@/project/session";
 import { clearFurniturePush, furniturePushPosition } from './furniturePushAnimation';
-import { chipsetAnimationKey, TILE_SIZE } from "@/assets/bundled";
+import { chipsetAnimationKey } from "@/assets/bundled";
 import {
   supportsChipsetQuarterComposition,
   tilesetAnimationKeyForTile,
@@ -172,6 +174,7 @@ export function loadMap(scene: PlaySceneContext, mapId: MapId, options: { readon
   if (options.applyMapBgm !== false) startMapBgm(project, scene.session, mapId);
   if (!options.preserveErasedEvents) scene.session.erasedEventIds = [];
   resetMapRuntime(scene);
+  syncPlayerCharacterScale(scene);
   applyMapOverrides(scene);
   initializeFieldSpawnsForScene(scene);
   scene.renderTiles();
@@ -311,6 +314,7 @@ function tileTargetLayer<TImage extends RenderedTileImage, TSprite extends Rende
 }
 
 function applyTileDepth(
+  tileSize: number,
   image: RenderedTileImage,
   tileset: TilesetDef,
   tile: number,
@@ -322,7 +326,7 @@ function applyTileDepth(
     image.setDepth(y * 2);
     return;
   }
-  image.setDepth(mapUpperTileDepth(tileset, tile, y));
+  image.setDepth(mapUpperTileDepth(tileset, tile, y, tileSize));
 }
 
 function rootYSortHost<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
@@ -363,7 +367,7 @@ function placeMapTileImage<TImage extends RenderedTileImage, TSprite extends Ren
   const alwaysAbove = layer === "upper" && isAlwaysAboveCharacterUpperTile(tileset, tile);
   bumpPerfCounter(scene, "tileObjectsCreated");
   image.setOrigin(0, 0);
-  applyTileDepth(image, tileset, tile, y, layer);
+  applyTileDepth(mapTileSize(scene.map), image, tileset, tile, y, layer);
   // 화면 밖 타일은 카메라가 타일 경계를 넘을 때 숨긴다(playSceneTileCulling 주석 참고).
   trackCullableTile(rootYSortHost(scene), image, x, y);
   if (layer === "upper" && !alwaysAbove) {
@@ -401,14 +405,14 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
   // 사용자가 받침을 확정한 커스텀 칩셋도 같은 답을 받는다. 규칙이 없으면 null 이라 그 밖은 전과 같다.
   const backingTile = layer === "lower" ? tileBackingTile(tileset, tile) : null;
   if (backingTile !== null) {
-    const backing = scene.add.image(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${backingTile}`);
+    const backing = scene.add.image(x * mapTileSize(scene.map), y * mapTileSize(scene.map), textureKey, `tile_${backingTile}`);
     placeMapTileImage(scene, backing, tileset, backingTile, x, y, layer);
   }
   const baseAnimationKey = tilesetAnimationKeyForTile(tileset, tile);
   const animationKey = baseAnimationKey ? chipsetAnimationKey(textureKey, baseAnimationKey) : null;
   const image = animationKey
-    ? scene.add.sprite(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${tile}`).play(animationKey)
-    : scene.add.image(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${tile}`);
+    ? scene.add.sprite(x * mapTileSize(scene.map), y * mapTileSize(scene.map), textureKey, `tile_${tile}`).play(animationKey)
+    : scene.add.image(x * mapTileSize(scene.map), y * mapTileSize(scene.map), textureKey, `tile_${tile}`);
   placeMapTileImage(scene, image, tileset, tile, x, y, layer);
 }
 
@@ -424,8 +428,8 @@ function renderLakeAutotile<TImage extends RenderedTileImage, TSprite extends Re
     const animationKey = quarterAnimationKey(textureKey, part.tile, part.quarter);
     const frameName = quarterFrameName(part.tile, part.quarter);
     const image = animationKey
-      ? scene.add.sprite(x * TILE_SIZE + part.offsetX, y * TILE_SIZE + part.offsetY, textureKey, frameName).play(animationKey)
-      : scene.add.image(x * TILE_SIZE + part.offsetX, y * TILE_SIZE + part.offsetY, textureKey, frameName);
+      ? scene.add.sprite(x * mapTileSize(scene.map) + part.offsetX, y * mapTileSize(scene.map) + part.offsetY, textureKey, frameName).play(animationKey)
+      : scene.add.image(x * mapTileSize(scene.map) + part.offsetX, y * mapTileSize(scene.map) + part.offsetY, textureKey, frameName);
     // 쿼터 소스는 맵 셀 좌표 기준 depth 를 공유한다.
     placeMapTileImage(scene, image, tileset, part.tile, x, y, layer);
   }
@@ -442,13 +446,13 @@ function renderTerrainQuarter<TImage extends RenderedTileImage, TSprite extends 
   layer: "lower" | "upper",
 ): void {
   if (composition.underlayTile !== undefined) {
-    const underlay = scene.add.image(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${composition.underlayTile}`);
+    const underlay = scene.add.image(x * mapTileSize(scene.map), y * mapTileSize(scene.map), textureKey, `tile_${composition.underlayTile}`);
     placeMapTileImage(scene, underlay, tileset, composition.underlayTile, x, y, layer);
   }
   for (const part of composition.sources) {
     const image = scene.add.image(
-      x * TILE_SIZE + part.offsetX,
-      y * TILE_SIZE + part.offsetY,
+      x * mapTileSize(scene.map) + part.offsetX,
+      y * mapTileSize(scene.map) + part.offsetY,
       textureKey,
       `tile_${part.tile}_${part.quarter}`
     );
@@ -472,7 +476,7 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     const event = view.event;
     scene.runtimeDom.upsertEventMarker(view, (eventId) => {
       void scene.runEvent(eventId);
-    });
+    }, mapTileSize(scene.map));
     const sprite = view.sprite;
     if (!sprite) continue;
     // Command-driven frame changes must survive refreshRuntimeSurfaces (wait/transfer mid-sequence).
@@ -493,13 +497,13 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     // 진행 중인 걸음의 보간 위치에 놓는다.
     const position = furniturePushPosition(scene, event.id) ?? renderedEventPosition(view, scene.autonomousNPCs?.get(event.id));
     const marker = scene.add.sprite(
-      footprintSpriteX(position.x, view.footprint),
-      characterSpriteY(position.y),
+      footprintSpriteX(position.x, view.footprint, mapTileSize(scene.map)),
+      characterSpriteY(position.y, mapTileSize(scene.map)),
       spriteTexture?.texture ?? DEFAULT_EASYRPG_CHARSET_ID,
       frame
     );
     placeCharacterSprite(marker, view.priority);
-    marker.setScale(eventSpriteScale(spriteTexture, marker, view.scale));
+    marker.setScale(eventSpriteScale(spriteTexture, marker, view.page?.graphic.scale, mapTileSize(scene.map), view.page?.graphic.scaleMode));
     scene.eventSprites.set(event.id, marker);
   }
   syncForageWarnings(scene);

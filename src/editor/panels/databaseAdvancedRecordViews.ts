@@ -25,10 +25,10 @@ export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord): v
     ]),
     panel("능력치", [
       numberField("최대 HP", "db-field-enemy-max-hp", record.stats.maxHp, (maxHp) =>
-        updateDatabaseRecord("enemies", record.id, { stats: { ...record.stats, maxHp } })
+        updateDatabaseRecord("enemies", record.id, { stats: { ...currentEnemyStats(record.id, record.stats), maxHp } })
       ),
       numberField("공격력", "db-field-enemy-attack", record.stats.attack, (attack) =>
-        updateDatabaseRecord("enemies", record.id, { stats: { ...record.stats, attack } })
+        updateDatabaseRecord("enemies", record.id, { stats: { ...currentEnemyStats(record.id, record.stats), attack } })
       ),
     ]),
     panel("보상", [
@@ -123,4 +123,13 @@ function neutralResourceSlot(resourceId: string | undefined): HTMLElement {
 
 function currentEnemyRewards(enemyId: string, fallback: EnemyRecord["rewards"]): EnemyRecord["rewards"] {
   return store.getCurrent().database.enemies.find((record) => record.id === enemyId)?.rewards ?? fallback;
+}
+
+/**
+ * 합성 patch(`{ ...이전값, 바뀐필드 }`)의 베이스는 **항상 store 에서 다시 읽는다.**
+ * 렌더 클로저가 잡은 record 는 편집 중 재렌더 보류(400ms grace) 창에서 낡을 수 있고,
+ * 그 사이 AI 적용·undo 가 store 를 갈아치우면 낡은 베이스가 그 변경을 조용히 되돌린다.
+ */
+function currentEnemyStats(enemyId: string, fallback: EnemyRecord["stats"]): EnemyRecord["stats"] {
+  return store.getCurrent().database.enemies.find((record) => record.id === enemyId)?.stats ?? fallback;
 }

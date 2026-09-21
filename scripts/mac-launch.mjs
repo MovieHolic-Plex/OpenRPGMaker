@@ -1,58 +1,61 @@
-import { resolve } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SetupError, runCommand, reportError } from './setup-local.mjs';
-import { applyLegacyEnvAliases } from './lib/oprnEnv.mjs';
+import { SetupError, requireNode24, ensureDependencies, readConfiguration, validateConfig, prepareProject, setupLocal, runCommand, reportError } from './setup-local.mjs';
+import { withTsModule } from './ontology-ts-loader.mjs';
 
-applyLegacyEnvAliases();
-
-const ORIGIN = 'http://127.0.0.1:9999';
 const openBrowser = url => runCommand(process.platform === 'darwin' ? '/usr/bin/open' : 'xdg-open', [url]);
 
-export async function launchServer({ root, projectId, createServer, open = openBrowser, signals = process, log = console.log }) {
-  const url = new URL('/', ORIGIN);
-  url.searchParams.set('project', projectId);
-  let server; let ready = false; let stopped = false; let closing;
+export async function launchServer({ root, projectDir, startServer, open = openBrowser, signals = process, log = console.log }) {
+  let server; let stopping = false; let closing;
   const completed = Promise.withResolvers();
-  // A signal during create/listen is latched: never start or open after cancellation.
-  const stop = () => { stopped = true; if (ready) void close(); };
-  const close = () => {
-    stopped = true;
-    if (!closing) closing = (async () => {
-      try { if (server) await server.close(); completed.resolve(); }
-      catch { completed.reject(new SetupError('CLOSE_FAILED', 'Vite를 정상적으로 종료하지 못했습니다. 이 터미널의 실행 프로세스를 종료한 뒤 다시 시작하세요.')); }
-      finally { signals.off('SIGINT', stop); signals.off('SIGTERM', stop); }
-    })();
-    return closing;
-  };
+  void completed.promise.catch(() => {});
+  const stop = () => { stopping = true; if (server) void close(); };
+  const cleanup = () => { signals.off('SIGINT', stop); signals.off('SIGTERM', stop); };
+  const close = () => closing ??= (async () => {
+    try { await server?.close(); completed.resolve(); }
+    catch (error) { completed.reject(error); }
+    finally { cleanup(); }
+  })();
   signals.on('SIGINT', stop); signals.on('SIGTERM', stop);
   try {
-    server = await createServer({ root, configLoader: 'runner', mode: 'development', server: { host: '127.0.0.1', port: 9999, strictPort: true, https: false, open: false } });
-    if (stopped) throw new SetupError('CANCELLED', '실행을 취소했습니다.');
-    await server.listen();
-    if (stopped) throw new SetupError('CANCELLED', '실행을 취소했습니다.');
-    ready = true;
-    log(`RPG Maker 실행 주소: ${url.href}`);
-    log('이 터미널을 열어 두세요. Ctrl-C로 서버를 종료합니다. 프로젝트는 SQLite 폴더에 저장합니다. 별도 백업은 JSON으로 내보내세요.');
+    server = await startServer({ projectDir, distDir: resolve(root, 'dist'),
+      browserBridgeSource: readFileSync(resolve(root, 'dist-electron/browser-bridge.js'), 'utf8'),
+      host: '127.0.0.1', port: 9999, publicOrigin: 'http://127.0.0.1:9999',
+      enableOwnerAi: process.env.OPRN_HOST_OWNER_AI === '1' });
+    if (stopping) { await close(); throw new SetupError('CANCELLED', '실행을 취소했습니다.'); }
+    log(`OPRN 실행 주소: ${server.url}`);
+    log(`저장 폴더: ${projectDir}. 이 터미널을 열어 두세요. 종료: Ctrl-C`);
     if (open) {
-      try { await open(url.href); }
-      catch { log(`브라우저를 열지 못했습니다. 아래 주소를 브라우저에서 직접 여세요: ${url.href}`); }
+      try { await open(server.url); }
+      catch { log(`브라우저에서 직접 여세요: ${server.url}`); }
     }
-    return { url: url.href, closed: completed.promise, close };
+    return { url: server.url, closed: completed.promise, close };
   } catch (error) {
-    await close();
-    await completed.promise;
-    if (error instanceof SetupError) throw error;
-    if (error.code === 'EADDRINUSE' || /^Port \d+ is already in use$/.test(error.message)) {
-      throw new SetupError('PORT_BUSY', '9999 포트를 다른 프로그램이 사용 중입니다. 브라우저를 열거나 다른 서버를 종료하지 않았습니다. 앞서 실행한 터미널이 있다면 직접 종료한 뒤 다시 시도하세요.');
-    }
-    throw new SetupError('VITE_START', 'Vite를 실행하지 못했습니다. 폴더 권한과 설치된 패키지를 확인하세요. 기존 node_modules는 그대로 두었습니다. 설치가 손상되었다면 직접 다른 곳으로 옮긴 뒤 npm ci를 실행하세요.');
+    await close(); await completed.promise;
+    if (error?.code === 'EADDRINUSE') throw new SetupError('PORT_BUSY', '9999 포트를 다른 프로그램이 사용 중입니다. 기존 서버는 그대로 두었습니다.');
+    throw error;
   }
 }
 
-async function main() {
-  if (process.argv.slice(2).some(arg => arg !== '--no-open')) throw new SetupError('ARGUMENTS', '지원하는 인자는 --no-open뿐입니다. 명령 인자로 키나 접속 정보를 전달하지 마세요.');
-  throw new SetupError('STORE_RETIRED', '이 런처의 Supabase 접속은 퇴역했습니다. 있는 project.sqlite 폴더를 npm start -- --project-dir <폴더> 로 여세요. 환경 파일은 바꾸지 않았습니다.');
+export async function main(argv = process.argv.slice(2)) {
+  requireNode24();
+  let projectDir; let noOpen = false;
+  for (let index = 0; index < argv.length; index++) {
+    if (argv[index] === '--no-open') noOpen = true;
+    else if (argv[index] === '--project-dir' && argv[index + 1] && !argv[index + 1].startsWith('--')) projectDir = argv[++index];
+    else throw new SetupError('ARGUMENTS', '지원 인자: --no-open, --project-dir <폴더>');
+  }
+  const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+  await ensureDependencies(root);
+  const config = projectDir ? validateConfig({ projectDir }, root) : await readConfiguration(root) ?? await setupLocal({ root });
+  await prepareProject(config);
+  await runCommand('npm', ['run', 'build:packaged'], { cwd: root, stdio: 'inherit' });
+  await runCommand('npm', ['run', 'build:electron'], { cwd: root, stdio: 'inherit' });
+  process.env.OPRN_OH_MY_PI_WORKER_SCRIPT ??= resolve(root, 'scripts/oh-my-pi-worker.ts');
+  await withTsModule(resolve(root, 'electron/serve/runtime.ts'), 'oprn-local-host.mjs', async runtime => {
+    const running = await launchServer({ root, projectDir: config.projectDir, startServer: runtime.startLocalProjectServer, open: noOpen ? false : openBrowser });
+    await running.closed;
+  });
 }
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  main().catch(reportError);
-}
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch(reportError);

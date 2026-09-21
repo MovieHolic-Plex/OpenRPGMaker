@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import { createTownArchitectureCityProject } from "@/project/defaults/defaultProject";
 import { TOWN_ARCHITECTURE_CITY_NPC_COUNT } from "@/project/defaults/townArchitectureCityNpcs";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 declare const process: {
@@ -59,7 +59,7 @@ test("captures proof for thirty moving city NPCs with dialogue", async ({ page }
   await page.setViewportSize({ width: 1600, height: 1000 });
   // Layer buttons and mode-play are classic-toolbar chrome — expert-only.
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
-  await seedProjectFromSupabaseCanonical(page, project, APP_URL);
+  await seedProjectForEditor(page, project, APP_URL);
   await page.getByTestId(`map-tree-node-${project.startMapId}`).click();
   await page.getByTestId("layer-event").click();
   await page.getByTestId("tool-event").click();

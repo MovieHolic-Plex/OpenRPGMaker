@@ -1,0 +1,170 @@
+{
+  "id": "01-downgrade-a1",
+  "screenshot": "01-downgrade-a1.png",
+  "expected": {
+    "kind": "ready",
+    "actor": "a1",
+    "stats": {
+      "attack": [
+        30,
+        25,
+        -5
+      ],
+      "defense": [
+        18,
+        10,
+        -8
+      ],
+      "mind": [
+        8,
+        8,
+        0
+      ],
+      "agility": [
+        8,
+        6,
+        -2
+      ]
+    },
+    "actors": [
+      "shop-actor-a1",
+      "shop-actor-a2",
+      "shop-actor-a3",
+      "shop-actor-a4",
+      "shop-actor-a5",
+      "shop-actor-a6"
+    ],
+    "displaced": [
+      {
+        "id": "old",
+        "count": 1
+      }
+    ]
+  },
+  "observed": {
+    "gold": 200,
+    "inventory": {
+      "candidate": 1,
+      "old": 1,
+      "potion": 1
+    },
+    "owned": 0,
+    "playerGold": 200,
+    "merchantGold": 200,
+    "selected": "shop-buy-candidate",
+    "cap": 5,
+    "unitPrice": 40,
+    "displayedPrice": 40,
+    "displayedOwned": 1,
+    "quantity": "1",
+    "quantityMax": "5",
+    "total": 40,
+    "rows": 6,
+    "actorEquipment": {
+      "a1": {
+        "weapon": "old"
+      },
+      "a2": {
+        "weapon": "old"
+      },
+      "a3": {
+        "weapon": "curse"
+      },
+      "a4": {
+        "weapon": "old"
+      },
+      "a5": {
+        "weapon": "old"
+      },
+      "a6": {
+        "weapon": "old"
+      }
+    },
+    "tradeCounts": {},
+    "focus": "shop-actor-a1",
+    "balance": "160",
+    "shortage": null,
+    "x": 14,
+    "y": 18,
+    "warnings": [],
+    "detail": {
+      "kind": "ready",
+      "actor": "a1",
+      "slot": "weapon",
+      "same": "false",
+      "reason": null,
+      "actors": [
+        "shop-actor-a1",
+        "shop-actor-a2",
+        "shop-actor-a3",
+        "shop-actor-a4",
+        "shop-actor-a5",
+        "shop-actor-a6"
+      ],
+      "stats": {
+        "attack": [
+          30,
+          25,
+          -5
+        ],
+        "defense": [
+          18,
+          10,
+          -8
+        ],
+        "mind": [
+          8,
+          8,
+          0
+        ],
+        "agility": [
+          8,
+          6,
+          -2
+        ]
+      },
+      "effects": {
+        "gained": [
+          {
+            "effectKey": "attackAll",
+            "text": "전체 공격"
+          }
+        ],
+        "lost": [
+          {
+            "effectKey": "doubleAttack",
+            "text": "연속 공격"
+          },
+          {
+            "effectKey": "elementalDefenseIds",
+            "effectId": "fire",
+            "effectName": "불꽃",
+            "text": "속성 방어 · 불꽃"
+          }
+        ],
+        "changed": [
+          {
+            "effectKey": "accuracy",
+            "current": "90",
+            "next": "80",
+            "text": "명중률 · 90 → 80 (-10)"
+          },
+          {
+            "effectKey": "criticalRate",
+            "current": "10",
+            "next": "5",
+            "text": "치명타율 · 10 → 5 (-5)"
+          }
+        ]
+      },
+      "displaced": [
+        {
+          "id": "old",
+          "count": 1
+        }
+      ],
+      "focus": "shop-actor-a1",
+      "scrollTop": 0
+    }
+  }
+}

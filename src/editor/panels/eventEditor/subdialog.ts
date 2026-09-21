@@ -1,6 +1,6 @@
 import { clearChildren, el } from "@/util/dom";
 import { renderEditorIcon } from "./editorIcons";
-import { registerModal } from "@/editor/ui/modalStack";
+import { isTopModal, registerModal } from "@/editor/ui/modalStack";
 import { installEventEditorCustomSelects } from "./customSelect";
 
 type EventSubdialogOptions = {
@@ -41,8 +41,10 @@ export function openEventSubdialog(options: EventSubdialogOptions): void {
   });
   const body = el("div", { class: "event-subdialog-body" });
   let disposeCustomSelects = (): void => undefined;
+  let disposeFocusTrap = (): void => undefined;
   const close = registerModal(backdrop, () => {
     disposeCustomSelects();
+    disposeFocusTrap();
     backdrop.remove();
     if (returnFocus && document.body.contains(returnFocus) && returnFocus.getAttribute("disabled") === null) {
       returnFocus.focus({ preventScroll: true });
@@ -67,20 +69,25 @@ export function openEventSubdialog(options: EventSubdialogOptions): void {
   backdrop.addEventListener("click", (event) => {
     if (event.target === backdrop) close();
   });
-  windowEl.addEventListener("keydown", (event) => {
-    if (event.key !== "Tab") return;
+  const trapFocus = (event: KeyboardEvent): void => {
+    if (!isTopModal(backdrop) || event.key !== "Tab") return;
     const controls = focusableControls(windowEl);
     if (controls.length === 0) return;
     const first = controls[0]!;
     const last = controls[controls.length - 1]!;
-    if (event.shiftKey && document.activeElement === first) {
+    if (!windowEl.contains(document.activeElement)) {
+      event.preventDefault();
+      (event.shiftKey ? last : first).focus({ preventScroll: true });
+    } else if (event.shiftKey && document.activeElement === first) {
       event.preventDefault();
       last.focus({ preventScroll: true });
     } else if (!event.shiftKey && document.activeElement === last) {
       event.preventDefault();
       first.focus({ preventScroll: true });
     }
-  });
+  };
+  document.addEventListener("keydown", trapFocus, true);
+  disposeFocusTrap = () => document.removeEventListener("keydown", trapFocus, true);
 
   document.body.append(backdrop);
   clearChildren(body);

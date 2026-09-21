@@ -1,8 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { defaultAiConfig, loadAiConfig, saveAiConfig } from "@/ai/llmClient";
-import { configForUltrabrain } from "@/ai/ultrabrainConfig";
-import { parseHarmonyReview, reviewMapHarmony, unusableReviewReason } from "@/ai/ultrabrainReview";
+import { configForUltrabrain, ULTRABRAIN_REVIEW_MAX_TOKENS } from "@/ai/ultrabrainConfig";
+import { mapScopeNote, parseHarmonyReview, reviewMapHarmony, unresolvedReviewSignature, unusableReviewReason } from "@/ai/ultrabrainReview";
+import { appendToTree } from "@/project/mapTree";
 
 const mocks = vi.hoisted(() => ({ chat: vi.fn(), render: vi.fn() }));
 vi.mock("@/ai/llmClient", async importOriginal => ({ ...await importOriginal<typeof import("@/ai/llmClient")>(), chatCompletion: mocks.chat }));
@@ -44,6 +45,101 @@ describe("Ultrabrain whole-map review", () => {
     expect(config).toMatchObject({ model: "gemini-3.8-flash", reasoningEffort: "high" });
     expect(request.messages[1].content.filter((p: { type: string }) => p.type === "image_url")).toHaveLength(1);
     expect(JSON.stringify(before)).not.toBe(JSON.stringify(after));
+  });
+
+
+  // 2026-09-18: 검수기에 요청 문장 전체를 맵마다 그대로 들이댔더니, 「여관 하나와 집 두 채가 있는
+  // 마을을 만들어줘」 턴에 딸려 만들어진 집 실내가 «마을 외경 요청과 달리 단일 주택 내부라
+  // 부합하지 않는다 — 실외 맵으로 재구성하라» 로 불합격했다. 고칠 수 없는 판정이라 수리 2회
+  // 동안 글자 하나 안 바뀌고 반복됐고 턴이 끝나지 않았다.
+  it("맵마다 «요청과 안 맞는다»를 못 적게 한다 — 한 요청이 여러 맵을 만든다", async () => {
+    const before = createBlankProject();
+    const after = structuredClone(before);
+    const map = Object.values(after.maps)[0]!;
+    map.lowerTiles[0] = (map.lowerTiles[0] ?? 0) + 1;
+    await reviewMapHarmony(before, after, "마을 만들어줘", defaultAiConfig());
+    for (const [, request] of mocks.chat.mock.calls) {
+      const system = request.messages[0].content as string;
+      expect(system, "범위 지적 금지를 두 역할 모두에 건다").toMatch(/never report that the (map|image) is the wrong scene/i);
+    }
+    const brainSystem = mocks.chat.mock.calls[1]![1].messages[0].content as string;
+    expect(brainSystem, "요청 부합 판정을 조화 기준에서 뺀다").not.toContain("fit to the user's request");
+    const payload = JSON.parse(mocks.chat.mock.calls[1]![1].messages[1].content[0].text as string) as Record<string, unknown>;
+    expect(payload.mapScope, "이 맵이 요청의 한 부분임을 알려 준다").toContain("요청 전체를 혼자 담지 않는다");
+  });
+
+  it("mapScopeNote 는 맵 트리 부모를 이름으로 알려 준다", () => {
+    const project = createBlankProject();
+    const parentId = project.startMapId;
+    const child = structuredClone(project.maps[parentId]!);
+    child.id = "map_child";
+    child.name = "여관 2층";
+    project.maps.map_child = child;
+    project.maps[parentId]!.name = "초록바람 마을";
+    appendToTree(project.mapTree, "map_child", parentId);
+    expect(mapScopeNote(project, "map_child")).toContain("「초록바람 마을」의 하위 맵");
+    expect(mapScopeNote(project, parentId)).toContain("여러 맵 중 하나일 수 있다");
+  });
+
+  it("mapIds 를 주면 그 맵만 본다 — 수리 뒤 재검수가 손대지 않은 맵을 다시 그리지 않는다", async () => {
+    const before = createBlankProject();
+    const after = structuredClone(before);
+    const first = Object.values(after.maps)[0]!;
+    const second = structuredClone(first);
+    second.id = "map_second";
+    second.lowerTiles[0] = (second.lowerTiles[0] ?? 0) + 7;
+    after.maps.map_second = second;
+    first.lowerTiles[0] = (first.lowerTiles[0] ?? 0) + 1;
+
+    await reviewMapHarmony(before, after, "…", defaultAiConfig());
+    expect(mocks.render, "기본은 바뀐 맵 전부").toHaveBeenCalledTimes(2);
+
+    mocks.render.mockClear();
+    mocks.chat.mockClear();
+    await reviewMapHarmony(before, after, "…", defaultAiConfig(), { mapIds: new Set(["map_second"]) });
+    expect(mocks.render).toHaveBeenCalledTimes(1);
+    expect(mocks.render.mock.calls[0]![1].id).toBe("map_second");
+  });
+
+  it("unresolvedReviewSignature 는 통과한 맵을 빼고 순서에 흔들리지 않는다", () => {
+    const ok = { mapId: "a", harmonious: true, summary: "좋다", findings: [] };
+    const bad = { mapId: "b", harmonious: false, summary: "나쁘다", findings: ["x", "y"] };
+    const other = { mapId: "c", harmonious: false, summary: "나쁘다", findings: ["z"] };
+    expect(unresolvedReviewSignature([ok, bad, other])).toBe(unresolvedReviewSignature([other, bad, ok]));
+    expect(unresolvedReviewSignature([ok, bad])).not.toBe(unresolvedReviewSignature([ok, other]));
+    // 통과한 맵이 늘어나도 «안 풀린 지적» 은 그대로 — 수리가 진전을 냈는지만 본다.
+    expect(unresolvedReviewSignature([bad])).toBe(unresolvedReviewSignature([bad, ok]));
+    expect(unresolvedReviewSignature([ok])).toBe("");
+  });
+
+  // 2026-09-18 실측: `high` 추론 한 번이 출력 예산 4096 을 다 써 JSON 을 못 뱉었고(`finish=length`),
+  // 재시도가 같은 예산이라 같은 자리에서 또 끊겨 마을 턴 전체가 「끝까지 검수하지 못했어요」로 끝났다.
+  it("예산이 모자라 끊긴 응답은 예산을 넓혀 다시 묻는다", async () => {
+    const before = createBlankProject(), after = structuredClone(before);
+    const map = Object.values(after.maps)[0]!;
+    map.lowerTiles[0] = (map.lowerTiles[0] ?? 0) + 1;
+    const ok = { finishReason: "stop", message: { content: JSON.stringify({ harmonious: true, summary: "어울립니다.", findings: [] }) }, imageDelivery: [{ messageIndex: 1, partIndex: 1 }] };
+    // Vision 은 한 번에 성공, Ultrabrain 은 첫 호출이 length 로 끊긴다.
+    mocks.chat.mockResolvedValueOnce(ok)
+      .mockResolvedValueOnce({ finishReason: "length", message: { content: "" }, imageDelivery: [{ messageIndex: 1, partIndex: 1 }] })
+      .mockResolvedValue(ok);
+    await reviewMapHarmony(before, after, "…", defaultAiConfig());
+    const budgets = mocks.chat.mock.calls.map(([config]) => (config as { maxTokens: number }).maxTokens);
+    expect(budgets[1], "첫 검수 예산은 상수 그대로").toBe(ULTRABRAIN_REVIEW_MAX_TOKENS);
+    expect(budgets[2], "끊긴 뒤 재시도는 예산을 넓힌다").toBeGreaterThan(budgets[1]!);
+  });
+
+  it("끊김이 아닌 실패는 같은 예산으로 다시 묻는다 — 일시 오류이기 때문", async () => {
+    const before = createBlankProject(), after = structuredClone(before);
+    const map = Object.values(after.maps)[0]!;
+    map.lowerTiles[0] = (map.lowerTiles[0] ?? 0) + 1;
+    const ok = { finishReason: "stop", message: { content: JSON.stringify({ harmonious: true, summary: "어울립니다.", findings: [] }) }, imageDelivery: [{ messageIndex: 1, partIndex: 1 }] };
+    mocks.chat.mockResolvedValueOnce(ok)
+      .mockResolvedValueOnce({ finishReason: "stop", message: { content: "" }, imageDelivery: [{ messageIndex: 1, partIndex: 1 }] })
+      .mockResolvedValue(ok);
+    await reviewMapHarmony(before, after, "…", defaultAiConfig());
+    const budgets = mocks.chat.mock.calls.map(([config]) => (config as { maxTokens: number }).maxTokens);
+    expect(budgets[2]).toBe(budgets[1]);
   });
 
   it("refuses missing image delivery, truncated output, inconsistent verdicts, and cancellation", async () => {

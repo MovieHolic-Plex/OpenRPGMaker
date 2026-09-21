@@ -3,6 +3,7 @@
 import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
 import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
+import { tintDurationMs } from "@/project/eventCommands/tintDuration";
 import { store } from "@/project/store";
 import { tilesetKind, TILESET_KIND_LABELS } from "@/project/tilesetKind";
 import type { Command, M2CommandValue } from "@/project/types";
@@ -570,11 +571,7 @@ function tintScreenBody(context: CommandEditContext, cmd: M2Command): HTMLElemen
   }) as HTMLInputElement;
   const durationInput = el("input", {
     attrs: { type: "number", min: "0", step: "1" },
-    value: String(
-      typeof cmd.fields.duration === "number"
-        ? cmd.fields.duration
-        : Number(cmd.fields.duration) || 0
-    ),
+    value: String(tintDurationMs(cmd.fields)),
     dataset: { testid: "tint-screen-duration-input" },
   }) as HTMLInputElement;
   const chips = el("div", {
@@ -608,8 +605,8 @@ function tintScreenBody(context: CommandEditContext, cmd: M2Command): HTMLElemen
     replaceFields(context, cmd, {
       color,
       value: valueInput.value.trim(),
-      duration: Math.max(0, Math.trunc(Number(durationInput.value) || 0)),
-    });
+      durationMs: Math.max(0, Math.trunc(Number(durationInput.value) || 0)),
+    }, ["duration"]);
     renderPreview();
   };
   const renderPreview = () => {
@@ -662,7 +659,7 @@ function tintScreenBody(context: CommandEditContext, cmd: M2Command): HTMLElemen
       [
         fieldBlock("색상 프리셋", chips),
         fieldBlock("직접 색", valueInput),
-        fieldBlock("전환 시간", durationInput),
+        fieldBlock("전환 시간(ms)", durationInput),
       ],
       preview
     )
@@ -1705,7 +1702,7 @@ function changeTileM2Body(context: CommandEditContext, cmd: M2Command): HTMLElem
   layerInput.addEventListener("input", commit);
   renderPreview();
   wrap.append(
-    intentCard("타일 변경", "맵 한 칸의 바닥이나 덧그림을 바꿉니다.", "change-tile-m2-intent"),
+    intentCard("타일 변경", "맵 한 칸의 바닥이나 상위 타일을 바꿉니다.", "change-tile-m2-intent"),
     layout(
       [...coords.fields, fieldBlock("레이어", layerInput), fieldBlock("바꿀 그림", tileIdInput)],
       preview
@@ -1961,6 +1958,7 @@ function parseEffectColor(raw: string): string | null {
 
 function durationPhrase(ms: number): string {
   if (ms <= 0) return "즉시 전환";
+  if (ms < 100) return `${ms}ms 전환`;
   return `${Math.round(ms / 100) / 10}초 전환`;
 }
 

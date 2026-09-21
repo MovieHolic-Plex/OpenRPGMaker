@@ -1,0 +1,102 @@
+/* ── 단계별 표시 (data-stage: compose | running | review) ──────────────────
+   결정에 필요한 것만 보이게 한다. JS 는 stage 만 바꾸고, 무엇을 숨길지는 여기서 정한다. */
+.region-task-modal[data-stage="review"] .region-task-prompt { display: none; }
+.region-task-modal[data-stage="compose"] .region-task-recap,
+.region-task-modal[data-stage="running"] .region-task-recap { display: none; }
+.region-task-modal[data-stage="running"] .region-task-actions { justify-content: flex-start; }
+
+/* 검토 단계 지시 요약 — 한 줄, 넘치면 말줄임 */
+.region-task-recap {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.region-task-recap-text {
+  color: var(--editor-text-muted);
+  flex: 1 1 auto;
+  font-size: 13px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.region-task-recap-edit {
+  background: transparent;
+  border: 1px solid var(--editor-line);
+  border-radius: 999px;
+  color: var(--editor-text-muted);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: 11px;
+  padding: 3px var(--space-2);
+}
+.region-task-recap-edit:hover { border-color: var(--accent); color: var(--accent); }
+
+.region-task-prompt {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* ── 「고급」 접이식 ── */
+.region-task-advanced-toggle {
+  align-items: center;
+  align-self: flex-start;
+  background: transparent;
+  border: none;
+  color: var(--editor-text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 12px;
+  gap: var(--space-1);
+  padding: 2px 0;
+}
+.region-task-advanced-toggle:hover { color: var(--editor-text); }
+.region-task-advanced-chevron {
+  border-bottom: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  box-sizing: border-box;
+  display: inline-block;
+  flex-shrink: 0;
+  height: 6px;
+  margin-right: 2px;
+  transform: rotate(-45deg);
+  transition: transform 140ms ease;
+  width: 6px;
+}
+.region-task-advanced-toggle[aria-expanded="true"] .region-task-advanced-chevron {
+  transform: rotate(45deg);
+}
+.region-task-advanced-body {
+  border-top: 1px solid var(--editor-line);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+}
+.region-task-advanced-body.hidden { display: none; }
+.region-task-advanced-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+/* 부분 적용은 「고급」 안이 아니라 검토 본문(변경 목록 아래)에 산다 — 위 목록과 시각적으로
+   이어 보이도록 여백만 준다. */
+.region-task-partial-host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+.region-task-partial-host.hidden { display: none; }
+
+/* 어시스턴트 문단은 툴 추적 줄과 구분한다 */
+.region-task-log-line.is-assistant {
+  border-left: 2px solid var(--editor-line-strong);
+  color: var(--editor-text);
+  padding-left: var(--space-2);
+}

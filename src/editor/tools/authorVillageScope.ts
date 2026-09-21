@@ -1,3 +1,5 @@
+import { ensureForestGroveTileset, FOREST_GROVE_GROUP } from "@/project/defaults/forestGrove";
+import { computeReachableCells } from "@/project/lint/reachability";
 import type { AuthorVillageRequest, ConstructionRect } from "@/editor/construction/contracts";
 import { isPassable } from "@/project/collision";
 import { TILE } from "@/project/defaults/constants";
@@ -18,6 +20,14 @@ export function restoreExistingTargetStart(
   request: AuthorVillageRequest,
 ): void {
   if (request.target.kind !== "existing") return;
+  // A newly authored blank start map has no authored spawn to preserve. Retain the
+  // builder's reachable entry if the old blank-map centre became an isolated pocket.
+  if (mayRelocateBlankStart(baseline, request)) {
+    const map = draft.maps[request.target.mapId]!;
+    const reachable = computeReachableCells(draft, map, baseline.startPos.x, baseline.startPos.y);
+    if (!isPassable(draft, map, baseline.startPos.x, baseline.startPos.y)
+      || !reachable.has(`${draft.startPos.x},${draft.startPos.y}`)) return;
+  }
   draft.startMapId = baseline.startMapId;
   draft.startPos = { ...baseline.startPos };
   const beforeMap = baseline.maps[baseline.startMapId];
@@ -281,6 +291,12 @@ function stripAddedNodes(node: MapTreeNode, added: ReadonlySet<string>): MapTree
   return added.has(node.mapId) ? undefined : { mapId: node.mapId, children };
 }
 
+function mayRelocateBlankStart(baseline: Project, request: AuthorVillageRequest): boolean {
+  return request.target.kind === "existing" && !request.target.bounds
+    && baseline.startMapId === request.target.mapId
+    && !!baseline.maps[request.target.mapId] && !isLivedMap(baseline.maps[request.target.mapId]!);
+}
+
 function assertStart(state: VillageFacadeState): void {
   const { baseline, draft, request } = state;
   if (request.target.kind === "new") {
@@ -295,6 +311,8 @@ function assertStart(state: VillageFacadeState): void {
     }
     return;
   }
+  if (mayRelocateBlankStart(baseline, request) && draft.startMapId === baseline.startMapId
+    && isPassable(draft, draft.maps[draft.startMapId]!, draft.startPos.x, draft.startPos.y)) return;
   if (draft.startMapId !== baseline.startMapId || !same(draft.startPos, baseline.startPos)) {
     scopeError("Village changed the existing project start.", draft.startMapId);
   }
@@ -326,6 +344,9 @@ function assertTilesets(state: VillageFacadeState): void {
 }
 
 function allowedTargetTilesetChange(before: TilesetDef, after: TilesetDef): boolean {
+  const expected = structuredClone(before);
+  if (after.autotileGroups?.some(group => group.id === FOREST_GROVE_GROUP)) ensureForestGroveTileset(expected);
+  before = expected;
   const beforeGrafts = before.tileGrafts ?? [];
   const afterGrafts = after.tileGrafts ?? [];
   const canAppendInnSign = !beforeGrafts.some((graft) => graft.targetTile === INN_SIGN_GRAFT.targetTile);

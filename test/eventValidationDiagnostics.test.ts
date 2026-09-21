@@ -77,6 +77,26 @@ describe("event validation diagnostic data", () => {
     expect(deleted[0]?.field?.testId).toBe("event-command-goto-label-name");
   });
 
+  it("warns (not errors) when a fork names another map's location — runtime only sees the current map", () => {
+    // Given: two maps, the location lives on the second one, the event on the first.
+    const { project, event, validate } = fixture([]);
+    const otherMapId = "map_other" as const;
+    project.maps[otherMapId] = {
+      ...project.maps[project.startMapId]!,
+      id: otherMapId,
+      events: [],
+      locations: [{ id: "loc_other", name: "다른 구역", x: 0, y: 0, w: 2, h: 2 }],
+    };
+    const page = event.pages?.[0];
+    if (!page) throw new Error("Missing page");
+    page.commands = [{ kind: "fork", condition: { kind: "insideLocation", locationId: "loc_other", inside: true }, then: [] }];
+    // When: validating from the start map.
+    const issues = validate().issues.filter((issue) => issue.code?.startsWith("condition.insideLocation"));
+    // Then: a warning names the cross-map trap instead of a silent pass or a deletion error.
+    expect(issues).toHaveLength(1);
+    expect(issues[0]).toMatchObject({ severity: "warning", code: "condition.insideLocation.other-map" });
+  });
+
   it("exports equivalent Markdown and JSON without authored strings or unrelated data", async () => {
     const { eventValidationDiagnosticReport, formatEventValidationDiagnostics } = await import("@/editor/eventValidationDiagnostics");
     // Given: hostile user-authored identifiers in the real validator input.

@@ -192,12 +192,14 @@ for (const hit of doubles) {
 // ── 슬라이스 디렉터리 수집 ─────────────────────────────────────────────────────
 // 슬라이스 = NN-*.css 를 가진 디렉터리. 형제 배럴은 `<디렉터리>.css`.
 const NUMBERED_RE = /^(\d{2})-.+\.css$/;
-// 표면 진입 시트 — 배럴이 없는 슬라이스 디렉터리의 등록처(검사 3). 레지스트리가 없거나 파일이 없으면 빈 목록.
+// 표면 진입 시트(및 정적 보조 진입 시트) — 배럴이 없는 슬라이스 디렉터리의
+// 등록처(검사 3). 레지스트리가 없거나 파일이 없으면 빈 목록.
 const SURFACE_ENTRIES = (() => {
   const reg = join(ROOT, "scripts/css-surfaces.json");
   if (!existsSync(reg)) return [];
   return Object.values(JSON.parse(readFileSync(reg, "utf8")).surfaces ?? {})
-    .map((s) => resolve(ROOT, s.entry))
+    .flatMap((s) => [s.entry, ...(s.additionalEntries ?? [])])
+    .map((entry) => resolve(ROOT, entry))
     .filter((p) => existsSync(p));
 })();
 const sliceDirs = new Map(); // 디렉터리 절대경로 → 번호 파일명 배열

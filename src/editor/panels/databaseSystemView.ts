@@ -1,3 +1,4 @@
+import { fieldHudEditor } from "./databaseFieldHud";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { GUARD_MAX_DAMAGE_REDUCTION_PERCENT } from "@/battle/action/guard";
 import { BATTLE_SKINS, isDeprecatedBattleSkin, listActiveBattleSkinIds, listBattleSkinIds, resolveSkinId } from "@/battle/skins/registry";
@@ -99,6 +100,7 @@ export type SystemSectionSlug =
   | "overview"
   | "party"
   | "display"
+  | "hud"
   | "menu"
   | "font"
   | "resources"
@@ -135,6 +137,7 @@ const SYSTEM_SECTION_ORDER: readonly { readonly slug: SystemSectionSlug; readonl
   { slug: "party", label: "초기 파티" },
   { slug: "display", label: "화면" },
   { slug: "menu", label: "게임 메뉴" },
+  { slug: "hud", label: "인게임 HUD" },
   { slug: "font", label: "폰트" },
   { slug: "resources", label: "리소스" },
   { slug: "startup", label: "시작 설정" },
@@ -278,6 +281,7 @@ function systemSectionNodes(
     ]),
     display: section("display", [playResolutionFieldset(project, rerender)]),
     menu: section("menu", [menuSkinFieldset(project)]),
+    hud: section("hud", [fieldHudEditor(project, config => updateSystem(draft => { draft.system.fieldHud = config; }))]),
     font: section("font", [systemFontFieldset(project, rerender)]),
     resources: section("resources", [
       rm2k3Fieldset("공유 그래픽", [
@@ -902,7 +906,7 @@ function optInSystemFields(project: Project, rerender: SystemRefresh): readonly 
   // 몬스터 돌봄 number fields
   if (system.monsterCare) {
     care.push(
-      numberField("돌봄 걸음/tick", "db-field-system-monster-care-steps", () => store.getCurrent().system.monsterCare?.stepsPerTick ?? 50, (value) => {
+      numberField("돌봄 1회당 걸음 수", "db-field-system-monster-care-steps", () => store.getCurrent().system.monsterCare?.stepsPerTick ?? 50, (value) => {
         updateSystem((draft) => {
           draft.system.monsterCare = normalizeMonsterCare({ ...draft.system.monsterCare, stepsPerTick: value });
         }, "system:monster-care:stepsPerTick");
@@ -2312,6 +2316,7 @@ function titleScreenWorkbenchPreview(
 const SYSTEM_SECTION_HELP: Record<Exclude<SystemSectionSlug, "overview">, string> = {
   party: "게임을 시작할 멤버와 순서를 정합니다.",
   display: "게임 화면의 크기와 맵에 미치는 영향을 확인합니다.",
+  hud: "게임 화면에 표시할 정보와 디자인을 구성합니다.",
   menu: "플레이 중 ESC 또는 X로 여는 메뉴의 디자인을 선택하고 미리 확인합니다.",
   font: "화면 역할마다 글꼴을 고르고 실제 문장으로 비교합니다.",
   resources: "프로젝트에서 공유하는 그래픽을 선택합니다.",

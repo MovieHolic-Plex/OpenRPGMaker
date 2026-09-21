@@ -75,8 +75,8 @@ The passing real-editor command was:
 
 ```sh
 DEV_SERVER_PORT=19035 E2E_RETRIES=0 E2E_FREEZE_DEV_SERVER=1 \
-VITE_CACHE_DIR=.omo/vite-cinematics-e2e VITE_SUPABASE_URL= \
-VITE_SUPABASE_ANON_KEY= VITE_SUPABASE_PROJECT_ID= \
+VITE_CACHE_DIR=.omo/vite-cinematics-e2e VITE_LEGACY_DB_URL= \
+VITE_LEGACY_DB_ANON_KEY= VITE_LEGACY_DB_PROJECT_ID= \
 VITE_AI_ACTIVITY_DISK_MIRROR=0 VITE_EDIT_ACTIVITY_DISK_MIRROR=0 \
 npm run test:e2e -- test/e2e/database-cinematics.spec.ts --max-failures=1
 ```
@@ -97,7 +97,7 @@ were inside the viewport. The exact receipts and screenshots are in
 
 The tests use real local-only `?blankProject=1&aiBridge=0` sessions and assert
 there is no live DB target. Remote REST writes are blocked and recorded. They
-do not claim a remote Supabase save; the real project codec and restored UI
+do not claim a remote LegacyDb save; the real project codec and restored UI
 prove serialization/reload.
 
 The blank-session `session-not-persisted` warning is intentional. Every raw
@@ -115,6 +115,6 @@ not hidden from the error listener. A stale owned Vite process was identified
 by PID/cwd and stopped before restarting the final test.
 
 The successful Playwright run exited 0 and port 19035 was no longer listening.
-All tests use isolated browser contexts. No user Supabase project was mutated.
+All tests use isolated browser contexts. No user LegacyDb project was mutated.
 Full repository gates and independent Phase 2 QA/review are separate final
 steps; this report does not claim the whole user goal complete.

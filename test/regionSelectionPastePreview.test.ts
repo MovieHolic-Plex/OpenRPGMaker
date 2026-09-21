@@ -229,3 +229,48 @@ describe("renderSelectionActionChips — 복사/붙여넣기/지우기/해제 �
     expect(findByTestId(document.body as unknown as FakeElement, "selection-chip-paste")).toBeFalsy();
   });
 });
+
+describe("붙여넣기는 선택 툴바를 따라오지 않는다", () => {
+  it("enterPastePreview는 원본 선택을 유지한다", async () => {
+    const { mapId, copySelection, enterPastePreview } = await setupWithSelection();
+    const { editorState } = await import("@/editor/editorState");
+    expect(copySelection(mapId)).toBe(true);
+    const before = editorState.get().selection;
+    expect(enterPastePreview(mapId, 5, 5)).toBe(true);
+    expect(editorState.get().selection).toEqual(before);
+    expect(editorState.get().pastePreview).toEqual({ x: 5, y: 5 });
+  });
+
+  it("confirmPastePreview는 붙여넣은 칸을 선택하지 않는다", async () => {
+    const { mapId, copySelection, enterPastePreview, confirmPastePreview } = await setupWithSelection();
+    const { editorState } = await import("@/editor/editorState");
+    expect(copySelection(mapId)).toBe(true);
+    expect(enterPastePreview(mapId, 5, 5)).toBe(true);
+    expect(confirmPastePreview(mapId)).toBe(true);
+    expect(editorState.get().pastePreview).toBeNull();
+    expect(editorState.get().selection).toBeNull();
+  });
+
+  it("pasteClipboard는 대상 칸을 선택으로 올리지 않는다", async () => {
+    const { mapId, copySelection } = await setupWithSelection();
+    const { editorState } = await import("@/editor/editorState");
+    const { pasteClipboard } = await import("@/editor/mapClipboard");
+    expect(copySelection(mapId)).toBe(true);
+    const before = editorState.get().selection;
+    expect(pasteClipboard(mapId, 5, 5)).toBe(true);
+    expect(editorState.get().selection).toEqual(before);
+  });
+
+  it("movePastePreview가 같은 칸이면 통지하지 않는다", async () => {
+    const { mapId, copySelection, enterPastePreview, movePastePreview } = await setupWithSelection();
+    const { editorState } = await import("@/editor/editorState");
+    expect(copySelection(mapId)).toBe(true);
+    expect(enterPastePreview(mapId, 5, 5)).toBe(true);
+    let notifications = 0;
+    const unsub = editorState.subscribe(() => { notifications += 1; });
+    movePastePreview(mapId, 5, 5);
+    movePastePreview(mapId, 5, 5);
+    unsub();
+    expect(notifications).toBe(0);
+  });
+});

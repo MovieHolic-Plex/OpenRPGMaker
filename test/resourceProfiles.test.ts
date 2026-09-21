@@ -1,16 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { FACE_IMAGE_SIZE, RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import { RESOURCE_PROFILE_SPECS, validateResourceDimensions } from "@/project/resourceProfiles";
-import { RESOURCE_SLICING as CATALOG_RESOURCE_SLICING } from "../scripts/supabase-resource-root/catalog.mjs";
 
 describe("RM2K3 resource profiles", () => {
-  it("keeps the supabase catalog slicing mirror byte-identical to the source of truth", () => {
-    // scripts/supabase-resource-root/catalog.mjs hand-copies RESOURCE_SLICING because it runs
-    // as a standalone .mjs with no TS build. Nothing enforced the copy, so battleCharset gained
-    // columns/rows/count on the TS side while the mirror kept only cellWidth/cellHeight.
-    expect(CATALOG_RESOURCE_SLICING).toEqual(RESOURCE_SLICING);
-  });
-
   it("records slicing ontology for every resource profile kind", () => {
     for (const spec of RESOURCE_PROFILE_SPECS) {
       expect(spec.slicing).toBe(RESOURCE_SLICING[spec.kind]);

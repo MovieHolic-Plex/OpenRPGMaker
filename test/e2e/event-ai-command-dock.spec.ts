@@ -2,7 +2,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, EventPage, Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 /**
  * 「AI로 명령 만들기」 도크의 사용 계약. LLM 엔드포인트를 목으로 갈아끼워 생성 → 목록 자리에서
@@ -72,7 +72,7 @@ function probeProject(): Project {
 }
 
 async function openDock(page: Page, project: Project): Promise<Locator> {
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await page.evaluate(async (mapId) => {
     const modalModule = await import("/src/editor/panels/eventEditor/modal.ts");
     modalModule.openEventEditorModal(mapId, "ev_ai_dock");

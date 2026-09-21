@@ -43,7 +43,7 @@ describe("generator real store palette identity", () => {
       const result = runTool(ctx, "generate_map", {
         name: "지하실", theme: "cave", id: "map_cellar", entrance: { y: 8, x: 1 },
         pois: [{ x: 9, y: 2 }], border: "wall", height: 10, width: 12,
-        ...(mode === "native-upper" ? { tilesetId: "scarloxy_chipset_grassland" } : {}),
+        ...(mode === "native-upper" ? { tilesetId: "scarloxy_chipset_grassland" } : { tilesetId: "easyrpg_chipset_combined_town" }),
       });
       expect(result.ok, result.summary).toBe(true);
       expect(ctx.project.tilesets).toEqual(rulesBefore);

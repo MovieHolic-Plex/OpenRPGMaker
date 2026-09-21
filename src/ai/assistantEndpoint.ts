@@ -32,11 +32,12 @@ import { configForLiteModel, isProxyAuth, loadAiConfig, type AiConfig } from "./
 /**
  * AI 표면 식별자 — 사람이 에디터에서 직접 여는 AI 진입점.
  *
- * activityLogTypes.AiActivityChannel 과 값이 일부 겹치지만 별 타입이다: 그쪽은 Supabase
+ * activityLogTypes.AiActivityChannel 과 값이 일부 겹치지만 별 타입이다: 그쪽은 project storage
  * ai_activity_logs.channel 컬럼에 그대로 실리는 로깅 어휘라, 표면을 하나 늘리는 사정으로 DB 어휘가
  * 따라 늘어나면 안 된다.
  */
 export type AiSurface =
+  | "dialogue-review"
   | "chat"
   | "region"
   | "cluster"
@@ -81,6 +82,7 @@ export const TILESET_ANALYSIS_MAX_TOKENS = 8192;
  */
 const SURFACE_POLICIES: Readonly<Record<AiSurface, SurfacePolicy>> = {
   "chat": { tier: "supervisor" },
+  "dialogue-review": { tier: "supervisor", maxTokens: 8192 },
   "region": { tier: "lite", maxToolCallsCeiling: REGION_SURFACE_MAX_TOOL_CALLS },
   "cluster": { tier: "lite" },
   "event-command": { tier: "lite" },

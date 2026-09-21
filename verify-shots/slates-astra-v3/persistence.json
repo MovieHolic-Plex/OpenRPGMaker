@@ -1,0 +1,24 @@
+{
+  "projectId": "rpg-zzu-slates32-38e6",
+  "saved": true,
+  "reloadedEqual": true,
+  "mapMirrorsEqual": true,
+  "tilesetMirrorsEqual": true,
+  "maps": [
+    "slates_mastery_detail",
+    "slates_astra_v2_walled_50",
+    "slates_grove",
+    "slates_study",
+    "slates_harbor",
+    "slates_village_50",
+    "slates_mastery_terrain",
+    "slates_mastery_architecture",
+    "slates_mastery_fortification",
+    "slates_astra_v3_walled_50",
+    "slates_castle",
+    "slates_astra_walled_50",
+    "slates_town"
+  ],
+  "tileSize": 32,
+  "sha256": "24c4dea267dc50dbfde27b8fc667912fe2148f83d674cf65fd9e2ce3ca3f3af6"
+}

@@ -5,7 +5,7 @@
 //   3) battle-status-icon-* 이 실제로 렌더된다(이전엔 CSS 규칙 0건 → 0×0 빈 span)
 //   4) 파티 몬스터 전투의 레벨업/습득 기술이 결과 패널에 나온다
 import { expect, test, type Page } from "@playwright/test";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { exportedProject } from "./rm2k3-database-helpers";
 import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
 import { scarloxySpeciesId } from "@/project/defaults/scarloxyPokemonDemoGame";
@@ -110,7 +110,7 @@ test("Tier0-1/2: 데모가 gen1 게이트를 켜고, 상태 runtimeEffects 가 �
   await page.setViewportSize({ width: 1474, height: 950 });
   // 기본(basic) UI 모드는 상단 툴바 항목을 숨긴다 — expert 주입(시드 헬퍼가 clear 후에도 보존).
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
-  await seedProjectFromSupabaseCanonical(page, createScarloxyPokemonDemoProject());
+  await seedProjectForEditor(page, createScarloxyPokemonDemoProject());
 
   // (1) 출하 데모가 규칙 엔진을 켰다. syncBattleModelAttribute 가 store 구독으로 찍는 속성.
   //     이전에는 데모가 battleUiStyle(스킨)만 켜서 이 값이 "rm2k3" 였다.
@@ -163,7 +163,7 @@ test("Tier0-3/4: 상태 배지가 렌더되고, 몬스터 레벨업이 결과 �
   test.setTimeout(120_000);
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
-  await seedProjectFromSupabaseCanonical(page, makeBattleEvidenceProject());
+  await seedProjectForEditor(page, makeBattleEvidenceProject());
   await page.getByTestId("mode-play").click();
   await startTitle(page);
 

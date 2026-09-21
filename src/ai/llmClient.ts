@@ -1,3 +1,4 @@
+import { inspectPromptPayload, publishPromptInspection, inspectionEpoch } from "./authoring/promptInspection";
 import { normalizePiApplyMode } from "./piAgent/applyMode";
 import { configForRole, parseRoleModels, type SpecialistModels } from "./modelRoles";
 // ai/llmClient.ts
@@ -526,7 +527,7 @@ function stripMessageNames(messages: readonly ChatMessage[]): readonly ChatMessa
   });
 }
 
-function requestBody(config: AiConfig, req: ChatRequest, stream: boolean): string {
+function requestBody(config: AiConfig, req: ChatRequest, stream: boolean, captureEpoch: number): string {
   const capability = providerCapability(config, { hasTools: Boolean(req.tools && req.tools.length > 0) });
   // 공급자 max_tokens 상한이 선언돼 있으면 클램프한다.
   const maxTokens = clampMaxTokens(capability, config.maxTokens);
@@ -559,6 +560,9 @@ function requestBody(config: AiConfig, req: ChatRequest, stream: boolean): strin
       );
     }
   }
+  try {
+    publishPromptInspection(inspectPromptPayload(body, "Chat completions · 전송 시도", config.model, [config.apiKey ?? ""]), captureEpoch);
+  } catch { /* inspection cannot break transport */ }
   return JSON.stringify(body);
 }
 
@@ -797,6 +801,7 @@ export function isLlmAbortError(error: unknown): boolean {
 // Chat Completions 호출 + 일시 오류 자동 재시도 1회(지수 백오프).
 // 스트리밍 도중(토큰이 이미 UI로 나간 뒤) 끊긴 경우는 중복 출력을 피하기 위해 재시도하지 않는다.
 export async function chatCompletion(config: AiConfig, req: ChatRequest): Promise<ChatResult> {
+  const captureEpoch = inspectionEpoch();
   let streamedAny = false;
   const guardedReq: ChatRequest = {
     ...req,
@@ -813,14 +818,14 @@ export async function chatCompletion(config: AiConfig, req: ChatRequest): Promis
         }
       : undefined,
   };
-  if (req.disableTransientRetry) return await chatCompletionOnce(config, guardedReq);
+  if (req.disableTransientRetry) return await chatCompletionOnce(config, guardedReq, captureEpoch);
   try {
-    return await chatCompletionOnce(config, guardedReq);
+    return await chatCompletionOnce(config, guardedReq, captureEpoch);
   } catch (cause) {
     if (!isRetryableLlmError(cause) || streamedAny || req.signal?.aborted) throw cause;
     await sleep(LLM_RETRY_BACKOFF_MS);
     try {
-      return await chatCompletionOnce(config, guardedReq);
+      return await chatCompletionOnce(config, guardedReq, captureEpoch);
     } catch (retryCause) {
       if (retryCause instanceof LlmError) {
         throw new LlmError(`${retryCause.message} (자동 재시도 1회 실패)`, retryCause.status);
@@ -900,7 +905,7 @@ export function reportModelDemotion(requested: string, served: string): void {
 }
 
 // 단일 Chat Completions 호출. 키가 없으면 즉시 사람이 읽을 오류.
-async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<ChatResult> {
+async function chatCompletionOnce(config: AiConfig, req: ChatRequest, captureEpoch: number): Promise<ChatResult> {
   const companion = usesOhMyPiCompanion(config);
   // proxyAuth(상대 baseUrl)는 프록시가 서버 측에서 Authorization 을 주입하므로 클라이언트 키 불필요.
   if (!companion && config.authMode === "apiKey" && !isProxyAuth(config) && (!config.apiKey || !config.apiKey.trim())) {
@@ -936,7 +941,7 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<C
       response = await fetch(endpoint(config), {
         method: "POST",
         headers: headers(config),
-        body: requestBody(config, req, stream),
+        body: requestBody(config, req, stream, captureEpoch),
         signal: controller.signal,
       });
     } finally {

@@ -89,10 +89,16 @@ export function sliderStepperField(
     const offset = clamped - bounds.min;
     return bounds.min + Math.round(offset / bounds.step) * bounds.step;
   };
-  // 초기값도 즉시 정규화해 두 입력의 표시가 범위 밖 데이터에서도 일치하게 한다.
-  const initial = normalize(value);
-  range.value = String(initial);
-  stepper.value = String(initial);
+  // 초기 표시는 **클램프만** 한다. 스텝까지 스냅하면 저장값이 스텝 배수가 아닐 때
+  // (모델 계층은 clamp 만 하므로 흔하다 — 예: percentMax=33, step=5) 화면은 35, store 는 33
+  // 이 되어 "표시값 ≠ 저장값"이 렌더 시점부터 생긴다. 그 상태에서 아무 입력이나 하면 첫
+  // 커밋이 33→35 를 조용히 덮어썼다.
+  // 스텝 정규화는 사용자가 실제로 조작할 때만 한다(commit 경로의 normalize).
+  // range 는 step 속성 때문에 브라우저가 가장 가까운 유효값으로 붙여 그리지만, 권위 있는
+  // 숫자를 보여 주는 stepper 는 저장값 그대로 남는다.
+  const initialDisplay = Math.min(bounds.max, Math.max(bounds.min, Number.isFinite(value) ? value : bounds.min));
+  range.value = String(initialDisplay);
+  stepper.value = String(initialDisplay);
   const commit = (source: HTMLInputElement, next: number): void => {
     range.value = String(next);
     stepper.value = String(next);
@@ -176,7 +182,16 @@ export function numberField(
     syncButtonState();
     onInput(next);
   };
-  input.addEventListener("input", () => commitInput(false));
+  input.addEventListener("input", () => {
+    // 빈 칸은 "지우는 중"이지 0 이 아니다. Number("") === 0 이 isFinite 를 통과하는 탓에
+    // 전체 선택 후 삭제하는 평범한 제스처가 매 keystroke 0(또는 min)을 커밋했고, 화면은
+    // rewrite 가드(input.value !== "") 때문에 빈 칸으로 남아 사용자가 알아채지 못했다.
+    // 가격 0, 최소 기부 개수 0 같은 조용한 데이터 손상 경로다.
+    // 형제 컨트롤 sliderStepperField 는 이미 빈 입력을 무시한다 — 같은 규약으로 맞춘다.
+    // 빈 칸의 최종 확정은 아래 change(블러)가 normalize 해서 맡는다.
+    if (input.value === "") return;
+    commitInput(false);
+  });
   input.addEventListener("change", () => commitInput(true));
 
   const stepBy = (direction: -1 | 1): void => {
@@ -287,7 +302,8 @@ export function segmentedControl(
     });
     group.append(el("label", { class: "db-segmented-pill", children: [input, el("span", { text: option.name })] }));
   }
-  return field(label, group);
+  // field() 로 감싸면 캡션 클릭이 첫 라디오를 체크한다 — labelledGroupField() 참고.
+  return labelledGroupField(label, group);
 }
 
 /**
@@ -349,7 +365,9 @@ export function avatarChipRow(
     });
     row.append(chip);
   }
-  return field(label, row);
+  // 칩은 button 이라 field() 로 감싸면 캡션 클릭이 첫 칩을 토글한다 — labelledGroupField() 참고.
+  row.setAttribute("role", "group");
+  return labelledGroupField(label, row);
 }
 
 function faceChipAvatar(actor: AvatarChipActor): HTMLElement {
@@ -384,9 +402,36 @@ function numericField(label: string, control: HTMLElement, input: HTMLInputEleme
 export function field(label: string, control: HTMLElement): HTMLElement {
   // 라벨 칸은 `text-overflow: ellipsis` 라 좁아지면 글자가 잘린다("이동 간격(ms)" 가
   // "이동 간격(..." 로 실측됐다). 잘려도 전체 문구에 닿을 수 있게 title 을 항상 건다.
+  //
+  // 주의: 이 래퍼는 **컨트롤이 하나일 때만** 쓴다. 감싸는 label 은 "안쪽 첫 labelable
+  // 자손"을 캡션 클릭만으로 발화시키므로(button 도 labelable), 컨트롤이 여럿인 그룹에
+  // 쓰면 첫 라디오·첫 칩이 조용히 눌린다. 그룹은 labelledGroupField() 를 쓸 것.
   return el("label", {
     class: "db-field",
     children: [el("span", { text: label, attrs: { title: label } }), control],
+  });
+}
+
+let groupFieldSequence = 0;
+
+/**
+ * 컨트롤이 여럿인 그룹(라디오 그룹·칩 행)용 필드. field() 와 **격자 모양은 같지만**
+ * 캡션을 label 로 감싸지 않는다.
+ *
+ * 왜: 감싸는 `<label>` 은 `for` 가 없으면 "안쪽 첫 labelable 자손"을 라벨 대상으로 잡고,
+ * 캡션 글자 클릭이 그 대상에 synthetic click 을 보낸다. button 도 labelable 이라
+ * 라디오 그룹은 첫 라디오가 체크되고, 칩 행은 첫 칩의 onToggle 이 발화해 **데이터가
+ * 조용히 바뀐다**(2026-09-19 크로미움 실측: 세그먼티드는 현재 선택이 첫 옵션이 아닐 때,
+ * 칩은 조건 없이 매번). numericField 가 같은 이유로 이미 회피하고 있던 규약을 그룹으로 넓힌다.
+ *
+ * 접근명은 캡션 id 를 그룹에 `aria-labelledby` 로 물려 유지한다.
+ */
+function labelledGroupField(label: string, group: HTMLElement): HTMLElement {
+  const captionId = `db-group-field-${++groupFieldSequence}`;
+  group.setAttribute("aria-labelledby", captionId);
+  return el("div", {
+    class: "db-field",
+    children: [el("span", { text: label, attrs: { id: captionId, title: label } }), group],
   });
 }
 

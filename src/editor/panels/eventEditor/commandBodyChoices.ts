@@ -55,7 +55,7 @@ export function choicesBody(context: CommandEditContext, cmd: ChoicesCommand): H
   });
 
   const cancelBehaviors = cancelBehaviorsForCount(options.length);
-  const cancelBehavior = normalizeCancelBehavior(cmd.cancelBehavior ?? "choice2", options.length);
+  const cancelBehavior = normalizeCancelBehavior(cmd.cancelBehavior ?? "disallow", options.length);
 
   wrap.append(
     el("div", {
@@ -74,6 +74,14 @@ export function choicesBody(context: CommandEditContext, cmd: ChoicesCommand): H
         }),
       ],
     }),
+    ...(cmd.options.length > MAX_CHOICE_OPTIONS
+      ? [el("p", {
+        class: "event-command-choices-warning",
+        text: `선택지가 ${cmd.options.length}개입니다. 화면에는 처음 ${MAX_CHOICE_OPTIONS}개만 표시하며 나머지 분기는 유지합니다.`,
+        attrs: { role: "status", "aria-live": "polite" },
+        dataset: { testid: "event-choice-overflow-warning" },
+      })]
+      : []),
     el("p", {
       class: "event-command-choices-hint",
       text: "각 선택지 본문은 왼쪽 목록에서 고칩니다.",
@@ -127,7 +135,7 @@ function choiceOptionRow(
           ...latest,
           options: nextOptions.length ? nextOptions : [...DEFAULT_OPTIONS],
           cancelBehavior: normalizeCancelBehavior(
-            latest.cancelBehavior ?? "choice2",
+            latest.cancelBehavior ?? "disallow",
             Math.max(1, nextOptions.length)
           ),
         });
@@ -274,5 +282,6 @@ function readOptionsFromDom(source: HTMLInputElement, cmd: ChoicesCommand): Choi
     text: input.value,
     branch: cmd.options[index]?.branch ?? [],
   }));
-  return next.length ? next : [...DEFAULT_OPTIONS];
+  const hidden = cmd.options.slice(MAX_CHOICE_OPTIONS);
+  return next.length ? [...next, ...hidden] : [...DEFAULT_OPTIONS, ...hidden];
 }

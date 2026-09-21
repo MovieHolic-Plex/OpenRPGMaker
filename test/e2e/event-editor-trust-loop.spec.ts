@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { createBlankProject } from "@/project/defaults";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 test.setTimeout(60_000);
 
@@ -20,7 +20,7 @@ test.beforeEach(async ({ page }) => {
 test("event editor draft, validation, picker, and runtime test form one trustworthy loop", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   const project = createBlankProject();
-  await seedProjectFromSupabaseCanonical(page, project, "/?freshProject=1");
+  await seedProjectForEditor(page, project, "/?freshProject=1");
   const ids = await openNewEventEditor(page, project.startMapId);
   const editor = page.getByTestId("event-editor-modal");
 

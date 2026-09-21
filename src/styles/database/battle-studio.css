@@ -593,6 +593,22 @@
   width: 100%;
 }
 
+/* Hidden compatibility inputs must stay a 1px clipped control. The shared
+   editor input reset and battle-command field styling otherwise expand them to
+   the full card width, which gives the modal a false horizontal scroll extent. */
+.database-modal-backdrop .database-modal-window .database-modal-body input.db-authoring-id {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  min-height: 0;
+  min-width: 1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
 /* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 8px 로 덮는다. */
 .database-modal-backdrop .database-modal-window .db-battle-command-card select {
   padding-right: 24px;

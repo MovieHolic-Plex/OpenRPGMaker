@@ -1,7 +1,7 @@
 // scripts/lib/canonical-project-digest.mjs
 // Pure, deterministic canonical serialization + content digest for the horror browser QA.
 //
-// This is the "same data, same digest" contract between the Node-side Supabase reload and the
+// This is the "same data, same digest" contract between the Node-side LegacyDb reload and the
 // in-browser project state. `stableProjectSerialize` sorts object keys recursively and emits a
 // canonical JSON string, so key order in the source object never changes the digest. The browser
 // side replicates the same canonical string and hashes it with crypto.subtle (SHA-256); the

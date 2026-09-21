@@ -41,6 +41,27 @@ describe("battle dom keyboard and status rows", () => {
     document.body.innerHTML = "";
   });
 
+  it("shows keyboard AUTO/speed status and removes the host cover on teardown", () => {
+    vi.useFakeTimers();
+    const { host, controller } = setup();
+    try {
+      const status = controller.root.querySelector('[data-testid="battle-playback-status"]');
+      expect(status?.textContent).toBe("F 자동 꺼짐 · Shift 1×");
+      pressKey("Shift");
+      window.dispatchEvent(new KeyboardEvent("keyup", { key: "Shift", bubbles: true }));
+      expect(status?.textContent).toBe("F 자동 꺼짐 · Shift 1.8×");
+      pressKey("f");
+      expect(status?.textContent).toContain("F 자동 켜짐");
+      window.dispatchEvent(new KeyboardEvent("keydown", { key: "f", repeat: true, bubbles: true }));
+      expect(status?.textContent).toContain("F 자동 켜짐");
+      expect(host.querySelector('.battle-stage')).toBeTruthy();
+    } finally {
+      controller.destroy();
+      expect(host.querySelector('.battle-stage')).toBeNull();
+      vi.useRealTimers();
+    }
+  });
+
   it("intro director state announces the troop in the message window", () => {
     const { runtime, controller } = setup();
     const state = introDirectorState(runtime.snapshot());

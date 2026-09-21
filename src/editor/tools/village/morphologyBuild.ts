@@ -1,3 +1,4 @@
+import { paintForestGroves } from "./forestGroves";
 // editor/tools/village/morphologyBuild.ts
 // 형태 유형 계획(morphologyPlan)을 맵에 시공한다 — 기존 스탬퍼(킷 집·레시피 집·길 오토타일·울타리 타일·
 // 경작지 오토타일)를 그대로 쓴다. 나무만 타일셋에 따라 킷(treeKit.ts)을 고른다 — 합본 마을 원자 또는
@@ -7,6 +8,8 @@
 // 필지 둘레 울타리 → 밭·과수원·풀밭·산울타리 → 거리 기울기 나무 → 녹지 큰나무. 집을 봉인한 뒤에
 // 환경 쓰기가 오는 순서는 기존 시공기와 같다.
 
+import { paintOrganicVillageLake } from "./organicLake";
+import { BRIDGE_PLANK_TILE } from "./landscape";
 import { stampAuthoredHouseForm } from "@/editor/authoredHouseFormStamp";
 import { stampFootprintHouseKit, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
 import { stampHouseDoorBackground } from "@/editor/houseInteriors";
@@ -14,6 +17,7 @@ import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { DEFAULT_FARMLAND_AUTOTILE_GROUP, DEFAULT_TALL_GRASS_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import type { AutotileGroup } from "@/project/types";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
+import { forestCoverageTarget } from "../forestDensity";
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap, Project } from "@/project/types";
 import { mulberry32, type Rng } from "@/util/rng";
@@ -23,6 +27,7 @@ import {
   coordKey,
   DOOR_BOTTOM_TILE,
   DOOR_TOP_TILE,
+  FENCE_BACK_ROWS,
   FENCE_BOTTOM_LEFT,
   FENCE_BOTTOM_RIGHT,
   FENCE_END_LEFT,
@@ -51,6 +56,7 @@ import {
   type MorphologyPlan,
   type VillageMorphology,
 } from "./morphologyPlan";
+import { paintFlowerField, paintMarketDeck, placeMarketDeckProps } from "./plaza";
 import { paintRoadStrip } from "./roads";
 import {
   canStampTree,
@@ -62,8 +68,15 @@ import {
   type TreeStamp,
 } from "./treeKit";
 
-/** 산울타리 덤불(합본 마을 289) — 혼합 칩셋 위 반쪽에도 같은 번호로 있다. */
-const BUSH_TILE = 289;
+/**
+ * 마을 바깥 나무 경사. 예전 값(문턱 3 · 0 + d×0.07 · 상한 0.5)은 44×26 에서 후보를 184칸으로
+ * 좁히고 그중 28칸만 심어, 자유 칸 519칸(맵의 45%)을 맨 잔디로 남겼다(2026-09-18 실측).
+ * 문턱 3 은 그대로 둔다 — 2 로 내리면 길 옆 한 칸짜리 틈을 나무 두 그루가 막아 문 도달성 QA 가
+ * 깨진다(64×56 green 8채에서 reachable false 재현). 대신 기저 확률을 올려 후보를 촘촘히 심는다.
+ */
+const TREE_MIN_DISTANCE = 3;
+const TREE_BASE_CHANCE = 0.18;
+const TREE_STEP = 0.12;
 
 /** 프로브·테스트용 — 마지막 시공의 계획(맵과 대조해 어느 단계가 길을 지웠는지 찾는다). */
 export const morphologyDebugSink: { lastPlan?: MorphologyPlan } = {};
@@ -76,6 +89,7 @@ export interface MorphologyBuildArgs {
   readonly intent: VillageIntent;
   readonly morphology: VillageMorphology;
   readonly maxHouses: number;
+  readonly riverWidth?: number;
   /** 물·기존 집·숲 밴드·시작 좌표 등 절대 못 쓰는 칸(index). */
   readonly blocked: ReadonlySet<number>;
   /** 숲 밴드 — 집은 피하고 길은 지난다. */
@@ -103,6 +117,7 @@ export interface MorphologyBuild {
   readonly exits: readonly MorphologyExit[];
   /** 집 봉인(layoutPlan 등록) 뒤에 부른다 — 울타리·밭·나무. */
   finish(): MorphologyFinishReport;
+  finishWater(): void;
 }
 
 export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBuild {
@@ -120,9 +135,11 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
     templates,
     blocked: args.blocked, ...(args.softBlocked ? { softBlocked: args.softBlocked } : {}), ...(args.cliffBlocked ? { cliffBlocked: args.cliffBlocked } : {}),
     roadWidth: intent.roadWidth,
+    ...(args.riverWidth !== undefined ? { riverWidth: args.riverWidth } : {}),
   });
   morphologyDebugSink.lastPlan = plan;
   warnings.push(`형태 마을 계획: ${plan.notes.join(" / ")}`);
+  const riverCells = new Set(plan.river?.cells.map(cell => cell.y * map.width + cell.x) ?? []);
   const occ = plan.occupancy;
   const W = map.width;
   const lowerAt = (x: number, y: number): number => map.lowerTiles[y * W + x] ?? TILE.EMPTY;
@@ -133,10 +150,13 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
   if (plan.pond) paintPond(draft, map, plan.pond, warnings);
 
   // ② 뼈대 길.
-  for (const stroke of plan.roads) {
-    const cells = stroke.cells.filter((cell) => inMap(cell.x, cell.y) && !isWaterChipsetTile(lowerAt(cell.x, cell.y)));
-    paintRoadStrip(map, intent.pathStyle, cells);
-  }
+  const paintSkeleton = (): void => {
+    for (const stroke of plan.roads) {
+      const cells = stroke.cells.filter((cell) => inMap(cell.x, cell.y) && !riverCells.has(cell.y * W + cell.x) && !isWaterChipsetTile(lowerAt(cell.x, cell.y)));
+      paintRoadStrip(map, intent.pathStyle, cells);
+    }
+  };
+  if (!plan.river) paintSkeleton();
 
   // ③ 필지 위 집 — 문은 필지 앞면(남쪽) 행 바로 위.
   const houses: BuiltHouse[] = [];
@@ -191,10 +211,12 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
     usedKits.add(kitId);
   }
 
+  if (plan.river) paintSkeleton();
+
   // ④ 문 앞 옆길 — 문 앞 칸에서 앞면 방향으로 길까지(최대 6칸), 못 닿으면 4-이웃 BFS.
   const houseCells = houseBlockedCells(houses);
   // 옆길은 절벽 띠를 뚫지 않는다(큰길만 비탈이 된다).
-  const spurBlocked = args.cliffBlocked ? new Set<number>([...args.blocked, ...args.cliffBlocked]) : args.blocked;
+  const spurBlocked = new Set<number>([...args.blocked, ...args.cliffBlocked ?? [], ...riverCells]);
   for (const [index, house] of houses.entries()) {
     const slot = slots[index]!;
     // 계획 옆길은 필지 가운데 열에서 출발했다 — 실제 문(형태마다 위치가 다르다)이 다른 열이면 문 앞에서 그 옆길까지 한 번 더 잇는다.
@@ -221,14 +243,31 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
     // 물 예정지(blocked)·절벽 띠는 지금 잔디여도 나무를 심지 않는다 — 나중에 물·절벽이 깔리면 수관만 떠 남는다.
     const free = (x: number, y: number): boolean =>
       inMap(x, y) && pointInRect({ x, y }, area) && !sealed.has(y * W + x)
-      && !args.blocked.has(y * W + x) && !(args.cliffBlocked?.has(y * W + x) ?? false)
+      && !args.blocked.has(y * W + x) && !riverCells.has(y * W + x) && !(args.cliffBlocked?.has(y * W + x) ?? false)
       && lowerAt(x, y) === TILE.GRASS && upperAt(x, y) === TILE.EMPTY && !ROAD_TILES.has(lowerAt(x, y));
+    // 마을 공터 — 계획은 자리만 예약하고(OCC.commons) 아무것도 칠하지 않아, 어떤 형태 유형이든
+    // 마을 한가운데가 주변 잔디와 구별되지 않았다(2026-09-18 실측: 8×5 공터 40칸 중 채워진 칸 3).
+    // layoutPlan 은 그 자리를 role:"plaza" 로 적고 있었으므로 계획과 그림이 어긋나 있었다.
+    paintCommons(map, plan.commons, intent, mulberry32((seed ^ 0x6d2b79f5) >>> 0));
     let fenceTiles = 0;
-    for (const [index, house] of houses.entries()) fenceTiles += paintParcelFence(map, area, slots[index]!, house, sealed);
+    for (const [index, house] of houses.entries()) if (house.fence) fenceTiles += paintParcelFence(map, area, slots[index]!, house, sealed);
+    // On the river default, reserve the natural outer silhouette before planting
+    // fields. Otherwise rectangular fields consume the entire edge and dictate
+    // the forest shape, regardless of the canopy contour's noise.
+    let trees = 0;
+    const riverGrove = plan.river && kit.grove && intent.edgeTrees !== "none";
+    if (riverGrove && kit.grove) {
+      const groveFree = (x: number, y: number): boolean => free(x, y) && !houses.some(({ bbox: b }) =>
+        Math.hypot(Math.max(b.x - x, 0, x - (b.x + b.w - 1)) / 3,
+          Math.max(b.y - y, 0, y - (b.y + b.h - 1)) / 4) <= 1);
+      const grove = paintForestGroves(map, area, kit.grove, groveFree, seed ^ 0x51f15e3d,
+        forestCoverageTarget(intent.forestDensity ?? "normal"), undefined, true);
+      for (const index of grove.cells) occ[index] = OCC.reserved;
+      trees += Math.ceil(grove.cells.size / 12);
+    }
     let fieldCells = 0;
     const fieldRng = mulberry32((seed ^ 0x2f6b1a4d) >>> 0);
-    for (const field of plan.fields) fieldCells += paintField(map, field.rect, field.kind, free, fieldRng, occ);
-    let trees = 0;
+    for (const field of plan.fields) fieldCells += paintField(map, field.rect, field.kind, free, fieldRng, occ, kit);
     const plant = (stamp: TreeStamp, x: number, y: number): boolean => {
       if (!canStampTree(stamp, x, y, free, occ, W)) return false;
       stampTree(map, stamp, x, y);
@@ -246,11 +285,50 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
       const x = slot.parcel.x + 1, y = slot.parcel.y + 1;
       plant(kit.medium, x, y) || plant(kit.small, x, y);
     }
-    trees += paintTreeGradient(map, area, occ, free, intent, mulberry32((seed ^ 0x51f15e3d) >>> 0), kit);
+    if (!riverGrove) trees += paintTreeGradient(map, area, occ, free, intent, mulberry32((seed ^ 0x51f15e3d) >>> 0), kit);
     return { fenceTiles, fieldCells, trees };
   };
 
-  return { plan, houses, slots, plaza: plan.plaza, exits: plan.exits, finish };
+  const finishWater = (): void => {
+    if (!plan.river) return;
+    paintOrganicVillageLake(draft, map, plan.river);
+    for (const cell of plan.river.bridge) map.upperTiles[cell.y * W + cell.x] = BRIDGE_PLANK_TILE;
+    map.layoutPlan?.regions.push({ id: "village_river", role: "river", label: "마을을 관통하는 강", ...plan.river.bounds,
+      tags: ["morphology:river", "continuous-water", "painted-after-trees"] });
+  };
+  return { plan, houses, slots, plaza: plan.plaza, exits: plan.exits, finish, finishWater };
+}
+
+// ───────────────────────── 마을 공터 ─────────────────────────
+
+/**
+ * 공터를 주변 잔디와 구별되게 칠한다. 형태 유형은 계획 단계에서 자리만 잡아 두므로(OCC.commons)
+ * 여기서 `plazaStyle` 대로 바닥을 깐다 — market 은 장터 데크와 가판, garden 은 꽃밭, empty 는
+ * 손대지 않는다(풀 공터가 곧 의도다). 울타리·나무보다 먼저 불러야 나무가 데크 위에 서지 않는다.
+ */
+function paintCommons(map: GameMap, commons: Rect, intent: VillageIntent, rng: Rng): void {
+  // 둘레 한 칸은 접근로로 비운다 — 공터 가장자리까지 깔면 공터에 면한 집의 문 앞 옆길이 사라진다.
+  const inner: Rect = { x: commons.x + 1, y: commons.y + 1, w: commons.w - 2, h: commons.h - 2 };
+  if (inner.w < 3 || inner.h < 3) return;
+  if (intent.plazaStyle === "garden") { paintFlowerField(map, inner, rng); return; }
+  if (intent.plazaStyle !== "market") return;
+  // 장터 데크는 바닥을 통째로 갈아엎으므로 공터를 가로지르는 길을 먼저 떠 두었다가 되돌린다.
+  // (2026-09-18 실측: green 8채가 doors 5/8 · reachable false 로 QA 를 못 넘었다.)
+  const saved = new Map<number, number>();
+  for (let y = inner.y; y < inner.y + inner.h; y += 1) {
+    for (let x = inner.x; x < inner.x + inner.w; x += 1) {
+      if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+      const index = y * map.width + x;
+      const lower = map.lowerTiles[index] ?? TILE.EMPTY;
+      if (ROAD_TILES.has(lower)) saved.set(index, lower);
+    }
+  }
+  paintMarketDeck(map, inner);
+  for (const [index, tile] of saved) {
+    map.lowerTiles[index] = tile;
+    map.upperTiles[index] = TILE.EMPTY;
+  }
+  placeMarketDeckProps(map, inner);
 }
 
 // ───────────────────────── 연못 ─────────────────────────
@@ -335,6 +413,16 @@ function spurToRoad(
 // ───────────────────────── 필지 울타리 ─────────────────────────
 
 /**
+ * 필지 울타리 뒷줄이 앉을 행. 필지는 길에 면하려고 집보다 훨씬 깊게 잡히는데(2026-09-18 실측:
+ * 5줄짜리 집에 11줄 필지, 지붕 위 5줄) 그 깊이를 그대로 두르면 빈 뒷마당이 울타리에 갇혀
+ * 「집보다 큰 울타리」로 읽힌다. 용마루 위 `FENCE_BACK_ROWS` 줄까지만 두른다.
+ * 앞줄·좌우 변은 필지 폭을 그대로 쓴다 — 마당은 앞(남쪽)에 있기 때문이다.
+ */
+export function parcelFenceTop(parcelY: number, bboxY: number): number {
+  return Math.max(parcelY, bboxY - FENCE_BACK_ROWS);
+}
+
+/**
  * 필지 둘레 울타리(정본 문법): 뒷줄 378/379/380, 세로 변 408, 앞줄 438/379/410 + 문 게이트(409/439 마감).
  * 뒷줄은 용마루 행(bbox.y-1) 위에 있을 때만 친다 — 지붕 위 울타리 금지. 길·소품·봉인 칸은 건너뛴다.
  */
@@ -354,6 +442,7 @@ function paintParcelFence(map: GameMap, area: Rect, slot: HouseSlot, house: Buil
     map.upperTiles[index] = tile;
     placed += 1;
   };
+  const fenceTop = parcelFenceTop(parcel.y, bbox.y);
   const gateL = house.doorAt.x - FENCE_GATE_HALF_WIDTH;
   const gateR = house.doorAt.x + FENCE_GATE_HALF_WIDTH;
   // 앞줄(문 앞 행) — 게이트 양옆 끝 조각, 바깥 끝 모서리.
@@ -363,13 +452,13 @@ function paintParcelFence(map: GameMap, area: Rect, slot: HouseSlot, house: Buil
     setFence(x, lastY, tile);
   }
   // 뒷줄 — 용마루 행보다 위일 때만.
-  if (parcel.y < bbox.y - 1) {
+  if (fenceTop < bbox.y) {
     for (let x = parcel.x; x <= lastX; x += 1) {
-      setFence(x, parcel.y, x === parcel.x ? FENCE_TOP_LEFT : x === lastX ? FENCE_TOP_RIGHT : FENCE_TOP_RAIL);
+      setFence(x, fenceTop, x === parcel.x ? FENCE_TOP_LEFT : x === lastX ? FENCE_TOP_RIGHT : FENCE_TOP_RAIL);
     }
   }
   // 세로 변.
-  for (let y = parcel.y + 1; y < lastY; y += 1) {
+  for (let y = fenceTop + 1; y < lastY; y += 1) {
     setFence(parcel.x, y, FENCE_SIDE_RAIL);
     setFence(lastX, y, FENCE_SIDE_RAIL);
   }
@@ -392,6 +481,7 @@ function paintField(
   free: (x: number, y: number) => boolean,
   rng: Rng,
   occ: Uint8Array,
+  kit: TreeKit,
 ): number {
   const W = map.width;
   const cells: Point[] = [];
@@ -406,10 +496,10 @@ function paintField(
     painted = cells.length;
   } else {
     // 과수원 — 2×2 활엽수(합본 마을 원자, 혼합 칩셋에도 같은 번호)를 3칸 간격 격자로, 열마다 반 칸 엇갈림.
-    const fruitTree = COMBINED_TOWN_TREE_KIT.big;
-    for (let y = rect.y; y + 1 < rect.y + rect.h; y += 3) {
-      const offset = ((y - rect.y) / 3) % 2 === 1 ? 1 : 0;
-      for (let x = rect.x + offset; x + 1 < rect.x + rect.w; x += 3) {
+    const fruitTree = kit.id === "forest-harmony" ? kit.medium : COMBINED_TOWN_TREE_KIT.big;
+    for (let y = rect.y; y + fruitTree.h <= rect.y + rect.h; y += fruitTree.h + 1) {
+      const offset = ((y - rect.y) / (fruitTree.h + 1)) % 2 === 1 ? 1 : 0;
+      for (let x = rect.x + offset; x + fruitTree.w <= rect.x + rect.w; x += fruitTree.w + 1) {
         if (!canStampTree(fruitTree, x, y, free, occ, W)) continue;
         painted += stampTree(map, fruitTree, x, y);
         markTreeStamp(occ, W, fruitTree, x, y);
@@ -421,9 +511,10 @@ function paintField(
     for (const y of [rect.y - 1, rect.y + rect.h]) {
       for (let x = rect.x; x < rect.x + rect.w; x += 2) {
         if (rng() > 0.6 || !free(x, y)) continue;
-        map.upperTiles[y * W + x] = BUSH_TILE;
-        occ[y * W + x] = OCC.field;
-        painted += 1;
+        const shrub = kit.shrubs[0]!;
+        if (!canStampTree(shrub, x, y, free, occ, W)) continue;
+        painted += stampTree(map, shrub, x, y);
+        markTreeStamp(occ, W, shrub, x, y, OCC.field);
       }
     }
   }
@@ -447,7 +538,13 @@ function paintTreeGradient(
   kit: TreeKit,
 ): number {
   if (intent.edgeTrees === "none") return 0;
-  const scale = intent.edgeTrees === "dense" ? 1.6 : 1;
+  // `author_village` 는 edgeTrees 를 인자로 받지 않는다 — 모델이 쥔 숲 손잡이는 forestDensity 뿐인데
+  // 2026-09-18 까지 그 값이 여기 닿지 않아, 어떤 밀도를 넣어도 마을 바깥이 늘 같은 성긴 덤불밭이었다.
+  // normal(0.4) 을 1.0 으로 두고 선언 커버리지 비로 그루 수와 확률을 함께 민다.
+  const density = intent.forestDensity
+    ? forestCoverageTarget(intent.forestDensity) / forestCoverageTarget("normal")
+    : 1;
+  const scale = (intent.edgeTrees === "dense" ? 1.6 : 1) * density;
   const W = map.width;
   const dist = new Uint16Array(W * map.height).fill(0xffff);
   const queue: number[] = [];
@@ -471,15 +568,25 @@ function paintTreeGradient(
       queue.push(nIndex);
     }
   }
+  if (kit.grove) {
+    const grove = paintForestGroves(map, area, kit.grove,
+      (x, y) => free(x, y) && (occ[y * W + x] === OCC.free || occ[y * W + x] === OCC.commons)
+        && dist[y * W + x]! >= TREE_MIN_DISTANCE,
+      Math.floor(rng() * 0xffffffff), forestCoverageTarget(intent.forestDensity ?? "normal"), undefined, true);
+    for (const index of grove.cells) occ[index] = OCC.reserved;
+    return Math.ceil(grove.cells.size / 12);
+  }
   const candidates: number[] = [];
   for (let y = area.y; y < area.y + area.h - 1; y += 1) {
     for (let x = area.x; x < area.x + area.w; x += 1) {
       const index = y * W + x;
-      if ((dist[index] ?? 0) >= 3) candidates.push(index);
+      if ((dist[index] ?? 0) >= TREE_MIN_DISTANCE) candidates.push(index);
     }
   }
   for (let i = candidates.length - 1; i > 0; i -= 1) { const j = Math.floor(rng() * (i + 1)); [candidates[i], candidates[j]] = [candidates[j]!, candidates[i]!]; }
-  const cap = Math.floor(area.w * area.h * 0.14);
+  // 기준선 0.14/0.5 는 마을 바깥을 늘 「덤불 몇 그루 뿌린 잔디밭」으로 남겼다(2026-09-18 실측:
+  // 44×26 가장자리 띠 채움 26%). 기준을 0.22/0.7 로 올리고 밀도 비가 그 위에 곱해진다.
+  const cap = Math.floor(area.w * area.h * 0.22 * density);
   let placed = 0;
   const taken = new Set<number>();
   const open = (x: number, y: number): boolean => free(x, y) && !taken.has(y * W + x);
@@ -494,7 +601,7 @@ function paintTreeGradient(
     if (placed >= cap) break;
     const x = index % W, y = Math.floor(index / W);
     const d = dist[index]!;
-    const p = Math.min(0.5, (d - 2) * 0.07) * scale;
+    const p = Math.min(0.75 * density, (TREE_BASE_CHANCE + (d - TREE_MIN_DISTANCE) * TREE_STEP) * scale);
     if (rng() > p) continue;
     if (taken.has(index) || taken.has(index + W)) continue;
     if (!free(x, y) || !free(x, y + 1)) continue;

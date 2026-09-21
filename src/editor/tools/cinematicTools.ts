@@ -5,9 +5,11 @@ import {
   CINEMATIC_DURATION_MAX_MS,
   CINEMATIC_SCENE_LIMIT,
   normalizeCinematicSequence,
+  normalizeGameOverSettings,
   type CinematicMotion,
   type CinematicScene,
   type CinematicSequence,
+  type GameOverSettings,
 } from "@/project/cinematicSettings";
 import { listDatabaseResourceOptions, type DatabaseResourcePickerKind } from "@/editor/resourceOptions";
 import type { Project } from "@/project/types";
@@ -593,6 +595,7 @@ const editOpening: ToolDefinition = {
 };
 
 export const OPENING_IMAGE_TOOL = "generate_opening_image";
+export const GAME_OVER_IMAGE_TOOL = "generate_game_over_image";
 
 const OPENING_PROMPT_MIN_LENGTH = 4;
 
@@ -611,6 +614,24 @@ export function prepareOpeningImageRequest(args: Record<string, unknown>): { rea
   }
   const prompt = raw.trim();
   const name = rawName?.trim() || `오프닝 그림: ${prompt.slice(0, 24)}`;
+  return { prompt, name };
+}
+
+/** 게임오버 배경 생성도 같은 프롬프트 계약을 쓰되 기본 리소스 이름을 구분한다. */
+export function prepareGameOverImageRequest(args: Record<string, unknown>): { readonly prompt: string; readonly name: string } {
+  const raw = args.prompt;
+  if (typeof raw !== "string" || raw.trim().length < OPENING_PROMPT_MIN_LENGTH) {
+    throw new ToolError(
+      `prompt는 만들 그림을 설명하는 ${OPENING_PROMPT_MIN_LENGTH}자 이상의 문장이어야 합니다(예: "패배한 성문 앞의 폭풍우").`,
+      { code: "invalid-args" },
+    );
+  }
+  const rawName = args.name;
+  if (rawName !== undefined && typeof rawName !== "string") {
+    throw new ToolError("name은 문자열이어야 합니다.", { code: "invalid-args" });
+  }
+  const prompt = raw.trim();
+  const name = rawName?.trim() || `게임오버 그림: ${prompt.slice(0, 24)}`;
   return { prompt, name };
 }
 
@@ -638,6 +659,95 @@ const generateOpeningImage: ToolDefinition = {
   },
 };
 
+const generateGameOverImage: ToolDefinition = {
+  name: GAME_OVER_IMAGE_TOOL,
+  description:
+    "게임오버 화면용 전체화면 그림을 이미지 모델로 만들어 리소스로 등록하고 resourceId를 돌려준다. "
+    + "생성 뒤 set_game_over({backgroundResourceId})로 게임오버 배경에 연결한다. 글자·버튼·UI는 그림에 넣지 않는다.",
+  mode: "read",
+  parameters: {
+    type: "object",
+    additionalProperties: false,
+    required: ["prompt"],
+    properties: {
+      prompt: { type: "string", minLength: OPENING_PROMPT_MIN_LENGTH, description: "패배·절망·종료 분위기의 배경 설명. 글자는 넣지 않는다." },
+      name: { type: "string" },
+    },
+  },
+  run(_project, args): ToolExecResult {
+    const { prompt, name } = prepareGameOverImageRequest(args);
+    return {
+      summary: "게임오버 그림 생성 요청을 준비했습니다. 생성에는 편집기가 필요하며 아직 만들어지지 않았습니다.",
+      data: { status: "ui-required", prompt, name },
+    };
+  },
+};
+
+const getGameOver: ToolDefinition = {
+  name: "get_game_over",
+  description: "현재 게임오버 화면 설정(system.gameOver)을 반환한다. 없으면 gameOver:null이며 기본값을 만들지 않는다.",
+  mode: "read",
+  parameters: { type: "object", properties: {}, additionalProperties: false },
+  run(project): ToolExecResult {
+    const gameOver = project.system.gameOver;
+    if (!gameOver) return { summary: "게임오버 화면 설정이 아직 없습니다.", data: { gameOver: null } };
+    const warnings: string[] = [];
+    if (gameOver.backgroundResourceId && !listDatabaseResourceOptions("still", project).some(entry => entry.id === gameOver.backgroundResourceId)) {
+      warnings.push(`게임오버 배경 리소스를 찾을 수 없습니다: ${gameOver.backgroundResourceId}`);
+    }
+    return {
+      summary: `게임오버 화면 설정을 읽었습니다${gameOver.backgroundResourceId ? `(배경 ${gameOver.backgroundResourceId})` : "(배경 없음)"}.`,
+      data: { gameOver },
+      ...(warnings.length > 0 ? { warnings } : {}),
+    };
+  },
+};
+
+const setGameOver: ToolDefinition = {
+  name: "set_game_over",
+  description: "게임오버 화면의 제목·본문·재시도/타이틀 버튼 문구와 배경 그림을 설정한다. 배경 id는 list_opening_media(kind:\"image\") 또는 list_resources 결과에서 고르고, 빈 문자열은 해당 값을 지운다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      title: { type: "string", description: "게임오버 제목. 빈 문자열은 지움" },
+      message: { type: "string", description: "게임오버 본문. 빈 문자열은 지움" },
+      retryLabel: { type: "string", description: "재시도 버튼 문구. 빈 문자열은 기본 문구 사용" },
+      titleLabel: { type: "string", description: "타이틀 버튼 문구. 빈 문자열은 기본 문구 사용" },
+      backgroundResourceId: { type: "string", description: "전체화면 배경 그림 id. 빈 문자열은 제거" },
+    },
+  },
+  run(draft, args): ToolExecResult {
+    const allowed = ["title", "message", "retryLabel", "titleLabel", "backgroundResourceId"] as const;
+    if (!allowed.some(key => Object.hasOwn(args, key))) {
+      throw new ToolError("게임오버에서 바꿀 값을 하나 이상 지정하세요.", { code: "invalid-args" });
+    }
+    const current = draft.system.gameOver ?? {};
+    const next: GameOverSettings = { ...current };
+    for (const key of ["title", "message", "retryLabel", "titleLabel"] as const) {
+      if (!Object.hasOwn(args, key)) continue;
+      if (typeof args[key] !== "string") throw new ToolError(`${key}는 문자열이어야 합니다.`, { code: "invalid-args" });
+      const value = args[key].trim();
+      if (value) next[key] = value;
+      else delete next[key];
+    }
+    if (Object.hasOwn(args, "backgroundResourceId")) {
+      if (typeof args.backgroundResourceId !== "string") throw new ToolError("backgroundResourceId는 문자열이어야 합니다.", { code: "invalid-args" });
+      const id = args.backgroundResourceId.trim();
+      if (id && !listDatabaseResourceOptions("still", draft).some(entry => entry.id === id)) {
+        throw new ToolError(`게임오버 배경 리소스를 찾을 수 없습니다: ${id}. list_opening_media(kind:"image")로 후보를 확인하세요.`, { code: "resource-not-found" });
+      }
+      if (id) next.backgroundResourceId = id;
+      else delete next.backgroundResourceId;
+    }
+    const normalized = normalizeGameOverSettings(next);
+    if (Object.keys(normalized).length === 0) delete draft.system.gameOver;
+    else draft.system.gameOver = normalized;
+    return { summary: "게임오버 화면 설정을 저장했습니다.", data: { gameOver: draft.system.gameOver ?? null } };
+  },
+};
+
 export const CINEMATIC_TOOLS: readonly ToolDefinition[] = [
   getOpening,
   setOpening,
@@ -645,4 +755,7 @@ export const CINEMATIC_TOOLS: readonly ToolDefinition[] = [
   removeOpening,
   listOpeningMedia,
   generateOpeningImage,
+  getGameOver,
+  setGameOver,
+  generateGameOverImage,
 ];

@@ -1,4 +1,5 @@
 import { destroyGame, getGame, startEditGame } from "@/app/mode";
+import { clearTileGraftImageCache } from "@/assets/tileGraftImageCache";
 import { scheduleEditorAssetWarmup } from "@/assets/editorAssetWarmup";
 import {
   DEFAULT_ASSISTANT_TEMPERATURE,
@@ -6,7 +7,7 @@ import {
   type AssistantTemperature,
 } from "@/editor/assistantTemperature";
 import { collectProjectReferenceIssues } from "@/project/io/references";
-import { editorState } from "@/editor/editorState";
+import { editorState, editorStateChangedOnlyCanvasOverlay } from "@/editor/editorState";
 import { registerAiBootIntentTarget, clearPendingAiBootIntent } from "@/editor/aiBootIntent";
 import { dismissCoachMarks } from "@/editor/coachMarks";
 import { installSelectionChipHint } from "@/editor/selectionChipHint";
@@ -131,6 +132,7 @@ let authoringJourneyReferenceIssues: readonly string[] | null = null;
 let projectExportNode: HTMLElement | null = null;
 let unsubStore: (() => void) | null = null;
 let unsubEditor: (() => void) | null = null;
+let lastEditorPanelState = editorState.get();
 let unsubMapLocks: (() => void) | null = null;
 let mapTreeHeight = initialLayout.mapTreeHeight;
 let mapTreeAuto = initialLayout.mapTreeAuto;
@@ -223,6 +225,11 @@ export function renderEditor(main: HTMLElement): void {
   });
   const teamSidebar = aiPanel.querySelector<HTMLElement>(".ai-team-sidebar");
   if (teamSidebar) layout.append(teamSidebar);
+  // 조수 느낌표 버튼은 **캔버스 영역 안**에 놓는다. 오른쪽 아래는 팀 레일(84px)이 이미 쓰고
+  // 있는데, absolute 로 canvas-area 안에 두면 레일이 시작하는 곳에서 자동으로 끝나
+  // 겹침 계산이 필요 없다(실측 1440×1000: 레일 왼쪽 1357px, 버튼 오른쪽 1341px).
+  const suggestionPeek = aiPanel.querySelector<HTMLElement>(".ai-suggestion-peek");
+  if (suggestionPeek) canvasArea.append(suggestionPeek);
   main.append(layout, projectExportNodeElement());
 
   leftRoot = left;
@@ -263,8 +270,17 @@ export function renderEditor(main: HTMLElement): void {
     scheduleFullPanelRefresh();
   });
 
-  unsubStore = store.subscribe((_project, change) => refreshPanels(change));
-  unsubEditor = editorState.subscribe(() => scheduleFullPanelRefresh());
+  unsubStore = store.subscribe((_project, change) => {
+    if (change?.projectSwitch) clearTileGraftImageCache();
+    refreshPanels(change);
+  });
+  lastEditorPanelState = editorState.get();
+  unsubEditor = editorState.subscribe((state) => {
+    const previous = lastEditorPanelState;
+    lastEditorPanelState = state;
+    if (editorStateChangedOnlyCanvasOverlay(previous, state)) return;
+    scheduleFullPanelRefresh(state.currentMapId === previous.currentMapId);
+  });
   // 미리보기 토글도 눌린 상태(aria-pressed/색)를 그대로 보여야 한다 — 툴바만 다시 그린다.
   unsubMapBackgroundPreview = subscribeMapBackgroundPreview(() => {
     if (canvasToolbarRoot) renderCanvasToolbar(canvasToolbarRoot);
@@ -815,27 +831,34 @@ function verticalMargin(node: HTMLElement): number {
 // 지나간 칸마다 통지를 내므로, 한 틱 안의 여러 통지를 한 번으로 접는다. 최종 상태만
 // 반영하면 되므로 정합성 손실은 없다 — mapHistoryPanel 의 scheduleMapHistoryPanelMount 와 같은 모양.
 let fullPanelRefreshQueued = false;
-function scheduleFullPanelRefresh(): void {
+let fullPanelRefreshNeedsProject = false;
+function scheduleFullPanelRefresh(editorStateOnly = false): void {
+  fullPanelRefreshNeedsProject ||= !editorStateOnly;
   if (fullPanelRefreshQueued) return;
   fullPanelRefreshQueued = true;
   const run = (): void => {
     fullPanelRefreshQueued = false;
-    refreshPanels();
+    const stateOnly = !fullPanelRefreshNeedsProject;
+    fullPanelRefreshNeedsProject = false;
+    refreshPanels(undefined, stateOnly);
   };
   if (typeof queueMicrotask === "function") queueMicrotask(run);
   else setTimeout(run, 0);
 }
 
-function refreshPanels(change?: ProjectChangeDescriptor): void {
-  refreshAuthoringJourney(change);
+function refreshPanels(change?: ProjectChangeDescriptor, editorStateOnly = false): void {
+  if (!editorStateOnly) refreshAuthoringJourney(change);
   // 프로젝트 단위 변화(포크 커밋·재연결·복구)는 persistence 상태를 바꾼다 — 배너를 다시 그린다.
-  if (!change || change.scope === "project" || change.projectSwitch) paintPersistenceBanner();
+  if (!editorStateOnly && (!change || change.scope === "project" || change.projectSwitch)) paintPersistenceBanner();
   // 좌측 패널 호스트는 프리셋에 따라 없을 수 있다 — 캔버스 크롬만 있으면 갱신을 진행한다.
   if (!canvasToolbarRoot || !mapLockBannerRoot) return;
   if (change?.scope === "map" && change.cells?.length) {
     renderCanvasToolbar(canvasToolbarRoot);
     renderMapEditLockBanner(mapLockBannerRoot);
-    updateProjectExport();
+    // Tile painting can emit once per pointer sample. The hidden export is an
+    // automation oracle, not a live UI surface; give a stroke time to settle
+    // so a large project is serialized once after the burst.
+    updateProjectExport(500);
     return;
   }
   if (change?.scope === "database" || change?.scope === "system") {
@@ -846,7 +869,7 @@ function refreshPanels(change?: ProjectChangeDescriptor): void {
   renderLeftDockPanels();
   renderCanvasToolbar(canvasToolbarRoot);
   renderMapEditLockBanner(mapLockBannerRoot);
-  updateProjectExport();
+  if (!editorStateOnly) updateProjectExport();
   scheduleFitCanvas();
 }
 
@@ -1024,22 +1047,26 @@ function isRandomBattleTestRequest(value: unknown): value is { readonly kind: "r
 }
 // 콘텐츠 변경의 clone+stringify는 trailing 디바운스로 합친다. UI 상태만 바뀌면
 // ProjectExportMirror가 내용 버전별 JSON을 재사용하고 editor/history만 다시 직렬화한다.
-// 소비자는 E2E/내보내기 도구(숨은 <pre>)뿐이라 150ms 지연은 관측 불가.
+// 맵 타일 버스트는 500ms, 그 밖의 콘텐츠는 150ms로 숨은 <pre> 관측 비용을 묶는다.
 let projectExportTimer: ReturnType<typeof setTimeout> | null = null;
 const projectExportMirror = new ProjectExportMirror();
 
 // 숨은 `project-export-json` 미러는 프로젝트 전체를 JSON.stringify 한다. 선행 잠금
 // (`if (timer) return`)이면 버스트 중 150ms 마다 타이머가 재무장되어 반복 직렬화됐다 —
 // 우클릭 드래그 2초에 열 번 넘게 돌았다. 후행 엣지로 바꿔 버스트가 끝난 뒤 한 번만 돈다.
-function updateProjectExport(): void {
+function updateProjectExport(delayOverride?: number): void {
   if (projectExportTimer) clearTimeout(projectExportTimer);
+  // The first export is a full JSON stringify of the loaded project. Let the canvas and map
+  // shell get a paint opportunity before doing that hidden automation work; ordinary edits keep
+  // the shorter debounce while tile bursts pass an explicit longer delay.
+  const delay = delayOverride ?? (projectExportNode?.textContent ? 150 : 500);
   projectExportTimer = setTimeout(() => {
     projectExportTimer = null;
     if (!projectExportNode) return;
     projectExportNode.textContent = projectExportMirror.serialize(
       store.getCurrent(), store.getVersionToken(), editorState.get(), getMapEditHistoryState(),
     );
-  }, 150);
+  }, delay);
 }
 
 function bindLeftResizer(): void {

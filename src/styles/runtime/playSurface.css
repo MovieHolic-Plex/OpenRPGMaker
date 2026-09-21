@@ -171,6 +171,7 @@
    handSlot/minimap/actionHud 시트는 플레이어 폐포에만 있어 에디터 테스트플레이에서는
    규칙이 죽는다. 자식 조합자(`>`)를 쓰지 않는 것은 미니맵·타이머가 스테이지 직계가
    아닌 마운트 경로도 있기 때문이다. */
+.play-stage.cutscene-hud-hidden .field-hud,
 .play-stage.cutscene-hud-hidden .hand-slot,
 .play-stage.cutscene-hud-hidden .action-hud,
 .play-stage.cutscene-hud-hidden .minimap-root,

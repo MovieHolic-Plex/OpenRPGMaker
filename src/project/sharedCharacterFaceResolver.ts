@@ -1,5 +1,6 @@
 import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
+import type { CharacterFace, CharacterGraphicsDocument } from "./characterGraphics";
 import type { EventPageGraphic, FaceGraphic } from "./types";
 import { defaultSharedCharacterGraphics, parseSharedCharacterGraphicsDocument, SHARED_CHARACTER_GRAPHICS_ENDPOINT } from "./sharedCharacterGraphicsSchema";
 
@@ -29,6 +30,16 @@ export function sharedFaceForCharset(textureKey: string, characterIndex = 0): Fa
   const row = catalog.mappings.find(row => row.textureKey === canonical && row.characterIndex === characterIndex);
   return row?.status === "mapped" && row.faceResourceId
     ? { resourceId: row.faceResourceId, position: "left", flipHorizontally: false } : null;
+}
+/** Read-only shared row for the appearance slots. Returns the catalog row even when it is not mapped. */
+export function sharedCharsetRow(textureKeyOrId: string, characterIndex = 0): CharacterGraphicsDocument["mappings"][number] | null {
+  const canonical = findCharsetAsset(textureKeyOrId)?.textureKey ?? textureKeyOrId;
+  return catalog.mappings.find((entry) => entry.textureKey === canonical && entry.characterIndex === characterIndex) ?? null;
+}
+
+/** Read-only shared face row for the appearance slots. Uploaded/AI faces are absent. */
+export function sharedFaceRow(resourceId: string): CharacterFace | null {
+  return catalog.faces.find((entry) => entry.resourceId === resourceId) ?? null;
 }
 
 export function sharedFaceFromEventGraphic(graphic: EventPageGraphic): FaceGraphic | null {

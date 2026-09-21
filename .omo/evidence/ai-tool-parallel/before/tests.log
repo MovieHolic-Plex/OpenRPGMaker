@@ -1,0 +1,220 @@
+bun test v1.4.2 (744846f84)
+
+test/piToolConcurrency.bun.test.ts:
+115 |       codexApiKey: token, onEvent: f.onEvent, onCheckpoint: async () => {},
+116 |     });
+117 |     f.record("peak_concurrency", { title: String(peak) });
+118 |     f.evidence("timing");
+119 |     expect(done.stats.toolErrors).toBe(0);
+120 |     expect(peak).toBe(2);
+                       ^
+error: expect(received).toBe(expected)
+
+Expected: 2
+Received: 1
+
+      at <anonymous> (/home/main/.codex/worktrees/ab15/rpg-zzu/test/piToolConcurrency.bun.test.ts:120:18)
+(fail) single-agent parallel tool execution > two 200ms searches overlap in the default single-agent path [1061.15ms]
+94 |
+95 | async function within(promise: Promise<void>, label: string) {
+96 |   let timer: ReturnType<typeof setTimeout>;
+97 |   try {
+98 |     await Promise.race([promise, new Promise<void>((_, reject) => {
+99 |       timer = setTimeout(() => reject(new Error(`Timed out: ${label}`)), 1500);
+                                               ^
+error: Timed out: both HTTP requests must start before either is released
+      at <anonymous> (/home/main/.codex/worktrees/ab15/rpg-zzu/test/piToolConcurrency.bun.test.ts:99:43)
+(fail) single-agent parallel tool execution > default starts independent searches together, then writes [2725.84ms]
+94 |
+95 | async function within(promise: Promise<void>, label: string) {
+96 |   let timer: ReturnType<typeof setTimeout>;
+97 |   try {
+98 |     await Promise.race([promise, new Promise<void>((_, reject) => {
+99 |       timer = setTimeout(() => reject(new Error(`Timed out: ${label}`)), 1500);
+                                               ^
+error: Timed out: both HTTP requests must start before either is released
+      at <anonymous> (/home/main/.codex/worktrees/ab15/rpg-zzu/test/piToolConcurrency.bun.test.ts:99:43)
+(fail) single-agent parallel tool execution > auto starts independent searches together, then writes [2670.40ms]
+94 |
+95 | async function within(promise: Promise<void>, label: string) {
+96 |   let timer: ReturnType<typeof setTimeout>;
+97 |   try {
+98 |     await Promise.race([promise, new Promise<void>((_, reject) => {
+99 |       timer = setTimeout(() => reject(new Error(`Timed out: ${label}`)), 1500);
+                                               ^
+error: Timed out: both HTTP requests must start before either is released
+      at <anonymous> (/home/main/.codex/worktrees/ab15/rpg-zzu/test/piToolConcurrency.bun.test.ts:99:43)
+(fail) single-agent parallel tool execution > yolo starts independent searches together, then writes [2693.48ms]
+94 |
+95 | async function within(promise: Promise<void>, label: string) {
+96 |   let timer: ReturnType<typeof setTimeout>;
+97 |   try {
+98 |     await Promise.race([promise, new Promise<void>((_, reject) => {
+99 |       timer = setTimeout(() => reject(new Error(`Timed out: ${label}`)), 1500);
+                                               ^
+error: Timed out: both HTTP requests must start before either is released
+      at <anonymous> (/home/main/.codex/worktrees/ab15/rpg-zzu/test/piToolConcurrency.bun.test.ts:99:43)
+(fail) single-agent parallel tool execution > step starts independent searches together, then writes [2494.47ms]
+(pass) single-agent parallel tool execution > review starts independent searches together, then writes [673.65ms]
+167 |       },
+168 |     });
+169 |     const settled = done.then(value => ({ value }), error => ({ error }));
+170 |     try {
+171 |       await within(entered.promise, "first publication");
+172 |       expect(f.trace.filter(e => e.event === "tool_start").map(e => e.name)).toEqual(["set_project_settings"]);
+                                                                                   ^
+error: expect(received).toEqual(expected)
+
+  [
+    "set_project_settings",
++   "get_project_summary",
+  ]
+
+- Expected  - 0
++ Received  + 1
+
+      at <anonymous> (/home/main/.codex/worktrees/ab15/rpg-zzu/test/piToolConcurrency.bun.test.ts:172:78)
+(fail) single-agent parallel tool execution > publication blocks later reads and writes (fallback=%s) [1980.29ms]
+167 |       },
+168 |     });
+169 |     const settled = done.then(value => ({ value }), error => ({ error }));
+170 |     try {
+171 |       await within(entered.promise, "first publication");
+172 |       expect(f.trace.filter(e => e.event === "tool_start").map(e => e.name)).toEqual(["set_project_settings"]);
+                                                                                   ^
+error: expect(received).toEqual(expected)
+
+  [
+    "set_project_settings",
++   "get_project_summary",
+  ]
+
+- Expected  - 0
++ Received  + 1
+
+      at <anonymous> (/home/main/.codex/worktrees/ab15/rpg-zzu/test/piToolConcurrency.bun.test.ts:172:78)
+(fail) single-agent parallel tool execution > publication blocks later reads and writes (fallback=%s) [1943.40ms]
+188 |       onCheckpoint: async () => { f.record("approval_start"); entered.resolve(); await approve.promise; f.record("approval_end"); },
+189 |     });
+190 |     const settled = done.then(value => ({ value }), error => ({ error }));
+191 |     try {
+192 |       await within(entered.promise, "stage approval");
+193 |       expect(f.trace.filter(e => e.event === "tool_start").map(e => e.name)).toEqual(["set_project_settings", "finish_stage"]);
+                                                                                   ^
+error: expect(received).toEqual(expected)
+
+  [
+    "set_project_settings",
+    "finish_stage",
++   "get_project_summary",
+  ]
+
+- Expected  - 0
++ Received  + 1
+
+      at <anonymous> (/home/main/.codex/worktrees/ab15/rpg-zzu/test/piToolConcurrency.bun.test.ts:193:78)
+(fail) single-agent parallel tool execution > stage approval holds later calls in the same model response [1588.09ms]
+200 |     const f = fixture();
+201 |     await expect(runPiAgent(request(), {
+202 |       streamFn: model([[write("first"), read, write("forbidden")]]) as never, onEvent: f.onEvent,
+203 |       onCheckpoint: async () => { f.record("publish_rejected"); throw new Error("declined"); },
+204 |     })).rejects.toThrow("declined");
+205 |     expect(f.events.filter(e => e.type === "tool_end" && e.ok).length).toBe(0);
+                                                                             ^
+error: expect(received).toBe(expected)
+
+Expected: 0
+Received: 1
+
+      at <anonymous> (/home/main/.codex/worktrees/ab15/rpg-zzu/test/piToolConcurrency.bun.test.ts:205:72)
+(fail) single-agent parallel tool execution > a rejected publication prevents remaining same-response calls [821.10ms]
+(pass) single-agent parallel tool execution > one failed parallel search preserves the other result and permits recovery [1054.95ms]
+[pi-agent] aborted by client after 1 turns / 3 tool calls
+94 |
+95 | async function within(promise: Promise<void>, label: string) {
+96 |   let timer: ReturnType<typeof setTimeout>;
+97 |   try {
+98 |     await Promise.race([promise, new Promise<void>((_, reject) => {
+99 |       timer = setTimeout(() => reject(new Error(`Timed out: ${label}`)), 1500);
+                                               ^
+error: Timed out: both searches before cancellation
+      at <anonymous> (/home/main/.codex/worktrees/ab15/rpg-zzu/test/piToolConcurrency.bun.test.ts:99:43)
+(fail) single-agent parallel tool execution > abort cancels both searches without running the queued write [1812.87ms]
+
+test/piAgentToolEscalation.bun.test.ts:
+(pass) piAgent 툴 에스컬레이션 > find_tools 수확이 다음 턴 선언에 툴을 얹는다 [645.78ms]
+(pass) piAgent 툴 에스컬레이션 > 미노출 툴의 직접 호출도 폴백이 구제한다 [589.55ms]
+(pass) piAgent 툴 에스컬레이션 > 읽기 전용 실행은 폴백이 쓰기 툴을 못 만든다 — 승격이 경계를 넘지 않는다 [309.45ms]
+(pass) piAgent 툴 에스컬레이션 > find_tools 로 찾은 쓰기 툴도 읽기 전용에선 주입되지 않는다 [312.93ms]
+136 |       streamFn: scriptedStream(calls, [
+137 |         { name: "find_tools", args: { query: "set_project_settings" } },
+138 |         { name: "set_project_settings", args: { title: "Pi initial candidates" } },
+139 |       ]) as never,
+140 |     });
+141 |     expect(new Set(calls[0]!.toolNames)).toEqual(new Set(["get_project_summary", "find_tools"]));
+                                               ^
+error: expect(received).toEqual(expected)
+
+  Set {
+-   "get_project_summary",
+    "find_tools",
++   "list_tileset_references",
++   "read_tileset_reference",
++   "get_project_summary",
++   "web_search",
++   "set_build_spec",
+  }
+
+- Expected  - 1
++ Received  + 5
+
+      at <anonymous> (/home/main/.codex/worktrees/ab15/rpg-zzu/test/piAgentToolEscalation.bun.test.ts:141:42)
+(fail) piAgent 툴 에스컬레이션 > initial candidates cross the worker boundary and permit discovery outside them [645.00ms]
+147 |   test("empty search restores all permitted schemas on the next real Agent turn", async () => {
+148 |     const calls: ScriptedCall[] = [];
+149 |     await runPiAgent(request({ initialToolNames: ["find_tools"] }), {
+150 |       streamFn: scriptedStream(calls, [{ name: "find_tools", args: { query: "쀍쀍쀍쀍쀍" } }]) as never,
+151 |     });
+152 |     expect(calls[0]!.toolNames).toEqual(["find_tools"]);
+                                      ^
+error: expect(received).toEqual(expected)
+
+  [
+    "find_tools",
++   "list_tileset_references",
++   "read_tileset_reference",
++   "web_search",
++   "set_build_spec",
+  ]
+
+- Expected  - 0
++ Received  + 4
+
+      at <anonymous> (/home/main/.codex/worktrees/ab15/rpg-zzu/test/piAgentToolEscalation.bun.test.ts:152:33)
+(fail) piAgent 툴 에스컬레이션 > empty search restores all permitted schemas on the next real Agent turn [343.00ms]
+162 |         streamFn: scriptedStream(calls, [
+163 |           { name: "find_tools", args: { query: "쀍쀍쀍쀍쀍" } },
+164 |           { name: "set_party", args: { actorIds: [] } },
+165 |         ]) as never,
+166 |       });
+167 |       expect(calls[0]!.toolNames).toEqual(["find_tools"]);
+                                        ^
+error: expect(received).toEqual(expected)
+
+  [
+    "find_tools",
++   "set_build_spec",
+  ]
+
+- Expected  - 0
++ Received  + 1
+
+      at <anonymous> (/home/main/.codex/worktrees/ab15/rpg-zzu/test/piAgentToolEscalation.bun.test.ts:167:35)
+(fail) piAgent 툴 에스컬레이션 > empty search and direct calls cannot escape read-only or role allowlists [293.59ms]
+(pass) piAgent 툴 에스컬레이션 > more than sixteen discovered tools remain declared instead of silently disappearing [407.45ms]
+(pass) piAgent 툴 에스컬레이션 > discovered authoring tools change actual world, portrait, charset, equipment and party data [1611.58ms]
+
+ 8 pass
+ 13 fail
+ 44 expect() calls
+Ran 21 tests across 2 files. [27.95s]

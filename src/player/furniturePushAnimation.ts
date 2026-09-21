@@ -1,3 +1,4 @@
+import { mapTileSize } from "@/project/tileGeometry";
 import { characterSpriteY, footprintSpriteX, updateCharacterDepth } from './characterDepth';
 import { footprintBounds, rectsOverlap } from '@/project/footprint';
 import type { RuntimeEventView } from '@/project/runtimeEventState';
@@ -45,8 +46,8 @@ export function advanceFurniturePush(scene: PlaySceneContext): number | undefine
   const sprite = scene.eventSprites.get(push.view.event.id);
   if (sprite) {
     const position = furniturePushPosition(scene, push.view.event.id)!;
-    sprite.x = footprintSpriteX(position.x, push.view.footprint);
-    sprite.y = characterSpriteY(position.y);
+    sprite.x = footprintSpriteX(position.x, push.view.footprint, mapTileSize(scene.map));
+    sprite.y = characterSpriteY(position.y, mapTileSize(scene.map));
     updateCharacterDepth(sprite, push.view.priority);
   }
   return push.progress;
@@ -67,8 +68,8 @@ export function cancelFurniturePush(scene: PlaySceneContext): void {
     scene.eventPositions[id] = { x: push.view.x, y: push.view.y, direction: push.view.direction };
     const sprite = scene.eventSprites.get(id);
     if (sprite) {
-      sprite.x = footprintSpriteX(push.view.x, push.view.footprint);
-      sprite.y = characterSpriteY(push.view.y);
+      sprite.x = footprintSpriteX(push.view.x, push.view.footprint, mapTileSize(scene.map));
+      sprite.y = characterSpriteY(push.view.y, mapTileSize(scene.map));
       updateCharacterDepth(sprite, push.view.priority);
     }
   }

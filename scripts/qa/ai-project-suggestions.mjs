@@ -44,8 +44,19 @@ try {
     });
     return { mapId, name: store.getCurrent().maps[mapId].name };
   }, { storeUrl });
+  // 2026-09-21: 진단 카드는 왼쪽 AI 패널의 빈 대화 첫 화면이 아니라 **캔버스 오른쪽 아래
+  // 느낌표 버튼의 팝오버**에 산다. 닫혀 있으면 살펴보지 않으므로 먼저 열어야 한다.
+  const peek = page.getByTestId("ai-suggestion-peek");
+  await peek.waitFor({ timeout: 15000 });
+  check("Peek button sits clear of the team rail", await page.evaluate(() => {
+    const btn = document.querySelector('[data-testid="ai-suggestion-peek"]')?.getBoundingClientRect();
+    const rail = document.querySelector(".ai-team-sidebar")?.getBoundingClientRect();
+    return Boolean(btn) && (!rail || btn.right <= rail.left + 1);
+  }));
+  await peek.click();
   const card = page.getByTestId("ai-project-suggestion").filter({ hasText: "이동할 맵" });
   await card.waitFor({ timeout: live ? 65000 : 25000 });
+  check("Badge counts the visible cards", (await page.getByTestId("ai-suggestion-peek-badge").innerText()).trim() !== "");
   if (live) check("Live agent completed without local fallback", !(await page.getByTestId("ai-project-suggestions").innerText()).includes("기본 확인 결과"));
   check("Automatic grounded suggestion appears", (await card.innerText()).includes("동쪽 출구"));
   check("Agent runs read-only with bounded turns", requests.length === 1 && requests[0].readOnly === true && requests[0].maxTurns === 4);
@@ -55,18 +66,25 @@ try {
   }, { storeUrl, initial }));
   await page.screenshot({ path: out + "/01-suggestions.png" });
   await card.getByRole("button", { name: "위치 보기" }).click();
-  check("Locate keeps proposal visible", await card.isVisible());
+  // 위치 보기는 카메라를 옮기고 팝오버를 닫는다 — 「가리켰다」를 보여준 뒤 치우는 것이 맞다.
+  check("Locate closes the popover", await page.getByTestId("ai-suggestion-peek-popover").isHidden());
+  await peek.click();
+  await card.waitFor({ timeout: 15000 });
   await card.getByRole("button", { name: "AI와 이어가기" }).click();
   check("Suggestion fills request with exact target", (await page.getByTestId("ai-input").inputValue()).includes("qa-missing-door"));
   await page.waitForTimeout(2000);
   check("Draft never auto-sends or starts another inspection", requests.length === 1);
   await page.getByTestId("ai-input").fill("");
+  // 이어가기도 팝오버를 닫는다(입력창으로 시선을 옮긴다) — 넘기기 검사를 위해 다시 연다.
+  await peek.click();
+  await card.waitFor({ timeout: 15000 });
   await page.setViewportSize({ width: 1024, height: 800 });
   check("Compact suggestion has no horizontal overflow", await card.evaluate(n => n.scrollWidth <= n.clientWidth + 1));
   await page.screenshot({ path: out + "/02-compact.png" });
   await card.getByRole("button", { name: "넘기기" }).click();
   await page.waitForTimeout(2000);
   check("Dismissed suggestion stays dismissed", await card.count() === 0);
+  check("Badge clears with the last card", await page.getByTestId("ai-suggestion-peek-badge").isHidden());
   check("No browser errors", errors.length === 0);
   console.log(JSON.stringify({ checks, requests, errors }));
 } finally {

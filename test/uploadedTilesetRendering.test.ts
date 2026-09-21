@@ -61,16 +61,16 @@ describe('uploaded tilesets in Phaser editor and player', () => {
     expect(frames.get(key)!.size).toBe(540);
   });
 
-  it('keeps two uploaded images and two slicings of one image independent', () => {
+  it.each([32, 48])('keeps two uploaded images and a %ipx slicing independent', (size) => {
     const { project, tileset } = fixture();
     const other = { ...tileset, id: 'other', image: { type: 'uploaded' as const, id: 'other-image' } };
-    const large = { ...tileset, id: 'large', tileSize: 32, tilesPerRow: 15, count: 120, animationStrips: [] };
+    const large = { ...tileset, id: 'large', tileSize: size, tilesPerRow: 480 / size, count: (480 / size) * (288 / size), animationStrips: [] };
     project.tilesets.other = other; project.tilesets.large = large;
     const keys = [tileset, other, large].map(tilesetTextureKey);
     expect(new Set(keys).size).toBe(3);
     const { scene, frames } = textureScene(keys);
     registerUploadedTilesets(scene, project);
-    expect(frames.get(keys[2])!.get('tile_16')).toEqual([0, 32, 32, 32, 32]);
+    expect(frames.get(keys[2])!.get('tile_16')).toEqual([0, (16 % large.tilesPerRow) * size, Math.floor(16 / large.tilesPerRow) * size, size, size]);
     expect(frames.get(keys[0])!.get('tile_16')).toEqual([0, 256, 0, 16, 16]);
   });
 

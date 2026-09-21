@@ -1,0 +1,105 @@
+{
+  "valid": {
+    "valid": true,
+    "issues": [],
+    "scope": "Declared parts and one-step entrance approaches only; no aesthetic approval or transfer-event validation"
+  },
+  "failures": [
+    {
+      "case": "root",
+      "changed": {
+        "layer": "lower",
+        "x": 3,
+        "y": 7,
+        "tile": -1
+      },
+      "result": {
+        "valid": false,
+        "issues": [
+          {
+            "code": "CUT_ROOT",
+            "x": 3,
+            "y": 7,
+            "layer": "lower",
+            "partId": "forest:left",
+            "expected": 1430,
+            "actual": -1,
+            "message": "Restore the expected cell from the declared assembly"
+          }
+        ],
+        "scope": "Declared parts and one-step entrance approaches only; no aesthetic approval or transfer-event validation"
+      }
+    },
+    {
+      "case": "trunk",
+      "changed": {
+        "layer": "lower",
+        "x": 7,
+        "y": 5,
+        "tile": -1
+      },
+      "result": {
+        "valid": false,
+        "issues": [
+          {
+            "code": "MISSING_TRUNK",
+            "x": 7,
+            "y": 5,
+            "layer": "lower",
+            "partId": "forest:body",
+            "expected": 1353,
+            "actual": -1,
+            "message": "Restore the expected cell from the declared assembly"
+          }
+        ],
+        "scope": "Declared parts and one-step entrance approaches only; no aesthetic approval or transfer-event validation"
+      }
+    },
+    {
+      "case": "edge",
+      "changed": {
+        "layer": "upper",
+        "x": 3,
+        "y": 2,
+        "tile": 1440
+      },
+      "result": {
+        "valid": false,
+        "issues": [
+          {
+            "code": "REVERSED_EDGE",
+            "x": 3,
+            "y": 2,
+            "layer": "upper",
+            "partId": "forest:left",
+            "expected": 1410,
+            "actual": 1440,
+            "message": "Restore the expected cell from the declared assembly"
+          }
+        ],
+        "scope": "Declared parts and one-step entrance approaches only; no aesthetic approval or transfer-event validation"
+      }
+    },
+    {
+      "case": "entrance",
+      "changed": {
+        "layer": "lower",
+        "x": 10,
+        "y": 9,
+        "tile": 1364
+      },
+      "result": {
+        "valid": false,
+        "issues": [
+          {
+            "code": "BLOCKED_ENTRANCE",
+            "x": 10,
+            "y": 9,
+            "message": "Engine collision blocks the specified approach"
+          }
+        ],
+        "scope": "Declared parts and one-step entrance approaches only; no aesthetic approval or transfer-event validation"
+      }
+    }
+  ]
+}

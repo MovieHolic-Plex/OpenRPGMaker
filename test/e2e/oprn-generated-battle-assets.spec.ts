@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { deserialize } from "@/project/io";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 type ImageProbe = {
@@ -109,5 +109,5 @@ async function seedGeneratedBattleProject(page: Page): Promise<void> {
   const troop = project.database.troops.find((record) => record.id === "troop_slime");
   if (!troop) throw new Error("missing troop_slime fixture");
   troop.previewBackgroundResourceId = "easyrpg-backdrop-sky1";
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
 }

@@ -7,6 +7,22 @@ import { giveMonster } from "@/project/monsterCollection";
 import { battlerSnapshot, monsterPartyBattlers } from "@/battle/battleBattlers";
 
 describe("battle rewards to play session", () => {
+  it("grows a fallen actor's maximum HP without reviving them on level-up", () => {
+    const project = createBlankProject();
+    const session = startSession(project);
+    const actorId = session.partyActorIds[0];
+    const actor = normalizeActorRecord(project.database.actors.find((entry) => entry.id === actorId)!);
+    const beforeMaxHp = session.actorVitals[actorId].maxHp;
+    session.actorVitals[actorId].hp = 0;
+    const levelUps = applyBattleRewardsToSession(session, {
+      result: "victory",
+      rewards: { exp: totalExpForLevel(actor.expCurve, 40), gold: 0, items: [] },
+    }, project);
+    expect(levelUps.length).toBeGreaterThan(0);
+    expect(session.actorVitals[actorId].maxHp).toBeGreaterThan(beforeMaxHp);
+    expect(session.actorVitals[actorId].hp).toBe(0);
+  });
+
   it("adds victory rewards to actor experience, gold, and inventory", () => {
     // Given: a play session with one party actor and no earned battle rewards.
     const project = createBlankProject();

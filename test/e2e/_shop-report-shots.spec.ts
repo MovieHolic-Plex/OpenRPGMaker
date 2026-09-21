@@ -5,7 +5,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { openCommandPicker, openMapEventEditor } from "./eventStoryboardPicker";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { makeCommerceProject, runtimeState, tapKey } from "./oprn-commerce-fixtures";
 import { startNewGameFromTitle } from "./runtimeInput";
 import type { Command, Project } from "@/project/types";
@@ -128,7 +128,7 @@ function richShopProject(): Project {
 }
 
 async function openShopAtRuntime(page: Page, project: Project): Promise<void> {
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await page.getByTestId("mode-play").click();
   await startNewGameFromTitle(page);
   await expect

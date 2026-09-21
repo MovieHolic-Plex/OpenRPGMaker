@@ -3,6 +3,7 @@ import {
   renderSelectionActionChips,
   SELECTION_CHIP_PRESETS,
   selectionChipModalOptions,
+  shouldShowSelectionActionChips,
 } from "@/editor/selectionActionChips";
 import {
   anchoredBuildPalettePosition,
@@ -23,6 +24,32 @@ vi.mock("@/editor/mapClipboard", async (importOriginal) => {
 });
 
 const SELECTION: TileSelection = { mapId: "map-1", x: 3, y: 4, width: 5, height: 6 };
+
+describe("shouldShowSelectionActionChips", () => {
+  it("우클릭으로 잡은 선택에는 칩을 띄운다", () => {
+    expect(shouldShowSelectionActionChips({
+      selection: SELECTION,
+      pastePreview: null,
+      mapId: "map-1",
+    })).toBe(true);
+  });
+
+  it("Ctrl+V 붙여넣기 미리보기 중에는 칩을 숨긴다", () => {
+    expect(shouldShowSelectionActionChips({
+      selection: SELECTION,
+      pastePreview: { x: 8, y: 9 },
+      mapId: "map-1",
+    })).toBe(false);
+  });
+
+  it("다른 맵의 선택은 숨긴다", () => {
+    expect(shouldShowSelectionActionChips({
+      selection: SELECTION,
+      pastePreview: null,
+      mapId: "map-2",
+    })).toBe(false);
+  });
+});
 
 describe("selectionChipModalOptions", () => {
   it("AI 칩(instruction=null)은 autoRun 없이 모달만 연다", () => {

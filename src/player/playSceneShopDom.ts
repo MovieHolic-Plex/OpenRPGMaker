@@ -128,8 +128,9 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
   const goods = request.items.map(toGoods);
   const shell = el("div", {
     class: "runtime-shop-shell runtime-shop-items-shell",
-    dataset: { shopMode: request.mode },
+    dataset: { shopMode: request.mode, shopPreset: request.step.shopUiPreset ?? "classic" },
   });
+  const preset = request.step.shopUiPreset ?? "classic";
   const first = goods[0];
 
   // ── 상단 바: 정체성(상인·가게) + 모드 탭 + 소지금. 한 줄에 "여기가 어디고 내가 얼마 있나"가 다 있다.
@@ -143,12 +144,29 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
     const modes = shopMenuActions(request.step).filter((action): action is ShopMode => action !== "cancel");
     if (modes.length > 1) topbar.append(shopModeTabs(modes, request.mode, request.terms, request.onMode));
   }
+  if (preset === "tabs" && request.onCategory) {
+    topbar.append(el("nav", { class: "runtime-shop-preset-tabs-nav", attrs: { "aria-label": "상품 카테고리" }, children: [
+      el("button", { class: request.category === "all" ? "is-active" : "", text: "전체", attrs: { type: "button" }, on: { click: () => request.onCategory?.("all") } }),
+      el("button", { class: request.category === "equipment" ? "is-active" : "", text: "장비", attrs: { type: "button" }, on: { click: () => request.onCategory?.("equipment") } }),
+      el("button", { class: request.category === "material" ? "is-active" : "", text: "재료", attrs: { type: "button" }, on: { click: () => request.onCategory?.("material") } }),
+      el("button", { class: request.category === "consumable" ? "is-active" : "", text: "소모품", attrs: { type: "button" }, on: { click: () => request.onCategory?.("consumable") } }),
+    ] }));
+  }
   topbar.append(
     shopWindow("runtime-shop-gold-panel", [
       goldPanel(request.scene, request.terms, request.merchantGold, request.mode),
     ])
   );
   shell.append(topbar);
+  if (preset === "story") shell.append(el("div", { class: "runtime-shop-story-dialogue", children: [
+    el("strong", { text: "상인" }), el("span", { text: "오늘은 특별 추천 상품이 들어왔습니다." }),
+  ] }));
+  if (preset === "story") shell.append(el("nav", { class: "runtime-shop-story-actions", attrs: { "aria-label": "상인 행동" }, children: [
+    ...(request.onMode ? shopMenuActions(request.step).filter((action): action is ShopMode => action !== "cancel").map(mode =>
+      el("button", { text: mode === "buy" ? "사기" : "팔기", attrs: { type: "button" }, on: { click: () => request.onMode?.(mode) } })) : []),
+    el("button", { text: "말 걸기", attrs: { type: "button" }, on: { click: () => request.setStatus("상인: 다음 마을에 가기 전에 필요한 걸 챙겨요.") } }),
+    el("button", { text: "나가기", attrs: { type: "button" }, on: { click: () => request.showMenu() } }),
+  ] }));
 
   // ── 본문: 목록 + 상세 카드.
   const body = el("div", { class: "runtime-shop-main" });
@@ -159,9 +177,16 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
     if (bar) listChildren.push(bar);
   }
   listChildren.push(shopItemList(request, goods));
-  body.append(shopWindow("runtime-shop-list-panel", listChildren));
+  const listPanel = shopWindow("runtime-shop-list-panel", listChildren);
+  if (preset === "grid") listPanel.prepend(el("header", { class: "runtime-shop-grid-heading", children: [
+    el("strong", { text: "오늘의 진열" }), el("span", { text: `${goods.length}개 상품` }),
+  ] }));
+  body.append(listPanel);
 
   const side = el("div", { class: "runtime-shop-side" });
+  if (preset === "compare") side.append(el("header", { class: "runtime-shop-compare-heading", children: [
+    el("strong", { text: "장비 비교" }), el("span", { text: "현재 장비와 구매 후 변화" }),
+  ] }));
   side.append(shopWindow("runtime-shop-detail-panel", [detailCard(request.scene, request.step, first)]));
   side.append(shopWindow("runtime-shop-party-panel", [partyPreview(request.scene)]));
   body.append(side);

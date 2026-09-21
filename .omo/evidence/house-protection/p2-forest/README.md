@@ -129,7 +129,7 @@ change or suppressed assertion was needed.
 
 This producer verifies forest and its necessary placement support only. It does
 not claim integrated village snow/boulevard lifecycle, connected-road/browser QA,
-Supabase content persistence, full repository gates, independent review or merge
+LegacyDb content persistence, full repository gates, independent review or merge
 approval. Those remain the supervisor/integration responsibilities in the Phase 2
 contract. No push, PR, main merge or unrelated-file edit was performed.
 

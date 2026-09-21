@@ -1,0 +1,3315 @@
+{
+  "mapId": "grand-river-fortress",
+  "size": [
+    160,
+    144
+  ],
+  "placements": [
+    {
+      "name": "서쪽 긴 성벽",
+      "x": 20,
+      "y": 16,
+      "w": 6,
+      "h": 106
+    },
+    {
+      "name": "동쪽 성벽 북구간",
+      "x": 86,
+      "y": 16,
+      "w": 6,
+      "h": 34
+    },
+    {
+      "name": "동쪽 성벽 남구간",
+      "x": 86,
+      "y": 56,
+      "w": 6,
+      "h": 66
+    },
+    {
+      "name": "후문 회랑",
+      "x": 26,
+      "y": 18,
+      "w": 60,
+      "h": 14
+    },
+    {
+      "name": "북서 망루",
+      "x": 18,
+      "y": 10,
+      "w": 10,
+      "h": 18
+    },
+    {
+      "name": "door",
+      "x": 22,
+      "y": 24,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "북동 망루",
+      "x": 84,
+      "y": 10,
+      "w": 10,
+      "h": 18
+    },
+    {
+      "name": "door",
+      "x": 88,
+      "y": 24,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "gate",
+      "x": 52,
+      "y": 28,
+      "w": 6,
+      "h": 6
+    },
+    {
+      "name": "banner",
+      "x": 49,
+      "y": 28,
+      "w": 2,
+      "h": 5
+    },
+    {
+      "name": "banner",
+      "x": 59,
+      "y": 28,
+      "w": 2,
+      "h": 5
+    },
+    {
+      "name": "본성 넓은 상부",
+      "x": 34,
+      "y": 66,
+      "w": 46,
+      "h": 32
+    },
+    {
+      "name": "본성 중앙 상단",
+      "x": 42,
+      "y": 62,
+      "w": 28,
+      "h": 10
+    },
+    {
+      "name": "본성 서탑",
+      "x": 28,
+      "y": 78,
+      "w": 10,
+      "h": 20
+    },
+    {
+      "name": "door",
+      "x": 32,
+      "y": 94,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "본성 동탑",
+      "x": 78,
+      "y": 78,
+      "w": 10,
+      "h": 20
+    },
+    {
+      "name": "door",
+      "x": 82,
+      "y": 94,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "gate",
+      "x": 52,
+      "y": 92,
+      "w": 6,
+      "h": 6
+    },
+    {
+      "name": "banner",
+      "x": 40,
+      "y": 91,
+      "w": 2,
+      "h": 5
+    },
+    {
+      "name": "banner",
+      "x": 45,
+      "y": 91,
+      "w": 2,
+      "h": 5
+    },
+    {
+      "name": "banner",
+      "x": 62,
+      "y": 91,
+      "w": 2,
+      "h": 5
+    },
+    {
+      "name": "banner",
+      "x": 68,
+      "y": 91,
+      "w": 2,
+      "h": 5
+    },
+    {
+      "name": "vine",
+      "x": 34,
+      "y": 87,
+      "w": 6,
+      "h": 6
+    },
+    {
+      "name": "남벽 서구간",
+      "x": 24,
+      "y": 114,
+      "w": 26,
+      "h": 14
+    },
+    {
+      "name": "남벽 동구간",
+      "x": 58,
+      "y": 114,
+      "w": 28,
+      "h": 14
+    },
+    {
+      "name": "남서 망루",
+      "x": 18,
+      "y": 108,
+      "w": 10,
+      "h": 22
+    },
+    {
+      "name": "door",
+      "x": 22,
+      "y": 126,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "남동 망루",
+      "x": 84,
+      "y": 108,
+      "w": 10,
+      "h": 22
+    },
+    {
+      "name": "door",
+      "x": 88,
+      "y": 126,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "banner",
+      "x": 45,
+      "y": 121,
+      "w": 2,
+      "h": 5
+    },
+    {
+      "name": "banner",
+      "x": 60,
+      "y": 121,
+      "w": 2,
+      "h": 5
+    },
+    {
+      "name": "bare-tree",
+      "x": 51,
+      "y": 43,
+      "w": 8,
+      "h": 10
+    },
+    {
+      "name": "fountain",
+      "x": 38,
+      "y": 48,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "market",
+      "x": 36,
+      "y": 39,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bench",
+      "x": 44,
+      "y": 42,
+      "w": 4,
+      "h": 3
+    },
+    {
+      "name": "bench",
+      "x": 63,
+      "y": 44,
+      "w": 4,
+      "h": 3
+    },
+    {
+      "name": "statue",
+      "x": 45,
+      "y": 52,
+      "w": 2,
+      "h": 5
+    },
+    {
+      "name": "sacks",
+      "x": 35,
+      "y": 34,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "firewood",
+      "x": 40,
+      "y": 34,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "well",
+      "x": 77,
+      "y": 36,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "clock-tree",
+      "x": 72,
+      "y": 53,
+      "w": 6,
+      "h": 8
+    },
+    {
+      "name": "vine",
+      "x": 82,
+      "y": 42,
+      "w": 6,
+      "h": 6
+    },
+    {
+      "name": "bush",
+      "x": 33,
+      "y": 34,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 66,
+      "y": 34,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 75,
+      "y": 42,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 37,
+      "y": 59,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 64,
+      "y": 59,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 79,
+      "y": 62,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "grass",
+      "x": 32,
+      "y": 51,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "grass",
+      "x": 68,
+      "y": 39,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "grass",
+      "x": 75,
+      "y": 57,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "grass",
+      "x": 32,
+      "y": 70,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "grass",
+      "x": 95,
+      "y": 69,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 34,
+      "y": 60,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 68,
+      "y": 57,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 77,
+      "y": 31,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "boatLeft",
+      "x": 106,
+      "y": 45,
+      "w": 8,
+      "h": 4
+    },
+    {
+      "name": "boatRight",
+      "x": 106,
+      "y": 57,
+      "w": 8,
+      "h": 4
+    },
+    {
+      "name": "sacks",
+      "x": 93,
+      "y": 47,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "firewood",
+      "x": 95,
+      "y": 58,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "corn",
+      "x": 94,
+      "y": 72,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "corn",
+      "x": 94,
+      "y": 78,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "corn",
+      "x": 98,
+      "y": 72,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "corn",
+      "x": 98,
+      "y": 78,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "boulders",
+      "x": 122,
+      "y": 4,
+      "w": 8,
+      "h": 6
+    },
+    {
+      "name": "bush",
+      "x": 107,
+      "y": 5,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "autumn-tree",
+      "x": 138,
+      "y": 4,
+      "w": 6,
+      "h": 6
+    },
+    {
+      "name": "lodge-roof",
+      "x": 28,
+      "y": 128,
+      "w": 6,
+      "h": 6
+    },
+    {
+      "name": "door",
+      "x": 30,
+      "y": 136,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "campfire",
+      "x": 43,
+      "y": 138,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "bench",
+      "x": 36,
+      "y": 135,
+      "w": 4,
+      "h": 3
+    },
+    {
+      "name": "bench",
+      "x": 43,
+      "y": 133,
+      "w": 4,
+      "h": 3
+    },
+    {
+      "name": "firewood",
+      "x": 37,
+      "y": 129,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "crate",
+      "x": 35,
+      "y": 140,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-pot",
+      "x": 27,
+      "y": 140,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-pot",
+      "x": 39,
+      "y": 140,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "tree",
+      "x": 0,
+      "y": 13,
+      "w": 8,
+      "h": 15
+    },
+    {
+      "name": "tree",
+      "x": 2,
+      "y": 41,
+      "w": 8,
+      "h": 15
+    },
+    {
+      "name": "tree",
+      "x": 0,
+      "y": 81,
+      "w": 8,
+      "h": 15
+    },
+    {
+      "name": "tree",
+      "x": 3,
+      "y": 107,
+      "w": 8,
+      "h": 15
+    },
+    {
+      "name": "tree",
+      "x": 18,
+      "y": 128,
+      "w": 8,
+      "h": 15
+    },
+    {
+      "name": "tree",
+      "x": 96,
+      "y": 100,
+      "w": 8,
+      "h": 15
+    },
+    {
+      "name": "tree",
+      "x": 94,
+      "y": 119,
+      "w": 8,
+      "h": 15
+    },
+    {
+      "name": "tree",
+      "x": 146,
+      "y": 30,
+      "w": 8,
+      "h": 15
+    },
+    {
+      "name": "tree",
+      "x": 148,
+      "y": 78,
+      "w": 8,
+      "h": 15
+    },
+    {
+      "name": "tree",
+      "x": 142,
+      "y": 117,
+      "w": 8,
+      "h": 15
+    },
+    {
+      "name": "autumn-tree",
+      "x": 1,
+      "y": 0,
+      "w": 6,
+      "h": 6
+    },
+    {
+      "name": "autumn-tree",
+      "x": 29,
+      "y": 3,
+      "w": 6,
+      "h": 6
+    },
+    {
+      "name": "autumn-tree",
+      "x": 67,
+      "y": 2,
+      "w": 6,
+      "h": 6
+    },
+    {
+      "name": "autumn-tree",
+      "x": 95,
+      "y": 27,
+      "w": 6,
+      "h": 6
+    },
+    {
+      "name": "autumn-tree",
+      "x": 149,
+      "y": 56,
+      "w": 6,
+      "h": 6
+    },
+    {
+      "name": "autumn-tree",
+      "x": 142,
+      "y": 99,
+      "w": 6,
+      "h": 6
+    },
+    {
+      "name": "autumn-tree",
+      "x": 72,
+      "y": 132,
+      "w": 6,
+      "h": 6
+    },
+    {
+      "name": "bush",
+      "x": 3,
+      "y": 28,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 4,
+      "y": 60,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 0,
+      "y": 69,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 4,
+      "y": 99,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 4,
+      "y": 128,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 30,
+      "y": 4,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 40,
+      "y": 5,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 76,
+      "y": 4,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 97,
+      "y": 36,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 95,
+      "y": 91,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 92,
+      "y": 133,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 146,
+      "y": 24,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 151,
+      "y": 46,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 149,
+      "y": 70,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 143,
+      "y": 93,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 145,
+      "y": 136,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 64,
+      "y": 131,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "small-tree",
+      "x": 2,
+      "y": 34,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 0,
+      "y": 58,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 3,
+      "y": 74,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 33,
+      "y": 5,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 43,
+      "y": 3,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 73,
+      "y": 5,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 99,
+      "y": 39,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 96,
+      "y": 88,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 90,
+      "y": 132,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 150,
+      "y": 22,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 147,
+      "y": 51,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 152,
+      "y": 73,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 146,
+      "y": 107,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 149,
+      "y": 138,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "reeds",
+      "x": 9,
+      "y": 26,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "reeds",
+      "x": 9,
+      "y": 73,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "reeds",
+      "x": 99,
+      "y": 37,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "reeds",
+      "x": 101,
+      "y": 64,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "reeds",
+      "x": 105,
+      "y": 88,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "reeds",
+      "x": 105,
+      "y": 108,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "reeds",
+      "x": 103,
+      "y": 132,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "reeds",
+      "x": 145,
+      "y": 39,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "reeds",
+      "x": 143,
+      "y": 65,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "reeds",
+      "x": 140,
+      "y": 115,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "lamp",
+      "x": 45,
+      "y": 130,
+      "w": 1,
+      "h": 6
+    },
+    {
+      "name": "lamp",
+      "x": 61,
+      "y": 129,
+      "w": 1,
+      "h": 6
+    },
+    {
+      "name": "lamp",
+      "x": 29,
+      "y": 107,
+      "w": 1,
+      "h": 6
+    },
+    {
+      "name": "lamp",
+      "x": 82,
+      "y": 107,
+      "w": 1,
+      "h": 6
+    },
+    {
+      "name": "lamp",
+      "x": 36,
+      "y": 42,
+      "w": 1,
+      "h": 6
+    },
+    {
+      "name": "lamp",
+      "x": 66,
+      "y": 46,
+      "w": 1,
+      "h": 6
+    },
+    {
+      "name": "lamp",
+      "x": 93,
+      "y": 54,
+      "w": 1,
+      "h": 6
+    },
+    {
+      "name": "small-tree",
+      "x": 31,
+      "y": 6,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 36,
+      "y": 4,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 39,
+      "y": 8,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 70,
+      "y": 4,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 74,
+      "y": 7,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 35,
+      "y": 35,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 68,
+      "y": 35,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 79,
+      "y": 43,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 3,
+      "y": 30,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 3,
+      "y": 61,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 5,
+      "y": 64,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 149,
+      "y": 26,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 148,
+      "y": 29,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 144,
+      "y": 97,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 146,
+      "y": 99,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 65,
+      "y": 133,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-tree",
+      "x": 67,
+      "y": 134,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "bench",
+      "x": 30,
+      "y": 101,
+      "w": 4,
+      "h": 3
+    },
+    {
+      "name": "bench",
+      "x": 74,
+      "y": 102,
+      "w": 4,
+      "h": 3
+    },
+    {
+      "name": "sacks",
+      "x": 73,
+      "y": 110,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "stela",
+      "x": 40,
+      "y": 105,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "small-pot",
+      "x": 34,
+      "y": 35,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-pot",
+      "x": 38,
+      "y": 34,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-pot",
+      "x": 44,
+      "y": 36,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-pot",
+      "x": 33,
+      "y": 41,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-pot",
+      "x": 36,
+      "y": 45,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-pot",
+      "x": 41,
+      "y": 50,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-pot",
+      "x": 35,
+      "y": 53,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-pot",
+      "x": 43,
+      "y": 55,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-pot",
+      "x": 31,
+      "y": 99,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-pot",
+      "x": 35,
+      "y": 100,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-pot",
+      "x": 78,
+      "y": 100,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-pot",
+      "x": 80,
+      "y": 102,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-pot",
+      "x": 70,
+      "y": 109,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-pot",
+      "x": 77,
+      "y": 109,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-pot",
+      "x": 48,
+      "y": 99,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-pot",
+      "x": 60,
+      "y": 99,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "plant-pot",
+      "x": 32,
+      "y": 35,
+      "w": 2,
+      "h": 3
+    },
+    {
+      "name": "plant-pot",
+      "x": 42,
+      "y": 33,
+      "w": 2,
+      "h": 3
+    },
+    {
+      "name": "plant-pot",
+      "x": 37,
+      "y": 52,
+      "w": 2,
+      "h": 3
+    },
+    {
+      "name": "plant-pot",
+      "x": 64,
+      "y": 42,
+      "w": 2,
+      "h": 3
+    },
+    {
+      "name": "plant-pot",
+      "x": 74,
+      "y": 35,
+      "w": 2,
+      "h": 3
+    },
+    {
+      "name": "plant-pot",
+      "x": 29,
+      "y": 99,
+      "w": 2,
+      "h": 3
+    },
+    {
+      "name": "plant-pot",
+      "x": 77,
+      "y": 99,
+      "w": 2,
+      "h": 3
+    },
+    {
+      "name": "plant-pot",
+      "x": 38,
+      "y": 109,
+      "w": 2,
+      "h": 3
+    },
+    {
+      "name": "plant-pot",
+      "x": 65,
+      "y": 109,
+      "w": 2,
+      "h": 3
+    },
+    {
+      "name": "crate",
+      "x": 35,
+      "y": 36,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "crate",
+      "x": 37,
+      "y": 36,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "crate",
+      "x": 39,
+      "y": 36,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "crate",
+      "x": 32,
+      "y": 37,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "crate",
+      "x": 69,
+      "y": 109,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "crate",
+      "x": 71,
+      "y": 111,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "crate",
+      "x": 75,
+      "y": 111,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "crate",
+      "x": 80,
+      "y": 109,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "crate",
+      "x": 79,
+      "y": 111,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "crate",
+      "x": 93,
+      "y": 45,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "crate",
+      "x": 95,
+      "y": 45,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "crate",
+      "x": 96,
+      "y": 47,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "green-tree",
+      "x": 2,
+      "y": 4,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 6,
+      "y": 0,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 12,
+      "y": 1,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 28,
+      "y": 1,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 35,
+      "y": 0,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 39,
+      "y": 4,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 45,
+      "y": 1,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 61,
+      "y": 0,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 67,
+      "y": 1,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 75,
+      "y": 2,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 81,
+      "y": 0,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 90,
+      "y": 2,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 30,
+      "y": 4,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 33,
+      "y": 5,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 37,
+      "y": 7,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 43,
+      "y": 5,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 63,
+      "y": 4,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 66,
+      "y": 5,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 72,
+      "y": 4,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 77,
+      "y": 5,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 80,
+      "y": 6,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 86,
+      "y": 3,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 90,
+      "y": 5,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 0,
+      "y": 31,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 2,
+      "y": 35,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 1,
+      "y": 63,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 4,
+      "y": 67,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 0,
+      "y": 94,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 2,
+      "y": 98,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 1,
+      "y": 118,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 3,
+      "y": 124,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 32,
+      "y": 32,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 43,
+      "y": 31,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 69,
+      "y": 31,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 74,
+      "y": 39,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 78,
+      "y": 42,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 31,
+      "y": 60,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 68,
+      "y": 58,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 149,
+      "y": 24,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 149,
+      "y": 27,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 148,
+      "y": 45,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 144,
+      "y": 64,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 148,
+      "y": 70,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 142,
+      "y": 91,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 146,
+      "y": 94,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 149,
+      "y": 131,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 23,
+      "y": 123,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 36,
+      "y": 123,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 64,
+      "y": 130,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 69,
+      "y": 133,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 82,
+      "y": 132,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "green-tree",
+      "x": 91,
+      "y": 136,
+      "w": 4,
+      "h": 5
+    },
+    {
+      "name": "bush",
+      "x": 30,
+      "y": 5,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 40,
+      "y": 8,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 68,
+      "y": 7,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 77,
+      "y": 8,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 1,
+      "y": 39,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 3,
+      "y": 71,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 1,
+      "y": 102,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 147,
+      "y": 33,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 146,
+      "y": 74,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 144,
+      "y": 99,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 30,
+      "y": 34,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 45,
+      "y": 33,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 69,
+      "y": 35,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 77,
+      "y": 46,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 32,
+      "y": 58,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 65,
+      "y": 59,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 68,
+      "y": 137,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bench",
+      "x": 151,
+      "y": 90,
+      "w": 4,
+      "h": 3
+    },
+    {
+      "name": "small-pot",
+      "x": 155,
+      "y": 90,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "stela",
+      "x": 151,
+      "y": 94,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 147,
+      "y": 88,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 155,
+      "y": 95,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "bush",
+      "x": 151,
+      "y": 99,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "name": "crate",
+      "x": 92,
+      "y": 59,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "small-pot",
+      "x": 96,
+      "y": 60,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "name": "cairn",
+      "x": 98,
+      "y": 35,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "cairn",
+      "x": 94,
+      "y": 64,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "cairn",
+      "x": 99,
+      "y": 93,
+      "w": 2,
+      "h": 4
+    },
+    {
+      "name": "cairn",
+      "x": 98,
+      "y": 114,
+      "w": 2,
+      "h": 4
+    }
+  ],
+  "districts": [
+    {
+      "id": "keep",
+      "name": "넓은 본성과 앞뜰",
+      "x": 28,
+      "y": 62,
+      "w": 60,
+      "h": 52,
+      "tags": [
+        "참고 구도 수정"
+      ]
+    },
+    {
+      "id": "courtyard",
+      "name": "고목 뒤뜰",
+      "x": 32,
+      "y": 34,
+      "w": 50,
+      "h": 28,
+      "tags": [
+        "참고 구도 수정"
+      ]
+    },
+    {
+      "id": "harbor",
+      "name": "두 척의 배와 작은 나루",
+      "x": 94,
+      "y": 44,
+      "w": 20,
+      "h": 18,
+      "tags": [
+        "참고 구도 수정"
+      ]
+    },
+    {
+      "id": "river",
+      "name": "동쪽 큰 강",
+      "x": 108,
+      "y": 20,
+      "w": 34,
+      "h": 124,
+      "tags": [
+        "참고 구도 수정"
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "id": "lodge",
+      "x": 31,
+      "y": 140,
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        }
+      ]
+    },
+    {
+      "id": "fireside",
+      "x": 42,
+      "y": 139,
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "south-gate",
+      "x": 54,
+      "y": 110,
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "training",
+      "x": 62,
+      "y": 106,
+      "npc": "city-recruit",
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "market",
+      "x": 40,
+      "y": 45,
+      "npc": "city-merchant",
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "left"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "royal-square",
+      "x": 61,
+      "y": 39,
+      "npc": "city-courtier",
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "garden",
+      "x": 80,
+      "y": 59,
+      "npc": "city-gardener",
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "harbor",
+      "x": 96,
+      "y": 55,
+      "npc": "city-harbor",
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "down"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "pier",
+      "x": 109,
+      "y": 52,
+      "moves": [
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "up"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        },
+        {
+          "kind": "move",
+          "dir": "right"
+        }
+      ]
+    }
+  ],
+  "oldMapUnchanged": true,
+  "pierEndsAtWater": true
+}

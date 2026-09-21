@@ -1,6 +1,25 @@
 // test/eventCommandAssist.test.ts
 // 이벤트 명령 AI Assist — 순수 로직(프롬프트/파싱·검증/자가수정 루프) + UI(fakeDom 최소 렌더).
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+// UI tests stub the shared bridge; session/tool integration has its own contract suite.
+vi.mock("@/editor/aiAssistantBridge", () => ({
+  getAiAssistantStatus: () => ({ turnBusy: false }),
+  abortAiAssistantTurn: vi.fn(),
+  sendAiAssistantMessage: async (prompt: string, options: { eventCommandScope: { mapId: string; eventId: string; pageId: string; mode?: string } }) => {
+    const before = structuredClone(store.getCurrent());
+    const target = options.eventCommandScope;
+    const event = before.maps[target.mapId].events.find(e => e.id === target.eventId)!;
+    const page = event.pages!.find(p => p.id === target.pageId)!;
+    try {
+      const generated = await runEventCommandAssist({ config: CONFIG, prompt,
+        context: { project: before, mapId: target.mapId, event, page, scope: target.mode === "append" ? "append" : "page" } });
+      const after = structuredClone(before);
+      const resultPage = after.maps[target.mapId].events.find(e => e.id === target.eventId)!.pages!.find(p => p.id === target.pageId)!;
+      resultPage.commands = generated.scope === "append" ? [...page.commands, ...generated.commands] : generated.commands;
+      return { ok: true, pendingProposal: { before, after, callCount: 1, summary: "초안" } };
+    } catch (error) { return { ok: false, error: String(error) }; }
+  },
+}));
 import {
   aiCommandKinds,
   buildEventAssistPrompt,
@@ -598,7 +617,7 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
   async function generate(harness: Harness, prompt: string): Promise<void> {
     findByTestId(harness.panel, "ai-event-input")!.value = prompt;
     findByTestId(harness.panel, "ai-event-generate")!.click();
-    await vi.waitFor(() => expect(findByTestId(harness.panel, "ai-event-result")!.hidden).toBe(false));
+    await vi.waitFor(() => expect(hasEventAiStagedDraft(store.getCurrent().startMapId, harness.eventId, harness.page.id)).toBe(true));
   }
 
   function deferredFetch(): { resolve: (content: string) => void; mock: ReturnType<typeof vi.fn> } {
@@ -645,7 +664,7 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     expect(status.getAttribute("aria-live")).toBe("polite");
     expect(result.getAttribute("role")).toBe("region");
     expect(result.getAttribute("aria-labelledby")).toBe(resultTitle.getAttribute("id"));
-    expect(result.hidden).toBe(true);
+    expect(findByTestId(panel, "ai-event-apply")!.disabled).toBe(true);
   });
 
   it("초안은 도크 카드가 아니라 목록 자리(stagedHost)에 유령 행으로 그려진다", async () => {
@@ -675,7 +694,7 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     expect(harness.replaced).toHaveLength(1);
     expect(harness.replaced[0]).toHaveLength(1);
     expect(harness.replaced[0][0].kind).toBe("fork");
-    expect(findByTestId(harness.panel, "ai-event-result")!.hidden).toBe(true);
+    expect(findByTestId(harness.panel, "ai-event-apply")!.disabled).toBe(true);
     expect(harness.panel.textContent).toContain("↶ 되돌리기 한 번");
   });
 
@@ -728,7 +747,7 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     pending.resolve(JSON.stringify([{ kind: "text", body: "AI가 고친 대사" }]));
 
     await vi.waitFor(() => expect(harness.panel.textContent).toContain("명령 목록이 생성 중에 바뀌었어요"));
-    expect(findByTestId(harness.panel, "ai-event-result")!.hidden).toBe(true);
+    expect(findByTestId(harness.panel, "ai-event-apply")!.disabled).toBe(true);
     expect(hasEventAiStagedDraft(store.getCurrent().startMapId, harness.eventId, page.id)).toBe(false);
     expect(harness.replaced).toHaveLength(0);
     findByTestId(harness.panel, "ai-event-apply")!.click();
@@ -750,7 +769,7 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     expect(liveGenerate.disabled).toBe(true);
 
     pending.resolve(JSON.stringify([{ kind: "text", body: "AI가 고친 대사" }]));
-    await vi.waitFor(() => expect(findByTestId(live.panel, "ai-event-result")!.hidden).toBe(false));
+    await vi.waitFor(() => expect(liveGenerate.disabled).toBe(false));
 
     // 예전에는 finally 가 분리된 옛 도크의 버튼만 풀어서 사용자가 재생성을 영구히 릻혔다.
     expect(liveGenerate.disabled).toBe(false);
@@ -810,7 +829,7 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     await generate(harness, "보물상자");
 
     findByTestId(harness.panel, "ai-event-discard")!.click();
-    expect(findByTestId(harness.panel, "ai-event-result")!.hidden).toBe(true);
+    expect(findByTestId(harness.panel, "ai-event-apply")!.disabled).toBe(true);
     expect(harness.replaced).toHaveLength(0);
     expect(hasEventAiStagedDraft(store.getCurrent().startMapId, "event-1", "page-1")).toBe(false);
   });
@@ -869,7 +888,7 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     findByTestId(harness.panel, "ai-event-generate")!.click();
 
     await vi.waitFor(() => expect(harness.panel.textContent).toContain("item_ghost"));
-    expect(findByTestId(harness.panel, "ai-event-result")!.hidden).toBe(true);
+    expect(findByTestId(harness.panel, "ai-event-apply")!.disabled).toBe(true);
     expect(harness.replaced).toHaveLength(0);
   });
 });

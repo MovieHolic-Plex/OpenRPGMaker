@@ -65,25 +65,25 @@ Battle turns, battlers, rewards, troop events, animations, and battle UI behavio
 
 ### ResourcePipeline
 
-SQLite asset payloads, bundled bootstrap files, resource profiles, picker UI, and Phaser loading.
+LegacyDb-root resource payloads, local cache/bootstrap files, resource profiles, picker UI, and Phaser loading.
 
 - Entities: `AssetRef`, `UploadedAsset`, `ResourceProfile`
 - Types: `src/project/types/base.ts`
 - UI: `src/editor/panels/resourceManager.ts`, `src/editor/panels/resourceModal.ts`, `src/editor/panels/eventEditor/npcGraphicPicker.ts`
-- Runtime: `src/assets/bundled.ts`, `src/assets/generatedAssetResourceResolver.ts`, `src/assets/supabaseResourceCache.ts`, `src/player/resourceDisplay.ts`
+- Runtime: `src/assets/bundled.ts`, `src/assets/generatedAssetResourceResolver.ts`, `src/assets/legacyDbResourceCache.ts`, `src/player/resourceDisplay.ts`
 - Storage: `src/project/io/resourceReferenceValidation.ts`, `src/project/io/shapeResourceFields.ts`
-- Tests: `test/generatedAssetResourceResolver.test.ts`, `test/supabaseResourceCache.test.ts`, `test/e2e/oprn-resource-manager.spec.ts`
+- Tests: `test/generatedAssetResourceResolver.test.ts`, `test/legacyDbResourceCache.test.ts`, `test/e2e/oprn-resource-manager.spec.ts`
 
 ### ProjectPersistence
 
-Serialization, package export, migration, shape guards, reference validation, and SQLite project save.
+Serialization, package export, migration, shape guards, reference validation, and LegacyDb current_json sync.
 
 - Entities: `Project`, `ProjectSession`, `SaveSlot`, `GameMap`, `Command`, `ResourceProfile`
 - Types: `src/project/types/project.ts`, `src/project/types/events.ts`, `src/project/types/base.ts`
 - UI: `src/editor/saveActions.ts`, `src/editor/panels/menu.ts`
 - Runtime: `src/project/session.ts`, `src/project/package.ts`
-- Storage: `src/project/io.ts`, `src/project/io/guards.ts`, `src/project/io/references.ts`, `src/project/io/migration.ts`, `src/project/supabaseProjectSync.ts`
-- Tests: `test/io.test.ts`, `test/storePersistence.test.ts`, `test/supabaseProjectSync.test.ts`
+- Storage: `src/project/io.ts`, `src/project/io/guards.ts`, `src/project/io/references.ts`, `src/project/io/migration.ts`, `src/project/legacyDbProjectSync.ts`
+- Tests: `test/io.test.ts`, `test/storePersistence.test.ts`, `test/legacyDbProjectSync.test.ts`
 
 ## Entities
 
@@ -101,9 +101,9 @@ Serialization, package export, migration, shape guards, reference validation, an
 - `CommonEvent`: Reusable command list triggered by event commands or switches.
 - `SwitchDef`: Named boolean project switch.
 - `VariableDef`: Named numeric project variable.
-- `ResourceProfile`: Renderable/audio profile for a SQLite asset, bundled, or bootstrap asset.
+- `ResourceProfile`: Renderable/audio profile for a LegacyDb-root, bundled, or bootstrap asset.
 - `AssetRef`: Reference to bundled or uploaded asset storage.
-- `UploadedAsset`: SQLite asset payload and metadata; bundled generated files are bootstrap copies.
+- `UploadedAsset`: LegacyDb current_json.assets.uploaded payload and metadata; local generated files are cache/bootstrap copies.
 - `ActorRecord`: Database actor record.
 - `SkillRecord`: Database skill record and effect.
 - `ItemRecord`: Database item record.
@@ -143,14 +143,14 @@ Serialization, package export, migration, shape guards, reference validation, an
 
 - `map-uses-existing-tileset` (error): Every GameMap.tilesetId points to an existing TilesetDef.id.
 - `map-tile-array-size` (error): GameMap lower and upper tile arrays match width * height.
-- `sqlite-project-root` (error): Canonical project data, including maps, mapTree, database records, start position, and session defaults, lives in the host SQLite project folder. Exported JSON and memory sessions are fixtures, recovery snapshots, or imports.
+- `legacyDb-project-root` (error): Canonical project data, including maps, mapTree, database records, start position, and session defaults, lives in LegacyDb current_json; local project files are fixtures, recovery snapshots, imports, or caches.
 - `tileset-runtime-array-size` (error): Tileset passability, priority, and terrain arrays match TilesetDef.count.
 - `tile-group-ids-in-range` (error): TileGroupMetadata.tileIds stay inside the owning TilesetDef count.
 - `command-references-existing-map` (error): Transfer-style commands point to existing GameMap ids.
 - `command-references-existing-record` (error): Commands reference existing switches, variables, actors, items, skills, troops, and common events.
 - `database-record-references-exist` (error): Database record ids such as skillId, enemyIds, and animationId point to existing records.
-- `resource-reference-exists` (error): Resource ids used by commands, records, or UI point to a SQLite asset payload, bundled bootstrap asset, or generated bootstrap asset.
-- `sqlite-asset-root` (error): Persistent resource bytes must be restorable from the host SQLite asset store. Bundled public files are bootstrap copies and must not be the only source for promoted generated resources.
+- `resource-reference-exists` (error): Resource ids used by commands, records, or UI point to a LegacyDb-root uploaded payload, bundled bootstrap asset, or generated bootstrap asset.
+- `legacyDb-resource-root` (error): Persistent resource bytes must be restorable from LegacyDb current_json.assets.uploaded; local public files are cache or bootstrap copies and must not be the only source for promoted generated resources.
 - `bundled-resource-not-user-deletable` (warning): Bundled resources are not treated as user-deletable assets.
 
 ## Classification Evaluation

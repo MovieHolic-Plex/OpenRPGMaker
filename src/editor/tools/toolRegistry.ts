@@ -1,3 +1,7 @@
+import { TILE_ASSEMBLY_GUIDE_TOOLS } from "./tileAssemblyGuideTools";
+import { PUBLIC_TILE_RECIPE_TOOLS } from "./publicTileRecipeTools";
+import { FOREST_RECIPE_TOOLS } from "./forestRecipeTools";
+import { TILESET_REFERENCE_TOOLS, withTilesetReferencePurpose } from "./tilesetReferenceTools";
 // editor/tools/toolRegistry.ts
 // 모든 툴(읽기+쓰기)의 단일 레지스트리. 툴 추가 = 각 *Tools.ts 배열에 한 줄 추가로 끝난다.
 // toOpenAiTools()로 OpenAI function calling `tools` 배열을 자동 파생한다.
@@ -8,6 +12,7 @@ import { CLUSTER_RULE_TOOLS } from "./clusterRuleTools";
 import { DB_TOOLS } from "./dbTools";
 import { ENDING_TOOLS } from "./endingTools";
 import { COMPANION_TOOLS } from "./companionTools";
+import { EVENT_COMMAND_ASSIST_TOOLS } from "./eventCommandAssistTool";
 import { EVENT_TOOLS } from "./eventTools";
 import { NPC_CAST_TOOLS } from "./npcCastTools";
 import { EXPORT_TOOLS } from "./exportTools";
@@ -48,6 +53,8 @@ import { INTERIOR_ROOM_SESSION_TOOLS } from "./interiorRoomSession";
 import { DUNGEON_ROOM_SESSION_TOOLS } from "./dungeonRoomSession";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { CINEMATIC_TOOLS } from "./cinematicTools";
+import { IMAGE_ASSET_TOOLS } from "./imageAssetTools";
+import { AUDIO_DESCRIPTION_TOOLS } from "./audioDescriptionTools";
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { VIEW_FOCUS_TOOLS } from "./viewFocusTools";
 import { CHARACTER_APPEARANCE_TOOLS } from "./characterAppearanceTools";
@@ -68,7 +75,9 @@ import { RESOURCE_TOOLS } from "./resourceTools";
 import { MONSTER_RESOURCE_TOOLS } from "./monsterResourceTools";
 import { withMonsterAppearanceEnvelope } from "./monsterAppearanceTools";
 import { WORLD_STRUCTURE_TOOLS } from "./worldStructureTools";
+import { WORLD_CANON_TOOLS } from "./worldCanonTools";
 import { SPATIAL_TOOLS } from "./spatialTools";
+import { WEB_SEARCH_TOOLS } from "./webSearchTool";
 
 export { PLACEMENT_TOOLS };
 
@@ -87,8 +96,6 @@ export const LEGACY_TILE_KNOWLEDGE_SUPERSEDED: ReadonlyMap<string, string> = new
 // 레지스트리에 정의가 없으므로 superseded 매핑도 두지 않는다. 옛 이름 호출은 unknown-tool 로 거부된다.
 export const CONSTRUCTION_WRITE_SUPERSEDED: ReadonlyMap<string, string> = new Map([
   ["build_house", "author_house"],
-  ["build_house_kit", "author_house"],
-  ["build_house_lots", "author_house"],
   ["plan_village", "author_village"],
   ["materialize_village_spec", "author_village"],
   ["revise_village_plan", "author_village"],
@@ -103,7 +110,7 @@ export const CONSTRUCTION_WRITE_SUPERSEDED: ReadonlyMap<string, string> = new Ma
 // 레거시 툴 이름에 deprecated + supersededBy 부여 (LLM 비노출, getTool 실행 호환).
 function tagLegacy(tools: readonly ToolDefinition[]): readonly ToolDefinition[] {
   return tools.map((definition) => {
-    const tool = withMonsterAppearanceEnvelope(definition);
+    const tool = withTilesetReferencePurpose(withMonsterAppearanceEnvelope(definition));
     if (tool.deprecated) return tool;
     const superseded =
       CONSTRUCTION_WRITE_SUPERSEDED.get(tool.name)
@@ -159,6 +166,7 @@ function withDomain(tools: readonly ToolDefinition[], domain: ToolDomain): reado
 export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   FIND_TOOLS,
   ...PROJECT_WIKI_TOOLS,
+  ...WORLD_CANON_TOOLS,
   ...PROJECT_TOOLS,
   ...withDomain(VOCABULARY_TOOLS_V3, "tile"),
   AUTHOR_HOUSE_TOOL,
@@ -179,6 +187,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(ACTION_TOOLS, "map"),
   ...withDomain(MAP_GEN_TOOLS, "map"),
   ...withDomain(EVENT_TOOLS, "event"),
+  ...withDomain(EVENT_COMMAND_ASSIST_TOOLS, "event"),
   ...withDomain(NPC_CAST_TOOLS, "event"),
   ...withDomain(COMPANION_TOOLS, "event"),
   ...withDomain(INVESTIGATION_TOOLS, "event"),
@@ -192,6 +201,10 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(FARM_SPATIAL_TOOLS, "database"),
   ...withDomain(GAME_SYSTEM_TOGGLE_TOOLS, "system"),
   ...withDomain(TILESET_ATLAS_TOOLS, "tile"),
+  ...TILESET_REFERENCE_TOOLS,
+  ...TILE_ASSEMBLY_GUIDE_TOOLS,
+  ...FOREST_RECIPE_TOOLS,
+  ...PUBLIC_TILE_RECIPE_TOOLS,
   // 혼합 도메인 — 각 툴이 자기 domains 를 선언하고, 선언이 없으면 map 으로 떨어진다.
   ...withDomain(AUTHORING_MISC_TOOLS, "map"),
   ...withDomain(RESOURCE_TOOLS, "system"),
@@ -209,6 +222,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(TIME_TOOLS, "system"),
   ...withDomain(MONSTER_SYSTEM_TOOLS, "system"),
   ...withDomain(CINEMATIC_TOOLS, "system"),
+  ...withDomain(IMAGE_ASSET_TOOLS, "system"),
+  ...withDomain(AUDIO_DESCRIPTION_TOOLS, "system"),
   ...withDomain(EXPORT_TOOLS, "system"),
   ...withDomain(PLAY_TOOLS, "system"),
   ...withDomain(QUERY_TOOLS, "map"),
@@ -224,6 +239,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(CHARACTER_APPEARANCE_TOOLS, "database"),
   ...withDomain(PLACEMENT_TOOLS, "tile"),
   ...withDomain(RANGE_CLASSIFY_TOOLS, "tile"),
+  // 웹 검색은 UI 상태로 예측할 수 없다 — "최신 정보가 필요하다" 는 도메인이 아니라 요청의 성질이다.
+  ...WEB_SEARCH_TOOLS,
 ]);
 
 const TOOL_BY_NAME = new Map<string, ToolDefinition>(TOOL_REGISTRY.map((tool) => [tool.name, tool]));

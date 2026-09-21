@@ -1,5 +1,5 @@
 /* 스킨 구동 배틀러 스프라이트(정면/후면 파티 + 스킨별 적).
-   battle.css는 언레이어드라 이 파일도 언레이어드로 두고 index.css에서 battle.css 뒤에 import.
+   runtime/index.css가 공용 battle/ 리프 뒤에서 이 파일을 같은 runtime 레이어로 import.
    크기는 노드 transform이 아니라 이미지 width로 조절 → hit/lunge 모션 transform과 충돌 없음.
    주의: 노드에 base scale이 곱해진다(.battle-actor 1.65×, .battle-enemy 1.9×). */
 
@@ -52,8 +52,8 @@
   /* 208px 높이는 250px 필드의 83% — 머리가 좌상단 적 정보 패널 밑으로 파고들었다
      (적대 리뷰 3차). 3마리 1줄 패널 바닥(~98px)까지 고려해 140px(머리 y≈97.5)로
      맞춘다(코덱스 리뷰 C7: 150px 시절 3마리 패널이 머리를 10px 덮었다). */
-  width: 145px !important;
-  height: 140px !important;
+  width: 125px !important;
+  height: 110px !important;
   object-fit: contain;
 }
 

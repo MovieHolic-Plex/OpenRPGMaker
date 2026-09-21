@@ -1,3 +1,5 @@
+import { captureActivityVisuals, type ActivityVisual } from "./activityVisual";
+import { eventScopeAllowsTool, eventScopeRefusal, type EventCommandScope } from "./eventCommandScope";
 import { refreshSharedCharacterGraphics } from "@/project/sharedCharacterFaceResolver";
 import { configForRole } from "./modelRoles";
 import { configForLegacySupervisor } from "./ultrabrainConfig";
@@ -29,12 +31,14 @@ import { ToolReadEvidence } from "./toolReadEvidence";
 import { ToolVerificationEvidence, parseVerificationChecks, verificationInitialState, type VerificationRequirement, type ApproachPreview } from "./toolVerificationEvidence";
 import { isVerifyNpcRewardInput, npcRewardTargetSnapshot, VERIFY_NPC_REWARD_TOOL, type NpcRewardWitness } from "./npcRewardWitness";
 import { APPEARANCE_GENERATION_TOOL } from "@/editor/tools/characterAppearanceTools";
-import { OPENING_IMAGE_TOOL } from "@/editor/tools/cinematicTools";
+import { GAME_OVER_IMAGE_TOOL, OPENING_IMAGE_TOOL } from "@/editor/tools/cinematicTools";
+import { IMAGE_ASSET_TOOL } from "@/editor/tools/imageAssetTools";
 import type { AppearanceGenerationHandoff } from "@/editor/characterAppearanceGeneration";
+import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
+import { runToolAsync } from "@/editor/tools/asyncToolRunner";
 import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
 import { validateArgs } from "@/editor/tools/jsonSchema";
 import { viewportVillageBounds } from "@/editor/tools/authorVillageSupport";
-import { toOpenAiTools } from "@/editor/tools";
 import type { ToolContext, ToolResult } from "@/editor/tools";
 import {
   harnessToolReason,
@@ -96,6 +100,7 @@ import {
   type TurnSelectionSnapshot,
 } from "./conversationTurnContext";
 import { buildPreferenceMemorySection } from "./preferenceMemory";
+import { buildSessionRegistryTools } from "./sessionToolExposure";
 import { resolveWorkingContextTokens } from "./messageBudget";
 import {
   buildCompactedMessages,
@@ -724,6 +729,8 @@ export class AssistantSession {
   /** place_props 등 산포 중복 호출 억제 — 같은 인자로 이미 성공한 쓰기는 재실행하지 않는다. */
   private turnWriteDedupe = new Map<string, ToolResult>();
   private turnEscalatedToolNames: string[] = [];
+  /** Discovery miss or neutral routing opts the next request into the complete catalog. */
+  private turnFullCatalogFallback = false;
   /** 이번 턴에 실행을 시작한 툴 수 — tool_started 이벤트의 1-based 서수 원천. */
   private turnToolStartedCount = 0;
   private eventBaseProposalKeys = new Map<string, string>();
@@ -808,6 +815,7 @@ export class AssistantSession {
     return operation;
   }
   private storeBacked = false;
+  private eventCommandScope: EventCommandScope | undefined;
   private runReceipt: ProjectPersistenceReceipt | null = null;
   private wikiDelivery: {
     owner: { current: TurnResult | null };
@@ -1752,6 +1760,7 @@ export class AssistantSession {
     if (!operation) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted",
       runOutcome: deriveRunOutcome({ execution: "cancelled", acceptance: null, hasPendingDraft: false, hasApplied: false, persistence: "none" }) };
     signal = operation.signal;
+    this.eventCommandScope = opts?.eventCommandScope ? structuredClone(opts.eventCommandScope) : undefined;
     this.recoveryOperation = opts?.driverContinue && this.recoveredCheckpoint ? operation : null;
     if (this.recoveryOperation !== operation) { this.recoveredCheckpoint = null; this.recoveryBudget = null; }
     const subscriber = onEvent;
@@ -1816,7 +1825,7 @@ export class AssistantSession {
       this.readEvidence.begin(undefined);
       this.rebuildSystemPrompt();
     }
-    this.milestoneAutoApply = opts?.autonomous === true;
+    this.milestoneAutoApply = opts?.autonomous === true && !this.eventCommandScope;
     if (this.milestoneApplyFailed && !this.staleProposal) {
       // 실패한 proposed draft를 다음 턴으로 가져가면 같은 커밋 오류가 반복된다. 저장소는 실패
       // 당시 바뀌지 않았으므로 canonical store에서 세션 draft를 다시 시작한다.
@@ -1886,7 +1895,7 @@ export class AssistantSession {
       }
       operation.assertCurrent();
       const first = await operation.wait(this.executeUserTurn(text, onEvent, signal, turnOptions, reviewedDraftAtEntry));
-      const last = opts?.autonomous === true && !this.lastTurnPlanOnly && this.turnComposerMode !== "ask"
+      const last = opts?.autonomous === true && !this.eventCommandScope && !this.lastTurnPlanOnly && this.turnComposerMode !== "ask"
         ? await operation.wait(this.runAutonomousDriver(first, onEvent, signal, turnOptions)) : first;
       if (signal?.aborted) this.runExecution = "cancelled";
       return await this.finishAssessedRunRecap(last, startedAt, usageBefore, auditFrom, subscriber);
@@ -2044,11 +2053,12 @@ export class AssistantSession {
     }
     this.turnScope = options.scope ?? null;
     this.turnComposerMode = options.composerMode ?? "do";
+    this.turnFullCatalogFallback = false;
     this.planAuthoredThisTurn = false;
     this.lastTurnPlanOnly = false;
     this.turnIsDriverContinue = options.driverContinue === true;
     this.skipPlannerRoundOnly = false;
-    if (this.prepareProjectWiki && !this.turnIsDriverContinue) {
+    if (this.prepareProjectWiki && !this.turnIsDriverContinue && !this.eventCommandScope) {
       const owner = this.runResult;
       try {
         const world = await operation.wait(this.prepareProjectWiki({
@@ -2104,6 +2114,10 @@ export class AssistantSession {
     // 질문 모드는 사용자가 직접 고른 사실이라 선언의 create/modify 를 덮어쓴다 — 안 그러면 플래너·쓰기 기대가 문장 판정으로 돈다.
     const intent = this.applyComposerModeToIntent(await operation.wait(this.declareTurnIntent(instruction, onEvent, signal)));
     this.turnIntent = intent;
+    // A failed routing declaration has no safe domain hint. Preserve the old
+    // reliability behavior for that turn; normal LLM declarations use the
+    // control plane and can discover missing schemas incrementally.
+    this.turnFullCatalogFallback = intent.source === "fallback";
     if (intent.mode === "question") this.turnComposerMode = "ask";
     const question = this.turnComposerMode === "ask";
     const userAction = !this.turnIsDriverContinue && !question;
@@ -3295,10 +3309,6 @@ export class AssistantSession {
     this.recordAppliedProject(applied);
     operation.assertCurrent();
 
-    if (applied.wikiWarning) {
-      this.pushAudit({ kind: "status", text: `게임 변경은 적용됐지만 위키 진행 기록은 갱신하지 못했습니다: ${applied.wikiWarning}` });
-      onEvent({ type: "status", text: `위키 진행 기록 갱신 실패: ${applied.wikiWarning}` });
-    }
     this.pushAudit({
       kind: "status",
       text: `agent_run:milestone-applied "${completed.title}" calls=${calls.length} commit=${applied.commit.commitId ?? "local-only"} persisted=${String(applied.commit.persisted)}`,
@@ -3322,9 +3332,18 @@ export class AssistantSession {
     this.publishAcceptance(onEvent);
   }
 
+  private readonly activityBefore = new Map<string, ActivityVisual[]>();
+  private activityVisuals(name: string, args: Record<string, unknown>, result: ToolResult): ActivityVisual[] {
+    const before = this.activityBefore.get(name) ?? [];
+    this.activityBefore.delete(name);
+    const phase = !result.ok ? "failed" : getTool(name)?.mode === "write" ? "draft" : "read";
+    return [...before, ...captureActivityVisuals(this.ctx.project, name, args, result, phase)];
+  }
+
   /** 툴 실행 직전 신호를 알린다(1-based 서수). 실행 로직은 건드리지 않는다. */
   private emitToolStarted(onEvent: (event: SessionEvent) => void, name: string, args: Record<string, unknown>): void {
     this.turnToolStartedCount += 1;
+    this.activityBefore.set(name, getTool(name)?.mode === "write" ? captureActivityVisuals(this.ctx.project, name, args, undefined, "before") : []);
     onEvent({ type: "tool_started", name, args, index: this.turnToolStartedCount });
   }
 
@@ -3402,7 +3421,7 @@ export class AssistantSession {
         ...(result.issues && result.issues.length > 0 ? { issues: result.issues.map((issue) => issue.message) } : {}),
       });
       results.push({ name: call.name, result });
-      onEvent({ type: "tool_call", name: call.name, args: call.args, result, reason });
+      onEvent({ type: "tool_call", name: call.name, args: call.args, result, reason, visuals: this.activityVisuals(call.name, call.args, result) });
     }
     const verdict = parseLayerVerdict(results);
     const layerId = layer.id ?? "";
@@ -3525,14 +3544,10 @@ export class AssistantSession {
     this.approvedReviewIdentity = null;
     this.approvedAuthoredIdentity = null;
     this.reviewTurn = null;
-    const wiki = applied.wikiDelivery;
-    // The progress document is a later owned mutation, not the tool commit's revision.
-    this.lastAppliedProject = wiki?.project ? { project: wiki.project, commitId: null }
-      : applied.commitProject ? { project: applied.commitProject, commitId: applied.commit.commitId } : null;
-    this.runReceipt = wiki?.kind === "persisted"
-      && store.isPersistenceReceiptForProject(wiki.receipt, wiki.project) ? wiki.receipt : null;
-    if (wiki) this.wikiDelivery = { owner: this.runResult, project: wiki.project, receipt: this.runReceipt };
-    else if (this.wikiDelivery) {
+    this.lastAppliedProject = applied.commitProject
+      ? { project: applied.commitProject, commitId: applied.commit.commitId } : null;
+    this.runReceipt = null;
+    if (this.wikiDelivery) {
       this.wikiDelivery.project = undefined;
       this.wikiDelivery.receipt = null;
     }
@@ -3544,7 +3559,6 @@ export class AssistantSession {
         contentIdentity: this.identityOf(applied.applied), commitId: null, calls: [...this.turnAppliedMilestoneCalls] };
       this.checkpointPending = null;
     } else if (this.checkpointApplied) {
-      if (applied.wikiDelivery?.project) this.checkpointCurrentIdentity = this.identityOf(applied.wikiDelivery.project);
       this.checkpointApplied = { ...this.checkpointApplied, commitId: applied.commit.commitId };
     }
     this.captureCheckpoint(); // Before publish can synchronously cancel or replace this owner.
@@ -4340,6 +4354,7 @@ export class AssistantSession {
     onEvent: (event: SessionEvent) => void,
     proposedByKey: Map<string, ProposedCall>
   ): number {
+    if (this.eventCommandScope) return 0;
     const assets = [...this.specsByMap.values()]
       .filter(({ turnIndex }) => turnIndex === this.currentTurnIndex)
       .flatMap(({ spec }) => spec.assets.filter(asset => asset.kind === "npc").map(asset => ({ mapId: spec.mapId, asset })));
@@ -4376,7 +4391,7 @@ export class AssistantSession {
         ...(result.issues && result.issues.length > 0 ? { issues: result.issues.map((issue) => issue.message) } : {}),
       });
       if (!result.ok || !result.diff) {
-        onEvent({ type: "tool_call", name: "place_npc", args, result, reason });
+        onEvent({ type: "tool_call", name: "place_npc", args, result, reason, visuals: this.activityVisuals("place_npc", args, result) });
         continue;
       }
       this.recordToolResult("place_npc", args, result);
@@ -4390,7 +4405,7 @@ export class AssistantSession {
         reason,
       });
       placed += 1;
-      onEvent({ type: "tool_call", name: "place_npc", args, result, reason });
+      onEvent({ type: "tool_call", name: "place_npc", args, result, reason, visuals: this.activityVisuals("place_npc", args, result) });
     }
     return placed;
   }
@@ -4417,7 +4432,7 @@ export class AssistantSession {
   ): Promise<"none" | "applied" | "rekick"> {
     const operation = this.runOperation;
     operation.assertCurrent();
-    if (signal?.aborted) return "none";
+    if (signal?.aborted || this.eventCommandScope) return "none";
     const pending = collectPendingNpcs(this.ctx.project, this.baselineProject);
     if (pending.length === 0) return "none";
     let outcome: "none" | "applied" | "rekick" = "none";
@@ -4460,7 +4475,7 @@ export class AssistantSession {
         ...(result.issues && result.issues.length > 0 ? { issues: result.issues.map((issue) => issue.message) } : {}),
       });
       if (!result.ok || !result.diff) {
-        onEvent({ type: "tool_call", name: "author_npc_cast", args, result, reason });
+        onEvent({ type: "tool_call", name: "author_npc_cast", args, result, reason, visuals: this.activityVisuals("author_npc_cast", args, result) });
         this.rekickPendingNpcDialogue(onEvent, mapId, residents.map((npc) => npc.eventId), [result.summary]);
         outcome = "rekick";
         continue;
@@ -4469,7 +4484,7 @@ export class AssistantSession {
       this.upsertProposal(proposedByKey, { name: "author_npc_cast", args, summary: result.summary, result, destructive: false, requiresApproval: false, reason });
       this.pushAudit({ kind: "status", text: `npc-cast:applied map=${mapId} residents=${sheet.sheet.residents.map((resident) => resident.name).join(",")}` });
       if (outcome === "none") outcome = "applied";
-      onEvent({ type: "tool_call", name: "author_npc_cast", args, result, reason });
+      onEvent({ type: "tool_call", name: "author_npc_cast", args, result, reason, visuals: this.activityVisuals("author_npc_cast", args, result) });
     }
     return outcome;
   }
@@ -4776,10 +4791,18 @@ export class AssistantSession {
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "token-budget" };
       }
       let result: ChatResult;
-      // Full native schemas are the working catalog, not a domain-ranked shortlist.
-      // Session-only tools retain their lifecycle gates; ask mode removes every write.
+      // Start with a small control plane plus intent/plan/discovery candidates.
+      // A discovery miss or neutral routing flips turnFullCatalogFallback and
+      // restores the complete native catalog on the next round.
       const tools = [
-        ...toOpenAiTools(),
+        ...buildSessionRegistryTools({
+          requestText: this.currentTurnInstruction,
+          intent: this.turnIntent,
+          discoveredToolNames: this.turnEscalatedToolNames,
+          requiredReadTools: this.readEvidence.requiredReadTools(),
+          workPlan: this.workPlan,
+          fullCatalogFallback: this.eventCommandScope ? true : this.turnFullCatalogFallback,
+        }),
         GET_ORIGINAL_CONTEXT_TOOL,
         CORRECT_VERIFICATION_TOOL,
         ...(this.npcRewardRequirements ? [VERIFY_NPC_REWARD_TOOL] : []),
@@ -4787,6 +4810,7 @@ export class AssistantSession {
         ...(planToolsOn ? WORK_PLAN_TOOLS : []),
         ...(this.acceptance ? ACCEPTANCE_TOOLS : []),
       ]
+        .filter((tool) => !this.eventCommandScope || eventScopeAllowsTool(tool.function.name))
         .filter((tool) => this.turnComposerMode !== "ask" || !isWriteToolName(tool.function.name))
         .map((tool) => tool.function.name === "verify_npc_reward" ? tool : injectToolReasonIntoOpenAiTool(tool));
       const toolsChars = JSON.stringify(tools).length;
@@ -4827,6 +4851,7 @@ export class AssistantSession {
         // Only exact originals and native/monster reads in a successful writer request count.
         this.originalContext!.observeDelivered(requestMessages, grounded.includedIds, this.readEvidence);
         this.readEvidence.observeDelivered(requestMessages);
+        this.readEvidence.tilesetReferences.observeImages(requestMessages, result.imageDelivery);
       } catch (cause) {
         operation.assertCurrent();
         if (isLlmAbortError(cause) || signal?.aborted) {
@@ -5043,7 +5068,7 @@ export class AssistantSession {
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
       }
 
-      const startsWriteThisRound = toolCalls.some((call) => getTool(call.function.name)?.mode === "write");
+      const startsWriteThisRound = toolCalls.some((call) => isWriteToolName(call.function.name));
       // 이번 라운드에 렌더된 비전 이미지(있으면 툴 메시지 뒤에 user 메시지로 주입).
       const roundImages: RenderedToolImage[] = [];
       const acceptanceImages: AcceptanceImageReceipt[] = [];
@@ -5068,7 +5093,7 @@ export class AssistantSession {
         if (typeof args.theme === "string" && args.theme.trim()) turnTheme = args.theme.trim();
         this.emitToolStarted(onEvent, name, args);
         await operation.wait(this.yieldForUi(signal));
-        if (tool?.mode === "write" || name === APPEARANCE_GENERATION_TOOL || name === OPENING_IMAGE_TOOL) writeToolAttempts += 1;
+        if (tool?.mode === "write" || name === APPEARANCE_GENERATION_TOOL || name === OPENING_IMAGE_TOOL || name === GAME_OVER_IMAGE_TOOL || name === IMAGE_ASSET_TOOL) writeToolAttempts += 1;
         // 프로토콜 보장: 이 호출에 대한 role:"tool" 응답을 반드시 남긴다. 응답 없이 라운드를 벗어나면
         // 세션의 영구 대화에 짝 없는 tool_calls 가 남아 **그 뒤 모든 턴**이 공급자 400 으로 죽는다
         // (실측 2026-08-30). 예외는 삼키지 않고 응답을 붙인 뒤 그대로 다시 던진다.
@@ -5105,6 +5130,8 @@ export class AssistantSession {
           } else if (parsedCall.parseError !== null) {
             toolResult = invalidJsonArgsResult(name, call.function.arguments ?? "", parsedCall.parseError);
             this.pushAudit({ kind: "status", text: `tool-args:invalid-json ${name} — ${parsedCall.parseError}` });
+          } else if (this.eventCommandScope && eventScopeRefusal(this.eventCommandScope, name, args)) {
+            toolResult = eventScopeRefusal(this.eventCommandScope, name, args)!;
           } else if (this.turnComposerMode === "ask" && isWriteToolName(name)) {
             // 노출 목록은 감사용이고 실행은 이름으로 한다 — 모델이 외워 둔 쓰기 툴을 불러도 여기서 막는다.
             toolResult = composerAskRefusal(name);
@@ -5149,6 +5176,43 @@ export class AssistantSession {
                   ...applied,
                   summary: `오프닝 그림 ${still.resourceId} 를 만들어 등록했습니다. image 장면의 resourceId 로 쓰세요.`,
                   data: { status: "generated", resourceId: still.resourceId, name: still.name },
+                }
+                : applied;
+            }
+          } else if (name === GAME_OVER_IMAGE_TOOL) {
+            const { generateGameOverStill } = await operation.wait(import("@/editor/openingImageGeneration"));
+            const still = await operation.wait(generateGameOverStill(args, { signal }));
+            if (!still.ok) {
+              toolResult = { ok: false, summary: still.summary, issues: [{ severity: "error", code: still.code, message: still.summary }] };
+            } else {
+              const applied = runTool(this.ctx, "upsert_resource", {
+                resource: { id: still.resourceId, name: still.name, kind: "backdrop", dataUrl: still.dataUrl },
+              }, { dryRun: false });
+              toolResult = applied.ok
+                ? {
+                  ...applied,
+                  summary: `게임오버 그림 ${still.resourceId} 를 만들어 등록했습니다. set_game_over의 backgroundResourceId로 연결하세요.`,
+                  data: { status: "generated", resourceId: still.resourceId, name: still.name },
+                }
+                : applied;
+            }
+          } else if (name === IMAGE_ASSET_TOOL) {
+            const { generateImageAsset } = await operation.wait(import("@/editor/imageAssetGeneration"));
+            const asset = await operation.wait(generateImageAsset(args, { signal }));
+            if (!asset.ok) {
+              toolResult = { ok: false, summary: asset.summary, issues: [{ severity: "error", code: asset.code, message: asset.summary }] };
+            } else {
+              const applied = runTool(this.ctx, "upsert_resource", {
+                resource: {
+                  id: asset.resourceId, name: asset.name, kind: asset.kind, dataUrl: asset.dataUrl,
+                  ...(asset.kind === "monster" ? { monsterMetadata: { name: asset.name, tags: asset.tags, description: asset.prompt } } : {}),
+                },
+              }, { dryRun: false });
+              toolResult = applied.ok
+                ? {
+                  ...applied,
+                  summary: `${asset.kind} 그림 ${asset.resourceId} 를 만들어 등록했습니다. ${asset.kind === "monster" ? "get_monster_resource로 상세를 조회한 뒤 enemy.monsterResourceId와 appearanceTags에 연결하세요." : "관련 DB/시스템 레코드에 resourceId를 연결하세요."}`,
+                  data: { status: "generated", kind: asset.kind, resourceId: asset.resourceId, name: asset.name, tags: asset.tags },
                 }
                 : applied;
             }
@@ -5200,7 +5264,12 @@ export class AssistantSession {
                 : { warnings: [] };
               if (isSpecGatePass(gate)) {
                 const before = this.ctx.project;
-                toolResult = runTool(this.ctx, name, args, { dryRun: false });
+                toolResult = name === EVENT_COMMAND_ASSIST_TOOL
+                  ? await operation.wait(runToolAsync(this.ctx, name, args, {
+                    dryRun: false, signal: operation.signal, config: this.config, chat: this.chat,
+                    projectScopeKey: this.contextOptions.projectScopeKey, eventCommandScope: this.eventCommandScope,
+                  }))
+                  : runTool(this.ctx, name, args, { dryRun: false });
                 if (toolResult.ok) {
                   gate.commitExpansion?.();
                   this.pruneRemovedMapSpecs(before, this.ctx.project, name === "reset_project");
@@ -5277,6 +5346,13 @@ export class AssistantSession {
             this.turnEscalatedToolNames = next.slice(-MAX_ESCALATED_TOOLS_PER_TURN);
             if (discovered.length > 0) {
               this.pushAudit({ kind: "status", text: `tools:escalated ${discovered.join(",")}` });
+            } else if (name === "find_tools" && toolResult.ok) {
+              // A successful search with no matches is the only safe signal
+              // that routing did not find the requested capability. Retry the
+              // next model round with every active schema instead of claiming
+              // the editor cannot do the work.
+              this.turnFullCatalogFallback = true;
+              this.pushAudit({ kind: "status", text: "tools:fallback full-catalog (discovery-empty)" });
             }
           }
           if (toolResult.ok && tool) recordAssistantToolDomainUse(tool.domains);
@@ -5335,10 +5411,14 @@ export class AssistantSession {
           respond(toolResult);
           this.publishAcceptance(publishToolEvent);
           for (const event of toolEvents) onEvent(event);
-          onEvent({ type: "tool_call", name, args, result: toolResult, reason: recordedReason });
+          onEvent({ type: "tool_call", name, args, result: toolResult, reason: recordedReason, visuals: this.activityVisuals(name, args, toolResult) });
           if (completedItem) {
             await operation.wait(this.maybeAutoApplyMilestone(completedItem, onEvent));
             await operation.wait(this.sweepFinishedLayers(onEvent));
+          }
+
+          if (name === "read_tileset_reference" && toolResult.ok) {
+            roundImages.push(...this.readEvidence.tilesetReferences.imagesForRead(this.ctx.project, toolResult));
           }
 
           // 비전(BUG C): '보여줘' 계열 툴이면 이미지를 렌더해 모아둔다. 렌더 실패는 무시(텍스트로 진행).
@@ -5377,7 +5457,7 @@ export class AssistantSession {
         const parts: ContentPart[] = [
           {
             type: "text",
-            text: "방금 show_tiles/show_tile_grid로 조회한 이미지입니다. 타일의 의미·라벨·용도를 판단하거나 사용자에게 설명하기 전에 반드시 아래 이미지를 눈으로 확인하세요.",
+            text: "방금 조회한 이미지입니다. 타일셋 참고문서 이미지는 조립과 배치의 참고 자료입니다. 타일 작업 전에 MD와 아래 이미지를 함께 확인하세요.",
           },
         ];
         for (const image of roundImages) {

@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+const root='tiledata/forest-villages/villages',out='output/evidence/village-ten';
+fs.mkdirSync(root,{recursive:true});
+const plans=JSON.parse(fs.readFileSync(out+'/plans.json')),p=JSON.parse(fs.readFileSync(out+'/editor-saved-project.json')),proof=JSON.parse(fs.readFileSync(out+'/editor-proof.json'));
+const ts=p.tilesets.forest_high_cliff_river,asset=p.assets.uploaded[ts.image.id];
+fs.writeFileSync(root+'/tileset.json',JSON.stringify(ts,null,2));
+const atlas=fs.readFileSync(`.oprn-projects/oprn-hill-forest-harmony-20260918-a4e1/assets/${asset.ref.sha256}.png`);
+if(createHash('sha256').update(atlas).digest('hex')!==asset.ref.sha256)throw Error('Atlas hash');fs.writeFileSync(root+'/atlas.png',atlas);
+const entries=plans.map(plan=>{const m=p.maps[plan.map.id],name=plan.spec.slug;fs.writeFileSync(`${root}/${name}.json`,JSON.stringify(m));return{mapId:m.id,name:m.name,theme:plan.spec.theme,width:m.width,height:m.height,map:`${name}.json`,image:`${name}.png`,houses:plan.houses.length,forestCells:plan.forest.filter(Boolean).length,reviewStatus:'awaiting-user-review'};});
+fs.writeFileSync(root+'/manifest.json',JSON.stringify({sourceProjectId:'oprn-hill-forest-harmony-20260918-a4e1',tileSize:16,tileset:'tileset.json',atlas:'atlas.png',atlasSha256:asset.ref.sha256,entries},null,2));
+fs.writeFileSync(root+'/validation.json',JSON.stringify({editor:proof,remote:JSON.parse(fs.readFileSync(out+'/remote-proof.json')),local:JSON.parse(fs.readFileSync(out+'/reload-proof.json')),stairs:JSON.parse(fs.readFileSync(out+'/stairs-proof.json')),stairsRemote:JSON.parse(fs.readFileSync(out+'/stairs-remote-proof.json'))},null,2));
+fs.writeFileSync(root+'/README.md',`# 마을 10종 · 검수 후보\n\n[이미지 갤러리](gallery.html) · [전체 비교](contact-sheet.jpg) · [맵/이미지 목록](manifest.json) · [저장 및 연결 검증](validation.json)\n\n모두 80×72칸, 한 칸 16×16px. 기존 승인 타일셋을 재사용했고 새 픽셀 에셋은 생성하지 않았다. 각 JSON은 실제 편집기에 저장한 맵이다. 10종을 추가할 때 원본 19개 맵은 보존했다. 그 뒤 요청받은 솔바람 협곡 윤곽 개정은 별도 canyon-natural 자료로 기록했다. 아직 사용자 미술 검수를 통과한 것은 아니다.\n\n|마을|구성|집|수관 면적|\n|---|---|---:|---:|\n${entries.map(e=>`|[${e.name}](${e.image})|${e.theme}|${e.houses}|${(100*e.forestCells/5760).toFixed(1)}%|`).join('\n')}\n\n재사용: 프로젝트에 tileset.json의 타일셋과 atlas.png를 업로드 에셋으로 함께 등록한 다음 원하는 맵 JSON을 맵 트리에 추가한다. ID 충돌 시 맵·타일셋·이미지 참조를 함께 바꾼다. 절대 파일 경로 및 원격 인증 정보는 필요하지 않다. 스크린샷은 실제 편집기 화면을 확대율 1에서 잘라낸 것이다.\n`);
+fs.writeFileSync(root+'/gallery.html',`<!doctype html><html lang="ko"><meta charset="utf-8"><title>숲 마을 10종</title><style>body{background:#14241e;color:#eee;font:16px system-ui;margin:32px}main{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}img{width:100%;image-rendering:pixelated}article{background:#20352a;padding:16px}a{color:#bdedc4}h2{margin:0 0 8px}@media(max-width:800px){main{grid-template-columns:1fr}}</style><h1>숲 마을 10종 · 실제 에디터 화면</h1><p>80×72칸 · 16px 타일 · 사용자 검수 대기. 이미지를 누르면 원본 크기로 열립니다.</p><main>${entries.map((e,i)=>`<article><h2>${i+1}. ${e.name}</h2><p>${e.theme}</p><a href="${e.image}"><img src="${e.image}"></a><p><a href="${e.map}">맵 JSON</a></p></article>`).join('')}</main></html>`);
+console.log('Archived',entries.length);

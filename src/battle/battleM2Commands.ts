@@ -18,6 +18,9 @@ export type M2BattleCommand =
   | { readonly kind: "callCommonEvent"; readonly commonEventId: string };
 
 export function parseM2BattleCommand(command: M2Command): M2BattleCommand | undefined {
+  // Persisted commands can predate shape validation. Reject malformed payloads
+  // rather than crashing or interpreting missing numeric fields as a lethal zero.
+  if (!command.fields || typeof command.fields !== "object" || Array.isArray(command.fields)) return undefined;
   switch (command.commandId) {
     case "m2-098-change-enemy-hp":
       return {

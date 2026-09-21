@@ -607,13 +607,14 @@
 }
 
 /* ── 액션 버튼 — 평소 숨기고 hover/선택 시만 ─────────────────────── */
-.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-actions {
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-actions {
   opacity: 0;
   transition: opacity 0.12s;
 }
 
-.event-contents-fieldset .cmd-list .cmd-item > .cmd-head:hover > .cmd-actions,
-.event-contents-fieldset .cmd-list .cmd-item.selected > .cmd-head > .cmd-actions {
+.event-contents-fieldset .cmd-list .cmd-item:hover > .cmd-actions,
+.event-contents-fieldset .cmd-list .cmd-item.selected > .cmd-actions,
+.event-contents-fieldset .cmd-list .cmd-item:focus-within > .cmd-actions {
   opacity: 1;
 }
 
@@ -623,9 +624,14 @@
   outline-offset: 1px;
 }
 
-.event-contents-fieldset .cmd-list .cmd-item > .cmd-head:focus-visible > .cmd-actions,
 .event-contents-fieldset .cmd-list .cmd-item > .cmd-head:focus-visible > .cmd-drag-handle {
   opacity: 1;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-actions button:focus-visible,
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-drag-handle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {

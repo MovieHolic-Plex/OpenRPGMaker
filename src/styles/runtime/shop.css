@@ -74,6 +74,50 @@
   box-shadow: var(--runtime-glass-shadow);
   overflow: hidden;
 }
+/* Author-selected shop surfaces. The data model keeps the same commerce flow;
+   these presets only rearrange the existing list/detail components. */
+.runtime-shop-preset-grid .runtime-shop-item-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--shop-space-2);
+  padding: var(--shop-space-3);
+}
+.runtime-shop-preset-grid .runtime-shop-item-row {
+  min-height: 7rem;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: var(--shop-space-2);
+  text-align: center;
+}
+.runtime-shop-preset-grid .runtime-shop-item-icon { margin-inline: auto; }
+.runtime-shop-preset-grid .runtime-shop-item-price { margin-left: 0; }
+.runtime-shop-preset-compare .runtime-shop-detail-panel { border-left: 2px solid var(--shop-accent); }
+.runtime-shop-preset-compare .runtime-shop-comparison-summary { display: block; }
+.runtime-shop-preset-compare .runtime-shop-item-row { border-left: 3px solid var(--shop-accent); }
+.runtime-shop-preset-compare .runtime-shop-detail-panel::before {
+  content: "장비 비교 모드";
+  display: block;
+  margin-bottom: var(--shop-space-2);
+  color: var(--shop-accent);
+  font-size: var(--shop-text-small);
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+.runtime-shop-preset-cart .runtime-shop-item-row::after {
+  content: "담기";
+  margin-left: auto;
+  color: var(--shop-accent);
+  font-size: var(--shop-text-small);
+  font-weight: 700;
+}
+.runtime-shop-preset-cart .runtime-shop-item-row { padding-right: var(--shop-space-5); }
+.runtime-shop-preset-cart .runtime-shop-item-row.selected::after { content: "담김 ✓"; }
+.runtime-shop-preset-cart .runtime-shop-prompt-panel::before {
+  content: "장바구니에서 여러 상품을 확인한 뒤 결제하세요";
+  color: var(--shop-accent);
+  font-size: var(--shop-text-small);
+}
 /* Override only the legacy 720px shop cap in playSurface.css, not stage geometry. */
 .player-layout .play-viewport > .runtime-shop-overlay > .runtime-shop-items-shell.runtime-shop-shell {
   width: min(var(--shop-counter-width), 100%);
@@ -615,3 +659,144 @@
   .runtime-shop-gold-value.is-bumped,
   .runtime-shop-gold-delta { animation: none; }
 }
+
+/* Preset overrides come last so they win over the compact/mobile layout rules. */
+.runtime-shop-overlay.runtime-shop-preset-grid .runtime-shop-item-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--shop-space-2);
+  padding: var(--shop-space-3);
+}
+.runtime-shop-overlay.runtime-shop-preset-grid .runtime-shop-item-row {
+  min-height: 7rem;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: var(--shop-space-2);
+  text-align: center;
+}
+.runtime-shop-overlay.runtime-shop-preset-grid .runtime-shop-item-icon { margin-inline: auto; }
+.runtime-shop-overlay.runtime-shop-preset-grid .runtime-shop-item-price { margin-left: 0; }
+.runtime-shop-overlay.runtime-shop-preset-tabs .runtime-shop-list-panel::before { content: "전체   무기   방어구   아이템   기타"; display:block; padding:var(--shop-space-3); color:var(--shop-accent); font-weight:800; border-bottom:1px solid var(--shop-line); }
+.runtime-shop-overlay.runtime-shop-preset-split .runtime-shop-main { grid-template-columns: 1fr 1fr; }
+.runtime-shop-overlay.runtime-shop-preset-split .runtime-shop-side { border-left:2px solid var(--shop-accent); }
+.runtime-shop-overlay.runtime-shop-preset-cart .runtime-shop-item-row { border-left:3px solid var(--shop-accent); }
+.runtime-shop-overlay.runtime-shop-preset-stock .runtime-shop-item-row::before { content:"재고 3 · 오늘 할인"; color:var(--shop-gain); font-size:var(--shop-text-small); }
+.runtime-shop-overlay.runtime-shop-preset-stock .runtime-shop-gold-panel { box-shadow: inset 0 -3px 0 var(--shop-accent); }
+.runtime-shop-overlay.runtime-shop-preset-story .runtime-shop-topbar::after { content:"어서 오세요. 오늘은 특별 추천 상품이 있습니다."; display:block; max-width:16rem; padding:var(--shop-space-2) var(--shop-space-3); color:var(--shop-ink-dim); background:var(--shop-inset); border-radius:var(--shop-radius-small); font-size:var(--shop-text-small); }
+.runtime-shop-overlay.runtime-shop-preset-tabs { --shop-accent:#6c8de8; --shop-accent-soft:#202b55; }
+.runtime-shop-overlay.runtime-shop-preset-tabs .runtime-shop-topbar { flex-wrap:wrap; }
+.runtime-shop-overlay.runtime-shop-preset-tabs .runtime-shop-list-panel { order:2; }
+.runtime-shop-overlay.runtime-shop-preset-grid { --shop-accent:#d49a54; --shop-accent-soft:#49351e; }
+.runtime-shop-overlay.runtime-shop-preset-grid .runtime-shop-main { grid-template-columns: minmax(0,1.4fr) minmax(17rem,.8fr); }
+.runtime-shop-overlay.runtime-shop-preset-compare { --shop-accent:#71c6a1; --shop-accent-soft:#193d36; }
+.runtime-shop-overlay.runtime-shop-preset-compare .runtime-shop-main { grid-template-columns:minmax(16rem,.8fr) minmax(0,1.4fr); }
+.runtime-shop-overlay.runtime-shop-preset-compare .runtime-shop-side { order:-1; }
+.runtime-shop-overlay.runtime-shop-preset-split { --shop-accent:#d87862; --shop-accent-soft:#48251f; }
+.runtime-shop-overlay.runtime-shop-preset-split .runtime-shop-topbar { background:#25191c; }
+.runtime-shop-overlay.runtime-shop-preset-cart { --shop-accent:#c9a35d; --shop-accent-soft:#453719; }
+.runtime-shop-overlay.runtime-shop-preset-cart .runtime-shop-prompt-panel { background:#292218; }
+.runtime-shop-overlay.runtime-shop-preset-stock { --shop-accent:#8fc36c; --shop-accent-soft:#243a23; }
+.runtime-shop-overlay.runtime-shop-preset-stock .runtime-shop-topbar { border-bottom:3px solid var(--shop-accent); }
+.runtime-shop-overlay.runtime-shop-preset-story { --shop-accent:#d88bba; --shop-accent-soft:#432b44; }
+.runtime-shop-overlay.runtime-shop-preset-story .runtime-shop-topbar { min-height:7.5rem; align-items:flex-start; }
+.runtime-shop-overlay.runtime-shop-preset-story .runtime-shop-main { grid-template-columns:1fr; }
+.runtime-shop-overlay.runtime-shop-preset-story .runtime-shop-side { display:grid; grid-template-columns:1fr 1fr; }
+
+/* Final layout corrections for the authored presets. */
+.runtime-shop-overlay.runtime-shop-preset-split .runtime-shop-brand { flex:0 0 auto; min-width:12rem; }
+.runtime-shop-overlay.runtime-shop-preset-story .runtime-shop-side { display:flex; flex-direction:column; }
+.runtime-shop-overlay.runtime-shop-preset-story .runtime-shop-detail-name { white-space:normal; overflow-wrap:anywhere; }
+
+/* The three authored archetypes have different information hierarchies, not just
+   different colors. Simple shops deliberately remove the secondary panes. */
+.runtime-shop-overlay.runtime-shop-preset-classic .runtime-shop-detail-panel,
+.runtime-shop-overlay.runtime-shop-preset-classic .runtime-shop-party-panel { display:none; }
+.runtime-shop-overlay.runtime-shop-preset-classic .runtime-shop-main { display:block; }
+.runtime-shop-overlay.runtime-shop-preset-classic .runtime-shop-items-shell { width:min(680px,100%); }
+.runtime-shop-overlay.runtime-shop-preset-classic .runtime-shop-help-line { display:none; }
+.runtime-shop-overlay.runtime-shop-preset-classic .runtime-shop-detail-open { display:none; }
+
+.runtime-shop-story-actions { display:flex; gap:var(--shop-space-2); padding:var(--shop-space-3) var(--shop-space-4); border-bottom:1px solid var(--shop-line); background:var(--shop-inset); }
+.runtime-shop-story-actions button { flex:1; border:1px solid var(--shop-line); background:var(--shop-card); color:var(--shop-ink); padding:var(--shop-space-2) var(--shop-space-3); }
+.runtime-shop-story-actions button:hover, .runtime-shop-story-actions button:focus-visible { border-color:var(--shop-accent); color:var(--shop-accent); }
+.runtime-shop-overlay.runtime-shop-preset-story .runtime-shop-detail-panel,
+.runtime-shop-overlay.runtime-shop-preset-story .runtime-shop-party-panel { display:none; }
+.runtime-shop-overlay.runtime-shop-preset-story .runtime-shop-main { display:block; }
+.runtime-shop-overlay.runtime-shop-preset-cart .runtime-shop-item-row::after { content:none; }
+.runtime-shop-overlay.runtime-shop-preset-stock .runtime-shop-item-row::before { content:none; }
+.runtime-shop-overlay.runtime-shop-preset-split { --shop-accent:#c99f98; --shop-accent-soft:#654e4f; }
+.runtime-shop-overlay.runtime-shop-preset-cart { --shop-accent:#c8b58b; --shop-accent-soft:#665e49; }
+.runtime-shop-overlay.runtime-shop-preset-stock { --shop-accent:#adc09d; --shop-accent-soft:#526651; }
+.runtime-shop-overlay.runtime-shop-preset-story { --shop-accent:#c7a9bf; --shop-accent-soft:#655465; }
+.runtime-shop-overlay.runtime-shop-preset-baram {
+  --shop-surface:#24344b; --shop-surface-flat:#19263a; --shop-inset:#162236;
+  --shop-card:#304664; --shop-line:#5d789b; --shop-line-strong:#8ea8c5;
+  --shop-ink:#eef5ff; --shop-ink-dim:#b9c9de; --shop-accent:#d3b16e; --shop-accent-soft:#4c4d51;
+}
+.runtime-shop-overlay.runtime-shop-preset-baram { background:#101722; }
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-items-shell { width:min(560px,100%); }
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-topbar { padding:var(--shop-space-3) var(--shop-space-4); }
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-brand-sub,
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-detail-panel,
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-party-panel,
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-gold-panel { display:none; }
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-main { display:block; }
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-list-panel { border:0; }
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-item-list { padding:var(--shop-space-2); }
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-item-row { border-radius:0; min-height:36px; padding:var(--shop-space-2) var(--shop-space-3); }
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-item-row.selected { background:var(--shop-accent-soft); border-color:var(--shop-accent); }
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-prompt-panel { padding:var(--shop-space-2) var(--shop-space-4); }
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-help-line,
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-keyhints { display:none; }
+
+/* Each authored preset owns its full surface palette. These are opaque, deliberate
+   materials rather than the shared purple glass defaults. */
+.runtime-shop-overlay.runtime-shop-preset-classic {
+  --shop-surface:#29313d; --shop-surface-flat:#202732; --shop-inset:#1b222c;
+  --shop-card:#333d4b; --shop-line:#566170; --shop-line-strong:#778492;
+  --shop-ink:#edf0f2; --shop-ink-dim:#b5bec6; --shop-accent:#a9b7c4; --shop-accent-soft:#46515d;
+}
+.runtime-shop-overlay.runtime-shop-preset-tabs {
+  --shop-surface:#293737; --shop-surface-flat:#202d2d; --shop-inset:#1a2525;
+  --shop-card:#354747; --shop-line:#617473; --shop-line-strong:#82918f;
+  --shop-ink:#edf2f0; --shop-ink-dim:#b5c1bf; --shop-accent:#9ab6af; --shop-accent-soft:#465b58;
+}
+.runtime-shop-overlay.runtime-shop-preset-grid {
+  --shop-surface:#3a3328; --shop-surface-flat:#2d271f; --shop-inset:#231f1a;
+  --shop-card:#50483b; --shop-line:#817667; --shop-line-strong:#a79580;
+  --shop-ink:#f2eee5; --shop-ink-dim:#c8beae; --shop-accent:#c5aa7c; --shop-accent-soft:#645640;
+}
+.runtime-shop-overlay.runtime-shop-preset-compare {
+  --shop-surface:#2b3b39; --shop-surface-flat:#202f2d; --shop-inset:#182522;
+  --shop-card:#3a514c; --shop-line:#68827a; --shop-line-strong:#8da79b;
+  --shop-ink:#edf3ef; --shop-ink-dim:#b7c8c0; --shop-accent:#9bc0ae; --shop-accent-soft:#4b665c;
+}
+.runtime-shop-overlay.runtime-shop-preset-split {
+  --shop-surface:#3b3031; --shop-surface-flat:#2d2425; --shop-inset:#241c1d;
+  --shop-card:#504044; --shop-line:#806a6d; --shop-line-strong:#a78c8c;
+  --shop-ink:#f2eded; --shop-ink-dim:#c8babb; --shop-accent:#c99f98; --shop-accent-soft:#654e4f;
+}
+.runtime-shop-overlay.runtime-shop-preset-cart {
+  --shop-surface:#3a372d; --shop-surface-flat:#2d2a23; --shop-inset:#24221d;
+  --shop-card:#504b3d; --shop-line:#817968; --shop-line-strong:#a79c86;
+  --shop-ink:#f1efe7; --shop-ink-dim:#c8c1ae; --shop-accent:#c8b58b; --shop-accent-soft:#665e49;
+}
+.runtime-shop-overlay.runtime-shop-preset-stock {
+  --shop-surface:#304033; --shop-surface-flat:#253126; --shop-inset:#1d271e;
+  --shop-card:#405545; --shop-line:#708573; --shop-line-strong:#93a895;
+  --shop-ink:#edf1eb; --shop-ink-dim:#bbc6b9; --shop-accent:#adc09d; --shop-accent-soft:#526651;
+}
+.runtime-shop-overlay.runtime-shop-preset-story {
+  --shop-surface:#3b3440; --shop-surface-flat:#2e2832; --shop-inset:#241f28;
+  --shop-card:#514854; --shop-line:#827584; --shop-line-strong:#a392a4;
+  --shop-ink:#f1edf2; --shop-ink-dim:#c7bdc9; --shop-accent:#c7a9bf; --shop-accent-soft:#655465;
+}
+.runtime-shop-preset-tabs-nav { display:flex; gap:4px; flex:1 0 100%; order:3; padding-top:var(--shop-space-2); }
+.runtime-shop-preset-tabs-nav button { border:0; border-bottom:2px solid transparent; background:transparent; color:var(--shop-ink-dim); padding:var(--shop-space-2) var(--shop-space-3); }
+.runtime-shop-preset-tabs-nav button.is-active { color:var(--shop-ink); border-color:var(--shop-accent); }
+.runtime-shop-grid-heading,.runtime-shop-compare-heading { display:flex; justify-content:space-between; align-items:center; padding:var(--shop-space-3) var(--shop-space-4); border-bottom:1px solid var(--shop-line); }
+.runtime-shop-grid-heading span,.runtime-shop-compare-heading span { color:var(--shop-ink-dim); font-size:var(--shop-text-small); }
+.runtime-shop-compare-heading { grid-column:1 / -1; flex-direction:column; align-items:flex-start; }
+.runtime-shop-story-dialogue { display:flex; gap:var(--shop-space-3); align-items:center; padding:var(--shop-space-3) var(--shop-space-5); background:var(--shop-inset); color:var(--shop-ink-dim); }
+.runtime-shop-story-dialogue strong { color:var(--shop-accent); }

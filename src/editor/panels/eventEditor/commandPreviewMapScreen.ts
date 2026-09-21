@@ -10,6 +10,7 @@
  * `screenEffectStage`(미니 모니터 + 재생)가 그린다 — 무대를 둠으로 나누지 않는다.
  */
 import { el } from "@/util/dom";
+import { CAMERA_ZOOM_LIMITS } from "@/player/playSceneCamera";
 import { store } from "@/project/store";
 import { tilesetImageUrl } from "@/editor/tilesetImage";
 import type { Command, M2CommandValue } from "@/project/types";
@@ -116,7 +117,7 @@ export function changeTileChipStage(cmd: Extract<Command, { kind: "changeTile" }
             }),
             el("span", {
               class: "ecp-tile-chipsel-place",
-              text: `${map?.name || cmd.mapId || "(맵)"} · ${cmd.layer === "upper" ? "덧그림" : "바닥"} (${cmd.x}, ${cmd.y})`,
+              text: `${map?.name || cmd.mapId || "(맵)"} · ${cmd.layer === "upper" ? "상위" : "바닥"} (${cmd.x}, ${cmd.y})`,
             }),
           ],
         }),
@@ -328,7 +329,8 @@ function frameZoom(mode: CameraMode, zoom: number, progress: number): number {
 
 function clampZoom(value: number): number {
   if (!Number.isFinite(value) || value <= 0) return 1;
-  return Math.max(0.25, Math.min(4, value));
+  // 상한 정본은 런타임과 같다 — 여기서 따로 자르면 미리보기가 게임과 다른 배율을 보여준다.
+  return Math.max(CAMERA_ZOOM_LIMITS.min, Math.min(CAMERA_ZOOM_LIMITS.max, value));
 }
 
 function fieldValue(cmd: M2Command, key: string): M2CommandValue | undefined {

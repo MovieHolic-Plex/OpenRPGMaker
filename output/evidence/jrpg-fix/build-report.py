@@ -84,7 +84,7 @@ else:md+='최종 런타임 검증 진행 중.\n'
 md+='''
 ## 저장과 검증 한계
 
-원격 저장 활성 상태의 store.flush 이후 Supabase HTTP 200으로 해당 프로젝트를 다시 조회하고 store.reloadFromRemote를 실행했다. 첫 비교에서 레거시 대사 lines→body와 빈 상점 분기의 로드 정규화 차이가 있었으며, 로드한 정규 데이터를 저장한 뒤 세 값을 다시 비교했다.
+원격 저장 활성 상태의 store.flush 이후 LegacyDb HTTP 200으로 해당 프로젝트를 다시 조회하고 store.reloadFromRemote를 실행했다. 첫 비교에서 레거시 대사 lines→body와 빈 상점 분기의 로드 정규화 차이가 있었으며, 로드한 정규 데이터를 저장한 뒤 세 값을 다시 비교했다.
 
 '''+f"최종 비교 일치: `{proof['match']}`. 브라우저 저장 전 / 원격 / 브라우저 재로드 SHA-256: `{proof['hashes']['remote']}`. 전체 근거는 `review/persistence.json`.\n\n"
 md+='원격 재확인에서도 출하 로드·직렬화 정규화를 거친 해시가 동일했다(`review/remote-recheck.json`, HTTP 200). 원시 행의 차이는 에디터 재로드 시 추가된 빈 상점 분기 기본값이었다.\n\n'

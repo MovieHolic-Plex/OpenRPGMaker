@@ -6,6 +6,14 @@ export const PLACE_CATEGORIES = ['마을·도시', '자연', '건물·시설', '
 export const PLACE_ENVIRONMENTS = ['실외', '건물 내부', '지하', '수중'] as const;
 export type PlaceClassification = { style: string; category: string; environment: string; purposes: string[] };
 export const placeLibraryFilters = { style: '', category: '', environment: '', purpose: '', search: '' };
+/** 0건 화면의 탈출구 — 분류 필터를 손으로 되돌리게 두지 않는다. */
+export function resetPlaceLibraryFilters(): void {
+  placeLibraryFilters.style = '';
+  placeLibraryFilters.category = '';
+  placeLibraryFilters.environment = '';
+  placeLibraryFilters.purpose = '';
+  placeLibraryFilters.search = '';
+}
 export function classificationTags(value: PlaceClassification): string[] {
   return [`그림체:${value.style}`, `장소유형:${value.category}`, `공간형태:${value.environment}`, ...value.purposes.map(p => `용도:${p.trim()}`).filter(p => p !== '용도:')];
 }

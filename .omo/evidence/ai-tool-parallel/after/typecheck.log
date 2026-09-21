@@ -1,0 +1,7 @@
+
+> oprn@0.6.0 gates
+> node scripts/verify-gates.mjs --only typecheck
+
+typecheck:app  exit=0  errors=0  files=0
+
+기준선 대비 회귀 없음 (/home/main/.codex/worktrees/ab15/rpg-zzu/.omo/gates-baseline.json)

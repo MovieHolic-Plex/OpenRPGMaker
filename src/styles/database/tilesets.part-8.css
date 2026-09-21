@@ -1,0 +1,207 @@
+@media (max-width: 600px) {
+  .tileset-ai-review-header {
+    display: grid;
+  }
+
+  .tileset-ai-review-header .tileset-ai-review-analyze,
+  .tileset-ai-review-card-actions {
+    width: 100%;
+  }
+
+  .tileset-ai-review-card-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .tileset-ai-review-card-actions .subtle {
+    grid-column: 1 / -1;
+  }
+
+  .tileset-knowledge-template-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.tileset-layer-choice.active,
+.tileset-passage-choice.active {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.tileset-rule-note {
+  color: var(--text-2, #8b93a5);
+  font-size: 12px;
+  line-height: 1.4;
+  margin-top: 4px;
+}
+
+.tileset-rule-warning {
+  color: #c9803a;
+  font-size: 12px;
+  line-height: 1.4;
+  margin-top: 4px;
+}
+
+.tileset-review-wizard {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow-modal);
+  color: var(--text-1);
+  padding: var(--space-3);
+  z-index: var(--z-modal-top);
+}
+
+.tileset-review-title,
+.palette-preset-header strong {
+  font-weight: 700;
+}
+
+.palette-preset-name,
+.palette-preset-slots label {
+  display: grid;
+  gap: 4px;
+}
+
+.palette-preset-name input,
+.palette-preset-slots input,
+.palette-preset-slots select {
+  min-width: 0;
+}
+
+.palette-preset-header,
+.tileset-review-header,
+.tileset-review-card-actions,
+.tileset-review-overlay-tabs {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+
+.tileset-review-header {
+  justify-content: space-between;
+}
+
+.tileset-review-wizard-host {
+  background: var(--bg-glass);
+  box-shadow: var(--shadow-modal);
+  inset: var(--space-5);
+  position: fixed;
+  z-index: var(--z-modal-overlay);
+}
+
+.tileset-review-wizard {
+  display: grid;
+  gap: var(--space-3);
+  max-height: calc(100vh - (2 * var(--space-5)));
+  overflow: auto;
+}
+
+.tileset-review-overlay-grid {
+  overflow: auto;
+  position: relative;
+  width: min(100%, var(--tileset-width));
+}
+
+.tileset-review-overlay-grid img {
+  display: block;
+  width: var(--tileset-width);
+}
+
+.tileset-review-overlay-cells {
+  display: grid;
+  grid-template-columns: repeat(var(--tileset-cols), var(--tileset-cell));
+  inset: 0;
+  position: absolute;
+}
+
+.tileset-review-overlay-cell {
+  align-items: center;
+  border: 1px solid var(--pixel-grid);
+  color: var(--bg-base);
+  display: flex;
+  font-size: 10px;
+  font-weight: 700;
+  justify-content: center;
+  min-height: var(--tileset-cell);
+}
+
+.tileset-review-overlay-cell.mark-o {
+  background: var(--success-muted);
+}
+
+.tileset-review-overlay-cell.mark-x {
+  background: var(--danger-muted);
+}
+
+.tileset-review-overlay-cell.mark-star {
+  background: var(--accent-muted);
+}
+
+.tileset-review-overlay-cell.has-group {
+  outline: 2px solid var(--accent-border);
+  outline-offset: -2px;
+}
+
+.tileset-review-queue-card {
+  align-items: center;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  padding: var(--space-2);
+}
+
+.tileset-review-queue-card.empty {
+  display: block;
+}
+
+.tileset-review-tile-thumb {
+  image-rendering: pixelated;
+}
+
+.palette-preset-editor {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.palette-preset-list {
+  display: grid;
+  gap: 4px;
+}
+
+.palette-preset-row {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.palette-preset-row.active {
+  border-color: var(--accent-border);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.palette-preset-badge {
+  border: 1px solid var(--border-subtle, #cfd6e3);
+  border-radius: 4px;
+  font-size: 11px;
+  padding: 1px 4px;
+}
+
+.palette-preset-badge.locked,
+.palette-preset-lock.locked {
+  border-color: #c9803a;
+  color: #9a5d22;
+}
+
+.palette-preset-detail,
+.palette-preset-slots {
+  display: grid;
+  gap: 8px;
+}

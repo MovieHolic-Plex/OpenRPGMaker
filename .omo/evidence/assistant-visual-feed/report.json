@@ -1,0 +1,53 @@
+{
+  "checks": [
+    {
+      "label": "Real tool adapter creates immutable execution snapshots",
+      "ok": true
+    },
+    {
+      "label": "Default feed includes real asset images",
+      "ok": true
+    },
+    {
+      "label": "Successful monster update also has a before/draft pair",
+      "ok": true
+    },
+    {
+      "label": "Team roster shows target thumbnails",
+      "ok": true
+    },
+    {
+      "label": "Mounted image URLs stay valid after decoding and scrolling",
+      "ok": true
+    },
+    {
+      "label": "Click opens the captured before and draft pair",
+      "ok": true
+    },
+    {
+      "label": "Escape closes only image viewer",
+      "ok": true
+    },
+    {
+      "label": "Trace retains raw inputs with visual evidence",
+      "ok": true
+    },
+    {
+      "label": "Images persist separately as blobs",
+      "ok": true
+    },
+    {
+      "label": "No horizontal overflow in conversation",
+      "ok": true
+    },
+    {
+      "label": "Captured image bytes survive same-origin document reload",
+      "ok": true
+    },
+    {
+      "label": "No browser runtime errors",
+      "ok": true
+    }
+  ],
+  "errors": []
+}

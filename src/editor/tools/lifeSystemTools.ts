@@ -1,9 +1,10 @@
 // Life-system authored-data facades. The Database 생활/날씨/가축 tabs persist these
 // records; without typed tools the assistant reports the editor cannot author them.
-import { normalizeFarmAnimalSpeciesRecords } from "@/project/p1FoundationRecords";
+import { normalizeDailyWeatherConfig, normalizeFarmAnimalSpeciesRecords } from "@/project/p1FoundationRecords";
 import { normalizeLifeSkillRecord } from "@/project/skillModel";
 import type { DailyWeatherConfig, FarmAnimalSpeciesRecord, LifeSkillRecord, Project } from "@/project/types";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { mergeRecordPatch } from "./mergeRecordPatch";
 
 const LIFE_SKILL_TYPES = ["farming", "mining", "foraging", "fishing", "combat"] as const;
 type LifeSkillType = (typeof LIFE_SKILL_TYPES)[number];
@@ -25,15 +26,16 @@ function upsertById<T extends { id: string }>(list: T[], record: T): T[] {
   return list.map((entry, entryIndex) => (entryIndex === index ? record : entry));
 }
 
-function parseLifeSkill(value: unknown): LifeSkillRecord {
+function parseLifeSkill(value: unknown, existing?: LifeSkillRecord): LifeSkillRecord {
   const identity = requireIdName(value, "skill");
-  const record = value as Record<string, unknown>;
+  const record = mergeRecordPatch(existing, value as Record<string, unknown>);
   const skillType = record.skillType;
   if (typeof skillType !== "string" || !LIFE_SKILL_TYPES.includes(skillType as LifeSkillType)) {
     throw new ToolError(`skill.skillType은 ${LIFE_SKILL_TYPES.join("/")} 중 하나여야 합니다.`, { code: "invalid-args" });
   }
   const maxLevel = typeof record.maxLevel === "number" ? record.maxLevel : 10;
   return normalizeLifeSkillRecord({
+    ...existing,
     id: identity.id,
     name: identity.name,
     skillType: skillType as LifeSkillType,
@@ -41,15 +43,16 @@ function parseLifeSkill(value: unknown): LifeSkillRecord {
   });
 }
 
-function parseAnimalSpecies(value: unknown): FarmAnimalSpeciesRecord {
+function parseAnimalSpecies(value: unknown, existing?: FarmAnimalSpeciesRecord): FarmAnimalSpeciesRecord {
   const identity = requireIdName(value, "farmAnimalSpecies");
-  const record = value as Record<string, unknown>;
+  const record = mergeRecordPatch(existing, value as Record<string, unknown>);
   const feedItemId = typeof record.feedItemId === "string" ? record.feedItemId : "";
   const productItemId = typeof record.productItemId === "string" ? record.productItemId : "";
   if (!feedItemId || !productItemId) {
     throw new ToolError("farmAnimalSpecies에 feedItemId와 productItemId가 필요합니다.", { code: "invalid-args" });
   }
   const normalizedList = normalizeFarmAnimalSpeciesRecords([{
+    ...existing,
     id: identity.id,
     name: identity.name,
     feedItemId,
@@ -87,7 +90,8 @@ const upsertLifeSkill: ToolDefinition = {
     additionalProperties: false,
   },
   run(draft, args): ToolExecResult {
-    const skill = parseLifeSkill(args.skill);
+    const identity = requireIdName(args.skill, "skill");
+    const skill = parseLifeSkill(args.skill, draft.database.lifeSkills?.find((entry) => entry.id === identity.id));
     draft.database.lifeSkills = upsertById(draft.database.lifeSkills ?? [], skill);
     return { summary: `생활 스킬 ${skill.name}`, data: { skill } };
   },
@@ -138,11 +142,12 @@ const upsertLifeSystem: ToolDefinition = {
   run(draft: Project, args): ToolExecResult {
     const changed: string[] = [];
     if (args.dailyWeather && typeof args.dailyWeather === "object" && !Array.isArray(args.dailyWeather)) {
-      draft.system.dailyWeather = structuredClone(args.dailyWeather) as DailyWeatherConfig;
+      draft.system.dailyWeather = normalizeDailyWeatherConfig(mergeRecordPatch(draft.system.dailyWeather, args.dailyWeather as Record<string, unknown>) as unknown as DailyWeatherConfig);
       changed.push("날씨");
     }
     if (args.farmAnimalSpecies) {
-      const species = parseAnimalSpecies(args.farmAnimalSpecies);
+      const identity = requireIdName(args.farmAnimalSpecies, "farmAnimalSpecies");
+      const species = parseAnimalSpecies(args.farmAnimalSpecies, draft.database.farmAnimalSpecies?.find((entry) => entry.id === identity.id));
       draft.database.farmAnimalSpecies = upsertById(draft.database.farmAnimalSpecies ?? [], species);
       changed.push(`가축=${species.id}`);
     }

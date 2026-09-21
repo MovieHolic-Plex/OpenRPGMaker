@@ -396,7 +396,7 @@ try {
   assert.deepEqual(results.sourceHashesAfter, results.sourceHashes, 'Rendered source changed during QA');
   results.sourceHashesStable = true;
   results.network = { forwardedOrigin: base, forwardedTarget: `http://${host}:${port}`, externalRequestsForwarded: 0, remotePersistenceEnabled: false, blockedWriteAttempts: results.blockedRequests.filter(r => !['GET', 'HEAD', 'OPTIONS'].includes(r.method)) };
-  assert.equal(results.blockedRequests.filter(r => r.origin.includes('supabase') && !['GET', 'HEAD', 'OPTIONS'].includes(r.method)).length, 0, 'Unexpected attempted Supabase write');
+  assert.equal(results.blockedRequests.filter(r => r.origin.includes('legacyDb') && !['GET', 'HEAD', 'OPTIONS'].includes(r.method)).length, 0, 'Unexpected attempted LegacyDb write');
   check(results.errors.length === 0, { kind: 'pageerror', errors: results.errors });
   results.status = results.defects.length ? 'product-defects' : 'passed';
 } catch (error) {

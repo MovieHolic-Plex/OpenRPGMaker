@@ -19,7 +19,7 @@ export const CRAFT_RECIPE_PARAMS: JsonSchema = {
   properties: {
     recipe: {
       type: "object",
-      description: "제작 레시피 1건. 같은 id 가 있으면 통째로 교체한다.",
+      description: "제작 레시피 1건. 기존 id는 전달 필드만 수정하고 생략한 필드는 보존한다. ingredients 배열은 전달하면 교체한다. 신규 레시피에는 outputItemId가 필요하다.",
       properties: {
         id: { type: "string" },
         name: { type: "string" },
@@ -29,7 +29,7 @@ export const CRAFT_RECIPE_PARAMS: JsonSchema = {
         goldCost: { type: "integer", minimum: 0 },
         requiresUnlock: { type: "boolean", description: "true 면 세션이 레시피를 해금해야 제작 가능." },
       },
-      required: ["id", "outputItemId"],
+      required: ["id"],
       additionalProperties: false,
     },
   },

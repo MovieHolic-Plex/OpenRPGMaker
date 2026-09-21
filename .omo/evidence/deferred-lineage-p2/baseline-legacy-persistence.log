@@ -6,7 +6,7 @@
  RUN  v3.2.4 /tmp/st_01a07921-base
 
  ❯ test/storePersistence.test.ts (11 tests | 5 failed) 12118ms
-   × Project store remote persistence > does not write to Supabase before the canonical project has loaded 5157ms
+   × Project store remote persistence > does not write to LegacyDb before the canonical project has loaded 5157ms
      → expected "spy" to not be called at all, but actually been called 1 times[90m
 
 Received:
@@ -27,11 +27,11 @@ Received:
 
 Number of calls: [1m1[22m
 [39m
-   × Project store remote persistence > does not auto-save local dev showcase projects to Supabase 456ms
+   × Project store remote persistence > does not auto-save local dev showcase projects to LegacyDb 456ms
      → Cannot read properties of undefined (reading 'ok')
    × Project store remote persistence > always creates a new fresh project instead of reloading local dev overrides 785ms
      → Cannot read properties of undefined (reading 'ok')
-   × Project store remote persistence > saves and reloads local edits for dev showcase projects without Supabase 376ms
+   × Project store remote persistence > saves and reloads local edits for dev showcase projects without LegacyDb 376ms
      → Cannot read properties of undefined (reading 'ok')
    × Project store remote persistence > reports why DB persistence is unavailable for local dev showcase projects 356ms
      → fetch failed
@@ -44,7 +44,7 @@ Number of calls: [1m1[22m
 
 ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
 
- FAIL  test/storePersistence.test.ts > Project store remote persistence > does not write to Supabase before the canonical project has loaded
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > does not write to LegacyDb before the canonical project has loaded
 AssertionError: expected "spy" to not be called at all, but actually been called 1 times[90m
 
 Received:
@@ -75,16 +75,16 @@ Number of calls: [1m1[22m
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
 
- FAIL  test/storePersistence.test.ts > Project store remote persistence > does not auto-save local dev showcase projects to Supabase
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > does not auto-save local dev showcase projects to LegacyDb
 TypeError: Cannot read properties of undefined (reading 'ok')
- ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:233:17
+ ❯ loadProjectSnapshotFromLegacyDb src/project/legacyDbProjectSync.ts:233:17
     231|     signal: options.signal,
     232|   });
     233|   if (!response.ok) {
        |                 ^
-    234|     throw new SupabaseProjectSyncError(await response.text(), response…
+    234|     throw new LegacyDbProjectSyncError(await response.text(), response…
     235|   }
- ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:154:20
+ ❯ loadProjectFromLegacyDb src/project/legacyDbProjectSync.ts:154:20
  ❯ ProjectStore.load src/project/store.ts:282:27
  ❯ test/storePersistence.test.ts:55:5
 
@@ -92,29 +92,29 @@ TypeError: Cannot read properties of undefined (reading 'ok')
 
  FAIL  test/storePersistence.test.ts > Project store remote persistence > always creates a new fresh project instead of reloading local dev overrides
 TypeError: Cannot read properties of undefined (reading 'ok')
- ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:233:17
+ ❯ loadProjectSnapshotFromLegacyDb src/project/legacyDbProjectSync.ts:233:17
     231|     signal: options.signal,
     232|   });
     233|   if (!response.ok) {
        |                 ^
-    234|     throw new SupabaseProjectSyncError(await response.text(), response…
+    234|     throw new LegacyDbProjectSyncError(await response.text(), response…
     235|   }
- ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:154:20
+ ❯ loadProjectFromLegacyDb src/project/legacyDbProjectSync.ts:154:20
  ❯ ProjectStore.load src/project/store.ts:282:27
  ❯ test/storePersistence.test.ts:91:21
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
 
- FAIL  test/storePersistence.test.ts > Project store remote persistence > saves and reloads local edits for dev showcase projects without Supabase
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > saves and reloads local edits for dev showcase projects without LegacyDb
 TypeError: Cannot read properties of undefined (reading 'ok')
- ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:233:17
+ ❯ loadProjectSnapshotFromLegacyDb src/project/legacyDbProjectSync.ts:233:17
     231|     signal: options.signal,
     232|   });
     233|   if (!response.ok) {
        |                 ^
-    234|     throw new SupabaseProjectSyncError(await response.text(), response…
+    234|     throw new LegacyDbProjectSyncError(await response.text(), response…
     235|   }
- ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:154:20
+ ❯ loadProjectFromLegacyDb src/project/legacyDbProjectSync.ts:154:20
  ❯ ProjectStore.load src/project/store.ts:282:27
  ❯ test/storePersistence.test.ts:119:5
 
@@ -122,14 +122,14 @@ TypeError: Cannot read properties of undefined (reading 'ok')
 
  FAIL  test/storePersistence.test.ts > Project store remote persistence > reports why DB persistence is unavailable for local dev showcase projects
 TypeError: fetch failed
- ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:229:20
-    227| ): Promise<SupabaseProjectSnapshot | null> {
+ ❯ loadProjectSnapshotFromLegacyDb src/project/legacyDbProjectSync.ts:229:20
+    227| ): Promise<LegacyDbProjectSnapshot | null> {
     228|   if (!config) return null;
-    229|   const response = await fetch(supabaseProjectUrl(config, options.incl…
+    229|   const response = await fetch(legacyDbProjectUrl(config, options.incl…
        |                    ^
-    230|     headers: supabaseJsonHeaders(config, "read"),
+    230|     headers: legacyDbJsonHeaders(config, "read"),
     231|     signal: options.signal,
- ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:154:20
+ ❯ loadProjectFromLegacyDb src/project/legacyDbProjectSync.ts:154:20
  ❯ ProjectStore.load src/project/store.ts:282:27
  ❯ test/storePersistence.test.ts:151:5
 

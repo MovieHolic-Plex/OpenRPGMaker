@@ -332,7 +332,7 @@ export function openStructureKitEditor(
   });
   const tools = createTools(toolsWrap, session, (changed) => {
     tools.refresh();
-    // 레이어를 바꾸면 스테이지 테두리(바닥/덧그림)가 달라진다 — 캔버스만 다시 그린다.
+    // 레이어를 바꾸면 스테이지 테두리(바닥/상위)가 달라진다 — 캔버스만 다시 그린다.
     if (changed === "layer") redrawCanvasOnly();
     else refreshCellHints();
   });
@@ -652,7 +652,7 @@ function noteRecentTile(session: EditorSession, tile: number): void {
 /**
  * 이어진 같은 타일 영역을 채운다(4방향).
  * mapHelpers.floodFillCells 를 쓰지 않은 이유: 그 함수는 GameMap 을 받고 lowerTiles 만
- * 보므로 덧그림 레이어를 채울 수 없다. 킷은 두 레이어를 모두 채워야 한다.
+ * 보므로 상위 레이어를 채울 수 없다. 킷은 두 레이어를 모두 채워야 한다.
  */
 function fillContiguous(
   kit: SectionStructureKitDef,
@@ -790,9 +790,9 @@ export function growthAxisLabel(axis: StructureGrowthAxis): string {
   return GROWTH_AXIS_LABELS[axis];
 }
 
-/** 홈 레이어의 한글 라벨. 편집기 도구줄과 같은 어휘를 쓴다 — 하층/상층이 아니라 바닥/덧그림. */
+/** 홈 레이어의 한글 라벨. 편집기 도구줄과 같은 어휘를 쓴다 — 하층/상층이 아니라 바닥/상위. */
 export function layerHomeLabel(layerHome: "lower" | "upper" | "perCell"): string {
-  return layerHome === "lower" ? "바닥" : layerHome === "upper" ? "덧그림" : "칸별";
+  return layerHome === "lower" ? "바닥" : layerHome === "upper" ? "상위" : "칸별";
 }
 
 const GROWTH_AXIS_OPTIONS: readonly { readonly value: "" | StructureGrowthAxis; readonly label: string }[] = [
@@ -806,7 +806,7 @@ const LAYER_HOME_OPTIONS: readonly {
 }[] = [
   { value: "", label: "미지정 — 그림에서 유도" },
   { value: "lower", label: "바닥" },
-  { value: "upper", label: "덧그림" },
+  { value: "upper", label: "상위" },
   { value: "perCell", label: "칸별" },
 ];
 
@@ -1312,7 +1312,7 @@ function createTabs(host: HTMLElement, session: EditorSession, onSwitch: () => v
 
 /**
  * 도구 목록. 예전에는 칠하기·지우기 둘뿐이라 사각형·채우기·스포이트가 없었다.
- * 레이어 이름은 맵 편집기와 같은 어휘로 통일했다 — 하층/상층 → 바닥/덧그림.
+ * 레이어 이름은 맵 편집기와 같은 어휘로 통일했다 — 하층/상층 → 바닥/상위.
  * (testid 는 lower/upper 를 그대로 유지한다. 바꾸면 기존 테스트가 깨진다.)
  */
 const TOOL_BUTTONS: readonly {
@@ -1364,7 +1364,7 @@ function createTools(
 
   const layerNodes = [
     { layer: "lower" as KitLayer, label: "바닥", testid: "structure-kit-editor-layer-lower" },
-    { layer: "upper" as KitLayer, label: "덧그림", testid: "structure-kit-editor-layer-upper" },
+    { layer: "upper" as KitLayer, label: "상위", testid: "structure-kit-editor-layer-upper" },
   ].map((entry) => ({
     layer: entry.layer,
     node: el("button", {

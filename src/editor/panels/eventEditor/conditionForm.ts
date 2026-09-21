@@ -55,6 +55,12 @@ export const SEASON_OPTIONS = [
  */
 const conditionModeCache = new Map<string, Condition>();
 
+/** 폼 간 오염 방지: 캐시 키에 편집 호스트(이벤트·맵·페이지·경로)를 포함한다. */
+function conditionCacheKey(kind: string, path: readonly number[]): string {
+  const state = editorState.get();
+  return `${state.currentMapId ?? ""}::${state.selectedEventId ?? ""}::${state.selectedEventPageId ?? ""}::${JSON.stringify(path)}::${kind}`;
+}
+
 export function conditionForm(cond: Condition, onChange: (condition: Condition) => void, path: readonly number[] = []): HTMLElement {
   const wrap = el("div", {
     class: "event-condition-form",
@@ -63,8 +69,8 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
 
   const mode = selectWithOptions(CONDITION_MODE_OPTIONS, cond.kind, "event-condition-mode");
   mode.addEventListener("change", () => {
-    conditionModeCache.set(cond.kind, structuredClone(cond));
-    const cached = conditionModeCache.get(mode.value as Condition["kind"]);
+    conditionModeCache.set(conditionCacheKey(cond.kind, path), structuredClone(cond));
+    const cached = conditionModeCache.get(conditionCacheKey(mode.value as Condition["kind"], path));
     if (cached) { onChange(structuredClone(cached)); return; }
     switch (mode.value) {
       case "switch":
@@ -628,7 +634,7 @@ function conditionHint(kind: Condition["kind"]): string {
     case "relationshipAtLeast":
       return "관계가 지정 단계 이상인지 검사합니다. 호감도 수치와 별개로 연인·약혼·부부를 가릅니다.";
     case "battleResult":
-      return "직전 전투 결과에 따라 분기합니다. 필드 몬스터 처치 후 이벤트 소거에 씁니다.";
+      return "직전 전투 결과에 따라 분기합니다. 맵에서는 방금 끝난 전투를 보지만, 전투 중(트룹 페이지)에서는 지금 싸우는 전투가 아니라 그 전 전투를 봅니다.";
     case "run":
       return "지금 탐험 중인지, 몇 층인지, 기억과 결과를 검사합니다.";
     case "all":

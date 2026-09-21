@@ -142,3 +142,28 @@ class EditorStateStore {
 }
 
 export const editorState = new EditorStateStore();
+
+/**
+ * 선택 사각형·붙여넣기 고스트·클립보드만 바뀐 통지인가.
+ * 이 세 필드는 캔버스 오버레이가 소유하고, 좌측 독·로케이션 DOM 을 다시 지을 이유가 없다.
+ * 우클릭 영역 드래그·Ctrl+V 고스트 추적은 pointermove 마다 여기만 흔든다.
+ */
+const CANVAS_OVERLAY_EDITOR_KEYS = new Set<keyof EditorState>([
+  "selection",
+  "pastePreview",
+  "clipboard",
+]);
+
+export function editorStateChangedOnlyCanvasOverlay(
+  previous: EditorState,
+  next: EditorState,
+): boolean {
+  if (previous === next) return true;
+  let overlayChanged = false;
+  for (const key of Object.keys(next) as (keyof EditorState)[]) {
+    if (previous[key] === next[key]) continue;
+    if (!CANVAS_OVERLAY_EDITOR_KEYS.has(key)) return false;
+    overlayChanged = true;
+  }
+  return overlayChanged;
+}
