@@ -249,3 +249,29 @@ RGB(224,103,191)만 투명 처리하며 리사이즈/감색/재질 합성을 하
 물은 `forest_harmony_lake_47` 정의를 쓴다. 집·길의 합본 호환 판정과 나무/물 조립 선택은
 별개다. 기존 콘텐츠·선택 영역·명시적으로 다른 칩셋을 선택한 맵의 타일셋은 보존한다.
 자세한 경로·울타리 정책은 [마을 배치 연구](village-layout-research.md)를 따른다.
+
+## LPC 나무 가구 공통 기본 제공 타일셋 (2026-09-21)
+
+`opengameart_lpc_wooden_furniture` / `tex_opengameart_lpc_wooden_furniture`,
+표시명 `LPC 나무 가구 · OpenGameArt (CC-BY-SA 3.0)`. 성채 칩셋과 마찬가지로
+**모든 프로젝트의 선택 목록에 추가**이며 기본 선택은 바꾸지 않는다.
+
+- 원본: https://opengameart.org/content/lpc-wooden-furniture — 저자 bluecarrot16,
+  Basto, Sharm, William Thompson, Reemax, Janna/Lilius/Jannax. 라이선스는
+  CC-BY-SA 3.0 / GPL 3.0 (구성 요소별 상위 라이선스는 원본 크레딧 파일 참고).
+  `public/assets/opengameart-lpc-wooden-furniture.png`은 페이지의 투명 배경 변형
+  `clean_furniture.png`(512×1024)를 수정 없이 보존한다. 가군 배경 미리보기 변형은
+  묶지 않는다. 해시·출처·수정 없음 표기는 `ATTRIBUTION.md`.
+  게임 내보내기는 PNG와 `opengameart-lpc-wooden-furniture-CREDITS.txt`를 함께 수집한다.
+- LPC 표준 32×32px 시트다(16열 × 32행 = 512칸). 격자는 실측으로 확정했다: 침실 벽장
+  타일은 LPC 관습대로 32px 셀 하단에 그려지고, 주방 캐비닛·오븐·유리장은 32px 경계에서
+  정확히 잘린다. 에지 에너지·거터 분석은 격자 판별에 쓰지 않는다(가구 너비가 16/32 섞여
+  결과가 뒤집힌다). 원본 한 타일이 곧 엔진 한 칸이므로 32px · 16열 ·
+  `kind: "custom"` 으로 등록하고 16px RM2K 오토타일/물 애니 스트립은 등록하지 않는다.
+- 통행/레이어 초기값은 Slates 32px와 같은 계약(전부 통행 가능·하위, 메타 unknown)이다.
+  성채의 알파 E/T/O 표 방식으로 통행을 추정해 막지 않는다 — 가구 시트는 부분 투명
+  오브젝트가 대부분이라 알파 추정의 오답률이 더 높다. 칸 단위 조정은 타일 메타데이터
+  도구의 몫이다. `applyCustomChipsetMinimalHarness`는 이 시트를 건너뛴다(합본 마을
+  16px 투명 칩 표가 무관한 번호를 재해석하지 않게).
+- 정의: `src/project/defaults/lpcWoodenFurniture.ts`. 프레임 등록·리소스 프로필·자료
+  보관함 기하는 `bundledChipsetGeometry.ts`가 공유한다.

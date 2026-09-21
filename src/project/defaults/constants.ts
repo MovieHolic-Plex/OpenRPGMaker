@@ -17,6 +17,13 @@ export const CASTLE_REFERENCE_TILESET_TEXTURE_KEY = "tex_opengameart_castle_refe
 export const CASTLE_REFERENCE_TILE_SIZE = 16;
 export const CASTLE_REFERENCE_TILES_PER_ROW = 140;
 export const CASTLE_REFERENCE_TILE_COUNT = 140 * 140;
+/** [LPC] Wooden Furniture — bluecarrot16 등, CC-BY-SA 3.0 / GPL 3.0. 32px 원본을 32열로 등록한다. */
+export const LPC_WOODEN_FURNITURE_TILESET_ID = "opengameart_lpc_wooden_furniture";
+export const LPC_WOODEN_FURNITURE_TILESET_NAME = "LPC 나무 가구 · OpenGameArt (CC-BY-SA 3.0)";
+export const LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY = "tex_opengameart_lpc_wooden_furniture";
+export const LPC_WOODEN_FURNITURE_TILE_SIZE = 32;
+export const LPC_WOODEN_FURNITURE_TILES_PER_ROW = 16;
+export const LPC_WOODEN_FURNITURE_TILE_COUNT = 16 * 32;
 export const CASTLE_TILE_SIZE = 16;
 export const CASTLE_TILES_PER_ROW = 32;
 export const CASTLE_TILE_COUNT = 1024;
