@@ -1,0 +1,20 @@
+[
+  {
+    "projectId": "a6973c08-aabc-4c7f-9885-18e3e3e5e8e2",
+    "storage": "SQLite",
+    "saved": true,
+    "reloaded": true,
+    "mapsUnchanged": true,
+    "documents": 19,
+    "images": 14
+  },
+  {
+    "projectId": "af05d1df-370c-49c0-af56-4874c25bc429",
+    "storage": "SQLite",
+    "saved": true,
+    "reloaded": true,
+    "mapsUnchanged": true,
+    "documents": 19,
+    "images": 14
+  }
+]
