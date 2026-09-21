@@ -2020,3 +2020,11 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 - 계약 갱신: 헤드 제목은 "세계 개요"(빈 세계), identity 카드 라벨 단언은 "이름", head-sub 단언 제거(요소 삭제), help tooltip 단언 추가.
 - 검증: 세계관 계약 10파일 62케이스 통과, `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v4/` 4장(도화지/평문 폼/법칙 대화상자/조수 전달), e2e 통과.
 
+
+### 세계 개요 헤드 v5 + 법칙 대화상자 토큰 스코프 수정 (2026-09-22)
+
+- 사용자 피드백 2건. (1) "세계 안내서" 키커를 치워라. (2) 법칙 대화상자가 제대로 보이지 않는다.
+- **키커 제거:** `world-canon-kicker` 행을 없애고 헤드를 제목 + `?` 도움말 버튼 한 줄로 압축. 제목 16px, 미터 바 4px·11px 캡션으로 낮춰 헤드 전체 높이를 절반 이하로 줄였다.
+- **대화상자 대비 붕괴 원인(실측):** `openLawDialog` 가 backdrop 을 `document.body` 에 붙였다. `--db-studio-*` 토큰은 `.database-modal-backdrop` 스코프에만 정의돼 있어, 모달 밖에서는 `var(--db-studio-surface)` 가 무효값으로 떨어지고 배경·글자색이 상속 회색으로 무너졌다(스크린샷 실측: 패널이 #a19f9c 회색 덩어리). 수정: `document.querySelector(".database-modal-backdrop") ?? document.body` 에 마운트하고, 대화상자 CSS 에 폴백 값(`var(--db-studio-surface, #fff)` 등)을 함께 적어 스코프가 어긋나도 읽히게 했다. backdrop 은 `position: fixed` + `--z-modal-top` 유지.
+- 검증: 세계관 계약 10파일 62케이스 통과, `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v4/` 재캡처(대화상자 흰 배경 + 본문 텍스트 확인), e2e 통과.
+
