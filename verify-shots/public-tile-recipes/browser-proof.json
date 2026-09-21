@@ -1,0 +1,22 @@
+[
+  {
+    "mode": "fresh",
+    "origin": "http://127.0.0.1:9830",
+    "tilesetId": "forest_harmony",
+    "documents": 19,
+    "images": 14,
+    "allImagesExact": true,
+    "sqliteBacked": true,
+    "errors": []
+  },
+  {
+    "mode": "existing",
+    "origin": "http://127.0.0.1:9825",
+    "tilesetId": "forest_harmony",
+    "documents": 19,
+    "images": 14,
+    "allImagesExact": true,
+    "sqliteBacked": true,
+    "errors": []
+  }
+]
