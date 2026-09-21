@@ -1,0 +1,23 @@
+{
+  "projectId": "oprn-hill-forest-harmony-20260918-a4e1",
+  "storage": "SQLite",
+  "saved": true,
+  "reloaded": true,
+  "mapsUnchanged": true,
+  "receipt": {
+    "kind": "saved",
+    "sha256": "ea10a2689810775e78425af20385301413e38c0f5137efff1c535c4297b74f52",
+    "receipt": {
+      "revisionId": "a93ef723-184b-44a1-9365-bcb55dd97c72",
+      "projectId": "a6973c08-aabc-4c7f-9885-18e3e3e5e8e2",
+      "mutationGeneration": 1,
+      "contentIdentity": "2ce6f0a41d54a17e1645a7eed51c0cd39449908027201cc0b02d634abd33e05f",
+      "sha256": "ea10a2689810775e78425af20385301413e38c0f5137efff1c535c4297b74f52"
+    }
+  },
+  "documents": 3,
+  "images": 8,
+  "errors": [
+    "Failed to fetch dynamically imported module: http://127.0.0.1:9852/src/editor/EditScene.ts?t=1789965362683"
+  ]
+}

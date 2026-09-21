@@ -258,7 +258,8 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
     const riverGrove = plan.river && kit.grove && intent.edgeTrees !== "none";
     if (riverGrove && kit.grove) {
       const groveFree = (x: number, y: number): boolean => free(x, y) && !houses.some(({ bbox: b }) =>
-        x >= b.x - 3 && x < b.x + b.w + 3 && y >= b.y - 2 && y < b.y + b.h + 4);
+        Math.hypot(Math.max(b.x - x, 0, x - (b.x + b.w - 1)) / 3,
+          Math.max(b.y - y, 0, y - (b.y + b.h - 1)) / 4) <= 1);
       const grove = paintForestGroves(map, area, kit.grove, groveFree, seed ^ 0x51f15e3d,
         forestCoverageTarget(intent.forestDensity ?? "normal"), undefined, true);
       for (const index of grove.cells) occ[index] = OCC.reserved;

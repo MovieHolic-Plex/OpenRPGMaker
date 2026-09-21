@@ -93,3 +93,19 @@ AGENTS의 동일 읽기 절차를 따르고, 프로젝트를 읽어 아래 expor
 `verify-shots/tileset-references/`: 실제 DB UI, 편집/업로드 관찰, 제공자 전달 형식별 차단/허용 관찰,
 저장 영수증. `scripts/qa/capture-tileset-references.mjs`는 브라우저에서 실제 모듈을 호출한다.
 유료 LLM 호출이나 새 마을 생성은 하지 않는다. gates/vitest/전체 typecheck는 실행하지 않았다.
+
+## 숲마을 공용 자료 (2026-09-21)
+
+`forest_high_cliff_river`의 `village` 용도에 배치/공용 저장 안내 2 MD와 선별 마을
+전체 사진 7개를 보관한다. `shared_forest_village_objects`의 `village-props` 용도는
+19개 소품의 16px·6열 조립/금지 목록 1 MD와 시트 이미지 1개다.
+프로젝트 `oprn-hill-forest-harmony-20260918-a4e1`은 **로컬 SQLite가 편집 정본**이며,
+`apply-shared-village-references.mjs`가 에디터 store.update/flush 경로로 문서만 추가하고
+SQLite 및 새로 연 에디터에서 다시 읽는다. 원본 29개 맵의 타일 배열은 변경하지 않는다.
+
+공용 장소 7개의 문서 포함 스냅샷은 `oprn-place-organic-*-v2`, 소품 원격 보존본은
+`oprn-shared-forest-village-objects-v2`다. 기존 v1 원격 스냅샷을 덮어쓰지 않는다.
+신규 프로젝트는 공용 소품 번들의 문서를 받으며, 기존 번들에 문서가 없을 때만
+`ensureSharedVillageObjectReferences`가 보충한다. 사용자 문서나 공유 포인터는 보존한다.
+`tiledata/tilesets/forest_high_cliff_river/shared-library/`는 저작 원문과 선정 기록,
+`src/assets/sharedVillageReferences.json`은 배포용 MD/이미지 묶음이다.

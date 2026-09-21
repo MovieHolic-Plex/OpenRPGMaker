@@ -1,3 +1,4 @@
+import { sharedVillageObjectById } from "@/project/defaults/sharedVillageObjects";
 import { tiboInteriorObjectById } from "@/project/defaults/tiboInterior";
 import { bakeInteriorObject, bakeStructureKit, copyName } from "@/editor/harnessSuggestion/structureKitRasterModel";
 import { interiorObjectById } from "@/editor/interiorObjectCatalog";
@@ -40,7 +41,7 @@ export function copyBuiltinObjectIntoProject(input: {
   readonly kitId: string;
   readonly designId?: string;
 }): { readonly project: Project; readonly kit: SectionStructureKitDef } | { readonly error: string } {
-  const object = interiorObjectById(input.builtinId) ?? tiboInteriorObjectById(input.builtinId);
+  const object = interiorObjectById(input.builtinId) ?? tiboInteriorObjectById(input.builtinId) ?? sharedVillageObjectById(input.builtinId);
   const tileset = input.project.tilesets[input.tilesetId];
   if (!object) return { error: "원본 오브젝트가 없습니다" };
   if (!tileset) return { error: "타일셋이 없습니다" };

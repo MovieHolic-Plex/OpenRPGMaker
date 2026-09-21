@@ -272,3 +272,21 @@ clay oven is excluded. This does not ban unrelated indoor oven/cauldron assets.
 These are exterior layout references, not playable adventures: house interiors,
 NPC events, inter-map transfers, flowing water and waterfall animation are not
 implemented by these snapshots. Keep snapshot revisions immutable.
+
+## 승인된 강변 숲마을 공용 지역 (2026-09-21)
+
+`REGION_REFERENCES`의 `river-forest-village-78x44` / **강변 숲마을**은
+프로젝트와 무관한 「지역 → 기본 설계」 항목이다. 장소 카탈로그로 옮기지 않는다.
+기존 세 지역의 순서(특히 호수마을 부분 사례가 참조하는 2번 인덱스)를 유지하며 뒤에 추가한다.
+
+사용자가 승인한 `original-grove-trunks-20260921-76a3-1789965905810`을 재조회해
+`oprn-region-river-forest-village-v1`에 불변 스냅샷으로 저장했다. 타일을 재생성하거나
+수정하지 않는다. 원래 굽이숲 몸통·뿌리, 굽은 경계, 강·다리·집 8채·생활 소품을 보존한다.
+다운로드에는 외부 마을과 연결된 실내 9개, 출입·주민 이벤트, 칩셋과 graft를 모두 포함한다.
+지역 행 조회는 `regionReferences/river-forest-village.json`, 미리보기·다운로드·합성된
+칩셋 미리보기는 `public/assets/region-references/river-forest-village*`가 제공한다.
+
+과거 원격 발행 스크립트는 저장 전환에서 제거했다. 현재 참조 패키지는 보존하며, 새 로컬 프로젝트로 가져올 때는 `scripts/oprn-store.mjs import-json`을 사용한다 (기존 v1 덮어쓰기 금지).
+브라우저 관측: `scripts/qa/capture-shared-river-forest-region.mjs`.
+저장 재조회·실제 지역 카드·다운로드·전체 행 조회 근거:
+`reports/2026-09-21-shared-river-forest-region.md`.

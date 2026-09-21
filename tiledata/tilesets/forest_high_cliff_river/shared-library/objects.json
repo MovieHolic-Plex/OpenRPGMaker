@@ -1,0 +1,116 @@
+[
+  {
+    "id": "shared-village:forest-life:village-prop-extension:7:0",
+    "name": "표지판",
+    "width": 1,
+    "height": 2
+  },
+  {
+    "id": "shared-village:forest-life:village-prop-extension:11:0",
+    "name": "꽃 화단",
+    "width": 2,
+    "height": 2
+  },
+  {
+    "id": "shared-village:forest-life:village-prop-extension:16:0",
+    "name": "채소밭",
+    "width": 2,
+    "height": 2
+  },
+  {
+    "id": "shared-village:forest-life:village-prop-extension:26:0",
+    "name": "빨랫줄",
+    "width": 2,
+    "height": 2
+  },
+  {
+    "id": "shared-village:forest-life:village-life-new:birdhouse",
+    "name": "새집",
+    "width": 1,
+    "height": 2
+  },
+  {
+    "id": "shared-village:forest-life:village-life-new:herb-planter-v2",
+    "name": "약초 화분",
+    "width": 2,
+    "height": 1
+  },
+  {
+    "id": "shared-village:forest-life:village-life-new:fruit-basket",
+    "name": "과일 바구니",
+    "width": 2,
+    "height": 1
+  },
+  {
+    "id": "shared-village:cliff-life:village-prop-extension:16:2",
+    "name": "게시판",
+    "width": 2,
+    "height": 2
+  },
+  {
+    "id": "shared-village:cliff-life:village-prop-extension:22:2",
+    "name": "화분",
+    "width": 1,
+    "height": 2
+  },
+  {
+    "id": "shared-village:cliff-life:village-prop-extension:26:3",
+    "name": "나무 울타리",
+    "width": 2,
+    "height": 1
+  },
+  {
+    "id": "shared-village:cliff-life:village-prop-extension:2:3",
+    "name": "나무통",
+    "width": 1,
+    "height": 1
+  },
+  {
+    "id": "shared-village:cliff-life:village-life-new:stone-well-low",
+    "name": "낮은 돌 우물",
+    "width": 2,
+    "height": 2
+  },
+  {
+    "id": "shared-village:tibo-unfake:garden-arch",
+    "name": "덩굴 아치",
+    "width": 2,
+    "height": 2
+  },
+  {
+    "id": "shared-village:tibo-unfake:hanging-lantern",
+    "name": "벽걸이 등불",
+    "width": 1,
+    "height": 1
+  },
+  {
+    "id": "shared-village:tibo-unfake:fishing-basket",
+    "name": "낚시 바구니",
+    "width": 1,
+    "height": 1
+  },
+  {
+    "id": "shared-village:tibo-unfake:stone-step",
+    "name": "징검돌",
+    "width": 2,
+    "height": 1
+  },
+  {
+    "id": "shared-village:tibo-unfake:scarecrow",
+    "name": "허수아비",
+    "width": 1,
+    "height": 2
+  },
+  {
+    "id": "shared-village:tibo-unfake:seed-sack",
+    "name": "씨앗 자루",
+    "width": 2,
+    "height": 1
+  },
+  {
+    "id": "shared-village:tibo-unfake:stone-lantern",
+    "name": "돌등",
+    "width": 1,
+    "height": 2
+  }
+]
