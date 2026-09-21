@@ -1,5 +1,5 @@
 import { renderPlaceLibraryControls } from './spatialPlaceLibraryControls';
-import { classifyPlaceCard, matchesPlaceClassification } from './spatialPlaceClassification';
+import { classifyPlaceCard, matchesPlaceClassification, resetPlaceLibraryFilters } from './spatialPlaceClassification';
 import { canUseCompositionWorkspace } from "./spatialCompositionAccess";
 import { renderSpatialCompositionWorkspace } from "./spatialCompositionWorkspace";
 import { renderSpatialSpaceWorkspace } from "@/editor/panels/spatialSpaceWorkspace";
@@ -74,11 +74,20 @@ export function renderSpatialAuthoringShell(
   const onSelect = (id: string): void => {
     const card = cards.find(card => card.id === id);
     if (card) {
+      // 장소 갤러리: 첫 클릭은 선택만 한다(액션 줄이 뜬다). 같은 카드를 다시 누르면 편집기로
+      // 들어간다. 선택만으로 편집기가 열리면 「맵에 놓기」를 누를 기회가 사라진다.
+      if (placesGallery && card.canonicalSource) {
+        // 같은 카드를 다시 누르면 편집기로 들어간다. 갤러리가 보이는 동안에만 카드를 누를 수
+        // 있으므로(listView=true), 「이미 이 카드가 선택돼 있다」가 곧 재클릭이다.
+        const reopening = spatialSession().galleryCardId === card.id;
+        selectSpatialGalleryEntry(card);
+        patchSpatialSession({ galleryCardId: card.id, listView: !reopening });
+        usageChromeState.openPopoverCardId = null;
+        refresh();
+        return;
+      }
       selectSpatialGalleryEntry(card);
-      // 장소 갤러리에서는 첫 클릭이 선택, 같은 카드 재클릭(또는 편집 버튼)이 편집기 진입이다 —
-      // 선택 카드의 맵에 놓기·배치 보기 액션을 건너뛰지 않게 한다.
-      if (placesGallery && card.canonicalSource) patchSpatialSession({ listView: card.id !== selected?.id });
-      else if (!placesGallery) patchSpatialSession({ listView: false });
+      if (!placesGallery) patchSpatialSession({ listView: false });
       usageChromeState.openPopoverCardId = null;
     }
     if (tab === "tiles") {
@@ -157,7 +166,7 @@ export function renderSpatialAuthoringShell(
         class: "spatial-action", text: "편집",
         attrs: { type: "button" },
         dataset: { testid: "spatial-cell-edit" },
-        on: { click: () => { selectSpatialGalleryEntry(card); patchSpatialSession({ listView: false }); usageChromeState.openPopoverCardId = null; refresh(); } },
+        on: { click: () => { selectSpatialGalleryEntry(card); patchSpatialSession({ listView: false, galleryCardId: card.id }); usageChromeState.openPopoverCardId = null; refresh(); } },
       }),
       ...(usage.rows.length ? [el("button", {
         class: "spatial-action", text: `배치 ${usage.rows.length} ${popoverOpen ? "▴" : "▾"}`,
@@ -192,6 +201,13 @@ export function renderSpatialAuthoringShell(
               children: [
                 el("p", { class: "spatial-gallery-empty-title", text: "조건에 맞는 설계가 없습니다" }),
                 el("p", { class: "spatial-gallery-empty-body", text: "그림체·유형·공간 형태·용도 또는 쓰임 필터를 바꿔 보세요." }),
+                // 0건에서 빠져나갈 길을 준다 — 문구만 있고 초기화가 없으면 사용자가 손으로 되돌려야 했다.
+                el("button", {
+                  class: "spatial-action", text: "필터 초기화",
+                  attrs: { type: "button" },
+                  dataset: { testid: "spatial-filter-reset" },
+                  on: { click: () => { resetPlaceLibraryFilters(); usageChromeState.filter = "all"; usageChromeState.galleryScrollTop = 0; refresh(); } },
+                }),
               ],
             });
           }
@@ -222,6 +238,11 @@ export function renderSpatialAuthoringShell(
     ],
   });
 
+  // 장소 목록이 기본이다. 스테이지(미리보기·속성)는 「속성」을 눌렀을 때만 오른쪽에 붙는다.
+  // 카드 선택만으로 열지 않는다 — 그러면 71장짜리 목록이 5열로 줄어든다(실측 98% → 65%).
+  // 스테이지는 DOM 에 남겨 둔다(속성 토글이 죽은 버튼이 되지 않게) — CSS 로만 접는다.
+  const libraryOnly = placesGallery && !session.inspectorOpen;
+
   const shell = el("div", {
     class: "spatial-shell",
     dataset: { testid: `spatial-shell-${tab}`, ...(villageStudio ? { legacyOrigin: "villages" } : {}) },
@@ -229,7 +250,11 @@ export function renderSpatialAuthoringShell(
     // 셀은 정확히 두 행(chrome / 본문)이다. 목적 스트립을 셀의 세 번째 자식으로 넣으면
     // 본문이 암시 행으로 밀려 잘린다 — 둘을 한 래퍼로 묶어 둘째 행에 넣는다.
     children: [chrome, placesGallery
-      ? el("div", { class: "spatial-shell-main", children: [renderPlaceLibraryControls(cards, refresh), el("div", { class: "spatial-body", children: [gallery, stage] })] })
+      ? el("div", { class: "spatial-shell-main", children: [
+        placesPurposeBand(),
+        renderPlaceLibraryControls(cards, refresh),
+        el("div", { class: `spatial-body${libraryOnly ? " is-library-only" : ""}`, children: [gallery, stage] }),
+      ] })
       : el("div", { class: "spatial-body", children: [gallery, stage] })],
   });
   shell.addEventListener("keydown", (event) => handleShellKey(event, selected, refresh));
@@ -253,6 +278,36 @@ export function renderSpatialAuthoringShell(
 
 let latestShellRefresh: (() => void) | null = null;
 let escapeLayerInstalled = false;
+
+/**
+ * 이 탭이 뭔지 한 줄로 말한다. 3차 수리에서 들어왔다가 타일 화면 개편(2026-09-21) 때
+ * 렌더 호출만 사라져 CSS(.spatial-purpose*)만 남아 있었다 — 화면에는 없었다.
+ */
+function placesPurposeBand(): HTMLElement {
+  const step = (no: number, label: string, active = false): HTMLElement => el("span", {
+    class: `spatial-purpose-step${active ? " is-active" : ""}`,
+    children: [
+      el("span", { class: "spatial-purpose-step-no", text: String(no) }),
+      el("span", { text: label }),
+    ],
+  });
+  const arrow = (): HTMLElement => el("span", { class: "spatial-purpose-arrow", text: "→", attrs: { "aria-hidden": "true" } });
+  return el("div", {
+    class: "spatial-purpose",
+    dataset: { testid: "spatial-purpose" },
+    children: [
+      el("span", { class: "spatial-purpose-lead", children: [
+        el("strong", { text: "여기서 만든 장소가 정본입니다" }),
+        el("small", { text: "AI는 여기서 골라 쓸 뿐입니다 · 만든 장소는 「맵에 놓기」로 실제 맵이 됩니다" }),
+      ] }),
+      el("span", { class: "spatial-purpose-steps", children: [
+        step(1, "장소 만들기", true), arrow(),
+        step(2, "맵에 놓기"), arrow(),
+        step(3, "미리보기 · 적용"),
+      ] }),
+    ],
+  });
+}
 
 /**
  * 포커스가 셸 밖(document/body)에 있어도, 오류 배너·미리보기 같은 전이 UI 가 떠 있으면
