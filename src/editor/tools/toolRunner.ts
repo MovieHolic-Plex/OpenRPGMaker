@@ -12,7 +12,7 @@ import { beginSpatialToolProposal, sealSpatialToolProposal } from "./spatialTool
 import { verifyPostTilePlacement } from "@/project/lint/postTileVerify";
 import { formatTreePairRepairSummary, repairTreePairsOnProject } from "@/project/lint/repairTreePairs";
 import { resolveForestCanopyReplacementExemptTileIds } from "./forestComposition";
-import { commitChangeset, createDraft, summarizeChanges } from "./changeset";
+import { commitChangeset, createDraft, summarizeChanges, tileChangedMapIds } from "./changeset";
 import { normalizeArgsForSchema, validateArgs } from "./jsonSchema";
 import { getTool } from "./toolRegistry";
 import { ToolError, type ToolContext, type ToolDefinition, type ToolResult } from "./types";
@@ -165,7 +165,12 @@ export function runToolDefinition(
     if (treeRepairNote) diff.warnings.push(treeRepairNote);
 
     // baseline(before)을 넘겨 "이 변경이 새로 만든" 오류만 커밋을 막는다 — 선재 오류 프로젝트 편집 허용.
-    const commit = commitChangeset(draft, before);
+    // 타일 도구는 호출마다 프로젝트를 통째로 직렬화하고 모든 맵의 클러스터 규칙을 다시 훑었다.
+    // 왕복은 적용 커밋에 남기고, 클러스터는 타일이 바뀐 맵만 본다.
+    const commit = commitChangeset(draft, before, {
+      skipRoundtrip: true,
+      clusterMapIds: tileChangedMapIds(before, draft),
+    });
     if (!commit.ok) {
       const blocking = commit.blocking.length > 0 ? commit.blocking : commit.issues;
       return {

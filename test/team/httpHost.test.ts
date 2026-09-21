@@ -92,6 +92,21 @@ it('keeps the owner access code and login across restart, while logout revokes t
   expect((await fetch(server.url + '/__oprn/bridge', { method: 'POST', headers: { cookie } })).status).toBe(401);
 });
 
+it('opens a non-loopback bind without forcing an access code', async () => {
+  root = await mkdtemp(join(tmpdir(), 'oprn-exposed-host-'));
+  await writeFile(join(root, 'index.html'), '<html><head></head><body>editor</body></html>');
+  server = await startLocalProjectServer({ projectDir: join(root, 'project'), distDir: root,
+    browserBridgeSource: '', host: '0.0.0.0', publicOrigin: 'http://127.0.0.1:0' });
+  const page = await fetch(server.url);
+  expect(await page.text()).toContain('window.__OPRN_BRIDGE__');
+  expect(page.headers.get('content-security-policy')).toContain("script-src 'self' 'nonce-");
+  const failed = await fetch(server.url + '/__oprn/login', { method: 'POST', redirect: 'manual',
+    headers: { origin: server.url, 'content-type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ token: 'nope' }) });
+  expect(failed.status).toBe(401);
+  expect(failed.headers.get('content-security-policy')).toContain("script-src 'self' 'nonce-");
+});
+
 it('opens internal hosting by default and persists an explicit access-code opt-in', async () => {
   root = await mkdtemp(join(tmpdir(), 'oprn-internal-host-'));
   await writeFile(join(root, 'index.html'), '<html><head></head><body>editor</body></html>');

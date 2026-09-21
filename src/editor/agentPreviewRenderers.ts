@@ -26,6 +26,7 @@ import type { MapId } from "@/project/types";
 
 const AGENT_FOCUS_MAX_CELL_RECTS = 256;
 const AGENT_FOCUS_HIGHLIGHT_MS = 2200;
+export const AGENT_GHOST_MAX_CELL_RECTS = 256;
 const AGENT_GHOST_FILL_COLOR = 0x687864;
 const AGENT_GHOST_STROKE_COLOR = 0x62715f;
 const GHOST_SPRITE_ALPHA = 0.92;
@@ -139,6 +140,8 @@ export class AgentGhostPreviewRenderer {
   private startTime: number | null = null;
   private schedule: readonly GhostRevealStep[] = [];
   private tileLayer: Phaser.GameObjects.Container | null = null;
+  private boundsLayer: Phaser.GameObjects.Container | null = null;
+  private tileObjectKeys: string[] = [];
   private tileLayerKey = "";
   private currentToolName: string = "";
   private tileLayerParent: Phaser.GameObjects.Container | null = null;
@@ -179,7 +182,7 @@ export class AgentGhostPreviewRenderer {
    */
   private accumulateSchedule(previews: readonly AgentGhostPreview[]): readonly GhostRevealStep[] {
     const keyed = previews.flatMap((preview) =>
-      preview.cells.map((cell) => ({ cell, key: `${preview.mapId}:${cell.layer}:${cell.x},${cell.y}:${cell.tileId ?? ""}` }))
+      preview.cells.map((cell) => ({ cell, key: `${preview.mapId}:${cell.layer}:${cell.x},${cell.y}` }))
     );
     if (this.startTime === null) this.startTime = this.clock();
     const elapsedNow = Math.max(0, this.clock() - this.startTime);
@@ -216,20 +219,15 @@ export class AgentGhostPreviewRenderer {
   }
 
   render(): void {
-    this.layer.removeAll(true);
-    this.sweep = null;
     this.clearDomMarkers();
     const state = this.currentState();
     const previews = agentGhostPreviewsForMap(state, this.mapId());
     if (previews.length === 0) {
+      this.discardOverlay();
       this.schedule = [];
       this.scheduleKey = "";
       this.startTime = null;
       this.cellStartMs.clear();
-      this.animGroup = null;
-      this.tileLayerParent = null;
-      this.tileLayer = null; // layer.removeAll(true) 가 파괴했다 — 참조와 키를 반드시 리셋
-      this.tileLayerKey = "";
       this.stopTicker();
       if (!state.runningToolName) {
         this.currentToolName = "";
@@ -245,18 +243,24 @@ export class AgentGhostPreviewRenderer {
     // 셀 집합 지문은 타일 레이어를 다시 빌드할지 판단하는 데만 쓴다. 예전에는 이 지문이
     // 바뀔 때 startTime 까지 되감았는데, 라이브 프리뷰는 150ms 스로틀로 셀이 계속 늘어나므로
     // 툴 12개짜리 턴이 "왼쪽부터 쏵"을 12번 반복했다 — 쌓여가는 게 아니라 깜빡임으로 읽혔다.
-    this.scheduleKey = ghostScheduleKey(this.schedule);
+    this.scheduleKey = this.schedule.length > AGENT_GHOST_MAX_CELL_RECTS
+      ? `bbox:${this.schedule.length}`
+      : ghostScheduleKey(this.schedule);
     this.currentToolName = preferredGhostToolName(previews[0]?.toolName ?? "", state.runningToolName ?? "");
 
     if (!isAgentGhostPreviewHidden()) {
-      const group = this.scene.add.container(0, 0);
-      group.setName("agent-ghost-preview");
-      this.layer.add(group);
-      this.animGroup = group;
-
-      for (const preview of previews) {
-        group.add(this.boundsGraphic(preview.bounds));
+      if (!this.overlayAlive()) {
+        this.discardOverlay();
+        const group = this.scene.add.container(0, 0);
+        group.setName("agent-ghost-preview");
+        this.layer.add(group);
+        this.animGroup = group;
+        this.boundsLayer = this.scene.add.container(0, 0);
+        group.add(this.boundsLayer);
       }
+      this.redrawBounds(previews);
+    } else if (this.overlayAlive()) {
+      this.discardOverlay();
     }
 
     this.renderDomMarkers(previews);
@@ -326,9 +330,7 @@ export class AgentGhostPreviewRenderer {
 
     if (isAgentGhostPreviewHidden() || !this.animGroup) return;
 
-    if (cellCount > 0) {
-      this.drawAnimationLayers(animState);
-    }
+    if (cellCount > 0) this.drawAnimationLayers(animState);
   }
 
   /** Ground, upper decoration, then events; the sweep only accents the leading edge. */
@@ -396,74 +398,99 @@ export class AgentGhostPreviewRenderer {
     g.fillRect(x + 1, y - 4, 4, 3);
   }
 
-  /** 타일 스탬프 레이어(컴포지터 경로 포함)를 스케줄당 한 번 빌드한다. */
+  /** 이미 만든 칸은 유지하고, 새로 깔린 칸만 스프라이트를 추가한다. */
   private buildTileLayer(): void {
+    this.ensureTileLayer();
+    if (!this.tileLayer) return;
+    const desired = this.schedule.map((step) => this.cellObjectKey(step.cell));
+    const prefix = this.tileObjectKeys.length <= desired.length
+      && this.tileObjectKeys.every((key, index) => key === desired[index]);
+    if (!prefix) this.dropTileObjects();
+    this.ensureTileLayer();
+    if (!this.tileLayer) return;
+    for (let index = this.tileObjects.length; index < this.schedule.length; index += 1) {
+      const step = this.schedule[index];
+      if (!step) continue;
+      const obj = this.createCellObject(step.cell);
+      this.tileLayer.add(obj);
+      this.tileObjects.push({ obj, baseX: step.cell.x * editorMapTileSize(this.mapId()), baseY: step.cell.y * editorMapTileSize(this.mapId()) });
+      this.tileObjectKeys.push(desired[index] ?? "");
+    }
+  }
+
+  private createCellObject(cell: AgentGhostCell): Phaser.GameObjects.Container | Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle {
+    const project = store.getCurrent();
+    const mapId = this.mapId();
+    const currentMap = mapId ? project.maps[mapId] : undefined;
+    const tilesetId = cell.tilesetId ?? currentMap?.tilesetId;
+    const tileset = tilesetId ? project.tilesets[tilesetId] : undefined;
+    const px = cell.x * editorMapTileSize(this.mapId());
+    const py = cell.y * editorMapTileSize(this.mapId());
+    if (tileset && typeof cell.tileId === "number" && cell.tileId > TILE.EMPTY) {
+      const draftMap = mapId ? getAgentGhostDraftMap(mapId) ?? null : null;
+      const composed = draftMap
+        ? createChipsetTileObject(this.scene, draftMap, tileset, cell.x, cell.y, cell.tileId)
+        : null;
+      if (composed) {
+        composed.setAlpha(GHOST_SPRITE_ALPHA);
+        composed.setVisible(false);
+        return composed;
+      }
+      const textureKey = ensureTilesetTexture(this.scene, tileset);
+      const tileSprite = this.scene.add.image(px, py, textureKey, `tile_${cell.tileId}`);
+      tileSprite.setOrigin(0, 0);
+      tileSprite.setAlpha(GHOST_SPRITE_ALPHA);
+      tileSprite.setVisible(false);
+      return tileSprite;
+    }
+    const rect = this.cellRect(cell);
+    rect.setVisible(false);
+    return rect;
+  }
+
+  private cellObjectKey(cell: AgentGhostCell): string {
+    return `${cell.layer}:${cell.x},${cell.y}:${cell.tileId ?? ""}:${cell.tilesetId ?? ""}`;
+  }
+
+  private overlayAlive(): boolean {
+    return this.animGroup !== null && this.animGroup.parentContainer === this.layer;
+  }
+
+  private discardOverlay(): void {
+    this.layer.removeAll(true);
+    this.animGroup = null;
+    this.boundsLayer = null;
+    this.sweep = null;
+    this.tileLayer = null;
+    this.tileLayerParent = null;
+    this.tileLayerKey = "";
     this.tileObjects = [];
-    // layer.removeAll(true) 가 animGroup·그 안의 tileLayer 를 파괴한다. 파괴된 컨테이너를
-    // 재사용하면 add 한 셀이 표시 목록에서 빠져 보이지 않는다(라운드3 blocker 1).
+    this.tileObjectKeys = [];
+  }
+
+  private redrawBounds(previews: readonly AgentGhostPreview[]): void {
+    if (!this.boundsLayer) return;
+    this.boundsLayer.removeAll(true);
+    for (const preview of previews) this.boundsLayer.add(this.boundsGraphic(preview.bounds));
+  }
+
+  private dropTileObjects(): void {
+    this.tileLayer?.removeAll(true);
+    this.tileObjects = [];
+    this.tileObjectKeys = [];
+  }
+
+  private ensureTileLayer(): void {
     if (this.tileLayer && this.tileLayer.parentContainer !== this.animGroup) {
       this.tileLayer = null;
       this.tileLayerKey = "";
+      this.tileObjects = [];
+      this.tileObjectKeys = [];
     }
-    if (this.tileLayer) {
-      this.tileLayer.removeAll(true);
-    } else if (this.animGroup) {
+    if (!this.tileLayer && this.animGroup) {
       this.tileLayer = this.scene.add.container(0, 0);
       this.animGroup.add(this.tileLayer);
     }
-    if (!this.tileLayer) return;
-
-    const project = store.getCurrent();
-    const currentMap = this.mapId() ? project.maps[this.mapId()!] : undefined;
-    const defaultTilesetId = currentMap?.tilesetId;
-    const draftMap = getAgentGhostDraftMap(this.mapId() as MapId) ?? null;
-    const objects: Array<{ obj: Phaser.GameObjects.Container | Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle; baseX: number; baseY: number }> = [];
-
-    // 스케줄 순서대로 만들어 cellStates 인덱스와 정렬한다 — 프레임마다 phase 게이팅이
-    // 이 순서에 의존한다(스탬프 팝·순차 공개). 미공개 셀은 visible=false 로 둔다.
-    const view = this.scene.cameras.main.worldView;
-    for (const step of this.schedule) {
-      const cell = step.cell;
-      // Preserve schedule indices while materializing only the visible window.
-      if (Number.isFinite(view.width) && Number.isFinite(view.height) &&
-          (cell.x * editorMapTileSize(this.mapId()) < view.x - editorMapTileSize(this.mapId()) || cell.y * editorMapTileSize(this.mapId()) < view.y - editorMapTileSize(this.mapId()) ||
-           cell.x * editorMapTileSize(this.mapId()) > view.x + view.width + editorMapTileSize(this.mapId()) || cell.y * editorMapTileSize(this.mapId()) > view.y + view.height + editorMapTileSize(this.mapId()))) {
-        objects.length++;
-        continue;
-      }
-      const px = cell.x * editorMapTileSize(this.mapId());
-      const py = cell.y * editorMapTileSize(this.mapId());
-      const tilesetId = cell.tilesetId ?? defaultTilesetId;
-      const tileset = tilesetId ? project.tilesets[tilesetId] : undefined;
-
-      if (tileset && typeof cell.tileId === "number" && cell.tileId > TILE.EMPTY) {
-        // 에디터 본 렌더와 같은 컴포지터 경로(호수 쿼터·지형 쿼터·도로 오토타일·밑동 합성).
-        // 애니메이션 스프라이트가 파괴/재생성되는 churn을 없애려고 스케줄당 한 번만 만든다.
-        const composed = draftMap
-          ? createChipsetTileObject(this.scene, draftMap, tileset, cell.x, cell.y, cell.tileId)
-          : null;
-        if (composed) {
-          composed.setAlpha(GHOST_SPRITE_ALPHA);
-          composed.setVisible(false);
-          this.tileLayer.add(composed);
-          objects.push({ obj: composed, baseX: composed.x, baseY: composed.y });
-          continue;
-        }
-        const textureKey = ensureTilesetTexture(this.scene, tileset);
-        const tileSprite = this.scene.add.image(px, py, textureKey, `tile_${cell.tileId}`);
-        tileSprite.setOrigin(0, 0);
-        tileSprite.setAlpha(GHOST_SPRITE_ALPHA);
-        tileSprite.setVisible(false);
-        this.tileLayer.add(tileSprite);
-        objects.push({ obj: tileSprite, baseX: tileSprite.x, baseY: tileSprite.y });
-      } else {
-        const rect = this.cellRect(cell);
-        rect.setVisible(false);
-        this.tileLayer.add(rect);
-        objects.push({ obj: rect, baseX: rect.x, baseY: rect.y });
-      }
-    }
-    this.tileObjects = objects;
   }
 
   private renderOrUpdatePhaseChip(
@@ -608,10 +635,13 @@ export class AgentGhostPreviewRenderer {
     this.startTime = null;
     this.cellStartMs.clear();
     this.animGroup = null;
+    this.boundsLayer = null;
     this.sweep = null;
     this.tileLayer = null;
     this.tileLayerParent = null;
     this.tileLayerKey = "";
+    this.tileObjects = [];
+    this.tileObjectKeys = [];
     this.currentToolName = "";
   }
 

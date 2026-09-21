@@ -439,7 +439,7 @@ describe("AgentGhostPreviewRenderer with mock phaser and DOM", () => {
     expect(chip?.textContent).toContain("300 셀");
   });
 
-  it("라운드3 회귀: 두 번째 render() 후에도 타일 레이어가 새 animGroup에 재부모된다", () => {
+  it("이어 칠한 칸만 스프라이트를 추가하고, 이미 만든 칸은 다시 만들지 않는다", () => {
     let now = 1000;
     const renderer = new AgentGhostPreviewRenderer(mockScene, mockLayer, () => "m1", { clock: () => now });
     const base = createBlankProject();
@@ -450,21 +450,37 @@ describe("AgentGhostPreviewRenderer with mock phaser and DOM", () => {
     store.replace(base);
     replaceAgentGhostPreviewFromProjectDiff(base, draft);
     renderer.render();
-    const firstGroup = renderer["animGroup"];
-    now += 50;
-    renderer.update();
-    expect((renderer["tileObjects"] as unknown[]).length).toBeGreaterThan(0);
-    now += 3000;
+    const imagesAfterFirst = mockScene.add.image.mock.calls.length;
+    expect(imagesAfterFirst).toBe(1);
+
+    draft.maps["m1"].lowerTiles[1] = 6;
+    replaceAgentGhostPreviewFromProjectDiff(base, draft);
+    renderer.render();
+
+    expect(mockScene.add.image.mock.calls.length - imagesAfterFirst).toBe(1);
+    expect(renderer["animGroup"]).toBe(mockLayer.list[0]);
+  });
+
+  it("레이어에서 떨어진 미리보기는 다음 render()에서 새 그룹에 다시 붙인다", () => {
+    let now = 1000;
+    const renderer = new AgentGhostPreviewRenderer(mockScene, mockLayer, () => "m1", { clock: () => now });
+    const base = createBlankProject();
+    const draft = createBlankProject();
+    base.maps["m1"] = createBlankMap("m1", 10, 10);
+    draft.maps["m1"] = createBlankMap("m1", 10, 10);
+    draft.maps["m1"].lowerTiles[0] = 5;
+    store.replace(base);
+    replaceAgentGhostPreviewFromProjectDiff(base, draft);
+    renderer.render();
+    const firstGroup = renderer["animGroup"] as { parentContainer: unknown };
+    firstGroup.parentContainer = null;
+    mockLayer.list.length = 0;
     renderer.render();
     const secondGroup = renderer["animGroup"];
     expect(secondGroup).not.toBe(firstGroup);
-    // 파괴된 컨테이너 재사용이 아니라 새 그룹에 실제 재부모됐음을 판별한다:
-    // tileLayer 가 secondGroup 의 자식이고 셀 오브젝트를 실제로 담고 있어야 한다.
-    const tileLayer = renderer["tileLayer"] as any;
-    expect(tileLayer).not.toBeNull();
+    const tileLayer = renderer["tileLayer"] as { parentContainer: unknown; list: unknown[] };
     expect(tileLayer.parentContainer).toBe(secondGroup);
-    expect(secondGroup!.list).toContain(tileLayer);
-    expect(tileLayer.list?.length ?? 0).toBeGreaterThan(0);
+    expect(tileLayer.list.length).toBeGreaterThan(0);
     expect(renderer["tileLayerParent"]).toBe(secondGroup);
   });
 });
