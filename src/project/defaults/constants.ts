@@ -17,6 +17,31 @@ export const CASTLE_REFERENCE_TILESET_TEXTURE_KEY = "tex_opengameart_castle_refe
 export const CASTLE_REFERENCE_TILE_SIZE = 16;
 export const CASTLE_REFERENCE_TILES_PER_ROW = 140;
 export const CASTLE_REFERENCE_TILE_COUNT = 140 * 140;
+/** [LPC] Wooden Furniture — bluecarrot16 등, CC-BY-SA 3.0 / GPL 3.0. 32px 원본을 32열로 등록한다. */
+export const LPC_WOODEN_FURNITURE_TILESET_ID = "opengameart_lpc_wooden_furniture";
+export const LPC_WOODEN_FURNITURE_TILESET_NAME = "LPC 나무 가구 · OpenGameArt (CC-BY-SA 3.0)";
+export const LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY = "tex_opengameart_lpc_wooden_furniture";
+export const LPC_WOODEN_FURNITURE_TILE_SIZE = 32;
+export const LPC_WOODEN_FURNITURE_TILES_PER_ROW = 16;
+export const LPC_WOODEN_FURNITURE_TILE_COUNT = 16 * 32;
+/**
+ * 16px 판 — 같은 시트를 unfake.js 로 반감 축소한 병행본(2026-09-22).
+ *
+ * 왜 병행하는가: 32px 판은 자기 타일셋 맵에서만 쓸 수 있고, 기존 16px 맵(합본 마을·실내)에는
+ * 격자가 맞지 않아 찍을 수 없다. 16px 판은 기존 맵 어디에나 놓을 수 있다. 원본 32px 판은
+ * 손대지 않고 보존한다 — 축소본이 원본을 대체하지 않는다.
+ *
+ * 축소는 unfake.js 코어(unfake-core WASM)의 median 블록 다운스케일로 했다. 그 라이브러리의
+ * morph(구멍 메우기)와 양자화는 이 시트에 해로웠다 — 얇은 손잡이·칸막이를 노이즈로 보고
+ * 지운다(실측: 긴 탁자 다리 소실). 이 시트는 AI 생성물이 아니라 진짜 픽셀아트라 되돌릴
+ * 가짜 픽셀이 없기 때문이다. 그래서 다운스케일 단계만 쓴다.
+ */
+export const LPC_WOODEN_FURNITURE_16_ID = "opengameart_lpc_wooden_furniture_16";
+export const LPC_WOODEN_FURNITURE_16_NAME = "LPC 나무 가구 16px · OpenGameArt (CC-BY-SA 3.0)";
+export const LPC_WOODEN_FURNITURE_16_TEXTURE_KEY = "tex_opengameart_lpc_wooden_furniture_16";
+export const LPC_WOODEN_FURNITURE_16_TILE_SIZE = 16;
+export const LPC_WOODEN_FURNITURE_16_TILES_PER_ROW = 16;
+export const LPC_WOODEN_FURNITURE_16_TILE_COUNT = 16 * 32;
 export const CASTLE_TILE_SIZE = 16;
 export const CASTLE_TILES_PER_ROW = 32;
 export const CASTLE_TILE_COUNT = 1024;

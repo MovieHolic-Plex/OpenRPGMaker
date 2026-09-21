@@ -12,7 +12,7 @@ import type { ResourceKind } from "@/project/types";
 import { requiredRuntimeAssetPaths } from "@/project/webExportRuntimeAssets";
 import type { Project } from "@/project/types";
 import type { WebExportAsset } from "@/project/webExportTypes";
-import { CASTLE_REFERENCE_TILESET_TEXTURE_KEY, CASTLE_TILESET_TEXTURE_KEY } from "./defaults/constants";
+import { CASTLE_REFERENCE_TILESET_TEXTURE_KEY, CASTLE_TILESET_TEXTURE_KEY, LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY } from "./defaults/constants";
 
 const encoder = new TextEncoder();
 
@@ -59,6 +59,10 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
   }
   if (ids.has(CASTLE_REFERENCE_TILESET_TEXTURE_KEY)) {
     const path = "assets/opengameart-castle-reference-composite-CREDITS.txt";
+    assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
+  }
+  if (ids.has(LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY)) {
+    const path = "assets/opengameart-lpc-wooden-furniture-CREDITS.txt";
     assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
   }
   if (ids.has('castle_courtyard_harbor_atlas')) {

@@ -2,13 +2,14 @@ import { ensureSharedCastleReferences } from "./sharedCastleReferences";
 import { createSharedVillageObjectsTileset, ensureSharedVillageObjectReferences, SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "./sharedVillageObjects";
 import { createCastleTileset } from "./castleTileset";
 import { createForestHarmonyTileset, ensureForestHarmonyReferences, FOREST_HARMONY_ID, FOREST_HARMONY_TEXTURE } from "./forestHarmony";
+import { createLpcWoodenFurniture16Tileset, createLpcWoodenFurnitureTileset, seedLpcWoodenFurniture16Kits, seedLpcWoodenFurnitureKits } from "./lpcWoodenFurniture";
 import { createTiboInteriorTileset, extendTiboInteriorDefaults, TIBO_INTERIOR_ID, TIBO_INTERIOR_TEXTURE } from "./tiboInterior";
 import { createSlates32Tileset } from "./slates32";
 import { composeCombinedTownRetroWorldTileset } from "./combinedTownRetroWorld";
 import type { AssetSet, GameMap, PassFlag, ResourceKind, ResourceProfile, SpriteDef, TilesetDef } from "../types";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { CC0_AUDIO_ASSETS } from "@/assets/cc0AudioAssets";
-import { BUNDLED_EASYRPG_CHARSET_ASSETS, BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledChipsetSheetHeight, bundledChipsetTilesPerRow, bundledChipsetTileSize, bundledEasyRpgTilesetId, SLATES_32_TEXTURE_KEY } from "@/assets/bundled";
+import { BUNDLED_EASYRPG_CHARSET_ASSETS, BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledChipsetSheetHeight, bundledChipsetTilesPerRow, bundledChipsetTileSize, bundledEasyRpgTilesetId, LPC_WOODEN_FURNITURE_16_TEXTURE_KEY, LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY, SLATES_32_TEXTURE_KEY } from "@/assets/bundled";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { AUTHORABLE_FACESET_FACE_ASSETS, GENERATED_FACESET_FACE_IDS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
@@ -94,6 +95,8 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       changed = ensureSharedCastleReferences(project.tilesets[tileset.id]) || changed;
       if (tileset.id === SHARED_VILLAGE_OBJECT_ID) changed = ensureSharedVillageObjectReferences(project.tilesets[tileset.id]) || changed;
       if (tileset.id === TIBO_INTERIOR_ID) changed = extendTiboInteriorDefaults(project.tilesets[tileset.id]) || changed;
+      changed = seedLpcWoodenFurnitureKits(project.tilesets[tileset.id]) || changed;
+      changed = seedLpcWoodenFurniture16Kits(project.tilesets[tileset.id]) || changed;
       continue;
     }
     project.tilesets[tileset.id] = tileset;
@@ -194,6 +197,8 @@ function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[nu
   if (asset.textureKey === FOREST_HARMONY_TEXTURE) return createForestHarmonyTileset();
   if (asset.textureKey === TIBO_INTERIOR_TEXTURE) return createTiboInteriorTileset();
   if (asset.textureKey === SLATES_32_TEXTURE_KEY) return createSlates32Tileset();
+  if (asset.textureKey === LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY) return createLpcWoodenFurnitureTileset();
+  if (asset.textureKey === LPC_WOODEN_FURNITURE_16_TEXTURE_KEY) return createLpcWoodenFurniture16Tileset();
   if (asset.textureKey === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return createCombinedTownRetroWorldTileset();
   return bundledStandardChipsetTileset(asset);
 }
