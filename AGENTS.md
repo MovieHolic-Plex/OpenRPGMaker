@@ -26,7 +26,8 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - Editor validation: `openwiki/editor-validation.md`
-   - **타일을 저작하는 모든 에이전트:** 먼저 현재 프로젝트의 `타일 → 참고문서 → 해당 용도`를 읽어라. `list_tileset_references`로 용도/자료 목록을 조회하고 `read_tileset_reference`로 MD 전 페이지와 실제 이미지를 확인한 뒤 배치한다. 코딩 에이전트는 원격/SQLite 프로젝트를 읽어 `scripts/content/export-tileset-references.mjs`로 추출하고 이미지를 직접 연다. 이전 대화나 저장소의 옛 학습 문서만으로 대체하지 않는다. 구현·도구 계약은 `openwiki/tileset-reference-documents.md`.
+   - **타일을 저작하는 모든 에이전트:** 먼저 현재 프로젝트의 `타일 → 참고문서 → 해당 용도`를 읽어라. `list_tileset_references`로 용도/자료 목록을 조회하고 `read_tileset_reference`로 MD 전 페이지와 실제 이미지를 확인한 뒤 배치한다. 코딩 에이전트는 정본(SQLite 호스트) 프로젝트를 읽어 `scripts/content/export-tileset-references.mjs`로 추출하고 이미지를 직접 연다. 이전 대화나 저장소의 옛 학습 문서만으로 대체하지 않는다. 구현·도구 계약은 `openwiki/tileset-reference-documents.md`.
+   - **새 타일·타일 학습은 공용에 넣는다 (hard rule):** 특정 프로젝트에만 추가하고 끝내지 마라. 타일 그림은 `src/assets/bundled.ts` 번들로, 학습 자료는 `tiledata/<칩셋>/` 로 커밋하고 `scripts/content/register-*-references.mjs` 로 모든 관련 프로젝트의 참고문서에 등록한다. 아래 「새 타일·타일 학습은 공용에 추가한다」 절을 따른다.
    - **Slates 32px로 마을을 만들 때 먼저 읽을 그림 포함 조립 지침:** `openwiki/slates-agent-entry.md` → `openwiki/slates-dense-town.md` → `openwiki/slates-assembly-playbook.md` → 구조 학습·표본·구역 도감·저작 지침 (성곽·돌출층·깊은 지붕·46개 구역·검토 보류 항목).
    - 타일 레이어·배경 정책 (투명 여부와 홈 레이어·받침·다중 조각 제약의 분리, 커스텀 칩셋 검토 흐름): `openwiki/tile-layer-policy.md`
    - 공통 지연 툴팁 (아이콘 컨트롤 툴팁 동작 계약·명시 롤아웃 목록·문구 규칙): `openwiki/delayed-tooltip.md`
@@ -147,6 +148,42 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
 - 사용자가 **이번 메시지에서** 테스트/게이트를 하라고 적은 경우, 그 명령만.
 - dirty 는 `wip:` 커밋 또는 파일 사본. stash 아님.
 
+## 새 타일·타일 학습은 공용에 추가한다 (hard rule)
+
+**타일셋을 새로 넣거나 그 타일을 학습한 결과(참고문서 MD, 아틀라스, 조립 지침, 표본 이미지)를 만들면
+한 프로젝트 행 안에만 넣고 끝내지 않는다.** 같은 작업을 하는 다음 프로젝트·다음 에이전트가 그대로 쓸 수 있게
+공용 계층에 함께 등록한다. "이 프로젝트에서 보인다"는 완료 조건이 아니다.
+
+공용은 두 갈래이고, 대상이 다르다.
+
+### 1. 타일 그림·타일셋 정의 → 공용 번들
+
+- 그림 파일은 `assets/` 아래에 두고 `src/assets/bundled.ts` 의 `BUNDLED_EASYRPG_CHIPSET_ASSETS` 에 항목을 추가한다.
+- 칸 수·시트 높이·열 수는 `bundledChipsetFrameCount` / `bundledChipsetSheetHeight` / `bundledChipsetTilesPerRow` 에 맞춘다.
+- 타일셋 정의는 `src/project/defaults/defaultAssets.ts` 에 배선해 **모든 새 프로젝트가 처음부터 그 타일셋을 갖게** 한다.
+- 한 프로젝트의 `project.tilesets[...]` 에 업로드만 하고 끝내면 다른 프로젝트는 그 타일을 영원히 못 본다.
+- 라이선스·출처 표기(예: `ATTRIBUTION.md`, `CC BY 4.0`)를 같은 변경에 남긴다.
+
+### 2. 타일 학습 결과 → 저장소의 칩셋 폴더 + 참고문서 등록
+
+- 학습 자료의 **출처 사본은 저장소에 커밋**한다. 선례: `tiledata/castle-tiles-rpgs/` (원문 MD·부품 JSON·비교 그림·출처·`ai-references/`),
+  `tiledata/forest-villages/`.
+- 그 자료를 프로젝트의 `타일 → AI 참고문서` 로 심는 **등록 스크립트**를 남긴다. 선례: `scripts/content/register-castle-references.mjs`.
+  이 스크립트가 문서·그림을 `referenceDocuments` 로 만들고, 원본 소유자와 파생 타일셋 공유(`referenceSourceTilesetId`)를 배선한다.
+- 등록 대상은 그 타일셋을 쓰는 **모든 프로젝트 행과 공용 맵 다운로드**(`public/assets/region-references/*.oprn.json`)다.
+  한 프로젝트에만 넣고 끝내지 않는다.
+- 저장 후 그 프로젝트를 **다시 로드해** 존재를 증명하고, 영수증·화면 증거를 `tiledata/<칩셋>/ai-references/` 에 남긴다.
+- **전역 공용 라이브러리는 아직 없다.** 캐릭터·얼굴 자료(`scripts/lib/sharedCharacterGraphics.ts` + `src/assets/sharedCharacterGraphics.json`)처럼
+  출하 시드 + 호스트 지속본 + 편집기 읽기 경로를 갖춘 공용 저장소는 별도 작업이다. 그것이 생기면 그쪽이 정본이 된다.
+- 다른 프로젝트·외부 에이전트에 자료를 넘길 때는 `scripts/content/export-tileset-references.mjs` 로 추출한다.
+
+### 3. 왜 강제인가
+
+- 참고문서는 `project.tilesets[id].referenceDocuments` 라는 **프로젝트 행 안의 필드**다. 새 프로젝트를 열면 아무것도 없다.
+- 실측: Slates 32px 자료(4용도 / 14 MD / 109 이미지)를 `rpg-zzu-slates32-38e6` 한 행에만 넣어 두었고,
+  다른 프로젝트에서는 `타일 → AI 참고문서` 가 빈 화면이었다.
+- 학습을 프로젝트마다 다시 하는 비용은 이미지 수십 장을 매번 다시 읽는 비용이다.
+
 ## 프로젝트 정본 저장은 필수 (hard rule)
 
 **에이전트는 게임/맵/이벤트 콘텐츠를 실제 프로젝트 저장소에 저장하고 다시 읽기 전에는 완료로 보고하지 않는다.**
@@ -168,6 +205,11 @@ LegacyDb는 과거 데이터 이관·복구 경로이며 새 콘텐츠 작업의
    스키마·저장 계약 검증과 테스트 실행 제한은 기존 규칙을 따른다.
 6. 기존 LegacyDb 데이터의 삭제·서비스 종료는 데이터 이관 완료와 별도 작업이다.
    원본 프로젝트·기록·에셋이 보존되고 대상에서 재로드되는지 확인하기 전에는 폐기하지 않는다.
+
+7. **LegacyDb·Supabase에 임의로 쓰지 않는다.** 읽기·조회는 무해하지만, 사용자가 이번 작업에서
+   명시적으로 시키지 않으면 원격에 쓰지 않는다. 정본이 아닌 곳에 사본을 만들면 어느 쪽이 진짜인지
+   아무도 모르게 된다 — 실측: Slates 32px 참고문서 이관에서 옛 강제 규칙을 따라 Supabase에도 썼고,
+   사용자가 지적했다. 옛 문서의 "정본은 Supabase 행" 문장은 SQLite 호스트 도입(2026-09-18) 이전 것이다.
 
 ## Agent rules
 
