@@ -335,7 +335,7 @@ export function placeVillageTrees(
       && !exclusions.some(rect => x >= rect.x && y >= rect.y && x < rect.x + rect.w && y < rect.y + rect.h);
     if (kit.grove) {
       const density = intent.forestDensity ?? (intent.edgeTrees === "dense" ? "dense" : "normal");
-      const grove = paintForestGroves(map, area, kit.grove, groveFree, seed, forestCoverageTarget(density), undefined, true);
+      const grove = paintForestGroves(map, area, kit.grove, groveFree, seed, forestCoverageTarget(density), undefined, kit.medium);
       return Math.ceil(grove.cells.size / 12);
     }
     return plantForestBand(map, area, seed, kit, groveFree, Math.floor(area.w * area.h / 118) + 9).placed;
