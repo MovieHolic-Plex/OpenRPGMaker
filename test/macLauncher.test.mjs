@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, writeFile, stat, rm, symlink, copyFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, writeFile, readFile, stat, rm, symlink, copyFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { EventEmitter, once } from 'node:events';
@@ -176,30 +176,21 @@ test('command cancellation forwards SIGTERM and reaps the owned child', { timeou
 });
 
 
-test('CLI pins the validated normalized configuration snapshot for Vite after the probe', { timeout: 15000 }, async t => {
-  const { createServer: http } = await import('node:http');
+test('CLI refuses the retired Supabase launcher without probing or rewriting env', { timeout: 15000 }, async t => {
   const root = await directory(t);
-  await mkdir(join(root, 'scripts'));
-  await mkdir(join(root, 'node_modules/vite'), { recursive: true });
-  for (const name of ['mac-launch.mjs', 'setup-local.mjs']) await copyFile(new URL(`../scripts/${name}`, import.meta.url), join(root, 'scripts', name));
   const file = join(root, '.env.local');
-  const backend = http(async (_req, res) => {
-    // Another owner may edit configuration while a read probe is in flight.
-    await writeFile(file, 'SUPABASE_UPSTREAM_URL=http://unsafe.invalid\nSUPABASE_ANON_KEY=sb_secret_wrong\nVITE_SUPABASE_PROJECT_ID=wrong\n');
-    res.end('[{"project_id":"existing"}]');
-  });
-  const listening = once(backend, 'listening'); backend.listen(0, '127.0.0.1'); await listening;
-  t.after(() => new Promise(resolveClosed => backend.close(resolveClosed)));
-  const origin = `http://127.0.0.1:${backend.address().port}`;
-  await writeFile(file, `SUPABASE_UPSTREAM_URL=HTTP://127.0.0.1:${backend.address().port}/\nSUPABASE_ANON_KEY=sb_publishable_fixture\nVITE_SUPABASE_PROJECT_ID=existing\nVITE_SUPABASE_USE_PROXY=1\n`);
-  await writeFile(join(root, 'node_modules/vite/package.json'), '{"type":"module","exports":"./index.mjs"}');
-  await writeFile(join(root, 'node_modules/vite/index.mjs'), `export {loadEnv} from ${JSON.stringify(import.meta.resolve('vite'))}; export async function createServer(){console.log('SNAPSHOT:'+JSON.stringify({url:process.env.SUPABASE_UPSTREAM_URL,key:process.env.SUPABASE_ANON_KEY,project:process.env.VITE_SUPABASE_PROJECT_ID,proxy:process.env.VITE_SUPABASE_USE_PROXY,clientKey:process.env.VITE_SUPABASE_ANON_KEY}));throw new Error('end fixture before listening');}`);
+  const original = 'SUPABASE_UPSTREAM_URL=http://unsafe.invalid\n';
+  await writeFile(file, original);
+  const script = new URL('../scripts/mac-launch.mjs', import.meta.url).pathname;
   const env = Object.fromEntries(Object.entries(process.env).filter(([name]) => !name.includes('SUPABASE')));
-  const child = spawn(process.execPath, [join(root, 'scripts/mac-launch.mjs'), '--no-open'], { cwd: '/', env, stdio: ['ignore', 'pipe', 'pipe'] });
+  const child = spawn(process.execPath, [script, '--no-open'], { cwd: root, env, stdio: ['ignore', 'pipe', 'pipe'] });
   const ended = once(child, 'close', { signal: AbortSignal.timeout(10000) });
-  let stdout = ''; child.stdout.on('data', data => { stdout += data; });
+  let stdout = ''; let stderr = '';
+  child.stdout.on('data', data => { stdout += data; });
+  child.stderr.on('data', data => { stderr += data; });
   const [code] = await ended;
-  assert.equal(code, 1); // The fixture intentionally stops before opening any port.
-  const snapshot = JSON.parse(stdout.match(/SNAPSHOT:(.*)/)[1]);
-  assert.deepEqual(snapshot, { url: origin, key: 'sb_publishable_fixture', project: 'existing', proxy: '1', clientKey: '' });
+  assert.equal(code, 1);
+  assert.match(stderr, /STORE_RETIRED/);
+  assert.equal(stdout.includes('SNAPSHOT'), false);
+  assert.equal(await readFile(file, 'utf8'), original);
 });

@@ -87,6 +87,27 @@ export function shouldRetainOpenEventDraft(
 }
 
 /**
+ * Keep the on-screen working body, but point an edit draft's save baseline at the
+ * incoming canonical event when that body is no longer `draft.original`.
+ * The next `committedEvents` write then persists the incoming event, not the stale pre-edit snapshot.
+ * A matching baseline (ordinary autosave round-trip) stays untouched.
+ */
+export function rebaseOpenEditDraft(
+  incomingEvents: readonly GameEvent[] | undefined,
+  liveEvent: GameEvent,
+): GameEvent {
+  const next = structuredClone(liveEvent);
+  if (next.draft?.kind !== "edit") return next;
+  const incoming = (incomingEvents ?? []).find((item) => item.id === next.id);
+  if (!incoming || incoming.draft) return next;
+  const canonical = eventWithoutDraft(incoming);
+  const original = next.draft.original;
+  if (original && diffValues(original, canonical, "event").length === 0) return next;
+  next.draft = { ...next.draft, kind: "edit", original: canonical };
+  return next;
+}
+
+/**
  * Re-apply in-memory event editor drafts onto a canonical saved project.
  * Canonical persistence omits new drafts and keeps edit originals; this restores
  * the local working body plus draft metadata so the session and Cancel survive
@@ -101,8 +122,8 @@ export function projectWithPreservedEventDrafts(saved: Project, live: Project): 
       if (!shouldRetainOpenEventDraft(targetMap.events, liveEvent)) continue;
       const index = targetMap.events.findIndex((event) => event.id === liveEvent.id);
       if (index >= 0) {
-        // Prefer live working body + draft meta over the stripped snapshot.
-        targetMap.events[index] = structuredClone(liveEvent);
+        // Working body stays on screen. A changed canonical body becomes the next save baseline.
+        targetMap.events[index] = rebaseOpenEditDraft(targetMap.events, liveEvent);
       } else {
         targetMap.events.push(structuredClone(liveEvent));
       }

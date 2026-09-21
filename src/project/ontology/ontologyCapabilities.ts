@@ -22,7 +22,7 @@ export const ONTOLOGY_CAPABILITIES = [
         requiredTests: ["test/mapEditCommands.test.ts", "test/e2e/oprn-map-editor.spec.ts"],
       },
     ],
-    contracts: ["map-uses-existing-tileset", "map-tile-array-size", "supabase-project-root"],
+    contracts: ["map-uses-existing-tileset", "map-tile-array-size", "sqlite-project-root"],
   },
   {
     id: "EventAuthoring",
@@ -160,7 +160,7 @@ export const ONTOLOGY_CAPABILITIES = [
         requiredTests: ["test/generatedAssetResourceResolver.test.ts", "test/e2e/oprn-resource-manager.spec.ts"],
       },
     ],
-    contracts: ["resource-reference-exists", "supabase-resource-root", "bundled-resource-not-user-deletable"],
+    contracts: ["resource-reference-exists", "sqlite-asset-root", "bundled-resource-not-user-deletable"],
   },
   {
     id: "ProjectPersistence",
@@ -188,6 +188,6 @@ export const ONTOLOGY_CAPABILITIES = [
         requiredTests: ["test/io.test.ts", "test/migrationFixtures.ts"],
       },
     ],
-    contracts: ["map-uses-existing-tileset", "command-references-existing-record", "resource-reference-exists", "supabase-project-root", "supabase-resource-root"],
+    contracts: ["map-uses-existing-tileset", "command-references-existing-record", "resource-reference-exists", "sqlite-project-root", "sqlite-asset-root"],
   },
 ] satisfies readonly OntologyCapability[];

@@ -22,3 +22,10 @@ export function safeAssetContentType(mime: string): string {
 
 /** Asset documents must not execute, even when the type is an image or SVG. */
 export const ASSET_RESPONSE_CSP = "sandbox";
+
+/** Allowlisted asset bytes are content-addressed and may be cached. Opaque fallbacks must not be. */
+export function assetCacheControl(mime: string): string {
+  return safeAssetContentType(mime) === "application/octet-stream"
+    ? "private, no-cache"
+    : "public, max-age=31536000, immutable";
+}

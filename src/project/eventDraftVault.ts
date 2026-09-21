@@ -1,4 +1,4 @@
-import { shouldRetainOpenEventDraft } from "@/project/eventDrafts";
+import { rebaseOpenEditDraft, shouldRetainOpenEventDraft } from "@/project/eventDrafts";
 import type { GameEvent, MapId, Project } from "@/project/types";
 import { projectRepository } from "@/project/persistence/repository";
 
@@ -111,7 +111,14 @@ export function applyEventDraftVault(project: Project): Project {
     }
     const index = map.events.findIndex((event) => event.id === entry.event.id);
     if (index >= 0) {
-      map.events[index] = structuredClone(entry.event);
+      if (map.events[index]?.draft) {
+        // The live overlay already rebased this id. Do not put a stale vault original back.
+        rememberEventDraftVaultEntry(entry.mapId, map.events[index]!);
+        continue;
+      }
+      const placed = rebaseOpenEditDraft(map.events, entry.event);
+      map.events[index] = placed;
+      rememberEventDraftVaultEntry(entry.mapId, placed);
     } else {
       map.events.push(structuredClone(entry.event));
     }
@@ -150,7 +157,9 @@ function projectWithLiveDrafts(incoming: Project, live: Project): Project {
       if (!shouldRetainOpenEventDraft(targetMap.events, liveEvent)) continue;
       const index = targetMap.events.findIndex((event) => event.id === liveEvent.id);
       if (index >= 0) {
-        targetMap.events[index] = structuredClone(liveEvent);
+        const placed = rebaseOpenEditDraft(targetMap.events, liveEvent);
+        targetMap.events[index] = placed;
+        rememberEventDraftVaultEntry(mapId, placed);
       } else {
         targetMap.events.push(structuredClone(liveEvent));
       }

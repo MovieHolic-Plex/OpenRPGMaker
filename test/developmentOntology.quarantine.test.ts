@@ -63,8 +63,8 @@ describe("development ontology", () => {
 
     expect(resourcePipeline?.purpose).toContain("SQLite asset");
     expect(projectPersistence?.purpose).toContain("SQLite project save");
-    expect(resourcePipeline?.contracts).toEqual(expect.arrayContaining(["supabase-resource-root"]));
-    expect(projectPersistence?.contracts).toEqual(expect.arrayContaining(["supabase-resource-root"]));
+    expect(resourcePipeline?.contracts).toEqual(expect.arrayContaining(["sqlite-asset-root"]));
+    expect(projectPersistence?.contracts).toEqual(expect.arrayContaining(["sqlite-asset-root"]));
     expect(uploadedAsset?.description).toContain("SQLite asset payload");
     expect(generatedDevelopmentOntologyMarkdown(DEVELOPMENT_ONTOLOGY)).toContain("host SQLite asset store");
   });

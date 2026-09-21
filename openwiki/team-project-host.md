@@ -107,10 +107,14 @@ DB 스냅샷의 에셋 목록으로 파일을 복사하며 실패 시 불완전 
 
 ## 호스트 페이지 CSP (2026-09-22)
 
-팀 호스트가 주는 HTML 은 응답마다 nonce 를 붙인 `script-src` 를 가진다. 인라인 스크립트는
-그 nonce 가 있을 때만 실행된다. 에셋 응답의 Content-Type 은 이미지·음성·영상·폰트·SVG 만
-허용하고, 그 밖은 `application/octet-stream` 이다. 에셋 응답에는 `sandbox` CSP 를 붙인다.
-접속 코드를 끄면 주소만으로 소유자가 되는 내부 호스트 기본값은 그대로다.
+팀 호스트가 주는 HTML 은 응답마다 nonce 를 붙인 `script-src` 를 가진다. 로그인 실패(401)도
+같은 경로다. 인라인 스크립트는 그 nonce 가 있을 때만 실행된다. 에셋 응답의 Content-Type 은
+이미지·음성·영상·폰트·SVG 만 허용하고, 그 밖은 `application/octet-stream` 이다. 허용된 타입의
+`oprn-asset` 응답은 `public, max-age=31536000, immutable` 이고, 불투명 바이트는 `private, no-cache`
+다. 에셋 응답에는 `sandbox` CSP 를 붙인다.
+루프백(`127.0.0.1`, `localhost`, `::1`)은 접속 코드를 끄면 주소만으로 소유자가 된다.
+`0.0.0.0` 처럼 루프백이 아닌 바인드는 서버가 켜질 때 접속 코드를 켠다. `npm start` 의 기본 호스트가
+그 경우다.
 
 ## 적대적 리뷰 수정 (2026-09-18)
 

@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { extname, normalize, resolve, sep } from "node:path";
 import { protocol } from "electron";
-import { ASSET_RESPONSE_CSP, safeAssetContentType } from "../shared/assetMime";
+import { ASSET_RESPONSE_CSP, assetCacheControl, safeAssetContentType } from "../shared/assetMime";
 import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME } from "../shared/channels";
 import { handleActivityMirror, isActivityMirrorPath } from "../../scripts/lib/activityMirror.mjs";
 import type { SessionRegistry } from "./sessions";
@@ -101,7 +101,7 @@ export function registerAssetProtocol(sessions: SessionRegistry): void {
     return new Response(bytes, {
       headers: {
         "content-type": safeAssetContentType(row.mime),
-        "cache-control": "private, no-cache",
+        "cache-control": assetCacheControl(row.mime),
         "content-security-policy": ASSET_RESPONSE_CSP,
         "x-content-type-options": "nosniff",
       },

@@ -176,17 +176,5 @@ export function reportError(error) {
   process.exitCode = 1;
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const controller = new AbortController();
-  const abort = () => controller.abort();
-  process.on('SIGINT', abort); process.on('SIGTERM', abort);
-  try {
-    requireNode24();
-    if (process.argv.length > 2) throw new SetupError('ARGUMENTS', '설정 명령은 인자를 받지 않습니다. 키는 터미널의 입력 숨김 안내가 나왔을 때만 입력하세요.');
-    const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-    process.chdir(root);
-    await ensureDependencies(root);
-    await setupLocal({ root, signal: controller.signal });
-    console.log('개인 설정 .env.local을 권한 0600으로 저장했습니다. Start RPG Maker.command 또는 npm run mac:launch로 실행하세요.');
-  } catch (error) { reportError(error); }
-  finally { process.off('SIGINT', abort); process.off('SIGTERM', abort); }
+  reportError(new SetupError('STORE_RETIRED', '개인 Supabase 설정 마법사는 퇴역했습니다. 있는 project.sqlite 폴더를 npm start -- --project-dir <폴더> 로 여세요. 환경 파일은 바꾸지 않았습니다.'));
 }

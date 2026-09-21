@@ -1,9 +1,6 @@
 # OPRN Studio Agent Entry Point
 
-> **AI-log lookup without browser (2026-09-04 incident: prompt hid under oprn-9c35ec902c):** query `rpg_zzu.ai_conversations` with `Accept-Profile: rpg_zzu`, never filter `project_id` first.
-> Search `entries_json` for kind user to find the hidden prompt.
-> Credentials from `/home/main/z-project/rpg-zzu/.env.local`.
-> Browser fallback: IndexedDB `oprn-ai-records`.
+> **AI 기록 조회 (2026-09-22):** Supabase `rpg_zzu.ai_conversations` 조회는 퇴역했다. 브라우저 기록은 IndexedDB `oprn-ai-records`, 디스크 미러는 프로젝트의 `output/ai-activity/` 다. 자격 증명을 위키나 커밋에 남기지 마라.
 
 This repository uses a project-local OpenWiki layer so coding agents can understand the editor before changing it.
 

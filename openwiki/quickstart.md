@@ -39,8 +39,8 @@ npm run wt -- adopt <이름> --path <워크트리 절대경로>   # node_modules
   워크트리 전용 경로나 고유 임시 경로를 지정하라 (`vite.config.ts`가 지원). 공유 캐시의 재최적화가
   겹치면 동적 모듈 로딩이 실패해 빈 화면이 나올 수 있다. QA용 임시 캐시는 서버 종료 후 정리한다.
 
-콘텐츠(맵·이벤트·데모) 작업이면 `.env.local` 의 `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` /
-`VITE_SUPABASE_PROJECT_ID` 가 있어야 하고, 저장+재로드까지 증명해야 끝이다 — 루트 `AGENTS.md` 의 하드 룰.
+콘텐츠(맵·이벤트·데모) 작업이면 `OPRN_PROJECT_DIR` 또는 `--project-dir` 의 `project.sqlite` 를
+저장한 뒤 같은 폴더를 다시 읽어 증명해야 끝이다 — 루트 `AGENTS.md` 의 하드 룰.
 
 ## 팀 SQLite 호스트 (2026-09-18)
 
@@ -50,46 +50,12 @@ npm run wt -- adopt <이름> --path <워크트리 절대경로>   # node_modules
 팀 초대·호스팅·백업·충돌 처리 절차는 `openwiki/team-project-host.md`.
 아래 과거 Mac launcher/Supabase 설정 설명을 새 팀 호스트의 필수 설정으로 적용하지 않는다.
 
-## 1a. Mac novice launcher / private setup (Phase 1, 2026-09-06) — Supabase 절은 퇴역
+## 1a. Mac novice launcher — 퇴역 (2026-09-22)
 
-이 절의 Supabase URL·anon key·프로젝트 id 절차는 **따라가지 마라.** 정본은 위의 SQLite 호스트다.
-런처 스크립트에 옛 확인 코드가 남아 있어도 콘텐츠 작업의 완료 조건으로 쓰지 않는다.
-
-## 1a-legacy. Mac novice launcher notes (do not treat as the store)
-
-This path is for a person's own downloaded checkout, **not** agent worktree adoption above.
-Do not copy a maintainer's `.env.local` or use a maintainer project. It requires manually
-installed **Node.js 24 LTS including npm**, a writable extracted folder, and the owner's
-already provisioned Supabase access plus an **existing application project id**.
-
-- Double-click `Start RPG Maker.command`, or in Terminal type `/bin/bash ` and drag that
-  file into the window, then press Return (works when ZIP extraction lost the executable bit).
-  Optional: `chmod +x "Start RPG Maker.command"`. Do not disable Gatekeeper or use sudo.
-- Terminal equivalents, from the checkout: `npm run setup:local` creates private settings;
-  `npm run mac:launch` sets up if missing and launches. The `.command` resolves its own folder,
-  including spaces/Unicode, regardless of the current working directory.
-  실행 명령은 `npm run mac:launch` 하나로 통일합니다. 설정 질문과 오류·복구 안내는 한국어로 표시됩니다.
-- The wizard masks the anon/publishable key and performs a bounded read-only GET against
-  `rpg_zzu.projects`. Use an HTTPS Supabase **origin**, or HTTP loopback for a local service.
-  Admin/service-role/database credentials, URL credentials, redirects and remote HTTP are rejected.
-  It does not create projects, run migrations, or write to Supabase.
-- Existing `.env*` files are never rewritten. New `.env.local` uses exclusive creation with mode
-  `0600`, a server-only `SUPABASE_ANON_KEY`, and proxy mode. Failure/cancellation writes nothing.
-  `.env.development*` and shell overrides take precedence in Vite; setup refuses to silently write
-  shadowed settings. Existing/incomplete `.env.local` needs private correction by its owner,
-  followed by a restart. Do not paste keys into command arguments, chat, screenshots or issues.
-- `npm ci` runs **only** when `node_modules` is absent. Existing or broken installs are preserved;
-  recovery is to move the broken folder aside yourself and run `npm ci`. No system tools are installed.
-- The launcher owns only `http://127.0.0.1:9999/?project=<encoded-existing-id>`, with a strict port,
-  TLS disabled and Vite's `configLoader: "runner"`. It opens the browser only after its own listen
-  succeeds. A collision does not open/reuse/kill the other server or choose another port.
-  Browser-open failure prints the same URL; `npm run mac:launch -- --no-open` supports headless QA.
-- Keep the Terminal open; Ctrl-C stops the owned server. Bookmark the same origin and project id.
-  Online saving depends on Supabase availability; export JSON for a separate backup.
-  Bun is optional for editing and Node provider login, but needed for AI completions along with a
-  configured provider. `npm start` is the separate SQLite project host (requires `OPRN_PROJECT_DIR`), not this novice launcher.
-- Linux verification does **not** establish Finder/macOS behavior. The narrow
-  `.github/workflows/mac-onboarding.yml` job is dormant while Actions are disabled.
+`npm run mac:launch`, `npm run setup:local`, `npm run db:check`, `npm run db:migrate`,
+`npm run db:verify-ai` 는 Supabase 접속을 다시 열지 않고 `STORE_RETIRED` 로 끝난다.
+환경 파일은 쓰지 않는다. 프로젝트는 `npm start -- --project-dir <폴더>` 의 `project.sqlite` 다.
+옛 URL·anon key·`rpg_zzu.projects` 확인 절차는 완료 조건이 아니다.
 
 ## 1b. 전체 BGM은 Release 팩으로 설치
 

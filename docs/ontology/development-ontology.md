@@ -143,14 +143,14 @@ Serialization, package export, migration, shape guards, reference validation, an
 
 - `map-uses-existing-tileset` (error): Every GameMap.tilesetId points to an existing TilesetDef.id.
 - `map-tile-array-size` (error): GameMap lower and upper tile arrays match width * height.
-- `supabase-project-root` (error): Canonical project data, including maps, mapTree, database records, start position, and session defaults, lives in the host SQLite project folder. Exported JSON and memory sessions are fixtures, recovery snapshots, or imports.
+- `sqlite-project-root` (error): Canonical project data, including maps, mapTree, database records, start position, and session defaults, lives in the host SQLite project folder. Exported JSON and memory sessions are fixtures, recovery snapshots, or imports.
 - `tileset-runtime-array-size` (error): Tileset passability, priority, and terrain arrays match TilesetDef.count.
 - `tile-group-ids-in-range` (error): TileGroupMetadata.tileIds stay inside the owning TilesetDef count.
 - `command-references-existing-map` (error): Transfer-style commands point to existing GameMap ids.
 - `command-references-existing-record` (error): Commands reference existing switches, variables, actors, items, skills, troops, and common events.
 - `database-record-references-exist` (error): Database record ids such as skillId, enemyIds, and animationId point to existing records.
 - `resource-reference-exists` (error): Resource ids used by commands, records, or UI point to a SQLite asset payload, bundled bootstrap asset, or generated bootstrap asset.
-- `supabase-resource-root` (error): Persistent resource bytes must be restorable from the host SQLite asset store. Bundled public files are bootstrap copies and must not be the only source for promoted generated resources.
+- `sqlite-asset-root` (error): Persistent resource bytes must be restorable from the host SQLite asset store. Bundled public files are bootstrap copies and must not be the only source for promoted generated resources.
 - `bundled-resource-not-user-deletable` (warning): Bundled resources are not treated as user-deletable assets.
 
 ## Classification Evaluation

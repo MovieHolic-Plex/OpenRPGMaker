@@ -105,10 +105,10 @@ function pageCsp(nonce: string): string {
 }
 
 /** Inline host pages get one nonce. Injected script tags without it do not run. */
-function sendHtml(response: ServerResponse, html: string): void {
+function sendHtml(response: ServerResponse, html: string, status = 200): void {
   const nonce = randomUUID().replaceAll("-", "");
   const stamped = html.replaceAll("<script>", `<script nonce="${nonce}">`);
-  response.writeHead(200, {
+  response.writeHead(status, {
     "content-type": "text/html; charset=utf-8",
     "cache-control": "no-store",
     "content-security-policy": pageCsp(nonce),
@@ -144,6 +144,10 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       await rename(pending, accessPath);
     }
   }
+  // Loopback may stay open until an owner opts in. A non-loopback bind (npm start uses
+  // 0.0.0.0) must not treat every visitor as the owner.
+  const bindExposed = host !== LOOPBACK && host !== "localhost" && host !== "::1";
+  if (bindExposed) team.setAccessCodeRequired(true);
   // 동반 서비스도 실행별 토큰을 요구한다(설계 7.4) — 루프백·페이지 출처 모두 같은 머신의 다른
   // 프로세스에 열려 있다. 렌더러는 브리지 설정에서 토큰을 받아 fetch 헤더로 실어 보낸다.
   const companionToken = randomUUID();
@@ -270,7 +274,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       const signedIn = team.accessCodeRequired() ? (cookie ? team.sessionMember(cookie) : null) : team.owner();
       if (url.pathname === '/__oprn/login' && request.method === 'POST') {
         const member = team.authenticate(new URLSearchParams(await readRequestBody(request, 4096)).get('token') ?? '');
-        if (!member) { response.writeHead(401, { 'content-type': 'text/html; charset=utf-8' }).end(entryLoginPage.replace('id="login-error" hidden', 'id="login-error"')); return; }
+        if (!member) { sendHtml(response, entryLoginPage.replace('id="login-error" hidden', 'id="login-error"'), 401); return; }
         const id = team.createSession(member.id, Date.now() + 12 * 60 * 60 * 1000);
         if (!id) { sendJson(response, 429, { error: '접속 세션이 너무 많습니다' }); return; }
         response.writeHead(303, { location: returnUrl, 'set-cookie': `${cookieName}=${id}; HttpOnly; SameSite=Strict; Path=/; Max-Age=43200${publicOrigin?.startsWith('https:') ? '; Secure' : ''}`, 'cache-control': 'no-store' }).end(); return;
