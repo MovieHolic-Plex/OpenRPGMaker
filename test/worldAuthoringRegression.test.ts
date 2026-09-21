@@ -26,10 +26,14 @@ function input(root: FakeElement, id: string, value: string): void {
 function canonView(): FakeElement {
   const host = document.createElement("div"); renderWorldCanonTab(host, () => {}); return host as unknown as FakeElement;
 }
+/** 법윹 카드는 세계 설정 탭안에 있다. */
+function openSettingsTab(root: FakeElement): void {
+  findByTestId(root, "db-ws-section-tab-settings")?.click();
+}
 
 describe("world authoring data preservation", () => {
   it("merges law notes and toggles with the latest law values", () => {
-    const host = canonView();
+    const host = canonView(); openSettingsTab(host);
     // 스프레드 뷰: 법칙 카드 -> 대화상자에서 선택/비고 -> 저장. tri-state 데이터 계약은 그대로다.
     function openLaw(id: string): void {
       control(host, "db-world-canon-law-" + id).click();
@@ -57,10 +61,12 @@ describe("world authoring data preservation", () => {
   });
 
   it("limits every bounded authoring control at the input boundary", () => {
-    const host = canonView();
-    for (const [id, max] of Object.entries({ name: 120, premise: 280, era: 80, tech: 80, body: 50000 })) {
+    const host = canonView(); openSettingsTab(host);
+    for (const [id, max] of Object.entries({ name: 120, premise: 280, era: 80, tech: 80 })) {
       expect(control(host, `db-world-canon-${id}`).getAttribute("maxlength"), id).toBe(String(max));
     }
+    findByTestId(host, "db-ws-section-tab-body")?.click();
+    expect(control(host, "db-world-canon-body").getAttribute("maxlength"), "body").toBe("50000");
     // 법칙 비고 상한은 카드 안이 아니라 카드가 여는 대화상자 소유다.
     for (const kind of ["power", "gods", "death", "money"]) {
       control(host, "db-world-canon-law-" + kind).click();

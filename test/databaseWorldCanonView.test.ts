@@ -5,6 +5,11 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
+/** 이름·없는 것·법칙은 세계 설정 탭안에 있다. */
+function openSettingsTab(host: FakeElement): void {
+  findByTestId(host, "db-ws-section-tab-settings")?.click();
+}
+
 function renderTab(): FakeElement {
   const host = document.createElement("div") as unknown as FakeElement;
   const rerender = (): void => {
@@ -35,6 +40,7 @@ describe("database world canon view", () => {
 
   it("commits the world name and free-form body onto project.worldCanon", () => {
     const host = renderTab();
+    openSettingsTab(host);
     expect(findByTestId(host, "db-world-canon-workspace")).toBeTruthy();
 
     setInput(host, "db-world-canon-name", "서녘 공화국");
@@ -48,12 +54,14 @@ describe("database world canon view", () => {
 
   it("toggles a tone chip into the stored canon", () => {
     const host = renderTab();
+    openSettingsTab(host);
     findByTestId(host, "db-world-canon-tone-grim")?.click();
     expect(store.getCurrent().worldCanon?.tones).toEqual(["grim"]);
   });
 
   it("adds an absence tag from the add control", () => {
     const host = renderTab();
+    openSettingsTab(host);
     setInput(host, "db-world-canon-absence-input", "총");
     findByTestId(host, "db-world-canon-absence-add")?.click();
     expect(store.getCurrent().worldCanon?.absences).toEqual(["총"]);
@@ -118,6 +126,9 @@ describe("database world canon view", () => {
 
   it("updates the hero meter and stat with the body without a rerender", () => {
     const host = renderTab();
+    openSettingsTab(host);
+    expect(findByTestId(host, "db-world-canon-identity")?.textContent).toContain("이름과 한 줄");
+    findByTestId(host, "db-ws-section-tab-body")?.click();
     setInput(host, "db-world-canon-body", "가".repeat(20_700));
     const meter = findByTestId(host, "db-world-canon-ai-meter");
     expect(meter?.textContent).toContain("뒤 700자는 발췌 밖");
@@ -137,6 +148,7 @@ describe("database world canon view", () => {
       draft.worldCanon = { name: "꽉 찬 세계", absences: full };
     });
     const host2 = renderTab();
+    openSettingsTab(host2);
     setInput(host2, "db-world-canon-absence-input", "하나 더");
     findByTestId(host2, "db-world-canon-absence-add")?.click();
     expect(store.getCurrent().worldCanon?.absences).toHaveLength(32);
@@ -144,6 +156,8 @@ describe("database world canon view", () => {
 
   it("drops worldCanon when the last authored field is cleared", () => {
     const host = renderTab();
+    openSettingsTab(host);
+    openSettingsTab(host);
     setInput(host, "db-world-canon-name", "안개 해안");
     expect(store.getCurrent().worldCanon?.name).toBe("안개 해안");
     setInput(host, "db-world-canon-name", "   ");
