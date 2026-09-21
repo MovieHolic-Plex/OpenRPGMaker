@@ -1,6 +1,6 @@
 # Editor Pre-edit Routing & Cautions
 
-## 맵별 16/32px 좌표
+## 맵별 16/32/48px 좌표
 
 타일 크기 관련 수정은 [tile-geometry.md](tile-geometry.md)를 먼저 읽는다. 원본 아틀라스 슬라이싱과 맵 월드 좌표, 미리보기 표시 크기를 구분한다.
 

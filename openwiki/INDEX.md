@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **81쪽 / 3161KB / 약 897,777 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **81쪽 / 3168KB / 약 899,963 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,16 +15,16 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 495KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2923 | ~142,663 |
+| `openwiki/editor-ai-panel.md` | 499KB | 101KB ⚠상한 초과 — 절을 더 쪼개라 | 2954 | ~143,668 |
 | `openwiki/editor-ai-tools.md` | 226KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 1852 | ~63,726 |
 | `openwiki/editor-database.md` | 331KB | 61KB ⚠상한 초과 — 절을 더 쪼개라 | 1963 | ~96,240 |
 | `openwiki/editor-event-authoring.md` | 151KB | 77KB ⚠상한 초과 — 절을 더 쪼개라 | 827 | ~43,889 |
 | `openwiki/editor-event-commands.md` | 61KB | 32KB | 242 | ~16,671 |
 | `openwiki/editor-interior-room-harness.md` | 92KB | 6KB | 445 | ~26,769 |
-| `openwiki/editor-pre-edit-routing.md` | 128KB | 69KB ⚠상한 초과 — 절을 더 쪼개라 | 735 | ~36,936 |
+| `openwiki/editor-pre-edit-routing.md` | 128KB | 69KB ⚠상한 초과 — 절을 더 쪼개라 | 735 | ~36,937 |
 | `openwiki/editor-workflows-misc.md` | 67KB | 30KB | 472 | ~18,206 |
 | `openwiki/runtime-battle.md` | 163KB | 31KB | 763 | ~46,614 |
-| `openwiki/runtime-project-schema.md` | 159KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 1134 | ~43,615 |
+| `openwiki/runtime-project-schema.md` | 160KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 1141 | ~43,767 |
 | `openwiki/runtime-sessions.md` | 98KB | 48KB | 410 | ~25,818 |
 | `openwiki/testing.md` | 205KB | 48KB | 1914 | ~56,765 |
 
@@ -83,12 +83,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/runtime-sessions.md` | 4 | `output/evidence/stardew/stardew-supabase.json`, `verify-shots/runtime-qa/feature16-player/SUMMARY.md`, `verify-shots/runtime-qa/menu-design/SUMMARY.md`, `verify-shots/runtime-qa/weather-after/SUMMARY.md` |
 | `openwiki/se-catalog.md` | 8 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `labels.json`, `placed.json`, `test/audioDescriptionCommandSurfaces.test.ts` |
 | `openwiki/slates-assembly-playbook.md` | 1 | `ville_0.png` |
-| `openwiki/slates-study.md` | 1 | `source-row.json` |
+| `openwiki/slates-study.md` | 2 | `output/slates-study/source-project.json`, `source-row.json` |
 | `openwiki/spatial-authoring-controller.md` | 1 | `storeMutationInstrumentation.test.ts` |
 | `openwiki/spatial-catalog-ui.md` | 1 | `output/evidence/interior-removal-executed/host-proof.json` |
 | `openwiki/spatial-geography-compiler.md` | 1 | `.omo/ulw-execute/tile-to-world/execution-policy.md` |
 | `openwiki/spatial-geography-ui.md` | 3 | `.oprn.json`, `lake-persistence.json`, `lake-regions-desktop.png` |
 | `openwiki/testing.md` | 32 | `../dialogue.css`, `.omo/gates-vitest-report.json`, `X.quarantine.test.ts`, `X.test.ts`, `aiChatObservability.test.ts`, `aiChatPanelTransportError.test.ts`, `aiSelectionChipScope.test.ts`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/actionRpgAuthoringAcceptance.test.ts`, `test/aiEventPlacementSurfaceGate.test.ts`, `test/autosaveStatus.test.ts`, `test/databaseKoreanRtpDefaults.test.ts`, `test/dialoguePreviewPresentationCss.test.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/interiorConceptAssemblies.test.ts`, `test/loadNewRemoteProject.test.ts`, `test/regionTaskRun.test.ts`, `test/storePersistenceProof.test.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
+| `openwiki/tile-geometry.md` | 2 | `editor-checks.json`, `output/slates-reference/source-row.json` |
 | `openwiki/tile-layer-policy.md` | 1 | `Castle2_5.png` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
 | `openwiki/ui-discovery-pilot.md` | 3 | `direct/RESULTS.json`, `output/evidence/ui-discovery-v2/report.html`, `trace.json` |
@@ -289,7 +290,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L55` 설치 지점
 - `L61` 테스트
 
-### `openwiki/editor-ai-panel.md` — 495KB · 2923줄 · ~142,663 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 499KB · 2954줄 · ~143,668 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L2` 제작 전 그래픽 선택과 자동 큰 창 (2026-09-21)
 - `L26` 이미지 중심 작업 피드 (2026-09-21)
@@ -371,6 +372,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2819` 다섯 적용 모드와 실제 맵 증분 반영 (2026-09-18)
 - `L2858` Feature16 — 프롬프트 라이브러리·대사 검토·실제 요청 검사기 (2026-09-21)
 - `L2900` Pi 마을 완료 검사와 적용 분리 (2026-09-21)
+- `L2924` Pi 시공 연출과 공간 밑그림 복구 (2026-09-21)
 
 ### `openwiki/editor-ai-tools.md` — 226KB · 1852줄 · ~63,726 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
@@ -682,9 +684,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L486` 검증
 - `L493` Feature16 저작 보조 관측 경계 (2026-09-21)
 
-### `openwiki/editor-pre-edit-routing.md` — 128KB · 735줄 · ~36,936 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 128KB · 735줄 · ~36,937 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
-- `L3` 맵별 16/32px 좌표
+- `L3` 맵별 16/32/48px 좌표
 - `L11` 맵 목록 클릭은 즉시 선택한다 (2026-09-18 후속)
 - `L59` 맵 전환과 물 타일 애니메이션 공유 (2026-09-18)
 - `L77` 편집기 재렌더 비용 — 줌은 카메라 경로다 (2026-09-16)
@@ -1005,9 +1007,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L247` Genre ambience presets and sound pairing (2026-09-21)
   - `L271` Thirty audiovisual presets — evidence (2026-09-21)
 
-### `openwiki/runtime-pre-edit-routing.md` — 45KB · 308줄 · ~12,974 토큰
+### `openwiki/runtime-pre-edit-routing.md` — 45KB · 308줄 · ~12,975 토큰
 
-- `L3` 맵별 16/32px 좌표
+- `L3` 맵별 16/32/48px 좌표
 - `L197` ESC skill thumbnails (2026-09-06)
 - `L208` Recovered head emotes (2026-09-05)
 - `L214` 메뉴 입력·불러오기 배율 (2026-09-05)
@@ -1016,7 +1018,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L237` Saved uploaded tilesets in the actual player (2026-09-14)
 - `L258` 맵 배경(패럴랙스) 렌더 (2026-09-14)
 
-### `openwiki/runtime-project-schema.md` — 159KB · 1134줄 · ~43,615 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 160KB · 1141줄 · ~43,767 토큰 · 통째읽기 잘림
 
 - `L1` 종족 전투 뒷모습 리소스 (2026-09-20)
 - `L5` 웹 프로젝트 생성과 선택 (2026-09-18)
@@ -1053,27 +1055,27 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L598` Showcase media save-copy durability (issue #693, 2026-09-08)
 - `L638` 공용 첫 방문 데모 — 읽기 전용 저장 계약 (2026-09-14)
 - `L672` Project schema & persistence
-- `L901` Variable arithmetic & loop runtime (2026-08-07)
-- `L905` Canonical event-draft projection (2026-07-30)
-- `L911` P2 general buildings and home decorations (2026-08-25)
-- `L918` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
-- `L936` Boot normalizers must not create dangling references (2026-08-30)
-- `L962` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
-- `L996` 성장 트리 선택 확장 (2026-09-05)
-- `L1002` 마을 설계서 (2026-09-05)
-- `L1008` 공포 게임 제작 기능 (2026-09-05)
-  - `L1012` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
-- `L1016` NPC 표시 이름 (2026-09-05)
-- `L1029` 연결 실내 도면의 영속성 (2026-09-05)
-- `L1033` 개념 장소 형상 (2026-09-05)
-- `L1037` Optional village decoration attachments (2026-09-13)
-- `L1048` Optional map climate (Feature16, 2026-09-21)
-- `L1065` Optional authored combat rules (feature16, 2026-09-21)
-- `L1068` AI 저작 보조 설정의 프로젝트 지속성 (Feature16, 2026-09-21)
-- `L1081` 구름량 optional 필드 (2026-09-21)
-  - `L1093` Map atmosphere layers (2026-09-21)
-- `L1114` 필드 HUD 설정 (2026-09-21)
-  - `L1124` HUD 장르·서체 확장 (2026-09-21)
+- `L908` Variable arithmetic & loop runtime (2026-08-07)
+- `L912` Canonical event-draft projection (2026-07-30)
+- `L918` P2 general buildings and home decorations (2026-08-25)
+- `L925` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
+- `L943` Boot normalizers must not create dangling references (2026-08-30)
+- `L969` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
+- `L1003` 성장 트리 선택 확장 (2026-09-05)
+- `L1009` 마을 설계서 (2026-09-05)
+- `L1015` 공포 게임 제작 기능 (2026-09-05)
+  - `L1019` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
+- `L1023` NPC 표시 이름 (2026-09-05)
+- `L1036` 연결 실내 도면의 영속성 (2026-09-05)
+- `L1040` 개념 장소 형상 (2026-09-05)
+- `L1044` Optional village decoration attachments (2026-09-13)
+- `L1055` Optional map climate (Feature16, 2026-09-21)
+- `L1072` Optional authored combat rules (feature16, 2026-09-21)
+- `L1075` AI 저작 보조 설정의 프로젝트 지속성 (Feature16, 2026-09-21)
+- `L1088` 구름량 optional 필드 (2026-09-21)
+  - `L1100` Map atmosphere layers (2026-09-21)
+- `L1121` 필드 HUD 설정 (2026-09-21)
+  - `L1131` HUD 장르·서체 확장 (2026-09-21)
 
 ### `openwiki/runtime-sessions.md` — 98KB · 410줄 · ~25,818 토큰 · 통째읽기 잘림
 
@@ -1507,12 +1509,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L1901` 필드 HUD 브라우저 증거 (2026-09-21)
   - `L1907` 장르 HUD 시각 확인 (2026-09-21)
 
-### `openwiki/tile-geometry.md` — 5KB · 74줄 · ~1,651 토큰
+### `openwiki/tile-geometry.md` — 9KB · 116줄 · ~2,678 토큰
 
 - `L3` 좌표 계약
-- `L21` 원본 아틀라스와 표시 크기의 구분
-- `L38` 브라우저 근거
-- `L51` Slates 참고 맵 3종
+- `L21` 캐릭터 자동 배율 (2026-09-21)
+- `L45` 원본 아틀라스와 표시 크기의 구분
+- `L62` 48px 일반 칩셋 가져오기 (2026-09-21)
+- `L80` 브라우저 근거
+- `L93` Slates 참고 맵 3종
 
 ### `openwiki/tile-layer-policy.md` — 19KB · 247줄 · ~5,867 토큰
 

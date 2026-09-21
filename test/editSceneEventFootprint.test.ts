@@ -253,10 +253,11 @@ function fakeMarkerScene(): { scene: unknown; layer: { add(o: FakeObject): void 
   return { scene, layer, objects };
 }
 
-function renderMarkers(events: readonly GameEvent[]): FakeObject[] {
+function renderMarkers(events: readonly GameEvent[], tileSize = 16): FakeObject[] {
   const project = createBlankProject();
   const mapId = project.startMapId;
   project.maps[mapId]!.events = [...events];
+  project.maps[mapId]!.tileSize = tileSize;
   store.replace(project);
   editorState.set({ currentMapId: mapId, selectedEventId: null, selectedEventPageId: null });
   const { scene, layer, objects } = fakeMarkerScene();
@@ -307,15 +308,14 @@ describe("renderEventMarkers — 편집 맵에 몸 사각과 통행 행을 그�
     expect(rects[0]?.data.testid).toBeUndefined();
   });
 
-  it("크기를 지정하지 않은 이벤트의 그림은 예전처럼 타일 중앙에 축소된다(항등)", () => {
+  it.each([[16, 1], [32, 1], [48, 2]])("%ipx 맵의 자동 캐릭터는 런타임과 같은 발밑 위치·%i배로 표시된다", (tileSize, scale) => {
     const objects = renderMarkers([
       event("plain", 5, 7, undefined, { graphic: { sprite: SPRITE.sprite } }),
-    ]);
+    ], tileSize);
     const image = objects.find((o): o is FakeImage => o.kind === "image");
-    // 1차와 같다: 타일 중앙(88,120), 원점 0.5/0.5, 한 칸 축소.
-    expect([image?.x, image?.y]).toEqual([88, 120]);
-    expect([image?.originX, image?.originY]).toEqual([0.5, 0.5]);
-    expect(image?.scale).toBe(eventMarkerTileScale(24, 32));
+    expect([image?.x, image?.y]).toEqual([5.5 * tileSize, 8 * tileSize]);
+    expect([image?.originX, image?.originY]).toEqual([0.5, 1]);
+    expect(image?.scale).toBe(scale);
   });
 
   it("1x1 이라도 배율을 지정하면 발밑 기준 실제 크기로 바뀐다", () => {

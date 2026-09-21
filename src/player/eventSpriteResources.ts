@@ -6,6 +6,9 @@ import { isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
 import type { Project } from "@/project/types";
 import type { Dir } from "@/player/input";
 import { charsetIdleFrameIndex, isEasyRpgCharsetTextureKey } from "@/player/charsetMotion";
+import { characterRenderScale } from "@/project/characterScale";
+import { normalizeCharacterScale } from "@/project/footprint";
+import type { EventPageGraphic } from "@/project/types";
 
 export type EventSpriteTexture = {
   readonly texture: string;
@@ -57,14 +60,22 @@ export function resolveEventSpriteTexture(
   return null;
 }
 
+export function isCharsetSpriteTexture(texture: EventSpriteTexture | null): boolean {
+  return !!texture && (texture.charset === true || !!findCharsetAsset(texture.texture));
+}
+
 export function eventSpriteScale(
   texture: EventSpriteTexture | null,
   sprite: { readonly width?: number; readonly height?: number },
-  authoredScale: number,
+  authoredScale?: number,
+  tileSize = 16,
+  scaleMode?: EventPageGraphic["scaleMode"],
 ): number {
-  if (!texture?.fitSize) return authoredScale;
+  if (isCharsetSpriteTexture(texture)) return characterRenderScale(sprite.width, tileSize, { scale: authoredScale, scaleMode });
+  const scale = normalizeCharacterScale(authoredScale);
+  if (!texture?.fitSize) return scale;
   const size = Math.max(sprite.width ?? 0, sprite.height ?? 0);
-  return Number.isFinite(size) && size > 0 ? authoredScale * texture.fitSize / size : authoredScale;
+  return Number.isFinite(size) && size > 0 ? scale * texture.fitSize / size : scale;
 }
 
 export function setEventSpritePattern(

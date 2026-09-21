@@ -407,11 +407,11 @@ function currentMapId(): string {
   return editorState.get().currentMapId ?? project.startMapId;
 }
 
-/** Both dimensions must contain whole tiles; never infer 16 vs 32 from sheet width. */
+/** Both dimensions must contain whole tiles; the author chooses the source grid. */
 function chooseChipsetTileSize(width: number, height: number): Promise<number | null> {
-  const sizes = [16, 32].filter(size => width >= size && height >= size && width % size === 0 && height % size === 0);
+  const sizes = [16, 32, 48].filter(size => width >= size && height >= size && width % size === 0 && height % size === 0);
   if (!sizes.length) {
-    toast("칩셋 이미지의 가로·세로는 16 또는 32의 배수여야 합니다.", "error");
+    toast("칩셋 이미지의 가로·세로는 선택할 타일 크기(16·32·48)의 배수여야 합니다.", "error");
     return Promise.resolve(null);
   }
   return new Promise(resolve => {
