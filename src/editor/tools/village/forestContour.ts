@@ -1,5 +1,5 @@
 import type { AutotileGroup, GameMap, Rect } from "@/project/types";
-import type { TreeStamp } from "./treeKit";
+import { forestTrunkCandidates } from "./forestTrunkTiles";
 import type { ForestGroveReport } from "./forestGroves";
 
 const NEIGHBORS = [[0, -1], [1, 0], [0, 1], [-1, 0], [1, -1], [1, 1], [-1, 1], [-1, -1]] as const;
@@ -37,12 +37,11 @@ export function forestContourScore(x: number, y: number, area: Rect, seed: numbe
     + 1.2 * noise(wx / 3, wy / 3, seed ^ 0x75931) + (coverage - 0.4) * 7;
 }
 
-/** One-cell contour with whole tree assemblies underneath its exposed edge.
- * A missing trunk placement never deletes an entire contour row. The complete
- * tree is drawn first, then the connected canopy occludes it naturally. */
+/** Continuous contour fitted to the approved cliff-village trunk assemblies.
+ * Root pixels, full three-row height and end caps are shared with legacy groves. */
 export function paintContouredForest(map: GameMap, area: Rect, group: AutotileGroup,
   free: (x: number, y: number) => boolean, seed: number, coverage: number,
-  tree: TreeStamp, desired?: (x: number, y: number) => boolean): ForestGroveReport {
+  desired?: (x: number, y: number) => boolean): ForestGroveReport {
   const W = map.width;
   const inside = (x: number, y: number): boolean => x >= Math.max(0, area.x) && y >= Math.max(0, area.y)
     && x < Math.min(W, area.x + area.w) && y < Math.min(map.height, area.y + area.h);
@@ -74,25 +73,36 @@ export function paintContouredForest(map: GameMap, area: Rect, group: AutotileGr
     }
     if (component.length < 8) component.forEach(index => forest.delete(index));
   }
-  const planted = new Set<number>();
-  let trunkRuns = 0;
-  const firstLower = tree.cells.findIndex(cell => cell?.layer === "lower");
-  const canopyRows = Math.floor(firstLower / tree.w);
-  const boundary = [...forest].filter(index => !f(index % W, Math.floor(index / W) + 1)).sort((a, b) => a - b);
-  for (const index of boundary) {
-    const x = index % W - Math.floor(tree.w / 2), y = Math.floor(index / W) - canopyRows + 1;
-    const cells = tree.cells.flatMap((cell, i) => cell ? [{ ...cell, x: x + i % tree.w, y: y + Math.floor(i / tree.w) }] : []);
-    if (!cells.every(cell => open(cell.x, cell.y) && !planted.has(cell.y * W + cell.x))) continue;
-    // Anchor crowns in the forest; do not place free-floating trees in clearings.
-    if (cells.filter(cell => cell.layer === "upper" && f(cell.x, cell.y)).length < tree.w) continue;
-    for (const cell of cells) {
-      const at = cell.y * W + cell.x;
-      if (cell.backing !== undefined) map.lowerTiles[at] = cell.backing;
-      if (cell.layer === "upper") map.upperTiles[at] = cell.tile;
-      else map.lowerTiles[at] = cell.tile;
-      planted.add(at);
+  let trunks = new Map<number, number>(), trunkRuns = 0;
+  // Fit complete roots, never substitute a different tree or crop a trunk. A
+  // failed placement retracts only the exposed row, retaining one-cell bends.
+  // Every retry removes cells, so repair is bounded by the initial mask size.
+  const repairLimit = forest.size;
+  for (let attempt = 0; attempt <= repairLimit; attempt++) {
+    trunks = new Map(); trunkRuns = 0;
+    let invalid: { x: number; y: number; width: number } | undefined;
+    outer: for (let y = area.y; y < area.y + area.h; y++) {
+      // The forest continues past the bottom of the map; no roots are visible.
+      if (y === map.height - 1) continue;
+      for (let x = area.x; x < area.x + area.w; x++) {
+        if (!f(x, y) || f(x, y + 1) || (trunks.has(y * W + x) && trunks.has((y + 1) * W + x))) continue;
+        const start = x;
+        while (f(x + 1, y) && !f(x + 1, y + 1)
+          && !(trunks.has(y * W + x + 1) && trunks.has((y + 1) * W + x + 1))) x++;
+        const width = x - start + 1;
+        const candidates = forestTrunkCandidates(start, width);
+        const candidate = candidates.find(c => c.rows.every((row, dy) => row.every((tile, dx) => {
+          const cx = c.x + dx, cy = y + dy, index = cy * W + cx;
+          return open(cx, cy) && f(cx, y)
+            && (!trunks.has(index) || trunks.get(index) === tile);
+        })));
+        if (!candidate) { invalid = { x: start, y, width }; break outer; }
+        candidate.rows.forEach((row, dy) => row.forEach((tile, dx) => trunks.set((y + dy) * W + candidate.x + dx, tile)));
+        trunkRuns++;
+      }
     }
-    trunkRuns++;
+    if (!invalid) break;
+    for (let x = invalid.x; x < invalid.x + invalid.width; x++) forest.delete(invalid.y * W + x);
   }
   for (const index of forest) {
     const x = index % W, y = Math.floor(index / W);
@@ -100,5 +110,6 @@ export function paintContouredForest(map: GameMap, area: Rect, group: AutotileGr
     NEIGHBORS.forEach(([dx, dy], bit) => { if (f(x + dx, y + dy)) mask |= 1 << bit; });
     map.upperTiles[index] = group.variantMap[String(mask)]!;
   }
-  return { cells: new Set([...forest, ...planted]), canopyCells: forest.size, trunkRuns };
+  for (const [index, tile] of trunks) map.lowerTiles[index] = tile;
+  return { cells: new Set([...forest, ...trunks.keys()]), canopyCells: forest.size, trunkRuns };
 }
