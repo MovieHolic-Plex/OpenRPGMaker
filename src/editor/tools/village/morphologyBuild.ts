@@ -258,9 +258,10 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
     const riverGrove = plan.river && kit.grove && intent.edgeTrees !== "none";
     if (riverGrove && kit.grove) {
       const groveFree = (x: number, y: number): boolean => free(x, y) && !houses.some(({ bbox: b }) =>
-        x >= b.x - 3 && x < b.x + b.w + 3 && y >= b.y - 2 && y < b.y + b.h + 4);
+        Math.hypot(Math.max(b.x - x, 0, x - (b.x + b.w - 1)) / 3,
+          Math.max(b.y - y, 0, y - (b.y + b.h - 1)) / 4) <= 1);
       const grove = paintForestGroves(map, area, kit.grove, groveFree, seed ^ 0x51f15e3d,
-        forestCoverageTarget(intent.forestDensity ?? "normal"), undefined, true);
+        forestCoverageTarget(intent.forestDensity ?? "normal"), undefined, kit.medium);
       for (const index of grove.cells) occ[index] = OCC.reserved;
       trees += Math.ceil(grove.cells.size / 12);
     }
@@ -571,7 +572,7 @@ function paintTreeGradient(
     const grove = paintForestGroves(map, area, kit.grove,
       (x, y) => free(x, y) && (occ[y * W + x] === OCC.free || occ[y * W + x] === OCC.commons)
         && dist[y * W + x]! >= TREE_MIN_DISTANCE,
-      Math.floor(rng() * 0xffffffff), forestCoverageTarget(intent.forestDensity ?? "normal"), undefined, true);
+      Math.floor(rng() * 0xffffffff), forestCoverageTarget(intent.forestDensity ?? "normal"), undefined, kit.medium);
     for (const index of grove.cells) occ[index] = OCC.reserved;
     return Math.ceil(grove.cells.size / 12);
   }
