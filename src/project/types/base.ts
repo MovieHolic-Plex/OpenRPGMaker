@@ -429,6 +429,16 @@ export interface SectionStructureKitDef {
   // 반복 단위 크기 — rows.length === height, rows[*].tiles.length === width.
   width: number;
   height: number;
+  /**
+   * 이 킷이 저작된 아틀라스의 **한 칸 픽셀 크기**(2026-09-22).
+   *
+   * 왜 칸 수만으로는 부족한가: 같은 그림의 16px 판과 32px 판은 타일 번호와 칸 수가 같고
+   * 픽셀만 다르다(LPC 나무 가구가 그렇다). `width`/`height` 만 있으면 어느 판인지 알 수 없어
+   * 내보내기·복제·배치가 조용히 반쪽 크기로 어긋난다.
+   *
+   * 없으면 소유 타일셋의 `tileSize` 로 해석한다(하위 호환). 저장본의 기존 킷에는 이 값이 없다.
+   */
+  tileSize?: number;
   rows: StructureKitRow[];
   /** 입구·간판·자리 등 부위 목록(상대좌표). */
   parts?: StructureKitPart[];
