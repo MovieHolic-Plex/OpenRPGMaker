@@ -22,8 +22,29 @@ This worktree wires `renderSpatialRegionsCanvas` /
 imports `spatial-geography.css` from `src/styles/index.css`, and uses
 `openSpatialDestination` for child drill so `setSpatialTab` does not
 drop breadcrumbs. `bindSpatialAuthoringControllerFactory` stays the
-database.ts binding. Six selectable shipped region examples remain
-task18; they are not completed here.
+database.ts binding.
+
+## Regions gallery contract (2026-09-22)
+
+The regions tab no longer seeds the six terrain-vocabulary dummies from
+`REGION_CATALOG` (lake-country, deep-forest, harbor-coast, snow-frontier,
+high-pass, ancient-ruins) as read-only "default" cards. They had no live
+design, no linked map and no editable surface, so they only hid real
+content. Default region cards are now only the completed-map references
+from `REGION_REFERENCES` (읽기 전용 완성 맵 사례), followed by authored
+`library.regions` designs and village-preset settlement recipes.
+
+The tab shares the places-tab list-first layout. `spatialShell.ts` treats
+`regions` like `places` for the gallery: purpose strip, region library
+controls (`spatialRegionLibraryControls.ts` — style/origin/type/search
+filters over `spatialRegionClassification.ts`), classification badges,
+and a right stage that stays collapsed until 「속성」 is toggled. Region
+reference cards render real map thumbnails through the place-card thumb
+path (`spatialGallery.ts` routes `regionReferenceId` cards to
+`renderPlaceCardThumb`). Empty-state copy points at 「추가」, 마을 설계서
+and the default references. Editing an authored region still opens the
+geography canvas/inspector; `REGION_CATALOG` itself remains as the
+compiler/seed vocabulary for `buildSpatialCatalogLibrary` and tests.
 
 ## Settlement regions (2026-09-12)
 

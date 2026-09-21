@@ -86,6 +86,12 @@ export function spatialGalleryEmptyCopy(mode: SpatialAuthoringMode, tab: Spatial
   }
   const thing = tab === "tiles" ? "타일셋" : tab === "objects" ? "오브젝트" : tab === "spaces" ? "장소"
     : tab === "places" ? "장소" : tab === "regions" ? "지역" : "세계";
+  if (tab === "regions") {
+    return {
+      title: "조건에 맞는 지역이 없습니다",
+      body: "참고 사례는 「기본 설계」에 있습니다. 「추가」로 빈 지역을 만들거나, 마을 설계서로 정주지 지역을 만드세요.",
+    };
+  }
   return {
     title: `내 ${thing} 설계가 없습니다`,
     body: "「추가」로 새로 만들거나, 기본 설계를 복제해 시작하세요.",
