@@ -118,9 +118,14 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
 - **우클릭 영역 드래그 (2026-09-19):** 드래그 중에는 선택 사각형·크기 배지만 갱신하고,
   `selection-action-chips` DOM은 pointerup의 최종 영역에서 한 번만 만든다. 이전에는
   pointermove마다 버튼을 만들고 `getBoundingClientRect`로 레이아웃을 강제했다.
-- 남은 비용: 페인트 증분 렌더의 `tileLayer.sort("depth")` 가 자식 전체를 매 스토어
-  변경마다 정렬한다. lower/upper 컨테이너 분리, `scene.make`+`addAt` 으로 재부모화 회피가
-  후보 수정이다.
+- **lazy 창은 들어온 칸만 더하지 말고 나간 칸을 지운다 (2026-09-22).** `renderVisibleEditSceneTiles` 가
+  추가만 하면 팬할수록 컨테이너가 맵 전체로 다시 자란다. 화면 밖 페인트도 객체를 만들지 않는다.
+  맵 배열이 정본이고, 그 칸이 창에 들어올 때 만든다.
+- AI 패널의 class/style/높이 변화로 `overlayGeometryReadAtMs` 를 0으로 돌리지 마라.
+  스트리밍이 매 프레임 `getBoundingClientRect` 를 호출해 편집 입력이 멈춘다.
+  캔버스 크기만 즉시 무효화하고, 조수 카드 가림은 250ms TTL 로 다시 잰다.
+- 남은 비용: 페인트 증분 렌더의 `tileLayer.sort("depth")` 는 lazy 맵에서는 창 안 자식만 정렬한다.
+  창 밖 타일을 다시 컨테이너에 쌓지 마라.
 - `src/project/io/references.ts` 의 참조 검증은 **이슈 수집 계약**이다 — 검증기가 던진
   예외도 `check()` 가 이슈 문자열로 남긴다. 새 검증기를 추가할 때도 이 계약을 깨지 마라
   (비정규 프로젝트에서 예외가 새면 에디터 부팅이 통째로 죽는다. 실측 2026-09-16).
