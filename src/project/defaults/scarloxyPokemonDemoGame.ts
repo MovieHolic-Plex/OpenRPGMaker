@@ -12,7 +12,7 @@ import { PRODUCT_BRAND } from "@/brand";
 import type { GameEvent, GameMap, Project } from "../types";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
-import { normalizeStateRecord } from "@/project/databaseRecordModel";
+import { normalizeSkillRecord, normalizeStateRecord } from "@/project/databaseRecordModel";
 import { DEFAULT_ACTOR_ID, DEFAULT_SKILL_ID } from "./constants";
 import { createBlankMap, singleNodeTree } from "./defaultMaps";
 import {
@@ -214,6 +214,23 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
     demoSkill("skill_scarloxy_bug", "Mandible Cut", 25, "anim_scarloxy_scratch", "A Bug-type bite.", "bug"),
     demoSkill("skill_scarloxy_shadow", "Night Shade", 25, "anim_magic", "A Ghost-type shade.", "ghost"),
     demoSkill("skill_scarloxy_spark", "Thunder Jolt", 25, "anim_magic", "An Electric-type jolt.", "electric"),
+    // 전기자기파 — Gen1 관례(마비 100%, 땅 타입만 면역). 확률 10% 기술만 있으면
+    // 상태이상이 전투에서 사실상 관측되지 않아, 상태기 하나는 확정 부여로 둔다.
+    {
+      ...normalizeSkillRecord({
+        id: "skill_scarloxy_wave",
+        name: "전기자기파",
+        scope: "enemy",
+        power: 0,
+        animationId: "anim_magic",
+        description: "약한 전류로 상대를 반드시 마비시킵니다.",
+        mpCost: { flat: 0, percentMax: 0 },
+        successRate: 100,
+        effect: { kind: "support" },
+        elementId: "electric",
+        stateEffects: [{ stateId: "state_paralysis", chance: 100, operation: "add" }],
+      }),
+    },
     { ...demoSkill("skill_scarloxy_mind", "Dream Pulse", 30, "anim_magic", "A Psychic-type pulse.", "psychic"), stateEffects: [{ stateId: "state_sleep", chance: 10, operation: "add" as const }] },
     demoSkill("skill_scarloxy_dragon", "Dragon Rage", 40, "anim_scarloxy_explosion", "A Dragon-type blast.", "dragon")
   );
@@ -235,6 +252,7 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
     skill_scarloxy_bug: { maxPp: 35, elementId: "bug" },
     skill_scarloxy_shadow: { maxPp: 15, elementId: "ghost" },
     skill_scarloxy_spark: { maxPp: 30, elementId: "electric" },
+    skill_scarloxy_wave: { maxPp: 20, elementId: "electric" },
     skill_scarloxy_mind: { maxPp: 10, elementId: "psychic" },
     skill_scarloxy_dragon: { maxPp: 10, elementId: "dragon" },
   };
@@ -332,9 +350,12 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
     demoTroop("troop_pkmn_new_grass", "풀숲의 모슬링", "scarloxy-backdrop-forest", [
       { enemyId: "enemy_pkmn_mossling", x: 160, y: 132 },
     ]),
-    demoTroop("troop_pkmn_new_pair", "엠버킷과 퍼들업", "scarloxy-backdrop-forest", [
-      { enemyId: "enemy_pkmn_emberkit", x: 120, y: 130 },
-      { enemyId: "enemy_pkmn_puddlup", x: 190, y: 134 },
+    // 야생은 1:1 이 포켓몬 문법이다 — 두 마리 트룹은 더블배틀 시스템이 없는 한 만들지 않는다.
+    demoTroop("troop_pkmn_new_pair", "풀숲의 엠버킷", "scarloxy-backdrop-forest", [
+      { enemyId: "enemy_pkmn_emberkit", x: 160, y: 132 },
+    ]),
+    demoTroop("troop_pkmn_pond_pair", "연못가의 퍼들업", "scarloxy-backdrop-sand", [
+      { enemyId: "enemy_pkmn_puddlup", x: 160, y: 132 },
     ]),
     demoTroop("troop_pkmn_sparchu", "풀숲의 스파르츄", "scarloxy-backdrop-forest", [
       { enemyId: "enemy_pkmn_sparchu", x: 160, y: 132 },
@@ -421,7 +442,8 @@ const SCARLOXY_GEN1_PRIMARY_SKILLS: Readonly<Record<string, string>> = {
 // 채우고, 여기엔 주력 뒤에 붙는 상위 습득만 둔다. 15타입 차트가 사장되지 않게
 // 종족 타입(SCARLOXY_GEN1_TYPES)에 맞는 기술로만 구성한다.
 const SCARLOXY_LEVELUP_MOVES: Readonly<Record<string, readonly { level: number; skillId: string }[]>> = {
-  sparchu: [{ level: 5, skillId: "skill_scarloxy_quick" }, { level: 9, skillId: "skill_scarloxy_spark" }, { level: 13, skillId: "skill_scarloxy_ember" }],
+  // 원작 피카츄 습득 순서(전기쇼크 → 전광석화 → 전기자기파 lv9)를 따른다.
+  sparchu: [{ level: 5, skillId: "skill_scarloxy_quick" }, { level: 9, skillId: "skill_scarloxy_wave" }],
   cindrill: [{ level: 7, skillId: "skill_scarloxy_punch" }, { level: 10, skillId: "skill_scarloxy_ember" }, { level: 14, skillId: "skill_scarloxy_burst" }],
   charmadillo: [{ level: 12, skillId: "skill_pkmn_rock" }, { level: 16, skillId: "skill_scarloxy_burst" }],
   finsta: [{ level: 5, skillId: "skill_scarloxy_ice" }, { level: 9, skillId: "skill_scarloxy_mud" }],
@@ -603,7 +625,7 @@ function routeMap(): GameMap {
   map.lowerTiles = new Array<number>(map.width * map.height).fill(G.GRASS);
   map.upperTiles = new Array<number>(map.width * map.height).fill(EMPTY);
   map.encounterRate = 5;
-  map.troopIds = ["troop_pkmn_grass_a", "troop_pkmn_grass_b", "troop_pkmn_new_grass", "troop_pkmn_new_pair", "troop_pkmn_shore", "troop_pkmn_dream", "troop_pkmn_sparchu", "troop_pkmn_pouch"];
+  map.troopIds = ["troop_pkmn_grass_a", "troop_pkmn_grass_b", "troop_pkmn_new_grass", "troop_pkmn_new_pair", "troop_pkmn_pond_pair", "troop_pkmn_shore", "troop_pkmn_dream", "troop_pkmn_sparchu", "troop_pkmn_pouch"];
 
   stampLower(map, 22, 16, G.POND);
   stampLower(map, 4, 18, G.SAND_PATCH);
