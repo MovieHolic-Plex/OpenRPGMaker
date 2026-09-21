@@ -248,7 +248,6 @@ export class EditScene extends PhaserRuntime.Scene {
   private cameraScrollbars: CameraScrollbars | null = null;
   private navigationGeometry: { canvas: CanvasRect; unoccluded: CanvasRect; zoom: number } | null = null;
   private navigationResizeObserver: ResizeObserver | null = null;
-  private navigationMutationObserver: MutationObserver | null = null;
 
   private readonly handleCanvasZoomWheel = (event: WheelEvent): void => this.zoomAtWheel(event);
 
@@ -522,7 +521,6 @@ export class EditScene extends PhaserRuntime.Scene {
     this.cancelCameraFocus(false);
     this.unbindCanvasPanGuards();
     this.navigationResizeObserver?.disconnect();
-    this.navigationMutationObserver?.disconnect();
     this.cameraScrollbars?.destroy();
     this.cameraScrollbars = null;
     this.navigationGeometry = null;
@@ -635,19 +633,13 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private observeNavigationGeometry(): void {
-    const invalidate = () => { this.overlayGeometryReadAtMs = 0; };
-    const host = document.querySelector(".ai-chat-float-host");
-    this.navigationResizeObserver = new ResizeObserver(invalidate);
+    // 캔버스 크기만 즉시 무효화한다. AI 패널의 class/style/높이는 스트리밍 중 토큰마다 바뀌고,
+    // 그때 시계를 0으로 돌리면 250ms TTL 이 풀려 매 프레임 getBoundingClientRect 가 편집을 막는다.
+    // 조수 카드 가림은 update() 가 TTL 안에 다시 잰다.
+    this.navigationResizeObserver = new ResizeObserver(() => {
+      this.overlayGeometryReadAtMs = 0;
+    });
     this.navigationResizeObserver.observe(this.game.canvas);
-    for (const node of host?.querySelectorAll(".ai-deck, [data-testid='ai-command-bar'], [data-testid='ai-chat-body']") ?? []) {
-      this.navigationResizeObserver.observe(node);
-    }
-    if (host) {
-      this.navigationMutationObserver = new MutationObserver(invalidate);
-      this.navigationMutationObserver.observe(host, {
-        subtree: true, attributes: true, attributeFilter: ["class", "style", "hidden"],
-      });
-    }
   }
 
   private syncNavigationGeometry(): void {
