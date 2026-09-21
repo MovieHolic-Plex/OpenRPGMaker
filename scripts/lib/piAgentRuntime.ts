@@ -85,6 +85,7 @@ function createWebSearchTool(options: {
   return {
     name: WEB_SEARCH_TOOL,
     label: "웹 검색",
+    concurrency: "shared",
     description: [
       "인터넷을 검색해 최신 사실과 출처 URL을 가져온다.",
       "학습 시점 이후의 정보(최신 버전·릴리스·요금·뉴스·현행 표준)나 실존 작품의 구체 사실이 필요할 때 쓴다.",
@@ -210,7 +211,6 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   };
   const incremental = !!request.applyMode && request.applyMode !== "review" && !request.readOnly && !options.readOnlyTools && !!options.onCheckpoint;
   let accepted = structuredClone(base) as Project;
-  let executionQueue: Promise<unknown> = Promise.resolve();
   let rejected = false;
   const checkpoint = async (label: string, toolName: string, signal?: AbortSignal): Promise<void> => {
     if (!incremental || changedProjectKeys(accepted, ctx.project).length === 0) return;
@@ -231,15 +231,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     }
   };
   const wrapTool = (tool: PiToolShape): PiToolShape => !incremental ? tool : ({ ...tool,
-    execute(id, params, signal) {
-      const result = executionQueue.then(async () => {
-        if (rejected) throw new Error("적용이 중단되었습니다.");
-        signal?.throwIfAborted();
-        const result = await tool.execute(id, params, signal);
-        if (request.applyMode !== "step") await checkpoint(tool.name, tool.name, signal);
-        return result;
-      });
-      executionQueue = result.catch(() => undefined);
+    async execute(id, params, signal) {
+      // The core owns ordering: consecutive reads overlap; writes hold an exclusive
+      // barrier through publication. A second queue here would serialize reads too.
+      if (rejected) throw new Error("적용이 중단되었습니다.");
+      signal?.throwIfAborted();
+      const result = await tool.execute(id, params, signal);
+      if (tool.concurrency === "exclusive" && request.applyMode !== "step") await checkpoint(tool.name, tool.name, signal);
       return result;
     },
   });
@@ -264,6 +262,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   }
   if (incremental && request.applyMode === "step") tools.push(wrapTool({
     name: "finish_stage", label: "단계 적용",
+    concurrency: "exclusive",
     description: "지형·건물/길·NPC/이벤트 등 의미 있는 한 단계를 마친 뒤 호출한다. 사용자 승인 전에는 다음 단계로 진행하지 않는다.",
     parameters: { type: "object", properties: { title: { type: "string" } }, required: ["title"] },
     async execute(_id, params, signal) {
@@ -395,15 +394,18 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       pendingSummaries.delete(callId);
       const toolAt = toolStartedAt.get(callId);
       toolStartedAt.delete(callId);
+      // A registry write can succeed but its publication can still be rejected.
+      // In that case the core's failure must override the earlier draft receipt.
+      const publicationFailed = event.isError && record?.ok;
       emit({
         type: "tool_end",
-        result: record?.result ?? activityPayload(event.result),
+        result: publicationFailed ? activityPayload(event.result) : record?.result ?? activityPayload(event.result),
         visuals: record?.visuals,
         ...(toolAt === undefined ? {} : { durationMs: Date.now() - toolAt }),
         id: String(event.toolCallId ?? ""),
         name,
-        ok: record ? record.ok : !event.isError,
-        summary: record?.summary ?? (event.isError ? "실행 실패(인자 검증 또는 예외)" : ""),
+        ok: !event.isError && (record?.ok ?? true),
+        summary: publicationFailed ? "변경 적용 실패 또는 실행 중단" : record?.summary ?? (event.isError ? "실행 실패(인자 검증 또는 예외)" : ""),
       });
       // 순서 계약: 무엇을 했나(tool_end) 다음에 무엇이 바뀌었나(map_delta). 브라우저 다리가
       // 실행 중 도구 이름을 먼저 세우고 그 아래 칸을 그린다.

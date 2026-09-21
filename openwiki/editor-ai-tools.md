@@ -1,3 +1,26 @@
+## 단독 조수의 병렬 도구 실행 (2026-09-21)
+
+기본 조수도 팀 없이 독립적인 조회·웹 검색·Writer 초안을 한 모델 응답의 여러 호출로
+묶는다. `piAgent/systemPrompt.ts`가 이 규칙과 결과·생성 ID 의존성의 다음 턴 대기를 지시한다.
+`toolAdapter.ts`는 레지스트리 `mode=read`를 Pi 코어 `concurrency=shared`, 쓰기를
+`exclusive`로 매핑한다. 최초 노출·find_tools 승격·미노출 직접 호출이 모두 같은 매핑을 쓴다.
+웹 검색과 Writer는 shared, `finish_stage`는 exclusive다. 팀 배정·메일함의 기존 실행 정책은 유지한다.
+
+`scripts/lib/piAgentRuntime.ts`의 전체 도구용 `executionQueue`는 제거했다. 이 큐 때문에
+DEFAULT/AUTO/YOLO/단계별 적용에서는 검색까지 직렬 실행됐다. 이제 코어가 연속된 읽기를
+함께 실행하고, 쓰기는 앞선 호출의 종료를 기다려 실행·checkpoint 적용까지 단독 점유한다.
+뒤의 조회/쓰기는 승인된 최신 프로젝트를 보며, 검토 후 적용에서도 쓰기는 순서를 지킨다.
+승인 거절이나 중단은 후속 쓰기를 막는다. 초안 작성 후 checkpoint가 실패하면 이전의
+성공 영수증보다 코어 실패를 우선하여 `tool_end.ok=false`로 보고한다.
+
+병렬화는 비동기 대기 시간을 겹치는 것이며 동기 타일 연산을 여러 CPU에서 돌리는 기능은 아니다.
+도구 결과가 필요한 후속 모델 판단은 다음 턴에 실행한다. 제공자별 다중 호출 제한은 변경하지 않는다.
+증거·명령·제약: `reports/2026-09-21-ai-tool-parallel.md`, `.omo/evidence/ai-tool-parallel/`.
+회귀: `test/piToolConcurrency.bun.test.ts`(실제 Pi 루프 + 제어된 모델/검색 전송),
+`piApplyModes.bun.test.ts`, `piAgentToolAdapter.test.ts`.
+실제 모델/실제 검색 재현: `bun scripts/qa/ai-tool-parallel-live.mts` (연결된 제공자 필요,
+읽기 도구만 허용하고 프로젝트 적용이 발생하면 실패한다).
+
 ### 검색 중 사용자에게 보이는 것 (2026-09-21 실측)
 ## AI 새 야외·마을의 기본 칩셋 (2026-09-21)
 

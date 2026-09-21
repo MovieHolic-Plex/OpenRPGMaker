@@ -1,0 +1,35 @@
+
+ RUN  v3.2.4 /home/main/.codex/worktrees/ab15/rpg-zzu
+
+ ✓ test/piAgentToolAdapter.test.ts (6 tests) 2276ms
+   ✓ piAgent toolAdapter > 성공은 JSON 본문으로, 실패는 issues 를 실은 예외로 옮긴다  1046ms
+   ✓ piAgent toolAdapter > 에스컬레이션 해석기 > 실행 경계 안의 이름만 셰이프로 만든다  785ms
+ ✓ test/piAgentSystemPromptHousePolicy.test.ts (2 tests) 210ms
+ ✓ test/piAgentTeamRuntime.test.ts (22 tests) 36298ms
+   ✓ 팀 런타임 — 맵 in-flight 락 > 진행 중인 맵에 두 번째 배정을 내면 툴이 거절하고 앞 배정이 살아남는다  2031ms
+   ✓ 팀 런타임 — 맵 in-flight 락 > 다른 맵 두 배정은 함께 돌고 각자 자기 맵만 병합된다  2406ms
+   ✓ 팀 런타임 — 맵 in-flight 락 > 진행 중인 맵은 검수도 거절한다  1596ms
+   ✓ 팀 런타임 — 시작/확인 분리 > assign 은 즉시 돌아오고 check_agents 가 진행 중 배정을 알려준다  1589ms
+   ✓ 팀 런타임 — 시작/확인 분리 > wait_agents 는 끝난 배정의 결과를 돌려준다  1647ms
+   ✓ 팀 런타임 — 시작/확인 분리 > finish 는 진행 중인 배정이 있으면 거절한다  1500ms
+   ✓ 팀 런타임 — 시작/확인 분리 > 팀장이 기다리지 않고 끝나도 진행 중인 배정을 거두어 병합한다  1582ms
+   ✓ 팀 런타임 — 묶음이 만든 정의 > 시공 팀원이 만든 스위치가 팀 병합을 지나 커밋 게이트를 통과한다  2354ms
+   ✓ 팀 런타임 — 업무/수정 분류 > 검수 지적 뒤의 배정만 수정으로 분류되고 spawn 이 검수 행을 가리킨다  2450ms
+   ✓ team model roles > uses Ultrabrain for orchestration and Deep for builders with provider-specific credentials  1532ms
+   ✓ 팀 런타임 — 실행 상한 > timeoutMs 가 팀장·시공·검수 하위 에이전트에 그대로 실린다  1629ms
+   ✓ 팀 런타임 — 현재 맵 > 요청의 currentMapId 가 팀장 시스템 프롬프트의 기본 대상으로 실린다  1137ms
+   ✓ 외부·실내 담당이 직접 출입구를 협의하고 팀장은 대기 중 질문에 답한다  2112ms
+   ✓ 읽기 설계 두 작업을 병렬 배정하고 보고서를 받아 공통 텍스트를 적용한다  1869ms
+   ✓ 프로젝트 제작과 맵 쓰기를 양방향으로 잠그고 직렬 결과를 보존한다  1804ms
+   ✓ 읽기 작업의 잘못된 반환(mutation)은 적용하지 않고 실패로 보고한다  1511ms
+   ✓ 읽기 작업의 잘못된 반환(missing-report)은 적용하지 않고 실패로 보고한다  1438ms
+   ✓ 프로젝트 배정은 원래 요청 권한을 넓히지 않는다: {"readOnly":true}  1109ms
+   ✓ 프로젝트 배정은 원래 요청 권한을 넓히지 않는다: {"mapIds":["map_a"],"scopeStrict":true}  1155ms
+   ✓ live team checkpoints merge owned maps before another agent's final result  2375ms
+   ✓ 팀 마을 완료 상태 > 팀원 완료 정보를 최종 병합본에서 재검사해 done에도 미완료를 남긴다  1457ms
+ ✓ test/piWriterTool.test.ts (2 tests) 15ms
+
+ Test Files  4 passed (4)
+      Tests  32 passed (32)
+   Start at  11:50:10
+   Duration  55.65s (transform 12.81s, setup 0ms, collect 37.73s, tests 38.80s, environment 1ms, prepare 415ms)
