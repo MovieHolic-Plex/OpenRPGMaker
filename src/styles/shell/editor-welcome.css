@@ -240,6 +240,37 @@
     line-height: 1.45;
   }
 
+  /* AI 미연결 안내 — "만들기" 아래 같은 자리에 뜬다. 오류가 아니라 다음 행동 안내다. */
+  .editor-welcome-briefing .editor-welcome-ai-notice {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    align-items: center;
+    margin: 10px 0 0;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface-2);
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .editor-welcome-briefing .editor-welcome-ai-notice-action {
+    flex: none;
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .editor-welcome-briefing .editor-welcome-ai-notice-action:hover {
+    background: var(--surface-2);
+  }
+
   /* ── Second tier ────────────────────────────────────────────────────────── */
   .editor-welcome-briefing .editor-welcome-more {
     margin-top: var(--space-3);
