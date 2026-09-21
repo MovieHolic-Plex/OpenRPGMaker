@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "paths": [
+    "assets/ATTRIBUTION.md",
     "assets/cc0/jetrel/icons/book-magic.png",
     "assets/cc0/jetrel/icons/book-sword.png",
     "assets/cc0/jetrel/icons/bronze-sword.png",
@@ -67,6 +68,11 @@
     "assets/scarloxy/scarloxy-monster-larvea.png",
     "assets/scarloxy/scarloxy-monster-mossling.png",
     "assets/ui/windowskin-default.png",
-    "generated/battle-reference-forest.png"
+    "generated/battle-reference-forest.png",
+    "generated/opening/dark-citadel.png",
+    "generated/opening/desert-ruin.png",
+    "generated/opening/farm-golden.png",
+    "generated/opening/kingdom-day.png",
+    "generated/opening/snow-village.png"
   ]
 }

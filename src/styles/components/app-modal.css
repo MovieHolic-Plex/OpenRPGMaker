@@ -178,6 +178,104 @@
     }
   }
 
+  /* 인터뷰 모드 — 한 단계에 한 질문. 숨긴 단계의 입력은 DOM 에 남는다(테스트 계약). */
+  .new-project-header {
+    align-items: baseline;
+    display: flex;
+    gap: var(--space-2);
+    justify-content: space-between;
+  }
+  .new-project-progress {
+    color: var(--text-2);
+    font-size: 12px;
+  }
+  .new-project-step[hidden] {
+    display: none;
+  }
+  .new-project-step {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .new-project-question {
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .new-project-size-preview {
+    background: var(--bg-inset);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-s);
+    display: grid;
+    flex-shrink: 0;
+    height: 56px;
+    place-items: center;
+    width: 64px;
+  }
+  .new-project-size-preview-box {
+    background: var(--accent);
+    display: block;
+    opacity: 0.75;
+  }
+  .new-project-size-preview-box[data-size-preset="classic"] {
+    height: 24px;
+    width: 32px;
+  }
+  .new-project-size-preview-box[data-size-preset="wide"] {
+    height: 22px;
+    width: 48px;
+  }
+  .new-project-choice-list {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .new-project-choice-row {
+    background: var(--bg-inset);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-m);
+    cursor: pointer;
+    display: flex;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+  .new-project-choice-row:hover {
+    border-color: var(--border-strong);
+  }
+  .new-project-choice-row:has(.new-project-choice-radio:checked) {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  .new-project-choice-row:focus-within {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  .new-project-choice-radio {
+    accent-color: var(--accent);
+    height: 18px;
+    margin: 0;
+    width: 18px;
+  }
+  .new-project-choice-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .new-project-choice-label {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .new-project-choice-blurb {
+    color: var(--text-2);
+    font-size: 12px;
+  }
+  .new-project-summary {
+    background: var(--bg-inset);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-m);
+    color: var(--text-2);
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+
   /* AI 차단 게이트 경고(editor/ui/aiGateModal.ts) — 위 프리미티브에 목록/원문 영역만 얹는다. */
   .ai-gate-card {
     border-color: var(--danger);

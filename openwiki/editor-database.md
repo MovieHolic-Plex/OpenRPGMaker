@@ -351,6 +351,19 @@ Validation and replay boundaries are in `reports/pr617-621-integration.md`.
 
 ## Opening still media, sequence music and AI generation (2026-09-14)
 
+### 새 프로젝트 기본 오프닝 (2026-09-21)
+
+새 프로젝트는 이제 system.opening 에 기본 시퀀스가 이미 싣여 있다 — «왕국의 서막»
+프리셋(oprn-title-bright, battle-skin-ff/chrono-backdrop, 스타터 타이틀 곡
+cc0-bgm-rtp-ttl-001, pan/zoom/fade 모션, 타이틀 카드로 종료). 정확한 채택 지점은
+둘이다: (1) createBlankProject(새 프로젝트)와 (2) store.normalizeCurrentProject 의
+defaultOpening 정규화기(오프닝이 아예 없는 기존 프로젝트만 채택). deserialize 는
+순수하게 유지된다 — 없던 opening 을 왕복이 지어내면 안 된다는 기존 계약
+(cinematicSettings.test.ts 의 legacy-absence 케이스, 픽스처는 이제 명시적으로
+delete system.opening)이 그 이유다. 저작자가 지운/끈(enabled:false) 오프닝은
+되살리지 않는다. 장르 팩 프리셋은 필드 단위 패치라 이 값을 지우지 않는다.
+AI 컨텍스트는 intro 25번 줄에 이 사실을 명시한다.
+
 오프닝·게임오버 탭의 그림 슬롯은 picker kind `image`(아이템 아이콘 457개) 대신 신설 kind **`still`** 을 쓴다:
 배경화 → 타이틀 아트 → 생성·업로드 그림 순서가 앞에 오고, 기존 `image` 목록은 뒤에 통째로 남아 **아이콘으로
 저작해 둔 저장본이 그대로 유효하다**. 버튼 배선은 그대로고 `databaseCinematicMediaFields`(표시)와

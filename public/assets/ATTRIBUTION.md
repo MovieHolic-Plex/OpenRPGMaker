@@ -368,3 +368,16 @@ The corresponding `public/assets/region-references/*-atlas.png` files are copies
 of those uploaded atlases. This registration does not create new original artwork
 or change the attribution or licence status documented above. Preview PNGs are
 captures of the saved maps in the actual editor.
+
+## Opening mood stills (2026-09-22)
+
+generated/opening/*.png contains five cinematic opening stills (farm-golden,
+snow-village, desert-ruin, kingdom-day, dark-citadel) generated with the project
+god-tibo-imagen path (Google Antigravity, gemini-3.1-flash-image) from text prompts
+authored in this repository. No third-party reference images were used. They are
+project-original generated assets, registered as the oprn-still-* resource ids in
+src/assets/generatedAssetResourceResolver.ts with mood search terms in
+src/assets/openingStillMoods.ts. The remaining oprn-still-* ids point at existing
+bundled artwork (welcome poster slides and title art) whose provenance is
+documented in their sections above; this section registers no new claim for those
+files.

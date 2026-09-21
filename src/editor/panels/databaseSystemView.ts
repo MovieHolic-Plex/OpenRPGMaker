@@ -736,7 +736,7 @@ function playResolutionFieldset(project: Project, rerender: SystemRefresh): HTML
     rerender("values");
   });
 
-  return rm2k3Fieldset("게임 화면 해상도", [
+  return rm2k3Fieldset("게임 화면 크기", [
     el("p", {
       class: "db-system-resolution-help",
       text: "플레이 화면이 보여 주는 논리 영역입니다. 값이 커질수록 한 화면에 더 넓은 맵이 보이며, 다음 테스트 플레이부터 적용됩니다.",
@@ -801,7 +801,7 @@ function playResolutionDiagnostics(project: Project, resolution: Readonly<PlayRe
       estimatedFitScale: fitScale.toFixed(3),
     },
     children: [
-      el("strong", { text: "해상도 영향" }),
+      el("strong", { text: "크기 영향" }),
       el("div", {
         class: "db-system-resolution-diagram",
         attrs: { role: "img", "aria-label": `${resolution.width} × ${resolution.height}, ${analysis.aspectWidth}:${analysis.aspectHeight}` },

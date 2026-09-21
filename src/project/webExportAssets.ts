@@ -65,6 +65,9 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
     const path = 'assets/castle-surroundings/CREDITS.txt';
     assets.set(path, { kind: 'public', sourcePath: path, zipPath: path });
   }
+  // 저작자 표기 정본. CC BY 계열 기본 에셋(EasyRPG RTP 등)은 번들 여부와 무관하게 표기 의무가
+  // 따라오므로 조건부로 돌리지 않는다 — 타이틀 화면의 라이선스 표기도 이 파일을 연다.
+  assets.set("assets/ATTRIBUTION.md", { kind: "public", sourcePath: "assets/ATTRIBUTION.md", zipPath: "assets/ATTRIBUTION.md" });
   return [...assets.values()].sort((left, right) => left.zipPath.localeCompare(right.zipPath));
 }
 

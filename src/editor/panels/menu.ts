@@ -857,6 +857,11 @@ async function newProject(): Promise<void> {
   const choiceId = selection.choiceId;
   const packId = choiceId === null ? null : newProjectChoiceById(choiceId)?.packId ?? null;
   const seed = createNewProjectSeed(packId);
+  // 인터뷰 3단계 응답 적용 — 게임 화면 크기는 논리 뷰포트다. 타이틀 그림·파티클·음악은
+  // 질문하지 않는다: AI 가 장르에 맞게 넣고 저작자는 DB 에서 고친다(2026-09-22 합의).
+  if (selection.screenSize === "wide") {
+    seed.system.playResolution = { width: 640, height: 360 };
+  }
   const { createProjectFolderWithSeed } = await import("@/editor/projectFolderActions");
   if (store.hasUnsavedChanges() && !store.isSharedDemoSession() && !(await saveProjectNow())) return;
   let created: boolean;
@@ -870,8 +875,8 @@ async function newProject(): Promise<void> {
     toast("프로젝트 저장 서버에 연결하거나 데스크톱 앱에서 열어 주세요.", "error");
     return;
   }
-  const genreSuffix = choiceId ? ` — 시작 장르: ${newProjectChoiceLabel(choiceId)}` : "";
-  toast(`'${title}' 프로젝트를 만들었습니다 — 새 폴더에 저장됩니다${genreSuffix}`, "ok");
+  const genreSuffix = choiceId ? ` · ${newProjectChoiceLabel(choiceId)}` : "";
+  toast(`「${title}」${genreSuffix} 준비 완료 — 타일을 놓아 마을부터 만들어 보세요`, "ok");
   if (choiceId) {
     // 프리셋으로 만들면 장르 프롬프트를 AI 조수에 바로 자동 전송한다 —
     // 엔진 토글은 씨앗에 들어 있고, AI는 그 위의 콘텐츠만 채운다.

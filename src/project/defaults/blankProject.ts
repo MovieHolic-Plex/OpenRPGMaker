@@ -13,6 +13,7 @@ import { SCHEMA_VERSION } from "../types";
 import { DEFAULT_ACTOR_ID } from "./constants";
 import { defaultAssetSet, defaultResourceProfiles, defaultTilesets } from "./defaultAssets";
 import { defaultDatabase, defaultSession, defaultSystem, defaultTerms } from "./defaultDatabase";
+import { defaultOpeningSequence } from "./defaultOpeningSequence";
 import { createBlankMap, createStarterMap, singleNodeTree } from "./defaultMaps";
 import { ensureItemSwitchDefs } from "@/project/itemSwitchDefs";
 import { repairLegacyRateKeys } from "./legacyRateKeyRepair";
@@ -120,6 +121,7 @@ export function createBlankProject(): Project {
   map.id = BLANK_PROJECT_START_MAP_ID;
   const project = createProjectWithMaps([map], 0);
   project.system = { ...project.system, startActorIds: [DEFAULT_ACTOR_ID] };
+  project.system.opening = defaultOpeningSequence();
   project.session = { ...project.session, partyActorIds: [DEFAULT_ACTOR_ID] };
   return project;
 }
