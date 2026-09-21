@@ -7,7 +7,8 @@ import {CASTLE_MEASURED_PARTS} from '../src/project/defaults/castleMeasuredParts
 import {installCastleSurroundings,HARBOR_TILESET_ID} from './lib/castle-surroundings.mts';
 import {canMove} from '../src/project/collision';
 import {charsetFrameIndex} from '../src/assets/easyrpgRtp';
-const out='output/castle-density-improvement';fs.mkdirSync(out,{recursive:true});
+const landscape=process.argv.includes('--landscape');
+const out=landscape?'output/castle-landscape-improvement':'output/castle-density-improvement';fs.mkdirSync(out,{recursive:true});
 const original=JSON.parse(fs.readFileSync(process.argv[2]??'output/castle-reference-revision/before-density.json','utf8'));
 const p=structuredClone(original);installCastleSurroundings(p);
 const t=p.tilesets[HARBOR_TILESET_ID];
@@ -27,6 +28,13 @@ const additions:any[]=[
  {id:'crate',rect:[288,480,32,32],solid:true,file:'public/assets/opengameart-castle-tiles.png'},
 
 ];
+if(landscape)additions.push(
+ {id:'lodge-roof',rect:[128,416,96,96],solid:true},
+ {id:'timber',rect:[480,672,32,32],solid:true},
+ {id:'campfire',rect:[192,896,32,32],solid:true,colorKeys:[[32,29,32],[48,40,48]],file:'public/assets/castle-surroundings/sources/hyptosis-batch1.png'},
+ {id:'grass-patch',rect:[416,896,32,32],solid:false,file:'public/assets/castle-surroundings/sources/hyptosis-batch1.png'},
+ {id:'path-fringe',rect:[480,864,64,32],solid:false,file:'public/assets/castle-surroundings/sources/hyptosis-batch1.png'}
+);
 const oldPng=PNG.sync.read(Buffer.from(p.assets.uploaded.castle_courtyard_harbor_atlas.dataUrl.split(',')[1],'base64'));
 const source=PNG.sync.read(fs.readFileSync('public/assets/castle-surroundings/sources/hyptosis-batch3.png'));
 const newHeight=oldPng.height+additions.reduce((n,a)=>n+a.rect[3],0);
@@ -34,7 +42,7 @@ const extended=new PNG({width:512,height:newHeight});PNG.bitblt(oldPng,extended,
 let row=oldPng.height/16;
 for(const part of additions){const [x,y,w,h]=part.rect;const partSource=part.file?PNG.sync.read(fs.readFileSync(part.file)):source;
 PNG.bitblt(partSource,extended,x,y,w,h,0,row*16);
-if(part.colorKey)for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){const k=((row*16+yy)*512+xx)*4;if(part.colorKey.every((v:number,c:number)=>extended.data[k+c]===v))extended.data[k+3]=0;}
+if(part.colorKey||part.colorKeys)for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){const k=((row*16+yy)*512+xx)*4;if((part.colorKeys??[part.colorKey]).some((key:number[])=>key.every((v:number,c:number)=>extended.data[k+c]===v)))extended.data[k+3]=0;}
 part.atlasRect=[0,row,w/16,h/16];atlas.parts[part.id]={rect:part.atlasRect};row+=h/16;}
 for(let i=t.count;i<newHeight/16*32;i++){t.passability.push({up:false,down:false,left:false,right:false});t.priority.push('upper');t.terrain.push(0);t.tileMeta.push({label:'추가 실측 조각',defaultLayer:'upper',passage:'solid',tags:[],source:'ai'});}
 t.count=newHeight/16*32;
@@ -78,6 +86,7 @@ function panel(x:number,y:number,w:number,h:number){
 function face(x:number,y:number,w:number,h:number){for(let j=0;j<h;j++)for(let i=0;i<w;i++)put(x+i,y+j,i%2,j===0?6:j===h-1?10:8+(j-1)%2,true);}
 function building(name:string,x:number,y:number,w:number,roofH:number,wallH:number){panel(x,y,w,roofH);face(x,y+roofH,w,wallH);placements.push({name,x,y,w,h:roofH+wallH});}
 function stamp(id:string,x:number,y:number){
+ if(landscape&&id==='cairn')while(x>94&&[768,769,800,801].includes(m.lowerTiles[at(x+1,y+3)]))x--;
  // East-bank roots must sit on land, even when the canopy overhangs water.
  if(id==='green-tree'&&x>=140){while(x<156&&[1,2,3].some(dx=>{const v=m.lowerTiles[at(x+dx,y+4)];return [768,769,800,801].includes(v);}))x++;}
 
@@ -144,7 +153,23 @@ for(let x=106;x<144;x+=2)for(let j=0;j<4;j++)for(let i=0;i<2;i++)put(x+i,14+j,cl
 for(const x of [114,134]){for(let y=0;y<14;y++)for(let i=0;i<2;i++)put(x+i,y,i,24+y%2);for(let y=0;y<6;y++)for(let i=0;i<2;i++){m.upperTiles[at(x+i,14+y)]=-1;put(x+i,14+y,12+i,26+y);}}
 stamp('boulders',122,4);stamp('bush',107,5);stamp('autumn-tree',138,4);
 // Outside the walls: smaller lodge, staggered groves and short paths.
-building('성 밖 작은 관리소',28,130,14,6,5);stamp('door',34,137);stamp('firewood',43,136);
+if(landscape){
+ const wood=atlas.parts.timber.rect;
+ for(let y=131;y<140;y++)for(let x=28;x<34;x++)put(x,y,wood[0]+x%2,wood[1]+y%2,true);
+ stamp('lodge-roof',28,128);stamp('door',30,136);
+ stamp('campfire',43,138);stamp('bench',36,135);stamp('bench',43,133);
+ stamp('firewood',37,129);stamp('crate',35,140);stamp('small-pot',27,140);
+ // Low, interrupted enclosure keeps the entrance and southbound path clear.
+ face(26,142,12,2);face(40,142,7,2);stamp('small-pot',39,140);
+ // Source grass/dirt strips interrupt long straight approaches without masking the road centre.
+ const fringe=atlas.parts['path-fringe'].rect,patch=atlas.parts['grass-patch'].rect;
+ for(const [x,y] of [[35,131],[39,132],[45,130],[47,140],[54,136],[56,137],[95,131],[97,135]])
+  for(let j=0;j<2;j++)for(let i=0;i<4;i++)put(x+i,y+j,fringe[0]+i,fringe[1]+j);
+ for(const [x,y] of [[33,34],[40,32],[46,35],[68,34],[73,38],[78,47],[34,59],[65,61],
+ [2,36],[4,72],[2,97],[148,46],[148,71],[146,98],[26,136],[36,138],[40,137],[62,134],[68,136]])
+  for(let j=0;j<2;j++)for(let i=0;i<2;i++)put(x+i,y+j,patch[0]+i,patch[1]+j);
+}else{building('성 밖 작은 관리소',28,130,14,6,5);stamp('door',34,137);stamp('firewood',43,136);}
+
 for(const [x,y] of [[0,13],[2,41],[0,81],[3,107],[18,128],[96,100],[94,119],[146,30],[148,78],[142,117]])stamp('tree',x,y);
 for(const [x,y] of [[1,0],[29,3],[67,2],[95,27],[149,56],[142,99],[72,132]])stamp('autumn-tree',x,y);
 for(const [x,y] of [[3,28],[4,60],[0,69],[4,99],[4,128],[30,4],[40,5],[76,4],[97,36],[95,91],[92,133],[146,24],[151,46],[149,70],[143,93],[145,136],[64,131]])stamp('bush',x,y);
@@ -165,9 +190,16 @@ for(const [x,y] of [[2,4],[6,0],[12,1],[28,1],[35,0],[39,4],[45,1],[61,0],[67,1]
  [0,31],[2,35],[1,63],[4,67],[0,94],[2,98],[1,118],[3,124],
  [32,32],[43,31],[69,31],[74,39],[78,42],[31,60],[68,58],
  [145,24],[149,27],[148,45],[144,64],[148,70],[142,91],[146,94],[147,131],
- [28,125],[34,126],[64,130],[69,133],[82,132],[91,136]])stamp('green-tree',x,y);
+ ...(landscape?[[23,123],[36,123]]:[[28,125],[34,126]]),[64,130],[69,133],[82,132],[91,136]])stamp('green-tree',x,y);
 for(const [x,y] of [[30,5],[40,8],[68,7],[77,8],[1,39],[3,71],[1,102],[147,33],[146,74],[144,99],
  [30,34],[45,33],[69,35],[77,46],[32,58],[65,59],[68,137]])stamp('bush',x,y);
+if(landscape){
+ stamp('bench',151,90);stamp('small-pot',155,90);stamp('stela',151,94);
+ for(const [x,y] of [[147,88],[155,95],[151,99]])stamp('bush',x,y);
+ stamp('crate',92,59);stamp('small-pot',96,60);
+ // Small stones and reeds overlap only the landward shore, leaving the main water open.
+ for(const [x,y] of [[98,35],[97,64],[99,93],[102,114]])stamp('cairn',x,y);
+}
 function npc(id:string,name:string,x:number,y:number,index:number,body:string){m.events.push({id,name,x,y,placementRole:'npc',trigger:{kind:'action'},commands:[],pages:[{id:id+'-page',name,conditions:[],graphic:{sprite:{type:'bundled',id:'tex_easyrpg_charset_people1'},direction:'down',pattern:charsetFrameIndex({characterIndex:index,direction:'down',pattern:1})},trigger:{kind:'action'},priority:'same',overlapForbidden:true,movement:{type:'fixed',speed:3,frequency:3},commands:[{kind:'text',speaker:name,body}]}]});}
 npc('city-greeter','남문 안내인',59,132,0,'어서 오세요. 서쪽 성벽 안쪽 길을 따라가면 본성 뒤뜰로 이어집니다.');
 npc('city-merchant','뒤뜰 상인',40,44,1,'나루에서 들어온 곡물이에요. 고목 그늘 아래서 쉬어 가세요.');
@@ -212,7 +244,7 @@ function route(from:{x:number,y:number},to:{x:number,y:number}){
  for(const [dir,dx,dy] of [['up',0,-1],['down',0,1],['left',-1,0],['right',1,0]] as const){const x=a.x+dx,y=a.y+dy,k=`${x},${y}`;if(parent.has(k)||occupied.has(k)||!canMove(p,m,a.x,a.y,x,y))continue;parent.set(k,{key,dir});queue.push({x,y});}}
  throw Error('Unreachable '+JSON.stringify(to));
 }
-const stops=[{id:'south-gate',x:54,y:110},{id:'training',x:62,y:106,npc:'city-recruit'},
+const stops=[...(landscape?[{id:'lodge',x:31,y:140},{id:'fireside',x:42,y:139}]:[]),{id:'south-gate',x:54,y:110},{id:'training',x:62,y:106,npc:'city-recruit'},
 {id:'market',x:40,y:45,npc:'city-merchant'},{id:'royal-square',x:61,y:39,npc:'city-courtier'},
 {id:'garden',x:80,y:59,npc:'city-gardener'},{id:'harbor',x:96,y:55,npc:'city-harbor'},
 {id:'pier',x:109,y:52}];
