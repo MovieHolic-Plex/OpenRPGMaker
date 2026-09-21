@@ -2,7 +2,7 @@
 // 헤드리스 시뮬(pkmnCoreUnlock)이 로직을 증명했고, 여기서는 Phaser 플레이 씬 + 전투 DOM을 증명한다.
 // 결정적 구성: LLM 없이 에디터 도구(run)를 Node에서 직접 실행해 프로젝트를 만든 뒤 시드한다.
 import { expect, test, type Page } from "@playwright/test";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { createBlankProject } from "@/project/defaults";
 import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
 import { scarloxySpeciesId } from "@/project/defaults/scarloxyPokemonDemoGame";
@@ -97,7 +97,7 @@ test("pokemon DOM: 스타터 획득 → 전투에서 몬스터(영웅 아님)가
   await page.setViewportSize({ width: 1280, height: 800 });
   // 기본(basic) UI 모드는 상단 메뉴(mode-play)를 숨긴다 — expert 주입(시드 헬퍼가 clear 후에도 보존).
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
-  await seedProjectFromSupabaseCanonical(page, makePokemonProject());
+  await seedProjectForEditor(page, makePokemonProject());
   await page.getByTestId("mode-play").click();
   await startTitle(page);
 
@@ -190,7 +190,7 @@ test("control: battleParty off이면 영웅이 그대로 출전한다(액터 경
   // 스타터 이벤트 제거 + 몬스터 플래그 미설정 → 순수 액터 경로.
   map.events.splice(map.events.indexOf(starter), 1);
 
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await page.getByTestId("mode-play").click();
   await startTitle(page);
   await tapDir(page, "left");

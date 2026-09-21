@@ -267,7 +267,7 @@
     "lintPass": true,
     "remoteWrites": 0
   },
-  "persistencePath": "loadProjectFromSupabase -> projects current_json deserialize/repair -> maps mirror overlay",
+  "persistencePath": "loadProjectFromLegacyDb -> projects current_json deserialize/repair -> maps mirror overlay",
   "passed": true,
   "finishedAt": "2026-09-08T20:46:43.716Z",
   "exitCode": 0

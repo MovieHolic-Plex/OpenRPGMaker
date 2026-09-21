@@ -1,6 +1,6 @@
 # 소규모 마을 생활 공간
 
-정본: Supabase `rpg-zzu-house-template-gallery` (호수 마을), 19개 맵.
+정본: LegacyDb `rpg-zzu-house-template-gallery` (호수 마을), 19개 맵.
 마을: `spatial-geography:30:small-village:example:20260913`.
 공간 갤러리: `map_village_decoration_catalog`.
 
@@ -22,7 +22,7 @@ LLM 제공자의 자연어 대화 세션을 실행했다는 뜻은 아니다.
 
 ## 검증
 
-- 최종 원격 CAS 저장 및 재로드, 독립 재조회: `supabase-proof.json`, `final-remote-check.json`.
+- 최종 원격 CAS 저장 및 재로드, 독립 재조회: `legacy-db-proof.json`, `final-remote-check.json`.
   최종 서버 SHA: `5dc3f0706bbe05a878796084de162afba088c8bdd1560f052f78f80eb44b52ca`.
 - 동결 공간 래스터 40곳/152칸 일치, 현관·가판·쉼터·새 공간 71곳 도달 가능.
 - `focused-tests.json`: 13개 검사 통과. IO, 실패 원자성, 기존 통행 보존, 잔교 전체 도달,

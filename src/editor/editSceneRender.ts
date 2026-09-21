@@ -1,5 +1,4 @@
 import type Phaser from "phaser";
-import { TILE_SIZE } from "@/assets/bundled";
 import { editorState, type Layer } from "@/editor/editorState";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { renderEventMarkers } from "@/editor/editSceneEventMarkers";
@@ -10,6 +9,7 @@ import { tileStackAt, topTileInStack } from "@/project/mapOverlayTiles";
 import { store, type ProjectChangeCell } from "@/project/store";
 import { renderWalkEncounterOverlay } from "@/editor/walkEncounterOverlay";
 import { invalidateCullingWindow, resetCullableTiles, trackCullableTile } from "@/player/playSceneTileCulling";
+import { mapTileSize } from "@/project/tileGeometry";
 import type { GameMap, MapId } from "@/project/types";
 export { editorEventMarkerTexture, eventMarkerTileScale, renderEventLayerClickFeedback } from "@/editor/editSceneEventMarkers";
 
@@ -48,6 +48,46 @@ export interface EditSceneRenderContext {
 
 export type EditSceneTileIndex = Map<string, Phaser.GameObjects.GameObject[]>;
 
+/**
+ * Large maps should not pay the cost of creating every tile before the first frame.
+ * The existing culling pass can hide objects, but it cannot undo their construction.
+ * Keep the threshold below the common 128×128 render-contract fixture so the existing
+ * small/editor capture behavior remains unchanged while 100×100 hosted maps use the lazy path.
+ */
+export const LAZY_EDIT_MAP_CELL_THRESHOLD = 8_192;
+
+type EditSceneTileWindow = {
+  readonly minX: number;
+  readonly minY: number;
+  readonly maxX: number;
+  readonly maxY: number;
+};
+
+export function shouldLazilyRenderEditMap(map: GameMap): boolean {
+  return map.width * map.height > LAZY_EDIT_MAP_CELL_THRESHOLD;
+}
+
+function cameraTileWindow(scene: Phaser.Scene, map: GameMap): EditSceneTileWindow {
+  const view = scene.cameras?.main?.worldView;
+  if (!view || view.width <= 0 || view.height <= 0) {
+    return { minX: 0, minY: 0, maxX: map.width - 1, maxY: map.height - 1 };
+  }
+  // 컬링 창은 **월드 픽셀을 칸으로 나누는** 계산이다 — 여기서 16 을 쓰면 32px 맵에서
+  // 창이 두 배 넓게 잡혀 화면 밖 타일이 materialize 되거나(느림) 안쪽이 빈다(검은 칸).
+  const tileSize = mapTileSize(map, store.getCurrent().tilesets[map.tilesetId]);
+  const margin = 2;
+  const minX = Math.max(0, Math.floor(view.x / tileSize) - margin);
+  const minY = Math.max(0, Math.floor(view.y / tileSize) - margin);
+  const maxX = Math.min(map.width - 1, Math.floor((view.x + view.width) / tileSize) + margin);
+  const maxY = Math.min(map.height - 1, Math.floor((view.y + view.height) / tileSize) + margin);
+  return { minX, minY, maxX, maxY };
+}
+
+export function editSceneTileWindowKey(scene: Phaser.Scene, map: GameMap): string {
+  const window = cameraTileWindow(scene, map);
+  return `${window.minX},${window.minY},${window.maxX},${window.maxY}`;
+}
+
 export type EditSceneRenderStats = {
   readonly tileObjectsUpdated: number;
 };
@@ -69,12 +109,11 @@ export function renderEditScene(context: EditSceneRenderContext): EditSceneRende
   if (context.resetCamera) applyCameraView(context.scene, map, context.preserveCameraLookAt === true);
   const tileObjectsUpdated = renderTiles(context, map, mapOnlyCapture);
   if (mapOnlyCapture) return { tileObjectsUpdated };
-  renderWalkEncounterOverlay(context.scene, context.overlayLayer, map);
+  renderWalkEncounterOverlay(context.scene, context.overlayLayer, map, mapTileSize(map, store.getCurrent().tilesets[map.tilesetId]));
   if (state.tool === "collision") renderCollisionOverlay(context, map);
   if (state.showGrid) renderGrid(context.gridGraphics, map, state.layer);
   renderStartPosition(context);
-  renderEventMarkers(context, map, state.layer);
-  renderSelection(context);
+  renderEventMarkers({ ...context, tileSize: mapTileSize(map, store.getCurrent().tilesets[map.tilesetId]) }, map, state.layer);
   return { tileObjectsUpdated };
 }
 
@@ -90,10 +129,19 @@ export function renderEditSceneTileCells(
   const uniqueCells = uniqueRenderableTileCells(cells)
     .slice()
     .sort((a, b) => (a.layer === b.layer ? 0 : a.layer === "lower" ? -1 : 1));
+  const lazyWindow = shouldLazilyRenderEditMap(map) ? cameraTileWindow(context.scene, map) : null;
+  const limitToWindow = lazyWindow !== null && isPartialTileWindow(lazyWindow, map);
   let tileObjectsUpdated = 0;
   for (const cell of uniqueCells) {
     if (cell.x < 0 || cell.y < 0 || cell.x >= map.width || cell.y >= map.height) continue;
     const key = tileIndexKey(cell.layer, cell.x, cell.y);
+    if (limitToWindow && lazyWindow && isOutsideTileWindow(lazyWindow, cell.x, cell.y)) {
+      // 화면 밖은 맵 배열이 정본이다. 객체를 만들면 팬으로 이미 줄어든 창이 다시 맵 전체가 된다.
+      const previous = context.tileIndex.get(key) ?? [];
+      for (const object of previous) context.tileLayer.remove(object, true);
+      context.tileIndex.delete(key);
+      continue;
+    }
     const previous = context.tileIndex.get(key) ?? [];
     for (const object of previous) {
       context.tileLayer.remove(object, true);
@@ -118,18 +166,53 @@ function renderTiles(context: EditSceneRenderContext, map: GameMap, mapOnlyCaptu
   const tileset = store.getCurrent().tilesets[map.tilesetId];
   if (!tileset) return 0;
   const activeLayer = mapOnlyCapture ? "event" : editorState.get().layer;
+  const window = mapOnlyCapture || !context.tileIndex || !shouldLazilyRenderEditMap(map)
+    ? { minX: 0, minY: 0, maxX: map.width - 1, maxY: map.height - 1 }
+    : cameraTileWindow(context.scene, map);
   let tileObjectsUpdated = 0;
-  for (let y = 0; y < map.height; y++) {
-    for (let x = 0; x < map.width; x++) {
+  for (let y = window.minY; y <= window.maxY; y++) {
+    for (let x = window.minX; x <= window.maxX; x++) {
       tileObjectsUpdated += renderTileCellLayer(context, map, activeLayer, "lower", x, y).length;
     }
   }
-  for (let y = 0; y < map.height; y++) {
-    for (let x = 0; x < map.width; x++) {
+  for (let y = window.minY; y <= window.maxY; y++) {
+    for (let x = window.minX; x <= window.maxX; x++) {
       tileObjectsUpdated += renderTileCellLayer(context, map, activeLayer, "upper", x, y).length;
     }
   }
   return tileObjectsUpdated;
+}
+
+/** Materialize the newly visible cells of a large map after the camera moves. */
+export function renderVisibleEditSceneTiles(
+  context: EditSceneRenderContext & { readonly tileIndex: EditSceneTileIndex },
+): EditSceneRenderStats {
+  const map = store.getCurrent().maps[context.mapId];
+  if (!map || !shouldLazilyRenderEditMap(map)) return { tileObjectsUpdated: 0 };
+  const window = cameraTileWindow(context.scene, map);
+  for (const [key, objects] of context.tileIndex) {
+    const parsed = parseTileIndexKey(key);
+    if (!parsed || !isOutsideTileWindow(window, parsed.x, parsed.y)) continue;
+    for (const object of objects) context.tileLayer.remove(object, true);
+    context.tileIndex.delete(key);
+  }
+  let tileObjectsUpdated = 0;
+  for (let y = window.minY; y <= window.maxY; y++) {
+    for (let x = window.minX; x <= window.maxX; x++) {
+      const lowerKey = tileIndexKey("lower", x, y);
+      if (!context.tileIndex.has(lowerKey)) {
+        tileObjectsUpdated += renderTileCellLayer(context, map, editorState.get().layer, "lower", x, y).length;
+      }
+      const upperKey = tileIndexKey("upper", x, y);
+      if (!context.tileIndex.has(upperKey)) {
+        tileObjectsUpdated += renderTileCellLayer(context, map, editorState.get().layer, "upper", x, y).length;
+      }
+    }
+  }
+  if (tileObjectsUpdated > 0 && "sort" in context.tileLayer && typeof context.tileLayer.sort === "function") {
+    context.tileLayer.sort("depth");
+  }
+  return { tileObjectsUpdated };
 }
 
 function renderTileCellLayer(
@@ -144,19 +227,24 @@ function renderTileCellLayer(
   if (!tileset) return [];
   const objects: Phaser.GameObjects.GameObject[] = [];
   const i = y * map.width + x;
+  const tileSize = mapTileSize(map, tileset);
   if (layer === "lower") {
-    const lowerAlpha = activeLayer === "upper" ? 0.58 : 1;
+    // 비활성 레이어의 실물을 눈으로 분리한다(2026-09-21). upper 에서는 물들인 회록,
+    // event 에서도 0.62 로 내린다 — 이벤트 배지만 선명하면 배지가 어디에 떠 있는지가 즉시 읽힌다.
+    const lowerAlpha = activeLayer === "upper" ? 0.58 : activeLayer === "event" ? 0.62 : 1;
     const lower = map.lowerTiles[i];
     if (lower >= 0) {
       const lowerTile = createChipsetTileObject(context.scene, map, tileset, x, y, lower);
       lowerTile.setAlpha(lowerAlpha);
+      if (activeLayer === "upper") tintIfPossible(lowerTile, 0xc8d9bf);
       addTileObject(context, objects, lowerTile, 0, x, y);
     } else {
-      addTileObject(context, objects, createEmptyTile(context.scene, x, y, context.backgroundPreview === true), 0, x, y);
+      addTileObject(context, objects, createEmptyTile(context.scene, x, y, tileSize, context.backgroundPreview === true), 0, x, y);
     }
     for (const stackedLower of tileStackAt(map, "lower", i)) {
       const lowerTile = createChipsetTileObject(context.scene, map, tileset, x, y, stackedLower);
       lowerTile.setAlpha(lowerAlpha);
+      if (activeLayer === "upper") tintIfPossible(lowerTile, 0xc8d9bf);
       addTileObject(context, objects, lowerTile, 1, x, y);
     }
   } else {
@@ -224,6 +312,20 @@ function tileIndexKey(layer: "lower" | "upper", x: number, y: number): string {
   return `${layer}:${x},${y}`;
 }
 
+function parseTileIndexKey(key: string): { readonly x: number; readonly y: number } | null {
+  const match = /^(?:lower|upper):(-?\d+),(-?\d+)$/.exec(key);
+  if (!match) return null;
+  return { x: Number(match[1]), y: Number(match[2]) };
+}
+
+function isOutsideTileWindow(window: EditSceneTileWindow, x: number, y: number): boolean {
+  return x < window.minX || y < window.minY || x > window.maxX || y > window.maxY;
+}
+
+function isPartialTileWindow(window: EditSceneTileWindow, map: GameMap): boolean {
+  return window.minX > 0 || window.minY > 0 || window.maxX < map.width - 1 || window.maxY < map.height - 1;
+}
+
 function tintIfPossible(object: Phaser.GameObjects.GameObject, tint: number): void {
   if (!isTintable(object)) return;
   object.setTint(tint);
@@ -234,12 +336,18 @@ function isTintable(object: Phaser.GameObjects.GameObject): object is Phaser.Gam
 }
 
 /** 빈 하위 칸의 체커. 미리보기 중에는 알파를 낮춰 뒤의 배경이 비치게 한다(신호는 유지). */
-function createEmptyTile(scene: Phaser.Scene, x: number, y: number, translucent = false): Phaser.GameObjects.Rectangle {
+function createEmptyTile(
+  scene: Phaser.Scene,
+  x: number,
+  y: number,
+  tileSize: number,
+  translucent = false
+): Phaser.GameObjects.Rectangle {
   const r = scene.add.rectangle(
-    x * TILE_SIZE,
-    y * TILE_SIZE,
-    TILE_SIZE,
-    TILE_SIZE,
+    x * tileSize,
+    y * tileSize,
+    tileSize,
+    tileSize,
     (x + y) % 2 === 0 ? 0x15171c : 0x1a1d23
   );
   if (translucent) r.setAlpha(0.35);
@@ -250,6 +358,7 @@ function createEmptyTile(scene: Phaser.Scene, x: number, y: number, translucent 
 function renderCollisionOverlay(context: EditSceneRenderContext, map: GameMap): void {
   const project = store.getCurrent();
   const tileset = project.tilesets[map.tilesetId];
+  const tileSize = mapTileSize(map, tileset);
   const collG = context.scene.add.graphics();
   collG.fillStyle(0xff4444, 0.35);
   for (let y = 0; y < map.height; y++) {
@@ -260,7 +369,7 @@ function renderCollisionOverlay(context: EditSceneRenderContext, map: GameMap): 
       if (!tileset) continue;
       const pass = tilePassability(tileset, lower, upper);
       if (!pass.up && !pass.down && !pass.left && !pass.right) {
-        collG.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+        collG.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
       }
     }
   }
@@ -270,14 +379,15 @@ function renderCollisionOverlay(context: EditSceneRenderContext, map: GameMap): 
 function renderGrid(gridGraphics: Phaser.GameObjects.Graphics, map: GameMap, activeLayer: Layer): void {
   const color = activeLayer === "event" ? EVENT_GRID_COLOR : DEFAULT_GRID_COLOR;
   const alpha = activeLayer === "event" ? EVENT_GRID_ALPHA : DEFAULT_GRID_ALPHA;
+  const tileSize = mapTileSize(map, store.getCurrent().tilesets[map.tilesetId]);
   gridGraphics.lineStyle(1, color, alpha);
   for (let x = 0; x <= map.width; x++) {
-    gridGraphics.moveTo(x * TILE_SIZE, 0);
-    gridGraphics.lineTo(x * TILE_SIZE, map.height * TILE_SIZE);
+    gridGraphics.moveTo(x * tileSize, 0);
+    gridGraphics.lineTo(x * tileSize, map.height * tileSize);
   }
   for (let y = 0; y <= map.height; y++) {
-    gridGraphics.moveTo(0, y * TILE_SIZE);
-    gridGraphics.lineTo(map.width * TILE_SIZE, y * TILE_SIZE);
+    gridGraphics.moveTo(0, y * tileSize);
+    gridGraphics.lineTo(map.width * tileSize, y * tileSize);
   }
   gridGraphics.strokePath();
 }
@@ -285,11 +395,13 @@ function renderGrid(gridGraphics: Phaser.GameObjects.Graphics, map: GameMap, act
 function renderStartPosition(context: EditSceneRenderContext): void {
   const project = store.getCurrent();
   if (project.startMapId !== context.mapId) return;
+  const map = store.getCurrent().maps[context.mapId];
+  const tileSize = mapTileSize(map, map ? store.getCurrent().tilesets[map.tilesetId] : undefined);
   const s = context.scene.add.rectangle(
-    project.startPos.x * TILE_SIZE + TILE_SIZE / 2,
-    project.startPos.y * TILE_SIZE + TILE_SIZE / 2,
-    TILE_SIZE - 6,
-    TILE_SIZE - 6,
+    project.startPos.x * tileSize + tileSize / 2,
+    project.startPos.y * tileSize + tileSize / 2,
+    tileSize - 6,
+    tileSize - 6,
     0x69db7c,
     0.5
   );
@@ -297,32 +409,69 @@ function renderStartPosition(context: EditSceneRenderContext): void {
   context.overlayLayer.add(s);
 }
 
-function renderSelection(context: EditSceneRenderContext): void {
-  const selection = editorState.get().selection;
-  if (!selection || selection.mapId !== context.mapId) return;
-  const x = selection.x * TILE_SIZE;
-  const y = selection.y * TILE_SIZE;
-  const w = selection.width * TILE_SIZE;
-  const h = selection.height * TILE_SIZE;
+type SelectionRect = Phaser.GameObjects.Rectangle & {
+  setPosition(x: number, y: number): SelectionRect;
+  setSize(width: number, height: number): SelectionRect;
+};
+
+function isSelectionRect(value: unknown): value is SelectionRect {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Partial<SelectionRect>;
+  return typeof candidate.setPosition === "function"
+    && typeof candidate.setSize === "function"
+    && typeof candidate.setOrigin === "function"
+    && typeof candidate.setStrokeStyle === "function";
+}
+
+/**
+ * 선택 사각형은 타일 레이어와 수명이 다르다. 우클릭 드래그 중 선택만 바뀌는데
+ * 맵 타일을 전부 다시 만들면 Phaser 3.90 의 O(N²) 재부모화가 그대로 살아난다.
+ * 전용 컨테이너에서 두 사각형만 옮기거나 다시 그린다.
+ */
+export function syncSelectionOverlay(
+  scene: Phaser.Scene,
+  layer: Phaser.GameObjects.Container,
+  mapId: MapId,
+): void {
+  const state = editorState.get();
+  const selection = state.selection;
+  if (!selection || selection.mapId !== mapId || state.pastePreview) {
+    layer.removeAll(true);
+    return;
+  }
+  const map = store.getCurrent().maps[mapId];
+  const tileSize = mapTileSize(map, map ? store.getCurrent().tilesets[map.tilesetId] : undefined);
+  const x = selection.x * tileSize;
+  const y = selection.y * tileSize;
+  const w = selection.width * tileSize;
+  const h = selection.height * tileSize;
+  const existing = layer.list ?? [];
+  if (existing.length === 2 && isSelectionRect(existing[0]) && isSelectionRect(existing[1])) {
+    existing[0].setPosition(x, y).setSize(w, h);
+    existing[1].setPosition(x, y).setSize(w, h);
+    return;
+  }
+  layer.removeAll(true);
 
   // 이중 테두리: 어두운 바깥 + 밝은 청록 안쪽. 단색 청록 하나였을 때는 물·하늘 타일 위에서
   // 경계가 배경에 묻혀 어디까지 골랐는지 보이지 않았다. 어느 지형 위에서도 한쪽은 대비를 낸다.
   // 마칭앤츠 애니메이션은 쓰지 않는다 — 이 편집기는 매 프레임 작업으로 렉을 겪은 이력이 있고,
   // 정적 이중선으로 목적(경계 판독)은 달성된다.
-  const outline = context.scene.add.rectangle(x, y, w, h, 0x3bc9db, 0.12);
+  const outline = scene.add.rectangle(x, y, w, h, 0x3bc9db, 0.12);
   outline.setOrigin(0, 0);
   outline.setStrokeStyle(4, 0x10333a, 0.75);
-  context.overlayLayer.add(outline);
+  layer.add(outline);
 
-  const inner = context.scene.add.rectangle(x, y, w, h, 0x000000, 0);
+  const inner = scene.add.rectangle(x, y, w, h, 0x000000, 0);
   inner.setOrigin(0, 0);
   inner.setStrokeStyle(2, 0x7fe7f5, 1);
-  context.overlayLayer.add(inner);
+  layer.add(inner);
 }
 
 export function applyCameraView(scene: Phaser.Scene, map: GameMap, preserveLookAt: boolean): void {
-  const mapW = map.width * TILE_SIZE;
-  const mapH = map.height * TILE_SIZE;
+  const tileSize = mapTileSize(map, store.getCurrent().tilesets[map.tilesetId]);
+  const mapW = map.width * tileSize;
+  const mapH = map.height * tileSize;
   const cam = scene.cameras.main;
   const previousCenter = preserveLookAt ? readCameraLookAt(cam) : null;
   cam.setZoom(editorState.get().zoom);
@@ -336,7 +485,7 @@ export function applyCameraView(scene: Phaser.Scene, map: GameMap, preserveLookA
     previousCenter,
     preserveLookAt,
     devFocusWorld: focus
-      ? { x: (focus.x + 0.5) * TILE_SIZE, y: (focus.y + 0.5) * TILE_SIZE }
+      ? { x: (focus.x + 0.5) * tileSize, y: (focus.y + 0.5) * tileSize }
       : null,
   });
   cam.centerOn(center.x, center.y);

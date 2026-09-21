@@ -6,7 +6,7 @@
   "result": "append-only audit request fixed with unchanged privileges",
   "deploymentProven": false,
   "productChange": {
-    "path": "src/project/supabaseProjectSync.ts",
+    "path": "src/project/legacyDbProjectSync.ts",
     "function": "insertRows",
     "change": "Override inherited Prefer with return=minimal only for audit inserts",
     "sha256": "6fda87dc4aac6544a22d9a94bd2d227a1a2cc085bdcb925d4d6921de62e5e01e",
@@ -58,7 +58,7 @@
     "diff": "git diff --check passed",
     "focusedBuild": "Bun bundled 306 modules; exit 0",
     "newFileRules": "No violations in 2 files",
-    "unitCommand": "node scripts/run-vitest.mjs run test/supabaseAuditAppend.test.ts --configLoader bundle --maxWorkers 1 --no-file-parallelism",
+    "unitCommand": "node scripts/run-vitest.mjs run test/legacyDbAuditAppend.test.ts --configLoader bundle --maxWorkers 1 --no-file-parallelism",
     "liveCommand": "flock -w 60 /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock timeout 180 env SPATIAL_TEST_POSTGREST_BIN=<verified-parent-owned-executable> bash scripts/qa/spatial-audit-local.sh",
     "fullQ7Q9Rerun": false,
     "task20SourceAndEvidenceModified": false,
@@ -85,7 +85,7 @@
     "productionConnections": 0
   },
   "limitations": [
-    "Local PostgREST/JWT/ACL proof, not deployed Supabase gateway, credentials or migration rollout",
+    "Local PostgREST/JWT/ACL proof, not deployed LegacyDb gateway, credentials or migration rollout",
     "Headless application recordProjectCommit entry point; no browser or Q7-Q9 race claim",
     "Two separate audit requests remain non-atomic; request idempotency is not added",
     "Unkeyed repeated project_changes input may append a new generated-key row, but cannot overwrite an existing row",

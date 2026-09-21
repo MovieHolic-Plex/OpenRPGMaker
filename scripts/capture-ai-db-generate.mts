@@ -78,7 +78,7 @@ async function installStubs(page: Page, artwork: Record<"enemy" | "item", string
     });
   });
 
-  await page.route("**/supabase/**", async (route: Route) => {
+  await page.route("**/legacyDb/**", async (route: Route) => {
     await route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
   });
   await page.route("**/__oprn/**", async (route: Route) => {

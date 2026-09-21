@@ -19,9 +19,9 @@ export function previewForkFlow(cmd: Extract<Command, { kind: "fork" }>, context
     const taken = context.forkTaken;
     root.append(
       el("div", {
-        class: `ecp-fork-eval ${taken === "then" ? "is-true" : "is-false"}`,
+        class: `ecp-fork-eval ${taken === "then" ? "is-true" : taken === "else" ? "is-false" : "is-undetermined"}`,
         dataset: { testid: "ecp-fork-eval" },
-        text: taken === "then" ? "조건 충족 → 참 분기 실행" : "조건 불충족 → 거짓 분기 실행",
+        text: taken === "then" ? "조건 충족 → 조건이 맞을 때 분기 실행" : taken === "else" ? "조건 불충족 → 조건이 맞지 않을 때 분기 실행" : "판정 불가 → 플레이에서 확인",
       })
     );
   }
@@ -29,10 +29,10 @@ export function previewForkFlow(cmd: Extract<Command, { kind: "fork" }>, context
     el("div", {
       class: "ecp-fork-branches",
       children: [
-        branchCard("참일 때 (then)", cmd.then.length, "then", context?.forkTaken === "then", context?.forkTaken === "else"),
+        branchCard("조건이 맞을 때 (then)", cmd.then.length, "then", context?.forkTaken === "then", context?.forkTaken === "else" || context?.forkTaken === "unknown"),
         cmd.else
-          ? branchCard("그 외 (else)", cmd.else.length, "else", context?.forkTaken === "else", context?.forkTaken === "then")
-          : branchCard("그 외 (else)", 0, "else-absent", false, false),
+          ? branchCard("조건이 맞지 않을 때 (else)", cmd.else.length, "else", context?.forkTaken === "else", context?.forkTaken === "then" || context?.forkTaken === "unknown")
+          : branchCard("조건이 맞지 않을 때 (else)", 0, "else-absent", false, false),
       ],
     })
   );

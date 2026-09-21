@@ -1,3 +1,4 @@
+import { mapTileSize } from "@/project/tileGeometry";
 import type Phaser from "phaser";
 import { TILE_SIZE } from "@/assets/bundled";
 import type { GameMap } from "@/project/types";
@@ -6,6 +7,7 @@ import type { RuntimeCameraSessionState, RuntimeCameraTarget } from "@/project/s
 import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 import { store } from "@/project/store";
+import { CAMERA_ZOOM_LIMITS, resolveCameraZoom } from "@/project/cameraZoom";
 import { bumpPerfCounter } from "@/player/runtimePerfCounters";
 
 export type ScrollMapDirection = "down" | "left" | "right" | "up";
@@ -28,8 +30,8 @@ export function centerRuntimeCamera(
   map: GameMap,
   player: Phaser.GameObjects.Sprite
 ): void {
-  const mapWidth = Math.max(TILE_SIZE, map.width * TILE_SIZE);
-  const mapHeight = Math.max(TILE_SIZE, map.height * TILE_SIZE);
+  const mapWidth = Math.max(mapTileSize(map), map.width * mapTileSize(map));
+  const mapHeight = Math.max(mapTileSize(map), map.height * mapTileSize(map));
   const paddingX = Math.max(0, (camera.width - mapWidth) / 2);
   const paddingY = Math.max(0, (camera.height - mapHeight) / 2);
   camera.setZoom(1);
@@ -74,6 +76,7 @@ export function panRuntimeCamera(scene: PlaySceneContext, step: ScrollMapStep): 
     centerY: fromY,
     direction: step.direction,
     distanceTiles: step.distanceTiles,
+    tileSize: mapTileSize(scene.map),
   });
   camera.stopFollow();
   const sequence = async (): Promise<void> => {
@@ -103,6 +106,10 @@ export type CameraControlStep = {
 export function applyStoredCameraState(scene: PlaySceneContext): void {
   const state = scene.session.camera;
   if (!state) {
+    // 연출 상태가 없을 때의 배율은 **프로젝트 기본값**이다. 예전에는
+    // centerRuntimeCamera 가 1 로 리셋한 값이 그대로 남았다 — 그래서 고해상도
+    // 배경을 쓰려면 맵마다 auto 이벤트로 줌을 걸어야 했고 새 맵에서는 1 로 돌아갔다.
+    applyCameraZoom(scene.cameras.main, resolveCameraZoom(store.getCurrent().system));
     followCameraTarget(scene, { kind: "player" });
     return;
   }
@@ -214,7 +221,7 @@ function resolveCameraTarget(
 ): { readonly x: number; readonly y: number } {
   if (target.kind === "player") return { x: scene.player.x + offsetX, y: scene.player.y + offsetY };
   if (target.kind === "position") {
-    return { x: characterSpriteX(target.x) + offsetX, y: characterSpriteY(target.y) + offsetY };
+    return { x: characterSpriteX(target.x, mapTileSize(scene.map)) + offsetX, y: characterSpriteY(target.y, mapTileSize(scene.map)) + offsetY };
   }
   const sprite = scene.eventSprites.get(target.eventId);
   if (sprite) return { x: sprite.x + offsetX, y: sprite.y + offsetY };
@@ -222,13 +229,15 @@ function resolveCameraTarget(
     .find((event) => event.event.id === target.eventId);
   // 스프라이트가 없는 이벤트로 팬할 때도 **몸 중앙**을 겨눈다. 앵커를 쓰면 3x3 골렘이
   // 화면 한쪽으로 밀린 채 멈춘다.
-  if (view) return { x: footprintSpriteX(view.x, view.footprint) + offsetX, y: characterSpriteY(view.y) + offsetY };
+  if (view) return { x: footprintSpriteX(view.x, view.footprint, mapTileSize(scene.map)) + offsetX, y: characterSpriteY(view.y, mapTileSize(scene.map)) + offsetY };
   return { x: scene.player.x + offsetX, y: scene.player.y + offsetY };
 }
 
+/** 카메라 배율 범위의 정본은 @/project/cameraZoom 에 있다 — 저작 정규화와 같은 값을 봐야
+ * 「저장은 됐는데 플레이에서는 다른 배율」이 안 생긴다. */
 function applyCameraZoom(camera: Phaser.Cameras.Scene2D.Camera, zoom: number | undefined): void {
   if (zoom === undefined || !Number.isFinite(zoom) || zoom <= 0) return;
-  camera.setZoom(Math.min(4, Math.max(0.25, zoom)));
+  camera.setZoom(Math.min(CAMERA_ZOOM_LIMITS.max, Math.max(CAMERA_ZOOM_LIMITS.min, zoom)));
 }
 
 export function panCamera(camera: Phaser.Cameras.Scene2D.Camera, x: number, y: number, durationMs: number): Promise<void> {

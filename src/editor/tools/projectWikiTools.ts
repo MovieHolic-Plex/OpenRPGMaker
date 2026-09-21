@@ -17,7 +17,7 @@ export const PROJECT_WIKI_TOOLS: readonly ToolDefinition[] = [{
     },
   },
   run(project, args) {
-    const entities = project.world?.entities ?? [];
+    const entities = (project.world?.entities ?? []).filter((entity) => entity.wiki?.kind !== "progress");
     const superseded = new Set(entities.flatMap((entity) => entity.wiki?.supersedes ?? []));
     const selected = Array.isArray(args.ids)
       ? args.ids.filter((id): id is string => typeof id === "string")

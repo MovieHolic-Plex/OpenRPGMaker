@@ -137,6 +137,32 @@ M2 runtime commands: event processing, erase, graphic pattern, movement, checkpo
 
 ### 맵 위를 흐르는 구름 그림자 (2026-09-14)
 
+**2026-09-21 최종 렌더 교체:** 아래 2026-09-14의 12개 덩어리 설명은 과거 구현이다.
+`playSceneCloudShadows.ts`는 안개 노이즈와 분리된 `weather/cloudShadowTexture.ts`를 사용한다.
+512px 반복 영역의 구름 수는 `amount`(0~6, 기본 3)로 정한다. 나머지는 알파 0으로 완전히 맑다.
+내부는 고른 그늘, 경계의 8px만 부드럽게 처리한다. 미세 잡음·안개 질감은 없다.
+8개의 256² 위상 텍스처를 한 번 생성하고, 동일 위치 두 TileSprite로 96초 주기의 아주 작은
+윤곽 변화를 보간한다. 교차 보간 시 겹친 중심부 농도가 바뀌지 않도록 알파를 보정한다.
+UV는 월드 좌표/타일 배율로 계산하므로 카메라 이동·줌에도 지면에 붙는다.
+「맵 설정 → 구름 그림자 → 구름량」은 0~6단계 슬라이더/숫자 입력이다.
+`GameMap.cloudShadows.amount`는 optional이며 생략한 옛 맵은 3으로 해석한다.
+0은 레이어를 숨긴다. 같은 크기·속도·진하기에서 구름 무리 수만 증가하므로 양과 크기는 독립이다.
+amount는 정수 반올림 및 0~6 clamp, 비정상 값은 3으로 정규화한다.
+`setMapCloudShadows`의 patch가 필드를 보존하고 AI `set_map_properties.cloudShadows.amount`도 지원한다.
+양별 캐시는 최대 6×8개의 256² 텍스처로 제한된다(0은 생성하지 않음).
+편집기 브라우저 증거 `scripts/qa/cloud-amount-editor.mjs`: UI 0/1/6 → serialize/deserialize 유지,
+amount 없는 옛 데이터 기본 3. `cloud-amount-editor.png` 및 JSON 영수증 참조.
+비교 GIF: `WEATHER_QA_AMOUNT=1` 또는 `6`을 capture 명령에 추가한다.
+`.omo/evidence/weather-quality/cloud-amount-comparison.gif`: 1 대 6, 동일 속도8·진하기0.26·크기1.
+기본값은 opacity 0.26 / speed 8px/s. 기존에 명시적으로 저장된 수치는 바꾸지 않는다.
+속도 0은 이동과 윤곽 변화 모두 정지한다. depth 700000과 씬 종료 시 정리는 유지한다.
+실제 3D 태양광/입체 차폐 시뮬레이션이 아니라 2D 지면 투영 근사이며 광원별 분리는 없다.
+`__oprnCloudShadows`의 layoutCount=2는 구름 개수가 아닌 위상 보간용 두 레이어다.
+anchors는 UV 좌표이므로 예전 `cloud-shadows.probe.mjs`의 12개 월드 위상 판정은 적용하지 않는다.
+증거: `WEATHER_QA_KIND=cloud node scripts/qa/runtime/weather-motion.capture.mjs` →
+`.omo/evidence/weather-quality/cloud-motion-v2.gif` (10초, 125프레임, 실제 속도).
+
+
 - **저작 표면은 「맵 설정」의 한 섹션이다.** `GameMap.cloudShadows?: MapCloudShadowSetting`
   (`src/project/types/project.ts`) — `enabled` + `opacity`(0.05~0.6) · `speed`(0~160 px/초) ·
   `angleDeg`(0~359) · `scale`(0.5~2.5). optional 이라 옛 맵은 필드 자체가 없고 마이그레이션이 필요 없다.
@@ -182,3 +208,77 @@ M2 runtime commands: event processing, erase, graphic pattern, movement, checkpo
   **52.0px/초**, 방향 오차 **0.0°**, 위상 12/12 연속, 변한 픽셀 **9.00% vs 대조 0.17%(54배)**.
   기본 프리셋(0.34/26/28/1): **26.0px/초**, 오차 0.0°, 보이는 덩어리 8~11개, **9.52% vs 0.17%**.
   깊이 700_000·알파=설정값·텍스처 로드는 두 실행 모두 통과.
+
+### Weather sound (2026-09-21)
+
+`playSceneWeather.syncWeatherLayer` passes displayed weather intensity and the same visual clock to
+`AudioEngine.weather` (`audio/weatherAudio.ts`). Rain/storm automatically play stereo filtered noise;
+storm adds one low-frequency thunder envelope at phase460ms of each2400ms lightning cycle (after the
+120/290ms paired flashes). Clock jumps do not replay missed thunder. Snow/fog/cloud remain silent.
+The procedural WebAudio bus needs no downloaded asset or export asset registration, does not occupy
+BGM/BGS/ambient channels, follows the SE mixer, and starts only after the engine's input unlock.
+Transitions track displayed intensity. Weather clearing, scene shutdown and `stopAll` dispose sources
+and close the dedicated context; restored weather recreates the bus on the next sync.
+Browser evidence: `WEATHER_QA_KIND=rain|storm node scripts/qa/runtime/weather-audio.capture.mjs`
+uses the shipping player and records its actual destination bus, checking signal RMS, SE mute/restore
+and context shutdown. Output: `.omo/evidence/weather-quality/{rain,storm}-audio.webm` and JSON.
+
+### Map-wide atmosphere presets (2026-09-21)
+
+Map settings → 환경 효과 authors `GameMap.atmosphereEffects`, independently from `setWeather`
+and daily weather/fishing conditions. No placement rectangle or emitter position is authored.
+`src/project/atmosphere.ts` owns 19 effect IDs and normalization: leaves, petals, dust, sand,
+fireflies, magic, spirits, poison, ash, embers, smog, steam, leaks, sparks, sunrays, underwater,
+runes, shades, frost.
+Multiple distinct presets can coexist with weather/cloud shadows; unknown IDs and duplicates are
+ignored. Missing fields default to amount0.6/speed1/size1/opacity0.7; values clamp to amount/opacity0–1,
+speed0–3, size0.3–3. Missing map field means no effect, preserving existing maps.
+`playSceneAtmosphere.ts` uses the weather clock, screen-space zoom compensation and a separate
+800010-depth container. Each layer integrates its own speed (zero freezes it). Procedural polygons,
+halos, bubble rings and light rays require no assets; tinted seamless mist textures are shared with
+fog. Map changes reset layer phase; shutdown lets Phaser destroy objects and drops the WeakMap state.
+Atmosphere sounds are managed by the separate AudioEngine.atmosphere bus; rain/storm retain their own bus. Dust and sunrays default to silence because they have no intrinsic sound.
+Browser capture: `scripts/qa/runtime/atmosphere-gallery.capture.mjs`; evidence composition:
+`scripts/qa/compose-atmosphere-gallery.py`. The existing map is reused as a minimal rendering fixture,
+not an authored underwater/fantasy game. All GIF pixels originate from `player.html` screenshots.
+Editor controls and all 19 serialize/deserialize roundtrips: `scripts/qa/atmosphere-editor.mjs`.
+
+
+### Genre ambience presets and sound pairing (2026-09-21)
+
+`ATMOSPHERE_SCENES` contains thirty editable audiovisual combinations: five each in magic, demonic,
+wuxia, modern, industrial-era, and nature/underwater. `ATMOSPHERE_GENRES` owns the editor grouping. Applying a preset replaces only map atmosphere layers; weather, cloud
+shadows and BGM are preserved. Settings are copied into the map, so later catalog changes never
+rewrite already authored parameters. The editor explains replacement and exposes per-layer tint,
+sound selection (including none), and volume in addition to amount/speed/size/opacity.
+
+`AtmosphereEffect.sound?`, `volume?`, `tint?` are optional. Normalization chooses kind-specific default
+sound and volume0.35, clamps volume0–1 and accepts only #RRGGBB tint. Dust and sunrays are intentionally
+silent. AtmosphereAudio generates quiet stereo procedural loops: breeze/rustle/insects/chimes/whisper/
+rumble/fire/steam/drips/electric/bubbles. Same sound types share one voice with maximum requested gain;
+different voices scale by square root of active voice count, keeping combined presets restrained.
+Gain follows amount × layer volume × SE mixer. Initial playback waits for shared input unlock;
+layer removal stops its source; silence, map exit, shutdown and engine stopAll close the context.
+It never occupies authored BGM/BGS/ambient channels or requires external media for game export.
+Procedural sound is ambience; sparks/drips are not individually synchronized to each visual particle.
+
+Browser proof: `atmosphere-editor.mjs` checks all thirty preset UI applications and JSON roundtrips,
+plus sound-off and volume edits. `runtime/atmosphere-audio.capture.mjs` records real destination audio
+for four representative presets and checks nonzero output, SE mute/restore, and silent-map transfer
+closing the context. Audio/evidence are under `.omo/evidence/atmosphere/`.
+
+
+### Thirty audiovisual presets — evidence (2026-09-21)
+
+`runtime/atmosphere-presets.capture.mjs` asserts 30 unique IDs, five per genre, then boots each
+normalized preset via the shipping `player.html` harness on the same existing QA map. Each preset
+captures 60 native screenshots at96ms/frame (5.76s) and records its real WebAudio destination separately.
+Audio analyser samples require a running context, nonzero RMS and no sampled peak clipping.
+`compose-atmosphere-presets.py` makes six five-preset GIF contact sheets plus thirty full-size GIFs
+and an HTML gallery with per-preset audio controls. GIFs contain no audio and the separately recorded
+ambience is not represented as sample-synchronized video. All outputs and per-preset receipts live
+in `.omo/evidence/atmosphere-30/`. No new game/map content or remote project is authored for capture.
+
+New effect primitives: runes (rotating six-point sigils), shades (drifting multi-stroke wisps),
+frost (rotating six-arm crystals), using the same amount/speed/size/tint/audio controls.
+Existing preset IDs are retained; saved maps hold copied layer settings, not catalog references.

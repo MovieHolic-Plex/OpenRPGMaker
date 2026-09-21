@@ -12,21 +12,24 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 export function deserializeStoredProjectJson(value: unknown): Project {
-  const originalJson = JSON.stringify(value);
   try {
-    const repaired: unknown = JSON.parse(originalJson);
+    // The stored value already came from JSON.parse in the local host. Re-encoding and
+    // parsing it just to obtain a mutable copy adds a full project-sized stringify/parse
+    // pair before validation. structuredClone preserves the same copy-before-repair
+    // contract without paying that serialization cost.
+    const repaired: unknown = structuredClone(value);
     repairStoredProjectJson(repaired);
     return deserialize(JSON.stringify(repaired));
   } catch {
     // 세 차례의 검토에서 장식용 로드 복구가 정상 프로젝트를 불러오지 못하게 만들었다.
     // 복구본 전체를 검증한 뒤 실패하면 손대지 않은 원본 행을 여는 것을 구조적으로 보장한다.
-    return deserialize(originalJson);
+    return deserialize(JSON.stringify(value));
   }
 }
 
 function repairStoredProjectJson(value: unknown): unknown {
   repairStoredLoadFoundation(value);
-  repairSupabaseItemCatalog(value);
+  repairStoredItemCatalog(value);
   return value;
 }
 
@@ -41,7 +44,7 @@ export function repairStoredLoadFoundation(value: unknown): void {
   ensureLoadRepairBattleAnimations(value);
 }
 
-function repairSupabaseItemCatalog(value: unknown): void {
+function repairStoredItemCatalog(value: unknown): void {
   if (!isRecord(value)) return;
   // 참조 수집기는 정규화된 Project를 단일 권위자로 삼는다. 카탈로그를 건드리기 전의
   // 유효한 행을 먼저 해석하므로, 이벤트·시스템·시작 인벤토리의 기존 참조를 잃지 않는다.
@@ -49,7 +52,7 @@ function repairSupabaseItemCatalog(value: unknown): void {
 
   // DB current_json은 저작 데이터베이스 레코드의 기준 원본이다.
   // 일반 기본값 보충은 계속 금지한다. 이 제한적 이전만 2026-08 아이템 시드를 고친다.
-  // 그대로 두면 손대지 않은 영문 껍데기가 Supabase를 불러올 때마다 살아남기 때문이다.
+  // 그대로 두면 손대지 않은 영문 껍데기가 project storage를 불러올 때마다 살아남기 때문이다.
   const requiredSkillIds = repairUntouchedDefaultItemCatalogStubs(value, referencedItemIds);
   appendMissingLoadRepairSkills(value, requiredSkillIds);
 }

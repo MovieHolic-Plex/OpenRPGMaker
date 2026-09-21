@@ -24,7 +24,6 @@ import { spatialFixture } from "./support/spatialSchemaFixture";
 import { CHIPSET_TILE_GROUPS } from "@/project/defaults/chipsetMapping";
 import { COMBINED_TOWN_HARNESS_GROUPS } from "@/project/tilesetHarness/combinedTownGroups";
 import { MATERIAL_SLOT_IDS } from "@/editor/operators/materialSlots";
-import { CONCEPT_FACILITY_TEMPLATES } from "@/project/defaults/conceptFacilityTemplates";
 import { OUTDOOR_OBJECT_CATALOG, outdoorObjectById } from "@/project/defaults/spatial/outdoorObjectCatalog";
 import { SPACE_CATALOG, spaceDefById } from "@/project/defaults/spatial/spaceCatalog";
 import { PLACE_CATALOG, placeDefById, FACILITY_ENTRY_PORT_ID } from "@/project/defaults/spatial/placeCatalog";
@@ -102,11 +101,14 @@ describe("spatial catalog source fidelity", () => {
     // Then: defaults stay builtin; own cards keep authored names and distinct presentation ids
     expect(defaults.find((card) => card.id === "bed_v")?.name).not.toBe("Authored Bed V");
     expect(defaults.find((card) => card.id === "bed_v")?.source).toBe("default");
-    expect(own.map((card) => card.id).sort()).toEqual(
+    // 배송 칩셋 가운데 구조 킷을 이미 갖는 것(성벽 연구·공용 숲 오브젝트)은
+    // 사용자가 만든 것이 아니므로 내 설계 목록에서 제외한다.
+    const authoredOwn = own.filter((card) =>
+      !["opengameart_castle", "shared_forest_village_objects"].includes(card.tilesetId ?? ""));
+    expect(authoredOwn.map((card) => card.id).sort()).toEqual(
       [
         spatialPresentationId("tileset-kit", first, "bed_v"),
         spatialPresentationId("tileset-kit", first, "my_chair"),
-        spatialPresentationId("tileset-kit", second, "bed_v"),
       ].sort(),
     );
     expect(own.find((card) => card.id === spatialPresentationId("tileset-kit", first, "bed_v"))?.name).toBe("Authored Bed V");
@@ -510,7 +512,6 @@ describe("shipped spatial design catalog", () => {
 
   it("links every place child to a port that actually exists on its design", () => {
     // Given: 배송 시설 19종과 공간 카탈로그.
-    const facilities = new Map(CONCEPT_FACILITY_TEMPLATES.map((facility) => [facility.id, facility]));
     expect(PLACE_CATALOG.map((entry) => entry.id)).toEqual([...PLANNED_PLACES]);
 
     for (const place of PLACE_CATALOG) {
@@ -531,13 +532,8 @@ describe("shipped spatial design catalog", () => {
               .toEqual({ link: link.id, design: child.designId, port: side.portId, exists: true });
           } else {
             // 시설 자식은 포트 목록 대신 진입 방을 갖는다. 계약 이름과 진입 방을 함께 본다.
-            const facility = facilities.get(child.designId);
-            expect({ link: link.id, facility: child.designId, known: facility !== undefined })
-              .toEqual({ link: link.id, facility: child.designId, known: true });
+            // 초안 시설 묶음은 공용 실내 리셋으로 은퇴했다 — 진입 방 계약만 남는다.
             expect(side.portId).toBe(FACILITY_ENTRY_PORT_ID);
-            const entrances = (facility?.places ?? []).filter((room) => room.role === "entrance");
-            expect({ facility: child.designId, entrances: entrances.length > 0 })
-              .toEqual({ facility: child.designId, entrances: true });
           }
         }
       }
@@ -582,7 +578,7 @@ describe("shipped spatial design catalog", () => {
     }
   });
 
-  it("offers the shipped regions and worlds as default gallery cards", () => {
+  it("offers completed-map references as the only default region cards", () => {
     // Given: 프로젝트 라이브러리가 비어 있는 새 프로젝트.
     store.replace(createBlankProject(), { preserveEventDrafts: false });
 
@@ -590,9 +586,10 @@ describe("shipped spatial design catalog", () => {
     const regions = listSpatialGalleryCards(sessionFor({ tab: "regions", source: "all", mode: "design" }));
     const worlds = listSpatialGalleryCards(sessionFor({ tab: "worlds", source: "all", mode: "design" }));
 
-    // Then: 배송 정본이 기본 설계로 보인다 — 빈 화면으로 열리지 않는다.
+    // Then: 기본 지역 카드는 완성 맵 사례뿐이다 — 지형 어휘 더미(REGION_CATALOG)는 내지 않는다.
     expect(regions.filter((card) => card.source === "default").map((card) => card.localId))
-      .toEqual([...REGION_REFERENCES.map(reference => reference.id), ...REGION_CATALOG.map((region) => region.id)]);
+      .toEqual(REGION_REFERENCES.map(reference => reference.id));
+    expect(regions.every((card) => card.regionReferenceId !== undefined || card.canonicalSource !== undefined)).toBe(true);
     expect(worlds.filter((card) => card.source === "default").map((card) => card.localId))
       .toEqual(WORLD_CATALOG.map((world) => world.id));
   });

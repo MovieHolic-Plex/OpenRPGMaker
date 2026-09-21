@@ -12,7 +12,7 @@ const TRUNKS = [290, 291, 292, 293] as const;
 type Namespace = "interior" | "custom" | "foreign-rpg" | "id-collision";
 
 beforeEach(() => {
-  for (const key of ["VITE_SUPABASE_URL", "VITE_SUPABASE_ANON_KEY", "VITE_SUPABASE_PROJECT_ID", "VITE_SUPABASE_USE_PROXY"]) vi.stubEnv(key, "");
+  for (const key of ["VITE_LEGACY_DB_URL", "VITE_LEGACY_DB_ANON_KEY", "VITE_LEGACY_DB_PROJECT_ID", "VITE_LEGACY_DB_USE_PROXY"]) vi.stubEnv(key, "");
   blockedFetch.mockClear();
   vi.stubGlobal("fetch", blockedFetch);
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false });

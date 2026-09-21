@@ -1,7 +1,7 @@
 import { subscribeEditorUiMode } from "@/editor/editorUiMode";
 import type { EditorState } from "@/editor/editorState";
 import { mapHistoryEntryCount, renderMapHistoryPanel } from "@/editor/panels/mapHistoryPanel";
-import { renderRuleAuditPanel, ruleAuditViolationCount } from "@/editor/panels/ruleAuditPanel";
+import { renderRuleAuditPanel, ruleAuditViolationCountCached } from "@/editor/panels/ruleAuditPanel";
 import { isFavoriteTile, toggleFavoriteTile } from "@/editor/panels/tileBrushTools";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import {
@@ -16,6 +16,8 @@ import { el } from "@/util/dom";
 import { INSPECTION_COMMANDS, inspectionPins, toggleInspectionPin, type InspectionCommand } from '@/editor/panels/sidebarInspectionPins';
 import { resetSidebarSurfaceForTests, SIDEBAR_SURFACE_OPEN } from '@/editor/panels/sidebarSurface';
 import { hasOpenModalLayer } from '@/editor/ui/modalStack';
+
+export { RULE_AUDIT_UPDATED_EVENT } from "@/editor/panels/ruleAuditPanel";
 
 type ToolbarMenuId = "inspector" | "overflow" | "ruleAudit" | "history" | null;
 type OpenToolbarMenuId = Exclude<ToolbarMenuId, null>;
@@ -132,7 +134,7 @@ export function makeInspectorDropdown(model: TileToolbarModel): HTMLElement {
 export function makeRuleAuditDropdown(model: TileToolbarModel): HTMLElement {
   const wrapper = makeToolbarMenuWrapper("tile-rule-audit-menu");
   const active = openMenu === "ruleAudit";
-  const count = ruleAuditViolationCount();
+  const count = ruleAuditViolationCountCached();
   const toggle = makeMenuToggle("ruleAudit", "규칙 감사", active, count > 0, model.rerender);
   if (count > 0) toggle.append(makeToolbarBadge(count, "rule-audit-badge", true));
   wrapper.append(toggle);
@@ -184,7 +186,7 @@ export function makeOverflowDropdown(model: TileToolbarModel): HTMLElement {
   const pins = inspectionPins();
   const direct = openMenu !== null && openMenu !== "overflow" && pins.includes(openMenu);
   const panelOpen = openMenu === "overflow" || (!direct && openMenu !== null);
-  const ruleCount = ruleAuditViolationCount();
+  const ruleCount = ruleAuditViolationCountCached();
   const historyCount = mapHistoryEntryCount();
   const highlighted = state.brushSize > 1 || ruleCount > 0;
   const label = "검사·기록";

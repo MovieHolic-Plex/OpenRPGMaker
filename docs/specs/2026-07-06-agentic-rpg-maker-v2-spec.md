@@ -42,7 +42,7 @@ v2의 방향: **"단일 어시스턴트가 달린 에디터" → "게임을 만�
 - undo = 전체 프로젝트 스냅샷 ×50 (`src/editor/mapEditHistory.ts:62-67`에서 푸시/MAX_HISTORY 적용, :33은 시그니처 헬퍼), store.update()마다 전체 clone (`src/project/store.ts:178`).
 - 매 emit마다 전체 맵 재구축: `editSceneRender.ts:41` removeAll(true) + 전 타일 개별 Image 재생성. 컬링/더티렉트/타일맵 배칭 없음. DB 필드 수정에도 맵이 다시 그려짐(store 리스너 공유).
 - i18n 0(한국어 하드코딩 ~3,313개), 커맨드 팔레트/미니맵/스플릿뷰/멀티맵 탭/드래그드롭 임포트 없음. a11y 얇음.
-- Supabase 하드 커플링: `store.load()` 실패 시 부팅 게이트(DbConnectionRequiredError) — 오프라인 저작 2급.
+- LegacyDb 하드 커플링: `store.load()` 실패 시 부팅 게이트(DbConnectionRequiredError) — 오프라인 저작 2급.
 
 **이벤트 명령** — 2티어 구조(네이티브 44종 + m2Command 카탈로그 125종):
 - 완전 구현 ~39 / 부분(기록+일부 효과) ~20 / 스텁·셸 ~29. "기록만 하고 계속"(recordFallback, `m2Runtime.ts:98`)은 로드 안정성엔 좋으나 사용자에게 무통보.
@@ -60,7 +60,7 @@ v2의 방향: **"단일 어시스턴트가 달린 에디터" → "게임을 만�
 
 **데이터/협업**:
 - Project = 단일 jsonb blob, 검증은 경계에서만(세션 중 뮤테이션 무검증), 삭제는 참조 거부(cascade 없음), dangling ref 1개면 오픈 차단.
-- Realtime/CRDT/presence 0건(supabase-js조차 없음, raw PostgREST). 저장 시 맵 단위 3-way 머지(같은 맵 = 충돌). advisory 맵 잠금(TTL 2분, 폴링).
+- Realtime/CRDT/presence 0건(legacyDb-js조차 없음, raw PostgREST). 저장 시 맵 단위 3-way 머지(같은 맵 = 충돌). advisory 맵 잠금(TTL 2분, 폴링).
 - **인증 없음**: anon key 전권, RLS 없음 — 귀속 있는 팀워크는 보안상 불가. project_commits/project_changes/sync_verification_runs 테이블 미배선.
 
 **에이전트**:
@@ -103,8 +103,8 @@ v2의 방향: **"단일 어시스턴트가 달린 에디터" → "게임을 만�
 - **스킬 통합**: rpg_maker_skills/ 문서를 src/ai/skills.ts 레지스트리로 컴파일(단일 소스).
 
 ### E3. 팀워크 (사람×사람, 사람×에이전트)
-- 1단계: Supabase Auth + RLS(프로젝트 멤버십) + 에이전트도 신원 주체로. 미배선 project_commits/changes를 changeset 커밋마다 기록(작성자=사람|에이전트, 리뷰 상태).
-- 2단계: Supabase Realtime으로 presence(누가 어느 맵) + 잠금/커밋 브로드캐스트(폴링 제거). 맵 단위 잠금 유지하되 이벤트/DB 레코드 단위로 세밀화.
+- 1단계: LegacyDb Auth + RLS(프로젝트 멤버십) + 에이전트도 신원 주체로. 미배선 project_commits/changes를 changeset 커밋마다 기록(작성자=사람|에이전트, 리뷰 상태).
+- 2단계: LegacyDb Realtime으로 presence(누가 어느 맵) + 잠금/커밋 브로드캐스트(폴링 제거). 맵 단위 잠금 유지하되 이벤트/DB 레코드 단위로 세밀화.
 - 3단계(조건부): 동일 맵 동시 편집이 실측 병목일 때만 CRDT 검토. 기본 답은 "맵 단위 소유권 + 리뷰 큐".
 
 ### E4. 런타임 현대화 (선별)
@@ -165,9 +165,9 @@ v2의 방향: **"단일 어시스턴트가 달린 에디터" → "게임을 만�
 - **2026-07-08 개정: 지형 템플릿 폐기** — 구조 지식은 하네싱 키트(집/지형 오토타일)로 단일화, 클러스터는 어휘 계층으로 존속. 근거: 문법 이원화 충돌(사용자 결정).
 - **2026-07-07 C.2 웨이브 2 완료** (`feat/phase-6a` c3ed979, 1685 tests green, perf:bench 전 PASS): ①스펙 게이트 경계 slack ±2칸(공간 쓰기 8툴 한정, clear/파괴 방지 규칙은 유지 — 재계획 루프 대신 warning 흡수) ②공간 고스트 프리뷰(agentGhostPreview.ts, write 툴 20종, 수락 시 agentFocus 하이라이트로 인계) ③완성도 인지 린트(proposalCompleteness.ts — BuildSpec 영역 대조 결정적 1순위, "⚠ 미이행" 프로포절 노출) ④흙길 오토타일 보라→갈색 교정+시맨틱 수정(감독 직접, scripts/recolor-dirt-road.py). 웨이브 3(모델 계층화: 메인=gemini-3.5-flash / 보조=flash-lite, 사용자 결정) 진행 중.
 - **2026-07-07 C.2 웨이브 1 완료** (`feat/phase-6a` 4700149, 1666 tests green, perf:bench 전 항목 PASS): 에이전트 QA 백로그 3건 — ①AI 프로포절 수락 시 대상 맵 자동 포커스+편집 영역 하이라이트(agentFocus.ts, 수동 편집 무영향, 실수락 경로 프로브 실증) ②진짜 빈 프로젝트(createBlankProject 20×15 빈 맵 1개, 예제는 createSampleAdventureProject/"예제로 시작" 분리) ③place_npc SimplePage 관용 파싱+모델 친화 에러(정규화 warning 노출). 감독 통합 교정 2건: bare ?freshProject=1 레거시(예제) 계약 복원 — 빈 프로젝트는 ?blankProject=1 신설(e2e 32개 스펙 보호), W5 로그인 모달이 자동화 부팅에서 클릭 가로채던 회귀 억제. codex 워커 반려 1건(vitest 타임아웃 완화). 잔여 백로그: 흙길 타일, 스펙 게이트 slack, 모델 계층화, 고스트 프리뷰, 완성도 린트.
-- **2026-07-07 W5 팀 워크플로 UI 완료** (`feat/phase-6a` 486a46d, 1649 tests green, 비전 QA 11/11 PASS): 로그인 목업 모달(이메일/OAuth 이름/게스트 — 실 인증 없음, 신원 label localStorage만), topbar 신원 표시+라벨 편집 메뉴, 커밋 히스토리 패널(list_project_commits 읽기 전용, 실 Supabase 20행 확인), 맵 잠금 배지 라벨 구체화. 감독 비전 QA 적발 1건 수정: 신원 메뉴 내부 클릭이 document pointerdown 닫기에 삼켜져 라벨 변경/재로그인 불능(실브라우저 전용 — 유닛 fake DOM 미검출). Phase 8 실 Auth/RLS 스위치오버 전까지 목업 전용.
+- **2026-07-07 W5 팀 워크플로 UI 완료** (`feat/phase-6a` 486a46d, 1649 tests green, 비전 QA 11/11 PASS): 로그인 목업 모달(이메일/OAuth 이름/게스트 — 실 인증 없음, 신원 label localStorage만), topbar 신원 표시+라벨 편집 메뉴, 커밋 히스토리 패널(list_project_commits 읽기 전용, 실 LegacyDb 20행 확인), 맵 잠금 배지 라벨 구체화. 감독 비전 QA 적발 1건 수정: 신원 메뉴 내부 클릭이 document pointerdown 닫기에 삼켜져 라벨 변경/재로그인 불능(실브라우저 전용 — 유닛 fake DOM 미검출). Phase 8 실 Auth/RLS 스위치오버 전까지 목업 전용.
 - **2026-07-07 UI/UX 웨이브 완료** (`feat/phase-6a` 6cdfbf6, 1645 tests green): ①대화 페이지네이션(저작 개행 존중+창 폭 래핑+4줄 페이지 분할+▼ 커서) ②Galmuri 픽셀 폰트(런타임 표면 전용) ③윈도우 스킨 9-slice 일괄 교체 ④커버 스케일 max(1,ceil(w/320),ceil(h/240)) — 여백 0 ⑤성문 playerTouch는 ⑦의 증상으로 확정 ⑥e2e 부활(AI 도킹 패널 레이아웃 수정) ⑦readState 세션 스테일 훅 수정. 잔여 리스크 5건은 handoff 참조.
-- **2026-07-06 웨이브 4 완료** (`feat/phase-6a` f359ef8, 1628 tests green): ①store.updateMap structural sharing — 페인트 파이프라인 p95 35.7ms→8.1ms, **16ms 예산 복귀**(aliasing 가드 테스트 포함) ②runtime-partial 5종 승격(Change Parameters/State/Damage Processing 세션 실반영, Scroll Map 카메라, Change Actor Graphic) ③**commit_identity 마이그레이션 실 DB 적용 완료**(supabase-db, PostgREST 스모크 통과 — 커밋 이력 라이브) ④Phase8 결정사항 확정 기록(이메일 로그인/owner 백필/viewer read-only/RPC owner 부여).
+- **2026-07-06 웨이브 4 완료** (`feat/phase-6a` f359ef8, 1628 tests green): ①store.updateMap structural sharing — 페인트 파이프라인 p95 35.7ms→8.1ms, **16ms 예산 복귀**(aliasing 가드 테스트 포함) ②runtime-partial 5종 승격(Change Parameters/State/Damage Processing 세션 실반영, Scroll Map 카메라, Change Actor Graphic) ③**commit_identity 마이그레이션 실 DB 적용 완료**(legacyDb-db, PostgREST 스모크 통과 — 커밋 이력 라이브) ④Phase8 결정사항 확정 기록(이메일 로그인/owner 백필/viewer read-only/RPC owner 부여).
 - **2026-07-06 웨이브 3 완료** (`feat/phase-6a` f344fa5, 1617 tests green): ①성능 벤치 하네스+실측 예산 확정(파이프라인 p95 40ms 잠정/로드 500ms — 16ms 복귀는 전체 clone 제거 최적화 백로그) ②project_commits/changes 실배선 — EditorIdentity(human/agent), AI 수락=approved/직접=direct, fire-and-forget, list_project_commits 툴 ③Auth/RLS DRAFT SQL+롤아웃 5단계 문서(미적용, 열린 질문 5건). **사용자 결정 대기**: commit_identity 마이그레이션 실 DB 적용, Auth 방식(이메일/OAuth), 기존 프로젝트 owner 지정.
 - **2026-07-06 Phase 6B+7A 완료** (합의문 조항 3·4 대부분): branch `feat/phase-6a` (c455034), 1614 tests green. ①렌더 계약 — store 변경 스코프 도입, 단일 셀 페인트 16,384→5 오브젝트, DB 편집 시 맵 리드로우 0 (acf279d). ②per-map undo — 50벌 메모리 41.4MB→0.65MB, 맵 256×256 상한+lint (76f1c75, c455034). ③7A 헤드리스 CLI+MCP stdio 서버 — 76툴 노출, 쓰기 49툴 dry-run 강제, commit 경로 정적 부재 가드 (4ce8165). 잔여: 성능 예산 p95 실측 벤치, Realtime/Auth(8단계).
 - **2026-07-06 Phase 6A 완료** (합의문 조항 2 전체): branch `feat/phase-6a` (e2efe94). 결정론 RNG(ba7f5fd) + 패리티 배지(b6c97e7) + 흐름제어4/KeyInput/텍스트코드(359e7a1). 1594 tests green, tsc clean, 비전 QA 증거 `evidence/phase-6a-vision-qa/`. 체제: codex 구현 ×3 병렬(worktree 분리) + Claude 감독 리뷰(반려 1건: \v[n] 변수 ID 불일치) + agy 비전 QA.

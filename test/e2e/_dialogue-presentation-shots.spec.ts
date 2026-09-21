@@ -18,7 +18,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { startNewGameFromTitle } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const DIR = "output/evidence/dialogue-presentation";
 
@@ -163,7 +163,7 @@ test("대화창 연출 프레임을 캡처한다", async ({ page }) => {
   // (A) 창 등장 — 오버슈트 정점 부근. 트리거가 `auto` 라 맵이 뜨는 순간 대사가 시작되므로
   //     얼음은 **부팅 전에** 걸어 둔다. 부팅 후에 걸면 이미 끝나 있다.
   await installFreezeWatcher(page, { name: "dialogue-box-enter", fraction: 0.58, pinPhase: "enter" });
-  await seedProjectFromSupabaseCanonical(page, presentationProject());
+  await seedProjectForEditor(page, presentationProject());
 
   await page.getByTestId("mode-play").click({ force: true });
   await expect(page.getByTestId("test-play-window")).toBeVisible({ timeout: 60_000 });

@@ -1,0 +1,167 @@
+[
+  {
+    "path": "docs/experiments/slates-astra-v2/README.md",
+    "sha256": "93226a47a5ca8cfb6fc1f911fdc51e8dd1bab87e0132ea4a49b1e038671c928c",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "docs/experiments/slates-astra-v2/input-manifest.json",
+    "sha256": "edb77b2cdf9da7614d74d73270b984ee78a3ebdee620cf37e22392b57afee273",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "openwiki/slates-assembly-playbook.md",
+    "sha256": "f3f4063419b8508ca1802a75cfb77509d71a841231adea852a1fdb8f7aa37990",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "openwiki/slates-agent-entry.md",
+    "sha256": "e2f19323f20e1f17c008910fbaa92b2ddb2a91219e22da5403659d5c4b53293d",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "openwiki/slates-structure-learning.md",
+    "sha256": "1f487b606b593ba0f4815bde37d0902c6886e2d182d7cc036d52bbaa63fa09c2",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "openwiki/slates-village-authoring.md",
+    "sha256": "4437b6a0ff5f21f630ce8013d78916bcedaf3472b47d64c1fda3eb47b5369e2f",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "reports/slates-assembly-v2/index.html",
+    "sha256": "90173a6dc012247477ea52c7b8e2e77ff8fe4a0217b0db58ef651b5c14158420",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "public/assets/slates/slates-mastery-catalog.json",
+    "sha256": "687f16acc8f195e54f79ba1db69f3fb58b733042fd05102d444ce5370d2c0d0b",
+    "scope": "Seven mandated cards plus roof-deep/roof-junction patches and selected region metadata. No map rows used for placement."
+  },
+  {
+    "path": "public/assets/slates/slates-mastery-fine-recipes.json",
+    "sha256": "b2ed3e06825ffe1ad32bde803ee5566cd4a991c690f7894ebbb24de9b56beef4",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "public/assets/slates/slates-assembly-exercises.json",
+    "sha256": "5d563dcd1dcbd080714dd10763616bc87965e437e28903346c1979c70c686d9f",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "public/assets/slates/slates-v2-32px.png",
+    "sha256": "4401dd2f5b76492f7fff431263da2fbb1fd87a036604c0a31bdad96a20f20243",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "public/assets/slates/slates-v1-32px.png",
+    "sha256": "46334e1d515900abecfd339a95a3d890370751ce5dd79ec1fb6b36cf4c613ad1",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "openwiki/images/slates/mastery/projecting-house.png",
+    "sha256": "258697d38c483dfebaf37cfe881c8782082838ad528c5b759921edc878ecf83d",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "openwiki/images/slates/mastery/joined-shops.png",
+    "sha256": "5d4338d34704d85d25c4e13eee10ff99e7fdfc9783ec3908bf6574e116c5411d",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "openwiki/images/slates/mastery/parapet-corner.png",
+    "sha256": "f659ea4b0e28d67ead73331de115312f4e9073c008b7117e930d5b39b4715ae3",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "openwiki/images/slates/mastery/gate.png",
+    "sha256": "5e9c2bdc9b30d45d9c172b530d9eaadce43921953c6b3412b64fe34eb84dd464",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "openwiki/images/slates/mastery/projecting-house-parts.png",
+    "sha256": "04d34106338c92f49aaf03a3c9896605546875dbc4368ba750df4247ece64a99",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "openwiki/images/slates/mastery/joined-shops-parts.png",
+    "sha256": "03f9694ac477d66e220f8235781a977b061ef588161cc146cdc6e4b253818e3c",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "openwiki/images/slates/mastery/parapet-corner-parts.png",
+    "sha256": "55da85a45c0ed858f9005326c3744447095c1a929448287d9ec11e5a6e6975a4",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "openwiki/images/slates/mastery/region-battlement.png",
+    "sha256": "197a27c09b93be2d52900701164b0d16d3e6e3ab0f5ccddf6f4808b59c2c1584",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "openwiki/images/slates/mastery/region-towers.png",
+    "sha256": "c995c038135a4cb64e7d5296a4c7a242089f816b5217f87c8e7f7b7aa4702b50",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "openwiki/images/slates/mastery/region-roof.png",
+    "sha256": "777d49a78765dc3a82cb94ecdb588d08e846df9952c38ff546d2838103685602",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "openwiki/images/slates/mastery/region-timber.png",
+    "sha256": "b9b05aa2745626f0da89541cea37ba39ce34a5a1ef03a6cf435afc50f3c51923",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "openwiki/images/slates/mastery/region-castle-face.png",
+    "sha256": "ba4ec6504a6d9bbede496b9b82755e0a463b455143d7682b01aff8a3ef42dee1",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "openwiki/images/slates/mastery/wall-long.png",
+    "sha256": "20456242f558d8425e5fbf4761925abe4b014054d3c54250122fb00006159f93",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "openwiki/images/slates/assembly-v2/first-attempt.png",
+    "sha256": "601d4b692d44a463bea6ac1767d7bcab4e60f40b3c0782c1b647b3be45711324",
+    "scope": "catalog: seven mandated cards and selected region metadata; atlas: loaded into Canvas; documents/images: read/viewed"
+  },
+  {
+    "path": "openwiki/images/slates/mastery/inn.png",
+    "sha256": "7a677d57e7af85859781de061957ba81549c21d276e557695d090b6174685327",
+    "scope": "directly viewed during stages 4-5"
+  },
+  {
+    "path": "openwiki/images/slates/mastery/roof-deep.png",
+    "sha256": "1bee8af6ca32a6706ec20cd1fd54d24b1cee197913109bc6b51255dc973725ec",
+    "scope": "directly viewed during stages 4-5"
+  },
+  {
+    "path": "openwiki/images/slates/mastery/market.png",
+    "sha256": "7b1bec18940c3e23de6c47ebf92320afb6fb5d8fecb2897f59811ac1b5622480",
+    "scope": "directly viewed during stages 4-5"
+  },
+  {
+    "path": "openwiki/images/slates/mastery/market-parts.png",
+    "sha256": "461857812caac5f7510f542533f7a22cd92a2ee5254f83fe7df04d91ffaf592e",
+    "scope": "directly viewed during stages 4-5"
+  },
+  {
+    "path": "openwiki/images/slates/mastery/region-grass.png",
+    "sha256": "016f151bd690c3c76ee50a2b6ed92c6dfb4f1cd48cfe37636393664797039d37",
+    "scope": "directly viewed during stages 4-5"
+  },
+  {
+    "path": "openwiki/images/slates/mastery/region-single-trees.png",
+    "sha256": "6563471a1061bf05deee692f9d642383522364ccd4ea99ee7ee8d0aa517e4f17",
+    "scope": "directly viewed during stages 4-5"
+  },
+  {
+    "path": "openwiki/images/slates/mastery/region-well.png",
+    "sha256": "57efb2fab46189e097db304af9eb154b754649ffc0e54cb1f75d7ea28f2fa49b",
+    "scope": "directly viewed during stages 4-5"
+  }
+]

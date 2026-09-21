@@ -20,6 +20,8 @@
 // `flex:1` 을 쓰지 않으므로 이 창을 `<details>` 안(작업 기록 탭)에 넣어도 위 함정에 걸리지 않는다.
 
 import { editorState } from "@/editor/editorState";
+import { store } from "@/project/store";
+import { renderLegacyWikiActivityPanel } from "./legacyWikiActivityPanel";
 import {
   describeEditActivity,
   EDIT_ACTIVITY_EVENT,
@@ -168,7 +170,15 @@ export function renderEditActivityPanel(): HTMLElement {
     },
   });
 
+  const archive = el("div");
+  let archivedWorld = store.getCurrent().world;
+  archive.append(renderLegacyWikiActivityPanel(archivedWorld));
   const refresh = (): void => {
+    const world = store.getCurrent().world;
+    if (world !== archivedWorld) {
+      archivedWorld = world;
+      archive.replaceChildren(renderLegacyWikiActivityPanel(world));
+    }
     const total = editActivityEntryCount();
     const matched = matchedEntries();
     const rows = matched.slice(0, RENDER_LIMIT);
@@ -197,7 +207,7 @@ export function renderEditActivityPanel(): HTMLElement {
       ],
     }),
     el("div", { class: "edit-activity-toolbar", children: [summary, copyButton, exportButton] }),
-    list
+    list, archive
   );
 
   refresh();
@@ -227,11 +237,13 @@ function installActivitySubscription(root: HTMLElement, refresh: () => void): vo
       disposed = true;
       subscriptionCount = Math.max(0, subscriptionCount - 1);
       window.removeEventListener(EDIT_ACTIVITY_EVENT, handler);
+      unsubscribe();
       return;
     }
     refresh();
   };
   subscriptionCount += 1;
+  const unsubscribe = store.subscribe(handler);
   window.addEventListener(EDIT_ACTIVITY_EVENT, handler);
 }
 

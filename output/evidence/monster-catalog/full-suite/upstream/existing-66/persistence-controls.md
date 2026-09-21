@@ -8,7 +8,7 @@ Only these three assertions executed. Two Vitest processes both exited 1, with t
 
 | Unchanged test | Controlled external response | Frozen and pristine outcome |
 |---|---|---|
-| `storePersistence.test.ts` / `reports why DB persistence is unavailable for local dev showcase projects` | A synthetic HTTP 401 from the fetch seam for GET `/rest/v1/projects`, with body `{\n  "message":"Invalid authentication credentials"\n}` | Exact `SupabaseProjectSyncError` and body; thrown at `store.load()` before the asserted disabled/dev-showcase status |
+| `storePersistence.test.ts` / `reports why DB persistence is unavailable for local dev showcase projects` | A synthetic HTTP 401 from the fetch seam for GET `/rest/v1/projects`, with body `{\n  "message":"Invalid authentication credentials"\n}` | Exact `LegacyDbProjectSyncError` and body; thrown at `store.load()` before the asserted disabled/dev-showcase status |
 | `unsavedChangesGuard.test.ts` / `devProject 모드: 변경→true, flush(로컬 기록)→false` | In-memory project read and successful conditional PATCH acknowledgement | Exact `AssertionError: expected 'saved' to be 'saved-local' // Object.is equality`, at test line 39 |
 | `unsavedChangesGuard.test.ts` / `freshProject(저장 스킵) 모드: flush가 saved-local이어도 미저장으로 남는다` | Same in-memory read/save protocol, reset to the original project per test | Exact same error, at test line 58 |
 
@@ -17,12 +17,12 @@ Full assertion names, complete normalized messages and stacks are retained in `p
 ## Controls and actual exercised behavior
 
 - A separate diagnostic setup file installed only a `globalThis.fetch` seam. No application methods, source files, or test assertions were replaced. In particular, `store.load`, `store.flush`, deserialization, map merge, serialization, SHA generation, dirty-state transitions and error wrapping remained real pristine code.
-- Synthetic configured values were `VITE_SUPABASE_URL=http://127.0.0.1:1`, `VITE_SUPABASE_ANON_KEY=test-anon-key` and the existing test's project-id literal. The authentication test itself overrides the URL to `http://dbserver:8100`; the seam intercepts that string without connecting to it.
+- Synthetic configured values were `VITE_LEGACY_DB_URL=http://127.0.0.1:1`, `VITE_LEGACY_DB_ANON_KEY=test-anon-key` and the existing test's project-id literal. The authentication test itself overrides the URL to `http://dbserver:8100`; the seam intercepts that string without connecting to it.
 - No native fetch is invoked by the seam. Existing network/credential-read guards remain underneath it. No loopback server, actual DB service or credential file was accessed. HTTP-looking PATCH/POST records in the trace are in-memory calls, not DB writes.
 - The success response starts from the real pristine `createBlankProject()` serialized by the real pristine serializer. The resulting 2,451,024-byte seed has SHA-256 `e83bd501e9d20e8c57f5bca845516ae92a5879634c3ac15b73e00697fda9c003` and is retained as `persistence-control-seed.json`.
 - The seam maintains an in-memory project row, including the current SHA. It validates project payload shape and conditional SHA equality before acknowledging a save, rather than mocking `flush()` to return `saved`.
 - Traces show each real test loading a project, loading the map overlay, reading the project again for save merge, and issuing a conditional PATCH with its actual edited title (`미저장 변경` / `증발 위험 변경`). The pristine persistence path then returns `saved`; the original assertion fails at the same line as frozen.
-- The authentication control supplies the body as external response bytes. The real `loadProjectSnapshotFromSupabase` reads `response.text()` and constructs `SupabaseProjectSyncError`; the error itself was not mocked.
+- The authentication control supplies the body as external response bytes. The real `loadProjectSnapshotFromLegacyDb` reads `response.text()` and constructs `LegacyDbProjectSyncError`; the error itself was not mocked.
 
 ## Cause and minimal proposed correction
 
@@ -30,7 +30,7 @@ The unchanged tests import store directly after `vi.resetModules()` but do not i
 
 That already-existing branch explains both controlled outcomes:
 
-1. A rejected remote load yields the external authentication body wrapped in `SupabaseProjectSyncError`.
+1. A rejected remote load yields the external authentication body wrapped in `LegacyDbProjectSyncError`.
 2. A successful remote load plus acknowledged save yields `saved`, not `saved-local`.
 
 The frozen diff only adds monster-metadata reconciliation to the store's saved-response path and map-merge save path; it does not add this dev-project routing behavior or the authentication-error wrapper. No new persistence regression is supported by these three assertion signatures.

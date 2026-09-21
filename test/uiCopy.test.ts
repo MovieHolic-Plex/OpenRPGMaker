@@ -6,7 +6,7 @@ import { layerShortLabel } from "@/editor/panels/aiAgentBrief";
 describe("uiCopy", () => {
   it("plain style uses beginner-friendly words without tool jargon", () => {
     expect(uiLabel("database", "plain")).toBe("자료집");
-    expect(uiLabel("database", "plain")).not.toMatch(/DB|Supabase|chipset|autotile/);
+    expect(uiLabel("database", "plain")).not.toMatch(/DB|LegacyDb|chipset|autotile/);
     // 2026-08-30: `자료` 단독은 폐기했다 — `자료 보관함`(소재)과 앞 두 글자가 겹쳐 한 헤더에
     // 다른 뜻의 두 라벨이 같은 말로 보였다. 축약형은 정본의 축약이어야 하고, `자료집`은
     // 4글자로 툴바에 들어간다.
@@ -14,7 +14,7 @@ describe("uiCopy", () => {
     expect(uiLabel("tilesetMissing", "plain")).toBe("그림이 없습니다");
     expect(uiLabel("tilesetMissing", "plain")).not.toBe("타일셋이 없습니다");
     expect(uiLabel("layerLower", "plain")).toBe("바닥");
-    expect(uiLabel("layerUpper", "plain")).toBe("덧그림");
+    expect(uiLabel("layerUpper", "plain")).toBe("상위");
     expect(uiLabel("layerEvent", "plain")).toBe("이벤트");
   });
 
@@ -34,13 +34,13 @@ describe("uiCopy", () => {
   it("레이어 이름에 RM 유래 직역이 없다", () => {
     for (const style of ["plain", "technical"] as const) {
       expect(uiLabel("layerLower", style)).not.toBe("하위");
-      expect(uiLabel("layerUpper", style)).not.toBe("상위");
+      expect(uiLabel("layerUpper", style)).not.toBe("덧그림");
     }
   });
 
   // "장식"은 타일 **분류** 이름(팔레트 필터 칩 · tileMeta role "decoration")과 겹친다.
   // 레이어에 같은 말을 쓰면 한 화면에서 두 뜻이 부딪힌다.
-  it("덧그림 레이어 이름이 타일 분류명 '장식'과 겹치지 않는다", () => {
+  it("상위 레이어 이름이 타일 분류명 '장식'과 겹치지 않는다", () => {
     expect(uiLabel("layerUpper", "plain")).not.toBe("장식");
   });
 

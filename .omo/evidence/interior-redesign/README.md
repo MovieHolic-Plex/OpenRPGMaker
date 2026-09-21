@@ -2,7 +2,7 @@
 
 The previous catalog forced 101 spaces into rectangular envelopes with cream walls; 12 complete floors repeated a left/right two-room partition. `registerDiverseInteriorCatalog` replaces those saved designs while preserving their IDs and the user's 34 tile annotations.
 
-- 101 interiors updated in Supabase project `rpg-zzu-house-template-gallery`, then loaded again and compared canonically (`supabase-proof.json`). All eight existing interior maps refreshed through their three owning place occurrences.
+- 101 interiors updated in LegacyDb project `rpg-zzu-house-template-gallery`, then loaded again and compared canonically (`legacy-db-proof.json`). All eight existing interior maps refreshed through their three owning place occurrences.
 - 89 individual rooms now use six nonrectangular footprints. 12 complete floors use 2 rooms (4 designs), 3 rooms (6), or 4 rooms (2), with offset room envelopes and connecting doors. The `rect` on those 12 records denotes the containing bounding box, not a filled rectangular floor.
 - 23 distinct dimensions, 3 wall materials and 7 base floor materials. Individual rooms within a floor may use different materials.
 - Restored program-specific tables, added storage/decor appropriate to facilities, kept beds in sleeping rooms and cabinets/stoves against supported walls. Upper floors no longer repeat a kitchen by default.

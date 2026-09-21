@@ -1,0 +1,64 @@
+{
+  "method": "Real single-agent Pi loop; scripted model and search HTTP responses; no live-model speed claim.",
+  "trace": [
+    {
+      "event": "http_start",
+      "atMs": 287.7,
+      "query": "failure"
+    },
+    {
+      "event": "http_start",
+      "atMs": 288,
+      "query": "success"
+    },
+    {
+      "event": "http_end",
+      "atMs": 288,
+      "query": "failure"
+    },
+    {
+      "event": "http_end",
+      "atMs": 288,
+      "query": "success"
+    },
+    {
+      "event": "tool_start",
+      "atMs": 288.1,
+      "id": "1-0",
+      "name": "web_search"
+    },
+    {
+      "event": "tool_start",
+      "atMs": 288.2,
+      "id": "1-1",
+      "name": "web_search"
+    },
+    {
+      "event": "tool_end",
+      "atMs": 288.4,
+      "id": "1-0",
+      "name": "web_search",
+      "ok": false
+    },
+    {
+      "event": "tool_end",
+      "atMs": 288.5,
+      "id": "1-1",
+      "name": "web_search",
+      "ok": true
+    },
+    {
+      "event": "tool_start",
+      "atMs": 906.2,
+      "id": "2-0",
+      "name": "set_project_settings"
+    },
+    {
+      "event": "tool_end",
+      "atMs": 906.3,
+      "id": "2-0",
+      "name": "set_project_settings",
+      "ok": true
+    }
+  ]
+}

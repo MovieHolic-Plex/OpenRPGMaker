@@ -14,15 +14,17 @@ export function pushFrame(state: InterpreterState, commands: Command[]): boolean
 
 // 루프 본문 프레임을 push 한다. ownerCommands/ownerPc 는 이 프레임이 끝났을 때
 // 다시 실행을 재개할 부모 루프 명령의 위치이다(breakLoop 처리와 재진입에 사용).
+// iterations 는 지금까지 완료된 이 루프의 반복 수 — 재진입 시 이어서 센다.
 export function pushLoopFrame(
   state: InterpreterState,
   body: Command[],
   ownerCommands: Command[],
-  ownerPc: number
+  ownerPc: number,
+  iterations = 0
 ): boolean {
   if (body.length && state.stack.length >= state.maxStackDepth) state.onUnverified?.("Interpreter stack budget exhausted");
   if (body.length === 0 || state.stack.length >= state.maxStackDepth) return false;
-  state.stack.push({ commands: body, pc: 0, loopOwner: { commands: ownerCommands, pc: ownerPc } });
+  state.stack.push({ commands: body, pc: 0, loopOwner: { commands: ownerCommands, pc: ownerPc, iterations } });
   return true;
 }
 
@@ -30,8 +32,8 @@ export function advanceCompletedFrame(state: InterpreterState): ResumeAdvance {
   const completed = state.stack.pop();
   // 루프 본문 프레임이 정상적으로 끝났다면(breakLoop 없이) 다시 body 를 push.
   if (completed?.loopOwner) {
-    state.loopIterations = (state.loopIterations ?? 0) + 1;
-    if (state.loopIterations >= state.maxLoopIterations) {
+    const iterations = completed.loopOwner.iterations + 1;
+    if (iterations >= state.maxLoopIterations) {
       state.onUnverified?.("Interpreter loop budget exhausted");
       // 가드 도달: 루프를 종료한다. 부모 프레임의 pc 는 loop 명령 실행 시
       // 이미 loop 다음 명령으로 옮겨져 있으므로(see commandCatalog case "loop"),
@@ -41,7 +43,7 @@ export function advanceCompletedFrame(state: InterpreterState): ResumeAdvance {
       if (!parent) return "done";
       return "continue";
     }
-    pushLoopFrame(state, completed.commands, completed.loopOwner.commands, completed.loopOwner.pc);
+    pushLoopFrame(state, completed.commands, completed.loopOwner.commands, completed.loopOwner.pc, iterations);
     return "continue";
   }
   const parent = topFrame(state.stack);

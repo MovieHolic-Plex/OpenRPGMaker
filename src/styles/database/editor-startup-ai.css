@@ -1,0 +1,51 @@
+/*
+ * The assistant is mounted with the editor shell, before the database modal is
+ * requested. Keep its existing, already-split style files in the database
+ * layer, but load this assistant-only slice with the editor bootstrap.
+ *
+ * This is an import manifest rather than a second implementation. Its order is
+ * the former assistant prefix from database/index.css; the remaining DB record
+ * and modal styles stay lazy and are appended by that entry later.
+ */
+@import "./assistant-proposal.css";
+@import "./assistant-command-bar.css";
+@import "./assistant-sticky-checklist.css";
+@import "./assistant-rising-overlay.css";
+@import "./tabs-b-assistant-panel/01-legacy-preview-panel.css";
+@import "./tabs-b-assistant-panel/02-chat-dock.css";
+@import "./tabs-b-assistant-panel/03-three-tier-ia.css";
+@import "./tabs-b-assistant-panel/04-chat-bubbles-proposals.css";
+@import "./tabs-b-assistant-panel/05-structure-modal-overlays.css";
+@import "./tabs-b-assistant-panel/06-canvas-guides-panel-chrome.css";
+@import "./tabs-b-assistant-panel/07-viewer-modal-settings.css";
+@import "./tabs-b-assistant-panel/08-studio-mode-start-screen.css";
+@import "./tabs-b-assistant-panel/studio-mode-start-screen.part-2.css";
+@import "./tabs-b-assistant-panel/studio-mode-start-screen.part-3.css";
+@import "./tabs-b-assistant-panel/studio-mode-start-screen.part-4.css";
+@import "./tabs-b-assistant-panel/09-ux-polish-density.css";
+@import "./tabs-b-assistant-panel/10-dock-mode-rich-doc.css";
+@import "./tabs-b-assistant-panel/11-autonomous-run-surface.css";
+@import "./tabs-b-assistant-panel/12-assistant-temperature.css";
+@import "./assistant-composer.css";
+@import "./tabs-b-assistant-panel/18-assistant-deck.css";
+@import "./tabs-b-assistant-panel/assistant-deck.part-2.css";
+@import "./tabs-b-assistant-panel/assistant-deck.part-3.css";
+@import "./tabs-b-assistant-panel/assistant-deck.part-4.css";
+@import "./tabs-b-assistant-panel/19-assistant-cards.css";
+@import "./tabs-b-assistant-panel/assistant-cards.part-2.css";
+@import "./tabs-b-assistant-panel/assistant-cards.part-3.css";
+@import "./tabs-b-assistant-panel/assistant-cards.part-4.css";
+@import "./tabs-b-assistant-panel/assistant-cards.part-5.css";
+@import "./tabs-b-assistant-panel/20-team-board.css";
+@import "./tabs-b-assistant-panel/21-team-panel.css";
+@import "./tabs-b-assistant-panel/22-team-work.css";
+@import "./tabs-b-assistant-panel/23-agent-lanes.css";
+@import "./tabs-b-assistant-panel/24-assistant-work-strip.css";
+@import "./tabs-b-assistant-panel/25-team-sidebar.css";
+
+@import "./tabs-b-assistant-panel/26-activity-levels.css";
+@import "./tabs-b-assistant-panel/27-assistant-wide.css";
+
+@import "./tabs-b-assistant-panel/28-activity-media.css";
+
+@import "./tabs-b-assistant-panel/29-creation-choice.css";

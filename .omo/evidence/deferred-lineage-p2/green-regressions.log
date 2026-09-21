@@ -6,7 +6,7 @@
  RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-interior-load-consistency-0907
 
  ❯ test/storePersistence.test.ts (11 tests | 5 failed) 11481ms
-   × Project store remote persistence > does not write to Supabase before the canonical project has loaded 4675ms
+   × Project store remote persistence > does not write to LegacyDb before the canonical project has loaded 4675ms
      → expected "spy" to not be called at all, but actually been called 1 times[90m
 
 Received:
@@ -27,11 +27,11 @@ Received:
 
 Number of calls: [1m1[22m
 [39m
-   × Project store remote persistence > does not auto-save local dev showcase projects to Supabase 404ms
+   × Project store remote persistence > does not auto-save local dev showcase projects to LegacyDb 404ms
      → Cannot read properties of undefined (reading 'ok')
    × Project store remote persistence > always creates a new fresh project instead of reloading local dev overrides 648ms
      → Cannot read properties of undefined (reading 'ok')
-   × Project store remote persistence > saves and reloads local edits for dev showcase projects without Supabase 368ms
+   × Project store remote persistence > saves and reloads local edits for dev showcase projects without LegacyDb 368ms
      → Cannot read properties of undefined (reading 'ok')
    × Project store remote persistence > reports why DB persistence is unavailable for local dev showcase projects 386ms
      → {
@@ -104,7 +104,7 @@ Number of calls: [1m1[22m
    ✓ store preserves open event drafts across remote autosave > autosave submits canonical linked profiles and preserves the staged name for Apply  1797ms
    ✓ store preserves open event drafts across remote autosave > keeps a new event draft after map-patch save returns a draft-stripped project  1103ms
  ✓ test/storeFlushShaEvidence.test.ts (2 tests) 1730ms
-   ✓ Project store flush sha256 evidence > 전체 저장 경로: saveProjectToSupabase 의 sha256 이 flush 결과(saved.sha256)로 흘러든다  1390ms
+   ✓ Project store flush sha256 evidence > 전체 저장 경로: saveProjectToLegacyDb 의 sha256 이 flush 결과(saved.sha256)로 흘러든다  1390ms
    ✓ Project store flush sha256 evidence > 변경 없음 fast path 는 saved(sha256 없음) — sha256 은 선택 필드 계약 그대로  338ms
  ✓ test/storeUpdateMap.test.ts (4 tests) 789ms
  ✓ test/interiorRoomPipeline.test.ts (29 tests) 627ms
@@ -121,7 +121,7 @@ Number of calls: [1m1[22m
 
 ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
 
- FAIL  test/storePersistence.test.ts > Project store remote persistence > does not write to Supabase before the canonical project has loaded
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > does not write to LegacyDb before the canonical project has loaded
 AssertionError: expected "spy" to not be called at all, but actually been called 1 times[90m
 
 Received:
@@ -152,16 +152,16 @@ Number of calls: [1m1[22m
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
 
- FAIL  test/storePersistence.test.ts > Project store remote persistence > does not auto-save local dev showcase projects to Supabase
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > does not auto-save local dev showcase projects to LegacyDb
 TypeError: Cannot read properties of undefined (reading 'ok')
- ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:233:17
+ ❯ loadProjectSnapshotFromLegacyDb src/project/legacyDbProjectSync.ts:233:17
     231|     signal: options.signal,
     232|   });
     233|   if (!response.ok) {
        |                 ^
-    234|     throw new SupabaseProjectSyncError(await response.text(), response…
+    234|     throw new LegacyDbProjectSyncError(await response.text(), response…
     235|   }
- ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:154:20
+ ❯ loadProjectFromLegacyDb src/project/legacyDbProjectSync.ts:154:20
  ❯ ProjectStore.load src/project/store.ts:283:27
  ❯ test/storePersistence.test.ts:55:5
 
@@ -169,46 +169,46 @@ TypeError: Cannot read properties of undefined (reading 'ok')
 
  FAIL  test/storePersistence.test.ts > Project store remote persistence > always creates a new fresh project instead of reloading local dev overrides
 TypeError: Cannot read properties of undefined (reading 'ok')
- ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:233:17
+ ❯ loadProjectSnapshotFromLegacyDb src/project/legacyDbProjectSync.ts:233:17
     231|     signal: options.signal,
     232|   });
     233|   if (!response.ok) {
        |                 ^
-    234|     throw new SupabaseProjectSyncError(await response.text(), response…
+    234|     throw new LegacyDbProjectSyncError(await response.text(), response…
     235|   }
- ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:154:20
+ ❯ loadProjectFromLegacyDb src/project/legacyDbProjectSync.ts:154:20
  ❯ ProjectStore.load src/project/store.ts:283:27
  ❯ test/storePersistence.test.ts:91:21
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
 
- FAIL  test/storePersistence.test.ts > Project store remote persistence > saves and reloads local edits for dev showcase projects without Supabase
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > saves and reloads local edits for dev showcase projects without LegacyDb
 TypeError: Cannot read properties of undefined (reading 'ok')
- ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:233:17
+ ❯ loadProjectSnapshotFromLegacyDb src/project/legacyDbProjectSync.ts:233:17
     231|     signal: options.signal,
     232|   });
     233|   if (!response.ok) {
        |                 ^
-    234|     throw new SupabaseProjectSyncError(await response.text(), response…
+    234|     throw new LegacyDbProjectSyncError(await response.text(), response…
     235|   }
- ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:154:20
+ ❯ loadProjectFromLegacyDb src/project/legacyDbProjectSync.ts:154:20
  ❯ ProjectStore.load src/project/store.ts:283:27
  ❯ test/storePersistence.test.ts:119:5
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
 
  FAIL  test/storePersistence.test.ts > Project store remote persistence > reports why DB persistence is unavailable for local dev showcase projects
-SupabaseProjectSyncError: {
+LegacyDbProjectSyncError: {
   "message":"Invalid authentication credentials"
 }
- ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:234:11
+ ❯ loadProjectSnapshotFromLegacyDb src/project/legacyDbProjectSync.ts:234:11
     232|   });
     233|   if (!response.ok) {
-    234|     throw new SupabaseProjectSyncError(await response.text(), response…
+    234|     throw new LegacyDbProjectSyncError(await response.text(), response…
        |           ^
     235|   }
     236|   const rows = await parseProjectRows(response);
- ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:154:20
+ ❯ loadProjectFromLegacyDb src/project/legacyDbProjectSync.ts:154:20
  ❯ ProjectStore.load src/project/store.ts:283:27
  ❯ test/storePersistence.test.ts:151:5
 

@@ -98,7 +98,7 @@ export type DbPersistenceDisabledReason = "dev-showcase" | "load-failed" | "shar
 
 export type DbConfigField = "url" | "anonKey";
 
-/** 설정 출처. 예전엔 supabaseProjectConfig 의 별칭이었다 — 포트가 자기 어휘로 소유한다. */
+/** 설정 출처. 예전엔 projectRepository().currentTarget 의 별칭이었다 — 포트가 자기 어휘로 소유한다. */
 export type DbPersistenceConfigSource = "custom" | "env" | "legacy";
 
 export type PersistenceStatus =
@@ -130,7 +130,7 @@ export type ConversationListOptions = {
  * 프로젝트 저장소 포트. store 와 주변 모듈은 이것만 부른다.
  *
  * 대상 매개변수 규칙: `target` 을 **생략**하면 어댑터가 `currentTarget()` 을 쓴다.
- * `null` 을 **명시**하면 미설정으로 처리한다(sync 함수의 `config = supabaseProjectConfig()`
+ * `null` 을 **명시**하면 미설정으로 처리한다(sync 함수의 `config = projectRepository().currentTarget()`
  * 기본 매개변수와 같은 의미 — `undefined` 만 기본값을 부른다).
  */
 export type AssetPutInput = {

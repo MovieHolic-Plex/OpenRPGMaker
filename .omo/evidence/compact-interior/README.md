@@ -9,7 +9,7 @@
 - Two reviewed assemblies correct cabinet layer/backing and stove wall support.
 - Native renderer inspected. The 4× image is a browser screenshot of the native image with pixelated scaling.
 - Actual spatial get/preview/apply created the example; explicit refresh rebuilt the frozen source after corrections.
-- Supabase CAS save and reload succeeded; independent read confirms source definitions, both maps and the tileset.
+- LegacyDb CAS save and reload succeeded; independent read confirms source definitions, both maps and the tileset.
 - Shipping player: 10/10 beats, no runtime errors; actual entry, 21-step furniture/exit walk, return to yard.
 - The previous multi-storey examples retain their frozen snapshots. This is the first revised small interior, not a claim that every indoor space was replaced.
 

@@ -102,9 +102,9 @@ footer{margin-top:64px;color:var(--ink-3);font-size:.84rem;border-top:1px solid 
 <main>
 
 <h1>성(城) 타일 문법 재분석 — 사용자 손그림 정본 역공학</h1>
-<p class="meta">rpg-zzu · 2026-07-18 · 정본 = Supabase <code>rpg-zzu-dungeon-example</code>의 <code>map_castle_canvas</code>(50×40) 사용자 손그림 실측(읽기 전용)
+<p class="meta">rpg-zzu · 2026-07-18 · 정본 = LegacyDb <code>rpg-zzu-dungeon-example</code>의 <code>map_castle_canvas</code>(50×40) 사용자 손그림 실측(읽기 전용)
 · 대조 = 커밋 <code>9d8dd89</code> · <code>map_castle_rebuilt</code> · <code>src/editor/castleKit.ts</code><br>
-<span class="badge ok">Supabase 읽기 전용 — 저장 호출 0</span><span class="badge">렌더 PNG 11장 + 타일 카탈로그 32장</span><span class="badge">SVG 다이어그램 1개</span><span class="badge bad">이전 보고서 문법 섹션 정정판</span></p>
+<span class="badge ok">LegacyDb 읽기 전용 — 저장 호출 0</span><span class="badge">렌더 PNG 11장 + 타일 카탈로그 32장</span><span class="badge">SVG 다이어그램 1개</span><span class="badge bad">이전 보고서 문법 섹션 정정판</span></p>
 
 <div class="callout bad">
 <b>이 문서는 정정판이다.</b> 이전 보고서(<code>docs/2026-07-18-castle-scale-analysis.html</code>)의 문법 섹션(③)은
@@ -478,7 +478,7 @@ y18–20이 51/51/81 <b>맨 정면 3단</b> — 위 y17행은 측면 데크 모�
 <h3>실측 방법</h3>
 <div class="tablewrap"><table>
 <tr><th>항목</th><th>내용</th></tr>
-<tr><td>정본 소스</td><td>Supabase <code>rpg-zzu-dungeon-example</code> · <code>map_castle_canvas</code>(50×40) 전체 그리드 덤프 — <b>읽기 전용, 저장 호출 0</b></td></tr>
+<tr><td>정본 소스</td><td>LegacyDb <code>rpg-zzu-dungeon-example</code> · <code>map_castle_canvas</code>(50×40) 전체 그리드 덤프 — <b>읽기 전용, 저장 호출 0</b></td></tr>
 <tr><td>대조 소스</td><td><code>git show 9d8dd89</code>(남쪽 커튼 2층 복원 diff) · <code>map_castle_rebuilt</code>(36×26) · <code>src/editor/castleKit.ts</code> · <code>scripts/build-castle-canvas.mts</code>·<code>save-castle-rebuilt.mts</code>·<code>build-castle-showcase.mts</code> · <code>openwiki/castle-map.md</code></td></tr>
 <tr><td>사용 빈도 실측</td><td>캔버스 lower: 51=46 · 49=45 · 81=34 · 109=32 · 19=21 · 78=15 · 80=14 vs <b>21=3(견본 잔재)</b> · 48=1 · 79=1 · 50=1(견본 잔재) — 21·명암 변형은 사용자 사용 0회</td></tr>
 <tr><td>투명도 실측</td><td>칩셋 알파 채널: 캡 24/25 = 43% 투명(상단 모서리) · 베이스 54/55 = 12%(하단 모서리) · 179 = 19%(상단) · 209 = 34%(하단) · 88 = 55%</td></tr>
@@ -487,7 +487,7 @@ y18–20이 51/51/81 <b>맨 정면 3단</b> — 위 y17행은 측면 데크 모�
 </table></div>
 
 <footer>
-2026-07-18 · 성 타일 문법 재분석(문법 전용 — 확장 전략 별도) · Supabase 읽기 전용 · 저장소 변경은 본 보고서 파일 신규 1건뿐(커밋 없음).<br>
+2026-07-18 · 성 타일 문법 재분석(문법 전용 — 확장 전략 별도) · LegacyDb 읽기 전용 · 저장소 변경은 본 보고서 파일 신규 1건뿐(커밋 없음).<br>
 사용자 교정 반영: ① 성벽 위 통행 데크 필수(2층 커튼) ② 타워 캡/베이스 상위 겹침 — lower 파괴 금지.
 </footer>
 

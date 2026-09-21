@@ -115,7 +115,7 @@ TypeError: f.store.verifyPersistedRevision is not a function
     143|     const reading = f.store.verifyPersistedRevision(f.receipt);
        |                             ^
     144|     await started.promise;
-    145|     vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "new-target");
+    145|     vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "new-target");
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/12]⎯
 

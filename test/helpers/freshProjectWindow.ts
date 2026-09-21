@@ -35,5 +35,5 @@ const define = (key: string, value: unknown) =>
 define("window", fakeWindow);
 define("localStorage", freshProjectStorage);
 define("fetch", async () => {
-  throw new Error("fresh-project 세션은 Supabase 를 호출하지 않아야 한다");
+  throw new Error("fresh-project 세션은 LegacyDb 를 호출하지 않아야 한다");
 });

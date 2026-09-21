@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { emptyEventProject } from "./mockupProbeSeeds";
 import { openEventEditor } from "./eventEditorCertEvidence";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const DIR = "output/evidence/evcmd-modal-fix";
 
@@ -17,7 +17,7 @@ test.setTimeout(120_000);
 
 async function boot(page: Page) {
   const { project, eventId } = emptyEventProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await openEventEditor(page, eventId);
 }
 

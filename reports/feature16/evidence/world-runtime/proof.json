@@ -1,0 +1,54 @@
+[
+  {
+    "kind": "melee",
+    "globalWeather": "rain,0.8",
+    "before": {
+      "hp": 1000,
+      "mp": 43
+    },
+    "after": {
+      "hp": 975,
+      "mp": 41,
+      "x": 2
+    }
+  },
+  {
+    "kind": "dash",
+    "globalWeather": "rain,0.8",
+    "before": {
+      "hp": 1000,
+      "mp": 43
+    },
+    "after": {
+      "hp": 975,
+      "mp": 41,
+      "x": 3
+    }
+  },
+  {
+    "kind": "trap",
+    "globalWeather": "rain,0.8",
+    "before": {
+      "hp": 1000,
+      "mp": 43
+    },
+    "after": {
+      "hp": 975,
+      "mp": 41,
+      "x": 2
+    }
+  },
+  {
+    "kind": "projectile",
+    "globalWeather": "rain,0.8",
+    "before": {
+      "hp": 1000,
+      "mp": 43
+    },
+    "after": {
+      "hp": 975,
+      "mp": 41,
+      "x": 2
+    }
+  }
+]

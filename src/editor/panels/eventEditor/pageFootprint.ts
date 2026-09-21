@@ -13,7 +13,10 @@ import {
   normalizeCharacterScale,
   normalizePassRows,
 } from "@/project/footprint";
-import { renderFootprintPreview } from "./eventGraphicPreview";
+import { eventGraphicRenderScale, renderFootprintPreview } from "./eventGraphicPreview";
+import { isAutomaticCharacterScale } from "@/project/characterScale";
+import { mapTileSize } from "@/project/tileGeometry";
+import { store } from "@/project/store";
 import type { CharacterFootprint, EventPage, MapId } from "@/project/types";
 
 /**
@@ -30,11 +33,9 @@ export function derivedScaleForBody(footprint: CharacterFootprint): number {
   return Math.max(footprint.width, footprint.height);
 }
 
-/** 저장된 배율이 파생값과 다르면 작성자가 손으로 지정한 것으로 본다. */
+/** 기존 명시 배율은 보존한다. 신규 자동 설정만 맵 크기를 따라간다. */
 function isManualScale(page: EventPage): boolean {
-  if (page.graphic.scale === undefined) return false;
-  const body = normalizeCharacterFootprint(page.footprint);
-  return normalizeCharacterScale(page.graphic.scale) !== derivedScaleForBody(body);
+  return !isAutomaticCharacterScale(page.graphic);
 }
 
 function axisInput(testid: string, value: number, max: number): HTMLInputElement {
@@ -57,6 +58,7 @@ export function renderPageFootprint(mapId: MapId, eventId: string, page: EventPa
   const body = normalizeCharacterFootprint(page.footprint);
   const passRows = normalizePassRows(page.passRows, body.height);
   const manual = isManualScale(page);
+  const tileSize = mapTileSize(store.getCurrent().maps[mapId]);
 
   const control = el("div", {
     class: "event-footprint-control",
@@ -68,7 +70,7 @@ export function renderPageFootprint(mapId: MapId, eventId: string, page: EventPa
   const passInput = axisInput("event-page-pass-rows", passRows, body.height);
   const scaleInput = el("input", {
     attrs: { type: "number", min: "0.25", max: "8", step: "0.25" },
-    value: String(normalizeCharacterScale(page.graphic.scale)),
+    value: String(eventGraphicRenderScale(page.graphic, tileSize)),
     dataset: { testid: "event-page-body-scale" },
   }) as HTMLInputElement;
   const manualToggle = el("input", {
@@ -85,7 +87,7 @@ export function renderPageFootprint(mapId: MapId, eventId: string, page: EventPa
   const previewHost = el("div", {
     class: "event-footprint-preview-host",
     dataset: { testid: "event-page-footprint-preview-host" },
-    children: [renderFootprintPreview({ graphic: page.graphic, footprint: body, passRows })],
+    children: [renderFootprintPreview({ graphic: page.graphic, footprint: body, passRows, tileSize })],
   });
 
   /**
@@ -105,7 +107,7 @@ export function renderPageFootprint(mapId: MapId, eventId: string, page: EventPa
     const scale = manualToggle.checked
       ? normalizeCharacterScale(Number.parseFloat(scaleInput.value))
       : derivedScaleForBody(footprint);
-    const graphic = { ...page.graphic, scale };
+    const graphic: EventPage["graphic"] = { ...page.graphic, scale, scaleMode: manualToggle.checked ? "manual" : "auto" };
     updateEventPage(mapId, eventId, page.id, { footprint, passRows: rows, graphic });
     reflect(footprint, rows, graphic);
   }
@@ -116,9 +118,9 @@ export function renderPageFootprint(mapId: MapId, eventId: string, page: EventPa
     heightInput.value = String(footprint.height);
     passInput.value = String(rows);
     passInput.max = String(footprint.height);
-    scaleInput.value = String(normalizeCharacterScale(graphic.scale));
+    scaleInput.value = String(eventGraphicRenderScale(graphic, tileSize));
     summary.textContent = footprintSummary(footprint, rows);
-    previewHost.replaceChildren(renderFootprintPreview({ graphic, footprint, passRows: rows }));
+    previewHost.replaceChildren(renderFootprintPreview({ graphic, footprint, passRows: rows, tileSize }));
   }
 
   function currentFields(): { width: number; height: number; rows: number } {
@@ -159,7 +161,7 @@ export function renderPageFootprint(mapId: MapId, eventId: string, page: EventPa
       children: [
         el("label", {
           class: "event-footprint-scale-manual",
-          attrs: { title: "끄면 몸 크기에서 배율을 자동으로 맞춥니다" },
+          attrs: { title: "끄면 맵의 타일 크기와 몸 크기에 맞춰 캐릭터를 정수 배율로 확대합니다" },
           children: [manualToggle, el("span", { text: "배율 직접 지정" })],
         }),
         labeled("배율", scaleInput, "그림 크기. 몸 사각과 독립이다"),

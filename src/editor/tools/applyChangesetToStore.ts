@@ -15,7 +15,6 @@ import { combineDiffs, recordProjectCommit, recordProjectCommitFireAndForget, re
 import { store } from "@/project/store";
 import { canonicalJsonString } from "@/project/persistence/core/canonicalJson";
 import type { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
-import { createProjectWikiCoordinator, type WikiDeliveryMilestone } from "@/editor/projectWikiCoordinator";
 import type { ChangeSummary, Project } from "@/project/types";
 import { reconcileReviewedWorldForApply } from "@/project/world";
 import { commitChangeset, summarizeChanges } from "./changeset";
@@ -275,7 +274,7 @@ export interface ApplyProposedProjectOptions {
 }
 
 export type ApplyProposedProjectResult =
-  | { readonly ok: true; readonly commit: CommitRow; readonly applied: Project; readonly commitProject?: Project; readonly wikiWarning?: string; readonly wikiDelivery?: WikiDeliveryMilestone }
+  | { readonly ok: true; readonly commit: CommitRow; readonly applied: Project; readonly commitProject?: Project }
   | {
     readonly ok: false;
     readonly reason: "commit-rejected" | "retired-run" | "stale-base" | "stale-baseline" | "map-destruction-unapproved";
@@ -326,7 +325,6 @@ export async function applyProposedProject(
       : "맵 전체 청소는 사용자 허가가 필요합니다 — 채팅에서 확인 후 적용하세요.";
     return { ok: false, reason: "map-destruction-unapproved", issue, issues: [issue] };
   }
-  const wikiProjectIdentity = JSON.stringify(store.getProjectIdentity());
   // Wiki checkpoints and human codex edits own world documents independently of
   // detached authoring previews. A title/map proposal must not restore an old wiki.
   const appliedProject = { ...proposed };
@@ -421,19 +419,7 @@ export async function applyProposedProject(
   }
   if (options.operation?.signal.aborted) return { ok: true, commit: commitRow, applied: commitProject, commitProject };
   resetManualProjectCommitBaseline(appliedProject);
-  let wikiWarning: string | undefined;
-  let wikiDelivery: WikiDeliveryMilestone | undefined;
-  if (JSON.stringify(store.getProjectIdentity()) !== wikiProjectIdentity) {
-    return { ok: true, commit: commitRow, applied: store.getCurrent(), commitProject, wikiWarning: "프로젝트가 바뀌어 이전 작업의 위키 진행 기록을 갱신하지 않았습니다." };
-  }
-  if (appliedProject.world?.entities.some((entity) => entity.wiki)) {
-    try {
-      await createProjectWikiCoordinator().observe(options.summary, options.toolNames, options.operation?.signal,
-        milestone => { wikiDelivery = milestone; });
-    } catch (cause) {
-      wikiWarning = cause instanceof Error ? cause.message : String(cause);
-    }
-  }
-  return { ok: true, commit: commitRow, applied: store.getCurrent(), commitProject,
-    ...(wikiDelivery ? { wikiDelivery } : {}), ...(wikiWarning ? { wikiWarning } : {}) };
+  // Applied work already has a commit and mutation audit entry. Do not turn it
+  // into another authored document or attribute a later live edit to this apply.
+  return { ok: true, commit: commitRow, applied: commitProject, commitProject };
 }

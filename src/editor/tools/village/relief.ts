@@ -1,3 +1,4 @@
+import { isForestHarmonyTileset } from "@/project/defaults/forestHarmony";
 // editor/tools/village/relief.ts
 // 마을 지형 고저차 — 언덕(단구)을 계획하고 「합본 마을+레트로 월드맵」 혼합 칩셋의 절벽 어휘로 그린다.
 //
@@ -57,10 +58,10 @@ export const RETRO_CLIFF = {
 /** 혼합 칩셋에서 통행 가능으로 고쳐 쓰는 레트로 칸 — 정본은 defaults/constants 의 RETRO_WORLD_CLIFF_WALKABLE_TILES. */
 export const RETRO_CLIFF_WALKABLE: readonly number[] = RETRO_WORLD_CLIFF_WALKABLE_TILES;
 
-/** 혼합 칩셋(위 480 합본 마을 + 아래 480 레트로 월드맵)인가 — 절벽 어휘가 있는 유일한 번들 칩셋. */
+/** 혼합 칩셋(위 480 합본 마을 + 아래 480 레트로 월드맵)또는 그 구간을 보존한 숲마을인가. */
 export function tilesetHasCliffVocabulary(tileset: Pick<TilesetDef, "image" | "count"> | undefined): boolean {
   return tileset !== undefined && tileset.image.type === "bundled"
-    && tileset.image.id === "tex_easyrpg_chipset_combined_town_retro_world" && tileset.count >= RETRO_WORLD_TILE_OFFSET * 2;
+    && (tileset.image.id === "tex_easyrpg_chipset_combined_town_retro_world" || isForestHarmonyTileset(tileset)) && tileset.count >= RETRO_WORLD_TILE_OFFSET * 2;
 }
 
 /** 모서리를 깎은 직사각형 — 좌표는 칸 모서리(x1,y1 은 배타). 깎기 값은 칸 수(0 = 직각). */

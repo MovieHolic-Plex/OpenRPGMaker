@@ -1,0 +1,194 @@
+/* ── Safe harness review: Consolidated review container ── */
+.region-task-review-card {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+}
+.region-task-review-card:empty { display: none; }
+.region-task-review-card > :not(.hidden) + :not(.hidden) {
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* 지표는 한 줄 문자열이 아니라 항목 칩이다. 나쁜 값만 색으로 튀게 하고 나머지는 조용히 둔다. */
+.region-task-review-metrics {
+  background: transparent;
+  color: var(--editor-text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 11px;
+  gap: var(--space-1);
+  line-height: 1.5;
+  padding: var(--space-2) var(--space-3);
+}
+.region-task-metric {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  padding: 2px var(--space-2);
+  white-space: nowrap;
+}
+.region-task-metric.is-warn {
+  background: var(--warning-muted);
+  border-color: var(--warning);
+  color: var(--warning);
+  font-weight: 600;
+}
+.region-task-review-metrics.hidden,
+.region-task-review-issues.hidden,
+.region-task-room-controls.hidden { display: none; }
+
+.region-task-review-issues {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  gap: 3px;
+  padding: var(--space-2) var(--space-3);
+}
+.region-task-review-issue.is-error { color: var(--danger); }
+.region-task-review-issue.is-warning { color: var(--warning); }
+
+.region-task-room-controls {
+  background: transparent;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+}
+.region-task-room-title {
+  color: var(--editor-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.region-task-room-row { align-items: center; display: flex; gap: var(--space-2); }
+.region-task-room-name { flex: 1 1 auto; font-size: 12px; min-width: 0; }
+.region-task-room-lock,
+.region-task-room-reroll {
+  background: transparent;
+  border: 1px solid var(--editor-line-strong);
+  border-radius: 999px;
+  color: var(--editor-text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  padding: 3px var(--space-2);
+}
+.region-task-room-reroll:disabled { cursor: default; opacity: 0.45; }
+@media (max-width: 520px) {
+  .region-task-room-row { align-items: stretch; flex-wrap: wrap; }
+  .region-task-room-name { flex-basis: 100%; }
+}
+
+/* NPC 일정은 암묵적으로 켜지지 않는다. 승인 전에 실행 방식 세 가지를 명시적으로 고른다. */
+.region-task-npc-decision {
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--warning) 55%, transparent);
+  border-radius: var(--radius-s);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+}
+.region-task-npc-decision.hidden { display: none; }
+.region-task-npc-decision-title { color: var(--warning); font-size: 12px; font-weight: 700; }
+.region-task-npc-decision-help { color: var(--editor-text-muted); font-size: 11px; line-height: 1.45; }
+.region-task-npc-decision-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.region-task-npc-decision-actions button,
+.region-task-room-checkpoint {
+  background: transparent;
+  border: 1px solid var(--editor-line-strong);
+  border-radius: 999px;
+  color: var(--editor-text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  padding: 4px var(--space-2);
+}
+.region-task-npc-decision-actions button:hover,
+.region-task-room-checkpoint:hover { border-color: var(--accent); color: var(--accent); }
+
+/* 실제 detached map snapshot을 사용한 레이어별 중간 미리보기. */
+.region-task-room-checkpoints { align-items: center; display: flex; flex-wrap: wrap; gap: var(--space-1); }
+.region-task-room-checkpoint.is-failed { border-color: var(--danger); color: var(--danger); }
+.region-task-room-checkpoint.is-done { border-color: color-mix(in srgb, var(--success) 65%, transparent); }
+.region-task-room-checkpoint.is-selected {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent);
+  color: var(--accent);
+}
+.region-task-room-checkpoint-preview {
+  align-items: center;
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  max-height: 260px;
+  overflow: auto;
+  padding: var(--space-2);
+}
+.region-task-room-checkpoint-preview.hidden { display: none; }
+.region-task-room-checkpoint-preview canvas { height: auto; image-rendering: pixelated; max-width: 100%; }
+.region-task-room-checkpoint-caption { color: var(--editor-text-muted); font-size: 11px; }
+
+/* 액션 1행 — 지금 눌러야 할 것 하나만 강조색. 스크롤포트 바닥에 full-bleed 로 고정한다.
+   진단(아래 접힌 details)을 펼쳐 읽는 동안에도 「적용」이 화면에서 사라지지 않아야 한다. */
+.region-task-compare-actions {
+  align-items: center;
+  background: var(--bg-overlay);
+  border-top: 1px solid var(--border-subtle);
+  bottom: calc(var(--space-4) * -1);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  margin-block-start: var(--space-2);
+  margin-inline: calc(var(--space-4) * -1);
+  padding: var(--space-2) var(--space-4);
+  position: sticky;
+  z-index: 6;
+}
+.region-task-apply {
+  background: var(--accent);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-s);
+  color: var(--on-accent);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  padding: var(--space-2) var(--space-4);
+}
+/* 구역 체크를 전부 풀면 적용할 게 없다. 적용 버튼이 하나로 합쳐지면서 이 상태가
+   주 CTA 에 나타난다 — 예전에는 따로 있던 「선택 적용」 버튼만 흐려졌다. */
+.region-task-apply:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+.region-task-retry,
+.region-task-discard {
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--editor-line-strong);
+  border-radius: var(--radius-s);
+  color: var(--editor-text);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+}
+.region-task-retry svg {
+  flex-shrink: 0;
+  height: 14px;
+  width: 14px;
+}
+.region-task-retry:hover,
+.region-task-discard:hover { border-color: var(--accent); color: var(--accent); }

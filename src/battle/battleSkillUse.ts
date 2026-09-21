@@ -5,13 +5,13 @@ import type { Project, SkillId, SkillRecord } from "@/project/types";
 
 export type BattleSkillUser = Pick<
   MutableBattler | BattleBattlerSnapshot,
-  "mp" | "maxMp" | "skillIds" | "monsterInstanceId" | "skillPp" | "stateIds"
+  "mp" | "maxMp" | "skillIds" | "monsterInstanceId" | "skillPp" | "skillCooldowns" | "stateIds"
 >;
 export type MutableBattleSkillUser = Pick<
   MutableBattler,
-  "mp" | "maxMp" | "skillIds" | "monsterInstanceId" | "skillPp"
+  "mp" | "maxMp" | "skillIds" | "monsterInstanceId" | "skillPp" | "skillCooldowns"
 >;
-export type BattleSkillUseFailure = "missingSkill" | "notLearned" | "skillBlocked" | "insufficientMp" | "noPp";
+export type BattleSkillUseFailure = "missingSkill" | "notLearned" | "skillBlocked" | "insufficientMp" | "noPp" | "cooldown";
 export type BattleSkillResourceConsumption =
   | { readonly kind: "pp" | "mp"; readonly remaining: number }
   | { readonly kind: "none" };
@@ -31,6 +31,7 @@ export function battleSkillUseFailure(
   const skill = project.database.skills.find((record) => record.id === skillId);
   if (!skill) return "missingSkill";
   if (options.requireLearned !== false && !user.skillIds.includes(skillId)) return "notLearned";
+  if ((user.skillCooldowns?.[skillId] ?? 0) > 0) return "cooldown";
   if (stateBlocksSkillUse(project, user)) return "skillBlocked";
   if (usesSkillPp(project, user, skill)) {
     const currentPp = user.skillPp?.[skillId] ?? Math.max(1, Math.trunc(skill.maxPp ?? 1));
@@ -49,6 +50,7 @@ export function consumeBattleSkillResource(
 ): BattleSkillResourceConsumption {
   const skill = project.database.skills.find((record) => record.id === skillId);
   if (!skill) return { kind: "none" };
+  startBattleSkillCooldown(user, skill);
   if (usesSkillPp(project, user, skill)) {
     const maxPp = Math.max(1, Math.trunc(skill.maxPp ?? 1));
     const currentPp = user.skillPp?.[skillId] ?? maxPp;
@@ -87,7 +89,20 @@ export function battleSkillUseFailureLabel(
       const cost = skill ? battleSkillMpCost(skill, user.maxMp) : 0;
       return `MP 부족 (필요 ${cost} / 현재 ${user.mp})`;
     }
+    case "cooldown": return "재사용 대기 중입니다.";
     case "noPp":
       return "PP가 부족합니다.";
+  }
+}
+
+/** Includes the casting round; end-of-round decrement leaves N subsequent blocked rounds. */
+export function startBattleSkillCooldown(user: Pick<MutableBattler, "skillCooldowns">, skill: SkillRecord): void {
+  if ((skill.cooldownTurns ?? 0) > 0) (user.skillCooldowns ??= {})[skill.id] = skill.cooldownTurns! + 1;
+}
+export function advanceBattleSkillCooldowns(battlers: readonly Pick<MutableBattler, "skillCooldowns">[]): void {
+  for (const battler of battlers) for (const id of Object.keys(battler.skillCooldowns ?? {})) {
+    const remaining = battler.skillCooldowns![id] - 1;
+    if (remaining > 0) battler.skillCooldowns![id] = remaining;
+    else delete battler.skillCooldowns![id];
   }
 }

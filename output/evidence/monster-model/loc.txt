@@ -20,7 +20,7 @@
    92 src/project/monsterMetadata.ts
   237 src/project/projectCommitLog.ts
  1264 src/project/store.ts
- 1357 src/project/supabaseProjectSync.ts
+ 1357 src/project/legacyDbProjectSync.ts
   565 src/project/types/base.ts
   561 src/project/types/project.ts
   101 src/project/webExport.ts

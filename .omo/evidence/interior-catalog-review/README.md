@@ -36,7 +36,7 @@ in the QA browser; publication was performed by the CAS save script.
   investigation, frozen recompilation after live kit edits, old snapshots, explicit fixed anchors and outdoor layer preservation.
 - New/source spaces were previewed through `get_spatial_design` and
   `preview_spatial_build`; registration is idempotent.
-- Supabase save/reload proof: `supabase-proof.json`.
+- LegacyDb save/reload proof: `legacy-db-proof.json`.
 
 ## Deliberate boundaries
 

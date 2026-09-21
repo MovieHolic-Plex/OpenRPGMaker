@@ -1,0 +1,5 @@
+{
+  "baseline": "81123682b0b8802ae7bc012b114c0ff5bea26509",
+  "command": "bun test test/piToolConcurrency.bun.test.ts test/piAgentToolEscalation.bun.test.ts",
+  "exitCode": 1
+}

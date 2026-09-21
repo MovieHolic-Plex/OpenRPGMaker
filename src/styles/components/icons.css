@@ -345,6 +345,27 @@
   width: 12px;
 }
 
+/* AI 진입점 아이콘. 이벤트 편집기 도크 요약은 자체 SVG(`ee-icon-spark`)를 쓰지만,
+   맵 컨텍스트 메뉴는 `rm-tool-icon oprn-icon-*` 규약만 받으므로 같은 별 모양을
+   여기 한 벌 더 둔다. 별 본체는 ::before, 작은 별은 ::after 다. */
+.oprn-icon-spark::before {
+  background: var(--accent);
+  clip-path: polygon(50% 0, 62% 34%, 98% 34%, 68% 55%, 82% 94%, 50% 70%, 18% 94%, 32% 55%, 2% 34%, 38% 34%);
+  height: 14px;
+  left: 1px;
+  top: 0;
+  width: 14px;
+}
+
+.oprn-icon-spark::after {
+  background: var(--accent);
+  clip-path: polygon(50% 0, 62% 34%, 98% 34%, 68% 55%, 82% 94%, 50% 70%, 18% 94%, 32% 55%, 2% 34%, 38% 34%);
+  height: 6px;
+  left: 10px;
+  top: 10px;
+  width: 6px;
+}
+
 .oprn-icon-grid::before {
   background:
     linear-gradient(var(--text-2), var(--text-2)) 0 0 / 16px 1px,

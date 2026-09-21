@@ -228,7 +228,7 @@ function parseActivityPersistence(value: unknown): ActivityPersistence {
   switch (value) {
     case "not-recorded":
     case "local":
-    case "supabase":
+    case "project-store":
     case "both":
     case "failed-remote":
       return value;
@@ -242,7 +242,7 @@ function parseProjectPersistence(value: unknown): ProjectPersistence {
     case "not-requested":
     case "pending":
     case "local":
-    case "supabase":
+    case "project-store":
     case "both":
     case "failed":
       return value;

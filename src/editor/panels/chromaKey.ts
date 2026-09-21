@@ -23,9 +23,53 @@ export function isMagentaChromaKeyPixel(
   return red > resolved.minRed && green < resolved.maxGreen && blue > resolved.minBlue;
 }
 
+/**
+ * 원본 URL → 키 처리 결과 URL. **요소가 아니라 URL 로 기억한다.**
+ * 예전 스킵 가드는 `image.dataset.chromaKeyed` 였는데, 썸네일 경로가 렌더마다 새 `<img>` 를
+ * 만들기 때문에 가드가 한 번도 적중하지 않았다 — 보이는 행마다 getImageData + 픽셀 루프 +
+ * toDataURL 전 비용을 다시 냈다(2026-09-19 리뷰 P0-8). 같은 파일의 배경 경로
+ * (`autoKeyedUrlCache`)가 이미 쓰던 방식을 `<img>` 경로로 넓힌 것이다.
+ */
+const magentaKeyedUrlCache = new Map<string, string>();
+/** 값이 data URL 이라 한 건이 수백 KB 다 — 무한 성장시키지 않는다(삽입 순서대로 밀어낸다). */
+const MAGENTA_KEYED_URL_CACHE_MAX = 512;
+
+function magentaCacheKey(sourceUrl: string, options?: MagentaChromaKeyOptions): string {
+  const resolved = { ...DEFAULT_MAGENTA_CHROMA_KEY_OPTIONS, ...options };
+  return `${resolved.minRed}|${resolved.maxGreen}|${resolved.minBlue}|${sourceUrl}`;
+}
+
+function rememberMagentaKeyedUrl(key: string, value: string): void {
+  if (magentaKeyedUrlCache.size >= MAGENTA_KEYED_URL_CACHE_MAX) {
+    const oldest = magentaKeyedUrlCache.keys().next();
+    if (!oldest.done) magentaKeyedUrlCache.delete(oldest.value);
+  }
+  magentaKeyedUrlCache.set(key, value);
+}
+
+function adoptMagentaKeyedUrl(image: HTMLImageElement, sourceUrl: string, keyedUrl: string): void {
+  image.dataset.chromaKeyed = "true";
+  // 마젠타가 없던 원본이면 캐시가 원본 URL 을 돌려주므로 교체가 no-op 다(깜빡임 없음).
+  if (keyedUrl !== sourceUrl) image.src = keyedUrl;
+}
+
 export function applyMagentaChromaKey(image: HTMLImageElement, options?: MagentaChromaKeyOptions): void {
+  const sourceUrl = image.getAttribute("src") ?? "";
+  if (!sourceUrl) return;
+  const cacheKey = magentaCacheKey(sourceUrl, options);
+  const cached = magentaKeyedUrlCache.get(cacheKey);
+  if (cached !== undefined) {
+    adoptMagentaKeyedUrl(image, sourceUrl, cached);
+    return;
+  }
   const apply = (): void => {
     if (image.dataset.chromaKeyed === "true") return;
+    // 기다리는 사이 같은 URL 을 다른 <img> 가 끝냈을 수 있다.
+    const ready = magentaKeyedUrlCache.get(cacheKey);
+    if (ready !== undefined) {
+      adoptMagentaKeyedUrl(image, sourceUrl, ready);
+      return;
+    }
     const width = image.naturalWidth;
     const height = image.naturalHeight;
     if (width <= 0 || height <= 0) return;
@@ -36,17 +80,29 @@ export function applyMagentaChromaKey(image: HTMLImageElement, options?: Magenta
     if (!context) return;
     context.drawImage(image, 0, 0);
     const pixels = context.getImageData(0, 0, width, height);
+    let keyedAnyPixel = false;
     for (let index = 0; index < pixels.data.length; index += 4) {
       const red = pixels.data[index] ?? 0;
       const green = pixels.data[index + 1] ?? 0;
       const blue = pixels.data[index + 2] ?? 0;
-      if (isMagentaChromaKeyPixel(red, green, blue, options)) pixels.data[index + 3] = 0;
+      if (isMagentaChromaKeyPixel(red, green, blue, options)) {
+        pixels.data[index + 3] = 0;
+        keyedAnyPixel = true;
+      }
+    }
+    if (!keyedAnyPixel) {
+      // 마젠타가 한 픽셀도 없으면 재인코딩하지 않는다 — 투명 PNG 는 그대로 두고,
+      // JPG 가 PNG data URL 로 바뀌며 오히려 커지던 경로도 여기서 끊긴다.
+      rememberMagentaKeyedUrl(cacheKey, sourceUrl);
+      image.dataset.chromaKeyed = "true";
+      return;
     }
     context.putImageData(pixels, 0, 0);
-    image.dataset.chromaKeyed = "true";
-    image.src = canvas.toDataURL("image/png");
+    const dataUrl = canvas.toDataURL("image/png");
+    rememberMagentaKeyedUrl(cacheKey, dataUrl);
+    adoptMagentaKeyedUrl(image, sourceUrl, dataUrl);
   };
-  if (image.complete) {
+  if (image.complete && image.naturalWidth > 0) {
     apply();
     return;
   }

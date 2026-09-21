@@ -52,7 +52,6 @@ const KNOWN_WITHOUT_SNAPSHOT: readonly string[] = [
   "src/editor/panels/resourceManager.ts",
   "src/editor/panels/scratchConceptTab.ts",
   "src/editor/panels/structureKitDbTab.ts",
-  "src/editor/panels/tilesetAiQuestionEditor.ts",
   "src/editor/panels/tilesetSpacesTab.ts",
   "src/editor/panels/tilesetTileContextMenu.ts",
   "src/editor/panels/villageInfoModal.ts",

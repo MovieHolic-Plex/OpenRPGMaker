@@ -9,7 +9,19 @@ import {
 
 export const WORLD_CANON_PROMPT_HEADING = "## 이 세계(세계관 고정)";
 
-const BODY_EXCERPT_CHARS = 600;
+/**
+ * 「이 세계」 본문 발췌 상한.
+ *
+ * 600자였을 때의 실패: 세계관은 톤·법칙·금지 목록만으로 서지 않는다. 사용자가 왜 그런 세계인지,
+ * 어떤 사건이 있었는지 적어 둔 본문이 곧 판단 근거인데, 600자에서 잘리면 뒤쪽 절반을 못 본 채
+ * 대사를 지어낸다. 사용자 요청으로 20,000자까지 허용한다(2026-09-20).
+ *
+ * 왜 "무제한"이 아닌가: 이 절은 예산 슬라이싱 밖의 고정분이라(assistantSession 의
+ * buildSystemPrompt 주석 참고) 상한이 없으면 본문 하나가 프롬프트 전체를 밀어내고, 그때
+ * 잘리는 것은 뒤에 오는 실제 대화 기록·자원 목록이다. 20,000자는 소설 한 편 분량이라
+ * 실사용에서 잘릴 일이 거의 없으면서 폭주는 막는 선이다.
+ */
+export const WORLD_CANON_BODY_EXCERPT_CHARS = 20_000;
 
 const TONE_WORDS: Record<WorldCanonTone, string> = {
   hopeful: "희망",
@@ -63,6 +75,6 @@ export function findWorldCanonAbsenceHits(text: string, value: WorldCanon | unde
 }
 function excerpt(body: string): string {
   const flat = body.trim();
-  if (flat.length <= BODY_EXCERPT_CHARS) return flat;
-  return `${flat.slice(0, BODY_EXCERPT_CHARS).trimEnd()}\n…(이 세계 본문 ${flat.length - BODY_EXCERPT_CHARS}자 더 있음 — 자료집 「이 세계」에서 전문을 볼 수 있다)`;
+  if (flat.length <= WORLD_CANON_BODY_EXCERPT_CHARS) return flat;
+  return `${flat.slice(0, WORLD_CANON_BODY_EXCERPT_CHARS).trimEnd()}\n…(이 세계 본문 ${flat.length - WORLD_CANON_BODY_EXCERPT_CHARS}자 더 있음 — 자료집 「이 세계」에서 전문을 볼 수 있다)`;
 }

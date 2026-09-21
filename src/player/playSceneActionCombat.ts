@@ -1,3 +1,10 @@
+import { mapTileSize } from "@/project/tileGeometry";
+import { automaticCharacterScale } from "@/project/characterScale";
+import { canPayActionSkill } from "@/battle/action/skillEffects";
+import { actionFieldSlow } from "./actionFieldSlow";
+import { applyActionFieldStatus, canCastActionProfile, castActionFieldProfile, clearActionSkills, markActionCast, updateActionSkills } from "./playSceneActionSkills";
+import { normalizeActionSkillProfile } from "@/project/actionCombat";
+import type { ActionSkillProfile } from "@/project/types";
 import { actorOwnedSkillIds } from "@/project/growth/runtime";
 import { store } from "@/project/store";
 import { projectFontStack } from "@/project/fontRegistry";
@@ -50,7 +57,6 @@ import {
   MAP_UPPER_LAYER_DEPTH,
 } from "@/player/characterDepth";
 import { footprintBounds, pointRect, rectsOverlap } from "@/project/footprint";
-import { TILE_SIZE } from "@/assets/bundled";
 import { inBounds, isPassable } from "@/project/collision";
 import { moveRuntimeEventPosition } from "@/project/runtimeEventState"
 import { monsterTypesForRecord, typeChartMultiplierForTypes } from "@/battle/typeChart";
@@ -181,6 +187,7 @@ function destroyActionCombatVisuals(scene: PlaySceneContext): void {
   const state = scene.actionCombatState;
   if (!state) return;
   for (const enemy of state.enemies.values()) cleanupEnemyVisuals(scene, enemy);
+  clearActionSkills(scene);
   for (const projectile of state.projectiles) projectile.object.destroy();
   state.projectiles.length = 0;
   state.hud?.destroy();
@@ -205,6 +212,8 @@ export function updateActionCombatForScene(scene: PlaySceneContext, deltaMs: num
   updatePlayerDodge(scene, state, deltaMs);
   updateEnemyModes(scene, state, deltaMs);
   updateProjectiles(scene, state, deltaMs);
+  updateActionSkills(scene, deltaMs, (id) => enemyFractionalTilePosition(scene, id),
+    (enemy, profile, elementId) => hitProfileEnemy(scene, state, enemy, profile, elementId));
   applyContactDamage(scene, state);
   redrawEnemyHpBars(scene, state);
   updateActionHudModel(scene, state);
@@ -248,6 +257,7 @@ export function syncActionEnemiesForScene(scene: PlaySceneContext): void {
   if (state.fieldSpawnRuntime !== scene.fieldSpawnState) {
     for (const enemy of state.enemies.values()) cleanupEnemyVisuals(scene, enemy);
     state.enemies.clear();
+    clearActionSkills(scene);
     for (const projectile of state.projectiles) projectile.object.destroy();
     state.projectiles.length = 0;
     state.fieldSpawnRuntime = scene.fieldSpawnState;
@@ -420,7 +430,7 @@ function damageEnemyByNpc(
   victim.flashMs = ENEMY_FLASH_MS;
   scene.eventSprites.get(victim.eventId)?.setTintFill(0xffffff);
   if (pos) {
-    spawnDamageNumber(scene, characterSpriteX(pos.x), characterSpriteY(pos.y) - 20, String(Math.max(0, Math.round(damage))), "#d7c7ff");
+    spawnDamageNumber(scene, characterSpriteX(pos.x, mapTileSize(scene.map)), characterSpriteY(pos.y, mapTileSize(scene.map)) - 20, String(Math.max(0, Math.round(damage))), "#d7c7ff");
   }
   latchRetaliation(victim, attackerId);
   if (!outcome.died) {
@@ -583,7 +593,7 @@ function damagePlayer(
   scene.player.setTintFill(state.guarding ? 0x88bbff : 0xff7777);
   scene.cameras.main.shake(90, 0.006);
   playActionSe(SE_PLAYER_HURT_RESOURCE_ID);
-  spawnDamageNumber(scene, characterSpriteX(fromTileX), characterSpriteY(fromTileY) - 20, `-${dealt}`, state.guarding ? "#9bd0ff" : "#ff6655");
+  spawnDamageNumber(scene, characterSpriteX(fromTileX, mapTileSize(scene.map)), characterSpriteY(fromTileY, mapTileSize(scene.map)) - 20, `-${dealt}`, state.guarding ? "#9bd0ff" : "#ff6655");
   if (vitals.hp <= 0) killPartyForActionCombat(scene);
 }
 
@@ -661,12 +671,22 @@ export function tryActionSkillCast(scene: PlaySceneContext): void {
   if (!skillId) return;
   const skill = project.database.skills.find((entry) => entry.id === skillId);
   if (!skill?.actionSkill) return;
+  const profile = normalizeActionSkillProfile(skill.actionSkill);
+  if (!profile || vitals.hp <= 0 || !canCastActionProfile(scene, profile)) return;
+  if (profile.kind === "projectile" && state.projectiles.length >= 128) return;
   const mpCost = battleSkillMpCost(skill, vitals.maxMp);
-  if (vitals.mp < mpCost) return;
-  const ammo = skill.actionSkill.itemCost;
-  if (ammo && (scene.session.inventory[ammo.itemId] ?? 0) < ammo.amount) return;
+  const ammo = profile.itemCost;
+  if (!canPayActionSkill(vitals.mp, mpCost, scene.session.inventory, ammo)) return;
   vitals.mp -= mpCost;
   if (ammo) commitItemRemoval(project, scene, ammo.itemId, ammo.amount);
+  markActionCast(scene, profile);
+  if (profile.kind !== "projectile") {
+    flashSwingArc(scene, scene.facing, profile.kind === "melee" ? profile.range : 1);
+    playActionSe(SE_SWING_RESOURCE_ID);
+    castActionFieldProfile(scene, profile, skill.elementId, (id) => enemyFractionalTilePosition(scene, id),
+      (enemy, effect, elementId) => hitProfileEnemy(scene, state, enemy, effect, elementId));
+    return;
+  }
   const dir = dirDelta(scene.facing);
   spawnProjectileFrom(scene, state, {
     faction: "player",
@@ -676,12 +696,25 @@ export function tryActionSkillCast(scene: PlaySceneContext): void {
     y: scene.tileY,
     dirX: dir.x,
     dirY: dir.y,
-    speedTilesPerSec: skill.actionSkill.speedTilesPerSec ?? DEFAULT_PROJECTILE_SPEED_TILES_PER_SEC,
-    damage: skill.actionSkill.damage,
+    fieldStatus: profile.fieldStatus,
+    speedTilesPerSec: profile.speedTilesPerSec ?? DEFAULT_PROJECTILE_SPEED_TILES_PER_SEC,
+    damage: profile.damage,
     elementId: skill.elementId,
-    maxRangeTiles: skill.actionSkill.range,
+    maxRangeTiles: profile.range,
     color: 0x66ccff,
   });
+}
+
+function hitProfileEnemy(scene: PlaySceneContext, state: ActionCombatSceneState, enemy: ActionEnemyState,
+  profile: ActionSkillProfile, elementId?: string): boolean {
+  if (enemy.hp <= 0 || enemy.dying || !isHittableByFaction(effectiveFactionStance(state.factions,
+    state.factionStanceOverrides, PLAYER_FACTION_ID, enemy.factionId))) return false;
+  const pos = enemyTilePosition(scene, enemy.eventId);
+  if (!pos) return false;
+  const multiplier = typeChartMultiplierForTypes(store.getCurrent(), elementId, [], monsterTypesForRecord(store.getCurrent(), enemy.enemyId));
+  hitActionEnemy(scene, state, enemy, Math.max(1, Math.round(profile.damage * multiplier)), pos.x, pos.y);
+  applyActionFieldStatus(scene, enemy, profile);
+  return true;
 }
 
 // 주인공이 배운 스킬 id 목록(레벌/클래스 오버라이드 반영).
@@ -722,7 +755,7 @@ function hitActionEnemy(scene: PlaySceneContext, state: ActionCombatSceneState, 
   scene.eventSprites.get(enemy.eventId)?.setTintFill(0xffffff);
   scene.cameras.main.shake(60, 0.004);
   playActionSe(SE_HIT_ENEMY_RESOURCE_ID);
-  spawnDamageNumber(scene, characterSpriteX(tileX), characterSpriteY(tileY) - 20, String(damage), "#ffe066");
+  spawnDamageNumber(scene, characterSpriteX(tileX, mapTileSize(scene.map)), characterSpriteY(tileY, mapTileSize(scene.map)) - 20, String(damage), "#ffe066");
   latchRetaliation(enemy, PLAYER_COMBATANT_ID);
   if (enemy.hp > 0) {
     staggerActionEnemy(scene, enemy);
@@ -761,7 +794,7 @@ function playEnemyDeathBeat(scene: PlaySceneContext, enemy: ActionEnemyState): v
     alpha: 0,
     scaleX: ghost.scaleX * 1.25,
     scaleY: ghost.scaleY * 0.7,
-    y: ghost.y - TILE_SIZE * 0.25,
+    y: ghost.y - mapTileSize(scene.map) * 0.25,
     duration: DEATH_BEAT_MS,
     ease: "Quad.easeOut",
     onComplete: () => ghost.destroy(),
@@ -829,7 +862,7 @@ function grantActionKillRewards(scene: PlaySceneContext, enemy: ActionEnemyState
     }
     text = text ? `${text} EXP+${enemy.exp}` : `EXP+${enemy.exp}`;
     if (leveledUp) {
-      spawnDamageNumber(scene, characterSpriteX(scene.tileX), characterSpriteY(scene.tileY) - 40, "LEVEL UP!", "#8fd3ff");
+      spawnDamageNumber(scene, characterSpriteX(scene.tileX, mapTileSize(scene.map)), characterSpriteY(scene.tileY, mapTileSize(scene.map)) - 40, "LEVEL UP!", "#8fd3ff");
     }
   }
   if (enemy.dropItemId && enemy.dropRatePercent > 0) {
@@ -839,7 +872,7 @@ function grantActionKillRewards(scene: PlaySceneContext, enemy: ActionEnemyState
       text = text ? `${text} +아이템` : "+아이템";
     }
   }
-  if (text) spawnDamageNumber(scene, characterSpriteX(tileX), characterSpriteY(tileY) - 34, text, "#9be37e");
+  if (text) spawnDamageNumber(scene, characterSpriteX(tileX, mapTileSize(scene.map)), characterSpriteY(tileY, mapTileSize(scene.map)) - 34, text, "#9be37e");
   if (combatObservers.has(scene)) {
     const after = rewardTotal();
     if (after > before) observeCombat(scene, "reward-granted", before, after, enemy.eventId);
@@ -914,11 +947,11 @@ const FACING_ANGLE_DEG: Record<Dir, number> = { right: 0, down: 90, left: 180, u
 function flashSwingArc(scene: PlaySceneContext, facing: Dir, range: number): void {
   const graphics = scene.add.graphics();
   graphics.setDepth(COMBAT_DEPTH);
-  const centerX = characterSpriteX(scene.tileX);
+  const centerX = characterSpriteX(scene.tileX, mapTileSize(scene.map));
   // 스프라이트 발밑이 아니라 몸통 높이에서 베어야 궤적이 캐릭터에 걸린다.
-  const centerY = characterSpriteY(scene.tileY) - TILE_SIZE / 2;
+  const centerY = characterSpriteY(scene.tileY, mapTileSize(scene.map)) - mapTileSize(scene.map) / 2;
   // 타일 16px 기준이라 작게 잡으면 데미지 숫자에 묻힌다 — 사거리 1 에서도 한 타일보다 크게.
-  const radius = TILE_SIZE * (0.7 * Math.max(1, range) + 0.75);
+  const radius = mapTileSize(scene.map) * (0.7 * Math.max(1, range) + 0.75);
   const facingDeg = FACING_ANGLE_DEG[facing];
   const startDeg = facingDeg - SWING_SWEEP_DEG / 2;
 
@@ -952,18 +985,19 @@ function flashSwingArc(scene: PlaySceneContext, facing: Dir, range: number): voi
 
 // 스윙할 때 캐릭터도 같이 움직여야 궤적만 따로 나가는 느낌이 안 든다.
 // 위치는 playSceneMovement 가 매 프레임 덮어쓰므로(x/y 직접 대입) 손대면 안 되고,
-// 스케일은 아무도 건드리지 않아 안전하다. 눌렀다 펴는 스쿼시로 내지르는 동작을 낸다.
+// 현재 맵의 자동 배율을 기준으로 눌렀다 펴고, 종료 시에도 그 배율로 복원한다.
 function pulsePlayerSwing(scene: PlaySceneContext): void {
   scene.tweens.killTweensOf(scene.player);
-  scene.player.setScale(1, 1);
+  const baseScale = automaticCharacterScale(scene.player.width, mapTileSize(scene.map));
+  scene.player.setScale(baseScale, baseScale);
   scene.tweens.add({
     targets: scene.player,
-    scaleX: 1.16,
-    scaleY: 0.88,
+    scaleX: baseScale * 1.16,
+    scaleY: baseScale * 0.88,
     duration: Math.round(SWING_VFX_MS * 0.35),
     yoyo: true,
     ease: "Quad.easeOut",
-    onComplete: () => scene.player.setScale(1, 1),
+    onComplete: () => scene.player.setScale(baseScale, baseScale),
   });
 }
 
@@ -1111,13 +1145,13 @@ function applyKnockback(scene: PlaySceneContext, state: ActionCombatSceneState, 
   enemy.knockbackTween?.stop();
   enemy.knockbackTween = scene.tweens.add({
     targets: sprite,
-    x: footprintSpriteX(outcome.x, enemy.footprint),
-    y: characterSpriteY(outcome.y),
+    x: footprintSpriteX(outcome.x, enemy.footprint, mapTileSize(scene.map)),
+    y: characterSpriteY(outcome.y, mapTileSize(scene.map)),
     duration: KNOCKBACK_TWEEN_MS,
     ease: "Quad.easeOut",
     onComplete: () => {
       enemy.knockbackTween = undefined;
-      sprite.setPosition(footprintSpriteX(outcome.x, enemy.footprint), characterSpriteY(outcome.y));
+      sprite.setPosition(footprintSpriteX(outcome.x, enemy.footprint, mapTileSize(scene.map)), characterSpriteY(outcome.y, mapTileSize(scene.map)));
     },
   });
 }
@@ -1147,9 +1181,11 @@ function dirDelta(dir: Dir): { x: -1 | 0 | 1; y: -1 | 0 | 1 } {
   }
 }
 
-function updateEnemyModes(scene: PlaySceneContext, state: ActionCombatSceneState, deltaMs: number): void {
+function updateEnemyModes(scene: PlaySceneContext, state: ActionCombatSceneState, frameDeltaMs: number): void {
   const refs = combatantRefs(scene, state);
   for (const enemy of state.enemies.values()) {
+    const slowMover = scene.autonomousNPCs.get(enemy.eventId);
+    const deltaMs = frameDeltaMs * (slowMover ? actionFieldSlow.get(slowMover) ?? 1 : 1);
     enemy.attackCooldownMs = Math.max(0, enemy.attackCooldownMs - deltaMs);
     const pos = enemyTilePosition(scene, enemy.eventId);
     if (!pos) continue;
@@ -1217,7 +1253,7 @@ function startWindup(scene: PlaySceneContext, enemy: ActionEnemyState, attack: E
     mover.activeMove = null;
   }
   const sprite = scene.eventSprites.get(enemy.eventId);
-  if (sprite) sprite.setPosition(footprintSpriteX(ex, enemy.footprint), characterSpriteY(ey));
+  if (sprite) sprite.setPosition(footprintSpriteX(ex, enemy.footprint, mapTileSize(scene.map)), characterSpriteY(ey, mapTileSize(scene.map)));
   const dir = dominantAxisDir(dx, dy);
   moveRuntimeEventPosition(scene.eventPositions, enemy.eventId, ex, ey, dir);
   startWindupTelegraph(scene, enemy, sprite);
@@ -1278,7 +1314,7 @@ function drawTelegraph(scene: PlaySceneContext, enemy: ActionEnemyState, attack:
     }
   }
   for (const cell of cells) {
-    graphics.fillRect(characterSpriteX(cell.x) - TILE_SIZE / 2, characterSpriteY(cell.y) - TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    graphics.fillRect(characterSpriteX(cell.x, mapTileSize(scene.map)) - mapTileSize(scene.map) / 2, characterSpriteY(cell.y, mapTileSize(scene.map)) - mapTileSize(scene.map), mapTileSize(scene.map), mapTileSize(scene.map));
   }
   enemy.telegraph = graphics;
 }
@@ -1359,8 +1395,8 @@ function stepDash(scene: PlaySceneContext, state: ActionCombatSceneState, enemy:
     if (sprite) {
       const progress = dash.stepProgressMs / DASH_STEP_MS;
       sprite.setPosition(
-        footprintSpriteX(dash.fromX + (dash.toX - dash.fromX) * progress, enemy.footprint),
-        characterSpriteY(dash.fromY + (dash.toY - dash.fromY) * progress)
+        footprintSpriteX(dash.fromX + (dash.toX - dash.fromX) * progress, enemy.footprint, mapTileSize(scene.map)),
+        characterSpriteY(dash.fromY + (dash.toY - dash.fromY) * progress, mapTileSize(scene.map))
       );
     }
     return;
@@ -1378,7 +1414,7 @@ function stepDash(scene: PlaySceneContext, state: ActionCombatSceneState, enemy:
     if (hitsTarget && targetId !== undefined) {
       damageActionTarget(scene, state, enemy, targetId, attack.damage, dash.fromX, dash.fromY);
     }
-    if (sprite) sprite.setPosition(footprintSpriteX(dash.fromX, enemy.footprint), characterSpriteY(dash.fromY));
+    if (sprite) sprite.setPosition(footprintSpriteX(dash.fromX, enemy.footprint, mapTileSize(scene.map)), characterSpriteY(dash.fromY, mapTileSize(scene.map)));
     enterRecover(enemy, attack);
     return;
   }
@@ -1398,6 +1434,7 @@ function stepDash(scene: PlaySceneContext, state: ActionCombatSceneState, enemy:
 }
 
 interface ProjectileSpawnSpec {
+  readonly fieldStatus?: ActionSkillProfile["fieldStatus"];
   readonly faction: "enemy" | "player";
   readonly ownerId: string;
   readonly ownerFactionId: string;
@@ -1423,7 +1460,7 @@ function spawnProjectileFrom(scene: PlaySceneContext, state: ActionCombatSceneSt
     dirX = dx / len;
     dirY = dy / len;
   }
-  const object = scene.add.circle(characterSpriteX(spec.x), characterSpriteY(spec.y) - TILE_SIZE / 2, 3, spec.color);
+  const object = scene.add.circle(characterSpriteX(spec.x, mapTileSize(scene.map)), characterSpriteY(spec.y, mapTileSize(scene.map)) - mapTileSize(scene.map) / 2, 3, spec.color);
   object.setDepth(COMBAT_DEPTH + 1);
   object.setStrokeStyle(1, spec.faction === "player" ? 0xddf4ff : 0xffdd88);
   state.projectileSerial += 1;
@@ -1439,6 +1476,7 @@ function spawnProjectileFrom(scene: PlaySceneContext, state: ActionCombatSceneSt
     speedTilesPerMs: spec.speedTilesPerSec / 1000,
     damage: spec.damage,
     elementId: spec.elementId,
+    fieldStatus: spec.fieldStatus,
     traveledTiles: 0,
     maxRangeTiles: spec.maxRangeTiles,
     object,
@@ -1459,14 +1497,15 @@ function updateProjectiles(scene: PlaySceneContext, state: ActionCombatSceneStat
     let consumed = false;
     let blocked = false;
     while (remaining > 0 && !consumed && !blocked) {
-      const step = Math.min(0.5, remaining);
+      const step = Math.min(0.5, remaining, p.maxRangeTiles - p.traveledTiles);
+      if (step <= 0) { blocked = true; break; }
       remaining -= step;
       p.x += p.dirX * step;
       p.y += p.dirY * step;
       p.traveledTiles += step;
       const tx = Math.round(p.x);
       const ty = Math.round(p.y);
-      blocked = p.traveledTiles >= p.maxRangeTiles || !inBounds(scene.map, tx, ty) || !isPassable(project, scene.map, tx, ty);
+      blocked = !inBounds(scene.map, tx, ty) || !isPassable(project, scene.map, tx, ty);
       if (blocked) break;
       // 유탄 명중: 발사자 진영에 우호(1 이상)가 아닌 전투원은 전부 맞는다.
       // 같은 진영은 대각선 기본값이 동맹(2)이라 자연하게 아군 오사에서 면제된다.
@@ -1480,7 +1519,7 @@ function updateProjectiles(scene: PlaySceneContext, state: ActionCombatSceneStat
         break;
       }
       for (const enemy of [...state.enemies.values()]) {
-        if (enemy.eventId === p.ownerId) continue;
+        if (enemy.eventId === p.ownerId || enemy.dying || enemy.hp <= 0) continue;
         const pos = enemyTilePosition(scene, enemy.eventId);
         // 투사체는 **몸 사각** 어디에 닿아도 명중이다 — 앵커 칸만 보면 3x3 적을 관통했다.
         // 진영 게이트는 main 의 판정을 그대로 통과시킨다(기하만 넓힌다).
@@ -1488,14 +1527,17 @@ function updateProjectiles(scene: PlaySceneContext, state: ActionCombatSceneStat
         if (!isHittableByFaction(effectiveFactionStance(state.factions, state.factionStanceOverrides, p.ownerFactionId, enemy.factionId))) continue;
         const multiplier = typeChartMultiplierForTypes(project, p.elementId, [], monsterTypesForRecord(project, enemy.enemyId));
         const damage = Math.max(1, Math.round(p.damage * multiplier));
-        if (p.ownerId === PLAYER_COMBATANT_ID) hitActionEnemy(scene, state, enemy, damage, tx, ty);
+        if (p.ownerId === PLAYER_COMBATANT_ID) {
+          hitActionEnemy(scene, state, enemy, damage, tx, ty);
+          applyActionFieldStatus(scene, enemy, { kind: "projectile", damage: p.damage, range: p.maxRangeTiles, fieldStatus: p.fieldStatus });
+        }
         else damageEnemyByNpc(scene, state, enemy, p.ownerId, damage);
         consumed = true;
         break;
       }
     }
-    p.object.setPosition(characterSpriteX(p.x), characterSpriteY(p.y) - TILE_SIZE / 2);
-    if (consumed || blocked) {
+    p.object.setPosition(characterSpriteX(p.x, mapTileSize(scene.map)), characterSpriteY(p.y, mapTileSize(scene.map)) - mapTileSize(scene.map) / 2);
+    if (consumed || blocked || p.traveledTiles >= p.maxRangeTiles) {
       p.object.destroy();
       state.projectiles.splice(i, 1);
     }

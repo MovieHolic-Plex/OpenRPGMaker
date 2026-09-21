@@ -64,8 +64,10 @@ describe("troop battle test button closes the database modal cleanly (M11)", () 
     openDatabaseModal("troops");
 
     // openDatabaseModal registers 2 document keydown listeners: the dirty-close controller's
-    // Escape handler and the undo/redo history hotkey handler.
-    expect(documentListenerCount("keydown")).toBe(2);
+    // Escape handler and the undo/redo history hotkey handler. modalStack 의 공유 캡처
+    // 리스너 1개가 더해져 3 이다 — 그쪽은 document 당 한 번만 붙고 모달과 함께 사라지지 않는다
+    // (2026-09-19: DB 모달이 창 모드에서 modalStack 에 등록되면서 추가됐다).
+    expect(documentListenerCount("keydown")).toBe(3);
     expect(document.querySelector("[data-testid='database-modal']")).not.toBeNull();
 
     const battleTestButton = document.querySelector<HTMLButtonElement>("[data-testid='db-troop-battle-test']");
@@ -75,7 +77,8 @@ describe("troop battle test button closes the database modal cleanly (M11)", () 
     // fix(db) M11: 전투 테스트 버튼이 document.querySelector(...)?.remove()로 모달 DOM만
     // 뜯어내면 이 2개 리스너가 정리되지 않고 샌다. requestDatabaseModalClose("battleTest")를
     // 통해 정식 close()가 돌아야 한다.
-    expect(documentListenerCount("keydown")).toBe(0);
+    // 모달이 등록한 2개는 사라지고, 공유 리스너 1개만 남는다(누수가 아니라 문서 단위 상주).
+    expect(documentListenerCount("keydown")).toBe(1);
     expect(document.querySelector("[data-testid='database-modal']")).toBeNull();
   });
 });

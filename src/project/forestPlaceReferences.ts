@@ -1,0 +1,353 @@
+import { CURATED_VILLAGE_PLACES, curatedVillageSnapshot } from "./curatedVillagePlaceReferences";
+import type { GameMap, TilesetDef } from "./types";
+import snapshot0 from "./regionReferences/forest-cabin.json";
+import snapshot1 from "./regionReferences/forest-star.json";
+import snapshot2 from "./regionReferences/gubisup.json";
+import snapshot3 from "./regionReferences/small-forest-village.json";
+import snapshot4 from "./regionReferences/forest-cliff-village.json";
+import snapshot5 from "./regionReferences/high-cliff-village.json";
+import snapshot6 from "./regionReferences/cliff-forest-bridge.json";
+import snapshot7 from "./regionReferences/peaceful-forest.json";
+import snapshot8 from "./regionReferences/great-falls.json";
+import snapshot9 from "./regionReferences/rebuilt-forest-village.json";
+import snapshot10 from "./regionReferences/harmony-hill-village.json";
+import snapshot11 from "./regionReferences/hill-forest-cave.json";
+import snapshot12 from "./regionReferences/rebuilt-forest-cave.json";
+
+// Reviewed authored maps, independent of the active project. Keep legacy IDs stable.
+type ForestPlaceSnapshot = { map: GameMap; tileset: TilesetDef };
+const snapshots: Record<string, ForestPlaceSnapshot> = {
+  "forest-cabin-40x30": snapshot0 as unknown as ForestPlaceSnapshot,
+  "forest-star-64x56": snapshot1 as unknown as ForestPlaceSnapshot,
+  "gubisup-80x72": snapshot2 as unknown as ForestPlaceSnapshot,
+  "small-forest-village-80x72": snapshot3 as unknown as ForestPlaceSnapshot,
+  "forest-cliff-village-80x72": snapshot4 as unknown as ForestPlaceSnapshot,
+  "high-cliff-village-80x88": snapshot5 as unknown as ForestPlaceSnapshot,
+  "cliff-forest-bridge-80x72": snapshot6 as unknown as ForestPlaceSnapshot,
+  "peaceful-forest-100x100": snapshot7 as unknown as ForestPlaceSnapshot,
+  "great-falls-100x100": snapshot8 as unknown as ForestPlaceSnapshot,
+  "rebuilt-forest-village-64x64": snapshot9 as unknown as ForestPlaceSnapshot,
+  "harmony-hill-village-64x64": snapshot10 as unknown as ForestPlaceSnapshot,
+  "hill-forest-cave-20x16": snapshot11 as unknown as ForestPlaceSnapshot,
+  "rebuilt-forest-cave-20x16": snapshot12 as unknown as ForestPlaceSnapshot,
+};
+
+export const FOREST_PLACE_REFERENCES = [
+...CURATED_VILLAGE_PLACES,
+{
+  "id": "forest-cabin-40x30",
+  "name": "검은 숲의 오두막",
+  "kind": "completed-place",
+  "placeKind": "settlement",
+  "revision": 1,
+  "x": 0,
+  "y": 0,
+  "width": 40,
+  "height": 30,
+  "tilesetId": "forest_cabin_autotile",
+  "preview": "/assets/region-references/forest-cabin.png",
+  "tilesetPreview": "/assets/region-references/forest-cabin-atlas.png",
+  "projectDownload": "/assets/region-references/forest-cabin.oprn.json",
+  "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+  "sourceMapId": "map_forest_cabin_autotile",
+  "snapshotProjectId": "oprn-place-forest-cabin-v1",
+  "rules": [
+    "사용자가 다듬은 40×30 숲속 오두막. 검은 수관과 안쪽 모서리, 온전한 줄기·뿌리 배치를 보존한다.",
+    "한 칸은 16×16픽셀. 저장된 맵의 타일·레이어·통행·오토타일과 칩셋 이미지를 함께 보존한다.",
+    "새 프로젝트와 기존 프로젝트에서 공용 장소로 조회할 수 있다."
+  ],
+  "limitations": "완성 배치 참고 사례. 기존 이벤트와 연결된 동굴·마을은 파일에 포함되며, 새 실내·이동 이벤트는 추가하지 않는다."
+},
+{
+  "id": "forest-star-64x56",
+  "name": "별 모양 숲",
+  "kind": "completed-place",
+  "placeKind": "natural",
+  "revision": 1,
+  "x": 0,
+  "y": 0,
+  "width": 64,
+  "height": 56,
+  "tilesetId": "forest_cabin_autotile",
+  "preview": "/assets/region-references/forest-star.png",
+  "tilesetPreview": "/assets/region-references/forest-star-atlas.png",
+  "projectDownload": "/assets/region-references/forest-star.oprn.json",
+  "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+  "sourceMapId": "map_forest_star",
+  "snapshotProjectId": "oprn-place-forest-star-v1",
+  "rules": [
+    "별 모양의 연속 수관과 오두막. 남향 잎 외곽과 같은 행부터 줄기·뿌리를 잇는다.",
+    "한 칸은 16×16픽셀. 저장된 맵의 타일·레이어·통행·오토타일과 칩셋 이미지를 함께 보존한다.",
+    "새 프로젝트와 기존 프로젝트에서 공용 장소로 조회할 수 있다."
+  ],
+  "limitations": "완성 배치 참고 사례. 기존 이벤트와 연결된 동굴·마을은 파일에 포함되며, 새 실내·이동 이벤트는 추가하지 않는다."
+},
+{
+  "id": "gubisup-80x72",
+  "name": "굽이숲",
+  "kind": "completed-place",
+  "placeKind": "natural",
+  "revision": 1,
+  "x": 0,
+  "y": 0,
+  "width": 80,
+  "height": 72,
+  "tilesetId": "forest_complex_life_autotile",
+  "preview": "/assets/region-references/gubisup.png",
+  "tilesetPreview": "/assets/region-references/gubisup-atlas.png",
+  "projectDownload": "/assets/region-references/gubisup.oprn.json",
+  "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+  "sourceMapId": "map_forest_complex",
+  "snapshotProjectId": "oprn-region-gubisup-v1",
+  "rules": [
+    "여섯 빈터와 두 순환길, 샘과 오두막, 숲길 소품을 갖춘 숲.",
+    "한 칸은 16×16픽셀. 저장된 맵의 타일·레이어·통행·오토타일과 칩셋 이미지를 함께 보존한다.",
+    "새 프로젝트와 기존 프로젝트에서 공용 장소로 조회할 수 있다."
+  ],
+  "limitations": "완성 배치 참고 사례. 기존 이벤트와 연결된 동굴·마을은 파일에 포함되며, 새 실내·이동 이벤트는 추가하지 않는다."
+},
+{
+  "id": "small-forest-village-80x72",
+  "name": "굽이숲 작은마을",
+  "kind": "completed-place",
+  "placeKind": "settlement",
+  "revision": 1,
+  "x": 0,
+  "y": 0,
+  "width": 80,
+  "height": 72,
+  "tilesetId": "forest_small_village_terrain",
+  "preview": "/assets/region-references/small-forest-village.png",
+  "tilesetPreview": "/assets/region-references/small-forest-village-atlas.png",
+  "projectDownload": "/assets/region-references/small-forest-village.oprn.json",
+  "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+  "sourceMapId": "map_forest_small_village",
+  "snapshotProjectId": "oprn-region-small-forest-village-v1",
+  "rules": [
+    "연속 숲 안에 다섯 집과 두 언덕, 샘·텃밭·생활 소품을 배치한 작은 마을.",
+    "한 칸은 16×16픽셀. 저장된 맵의 타일·레이어·통행·오토타일과 칩셋 이미지를 함께 보존한다.",
+    "새 프로젝트와 기존 프로젝트에서 공용 장소로 조회할 수 있다."
+  ],
+  "limitations": "완성 배치 참고 사례. 기존 이벤트와 연결된 동굴·마을은 파일에 포함되며, 새 실내·이동 이벤트는 추가하지 않는다."
+},
+{
+  "id": "forest-cliff-village-80x72",
+  "name": "굽이숲 절벽마을",
+  "kind": "completed-place",
+  "placeKind": "settlement",
+  "revision": 1,
+  "x": 0,
+  "y": 0,
+  "width": 80,
+  "height": 72,
+  "tilesetId": "forest_cliff_village_lived_in",
+  "preview": "/assets/region-references/forest-cliff-village.png",
+  "tilesetPreview": "/assets/region-references/forest-cliff-village-atlas.png",
+  "projectDownload": "/assets/region-references/forest-cliff-village.oprn.json",
+  "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+  "sourceMapId": "map_forest_cliff_village",
+  "snapshotProjectId": "oprn-region-forest-cliff-village-v1",
+  "rules": [
+    "굽은 횡단 절벽과 다섯 마당. 큰길·오솔길·지름길과 검수한 소품 배치를 보존한다.",
+    "한 칸은 16×16픽셀. 저장된 맵의 타일·레이어·통행·오토타일과 칩셋 이미지를 함께 보존한다.",
+    "새 프로젝트와 기존 프로젝트에서 공용 장소로 조회할 수 있다."
+  ],
+  "limitations": "완성 배치 참고 사례. 기존 이벤트와 연결된 동굴·마을은 파일에 포함되며, 새 실내·이동 이벤트는 추가하지 않는다."
+},
+{
+  "id": "high-cliff-village-80x88",
+  "name": "솔바람 고원마을",
+  "kind": "completed-place",
+  "placeKind": "settlement",
+  "revision": 1,
+  "x": 0,
+  "y": 0,
+  "width": 80,
+  "height": 88,
+  "tilesetId": "forest_high_cliff_river",
+  "preview": "/assets/region-references/high-cliff-village.png",
+  "tilesetPreview": "/assets/region-references/high-cliff-village-atlas.png",
+  "projectDownload": "/assets/region-references/high-cliff-village.oprn.json",
+  "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+  "sourceMapId": "map_high_cliff_village",
+  "snapshotProjectId": "oprn-place-high-cliff-village-v1",
+  "rules": [
+    "높이 12칸의 절벽 위 다섯 집. 입구의 강과 3×9 나무판자 다리, 두 구간의 계단과 샘·텃밭.",
+    "한 칸은 16×16픽셀. 저장된 맵의 타일·레이어·통행·오토타일과 칩셋 이미지를 함께 보존한다.",
+    "새 프로젝트와 기존 프로젝트에서 공용 장소로 조회할 수 있다."
+  ],
+  "limitations": "완성 배치 참고 사례. 기존 이벤트와 연결된 동굴·마을은 파일에 포함되며, 새 실내·이동 이벤트는 추가하지 않는다."
+},
+{
+  "id": "cliff-forest-bridge-80x72",
+  "name": "솔바람 협곡",
+  "kind": "completed-place",
+  "placeKind": "natural",
+  "revision": 1,
+  "x": 0,
+  "y": 0,
+  "width": 80,
+  "height": 72,
+  "tilesetId": "forest_high_cliff_river",
+  "preview": "/assets/region-references/cliff-forest-bridge.png",
+  "tilesetPreview": "/assets/region-references/cliff-forest-bridge-atlas.png",
+  "projectDownload": "/assets/region-references/cliff-forest-bridge.oprn.json",
+  "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+  "sourceMapId": "map_cliff_forest_bridge",
+  "snapshotProjectId": "oprn-place-cliff-forest-bridge-v1",
+  "rules": [
+    "높이 14칸의 두 절벽을 26×3 나무다리 하나로 잇고 아래에는 큰 연속 숲을 둔 배치. 양쪽에 작은 집이 있다.",
+    "한 칸은 16×16픽셀. 저장된 맵의 타일·레이어·통행·오토타일과 칩셋 이미지를 함께 보존한다.",
+    "새 프로젝트와 기존 프로젝트에서 공용 장소로 조회할 수 있다."
+  ],
+  "limitations": "완성 배치 참고 사례. 기존 이벤트와 연결된 동굴·마을은 파일에 포함되며, 새 실내·이동 이벤트는 추가하지 않는다."
+},
+{
+  "id": "peaceful-forest-100x100",
+  "name": "고요한 숲마을",
+  "kind": "completed-place",
+  "placeKind": "settlement",
+  "revision": 1,
+  "x": 0,
+  "y": 0,
+  "width": 100,
+  "height": 100,
+  "tilesetId": "tileset_peaceful_forest_100",
+  "preview": "/assets/region-references/peaceful-forest.png",
+  "tilesetPreview": "/assets/region-references/peaceful-forest-atlas.png",
+  "projectDownload": "/assets/region-references/peaceful-forest.oprn.json",
+  "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+  "sourceMapId": "map_peaceful_forest_100",
+  "snapshotProjectId": "oprn-place-peaceful-forest-v1",
+  "rules": [
+    "100×100 넓은 숲마을. 둥근 언덕과 시냇물, 적은 집과 큰 숲으로 구성한 초기 배치.",
+    "한 칸은 16×16픽셀. 저장된 맵의 타일·레이어·통행·오토타일과 칩셋 이미지를 함께 보존한다.",
+    "새 프로젝트와 기존 프로젝트에서 공용 장소로 조회할 수 있다."
+  ],
+  "limitations": "완성 배치 참고 사례. 기존 이벤트와 연결된 동굴·마을은 파일에 포함되며, 새 실내·이동 이벤트는 추가하지 않는다."
+},
+{
+  "id": "great-falls-100x100",
+  "name": "큰 폭포 아래 마을",
+  "kind": "completed-place",
+  "placeKind": "settlement",
+  "revision": 1,
+  "x": 0,
+  "y": 0,
+  "width": 100,
+  "height": 100,
+  "tilesetId": "tileset_forest_great_falls_100",
+  "preview": "/assets/region-references/great-falls.png",
+  "tilesetPreview": "/assets/region-references/great-falls-atlas.png",
+  "projectDownload": "/assets/region-references/great-falls.oprn.json",
+  "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+  "sourceMapId": "map_forest_great_falls_100",
+  "snapshotProjectId": "oprn-place-great-falls-v1",
+  "rules": [
+    "100×100 숲속 마을. 중앙의 높은 절벽과 큰 폭포, 굽은 길과 집 배치를 보존한다.",
+    "한 칸은 16×16픽셀. 저장된 맵의 타일·레이어·통행·오토타일과 칩셋 이미지를 함께 보존한다.",
+    "새 프로젝트와 기존 프로젝트에서 공용 장소로 조회할 수 있다."
+  ],
+  "limitations": "완성 배치 참고 사례. 기존 이벤트와 연결된 동굴·마을은 파일에 포함되며, 새 실내·이동 이벤트는 추가하지 않는다."
+},
+{
+  "id": "rebuilt-forest-village-64x64",
+  "name": "숲과 단구의 마을",
+  "kind": "completed-place",
+  "placeKind": "settlement",
+  "revision": 1,
+  "x": 0,
+  "y": 0,
+  "width": 64,
+  "height": 64,
+  "tilesetId": "tileset_forest_harmony_review",
+  "preview": "/assets/region-references/rebuilt-forest-village.png",
+  "tilesetPreview": "/assets/region-references/rebuilt-forest-village-atlas.png",
+  "projectDownload": "/assets/region-references/rebuilt-forest-village.oprn.json",
+  "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+  "sourceMapId": "map_forest_village_rebuilt",
+  "snapshotProjectId": "oprn-place-rebuilt-forest-village-v1",
+  "rules": [
+    "단구·집·동굴을 놓은 64×64 마을. 연결된 바위굴과 이동 이벤트를 내려받는 문서에 포함한다.",
+    "한 칸은 16×16픽셀. 저장된 맵의 타일·레이어·통행·오토타일과 칩셋 이미지를 함께 보존한다.",
+    "새 프로젝트와 기존 프로젝트에서 공용 장소로 조회할 수 있다."
+  ],
+  "limitations": "완성 배치 참고 사례. 기존 이벤트와 연결된 동굴·마을은 파일에 포함되며, 새 실내·이동 이벤트는 추가하지 않는다."
+},
+{
+  "id": "harmony-hill-village-64x64",
+  "name": "언덕 위 숲마을 · 조화 배치",
+  "kind": "completed-place",
+  "placeKind": "settlement",
+  "revision": 1,
+  "x": 0,
+  "y": 0,
+  "width": 64,
+  "height": 64,
+  "tilesetId": "tileset_forest_harmony_review",
+  "preview": "/assets/region-references/harmony-hill-village.png",
+  "tilesetPreview": "/assets/region-references/harmony-hill-village-atlas.png",
+  "projectDownload": "/assets/region-references/harmony-hill-village.oprn.json",
+  "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+  "sourceMapId": "map_hill_forest_village_20260918",
+  "snapshotProjectId": "oprn-place-harmony-hill-village-v1",
+  "rules": [
+    "정돈된 중심부와 외곽 숲을 갖춘 마을. 주민 배치와 연결된 작은 동굴을 함께 보존한다.",
+    "한 칸은 16×16픽셀. 저장된 맵의 타일·레이어·통행·오토타일과 칩셋 이미지를 함께 보존한다.",
+    "새 프로젝트와 기존 프로젝트에서 공용 장소로 조회할 수 있다."
+  ],
+  "limitations": "완성 배치 참고 사례. 기존 이벤트와 연결된 동굴·마을은 파일에 포함되며, 새 실내·이동 이벤트는 추가하지 않는다."
+},
+{
+  "id": "hill-forest-cave-20x16",
+  "name": "절벽 속 작은 동굴",
+  "kind": "completed-place",
+  "placeKind": "natural",
+  "revision": 1,
+  "x": 0,
+  "y": 0,
+  "width": 20,
+  "height": 16,
+  "tilesetId": "easyrpg_chipset_dungeon",
+  "preview": "/assets/region-references/hill-forest-cave.png",
+  "tilesetPreview": "/assets/easyrpg-chipset-dungeon-transparent.png",
+  "projectDownload": "/assets/region-references/hill-forest-cave.oprn.json",
+  "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+  "sourceMapId": "map_hill_forest_cave",
+  "snapshotProjectId": "oprn-place-hill-forest-cave-v1",
+  "rules": [
+    "언덕 위 숲마을과 연결된 20×16 동굴. 출구 이동이 끊기지 않도록 연결 마을도 내려받는 문서에 포함한다.",
+    "한 칸은 16×16픽셀. 저장된 맵의 타일·레이어·통행·오토타일과 칩셋 이미지를 함께 보존한다.",
+    "새 프로젝트와 기존 프로젝트에서 공용 장소로 조회할 수 있다."
+  ],
+  "limitations": "완성 배치 참고 사례. 기존 이벤트와 연결된 동굴·마을은 파일에 포함되며, 새 실내·이동 이벤트는 추가하지 않는다."
+},
+{
+  "id": "rebuilt-forest-cave-20x16",
+  "name": "숲과 단구의 바위굴",
+  "kind": "completed-place",
+  "placeKind": "natural",
+  "revision": 1,
+  "x": 0,
+  "y": 0,
+  "width": 20,
+  "height": 16,
+  "tilesetId": "easyrpg_chipset_dungeon",
+  "preview": "/assets/region-references/rebuilt-forest-cave.png",
+  "tilesetPreview": "/assets/easyrpg-chipset-dungeon-transparent.png",
+  "projectDownload": "/assets/region-references/rebuilt-forest-cave.oprn.json",
+  "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+  "sourceMapId": "map_rebuilt_forest_cave",
+  "snapshotProjectId": "oprn-place-rebuilt-forest-cave-v1",
+  "rules": [
+    "숲과 단구의 마을에 연결된 20×16 바위굴. 마을로 나가는 기존 이동 이벤트를 보존한다.",
+    "한 칸은 16×16픽셀. 저장된 맵의 타일·레이어·통행·오토타일과 칩셋 이미지를 함께 보존한다.",
+    "새 프로젝트와 기존 프로젝트에서 공용 장소로 조회할 수 있다."
+  ],
+  "limitations": "완성 배치 참고 사례. 기존 이벤트와 연결된 동굴·마을은 파일에 포함되며, 새 실내·이동 이벤트는 추가하지 않는다."
+}
+] as const;
+
+export function forestPlaceSnapshot(id: string): ForestPlaceSnapshot | undefined {
+  return snapshots[id] ?? curatedVillageSnapshot(id);
+}

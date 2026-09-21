@@ -13,7 +13,7 @@ import {
 
 const REF = "abcdefghijklmnopqrst";
 const KEY = "aaa.bbb.ccc";
-const URL = `https://${REF}.supabase.co`;
+const URL = `https://${REF}.legacyDb.co`;
 
 function validEnv(): RemoteCertificateEnvironment {
   return {
@@ -22,8 +22,8 @@ function validEnv(): RemoteCertificateEnvironment {
     OPRN_E2E_REMOTE_ANON_KEY: KEY,
     OPRN_E2E_REMOTE_ISOLATION_MARKER: "rpg-zzu-e2e-owned-only",
     OPRN_E2E_REMOTE_PROJECT_REF: REF,
-    VITE_SUPABASE_URL: `${URL}/`,
-    VITE_SUPABASE_ANON_KEY: KEY,
+    VITE_LEGACY_DB_URL: `${URL}/`,
+    VITE_LEGACY_DB_ANON_KEY: KEY,
   };
 }
 
@@ -37,16 +37,16 @@ describe("remote certificate environment gate", () => {
     ["missing dedicated key", (env) => delete env.OPRN_E2E_REMOTE_ANON_KEY],
     ["missing ref", (env) => delete env.OPRN_E2E_REMOTE_PROJECT_REF],
     ["malformed URL", (env) => { env.OPRN_E2E_REMOTE_URL = "not-a-url"; }],
-    ["HTTP live URL", (env) => { env.OPRN_E2E_REMOTE_URL = "http://localhost"; env.VITE_SUPABASE_URL = "http://localhost"; }],
-    ["non Supabase host", (env) => { env.OPRN_E2E_REMOTE_URL = "https://example.com"; env.VITE_SUPABASE_URL = "https://example.com"; }],
-    ["host ref mismatch", (env) => { env.OPRN_E2E_REMOTE_URL = "https://zzzzzzzzzzzzzzzzzzzz.supabase.co"; env.VITE_SUPABASE_URL = env.OPRN_E2E_REMOTE_URL; }],
+    ["HTTP live URL", (env) => { env.OPRN_E2E_REMOTE_URL = "http://localhost"; env.VITE_LEGACY_DB_URL = "http://localhost"; }],
+    ["non LegacyDb host", (env) => { env.OPRN_E2E_REMOTE_URL = "https://example.com"; env.VITE_LEGACY_DB_URL = "https://example.com"; }],
+    ["host ref mismatch", (env) => { env.OPRN_E2E_REMOTE_URL = "https://zzzzzzzzzzzzzzzzzzzz.legacyDb.co"; env.VITE_LEGACY_DB_URL = env.OPRN_E2E_REMOTE_URL; }],
     ["malformed ref", (env) => { env.OPRN_E2E_REMOTE_PROJECT_REF = "short"; }],
     ["empty key", (env) => { env.OPRN_E2E_REMOTE_ANON_KEY = ""; }],
     ["malformed key", (env) => { env.OPRN_E2E_REMOTE_ANON_KEY = "not-jwt"; }],
-    ["ordinary URL absent", (env) => delete env.VITE_SUPABASE_URL],
-    ["ordinary URL mismatch", (env) => { env.VITE_SUPABASE_URL = "https://zzzzzzzzzzzzzzzzzzzz.supabase.co"; }],
-    ["ordinary key absent", (env) => delete env.VITE_SUPABASE_ANON_KEY],
-    ["ordinary key mismatch", (env) => { env.VITE_SUPABASE_ANON_KEY = "xxx.yyy.zzz"; }],
+    ["ordinary URL absent", (env) => delete env.VITE_LEGACY_DB_URL],
+    ["ordinary URL mismatch", (env) => { env.VITE_LEGACY_DB_URL = "https://zzzzzzzzzzzzzzzzzzzz.legacyDb.co"; }],
+    ["ordinary key absent", (env) => delete env.VITE_LEGACY_DB_ANON_KEY],
+    ["ordinary key mismatch", (env) => { env.VITE_LEGACY_DB_ANON_KEY = "xxx.yyy.zzz"; }],
   ];
 
   it.each(invalid)("rejects %s before any transport exists", (_name, mutate) => {
@@ -70,13 +70,13 @@ describe("remote certificate environment gate", () => {
   });
 
   it("permits HTTP localhost only under the explicit fake option", () => {
-    const env = { ...validEnv(), OPRN_E2E_REMOTE_URL: "http://127.0.0.1:54321", VITE_SUPABASE_URL: "http://127.0.0.1:54321" };
+    const env = { ...validEnv(), OPRN_E2E_REMOTE_URL: "http://127.0.0.1:54321", VITE_LEGACY_DB_URL: "http://127.0.0.1:54321" };
     expect(validateRemoteCertificateEnvironment(env).ok).toBe(false);
     expect(validateRemoteCertificateEnvironment(env, { allowTestLocalhost: true }).ok).toBe(true);
   });
 
   it("does not accept ordinary credentials as dedicated fallback", () => {
-    const env = { VITE_SUPABASE_URL: URL, VITE_SUPABASE_ANON_KEY: KEY };
+    const env = { VITE_LEGACY_DB_URL: URL, VITE_LEGACY_DB_ANON_KEY: KEY };
     expect(validateRemoteCertificateEnvironment(env)).toEqual({ ok: false, code: "certificate" });
   });
 });

@@ -1,0 +1,9 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';
+const target='src/assets/forestHarmonyTileset.json',t=JSON.parse(fs.readFileSync(target));const previous=JSON.parse(fs.readFileSync('src/assets/sharedVillageReferences.json'));
+const ids=['forest_harmony_road_47','forest_harmony_lake_47','forest_harmony_canopy_47'];
+let markdown='# 공용 칩셋 식별과 배치 예시\n\n정확한 대상: `forest_harmony`, 16px, 30열, '+t.count+'칸.\n\n## 공용 시트의 자동 연결 그룹\n\n|그룹|현재 멤버 범위|완전 연결 마스크 255|\n|---|---|---|\n';
+for(const id of ids){const g=t.autotileGroups.find(g=>g.id===id);assert(g);const a=g.memberTileIds;markdown+=`|${id}|${Math.min(...a)}–${Math.max(...a)}|${g.variantMap['255']}|\n`;}
+markdown+='\n이 숫자는 준비 스크립트가 현재 공용 정의에서 읽은 값이다. 배치 전 실제 프로젝트의 그룹을 다시 조회한다.\n\n## 현재 공용 아틀라스\n\n![공용 숲마을 원본 시트](image:forest-harmony-atlas)\n\n## 파생 확장판의 마을 배치 사례\n\n사진은 형태·동선 참고다. 공용 시트와 타일 인덱스가 같은 것은 아니다.\n';
+for(const i of previous.village.images)markdown+=`\n### ${i.name.replace('.png','')}\n${i.caption}\n![${i.name}](image:${i.id})\n`;
+const category={id:'forest-public-village',name:'마을',description:'공용 forest_harmony 전용 규격·수관·줄기·동선·금지 소품·SQLite 저장과 파생 마을 배치 사례.',documents:[{id:'public-village-rules',name:'공용 숲마을 배치 기준.md',markdown:fs.readFileSync('tiledata/tilesets/forest_harmony/references/VILLAGE.md','utf8')},{id:'public-village-gallery',name:'공용 칩셋과 마을 사례.md',markdown}],images:[{id:'forest-harmony-atlas',name:'공용 숲마을 아틀라스.png',caption:`공용 forest_harmony: 16px, 30열, ${t.count}칸. 파생 확장판과 구별한다.`,dataUrl:'data:image/png;base64,'+fs.readFileSync('public/assets/forest-harmony/chipset.png').toString('base64')},...previous.village.images.map(i=>({...i,caption:'파생 확장판 배치 참고 — '+i.caption}))]};
+t.referenceDocuments=[...(t.referenceDocuments??[]).filter(c=>c.id!==category.id),category];fs.writeFileSync(target,JSON.stringify(t)+'\n');console.log('Public forest_harmony: 2 documents, 8 images');

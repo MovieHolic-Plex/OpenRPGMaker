@@ -1,3 +1,7 @@
+import { inventoryViewEntries } from '@/player/playerInventoryView';
+import { createPlayerOptionsDetail } from '@/player/playerOptionsDetail';
+import { battleReportDetail } from "@/player/playerBattleReportDetail";
+import { formationDetail } from "@/player/playerFormationDetail";
 import { equipmentSlots, equipmentSlotLabel } from "@/project/equipmentSlots";
 import { createGrowthMenu, growthMenuTabs } from "@/player/playerGrowthMenu";
 import { canUseMenuItemOnActor } from "@/player/playerItemUse";
@@ -49,6 +53,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
   if (isStatusMenuGroupEntryId(options.selectedCommand)) return groupDetail(options, options.selectedCommand);
   switch (options.selectedCommand) {
     case "items": return itemDetail(options);
+    case "options": return createPlayerOptionsDetail(options.onOptionsChanged);
     case "skills": return skillDetail(options);
     case "equipment": return equipmentDetail(options);
     case "monsters": return monsterDetail(options);
@@ -57,6 +62,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "status": return statusDetail(options.project, options.session);
     case "row": return rowDetail(options);
     case "formation": return formationDetail(options);
+    case "battle-reports": return battleReportDetail(options);
     case "quests": return questsDetail(options.project, options.session);
     case "relationships": return relationshipsDetail(options.project, options.session);
     case "life-ledger": return createLifeLedgerDetail({
@@ -94,9 +100,11 @@ function groupDetail(options: StatusMenuDetailOptions, entryId: StatusMenuGroupE
 }
 
 const GROUP_COMMAND_DESCRIPTIONS: Partial<Record<StatusMenuCommandId, string>> = {
+  "battle-reports": "최근 전투 결과와 실제 행동 기록을 읽습니다.",
   quests: "받은 의뢰와 진행 상황을 봅니다.",
   relationships: "동료·주민과의 관계를 봅니다.",
   "life-ledger": "출하·꾸러미·생활 기술·가공 설비·수집 도감·박물관 기록을 관리합니다.",
+  options: "음량·대사 속도·메뉴 움직임을 이 기기에 설정합니다.",
   save: "현재 진행을 슬롯에 저장합니다.",
   load: "저장한 진행을 불러옵니다.",
   wait: "전투 중 명령 입력 시 시간을 멈출지 정합니다.",
@@ -189,7 +197,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   });
   const { wornSummary, bagEntries } = ownedEquipmentEntries(options);
   const entries = [...(wornSummary ? [wornSummary] : []), ...itemEntries, ...bagEntries];
-  return { title: "아이템", entries, emptyLabel: "아이템이 없습니다" };
+  return { title: "아이템", entries: inventoryViewEntries(entries, project, session, options.inventoryView, options.onInventoryViewChange), emptyLabel: "아이템이 없습니다", hint: "목록 끝에서 분류·정렬 변경 · ↑↓ 이동 · Enter 선택" };
 }
 
 function ownedEquipmentEntries(options: StatusMenuDetailOptions): {
@@ -409,26 +417,6 @@ function rowDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
     onActivate: options.onToggleRow ? () => options.onToggleRow?.(actor.id) : undefined,
   }));
   return { title: "열 바꾸기", entries, emptyLabel: "열을 바꿀 파티원이 없습니다" };
-}
-
-function formationDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
-  const actors = partyActors(options.project, options.session);
-  const selectedIndex = actors.findIndex((actor) => actor.id === options.formationActorId);
-  const entries = actors.map((actor, index) => ({
-    label: `${index + 1}. ${actor.name}`,
-    value: classNameFor(options.project, options.session, actor),
-    description: formationDescription(index, selectedIndex),
-    testId: `status-menu-formation-actor-${actor.id}`,
-    onActivate: formationActivate(options, actor.id, index, selectedIndex),
-  }));
-  return {
-    title: "진형",
-    entries,
-    emptyLabel: "순서를 바꿀 파티원이 없습니다",
-    hint: selectedIndex >= 0
-      ? `${actors[selectedIndex]?.name ?? "선택한 파티원"}을 이동할 위치를 선택하세요.`
-      : "먼저 이동할 파티원을 선택하세요.",
-  };
 }
 
 function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
@@ -709,23 +697,6 @@ function saveSlotEntryParts(
   }
 }
 
-function formationActivate(
-  options: StatusMenuDetailOptions,
-  actorId: string,
-  index: number,
-  selectedIndex: number
-): (() => void) | undefined {
-  if (selectedIndex >= 0 && index !== selectedIndex && options.formationActorId && options.onMoveFormationActor) {
-    return () => options.onMoveFormationActor?.(options.formationActorId as string, index);
-  }
-  return options.onSelectFormationActor ? () => options.onSelectFormationActor?.(actorId) : undefined;
-}
-
-function formationDescription(index: number, selectedIndex: number): string {
-  if (selectedIndex < 0) return "선택";
-  if (index === selectedIndex) return "이동 중";
-  return index < selectedIndex ? "위로 이동" : "아래로 이동";
-}
 
 function skillKindLabel(skill: SkillRecord): string {
   switch (skill.effect.kind) {

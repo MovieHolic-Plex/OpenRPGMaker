@@ -1,0 +1,16 @@
+/* Final owner for the database apply action. The shared-workspace branch in
+   studio-v2.css has higher specificity, so this selector matches that branch
+   explicitly and wins by source order without !important. */
+.database-modal-backdrop .database-modal-window .database-footer-button[data-testid="database-footer-apply"],
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-footer-button[data-testid="database-footer-apply"] {
+  background: var(--db-studio-accent);
+  border-color: var(--db-studio-accent);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+
+.database-modal-backdrop .database-modal-window .database-footer-button[data-testid="database-footer-apply"]:hover,
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-footer-button[data-testid="database-footer-apply"]:hover {
+  background: var(--db-studio-accent-hover);
+  border-color: var(--db-studio-accent-hover);
+}

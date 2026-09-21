@@ -1,0 +1,1963 @@
+{
+  "scenarioId": "grand-castle",
+  "projectPath": "output/castle-landscape-improvement/sqlite-reloaded.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "start",
+      "note": "SQLite 재로드본의 남쪽 진입로",
+      "shot": "02-start.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "grand-river-fortress",
+        "x": 54,
+        "y": 136,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "walk-lodge",
+      "note": "lodge까지 실제 이동 경로 27칸",
+      "shot": "03-walk-lodge.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "grand-river-fortress",
+        "x": 31,
+        "y": 140,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "grand-river-fortress",
+          "x": 31,
+          "y": 140,
+          "timeoutMs": 60000
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "walk-fireside",
+      "note": "fireside까지 실제 이동 경로 12칸",
+      "shot": "04-walk-fireside.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "grand-river-fortress",
+        "x": 42,
+        "y": 139,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "grand-river-fortress",
+          "x": 42,
+          "y": 139,
+          "timeoutMs": 60000
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "walk-south-gate",
+      "note": "south-gate까지 실제 이동 경로 41칸",
+      "shot": "05-walk-south-gate.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "grand-river-fortress",
+        "x": 54,
+        "y": 110,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "grand-river-fortress",
+          "x": 54,
+          "y": 110,
+          "timeoutMs": 60000
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "id": "walk-training",
+      "note": "training까지 실제 이동 경로 12칸",
+      "shot": "06-walk-training.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "grand-river-fortress",
+        "x": 62,
+        "y": 106,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "grand-river-fortress",
+          "x": 62,
+          "y": 106,
+          "timeoutMs": 60000
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "id": "talk-training",
+      "note": "성채 경비병와 대화",
+      "shot": "07-talk-training.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "grand-river-fortress",
+        "x": 62,
+        "y": 106,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "grand-river-fortress",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "face",
+          "dir": "up"
+        },
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present"
+        },
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "dialogue-box",
+          "attr": "data-dialogue-phase",
+          "value": "shown"
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "id": "close-training",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "grand-river-fortress",
+        "x": 62,
+        "y": 106,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "grand-river-fortress",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "pressUntil",
+          "key": "Enter",
+          "testid": "dialogue-box",
+          "state": "absent"
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "id": "walk-market",
+      "note": "market까지 실제 이동 경로 109칸",
+      "shot": "09-walk-market.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "grand-river-fortress",
+        "x": 40,
+        "y": 45,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "grand-river-fortress",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "grand-river-fortress",
+          "x": 40,
+          "y": 45,
+          "timeoutMs": 60000
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "id": "talk-market",
+      "note": "뒤뜰 상인와 대화",
+      "shot": "10-talk-market.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "grand-river-fortress",
+        "x": 40,
+        "y": 45,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "grand-river-fortress",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 2
+        }
+      },
+      "actions": [
+        {
+          "kind": "face",
+          "dir": "up"
+        },
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present"
+        },
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "dialogue-box",
+          "attr": "data-dialogue-phase",
+          "value": "shown"
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "id": "close-market",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "grand-river-fortress",
+        "x": 40,
+        "y": 45,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "grand-river-fortress",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 2
+        }
+      },
+      "actions": [
+        {
+          "kind": "pressUntil",
+          "key": "Enter",
+          "testid": "dialogue-box",
+          "state": "absent"
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "id": "walk-royal-square",
+      "note": "royal-square까지 실제 이동 경로 27칸",
+      "shot": "12-walk-royal-square.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "grand-river-fortress",
+        "x": 61,
+        "y": 39,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "grand-river-fortress",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 2
+        }
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "grand-river-fortress",
+          "x": 61,
+          "y": 39,
+          "timeoutMs": 60000
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "id": "talk-royal-square",
+      "note": "뒤뜰 안내인와 대화",
+      "shot": "13-talk-royal-square.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "grand-river-fortress",
+        "x": 61,
+        "y": 39,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "grand-river-fortress",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 3
+        }
+      },
+      "actions": [
+        {
+          "kind": "face",
+          "dir": "up"
+        },
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present"
+        },
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "dialogue-box",
+          "attr": "data-dialogue-phase",
+          "value": "shown"
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "id": "close-royal-square",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "grand-river-fortress",
+        "x": 61,
+        "y": 39,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "grand-river-fortress",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 3
+        }
+      },
+      "actions": [
+        {
+          "kind": "pressUntil",
+          "key": "Enter",
+          "testid": "dialogue-box",
+          "state": "absent"
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "id": "walk-garden",
+      "note": "garden까지 실제 이동 경로 39칸",
+      "shot": "15-walk-garden.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "grand-river-fortress",
+        "x": 80,
+        "y": 59,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "grand-river-fortress",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 3
+        }
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "grand-river-fortress",
+          "x": 80,
+          "y": 59,
+          "timeoutMs": 60000
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "id": "talk-garden",
+      "note": "정원 관리인와 대화",
+      "shot": "16-talk-garden.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "grand-river-fortress",
+        "x": 80,
+        "y": 59,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "grand-river-fortress",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 4
+        }
+      },
+      "actions": [
+        {
+          "kind": "face",
+          "dir": "up"
+        },
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present"
+        },
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "dialogue-box",
+          "attr": "data-dialogue-phase",
+          "value": "shown"
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "id": "close-garden",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "grand-river-fortress",
+        "x": 80,
+        "y": 59,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "grand-river-fortress",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 4
+        }
+      },
+      "actions": [
+        {
+          "kind": "pressUntil",
+          "key": "Enter",
+          "testid": "dialogue-box",
+          "state": "absent"
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "id": "walk-harbor",
+      "note": "harbor까지 실제 이동 경로 24칸",
+      "shot": "18-walk-harbor.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "grand-river-fortress",
+        "x": 96,
+        "y": 55,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "grand-river-fortress",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 4
+        }
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "grand-river-fortress",
+          "x": 96,
+          "y": 55,
+          "timeoutMs": 60000
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "id": "talk-harbor",
+      "note": "나루 관리인와 대화",
+      "shot": "19-talk-harbor.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "grand-river-fortress",
+        "x": 96,
+        "y": 55,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "grand-river-fortress",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 5
+        }
+      },
+      "actions": [
+        {
+          "kind": "face",
+          "dir": "up"
+        },
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present"
+        },
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "dialogue-box",
+          "attr": "data-dialogue-phase",
+          "value": "shown"
+        }
+      ]
+    },
+    {
+      "index": 19,
+      "id": "close-harbor",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "grand-river-fortress",
+        "x": 96,
+        "y": 55,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "grand-river-fortress",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 5
+        }
+      },
+      "actions": [
+        {
+          "kind": "pressUntil",
+          "key": "Enter",
+          "testid": "dialogue-box",
+          "state": "absent"
+        }
+      ]
+    },
+    {
+      "index": 20,
+      "id": "walk-pier",
+      "note": "pier까지 실제 이동 경로 16칸",
+      "shot": "21-walk-pier.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "grand-river-fortress",
+        "x": 109,
+        "y": 52,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "grand-river-fortress",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 5
+        }
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "grand-river-fortress",
+          "x": 109,
+          "y": 52,
+          "timeoutMs": 60000
+        }
+      ]
+    }
+  ]
+}

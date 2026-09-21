@@ -1,0 +1,106 @@
+/* ── 6. 타일 도크: 접이식 행(붓 보조 · 구조물 킷) ──────────────────────────── */
+
+/* 상자 대신 헤어라인 하나로 구획한다. 두 행이 같은 30px 리듬을 탄다. */
+.editor-layout .left-panel-stack .palette-inline-section {
+  border: 0;
+  border-radius: 0;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 2px;
+}
+
+.editor-layout .left-panel-stack .palette-inline-header {
+  min-height: 30px;
+  padding: 2px 2px;
+}
+
+.editor-layout .left-panel-stack .palette-inline-toggle {
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  font: 600 12px/1 var(--font-ui);
+  gap: 6px;
+  min-height: 24px;
+  padding: 0 6px 0 4px;
+}
+
+.editor-layout .left-panel-stack .palette-inline-toggle:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.editor-layout .left-panel-stack .palette-inline-toggle:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
+.editor-layout .left-panel-stack .palette-inline-caret {
+  color: var(--text-3);
+  font-size: 10px;
+  width: 10px;
+}
+
+.editor-layout .left-panel-stack .palette-inline-header .tile-brush-label {
+  color: var(--text-2);
+  font: 500 11px/1 var(--font-ui);
+}
+
+.editor-layout .left-panel-stack .palette-inline-header .tile-brush-chip {
+  background: var(--control-bg);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  color: var(--text-2);
+  font: 600 11px/1 var(--font-ui);
+  height: 22px;
+  padding: 0 9px;
+}
+
+.editor-layout .left-panel-stack .palette-inline-header .tile-brush-chip.active {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.editor-layout .left-panel-stack .palette-inline-section > .tile-brush-assist {
+  background: transparent;
+  border: 0;
+  padding: 0 2px 6px;
+}
+
+.editor-layout .left-panel-stack .structure-kit-shelf {
+  border-top: 1px solid var(--border-subtle);
+  margin: 2px 0 0;
+  padding: 2px 2px 4px;
+}
+
+.editor-layout .left-panel-stack .structure-kit-shelf-fold > summary.structure-kit-shelf-title {
+  align-items: center;
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  display: flex;
+  font: 600 12px/1 var(--font-ui);
+  gap: 6px;
+  letter-spacing: 0;
+  list-style: none;
+  min-height: 26px;
+  padding: 0 6px 0 4px;
+}
+
+.editor-layout .left-panel-stack .structure-kit-shelf-fold > summary.structure-kit-shelf-title::-webkit-details-marker {
+  display: none;
+}
+
+.editor-layout .left-panel-stack .structure-kit-shelf-fold > summary.structure-kit-shelf-title::before {
+  color: var(--text-3);
+  content: "▸";
+  display: inline-block;
+  font-size: 10px;
+  width: 10px;
+}
+
+.editor-layout .left-panel-stack .structure-kit-shelf-fold[open] > summary.structure-kit-shelf-title::before {
+  content: "▾";
+}
+
+.editor-layout .left-panel-stack .structure-kit-shelf-fold > summary.structure-kit-shelf-title:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}

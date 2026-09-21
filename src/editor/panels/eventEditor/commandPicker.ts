@@ -1,5 +1,6 @@
 import { newCommand, newM2Command } from "@/editor/eventActions";
 import {
+  isM2CatalogEntrySelectableInBattleEvent,
   isM2CatalogEntrySelectableInMap,
   M2_COMMAND_CATALOG,
   m2CommandById,
@@ -226,8 +227,17 @@ export type EventCommandPickerEntryView = {
   readonly testId: string;
 };
 
-function tabGridEntries(entries: readonly CommandEntry[]): readonly CommandEntry[] {
-  return entries.filter((entry) => entry.selectable);
+function commandEntrySelectable(entry: CommandEntry, context?: M2RuntimeContext): boolean {
+  if (entry.kind !== undefined) return entry.selectable;
+  const catalogEntry = m2CommandById(entry.commandId);
+  if (!catalogEntry) return entry.selectable;
+  return context === "troop"
+    ? isM2CatalogEntrySelectableInBattleEvent(catalogEntry)
+    : isM2CatalogEntrySelectableInMap(catalogEntry);
+}
+
+function tabGridEntries(entries: readonly CommandEntry[], context?: M2RuntimeContext): readonly CommandEntry[] {
+  return entries.filter((entry) => commandEntrySelectable(entry, context));
 }
 
 export function eventCommandPickerTabEntries(page: M2CommandPickerPage): readonly EventCommandPickerEntryView[] {
@@ -496,7 +506,7 @@ function renderPickerPage(
   if (recents.length > 0) {
     wrap.append(renderQuickCommandSection("최근 명령", "event-command-picker-recents", recents, onSelect, close, viewMode, onPreferencesChanged, context));
   }
-  wrap.append(renderCommandGrid(tabGridEntries(entries), onSelect, close, { showPageChip: false, viewMode, onPreferencesChanged, context }));
+  wrap.append(renderCommandGrid(tabGridEntries(entries, context), onSelect, close, { showPageChip: false, viewMode, onPreferencesChanged, context }));
   return wrap;
 }
 
@@ -606,6 +616,7 @@ function renderCommandButton(
   options: { readonly showPageChip: boolean; readonly onPreferencesChanged: () => void; readonly context?: M2RuntimeContext },
 ): HTMLElement {
   const visual = groupVisual(entry.group);
+  const selectable = commandEntrySelectable(entry, options.context);
   // Describe the representation inserted by the picker, not its persisted M2 alias.
   const descriptor = commandRuntimeSupportDescriptor(
     entry.kind && entry.kind !== "m2Command"
@@ -629,7 +640,7 @@ function renderCommandButton(
   }
   const badge = renderRuntimeSupportBadge(descriptor, `command-runtime-badge-picker-${entry.commandId}`);
   if (badge) children.push(badge);
-  if (!entry.selectable) {
+  if (!selectable) {
     const guidanceId = `command-picker-guidance-${entry.commandId}`;
     children.push(el("span", {
       class: "event-command-picker-alternate-route",
@@ -639,11 +650,11 @@ function renderCommandButton(
     }));
   }
   const button = el("button", {
-    class: entry.selectable ? "event-command-picker-command" : "event-command-picker-command is-informational",
+    class: selectable ? "event-command-picker-command" : "event-command-picker-command is-informational",
     attrs: {
       type: "button",
       "aria-label": entry.label,
-      ...(entry.selectable ? {} : {
+      ...(selectable ? {} : {
         "aria-disabled": "true",
         "aria-describedby": `command-picker-guidance-${entry.commandId}`,
       }),
@@ -653,12 +664,12 @@ function renderCommandButton(
       runtimeSupport: descriptor.support,
       runtimeOwner: entry.runtimeOwner,
       // 검색창에서 ↑↓/Enter 로 훑을 대상 표식. 즐겨찾기 별 버튼과 구분된다.
-      ...(entry.selectable ? { commandEntry: entry.commandId } : {}),
+      ...(selectable ? { commandEntry: entry.commandId } : {}),
     },
     children,
   }) as HTMLButtonElement;
   button.dataset.testid = entry.testId;
-  if (entry.selectable) {
+  if (selectable) {
     button.addEventListener("click", () => {
       recordRecentEventCommand(entry.commandId);
       const command = createCommandFromEntry(entry);
@@ -686,7 +697,7 @@ function renderCommandButton(
       },
     },
   }) as HTMLButtonElement;
-  favoriteButton.disabled = !entry.selectable;
+  favoriteButton.disabled = !selectable;
   return el("div", {
     class: "event-command-picker-command-wrap",
     dataset: { commandId: entry.commandId },

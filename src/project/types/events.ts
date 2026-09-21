@@ -143,6 +143,8 @@ export type SwitchValue =
 export type M2CommandValue = string | number | boolean;
 export type M2CommandFields = Record<string, M2CommandValue>;
 export type ShopType = "normal" | "buyOnly" | "sellOnly" | "repair" | "appraisal" | "pawn" | "blackMarket" | "consignment";
+/** Runtime shop surface selected by the author in the event/database editor. */
+export type ShopUiPreset = "classic" | "tabs" | "grid" | "compare" | "split" | "cart" | "stock" | "story" | "baram";
 export type ShopMessageType = "welcome" | "business" | "direct" | "festival" | "closingSale" | "vip";
 export type ShopServiceKind = "repair" | "appraisal" | "pawn";
 export type ShopRestockPolicy = "daily" | "weekly" | "onDemand";
@@ -426,6 +428,8 @@ export type Command =
       allowSell?: boolean;
       quantityMode?: "single" | "select";
       shopType?: ShopType;
+      /** Visual arrangement for the runtime shop window. */
+      shopUiPreset?: ShopUiPreset;
       messageType?: ShopMessageType;
       /** 상인이 플레이어 물품을 살 때 쓸 소지금. 생략 시 런타임 기본 100G. */
       merchantGold?: number;
@@ -511,9 +515,12 @@ export interface EventPageGraphic {
   transparent?: boolean;
   /**
    * 스프라이트 렌더 배율. 충돌 발자국과 **독립**이다 —
-   * "그림은 3배인데 발자국은 2x2" 같은 연출을 허용한다. 생략 시 1.
+   * "그림은 3배인데 발자국은 2x2" 같은 연출을 허용한다.
+   * 기존 명시 값은 절대 배율. scaleMode:auto에서는 자동 맞춤에 곱할 몸 배율이다.
    */
   scale?: number;
+  /** 생략 시 scale이 없으면 자동, 기존 scale이 있으면 수동(호환). */
+  scaleMode?: "auto" | "manual";
 }
 
 export interface NpcLivingDestination {
@@ -637,6 +644,11 @@ export interface EventDraftMeta {
   /** edit: 열기 전 원본(취소 시 복원). new: 생성 직후 스냅샷(사용자 편집 여부 판정 기준). */
   original?: PersistedGameEvent;
   authoredWrites?: EventDraftAuthoredWrite[];
+  /** Local recovery kept its work after a different project snapshot changed this event. */
+  conflict?: {
+    kind: "remote-change" | "remote-delete";
+    detectedAt: number;
+  };
 }
 
 export interface GameEvent {

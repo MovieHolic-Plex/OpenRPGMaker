@@ -223,15 +223,6 @@ export function renderWorkPlanChecklist(
         : []),
     ],
   });
-  const openBook = opts.onOpenBook
-    ? el("button", {
-        class: "ai-plan-book-open",
-        text: "계획 보기",
-        attrs: { type: "button", title: "작업 계획을 페이지로 엽니다" },
-        dataset: { testid: "ai-plan-book-open" },
-        on: { click: () => opts.onOpenBook?.() },
-      })
-    : null;
   const blocked = blockedItem(items);
   const blockedNote = blocked && typeof blocked.note === "string" && blocked.note.trim().length > 0
     ? blocked.note.trim()
@@ -245,7 +236,7 @@ export function renderWorkPlanChecklist(
         on: { click: () => opts.onStop?.() },
       })
     : null;
-  return el("div", {
+  const checklist = el("div", {
     class: "ai-autonomous-checklist",
     dataset: {
       testid: "ai-work-plan-checklist",
@@ -255,38 +246,64 @@ export function renderWorkPlanChecklist(
     },
     attrs: { role: "group", "aria-label": "할 일 목록" },
     children: [
-      el("div", {
-        class: "ai-run-whisper",
-        dataset: { testid: "ai-run-whisper" },
+      el("details", {
+        class: "ai-work-plan-dropdown",
+        attrs: { "aria-label": "할 일 목록" },
+        on: { toggle: (event: Event) => {
+          const open = (event.target as HTMLDetailsElement).open;
+          checklist.classList.toggle("is-open", open);
+        } },
         children: [
-          el("div", {
-            class: "ai-run-line",
+          el("summary", {
+            class: "ai-work-plan-head",
+            dataset: { testid: "ai-plan-head" },
             children: [
-              el("span", { class: "ai-run-status", dataset: { testid: "ai-run-status" }, text: statusLine }),
+              el("span", { class: "ai-plan-head-icon", attrs: { "aria-hidden": "true" }, children: [deckIcon("list", { size: 15 })] }),
+              el("span", {
+                class: "ai-work-plan-head-label",
+                dataset: { testid: "ai-plan-head-label" },
+                text: budget ? "자율 실행" : "할 일",
+              }),
+              el("span", {
+                class: "ai-work-plan-head-status",
+                dataset: { testid: "ai-run-status" },
+                text: statusLine,
+              }),
               el("span", {
                 class: "ai-autonomous-progress",
                 dataset: { testid: "ai-autonomous-progress" },
                 attrs: { title: "완료한 항목 / 전체 항목" },
                 text: `${done}/${items.length}`,
               }),
-              ...(openBook ? [openBook] : []),
               ...(stop ? [stop] : []),
+              el("span", { class: "ai-plan-head-chevron", attrs: { "aria-hidden": "true" }, children: [deckIcon("chevron-down", { size: 15 })] }),
             ],
           }),
-          ...(running ? [workItemActivityNode(opts.activity)] : []),
-          ...(blockedNote
-            ? [el("span", {
-                class: "ai-autonomous-item-note is-blocked",
-                dataset: { testid: "ai-work-item-blocked-note" },
-                text: blockedNote,
-              })]
-            : []),
-          el("div", {
-            class: "ai-run-progress",
-            dataset: { testid: "ai-run-progress" },
-            attrs: { "aria-hidden": "true" },
-            children: [progressFill],
-          }),
+          el("div", { class: "ai-work-plan-body", children: [
+            ...(running ? [workItemActivityNode(opts.activity)] : []),
+            ...(blockedNote
+              ? [el("span", {
+                  class: "ai-autonomous-item-note is-blocked",
+                  dataset: { testid: "ai-work-item-blocked-note" },
+                  text: blockedNote,
+                })]
+              : []),
+            el("div", {
+              class: "ai-run-progress",
+              dataset: { testid: "ai-run-progress" },
+              attrs: { "aria-hidden": "true" },
+              children: [progressFill],
+            }),
+            ...(opts.onOpenBook
+              ? [el("button", {
+                  class: "ai-plan-book-open",
+                  text: "계획 보기",
+                  attrs: { type: "button", title: "작업 계획을 페이지로 엽니다" },
+                  dataset: { testid: "ai-plan-book-open" },
+                  on: { click: () => opts.onOpenBook?.() },
+                })]
+              : []),
+          ] }),
         ],
       }),
       el("details", {
@@ -304,6 +321,7 @@ export function renderWorkPlanChecklist(
       }),
     ],
   });
+  return checklist;
 }
 
 function safeJsonStringify(value: unknown): string {

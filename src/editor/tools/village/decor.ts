@@ -1,3 +1,8 @@
+import { paintForestGroves } from "./forestGroves";
+import { dressForestVillage } from "./forestVillageDetails";
+import { isForestHarmonyTileset } from "@/project/defaults/forestHarmony";
+import { forestCoverageTarget } from "../forestDensity";
+import { prepareVillageTreeKit, plantForestBand } from "./treeKit";
 // editor/tools/village/decor.ts
 // 마을 소품 레이어 — 마당 꾸밈, 길 옆 벤치, 우물, 깃발, 바위 노두, 활엽수 군락, place_props 위임.
 
@@ -106,7 +111,7 @@ function placeYardCluster(
  * 꽃덤불 링 — 집 옆 벽 아래 자투리 잔디의 2×2에 꽃덤불(288)+덤불(289)을 격자로 섞고
  * 둘레에 꽃잎(348)을 한두 장 흘린다 (참조 맵 문법 L4: 꽃은 흩뿌림이 아니라 클러스터).
  */
-function placeFlowerRings(map: GameMap, houses: readonly BuiltHouse[], seed: number, area: Rect): number {
+function placeFlowerRings(map: GameMap, houses: readonly BuiltHouse[], seed: number, area: Rect, petalTile = 348): number {
   const rng = mulberry32((seed ^ 0x85ebca6b) >>> 0);
   const blocked = houseBlockedCells(houses, map);
   const freeGrass = (x: number, y: number): boolean =>
@@ -135,7 +140,7 @@ function placeFlowerRings(map: GameMap, houses: readonly BuiltHouse[], seed: num
       // 둘레 꽃잎 1~2장
       for (const petal of [{ x: anchorX - 1, y: wallMidY + 1 }, { x: anchorX + 2, y: wallMidY }]) {
         if (freeGrass(petal.x, petal.y) && rng() < 0.7) {
-          map.upperTiles[petal.y * map.width + petal.x] = 348;
+          map.upperTiles[petal.y * map.width + petal.x] = petalTile;
         }
       }
       rings += 1;
@@ -192,6 +197,7 @@ export function placeVillageDecor(
   warnings: string[]
 ): number {
   const blocked = houseBlockedCells(houses, map);
+  const forest = isForestHarmonyTileset(draft.tilesets[map.tilesetId]);
   let placed = 0;
   const pool = YARD_STYLE_POOLS[intent.yardStyle];
   for (let i = 0; i < houses.length; i += 1) {
@@ -220,6 +226,22 @@ export function placeVillageDecor(
     }
     for (let d = 0; d < scatterKinds.length; d += 1) {
       const kind = scatterKinds[d] as YardDecorKind;
+      // Forest atlas 348 is a marker glyph despite its inherited Flowers label.
+      // Use the catalog's observed flower (288), keeping the existing yard scope.
+      if (forest && kind === "flowers") {
+        const cells: Point[] = [];
+        for (let y = yardArea.y; y < yardArea.y + yardArea.h; y++) for (let x = yardArea.x; x < yardArea.x + yardArea.w; x++) {
+          if (!blocked.has(coordKey(x, y)) && map.lowerTiles[y * map.width + x] === TILE.GRASS
+            && map.upperTiles[y * map.width + x] === TILE.EMPTY
+            && !map.lowerTileStacks?.[y * map.width + x]?.length && !map.upperTileStacks?.[y * map.width + x]?.length
+            && !map.events.some(event => event.x === x && event.y === y)
+            && !(draft.startMapId === map.id && draft.startPos.x === x && draft.startPos.y === y)
+            && !(y === house.front.y && Math.abs(x - house.front.x) <= 1)) cells.push({ x, y });
+        }
+        const cell = shuffled(cells, mulberry32((seed + i * 100 + d * 7 + 11) >>> 0))[0];
+        if (cell) { map.upperTiles[cell.y * map.width + cell.x] = 288; placed++; }
+        continue;
+      }
       const scatter = yardScatterParams(kind);
       placed += placePropsCount(draft, {
         mapId: map.id,
@@ -238,7 +260,7 @@ export function placeVillageDecor(
   // 돌길이면 포석 위 덤불 토핑 (참조 맵 문법 L1).
   if (intent.pathStyle === "stone") placed += placeStoneToppings(map, area, houses, seed);
   // 꽃덤불 링 — 집 벽 옆 자투리 잔디에 1~2개 (참조 맵 문법 L4).
-  placed += placeFlowerRings(map, houses, seed, area);
+  placed += placeFlowerRings(map, houses, seed, area, forest ? 288 : 348);
   // 우물 하나 — 광장 근처 (382).
   if (/분수|fountain/i.test(intent.theme)) {
     warnings.push("요청한 fountain(분수) 타일은 combined_town에서 사용할 수 없어 well(우물 382)로 대체했다.");
@@ -286,6 +308,8 @@ export function placeVillageDecor(
 
   if (intent.edgeTrees !== "none") placed += placeStoneRestSpots(map, area, houses, seed);
 
+  if (intent.yardStyle !== "minimal") placed += dressForestVillage(draft, map, area, houses, seed, warnings);
+
   return placed;
 }
 
@@ -295,6 +319,27 @@ export function placeVillageTrees(
   seed: number, intent: VillageIntent, warnings: string[], reserved: readonly Rect[] = [],
 ): number {
   const yards = houses.map(house => yardAreaForHouse(map, [house.bbox], house.doorAt, { depth: 3, pad: 1 }));
+  const kit = prepareVillageTreeKit(draft.tilesets[map.tilesetId]);
+  if (kit.id === "forest-harmony") {
+    if (intent.edgeTrees === "none") return 0;
+    const blocked = houseBlockedCells(houses, map);
+    for (const { x, y } of protectedHouseCells(map)) blocked.add(coordKey(x, y));
+    for (const event of map.events) blocked.add(coordKey(event.x, event.y));
+    if (draft.startMapId === map.id) blocked.add(coordKey(draft.startPos.x, draft.startPos.y));
+    const free = (x: number, y: number): boolean => inMapBounds(map, x, y)
+      && !blocked.has(coordKey(x, y)) && map.lowerTiles[y * map.width + x] === TILE.GRASS
+      && map.upperTiles[y * map.width + x] === TILE.EMPTY
+      && !map.lowerTileStacks?.[y * map.width + x]?.length && !map.upperTileStacks?.[y * map.width + x]?.length;
+    const exclusions = [...reserved, ...yards, plaza.rect];
+    const groveFree = (x: number, y: number): boolean => free(x, y)
+      && !exclusions.some(rect => x >= rect.x && y >= rect.y && x < rect.x + rect.w && y < rect.y + rect.h);
+    if (kit.grove) {
+      const density = intent.forestDensity ?? (intent.edgeTrees === "dense" ? "dense" : "normal");
+      const grove = paintForestGroves(map, area, kit.grove, groveFree, seed, forestCoverageTarget(density), undefined, true);
+      return Math.ceil(grove.cells.size / 12);
+    }
+    return plantForestBand(map, area, seed, kit, groveFree, Math.floor(area.w * area.h / 118) + 9).placed;
+  }
   return unreservedAreas([area], [...reserved, ...yards])
     .filter(part => part.w >= 4 && part.h >= 4)
     .reduce((total, part) => total + plantVillageTreeArea(draft, map, part, plaza, houses, seed, intent, warnings, part.w * part.h / (area.w * area.h)), 0);

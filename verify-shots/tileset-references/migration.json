@@ -1,0 +1,42 @@
+{
+  "owner": "slates_32",
+  "sharedBy": [
+    "slates_astra_32",
+    "slates_study_32",
+    "slates_mastery_32",
+    "slates_village_32",
+    "slates_astra_v2_32",
+    "slates_astra_v3_32",
+    "slates_reference_32"
+  ],
+  "categories": [
+    {
+      "id": "village",
+      "name": "마을",
+      "documents": 5,
+      "images": 23,
+      "characters": 21062
+    },
+    {
+      "id": "structures",
+      "name": "구조 표본",
+      "documents": 1,
+      "images": 40,
+      "characters": 17818
+    },
+    {
+      "id": "atlas",
+      "name": "타일 사전",
+      "documents": 2,
+      "images": 46,
+      "characters": 17094
+    },
+    {
+      "id": "recipes",
+      "name": "조립 레시피",
+      "documents": 6,
+      "images": 0,
+      "characters": 127664
+    }
+  ]
+}

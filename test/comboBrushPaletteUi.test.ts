@@ -7,7 +7,7 @@
 //  · 기본(6열 리플로우) 팔레트에서 사각 드래그 = 활성 Combo Brush.
 //  · 그 붓의 셀 타일은 **화면에 보이던 그 칸들**이다(리플로우 순서를 격자로 읽는다).
 //  · 같은 칸에서 시작해 같은 칸에서 놓으면 예전처럼 단일 선택이다.
-//  · 커스텀 아틀라스 드래그는 원본 좌표 규약 그대로다(회귀 금지).
+//  · 커스텀 아틀라스 드래그도 화면의 6열 리플로우 좌표를 따른다.
 //  · 지형 도구 표면은 큐레이션 조합을 **이름과 그림**으로 낸다 — 타일 번호 입력 없음.
 //  · 사이드바가 합성 붓과 반복 붓(브러시 크기)을 다르게 표기한다.
 
@@ -131,8 +131,8 @@ describe("default reflowed palette creates a combo brush", () => {
   });
 });
 
-describe("custom atlas stamps stay on source coordinates", () => {
-  it("reads the drag rectangle from the source sheet, not the display order", () => {
+describe("custom atlas stamps preserve source coordinates", () => {
+  it("reads adjacent source rows as one rectangular stamp", () => {
     const tileset = customTileset();
     const created: PaletteStamp[] = [];
     const palette = makeCustomPalette({
@@ -144,13 +144,16 @@ describe("custom atlas stamps stay on source coordinates", () => {
     });
     document.body.append(palette);
 
-    // tilesPerRow=8 이므로 10 → 19 는 원본 시트에서 2×2.
+    // 원본 8열에서 10 → 19 는 2×2 범위다.
     dragBetween(palette, "chipset-tile-10", "chipset-tile-19");
 
     expect(created.length).toBe(1);
     expect(created[0]!.width).toBe(2);
     expect(created[0]!.height).toBe(2);
-    expect(created[0]!.cells.map((cell) => cell.tile)).toEqual([10, 11, 18, 19]);
+    expect(created[0]!.cells.map((cell) => cell.tile)).toEqual([
+      10, 11,
+      18, 19,
+    ]);
   });
 });
 

@@ -3,7 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { createShopShowcaseProject } from "@/project/defaults/defaultProject";
 import type { Command, Project } from "@/project/types";
 import { debugState } from "./eventEditorCertEvidence";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const EVIDENCE_DIR = ".omo/evidence/task-10-event-playwright";
 
@@ -20,7 +20,7 @@ test.beforeEach(async ({ page }) => {
 test("event delete confirmation supports dismiss and accept without manual browser input", async ({ page }) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1280, height: 840 });
-  await seedProjectFromSupabaseCanonical(page, createShopShowcaseProject());
+  await seedProjectForEditor(page, createShopShowcaseProject());
   await openSeededEventEditor(page, "ev_shopkeeper");
   const more = page.locator(".event-editor-footer-more");
   const openDeleteMenu = async () => {
@@ -56,7 +56,7 @@ test("event delete confirmation supports dismiss and accept without manual brows
 test("shop transaction branch survives apply, OK, and editor reopen", async ({ page }) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1280, height: 840 });
-  await seedProjectFromSupabaseCanonical(page, shopBranchProject());
+  await seedProjectForEditor(page, shopBranchProject());
   await openSeededEventEditor(page, "ev_shopkeeper");
 
   const shop = page.getByTestId("event-command-shop").first();

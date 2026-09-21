@@ -3,11 +3,11 @@ import { createBlankProject } from "@/project/defaults";
 import { serialize } from "@/project/io";
 import { sha256HexText } from "@/util/sha256";
 
-const URL = "https://abcdefghijklmnopqrst.supabase.co";
+const URL = "https://abcdefghijklmnopqrst.legacyDb.co";
 const KEY = "aaa.bbb.ccc";
 const PROJECT_ID = "ed0ed8e2-50b6-4a3a-a884-c2f46fcbf431";
 const CAPABILITY = "capability-value-with-more-than-thirty-two-characters";
-const CONFIG_KEY = "oprn:supabase-project-config";
+const CONFIG_KEY = "oprn:legacyDb-project-config";
 const BOOTSTRAP = Symbol.for("oprn:project-e2e.bootstrap");
 
 type TestWindow = Window & { [BOOTSTRAP]?: unknown };
@@ -30,9 +30,9 @@ function testWindow(): TestWindow {
 
 async function loadBridgeModule() {
   vi.resetModules();
-  vi.stubEnv("VITE_SUPABASE_URL", URL);
-  vi.stubEnv("VITE_SUPABASE_ANON_KEY", KEY);
-  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", PROJECT_ID);
+  vi.stubEnv("VITE_LEGACY_DB_URL", URL);
+  vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", KEY);
+  vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", PROJECT_ID);
   vi.stubGlobal("window", testWindow());
   vi.stubGlobal("navigator", { webdriver: true });
   const credentialDigest = await sha256HexText(KEY);

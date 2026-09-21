@@ -1,0 +1,23 @@
+/* Editor-owned AI dialogs keep the database modal class names for focus and
+ * close routing. Once the database layer is loaded, its generic body shell is
+ * more specific than the static first-paint rules, so restore the dialog-owned
+ * scroll contract at the end of this layer. */
+.database-modal-backdrop .database-modal-window:is(.tool-browser-window, .harness-window) {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.database-modal-backdrop .database-modal-window:is(.tool-browser-window, .harness-window)
+  .database-modal-body:is(.tool-browser-body, .harness-body) {
+  align-content: start;
+  background: var(--bg-raised);
+  display: grid;
+  flex: 1 1 auto;
+  flex-direction: initial;
+  gap: var(--space-2);
+  min-height: 0;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: var(--space-3) var(--space-4);
+}

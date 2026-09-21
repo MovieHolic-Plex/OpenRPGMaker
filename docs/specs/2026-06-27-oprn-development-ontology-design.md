@@ -52,7 +52,7 @@ Capability는 RPG ZZU의 기능 개발 단위다. 새 기능을 추가할 때 �
 - `DatabaseRecords`: 액터, 직업, 스킬, 아이템, 장비, 적, 부대, 상태, 애니메이션.
 - `BattleRuntime`: 전투 처리, 적/부대, 보상, 애니메이션, 전투 이벤트.
 - `ResourcePipeline`: bundled/uploaded 리소스, ResourceProfile, 선택 UI, Phaser 로딩.
-- `ProjectPersistence`: 프로젝트 저장/로드, 마이그레이션, shape/guard/reference validation, Supabase sync.
+- `ProjectPersistence`: 프로젝트 저장/로드, 마이그레이션, shape/guard/reference validation, LegacyDb sync.
 
 Capability는 아래 정보를 가진다.
 

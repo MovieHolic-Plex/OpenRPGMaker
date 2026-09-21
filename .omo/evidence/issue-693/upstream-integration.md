@@ -43,7 +43,7 @@ already-merged shop fixes are retained from exact upstream, not an open branch.
 
 A staged-tree blob comparison verified all 101 follow-up-only paths and all 112
 upstream-only paths equal their respective parent. The original acceptance
-ledger and media Supabase proof are byte-identical to the first parent. Every
+ledger and media LegacyDb proof are byte-identical to the first parent. Every
 `test/fixtures` path equals exact upstream, including its previously committed
 surface-fixture changes; this task regenerated none.
 

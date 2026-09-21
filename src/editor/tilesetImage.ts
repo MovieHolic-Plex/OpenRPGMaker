@@ -1,6 +1,7 @@
 import {
   ASSET_TILESET,
   BUNDLED_EASYRPG_CHIPSET_ASSETS,
+  BUNDLED_REFERENCE_CHIPSET_ASSETS,
   registerTilesetTextureFrames,
   TEX_TILESET,
   TILE_FRAME_COUNT,
@@ -18,6 +19,7 @@ import { DUNGEON_TEXTURE_KEY, INTERIOR_TEXTURE_KEY } from "@/project/tilesetHarn
 import { isWorldTileset, isWorldAnimatedTile } from "@/project/defaults/worldCoastMapping";
 import { isCombinedTownHalfTile, isCombinedTownRetroWorldTileset } from "@/project/defaults/combinedTownRetroWorld";
 import { store } from "@/project/store";
+import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import type { TilesetDef } from "@/project/types";
 import type Phaser from "phaser";
 import { animationKeyForTile, animationStripForTile } from "@/project/defaults/chipsetAnimation";
@@ -27,9 +29,10 @@ const DEFAULT_TILESET_IMAGE_URL = `/${ASSET_TILESET}`;
 
 /** Graft-free atlas URL (uploaded bytes or bundled path). Editor and evidence share this base. */
 export function tilesetBaseImageUrl(tileset: TilesetDef): string {
+  const uploaded = tileset.image.type === "uploaded" ? store.getCurrent().assets.uploaded[tileset.image.id] : undefined;
   return withInlineAsset(
     tileset.image.type === "uploaded"
-      ? store.getCurrent().assets.uploaded[tileset.image.id]?.dataUrl ?? DEFAULT_TILESET_IMAGE_URL
+      ? (uploaded ? uploadedAssetUrl(uploaded) : "") || DEFAULT_TILESET_IMAGE_URL
       : bundledTilesetImageUrl(tileset.image.id) ?? DEFAULT_TILESET_IMAGE_URL,
   );
 }
@@ -63,7 +66,7 @@ export function ensureTilesetTexture(scene: Phaser.Scene, tileset: TilesetDef): 
 
   // 확장 타일셋(count > 480)은 확장분 프레임까지 등록한다(기본 480 은 불변).
   if (tileset.image.type === "uploaded") registerUploadedTilesetFrames(scene, tileset, textureKey);
-  else registerTilesetTextureFrames(scene, textureKey, Math.max(TILE_FRAME_COUNT, tileset.count));
+  else registerTilesetTextureFrames(scene, textureKey, Math.max(TILE_FRAME_COUNT, tileset.count), tileset.tileSize, tileset.tilesPerRow);
   return textureKey;
 }
 
@@ -103,12 +106,22 @@ export function tilesetAnimationKeyForTile(tileset: TilesetDef, tile: number): s
     ?? (supportsChipsetTileAnimation(tileset, tile) ? animationKeyForTile(tile) : null);
 }
 
-export function tilesetTileBackgroundStyle(tileset: TilesetDef, tile: number, previewSize: number | string): string {
+export function tilesetCssImageValue(imageUrl: string): string {
+  return cssUrl(imageUrl);
+}
+
+export function tilesetTileBackgroundStyle(
+  tileset: TilesetDef,
+  tile: number,
+  previewSize: number | string,
+  imageUrl = tilesetImageUrl(tileset),
+  imageVariable?: string,
+): string {
   const column = tile % tileset.tilesPerRow;
   const row = Math.floor(tile / tileset.tilesPerRow);
   const cellSize = previewSizeCss(previewSize);
   return [
-    `background-image:${cssUrl(tilesetImageUrl(tileset))}`,
+    imageVariable ? `background-image:var(${imageVariable})` : `background-image:${cssUrl(imageUrl)}`,
     `background-size:calc(${tileset.tilesPerRow} * ${cellSize}) auto`,
     `background-position:calc(${-column} * ${cellSize}) calc(${-row} * ${cellSize})`,
   ].join(";");
@@ -121,14 +134,16 @@ function previewSizeCss(previewSize: number | string): string {
 /** 타일셋에 붙이기 전 후보 그래픽의 URL — 그래픽 고르기 미리보기가 쓴다. */
 export function tilesetImageSourceUrl(image: TilesetDef["image"]): string {
   if (image.type === "uploaded") {
-    return withInlineAsset(store.getCurrent().assets.uploaded[image.id]?.dataUrl ?? DEFAULT_TILESET_IMAGE_URL);
+    const asset = store.getCurrent().assets.uploaded[image.id];
+    return withInlineAsset(asset ? uploadedAssetUrl(asset) || DEFAULT_TILESET_IMAGE_URL : DEFAULT_TILESET_IMAGE_URL);
   }
   return withInlineAsset(bundledTilesetImageUrl(image.id) ?? DEFAULT_TILESET_IMAGE_URL);
 }
 
 function bundledTilesetImageUrl(textureKey: string): string | null {
   if (textureKey === TEX_TILESET) return DEFAULT_TILESET_IMAGE_URL;
-  const asset = BUNDLED_EASYRPG_CHIPSET_ASSETS.find((candidate) => candidate.textureKey === textureKey);
+  const asset = [...BUNDLED_EASYRPG_CHIPSET_ASSETS, ...BUNDLED_REFERENCE_CHIPSET_ASSETS]
+    .find((candidate) => candidate.textureKey === textureKey);
   return asset ? `/${asset.path}` : null;
 }
 

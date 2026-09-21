@@ -21,6 +21,7 @@ import {
   type ChipsetQuarterComposition,
 } from "@/project/defaults/terrainQuarterAutotile";
 import { store } from "@/project/store";
+import { mapTileSize } from "@/project/tileGeometry";
 import type { GameMap, TilesetDef } from "@/project/types";
 
 type ChipsetTileObject =
@@ -54,8 +55,11 @@ export function createChipsetTileObject(
   tileOrUndefined?: number
 ): ChipsetTileObject {
   const resolved = resolveRenderArgs(map, tilesetOrX, xOrY, yOrTile, tileOrUndefined);
-  if (!resolved) return createMissingTileObject(scene, xOrY, yOrTile);
+  if (!resolved) return createMissingTileObject(scene, typeof tilesetOrX === "number" ? tilesetOrX : xOrY, typeof tilesetOrX === "number" ? xOrY : yOrTile, mapTileSize(map));
   const { tile, tileset, x, y } = resolved;
+  // 좌표 단위는 맵(=타일셋)이 정한다. 16 을 박아 두면 32px 타일셋에서 칸마다 절반씩 겹쳐
+  // 그려지고 클릭 칸과 어긋난다.
+  const tileSize = mapTileSize(map, tileset);
   // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 타일 그림판도 포함.
   if (supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile, tileset)) {
     return createLakeAutotileObject(scene, map, tileset, x, y);
@@ -65,13 +69,13 @@ export function createChipsetTileObject(
     if (composition) return createTerrainQuarterObject(scene, tileset, x, y, composition);
   }
   const roadTile = isDefaultTilesetTexture(tileset) ? roadAutotileTileForCell(map, { x, y }) : null;
-  if (roadTile !== null) return createRawTileObject(scene, tileset, x * TILE_SIZE, y * TILE_SIZE, roadTile);
+  if (roadTile !== null) return createRawTileObject(scene, tileset, x * tileSize, y * tileSize, roadTile);
   // 투명 칩이 lower 에 단독이면 투명 부분이 검게 보임 → 정책이 정한 받침 타일과 합성.
   const backingTile = tileBackingTile(tileset, tile);
   if (backingTile !== null) {
-    return createBackedTileObject(scene, tileset, x, y, tile, backingTile);
+    return createBackedTileObject(scene, tileset, x, y, tile, backingTile, tileSize);
   }
-  return createRawTileObject(scene, tileset, x * TILE_SIZE, y * TILE_SIZE, tile);
+  return createRawTileObject(scene, tileset, x * tileSize, y * tileSize, tile);
 }
 
 function createBackedTileObject(
@@ -81,9 +85,11 @@ function createBackedTileObject(
   y: number,
   tile: number,
   backingTile: number,
+  tileSize: number,
 ): Phaser.GameObjects.Container {
-  const container = scene.add.container(x * TILE_SIZE, y * TILE_SIZE);
-  container.setSize(TILE_SIZE, TILE_SIZE);
+  // 받침은 커스텀·업로드 칩셋에도 적용된다(내장 전용이 아니다) — 컨테이너도 좌표 단위를 따라야 한다.
+  const container = scene.add.container(x * tileSize, y * tileSize);
+  container.setSize(tileSize, tileSize);
   container.add(createRawTileObject(scene, tileset, 0, 0, backingTile));
   container.add(createRawTileObject(scene, tileset, 0, 0, tile));
   return container;
@@ -105,8 +111,8 @@ function resolveRenderArgs(
   return { tileset: tilesetOrX, x: xOrY, y: yOrTile, tile: tileOrUndefined };
 }
 
-function createMissingTileObject(scene: Phaser.Scene, x: number, y: number): Phaser.GameObjects.Rectangle {
-  const rect = scene.add.rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0x000000, 0);
+function createMissingTileObject(scene: Phaser.Scene, x: number, y: number, tileSize: number): Phaser.GameObjects.Rectangle {
+  const rect = scene.add.rectangle(x * tileSize, y * tileSize, tileSize, tileSize, 0x000000, 0);
   rect.setOrigin(0, 0);
   return rect;
 }

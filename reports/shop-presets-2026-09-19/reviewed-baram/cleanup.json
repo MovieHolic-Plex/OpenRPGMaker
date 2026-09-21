@@ -1,0 +1,44 @@
+[
+  {
+    "resource": "/home/main/z-project/rpg-zzu/.vite-cache/shop-decision-player-Lhcntf",
+    "registeredAt": "2026-09-18T16:09:29.099Z",
+    "closed": true,
+    "closedAt": "2026-09-18T16:09:43.384Z"
+  },
+  {
+    "resource": "http://127.0.0.1:40017",
+    "registeredAt": "2026-09-18T16:09:36.597Z",
+    "closed": true,
+    "closedAt": "2026-09-18T16:09:43.382Z"
+  },
+  {
+    "resource": "chromium",
+    "registeredAt": "2026-09-18T16:09:36.699Z",
+    "closed": true,
+    "closedAt": "2026-09-18T16:09:43.380Z"
+  },
+  {
+    "resource": "economy-1024x768:context",
+    "registeredAt": "2026-09-18T16:09:36.761Z",
+    "closed": true,
+    "closedAt": "2026-09-18T16:09:43.341Z"
+  },
+  {
+    "resource": "economy-1024x768:page",
+    "registeredAt": "2026-09-18T16:09:36.799Z",
+    "closed": true,
+    "closedAt": "2026-09-18T16:09:43.335Z"
+  },
+  {
+    "resource": "economy-1024x768:cdp",
+    "registeredAt": "2026-09-18T16:09:38.795Z",
+    "closed": true,
+    "closedAt": "2026-09-18T16:09:43.316Z"
+  },
+  {
+    "resource": "economy-1024x768:heap-read-handle",
+    "registeredAt": "2026-09-18T16:09:39.822Z",
+    "closed": true,
+    "closedAt": "2026-09-18T16:09:43.298Z"
+  }
+]

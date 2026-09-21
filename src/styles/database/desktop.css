@@ -190,16 +190,6 @@
     overflow: hidden;
   }
 
-  .database-modal-body .oprn-detail-enemies > .db-enemy-bm101-workbench {
-    grid-template-areas:
-      "name graphic actions"
-      "stats graphic actions"
-      "species rewards actions"
-      "critical options actions"
-      "state element actions";
-    grid-template-columns: minmax(360px, 0.88fr) minmax(360px, 0.9fr) minmax(430px, 1fr);
-  }
-
   .database-modal-window:has(.oprn-record-troops) {
     background: var(--bg-raised);
     border: 1px solid var(--border-subtle);
@@ -477,19 +467,6 @@
   .database-modal-body .db-troop-member-editor {
     gap: 10px;
     grid-template-columns: 96px minmax(0, 1fr);
-  }
-
-  .database-modal-body .db-troop-member-list {
-    gap: 6px;
-    grid-template-columns: minmax(160px, 1fr) minmax(160px, 1fr);
-    grid-template-rows: auto auto minmax(96px, auto);
-  }
-
-  .database-modal-body .db-troop-member-list .db-troop-member-position-panel {
-    max-height: none;
-    overflow: auto;
-    padding: 16px 10px 10px;
-    width: auto;
   }
 
   .database-modal-body .db-troop-member-position-panel .db-field {

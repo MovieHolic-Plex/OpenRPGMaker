@@ -1,0 +1,424 @@
+{
+  "source": "verify-shots/slates-astra-v3/project.json",
+  "width": 3200,
+  "height": 3200,
+  "tileSize": 32,
+  "validArrays": true,
+  "spawnPassable": true,
+  "reachableCells": 700,
+  "landmarks": [
+    {
+      "name": "b01 courtyard-inn 문앞 1",
+      "x": 4,
+      "y": 10,
+      "reachable": true
+    },
+    {
+      "name": "b01 courtyard-inn 문앞 2",
+      "x": 8,
+      "y": 9,
+      "reachable": true
+    },
+    {
+      "name": "b02 joined-shops 문앞 1",
+      "x": 11,
+      "y": 9,
+      "reachable": true
+    },
+    {
+      "name": "b02 joined-shops 문앞 2",
+      "x": 14,
+      "y": 10,
+      "reachable": true
+    },
+    {
+      "name": "b03 joined-shops 문앞 1",
+      "x": 19,
+      "y": 9,
+      "reachable": true
+    },
+    {
+      "name": "b03 joined-shops 문앞 2",
+      "x": 22,
+      "y": 10,
+      "reachable": true
+    },
+    {
+      "name": "b04 joined-shops 문앞 1",
+      "x": 5,
+      "y": 16,
+      "reachable": true
+    },
+    {
+      "name": "b04 joined-shops 문앞 2",
+      "x": 8,
+      "y": 17,
+      "reachable": true
+    },
+    {
+      "name": "b05 low-workshop 문앞 1",
+      "x": 12,
+      "y": 17,
+      "reachable": true
+    },
+    {
+      "name": "b06 low-workshop 문앞 1",
+      "x": 19,
+      "y": 15,
+      "reachable": true
+    },
+    {
+      "name": "b07 low-workshop 문앞 1",
+      "x": 28,
+      "y": 8,
+      "reachable": true
+    },
+    {
+      "name": "b08 house 문앞 1",
+      "x": 32,
+      "y": 10,
+      "reachable": true
+    },
+    {
+      "name": "b09 joined-shops 문앞 1",
+      "x": 36,
+      "y": 9,
+      "reachable": true
+    },
+    {
+      "name": "b09 joined-shops 문앞 2",
+      "x": 39,
+      "y": 10,
+      "reachable": true
+    },
+    {
+      "name": "b10 courtyard-inn 문앞 1",
+      "x": 42,
+      "y": 10,
+      "reachable": true
+    },
+    {
+      "name": "b10 courtyard-inn 문앞 2",
+      "x": 46,
+      "y": 9,
+      "reachable": true
+    },
+    {
+      "name": "b11 joined-shops 문앞 1",
+      "x": 28,
+      "y": 15,
+      "reachable": true
+    },
+    {
+      "name": "b11 joined-shops 문앞 2",
+      "x": 31,
+      "y": 16,
+      "reachable": true
+    },
+    {
+      "name": "b12 low-workshop 문앞 1",
+      "x": 31,
+      "y": 21,
+      "reachable": true
+    },
+    {
+      "name": "b13 joined-shops 문앞 1",
+      "x": 42,
+      "y": 17,
+      "reachable": true
+    },
+    {
+      "name": "b13 joined-shops 문앞 2",
+      "x": 45,
+      "y": 18,
+      "reachable": true
+    },
+    {
+      "name": "b14 courtyard-inn 문앞 1",
+      "x": 35,
+      "y": 19,
+      "reachable": true
+    },
+    {
+      "name": "b14 courtyard-inn 문앞 2",
+      "x": 39,
+      "y": 18,
+      "reachable": true
+    },
+    {
+      "name": "b15 courtyard-inn 문앞 1",
+      "x": 4,
+      "y": 24,
+      "reachable": true
+    },
+    {
+      "name": "b15 courtyard-inn 문앞 2",
+      "x": 8,
+      "y": 23,
+      "reachable": true
+    },
+    {
+      "name": "b16 joined-shops 문앞 1",
+      "x": 11,
+      "y": 25,
+      "reachable": true
+    },
+    {
+      "name": "b16 joined-shops 문앞 2",
+      "x": 14,
+      "y": 26,
+      "reachable": true
+    },
+    {
+      "name": "b17 joined-shops 문앞 1",
+      "x": 17,
+      "y": 20,
+      "reachable": true
+    },
+    {
+      "name": "b17 joined-shops 문앞 2",
+      "x": 20,
+      "y": 21,
+      "reachable": true
+    },
+    {
+      "name": "b18 low-workshop 문앞 1",
+      "x": 26,
+      "y": 21,
+      "reachable": true
+    },
+    {
+      "name": "b19 joined-shops 문앞 1",
+      "x": 26,
+      "y": 27,
+      "reachable": true
+    },
+    {
+      "name": "b19 joined-shops 문앞 2",
+      "x": 29,
+      "y": 28,
+      "reachable": true
+    },
+    {
+      "name": "b20 joined-shops 문앞 1",
+      "x": 35,
+      "y": 26,
+      "reachable": true
+    },
+    {
+      "name": "b20 joined-shops 문앞 2",
+      "x": 38,
+      "y": 27,
+      "reachable": true
+    },
+    {
+      "name": "b21 courtyard-inn 문앞 1",
+      "x": 17,
+      "y": 28,
+      "reachable": true
+    },
+    {
+      "name": "b21 courtyard-inn 문앞 2",
+      "x": 21,
+      "y": 27,
+      "reachable": true
+    },
+    {
+      "name": "b22 joined-shops 문앞 1",
+      "x": 5,
+      "y": 30,
+      "reachable": true
+    },
+    {
+      "name": "b22 joined-shops 문앞 2",
+      "x": 8,
+      "y": 31,
+      "reachable": true
+    },
+    {
+      "name": "b23 house 문앞 1",
+      "x": 10,
+      "y": 37,
+      "reachable": true
+    },
+    {
+      "name": "b24 courtyard-inn 문앞 1",
+      "x": 13,
+      "y": 36,
+      "reachable": true
+    },
+    {
+      "name": "b24 courtyard-inn 문앞 2",
+      "x": 17,
+      "y": 35,
+      "reachable": true
+    },
+    {
+      "name": "b25 courtyard-inn 문앞 1",
+      "x": 42,
+      "y": 29,
+      "reachable": true
+    },
+    {
+      "name": "b25 courtyard-inn 문앞 2",
+      "x": 46,
+      "y": 28,
+      "reachable": true
+    },
+    {
+      "name": "b26 joined-shops 문앞 1",
+      "x": 42,
+      "y": 35,
+      "reachable": true
+    },
+    {
+      "name": "b26 joined-shops 문앞 2",
+      "x": 45,
+      "y": 36,
+      "reachable": true
+    },
+    {
+      "name": "b27 joined-shops 문앞 1",
+      "x": 20,
+      "y": 34,
+      "reachable": true
+    },
+    {
+      "name": "b27 joined-shops 문앞 2",
+      "x": 23,
+      "y": 35,
+      "reachable": true
+    },
+    {
+      "name": "b28 house 문앞 1",
+      "x": 4,
+      "y": 38,
+      "reachable": true
+    },
+    {
+      "name": "b29 courtyard-inn 문앞 1",
+      "x": 10,
+      "y": 44,
+      "reachable": true
+    },
+    {
+      "name": "b29 courtyard-inn 문앞 2",
+      "x": 14,
+      "y": 43,
+      "reachable": true
+    },
+    {
+      "name": "b30 house 문앞 1",
+      "x": 16,
+      "y": 44,
+      "reachable": true
+    },
+    {
+      "name": "b31 low-workshop 문앞 1",
+      "x": 35,
+      "y": 32,
+      "reachable": true
+    },
+    {
+      "name": "b32 low-workshop 문앞 1",
+      "x": 29,
+      "y": 33,
+      "reachable": true
+    },
+    {
+      "name": "b33 courtyard-inn 문앞 1",
+      "x": 28,
+      "y": 40,
+      "reachable": true
+    },
+    {
+      "name": "b33 courtyard-inn 문앞 2",
+      "x": 32,
+      "y": 39,
+      "reachable": true
+    },
+    {
+      "name": "b34 joined-shops 문앞 1",
+      "x": 35,
+      "y": 38,
+      "reachable": true
+    },
+    {
+      "name": "b34 joined-shops 문앞 2",
+      "x": 38,
+      "y": 39,
+      "reachable": true
+    },
+    {
+      "name": "b35 low-workshop 문앞 1",
+      "x": 35,
+      "y": 44,
+      "reachable": true
+    },
+    {
+      "name": "b36 joined-shops 문앞 1",
+      "x": 20,
+      "y": 41,
+      "reachable": true
+    },
+    {
+      "name": "b36 joined-shops 문앞 2",
+      "x": 23,
+      "y": 42,
+      "reachable": true
+    },
+    {
+      "name": "b37 low-workshop 문앞 1",
+      "x": 5,
+      "y": 44,
+      "reachable": true
+    },
+    {
+      "name": "b38 house 문앞 1",
+      "x": 41,
+      "y": 43,
+      "reachable": true
+    },
+    {
+      "name": "b39 house 문앞 1",
+      "x": 45,
+      "y": 44,
+      "reachable": true
+    },
+    {
+      "name": "b40 low-workshop 문앞 1",
+      "x": 29,
+      "y": 45,
+      "reachable": true
+    },
+    {
+      "name": "우물 앞 쉼터",
+      "x": 14,
+      "y": 28,
+      "reachable": true
+    },
+    {
+      "name": "약초 정원",
+      "x": 44,
+      "y": 22,
+      "reachable": true
+    },
+    {
+      "name": "남문 안",
+      "x": 24,
+      "y": 44,
+      "reachable": true
+    },
+    {
+      "name": "남문 밖",
+      "x": 24,
+      "y": 49,
+      "reachable": true
+    }
+  ],
+  "sealedGateBlocksExterior": true,
+  "gatePassageReachable": true,
+  "gateInsidePassable": true,
+  "mapCount": 13,
+  "errors": []
+}

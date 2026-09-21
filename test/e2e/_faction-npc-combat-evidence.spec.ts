@@ -3,7 +3,7 @@ import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { createBlankProject } from "@/project/defaults";
 import { startNewGameFromTitle } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import type { EnemyActionProfile, Project } from "@/project/types";
 
 test.setTimeout(300_000);
@@ -146,7 +146,7 @@ test("faction evidence: a three-way NPC war where only one faction is hostile to
     window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
-  await seedProjectFromSupabaseCanonical(page, buildThreeWayWarProject());
+  await seedProjectForEditor(page, buildThreeWayWarProject());
 
   await page.getByTestId("mode-play").click({ force: true });
   await expect(page.getByTestId("test-play-window")).toBeVisible({ timeout: 30_000 });

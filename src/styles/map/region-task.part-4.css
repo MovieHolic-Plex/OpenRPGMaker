@@ -1,0 +1,181 @@
+/* ── 변경 칸 하이라이트 (이후 썸네일 위) ──
+   캔버스는 찍은 폭 그대로 그리고 컨테이너(max-width: 지시/생성 240·검토 480)는
+   CSS 로 내려가므로 크롭이 없다 — inset:0 오버레이 격자가 타일과 1:1 로 맞는다. */
+.region-task-compare-canvas {
+  background: var(--bg-surface);
+  border: 1px solid var(--editor-line);
+  border-radius: var(--radius-s);
+  cursor: zoom-in;
+  max-width: 240px;
+  overflow: hidden;
+  position: relative;
+}
+.region-task-compare-canvas canvas {
+  display: block;
+  image-rendering: pixelated;
+}
+.region-task-compare-canvas.is-zoomed {
+  cursor: zoom-out;
+  max-width: none;
+  overflow: visible;
+  position: relative;
+  z-index: 5;
+}
+.region-task-compare-canvas.is-zoomed canvas {
+  transform: scale(2);
+  transform-origin: top left;
+}
+
+.region-task-compare {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  justify-content: center;
+  margin-top: var(--space-2);
+}
+
+/* ── 단일 A/B 미리보기 래퍼 및 토글 ── */
+.region-task-preview {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.region-task-preview-ab-toggle {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+}
+
+.region-task-preview-ab-btn {
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-s);
+  color: var(--editor-text-muted);
+  cursor: pointer;
+  font: 500 11px/1.2 var(--font-ui, system-ui, sans-serif);
+  padding: 3px var(--space-3);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.region-task-preview-ab-btn:hover {
+  color: var(--editor-text);
+}
+
+.region-task-preview-ab-btn.is-active {
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(15, 23, 42, 0.08));
+  color: var(--editor-text);
+  font-weight: 600;
+}
+
+.region-task-preview-stage {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
+
+/* A/B 상태에 따라 활성 캔버스만 표시 */
+.region-task-preview[data-ab-view="before"] [data-testid="region-task-after"],
+.region-task-preview[data-ab-view="after"] [data-testid="region-task-before"] {
+  display: none !important;
+}
+
+.region-task-preview[data-ab-view="before"] [data-testid="region-task-before"],
+.region-task-preview[data-ab-view="after"] [data-testid="region-task-after"] {
+  display: block;
+}
+
+.region-task-compare-figure {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  text-align: center;
+}
+.region-task-compare-figure figcaption {
+  color: var(--editor-text-muted);
+  font: 600 11px/1.2 var(--font-ui, system-ui, sans-serif);
+}
+
+.region-task-change-overlay {
+  display: grid;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+.region-task-change-cell {
+  transition: background-color 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
+}
+/* 테두리를 1px→2px 로 올린다. 240px 썸네일에서 4칸 변화는 1px 테두리로는 눈에 들어오지 않아
+   「이전 | 이후」 왕복이 유일한 확인 수단이었다. */
+.region-task-change-cell.is-changed {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--accent) 75%, transparent);
+}
+/* 여백 칸 — 다듬기 미리보기에서 영역 밖 2칸. 비교 대상이라 그림은 보여야 하고,
+   손댄 영역과는 구분돼야 한다. 아주 옅은 막만 덮는다. */
+.region-task-change-cell.is-context {
+  background: color-mix(in srgb, var(--bg-base) 30%, transparent);
+}
+/* 영역 테두리 — 여백 프레임에서 "어디까지가 AI 가 다시 짠 사각형인가". */
+.region-task-region-frame {
+  border: 2px dashed color-mix(in srgb, var(--accent) 70%, transparent);
+  border-radius: 2px;
+  pointer-events: none;
+}
+/* 체크를 푼 덩어리 — 적용되지 않으므로 하이라이트를 걷는다 */
+.region-task-change-cell.is-changed.is-excluded {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--editor-text-muted) 35%, transparent);
+}
+/* 체크박스에 마우스/포커스가 있는 동안: 지목된 덩어리만 살리고 나머지는 물러난다 */
+.region-task-change-overlay.is-isolating .region-task-change-cell.is-changed { opacity: 0.25; }
+.region-task-change-overlay .region-task-change-cell.is-focus {
+  background: color-mix(in srgb, var(--accent) 55%, transparent);
+  box-shadow: inset 0 0 0 2px var(--bg-raised);
+  opacity: 1;
+}
+
+/* 이벤트 마커 — 오버레이 격자 한 칸에 번호 마커. 어떤 타일 위에 놓여도 읽히도록
+   반투명 어두운 원을 깐다. 클릭·hover 대상은 아래 변경 목록 행이므로 포인터는 통과시킨다. */
+.region-task-event-marker {
+  align-items: center;
+  background: var(--bg-active);
+  border-radius: 50%;
+  color: var(--text-1);
+  display: flex;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  font-weight: 700;
+  justify-content: center;
+  line-height: 1;
+  pointer-events: none;
+  transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
+}
+.region-task-event-marker.is-focus {
+  box-shadow: 0 0 0 2px var(--bg-raised);
+  transform: scale(1.35);
+}
+.region-task-change-overlay.is-isolating .region-task-event-marker { opacity: 0.25; }
+
+/* 목록 행이 tabindex 로 포커스를 받는다 — 키보드로도 어느 행을 보고 있는지 보여야 한다. */
+.region-task-change-row:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .region-task-change-cell { transition: none; }
+  /* 마커는 확대(scale)로 강조한다 — 움직임을 줄여 달라고 했으면 테두리만 남긴다. */
+  .region-task-event-marker { transition: none; }
+  .region-task-event-marker.is-focus { transform: none; }
+}

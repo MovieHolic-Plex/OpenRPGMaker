@@ -1,3 +1,6 @@
+import { mapTileSize } from "@/project/tileGeometry";
+import { syncPlayerCharacterScale } from "@/player/playerCharacterScale";
+import { ACTION_STAMINA_MAX } from "@/player/actionCombatTypes";
 import type Phaser from "phaser";
 import { clearAllSceneEmotes, syncSceneEmotes } from "@/player/playSceneEmotes";
 import { getLoadedPhaser } from "@/app/phaserRuntime";
@@ -165,7 +168,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   lightingTransitionWaiters: Array<() => void> = [];
   weatherClockMs = 0;
   weatherFixedAccumulatorMs = 0;
-  cloudShadowSprites?: Phaser.GameObjects.Image[];
+  cloudShadowSprites?: Phaser.GameObjects.TileSprite[];
   cloudShadowClockMs = 0;
   weatherDisplayed: WeatherParams = { kind: "none", intensity: 0 };
   weatherTargetSignature = "none:0";
@@ -266,12 +269,13 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     seedLocationOccupancyForScene(this);
     this.player = this.add.sprite(
       // 주인공도 **몸 중앙**에 놓는다 — 1x1 이면 타일 중앙과 같은 값이다(항등).
-      footprintSpriteX(this.tileX, resolvePlayerBody(project, this.session).footprint),
-      characterSpriteY(this.tileY),
+      footprintSpriteX(this.tileX, resolvePlayerBody(project, this.session).footprint, mapTileSize(this.map)),
+      characterSpriteY(this.tileY, mapTileSize(this.map)),
       this.playerSprite.texture,
       this.playerSprite.idleFrameFor("down")
     );
     placeCharacterSprite(this.player, "same");
+    syncPlayerCharacterScale(this);
     installWeatherLayer(this);
     installCloudShadowLayer(this);
     installTimeTintLayer(this);
@@ -375,7 +379,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     updateTimeTint(this, deltaMs);
     updateLighting(this, deltaMs);
     updateMapBackground(this, deltaMs);
-    syncTileCulling(this, this.cameras.main.worldView);
+    syncTileCulling(this, this.cameras.main.worldView, mapTileSize(this.map));
     // 이벤트 마커는 화면 좌표로 놓여야 한다 — 카메라를 반영하지 않으면 무대의 스크롤 영역이
     // 맵 크기만큼 부풀고, 마커 클릭이 무대를 스크롤시켜 재생 화면이 검게 된다(runtimeDom 주석).
     this.runtimeDom.syncCameraOffset(this.cameras.main.scrollX, this.cameras.main.scrollY);
@@ -396,7 +400,12 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       this.handSlotHost = host;
       this.handSlotChip = mountHandSlotChip(host);
     }
-    this.handSlotChip?.update(store.getCurrent(), this.session);
+    this.handSlotChip?.update(store.getCurrent(), this.session, {
+      stamina: this.actionCombatState?.config.staminaEnabled ? this.actionCombatState.stamina : undefined,
+      staminaMax: ACTION_STAMINA_MAX,
+      playerX: this.player ? (this.player.x - this.cameras.main.scrollX) * this.cameras.main.zoom : undefined,
+      playerY: this.player ? (this.player.y - this.cameras.main.scrollY) * this.cameras.main.zoom : undefined,
+    });
   }
 
   getMapId(): MapId {
@@ -439,6 +448,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       this.player.setFrame(this.playerSprite.idleFrameFor(this.facing));
     }
     refreshSceneRuntimeSurfaces(this);
+    syncPlayerCharacterScale(this);
     syncFollowerSprites(this);
     applyStoredCameraState(this);
     syncWeatherLayer(this);
@@ -591,8 +601,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.player.setTexture(this.playerSprite.texture);
     this.player.setFrame(this.playerSprite.idleFrameFor(this.facing));
     this.player.setPosition(
-      footprintSpriteX(this.tileX, resolvePlayerBody(project, this.session).footprint),
-      characterSpriteY(this.tileY)
+      footprintSpriteX(this.tileX, resolvePlayerBody(project, this.session).footprint, mapTileSize(this.map)),
+      characterSpriteY(this.tileY, mapTileSize(this.map))
     );
     placeCharacterSprite(this.player, "same");
     for (const animation of this.activeMapAnimations) animation.destroy(true);

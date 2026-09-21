@@ -293,6 +293,7 @@ export interface PlaySession {
   followerTrail: RuntimeFollowerTrailPoint[];
   actorEquipment: Record<string, ActorInitialEquipment>;
   actorRows: Record<string, ActorRowPosition>;
+  battleReports?: import("@/project/battleReports").BattleReport[];
   // 런타임 액터 이름 오버라이드(enterHeroName 등). actorId → 이름. 미설정 시 DB 이름 사용.
   actorNames?: Record<string, string>;
   // 런타임 액터 별명 오버라이드(Change Actor Nickname). actorId → 별명.

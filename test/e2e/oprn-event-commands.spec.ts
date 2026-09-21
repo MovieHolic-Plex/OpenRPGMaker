@@ -1,7 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import type { Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 type SeedProject = Project;
@@ -99,7 +99,7 @@ async function tapKey(page: Page, key: string, holdMs = 80): Promise<void> {
 }
 
 async function seedProject(page: Page, project: SeedProject, path = "/"): Promise<void> {
-  await seedProjectFromSupabaseCanonical(page, project, path);
+  await seedProjectForEditor(page, project, path);
   const expert = page.getByRole("button", { name: "전문가 모드", exact: true });
   if (await expert.getAttribute("aria-pressed") !== "true") await expert.click();
   await expect(expert).toHaveAttribute("aria-pressed", "true");

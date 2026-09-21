@@ -1,15 +1,15 @@
 import type { Layer } from "@/editor/editorState";
-import { isDefaultTilesetTexture, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
+import { isDefaultTilesetTexture, tilesetCssImageValue, tilesetImageUrl, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { CHIPSET_TILE_GROUPS, tileAiLabelForIndex, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { tileVisibleOnLayer } from "@/editor/tileLayerClassification";
 import type { AutotileGroup, TilesetDef } from "@/project/types";
+import { CASTLE_TILESET_TEXTURE_KEY } from "@/project/defaults/constants";
 import { el } from "@/util/dom";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 import {
   displayOrderStampFactory,
   installPaletteStampGesture,
-  sourceCoordinateStampFactory,
 } from "@/editor/panels/tilePaletteCustomGesture";
 
 // RM2003식 단일 타일 팔레트 — 그룹/시트 보기 분리 없이 가로 6칸 고정 리플로우.
@@ -20,6 +20,10 @@ import {
 
 export const GRID_PALETTE_COLUMNS = 6;
 export const CUSTOM_PALETTE_MIN_CELL_SIZE = 16;
+/** Large uploaded atlases should not block the first editor paint with thousands of buttons. */
+const DEFERRED_CUSTOM_PALETTE_THRESHOLD = 512;
+const INITIAL_CUSTOM_PALETTE_CELLS = 96;
+const DEFERRED_CUSTOM_PALETTE_BATCH = 128;
 
 
 export type GridAutotileEntry = {
@@ -236,7 +240,8 @@ export function makeGridPalette(input: MakeGridPaletteWithStampArgs): HTMLElemen
     },
   });
   // 6열 리플로우 팔레트라 필터는 **숨김**이 맞다 — 위치가 정보가 아니고, 결과가
-  // 위로 몰려 스크롤 없이 보인다. (커스텀 아틀라스는 반대 — makeCustomPalette 주석 참고)
+  // 위로 몰려 스크롤 없이 보인다. 커스텀 아틀라스도 같은 세로 리플로우를 쓰되
+  // 원본 타일 ID와 전체 셀은 유지한다.
   let shown = 0;
   for (const entry of model.autotiles) {
     if (!passesFilter(args, entry.representativeTile)) continue;
@@ -274,15 +279,22 @@ export function makeGridPalette(input: MakeGridPaletteWithStampArgs): HTMLElemen
 }
 
 export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
-  const columns = Math.max(1, args.tileset.tilesPerRow);
+  const sourceColumns = Math.max(1, args.tileset.tilesPerRow);
+  const sourceRows = Math.max(1, Math.ceil(args.tileset.count / sourceColumns));
+  // Preserve source adjacency for every atlas; Castle2 also uses 16px source-layout styling.
+  const sourceLayout = args.tileset.image.type === "bundled" && args.tileset.image.id === CASTLE_TILESET_TEXTURE_KEY;
+  const columns = sourceColumns;
   const rows = Math.max(1, Math.ceil(args.tileset.count / columns));
+  const displayTiles = buildCustomPaletteModel(args.tileset);
   const sheet = el("div", {
-    class: "chipset-sheet tile-palette custom-palette",
+    class: `chipset-sheet tile-palette custom-palette${sourceLayout ? " source-layout" : ""}`,
     dataset: {
       testid: "tile-palette",
       paletteKind: "custom",
-      sourceColumns: String(columns),
-      sourceRows: String(rows),
+      sourceColumns: String(sourceColumns),
+      sourceRows: String(sourceRows),
+      displayColumns: String(columns),
+      displayRows: String(rows),
     },
     attrs: { style: `--custom-cols:${columns};--custom-rows:${rows};--custom-min-cell:${CUSTOM_PALETTE_MIN_CELL_SIZE}px` },
   });
@@ -291,24 +303,55 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
     dataset: { testid: "custom-palette-grid" },
     attrs: { style: `grid-template-columns:repeat(${columns}, var(--chipset-cell))` },
   });
-  // 커스텀 아틀라스는 **칸의 위치가 정보**다(원본 시트의 행·열을 그대로 유지).
-  // 숨기면 아틀라스 모양이 깨져 감독이 "어디쯤 타일"인지 못 찾으므로 흐리게만 한다.
-  for (const tileId of buildCustomPaletteModel(args.tileset)) {
-    const cell = makePaletteCell(args, tileId);
-    if (!passesFilter(args, tileId)) cell.classList.add("is-filtered-out");
-    grid.append(cell);
-  }
+  const backgroundImageUrl = tilesetImageUrl(args.tileset);
+  grid.style.setProperty("--custom-palette-image", tilesetCssImageValue(backgroundImageUrl));
+  // Custom cells keep source coordinates, including empty cells between objects.
+  // Large uploaded atlases routinely contain 2,000+ cells. Keep the first
+  // viewport synchronous, then append the rest in short batches so button
+  // creation cannot block the first canvas frame.
+  const initialCount = displayTiles.length > DEFERRED_CUSTOM_PALETTE_THRESHOLD
+    ? Math.min(INITIAL_CUSTOM_PALETTE_CELLS, displayTiles.length)
+    : displayTiles.length;
+  const appendCells = (from: number, to: number): void => {
+    const fragment = document.createDocumentFragment();
+    for (let index = from; index < to; index += 1) {
+      const tileId = displayTiles[index];
+      if (tileId === undefined) continue;
+      const cell = makePaletteCell(args, tileId, undefined, {
+        backgroundImageUrl,
+        backgroundImageVar: "--custom-palette-image",
+      });
+      if (!passesFilter(args, tileId)) cell.classList.add("is-filtered-out");
+      if (from > 0) cell.tabIndex = -1;
+      fragment.append(cell);
+    }
+    grid.append(fragment);
+  };
+  appendCells(0, initialCount);
   installGridRoving(grid, columns);
   if (args.onCreatePaletteStamp) {
     installPaletteStampGesture(
       sheet,
       grid,
-      sourceCoordinateStampFactory(args.tileset),
+      displayOrderStampFactory({ displayTiles, displayTilesPerRow: columns, tileset: args.tileset }),
       args.onSelectTile,
       args.onCreatePaletteStamp,
     );
   }
   sheet.append(grid);
+  if (initialCount < displayTiles.length) {
+    let nextIndex = initialCount;
+    const appendBatch = (): void => {
+      if (!sheet.isConnected) return;
+      const end = Math.min(displayTiles.length, nextIndex + DEFERRED_CUSTOM_PALETTE_BATCH);
+      appendCells(nextIndex, end);
+      nextIndex = end;
+      if (nextIndex < displayTiles.length) window.setTimeout(appendBatch, 0);
+    };
+    if (typeof window === "undefined") appendCells(nextIndex, displayTiles.length);
+    else if (typeof window.requestAnimationFrame === "function") window.requestAnimationFrame(() => window.setTimeout(appendBatch, 0));
+    else window.setTimeout(appendBatch, 0);
+  }
   return sheet;
 }
 
@@ -402,7 +445,7 @@ function makePaletteCell(
   args: MakeGridPaletteArgs,
   tileId: number,
   title = gridTileTitle(args.tileset, tileId),
-  decorations: { readonly badge?: string; readonly className?: string } = {}
+  decorations: { readonly badge?: string; readonly className?: string; readonly backgroundImageUrl?: string; readonly backgroundImageVar?: string } = {}
 ): HTMLButtonElement {
   const cell = el("button", {
     class: "chipset-tile" + (args.selectedTile === tileId ? " active" : "") + (decorations.className ?? ""),
@@ -411,7 +454,13 @@ function makePaletteCell(
       type: "button",
       "aria-label": title,
       "aria-pressed": String(args.selectedTile === tileId),
-      style: tilesetTileBackgroundStyle(args.tileset, tileId, "var(--chipset-cell)"),
+      style: tilesetTileBackgroundStyle(
+        args.tileset,
+        tileId,
+        "var(--chipset-cell)",
+        decorations.backgroundImageUrl,
+        decorations.backgroundImageVar,
+      ),
     },
     dataset: { testid: `chipset-tile-${tileId}`, tileIndex: String(tileId) },
     on: {

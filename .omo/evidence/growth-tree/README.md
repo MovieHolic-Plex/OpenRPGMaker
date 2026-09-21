@@ -9,7 +9,7 @@
 - Firefox DB probe: 32 tabs measured, no tab errors. Both new tabs have zero clipped text, tiny text, broken images, unskinned controls, or bad image URLs. Unrelated existing tabs have findings; see `db-probe.json` totals.
 - Surface gate: exit 1, reproduced at the unmodified source baseline in `/tmp/rpg-zzu-growth-base`: the same six event-editor snapshot assertions and the same `.selected` CSS `bottom` ratchet. Both reports are included with whitespace normalized; the integrated failed-assertion comparison is in `surface-comparison.json`. Baselines were not modified.
 
-The browser projects are minimal contract fixtures. They do not author or modify a user's Supabase project. Authored settings use the existing project store and persistence pipeline; runtime investments round-trip through save slots.
+The browser projects are minimal contract fixtures. They do not author or modify a user's LegacyDb project. Authored settings use the existing project store and persistence pipeline; runtime investments round-trip through save slots.
 
 - Final editor interactions passed: CRUD, links, cycle rejection, arrange, drag/keyboard movement, preview spending/refund, dirty-close guard, tab return; no page errors or outer overflow at 1600/1280/1024.
 - Additional layout assertions prove the search input does not overlap the create button and the bonus selector remains usable at all three widths.

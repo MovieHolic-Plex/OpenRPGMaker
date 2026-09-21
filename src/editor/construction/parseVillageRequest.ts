@@ -35,8 +35,8 @@ import {
 const REQUEST_KEYS = ["target", "houseCount", "housePlans", "houseObjectIds", "composition", "multiStoreyCount", "houseClustering", "countPolicy", "groundTheme", "settlementLayout", "morphology", "relief", "npcCount", "residents", "theme", "forestDensity", "seed", "interior", "presetId", "fullMap"] as const;
 const FOREST_DENSITIES = ["sparse", "normal", "dense", "impassable"] as const;
 const EXISTING_TARGET_KEYS = ["kind", "mapId", "bounds", "fullMap"] as const;
-const NEW_TARGET_KEYS = ["kind", "mapId", "name", "width", "height", "plannedMap"] as const;
-const HOUSE_PLAN_KEYS = ["objectId", "kitId", "yard", "ownerName", "templateId", "program"] as const;
+const NEW_TARGET_KEYS = ["kind", "mapId", "name", "width", "height", "plannedMap", "tilesetId"] as const;
+const HOUSE_PLAN_KEYS = ["objectId", "kitId", "yard", "ownerName", "templateId", "program", "fence"] as const;
 const RESIDENT_KEYS = ["name", "role", "lines"] as const;
 const MIN_HOUSES = 1;
 const MAX_HOUSES = 32;
@@ -187,6 +187,7 @@ function parseNewTarget(target: BoundaryRecord): AuthorVillageTarget {
     kind: "new",
     mapId,
     name: requiredString(target, "name", "authorVillage.target"),
+    ...(target["tilesetId"] === undefined ? {} : { tilesetId: requiredString(target, "tilesetId", "authorVillage.target") }),
     ...(width === undefined ? {} : { width }),
     ...(height === undefined ? {} : { height }),
     ...(plannedMap === undefined ? {} : { plannedMap }),
@@ -257,6 +258,8 @@ function parseHousePlan(value: unknown, index: number): VillageHousePlan {
     throw new ToolError(`${scope}.objectId cannot be combined with kitId/templateId.`, { code: "invalid-args" });
   }
   const program = parseProgram(plan["program"], scope);
+  const fence = plan["fence"];
+  if (fence !== undefined && typeof fence !== "boolean") throw new ToolError(`${scope}.fence must be boolean.`, { code: "invalid-args" });
   return {
     ...(objectId === undefined ? {} : { objectId }),
     ...(kitId === undefined ? {} : { kitId }),
@@ -264,6 +267,7 @@ function parseHousePlan(value: unknown, index: number): VillageHousePlan {
     ...(ownerName === undefined ? {} : { ownerName }),
     ...(templateId === undefined ? {} : { templateId }),
     ...(program === undefined ? {} : { program }),
+    ...(typeof fence === "boolean" ? { fence } : {}),
   };
 }
 

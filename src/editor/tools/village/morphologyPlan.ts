@@ -1,3 +1,4 @@
+import { DEFAULT_WORLD_GEN_RULES, riverBandDepth } from "@/project/worldGenRules";
 // editor/tools/village/morphologyPlan.ts
 // 취락 형태 유형(morphology) 기반 마을 설계 — 순수 기하. 맵을 만지지 않는다.
 //
@@ -11,6 +12,8 @@
 // 가로 길엔 북쪽 줄이 길을 보고, 남쪽 줄은 뒷골목(Hintergasse)을 본다. 세로 길엔 양쪽 집이
 // 남쪽 문에서 짧은 옆길로 길에 붙는다.
 
+import { ToolError } from "../types";
+import { planVillageRiver, type RiverVillagePlan } from "./riverPlan";
 import { mulberry32, type Rng } from "@/util/rng";
 import type { HouseTemplate, Plaza, Point, Rect } from "./constants";
 
@@ -60,6 +63,7 @@ export interface MorphologyPlan {
   readonly plaza: Plaza;
   /** 녹지 안 연못(타원 fill). */
   readonly pond?: Rect;
+  readonly river?: RiverVillagePlan;
   /** 녹지·뒷마당 큰나무(2×2) 앵커. */
   readonly bigTrees: readonly Point[];
   readonly exits: readonly MorphologyExit[];
@@ -85,6 +89,7 @@ export interface MorphologyPlanArgs {
   /** 절벽 띠(고저차) — 집·필지·밭·옆길·골목 성장은 못 들어가고 큰길·링 길만 가로지른다(비탈이 된다). */
   readonly cliffBlocked?: ReadonlySet<number>;
   readonly roadWidth: number;
+  readonly riverWidth?: number;
 }
 
 /** 점유표 값. */
@@ -176,7 +181,9 @@ export function planVillageMorphology(args: MorphologyPlanArgs): MorphologyPlan 
   let commons: Rect;
   let plaza: Plaza;
   let pond: Rect | undefined;
+  let river: RiverVillagePlan | undefined;
   switch (args.morphology) {
+    case "river": ({ commons, plaza, river } = planRiverVillage(ctx)); break;
     case "street": ({ commons, plaza } = planStreetVillage(ctx)); break;
     case "green": ({ commons, plaza, pond } = planGreenVillage(ctx)); break;
     case "round": ({ commons, plaza, pond } = planRoundVillage(ctx)); break;
@@ -193,12 +200,60 @@ export function planVillageMorphology(args: MorphologyPlanArgs): MorphologyPlan 
     commons,
     plaza,
     ...(pond ? { pond } : {}),
+    ...(river ? { river } : {}),
     bigTrees: ctx.bigTrees,
     exits: ctx.exits,
     occupancy: grid.occ,
     mapWidth: args.mapWidth,
     notes: ctx.notes,
   };
+}
+
+/** Plan water first, then connected bank paths and plots on both banks. */
+function planRiverVillage(ctx: PlanCtx): { commons: Rect; plaza: Plaza; river: RiverVillagePlan } {
+  const { area, grid } = ctx;
+  const river = planVillageRiver(area, ctx.args.seed, ctx.args.riverWidth ?? riverBandDepth(Math.min(area.w, area.h), DEFAULT_WORLD_GEN_RULES.water));
+  for (const cell of river.cells) {
+    if (grid.get(cell.x, cell.y) === OCC.reserved || grid.get(cell.x, cell.y) === OCC.cliff) {
+      throw new ToolError("강 예정지에 기존 지형·건물이 있습니다. 빈 영역을 선택하세요.", { code: "village-river-conflict" });
+    }
+    grid.set(cell.x, cell.y, OCC.pond);
+  }
+  const width = clampInt(ctx.args.roadWidth, 2, 3) as 2 | 3;
+  const west = addRoad(ctx, connect4(river.westRoad), width, "main");
+  const east = addRoad(ctx, connect4(river.eastRoad), width, "main");
+  // The bridge is part of the road graph, while its lower water remains reserved.
+  for (const cell of river.bridge) grid.set(cell.x, cell.y, OCC.free);
+  addRoad(ctx, river.crossing, 1, "main");
+  const entry = river.westRoad[river.crossingY - area.y]!;
+  const commons = findFreeRect(ctx, { x: entry.x - 3, y: entry.y + 3 }, 3, 3, 8);
+  if (!commons) throw new ToolError("강변 쉼터를 둘 빈 땅이 없습니다.", { code: "village-river-capacity" });
+  grid.setRect(commons, OCC.commons);
+  const midpoint = river.bounds.x + Math.floor(river.bounds.w / 2);
+  const banks = [
+    { cells: west, side: "west" as const, limit: Math.ceil(ctx.args.maxHouses / 2), center: { x: entry.x - 6, y: entry.y } },
+    { cells: east, side: "east" as const, limit: ctx.args.maxHouses, center: { x: midpoint + 8, y: entry.y + 2 } },
+  ];
+  for (const bank of banks) {
+    const bankArea = bank.side === "west" ? { ...area, w: midpoint - area.x }
+      : { ...area, x: midpoint, w: area.x + area.w - midpoint };
+    const local: PlanCtx = { ...ctx, area: bankArea, args: { ...ctx.args, maxHouses: bank.limit } };
+    const rows = rowExtents(bank.cells);
+    planColumnBeside(local, y => bank.side === "west" ? rows.get(y)?.left : rows.get(y)?.right,
+      area.y + 2 + (bank.side === "east" ? 2 : 0), area.y + area.h - 2, bank.side, { back: [1, 2], verge: 0 });
+    growHousesOnRoads(local, bank.center);
+  }
+  if (ctx.args.maxHouses > 1 && !["west", "east"].every(side => ctx.houses.some(h => {
+    const row = Math.max(0, Math.min(area.h - 1, h.bbox.y - area.y));
+    const centerX = h.bbox.x + h.bbox.w / 2;
+    return side === "west" ? centerX < river.westRoad[row]!.x + 3 : centerX > river.eastRoad[row]!.x - 3;
+  }))) {
+    throw new ToolError("강 양쪽에 주택을 배치할 공간이 부족합니다.", { code: "village-river-capacity" });
+  }
+  if (countStrokeComponents(ctx.roads) !== 1) throw new ToolError("강변 길과 건널목이 연결되지 않았습니다.", { code: "village-river-access" });
+  ctx.exits.push({ id: "river-west-north", ...river.westRoad[0]! }, { id: "river-east-south", ...river.eastRoad[river.eastRoad.length - 1]! });
+  ctx.notes.push(`강변 수로 ${river.cells.length}칸, 다리 ${river.bridge.length}칸, 양안 주거`);
+  return { commons, plaza: { rect: commons, centerX: entry.x, centerRow: entry.y }, river };
 }
 
 /** 계획 길(옆길 제외)의 4-이웃 성분 수 — 1 이 정상. 막힌 칸(물·기존 집)이 큰길을 끊으면 2 이상. */
@@ -561,8 +616,12 @@ function planStreetVillage(ctx: PlanCtx): { commons: Rect; plaza: Plaza } {
     const connectors = dedupeNumbers([area.x + 2, ...(alleys.length > 0 ? alleys : [area.x + Math.floor(area.w / 2)]), area.x + area.w - 3]);
     for (const x of connectors) connectVertical(ctx, x, mainExt.get(x)?.bottom, laneExt.get(x)?.top);
   }
+  // 결정적 배치가 모자랄 때만 길에 붙여 채운다 — 이미 채운 경우는 한 칸도 안 바뀐다.
+  const grown = ctx.houses.length < ctx.args.maxHouses
+    ? growHousesOnRoads(ctx, { x: commons.x + Math.floor(commons.w / 2), y: commons.y + Math.floor(commons.h / 2) })
+    : 0;
   const plaza: Plaza = { rect: commons, centerX: commons.x + Math.floor(commons.w / 2), centerRow: commons.y + Math.floor(commons.h / 2) };
-  ctx.notes.push(`가로촌 가로축 midY=${midY}`);
+  ctx.notes.push(`가로촌 가로축 midY=${midY}${grown ? ` 보충 시도 ${grown}` : ""}`);
   return { commons, plaza };
 }
 
@@ -601,8 +660,9 @@ function planGreenVillage(ctx: PlanCtx): { commons: Rect; plaza: Plaza; pond?: R
   const width = clampInt(ctx.args.roadWidth, 2, 3) as 2 | 3;
   const cx = area.x + Math.floor(area.w / 2) + jitter(rng, 2);
   const cy = area.y + Math.floor(area.h * 0.5) + jitter(rng, 2);
-  const halfLength = clampInt(area.w * 0.36, 11, 26);
-  const halfWidth = clampInt(area.h * 0.14, 5, 9);
+  // 하한 11×5(=렌즈 23×11)는 32×24 맵을 가로로 다 먹었다 — 맵에 맞춰 함께 줄인다.
+  const halfLength = clampInt(area.w * 0.36, Math.min(11, Math.floor(area.w / 4)), 26);
+  const halfWidth = clampInt(area.h * 0.14, Math.min(5, Math.floor(area.h / 6)), 9);
   const westTip: Point = { x: cx - halfLength, y: cy };
   const eastTip: Point = { x: cx + halfLength, y: cy };
   const northArc = smoothCurveCells([
@@ -671,6 +731,9 @@ function planGreenVillage(ctx: PlanCtx): { commons: Rect; plaza: Plaza; pond?: R
     ceilingAt: (x) => southBottom.get(x)?.bottom, back: [0, 0], alleyEvery: 3,
   });
   for (const x of dedupeNumbers([westTip.x + 2, ...alleys, eastTip.x - 2])) connectVertical(ctx, x, southBottom.get(x)?.bottom, laneTop.get(x)?.top);
+  // 결정적 배치가 모자랄 때만 길에 붙여 채운다 — 이미 채운 경우는 한 칸도 안 바뀐다.
+  const grown = ctx.houses.length < ctx.args.maxHouses ? growHousesOnRoads(ctx, { x: cx, y: cy }) : 0;
+  if (grown) ctx.notes.push(`광장촌 보충 시도 ${grown}`);
   const plaza: Plaza = { rect: commons, centerX: cx + Math.floor(halfLength * 0.3), centerRow: cy };
   ctx.notes.push(`광장촌 렌즈 ${commons.w}×${commons.h}`);
   return { commons, plaza, ...(pond ? { pond } : {}) };
@@ -678,10 +741,96 @@ function planGreenVillage(ctx: PlanCtx): { commons: Rect; plaza: Plaza; pond?: R
 
 // ───────────────────────── 유형 ③ 환촌 ─────────────────────────
 
+/**
+ * 길에 앵커해 관심도 순으로 집을 채운다(Emilien 2012 식 성장). 괴촌의 뼈대이자, 다른 형태 유형이
+ * 결정적 배치 한 번으로 목표 채수를 못 채웠을 때의 보충이다.
+ *
+ * 왜 보충이 필요한가(2026-09-18 실측): 환촌은 링 둘레와 진입로 옆에 한 번만 놓고 끝나서 큰 맵에서도
+ * 목표에 1~2채 모자랐다 — 64×56 에 8채 요청하면 7~8채, 80×72 에 12채 요청하면 10~11채.
+ * 시공기는 그 부족을 `village-count-shortfall` 로 거절하므로 요청 자체가 실패했다.
+ *
+ * 돌려주는 값은 시도 횟수(노트용). 채운 채수는 `ctx.houses.length` 로 본다.
+ */
+function growHousesOnRoads(ctx: PlanCtx, center: Point): number {
+  const { area, rng, grid } = ctx;
+  // 성장(Emilien 2012 식 관심도): 후보는 반드시 기존 길 칸에 앵커한다 — 길 위(문이 길을 봄) 75%,
+  // 길 아래(용마루가 길에 붙고 문 앞에서 옆으로 돌아 길에 붙는 뒷골목형) 25%. 관심도 = 사교성(이웃 수) ×
+  // 중심 편향 × 흔들림. 세 채마다 새 골목을 바깥으로 뻗어 다음 성장을 부르고, 세 번 연속 실패해도 뻗는다.
+  const maxDist = Math.hypot(area.w, area.h) / 2;
+  let attempts = 0;
+  let failures = 0;
+  const maxAttempts = ctx.args.maxHouses * 8;
+  while (ctx.houses.length < ctx.args.maxHouses && attempts < maxAttempts) {
+    attempts += 1;
+    const anchors = ctx.roads.filter((stroke) => stroke.role !== "spur").flatMap((stroke) => stroke.cells)
+      .filter((cell) => cell.x >= area.x + 3 && cell.x <= area.x + area.w - 4 && cell.y >= area.y + 3 && cell.y <= area.y + area.h - 4);
+    if (anchors.length === 0) break;
+    let best: { slot: HouseSlot; interest: number } | undefined;
+    for (let k = 0; k < 80; k += 1) {
+      const anchor = anchors[Math.floor(rng() * anchors.length)]!;
+      const above = rng() < 0.75;
+      const template = pickTemplate(ctx, MAX_TEMPLATE_W, MAX_TEMPLATE_H);
+      if (!template) break;
+      let bbox: Rect;
+      let parcel: Rect;
+      let front: Point;
+      if (ctx.args.morphology === "river" && rng() < 0.8) {
+        // Bank paths run north–south. Place alongside them, then connect the south-facing door.
+        const west = rng() < 0.5;
+        const offset = 2 + Math.floor(rng() * 9);
+        bbox = { x: west ? anchor.x - template.w - offset : anchor.x + offset,
+          y: anchor.y - template.h + jitter(rng, 2), w: template.w, h: template.h };
+        front = { x: bbox.x + Math.floor(bbox.w / 2), y: bbox.y + bbox.h };
+        parcel = { x: bbox.x - 1, y: bbox.y - 1, w: bbox.w + 2, h: bbox.h + 2 };
+      } else if (above) {
+        const gap = rng() < 0.6 ? 1 : 2;
+        front = { x: anchor.x + jitter(rng, 1), y: anchor.y - gap };
+        bbox = { x: front.x - Math.floor(template.w / 2), y: front.y - template.h, w: template.w, h: template.h };
+        const back = 1 + Math.floor(rng() * 2);
+        const parcelTop = bbox.y - 1 - back;
+        parcel = { x: bbox.x - 1, y: parcelTop, w: template.w + 2, h: front.y - parcelTop + 1 };
+      } else {
+        const ridgeY = anchor.y + 2;
+        bbox = { x: anchor.x + jitter(rng, 2) - Math.floor(template.w / 2), y: ridgeY + 1, w: template.w, h: template.h };
+        parcel = { x: bbox.x - 1, y: ridgeY, w: template.w + 2, h: template.h + 2 };
+        front = { x: bbox.x + Math.floor(bbox.w / 2), y: bbox.y + bbox.h };
+      }
+      if (!grid.rectFree(parcel)) continue;
+      // 옆 필지와 최소 1칸 띄운다(울타리가 붙지 않게).
+      if (!grid.rectFree({ x: parcel.x - 1, y: parcel.y, w: 1, h: parcel.h }, [OCC.road, OCC.spur, OCC.commons, OCC.pond])) continue;
+      if (!grid.rectFree({ x: parcel.x + parcel.w, y: parcel.y, w: 1, h: parcel.h }, [OCC.road, OCC.spur, OCC.commons, OCC.pond])) continue;
+      let neighbours = 0;
+      for (const house of ctx.houses) {
+        const dist = Math.hypot(house.bbox.x + house.bbox.w / 2 - front.x, house.bbox.y + house.bbox.h / 2 - front.y);
+        if (dist <= 14) neighbours += 1;
+      }
+      // 옆길을 지금 확보한다 — 길 아래 집은 문 앞에서 필지를 돌아 길에 붙는다(못 붙으면 후보 탈락).
+      const spur = planSpur(ctx, front, parcel, ctx.args.morphology === "river" ? 18 : above ? 4 : 14);
+      if (!spur) continue;
+      const sociability = ctx.houses.length === 0 ? 1 : Math.min(1, 0.35 + neighbours * 0.22);
+      const centrality = 1 - 0.5 * Math.min(1, Math.hypot(front.x - center.x, front.y - center.y) / maxDist);
+      const interest = sociability * centrality * (above ? 1 : 0.55) * (0.7 + rng() * 0.3);
+      if (!best || interest > best.interest) best = { slot: { bbox, template, frontDir: "down", parcel, spur }, interest };
+    }
+    if (!best || !tryPlaceSlot(ctx, best.slot)) {
+      failures += 1;
+      if (failures % 3 === 0) growLane(ctx, center, 1);
+      continue;
+    }
+    for (const cell of best.slot.spur ?? []) if (grid.get(cell.x, cell.y) === OCC.free) grid.set(cell.x, cell.y, OCC.spur);
+    failures = 0;
+    if (ctx.houses.length % 3 === 0) growLane(ctx, center, 1);
+  }
+  return attempts;
+}
+
 function planRoundVillage(ctx: PlanCtx): { commons: Rect; plaza: Plaza; pond?: Rect } {
   const { area, rng } = ctx;
   const width = clampInt(ctx.args.roadWidth, 2, 3) as 2 | 3;
-  const radius = clampInt(Math.min(area.w, area.h) * 0.17, 7, 12);
+  // 하한 7(=지름 15)은 26줄짜리 맵을 통째로 먹어 집 자리가 안 남았다(2026-09-18 실측: 3채 요청에 2채).
+  // 좁은 변의 1/4 로 함께 줄인다 — 작은 환촌이 되지, 링만 있고 집이 없는 맵이 되지는 않는다.
+  const shortSide = Math.min(area.w, area.h);
+  const radius = clampInt(shortSide * 0.17, Math.min(7, Math.floor(shortSide / 4)), 12);
   const cx = area.x + Math.floor(area.w / 2) + jitter(rng, 2);
   const cy = area.y + Math.floor(area.h * 0.44) + jitter(rng, 2);
   const ringPoints: Point[] = [];
@@ -732,8 +881,10 @@ function planRoundVillage(ctx: PlanCtx): { commons: Rect; plaza: Plaza; pond?: R
   const entranceRows = rowExtents(entranceCells);
   planColumnBeside(ctx, (y) => entranceRows.get(y)?.left, cy + radius + 3, area.y + area.h - 4, "west");
   planColumnBeside(ctx, (y) => entranceRows.get(y)?.right, cy + radius + 3, area.y + area.h - 4, "east");
+  // 링 둘레·진입로 옆 배치만으로는 큰 맵에서도 목표에 1~2채 모자랐다 — 모자란 만큼만 길에 붙여 채운다.
+  const grown = ctx.houses.length < ctx.args.maxHouses ? growHousesOnRoads(ctx, { x: cx, y: cy }) : 0;
   const plaza: Plaza = { rect: commons, centerX: cx + 2, centerRow: cy + 1 };
-  ctx.notes.push(`환촌 r=${radius}`);
+  ctx.notes.push(`환촌 r=${radius}${grown ? ` 보충 시도 ${grown}` : ""}`);
   return { commons, plaza, ...(pond ? { pond } : {}) };
 }
 
@@ -772,66 +923,7 @@ function planClusterVillage(ctx: PlanCtx): { commons: Rect; plaza: Plaza } {
   grid.setRect(commons, OCC.commons);
   ctx.bigTrees.push({ x: commons.x + 1, y: commons.y + 1 });
 
-  // 성장(Emilien 2012 식 관심도): 후보는 반드시 기존 길 칸에 앵커한다 — 길 위(문이 길을 봄) 75%,
-  // 길 아래(용마루가 길에 붙고 문 앞에서 옆으로 돌아 길에 붙는 뒷골목형) 25%. 관심도 = 사교성(이웃 수) ×
-  // 중심 편향 × 흔들림. 세 채마다 새 골목을 바깥으로 뻗어 다음 성장을 부르고, 세 번 연속 실패해도 뻗는다.
-  const maxDist = Math.hypot(area.w, area.h) / 2;
-  let attempts = 0;
-  let failures = 0;
-  const maxAttempts = ctx.args.maxHouses * 8;
-  while (ctx.houses.length < ctx.args.maxHouses && attempts < maxAttempts) {
-    attempts += 1;
-    const anchors = ctx.roads.filter((stroke) => stroke.role !== "spur").flatMap((stroke) => stroke.cells)
-      .filter((cell) => cell.x >= area.x + 3 && cell.x <= area.x + area.w - 4 && cell.y >= area.y + 3 && cell.y <= area.y + area.h - 4);
-    if (anchors.length === 0) break;
-    let best: { slot: HouseSlot; interest: number } | undefined;
-    for (let k = 0; k < 80; k += 1) {
-      const anchor = anchors[Math.floor(rng() * anchors.length)]!;
-      const above = rng() < 0.75;
-      const template = pickTemplate(ctx, MAX_TEMPLATE_W, MAX_TEMPLATE_H);
-      if (!template) break;
-      let bbox: Rect;
-      let parcel: Rect;
-      let front: Point;
-      if (above) {
-        const gap = rng() < 0.6 ? 1 : 2;
-        front = { x: anchor.x + jitter(rng, 1), y: anchor.y - gap };
-        bbox = { x: front.x - Math.floor(template.w / 2), y: front.y - template.h, w: template.w, h: template.h };
-        const back = 1 + Math.floor(rng() * 2);
-        const parcelTop = bbox.y - 1 - back;
-        parcel = { x: bbox.x - 1, y: parcelTop, w: template.w + 2, h: front.y - parcelTop + 1 };
-      } else {
-        const ridgeY = anchor.y + 2;
-        bbox = { x: anchor.x + jitter(rng, 2) - Math.floor(template.w / 2), y: ridgeY + 1, w: template.w, h: template.h };
-        parcel = { x: bbox.x - 1, y: ridgeY, w: template.w + 2, h: template.h + 2 };
-        front = { x: bbox.x + Math.floor(bbox.w / 2), y: bbox.y + bbox.h };
-      }
-      if (!grid.rectFree(parcel)) continue;
-      // 옆 필지와 최소 1칸 띄운다(울타리가 붙지 않게).
-      if (!grid.rectFree({ x: parcel.x - 1, y: parcel.y, w: 1, h: parcel.h }, [OCC.road, OCC.spur, OCC.commons, OCC.pond])) continue;
-      if (!grid.rectFree({ x: parcel.x + parcel.w, y: parcel.y, w: 1, h: parcel.h }, [OCC.road, OCC.spur, OCC.commons, OCC.pond])) continue;
-      let neighbours = 0;
-      for (const house of ctx.houses) {
-        const dist = Math.hypot(house.bbox.x + house.bbox.w / 2 - front.x, house.bbox.y + house.bbox.h / 2 - front.y);
-        if (dist <= 14) neighbours += 1;
-      }
-      // 옆길을 지금 확보한다 — 길 아래 집은 문 앞에서 필지를 돌아 길에 붙는다(못 붙으면 후보 탈락).
-      const spur = planSpur(ctx, front, parcel, above ? 4 : 14);
-      if (!spur) continue;
-      const sociability = ctx.houses.length === 0 ? 1 : Math.min(1, 0.35 + neighbours * 0.22);
-      const centrality = 1 - 0.5 * Math.min(1, Math.hypot(front.x - center.x, front.y - center.y) / maxDist);
-      const interest = sociability * centrality * (above ? 1 : 0.55) * (0.7 + rng() * 0.3);
-      if (!best || interest > best.interest) best = { slot: { bbox, template, frontDir: "down", parcel, spur }, interest };
-    }
-    if (!best || !tryPlaceSlot(ctx, best.slot)) {
-      failures += 1;
-      if (failures % 3 === 0) growLane(ctx, center, 1);
-      continue;
-    }
-    for (const cell of best.slot.spur ?? []) if (grid.get(cell.x, cell.y) === OCC.free) grid.set(cell.x, cell.y, OCC.spur);
-    failures = 0;
-    if (ctx.houses.length % 3 === 0) growLane(ctx, center, 1);
-  }
+  const attempts = growHousesOnRoads(ctx, center);
   const plaza: Plaza = { rect: commons, centerX: commons.x + Math.floor(commons.w / 2), centerRow: commons.y + Math.floor(commons.h / 2) };
   ctx.notes.push(`괴촌 출구 ${chosen.join(",")} 시도 ${attempts}`);
   return { commons, plaza };

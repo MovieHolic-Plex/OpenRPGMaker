@@ -33,6 +33,8 @@ export function listMonsterResources(project: MonsterResourceProject): readonly 
       add(asset.resourceId, asset.id.replace(/-/g, " "), "bundled");
     }
   }
+  add("generated-enemy-reference-cocoon", "초록 고치 · 전투 정면", "bundled");
+  add("generated-enemy-reference-seed-back", "씨앗 몬스터 · 전투 뒷모습", "bundled");
   for (const id of builtinGeneratedResourceIds()) {
     if (id.startsWith("generated-enemy-")) add(id, id.replace(/^generated-enemy-/, "").replace(/-/g, " "), "bundled");
   }

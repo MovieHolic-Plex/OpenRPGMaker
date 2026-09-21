@@ -87,6 +87,24 @@ export function openCommandContextMenu(request: CommandShortcutRequest): void {
       close();
       return;
     }
+    const items = Array.from(menu.querySelectorAll<HTMLButtonElement>('[role="menuitem"]'))
+      .filter((item) => !item.disabled && item.offsetParent !== null);
+    const current = items.indexOf(event.target instanceof HTMLButtonElement ? event.target : document.activeElement as HTMLButtonElement);
+    if (event.key === "ArrowDown" || event.key === "ArrowUp" || event.key === "Home" || event.key === "End") {
+      if (items.length === 0) return;
+      event.preventDefault();
+      const nextIndex = event.key === "Home" ? 0
+        : event.key === "End" ? items.length - 1
+          : (current < 0 ? 0 : (current + (event.key === "ArrowDown" ? 1 : -1) + items.length) % items.length);
+      items[nextIndex]?.focus({ preventScroll: true });
+      return;
+    }
+    // Let the focused menuitem's native button activation run. The old fixed
+    // shortcut mapping ignored which row had focus and always inserted/edited
+    // the command that opened the menu.
+    if ((event.key === "Enter" || event.key === " " || event.key === "Spacebar")
+      && event.target instanceof HTMLElement
+      && event.target.closest('[role="menuitem"]')) return;
     handleCommandShortcut(event, request, close);
   });
   menu.querySelector<HTMLElement>('[data-testid="event-command-menu-edit"]')?.focus();

@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { mockupProject } from "./mockupProbeSeeds";
 import { openEventEditor } from "./eventEditorCertEvidence";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const EVIDENCE_DIR = ".omo/evidence/evcmd-modal-fix";
 
@@ -16,7 +16,7 @@ test.beforeEach(async ({ page }) => {
 
 test("기존 이벤트 명령을 클릭하면 같은 페이지의 편집 모달이 열린다", async ({ page, context }) => {
   const { project, eventId } = mockupProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await openEventEditor(page, eventId);
 
   const editor = page.getByTestId("event-editor-modal");

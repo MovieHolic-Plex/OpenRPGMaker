@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { CAMERA_ZOOM_LIMITS, normalizeCameraZoom, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
 import { MAP_BACKGROUND_LAYER_DEPTH, MAP_LOWER_LAYER_DEPTH } from "@/player/characterDepth";
 import {
   BACKGROUND_FRAMES_PER_SECOND,
@@ -36,6 +37,8 @@ type StubSprite = {
   y: number;
   tilePositionX: number;
   tilePositionY: number;
+  tileScaleX: number;
+  tileScaleY: number;
   setTexture(key: string): void;
   setSize(width: number, height: number): void;
   setPosition(x: number, y: number): void;
@@ -62,6 +65,8 @@ function createSprite(key: string): StubSprite {
     y: 0,
     tilePositionX: 0,
     tilePositionY: 0,
+    tileScaleX: 1,
+    tileScaleY: 1,
     setTexture(next) {
       this.texture = { key: next };
     },
@@ -85,6 +90,10 @@ function createSprite(key: string): StubSprite {
     },
     setDepth(value) {
       this.depth = value;
+    },
+    setTileScale(x, y) {
+      this.tileScaleX = x;
+      this.tileScaleY = y === undefined ? x : y;
     },
     setTilePosition(x, y) {
       this.tilePositionX = x;
@@ -393,5 +402,42 @@ describe("맵 배경 렌더", () => {
       expect(stub.sprites).toHaveLength(1);
       expect(stub.sprite()?.texture.key).toBe(mapBackgroundTextureKey("easyrpg-backdrop-sky1"));
     });
+  });
+});
+
+/**
+ * 프로젝트 기본 카메라 배율(2026-09-22).
+ *
+ * 왜 필요한가: 줌은 원래 연출 상태(session.camera.zoom, 이벤트 명령 m2-201)로만
+ * 존재했다. 그래서 고해상도 배경을 1:1 로 쓰려면 맵마다 auto 이벤트를 심어
+ * 줌을 걸어야 했고 새 맵에서는 1 로 돌아갔다. 기본값은 프로젝트가 정하고
+ * 연출은 그 위에 일시적으로 덮어쓰는 구조가 맞다.
+ */
+describe("프로젝트 기본 카메라 배율", () => {
+  it("1(클래식)은 생략해 저장하지 않는다 — 였 JSON 바이트가 유지된다", () => {
+    expect(normalizeCameraZoom(1)).toBeUndefined();
+    expect(normalizeCameraZoom(undefined)).toBeUndefined();
+    expect(normalizeCameraZoom("4")).toBeUndefined();
+    expect(normalizeCameraZoom(Number.NaN)).toBeUndefined();
+  });
+
+  it("범위를 넘으면 클램프하고 상한은 런타임과 같다", () => {
+    expect(normalizeCameraZoom(999)).toBe(CAMERA_ZOOM_LIMITS.max);
+    expect(normalizeCameraZoom(0.01)).toBe(CAMERA_ZOOM_LIMITS.min);
+    expect(normalizeCameraZoom(4.5)).toBe(4.5);
+  });
+
+  it("저작이 없으면 1 이 효욨 배율이다", () => {
+    expect(resolveCameraZoom(undefined)).toBe(1);
+    expect(resolveCameraZoom({})).toBe(1);
+    expect(resolveCameraZoom({ cameraZoom: 4.5 })).toBe(4.5);
+  });
+
+  it("store 함수는 1 을 쓰면 필드를 지운다", () => {
+    const system: { cameraZoom?: number } = {};
+    storeCameraZoom(system as never, 4.5);
+    expect(system.cameraZoom).toBe(4.5);
+    storeCameraZoom(system as never, 1);
+    expect("cameraZoom" in system).toBe(false);
   });
 });

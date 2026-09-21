@@ -12,7 +12,7 @@ import type { Project } from "../src/project/types";
 
 /**
  * The break: `qa:horror` (Slice A) binds the browser to the project via projectId only,
- * so any Supabase row with the matching id passes even when its real content differs. A
+ * so any LegacyDb row with the matching id passes even when its real content differs. A
  * deterministic digest over the actual project data — computed independently on Node and in the
  * browser from that same data — is required, and a mismatch must fail. A shift of startMapId
  * or startPos x/y in the loaded content must be rejected, not silently accepted.
@@ -57,7 +57,7 @@ describe("canonical project content digest", () => {
   });
 
   it("is stable under key reordering (canonical serialize)", () => {
-    // Both browser and Supabase project data arrive as parsed JSON, so compare two
+    // Both browser and LegacyDb project data arrive as parsed JSON, so compare two
     // different orderings of the same JSON-normalized object.
     const normalized = JSON.parse(JSON.stringify(sampleProject()));
     const a = canonicalProjectDigest(normalized);

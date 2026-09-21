@@ -21,6 +21,11 @@ export function regionReferenceInspector(id: string): HTMLElement {
     el("ul", { children: entry.rules.map(text => el("li", { text })) }),
     el("p", { text: entry.limitations }),
     el("a", { text: "원본 이미지 크게 보기", attrs: { href: entry.preview, target: "_blank", rel: "noopener" } }),
+    ...("projectDownload" in entry ? [el("p", { children: [el("a", {
+      text: `${entry.kind === "completed-place" ? "장소" : "지역"} 맵 파일 내려받기 · 칩셋 포함`,
+      attrs: { href: entry.projectDownload, download: `${entry.name}.oprn.json` },
+      dataset: { testid: "region-reference-download" },
+    })] })] : []),
     el("p", { text: `AI 조회: read_region_reference · ${entry.id}` }),
   ] });
 }

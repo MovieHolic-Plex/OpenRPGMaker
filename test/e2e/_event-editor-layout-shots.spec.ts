@@ -2,7 +2,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import { emptyEventProject, mockupProject } from "./mockupProbeSeeds";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { openSeededEventEditor } from "./eventStoryboardPicker";
 
 const TAG = process.env.EVIDENCE_TAG ?? "before";
@@ -94,7 +94,7 @@ for (const shot of SHOTS) {
     }, shot.mode);
     await page.setViewportSize({ ...VIEWPORT });
     const seed = shot.seed === "mockup" ? mockupProject() : emptyEventProject();
-    await seedProjectFromSupabaseCanonical(page, seed.project);
+    await seedProjectForEditor(page, seed.project);
     const eventTile = shot.seed === "mockup" ? { x: 8, y: 8 } : { x: 4, y: 4 };
     await openEventEditorAnyMode(page, seed.eventId, eventTile);
     const modal = page.getByTestId("event-editor-modal");

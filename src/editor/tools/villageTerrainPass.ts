@@ -23,7 +23,7 @@ import {
   type ForestDensity,
 } from "./forestDensity";
 import { protectedHouseCells } from "./houseProtection";
-import { plantForestBand, treeKitForTileset } from "./village/treeKit";
+import { plantForestBand, prepareVillageTreeKit } from "./village/treeKit";
 import { ToolError, type ToolDefinition } from "./types";
 import { environmentalRoadAt } from "./village/constants";
 import { isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness";
@@ -173,9 +173,13 @@ export function applyTerrainPassFromMasks(
 
   // 숲 나무 확장 띠가 있는 혼합 칩셋이면 숲 띠를 그 킷(숲 벽·큰 참나무·활엽수·덤불)으로 채운다 —
   // 합본 마을 원자(침엽수 1×2·활엽수 2×2)와 섞이면 한 맵에 나무 양식이 둘이 된다(2026-09-18).
-  const forestKit = treeKitForTileset(draft.tilesets?.[map.tilesetId]);
-  const forestKitApplies = phase !== "water" && forestKit.id === "forest-trees";
+  const forestKit = prepareVillageTreeKit(draft.tilesets?.[map.tilesetId]);
+  const forestKitApplies = phase !== "water" && forestKit.id !== "combined-town";
   const sealed = forestKitApplies ? new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x)) : undefined;
+  if (sealed) {
+    for (const event of map.events) sealed.add(event.y * map.width + event.x);
+    if (draft.startMapId === map.id) sealed.add(draft.startPos.y * map.width + draft.startPos.x);
+  }
   for (const rect of phase === "water" ? [] : unreservedAreas(masks.forestRects, masks.waterRects)) {
     if (rect.w < 2 || rect.h < 2) continue;
     if (forestKitApplies && sealed) {

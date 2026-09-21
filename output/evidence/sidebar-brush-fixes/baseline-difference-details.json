@@ -727,7 +727,7 @@
   },
   {
     "file": "test/storeFlushShaEvidence.test.ts",
-    "test": "Project store flush sha256 evidence 전체 저장 경로: saveProjectToSupabase 의 sha256 이 flush 결과(saved.sha256)로 흘러든다",
+    "test": "Project store flush sha256 evidence 전체 저장 경로: saveProjectToLegacyDb 의 sha256 이 flush 결과(saved.sha256)로 흘러든다",
     "fullRunMessage": "Error: STACK_TRACE_ERROR",
     "fullRunDuration": 15212.493452000002,
     "baselineStatus": "passed",

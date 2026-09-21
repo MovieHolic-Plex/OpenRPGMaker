@@ -20,7 +20,7 @@ import {
   requestAiStudioToggle,
 } from "@/editor/aiStudioMode";
 import { openHelpModal } from "@/editor/panels/helpModal";
-import { openDatabaseModal } from "@/editor/panels/databaseModal";
+import { openDatabaseModalLazy } from "@/editor/panels/databaseModalLazy";
 import { renderDbConnectionStatus } from "@/editor/panels/dbConnectionStatus";
 import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
@@ -140,7 +140,7 @@ export function renderTopbar(topbar: HTMLElement): void {
     ...(chrome.paletteRail
       ? [renderMenu("tools", "도구", menuCommands("tools", topbar), { chevron: true })]
       : [
-          toolButton({ testId: "toolbar-database", icon: "database", label: headerLabel("databaseShort"), title: headerLabel("database"), onClick: () => openDatabaseModal() }),
+          toolButton({ testId: "toolbar-database", icon: "database", label: headerLabel("databaseShort"), title: headerLabel("database"), onClick: () => openDatabaseModalLazy() }),
           toolButton({ testId: "toolbar-resource-manager", icon: "image", label: headerLabel("resources"), title: headerLabel("resourceLibrary"), onClick: () => openResourceModal() }),
           toolButton({ testId: "toolbar-world", icon: "globe", title: headerLabel("world"), onClick: () => openWorldPanel() }),
           toolButton({ testId: "toolbar-sound-test", icon: "music", title: headerLabel("audio"), onClick: () => openAudioTestDialog() }),
@@ -338,7 +338,6 @@ function renderTopbarStudioButton(): HTMLElement {
   };
   const button = el("button", {
     class: "topbar-ai-studio",
-    text: "스튜디오",
     attrs: {
       type: "button",
       "aria-label": "AI 스튜디오",
@@ -346,6 +345,10 @@ function renderTopbarStudioButton(): HTMLElement {
       title: "AI 스튜디오 — 장면 모니터와 조수",
     },
     dataset: { testid: "topbar-ai-studio" },
+    children: [
+      el("span", { class: "topbar-ai-studio-icon", attrs: { "aria-hidden": "true" }, text: "✦" }),
+      el("span", { class: "topbar-ai-studio-label", text: "스튜디오" }),
+    ],
     on: { click: () => requestAiStudioToggle() },
   }) as HTMLButtonElement;
   paint(button, readStudioMode());
@@ -712,7 +715,7 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
       const chrome = getEditorChrome();
       const beginnerOnly: MenuCommand[] = chrome.paletteRail
         ? [
-            item(`${headerLabel("database")}...`, "menu-tools-database", () => openDatabaseModal(), "database"),
+            item(`${headerLabel("database")}...`, "menu-tools-database", () => openDatabaseModalLazy(), "database"),
             { kind: "separator" },
           ]
         : [];
@@ -886,7 +889,7 @@ async function newProject(): Promise<void> {
     }
   }
   // 데스크톱은 열린 폴더, 웹은 hostProject 주소를 부팅 attach가 다시 연다.
-  window.location.reload();
+  if (window.oprn?.start) window.location.reload();
 }
 
 async function newSkyStairProject(): Promise<void> {
@@ -972,9 +975,15 @@ async function reloadProjectFromDb(_topbar: HTMLElement): Promise<void> {
 
 async function doLoad(): Promise<void> {
   const { openProjectFolder } = await import("@/editor/projectFolderActions");
-  const opened = await openProjectFolder();
+  let opened: boolean;
+  try {
+    opened = await openProjectFolder();
+  } catch (error) {
+    toast(error instanceof Error ? error.message : "폴더를 열지 못했습니다.", "error");
+    return;
+  }
   if (!opened) {
-    toast("폴더 열기는 데스크톱 앱에서만 됩니다.", "error");
+    toast("프로젝트 서버에 연결되지 않았습니다. 내부 IP의 프로젝트 호스트 주소로 다시 접속하세요.", "error");
     return;
   }
   window.location.reload();
@@ -1066,16 +1075,28 @@ function doImport(): void {
   input.addEventListener("change", () => {
     const file = input.files?.[0];
     if (!file) return;
-    if (isProjectPackageFile(file)) {
-      void replaceProjectFromPackage(file);
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => replaceProjectFromJson(String(reader.result));
-    reader.onerror = () => toast("파일 읽기 실패", "error");
-    reader.readAsText(file);
+    void confirmAndImport(file);
   });
   input.click();
+}
+
+async function confirmAndImport(file: File): Promise<void> {
+  const confirmed = await showConfirm({
+    title: "프로젝트 가져오기",
+    message: "현재 프로젝트를 가져온 파일로 교체합니다. 저장하지 않은 변경과 이벤트 초안은 사라집니다.",
+    confirmLabel: "가져오기",
+    cancelLabel: "취소",
+    danger: true,
+  });
+  if (!confirmed) return;
+  if (isProjectPackageFile(file)) {
+    void replaceProjectFromPackage(file);
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => replaceProjectFromJson(String(reader.result));
+  reader.onerror = () => toast("파일 읽기 실패", "error");
+  reader.readAsText(file);
 }
 
 function isProjectPackageFile(file: File): boolean {

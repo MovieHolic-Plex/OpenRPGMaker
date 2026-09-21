@@ -20,7 +20,7 @@ Execution journal: `/tmp/ulw-20260907-191135.jJiUQp.md`.
 - GREEN: `profile-green.json` / `profile-green.log` / `args-green.log`:
   the same 32 tests passed.
 - Real browser AI sent exactly `actionProfile: {aggroRange: 7}` with the existing
-  spawn ID. Actual Supabase reload preserved attack, stats, rewards and both
+  spawn ID. Actual LegacyDb reload preserved attack, stats, rewards and both
   existing spawn IDs, changing only the requested profile field and target area.
 - The real `applyToolToStore` boundary rejected quoted attack keys, unknown
   attack kinds and invalid movement values with no serialized store change.
@@ -47,7 +47,7 @@ Execution journal: `/tmp/ulw-20260907-191135.jJiUQp.md`.
 - `spawn-final-green.json` / `spawn-green.log`: 98 related tests passed.
 - `spawn-surface.json`: actual browser store operations rejected unknown update,
   duplicate add and invalid mode with no mutation; explicit add, update and
-  targeted delete succeeded, and the actual Supabase reload retained attacks,
+  targeted delete succeeded, and the actual LegacyDb reload retained attacks,
   database records, existing IDs and `chase:false`.
 - App typecheck, regenerated tool catalog and final full build passed.
   See `spawn-validation.json`.
@@ -59,7 +59,7 @@ duplicate-proof or that deliberately repeated enemies are forbidden.
 ## Final real-surface proof
 
 `browser-surface.mjs` drives actual Chrome against the editor and the dedicated
-player. It reads the real Supabase row and AI conversation, not fabricated
+player. It reads the real LegacyDb row and AI conversation, not fabricated
 responses. The recorded AI call used `spawnMode:"update"` and only
 `actionProfile:{aggroRange:7}`. The reloaded attack, stats and rewards matched
 the prior saved values; the target retained its ID and `chase:false`.

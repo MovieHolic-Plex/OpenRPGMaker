@@ -18,9 +18,9 @@ const final: ChatResult = { message: { role: "assistant", content: "RESULT" }, f
 let restoreDom: (() => void) | undefined;
 beforeEach(() => {
   // Commit-history transport has its own configuration; store persistence flags alone do not isolate it.
-  vi.stubEnv("VITE_SUPABASE_USE_PROXY", "0");
-  vi.stubEnv("VITE_SUPABASE_URL", "");
-  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "");
+  vi.stubEnv("VITE_LEGACY_DB_USE_PROXY", "0");
+  vi.stubEnv("VITE_LEGACY_DB_URL", "");
+  vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "");
   restoreDom = installFakeDom();
   vi.spyOn(activityLog, "recordAiActivity").mockImplementation(async entry => activityLog.buildAiActivityLogRecord(entry));
   resetIntentDeclarationCache();

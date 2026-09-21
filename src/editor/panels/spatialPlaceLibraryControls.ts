@@ -1,6 +1,6 @@
 import { el } from '@/util/dom';
 import type { SpatialGalleryCard } from './spatialCatalog';
-import { classifyPlaceCard, PLACE_CATEGORIES, PLACE_ENVIRONMENTS, placeLibraryFilters } from './spatialPlaceClassification';
+import { classifyPlaceCard, matchesPlaceClassification, PLACE_CATEGORIES, PLACE_ENVIRONMENTS, placeLibraryFilters } from './spatialPlaceClassification';
 import { openNewPlaceDialog } from './spatialNewPlaceDialog';
 import { patchSpatialSession } from './spatialAuthoringSession';
 import { openDialog } from './databaseEnemyRecordSupport';
@@ -26,8 +26,21 @@ export function renderPlaceLibraryControls(cards: readonly SpatialGalleryCard[],
     close = openDialog('place-category-dialog', '장소 유형 추가', [form, el('p', { text: '이 유형으로 만든 장소를 저장하면 분류도 함께 저장됩니다.' })], [{ label: '취소', testid: 'place-category-cancel' }]);
   } } }));
   return el('section', { class: 'place-library-controls', children: [
-    el('div', { class: 'place-library-heading', children: [el('div', { children: [el('strong', { text: '장소 라이브러리' }), el('p', { text: '그림체를 고르고, 유형과 공간 형태로 필요한 장소를 찾으세요.' })] }), el('button', { text: '＋ 장소 만들기', class: 'spatial-action is-primary', on: { click: () => openNewPlaceDialog(refresh) } })] }),
-    el('div', { class: 'place-library-filters', children: [select('그림체', 'style', values.map(v => v.style)), select('공간 형태', 'environment', PLACE_ENVIRONMENTS), select('용도', 'purpose', values.flatMap(v => v.purposes)), search] }), tabs,
-    el('small', { text: 'EasyRPG · Tibo는 호환 확장 소재입니다. 기본 장소는 모든 프로젝트에서 사용할 수 있습니다.' }),
+    // 두 줄로 접는다 — 제목줄과 도구줄. 69장짜리 목록에서 네 줄짜리 머리는 그냥 세로 손실이었다.
+    el('div', { class: 'place-library-heading', children: [
+      el('div', { class: 'place-library-title', children: [
+        el('strong', { text: '장소 라이브러리' }),
+        el('span', { class: 'place-library-count', text: `${cards.filter(matchesPlaceClassification).length}개`, dataset: { testid: 'place-library-count' } }),
+        el('small', { text: 'EasyRPG · Tibo는 호환 확장 소재입니다' }),
+      ] }),
+      el('button', { text: '＋ 장소 만들기', class: 'spatial-action is-primary', on: { click: () => openNewPlaceDialog(refresh) } }),
+    ] }),
+    el('div', { class: 'place-library-filters', children: [
+      search,
+      select('그림체', 'style', values.map(v => v.style)),
+      select('공간 형태', 'environment', PLACE_ENVIRONMENTS),
+      select('용도', 'purpose', values.flatMap(v => v.purposes)),
+      tabs,
+    ] }),
   ] });
 }

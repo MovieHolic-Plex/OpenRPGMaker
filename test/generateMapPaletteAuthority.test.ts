@@ -13,7 +13,7 @@ import { isPassable } from "@/project/collision";
 import type { Project, TilesetDef } from "@/project/types";
 
 // Round10 terminal-harness.audit[192], copied as a minimal offline regression input.
-const capturedArgs = { name: "지하실", theme: "cave", id: "map_cellar",
+const capturedArgs = { tilesetId: DEFAULT_TILESET_ID, name: "지하실", theme: "cave", id: "map_cellar",
   entrance: { y: 8, x: 1 }, pois: [{ x: 9, y: 2 }], border: "wall", height: 10, width: 12 };
 const capturedLower = [
   306,306,306,306,306,306,306,306,306,306,306,306,
@@ -51,7 +51,7 @@ function expectStableReload(p: Project): void {
 }
 
 describe("generate_map palette authority", () => {
-  it("replays the captured default cave/settlement map without changing any shared tile rules", () => {
+  it("replays the captured combined-town cave/settlement map without changing any shared tile rules", () => {
     const ctx = { project: project() };
     const before = structuredClone(ctx.project.tilesets);
     expect(before[DEFAULT_TILESET_ID]!.priority[385]).toBe("upper");

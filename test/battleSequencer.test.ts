@@ -209,10 +209,11 @@ describe("battle sequencer", () => {
       rng: () => 0.5,
     });
     const consumed: number[] = [];
+    const lines: string[] = [];
     const sequencer = createBattleSequencer(
       runtime,
       {
-        onDirectorState: () => undefined,
+        onDirectorState: (state) => lines.push(...state.lines),
         onSyncView: () => undefined,
         onDamageFeedback: () => undefined,
         onResultStage: () => undefined,
@@ -235,6 +236,7 @@ describe("battle sequencer", () => {
     sequencer.runAfterActorCommand({ kind: "attack", targetEnemyId: "enemy-1" }, before, after);
 
     expect(consumed).toEqual(expected);
+    expect(lines.some((line) => line.startsWith(`${before.actors[0].name}: `) && line.includes("피해"))).toBe(true);
   });
 
   it("acknowledges a strict event wait only after its scheduled presentation pause", () => {

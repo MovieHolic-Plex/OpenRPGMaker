@@ -72,7 +72,7 @@ export async function reloadProjectFromDbNow(options: {
     return false;
   }
   if (options.expectedProjectId !== undefined) {
-    // 대상을 저장소에 묻는다 — Supabase 설정을 직접 보면 로컬 폴더 정본에서 남의 id 를 비교한다.
+    // 대상을 저장소에 묻는다 — project storage 설정을 직접 보면 로컬 폴더 정본에서 남의 id 를 비교한다.
     const liveId = projectRepository().currentTarget()?.projectId ?? null;
     if (liveId !== options.expectedProjectId) {
       toast("복구 대상이 바뀌어 불러오기를 취소했습니다.", "error");

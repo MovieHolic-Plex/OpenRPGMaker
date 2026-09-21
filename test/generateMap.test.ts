@@ -79,6 +79,7 @@ describe("generate_map", () => {
   it("번들 프로필을 디스패치하되 실내는 개념 시공으로 안내한다", () => {
     const profileKeys = new Set<string>();
     let conceptInteriors = 0;
+    let manualAtlases = 0;
 
     for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
       const tilesetId = bundledEasyRpgTilesetId(asset.textureKey);
@@ -104,6 +105,14 @@ describe("generate_map", () => {
         border: "wall",
       });
 
+      if (tilesetId === "opengameart_castle") {
+        // This atlas is bundled for manual authoring; no RM2K generation palette applies.
+        expect(result.ok).toBe(false);
+        expect(result.issues?.some(issue => issue.code === "unsupported-tileset")).toBe(true);
+        expect(ctx.project.maps[`map_${tilesetId}`]).toBeUndefined();
+        manualAtlases += 1;
+        continue;
+      }
       if (["easyrpg_chipset_interior", "easyrpg_chipset_retro_house", "scarloxy_chipset_indoor"].includes(tilesetId)) {
         expect(result.ok).toBe(false);
         expect(result.issues?.some(issue => issue.code === "concept-interior-required")).toBe(true);
@@ -125,7 +134,7 @@ describe("generate_map", () => {
       profileKeys.add(data.generationProfile);
     }
 
-    expect(profileKeys.size + conceptInteriors).toBe(BUNDLED_EASYRPG_CHIPSET_ASSETS.length);
+    expect(profileKeys.size + conceptInteriors + manualAtlases).toBe(BUNDLED_EASYRPG_CHIPSET_ASSETS.length);
   });
 
   // 사용자 보고 2026-08-29: "타일 깔라 하면 항상 외곽에 벽을 깐다".

@@ -15,6 +15,8 @@ export default defineConfig({
     alias: [
       { find: /^@\/app\/mode$/, replacement: src("player/exportAppModeShim.ts") },
       { find: /^@\/project\/store$/, replacement: src("player/exportProjectStoreShim.ts") },
+      // 성 서재 참고문서는 에디터 시드용 15MB JSON 이다. 내보낸 플레이어에는 넣지 않는다.
+      { find: "@/assets/sharedCastleReferences.json", replacement: src("player/emptySharedCastleReferences.json") },
       { find: "@", replacement: src("") },
     ],
     extensions: [".ts", ".js"],

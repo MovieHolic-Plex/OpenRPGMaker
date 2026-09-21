@@ -150,6 +150,13 @@ export const UPSERT_CHARACTER_PROFILE_SCHEMA: JsonSchema = {
   additionalProperties: false,
 };
 
+export const DELETE_CHARACTER_PROFILE_SCHEMA: JsonSchema = {
+  type: "object",
+  properties: { characterId: { type: "string" } },
+  required: ["characterId"],
+  additionalProperties: false,
+};
+
 export const UPSERT_TEST_PRESET_SCHEMA: JsonSchema = {
   type: "object",
   properties: {

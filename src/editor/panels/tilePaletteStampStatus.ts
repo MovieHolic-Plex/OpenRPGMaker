@@ -3,6 +3,7 @@ import { EDITOR_BRUSH_SIZES, type EditorState } from "@/editor/editorState";
 import { setTileBrushSize, selectTileTool } from "@/editor/panels/tileToolbarActions";
 import { el } from "@/util/dom";
 import { getEditorChrome } from "@/editor/editorUiMode";
+import { layerUiLabel } from "@/editor/uiCopy";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 
 /**
@@ -28,7 +29,7 @@ export function makeTileBrushControls(state: EditorState, rerender: () => void):
     ? tileBrushActionLabel(stamp) ?? shape
     : { erase: "지우기", fill: "채우기", select: "선택", eyedropper: "집기", pan: "화면 밀기", collision: "통행 표시", event: "이벤트" }[state.tool];
   const composite = isComboBrush(stamp);
-  const layer = { lower: "바닥", upper: "덧그림", event: "이벤트" }[state.layer];
+  const layer = layerUiLabel(state.layer);
   const row = el("div", { class: "sidebar-brush-controls", dataset: { testid: "tile-brush-controls" } });
   if (!getEditorChrome().paletteRail) {
     const applicable = state.layer !== "event" && (state.tool === "erase" || (state.tool === "paint" && state.paintShape === "pen" && !stamp));
@@ -69,7 +70,7 @@ export function makeTileBrushControls(state: EditorState, rerender: () => void):
   }
   row.append(sizes, el("span", {
     class: "sidebar-brush-state" + (composite ? " is-combo-brush" : ""),
-    // 합성 붓은 배지가 이미 레이어를 말한다 — "바닥+덧그림 · 바닥"처럼 중복하지 않는다.
+    // 합성 붓은 배지가 이미 레이어를 말한다 — "바닥+상위 · 바닥"처럼 중복하지 않는다.
     text: composite ? action : `${action} · ${layer}`,
     dataset: { testid: "tile-brush-state", shape: state.paintShape, layer: state.layer,
       brushKind: composite ? "combo" : stamp ? "stamp" : "repeat",

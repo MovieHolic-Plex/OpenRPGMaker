@@ -1,15 +1,15 @@
 import { expect, test } from "@playwright/test";
 import { createModernNocturneProject } from "@/project/defaults/modernNocturneGame";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 test("probe: dblclick witness opens event editor", async ({ page }) => {
   test.setTimeout(120_000);
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await seedProjectFromSupabaseCanonical(page, createModernNocturneProject(), "/?e2eVitals=1");
+  await seedProjectForEditor(page, createModernNocturneProject(), "/?e2eVitals=1");
   await expect(page.getByText("해오름구 · 자정", { exact: true }).first()).toBeVisible();
   await page.waitForFunction(() => typeof (window as unknown as { __oprnEditCamera?: unknown }).__oprnEditCamera === "function", undefined, { timeout: 20_000 });
-  await page.getByTestId("layer-lower").click();
+  await page.getByTestId("layer-event").click();
   await page.waitForTimeout(500);
 
   const diag = await page.evaluate(() => {

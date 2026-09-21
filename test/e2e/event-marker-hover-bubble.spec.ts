@@ -2,7 +2,7 @@
 import { expect, test } from "@playwright/test";
 import { mkdirSync } from "node:fs";
 import { createModernNocturneProject, MODERN_MAP } from "@/project/defaults/modernNocturneGame";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const SHOT_DIR = "output/evidence/event-hover-bubble";
 mkdirSync(SHOT_DIR, { recursive: true });
@@ -17,7 +17,7 @@ test("event marker hover shows a bubble at the tile's top-right and no native ti
 
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1440, height: 900 });
-  await seedProjectFromSupabaseCanonical(page, project, "/");
+  await seedProjectForEditor(page, project, "/");
   await page.waitForFunction(() => typeof (window as never as { __oprnEditWorldToClient?: unknown }).__oprnEditWorldToClient === "function", undefined, { timeout: 20_000 });
   const skip = page.getByText("건너뛰기", { exact: true }).first();
   if (await skip.isVisible().catch(() => false)) await skip.click();

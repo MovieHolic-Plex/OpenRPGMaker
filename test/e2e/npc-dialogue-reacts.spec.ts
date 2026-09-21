@@ -8,7 +8,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { startNewGameFromTitle } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 type DebugWindow = {
   __oprnDebug?: { setSwitch?(id: string, value: boolean): void; readState(): { switches: Record<string, boolean> } };
@@ -61,7 +61,7 @@ test("종을 되살리면 마을 사람 대사가 바뀐다", async ({ page }) =
   const kid = project.maps[project.startMapId]!.events.find((event) => event.id === "ev_kid");
   expect(kid?.pages?.length, "ev_kid 에 대사 층이 없다").toBeGreaterThan(1);
 
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
   await page.getByTestId("mode-play").click({ force: true });
   await expect(page.getByTestId("test-play-window")).toBeVisible({ timeout: 20_000 });

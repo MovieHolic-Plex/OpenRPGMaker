@@ -9,7 +9,7 @@ import { expect, test } from "@playwright/test";
 import { createSnowMountain60Project } from "@/project/defaults/defaultProject";
 import { SNOW_MOUNTAIN_START } from "@/project/defaults/snowMountain60";
 import { startNewGameFromTitle, tapKey } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 test.setTimeout(180_000);
 test.use({ serviceWorkers: "block" });
@@ -59,7 +59,7 @@ test("편집기 캔버스가 절벽 다섯 겹을 그린다", async ({ page }) =
     window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1600, height: 1000 });
-  await seedProjectFromSupabaseCanonical(page, createSnowMountain60Project());
+  await seedProjectForEditor(page, createSnowMountain60Project());
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 30_000 });
   // 60×60 을 한 화면에 최대한 담는다. 줌 버튼은 x1 이 최소다(0.5 는 없다).
   // `timeout` 을 반드시 준다 — playwright 기본 action timeout 은 0(무한)이라
@@ -75,7 +75,7 @@ test("런타임이 산 발치에서 시작하고 플레이어를 밀어내지 �
     window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
-  await seedProjectFromSupabaseCanonical(page, createSnowMountain60Project());
+  await seedProjectForEditor(page, createSnowMountain60Project());
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 30_000 });
   await page.getByTestId("mode-play").click({ force: true });
   await expect(page.getByTestId("test-play-window")).toBeVisible({ timeout: 30_000 });

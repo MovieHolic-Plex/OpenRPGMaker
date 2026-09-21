@@ -1,0 +1,357 @@
+[
+  {
+    "path": "scripts/content/build-slates-astra-v2.mjs",
+    "bytes": 47323,
+    "sha256": "07b7f093f1affee52686775c87e64469de655db06e69c9a27bedbd1e6ce3b66c"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/REPORT.md",
+    "bytes": 10865,
+    "sha256": "7f287dc6646030b088d3996191148893abdbb5c0a225132034396b8ada2f9c7d"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/atlas.png",
+    "bytes": 634732,
+    "sha256": "84ceea7a818988907d4cc12d2874c2af6107b3bd9dba9025bd40326085e7969c"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/building-mask.png",
+    "bytes": 67282,
+    "sha256": "d719999dbdcd7ef16b6fff95d90d8ce31bf0be14ee12e4092e0b3acf8ba2d0be"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/bundle.json",
+    "bytes": 1167029,
+    "sha256": "3294849c7b80c36dccc96c56bc771cb08aa3979e70c7210c0d6f689149f6e44c"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/catalog-decoding.json",
+    "bytes": 420874,
+    "sha256": "8040aa748087565e445a3c09a8872a9983256228e508e9105c03fe88a34fbc6e"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/courtyard-inn-collision.png",
+    "bytes": 55850,
+    "sha256": "e314e5dc57fb0040a0d9b6f9c0f7eb45b97078e12d48c8a492e368897d3f5123"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/courtyard-inn-complete.png",
+    "bytes": 49840,
+    "sha256": "69d59935e171998a0903cbdf8892ea3326a11685100a9afd6dbd72dda0ccbaf3"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/courtyard-inn-join.png",
+    "bytes": 23913,
+    "sha256": "bad7efa39ba392b7f44b1c6557ff8a947578f92d4cd3112a1c94b2953548e569"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/courtyard-inn-mask.png",
+    "bytes": 16808,
+    "sha256": "0bce5b72f9318f885582762be6bda5bea9c4b971778ba344644f1c2eec72e671"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/courtyard-inn-parts.png",
+    "bytes": 131782,
+    "sha256": "1271785b17184d9baba2de2b4be68a019b29a2740c71488a3255ff0ad1e9b7bb"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/courtyard-inn-shadow.png",
+    "bytes": 16160,
+    "sha256": "5d5eb6b850ae2dddb7f5d0577d6e9e3ef61f1b26b63322f105b5b38bc8ae8674"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/courtyard-inn-silhouette.png",
+    "bytes": 44709,
+    "sha256": "3d3a66d54155734f03b45d13a92f3c98b2b30f9618da5a110f430e3edb24c5a7"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/courtyard-inn-sources.png",
+    "bytes": 197279,
+    "sha256": "410b03630640d7e0d23b3eb317326e8b757ee89242f3c3ee92e1a8f0c2a795b9"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/districts.png",
+    "bytes": 818398,
+    "sha256": "2c353bbefe5d4f49ea07d7b030d3748f4f8309668bf9c2f356ea6086ba5541cf"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/gate-join-final.png",
+    "bytes": 85434,
+    "sha256": "55ac7b8a3d089fcd6c845af0350bc7d40553e88bef5c2d5c96211b1b0abace77"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/house-collision.png",
+    "bytes": 36624,
+    "sha256": "f4d0f679c08ea71da095fbb7354b82f66f971266ab6e4b94c4d79bb4b6f49b25"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/house-complete.png",
+    "bytes": 33029,
+    "sha256": "6fc46406a722809fb0de0afc5b86c20f4548eb25310fe7a9f8b917a06a50da69"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/house-join.png",
+    "bytes": 20193,
+    "sha256": "6b4931dd7b55af46049bd3ac6fb43530f3c0c7e398573f15a273554e236cfc5d"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/house-mask.png",
+    "bytes": 12259,
+    "sha256": "17dc91c05653de23d53b54a87fb9f122ac56703185491f31e364ee7cbc8d48cc"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/house-parts.png",
+    "bytes": 89421,
+    "sha256": "5f23e54823aa25af8573bcd5e4f63e713bac8557c82e8ec8ecdb13f8f8868ae3"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/house-shadow.png",
+    "bytes": 11629,
+    "sha256": "69d8e0bde940ca5a376fc94ac4846ba566516192b03b0a4415c340c1b9307370"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/house-silhouette.png",
+    "bytes": 29094,
+    "sha256": "e4ab323a2e824b676317817d75018d5e7d6368601d384041ffc98e5692881bd2"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/house-sources.png",
+    "bytes": 142104,
+    "sha256": "fd7091f34fd79ba433aa9066fffb240514f3cb4d29632941915d139f9222da69"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/joined-shops-collision.png",
+    "bytes": 63305,
+    "sha256": "d80712681f22f71966012a9681fd85e79dcfdb998d95368a0df89e5045510f15"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/joined-shops-complete.png",
+    "bytes": 56984,
+    "sha256": "433a8730222404dc96aab09b227c88ccf1ba654da8aba48cdd9f094f1fcafe4b"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/joined-shops-join.png",
+    "bytes": 29403,
+    "sha256": "fe7b4dd3842d46e6d4564aba81fe88cd9f9cc864c06a73f6c36ab689128e3e9f"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/joined-shops-mask.png",
+    "bytes": 18760,
+    "sha256": "67cb99048970bf37a1d607af950081ca2bb1781b2bf7220cec6c2d279413e0ef"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/joined-shops-parts.png",
+    "bytes": 147187,
+    "sha256": "cf0cdfd074b8f026602553f126477799fc374cd7919ef606fa605aecde899330"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/joined-shops-shadow.png",
+    "bytes": 18152,
+    "sha256": "e1b92dd9acd2b1a167693ddc4214535511b5aeb7ed31c5c7badf2dd755086d8f"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/joined-shops-silhouette.png",
+    "bytes": 51810,
+    "sha256": "3b1460aa8e3ff409054874d38809dcfe542164596a29f6c6badb84e8f82ba8b7"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/joined-shops-sources.png",
+    "bytes": 191672,
+    "sha256": "d5d2d8303434e1698a6d756763a18aa1d7bbf382da9fa41dfaa22f12639d7909"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/layout.json",
+    "bytes": 22101,
+    "sha256": "f19e7999d13b0839631843b9cfe7cf8c4686f60a46cf250c12ad11802434954f"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/low-workshop-collision.png",
+    "bytes": 27378,
+    "sha256": "cc5f210bea4e3ba8576b9586cc885004b7c3957d1c5c742c136bfd5bd11161a7"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/low-workshop-complete.png",
+    "bytes": 25329,
+    "sha256": "4ba7b304733ad2dc214f262030b711fd2984eb2a7383401cdd391bff813b35dd"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/low-workshop-join.png",
+    "bytes": 14355,
+    "sha256": "84f5ac2d705d88efa65fbc208117a77400aab3fd655004c4e8a2de076673331a"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/low-workshop-mask.png",
+    "bytes": 10243,
+    "sha256": "69599f0764da3a50a672370e2ae3601cc5ebd1762984cda53c5383a3a20eadd7"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/low-workshop-parts.png",
+    "bytes": 73433,
+    "sha256": "200c54f93036835af861d2d64f4c0f8ca32aa54ddb1bd74cad0b1f8669eef4bf"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/low-workshop-shadow.png",
+    "bytes": 9969,
+    "sha256": "8f3608df68e4a31f75454f643249e3aa519443d43641bea31f13e709dd88beeb"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/low-workshop-silhouette.png",
+    "bytes": 22590,
+    "sha256": "5d3097b5f152325cc993b2cedc57971d4ab5abca3b732341bc0d16763e11bca3"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/low-workshop-sources.png",
+    "bytes": 31229,
+    "sha256": "7f082cee5bfccb99a50bdae53b2349bdcc9593b4a9457e84fa8e265a8d71d831"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/map-collision.png",
+    "bytes": 799259,
+    "sha256": "0650c2811bcad8e82559e3f0551ec61b99a8c9ac8ec660757f3370366f8f1b00"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/map-from-bundle.png",
+    "bytes": 771787,
+    "sha256": "7d97f7fe96106f4b824411a0431b05090d7258c37901ea5a032b672f3f344fa3"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/map-render-check.json",
+    "bytes": 419,
+    "sha256": "8db847e504442e447189b59c9b080b4f1226a8177c5e4eec9faa5c5979f022bd"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/map.png",
+    "bytes": 771787,
+    "sha256": "7d97f7fe96106f4b824411a0431b05090d7258c37901ea5a032b672f3f344fa3"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/metrics.json",
+    "bytes": 2164,
+    "sha256": "baf51bee43b81c741776471182656b5e2b19be75895cdd6222b670462aba6802"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/modules.json",
+    "bytes": 493222,
+    "sha256": "6ccc93d56159f88e2fe6118f35887b9518d7a525b736568bae3aef016269c5e5"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/open-gate-collision.png",
+    "bytes": 50904,
+    "sha256": "162984a37b514029c8ed59eda5735b9512ee942ecec7db0f9cba8c3f96a86764"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/open-gate-complete.png",
+    "bytes": 47210,
+    "sha256": "931ccb015bb3bc929282ed3d6c3146e01bb82f8ec3fde401e01b2bdcf9308475"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/open-gate-join.png",
+    "bytes": 22323,
+    "sha256": "2f01c84150537644b821d1d3a0d4f04e88cf9920bba8ffa81d9f14d16677577f"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/open-gate-mask.png",
+    "bytes": 18476,
+    "sha256": "c38858d29b9794fa957f62cb78bc64a23b58a08a1e18ddd3ecc921bd437b3d45"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/open-gate-parts.png",
+    "bytes": 131959,
+    "sha256": "561693f60d5efc1cda5d1e6b1fc3bee01aaf6c75265a0c2984167e68ce8d15ef"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/open-gate-shadow.png",
+    "bytes": 17479,
+    "sha256": "579aaa2b3c6e0ac2a87cd04205ddbe73ad0d0221eca672d10b0102407e753c64"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/open-gate-silhouette.png",
+    "bytes": 42531,
+    "sha256": "e236b25c0b55d4cc66e0f39da11199dfb33a8902a6174f5fb34d1c927f01fb55"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/open-gate-sources.png",
+    "bytes": 27631,
+    "sha256": "334979003e91ae86ff54c5b1fbabd8043d529c7dd1d8607377fb17a59097ab83"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/read-inputs.json",
+    "bytes": 8822,
+    "sha256": "223a4a70a679000f9b22b7beb51d34962439244d14432c40343634e38c5787f4"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/recipes.json",
+    "bytes": 811673,
+    "sha256": "506e69f2c643bd780963bfc50929a6de5cf85b5b19d1edde7e41e06a84a57579"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/source-selection.png",
+    "bytes": 85889,
+    "sha256": "0a317e5d34092f65c98706318dd3ae9e2e3d18b2e3f8eaee63c85e63d64052f5"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/stage1-overview.png",
+    "bytes": 228661,
+    "sha256": "753d0aeafde6e02050bbec66c1ced3d0aaf3c677aacb80e393503bef37fdd88e"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/stage1-report.md",
+    "bytes": 12320,
+    "sha256": "fc8d1ec1d0d5755e757aca903b2bcc9c13d6e851cefd7c5ef6f4065914dfc662"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/street-joins.png",
+    "bytes": 165989,
+    "sha256": "639533e72c89dbce68893f21a02e64ead991571ef28174c58a9f8b1ef99df2ee"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/street.png",
+    "bytes": 385630,
+    "sha256": "25ef173944cac72e2ec1a0e14b702c56843b7de580891b8d7f00472f51119161"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/wall-corner-before.png",
+    "bytes": 27703,
+    "sha256": "17222ebdd0a852135d4faa1564159d5c1986e1451e5a28bb0ef961ef592e268b"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/wall-corner-collision.png",
+    "bytes": 36176,
+    "sha256": "7edbe2738bf1438dda625879e282d7ac591870b2ef3f72519605c974cc0782d8"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/wall-corner-complete.png",
+    "bytes": 33800,
+    "sha256": "22d7660ebd824aab08df8fa56ea15fab75a208bfb9736788ee4ef04bc6a89e3a"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/wall-corner-join.png",
+    "bytes": 13022,
+    "sha256": "1962da644ba5a52398c815a1cdb499b5e0c5d7059728b3e68ad624017554fd29"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/wall-corner-mask.png",
+    "bytes": 17553,
+    "sha256": "288a4ab538889d6aafc8827a412377758de98f4e1ee14ec3c9865ef82551d95a"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/wall-corner-parts.png",
+    "bytes": 118546,
+    "sha256": "72d0dbf084ea45199359697089f45ea363a6511cd0c77376f4461b69ecd7df42"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/wall-corner-shadow.png",
+    "bytes": 17458,
+    "sha256": "aec9c584ea8e65aeff4765a62636c6afb4e73faa1081213cba3ff5fd4044682e"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/wall-corner-silhouette.png",
+    "bytes": 29341,
+    "sha256": "474bdfb5153724875b3f02c75419e54d543588c910504972ec15d3b44861e798"
+  },
+  {
+    "path": "verify-shots/slates-astra-v2/wall-corner-sources.png",
+    "bytes": 23836,
+    "sha256": "07cec8b37cac113115e5a924fc7ce108680e6459f842d502af417229ebc6462f"
+  }
+]

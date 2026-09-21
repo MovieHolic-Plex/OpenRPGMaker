@@ -4,6 +4,7 @@ import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { store } from "@/project/store";
 import type { ActorParameterKey, ClassRecord } from "@/project/types";
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
 import { curvePreviewGraph } from "@/editor/panels/databaseCurvePreview";
 
 const PARAMETER_LABELS: Record<ActorParameterKey, string> = {
@@ -78,8 +79,19 @@ function openClassParameterDialog(record: ClassRecord, initialKey: ActorParamete
   };
   // 레벨/값 입력을 draft 에 반영(스토어 커밋 아님).
   const applyValueToDraft = (): void => {
-    activeLevel = clampDialogInteger(dialogInputNumber(levelInput), 1, 99);
-    const value = clampDialogInteger(dialogInputNumber(valueInput), 1, 99999);
+    const rawLevel = dialogInputNumber(levelInput);
+    const rawValue = dialogInputNumber(valueInput);
+    // 빈 칸·NaN 을 min 으로 폴백하면 **보던 값이 Lv1 에 기록되고 원래 Lv1 이 파괴된다.**
+    // (레벨을 비우고 적용 → clampDialogInteger(NaN,1,99) === 1) 유효하지 않은 입력은
+    // 커밋 대상이 아니다 — 마지막 유효 상태로 되돌리고 이유를 알린다.
+    if (!Number.isFinite(rawLevel) || !Number.isFinite(rawValue)) {
+      levelInput.value = String(activeLevel);
+      syncValueInput();
+      toast("레벨과 값은 숫자로 입력하세요. 마지막 값으로 되돌렸습니다.", "error");
+      return;
+    }
+    activeLevel = clampDialogInteger(rawLevel, 1, 99);
+    const value = clampDialogInteger(rawValue, 1, 99999);
     const nextCurve = draft[activeKey].slice();
     nextCurve[activeLevel - 1] = value;
     draft = { ...draft, [activeKey]: nextCurve };

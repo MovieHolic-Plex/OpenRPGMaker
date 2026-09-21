@@ -11,6 +11,14 @@ describe("aiToolLabels — 툴 이름을 사람 말로", () => {
     expect(toolLabel("author_house")).toBe("집 짓기");
   });
 
+  it("웹 검색은 사전에 있다 — 없으면 화면에 영문 함수명이 그대로 보인다", () => {
+    // Break(2026-09-21 실측): 사전에서 빠지면 조수가 검색할 때마다 작업 타임라인이 영문을 보여 준다.
+    expect(toolLabel("web_search")).toBe("웹 검색");
+    // 바깥 검색이므로 돋보기 아이콘·조회 그룹이다.
+    expect(toolIconKey("web_search")).toBe("search");
+    expect(toolGroup("web_search")).toBe("inspect");
+  });
+
   it("모르는 툴은 원문의 밑줄만 공백으로 푼다 — 지어내지 않는다", () => {
     // Break: 폴백이 빈 문자열이나 원문 그대로(밑줄 포함)를 돌려준다.
     expect(toolLabel("weird_new_tool")).toBe("weird new tool");

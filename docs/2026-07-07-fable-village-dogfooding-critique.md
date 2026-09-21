@@ -3,7 +3,7 @@
 > 감독(Claude Fable 5) 직접 수행. 지시: "모든 맵을 삭제하고, 에디터 기능만으로 마을 하나를 만들어라. 에이전트를 최대한 이용하고 비판적으로 평가하라."
 > 환경: feat/phase-6a 942b350 빌드(9988 정적 서빙) + dev 서버. 인-에디터 AI = `google/gemini-3.5-flash` (사용자 확정 상위 모델).
 > 증거: `evidence/fable-village-eval/` (P1~P10 스크린샷 + 타임라인 + p9/p10 상세 계측 로그 jsonl).
-> 결과물: Supabase 프로젝트 `fable-village` ("Fable 마을") — 흙길 십자로 + 집 3채 + 연못 정원 + NPC 2명(마리/토무, 대사 포함) + 시작 위치. `evidence/fable-village-eval/fable-village.json` 아티팩트 동봉.
+> 결과물: LegacyDb 프로젝트 `fable-village` ("Fable 마을") — 흙길 십자로 + 집 3채 + 연못 정원 + NPC 2명(마리/토무, 대사 포함) + 시작 위치. `evidence/fable-village-eval/fable-village.json` 아티팩트 동봉.
 
 ## 요약 판정
 
@@ -57,7 +57,7 @@
 | P7 | 채팅 3턴 전체 마을 | **마을 완성 1차** (십자로+집3+연못+NPC) — 영속화 실패 (결함 12) |
 | P8 | dev 서버 + 모듈 저장 계획 | 0건 프로포절 블로킹 발견 (결함 5) + 완성도 린트 실전 검증 |
 | P9 | 상세 계측 로깅 + 카드 양쪽 처리 | 마을 재완성 (턴당 33~37초) — DB 모달 진입 실패 (결함 12 확정) |
-| P10 | dev + saveProjectToSupabase 직접 호출 | **영속화 성공**: `fable-village` 업서트 + 재로드 검증 + 인게임 플레이테스트 ✓ |
+| P10 | dev + saveProjectToLegacyDb 직접 호출 | **영속화 성공**: `fable-village` 업서트 + 재로드 검증 + 인게임 플레이테스트 ✓ |
 
 ## 결과물 보는 법
 9988 에디터에서 DB 연결 설정(또는 부팅 에러 화면의 "DB 연결 열기") → Project ID `fable-village` → 연결 시도. 또는 목록 불러오기에서 "Fable 마을" 선택.

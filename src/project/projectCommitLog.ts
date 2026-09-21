@@ -1,12 +1,12 @@
 // project/projectCommitLog.ts
-// 원격 커밋 로그(Supabase project_commits / project_changes) 기록 경로.
+// 원격 커밋 로그(project storage project_commits / project_changes) 기록 경로.
 //
 // **왜 `@/editor/tools/changeset` 를 여기서 import 하는가 (순환 검사 근거, 2026-08-29 실측):**
 // diff 계산기(`summarizeChanges`)를 두 번 만들지 않기 위해 원본을 그대로 쓴다. import 그래프를
 // 실제로 넓혀서 확인했다 —
 //   - `editor/tools/changeset.ts` 에서 도달 가능한 모듈 218개 중 `project/projectCommitLog.ts`
 //     도 `project/store.ts` 도 **없다**. 즉 순환이 아니다.
-//   - 무게도 늘지 않는다: `projectCommitLog.ts` 는 이미 `supabaseProjectSync` 경유로
+//   - 무게도 늘지 않는다: `projectCommitLog.ts` 는 이미 `projectRepository` 경유로
 //     `project/lint/projectLint` 를 끌고 있어 224개를 도달한다. changeset 이 추가로 들여오는
 //     것은 `editor/detachedDraftMemory`(의존 0개)와 타입 전용 `editor/tools/types` 뿐이다.
 //   - `src/project/*` → `src/editor/*` 방향 자체도 선례가 있다
@@ -61,7 +61,7 @@ function drainEditActivityForCommit(): EditActivityCommitAttachment | undefined 
 }
 
 /**
- * 커밋 로그 row — 포스트 적용 증거로 쓰는 결정적 형태. supabase 미설정이면
+ * 커밋 로그 row — 포스트 적용 증거로 쓰는 결정적 형태. 프로젝트 저장소 미설정이면
  * persisted:false + commitId:null(로컬 전용)로 항상 resolve 된다.
  */
 export type CommitRow = {
@@ -154,7 +154,7 @@ export function recordManualProjectCommitAfterSave(project: Project, baseline?: 
     // 커밋 기록 요청이 실패하면(네트워크 오류 등) baseline을 전진시키지 않는다 —
     // 미리 전진시키면 이후 동일 내용 재저장이 dedup에 걸려 그 커밋이 영구히 기록되지 않는다.
     //
-    // resolve 됐다고 기록된 것은 아니다. `commits.record` 는 supabase 미설정과
+    // resolve 됐다고 기록된 것은 아니다. `commits.record` 는 프로젝트 저장소 미설정과
     // project_commits/project_changes 테이블 누락을 **정상 resolve(not-configured)** 로 돌려준다.
     // 이전 구현은 `.then()` 에서 kind 를 보지 않아 그 경우에도 baseline 을 전진시켰고,
     // 나중에 설정이 붙은 뒤 동일 내용 재저장이 dedup 에 걸려 그 커밋이 영구히 사라졌다.

@@ -287,26 +287,26 @@
 .oprn-status-menu .status-menu-strip-value { color: var(--status-edge-muted); font-size: 5.5px; font-variant-numeric: tabular-nums; font-weight: 500; white-space: nowrap; }
 
 /* ── 사이드 시트(landing sheet): 첫 화면만 오른쪽 140px 시트. 지도는 왼쪽에 남고 오른쪽으로 갈수록만 어둡다. function 모드는 기본 판 ── */
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"]::before {
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"]::before {
   box-shadow: -4px 0 14px rgba(3, 5, 14, 0.45);
   inset: 6px 6px 6px 174px;
 }
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"]::after {
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"]::after {
   background: linear-gradient(90deg, rgba(6, 8, 18, 0.04), rgba(6, 8, 18, 0.12) 50%, rgba(6, 8, 18, 0.5));
 }
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-header {
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-header {
   gap: 4px;
   left: 181px;
   padding-bottom: 4px;
   right: 13px;
   top: 12px;
 }
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-heading { font-size: 9px; }
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-location,
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-gold,
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-time { font-size: 6px; }
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-heading { font-size: 9px; }
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-location,
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-gold,
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-time { font-size: 6px; }
 /* 파티 개요 4행 — 얼굴 22px(렌더러가 크기를 정한다), 행 26px */
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-party-overview {
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-party-overview {
   bottom: auto;
   gap: 2px;
   height: 110px;
@@ -314,22 +314,22 @@
   right: 13px;
   top: 28px;
 }
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-overview-row {
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-overview-row {
   gap: 3px;
   grid-template-columns: 22px minmax(0, 1fr);
   padding: 1px 3px 1px 2px;
 }
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-overview-info { gap: 1px; }
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-overview-head .status-menu-actor-name { font-size: 6.5px; }
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-overview-head .status-menu-actor-subline { font-size: 5px; }
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-overview-chip { font-size: 4.5px; padding: 0 2px; }
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-overview-vital { gap: 2px; grid-template-columns: 8px minmax(0, 1fr) max-content; line-height: 1.1; }
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-overview-vital-label { font-size: 4.5px; }
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-overview-value { font-size: 5.5px; line-height: 1.1; }
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-overview-head { line-height: 1.15; }
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-overview-track { height: 2px; }
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-overview-info { gap: 1px; }
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-overview-head .status-menu-actor-name { font-size: 6.5px; }
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-overview-head .status-menu-actor-subline { font-size: 5px; }
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-overview-chip { font-size: 4.5px; padding: 0 2px; }
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-overview-vital { gap: 2px; grid-template-columns: 8px minmax(0, 1fr) max-content; line-height: 1.1; }
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-overview-vital-label { font-size: 4.5px; }
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-overview-value { font-size: 5.5px; line-height: 1.1; }
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-overview-head { line-height: 1.15; }
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-overview-track { height: 2px; }
 /* 명령 격자 2열 × 5행(12px) — 10항목 평탄 레일이 68px 에 들어간다. 세로 커서 막대는 왼쪽 열만 가리키므로 끄고 선택 바탕으로 */
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-command-rail {
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-command-rail {
   border-right: 0;
   bottom: auto;
   display: grid;
@@ -343,25 +343,25 @@
   top: 142px;
   width: auto;
 }
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-command-rail::after { display: none; }
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-command-rail > .status-menu-command {
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-command-rail::after { display: none; }
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-command-rail > .status-menu-command {
   flex: none;
   font-size: 6px;
   gap: 3px;
   height: 12px;
   padding: 0 3px;
 }
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-command-icon { flex-basis: 8px; height: 8px; width: 8px; }
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-command-icon { flex-basis: 8px; height: 8px; width: 8px; }
 /* 푸터 — 시트 폭에 맞추고, 첫 화면엔 메시지 줄이 비어 있으므로 접는다 */
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-footer {
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-footer {
   bottom: 12px;
   font-size: 5.5px;
   gap: 0;
   left: 181px;
   right: 13px;
 }
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-message { display: none; }
-.oprn-status-menu.main-menu[data-menu-skin="sheet"][data-status-menu-screen="main"] .status-menu-controls { padding-top: 3px; }
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-message { display: none; }
+.oprn-status-menu.main-menu:is([data-menu-skin="sheet"],[data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-controls { padding-top: 3px; }
 
 /* Classic: separate blue windows, crisp double borders and a restrained cursor. */
 .oprn-status-menu.main-menu[data-menu-skin="classic"] {
@@ -500,3 +500,34 @@
   background: var(--status-edge-amber-soft);
   border-color: var(--status-edge-amber);
 }
+
+/* Exploration-first menu: native 9px Korean lettering, one keyboard column. */
+.oprn-status-menu.main-menu[data-menu-skin="field-list"] {
+  --runtime-ui-font: "Galmuri9", sans-serif;
+  --status-edge-ivory:#293b43;
+  --status-edge-muted:#617272;
+  --status-edge-amber:#943c40;
+  --status-edge-amber-soft:#e7e7d2;
+  --status-edge-border:#a4b5ad;
+  font-synthesis:none;
+  text-shadow:none;
+}
+.oprn-status-menu.main-menu[data-menu-skin="field-list"]::before {
+  background:#faf9eb; border:2px solid #3a5055; border-radius:2px;
+  box-shadow:inset 0 0 0 2px #fff,0 2px 0 #25363c;
+}
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-status-menu-screen="main"]::after { background:#172a301a; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-status-menu-screen="main"] .status-menu-party-overview { display:none; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-status-menu-screen="main"] .status-menu-header { left:185px; right:17px; top:17px; display:flex; justify-content:space-between; padding-bottom:9px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-status-menu-screen="main"] :is(.status-menu-location,.status-menu-time) { display:none; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-status-menu-screen="main"] :is(.status-menu-heading,.status-menu-gold) { font:400 9px/1 "Galmuri9",sans-serif; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-status-menu-screen="main"] .status-menu-command-rail { top:42px; left:183px; right:15px; height:auto; bottom:32px; grid-template-columns:1fr; grid-auto-rows:16px; gap:1px; overflow-y:auto; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-status-menu-screen="main"] .status-menu-command-rail > .status-menu-command { padding:2px 8px; font:400 9px/1 "Galmuri9",sans-serif; border-radius:1px; gap:7px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"] .status-menu-command.selected { background:#e1e8d9; box-shadow:inset 3px 0 #b95350; color:#23383b; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"] .status-menu-command-icon { display:none; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-status-menu-screen="main"] .status-menu-footer { left:185px; right:17px; bottom:14px; border-top:1px solid #a4b5ad; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"] .status-menu-controls { font:400 9px/1.3 "Galmuri9",sans-serif; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"] .status-menu-command-rail > .status-menu-command:focus-visible { outline:1px solid #943c40; outline-offset:-1px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-status-menu-screen="main"] .status-menu-controls { white-space:pre-line; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-status-menu-screen="main"] .status-menu-command-rail { grid-auto-rows:15px; bottom:41px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-status-menu-screen="main"] .status-menu-footer { border-radius:0; }

@@ -1,3 +1,16 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
+## LegacyDb 잔여 의존 정리 (2026-09-21)
+
+현재 정본은 SQLite다. `tileMetadataDb.ts`의 load/save/clear 공개 함수는 저장소 중립 이름을
+사용하며, 호출자가 없던 LegacyDb 별칭을 제거했다. 실제 저장소 선택과 clear의 기존 no-op
+동작은 유지한다. 제거 범위·이관 도구의 한계는 [storage-retirement.md](storage-retirement.md).
+과거 LegacyDb 필수 지시는 현행 콘텐츠 저장 계약이 아니다. AGENTS의 SQLite 저장+재로드를 따른다.
+
+## 종족 전투 뒷모습 리소스 (2026-09-20)
+
+`MonsterSpeciesGraphic.backResourceId?: string`은 선택적 후면 전투 이미지 참조다. 기존 문서에는 없어도 되며 normalize는 공백 값을 정리한다. IO 참조 검증은 정면과 같은 monster 리소스 계약을 적용하고, 웹 export의 재귀 문자열 수집으로 이미지도 패키징한다. DB 도구 스키마와 종족 그래픽 편집기에 같은 필드를 노출한다. 방향이 back인 파티에서만 선택하며 미지정 시 정면 fallback을 유지한다. 버전 수동 증가는 없다. save/load/export 계약 테스트는 `test/monsterBackSprite.test.ts`에 추가했지만 세션 규칙에 따라 실행하지 않았다.
+
 ## 웹 프로젝트 생성과 선택 (2026-09-18)
 
 브라우저 호스트는 기본 폴더의 `.oprn-projects/<uuid>`에 프로젝트별 SQLite를 만든다.
@@ -19,7 +32,7 @@ PR #845, P2(로컬 어댑터·Electron 셸)는 브랜치 `local-store/p2`가 mai
 
 - **포트**: `src/project/persistence/types.ts`의 `ProjectRepository` 하나를 `repository.ts`가
   호출 시점에 고른다 — preload 브리지(`window.oprn`)가 있으면 Electron 어댑터, 없으면
-  **메모리 어댑터**. store와 주변 모듈은 더 이상 Supabase를 직접 부르지 않는다.
+  **메모리 어댑터**. store와 주변 모듈은 더 이상 LegacyDb를 직접 부르지 않는다.
 - **로컬 어댑터**: `electron/local-store/`는 `node:sqlite`(`DatabaseSync`)만 쓰는 Node 전용
   라이브러리다. electron을 import하지 않으므로 헤드리스 도구가 같은 폴더를 같은 라이브러리로 연다.
   폴더 모양은 `project.sqlite` + `assets/` + `backups/`(`VACUUM INTO`), 형식 버전은 `meta`에 있다.
@@ -30,15 +43,15 @@ PR #845, P2(로컬 어댑터·Electron 셸)는 브랜치 `local-store/p2`가 mai
   `src/project/types/**`·`src/project/persistence/core/**`만, `src/**`는 `electron/shared/**`만
   import한다. 렌더러 파일 이름에 `sqlite`를 쓰지 않는다. `test/noLocalProjectDb.test.ts`가 이 경계를 지킨다.
 - **헤드리스**: `scripts/oprn-store.mjs`(init·info·import-json·import-package·export-json·backup·
-  import-supabase)와 `scripts/oprn-tools.mjs --project-dir <dir>`가 폴더를 연다.
+  import-legacyDb)와 `scripts/oprn-tools.mjs --project-dir <dir>`가 폴더를 연다.
   계약은 `test/localStore/headlessProjectDir.test.ts`(폴더 열기)와 `test/persistence/*`(공유 계약).
 - **패키징(P5 진입, 2026-09-17)**: `electron-builder.config.mjs` + `npm run package`/`package:dir`
   → `release/linux-unpacked`(asar 안에 dist/+dist-electron/). 개발 스모크(`electron:smoke`는
   `dist-electron/main.cjs`를 직접 띄운다)와 다른 경로라 `scripts/qa/verifyPackagedApp.mjs`
   (`npm run qa:package`, 헤드리스는 xvfb-run 필요)가 실제 바이너리로 시작 화면→폴더 열기→
   편집기 캔버스→폴더 영속화를 증명한다.
-  - **출하 번들 env 스크럽**: `supabaseProjectConfig`가 `import.meta.env`를 통째로 직렬화하므로
-    `.env.local`의 모든 `VITE_*`(Supabase 주소·키, LLM 키 등)가 번들에 박힌다. `package`/`package:dir`는
+  - **출하 번들 env 스크럽**: `legacyDbProjectConfig`가 `import.meta.env`를 통째로 직렬화하므로
+    `.env.local`의 모든 `VITE_*`(LegacyDb 주소·키, LLM 키 등)가 번들에 박힌다. `package`/`package:dir`는
     `build:packaged`(`vite build --mode packaged`)를 타고 `.env.packaged`가 `.env.local`보다 우선해
     원격·비밀 변수를 빈 문자열로 덮는다 — 패키징 앱의 원격 연결은 사용자가 설정 화면에서 넣는다.
     새 `VITE_*` 비밀을 추가하면 `.env.packaged`에도 빈 값으로 나열해야 한다.
@@ -74,16 +87,16 @@ P4 셸 코드는 main 에 있었지만 **실행 진입점이 없어서** 아무�
 - **증거**: `scripts/qa/electronAppBootProbe.mjs` 가 폴더를 연 채 앱을 띄워 편집기 셸·본문 마운트,
   상태 `ready`, DB 연결 화면 부재, 메뉴 저장이 `project.sqlite` 리비전을 올리는 것까지 본다.
   저장·재기동 왕복은 `test/e2e/electronBridge.spec.ts`(playwright.electron.config.ts)가 맡는다.
-- **P6 완료 — 부팅 경로에서 Supabase 제거 (2026-09-16)**: 브리지 없는 웹 빌드의 폴백이
+- **P6 완료 — 부팅 경로에서 LegacyDb 제거 (2026-09-16)**: 브리지 없는 웹 빌드의 폴백이
   **메모리 어댑터**(`createMemoryRepository({ target: null })`)로 바뀌었다. 웹 빌드는 편집 도구가
-  아니라 QA 하네스다. 다음 모듈을 삭제했다: `supabaseProjectSync` · `supabaseProjectConfig` ·
-  `supabaseProxyPath` · `persistence/supabaseRepository` · `spatial/persistence` ·
-  `spatial/persistenceHttp` · vite의 `/supabase` 프록시. `saveRouting` 은 라우팅 오류·권한
+  아니라 QA 하네스다. 다음 모듈을 삭제했다: `legacyDbProjectSync` · `legacyDbProjectConfig` ·
+  `legacyDbProxyPath` · `persistence/legacyDbRepository` · `spatial/persistence` ·
+  `spatial/persistenceHttp` · vite의 `/legacyDb` 프록시. `saveRouting` 은 라우팅 오류·권한
   타입만 남기고 재작성했고 `SpatialPersistenceError` 등은 `persistenceTypes` 로 옮깠다.
   맵 편집 잠금(`mapEditLocks`)은 원격 행이 없어 성립하지 않으므로 계약 유지 스텁(idle)으로
   퇴역했다 — `canEditMap` 은 항상 참.
-- **결합 경계 가드**: `test/persistence/supabaseCouplingBoundary.test.ts` 가 세 가지를 지킨다 —
-  ① `src/**` 어디에도 `/rest/v1` 문자열이 없을 것, ② 퇴역 모듈(`supabaseProjectSync` 등)이
+- **결합 경계 가드**: `test/persistence/storageBoundary.test.ts` 가 세 가지를 지킨다 —
+  ① `src/**` 어디에도 `/rest/v1` 문자열이 없을 것, ② 퇴역 모듈(`legacyDbProjectSync` 등)이
   부활하지 말 것, ③ 브리지 없는 기본 어댑터가 memory 종류일 것.
 - **이관 도구**: `test/support/projectSession.ts` 의 `installMemoryProjectSession()`(스토어·UI 주제),
   `test/support/electronBridgeSession.ts` 의 `installElectronBridgeSession()`(비동기 전송 주제 — 저장을
@@ -232,7 +245,7 @@ and the explicit task11 transaction boundary (project v4 / spatial v1).
 
 `ProjectWriteAuthority` is separate from `Project`: an explicit create intent, a
 legacy loaded target, or a canonical loaded/accepted server SHA plus target.
-`loadProjectSnapshotFromSupabase` returns it; the ordinary load callback carries
+`loadProjectSnapshotFromLegacyDb` returns it; the ordinary load callback carries
 it into the store before normalization. Local clones, map edits, AI acceptance
 and same-target replacement retain that authority. A null editor baseline never
 means insert-only creation. Canonical full/map saves use one publication RPC,
@@ -286,7 +299,7 @@ editor. The optional wire/server hash alone doesn't establish content equality.
 If accepted content can't normalize, saving logs the error and returns no receipt.
 
 `store.verifyPersistedRevision(receipt, { signal?, validate? })` accepts the exact
-store-issued object. A private WeakMap holds its captured Supabase configuration
+store-issued object. A private WeakMap holds its captured LegacyDb configuration
 and load/adoption lineage; copied or reconstructed tokens fail. `loadProjectForPersistenceProof` reuses the
 normalized/hybrid loader with observed `project_id` and cancellation, without
 commit-tip hydration. It performs a remote read, not `reloadFromRemote()`: no
@@ -314,10 +327,10 @@ currentness when consuming it after an await. Neither save responses nor proof
 reads replace newer local edits.
 
 Sources: [store types and methods](../src/project/store.ts) and
-[proof loader](../src/project/supabaseProjectSync.ts). The
+[proof loader](../src/project/legacyDbProjectSync.ts). The
 [session contract](editor-ai-panel.md) describes completion/retry and optional
 apply-commit correlation. [P1 evidence](../output/evidence/ai-harness/p1/README.md)
-records real editor and isolated Supabase proof. This adds no schema migration,
+records real editor and isolated LegacyDb proof. This adds no schema migration,
 durable receipt recovery, cross-device guarantee, or P2-P5 implementation.
 
 ## Opening and game-over cinematic settings (2026-09-06)
@@ -419,7 +432,7 @@ and applies only kind/raw-ID states that changed locally relative to base. Diffe
 edits survive together; a changed local key wins a same-key conflict. Absence is reset,
 not clear. Unchanged local keys retain remote edits and remote resets.
 
-`src/project/supabaseProjectSync.ts` uses this delta for map-patch saves. A project-scoped
+`src/project/legacyDbProjectSync.ts` uses this delta for map-patch saves. A project-scoped
 description mutation doesn't force a full save: `src/project/store.ts` chooses the save API
 from the persisted baseline. After success, the store reconciles descriptions with
 `base=submitted`, `local=current`, `latest=saved`. This preserves typing during the request,
@@ -449,7 +462,7 @@ Real playback references still retain their assets and IDs.
 `test/audioDescriptions.test.ts`, `test/audioDescriptionPersistence.test.ts`,
 `test/audioDescriptionConcurrentPersistence.test.ts` and
 `test/audioDescriptionExport.test.ts` exercise these boundaries. Transport-mocked tests
-using real save/load/merge functions aren't evidence of a live Supabase write.
+using real save/load/merge functions aren't evidence of a live LegacyDb write.
 
 ## Character/face authoring metadata (2026-09-06)
 
@@ -457,7 +470,7 @@ using real save/load/merge functions aren't evidence of a live Supabase write.
 
 `ResourceProfile` optionally carries standalone-face `graphicAttributes`/`graphicNote`, or charset `characterSlots: [{characterIndex,graphicAttributes,status,faceResourceId,quality,note}]`. Seven independent string axes are kind/age/gender/skin/hair/clothing/role. Sprite names remain in `Project.charsetLabels`; face names use the existing profile name. No parallel asset registry, project version bump, or SQL migration is introduced.
 
-`characterGraphics.validateCharacterGraphicsProject` runs in `validateProjectV4`, rejecting malformed attributes, duplicate canonical sprite slots and unknown mapped face IDs. Non-mapped states require an explicit null face ID; pending/no-face are distinct. Existing projects keep these optional fields absent; display-only literal-label suggestions do not write metadata on load. Texture-key/resource-ID profile aliases resolve to the annotated profile rather than hiding edits. Whole-project serialize/deserialize, packages and Supabase current_json retain the fields; the existing missing-only bundled-profile supplementation preserves annotated profiles.
+`characterGraphics.validateCharacterGraphicsProject` runs in `validateProjectV4`, rejecting malformed attributes, duplicate canonical sprite slots and unknown mapped face IDs. Non-mapped states require an explicit null face ID; pending/no-face are distinct. Existing projects keep these optional fields absent; display-only literal-label suggestions do not write metadata on load. Texture-key/resource-ID profile aliases resolve to the annotated profile rather than hiding edits. Whole-project serialize/deserialize, packages and LegacyDb current_json retain the fields; the existing missing-only bundled-profile supplementation preserves annotated profiles.
 
 Metadata JSON import validates all v1/v2 rows before a single mutation, retains pending labels and exact supplied face IDs, and never invokes automatic face matching or rewrites authored event commands. V2 exports both independent attribute sets. Focused contracts: `test/characterGraphics.test.ts`, `test/characterGraphicsLoad.test.ts`, `test/databaseCharacterGraphics.test.ts`.
 ## Character appearance sets v1 (2026-09-06)
@@ -594,7 +607,7 @@ Authored project schema, defaults, validation, migration, references, and persis
 ## Showcase media save-copy durability (issue #693, 2026-09-08)
 
 `mediaImportPersistence.ts` stages showcase audio/video in a detached candidate.
-The shared confirmation explicitly authorizes a NEW Supabase project before any
+The shared confirmation explicitly authorizes a NEW LegacyDb project before any
 remote write. `loadNewRemoteProjectTransactionally(..., { source: "dev-showcase" })`
 does not flush a quota-constrained source: it preserves live edits and previous
 local recovery, saves the candidate to a generated target, then uses the existing
@@ -605,8 +618,8 @@ written but unadopted remote copy may remain; there is no automatic remote delet
 
 Adoption removes the three showcase boot selectors from the URL so reload opens
 the new remote project, not the seed. The original local override stays available
-at its original URL. Supabase `current_json.assets.uploaded` remains the media
-root; `supabaseResourceCache` remains a cache, not canonical blob storage. No
+at its original URL. LegacyDb `current_json.assets.uploaded` remains the media
+root; `legacyDbResourceCache` remains a cache, not canonical blob storage. No
 project schema migration, local DB fallback or new backend is introduced.
 
 Ordinary remote media import awaits store flush before success. A failed remote
@@ -633,7 +646,7 @@ bytes after real remote reload and Test Play. The default is not remote proof.
 
 ## 공용 첫 방문 데모 — 읽기 전용 저장 계약 (2026-09-14)
 
-첫 방문자가 바로 보는 정본 데모는 전용 Supabase 행
+첫 방문자가 바로 보는 정본 데모는 전용 LegacyDb 행
 `rpg-zzu-first-visit-demo`(「큰 강호 장터 마을」)다. 배포 기본(gallery) 행을 쓰지
 않는 이유: 공유 행은 다른 탭의 자동저장이 덮어쓰는 실측 사고가 있다
 (`openwiki/large-village-generation.md`).
@@ -647,7 +660,7 @@ bytes after real remote reload and Test Play. The default is not remote proof.
   `remotePersistenceEnabled` 게이트에서 멈춘다 — 새로운 쓰기 경로를 만들지 않고
   비활성 이유(`DbPersistenceDisabledReason` 에 `"shared-demo"` 추가)만 늘렸다.
 - **URL·선택 저장 오염 금지.** `loadSharedDemo` 는 `syncProjectToUrl` /
-  `saveSupabaseSelectedProjectId` 를 호출하지 않는다 — 다음 방문도 첫 방문
+  `saveLegacyDbSelectedProjectId` 를 호출하지 않는다 — 다음 방문도 첫 방문
   게이트를 다시 타고, 방문자의 기존 작업 선택을 데모가 덮지 않는다.
 - **포크만이 유일한 쓰기 출구.** `forkSharedDemoToEditableCopy` →
   `loadNewRemoteProjectTransactionally(project)`. 데모 세션은 flush 할 원격
@@ -657,7 +670,7 @@ bytes after real remote reload and Test Play. The default is not remote proof.
   데모 세션에서는 같은 사본 만들기 안내로 연결한다.
 - **발행.** `scripts/publish-first-visit-demo.mts` 가
   `buildLargeRiverMarketVillageProject` 산출물을 QA(집 20채·NPC 53·시장·낚시·
-  물길) 후 실제 Supabase 경로로 저장하고 재로드 일치를 증명한다. 스토어를 거치지
+  물길) 후 실제 LegacyDb 경로로 저장하고 재로드 일치를 증명한다. 스토어를 거치지
   않으므로 읽기 전용 가드의 영향을 받지 않는다. 증거는
   `output/evidence/first-visit-demo/`(적용 실행은 `{"saved":true,"reloaded":true}`).
 - **계약 테스트:** `test/sharedDemoStore.test.ts` — 데모 로드 시 읽기 전용
@@ -666,13 +679,20 @@ bytes after real remote reload and Test Play. The default is not remote proof.
   않음, 데모 id 대상 전환 거부.
 
 ## Project schema & persistence
-- **Retained map planning items (2026-09-10, OPRN-019):** optional `GameMap.planningItems` is authored, human-readable planning data owned by `src/project/mapPlanningItems.ts`. Each row is `{id, text, status:"active"|"retired", origin:"user"|"spec", createdAt?, updatedAt?, specAssetId?}` with ids of the form `pi_N`, text folded to single spaces and capped at 400 characters, and at most 200 rows per map. The field is **absent** when unauthored, so legacy project JSON stays byte-stable and `SCHEMA_VERSION` is **not** bumped. `validateMaps` in `io/shapeEventFields.ts` is **fail-closed** at the JSON boundary — a non-array, blank id/text, duplicate id, unknown `status`/`origin`, non-string timestamp, or over-limit array rejects the load rather than silently dropping a sentence the user chose to keep. After shape checks, `normalizeProjectPlanningItems` (in `io/shape.ts`, beside `normalizeStoryFlags`) re-normalizes text and deletes the field when nothing survives. `serialize` passes the field through unchanged, so export (`.oprn` / project JSON) → import round-trips it, and Supabase load/save need no migration. Editor writes go only through `src/editor/mapPlanningActions.ts` as `{scope:"map", mapId}` updates. This field is authoring metadata for the assistant UX only: no runtime, session, save-slot, spec-gate, approval-policy or validator code reads it, and it must not become mandatory prompt memory — reuse is an explicit per-turn user choice (`openwiki/editor-ai-panel.md`). Tests: `test/mapPlanningItems.test.ts` (roundtrip, empty-field deletion, fail-closed cases), `test/mapPlanningReuse.test.ts` (reload through `store.replaceProject`, per-map scope, deletion).
+
+- **Character auto scale (2026-09-21):** optional `EventPageGraphic.scaleMode: "auto" | "manual"`
+  survives project serialize/deserialize and is validated on page/graphic inputs. Missing mode plus
+  explicit `scale` preserves the legacy absolute value (including 1); neither field means automatic
+  integer fit to the current map cell. Explicit auto treats `scale` as a body multiplier. No version
+  bump or data rewrite. Editor manual/auto controls and player/NPC/follower rendering share this
+  contract; see `tile-geometry.md` «캐릭터 자동 배율» and `test/ioFootprintValidation.test.ts`.
+- **Retained map planning items (2026-09-10, OPRN-019):** optional `GameMap.planningItems` is authored, human-readable planning data owned by `src/project/mapPlanningItems.ts`. Each row is `{id, text, status:"active"|"retired", origin:"user"|"spec", createdAt?, updatedAt?, specAssetId?}` with ids of the form `pi_N`, text folded to single spaces and capped at 400 characters, and at most 200 rows per map. The field is **absent** when unauthored, so legacy project JSON stays byte-stable and `SCHEMA_VERSION` is **not** bumped. `validateMaps` in `io/shapeEventFields.ts` is **fail-closed** at the JSON boundary — a non-array, blank id/text, duplicate id, unknown `status`/`origin`, non-string timestamp, or over-limit array rejects the load rather than silently dropping a sentence the user chose to keep. After shape checks, `normalizeProjectPlanningItems` (in `io/shape.ts`, beside `normalizeStoryFlags`) re-normalizes text and deletes the field when nothing survives. `serialize` passes the field through unchanged, so export (`.oprn` / project JSON) → import round-trips it, and LegacyDb load/save need no migration. Editor writes go only through `src/editor/mapPlanningActions.ts` as `{scope:"map", mapId}` updates. This field is authoring metadata for the assistant UX only: no runtime, session, save-slot, spec-gate, approval-policy or validator code reads it, and it must not become mandatory prompt memory — reuse is an explicit per-turn user choice (`openwiki/editor-ai-panel.md`). Tests: `test/mapPlanningItems.test.ts` (roundtrip, empty-field deletion, fail-closed cases), `test/mapPlanningReuse.test.ts` (reload through `store.replaceProject`, per-map scope, deletion).
 - **System audio cue authoring (2026-09-08):** M2 027/028 fields add optional concrete `cue` and `operation:"set"|"reset"` (omission means set), preserving `resourceId` precedence over legacy `value` even when empty. New catalog defaults are `{cue:"battle",operation:"set",resourceId:"",volume:100}` for BGM and `cue:"confirm"` for SE. `src/project/systemAudioOverrides.ts` owns the finite cue keys; `volume` is per-track 0..100, not a mixer mutation. Generic forms show a disabled legacy placeholder instead of pretending a cue-less saved command has the new default. Existing project versions need no audio migration: generic M2 fields round-trip unchanged; only the optional runtime/save-slot `systemAudioOverrides` field is added. Its parser rejects unknown families/cues, non-string resources and non-finite/out-of-range volumes. See `runtime-sessions.md` for playback and silence/reset semantics.
-- **Map-patch correction of invalid remote references (2026-09-08, task66):** a remote `current_json` can contain linked animals with an empty housing species policy even after the editor restores a valid local policy. Ordinary `deserialize`/Supabase load still rejects that row. Patch comparison extracts current-v4 maps/mapTree through shape checks and reference-independent normalization (`readProjectV4MapMergeSnapshot`); it never exposes invalid remote roots as a loadable Project. Reference repair is reserved for ordinary load and the validated complete candidate, not patch projection: repairing against remote roots first can delete concurrent common-event calls, transfers, schedules/living destinations, or rewrite emote targets that local roots/maps restore. This applies even if ordinary remote load would succeed after pruning. The same unpruned projection drives conflict detection, so a command-only remote edit cannot disappear from comparison. Local roots merge with the latest remote maps under the unchanged map/tree conflict rules. The completed candidate must pass reference validation before compatible load normalization, then the existing SHA-conditional write; a failed SHA re-reads and re-merges. Invalid local references, malformed remote shapes/versions, or incompatible merged references produce no write. No full-save fallback, animal-link repair policy, store-flight redesign, or schema migration is introduced. `test/supabaseMapPatchRecovery.test.ts` uses real parsing/validation and deferred transport barriers for correction, unrelated-map/event payload preservation, restored reference targets, load refusal, same-map command conflicts, SHA races, and zero-write rejection.
-- **Supabase schema deployment is manifest-driven (2026-08-24):** `scripts/lib/supabase-database-ops.mjs` registers every deployable file under `supabase/migrations/`; `test/supabaseDatabaseOps.node.test.mjs` fails when a non-draft SQL file is omitted. Run `npm run db:check` for an anon-key/PostgREST schema probe. An administrator sets `SUPABASE_DB_URL` in untracked `.env.local` and runs `npm run db:migrate`; the Bun runner records SHA-256 checksums in the admin-only `rpg_zzu.schema_migrations` ledger, baselines already-complete legacy migrations, rejects partially applied or checksum-changed SQL, reloads the PostgREST schema cache, and finishes with project-scoped `ai_activity_logs`/`ai_conversations` insert→reload→cleanup verification. `DRAFT_*.sql` is never deployable. Do not report DB work complete until `npm run db:verify-ai` passes and the project id is recorded.
-- **Missing AI tables are configuration errors, not successful fallbacks:** new activity writes never fall back into `ai_analysis_runs`; that table is read only for historical fallback rows. Missing `ai_activity_logs`, `ai_conversations`, or `user_skills` writes throw `SupabaseMigrationRequiredError` naming the required migration. The local conversation record (IndexedDB `oprn-ai-records` since 2026-09-03; the old `oprn:ai-conversations` localStorage key is migrated on first access) remains available, but the failed remote mirror is logged instead of silently swallowed. `scripts/list-ai-activity.mjs --remote` loads `.env` plus `.env.local` and scopes both primary and historical queries to `VITE_SUPABASE_PROJECT_ID`.
-- **Online-save credentials are deployment-owned (2026-08-24):** when a complete Vite Supabase URL/Anon pair exists, `supabaseProjectConfigDraftWithSource` treats it as authoritative over stale browser custom credentials. Product UI never asks a user to enter URL, Anon key, or Project ID. Work selection persists separately as the non-secret `oprn:supabase-selected-project`; `loadNewRemoteProject` must not copy deployment credentials into localStorage. Old `oprn:supabase-project-config` remains read-only compatibility when deployment env is absent. This is a zero-configuration UX change, not Supabase Auth or per-user RLS: the client-visible Anon key is still public application configuration, and user isolation must not be claimed until Auth/RLS is implemented and verified.
-- **AI 로그·대화 테이블의 anon 권한은 최소로 유지한다 (2026-08-27):** `20260827000000_ai_log_anon_delete_revoke.sql` 이 `ai_activity_logs` / `ai_conversations` / `ai_analysis_runs` 에서 anon 의 DELETE 를 회수한다. 클라이언트에는 이 세 테이블의 삭제 경로가 없다(`replaceRows` 는 maps/tilesets, `deleteSupabaseUserSkill` 은 user_skills 만) — 그래서 회수해도 기능 손실이 없고, 공개 anon 키로 남의 프로젝트 로그를 지우는 경로가 사라진다. 권한만 바꾸는 마이그레이션은 컬럼 계약으로 상태를 판정할 수 없으므로 레지스트리가 `revoked-privilege` 계약을 갖고, 적용기가 `information_schema.role_table_grants` 를 읽어 적용 여부를 판정한다(계약 없이 등록하면 SQL 실행 없이 baseline 으로 기록되어 조용히 누락된다). `verifyAiPersistence` 의 프로브 행은 고정 id 로 upsert 되고, anon DELETE 가 거부되면 실패가 아니라 `probeRetained` 로 보고되며 `db:migrate` 가 관리자 DSN 으로 정리한다. Phase8 초안(`DRAFT_20260706_auth_rls.sql`)은 이 세 테이블의 RLS + 4개 동작 정책을 포함해야 하고, `test/supabaseRlsCoverage.node.test.mjs` 가 등록된 마이그레이션이 만드는 모든 `rpg_zzu` 테이블에 대해 이를 강제한다(신규 마이그레이션의 anon GRANT 도 함께 차단).
+- **Map-patch correction of invalid remote references (2026-09-08, task66):** a remote `current_json` can contain linked animals with an empty housing species policy even after the editor restores a valid local policy. Ordinary `deserialize`/LegacyDb load still rejects that row. Patch comparison extracts current-v4 maps/mapTree through shape checks and reference-independent normalization (`readProjectV4MapMergeSnapshot`); it never exposes invalid remote roots as a loadable Project. Reference repair is reserved for ordinary load and the validated complete candidate, not patch projection: repairing against remote roots first can delete concurrent common-event calls, transfers, schedules/living destinations, or rewrite emote targets that local roots/maps restore. This applies even if ordinary remote load would succeed after pruning. The same unpruned projection drives conflict detection, so a command-only remote edit cannot disappear from comparison. Local roots merge with the latest remote maps under the unchanged map/tree conflict rules. The completed candidate must pass reference validation before compatible load normalization, then the existing SHA-conditional write; a failed SHA re-reads and re-merges. Invalid local references, malformed remote shapes/versions, or incompatible merged references produce no write. No full-save fallback, animal-link repair policy, store-flight redesign, or schema migration is introduced. `test/legacyDbMapPatchRecovery.test.ts` uses real parsing/validation and deferred transport barriers for correction, unrelated-map/event payload preservation, restored reference targets, load refusal, same-map command conflicts, SHA races, and zero-write rejection.
+- **LegacyDb schema deployment is manifest-driven (2026-08-24):** `scripts/lib/legacyDb-database-ops.mjs` registers every deployable file under `legacyDb/migrations/`; `test/legacyDbDatabaseOps.node.test.mjs` fails when a non-draft SQL file is omitted. Run `npm run db:check` for an anon-key/PostgREST schema probe. An administrator sets `LEGACY_DB_DB_URL` in untracked `.env.local` and runs `npm run db:migrate`; the Bun runner records SHA-256 checksums in the admin-only `rpg_zzu.schema_migrations` ledger, baselines already-complete legacy migrations, rejects partially applied or checksum-changed SQL, reloads the PostgREST schema cache, and finishes with project-scoped `ai_activity_logs`/`ai_conversations` insert→reload→cleanup verification. `DRAFT_*.sql` is never deployable. Do not report DB work complete until `npm run db:verify-ai` passes and the project id is recorded.
+- **Missing AI tables are configuration errors, not successful fallbacks:** new activity writes never fall back into `ai_analysis_runs`; that table is read only for historical fallback rows. Missing `ai_activity_logs`, `ai_conversations`, or `user_skills` writes throw `LegacyDbMigrationRequiredError` naming the required migration. The local conversation record (IndexedDB `oprn-ai-records` since 2026-09-03; the old `oprn:ai-conversations` localStorage key is migrated on first access) remains available, but the failed remote mirror is logged instead of silently swallowed. `scripts/list-ai-activity.mjs --remote` loads `.env` plus `.env.local` and scopes both primary and historical queries to `VITE_LEGACY_DB_PROJECT_ID`.
+- **Online-save credentials are deployment-owned (2026-08-24):** when a complete Vite LegacyDb URL/Anon pair exists, `legacyDbProjectConfigDraftWithSource` treats it as authoritative over stale browser custom credentials. Product UI never asks a user to enter URL, Anon key, or Project ID. Work selection persists separately as the non-secret `oprn:legacyDb-selected-project`; `loadNewRemoteProject` must not copy deployment credentials into localStorage. Old `oprn:legacyDb-project-config` remains read-only compatibility when deployment env is absent. This is a zero-configuration UX change, not LegacyDb Auth or per-user RLS: the client-visible Anon key is still public application configuration, and user isolation must not be claimed until Auth/RLS is implemented and verified.
+- **AI 로그·대화 테이블의 anon 권한은 최소로 유지한다 (2026-08-27):** `20260827000000_ai_log_anon_delete_revoke.sql` 이 `ai_activity_logs` / `ai_conversations` / `ai_analysis_runs` 에서 anon 의 DELETE 를 회수한다. 클라이언트에는 이 세 테이블의 삭제 경로가 없다(`replaceRows` 는 maps/tilesets, `deleteLegacyDbUserSkill` 은 user_skills 만) — 그래서 회수해도 기능 손실이 없고, 공개 anon 키로 남의 프로젝트 로그를 지우는 경로가 사라진다. 권한만 바꾸는 마이그레이션은 컬럼 계약으로 상태를 판정할 수 없으므로 레지스트리가 `revoked-privilege` 계약을 갖고, 적용기가 `information_schema.role_table_grants` 를 읽어 적용 여부를 판정한다(계약 없이 등록하면 SQL 실행 없이 baseline 으로 기록되어 조용히 누락된다). `verifyAiPersistence` 의 프로브 행은 고정 id 로 upsert 되고, anon DELETE 가 거부되면 실패가 아니라 `probeRetained` 로 보고되며 `db:migrate` 가 관리자 DSN 으로 정리한다. Phase8 초안(`DRAFT_20260706_auth_rls.sql`)은 이 세 테이블의 RLS + 4개 동작 정책을 포함해야 하고, `test/legacyDbRlsCoverage.node.test.mjs` 가 등록된 마이그레이션이 만드는 모든 `rpg_zzu` 테이블에 대해 이를 강제한다(신규 마이그레이션의 anon GRANT 도 함께 차단).
 - **P2 fishing/forage/collection/museum foundation (2026-08-25):** optional `database.fishSpecies` and `system.fishing`, `system.seasonalForage`, `system.collections`, `system.museum` records are normalized and shape/reference validated by `p2FoundationRecords.ts`, `shapeDatabaseFields.ts`, and `io/references.ts`. Missing P2 fields remain absent for byte-stable legacy project serialization. Fishing spots and forage areas carry bounded map rectangles; fish/item/map/reward references and duplicate ids fail closed. `PlaySession.collections`, `museumRewardAppliedIds`, `forageLastAdvancedDayKey`, generated-forage placeable metadata, and the dedicated `rng.streams.fishing` cursor are optional save-v3 fields handled by the shared manual/autosave/checkpoint writer, parser, and apply path. Load repair removes dangling P2 child rows without weakening museum AND conditions; map deletion reports and removes only definitions on the deleted map.
 - **Optional P0 life-sim system records (2026-08-24):** `SystemRecords` accepts additive `energy`, `shipping`, `bundles`, `worldUnlocks`, and `makers` definitions. They are whitelisted by `normalizeSystemRecords`, shape-validated before normalization, serialized only when authored, and therefore leave old project JSON byte-stable. Bundle/world-unlock/maker definition ids and per-definition item rows must be unique. Reference validation fails closed for shipping allow-list items, bundle requirement/reward items and switch/recipe/world-unlock targets, world-unlock switches, maker input/output items, and enabled life-skill reward switch/recipe targets. Duplicate bundle/world-unlock/maker ids are also reported when linting an in-memory project, not only at the wire boundary.
 - **P1 weather/animal foundation (2026-08-25):** authored weather is optional `system.dailyWeather { enabled, forecastDays?, seasons }`, where each season maps to bounded weighted `{ kind, weight, intensity? }` rules and `kind` reuses the native `none|rain|storm|snow|fog` union. Animal definitions are optional `database.farmAnimalSpecies`, placed animal-home definitions are `system.farmAnimalBuildings`, and editor-authored starting instances are `project.session.farmAnimals`. The animal-home type is intentionally limited to animal capacity/placement and must not be reused as the future general farm-building/house-placement model. `src/project/p1FoundationRecords.ts` owns direct-write normalization and collection/numeric limits; `shapeDatabaseFields.ts` rejects duplicate ids, unknown enums, unsafe numbers, and over-limit arrays at the JSON boundary. All fields remain absent when unauthored, so legacy project serialization stays byte-stable and no project schema-version bump is required. `src/project/io/references.ts` is the canonical cross-record authority: it validates duplicate species/building/instance IDs, feed/product item IDs, building map/bounds/allowed-species IDs, and start-instance species/building/event compatibility and capacity with exact authored paths. Repair drops species whose required item references are invalid and cascades their instances, prunes dangling allowed species, removes invalid placed homes, and clears invalid/incompatible/overflow home assignments without inventing replacements. Unknown event bindings remain a validation error rather than being silently retargeted.
@@ -684,8 +704,8 @@ bytes after real remote reload and Test Play. The default is not remote proof.
 - The `src/project` data model is the canonical authored content: maps, database records, tilesets, events, and saveable project metadata. Code that edits project content should update this model, not runtime session fields.
 - Optional `system.genre` is limited to the five IDs in `src/project/genrePackId.ts`, is preserved by normalize/serialize/deserialize, and rejects unsupported strings during shape validation. It is editor authoring metadata only: all packs use the same `Project` schema and runtime, and player code must not branch on it. Pack definitions and readiness live in `src/editor/genrePacks.ts`.
 - `GameMap.roguelikeRoom?` is additive authored room metadata: `{ roomId?, resetEventState?, encounterSlots?: [{ id, choices: [{ fieldSpawnId, weight?, minFloor?, maxFloor? }] }] }`. Slots reference field spawns on the same map, have unique non-empty ids, require at least one choice, use positive integer weights, and accept floor bounds 1–9999 with `minFloor <= maxFloor`. `resetEventState` defaults to true and scopes authored event self switches plus `Erase Event` state to the current room generation; false opts out. Omission preserves legacy field-spawn behavior and requires no schema-version bump. Runtime run state remains in `PlaySession.roguelikeRun`, not in project JSON.
-- **DB-is-truth for database records (2026-07-24):** Supabase `current_json` is the canonical source for authored database collections (items, skills, states, battleAnimations, battlerAnimations). `repairSupabaseCurrentJson` in `src/project/supabaseProjectSync.ts` no longer backfills missing records from `defaultItemRecords()` / `defaultSkillRecords()` / etc. on load — a sparse DB row loads as-is. JSON defaults only **seed new projects** via `createBlankProject` → `saveProjectToSupabase` (a DB write). Local is cache-only; there is no local-JSON-as-truth path (enforced by `test/noLocalProjectDb.test.ts` and the `supabase-project-root` ontology contract). Verified by `test/supabaseProjectSync.test.ts` (no-backfill unit) and `test/supabaseCanonicalRoundtrip.live.test.ts` (live load→save→reload).
-- **번들 기본 카탈로그 보충은 Supabase 백필과 다른 층이다 (2026-08-30):** 위의 "보충 금지"는 `repairSupabaseCurrentJson` 이 **원격 행**에 손대지 않는다는 규칙이다. 그와 별개로 `ensureDefaultDatabaseIconResources()` (`src/project/defaults/defaultDatabaseIconResources.ts`, `store.normalizeCurrentProject` 에서 호출) 는 **번들 기본 아이템과 기본 장비**를 id 기준으로 보충한다 — 없는 id 만 넣고 이미 있는 레코드는 절대 덮지 않는다. 이 층이 필요한 이유는 실측이다: 편집기 기본 예제(`createSampleAdventureProject`)가 동결된 export 픽스처 `src/project/defaults/fixtures/dew-village-demo.json` 를 복제하는데, 그 픽스처에는 아이템 21개·장비 11개만 들어 있다. 아이템만 보충하고 장비는 보충하지 않던 비대칭 때문에 코드의 기본 장비 86종 중 11종만 화면에 보였다. 계약은 `test/defaultEquipmentBackfill.test.ts` 가 고정한다(모든 `defaultEquipmentRecords()` id 존재 + 사용자가 고친 이름 보존). **한계는 그대로 적어 둔다: 사용자가 의도적으로 지운 기본 레코드는 다음 로드에 다시 살아난다.** 보충이 `changed` 를 세우므로 그 부활이 다음 저장에 실려 나갈 수 있다. 아이템 보충이 원래 갖고 있던 성질이고 이번 변경이 만든 것은 아니지만, "보충 금지" 이야기의 유일한 실질 예외라서 명시한다.
+- **DB-is-truth for database records (2026-07-24):** LegacyDb `current_json` is the canonical source for authored database collections (items, skills, states, battleAnimations, battlerAnimations). `repairLegacyDbCurrentJson` in `src/project/legacyDbProjectSync.ts` no longer backfills missing records from `defaultItemRecords()` / `defaultSkillRecords()` / etc. on load — a sparse DB row loads as-is. JSON defaults only **seed new projects** via `createBlankProject` → `saveProjectToLegacyDb` (a DB write). Local is cache-only; there is no local-JSON-as-truth path (enforced by `test/noLocalProjectDb.test.ts` and the `legacyDb-project-root` ontology contract). Verified by `test/legacyDbProjectSync.test.ts` (no-backfill unit) and `test/legacyDbCanonicalRoundtrip.live.test.ts` (live load→save→reload).
+- **번들 기본 카탈로그 보충은 LegacyDb 백필과 다른 층이다 (2026-08-30):** 위의 "보충 금지"는 `repairLegacyDbCurrentJson` 이 **원격 행**에 손대지 않는다는 규칙이다. 그와 별개로 `ensureDefaultDatabaseIconResources()` (`src/project/defaults/defaultDatabaseIconResources.ts`, `store.normalizeCurrentProject` 에서 호출) 는 **번들 기본 아이템과 기본 장비**를 id 기준으로 보충한다 — 없는 id 만 넣고 이미 있는 레코드는 절대 덮지 않는다. 이 층이 필요한 이유는 실측이다: 편집기 기본 예제(`createSampleAdventureProject`)가 동결된 export 픽스처 `src/project/defaults/fixtures/dew-village-demo.json` 를 복제하는데, 그 픽스처에는 아이템 21개·장비 11개만 들어 있다. 아이템만 보충하고 장비는 보충하지 않던 비대칭 때문에 코드의 기본 장비 86종 중 11종만 화면에 보였다. 계약은 `test/defaultEquipmentBackfill.test.ts` 가 고정한다(모든 `defaultEquipmentRecords()` id 존재 + 사용자가 고친 이름 보존). **한계는 그대로 적어 둔다: 사용자가 의도적으로 지운 기본 레코드는 다음 로드에 다시 살아난다.** 보충이 `changed` 를 세우므로 그 부활이 다음 저장에 실려 나갈 수 있다. 아이템 보충이 원래 갖고 있던 성질이고 이번 변경이 만든 것은 아니지만, "보충 금지" 이야기의 유일한 실질 예외라서 명시한다.
 - **저장이 스킵되는 세션은 화면이 그렇다고 말해야 한다 (2026-08-30):** `?freshProject=1` / `?blankProject=1` / dev 쇼케이스 위치는 의도적으로 `remotePersistenceEnabled = false` 이고 `isSaveSkippedLocation()` 이면 localStorage 기록조차 스킵한다. 예전에는 이 상태에서 편집해도 자동 저장 표시가 조용해서(또는 `saved` 로 보여서) 사용자가 저장됐다고 믿었고, 다시 열면 추가한 레코드가 사라졌다. 이제 `store` 가 이 조합에서 `{ kind: "error", code: "session-not-persisted" }` 를 세워 톱바 저장 칩(`db-autosave-state`)에 "이 세션은 저장되지 않습니다" 를 띄운다. 저장이 안 되는 것은 의도된 동작이고, 조용했던 것이 결함이었다. 계약은 `test/itemAddPersistence.test.ts` 가 실제 store·실제 `addDatabaseRecord` 경로로 고정한다.
 - Runtime item-use charges are optional save/session data for backward compatibility. Missing or malformed charge maps normalize to an empty map; finite-use transitions own inventory/charge conservation. `src/project/itemQuantities.ts` owns the shared `ITEM_QUANTITY_MAX` (9,999,999), safe-integer validation, and result resolution. `changeItem`/`changeItemsAtomically` reject an unsafe current value, delta, or result before touching inventory or charge cursors; shipping, bundles, upgrades, makers, farming, crafting, storage transfers, and shop purchases/sales commit item movement through that contract. Chest save parsing and direct snapshot restore preserve valid chest metadata while dropping zero, unsafe, or over-cap inventory rows. Runtime equipment reads use effective normalized equipment, while user equip/unequip writes go through the strict atomic transition authority and never mint or delete inventory.
 - Optional `GameMap.layoutPlan` stores generation bbox design after village/market builds (`MapLayoutPlan` / `MapLayoutRegion` in `types/project.ts`). Helpers: `src/project/mapLayoutPlan.ts` (`findLayoutRegions`, `rankRegionsByCenter`). Do not discard plan after stamping tiles — keep for “move blue house in center” style queries.
@@ -877,7 +897,7 @@ bytes after real remote reload and Test Play. The default is not remote proof.
   - Why the gate exists (measured 2026-08-30): content scripts read this fixture, add maps/events, and write it back, so the database froze at whatever it was when first exported. The demo shipped with all 11 equipment rows missing `accuracy`/`criticalRate`, 18 rows pointing at other records' icons (16 items + 2 equipment — `item_hi_potion` → `cc0-jetrel-potion-red`, `item_sword_manual` → a bronze sword instead of a book, `equip_iron_sword` and `equip_steel_sword` → both the bronze sword), empty `attackElementIds`/`stateDefenseIds`, and three stale prices. `ensureDefaultDatabaseIconResources` could not repair it because that pass only fills *empty* icon fields — a wrong value is left alone. `test/sampleAdventureNeedsNoBackfill.test.ts` now pins that the load-time pass finds nothing to do for the shipped demo.
   - Refreshing `items`/`equipment` alone is not valid: their rows reference `anim_gen_*` animations, `state_*` rows, and `skill_item_*` skills, so a partial sync leaves dangling references and `validateProjectReferences` throws. The five tables move together.
   - `test/e2e/author-dew-village-editor-demo.spec.ts` does **not** write this file. It writes a separate 2-map authoring smoke output to `test/fixtures/projects/dew-village-demo.json` and hard-asserts that 2-map shape. The two files share a name but are different artifacts; the earlier "regenerate with that playwright spec" note pointed at the wrong path and is how the shipped fixture went stale unnoticed.
-- **`test/fixtures/projects/dew-village-demo.json` is deliberately kept old.** It is the legacy specimen for the three legacy-repair tests in `test/supabaseProjectSync.test.ts` (imported as `dewVillageDemoLegacySpecimen`), which need a pre-migration project to have anything to repair — `retiredEquipmentItemReplacement` rewrites an existing row and does nothing when the row is absent. Do not "helpfully" refresh it or point those tests at the shipped fixture: the tests would pass vacuously.
+- **`test/fixtures/projects/dew-village-demo.json` is deliberately kept old.** It is the legacy specimen for the three legacy-repair tests in `test/legacyDbProjectSync.test.ts` (imported as `dewVillageDemoLegacySpecimen`), which need a pre-migration project to have anything to repair — `retiredEquipmentItemReplacement` rewrites an existing row and does nothing when the row is absent. Do not "helpfully" refresh it or point those tests at the shipped fixture: the tests would pass vacuously.
 - Shop economy session fields `shopLoyaltySpend` / `shopTradeCounts` / `shopMileagePoints` / `shopPawnTickets` / `shopLastRestockDayKey` persist S/A/B shop economy state (loyalty discount, dynamic pricing, mileage). Purchases preflight the player stack, player/merchant gold, and trade counters before committing the item grant; sales likewise preflight inventory, payout capacity, merchant gold, and every shop ledger before checking `changeItemsAtomically` and committing gold/count changes. A full, unsafe, or overflowing value leaves inventory, player gold, trade ledgers, and merchant gold unchanged. Mileage accrues **only on successful purchase** via `mileageRate` and is **deducted on refund** via `refundShopMileage`. Repair/appraisal services gate on `appraisalUnidentifiedPool` — empty pool disables the menu and returns `failed` (no gold is charged). Festival/traveling shops are **condition-gated**: `festivalFlag`/`travelingRouteId` must be wrapped in a `fork`/`condition` event; runtime does not auto-show a closed festival shop.
 - `TilesetDef.transparentColor` is an optional authored-project hex color key (`#rrggbb`) set by the editor. It is persisted with the tileset, validated as an optional string, and render-time transparency should prefer it over bundled chipset default color keys.
 - `TilesetDef.kind` optionally classifies a sheet as `"rpg2k"` or `"custom"`. Legacy records infer uploaded or non-480 sheets as custom; bundled 480-chip sheets remain RPG2K. Editor tileset selectors group both categories. Custom map palettes preserve exact source-cell order (up to ten visible columns) and must not apply Combined Town tile-number/autotile-collapse semantics; explicit tile metadata and priority still control layer routing.
@@ -899,10 +919,11 @@ bytes after real remote reload and Test Play. The default is not remote proof.
 - 루프 스택: `stack.breakLoop`는 가장 가까운 `loopOwner`만 끊고, 루프 없으면 스택을 비우지 않고 경고를 반환한 뒤 현재 `breakLoop` 명령을 한 칸 넘긴다. 같은 명령을 재실행해 instruction budget을 소진하지 않는다. `hasLoopFrame` / `maxLoopIterations=100,000` / `maxStackDepth` 가드는 유지.
 
 ## Canonical event-draft projection (2026-07-30)
-- Open editor drafts may live inside the in-memory `Project`, but they are never canonical authored output. `committedEvents()` excludes `draft.kind:"new"` and projects `draft.original` for edit drafts; `projectWithoutEventDrafts()` applies this to every map. Autosave, Supabase writes, package/web export, edit-history project snapshots, and any canonical serialization boundary must use that projection.
+- Open editor drafts may live inside the in-memory `Project`, but they are never canonical authored output. `committedEvents()` excludes `draft.kind:"new"` and projects `draft.original` for edit drafts; `projectWithoutEventDrafts()` applies this to every map. Autosave, LegacyDb writes, package/web export, edit-history project snapshots, and any canonical serialization boundary must use that projection.
 - Editor-only map/list/marker/drag surfaces use `editorWorkingEvents()` so new and edited events do not disappear while their canonical projection is hidden. Runtime/project consumers must not switch to this working projection.
 - `eventDraftVault.ts` stores project-scoped local recovery copies and reapplies live drafts over incoming remote/replace snapshots. Apply/OK remove draft metadata before canonical persistence; Cancel forgets the vault row and restores the original/removes the new event. The vault is recovery state, not a second authored source of truth and not evidence of a successful remote save.
-- `store.beginReadOnlyProjectSnapshot()` temporarily changes `getCurrent()` for runtime readers while mutations, dirty state, autosave, `flush()`, and Supabase persistence continue to use the private canonical `current`; release restores the prior reader snapshot idempotently. Ordinary test play exposes a `projectWithoutEventDrafts()` snapshot after its save flush, while selected-event test exposes the canonical snapshot plus only the selected working body and never flushes. Keep this API scoped to runtime sandboxes and release only after player teardown.
+- When an incoming canonical event still exists but its body differs from `draft.original`, `rebaseOpenEditDraft` keeps the on-screen working body and moves the save baseline to that incoming event. The editor still marks `draft.conflict.kind === "remote-change"`. A missing committed event stays in the editor as `remote-delete`, and `committedEvents` omits it so the next save does not write the pre-edit snapshot back. Contract: `test/eventDraftVault.test.ts`.
+- `store.beginReadOnlyProjectSnapshot()` temporarily changes `getCurrent()` for runtime readers while mutations, dirty state, autosave, `flush()`, and LegacyDb persistence continue to use the private canonical `current`; release restores the prior reader snapshot idempotently. Ordinary test play exposes a `projectWithoutEventDrafts()` snapshot after its save flush, while selected-event test exposes the canonical snapshot plus only the selected working body and never flushes. Keep this API scoped to runtime sandboxes and release only after player teardown.
 
 ## P2 general buildings and home decorations (2026-08-25)
 
@@ -1040,3 +1061,95 @@ deserialize preserves the field and authored spatial library. Generated maps fre
 object revisions, graphics and placements in `villageDesignSource.resolvedSettings.spaceDecorations`;
 this is authored provenance, not runtime state. The shipping player consumes the generated map through
 its existing raster/collision path. See `small-village-generation.md` for the attachment contract.
+
+## Optional map climate (Feature16, 2026-09-21)
+
+`GameMap.climate` is optional: `{mode: "inherit" | "indoor"}` or
+`{mode: "fixed", weather: "none" | "rain" | "snow" | "storm" | "fog", intensity: number}`.
+`project/mapClimate.ts` normalizes modes, clamps intensity to 0..1 (default .5),
+and discards unknown mode values. `io/shape.ts` applies it after cloning on the
+canonical project load/merge path. Serialization preserves the authored object;
+unset legacy maps remain unset. This is additive with no version bump.
+
+`resolveMapWeather` applies fixed/indoor overrides only at `syncWeatherLayer`'s
+render boundary. Indoor suppresses precipitation, fog and lightning immediately;
+transitions still advance underneath and outdoor maps resume global weather.
+Neither map transfers nor fixed climates overwrite `session.m2Runtime.screen.weather`
+or the daily-weather calendar. Event weather commands continue to update global
+weather even indoors. Save/load stores authored climate in the project and global
+weather in the existing session path. Contracts: `test/feature16WorldSchema.test.ts`,
+`test/feature16WorldClimate.test.ts`.
+## Optional authored combat rules (feature16, 2026-09-21)
+
+`databaseRecordModel.normalizeSkillRecord` and `databaseEnemyTroopRecordModel.normalizeEnemyRecord` preserve formula/crit/cooldown/hit-sequence and conditional drops/AI conditions through normal project deserialize/serialize. Existing schema version is unchanged: omitted optional fields retain old behavior; an absent drop array differs from an explicitly empty array. Bounds and evaluation semantics are in `runtime-battle.md` → Authored combat rules. Editor `updateSkillRecord` whitelist includes all new fields. Roundtrip coverage lives in `test/feature16CombatSchema.test.ts`; project contents are only minimal test fixtures, not authored remote DB content.
+## AI 저작 보조 설정의 프로젝트 지속성 (Feature16, 2026-09-21)
+
+`Project.aiAuthoring?`는 `project/aiAuthoring.ts`의 `AiAuthoring`:
+`templates: {id,name,tags,body}[]`, `dialogueStyleRules: string`, `maxDialogueChars: number`다.
+런타임 전투/대사 실행 의미를 바꾸지 않는 에디터 설정이며 버전 축은 올리지 않는다.
+`io/shape.normalizeProjectV4`는 필드가 있는 문서에만 순수 정규화를 적용한다. 구형 문서의
+필드 부재는 그대로 두고 UI에서 기본값(빈 목록·빈 규칙·240자)을 제공한다.
+잘못된 항목/중복 id는 제외하고 태그를 정리하며 이름/본문/규칙과 글자 수 범위를 제한한다.
+표준 `serialize`의 루트 복사와 기존 프로젝트 저장 경로가 필드를 보존한다.
+라이브러리/규칙 편집은 undo 스냅샷 및 라벨이 있는 `store.update`로만 기록한다.
+일시적 대사 색인·LLM 지적·프롬프트 관측 원문은 프로젝트에 저장하지 않는다.
+`test/feature16-ai.test.ts`는 실제 serialize/deserialize의 구형 부재, 저장·수정·삭제 왕복을
+검증하도록 작성했다. 테스트와 원격 저장은 작성 세션에서 실행하지 않았다.
+## 구름량 optional 필드 (2026-09-21)
+
+`GameMap.cloudShadows.amount?: number`는 0~6단계이며 생략한 기존 데이터는 3으로 렌더한다.
+`normalizeCloudShadowParams`에서 반올림·clamp하고 비정상 값은 기본 3으로 복구한다.
+기존 맵 직렬화가 필드를 보존하므로 문서 버전 상승이나 원격 데이터 마이그레이션은 없다.
+`setMapCloudShadows`와 AI `set_map_properties`가 저작 경로이며 구름량은 진하기/크기와 독립이다.
+로컬 편집기 UI 0/1/6 설정 및 `serialize`→`deserialize` 왕복, 옛 데이터 기본값은
+`scripts/qa/cloud-amount-editor.mjs`로 브라우저에서 확인했다. 실제 게임 콘텐츠는 변경하지 않았다.
+
+Feature16/main 통합: `syncWeatherLayer`에서 맵 기후를 먼저 해석한 같은 날씨를
+렌더러와 `audio.weather.update` 양쪽에 전달한다. 실내는 날씨 소리도 차단하며
+전역 날씨 상태는 유지한다.
+### Map atmosphere layers (2026-09-21)
+
+`GameMap.atmosphereEffects?: AtmosphereEffect[]` adds optional map-wide visual decoration.
+Kinds and bounded amount/speed/size/opacity settings live in `src/project/atmosphere.ts`.
+Editor map settings expose a separate 환경 효과 section and save via `setMapAtmosphereEffects`
+→ scoped `store.update` (map edit lock and mutation observation preserved). JSON save/load retains
+these plain settings; no schema version bump or changes to gameplay WeatherKind are needed.
+Old maps without this field have zero atmosphere layers. Rendering presets do not author new maps,
+change calendar/fishing weather, or download assets. Local runtime QA fixtures are not project content.
+
+Atmosphere layers additionally accept optional `sound`, `volume`, `tint` settings. The pure model
+normalizes missing sound by visual kind, volume to0.35, and only #RRGGBB colors. Genre presets are
+engine-owned configuration templates copied through the existing scoped map action, not new game
+content or separate remotely authored projects. UI preset application and per-layer sound edits
+are covered by browser save/reload receipts (`presets-editor.json`).
+
+The genre catalog now contains exactly30 unique audiovisual presets in six groups of five, using
+19 visual primitives (including runes/shades/frost). Group labels are shared between the catalog
+and map editor. Every preset retains at least one active sound layer; naturally silent particles
+may coexist with audible atmosphere. Existing ten preset IDs remain valid catalog entries.
+
+## 필드 HUD 설정 (2026-09-21)
+
+`system.fieldHud?: FieldHudConfig`의 `widgets?: HudWidget[]`가 데이터 기반 HUD 구성이다. `widgets` 생략은 theme 프리셋을 계산하고 `[]`는 의도적으로 비운 HUD다. 기존 theme/vitals/clock/tools/objective/hideEmpty 필드도 읽는다. 미설정 문서는 저장 바이트에 필드를 추가하지 않고 런타임에서 minimal을 사용한다. DB에서 legacy를 선택하면 이전 HUD로 돌아간다. 스키마 버전 증가는 없다.
+
+`project/fieldHud.ts`는 프리셋과 정규화를 소유한다. 요소는 gauge/clock/slots/text/party/timers/image, 게이지 표현은 bar/vertical/hearts/ring/number다. source/actorId/variableId/maxVariableId/timerId/itemIds가 데이터 연결이고 resourceId는 기존 리소스 ID다. 문자열 표현식이나 사용자 CSS를 실행하지 않는다. IO의 `shapeFieldHud`가 24개 제한, 중복 ID, enum, 유한 정수/범위, hex 색을 검증하며 `references`가 저작된 배우·변수·스위치·아이템·이미지 참조를 검사한다.
+
+`FieldHud`는 HandSlotChip과 수명을 공유한다. `fieldHudData`는 세션만 읽고 `fieldHudRender`는 DOM만 그린다. 액션 스태미나와 플레이어 화면 좌표는 PlayScene의 실제 상태를 전달한다. 조건은 항상/최댓값 미만/25% 이하/양수/액션 맵/스위치/값 변경 후 3초다. 자동 회피 요소는 플레이어가 접근하면 위·아래를 바꾸고 고정 패널과의 겹침을 피한다. 사용자 배치는 뷰포트 경계에 제한한다.
+
+프리셋은 실제 게임에 없는 데이터를 꾸며내지 않는다. 식량 슬롯은 아이템 수량이며 음식 효과/지속 시간 모델을 만들지 않는다. 데이터가 없으면 요소를 숨긴다. 새 HUD가 소유하는 HP/스태미나의 옛 표시만 억제하고 나머지 액션 조작 안내를 유지한다. 메뉴·대화·전투·컷신에서는 HUD가 숨겨진다. 런타임 입력은 기존 숫자키/대괄호 계약이며 드래그/방향키 편집은 DB 미리보기에만 존재한다.
+
+### HUD 장르·서체 확장 (2026-09-21)
+
+`FieldHudConfig.font?: auto|pixel|round|clean`, `menuStyle?: project|field-list|sheet|classic|journal|workbench`를 추가했다.
+`HudWidget.showValue`는 생략 시 true, 게이지 `shape: petals`는 `ceil(clamp(value/max)*5)`개의
+꽃잎을 그린다. 0에서는 꽃잎이 없고 줄기는 회색이다. IO는 새 enum/boolean도 검사한다.
+collector/classic/horror/chase/hearts 프리셋을 추가했다. 기존 미설정 문서는 그대로 minimal이다.
+메뉴 스킨 조회는 명시적인 HUD menuStyle(project 제외)을 먼저 읽고 나머지는 기존 menuUiStyle을
+사용한다. `field-list`는 독립 메뉴 스킨으로도 저장 가능하고, 단일 열 키보드 이동을 사용한다.
+빈 HUD에서도 구성 정규화를 매 프레임 반복하지 않도록 최초 초기화 여부를 별도로 추적한다.
+추격형은 상시 액션 HUD와 미니맵도 억제한다. 대화·메뉴·전투 UI는 기존대로 작동한다.
+
+
+## 타일셋 참고문서 데이터 (2026-09-21)
+
+[타일셋 참고문서](tileset-reference-documents.md): 프로젝트 소유의 용도별 MD·이미지, 파생 타일셋의 원본 공유, Pi/레거시 AI 전달 확인, 저장·내보내기 계약.

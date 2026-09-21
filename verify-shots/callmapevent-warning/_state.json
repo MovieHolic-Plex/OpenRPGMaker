@@ -1,0 +1,15 @@
+{
+ "state": {
+  "mapId": "map_ember_village",
+  "ids": [
+   "ev_house_door_1_map_blank_start_4",
+   "ev_house_door_1_map_blank_start_4_step"
+  ],
+  "hasStep": true
+ },
+ "shots": [
+  "01-list-tooltip-warning",
+  "02-event-editor-callmapevent",
+  "03-validation-bell"
+ ]
+}

@@ -131,7 +131,11 @@
   padding: 6px 8px 6px 10px;
 }
 .ai-team-member-row input[type="checkbox"] { accent-color: var(--accent); flex: none; margin: 0; }
-.ai-team-member-name { flex: none; font-size: calc(13px * var(--ai-font-scale, 1)); font-weight: var(--font-weight-semibold); }
+.ai-team-roster-member .ai-team-member-name {
+  flex: none;
+  font-size: calc(13px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+}
 .ai-team-member-summary {
   color: var(--text-3);
   flex: 1 1 auto;

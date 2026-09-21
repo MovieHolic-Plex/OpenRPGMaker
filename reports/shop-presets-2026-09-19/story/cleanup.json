@@ -1,0 +1,44 @@
+[
+  {
+    "resource": "/home/main/z-project/rpg-zzu/.vite-cache/shop-decision-player-FSck2b",
+    "registeredAt": "2026-09-18T15:28:33.230Z",
+    "closed": true,
+    "closedAt": "2026-09-18T15:28:49.848Z"
+  },
+  {
+    "resource": "http://127.0.0.1:35319",
+    "registeredAt": "2026-09-18T15:28:41.913Z",
+    "closed": true,
+    "closedAt": "2026-09-18T15:28:49.842Z"
+  },
+  {
+    "resource": "chromium",
+    "registeredAt": "2026-09-18T15:28:42.033Z",
+    "closed": true,
+    "closedAt": "2026-09-18T15:28:49.840Z"
+  },
+  {
+    "resource": "economy-1024x768:context",
+    "registeredAt": "2026-09-18T15:28:42.107Z",
+    "closed": true,
+    "closedAt": "2026-09-18T15:28:49.790Z"
+  },
+  {
+    "resource": "economy-1024x768:page",
+    "registeredAt": "2026-09-18T15:28:42.151Z",
+    "closed": true,
+    "closedAt": "2026-09-18T15:28:49.784Z"
+  },
+  {
+    "resource": "economy-1024x768:cdp",
+    "registeredAt": "2026-09-18T15:28:44.467Z",
+    "closed": true,
+    "closedAt": "2026-09-18T15:28:49.759Z"
+  },
+  {
+    "resource": "economy-1024x768:heap-read-handle",
+    "registeredAt": "2026-09-18T15:28:45.580Z",
+    "closed": true,
+    "closedAt": "2026-09-18T15:28:49.738Z"
+  }
+]

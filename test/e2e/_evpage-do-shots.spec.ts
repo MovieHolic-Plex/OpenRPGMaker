@@ -3,7 +3,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import { emptyEventProject, mockupProject } from "./mockupProbeSeeds";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { openSeededEventEditor } from "./eventStoryboardPicker";
 
 const TAG = process.env.EVIDENCE_TAG ?? "before";
@@ -114,7 +114,7 @@ for (const shot of SHOTS) {
     });
     await page.setViewportSize({ width: shot.width, height: shot.height });
     const seed = shot.seed === "mockup" ? mockupProject() : emptyEventProject();
-    await seedProjectFromSupabaseCanonical(page, seed.project);
+    await seedProjectForEditor(page, seed.project);
     await openSeededEventEditor(page, shot.seed === "mockup" ? { x: 8, y: 8 } : { x: 4, y: 4 });
     const modal = page.getByTestId("event-editor-modal");
     // 페이지 세그먼트의 산 testid 는 `evt-page-segment-<n>` 이다 — `event-page-tab-3` 은 `src` 어느

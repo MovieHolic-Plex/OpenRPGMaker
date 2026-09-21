@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** store 와 주변 모듈이 Supabase sync 모듈을 직접 부르는 대신 `ProjectRepository` 포트 하나를 부르게 하고, 그 뒤에 Supabase 어댑터(기존 모듈을 그대로 감쌈)와 메모리 어댑터를 세운다. 네트워크 요청·호출 인자·테스트 결과는 하나도 바뀌지 않는다.
+**Goal:** store 와 주변 모듈이 LegacyDb sync 모듈을 직접 부르는 대신 `ProjectRepository` 포트 하나를 부르게 하고, 그 뒤에 LegacyDb 어댑터(기존 모듈을 그대로 감쌈)와 메모리 어댑터를 세운다. 네트워크 요청·호출 인자·테스트 결과는 하나도 바뀌지 않는다.
 
-**Architecture:** 순수 함수(정규 JSON, 저장 와이어, 맵 병합·충돌, 로드 복구, 맵 패치 계획)를 `src/project/persistence/core/` 로 옮겨 DOM·네트워크 없는 영역을 만든다. 그 위에 `persistence/types.ts` 의 포트 인터페이스, `persistence/target.ts` 의 저장 대상 타입, `persistence/repository.ts` 의 선택기(기본 Supabase, 테스트 주입)를 둔다. `supabaseRepository.ts` 는 sync 함수를 메서드 본문에서 named import 로 그대로 부르고, `memoryRepository.ts` 는 core 함수만으로 같은 의미를 구현한다. 계약 테스트 하나가 두 어댑터에 같은 스펙을 돌린다. store 는 저장·읽기·활성화·헬스체크만 포트로 바꾸고, 원격 설정 초안·URL 바·프로젝트 전환 트랜잭션은 P4·P6 으로 남긴다.
+**Architecture:** 순수 함수(정규 JSON, 저장 와이어, 맵 병합·충돌, 로드 복구, 맵 패치 계획)를 `src/project/persistence/core/` 로 옮겨 DOM·네트워크 없는 영역을 만든다. 그 위에 `persistence/types.ts` 의 포트 인터페이스, `persistence/target.ts` 의 저장 대상 타입, `persistence/repository.ts` 의 선택기(기본 LegacyDb, 테스트 주입)를 둔다. `legacyDbRepository.ts` 는 sync 함수를 메서드 본문에서 named import 로 그대로 부르고, `memoryRepository.ts` 는 core 함수만으로 같은 의미를 구현한다. 계약 테스트 하나가 두 어댑터에 같은 스펙을 돌린다. store 는 저장·읽기·활성화·헬스체크만 포트로 바꾸고, 원격 설정 초안·URL 바·프로젝트 전환 트랜잭션은 P4·P6 으로 남긴다.
 
 **Tech Stack:** TypeScript 5.7 strict, Vite 6, vitest 3.2.4(node 환경, `test/**/*.test.ts`, testTimeout 15s), Node 24.11, zod 4(이번 단계에서는 쓰지 않음).
 
@@ -12,11 +12,11 @@
 
 ## Global Constraints
 
-- **동작 불변.** 같은 입력에 같은 URL·헤더·본문·호출 인자. sync 함수의 이름·시그니처·모듈 경로는 P6 까지 그대로 둔다(테스트 809 파일이 store 를, 26 파일이 `saveProjectToSupabase` 를 참조한다).
-- **어댑터는 sync 함수를 메서드 본문 안에서 named import 로 부른다.** 모듈 로드 시점에 함수 표를 만들거나 구조 분해로 캐시하지 않는다. `vi.mock`·`vi.spyOn` 이 갈아 끼운 함수를 보아야 한다(`test/storePersistenceProof.test.ts` 가 `recordProjectCommitToSupabase` 를 spy 한다).
-- **호출 인자는 호출부가 넘긴 그대로 전달한다.** 기본 대상 대체는 sync 의 기본 매개변수(`config = supabaseProjectConfig()`)가 하도록 `undefined` 를 그대로 넘긴다. 어댑터가 `?? currentTarget()` 로 먼저 채우지 않는다.
+- **동작 불변.** 같은 입력에 같은 URL·헤더·본문·호출 인자. sync 함수의 이름·시그니처·모듈 경로는 P6 까지 그대로 둔다(테스트 809 파일이 store 를, 26 파일이 `saveProjectToLegacyDb` 를 참조한다).
+- **어댑터는 sync 함수를 메서드 본문 안에서 named import 로 부른다.** 모듈 로드 시점에 함수 표를 만들거나 구조 분해로 캐시하지 않는다. `vi.mock`·`vi.spyOn` 이 갈아 끼운 함수를 보아야 한다(`test/storePersistenceProof.test.ts` 가 `recordProjectCommitToLegacyDb` 를 spy 한다).
+- **호출 인자는 호출부가 넘긴 그대로 전달한다.** 기본 대상 대체는 sync 의 기본 매개변수(`config = legacyDbProjectConfig()`)가 하도록 `undefined` 를 그대로 넘긴다. 어댑터가 `?? currentTarget()` 로 먼저 채우지 않는다.
 - **가드 `test/noLocalProjectDb.test.ts` 는 이번 단계에서 손대지 않고 초록이어야 한다.** 이 가드는 `src/project`·`src/editor` 의 파일 **본문 전체**에서 문자열 `sqlite`·`sql.js`·`better-sqlite`·`indexedDB`·`openDatabase(` 를 찾는다. 주석에도 그 단어를 쓰지 말 것. P2 이야기를 적고 싶으면 "로컬 스토어" 라고 쓴다.
-- **core 경계.** `src/project/persistence/core/**` 는 `window`·`document`·`localStorage`·`navigator`·`fetch(`·`import.meta.env` 토큰과 `supabase`·`@/editor`·`@/ai`·`@/app`·`spatial/persistence` 경로 import 가 없다. Task 1 의 가드 테스트가 고정한다.
+- **core 경계.** `src/project/persistence/core/**` 는 `window`·`document`·`localStorage`·`navigator`·`fetch(`·`import.meta.env` 토큰과 `legacyDb`·`@/editor`·`@/ai`·`@/app`·`spatial/persistence` 경로 import 가 없다. Task 1 의 가드 테스트가 고정한다.
 - **이름 규칙.** 새 식별자는 `oprn` 계열이거나 중립 이름이다. `rpgzzu`·`rpg-zzu`·`RPG_ZZU` 를 새로 만들지 않는다(`test/detsukuruBrandStrings.test.ts` 가 막는다). Postgres 스키마 `rpg_zzu` 는 데이터라 sync 모듈과 가짜 PostgREST 에 그대로 남는다.
 - **커밋.** `type(scope): 한국어 서술형` + 본문 + Lore 트레일러(`Constraint:`/`Rejected:`/`Confidence:`/`Scope-risk:`/`Reversibility:`/`Directive:`/`Tested:`/`Not-tested:`) + `Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>`. 태스크마다 커밋 하나.
 - **브랜치·PR.** `persistence/p1-port` 를 `origin/main` 에서 딴다. 워크트리를 쓰면 `node_modules` 는 주 체크아웃(`/home/main/z-project/rpg-zzu/node_modules`)으로 심링크한다. main 병합은 `gh pr create` 로만.
@@ -40,20 +40,20 @@ src/project/persistence/
   target.ts              ProjectTarget(P1 = 원격 모양)·projectTargetKey·sameProjectTarget(saveRouting 에서 이동)
   types.ts               중립 이름 별칭 + ProjectRepository 인터페이스
   repository.ts          projectRepository()·setProjectRepositoryForTest()
-  supabaseRepository.ts  createSupabaseRepository() — sync 모듈 래핑
+  legacyDbRepository.ts  createLegacyDbRepository() — sync 모듈 래핑
   memoryRepository.ts    createMemoryRepository() — core 만으로 구현
 test/persistence/
-  coreBoundary.test.ts   core 디렉터리에 DOM·네트워크·Supabase 토큰 없음
+  coreBoundary.test.ts   core 디렉터리에 DOM·네트워크·LegacyDb 토큰 없음
   mapMerge.test.ts       병합·충돌 순수 함수
   mapPatch.test.ts       planMapPatch: 비겹침 병합·충돌·참조 검증
   repositorySelection.test.ts
   fakePostgrest.ts       메모리 PostgREST(테스트 도우미, .test 아님)
-  repositoryContract.test.ts  메모리·가짜 전송 Supabase 두 어댑터에 같은 스펙
+  repositoryContract.test.ts  메모리·가짜 전송 LegacyDb 두 어댑터에 같은 스펙
 ```
 
 **고치는 것**
 
-- `src/project/supabaseProjectSync.ts` — 옮긴 함수를 core 에서 import. `saveProjectMapPatchToSupabase` 본문이 `planMapPatch` 를 쓴다. `SupabaseAiAnalysisRunInput` 을 export. `canonicalJsonString` 은 re-export 로 남긴다.
+- `src/project/legacyDbProjectSync.ts` — 옮긴 함수를 core 에서 import. `saveProjectMapPatchToLegacyDb` 본문이 `planMapPatch` 를 쓴다. `LegacyDbAiAnalysisRunInput` 을 export. `canonicalJsonString` 은 re-export 로 남긴다.
 - `src/project/spatial/saveRouting.ts` — `sameProjectTarget` 정의를 `persistence/target.ts` 로 옮기고 re-export.
 - `src/project/store.ts` — 저장·읽기·증명 읽기·활성화·헬스체크·상태를 포트로.
 - `src/project/projectCommitLog.ts`, `src/editor/teamWorkflowUi.ts`, `src/ai/activityLog.ts`, `src/ai/conversationStore.ts`, `src/project/tileMetadataDb.ts` — 포트로.
@@ -63,10 +63,10 @@ test/persistence/
 
 | 남는 것 | 위치 | 처리 단계 |
 |---|---|---|
-| `supabaseProjectConfigDraft*`·`stageSupabaseProjectConfigDraft`·`saveSupabaseSelectedProjectId`·`syncProjectToUrl` | `store.ts` 의 `loadNewRemoteProject*`·`getE2ESnapshot`·`syncProjectUrlBar` | P4(시작 화면이 전환을 맡음)·P6(삭제) |
-| `cacheSupabaseRootResources` | `store.ts` `refreshSupabaseResourceCache` | P3(미디어 분리와 함께 로컬 모드 건너뜀)·P6 |
+| `legacyDbProjectConfigDraft*`·`stageLegacyDbProjectConfigDraft`·`saveLegacyDbSelectedProjectId`·`syncProjectToUrl` | `store.ts` 의 `loadNewRemoteProject*`·`getE2ESnapshot`·`syncProjectUrlBar` | P4(시작 화면이 전환을 맡음)·P6(삭제) |
+| `cacheLegacyDbRootResources` | `store.ts` `refreshLegacyDbResourceCache` | P3(미디어 분리와 함께 로컬 모드 건너뜀)·P6 |
 | `loadDevProjectOverride`·`saveDevProjectOverride` | `store.ts` | P6 |
-| 프로젝트 고르기·연결 설정 패널(`listSupabaseProjects`·`loadSupabaseProjectPreview`) | `src/editor/panels/dbConnection*.ts`, `projectPickerCover.ts` | P4·P6 |
+| 프로젝트 고르기·연결 설정 패널(`listLegacyDbProjects`·`loadLegacyDbProjectPreview`) | `src/editor/panels/dbConnection*.ts`, `projectPickerCover.ts` | P4·P6 |
 | `list_project_commits` 동기 XHR | `src/editor/tools/queryTools.ts` | P4(브리지 `sendSync` 한 곳) |
 | 맵 편집 잠금 | `src/editor/mapEditLocks.ts` | P6(원격 전용 퇴역) |
 | 초안 금고 키의 projectId | `src/project/eventDraftVault.ts` | P4(로컬 대상 UUID 로) |
@@ -80,7 +80,7 @@ test/persistence/
 git fetch origin main
 git switch -c persistence/p1-port origin/main
 ls -la node_modules | head -1      # 심링크가 아니면: ln -s /home/main/z-project/rpg-zzu/node_modules node_modules
-npx vitest run test/noLocalProjectDb.test.ts test/supabaseProjectSync.test.ts --reporter=dot   # 기준선: 둘 다 초록이어야 시작
+npx vitest run test/noLocalProjectDb.test.ts test/legacyDbProjectSync.test.ts --reporter=dot   # 기준선: 둘 다 초록이어야 시작
 ```
 
 ---
@@ -91,7 +91,7 @@ npx vitest run test/noLocalProjectDb.test.ts test/supabaseProjectSync.test.ts --
 - Create: `src/project/persistence/core/canonicalJson.ts`
 - Create: `src/project/persistence/core/projectWire.ts`
 - Create: `test/persistence/coreBoundary.test.ts`
-- Modify: `src/project/supabaseProjectSync.ts` (`canonicalJsonString` 1310–1320행 삭제 후 re-export, private `projectWire`·`ProjectWire` 874–881행 삭제)
+- Modify: `src/project/legacyDbProjectSync.ts` (`canonicalJsonString` 1310–1320행 삭제 후 re-export, private `projectWire`·`ProjectWire` 874–881행 삭제)
 - Modify: `src/editor/tools/applyChangesetToStore.ts`, `src/project/authoredProjectBaseline.ts` (import 경로)
 
 **Interfaces:**
@@ -108,8 +108,8 @@ import { join } from "node:path";
 const CORE_DIR = "src/project/persistence/core";
 // 렌더러 전용 능력. core 는 메인 프로세스·노드 스크립트에서도 그대로 돌아야 한다.
 const FORBIDDEN_TOKENS = ["window.", "document.", "localStorage", "navigator.", "fetch(", "import.meta.env", "XMLHttpRequest"] as const;
-// Supabase 와 편집기 UI 로 되돌아가는 import.
-const FORBIDDEN_IMPORTS = ["supabase", "@/editor", "@/ai", "@/app", "spatial/persistence", "spatial/saveRouting"] as const;
+// LegacyDb 와 편집기 UI 로 되돌아가는 import.
+const FORBIDDEN_IMPORTS = ["legacyDb", "@/editor", "@/ai", "@/app", "spatial/persistence", "spatial/saveRouting"] as const;
 
 function coreFiles(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {
@@ -124,7 +124,7 @@ describe("persistence core boundary", () => {
     expect(coreFiles(CORE_DIR).length).toBeGreaterThan(0);
   });
 
-  it("core 는 DOM·네트워크·Supabase 를 모른다", () => {
+  it("core 는 DOM·네트워크·LegacyDb 를 모른다", () => {
     const offenders: string[] = [];
     for (const file of coreFiles(CORE_DIR)) {
       const text = readFileSync(file, "utf8");
@@ -151,7 +151,7 @@ Expected: FAIL — `expect(existsSync(CORE_DIR)).toBe(true)` 가 false.
 /**
  * jsonb 키 정렬 불변 비교 문자열(todo 8 실측 결함).
  *
- * Supabase의 current_json/map_json 컬럼은 PostgreSQL jsonb 로 저장되어 키가
+ * LegacyDb의 current_json/map_json 컬럼은 PostgreSQL jsonb 로 저장되어 키가
  * **알파벳순으로 정렬**된다(실측: {z:1,a:2,m:3} → {a:2,m:3,z:1}). 반면 에디터 메모리
  * (persistedBaseline/로컬 드래프트)의 객체는 삽입 순서 키를 유지한다. 같은 논리 맵도
  * JSON.stringify 결과가 달라져 매 flush가 가짜 conflict로 끝났다(첫 마일스톤 이후 저장 불가).
@@ -198,7 +198,7 @@ export async function projectWire(project: Project): Promise<ProjectWire> {
 
 - [ ] **Step 5: sync 모듈을 고친다**
 
-`src/project/supabaseProjectSync.ts`:
+`src/project/legacyDbProjectSync.ts`:
 1. 파일 상단 import 에 추가: `import { projectWire, type ProjectWire } from "./persistence/core/projectWire";` 와 `export { canonicalJsonString } from "./persistence/core/canonicalJson";` 그리고 내부 사용을 위해 `import { canonicalJsonString } from "./persistence/core/canonicalJson";`.
 2. `type ProjectWire = {...}` (약 92–96행) 삭제.
 3. `async function projectWire(project: Project): Promise<ProjectWire> {...}` (약 874–881행) 삭제.
@@ -208,17 +208,17 @@ export async function projectWire(project: Project): Promise<ProjectWire> {
 
 - [ ] **Step 6: 통과 확인**
 
-Run: `npx vitest run test/persistence/coreBoundary.test.ts test/supabaseProjectSync.test.ts test/noLocalProjectDb.test.ts --reporter=dot && npx tsc --noEmit -p tsconfig.app.json`
+Run: `npx vitest run test/persistence/coreBoundary.test.ts test/legacyDbProjectSync.test.ts test/noLocalProjectDb.test.ts --reporter=dot && npx tsc --noEmit -p tsconfig.app.json`
 Expected: 세 파일 PASS, tsc 오류 0.
 
 - [ ] **Step 7: 커밋**
 
 ```bash
-git add src/project/persistence/core/canonicalJson.ts src/project/persistence/core/projectWire.ts test/persistence/coreBoundary.test.ts src/project/supabaseProjectSync.ts src/editor/tools/applyChangesetToStore.ts src/project/authoredProjectBaseline.ts
+git add src/project/persistence/core/canonicalJson.ts src/project/persistence/core/projectWire.ts test/persistence/coreBoundary.test.ts src/project/legacyDbProjectSync.ts src/editor/tools/applyChangesetToStore.ts src/project/authoredProjectBaseline.ts
 git commit -F - <<'MSG'
 refactor(persistence): 정규 JSON 과 저장 와이어를 core 로 옮긴다
 
-저장소 포트의 첫 조각이다. DOM·네트워크·Supabase 를 모르는 `src/project/persistence/core/`
+저장소 포트의 첫 조각이다. DOM·네트워크·LegacyDb 를 모르는 `src/project/persistence/core/`
 를 만들고 경계 가드 테스트로 고정한다. 함수 본문은 sync 모듈에서 그대로 옮겼고 sync 는
 같은 함수를 import 한다.
 
@@ -227,7 +227,7 @@ Confidence: high
 Scope-risk: narrow
 Reversibility: clean
 Directive: core 에 새 파일을 넣을 때 test/persistence/coreBoundary.test.ts 의 금지 토큰 목록을 먼저 읽는다
-Tested: npx vitest run test/persistence/coreBoundary.test.ts test/supabaseProjectSync.test.ts test/noLocalProjectDb.test.ts
+Tested: npx vitest run test/persistence/coreBoundary.test.ts test/legacyDbProjectSync.test.ts test/noLocalProjectDb.test.ts
 Tested: npx tsc --noEmit -p tsconfig.app.json
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
@@ -241,7 +241,7 @@ MSG
 **Files:**
 - Create: `src/project/persistence/core/mapMerge.ts`
 - Create: `test/persistence/mapMerge.test.ts`
-- Modify: `src/project/supabaseProjectSync.ts` (1117–1141행 `changedMapIdsBetween`·`mapSaveConflicts`, 1165–1275행 `mergeProjectMaps`~`insertMapTreeNode`, 1296–1298행 `mapSnapshot`, 1322–1324행 `mapConflictName` 삭제)
+- Modify: `src/project/legacyDbProjectSync.ts` (1117–1141행 `changedMapIdsBetween`·`mapSaveConflicts`, 1165–1275행 `mergeProjectMaps`~`insertMapTreeNode`, 1296–1298행 `mapSnapshot`, 1322–1324행 `mapConflictName` 삭제)
 
 **Interfaces:**
 - Produces:
@@ -395,20 +395,20 @@ export function mapSnapshot(map: GameMap | undefined): string {
 // ── 아래는 sync 모듈에서 그대로 옮긴 비공개 보조 함수 ─────────────────────────
 // mapTreeLocations, visitMapTreeLocations, mergeMapTree, mergeMapTreeNode, MapTreePlacement,
 // findMapTreePlacement, removeMapTreeNode, insertMapTreeNode, mapConflictName —
-// src/project/supabaseProjectSync.ts 의 1194–1275행과 1322–1324행 본문을 한 글자도 바꾸지 않고 붙인다.
+// src/project/legacyDbProjectSync.ts 의 1194–1275행과 1322–1324행 본문을 한 글자도 바꾸지 않고 붙인다.
 ```
 
-옮길 때 sync 의 해당 함수를 삭제하고, sync 상단에 `import { changedMapIdsBetween, changedMapTreeIdsBetween, mapSaveConflicts, mergeProjectMaps, type MapSaveConflict } from "./persistence/core/mapMerge";` 를 넣는다. `export type SupabaseMapSaveConflict = {...}` 는 `export type SupabaseMapSaveConflict = MapSaveConflict;` 로 바꾼다(이름은 남긴다 — `SupabaseSaveResult` 와 테스트가 쓴다). `mapSnapshot` 은 sync 안에서 더 쓰는 곳이 없으면 import 하지 않는다(tsc 가 알려준다).
+옮길 때 sync 의 해당 함수를 삭제하고, sync 상단에 `import { changedMapIdsBetween, changedMapTreeIdsBetween, mapSaveConflicts, mergeProjectMaps, type MapSaveConflict } from "./persistence/core/mapMerge";` 를 넣는다. `export type LegacyDbMapSaveConflict = {...}` 는 `export type LegacyDbMapSaveConflict = MapSaveConflict;` 로 바꾼다(이름은 남긴다 — `LegacyDbSaveResult` 와 테스트가 쓴다). `mapSnapshot` 은 sync 안에서 더 쓰는 곳이 없으면 import 하지 않는다(tsc 가 알려준다).
 
 - [ ] **Step 4: 통과 확인**
 
-Run: `npx vitest run test/persistence/mapMerge.test.ts test/persistence/coreBoundary.test.ts test/supabaseProjectSync.test.ts --reporter=dot && npx tsc --noEmit -p tsconfig.app.json`
+Run: `npx vitest run test/persistence/mapMerge.test.ts test/persistence/coreBoundary.test.ts test/legacyDbProjectSync.test.ts --reporter=dot && npx tsc --noEmit -p tsconfig.app.json`
 Expected: PASS, tsc 0.
 
 - [ ] **Step 5: 커밋**
 
 ```bash
-git add src/project/persistence/core/mapMerge.ts test/persistence/mapMerge.test.ts src/project/supabaseProjectSync.ts
+git add src/project/persistence/core/mapMerge.ts test/persistence/mapMerge.test.ts src/project/legacyDbProjectSync.ts
 git commit -F - <<'MSG'
 refactor(persistence): 맵 병합·충돌 판정을 core 로 옮긴다
 
@@ -419,7 +419,7 @@ sync 모듈에서 `persistence/core/mapMerge.ts` 로 옮겼다. 본문은 그대
 Confidence: high
 Scope-risk: narrow
 Reversibility: clean
-Tested: npx vitest run test/persistence/mapMerge.test.ts test/supabaseProjectSync.test.ts
+Tested: npx vitest run test/persistence/mapMerge.test.ts test/legacyDbProjectSync.test.ts
 Tested: npx tsc --noEmit -p tsconfig.app.json
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
@@ -432,20 +432,20 @@ MSG
 
 **Files:**
 - Create: `src/project/persistence/core/loadRepair.ts`
-- Modify: `src/project/supabaseProjectSync.ts` (1350행 `deserializeSupabaseCurrentJson` 부터 파일 끝 `cloneRecord` 까지 이동; `isRecord` 는 sync 에 남긴다)
+- Modify: `src/project/legacyDbProjectSync.ts` (1350행 `deserializeLegacyDbCurrentJson` 부터 파일 끝 `cloneRecord` 까지 이동; `isRecord` 는 sync 에 남긴다)
 
 **Interfaces:**
-- Produces: `deserializeStoredProjectJson(value: unknown): Project`, `repairStoredLoadFoundation(value: unknown): void`. (옛 이름 `deserializeSupabaseCurrentJson`·`repairSupabaseLoadFoundation`·`repairSupabaseCurrentJson` 은 사라진다 — 모듈 밖에서 쓰던 곳이 없다.)
+- Produces: `deserializeStoredProjectJson(value: unknown): Project`, `repairStoredLoadFoundation(value: unknown): void`. (옛 이름 `deserializeLegacyDbCurrentJson`·`repairLegacyDbLoadFoundation`·`repairLegacyDbCurrentJson` 은 사라진다 — 모듈 밖에서 쓰던 곳이 없다.)
 
 - [ ] **Step 1: 기존 복구 테스트가 기준선이다 — 먼저 이름을 확인해 둔다**
 
-Run: `grep -n "legacy\|repair\|복구" test/supabaseProjectSync.test.ts | head -20`
+Run: `grep -n "legacy\|repair\|복구" test/legacyDbProjectSync.test.ts | head -20`
 Expected: 로드 복구를 검사하는 `it(...)` 셋 이상이 보인다(파일 상단 주석이 "legacy 복구 경로를 검사하는 아래 세 테스트" 라고 말한다). 이 파일이 Step 4 에서 초록이면 이동이 맞다.
 
 - [ ] **Step 2: 함수를 옮긴다**
 
-1. `src/project/supabaseProjectSync.ts` 에서 `function deserializeSupabaseCurrentJson(value: unknown): Project {` 부터 파일 끝(`function cloneRecord`… 까지)을 잘라 `src/project/persistence/core/loadRepair.ts` 에 붙인다. `isRecord` 는 자르지 않는다(sync 가 여러 곳에서 쓴다). loadRepair 에는 아래 세 줄짜리 `isRecord` 를 새로 둔다.
-2. 이름 셋만 바꾼다(정의와 loadRepair 안 호출부 모두): `deserializeSupabaseCurrentJson → deserializeStoredProjectJson`, `repairSupabaseCurrentJson → repairStoredProjectJson`, `repairSupabaseLoadFoundation → repairStoredLoadFoundation`. 두 개를 `export` 한다: `deserializeStoredProjectJson`, `repairStoredLoadFoundation`. 나머지 보조 함수 이름은 그대로.
+1. `src/project/legacyDbProjectSync.ts` 에서 `function deserializeLegacyDbCurrentJson(value: unknown): Project {` 부터 파일 끝(`function cloneRecord`… 까지)을 잘라 `src/project/persistence/core/loadRepair.ts` 에 붙인다. `isRecord` 는 자르지 않는다(sync 가 여러 곳에서 쓴다). loadRepair 에는 아래 세 줄짜리 `isRecord` 를 새로 둔다.
+2. 이름 셋만 바꾼다(정의와 loadRepair 안 호출부 모두): `deserializeLegacyDbCurrentJson → deserializeStoredProjectJson`, `repairLegacyDbCurrentJson → repairStoredProjectJson`, `repairLegacyDbLoadFoundation → repairStoredLoadFoundation`. 두 개를 `export` 한다: `deserializeStoredProjectJson`, `repairStoredLoadFoundation`. 나머지 보조 함수 이름은 그대로.
 3. loadRepair 상단 import — 옮긴 본문이 쓰는 것만 sync 의 import 목록에서 가져온다. 기대 목록(실제로는 tsc 가 알려주는 대로):
 
 ```ts
@@ -464,29 +464,29 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 ```
 
-4. sync 상단에 `import { deserializeStoredProjectJson, repairStoredLoadFoundation } from "./persistence/core/loadRepair";` 를 넣고, sync 안의 호출부 이름을 바꾼다: `loadProjectSnapshotFromSupabase` 의 `deserializeSupabaseCurrentJson(row.current_json)`, `saveProjectMapPatchToSupabase` 의 `deserializeSupabaseCurrentJson(candidate)`, `readMapPatchSnapshot` 안의 두 호출. sync 에서 더 이상 쓰지 않게 된 import(`defaultEquipmentRecords` 등)는 지운다 — tsc 의 unused 경고가 아니라 `npx eslint` 가 없으므로 `grep -c` 로 확인한다.
+4. sync 상단에 `import { deserializeStoredProjectJson, repairStoredLoadFoundation } from "./persistence/core/loadRepair";` 를 넣고, sync 안의 호출부 이름을 바꾼다: `loadProjectSnapshotFromLegacyDb` 의 `deserializeLegacyDbCurrentJson(row.current_json)`, `saveProjectMapPatchToLegacyDb` 의 `deserializeLegacyDbCurrentJson(candidate)`, `readMapPatchSnapshot` 안의 두 호출. sync 에서 더 이상 쓰지 않게 된 import(`defaultEquipmentRecords` 등)는 지운다 — tsc 의 unused 경고가 아니라 `npx eslint` 가 없으므로 `grep -c` 로 확인한다.
 
 - [ ] **Step 3: 통과 확인**
 
-Run: `npx vitest run test/supabaseProjectSync.test.ts test/persistence/coreBoundary.test.ts --reporter=dot && npx tsc --noEmit -p tsconfig.app.json && grep -c "deserializeSupabaseCurrentJson\|repairSupabaseLoadFoundation" src/project/supabaseProjectSync.ts`
+Run: `npx vitest run test/legacyDbProjectSync.test.ts test/persistence/coreBoundary.test.ts --reporter=dot && npx tsc --noEmit -p tsconfig.app.json && grep -c "deserializeLegacyDbCurrentJson\|repairLegacyDbLoadFoundation" src/project/legacyDbProjectSync.ts`
 Expected: PASS, tsc 0, grep 0.
 
 - [ ] **Step 4: 커밋**
 
 ```bash
-git add src/project/persistence/core/loadRepair.ts src/project/supabaseProjectSync.ts
+git add src/project/persistence/core/loadRepair.ts src/project/legacyDbProjectSync.ts
 git commit -F - <<'MSG'
 refactor(persistence): 저장본 JSON 로드 복구를 core 로 옮긴다
 
-`deserializeSupabaseCurrentJson` 계열을 `persistence/core/loadRepair.ts` 의
+`deserializeLegacyDbCurrentJson` 계열을 `persistence/core/loadRepair.ts` 의
 `deserializeStoredProjectJson`·`repairStoredLoadFoundation` 로 옮겼다. 본문은 그대로이고
-이름의 Supabase 만 뗐다 — 이 복구는 저장소가 무엇이든 옛 문서에 필요하다.
+이름의 LegacyDb 만 뗐다 — 이 복구는 저장소가 무엇이든 옛 문서에 필요하다.
 
 Constraint: 로드 복구 실패 시 원본 행을 그대로 여는 try/catch 구조는 바꾸지 않는다 — 세 차례 리뷰의 결론
 Confidence: high
 Scope-risk: narrow
 Reversibility: clean
-Tested: npx vitest run test/supabaseProjectSync.test.ts (legacy 복구 테스트 포함)
+Tested: npx vitest run test/legacyDbProjectSync.test.ts (legacy 복구 테스트 포함)
 Tested: npx tsc --noEmit -p tsconfig.app.json
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
@@ -500,7 +500,7 @@ MSG
 **Files:**
 - Create: `src/project/persistence/core/mapPatch.ts`
 - Create: `test/persistence/mapPatch.test.ts`
-- Modify: `src/project/supabaseProjectSync.ts` (`canonicalizeForMapComparison`·`MapPatchSnapshot`·`readMapPatchSnapshot` 삭제, `saveProjectMapPatchToSupabase` 본문 교체)
+- Modify: `src/project/legacyDbProjectSync.ts` (`canonicalizeForMapComparison`·`MapPatchSnapshot`·`readMapPatchSnapshot` 삭제, `saveProjectMapPatchToLegacyDb` 본문 교체)
 
 **Interfaces:**
 - Consumes: Task 1–3 의 `projectWire`, `mapMerge` 함수들, `deserializeStoredProjectJson`, `repairStoredLoadFoundation`.
@@ -711,7 +711,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 ```
 
-- [ ] **Step 4: sync 의 `saveProjectMapPatchToSupabase` 본문을 교체한다**
+- [ ] **Step 4: sync 의 `saveProjectMapPatchToLegacyDb` 본문을 교체한다**
 
 `canonicalizeForMapComparison`·`type MapPatchSnapshot`·`readMapPatchSnapshot` (약 1144–1163행)을 sync 에서 지우고 `import { mapPatchChangeSet, planMapPatch, readMapPatchSnapshot } from "./persistence/core/mapPatch";` 를 넣는다. 함수 본문은 다음으로 바꾼다(앞 8줄 `if (!config)` ~ `removeLegacySpriteReferences(baseProject);` 는 그대로).
 
@@ -720,7 +720,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   for (let attempt = 0; attempt < MAP_PATCH_MAX_ATTEMPTS; attempt += 1) {
     // Conflict/merge against current_json only (no maps overlay). RTT cut: drop
     // saveChangedMapRowsFromCanonical's before/after full-snapshot pair.
-    const latestRow = await loadProjectRowFromSupabase(config);
+    const latestRow = await loadProjectRowFromLegacyDb(config);
     // A remotely activated canonical target must not be patched from stale legacy content.
     if (latestRow && isRecord(latestRow.current_json) && Object.hasOwn(latestRow.current_json, "spatialAuthoring")) {
       throw new ProjectRoutingError("activation-required", "The legacy target was activated remotely. Reload before editing; stale content cannot acquire its new token.");
@@ -730,7 +730,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
     const plan = await planMapPatch(changeSet, latestProject);
     if (plan.kind === "conflict") return { kind: "conflict", conflicts: plan.conflicts };
-    const saved = await saveProjectSnapshotToSupabase(config, plan.mergedProject, latestSha, plan.wire);
+    const saved = await saveProjectSnapshotToLegacyDb(config, plan.mergedProject, latestSha, plan.wire);
     if (!saved) continue;
     try {
       // maps table = map-content SoT mirror written after successful project snapshot.
@@ -740,25 +740,25 @@ function isRecord(value: unknown): value is Record<string, unknown> {
     }
     return { kind: "saved", project: plan.mergedProject, sha256: plan.wire.sha256 };
   }
-  throw new SupabaseProjectSyncError("Supabase project changed too often while saving map patch", 409);
+  throw new LegacyDbProjectSyncError("LegacyDb project changed too often while saving map patch", 409);
 ```
 
 이제 sync 에서 `applyAudioDescriptionDelta`·`applyMonsterMetadataDelta`·`validateProjectReferences`·`readProjectV4MapMergeSnapshot`·`SCHEMA_VERSION` 을 쓰는 곳이 남아 있는지 grep 하고, 없으면 import 를 지운다.
 
 - [ ] **Step 5: 통과 확인**
 
-Run: `npx vitest run test/persistence --reporter=dot && npx vitest run test/supabaseProjectSync.test.ts test/storeSaveOrdering.test.ts test/storeFlushShaEvidence.test.ts --reporter=dot && npx tsc --noEmit -p tsconfig.app.json`
+Run: `npx vitest run test/persistence --reporter=dot && npx vitest run test/legacyDbProjectSync.test.ts test/storeSaveOrdering.test.ts test/storeFlushShaEvidence.test.ts --reporter=dot && npx tsc --noEmit -p tsconfig.app.json`
 Expected: 전부 PASS, tsc 0.
 
 - [ ] **Step 6: 커밋**
 
 ```bash
-git add src/project/persistence/core/mapPatch.ts test/persistence/mapPatch.test.ts src/project/supabaseProjectSync.ts
+git add src/project/persistence/core/mapPatch.ts test/persistence/mapPatch.test.ts src/project/legacyDbProjectSync.ts
 git commit -F - <<'MSG'
 refactor(persistence): 맵 패치 계획을 core 로 빼고 sync 가 그것을 부른다
 
 충돌 판정·병합·오디오/몬스터 메타 델타·참조 검증·와이어 계산을 `planMapPatch` 하나로 묶었다.
-`saveProjectMapPatchToSupabase` 는 최신 행 읽기 → 계획 → 조건부 갱신 → 미러 순서를 그대로
+`saveProjectMapPatchToLegacyDb` 는 최신 행 읽기 → 계획 → 조건부 갱신 → 미러 순서를 그대로
 돌되 계획 부분만 core 를 부른다. 재시도 루프 밖에서 한 번 계산하던 changedMapIds·트리 변경도
 `mapPatchChangeSet` 으로 같은 위치에 남는다.
 
@@ -768,7 +768,7 @@ Confidence: high
 Scope-risk: narrow
 Reversibility: clean
 Directive: 어댑터의 saveMapPatch 는 항상 mapPatchChangeSet → (최신본 읽기 → planMapPatch → CAS) 루프 순서를 지킨다
-Tested: npx vitest run test/persistence test/supabaseProjectSync.test.ts test/storeSaveOrdering.test.ts test/storeFlushShaEvidence.test.ts
+Tested: npx vitest run test/persistence test/legacyDbProjectSync.test.ts test/storeSaveOrdering.test.ts test/storeFlushShaEvidence.test.ts
 Tested: npx tsc --noEmit -p tsconfig.app.json
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
@@ -785,14 +785,14 @@ MSG
 - Create: `src/project/persistence/repository.ts`
 - Create: `test/persistence/repositorySelection.test.ts`
 - Modify: `src/project/spatial/saveRouting.ts` (`sameProjectTarget` 정의 삭제 → import + re-export)
-- Modify: `src/project/supabaseProjectSync.ts` (`type SupabaseAiAnalysisRunInput` 에 `export`)
+- Modify: `src/project/legacyDbProjectSync.ts` (`type LegacyDbAiAnalysisRunInput` 에 `export`)
 
 **Interfaces:**
 - Produces:
-  - `type RemoteProjectTarget = SupabaseProjectConfig`, `type ProjectTarget = RemoteProjectTarget` (P4 에서 유니언으로 넓힘), `projectTargetKey(target): string`, `sameProjectTarget(a: ProjectTarget, b: ProjectTarget | null): boolean`
+  - `type RemoteProjectTarget = LegacyDbProjectConfig`, `type ProjectTarget = RemoteProjectTarget` (P4 에서 유니언으로 넓힘), `projectTargetKey(target): string`, `sameProjectTarget(a: ProjectTarget, b: ProjectTarget | null): boolean`
   - `interface ProjectRepository` (아래 코드가 정본)
   - `projectRepository(): ProjectRepository`, `setProjectRepositoryForTest(repository: ProjectRepository | null): void`
-- 이 태스크는 `createSupabaseRepository` 를 아직 만들지 않는다. `repository.ts` 는 Task 7 까지 임시로 `throw` 하는 자리표시자를 두지 **않고**, Task 7 에서 import 를 채운다. 그래서 이 태스크의 테스트는 주입 경로만 검사한다.
+- 이 태스크는 `createLegacyDbRepository` 를 아직 만들지 않는다. `repository.ts` 는 Task 7 까지 임시로 `throw` 하는 자리표시자를 두지 **않고**, Task 7 에서 import 를 채운다. 그래서 이 태스크의 테스트는 주입 경로만 검사한다.
 
 - [ ] **Step 1: 실패하는 테스트**
 
@@ -833,10 +833,10 @@ Expected: FAIL — 모듈 없음.
 
 ```ts
 // src/project/persistence/target.ts
-import type { SupabaseProjectConfig } from "../supabaseProjectConfig";
+import type { LegacyDbProjectConfig } from "../legacyDbProjectConfig";
 
-/** 원격 행 대상. url·projectId·anonKey — 지금의 SupabaseProjectConfig 와 같은 모양이다. */
-export type RemoteProjectTarget = SupabaseProjectConfig;
+/** 원격 행 대상. url·projectId·anonKey — 지금의 LegacyDbProjectConfig 와 같은 모양이다. */
+export type RemoteProjectTarget = LegacyDbProjectConfig;
 
 /**
  * 저장 대상. P1 에서는 원격 모양 하나다. Electron 어댑터를 붙이는 단계에서
@@ -866,26 +866,26 @@ import type { Project } from "../types";
 import type { CanonicalSave, ProjectWriteAuthority } from "../spatial/saveRouting";
 import type { DbPersistenceDisabledReason, DbPersistenceStatus } from "../persistenceStatus";
 import type {
-  SupabaseAiActivityLogInput,
-  SupabaseAiAnalysisRunInput,
-  SupabaseConversationInput,
-  SupabaseProjectCommitInput,
-  SupabaseProjectCommitListItem,
-  SupabaseProjectMapPatchInput,
-  SupabaseProjectSnapshot,
-  SupabaseSaveResult,
-} from "../supabaseProjectSync";
+  LegacyDbAiActivityLogInput,
+  LegacyDbAiAnalysisRunInput,
+  LegacyDbConversationInput,
+  LegacyDbProjectCommitInput,
+  LegacyDbProjectCommitListItem,
+  LegacyDbProjectMapPatchInput,
+  LegacyDbProjectSnapshot,
+  LegacyDbSaveResult,
+} from "../legacyDbProjectSync";
 import type { ProjectTarget } from "./target";
 
-// 중립 이름. 지금은 sync 모듈의 타입에 대한 별칭이고, Supabase 퇴역 단계에서 정의가 이쪽으로 온다.
-export type ProjectSnapshot = SupabaseProjectSnapshot;
-export type SaveResult = SupabaseSaveResult;
-export type MapPatchInput = SupabaseProjectMapPatchInput;
-export type CommitInput = SupabaseProjectCommitInput;
-export type CommitListItem = SupabaseProjectCommitListItem;
-export type AiActivityInput = SupabaseAiActivityLogInput;
-export type AiAnalysisRunInput = SupabaseAiAnalysisRunInput;
-export type ConversationInput = SupabaseConversationInput;
+// 중립 이름. 지금은 sync 모듈의 타입에 대한 별칭이고, LegacyDb 퇴역 단계에서 정의가 이쪽으로 온다.
+export type ProjectSnapshot = LegacyDbProjectSnapshot;
+export type SaveResult = LegacyDbSaveResult;
+export type MapPatchInput = LegacyDbProjectMapPatchInput;
+export type CommitInput = LegacyDbProjectCommitInput;
+export type CommitListItem = LegacyDbProjectCommitListItem;
+export type AiActivityInput = LegacyDbAiActivityLogInput;
+export type AiAnalysisRunInput = LegacyDbAiAnalysisRunInput;
+export type ConversationInput = LegacyDbConversationInput;
 export type PersistenceStatus = DbPersistenceStatus;
 
 export type LoadSnapshotOptions = {
@@ -907,7 +907,7 @@ export type ConversationListOptions = {
  * 프로젝트 저장소 포트. store 와 주변 모듈은 이것만 부른다.
  *
  * 대상 매개변수 규칙: `target` 을 **생략**하면 어댑터가 `currentTarget()` 을 쓴다.
- * `null` 을 **명시**하면 미설정으로 처리한다(sync 함수의 `config = supabaseProjectConfig()`
+ * `null` 을 **명시**하면 미설정으로 처리한다(sync 함수의 `config = legacyDbProjectConfig()`
  * 기본 매개변수와 같은 의미 — `undefined` 만 기본값을 부른다).
  */
 export interface ProjectRepository {
@@ -944,13 +944,13 @@ export interface ProjectRepository {
 }
 ```
 
-`src/project/supabaseProjectSync.ts` 의 `type SupabaseAiAnalysisRunInput = {` 를 `export type SupabaseAiAnalysisRunInput = {` 로 바꾼다.
+`src/project/legacyDbProjectSync.ts` 의 `type LegacyDbAiAnalysisRunInput = {` 를 `export type LegacyDbAiAnalysisRunInput = {` 로 바꾼다.
 
 - [ ] **Step 5: `repository.ts`**
 
 ```ts
 // src/project/persistence/repository.ts
-import { createSupabaseRepository } from "./supabaseRepository";
+import { createLegacyDbRepository } from "./legacyDbRepository";
 import type { ProjectRepository } from "./types";
 
 let override: ProjectRepository | null = null;
@@ -963,7 +963,7 @@ let remote: ProjectRepository | null = null;
  */
 export function projectRepository(): ProjectRepository {
   if (override) return override;
-  remote ??= createSupabaseRepository();
+  remote ??= createLegacyDbRepository();
   return remote;
 }
 
@@ -973,19 +973,19 @@ export function setProjectRepositoryForTest(repository: ProjectRepository | null
 }
 ```
 
-Task 7 전까지 `./supabaseRepository` 가 없어 tsc 가 실패한다. 이 태스크의 커밋을 위해 **최소 어댑터**를 함께 만든다 — Task 7 에서 본체로 채운다:
+Task 7 전까지 `./legacyDbRepository` 가 없어 tsc 가 실패한다. 이 태스크의 커밋을 위해 **최소 어댑터**를 함께 만든다 — Task 7 에서 본체로 채운다:
 
 ```ts
-// src/project/persistence/supabaseRepository.ts (Task 5 시점의 최소본)
-import { supabaseProjectConfig } from "../supabaseProjectConfig";
+// src/project/persistence/legacyDbRepository.ts (Task 5 시점의 최소본)
+import { legacyDbProjectConfig } from "../legacyDbProjectConfig";
 import { dbPersistenceStatus } from "../persistenceStatus";
 import type { ProjectRepository } from "./types";
 
-export function createSupabaseRepository(): ProjectRepository {
-  const notWired = (name: string) => () => Promise.reject(new Error(`supabaseRepository.${name} 는 Task 7 에서 연결된다`));
+export function createLegacyDbRepository(): ProjectRepository {
+  const notWired = (name: string) => () => Promise.reject(new Error(`legacyDbRepository.${name} 는 Task 7 에서 연결된다`));
   return {
     kind: "remote",
-    currentTarget: () => supabaseProjectConfig(),
+    currentTarget: () => legacyDbProjectConfig(),
     status: (disabledReason) => dbPersistenceStatus({ disabledReason }),
     probe: notWired("probe"),
     loadProject: notWired("loadProject"),
@@ -1003,13 +1003,13 @@ export function createSupabaseRepository(): ProjectRepository {
 
 - [ ] **Step 6: 통과 확인**
 
-Run: `npx vitest run test/persistence --reporter=dot && npx vitest run test/supabaseProjectSync.test.ts test/supabaseProjectConfig.test.ts test/spatialPersistence.test.ts --reporter=dot && npx tsc --noEmit -p tsconfig.app.json && npx tsc --noEmit`
+Run: `npx vitest run test/persistence --reporter=dot && npx vitest run test/legacyDbProjectSync.test.ts test/legacyDbProjectConfig.test.ts test/spatialPersistence.test.ts --reporter=dot && npx tsc --noEmit -p tsconfig.app.json && npx tsc --noEmit`
 Expected: PASS, 두 tsc 모두 0.
 
 - [ ] **Step 7: 커밋**
 
 ```bash
-git add src/project/persistence/target.ts src/project/persistence/types.ts src/project/persistence/repository.ts src/project/persistence/supabaseRepository.ts test/persistence/repositorySelection.test.ts src/project/spatial/saveRouting.ts src/project/supabaseProjectSync.ts
+git add src/project/persistence/target.ts src/project/persistence/types.ts src/project/persistence/repository.ts src/project/persistence/legacyDbRepository.ts test/persistence/repositorySelection.test.ts src/project/spatial/saveRouting.ts src/project/legacyDbProjectSync.ts
 git commit -F - <<'MSG'
 feat(persistence): 저장소 포트 인터페이스와 대상 타입, 선택기를 둔다
 
@@ -1025,7 +1025,7 @@ Confidence: high
 Scope-risk: narrow
 Reversibility: clean
 Directive: 포트에 메서드를 더할 때는 실제 소비자가 있어야 한다 — listProjects·assets·외부 변경 구독은 그 소비자가 생기는 단계(P3·P4)에서 넣는다
-Tested: npx vitest run test/persistence test/supabaseProjectSync.test.ts test/supabaseProjectConfig.test.ts test/spatialPersistence.test.ts
+Tested: npx vitest run test/persistence test/legacyDbProjectSync.test.ts test/legacyDbProjectConfig.test.ts test/spatialPersistence.test.ts
 Tested: npx tsc --noEmit && npx tsc --noEmit -p tsconfig.app.json
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
@@ -1044,7 +1044,7 @@ MSG
 - Consumes: core 전부, `types.ts`, `target.ts`.
 - Produces: `createMemoryRepository(options: { readonly target: ProjectTarget | null; readonly now?: () => string }): MemoryRepository` where `MemoryRepository = ProjectRepository & { readonly rows: ReadonlyMap<string, MemoryProjectRow> }`.
 
-메모리 어댑터의 의미는 **legacy(비 spatial) 문서의 Supabase 경로**와 같다: 저장은 `projectWithoutEventDrafts` + legacy sprite 제거 + 와이어 계산 + 행 교체, 맵 패치는 `mapPatchChangeSet → planMapPatch → CAS` 루프, 커밋·AI 기록은 같은 컬럼 이름의 행. spatial 발행(`spatialAuthoring` 마커)은 모델링하지 않는다 — 계약 테스트는 legacy 문서만 쓴다.
+메모리 어댑터의 의미는 **legacy(비 spatial) 문서의 LegacyDb 경로**와 같다: 저장은 `projectWithoutEventDrafts` + legacy sprite 제거 + 와이어 계산 + 행 교체, 맵 패치는 `mapPatchChangeSet → planMapPatch → CAS` 루프, 커밋·AI 기록은 같은 컬럼 이름의 행. spatial 발행(`spatialAuthoring` 마커)은 모델링하지 않는다 — 계약 테스트는 legacy 문서만 쓴다.
 
 - [ ] **Step 1: 계약 테스트를 쓴다 (메모리 어댑터만 먼저 등록)**
 
@@ -1268,7 +1268,7 @@ type Row = Record<string, unknown>;
 const MAP_PATCH_MAX_ATTEMPTS = 4;
 
 /**
- * 테스트용 저장소. legacy 문서의 Supabase 경로와 같은 의미를 core 함수만으로 낸다.
+ * 테스트용 저장소. legacy 문서의 LegacyDb 경로와 같은 의미를 core 함수만으로 낸다.
  * spatial 발행은 모델링하지 않는다 — 문서에 spatialAuthoring 마커가 있어도 일반 저장으로 다룬다.
  */
 export function createMemoryRepository(options: { readonly target: ProjectTarget | null; readonly now?: () => string }): MemoryRepository {
@@ -1363,7 +1363,7 @@ export function createMemoryRepository(options: { readonly target: ProjectTarget
         const resolved = resolve(target);
         if (!resolved) return { kind: "not-configured" };
         const serialized = input.serialized ?? serialize(projectWithoutEventDrafts(input.project));
-        await sha256HexText(serialized); // Supabase 경로와 같은 비용·순서(current_sha256 계산)를 유지한다.
+        await sha256HexText(serialized); // LegacyDb 경로와 같은 비용·순서(current_sha256 계산)를 유지한다.
         const commitId = randomUuid();
         const list = bucket(commits, resolved.projectId);
         list.unshift({
@@ -1479,7 +1479,7 @@ feat(persistence): 메모리 어댑터와 저장소 계약 테스트
 
 계약 테스트는 어댑터 하나가 아니라 포트의 의미를 고정한다 — 저장/읽기 왕복, sha256 이 직렬화
 텍스트의 해시라는 것, 비겹침 맵 패치 병합, 같은 맵 충돌, 커밋 tip, AI 기록 왕복, null 대상의
-not-configured. 메모리 어댑터는 core 함수만으로 legacy 문서의 Supabase 경로와 같은 의미를 낸다.
+not-configured. 메모리 어댑터는 core 함수만으로 legacy 문서의 LegacyDb 경로와 같은 의미를 낸다.
 
 Constraint: 메모리 어댑터는 spatial 발행을 모델링하지 않는다 — 계약 테스트는 legacy 문서만 쓴다
 Rejected: 메모리 어댑터를 Map<projectId, Project> 로 단순화 | 와이어·sha·CAS 를 빼면 로컬 스토어와 의미가 갈라진다
@@ -1496,40 +1496,40 @@ MSG
 
 ---
 
-## Task 7: Supabase 어댑터 — 기존 sync 모듈 래핑, 가짜 PostgREST 로 계약 통과
+## Task 7: LegacyDb 어댑터 — 기존 sync 모듈 래핑, 가짜 PostgREST 로 계약 통과
 
 **Files:**
-- Modify: `src/project/persistence/supabaseRepository.ts` (Task 5 의 최소본을 본체로)
+- Modify: `src/project/persistence/legacyDbRepository.ts` (Task 5 의 최소본을 본체로)
 - Create: `test/persistence/fakePostgrest.ts`
 - Modify: `test/persistence/repositoryContract.test.ts` (두 번째 `describeRepositoryContract` 등록)
 
 **Interfaces:**
-- Consumes: sync 모듈의 export 함수들(이름 그대로), `activateSpatialProjectFromRaw`, `dbPersistenceStatus`, `supabaseProjectConfig`.
-- Produces: `createSupabaseRepository(): ProjectRepository` (완성본), `createFakePostgrest(): { readonly fetch: typeof fetch; readonly tables: ReadonlyMap<string, Record<string, unknown>[]> }`.
+- Consumes: sync 모듈의 export 함수들(이름 그대로), `activateSpatialProjectFromRaw`, `dbPersistenceStatus`, `legacyDbProjectConfig`.
+- Produces: `createLegacyDbRepository(): ProjectRepository` (완성본), `createFakePostgrest(): { readonly fetch: typeof fetch; readonly tables: ReadonlyMap<string, Record<string, unknown>[]> }`.
 
-- [ ] **Step 1: 계약 테스트에 Supabase(가짜 전송) 픽스처를 추가한다 (실패)**
+- [ ] **Step 1: 계약 테스트에 LegacyDb(가짜 전송) 픽스처를 추가한다 (실패)**
 
 `test/persistence/repositoryContract.test.ts` 맨 아래에 추가:
 
 ```ts
 import { vi } from "vitest";
-import { createSupabaseRepository } from "@/project/persistence/supabaseRepository";
+import { createLegacyDbRepository } from "@/project/persistence/legacyDbRepository";
 import { createFakePostgrest } from "./fakePostgrest";
 
-describeRepositoryContract("supabase (fake PostgREST)", (projectId) => {
+describeRepositoryContract("legacyDb (fake PostgREST)", (projectId) => {
   const origin = "http://contract-transport.invalid";
   const postgrest = createFakePostgrest();
-  vi.stubEnv("VITE_SUPABASE_USE_PROXY", "0");
-  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
-  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", projectId);
-  vi.stubEnv("VITE_SUPABASE_URL", origin);
+  vi.stubEnv("VITE_LEGACY_DB_USE_PROXY", "0");
+  vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-anon-key");
+  vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", projectId);
+  vi.stubEnv("VITE_LEGACY_DB_URL", origin);
   vi.stubGlobal("window", {
     location: { hostname: "127.0.0.1", pathname: "/", search: "" },
     localStorage: { getItem: () => null, setItem: () => undefined, removeItem: () => undefined },
   });
   vi.stubGlobal("fetch", postgrest.fetch);
   return {
-    repository: createSupabaseRepository(),
+    repository: createLegacyDbRepository(),
     target: { url: origin, anonKey: "test-anon-key", projectId },
     cleanup: () => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); },
   };
@@ -1648,53 +1648,53 @@ export function createFakePostgrest(): { readonly fetch: typeof fetch; readonly 
 
 - [ ] **Step 4: 어댑터 본체**
 
-`src/project/persistence/supabaseRepository.ts` 전체를 다음으로 교체한다.
+`src/project/persistence/legacyDbRepository.ts` 전체를 다음으로 교체한다.
 
 ```ts
-// src/project/persistence/supabaseRepository.ts
+// src/project/persistence/legacyDbRepository.ts
 import { dbPersistenceStatus, type DbPersistenceDisabledReason } from "../persistenceStatus";
 import { activateSpatialProjectFromRaw } from "../spatial/saveRouting";
-import { supabaseProjectConfig } from "../supabaseProjectConfig";
+import { legacyDbProjectConfig } from "../legacyDbProjectConfig";
 import {
   hydrateLastRemoteCommitTip,
-  listProjectCommitsFromSupabase,
-  listSupabaseAiActivityLogs,
-  listSupabaseConversations,
+  listProjectCommitsFromLegacyDb,
+  listLegacyDbAiActivityLogs,
+  listLegacyDbConversations,
   loadProjectForPersistenceProof,
-  loadProjectFromSupabase,
-  loadProjectSnapshotFromSupabase,
-  loadSupabaseConversation,
+  loadProjectFromLegacyDb,
+  loadProjectSnapshotFromLegacyDb,
+  loadLegacyDbConversation,
   peekLastRemoteCommitTip,
-  recordProjectCommitToSupabase,
-  recordSupabaseAiActivityLog,
-  recordSupabaseAiAnalysisRun,
-  recordSupabaseConversation,
-  saveProjectMapPatchToSupabase,
-  saveProjectToSupabase,
+  recordProjectCommitToLegacyDb,
+  recordLegacyDbAiActivityLog,
+  recordLegacyDbAiAnalysisRun,
+  recordLegacyDbConversation,
+  saveProjectMapPatchToLegacyDb,
+  saveProjectToLegacyDb,
   seedLastRemoteCommitTip,
-} from "../supabaseProjectSync";
+} from "../legacyDbProjectSync";
 import type { ProjectTarget } from "./target";
 import type { ProjectRepository } from "./types";
 
 /**
- * 기존 Supabase sync 모듈을 포트 뒤에 그대로 감싼다. 동작 변화 없음이 목표다.
+ * 기존 LegacyDb sync 모듈을 포트 뒤에 그대로 감싼다. 동작 변화 없음이 목표다.
  *
  * 규칙 둘. (1) sync 함수는 메서드 **본문 안에서** named import 로 부른다 — 모듈 로드 시점에
  * 표로 만들거나 구조 분해로 캐시하면 vi.mock/vi.spyOn 이 바꿔 끼운 함수를 못 본다.
  * (2) 인자는 호출부가 넘긴 그대로 전달한다 — `target` 이 undefined 면 undefined 를 넘겨
- * sync 의 기본 매개변수(`config = supabaseProjectConfig()`)가 대상을 채우게 한다.
+ * sync 의 기본 매개변수(`config = legacyDbProjectConfig()`)가 대상을 채우게 한다.
  */
-export function createSupabaseRepository(): ProjectRepository {
+export function createLegacyDbRepository(): ProjectRepository {
   return {
     kind: "remote",
-    currentTarget: (): ProjectTarget | null => supabaseProjectConfig(),
+    currentTarget: (): ProjectTarget | null => legacyDbProjectConfig(),
     status: (disabledReason: DbPersistenceDisabledReason | null) => dbPersistenceStatus({ disabledReason }),
     async probe() {
-      const config = supabaseProjectConfig();
+      const config = legacyDbProjectConfig();
       if (!config) return false;
       try {
         // GET with limit=0 on a known table in the rpg_zzu schema. Must include Accept-Profile
-        // (same as supabaseJsonHeaders "read") so PostgREST resolves the table correctly.
+        // (same as legacyDbJsonHeaders "read") so PostgREST resolves the table correctly.
         const response = await fetch(`${config.url}/rest/v1/projects?limit=0`, {
           headers: {
             apikey: config.anonKey,
@@ -1709,46 +1709,46 @@ export function createSupabaseRepository(): ProjectRepository {
         return false;
       }
     },
-    loadProject: (target, onAuthority) => loadProjectFromSupabase(target, onAuthority),
-    loadSnapshot: (target, options) => (options === undefined ? loadProjectSnapshotFromSupabase(target) : loadProjectSnapshotFromSupabase(target, options)),
+    loadProject: (target, onAuthority) => loadProjectFromLegacyDb(target, onAuthority),
+    loadSnapshot: (target, options) => (options === undefined ? loadProjectSnapshotFromLegacyDb(target) : loadProjectSnapshotFromLegacyDb(target, options)),
     loadForProof: (target, signal) => loadProjectForPersistenceProof(target, signal),
-    save: (project, target, authority) => saveProjectToSupabase(project, target, authority),
-    saveMapPatch: (input, target) => saveProjectMapPatchToSupabase(input, target),
+    save: (project, target, authority) => saveProjectToLegacyDb(project, target, authority),
+    saveMapPatch: (input, target) => saveProjectMapPatchToLegacyDb(input, target),
     activateLegacy: (target) => activateSpatialProjectFromRaw(target),
     commits: {
-      record: (input, target) => recordProjectCommitToSupabase(input, target),
-      list: (limit, target) => listProjectCommitsFromSupabase(limit, target),
+      record: (input, target) => recordProjectCommitToLegacyDb(input, target),
+      list: (limit, target) => listProjectCommitsFromLegacyDb(limit, target),
       hydrateTip: (target) => hydrateLastRemoteCommitTip(target),
       peekTip: (projectId) => peekLastRemoteCommitTip(projectId),
       seedTip: (projectId, commitId) => seedLastRemoteCommitTip(projectId, commitId),
     },
     ai: {
-      recordActivity: (input, target) => recordSupabaseAiActivityLog(input, target),
-      listActivity: (limit, target, options) => listSupabaseAiActivityLogs(limit, target, options),
-      recordConversation: (input, target) => recordSupabaseConversation(input, target),
-      listConversations: (options, target) => listSupabaseConversations(options, target),
-      loadConversation: (conversationId, target, signal) => loadSupabaseConversation(conversationId, target, signal),
-      recordAnalysisRun: (input, target) => recordSupabaseAiAnalysisRun(input, target),
+      recordActivity: (input, target) => recordLegacyDbAiActivityLog(input, target),
+      listActivity: (limit, target, options) => listLegacyDbAiActivityLogs(limit, target, options),
+      recordConversation: (input, target) => recordLegacyDbConversation(input, target),
+      listConversations: (options, target) => listLegacyDbConversations(options, target),
+      loadConversation: (conversationId, target, signal) => loadLegacyDbConversation(conversationId, target, signal),
+      recordAnalysisRun: (input, target) => recordLegacyDbAiAnalysisRun(input, target),
     },
   };
 }
 ```
 
-주의: `recordProjectCommitToSupabase(input, target)` 에서 `target` 이 `undefined` 면 JS 는 기본 매개변수를 적용한다 — `undefined` 를 **자리에 넣어 넘기는 것**과 인자를 생략하는 것은 기본값 적용에서 같다. 다르게 보이는 것은 `toHaveBeenCalledWith` 의 인자 개수뿐이며, 그 경우는 Global Constraints 의 마지막 항목대로 assertion 을 고친다.
+주의: `recordProjectCommitToLegacyDb(input, target)` 에서 `target` 이 `undefined` 면 JS 는 기본 매개변수를 적용한다 — `undefined` 를 **자리에 넣어 넘기는 것**과 인자를 생략하는 것은 기본값 적용에서 같다. 다르게 보이는 것은 `toHaveBeenCalledWith` 의 인자 개수뿐이며, 그 경우는 Global Constraints 의 마지막 항목대로 assertion 을 고친다.
 
 - [ ] **Step 5: 통과 확인**
 
 Run: `npx vitest run test/persistence --reporter=dot && npx tsc --noEmit`
-Expected: 계약 22건(memory 11 + supabase 11) PASS, tsc 0.
+Expected: 계약 22건(memory 11 + legacyDb 11) PASS, tsc 0.
 
 가짜 PostgREST 가 어떤 요청을 못 받는지 보려면 `fakePostgrest.ts` 의 `throw new Error("fake postgrest: unsupported filter ...")` 메시지가 그대로 어댑터 예외로 올라온다 — 그때는 sync 가 실제로 보내는 필터를 `createFakePostgrest` 에 추가한다(sync 코드는 고치지 않는다).
 
 - [ ] **Step 6: 커밋**
 
 ```bash
-git add src/project/persistence/supabaseRepository.ts test/persistence/fakePostgrest.ts test/persistence/repositoryContract.test.ts
+git add src/project/persistence/legacyDbRepository.ts test/persistence/fakePostgrest.ts test/persistence/repositoryContract.test.ts
 git commit -F - <<'MSG'
-feat(persistence): Supabase 어댑터가 기존 sync 모듈을 그대로 감싼다
+feat(persistence): LegacyDb 어댑터가 기존 sync 모듈을 그대로 감싼다
 
 메서드 하나가 sync 함수 하나를 같은 인자로 부른다. 새 동작은 없다. 계약 테스트는 메모리
 PostgREST(`test/persistence/fakePostgrest.ts`) 위에서 같은 스펙 11건을 통과한다 — 조건부
@@ -1864,19 +1864,19 @@ Expected: FAIL — `getDbPersistenceStatus` 가 `not-configured`(store 가 아�
 ```ts
 // 지우기
 import {
-  loadProjectFromSupabase,
+  loadProjectFromLegacyDb,
   loadProjectForPersistenceProof,
-  loadProjectSnapshotFromSupabase,
-  saveProjectMapPatchToSupabase,
-  saveProjectToSupabase,
-  type SupabaseSaveResult,
+  loadProjectSnapshotFromLegacyDb,
+  saveProjectMapPatchToLegacyDb,
+  saveProjectToLegacyDb,
+  type LegacyDbSaveResult,
   type ProjectWriteAuthority,
-} from "./supabaseProjectSync";
+} from "./legacyDbProjectSync";
 import { activateSpatialProjectFromRaw, assertCanonicalReplacement, ProjectRoutingError, sameProjectTarget } from "./spatial/saveRouting";
 import { dbPersistenceStatus, type DbPersistenceDisabledReason, type DbPersistenceStatus } from "./persistenceStatus";
 
 // 넣기
-import type { SupabaseSaveResult, ProjectWriteAuthority } from "./supabaseProjectSync";
+import type { LegacyDbSaveResult, ProjectWriteAuthority } from "./legacyDbProjectSync";
 import { assertCanonicalReplacement, ProjectRoutingError } from "./spatial/saveRouting";
 import type { DbPersistenceDisabledReason, DbPersistenceStatus } from "./persistenceStatus";
 import { projectRepository } from "./persistence/repository";
@@ -1884,7 +1884,7 @@ import { sameProjectTarget } from "./persistence/target";
 import type { ProjectRepository } from "./persistence/types";
 ```
 
-`./supabaseProjectConfig` import 에서 `supabaseProjectConfig` 를 뺀다(`saveSupabaseSelectedProjectId`·`stageSupabaseProjectConfigDraft`·`supabaseProjectConfigDraft`·`supabaseProjectConfigDraftWithSource`·타입 둘은 남는다).
+`./legacyDbProjectConfig` import 에서 `legacyDbProjectConfig` 를 뺀다(`saveLegacyDbSelectedProjectId`·`stageLegacyDbProjectConfigDraft`·`legacyDbProjectConfigDraft`·`legacyDbProjectConfigDraftWithSource`·타입 둘은 남는다).
 
 클래스 필드 선언 아래(예: `private localProjectSessionId = randomUuid();` 다음)에 추가:
 
@@ -1900,28 +1900,28 @@ import type { ProjectRepository } from "./persistence/types";
 | 위치 | 지금 | 이후 |
 |---|---|---|
 | `load()` 292 | `dbPersistenceStatus({ disabledReason: null })` | `this.repository.status(null)` |
-| `loadSharedDemo()` 377 | `const base = supabaseProjectConfig();` | `const base = this.repository.currentTarget();` |
-| `loadSharedDemo()` 382 | `await loadProjectSnapshotFromSupabase(target)` | `await this.repository.loadSnapshot(target)` |
-| `loadNewRemoteProject()` 449 | `const target = supabaseProjectConfig();` | `const target = this.repository.currentTarget();` |
+| `loadSharedDemo()` 377 | `const base = legacyDbProjectConfig();` | `const base = this.repository.currentTarget();` |
+| `loadSharedDemo()` 382 | `await loadProjectSnapshotFromLegacyDb(target)` | `await this.repository.loadSnapshot(target)` |
+| `loadNewRemoteProject()` 449 | `const target = legacyDbProjectConfig();` | `const target = this.repository.currentTarget();` |
 | 기본 dependencies 480 | `await loadProjectForPersistenceProof(config)` | `await projectRepository().loadForProof(config)` |
-| 기본 dependencies 486 | `saveProjectToSupabase(candidate, config)` | `projectRepository().save(candidate, config)` |
-| 트랜잭션 529 | `const baseConfig = supabaseProjectConfig();` | `const baseConfig = this.repository.currentTarget();` |
-| 트랜잭션 598 | `sameProjectTarget(baseConfig, supabaseProjectConfig())` | `sameProjectTarget(baseConfig, this.repository.currentTarget())` |
+| 기본 dependencies 486 | `saveProjectToLegacyDb(candidate, config)` | `projectRepository().save(candidate, config)` |
+| 트랜잭션 529 | `const baseConfig = legacyDbProjectConfig();` | `const baseConfig = this.repository.currentTarget();` |
+| 트랜잭션 598 | `sameProjectTarget(baseConfig, legacyDbProjectConfig())` | `sameProjectTarget(baseConfig, this.repository.currentTarget())` |
 | `getDbPersistenceStatus()` 782 | `dbPersistenceStatus({ disabledReason: this.remotePersistenceDisabledReason })` | `this.repository.status(this.remotePersistenceDisabledReason)` |
-| `activateSpatialAuthoring()` 787 | `const target = supabaseProjectConfig();` | `const target = this.repository.currentTarget();` |
-| 같은 함수 809·828 | `sameProjectTarget(target, supabaseProjectConfig())` | `sameProjectTarget(target, this.repository.currentTarget())` |
+| `activateSpatialAuthoring()` 787 | `const target = legacyDbProjectConfig();` | `const target = this.repository.currentTarget();` |
+| 같은 함수 809·828 | `sameProjectTarget(target, legacyDbProjectConfig())` | `sameProjectTarget(target, this.repository.currentTarget())` |
 | `reconnectRemotePersistence()` 860 | `dbPersistenceStatus({ disabledReason: null })` | `this.repository.status(null)` |
-| `reloadFromRemote()` 915 | `supabaseProjectConfig()?.projectId ?? null` | `this.repository.currentTarget()?.projectId ?? null` |
-| `reloadFromRemoteForE2E()` 972 | `const config = supabaseProjectConfig();` | `const config = this.repository.currentTarget();` |
-| `isPersistenceReceiptCurrent()` 1107 | `const config = supabaseProjectConfig();` | `const config = this.repository.currentTarget();` |
+| `reloadFromRemote()` 915 | `legacyDbProjectConfig()?.projectId ?? null` | `this.repository.currentTarget()?.projectId ?? null` |
+| `reloadFromRemoteForE2E()` 972 | `const config = legacyDbProjectConfig();` | `const config = this.repository.currentTarget();` |
+| `isPersistenceReceiptCurrent()` 1107 | `const config = legacyDbProjectConfig();` | `const config = this.repository.currentTarget();` |
 | `verifyPersistedRevision()` 1126 | `await loadProjectForPersistenceProof(target, options.signal)` | `await this.repository.loadForProof(target, options.signal)` |
-| `saveCurrentWithAutoSaveState()` 1441 | `const target = supabaseProjectConfig();` | `const target = this.repository.currentTarget();` |
-| 같은 함수 1456·1460·1473 | `sameProjectTarget(target, supabaseProjectConfig())` | `sameProjectTarget(target, this.repository.currentTarget())` |
-| `persistCurrent()` 1511 | `const config = supabaseProjectConfig();` | `const config = this.repository.currentTarget();` |
-| `persistCurrent()` 1557 | `sameProjectTarget(target, supabaseProjectConfig())` | `sameProjectTarget(target, this.repository.currentTarget())` |
-| `readRemoteProject()` 1628 | `const target = supabaseProjectConfig();` | `const target = this.repository.currentTarget();` |
-| 같은 함수 1634·1639 | `sameProjectTarget(target, supabaseProjectConfig())` | `sameProjectTarget(target, this.repository.currentTarget())` |
-| `syncProjectUrlBar()` 1726 | `supabaseProjectConfig()?.projectId` | `this.repository.currentTarget()?.projectId` |
+| `saveCurrentWithAutoSaveState()` 1441 | `const target = legacyDbProjectConfig();` | `const target = this.repository.currentTarget();` |
+| 같은 함수 1456·1460·1473 | `sameProjectTarget(target, legacyDbProjectConfig())` | `sameProjectTarget(target, this.repository.currentTarget())` |
+| `persistCurrent()` 1511 | `const config = legacyDbProjectConfig();` | `const config = this.repository.currentTarget();` |
+| `persistCurrent()` 1557 | `sameProjectTarget(target, legacyDbProjectConfig())` | `sameProjectTarget(target, this.repository.currentTarget())` |
+| `readRemoteProject()` 1628 | `const target = legacyDbProjectConfig();` | `const target = this.repository.currentTarget();` |
+| 같은 함수 1634·1639 | `sameProjectTarget(target, legacyDbProjectConfig())` | `sameProjectTarget(target, this.repository.currentTarget())` |
+| `syncProjectUrlBar()` 1726 | `legacyDbProjectConfig()?.projectId` | `this.repository.currentTarget()?.projectId` |
 
 세 곳은 치환이 아니라 코드 교체다.
 
@@ -1986,15 +1986,15 @@ import type { ProjectRepository } from "./persistence/types";
 
 - [ ] **Step 5: 남은 참조 확인**
 
-Run: `grep -nE "supabaseProjectConfig\(\)|dbPersistenceStatus\(|loadProjectFromSupabase|loadProjectForPersistenceProof|loadProjectSnapshotFromSupabase|saveProjectToSupabase|saveProjectMapPatchToSupabase|activateSpatialProjectFromRaw" src/project/store.ts`
-Expected: 출력 없음. (`supabaseProjectConfigDraft`·`supabaseProjectConfigDraftWithSource`·`stageSupabaseProjectConfigDraft`·`saveSupabaseSelectedProjectId` 는 남아 있어야 한다 — 이번 단계 범위 밖.)
+Run: `grep -nE "legacyDbProjectConfig\(\)|dbPersistenceStatus\(|loadProjectFromLegacyDb|loadProjectForPersistenceProof|loadProjectSnapshotFromLegacyDb|saveProjectToLegacyDb|saveProjectMapPatchToLegacyDb|activateSpatialProjectFromRaw" src/project/store.ts`
+Expected: 출력 없음. (`legacyDbProjectConfigDraft`·`legacyDbProjectConfigDraftWithSource`·`stageLegacyDbProjectConfigDraft`·`saveLegacyDbSelectedProjectId` 는 남아 있어야 한다 — 이번 단계 범위 밖.)
 
 - [ ] **Step 6: 통과 확인**
 
 Run: `npx vitest run test/persistence --reporter=dot && npx tsc --noEmit -p tsconfig.app.json && npx tsc --noEmit`
 Expected: PASS, tsc 0.
 
-Run (store 회귀): `npx vitest run test/storePersistenceProof.test.ts test/storeSaveOrdering.test.ts test/storeFlushShaEvidence.test.ts test/storeEventDraftPreserve.test.ts test/storeUpdateMap.test.ts test/storeUndoSnapshotInventory.test.ts test/spatialPersistence.test.ts test/p2SpatialPersistence.test.ts test/spatialPersistenceTransport.test.ts test/dbConnectionChip.test.ts test/supabaseProjectSync.test.ts test/noLocalProjectDb.test.ts --reporter=dot`
+Run (store 회귀): `npx vitest run test/storePersistenceProof.test.ts test/storeSaveOrdering.test.ts test/storeFlushShaEvidence.test.ts test/storeEventDraftPreserve.test.ts test/storeUpdateMap.test.ts test/storeUndoSnapshotInventory.test.ts test/spatialPersistence.test.ts test/p2SpatialPersistence.test.ts test/spatialPersistenceTransport.test.ts test/dbConnectionChip.test.ts test/legacyDbProjectSync.test.ts test/noLocalProjectDb.test.ts --reporter=dot`
 Expected: PASS. 한 파일이 실패하면 먼저 그 파일만 다시 돌려 부하 타임아웃을 배제하고, 그다음 `git stash` 없이 `git show origin/main:<path>` 로 기준 트리에서도 실패하는지 본다(Task 10 의 A/B 절차). 인자 개수 assertion 이면 Global Constraints 의 규칙대로 assertion 을 고친다.
 
 - [ ] **Step 7: 커밋**
@@ -2006,18 +2006,18 @@ refactor(store): 저장·읽기·증명·활성화·헬스체크를 저장소 �
 
 store 는 이제 `projectRepository()` 만 안다. 저장 두 경로, 로드·재로드·증명 읽기, legacy 활성화,
 연결 상태, 헬스체크의 연결 확인이 전부 포트 메서드다. 대상(`currentTarget()`)은 어댑터가 계산하고
-store 는 비교만 한다. 기본 어댑터가 Supabase 이므로 요청 모양과 인자는 그대로다.
+store 는 비교만 한다. 기본 어댑터가 LegacyDb 이므로 요청 모양과 인자는 그대로다.
 
 남긴 것: 원격 설정 초안·선택 저장·URL 바·프로젝트 전환 트랜잭션·리소스 캐시·개발 덮어쓰기.
-시작 화면(P4)과 Supabase 퇴역(P6)이 맡는다 — 계획서의 "손대지 않는 것" 표.
+시작 화면(P4)과 LegacyDb 퇴역(P6)이 맡는다 — 계획서의 "손대지 않는 것" 표.
 
 Constraint: store 는 모듈 싱글턴 — 저장소를 필드에 고정하지 않고 getter 로 매번 고른다
 Constraint: legacy 활성화는 원격 전용이라 포트에서 optional 이다 — 없으면 동기 가드에서 ProjectRoutingError
-Rejected: supabaseProjectConfigDraft 계열도 포트로 | 설정 초안은 원격 UI 의 개념이고 로컬 대상에는 대응물이 없다 — 시작 화면이 대체
+Rejected: legacyDbProjectConfigDraft 계열도 포트로 | 설정 초안은 원격 UI 의 개념이고 로컬 대상에는 대응물이 없다 — 시작 화면이 대체
 Confidence: high
 Scope-risk: broad
 Reversibility: clean
-Directive: store 에 sync 모듈이나 supabaseProjectConfig() 값 import 를 다시 넣지 않는다 — Task 8 Step 5 의 grep 이 비어 있어야 한다
+Directive: store 에 sync 모듈이나 legacyDbProjectConfig() 값 import 를 다시 넣지 않는다 — Task 8 Step 5 의 grep 이 비어 있어야 한다
 Tested: npx vitest run test/persistence (storeUsesRepository 3건 포함)
 Tested: store 회귀 12 파일 (Step 6 목록)
 Tested: npx tsc --noEmit && npx tsc --noEmit -p tsconfig.app.json
@@ -2045,7 +2045,7 @@ MSG
 
 Run:
 ```bash
-grep -rlE "recordProjectCommitToSupabase|listProjectCommitsFromSupabase|recordSupabaseAiActivityLog|recordSupabaseConversation|listSupabaseConversations|recordSupabaseAiAnalysisRun|tileMetadataDb|projectCommitLog|teamWorkflowUi|conversationStore|ai/activityLog" test --include=*.test.ts | grep -v e2e | sort > /tmp/p1-task9-tests.txt; wc -l /tmp/p1-task9-tests.txt
+grep -rlE "recordProjectCommitToLegacyDb|listProjectCommitsFromLegacyDb|recordLegacyDbAiActivityLog|recordLegacyDbConversation|listLegacyDbConversations|recordLegacyDbAiAnalysisRun|tileMetadataDb|projectCommitLog|teamWorkflowUi|conversationStore|ai/activityLog" test --include=*.test.ts | grep -v e2e | sort > /tmp/p1-task9-tests.txt; wc -l /tmp/p1-task9-tests.txt
 npx vitest run $(cat /tmp/p1-task9-tests.txt) --reporter=dot 2>&1 | tail -6
 ```
 Expected: 파일 수가 찍히고 기준선이 초록(또는 실패 목록을 적어 둔다 — 이 단계 전에 실패하던 것은 이 단계의 회귀가 아니다).
@@ -2054,83 +2054,83 @@ Expected: 파일 수가 찍히고 기준선이 초록(또는 실패 목록을 �
 
 ```ts
 // 지우기
-import { recordProjectCommitToSupabase, type ProjectCommitReviewStatus } from "./supabaseProjectSync";
+import { recordProjectCommitToLegacyDb, type ProjectCommitReviewStatus } from "./legacyDbProjectSync";
 // 넣기
-import type { ProjectCommitReviewStatus } from "./supabaseProjectSync";
+import type { ProjectCommitReviewStatus } from "./legacyDbProjectSync";
 import { projectRepository } from "./persistence/repository";
 ```
-두 호출부(`recordProjectCommit` 의 `await recordProjectCommitToSupabase({`, `recordManualProjectCommitAfterSave` 의 `void recordProjectCommitToSupabase({`)를 `projectRepository().commits.record({` 로 바꾼다. 43행 근처 주석의 "`recordProjectCommitToSupabase` 호출부가" 는 "`commits.record` 호출부가" 로.
+두 호출부(`recordProjectCommit` 의 `await recordProjectCommitToLegacyDb({`, `recordManualProjectCommitAfterSave` 의 `void recordProjectCommitToLegacyDb({`)를 `projectRepository().commits.record({` 로 바꾼다. 43행 근처 주석의 "`recordProjectCommitToLegacyDb` 호출부가" 는 "`commits.record` 호출부가" 로.
 
 - [ ] **Step 3: `teamWorkflowUi.ts`**
 
 ```ts
 // 지우기
-import { listProjectCommitsFromSupabase, type SupabaseProjectCommitListItem } from "@/project/supabaseProjectSync";
+import { listProjectCommitsFromLegacyDb, type LegacyDbProjectCommitListItem } from "@/project/legacyDbProjectSync";
 // 넣기
-import type { SupabaseProjectCommitListItem } from "@/project/supabaseProjectSync";
+import type { LegacyDbProjectCommitListItem } from "@/project/legacyDbProjectSync";
 import { projectRepository } from "@/project/persistence/repository";
 ```
-`const commits = await listProjectCommitsFromSupabase(20);` → `const commits = await projectRepository().commits.list(20);`
+`const commits = await listProjectCommitsFromLegacyDb(20);` → `const commits = await projectRepository().commits.list(20);`
 
 - [ ] **Step 4: `activityLog.ts`**
 
 ```ts
 // 지우기
-import { supabaseProjectConfig } from "@/project/supabaseProjectConfig";
-import { recordSupabaseAiActivityLog } from "@/project/supabaseProjectSync";
+import { legacyDbProjectConfig } from "@/project/legacyDbProjectConfig";
+import { recordLegacyDbAiActivityLog } from "@/project/legacyDbProjectSync";
 // 넣기
 import { projectRepository } from "@/project/persistence/repository";
 ```
-- outbox sender: `const result = await recordSupabaseAiActivityLog(payload as ...)` → `const result = await projectRepository().ai.recordActivity(payload as ReturnType<typeof aiActivityRemoteInput>);`
-- `persistAiActivityNow`: `const remote = await recordSupabaseAiActivityLog(remoteInput);` → `const remote = await projectRepository().ai.recordActivity(remoteInput);`
-- `aiActivityPersistenceState`: `remote: supabaseProjectConfig() !== null` → `remote: projectRepository().currentTarget() !== null`.
+- outbox sender: `const result = await recordLegacyDbAiActivityLog(payload as ...)` → `const result = await projectRepository().ai.recordActivity(payload as ReturnType<typeof aiActivityRemoteInput>);`
+- `persistAiActivityNow`: `const remote = await recordLegacyDbAiActivityLog(remoteInput);` → `const remote = await projectRepository().ai.recordActivity(remoteInput);`
+- `aiActivityPersistenceState`: `remote: legacyDbProjectConfig() !== null` → `remote: projectRepository().currentTarget() !== null`.
 
 - [ ] **Step 5: `conversationStore.ts`**
 
 ```ts
 // 지우기
-import { supabaseProjectConfig } from "@/project/supabaseProjectConfig";
-import { listSupabaseConversations, recordSupabaseConversation, type SupabaseConversationInput } from "@/project/supabaseProjectSync";
+import { legacyDbProjectConfig } from "@/project/legacyDbProjectConfig";
+import { listLegacyDbConversations, recordLegacyDbConversation, type LegacyDbConversationInput } from "@/project/legacyDbProjectSync";
 // 넣기
-import type { SupabaseConversationInput } from "@/project/supabaseProjectSync";
+import type { LegacyDbConversationInput } from "@/project/legacyDbProjectSync";
 import { projectRepository } from "@/project/persistence/repository";
 ```
-- outbox sender: `const result = await recordSupabaseConversation({ ... })` → `const result = await projectRepository().ai.recordConversation({ ... })`
-- `saveConversation`: `const config = supabaseProjectConfig();` → `const config = projectRepository().currentTarget();` 그리고 `void recordSupabaseConversation(remoteInput, config).catch(` → `void projectRepository().ai.recordConversation(remoteInput, config).catch(` (두 번째 인자 `config` 를 **그대로** 넘긴다 — 저장 시점에 고정한 대상이다).
-- `hydrateConversationArchive`: `const captured = supabaseProjectConfig();` → `const captured = projectRepository().currentTarget();` 그리고 `await listSupabaseConversations({ ... }, config)` → `await projectRepository().ai.listConversations({ ... }, config)`.
+- outbox sender: `const result = await recordLegacyDbConversation({ ... })` → `const result = await projectRepository().ai.recordConversation({ ... })`
+- `saveConversation`: `const config = legacyDbProjectConfig();` → `const config = projectRepository().currentTarget();` 그리고 `void recordLegacyDbConversation(remoteInput, config).catch(` → `void projectRepository().ai.recordConversation(remoteInput, config).catch(` (두 번째 인자 `config` 를 **그대로** 넘긴다 — 저장 시점에 고정한 대상이다).
+- `hydrateConversationArchive`: `const captured = legacyDbProjectConfig();` → `const captured = projectRepository().currentTarget();` 그리고 `await listLegacyDbConversations({ ... }, config)` → `await projectRepository().ai.listConversations({ ... }, config)`.
 
 - [ ] **Step 6: `tileMetadataDb.ts`**
 
 ```ts
 // 지우기
-import { loadProjectSnapshotFromSupabase, recordSupabaseAiAnalysisRun, saveProjectToSupabase, type ProjectWriteAuthority, type SupabaseSaveResult } from "./supabaseProjectSync";
+import { loadProjectSnapshotFromLegacyDb, recordLegacyDbAiAnalysisRun, saveProjectToLegacyDb, type ProjectWriteAuthority, type LegacyDbSaveResult } from "./legacyDbProjectSync";
 // 넣기
-import type { ProjectWriteAuthority, SupabaseSaveResult } from "./supabaseProjectSync";
+import type { ProjectWriteAuthority, LegacyDbSaveResult } from "./legacyDbProjectSync";
 import { projectRepository } from "./persistence/repository";
 ```
 
 ```ts
-export async function loadProjectFromSupabaseCanonicalStore(): Promise<StoredProject> {
+export async function loadProjectFromLegacyDbCanonicalStore(): Promise<StoredProject> {
   const repository = projectRepository();
   const target = repository.currentTarget();
   const snapshot = target ? await repository.loadSnapshot(target) : null;
   return snapshot ? { found: true, project: snapshot.project, authority: snapshot.authority } : { found: false, project: null };
 }
 
-export async function saveProjectToSupabaseCanonicalStore(project: Project, authority?: ProjectWriteAuthority): Promise<SupabaseSaveResult> {
+export async function saveProjectToLegacyDbCanonicalStore(project: Project, authority?: ProjectWriteAuthority): Promise<LegacyDbSaveResult> {
   const repository = projectRepository();
   const target = repository.currentTarget();
   if (!target) return { kind: "not-configured" };
   return repository.save(projectWithoutEventDrafts(project), target, authority);
 }
 ```
-`recordAiAnalysisRun`: `await recordSupabaseAiAnalysisRun(input);` → `await projectRepository().ai.recordAnalysisRun(input);`
+`recordAiAnalysisRun`: `await recordLegacyDbAiAnalysisRun(input);` → `await projectRepository().ai.recordAnalysisRun(input);`
 
-(원래 `loadProjectSnapshotFromSupabase()` 와 `saveProjectToSupabase(project, undefined, authority)` 는 설정이 없으면 각각 null·not-configured 였다. 위 코드가 같은 결과를 낸다.)
+(원래 `loadProjectSnapshotFromLegacyDb()` 와 `saveProjectToLegacyDb(project, undefined, authority)` 는 설정이 없으면 각각 null·not-configured 였다. 위 코드가 같은 결과를 낸다.)
 
 - [ ] **Step 7: 남은 직접 호출 확인**
 
-Run: `grep -rlE "from \"(@/project/|\./|\.\./project/)supabaseProjectSync\"" src --include=*.ts | sort`
+Run: `grep -rlE "from \"(@/project/|\./|\.\./project/)legacyDbProjectSync\"" src --include=*.ts | sort`
 Expected(정확히 이 목록):
 ```
 src/editor/panels/dbConnectionProjectPicker.ts
@@ -2138,18 +2138,18 @@ src/editor/panels/dbConnectionSettings.ts
 src/editor/panels/projectPickerCover.ts
 src/editor/teamWorkflowUi.ts          (type import 만)
 src/ai/conversationStore.ts           (type import 만)
-src/project/persistence/supabaseRepository.ts
+src/project/persistence/legacyDbRepository.ts
 src/project/persistence/types.ts      (type import 만)
 src/project/projectCommitLog.ts       (type import 만)
 src/project/store.ts                  (type import 만)
 src/project/tileMetadataDb.ts         (type import 만)
 ```
-값 import 가 남은 파일은 어댑터와 패널 셋뿐이어야 한다. 확인 명령: `grep -rnE "^import \{[^}]*\b(load|save|record|list|hydrate|peek|seed)[A-Za-z]*(Supabase|FromSupabase|ToSupabase)[^}]*\} from" src --include=*.ts | grep -v persistence/supabaseRepository.ts | grep -v "src/editor/panels/"` → 출력 없음.
+값 import 가 남은 파일은 어댑터와 패널 셋뿐이어야 한다. 확인 명령: `grep -rnE "^import \{[^}]*\b(load|save|record|list|hydrate|peek|seed)[A-Za-z]*(LegacyDb|FromLegacyDb|ToLegacyDb)[^}]*\} from" src --include=*.ts | grep -v persistence/legacyDbRepository.ts | grep -v "src/editor/panels/"` → 출력 없음.
 
 - [ ] **Step 8: 통과 확인**
 
 Run: `npx vitest run $(cat /tmp/p1-task9-tests.txt) test/persistence --reporter=dot 2>&1 | tail -6 && npx tsc --noEmit && npx tsc --noEmit -p tsconfig.app.json`
-Expected: Step 1 기준선과 같은 결과(초록), tsc 0. `test/storePersistenceProof.test.ts` 의 `vi.spyOn(sync, "recordProjectCommitToSupabase")` 가 여전히 호출을 본다 — 어댑터가 호출 시점 바인딩으로 부르기 때문이다.
+Expected: Step 1 기준선과 같은 결과(초록), tsc 0. `test/storePersistenceProof.test.ts` 의 `vi.spyOn(sync, "recordProjectCommitToLegacyDb")` 가 여전히 호출을 본다 — 어댑터가 호출 시점 바인딩으로 부르기 때문이다.
 
 - [ ] **Step 9: 커밋**
 
@@ -2160,7 +2160,7 @@ refactor(persistence): 커밋 로그·팀 패널·AI 기록·타일 메타가 �
 
 sync 함수를 값으로 import 하던 다섯 모듈을 `projectRepository()` 로 돌렸다. 인자는 그대로다 —
 대화 미러는 저장 시점에 잡은 대상을 두 번째 인자로 계속 넘기고, 타일 메타의 설정 없음 경로는
-전과 같이 null·not-configured 를 돌려준다. 이제 sync 함수를 값으로 부르는 곳은 Supabase 어댑터와
+전과 같이 null·not-configured 를 돌려준다. 이제 sync 함수를 값으로 부르는 곳은 LegacyDb 어댑터와
 원격 전용 패널 셋뿐이다.
 
 Constraint: 대화 미러의 대상은 저장 시점 고정 — 재시도가 현재 프로젝트를 채택하면 안 된다(기존 주석의 계약)
@@ -2211,13 +2211,13 @@ npm run test:changed -- origin/main > /tmp/p1-test-changed.log 2>&1; echo "exit=
 Run: `DEV_SERVER_PORT=9873 npx playwright test test/e2e/event-preview-state.spec.ts --reporter=line`
 Expected: `1 passed`. (이 스펙은 `__OPRN_E2E_PROJECT__` 시드로 편집기를 부팅해 편집·미리보기를 돌린다 — store 부팅 경로가 포트를 지나는 것을 브라우저에서 확인한다. 포트가 점유돼 있으면 다른 번호를 쓴다.)
 
-`.env.local` 이 있는 체크아웃이라면 한 번 더: `DEV_SERVER_PORT=9873 npx playwright test test/e2e/supabase-root-cache.spec.ts --reporter=line` — 실제 원격 행을 읽는 경로. 없으면 건너뛰고 PR 본문에 "검증 안 함" 으로 적는다.
+`.env.local` 이 있는 체크아웃이라면 한 번 더: `DEV_SERVER_PORT=9873 npx playwright test test/e2e/legacyDb-root-cache.spec.ts --reporter=line` — 실제 원격 행을 읽는 경로. 없으면 건너뛰고 PR 본문에 "검증 안 함" 으로 적는다.
 
 - [ ] **Step 5: PR**
 
 ```bash
 git push -u origin persistence/p1-port
-gh pr create --base main --title "refactor(persistence): 저장소 포트 도입 — store 와 주변 모듈이 Supabase 를 직접 부르지 않는다" --body-file /tmp/p1-pr-body.md
+gh pr create --base main --title "refactor(persistence): 저장소 포트 도입 — store 와 주변 모듈이 LegacyDb 를 직접 부르지 않는다" --body-file /tmp/p1-pr-body.md
 ```
 
 `/tmp/p1-pr-body.md` 는 이 틀을 채운다:
@@ -2232,16 +2232,16 @@ gh pr create --base main --title "refactor(persistence): 저장소 포트 도입
 4. core: 맵 패치 계획, sync 가 그것을 사용
 5. 포트 인터페이스·대상 타입·선택기
 6. 메모리 어댑터 + 계약 테스트
-7. Supabase 어댑터 + 가짜 PostgREST
+7. LegacyDb 어댑터 + 가짜 PostgREST
 8. store → 포트
 9. 커밋 로그·팀 패널·AI 기록·타일 메타 → 포트
 
 **검증**
 - `tsc --noEmit` 둘 다 0
-- 계약 테스트 22건(메모리 11 + 가짜 전송 Supabase 11), core 단위 테스트, store 주입 테스트 3건
+- 계약 테스트 22건(메모리 11 + 가짜 전송 LegacyDb 11), core 단위 테스트, store 주입 테스트 3건
 - `npm run test:changed -- origin/main`: N 파일 중 M 실패 → A/B 표 (아래)
 - Playwright `event-preview-state.spec.ts` 통과
-- (있으면) `supabase-root-cache.spec.ts` 통과 / 없으면 "검증 안 함"
+- (있으면) `legacyDb-root-cache.spec.ts` 통과 / 없으면 "검증 안 함"
 
 | 실패 파일 | 분류 | 근거 |
 |---|---|---|

@@ -1,4 +1,4 @@
-# OPRN 로컬 SQLite 프로젝트 저장소 설계 — Supabase 정본에서 프로젝트 폴더 정본으로, Electron 데스크톱
+# OPRN 로컬 SQLite 프로젝트 저장소 설계 — LegacyDb 정본에서 프로젝트 폴더 정본으로, Electron 데스크톱
 
 작성: 2026-09-15. 근거: 같은 날의 코드 조사(저장 경로·미디어·가드), PGlite 대 SQLite 실측, 사용자 결정(Electron, 협업은 후순위, SQLite 전면).
 상태: 사용자 검토 대기 → 승인 후 `docs/superpowers/plans/` 에 실행 계획.
@@ -6,12 +6,12 @@
 
 ## 0. 한눈에
 
-정본을 "원격 Postgres 의 프로젝트 행" 에서 "사용자가 고른 폴더 안의 `project.sqlite`" 로 옮긴다. 렌더러는 정본을 직접 열지 않고 **저장소 포트** 하나로만 접근하며, 포트 뒤에 Supabase 어댑터(이관 기간만)·Electron 어댑터·메모리 어댑터가 선다. 미디어는 base64 문자열로 문서 안에 있던 것을 내용 주소 파일로 꺼내고 `oprn-asset://` 프로토콜로 서빙한다. 앱은 Electron 이고 맥을 먼저 낸다.
+정본을 "원격 Postgres 의 프로젝트 행" 에서 "사용자가 고른 폴더 안의 `project.sqlite`" 로 옮긴다. 렌더러는 정본을 직접 열지 않고 **저장소 포트** 하나로만 접근하며, 포트 뒤에 LegacyDb 어댑터(이관 기간만)·Electron 어댑터·메모리 어댑터가 선다. 미디어는 base64 문자열로 문서 안에 있던 것을 내용 주소 파일로 꺼내고 `oprn-asset://` 프로토콜로 서빙한다. 앱은 Electron 이고 맥을 먼저 낸다.
 
 | 영역 | 지금 | 이후 |
 |---|---|---|
 | 정본 | `rpg_zzu.projects.current_json` (PostgREST, anon 키, sha256 CAS) | `<프로젝트 폴더>/project.sqlite` 의 `project` 행, 같은 sha256 CAS |
-| 접근 | store → `supabaseProjectSync.ts` 1,579줄 직접 호출 | store → `ProjectRepository` 포트 → 어댑터 |
+| 접근 | store → `legacyDbProjectSync.ts` 1,579줄 직접 호출 | store → `ProjectRepository` 포트 → 어댑터 |
 | 미디어 | `assets.uploaded[id].dataUrl` base64 (문서 안, 최대 11MB 문자열) | `assets/<sha256>.<ext>` 파일 + 문서에는 `ref` 넷만 |
 | 프로세스 | 브라우저 탭 + vite dev/preview 서버 | Electron 메인(로컬 스토어·프로토콜·동반 서비스) + 렌더러(기존 편집기) |
 | 협업 | 원격 행 하나를 여럿이 CAS 로 갱신 | 이번 범위 밖. 나중에 정본을 가진 서버로 |
@@ -21,14 +21,14 @@
 
 조사로 확정한 사실:
 
-- Supabase 는 Postgres 로만 쓴다. `/rest/v1` 로 raw `fetch`, 헤더 `apikey`·`Authorization`·`Accept-Profile: rpg_zzu`. supabase-js·Storage·Auth·Realtime 은 쓰지 않는다. RLS 는 초안 마이그레이션뿐이고 anon 키로 행 삭제가 된다(메모리 `anon-key-can-delete-projects`).
+- LegacyDb 는 Postgres 로만 쓴다. `/rest/v1` 로 raw `fetch`, 헤더 `apikey`·`Authorization`·`Accept-Profile: rpg_zzu`. legacyDb-js·Storage·Auth·Realtime 은 쓰지 않는다. RLS 는 초안 마이그레이션뿐이고 anon 키로 행 삭제가 된다(메모리 `anon-key-can-delete-projects`).
 - 문서 하나가 정본이다. `projects.current_json` 에 프로젝트 전체가 들어가고 sha256 조건부 갱신으로 다중 작성자를 막는다. 맵 미러·커밋 계보·AI 기록 테이블이 곁에 있다.
 - 미디어는 문서 안 base64 다. `UploadedAsset.dataUrl` 을 읽는 곳이 30개 파일 58곳, 가져오기 상한은 이미지 4MB·오디오 8MB·영상 32MB. 큰 프로젝트는 문서 문자열이 11MB 를 넘고, 자주 부르는 `structuredClone`(store 안 17곳)과 저장 시 sha256 이 그 크기를 매번 치른다.
 - 2026-09-06 의 결정 "로컬 정본 DB 금지" 를 `test/noLocalProjectDb.test.ts` 가 지킨다. 당시 사고 원인은 브라우저 localStorage 의 쿼터, 동기 API, 키 하나를 통째로 재기록하는 구조, 전송 성공과 무관하게 밀어내는 링버퍼였다.
 - 동반 서비스(AI 인증·완성·활동 로그 디스크 미러·유료 게이트웨이 프록시)는 `vite.config.ts` 플러그인 넷으로 dev 와 preview 서버에 붙어 있고, `npm start` 는 `vite preview` 9888 이다. 완성 호출은 Bun 워커가 필요하다(pi-ai 가 `bun:sqlite` 를 싣는다).
 - 헤드리스 도구(`scripts/oprn-tools.mjs`, MCP 서버, Pi 에이전트)는 이미 JSON 파일이나 `.oprn` 패키지를 직접 읽는다. 원격에 의존하지 않는다.
 
-문제는 Supabase 자체가 아니라 셋이다. 정본이 사용자 손 밖에 있어 앱으로 배포할 수 없고, 미디어가 문서 안에 있어 크기와 상한이 묶여 있으며, 저장 경로가 한 구현에 직접 결합돼 있어 갈아 끼울 수 없다.
+문제는 LegacyDb 자체가 아니라 셋이다. 정본이 사용자 손 밖에 있어 앱으로 배포할 수 없고, 미디어가 문서 안에 있어 크기와 상한이 묶여 있으며, 저장 경로가 한 구현에 직접 결합돼 있어 갈아 끼울 수 없다.
 
 ## 2. 목표 · 비목표
 
@@ -70,7 +70,7 @@
 | `src/**` 가 `electron/` 에서 import 할 수 있는 것 | `electron/shared/**` (채널 이름·zod 스키마·타입) | 신설 |
 | 렌더러 어댑터 파일 이름에 sqlite 없음 | `src/project/persistence/**` | 기존 문자열 검사에 걸리지 않게 하는 규칙 |
 
-퇴역 항목 셋: 맵 편집 잠금은 로컬 모드에서 "미설정" 으로 꺼지고 편집기는 이미 그 상태를 처리한다. `?project=` 딥링크는 Electron 에서 무시되고 폴더 선택이 대신한다. 호스팅 프리뷰와 Supabase 는 8절 이관이 끝날 때까지만 유지한다.
+퇴역 항목 셋: 맵 편집 잠금은 로컬 모드에서 "미설정" 으로 꺼지고 편집기는 이미 그 상태를 처리한다. `?project=` 딥링크는 Electron 에서 무시되고 폴더 선택이 대신한다. 호스팅 프리뷰와 LegacyDb 는 8절 이관이 끝날 때까지만 유지한다.
 
 ## 4. 프로젝트 저장 형태
 
@@ -132,19 +132,19 @@ interface ProjectRepository {
 }
 ```
 
-spatial 발행의 분기는 포트 바깥으로 나오지 않는다. 지금 `routeSpatialSave` 가 RPC 로 갈지 일반 upsert 로 갈지 고르는데, 그 판단은 Supabase 어댑터 안으로 들어가고 로컬 어댑터의 `save` 는 CAS 와 미러 갱신을 트랜잭션 하나로 끝낸다. store 는 `save` 하나만 부른다. 맵 병합·충돌 판정·정규 JSON 직렬화(`canonicalJsonString`)·sha256 은 `src/project/persistence/core/` 로 옮겨 두 어댑터와 메인 프로세스가 같은 코드를 쓴다.
+spatial 발행의 분기는 포트 바깥으로 나오지 않는다. 지금 `routeSpatialSave` 가 RPC 로 갈지 일반 upsert 로 갈지 고르는데, 그 판단은 LegacyDb 어댑터 안으로 들어가고 로컬 어댑터의 `save` 는 CAS 와 미러 갱신을 트랜잭션 하나로 끝낸다. store 는 `save` 하나만 부른다. 맵 병합·충돌 판정·정규 JSON 직렬화(`canonicalJsonString`)·sha256 은 `src/project/persistence/core/` 로 옮겨 두 어댑터와 메인 프로세스가 같은 코드를 쓴다.
 
 **어댑터 셋.**
 
-- Supabase 어댑터. 지금 sync 모듈과 spatial persistence 를 그대로 감싼다. 동작 변화 없음이 목표이고, 8절 이관이 끝나면 통째로 지운다. 에셋 `put` 은 지금처럼 데이터 URL 을 돌려줘 옛 경로가 그대로 산다.
-- Electron 어댑터. preload 가 contextBridge 로 노출한 `window.oprn` 을 부르고, 브리지는 `ipcRenderer.invoke` 로 메인에 넘긴다. 저장 시 직렬화한 텍스트를 보내 메인이 같은 바이트로 sha256 을 계산한다. 메인은 채널 입력을 zod 로 검증한다(이미 의존성). **동기 호출은 없다** — 2026-09-16 에 마지막 예외(`commits.listSync`/`peekTip`)를 지웠다. 호출자가 0곳이었고(포트에만 있고 아무도 안 부름), AI 도구 `list_project_commits` 의 동기 XHR 은 브리지가 아니라 Supabase PostgREST 를 직접 보는 **별개 경로**였다(`src/editor/tools/queryTools.ts`). 그래서 두 껍데기의 브리지 모양이 이제 같다.
+- LegacyDb 어댑터. 지금 sync 모듈과 spatial persistence 를 그대로 감싼다. 동작 변화 없음이 목표이고, 8절 이관이 끝나면 통째로 지운다. 에셋 `put` 은 지금처럼 데이터 URL 을 돌려줘 옛 경로가 그대로 산다.
+- Electron 어댑터. preload 가 contextBridge 로 노출한 `window.oprn` 을 부르고, 브리지는 `ipcRenderer.invoke` 로 메인에 넘긴다. 저장 시 직렬화한 텍스트를 보내 메인이 같은 바이트로 sha256 을 계산한다. 메인은 채널 입력을 zod 로 검증한다(이미 의존성). **동기 호출은 없다** — 2026-09-16 에 마지막 예외(`commits.listSync`/`peekTip`)를 지웠다. 호출자가 0곳이었고(포트에만 있고 아무도 안 부름), AI 도구 `list_project_commits` 의 동기 XHR 은 브리지가 아니라 LegacyDb PostgREST 를 직접 보는 **별개 경로**였다(`src/editor/tools/queryTools.ts`). 그래서 두 껍데기의 브리지 모양이 이제 같다.
 - 메모리 어댑터. store 단위 테스트와 브라우저 e2e 하네스용이다. 지금 `__OPRN_E2E_PROJECT__` 시드가 하던 일을 맡고, 저장 상태 표시는 "이 세션에만 저장" 이다. `devProjectPersistence` 의 개발용 덮어쓰기는 P6 에서 정리한다.
 
 **메인 프로세스 로컬 스토어.** `electron/local-store/` 에 Node 전용 라이브러리로 두고 4절의 스키마와 저장 규칙을 구현한다. `electron` 모듈을 import 하지 않아 노드 스크립트와 헤드리스 Pi 에이전트가 같은 라이브러리로 폴더를 직접 연다. 드라이버는 `node:sqlite` 의 `DatabaseSync` 를 40줄 안팎의 `Driver` 인터페이스 뒤에 둔다. 실험 API 표시가 남아 있어 깨지면 `better-sqlite3` 로 갈아 끼울 자리다.
 
-**store 와의 연결.** store 는 자동 저장 debounce, 영수증, 충돌 UI, 초안 금고, 개발 쇼케이스 로직을 그대로 갖고, sync 모듈 직접 import 만 포트 호출로 바꾼다. 부팅 시 `window.oprn` 이 있으면 Electron 어댑터, 없고 Supabase 설정이 있으면 Supabase 어댑터, 둘 다 없으면 메모리 어댑터다. 원격 실패 큐 `remoteOutbox` 는 원격 어댑터일 때만 감싼다. "온라인 저장" 같은 문구는 어댑터가 주는 라벨로 바꾼다. 프로젝트 고르기 모달과 연결 설정 모달은 Electron 에서 숨기고 7절의 시작 화면이 대신한다.
+**store 와의 연결.** store 는 자동 저장 debounce, 영수증, 충돌 UI, 초안 금고, 개발 쇼케이스 로직을 그대로 갖고, sync 모듈 직접 import 만 포트 호출로 바꾼다. 부팅 시 `window.oprn` 이 있으면 Electron 어댑터, 없고 LegacyDb 설정이 있으면 LegacyDb 어댑터, 둘 다 없으면 메모리 어댑터다. 원격 실패 큐 `remoteOutbox` 는 원격 어댑터일 때만 감싼다. "온라인 저장" 같은 문구는 어댑터가 주는 라벨로 바꾼다. 프로젝트 고르기 모달과 연결 설정 모달은 Electron 에서 숨기고 7절의 시작 화면이 대신한다.
 
-**계약 테스트 하나.** 저장·충돌·병합·커밋·AI 기록·에셋의 기대 동작을 한 스펙으로 쓰고 메모리·로컬(임시 폴더의 진짜 SQLite)·가짜 전송 Supabase 세 어댑터에 같이 돌린다. 어댑터 셋의 의미가 갈라지는 것을 막는 핵심 장치다.
+**계약 테스트 하나.** 저장·충돌·병합·커밋·AI 기록·에셋의 기대 동작을 한 스펙으로 쓰고 메모리·로컬(임시 폴더의 진짜 SQLite)·가짜 전송 LegacyDb 세 어댑터에 같이 돌린다. 어댑터 셋의 의미가 갈라지는 것을 막는 핵심 장치다.
 
 ## 6. 미디어를 JSON 밖으로
 
@@ -162,11 +162,11 @@ spatial 발행의 분기는 포트 바깥으로 나오지 않는다. 지금 `rou
 | 음악·효과음 | 8MB | 64MB |
 | 영상 | 32MB | 256MB |
 
-**기존 프로젝트 자동 이관.** 로컬 스토어가 프로젝트를 열 때 문서에 base64 `dataUrl` 에셋이 남아 있으면, 렌더러에 넘기기 전에 메인에서 각각을 파일로 꺼내고 `ref` 로 바꾼 뒤 새 revision 으로 저장하고 "미디어 분리" 커밋을 남긴다. 같은 바이트는 같은 sha256 이라 여러 번 열어도 한 번만 일어난다. 8절의 Supabase 이관 스크립트도 같은 함수를 부른다.
+**기존 프로젝트 자동 이관.** 로컬 스토어가 프로젝트를 열 때 문서에 base64 `dataUrl` 에셋이 남아 있으면, 렌더러에 넘기기 전에 메인에서 각각을 파일로 꺼내고 `ref` 로 바꾼 뒤 새 revision 으로 저장하고 "미디어 분리" 커밋을 남긴다. 같은 바이트는 같은 sha256 이라 여러 번 열어도 한 번만 일어난다. 8절의 LegacyDb 이관 스크립트도 같은 함수를 부른다.
 
 **내보내기 유지.** 웹 내보내기 ZIP 은 `assets/uploaded/<id>.<확장자>` 를 지금처럼 쓰되 바이트를 `uploadedAssetBytes` 로 얻는다. 스탠드얼론 단일 HTML 은 지금도 모든 에셋을 data URL 로 인라인하므로, 빌드 시점에 `ref` 를 data URL 로 되돌려 넣기만 하면 결과물 모양이 그대로다. 릴리스 의존성 수집의 내장 미디어 검증은 문자열 접두사 대신 바이트와 MIME 을 본다. 헤드리스 노드 내보내기 스크립트는 로컬 스토어 라이브러리로 폴더의 파일을 직접 읽는다.
 
-**함께 정리되는 것.** 업로드 에셋을 브라우저 Cache API 에 복사하던 코드는 로컬 모드에서 건너뛰고 Supabase 어댑터와 함께 사라진다. 문서에서 11MB 문자열이 빠지므로 `structuredClone` 과 저장 시 sha256 이 문서 크기만큼만 든다. BGM 카탈로그와 효과음 카탈로그는 id 참조라 영향이 없다.
+**함께 정리되는 것.** 업로드 에셋을 브라우저 Cache API 에 복사하던 코드는 로컬 모드에서 건너뛰고 LegacyDb 어댑터와 함께 사라진다. 문서에서 11MB 문자열이 빠지므로 `structuredClone` 과 저장 시 sha256 이 문서 크기만큼만 든다. BGM 카탈로그와 효과음 카탈로그는 id 참조라 영향이 없다.
 
 ## 7. Electron 셸
 
@@ -181,7 +181,7 @@ electron/
   local-store/    5절의 Node 라이브러리. electron 을 import 하지 않음
 ```
 
-렌더러는 지금의 `vite build` 결과 `dist/` 그대로다. `base` 가 `/` 라 절대 경로 자산은 `app://oprn/assets/…` 로 풀린다. 메인과 preload 는 `scripts/build-electron.mjs` 가 esbuild 로 `dist-electron/{main,preload}.cjs` 로 묶는다(`electron` 과 `node:*` 는 external). 개발은 `npm run electron:dev` — vite dev 서버를 띄우고 `ELECTRON_RENDERER_URL` 로 그 주소를 Electron 에 넘긴다. 이때도 저장은 Electron 어댑터라 Supabase 설정이 필요 없다. 배포는 `app://oprn/index.html` 이다.
+렌더러는 지금의 `vite build` 결과 `dist/` 그대로다. `base` 가 `/` 라 절대 경로 자산은 `app://oprn/assets/…` 로 풀린다. 메인과 preload 는 `scripts/build-electron.mjs` 가 esbuild 로 `dist-electron/{main,preload}.cjs` 로 묶는다(`electron` 과 `node:*` 는 external). 개발은 `npm run electron:dev` — vite dev 서버를 띄우고 `ELECTRON_RENDERER_URL` 로 그 주소를 Electron 에 넘긴다. 이때도 저장은 Electron 어댑터라 LegacyDb 설정이 필요 없다. 배포는 `app://oprn/index.html` 이다.
 
 ### 7.2 프로세스 경계
 
@@ -223,12 +223,12 @@ electron/
 | 단계 | 내용 | 끝났다는 증거 |
 |---|---|---|
 | P0 | 이름 스윕. PR #832 와 영속 키 호환 PR | 가드가 옛 이름을 막는다 |
-| P1 | 포트 도입, 동작 불변. `src/project/persistence/` 에 인터페이스·`core/`·메모리 어댑터·Supabase 어댑터(기존 모듈 래핑). store 는 포트만 부른다. 계약 테스트(메모리·가짜 전송 Supabase) | `test:changed` 초록, 브라우저 e2e 스모크 초록, 원격 저장 동작 동일 |
+| P1 | 포트 도입, 동작 불변. `src/project/persistence/` 에 인터페이스·`core/`·메모리 어댑터·LegacyDb 어댑터(기존 모듈 래핑). store 는 포트만 부른다. 계약 테스트(메모리·가짜 전송 LegacyDb) | `test:changed` 초록, 브라우저 e2e 스모크 초록, 원격 저장 동작 동일 |
 | P2 | `electron/local-store/` 와 CLI `scripts/oprn-store.mjs`(`init`·`import-json`·`import-package`·`export-json`·`backup`·`info`). 임시 폴더의 진짜 SQLite 로 단위 테스트. 계약 테스트에 로컬 어댑터 추가. 가드를 3절 표대로 고친다. `oprn-tools.mjs`·MCP 서버에 `--project-dir` | 로컬 어댑터가 계약 테스트 통과, 헤드리스 도구가 폴더를 연다 |
 | P3 | 미디어 분리. 타입·접근자·58곳·이관 함수·내보내기 | 웹 모드 동작 동일, 이관 함수가 픽스처 프로젝트를 한 번만 바꾼다 |
 | P4 | Electron 셸 개발 모드. 메인·preload·두 프로토콜·Electron 어댑터·시작 화면·메뉴·닫기 절차·동반 서비스·PWA 끄기 | Playwright Electron 스모크 통과 |
-| P5 | 맥 패키징과 도그푸딩. `scripts/oprn-store.mjs import-supabase --project <id> --out <dir>` 로 남은 원격 프로젝트를 폴더로 옮긴다. 원격 행은 지우지 않는다 | 실제 프로젝트 셋을 앱에서 열고 편집·저장·재시작 |
-| P6 | Supabase 퇴역. `supabaseProjectSync.ts`, spatial `persistenceHttp`, `remoteOutbox`, `supabaseProjectConfig`, `/supabase` 프록시, 두 모달, live 테스트, Cache API 복사. 웹 빌드는 메모리 어댑터만 남아 QA 하네스가 된다. 9888 프리뷰는 이때부터 편집 도구가 아니다 | 가드가 `/rest/v1` 문자열을 src 에서 막는다 |
+| P5 | 맥 패키징과 도그푸딩. `scripts/oprn-store.mjs import-legacyDb --project <id> --out <dir>` 로 남은 원격 프로젝트를 폴더로 옮긴다. 원격 행은 지우지 않는다 | 실제 프로젝트 셋을 앱에서 열고 편집·저장·재시작 |
+| P6 | LegacyDb 퇴역. `legacyDbProjectSync.ts`, spatial `persistenceHttp`, `remoteOutbox`, `legacyDbProjectConfig`, `/legacyDb` 프록시, 두 모달, live 테스트, Cache API 복사. 웹 빌드는 메모리 어댑터만 남아 QA 하네스가 된다. 9888 프리뷰는 이때부터 편집 도구가 아니다 | 가드가 `/rest/v1` 문자열을 src 에서 막는다 |
 
 이관 스크립트의 대응: `projects.current_json` → `project.current_json`, `project_commits`·`project_changes` → `commits`·`changes`, AI 세 테이블 → 같은 이름, 미디어는 6절 함수로 추출, `maps` 미러는 복사하지 않고 문서에서 다시 만든다. 스크립트는 멱등이라 같은 프로젝트를 두 번 옮겨도 폴더 하나다.
 
@@ -275,7 +275,7 @@ electron/
 
 기각 이유는 수치보다 구조다. PGlite 는 연결 하나에 배타적이고 데이터 디렉터리 잠금이 없어(PR #892 미병합) 노드 스크립트와 앱이 같은 프로젝트를 여는 우리 사용 방식과 맞지 않는다. NodeFS 의 fsync 가 no-op 이라(issue #1107) 정전 내구성이 없다. 배포된 게임을 생각하면 더 분명하다. 설치 폴더는 읽기 전용이라 시작마다 클러스터를 복사해야 하고, Steam Cloud 는 파일 단위라 파일 수십 개짜리 데이터 디렉터리가 부분 동기화되면 통째로 깨지며, 스팀 덱에서 DB 엔진에 500MB 를 줄 수 없다. SQLite 는 이 전부의 반대편에 있고, 편집기의 `project.sqlite` 를 게임의 읽기 전용 콘텐츠 DB 로 변환 없이 동봉할 수 있다.
 
-PGlite 가 남을 수 있던 자리는 Supabase 어댑터 계약 테스트였으나, 그 어댑터는 P6 에서 사라지므로 가짜 전송으로 충분하다. 의존성에 넣지 않는다.
+PGlite 가 남을 수 있던 자리는 LegacyDb 어댑터 계약 테스트였으나, 그 어댑터는 P6 에서 사라지므로 가짜 전송으로 충분하다. 의존성에 넣지 않는다.
 
 ## 부록 A. 이름
 
@@ -292,4 +292,4 @@ PGlite 가 남을 수 있던 자리는 Supabase 어댑터 계약 테스트였으
 
 ## 부록 B. 이번 설계가 건드리는 기존 파일
 
-`src/project/store.ts`(1,807줄, sync import 를 포트로), `src/project/supabaseProjectSync.ts`(1,579줄, 어댑터 안으로 → P6 삭제), `src/project/spatial/{persistence,persistenceHttp,saveRouting}.ts`, `src/project/remoteOutbox.ts`, `src/project/supabaseProjectConfig.ts`, `src/project/devProjectPersistence.ts`(메모리 어댑터로 흡수), `src/project/types/base.ts`(`UploadedAsset`), `src/pwa.ts`, `src/main.ts`(`beforeunload`), `src/editor/tools/queryTools.ts`(동기 XHR), `vite.config.ts`(동반 서비스 본체 추출), `test/noLocalProjectDb.test.ts`, `openwiki/testing.md`, `openwiki/runtime-project-schema.md`.
+`src/project/store.ts`(1,807줄, sync import 를 포트로), `src/project/legacyDbProjectSync.ts`(1,579줄, 어댑터 안으로 → P6 삭제), `src/project/spatial/{persistence,persistenceHttp,saveRouting}.ts`, `src/project/remoteOutbox.ts`, `src/project/legacyDbProjectConfig.ts`, `src/project/devProjectPersistence.ts`(메모리 어댑터로 흡수), `src/project/types/base.ts`(`UploadedAsset`), `src/pwa.ts`, `src/main.ts`(`beforeunload`), `src/editor/tools/queryTools.ts`(동기 XHR), `vite.config.ts`(동반 서비스 본체 추출), `test/noLocalProjectDb.test.ts`, `openwiki/testing.md`, `openwiki/runtime-project-schema.md`.

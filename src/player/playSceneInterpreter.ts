@@ -1,3 +1,4 @@
+import { mapTileSize } from "@/project/tileGeometry";
 import { cancelFurniturePush } from './furniturePushAnimation';
 import { friendshipDeltaEmote } from "@/project/emotes";
 import { showSceneEmote } from "@/player/playSceneEmotes";
@@ -750,7 +751,7 @@ function stopCommandMovement(scene: PlaySceneContext): void {
     scene.movingTo = { ...scene.movingFrom };
     // 이동을 끊고 스프라이트를 되돌릴 때도 **몸 중앙**이다. 1x1 이면 타일 중앙과 같다.
     const footprint = resolvePlayerBody(store.getCurrent(), scene.session).footprint;
-    scene.player.setPosition(footprintSpriteX(scene.tileX, footprint), characterSpriteY(scene.tileY));
+    scene.player.setPosition(footprintSpriteX(scene.tileX, footprint, mapTileSize(scene.map)), characterSpriteY(scene.tileY, mapTileSize(scene.map)));
   }
 }
 

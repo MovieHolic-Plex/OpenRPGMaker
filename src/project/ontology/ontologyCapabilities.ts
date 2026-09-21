@@ -22,7 +22,7 @@ export const ONTOLOGY_CAPABILITIES = [
         requiredTests: ["test/mapEditCommands.test.ts", "test/e2e/oprn-map-editor.spec.ts"],
       },
     ],
-    contracts: ["map-uses-existing-tileset", "map-tile-array-size", "supabase-project-root"],
+    contracts: ["map-uses-existing-tileset", "map-tile-array-size", "canonical-project-root"],
   },
   {
     id: "EventAuthoring",
@@ -60,7 +60,7 @@ export const ONTOLOGY_CAPABILITIES = [
     typeSurfaces: ["src/project/types/base.ts"],
     uiSurfaces: [
       "src/editor/panels/tilesetMetadataEditor.ts",
-      "src/editor/panels/tilesetAiQuestionEditor.ts",
+      "src/editor/panels/tilesetReferencePanel.ts",
     ],
     runtimeSurfaces: ["src/project/tilesetPassage.ts", "src/project/aiPreviewGenerator.ts", "src/project/aiPreviewContracts.ts"],
     storageSurfaces: ["src/project/io/guards.ts", "src/project/io/shapeResourceFields.ts", "src/project/tileMetadataDb.ts"],
@@ -142,13 +142,13 @@ export const ONTOLOGY_CAPABILITIES = [
   {
     id: "ResourcePipeline",
     label: "Resource Pipeline",
-    purpose: "Supabase-root resource payloads, local cache/bootstrap files, resource profiles, picker UI, and Phaser loading.",
+    purpose: "project-owned resource payloads, local cache/bootstrap files, resource profiles, picker UI, and Phaser loading.",
     entities: ["AssetRef", "UploadedAsset", "ResourceProfile"],
     typeSurfaces: ["src/project/types/base.ts"],
     uiSurfaces: ["src/editor/panels/resourceManager.ts", "src/editor/panels/resourceModal.ts", "src/editor/panels/eventEditor/npcGraphicPicker.ts"],
-    runtimeSurfaces: ["src/assets/bundled.ts", "src/assets/generatedAssetResourceResolver.ts", "src/assets/supabaseResourceCache.ts", "src/player/resourceDisplay.ts"],
+    runtimeSurfaces: ["src/assets/bundled.ts", "src/assets/generatedAssetResourceResolver.ts", "src/project/persistence/electronRepository.ts", "src/player/resourceDisplay.ts"],
     storageSurfaces: ["src/project/io/resourceReferenceValidation.ts", "src/project/io/shapeResourceFields.ts"],
-    testSurfaces: ["test/generatedAssetResourceResolver.test.ts", "test/supabaseResourceCache.test.ts", "test/e2e/oprn-resource-manager.spec.ts"],
+    testSurfaces: ["test/generatedAssetResourceResolver.test.ts", "test/localStore/store.test.ts", "test/e2e/oprn-resource-manager.spec.ts"],
     docsSurfaces: ["public/assets/MANIFEST.md"],
     commonTasks: [
       {
@@ -160,12 +160,12 @@ export const ONTOLOGY_CAPABILITIES = [
         requiredTests: ["test/generatedAssetResourceResolver.test.ts", "test/e2e/oprn-resource-manager.spec.ts"],
       },
     ],
-    contracts: ["resource-reference-exists", "supabase-resource-root", "bundled-resource-not-user-deletable"],
+    contracts: ["resource-reference-exists", "canonical-resource-root", "bundled-resource-not-user-deletable"],
   },
   {
     id: "ProjectPersistence",
     label: "Project Persistence",
-    purpose: "Serialization, package export, migration, shape guards, reference validation, and Supabase current_json sync.",
+    purpose: "Serialization, package export, migration, shape guards, reference validation, and project.sqlite sync.",
     entities: ["Project", "ProjectSession", "SaveSlot", "GameMap", "Command", "ResourceProfile"],
     typeSurfaces: ["src/project/types/project.ts", "src/project/types/events.ts", "src/project/types/base.ts"],
     uiSurfaces: ["src/editor/saveActions.ts", "src/editor/panels/menu.ts"],
@@ -188,6 +188,6 @@ export const ONTOLOGY_CAPABILITIES = [
         requiredTests: ["test/io.test.ts", "test/migrationFixtures.ts"],
       },
     ],
-    contracts: ["map-uses-existing-tileset", "command-references-existing-record", "resource-reference-exists", "supabase-project-root", "supabase-resource-root"],
+    contracts: ["map-uses-existing-tileset", "command-references-existing-record", "resource-reference-exists", "canonical-project-root", "canonical-resource-root"],
   },
 ] satisfies readonly OntologyCapability[];

@@ -1,0 +1,79 @@
+{
+  "id": "08-field-return",
+  "screenshot": "08-field-return.png",
+  "expected": {
+    "gold": 60,
+    "inventory": {},
+    "x": 14,
+    "y": 18
+  },
+  "observed": {
+    "gold": 60,
+    "inventory": {},
+    "owned": 0,
+    "playerGold": null,
+    "merchantGold": null,
+    "selected": null,
+    "cap": null,
+    "unitPrice": null,
+    "displayedPrice": null,
+    "displayedOwned": null,
+    "quantity": null,
+    "quantityMax": null,
+    "total": null,
+    "rows": 0,
+    "actorEquipment": {
+      "actor_hero": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_guardian": {
+        "weapon": "equip_sword",
+        "shield": "equip_oak_shield",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_mage": {
+        "weapon": "equip_mage_staff",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_scout": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_cleric": {
+        "weapon": "equip_mage_staff",
+        "shield": "equip_oak_shield",
+        "armor": "equip_mystic_robe",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      },
+      "actor_ranger": {
+        "weapon": "equip_scout_dagger",
+        "armor": "equip_leather_armor",
+        "helmet": "equip_traveler_hat",
+        "accessory": "equip_focus_charm"
+      }
+    },
+    "tradeCounts": {
+      "equip_sword": {
+        "sold": 2,
+        "bought": 2
+      }
+    },
+    "focus": null,
+    "balance": null,
+    "shortage": null,
+    "x": 14,
+    "y": 18,
+    "warnings": []
+  }
+}

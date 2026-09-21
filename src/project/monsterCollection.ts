@@ -569,6 +569,7 @@ function rollIv(rng: Rng): number {
 function normalizeSpeciesGraphic(graphic: Partial<MonsterSpeciesGraphic> | undefined): MonsterSpeciesGraphic {
   return {
     monsterResourceId: cleanOptionalText(graphic?.monsterResourceId),
+    backResourceId: cleanOptionalText(graphic?.backResourceId),
     fieldCharsetId: cleanOptionalText(graphic?.fieldCharsetId),
     fieldGraphic: graphic?.fieldGraphic?.sprite?.id ? graphic.fieldGraphic : undefined,
     graphicHue: clampInteger(graphic?.graphicHue ?? 0, 0, 360),

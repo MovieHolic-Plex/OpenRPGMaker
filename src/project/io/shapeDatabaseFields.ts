@@ -1,3 +1,4 @@
+import { validateFieldHud } from "./shapeFieldHud";
 import { isEquipmentSlotId } from "@/project/equipmentSlots";
 import { isGenrePackId } from "@/project/genrePackId";
 import { TOOL_CAPABILITY_AXIS_MAX, TOOL_CAPABILITY_TILE_MAX } from "@/project/upgrades";
@@ -86,12 +87,16 @@ export function validateDatabase(value: unknown): void {
 export function validateSystem(value: unknown): void {
   const system = requireRecord("system", value);
   requireArray("system.startActorIds", system.startActorIds);
+  if (system.fieldHud !== undefined) validateFieldHud(system.fieldHud);
   if (system.opening !== undefined) validateCinematicSequence("system.opening", system.opening);
   if (system.gameOver !== undefined) validateGameOverSettings(system.gameOver);
   if (system.battleCommandCss !== undefined) requireString("system.battleCommandCss", system.battleCommandCss);
   // 주인공 몸 크기는 이벤트 페이지와 **같은 경계**로 막는다(2차 §9). 한쪽만 검증하면
   // `playerFootprint: {width: -5}` 가 로드를 통과하고 런타임 정규화만이 마지막 방어선이 된다.
   validateFootprintPair("system.playerFootprint", system.playerFootprint, "system.playerPassRows", system.playerPassRows);
+  if (system.cameraZoom !== undefined) {
+    requireNumber("system.cameraZoom", system.cameraZoom);
+  }
   if (system.playResolution !== undefined) {
     const playResolution = requireRecord("system.playResolution", system.playResolution);
     requireNumber("system.playResolution.width", playResolution.width);

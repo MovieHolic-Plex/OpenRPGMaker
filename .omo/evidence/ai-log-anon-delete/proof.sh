@@ -2,7 +2,7 @@
 # 로컬 postgres 에 마이그레이션을 순서대로 적용하고 anon 권한을 실측한다.
 set -euo pipefail
 REPO=/home/main/z-project/rpg-zzu-ai-log-rls
-M=$REPO/supabase/migrations
+M=$REPO/legacyDb/migrations
 CN=ulw-rls-pg
 PGPASS=ulwproof
 

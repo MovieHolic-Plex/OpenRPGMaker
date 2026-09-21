@@ -3,7 +3,7 @@
   "runId": "877f4c3a-11f8-43a1-aa63-426af83dca5e",
   "projectId": "qa-ai-proof-877f4c3a-11f8-43a1-aa63-426af83dca5e",
   "startedAt": "2026-09-06T09:46:51.552Z",
-  "surface": "actual ProjectStore flush/verifyPersistedRevision via Vite SSR and live Supabase REST",
+  "surface": "actual ProjectStore flush/verifyPersistedRevision via Vite SSR and live LegacyDb REST",
   "sourceSha": "3eccfb89f36daae1826d7b93f51bea5a4ac3d40a",
   "storeSourceSha256": "7823f05b36f84ef5e2cf4532b6b3e11331228a650c7973117ce6c7f35f5c9645",
   "harnessSha256": "a9721a4f15c9bf1ca996fd3c1c23fbff33390e826390671f7ea181d9b7952e19",

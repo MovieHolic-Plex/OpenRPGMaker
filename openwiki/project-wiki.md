@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # Project wiki
 
 The project wiki extends the existing `project.world` documents. It is not a
@@ -10,6 +12,30 @@ kind (`declaration`, `knowledge`, `progress`), evidence basis (`explicit`,
 `inferred`, `observed`), host-owned sources, optional topic/combat mode, and
 superseded document IDs. `origin: ai` identifies the writer, not the certainty
 or provenance of a fact.
+
+### Work history is not a codex document (2026-09-20)
+
+New wiki extraction creates lasting `declaration`/`knowledge` only. The extraction
+adapter rejects new `progress` patches. `applyProposedProject` records work through
+the existing commit and mutation audit paths; it no longer calls a wiki observer,
+adds an `적용된 작업` card, takes a second wiki undo snapshot, or flushes a progress
+document. Application delivery refers to the actual tool-applied project.
+
+Legacy AI `progress`/`observed` cards backed solely by application sources remain
+byte-content-preserved in `project.world.entities` for export/load compatibility
+and references. This is a read-through history migration, not deletion or replay
+into newly timestamped commits. `world/activity.ts` identifies them; the codex
+list, search and selection omit them. `작업 기록 → 행위 기록 → 이전 AI 작업 기록`
+provides a read-only, newest-first, paged view with original dates and full text.
+Manual annotations (`knowledge` with manual sources) and user-owned records stay
+in the codex. No schema bump, SQL migration or live-project bulk rewrite is needed.
+
+All `progress` documents are excluded before both the eight-document retrieval
+limit and the 64-document extraction-input limit. `read_project_wiki` also excludes
+them when explicit IDs or `includeHistory` are supplied; that flag refers to old
+knowledge revisions, not work logs. Automatic work history cannot become project
+knowledge merely by matching the query. Historical source bodies remain available
+in the work-history UI and project exports.
 
 Source IDs, text, kind and chronological ordering are supplied by the host.
 The model can reference supplied IDs but cannot fabricate evidence. User
@@ -95,14 +121,14 @@ documents. Wiki backfill remains a separate, editor-owned action.
 
 Intent selection and normal authoring receive the same relevant wiki context.
 The intent cache includes that context, so a correction invalidates the earlier
-route. Core declarations outrank incidental progress within the context budget.
+route. Core declarations outrank other knowledge within the context budget;
+work-history records do not enter it.
 `read_project_wiki` retrieves selected document bodies in 12,000-character pages.
 Generic CRUD and blanket wiki lint remain absent.
 
-Successful shared proposal application records observed tool/map state directly,
-not a model's guess about what happened. Failed/discarded proposals never become
-progress. A later wiki save failure is reported separately from successful game
-application. Ordinary proposals and region applies retain newer live documents.
+Successful shared proposal application records work in the existing commit/audit
+history. It creates no wiki progress document. Ordinary proposals and region
+applies retain newer live documents.
 
 ## Combat acceptance slice
 
@@ -117,6 +143,19 @@ transparency). An unresolved `{query: "monster"}` is not an EventPageGraphic and
 must be rejected; omitting the override uses the troop enemy's existing art.
 
 ## Verification
+
+Work-history separation: `wikiActivitySeparation.test.ts` covers actual
+serialize/load retention, manual annotations, codex deep links, both AI input
+budgets, explicit tool reads, original dates, escaped text, pagination and project
+switches. `projectWikiApplication.test.ts` checks repeated successful application
+and commit-log failure without extra documents, snapshots or wiki flushes.
+Browser component QA: `node scripts/qa/wiki-work-history.mjs` (set
+`WIKI_QA_ORIGIN` to the worktree server); screenshot and report under
+`output/evidence/wiki-work-history/`. It uses production panels/store/styles and
+test fixtures without remote writes. At `759975b8c`, the existing LegacyDb-specific
+assertions in `applyChangesetToStore.test.ts` fail unchanged on baseline because
+the default repository now selects memory/local storage; compare regressions
+against that baseline rather than treating those two assertions as new failures.
 
 Domain tests: `projectWikiDomain.test.ts`, `projectWikiPatch.test.ts`,
 `projectWikiClient.test.ts`, and `projectWikiContext.test.ts`.
@@ -141,7 +180,7 @@ and original-context initialization, real acceptance authority rejection,
 detached title authoring, no late writes, fatal non-exempt errors, and timely
 application with truthful local-save delivery. No live project is exercised.
 
-Live evidence uses a separate Supabase QA project and the user's existing OAuth
+Live evidence uses a separate LegacyDb QA project and the user's existing OAuth
 provider. A successful model reply is not evidence of wiki persistence; require
 store flush followed by loading the same remote project. Runtime combat proof
 uses the exported player (`player.html`), never the editor play shell.

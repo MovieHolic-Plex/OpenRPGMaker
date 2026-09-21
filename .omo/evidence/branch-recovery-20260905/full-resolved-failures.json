@@ -153,7 +153,7 @@
   },
   {
     "file": "test/storeFlushShaEvidence.test.ts",
-    "test": "Project store flush sha256 evidence \uc804\uccb4 \uc800\uc7a5 \uacbd\ub85c: saveProjectToSupabase \uc758 sha256 \uc774 flush \uacb0\uacfc(saved.sha256)\ub85c \ud758\ub7ec\ub4e0\ub2e4"
+    "test": "Project store flush sha256 evidence \uc804\uccb4 \uc800\uc7a5 \uacbd\ub85c: saveProjectToLegacyDb \uc758 sha256 \uc774 flush \uacb0\uacfc(saved.sha256)\ub85c \ud758\ub7ec\ub4e0\ub2e4"
   },
   {
     "file": "test/storePersistence.test.ts",

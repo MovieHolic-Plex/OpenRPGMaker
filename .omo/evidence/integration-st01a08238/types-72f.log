@@ -12,7 +12,7 @@
     "src/editor/panels/aiStickyChecklist.ts",
     "src/editor/projectWikiCoordinator.ts",
     "src/project/store.ts",
-    "src/project/supabaseProjectSync.ts",
+    "src/project/legacyDbProjectSync.ts",
     "test/aiAssistantSession.test.ts",
     "test/aiCompletionAccounting.test.ts",
     "test/aiRunEndProof.test.ts",

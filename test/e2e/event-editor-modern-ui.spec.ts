@@ -2,7 +2,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import { openEventEditor, screenshotEvidence, writeEvidenceJson } from "./eventEditorCertEvidence";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import type { Command, Project } from "@/project/types";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-modern-ui";
@@ -10,7 +10,7 @@ const EVIDENCE_DIR = "output/evidence/event-editor-modern-ui";
 test("event editor modern target surface", async ({ page }) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1586, height: 992 });
-  await seedProjectFromSupabaseCanonical(page, targetProject());
+  await seedProjectForEditor(page, targetProject());
   await openEventEditor(page, "event_starter_sera");
 
   const command = await activeChangeFaceCommand(page);

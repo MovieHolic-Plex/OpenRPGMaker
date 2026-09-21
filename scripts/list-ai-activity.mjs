@@ -1,84 +1,23 @@
 #!/usr/bin/env node
-// 최근 AI 활동 로그 조회 — 디스크(output/ai-activity/) 우선, 필요하면 Supabase.
-//
-// 사용법:
-//   node scripts/list-ai-activity.mjs [limit] [--failed] [--issues] [--tools] [--remote] [--run <id>]
-//     --failed  실패한 턴만 (result.ok === false 또는 ok:false 툴콜 존재)
-//     --issues  실패 + 플래너 폴백·의도 재질문·WorkPlan 거부 경고까지
-//     --tools   실패 툴콜의 이름·요약·이슈까지 펼쳐 본다 (툴콜링 실패 원인 분류용)
-//     --remote  Supabase 도 함께 조회 (기본은 디스크만 — 로컬 QA 가 대부분)
-//     --run     특정 런(run_id)만. 브라우저 콘솔의 __oprnAiActivityRunId() 값을 넣는다.
-//
-// --run 이 필요한 이유: 같은 머신의 워크트리 여러 개가 전부 같은 project_id 로 쓴다.
-// 필터 없는 최신 정렬은 옆 워크트리의 e2e 턴을 준다(실측: 5,128턴 중 사람이 친 건 9턴).
-// 디스크 미러는 cwd 로 공짜 격리를 받고 있었고, run_id 가 그걸 DB 로 옮긴 것이다.
+// AI activity: local disk mirror and explicitly selected SQLite project.
+// --project-dir <folder> [--run <id>] [limit] [--failed] [--issues] [--tools]
 import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { buildAiActivityUrls, loadSupabaseEnvironment } from "./lib/supabase-database-ops.mjs";
+import { openProjectLogReader, projectDirArgument } from "./lib/project-log-reader.mjs";
 
 const DIR = join(process.cwd(), "output", "ai-activity");
 
-/** 프록시 모드에서는 VITE_SUPABASE_URL 이 상대 경로다 — 노드는 절대 URL 이 필요하다. */
-function remoteBaseUrl(env) {
-  for (const candidate of [env.SUPABASE_UPSTREAM_URL, env.SUPABASE_URL, env.VITE_SUPABASE_URL]) {
-    const url = (candidate || "").trim().replace(/\/$/, "");
-    if (/^https?:\/\//.test(url)) return url;
-  }
-  return "";
+function listProject(projectDir, limit, runId) {
+  const db = openProjectLogReader(projectDir);
+  try {
+    const query = `SELECT log_id, run_id, channel, instruction, map_id, payload_json, created_at FROM ai_activity_logs
+      ${runId ? 'WHERE run_id = ?' : ''} ORDER BY created_at DESC LIMIT ?`;
+    return db.prepare(query).all(...(runId ? [runId, limit] : [limit])).map(row => ({
+      ...row, payload_json: row.payload_json ? JSON.parse(row.payload_json) : null,
+    }));
+  } finally { db.close(); }
 }
 
-async function listRemote(env, limit, runId) {
-  const url = remoteBaseUrl(env);
-  const key = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_ANON_KEY || env.VITE_SUPABASE_ANON_KEY || "";
-  const projectId = env.VITE_SUPABASE_PROJECT_ID || "";
-  if (!url || !key || !projectId) return { error: "no supabase env or project id" };
-  const urls = buildAiActivityUrls({ url, projectId }, limit, { runId });
-  const headers = {
-    apikey: key,
-    Authorization: `Bearer ${key}`,
-    Accept: "application/json",
-    "Accept-Profile": "rpg_zzu",
-  };
-  let primary = [];
-  try {
-    const r = await fetch(
-      urls.primary,
-      { headers },
-    );
-    if (r.ok) primary = await r.json();
-    else primary = { status: r.status, body: await r.text() };
-  } catch (e) {
-    primary = { error: String(e) };
-  }
-  // run 필터가 걸리면 폴백 URL 이 없다 — ai_analysis_runs 에는 런 정보가 없어서
-  // 섞으면 다시 옆 런의 턴이 들어온다.
-  if (!urls.fallback) return { primary, fallback: [], runId };
-  let fallback = [];
-  try {
-    const r = await fetch(
-      urls.fallback,
-      { headers },
-    );
-    if (r.ok) {
-      const rows = await r.json();
-      fallback = rows.map((row) => ({
-        log_id: row.run_id,
-        channel: row.prompt_context_json?.channel,
-        instruction: row.prompt_context_json?.instruction,
-        map_id: row.prompt_context_json?.mapId,
-        created_at: row.created_at,
-        source: "fallback",
-      }));
-    } else {
-      fallback = { status: r.status, body: await r.text() };
-    }
-  } catch (e) {
-    fallback = { error: String(e) };
-  }
-  return { primary, fallback };
-}
-
-/** 디스크 요약 목록. index.json 이 없거나 깨졌으면 개별 레코드에서 직접 요약을 만든다. */
 function listDisk(limit) {
   if (!existsSync(DIR)) {
     return {
@@ -200,12 +139,14 @@ const runIdIndex = args.indexOf("--run");
 const runId = runIdIndex >= 0 ? (args[runIdIndex + 1] ?? "") : "";
 // `--run <id>` 의 값이 숫자로 오해되지 않게 limit 탐색에서 제외한다.
 const positional = args.filter((value, index) => index !== runIdIndex && index !== runIdIndex + 1);
-const limit = Number(positional.find((a) => /^\d+$/.test(a)) ?? 10);
+const limit = Math.max(1, Math.min(1000, Number(positional.find((a) => /^\d+$/.test(a)) ?? 10)));
 const onlyFailed = args.includes("--failed");
 const onlyIssues = args.includes("--issues");
 const withTools = args.includes("--tools");
-// --run 은 DB 만 답할 수 있는 질문이다(디스크에는 런 개념이 없다) — 자동으로 원격을 켠다.
-const withRemote = args.includes("--remote") || runId.length > 0;
+// 런 필터는 선택한 프로젝트의 기록에 적용한다.
+const projectDir = projectDirArgument(args);
+if (args.includes("--remote")) throw new Error("Use --project-dir <folder> for stored AI activity");
+if (runId && !projectDir) throw new Error("--run requires --project-dir or OPRN_PROJECT_DIR");
 
 const disk = listDisk(limit);
 let rows = disk.rows;
@@ -217,5 +158,5 @@ if (withTools) rows = rows.map((row) => ({ ...row, failures: failedToolDetail(ro
 const out = {
   disk: { dir: DIR, count: rows.length, ...(disk.error ? { error: disk.error } : {}), rows },
 };
-if (withRemote) out.remote = await listRemote(loadSupabaseEnvironment(), limit, runId);
+if (projectDir) out.project = { projectDir, rows: listProject(projectDir, limit, runId) };
 console.log(JSON.stringify(out, null, 2));

@@ -9,7 +9,7 @@
 // 마운트되므로 그 변수를 못 받는다. 그래서 같은 방식을 전투에도 붙인다.
 //
 // 방식: 씬의 레이아웃 박스를 논리 해상도로 고정하고 컨테이너에 맞춰 transform: scale 한다.
-// 정수 배율을 우선해 픽셀아트가 흐려지지 않게 하고, 정수로는 남는 여백이 크면 소수 배율을 쓴다.
+// 전체 UI가 잘리지 않는 최대 균일 배율을 쓴다. 비율 차이로 남는 여백은 battle-stage가 덮는다.
 //
 // ── 논리 해상도를 640×480 으로 올린 이유 (320×240 에서 옮겨왔다) ──────────────
 // 맵은 320×240(RM2003 해상도)이지만 **전투 화면만** 640×480 을 쓴다. 전투 UI 는 픽셀아트가
@@ -31,21 +31,10 @@ export const BATTLE_LOGICAL_HEIGHT = 480;
 /** 자산 px(320×240 시대 기준) → 논리 px 환산 계수. 640×480 논리 해상도에서 1 자산 px = 2 논리 px. */
 export const BATTLE_ASSET_PIXEL_SCALE = 2;
 
-/**
- * 컨테이너 크기에 맞는 배율. 정수 배율이 컨테이너의 88% 이상을 채우면 정수를 쓴다
- * (픽셀 보간 없음). 그렇지 않으면 꽉 채우는 소수 배율을 **0.5 단계로 내림해** 쓴다 —
- * 임의 소수(예: 1.73)는 논리 1-2px 창 테두리와 픽셀 폰트가 디바이스 픽셀 격자에
- * 걸려 흐려진다(실측). 0.5 배율은 논리 2px = 1 디바이스 px 이라 격자에 정확히 놓인다.
- */
+/** Largest uniform fit without cropping; the host's own transform is applied once by its parent. */
 export function calculateBattleStageScale(width: number, height: number): number {
   if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) return 1;
-  const exact = Math.min(width / BATTLE_LOGICAL_WIDTH, height / BATTLE_LOGICAL_HEIGHT);
-  if (exact <= 0) return 1;
-  const integer = Math.floor(exact);
-  if (integer >= 1 && integer / exact >= 0.88) return integer;
-  // 소수 폴백은 0.5 단계로 내림해 양자화한다. floor(exact) 보다 클 수 없으므로
-  // 컨테이너를 넘치지 않고, Math.max 의 0.5 가 그대로 바닥이 된다.
-  return Math.max(0.5, Math.floor(exact * 2) / 2);
+  return Math.min(width / BATTLE_LOGICAL_WIDTH, height / BATTLE_LOGICAL_HEIGHT);
 }
 
 type ScaleBinding = { readonly sync: () => void; readonly cleanup: () => void };
@@ -74,8 +63,8 @@ export function bindBattleStageScale(host: HTMLElement, scene: HTMLElement): Sca
     const offsetX = Math.max(0, (width - BATTLE_LOGICAL_WIDTH * scale) / 2);
     const offsetY = Math.max(0, (height - BATTLE_LOGICAL_HEIGHT * scale) / 2);
     scene.style.setProperty("--battle-stage-scale", String(scale));
-    scene.style.setProperty("--battle-stage-offset-x", `${Math.round(offsetX)}px`);
-    scene.style.setProperty("--battle-stage-offset-y", `${Math.round(offsetY)}px`);
+    scene.style.setProperty("--battle-stage-offset-x", `${offsetX}px`);
+    scene.style.setProperty("--battle-stage-offset-y", `${offsetY}px`);
     scene.dataset.battleStageScale = scale.toFixed(3);
   };
 

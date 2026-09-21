@@ -137,7 +137,7 @@ reduction removes unrelated catalog work from the real save/read pipeline.
 
 The old fixture resolved its waiter for *any* `/rest/v1/project_changes` request.
 To test this independently of machine speed, a temporary fixture challenge
-subscribed first, called the actual `recordProjectCommitToSupabase` with the same
+subscribed first, called the actual `recordProjectCommitToLegacyDb` with the same
 project content but explicit target `foreign-project`, awaited that real writer,
 and checked `pendingSignals.has(committed.promise) === true` before local save.
 There was no sleep, polling or race against a short timer.
@@ -241,7 +241,7 @@ configuration target pinning; and cancellation/disabling during an in-flight rea
 
 Only fetch is a synthetic HTTP transport. The production store, serializer,
 normalizer, loader, SHA-256, save writer, commit writer and RequestInit/Response
-handling are real. No live Supabase, socket server or browser proof is claimed.
+handling are real. No live LegacyDb, socket server or browser proof is claimed.
 No production files, legacy tests, gates, builds, PRs or other worktrees changed.
 
 ## Commands and results

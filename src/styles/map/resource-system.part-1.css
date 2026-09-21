@@ -7,6 +7,17 @@
   min-width: 0;
   position: relative;
 }
+/* 2026-09-18: dense(standard/expert, 플로팅 툴바)만 flex column.
+   고정 top 예약(48px/배너 시 74px)이 배너 실측(42px)과 어긋나 상단 빈 띠를
+   만들던 결함 수정. 셸이 배너 뒤에 normal flow로 바로 붙는다.
+   beginner(도크 툴바)는 absolute 예약을 유지 — 플로팅과 도크를 한 규칙으로
+   묶으면 도크 바가 캔버스와 겹친다. */
+body.editor-ui-standard .editor-layout .canvas-area,
+body.editor-ui-expert .editor-layout .canvas-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
 
 .editor-layout .canvas-area .phaser-container {
   /* 스크롤 셸을 꽉 채운다. 고정 1024×768은 작은 중앙 영역 + 가로스크롤을 만든다. */
@@ -19,13 +30,38 @@
 }
 
 .editor-canvas-scroll-shell {
-  /* 크롬 높이: 상태바 / 툴바 예약. Figma 셸은 figma-editor에서 덮어씀. */
+  /* 크롬 높이: 상태바 / 툴바 예약. Figma 셸은 figma-editor에서 덮어씀.
+     beginner(absolute)는 아래 :has 규칙에서 위·아래를 못 박는다. */
+  bottom: 0;
   height: auto;
   left: 0;
   /* DOM 스크롤 대신 카메라 팬 — 스크롤바 거터로 영역이 줄어들지 않게 */
   position: absolute;
   right: 0;
   width: auto;
+}
+body.editor-ui-standard .editor-canvas-scroll-shell,
+body.editor-ui-expert .editor-canvas-scroll-shell {
+  /* dense만 normal flow + flex:1 — 남은 높이를 다 쓴다. */
+  bottom: auto;
+  flex: 1;
+  left: auto;
+  min-height: 0;
+  position: relative;
+  right: auto;
+  top: auto;
+}
+/* beginner(absolute) 셸은 위·아래를 둘 다 못 박아야 늘어난다.
+   bottom:0만 주면 height:auto라 높이는 그대로고 top이 아래로 밀려
+   상단 갭이 생긴다(2026-09-19 실측 top:143). top은 배너 실측 42px —
+   툴바 오프셋과 같은 값(uxc 미러 :23-33). 배너가 없으면 0. */
+body.editor-ui-beginner .canvas-area:has(.persistence-mode-banner) .editor-canvas-scroll-shell {
+  bottom: 0;
+  top: 42px;
+}
+body.editor-ui-beginner .canvas-area:not(:has(.persistence-mode-banner)) .editor-canvas-scroll-shell {
+  bottom: 0;
+  top: 0;
 }
 
 .editor-canvas-scroll-shell::-webkit-scrollbar {

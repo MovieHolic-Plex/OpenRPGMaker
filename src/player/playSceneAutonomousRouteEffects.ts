@@ -1,5 +1,4 @@
 import { eventSpriteScale, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
-import { isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import type {
   AutonomousNpcSceneContext,
@@ -22,15 +21,15 @@ export function clampRouteOpacity(value: number): number {
 export function applyMoveRouteGraphicChange(
   spriteId: string,
   view: RuntimeEventView,
-  sprite: AutonomousNpcSprite | undefined
+  sprite: AutonomousNpcSprite | undefined,
+  tileSize = 16,
 ): void {
   const normalized = spriteId.trim();
   if (!normalized || !sprite) return;
   const texture = resolveEventSpriteTexture(store.getCurrent(), normalized, view.page?.graphic.pattern);
   if (texture) {
-    const wasMonster = isGeneratedMonsterSprite(sprite.texture.key);
     sprite.setTexture(texture.texture, texture.frame);
-    if (texture.fitSize || wasMonster) sprite.setScale?.(eventSpriteScale(texture, sprite, view.scale));
+    sprite.setScale?.(eventSpriteScale(texture, sprite, view.page?.graphic.scale, tileSize, view.page?.graphic.scaleMode));
   }
 }
 

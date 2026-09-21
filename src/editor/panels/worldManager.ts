@@ -1,6 +1,6 @@
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { selectEditorMap } from "@/editor/mapSelection";
-import { openDatabaseModal } from "@/editor/panels/databaseModal";
+import { openDatabaseModalLazy } from "@/editor/panels/databaseModalLazy";
 import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import {
@@ -10,6 +10,7 @@ import {
 } from "@/project/factionsFromWorld";
 import { normalizeProjectFactions } from "@/project/factions";
 import { lintWorld, normalizeProjectWorld, normalizeWorld } from "@/project/world";
+import { isWikiActivityRecord } from "@/project/world/activity";
 import {
   WORLD_ENTITY_TYPES,
   WORLD_REF_KINDS,
@@ -185,7 +186,7 @@ export function jumpToWorldRefTarget(ref: WorldRef, project: Project = store.get
         return false;
       }
       setSelectedRecordId("actors", ref.id);
-      openDatabaseModal("actors");
+      openDatabaseModalLazy("actors");
       return true;
     case "item":
       if (!project.database.items.some((record) => record.id === ref.id)) {
@@ -193,7 +194,7 @@ export function jumpToWorldRefTarget(ref: WorldRef, project: Project = store.get
         return false;
       }
       setSelectedRecordId("items", ref.id);
-      openDatabaseModal("items");
+      openDatabaseModalLazy("items");
       return true;
     case "skill":
       if (!project.database.skills.some((record) => record.id === ref.id)) {
@@ -201,7 +202,7 @@ export function jumpToWorldRefTarget(ref: WorldRef, project: Project = store.get
         return false;
       }
       setSelectedRecordId("skills", ref.id);
-      openDatabaseModal("skills");
+      openDatabaseModalLazy("skills");
       return true;
     case "event": {
       const match = findEvent(project, ref.id);
@@ -387,7 +388,7 @@ export function highestSeverity(issues: readonly LintIssue[]): LintSeverity | nu
 
 export function visibleEntities(entities: readonly WorldEntity[], tab: WorldTabKey, search: string): readonly WorldEntity[] {
   const query = normalizeSearch(search);
-  return entities.filter((entity) => entityInTab(entity, tab) && (!query || entityMatchesSearch(entity, query)));
+  return entities.filter((entity) => !isWikiActivityRecord(entity) && entityInTab(entity, tab) && (!query || entityMatchesSearch(entity, query)));
 }
 
 export function currentWorld(project: Project): ProjectWorld {

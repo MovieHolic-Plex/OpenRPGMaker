@@ -1,14 +1,14 @@
 // editor/assistantToolMode.ts
 // 컨텍스트 모드 결정(2026-07-07 타일 시공 흐름 재설계 §2.2.2 — 원칙 0).
-// AI 어시스턴트에 노출할 툴 집합(toOpenAiTools({mode}))의 mode를 **UI 상태에서만**
-// 결정론으로 계산한다 — 모델 판단 금지. 우선순위:
+// Scoped editor consumers and the UI badge derive a tool mode from **UI state only**;
+// the main AssistantSession uses its hybrid control-plane exposure. 우선순위:
 //   1. DB 모달 열림           → "database"
 //   2. 이벤트 에디터 열림      → "event"
 //   3. 이벤트 레이어/도구 활성 → "event"
 //   4. 타일 팔레트 활성(좌측 팔레트 보임 + 타일 레이어 편집) → "tile"
 //   5. 판정 불가/일반          → "map" (기본, 넓게)
 //
-// 활성 도메인 = 코어 + UI 도메인 + **의도 선언이 여는 도메인** + 최근 쓴 툴의 도메인.
+// Scoped 활성 도메인 = 코어 + UI 도메인 + **의도 선언이 여는 도메인** + 최근 쓴 툴의 도메인.
 // 예전에는 여기 221개 키워드 표(INTENT_KEYWORDS)가 사용자 문장을 substring 으로 훑어 도메인을 열었다 —
 // 「낮게」가 시간 시스템을, 「적게」가 전투·DB 를, 「이 지역에」가 월드 그래프를 열었다(2026-09-03 감사).
 // 이제 문장은 모델이 한 번 읽어 선언하고(intentDeclaration), 이 모듈은 선언 필드를 도메인으로 옮기기만 한다.

@@ -70,28 +70,28 @@
       "kind": "ready",
       "projectId": "rpg-zzu-house-template-gallery",
       "source": "env",
-      "url": "/supabase"
+      "url": "/legacyDb"
     }
   },
-  "sameOriginSupabase": [
+  "sameOriginLegacyDb": [
     {
-      "path": "/supabase/rest/v1/projects",
+      "path": "/legacyDb/rest/v1/projects",
       "status": 200
     },
     {
-      "path": "/supabase/rest/v1/maps",
+      "path": "/legacyDb/rest/v1/maps",
       "status": 200
     },
     {
-      "path": "/supabase/rest/v1/project_commits",
+      "path": "/legacyDb/rest/v1/project_commits",
       "status": 200
     },
     {
-      "path": "/supabase/rest/v1/map_edit_locks",
+      "path": "/legacyDb/rest/v1/map_edit_locks",
       "status": 200
     },
     {
-      "path": "/supabase/rest/v1/map_edit_locks",
+      "path": "/legacyDb/rest/v1/map_edit_locks",
       "status": 405
     }
   ],

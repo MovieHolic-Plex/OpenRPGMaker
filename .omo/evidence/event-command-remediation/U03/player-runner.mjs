@@ -35,7 +35,7 @@ try {
   for (const entry of cases) {
     const context = await browser.newContext();
     const writes = [];
-    await context.route(url => /(?:supabase|dbserver|\/rest\/v1|\/projects?(?:\/|$))/i.test(url.href), async route => {
+    await context.route(url => /(?:legacyDb|dbserver|\/rest\/v1|\/projects?(?:\/|$))/i.test(url.href), async route => {
       const request = route.request();
       if (!["GET", "HEAD", "OPTIONS"].includes(request.method())) {
         writes.push(`${request.method()} ${request.url()}`); await route.abort("blockedbyclient");

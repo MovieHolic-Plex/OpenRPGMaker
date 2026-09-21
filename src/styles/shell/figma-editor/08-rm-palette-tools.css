@@ -131,7 +131,7 @@
 
   /* 레이어 전환 — 도구 줄 바로 아래. 맵 작업 중 두 번째로 잦은 조작이라 사이드바 최상단에 둔다
      (전에는 standard/expert 에서 상단 「도구」 메뉴에만 있었다). 라벨을 항상 노출해
-     아이콘만으로 바닥/덧그림/이벤트를 구별하게 만들지 않는다. */
+     아이콘만으로 바닥/상위/이벤트를 구별하게 만들지 않는다. */
   .left-panel-stack[data-testid="left-palette-root"] .left-layer-switcher {
     display: grid;
     gap: 2px;
@@ -344,4 +344,3 @@
     font-size: 14px;
     margin: 8px 0 6px;
   }
-

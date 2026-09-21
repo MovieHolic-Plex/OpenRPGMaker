@@ -1,0 +1,134 @@
+{
+  "source": "verify-shots/slates-astra-experiment/project.json",
+  "width": 3200,
+  "height": 3200,
+  "tileSize": 32,
+  "validArrays": true,
+  "spawnPassable": true,
+  "reachableCells": 1380,
+  "landmarks": [
+    {
+      "name": "열린 남문",
+      "x": 25,
+      "y": 44,
+      "reachable": true
+    },
+    {
+      "name": "남문 바깥",
+      "x": 25,
+      "y": 48,
+      "reachable": true
+    },
+    {
+      "name": "우물 광장",
+      "x": 27,
+      "y": 21,
+      "reachable": true
+    },
+    {
+      "name": "동쪽 정원 입구",
+      "x": 37,
+      "y": 19,
+      "reachable": true
+    },
+    {
+      "name": "서문 수선공 문 앞",
+      "x": 10,
+      "y": 15,
+      "reachable": true
+    },
+    {
+      "name": "청동 공방 문 앞",
+      "x": 16,
+      "y": 17,
+      "reachable": true
+    },
+    {
+      "name": "마을 회관 문 앞",
+      "x": 27,
+      "y": 18,
+      "reachable": true
+    },
+    {
+      "name": "북동 서고 문 앞",
+      "x": 40,
+      "y": 15,
+      "reachable": true
+    },
+    {
+      "name": "바늘 상점 문 앞",
+      "x": 10,
+      "y": 29,
+      "reachable": true
+    },
+    {
+      "name": "염색 상점 문 앞",
+      "x": 16,
+      "y": 28,
+      "reachable": true
+    },
+    {
+      "name": "여관 본동 문 앞",
+      "x": 37,
+      "y": 33,
+      "reachable": true
+    },
+    {
+      "name": "남서 주택 문 앞",
+      "x": 10,
+      "y": 40,
+      "reachable": true
+    },
+    {
+      "name": "빵집 문 앞",
+      "x": 16,
+      "y": 40,
+      "reachable": true
+    },
+    {
+      "name": "정원지기 집 문 앞",
+      "x": 38,
+      "y": 41,
+      "reachable": true
+    },
+    {
+      "name": "광장 약초방 문 앞",
+      "x": 26,
+      "y": 31,
+      "reachable": true
+    },
+    {
+      "name": "회관 기록실 문 앞",
+      "x": 31,
+      "y": 17,
+      "reachable": true
+    },
+    {
+      "name": "가판대 21,33",
+      "x": 21,
+      "y": 35,
+      "reachable": true
+    },
+    {
+      "name": "가판대 28,33",
+      "x": 28,
+      "y": 35,
+      "reachable": true
+    },
+    {
+      "name": "가판대 21,37",
+      "x": 21,
+      "y": 39,
+      "reachable": true
+    },
+    {
+      "name": "가판대 30,37",
+      "x": 30,
+      "y": 39,
+      "reachable": true
+    }
+  ],
+  "sealedGateBlocksPlaza": true,
+  "mapCount": 11,
+  "errors": []
+}
