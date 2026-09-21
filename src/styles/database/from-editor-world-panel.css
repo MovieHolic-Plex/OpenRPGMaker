@@ -946,3 +946,11 @@
   .world-document-workspace .world-canon-ai-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
+
+/* 본문 탭(도화지) — 첫 화면의 주인공. 리드 문장 + 본문이 화면을 채운다. */
+.world-document-workspace .world-canon-body-lead {
+  margin: 0;
+  font: 400 13px/1.6 var(--font-ui);
+  color: var(--db-studio-text-2);
+}
+

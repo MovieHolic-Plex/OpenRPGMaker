@@ -247,17 +247,28 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     ],
   });
 
-  // ---- 탭 1: 문서 (기존 스프레드 전체) ----
-  const documentPanel = el("div", {
+  // ---- 탭 구성: 본문(도화지)이 첫 화면의 주인공이다 ----
+  // 세계 개요를 클릭하면 폼이 아니라 쓰기 시작할 수 있는 도화지가 먼저 보여야 한다(2026-09-22 사용자 피드백).
+  const bodyPanel = el("div", {
+    class: "world-canon-tab-body world-canon-body-panel",
+    children: [
+      el("p", {
+        class: "world-canon-body-lead",
+        text: "이 세계의 이야기를 자유롭게 적으세요 — 역사, 땅, 문화, 숨겨 둔 것. 이름·톤·법칙 같은 설정은 세계 설정 탭에 있다.",
+      }),
+      bodyCard,
+    ],
+  });
+  const settingsPanel = el("div", {
     class: "world-canon-tab-body",
-    children: [identityCard(canon), frameCard, lawsCard, bodyCard],
+    children: [identityCard(canon), frameCard, lawsCard],
   });
   // ---- 탭 2: 조수 전달 (AI 프롬프트 투영 + 전달 상태) ----
   const buildAiPanel = (): HTMLElement => {
     const wrap = el("div", { class: "world-canon-tab-body world-canon-ai-panel", dataset: { testid: "world-canon-ai-panel" } });
     wrap.append(el("p", {
       class: "world-canon-ai-lead",
-      text: "조수가 매 턴 읽는 고정 블록이다. 여기 보이는 것 = 조수가 아는 것의 전부다. 고치려면 문서 탭에서 해당 필드를 수정하면 된다.",
+      text: "조수가 매 턴 읽는 고정 블록이다. 여기 보이는 것 = 조수가 아는 것의 전부다. 고치려면 세계 설정 탭에서 해당 필드를 수정하면 된다.",
     }));
     const grid = el("div", { class: "world-canon-ai-grid" });
     aiRefs.tiles = new Map();
@@ -282,8 +293,9 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
   const unsetCount = WORLD_CANON_LAW_KINDS.filter((kind) => canon.laws[kind].present === undefined).length;
   const tabs = inspectorTabs({
     sections: [
-      { id: "document", label: "문서", build: () => documentPanel },
-      { id: "ai", label: "조수 전달", ...(unsetCount > 0 ? { badge: `미정 ${unsetCount}` } : {}), build: buildAiPanel },
+      { id: "body", label: "본문", build: () => bodyPanel },
+      { id: "settings", label: "세계 설정", ...(unsetCount > 0 ? { badge: `법칙 미정 ${unsetCount}` } : {}), build: () => settingsPanel },
+      { id: "ai", label: "조수 전달", build: buildAiPanel },
     ],
     activeId: activeSpreadTab.get(host),
     onChange: (id) => activeSpreadTab.set(host, id),

@@ -2002,3 +2002,12 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 - testid: 탭 스트립 `db-ws-section-tabs`, 탭 `db-ws-section-tab-document|ai`, 패널 `db-ws-section-panel-document|ai`, 조수 패널 `world-canon-ai-panel`, 투영 `world-canon-ai-panel-preview`. 기존 계약(헤드 미러·법칙 카드·대화상자·본문)은 모두 유지.
 - 검증: 세계관 계약 10파일 61케이스 전부 통과(탭 계약 2건 추가), `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v3/` — 빈 문서 탭 / 작성된 문서 탭 / 법칙 대화상자 / 조수 전달 탭 4장.
 
+
+### 세계 개요 본문 우선 — 도화지 첫 화면 (2026-09-22 v3)
+
+- 사용자 피드백: "세계 개요를 클릭했을 때 빈 도화지(혹은 AI 가 미리 채워 둔 줄글)가 보이는 게 맞는다." 탭 순서를 본문 우선으로 재편했다: **본문**(도화지 + 리드 문장) → **세계 설정**(이름·전제·뼈대·법칙 질문 카드) → **조수 전달**(AI 프롬프트 투영 + 상태 타일). 초기 활성 탭은 본문이고, 스프레드 헤드(세계 제목·전제 에피그래프·AI 미터·통계)는 탭 위에 계속 고정된다.
+- "AI 가 미리 채워 둔 줄글"은 아직 미구현 — 본문 탭의 리드 문장이 안내만 한다. 생성형 초안 채움은 별도 작업(AI 세션 연결 필요)으로 남긴다.
+- testid: 탭 `db-ws-section-tab-body|settings|ai`, 패널 `db-ws-section-panel-body|settings|ai`. 법칙 카드·대화상자 계약은 v2 와 동일하되 세계 설정 탭 안으로 이동했다. 조수 전달 탭의 미정 배지는 세계 설정 탭 라벨로 옮겨졌다(`법칙 미정 N`).
+- fakeDom 정리: 중복 정의된 `isConnected` getter 제거(첫 번째 정의가 이기며 복잡한 walker 는 죽은 코드였다), selector 매처에 일반 속성 선택자(`[aria-selected='true']` 등) 지원 추가.
+- 검증: 세계관 계약 10파일 62케이스 전부 통과, `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v3/` — 빈 본문 도화지 / 작성된 본문 / 세계 설정 탭 / 법칙 대화상자 / 조수 전달 탭 5장(e2e 통과).
+

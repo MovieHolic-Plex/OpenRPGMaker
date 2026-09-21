@@ -8,11 +8,16 @@ import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 function renderTab(): FakeElement {
   const host = document.createElement("div") as unknown as FakeElement;
   const rerender = (): void => {
-    host.replaceChildren();
+    host.textContent = "";
     renderWorldCanonTab(host as unknown as HTMLElement, rerender);
   };
   rerender();
   return host;
+}
+
+/** 법윹 카드는 세계 설정 탭 안에 있다 — 테스트에서는 선 열고 조작한다. */
+function openSettingsTab(host: FakeElement): void {
+  findByTestId(host, "db-ws-section-tab-settings")?.click();
 }
 
 describe("world canon spread view", () => {
@@ -48,6 +53,7 @@ describe("world canon spread view", () => {
       draft.worldCanon = { laws: { gods: { present: false }, money: { present: true, note: "이름이 화폐" } } };
     });
     const host = renderTab();
+    openSettingsTab(host);
     expect(findByTestId(host, "db-world-canon-law-gods")?.textContent).toContain("없음 — 조수도 없다고 답함");
     expect(findByTestId(host, "db-world-canon-law-money")?.textContent).toContain("있음");
     expect(findByTestId(host, "db-world-canon-law-money")?.textContent).toContain("이름이 화폐");
@@ -59,6 +65,7 @@ describe("world canon spread view", () => {
 
   it("commits a law through the dialog options and note", () => {
     const host = renderTab();
+    openSettingsTab(host);
     findByTestId(host, "db-world-canon-law-death")?.click();
     const dialog = findByTestId(document.body as unknown as FakeElement, "db-world-canon-law-dialog");
     expect(dialog).toBeTruthy();
@@ -74,14 +81,26 @@ describe("world canon spread view", () => {
     expect(findByTestId(host, "db-world-canon-law-death")?.textContent).toContain("죽음은 영원한 항해다");
   });
 
-  it("splits the one-pager into document and AI-delivery tabs", () => {
+  it("opens on the body canvas, not a form", () => {
     const host = renderTab();
     const tabs = findByTestId(host, "db-ws-section-tabs");
     expect(tabs).toBeTruthy();
     const labels = tabs?.textContent ?? "";
-    expect(labels).toContain("문서");
+    expect(labels).toContain("본문");
+    expect(labels).toContain("세계 설정");
     expect(labels).toContain("조수 전달");
-    // 초기 탭은 문서다 — 이름/전제/법칙 카드가 눈앞에 있다.
+    // 초기 탭은 본문이다 — 세계 개요를 클릭하면 도화지가 먼저 보인다.
+    const activeTab = tabs?.querySelector("[aria-selected='true']");
+    expect(activeTab?.getAttribute("data-testid")).toBe("db-ws-section-tab-body");
+    expect(findByTestId(host, "db-world-canon-body")).toBeTruthy();
+    expect(findByTestId(host, "world-canon-ai-panel")).toBeNull();
+  });
+
+  it("keeps settings fields one tab away, not in the way", () => {
+    const host = renderTab();
+    expect(findByTestId(host, "db-world-canon-name")).toBeNull();
+    expect(findByTestId(host, "db-world-canon-law-gods")).toBeNull();
+    findByTestId(host, "db-ws-section-tab-settings")?.click();
     expect(findByTestId(host, "db-world-canon-name")).toBeTruthy();
     expect(findByTestId(host, "db-world-canon-law-gods")).toBeTruthy();
   });
@@ -104,6 +123,7 @@ describe("world canon spread view", () => {
 
   it("keeps unset as undefined when saving without a choice", () => {
     const host = renderTab();
+    openSettingsTab(host);
     findByTestId(host, "db-world-canon-law-power")?.click();
     const save = findByTestId(document.body as unknown as FakeElement, "db-world-canon-law-power-save");
     save?.click();
@@ -114,6 +134,7 @@ describe("world canon spread view", () => {
 
   it("keeps the law note inside the project AI projection", () => {
     const host = renderTab();
+    openSettingsTab(host);
     findByTestId(host, "db-world-canon-law-money")?.click();
     const yes = findByTestId(document.body as unknown as FakeElement, "db-world-canon-law-money-option-yes");
     yes?.click();
