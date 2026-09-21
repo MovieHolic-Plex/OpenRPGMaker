@@ -1008,9 +1008,14 @@ Phase 1은 탐색·선택·표현 변경뿐이다. 방 마이그레이션과 마
 공유 셸을 쓴다. 적대적 리뷰(`output/evidence/spatial-ux-review/`) 후 아래 계약이 생겼다.
 
 - **기본 설계는 읽기 전용 카탈로그다.** draft 가 없는 카드도 스테이지·인스펙터가 실제
-  내용을 렌더한다 — 지역·세계는 `catalogRegionDesign`/`catalogWorldDesign`(`catalogSeed.ts`)
-  + 지형 래스터, 공간은 방 종류 요약(필수 역할·분위기), 장소는 카탈로그 번들 래스터.
+  내용을 렌더한다 — 세계는 `catalogWorldDesign`(`catalogSeed.ts`) + 지형 래스터,
+  공간은 방 종류 요약(필수 역할·분위기), 장소는 카탈로그 번들 래스터.
   인스펙터에 「읽기 전용」안내와 사실표를 둔다.
+  **지역은 예외(2026-09-22):** `REGION_CATALOG` 지형 어휘 더미 6종은 갤러리에 내지 않는다 —
+  실체(설계·맵·편집 표면)가 없어 실제 자료를 가렸다. 지역 탭 기본 카드는 완성 맵 참고 사례
+  (`REGION_REFERENCES`)뿐이고, 지역 탭은 장소 탭과 같은 목록-우선 레이아웃(목적 스트립 ·
+  지역 라이브러리 필터 · 배지 · 「속성」 전까지 스테이지 접음)을 쓴다. 계약은
+  [spatial-geography-ui.md](spatial-geography-ui.md) «Regions gallery contract».
 - **미리보기는 `hasAuthoringDraft()` 일 때만 enabled.** draft 없이 누르면 생기던
   `authoring-draft-missing` 노출을 막는다. 「추가」는 `spatialDocumentPresent` 없으면
   사람 말 안내를 띄운다 — `spatialAuthoring` 문서 없는(레거시·dev) 프로젝트는 읽기 전용이다.
@@ -2022,3 +2027,12 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 타일별 AI 참고문서·SQLite 저장·불변 원격 v2 보존본은
 `openwiki/tileset-reference-documents.md`와
 `tiledata/tilesets/forest_high_cliff_river/shared-library/`를 참조한다.
+
+### 세계 개요 스프레드 뷰 (2026-09-22)
+
+- 세계 개요 탭을 "문서 먼저" 스프레드 뷰로 다시 쌌다. 본문 순서: 스프레드 헤드(키커 `세계 안내서 · 한 장` + 세계 제목 + 따옴표 감싼 한 줄 전제 에피그래프 + AI 미터 + hero stats) → 이름과 한 줄 → 뼈대(톤·시대·기술·없는 것, 시대/기술은 2열) → **법칙 질문 카드** → 본문. 스키마·store 계약·경계값은 무변경이고 뷰 조립만 바뀌었다.
+- **법칙 카드:** tri-state 세그먼트(미정/없음/있음)는 데이터 모델이 UI 로 샌 형태라 폐기하고 질문 카드(`lawCard`, testid `db-world-canon-law-{kind}`)로 교체했다. 카드 클릭이 대화상자(`db-world-canon-law-dialog`, backdrop z-index `--z-modal-top`)를 열고 옵션 3종(`-option-unset|no|yes`) + 비고(`-note`, 160자) + 저장(`-save`)으로 반영한다. `present: undefined|false|true` 의미는 이전과 완전히 같다. 카드 상태 배지는 결과 말로 쓴다: 미정="조수가 상상합니다", 없음="조수도 없다고 답함".
+- **라이브 미러:** 스프레드 헤드의 제목/전제는 이름·전제 입력 input 에 즉시 따라붙는다(`renderHeadMirror`). 탭 리렌더를 기다리면 미러가 늦게 갱신돼 문서가 아니라 폼처럼 보였다(실측). 빈 값 초안은 초대 문구("세계의 이름을 지어 보세요")로 렌더한다.
+- 계약 이동: `db-world-canon-law-{kind}-note` testid 는 카드 안이 아니라 카드가 여는 대화상자 소유로 이동했다(`worldAuthoringRegression` 수정). tri-state 라디오 testid `db-world-canon-law-{kind}-present` 는 폐기됐다(`worldCanonSpreadView.test.ts` 가 부재를 고정).
+- 검증: 세계관 계약 10파일 59케이스 전부 통과, `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v3/` (빈 상태/작성 상태/대화상자/완성 4장, e2e `world-canon-spread-evidence.spec.ts`).
+

@@ -58,6 +58,19 @@ identity별로 재사용한다. 따라서 목록을 다시 그릴 때 맵 수가
 쿼터 이미지는 프레임 변경 때 건너뛴다. 자식 이미지의 `visible`만 보지 말고 부모 체인까지
 확인해야 화면 밖 호수 쿼터 갱신이 다시 살아나지 않는다.
 
+## database 표면 CSS 지연 로드와 공용 다이얼로그 (2026-09-21)
+
+database/index.css 진입 시트가 databaseModal.ts 청크에 묶여 늦게 로드된 뒤(2026-09-19
+PR #997), 그 청크 밖에서 여는 공용 다이얼로그가 스타일 없이 렌더되는 회귀가 실측됐다
+(맵 설정 → 배경 음악 → 곡 선택: backdrop이 fixed/1200이 아니라 static/투명, 피커 grid가
+block, 검색창은 브라우저 기본 2px inset — 스타일시트에 규칙 자체가 없었다).
+**계약:** database 어휘 클래스(db-enemy-dialog, db-resource-picker 등)로 화면을 만드는
+모듈은 databaseModal 청크 안에 있거나, 청크 밖이라면 자기 진입점에서
+`@/styles/database/index.css`를 import 해야 한다(모듈당 한 번 평가라 자료집 경로와
+겹쳐도 무해). 회귀 감별법: computed style이 예상과 다르면 승자 게이트보다 먼저
+`document.styleSheets`에 그 선택자가 존재하는지부터 확인하라 — 이 함정은 콘솔 에러를
+남기지 않는다. 증거: output/evidence/map-bgm-picker-css/(03 깨짐 vs 10/11 복구).
+
 ## 맵 전환과 물 타일 애니메이션 공유 (2026-09-18)
 
 `chipsetTileRender`의 애니메이션 타일·호수 쿼터는 `sharedTileAnimation`을 통해

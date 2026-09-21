@@ -10,7 +10,11 @@ import castleSnapshot from "./regionReferences/castle-town.json";
 import { REFERENCE_HOUSE_FORM_DEFS } from "./defaults/referenceHouseFormCatalog";
 
 /** Fixed authored examples, independent of procedural RegionDesign and the active project. */
-export const REGION_REFERENCES = [{
+export const REGION_REFERENCES = [
+  // 완성 맵 사례 — 실제 저장본에서 온 읽기 전용 자료만 배송한다. 지형 어휘 더미는 내지 않는다.
+  // LAKE_PLACE_REFERENCES 가 REGION_REFERENCES[2](호수마을)를 원본으로 삼으므로
+  // 기존 네 사례의 순서·인덱스를 유지하고, 새 사례는 배열 뒤에 추가한다.
+  {
   id: "walled-settlement-43x45", name: "성벽으로 둘러싸인 정주지", kind: "completed-map" as const, regionKind: "settlement" as const,
   revision: 1, width: 43, height: 45, tilesetId: snapshot.tileset.id,
   preview: "/assets/region-references/walled-settlement.png",

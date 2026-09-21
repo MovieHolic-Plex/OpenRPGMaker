@@ -46,7 +46,9 @@ const TAB_LABELS: Record<MapPropsTab, string> = {
 };
 
 const SECTION_ORDER: readonly MapPropsTab[] = [
-  "general", "climate", "background", "clouds", "atmosphere", "bgm", "battle", "restrictions", "encounter", "spawns", "minimap",
+  // 게임플레이에 바로 걸리는 설정을 위에, 장식(기후·구름·환경)은 아래로.
+  // 2026-09-22 실측: 기후·배경·구름이 먼저 와서 BGM·인카운터를 찾으려면 스크롤이 길었다.
+  "general", "bgm", "encounter", "spawns", "battle", "restrictions", "background", "minimap", "climate", "clouds", "atmosphere",
 ];
 
 const SECTION_DESCRIPTIONS: Record<MapPropsTab, string> = {
