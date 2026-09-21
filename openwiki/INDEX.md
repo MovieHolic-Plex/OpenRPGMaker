@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **83쪽 / 3201KB / 약 910,153 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **83쪽 / 3203KB / 약 910,708 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -95,6 +95,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
 | `openwiki/ui-discovery-pilot.md` | 3 | `direct/RESULTS.json`, `output/evidence/ui-discovery-v2/report.html`, `trace.json` |
 | `openwiki/village-design.md` | 3 | `depth-review.json`, `output/evidence/house-heights/REVIEW.md`, `output/village-direction/index.html` |
+| `openwiki/village-layout-research.md` | 1 | `forestVillageDetails.ts` |
 | `openwiki/world-structure-authoring.md` | 1 | `verify-shots/runtime-qa/world-structure-tools/SUMMARY.md` |
 
 ## 페이지별 절 좌표
@@ -1596,16 +1597,17 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L189` 조밀한 소형 주택 마을로 수정 (2026-09-13)
 - `L208` 저장된 소규모 집 구성 (2026-09-13)
 
-### `openwiki/village-layout-research.md` — 13KB · 141줄 · ~4,065 토큰
+### `openwiki/village-layout-research.md` — 15KB · 159줄 · ~4,620 토큰
 
 - `L3` 현재 적용한 변경과 범위
 - `L34` 울타리와 숲마을 칩셋 기본값 (2026-09-21 후속)
 - `L52` 누락된 작업 복원과 연결 숲 통합 (2026-09-21)
-- `L62` 연구에서 확인한 원칙과 한계
-- `L77` 장기 설계 방향: 강을 따라 자란 마을
-- `L98` 구현 경로와 소유권
-- `L119` 수용 기준과 다음 검증
-- `L134` 장소 라이브러리의 기준 도안
+- `L62` 굽은 외곽 숲과 생활 소품 기본 꾸밈 (2026-09-21)
+- `L80` 연구에서 확인한 원칙과 한계
+- `L95` 장기 설계 방향: 강을 따라 자란 마을
+- `L116` 구현 경로와 소유권
+- `L137` 수용 기준과 다음 검증
+- `L152` 장소 라이브러리의 기준 도안
 
 ### `openwiki/world-generation-rules.md` — 9KB · 116줄 · ~2,645 토큰
 

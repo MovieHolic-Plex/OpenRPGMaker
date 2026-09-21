@@ -251,10 +251,22 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
     paintCommons(map, plan.commons, intent, mulberry32((seed ^ 0x6d2b79f5) >>> 0));
     let fenceTiles = 0;
     for (const [index, house] of houses.entries()) if (house.fence) fenceTiles += paintParcelFence(map, area, slots[index]!, house, sealed);
+    // On the river default, reserve the natural outer silhouette before planting
+    // fields. Otherwise rectangular fields consume the entire edge and dictate
+    // the forest shape, regardless of the canopy contour's noise.
+    let trees = 0;
+    const riverGrove = plan.river && kit.grove && intent.edgeTrees !== "none";
+    if (riverGrove && kit.grove) {
+      const groveFree = (x: number, y: number): boolean => free(x, y) && !houses.some(({ bbox: b }) =>
+        x >= b.x - 3 && x < b.x + b.w + 3 && y >= b.y - 2 && y < b.y + b.h + 4);
+      const grove = paintForestGroves(map, area, kit.grove, groveFree, seed ^ 0x51f15e3d,
+        forestCoverageTarget(intent.forestDensity ?? "normal"), undefined, true);
+      for (const index of grove.cells) occ[index] = OCC.reserved;
+      trees += Math.ceil(grove.cells.size / 12);
+    }
     let fieldCells = 0;
     const fieldRng = mulberry32((seed ^ 0x2f6b1a4d) >>> 0);
     for (const field of plan.fields) fieldCells += paintField(map, field.rect, field.kind, free, fieldRng, occ, kit);
-    let trees = 0;
     const plant = (stamp: TreeStamp, x: number, y: number): boolean => {
       if (!canStampTree(stamp, x, y, free, occ, W)) return false;
       stampTree(map, stamp, x, y);
@@ -272,7 +284,7 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
       const x = slot.parcel.x + 1, y = slot.parcel.y + 1;
       plant(kit.medium, x, y) || plant(kit.small, x, y);
     }
-    trees += paintTreeGradient(map, area, occ, free, intent, mulberry32((seed ^ 0x51f15e3d) >>> 0), kit);
+    if (!riverGrove) trees += paintTreeGradient(map, area, occ, free, intent, mulberry32((seed ^ 0x51f15e3d) >>> 0), kit);
     return { fenceTiles, fieldCells, trees };
   };
 
@@ -559,7 +571,7 @@ function paintTreeGradient(
     const grove = paintForestGroves(map, area, kit.grove,
       (x, y) => free(x, y) && (occ[y * W + x] === OCC.free || occ[y * W + x] === OCC.commons)
         && dist[y * W + x]! >= TREE_MIN_DISTANCE,
-      Math.floor(rng() * 0xffffffff), forestCoverageTarget(intent.forestDensity ?? "normal"));
+      Math.floor(rng() * 0xffffffff), forestCoverageTarget(intent.forestDensity ?? "normal"), undefined, true);
     for (const index of grove.cells) occ[index] = OCC.reserved;
     return Math.ceil(grove.cells.size / 12);
   }

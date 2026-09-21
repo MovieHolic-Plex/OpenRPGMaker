@@ -2,12 +2,12 @@
 import { chromium } from 'playwright';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-const output = 'output/evidence/restored-river-village';
+const output = process.env.OUTPUT ?? 'output/evidence/restored-river-village';
 mkdirSync(output, { recursive: true });
 const env = Object.fromEntries(readFileSync('.env.local', 'utf8').split('\n').filter(line => line.includes('=') && !line.startsWith('#')).map(line => {
   const i = line.indexOf('='); return [line.slice(0, i), line.slice(i + 1).trim().replace(/^['"]|['"]$/g, '')];
 }));
-const projectId = `river-groves-restored-20260921-76a3-${Date.now()}`;
+const projectId = `${process.env.PROJECT_PREFIX ?? 'river-groves-restored-20260921-76a3'}-${Date.now()}`;
 async function remote(method, body) {
   const response = await fetch(`${env.VITE_SUPABASE_URL}/rest/v1/projects?${method === 'GET' ? `project_id=eq.${projectId}&select=current_json,current_sha256` : 'on_conflict=project_id'}`, {
     method, headers: { apikey: env.VITE_SUPABASE_ANON_KEY, Authorization: `Bearer ${env.VITE_SUPABASE_ANON_KEY}`,
@@ -38,7 +38,7 @@ try {
       houseCount: 8, npcCount: 4, countPolicy: 'exact', interior: true, seed: 17 };
     const built = runAuthorVillage(ctx, args);
     if (!built.ok) return { ok: false, summary: built.summary, issues: built.issues, data: built.data };
-    return { ok: true, project: ctx.project, args, summary: built.summary, village: built.data.village };
+    return { ok: true, project: ctx.project, args, summary: built.summary, village: built.data.village, warnings: built.data.construction.warnings };
   });
   if (!result.ok) { writeFileSync(`${output}/failure.json`, JSON.stringify(result, null, 2)); throw Error(result.summary); }
   const p = result.project;
@@ -76,7 +76,8 @@ try {
       riverRegions: map.layoutPlan.regions.filter(r => r.role === 'river').length };
   }, row.current_json);
   await page.locator('#restored-village-canvas').screenshot({ path: `${output}/village.png` });
-  const report = { projectId, sha, remoteReloadVerified: true, args: result.args, summary: result.summary, village: result.village, ...proof, errors };
+  const report = { projectId, sha, remoteReloadVerified: true, args: result.args, summary: result.summary, village: result.village,
+    decoration: result.warnings?.filter(warning => warning.startsWith('숲마을 생활 소품:')), ...proof, errors };
   writeFileSync(`${output}/observations.json`, JSON.stringify(report, null, 2));
   console.log(JSON.stringify(report));
 } finally { await browser.close(); }
