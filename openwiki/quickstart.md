@@ -139,6 +139,7 @@ SHA-256 검증·손상 복구·잠금 복구·관리자 제작 명령은 `openwi
 |---|---|
 | 맵에 타일이 잘못 찍힌다 / 브러시·도형·되돌리기 | `src/editor/EditScene.ts`, `src/editor/tileActions.ts`, `src/editor/TilePaintEngine.ts` |
 | 맵 렌더·빈 칸 체커·레이어 겹침 | `src/editor/editSceneRender.ts` |
+| Slates 32px 마을 저작 | `openwiki/slates-agent-entry.md` → `openwiki/slates-dense-town.md` → `openwiki/slates-assembly-playbook.md` → 구조 학습·표본·구역 도감·저작 지침 (구조·오차·원본 ID·조립 규칙), `public/assets/slates/slates-study-catalog.json` |
 | 타일 팔레트·칩셋 그리드·스탬프 | `src/editor/panels/tilePalette.ts`, `src/editor/chipsetTileRender.ts`, `src/editor/tilePaletteStamp.ts` |
 | 오토타일·지형 연결 | `openwiki/autotiles.md` → `src/assets` 의 autotile 모듈 |
 | 맵 목록·트리·드래그·썸네일 | `src/editor/panels/mapList.ts`, `src/project/mapTree.ts`, `src/editor/panels/mapThumbnail.ts` |

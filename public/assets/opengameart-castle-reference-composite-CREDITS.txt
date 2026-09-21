@@ -1,0 +1,16 @@
+Castle reference composite — bridge removed (2026-09-21)
+Source composition: https://opengameart.org/content/castle-tiles-for-rpgs
+Castle2 and terrain: Zabin, Hyptosis, Daniel Cook — CC BY 3.0.
+https://creativecommons.org/licenses/by/3.0/
+Boat, dock, sacks: Daniel Eddeland (Daneeklu) — CC BY-SA 3.0.
+https://opengameart.org/content/farming-tilesets-magic-animations-and-ui-elements
+Wood material: Jetrel — CC BY-SA 3.0 (linked by the source composition).
+https://opengameart.org/content/2d-lost-garden-tileset-transition-to-jetrels-style
+https://creativecommons.org/licenses/by-sa/3.0/
+
+Modification: the lower-right GPL bridge (Irukard / The Mana World) has been
+removed, including parapets, deck, arch and piers. Its 16px cells in rectangle
+x=102,y=107,w=30,h=28 are replaced by river water from x=110,y=96,w=2,h=2.
+All pixels outside that rectangle remain unchanged. The adapted composite
+is distributed under CC BY-SA 3.0. It is no longer an exact screenshot match.
+This notice does not relicense the editor code.

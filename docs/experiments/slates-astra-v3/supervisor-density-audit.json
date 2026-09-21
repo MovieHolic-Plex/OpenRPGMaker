@@ -1,0 +1,20 @@
+{
+  "bundleSha256": "30ad30730b4a227181e3f32c2fba7c7d3f46e40420718ca2b2e37fd7ab225a42",
+  "independentAlphaPixels": 988745.874509804,
+  "independentDensityPercent": 52.24957484177383,
+  "buildingCount": 40,
+  "buildingFootprintOverlaps": [],
+  "walkableEmpty5x5": [],
+  "largestWalkableRectangle": [
+    40,
+    [
+      22,
+      10,
+      2,
+      20
+    ]
+  ],
+  "sourceOperations": 9993,
+  "invalidSourceRects": [],
+  "method": "Supervisor independently replayed original module source rectangles with Pillow alpha-over; inspected authored footprints and encoded bundle collision. Fixed interior [3,4,44,42]."
+}

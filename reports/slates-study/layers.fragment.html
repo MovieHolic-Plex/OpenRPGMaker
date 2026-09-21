@@ -1,0 +1,35 @@
+<div id="slates-layer-study">
+  <h3>나무 한 그루의 구성</h3>
+  <div class="viz-controls" aria-label="나무 레이어 선택">
+    <button class="btn" type="button" data-layer="all" aria-pressed="true">전체</button>
+    <button class="btn" type="button" data-layer="ground" aria-pressed="false">바닥</button>
+    <button class="btn" type="button" data-layer="canopy" aria-pressed="false">수관</button>
+    <button class="btn" type="button" data-layer="trunk" aria-pressed="false">밑동</button>
+    <button class="btn" type="button" data-layer="passage" aria-pressed="false">통행</button>
+  </div>
+  <canvas width="320" height="320" role="img" aria-label="Slates 활엽수의 바닥, 수관, 밑동과 통행 설정"></canvas>
+  <div class="text-small" aria-live="polite" data-detail>활엽수 2×3 · 한 칸 32×32px</div>
+</div>
+<style>
+#slates-layer-study canvas { display:block; width:min(100%,320px); height:auto; margin:12px auto; image-rendering:pixelated; }
+#slates-layer-study [data-detail] {text-align:center;}
+</style>
+<script>
+(()=>{
+const root=document.getElementById('slates-layer-study'),c=root.querySelector('canvas'),ctx=c.getContext('2d'),im=new Image();
+let layer=window.openai?.widgetState?.modelContent?.layer??'all';
+const names={all:'활엽수 2×3 · 하위 잔디 + 상위 나무',ground:'바닥 · 나무 아래에도 남는 잔디',canopy:'수관 2행 · 통과 가능 / 캐릭터 위에 표시',trunk:'밑동 1행 · 통행 차단',passage:'○ 수관: 통과 / × 밑동: 차단 · 연구실 설정'};
+if(!(layer in names))layer='all';
+function tile(id,x,y){ctx.drawImage(im,id%56*32,Math.floor(id/56)*32,32,32,x*80,y*80,80,80);}
+function draw(){if(!im.complete||!im.naturalWidth)return;const css=getComputedStyle(root),fg=css.getPropertyValue('--foreground').trim(),bg=css.getPropertyValue('--muted').trim(),color=css.getPropertyValue('--viz-series-1').trim();ctx.clearRect(0,0,320,320);ctx.imageSmoothingEnabled=false;
+ctx.fillStyle=bg;ctx.fillRect(0,0,320,320);
+if(['all','ground','passage'].includes(layer))for(let y=0;y<4;y++)for(let x=0;x<4;x++)tile(57,x,y);
+if(layer!=='ground')for(let y=0;y<3;y++)for(let x=0;x<2;x++){
+if(layer==='canopy'&&y===2||layer==='trunk'&&y<2)continue;tile((18+y)*56+12+x,x+1,y);
+if(layer==='passage'){ctx.globalAlpha=.8;ctx.fillStyle=bg;ctx.fillRect((x+1)*80+23,y*80+25,35,34);ctx.globalAlpha=1;ctx.fillStyle=fg;ctx.font='24px sans-serif';ctx.textAlign='center';ctx.fillText(y===2?'×':'○',(x+1)*80+40,y*80+50);ctx.strokeStyle=color;ctx.lineWidth=y===2?2:1;ctx.strokeRect((x+1)*80+1,y*80+1,78,78);}}
+root.querySelector('[data-detail]').textContent=names[layer];root.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.layer===layer)));}
+root.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{layer=b.dataset.layer;draw();window.openai?.setWidgetState?.({modelContent:{layer},privateContent:null})?.catch(()=>{});}));
+window.addEventListener('openai:set_globals',e=>{const v=e.detail?.globals?.widgetState?.modelContent?.layer;if(v in names){layer=v;draw();}});
+new MutationObserver(draw).observe(document.documentElement,{attributes:true,attributeFilter:['class','style','data-theme']});im.onload=draw;im.src='__SLATES_ATLAS__';
+})();
+</script>

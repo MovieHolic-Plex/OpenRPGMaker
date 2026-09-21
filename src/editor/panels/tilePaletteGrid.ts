@@ -4,6 +4,7 @@ import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { CHIPSET_TILE_GROUPS, tileAiLabelForIndex, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { tileVisibleOnLayer } from "@/editor/tileLayerClassification";
 import type { AutotileGroup, TilesetDef } from "@/project/types";
+import { CASTLE_TILESET_TEXTURE_KEY } from "@/project/defaults/constants";
 import { el } from "@/util/dom";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 import {
@@ -280,12 +281,13 @@ export function makeGridPalette(input: MakeGridPaletteWithStampArgs): HTMLElemen
 export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
   const sourceColumns = Math.max(1, args.tileset.tilesPerRow);
   const sourceRows = Math.max(1, Math.ceil(args.tileset.count / sourceColumns));
-  // Adjacent atlas cells form trees and terrain; preserve source rows in the view.
+  // Preserve source adjacency for every atlas; Castle2 also uses 16px source-layout styling.
+  const sourceLayout = args.tileset.image.type === "bundled" && args.tileset.image.id === CASTLE_TILESET_TEXTURE_KEY;
   const columns = sourceColumns;
   const rows = Math.max(1, Math.ceil(args.tileset.count / columns));
   const displayTiles = buildCustomPaletteModel(args.tileset);
   const sheet = el("div", {
-    class: "chipset-sheet tile-palette custom-palette",
+    class: `chipset-sheet tile-palette custom-palette${sourceLayout ? " source-layout" : ""}`,
     dataset: {
       testid: "tile-palette",
       paletteKind: "custom",

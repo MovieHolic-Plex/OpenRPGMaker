@@ -16,7 +16,7 @@ import {
 } from "@/editor/agentBlueprint";
 import { isAgentGhostPreviewHidden } from "@/editor/agentGhostPreview";
 import { EVENT_LABEL_FONT_SIZE, eventLabelFontFamily, eventLabelResolution } from "@/editor/editSceneEventMarkers";
-import { TILE_SIZE } from "@/assets/bundled";
+import { editorMapTileSize } from "@/editor/mapGeometry";
 import type { MapId } from "@/project/types";
 
 /** 청사진 색 — 종이 위 제도선. 고스트 프리뷰(초록/청록)와 겹쳐도 구분된다. */
@@ -172,10 +172,10 @@ export class AgentBlueprintRenderer {
   private entryGraphic(entry: BlueprintEntry, progress: number, graphics: Phaser.GameObjects.Graphics): void {
     const style = blueprintStatusStyle(entry.status);
     graphics.clear();
-    const x = entry.x * TILE_SIZE;
-    const y = entry.y * TILE_SIZE;
-    const width = entry.w * TILE_SIZE;
-    const height = entry.h * TILE_SIZE;
+    const x = entry.x * editorMapTileSize(this.mapId());
+    const y = entry.y * editorMapTileSize(this.mapId());
+    const width = entry.w * editorMapTileSize(this.mapId());
+    const height = entry.h * editorMapTileSize(this.mapId());
     // 원형·타원 힌트(fill_region.shape 와 같은 뜻): circle 은 사각형 안 내접 원, ellipse 는 사각형 안 타원.
     const round = entry.shape === "circle" || entry.shape === "ellipse";
     const diameter = entry.shape === "circle" ? Math.min(width, height) : 0;
@@ -221,7 +221,7 @@ export class AgentBlueprintRenderer {
     if (!round && progress === 1) {
       graphics.lineStyle(1, style.color, style.strokeAlpha * 0.5);
       graphics.beginPath();
-      for (let dx = TILE_SIZE * 2; dx < width; dx += TILE_SIZE * 2) {
+      for (let dx = editorMapTileSize(this.mapId()) * 2; dx < width; dx += editorMapTileSize(this.mapId()) * 2) {
         graphics.moveTo(x + dx, y); graphics.lineTo(x + dx, y + 3);
       }
       graphics.strokePath();
@@ -234,7 +234,7 @@ export class AgentBlueprintRenderer {
     const style = blueprintStatusStyle(entry.status);
     // 사각형 안쪽 위에 붙인다 — 맵 위쪽 경계(y=0)에서 화면 밖으로 나가지 않는다. 같은 자리에서
     // 시작하는 라벨(집 모서리 위 장식 등)은 한 줄씩 내려 쌓아 서로 가리지 않는다.
-    const label = this.scene.add.text(entry.x * TILE_SIZE + 2, entry.y * TILE_SIZE + 2 + placed.row * LABEL_ROW_PX, placed.caption, {
+    const label = this.scene.add.text(entry.x * editorMapTileSize(this.mapId()) + 2, entry.y * editorMapTileSize(this.mapId()) + 2 + placed.row * LABEL_ROW_PX, placed.caption, {
       backgroundColor: "#0b1b2b",
       color: "#e7f5ff",
       fontFamily: eventLabelFontFamily(),

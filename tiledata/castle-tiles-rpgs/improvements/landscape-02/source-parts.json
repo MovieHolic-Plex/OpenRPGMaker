@@ -1,0 +1,301 @@
+{
+  "source": "Each addition.sourceFile; rect in source pixels, atlasRect in 16px cells.",
+  "units": "source pixels; atlas cells 16px",
+  "additions": [
+    {
+      "id": "bare-tree",
+      "rect": [
+        256,
+        128,
+        128,
+        160
+      ],
+      "solid": true,
+      "atlasRect": [
+        0,
+        59,
+        8,
+        10
+      ],
+      "sourceFile": "public/assets/castle-surroundings/sources/hyptosis-batch3.png",
+      "sourceSha256": "0ecb297dd35736d41a940efae66c2833cdecc879cfa6391116aa98e2a13f39c3"
+    },
+    {
+      "id": "autumn-tree",
+      "rect": [
+        224,
+        640,
+        96,
+        96
+      ],
+      "solid": true,
+      "atlasRect": [
+        0,
+        69,
+        6,
+        6
+      ],
+      "sourceFile": "public/assets/castle-surroundings/sources/hyptosis-batch3.png",
+      "sourceSha256": "0ecb297dd35736d41a940efae66c2833cdecc879cfa6391116aa98e2a13f39c3"
+    },
+    {
+      "id": "small-tree",
+      "rect": [
+        416,
+        672,
+        32,
+        32
+      ],
+      "solid": true,
+      "atlasRect": [
+        0,
+        75,
+        2,
+        2
+      ],
+      "sourceFile": "public/assets/castle-surroundings/sources/hyptosis-batch3.png",
+      "sourceSha256": "0ecb297dd35736d41a940efae66c2833cdecc879cfa6391116aa98e2a13f39c3"
+    },
+    {
+      "id": "fine-paving",
+      "rect": [
+        32,
+        0,
+        32,
+        32
+      ],
+      "solid": false,
+      "atlasRect": [
+        0,
+        77,
+        2,
+        2
+      ],
+      "sourceFile": "public/assets/castle-surroundings/sources/hyptosis-batch3.png",
+      "sourceSha256": "0ecb297dd35736d41a940efae66c2833cdecc879cfa6391116aa98e2a13f39c3"
+    },
+    {
+      "id": "cliff",
+      "rect": [
+        576,
+        288,
+        32,
+        64
+      ],
+      "solid": true,
+      "atlasRect": [
+        0,
+        79,
+        2,
+        4
+      ],
+      "sourceFile": "public/assets/castle-surroundings/sources/hyptosis-batch3.png",
+      "sourceSha256": "0ecb297dd35736d41a940efae66c2833cdecc879cfa6391116aa98e2a13f39c3"
+    },
+    {
+      "id": "stone-court",
+      "rect": [
+        200,
+        4,
+        16,
+        16
+      ],
+      "solid": false,
+      "file": "public/assets/opengameart-castle-tiles.png",
+      "atlasRect": [
+        0,
+        83,
+        1,
+        1
+      ],
+      "sourceFile": "public/assets/opengameart-castle-tiles.png",
+      "sourceSha256": "b3222b8bed826043ae11a15c8983af5adbdc4a8bddd04f1171a0b070903991ad"
+    },
+    {
+      "id": "green-tree",
+      "rect": [
+        304,
+        80,
+        64,
+        80
+      ],
+      "solid": true,
+      "file": "public/assets/castle-surroundings/sources/hyptosis-batch5.png",
+      "colorKey": [
+        255,
+        0,
+        255
+      ],
+      "atlasRect": [
+        0,
+        84,
+        4,
+        5
+      ],
+      "sourceFile": "public/assets/castle-surroundings/sources/hyptosis-batch5.png",
+      "sourceSha256": "799e72327b57a9365d71036fc8029fed4503723b6f5ae1c681b05d06242e5f5d"
+    },
+    {
+      "id": "plant-pot",
+      "rect": [
+        0,
+        304,
+        32,
+        48
+      ],
+      "solid": true,
+      "file": "public/assets/castle-surroundings/sources/hyptosis-batch4.png",
+      "atlasRect": [
+        0,
+        89,
+        2,
+        3
+      ],
+      "sourceFile": "public/assets/castle-surroundings/sources/hyptosis-batch4.png",
+      "sourceSha256": "9b75426c7db7e39223848a56d6415af477bec7af5f90b1d7f26fb0ea324e8d9b"
+    },
+    {
+      "id": "small-pot",
+      "rect": [
+        0,
+        384,
+        32,
+        32
+      ],
+      "solid": true,
+      "file": "public/assets/castle-surroundings/sources/hyptosis-batch4.png",
+      "atlasRect": [
+        0,
+        92,
+        2,
+        2
+      ],
+      "sourceFile": "public/assets/castle-surroundings/sources/hyptosis-batch4.png",
+      "sourceSha256": "9b75426c7db7e39223848a56d6415af477bec7af5f90b1d7f26fb0ea324e8d9b"
+    },
+    {
+      "id": "crate",
+      "rect": [
+        288,
+        480,
+        32,
+        32
+      ],
+      "solid": true,
+      "file": "public/assets/opengameart-castle-tiles.png",
+      "atlasRect": [
+        0,
+        94,
+        2,
+        2
+      ],
+      "sourceFile": "public/assets/opengameart-castle-tiles.png",
+      "sourceSha256": "b3222b8bed826043ae11a15c8983af5adbdc4a8bddd04f1171a0b070903991ad"
+    },
+    {
+      "id": "lodge-roof",
+      "rect": [
+        128,
+        416,
+        96,
+        96
+      ],
+      "solid": true,
+      "atlasRect": [
+        0,
+        96,
+        6,
+        6
+      ],
+      "sourceFile": "public/assets/castle-surroundings/sources/hyptosis-batch3.png",
+      "sourceSha256": "0ecb297dd35736d41a940efae66c2833cdecc879cfa6391116aa98e2a13f39c3"
+    },
+    {
+      "id": "timber",
+      "rect": [
+        480,
+        672,
+        32,
+        32
+      ],
+      "solid": true,
+      "atlasRect": [
+        0,
+        102,
+        2,
+        2
+      ],
+      "sourceFile": "public/assets/castle-surroundings/sources/hyptosis-batch3.png",
+      "sourceSha256": "0ecb297dd35736d41a940efae66c2833cdecc879cfa6391116aa98e2a13f39c3"
+    },
+    {
+      "id": "campfire",
+      "rect": [
+        192,
+        896,
+        32,
+        32
+      ],
+      "solid": true,
+      "colorKeys": [
+        [
+          32,
+          29,
+          32
+        ],
+        [
+          48,
+          40,
+          48
+        ]
+      ],
+      "file": "public/assets/castle-surroundings/sources/hyptosis-batch1.png",
+      "atlasRect": [
+        0,
+        104,
+        2,
+        2
+      ],
+      "sourceFile": "public/assets/castle-surroundings/sources/hyptosis-batch1.png",
+      "sourceSha256": "fc49032576ff7ac60b38e52a9d23683d8fed6104ee3ccee0ba1cb0b3ab33a62f"
+    },
+    {
+      "id": "grass-patch",
+      "rect": [
+        416,
+        896,
+        32,
+        32
+      ],
+      "solid": false,
+      "file": "public/assets/castle-surroundings/sources/hyptosis-batch1.png",
+      "atlasRect": [
+        0,
+        106,
+        2,
+        2
+      ],
+      "sourceFile": "public/assets/castle-surroundings/sources/hyptosis-batch1.png",
+      "sourceSha256": "fc49032576ff7ac60b38e52a9d23683d8fed6104ee3ccee0ba1cb0b3ab33a62f"
+    },
+    {
+      "id": "path-fringe",
+      "rect": [
+        480,
+        864,
+        64,
+        32
+      ],
+      "solid": false,
+      "file": "public/assets/castle-surroundings/sources/hyptosis-batch1.png",
+      "atlasRect": [
+        0,
+        108,
+        4,
+        2
+      ],
+      "sourceFile": "public/assets/castle-surroundings/sources/hyptosis-batch1.png",
+      "sourceSha256": "fc49032576ff7ac60b38e52a9d23683d8fed6104ee3ccee0ba1cb0b3ab33a62f"
+    }
+  ]
+}

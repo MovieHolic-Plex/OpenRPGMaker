@@ -191,3 +191,56 @@ DB 타일셋 편집기(`src/editor/panels/tilesetMetadataEditor.ts`), 테스트�
 retro-world 원본의 -480 인덱스에서 16×16 그대로 복사한다. 팔레트 키
 RGB(224,103,191)만 투명 처리하며 리사이즈/감색/재질 합성을 하지 않는다.
 기존 번호와 통행/오토타일 정의를 유지한다. 자료집 타일 화면에서 확인한다.
+
+## 성채 공통 기본 제공 타일셋 (2026-09-19)
+
+`opengameart_castle` / `tex_opengameart_castle`, 표시명 `성채 · OpenGameArt (CC-BY 3.0)`.
+사용자 지정 범위는 **모든 프로젝트의 선택 목록에 추가**다. 시작 맵이나 기본 선택
+`DEFAULT_TILESET_ID`는 바꾸지 않는다. `defaultTilesets`가 신규 프로젝트에 제공하고,
+기존 프로젝트는 `ensureBundledTilesets` / `ensureBundledResourceProfiles`로 추가된다.
+이미 존재하는 정의의 사용자 설정은 교체하지 않는다.
+
+- 원본: https://opengameart.org/content/castle-tiles-for-rpgs 의 `Castle2_5.png`.
+  `public/assets/opengameart-castle-tiles.png`는 512×512 원본을 수정 없이 보존한다.
+  저작자 Zabin / Hyptosis / Daniel Cook, CC BY 3.0. 해시·출처는 `ATTRIBUTION.md`.
+  게임 내보내기는 PNG와 `opengameart-castle-tiles-CREDITS.txt`를 함께 수집한다.
+- 원본 그림은 32px이지만 엔진 맵 좌표는 16px이다. 그림을 축소하지 않고
+  **16px · 32열 · 1024칸**의 `kind: custom`으로 등록한다. 원본 한 타일은 2×2칸이다.
+  성채 팔레트는 가로 스크롤 가능한 원본 배열을 유지해 드래그 조합 선택을 지원한다.
+- 정의: `src/project/defaults/castleTileset.ts`. 알파 표는 원본의 16px 셀을 실측한
+  E(빈칸)/T(부분 투명)/O(불투명) 표다. 잔디는 하위·통행 가능, 물/물가는 하위·막힘,
+  건축과 소품은 상위·막힘, 빈칸은 상위·통행 가능이라는 보수적 초기 설정이다.
+  이는 저작자가 수정할 기본값이며, 사람의 승인(`origin: user`)으로 표시하지 않는다.
+  이 시트에는 RM2K 오토타일/물 애니메이션이나 자동 맵 생성 프로필을 적용하지 않는다.
+- `bundledChipsetGeometry.ts`가 원본 열 수를 프레임 등록·리소스 프로필·그래픽 선택·타일
+  이식에 공유한다. 색 키/이식으로 키가 달라진 텍스처는 `tilesetImage.ts`에서 명시적으로
+  격자를 전달한다. `combinedTown.ts`의 기존 숫자 기반 투명 타일 보정도 이 시트는 건너뛴다.
+- 회귀 계약: `test/castleTileset.test.ts`의 기존 프로젝트 추가/설정 유지, 32열 프레임
+  경계와 마지막 칸, 내보내기 출처 동봉. 세션 규칙에 따라 테스트 실행은 사용자가 요청할 때 한다.
+  브라우저 증거: `.omo/evidence/castle-tiles/NOTES.md`와 같은 폴더의 PNG/관측 JSON.
+
+### 참고 이미지 보드와 성채 공간 카탈로그 (2026-09-19)
+
+사용자가 제공한 2239×2235 성채·강변 합성 이미지는 `public/assets/opengameart-castle-reference-composite.png`에
+오른쪽 1px·아래쪽 5px을 패딩한 2240×2240 RGB 보드로 보존한다. `opengameart_castle_reference` /
+`tex_opengameart_castle_reference`는 16px · 140열 · 19,600칸이며, 보드 맵
+`map_castle_reference_95_20260919`(140×140)의 하위 타일이 0부터 순서대로 채워진다. 따라서 맵을
+다시 그리면 원본 참고 이미지와 같은 픽셀 배열이 된다. 이 보드는 시각 비교용이고, 실제 편집은
+`opengameart_castle` 원본 타일셋을 사용한다. 내보내기에는 보드 PNG와
+`opengameart-castle-reference-composite-CREDITS.txt`가 함께 들어간다.
+
+비교 맵 `map_castle_reference_20260919`도 같은 원본 보드를 사용하며, 4×4 총 16구역의
+`comparisonGrid`를 저장한다. 원본 타일셋으로 계속 편집할 수 있는 80×64 맵은
+`map_castle_editable_20260919`에 보존한다. `scripts/compare-castle-reference.py`로
+비교 보드를 같은 참고 이미지와 비교하면 당연히 1.000000을 기록한다. 이는 원본 타일을
+올바르게 조립했다는 증거가 아니다. 실제 원본 타일 조립은 `map_castle_keep_3`의
+쌍문 안뜰성에서 확인한다. 측정한 완성형 부품 좌표와 과거 오인 목록은 `castle-map.md`에 있다.
+
+같은 원본을 재사용할 수 있도록 원격 프로젝트 `rpg-zzu-house-template-gallery`의
+`spatialAuthoring.library`에 성문·지붕·성벽·망루·돌다리·폭포와 시장 가판대·경작지·나무·석상·선착장·나룻배
+오브젝트 12종, 바깥뜰·선착장·농경지 공간, 성채·강변·시장·농경지·선착장 장소,
+`castle-reference:region:river-castle` 지역, `castle-reference:world:kingdom` 세계를 등록했다. 저장은 `publish_spatial_project` 후
+`sync_spatial_mirrors`를 거쳤고, 프로젝트를 다시 읽어 맵·타일셋·카탈로그 레코드를 확인했다.
+
+카탈로그의 이전 `confidence: high` 표시는 실측 검증이 아니었다. 208=물가, 188=시계나무 조각,
+215/216=벤치, 233=상자이며 기존 농경지·선착장·나룻배 명칭을 그대로 사용하지 않는다.

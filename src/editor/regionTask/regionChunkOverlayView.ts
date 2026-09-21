@@ -15,7 +15,7 @@
 //   · 청크 22개 중 18개가 1칸 = 16×16px → 히트 영역을 MIN_CHUNK_HIT_PX 까지 넓힌다.
 //   · 라벨 22개가 서로를 덮고 같은 이름이 중복됐다("Tree(1칸)·우상단" ×2) → 기본은 감추고
 //     지목(hover/focus)된 것만 보인다.
-import { TILE_SIZE } from "@/assets/bundled";
+import { editorMapTileSize } from "@/editor/mapGeometry";
 import { editorState } from "@/editor/editorState";
 import { resolveRegionClientRect } from "@/editor/regionClientRect";
 import { el } from "@/util/dom";
@@ -89,7 +89,7 @@ function geometry(region: RegionRect): { originX: number; originY: number; tileS
       tileSize: client.width / region.width,
     };
   }
-  return { originX: region.x * TILE_SIZE * zoom, originY: region.y * TILE_SIZE * zoom, tileSize: TILE_SIZE * zoom };
+  return { originX: region.x * editorMapTileSize() * zoom, originY: region.y * editorMapTileSize() * zoom, tileSize: editorMapTileSize() * zoom };
 }
 
 function styleRect(node: HTMLElement, rect: OverlayRect): void {
