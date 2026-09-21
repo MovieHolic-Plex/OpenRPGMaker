@@ -11,6 +11,8 @@ import {
   tilesetTextureKey,
 } from "@/editor/tilesetImage";
 import { tileBackingTile } from "@/editor/tileLayerPolicy";
+import { MAP_BACKGROUND_LAYER_DEPTH } from "@/player/characterDepth";
+import { isPanoramaWindowTile } from "@/project/defaults/chipsetMapping";
 import { animationKeyForTile } from "@/project/defaults/chipsetAnimation";
 import {
   isLakeAutotileTile,
@@ -23,7 +25,7 @@ import {
 } from "@/project/defaults/terrainQuarterAutotile";
 import { mapWithCommittedEvents } from "@/project/eventDrafts";
 import { applyRuntimeMapOverrides } from "@/project/runtimeMap";
-import { tileStackAt } from "@/project/mapOverlayTiles";
+import { tileStackAt, topTileInStack } from "@/project/mapOverlayTiles";
 import { invalidateTilePassabilityComponents } from "@/project/tilePassabilityComponents";
 import { store } from "@/project/store";
 import type { MapId, TilesetDef, Trigger } from "@/project/types";
@@ -208,6 +210,7 @@ export function renderTiles<
   for (let y = 0; y < map.height; y++) {
     for (let x = 0; x < map.width; x++) {
       const index = y * map.width + x;
+      renderEmptyCellCover(scene, x, y, index);
       renderTile(scene, tileset, x, y, map.lowerTiles[index], "lower");
       for (const tile of tileStackAt(map, "lower", index)) renderTile(scene, tileset, x, y, tile, "lower");
       renderTile(scene, tileset, x, y, map.upperTiles[index], "upper");
@@ -376,6 +379,42 @@ function placeMapTileImage<TImage extends RenderedTileImage, TSprite extends Ren
     return;
   }
   tileTargetLayer(scene, layer, alwaysAbove).add(image);
+}
+
+/**
+ * 빈 칸을 가리는 어둘운 판을 깔는다 — RM2K 방식에서 파노라마는
+ * **특수 타일(파노라마 창)을 깔 칸에서만** 비친다.
+ *
+ * 왜 필요한가(2026-09-22): 이전에는 하층 타일이 없는 칸이 그대로 뚜려 진 창이 되어
+ * 배경이 다 보였다. RM2K 파노라마는 그렇지 않다 — 배경은 레이어 뒤에 깔리고,
+ * 칸을 채우면 가려지며, 투명 칸을 내어둘 그 칸에서만 보인다.
+ *
+ * 가리는 방법은 **카메라 배경색 사각형**이다. 별도 스프라이트를 만들지 않는 이유:
+ * 100x100 맵은 1만 칸이고 그 대부분이 하층 타일로 채워진다. 반대로 하층 타일이 없는 칸은
+ * 소수이므로, **빈 칸이 있는 맵에서만** 컨테이너를 만들고 칸 수만큼 사각형을 넣는다.
+ */
+function renderEmptyCellCover<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
+  scene: RenderTilesSceneContext<TImage, TSprite>,
+  x: number,
+  y: number,
+  index: number,
+): void {
+  const map = scene.map;
+  // 하층이 비어 있는가? 배열 뚜기(stack)에 타일이 있으면 채워진 것이다.
+  const lower = topTileInStack(map, "lower", index) ?? map.lowerTiles[index];
+  if (lower >= 0) return;
+  // 창 타일이 있으면 가리지 않는다 — 그가 파노라마를 보이는 법이다.
+  // 상위 레이어에 놓여도(정책상 홈이 upper), 하층이 비어 있다면 같은 결과가 나야 한다.
+  const upper = topTileInStack(map, "upper", index) ?? map.upperTiles[index];
+  if (isPanoramaWindowTile(lower) || isPanoramaWindowTile(upper)) return;
+  const size = mapTileSize(map);
+  if (typeof scene.add.rectangle !== "function") return;
+  const cover = scene.add.rectangle(x * size, y * size, size, size, 0x000000);
+  cover.setOrigin(0, 0);
+  // 배경(-100k) 위, 하층 타일(0) 아래. 이 범위 안에서만 가린다.
+  cover.setDepth(MAP_BACKGROUND_LAYER_DEPTH + 1);
+  scene.tileLayer.add(cover);
+  trackCullableTile(rootYSortHost(scene), cover, x, y);
 }
 
 function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
